@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E514247BA2
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 09:50:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DBA447BA0
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 09:50:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727403AbfFQHuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 03:50:11 -0400
-Received: from mx2.suse.de ([195.135.220.15]:40234 "EHLO mx1.suse.de"
+        id S1727464AbfFQHuM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 03:50:12 -0400
+Received: from mx2.suse.de ([195.135.220.15]:40270 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726189AbfFQHuK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 Jun 2019 03:50:10 -0400
+        id S1726189AbfFQHuL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Jun 2019 03:50:11 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 78BA5AFED;
-        Mon, 17 Jun 2019 07:50:08 +0000 (UTC)
+        by mx1.suse.de (Postfix) with ESMTP id 9ADC8AFE9;
+        Mon, 17 Jun 2019 07:50:10 +0000 (UTC)
 From:   Benjamin Poirier <bpoirier@suse.com>
 To:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
         netdev@vger.kernel.org
-Subject: [PATCH net-next 09/16] qlge: Remove rx_ring.type
-Date:   Mon, 17 Jun 2019 16:48:51 +0900
-Message-Id: <20190617074858.32467-9-bpoirier@suse.com>
+Subject: [PATCH net-next 10/16] qlge: Factor out duplicated expression
+Date:   Mon, 17 Jun 2019 16:48:52 +0900
+Message-Id: <20190617074858.32467-10-bpoirier@suse.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190617074858.32467-1-bpoirier@suse.com>
 References: <20190617074858.32467-1-bpoirier@suse.com>
@@ -31,155 +31,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This field is redundant, the type can be determined from the index, cq_id.
-
 Signed-off-by: Benjamin Poirier <bpoirier@suse.com>
 ---
- drivers/net/ethernet/qlogic/qlge/qlge.h      | 10 -------
- drivers/net/ethernet/qlogic/qlge/qlge_dbg.c  | 16 +++++++---
- drivers/net/ethernet/qlogic/qlge/qlge_main.c | 31 +++++---------------
- 3 files changed, 19 insertions(+), 38 deletions(-)
+ drivers/net/ethernet/qlogic/qlge/qlge.h      |  6 ++++++
+ drivers/net/ethernet/qlogic/qlge/qlge_main.c | 18 ++++++------------
+ 2 files changed, 12 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/net/ethernet/qlogic/qlge/qlge.h b/drivers/net/ethernet/qlogic/qlge/qlge.h
-index 519fa39dd194..5a4b2520cd2a 100644
+index 5a4b2520cd2a..0bb7ccdca6a7 100644
 --- a/drivers/net/ethernet/qlogic/qlge/qlge.h
 +++ b/drivers/net/ethernet/qlogic/qlge/qlge.h
-@@ -1387,15 +1387,6 @@ struct tx_ring {
- 	u64 tx_errors;
- };
+@@ -77,6 +77,12 @@
+ #define LSD(x)  ((u32)((u64)(x)))
+ #define MSD(x)  ((u32)((((u64)(x)) >> 32)))
  
--/*
-- * Type of inbound queue.
-- */
--enum {
--	DEFAULT_Q = 2,		/* Handles slow queue and chip/MPI events. */
--	TX_Q = 3,		/* Handles outbound completions. */
--	RX_Q = 4,		/* Handles inbound completions. */
--};
--
- struct qlge_page_chunk {
- 	struct page *page;
- 	void *va; /* virt addr including offset */
-@@ -1468,7 +1459,6 @@ struct rx_ring {
- 	struct qlge_bq sbq;
- 
- 	/* Misc. handler elements. */
--	u32 type;		/* Type of queue, tx, rx. */
- 	u32 irq;		/* Which vector this ring is assigned. */
- 	u32 cpu;		/* Which CPU this should run on. */
- 	char name[IFNAMSIZ + 5];
-diff --git a/drivers/net/ethernet/qlogic/qlge/qlge_dbg.c b/drivers/net/ethernet/qlogic/qlge/qlge_dbg.c
-index 35af06dd21dd..a177302073db 100644
---- a/drivers/net/ethernet/qlogic/qlge/qlge_dbg.c
-+++ b/drivers/net/ethernet/qlogic/qlge/qlge_dbg.c
-@@ -1731,16 +1731,24 @@ void ql_dump_cqicb(struct cqicb *cqicb)
- 	       le16_to_cpu(cqicb->sbq_len));
- }
- 
-+static const char *qlge_rx_ring_type_name(struct rx_ring *rx_ring)
-+{
-+	struct ql_adapter *qdev = rx_ring->qdev;
++#define QLGE_FIT16(value) \
++({ \
++	typeof(value) _value = value; \
++	(_value) == 65536 ? 0 : (u16)(_value); \
++})
 +
-+	if (rx_ring->cq_id < qdev->rss_ring_count)
-+		return "RX COMPLETION";
-+	else
-+		return "TX COMPLETION";
-+};
-+
- void ql_dump_rx_ring(struct rx_ring *rx_ring)
- {
- 	if (rx_ring == NULL)
- 		return;
- 	pr_err("===================== Dumping rx_ring %d ===============\n",
- 	       rx_ring->cq_id);
--	pr_err("Dumping rx_ring %d, type = %s%s%s\n",
--	       rx_ring->cq_id, rx_ring->type == DEFAULT_Q ? "DEFAULT" : "",
--	       rx_ring->type == TX_Q ? "OUTBOUND COMPLETIONS" : "",
--	       rx_ring->type == RX_Q ? "INBOUND_COMPLETIONS" : "");
-+	pr_err("Dumping rx_ring %d, type = %s\n", rx_ring->cq_id,
-+	       qlge_rx_ring_type_name(rx_ring));
- 	pr_err("rx_ring->cqicb = %p\n", &rx_ring->cqicb);
- 	pr_err("rx_ring->cq_base = %p\n", rx_ring->cq_base);
- 	pr_err("rx_ring->cq_base_dma = %llx\n",
+ /* MPI test register definitions. This register
+  * is used for determining alternate NIC function's
+  * PCI->func number.
 diff --git a/drivers/net/ethernet/qlogic/qlge/qlge_main.c b/drivers/net/ethernet/qlogic/qlge/qlge_main.c
-index 4a3fa0861f8d..733f3b87c3a5 100644
+index 733f3b87c3a5..a21c47c4b9bd 100644
 --- a/drivers/net/ethernet/qlogic/qlge/qlge_main.c
 +++ b/drivers/net/ethernet/qlogic/qlge/qlge_main.c
-@@ -2785,14 +2785,10 @@ static void ql_free_rx_buffers(struct ql_adapter *qdev)
+@@ -2974,7 +2974,6 @@ static int ql_start_rx_ring(struct ql_adapter *qdev, struct rx_ring *rx_ring)
+ 	void __iomem *doorbell_area =
+ 	    qdev->doorbell_area + (DB_PAGE_SIZE * (128 + rx_ring->cq_id));
+ 	int err = 0;
+-	u16 bq_len;
+ 	u64 tmp;
+ 	__le64 *base_indirect_ptr;
+ 	int page_entries;
+@@ -3009,8 +3008,8 @@ static int ql_start_rx_ring(struct ql_adapter *qdev, struct rx_ring *rx_ring)
+ 	memset((void *)cqicb, 0, sizeof(struct cqicb));
+ 	cqicb->msix_vect = rx_ring->irq;
  
- static void ql_alloc_rx_buffers(struct ql_adapter *qdev)
- {
--	struct rx_ring *rx_ring;
- 	int i;
+-	bq_len = (rx_ring->cq_len == 65536) ? 0 : (u16) rx_ring->cq_len;
+-	cqicb->len = cpu_to_le16(bq_len | LEN_V | LEN_CPP_CONT);
++	cqicb->len = cpu_to_le16(QLGE_FIT16(rx_ring->cq_len) | LEN_V |
++				 LEN_CPP_CONT);
  
--	for (i = 0; i < qdev->rx_ring_count; i++) {
--		rx_ring = &qdev->rx_ring[i];
--		if (rx_ring->type != TX_Q)
--			ql_update_buffer_queues(rx_ring);
--	}
-+	for (i = 0; i < qdev->rss_ring_count; i++)
-+		ql_update_buffer_queues(&qdev->rx_ring[i]);
- }
+ 	cqicb->addr = cpu_to_le64(rx_ring->cq_base_dma);
  
- static int qlge_init_bq(struct qlge_bq *bq)
-@@ -3071,12 +3067,7 @@ static int ql_start_rx_ring(struct ql_adapter *qdev, struct rx_ring *rx_ring)
+@@ -3034,12 +3033,9 @@ static int ql_start_rx_ring(struct ql_adapter *qdev, struct rx_ring *rx_ring)
+ 			page_entries++;
+ 		} while (page_entries < MAX_DB_PAGES_PER_BQ(rx_ring->lbq.len));
+ 		cqicb->lbq_addr = cpu_to_le64(rx_ring->lbq.base_indirect_dma);
+-		bq_len = qdev->lbq_buf_size == 65536 ? 0 :
+-			(u16)qdev->lbq_buf_size;
+-		cqicb->lbq_buf_size = cpu_to_le16(bq_len);
+-		bq_len = (rx_ring->lbq.len == 65536) ? 0 :
+-			(u16)rx_ring->lbq.len;
+-		cqicb->lbq_len = cpu_to_le16(bq_len);
++		cqicb->lbq_buf_size =
++			cpu_to_le16(QLGE_FIT16(qdev->lbq_buf_size));
++		cqicb->lbq_len = cpu_to_le16(QLGE_FIT16(rx_ring->lbq.len));
+ 		rx_ring->lbq.prod_idx = 0;
+ 		rx_ring->lbq.curr_idx = 0;
+ 		rx_ring->lbq.clean_idx = 0;
+@@ -3059,9 +3055,7 @@ static int ql_start_rx_ring(struct ql_adapter *qdev, struct rx_ring *rx_ring)
+ 		cqicb->sbq_addr =
+ 		    cpu_to_le64(rx_ring->sbq.base_indirect_dma);
+ 		cqicb->sbq_buf_size = cpu_to_le16(SMALL_BUFFER_SIZE);
+-		bq_len = (rx_ring->sbq.len == 65536) ? 0 :
+-			(u16)rx_ring->sbq.len;
+-		cqicb->sbq_len = cpu_to_le16(bq_len);
++		cqicb->sbq_len = cpu_to_le16(QLGE_FIT16(rx_ring->sbq.len));
+ 		rx_ring->sbq.prod_idx = 0;
+ 		rx_ring->sbq.curr_idx = 0;
  		rx_ring->sbq.clean_idx = 0;
- 		rx_ring->sbq.free_cnt = rx_ring->sbq.len;
- 	}
--	switch (rx_ring->type) {
--	case TX_Q:
--		cqicb->irq_delay = cpu_to_le16(qdev->tx_coalesce_usecs);
--		cqicb->pkt_delay = cpu_to_le16(qdev->tx_max_coalesced_frames);
--		break;
--	case RX_Q:
-+	if (rx_ring->cq_id < qdev->rss_ring_count) {
- 		/* Inbound completion handling rx_rings run in
- 		 * separate NAPI contexts.
- 		 */
-@@ -3084,10 +3075,9 @@ static int ql_start_rx_ring(struct ql_adapter *qdev, struct rx_ring *rx_ring)
- 			       64);
- 		cqicb->irq_delay = cpu_to_le16(qdev->rx_coalesce_usecs);
- 		cqicb->pkt_delay = cpu_to_le16(qdev->rx_max_coalesced_frames);
--		break;
--	default:
--		netif_printk(qdev, ifup, KERN_DEBUG, qdev->ndev,
--			     "Invalid rx_ring->type = %d.\n", rx_ring->type);
-+	} else {
-+		cqicb->irq_delay = cpu_to_le16(qdev->tx_coalesce_usecs);
-+		cqicb->pkt_delay = cpu_to_le16(qdev->tx_max_coalesced_frames);
- 	}
- 	err = ql_write_cfg(qdev, cqicb, sizeof(struct cqicb),
- 			   CFG_LCQ, rx_ring->cq_id);
-@@ -3433,12 +3423,7 @@ static int ql_request_irq(struct ql_adapter *qdev)
- 				goto err_irq;
- 
- 			netif_err(qdev, ifup, qdev->ndev,
--				  "Hooked intr %d, queue type %s, with name %s.\n",
--				  i,
--				  qdev->rx_ring[0].type == DEFAULT_Q ?
--				  "DEFAULT_Q" :
--				  qdev->rx_ring[0].type == TX_Q ? "TX_Q" :
--				  qdev->rx_ring[0].type == RX_Q ? "RX_Q" : "",
-+				  "Hooked intr 0, queue type RX_Q, with name %s.\n",
- 				  intr_context->name);
- 		}
- 		intr_context->hooked = 1;
-@@ -4001,7 +3986,6 @@ static int ql_configure_rings(struct ql_adapter *qdev)
- 			rx_ring->sbq.type = QLGE_SB;
- 			rx_ring->sbq.len = NUM_SMALL_BUFFERS;
- 			rx_ring->sbq.size = rx_ring->sbq.len * sizeof(__le64);
--			rx_ring->type = RX_Q;
- 		} else {
- 			/*
- 			 * Outbound queue handles outbound completions only.
-@@ -4014,7 +3998,6 @@ static int ql_configure_rings(struct ql_adapter *qdev)
- 			rx_ring->lbq.size = 0;
- 			rx_ring->sbq.len = 0;
- 			rx_ring->sbq.size = 0;
--			rx_ring->type = TX_Q;
- 		}
- 	}
- 	return 0;
 -- 
 2.21.0
 
