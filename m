@@ -2,197 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D677748B33
+	by mail.lfdr.de (Postfix) with ESMTP id 6CB3048B32
 	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 20:02:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727511AbfFQSCI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 14:02:08 -0400
-Received: from mail-qt1-f202.google.com ([209.85.160.202]:37396 "EHLO
-        mail-qt1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727296AbfFQSCH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 14:02:07 -0400
-Received: by mail-qt1-f202.google.com with SMTP id g56so9955956qte.4
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 11:02:06 -0700 (PDT)
+        id S1727580AbfFQSCJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 14:02:09 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:35196 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727302AbfFQSCI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 14:02:08 -0400
+Received: by mail-qt1-f194.google.com with SMTP id d23so11862148qto.2;
+        Mon, 17 Jun 2019 11:02:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=q6fAxPcopqOzKqAUUbb7EJUjbkYw4Cmey6lp2gh3NIw=;
-        b=lp35msJJoyw9vPcyZJX2XnGmbmcqUYShSMIYpR4O5l/aeCzX92vpmyyjWoD7eMAv2u
-         IbhOrrkv7x/fsCcVSWNrJqyOR+KCYDfzedWFG7wVTVAypWIA7nEWMMJwcmCO6GZlr8ho
-         StzDNuZFQPzp5FoJ2VtXZ+LaR+PNKRf2LDup7InyTqxUaJGOfyEmEN50JSB0HaTch91t
-         mFO/zOBuorUWfix4ob8XphFv/rBuj1JSq2jA9HxKz6d/TIHmTbUkfOn5HtnPsgd6MonH
-         fGtg7vA6hjBFV6taT3QdbcPU3ge5XjoC9gLNUg8uMPd9R63f+RXRYF2LjXShM0/0WEuR
-         YS3Q==
+        bh=JNPNSnX/nZLYbeGrmzMgRn9YqTSI5FtDFBTl4Ci0/h0=;
+        b=qe/mDa0RpT/lvCERAtXPrli5vv2TYyDyCHmVvSaFlK+aYwBP3e+nwCDW7dJPzK3DGM
+         COSG8lv5oEr8tb/LhqiNge0UjTOelVcGlkaY9gScm+v72ZewZ6gKE4AWqH4wChNXJrgr
+         stEBvowe/a7FrtwwJvQJGh2E3QomQVTQKtFL++5T1TZEsR5QGzdTLgA4ibKRtBZ/nlbe
+         fKhiujKdCsQ7El6+F+NmWcOSkuqQ+eC6LN9BgjaHZ9W/5tMebnsWlMEBaZfrWGMawSRD
+         FPWLyZA9pMRiMEWVPBz4jQUvlUKMlhdlMs1A3Bi1RdBvk6ug6L/dGkERm1lUKaPfVzYZ
+         ePaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=q6fAxPcopqOzKqAUUbb7EJUjbkYw4Cmey6lp2gh3NIw=;
-        b=sXzFRt4sIO41cFtC42nmAHXp4G+kF6Zq0jYDsOT1+h3tEiPpy6C6qkoMVo9HPcMV83
-         EMhNjUKf2C766w0ftC6CoOEOZHfQvEuD4WTphZCH97rLI8G16c9k2o5xctTOKwYn8/f/
-         lSYNQ9SB6vimfx8VI3UJQ7V/AggfWYqawODIUJUzKuHXvqKARRkFSrcqZtDsH0NPw3aU
-         6QCC8ARdhOWsrXnG3iW5xRtmDk6nJkagpTYaJuQrF6EdIYqgf4KFm4WjWtBlo/qfN7X6
-         qXW4MzEo4Xv3cOZY8Dnp0GJ0ezSqUhEdFKp5MDCegzS/eCifMl9uH8spRwD+CF07fLKM
-         SKhQ==
-X-Gm-Message-State: APjAAAWWkLQx9RpnW2MTTYMm1b5cblMzdSW3+H5f0sOwAIAscDLVTQ2k
-        vm7WD1Zpi4XPiJdV5+2l4/QTV1LjBTl+vVH7kXHc/AI6T4J7IfgFxYnoqFpqsFphMmyJKfoZkYA
-        jnHs3eeYpTfZYBCcutZZPtUHUr9lFCNgIv8dkDCvZ0Qup8VQ8P7Eevg==
-X-Google-Smtp-Source: APXvYqxNA6xXx+YNo8r9AdPtGkfS1S4tcWad2IDkcTMFGnYSsn/DSauwT/cddaISCEqhEfg0S6yq78c=
-X-Received: by 2002:aed:3e0f:: with SMTP id l15mr97556106qtf.251.1560794526247;
- Mon, 17 Jun 2019 11:02:06 -0700 (PDT)
-Date:   Mon, 17 Jun 2019 11:01:09 -0700
-In-Reply-To: <20190617180109.34950-1-sdf@google.com>
-Message-Id: <20190617180109.34950-10-sdf@google.com>
-Mime-Version: 1.0
-References: <20190617180109.34950-1-sdf@google.com>
-X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
-Subject: [PATCH bpf-next v6 9/9] bpftool: support cgroup sockopt
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        Stanislav Fomichev <sdf@google.com>, Martin Lau <kafai@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JNPNSnX/nZLYbeGrmzMgRn9YqTSI5FtDFBTl4Ci0/h0=;
+        b=Kvt7JTu6Z1TbLDqZfxTPP5pXmCdBXzqF4qK2UmthIsO4UiMtgy7JwanqAadAnKD+KR
+         x05Yaf53g/yeO/rgArGdM5gHSixntoYOjszQHD198waPKsO2oodG1HWzRPDvTJJbU5Sb
+         vfg1V/vbx3QMfyxLS6dTgNwREI8tIKh8pwcxcx4E7T3sqm8kutAfHLKSWEiEAIxGhmbl
+         Jrtk9j3ddcx/Ost3vZXs0zfIzU2itlD7/Q3mi2iEpgJIS77r6gT/HpFZGIMlHy1y/hiB
+         ZRf8k3xA7UMI7eKQdt4fZmuDz0Z839ZkFRNtfsaWzqZFlTsF4KLNztGWKkM7LC7pjbH4
+         5wLw==
+X-Gm-Message-State: APjAAAVA/btMqw4euuOaC8dc62Kx9J1XFwn0lrX4Ehfy1LrPKnbQcs2X
+        LrCNV49AcFheDD0brZ82CZIPHvBCSE8WI5VAWFk=
+X-Google-Smtp-Source: APXvYqy6O+86H1ro/1Q5OY3wtqwX9Bs8lcEA6dFidoKqtF/RBV4Kk035945bnOueL/ukxTWLBupYyY+L1hNj1cUqy8A=
+X-Received: by 2002:ac8:290c:: with SMTP id y12mr6842499qty.141.1560794527066;
+ Mon, 17 Jun 2019 11:02:07 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190611043505.14664-1-andriin@fb.com> <20190611043505.14664-4-andriin@fb.com>
+ <CAPhsuW7bowxNMr22UkCvTkq8VHYrNiEJtQSdZjausj_8d4oYUQ@mail.gmail.com>
+In-Reply-To: <CAPhsuW7bowxNMr22UkCvTkq8VHYrNiEJtQSdZjausj_8d4oYUQ@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 17 Jun 2019 11:01:55 -0700
+Message-ID: <CAEf4BzbTf6o9yqij7M1rwAOx_hq2Yc=qvNX_o1Trooesxja2ig@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 3/8] libbpf: refactor map initialization
+To:     Song Liu <liu.song.a23@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Support sockopt prog type and cgroup hooks in the bpftool.
+On Sat, Jun 15, 2019 at 2:03 PM Song Liu <liu.song.a23@gmail.com> wrote:
+>
+> On Mon, Jun 10, 2019 at 9:35 PM Andrii Nakryiko <andriin@fb.com> wrote:
+> >
+> > User and global data maps initialization has gotten pretty complicated
+> > and unnecessarily convoluted. This patch splits out the logic for global
+> > data map and user-defined map initialization. It also removes the
+> > restriction of pre-calculating how many maps will be initialized,
+> > instead allowing to keep adding new maps as they are discovered, which
+> > will be used later for BTF-defined map definitions.
+> >
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+> >  tools/lib/bpf/libbpf.c | 244 ++++++++++++++++++++++-------------------
+> >  1 file changed, 134 insertions(+), 110 deletions(-)
+> >
+> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > index 9e39a0a33aeb..c931ee7e1fd2 100644
+> > --- a/tools/lib/bpf/libbpf.c
+> > +++ b/tools/lib/bpf/libbpf.c
+> > @@ -234,6 +234,7 @@ struct bpf_object {
+> >         size_t nr_programs;
+> >         struct bpf_map *maps;
+> >         size_t nr_maps;
+> > +       size_t maps_cap;
+> >         struct bpf_secdata sections;
+> >
+> >         bool loaded;
+> > @@ -763,12 +764,38 @@ int bpf_object__variable_offset(const struct bpf_object *obj, const char *name,
+> >         return -ENOENT;
+> >  }
+> >
+> > -static bool bpf_object__has_maps(const struct bpf_object *obj)
+> > +static struct bpf_map *bpf_object__add_map(struct bpf_object *obj)
+> >  {
+> > -       return obj->efile.maps_shndx >= 0 ||
+> > -              obj->efile.data_shndx >= 0 ||
+> > -              obj->efile.rodata_shndx >= 0 ||
+> > -              obj->efile.bss_shndx >= 0;
+> > +       struct bpf_map *new_maps;
+> > +       size_t new_cap;
+> > +       int i;
+> > +
+> > +       if (obj->nr_maps + 1 <= obj->maps_cap)
+> nit:   how about     if (obj->nr_maps < obj->maps_cap)
 
-Cc: Martin Lau <kafai@fb.com>
-Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
----
- tools/bpf/bpftool/Documentation/bpftool-cgroup.rst | 7 +++++--
- tools/bpf/bpftool/Documentation/bpftool-prog.rst   | 2 +-
- tools/bpf/bpftool/bash-completion/bpftool          | 8 +++++---
- tools/bpf/bpftool/cgroup.c                         | 5 ++++-
- tools/bpf/bpftool/main.h                           | 1 +
- tools/bpf/bpftool/prog.c                           | 3 ++-
- 6 files changed, 18 insertions(+), 8 deletions(-)
+yep, will do
 
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst b/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst
-index 36807735e2a5..cac088a320a6 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst
-@@ -29,7 +29,8 @@ CGROUP COMMANDS
- |	*PROG* := { **id** *PROG_ID* | **pinned** *FILE* | **tag** *PROG_TAG* }
- |	*ATTACH_TYPE* := { **ingress** | **egress** | **sock_create** | **sock_ops** | **device** |
- |		**bind4** | **bind6** | **post_bind4** | **post_bind6** | **connect4** | **connect6** |
--|		**sendmsg4** | **sendmsg6** | **sysctl** }
-+|		**sendmsg4** | **sendmsg6** | **sysctl** | **getsockopt** |
-+|		**setsockopt** }
- |	*ATTACH_FLAGS* := { **multi** | **override** }
- 
- DESCRIPTION
-@@ -86,7 +87,9 @@ DESCRIPTION
- 		  unconnected udp4 socket (since 4.18);
- 		  **sendmsg6** call to sendto(2), sendmsg(2), sendmmsg(2) for an
- 		  unconnected udp6 socket (since 4.18);
--		  **sysctl** sysctl access (since 5.2).
-+		  **sysctl** sysctl access (since 5.2);
-+		  **getsockopt** call to getsockopt (since 5.3);
-+		  **setsockopt** call to setsockopt (since 5.3).
- 
- 	**bpftool cgroup detach** *CGROUP* *ATTACH_TYPE* *PROG*
- 		  Detach *PROG* from the cgroup *CGROUP* and attach type
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-prog.rst b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
-index 228a5c863cc7..c6bade35032c 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-prog.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
-@@ -40,7 +40,7 @@ PROG COMMANDS
- |		**lwt_seg6local** | **sockops** | **sk_skb** | **sk_msg** | **lirc_mode2** |
- |		**cgroup/bind4** | **cgroup/bind6** | **cgroup/post_bind4** | **cgroup/post_bind6** |
- |		**cgroup/connect4** | **cgroup/connect6** | **cgroup/sendmsg4** | **cgroup/sendmsg6** |
--|		**cgroup/sysctl**
-+|		**cgroup/sysctl** | **cgroup/getsockopt** | **cgroup/setsockopt**
- |	}
- |       *ATTACH_TYPE* := {
- |		**msg_verdict** | **stream_verdict** | **stream_parser** | **flow_dissector**
-diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
-index 2725e27dfa42..7afb8b6fbaaa 100644
---- a/tools/bpf/bpftool/bash-completion/bpftool
-+++ b/tools/bpf/bpftool/bash-completion/bpftool
-@@ -378,7 +378,8 @@ _bpftool()
-                                 cgroup/connect4 cgroup/connect6 \
-                                 cgroup/sendmsg4 cgroup/sendmsg6 \
-                                 cgroup/post_bind4 cgroup/post_bind6 \
--                                cgroup/sysctl" -- \
-+                                cgroup/sysctl cgroup/getsockopt \
-+                                cgroup/setsockopt" -- \
-                                                    "$cur" ) )
-                             return 0
-                             ;;
-@@ -688,7 +689,8 @@ _bpftool()
-                 attach|detach)
-                     local ATTACH_TYPES='ingress egress sock_create sock_ops \
-                         device bind4 bind6 post_bind4 post_bind6 connect4 \
--                        connect6 sendmsg4 sendmsg6 sysctl'
-+                        connect6 sendmsg4 sendmsg6 sysctl getsockopt \
-+                        setsockopt'
-                     local ATTACH_FLAGS='multi override'
-                     local PROG_TYPE='id pinned tag'
-                     case $prev in
-@@ -698,7 +700,7 @@ _bpftool()
-                             ;;
-                         ingress|egress|sock_create|sock_ops|device|bind4|bind6|\
-                         post_bind4|post_bind6|connect4|connect6|sendmsg4|\
--                        sendmsg6|sysctl)
-+                        sendmsg6|sysctl|getsockopt|setsockopt)
-                             COMPREPLY=( $( compgen -W "$PROG_TYPE" -- \
-                                 "$cur" ) )
-                             return 0
-diff --git a/tools/bpf/bpftool/cgroup.c b/tools/bpf/bpftool/cgroup.c
-index 7e22f115c8c1..3083f2e4886e 100644
---- a/tools/bpf/bpftool/cgroup.c
-+++ b/tools/bpf/bpftool/cgroup.c
-@@ -25,7 +25,8 @@
- 	"       ATTACH_TYPE := { ingress | egress | sock_create |\n"	       \
- 	"                        sock_ops | device | bind4 | bind6 |\n"	       \
- 	"                        post_bind4 | post_bind6 | connect4 |\n"       \
--	"                        connect6 | sendmsg4 | sendmsg6 | sysctl }"
-+	"                        connect6 | sendmsg4 | sendmsg6 | sysctl |\n"  \
-+	"                        getsockopt | setsockopt }"
- 
- static const char * const attach_type_strings[] = {
- 	[BPF_CGROUP_INET_INGRESS] = "ingress",
-@@ -42,6 +43,8 @@ static const char * const attach_type_strings[] = {
- 	[BPF_CGROUP_UDP4_SENDMSG] = "sendmsg4",
- 	[BPF_CGROUP_UDP6_SENDMSG] = "sendmsg6",
- 	[BPF_CGROUP_SYSCTL] = "sysctl",
-+	[BPF_CGROUP_GETSOCKOPT] = "getsockopt",
-+	[BPF_CGROUP_SETSOCKOPT] = "setsockopt",
- 	[__MAX_BPF_ATTACH_TYPE] = NULL,
- };
- 
-diff --git a/tools/bpf/bpftool/main.h b/tools/bpf/bpftool/main.h
-index 28a2a5857e14..9c5d9c80f71e 100644
---- a/tools/bpf/bpftool/main.h
-+++ b/tools/bpf/bpftool/main.h
-@@ -74,6 +74,7 @@ static const char * const prog_type_name[] = {
- 	[BPF_PROG_TYPE_SK_REUSEPORT]		= "sk_reuseport",
- 	[BPF_PROG_TYPE_FLOW_DISSECTOR]		= "flow_dissector",
- 	[BPF_PROG_TYPE_CGROUP_SYSCTL]		= "cgroup_sysctl",
-+	[BPF_PROG_TYPE_CGROUP_SOCKOPT]		= "cgroup_sockopt",
- };
- 
- extern const char * const map_type_name[];
-diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
-index 1f209c80d906..a201e1c83346 100644
---- a/tools/bpf/bpftool/prog.c
-+++ b/tools/bpf/bpftool/prog.c
-@@ -1070,7 +1070,8 @@ static int do_help(int argc, char **argv)
- 		"                 sk_reuseport | flow_dissector | cgroup/sysctl |\n"
- 		"                 cgroup/bind4 | cgroup/bind6 | cgroup/post_bind4 |\n"
- 		"                 cgroup/post_bind6 | cgroup/connect4 | cgroup/connect6 |\n"
--		"                 cgroup/sendmsg4 | cgroup/sendmsg6 }\n"
-+		"                 cgroup/sendmsg4 | cgroup/sendmsg6 | cgroup/getsockopt |\n"
-+		"                 cgroup/setsockopt }\n"
- 		"       ATTACH_TYPE := { msg_verdict | stream_verdict | stream_parser |\n"
- 		"                        flow_dissector }\n"
- 		"       " HELP_SPEC_OPTIONS "\n"
--- 
-2.22.0.410.gd8fdbe21b5-goog
+>
+> > +               return &obj->maps[obj->nr_maps++];
+> > +
+> > +       new_cap = max(4ul, obj->maps_cap * 3 / 2);
+> > +       new_maps = realloc(obj->maps, new_cap * sizeof(*obj->maps));
+> > +       if (!new_maps) {
+> > +               pr_warning("alloc maps for object failed\n");
+> > +               return ERR_PTR(-ENOMEM);
+> > +       }
+> > +
+> > +       obj->maps_cap = new_cap;
+> > +       obj->maps = new_maps;
+> > +
+> > +       /* zero out new maps */
+> > +       memset(obj->maps + obj->nr_maps, 0,
+> > +              (obj->maps_cap - obj->nr_maps) * sizeof(*obj->maps));
+> > +       /*
+> > +        * fill all fd with -1 so won't close incorrect fd (fd=0 is stdin)
+> > +        * when failure (zclose won't close negative fd)).
+> > +        */
+> > +       for (i = obj->nr_maps; i < obj->maps_cap; i++) {
+> > +               obj->maps[i].fd = -1;
+> > +               obj->maps[i].inner_map_fd = -1;
+> > +       }
+> > +
+> > +       return &obj->maps[obj->nr_maps++];
+> >  }
+> >
+> >  static int
+> > @@ -808,29 +835,68 @@ bpf_object__init_internal_map(struct bpf_object *obj, struct bpf_map *map,
+> >         return 0;
+> >  }
+> >
+> > -static int bpf_object__init_maps(struct bpf_object *obj, int flags)
+> > +static int bpf_object__init_global_data_maps(struct bpf_object *obj)
+> > +{
+> > +       struct bpf_map *map;
+> > +       int err;
+> > +
+> > +       if (!obj->caps.global_data)
+> > +               return 0;
+> > +       /*
+> > +        * Populate obj->maps with libbpf internal maps.
+> > +        */
+> > +       if (obj->efile.data_shndx >= 0) {
+> > +               map = bpf_object__add_map(obj);
+> > +               if (IS_ERR(map))
+> > +                       return PTR_ERR(map);
+> > +               err = bpf_object__init_internal_map(obj, map, LIBBPF_MAP_DATA,
+> > +                                                   obj->efile.data,
+> > +                                                   &obj->sections.data);
+> > +               if (err)
+> > +                       return err;
+> > +       }
+> > +       if (obj->efile.rodata_shndx >= 0) {
+> > +               map = bpf_object__add_map(obj);
+> > +               if (IS_ERR(map))
+> > +                       return PTR_ERR(map);
+> > +               err = bpf_object__init_internal_map(obj, map, LIBBPF_MAP_RODATA,
+> > +                                                   obj->efile.rodata,
+> > +                                                   &obj->sections.rodata);
+> > +               if (err)
+> > +                       return err;
+> > +       }
+> > +       if (obj->efile.bss_shndx >= 0) {
+> > +               map = bpf_object__add_map(obj);
+> > +               if (IS_ERR(map))
+> > +                       return PTR_ERR(map);
+> > +               err = bpf_object__init_internal_map(obj, map, LIBBPF_MAP_BSS,
+> > +                                                   obj->efile.bss, NULL);
+> > +               if (err)
+> > +                       return err;
+> > +       }
+>
+> These 3 if clause are a little too complicated. How about we call
+> bpf_obj_add_map(obj) within bpf_object__init_internal_map()?
 
+Yeah, totally, not sure why I did it this way :)
+
+>
+> > +       return 0;
+> > +}
+> > +
+> > +static int bpf_object__init_user_maps(struct bpf_object *obj, bool strict)
+> >  {
+
+<snip>
