@@ -2,114 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 46F3247C1B
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 10:23:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FEE747C38
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 10:25:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727556AbfFQIWz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 04:22:55 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:52336 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725862AbfFQIWy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 04:22:54 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x5H8EDPq036975;
-        Mon, 17 Jun 2019 08:22:24 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2018-07-02;
- bh=FGXkU7eOmJXcfpTdOS3rFhVnp4//dWioBuU5JvbAozk=;
- b=HoOGFZ6IDRsf/WaCfXo2ZTPgY5pwDJWXjo1xX+qTvLOMlZocWpKu1Sf00Bmkx3VFzyma
- 10WCt0cIJkIFz7mHW+wD9GUOEQ0ivHG8jDJ0t4TRvpEWC+TsmSyquhiRY045QRVvKMqd
- BIDabSi8xq4vX0L9MhRibAwTnUvf3DfPIk//8VY7MahBLoeLEZ2KraHUQ39ijiOHMNDT
- 8ndBBvPX7iRqpB2l3z33gYX+RiPyyzfIf8yD1/MNNifpDFIZvAldxXl3FHTYVYXdGTMe
- /6jx2aoi8UlUxIMQRg+jUh/JipGQ+5QpEWrsTOM8x9vyDm7cYa5WG5PQ0L40CVIPJPpn iA== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2130.oracle.com with ESMTP id 2t4r3td2pj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 17 Jun 2019 08:22:24 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x5H8LV8W126648;
-        Mon, 17 Jun 2019 08:22:24 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3030.oracle.com with ESMTP id 2t59gd3q66-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 17 Jun 2019 08:22:24 +0000
-Received: from abhmp0014.oracle.com (abhmp0014.oracle.com [141.146.116.20])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x5H8M5I4026605;
-        Mon, 17 Jun 2019 08:22:05 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 17 Jun 2019 01:22:05 -0700
-Date:   Mon, 17 Jun 2019 11:21:48 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Ian Abbott <abbotti@mev.co.uk>,
-        H Hartley Sweeten <hsweeten@visionengravers.com>,
-        devel@driverdev.osuosl.org, linux-s390@vger.kernel.org,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, linux-wireless@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-mm@kvack.org, iommu@lists.linux-foundation.org,
-        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
-        linux-media@vger.kernel.org
-Subject: Re: use exact allocation for dma coherent memory
-Message-ID: <20190617082148.GF28859@kadam>
-References: <20190614134726.3827-1-hch@lst.de>
+        id S1727520AbfFQIZs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 04:25:48 -0400
+Received: from mail-eopbgr60057.outbound.protection.outlook.com ([40.107.6.57]:30537
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725791AbfFQIZr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Jun 2019 04:25:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ou5vlwPYdRxPM6Cc5u3lx/hIStNFSdsL70iR5zveAuk=;
+ b=ZHHIsb/yMlxCUrirzXegVo0vNtuau/+Bx7P9FWi87pZcKCo0+CGre6psA3DxpcxvMYkkSzU8QR3bTxHm3h8xa1vivi6o4H6OYiTnpra+2GN0GN53hSkHpXQ6nKsz2Tk3ecqSpso2JvuCeRrgiTJNMVtMY54j9mFSkV+ago+9qSY=
+Received: from DBBPR05MB6283.eurprd05.prod.outlook.com (20.179.40.84) by
+ DBBPR05MB6315.eurprd05.prod.outlook.com (20.179.40.209) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1987.11; Mon, 17 Jun 2019 08:25:41 +0000
+Received: from DBBPR05MB6283.eurprd05.prod.outlook.com
+ ([fe80::50a0:251f:78ce:22c6]) by DBBPR05MB6283.eurprd05.prod.outlook.com
+ ([fe80::50a0:251f:78ce:22c6%6]) with mapi id 15.20.1987.014; Mon, 17 Jun 2019
+ 08:25:41 +0000
+From:   Tariq Toukan <tariqt@mellanox.com>
+To:     Florian Westphal <fw@strlen.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Eric Dumazet <edumazet@google.com>,
+        Ran Rozenstein <ranro@mellanox.com>,
+        Maor Gottlieb <maorg@mellanox.com>
+Subject: Re: [PATCH net-next v3 7/7] net: ipv4: provide __rcu annotation for
+ ifa_list
+Thread-Topic: [PATCH net-next v3 7/7] net: ipv4: provide __rcu annotation for
+ ifa_list
+Thread-Index: AQHVF83Lr33HKjKwkUC3VoNAQ9XCp6afnOAA
+Date:   Mon, 17 Jun 2019 08:25:41 +0000
+Message-ID: <04a5f0ab-00b7-7ba9-2842-915479abe6be@mellanox.com>
+References: <20190531162709.9895-1-fw@strlen.de>
+ <20190531162709.9895-8-fw@strlen.de>
+In-Reply-To: <20190531162709.9895-8-fw@strlen.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: AM6PR05CA0021.eurprd05.prod.outlook.com
+ (2603:10a6:20b:2e::34) To DBBPR05MB6283.eurprd05.prod.outlook.com
+ (2603:10a6:10:c1::20)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=tariqt@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [193.47.165.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: dc592d28-9434-4d45-9f08-08d6f2fd6297
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DBBPR05MB6315;
+x-ms-traffictypediagnostic: DBBPR05MB6315:
+x-microsoft-antispam-prvs: <DBBPR05MB6315E44B870E954FDCC1128AAEEB0@DBBPR05MB6315.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1850;
+x-forefront-prvs: 0071BFA85B
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(366004)(39860400002)(136003)(346002)(376002)(199004)(189003)(66446008)(66556008)(14454004)(73956011)(64756008)(186003)(68736007)(4326008)(107886003)(305945005)(6246003)(7736002)(26005)(5660300002)(8676002)(66476007)(66946007)(66066001)(81156014)(86362001)(31696002)(53936002)(81166006)(8936002)(476003)(54906003)(45080400002)(102836004)(478600001)(110136005)(486006)(14444005)(256004)(71190400001)(446003)(11346002)(99286004)(76176011)(316002)(52116002)(25786009)(6512007)(229853002)(2501003)(386003)(6506007)(53546011)(3846002)(6116002)(2616005)(31686004)(6436002)(71200400001)(6486002)(36756003)(2906002);DIR:OUT;SFP:1101;SCL:1;SRVR:DBBPR05MB6315;H:DBBPR05MB6283.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: hbT5Md4SP2gLJbKy0Z8ZSa/yB0+eU6TurBCs96NARQVWMOxklqPh9zTpf0RtXivpWUcK1ioCGQJ2glwOcTQbcXnRjrHxGwQhazPsnNXGRw2cZGz9wUzS8sgXf1ADzp6Dm/ERykVXn4hdn9n7EvX7906QdeTZIraFWTFEipnmkB23I/U1xTRgrmIqMf45yZfWv/nIhKJ9gPHCPh1T4SOklilS8oec3wvih8ed1RQdiMDqjm/OR9eOCIKmgW7SQdzwvDn1taS/lbGVch2idOydLJTv8kh9JYoQNoieNH5BJpnsdCoj4AUY+EJqcyU1g4XIxdqthB64S1zmLIiRopbxDiz/SsDW4o9Hgqx7d4+yJiAV5gEYM2k+Rom3F6MhxyjLt85My9HQK7AoYF/j1hQCy94LGZM8NighlIHgnwqHIIg=
+Content-Type: text/plain; charset="Windows-1252"
+Content-ID: <7791C280FFBF8C438634CF556C153502@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190614134726.3827-1-hch@lst.de>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9290 signatures=668687
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=782
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1810050000 definitions=main-1906170078
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9290 signatures=668687
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=820 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
- definitions=main-1906170078
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dc592d28-9434-4d45-9f08-08d6f2fd6297
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jun 2019 08:25:41.7563
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: tariqt@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR05MB6315
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I once wrote a Smatch check based on a commit message that said we can't
-pass dma_alloc_coherent() pointers to virt_to_phys().  But then I never
-felt like I understood the rules enough to actually report the warnings
-as bugs.
 
-drivers/platform/x86/dcdbas.c:108 smi_data_buf_realloc() error: 'buf' came from dma_alloc_coherent() so we can't do virt_to_phys()
-drivers/net/caif/caif_virtio.c:414 cfv_create_genpool() error: 'cfv->alloc_addr' came from dma_alloc_coherent() so we can't do virt_to_phys()
-drivers/infiniband/hw/cxgb4/qp.c:135 alloc_host_sq() error: 'sq->queue' came from dma_alloc_coherent() so we can't do virt_to_phys()
-drivers/infiniband/hw/cxgb4/qp.c:272 create_qp() error: 'wq->rq.queue' came from dma_alloc_coherent() so we can't do virt_to_phys()
-drivers/infiniband/hw/cxgb4/qp.c:2628 alloc_srq_queue() error: 'wq->queue' came from dma_alloc_coherent() so we can't do virt_to_phys()
-drivers/infiniband/hw/ocrdma/ocrdma_verbs.c:494 ocrdma_alloc_ucontext() error: 'ctx->ah_tbl.va' came from dma_alloc_coherent() so we can't do virt_to_phys()
 
-drivers/infiniband/hw/cxgb4/qp.c
-   129  static int alloc_host_sq(struct c4iw_rdev *rdev, struct t4_sq *sq)
-   130  {
-   131          sq->queue = dma_alloc_coherent(&(rdev->lldi.pdev->dev), sq->memsize,
-   132                                         &(sq->dma_addr), GFP_KERNEL);
-   133          if (!sq->queue)
-   134                  return -ENOMEM;
-   135          sq->phys_addr = virt_to_phys(sq->queue);
-   136          dma_unmap_addr_set(sq, mapping, sq->dma_addr);
-   137          return 0;
-   138  }
+On 5/31/2019 7:27 PM, Florian Westphal wrote:
+> ifa_list is protected by rcu, yet code doesn't reflect this.
+>=20
+> Add the __rcu annotations and fix up all places that are now reported by
+> sparse.
+>=20
+> I've done this in the same commit to not add intermediate patches that
+> result in new warnings.
+>=20
+> Reported-by: Eric Dumazet <edumazet@google.com>
+> Signed-off-by: Florian Westphal <fw@strlen.de>
 
-Is this a bug?
+Hi Florian,
 
-regards,
-dan carpenter
+Our verification team bisected a degradation [1], seems to be in this patch=
+.
+I see you already posted one fix for it [2], but it does not solve.
+Any idea?
 
+Regards,
+Tariq
+
+
+[2] d3e6e285fff3 net: ipv4: fix rcu lockdep splat due to wrong annotation
+
+[1]
+
+[2019-06-11 22:38:19] mlx5_core 0000:00:08.1 ens8f1: Link up
+[2019-06-11 22:38:19] 8021q: adding VLAN 0 to HW filter on device ens8f1
+[2019-06-11 22:38:47] watchdog: BUG: soft lockup - CPU#4 stuck for 22s!=20
+[ifconfig:32042]
+[2019-06-11 22:38:47] Modules linked in: rdma_ucm rdma_cm iw_cm ib_ipoib=20
+ib_cm ib_umad mlx5_ib mlx5_core mlxfw mlx4_ib ib_uverbs ib_core mlx4_en=20
+ptp pps_core mlx4_core 8021q garp stp mrp llc mst_pciconf(OE) nfsv3=20
+nfs_acl nfs lockd grace fscache netconsole cfg80211 rfkill sunrpc=20
+snd_hda_codec_generic ledtrig_audio snd_hda_intel snd_hda_codec=20
+snd_hda_core cirrus drm_kms_helper snd_hwdep snd_seq crc32_pclmul=20
+snd_seq_device ghash_clmulni_intel drm snd_pcm snd_timer snd syscopyarea=20
+sysfillrect soundcore sysimgblt i2c_piix4 pcspkr fb_sys_fops i2c_core=20
+sch_fq_codel ip_tables ata_generic pata_acpi virtio_net crc32c_intel=20
+net_failover serio_raw failover ata_piix floppy [last unloaded: mlx4_core]
+[2019-06-11 22:38:47] CPU: 4 PID: 32042 Comm: ifconfig Tainted: G=20
+    OE     5.2.0-rc4-for-upstream-perf-2019-06-11_15-08-06-31 #1
+[2019-06-11 22:38:47] Hardware name: QEMU Standard PC (i440FX + PIIX,=20
+1996), BIOS 1.10.2-1ubuntu1 04/01/2014
+[2019-06-11 22:38:47] RIP: 0010:__inet_del_ifa+0xa5/0x300
+[2019-06-11 22:38:47] Code: 5e 10 45 31 d2 eb 13 0f b6 43 44 41 38 46 44=20
+4c 0f 46 cb 4c 8d 5b 10 49 89 da 49 8b 1b 48 85 db 0f 84 98 00 00 00 f6=20
+43 48 01 <74> db 41 8b 46 38 3b 43 38 75 de 8b 53 34 41 33 56 34 85 c2 75 d=
+3
+[2019-06-11 22:38:47] RSP: 0018:ffffc90002cafc28 EFLAGS: 00000246=20
+ORIG_RAX: ffffffffffffff13
+[2019-06-11 22:38:47] RAX: 0000000000000000 RBX: ffff888291eb9880 RCX:=20
+0000000000000000
+[2019-06-11 22:38:47] RDX: 0000000000000000 RSI: 0000000000000001 RDI:=20
+ffff88835c39a000
+[2019-06-11 22:38:47] RBP: 0000000000000000 R08: 0000000000000000 R09:=20
+ffff888291eb9880
+[2019-06-11 22:38:47] R10: ffff888291eb9880 R11: ffff888291eb9890 R12:=20
+0000000000000000
+[2019-06-11 22:38:47] R13: ffff88835c39a010 R14: ffff88827bb7c680 R15:=20
+0000000000000001
+[2019-06-11 22:38:47] FS:  00007fd1c0d82740(0000)=20
+GS:ffff88835f700000(0000) knlGS:0000000000000000
+[2019-06-11 22:38:47] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[2019-06-11 22:38:47] CR2: 00007f9781165160 CR3: 0000000276a52000 CR4:=20
+00000000000006e0
+[2019-06-11 22:38:47] DR0: 0000000000000000 DR1: 0000000000000000 DR2:=20
+0000000000000000
+[2019-06-11 22:38:47] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:=20
+0000000000000400
+[2019-06-11 22:38:47] Call Trace:
+[2019-06-11 22:38:47]  devinet_ioctl+0x1fa/0x720
+[2019-06-11 22:38:47]  inet_ioctl+0x93/0x150
+[2019-06-11 22:38:47]  ? page_add_file_rmap+0x15/0x180
+[2019-06-11 22:38:47]  ? alloc_set_pte+0x12c/0x580
+[2019-06-11 22:38:47]  sock_do_ioctl+0x3d/0x130
+[2019-06-11 22:38:47]  ? filemap_map_pages+0xf2/0x3b0
+[2019-06-11 22:38:47]  sock_ioctl+0x1e5/0x390
+[2019-06-11 22:38:47]  ? __handle_mm_fault+0xae4/0xe80
+[2019-06-11 22:38:47]  do_vfs_ioctl+0xa6/0x600
+[2019-06-11 22:38:47]  ksys_ioctl+0x60/0x90
+[2019-06-11 22:38:47]  __x64_sys_ioctl+0x16/0x20
+[2019-06-11 22:38:47]  do_syscall_64+0x48/0x130
+[2019-06-11 22:38:47]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[2019-06-11 22:38:47] RIP: 0033:0x7fd1c0899dc7
+[2019-06-11 22:38:47] Code: b3 66 90 48 8b 05 d9 00 2d 00 64 c7 00 26 00=20
+00 00 48 c7 c0 ff ff ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 b8 10 00 00=20
+00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d a9 00 2d 00 f7 d8 64 89 01 4=
+8
+[2019-06-11 22:38:47] RSP: 002b:00007fff995c4758 EFLAGS: 00000246=20
+ORIG_RAX: 0000000000000010
+[2019-06-11 22:38:47] RAX: ffffffffffffffda RBX: 0000000000000002 RCX:=20
+00007fd1c0899dc7
+[2019-06-11 22:38:47] RDX: 00007fff995c47c0 RSI: 0000000000008916 RDI:=20
+000000000000000c
+[2019-06-11 22:38:47] RBP: 00007fff995c5be7 R08: 00007fff995c48fd R09:=20
+0000000000000000
+[2019-06-11 22:38:47] R10: 00007fd1c091e880 R11: 0000000000000246 R12:=20
+0000000000000005
+[2019-06-11 22:38:47] R13: 00007fff995c4aa8 R14: 0000000000000000 R15:=20
+0000000000000000
