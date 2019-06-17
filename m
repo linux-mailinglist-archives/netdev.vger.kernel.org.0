@@ -2,111 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 40196483C9
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 15:22:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEED5483B7
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 15:18:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727611AbfFQNVt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 09:21:49 -0400
-Received: from smtp113.ord1c.emailsrvr.com ([108.166.43.113]:50846 "EHLO
-        smtp113.ord1c.emailsrvr.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725884AbfFQNVs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 09:21:48 -0400
-X-Greylist: delayed 358 seconds by postgrey-1.27 at vger.kernel.org; Mon, 17 Jun 2019 09:21:47 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mev.co.uk;
-        s=20190130-41we5z8j; t=1560777347;
-        bh=ZvJvYkjr7iE1RIXRXDlijzKzJL0BitvNBM9T5FqQAmw=;
-        h=Subject:To:From:Date:From;
-        b=Nl+Gx2+KTHlZUrgrlD4OPdHaDIh8UJfTuRA5MZVnySfiilIiWgnddpiJk4/aln5DA
-         OAo8bcON3aHKJNRIUHN2qprmbAq2BRvH2IUzshdVkvRvYeZuB2iOeftPYIjVWn6ziI
-         KuJnFj51kem220yEC5D7kahxijPjmtFu66j0THaY=
-X-Auth-ID: abbotti@mev.co.uk
-Received: by smtp7.relay.ord1c.emailsrvr.com (Authenticated sender: abbotti-AT-mev.co.uk) with ESMTPSA id D9002A01B2;
-        Mon, 17 Jun 2019 09:15:44 -0400 (EDT)
-X-Sender-Id: abbotti@mev.co.uk
-Received: from [10.0.0.62] (remote.quintadena.com [81.133.34.160])
-        (using TLSv1.2 with cipher AES128-SHA)
-        by 0.0.0.0:465 (trex/5.7.12);
-        Mon, 17 Jun 2019 09:15:47 -0400
-Subject: Re: [PATCH 12/16] staging/comedi: mark as broken
-To:     Christoph Hellwig <hch@lst.de>,
-        Greg KH <gregkh@linuxfoundation.org>
-Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        H Hartley Sweeten <hsweeten@visionengravers.com>,
-        devel@driverdev.osuosl.org, linux-s390@vger.kernel.org,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, linux-wireless@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-mm@kvack.org, iommu@lists.linux-foundation.org,
-        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
-        linux-media@vger.kernel.org
-References: <20190614134726.3827-1-hch@lst.de>
- <20190614134726.3827-13-hch@lst.de> <20190614140239.GA7234@kroah.com>
- <20190614144857.GA9088@lst.de> <20190614153032.GD18049@kroah.com>
- <20190614153428.GA10008@lst.de>
-From:   Ian Abbott <abbotti@mev.co.uk>
-Organization: MEV Ltd.
-Message-ID: <60c6af3d-d8e4-5745-8d2b-9791a2f4ff56@mev.co.uk>
-Date:   Mon, 17 Jun 2019 14:15:43 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1727703AbfFQNSR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 09:18:17 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:42356 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725884AbfFQNSQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 09:18:16 -0400
+Received: by mail-io1-f68.google.com with SMTP id u19so20972263ior.9
+        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 06:18:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=nTeIw60hUFURhpVY68TtWKeGZD0Gs/oRMnQY0Nlgiv0=;
+        b=OEQlFv6flVX4D4rsAzYHBbViShPnwp/kLFMFu8vWJu3IWLw6PDh87VIoIiurJqrInQ
+         y6pm1oYqJWDTGKdTiuz8jUKdqGUJeYw0qQ0kJ1H+SjJ1jMPB9ryAECaHs8IUpnT/xWSF
+         Hhp5t/XmYuH/p8+tE1buNtouuRk1UlyWBQJHThesu/miX9+c0z4rOE7LtaTvqlHgMphb
+         NW8+w6aw/JXfnOGE8civZ3N2ttZ1ExpZBe4i88upZ1/gdkmHhgLoQ1Cfw4sUWK1m/Qhf
+         xthjqBN4wWkQLQUkU+cj2GuQ/kInAmKzzYmV/IbwK6gS/1LkqTpwhkTx5wr+uFk/zJQe
+         T8Vw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=nTeIw60hUFURhpVY68TtWKeGZD0Gs/oRMnQY0Nlgiv0=;
+        b=FrnUdCGNi/FAtFLWa6EuzWk9IKfy867EbwVPvbY1naDb7tUErTniKoMor0035aG83d
+         DuSTv8MQhX4yWx9Fd+ULQeZyZtQZvWWGrdvD9QVihz1OuUHChka/gmwwKNv7vdaHf6NH
+         W9k4/lOr3ywx0x6EEKh7YdqEebwrNxlwDMZwxTCQpk8roJqDqWA80h92R408L3+KIfRF
+         Yoe+ou/IT/+pPTiPpn8LCLuhrb8T76FvKiGEuA40/MLQYio0E0G2WIoCLFbrwNsRJ2BL
+         NorAqAYhnJARaezrJqp4mXLhJ6ocq4LC7wET0kewwHv3sq1HjAm2MPCvGHYWgPpUW6JN
+         Uy/g==
+X-Gm-Message-State: APjAAAXDx/SmUJAWNGoofJdTr1Qy+LNg6PYmn1gHiGybs+qDbDK+yz1d
+        rkgGvu9ZQmOyGYrubiHMfVERR/1Z
+X-Google-Smtp-Source: APXvYqzMR06amf2Ekzd6SF/NjEhoy2Tg8JuLObTQPvfV/lVxFiiGddwfvk89uDBoi1eo7+jCxt1m0g==
+X-Received: by 2002:a02:298b:: with SMTP id p133mr88452796jap.37.1560777495874;
+        Mon, 17 Jun 2019 06:18:15 -0700 (PDT)
+Received: from ?IPv6:2601:282:800:fd80:f1:4f12:3a05:d55e? ([2601:282:800:fd80:f1:4f12:3a05:d55e])
+        by smtp.googlemail.com with ESMTPSA id z15sm4250081ioc.68.2019.06.17.06.18.14
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 17 Jun 2019 06:18:15 -0700 (PDT)
+Subject: Re: [PATCH net v4 1/8] ipv4/fib_frontend: Rename
+ ip_valid_fib_dump_req, provide non-strict version
+To:     Stefano Brivio <sbrivio@redhat.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        netdev@vger.kernel.org
+References: <cover.1560561432.git.sbrivio@redhat.com>
+ <fb2bbc9568a7d7d21a00b791a2d4f488cfcd8a50.1560561432.git.sbrivio@redhat.com>
+ <4dfbaf6a-5cff-13ea-341e-2b1f91c25d04@gmail.com>
+ <20190615051342.7e32c2bb@redhat.com>
+ <d780b664-bdbd-801f-7c61-d4854ff26192@gmail.com>
+ <20190615052705.66f3fe62@redhat.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <f6ed8beb-0892-059a-2b08-90e782226115@gmail.com>
+Date:   Mon, 17 Jun 2019 07:18:10 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-In-Reply-To: <20190614153428.GA10008@lst.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
+In-Reply-To: <20190615052705.66f3fe62@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/06/2019 16:34, Christoph Hellwig wrote:
-> On Fri, Jun 14, 2019 at 05:30:32PM +0200, Greg KH wrote:
->> On Fri, Jun 14, 2019 at 04:48:57PM +0200, Christoph Hellwig wrote:
->>> On Fri, Jun 14, 2019 at 04:02:39PM +0200, Greg KH wrote:
->>>> Perhaps a hint as to how we can fix this up?  This is the first time
->>>> I've heard of the comedi code not handling dma properly.
+On 6/14/19 9:27 PM, Stefano Brivio wrote:
+>>>> Can you explain why this patch is needed? The existing function requires
+>>>> strict mode and is needed to enable any of the kernel side filtering
+>>>> beyond the RTM_F_CLONED setting in rtm_flags.  
 >>>
->>> It can be fixed by:
+>>> It's mostly to have proper NLM_F_MATCH support. Let's pick an iproute2
+>>> version without strict checking support (< 5.0), that sets NLM_F_MATCH
+>>> though. Then we need this check:
 >>>
->>>   a) never calling virt_to_page (or vmalloc_to_page for that matter)
->>>      on dma allocation
->>>   b) never remapping dma allocation with conflicting cache modes
->>>      (no remapping should be doable after a) anyway).
+>>> 	if (nlh->nlmsg_len < nlmsg_msg_size(sizeof(*rtm)))  
 >>
->> Ok, fair enough, have any pointers of drivers/core code that does this
->> correctly?  I can put it on my todo list, but might take a week or so...
+>> but that check existed long before any of the strict checking and kernel
+>> side filtering was added.
 > 
-> Just about everyone else.  They just need to remove the vmap and
-> either do one large allocation, or live with the fact that they need
-> helpers to access multiple array elements instead of one net vmap,
-> which most of the users already seem to do anyway, with just a few
-> using the vmap (which might explain why we didn't see blowups yet).
+> Indeed. And now I'm recycling it, even if strict checking is not
+> requested.
+> 
+>>> and to set filter parameters not just based on flags (i.e. RTM_F_CLONED),
+>>> but also on table, protocol, etc.  
+>>
+>> and to do that you *must* have strict checking. There is no way to trust
+>> userspace without that strict flag set because iproute2 for the longest
+>> time sent the wrong header for almost all dump requests.
+> 
+> So you're implying that:
+> 
+> - we shouldn't support NLM_F_MATCH
+> 
+> - we should keep this broken for iproute2 < 5.0.0?
+> 
+> I guess this might be acceptable, but please state it clearly.
+> 
+> By the way, if really needed, we can do strict checking even if not
+> requested. But this might add more and more userspace breakage, I guess.
+> 
 
-Avoiding the vmap in comedi should be do-able as it already has other 
-means to get at the buffer pages.
-
-When comedi makes the buffer from DMA coherent memory, it currently 
-allocates it as a series of page-sized chunks.  That cannot be mmap'ed 
-in one go with dma_mmap_coherent(), so I see the following solutions.
-
-1. Change the buffer allocation to allocate a single chunk of DMA 
-coherent memory and use dma_mmap_coherent() to mmap it.
-
-2. Call dma_mmap_coherent() in a loop, adjusting vma->vm_start and 
-vma->vm_end for each iteration (vma->vm_pgoff will be 0), and restoring 
-the vma->vm_start and vma->vm_end at the end.
-
-I'm not sure if 2 is a legal option.
-
--- 
--=( Ian Abbott <abbotti@mev.co.uk> || Web: www.mev.co.uk )=-
--=( MEV Ltd. is a company registered in England & Wales. )=-
--=( Registered number: 02862268.  Registered address:    )=-
--=( 15 West Park Road, Bramhall, STOCKPORT, SK7 3JZ, UK. )=-
+Prior to 5.0 and strict checking, iproute2 was sending ifinfomsg as the
+header struct - which is wrong for routes. ifi_flags just happens to
+have the same offset as rtm_flags so the check for RTM_F_CLONED is ok,
+but nothing else sent in the get request (e.g., potentially appended
+attributes) can be trusted, so the !strict path you are adding with
+nlmsg_parse_deprecated is wrong. The kernel side filter argument can be
+used and treating RTM_F_CLONED as a filter is ok, but not the new
+parsing code.
