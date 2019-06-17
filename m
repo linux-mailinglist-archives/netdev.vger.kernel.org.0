@@ -2,99 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A95CE47FCC
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 12:36:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71C1947FE0
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 12:41:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727436AbfFQKfz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 06:35:55 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:43724 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726427AbfFQKfy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 06:35:54 -0400
-Received: by mail-wr1-f67.google.com with SMTP id p13so9334960wru.10
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 03:35:53 -0700 (PDT)
+        id S1726898AbfFQKks (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 06:40:48 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:35586 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726427AbfFQKks (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 06:40:48 -0400
+Received: by mail-lj1-f195.google.com with SMTP id x25so8818099ljh.2
+        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 03:40:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=LdLD6/GLnt8m3EwyYjIGs7rafDrtX5c/RGMl/GKKl8o=;
-        b=LbaodTzMAL8u12y2crGYXzc5LcEcD4olP+PnKNNkq1Ry/FFWYTKTvPDF4uTM6VXEOO
-         Ok3b/58sc2ip+falSZ1Temq/KsMze8wnfJQLOklfCX2iBleXVj0ObJ1h1Mgls5NXnna/
-         SQSig9XOK4T0+hyMOxF8Xhmr/+4C1XqzOEM24=
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=qjyOm5jUlTHrm3VcdpTzvNXJzoC5FF0ZBV+AJFqfwy8=;
+        b=gy5kjwRSDGUmg+loUcjvpvKLKPjh8DRZE092YszFWVPKk36tVOMTs3TvbNA+0dsR91
+         WIJqH6O9/9sAJonxuI1Bo9pqATokUYLTsE1xdKNrqKtwtSTXwCgpvj3D8O1DiTtBa3OY
+         7xZj8JVm4zw7NsxAfSMv8gX5XE/N8Pv+2B//BpaRBjwYD/V+pD2KBQL9EJtpdJJJVRYL
+         kJ8RyTd6iaFhRuRtxAHlUP0QKB81uQQochdQfknajVs8eplC+0XzPhRvBq7uNQTewY69
+         guVmNzppj2Bst0zPUgPbjO0Eu3gjErwfwbcJnGaIMYQB9AmjG1hKKz01MiNje2MoOaMG
+         QOtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=LdLD6/GLnt8m3EwyYjIGs7rafDrtX5c/RGMl/GKKl8o=;
-        b=LrBg87zYyZpWWAv1wFq0c0uaWXCu/ZTrwwe2+AT8MFV0/+aNr1WUbopFIf/RVTNJym
-         qEAxUYAZHda8tAWkZc3G+cCcVH57nTTB8bmsrXANGc0W310jL1WTFewxOipactlp7oIX
-         dIhLQ00IFjsz8bGg2rZOnpek5v4x1pSBYxtbdWR3dRCzFWs6/jkrU0DoAin1vrxbIIOW
-         6SXqCOltx1v2Q9u3ttd5l2SzOinR/PAfswysRVmMrbLrN+KNpMgqHtAYdIMyaAe9nL/b
-         +zkFQJWfa/kYqrJkGGBLdxwgXMjavhZyLixumlW4XzAKju82e3Vo4nru+PlPiga2JXIg
-         KEXQ==
-X-Gm-Message-State: APjAAAXlTNEBJsZsMgOw7b+3Rqt7Il20bezXlQ0jMEonq07CWR2e3kMD
-        iqZ6nqXPQUu5Vl4gjHV2LZ4gyg==
-X-Google-Smtp-Source: APXvYqzFFb4lC949Z60IWxorsffQZyTfPYve5pAYlHt07baOm8aNcHW8hBKNaqDa+JDSAIdRNBcnyw==
-X-Received: by 2002:adf:f84f:: with SMTP id d15mr75042119wrq.53.1560767752500;
-        Mon, 17 Jun 2019 03:35:52 -0700 (PDT)
-Received: from [10.176.68.244] ([192.19.248.250])
-        by smtp.gmail.com with ESMTPSA id p140sm3887001wme.31.2019.06.17.03.35.51
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 17 Jun 2019 03:35:51 -0700 (PDT)
-Subject: Re: [PATCH v4 3/5] brcmfmac: sdio: Disable auto-tuning around
- commands expected to fail
-To:     Douglas Anderson <dianders@chromium.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Adrian Hunter <adrian.hunter@intel.com>
-Cc:     brcm80211-dev-list.pdl@broadcom.com,
-        linux-rockchip@lists.infradead.org,
-        Double Lo <double.lo@cypress.com>, briannorris@chromium.org,
-        linux-wireless@vger.kernel.org,
-        Naveen Gupta <naveen.gupta@cypress.com>,
-        Madhan Mohan R <madhanmohan.r@cypress.com>, mka@chromium.org,
-        Wright Feng <wright.feng@cypress.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        netdev@vger.kernel.org, brcm80211-dev-list@cypress.com,
-        Hans de Goede <hdegoede@redhat.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        linux-kernel@vger.kernel.org,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20190613234153.59309-1-dianders@chromium.org>
- <20190613234153.59309-4-dianders@chromium.org>
-From:   Arend Van Spriel <arend.vanspriel@broadcom.com>
-Message-ID: <be97a37a-d81b-5756-7a97-418d9b36a381@broadcom.com>
-Date:   Mon, 17 Jun 2019 12:35:50 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=qjyOm5jUlTHrm3VcdpTzvNXJzoC5FF0ZBV+AJFqfwy8=;
+        b=o3yYxvJUVY9kXfhPd2TQ5pcLtTDSwXP9FcrzmeCq8TpG2zPhaRoSnMomZo5st6qgrL
+         RdxIQLLvXM/Kig3rfbPmnCPoIsq7vwQQChs1Jv2aVHxxqz8/NjPGowiHBCdDRwjvZL4t
+         nq3U0hcsnbDssHzWjCeY2L+xl7EM0bJbxkt8awWgemELOFe+8dtnNxQhtR8scfRvlo+W
+         yThg9wYayh0L7FX8jbehyGyEMywmVEO7mRvZeWKszGAOzzzmEDMAaJVG0dyOGf3Mm+sU
+         FJ8kl1Giiwi5yyBV5K5HS4qj8Lo2Ej0b9+kKTLz6BnbR3vI+eCh71IYNhzSwhkRP+NeU
+         IZqA==
+X-Gm-Message-State: APjAAAXcrRD+ZTgmkCwOGUmMIH055ztUEVXCZ7RhHD/CHta7MmXYHthx
+        98aczKGOmKWE7RgCVuiC+FyKD2p+WnhIKBETWVOV3Q==
+X-Google-Smtp-Source: APXvYqyJ/4NlVGen9mEDEJFgUwywW3Ugc4Zau5rMZozFcJhZbBt5k0iq0dveVQb3h5/rYoTvJhHb9pQlQGGet7oAI54=
+X-Received: by 2002:a2e:6c14:: with SMTP id h20mr1705967ljc.38.1560768045802;
+ Mon, 17 Jun 2019 03:40:45 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190613234153.59309-4-dianders@chromium.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20190617073320.69015-1-lifei.shirley@bytedance.com>
+ <28bef625-ce70-20a1-7d8b-296cd43015c4@redhat.com> <2d05dce3-e19a-2f0f-8b74-8defae38640d@redhat.com>
+ <CA+=e4K6_EGK+r4RXWpK2wZ5OW9JNQS9NfGpZtG3grjhApAFCEw@mail.gmail.com>
+In-Reply-To: <CA+=e4K6_EGK+r4RXWpK2wZ5OW9JNQS9NfGpZtG3grjhApAFCEw@mail.gmail.com>
+From:   =?UTF-8?B?5p2O6I+y?= <lifei.shirley@bytedance.com>
+Date:   Mon, 17 Jun 2019 18:40:34 +0800
+Message-ID: <CA+=e4K7VCqJD_g_a3GHpjqAKhJxs3T+88tBjyabRTh2SzB=cOw@mail.gmail.com>
+Subject: Re: [External Email] Re: [PATCH] Fix tun: wake up waitqueues after
+ IFF_UP is set
+To:     Jason Wang <jasowang@redhat.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     zhengfeiran@bytedance.com, duanxiongchun@bytedance.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/14/2019 1:41 AM, Douglas Anderson wrote:
-> There are certain cases, notably when transitioning between sleep and
-> active state, when Broadcom SDIO WiFi cards will produce errors on the
-> SDIO bus.  This is evident from the source code where you can see that
-> we try commands in a loop until we either get success or we've tried
-> too many times.  The comment in the code reinforces this by saying
-> "just one write attempt may fail"
-> 
-> Unfortunately these failures sometimes end up causing an "-EILSEQ"
-> back to the core which triggers a retuning of the SDIO card and that
-> blocks all traffic to the card until it's done.
-> 
-> Let's disable retuning around the commands we expect might fail.
-> 
-> Fixes: bd11e8bd03ca ("mmc: core: Flag re-tuning is needed on CRC errors")
+Hi all,
 
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+On Mon, Jun 17, 2019 at 5:32 PM =E6=9D=8E=E8=8F=B2 <lifei.shirley@bytedance=
+.com> wrote:
+>
+> Ok, thanks for detail suggestion! :)
+>
+> On Mon, Jun 17, 2019 at 4:16 PM Jason Wang <jasowang@redhat.com> wrote:
+>>
+>>
+>> On 2019/6/17 =E4=B8=8B=E5=8D=884:10, Jason Wang wrote:
+>> >
+>> > On 2019/6/17 =E4=B8=8B=E5=8D=883:33, Fei Li wrote:
+>> >> Currently after setting tap0 link up, the tun code wakes tx/rx waited
+>> >> queues up in tun_net_open() when .ndo_open() is called, however the
+>> >> IFF_UP flag has not been set yet. If there's already a wait queue, it
+>> >> would fail to transmit when checking the IFF_UP flag in tun_sendmsg()=
+.
+>> >> Then the saving vhost_poll_start() will add the wq into wqh until it
+>> >> is waken up again. Although this works when IFF_UP flag has been set
+>> >> when tun_chr_poll detects; this is not true if IFF_UP flag has not
+>> >> been set at that time. Sadly the latter case is a fatal error, as
+>> >> the wq will never be waken up in future unless later manually
+>> >> setting link up on purpose.
+>> >>
+>> >> Fix this by moving the wakeup process into the NETDEV_UP event
+>> >> notifying process, this makes sure IFF_UP has been set before all
+>> >> waited queues been waken up.
+>>
+>>
+>> Btw, the title needs some tweak. E.g you need use "net" as prefix since
+>> it's a fix for net.git and "Fix" could be removed like:
+>>
+>> [PATCH net] tun: wake up waitqueues after IFF_UP is set.
+>>
+>> Thanks
+>>
+>>
+>> >>
+>> >> Signed-off-by: Fei Li <lifei.shirley@bytedance.com>
+>> >> ---
+>> >>   drivers/net/tun.c | 17 +++++++++--------
+>> >>   1 file changed, 9 insertions(+), 8 deletions(-)
+>> >>
+>> >> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+>> >> index c452d6d831dd..a3c9cab5a4d0 100644
+>> >> --- a/drivers/net/tun.c
+>> >> +++ b/drivers/net/tun.c
+>> >> @@ -1015,17 +1015,9 @@ static void tun_net_uninit(struct net_device
+>> >> *dev)
+>> >>   static int tun_net_open(struct net_device *dev)
+>> >>   {
+>> >>       struct tun_struct *tun =3D netdev_priv(dev);
+Will remove the above unused struct in next version.
+Sorry for the negligence!
+
+Have a nice day, thanks
+Fei
+
+
+>> >> -    int i;
+>> >>         netif_tx_start_all_queues(dev);
+>> >>   -    for (i =3D 0; i < tun->numqueues; i++) {
+>> >> -        struct tun_file *tfile;
+>> >> -
+>> >> -        tfile =3D rtnl_dereference(tun->tfiles[i]);
+>> >> - tfile->socket.sk->sk_write_space(tfile->socket.sk);
+>> >> -    }
+>> >> -
+>> >>       return 0;
+>> >>   }
+>> >>   @@ -3634,6 +3626,7 @@ static int tun_device_event(struct
+>> >> notifier_block *unused,
+>> >>   {
+>> >>       struct net_device *dev =3D netdev_notifier_info_to_dev(ptr);
+>> >>       struct tun_struct *tun =3D netdev_priv(dev);
+>> >> +    int i;
+>> >>         if (dev->rtnl_link_ops !=3D &tun_link_ops)
+>> >>           return NOTIFY_DONE;
+>> >> @@ -3643,6 +3636,14 @@ static int tun_device_event(struct
+>> >> notifier_block *unused,
+>> >>           if (tun_queue_resize(tun))
+>> >>               return NOTIFY_BAD;
+>> >>           break;
+>> >> +    case NETDEV_UP:
+>> >> +        for (i =3D 0; i < tun->numqueues; i++) {
+>> >> +            struct tun_file *tfile;
+>> >> +
+>> >> +            tfile =3D rtnl_dereference(tun->tfiles[i]);
+>> >> + tfile->socket.sk->sk_write_space(tfile->socket.sk);
+>> >> +        }
+>> >> +        break;
+>> >>       default:
+>> >>           break;
+>> >>       }
+>> >
+>> >
+>> > Acked-by: Jason Wang <jasowang@redhat.com)
+>> >
