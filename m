@@ -2,258 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9575347BA8
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 09:50:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10FA847BB1
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 09:54:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727573AbfFQHu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 03:50:26 -0400
-Received: from mx2.suse.de ([195.135.220.15]:40462 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726189AbfFQHuZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 Jun 2019 03:50:25 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 8F68DAFE9;
-        Mon, 17 Jun 2019 07:50:23 +0000 (UTC)
-From:   Benjamin Poirier <bpoirier@suse.com>
-To:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
-        netdev@vger.kernel.org
-Subject: [PATCH net-next 16/16] qlge: Refill empty buffer queues from wq
-Date:   Mon, 17 Jun 2019 16:48:58 +0900
-Message-Id: <20190617074858.32467-16-bpoirier@suse.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190617074858.32467-1-bpoirier@suse.com>
-References: <20190617074858.32467-1-bpoirier@suse.com>
+        id S1727140AbfFQHx7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 03:53:59 -0400
+Received: from mail-ua1-f68.google.com ([209.85.222.68]:42298 "EHLO
+        mail-ua1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726047AbfFQHx7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 03:53:59 -0400
+Received: by mail-ua1-f68.google.com with SMTP id a97so3087883uaa.9
+        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 00:53:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tRW1fNYqfwgQBy9THQpXCwuo5cDKvcErh5obSg7YYNc=;
+        b=rF1z+kGx4xXL8zfFmisXiiKRC1ok9357niHWA7JwibX0ET3Sg2Vx/C91G3nrLc+Xhe
+         BPK1VcVetMEFD5keUYeTb5W3hxqOdM34b/M9bruL5im6NuFkKRqVC7jsMPkebP2tAn6Y
+         D94jWFD4CUzmB3wQv0vDlpQdduzhIvtbUwbiHXA/jfeOFu2cvoIcibGdp+E+Bd3gGBoy
+         3gl7atT4pvqbvXUtPRwvJqQds1zAPHerPuoQw/wouC1cnIz0xBuv7d33qJEKP6bN2kwZ
+         CNzBAvYinLErfw6BiZX1TKiSPZVm6+weN+Ve92dW+5Ee4stiJZG0x7ywBtwPHFq7QAAV
+         g3Kw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tRW1fNYqfwgQBy9THQpXCwuo5cDKvcErh5obSg7YYNc=;
+        b=Hpj2iLdWBVSgp2YUvDCr2i8HS3xSagZ2WN6rPAMJc1sPk6dw7/GZ1Wx74VP2p7yI1u
+         aobD5OX/MCSJiV4PF9Mbm0/eypCcNR8usnJfoH84eQyVc5pjDhk2fe5MsSrbETLFmUvM
+         0N8oFGrDPqhx24d6ZwLer6yGElZSUQqkcpVJxlipFo9XQrwdW2RgZAgTk7voqo5fnK9x
+         1l/B4kF9dfLQvWf/sIJZCbO6nTN5YumrjRKTx0ZClABZj5wuc6N1DKNIBVe2tEQmxY4P
+         5JHi6XFYZA+NMO0EPEu4VGAINpgx62gKlfD/LV0TIBvamCkWn6w8Qtr7oscGCi71Njs/
+         Q81w==
+X-Gm-Message-State: APjAAAVrU+5NSQXTNpljAe3k+b71hONAV3iRjmtki3Wkdz1p2sZP18pG
+        Ad0ev5dvyp+PlYk1jvE/0g4w5m5Y+OVexBQYAECbrg==
+X-Google-Smtp-Source: APXvYqyhLV0eZUsbwyc8+v3TnW8XR69RoxoH9782ZqeCtf+IvVa1gMZ7SgjScvGxko8mmZpldj50C+TaD9ZWqmsljgk=
+X-Received: by 2002:a9f:31a2:: with SMTP id v31mr6656078uad.15.1560758038323;
+ Mon, 17 Jun 2019 00:53:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20190613234153.59309-1-dianders@chromium.org> <20190613234153.59309-3-dianders@chromium.org>
+ <CAPDyKFrgXGf_9=H7G40fiUQj=da5WWRys_oim2azgL4FEOeUVA@mail.gmail.com> <CAD=FV=UA9i1eEi3Mx0WF-DnCnr4O4-MfOxa=axZOJtXzxbV7Tw@mail.gmail.com>
+In-Reply-To: <CAD=FV=UA9i1eEi3Mx0WF-DnCnr4O4-MfOxa=axZOJtXzxbV7Tw@mail.gmail.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Mon, 17 Jun 2019 09:53:20 +0200
+Message-ID: <CAPDyKFqNUJospyV05ZC7Y894QB6a9LQ8cjdT+zrD9EQvm_OWRg@mail.gmail.com>
+Subject: Re: [PATCH v4 2/5] mmc: core: API to temporarily disable retuning for
+ SDIO CRC errors
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        brcm80211-dev-list.pdl@broadcom.com,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        Double Lo <double.lo@cypress.com>,
+        Brian Norris <briannorris@chromium.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Naveen Gupta <naveen.gupta@cypress.com>,
+        Madhan Mohan R <madhanmohan.r@cypress.com>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Wright Feng <wright.feng@cypress.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        netdev <netdev@vger.kernel.org>,
+        brcm80211-dev-list <brcm80211-dev-list@cypress.com>,
+        Jiong Wu <lohengrin1024@gmail.com>,
+        Ritesh Harjani <riteshh@codeaurora.org>,
+        Allison Randal <allison@lohutok.net>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Shawn Lin <shawn.lin@rock-chips.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Avri Altman <avri.altman@wdc.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When operating at mtu 9000, qlge does order-1 allocations for rx buffers in
-atomic context. This is especially unreliable when free memory is low or
-fragmented. Add an approach similar to commit 3161e453e496 ("virtio: net
-refill on out-of-memory") to qlge so that the device doesn't lock up if
-there are allocation failures.
+[...]
 
-Signed-off-by: Benjamin Poirier <bpoirier@suse.com>
----
- drivers/net/ethernet/qlogic/qlge/qlge.h      |  8 ++
- drivers/net/ethernet/qlogic/qlge/qlge_main.c | 80 ++++++++++++++++----
- 2 files changed, 72 insertions(+), 16 deletions(-)
+> > > --- a/include/linux/mmc/sdio_func.h
+> > > +++ b/include/linux/mmc/sdio_func.h
+> > > @@ -167,4 +167,7 @@ extern void sdio_f0_writeb(struct sdio_func *func, unsigned char b,
+> > >  extern mmc_pm_flag_t sdio_get_host_pm_caps(struct sdio_func *func);
+> > >  extern int sdio_set_host_pm_flags(struct sdio_func *func, mmc_pm_flag_t flags);
+> > >
+> > > +extern void sdio_retune_crc_disable(struct sdio_func *func);
+> > > +extern void sdio_retune_crc_enable(struct sdio_func *func);
+> > > +
+> > >  #endif /* LINUX_MMC_SDIO_FUNC_H */
+> > > --
+> > > 2.22.0.rc2.383.gf4fbbf30c2-goog
+> > >
+> >
+> > Besides the minor comments, this looks good to me.
+>
+> Thank you for the reviews!
+>
+> I'll plan to send a v5 on my Monday with the fixes assuming no new
+> heated discussion starts up.  If it's less work for you, I'm also
+> happy if you just want to make the trivial fixes yourself when
+> applying.
 
-diff --git a/drivers/net/ethernet/qlogic/qlge/qlge.h b/drivers/net/ethernet/qlogic/qlge/qlge.h
-index 1d90b32f6285..9c4d933c1ff7 100644
---- a/drivers/net/ethernet/qlogic/qlge/qlge.h
-+++ b/drivers/net/ethernet/qlogic/qlge/qlge.h
-@@ -1453,6 +1453,13 @@ struct qlge_bq {
- 
- #define QLGE_BQ_WRAP(index) ((index) & (QLGE_BQ_LEN - 1))
- 
-+#define QLGE_BQ_HW_OWNED(bq) \
-+({ \
-+	typeof(bq) _bq = bq; \
-+	QLGE_BQ_WRAP(QLGE_BQ_ALIGN((_bq)->next_to_use) - \
-+		     (_bq)->next_to_clean); \
-+})
-+
- struct rx_ring {
- 	struct cqicb cqicb;	/* The chip's completion queue init control block. */
- 
-@@ -1480,6 +1487,7 @@ struct rx_ring {
- 	/* Misc. handler elements. */
- 	u32 irq;		/* Which vector this ring is assigned. */
- 	u32 cpu;		/* Which CPU this should run on. */
-+	struct delayed_work refill_work;
- 	char name[IFNAMSIZ + 5];
- 	struct napi_struct napi;
- 	u8 reserved;
-diff --git a/drivers/net/ethernet/qlogic/qlge/qlge_main.c b/drivers/net/ethernet/qlogic/qlge/qlge_main.c
-index 7db4c31c9cc4..a13bda566187 100644
---- a/drivers/net/ethernet/qlogic/qlge/qlge_main.c
-+++ b/drivers/net/ethernet/qlogic/qlge/qlge_main.c
-@@ -1029,7 +1029,7 @@ static const char * const bq_type_name[] = {
- 
- /* return 0 or negative error */
- static int qlge_refill_sb(struct rx_ring *rx_ring,
--			  struct qlge_bq_desc *sbq_desc)
-+			  struct qlge_bq_desc *sbq_desc, gfp_t gfp)
- {
- 	struct ql_adapter *qdev = rx_ring->qdev;
- 	struct sk_buff *skb;
-@@ -1041,7 +1041,7 @@ static int qlge_refill_sb(struct rx_ring *rx_ring,
- 		     "ring %u sbq: getting new skb for index %d.\n",
- 		     rx_ring->cq_id, sbq_desc->index);
- 
--	skb = netdev_alloc_skb(qdev->ndev, SMALL_BUFFER_SIZE);
-+	skb = __netdev_alloc_skb(qdev->ndev, SMALL_BUFFER_SIZE, gfp);
- 	if (!skb)
- 		return -ENOMEM;
- 	skb_reserve(skb, QLGE_SB_PAD);
-@@ -1062,7 +1062,7 @@ static int qlge_refill_sb(struct rx_ring *rx_ring,
- 
- /* return 0 or negative error */
- static int qlge_refill_lb(struct rx_ring *rx_ring,
--			  struct qlge_bq_desc *lbq_desc)
-+			  struct qlge_bq_desc *lbq_desc, gfp_t gfp)
- {
- 	struct ql_adapter *qdev = rx_ring->qdev;
- 	struct qlge_page_chunk *master_chunk = &rx_ring->master_chunk;
-@@ -1071,8 +1071,7 @@ static int qlge_refill_lb(struct rx_ring *rx_ring,
- 		struct page *page;
- 		dma_addr_t dma_addr;
- 
--		page = alloc_pages(__GFP_COMP | GFP_ATOMIC,
--				   qdev->lbq_buf_order);
-+		page = alloc_pages(gfp | __GFP_COMP, qdev->lbq_buf_order);
- 		if (unlikely(!page))
- 			return -ENOMEM;
- 		dma_addr = pci_map_page(qdev->pdev, page, 0,
-@@ -1109,33 +1108,33 @@ static int qlge_refill_lb(struct rx_ring *rx_ring,
- 	return 0;
- }
- 
--static void qlge_refill_bq(struct qlge_bq *bq)
-+/* return 0 or negative error */
-+static int qlge_refill_bq(struct qlge_bq *bq, gfp_t gfp)
- {
- 	struct rx_ring *rx_ring = QLGE_BQ_CONTAINER(bq);
- 	struct ql_adapter *qdev = rx_ring->qdev;
- 	struct qlge_bq_desc *bq_desc;
- 	int refill_count;
-+	int retval;
- 	int i;
- 
- 	refill_count = QLGE_BQ_WRAP(QLGE_BQ_ALIGN(bq->next_to_clean - 1) -
- 				    bq->next_to_use);
- 	if (!refill_count)
--		return;
-+		return 0;
- 
- 	i = bq->next_to_use;
- 	bq_desc = &bq->queue[i];
- 	i -= QLGE_BQ_LEN;
- 	do {
--		int retval;
--
- 		netif_printk(qdev, rx_status, KERN_DEBUG, qdev->ndev,
- 			     "ring %u %s: try cleaning idx %d\n",
- 			     rx_ring->cq_id, bq_type_name[bq->type], i);
- 
- 		if (bq->type == QLGE_SB)
--			retval = qlge_refill_sb(rx_ring, bq_desc);
-+			retval = qlge_refill_sb(rx_ring, bq_desc, gfp);
- 		else
--			retval = qlge_refill_lb(rx_ring, bq_desc);
-+			retval = qlge_refill_lb(rx_ring, bq_desc, gfp);
- 		if (retval < 0) {
- 			netif_err(qdev, ifup, qdev->ndev,
- 				  "ring %u %s: Could not get a page chunk, idx %d\n",
-@@ -1163,12 +1162,52 @@ static void qlge_refill_bq(struct qlge_bq *bq)
- 		}
- 		bq->next_to_use = i;
- 	}
-+
-+	return retval;
-+}
-+
-+static void ql_update_buffer_queues(struct rx_ring *rx_ring, gfp_t gfp,
-+				    unsigned long delay)
-+{
-+	bool sbq_fail, lbq_fail;
-+
-+	sbq_fail = !!qlge_refill_bq(&rx_ring->sbq, gfp);
-+	lbq_fail = !!qlge_refill_bq(&rx_ring->lbq, gfp);
-+
-+	/* Minimum number of buffers needed to be able to receive at least one
-+	 * frame of any format:
-+	 * sbq: 1 for header + 1 for data
-+	 * lbq: mtu 9000 / lb size
-+	 * Below this, the queue might stall.
-+	 */
-+	if ((sbq_fail && QLGE_BQ_HW_OWNED(&rx_ring->sbq) < 2) ||
-+	    (lbq_fail && QLGE_BQ_HW_OWNED(&rx_ring->lbq) <
-+	     DIV_ROUND_UP(9000, LARGE_BUFFER_MAX_SIZE)))
-+		/* Allocations can take a long time in certain cases (ex.
-+		 * reclaim). Therefore, use a workqueue for long-running
-+		 * work items.
-+		 */
-+		queue_delayed_work_on(smp_processor_id(), system_long_wq,
-+				      &rx_ring->refill_work, delay);
- }
- 
--static void ql_update_buffer_queues(struct rx_ring *rx_ring)
-+static void qlge_slow_refill(struct work_struct *work)
- {
--	qlge_refill_bq(&rx_ring->sbq);
--	qlge_refill_bq(&rx_ring->lbq);
-+	struct rx_ring *rx_ring = container_of(work, struct rx_ring,
-+					       refill_work.work);
-+	struct napi_struct *napi = &rx_ring->napi;
-+
-+	napi_disable(napi);
-+	ql_update_buffer_queues(rx_ring, GFP_KERNEL, HZ / 2);
-+	napi_enable(napi);
-+
-+	local_bh_disable();
-+	/* napi_disable() might have prevented incomplete napi work from being
-+	 * rescheduled.
-+	 */
-+	napi_schedule(napi);
-+	/* trigger softirq processing */
-+	local_bh_enable();
- }
- 
- /* Unmaps tx buffers.  Can be called from send() if a pci mapping
-@@ -2168,7 +2207,7 @@ static int ql_clean_inbound_rx_ring(struct rx_ring *rx_ring, int budget)
- 		if (count == budget)
- 			break;
- 	}
--	ql_update_buffer_queues(rx_ring);
-+	ql_update_buffer_queues(rx_ring, GFP_ATOMIC, 0);
- 	ql_write_cq_idx(rx_ring);
- 	return count;
- }
-@@ -2776,7 +2815,8 @@ static void ql_alloc_rx_buffers(struct ql_adapter *qdev)
- 	int i;
- 
- 	for (i = 0; i < qdev->rss_ring_count; i++)
--		ql_update_buffer_queues(&qdev->rx_ring[i]);
-+		ql_update_buffer_queues(&qdev->rx_ring[i], GFP_KERNEL,
-+					HZ / 2);
- }
- 
- static int qlge_init_bq(struct qlge_bq *bq)
-@@ -3870,6 +3910,7 @@ static int ql_get_adapter_resources(struct ql_adapter *qdev)
- static int qlge_close(struct net_device *ndev)
- {
- 	struct ql_adapter *qdev = netdev_priv(ndev);
-+	int i;
- 
- 	/* If we hit pci_channel_io_perm_failure
- 	 * failure condition, then we already
-@@ -3887,6 +3928,11 @@ static int qlge_close(struct net_device *ndev)
- 	 */
- 	while (!test_bit(QL_ADAPTER_UP, &qdev->flags))
- 		msleep(1);
-+
-+	/* Make sure refill_work doesn't re-enable napi */
-+	for (i = 0; i < qdev->rss_ring_count; i++)
-+		cancel_delayed_work_sync(&qdev->rx_ring[i].refill_work);
-+
- 	ql_adapter_down(qdev);
- 	ql_release_adapter_resources(qdev);
- 	return 0;
-@@ -3953,6 +3999,8 @@ static int ql_configure_rings(struct ql_adapter *qdev)
- 			    rx_ring->cq_len * sizeof(struct ql_net_rsp_iocb);
- 			rx_ring->lbq.type = QLGE_LB;
- 			rx_ring->sbq.type = QLGE_SB;
-+			INIT_DELAYED_WORK(&rx_ring->refill_work,
-+					  &qlge_slow_refill);
- 		} else {
- 			/*
- 			 * Outbound queue handles outbound completions only.
--- 
-2.21.0
+It really doesn't matter to me, feel free to pick the option you
+prefer. At this point I am just awaiting acks for the broadcom patces
+and some clarity of what stable releases we should target for
+non-tagged patches.
 
+Kind regards
+Uffe
