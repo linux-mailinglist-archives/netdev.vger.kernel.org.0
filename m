@@ -2,178 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08F554811A
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 13:43:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0EB84812A
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 13:45:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726538AbfFQLm4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 07:42:56 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:40640 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725763AbfFQLmz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 07:42:55 -0400
-Received: by sipsolutions.net with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1hcq22-0003pC-6x; Mon, 17 Jun 2019 13:42:38 +0200
-Message-ID: <dbb32f185d2c3a654083ee0a7188379e1f88d899.camel@sipsolutions.net>
-Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Arnd Bergmann <arnd@arndb.de>, Dan Williams <dcbw@redhat.com>
-Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Alex Elder <elder@linaro.org>, abhishek.esse@gmail.com,
-        Ben Chan <benchan@google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        cpratapa@codeaurora.org, David Miller <davem@davemloft.net>,
-        DTML <devicetree@vger.kernel.org>,
-        Eric Caruso <ejcaruso@google.com>, evgreen@chromium.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-arm-msm@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-soc@vger.kernel.org, Networking <netdev@vger.kernel.org>,
-        syadagir@codeaurora.org
-Date:   Mon, 17 Jun 2019 13:42:36 +0200
-In-Reply-To: <CAK8P3a2nzZKtshYfomOOSYkqx5HdU15Wr9b+3va0B1euNhFOAg@mail.gmail.com> (sfid-20190612_170637_190349_3B0027EE)
-References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
-         <a94676381a5ca662c848f7a725562f721c43ce76.camel@sipsolutions.net>
-         <CAK8P3a0kV-i7BJJ2X6C=5n65rSGfo8fUiC4J_G-+M8EctYKbkg@mail.gmail.com>
-         <fc0d08912bc10ad089eb74034726308375279130.camel@redhat.com>
-         <36bca57c999f611353fd9741c55bb2a7@codeaurora.org>
-         <153fafb91267147cf22e2bf102dd822933ec823a.camel@redhat.com>
-         <CAK8P3a2Y+tcL1-V57dtypWHndNT3eDJdcKj29c_v+k8o1HHQig@mail.gmail.com>
-         <f4249aa5f5acdd90275eda35aa16f3cfb29d29be.camel@redhat.com>
-         <CAK8P3a2nzZKtshYfomOOSYkqx5HdU15Wr9b+3va0B1euNhFOAg@mail.gmail.com>
-         (sfid-20190612_170637_190349_3B0027EE)
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-2.fc28) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S1726605AbfFQLp1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 07:45:27 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:48672 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725763AbfFQLp1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Jun 2019 07:45:27 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 1932C8E224;
+        Mon, 17 Jun 2019 11:45:26 +0000 (UTC)
+Received: from oldenburg2.str.redhat.com (dhcp-192-180.str.redhat.com [10.33.192.180])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 12FE361369;
+        Mon, 17 Jun 2019 11:45:21 +0000 (UTC)
+From:   Florian Weimer <fweimer@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Joseph Myers <joseph@codesourcery.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linux API <linux-api@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Laura Abbott <labbott@redhat.com>,
+        Paul Burton <pburton@wavecomp.com>,
+        Deepa Dinamani <deepa.kernel@gmail.com>,
+        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] uapi: avoid namespace conflict in linux/posix_types.h
+References: <20190319165123.3967889-1-arnd@arndb.de>
+        <alpine.DEB.2.21.1905072249570.19308@digraph.polyomino.org.uk>
+        <87tvd2j9ye.fsf@oldenburg2.str.redhat.com>
+        <CAHk-=wio1e4=WUUwmo-Ph55BEgH_X3oXzBpvPyLQg2TxzfGYuw@mail.gmail.com>
+        <871s05fd8o.fsf@oldenburg2.str.redhat.com>
+        <CAHk-=wg4ijSoPq-w7ct_VuZvgHx+tUv_QX-We-62dEwK+AOf2w@mail.gmail.com>
+Date:   Mon, 17 Jun 2019 13:45:20 +0200
+In-Reply-To: <CAHk-=wg4ijSoPq-w7ct_VuZvgHx+tUv_QX-We-62dEwK+AOf2w@mail.gmail.com>
+        (Linus Torvalds's message of "Fri, 7 Jun 2019 11:56:16 -0700")
+Message-ID: <87sgs8igfj.fsf@oldenburg2.str.redhat.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.2 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.26]); Mon, 17 Jun 2019 11:45:26 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2019-06-12 at 17:06 +0200, Arnd Bergmann wrote:
-> On Wed, Jun 12, 2019 at 4:28 PM Dan Williams <dcbw@redhat.com> wrote:
-> > On Wed, 2019-06-12 at 10:31 +0200, Arnd Bergmann wrote:
-> > > On Tue, Jun 11, 2019 at 7:23 PM Dan Williams <dcbw@redhat.com> wrote:
-> > 
-> > I was trying to make the point that rmnet doesn't need to care about
-> > how the QMAP packets get to the device itself; it can be pretty generic
-> > so that it can be used by IPA/qmi_wwan/rmnet_smd/etc.
-> 
-> rmnet at the moment is completely generic in that regard already,
-> however it is implemented as a tunnel driver talking to another
-> device rather than an abstraction layer below that driver.
+* Linus Torvalds:
 
-It doesn't really actually *do* much other than muck with the headers a
-small amount, but even that isn't really much.
+> On Fri, Jun 7, 2019 at 11:43 AM Florian Weimer <fweimer@redhat.com> wrote:
+>>
+>> On the glibc side, we nowadays deal with this by splitting headers
+>> further.  (We used to suppress definitions with macros, but that tended
+>> to become convoluted.)  In this case, moving the definition of
+>> __kernel_long_t to its own header, so that
+>> include/uapi/asm-generic/socket.h can include that should fix it.
+>
+> I think we should strive to do that on the kernel side too, since
+> clearly we shouldn't expose that "val[]" thing in the core posix types
+> due to namespace rules, but at the same time I think the patch to
+> rename val[] is fundamentally broken too.
+>
+> Can you describe how you split things (perhaps even with a patch ;)?
+> Is this literally the only issue you currently have? Because I'd
+> expect similar issues to show up elsewhere too, but who knows.. You
+> presumably do.
 
-You can probably implement that far more efficiently on some devices
-where you have a semi-decent DMA engine that at least supports S/G.
+I wanted to introduce a new header, <asm/kernel_long_t.h>, and include
+it where the definition of __kernel_long_t is needed, something like
+this (incomplete, untested):
 
-> > > I understand that the rmnet model was intended to provide a cleaner
-> > > abstraction, but it's not how we normally structure subsystems in
-> > > Linux, and moving to a model more like how wireless_dev works
-> > > would improve both readability and performance, as you describe
-> > > it, it would be more like (ignoring for now the need for multiple
-> > > connections):
-> > > 
-> > >    ipa_dev
-> > >         rmnet_dev
-> > >                wwan_dev
-> > >                       net_device
-> > 
-> > Perhaps I'm assuming too much from this diagram but this shows a 1:1
-> > between wwan_dev and "lower" devices.
+diff --git a/arch/sparc/include/uapi/asm/posix_types.h b/arch/sparc/include/uapi/asm/posix_types.h
+index f139e0048628..6510d7538605 100644
+--- a/arch/sparc/include/uapi/asm/posix_types.h
++++ b/arch/sparc/include/uapi/asm/posix_types.h
+@@ -8,6 +8,8 @@
+ #ifndef __SPARC_POSIX_TYPES_H
+ #define __SPARC_POSIX_TYPES_H
+ 
++#include <asm/kernel_long_t.h>
++
+ #if defined(__sparc__) && defined(__arch64__)
+ /* sparc 64 bit */
+ 
+@@ -19,10 +21,6 @@ typedef unsigned short         __kernel_old_gid_t;
+ typedef int		       __kernel_suseconds_t;
+ #define __kernel_suseconds_t __kernel_suseconds_t
+ 
+-typedef long		__kernel_long_t;
+-typedef unsigned long	__kernel_ulong_t;
+-#define __kernel_long_t __kernel_long_t
+-
+ struct __kernel_old_timeval {
+ 	__kernel_long_t tv_sec;
+ 	__kernel_suseconds_t tv_usec;
+diff --git a/arch/x86/include/uapi/asm/kernel_long_t.h b/arch/x86/include/uapi/asm/kernel_long_t.h
+new file mode 100644
+index 000000000000..ed3bff40e1e8
+--- /dev/null
++++ b/arch/x86/include/uapi/asm/kernel_long_t.h
+@@ -0,0 +1,8 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++#ifndef __KERNEL__
++# ifdef defined(__x86_64__) && defined(__ILP32__)
++#  include <asm/kernel_long_t_x32.h>
++# else
++#  include <asm-generic/kernel_long_t.h>
++# endif
++#endif
+diff --git a/arch/x86/include/uapi/asm/kernel_long_t_x32.h b/arch/x86/include/uapi/asm/kernel_long_t_x32.h
+new file mode 100644
+index 000000000000..a71cbce7e966
+--- /dev/null
++++ b/arch/x86/include/uapi/asm/kernel_long_t_x32.h
+@@ -0,0 +1,6 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++#ifndef _ASM_X86_KERNEL_LONG_T_X32_H
++#define _ASM_X86_KERNEL_LONG_T_X32_H
++typedef long long __kernel_long_t;
++typedef unsigned long long __kernel_ulong_t;
++#endif /* _ASM_X86_KERNEL_LONG_T_X32_H */
+diff --git a/arch/x86/include/uapi/asm/posix_types_x32.h b/arch/x86/include/uapi/asm/posix_types_x32.h
+index f60479b07fc8..92c7af21da9e 100644
+--- a/arch/x86/include/uapi/asm/posix_types_x32.h
++++ b/arch/x86/include/uapi/asm/posix_types_x32.h
+@@ -11,10 +11,6 @@
+  *
+  */
+ 
+-typedef long long __kernel_long_t;
+-typedef unsigned long long __kernel_ulong_t;
+-#define __kernel_long_t __kernel_long_t
+-
+ #include <asm/posix_types_64.h>
+ 
+ #endif /* _ASM_X86_POSIX_TYPES_X32_H */
+diff --git a/include/uapi/asm-generic/kernel_long_t.h b/include/uapi/asm-generic/kernel_long_t.h
+new file mode 100644
+index 000000000000..649a97a8c304
+--- /dev/null
++++ b/include/uapi/asm-generic/kernel_long_t.h
+@@ -0,0 +1,8 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++#ifndef __ASM_GENERIC_KERNEL_LONG_T_H
++#define __ASM_GENERIC_KERNEL_LONG_T_H
++
++typedef long		__kernel_long_t;
++typedef unsigned long	__kernel_ulong_t;
++
++#endif /* __ASM_GENERIC_POSIX_TYPES_H */
+diff --git a/include/uapi/asm-generic/posix_types.h b/include/uapi/asm-generic/posix_types.h
+index f0733a26ebfc..2715ba4599bd 100644
+--- a/include/uapi/asm-generic/posix_types.h
++++ b/include/uapi/asm-generic/posix_types.h
+@@ -11,10 +11,7 @@
+  * architectures, so that you can override them.
+  */
+ 
+-#ifndef __kernel_long_t
+-typedef long		__kernel_long_t;
+-typedef unsigned long	__kernel_ulong_t;
+-#endif
++#include <asm/kernel_long_t.h>
+ 
+ #ifndef __kernel_ino_t
+ typedef __kernel_ulong_t __kernel_ino_t;
 
-I guess the fuller picture would be something like
+Additional architectures need conversion as well, but I think this
+suggests where this is going.  Would that be acceptable?
 
-ipa_dev
-	rmnet_dev
-		wwan_dev
-			net_device*
+A different approach would rename <asm/posix_types.h> to something more
+basic, exclude the two structs, and move all internal #includes which do
+need the structs to the new header.  A new <asm/posix_types.h> would
+include the renamed header and add back the two structs, for
+compatibility.
 
-(i.e. with multiple net_devices)
+For a less strict definition of compatibility, it would also be possible
+to introduce <asm/fsid_t.h> (for __kernel_fsid_t) and <linux/fd_set.h>
+(for __kernel_fd_set), and remove the definition of those from
+<asm/posix_types.h>.
 
-> > What Johannes is proposing (IIRC) is something a bit looser where a
-> > wwan_dev does not necessarily provide netdev itself, but is instead the
-> > central point that various channels (control, data, gps, sim card, etc)
-> > register with. That way the wwan_dev can provide an overall view of the
-> > WWAN device to userspace, and userspace can talk to the wwan_dev to ask
-> > the lower drivers (ipa, rmnet, etc) to create new channels (netdev,
-> > tty, otherwise) when the control channel has told the modem firmware to
-> > expect one.
+The other question is whether this __kernel_long_t dependency in
+<asm/socket.h> is even valid because it makes the constants SO_RCVTIMEO
+etc. unusable in a preprocessor expression (although POSIX does not make
+such a requirement as far as I can see).
 
-Yeah, that's more what I had in mind after all our discussions (will
-continue this below).
-
-> Right, as I noted above, I simplified it a bit. We probably want to
-> have multiple net_device instances for an ipa_dev, so there has
-> to be a 1:n relationship instead of 1:1 at one of the intermediate
-> levels, but it's not obvious which level that should be.
-> 
-> In theory we could even have a single net_device instance correspond
-> to the ipa_dev, but then have multiple IP addresses bound to it,
-> so each IP address corresponds to a channel/queue/napi_struct,
-> but the user visible object remains a single device.
-
-I don't think this latter (multiple IP addresses) works well - you want
-a hardware specific header ("ETH_P_MAP") to carry the channel ID,
-without looking up the IP address and all that.
-
-
-But anyway, as I alluded to above, I had something like this in mind:
-
-driver_dev
-  struct device *dev (USB, PCI, ...)
-  net_device NA
-  net_device NB
-  tty TA
- ...
-
-(I'm cutting out the rmnet layer here for now)
-
-while having a separate that just links all the pieces together:
-
-wwan_device W
-  ---> dev
-  ---> NA
-  ---> NB
-  ---> TA
-
-So the driver is still responsible for creating the netdevs (or can of
-course delegate that to an "rmnet" library), but then all it also does
-is register the netdevs with the WWAN core like
-
-	wwan_add_netdev(dev, NA)
-
-and the WWAN core would allocate the wwan_device W for this.
-
-That way, the drivers can concentrate on providing all the necessary
-bits, and - crucially - even *different* drivers can end up linking to
-the same wwan_device. For example, if you have a modem that has a multi-
-function USB device, then an ethernet driver might create the netdev and
-a tty driver might create the control channel, but if they both agree on
-using the right "struct device" instance, you can still get the correct
-wwan_device out of it all.
-
-And, in fact, some should then be
-
-	wwan_maybe_add_netdev(dev, N)
-
-because the ethernet driver may not know if it attached to a modem or
-not, but if the control channel also attaches it's a modem for sure,
-with that ethernet channel attached to it.
-
-Additionally, I'm thinking API such as
-
-	wwan_add(dev, &ops, opsdata)
-
-that doesn't automatically attach any channels, but provides "ops" to
-the core to create appropriate channels. I think this latter would be
-something for IPA/rmnet to use, perhaps for rmnet to offer the right ops
-structure.
-
-johannes
-
+Thanks,
+Florian
