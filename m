@@ -2,90 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7A2A485B2
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 16:40:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8F0E485D0
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 16:43:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726642AbfFQOjg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 10:39:36 -0400
-Received: from wout3-smtp.messagingengine.com ([64.147.123.19]:47089 "EHLO
-        wout3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725983AbfFQOjg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 10:39:36 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id D7CA88C5;
-        Mon, 17 Jun 2019 10:39:34 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Mon, 17 Jun 2019 10:39:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=0lHMgq
-        aeNtiU2u36JVrCBlKFBJ1DNkUjrm8h+JavxgM=; b=m5xVf6X5jpBWIxyj2Z1TOo
-        HEUh0Y5yp6Ek7ZTiNrRRtEVjgmihV4m9iAF5ppb+g9WqBPNAoPOSnR0upF4upaaP
-        4sq0uTVdur4AW5a3RpKwyDJLTu7YhFrUAqrveBc42q8n44W6LhVl241yRugmFqbM
-        doK2qcMn5QL85o4W3pmxDavuWEHp7sW4PUQbnNxHUfiuzfWFlP8D8sl2eLQNn+Op
-        uXVoo8CPMcN0m1uh5DbmL+ZhbP7paCnaPku6R37I54OiqAvXeCp9LC6wHFYVS7c4
-        4kX/kQ3j0b81hENqg53Ddfzk1qKyuiQAQHNjCchDkrB6GjzqmHVVlsEDku9JoJnw
-        ==
-X-ME-Sender: <xms:JqYHXUI7u1W88F9YwKfj-Cn_h2d_ih3Y6y52sP65IMa3R9rpIvaJfA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduuddrudeijedgjeelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvuffkfhggtggujggfsehttd
-    ertddtredvnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
-    ohhstghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmh
-    epmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgv
-    rhfuihiivgeptd
-X-ME-Proxy: <xmx:JqYHXVajJxC08loTCF0HWeCbREFraScLKfOIxWkBR30rvWSM9jkQGQ>
-    <xmx:JqYHXdLTrycQPZWAE0kO-kFC4xyNtrzashFM4VvioXmVBH2g_OvcXg>
-    <xmx:JqYHXXntNJKDgTajn09wxQhykDTqP-sUH23NOUr_bgRBTC7i8ugP4A>
-    <xmx:JqYHXVZ_Cgc-y7u3HLpZEOH2rFh2Mwp-Woo7NBvWjsqjb_K8tMDHLQ>
-Received: from localhost (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 94A25380084;
-        Mon, 17 Jun 2019 10:39:33 -0400 (EDT)
-Date:   Mon, 17 Jun 2019 17:39:32 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Stephen Suryaputra <ssuryaextr@gmail.com>
-Cc:     netdev@vger.kernel.org, nikolay@cumulusnetworks.com,
-        dsahern@gmail.com
-Subject: Re: [PATCH net-next v3] ipv4: Support multipath hashing on inner IP
- pkts for GRE tunnel
-Message-ID: <20190617143932.GA9828@splinter>
-References: <20190613183858.9892-1-ssuryaextr@gmail.com>
+        id S1728420AbfFQOnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 10:43:15 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:41010 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727997AbfFQOnP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 10:43:15 -0400
+Received: by mail-qt1-f196.google.com with SMTP id d17so6010889qtj.8
+        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 07:43:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=lxS/dzQw4wkh+Z+PAMdqgR2Kw5xVW/ETkqpwQQdohjY=;
+        b=uOiPQVSvdji650lqSVqMSA9lqtVjZlLs4sXfwABm+f4Lc0DO9TO4rYr8XIoijxtblQ
+         zedBfwurkpj8zF5uIxhRRZwUZEd/1shsuQ8aE7b9bGuuxvUcR+Wrs5dQYLnZqy4B485i
+         KwMLg7E+ZnTNzNr/kYPyW9xFbVHr4oMNdZmOMOVcs5IK7MHayx+KgKxM6TwXrkVZqkmz
+         z1aELK1gidoPgWjzfAUMen540inm6WttYgOeopnAe9tgY7wgheL/m1fg0go4kWymDLqM
+         xpWn7EPGbK7ZoUHJyEDjECQn3O0fcpkeeE2vnGyOcQAyntDZLfTg+20I0rKY+5WM0ID6
+         ArpA==
+X-Gm-Message-State: APjAAAWLnw/lb08Pim9v7JWp59RUSKDVGDg4r0YboM/sDfB7X8kXD/xV
+        neyeyoGlrGZ7l8vR/IiR4XsyUNFKy/4=
+X-Google-Smtp-Source: APXvYqwavvGjRNDaa71vDWp/7KVZgO3Ghhc2s0zA1b8b++lVdLmzk98FDf0R90PixvOg24leSYkxow==
+X-Received: by 2002:a0c:b5dd:: with SMTP id o29mr21771848qvf.85.1560782594646;
+        Mon, 17 Jun 2019 07:43:14 -0700 (PDT)
+Received: from redhat.com (pool-100-0-197-103.bstnma.fios.verizon.net. [100.0.197.103])
+        by smtp.gmail.com with ESMTPSA id s44sm8410210qtc.8.2019.06.17.07.43.13
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 17 Jun 2019 07:43:13 -0700 (PDT)
+Date:   Mon, 17 Jun 2019 10:43:12 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        huhai@kylinos.cn
+Subject: Re: [PATCH net-next] vhost_net: disable zerocopy by default
+Message-ID: <20190617104301-mutt-send-email-mst@kernel.org>
+References: <20190617092054.12299-1-jasowang@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190613183858.9892-1-ssuryaextr@gmail.com>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+In-Reply-To: <20190617092054.12299-1-jasowang@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 13, 2019 at 02:38:58PM -0400, Stephen Suryaputra wrote:
-> Multipath hash policy value of 0 isn't distributing since the outer IP
-> dest and src aren't varied eventhough the inner ones are. Since the flow
-> is on the inner ones in the case of tunneled traffic, hashing on them is
-> desired.
+On Mon, Jun 17, 2019 at 05:20:54AM -0400, Jason Wang wrote:
+> Vhost_net was known to suffer from HOL[1] issues which is not easy to
+> fix. Several downstream disable the feature by default. What's more,
+> the datapath was split and datacopy path got the support of batching
+> and XDP support recently which makes it faster than zerocopy part for
+> small packets transmission.
 > 
-> This is done mainly for IP over GRE, hence only tested for that. But
-> anything else supported by flow dissection should work.
+> It looks to me that disable zerocopy by default is more
+> appropriate. It cold be enabled by default again in the future if we
+> fix the above issues.
 > 
-> v2: Use skb_flow_dissect_flow_keys() directly so that other tunneling
->     can be supported through flow dissection (per Nikolay Aleksandrov).
-> v3: Remove accidental inclusion of ports in the hash keys and clarify
->     the documentation (Nikolay Alexandrov).
-> Signed-off-by: Stephen Suryaputra <ssuryaextr@gmail.com>
+> [1] https://patchwork.kernel.org/patch/3787671/
+> 
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
 
-Hi,
 
-Do you plan to add IPv6 support? Would be good to have the same features
-in both stacks.
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
 
-Also, we have tests for these sysctls under
-tools/testing/selftests/net/forwarding/router_multipath.sh
-
-Can you add a test for this change as well? You'll probably need to
-create a new file given the topology created by router_multipath.sh does
-not include tunnels.
-
-Thanks
+> ---
+>  drivers/vhost/net.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+> index 2d9df786a9d3..21e0805e5e60 100644
+> --- a/drivers/vhost/net.c
+> +++ b/drivers/vhost/net.c
+> @@ -36,7 +36,7 @@
+>  
+>  #include "vhost.h"
+>  
+> -static int experimental_zcopytx = 1;
+> +static int experimental_zcopytx = 0;
+>  module_param(experimental_zcopytx, int, 0444);
+>  MODULE_PARM_DESC(experimental_zcopytx, "Enable Zero Copy TX;"
+>  		                       " 1 -Enable; 0 - Disable");
+> -- 
+> 2.18.1
