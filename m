@@ -2,113 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5161E48F1F
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 21:30:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B6EF48F2B
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 21:31:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728925AbfFQTat (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 15:30:49 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:33701 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726818AbfFQTat (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 15:30:49 -0400
-Received: by mail-qt1-f193.google.com with SMTP id x2so12271082qtr.0;
-        Mon, 17 Jun 2019 12:30:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=heHfMI8HvMbjQ3YPPxt4J0OSxlkzKtOLqmUyTJkyUTk=;
-        b=L5+RXzt+DaBWpS7NogH46s5f7OPSqzWB4euayWYmQUSa0goTeiL1RGZnnbFBTYrpmT
-         wBZKqxv18Y9i2+YPwSc0nj8FIH2nX6KpE4bYWlNQiZan9d9b/MpE4QRcDTrdN+zC58a4
-         2XUyonOechzRpJ89J6L1gw9dQvI7tTRhy/mTpQYUBubJYuTj5HKjmIIon+0NpRCTr5wP
-         uMtrCnJw2mpuhmLomf1lU1DDKpHFl5oAlcHmmI4jsR3kvG1BBSX8MLkMtBAzpv4042kF
-         F1bde6vW0RLcZUnlliOnq1pMI1kDhzgAKOeg7ot2mbjHjLHm8EFdy4EK7TyYQd4Ak5+2
-         C6mg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=heHfMI8HvMbjQ3YPPxt4J0OSxlkzKtOLqmUyTJkyUTk=;
-        b=rg+ozXb05T4198Q+3ZJ6Q8P25X5pUmBeGubMGRjFIXjuBmCRhNOSucnl0fSlHxoxCA
-         qz3oHaBufrPOYUf9ZSwJ9pg6ZqtwXaGQ6V7pOc1vld4kt/lJozCdrXBg19KReVlItz0X
-         ZArEjjh/f6Ws906rH00D/a8YZh/2UhZu75yKKQ+cr+tncCTl5YZ2pWMe31gt20XmudxB
-         592WlLa7qVk1cpQ/wC3/A0ogG/ltuPXQa8ziBN7W462Yj+P3flvxAh8vPidIgFa6MwZh
-         9Ifwu4SUTb3KRn9Pgb+kwuMQs9PXzHvqz19AKKOgqhnvLbUOYoQQL6dF3MQM2pZJIV0D
-         TgKQ==
-X-Gm-Message-State: APjAAAWG5l141jkezO4kQFMsno1qDjGXqMx2TzoiJ2t356+EJKhhuQD3
-        hR0VHuDcjSvwBqQX0Yy2DO3iUYU7hS+Ei7IZ7pMUnc6O
-X-Google-Smtp-Source: APXvYqzJtpAtMiugSbpg/b2+92DQvI5MTM0cRskk/9imOlranjlFhSQi+qCGSJx1HVMYWF534AJQpfzaZppTYJecFRA=
-X-Received: by 2002:ac8:290c:: with SMTP id y12mr7279599qty.141.1560799848510;
- Mon, 17 Jun 2019 12:30:48 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190611044747.44839-1-andriin@fb.com> <20190611044747.44839-9-andriin@fb.com>
- <20190614232329.GF9636@mini-arch> <CAEf4BzZ5itJ+toa-3Bm3yNxP=CyvNm=CZ5Dg+=nhU=p4CSu=+g@mail.gmail.com>
- <20190615000104.GG9636@mini-arch>
-In-Reply-To: <20190615000104.GG9636@mini-arch>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 17 Jun 2019 12:30:37 -0700
-Message-ID: <CAEf4BzbV-W1KsuN3AuPas_3dG7MVwZO6RsqohS2uvnEf49M67w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 8/8] selftests/bpf: switch tests to BTF-defined
- map definitions
-To:     Stanislav Fomichev <sdf@fomichev.me>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1727439AbfFQTbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 15:31:19 -0400
+Received: from mga09.intel.com ([134.134.136.24]:50086 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726818AbfFQTbT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Jun 2019 15:31:19 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 17 Jun 2019 12:31:19 -0700
+X-ExtLoop1: 1
+Received: from vpatel-desk.jf.intel.com (HELO localhost.localdomain) ([10.7.159.52])
+  by orsmga007.jf.intel.com with ESMTP; 17 Jun 2019 12:31:18 -0700
+From:   Vedang Patel <vedang.patel@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     jeffrey.t.kirsher@intel.com, davem@davemloft.net, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        intel-wired-lan@lists.osuosl.org, vinicius.gomes@intel.com,
+        l@dorileo.org, Vedang Patel <vedang.patel@intel.com>
+Subject: [PATCH net-next v3 0/6] net/sched: Add txtime-assist support for taprio.
+Date:   Mon, 17 Jun 2019 12:31:04 -0700
+Message-Id: <1560799870-18956-1-git-send-email-vedang.patel@intel.com>
+X-Mailer: git-send-email 2.7.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 14, 2019 at 5:01 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
->
-> On 06/14, Andrii Nakryiko wrote:
-> > On Fri, Jun 14, 2019 at 4:23 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
-> > >
-> > > On 06/10, Andrii Nakryiko wrote:
-> > > > Switch test map definition to new BTF-defined format.
-> > > Reiterating my concerns on non-RFC version:
-> > >
-> > > Pretty please, let's not convert everything at once. Let's start
-> > > with stuff that explicitly depends on BTF (spinlocks?).
-> >
-> > How about this approach. I can split last commit into two. One
-> > converting all the stuff that needs BTF (spinlocks, etc). Another part
-> > - everything else. If it's so important for your use case, you'll be
-> > able to just back out my last commit. Or we just don't land last
-> > commit.
-> I can always rollback or do not backport internally; the issue is that
-> it would be much harder to backport any future fixes/extensions to
-> those tests. So splitting in two and not landing the last one is
-> preferable ;-)
+Changes in v3:
+- Simplify implementation for taprio flags. 
+- txtime_delay can only be set if txtime-assist mode is enabled.
+- txtime_delay and flags will only be visible in tc output if set by user.
+- Minor changes in error reporting.
 
-So I just posted v2 and I split all the test conversions into three parts:
-1. tests that already rely on BTF
-2. tests w/ custom key/value types
-3. all the reset
+Changes in v2:
+- Txtime-offload has now been renamed to txtime-assist mode.
+- Renamed the offload parameter to flags.
+- Removed the code which introduced the hardware offloading functionality.
 
-I think we should definitely apply #1. I think #2 would be nice. And
-we can probably hold off on #3. I'll let Alexei or Daniel decide, but
-it shouldn't be hard for them to do that.
+Original Cover letter (with above changes included)
+--------------------------------------------------
 
->
-> > > One good argument (aside from the one that we'd like to be able to
-> > > run tests internally without BTF for a while): libbpf doesn't
-> > > have any tests as far as I'm aware. If we don't have 'legacy' maps in the
-> > > selftests, libbpf may bit rot.
-> >
-> > I left few legacy maps exactly for that reason. See progs/test_btf_*.c.
-> Damn it, you've destroyed my only good argument.
+Currently, we are seeing packets being transmitted outside their
+timeslices. We can confirm that the packets are being dequeued at the right
+time. So, the delay is induced after the packet is dequeued, because
+taprio, without any offloading, has no control of when a packet is actually
+transmitted.
 
-Heh :)
+In order to solve this, we are making use of the txtime feature provided by
+ETF qdisc. Hardware offloading needs to be supported by the ETF qdisc in
+order to take advantage of this feature. The taprio qdisc will assign
+txtime (in skb->tstamp) for all the packets which do not have the txtime
+allocated via the SO_TXTIME socket option. For the packets which already
+have SO_TXTIME set, taprio will validate whether the packet will be
+transmitted in the correct interval.
 
->
-> > > (Andrii, feel free to ignore, since we've already discussed that)
-> > >
-> > > > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > > > ---
-> >
-> >
-> > <snip>
+In order to support this, the following parameters have been added:
+- flags (taprio): This is added in order to support different offloading
+  modes which will be added in the future.
+- txtime-delay (taprio): This indicates the minimum time it will take for
+  the packet to hit the wire after it reaches taprio_enqueue(). This is
+  useful in determining whether we can transmit the packet in the remaining
+  time if the gate corresponding to the packet is currently open.
+- skip_skb_check (ETF): ETF currently drops any packet which does not have
+  the SO_TXTIME socket option set. This check can be skipped by specifying
+  this option.
+
+Following is an example configuration:
+
+tc qdisc replace dev $IFACE parent root handle 100 taprio \\
+    num_tc 3 \\
+    map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \\
+    queues 1@0 1@0 1@0 \\
+    base-time $BASE_TIME \\
+    sched-entry S 01 300000 \\
+    sched-entry S 02 300000 \\
+    sched-entry S 04 400000 \\
+    flags 0x1 \\
+    txtime-delay 200000 \\
+    clockid CLOCK_TAI
+
+tc qdisc replace dev $IFACE parent 100:1 etf \\
+    offload delta 200000 clockid CLOCK_TAI skip_skb_check
+
+Here, the "flags" parameter is indicating that the txtime-assist mode is
+enabled. Also, all the traffic classes have been assigned the same queue.
+This is to prevent the traffic classes in the lower priority queues from
+getting starved. Note that this configuration is specific to the i210
+ethernet card. Other network cards where the hardware queues are given the
+same priority, might be able to utilize more than one queue.
+
+Following are some of the other highlights of the series:
+- Fix a bug where hardware timestamping and SO_TXTIME options cannot be
+  used together. (Patch 1)
+- Introduces the skip_skb_check option.  (Patch 2)
+- Make TxTime assist mode work with TCP packets (Patch 7).
+
+The following changes are recommended to be done in order to get the best
+performance from taprio in this mode:
+# TSN in general does not allow Jumbo frames.
+ip link set dev enp1s0 mtu 1514
+# Disable segmentation offload. This is to prevent NIC from sending packets
+# after the gate for a traffic class has closed.
+ethtool -K eth0 gso off 
+ethtool -K eth0 tso off
+# Disable energy efficient ethernet to make sure there are no latency
+# spikes when NIC is trying to wake up when the packet is supposed to be
+# sent.
+ethtool --set-eee eth0 eee off
+
+Thanks,
+Vedang Patel
+
+Vedang Patel (6):
+  igb: clear out tstamp after sending the packet.
+  etf: Add skip_sock_check
+  taprio: calculate cycle_time when schedule is installed
+  taprio: Add support for txtime-assist mode.
+  taprio: make clock reference conversions easier
+  taprio: Adjust timestamps for TCP packets.
+
+ drivers/net/ethernet/intel/igb/igb_main.c |   1 +
+ include/uapi/linux/pkt_sched.h            |   5 +
+ net/sched/sch_etf.c                       |  10 +
+ net/sched/sch_taprio.c                    | 431 +++++++++++++++++++++++++++---
+ 4 files changed, 413 insertions(+), 34 deletions(-)
+
+-- 
+2.7.3
+
