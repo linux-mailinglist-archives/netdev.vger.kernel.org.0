@@ -2,213 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6E5548BE3
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 20:24:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE0FE48BEC
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 20:28:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727436AbfFQSY3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 14:24:29 -0400
-Received: from mail-eopbgr10052.outbound.protection.outlook.com ([40.107.1.52]:56809
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725764AbfFQSY2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 Jun 2019 14:24:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+otVGrslUjcNF4z35Hs8y42x8e5TXGDUEhFxmJ05taA=;
- b=kszkO1r/IoSQzugPrAMwEU2Idp35T/YViLHPQkb0nhoD4JYpd7zi6WomuLiv1ij6DHK7LP8rw3f/wCfSP8OQLLGoAyUSbjmXqQZnuhm9oKknUXT3j6EPJW67NmyryU7/rpmScxwVsXVtwvj0gLrubq8dfE6xGDfHpMdQUwfBKTw=
-Received: from AM0PR05MB4403.eurprd05.prod.outlook.com (52.134.125.139) by
- AM0PR05MB4498.eurprd05.prod.outlook.com (52.134.94.11) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1987.10; Mon, 17 Jun 2019 18:24:22 +0000
-Received: from AM0PR05MB4403.eurprd05.prod.outlook.com
- ([fe80::edf6:f68:cb6c:777f]) by AM0PR05MB4403.eurprd05.prod.outlook.com
- ([fe80::edf6:f68:cb6c:777f%7]) with mapi id 15.20.1987.014; Mon, 17 Jun 2019
- 18:24:22 +0000
-From:   Mark Bloch <markb@mellanox.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "leon@kernel.org" <leon@kernel.org>
-CC:     "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>,
-        Paul Blakey <paulb@mellanox.com>,
-        Maor Gottlieb <maorg@mellanox.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Eli Britstein <elibr@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH] net/mlx5e: reduce stack usage in
- mlx5_eswitch_termtbl_create
-Thread-Topic: [PATCH] net/mlx5e: reduce stack usage in
- mlx5_eswitch_termtbl_create
-Thread-Index: AQHVJP0S5k/4heTy2UiEdxM8FtaiC6agI7mAgAAGBIA=
-Date:   Mon, 17 Jun 2019 18:24:22 +0000
-Message-ID: <6937bfcd-b290-8372-f117-323eb7955aeb@mellanox.com>
-References: <20190617110855.2085326-1-arnd@arndb.de>
- <9efb76f79369b8577ef425c7f6e694132719353e.camel@mellanox.com>
-In-Reply-To: <9efb76f79369b8577ef425c7f6e694132719353e.camel@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: BY5PR03CA0012.namprd03.prod.outlook.com
- (2603:10b6:a03:1e0::22) To AM0PR05MB4403.eurprd05.prod.outlook.com
- (2603:10a6:208:65::11)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=markb@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [208.186.24.68]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a5a51e9e-20b8-4899-80b0-08d6f35104b2
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM0PR05MB4498;
-x-ms-traffictypediagnostic: AM0PR05MB4498:
-x-microsoft-antispam-prvs: <AM0PR05MB4498241519CA48E7D639F95BD2EB0@AM0PR05MB4498.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-forefront-prvs: 0071BFA85B
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(376002)(396003)(346002)(136003)(366004)(39860400002)(189003)(199004)(486006)(54906003)(99286004)(76176011)(110136005)(2201001)(86362001)(4326008)(316002)(52116002)(6246003)(26005)(8676002)(6506007)(386003)(102836004)(53546011)(81166006)(81156014)(36756003)(8936002)(6116002)(3846002)(55236004)(5660300002)(68736007)(66066001)(14454004)(31686004)(478600001)(11346002)(2906002)(6436002)(476003)(71190400001)(71200400001)(31696002)(7736002)(14444005)(256004)(2501003)(446003)(229853002)(305945005)(66946007)(66446008)(6512007)(53936002)(186003)(64756008)(66556008)(66476007)(6486002)(25786009)(2616005)(73956011);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB4498;H:AM0PR05MB4403.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: g/cwKi+cIrIeKela78MrVRqrj9OCyB/w7hipBDCX2jJN7v6wI9/V1fBy/5s+CwgkYuYFl1OVoJX/05QHTJPqwFeSnr6Rifg9cU0K+4AwrcGX9t3P2Ii4X+bsa6XVoWrx/H4Nt0bHq8mU2ZhsKORyQD+mKptK9S3EZOTPnHEWEbzFf4p6gflHhUvZ8EZ0QEYjhBFUzR1O2h+mrQ9SvnWZlYCmmpBGtdtLNIsucf7KuCA6dL5T2lv3ShdfAXC7SeyyooNtKb7h3pEpp3g9XWrbRMpmuGYWgIKkL8HNJtsLo1SA2srm88oQgmRd59HnzUC6oShKKSJhr2PBHPuBRQtytrjRMHLkfcEg1M+Z4w80jDHEfmUiIo1umSSeTvqTUyZO7IRGUUAQ0UMsMIGzkOcto4dRrFPMXFMIub+VT7yYzPw=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <3840B7142885964D84C3DFE1C109911B@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726427AbfFQS2s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 14:28:48 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:43002 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725764AbfFQS2r (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Jun 2019 14:28:47 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 6F2EE307D90E;
+        Mon, 17 Jun 2019 18:28:39 +0000 (UTC)
+Received: from localhost (ovpn-112-18.ams2.redhat.com [10.36.112.18])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id C54E41001E86;
+        Mon, 17 Jun 2019 18:28:34 +0000 (UTC)
+Date:   Mon, 17 Jun 2019 20:28:30 +0200
+From:   Stefano Brivio <sbrivio@redhat.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net v4 1/8] ipv4/fib_frontend: Rename
+ ip_valid_fib_dump_req, provide non-strict version
+Message-ID: <20190617202830.3dd92d46@redhat.com>
+In-Reply-To: <43a9b0c7-27b4-733c-d3f2-60ad894e8aeb@gmail.com>
+References: <cover.1560561432.git.sbrivio@redhat.com>
+        <fb2bbc9568a7d7d21a00b791a2d4f488cfcd8a50.1560561432.git.sbrivio@redhat.com>
+        <4dfbaf6a-5cff-13ea-341e-2b1f91c25d04@gmail.com>
+        <20190615051342.7e32c2bb@redhat.com>
+        <d780b664-bdbd-801f-7c61-d4854ff26192@gmail.com>
+        <20190615052705.66f3fe62@redhat.com>
+        <20190616220417.573be9a6@redhat.com>
+        <d3527e70-15aa-abf8-4451-91e5bae4f1ab@gmail.com>
+        <20190617161333.29cab4d7@redhat.com>
+        <43a9b0c7-27b4-733c-d3f2-60ad894e8aeb@gmail.com>
+Organization: Red Hat
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a5a51e9e-20b8-4899-80b0-08d6f35104b2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jun 2019 18:24:22.3087
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: markb@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4498
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Mon, 17 Jun 2019 18:28:47 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDYvMTcvMTkgMTE6MDIgQU0sIFNhZWVkIE1haGFtZWVkIHdyb3RlOg0KPiBPbiBNb24s
-IDIwMTktMDYtMTcgYXQgMTM6MDggKzAyMDAsIEFybmQgQmVyZ21hbm4gd3JvdGU6DQo+PiBQdXR0
-aW5nIGFuIGVtcHR5ICdtbHg1X2Zsb3dfc3BlYycgc3RydWN0dXJlIG9uIHRoZSBzdGFjayBpcyBh
-IGJpdA0KPj4gd2FzdGVmdWwgYW5kIGNhdXNlcyBhIHdhcm5pbmcgb24gMzItYml0IGFyY2hpdGVj
-dHVyZXMgd2hlbiBidWlsZGluZw0KPj4gd2l0aCBjbGFuZyAtZnNhbml0aXplLWNvdmVyYWdlOg0K
-Pj4NCj4+IGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lc3dpdGNoX29m
-ZmxvYWRzX3Rlcm10YmwuYzoNCj4+IEluIGZ1bmN0aW9uICdtbHg1X2Vzd2l0Y2hfdGVybXRibF9j
-cmVhdGUnOg0KPj4gZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2Vzd2l0
-Y2hfb2ZmbG9hZHNfdGVybXRibC5jOjkwDQo+PiA6MTogZXJyb3I6IHRoZSBmcmFtZSBzaXplIG9m
-IDEwMzIgYnl0ZXMgaXMgbGFyZ2VyIHRoYW4gMTAyNCBieXRlcyBbLQ0KPj4gV2Vycm9yPWZyYW1l
-LWxhcmdlci10aGFuPV0NCj4+DQo+PiBTaW5jZSB0aGUgc3RydWN0dXJlIGlzIG5ldmVyIHdyaXR0
-ZW4gdG8sIHdlIGNhbiBzdGF0aWNhbGx5IGFsbG9jYXRlDQo+PiBpdCB0byBhdm9pZCB0aGUgc3Rh
-Y2sgdXNhZ2UuIFRvIGJlIG9uIHRoZSBzYWZlIHNpZGUsIG1hcmsgYWxsDQo+PiBzdWJzZXF1ZW50
-IGZ1bmN0aW9uIGFyZ3VtZW50cyB0aGF0IHdlIHBhc3MgaXQgaW50byBhcyAnY29uc3QnDQo+PiBh
-cyB3ZWxsLg0KPj4NCj4+IEZpeGVzOiAxMGNhYWJkYWFkNWEgKCJuZXQvbWx4NWU6IFVzZSB0ZXJt
-aW5hdGlvbiB0YWJsZSBmb3IgVkxBTiBwdXNoDQo+PiBhY3Rpb25zIikNCj4+IFNpZ25lZC1vZmYt
-Ynk6IEFybmQgQmVyZ21hbm4gPGFybmRAYXJuZGIuZGU+DQo+PiAtLS0NCj4+ICAuLi4vbWx4NS9j
-b3JlL2Vzd2l0Y2hfb2ZmbG9hZHNfdGVybXRibC5jICAgICAgfCAgMiArLQ0KPj4gIC4uLi9uZXQv
-ZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2ZzX2NvcmUuYyB8IDIwICsrKysrKysrKy0tLS0t
-LQ0KPj4gLS0tLQ0KPj4gIGluY2x1ZGUvbGludXgvbWx4NS9mcy5oICAgICAgICAgICAgICAgICAg
-ICAgICB8ICAyICstDQo+PiAgMyBmaWxlcyBjaGFuZ2VkLCAxMiBpbnNlcnRpb25zKCspLCAxMiBk
-ZWxldGlvbnMoLSkNCj4+DQo+PiBkaWZmIC0tZ2l0DQo+PiBhL2RyaXZlcnMvbmV0L2V0aGVybmV0
-L21lbGxhbm94L21seDUvY29yZS9lc3dpdGNoX29mZmxvYWRzX3Rlcm10YmwuYw0KPj4gYi9kcml2
-ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZXN3aXRjaF9vZmZsb2Fkc190ZXJt
-dGJsLmMNCj4+IGluZGV4IGNiN2Q4ZWJlMmM5NS4uMTcxZjNkNGVmOWFjIDEwMDY0NA0KPj4gLS0t
-DQo+PiBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lc3dpdGNoX29m
-ZmxvYWRzX3Rlcm10YmwuYw0KPj4gKysrDQo+PiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxh
-bm94L21seDUvY29yZS9lc3dpdGNoX29mZmxvYWRzX3Rlcm10YmwuYw0KPj4gQEAgLTUwLDcgKzUw
-LDcgQEAgbWx4NV9lc3dpdGNoX3Rlcm10YmxfY3JlYXRlKHN0cnVjdCBtbHg1X2NvcmVfZGV2DQo+
-PiAqZGV2LA0KPj4gIAkJCSAgICBzdHJ1Y3QgbWx4NV9mbG93X2FjdCAqZmxvd19hY3QpDQo+PiAg
-ew0KPj4gIAlzdHJ1Y3QgbWx4NV9mbG93X25hbWVzcGFjZSAqcm9vdF9uczsNCj4+IC0Jc3RydWN0
-IG1seDVfZmxvd19zcGVjIHNwZWMgPSB7fTsNCj4+ICsJc3RhdGljIGNvbnN0IHN0cnVjdCBtbHg1
-X2Zsb3dfc3BlYyBzcGVjID0ge307DQo+IA0KPiBMR1RNLCBqdXN0IG1ha2Ugc3VyZSBwbGVhc2Ug
-dG8gaGF2ZSBhIHJldmVyc2UgeG1hcyB0cmVlIGhlcmUuDQo+IA0KPiBNYXJrLCBwbGVhc2UgbGV0
-IG1lIGtub3cgaWYgeW91IGFyZSBvayB3aXRoIHN1Y2ggQVBJIGNvbnN0cmFpbiB0byBmbG93DQo+
-IHN0ZWVyaW5nIChzcGVjIG11c3QgYmUgY29uc3QpLg0KDQpJIGRvbid0IHRoaW5rIHRoZSBzdGVl
-cmluZyBjb3JlIGxheWVyIHNob3VsZCBjaGFuZ2UgdGhlIG1hdGNoaW5nIGFza2VkIGJ5IHRoZSB1
-c2VyLg0KRXZlbiB3aXRob3V0IHRoZSBmcmFtZSBzaXplIGlzc3VlIEkgbGlrZSB0aGlzIGNoYW5n
-ZSwgdGhhbmtzIQ0KDQpMR1RNDQoNClRoYW5rcywNCk1hcmsNCg0KPiANCj4gVGhhbmtzLA0KPiBT
-YWVlZC4NCj4gDQo+PiAgCWludCBwcmlvLCBmbGFnczsNCj4+ICAJaW50IGVycjsNCj4+ICANCj4+
-IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZnNf
-Y29yZS5jDQo+PiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9mc19j
-b3JlLmMNCj4+IGluZGV4IGZlNzZjNmZkNmQ4MC4uNzM5MTIzZTEzNjNiIDEwMDY0NA0KPj4gLS0t
-IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2ZzX2NvcmUuYw0KPj4g
-KysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2ZzX2NvcmUuYw0K
-Pj4gQEAgLTU4NCw3ICs1ODQsNyBAQCBzdGF0aWMgaW50IGluc2VydF9mdGUoc3RydWN0IG1seDVf
-Zmxvd19ncm91cCAqZmcsDQo+PiBzdHJ1Y3QgZnNfZnRlICpmdGUpDQo+PiAgfQ0KPj4gIA0KPj4g
-IHN0YXRpYyBzdHJ1Y3QgZnNfZnRlICphbGxvY19mdGUoc3RydWN0IG1seDVfZmxvd190YWJsZSAq
-ZnQsDQo+PiAtCQkJCXUzMiAqbWF0Y2hfdmFsdWUsDQo+PiArCQkJCWNvbnN0IHUzMiAqbWF0Y2hf
-dmFsdWUsDQo+PiAgCQkJCXN0cnVjdCBtbHg1X2Zsb3dfYWN0ICpmbG93X2FjdCkNCj4+ICB7DQo+
-PiAgCXN0cnVjdCBtbHg1X2Zsb3dfc3RlZXJpbmcgKnN0ZWVyaW5nID0gZ2V0X3N0ZWVyaW5nKCZm
-dC0+bm9kZSk7DQo+PiBAQCAtNjEyLDcgKzYxMiw3IEBAIHN0YXRpYyB2b2lkIGRlYWxsb2NfZmxv
-d19ncm91cChzdHJ1Y3QNCj4+IG1seDVfZmxvd19zdGVlcmluZyAqc3RlZXJpbmcsDQo+PiAgDQo+
-PiAgc3RhdGljIHN0cnVjdCBtbHg1X2Zsb3dfZ3JvdXAgKmFsbG9jX2Zsb3dfZ3JvdXAoc3RydWN0
-DQo+PiBtbHg1X2Zsb3dfc3RlZXJpbmcgKnN0ZWVyaW5nLA0KPj4gIAkJCQkJCXU4DQo+PiBtYXRj
-aF9jcml0ZXJpYV9lbmFibGUsDQo+PiAtCQkJCQkJdm9pZCAqbWF0Y2hfY3JpdGVyaWEsDQo+PiAr
-CQkJCQkJY29uc3Qgdm9pZA0KPj4gKm1hdGNoX2NyaXRlcmlhLA0KPj4gIAkJCQkJCWludCBzdGFy
-dF9pbmRleCwNCj4+ICAJCQkJCQlpbnQgZW5kX2luZGV4KQ0KPj4gIHsNCj4+IEBAIC02NDIsNyAr
-NjQyLDcgQEAgc3RhdGljIHN0cnVjdCBtbHg1X2Zsb3dfZ3JvdXANCj4+ICphbGxvY19mbG93X2dy
-b3VwKHN0cnVjdCBtbHg1X2Zsb3dfc3RlZXJpbmcgKnN0ZWVyDQo+PiAgDQo+PiAgc3RhdGljIHN0
-cnVjdCBtbHg1X2Zsb3dfZ3JvdXAgKmFsbG9jX2luc2VydF9mbG93X2dyb3VwKHN0cnVjdA0KPj4g
-bWx4NV9mbG93X3RhYmxlICpmdCwNCj4+ICAJCQkJCQkgICAgICAgdTgNCj4+IG1hdGNoX2NyaXRl
-cmlhX2VuYWJsZSwNCj4+IC0JCQkJCQkgICAgICAgdm9pZA0KPj4gKm1hdGNoX2NyaXRlcmlhLA0K
-Pj4gKwkJCQkJCSAgICAgICBjb25zdCB2b2lkDQo+PiAqbWF0Y2hfY3JpdGVyaWEsDQo+PiAgCQkJ
-CQkJICAgICAgIGludCBzdGFydF9pbmRleCwNCj4+ICAJCQkJCQkgICAgICAgaW50IGVuZF9pbmRl
-eCwNCj4+ICAJCQkJCQkgICAgICAgc3RydWN0IGxpc3RfaGVhZA0KPj4gKnByZXYpDQo+PiBAQCAt
-MTI4NSw3ICsxMjg1LDcgQEAgYWRkX3J1bGVfZnRlKHN0cnVjdCBmc19mdGUgKmZ0ZSwNCj4+ICB9
-DQo+PiAgDQo+PiAgc3RhdGljIHN0cnVjdCBtbHg1X2Zsb3dfZ3JvdXAgKmFsbG9jX2F1dG9fZmxv
-d19ncm91cChzdHJ1Y3QNCj4+IG1seDVfZmxvd190YWJsZSAgKmZ0LA0KPj4gLQkJCQkJCSAgICAg
-c3RydWN0DQo+PiBtbHg1X2Zsb3dfc3BlYyAqc3BlYykNCj4+ICsJCQkJCQkgICAgIGNvbnN0IHN0
-cnVjdA0KPj4gbWx4NV9mbG93X3NwZWMgKnNwZWMpDQo+PiAgew0KPj4gIAlzdHJ1Y3QgbGlzdF9o
-ZWFkICpwcmV2ID0gJmZ0LT5ub2RlLmNoaWxkcmVuOw0KPj4gIAlzdHJ1Y3QgbWx4NV9mbG93X2dy
-b3VwICpmZzsNCj4+IEBAIC0xNDUxLDcgKzE0NTEsNyBAQCBzdGF0aWMgaW50IGNoZWNrX2NvbmZs
-aWN0aW5nX2Z0ZXMoc3RydWN0IGZzX2Z0ZQ0KPj4gKmZ0ZSwgY29uc3Qgc3RydWN0IG1seDVfZmxv
-d19hY3QNCj4+ICB9DQo+PiAgDQo+PiAgc3RhdGljIHN0cnVjdCBtbHg1X2Zsb3dfaGFuZGxlICph
-ZGRfcnVsZV9mZyhzdHJ1Y3QgbWx4NV9mbG93X2dyb3VwDQo+PiAqZmcsDQo+PiAtCQkJCQkgICAg
-dTMyICptYXRjaF92YWx1ZSwNCj4+ICsJCQkJCSAgICBjb25zdCB1MzIgKm1hdGNoX3ZhbHVlLA0K
-Pj4gIAkJCQkJICAgIHN0cnVjdCBtbHg1X2Zsb3dfYWN0DQo+PiAqZmxvd19hY3QsDQo+PiAgCQkJ
-CQkgICAgc3RydWN0DQo+PiBtbHg1X2Zsb3dfZGVzdGluYXRpb24gKmRlc3QsDQo+PiAgCQkJCQkg
-ICAgaW50IGRlc3RfbnVtLA0KPj4gQEAgLTE1MzYsNyArMTUzNiw3IEBAIHN0YXRpYyB2b2lkIGZy
-ZWVfbWF0Y2hfbGlzdChzdHJ1Y3QNCj4+IG1hdGNoX2xpc3RfaGVhZCAqaGVhZCkNCj4+ICANCj4+
-ICBzdGF0aWMgaW50IGJ1aWxkX21hdGNoX2xpc3Qoc3RydWN0IG1hdGNoX2xpc3RfaGVhZCAqbWF0
-Y2hfaGVhZCwNCj4+ICAJCQkgICAgc3RydWN0IG1seDVfZmxvd190YWJsZSAqZnQsDQo+PiAtCQkJ
-ICAgIHN0cnVjdCBtbHg1X2Zsb3dfc3BlYyAqc3BlYykNCj4+ICsJCQkgICAgY29uc3Qgc3RydWN0
-IG1seDVfZmxvd19zcGVjICpzcGVjKQ0KPj4gIHsNCj4+ICAJc3RydWN0IHJobGlzdF9oZWFkICp0
-bXAsICpsaXN0Ow0KPj4gIAlzdHJ1Y3QgbWx4NV9mbG93X2dyb3VwICpnOw0KPj4gQEAgLTE1ODks
-NyArMTU4OSw3IEBAIHN0YXRpYyB1NjQgbWF0Y2hlZF9mZ3NfZ2V0X3ZlcnNpb24oc3RydWN0DQo+
-PiBsaXN0X2hlYWQgKm1hdGNoX2hlYWQpDQo+PiAgDQo+PiAgc3RhdGljIHN0cnVjdCBmc19mdGUg
-Kg0KPj4gIGxvb2t1cF9mdGVfbG9ja2VkKHN0cnVjdCBtbHg1X2Zsb3dfZ3JvdXAgKmcsDQo+PiAt
-CQkgIHUzMiAqbWF0Y2hfdmFsdWUsDQo+PiArCQkgIGNvbnN0IHUzMiAqbWF0Y2hfdmFsdWUsDQo+
-PiAgCQkgIGJvb2wgdGFrZV93cml0ZSkNCj4+ICB7DQo+PiAgCXN0cnVjdCBmc19mdGUgKmZ0ZV90
-bXA7DQo+PiBAQCAtMTYyMiw3ICsxNjIyLDcgQEAgbG9va3VwX2Z0ZV9sb2NrZWQoc3RydWN0IG1s
-eDVfZmxvd19ncm91cCAqZywNCj4+ICBzdGF0aWMgc3RydWN0IG1seDVfZmxvd19oYW5kbGUgKg0K
-Pj4gIHRyeV9hZGRfdG9fZXhpc3RpbmdfZmcoc3RydWN0IG1seDVfZmxvd190YWJsZSAqZnQsDQo+
-PiAgCQkgICAgICAgc3RydWN0IGxpc3RfaGVhZCAqbWF0Y2hfaGVhZCwNCj4+IC0JCSAgICAgICBz
-dHJ1Y3QgbWx4NV9mbG93X3NwZWMgKnNwZWMsDQo+PiArCQkgICAgICAgY29uc3Qgc3RydWN0IG1s
-eDVfZmxvd19zcGVjICpzcGVjLA0KPj4gIAkJICAgICAgIHN0cnVjdCBtbHg1X2Zsb3dfYWN0ICpm
-bG93X2FjdCwNCj4+ICAJCSAgICAgICBzdHJ1Y3QgbWx4NV9mbG93X2Rlc3RpbmF0aW9uICpkZXN0
-LA0KPj4gIAkJICAgICAgIGludCBkZXN0X251bSwNCj4+IEBAIC0xNzE1LDcgKzE3MTUsNyBAQCB0
-cnlfYWRkX3RvX2V4aXN0aW5nX2ZnKHN0cnVjdCBtbHg1X2Zsb3dfdGFibGUNCj4+ICpmdCwNCj4+
-ICANCj4+ICBzdGF0aWMgc3RydWN0IG1seDVfZmxvd19oYW5kbGUgKg0KPj4gIF9tbHg1X2FkZF9m
-bG93X3J1bGVzKHN0cnVjdCBtbHg1X2Zsb3dfdGFibGUgKmZ0LA0KPj4gLQkJICAgICBzdHJ1Y3Qg
-bWx4NV9mbG93X3NwZWMgKnNwZWMsDQo+PiArCQkgICAgIGNvbnN0IHN0cnVjdCBtbHg1X2Zsb3df
-c3BlYyAqc3BlYywNCj4+ICAJCSAgICAgc3RydWN0IG1seDVfZmxvd19hY3QgKmZsb3dfYWN0LA0K
-Pj4gIAkJICAgICBzdHJ1Y3QgbWx4NV9mbG93X2Rlc3RpbmF0aW9uICpkZXN0LA0KPj4gIAkJICAg
-ICBpbnQgZGVzdF9udW0pDQo+PiBAQCAtMTgyMyw3ICsxODIzLDcgQEAgc3RhdGljIGJvb2wgZndk
-X25leHRfcHJpb19zdXBwb3J0ZWQoc3RydWN0DQo+PiBtbHg1X2Zsb3dfdGFibGUgKmZ0KQ0KPj4g
-IA0KPj4gIHN0cnVjdCBtbHg1X2Zsb3dfaGFuZGxlICoNCj4+ICBtbHg1X2FkZF9mbG93X3J1bGVz
-KHN0cnVjdCBtbHg1X2Zsb3dfdGFibGUgKmZ0LA0KPj4gLQkJICAgIHN0cnVjdCBtbHg1X2Zsb3df
-c3BlYyAqc3BlYywNCj4+ICsJCSAgICBjb25zdCBzdHJ1Y3QgbWx4NV9mbG93X3NwZWMgKnNwZWMs
-DQo+PiAgCQkgICAgc3RydWN0IG1seDVfZmxvd19hY3QgKmZsb3dfYWN0LA0KPj4gIAkJICAgIHN0
-cnVjdCBtbHg1X2Zsb3dfZGVzdGluYXRpb24gKmRlc3QsDQo+PiAgCQkgICAgaW50IG51bV9kZXN0
-KQ0KPj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvbWx4NS9mcy5oIGIvaW5jbHVkZS9saW51
-eC9tbHg1L2ZzLmgNCj4+IGluZGV4IDJkZGFhOTdmMjE3OS4uYzBjMDI5NjY0NTI3IDEwMDY0NA0K
-Pj4gLS0tIGEvaW5jbHVkZS9saW51eC9tbHg1L2ZzLmgNCj4+ICsrKyBiL2luY2x1ZGUvbGludXgv
-bWx4NS9mcy5oDQo+PiBAQCAtMjAwLDcgKzIwMCw3IEBAIHN0cnVjdCBtbHg1X2Zsb3dfYWN0IHsN
-Cj4+ICAgKi8NCj4+ICBzdHJ1Y3QgbWx4NV9mbG93X2hhbmRsZSAqDQo+PiAgbWx4NV9hZGRfZmxv
-d19ydWxlcyhzdHJ1Y3QgbWx4NV9mbG93X3RhYmxlICpmdCwNCj4+IC0JCSAgICBzdHJ1Y3QgbWx4
-NV9mbG93X3NwZWMgKnNwZWMsDQo+PiArCQkgICAgY29uc3Qgc3RydWN0IG1seDVfZmxvd19zcGVj
-ICpzcGVjLA0KPj4gIAkJICAgIHN0cnVjdCBtbHg1X2Zsb3dfYWN0ICpmbG93X2FjdCwNCj4+ICAJ
-CSAgICBzdHJ1Y3QgbWx4NV9mbG93X2Rlc3RpbmF0aW9uICpkZXN0LA0KPj4gIAkJICAgIGludCBu
-dW1fZGVzdCk7DQo=
+On Mon, 17 Jun 2019 11:06:51 -0600
+David Ahern <dsahern@gmail.com> wrote:
+
+> On 6/17/19 8:13 AM, Stefano Brivio wrote:
+> >>
+> >> With strict checking (5.0 and forward):
+> >> - RTM_F_CLONED NOT set means dump only FIB entries
+> >> - RTM_F_CLONED set means dump only exceptions  
+> > 
+> > Okay. Should we really ignore the RFC and NLM_F_MATCH though? If we add
+> > field(s) to the filter, it comes almost for free, something like:
+> > 
+> > 	if (nlh->nlmsg_flags & NLM_F_MATCH)
+> > 		filter->dump_exceptions = rtm->rtm_flags & RTM_F_CLONED;
+> > 
+> > instead of:
+> > 
+> > 	filter->dump_exceptions = rtm->rtm_flags & RTM_F_CLONED;  
+> 
+> This is where you keep losing me. iproute2 has always set NLM_F_MATCH on
+> dump requests, so that flag can not be used as a discriminator here.
+
+iproute2 yes, but some other users (I'm not aware of any so I have no
+examples) might *very* vaguely follow the RFC and expect consistent
+results. That was my only point here. Most likely just a theoretical
+one.
+
+> >   
+> >> Without strict checking (old iproute2 on any kernel):
+> >> - dump all, userspace has to sort
+> >>
+> >> Kernel side this can be handled with new field, dump_exceptions, in the
+> >> filter that defaults to true and then is reset in the strict path if the
+> >> flag is not set.  
+> > 
+> > I guess we need to add two fields, we'll need a 'dump_routes' too.
+> > 
+> > Otherwise, the dump functions can't distinguish between the three cases
+> > ('no strict checking', 'strict checking and RTM_F_CLONED', 'strict
+> > checking and no RTM_F_CLONED'). How would you do this with a single
+> > additional field?
+> >   
+> 
+> sure, separate fields are needed for the pre-strict mode use case.
+
+Well, they are needed, in general. They both start as true, non-strict
+mode doesn't clear them, strict mode clears one. That's how I would do
+it.
+
+> So, I take it we are converging on this:
+> 
+> 1. non-strict mode, dump both (FIB entries and exceptions). Userspace
+> has to filter. This is the legacy behavior you are trying to restore.
+> 
+> 2. strict mode:
+>    a. dump only FIB entries if RTM_F_CLONED is not set
+>    b. dump only exception entries if RTM_F_CLONED is set
+> 
+> Agreed?
+
+Agreed in general, maybe let me know what you think about the
+NLM_F_MATCH point above though.
+
+-- 
+Stefano
