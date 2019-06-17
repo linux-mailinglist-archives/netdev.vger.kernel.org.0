@@ -2,492 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 57CEA48EA5
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 21:27:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E8BE48EEB
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 21:28:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729007AbfFQT13 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 15:27:29 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:37882 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729042AbfFQT13 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 15:27:29 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5HJEMj0002707
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 12:27:29 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=dIJD3J7vaaIZpwFSjvQ33COn9L6/MC7aDLKB+oF19Sc=;
- b=jFfV2ApHZp/ErtyuXW85p/U6Ucq+O42g/AfeKYP9m3sgqliw33BzpjGsSFTSvs1MHgTc
- m58vWOB9ZoLkarHplRmUmcPF7HGx+zag++cUdkK8a0D+YU53uL9CacuO5cJCLrIwzpIV
- xaaPkHixTTVPkRUzUsaukiIp2VHILF1xUaA= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2t6ffs0c4s-6
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 12:27:28 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Mon, 17 Jun 2019 12:27:25 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id 0F76686173A; Mon, 17 Jun 2019 12:27:24 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <andrii.nakryiko@gmail.com>, <ast@fb.com>, <daniel@iogearbox.net>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <kernel-team@fb.com>
-CC:     Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH v2 bpf-next 11/11] selftests/bpf: convert remaining selftests to BTF-defined maps
-Date:   Mon, 17 Jun 2019 12:27:00 -0700
-Message-ID: <20190617192700.2313445-12-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190617192700.2313445-1-andriin@fb.com>
-References: <20190617192700.2313445-1-andriin@fb.com>
-X-FB-Internal: Safe
+        id S1726947AbfFQT21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 15:28:27 -0400
+Received: from mail-eopbgr780139.outbound.protection.outlook.com ([40.107.78.139]:54448
+        "EHLO NAM03-BY2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726357AbfFQT20 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Jun 2019 15:28:26 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=testarcselector01; d=microsoft.com; cv=none;
+ b=ANxR3xDov/xIub1BTLnNc00bqpbMfLig6kOn36xmKyXi8jKRhQIEbcXA9dtEQEvohy63sRCfVzZ1XjBsua8SbBiw07RHqkImif1V4nJ2Kn6YmPlHvKJwLKWieMqFRL5JKEPm5q8gDpY9TVpWjX5R/nGNhBI6WdpBNtjbjjy4osA=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=testarcselector01;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AgAptR3DM0iiC7slJUXaX+ofdmaisgM/VUpTuRkaEiA=;
+ b=d1KGLpXSc1CpufEZBb1XsNchNZdpEG8dpIqaX1UR2IF7/ozYXFjKuMRyvIjMwOKJGVwVw5514qBIkzPi8o484Qw+GQDBvqq20en0ter0Bqtm7WkNGWWqJQoXvkeWkMhi72Y2/x1eid1OhPVfz/Cw//Uatz6pq7bCMLoY2+c4DPQ=
+ARC-Authentication-Results: i=1; test.office365.com
+ 1;spf=none;dmarc=none;dkim=none;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AgAptR3DM0iiC7slJUXaX+ofdmaisgM/VUpTuRkaEiA=;
+ b=Vg1bqXLbJnS2yqHNDfuCUNEp1xmPZB+rVIZijyhjEVBOErOwpfzMk2O9p22sRpqAF4m3pRs7GJZDRFYCyHLPQxlGK5Dv2ozl+b9Y7zzETHAsnMDoGRu7e5MfNEZXSuRt2ksDr/nZTYn6Ym4lbEvG0+D9GNWyXzBOdKwFyF2XzE0=
+Received: from MW2PR2101MB1116.namprd21.prod.outlook.com (2603:10b6:302:a::33)
+ by MW2PR2101MB1114.namprd21.prod.outlook.com (2603:10b6:302:a::31) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2008.2; Mon, 17 Jun
+ 2019 19:27:45 +0000
+Received: from MW2PR2101MB1116.namprd21.prod.outlook.com
+ ([fe80::a1f6:c002:82ba:ad47]) by MW2PR2101MB1116.namprd21.prod.outlook.com
+ ([fe80::a1f6:c002:82ba:ad47%9]) with mapi id 15.20.2008.007; Mon, 17 Jun 2019
+ 19:27:45 +0000
+From:   Sunil Muthuswamy <sunilmut@microsoft.com>
+To:     David Miller <davem@davemloft.net>
+CC:     Dexuan Cui <decui@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "sashal@kernel.org" <sashal@kernel.org>,
+        Michael Kelley <mikelley@microsoft.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH net] hvsock: fix epollout hang from race condition
+Thread-Topic: [PATCH net] hvsock: fix epollout hang from race condition
+Thread-Index: AdUhY/kd1+XRZykcRS6vcxcYhC9DaQBvCbgAAAJcZAAAVwongAAsXmzAAAHItoAAAQ9BAA==
+Date:   Mon, 17 Jun 2019 19:27:45 +0000
+Message-ID: <MW2PR2101MB11168BA3D46BEC843D694E04C0EB0@MW2PR2101MB1116.namprd21.prod.outlook.com>
+References: <PU1P153MB0169BACDA500F94910849770BFE90@PU1P153MB0169.APCP153.PROD.OUTLOOK.COM>
+        <20190616.135445.822152500838073831.davem@davemloft.net>
+        <MW2PR2101MB111697FDA0BEDA81237FECB3C0EB0@MW2PR2101MB1116.namprd21.prod.outlook.com>
+ <20190617.115615.91633577273679753.davem@davemloft.net>
+In-Reply-To: <20190617.115615.91633577273679753.davem@davemloft.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=sunilmut@microsoft.com; 
+x-originating-ip: [2001:4898:80e8:3:8d7e:cb94:2f88:ec90]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: b4b566a5-79e4-4304-b42b-08d6f359dfc3
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:MW2PR2101MB1114;
+x-ms-traffictypediagnostic: MW2PR2101MB1114:
+x-microsoft-antispam-prvs: <MW2PR2101MB11143926C3BE9132F79F6ADFC0EB0@MW2PR2101MB1114.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0071BFA85B
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(376002)(39860400002)(366004)(396003)(346002)(189003)(199004)(13464003)(8676002)(81156014)(81166006)(8936002)(316002)(22452003)(478600001)(305945005)(7736002)(10090500001)(68736007)(6116002)(99286004)(52396003)(7696005)(6916009)(8990500004)(54906003)(76176011)(53546011)(102836004)(10290500003)(6506007)(14454004)(66446008)(73956011)(66946007)(64756008)(66476007)(66556008)(6246003)(5660300002)(229853002)(52536014)(33656002)(4326008)(76116006)(53936002)(46003)(25786009)(2906002)(74316002)(71190400001)(71200400001)(86362001)(9686003)(55016002)(476003)(486006)(6436002)(446003)(11346002)(256004)(14444005)(186003);DIR:OUT;SFP:1102;SCL:1;SRVR:MW2PR2101MB1114;H:MW2PR2101MB1116.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: microsoft.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: UIPb1xRk/01q2kXGlJ43B1UplM2CAZQG8eMElPKMkNTGyBaHyfV/ZxExK05hRpAG9wCiasj/9Jt6A/s233u73MX+McICbahIemlcMTuKOAnmC7RDVhfssZReG3jvsfsRVPF8OosHRfSBr3qY7GklUHHWujYkoDS6K2ewwa0OyPdbIOBONiVpX7ektB0pcjTewTBAltEuhNtU9V82zLQ3syGRDDPw4ZbTpVPI0V3nn8JL9H2Mzru6cNaNqVKWzbTQCA0+tt48yFv7aYthOWtNDv+PtD8W05R+HKVoQF7YcHBBH6QVdtY1bgParRK8U+AszyiIyq1aSh/+Uqiwg/rtKpFtOTyqvpplquLdqKbObo2MQxINeDdymRXizxChWqFdhqkQ73IYbHi8Nix0E3VGWeK1XyezicXCnztYdUUMkq4=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-17_07:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906170171
-X-FB-Internal: deliver
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b4b566a5-79e4-4304-b42b-08d6f359dfc3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jun 2019 19:27:45.0458
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: sunilmut@ntdev.microsoft.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR2101MB1114
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert all the rest of selftests that use BPF maps. These are either
-maps with integer key/value or special types of maps that don't event
-allow BTF type information for key/value.
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- .../selftests/bpf/progs/get_cgroup_id_kern.c  | 18 +++--
- .../selftests/bpf/progs/sample_map_ret0.c     | 18 +++--
- .../bpf/progs/sockmap_verdict_prog.c          | 36 +++++++---
- .../selftests/bpf/progs/test_map_in_map.c     | 20 ++++--
- .../testing/selftests/bpf/progs/test_obj_id.c |  9 ++-
- .../bpf/progs/test_skb_cgroup_id_kern.c       |  9 ++-
- .../testing/selftests/bpf/progs/test_tc_edt.c |  9 ++-
- .../bpf/progs/test_tcp_check_syncookie_kern.c |  9 ++-
- .../selftests/bpf/test_queue_stack_map.h      | 20 ++++--
- .../testing/selftests/bpf/test_sockmap_kern.h | 72 +++++++++++++------
- 10 files changed, 154 insertions(+), 66 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/progs/get_cgroup_id_kern.c b/tools/testing/selftests/bpf/progs/get_cgroup_id_kern.c
-index 014dba10b8a5..87b202381088 100644
---- a/tools/testing/selftests/bpf/progs/get_cgroup_id_kern.c
-+++ b/tools/testing/selftests/bpf/progs/get_cgroup_id_kern.c
-@@ -4,17 +4,23 @@
- #include <linux/bpf.h>
- #include "bpf_helpers.h"
- 
--struct bpf_map_def SEC("maps") cg_ids = {
-+struct {
-+	__u32 type;
-+	__u32 max_entries;
-+	__u32 *key;
-+	__u64 *value;
-+} cg_ids SEC(".maps") = {
- 	.type = BPF_MAP_TYPE_ARRAY,
--	.key_size = sizeof(__u32),
--	.value_size = sizeof(__u64),
- 	.max_entries = 1,
- };
- 
--struct bpf_map_def SEC("maps") pidmap = {
-+struct {
-+	__u32 type;
-+	__u32 max_entries;
-+	__u32 *key;
-+	__u32 *value;
-+} pidmap SEC(".maps") = {
- 	.type = BPF_MAP_TYPE_ARRAY,
--	.key_size = sizeof(__u32),
--	.value_size = sizeof(__u32),
- 	.max_entries = 1,
- };
- 
-diff --git a/tools/testing/selftests/bpf/progs/sample_map_ret0.c b/tools/testing/selftests/bpf/progs/sample_map_ret0.c
-index 0756303676ac..0f4d47cecd4d 100644
---- a/tools/testing/selftests/bpf/progs/sample_map_ret0.c
-+++ b/tools/testing/selftests/bpf/progs/sample_map_ret0.c
-@@ -2,17 +2,23 @@
- #include <linux/bpf.h>
- #include "bpf_helpers.h"
- 
--struct bpf_map_def SEC("maps") htab = {
-+struct {
-+	__u32 type;
-+	__u32 max_entries;
-+	__u32 *key;
-+	long *value;
-+} htab SEC(".maps") = {
- 	.type = BPF_MAP_TYPE_HASH,
--	.key_size = sizeof(__u32),
--	.value_size = sizeof(long),
- 	.max_entries = 2,
- };
- 
--struct bpf_map_def SEC("maps") array = {
-+struct {
-+	__u32 type;
-+	__u32 max_entries;
-+	__u32 *key;
-+	long *value;
-+} array SEC(".maps") = {
- 	.type = BPF_MAP_TYPE_ARRAY,
--	.key_size = sizeof(__u32),
--	.value_size = sizeof(long),
- 	.max_entries = 2,
- };
- 
-diff --git a/tools/testing/selftests/bpf/progs/sockmap_verdict_prog.c b/tools/testing/selftests/bpf/progs/sockmap_verdict_prog.c
-index d85c874ef25e..983c4f6e4fad 100644
---- a/tools/testing/selftests/bpf/progs/sockmap_verdict_prog.c
-+++ b/tools/testing/selftests/bpf/progs/sockmap_verdict_prog.c
-@@ -4,31 +4,49 @@
- 
- int _version SEC("version") = 1;
- 
--struct bpf_map_def SEC("maps") sock_map_rx = {
-+struct {
-+	__u32 type;
-+	__u32 max_entries;
-+	__u32 key_size;
-+	__u32 value_size;
-+} sock_map_rx SEC(".maps") = {
- 	.type = BPF_MAP_TYPE_SOCKMAP,
-+	.max_entries = 20,
- 	.key_size = sizeof(int),
- 	.value_size = sizeof(int),
--	.max_entries = 20,
- };
- 
--struct bpf_map_def SEC("maps") sock_map_tx = {
-+struct {
-+	__u32 type;
-+	__u32 max_entries;
-+	__u32 key_size;
-+	__u32 value_size;
-+} sock_map_tx SEC(".maps") = {
- 	.type = BPF_MAP_TYPE_SOCKMAP,
-+	.max_entries = 20,
- 	.key_size = sizeof(int),
- 	.value_size = sizeof(int),
--	.max_entries = 20,
- };
- 
--struct bpf_map_def SEC("maps") sock_map_msg = {
-+struct {
-+	__u32 type;
-+	__u32 max_entries;
-+	__u32 key_size;
-+	__u32 value_size;
-+} sock_map_msg SEC(".maps") = {
- 	.type = BPF_MAP_TYPE_SOCKMAP,
-+	.max_entries = 20,
- 	.key_size = sizeof(int),
- 	.value_size = sizeof(int),
--	.max_entries = 20,
- };
- 
--struct bpf_map_def SEC("maps") sock_map_break = {
-+struct {
-+	__u32 type;
-+	__u32 max_entries;
-+	int *key;
-+	int *value;
-+} sock_map_break SEC(".maps") = {
- 	.type = BPF_MAP_TYPE_ARRAY,
--	.key_size = sizeof(int),
--	.value_size = sizeof(int),
- 	.max_entries = 20,
- };
- 
-diff --git a/tools/testing/selftests/bpf/progs/test_map_in_map.c b/tools/testing/selftests/bpf/progs/test_map_in_map.c
-index 2985f262846e..7404bee7c26e 100644
---- a/tools/testing/selftests/bpf/progs/test_map_in_map.c
-+++ b/tools/testing/selftests/bpf/progs/test_map_in_map.c
-@@ -5,22 +5,30 @@
- #include <linux/types.h>
- #include "bpf_helpers.h"
- 
--struct bpf_map_def SEC("maps") mim_array = {
-+struct {
-+	__u32 type;
-+	__u32 max_entries;
-+	__u32 key_size;
-+	__u32 value_size;
-+} mim_array SEC(".maps") = {
- 	.type = BPF_MAP_TYPE_ARRAY_OF_MAPS,
-+	.max_entries = 1,
- 	.key_size = sizeof(int),
- 	/* must be sizeof(__u32) for map in map */
- 	.value_size = sizeof(__u32),
--	.max_entries = 1,
--	.map_flags = 0,
- };
- 
--struct bpf_map_def SEC("maps") mim_hash = {
-+struct {
-+	__u32 type;
-+	__u32 max_entries;
-+	__u32 key_size;
-+	__u32 value_size;
-+} mim_hash SEC(".maps") = {
- 	.type = BPF_MAP_TYPE_HASH_OF_MAPS,
-+	.max_entries = 1,
- 	.key_size = sizeof(int),
- 	/* must be sizeof(__u32) for map in map */
- 	.value_size = sizeof(__u32),
--	.max_entries = 1,
--	.map_flags = 0,
- };
- 
- SEC("xdp_mimtest")
-diff --git a/tools/testing/selftests/bpf/progs/test_obj_id.c b/tools/testing/selftests/bpf/progs/test_obj_id.c
-index 880d2963b472..2b1c2efdeed4 100644
---- a/tools/testing/selftests/bpf/progs/test_obj_id.c
-+++ b/tools/testing/selftests/bpf/progs/test_obj_id.c
-@@ -16,10 +16,13 @@
- 
- int _version SEC("version") = 1;
- 
--struct bpf_map_def SEC("maps") test_map_id = {
-+struct {
-+	__u32 type;
-+	__u32 max_entries;
-+	__u32 *key;
-+	__u64 *value;
-+} test_map_id SEC(".maps") = {
- 	.type = BPF_MAP_TYPE_ARRAY,
--	.key_size = sizeof(__u32),
--	.value_size = sizeof(__u64),
- 	.max_entries = 1,
- };
- 
-diff --git a/tools/testing/selftests/bpf/progs/test_skb_cgroup_id_kern.c b/tools/testing/selftests/bpf/progs/test_skb_cgroup_id_kern.c
-index 68cf9829f5a7..af296b876156 100644
---- a/tools/testing/selftests/bpf/progs/test_skb_cgroup_id_kern.c
-+++ b/tools/testing/selftests/bpf/progs/test_skb_cgroup_id_kern.c
-@@ -10,10 +10,13 @@
- 
- #define NUM_CGROUP_LEVELS	4
- 
--struct bpf_map_def SEC("maps") cgroup_ids = {
-+struct {
-+	__u32 type;
-+	__u32 max_entries;
-+	__u32 *key;
-+	__u64 *value;
-+} cgroup_ids SEC(".maps") = {
- 	.type = BPF_MAP_TYPE_ARRAY,
--	.key_size = sizeof(__u32),
--	.value_size = sizeof(__u64),
- 	.max_entries = NUM_CGROUP_LEVELS,
- };
- 
-diff --git a/tools/testing/selftests/bpf/progs/test_tc_edt.c b/tools/testing/selftests/bpf/progs/test_tc_edt.c
-index 3af64c470d64..c2781dd78617 100644
---- a/tools/testing/selftests/bpf/progs/test_tc_edt.c
-+++ b/tools/testing/selftests/bpf/progs/test_tc_edt.c
-@@ -16,10 +16,13 @@
- #define THROTTLE_RATE_BPS (5 * 1000 * 1000)
- 
- /* flow_key => last_tstamp timestamp used */
--struct bpf_map_def SEC("maps") flow_map = {
-+struct {
-+	__u32 type;
-+	__u32 max_entries;
-+	uint32_t *key;
-+	uint64_t *value;
-+} flow_map SEC(".maps") = {
- 	.type = BPF_MAP_TYPE_HASH,
--	.key_size = sizeof(uint32_t),
--	.value_size = sizeof(uint64_t),
- 	.max_entries = 1,
- };
- 
-diff --git a/tools/testing/selftests/bpf/progs/test_tcp_check_syncookie_kern.c b/tools/testing/selftests/bpf/progs/test_tcp_check_syncookie_kern.c
-index 1ab095bcacd8..0f1725e25c44 100644
---- a/tools/testing/selftests/bpf/progs/test_tcp_check_syncookie_kern.c
-+++ b/tools/testing/selftests/bpf/progs/test_tcp_check_syncookie_kern.c
-@@ -16,10 +16,13 @@
- #include "bpf_helpers.h"
- #include "bpf_endian.h"
- 
--struct bpf_map_def SEC("maps") results = {
-+struct {
-+	__u32 type;
-+	__u32 max_entries;
-+	__u32 *key;
-+	__u64 *value;
-+} results SEC(".maps") = {
- 	.type = BPF_MAP_TYPE_ARRAY,
--	.key_size = sizeof(__u32),
--	.value_size = sizeof(__u64),
- 	.max_entries = 1,
- };
- 
-diff --git a/tools/testing/selftests/bpf/test_queue_stack_map.h b/tools/testing/selftests/bpf/test_queue_stack_map.h
-index 295b9b3bc5c7..f284137a36c4 100644
---- a/tools/testing/selftests/bpf/test_queue_stack_map.h
-+++ b/tools/testing/selftests/bpf/test_queue_stack_map.h
-@@ -10,20 +10,28 @@
- 
- int _version SEC("version") = 1;
- 
--struct bpf_map_def __attribute__ ((section("maps"), used)) map_in = {
-+struct {
-+	__u32 type;
-+	__u32 max_entries;
-+	__u32 key_size;
-+	__u32 value_size;
-+} map_in SEC(".maps") = {
- 	.type = MAP_TYPE,
-+	.max_entries = 32,
- 	.key_size = 0,
- 	.value_size = sizeof(__u32),
--	.max_entries = 32,
--	.map_flags = 0,
- };
- 
--struct bpf_map_def __attribute__ ((section("maps"), used)) map_out = {
-+struct {
-+	__u32 type;
-+	__u32 max_entries;
-+	__u32 key_size;
-+	__u32 value_size;
-+} map_out SEC(".maps") = {
- 	.type = MAP_TYPE,
-+	.max_entries = 32,
- 	.key_size = 0,
- 	.value_size = sizeof(__u32),
--	.max_entries = 32,
--	.map_flags = 0,
- };
- 
- SEC("test")
-diff --git a/tools/testing/selftests/bpf/test_sockmap_kern.h b/tools/testing/selftests/bpf/test_sockmap_kern.h
-index 4e7d3da21357..70b9236cedb0 100644
---- a/tools/testing/selftests/bpf/test_sockmap_kern.h
-+++ b/tools/testing/selftests/bpf/test_sockmap_kern.h
-@@ -28,59 +28,89 @@
-  * are established and verdicts are decided.
-  */
- 
--struct bpf_map_def SEC("maps") sock_map = {
-+struct {
-+	__u32 type;
-+	__u32 max_entries;
-+	__u32 key_size;
-+	__u32 value_size;
-+} sock_map SEC(".maps") = {
- 	.type = TEST_MAP_TYPE,
-+	.max_entries = 20,
- 	.key_size = sizeof(int),
- 	.value_size = sizeof(int),
--	.max_entries = 20,
- };
- 
--struct bpf_map_def SEC("maps") sock_map_txmsg = {
-+struct {
-+	__u32 type;
-+	__u32 max_entries;
-+	__u32 key_size;
-+	__u32 value_size;
-+} sock_map_txmsg SEC(".maps") = {
- 	.type = TEST_MAP_TYPE,
-+	.max_entries = 20,
- 	.key_size = sizeof(int),
- 	.value_size = sizeof(int),
--	.max_entries = 20,
- };
- 
--struct bpf_map_def SEC("maps") sock_map_redir = {
-+struct {
-+	__u32 type;
-+	__u32 max_entries;
-+	__u32 key_size;
-+	__u32 value_size;
-+} sock_map_redir SEC(".maps") = {
- 	.type = TEST_MAP_TYPE,
-+	.max_entries = 20,
- 	.key_size = sizeof(int),
- 	.value_size = sizeof(int),
--	.max_entries = 20,
- };
- 
--struct bpf_map_def SEC("maps") sock_apply_bytes = {
-+struct {
-+	__u32 type;
-+	__u32 max_entries;
-+	int *key;
-+	int *value;
-+} sock_apply_bytes SEC(".maps") = {
- 	.type = BPF_MAP_TYPE_ARRAY,
--	.key_size = sizeof(int),
--	.value_size = sizeof(int),
- 	.max_entries = 1
- };
- 
--struct bpf_map_def SEC("maps") sock_cork_bytes = {
-+struct {
-+	__u32 type;
-+	__u32 max_entries;
-+	int *key;
-+	int *value;
-+} sock_cork_bytes SEC(".maps") = {
- 	.type = BPF_MAP_TYPE_ARRAY,
--	.key_size = sizeof(int),
--	.value_size = sizeof(int),
- 	.max_entries = 1
- };
- 
--struct bpf_map_def SEC("maps") sock_bytes = {
-+struct {
-+	__u32 type;
-+	__u32 max_entries;
-+	int *key;
-+	int *value;
-+} sock_bytes SEC(".maps") = {
- 	.type = BPF_MAP_TYPE_ARRAY,
--	.key_size = sizeof(int),
--	.value_size = sizeof(int),
- 	.max_entries = 6
- };
- 
--struct bpf_map_def SEC("maps") sock_redir_flags = {
-+struct {
-+	__u32 type;
-+	__u32 max_entries;
-+	int *key;
-+	int *value;
-+} sock_redir_flags SEC(".maps") = {
- 	.type = BPF_MAP_TYPE_ARRAY,
--	.key_size = sizeof(int),
--	.value_size = sizeof(int),
- 	.max_entries = 1
- };
- 
--struct bpf_map_def SEC("maps") sock_skb_opts = {
-+struct {
-+	__u32 type;
-+	__u32 max_entries;
-+	int *key;
-+	int *value;
-+} sock_skb_opts SEC(".maps") = {
- 	.type = BPF_MAP_TYPE_ARRAY,
--	.key_size = sizeof(int),
--	.value_size = sizeof(int),
- 	.max_entries = 1
- };
- 
--- 
-2.17.1
+> -----Original Message-----
+> From: David Miller <davem@davemloft.net>
+> Sent: Monday, June 17, 2019 11:56 AM
+> To: Sunil Muthuswamy <sunilmut@microsoft.com>
+> Cc: Dexuan Cui <decui@microsoft.com>; KY Srinivasan <kys@microsoft.com>; =
+Haiyang Zhang <haiyangz@microsoft.com>; Stephen
+> Hemminger <sthemmin@microsoft.com>; sashal@kernel.org; Michael Kelley <mi=
+kelley@microsoft.com>; netdev@vger.kernel.org;
+> linux-hyperv@vger.kernel.org; linux-kernel@vger.kernel.org
+> Subject: Re: [PATCH net] hvsock: fix epollout hang from race condition
+>=20
+> From: Sunil Muthuswamy <sunilmut@microsoft.com>
+> Date: Mon, 17 Jun 2019 18:47:08 +0000
+>=20
+> >
+> >
+> >> -----Original Message-----
+> >> From: linux-hyperv-owner@vger.kernel.org <linux-hyperv-owner@vger.kern=
+el.org> On Behalf Of David Miller
+> >> Sent: Sunday, June 16, 2019 1:55 PM
+> >> To: Dexuan Cui <decui@microsoft.com>
+> >> Cc: Sunil Muthuswamy <sunilmut@microsoft.com>; KY Srinivasan <kys@micr=
+osoft.com>; Haiyang Zhang
+> <haiyangz@microsoft.com>;
+> >> Stephen Hemminger <sthemmin@microsoft.com>; sashal@kernel.org; Michael=
+ Kelley <mikelley@microsoft.com>;
+> >> netdev@vger.kernel.org; linux-hyperv@vger.kernel.org; linux-kernel@vge=
+r.kernel.org
+> >> Subject: Re: [PATCH net] hvsock: fix epollout hang from race condition
+> >>
+> >> From: Dexuan Cui <decui@microsoft.com>
+> >> Date: Sat, 15 Jun 2019 03:22:32 +0000
+> >>
+> >> > These warnings are not introduced by this patch from Sunil.
+> >> >
+> >> > I'm not sure why I didn't notice these warnings before.
+> >> > Probably my gcc version is not new eought?
+> >> >
+> >> > Actually these warnings are bogus, as I checked the related function=
+s,
+> >> > which may confuse the compiler's static analysis.
+> >> >
+> >> > I'm going to make a patch to initialize the pointers to NULL to supp=
+ress
+> >> > the warnings. My patch will be based on the latest's net.git + this =
+patch
+> >> > from Sunil.
+> >>
+> >> Sunil should then resubmit his patch against something that has the
+> >> warning suppression patch applied.
+> >
+> > David, Dexuan's patch to suppress the warnings seems to be applied now
+> > to the 'net' branch. Can we please get this patch applied as well?
+>=20
+> I don't know how else to say "Suni should then resubmit his patch"
+>=20
+> Please just resubmit it!
 
+The patch does not change at all. So, I was hoping we could reapply it. But=
+, I have
+resubmitted the patch. Thanks.
