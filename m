@@ -2,120 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 450254779A
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 03:27:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86F8E477B2
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 03:33:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727522AbfFQB1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 16 Jun 2019 21:27:15 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:45736 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727382AbfFQB1P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jun 2019 21:27:15 -0400
-Received: by mail-io1-f68.google.com with SMTP id e3so17584523ioc.12
-        for <netdev@vger.kernel.org>; Sun, 16 Jun 2019 18:27:14 -0700 (PDT)
+        id S1727515AbfFQBdi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 16 Jun 2019 21:33:38 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:34270 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727382AbfFQBdi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 16 Jun 2019 21:33:38 -0400
+Received: by mail-pf1-f195.google.com with SMTP id c85so4735080pfc.1
+        for <netdev@vger.kernel.org>; Sun, 16 Jun 2019 18:33:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=13AwZqbotSg79vPxim68wvGgTKowboMyFl+YMc3GMFk=;
-        b=JASj+7Xl70YwVOsXqTFj46lNOoC9OaIbex3ivV7gFo0t4o9SbxYBX4q28wlk3Uzot5
-         BkiEmOuWH7M+ZnzVTrF2BgAy6KcZuWhEOZjdBu7hXXDzqFcEjPwY559bY8Ijch/0Qxs2
-         a2XXlnq2bZGZTDGgPs5t8xvpGRPnYNchJtoY1moOL7xha7NDipf1aoYbCdgVBDhF412x
-         uod/BBLHHYD+95J9jrCGqFBBwQCdWR1Hxdf2fSNvdu6jIbrEw7uWtiCyxFFwEyPSXu1s
-         zX9XsVBMIRlghfqHUxrIFzSvjh9Tkn4BhRGUQnDNGeLz2+M+JfOl9rWnuC3guHlQyjXh
-         t79A==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=SJXRVjjq04y3EgDt1waIag/MD9emkmPsTPeOWo4dcAY=;
+        b=fUKkEd7LK1qEC80S0130iDIn5lpqB42ZJuTpXl+1c/JZs+8Q/21+lYO9nTbM81JY9w
+         j6NKYAVNE0S6rsNkmwlRxFynUnrAJqOgtAb1zygKPctW9ke7iFv2q/w/m2VNg6WzD19I
+         H+00I57O4qr1Ex/Es2KOK1qJvCMNxFeOaPi4Vf9QgoWalJm+mh0hz0BTcOEl2/yFq43x
+         6ATvagD/2eBW+3kqCoHCkAH6E5ItT17cVa+cw1OkMd1SALiA7oDlxlsJDnXwA0SNMa1t
+         c9nVED1HZern/i49Wlmm/6TiLS9IflaAqjo0BOR0pAFF0ZLqGROlnyMtX/bNeUSoC0wf
+         ILAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=13AwZqbotSg79vPxim68wvGgTKowboMyFl+YMc3GMFk=;
-        b=LB7YJv4FbXr8V6hKepI4k2DdGZsEbfQGlXShH2JGjwEFJxr4aVrm6Br2PCrGl4omII
-         C1CQrSyq2/0qwqneWOFpvkUk4+SPDVIiz4nWRtU1UY1g/WmVbC5commk9IwX50O8ZaSQ
-         fmUEtwDqEYvulyMhQGV6MWQDOheB9W40FI1Nu/HXk6CZ8VfN81l85TQKcQ2CYYiu3BYA
-         ebpsP6Q37lFPWzSPyhGRFdJn50Khi+P+Kv3u30/prgUti1zhjKWIObCGysieEmbxC4kA
-         ZEzItcdmHSaXJT1uwSTcP/CxYttOAucuojJeT/15OqdPudaC639tWqxSc9R1j/K6kwnD
-         wPrA==
-X-Gm-Message-State: APjAAAXCJJyKqEhCKhF2Xv0w21AYtAZoYq3weEGzAEOEfDXB0vEwXbSo
-        Rah123/gKD63YjVFL5hRS24=
-X-Google-Smtp-Source: APXvYqxCHDE6nQSsJP0LHFXAbQEgQNBSRv4IekpYvBla0Y9WtkZnUSUNMe8rB756e5dgmaYjW1h3iw==
-X-Received: by 2002:a6b:cf17:: with SMTP id o23mr22102591ioa.176.1560734834629;
-        Sun, 16 Jun 2019 18:27:14 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:e47c:7f99:12d2:ca2e? ([2601:282:800:fd80:e47c:7f99:12d2:ca2e])
-        by smtp.googlemail.com with ESMTPSA id u26sm12790172iol.1.2019.06.16.18.27.13
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 16 Jun 2019 18:27:13 -0700 (PDT)
-Subject: Re: [PATCH net-next 08/17] netdevsim: Adjust accounting for IPv6
- multipath notifications
-To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com, alexpe@mellanox.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-References: <20190615140751.17661-1-idosch@idosch.org>
- <20190615140751.17661-9-idosch@idosch.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <25bb06eb-bd2a-de85-9903-19215703363a@gmail.com>
-Date:   Sun, 16 Jun 2019 19:27:13 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=SJXRVjjq04y3EgDt1waIag/MD9emkmPsTPeOWo4dcAY=;
+        b=sXA3x3l/h27dDGCzfbrQJ5PQP0pVk8xItZo9LZClPZHYOgdH7475zdwsJBgb+qnbl1
+         euXtjg9OeFqis0+BimMEbPtn+LaNIkO9LZ3Bf7VTpcz52xrtvdcB2P91GVhuluJbveTj
+         33IgojtDxYiAeBeMG3AGC3vEzZTXwNoqM2JaCuM0uMBMi0VHkJo+hVCv6vINYDqVVgI9
+         ZwYQ5P9OJtXE231FsXqCU19uVK96SyXoYhZz9RW8gTH7/2wjCOZyTi5nq2fJ92z5VEi/
+         kJqXXgvcXUj1o9l2r9VBQZ9annQEsKjhkSjSFB4H2IWLcKb5T65QJXO7JFaBlX67Iv2Q
+         j87A==
+X-Gm-Message-State: APjAAAW3lKTw4focN0ZUkU0EPBe2Q2acZPXBDy0saIAYq6q57PN+ajq4
+        MaB5QoX10hlPjfWl6Esap5UZ1K5oxxMjCw==
+X-Google-Smtp-Source: APXvYqxB6LdMZ5DfoEfbI+CZEENaGzia2PDWYRdwmAu0SxIR22uQNZoDK9LwA3YkirviJC0msPvmkA==
+X-Received: by 2002:aa7:9212:: with SMTP id 18mr72387980pfo.120.1560735217483;
+        Sun, 16 Jun 2019 18:33:37 -0700 (PDT)
+Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id y185sm9838306pfy.110.2019.06.16.18.33.35
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Sun, 16 Jun 2019 18:33:36 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Jiri Pirko <jiri@resnulli.us>, David Miller <davem@davemloft.net>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCHv2 net-next] team: add ethtool get_link_ksettings
+Date:   Mon, 17 Jun 2019 09:32:55 +0800
+Message-Id: <20190617013255.27324-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.19.2
+In-Reply-To: <20190527033110.9861-1-liuhangbin@gmail.com>
+References: <20190527033110.9861-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190615140751.17661-9-idosch@idosch.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/15/19 8:07 AM, Ido Schimmel wrote:
-> diff --git a/drivers/net/netdevsim/fib.c b/drivers/net/netdevsim/fib.c
-> index 83ba5113210d..6e5498ef3855 100644
-> --- a/drivers/net/netdevsim/fib.c
-> +++ b/drivers/net/netdevsim/fib.c
-> @@ -137,19 +137,20 @@ static int nsim_fib_rule_event(struct nsim_fib_data *data,
->  }
->  
->  static int nsim_fib_account(struct nsim_fib_entry *entry, bool add,
-> +			    unsigned int num_rt,
->  			    struct netlink_ext_ack *extack)
->  {
->  	int err = 0;
->  
->  	if (add) {
-> -		if (entry->num < entry->max) {
-> -			entry->num++;
-> +		if (entry->num + num_rt < entry->max) {
-> +			entry->num += num_rt;
->  		} else {
->  			err = -ENOSPC;
->  			NL_SET_ERR_MSG_MOD(extack, "Exceeded number of supported fib entries");
->  		}
->  	} else {
-> -		entry->num--;
-> +		entry->num -= num_rt;
->  	}
->  
->  	return err;
-> @@ -159,14 +160,20 @@ static int nsim_fib_event(struct nsim_fib_data *data,
->  			  struct fib_notifier_info *info, bool add)
->  {
->  	struct netlink_ext_ack *extack = info->extack;
-> +	struct fib6_entry_notifier_info *fen6_info;
-> +	unsigned int num_rt = 1;
->  	int err = 0;
->  
->  	switch (info->family) {
->  	case AF_INET:
-> -		err = nsim_fib_account(&data->ipv4.fib, add, extack);
-> +		err = nsim_fib_account(&data->ipv4.fib, add, num_rt, extack);
->  		break;
->  	case AF_INET6:
-> -		err = nsim_fib_account(&data->ipv6.fib, add, extack);
-> +		fen6_info = container_of(info, struct fib6_entry_notifier_info,
-> +					 info);
-> +		if (fen6_info->multipath_rt)
-> +			num_rt = fen6_info->nsiblings + 1;
-> +		err = nsim_fib_account(&data->ipv6.fib, add, num_rt, extack);
+Like bond, add ethtool get_link_ksettings to show the total speed.
 
-The intention of the original patch was to account for a multipath route
-as 1 entry, not N where N is the number of paths.
+v2: no update, just repost.
+
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+---
+ drivers/net/team/team.c | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+
+diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
+index b48006e7fa2f..f3422f85f604 100644
+--- a/drivers/net/team/team.c
++++ b/drivers/net/team/team.c
+@@ -2054,9 +2054,34 @@ static void team_ethtool_get_drvinfo(struct net_device *dev,
+ 	strlcpy(drvinfo->version, UTS_RELEASE, sizeof(drvinfo->version));
+ }
+ 
++static int team_ethtool_get_link_ksettings(struct net_device *dev,
++					   struct ethtool_link_ksettings *cmd)
++{
++	struct team *team= netdev_priv(dev);
++	unsigned long speed = 0;
++	struct team_port *port;
++
++	cmd->base.duplex = DUPLEX_UNKNOWN;
++	cmd->base.port = PORT_OTHER;
++
++	list_for_each_entry(port, &team->port_list, list) {
++		if (team_port_txable(port)) {
++			if (port->state.speed != SPEED_UNKNOWN)
++				speed += port->state.speed;
++			if (cmd->base.duplex == DUPLEX_UNKNOWN &&
++			    port->state.duplex != DUPLEX_UNKNOWN)
++				cmd->base.duplex = port->state.duplex;
++		}
++	}
++	cmd->base.speed = speed ? : SPEED_UNKNOWN;
++
++	return 0;
++}
++
+ static const struct ethtool_ops team_ethtool_ops = {
+ 	.get_drvinfo		= team_ethtool_get_drvinfo,
+ 	.get_link		= ethtool_op_get_link,
++	.get_link_ksettings	= team_ethtool_get_link_ksettings,
+ };
+ 
+ /***********************
+-- 
+2.19.2
+
