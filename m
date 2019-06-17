@@ -2,79 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 42DFE47F84
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 12:20:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96E6647F8A
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 12:21:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728085AbfFQKUb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 06:20:31 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:34354 "EHLO mx1.redhat.com"
+        id S1728178AbfFQKVd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 06:21:33 -0400
+Received: from foss.arm.com ([217.140.110.172]:44492 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726665AbfFQKUb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 Jun 2019 06:20:31 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 19EA390C87;
-        Mon, 17 Jun 2019 10:20:23 +0000 (UTC)
-Received: from localhost (ovpn-112-18.ams2.redhat.com [10.36.112.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 7A68B12C91;
-        Mon, 17 Jun 2019 10:20:17 +0000 (UTC)
-Date:   Mon, 17 Jun 2019 12:20:13 +0200
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     jishi@redhat.com, weiwan@google.com, dsahern@gmail.com,
-        kafai@fb.com, edumazet@google.com,
-        matti.vaittinen@fi.rohmeurope.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 0/2] selftests: pmtu: List/flush IPv4 cached
- routes, improve IPv6 test
-Message-ID: <20190617122013.37a22626@redhat.com>
-In-Reply-To: <20190616.204552.1290065029514400171.davem@davemloft.net>
-References: <cover.1560562631.git.sbrivio@redhat.com>
-        <20190616.204552.1290065029514400171.davem@davemloft.net>
-Organization: Red Hat
+        id S1726302AbfFQKVd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Jun 2019 06:21:33 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 607ED344;
+        Mon, 17 Jun 2019 03:21:32 -0700 (PDT)
+Received: from e119884-lin.cambridge.arm.com (e119884-lin.cambridge.arm.com [10.1.196.72])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C390C3F246;
+        Mon, 17 Jun 2019 03:23:16 -0700 (PDT)
+From:   Vincenzo Frascino <vincenzo.frascino@arm.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        vincenzo.frascino@arm.com
+Subject: [PATCH] fib_semantics: Fix warning in fib_check_nh_v4_gw
+Date:   Mon, 17 Jun 2019 11:21:19 +0100
+Message-Id: <20190617102119.56253-1-vincenzo.frascino@arm.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.29]); Mon, 17 Jun 2019 10:20:31 +0000 (UTC)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 16 Jun 2019 20:45:52 -0700 (PDT)
-David Miller <davem@davemloft.net> wrote:
+Currently, the err variable in fib_check_nh_v4_gw may be used
+uninitialized leading to the warning below:
 
-> From: Stefano Brivio <sbrivio@redhat.com>
-> Date: Sat, 15 Jun 2019 03:38:16 +0200
-> 
-> > This series introduce a new test, list_flush_ipv4_exception, and improves
-> > the existing list_flush_ipv6_exception test by making it as demanding as
-> > the IPv4 one.  
-> 
-> I suspect this will need a respin because semantics are still being discussed
+  fib_semantics.c: In function ‘fib_check_nh_v4_gw’:
+  fib_semantics.c:1023:12: warning: ‘err’ may be used
+    uninitialised in this function [-Wmaybe-uninitialized]
+       if (!tbl || err) {
+                   ^~
 
-Maybe not a respin, because we're discussing netlink semantics and how
-many past versions of iproute2 need to work, whereas user interface and
-expectations of fixed, recent kernel/iproute2 are untouched.
+Initialize err to 0 to fix the warning.
 
-Anyway, sure, it doesn't make sense to merge this before the fix is
-final -- I'll resend then.
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
+Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Signed-off-by: Vincenzo Frascino <vincenzo.frascino@arm.com>
+---
+ net/ipv4/fib_semantics.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-This prompts some questions though (answer this quick survey and win a
-patch for netdev-FAQ.rst): when (and against which tree) do tests that
-are fixed by a recent patch need to be submitted? Is it a problem if
-the test is merged before the fix? Would a "dependency" note help?
-
-> and I seem to recall a mention of there being some conflict with some of
-> David A's changes.
-
-That was for e28799e52a0a ("selftests: pmtu: Introduce
-list_flush_ipv6_exception test case") on top of 438a9a856ba4 ("selftests: pmtu:
-Add support for routing via nexthop objects"), but you already fixed the
-conflict.
-
-That test case, by the way, will also fail until we agree on the fix.
-
+diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+index b80410673915..bfa49a88d03a 100644
+--- a/net/ipv4/fib_semantics.c
++++ b/net/ipv4/fib_semantics.c
+@@ -964,7 +964,7 @@ static int fib_check_nh_v4_gw(struct net *net, struct fib_nh *nh, u32 table,
+ {
+ 	struct net_device *dev;
+ 	struct fib_result res;
+-	int err;
++	int err = 0;
+ 
+ 	if (nh->fib_nh_flags & RTNH_F_ONLINK) {
+ 		unsigned int addr_type;
 -- 
-Stefano
+2.21.0
+
