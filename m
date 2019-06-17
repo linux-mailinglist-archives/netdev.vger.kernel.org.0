@@ -2,109 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 424F547978
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 06:45:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D43347999
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 07:02:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726127AbfFQEnn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 00:43:43 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:42361 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725840AbfFQEnn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 00:43:43 -0400
-Received: by mail-lf1-f68.google.com with SMTP id y13so5444974lfh.9
-        for <netdev@vger.kernel.org>; Sun, 16 Jun 2019 21:43:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QZYnY2hIUSm+INHACfGV3NJI8hXeyeTw8tvqjhCF464=;
-        b=MMXvlchVs2Zgrzft62CDXTNlgYLYUhsdEmF5yBBfIzjcxXwgu+TFNl4ZoIwXwi/Cp5
-         GZyWocmV8KqP7vfrpu1KZsUdWgrLDSd0gdy43lJi+LlqepOvPg3LRwzIW8VKsHP3Zyex
-         nUl+DAZfb/HRyNan1Ndv+uAdskNAK0QOUFJS1qq8hxxYXWax7O1+84TlV70C14ekBJq6
-         2Ld/EPFBUYKfF5DBrHjTwoqqpQ8o2NWQU/A8PIF+9etcSJjrhDveAIUKfa2rAObbsj+p
-         xspUXSK+ZWwcak0Pe7L+Kb0TaWtpxbwnsJoIEHGhu7U1B34r930XYyfs5qAAq3I80GEW
-         ESfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QZYnY2hIUSm+INHACfGV3NJI8hXeyeTw8tvqjhCF464=;
-        b=ONFTyujCmXqIPH6RCTor+ECw857LVwRx/a6Id7GcVYHxtB15Hb3ub0yXERZoxiYe38
-         oEoSmHZ4jtgJT0wTh4uJsRAZ2sCeWbpAXeMRhjzs04MPzIa6XRwl1DO788Mfz7dtDGDm
-         x3Too+u6tTQNMPqx8C8AFXAN18XUX3BASq/Q7D8vDJFl4BWRoGhVOcRXftBJ6i0Te9uq
-         OaPYyG9oJqsL7AyBHKWSfKoqW5sK8gM2JpUpKjFjAfHXmKrD8kBzkIoeDZNsgd0CAVot
-         KRk1sOhD1EWhvsZhEsV2l7UhCjOSP54z/AXaUNauiJHL9EkyKyBh3JaH4fURYytqYhdp
-         QzuQ==
-X-Gm-Message-State: APjAAAUjmG/3RKBJIIU+ZKgTJuJvH740JB35oOLwoAf19ekgbJr2cMPj
-        gkxTIm8+nzo1bjhavyLKWQMW8cRsdhPgrQm1tBOcnA==
-X-Google-Smtp-Source: APXvYqx5atfcvuI00s9Z4mXLRo48akZO/SgAq0T1wCjD9YxY4YsnaLJCxKSL3H3msuEwih+R7uGarFUy+Wtgrp1SkuE=
-X-Received: by 2002:a19:5046:: with SMTP id z6mr6335117lfj.185.1560746621318;
- Sun, 16 Jun 2019 21:43:41 -0700 (PDT)
-MIME-Version: 1.0
-References: <1560745167-9866-1-git-send-email-yash.shah@sifive.com>
-In-Reply-To: <1560745167-9866-1-git-send-email-yash.shah@sifive.com>
-From:   Yash Shah <yash.shah@sifive.com>
-Date:   Mon, 17 Jun 2019 10:13:05 +0530
-Message-ID: <CAJ2_jOH2X6+CcNCruxX0aeCzPnjcGuv-X1Q4eESsY6PyW1LViA@mail.gmail.com>
-Subject: Re: [PATCH v2 0/2] Add macb support for SiFive FU540-C000
-To:     David Miller <davem@davemloft.net>, devicetree@vger.kernel.org,
-        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Palmer Dabbelt <palmer@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        =?UTF-8?Q?Petr_=C5=A0tetiar?= <ynezz@true.cz>,
-        Sachin Ghadi <sachin.ghadi@sifive.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726278AbfFQFCX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 01:02:23 -0400
+Received: from f0-dek.dektech.com.au ([210.10.221.142]:43670 "EHLO
+        mail.dektech.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726030AbfFQFCX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 01:02:23 -0400
+X-Greylist: delayed 357 seconds by postgrey-1.27 at vger.kernel.org; Mon, 17 Jun 2019 01:02:21 EDT
+Received: from localhost (localhost [127.0.0.1])
+        by mail.dektech.com.au (Postfix) with ESMTP id E2E5EE4E5E;
+        Mon, 17 Jun 2019 14:56:21 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dektech.com.au;
+         h=x-mailer:message-id:date:date:subject:subject:from:from
+        :received:received:received; s=mail_dkim; t=1560747381; bh=VAgPq
+        XUK+w4bRPwkOn9ZSufdF5DppLVtnKmJpiSMH6s=; b=OUt03EJAAFD4XU/bTfgHT
+        IRjR6KSZagsc2cjcveHy8lMi+4IgquARYrUcsOGLYOGyUztqlCMEvG627zcbQ2MI
+        C7U54hIvZZLxVYFvKeLoAiC7Aw7s1SCSUAJLjXohuX/4Xkwn++PekkzgueM/Yh0G
+        07EJXfiW8xdSdPwZApJAaU=
+X-Virus-Scanned: amavisd-new at dektech.com.au
+Received: from mail.dektech.com.au ([127.0.0.1])
+        by localhost (mail2.dektech.com.au [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id FUXOhCK52xqO; Mon, 17 Jun 2019 14:56:21 +1000 (AEST)
+Received: from mail.dektech.com.au (localhost [127.0.0.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.dektech.com.au (Postfix) with ESMTPS id 2936FE4F70;
+        Mon, 17 Jun 2019 14:56:20 +1000 (AEST)
+Received: from localhost.localdomain (unknown [14.161.14.188])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.dektech.com.au (Postfix) with ESMTPSA id 4E20DE4E5E;
+        Mon, 17 Jun 2019 14:56:19 +1000 (AEST)
+From:   Tuong Lien <tuong.t.lien@dektech.com.au>
+To:     davem@davemloft.net, jon.maloy@ericsson.com, maloy@donjonn.com,
+        ying.xue@windriver.com, netdev@vger.kernel.org
+Cc:     tipc-discussion@lists.sourceforge.net
+Subject: [net] tipc: fix issues with early FAILOVER_MSG from peer
+Date:   Mon, 17 Jun 2019 11:56:12 +0700
+Message-Id: <20190617045612.3509-1-tuong.t.lien@dektech.com.au>
+X-Mailer: git-send-email 2.13.7
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 17, 2019 at 9:49 AM Yash Shah <yash.shah@sifive.com> wrote:
->
-> On FU540, the management IP block is tightly coupled with the Cadence
-> MACB IP block. It manages many of the boundary signals from the MACB IP
-> This patchset controls the tx_clk input signal to the MACB IP. It
-> switches between the local TX clock (125MHz) and PHY TX clocks. This
-> is necessary to toggle between 1Gb and 100/10Mb speeds.
->
-> Future patches may add support for monitoring or controlling other IP
-> boundary signals.
->
-> This patchset is mostly based on work done by
-> Wesley Terpstra <wesley@sifive.com>
->
-> This patchset is based on Linux v5.2-rc1 and tested on HiFive Unleashed
-> board with additional board related patches needed for testing can be
-> found at dev/yashs/ethernet branch of:
+It appears that a FAILOVER_MSG can come from peer even when the failure
+link is resetting (i.e. just after the 'node_write_unlock()'...). This
+means the failover procedure on the node has not been started yet.
+The situation is as follows:
 
-Correction in branch name: dev/yashs/ethernet_v2
+         node1                                node2
+  linkb          linka                  linka        linkb
+    |              |                      |            |
+    |              |                      x failure    |
+    |              |                  RESETTING        |
+    |              |                      |            |
+    |              x failure            RESET          |
+    |          RESETTING             FAILINGOVER       |
+    |              |   (FAILOVER_MSG)     |            |
+    |<-------------------------------------------------|
+    | *FAILINGOVER |                      |            |
+    |              | (dummy FAILOVER_MSG) |            |
+    |------------------------------------------------->|
+    |            RESET                    |            | FAILOVER_END
+    |         FAILINGOVER               RESET          |
+    .              .                      .            .
+    .              .                      .            .
+    .              .                      .            .
 
-> https://github.com/yashshah7/riscv-linux.git
->
-> Change History:
-> V2:
-> - Change compatible string from "cdns,fu540-macb" to "sifive,fu540-macb"
-> - Add "MACB_SIFIVE_FU540" in Kconfig to support SiFive FU540 in macb
->   driver. This is needed because on FU540, the macb driver depends on
->   SiFive GPIO driver.
-> - Avoid writing the result of a comparison to a register.
-> - Fix the issue of probe fail on reloading the module reported by:
->   Andreas Schwab <schwab@suse.de>
->
-> Yash Shah (2):
->   macb: bindings doc: add sifive fu540-c000 binding
->   macb: Add support for SiFive FU540-C000
->
->  Documentation/devicetree/bindings/net/macb.txt |   3 +
->  drivers/net/ethernet/cadence/Kconfig           |   6 ++
->  drivers/net/ethernet/cadence/macb_main.c       | 129 +++++++++++++++++++++++++
->  3 files changed, 138 insertions(+)
->
-> --
-> 1.9.1
->
+Once this happens, the link failover procedure will be triggered
+wrongly on the receiving node since the node isn't in FAILINGOVER state
+but then another link failover will be carried out.
+The consequences are:
+
+1) A peer might get stuck in FAILINGOVER state because the 'sync_point'
+was set, reset and set incorrectly, the criteria to end the failover
+would not be met, it could keep waiting for a message that has already
+received.
+
+2) The early FAILOVER_MSG(s) could be queued in the link failover
+deferdq but would be purged or not pulled out because the 'drop_point'
+was not set correctly.
+
+3) The early FAILOVER_MSG(s) could be dropped too.
+
+4) The dummy FAILOVER_MSG could make the peer leaving FAILINGOVER state
+shortly, but later on it would be restarted.
+
+The same situation can also happen when the link is in PEER_RESET state
+and a FAILOVER_MSG arrives.
+
+The commit resolves the issues by forcing the link down immediately, so
+the failover procedure will be started normally (which is the same as
+when receiving a FAILOVER_MSG and the link is in up state).
+
+Also, the function "tipc_node_link_failover()" is toughen to avoid such
+a situation from happening.
+
+Acked-by: Jon Maloy <jon.maloy@ericsson.se>
+Signed-off-by: Tuong Lien <tuong.t.lien@dektech.com.au>
+---
+ net/tipc/link.c |  1 -
+ net/tipc/node.c | 10 +++++++---
+ 2 files changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/net/tipc/link.c b/net/tipc/link.c
+index d5ed509e0660..bcfb0a4ab485 100644
+--- a/net/tipc/link.c
++++ b/net/tipc/link.c
+@@ -1762,7 +1762,6 @@ void tipc_link_failover_prepare(struct tipc_link *l, struct tipc_link *tnl,
+ 	 * node has entered SELF_DOWN_PEER_LEAVING and both peer nodes
+ 	 * would have to start over from scratch instead.
+ 	 */
+-	WARN_ON(l && tipc_link_is_up(l));
+ 	tnl->drop_point = 1;
+ 	tnl->failover_reasm_skb = NULL;
+ 
+diff --git a/net/tipc/node.c b/net/tipc/node.c
+index e4dba865105e..65644642c091 100644
+--- a/net/tipc/node.c
++++ b/net/tipc/node.c
+@@ -777,9 +777,9 @@ static void tipc_node_link_up(struct tipc_node *n, int bearer_id,
+  *	   disturbance, wrong session, etc.)
+  *	3. Link <1B-2B> up
+  *	4. Link endpoint 2A down (e.g. due to link tolerance timeout)
+- *	5. Node B starts failover onto link <1B-2B>
++ *	5. Node 2 starts failover onto link <1B-2B>
+  *
+- *	==> Node A does never start link/node failover!
++ *	==> Node 1 does never start link/node failover!
+  *
+  * @n: tipc node structure
+  * @l: link peer endpoint failingover (- can be NULL)
+@@ -794,6 +794,10 @@ static void tipc_node_link_failover(struct tipc_node *n, struct tipc_link *l,
+ 	if (!tipc_link_is_up(tnl))
+ 		return;
+ 
++	/* Don't rush, failure link may be in the process of resetting */
++	if (l && !tipc_link_is_reset(l))
++		return;
++
+ 	tipc_link_fsm_evt(tnl, LINK_SYNCH_END_EVT);
+ 	tipc_node_fsm_evt(n, NODE_SYNCH_END_EVT);
+ 
+@@ -1719,7 +1723,7 @@ static bool tipc_node_check_state(struct tipc_node *n, struct sk_buff *skb,
+ 	/* Initiate or update failover mode if applicable */
+ 	if ((usr == TUNNEL_PROTOCOL) && (mtyp == FAILOVER_MSG)) {
+ 		syncpt = oseqno + exp_pkts - 1;
+-		if (pl && tipc_link_is_up(pl)) {
++		if (pl && !tipc_link_is_reset(pl)) {
+ 			__tipc_node_link_down(n, &pb_id, xmitq, &maddr);
+ 			trace_tipc_node_link_down(n, true,
+ 						  "node link down <- failover!");
+-- 
+2.13.7
+
