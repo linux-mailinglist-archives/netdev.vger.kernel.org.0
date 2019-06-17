@@ -2,46 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B5E9D48419
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 15:35:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B2914841A
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 15:35:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727159AbfFQNe0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 09:34:26 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:41983 "EHLO
+        id S1727523AbfFQNee (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 09:34:34 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:42955 "EHLO
         mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726405AbfFQNe0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 09:34:26 -0400
-Received: by mail-pf1-f196.google.com with SMTP id m30so5699821pff.8
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 06:34:25 -0700 (PDT)
+        with ESMTP id S1726405AbfFQNee (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 09:34:34 -0400
+Received: by mail-pf1-f196.google.com with SMTP id q10so5700204pff.9
+        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 06:34:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=MUdRUwAak57Ck6Aqsw8+YNqQywkA6ZUApjGP4kWJp8w=;
-        b=hQU2+5lBIgHOKYQoLLO2sLZT5JNu/8o5opqlzeAaK2isAY2091JC8+oQbMNsArblqO
-         vmX9fB4WQ3D1JFhpuik5ATFCP04I7Oi0XE/r2d4IJ7V/+ofCn9kElUXa4o4/W7WLI7wS
-         EOiJaU+HrUm7ie/Sri5U+4nkLC/rDIHDpGsdVOtJrx2BNeSABNzPup24+Nw6zuv6b0Hj
-         wNcY5pdwdZqUJZkW1b505mxilBX7N87FTasgd6M3pBwo2t/58MphPb2UQMCuQ7NGKlw0
-         qGZVNTel2uy4zrinm4i8Vo+rnuFFhgfoLcsG920YlnCf0q+ZxlQX3Fimp9YukO9ecsFA
-         mV3g==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :in-reply-to:references;
+        bh=Ym+Kgrqwf/hk9Fs8QYXFX64f8kKSwJZyVRGMNWQXJho=;
+        b=gTEOO9d8uUlEjbzTdVHQS7PMVskfyVmO3z9kNBqSvTKYDsE1w2Zpli0hB0yrRAShj/
+         vycRiw2gTVWKtLXr0a9qyWvqS0JwfQYTQMbwmn50nTJccK6cmtppE3aAuf2rKoyXc1Lu
+         sKcCv9uANX9VVjwOwEGJRSAizkDvGRUre4TfwMw5dQzY6rS4PvALWT3IZUIrtdZv6ijE
+         o0TxtOAGPq4WfOYX2RarJvGowC99YuhmTF0TjUNVXvnj8olT8R04LqUfG5ia4dKt4ivi
+         ERjVdZnhj+LjZLlyCkWaGABN9qyCGD1mO8s0sAnpZUFoXZzVh51AiIlQv9UJ1ociNNrk
+         tApQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=MUdRUwAak57Ck6Aqsw8+YNqQywkA6ZUApjGP4kWJp8w=;
-        b=PP/D77lnZ5awAHsV0Xf4zllyuOdcjtl/h7rV9lwvTl/c6g5CE2xXz5u2t4kIcQXatC
-         AjeNMcihs/IHRaL03A8dMSGS9OD4oWVodfRXDgD/RMUf1e5S21jmnv1gZWM0w58T02tH
-         PKAV2iHYcKKaKUCDeH5Ut0mscqS9yFnP1ZL7EBsWv/SEE0ooQfByO07My0zeNPYydOP/
-         2rhKKAOXhxM6mchl2L7keJixjFIMheUScrmJUjOZqWl79tYLoWeXP/wWCqZirA7seUsc
-         UKnzKZb2JGqKZxH57LPLUIyRmoTjiHchRu3btqY8Xa4oBiUbEZt/vZGWGZdOmDUkCNpe
-         nlLg==
-X-Gm-Message-State: APjAAAVLMuStuL360uSFg3D/7iCnyhI4t1WmcRhypRZdnEQUrEHiy5/1
-        2WeYc7dqtF8kJfl7QEmpByNZFzK0
-X-Google-Smtp-Source: APXvYqy/P1mWY39UwLFmHCSa2cmeIRJ1C2qRGTSCLY3TpAEsJ6r0PdfUZg38KrLaKqILD+aEuYwGaQ==
-X-Received: by 2002:a63:cc4e:: with SMTP id q14mr48591446pgi.84.1560778465063;
-        Mon, 17 Jun 2019 06:34:25 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:in-reply-to:references;
+        bh=Ym+Kgrqwf/hk9Fs8QYXFX64f8kKSwJZyVRGMNWQXJho=;
+        b=EuUHj1oaJ9IobjaPWitvuAmrC6R9ep66uAe1D5PfnVwrELAWuUqMqzl1+VVY12hbvC
+         Vqs0xoHS/iPBshslosehXMVu/s/w3uUtxRCCSyNzmjuxb8yfg57HOMjrbb/TeoebCu55
+         UjmpURj3/ub9YRgNtFFpF+mkjv6+wPuxlshr9ZcW2QdtiQNA6A5k/y5b9o9icTeEs++j
+         maaQC8BLFksRNF0LqIwEHumFM4SlpRIgciihwGKZF/h1y7BzUnXwEqcuTMBn3zUs94sQ
+         VkFIbsKbnz40feXwHL/FZRv4HsaI87k1xPbjBvSIwvslDz26v366z2qFiTvG9yGXw2rW
+         uBmw==
+X-Gm-Message-State: APjAAAUNXE55O+tvHSANFpiQzQllHozPpaANRa6kEJLKuGnYmXtqWrCq
+        ifodCEnLYnesLCLQOgGt80s+1Xvl
+X-Google-Smtp-Source: APXvYqzA4nJhZo7G/6u9p1h0x6Yzmmtj29eGMMWyg1ByTJHwN7l86AuO4t8t36vDru6z//22f8wsdA==
+X-Received: by 2002:a62:d143:: with SMTP id t3mr14556933pfl.66.1560778473485;
+        Mon, 17 Jun 2019 06:34:33 -0700 (PDT)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id v138sm18638107pfc.15.2019.06.17.06.34.23
+        by smtp.gmail.com with ESMTPSA id g17sm15171958pfb.56.2019.06.17.06.34.32
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 17 Jun 2019 06:34:24 -0700 (PDT)
+        Mon, 17 Jun 2019 06:34:32 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>
 Cc:     davem@davemloft.net, Jon Maloy <jon.maloy@ericsson.com>,
@@ -54,61 +56,51 @@ Cc:     davem@davemloft.net, Jon Maloy <jon.maloy@ericsson.com>,
         syzkaller-bugs@googlegroups.com,
         Dmitry Vyukov <dvyukov@google.com>,
         Pravin B Shelar <pshelar@nicira.com>
-Subject: [PATCH net 0/3] net: fix quite a few dst_cache crashes reported by syzbot
-Date:   Mon, 17 Jun 2019 21:34:12 +0800
-Message-Id: <cover.1560778340.git.lucien.xin@gmail.com>
+Subject: [PATCH net 1/3] ip_tunnel: allow not to count pkts on tstats by setting skb's dev to NULL
+Date:   Mon, 17 Jun 2019 21:34:13 +0800
+Message-Id: <89113721df2e1ea6f2ea9ecffe4024588f224dc3.1560778340.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.1.0
+In-Reply-To: <cover.1560778340.git.lucien.xin@gmail.com>
+References: <cover.1560778340.git.lucien.xin@gmail.com>
+In-Reply-To: <cover.1560778340.git.lucien.xin@gmail.com>
+References: <cover.1560778340.git.lucien.xin@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are two kinds of crashes reported many times by syzbot with no
-reproducer. Call Traces are like:
+iptunnel_xmit() works as a common function, also used by a udp tunnel
+which doesn't have to have a tunnel device, like how TIPC works with
+udp media.
 
-     BUG: KASAN: slab-out-of-bounds in rt_cache_valid+0x158/0x190
-     net/ipv4/route.c:1556
-       rt_cache_valid+0x158/0x190 net/ipv4/route.c:1556
-       __mkroute_output net/ipv4/route.c:2332 [inline]
-       ip_route_output_key_hash_rcu+0x819/0x2d50 net/ipv4/route.c:2564
-       ip_route_output_key_hash+0x1ef/0x360 net/ipv4/route.c:2393
-       __ip_route_output_key include/net/route.h:125 [inline]
-       ip_route_output_flow+0x28/0xc0 net/ipv4/route.c:2651
-       ip_route_output_key include/net/route.h:135 [inline]
-     ...
+In these cases, we should allow not to count pkts on dev's tstats, so
+that udp tunnel can work with no tunnel device safely.
 
-   or:
-
-     kasan: GPF could be caused by NULL-ptr deref or user memory access
-     RIP: 0010:dst_dev_put+0x24/0x290 net/core/dst.c:168
-       <IRQ>
-       rt_fibinfo_free_cpus net/ipv4/fib_semantics.c:200 [inline]
-       free_fib_info_rcu+0x2e1/0x490 net/ipv4/fib_semantics.c:217
-       __rcu_reclaim kernel/rcu/rcu.h:240 [inline]
-       rcu_do_batch kernel/rcu/tree.c:2437 [inline]
-       invoke_rcu_callbacks kernel/rcu/tree.c:2716 [inline]
-       rcu_process_callbacks+0x100a/0x1ac0 kernel/rcu/tree.c:2697
-     ...
-
-They were caused by the fib_nh_common percpu member 'nhc_pcpu_rth_output'
-overwritten by another percpu variable 'dev->tstats' access overflow in
-tipc udp media xmit path when counting packets on a non tunnel device.
-
-The fix is to make udp tunnel work with no tunnel device by allowing not
-to count packets on the tstats when the tunnel dev is NULL in Patches 1/3
-and 2/3, then pass a NULL tunnel dev in tipc_udp_tunnel() in Patch 3/3.
-
-Xin Long (3):
-  ip_tunnel: allow not to count pkts on tstats by setting skb's dev to
-    NULL
-  ip6_tunnel: allow not to count pkts on tstats by passing dev as NULL
-  tipc: pass tunnel dev as NULL to udp_tunnel(6)_xmit_skb
-
- include/net/ip6_tunnel.h  | 9 ++++++---
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
  net/ipv4/ip_tunnel_core.c | 9 ++++++---
- net/tipc/udp_media.c      | 8 +++-----
- 3 files changed, 15 insertions(+), 11 deletions(-)
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
+diff --git a/net/ipv4/ip_tunnel_core.c b/net/ipv4/ip_tunnel_core.c
+index 30c1c26..5073e3c 100644
+--- a/net/ipv4/ip_tunnel_core.c
++++ b/net/ipv4/ip_tunnel_core.c
+@@ -89,9 +89,12 @@ void iptunnel_xmit(struct sock *sk, struct rtable *rt, struct sk_buff *skb,
+ 	__ip_select_ident(net, iph, skb_shinfo(skb)->gso_segs ?: 1);
+ 
+ 	err = ip_local_out(net, sk, skb);
+-	if (unlikely(net_xmit_eval(err)))
+-		pkt_len = 0;
+-	iptunnel_xmit_stats(dev, pkt_len);
++
++	if (dev) {
++		if (unlikely(net_xmit_eval(err)))
++			pkt_len = 0;
++		iptunnel_xmit_stats(dev, pkt_len);
++	}
+ }
+ EXPORT_SYMBOL_GPL(iptunnel_xmit);
+ 
 -- 
 2.1.0
 
