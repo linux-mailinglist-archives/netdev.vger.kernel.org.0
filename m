@@ -2,57 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AD4548131
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 13:46:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B138A48136
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 13:47:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726443AbfFQLqP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 07:46:15 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:44032 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725973AbfFQLqP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 07:46:15 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5HBjJar028449;
-        Mon, 17 Jun 2019 04:46:13 -0700
+        id S1725862AbfFQLrZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 07:47:25 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:41190 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725763AbfFQLrZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 07:47:25 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5HBkBpx000508;
+        Mon, 17 Jun 2019 04:47:20 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=u6ht7QRzfPEQw9bGNG/SxsSJesHteM4RlWM5AFFKhK0=;
- b=NCSwjTkbzZPhUXPfWhRo4dxy0D5j1usSJhz7Mr+0nMOrUMgWgKHC/HFg0xIvhsIKBhEY
- 7/A+f2XvMldXmLeeFX8vtYP9cWVcWnFPLz4NeKQM7uo6SU3KmgxySRT8ZID9G8ceZPdh
- 49pJ5DFalQe6jo3NJ31AXahlJZy+kx6QW0tOY1hQCdtZltIz3K5NWLGF2VkdFChzReUT
- v030ZhY0AxT9In8Tle6VB6VFTTi06PORJFC9zPXq7t4XJWhoWBsFts/rwsEmt1vNG7lG
- G+Ac+GHhT3cM9gSYepiEeY5Wqe2RoJX8/KctqvXWo3VIR2NtOnOrY8i5BJxor6vb795B nw== 
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pfpt0818;
+ bh=H7VLLzLCy2HusDDZ1YQ7PmdQ2dPUliNUTRIRRpRdlYI=;
+ b=rtpKMccSSZogIZ6AAfay2AHzxZEayIsxk5Her9JlwIq7aXBwT0U8D5y4rgcyzJNfEWuk
+ SuVKmOF0lOD4KJ0iziPv8NfnTNeU30H9abypjzbc73y9//BrZwjHmWww8EPlkmJImy72
+ lSWKCLYaEbdghhwLt9uoXneG2dx8d7QwgIB/bc+AVg9Bs79sVgEC0yj9djyYvGzJYgN5
+ PlFMiFMOub0Rd3purTuZVrbI672unSrQMJjpWZQ31Ttx5yaGNJsbLhK4lfLURR8KGS4s
+ WvpAVSXsFomVoJ8qr35sfrM5GNq80biba8lvlKARO0Gd4Bgu+BadgiiYFKEjrjM9NECk hg== 
 Received: from sc-exch04.marvell.com ([199.233.58.184])
-        by mx0a-0016f401.pphosted.com with ESMTP id 2t68rp8aje-1
+        by mx0b-0016f401.pphosted.com with ESMTP id 2t506hxdve-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 17 Jun 2019 04:46:13 -0700
+        Mon, 17 Jun 2019 04:47:20 -0700
 Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH04.marvell.com
  (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Mon, 17 Jun
- 2019 04:46:11 -0700
-Received: from maili.marvell.com (10.93.176.43) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server id 15.0.1367.3 via Frontend
- Transport; Mon, 17 Jun 2019 04:46:12 -0700
-Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
-        by maili.marvell.com (Postfix) with ESMTP id C1BD13F703F;
-        Mon, 17 Jun 2019 04:46:11 -0700 (PDT)
-Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id x5HBkB9q017147;
-        Mon, 17 Jun 2019 04:46:11 -0700
-Received: (from root@localhost)
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id x5HBkBcS017146;
-        Mon, 17 Jun 2019 04:46:11 -0700
+ 2019 04:47:19 -0700
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.36.57) by
+ SC-EXCH03.marvell.com (10.93.176.83) with Microsoft SMTP Server (TLS) id
+ 15.0.1367.3 via Frontend Transport; Mon, 17 Jun 2019 04:47:19 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=marvell.onmicrosoft.com; s=selector2-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=H7VLLzLCy2HusDDZ1YQ7PmdQ2dPUliNUTRIRRpRdlYI=;
+ b=VZtJ6tt97cn/W4yiBxkF4rw0rlt+PDk9E8tM0+JG29LtscbqekCXSTzRoNSqFiDRGH6F8XJnXJNHNNrXkiTI9prj162EvcuyBoG1rRhHhrpAAT/7F8TsAKsbLUuoc9AFb5hjFEderZTzY9qSfrlXeXCcCdEonx4kduK6lPWamwA=
+Received: from MN2PR18MB2528.namprd18.prod.outlook.com (20.179.80.86) by
+ MN2PR18MB2959.namprd18.prod.outlook.com (20.179.23.22) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1987.11; Mon, 17 Jun 2019 11:47:17 +0000
+Received: from MN2PR18MB2528.namprd18.prod.outlook.com
+ ([fe80::5c9b:c441:b4d2:da19]) by MN2PR18MB2528.namprd18.prod.outlook.com
+ ([fe80::5c9b:c441:b4d2:da19%7]) with mapi id 15.20.1987.014; Mon, 17 Jun 2019
+ 11:47:17 +0000
 From:   Sudarsana Reddy Kalluru <skalluru@marvell.com>
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <mkalderon@marvell.com>,
-        <aelior@marvell.com>
-Subject: [PATCH net-next 4/4] qed: Add devlink support for configuration attributes.
-Date:   Mon, 17 Jun 2019 04:45:28 -0700
-Message-ID: <20190617114528.17086-5-skalluru@marvell.com>
-X-Mailer: git-send-email 2.12.0
-In-Reply-To: <20190617114528.17086-1-skalluru@marvell.com>
-References: <20190617114528.17086-1-skalluru@marvell.com>
+To:     David Miller <davem@davemloft.net>,
+        "maurosr@linux.vnet.ibm.com" <maurosr@linux.vnet.ibm.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Ariel Elior <aelior@marvell.com>,
+        GR-everest-linux-l2 <GR-everest-linux-l2@marvell.com>
+Subject: RE: [PATCH net] bnx2x: Check if transceiver implements DDM before
+ access
+Thread-Topic: [PATCH net] bnx2x: Check if transceiver implements DDM before
+ access
+Thread-Index: AQHVJIORLasmcadWBkGgHURJjRzasqafnnsw
+Date:   Mon, 17 Jun 2019 11:47:17 +0000
+Message-ID: <MN2PR18MB25285A81C813B5C8C004079AD3EB0@MN2PR18MB2528.namprd18.prod.outlook.com>
+References: <20190613192540.15645-1-maurosr@linux.vnet.ibm.com>
+ <20190616.133904.49117769286698801.davem@davemloft.net>
+In-Reply-To: <20190616.133904.49117769286698801.davem@davemloft.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [2402:3a80:505:9892:ad39:4932:9551:13db]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: efab127d-c755-4d7a-23b4-08d6f3198c59
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MN2PR18MB2959;
+x-ms-traffictypediagnostic: MN2PR18MB2959:
+x-microsoft-antispam-prvs: <MN2PR18MB295924473E64F7E17B71F7F1D3EB0@MN2PR18MB2959.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-forefront-prvs: 0071BFA85B
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(39850400004)(396003)(136003)(346002)(376002)(189003)(13464003)(199004)(8676002)(4326008)(25786009)(14454004)(74316002)(46003)(186003)(33656002)(478600001)(2906002)(476003)(86362001)(110136005)(11346002)(446003)(76176011)(54906003)(107886003)(316002)(6506007)(53546011)(102836004)(7696005)(6116002)(6246003)(486006)(53936002)(99286004)(14444005)(256004)(71190400001)(71200400001)(52536014)(81156014)(229853002)(2501003)(68736007)(8936002)(81166006)(9686003)(66946007)(66476007)(66556008)(76116006)(64756008)(73956011)(6436002)(55016002)(305945005)(7736002)(66446008)(5660300002);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR18MB2959;H:MN2PR18MB2528.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: marvell.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: BfOLDi7Q2/7FGPRlzK+DiLrexQZlgTBM0j6UECdDQErbgvPhD8HxnKg0CQu+f3rchebAFGKTE6FwrCbyILI0RHgKIkCbDledRBUe7TLVRP63FqKQDLFHYaq2s4ngqQZ3ZjpME27frbogPSABnZcSiX2VK8HrHK6KjfHQplIliq5duiryqslmTfR4KBfnLwClfqOyGB4/rU7T5pnPSh5sohRKjX+Dva/MMNI3+k2cphtGD+k1C2S/1JYYX+VIpc1KYYDw0PnZpZd9/bIEVjmC+pJQhjGenZbxAXMjKrNwm+6UiB45n9CTyIFbE3avb/CjiqBmJ5n0nhRc8QTFHzunAxSaNt5MX42ifXuwFgfNrmgOPDqMDOUx55RWrtF8F1dF9hjTV06pQxiA35wKd1lxKerPAiJlgiNnfP1DTzwmn24=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain
+X-MS-Exchange-CrossTenant-Network-Message-Id: efab127d-c755-4d7a-23b4-08d6f3198c59
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jun 2019 11:47:17.2698
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: skalluru@marvell.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR18MB2959
+X-OriginatorOrg: marvell.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-17_06:,,
  signatures=0
 Sender: netdev-owner@vger.kernel.org
@@ -60,300 +98,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds implementation for devlink callbacks for reading/
-configuring the device attributes.
+> -----Original Message-----
+> From: David Miller <davem@davemloft.net>
+> Sent: Monday, June 17, 2019 2:09 AM
+> To: maurosr@linux.vnet.ibm.com
+> Cc: netdev@vger.kernel.org; Ariel Elior <aelior@marvell.com>; Sudarsana
+> Reddy Kalluru <skalluru@marvell.com>; GR-everest-linux-l2 <GR-everest-
+> linux-l2@marvell.com>
+> Subject: Re: [PATCH net] bnx2x: Check if transceiver implements DDM befor=
+e
+> access
+>=20
+> From: "Mauro S. M. Rodrigues" <maurosr@linux.vnet.ibm.com>
+> Date: Thu, 13 Jun 2019 16:25:40 -0300
+>=20
+> > Some transceivers may comply with SFF-8472 even though they do not
+> > implement the Digital Diagnostic Monitoring (DDM) interface described
+> > in the spec. The existence of such area is specified by the 6th bit of
+> > byte 92, set to 1 if implemented.
+> >
+> > Currently, without checking this bit, bnx2x fails trying to read sfp
+> > module's EEPROM with the follow message:
+> >
+> > ethtool -m enP5p1s0f1
+> > Cannot get Module EEPROM data: Input/output error
+> >
+> > Because it fails to read the additional 256 bytes in which it is
+> > assumed to exist the DDM data.
+> >
+> > This issue was noticed using a Mellanox Passive DAC PN 01FT738. The
+> > EEPROM data was confirmed by Mellanox as correct and similar to other
+> > Passive DACs from other manufacturers.
+> >
+> > Signed-off-by: Mauro S. M. Rodrigues <maurosr@linux.vnet.ibm.com>
+>=20
+> Marvell folks, please review.
 
-Signed-off-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
----
- drivers/net/ethernet/qlogic/qed/qed.h         |   1 +
- drivers/net/ethernet/qlogic/qed/qed_devlink.c | 184 ++++++++++++++++++++++++++
- drivers/net/ethernet/qlogic/qed/qed_devlink.h |  23 ++++
- drivers/net/ethernet/qlogic/qed/qed_hsi.h     |  11 ++
- 4 files changed, 219 insertions(+)
-
-diff --git a/drivers/net/ethernet/qlogic/qed/qed.h b/drivers/net/ethernet/qlogic/qed/qed.h
-index 89fe091..2afd5c7 100644
---- a/drivers/net/ethernet/qlogic/qed/qed.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed.h
-@@ -866,6 +866,7 @@ struct qed_dev {
- 
- 	struct devlink			*dl;
- 	bool				iwarp_cmt;
-+	u8				cfg_entity_id;
- };
- 
- #define NUM_OF_VFS(dev)         (QED_IS_BB(dev) ? MAX_NUM_VFS_BB \
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_devlink.c b/drivers/net/ethernet/qlogic/qed/qed_devlink.c
-index acb6c87..232a8c4 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_devlink.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_devlink.c
-@@ -4,6 +4,30 @@
- #include "qed_devlink.h"
- #include "qed_mcp.h"
- 
-+static const struct qed_devlink_cfg_param cfg_params[] = {
-+	{DEVLINK_PARAM_GENERIC_ID_ENABLE_SRIOV, NVM_CFG_ID_ENABLE_SRIOV,
-+	 DEVLINK_PARAM_TYPE_BOOL},
-+	{QED_DEVLINK_ENTITY_ID, 0, DEVLINK_PARAM_TYPE_U8},
-+	{QED_DEVLINK_DEVICE_CAPABILITIES, NVM_CFG_ID_DEVICE_CAPABILITIES,
-+	 DEVLINK_PARAM_TYPE_U8},
-+	{QED_DEVLINK_MF_MODE, NVM_CFG_ID_MF_MODE, DEVLINK_PARAM_TYPE_U8},
-+	{QED_DEVLINK_DCBX_MODE, NVM_CFG_ID_DCBX_MODE, DEVLINK_PARAM_TYPE_U8},
-+	{QED_DEVLINK_PREBOOT_OPROM, NVM_CFG_ID_PREBOOT_OPROM,
-+	 DEVLINK_PARAM_TYPE_BOOL},
-+	{QED_DEVLINK_PREBOOT_BOOT_PROTOCOL, NVM_CFG_ID_PREBOOT_BOOT_PROTOCOL,
-+	 DEVLINK_PARAM_TYPE_U8},
-+	{QED_DEVLINK_PREBOOT_VLAN, NVM_CFG_ID_PREBOOT_VLAN,
-+	 DEVLINK_PARAM_TYPE_U16},
-+	{QED_DEVLINK_PREBOOT_VLAN_VALUE, NVM_CFG_ID_PREBOOT_VLAN_VALUE,
-+	 DEVLINK_PARAM_TYPE_U16},
-+	{QED_DEVLINK_MBA_DELAY_TIME, NVM_CFG_ID_MBA_DELAY_TIME,
-+	 DEVLINK_PARAM_TYPE_U8},
-+	{QED_DEVLINK_MBA_SETUP_HOT_KEY, NVM_CFG_ID_MBA_SETUP_HOT_KEY,
-+	 DEVLINK_PARAM_TYPE_U8},
-+	{QED_DEVLINK_MBA_HIDE_SETUP_PROMPT, NVM_CFG_ID_MBA_HIDE_SETUP_PROMPT,
-+	 DEVLINK_PARAM_TYPE_BOOL},
-+};
-+
- static int qed_dl_param_get(struct devlink *dl, u32 id,
- 			    struct devlink_param_gset_ctx *ctx)
- {
-@@ -30,11 +54,171 @@ static int qed_dl_param_set(struct devlink *dl, u32 id,
- 	return 0;
- }
- 
-+static int qed_dl_get_perm_cfg(struct devlink *dl, u32 id,
-+			       struct devlink_param_gset_ctx *ctx)
-+{
-+	u8 buf[QED_DL_PARAM_BUF_LEN];
-+	struct qed_devlink *qed_dl;
-+	int rc, cfg_idx, len = 0;
-+	struct qed_hwfn *hwfn;
-+	struct qed_dev *cdev;
-+	struct qed_ptt *ptt;
-+	u32 flags;
-+
-+	qed_dl = devlink_priv(dl);
-+	cdev = qed_dl->cdev;
-+	hwfn = QED_LEADING_HWFN(cdev);
-+
-+	if (id == QED_DEVLINK_ENTITY_ID) {
-+		ctx->val.vu8 = cdev->cfg_entity_id;
-+		return 0;
-+	}
-+
-+	for (cfg_idx = 0; cfg_idx < ARRAY_SIZE(cfg_params); cfg_idx++)
-+		if (cfg_params[cfg_idx].id == id)
-+			break;
-+
-+	if (cfg_idx == ARRAY_SIZE(cfg_params)) {
-+		DP_ERR(cdev, "Invalid command id %d\n", id);
-+		return -EINVAL;
-+	}
-+
-+	ptt = qed_ptt_acquire(hwfn);
-+	if (!ptt)
-+		return -EAGAIN;
-+
-+	memset(buf, 0, QED_DL_PARAM_BUF_LEN);
-+	flags = cdev->cfg_entity_id ? QED_DL_PARAM_PF_GET_FLAGS :
-+		QED_DL_PARAM_GET_FLAGS;
-+	rc = qed_mcp_nvm_get_cfg(hwfn, ptt, cfg_params[cfg_idx].cmd,
-+				 cdev->cfg_entity_id, flags, buf, &len);
-+	if (rc)
-+		DP_ERR(cdev, "Error = %d\n", rc);
-+	else
-+		memcpy(&ctx->val, buf, len);
-+
-+	qed_ptt_release(hwfn, ptt);
-+
-+	return rc;
-+}
-+
-+static int qed_dl_set_perm_cfg(struct devlink *dl, u32 id,
-+			       struct devlink_param_gset_ctx *ctx)
-+{
-+	u8 buf[QED_DL_PARAM_BUF_LEN];
-+	struct qed_devlink *qed_dl;
-+	int rc, cfg_idx, len = 0;
-+	struct qed_hwfn *hwfn;
-+	struct qed_dev *cdev;
-+	struct qed_ptt *ptt;
-+	u32 flags;
-+
-+	qed_dl = devlink_priv(dl);
-+	cdev = qed_dl->cdev;
-+	hwfn = QED_LEADING_HWFN(cdev);
-+
-+	if (id == QED_DEVLINK_ENTITY_ID) {
-+		cdev->cfg_entity_id = ctx->val.vu8;
-+		return 0;
-+	}
-+
-+	for (cfg_idx = 0; cfg_idx < ARRAY_SIZE(cfg_params); cfg_idx++)
-+		if (cfg_params[cfg_idx].id == id)
-+			break;
-+
-+	if (cfg_idx == ARRAY_SIZE(cfg_params)) {
-+		DP_ERR(cdev, "Invalid command id %d\n", id);
-+		return -EINVAL;
-+	}
-+
-+	memset(buf, 0, QED_DL_PARAM_BUF_LEN);
-+	switch (cfg_params[cfg_idx].type) {
-+	case DEVLINK_PARAM_TYPE_BOOL:
-+		len = 1;
-+		break;
-+	case DEVLINK_PARAM_TYPE_U8:
-+		len = 1;
-+		break;
-+	case DEVLINK_PARAM_TYPE_U16:
-+		len = 2;
-+		break;
-+	case DEVLINK_PARAM_TYPE_U32:
-+		len = 4;
-+		break;
-+	case DEVLINK_PARAM_TYPE_STRING:
-+		len = strlen(ctx->val.vstr);
-+		break;
-+	}
-+
-+	memcpy(buf, &ctx->val, len);
-+	flags = cdev->cfg_entity_id ? QED_DL_PARAM_PF_SET_FLAGS :
-+		QED_DL_PARAM_SET_FLAGS;
-+
-+	ptt = qed_ptt_acquire(hwfn);
-+	if (!ptt)
-+		return -EAGAIN;
-+
-+	rc = qed_mcp_nvm_set_cfg(hwfn, ptt, cfg_params[cfg_idx].cmd,
-+				 cdev->cfg_entity_id, flags, buf, len);
-+	if (rc)
-+		DP_ERR(cdev, "Error = %d\n", rc);
-+
-+	qed_ptt_release(hwfn, ptt);
-+
-+	return rc;
-+}
-+
- static const struct devlink_param qed_devlink_params[] = {
-+	DEVLINK_PARAM_GENERIC(ENABLE_SRIOV, BIT(DEVLINK_PARAM_CMODE_PERMANENT),
-+			      qed_dl_get_perm_cfg, qed_dl_set_perm_cfg, NULL),
- 	DEVLINK_PARAM_DRIVER(QED_DEVLINK_PARAM_ID_IWARP_CMT,
- 			     "iwarp_cmt", DEVLINK_PARAM_TYPE_BOOL,
- 			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
- 			     qed_dl_param_get, qed_dl_param_set, NULL),
-+	DEVLINK_PARAM_DRIVER(QED_DEVLINK_ENTITY_ID,
-+			     "entity_id", DEVLINK_PARAM_TYPE_U8,
-+			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
-+			     qed_dl_get_perm_cfg, qed_dl_set_perm_cfg, NULL),
-+	DEVLINK_PARAM_DRIVER(QED_DEVLINK_DEVICE_CAPABILITIES,
-+			     "device_capabilities", DEVLINK_PARAM_TYPE_U8,
-+			     BIT(DEVLINK_PARAM_CMODE_PERMANENT),
-+			     qed_dl_get_perm_cfg, qed_dl_set_perm_cfg, NULL),
-+	DEVLINK_PARAM_DRIVER(QED_DEVLINK_MF_MODE,
-+			     "mf_mode", DEVLINK_PARAM_TYPE_U8,
-+			     BIT(DEVLINK_PARAM_CMODE_PERMANENT),
-+			     qed_dl_get_perm_cfg, qed_dl_set_perm_cfg, NULL),
-+	DEVLINK_PARAM_DRIVER(QED_DEVLINK_DCBX_MODE,
-+			     "dcbx_mode", DEVLINK_PARAM_TYPE_U8,
-+			     BIT(DEVLINK_PARAM_CMODE_PERMANENT),
-+			     qed_dl_get_perm_cfg, qed_dl_set_perm_cfg, NULL),
-+	DEVLINK_PARAM_DRIVER(QED_DEVLINK_PREBOOT_OPROM,
-+			     "preboot_oprom", DEVLINK_PARAM_TYPE_BOOL,
-+			     BIT(DEVLINK_PARAM_CMODE_PERMANENT),
-+			     qed_dl_get_perm_cfg, qed_dl_set_perm_cfg, NULL),
-+	DEVLINK_PARAM_DRIVER(QED_DEVLINK_PREBOOT_BOOT_PROTOCOL,
-+			     "preboot_boot_protocol", DEVLINK_PARAM_TYPE_U8,
-+			     BIT(DEVLINK_PARAM_CMODE_PERMANENT),
-+			     qed_dl_get_perm_cfg, qed_dl_set_perm_cfg, NULL),
-+	DEVLINK_PARAM_DRIVER(QED_DEVLINK_PREBOOT_VLAN,
-+			     "preboot_vlan", DEVLINK_PARAM_TYPE_U16,
-+			     BIT(DEVLINK_PARAM_CMODE_PERMANENT),
-+			     qed_dl_get_perm_cfg, qed_dl_set_perm_cfg, NULL),
-+	DEVLINK_PARAM_DRIVER(QED_DEVLINK_PREBOOT_VLAN_VALUE,
-+			     "preboot_vlan_value", DEVLINK_PARAM_TYPE_U16,
-+			     BIT(DEVLINK_PARAM_CMODE_PERMANENT),
-+			     qed_dl_get_perm_cfg, qed_dl_set_perm_cfg, NULL),
-+	DEVLINK_PARAM_DRIVER(QED_DEVLINK_MBA_DELAY_TIME,
-+			     "mba_delay_time", DEVLINK_PARAM_TYPE_U8,
-+			     BIT(DEVLINK_PARAM_CMODE_PERMANENT),
-+			     qed_dl_get_perm_cfg, qed_dl_set_perm_cfg, NULL),
-+	DEVLINK_PARAM_DRIVER(QED_DEVLINK_MBA_SETUP_HOT_KEY,
-+			     "mba_setup_hot_key", DEVLINK_PARAM_TYPE_U8,
-+			     BIT(DEVLINK_PARAM_CMODE_PERMANENT),
-+			     qed_dl_get_perm_cfg, qed_dl_set_perm_cfg, NULL),
-+	DEVLINK_PARAM_DRIVER(QED_DEVLINK_MBA_HIDE_SETUP_PROMPT,
-+			     "mba_hide_setup_prompt", DEVLINK_PARAM_TYPE_BOOL,
-+			     BIT(DEVLINK_PARAM_CMODE_PERMANENT),
-+			     qed_dl_get_perm_cfg, qed_dl_set_perm_cfg, NULL),
- };
- 
- static const struct devlink_ops qed_dl_ops;
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_devlink.h b/drivers/net/ethernet/qlogic/qed/qed_devlink.h
-index 86e1caa..ca52a3f 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_devlink.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_devlink.h
-@@ -3,6 +3,12 @@
- #define _QED_DEVLINK_H
- #include "qed.h"
- 
-+#define QED_DL_PARAM_GET_FLAGS		0xA
-+#define QED_DL_PARAM_SET_FLAGS		0xE
-+#define QED_DL_PARAM_PF_GET_FLAGS	0x1A
-+#define QED_DL_PARAM_PF_SET_FLAGS	0x1E
-+#define QED_DL_PARAM_BUF_LEN		32
-+
- struct qed_devlink {
- 	struct qed_dev *cdev;
- };
-@@ -10,6 +16,23 @@ struct qed_devlink {
- enum qed_devlink_param_id {
- 	QED_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
- 	QED_DEVLINK_PARAM_ID_IWARP_CMT,
-+	QED_DEVLINK_ENTITY_ID,
-+	QED_DEVLINK_DEVICE_CAPABILITIES,
-+	QED_DEVLINK_MF_MODE,
-+	QED_DEVLINK_DCBX_MODE,
-+	QED_DEVLINK_PREBOOT_OPROM,
-+	QED_DEVLINK_PREBOOT_BOOT_PROTOCOL,
-+	QED_DEVLINK_PREBOOT_VLAN,
-+	QED_DEVLINK_PREBOOT_VLAN_VALUE,
-+	QED_DEVLINK_MBA_DELAY_TIME,
-+	QED_DEVLINK_MBA_SETUP_HOT_KEY,
-+	QED_DEVLINK_MBA_HIDE_SETUP_PROMPT,
-+};
-+
-+struct qed_devlink_cfg_param {
-+	u16 id;
-+	u16 cmd;
-+	enum devlink_param_type type;
- };
- 
- int qed_devlink_register(struct qed_dev *cdev);
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_hsi.h b/drivers/net/ethernet/qlogic/qed/qed_hsi.h
-index 5091f5b1..49b6a6e 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_hsi.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_hsi.h
-@@ -13338,6 +13338,17 @@ enum spad_sections {
- 
- #define NVM_CFG_ID_MAC_ADDRESS			1
- #define NVM_CFG_ID_MF_MODE			9
-+#define NVM_CFG_ID_DCBX_MODE			26
-+#define NVM_CFG_ID_PREBOOT_OPROM		59
-+#define NVM_CFG_ID_MBA_DELAY_TIME		61
-+#define NVM_CFG_ID_MBA_SETUP_HOT_KEY		62
-+#define NVM_CFG_ID_MBA_HIDE_SETUP_PROMPT	63
-+#define NVM_CFG_ID_PREBOOT_BOOT_PROTOCOL	69
-+#define NVM_CFG_ID_ENABLE_SRIOV			70
-+#define NVM_CFG_ID_DEVICE_CAPABILITIES		117
-+#define NVM_CFG_ID_PREBOOT_VLAN			133
-+#define NVM_CFG_ID_PREBOOT_VLAN_VALUE		132
-+
- 
- #define MCP_TRACE_SIZE          2048	/* 2kb */
- 
--- 
-1.8.3.1
-
+Acked-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
