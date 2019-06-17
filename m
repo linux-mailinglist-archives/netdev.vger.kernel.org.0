@@ -2,104 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 083E349550
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 00:42:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 754D549554
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 00:42:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728455AbfFQWmf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 18:42:35 -0400
-Received: from mail.us.es ([193.147.175.20]:36216 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728398AbfFQWmd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 Jun 2019 18:42:33 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id A1A82BEBA6
-        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 00:42:31 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 93494DA708
-        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 00:42:31 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 9299CDA707; Tue, 18 Jun 2019 00:42:31 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 81755DA70C;
-        Tue, 18 Jun 2019 00:42:29 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 18 Jun 2019 00:42:29 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from salvia.here (sys.soleta.eu [212.170.55.40])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id 50A144265A2F;
-        Tue, 18 Jun 2019 00:42:29 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH 3/3] netfilter: ipv6: nf_defrag: accept duplicate fragments again
-Date:   Tue, 18 Jun 2019 00:42:23 +0200
-Message-Id: <20190617224223.1004-4-pablo@netfilter.org>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20190617224223.1004-1-pablo@netfilter.org>
-References: <20190617224223.1004-1-pablo@netfilter.org>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1728769AbfFQWmj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 18:42:39 -0400
+Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:48516 "EHLO
+        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728701AbfFQWmh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 18:42:37 -0400
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.89)
+        (envelope-from <fw@strlen.de>)
+        id 1hd0Ke-0001f1-Go; Tue, 18 Jun 2019 00:42:32 +0200
+Date:   Tue, 18 Jun 2019 00:42:32 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Florian Westphal <fw@strlen.de>, wenxu@ucloud.cn,
+        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] netfilter: nft_paylaod: add base type
+ NFT_PAYLOAD_LL_HEADER_NO_TAG
+Message-ID: <20190617224232.55hldt4bw2qcmnll@breakpoint.cc>
+References: <1560151280-28908-1-git-send-email-wenxu@ucloud.cn>
+ <20190610094433.3wjmpfiph7iwguan@breakpoint.cc>
+ <20190617223004.tnqz2bl7qp63fcfy@salvia>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190617223004.tnqz2bl7qp63fcfy@salvia>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Guillaume Nault <gnault@redhat.com>
+Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+> > Subject: Change bridge l3 dependency to meta protocol
+> > 
+> > This examines skb->protocol instead of ethernet header type, which
+> > might be different when vlan is involved.
+> >  
+> > +	if (ctx->pctx.family == NFPROTO_BRIDGE && desc == &proto_eth) {
+> > +		if (expr->payload.desc == &proto_ip ||
+> > +		    expr->payload.desc == &proto_ip6)
+> > +			desc = &proto_metaeth;
+> > +	}i
+> 
+> Is this sufficient to restrict the matching? Is this still buggy from
+> ingress?
 
-When fixing the skb leak introduced by the conversion to rbtree, I
-forgot about the special case of duplicate fragments. The condition
-under the 'insert_error' label isn't effective anymore as
-nf_ct_frg6_gather() doesn't override the returned value anymore. So
-duplicate fragments now get NF_DROP verdict.
+This is what netdev family uses as well (skb->protocol i mean).
+I'm not sure it will work for output however (haven't checked).
 
-To accept duplicate fragments again, handle them specially as soon as
-inet_frag_queue_insert() reports them. Return -EINPROGRESS which will
-translate to NF_STOLEN verdict, like any accepted fragment. However,
-such packets don't carry any new information and aren't queued, so we
-just drop them immediately.
+> I wonder if an explicit NFT_PAYLOAD_CHECK_VLAN flag would be useful in
+> the kernel, if so we could rename NFTA_PAYLOAD_CSUM_FLAGS to
+> NFTA_PAYLOAD_FLAGS and place it there. Just an idea.
 
-Fixes: a0d56cb911ca ("netfilter: ipv6: nf_defrag: fix leakage of unqueued fragments")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/ipv6/netfilter/nf_conntrack_reasm.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+What would NFT_PAYLOAD_CHECK_VLAN do?
+You mean disable/enable the 'vlan is there' illusion that nft_payload
+provides?  That would work as well of course, but I would prefer to
+switch to meta dependencies where possible so we don't rely on
+particular layout of a different header class (e.g. meta l4proto doesn't
+depend on ip version, and meta protocol won't depend on particular
+ethernet frame).
 
-diff --git a/net/ipv6/netfilter/nf_conntrack_reasm.c b/net/ipv6/netfilter/nf_conntrack_reasm.c
-index 5b3f65e29b6f..8951de8b568f 100644
---- a/net/ipv6/netfilter/nf_conntrack_reasm.c
-+++ b/net/ipv6/netfilter/nf_conntrack_reasm.c
-@@ -265,8 +265,14 @@ static int nf_ct_frag6_queue(struct frag_queue *fq, struct sk_buff *skb,
- 
- 	prev = fq->q.fragments_tail;
- 	err = inet_frag_queue_insert(&fq->q, skb, offset, end);
--	if (err)
-+	if (err) {
-+		if (err == IPFRAG_DUP) {
-+			/* No error for duplicates, pretend they got queued. */
-+			kfree_skb(skb);
-+			return -EINPROGRESS;
-+		}
- 		goto insert_error;
-+	}
- 
- 	if (dev)
- 		fq->iif = dev->ifindex;
-@@ -304,8 +310,6 @@ static int nf_ct_frag6_queue(struct frag_queue *fq, struct sk_buff *skb,
- 	return -EINPROGRESS;
- 
- insert_error:
--	if (err == IPFRAG_DUP)
--		goto err;
- 	inet_frag_kill(&fq->q);
- err:
- 	skb_dst_drop(skb);
--- 
-2.11.0
+What might be useful is an nft switch to turn off dependeny
+insertion, this would also avoid the problem (if users restrict the
+matching properly...).
 
+Another unresolved issue is presence of multiple vlan tags, so we might
+have to add yet another meta key to retrieve the l3 protocol in use
+
+(the problem at hand was 'ip protocol icmp' not matching traffic inside
+ a vlan).
+
+The other issue is lack of vlan awareness in some bridge/netdev
+expressions, e.g. reject.
+
+I think we could apply this patch to nft after making sure it works
+for output as thats probably the only solution that won't need
+changes in the kernel.
+
+If it doesn't, we will need to find a different solution in any case.
