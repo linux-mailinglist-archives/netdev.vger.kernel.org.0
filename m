@@ -2,91 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8798E483EE
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 15:29:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5E9D48419
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 15:35:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726736AbfFQN3T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 09:29:19 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:46765 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725884AbfFQN3T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 09:29:19 -0400
-Received: by mail-io1-f65.google.com with SMTP id i10so20991506iol.13
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 06:29:18 -0700 (PDT)
+        id S1727159AbfFQNe0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 09:34:26 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:41983 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726405AbfFQNe0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 09:34:26 -0400
+Received: by mail-pf1-f196.google.com with SMTP id m30so5699821pff.8
+        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 06:34:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=puWqUZ2IJK+4X7IGbVhqVy/p0SHF6HWirxK6e2Lnr1E=;
-        b=PHt0o12GduPGVKH+REmvdO2mLN3ha5HA4LY4vJ7Grr06m8F/VCsMwY/Coz8+MAXcFh
-         0VXy5zIJAcEmFxlKyIMdRV2OOTeiaj3wClNYV0PtlGPwKb1B2dVOSXm695YvvnMCd5Gd
-         wX+Z4rFtPg5YZzhpcmpy3leSzCt3sfB+NpmE1GYO4+TU5+QPfnkpKbbdyJJWOD2cZwID
-         qSwZF+9wID4alvvRQsBmnHmHzZ9ixhqbL760J4yPOiMxXXSipDzpQwSZa3ylWs+NZ58a
-         l54tIUOasr7YojwgVpH43TOqBrKcIKLbVVCBDiZrz/cSHzQg2TSY5SGdxBS9VSv0iPyF
-         dlEA==
+        h=from:to:cc:subject:date:message-id;
+        bh=MUdRUwAak57Ck6Aqsw8+YNqQywkA6ZUApjGP4kWJp8w=;
+        b=hQU2+5lBIgHOKYQoLLO2sLZT5JNu/8o5opqlzeAaK2isAY2091JC8+oQbMNsArblqO
+         vmX9fB4WQ3D1JFhpuik5ATFCP04I7Oi0XE/r2d4IJ7V/+ofCn9kElUXa4o4/W7WLI7wS
+         EOiJaU+HrUm7ie/Sri5U+4nkLC/rDIHDpGsdVOtJrx2BNeSABNzPup24+Nw6zuv6b0Hj
+         wNcY5pdwdZqUJZkW1b505mxilBX7N87FTasgd6M3pBwo2t/58MphPb2UQMCuQ7NGKlw0
+         qGZVNTel2uy4zrinm4i8Vo+rnuFFhgfoLcsG920YlnCf0q+ZxlQX3Fimp9YukO9ecsFA
+         mV3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=puWqUZ2IJK+4X7IGbVhqVy/p0SHF6HWirxK6e2Lnr1E=;
-        b=bkfsX0Y//xDP/Hg/uMIvyqTYDMZhGegUqGQhhxfgt+DFpOhoSAZrvP5fxuG3yPb5oW
-         POZVc6dWul4tQMzm43sAr1ZvMFmstbS3nMc1RDU4ldsB3agGdODqqrzeOnkB0OmNc+2w
-         I1f/OQQXXX/lDQhbbfGWtTWD5TFPqiffBcnMQj0utUjJMgulPdVjKVbowSKhz7XWl9X4
-         7I6paMPfG8OeD82L3bL5EWGv5YFVXJu9+vcmEGFBMlYoiK5X8697TXvFVd0brLIkoiOw
-         TJpkYci3PTSSodry6evHRi4ctbiKx0nNVtO3Qceg+ROVy4OzXFlxzbrVziq1EfplEw2x
-         f+rA==
-X-Gm-Message-State: APjAAAVpMuf9B+IXgeoQoCBI6C65czsDAaMPBCWNTSGiiUNFl7iyjgxU
-        hcFfQ+QHrk4YgeVsL66eKRcRG7Qp
-X-Google-Smtp-Source: APXvYqzl7pqIeyFMANX0cphKHm/zOh7JyWf1U+6YUqTNH5FC/V03lS1GVtAz5yFiHJJ0AbjuAW6wQw==
-X-Received: by 2002:a02:1146:: with SMTP id 67mr85520296jaf.10.1560778157942;
-        Mon, 17 Jun 2019 06:29:17 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:f1:4f12:3a05:d55e? ([2601:282:800:fd80:f1:4f12:3a05:d55e])
-        by smtp.googlemail.com with ESMTPSA id a7sm9645416iok.19.2019.06.17.06.29.16
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=MUdRUwAak57Ck6Aqsw8+YNqQywkA6ZUApjGP4kWJp8w=;
+        b=PP/D77lnZ5awAHsV0Xf4zllyuOdcjtl/h7rV9lwvTl/c6g5CE2xXz5u2t4kIcQXatC
+         AjeNMcihs/IHRaL03A8dMSGS9OD4oWVodfRXDgD/RMUf1e5S21jmnv1gZWM0w58T02tH
+         PKAV2iHYcKKaKUCDeH5Ut0mscqS9yFnP1ZL7EBsWv/SEE0ooQfByO07My0zeNPYydOP/
+         2rhKKAOXhxM6mchl2L7keJixjFIMheUScrmJUjOZqWl79tYLoWeXP/wWCqZirA7seUsc
+         UKnzKZb2JGqKZxH57LPLUIyRmoTjiHchRu3btqY8Xa4oBiUbEZt/vZGWGZdOmDUkCNpe
+         nlLg==
+X-Gm-Message-State: APjAAAVLMuStuL360uSFg3D/7iCnyhI4t1WmcRhypRZdnEQUrEHiy5/1
+        2WeYc7dqtF8kJfl7QEmpByNZFzK0
+X-Google-Smtp-Source: APXvYqy/P1mWY39UwLFmHCSa2cmeIRJ1C2qRGTSCLY3TpAEsJ6r0PdfUZg38KrLaKqILD+aEuYwGaQ==
+X-Received: by 2002:a63:cc4e:: with SMTP id q14mr48591446pgi.84.1560778465063;
+        Mon, 17 Jun 2019 06:34:25 -0700 (PDT)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id v138sm18638107pfc.15.2019.06.17.06.34.23
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 17 Jun 2019 06:29:17 -0700 (PDT)
-Subject: Re: [PATCH net v4 2/8] ipv4: Honour NLM_F_MATCH, make semantics of
- NETLINK_GET_STRICT_CHK consistent
-To:     Stefano Brivio <sbrivio@redhat.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        netdev@vger.kernel.org
-References: <cover.1560561432.git.sbrivio@redhat.com>
- <58865c4c143d0da40cd417b5b87b49d292d8129d.1560561432.git.sbrivio@redhat.com>
- <9abeefb6-81a7-dc0a-30f4-f15ccf4edc86@gmail.com>
- <20190615052332.16628b2c@redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <da3e93e8-9dc6-fc45-4b24-d527c9a206fc@gmail.com>
-Date:   Mon, 17 Jun 2019 07:29:15 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
-MIME-Version: 1.0
-In-Reply-To: <20190615052332.16628b2c@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        Mon, 17 Jun 2019 06:34:24 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>
+Cc:     davem@davemloft.net, Jon Maloy <jon.maloy@ericsson.com>,
+        Ying Xue <ying.xue@windriver.com>,
+        tipc-discussion@lists.sourceforge.net,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Su Yanjun <suyj.fnst@cn.fujitsu.com>,
+        David Ahern <dsahern@gmail.com>,
+        syzkaller-bugs@googlegroups.com,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Pravin B Shelar <pshelar@nicira.com>
+Subject: [PATCH net 0/3] net: fix quite a few dst_cache crashes reported by syzbot
+Date:   Mon, 17 Jun 2019 21:34:12 +0800
+Message-Id: <cover.1560778340.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/14/19 9:23 PM, Stefano Brivio wrote:
-> 
-> 1. we need a way to filter on cached routes
-> 
-> 2. RTM_F_CLONED, by itself, doesn't specify a filter
-> 
-> 3. how do we turn that into a filter? NLM_F_MATCH, says RFC 3549
-> 
-> 4. but if strict checking is requested, you also turn some attributes
->    and flags into filters -- so let's make that apply to RTM_F_CLONED
->    too, I don't see any reason why that should be special
-> 
+There are two kinds of crashes reported many times by syzbot with no
+reproducer. Call Traces are like:
 
-I guess I am arguing (and Martin seems to agree with end goal) that
-RTM_F_CLONED is special. There are really 2 "databases" to be dumped
-here: FIB entries and exceptions. Which one to dump is controlled by
-RTM_F_CLONED.
+     BUG: KASAN: slab-out-of-bounds in rt_cache_valid+0x158/0x190
+     net/ipv4/route.c:1556
+       rt_cache_valid+0x158/0x190 net/ipv4/route.c:1556
+       __mkroute_output net/ipv4/route.c:2332 [inline]
+       ip_route_output_key_hash_rcu+0x819/0x2d50 net/ipv4/route.c:2564
+       ip_route_output_key_hash+0x1ef/0x360 net/ipv4/route.c:2393
+       __ip_route_output_key include/net/route.h:125 [inline]
+       ip_route_output_flow+0x28/0xc0 net/ipv4/route.c:2651
+       ip_route_output_key include/net/route.h:135 [inline]
+     ...
+
+   or:
+
+     kasan: GPF could be caused by NULL-ptr deref or user memory access
+     RIP: 0010:dst_dev_put+0x24/0x290 net/core/dst.c:168
+       <IRQ>
+       rt_fibinfo_free_cpus net/ipv4/fib_semantics.c:200 [inline]
+       free_fib_info_rcu+0x2e1/0x490 net/ipv4/fib_semantics.c:217
+       __rcu_reclaim kernel/rcu/rcu.h:240 [inline]
+       rcu_do_batch kernel/rcu/tree.c:2437 [inline]
+       invoke_rcu_callbacks kernel/rcu/tree.c:2716 [inline]
+       rcu_process_callbacks+0x100a/0x1ac0 kernel/rcu/tree.c:2697
+     ...
+
+They were caused by the fib_nh_common percpu member 'nhc_pcpu_rth_output'
+overwritten by another percpu variable 'dev->tstats' access overflow in
+tipc udp media xmit path when counting packets on a non tunnel device.
+
+The fix is to make udp tunnel work with no tunnel device by allowing not
+to count packets on the tstats when the tunnel dev is NULL in Patches 1/3
+and 2/3, then pass a NULL tunnel dev in tipc_udp_tunnel() in Patch 3/3.
+
+Xin Long (3):
+  ip_tunnel: allow not to count pkts on tstats by setting skb's dev to
+    NULL
+  ip6_tunnel: allow not to count pkts on tstats by passing dev as NULL
+  tipc: pass tunnel dev as NULL to udp_tunnel(6)_xmit_skb
+
+ include/net/ip6_tunnel.h  | 9 ++++++---
+ net/ipv4/ip_tunnel_core.c | 9 ++++++---
+ net/tipc/udp_media.c      | 8 +++-----
+ 3 files changed, 15 insertions(+), 11 deletions(-)
+
+-- 
+2.1.0
+
