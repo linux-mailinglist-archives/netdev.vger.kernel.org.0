@@ -2,90 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 99C11489D3
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 19:16:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2395489DC
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 19:18:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726964AbfFQRQZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 13:16:25 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:33944 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726005AbfFQRQZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 Jun 2019 13:16:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=aShAcX1ffuYf6Z5/DgVB3utR2HkNASrMTMIer3eKoF8=; b=gaCazfKZMl0BC6BUVPomKGyfAZ
-        s6TI55qr35Q6XghIVDlGxKCEOv/walOrXr1ZKZT1cYR3etwygW6HXcZCs88LWDjBiBBYFkv7ya7D1
-        4PtdlSTIZdCwToEy880BPrroh7PTWFuTP5mIZbogQzCF7wWEFbVOlJ122p2YrYl4wXSE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hcvEr-0002Ac-Fy; Mon, 17 Jun 2019 19:16:13 +0200
-Date:   Mon, 17 Jun 2019 19:16:13 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek Vasut <marex@denx.de>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
-Subject: Re: [PATCH V2] net: phy: tja11xx: Add IRQ support to the driver
-Message-ID: <20190617171613.GJ17551@lunn.ch>
-References: <4f33b529-6c3c-07ee-6177-2d332de514c6@denx.de>
- <cc8db234-4534-674d-eece-5a797a530cdf@gmail.com>
- <ca63964a-242c-bb46-bd4e-76a270dbedb3@denx.de>
- <20190528195806.GV18059@lunn.ch>
- <15906cc0-3d8f-7810-27ed-d64bdbcfa7e7@denx.de>
- <20190528212252.GW18059@lunn.ch>
- <fe6c4f2f-812d-61b8-3ffb-7ed7dd89d151@denx.de>
- <20190529232930.GF18059@lunn.ch>
- <19f9e596-5b51-8c76-396e-572d3e8da463@denx.de>
- <f9bb1f48-b69d-09b2-5b48-e3f09ce9107e@denx.de>
+        id S1726529AbfFQRSL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 13:18:11 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:55036 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726005AbfFQRSL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 13:18:11 -0400
+Received: from 162-237-133-238.lightspeed.rcsntx.sbcglobal.net ([162.237.133.238] helo=lindsey)
+        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
+        (Exim 4.76)
+        (envelope-from <tyhicks@canonical.com>)
+        id 1hcvGf-0001hH-PV; Mon, 17 Jun 2019 17:18:06 +0000
+Date:   Mon, 17 Jun 2019 12:18:01 -0500
+From:   Tyler Hicks <tyhicks@canonical.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Looney <jtl@netflix.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Bruce Curtis <brucec@netflix.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Subject: Re: [PATCH net 3/4] tcp: add tcp_min_snd_mss sysctl
+Message-ID: <20190617171800.GA5577@lindsey>
+References: <20190617170354.37770-1-edumazet@google.com>
+ <20190617170354.37770-4-edumazet@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f9bb1f48-b69d-09b2-5b48-e3f09ce9107e@denx.de>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <20190617170354.37770-4-edumazet@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 13, 2019 at 05:42:53PM +0200, Marek Vasut wrote:
-> On 5/30/19 1:46 AM, Marek Vasut wrote:
-> > On 5/30/19 1:29 AM, Andrew Lunn wrote:
-> >> On Tue, May 28, 2019 at 11:33:33PM +0200, Marek Vasut wrote:
-> >>> On 5/28/19 11:22 PM, Andrew Lunn wrote:
-> >>>>> The link detection on the TJA1100 (not TJA1101) seems unstable at best,
-> >>>>> so I better use all the interrupt sources to nudge the PHY subsystem and
-> >>>>> have it check the link change.
-> >>>>
-> >>>> Then it sounds like you should just ignore interrupts and stay will
-> >>>> polling for the TJA1100.
-> >>>
-> >>> Polling for the link status change is slow(er) than the IRQ driven
-> >>> operation, so I would much rather use the interrupts.
-> >>
-> >> I agree about the speed, but it seems like interrupts on this PHY are
-> >> not so reliable. Polling always works. But unfortunately, you cannot
-> >> have both interrupts and polling to fix up problems when interrupts
-> >> fail. Your call, do you think interrupts really do work?
-> > 
-> > It works fine for me this way. And mind you, it's only the TJA1100
-> > that's flaky, the TJA1101 is better.
-> > 
-> >> If you say that tja1101 works as expected, then please just use the
-> >> link up/down bits for it.
-> > 
-> > I still don't know which bits really trigger link status changes, so I'd
-> > like to play it safe and just trigger on all of them.
+On 2019-06-17 10:03:53, Eric Dumazet wrote:
+> Some TCP peers announce a very small MSS option in their SYN and/or
+> SYN/ACK messages.
 > 
-> So what do we do here ?
+> This forces the stack to send packets with a very high network/cpu
+> overhead.
+> 
+> Linux has enforced a minimal value of 48. Since this value includes
+> the size of TCP options, and that the options can consume up to 40
+> bytes, this means that each segment can include only 8 bytes of payload.
+> 
+> In some cases, it can be useful to increase the minimal value
+> to a saner value.
+> 
+> We still let the default to 48 (TCP_MIN_SND_MSS), for compatibility
+> reasons.
+> 
+> Note that TCP_MAXSEG socket option enforces a minimal value
+> of (TCP_MIN_MSS). David Miller increased this minimal value
+> in commit c39508d6f118 ("tcp: Make TCP_MAXSEG minimum more correct.")
+> from 64 to 88.
+> 
+> We might in the future merge TCP_MIN_SND_MSS and TCP_MIN_MSS.
+> 
+> CVE-2019-11479 -- tcp mss hardcoded to 48
+> 
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Suggested-by: Jonathan Looney <jtl@netflix.com>
+> Acked-by: Neal Cardwell <ncardwell@google.com>
+> Cc: Yuchung Cheng <ycheng@google.com>
+> Cc: Tyler Hicks <tyhicks@canonical.com>
 
-Hi Marek
+I've given the two sysctl patches a close review and some testing.
 
-My personal preference would be to just enable what is needed. But
-I won't block a patch which enables everything.
+Acked-by: Tyler Hicks <tyhicks@canonical.com>
 
-  Andrew
+Tyler
+
+> Cc: Bruce Curtis <brucec@netflix.com>
+> Cc: Jonathan Lemon <jonathan.lemon@gmail.com>
+> ---
+>  Documentation/networking/ip-sysctl.txt |  8 ++++++++
+>  include/net/netns/ipv4.h               |  1 +
+>  net/ipv4/sysctl_net_ipv4.c             | 11 +++++++++++
+>  net/ipv4/tcp_ipv4.c                    |  1 +
+>  net/ipv4/tcp_output.c                  |  3 +--
+>  5 files changed, 22 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
+> index 288aa264ac26d98637a5bb1babc334bfc699bef1..22f6b8b1110ad20c36e7ceea6d67fd2cc938eb7b 100644
+> --- a/Documentation/networking/ip-sysctl.txt
+> +++ b/Documentation/networking/ip-sysctl.txt
+> @@ -255,6 +255,14 @@ tcp_base_mss - INTEGER
+>  	Path MTU discovery (MTU probing).  If MTU probing is enabled,
+>  	this is the initial MSS used by the connection.
+>  
+> +tcp_min_snd_mss - INTEGER
+> +	TCP SYN and SYNACK messages usually advertise an ADVMSS option,
+> +	as described in RFC 1122 and RFC 6691.
+> +	If this ADVMSS option is smaller than tcp_min_snd_mss,
+> +	it is silently capped to tcp_min_snd_mss.
+> +
+> +	Default : 48 (at least 8 bytes of payload per segment)
+> +
+>  tcp_congestion_control - STRING
+>  	Set the congestion control algorithm to be used for new
+>  	connections. The algorithm "reno" is always available, but
+> diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
+> index 7698460a3dd1e5070e12d406b3ee58834688cdc9..623cfbb7b8dcbb2a6d8325ec010aff78bbdf8839 100644
+> --- a/include/net/netns/ipv4.h
+> +++ b/include/net/netns/ipv4.h
+> @@ -117,6 +117,7 @@ struct netns_ipv4 {
+>  #endif
+>  	int sysctl_tcp_mtu_probing;
+>  	int sysctl_tcp_base_mss;
+> +	int sysctl_tcp_min_snd_mss;
+>  	int sysctl_tcp_probe_threshold;
+>  	u32 sysctl_tcp_probe_interval;
+>  
+> diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+> index fa213bd8e233b577114815ca2227f08264e7df06..b6f14af926faf80f1686549bee7154c584dc63e6 100644
+> --- a/net/ipv4/sysctl_net_ipv4.c
+> +++ b/net/ipv4/sysctl_net_ipv4.c
+> @@ -39,6 +39,8 @@ static int ip_local_port_range_min[] = { 1, 1 };
+>  static int ip_local_port_range_max[] = { 65535, 65535 };
+>  static int tcp_adv_win_scale_min = -31;
+>  static int tcp_adv_win_scale_max = 31;
+> +static int tcp_min_snd_mss_min = TCP_MIN_SND_MSS;
+> +static int tcp_min_snd_mss_max = 65535;
+>  static int ip_privileged_port_min;
+>  static int ip_privileged_port_max = 65535;
+>  static int ip_ttl_min = 1;
+> @@ -769,6 +771,15 @@ static struct ctl_table ipv4_net_table[] = {
+>  		.mode		= 0644,
+>  		.proc_handler	= proc_dointvec,
+>  	},
+> +	{
+> +		.procname	= "tcp_min_snd_mss",
+> +		.data		= &init_net.ipv4.sysctl_tcp_min_snd_mss,
+> +		.maxlen		= sizeof(int),
+> +		.mode		= 0644,
+> +		.proc_handler	= proc_dointvec_minmax,
+> +		.extra1		= &tcp_min_snd_mss_min,
+> +		.extra2		= &tcp_min_snd_mss_max,
+> +	},
+>  	{
+>  		.procname	= "tcp_probe_threshold",
+>  		.data		= &init_net.ipv4.sysctl_tcp_probe_threshold,
+> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+> index bc86f9735f4577d50d94f42b10edb6ba95bb7a05..cfa81190a1b1af30d05f4f6cd84c05b025a6afeb 100644
+> --- a/net/ipv4/tcp_ipv4.c
+> +++ b/net/ipv4/tcp_ipv4.c
+> @@ -2628,6 +2628,7 @@ static int __net_init tcp_sk_init(struct net *net)
+>  	net->ipv4.sysctl_tcp_ecn_fallback = 1;
+>  
+>  	net->ipv4.sysctl_tcp_base_mss = TCP_BASE_MSS;
+> +	net->ipv4.sysctl_tcp_min_snd_mss = TCP_MIN_SND_MSS;
+>  	net->ipv4.sysctl_tcp_probe_threshold = TCP_PROBE_THRESHOLD;
+>  	net->ipv4.sysctl_tcp_probe_interval = TCP_PROBE_INTERVAL;
+>  
+> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+> index 1bb1c46b4abad100622d3f101a0a3ca0a6c8e881..00c01a01b547ec67c971dc25a74c9258563cf871 100644
+> --- a/net/ipv4/tcp_output.c
+> +++ b/net/ipv4/tcp_output.c
+> @@ -1459,8 +1459,7 @@ static inline int __tcp_mtu_to_mss(struct sock *sk, int pmtu)
+>  	mss_now -= icsk->icsk_ext_hdr_len;
+>  
+>  	/* Then reserve room for full set of TCP options and 8 bytes of data */
+> -	if (mss_now < TCP_MIN_SND_MSS)
+> -		mss_now = TCP_MIN_SND_MSS;
+> +	mss_now = max(mss_now, sock_net(sk)->ipv4.sysctl_tcp_min_snd_mss);
+>  	return mss_now;
+>  }
+>  
+> -- 
+> 2.22.0.410.gd8fdbe21b5-goog
+> 
