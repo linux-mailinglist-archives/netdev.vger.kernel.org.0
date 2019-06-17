@@ -2,90 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 041A8489D2
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 19:16:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99C11489D3
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 19:16:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726669AbfFQRQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 13:16:15 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:40603 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726005AbfFQRQP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 13:16:15 -0400
-Received: by mail-pg1-f194.google.com with SMTP id w10so1530746pgj.7
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 10:16:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=5+L8q4MccaA4jsHU0wyQTIrx8hFyzOC6yHHTOz7k82U=;
-        b=X0gpcVNyZm1GSsqTUkrRG7+HeaZQ6Tportm+/KM14yd5slz1+8ZliJHOar0YCgO09S
-         OoBw4KO3oOuUWyrlr1ZLjDIxvT9IJhRMm5ih+y8QbH7h9Cw373G8zhkb6kwaAIUjnyJ9
-         oLxfewuEU8jeSsH5PpGYYKpuz8+yxrr+3srCpqC1CZt2jruCDqXsxqdsBsbuMlsfiDL7
-         yiSVPWk818LtuPzRD3asu0w1MPXMukHwsxy1s6c0YWwHSGVKuR4RvgBomSLCsG++g+pR
-         zrECO69HK8gIAIuIrbCM9gD+FiFCo87zM71dr9YhoVrE1fbVMyBbkh/196CqQ6zu6SV9
-         0nfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=5+L8q4MccaA4jsHU0wyQTIrx8hFyzOC6yHHTOz7k82U=;
-        b=rnFj2GOgDwnQfSbry/0OzjARDrzzJp6BV3Sqi8TDXAE6lgCJa5n2cwluahWlvoWskn
-         LnJuzF1IPFiDUMp0TzZ65Pbqos1Tkv1ySCm693HAOb8WnhCQjNfpeCY1u5qafORQzvyv
-         D9pALJsxrTMtBVZNc8eRUcPKxIK6bkFLXzGzYgKfrPxUZ21B1tDtAE9oUX44Xu1lRA4m
-         wS2TOXvb8QTDb5QDebmae2rRum7pUcFhItBAOQNVZSt1qrWgaUbL0TcnsYFxmc8CJiy6
-         BNyxWc4qXqhB6+5eYDDYyzv5JvXaJyYIyUfHzGJ4JwGk2C0D8wM0dBcTwq/CmVpWIpYS
-         EYFg==
-X-Gm-Message-State: APjAAAV61jEXwQLd/4bk1B9sreWIVvn5Qua7nel1R+6XKGeyxzOv0dqp
-        Zu3wFh7+4RrS7XHmOD/j2Ro=
-X-Google-Smtp-Source: APXvYqxKYiapScWIrGZeB3MsjBpbt64uoTpeZ4AGV7Nls57kjqSwIh9VaVHaQmXCE383vCtOMA7VRA==
-X-Received: by 2002:a17:90a:9a95:: with SMTP id e21mr26376061pjp.98.1560791774433;
-        Mon, 17 Jun 2019 10:16:14 -0700 (PDT)
-Received: from [172.26.125.68] ([2620:10d:c090:180::1:e1dd])
-        by smtp.gmail.com with ESMTPSA id k22sm9329709pfg.77.2019.06.17.10.16.13
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 17 Jun 2019 10:16:13 -0700 (PDT)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Eric Dumazet" <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        "Eric Dumazet" <eric.dumazet@gmail.com>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Jonathan Looney" <jtl@netflix.com>,
-        "Neal Cardwell" <ncardwell@google.com>,
-        "Tyler Hicks" <tyhicks@canonical.com>,
-        "Yuchung Cheng" <ycheng@google.com>,
-        "Bruce Curtis" <brucec@netflix.com>
-Subject: Re: [PATCH net 4/4] tcp: enforce tcp_min_snd_mss in tcp_mtu_probing()
-Date:   Mon, 17 Jun 2019 10:16:12 -0700
-X-Mailer: MailMate (1.12.5r5635)
-Message-ID: <0EBAC49D-D8A7-4E00-9227-C3B1D6FDB610@gmail.com>
-In-Reply-To: <20190617170354.37770-5-edumazet@google.com>
-References: <20190617170354.37770-1-edumazet@google.com>
- <20190617170354.37770-5-edumazet@google.com>
+        id S1726964AbfFQRQZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 13:16:25 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33944 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726005AbfFQRQZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Jun 2019 13:16:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=aShAcX1ffuYf6Z5/DgVB3utR2HkNASrMTMIer3eKoF8=; b=gaCazfKZMl0BC6BUVPomKGyfAZ
+        s6TI55qr35Q6XghIVDlGxKCEOv/walOrXr1ZKZT1cYR3etwygW6HXcZCs88LWDjBiBBYFkv7ya7D1
+        4PtdlSTIZdCwToEy880BPrroh7PTWFuTP5mIZbogQzCF7wWEFbVOlJ122p2YrYl4wXSE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hcvEr-0002Ac-Fy; Mon, 17 Jun 2019 19:16:13 +0200
+Date:   Mon, 17 Jun 2019 19:16:13 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marek Vasut <marex@denx.de>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>, linux-hwmon@vger.kernel.org
+Subject: Re: [PATCH V2] net: phy: tja11xx: Add IRQ support to the driver
+Message-ID: <20190617171613.GJ17551@lunn.ch>
+References: <4f33b529-6c3c-07ee-6177-2d332de514c6@denx.de>
+ <cc8db234-4534-674d-eece-5a797a530cdf@gmail.com>
+ <ca63964a-242c-bb46-bd4e-76a270dbedb3@denx.de>
+ <20190528195806.GV18059@lunn.ch>
+ <15906cc0-3d8f-7810-27ed-d64bdbcfa7e7@denx.de>
+ <20190528212252.GW18059@lunn.ch>
+ <fe6c4f2f-812d-61b8-3ffb-7ed7dd89d151@denx.de>
+ <20190529232930.GF18059@lunn.ch>
+ <19f9e596-5b51-8c76-396e-572d3e8da463@denx.de>
+ <f9bb1f48-b69d-09b2-5b48-e3f09ce9107e@denx.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f9bb1f48-b69d-09b2-5b48-e3f09ce9107e@denx.de>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Jun 13, 2019 at 05:42:53PM +0200, Marek Vasut wrote:
+> On 5/30/19 1:46 AM, Marek Vasut wrote:
+> > On 5/30/19 1:29 AM, Andrew Lunn wrote:
+> >> On Tue, May 28, 2019 at 11:33:33PM +0200, Marek Vasut wrote:
+> >>> On 5/28/19 11:22 PM, Andrew Lunn wrote:
+> >>>>> The link detection on the TJA1100 (not TJA1101) seems unstable at best,
+> >>>>> so I better use all the interrupt sources to nudge the PHY subsystem and
+> >>>>> have it check the link change.
+> >>>>
+> >>>> Then it sounds like you should just ignore interrupts and stay will
+> >>>> polling for the TJA1100.
+> >>>
+> >>> Polling for the link status change is slow(er) than the IRQ driven
+> >>> operation, so I would much rather use the interrupts.
+> >>
+> >> I agree about the speed, but it seems like interrupts on this PHY are
+> >> not so reliable. Polling always works. But unfortunately, you cannot
+> >> have both interrupts and polling to fix up problems when interrupts
+> >> fail. Your call, do you think interrupts really do work?
+> > 
+> > It works fine for me this way. And mind you, it's only the TJA1100
+> > that's flaky, the TJA1101 is better.
+> > 
+> >> If you say that tja1101 works as expected, then please just use the
+> >> link up/down bits for it.
+> > 
+> > I still don't know which bits really trigger link status changes, so I'd
+> > like to play it safe and just trigger on all of them.
+> 
+> So what do we do here ?
 
+Hi Marek
 
-On 17 Jun 2019, at 10:03, Eric Dumazet wrote:
+My personal preference would be to just enable what is needed. But
+I won't block a patch which enables everything.
 
-> If mtu probing is enabled tcp_mtu_probing() could very well end up
-> with a too small MSS.
->
-> Use the new sysctl tcp_min_snd_mss to make sure MSS search
-> is performed in an acceptable range.
->
-> CVE-2019-11479 -- tcp mss hardcoded to 48
->
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reported-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-> Cc: Jonathan Looney <jtl@netflix.com>
-> Acked-by: Neal Cardwell <ncardwell@google.com>
-> Cc: Yuchung Cheng <ycheng@google.com>
-> Cc: Tyler Hicks <tyhicks@canonical.com>
-> Cc: Bruce Curtis <brucec@netflix.com>
-Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+  Andrew
