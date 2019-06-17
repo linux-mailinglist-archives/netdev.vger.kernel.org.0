@@ -2,170 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A67548BFB
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 20:35:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF56E48C31
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 20:39:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726048AbfFQSfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 14:35:41 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:33784 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725878AbfFQSfl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 14:35:41 -0400
-Received: by mail-qt1-f196.google.com with SMTP id x2so12034425qtr.0;
-        Mon, 17 Jun 2019 11:35:40 -0700 (PDT)
+        id S1726424AbfFQSj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 14:39:27 -0400
+Received: from mail-vs1-f66.google.com ([209.85.217.66]:37875 "EHLO
+        mail-vs1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725926AbfFQSj1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 14:39:27 -0400
+Received: by mail-vs1-f66.google.com with SMTP id v6so6839008vsq.4
+        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 11:39:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=6R1eTlGzgAfQR7Dbiz2phmu63E+RU6ETeg5r7VI5LIU=;
-        b=tADnIhed7CuC/BijpCUz/9AxD4B4fY30mvOvoiXuro/1gyvnxqIwsAqmyMHkx1bw6T
-         rAN5BXfCItoQS3t+mmhF+LvZ+cWDruYLyZjCzD60lJb3u43+AExC9o06Lwz0aApG7Q85
-         7pmedRwYyat+pIBMkYsbZuqoqQYsavpL9zBfkxdYLV5sCFBeF69G8Y5xmVjoaJ8dkfb8
-         YZyrAyPady+YFP0NapwaPaF7rmF48Ez8dJXjwLXtUbjvSOlIpMccfRXcn0w/ZGuqM0pc
-         Ca3Xuxf0T97t1RJ6zwRqdqrl+9SvAdOgLs3r6DJ/0CGFqRMcH5ZwyjyMCv2I3jyHr0Jq
-         L7AQ==
+        bh=HrHPxKrferT1JAd/MlzxZwSuGBA6gb0ENjpbrrRdk7w=;
+        b=SV7VogTP85EMqFS3Mzv6FQo/JuabZthZ0z2+w+f7x6cgdpjYwsindOdSBj6DYL7muZ
+         Ga32lSPxZzQMNTqIEKijrS3U0njBt8U1FGuYY4Bn4rgrKgquOm2fNDP7UUQXEBYolnJI
+         tn7JP7FeZbZ7RVkn3KRu0VDYevg8MpiDclJsfbC/y/ZrEIOggA73s9uvPuFHFS8yA2CC
+         heFrSIiAspsjbKU9EDZhdgXpre73gO+mIjJxiUOamg5k40ct/femc0WlL7O6TSLb3A4G
+         NRNKGp3iBcehgOVQvRCRA+xB8ZQD3fwNi1wkLzgmuBNRk4xNZhqIfi/sgaDYqDvi0YmT
+         6ceA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=6R1eTlGzgAfQR7Dbiz2phmu63E+RU6ETeg5r7VI5LIU=;
-        b=rvDclBaOYxdAjXgRltClgwPYMJKdGthqSCyFcQQTL9IZac/3T7y3tdtHdgG3q4zszg
-         z5KPRtOkxk16ysdklO3xmkzEbPALwstiLofF2Gki2FBCwSgpxc/DPnOW1OrdYxovzQ/q
-         NS2thOWIzyW0JoeQYKC4hShFvKel7Ch95ZyXIUfBk7j6jv2RI4fhWKoB3dtq64Rg66gH
-         pjms0qjOpx8PxAeHyoB805imXnkhnSGML0804wPc3CWYqnvGrYxoUGrbJ6iKahqcAgHW
-         9Op779NI5bgcVNtK7k0O7QF+Vd8jOwqiv3K2XShpSWsQGX3lboHjDxTw8UKRIeeKz7DJ
-         U1WQ==
-X-Gm-Message-State: APjAAAW0hZaqXiQvK4533MwUdyZVj9p75YrYxcq1wSWODnwSpGwh5aMl
-        RgR6G6elltrlnjkrJLiw9p7fntMZ6t/Gsn7Njr8=
-X-Google-Smtp-Source: APXvYqw3ayZjxjfSJGWiVqOR9NoqEhVz0jUkyjLZR6RvXr/HYuweowdEY9d4cJr0MmrsM9NARW2soXKAQ5kpvhWBjRQ=
-X-Received: by 2002:a0c:d0fc:: with SMTP id b57mr23098602qvh.78.1560796540158;
- Mon, 17 Jun 2019 11:35:40 -0700 (PDT)
+        bh=HrHPxKrferT1JAd/MlzxZwSuGBA6gb0ENjpbrrRdk7w=;
+        b=e3TDnMi3DpVBdsAb7CFSgFyyYqHC9XM5juI1EaqYGQxlQyZO8BUXdRpkf5TbVVm089
+         rrEItkPEHO8CUKfDYAf4jtJ8yy5Qw/1M4WxF2icMhsHZKIvcZ6Mml/JkPSkUp/GSayo3
+         lfq+2PksTWjh/GGV77iUqB3cno1ft3VkfPuA5F8yXqJwYGUdGVFa5WJXZyHAI9mNgwWX
+         c8ArTtCxSSf74x2auRq8mwUaVX36+jLIXzHIUZ8S4ZduzZ/YL3cA359MTa+Yj/qhd3TV
+         kMRkpdQvrx3GTM2XS9aJ2Mtc5+K/mEdRlA3ICP85n+8TZzcQArhaZ5aDkAR+ZVU3wiaM
+         lE8w==
+X-Gm-Message-State: APjAAAXY20rwCMwsrE1rbUh431Qs+kmZHgYBbprCtIdePbEpl6ER3Odi
+        01x/8hO4Dzu9QfKfaZEqS/DZZaNqbkmkdP+rsogfvA==
+X-Google-Smtp-Source: APXvYqy0hy2tVDS6IPNJlT9E1K+7AzXLT3TMlyyG420beOQJMtebGkOnRtHj86zAn/Yfs7K2PHcRzwGpAQjwvWrfiXQ=
+X-Received: by 2002:a67:ee5b:: with SMTP id g27mr1171014vsp.165.1560796765659;
+ Mon, 17 Jun 2019 11:39:25 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190611044747.44839-1-andriin@fb.com> <20190611044747.44839-3-andriin@fb.com>
- <CAPhsuW6kAN=gMjtXiAJazDFTszuq4xE-9OQTP_GhDX2cxym0NQ@mail.gmail.com>
- <CAEf4BzY_X9jPvwgcVQozS4RyonXEK9mkd58uvPVrjFi-Gvui3Q@mail.gmail.com> <8F07D61C-2751-44A6-9E89-9BE6781FEF81@fb.com>
-In-Reply-To: <8F07D61C-2751-44A6-9E89-9BE6781FEF81@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 17 Jun 2019 11:35:29 -0700
-Message-ID: <CAEf4BzbP4Urmg3m-ynSv8XAVhhm-4Rk3+F7zguZ7E7-oGBuWOQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/8] libbpf: extract BTF loading and simplify ELF
- parsing logic
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Song Liu <liu.song.a23@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>
+References: <20190617175653.21756-1-dianders@chromium.org>
+In-Reply-To: <20190617175653.21756-1-dianders@chromium.org>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Mon, 17 Jun 2019 20:38:49 +0200
+Message-ID: <CAPDyKFpaX6DSM_BjtghAHUf7qYCyEG+wMagXPUdgz3Eutovqfw@mail.gmail.com>
+Subject: Re: [PATCH v5 0/5] brcmfmac: sdio: Deal better w/ transmission errors
+ related to idle
+To:     Douglas Anderson <dianders@chromium.org>,
+        Kalle Valo <kvalo@codeaurora.org>
+Cc:     Adrian Hunter <adrian.hunter@intel.com>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        brcm80211-dev-list.pdl@broadcom.com,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        Double Lo <double.lo@cypress.com>,
+        Brian Norris <briannorris@chromium.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Naveen Gupta <naveen.gupta@cypress.com>,
+        Madhan Mohan R <madhanmohan.r@cypress.com>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Wright Feng <wright.feng@cypress.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        netdev <netdev@vger.kernel.org>,
+        brcm80211-dev-list <brcm80211-dev-list@cypress.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Allison Randal <allison@lohutok.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        =?UTF-8?Q?Niklas_S=C3=B6derlund?= 
+        <niklas.soderlund+renesas@ragnatech.se>,
+        Ritesh Harjani <riteshh@codeaurora.org>,
+        Michael Trimarchi <michael@amarulasolutions.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Ondrej Jirman <megous@megous.com>,
+        Jiong Wu <lohengrin1024@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Avri Altman <avri.altman@wdc.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 17, 2019 at 11:07 AM Song Liu <songliubraving@fb.com> wrote:
+On Mon, 17 Jun 2019 at 19:57, Douglas Anderson <dianders@chromium.org> wrote:
 >
+> This series attempts to deal better with the expected transmission
+> errors related to the idle states (handled by the Always-On-Subsystem
+> or AOS) on the SDIO-based WiFi on rk3288-veyron-minnie,
+> rk3288-veyron-speedy, and rk3288-veyron-mickey.
 >
+> Some details about those errors can be found in
+> <https://crbug.com/960222>, but to summarize it here: if we try to
+> send the wakeup command to the WiFi card at the same time it has
+> decided to wake up itself then it will behave badly on the SDIO bus.
+> This can cause timeouts or CRC errors.
 >
-> > On Jun 17, 2019, at 10:24 AM, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Sat, Jun 15, 2019 at 1:26 PM Song Liu <liu.song.a23@gmail.com> wrote:
-> >>
-> >> On Mon, Jun 10, 2019 at 9:49 PM Andrii Nakryiko <andriin@fb.com> wrote:
-> >>>
-> >>> As a preparation for adding BTF-based BPF map loading, extract .BTF and
-> >>> .BTF.ext loading logic. Also simplify error handling in
-> >>> bpf_object__elf_collect() by returning early, as there is no common
-> >>> clean up to be done.
-> >>>
-> >>> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> >>> ---
-> >>> tools/lib/bpf/libbpf.c | 137 ++++++++++++++++++++++-------------------
-> >>> 1 file changed, 75 insertions(+), 62 deletions(-)
-> >>>
-> >>> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> >>> index ba89d9727137..9e39a0a33aeb 100644
-> >>> --- a/tools/lib/bpf/libbpf.c
-> >>> +++ b/tools/lib/bpf/libbpf.c
-> >>> @@ -1078,6 +1078,58 @@ static void bpf_object__sanitize_btf_ext(struct bpf_object *obj)
-> >>>        }
-> >>> }
-> >>>
-> >>> +static int bpf_object__load_btf(struct bpf_object *obj,
-> >>> +                               Elf_Data *btf_data,
-> >>> +                               Elf_Data *btf_ext_data)
-> >>> +{
-> >>> +       int err = 0;
-> >>> +
-> >>> +       if (btf_data) {
-> >>> +               obj->btf = btf__new(btf_data->d_buf, btf_data->d_size);
-> >>> +               if (IS_ERR(obj->btf)) {
-> >>> +                       pr_warning("Error loading ELF section %s: %d.\n",
-> >>> +                                  BTF_ELF_SEC, err);
-> >>> +                       goto out;
-> >>
-> >> If we goto out here, we will return 0.
-> >
-> >
-> > Yes, it's intentional. BTF is treated as optional, so if we fail to
-> > load it, libbpf will emit warning, but will proceed as nothing
-> > happened and no BTF was supposed to be loaded.
-> >
-> >>
-> >>> +               }
-> >>> +               err = btf__finalize_data(obj, obj->btf);
-> >>> +               if (err) {
-> >>> +                       pr_warning("Error finalizing %s: %d.\n",
-> >>> +                                  BTF_ELF_SEC, err);
-> >>> +                       goto out;
-> >>> +               }
-> >>> +               bpf_object__sanitize_btf(obj);
-> >>> +               err = btf__load(obj->btf);
-> >>> +               if (err) {
-> >>> +                       pr_warning("Error loading %s into kernel: %d.\n",
-> >>> +                                  BTF_ELF_SEC, err);
-> >>> +                       goto out;
-> >>> +               }
-> >>> +       }
-> >>> +       if (btf_ext_data) {
-> >>> +               if (!obj->btf) {
-> >>> +                       pr_debug("Ignore ELF section %s because its depending ELF section %s is not found.\n",
-> >>> +                                BTF_EXT_ELF_SEC, BTF_ELF_SEC);
-> >>> +                       goto out;
-> >>
-> >> We will also return 0 when goto out here.
-> >
-> >
-> > See above, it's original behavior of libbpf.
-> >
-> >>
-> >>> +               }
-> >>> +               obj->btf_ext = btf_ext__new(btf_ext_data->d_buf,
-> >>> +                                           btf_ext_data->d_size);
-> >>> +               if (IS_ERR(obj->btf_ext)) {
-> >>> +                       pr_warning("Error loading ELF section %s: %ld. Ignored and continue.\n",
-> >>> +                                  BTF_EXT_ELF_SEC, PTR_ERR(obj->btf_ext));
-> >>> +                       obj->btf_ext = NULL;
-> >>> +                       goto out;
-> >> And, here. And we will not free obj->btf.
-> >
-> > This is situation in which we successfully loaded .BTF, but failed to
-> > load .BTF.ext. In that case we'll warn about .BTF.ext, but will drop
-> > it and continue with .BTF only.
-> >
+> When I tested on 4.19 and 4.20 these CRC errors can be seen to cause
+> re-tuning.  Since I am currently developing on 4.19 this was the
+> original problem I attempted to solve.
 >
-> Yeah, that makes sense.
+> On mainline it turns out that you don't see the retuning errors but
+> you see tons of spam about timeouts trying to wakeup from sleep.  I
+> tracked down the commit that was causing that and have partially
+> reverted it here.  I have no real knowledge about Broadcom WiFi, but
+> the commit that was causing problems sounds (from the descriptioin) to
+> be a hack commit penalizing all Broadcom WiFi users because of a bug
+> in a Cypress SD controller.  I will let others comment if this is
+> truly the case and, if so, what the right solution should be.
 >
-> Shall we let bpf_object__load_btf() return void? Since it always
-> returns 0?
+> For v3 of this series I have added 2 patches to the end of the series
+> to address errors that would show up on systems with these same SDIO
+> WiFi cards when used on controllers that do periodic retuning.  These
+> systems need an extra fix to prevent the retuning from happening when
+> the card is asleep.
+>
+> I believe v5 of this series is all ready to go assuming Kalle Valo is
+> good with it.  I've added after-the-cut notes to patches awaiting his
+> Ack and have added other tags collected so far.
+>
+> Changes in v5:
+> - Add missing sdio_retune_crc_enable() in comments (Ulf).
+> - /s/reneable/re-enable (Ulf).
+> - Remove leftover prototypes: mmc_expect_errors_begin() / end() (Ulf).
+> - Rewording of "sleep command" in commit message (Arend).
+>
+> Changes in v4:
+> - Moved to SDIO API only (Adrian, Ulf).
+> - Renamed to make it less generic, now retune_crc_disable (Ulf).
+> - Function header makes it clear host must be claimed (Ulf).
+> - No more WARN_ON (Ulf).
+> - Adjust to API rename (Adrian, Ulf).
+> - Moved retune hold/release to SDIO API (Adrian).
+> - Adjust to API rename (Adrian).
+>
+> Changes in v3:
+> - Took out the spinlock since I believe this is all in one context.
+> - Expect errors for all of brcmf_sdio_kso_control() (Adrian).
+> - ("mmc: core: Export mmc_retune_hold_now() mmc_retune_release()") new for v3.
+> - ("brcmfmac: sdio: Don't tune while the card is off") new for v3.
+>
+> Changes in v2:
+> - A full revert, not just a partial one (Arend).  ...with explicit Cc.
+> - Updated commit message to clarify based on discussion of v1.
+>
+> Douglas Anderson (5):
+>   Revert "brcmfmac: disable command decode in sdio_aos"
+>   mmc: core: API to temporarily disable retuning for SDIO CRC errors
+>   brcmfmac: sdio: Disable auto-tuning around commands expected to fail
+>   mmc: core: Add sdio_retune_hold_now() and sdio_retune_release()
+>   brcmfmac: sdio: Don't tune while the card is off
+>
+>  drivers/mmc/core/core.c                       |  5 +-
+>  drivers/mmc/core/sdio_io.c                    | 77 +++++++++++++++++++
+>  .../broadcom/brcm80211/brcmfmac/sdio.c        | 17 ++--
+>  include/linux/mmc/host.h                      |  1 +
+>  include/linux/mmc/sdio_func.h                 |  6 ++
+>  5 files changed, 99 insertions(+), 7 deletions(-)
+>
+> --
+> 2.22.0.410.gd8fdbe21b5-goog
+>
 
-This is split into bpf_object__init_btf and
-bpf_object__sanitize_and_load_btf in patch #6, both of which can
-return errors. So probably not worth changing just for one patch.
+Applied for fixes, thanks!
 
->
-> Thanks,
-> Song
->
-> <snip>
->
+Some minor changes:
+1) Dropped the a few "commit notes", that was more related to version
+and practical information about the series.
+2) Dropped fixes tags for patch 2->5, but instead put a stable tag
+targeted for v4.18+.
+
+Awaiting an ack from Kalle before sending the PR to Linus.
+
+Kalle, perhaps you prefer to pick patch 1, as it could go separate.
+Then please tell - and/or if there is anything else you want me to
+change.
+
+Kind regards
+Uffe
