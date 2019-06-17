@@ -2,141 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 737EA495B9
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 01:14:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E7AE495C4
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 01:20:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727057AbfFQXOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 19:14:01 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:5848 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726685AbfFQXOB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 19:14:01 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5HNCeZN023626;
-        Mon, 17 Jun 2019 16:13:06 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=kD57tCAhEL93V0zBDmeP/5lFPq4iFxwKi42Hg+SI/Gk=;
- b=NrZwJFnxkUCSc18dJcivoZXPGyzJLf0u24XyZRVSU/vlr5Ii/QGj5t5DzgShnmD4Oe/R
- moPnRlqjFx85lPJ7nLyobyA1L4ZVZkrAdbHEBBhrSnANij/0PKkz67rL63aJ8D64sJia
- zQ3PjsGo9iOgamTY9hNmH37GndYWLDwKg+4= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2t6e8esdna-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 17 Jun 2019 16:13:06 -0700
-Received: from ash-exopmbx201.TheFacebook.com (2620:10d:c0a8:83::8) by
- ash-exhub102.TheFacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 17 Jun 2019 16:13:04 -0700
-Received: from ash-exhub104.TheFacebook.com (2620:10d:c0a8:82::d) by
- ash-exopmbx201.TheFacebook.com (2620:10d:c0a8:83::8) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 17 Jun 2019 16:13:04 -0700
-Received: from NAM05-DM3-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.175) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
- via Frontend Transport; Mon, 17 Jun 2019 16:13:04 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector1-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kD57tCAhEL93V0zBDmeP/5lFPq4iFxwKi42Hg+SI/Gk=;
- b=AAUb5EpMPnwJzVfu3tLjJlf+auzwr3HmclzDRKULjvEAmSX+Ue+UaS6XglX08QdxX8ClInSuCkSSe0IB9vM5YwWZFAo/2YHtCMfQQOcWFtmlWRqXcrLEBqrQIZaXLnAXaqOAlVgeiGE+0tJyTu0GRRsG7shI+YZmtrBT4yg+eyE=
-Received: from MWHPR15MB1262.namprd15.prod.outlook.com (10.175.3.141) by
- MWHPR15MB1951.namprd15.prod.outlook.com (10.175.9.12) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1987.12; Mon, 17 Jun 2019 23:13:03 +0000
-Received: from MWHPR15MB1262.namprd15.prod.outlook.com
- ([fe80::80df:7291:9855:e8bc]) by MWHPR15MB1262.namprd15.prod.outlook.com
- ([fe80::80df:7291:9855:e8bc%8]) with mapi id 15.20.1987.014; Mon, 17 Jun 2019
- 23:13:03 +0000
-From:   Matt Mullins <mmullins@fb.com>
-To:     "alexei.starovoitov@gmail.com" <alexei.starovoitov@gmail.com>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>
-CC:     Song Liu <songliubraving@fb.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Martin Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        "arnd@arndb.de" <arnd@arndb.de>, Andrii Nakryiko <andriin@fb.com>
-Subject: Re: [PATCH] bpf: hide do_bpf_send_signal when unused
-Thread-Topic: [PATCH] bpf: hide do_bpf_send_signal when unused
-Thread-Index: AQHVJQxLE8bACzewukSK6TikAan5uKaf9/mAgACBUQCAAAEIgA==
-Date:   Mon, 17 Jun 2019 23:13:03 +0000
-Message-ID: <75e9ff40e1002ad9c82716dfd77966a3721022b6.camel@fb.com>
-References: <20190617125724.1616165-1-arnd@arndb.de>
-         <CAADnVQ+LzuNHFyLae0vUAudZpOFQ4cA02OC0zu3ypis+gqnjew@mail.gmail.com>
-         <20190617190920.71c21a6c@gandalf.local.home>
-In-Reply-To: <20190617190920.71c21a6c@gandalf.local.home>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
-x-originating-ip: [2620:10d:c090:200::1:b232]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 0f1b1b3d-282f-433b-9ed2-08d6f3795942
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR15MB1951;
-x-ms-traffictypediagnostic: MWHPR15MB1951:
-x-microsoft-antispam-prvs: <MWHPR15MB19519F98D6857F8AA6BFB3E6B0EB0@MWHPR15MB1951.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-forefront-prvs: 0071BFA85B
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(376002)(136003)(39860400002)(396003)(366004)(189003)(199004)(68736007)(102836004)(486006)(86362001)(186003)(14454004)(6116002)(76176011)(53546011)(256004)(6506007)(71200400001)(53936002)(6512007)(14444005)(99286004)(2906002)(110136005)(446003)(7736002)(81156014)(76116006)(64756008)(8936002)(2616005)(11346002)(476003)(36756003)(6246003)(229853002)(6436002)(6486002)(71190400001)(66446008)(73956011)(54906003)(66556008)(25786009)(316002)(81166006)(118296001)(50226002)(2501003)(478600001)(8676002)(4326008)(5660300002)(46003)(66476007)(305945005)(66946007)(99106002);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1951;H:MWHPR15MB1262.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: KNUVxvXn1aB30hU1FfwKzUP6nQiHHmHFvvMA2J0gWiZuDlQvI2+3wm7v19sxv3f56J91eK18gcxOk3X/uIYFNiNw2C5t3PqkcBNQWwqqKZ0bIdXnV0irSyTCnpGDZowC/04sqmHGTVkfxuHqI7vWRyNZJl8gTmjOngMOPQm7e+C+OEr6JrzJThWxN/wqJKger8ISB4BYtPYYatxh+RUQirT+7OtJM0DAYxFGuUOkHRUyrh8FQIvzfrJ4OR7nexhQgReArMN82LoT/Oyz28g97O3/cciZco44e7XX0rx9hW0nNZ7gIJJfIH7dHp16ehiKpVENdavdG4uJ2ONPKj6BT+eVXhNfV/g9pOatSU5oBsQ+urhrdkJlALyZ8S7c0sD+UCAJ5a4yaCBHIlyAF9SbZLtZsZwEtZjfkvM2xwb/WDQ=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <C79D25D67040F1448F425649F73E8E09@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1727768AbfFQXUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 19:20:07 -0400
+Received: from mx.0dd.nl ([5.2.79.48]:39954 "EHLO mx.0dd.nl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726121AbfFQXUH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Jun 2019 19:20:07 -0400
+Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx.0dd.nl (Postfix) with ESMTPS id 6DE175FEE7;
+        Tue, 18 Jun 2019 01:20:04 +0200 (CEST)
+Authentication-Results: mx.0dd.nl;
+        dkim=pass (2048-bit key) header.d=vdorst.com header.i=@vdorst.com header.b="uOfUPqnK";
+        dkim-atps=neutral
+Received: from www (www.vdorst.com [192.168.2.222])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.vdorst.com (Postfix) with ESMTPSA id 31DC51C7A096;
+        Tue, 18 Jun 2019 01:20:04 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com 31DC51C7A096
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
+        s=default; t=1560813604;
+        bh=1V+kDFbsQWF2yVaPvwyK9QrJHGtmWAERQrJ9w82bGkI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=uOfUPqnKv2RKjGgsDvHezjQzYlcYRsBbJMIJqRIRlElb40ISlrs11soXd5jC2zl81
+         E4Chur7eznaSsLZUUQd4Zycv0OIrADj61duD/0a/tkO2bnpzEP8qJMrF2unh8/Dhwj
+         t0zoZSCha0UrGy9vZU84+INmpA6qSBnXCDKCEOnXgVmI/+b1EMr8T7AtWafEUhHcC6
+         cBforI4Gh6/zPaOZ+crSgSzbRU8Oy/1flM116u1Yli3so42GglBPFuF0hRrat835Rc
+         PP2IbTv2l5l66RYGnRKbWLlzyE0fqkQKigHvu1GmqdyYzwD5WpKWyKXcI6qfiR1NR0
+         jz9VWQKuREyIg==
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1]) by
+ www.vdorst.com (Horde Framework) with HTTPS; Mon, 17 Jun 2019 23:20:04 +0000
+Date:   Mon, 17 Jun 2019 23:20:04 +0000
+Message-ID: <20190617232004.Horde.mAVymZdeb9Jjf29W2PeOggU@www.vdorst.com>
+From:   =?utf-8?b?UmVuw6k=?= van Dorst <opensource@vdorst.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        netdev@vger.kernel.org, john@phrozen.org,
+        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org
+Subject: Re: [PATCH net-next 0/2] net: mediatek: Add MT7621 TRGMII mode
+ support
+References: <20190616182010.18778-1-opensource@vdorst.com>
+ <20190617140223.GC25211@lunn.ch>
+ <20190617213312.Horde.fcb9-g80Zzfd-IMC8EQy50h@www.vdorst.com>
+ <20190617214428.GO17551@lunn.ch>
+In-Reply-To: <20190617214428.GO17551@lunn.ch>
+User-Agent: Horde Application Framework 5
+Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0f1b1b3d-282f-433b-9ed2-08d6f3795942
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jun 2019 23:13:03.1983
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: mmullins@fb.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1951
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-17_09:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906170201
-X-FB-Internal: deliver
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gTW9uLCAyMDE5LTA2LTE3IGF0IDE5OjA5IC0wNDAwLCBTdGV2ZW4gUm9zdGVkdCB3cm90ZToN
-Cj4gT24gTW9uLCAxNyBKdW4gMjAxOSAwODoyNjoyOSAtMDcwMA0KPiBBbGV4ZWkgU3Rhcm92b2l0
-b3YgPGFsZXhlaS5zdGFyb3ZvaXRvdkBnbWFpbC5jb20+IHdyb3RlOg0KPiANCj4gPiBPbiBNb24s
-IEp1biAxNywgMjAxOSBhdCA1OjU5IEFNIEFybmQgQmVyZ21hbm4gPGFybmRAYXJuZGIuZGU+IHdy
-b3RlOg0KPiA+ID4gDQo+ID4gPiBXaGVuIENPTkZJR19NT0RVTEVTIGlzIGRpc2FibGVkLCB0aGlz
-IGZ1bmN0aW9uIGlzIG5ldmVyIGNhbGxlZDoNCj4gPiA+IA0KPiA+ID4ga2VybmVsL3RyYWNlL2Jw
-Zl90cmFjZS5jOjU4MToxMzogZXJyb3I6ICdkb19icGZfc2VuZF9zaWduYWwnIGRlZmluZWQgYnV0
-IG5vdCB1c2VkIFstV2Vycm9yPXVudXNlZC1mdW5jdGlvbl0gIA0KPiA+IA0KPiA+IGhtbS4gaXQg
-c2hvdWxkIHdvcmsganVzdCBmaW5lIHdpdGhvdXQgbW9kdWxlcy4NCj4gPiB0aGUgYnVnIGlzIHNv
-bWV3aGVyZSBlbHNlLg0KPiANCj4gRnJvbSB3aGF0IEkgc2VlLCB0aGUgb25seSB1c2Ugb2YgZG9f
-YnBmX3NlbmRfc2lnbmFsIGlzIHdpdGhpbiBhDQo+ICNpZmRlZiBDT05GSUdfTU9EVUxFUywgd2hp
-Y2ggbWVhbnMgdGhhdCB5b3Ugd2lsbCBnZXQgYSB3YXJuaW5nIGFib3V0IGENCj4gc3RhdGljIHVu
-dXNlZCB3aGVuIENPTkZJR19NT0RVTEVTIGlzIG5vdCBkZWZpbmVkLg0KPiANCj4gSW4ga2VybmVs
-L3RyYWNlL2JwZl90cmFjZS5jIHdlIGhhdmU6DQo+IA0KPiBzdGF0aWMgdm9pZCBkb19icGZfc2Vu
-ZF9zaWduYWwoc3RydWN0IGlycV93b3JrICplbnRyeSkNCj4gDQo+IFsuLl0NCj4gDQo+ICNpZmRl
-ZiBDT05GSUdfTU9EVUxFUw0KPiANCj4gWy4uXQ0KPiANCj4gICAgICAgICBmb3JfZWFjaF9wb3Nz
-aWJsZV9jcHUoY3B1KSB7DQo+ICAgICAgICAgICAgICAgICB3b3JrID0gcGVyX2NwdV9wdHIoJnNl
-bmRfc2lnbmFsX3dvcmssIGNwdSk7DQo+ICAgICAgICAgICAgICAgICBpbml0X2lycV93b3JrKCZ3
-b3JrLT5pcnFfd29yaywgZG9fYnBmX3NlbmRfc2lnbmFsKTsgIDwtLSBvbiB1c2Ugb2YgZG9fYnBm
-X3NlbmRfc2lnbmFsDQo+ICAgICAgICAgfQ0KPiBbLi5dDQo+ICNlbmRpZiAvKiBDT05GSUdfTU9E
-VUxFUyAqLw0KPiANCj4gVGhlIGJ1ZyAocmVhbGx5IGp1c3QgYSB3YXJuaW5nKSByZXBvcnRlZCBp
-cyBleGFjdGx5IGhlcmUuDQoNCkkgZG9uJ3QgdGhpbmsgYnBmX3NlbmRfc2lnbmFsIGlzIHRpZWQg
-dG8gbW9kdWxlcyBhdCBhbGw7DQpzZW5kX3NpZ25hbF9pcnFfd29ya19pbml0IGFuZCB0aGUgY29y
-cmVzcG9uZGluZyBpbml0Y2FsbCBzaG91bGQgYmUNCm1vdmVkIG91dHNpZGUgdGhhdCAjaWZkZWYu
-DQoNCj4gDQo+IC0tIFN0ZXZlDQo=
+Quoting Andrew Lunn <andrew@lunn.ch>:
+
+Hi Andrew,
+
+> On Mon, Jun 17, 2019 at 09:33:12PM +0000, René van Dorst wrote:
+>> Quoting Andrew Lunn <andrew@lunn.ch>:
+>>
+>> >On Sun, Jun 16, 2019 at 08:20:08PM +0200, René van Dorst wrote:
+>> >>Like many other mediatek SOCs, the MT7621 SOC and the internal MT7530
+>> >>switch both
+>> >>supports TRGMII mode. MT7621 TRGMII speed is 1200MBit.
+>> >
+>> >Hi René
+>> >
+>>
+>> Hi Andrew,
+>>
+>> >Is TRGMII used only between the SoC and the Switch? Or does external
+>> >ports of the switch also support 1200Mbit/s? If external ports support
+>> >this, what does ethtool show for Speed?
+>>
+>> Only the first GMAC of the SOC and port 6 of the switch supports this mode.
+>> The switch can be internal in the SOC but also a separate chip.
+>>
+>> PHYLINK and ethertool reports the link as 1Gbit.
+>> The link is fixed-link with speed = 1000.
+>>
+>> dmesg output with unposted PHYLINK patches:
+>> [    5.236763] mt7530 mdio-bus:1f: configuring for fixed/trgmii link mode
+>> [    5.249813] mt7530 mdio-bus:1f: phylink_mac_config:
+>> mode=fixed/trgmii/1Gbps/Full adv=00,00000000,00000220 pause=12 link=1 an=1
+>> [    6.389435] mtk_soc_eth 1e100000.ethernet eth0: phylink_mac_config:
+>> mode=fixed/trgmii/1Gbps/Full adv=00,00000000,00000220 pause=12 link=1 an=1
+>
+> With PHYLINK, you can probably set the fixed link to the true 1.2Gbps.
+
+By adding some extra speed states in the code it seems to work.
+
++               if (state->speed == 1200)
++                       mcr |= PMCR_FORCE_SPEED_1000;
+
+dmesg:
+[    5.261375] mt7530 mdio-bus:1f: configuring for fixed/trgmii link mode
+[    5.274390] mt7530 mdio-bus:1f: phylink_mac_config:  
+mode=fixed/trgmii/Unsupported (update phy-core.c)/Full  
+adv=00,00000000,00000200 pause=12 link=1 an=1
+[    6.296614] mtk_soc_eth 1e100000.ethernet eth0: configuring for  
+fixed/trgmii link mode
+[    6.313608] mtk_soc_eth 1e100000.ethernet eth0: phylink_mac_config:  
+mode=fixed/trgmii/Unsupported (update phy core.c)/Full  
+adv=00,00000000,00000200 pause=12 link=1 an=1
+
+# ethtool eth0
+Settings for eth0:
+         Supported ports: [ MII ]
+         Supported link modes:   Not reported
+         Supported pause frame use: No
+         Supports auto-negotiation: No
+         Supported FEC modes: Not reported
+         Advertised link modes:  Not reported
+         Advertised pause frame use: No
+         Advertised auto-negotiation: No
+         Advertised FEC modes: Not reported
+         Speed: 1200Mb/s
+         Duplex: Full
+         Port: MII
+         PHYAD: 0
+         Transceiver: internal
+         Auto-negotiation: on
+         Current message level: 0x000000ff (255)
+                                drv probe link timer ifdown ifup rx_err tx_err
+         Link detected: yes
+
+
+>> # ethtool eth0
+>> Settings for eth0:
+>>          Supported ports: [ MII ]
+>>          Supported link modes:   1000baseT/Full
+>>          Supported pause frame use: No
+>>          Supports auto-negotiation: No
+>>          Supported FEC modes: Not reported
+>>          Advertised link modes:  1000baseT/Full
+>>          Advertised pause frame use: No
+>>          Advertised auto-negotiation: No
+>>          Advertised FEC modes: Not reported
+>>          Speed: 1000Mb/s
+>
+> We could consider adding 1200BaseT/Full?
+
+I don't have any opinion about this.
+It is great that it shows nicely in ethtool but I think supporting more
+speeds in phy_speed_to_str() is enough.
+
+Also you may want to add other SOCs trgmii ranges too:
+- 1200BaseT/Full for mt7621 only
+- 2000BaseT/Full for mt7623 and mt7683
+- 2600BaseT/Full for mt7623 only
+
+I leave the decision to you.
+
+Greats,
+
+René
+
+>
+>    Andrew
+
+
