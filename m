@@ -2,117 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 73DEC48985
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 19:00:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7BBD48995
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 19:04:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726362AbfFQRAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 13:00:31 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:40887 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725863AbfFQRAb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 13:00:31 -0400
-Received: by mail-pf1-f193.google.com with SMTP id p184so6008709pfp.7;
-        Mon, 17 Jun 2019 10:00:31 -0700 (PDT)
+        id S1726731AbfFQRE3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 13:04:29 -0400
+Received: from mail-ot1-f73.google.com ([209.85.210.73]:39222 "EHLO
+        mail-ot1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725863AbfFQRE2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 13:04:28 -0400
+Received: by mail-ot1-f73.google.com with SMTP id x27so5172455ote.6
+        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 10:04:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=PWC+RbxtlMDHshNLSaHRZ424esMvY5x7T2f733VpE/M=;
-        b=upDVNYelb9DUB/83bN9uWmEr9jt871fNfLI5T0ZdvUdJ8DAnQ0qnF7Ja6X7Wn2suj9
-         4hdqCuD943g4PL1FC6ClHYljI0bF8vlkLKWNDxSKBL+Gc9pvvmxf4pd1E5Q5IeqsqbVg
-         nnSivwFlG5JzpTJg1nbsQhx5LBL3ISkYVSW/p6HkRyj5KwP77B8k9CFtBJcucttxH8eb
-         dNU1nSookMwuKeNmC5kjQiB/bMx+1u1YKbphgCOXU8qlfwDzLxZpsoOWmv/gMecdMHa9
-         yC+MJyyxc6R/+OT5Rj1m+svVQ4vaJuM/9ZtwZSlCw32+gEpBya/yIcDoD1xM910hiYcn
-         pLjg==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=JqBZQ8VEOSDyfbiQWC8fU8SqzSy8ioAWvekiIEW8Kbk=;
+        b=V0cVkplByGOjX1iZo+ocVhqpQX7fdQDfuYdUvyLEeFwDIRWvC9EDZMKY00nHqabNQk
+         R9cX2S/RfVhut0zzJnPqLjHBnA80FUAyOq8OGxj0gdBIj2Ube8ew71T17sFRkXH+uHKG
+         Bi6chxF+JgBEUDDmTuVT/v3hZyUCGUJe72Av6i6sqUYJ/2Rn3jhLBgnLLaYhzXe2o97P
+         rdLmh8Kxx42tjyAibbsM8X0mythtC97Joa/oEgTSQBE3De4OFlRqWhz6x+ltBBo49A0P
+         hYddSBz1pp1VNM0Jkw8cf9IuEfzObOBdje1MMufHFMSD8hZWiCI2to1gNnokmwBNbua6
+         dyKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=PWC+RbxtlMDHshNLSaHRZ424esMvY5x7T2f733VpE/M=;
-        b=jfSMMeJdq4fPeEpme1ayyv7JlVvFrmyPt25lZexAN0+D5zrrqz93MkOARbI3zT2y44
-         fxoTeeH7AjzzdVf0aHJI3iUig4i/QLDPzG2F4YhRLCGsjOHreA80BdJ/YvlQ+G/DKDMY
-         agECWO8wUgXGrY9u5Ubh8P4B1sH7jAB7ut9xOFLr7BLHfClvQN5GZOsHcVQapi1QrgtM
-         iu5tpYt9N6LdS2AwTFzOgX7BbCO9Ed8UhUv9kpdjlzru0j3FVlzHoSNPNhXo8MCkuUbq
-         /CXY6g5WqrDBXbcgzZvYWowlUS4rcJtDCWMR3UBeblJkeL0iobsQZnuvKaY3NrvJjZFb
-         hLwA==
-X-Gm-Message-State: APjAAAUgSertC24rigTu/NlCvUKqW+KG59PdJfAx2j2bzgAGCKihEuiA
-        ZrsLTwA+nqo25oxJSuganXU=
-X-Google-Smtp-Source: APXvYqw6wt+Opahah8Vn7nUIT5LdVOYWnQNKWZfnggSuwHfRwOO3nFjPPvZvbDGLoocfMFVJhjaLFg==
-X-Received: by 2002:a17:90a:cb97:: with SMTP id a23mr26512512pju.67.1560790830866;
-        Mon, 17 Jun 2019 10:00:30 -0700 (PDT)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id d123sm15587217pfc.144.2019.06.17.10.00.29
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Mon, 17 Jun 2019 10:00:29 -0700 (PDT)
-Subject: Re: [PATCH v3] net: ipv4: move tcp_fastopen server side code to
- SipHash library
-To:     Ard Biesheuvel <ard.biesheuvel@linaro.org>, netdev@vger.kernel.org
-Cc:     linux-crypto@vger.kernel.org, herbert@gondor.apana.org.au,
-        ebiggers@kernel.org, edumazet@google.com, davem@davemloft.net,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, jbaron@akamai.com,
-        cpaasch@apple.com, David.Laight@aculab.com, ycheng@google.com
-References: <20190617080933.32152-1-ard.biesheuvel@linaro.org>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <e1c4c9b6-3668-106a-69ef-7ef6c016a5f6@gmail.com>
-Date:   Mon, 17 Jun 2019 10:00:28 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
-MIME-Version: 1.0
-In-Reply-To: <20190617080933.32152-1-ard.biesheuvel@linaro.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=JqBZQ8VEOSDyfbiQWC8fU8SqzSy8ioAWvekiIEW8Kbk=;
+        b=IqeAiAQUiSpYD82iBtGHKLwNCpL9qPsFmPyeIAudL5/BrQJYjybCNAytCn5oJYAsfV
+         GYflyombLn/k85NO9tgfjXXB8nWACCB0kufgItTwQsDEvQhftDfvjzhNIZCmD0f4xoke
+         pziRj1wmk67PxPVOJM99Sz2pEDlF1qdvV1ZwUBuIM22uyQRT7suyOfj/N4NKEbXf4up4
+         ZfPvMUL2uEDCoHnOVhXPXm/MeIDfTdb2Q46/bHhj2L9c1NyuuI1ijRzlkmvI7Ok/jzER
+         vP0seyNUfzNuQB8e34mEll0VcwV+Xvi7AL0r0YihbjHyOWDYW0e/wDEkdKuLwC165o2U
+         D0nw==
+X-Gm-Message-State: APjAAAUGHm4Pb5+4S1QtNz31aKAM4/urkcctUTMqHRMKattMootiY1jd
+        3XAWSvV6S6JMk8g4hUSF4QWkYCvLkLXwmg==
+X-Google-Smtp-Source: APXvYqzYfuJnixcXgwJqhwjV1yc3dsUnR1rxZZ9bBs5JIJjH5j8JOwZZW0j1tNpZdIEZjYOXKJxd5Ban1oPIXg==
+X-Received: by 2002:aca:36c5:: with SMTP id d188mr11072102oia.39.1560791067872;
+ Mon, 17 Jun 2019 10:04:27 -0700 (PDT)
+Date:   Mon, 17 Jun 2019 10:03:50 -0700
+Message-Id: <20190617170354.37770-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
+Subject: [PATCH net 0/4] tcp: make sack processing more robust
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Looney <jtl@netflix.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Tyler Hicks <tyhicks@canonical.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Bruce Curtis <brucec@netflix.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Jonathan Looney brought to our attention multiple problems
+in TCP stack at the sender side.
 
+SACK processing can be abused by malicious peers to either
+cause overflows, or increase of memory usage.
 
-On 6/17/19 1:09 AM, Ard Biesheuvel wrote:
-> Using a bare block cipher in non-crypto code is almost always a bad idea,
-> not only for security reasons (and we've seen some examples of this in
-> the kernel in the past), but also for performance reasons.
-> 
-> In the TCP fastopen case, we call into the bare AES block cipher one or
-> two times (depending on whether the connection is IPv4 or IPv6). On most
-> systems, this results in a call chain such as
-> 
->   crypto_cipher_encrypt_one(ctx, dst, src)
->     crypto_cipher_crt(tfm)->cit_encrypt_one(crypto_cipher_tfm(tfm), ...);
->       aesni_encrypt
->         kernel_fpu_begin();
->         aesni_enc(ctx, dst, src); // asm routine
->         kernel_fpu_end();
-> 
-> It is highly unlikely that the use of special AES instructions has a
-> benefit in this case, especially since we are doing the above twice
-> for IPv6 connections, instead of using a transform which can process
-> the entire input in one go.
-> 
-> We could switch to the cbcmac(aes) shash, which would at least get
-> rid of the duplicated overhead in *some* cases (i.e., today, only
-> arm64 has an accelerated implementation of cbcmac(aes), while x86 will
-> end up using the generic cbcmac template wrapping the AES-NI cipher,
-> which basically ends up doing exactly the above). However, in the given
-> context, it makes more sense to use a light-weight MAC algorithm that
-> is more suitable for the purpose at hand, such as SipHash.
-> 
-> Since the output size of SipHash already matches our chosen value for
-> TCP_FASTOPEN_COOKIE_SIZE, and given that it accepts arbitrary input
-> sizes, this greatly simplifies the code as well.
-> 
-> NOTE: Server farms backing a single server IP for load balancing purposes
->       and sharing a single fastopen key will be adversely affected by
->       this change unless all systems in the pool receive their kernel
->       upgrades at the same time.
-> 
-> Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-> ---
+First two patches fix the immediate problems.
 
-All our fastopen packetdrill tests pass (after I changed all the cookie values in them)
+Since the malicious peers abuse senders by advertizing a very
+small MSS in their SYN or SYNACK packet, the last two
+patches add a new sysctl so that admins can chose a higher
+limit for MSS clamping.
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+Eric Dumazet (4):
+  tcp: limit payload size of sacked skbs
+  tcp: tcp_fragment() should apply sane memory limits
+  tcp: add tcp_min_snd_mss sysctl
+  tcp: enforce tcp_min_snd_mss in tcp_mtu_probing()
 
+ Documentation/networking/ip-sysctl.txt |  8 ++++++++
+ include/linux/tcp.h                    |  4 ++++
+ include/net/netns/ipv4.h               |  1 +
+ include/net/tcp.h                      |  2 ++
+ include/uapi/linux/snmp.h              |  1 +
+ net/ipv4/proc.c                        |  1 +
+ net/ipv4/sysctl_net_ipv4.c             | 11 +++++++++++
+ net/ipv4/tcp.c                         |  1 +
+ net/ipv4/tcp_input.c                   | 26 ++++++++++++++++++++------
+ net/ipv4/tcp_ipv4.c                    |  1 +
+ net/ipv4/tcp_output.c                  | 10 +++++++---
+ net/ipv4/tcp_timer.c                   |  1 +
+ 12 files changed, 58 insertions(+), 9 deletions(-)
+
+-- 
+2.22.0.410.gd8fdbe21b5-goog
 
