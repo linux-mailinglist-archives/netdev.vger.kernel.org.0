@@ -2,161 +2,256 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D43347999
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 07:02:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1500479A4
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 07:15:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726278AbfFQFCX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 01:02:23 -0400
-Received: from f0-dek.dektech.com.au ([210.10.221.142]:43670 "EHLO
+        id S1725914AbfFQFP5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 01:15:57 -0400
+Received: from f0-dek.dektech.com.au ([210.10.221.142]:55924 "EHLO
         mail.dektech.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726030AbfFQFCX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 01:02:23 -0400
-X-Greylist: delayed 357 seconds by postgrey-1.27 at vger.kernel.org; Mon, 17 Jun 2019 01:02:21 EDT
+        with ESMTP id S1725280AbfFQFP4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 01:15:56 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by mail.dektech.com.au (Postfix) with ESMTP id E2E5EE4E5E;
-        Mon, 17 Jun 2019 14:56:21 +1000 (AEST)
+        by mail.dektech.com.au (Postfix) with ESMTP id E6226E4F89;
+        Mon, 17 Jun 2019 15:15:50 +1000 (AEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dektech.com.au;
          h=x-mailer:message-id:date:date:subject:subject:from:from
-        :received:received:received; s=mail_dkim; t=1560747381; bh=VAgPq
-        XUK+w4bRPwkOn9ZSufdF5DppLVtnKmJpiSMH6s=; b=OUt03EJAAFD4XU/bTfgHT
-        IRjR6KSZagsc2cjcveHy8lMi+4IgquARYrUcsOGLYOGyUztqlCMEvG627zcbQ2MI
-        C7U54hIvZZLxVYFvKeLoAiC7Aw7s1SCSUAJLjXohuX/4Xkwn++PekkzgueM/Yh0G
-        07EJXfiW8xdSdPwZApJAaU=
+        :received:received:received; s=mail_dkim; t=1560748550; bh=/+i7n
+        BBZCB0X4FPUG8yNW/nePa2NKgJT97q7+ZxinmQ=; b=MwGxDEyzCrSnNhOa+JEJw
+        RxlcFP91WeJwshH+0tiI1h5ZtrZZKvHANfM5E95d0psssRjTzjXgdRUh3dl8MB57
+        2e8tmSAsyKXRN615EcY7+D5WuuxY5udPkA9dsueb+IhdlBkVUTpPLsVHA/QG2lHv
+        iDVLEvNxCdll6Eg1dPc3EM=
 X-Virus-Scanned: amavisd-new at dektech.com.au
 Received: from mail.dektech.com.au ([127.0.0.1])
         by localhost (mail2.dektech.com.au [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id FUXOhCK52xqO; Mon, 17 Jun 2019 14:56:21 +1000 (AEST)
+        with ESMTP id kW_a0olO7aNV; Mon, 17 Jun 2019 15:15:50 +1000 (AEST)
 Received: from mail.dektech.com.au (localhost [127.0.0.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPS id 2936FE4F70;
-        Mon, 17 Jun 2019 14:56:20 +1000 (AEST)
+        by mail.dektech.com.au (Postfix) with ESMTPS id BACC5E4F8A;
+        Mon, 17 Jun 2019 15:15:50 +1000 (AEST)
 Received: from localhost.localdomain (unknown [14.161.14.188])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPSA id 4E20DE4E5E;
-        Mon, 17 Jun 2019 14:56:19 +1000 (AEST)
+        by mail.dektech.com.au (Postfix) with ESMTPSA id CF5E9E4F89;
+        Mon, 17 Jun 2019 15:15:48 +1000 (AEST)
 From:   Tuong Lien <tuong.t.lien@dektech.com.au>
 To:     davem@davemloft.net, jon.maloy@ericsson.com, maloy@donjonn.com,
         ying.xue@windriver.com, netdev@vger.kernel.org
 Cc:     tipc-discussion@lists.sourceforge.net
-Subject: [net] tipc: fix issues with early FAILOVER_MSG from peer
-Date:   Mon, 17 Jun 2019 11:56:12 +0700
-Message-Id: <20190617045612.3509-1-tuong.t.lien@dektech.com.au>
+Subject: [net-next] tipc: include retrans failure detection for unicast
+Date:   Mon, 17 Jun 2019 12:15:42 +0700
+Message-Id: <20190617051542.4133-1-tuong.t.lien@dektech.com.au>
 X-Mailer: git-send-email 2.13.7
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It appears that a FAILOVER_MSG can come from peer even when the failure
-link is resetting (i.e. just after the 'node_write_unlock()'...). This
-means the failover procedure on the node has not been started yet.
-The situation is as follows:
+In patch series, commit 9195948fbf34 ("tipc: improve TIPC throughput by
+Gap ACK blocks"), as for simplicity, the repeated retransmit failures'
+detection in the function - "tipc_link_retrans()" was kept there for
+broadcast retransmissions only.
 
-         node1                                node2
-  linkb          linka                  linka        linkb
-    |              |                      |            |
-    |              |                      x failure    |
-    |              |                  RESETTING        |
-    |              |                      |            |
-    |              x failure            RESET          |
-    |          RESETTING             FAILINGOVER       |
-    |              |   (FAILOVER_MSG)     |            |
-    |<-------------------------------------------------|
-    | *FAILINGOVER |                      |            |
-    |              | (dummy FAILOVER_MSG) |            |
-    |------------------------------------------------->|
-    |            RESET                    |            | FAILOVER_END
-    |         FAILINGOVER               RESET          |
-    .              .                      .            .
-    .              .                      .            .
-    .              .                      .            .
+This commit now reapplies this feature for link unicast retransmissions
+that has been done via the function - "tipc_link_advance_transmq()".
 
-Once this happens, the link failover procedure will be triggered
-wrongly on the receiving node since the node isn't in FAILINGOVER state
-but then another link failover will be carried out.
-The consequences are:
-
-1) A peer might get stuck in FAILINGOVER state because the 'sync_point'
-was set, reset and set incorrectly, the criteria to end the failover
-would not be met, it could keep waiting for a message that has already
-received.
-
-2) The early FAILOVER_MSG(s) could be queued in the link failover
-deferdq but would be purged or not pulled out because the 'drop_point'
-was not set correctly.
-
-3) The early FAILOVER_MSG(s) could be dropped too.
-
-4) The dummy FAILOVER_MSG could make the peer leaving FAILINGOVER state
-shortly, but later on it would be restarted.
-
-The same situation can also happen when the link is in PEER_RESET state
-and a FAILOVER_MSG arrives.
-
-The commit resolves the issues by forcing the link down immediately, so
-the failover procedure will be started normally (which is the same as
-when receiving a FAILOVER_MSG and the link is in up state).
-
-Also, the function "tipc_node_link_failover()" is toughen to avoid such
-a situation from happening.
+Also, the "tipc_link_retrans()" is renamed to "tipc_link_bc_retrans()"
+as it is used only for broadcast.
 
 Acked-by: Jon Maloy <jon.maloy@ericsson.se>
 Signed-off-by: Tuong Lien <tuong.t.lien@dektech.com.au>
 ---
- net/tipc/link.c |  1 -
- net/tipc/node.c | 10 +++++++---
- 2 files changed, 7 insertions(+), 4 deletions(-)
+ net/tipc/link.c | 106 +++++++++++++++++++++++++++++++++++++-------------------
+ 1 file changed, 70 insertions(+), 36 deletions(-)
 
 diff --git a/net/tipc/link.c b/net/tipc/link.c
-index d5ed509e0660..bcfb0a4ab485 100644
+index f5cd986e1e50..d5ed509e0660 100644
 --- a/net/tipc/link.c
 +++ b/net/tipc/link.c
-@@ -1762,7 +1762,6 @@ void tipc_link_failover_prepare(struct tipc_link *l, struct tipc_link *tnl,
- 	 * node has entered SELF_DOWN_PEER_LEAVING and both peer nodes
- 	 * would have to start over from scratch instead.
- 	 */
--	WARN_ON(l && tipc_link_is_up(l));
- 	tnl->drop_point = 1;
- 	tnl->failover_reasm_skb = NULL;
+@@ -249,9 +249,9 @@ static void tipc_link_build_bc_init_msg(struct tipc_link *l,
+ 					struct sk_buff_head *xmitq);
+ static bool tipc_link_release_pkts(struct tipc_link *l, u16 to);
+ static u16 tipc_build_gap_ack_blks(struct tipc_link *l, void *data);
+-static void tipc_link_advance_transmq(struct tipc_link *l, u16 acked, u16 gap,
+-				      struct tipc_gap_ack_blks *ga,
+-				      struct sk_buff_head *xmitq);
++static int tipc_link_advance_transmq(struct tipc_link *l, u16 acked, u16 gap,
++				     struct tipc_gap_ack_blks *ga,
++				     struct sk_buff_head *xmitq);
  
-diff --git a/net/tipc/node.c b/net/tipc/node.c
-index e4dba865105e..65644642c091 100644
---- a/net/tipc/node.c
-+++ b/net/tipc/node.c
-@@ -777,9 +777,9 @@ static void tipc_node_link_up(struct tipc_node *n, int bearer_id,
-  *	   disturbance, wrong session, etc.)
-  *	3. Link <1B-2B> up
-  *	4. Link endpoint 2A down (e.g. due to link tolerance timeout)
-- *	5. Node B starts failover onto link <1B-2B>
-+ *	5. Node 2 starts failover onto link <1B-2B>
-  *
-- *	==> Node A does never start link/node failover!
-+ *	==> Node 1 does never start link/node failover!
-  *
-  * @n: tipc node structure
-  * @l: link peer endpoint failingover (- can be NULL)
-@@ -794,6 +794,10 @@ static void tipc_node_link_failover(struct tipc_node *n, struct tipc_link *l,
- 	if (!tipc_link_is_up(tnl))
- 		return;
+ /*
+  *  Simple non-static link routines (i.e. referenced outside this file)
+@@ -1044,32 +1044,69 @@ static void tipc_link_advance_backlog(struct tipc_link *l,
+ 	l->snd_nxt = seqno;
+ }
  
-+	/* Don't rush, failure link may be in the process of resetting */
-+	if (l && !tipc_link_is_reset(l))
-+		return;
+-static void link_retransmit_failure(struct tipc_link *l, struct sk_buff *skb)
++/**
++ * link_retransmit_failure() - Detect repeated retransmit failures
++ * @l: tipc link sender
++ * @r: tipc link receiver (= l in case of unicast)
++ * @from: seqno of the 1st packet in retransmit request
++ * @rc: returned code
++ *
++ * Return: true if the repeated retransmit failures happens, otherwise
++ * false
++ */
++static bool link_retransmit_failure(struct tipc_link *l, struct tipc_link *r,
++				    u16 from, int *rc)
+ {
+-	struct tipc_msg *hdr = buf_msg(skb);
++	struct sk_buff *skb = skb_peek(&l->transmq);
++	struct tipc_msg *hdr;
 +
- 	tipc_link_fsm_evt(tnl, LINK_SYNCH_END_EVT);
- 	tipc_node_fsm_evt(n, NODE_SYNCH_END_EVT);
++	if (!skb)
++		return false;
++	hdr = buf_msg(skb);
++
++	/* Detect repeated retransmit failures on same packet */
++	if (r->prev_from != from) {
++		r->prev_from = from;
++		r->stale_limit = jiffies + msecs_to_jiffies(r->tolerance);
++		r->stale_cnt = 0;
++	} else if (++r->stale_cnt > 99 && time_after(jiffies, r->stale_limit)) {
++		pr_warn("Retransmission failure on link <%s>\n", l->name);
++		link_print(l, "State of link ");
++		pr_info("Failed msg: usr %u, typ %u, len %u, err %u\n",
++			msg_user(hdr), msg_type(hdr), msg_size(hdr),
++			msg_errcode(hdr));
++		pr_info("sqno %u, prev: %x, src: %x\n",
++			msg_seqno(hdr), msg_prevnode(hdr), msg_orignode(hdr));
++
++		trace_tipc_list_dump(&l->transmq, true, "retrans failure!");
++		trace_tipc_link_dump(l, TIPC_DUMP_NONE, "retrans failure!");
++		trace_tipc_link_dump(r, TIPC_DUMP_NONE, "retrans failure!");
++
++		if (link_is_bc_sndlink(l))
++			*rc = TIPC_LINK_DOWN_EVT;
++
++		*rc = tipc_link_fsm_evt(l, LINK_FAILURE_EVT);
++		return true;
++	}
  
-@@ -1719,7 +1723,7 @@ static bool tipc_node_check_state(struct tipc_node *n, struct sk_buff *skb,
- 	/* Initiate or update failover mode if applicable */
- 	if ((usr == TUNNEL_PROTOCOL) && (mtyp == FAILOVER_MSG)) {
- 		syncpt = oseqno + exp_pkts - 1;
--		if (pl && tipc_link_is_up(pl)) {
-+		if (pl && !tipc_link_is_reset(pl)) {
- 			__tipc_node_link_down(n, &pb_id, xmitq, &maddr);
- 			trace_tipc_node_link_down(n, true,
- 						  "node link down <- failover!");
+-	pr_warn("Retransmission failure on link <%s>\n", l->name);
+-	link_print(l, "State of link ");
+-	pr_info("Failed msg: usr %u, typ %u, len %u, err %u\n",
+-		msg_user(hdr), msg_type(hdr), msg_size(hdr), msg_errcode(hdr));
+-	pr_info("sqno %u, prev: %x, src: %x\n",
+-		msg_seqno(hdr), msg_prevnode(hdr), msg_orignode(hdr));
++	return false;
+ }
+ 
+-/* tipc_link_retrans() - retransmit one or more packets
++/* tipc_link_bc_retrans() - retransmit zero or more packets
+  * @l: the link to transmit on
+  * @r: the receiving link ordering the retransmit. Same as l if unicast
+  * @from: retransmit from (inclusive) this sequence number
+  * @to: retransmit to (inclusive) this sequence number
+  * xmitq: queue for accumulating the retransmitted packets
+  */
+-static int tipc_link_retrans(struct tipc_link *l, struct tipc_link *r,
+-			     u16 from, u16 to, struct sk_buff_head *xmitq)
++static int tipc_link_bc_retrans(struct tipc_link *l, struct tipc_link *r,
++				u16 from, u16 to, struct sk_buff_head *xmitq)
+ {
+ 	struct sk_buff *_skb, *skb = skb_peek(&l->transmq);
+ 	u16 bc_ack = l->bc_rcvlink->rcv_nxt - 1;
+ 	u16 ack = l->rcv_nxt - 1;
+ 	struct tipc_msg *hdr;
++	int rc = 0;
+ 
+ 	if (!skb)
+ 		return 0;
+@@ -1077,20 +1114,9 @@ static int tipc_link_retrans(struct tipc_link *l, struct tipc_link *r,
+ 		return 0;
+ 
+ 	trace_tipc_link_retrans(r, from, to, &l->transmq);
+-	/* Detect repeated retransmit failures on same packet */
+-	if (r->prev_from != from) {
+-		r->prev_from = from;
+-		r->stale_limit = jiffies + msecs_to_jiffies(r->tolerance);
+-		r->stale_cnt = 0;
+-	} else if (++r->stale_cnt > 99 && time_after(jiffies, r->stale_limit)) {
+-		link_retransmit_failure(l, skb);
+-		trace_tipc_list_dump(&l->transmq, true, "retrans failure!");
+-		trace_tipc_link_dump(l, TIPC_DUMP_NONE, "retrans failure!");
+-		trace_tipc_link_dump(r, TIPC_DUMP_NONE, "retrans failure!");
+-		if (link_is_bc_sndlink(l))
+-			return TIPC_LINK_DOWN_EVT;
+-		return tipc_link_fsm_evt(l, LINK_FAILURE_EVT);
+-	}
++
++	if (link_retransmit_failure(l, r, from, &rc))
++		return rc;
+ 
+ 	skb_queue_walk(&l->transmq, skb) {
+ 		hdr = buf_msg(skb);
+@@ -1324,17 +1350,23 @@ static u16 tipc_build_gap_ack_blks(struct tipc_link *l, void *data)
+  * @gap: # of gap packets
+  * @ga: buffer pointer to Gap ACK blocks from peer
+  * @xmitq: queue for accumulating the retransmitted packets if any
++ *
++ * In case of a repeated retransmit failures, the call will return shortly
++ * with a returned code (e.g. TIPC_LINK_DOWN_EVT)
+  */
+-static void tipc_link_advance_transmq(struct tipc_link *l, u16 acked, u16 gap,
+-				      struct tipc_gap_ack_blks *ga,
+-				      struct sk_buff_head *xmitq)
++static int tipc_link_advance_transmq(struct tipc_link *l, u16 acked, u16 gap,
++				     struct tipc_gap_ack_blks *ga,
++				     struct sk_buff_head *xmitq)
+ {
+ 	struct sk_buff *skb, *_skb, *tmp;
+ 	struct tipc_msg *hdr;
+ 	u16 bc_ack = l->bc_rcvlink->rcv_nxt - 1;
+ 	u16 ack = l->rcv_nxt - 1;
+-	u16 seqno;
+-	u16 n = 0;
++	u16 seqno, n = 0;
++	int rc = 0;
++
++	if (gap && link_retransmit_failure(l, l, acked + 1, &rc))
++		return rc;
+ 
+ 	skb_queue_walk_safe(&l->transmq, skb, tmp) {
+ 		seqno = buf_seqno(skb);
+@@ -1369,6 +1401,8 @@ static void tipc_link_advance_transmq(struct tipc_link *l, u16 acked, u16 gap,
+ 			goto next_gap_ack;
+ 		}
+ 	}
++
++	return 0;
+ }
+ 
+ /* tipc_link_build_state_msg: prepare link state message for transmission
+@@ -1919,7 +1953,7 @@ static int tipc_link_proto_rcv(struct tipc_link *l, struct sk_buff *skb,
+ 			tipc_link_build_proto_msg(l, STATE_MSG, 0, reply,
+ 						  rcvgap, 0, 0, xmitq);
+ 
+-		tipc_link_advance_transmq(l, ack, gap, ga, xmitq);
++		rc |= tipc_link_advance_transmq(l, ack, gap, ga, xmitq);
+ 
+ 		/* If NACK, retransmit will now start at right position */
+ 		if (gap)
+@@ -2036,7 +2070,7 @@ int tipc_link_bc_sync_rcv(struct tipc_link *l, struct tipc_msg *hdr,
+ 	if (more(peers_snd_nxt, l->rcv_nxt + l->window))
+ 		return rc;
+ 
+-	rc = tipc_link_retrans(snd_l, l, from, to, xmitq);
++	rc = tipc_link_bc_retrans(snd_l, l, from, to, xmitq);
+ 
+ 	l->snd_nxt = peers_snd_nxt;
+ 	if (link_bc_rcv_gap(l))
+@@ -2132,7 +2166,7 @@ int tipc_link_bc_nack_rcv(struct tipc_link *l, struct sk_buff *skb,
+ 
+ 	if (dnode == tipc_own_addr(l->net)) {
+ 		tipc_link_bc_ack_rcv(l, acked, xmitq);
+-		rc = tipc_link_retrans(l->bc_sndlink, l, from, to, xmitq);
++		rc = tipc_link_bc_retrans(l->bc_sndlink, l, from, to, xmitq);
+ 		l->stats.recv_nacks++;
+ 		return rc;
+ 	}
 -- 
 2.13.7
 
