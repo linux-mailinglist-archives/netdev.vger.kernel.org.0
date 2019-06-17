@@ -2,88 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E761F48530
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 16:22:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3146F4855B
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 16:29:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728033AbfFQOUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 10:20:35 -0400
-Received: from mail-ed1-f47.google.com ([209.85.208.47]:34037 "EHLO
-        mail-ed1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726005AbfFQOUf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 10:20:35 -0400
-Received: by mail-ed1-f47.google.com with SMTP id s49so16466480edb.1
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 07:20:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :user-agent:mime-version;
-        bh=lPDqMdPEKR2PzqaGXWoGDd7T5h4jBpHExcweaLaSSK0=;
-        b=Iay63UGcYlvzI9g3XDbohxpgexk9t4pKF6mBC7NJEA0o2i/h7b/F3pyRiN7Ztb5yhg
-         IGbfDCuvvjULm7skN4POwuaHWx33fxSiMI7qeoYiZf+H4tqbmlcbZc1tb396Gn9C+r0j
-         wLA9hWmoRSXQE1p8DWJnjWib2J/4Kaz2VWSVHI688WdK0no2cBvovBdcdntWCHAxQ946
-         z2JoMRtEJvhNYoUFUu3ZKtlUkW3DiKCMs5jrJfXK1Cqn2Xs4IjIEY8K6M8szn+ozlS1c
-         EZYkDBaWPauhcR4yqdZ4NLQpUqF7pdJSAhwbay0oiAGr8k3TfraHW12LWhIdIN34y+0A
-         xU1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:user-agent:mime-version;
-        bh=lPDqMdPEKR2PzqaGXWoGDd7T5h4jBpHExcweaLaSSK0=;
-        b=JVVeUEge/FDB/TJkfVJ77PS5Y9r29aKCCZ2tOcOKpx7Y6Oolan6fKUlOaLYVBFlx27
-         adtBETMKfSiNdfoHSbfk99FLWnA53iltzUpWKSGUKTn05K3Q/wZflkGQTRjesnCaGzyH
-         30eGalyKxqmlVZZS/aqqBmUhhlRKVK9sd87HScEdS1tnqyWV7xwxvSUobTqQFkpOAChY
-         UYLEcTKB8IOddUdoKBMRc4G/cBsJDn7KukrrfT3smIKO1w5I8UbL1gRh/lWoDB3kCH8u
-         akrNVnKWQRKI9BNcii3aK6uIJuQYON8LqdOE0c8G97nWfnEqxeBbZO1nErDErCZS5w++
-         v3oQ==
-X-Gm-Message-State: APjAAAUCIvzmKXnqfHGwq0b1D3xadyWmfiOrVXxck4QmLVqJQ2SX3BSi
-        utn9zglK7CE6CZh40IAw6cWH/Q==
-X-Google-Smtp-Source: APXvYqyNGHMS9Mr0hlgx8DUwk8VB/wUtnm/TqHyh3muEpDOB7qL1OTl8vAIIxlvfK0LsosNfRT+dCw==
-X-Received: by 2002:a50:95ae:: with SMTP id w43mr90466777eda.115.1560781232849;
-        Mon, 17 Jun 2019 07:20:32 -0700 (PDT)
-Received: from localhost ([81.92.102.43])
-        by smtp.gmail.com with ESMTPSA id w27sm2071922edw.63.2019.06.17.07.20.31
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 17 Jun 2019 07:20:32 -0700 (PDT)
-Date:   Mon, 17 Jun 2019 07:20:31 -0700 (PDT)
-From:   Paul Walmsley <paul.walmsley@sifive.com>
-X-X-Sender: paulw@viisi.sifive.com
-To:     Troy Benjegerdes <troy.benjegerdes@sifive.com>
-cc:     Andreas Schwab <schwab@suse.de>,
-        Mark Rutland <mark.rutland@arm.com>,
-        devicetree@vger.kernel.org, Albert Ou <aou@eecs.berkeley.edu>,
-        netdev@vger.kernel.org, Palmer Dabbelt <palmer@sifive.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        nicolas.ferre@microchip.com,
-        Sachin Ghadi <sachin.ghadi@sifive.com>,
-        Yash Shah <yash.shah@sifive.com>, robh+dt@kernel.org,
-        ynezz@true.cz, linux-riscv@lists.infradead.org,
-        davem@davemloft.net, Jim Jacobsen <jamez@wit.com>
-Subject: Re: [PATCH v2 0/2] Add macb support for SiFive FU540-C000
-In-Reply-To: <F48A4F7F-0B0D-4191-91AD-DC51686D1E78@sifive.com>
-Message-ID: <alpine.DEB.2.21.9999.1906170715350.32654@viisi.sifive.com>
-References: <1560745167-9866-1-git-send-email-yash.shah@sifive.com> <mvmtvco62k9.fsf@suse.de> <alpine.DEB.2.21.9999.1906170252410.19994@viisi.sifive.com> <mvmpnnc5y49.fsf@suse.de> <alpine.DEB.2.21.9999.1906170305020.19994@viisi.sifive.com> <mvmh88o5xi5.fsf@suse.de>
- <alpine.DEB.2.21.9999.1906170419010.19994@viisi.sifive.com> <F48A4F7F-0B0D-4191-91AD-DC51686D1E78@sifive.com>
-User-Agent: Alpine 2.21.9999 (DEB 301 2018-08-15)
+        id S1728321AbfFQO2V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 10:28:21 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33194 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726642AbfFQO2U (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Jun 2019 10:28:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=2ill3+BPg+PjYSkFeffTLMYEsH7eA76ZuTeUwvDT5ig=; b=EJIBwP/1X4q3GB6IpNCDIptbCh
+        il2B7WWqPOsjMq8H6R/+1nj6lXipox0lrztKuamG2jk6dlnY8WeE4Tc/uzsyNaoZrxoO/DkDQLqjj
+        eZogdnHYOdwXb3CDHB4MbZuq4cdduJiP/b3bI7S2d0mv3QP4Ce/yQPel+OphB29GBB6s=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hcscH-000837-Mc; Mon, 17 Jun 2019 16:28:13 +0200
+Date:   Mon, 17 Jun 2019 16:28:13 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>
+Subject: Re: [PATCH RFC 3/6] dpaa2-mac: add MC API for the DPMAC object
+Message-ID: <20190617142813.GD25211@lunn.ch>
+References: <1560470153-26155-1-git-send-email-ioana.ciornei@nxp.com>
+ <1560470153-26155-4-git-send-email-ioana.ciornei@nxp.com>
+ <20190614011224.GC28822@lunn.ch>
+ <VI1PR0402MB28002EE1DB0B3FB39B907052E0EE0@VI1PR0402MB2800.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <VI1PR0402MB28002EE1DB0B3FB39B907052E0EE0@VI1PR0402MB2800.eurprd04.prod.outlook.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 17 Jun 2019, Troy Benjegerdes wrote:
+On Fri, Jun 14, 2019 at 02:06:05PM +0000, Ioana Ciornei wrote:
+> > Subject: Re: [PATCH RFC 3/6] dpaa2-mac: add MC API for the DPMAC object
+> > 
+> > > +/**
+> > > + * dpmac_set_link_state() - Set the Ethernet link status
+> > > + * @mc_io:      Pointer to opaque I/O object
+> > > + * @cmd_flags:  Command flags; one or more of 'MC_CMD_FLAG_'
+> > > + * @token:      Token of DPMAC object
+> > > + * @link_state: Link state configuration
+> > > + *
+> > > + * Return:      '0' on Success; Error code otherwise.
+> > > + */
+> > > +int dpmac_set_link_state(struct fsl_mc_io *mc_io,
+> > > +			 u32 cmd_flags,
+> > > +			 u16 token,
+> > > +			 struct dpmac_link_state *link_state) {
+> > > +	struct dpmac_cmd_set_link_state *cmd_params;
+> > > +	struct fsl_mc_command cmd = { 0 };
+> > > +
+> > > +	/* prepare command */
+> > > +	cmd.header =
+> > mc_encode_cmd_header(DPMAC_CMDID_SET_LINK_STATE,
+> > > +					  cmd_flags,
+> > > +					  token);
+> > > +	cmd_params = (struct dpmac_cmd_set_link_state *)cmd.params;
+> > > +	cmd_params->options = cpu_to_le64(link_state->options);
+> > > +	cmd_params->rate = cpu_to_le32(link_state->rate);
+> > > +	dpmac_set_field(cmd_params->state, STATE, link_state->up);
+> > > +	dpmac_set_field(cmd_params->state, STATE_VALID,
+> > > +			link_state->state_valid);
+> > > +	cmd_params->supported = cpu_to_le64(link_state->supported);
+> > > +	cmd_params->advertising = cpu_to_le64(link_state->advertising);
+> > 
+> > I don't understand what supported and advertising mean in the context of a
+> > MAC. PHY yes, but MAC?
+> 
+> It's still in the context of the PHY.
 
-> Have we documented this tx clock switch register in something with a
-> direct URL link (rather than a PDF)?
+If this is for the PHY why are you not using DPNI? That is the object
+which represents the PHY.
 
-The SiFive FU540 user manual PDF is the canonical public reference:
+> As stated in the previous reply, the MAC can do pause, asym pause
+> but not half duplex or EEE.
 
-https://static.dev.sifive.com/FU540-C000-v1.0.pdf
+I'm very surprised it cannot do EEE! I hope the firmware is getting
+the auto-neg advertisement correct.
 
-This practice aligns with other SoC vendors, who also release PDFs.
+   Andrew
 
-The relevant Ethernet documentation, including register maps, is in 
-Chapter 19.
-
-
-- Paul
