@@ -2,109 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8107B486A8
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 17:10:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15317486D8
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 17:19:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728228AbfFQPJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 11:09:37 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:59626 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726215AbfFQPJh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 11:09:37 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id x5HF9QuK078617;
-        Mon, 17 Jun 2019 10:09:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1560784166;
-        bh=rTV+SbefbDzPyGHW1pgcLCQYe9fYpv1qPT94iYiJ7RY=;
-        h=Subject:From:To:CC:References:Date:In-Reply-To;
-        b=lUr0x2tVaSTlbCLsfbI/X2vkSqoBl9kvvbSUDVLW5SUlVAOHHt1FZ4QBhtobls8QP
-         L8TO799xCuH9/hfiHgmmOv/K1otnnZw7y/kIStLLXjhCOZ8Z2nFC+0FFUr3m0GpN5o
-         /xI99dToHkRREEauRLeibCRMngedGR2BulqoOMNM=
-Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x5HF9Q7g029558
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 17 Jun 2019 10:09:26 -0500
-Received: from DLEE106.ent.ti.com (157.170.170.36) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Mon, 17
- Jun 2019 10:09:25 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE106.ent.ti.com
- (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
- Frontend Transport; Mon, 17 Jun 2019 10:09:25 -0500
-Received: from [10.250.65.13] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id x5HF9PFk034523;
-        Mon, 17 Jun 2019 10:09:25 -0500
-Subject: Re: [PATCH v12 1/5] can: m_can: Create a m_can platform framework
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <wg@grandegger.com>, <mkl@pengutronix.de>, <davem@davemloft.net>
-CC:     <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20190509161109.10499-1-dmurphy@ti.com>
- <dbb7bdef-820d-5dcc-d7b5-a82bc1b076fb@ti.com>
- <a8e3f2d3-18c3-3bdb-1318-8964afc7e032@ti.com>
- <93530d94-ec65-de82-448e-f2460dd39fb9@ti.com>
- <0f6c41c8-0071-ed3a-9e65-caf02a0fbefe@ti.com>
-Message-ID: <6fa79302-ad32-7f43-f9d5-af70aa789284@ti.com>
-Date:   Mon, 17 Jun 2019 10:09:25 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1727900AbfFQPTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 11:19:34 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33436 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726215AbfFQPTd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Jun 2019 11:19:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=u8BXVhx3Xt01zURMOtWv/YAU6w23gGORQqBBwLmef78=; b=Qx9QZU8GMiQRkSX4qAsLLCrF2T
+        L7fei+oqujqTKEXqX2N1Q+5IBeHIcWxsS9VWnN+9PpEglnq2dO++xEFqo6h0yCJIuJ1fY09/rLVw8
+        dHG3Kt+QCP4ktvrLPOFBtooJhgwPUO6O4xUGcvRzUB778wBWCTSPsQua3PYLZ/ZgiirM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hctPr-0008W0-T1; Mon, 17 Jun 2019 17:19:27 +0200
+Date:   Mon, 17 Jun 2019 17:19:27 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Parshuram Thombare <pthombar@cadence.com>
+Cc:     nicolas.ferre@microchip.com, davem@davemloft.net,
+        f.fainelli@gmail.com, netdev@vger.kernel.org, hkallweit1@gmail.com,
+        linux-kernel@vger.kernel.org, rafalc@cadence.com,
+        aniljoy@cadence.com, piotrs@cadence.com
+Subject: Re: [PATCH 5/6] net: macb: add support for high speed interface
+Message-ID: <20190617151927.GI25211@lunn.ch>
+References: <1560642481-28297-1-git-send-email-pthombar@cadence.com>
+ <1560642512-28765-1-git-send-email-pthombar@cadence.com>
 MIME-Version: 1.0
-In-Reply-To: <0f6c41c8-0071-ed3a-9e65-caf02a0fbefe@ti.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1560642512-28765-1-git-send-email-pthombar@cadence.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Marc
+>  	switch (state->interface) {
+> +	case PHY_INTERFACE_MODE_NA:
 
-On 6/10/19 11:35 AM, Dan Murphy wrote:
-> Bump
->
-> On 6/6/19 8:16 AM, Dan Murphy wrote:
->> Marc
->>
->> Bump
->>
->> On 5/31/19 6:51 AM, Dan Murphy wrote:
->>> Marc
->>>
->>> On 5/15/19 3:54 PM, Dan Murphy wrote:
->>>> Marc
->>>>
->>>> On 5/9/19 11:11 AM, Dan Murphy wrote:
->>>>> Create a m_can platform framework that peripheral
->>>>> devices can register to and use common code and register sets.
->>>>> The peripheral devices may provide read/write and configuration
->>>>> support of the IP.
->>>>>
->>>>> Acked-by: Wolfgang Grandegger <wg@grandegger.com>
->>>>> Signed-off-by: Dan Murphy <dmurphy@ti.com>
->>>>> ---
->>>>>
->>>>> v12 - Update the m_can_read/write functions to create a backtrace 
->>>>> if the callback
->>>>> pointer is NULL. - https://lore.kernel.org/patchwork/patch/1052302/
->>>>>
->>>> Is this able to be merged now?
->>>
->>> ping
+I would not list PHY_INTERFACE_MODE_NA here.
 
-Wondering if there is anything else we need to do?
+> +	case PHY_INTERFACE_MODE_USXGMII:
+> +	case PHY_INTERFACE_MODE_10GKR:
+> +		if (bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE) {
+> +			phylink_set(mask, 10000baseCR_Full);
+> +			phylink_set(mask, 10000baseER_Full);
+> +			phylink_set(mask, 10000baseKR_Full);
+> +			phylink_set(mask, 10000baseLR_Full);
+> +			phylink_set(mask, 10000baseLRM_Full);
+> +			phylink_set(mask, 10000baseSR_Full);
+> +			phylink_set(mask, 10000baseT_Full);
+> +			phylink_set(mask, 5000baseT_Full);
+> +			phylink_set(mask, 2500baseX_Full);
+> +			phylink_set(mask, 1000baseX_Full);
+> +		}
+> +		/* Fall-through */
+>  	case PHY_INTERFACE_MODE_SGMII:
+>  		if (bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE)
+>  			phylink_set(mask, 2500baseT_Full);
+> @@ -594,17 +639,55 @@ static void gem_mac_config(struct phylink_config *pl_config, unsigned int mode,
+>  			reg |= MACB_BIT(FD);
+>  		macb_or_gem_writel(bp, NCFGR, reg);
+>  
+> -		if (state->speed == SPEED_2500) {
+> -			gem_writel(bp, NCFGR, GEM_BIT(GBE) |
+> -				   gem_readl(bp, NCFGR));
+> -			gem_writel(bp, NCR, GEM_BIT(TWO_PT_FIVE_GIG) |
+> -				   gem_readl(bp, NCR));
+> -		} else if (state->speed == SPEED_1000) {
+> -			gem_writel(bp, NCFGR, GEM_BIT(GBE) |
+> -				   gem_readl(bp, NCFGR));
+> -		} else if (state->speed == SPEED_100) {
+> -			macb_writel(bp, NCFGR, MACB_BIT(SPD) |
+> -				    macb_readl(bp, NCFGR));
+> +		if (bp->phy_interface == PHY_INTERFACE_MODE_USXGMII) {
+> +			u32 speed;
+> +
+> +			switch (state->speed) {
+> +			case SPEED_10000:
+> +				if (bp->serdes_rate ==
+> +				    MACB_SERDES_RATE_10_PT_3125Gbps) {
+> +					speed = HS_MAC_SPEED_10000M;
+> +				} else {
+> +					netdev_warn(netdev,
+> +						    "10G not supported by HW");
+> +					netdev_warn(netdev, "Setting speed to 1G");
+> +					speed = HS_MAC_SPEED_1000M;
+> +				}
+> +				break;
+> +			case SPEED_5000:
+> +				speed = HS_MAC_SPEED_5000M;
+> +				break;
+> +			case SPEED_2500:
+> +				speed = HS_MAC_SPEED_2500M;
+> +				break;
+> +			case SPEED_1000:
+> +				speed = HS_MAC_SPEED_1000M;
+> +				break;
+> +			default:
+> +			case SPEED_100:
+> +				speed = HS_MAC_SPEED_100M;
+> +				break;
+> +			}
+> +
+> +			gem_writel(bp, HS_MAC_CONFIG,
+> +				   GEM_BFINS(HS_MAC_SPEED, speed,
+> +					     gem_readl(bp, HS_MAC_CONFIG)));
+> +			gem_writel(bp, USX_CONTROL,
+> +				   GEM_BFINS(USX_CTRL_SPEED, speed,
+> +					     gem_readl(bp, USX_CONTROL)));
+> +		} else {
+> +			if (state->speed == SPEED_2500) {
+> +				gem_writel(bp, NCFGR, GEM_BIT(GBE) |
+> +					   gem_readl(bp, NCFGR));
+> +				gem_writel(bp, NCR, GEM_BIT(TWO_PT_FIVE_GIG) |
+> +					   gem_readl(bp, NCR));
+> +			} else if (state->speed == SPEED_1000) {
+> +				gem_writel(bp, NCFGR, GEM_BIT(GBE) |
+> +					   gem_readl(bp, NCFGR));
+> +			} else if (state->speed == SPEED_100) {
+> +				macb_writel(bp, NCFGR, MACB_BIT(SPD) |
+> +					    macb_readl(bp, NCFGR));
+> +			}
 
-The part has officially shipped and we had hoped to have driver support 
-in Linux as part of the announcement.
+Maybe split this up into two helper functions?
 
-Dan
-
-
->>>
->>>
->>>> Dan
->>>>
->>>> <snip>
+      Andrew
