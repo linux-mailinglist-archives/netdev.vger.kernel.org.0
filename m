@@ -2,121 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E2DB948D6D
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 21:05:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD3A448D7E
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 21:06:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728633AbfFQTF1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 15:05:27 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:34984 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726098AbfFQTF0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 15:05:26 -0400
-Received: by mail-pf1-f193.google.com with SMTP id d126so6186413pfd.2
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 12:05:26 -0700 (PDT)
+        id S1728609AbfFQTGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 15:06:55 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:41529 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726529AbfFQTGz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 15:06:55 -0400
+Received: by mail-qt1-f194.google.com with SMTP id d17so7170930qtj.8;
+        Mon, 17 Jun 2019 12:06:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=appneta.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=YnCb3pKFcjJQDWfuu4zZ4IPAqdP8bDj70tQarrqJA4E=;
-        b=A4X/KhXA7O5XTHuY6NfApDEsClzY9VLycFoj+ighBJrb+Bt694nnq+36B/8JuZa4NF
-         Kom2/gAYRcGqoiOyePIQcIgNPOLRMzlzsFb4hOPHoDsAGJR9rSJOdvpsR1bwSCgsq8mL
-         oDqOpKOvGsTrxnmb8gabRYqod4AIDAhsdJ7jg=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bZXzxDlFcs/KgzCLwIkEjkXbvSSYOGNCeCSskeDw5zQ=;
+        b=MX8jmtBBRD1r8t07VtxB1VnMz7+UXMztQE5wkY5BCCTju4+Yr2cXWcBTpNCDZHCIS5
+         3HvLYqVhmfP58yrFrsyqZ0Q43obKaEuTfRN8RTDqyx4iXhoxsEqM4nAAehJHcHrEzdy9
+         BYN9ZfjrfhqZ4pCcWMplOcD5Q7NB3WFtwu8u8wxSbn8SOFA4gUymEA4YSra0amFmpCvn
+         FW7bsyBcS3t4zuAocKi11YBmp4QXpqHekLDy8UopT4KTx2swZ3wnKtrXPmhYYstkU0w2
+         HuqQQSrmIoOwt+nNj5OoWTVmlnuvSAZLoNAAo7kU0zegH6W02wtcbgVfoZSfr6C8UYwK
+         cfFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=YnCb3pKFcjJQDWfuu4zZ4IPAqdP8bDj70tQarrqJA4E=;
-        b=RW8gEi5QEKs61h7c44fmEsLo9aua6N/+/8iIk1l/7i4a0vj4vOgCIDxzg8dC2umxOt
-         32x0ShX9YQRX9ZEczwygKBUp2+pM3o3mpeZ4ZRcksNXEd3RqQ4fP3XdpewCx/8Gm/x14
-         pRpDPpH5BSgxVp7F9tXiX8AejSIsJop+DzUx4zvne5QhPy6QDrMN6ORn6CtDYecHmjBE
-         siQGw9Lolsj0F9At7cQIgXH7Y7SkJ/D/OmZM5z9SAco5O/2Qhu3AyOvxar7RJCohfOIz
-         SEkU/L6PIqbfzm2r6dWpMeCAXAbNctaKmuW3bLUkPP52PIySsAna1nxZ9cW3grUxfSIk
-         IMeg==
-X-Gm-Message-State: APjAAAUaJHWPKf+e0C7zd7gCLWAm4msxMwv3Ju0aQHeAE/+soUbDPrgB
-        4Ee1qqij6V6H37I5Xsm1XOXyIg==
-X-Google-Smtp-Source: APXvYqyfGNVM3XuLS06e9v7G9O4NGlFdS+43bjHE9rkWn//VId1KvzFuE1PdRbwS03I5cQfwI7Y3EQ==
-X-Received: by 2002:a62:e515:: with SMTP id n21mr48498381pff.186.1560798325712;
-        Mon, 17 Jun 2019 12:05:25 -0700 (PDT)
-Received: from linux-net-fred.jaalam.net ([2001:4958:15a0:24:5054:ff:fecb:7a95])
-        by smtp.googlemail.com with ESMTPSA id l63sm13042616pfl.181.2019.06.17.12.05.24
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 17 Jun 2019 12:05:24 -0700 (PDT)
-From:   Fred Klassen <fklassen@appneta.com>
-To:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Willem de Bruijn <willemb@google.com>
-Cc:     Fred Klassen <fklassen@appneta.com>
-Subject: [PATCH net v4] net/udp_gso: Allow TX timestamp with UDP GSO
-Date:   Mon, 17 Jun 2019 12:05:07 -0700
-Message-Id: <20190617190507.12730-1-fklassen@appneta.com>
-X-Mailer: git-send-email 2.11.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bZXzxDlFcs/KgzCLwIkEjkXbvSSYOGNCeCSskeDw5zQ=;
+        b=lLcvebsMkw3ae28kjyd5UHtj55WF8NDPtHpEzD49LjcX5SY6JV79edxl9ACqaSC48K
+         wHjB2N4nDNbbBO689QKpAJInxPBUCRZDrixRBBEkd5LS0Kdj+Kvy2HZGVhCYX/ebaBkW
+         1oJD2kN8LOjw9LSbyZRA2yiAXgWFFMeHdQPxvwaW8rGMrPPlXt68kryA7ay/sUCC2lkK
+         IYuC8d3YOSl+NP/cV3QYljYTz1ZAVvfmbTcZ1wUYt5IZ70ISAjftEp8jN7tsSaUOvC+J
+         2hUq1NueRYhrTbEIIrwVn11ro4LRanQi3I6Jql5iF4DGRMhhwB1DXaOjQuVDoY6CG9ps
+         4Naw==
+X-Gm-Message-State: APjAAAWnAYdsv2kL4O/rNXmOqtarA8xUMWXTxFuuHUWbMH/voCH+EGTe
+        qzftMfRTMtCIAd40rALsi/bSAV+o1N4XLXgBAEw=
+X-Google-Smtp-Source: APXvYqzhcfNidc9xroCC1wW8Oldvz/95i4ihWAlvdk103r7uUzFT51cgx7TseXb2CtO40QGHDLrOIGOqKM8lYKoQ9i8=
+X-Received: by 2002:ac8:2fb7:: with SMTP id l52mr71405503qta.93.1560798414376;
+ Mon, 17 Jun 2019 12:06:54 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190615191225.2409862-1-ast@kernel.org> <CAEf4BzY_w-tTQFy_MfSvRwS4uDziNLRN+Jax4WXidP9R-s961w@mail.gmail.com>
+ <70187096-9876-b004-0ccb-8293618f384f@fb.com>
+In-Reply-To: <70187096-9876-b004-0ccb-8293618f384f@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 17 Jun 2019 12:06:42 -0700
+Message-ID: <CAEf4BzZWAKrdcknFgBJWVczm3LpFHqcBcVv6ZunvHHcKk6eE8w@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 0/9] bpf: bounded loops and other features
+To:     Alexei Starovoitov <ast@fb.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixes an issue where TX Timestamps are not arriving on the error queue
-when UDP_SEGMENT CMSG type is combined with CMSG type SO_TIMESTAMPING.
-This can be illustrated with an updated updgso_bench_tx program which
-includes the '-T' option to test for this condition. It also introduces
-the '-P' option which will call poll() before reading the error queue.
+On Mon, Jun 17, 2019 at 11:58 AM Alexei Starovoitov <ast@fb.com> wrote:
+>
+> On 6/17/19 9:39 AM, Andrii Nakryiko wrote:
+> > On Sat, Jun 15, 2019 at 12:12 PM Alexei Starovoitov <ast@kernel.org> wrote:
+> >>
+> >> v2->v3: fixed issues in backtracking pointed out by Andrii.
+> >> The next step is to add a lot more tests for backtracking.
+> >>
+> >
+> > Tests would be great, verifier complexity is at the level, where it's
+> > very easy to miss issues.
+> >
+> > Was fuzzying approach ever discussed for BPF verifier? I.e., have a
+> > fuzzer to generate both legal and illegal random small programs. Then
+> > re-implement verifier as user-level program with straightforward
+> > recursive exhaustive verification (so no state pruning logic, no
+> > precise/coarse, etc, just register/stack state tracking) of all
+> > possible branches. If kernel verifier's verdict differs from
+> > user-level verifier's verdict - flag that as a test case and figure
+> > out why they differ. Obviously that would work well only for small
+> > programs, but that should be a good first step already.
+> >
+> > In addition, if this is done, that user-land verifier can be a HUGE
+> > help to BPF application developers, as libbpf would (potentially) be
+> > able to generate better error messages using it as well.
+>
+> In theory that sounds good, but doesn't work in practice.
+> The kernel verifier keeps changing faster than user space can catch up.
+> It's also relying on loaded maps and all sorts of callbacks that
+> check context, allowed helpers, maps, combinations of them from all
+> over the kernel.
+> The last effort to build kernel verifier as-is into .o and link
+> with kmalloc/map wrappers in user space was here:
+> https://github.com/iovisor/bpf-fuzzer
+> It was fuzzing the verifier and was able to find few minor bugs.
+> But it quickly bit rotted.
+>
+> Folks brought up in the past the idea to collect user space
+> verifiers from different kernels, so that user space tooling can
+> check whether particular program will load on a set of kernels
+> without need to run them in VMs.
+> Even if such feature existed today it won't really solve this production
+> headache, since all kernels prior to today will not be covered.
+>
+> I think syzbot is still generating bpf programs. iirc it found
+> one bug in the past in the verifier core.
+> I think the only way to make verifier more robust is to keep
+> adding new test cases manually.
+> Most interesting bugs we found by humans.
+>
+> Another approach to 'better error message' that was considered
+> in the past was to teach llvm to recognize things that verifier
+> will reject and let llvm warn on them.
+> But it's also not practical. We had llvm error on calls.
+> Then we added them to the verifier and had to change llvm.
+> If we had llvm error on loops, now we'd need to change it.
+> imo it's better to let llvm handle everything.
 
-    ./udpgso_bench_tx -4ucTPv -S 1472 -l2 -D 172.16.120.18
-    poll timeout
-    udp tx:      0 MB/s        1 calls/s      1 msg/s
-
-The "poll timeout" message above indicates that TX timestamp never
-arrived.
-
-This patch preserves tx_flags for the first UDP GSO segment. Only the
-first segment is timestamped, even though in some cases there may be
-benefital in timestamping both the first and last segment.
-
-Factors in deciding on first segment timestamp only:
-
-- Timestamping both first and last segmented is not feasible. Hardware
-can only have one outstanding TS request at a time.
-
-- Timestamping last segment may under report network latency of the
-previous segments. Even though the doorbell is suppressed, the ring
-producer counter has been incremented.
-
-- Timestamping the first segment has the upside in that it reports
-timestamps from the application's view, e.g. RTT.
-
-- Timestamping the first segment has the downside that it may
-underreport tx host network latency. It appears that we have to pick
-one or the other. And possibly follow-up with a config flag to choose
-behavior.
-
-v2: Remove tests as noted by Willem de Bruijn <willemb@google.com>
-    Moving tests from net to net-next
-
-v3: Update only relevant tx_flag bits as per
-    Willem de Bruijn <willemb@google.com>
-
-v4: Update comments and commit message as per
-    Willem de Bruijn <willemb@google.com>
-
-Fixes: ee80d1ebe5ba ("udp: add udp gso")
-Signed-off-by: Fred Klassen <fklassen@appneta.com>
----
- net/ipv4/udp_offload.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
-index 06b3e2c1fcdc..9763464a75d7 100644
---- a/net/ipv4/udp_offload.c
-+++ b/net/ipv4/udp_offload.c
-@@ -224,6 +224,11 @@ struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
- 	seg = segs;
- 	uh = udp_hdr(seg);
- 
-+	/* preserve TX timestamp flags and TS key for first segment */
-+	skb_shinfo(seg)->tskey = skb_shinfo(gso_skb)->tskey;
-+	skb_shinfo(seg)->tx_flags |=
-+			(skb_shinfo(gso_skb)->tx_flags & SKBTX_ANY_TSTAMP);
-+
- 	/* compute checksum adjustment based on old length versus new */
- 	newlen = htons(sizeof(*uh) + mss);
- 	check = csum16_add(csum16_sub(uh->check, uh->len), newlen);
--- 
-2.11.0
-
+That all makes sense. Thanks for elaborate explanation!
