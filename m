@@ -2,173 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 62CB148D96
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 21:09:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF1E648DD8
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 21:17:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728884AbfFQTJG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 15:09:06 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:45279 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728878AbfFQTJE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 15:09:04 -0400
-Received: by mail-pl1-f196.google.com with SMTP id bi6so4487771plb.12
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 12:09:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=appneta.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=AgZjqRyH2K7f5nt81N/Z9x10UGeAyLYjRs3Qaal5mvg=;
-        b=tK6ioCCuHTYwjmhNb0zkVGqPYYSf0LG5fmMrPXYJEg6T4TKbEjl18BieKwOnAFp9V2
-         +rnKaeoEh/x3eBralvFP43griB+gXtwyldSbfT/7gd1doKvqEtykuZUeZEMgyvFmupkZ
-         8mkTaehAvn2QsQSE6D7nX3n3Uy263loL5hMzY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=AgZjqRyH2K7f5nt81N/Z9x10UGeAyLYjRs3Qaal5mvg=;
-        b=Q40O4d0HP5p1pJMUDt7kXvP1tkt7oy6AFCE9+eJWqsikAAzJTTUKWDpomBjJujRKUf
-         Y+WRzPJLBtoEtPFFu0bA1bi8vG3j3+TP7EVTyVpbx/qgW5iEBhydyiJsbq8iWhA28egq
-         4KG+RMFf0tHOjmxU69PDVfEU2xnZ61wZ4BDtXYTBBsv1PIZvFzrMoUsOi7FOOId5O/dY
-         Zqr5s0DM+jHGI4kkq24ino1ezlz3hkI9n17TRV31lbKHsC1pmt0aQMpl0bip0PByf3hH
-         at+AGtzz1OoO/KSkLN+VLVqD8O7LoOBCPK+mQGZmg1yzkpsWI7UkU+QXwGQfDll2NZ/c
-         OLaA==
-X-Gm-Message-State: APjAAAWNgzjWc2ezdHaj/PVRcVl+aBaOXjvAfco6BGT9nNDKVE4kOWQi
-        kOqSqnAKibeIM2QQ9jchcboHtw==
-X-Google-Smtp-Source: APXvYqw2g/5IBjCumoQRuoTgKrTyAScBK+YOe2q2oR9TTBVytYux8/m5VdvdVVDdtek7Th51xgWYuA==
-X-Received: by 2002:a17:902:8205:: with SMTP id x5mr10889097pln.279.1560798544272;
-        Mon, 17 Jun 2019 12:09:04 -0700 (PDT)
-Received: from linux-net-fred.jaalam.net ([2001:4958:15a0:24:5054:ff:fecb:7a95])
-        by smtp.googlemail.com with ESMTPSA id p43sm111063pjp.4.2019.06.17.12.09.03
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 17 Jun 2019 12:09:03 -0700 (PDT)
-From:   Fred Klassen <fklassen@appneta.com>
-To:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Willem de Bruijn <willemb@google.com>
-Cc:     Fred Klassen <fklassen@appneta.com>
-Subject: [PATCH net-next v3 3/3] net/udpgso_bench.sh test fails on error
-Date:   Mon, 17 Jun 2019 12:08:37 -0700
-Message-Id: <20190617190837.13186-4-fklassen@appneta.com>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20190617190837.13186-1-fklassen@appneta.com>
-References: <20190617190837.13186-1-fklassen@appneta.com>
+        id S1728488AbfFQTRb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 15:17:31 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:47318 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725829AbfFQTR2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 15:17:28 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x5HJDblY117470;
+        Mon, 17 Jun 2019 19:17:18 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2018-07-02;
+ bh=N0fZ/pjg81/eD/DCiE/Dh3t4JVgGmGh6DJ1D5AK3Z3Q=;
+ b=VJvdI4tE4D/3ZymNHHArHH/jlE8zJGuCXu4vIJnrNn4uTKYkE2Fy2wfCXYCehc/MU59c
+ s2Fut7gx4dYV5eVgbDHUthGgxIhhVUKyIXqvrN19IvvQML8XqdlyYWvFF2fEO0cQCPlW
+ MajN4wuAEWwcD+RHuuTlrK2ieId0HOijUDcB5JY2dvT+MMogmbHMGQacVeA/SsprrROp
+ wumbb14BZPZ2EL+Fw8Wy+8tJhF/19bpUXiLw+A1gfDnScj+VkRu+ozqKzXE/6RPIcw+U
+ ibhFBW0fZINkMFl2v/QyZygvgVIsaaWI4wD0LujG1BAeA2HZoJ0K2J2UvR3xvRoPbgIF Jg== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by aserp2120.oracle.com with ESMTP id 2t4rmp09fh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 17 Jun 2019 19:17:18 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x5HJGPBS155680;
+        Mon, 17 Jun 2019 19:17:18 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by aserp3020.oracle.com with ESMTP id 2t5mgbhd9u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 17 Jun 2019 19:17:18 +0000
+Received: from abhmp0009.oracle.com (abhmp0009.oracle.com [141.146.116.15])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x5HJHG0a003467;
+        Mon, 17 Jun 2019 19:17:16 GMT
+Received: from kadam (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 17 Jun 2019 12:17:16 -0700
+Date:   Mon, 17 Jun 2019 22:17:08 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Colin King <colin.king@canonical.com>
+Cc:     Derek Chickles <dchickles@marvell.com>,
+        Satanand Burla <sburla@marvell.com>,
+        Felix Manlunas <fmanlunas@marvell.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][V2] net: lio_core: fix potential sign-extension overflow
+ on large shift
+Message-ID: <20190617191708.GI28859@kadam>
+References: <20190617161249.28846-1-colin.king@canonical.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190617161249.28846-1-colin.king@canonical.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9291 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1810050000 definitions=main-1906170171
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9291 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1906170171
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ensure that failure on any individual test results in an overall
-failure of the test script.
+On Mon, Jun 17, 2019 at 05:12:49PM +0100, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
+> 
+> Left shifting the signed int value 1 by 31 bits has undefined behaviour
+> and the shift amount oq_no can be as much as 63.  Fix this by using
+> BIT_ULL(oq_no) instead.
+> 
+> Addresses-Coverity: ("Bad shift operation")
+> Fixes: f21fb3ed364b ("Add support of Cavium Liquidio ethernet adapters")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> ---
 
-Signed-off-by: Fred Klassen <fklassen@appneta.com>
----
- tools/testing/selftests/net/udpgso_bench.sh | 33 +++++++++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
+Looks good.  Thanks!
 
-diff --git a/tools/testing/selftests/net/udpgso_bench.sh b/tools/testing/selftests/net/udpgso_bench.sh
-index d4d831dfd44d..4df1cd8d69d2 100755
---- a/tools/testing/selftests/net/udpgso_bench.sh
-+++ b/tools/testing/selftests/net/udpgso_bench.sh
-@@ -3,6 +3,10 @@
- #
- # Run a series of udpgso benchmarks
- 
-+GREEN='\033[0;92m'
-+RED='\033[0;31m'
-+NC='\033[0m' # No Color
-+
- wake_children() {
- 	local -r jobs="$(jobs -p)"
- 
-@@ -29,60 +33,89 @@ run_in_netns() {
- 
- run_udp() {
- 	local -r args=$@
-+	local errors=0
- 
- 	echo "udp"
- 	run_in_netns ${args}
-+	errors=$(( $errors + $? ))
- 
- 	echo "udp gso"
- 	run_in_netns ${args} -S 0
-+	errors=$(( $errors + $? ))
- 
- 	echo "udp gso zerocopy"
- 	run_in_netns ${args} -S 0 -z
-+	errors=$(( $errors + $? ))
- 
- 	echo "udp gso timestamp"
- 	run_in_netns ${args} -S 0 -T
-+	errors=$(( $errors + $? ))
- 
- 	echo "udp gso zerocopy audit"
- 	run_in_netns ${args} -S 0 -z -a
-+	errors=$(( $errors + $? ))
- 
- 	echo "udp gso timestamp audit"
- 	run_in_netns ${args} -S 0 -T -a
-+	errors=$(( $errors + $? ))
- 
- 	echo "udp gso zerocopy timestamp audit"
- 	run_in_netns ${args} -S 0 -T -z -a
-+	errors=$(( $errors + $? ))
-+
-+	return $errors
- }
- 
- run_tcp() {
- 	local -r args=$@
-+	local errors=0
- 
- 	echo "tcp"
- 	run_in_netns ${args} -t
-+	errors=$(( $errors + $? ))
- 
- 	echo "tcp zerocopy"
- 	run_in_netns ${args} -t -z
-+	errors=$(( $errors + $? ))
- 
- 	# excluding for now because test fails intermittently
- 	# add -P option to include poll() to reduce possibility of lost messages
- 	#echo "tcp zerocopy audit"
- 	#run_in_netns ${args} -t -z -P -a
-+	#errors=$(( $errors + $? ))
-+
-+	return $errors
- }
- 
- run_all() {
- 	local -r core_args="-l 3"
- 	local -r ipv4_args="${core_args} -4 -D 127.0.0.1"
- 	local -r ipv6_args="${core_args} -6 -D ::1"
-+	local errors=0
- 
- 	echo "ipv4"
- 	run_tcp "${ipv4_args}"
-+	errors=$(( $errors + $? ))
- 	run_udp "${ipv4_args}"
-+	errors=$(( $errors + $? ))
- 
- 	echo "ipv6"
- 	run_tcp "${ipv4_args}"
-+	errors=$(( $errors + $? ))
- 	run_udp "${ipv6_args}"
-+	errors=$(( $errors + $? ))
-+
-+	return $errors
- }
- 
- if [[ $# -eq 0 ]]; then
- 	run_all
-+	if [ $? -ne 0 ]; then
-+		echo -e "$(basename $0): ${RED}FAIL${NC}"
-+		exit 1
-+	fi
-+
-+	echo -e "$(basename $0): ${GREEN}PASS${NC}"
- elif [[ $1 == "__subprocess" ]]; then
- 	shift
- 	run_one $@
--- 
-2.11.0
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+
+regards,
+dan carpenter
 
