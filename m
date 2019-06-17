@@ -2,80 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C577A4915E
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 22:30:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA71A4916D
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 22:34:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728282AbfFQUaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 16:30:15 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:38601 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726023AbfFQUaP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 16:30:15 -0400
-Received: by mail-ed1-f67.google.com with SMTP id r12so15841927edo.5;
-        Mon, 17 Jun 2019 13:30:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/6miJAsvlKZ+NTF37mtgfecOjC+L4l+FZ/tO8y72hcY=;
-        b=j+LfTk1cJSVWMXglHnydK2FvbU2cs3ZZ8ZDSuyEvKqfv3CBK3TyXIRfwe5Fykwtsd0
-         1iNdJXf52TqlRtAgjvFI+LuNFTOzl4LT2O2iiBi43TMbJdZSDZtYzcUl6raTSPJeqHIK
-         tA1aI9ApRivKBRg+oEwNAuAwRj3ndD45f1WYGRNOUvJslo6Soh6AwR0PZtLMBvuvT2F0
-         mqmkjF/01cEshq+ANLhA2uR3pjGrXpHzKDrY6tORIN8C8NfN/2mtq1R6JMMmVCevKhlK
-         bxvae19fagM9rFMRvnPaNuK3GCQT8j7rFeaaXrstfLiCsTt7Bs8wx24d7ygEBCSB9JtH
-         8gFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/6miJAsvlKZ+NTF37mtgfecOjC+L4l+FZ/tO8y72hcY=;
-        b=qll6wtRxCxEz8wkFaJXFv9Lpxx4v9lDAWl/lEHsifzHPgPOmTU/zt7095/bjMYLPVi
-         /huPyZlpTtw9XdjcwKHHQ82sZ9LvZ41yhQPyfjrKpukco0KUGyGGzQNXZ+izkoEyKucZ
-         gmPnoJTnvmAEBbtFNcpEfQkdwVFF8+X83MfYN3T3KAo/x32JUJUhhKJWQVDKAJqFVKH9
-         AkzPWUf57TCc6dsTT5tpYakv34rOgx8lNqnBcy3fIN8CTj2yS9+W38/HT6wZbpDa73XD
-         D/UR47xVYUsLgX+2WuPCdff8EEUZkuX+SH9XDgb8lYVgxY2QXklrjYmpDcD6zJKqNMs3
-         JdEQ==
-X-Gm-Message-State: APjAAAUO/pZ3M1bgGNk/VPlPstznxov4b3RaI+r9ucdWpKmF8kTkuKUS
-        w2HiZOt9Fj/abbbwYZbyO2MIvzaaRKO516iOhgE=
-X-Google-Smtp-Source: APXvYqww7nWizr0FGtjHx8XNgx3Yo2U7sZtEVkvbXpDZvrVllwR5sexNhXcxX8QvfYgLauxPY9yAkyRBDwpJMkOzvIk=
-X-Received: by 2002:a50:b3fd:: with SMTP id t58mr68393204edd.31.1560803413120;
- Mon, 17 Jun 2019 13:30:13 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190617190837.13186-1-fklassen@appneta.com>
-In-Reply-To: <20190617190837.13186-1-fklassen@appneta.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 17 Jun 2019 16:29:37 -0400
-Message-ID: <CAF=yD-KQ1dxmNbR8-xoiNTfwHXzO-wQRpz+0ZFN9o36+UE_e6A@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 0/3] UDP GSO audit tests
-To:     Fred Klassen <fklassen@appneta.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        Willem de Bruijn <willemb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1728454AbfFQUea (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 16:34:30 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:37906 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725844AbfFQUe3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 16:34:29 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0231215110457;
+        Mon, 17 Jun 2019 13:34:28 -0700 (PDT)
+Date:   Mon, 17 Jun 2019 13:34:28 -0700 (PDT)
+Message-Id: <20190617.133428.1681715924857496492.davem@davemloft.net>
+To:     xuechaojing@huawei.com
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        luoshaokai@huawei.com, cloud.wangxiaoyun@huawei.com,
+        chiqijun@huawei.com, wulike1@huawei.com
+Subject: Re: [PATCH net-next v4 1/3] hinic: add rss support
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190617054601.3056-2-xuechaojing@huawei.com>
+References: <20190617054601.3056-1-xuechaojing@huawei.com>
+        <20190617054601.3056-2-xuechaojing@huawei.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 17 Jun 2019 13:34:29 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 17, 2019 at 3:09 PM Fred Klassen <fklassen@appneta.com> wrote:
->
-> Updates to UDP GSO selftests ot optionally stress test CMSG
-> subsytem, and report the reliability and performance of both
-> TX Timestamping and ZEROCOPY messages.
->
-> Fred Klassen (3):
->   net/udpgso_bench_tx: options to exercise TX CMSG
->   net/udpgso_bench.sh add UDP GSO audit tests
->   net/udpgso_bench.sh test fails on error
->
->  tools/testing/selftests/net/udpgso_bench.sh   |  52 ++++-
->  tools/testing/selftests/net/udpgso_bench_tx.c | 291 ++++++++++++++++++++++++--
->  2 files changed, 327 insertions(+), 16 deletions(-)
->
-> --
+From: Xue Chaojing <xuechaojing@huawei.com>
+Date: Mon, 17 Jun 2019 05:45:59 +0000
 
-For the series:
+> +static int hinic_rss_init(struct hinic_dev *nic_dev)
+> +{
+> +	u8 default_rss_key[HINIC_RSS_KEY_SIZE] = { 0 };
+> +	u32 indir_tbl[HINIC_RSS_INDIR_SIZE] = { 0 };
+> +	u8 tmpl_idx = nic_dev->rss_tmpl_idx;
+> +	int err, i;
+> +
+> +	netdev_rss_key_fill(default_rss_key, sizeof(default_rss_key));
 
-Acked-by: Willem de Bruijn <willemb@google.com>
+Since netdev_rss_key_fill() fills the entire object, you don't need the
+variable initializer for default_rss_key here, please remove it.
+
+> +int hinic_rss_set_indir_tbl(struct hinic_dev *nic_dev, u32 tmpl_idx,
+> +			    const u32 *indir_table)
+> +{
+> +	for (i = 0; i < HINIC_RSS_INDIR_SIZE; i++) {
+> +		indir_tbl->entry[i] = (u8)(*(indir_table + i));
+
+Please index the array normally using "indir_table[i]", I also suspect
+the u8 cast is also unnecessary.
