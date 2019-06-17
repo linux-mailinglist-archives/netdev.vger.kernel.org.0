@@ -2,62 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 010BA491EC
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 23:02:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C12E491F3
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 23:06:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726724AbfFQVCc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 17:02:32 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:38280 "EHLO
+        id S1726733AbfFQVGA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 17:06:00 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:38342 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726529AbfFQVCc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 17:02:32 -0400
+        with ESMTP id S1726514AbfFQVGA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 17:06:00 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1A7631513979F;
-        Mon, 17 Jun 2019 14:02:31 -0700 (PDT)
-Date:   Mon, 17 Jun 2019 14:02:30 -0700 (PDT)
-Message-Id: <20190617.140230.537297372523260104.davem@davemloft.net>
-To:     arnd@arndb.de
-Cc:     saeedm@mellanox.com, leon@kernel.org, ozsh@mellanox.com,
-        paulb@mellanox.com, elibr@mellanox.com, markb@mellanox.com,
-        ogerlitz@mellanox.com, maorg@mellanox.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net/mlx5e: reduce stack usage in
- mlx5_eswitch_termtbl_create
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id A6DBC151397AE;
+        Mon, 17 Jun 2019 14:05:59 -0700 (PDT)
+Date:   Mon, 17 Jun 2019 14:05:59 -0700 (PDT)
+Message-Id: <20190617.140559.2007026200675147689.davem@davemloft.net>
+To:     colin.king@canonical.com
+Cc:     yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][next] net: hns3: fix dereference of ae_dev before it
+ is null checked
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190617110855.2085326-1-arnd@arndb.de>
-References: <20190617110855.2085326-1-arnd@arndb.de>
+In-Reply-To: <20190617114214.25276-1-colin.king@canonical.com>
+References: <20190617114214.25276-1-colin.king@canonical.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 17 Jun 2019 14:02:31 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 17 Jun 2019 14:05:59 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
-Date: Mon, 17 Jun 2019 13:08:22 +0200
+From: Colin King <colin.king@canonical.com>
+Date: Mon, 17 Jun 2019 12:42:14 +0100
 
-> Putting an empty 'mlx5_flow_spec' structure on the stack is a bit
-> wasteful and causes a warning on 32-bit architectures when building
-> with clang -fsanitize-coverage:
+> From: Colin Ian King <colin.king@canonical.com>
 > 
-> drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_termtbl.c: In function 'mlx5_eswitch_termtbl_create':
-> drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_termtbl.c:90:1: error: the frame size of 1032 bytes is larger than 1024 bytes [-Werror=frame-larger-than=]
+> Pointer ae_dev is null checked however, prior to that it is dereferenced
+> when assigned pointer ops. Fix this by assigning pointer ops after ae_dev
+> has been null checked.
 > 
-> Since the structure is never written to, we can statically allocate
-> it to avoid the stack usage. To be on the safe side, mark all
-> subsequent function arguments that we pass it into as 'const'
-> as well.
-> 
-> Fixes: 10caabdaad5a ("net/mlx5e: Use termination table for VLAN push actions")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Addresses-Coverity: ("Dereference before null check")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 
-Saeed, once Arnd fixes the reverse christmas tree issue, I assume you will take
-this in via your tree?
-
-Thanks.
+Applied.
