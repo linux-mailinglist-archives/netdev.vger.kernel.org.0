@@ -2,157 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E8BE48EEB
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 21:28:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5161E48F1F
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 21:30:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726947AbfFQT21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 15:28:27 -0400
-Received: from mail-eopbgr780139.outbound.protection.outlook.com ([40.107.78.139]:54448
-        "EHLO NAM03-BY2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726357AbfFQT20 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 17 Jun 2019 15:28:26 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=testarcselector01; d=microsoft.com; cv=none;
- b=ANxR3xDov/xIub1BTLnNc00bqpbMfLig6kOn36xmKyXi8jKRhQIEbcXA9dtEQEvohy63sRCfVzZ1XjBsua8SbBiw07RHqkImif1V4nJ2Kn6YmPlHvKJwLKWieMqFRL5JKEPm5q8gDpY9TVpWjX5R/nGNhBI6WdpBNtjbjjy4osA=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=testarcselector01;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AgAptR3DM0iiC7slJUXaX+ofdmaisgM/VUpTuRkaEiA=;
- b=d1KGLpXSc1CpufEZBb1XsNchNZdpEG8dpIqaX1UR2IF7/ozYXFjKuMRyvIjMwOKJGVwVw5514qBIkzPi8o484Qw+GQDBvqq20en0ter0Bqtm7WkNGWWqJQoXvkeWkMhi72Y2/x1eid1OhPVfz/Cw//Uatz6pq7bCMLoY2+c4DPQ=
-ARC-Authentication-Results: i=1; test.office365.com
- 1;spf=none;dmarc=none;dkim=none;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AgAptR3DM0iiC7slJUXaX+ofdmaisgM/VUpTuRkaEiA=;
- b=Vg1bqXLbJnS2yqHNDfuCUNEp1xmPZB+rVIZijyhjEVBOErOwpfzMk2O9p22sRpqAF4m3pRs7GJZDRFYCyHLPQxlGK5Dv2ozl+b9Y7zzETHAsnMDoGRu7e5MfNEZXSuRt2ksDr/nZTYn6Ym4lbEvG0+D9GNWyXzBOdKwFyF2XzE0=
-Received: from MW2PR2101MB1116.namprd21.prod.outlook.com (2603:10b6:302:a::33)
- by MW2PR2101MB1114.namprd21.prod.outlook.com (2603:10b6:302:a::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2008.2; Mon, 17 Jun
- 2019 19:27:45 +0000
-Received: from MW2PR2101MB1116.namprd21.prod.outlook.com
- ([fe80::a1f6:c002:82ba:ad47]) by MW2PR2101MB1116.namprd21.prod.outlook.com
- ([fe80::a1f6:c002:82ba:ad47%9]) with mapi id 15.20.2008.007; Mon, 17 Jun 2019
- 19:27:45 +0000
-From:   Sunil Muthuswamy <sunilmut@microsoft.com>
-To:     David Miller <davem@davemloft.net>
-CC:     Dexuan Cui <decui@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "sashal@kernel.org" <sashal@kernel.org>,
-        Michael Kelley <mikelley@microsoft.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net] hvsock: fix epollout hang from race condition
-Thread-Topic: [PATCH net] hvsock: fix epollout hang from race condition
-Thread-Index: AdUhY/kd1+XRZykcRS6vcxcYhC9DaQBvCbgAAAJcZAAAVwongAAsXmzAAAHItoAAAQ9BAA==
-Date:   Mon, 17 Jun 2019 19:27:45 +0000
-Message-ID: <MW2PR2101MB11168BA3D46BEC843D694E04C0EB0@MW2PR2101MB1116.namprd21.prod.outlook.com>
-References: <PU1P153MB0169BACDA500F94910849770BFE90@PU1P153MB0169.APCP153.PROD.OUTLOOK.COM>
-        <20190616.135445.822152500838073831.davem@davemloft.net>
-        <MW2PR2101MB111697FDA0BEDA81237FECB3C0EB0@MW2PR2101MB1116.namprd21.prod.outlook.com>
- <20190617.115615.91633577273679753.davem@davemloft.net>
-In-Reply-To: <20190617.115615.91633577273679753.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=sunilmut@microsoft.com; 
-x-originating-ip: [2001:4898:80e8:3:8d7e:cb94:2f88:ec90]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b4b566a5-79e4-4304-b42b-08d6f359dfc3
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:MW2PR2101MB1114;
-x-ms-traffictypediagnostic: MW2PR2101MB1114:
-x-microsoft-antispam-prvs: <MW2PR2101MB11143926C3BE9132F79F6ADFC0EB0@MW2PR2101MB1114.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0071BFA85B
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(376002)(39860400002)(366004)(396003)(346002)(189003)(199004)(13464003)(8676002)(81156014)(81166006)(8936002)(316002)(22452003)(478600001)(305945005)(7736002)(10090500001)(68736007)(6116002)(99286004)(52396003)(7696005)(6916009)(8990500004)(54906003)(76176011)(53546011)(102836004)(10290500003)(6506007)(14454004)(66446008)(73956011)(66946007)(64756008)(66476007)(66556008)(6246003)(5660300002)(229853002)(52536014)(33656002)(4326008)(76116006)(53936002)(46003)(25786009)(2906002)(74316002)(71190400001)(71200400001)(86362001)(9686003)(55016002)(476003)(486006)(6436002)(446003)(11346002)(256004)(14444005)(186003);DIR:OUT;SFP:1102;SCL:1;SRVR:MW2PR2101MB1114;H:MW2PR2101MB1116.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: microsoft.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: UIPb1xRk/01q2kXGlJ43B1UplM2CAZQG8eMElPKMkNTGyBaHyfV/ZxExK05hRpAG9wCiasj/9Jt6A/s233u73MX+McICbahIemlcMTuKOAnmC7RDVhfssZReG3jvsfsRVPF8OosHRfSBr3qY7GklUHHWujYkoDS6K2ewwa0OyPdbIOBONiVpX7ektB0pcjTewTBAltEuhNtU9V82zLQ3syGRDDPw4ZbTpVPI0V3nn8JL9H2Mzru6cNaNqVKWzbTQCA0+tt48yFv7aYthOWtNDv+PtD8W05R+HKVoQF7YcHBBH6QVdtY1bgParRK8U+AszyiIyq1aSh/+Uqiwg/rtKpFtOTyqvpplquLdqKbObo2MQxINeDdymRXizxChWqFdhqkQ73IYbHi8Nix0E3VGWeK1XyezicXCnztYdUUMkq4=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1728925AbfFQTat (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 15:30:49 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:33701 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726818AbfFQTat (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 15:30:49 -0400
+Received: by mail-qt1-f193.google.com with SMTP id x2so12271082qtr.0;
+        Mon, 17 Jun 2019 12:30:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=heHfMI8HvMbjQ3YPPxt4J0OSxlkzKtOLqmUyTJkyUTk=;
+        b=L5+RXzt+DaBWpS7NogH46s5f7OPSqzWB4euayWYmQUSa0goTeiL1RGZnnbFBTYrpmT
+         wBZKqxv18Y9i2+YPwSc0nj8FIH2nX6KpE4bYWlNQiZan9d9b/MpE4QRcDTrdN+zC58a4
+         2XUyonOechzRpJ89J6L1gw9dQvI7tTRhy/mTpQYUBubJYuTj5HKjmIIon+0NpRCTr5wP
+         uMtrCnJw2mpuhmLomf1lU1DDKpHFl5oAlcHmmI4jsR3kvG1BBSX8MLkMtBAzpv4042kF
+         F1bde6vW0RLcZUnlliOnq1pMI1kDhzgAKOeg7ot2mbjHjLHm8EFdy4EK7TyYQd4Ak5+2
+         C6mg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=heHfMI8HvMbjQ3YPPxt4J0OSxlkzKtOLqmUyTJkyUTk=;
+        b=rg+ozXb05T4198Q+3ZJ6Q8P25X5pUmBeGubMGRjFIXjuBmCRhNOSucnl0fSlHxoxCA
+         qz3oHaBufrPOYUf9ZSwJ9pg6ZqtwXaGQ6V7pOc1vld4kt/lJozCdrXBg19KReVlItz0X
+         ZArEjjh/f6Ws906rH00D/a8YZh/2UhZu75yKKQ+cr+tncCTl5YZ2pWMe31gt20XmudxB
+         592WlLa7qVk1cpQ/wC3/A0ogG/ltuPXQa8ziBN7W462Yj+P3flvxAh8vPidIgFa6MwZh
+         9Ifwu4SUTb3KRn9Pgb+kwuMQs9PXzHvqz19AKKOgqhnvLbUOYoQQL6dF3MQM2pZJIV0D
+         TgKQ==
+X-Gm-Message-State: APjAAAWG5l141jkezO4kQFMsno1qDjGXqMx2TzoiJ2t356+EJKhhuQD3
+        hR0VHuDcjSvwBqQX0Yy2DO3iUYU7hS+Ei7IZ7pMUnc6O
+X-Google-Smtp-Source: APXvYqzJtpAtMiugSbpg/b2+92DQvI5MTM0cRskk/9imOlranjlFhSQi+qCGSJx1HVMYWF534AJQpfzaZppTYJecFRA=
+X-Received: by 2002:ac8:290c:: with SMTP id y12mr7279599qty.141.1560799848510;
+ Mon, 17 Jun 2019 12:30:48 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b4b566a5-79e4-4304-b42b-08d6f359dfc3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jun 2019 19:27:45.0458
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: sunilmut@ntdev.microsoft.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR2101MB1114
+References: <20190611044747.44839-1-andriin@fb.com> <20190611044747.44839-9-andriin@fb.com>
+ <20190614232329.GF9636@mini-arch> <CAEf4BzZ5itJ+toa-3Bm3yNxP=CyvNm=CZ5Dg+=nhU=p4CSu=+g@mail.gmail.com>
+ <20190615000104.GG9636@mini-arch>
+In-Reply-To: <20190615000104.GG9636@mini-arch>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 17 Jun 2019 12:30:37 -0700
+Message-ID: <CAEf4BzbV-W1KsuN3AuPas_3dG7MVwZO6RsqohS2uvnEf49M67w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 8/8] selftests/bpf: switch tests to BTF-defined
+ map definitions
+To:     Stanislav Fomichev <sdf@fomichev.me>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Jun 14, 2019 at 5:01 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
+>
+> On 06/14, Andrii Nakryiko wrote:
+> > On Fri, Jun 14, 2019 at 4:23 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
+> > >
+> > > On 06/10, Andrii Nakryiko wrote:
+> > > > Switch test map definition to new BTF-defined format.
+> > > Reiterating my concerns on non-RFC version:
+> > >
+> > > Pretty please, let's not convert everything at once. Let's start
+> > > with stuff that explicitly depends on BTF (spinlocks?).
+> >
+> > How about this approach. I can split last commit into two. One
+> > converting all the stuff that needs BTF (spinlocks, etc). Another part
+> > - everything else. If it's so important for your use case, you'll be
+> > able to just back out my last commit. Or we just don't land last
+> > commit.
+> I can always rollback or do not backport internally; the issue is that
+> it would be much harder to backport any future fixes/extensions to
+> those tests. So splitting in two and not landing the last one is
+> preferable ;-)
 
+So I just posted v2 and I split all the test conversions into three parts:
+1. tests that already rely on BTF
+2. tests w/ custom key/value types
+3. all the reset
 
-> -----Original Message-----
-> From: David Miller <davem@davemloft.net>
-> Sent: Monday, June 17, 2019 11:56 AM
-> To: Sunil Muthuswamy <sunilmut@microsoft.com>
-> Cc: Dexuan Cui <decui@microsoft.com>; KY Srinivasan <kys@microsoft.com>; =
-Haiyang Zhang <haiyangz@microsoft.com>; Stephen
-> Hemminger <sthemmin@microsoft.com>; sashal@kernel.org; Michael Kelley <mi=
-kelley@microsoft.com>; netdev@vger.kernel.org;
-> linux-hyperv@vger.kernel.org; linux-kernel@vger.kernel.org
-> Subject: Re: [PATCH net] hvsock: fix epollout hang from race condition
->=20
-> From: Sunil Muthuswamy <sunilmut@microsoft.com>
-> Date: Mon, 17 Jun 2019 18:47:08 +0000
->=20
+I think we should definitely apply #1. I think #2 would be nice. And
+we can probably hold off on #3. I'll let Alexei or Daniel decide, but
+it shouldn't be hard for them to do that.
+
+>
+> > > One good argument (aside from the one that we'd like to be able to
+> > > run tests internally without BTF for a while): libbpf doesn't
+> > > have any tests as far as I'm aware. If we don't have 'legacy' maps in the
+> > > selftests, libbpf may bit rot.
+> >
+> > I left few legacy maps exactly for that reason. See progs/test_btf_*.c.
+> Damn it, you've destroyed my only good argument.
+
+Heh :)
+
+>
+> > > (Andrii, feel free to ignore, since we've already discussed that)
+> > >
+> > > > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > > > ---
 > >
 > >
-> >> -----Original Message-----
-> >> From: linux-hyperv-owner@vger.kernel.org <linux-hyperv-owner@vger.kern=
-el.org> On Behalf Of David Miller
-> >> Sent: Sunday, June 16, 2019 1:55 PM
-> >> To: Dexuan Cui <decui@microsoft.com>
-> >> Cc: Sunil Muthuswamy <sunilmut@microsoft.com>; KY Srinivasan <kys@micr=
-osoft.com>; Haiyang Zhang
-> <haiyangz@microsoft.com>;
-> >> Stephen Hemminger <sthemmin@microsoft.com>; sashal@kernel.org; Michael=
- Kelley <mikelley@microsoft.com>;
-> >> netdev@vger.kernel.org; linux-hyperv@vger.kernel.org; linux-kernel@vge=
-r.kernel.org
-> >> Subject: Re: [PATCH net] hvsock: fix epollout hang from race condition
-> >>
-> >> From: Dexuan Cui <decui@microsoft.com>
-> >> Date: Sat, 15 Jun 2019 03:22:32 +0000
-> >>
-> >> > These warnings are not introduced by this patch from Sunil.
-> >> >
-> >> > I'm not sure why I didn't notice these warnings before.
-> >> > Probably my gcc version is not new eought?
-> >> >
-> >> > Actually these warnings are bogus, as I checked the related function=
-s,
-> >> > which may confuse the compiler's static analysis.
-> >> >
-> >> > I'm going to make a patch to initialize the pointers to NULL to supp=
-ress
-> >> > the warnings. My patch will be based on the latest's net.git + this =
-patch
-> >> > from Sunil.
-> >>
-> >> Sunil should then resubmit his patch against something that has the
-> >> warning suppression patch applied.
-> >
-> > David, Dexuan's patch to suppress the warnings seems to be applied now
-> > to the 'net' branch. Can we please get this patch applied as well?
->=20
-> I don't know how else to say "Suni should then resubmit his patch"
->=20
-> Please just resubmit it!
-
-The patch does not change at all. So, I was hoping we could reapply it. But=
-, I have
-resubmitted the patch. Thanks.
+> > <snip>
