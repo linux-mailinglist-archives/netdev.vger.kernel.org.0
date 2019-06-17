@@ -2,96 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D2C547E03
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 11:12:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5309447E27
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 11:20:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728053AbfFQJMN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 05:12:13 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:33753 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727323AbfFQJMM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 05:12:12 -0400
-Received: by mail-ot1-f65.google.com with SMTP id p4so3799975oti.0
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 02:12:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=XkQKkEqj0Dk+yMwwMUT9kq+YcOABBfUMfQA+OLQkIhs=;
-        b=A97y2r8a4SElnnqWxEgYt9hqzUlV/cOq2E2WwDSEdCBsMl4m9cFtY2fwwCpdvcakGW
-         awt+SV7bLv8nxXRVmEnrNMG5nFwayb31HFNIpLayWLPTVlHkQNzKb7SuHGb/q/kFN1iG
-         KVV5NavH8nIx9y83mXraGlVjJ8aelPhg8mONarGKKwUmLvP7zgFt9KexSKptxXiLGBtB
-         AghmJ9J5muwb89JeCF2VbT9c8bxFbPOzohfyudUTv0h+bt9tmpFijVpS7R1W1toW/CwL
-         o9HaBfx9fAnEFi8vjuByIGu5qiqhE5bzRO7ym7pfTmOyYah4LXxvPFkfhV2bB4XvMmBB
-         qZjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=XkQKkEqj0Dk+yMwwMUT9kq+YcOABBfUMfQA+OLQkIhs=;
-        b=UxUfWbPoEA2Q7IRgoCQzemub87J6t4v9nWp5VS4DutREVQYTeTPt0Jxun32rOCyOqH
-         R7TgSIAmr/YuRsdaRRmMeasSbEbEoqHYG7q/1t4snom78n0YHiseSr60tQAVKCyouG9d
-         QyGmlvC5Z4rYCWRoqW5Vp+9vrwqVh1hzF/KqIcU7385Nise/e94rq9WoVz2FMFxyV3uB
-         ETsdWHEtIi26ED1MDLow+KQPSKr43SWuvTpJRKTPsmTs8DOQgy9Yds3HZpRWD9tpP3ZY
-         VhQVQlBHQ0AMo78A5QA6WgyiSsFJnLXTMMp/f3kLQFgDqccPimrhewYf0+ZJPt4U+N31
-         jk5w==
-X-Gm-Message-State: APjAAAXXiyFx+o+A2cUdtXf6732oKVAu6tTTLViMYE8TILEQSFeJCUuw
-        2g0/iaB8psT9Sh1NRC72dbzcxw==
-X-Google-Smtp-Source: APXvYqwsv0A5/ztfsCZbU16h7iBULFGTI4PThp2tCsCGD02xzLu83QPfwHz3CgMUuRTE/EiYGmWv6w==
-X-Received: by 2002:a9d:4b88:: with SMTP id k8mr61017358otf.285.1560762731712;
-        Mon, 17 Jun 2019 02:12:11 -0700 (PDT)
-Received: from localhost.localdomain (li964-79.members.linode.com. [45.33.10.79])
-        by smtp.gmail.com with ESMTPSA id l145sm4418324oib.6.2019.06.17.02.12.06
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 17 Jun 2019 02:12:11 -0700 (PDT)
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH 2/2] perf trace: Handle NULL pointer dereference in trace__syscall_info()
-Date:   Mon, 17 Jun 2019 17:11:40 +0800
-Message-Id: <20190617091140.24372-2-leo.yan@linaro.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190617091140.24372-1-leo.yan@linaro.org>
-References: <20190617091140.24372-1-leo.yan@linaro.org>
+        id S1727706AbfFQJUW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 05:20:22 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:55798 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726286AbfFQJUW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Jun 2019 05:20:22 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 3DBD7201C6;
+        Mon, 17 Jun 2019 11:20:21 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id zeqB7q0eqP-K; Mon, 17 Jun 2019 11:20:20 +0200 (CEST)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 85EFF20096;
+        Mon, 17 Jun 2019 11:20:20 +0200 (CEST)
+Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
+ (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Mon, 17 Jun 2019
+ 11:20:20 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 2290C31805E2;
+ Mon, 17 Jun 2019 11:20:20 +0200 (CEST)
+Date:   Mon, 17 Jun 2019 11:20:20 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Florian Westphal <fw@strlen.de>
+CC:     <netdev@vger.kernel.org>, Stephen Rothwell <sfr@canb.auug.org.au>
+Subject: Re: [PATCH ipsec-next] xfrm: fix bogus WARN_ON with ipv6
+Message-ID: <20190617092020.GS17989@gauss3.secunet.de>
+References: <20190612111144.757a8cea@canb.auug.org.au>
+ <20190612083058.22230-1-fw@strlen.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20190612083058.22230-1-fw@strlen.de>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-trace__init_bpf_map_syscall_args() invokes trace__syscall_info() to
-retrieve system calls information, it always passes NULL for 'evsel'
-argument; when id is an invalid value then the logging will try to
-output event name, this triggers NULL pointer dereference.
+On Wed, Jun 12, 2019 at 10:30:58AM +0200, Florian Westphal wrote:
+> net/xfrm/xfrm_input.c:378:17: warning: this statement may fall through [-Wimplicit-fallthrough=]
+> skb->protocol = htons(ETH_P_IPV6);
+> 
+> ... the fallthrough then causes a bogus WARN_ON().
+> 
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Fixes: 4c203b0454b ("xfrm: remove eth_proto value from xfrm_state_afinfo")
+> Signed-off-by: Florian Westphal <fw@strlen.de>
 
-This patch directly uses string "unknown" for event name when 'evsel'
-is NULL pointer.
-
-Signed-off-by: Leo Yan <leo.yan@linaro.org>
----
- tools/perf/builtin-trace.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/tools/perf/builtin-trace.c b/tools/perf/builtin-trace.c
-index 5cd74651db4c..49dfb2fd393b 100644
---- a/tools/perf/builtin-trace.c
-+++ b/tools/perf/builtin-trace.c
-@@ -1764,7 +1764,7 @@ static struct syscall *trace__syscall_info(struct trace *trace,
- 		static u64 n;
- 
- 		pr_debug("Invalid syscall %d id, skipping (%s, %" PRIu64 ")\n",
--			 id, perf_evsel__name(evsel), ++n);
-+			 id, evsel ? perf_evsel__name(evsel) : "unknown", ++n);
- 		return NULL;
- 	}
- 
--- 
-2.17.1
-
+Applied, thanks Florian!
