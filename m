@@ -2,120 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 78DFB48438
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 15:40:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D433248476
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 15:49:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726243AbfFQNjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 09:39:00 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:45476 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725973AbfFQNjA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 09:39:00 -0400
-Received: by mail-io1-f65.google.com with SMTP id e3so21080122ioc.12
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 06:38:59 -0700 (PDT)
+        id S1727852AbfFQNtS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 09:49:18 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:42781 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725983AbfFQNtR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 09:49:17 -0400
+Received: by mail-qt1-f195.google.com with SMTP id s15so10700450qtk.9;
+        Mon, 17 Jun 2019 06:49:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=//pA/IsftzJeCh0PJhV/KXqgwznXQR4nG+ODrLNY/fE=;
-        b=YbX6Fmg+Y19JcITycDwiwDeVqlg0Bvc0s9AshEjOKFi2Twst+YYaZMwvkecyoCPqbs
-         vouPHEAwwy4vwN74KRuYnOSgIVGfxsbW7JHdA7V1DbbbP17KZvVMOeKQShmP29tRMBn+
-         8LK340DXAWfRQzRnq78qzKRxFVsuwn8vsGfIw1a/BP9nyTJD48zIPE3JjkPe4+OcPHco
-         g9cKnaZ5PmjOexFTKKUiA0vgUieBI7qYSDN4/pUeTRqq/vQKAuddT9NSYIg+IESeeh9w
-         xFQTHkFA+IQSqz5xlZjeyLfB1xu4gQlwaJf7x+hMwLB4IeklXtlTHBdM9LrWDnUs7j74
-         BdwA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=94sn0DTHUZTVcQOD/9DaY0xY644jfzyvVVrkXSXjOxk=;
+        b=MjjNrEfDFf4lIFoODjvXa5xbnWk2UgWK2Ao5REw+whWMiAVMsMKdA0+Woeg9SBXpBR
+         BWQmHDr5qRwPGv3i7hJnBjtxa4gUIFiH90xFdK4xazv4lBQxrTWkJNuHgzhyhwyAHViT
+         WzkBzi8fUxcFjZ+apRhJ9BQ0Xn7PL8NLcmuLVfJ4gQDfZIIUHOv0yPteedblTKPo4OI1
+         DTqWdfSKGFTTFBCPzjYz4MHerwbTSTJq4APqK5bmtnPPJ8hH+Xe0m0gHHk1LtaRyslnB
+         KsnlGkCeAIyQwZsbu1j5n3Z1pvpJH3QoOtD9s3p+pJivoKcI0qbKn2ruAB0d2ByGFm3y
+         2pjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=//pA/IsftzJeCh0PJhV/KXqgwznXQR4nG+ODrLNY/fE=;
-        b=eT+52kfBsWDtHGSpS/+o0+y0Bw3sbac5BoheHTkuiyIB/RMpUcil6QZ/KEFaAi/XIQ
-         kNRIhXNHDPUyKI+O3WPHhnxdi5QiTB+n1HDqx4PcUm8mTY9MUacPw85TV/GI9yqv3EaJ
-         FCsBMKqMw03IPcJjDexWgZbdOqm57KtGAQqFZFeEjZs3HlLUOzcskuTJFNTPU/ojLS4S
-         JEAFrCTifgm1LBON92X0TxaGyLqSTkyNV0TOmGbfH75gfp/wwPvMv3HBK9jGwuNqq55N
-         F3b0x+Avim/H7zHavIsFGcanVqGU5Q+7HNJZ91cHpOhy3VtaOVoQyh33rx0Sg9BR7UUB
-         9Bgw==
-X-Gm-Message-State: APjAAAUiJWcNR/XlildpygJuRHKwnbbJxPiXuRY+sTYVvRC4loppl17N
-        6pB6LRLCK6GtPKZT9GalDdyldvF1
-X-Google-Smtp-Source: APXvYqwVg6HPvI9V2AlRAYGbWVw96D/GfDGamRVD8By0j4rQmguaeYE8vjWm5POm8KtNfXVNdKJZiA==
-X-Received: by 2002:a5d:80c3:: with SMTP id h3mr8403625ior.167.1560778739123;
-        Mon, 17 Jun 2019 06:38:59 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:f1:4f12:3a05:d55e? ([2601:282:800:fd80:f1:4f12:3a05:d55e])
-        by smtp.googlemail.com with ESMTPSA id p63sm13574155iof.45.2019.06.17.06.38.58
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 17 Jun 2019 06:38:58 -0700 (PDT)
-Subject: Re: [PATCH net v4 1/8] ipv4/fib_frontend: Rename
- ip_valid_fib_dump_req, provide non-strict version
-To:     Stefano Brivio <sbrivio@redhat.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        netdev@vger.kernel.org
-References: <cover.1560561432.git.sbrivio@redhat.com>
- <fb2bbc9568a7d7d21a00b791a2d4f488cfcd8a50.1560561432.git.sbrivio@redhat.com>
- <4dfbaf6a-5cff-13ea-341e-2b1f91c25d04@gmail.com>
- <20190615051342.7e32c2bb@redhat.com>
- <d780b664-bdbd-801f-7c61-d4854ff26192@gmail.com>
- <20190615052705.66f3fe62@redhat.com> <20190616220417.573be9a6@redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <d3527e70-15aa-abf8-4451-91e5bae4f1ab@gmail.com>
-Date:   Mon, 17 Jun 2019 07:38:54 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=94sn0DTHUZTVcQOD/9DaY0xY644jfzyvVVrkXSXjOxk=;
+        b=IIWL46ryAhbO6jm5PELZeFt1XnIY+9kymB68jU27W8Q1MBwzNc/irE33Udjah81r4j
+         qJtjVETXOme9i/x71eGDU6CLOzPFyBuKfNxeK+8fOoQ5mZkfNZGU5wYwHPJ5tJt/y5iG
+         DXhWvzesQ9qsKuGH299zhEech8elAATxQGvA49+FkklTJ/3a5gYj1AaV4dgjmtJuz5Fz
+         Y8PLnm9boMXtq55gsdK9glzzHsfCJgOthbwtGVlL/LSAYS78G0FKtuuUjI2JDZ6sqzU4
+         n1KcYmXigr9gC6KzCWz1fqsv92ehA5jQZtw4aOHyMeCtBLEYDo+YlWwpUkIJD2MAINDf
+         VSgQ==
+X-Gm-Message-State: APjAAAVmcRTFwBmBVXc+khGVei04Xgw3ctJJ1h8QQ11bsNZRe3Kpyjnj
+        asPcjhG+HT1m/bjaWo6uzMo=
+X-Google-Smtp-Source: APXvYqzPLiSQF/+cyc2b0FL9ZuPmrVzLSE2WQMFWXzuhbk9aHBcmgjD139D+KpiigPqbWbCeyZ/laQ==
+X-Received: by 2002:ac8:30a7:: with SMTP id v36mr72266752qta.119.1560779356433;
+        Mon, 17 Jun 2019 06:49:16 -0700 (PDT)
+Received: from localhost.localdomain ([2001:1284:f013:ed8b:101b:c686:4add:18ab])
+        by smtp.gmail.com with ESMTPSA id o71sm6216275qke.18.2019.06.17.06.49.15
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 17 Jun 2019 06:49:15 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 2E009C1BD6; Mon, 17 Jun 2019 10:49:13 -0300 (-03)
+Date:   Mon, 17 Jun 2019 10:49:13 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     syzbot <syzbot+c1a380d42b190ad1e559@syzkaller.appspotmail.com>,
+        davem@davemloft.net, linux-kernel@vger.kernel.org,
+        linux-sctp@vger.kernel.org, lucien.xin@gmail.com,
+        netdev@vger.kernel.org, nhorman@tuxdriver.com,
+        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
+Subject: Re: general protection fault in sctp_sched_prio_sched
+Message-ID: <20190617134913.GL3436@localhost.localdomain>
+References: <20190616153804.3604-1-hdanton@sina.com>
 MIME-Version: 1.0
-In-Reply-To: <20190616220417.573be9a6@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190616153804.3604-1-hdanton@sina.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/16/19 2:04 PM, Stefano Brivio wrote:
-> We could do this:
-> 
-> - strict checking enabled (iproute2 >= 5.0.0):
->   - in inet{,6}_dump_fib(): if NLM_F_MATCH is set, set
->     filter->filter_set in any case
-> 
->   - in fn_trie_dump_leaf() and rt6_dump_route(): use filter->filter_set
->     to decide if we want to filter depending on RTM_F_CLONED being
->     set/unset. If other filters (rt_type, dev, protocol) are not set,
->     they are still wildcards (existing implementation)
-> 
-> - no strict checking (iproute2 < 5.0.0):
->   - we can't filter consistently, so apply no filters at all: dump all
->     the routes (filter->filter_set not set), cached and uncached. That
->     means more netlink messages, but no spam as iproute2 filters them
->     anyway, and list/flush cache commands work again.
-> 
-> I would drop 1/8, turn 2/8 and 6/8 into a straightforward:
-> 
->  	if (cb->strict_check) {
->  		err = ip_valid_fib_dump_req(net, nlh, &filter, cb);
->  		if (err < 0)
->  			return err;
-> +		if (nlh->nlmsg_flags & NLM_F_MATCH)
-> +			filter.filter_set = 1;
->  	} else if (nlmsg_len(nlh) >= sizeof(struct rtmsg)) {
->  		struct rtmsg *rtm = nlmsg_data(nlh);
-> 
-> and other patches remain the same.
-> 
-> What do you think?
-> 
+Hi,
 
-With strict checking (5.0 and forward):
-- RTM_F_CLONED NOT set means dump only FIB entries
-- RTM_F_CLONED set means dump only exceptions
+On Sun, Jun 16, 2019 at 11:38:03PM +0800, Hillf Danton wrote:
+> 
+> Hello Syzbot
+> 
+> On Sat, 15 Jun 2019 16:36:06 -0700 (PDT) syzbot wrote:
+> > Hello,
+> > 
+> > syzbot found the following crash on:
+> > 
+...
+> Check prio_head and bail out if it is not valid.
+> 
+> Thanks
+> Hillf
+> ----->8---
+> ---
+> net/sctp/stream_sched_prio.c | 2 ++
+> 1 file changed, 2 insertions(+)
+> 
+> diff --git a/net/sctp/stream_sched_prio.c b/net/sctp/stream_sched_prio.c
+> index 2245083..db25a43 100644
+> --- a/net/sctp/stream_sched_prio.c
+> +++ b/net/sctp/stream_sched_prio.c
+> @@ -135,6 +135,8 @@ static void sctp_sched_prio_sched(struct sctp_stream *stream,
+> 	struct sctp_stream_priorities *prio, *prio_head;
+> 
+> 	prio_head = soute->prio_head;
+> +	if (!prio_head)
+> +		return;
+> 
+> 	/* Nothing to do if already scheduled */
+> 	if (!list_empty(&soute->prio_list))
+> --
 
-Without strict checking (old iproute2 on any kernel):
-- dump all, userspace has to sort
+Thanks but this is not a good fix for this. It will cause the stream
+to never be scheduled.
 
-Kernel side this can be handled with new field, dump_exceptions, in the
-filter that defaults to true and then is reset in the strict path if the
-flag is not set.
+The problem happens because of the fault injection that happened a bit
+before the crash, in here:
+
+int sctp_stream_init_ext(struct sctp_stream *stream, __u16 sid)
+{
+        struct sctp_stream_out_ext *soute;
+
+        soute = kzalloc(sizeof(*soute), GFP_KERNEL);
+        if (!soute)
+                return -ENOMEM;
+        SCTP_SO(stream, sid)->ext = soute;  <---- [A]
+
+        return sctp_sched_init_sid(stream, sid, GFP_KERNEL);
+                      ^^^^^^^^^^^^---- [B] failed
+}
+
+This causes the 1st sendmsg to bail out with the error. When the 2nd
+one gets in, it will:
+
+sctp_sendmsg_to_asoc()
+{
+...
+        if (unlikely(!SCTP_SO(&asoc->stream, sinfo->sinfo_stream)->ext)) {
+                                                                 ^^^^^--- [C]
+                err = sctp_stream_init_ext(&asoc->stream, sinfo->sinfo_stream);
+                if (err)
+                        goto err;
+        }
+
+[A] leaves ext initialized, despite the failed in [B]. Then in [C], it
+will not try to initialize again.
+
+We need to either uninitialize ->ext as error handling for [B], or
+improve the check on [C].
+
+syzbot++ once again.
+
+  Marcelo
