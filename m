@@ -2,123 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 622664922A
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 23:14:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E09449237
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 23:16:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726721AbfFQVO4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 17:14:56 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:34254 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725497AbfFQVO4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 17:14:56 -0400
-Received: by mail-pl1-f194.google.com with SMTP id i2so4677958plt.1
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 14:14:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=77Y4YaolfbJc51OiQS7jlCK/dkrVeZ3ZEsMtCUk881o=;
-        b=cGi0ptqdqr7nMInLcBDpkkzpn9s1PXv/vq3/A+/NjKNqaCHicp8LxAEsjvp8FyMUSW
-         010y2Jtk4OvXiH5Cat6jtA549GZeMQGyyx7GmfX/mVoIZQ4ZpIideK75VT6bDVDMkoLM
-         yxOv6W6kphERridyXuo8kSL8MNPACVNxvhYEWK8gjSrybsyrtSK7GHcB2tAkwbX4JmQj
-         JXxf9MwGlodFNFVSgp0PPO8aAkhVDeHuv7SFrEZ2tAUq9uZ2tGgrwYGYwHFhaAR01iE6
-         Ky/I60CBYdDE6ikwTAOKk/xvKFnjYVWmSGc99niTZ+KQAYlAQigi5wzjL1DyyExADe+k
-         eblA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=77Y4YaolfbJc51OiQS7jlCK/dkrVeZ3ZEsMtCUk881o=;
-        b=UMVcWooO52IEBxVmdUiBcJQMXyuE6cuXQ/ViZR9kJeRzX6whv/9tZegt+/8teWC89c
-         f/B2gmtl2l7qlWGOkdB1/JOSTw2WXJLFYJV5ax+GW66Dm73Io0BgtlY16AX9Hz66n9ag
-         8MTtzHKaG67EmLPVmB1KriqzX0Aj/DtxPW6x1RrXUr6QsMz/mRjZR80M1i2RdAI+8N0H
-         hyIar3CgAD84SWc2d5RcFvACteVgDo+0NSRCwWBP7FwDrZcMZlYxeT483/YrIt7QdUbO
-         1qLncEAkRhQXUo0Ec1+B4iJmNTdUv8v5vX7mlm0r1ipZTYb/oehL/MvI6IBrDJAyTqVs
-         N2rQ==
-X-Gm-Message-State: APjAAAXeo+Atdv0szeBJGR/Niu2YSTz8bg9ueZozzFv07c/CJObZSCNV
-        /K/j0z/LFQ0+Sn5XmKZCL4l9mg==
-X-Google-Smtp-Source: APXvYqyOl/TWjxSoWJqDOvtb/N0KpdbnSZzuoGZsB4mbpMjLP25cQcQl8gZcwHVuL/JuyT0hqAKf3Q==
-X-Received: by 2002:a17:902:9a84:: with SMTP id w4mr8338998plp.160.1560805679727;
-        Mon, 17 Jun 2019 14:07:59 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id c129sm14759479pfa.106.2019.06.17.14.07.58
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 17 Jun 2019 14:07:58 -0700 (PDT)
-Date:   Mon, 17 Jun 2019 14:07:57 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
+        id S1726095AbfFQVQm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 17:16:42 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:50596 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725839AbfFQVQm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 17:16:42 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us2.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id C1B6628007C;
+        Mon, 17 Jun 2019 21:16:39 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 17 Jun
+ 2019 14:16:34 -0700
+Subject: Re: [PATCH] bpf: optimize constant blinding
+To:     Jiong Wang <jiong.wang@netronome.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>
+CC:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 8/8] selftests/bpf: switch tests to BTF-defined
- map definitions
-Message-ID: <20190617210757.GH9636@mini-arch>
-References: <20190611044747.44839-1-andriin@fb.com>
- <20190611044747.44839-9-andriin@fb.com>
- <20190614232329.GF9636@mini-arch>
- <CAEf4BzZ5itJ+toa-3Bm3yNxP=CyvNm=CZ5Dg+=nhU=p4CSu=+g@mail.gmail.com>
- <20190615000104.GG9636@mini-arch>
- <CAEf4BzbV-W1KsuN3AuPas_3dG7MVwZO6RsqohS2uvnEf49M67w@mail.gmail.com>
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+References: <20190612113208.21865-1-naveen.n.rao@linux.vnet.ibm.com>
+ <CAADnVQLp+N8pYTgmgEGfoubqKrWrnuTBJ9z2qc1rB6+04WfgHA@mail.gmail.com>
+ <87sgse26av.fsf@netronome.com> <87r27y25c3.fsf@netronome.com>
+ <CAADnVQJZkJu60jy8QoomVssC=z3NE4402bMnfobaWNE_ANC6sg@mail.gmail.com>
+ <87ef3w5hew.fsf@netronome.com>
+ <41dfe080-be03-3344-d279-e638a5a6168d@solarflare.com>
+ <878su0geyt.fsf@netronome.com>
+ <58d86352-4989-38d6-666b-5e932df9ed46@solarflare.com>
+ <877e9kgd39.fsf@netronome.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <f2a74aac-7350-8b35-236a-b17323bb79e6@solarflare.com>
+Date:   Mon, 17 Jun 2019 22:16:33 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzbV-W1KsuN3AuPas_3dG7MVwZO6RsqohS2uvnEf49M67w@mail.gmail.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+In-Reply-To: <877e9kgd39.fsf@netronome.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24684.005
+X-TM-AS-Result: No-5.998100-4.000000-10
+X-TMASE-MatchedRID: cgbqQT5W8hdEgaBf5eVRwvZvT2zYoYOwC/ExpXrHizz5+tteD5Rzhb/0
+        pkNbQpuU2cBrC5VzXZijDwh25qtF1+wy2NhRsPybA9lly13c/gGFUOeR/MPu5l6ZbCgJcOP1K6N
+        gXi8D7Qhlrwi/uVF+3RWjJZzvebtwkQ+VI66DgF6cxB01DrjF96RKBWxEuWDzmyiLZetSf8my5/
+        tFZu9S3Ku6xVHLhqfxwrbXMGDYqV8NstCXmf87HE2j4CflSSdbPftAkXfHYuxekegG5gtgKl+1A
+        CAa9ge4B8RSXFHFbbj0y3cDig99ZjqjEMi+V3bYtIu3kwejqlhFmXJm4PLyqVHTb2Y4zo/QutwT
+        zHK3ELl3mFldkWgHw/pJH+h4T7AX
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--5.998100-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24684.005
+X-MDID: 1560806200-hAfrg_k4Cn-a
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/17, Andrii Nakryiko wrote:
-> On Fri, Jun 14, 2019 at 5:01 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
-> >
-> > On 06/14, Andrii Nakryiko wrote:
-> > > On Fri, Jun 14, 2019 at 4:23 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
-> > > >
-> > > > On 06/10, Andrii Nakryiko wrote:
-> > > > > Switch test map definition to new BTF-defined format.
-> > > > Reiterating my concerns on non-RFC version:
-> > > >
-> > > > Pretty please, let's not convert everything at once. Let's start
-> > > > with stuff that explicitly depends on BTF (spinlocks?).
-> > >
-> > > How about this approach. I can split last commit into two. One
-> > > converting all the stuff that needs BTF (spinlocks, etc). Another part
-> > > - everything else. If it's so important for your use case, you'll be
-> > > able to just back out my last commit. Or we just don't land last
-> > > commit.
-> > I can always rollback or do not backport internally; the issue is that
-> > it would be much harder to backport any future fixes/extensions to
-> > those tests. So splitting in two and not landing the last one is
-> > preferable ;-)
-> 
-> So I just posted v2 and I split all the test conversions into three parts:
-> 1. tests that already rely on BTF
-> 2. tests w/ custom key/value types
-> 3. all the reset
-> 
-> I think we should definitely apply #1. I think #2 would be nice. And
-> we can probably hold off on #3. I'll let Alexei or Daniel decide, but
-> it shouldn't be hard for them to do that.
-Awesome, thanks!
+On 17/06/2019 21:40, Jiong Wang wrote:
+> Now if we don't split patch when patch an insn inside patch, instead, if we
+> replace the patched insn using what you suggested, then the logic looks to
+> me becomes even more complex, something like
+>
+>    for (idx = 0; idx < insn_cnt; idx++) {
+>      if (insns[idx] is not BPF_LIST_INSN) {
+>        do_insn(...)
+>      }
+>      else if (insns[idx] is BPF_LIST_INSN) {
+>        list = pool_base + insn.imm;
+>        while (list) {
+>          insn = list_head->insn;
+>          if (insn is BF_LIST_INSN) {
+>            sub_list = ...
+>            while ()
+>              do_insn()
+>            continue;
+>          }
+>          do_insn(...)
+>          list = pool_base + list->next;
+>        }
+>      }
+>    }
+Why can't do_insn() just go like:
+    if (insn is BPF_LIST_INSN)
+        for (idx = 0; idx < LIST_COUNT(insn); idx++)
+            do_insn(pool_base + LIST_START(insn) + idx);
+    else
+        rest of processing
+?
 
-> > > > One good argument (aside from the one that we'd like to be able to
-> > > > run tests internally without BTF for a while): libbpf doesn't
-> > > > have any tests as far as I'm aware. If we don't have 'legacy' maps in the
-> > > > selftests, libbpf may bit rot.
-> > >
-> > > I left few legacy maps exactly for that reason. See progs/test_btf_*.c.
-> > Damn it, you've destroyed my only good argument.
-> 
-> Heh :)
-> 
-> >
-> > > > (Andrii, feel free to ignore, since we've already discussed that)
-> > > >
-> > > > > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > > > > ---
-> > >
-> > >
-> > > <snip>
+Alternatively, iterate with something more sophisticated than 'idx++'
+ (standard recursion-to-loop transformation).
+You shouldn't ever need a for() tower statically in the code...
+
+> So, I am thinking what Alexei and Andrii suggested make sense, just use
+> single data structure (singly linked list) to represent everything, so the
+> insn traversal etc could be simple
+But then you have to also store orig_insn_idx with each insn, so you can
+ calculate the new jump offsets when you linearise.  Having an array of
+ patched_orig_insns gives you that for free.
