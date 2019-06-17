@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F6AE48829
-	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 18:02:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3510F4882B
+	for <lists+netdev@lfdr.de>; Mon, 17 Jun 2019 18:02:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726151AbfFQQCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 12:02:11 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:46515 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725995AbfFQQCL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 12:02:11 -0400
-Received: by mail-wr1-f67.google.com with SMTP id n4so10543520wrw.13
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 09:02:09 -0700 (PDT)
+        id S1726286AbfFQQCg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 12:02:36 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:54998 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725995AbfFQQCf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 12:02:35 -0400
+Received: by mail-wm1-f68.google.com with SMTP id g135so9854413wme.4
+        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 09:02:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
         bh=1eVyO3475+vGYTpZM4Ne10AoF7Av4Go6cB68x/X91Aw=;
-        b=SIEcs+YzLZvQqtpwNTeddXv76rp7FipkTp5uJTvv9XzLFfDBimJicByamKkTuuu61I
-         ZxctydBlGdNJQUWxL/EfiIS2Wg77eNd7FXSyU75fqPLRE8DlK/bFo4noX6ZHjS5hM/+Q
-         w3csHOi3+P17zR/AnMmkObGOBRx0gTDCnPMk4xrf4oLC03Pmx/p9oWzsYjB9IKNiO3tO
-         BMJ1AzOCIUvET/4STvaRJ/l0s1EokrbGBbupHWPU+6Snak3kc2LYIvgEgv+w+P4flY+9
-         ek5Wg7M0/78HuBnSskVLlDeji9HraYWXzR/eYiviNPKskIJLT2ddzcx7aT15yJzPw+6j
-         tMzQ==
+        b=O6lwPb8aGJ6ponVHaiOgGEGg5P5JN9xx7nY4eCvmoFvD2dVPm5u3qqhquNBfZx71ig
+         pbFGU6xai//zgrefU5NXExkKqHg301XT858Xmm8ZATHacqA7yv6fhXYhoBPXjOQ/KEnG
+         EsduWH2mwS0HoVTdXbuNP9/4hzOHdUxxStoh47yAey/jJnUaG8ZPGAt8JGXKAjtxS0ij
+         lNWtvCc5ZOeLR4lEUV9iJxaQRXk9qs967angRBOVFzmhsgnpWWs/hrNLiFs8RDeqwMf9
+         KVjkJ7cpX44UfePc4LJOO/B5j5hpYLESFngogDP6Lbzspy+8yEqkHoC/8R843qlu0pCB
+         mlWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
         bh=1eVyO3475+vGYTpZM4Ne10AoF7Av4Go6cB68x/X91Aw=;
-        b=o2Zvmn5QFkvtGnipoHwYicXqbZnO4BnwVRdf1LPg/oOJO58T9IsoCpleiYeEtsUisM
-         N1zQPNSxswRPfCMPRRB76QWQwSQu7QOy/qqUkN+lMEJVq6RsaCOh/1Rr56mUHJKhsAsK
-         eHPKNtF81fBUP8ONifUL+z25E/zdyxJmFa8lKHkBvUiT8LldQJTYJxojyQQ9JS/3DVq0
-         qlFCPydgGRiOx2gYmRoQXFT7B6ttDsov99IKMnv+12kYCPCQVqOYxHJFx5Rvfm/kLo1Z
-         5A+c2n74YRxA+OHhyGZJsZjAT6l0lcVnc2aeB65R1elA1EeUMpReegf8xWInp5y5uC7d
-         ud7g==
-X-Gm-Message-State: APjAAAV1bqP0D9+OaYm8F1mYbP02NtHE8VeMrJwQIWwNWkNdEx3mDgLB
-        Z87YhdIfvGcFCvVqgfXIKSoQtP4YwJM=
-X-Google-Smtp-Source: APXvYqwBRD//bnkgHN3ovmckUF/qJrQK/Qb90U2iPnu9cGhj+DhQXmoT/oLV3ItLMIj0vV3SLpFARw==
-X-Received: by 2002:adf:e7ca:: with SMTP id e10mr16582418wrn.281.1560787329166;
-        Mon, 17 Jun 2019 09:02:09 -0700 (PDT)
+        b=CxgFuH5YVUM6yKUCrbUsqWq+ZmXoXcT5/0CLlrrJY9lyi6/j9x0wNJ/lGmWUp5szwy
+         cGkBUPwF13PFWvPPjgTSyfFBuakIRiAnCvpEmw/d3vZ2ODmtAYuRvdIVCcCk2KVzsU4K
+         O9BZ/n4tQb0adVZEiO9VCJYAs70kF6bMHjnXMtxWSAU0nux2lB4ofDizermUhQWqY3zG
+         SNsJmXspCwtEzdbS956kPI8TYsM0wK3x4V8/V+R5ki5+yIVCaxP3Eo96Cm2BfFUz/UdC
+         DSFEBi1YugpyPYvF5yEqJL1t8CLC4C3kMIMv4z3QJhRKLWjhFYjaI5aqmk4hBfxyf+V+
+         U/NA==
+X-Gm-Message-State: APjAAAW1relJwchs4JPfNR9X6No+FBRiOnOIiAOpKq7RiPK1hP3+/USR
+        zyWkiutofNhM8YHjvX3GnYwPa7vZwgs=
+X-Google-Smtp-Source: APXvYqyCrdf2UW4tPuLNCmAgTDl8Aap6ZVd6sgPFHZN2LMLDOfLN5ZpFyAilWI5v+l6aiwFBy3pm+A==
+X-Received: by 2002:a1c:6154:: with SMTP id v81mr19127147wmb.92.1560787353376;
+        Mon, 17 Jun 2019 09:02:33 -0700 (PDT)
 Received: from localhost (ip-78-45-163-56.net.upcbroadband.cz. [78.45.163.56])
-        by smtp.gmail.com with ESMTPSA id y9sm124369wma.1.2019.06.17.09.02.08
+        by smtp.gmail.com with ESMTPSA id t63sm12484276wmt.6.2019.06.17.09.02.32
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 17 Jun 2019 09:02:08 -0700 (PDT)
+        Mon, 17 Jun 2019 09:02:33 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, mlxsw@mellanox.com, eli@mellanox.com,
         jhs@mojatatu.com, xiyou.wangcong@gmail.com
-Subject: [patch net-next internal] net: sched: cls_matchall: allow to delete filter
-Date:   Mon, 17 Jun 2019 18:02:08 +0200
-Message-Id: <20190617160208.7548-1-jiri@resnulli.us>
+Subject: [patch net-next] net: sched: cls_matchall: allow to delete filter
+Date:   Mon, 17 Jun 2019 18:02:32 +0200
+Message-Id: <20190617160232.7599-1-jiri@resnulli.us>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
