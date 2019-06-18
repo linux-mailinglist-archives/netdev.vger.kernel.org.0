@@ -2,307 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BB2C4A9CA
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 20:26:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84A4B4A9C2
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 20:25:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730340AbfFRS0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 14:26:30 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:46940 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727616AbfFRS0a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 14:26:30 -0400
-Received: by mail-pf1-f195.google.com with SMTP id 81so8123555pfy.13
-        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 11:26:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=i+jVDnZqlS8Fcpero0ZTuTKJG6BWe/9VcMfcFclCD40=;
-        b=m43XeUBzrbF4lN3MXz5e9EzzPgPHHfX7exbkSMYiFdhcAkW9iWWSclxeo58IYLAnb4
-         slhfxbnJBzOxWWBjfosQppUsaXGGMxzCdhkeQsPPcxGnnBgVbbEIj/MfQZPa8GGrkFkj
-         7pgKNzjYvt9yKDU934zrNduwdF8RmCJXgvTmg/WPXkvw/M0yI883IEplJ3itUMKU+cuz
-         nwiS92NntsxwZiGJ03wu8IyMpbeX3IdzcD5Rv9/ptviA/Y1TLix+mRw/h32SWqC5XInj
-         gXsnD34Nyqp7mBCElaYz7B1TWXFpveIXcxlj/yo67IjFM3KsL9eaLiLccmdOjBdfKZXx
-         +sqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=i+jVDnZqlS8Fcpero0ZTuTKJG6BWe/9VcMfcFclCD40=;
-        b=QKumgolQfOO3Gy1OhUOxXEL13+nGVMLB7090FfCff06S141epyn5BVyFiOTFTDxwtY
-         2FIVrHSQer3IJLzng6Wd0SkwwHiwNOpnBSWevrYCq9F1LgHSKTIFZub1Xms7enodH/UJ
-         HKf+eMYx/V/lwswZ41LeBSxqHZ8DXRXg97FZENtONczocH3/GTEte77dlAkLLgdgb3py
-         8gq2rfwL5F0tN0ii6n2eDLMS76QO/uUZSjUKV5UxVE2Zgp4tL/FLlmkDzk7HDUc4boMz
-         Sz+jELvpg8V6biMgGPumvNuXq3Byn+u3yisecEx8coXbzxBzeO9nuLB3TBc9cQA4Xmmn
-         yemQ==
-X-Gm-Message-State: APjAAAX1RJnb6K1nnhi/leZT3dB4PZhmFFnvwD1QorthW78F5wmPLZZ9
-        IXCqXko6AzM4xzf/t5fgooSzoJTdqFI=
-X-Google-Smtp-Source: APXvYqw4shZZHE8bDVHYfDXF+lNjRKkrjZ6N9TpK4cVOrHE0nrCyvLuS/yUJWyUi4anxbN88cg0ajg==
-X-Received: by 2002:a62:5cc6:: with SMTP id q189mr121016864pfb.114.1560882389529;
-        Tue, 18 Jun 2019 11:26:29 -0700 (PDT)
-Received: from weiwan0.svl.corp.google.com ([2620:15c:2c4:201:9310:64cb:677b:dcba])
-        by smtp.gmail.com with ESMTPSA id h6sm2845859pjs.2.2019.06.18.11.26.28
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 18 Jun 2019 11:26:28 -0700 (PDT)
-From:   Wei Wang <tracywwnj@gmail.com>
-To:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Martin KaFai Lau <kafai@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Mahesh Bandewar <maheshb@google.com>,
-        David Ahern <dsahern@gmail.com>, Wei Wang <weiwan@google.com>
-Subject: [PATCH net-next 5/5] ipv6: convert major tx path to use RT6_LOOKUP_F_DST_NOREF
-Date:   Tue, 18 Jun 2019 11:25:43 -0700
-Message-Id: <20190618182543.65477-6-tracywwnj@gmail.com>
-X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
-In-Reply-To: <20190618182543.65477-1-tracywwnj@gmail.com>
-References: <20190618182543.65477-1-tracywwnj@gmail.com>
+        id S1730197AbfFRSZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 14:25:50 -0400
+Received: from mail-eopbgr30052.outbound.protection.outlook.com ([40.107.3.52]:35707
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727616AbfFRSZu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Jun 2019 14:25:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=G1vbh2K593EGktkzPOJe05CCnv8JZbwF+VLdvrk2bcU=;
+ b=Dy34YpZqCBNhY/9JNdZCGCtM4926K+1W+5+B/SHUrrIqeYkp7k3rzAIDPUahr9oYQqYQ315bsU9Or4qw/F06h6tCgA/mUrgNrzjPng68RDsVoiI/kXN6yc5yxUfCRiv9hkvQpHRdOpVfE8DRM0U0kj6rEWOjz6uRfs+9O9ImldQ=
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
+ DB6PR0501MB2390.eurprd05.prod.outlook.com (10.168.75.144) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1987.11; Tue, 18 Jun 2019 18:25:46 +0000
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::a901:6951:59de:3278]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::a901:6951:59de:3278%2]) with mapi id 15.20.1987.014; Tue, 18 Jun 2019
+ 18:25:46 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     Parav Pandit <parav@mellanox.com>,
+        Leon Romanovsky <leonro@mellanox.com>
+CC:     Mark Bloch <markb@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        Bodong Wang <bodong@mellanox.com>
+Subject: Re: [PATCH mlx5-next 14/15] {IB, net}/mlx5: E-Switch, Use index of
+ rep for vport to IB port mapping
+Thread-Topic: [PATCH mlx5-next 14/15] {IB, net}/mlx5: E-Switch, Use index of
+ rep for vport to IB port mapping
+Thread-Index: AQHVJUIpGI7fvdRK1U+ZsqwPxYsEnKahOoGAgAABfQCAAH/3gA==
+Date:   Tue, 18 Jun 2019 18:25:46 +0000
+Message-ID: <7b098b42a51e5b96eca99c024719eebafa775f7a.camel@mellanox.com>
+References: <20190617192247.25107-1-saeedm@mellanox.com>
+         <20190617192247.25107-15-saeedm@mellanox.com>
+         <20190618104220.GH4690@mtr-leonro.mtl.com>
+         <AM0PR05MB4866DF63BB7D80483630F0A9D1EA0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+In-Reply-To: <AM0PR05MB4866DF63BB7D80483630F0A9D1EA0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.32.2 (3.32.2-1.fc30) 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-originating-ip: [209.116.155.178]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 92900457-cfd7-4caf-c805-08d6f41a61ad
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2390;
+x-ms-traffictypediagnostic: DB6PR0501MB2390:
+x-microsoft-antispam-prvs: <DB6PR0501MB2390A5FEC57CE7BEAAC9F371BEEA0@DB6PR0501MB2390.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 007271867D
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(346002)(366004)(396003)(376002)(39860400002)(199004)(189003)(13464003)(64756008)(86362001)(81166006)(478600001)(53546011)(5660300002)(486006)(6506007)(6636002)(76176011)(118296001)(54906003)(3846002)(68736007)(14454004)(53936002)(81156014)(8936002)(316002)(110136005)(2906002)(6116002)(229853002)(6486002)(58126008)(8676002)(6246003)(7736002)(476003)(66556008)(66476007)(71190400001)(446003)(102836004)(66446008)(186003)(6512007)(26005)(25786009)(305945005)(6436002)(11346002)(66946007)(76116006)(73956011)(91956017)(66066001)(2616005)(99286004)(4326008)(71200400001)(450100002)(107886003)(256004)(36756003);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2390;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: I7K8KybzyhaeDKRCpk9b/GbXYW74Qbqcnqxnb9MuC5f+zne8Bs/gOVinVWB4do123c6eT3M9JQFE6f7kA/rXPCWlhcbXhBRbF5JydiHhvQOlQioesNuK4foen5eyu8/b16R7dDKErZUQOA9XYgdAIuwTsMSXGmli46tWiYxXP6OfSWY77RHTvY/bQPwFK9fxVUQHmWZBtJdc0alkPzL53gY6/P6J5VBp+BNf/urdGeNK9sUeB4tiP1vEjR3oi1yy+F9DvfutpJhWAoWVxNdC3cya+krCLUKeYvk75HJN3aRAsdV8ihLsAeg+LCxqVSEo6AXYEgCTuAvjL5PO7wSbMylu8Ux36lYuKdN27DfoX5q4PvZo5DrA06hWKfZFdUtwR+0gQKosWYwARuO26lnXhf4FCGYV6c1GITyuRqi/upk=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <09BE78105BB32A4781F89EF5AA17F0AD@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 92900457-cfd7-4caf-c805-08d6f41a61ad
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jun 2019 18:25:46.3288
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2390
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wei Wang <weiwan@google.com>
-
-For tx path, in most cases, we still have to take refcnt on the dst
-cause the caller is caching the dst somewhere. But it still is
-beneficial to make use of RT6_LOOKUP_F_DST_NOREF flag while doing the
-route lookup. It is cause this flag prevents manipulating refcnt on
-net->ipv6.ip6_null_entry when doing fib6_rule_lookup() to traverse each
-routing table. The null_entry is a shared object and constant updates on
-it cause false sharing.
-
-We converted the current major lookup function ip6_route_output_flags()
-to make use of RT6_LOOKUP_F_DST_NOREF.
-
-Together with the change in the rx path, we see noticable performance
-boost:
-I ran synflood tests between 2 hosts under the same switch. Both hosts
-have 20G mlx NIC, and 8 tx/rx queues.
-Sender sends pure SYN flood with random src IPs and ports using trafgen.
-Receiver has a simple TCP listener on the target port.
-Both hosts have multiple custom rules:
-- For incoming packets, only local table is traversed.
-- For outgoing packets, 3 tables are traversed to find the route.
-The packet processing rate on the receiver is as follows:
-- Before the fix: 3.78Mpps
-- After the fix:  5.50Mpps
-
-Signed-off-by: Wei Wang <weiwan@google.com>
-Acked-by: Eric Dumazet <edumazet@google.com>
-Acked-by: Mahesh Bandewar <maheshb@google.com>
----
- drivers/net/vrf.c       | 11 ++++++-----
- include/net/ip6_route.h | 25 +++++++++++++++++++++++--
- include/net/l3mdev.h    | 11 +++++++----
- net/ipv6/route.c        | 10 ++++++----
- net/l3mdev/l3mdev.c     | 22 +++++++++++-----------
- 5 files changed, 53 insertions(+), 26 deletions(-)
-
-diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
-index 11b9525dff27..1d1ac78b167e 100644
---- a/drivers/net/vrf.c
-+++ b/drivers/net/vrf.c
-@@ -1072,12 +1072,14 @@ static struct sk_buff *vrf_l3_rcv(struct net_device *vrf_dev,
- #if IS_ENABLED(CONFIG_IPV6)
- /* send to link-local or multicast address via interface enslaved to
-  * VRF device. Force lookup to VRF table without changing flow struct
-+ * No refcnt is taken on the dst.
-  */
--static struct dst_entry *vrf_link_scope_lookup(const struct net_device *dev,
--					      struct flowi6 *fl6)
-+static struct dst_entry *vrf_link_scope_lookup_noref(
-+					    const struct net_device *dev,
-+					    struct flowi6 *fl6)
- {
- 	struct net *net = dev_net(dev);
--	int flags = RT6_LOOKUP_F_IFACE;
-+	int flags = RT6_LOOKUP_F_IFACE | RT6_LOOKUP_F_DST_NOREF;
- 	struct dst_entry *dst = NULL;
- 	struct rt6_info *rt;
- 
-@@ -1087,7 +1089,6 @@ static struct dst_entry *vrf_link_scope_lookup(const struct net_device *dev,
- 	 */
- 	if (fl6->flowi6_oif == dev->ifindex) {
- 		dst = &net->ipv6.ip6_null_entry->dst;
--		dst_hold(dst);
- 		return dst;
- 	}
- 
-@@ -1107,7 +1108,7 @@ static const struct l3mdev_ops vrf_l3mdev_ops = {
- 	.l3mdev_l3_rcv		= vrf_l3_rcv,
- 	.l3mdev_l3_out		= vrf_l3_out,
- #if IS_ENABLED(CONFIG_IPV6)
--	.l3mdev_link_scope_lookup = vrf_link_scope_lookup,
-+	.l3mdev_link_scope_lookup_noref = vrf_link_scope_lookup_noref,
- #endif
- };
- 
-diff --git a/include/net/ip6_route.h b/include/net/ip6_route.h
-index 82bced2fc1e3..d587d73a5120 100644
---- a/include/net/ip6_route.h
-+++ b/include/net/ip6_route.h
-@@ -84,8 +84,29 @@ struct dst_entry *ip6_route_input_lookup(struct net *net,
- 					 struct flowi6 *fl6,
- 					 const struct sk_buff *skb, int flags);
- 
--struct dst_entry *ip6_route_output_flags(struct net *net, const struct sock *sk,
--					 struct flowi6 *fl6, int flags);
-+struct dst_entry *ip6_route_output_flags_noref(struct net *net,
-+					       const struct sock *sk,
-+					       struct flowi6 *fl6, int flags);
-+
-+static inline struct dst_entry *ip6_route_output_flags(struct net *net,
-+						       const struct sock *sk,
-+						       struct flowi6 *fl6,
-+						       int flags) {
-+	struct dst_entry *dst;
-+	struct rt6_info *rt6;
-+
-+	rcu_read_lock();
-+	dst = ip6_route_output_flags_noref(net, sk, fl6, flags);
-+	rt6 = (struct rt6_info *)dst;
-+	/* For dst cached in uncached_list, refcnt is already taken. */
-+	if (list_empty(&rt6->rt6i_uncached) && !dst_hold_safe(dst)) {
-+		dst = &net->ipv6.ip6_null_entry->dst;
-+		dst_hold(dst);
-+	}
-+	rcu_read_unlock();
-+
-+	return dst;
-+}
- 
- static inline struct dst_entry *ip6_route_output(struct net *net,
- 						 const struct sock *sk,
-diff --git a/include/net/l3mdev.h b/include/net/l3mdev.h
-index e942372b077b..d8c37317bb86 100644
---- a/include/net/l3mdev.h
-+++ b/include/net/l3mdev.h
-@@ -31,8 +31,9 @@ struct l3mdev_ops {
- 					  u16 proto);
- 
- 	/* IPv6 ops */
--	struct dst_entry * (*l3mdev_link_scope_lookup)(const struct net_device *dev,
--						 struct flowi6 *fl6);
-+	struct dst_entry * (*l3mdev_link_scope_lookup_noref)(
-+					    const struct net_device *dev,
-+					    struct flowi6 *fl6);
- };
- 
- #ifdef CONFIG_NET_L3_MASTER_DEV
-@@ -140,7 +141,8 @@ static inline bool netif_index_is_l3_master(struct net *net, int ifindex)
- 	return rc;
- }
- 
--struct dst_entry *l3mdev_link_scope_lookup(struct net *net, struct flowi6 *fl6);
-+struct dst_entry *l3mdev_link_scope_lookup_noref(struct net *net,
-+						 struct flowi6 *fl6);
- 
- static inline
- struct sk_buff *l3mdev_l3_rcv(struct sk_buff *skb, u16 proto)
-@@ -251,7 +253,8 @@ static inline bool netif_index_is_l3_master(struct net *net, int ifindex)
- }
- 
- static inline
--struct dst_entry *l3mdev_link_scope_lookup(struct net *net, struct flowi6 *fl6)
-+struct dst_entry *l3mdev_link_scope_lookup_noref(struct net *net,
-+						 struct flowi6 *fl6)
- {
- 	return NULL;
- }
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index d2b287635aab..602d00794b30 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -2415,8 +2415,9 @@ static struct rt6_info *ip6_pol_route_output(struct net *net,
- 	return ip6_pol_route(net, table, fl6->flowi6_oif, fl6, skb, flags);
- }
- 
--struct dst_entry *ip6_route_output_flags(struct net *net, const struct sock *sk,
--					 struct flowi6 *fl6, int flags)
-+struct dst_entry *ip6_route_output_flags_noref(struct net *net,
-+					       const struct sock *sk,
-+					       struct flowi6 *fl6, int flags)
- {
- 	bool any_src;
- 
-@@ -2424,13 +2425,14 @@ struct dst_entry *ip6_route_output_flags(struct net *net, const struct sock *sk,
- 	    (IPV6_ADDR_MULTICAST | IPV6_ADDR_LINKLOCAL)) {
- 		struct dst_entry *dst;
- 
--		dst = l3mdev_link_scope_lookup(net, fl6);
-+		dst = l3mdev_link_scope_lookup_noref(net, fl6);
- 		if (dst)
- 			return dst;
- 	}
- 
- 	fl6->flowi6_iif = LOOPBACK_IFINDEX;
- 
-+	flags |= RT6_LOOKUP_F_DST_NOREF;
- 	any_src = ipv6_addr_any(&fl6->saddr);
- 	if ((sk && sk->sk_bound_dev_if) || rt6_need_strict(&fl6->daddr) ||
- 	    (fl6->flowi6_oif && any_src))
-@@ -2443,7 +2445,7 @@ struct dst_entry *ip6_route_output_flags(struct net *net, const struct sock *sk,
- 
- 	return fib6_rule_lookup(net, fl6, NULL, flags, ip6_pol_route_output);
- }
--EXPORT_SYMBOL_GPL(ip6_route_output_flags);
-+EXPORT_SYMBOL_GPL(ip6_route_output_flags_noref);
- 
- struct dst_entry *ip6_blackhole_route(struct net *net, struct dst_entry *dst_orig)
- {
-diff --git a/net/l3mdev/l3mdev.c b/net/l3mdev/l3mdev.c
-index cfc9fcb97465..06133426549b 100644
---- a/net/l3mdev/l3mdev.c
-+++ b/net/l3mdev/l3mdev.c
-@@ -114,35 +114,35 @@ u32 l3mdev_fib_table_by_index(struct net *net, int ifindex)
- EXPORT_SYMBOL_GPL(l3mdev_fib_table_by_index);
- 
- /**
-- *	l3mdev_link_scope_lookup - IPv6 route lookup based on flow for link
-- *			     local and multicast addresses
-+ *	l3mdev_link_scope_lookup_noref - IPv6 route lookup based on flow
-+ *			     for link local and multicast addresses
-  *	@net: network namespace for device index lookup
-  *	@fl6: IPv6 flow struct for lookup
-+ *	This function does not hold refcnt on the returned dst.
-+ *	Caller must hold rcu_read_lock().
-  */
- 
--struct dst_entry *l3mdev_link_scope_lookup(struct net *net,
--					   struct flowi6 *fl6)
-+struct dst_entry *l3mdev_link_scope_lookup_noref(struct net *net,
-+						 struct flowi6 *fl6)
- {
- 	struct dst_entry *dst = NULL;
- 	struct net_device *dev;
- 
-+	WARN_ON_ONCE(!rcu_read_lock_held());
- 	if (fl6->flowi6_oif) {
--		rcu_read_lock();
--
- 		dev = dev_get_by_index_rcu(net, fl6->flowi6_oif);
- 		if (dev && netif_is_l3_slave(dev))
- 			dev = netdev_master_upper_dev_get_rcu(dev);
- 
- 		if (dev && netif_is_l3_master(dev) &&
--		    dev->l3mdev_ops->l3mdev_link_scope_lookup)
--			dst = dev->l3mdev_ops->l3mdev_link_scope_lookup(dev, fl6);
--
--		rcu_read_unlock();
-+		    dev->l3mdev_ops->l3mdev_link_scope_lookup_noref)
-+			dst = dev->l3mdev_ops->
-+				l3mdev_link_scope_lookup_noref(dev, fl6);
- 	}
- 
- 	return dst;
- }
--EXPORT_SYMBOL_GPL(l3mdev_link_scope_lookup);
-+EXPORT_SYMBOL_GPL(l3mdev_link_scope_lookup_noref);
- 
- /**
-  *	l3mdev_fib_rule_match - Determine if flowi references an
--- 
-2.22.0.410.gd8fdbe21b5-goog
-
+T24gVHVlLCAyMDE5LTA2LTE4IGF0IDEwOjQ3ICswMDAwLCBQYXJhdiBQYW5kaXQgd3JvdGU6DQo+
+IEhpIExlb24sDQo+IA0KPiA+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4gRnJvbTog
+TGVvbiBSb21hbm92c2t5DQo+ID4gU2VudDogVHVlc2RheSwgSnVuZSAxOCwgMjAxOSA0OjEyIFBN
+DQo+ID4gVG86IFNhZWVkIE1haGFtZWVkIDxzYWVlZG1AbWVsbGFub3guY29tPg0KPiA+IENjOiBu
+ZXRkZXZAdmdlci5rZXJuZWwub3JnOyBsaW51eC1yZG1hQHZnZXIua2VybmVsLm9yZzsgQm9kb25n
+IFdhbmcNCj4gPiA8Ym9kb25nQG1lbGxhbm94LmNvbT47IFBhcmF2IFBhbmRpdCA8cGFyYXZAbWVs
+bGFub3guY29tPjsgTWFyaw0KPiA+IEJsb2NoDQo+ID4gPG1hcmtiQG1lbGxhbm94LmNvbT4NCj4g
+PiBTdWJqZWN0OiBSZTogW1BBVENIIG1seDUtbmV4dCAxNC8xNV0ge0lCLCBuZXR9L21seDU6IEUt
+U3dpdGNoLCBVc2UNCj4gPiBpbmRleCBvZiByZXANCj4gPiBmb3IgdnBvcnQgdG8gSUIgcG9ydCBt
+YXBwaW5nDQo+ID4gDQo+ID4gT24gTW9uLCBKdW4gMTcsIDIwMTkgYXQgMDc6MjM6MzdQTSArMDAw
+MCwgU2FlZWQgTWFoYW1lZWQgd3JvdGU6DQo+ID4gPiBGcm9tOiBCb2RvbmcgV2FuZyA8Ym9kb25n
+QG1lbGxhbm94LmNvbT4NCj4gPiA+IA0KPiA+ID4gSW4gdGhlIHNpbmdsZSBJQiBkZXZpY2UgbW9k
+ZSwgdGhlIG1hcHBpbmcgYmV0d2VlbiB2cG9ydCBudW1iZXINCj4gPiA+IGFuZCByZXANCj4gPiA+
+IHJlbGllcyBvbiBhIGNvdW50ZXIuIEhvd2V2ZXIgZm9yIGR5bmFtaWMgdnBvcnQgYWxsb2NhdGlv
+biwgaXQgaXMNCj4gPiA+IGRlc2lyZWQgdG8ga2VlcCBjb25zaXN0ZW50IG1hcCBvZiBlc3dpdGNo
+IHZwb3J0IGFuZCBJQiBwb3J0Lg0KPiA+ID4gDQo+ID4gPiBIZW5jZSwgc2ltcGxpZnkgY29kZSB0
+byByZW1vdmUgdGhlIGZyZWUgcnVubmluZyBjb3VudGVyIGFuZA0KPiA+ID4gaW5zdGVhZA0KPiA+
+ID4gdXNlIHRoZSBhdmFpbGFibGUgdnBvcnQgaW5kZXggZHVyaW5nIGxvYWQvdW5sb2FkIHNlcXVl
+bmNlIGZyb20NCj4gPiA+IHRoZQ0KPiA+ID4gZXN3aXRjaC4NCj4gPiA+IA0KPiA+ID4gU2lnbmVk
+LW9mZi1ieTogQm9kb25nIFdhbmcgPGJvZG9uZ0BtZWxsYW5veC5jb20+DQo+ID4gPiBTdWdnZXN0
+ZWQtYnk6IFBhcmF2IFBhbmRpdCA8cGFyYXZAbWVsbGFub3guY29tPg0KPiA+ID4gUmV2aWV3ZWQt
+Ynk6IFBhcmF2IFBhbmRpdCA8cGFyYXZAbWVsbGFub3guY29tPg0KPiA+IA0KPiA+IFdlIGFyZSBu
+b3QgYWRkaW5nIG11bHRpcGxlICIqLWJ5IiBmb3Igc2FtZSB1c2VyLCBwbGVhc2UgY2hvb3NlIG9u
+ZS4NCj4gPiANCj4gU3VnZ2VzdGVkLWJ5IHdhcyBhZGRlZCBieSBCb2RvbmcgZHVyaW5nIG91ciBk
+aXNjdXNzaW9uLiBMYXRlciBvbiB3aGVuDQo+IEkgZGlkIGdlcnJpdCArMSwgUkIgdGFnIGdvdCBh
+ZGRlZC4NCj4gDQoNCklzIHRoZXJlIGEgcnVsZSBhZ2FpbnN0IGhhdmluZyBtdWx0aXBsZSAiKi1i
+eSIgPyBpIGRvbid0IHRoaW5rIHNvICBhbmQNCnRoZXJlIHNob3VsZG4ndCBiZSwgdXNlcnMgbmVl
+ZCB0byBnZXQgdGhlIGV4YWN0IGFtb3VudCBvZiByZWNvZ25pdGlvbg0KYXMgdGhlIGFtb3VudCBv
+ZiB3b3JrIHRoZXkgcHV0IGludG8gdGhpcyBwYXRjaCwgaWYgdGhleSByZXZpZXdlZCBhbmQNCnRl
+c3RlZCBhIHBhdGNoIHRoZXkgZGVzZXJ2ZSB0d28gdGFncyAuLiANCg0KDQo=
