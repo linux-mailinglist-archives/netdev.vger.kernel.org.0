@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2969449D92
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 11:38:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3697A49D95
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 11:39:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729562AbfFRJig (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 05:38:36 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:34735 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729113AbfFRJif (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 05:38:35 -0400
-Received: by mail-io1-f67.google.com with SMTP id k8so28352433iot.1
-        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 02:38:35 -0700 (PDT)
+        id S1729113AbfFRJjQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 05:39:16 -0400
+Received: from mail-yw1-f68.google.com ([209.85.161.68]:44744 "EHLO
+        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729240AbfFRJjQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 05:39:16 -0400
+Received: by mail-yw1-f68.google.com with SMTP id l79so6428486ywe.11
+        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 02:39:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ZYxk0zpnWBOIpwkEOgb96nHnDd2liidUIE8WsxVQMbI=;
-        b=l/c1zYnrThVQCNjjptn2RTlsV/kxJkwZ2aqJXiXdGGHDf2aj8R12Lp6tr1JHjhTsG7
-         2tPXRCzsnUPxkEOKQem6FptIukoiTOrR7/TOQB497QcDSCNq9WxMgVDti6kzy6ig9uyq
-         PxaZrzZ47KRUrX4vmImFnTJYnwbhX/q6nY0pP11SXMgie7+MlTVJZwz4zIUXhcwUErEr
-         RMQDrgXPwDd1aVPCBLYGdeGGtitrYhFHBR0T6Evsy2CCDWi/rptpvNtHmL2b+jvtElr8
-         bu2Gbicp/yiQsfqsb0jauUc/IfOaKyRnP4b6+YWeIdALs7/vFkQkUPPoo1Cm2V2PCZxb
-         gsZA==
+        bh=leaXUi5ri0cQyDOTph/umJ47L10A5R130By8h9bkWuM=;
+        b=GiJrqR8tEg+IgMf+ERQsK3vkLG/3KxpD6hP1IKk+/jSWrrTb0LJmXU7Z1Iv8SthYTG
+         /+L+fPxg3AE5IR5cgOTyRvHzcfSwNUWHkAEiWIW+DBZYBd1GJJJ/aaibb4vnhIPVogvK
+         JJtEKDlQ3glh8mrfetO+lYKUunHPcj0yAVVuEss9Pt9QC583HKroYWioqBc24zTgJI3h
+         knS35KmWHe4nAy8P0vJDzyY3RvLNnXI8Il1eTIP3CyCx7YXcYXbQCHQR6Gr1uauCYlER
+         tLhy/Uy38JoJcfweB/H8HfFwZ3rOZM2SPwAO7H/qisjo5ITX0+vm2KS3fMABNEDqaatW
+         BJ7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ZYxk0zpnWBOIpwkEOgb96nHnDd2liidUIE8WsxVQMbI=;
-        b=LoofOBj6fqQhEt5WT0/wP/0seHc4P4WalhTp2ZiNmZ4LkFY7MZOZPLgRufyfDdkFWF
-         otEqoxLOFFoAg36KyPDnvYedhCIsBY5ye7fuGwcXd2TJGTLUdqAFbILg7ku9quSTpZ+h
-         Is/x93IM6JB09rr/N217JVMtPdgsbN+02KcKSAVDxpCQzwS8Pze3l2Qr4RGFQ2Izg1xW
-         ijzlxjc+pKx21G8bL14LI7r74vjodPaM7pgLaqjjzwg16XSUnRPNANzFPGBydSCht5sD
-         vxiEWvRYURIaft9V22bp2BGcyWJn3DFiOXR0zFLbuJXn+RPUgLxPVXitpRlUXoduJEgC
-         JpeA==
-X-Gm-Message-State: APjAAAVyYsQRxRL6bvzStgIK+xY5JeMPG9SiJUOLkv+XE75LHZEHL+6J
-        CVJ+clxXpDKy9y5heRgxJZ+XMJvOFM84ivIB817DJA==
-X-Google-Smtp-Source: APXvYqy5iMKHIoyO5hV9y5XQejAf3ueCf8/vJgPqlTh1hmwPScZA8IKGQdp6DJto0GIRU4iuC1267QC4eNY+bQi73YE=
-X-Received: by 2002:a02:1a86:: with SMTP id 128mr88760574jai.95.1560850715088;
- Tue, 18 Jun 2019 02:38:35 -0700 (PDT)
+        bh=leaXUi5ri0cQyDOTph/umJ47L10A5R130By8h9bkWuM=;
+        b=NFlvCUxGkINxgctEcLowpPfp9ZIUW/fukX1DRjtcFmwzmf4AprSJtRK5GaR2X6GX57
+         xNU6yFZ1gX57/wWsE/4917VOwnvcd8Ggu7oUkziFLiAn/jFkzcKFsSgtUKoZtbRqM7Cl
+         5qKVX6l4dqHKLL6AGCyiplNqfsnkBdCEuGvbOiuI92t9x+LQ3vOYx20vH2xwsjJ0eGnS
+         6sT+GGA0mqLGI9xsx+fq89tdX5SaCgB4PtuIzQpwICgyLxGYeq6DH9x0oK396AgLMTTq
+         oA3OtBJDr6s7zrdBnuW5BNqJuSd/EZSbqmUVj1Ztfxg0wbYImbt+aahoyXfDpC4e43DD
+         NiyQ==
+X-Gm-Message-State: APjAAAVWPd8SMjDmZGvoPqPDW8kzE8ND6HNvl/4q7eDa732habOHkkMT
+        +jKNlPvyd0McyTUxnHJ6ro3HelCI6UhCmvYPxo6nWg==
+X-Google-Smtp-Source: APXvYqwOtdo/l+34qiJmGaKb1hdEfZkMNPw4IXxkUawdQEKNBHK8eVk2i8TKl92yzxFn+/Y6Yu5ontIWKIX3MTdjYMo=
+X-Received: by 2002:a0d:dfc4:: with SMTP id i187mr20962306ywe.146.1560850755293;
+ Tue, 18 Jun 2019 02:39:15 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190618093207.13436-1-ard.biesheuvel@linaro.org> <CANn89i+Hcp5nxteWHOq-Uv9VzneCemVEkyyZJD=UG9-wsrLAwQ@mail.gmail.com>
-In-Reply-To: <CANn89i+Hcp5nxteWHOq-Uv9VzneCemVEkyyZJD=UG9-wsrLAwQ@mail.gmail.com>
-From:   Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Date:   Tue, 18 Jun 2019 11:38:23 +0200
-Message-ID: <CAKv+Gu-QbrSSCKn09XFa9Cms7jbCgsYotPdFboFR=dCDZWvPYg@mail.gmail.com>
-Subject: Re: [PATCH 0/2] net: fastopen: follow-up tweaks for SipHash switch
-To:     Eric Dumazet <edumazet@google.com>
+References: <20190618093207.13436-1-ard.biesheuvel@linaro.org> <20190618093207.13436-2-ard.biesheuvel@linaro.org>
+In-Reply-To: <20190618093207.13436-2-ard.biesheuvel@linaro.org>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 18 Jun 2019 02:39:04 -0700
+Message-ID: <CANn89iJuTq36KMf1madQH08g6K0a-Uj-PDH80ao9zuEw+WNcZg@mail.gmail.com>
+Subject: Re: [PATCH 1/2] net: fastopen: make key handling more robust against
+ future changes
+To:     Ard Biesheuvel <ard.biesheuvel@linaro.org>
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Biggers <ebiggers@kernel.org>,
-        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
-        <linux-crypto@vger.kernel.org>,
+        linux-crypto@vger.kernel.org,
         Herbert Xu <herbert@gondor.apana.org.au>,
         David Miller <davem@davemloft.net>,
         Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
@@ -66,22 +66,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 18 Jun 2019 at 11:37, Eric Dumazet <edumazet@google.com> wrote:
+On Tue, Jun 18, 2019 at 2:32 AM Ard Biesheuvel
+<ard.biesheuvel@linaro.org> wrote:
 >
-> On Tue, Jun 18, 2019 at 2:32 AM Ard Biesheuvel
-> <ard.biesheuvel@linaro.org> wrote:
-> >
-> > A pair of tweaks for issues spotted by Eric Biggers. Patch #1 is
-> > mostly cosmetic, since the error check it adds is unreachable in
-> > practice, and the other changes are syntactic cleanups. Patch #2
-> > adds endian swabbing of the SipHash output for big endian systems
-> > so that the in-memory representation is the same as on little
-> > endian systems.
-> >
+> Some changes to the TCP fastopen code to make it more robust
+> against future changes in the choice of key/cookie size, etc.
 >
-> Please always add net or net-next in your patches for netdev@
+> - Instead of keeping the SipHash key in an untyped u8[] buffer
+>   and casting it to the right type upon use, use the correct
+>   siphash_key_t type directly. This ensures that the key will
+>   appear at the correct alignment if we ever change the way
+>   these data structures are allocated. (Currently, they are
+>   only allocated via kmalloc so they always appear at the
+>   correct alignment)
 >
-> ( Documentation/networking/netdev-FAQ.rst )
+> - Use DIV_ROUND_UP when sizing the u64[] array to hold the
+>   cookie, so it is always of sufficient size, even when
+>   TCP_FASTOPEN_COOKIE_MAX is no longer a multiple of 8.
 >
+> - Add a key length check to tcp_fastopen_reset_cipher(). No
+>   callers exist currently that fail this check (they all pass
+>   compile constant values that equal TCP_FASTOPEN_KEY_LENGTH),
+>   but future changes might create problems, e.g., by leaving part
+>   of the key uninitialized, or overflowing the key buffers.
+>
+> Note that none of these are functional changes wrt the current
+> state of the code.
+>
+...
 
-Apologies. These patches are intended for net-next
+> -       memcpy(ctx->key[0], primary_key, len);
+> +       if (unlikely(len != TCP_FASTOPEN_KEY_LENGTH)) {
+> +               pr_err("TCP: TFO key length %u invalid\n", len);
+> +               err = -EINVAL;
+> +               goto out;
+> +       }
+
+
+Why a pr_err() is there ?
+
+Can unpriv users flood the syslog ?
