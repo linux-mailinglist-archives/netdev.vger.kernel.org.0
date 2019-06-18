@@ -2,176 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FE8D4963E
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 02:18:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3675349641
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 02:19:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727626AbfFRASf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 20:18:35 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:44701 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726568AbfFRASe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 20:18:34 -0400
-Received: by mail-pl1-f196.google.com with SMTP id t7so4897639plr.11
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 17:18:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Hocnr3ADCF/48h6qr4g0S/T+ZTxODk59b0+DzVZlOBs=;
-        b=PHCrgBbtf5C0aydCYWmKUjQ+4KtVtgRWVWEDO/SCotog+R8lPb5OiPa797A6Zm7f1E
-         TehHQdJ5MeCUEn8NcRfnBvsnzKRZupcvplCO7xiTW6R3VhAlR4eTWb3ueVkhzG0qg+d6
-         rPZKPk39PT1fnMeHBPteJbW+LujySiYMfKmQ6QpUuHKz3VuxrRmPYzlKpCjaUImhW5Mn
-         O3P03M0OPUydOefBvd8Ho+zNxp7f8izemSR4z5U9blEsu3HnKSzDMXs9uGsmUgnEz5Lg
-         8RUepQPdrlzuYbnlG6G2vUZDAaC3oeWhG28e0HB1BrZf+FF91PjAbqaCdNp0+Q0FfqS2
-         cCnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Hocnr3ADCF/48h6qr4g0S/T+ZTxODk59b0+DzVZlOBs=;
-        b=fu1zB3EIUrryhkvuWi5R8syiNTa6fBokeKHVnr9Irm3fzK190p2hY4nXj7fVe4O8Ne
-         XPrvneMGNmBMdS4q8SY4IcMXLywFMFYUDNPIF5TvWkb9RxYJvxz/x7BI4MDlYIiER3Bi
-         BQPD3vtVJLiFnWxQIx+Izb+/4jR+G53G+Nmik77oN7F5I705/Tsqh2RHdiS5/LDqW7j9
-         guOMfPVnW101dTx8zGdAmfM5rTsk3YYfSxS00RehqUoXs8vkkqum0/BUMki4sYn2xLyB
-         CO61UEPE7SsWHtWN6cMABAtTclUaqRGH3rs6yaHroII9APFDODTe7PiKNWz2Zlgkkk8P
-         NUnA==
-X-Gm-Message-State: APjAAAURnJ44KNlBID3rjaa5caK7jVPS3JAr5OLCRV5D0C7mZHv9A3b4
-        OUL4PUHU/1117bcVkXaUqwYwRTxaMom6qQ0Y9tg=
-X-Google-Smtp-Source: APXvYqzO/xcSyg/vuZoglbXwK2RlIM8o2c4dZb+xPTlF+IMNoDFN6yNcWbYW4nUpGM983Qvhi1eWgvGorNbr29Q7+68=
-X-Received: by 2002:a17:902:363:: with SMTP id 90mr24993279pld.340.1560817113574;
- Mon, 17 Jun 2019 17:18:33 -0700 (PDT)
+        id S1728575AbfFRASx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 20:18:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56116 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726568AbfFRASx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Jun 2019 20:18:53 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9602B20861;
+        Tue, 18 Jun 2019 00:18:51 +0000 (UTC)
+Date:   Mon, 17 Jun 2019 20:18:50 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Matt Mullins <mmullins@fb.com>, Song Liu <songliubraving@fb.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Martin Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        "arnd@arndb.de" <arnd@arndb.de>, Andrii Nakryiko <andriin@fb.com>
+Subject: Re: [PATCH] bpf: hide do_bpf_send_signal when unused
+Message-ID: <20190617201850.010a4cf6@gandalf.local.home>
+In-Reply-To: <CAADnVQKCeHrq+bf4DceH7+ihpq+q-V+bFOiF-TpYjekH7dPA0w@mail.gmail.com>
+References: <20190617125724.1616165-1-arnd@arndb.de>
+        <CAADnVQ+LzuNHFyLae0vUAudZpOFQ4cA02OC0zu3ypis+gqnjew@mail.gmail.com>
+        <20190617190920.71c21a6c@gandalf.local.home>
+        <75e9ff40e1002ad9c82716dfd77966a3721022b6.camel@fb.com>
+        <CAADnVQKCeHrq+bf4DceH7+ihpq+q-V+bFOiF-TpYjekH7dPA0w@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20190617170354.37770-1-edumazet@google.com> <20190617170354.37770-3-edumazet@google.com>
-In-Reply-To: <20190617170354.37770-3-edumazet@google.com>
-From:   Christoph Paasch <christoph.paasch@gmail.com>
-Date:   Mon, 17 Jun 2019 17:18:22 -0700
-Message-ID: <CALMXkpYVRxgeqarp4gnmX7GqYh1sWOAt6UaRFqYBOaaNFfZ5sw@mail.gmail.com>
-Subject: Re: [PATCH net 2/4] tcp: tcp_fragment() should apply sane memory limits
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Looney <jtl@netflix.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Tyler Hicks <tyhicks@canonical.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Bruce Curtis <brucec@netflix.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Dustin Marquess <dmarquess@apple.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 17, 2019 at 10:05 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> Jonathan Looney reported that a malicious peer can force a sender
-> to fragment its retransmit queue into tiny skbs, inflating memory
-> usage and/or overflow 32bit counters.
->
-> TCP allows an application to queue up to sk_sndbuf bytes,
-> so we need to give some allowance for non malicious splitting
-> of retransmit queue.
->
-> A new SNMP counter is added to monitor how many times TCP
-> did not allow to split an skb if the allowance was exceeded.
->
-> Note that this counter might increase in the case applications
-> use SO_SNDBUF socket option to lower sk_sndbuf.
->
-> CVE-2019-11478 : tcp_fragment, prevent fragmenting a packet when the
->         socket is already using more than half the allowed space
->
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reported-by: Jonathan Looney <jtl@netflix.com>
-> Acked-by: Neal Cardwell <ncardwell@google.com>
-> Acked-by: Yuchung Cheng <ycheng@google.com>
-> Reviewed-by: Tyler Hicks <tyhicks@canonical.com>
-> Cc: Bruce Curtis <brucec@netflix.com>
-> Cc: Jonathan Lemon <jonathan.lemon@gmail.com>
-> ---
->  include/uapi/linux/snmp.h | 1 +
->  net/ipv4/proc.c           | 1 +
->  net/ipv4/tcp_output.c     | 5 +++++
->  3 files changed, 7 insertions(+)
->
-> diff --git a/include/uapi/linux/snmp.h b/include/uapi/linux/snmp.h
-> index 86dc24a96c90ab047d5173d625450facd6c6dd79..fd42c1316d3d112ecd8a00d2b499d6f6901c5e81 100644
-> --- a/include/uapi/linux/snmp.h
-> +++ b/include/uapi/linux/snmp.h
-> @@ -283,6 +283,7 @@ enum
->         LINUX_MIB_TCPACKCOMPRESSED,             /* TCPAckCompressed */
->         LINUX_MIB_TCPZEROWINDOWDROP,            /* TCPZeroWindowDrop */
->         LINUX_MIB_TCPRCVQDROP,                  /* TCPRcvQDrop */
-> +       LINUX_MIB_TCPWQUEUETOOBIG,              /* TCPWqueueTooBig */
->         __LINUX_MIB_MAX
->  };
->
-> diff --git a/net/ipv4/proc.c b/net/ipv4/proc.c
-> index 4370f4246e86dfe06a9e07cace848baeaf6cc4da..073273b751f8fcda1c9c79cd1ab566f2939b2517 100644
-> --- a/net/ipv4/proc.c
-> +++ b/net/ipv4/proc.c
-> @@ -287,6 +287,7 @@ static const struct snmp_mib snmp4_net_list[] = {
->         SNMP_MIB_ITEM("TCPAckCompressed", LINUX_MIB_TCPACKCOMPRESSED),
->         SNMP_MIB_ITEM("TCPZeroWindowDrop", LINUX_MIB_TCPZEROWINDOWDROP),
->         SNMP_MIB_ITEM("TCPRcvQDrop", LINUX_MIB_TCPRCVQDROP),
-> +       SNMP_MIB_ITEM("TCPWqueueTooBig", LINUX_MIB_TCPWQUEUETOOBIG),
->         SNMP_MIB_SENTINEL
->  };
->
-> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-> index b8e3bbb852117459d131fbb41d69ae63bd251a3e..1bb1c46b4abad100622d3f101a0a3ca0a6c8e881 100644
-> --- a/net/ipv4/tcp_output.c
-> +++ b/net/ipv4/tcp_output.c
-> @@ -1296,6 +1296,11 @@ int tcp_fragment(struct sock *sk, enum tcp_queue tcp_queue,
->         if (nsize < 0)
->                 nsize = 0;
->
-> +       if (unlikely((sk->sk_wmem_queued >> 1) > sk->sk_sndbuf)) {
-> +               NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPWQUEUETOOBIG);
-> +               return -ENOMEM;
-> +       }
-> +
+On Mon, 17 Jun 2019 16:27:33 -0700
+Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
 
-Hi Eric, I now have a packetdrill test that started failing (see
-below). Admittedly, a bit weird test with the SO_SNDBUF forced so low.
+> On Mon, Jun 17, 2019 at 4:13 PM Matt Mullins <mmullins@fb.com> wrote:
+> > >
+> > > The bug (really just a warning) reported is exactly here.  
+> >
+> > I don't think bpf_send_signal is tied to modules at all;
+> > send_signal_irq_work_init and the corresponding initcall should be
+> > moved outside that #ifdef.  
+> 
+> right. I guess send_signal_irq_work_init was accidentally placed
+> after bpf_event_init and happened to be within that ifdef.
+> Should definitely be outside.
 
-Nevertheless, previously this test would pass, now it stalls after the
-write() because tcp_fragment() returns -ENOMEM. Your commit-message
-mentions that this could trigger when one sets SO_SNDBUF low. But,
-here we have a complete stall of the connection and we never recover.
+So Arnd did find a bug. Just the wrong solution ;-)
 
-I don't know if we care about this, but there it is :-)
-
-
-Christoph
-
-----
---tolerance_usecs=10000
-
-+0.0 `ifconfig tun0 mtu 5060`
-+0.0 `ethtool -K tun0 tso off` // don't send big segments > MSS
-
-+0.015 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
-+0.0 setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
-+0.0 bind(3, ..., ...) = 0
-
-+0.0 setsockopt(3, SOL_SOCKET, SO_SNDBUF, [2000], 4) = 0
-
-+0.0 listen(3, 1) = 0
-
-+0 < S 0:0(0) win 24900 <mss 5020,sackOK,nop,nop,nop,wscale 7>
-+0 > S. 0:0(0) ack 1 <mss 5020,sackOK,nop,nop,nop,wscale 7>
-+0 < . 1:1(0) ack 1 win 257
-+0 accept(3, ..., ...) = 4
-
-+0 setsockopt(4, SOL_TCP, TCP_CORK, [1], 4) = 0
-
-+0 write(4, ..., 9999) = 9999
-+0.0 > . 1:5021(5020) ack 1
-+0.01 <  . 1:1(0) ack 5021 win 257
-
-+0.206 > P. 5021:10000(4979) ack 1
-+0.01 <  . 1:1(0) ack 10000 win 257
+-- Steve
