@@ -2,96 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 28FB84ACD9
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 23:09:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC4484ACE4
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 23:09:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731010AbfFRVGs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 17:06:48 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:45992 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730653AbfFRVGs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 17:06:48 -0400
-Received: by mail-qk1-f196.google.com with SMTP id s22so9533227qkj.12;
-        Tue, 18 Jun 2019 14:06:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PhQShykXloliKPMckMupDfwZ8pnrhdgE2i1x2GgfEmI=;
-        b=ukYtKO2nfsZfAhueJCu8NbbqpXKNV9imjzRX1HUortW+t4FD/FJfJfeITZ+1twwwMg
-         CI2wrEqy7Tv8NSh6F4EHTfafRnZRLBn5pVzJ+gcrfUNj67UVHaZ3WJIZHCu/K8939Ljo
-         5BZtqE7tx/uXsAuwxDTT6zVHQgbAj9HjZjB4SOG/R/NIZws5VlUqUH9J/WAXJEsLRroA
-         dKatXBmMA4gYt5raPpWpjxrvRYR1gtqcfbNAdCOrza8z6NfwqXITHwTHTM9LhPONR2Wk
-         3OSzjSHvQpFO0EQR+hcnpTxX60v5YOC6zkQFFKvVKpCfoRu2zkOAB7ye+dTklVHrj/RC
-         wl3A==
-X-Gm-Message-State: APjAAAUV8A7HskDg77MLPUGecQnpUyN54i+hN1lCfX6hcx8TII1r7rpY
-        7jum8HwifWtM9SsZPmZPni0O96vaooHfRDK9lz8=
-X-Google-Smtp-Source: APXvYqyldOckhcLwc1fQrwZ7LnDDOLS2W9t7zPz5YSzYHLSMEwkWyDge/ONSs2cFdXB+lyGj7IX6kT1wQZim1MIdYpE=
-X-Received: by 2002:ae9:e608:: with SMTP id z8mr87456546qkf.182.1560892007052;
- Tue, 18 Jun 2019 14:06:47 -0700 (PDT)
+        id S1731064AbfFRVHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 17:07:12 -0400
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:35634 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730696AbfFRVHK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 17:07:10 -0400
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: gtucker)
+        with ESMTPSA id EFF1D285136
+Subject: Re: next/master boot bisection: next-20190617 on
+ sun8i-h2-plus-orangepi-zero
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     Kevin Hilman <khilman@baylibre.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        tomeu.vizoso@collabora.com, mgalka@collabora.com,
+        broonie@kernel.org, matthew.hart@linaro.org,
+        enric.balletbo@collabora.com, Jose Abreu <joabreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+References: <5d089fb6.1c69fb81.4f92.9134@mx.google.com>
+ <7hr27qdedo.fsf@baylibre.com>
+ <CAFBinCCrpQNU_JtL0SwEGbwWZ2Qy-b2m5rdjuE0__nDRORGTiQ@mail.gmail.com>
+ <7d0a9da1-0b42-d4e9-0690-32d58a6d27de@collabora.com>
+ <CAFBinCA7gMLJ=jPqgRgHcBABBvC7bWVt8VJhLZ5uN=03WL1UWQ@mail.gmail.com>
+From:   Guillaume Tucker <guillaume.tucker@collabora.com>
+Message-ID: <2af9b9a5-cdf8-afce-5a75-d66c99eb82a2@collabora.com>
+Date:   Tue, 18 Jun 2019 22:07:06 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
- <a94676381a5ca662c848f7a725562f721c43ce76.camel@sipsolutions.net>
- <CAK8P3a0kV-i7BJJ2X6C=5n65rSGfo8fUiC4J_G-+M8EctYKbkg@mail.gmail.com>
- <fc0d08912bc10ad089eb74034726308375279130.camel@redhat.com>
- <36bca57c999f611353fd9741c55bb2a7@codeaurora.org> <153fafb91267147cf22e2bf102dd822933ec823a.camel@redhat.com>
- <CAK8P3a2Y+tcL1-V57dtypWHndNT3eDJdcKj29c_v+k8o1HHQig@mail.gmail.com>
- <f4249aa5f5acdd90275eda35aa16f3cfb29d29be.camel@redhat.com>
- <CAK8P3a2nzZKtshYfomOOSYkqx5HdU15Wr9b+3va0B1euNhFOAg@mail.gmail.com>
- <dbb32f185d2c3a654083ee0a7188379e1f88d899.camel@sipsolutions.net>
- <d533b708-c97a-710d-1138-3ae79107f209@linaro.org> <abdfc6b3a9981bcdef40f85f5442a425ce109010.camel@sipsolutions.net>
- <CAK8P3a3ksrFTo2+dLB+doLeY+kPP7rYxv2O7BwvjYgK2cwCTuQ@mail.gmail.com>
- <97cbfb3723607c95d78e25785262ae7b0acdb11c.camel@sipsolutions.net>
- <CAK8P3a29+JKbDdS9ikhgaKa-AJ1qd1sDMTAfzivGh5wN4VL88A@mail.gmail.com> <54a5acb6cf26ebc6447f8ebcbdcb8e0eed693ab3.camel@sipsolutions.net>
-In-Reply-To: <54a5acb6cf26ebc6447f8ebcbdcb8e0eed693ab3.camel@sipsolutions.net>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 18 Jun 2019 23:06:29 +0200
-Message-ID: <CAK8P3a3r95gXMdq7s9GF=37v6t4kR+-2iyC6bnmUDVuM+bn80Q@mail.gmail.com>
-Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     Alex Elder <elder@linaro.org>, Dan Williams <dcbw@redhat.com>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        abhishek.esse@gmail.com, Ben Chan <benchan@google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        cpratapa@codeaurora.org, David Miller <davem@davemloft.net>,
-        DTML <devicetree@vger.kernel.org>,
-        Eric Caruso <ejcaruso@google.com>, evgreen@chromium.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-arm-msm@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-soc@vger.kernel.org, Networking <netdev@vger.kernel.org>,
-        syadagir@codeaurora.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAFBinCA7gMLJ=jPqgRgHcBABBvC7bWVt8VJhLZ5uN=03WL1UWQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 18, 2019 at 10:39 PM Johannes Berg
-<johannes@sipsolutions.net> wrote:
-> On Tue, 2019-06-18 at 22:33 +0200, Arnd Bergmann wrote:
+Hi Martin,
 
-> It seems to me though that this is far more complex than what I'm
-> proposing? What I'm proposing there doesn't even need any userspace
-> involvement, as long as all the pieces are in the different sub-drivers,
-> they'd fall out automatically.
->
-> And realistically, the wwan_device falls out anyway at some point, the
-> only question is if we really make one specific driver be the "owner" of
-> it. I'm suggesting that we don't, and just make its lifetime depend on
-> the links to parts it has (unless something like IPA actually wants to
-> be an owner).
+On 18/06/2019 21:58, Martin Blumenstingl wrote:
+> Hi Guillaume,
+> 
+> On Tue, Jun 18, 2019 at 10:53 PM Guillaume Tucker
+> <guillaume.tucker@collabora.com> wrote:
+>>
+>> On 18/06/2019 21:42, Martin Blumenstingl wrote:
+>>> On Tue, Jun 18, 2019 at 6:53 PM Kevin Hilman <khilman@baylibre.com> wrote:
+>>> [...]
+>>>> This seems to have broken on several sunxi SoCs, but also a MIPS SoC
+>>>> (pistachio_marduk):
+>>>>
+>>>> https://storage.kernelci.org/next/master/next-20190618/mips/pistachio_defconfig/gcc-8/lab-baylibre-seattle/boot-pistachio_marduk.html
+>>> today I learned why initializing arrays on the stack is important
+>>> too bad gcc didn't warn that I was about to shoot myself (or someone
+>>> else) in the foot :/
+>>>
+>>> I just sent a fix: [0]
+>>>
+>>> sorry for this issue and thanks to Kernel CI for even pointing out the
+>>> offending commit (this makes things a lot easier than just yelling
+>>> that "something is broken")
+>>
+>> Glad that helped :)
+>>
+>> If you would be so kind as to credit our robot friend in your
+>> patch, it'll be forever grateful:
+>>
+>>   Reported-by: "kernelci.org bot" <bot@kernelci.org>
+> sure
+> do you want me to re-send my other patch or should I just reply to it
+> adding the Reported-by tag and hope that Dave will catch it when
+> applying the patch?
 
-My feeling so far is that having the wwan_device be owned by a device
-gives a nicer abstraction model that is also simpler for the common
-case. A device driver like ipa would end up with a probe() function
-that does does wwan_device_alloc/wwan_device_register, corresponding
-to alloc_etherdev/register_netdev, and then communicates through
-callbacks.
+Well that's no big deal so replying would already be great.  The
+important part is that the fix gets applied.
 
-I agree the compound device case would get more complex by
-shoehorning it into this model, but that can be a valid tradeoff
-if it's the exceptional case rather than the common one.
+> in either case: I did mention in the patch description that Kernel CI caught it
 
-      Arnd
+I see, thanks!
+
+> by the way: I didn't know how to credit the Kernel CI bot.
+> syzbot / syzkaller makes that bit easy as it's mentioned in the
+> generated email, see [0] for a (random) example
+> have you considered adding the Reported-by to the generated email?
+
+Yes, we've got some bugs to fix first but that will be added to
+the email report soon (next week I guess).  Thanks for the
+suggestion though.
+
+Guillaume
+
+> [0] https://lkml.org/lkml/2019/4/19/638
