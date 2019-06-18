@@ -2,58 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F6E24A8A0
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 19:39:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A2F04A891
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 19:38:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730194AbfFRRip (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 13:38:45 -0400
-Received: from smtp2.ono.com ([62.42.230.179]:18612 "EHLO smtp2.ono.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729477AbfFRRio (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Jun 2019 13:38:44 -0400
-X-Junkmail-Premium-Raw: score=26/50,refid=2.7.2:2019.6.18.165417:17:26.894,ip=62.42.230.133,rules=__HAS_MSGID,
- __SANE_MSGID, MSGID_JMAIL_DEFAULT, INVALID_MSGID_NO_FQDN, __HAS_FROM,
- FROM_NAME_PHRASE, FROM_NAME_ALLCAPS, __HAS_REPLYTO, __FRAUD_WEBMAIL_REPLYTO,
- BLANK_SUBJECT, __MIME_VERSION, __CT, __CT_TEXT_PLAIN, __CTE, MISSING_HEADERS,
- __ANY_URI, __FRAUD_BODY_WEBMAIL, __URI_NO_WWW, __NO_HTML_TAG_RAW,
- BODYTEXTP_SIZE_400_LESS, BODY_SIZE_200_299, BODYTEXTP_SIZE_3000_LESS,
- __MIME_TEXT_P1, __MIME_TEXT_ONLY, __URI_NS, HTML_00_01, HTML_00_10,
- BODY_SIZE_5000_LESS, __FRAUD_WEBMAIL, WEBMAIL_REPLYTO_NOT_FROM,
- FRAUD_WEBMAIL_R_NOT_F, __MIME_TEXT_P, FRAUD_LITTLE_BODY,
- __PHISH_SPEAR_STRUCTURE_1, BODY_SIZE_1000_LESS, BODY_SIZE_2000_LESS,
- SMALL_BODY, __PHISH_SPEAR_STRUCTURE_2, REPLYTO_FROM_DIFF_ADDY, NO_URI_HTTPS,
- BODY_SIZE_7000_LESS, TO_MALFORMED
-Received: from resprs03 (62.42.230.133) by smtp2.ono.com (9.0.019.09-1)
-        id 5CAF0F5D03693A66; Tue, 18 Jun 2019 19:30:26 +0200
-Received: from (149.126.75.9) by webmailcpr03n.ono.com;  Tue, 18 Jun 2019 19:30:24 +0200
-Message-ID: <33042059.649451560879024452.JavaMail.defaultUser@defaultHost>
-Date:   Tue, 18 Jun 2019 19:30:24 +0200 (CEST)
-From:   DR ALBERT ZONGO <rjpd@ono.com>
-Reply-To: dralbertddzongo@gmail.com
-Subject: 
-MIME-Version: 1.0
-Content-Type: text/plain;charset="UTF-8"
+        id S1730073AbfFRRiC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 13:38:02 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:50740 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729477AbfFRRiC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 13:38:02 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id B2FAE15104429;
+        Tue, 18 Jun 2019 10:38:01 -0700 (PDT)
+Date:   Tue, 18 Jun 2019 10:37:59 -0700 (PDT)
+Message-Id: <20190618.103759.1101173171614676988.davem@davemloft.net>
+To:     gregkh@linuxfoundation.org
+Cc:     willemdebruijn.kernel@gmail.com, naresh.kamboju@linaro.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, fklassen@appneta.com
+Subject: Re: 4.19: udpgso_bench_tx: setsockopt zerocopy: Unknown error 524
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190618171516.GA17547@kroah.com>
+References: <CAF=yD-JnTHdDE8K-EaJM2fH9awvjAmOJkoZbtU+Wi58pPnyAxw@mail.gmail.com>
+        <20190618.094759.539007481404905339.davem@davemloft.net>
+        <20190618171516.GA17547@kroah.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-To:     unlisted-recipients:; (no To-header on input)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 18 Jun 2019 10:38:02 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Greg KH <gregkh@linuxfoundation.org>
+Date: Tue, 18 Jun 2019 19:15:16 +0200
 
+> On Tue, Jun 18, 2019 at 09:47:59AM -0700, David Miller wrote:
+>> From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+>> Date: Tue, 18 Jun 2019 12:37:33 -0400
+>> 
+>> > Specific to the above test, I can add a check command testing
+>> > setsockopt SO_ZEROCOPY  return value. AFAIK kselftest has no explicit
+>> > way to denote "skipped", so this would just return "pass". Sounds a
+>> > bit fragile, passing success when a feature is absent.
+>> 
+>> Especially since the feature might be absent because the 'config'
+>> template forgot to include a necessary Kconfig option.
+> 
+> That is what the "skip" response is for, don't return "pass" if the
+> feature just isn't present.  That lets people run tests on systems
+> without the config option enabled as you say, or on systems without the
+> needed userspace tools present.
 
+Ok I see how skip works, thanks for explaining.
 
---
-Greetings,
-
-I have an intending proposal for you please i need you to contact my 
-private
-
- E-mail (dralbertddzongo@gmail.com) for more updates,
-
-Best Wishes.
-
-DR ALBERT ZONGO
-
---
+It would just be nice if it could work in a way such that we could
+distinguish "too old kernel for feature" from "missing Kconfig symbol
+in selftest config template". :-)
 
