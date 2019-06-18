@@ -2,3621 +2,2998 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 640DE4ACCE
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 23:09:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E474B4AC9B
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 23:08:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731032AbfFRVGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 17:06:40 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:34670 "EHLO
+        id S1730828AbfFRVFy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 17:05:54 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:34494 "EHLO
         bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730832AbfFRVF4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 17:05:56 -0400
+        with ESMTP id S1730785AbfFRVFx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 17:05:53 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Sender:Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:
-        To:From:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
+        Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=0Fd59qYHPeeoAztyC3BNaFmvhKSlCUBOd/6uerZbhRM=; b=NcWH33eQiz+NCf2Lwg00qXODSC
-        Oh20oknzSq+1nnCh/4b8tnOP6VfFgO6sV9obgYj1rkgpLXXuUD/vZhkRx+ZC0TY1PjcORGTCaKqN7
-        Fb49IN0K5wvmZuXt+9kPngkbxiGrSi+29jBNsd6g+isw1mVCnBSvzYIpU6YEK6hg/ZJe2AmO2WSG1
-        F8g552zq/kvTEnYGNFW+TkxrqfQwvelk/Mh2dfAebgVzvZ1EQBGYugafKMVp6Yhb8lnE65710cyqk
-        fDo0CjzeG2CeJ+uqnzTYrdsO+Mhoa/TL3vv5rub072QBsbZ8jfAjR+0HUABN9VSCilRgb/Lm2GFqa
-        h5+UNbzA==;
+        bh=PWYw0iTN8+x1NRVK/b653bg1eAhDduQz/1etIgLL9g4=; b=IIWo0nG/2lc4MyCFNoUbkRBXi9
+        GDLz8aZLakTonbQkMrAUSjZO9Ohv6h9monGR03F4/9fwAnozijCe85aDf0zmYr1AY3khXNQDQ8HPV
+        lGZ0ca5lYp2yEIIj+529GUppheWN39ey1bcVhxedOjc+f/Z7wYdcUMnfJXLoMcFJdlucBabbxYl7/
+        X03byKAE9qyRWNGZ+zztv6shpzaKRYR2fLWsjtLVpJI6jvawwjMnRws9jai311VaSuj0dD/OR4K/E
+        Fn84VtZRhvIFX24Q9aX4k+crOoML4OkriF8q6J8V5vcEJ19Zh3EZ37wqkaq5A+UuXBAbg6YgG32cx
+        qUHXHtrA==;
 Received: from 177.133.86.196.dynamic.adsl.gvt.net.br ([177.133.86.196] helo=bombadil.infradead.org)
         by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
-        id 1hdLIc-0006yh-7n; Tue, 18 Jun 2019 21:05:52 +0000
+        id 1hdLIb-0006yY-T4; Tue, 18 Jun 2019 21:05:51 +0000
 Received: from mchehab by bombadil.infradead.org with local (Exim 4.92)
         (envelope-from <mchehab@bombadil.infradead.org>)
-        id 1hdLIZ-0002Bk-Kr; Tue, 18 Jun 2019 18:05:47 -0300
+        id 1hdLIZ-0002CE-RU; Tue, 18 Jun 2019 18:05:47 -0300
 From:   Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
         Mauro Carvalho Chehab <mchehab@infradead.org>,
         linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        x86@kernel.org, linux-wireless@vger.kernel.org,
-        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        linux-arch@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-crypto@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net,
-        linaro-mm-sig@lists.linaro.org, linux-gpio@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        iommu@lists.linux-foundation.org, linux-mm@kvack.org,
-        kernel-hardening@lists.openwall.com,
-        linux-security-module@vger.kernel.org
-Subject: [PATCH v1 01/22] docs: Documentation/*.txt: rename all ReST files to *.rst
-Date:   Tue, 18 Jun 2019 18:05:25 -0300
-Message-Id: <6b6b6db8d6de9b66223dd6d4b43eb60ead4c71d7.1560891322.git.mchehab+samsung@kernel.org>
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: [PATCH v1 08/22] docs: sysctl: convert to ReST
+Date:   Tue, 18 Jun 2019 18:05:32 -0300
+Message-Id: <10f86e564cde93a7fd2e032f0635e5a58a053615.1560891322.git.mchehab+samsung@kernel.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <cover.1560891322.git.mchehab+samsung@kernel.org>
 References: <cover.1560891322.git.mchehab+samsung@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Those files are actually at ReST format. Ok, currently, they
-don't belong to any place yet at the organized book series,
-but we don't want patches to break them as ReST files. So,
-rename them and add a :orphan: in order to shut up warning
-messages like those:
+Rename the /proc/sys/ documentation files to ReST, using the
+README file as a template for an index.rst, adding the other
+files there via TOC markup.
 
-...
-    Documentation/svga.rst: WARNING: document isn't included in any toctree
-    Documentation/switchtec.rst: WARNING: document isn't included in any toctree
-...
+Despite being written on different times with different
+styles, try to make them somewhat coherent with a similar
+look and feel, ensuring that they'll look nice as both
+raw text file and as via the html output produced by the
+Sphinx build system.
 
-Later patches will move them to a better place and remove the
-:orphan: markup.
+At its new index.rst, let's add a :orphan: while this is not linked to
+the main index.rst file, in order to avoid build warnings.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
 ---
+ .../admin-guide/kernel-parameters.txt         |   2 +-
+ Documentation/admin-guide/mm/index.rst        |   2 +-
+ Documentation/admin-guide/mm/ksm.rst          |   2 +-
+ Documentation/core-api/printk-formats.rst     |   2 +-
+ Documentation/networking/ip-sysctl.txt        |   2 +-
+ Documentation/sysctl/{abi.txt => abi.rst}     |  71 ++--
+ Documentation/sysctl/{fs.txt => fs.rst}       | 142 +++----
+ Documentation/sysctl/{README => index.rst}    |  36 +-
+ .../sysctl/{kernel.txt => kernel.rst}         | 374 ++++++++++--------
+ Documentation/sysctl/{net.txt => net.rst}     | 141 ++++---
+ .../sysctl/{sunrpc.txt => sunrpc.rst}         |  13 +-
+ Documentation/sysctl/{user.txt => user.rst}   |  32 +-
+ Documentation/sysctl/{vm.txt => vm.rst}       | 258 ++++++------
+ Documentation/vm/unevictable-lru.rst          |   2 +-
+ kernel/panic.c                                |   2 +-
+ mm/swap.c                                     |   2 +-
+ 16 files changed, 626 insertions(+), 457 deletions(-)
+ rename Documentation/sysctl/{abi.txt => abi.rst} (30%)
+ rename Documentation/sysctl/{fs.txt => fs.rst} (77%)
+ rename Documentation/sysctl/{README => index.rst} (78%)
+ rename Documentation/sysctl/{kernel.txt => kernel.rst} (79%)
+ rename Documentation/sysctl/{net.txt => net.rst} (85%)
+ rename Documentation/sysctl/{sunrpc.txt => sunrpc.rst} (62%)
+ rename Documentation/sysctl/{user.txt => user.rst} (77%)
+ rename Documentation/sysctl/{vm.txt => vm.rst} (85%)
 
-I had to remove the long list of maintainers got by
-getpatch.pl, as it was too long. I opted to keep only the
-mailing lists.
-
- Documentation/ABI/removed/sysfs-class-rfkill  |  2 +-
- Documentation/ABI/stable/sysfs-class-rfkill   |  2 +-
- Documentation/ABI/stable/sysfs-devices-node   |  2 +-
- Documentation/ABI/testing/procfs-diskstats    |  2 +-
- Documentation/ABI/testing/sysfs-block         |  2 +-
- .../ABI/testing/sysfs-class-switchtec         |  2 +-
- .../ABI/testing/sysfs-devices-system-cpu      |  4 +-
- .../{DMA-API-HOWTO.txt => DMA-API-HOWTO.rst}  |  2 +
- Documentation/{DMA-API.txt => DMA-API.rst}    |  8 ++-
- .../{DMA-ISA-LPC.txt => DMA-ISA-LPC.rst}      |  4 +-
- ...{DMA-attributes.txt => DMA-attributes.rst} |  2 +
- Documentation/{IPMI.txt => IPMI.rst}          |  2 +
- .../{IRQ-affinity.txt => IRQ-affinity.rst}    |  2 +
- .../{IRQ-domain.txt => IRQ-domain.rst}        |  2 +
- Documentation/{IRQ.txt => IRQ.rst}            |  2 +
- .../{Intel-IOMMU.txt => Intel-IOMMU.rst}      |  2 +
- Documentation/PCI/pci.rst                     |  8 +--
- Documentation/{SAK.txt => SAK.rst}            |  3 +-
- Documentation/{SM501.txt => SM501.rst}        |  2 +
- Documentation/admin-guide/hw-vuln/l1tf.rst    |  2 +-
- .../admin-guide/kernel-parameters.txt         |  4 +-
- .../{atomic_bitops.txt => atomic_bitops.rst}  |  3 +-
- Documentation/block/biodoc.txt                |  2 +-
- .../{bt8xxgpio.txt => bt8xxgpio.rst}          |  3 +-
- Documentation/{btmrvl.txt => btmrvl.rst}      |  2 +
- ...-mapping.txt => bus-virt-phys-mapping.rst} | 54 +++++++++---------
- ...g-warn-once.txt => clearing-warn-once.rst} |  2 +
- Documentation/{cpu-load.txt => cpu-load.rst}  |  2 +
- .../{cputopology.txt => cputopology.rst}      |  2 +
- Documentation/{crc32.txt => crc32.rst}        |  2 +
- Documentation/{dcdbas.txt => dcdbas.rst}      |  2 +
- ...ging-modules.txt => debugging-modules.rst} |  2 +
- ...hci1394.txt => debugging-via-ohci1394.rst} |  2 +
- Documentation/{dell_rbu.txt => dell_rbu.rst}  |  3 +-
- Documentation/device-mapper/statistics.rst    |  4 +-
- .../devicetree/bindings/phy/phy-bindings.txt  |  2 +-
- Documentation/{digsig.txt => digsig.rst}      |  2 +
- Documentation/driver-api/usb/dma.rst          |  6 +-
- Documentation/driver-model/device.rst         |  2 +-
- Documentation/{efi-stub.txt => efi-stub.rst}  |  2 +
- Documentation/{eisa.txt => eisa.rst}          |  2 +
- Documentation/fb/vesafb.rst                   |  2 +-
- Documentation/filesystems/sysfs.txt           |  2 +-
- ...ex-requeue-pi.txt => futex-requeue-pi.rst} |  2 +
- .../{gcc-plugins.txt => gcc-plugins.rst}      |  2 +
- Documentation/gpu/drm-mm.rst                  |  2 +-
- Documentation/{highuid.txt => highuid.rst}    |  4 +-
- .../{hw_random.txt => hw_random.rst}          |  2 +
- .../{hwspinlock.txt => hwspinlock.rst}        |  2 +
- Documentation/ia64/irq-redir.rst              |  2 +-
- .../{intel_txt.txt => intel_txt.rst}          |  2 +
- .../{io-mapping.txt => io-mapping.rst}        |  2 +
- .../{io_ordering.txt => io_ordering.rst}      |  2 +
- Documentation/{iostats.txt => iostats.rst}    |  2 +
- ...flags-tracing.txt => irqflags-tracing.rst} |  3 +-
- Documentation/{isa.txt => isa.rst}            |  2 +
- Documentation/{isapnp.txt => isapnp.rst}      |  2 +
- ...hreads.txt => kernel-per-CPU-kthreads.rst} |  4 +-
- Documentation/{kobject.txt => kobject.rst}    |  6 +-
- Documentation/{kprobes.txt => kprobes.rst}    |  3 +-
- Documentation/{kref.txt => kref.rst}          |  2 +
- Documentation/laptops/thinkpad-acpi.rst       |  6 +-
- Documentation/{ldm.txt => ldm.rst}            |  5 +-
- Documentation/locking/rt-mutex.rst            |  2 +-
- ...kup-watchdogs.txt => lockup-watchdogs.rst} |  2 +
- Documentation/{lsm.txt => lsm.rst}            |  2 +
- Documentation/{lzo.txt => lzo.rst}            |  2 +
- Documentation/{mailbox.txt => mailbox.rst}    |  2 +
- Documentation/memory-barriers.txt             |  6 +-
- ...hameleon-bus.txt => men-chameleon-bus.rst} |  2 +
- Documentation/networking/scaling.rst          |  4 +-
- .../{nommu-mmap.txt => nommu-mmap.rst}        |  2 +
- Documentation/{ntb.txt => ntb.rst}            |  2 +
- Documentation/{numastat.txt => numastat.rst}  |  3 +-
- Documentation/{padata.txt => padata.rst}      |  2 +
- ...port-lowlevel.txt => parport-lowlevel.rst} |  2 +
- ...-semaphore.txt => percpu-rw-semaphore.rst} |  2 +
- Documentation/{phy.txt => phy.rst}            |  2 +
- Documentation/{pi-futex.txt => pi-futex.rst}  |  2 +
- Documentation/{pnp.txt => pnp.rst}            | 13 +++--
- ...reempt-locking.txt => preempt-locking.rst} |  4 +-
- Documentation/{pwm.txt => pwm.rst}            |  2 +
- Documentation/{rbtree.txt => rbtree.rst}      | 54 +++++++++---------
- .../{remoteproc.txt => remoteproc.rst}        |  4 +-
- Documentation/{rfkill.txt => rfkill.rst}      |  2 +
- ...ust-futex-ABI.txt => robust-futex-ABI.rst} |  2 +
- ...{robust-futexes.txt => robust-futexes.rst} |  2 +
- Documentation/{rpmsg.txt => rpmsg.rst}        |  2 +
- Documentation/{rtc.txt => rtc.rst}            |  8 ++-
- Documentation/s390/vfio-ccw.rst               |  6 +-
- Documentation/{sgi-ioc4.txt => sgi-ioc4.rst}  |  2 +
- Documentation/{siphash.txt => siphash.rst}    |  2 +
- .../{smsc_ece1099.txt => smsc_ece1099.rst}    |  2 +
- .../{speculation.txt => speculation.rst}      |  2 +
- .../{static-keys.txt => static-keys.rst}      |  2 +
- Documentation/{svga.txt => svga.rst}          |  2 +
- .../{switchtec.txt => switchtec.rst}          |  4 +-
- .../{sync_file.txt => sync_file.rst}          |  2 +
- Documentation/sysctl/kernel.txt               |  4 +-
- Documentation/sysctl/vm.txt                   |  2 +-
- Documentation/{tee.txt => tee.rst}            |  2 +
- .../{this_cpu_ops.txt => this_cpu_ops.rst}    |  2 +
- Documentation/trace/kprobetrace.rst           |  2 +-
- .../translations/ko_KR/memory-barriers.txt    |  6 +-
- Documentation/translations/zh_CN/IRQ.txt      |  4 +-
- .../translations/zh_CN/filesystems/sysfs.txt  |  2 +-
- .../translations/zh_CN/io_ordering.txt        |  4 +-
- ...access.txt => unaligned-memory-access.rst} |  2 +
- ...ed-device.txt => vfio-mediated-device.rst} |  4 +-
- Documentation/{vfio.txt => vfio.rst}          |  2 +
- .../{video-output.txt => video-output.rst}    |  3 +-
- Documentation/watchdog/hpwdt.rst              |  2 +-
- Documentation/x86/topology.rst                |  2 +-
- Documentation/{xillybus.txt => xillybus.rst}  |  2 +
- Documentation/{xz.txt => xz.rst}              |  2 +
- Documentation/{zorro.txt => zorro.rst}        |  7 ++-
- MAINTAINERS                                   | 56 +++++++++----------
- arch/Kconfig                                  |  4 +-
- arch/arm/Kconfig                              |  2 +-
- arch/ia64/hp/common/sba_iommu.c               | 12 ++--
- arch/ia64/sn/pci/pci_dma.c                    |  4 +-
- arch/parisc/Kconfig                           |  2 +-
- arch/parisc/kernel/pci-dma.c                  |  2 +-
- arch/sh/Kconfig                               |  2 +-
- arch/sparc/Kconfig                            |  2 +-
- arch/unicore32/include/asm/io.h               |  2 +-
- arch/x86/Kconfig                              |  4 +-
- arch/x86/include/asm/dma-mapping.h            |  4 +-
- arch/x86/kernel/amd_gart_64.c                 |  2 +-
- block/partitions/Kconfig                      |  2 +-
- drivers/base/core.c                           |  2 +-
- drivers/char/Kconfig                          |  4 +-
- drivers/char/hw_random/core.c                 |  2 +-
- drivers/char/ipmi/Kconfig                     |  2 +-
- drivers/char/ipmi/ipmi_si_hotmod.c            |  2 +-
- drivers/char/ipmi/ipmi_si_intf.c              |  2 +-
- drivers/dma-buf/Kconfig                       |  2 +-
- drivers/gpio/Kconfig                          |  2 +-
- drivers/parisc/sba_iommu.c                    | 16 +++---
- drivers/pci/switch/Kconfig                    |  2 +-
- drivers/platform/x86/Kconfig                  |  4 +-
- drivers/platform/x86/dcdbas.c                 |  2 +-
- drivers/platform/x86/dell_rbu.c               |  2 +-
- drivers/pnp/isapnp/Kconfig                    |  2 +-
- drivers/vfio/Kconfig                          |  2 +-
- drivers/vfio/mdev/Kconfig                     |  2 +-
- include/asm-generic/bitops/atomic.h           |  2 +-
- include/linux/dma-mapping.h                   |  2 +-
- include/linux/hw_random.h                     |  2 +-
- include/linux/io-mapping.h                    |  2 +-
- include/linux/jump_label.h                    |  2 +-
- include/linux/kobject.h                       |  2 +-
- include/linux/kobject_ns.h                    |  2 +-
- include/linux/rbtree.h                        |  2 +-
- include/linux/rbtree_augmented.h              |  2 +-
- include/media/videobuf-dma-sg.h               |  2 +-
- init/Kconfig                                  |  2 +-
- kernel/dma/debug.c                            |  2 +-
- kernel/padata.c                               |  2 +-
- lib/Kconfig                                   |  2 +-
- lib/Kconfig.debug                             |  2 +-
- lib/crc32.c                                   |  2 +-
- lib/kobject.c                                 |  4 +-
- lib/lzo/lzo1x_decompress_safe.c               |  2 +-
- lib/xz/Kconfig                                |  2 +-
- mm/Kconfig                                    |  2 +-
- mm/nommu.c                                    |  2 +-
- samples/kprobes/kprobe_example.c              |  2 +-
- samples/kprobes/kretprobe_example.c           |  2 +-
- scripts/gcc-plugins/Kconfig                   |  2 +-
- security/Kconfig                              |  2 +-
- tools/include/linux/rbtree.h                  |  2 +-
- tools/include/linux/rbtree_augmented.h        |  2 +-
- 173 files changed, 397 insertions(+), 242 deletions(-)
- rename Documentation/{DMA-API-HOWTO.txt => DMA-API-HOWTO.rst} (99%)
- rename Documentation/{DMA-API.txt => DMA-API.rst} (99%)
- rename Documentation/{DMA-ISA-LPC.txt => DMA-ISA-LPC.rst} (98%)
- rename Documentation/{DMA-attributes.txt => DMA-attributes.rst} (99%)
- rename Documentation/{IPMI.txt => IPMI.rst} (99%)
- rename Documentation/{IRQ-affinity.txt => IRQ-affinity.rst} (99%)
- rename Documentation/{IRQ-domain.txt => IRQ-domain.rst} (99%)
- rename Documentation/{IRQ.txt => IRQ.rst} (99%)
- rename Documentation/{Intel-IOMMU.txt => Intel-IOMMU.rst} (99%)
- rename Documentation/{SAK.txt => SAK.rst} (99%)
- rename Documentation/{SM501.txt => SM501.rst} (99%)
- rename Documentation/{atomic_bitops.txt => atomic_bitops.rst} (99%)
- rename Documentation/{bt8xxgpio.txt => bt8xxgpio.rst} (99%)
- rename Documentation/{btmrvl.txt => btmrvl.rst} (99%)
- rename Documentation/{bus-virt-phys-mapping.txt => bus-virt-phys-mapping.rst} (93%)
- rename Documentation/{clearing-warn-once.txt => clearing-warn-once.rst} (96%)
- rename Documentation/{cpu-load.txt => cpu-load.rst} (99%)
- rename Documentation/{cputopology.txt => cputopology.rst} (99%)
- rename Documentation/{crc32.txt => crc32.rst} (99%)
- rename Documentation/{dcdbas.txt => dcdbas.rst} (99%)
- rename Documentation/{debugging-modules.txt => debugging-modules.rst} (98%)
- rename Documentation/{debugging-via-ohci1394.txt => debugging-via-ohci1394.rst} (99%)
- rename Documentation/{dell_rbu.txt => dell_rbu.rst} (99%)
- rename Documentation/{digsig.txt => digsig.rst} (99%)
- rename Documentation/{efi-stub.txt => efi-stub.rst} (99%)
- rename Documentation/{eisa.txt => eisa.rst} (99%)
- rename Documentation/{futex-requeue-pi.txt => futex-requeue-pi.rst} (99%)
- rename Documentation/{gcc-plugins.txt => gcc-plugins.rst} (99%)
- rename Documentation/{highuid.txt => highuid.rst} (99%)
- rename Documentation/{hw_random.txt => hw_random.rst} (99%)
- rename Documentation/{hwspinlock.txt => hwspinlock.rst} (99%)
- rename Documentation/{intel_txt.txt => intel_txt.rst} (99%)
- rename Documentation/{io-mapping.txt => io-mapping.rst} (99%)
- rename Documentation/{io_ordering.txt => io_ordering.rst} (99%)
- rename Documentation/{iostats.txt => iostats.rst} (99%)
- rename Documentation/{irqflags-tracing.txt => irqflags-tracing.rst} (99%)
- rename Documentation/{isa.txt => isa.rst} (99%)
- rename Documentation/{isapnp.txt => isapnp.rst} (98%)
- rename Documentation/{kernel-per-CPU-kthreads.txt => kernel-per-CPU-kthreads.rst} (99%)
- rename Documentation/{kobject.txt => kobject.rst} (99%)
- rename Documentation/{kprobes.txt => kprobes.rst} (99%)
- rename Documentation/{kref.txt => kref.rst} (99%)
- rename Documentation/{ldm.txt => ldm.rst} (98%)
- rename Documentation/{lockup-watchdogs.txt => lockup-watchdogs.rst} (99%)
- rename Documentation/{lsm.txt => lsm.rst} (99%)
- rename Documentation/{lzo.txt => lzo.rst} (99%)
- rename Documentation/{mailbox.txt => mailbox.rst} (99%)
- rename Documentation/{men-chameleon-bus.txt => men-chameleon-bus.rst} (99%)
- rename Documentation/{nommu-mmap.txt => nommu-mmap.rst} (99%)
- rename Documentation/{ntb.txt => ntb.rst} (99%)
- rename Documentation/{numastat.txt => numastat.rst} (99%)
- rename Documentation/{padata.txt => padata.rst} (99%)
- rename Documentation/{parport-lowlevel.txt => parport-lowlevel.rst} (99%)
- rename Documentation/{percpu-rw-semaphore.txt => percpu-rw-semaphore.rst} (99%)
- rename Documentation/{phy.txt => phy.rst} (99%)
- rename Documentation/{pi-futex.txt => pi-futex.rst} (99%)
- rename Documentation/{pnp.txt => pnp.rst} (98%)
- rename Documentation/{preempt-locking.txt => preempt-locking.rst} (99%)
- rename Documentation/{pwm.txt => pwm.rst} (99%)
- rename Documentation/{rbtree.txt => rbtree.rst} (94%)
- rename Documentation/{remoteproc.txt => remoteproc.rst} (99%)
- rename Documentation/{rfkill.txt => rfkill.rst} (99%)
- rename Documentation/{robust-futex-ABI.txt => robust-futex-ABI.rst} (99%)
- rename Documentation/{robust-futexes.txt => robust-futexes.rst} (99%)
- rename Documentation/{rpmsg.txt => rpmsg.rst} (99%)
- rename Documentation/{rtc.txt => rtc.rst} (99%)
- rename Documentation/{sgi-ioc4.txt => sgi-ioc4.rst} (99%)
- rename Documentation/{siphash.txt => siphash.rst} (99%)
- rename Documentation/{smsc_ece1099.txt => smsc_ece1099.rst} (99%)
- rename Documentation/{speculation.txt => speculation.rst} (99%)
- rename Documentation/{static-keys.txt => static-keys.rst} (99%)
- rename Documentation/{svga.txt => svga.rst} (99%)
- rename Documentation/{switchtec.txt => switchtec.rst} (98%)
- rename Documentation/{sync_file.txt => sync_file.rst} (99%)
- rename Documentation/{tee.txt => tee.rst} (99%)
- rename Documentation/{this_cpu_ops.txt => this_cpu_ops.rst} (99%)
- rename Documentation/{unaligned-memory-access.txt => unaligned-memory-access.rst} (99%)
- rename Documentation/{vfio-mediated-device.txt => vfio-mediated-device.rst} (99%)
- rename Documentation/{vfio.txt => vfio.rst} (99%)
- rename Documentation/{video-output.txt => video-output.rst} (99%)
- rename Documentation/{xillybus.txt => xillybus.rst} (99%)
- rename Documentation/{xz.txt => xz.rst} (99%)
- rename Documentation/{zorro.txt => zorro.rst} (99%)
-
-diff --git a/Documentation/ABI/removed/sysfs-class-rfkill b/Documentation/ABI/removed/sysfs-class-rfkill
-index 3ce6231f20b2..1652b2381dda 100644
---- a/Documentation/ABI/removed/sysfs-class-rfkill
-+++ b/Documentation/ABI/removed/sysfs-class-rfkill
-@@ -1,6 +1,6 @@
- rfkill - radio frequency (RF) connector kill switch support
- 
--For details to this subsystem look at Documentation/rfkill.txt.
-+For details to this subsystem look at Documentation/rfkill.rst.
- 
- What:		/sys/class/rfkill/rfkill[0-9]+/claim
- Date:		09-Jul-2007
-diff --git a/Documentation/ABI/stable/sysfs-class-rfkill b/Documentation/ABI/stable/sysfs-class-rfkill
-index 80151a409d67..68fd0afdad0d 100644
---- a/Documentation/ABI/stable/sysfs-class-rfkill
-+++ b/Documentation/ABI/stable/sysfs-class-rfkill
-@@ -1,6 +1,6 @@
- rfkill - radio frequency (RF) connector kill switch support
- 
--For details to this subsystem look at Documentation/rfkill.txt.
-+For details to this subsystem look at Documentation/rfkill.rst.
- 
- For the deprecated /sys/class/rfkill/*/claim knobs of this interface look in
- Documentation/ABI/removed/sysfs-class-rfkill.
-diff --git a/Documentation/ABI/stable/sysfs-devices-node b/Documentation/ABI/stable/sysfs-devices-node
-index f7ce68fbd4b9..de1d022c0864 100644
---- a/Documentation/ABI/stable/sysfs-devices-node
-+++ b/Documentation/ABI/stable/sysfs-devices-node
-@@ -61,7 +61,7 @@ Date:		October 2002
- Contact:	Linux Memory Management list <linux-mm@kvack.org>
- Description:
- 		The node's hit/miss statistics, in units of pages.
--		See Documentation/numastat.txt
-+		See Documentation/numastat.rst
- 
- What:		/sys/devices/system/node/nodeX/distance
- Date:		October 2002
-diff --git a/Documentation/ABI/testing/procfs-diskstats b/Documentation/ABI/testing/procfs-diskstats
-index abac31d216de..26661dd5188b 100644
---- a/Documentation/ABI/testing/procfs-diskstats
-+++ b/Documentation/ABI/testing/procfs-diskstats
-@@ -29,4 +29,4 @@ Description:
- 		17 - sectors discarded
- 		18 - time spent discarding
- 
--		For more details refer to Documentation/iostats.txt
-+		For more details refer to Documentation/iostats.rst
-diff --git a/Documentation/ABI/testing/sysfs-block b/Documentation/ABI/testing/sysfs-block
-index dfad7427817c..d300a6b9d17c 100644
---- a/Documentation/ABI/testing/sysfs-block
-+++ b/Documentation/ABI/testing/sysfs-block
-@@ -15,7 +15,7 @@ Description:
- 		 9 - I/Os currently in progress
- 		10 - time spent doing I/Os (ms)
- 		11 - weighted time spent doing I/Os (ms)
--		For more details refer Documentation/iostats.txt
-+		For more details refer Documentation/iostats.rst
- 
- 
- What:		/sys/block/<disk>/<part>/stat
-diff --git a/Documentation/ABI/testing/sysfs-class-switchtec b/Documentation/ABI/testing/sysfs-class-switchtec
-index 48cb4c15e430..c8d80db1e32c 100644
---- a/Documentation/ABI/testing/sysfs-class-switchtec
-+++ b/Documentation/ABI/testing/sysfs-class-switchtec
-@@ -1,6 +1,6 @@
- switchtec - Microsemi Switchtec PCI Switch Management Endpoint
- 
--For details on this subsystem look at Documentation/switchtec.txt.
-+For details on this subsystem look at Documentation/switchtec.rst.
- 
- What: 		/sys/class/switchtec
- Date:		05-Jan-2017
-diff --git a/Documentation/ABI/testing/sysfs-devices-system-cpu b/Documentation/ABI/testing/sysfs-devices-system-cpu
-index 87478ac6c2af..1a2653f5261f 100644
---- a/Documentation/ABI/testing/sysfs-devices-system-cpu
-+++ b/Documentation/ABI/testing/sysfs-devices-system-cpu
-@@ -34,7 +34,7 @@ Description:	CPU topology files that describe kernel limits related to
- 		present: cpus that have been identified as being present in
- 		the system.
- 
--		See Documentation/cputopology.txt for more information.
-+		See Documentation/cputopology.rst for more information.
- 
- 
- What:		/sys/devices/system/cpu/probe
-@@ -103,7 +103,7 @@ Description:	CPU topology files that describe a logical CPU's relationship
- 		thread_siblings_list: human-readable list of cpu#'s hardware
- 		threads within the same core as cpu#
- 
--		See Documentation/cputopology.txt for more information.
-+		See Documentation/cputopology.rst for more information.
- 
- 
- What:		/sys/devices/system/cpu/cpuidle/current_driver
-diff --git a/Documentation/DMA-API-HOWTO.txt b/Documentation/DMA-API-HOWTO.rst
-similarity index 99%
-rename from Documentation/DMA-API-HOWTO.txt
-rename to Documentation/DMA-API-HOWTO.rst
-index 358d495456d1..db9f8fcebe1f 100644
---- a/Documentation/DMA-API-HOWTO.txt
-+++ b/Documentation/DMA-API-HOWTO.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- =========================
- Dynamic DMA mapping Guide
- =========================
-diff --git a/Documentation/DMA-API.txt b/Documentation/DMA-API.rst
-similarity index 99%
-rename from Documentation/DMA-API.txt
-rename to Documentation/DMA-API.rst
-index e47c63bd4887..2f26857f97ff 100644
---- a/Documentation/DMA-API.txt
-+++ b/Documentation/DMA-API.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ============================================
- Dynamic DMA mapping using the generic device
- ============================================
-@@ -5,7 +7,7 @@ Dynamic DMA mapping using the generic device
- :Author: James E.J. Bottomley <James.Bottomley@HansenPartnership.com>
- 
- This document describes the DMA API.  For a more gentle introduction
--of the API (and actual examples), see Documentation/DMA-API-HOWTO.txt.
-+of the API (and actual examples), see Documentation/DMA-API-HOWTO.rst.
- 
- This API is split into two pieces.  Part I describes the basic API.
- Part II describes extensions for supporting non-consistent memory
-@@ -463,7 +465,7 @@ without the _attrs suffixes, except that they pass an optional
- dma_attrs.
- 
- The interpretation of DMA attributes is architecture-specific, and
--each attribute should be documented in Documentation/DMA-attributes.txt.
-+each attribute should be documented in Documentation/DMA-attributes.rst.
- 
- If dma_attrs are 0, the semantics of each of these functions
- is identical to those of the corresponding function
-@@ -476,7 +478,7 @@ for DMA::
- 
- 	#include <linux/dma-mapping.h>
- 	/* DMA_ATTR_FOO should be defined in linux/dma-mapping.h and
--	* documented in Documentation/DMA-attributes.txt */
-+	* documented in Documentation/DMA-attributes.rst */
- 	...
- 
- 		unsigned long attr;
-diff --git a/Documentation/DMA-ISA-LPC.txt b/Documentation/DMA-ISA-LPC.rst
-similarity index 98%
-rename from Documentation/DMA-ISA-LPC.txt
-rename to Documentation/DMA-ISA-LPC.rst
-index b1ec7b16c21f..205a379c2d62 100644
---- a/Documentation/DMA-ISA-LPC.txt
-+++ b/Documentation/DMA-ISA-LPC.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ============================
- DMA with ISA and LPC devices
- ============================
-@@ -17,7 +19,7 @@ To do ISA style DMA you need to include two headers::
- 	#include <asm/dma.h>
- 
- The first is the generic DMA API used to convert virtual addresses to
--bus addresses (see Documentation/DMA-API.txt for details).
-+bus addresses (see Documentation/DMA-API.rst for details).
- 
- The second contains the routines specific to ISA DMA transfers. Since
- this is not present on all platforms make sure you construct your
-diff --git a/Documentation/DMA-attributes.txt b/Documentation/DMA-attributes.rst
-similarity index 99%
-rename from Documentation/DMA-attributes.txt
-rename to Documentation/DMA-attributes.rst
-index 8f8d97f65d73..471c5c38f9d9 100644
---- a/Documentation/DMA-attributes.txt
-+++ b/Documentation/DMA-attributes.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ==============
- DMA attributes
- ==============
-diff --git a/Documentation/IPMI.txt b/Documentation/IPMI.rst
-similarity index 99%
-rename from Documentation/IPMI.txt
-rename to Documentation/IPMI.rst
-index 5ef1047e2e66..f6c2d11710fe 100644
---- a/Documentation/IPMI.txt
-+++ b/Documentation/IPMI.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- =====================
- The Linux IPMI Driver
- =====================
-diff --git a/Documentation/IRQ-affinity.txt b/Documentation/IRQ-affinity.rst
-similarity index 99%
-rename from Documentation/IRQ-affinity.txt
-rename to Documentation/IRQ-affinity.rst
-index 29da5000836a..49ba271349d6 100644
---- a/Documentation/IRQ-affinity.txt
-+++ b/Documentation/IRQ-affinity.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ================
- SMP IRQ affinity
- ================
-diff --git a/Documentation/IRQ-domain.txt b/Documentation/IRQ-domain.rst
-similarity index 99%
-rename from Documentation/IRQ-domain.txt
-rename to Documentation/IRQ-domain.rst
-index 507775cce753..a610a8ea9a92 100644
---- a/Documentation/IRQ-domain.txt
-+++ b/Documentation/IRQ-domain.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ===============================================
- The irq_domain interrupt number mapping library
- ===============================================
-diff --git a/Documentation/IRQ.txt b/Documentation/IRQ.rst
-similarity index 99%
-rename from Documentation/IRQ.txt
-rename to Documentation/IRQ.rst
-index 4273806a606b..a9f3e192c2cb 100644
---- a/Documentation/IRQ.txt
-+++ b/Documentation/IRQ.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ===============
- What is an IRQ?
- ===============
-diff --git a/Documentation/Intel-IOMMU.txt b/Documentation/Intel-IOMMU.rst
-similarity index 99%
-rename from Documentation/Intel-IOMMU.txt
-rename to Documentation/Intel-IOMMU.rst
-index 9dae6b47e398..b001104c25c8 100644
---- a/Documentation/Intel-IOMMU.txt
-+++ b/Documentation/Intel-IOMMU.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ===================
- Linux IOMMU Support
- ===================
-diff --git a/Documentation/PCI/pci.rst b/Documentation/PCI/pci.rst
-index 6864f9a70f5f..840cbf5f37a7 100644
---- a/Documentation/PCI/pci.rst
-+++ b/Documentation/PCI/pci.rst
-@@ -239,7 +239,7 @@ from the PCI device config space. Use the values in the pci_dev structure
- as the PCI "bus address" might have been remapped to a "host physical"
- address by the arch/chip-set specific kernel support.
- 
--See Documentation/io-mapping.txt for how to access device registers
-+See Documentation/io-mapping.rst for how to access device registers
- or device memory.
- 
- The device driver needs to call pci_request_region() to verify
-@@ -265,7 +265,7 @@ Set the DMA mask size
- ---------------------
- .. note::
-    If anything below doesn't make sense, please refer to
--   Documentation/DMA-API.txt. This section is just a reminder that
-+   Documentation/DMA-API.rst. This section is just a reminder that
-    drivers need to indicate DMA capabilities of the device and is not
-    an authoritative source for DMA interfaces.
- 
-@@ -291,7 +291,7 @@ Many 64-bit "PCI" devices (before PCI-X) and some PCI-X devices are
- Setup shared control data
- -------------------------
- Once the DMA masks are set, the driver can allocate "consistent" (a.k.a. shared)
--memory.  See Documentation/DMA-API.txt for a full description of
-+memory.  See Documentation/DMA-API.rst for a full description of
- the DMA APIs. This section is just a reminder that it needs to be done
- before enabling DMA on the device.
- 
-@@ -421,7 +421,7 @@ owners if there is one.
- 
- Then clean up "consistent" buffers which contain the control data.
- 
--See Documentation/DMA-API.txt for details on unmapping interfaces.
-+See Documentation/DMA-API.rst for details on unmapping interfaces.
- 
- 
- Unregister from other subsystems
-diff --git a/Documentation/SAK.txt b/Documentation/SAK.rst
-similarity index 99%
-rename from Documentation/SAK.txt
-rename to Documentation/SAK.rst
-index 260e1d3687bd..73dd10fa4337 100644
---- a/Documentation/SAK.txt
-+++ b/Documentation/SAK.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- =========================================
- Linux Secure Attention Key (SAK) handling
- =========================================
-@@ -88,4 +90,3 @@ And that's it!  Only the superuser may reprogram the SAK key.
-      /dev/console.  So SAK kills them all.  A workaround is to simply
-      delete these lines, but this may cause system management
-      applications to malfunction - test everything well.
--
-diff --git a/Documentation/SM501.txt b/Documentation/SM501.rst
-similarity index 99%
-rename from Documentation/SM501.txt
-rename to Documentation/SM501.rst
-index 882507453ba4..772a9b5c7d49 100644
---- a/Documentation/SM501.txt
-+++ b/Documentation/SM501.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- .. include:: <isonum.txt>
- 
- ============
-diff --git a/Documentation/admin-guide/hw-vuln/l1tf.rst b/Documentation/admin-guide/hw-vuln/l1tf.rst
-index 656aee262e23..5668fc2013ce 100644
---- a/Documentation/admin-guide/hw-vuln/l1tf.rst
-+++ b/Documentation/admin-guide/hw-vuln/l1tf.rst
-@@ -268,7 +268,7 @@ Guest mitigation mechanisms
-    /proc/irq/$NR/smp_affinity[_list] files. Limited documentation is
-    available at:
- 
--   https://www.kernel.org/doc/Documentation/IRQ-affinity.txt
-+   https://www.kernel.org/doc/Documentation/IRQ-affinity.rst
- 
- .. _smt_control:
- 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 7abe677f8c5e..873062810484 100644
+index 20780fbc948d..a15295e180fe 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -3162,7 +3162,7 @@
- 			See Documentation/sysctl/vm.txt for details.
+@@ -3159,7 +3159,7 @@
+ 	numa_zonelist_order= [KNL, BOOT] Select zonelist order for NUMA.
+ 			'node', 'default' can be specified
+ 			This can be set from sysctl after boot.
+-			See Documentation/sysctl/vm.txt for details.
++			See Documentation/sysctl/vm.rst for details.
  
  	ohci1394_dma=early	[HW] enable debugging via the ohci1394 driver.
--			See Documentation/debugging-via-ohci1394.txt for more
-+			See Documentation/debugging-via-ohci1394.rst for more
- 			info.
+ 			See Documentation/debugging-via-ohci1394.rst for more
+diff --git a/Documentation/admin-guide/mm/index.rst b/Documentation/admin-guide/mm/index.rst
+index ddf8d8d33377..f5e92f33f96e 100644
+--- a/Documentation/admin-guide/mm/index.rst
++++ b/Documentation/admin-guide/mm/index.rst
+@@ -11,7 +11,7 @@ processes address space and many other cool things.
+ Linux memory management is a complex system with many configurable
+ settings. Most of these settings are available via ``/proc``
+ filesystem and can be quired and adjusted using ``sysctl``. These APIs
+-are described in Documentation/sysctl/vm.txt and in `man 5 proc`_.
++are described in Documentation/sysctl/vm.rst and in `man 5 proc`_.
  
- 	olpc_ec_timeout= [OLPC] ms delay when issuing EC commands
-@@ -5075,7 +5075,7 @@
+ .. _man 5 proc: http://man7.org/linux/man-pages/man5/proc.5.html
  
- 	vga=		[BOOT,X86-32] Select a particular video mode
- 			See Documentation/x86/boot.rst and
--			Documentation/svga.txt.
-+			Documentation/svga.rst.
- 			Use vga=ask for menu.
- 			This is actually a boot loader parameter; the value is
- 			passed to the kernel using a special protocol.
-diff --git a/Documentation/atomic_bitops.txt b/Documentation/atomic_bitops.rst
-similarity index 99%
-rename from Documentation/atomic_bitops.txt
-rename to Documentation/atomic_bitops.rst
-index 093cdaefdb37..b683bcb71185 100644
---- a/Documentation/atomic_bitops.txt
-+++ b/Documentation/atomic_bitops.rst
-@@ -1,3 +1,5 @@
-+:orphan:
+diff --git a/Documentation/admin-guide/mm/ksm.rst b/Documentation/admin-guide/mm/ksm.rst
+index 9303786632d1..7b2b8767c0b4 100644
+--- a/Documentation/admin-guide/mm/ksm.rst
++++ b/Documentation/admin-guide/mm/ksm.rst
+@@ -59,7 +59,7 @@ MADV_UNMERGEABLE is applied to a range which was never MADV_MERGEABLE.
+ 
+ If a region of memory must be split into at least one new MADV_MERGEABLE
+ or MADV_UNMERGEABLE region, the madvise may return ENOMEM if the process
+-will exceed ``vm.max_map_count`` (see Documentation/sysctl/vm.txt).
++will exceed ``vm.max_map_count`` (see Documentation/sysctl/vm.rst).
+ 
+ Like other madvise calls, they are intended for use on mapped areas of
+ the user address space: they will report ENOMEM if the specified range
+diff --git a/Documentation/core-api/printk-formats.rst b/Documentation/core-api/printk-formats.rst
+index 75d2bbe9813f..1d8e748f909f 100644
+--- a/Documentation/core-api/printk-formats.rst
++++ b/Documentation/core-api/printk-formats.rst
+@@ -119,7 +119,7 @@ Kernel Pointers
+ 
+ For printing kernel pointers which should be hidden from unprivileged
+ users. The behaviour of %pK depends on the kptr_restrict sysctl - see
+-Documentation/sysctl/kernel.txt for more details.
++Documentation/sysctl/kernel.rst for more details.
+ 
+ Unmodified Addresses
+ --------------------
+diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
+index 8e33d999951e..8626b175b192 100644
+--- a/Documentation/networking/ip-sysctl.txt
++++ b/Documentation/networking/ip-sysctl.txt
+@@ -2276,7 +2276,7 @@ addr_scope_policy - INTEGER
+ 
+ 
+ /proc/sys/net/core/*
+-	Please see: Documentation/sysctl/net.txt for descriptions of these entries.
++	Please see: Documentation/sysctl/net.rst for descriptions of these entries.
+ 
+ 
+ /proc/sys/net/unix/*
+diff --git a/Documentation/sysctl/abi.txt b/Documentation/sysctl/abi.rst
+similarity index 30%
+rename from Documentation/sysctl/abi.txt
+rename to Documentation/sysctl/abi.rst
+index 63f4ebcf652c..599bcde7f0b7 100644
+--- a/Documentation/sysctl/abi.txt
++++ b/Documentation/sysctl/abi.rst
+@@ -1,16 +1,21 @@
+-Documentation for /proc/sys/abi/* kernel version 2.6.0.test2
+-	(c) 2003,  Fabian Frederick <ffrederick@users.sourceforge.net>
++================================
++Documentation for /proc/sys/abi/
++================================
+ 
+-For general info : README.
++kernel version 2.6.0.test2
+ 
+-==============================================================
++Copyright (c) 2003,  Fabian Frederick <ffrederick@users.sourceforge.net>
 +
- =============
- Atomic bitops
- =============
-@@ -68,4 +70,3 @@ clear_bit_unlock() which has RELEASE semantics.
++For general info: index.rst.
++
++------------------------------------------------------------------------------
  
- Since a platform only has a single means of achieving atomic operations
- the same barriers as for atomic_t are used, see atomic_t.txt.
+ This path is binary emulation relevant aka personality types aka abi.
+ When a process is executed, it's linked to an exec_domain whose
+ personality is defined using values available from /proc/sys/abi.
+ You can find further details about abi in include/linux/personality.h.
+ 
+-Here are the files featuring in 2.6 kernel :
++Here are the files featuring in 2.6 kernel:
+ 
+ - defhandler_coff
+ - defhandler_elf
+@@ -19,36 +24,44 @@ Here are the files featuring in 2.6 kernel :
+ - fake_utsname
+ - trace
+ 
+-===========================================================
+-defhandler_coff:
+-defined value :
+-PER_SCOSVR3
+-0x0003 | STICKY_TIMEOUTS | WHOLE_SECONDS | SHORT_INODE
++defhandler_coff
++---------------
+ 
+-===========================================================
+-defhandler_elf:
+-defined value :
+-PER_LINUX
+-0
++defined value:
++	PER_SCOSVR3::
++
++		0x0003 | STICKY_TIMEOUTS | WHOLE_SECONDS | SHORT_INODE
++
++defhandler_elf
++--------------
++
++defined value:
++	PER_LINUX::
++
++		0
++
++defhandler_lcall7
++-----------------
+ 
+-===========================================================
+-defhandler_lcall7:
+ defined value :
+-PER_SVR4
+-0x0001 | STICKY_TIMEOUTS | MMAP_PAGE_ZERO,
++	PER_SVR4::
++
++		0x0001 | STICKY_TIMEOUTS | MMAP_PAGE_ZERO,
++
++defhandler_libsco
++-----------------
+ 
+-===========================================================
+-defhandler_libsco:
+ defined value:
+-PER_SVR4
+-0x0001 | STICKY_TIMEOUTS | MMAP_PAGE_ZERO,
++	PER_SVR4::
+ 
+-===========================================================
+-fake_utsname:
+-Unused
++		0x0001 | STICKY_TIMEOUTS | MMAP_PAGE_ZERO,
++
++fake_utsname
++------------
+ 
+-===========================================================
+-trace:
+ Unused
+ 
+-===========================================================
++trace
++-----
++
++Unused
+diff --git a/Documentation/sysctl/fs.txt b/Documentation/sysctl/fs.rst
+similarity index 77%
+rename from Documentation/sysctl/fs.txt
+rename to Documentation/sysctl/fs.rst
+index ebc679bcb2dc..2a45119e3331 100644
+--- a/Documentation/sysctl/fs.txt
++++ b/Documentation/sysctl/fs.rst
+@@ -1,10 +1,16 @@
+-Documentation for /proc/sys/fs/*	kernel version 2.2.10
+-	(c) 1998, 1999,  Rik van Riel <riel@nl.linux.org>
+-	(c) 2009,        Shen Feng<shen@cn.fujitsu.com>
++===============================
++Documentation for /proc/sys/fs/
++===============================
+ 
+-For general info and legal blurb, please look in README.
++kernel version 2.2.10
+ 
+-==============================================================
++Copyright (c) 1998, 1999,  Rik van Riel <riel@nl.linux.org>
++
++Copyright (c) 2009,        Shen Feng<shen@cn.fujitsu.com>
++
++For general info and legal blurb, please look in intro.rst.
++
++------------------------------------------------------------------------------
+ 
+ This file contains documentation for the sysctl files in
+ /proc/sys/fs/ and is valid for Linux kernel version 2.2.
+@@ -16,9 +22,10 @@ system, it is advisable to read both documentation and source
+ before actually making adjustments.
+ 
+ 1. /proc/sys/fs
+-----------------------------------------------------------
++===============
+ 
+ Currently, these files are in /proc/sys/fs:
++
+ - aio-max-nr
+ - aio-nr
+ - dentry-state
+@@ -42,9 +49,9 @@ Currently, these files are in /proc/sys/fs:
+ - super-max
+ - super-nr
+ 
+-==============================================================
+ 
+-aio-nr & aio-max-nr:
++aio-nr & aio-max-nr
++-------------------
+ 
+ aio-nr is the running total of the number of events specified on the
+ io_setup system call for all currently active aio contexts.  If aio-nr
+@@ -52,21 +59,20 @@ reaches aio-max-nr then io_setup will fail with EAGAIN.  Note that
+ raising aio-max-nr does not result in the pre-allocation or re-sizing
+ of any kernel data structures.
+ 
+-==============================================================
+ 
+-dentry-state:
++dentry-state
++------------
+ 
+-From linux/include/linux/dcache.h:
+---------------------------------------------------------------
+-struct dentry_stat_t dentry_stat {
++From linux/include/linux/dcache.h::
++
++  struct dentry_stat_t dentry_stat {
+         int nr_dentry;
+         int nr_unused;
+         int age_limit;         /* age in seconds */
+         int want_pages;        /* pages requested by system */
+         int nr_negative;       /* # of unused negative dentries */
+         int dummy;             /* Reserved for future use */
+-};
+---------------------------------------------------------------
++  };
+ 
+ Dentries are dynamically allocated and deallocated.
+ 
+@@ -84,9 +90,9 @@ negative dentries which do not map to any files. Instead,
+ they help speeding up rejection of non-existing files provided
+ by the users.
+ 
+-==============================================================
+ 
+-dquot-max & dquot-nr:
++dquot-max & dquot-nr
++--------------------
+ 
+ The file dquot-max shows the maximum number of cached disk
+ quota entries.
+@@ -98,9 +104,9 @@ If the number of free cached disk quotas is very low and
+ you have some awesome number of simultaneous system users,
+ you might want to raise the limit.
+ 
+-==============================================================
+ 
+-file-max & file-nr:
++file-max & file-nr
++------------------
+ 
+ The value in file-max denotes the maximum number of file-
+ handles that the Linux kernel will allocate. When you get lots
+@@ -119,18 +125,19 @@ used file handles.
+ Attempts to allocate more file descriptors than file-max are
+ reported with printk, look for "VFS: file-max limit <number>
+ reached".
+-==============================================================
+ 
+-nr_open:
++
++nr_open
++-------
+ 
+ This denotes the maximum number of file-handles a process can
+ allocate. Default value is 1024*1024 (1048576) which should be
+ enough for most machines. Actual limit depends on RLIMIT_NOFILE
+ resource limit.
+ 
+-==============================================================
+ 
+-inode-max, inode-nr & inode-state:
++inode-max, inode-nr & inode-state
++---------------------------------
+ 
+ As with file handles, the kernel allocates the inode structures
+ dynamically, but can't free them yet.
+@@ -157,9 +164,9 @@ preshrink is nonzero when the nr_inodes > inode-max and the
+ system needs to prune the inode list instead of allocating
+ more.
+ 
+-==============================================================
+ 
+-overflowgid & overflowuid:
++overflowgid & overflowuid
++-------------------------
+ 
+ Some filesystems only support 16-bit UIDs and GIDs, although in Linux
+ UIDs and GIDs are 32 bits. When one of these filesystems is mounted
+@@ -169,18 +176,18 @@ to a fixed value before being written to disk.
+ These sysctls allow you to change the value of the fixed UID and GID.
+ The default is 65534.
+ 
+-==============================================================
+ 
+-pipe-user-pages-hard:
++pipe-user-pages-hard
++--------------------
+ 
+ Maximum total number of pages a non-privileged user may allocate for pipes.
+ Once this limit is reached, no new pipes may be allocated until usage goes
+ below the limit again. When set to 0, no limit is applied, which is the default
+ setting.
+ 
+-==============================================================
+ 
+-pipe-user-pages-soft:
++pipe-user-pages-soft
++--------------------
+ 
+ Maximum total number of pages a non-privileged user may allocate for pipes
+ before the pipe size gets limited to a single page. Once this limit is reached,
+@@ -190,9 +197,9 @@ denied until usage goes below the limit again. The default value allows to
+ allocate up to 1024 pipes at their default size. When set to 0, no limit is
+ applied.
+ 
+-==============================================================
+ 
+-protected_fifos:
++protected_fifos
++---------------
+ 
+ The intent of this protection is to avoid unintentional writes to
+ an attacker-controlled FIFO, where a program expected to create a regular
+@@ -208,9 +215,9 @@ When set to "2" it also applies to group writable sticky directories.
+ 
+ This protection is based on the restrictions in Openwall.
+ 
+-==============================================================
+ 
+-protected_hardlinks:
++protected_hardlinks
++--------------------
+ 
+ A long-standing class of security issues is the hardlink-based
+ time-of-check-time-of-use race, most commonly seen in world-writable
+@@ -228,9 +235,9 @@ already own the source file, or do not have read/write access to it.
+ 
+ This protection is based on the restrictions in Openwall and grsecurity.
+ 
+-==============================================================
+ 
+-protected_regular:
++protected_regular
++-----------------
+ 
+ This protection is similar to protected_fifos, but it
+ avoids writes to an attacker-controlled regular file, where a program
+@@ -244,9 +251,9 @@ owned by the owner of the directory.
+ 
+ When set to "2" it also applies to group writable sticky directories.
+ 
+-==============================================================
+ 
+-protected_symlinks:
++protected_symlinks
++------------------
+ 
+ A long-standing class of security issues is the symlink-based
+ time-of-check-time-of-use race, most commonly seen in world-writable
+@@ -264,34 +271,38 @@ follower match, or when the directory owner matches the symlink's owner.
+ 
+ This protection is based on the restrictions in Openwall and grsecurity.
+ 
+-==============================================================
+ 
+ suid_dumpable:
++--------------
+ 
+ This value can be used to query and set the core dump mode for setuid
+ or otherwise protected/tainted binaries. The modes are
+ 
+-0 - (default) - traditional behaviour. Any process which has changed
+-	privilege levels or is execute only will not be dumped.
+-1 - (debug) - all processes dump core when possible. The core dump is
+-	owned by the current user and no security is applied. This is
+-	intended for system debugging situations only. Ptrace is unchecked.
+-	This is insecure as it allows regular users to examine the memory
+-	contents of privileged processes.
+-2 - (suidsafe) - any binary which normally would not be dumped is dumped
+-	anyway, but only if the "core_pattern" kernel sysctl is set to
+-	either a pipe handler or a fully qualified path. (For more details
+-	on this limitation, see CVE-2006-2451.) This mode is appropriate
+-	when administrators are attempting to debug problems in a normal
+-	environment, and either have a core dump pipe handler that knows
+-	to treat privileged core dumps with care, or specific directory
+-	defined for catching core dumps. If a core dump happens without
+-	a pipe handler or fully qualifid path, a message will be emitted
+-	to syslog warning about the lack of a correct setting.
++=   ==========  ===============================================================
++0   (default)	traditional behaviour. Any process which has changed
++		privilege levels or is execute only will not be dumped.
++1   (debug)	all processes dump core when possible. The core dump is
++		owned by the current user and no security is applied. This is
++		intended for system debugging situations only.
++		Ptrace is unchecked.
++		This is insecure as it allows regular users to examine the
++		memory contents of privileged processes.
++2   (suidsafe)	any binary which normally would not be dumped is dumped
++		anyway, but only if the "core_pattern" kernel sysctl is set to
++		either a pipe handler or a fully qualified path. (For more
++		details on this limitation, see CVE-2006-2451.) This mode is
++		appropriate when administrators are attempting to debug
++		problems in a normal environment, and either have a core dump
++		pipe handler that knows to treat privileged core dumps with
++		care, or specific directory defined for catching core dumps.
++		If a core dump happens without a pipe handler or fully
++		qualified path, a message will be emitted to syslog warning
++		about the lack of a correct setting.
++=   ==========  ===============================================================
+ 
+-==============================================================
+ 
+-super-max & super-nr:
++super-max & super-nr
++--------------------
+ 
+ These numbers control the maximum number of superblocks, and
+ thus the maximum number of mounted filesystems the kernel
+@@ -299,33 +310,33 @@ can have. You only need to increase super-max if you need to
+ mount more filesystems than the current value in super-max
+ allows you to.
+ 
+-==============================================================
+ 
+-aio-nr & aio-max-nr:
++aio-nr & aio-max-nr
++-------------------
+ 
+ aio-nr shows the current system-wide number of asynchronous io
+ requests.  aio-max-nr allows you to change the maximum value
+ aio-nr can grow to.
+ 
+-==============================================================
+ 
+-mount-max:
++mount-max
++---------
+ 
+ This denotes the maximum number of mounts that may exist
+ in a mount namespace.
+ 
+-==============================================================
+ 
+ 
+ 2. /proc/sys/fs/binfmt_misc
+-----------------------------------------------------------
++===========================
+ 
+ Documentation for the files in /proc/sys/fs/binfmt_misc is
+ in Documentation/admin-guide/binfmt-misc.rst.
+ 
+ 
+ 3. /proc/sys/fs/mqueue - POSIX message queues filesystem
+-----------------------------------------------------------
++========================================================
++
+ 
+ The "mqueue"  filesystem provides  the necessary kernel features to enable the
+ creation of a  user space  library that  implements  the  POSIX message queues
+@@ -356,7 +367,7 @@ the default message size value if attr parameter of mq_open(2) is NULL. If it
+ exceed msgsize_max, the default value is initialized msgsize_max.
+ 
+ 4. /proc/sys/fs/epoll - Configuration options for the epoll interface
+---------------------------------------------------------
++=====================================================================
+ 
+ This directory contains configuration options for the epoll(7) interface.
+ 
+@@ -371,4 +382,3 @@ Each "watch" costs roughly 90 bytes on a 32bit kernel, and roughly 160 bytes
+ on a 64bit one.
+ The current default value for  max_user_watches  is the 1/32 of the available
+ low memory, divided for the "watch" cost in bytes.
 -
-diff --git a/Documentation/block/biodoc.txt b/Documentation/block/biodoc.txt
-index ac18b488cb5e..ac504de0cb93 100644
---- a/Documentation/block/biodoc.txt
-+++ b/Documentation/block/biodoc.txt
-@@ -184,7 +184,7 @@ a virtual address mapping (unlike the earlier scheme of virtual address
- do not have a corresponding kernel virtual address space mapping) and
- low-memory pages.
- 
--Note: Please refer to Documentation/DMA-API-HOWTO.txt for a discussion
-+Note: Please refer to Documentation/DMA-API-HOWTO.rst for a discussion
- on PCI high mem DMA aspects and mapping of scatter gather lists, and support
- for 64 bit PCI.
- 
-diff --git a/Documentation/bt8xxgpio.txt b/Documentation/bt8xxgpio.rst
-similarity index 99%
-rename from Documentation/bt8xxgpio.txt
-rename to Documentation/bt8xxgpio.rst
-index a845feb074de..093875e1b0aa 100644
---- a/Documentation/bt8xxgpio.txt
-+++ b/Documentation/bt8xxgpio.rst
-@@ -1,3 +1,5 @@
+diff --git a/Documentation/sysctl/README b/Documentation/sysctl/index.rst
+similarity index 78%
+rename from Documentation/sysctl/README
+rename to Documentation/sysctl/index.rst
+index d5f24ab0ecc3..efbcde8c1c9c 100644
+--- a/Documentation/sysctl/README
++++ b/Documentation/sysctl/index.rst
+@@ -1,5 +1,12 @@
+-Documentation for /proc/sys/		kernel version 2.2.10
+-	(c) 1998, 1999,  Rik van Riel <riel@nl.linux.org>
 +:orphan:
 +
- ===================================================================
- A driver for a selfmade cheap BT8xx based PCI GPIO-card (bt8xxgpio)
- ===================================================================
-@@ -59,4 +61,3 @@ The GPIO pins are marked with G00-G23::
-            | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
-            ^
-            This is pin 1
--
-diff --git a/Documentation/btmrvl.txt b/Documentation/btmrvl.rst
-similarity index 99%
-rename from Documentation/btmrvl.txt
-rename to Documentation/btmrvl.rst
-index ec57740ead0c..e6dd1c96e842 100644
---- a/Documentation/btmrvl.txt
-+++ b/Documentation/btmrvl.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- =============
- btmrvl driver
- =============
-diff --git a/Documentation/bus-virt-phys-mapping.txt b/Documentation/bus-virt-phys-mapping.rst
-similarity index 93%
-rename from Documentation/bus-virt-phys-mapping.txt
-rename to Documentation/bus-virt-phys-mapping.rst
-index 4bb07c2f3e7d..eefb0ae99ba8 100644
---- a/Documentation/bus-virt-phys-mapping.txt
-+++ b/Documentation/bus-virt-phys-mapping.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ==========================================================
- How to access I/O mapped memory from within device drivers
- ==========================================================
-@@ -8,7 +10,7 @@ How to access I/O mapped memory from within device drivers
- 
- 	The virt_to_bus() and bus_to_virt() functions have been
- 	superseded by the functionality provided by the PCI DMA interface
--	(see Documentation/DMA-API-HOWTO.txt).  They continue
-+	(see Documentation/DMA-API-HOWTO.rst).  They continue
- 	to be documented below for historical purposes, but new code
- 	must not use them. --davidm 00/12/12
- 
-@@ -19,35 +21,35 @@ How to access I/O mapped memory from within device drivers
- 
- The AHA-1542 is a bus-master device, and your patch makes the driver give the
- controller the physical address of the buffers, which is correct on x86
--(because all bus master devices see the physical memory mappings directly). 
-+(because all bus master devices see the physical memory mappings directly).
- 
- However, on many setups, there are actually **three** different ways of looking
- at memory addresses, and in this case we actually want the third, the
--so-called "bus address". 
-+so-called "bus address".
- 
- Essentially, the three ways of addressing memory are (this is "real memory",
--that is, normal RAM--see later about other details): 
-+that is, normal RAM--see later about other details):
- 
-- - CPU untranslated.  This is the "physical" address.  Physical address 
-+ - CPU untranslated.  This is the "physical" address.  Physical address
-    0 is what the CPU sees when it drives zeroes on the memory bus.
- 
-- - CPU translated address. This is the "virtual" address, and is 
-+ - CPU translated address. This is the "virtual" address, and is
-    completely internal to the CPU itself with the CPU doing the appropriate
--   translations into "CPU untranslated". 
-+   translations into "CPU untranslated".
- 
-- - bus address. This is the address of memory as seen by OTHER devices, 
--   not the CPU. Now, in theory there could be many different bus 
-+ - bus address. This is the address of memory as seen by OTHER devices,
-+   not the CPU. Now, in theory there could be many different bus
-    addresses, with each device seeing memory in some device-specific way, but
-    happily most hardware designers aren't actually actively trying to make
--   things any more complex than necessary, so you can assume that all 
--   external hardware sees the memory the same way. 
-+   things any more complex than necessary, so you can assume that all
-+   external hardware sees the memory the same way.
- 
- Now, on normal PCs the bus address is exactly the same as the physical
- address, and things are very simple indeed. However, they are that simple
- because the memory and the devices share the same address space, and that is
--not generally necessarily true on other PCI/ISA setups. 
-+not generally necessarily true on other PCI/ISA setups.
- 
--Now, just as an example, on the PReP (PowerPC Reference Platform), the 
-+Now, just as an example, on the PReP (PowerPC Reference Platform), the
- CPU sees a memory map something like this (this is from memory)::
- 
- 	0-2 GB		"real memory"
-@@ -58,17 +60,17 @@ Now, that looks simple enough. However, when you look at the same thing from
- the viewpoint of the devices, you have the reverse, and the physical memory
- address 0 actually shows up as address 2 GB for any IO master.
- 
--So when the CPU wants any bus master to write to physical memory 0, it 
-+So when the CPU wants any bus master to write to physical memory 0, it
- has to give the master address 0x80000000 as the memory address.
- 
--So, for example, depending on how the kernel is actually mapped on the 
-+So, for example, depending on how the kernel is actually mapped on the
- PPC, you can end up with a setup like this::
- 
-  physical address:	0
-  virtual address:	0xC0000000
-  bus address:		0x80000000
- 
--where all the addresses actually point to the same thing.  It's just seen 
-+where all the addresses actually point to the same thing.  It's just seen
- through different translations..
- 
- Similarly, on the Alpha, the normal translation is::
-@@ -78,7 +80,7 @@ Similarly, on the Alpha, the normal translation is::
-  bus address:		0x40000000
- 
- (but there are also Alphas where the physical address and the bus address
--are the same). 
-+are the same).
- 
- Anyway, the way to look up all these translations, you do::
- 
-@@ -113,7 +115,7 @@ pointer from the kernel. So you can have something like this::
- 			case STATUS_OK:
- 				...
- 
--on the other hand, you want the bus address when you have a buffer that 
-+on the other hand, you want the bus address when you have a buffer that
- you want to give to the controller::
- 
- 	/* ask the controller to read the sense status into "sense_buffer" */
-@@ -124,7 +126,7 @@ you want to give to the controller::
- 
- And you generally **never** want to use the physical address, because you can't
- use that from the CPU (the CPU only uses translated virtual addresses), and
--you can't use it from the bus master. 
-+you can't use it from the bus master.
- 
- So why do we care about the physical address at all? We do need the physical
- address in some cases, it's just not very often in normal code.  The physical
-@@ -142,7 +144,7 @@ shouldn't need to know about "bus addresses" etc).
- There is a completely different type of memory too, and that's the "shared
- memory" on the PCI or ISA bus. That's generally not RAM (although in the case
- of a video graphics card it can be normal DRAM that is just used for a frame
--buffer), but can be things like a packet buffer in a network card etc. 
-+buffer), but can be things like a packet buffer in a network card etc.
- 
- This memory is called "PCI memory" or "shared memory" or "IO memory" or
- whatever, and there is only one way to access it: the readb/writeb and
-@@ -151,7 +153,7 @@ there is really nothing you can do with such an address: it's not
- conceptually in the same memory space as "real memory" at all, so you cannot
- just dereference a pointer. (Sadly, on x86 it **is** in the same memory space,
- so on x86 it actually works to just deference a pointer, but it's not
--portable). 
-+portable).
- 
- For such memory, you can do things like:
- 
-@@ -197,19 +199,19 @@ Note that kernel versions 2.0.x (and earlier) mistakenly called the
- ioremap() function "vremap()".  ioremap() is the proper name, but I
- didn't think straight when I wrote it originally.  People who have to
- support both can do something like::
-- 
-+
- 	/* support old naming silliness */
- 	#if LINUX_VERSION_CODE < 0x020100
- 	#define ioremap vremap
--	#define iounmap vfree                                                     
-+	#define iounmap vfree
- 	#endif
-- 
-+
- at the top of their source files, and then they can use the right names
--even on 2.0.x systems. 
-+even on 2.0.x systems.
- 
- And the above sounds worse than it really is.  Most real drivers really
- don't do all that complex things (or rather: the complexity is not so
--much in the actual IO accesses as in error handling and timeouts etc). 
-+much in the actual IO accesses as in error handling and timeouts etc).
- It's generally not hard to fix drivers, and in many cases the code
- actually looks better afterwards::
- 
-diff --git a/Documentation/clearing-warn-once.txt b/Documentation/clearing-warn-once.rst
-similarity index 96%
-rename from Documentation/clearing-warn-once.txt
-rename to Documentation/clearing-warn-once.rst
-index 211fd926cf00..cdfa892c7fdf 100644
---- a/Documentation/clearing-warn-once.txt
-+++ b/Documentation/clearing-warn-once.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- Clearing WARN_ONCE
- ------------------
- 
-diff --git a/Documentation/cpu-load.txt b/Documentation/cpu-load.rst
-similarity index 99%
-rename from Documentation/cpu-load.txt
-rename to Documentation/cpu-load.rst
-index 2d01ce43d2a2..6b2815b78683 100644
---- a/Documentation/cpu-load.txt
-+++ b/Documentation/cpu-load.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ========
- CPU load
- ========
-diff --git a/Documentation/cputopology.txt b/Documentation/cputopology.rst
-similarity index 99%
-rename from Documentation/cputopology.txt
-rename to Documentation/cputopology.rst
-index b90dafcc8237..ef1e6b105957 100644
---- a/Documentation/cputopology.txt
-+++ b/Documentation/cputopology.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ===========================================
- How CPU topology info is exported via sysfs
- ===========================================
-diff --git a/Documentation/crc32.txt b/Documentation/crc32.rst
-similarity index 99%
-rename from Documentation/crc32.txt
-rename to Documentation/crc32.rst
-index 8a6860f33b4e..f7c73d713a35 100644
---- a/Documentation/crc32.txt
-+++ b/Documentation/crc32.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- =================================
- brief tutorial on CRC computation
- =================================
-diff --git a/Documentation/dcdbas.txt b/Documentation/dcdbas.rst
-similarity index 99%
-rename from Documentation/dcdbas.txt
-rename to Documentation/dcdbas.rst
-index 309cc57a7c1c..abbc2bfd58a7 100644
---- a/Documentation/dcdbas.txt
-+++ b/Documentation/dcdbas.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ===================================
- Dell Systems Management Base Driver
- ===================================
-diff --git a/Documentation/debugging-modules.txt b/Documentation/debugging-modules.rst
-similarity index 98%
-rename from Documentation/debugging-modules.txt
-rename to Documentation/debugging-modules.rst
-index 172ad4aec493..994f4b021a81 100644
---- a/Documentation/debugging-modules.txt
-+++ b/Documentation/debugging-modules.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- Debugging Modules after 2.6.3
- -----------------------------
- 
-diff --git a/Documentation/debugging-via-ohci1394.txt b/Documentation/debugging-via-ohci1394.rst
-similarity index 99%
-rename from Documentation/debugging-via-ohci1394.txt
-rename to Documentation/debugging-via-ohci1394.rst
-index 981ad4f89fd3..ead0196d94b7 100644
---- a/Documentation/debugging-via-ohci1394.txt
-+++ b/Documentation/debugging-via-ohci1394.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ===========================================================================
- Using physical DMA provided by OHCI-1394 FireWire controllers for debugging
- ===========================================================================
-diff --git a/Documentation/dell_rbu.txt b/Documentation/dell_rbu.rst
-similarity index 99%
-rename from Documentation/dell_rbu.txt
-rename to Documentation/dell_rbu.rst
-index 5d1ce7bcd04d..45cd18abd98f 100644
---- a/Documentation/dell_rbu.txt
-+++ b/Documentation/dell_rbu.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- =============================================================
- Usage of the new open sourced rbu (Remote BIOS Update) driver
- =============================================================
-@@ -125,4 +127,3 @@ read back the image downloaded.
-    code which sends the BIOS update request to the BIOS. So on the next reboot
-    the BIOS knows about the new image downloaded and it updates itself.
-    Also don't unload the rbu driver if the image has to be updated.
--
-diff --git a/Documentation/device-mapper/statistics.rst b/Documentation/device-mapper/statistics.rst
-index 3d80a9f850cc..39f74af35abb 100644
---- a/Documentation/device-mapper/statistics.rst
-+++ b/Documentation/device-mapper/statistics.rst
-@@ -13,7 +13,7 @@ the range specified.
- 
- The I/O statistics counters for each step-sized area of a region are
- in the same format as `/sys/block/*/stat` or `/proc/diskstats` (see:
--Documentation/iostats.txt).  But two extra counters (12 and 13) are
-+Documentation/iostats.rst).  But two extra counters (12 and 13) are
- provided: total time spent reading and writing.  When the histogram
- argument is used, the 14th parameter is reported that represents the
- histogram of latencies.  All these counters may be accessed by sending
-@@ -151,7 +151,7 @@ Messages
- 	  The first 11 counters have the same meaning as
- 	  `/sys/block/*/stat or /proc/diskstats`.
- 
--	  Please refer to Documentation/iostats.txt for details.
-+	  Please refer to Documentation/iostats.rst for details.
- 
- 	  1. the number of reads completed
- 	  2. the number of reads merged
-diff --git a/Documentation/devicetree/bindings/phy/phy-bindings.txt b/Documentation/devicetree/bindings/phy/phy-bindings.txt
-index a403b81d0679..5e2a53bcba0e 100644
---- a/Documentation/devicetree/bindings/phy/phy-bindings.txt
-+++ b/Documentation/devicetree/bindings/phy/phy-bindings.txt
-@@ -1,5 +1,5 @@
- This document explains only the device tree data binding. For general
--information about PHY subsystem refer to Documentation/phy.txt
-+information about PHY subsystem refer to Documentation/phy.rst
- 
- PHY device node
- ===============
-diff --git a/Documentation/digsig.txt b/Documentation/digsig.rst
-similarity index 99%
-rename from Documentation/digsig.txt
-rename to Documentation/digsig.rst
-index f6a8902d3ef7..3597711d0df1 100644
---- a/Documentation/digsig.txt
-+++ b/Documentation/digsig.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ==================================
- Digital Signature Verification API
- ==================================
-diff --git a/Documentation/driver-api/usb/dma.rst b/Documentation/driver-api/usb/dma.rst
-index 59d5aee89e37..12955a77c7fe 100644
---- a/Documentation/driver-api/usb/dma.rst
-+++ b/Documentation/driver-api/usb/dma.rst
-@@ -10,7 +10,7 @@ API overview
- 
- The big picture is that USB drivers can continue to ignore most DMA issues,
- though they still must provide DMA-ready buffers (see
--``Documentation/DMA-API-HOWTO.txt``).  That's how they've worked through
-+``Documentation/DMA-API-HOWTO.rst``).  That's how they've worked through
- the 2.4 (and earlier) kernels, or they can now be DMA-aware.
- 
- DMA-aware usb drivers:
-@@ -60,7 +60,7 @@ and effects like cache-trashing can impose subtle penalties.
-   force a consistent memory access ordering by using memory barriers.  It's
-   not using a streaming DMA mapping, so it's good for small transfers on
-   systems where the I/O would otherwise thrash an IOMMU mapping.  (See
--  ``Documentation/DMA-API-HOWTO.txt`` for definitions of "coherent" and
-+  ``Documentation/DMA-API-HOWTO.rst`` for definitions of "coherent" and
-   "streaming" DMA mappings.)
- 
-   Asking for 1/Nth of a page (as well as asking for N pages) is reasonably
-@@ -91,7 +91,7 @@ Working with existing buffers
- Existing buffers aren't usable for DMA without first being mapped into the
- DMA address space of the device.  However, most buffers passed to your
- driver can safely be used with such DMA mapping.  (See the first section
--of Documentation/DMA-API-HOWTO.txt, titled "What memory is DMA-able?")
-+of Documentation/DMA-API-HOWTO.rst, titled "What memory is DMA-able?")
- 
- - When you're using scatterlists, you can map everything at once.  On some
-   systems, this kicks in an IOMMU and turns the scatterlists into single
-diff --git a/Documentation/driver-model/device.rst b/Documentation/driver-model/device.rst
-index 2b868d49d349..17bcc483c4b1 100644
---- a/Documentation/driver-model/device.rst
-+++ b/Documentation/driver-model/device.rst
-@@ -53,7 +53,7 @@ Attributes of devices can be exported by a device driver through sysfs.
- Please see Documentation/filesystems/sysfs.txt for more information
- on how sysfs works.
- 
--As explained in Documentation/kobject.txt, device attributes must be
-+As explained in Documentation/kobject.rst, device attributes must be
- created before the KOBJ_ADD uevent is generated. The only way to realize
- that is by defining an attribute group.
- 
-diff --git a/Documentation/efi-stub.txt b/Documentation/efi-stub.rst
-similarity index 99%
-rename from Documentation/efi-stub.txt
-rename to Documentation/efi-stub.rst
-index 833edb0d0bc4..29256cad8af3 100644
---- a/Documentation/efi-stub.txt
-+++ b/Documentation/efi-stub.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- =================
- The EFI Boot Stub
- =================
-diff --git a/Documentation/eisa.txt b/Documentation/eisa.rst
-similarity index 99%
-rename from Documentation/eisa.txt
-rename to Documentation/eisa.rst
-index f388545a85a7..d98949908405 100644
---- a/Documentation/eisa.txt
-+++ b/Documentation/eisa.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ================
- EISA bus support
- ================
-diff --git a/Documentation/fb/vesafb.rst b/Documentation/fb/vesafb.rst
-index 2ed0dfb661cf..a0b658091b07 100644
---- a/Documentation/fb/vesafb.rst
-+++ b/Documentation/fb/vesafb.rst
-@@ -30,7 +30,7 @@ How to use it?
- ==============
- 
- Switching modes is done using the vga=... boot parameter.  Read
--Documentation/svga.txt for details.
-+Documentation/svga.rst for details.
- 
- You should compile in both vgacon (for text mode) and vesafb (for
- graphics mode). Which of them takes over the console depends on
-diff --git a/Documentation/filesystems/sysfs.txt b/Documentation/filesystems/sysfs.txt
-index 5b5311f9358d..d159826c5cf3 100644
---- a/Documentation/filesystems/sysfs.txt
-+++ b/Documentation/filesystems/sysfs.txt
-@@ -16,7 +16,7 @@ a means to export kernel data structures, their attributes, and the
- linkages between them to userspace. 
- 
- sysfs is tied inherently to the kobject infrastructure. Please read
--Documentation/kobject.txt for more information concerning the kobject
-+Documentation/kobject.rst for more information concerning the kobject
- interface. 
- 
- 
-diff --git a/Documentation/futex-requeue-pi.txt b/Documentation/futex-requeue-pi.rst
-similarity index 99%
-rename from Documentation/futex-requeue-pi.txt
-rename to Documentation/futex-requeue-pi.rst
-index 14ab5787b9a7..a90dbff26629 100644
---- a/Documentation/futex-requeue-pi.txt
-+++ b/Documentation/futex-requeue-pi.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ================
- Futex Requeue PI
- ================
-diff --git a/Documentation/gcc-plugins.txt b/Documentation/gcc-plugins.rst
-similarity index 99%
-rename from Documentation/gcc-plugins.txt
-rename to Documentation/gcc-plugins.rst
-index 8502f24396fb..e08d013c6de2 100644
---- a/Documentation/gcc-plugins.txt
-+++ b/Documentation/gcc-plugins.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- =========================
- GCC plugin infrastructure
- =========================
-diff --git a/Documentation/gpu/drm-mm.rst b/Documentation/gpu/drm-mm.rst
-index c8ebd4f66a6a..fa30dfcfc3c8 100644
---- a/Documentation/gpu/drm-mm.rst
-+++ b/Documentation/gpu/drm-mm.rst
-@@ -320,7 +320,7 @@ struct :c:type:`struct file_operations <file_operations>` get_unmapped_area
- field with a pointer on :c:func:`drm_gem_cma_get_unmapped_area`.
- 
- More detailed information about get_unmapped_area can be found in
--Documentation/nommu-mmap.txt
-+Documentation/nommu-mmap.rst
- 
- Memory Coherency
- ----------------
-diff --git a/Documentation/highuid.txt b/Documentation/highuid.rst
-similarity index 99%
-rename from Documentation/highuid.txt
-rename to Documentation/highuid.rst
-index 6ee70465c0ea..d1cbc71a59a2 100644
---- a/Documentation/highuid.txt
-+++ b/Documentation/highuid.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ===================================================
- Notes on the change from 16-bit UIDs to 32-bit UIDs
- ===================================================
-@@ -19,7 +21,7 @@ What's left to be done for 32-bit UIDs on all Linux architectures:
-   underlying filesystem, because quota records are written at offsets
-   corresponding to the UID in question.
-   Further investigation is needed to see if the quota system can cope
--  properly with huge UIDs. If it can deal with 64-bit file offsets on all 
-+  properly with huge UIDs. If it can deal with 64-bit file offsets on all
-   architectures, this should not be a problem.
- 
- - Decide whether or not to keep backwards compatibility with the system
-diff --git a/Documentation/hw_random.txt b/Documentation/hw_random.rst
-similarity index 99%
-rename from Documentation/hw_random.txt
-rename to Documentation/hw_random.rst
-index 121de96e395e..fb5e32fae384 100644
---- a/Documentation/hw_random.txt
-+++ b/Documentation/hw_random.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ==========================================================
- Linux support for random number generator in i8xx chipsets
- ==========================================================
-diff --git a/Documentation/hwspinlock.txt b/Documentation/hwspinlock.rst
-similarity index 99%
-rename from Documentation/hwspinlock.txt
-rename to Documentation/hwspinlock.rst
-index ed640a278185..68297473647c 100644
---- a/Documentation/hwspinlock.txt
-+++ b/Documentation/hwspinlock.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ===========================
- Hardware Spinlock Framework
- ===========================
-diff --git a/Documentation/ia64/irq-redir.rst b/Documentation/ia64/irq-redir.rst
-index 39bf94484a15..0abc7b35f6c0 100644
---- a/Documentation/ia64/irq-redir.rst
-+++ b/Documentation/ia64/irq-redir.rst
-@@ -7,7 +7,7 @@ IRQ affinity on IA64 platforms
- 
- By writing to /proc/irq/IRQ#/smp_affinity the interrupt routing can be
- controlled. The behavior on IA64 platforms is slightly different from
--that described in Documentation/IRQ-affinity.txt for i386 systems.
-+that described in Documentation/IRQ-affinity.rst for i386 systems.
- 
- Because of the usage of SAPIC mode and physical destination mode the
- IRQ target is one particular CPU and cannot be a mask of several
-diff --git a/Documentation/intel_txt.txt b/Documentation/intel_txt.rst
-similarity index 99%
-rename from Documentation/intel_txt.txt
-rename to Documentation/intel_txt.rst
-index d83c1a2122c9..5a55007ecf08 100644
---- a/Documentation/intel_txt.txt
-+++ b/Documentation/intel_txt.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- =====================
- Intel(R) TXT Overview
- =====================
-diff --git a/Documentation/io-mapping.txt b/Documentation/io-mapping.rst
-similarity index 99%
-rename from Documentation/io-mapping.txt
-rename to Documentation/io-mapping.rst
-index a966239f04e4..82a2cacf9a29 100644
---- a/Documentation/io-mapping.txt
-+++ b/Documentation/io-mapping.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ========================
- The io_mapping functions
- ========================
-diff --git a/Documentation/io_ordering.txt b/Documentation/io_ordering.rst
-similarity index 99%
-rename from Documentation/io_ordering.txt
-rename to Documentation/io_ordering.rst
-index 2ab303ce9a0d..18ef889c100e 100644
---- a/Documentation/io_ordering.txt
-+++ b/Documentation/io_ordering.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ==============================================
- Ordering I/O writes to memory-mapped addresses
- ==============================================
-diff --git a/Documentation/iostats.txt b/Documentation/iostats.rst
-similarity index 99%
-rename from Documentation/iostats.txt
-rename to Documentation/iostats.rst
-index 5d63b18bd6d1..f4d37d812c30 100644
---- a/Documentation/iostats.txt
-+++ b/Documentation/iostats.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- =====================
- I/O statistics fields
- =====================
-diff --git a/Documentation/irqflags-tracing.txt b/Documentation/irqflags-tracing.rst
-similarity index 99%
-rename from Documentation/irqflags-tracing.txt
-rename to Documentation/irqflags-tracing.rst
-index bdd208259fb3..a2fbbb1a62b9 100644
---- a/Documentation/irqflags-tracing.txt
-+++ b/Documentation/irqflags-tracing.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- =======================
- IRQ-flags state tracing
- =======================
-@@ -49,4 +51,3 @@ turn itself off. I.e. the lock validator will still be reliable. There
- should be no crashes due to irq-tracing bugs. (except if the assembly
- changes break other code by modifying conditions or registers that
- shouldn't be)
--
-diff --git a/Documentation/isa.txt b/Documentation/isa.rst
-similarity index 99%
-rename from Documentation/isa.txt
-rename to Documentation/isa.rst
-index def4a7b690b5..f3a412d266b0 100644
---- a/Documentation/isa.txt
-+++ b/Documentation/isa.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ===========
- ISA Drivers
- ===========
-diff --git a/Documentation/isapnp.txt b/Documentation/isapnp.rst
-similarity index 98%
-rename from Documentation/isapnp.txt
-rename to Documentation/isapnp.rst
-index 8d0840ac847b..136a5e92be27 100644
---- a/Documentation/isapnp.txt
-+++ b/Documentation/isapnp.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ==========================================================
- ISA Plug & Play support by Jaroslav Kysela <perex@suse.cz>
- ==========================================================
-diff --git a/Documentation/kernel-per-CPU-kthreads.txt b/Documentation/kernel-per-CPU-kthreads.rst
-similarity index 99%
-rename from Documentation/kernel-per-CPU-kthreads.txt
-rename to Documentation/kernel-per-CPU-kthreads.rst
-index 5623b9916411..765c7b9bd7fd 100644
---- a/Documentation/kernel-per-CPU-kthreads.txt
-+++ b/Documentation/kernel-per-CPU-kthreads.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ==========================================
- Reducing OS jitter due to per-cpu kthreads
- ==========================================
-@@ -10,7 +12,7 @@ them to a "housekeeping" CPU dedicated to such work.
- References
- ==========
- 
---	Documentation/IRQ-affinity.txt:  Binding interrupts to sets of CPUs.
-+-	Documentation/IRQ-affinity.rst:  Binding interrupts to sets of CPUs.
- 
- -	Documentation/cgroup-v1:  Using cgroups to bind tasks to sets of CPUs.
- 
-diff --git a/Documentation/kobject.txt b/Documentation/kobject.rst
-similarity index 99%
-rename from Documentation/kobject.txt
-rename to Documentation/kobject.rst
-index ff4c25098119..6117192bf3e6 100644
---- a/Documentation/kobject.txt
-+++ b/Documentation/kobject.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- =====================================================================
- Everything you never wanted to know about kobjects, ksets, and ktypes
- =====================================================================
-@@ -210,7 +212,7 @@ statically and will warn the developer of this improper usage.
- If all that you want to use a kobject for is to provide a reference counter
- for your structure, please use the struct kref instead; a kobject would be
- overkill.  For more information on how to use struct kref, please see the
--file Documentation/kref.txt in the Linux kernel source tree.
-+file Documentation/kref.rst in the Linux kernel source tree.
- 
- 
- Creating "simple" kobjects
-@@ -270,7 +272,7 @@ such a method has a form like::
- 
-     void my_object_release(struct kobject *kobj)
-     {
--    	    struct my_object *mine = container_of(kobj, struct my_object, kobj);
-+	    struct my_object *mine = container_of(kobj, struct my_object, kobj);
- 
- 	    /* Perform any additional cleanup on this object, then... */
- 	    kfree(mine);
-diff --git a/Documentation/kprobes.txt b/Documentation/kprobes.rst
-similarity index 99%
-rename from Documentation/kprobes.txt
-rename to Documentation/kprobes.rst
-index 8baab8832c5b..6c0011755e68 100644
---- a/Documentation/kprobes.txt
-+++ b/Documentation/kprobes.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- =======================
- Kernel Probes (Kprobes)
- =======================
-@@ -798,4 +800,3 @@ unoptimized, and any new probes registered after that will not be optimized.
- Note that this knob *changes* the optimized state. This means that optimized
- probes (marked [OPTIMIZED]) will be unoptimized ([OPTIMIZED] tag will be
- removed). If the knob is turned on, they will be optimized again.
--
-diff --git a/Documentation/kref.txt b/Documentation/kref.rst
-similarity index 99%
-rename from Documentation/kref.txt
-rename to Documentation/kref.rst
-index 3af384156d7e..470e3c1bacdc 100644
---- a/Documentation/kref.txt
-+++ b/Documentation/kref.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ===================================================
- Adding reference counters (krefs) to kernel objects
- ===================================================
-diff --git a/Documentation/laptops/thinkpad-acpi.rst b/Documentation/laptops/thinkpad-acpi.rst
-index 19d52fc3c5e9..d0f0d16c21b9 100644
---- a/Documentation/laptops/thinkpad-acpi.rst
-+++ b/Documentation/laptops/thinkpad-acpi.rst
-@@ -643,7 +643,7 @@ Sysfs notes
- 	2010.
- 
- 	rfkill controller switch "tpacpi_bluetooth_sw": refer to
--	Documentation/rfkill.txt for details.
-+	Documentation/rfkill.rst for details.
- 
- 
- Video output control -- /proc/acpi/ibm/video
-@@ -1406,7 +1406,7 @@ Sysfs notes
- 	2010.
- 
- 	rfkill controller switch "tpacpi_wwan_sw": refer to
--	Documentation/rfkill.txt for details.
-+	Documentation/rfkill.rst for details.
- 
- 
- EXPERIMENTAL: UWB
-@@ -1426,7 +1426,7 @@ Sysfs notes
- ^^^^^^^^^^^
- 
- 	rfkill controller switch "tpacpi_uwb_sw": refer to
--	Documentation/rfkill.txt for details.
-+	Documentation/rfkill.rst for details.
- 
- Adaptive keyboard
- -----------------
-diff --git a/Documentation/ldm.txt b/Documentation/ldm.rst
-similarity index 98%
-rename from Documentation/ldm.txt
-rename to Documentation/ldm.rst
-index 12c571368e73..1e8739669541 100644
---- a/Documentation/ldm.txt
-+++ b/Documentation/ldm.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ==========================================
- LDM - Logical Disk Manager (Dynamic Disks)
- ==========================================
-@@ -75,7 +77,7 @@ When Linux boots, you will see something like::
- Compiling LDM Support
- ---------------------
- 
--To enable LDM, choose the following two options: 
-+To enable LDM, choose the following two options:
- 
-   - "Advanced partition selection" CONFIG_PARTITION_ADVANCED
-   - "Windows Logical Disk Manager (Dynamic Disk) support" CONFIG_LDM_PARTITION
-@@ -118,4 +120,3 @@ me.
- Cheers,
-     FlatCap - Richard Russon
-     ldm@flatcap.org
--
-diff --git a/Documentation/locking/rt-mutex.rst b/Documentation/locking/rt-mutex.rst
-index c365dc302081..6e3dcff802f9 100644
---- a/Documentation/locking/rt-mutex.rst
-+++ b/Documentation/locking/rt-mutex.rst
-@@ -4,7 +4,7 @@ RT-mutex subsystem with PI support
- 
- RT-mutexes with priority inheritance are used to support PI-futexes,
- which enable pthread_mutex_t priority inheritance attributes
--(PTHREAD_PRIO_INHERIT). [See Documentation/pi-futex.txt for more details
-+(PTHREAD_PRIO_INHERIT). [See Documentation/pi-futex.rst for more details
- about PI-futexes.]
- 
- This technology was developed in the -rt tree and streamlined for
-diff --git a/Documentation/lockup-watchdogs.txt b/Documentation/lockup-watchdogs.rst
-similarity index 99%
-rename from Documentation/lockup-watchdogs.txt
-rename to Documentation/lockup-watchdogs.rst
-index 290840c160af..a60598bfd50f 100644
---- a/Documentation/lockup-watchdogs.txt
-+++ b/Documentation/lockup-watchdogs.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ===============================================================
- Softlockup detector and hardlockup detector (aka nmi_watchdog)
- ===============================================================
-diff --git a/Documentation/lsm.txt b/Documentation/lsm.rst
-similarity index 99%
-rename from Documentation/lsm.txt
-rename to Documentation/lsm.rst
-index ad4dfd020e0d..4f0b1a6ea76c 100644
---- a/Documentation/lsm.txt
-+++ b/Documentation/lsm.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ========================================================
- Linux Security Modules: General Security Hooks for Linux
- ========================================================
-diff --git a/Documentation/lzo.txt b/Documentation/lzo.rst
-similarity index 99%
-rename from Documentation/lzo.txt
-rename to Documentation/lzo.rst
-index ca983328976b..36965db785af 100644
---- a/Documentation/lzo.txt
-+++ b/Documentation/lzo.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ===========================================================
- LZO stream format as understood by Linux's LZO decompressor
- ===========================================================
-diff --git a/Documentation/mailbox.txt b/Documentation/mailbox.rst
-similarity index 99%
-rename from Documentation/mailbox.txt
-rename to Documentation/mailbox.rst
-index 0ed95009cc30..02e754db3567 100644
---- a/Documentation/mailbox.txt
-+++ b/Documentation/mailbox.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ============================
- The Common Mailbox Framework
- ============================
-diff --git a/Documentation/memory-barriers.txt b/Documentation/memory-barriers.txt
-index f4170aae1d75..4a44f00478db 100644
---- a/Documentation/memory-barriers.txt
-+++ b/Documentation/memory-barriers.txt
-@@ -549,8 +549,8 @@ There are certain things that the Linux kernel memory barriers do not guarantee:
- 	[*] For information on bus mastering DMA and coherency please read:
- 
- 	    Documentation/PCI/pci.rst
--	    Documentation/DMA-API-HOWTO.txt
--	    Documentation/DMA-API.txt
-+	    Documentation/DMA-API-HOWTO.rst
-+	    Documentation/DMA-API.rst
- 
- 
- DATA DEPENDENCY BARRIERS (HISTORICAL)
-@@ -1933,7 +1933,7 @@ There are some more advanced barrier functions:
-      here.
- 
-      See the subsection "Kernel I/O barrier effects" for more information on
--     relaxed I/O accessors and the Documentation/DMA-API.txt file for more
-+     relaxed I/O accessors and the Documentation/DMA-API.rst file for more
-      information on consistent memory.
- 
- 
-diff --git a/Documentation/men-chameleon-bus.txt b/Documentation/men-chameleon-bus.rst
-similarity index 99%
-rename from Documentation/men-chameleon-bus.txt
-rename to Documentation/men-chameleon-bus.rst
-index 1b1f048aa748..2d6175229e58 100644
---- a/Documentation/men-chameleon-bus.txt
-+++ b/Documentation/men-chameleon-bus.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- =================
- MEN Chameleon Bus
- =================
-diff --git a/Documentation/networking/scaling.rst b/Documentation/networking/scaling.rst
-index f78d7bf27ff5..05f0feb99320 100644
---- a/Documentation/networking/scaling.rst
-+++ b/Documentation/networking/scaling.rst
-@@ -81,7 +81,7 @@ of queues to IRQs can be determined from /proc/interrupts. By default,
- an IRQ may be handled on any CPU. Because a non-negligible part of packet
- processing takes place in receive interrupt handling, it is advantageous
- to spread receive interrupts between CPUs. To manually adjust the IRQ
--affinity of each interrupt see Documentation/IRQ-affinity.txt. Some systems
-+affinity of each interrupt see Documentation/IRQ-affinity.rst. Some systems
- will be running irqbalance, a daemon that dynamically optimizes IRQ
- assignments and as a result may override any manual settings.
- 
-@@ -160,7 +160,7 @@ can be configured for each receive queue using a sysfs file entry::
- 
- This file implements a bitmap of CPUs. RPS is disabled when it is zero
- (the default), in which case packets are processed on the interrupting
--CPU. Documentation/IRQ-affinity.txt explains how CPUs are assigned to
-+CPU. Documentation/IRQ-affinity.rst explains how CPUs are assigned to
- the bitmap.
- 
- 
-diff --git a/Documentation/nommu-mmap.txt b/Documentation/nommu-mmap.rst
-similarity index 99%
-rename from Documentation/nommu-mmap.txt
-rename to Documentation/nommu-mmap.rst
-index 530fed08de2c..f7f75813dc9c 100644
---- a/Documentation/nommu-mmap.txt
-+++ b/Documentation/nommu-mmap.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- =============================
- No-MMU memory mapping support
- =============================
-diff --git a/Documentation/ntb.txt b/Documentation/ntb.rst
-similarity index 99%
-rename from Documentation/ntb.txt
-rename to Documentation/ntb.rst
-index 87d1372da879..a25e7814b898 100644
---- a/Documentation/ntb.txt
-+++ b/Documentation/ntb.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ===========
- NTB Drivers
- ===========
-diff --git a/Documentation/numastat.txt b/Documentation/numastat.rst
-similarity index 99%
-rename from Documentation/numastat.txt
-rename to Documentation/numastat.rst
-index aaf1667489f8..762925cfe882 100644
---- a/Documentation/numastat.txt
-+++ b/Documentation/numastat.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ===============================
- Numa policy hit/miss statistics
- ===============================
-@@ -27,4 +29,3 @@ interleave_hit 	Interleaving wanted to allocate from this node
- For easier reading you can use the numastat utility from the numactl package
- (http://oss.sgi.com/projects/libnuma/). Note that it only works
- well right now on machines with a small number of CPUs.
--
-diff --git a/Documentation/padata.txt b/Documentation/padata.rst
-similarity index 99%
-rename from Documentation/padata.txt
-rename to Documentation/padata.rst
-index b103d0c82000..f8369d18c846 100644
---- a/Documentation/padata.txt
-+++ b/Documentation/padata.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- =======================================
- The padata parallel execution mechanism
- =======================================
-diff --git a/Documentation/parport-lowlevel.txt b/Documentation/parport-lowlevel.rst
-similarity index 99%
-rename from Documentation/parport-lowlevel.txt
-rename to Documentation/parport-lowlevel.rst
-index 0633d70ffda7..b8574d83d328 100644
---- a/Documentation/parport-lowlevel.txt
-+++ b/Documentation/parport-lowlevel.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ===============================
- PARPORT interface documentation
- ===============================
-diff --git a/Documentation/percpu-rw-semaphore.txt b/Documentation/percpu-rw-semaphore.rst
-similarity index 99%
-rename from Documentation/percpu-rw-semaphore.txt
-rename to Documentation/percpu-rw-semaphore.rst
-index 247de6410855..5c39c88d3719 100644
---- a/Documentation/percpu-rw-semaphore.txt
-+++ b/Documentation/percpu-rw-semaphore.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ====================
- Percpu rw semaphores
- ====================
-diff --git a/Documentation/phy.txt b/Documentation/phy.rst
-similarity index 99%
-rename from Documentation/phy.txt
-rename to Documentation/phy.rst
-index 457c3e0f86d6..129a45ccc857 100644
---- a/Documentation/phy.txt
-+++ b/Documentation/phy.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- =============
- PHY subsystem
- =============
-diff --git a/Documentation/pi-futex.txt b/Documentation/pi-futex.rst
-similarity index 99%
-rename from Documentation/pi-futex.txt
-rename to Documentation/pi-futex.rst
-index c33ba2befbf8..884ba7f2aa10 100644
---- a/Documentation/pi-futex.txt
-+++ b/Documentation/pi-futex.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ======================
- Lightweight PI-futexes
- ======================
-diff --git a/Documentation/pnp.txt b/Documentation/pnp.rst
-similarity index 98%
-rename from Documentation/pnp.txt
-rename to Documentation/pnp.rst
-index bab2d10631f0..ef84f35a9b47 100644
---- a/Documentation/pnp.txt
-+++ b/Documentation/pnp.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- =================================
- Linux Plug and Play Documentation
- =================================
-@@ -10,7 +12,7 @@ Overview
- --------
- 
- Plug and Play provides a means of detecting and setting resources for legacy or
--otherwise unconfigurable devices.  The Linux Plug and Play Layer provides these 
-+otherwise unconfigurable devices.  The Linux Plug and Play Layer provides these
- services to compatible drivers.
- 
- 
-@@ -18,7 +20,7 @@ The User Interface
- ------------------
- 
- The Linux Plug and Play user interface provides a means to activate PnP devices
--for legacy and user level drivers that do not support Linux Plug and Play.  The 
-+for legacy and user level drivers that do not support Linux Plug and Play.  The
- user interface is integrated into sysfs.
- 
- In addition to the standard sysfs file the following are created in each
-@@ -113,9 +115,9 @@ The Unified Plug and Play Layer
- -------------------------------
- 
- All Plug and Play drivers, protocols, and services meet at a central location
--called the Plug and Play Layer.  This layer is responsible for the exchange of 
--information between PnP drivers and PnP protocols.  Thus it automatically 
--forwards commands to the proper protocol.  This makes writing PnP drivers 
-+called the Plug and Play Layer.  This layer is responsible for the exchange of
-+information between PnP drivers and PnP protocols.  Thus it automatically
-+forwards commands to the proper protocol.  This makes writing PnP drivers
- significantly easier.
- 
- The following functions are available from the Plug and Play Layer:
-@@ -289,4 +291,3 @@ They are as follows::
- 				     unsigned short vendor,
- 				     unsigned short function,
- 				     struct pnp_dev *from)
--
-diff --git a/Documentation/preempt-locking.txt b/Documentation/preempt-locking.rst
-similarity index 99%
-rename from Documentation/preempt-locking.txt
-rename to Documentation/preempt-locking.rst
-index dce336134e54..4dfa1512a75b 100644
---- a/Documentation/preempt-locking.txt
-+++ b/Documentation/preempt-locking.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ===========================================================================
- Proper Locking Under a Preemptible Kernel: Keeping Kernel Code Preempt-Safe
- ===========================================================================
-@@ -16,7 +18,7 @@ requires explicit additional locking for very few additional situations.
- 
- This document is for all kernel hackers.  Developing code in the kernel
- requires protecting these situations.
-- 
-+
- 
- RULE #1: Per-CPU data structures need explicit protection
- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-diff --git a/Documentation/pwm.txt b/Documentation/pwm.rst
-similarity index 99%
-rename from Documentation/pwm.txt
-rename to Documentation/pwm.rst
-index 8fbf0aa3ba2d..78d06b7f5427 100644
---- a/Documentation/pwm.txt
-+++ b/Documentation/pwm.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ======================================
- Pulse Width Modulation (PWM) interface
- ======================================
-diff --git a/Documentation/rbtree.txt b/Documentation/rbtree.rst
-similarity index 94%
-rename from Documentation/rbtree.txt
-rename to Documentation/rbtree.rst
-index 523d54b60087..c0cbda408050 100644
---- a/Documentation/rbtree.txt
-+++ b/Documentation/rbtree.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- =================================
- Red-black Trees (rbtree) in Linux
- =================================
-@@ -62,8 +64,8 @@ Creating a new rbtree
- Data nodes in an rbtree tree are structures containing a struct rb_node member::
- 
-   struct mytype {
--  	struct rb_node node;
--  	char *keystring;
-+	struct rb_node node;
-+	char *keystring;
-   };
- 
- When dealing with a pointer to the embedded struct rb_node, the containing data
-@@ -85,20 +87,20 @@ Example::
- 
-   struct mytype *my_search(struct rb_root *root, char *string)
-   {
--  	struct rb_node *node = root->rb_node;
-+	struct rb_node *node = root->rb_node;
- 
--  	while (node) {
--  		struct mytype *data = container_of(node, struct mytype, node);
-+	while (node) {
-+		struct mytype *data = container_of(node, struct mytype, node);
- 		int result;
- 
- 		result = strcmp(string, data->keystring);
- 
- 		if (result < 0)
--  			node = node->rb_left;
-+			node = node->rb_left;
- 		else if (result > 0)
--  			node = node->rb_right;
-+			node = node->rb_right;
- 		else
--  			return data;
-+			return data;
- 	}
- 	return NULL;
-   }
-@@ -117,25 +119,25 @@ Example::
- 
-   int my_insert(struct rb_root *root, struct mytype *data)
-   {
--  	struct rb_node **new = &(root->rb_node), *parent = NULL;
-+	struct rb_node **new = &(root->rb_node), *parent = NULL;
- 
--  	/* Figure out where to put new node */
--  	while (*new) {
--  		struct mytype *this = container_of(*new, struct mytype, node);
--  		int result = strcmp(data->keystring, this->keystring);
-+	/* Figure out where to put new node */
-+	while (*new) {
-+		struct mytype *this = container_of(*new, struct mytype, node);
-+		int result = strcmp(data->keystring, this->keystring);
- 
- 		parent = *new;
--  		if (result < 0)
--  			new = &((*new)->rb_left);
--  		else if (result > 0)
--  			new = &((*new)->rb_right);
--  		else
--  			return FALSE;
--  	}
-+		if (result < 0)
-+			new = &((*new)->rb_left);
-+		else if (result > 0)
-+			new = &((*new)->rb_right);
-+		else
-+			return FALSE;
-+	}
- 
--  	/* Add new node and rebalance tree. */
--  	rb_link_node(&data->node, parent, new);
--  	rb_insert_color(&data->node, root);
-+	/* Add new node and rebalance tree. */
-+	rb_link_node(&data->node, parent, new);
-+	rb_insert_color(&data->node, root);
- 
- 	return TRUE;
-   }
-@@ -152,14 +154,14 @@ Example::
-   struct mytype *data = mysearch(&mytree, "walrus");
- 
-   if (data) {
--  	rb_erase(&data->node, &mytree);
--  	myfree(data);
-+	rb_erase(&data->node, &mytree);
-+	myfree(data);
-   }
- 
- To replace an existing node in a tree with a new one with the same key, call::
- 
-   void rb_replace_node(struct rb_node *old, struct rb_node *new,
--  			struct rb_root *tree);
-+			struct rb_root *tree);
- 
- Replacing a node this way does not re-sort the tree: If the new node doesn't
- have the same key as the old node, the rbtree will probably become corrupted.
-diff --git a/Documentation/remoteproc.txt b/Documentation/remoteproc.rst
-similarity index 99%
-rename from Documentation/remoteproc.txt
-rename to Documentation/remoteproc.rst
-index 77fb03acdbb4..71eb7728fcf3 100644
---- a/Documentation/remoteproc.txt
-+++ b/Documentation/remoteproc.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ==========================
- Remote Processor Framework
- ==========================
-@@ -22,7 +24,7 @@ for remote processors that supports this kind of communication. This way,
- platform-specific remoteproc drivers only need to provide a few low-level
- handlers, and then all rpmsg drivers will then just work
- (for more information about the virtio-based rpmsg bus and its drivers,
--please read Documentation/rpmsg.txt).
-+please read Documentation/rpmsg.rst).
- Registration of other types of virtio devices is now also possible. Firmwares
- just need to publish what kind of virtio devices do they support, and then
- remoteproc will add those devices. This makes it possible to reuse the
-diff --git a/Documentation/rfkill.txt b/Documentation/rfkill.rst
-similarity index 99%
-rename from Documentation/rfkill.txt
-rename to Documentation/rfkill.rst
-index 7d3684e81df6..4da9994e9bb4 100644
---- a/Documentation/rfkill.txt
-+++ b/Documentation/rfkill.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ===============================
- rfkill - RF kill switch support
- ===============================
-diff --git a/Documentation/robust-futex-ABI.txt b/Documentation/robust-futex-ABI.rst
-similarity index 99%
-rename from Documentation/robust-futex-ABI.txt
-rename to Documentation/robust-futex-ABI.rst
-index 8a5d34abf726..6d359b46610c 100644
---- a/Documentation/robust-futex-ABI.txt
-+++ b/Documentation/robust-futex-ABI.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ====================
- The robust futex ABI
- ====================
-diff --git a/Documentation/robust-futexes.txt b/Documentation/robust-futexes.rst
-similarity index 99%
-rename from Documentation/robust-futexes.txt
-rename to Documentation/robust-futexes.rst
-index 6361fb01c9c1..20beef77597a 100644
---- a/Documentation/robust-futexes.txt
-+++ b/Documentation/robust-futexes.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ========================================
- A description of what robust futexes are
- ========================================
-diff --git a/Documentation/rpmsg.txt b/Documentation/rpmsg.rst
-similarity index 99%
-rename from Documentation/rpmsg.txt
-rename to Documentation/rpmsg.rst
-index 24b7a9e1a5f9..ad53931f3e43 100644
---- a/Documentation/rpmsg.txt
-+++ b/Documentation/rpmsg.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ============================================
- Remote Processor Messaging (rpmsg) Framework
- ============================================
-diff --git a/Documentation/rtc.txt b/Documentation/rtc.rst
-similarity index 99%
-rename from Documentation/rtc.txt
-rename to Documentation/rtc.rst
-index 688c95b11919..6893bb5cf0ef 100644
---- a/Documentation/rtc.txt
-+++ b/Documentation/rtc.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- =======================================
- Real Time Clock (RTC) Drivers for Linux
- =======================================
-@@ -86,9 +88,9 @@ a different value to /proc/sys/dev/rtc/max-user-freq. Note that the
- interrupt handler is only a few lines of code to minimize any possibility
- of this effect.
- 
--Also, if the kernel time is synchronized with an external source, the 
--kernel will write the time back to the CMOS clock every 11 minutes. In 
--the process of doing this, the kernel briefly turns off RTC periodic 
-+Also, if the kernel time is synchronized with an external source, the
-+kernel will write the time back to the CMOS clock every 11 minutes. In
-+the process of doing this, the kernel briefly turns off RTC periodic
- interrupts, so be aware of this if you are doing serious work. If you
- don't synchronize the kernel time with an external source (via ntp or
- whatever) then the kernel will keep its hands off the RTC, allowing you
-diff --git a/Documentation/s390/vfio-ccw.rst b/Documentation/s390/vfio-ccw.rst
-index 1f6d0b56d53e..87b5bb49b2f3 100644
---- a/Documentation/s390/vfio-ccw.rst
-+++ b/Documentation/s390/vfio-ccw.rst
-@@ -38,7 +38,7 @@ every detail. More information/reference could be found here:
-   qemu/hw/s390x/css.c
- 
- For vfio mediated device framework:
--- Documentation/vfio-mediated-device.txt
-+- Documentation/vfio-mediated-device.rst
- 
- Motivation of vfio-ccw
- ----------------------
-@@ -322,5 +322,5 @@ Reference
- 2. ESA/390 Common I/O Device Commands manual (IBM Form. No. SA22-7204)
- 3. https://en.wikipedia.org/wiki/Channel_I/O
- 4. Documentation/s390/cds.rst
--5. Documentation/vfio.txt
--6. Documentation/vfio-mediated-device.txt
-+5. Documentation/vfio.rst
-+6. Documentation/vfio-mediated-device.rst
-diff --git a/Documentation/sgi-ioc4.txt b/Documentation/sgi-ioc4.rst
-similarity index 99%
-rename from Documentation/sgi-ioc4.txt
-rename to Documentation/sgi-ioc4.rst
-index 72709222d3c0..e6ed2e9b055b 100644
---- a/Documentation/sgi-ioc4.txt
-+++ b/Documentation/sgi-ioc4.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ====================================
- SGI IOC4 PCI (multi function) device
- ====================================
-diff --git a/Documentation/siphash.txt b/Documentation/siphash.rst
-similarity index 99%
-rename from Documentation/siphash.txt
-rename to Documentation/siphash.rst
-index 9965821ab333..833eef3a7956 100644
---- a/Documentation/siphash.txt
-+++ b/Documentation/siphash.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ===========================
- SipHash - a short input PRF
- ===========================
-diff --git a/Documentation/smsc_ece1099.txt b/Documentation/smsc_ece1099.rst
-similarity index 99%
-rename from Documentation/smsc_ece1099.txt
-rename to Documentation/smsc_ece1099.rst
-index 079277421eaf..a403fcd7c64d 100644
---- a/Documentation/smsc_ece1099.txt
-+++ b/Documentation/smsc_ece1099.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- =================================================
- Msc Keyboard Scan Expansion/GPIO Expansion device
- =================================================
-diff --git a/Documentation/speculation.txt b/Documentation/speculation.rst
-similarity index 99%
-rename from Documentation/speculation.txt
-rename to Documentation/speculation.rst
-index 50d7ea857cff..e240f01b0983 100644
---- a/Documentation/speculation.txt
-+++ b/Documentation/speculation.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- This document explains potential effects of speculation, and how undesirable
- effects can be mitigated portably using common APIs.
- 
-diff --git a/Documentation/static-keys.txt b/Documentation/static-keys.rst
-similarity index 99%
-rename from Documentation/static-keys.txt
-rename to Documentation/static-keys.rst
-index 9803e14639bf..bdf545e3a37f 100644
---- a/Documentation/static-keys.txt
-+++ b/Documentation/static-keys.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ===========
- Static Keys
- ===========
-diff --git a/Documentation/svga.txt b/Documentation/svga.rst
-similarity index 99%
-rename from Documentation/svga.txt
-rename to Documentation/svga.rst
-index b6c2f9acca92..1bfd54d9fb59 100644
---- a/Documentation/svga.txt
-+++ b/Documentation/svga.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- .. include:: <isonum.txt>
- 
- =================================
-diff --git a/Documentation/switchtec.txt b/Documentation/switchtec.rst
-similarity index 98%
-rename from Documentation/switchtec.txt
-rename to Documentation/switchtec.rst
-index 30d6a64e53f7..6879c92de8e2 100644
---- a/Documentation/switchtec.txt
-+++ b/Documentation/switchtec.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ========================
- Linux Switchtec Support
- ========================
-@@ -97,6 +99,6 @@ the following configuration settings:
- NT EP BAR 2 will be dynamically configured as a Direct Window, and
- the configuration file does not need to configure it explicitly.
- 
--Please refer to Documentation/ntb.txt in Linux source tree for an overall
-+Please refer to Documentation/ntb.rst in Linux source tree for an overall
- understanding of the Linux NTB stack. ntb_hw_switchtec works as an NTB
- Hardware Driver in this stack.
-diff --git a/Documentation/sync_file.txt b/Documentation/sync_file.rst
-similarity index 99%
-rename from Documentation/sync_file.txt
-rename to Documentation/sync_file.rst
-index 496fb2c3b3e6..a65a67cc06fa 100644
---- a/Documentation/sync_file.txt
-+++ b/Documentation/sync_file.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ===================
- Sync File API Guide
- ===================
-diff --git a/Documentation/sysctl/kernel.txt b/Documentation/sysctl/kernel.txt
-index 92f7f34b021a..e6139d88f819 100644
++===========================
++Documentation for /proc/sys
++===========================
++
++Copyright (c) 1998, 1999,  Rik van Riel <riel@nl.linux.org>
++
++------------------------------------------------------------------------------
+ 
+ 'Why', I hear you ask, 'would anyone even _want_ documentation
+ for them sysctl files? If anybody really needs it, it's all in
+@@ -12,11 +19,12 @@ have the time or knowledge to read the source code.
+ Furthermore, the programmers who built sysctl have built it to
+ be actually used, not just for the fun of programming it :-)
+ 
+-==============================================================
++------------------------------------------------------------------------------
+ 
+ Legal blurb:
+ 
+ As usual, there are two main things to consider:
++
+ 1. you get what you pay for
+ 2. it's free
+ 
+@@ -35,15 +43,17 @@ stories to: <riel@nl.linux.org>
+ 
+ Rik van Riel.
+ 
+-==============================================================
++--------------------------------------------------------------
+ 
+-Introduction:
++Introduction
++============
+ 
+ Sysctl is a means of configuring certain aspects of the kernel
+ at run-time, and the /proc/sys/ directory is there so that you
+ don't even need special tools to do it!
+ In fact, there are only four things needed to use these config
+ facilities:
++
+ - a running Linux system
+ - root access
+ - common sense (this is especially hard to come by these days)
+@@ -54,7 +64,9 @@ several (arch-dependent?) subdirs. Each subdir is mainly about
+ one part of the kernel, so you can do configuration on a piece
+ by piece basis, or just some 'thematic frobbing'.
+ 
+-The subdirs are about:
++This documentation is about:
++
++=============== ===============================================================
+ abi/		execution domains & personalities
+ debug/		<empty>
+ dev/		device specific information (eg dev/cdrom/info)
+@@ -70,7 +82,19 @@ sunrpc/		SUN Remote Procedure Call (NFS)
+ vm/		memory management tuning
+ 		buffer and cache management
+ user/		Per user per user namespace limits
++=============== ===============================================================
+ 
+ These are the subdirs I have on my system. There might be more
+ or other subdirs in another setup. If you see another dir, I'd
+ really like to hear about it :-)
++
++.. toctree::
++   :maxdepth: 1
++
++   abi
++   fs
++   kernel
++   net
++   sunrpc
++   user
++   vm
+diff --git a/Documentation/sysctl/kernel.txt b/Documentation/sysctl/kernel.rst
+similarity index 79%
+rename from Documentation/sysctl/kernel.txt
+rename to Documentation/sysctl/kernel.rst
+index e6139d88f819..29a5bbca9bee 100644
 --- a/Documentation/sysctl/kernel.txt
-+++ b/Documentation/sysctl/kernel.txt
-@@ -44,7 +44,7 @@ show up in /proc/sys/kernel:
- - kexec_load_disabled
- - kptr_restrict
- - l2cr                        [ PPC only ]
--- modprobe                    ==> Documentation/debugging-modules.txt
-+- modprobe                    ==> Documentation/debugging-modules.rst
- - modules_disabled
- - msg_next_id		      [ sysv ipc ]
- - msgmax
-@@ -327,7 +327,7 @@ when a hard lockup is detected.
-    0 - don't panic on hard lockup
-    1 - panic on hard lockup
++++ b/Documentation/sysctl/kernel.rst
+@@ -1,10 +1,16 @@
+-Documentation for /proc/sys/kernel/*	kernel version 2.2.10
+-	(c) 1998, 1999,  Rik van Riel <riel@nl.linux.org>
+-	(c) 2009,        Shen Feng<shen@cn.fujitsu.com>
++===================================
++Documentation for /proc/sys/kernel/
++===================================
  
--See Documentation/lockup-watchdogs.txt for more information.  This can
-+See Documentation/lockup-watchdogs.rst for more information.  This can
+-For general info and legal blurb, please look in README.
++kernel version 2.2.10
+ 
+-==============================================================
++Copyright (c) 1998, 1999,  Rik van Riel <riel@nl.linux.org>
++
++Copyright (c) 2009,        Shen Feng<shen@cn.fujitsu.com>
++
++For general info and legal blurb, please look in index.rst.
++
++------------------------------------------------------------------------------
+ 
+ This file contains documentation for the sysctl files in
+ /proc/sys/kernel/ and is valid for Linux kernel version 2.2.
+@@ -102,9 +108,9 @@ show up in /proc/sys/kernel:
+ - watchdog_thresh
+ - version
+ 
+-==============================================================
+ 
+ acct:
++=====
+ 
+ highwater lowwater frequency
+ 
+@@ -119,18 +125,18 @@ That is, suspend accounting if there left <= 2% free; resume it
+ if we got >=4%; consider information about amount of free space
+ valid for 30 seconds.
+ 
+-==============================================================
+ 
+ acpi_video_flags:
++=================
+ 
+ flags
+ 
+ See Doc*/kernel/power/video.txt, it allows mode of video boot to be
+ set during run time.
+ 
+-==============================================================
+ 
+ auto_msgmni:
++============
+ 
+ This variable has no effect and may be removed in future kernel
+ releases. Reading it always returns 0.
+@@ -140,9 +146,8 @@ Echoing "1" into this file enabled msgmni automatic recomputing.
+ Echoing "0" turned it off. auto_msgmni default value was 1.
+ 
+ 
+-==============================================================
+-
+ bootloader_type:
++================
+ 
+ x86 bootloader identification
+ 
+@@ -157,9 +162,9 @@ the value 340 = 0x154.
+ See the type_of_loader and ext_loader_type fields in
+ Documentation/x86/boot.rst for additional information.
+ 
+-==============================================================
+ 
+ bootloader_version:
++===================
+ 
+ x86 bootloader version
+ 
+@@ -169,9 +174,9 @@ file will contain the value 564 = 0x234.
+ See the type_of_loader and ext_loader_ver fields in
+ Documentation/x86/boot.rst for additional information.
+ 
+-==============================================================
+ 
+ callhome:
++=========
+ 
+ Controls the kernel's callhome behavior in case of a kernel panic.
+ 
+@@ -184,27 +189,31 @@ the complete kernel oops message is send to the IBM customer service
+ organization in case the mainframe the Linux operating system is running
+ on has a service contract with IBM.
+ 
+-==============================================================
+ 
+-cap_last_cap
++cap_last_cap:
++=============
+ 
+ Highest valid capability of the running kernel.  Exports
+ CAP_LAST_CAP from the kernel.
+ 
+-==============================================================
+ 
+ core_pattern:
++=============
+ 
+ core_pattern is used to specify a core dumpfile pattern name.
+-. max length 127 characters; default value is "core"
+-. core_pattern is used as a pattern template for the output filename;
++
++* max length 127 characters; default value is "core"
++* core_pattern is used as a pattern template for the output filename;
+   certain string patterns (beginning with '%') are substituted with
+   their actual values.
+-. backward compatibility with core_uses_pid:
++* backward compatibility with core_uses_pid:
++
+ 	If core_pattern does not include "%p" (default does not)
+ 	and core_uses_pid is set, then .PID will be appended to
+ 	the filename.
+-. corename format specifiers:
++
++* corename format specifiers::
++
+ 	%<NUL>	'%' is dropped
+ 	%%	output one '%'
+ 	%p	pid
+@@ -221,13 +230,14 @@ core_pattern is used to specify a core dumpfile pattern name.
+ 	%e	executable filename (may be shortened)
+ 	%E	executable path
+ 	%<OTHER> both are dropped
+-. If the first character of the pattern is a '|', the kernel will treat
++
++* If the first character of the pattern is a '|', the kernel will treat
+   the rest of the pattern as a command to run.  The core dump will be
+   written to the standard input of that program instead of to a file.
+ 
+-==============================================================
+ 
+ core_pipe_limit:
++================
+ 
+ This sysctl is only applicable when core_pattern is configured to pipe
+ core files to a user space helper (when the first character of
+@@ -248,9 +258,9 @@ parallel, but that no waiting will take place (i.e. the collecting
+ process is not guaranteed access to /proc/<crashing pid>/).  This
+ value defaults to 0.
+ 
+-==============================================================
+ 
+ core_uses_pid:
++==============
+ 
+ The default coredump filename is "core".  By setting
+ core_uses_pid to 1, the coredump filename becomes core.PID.
+@@ -258,9 +268,9 @@ If core_pattern does not include "%p" (default does not)
+ and core_uses_pid is set, then .PID will be appended to
+ the filename.
+ 
+-==============================================================
+ 
+ ctrl-alt-del:
++=============
+ 
+ When the value in this file is 0, ctrl-alt-del is trapped and
+ sent to the init(1) program to handle a graceful restart.
+@@ -268,14 +278,15 @@ When, however, the value is > 0, Linux's reaction to a Vulcan
+ Nerve Pinch (tm) will be an immediate reboot, without even
+ syncing its dirty buffers.
+ 
+-Note: when a program (like dosemu) has the keyboard in 'raw'
+-mode, the ctrl-alt-del is intercepted by the program before it
+-ever reaches the kernel tty layer, and it's up to the program
+-to decide what to do with it.
++Note:
++  when a program (like dosemu) has the keyboard in 'raw'
++  mode, the ctrl-alt-del is intercepted by the program before it
++  ever reaches the kernel tty layer, and it's up to the program
++  to decide what to do with it.
+ 
+-==============================================================
+ 
+ dmesg_restrict:
++===============
+ 
+ This toggle indicates whether unprivileged users are prevented
+ from using dmesg(8) to view messages from the kernel's log buffer.
+@@ -286,18 +297,21 @@ dmesg(8).
+ The kernel config option CONFIG_SECURITY_DMESG_RESTRICT sets the
+ default value of dmesg_restrict.
+ 
+-==============================================================
+ 
+ domainname & hostname:
++======================
+ 
+ These files can be used to set the NIS/YP domainname and the
+ hostname of your box in exactly the same way as the commands
+-domainname and hostname, i.e.:
+-# echo "darkstar" > /proc/sys/kernel/hostname
+-# echo "mydomain" > /proc/sys/kernel/domainname
+-has the same effect as
+-# hostname "darkstar"
+-# domainname "mydomain"
++domainname and hostname, i.e.::
++
++	# echo "darkstar" > /proc/sys/kernel/hostname
++	# echo "mydomain" > /proc/sys/kernel/domainname
++
++has the same effect as::
++
++	# hostname "darkstar"
++	# domainname "mydomain"
+ 
+ Note, however, that the classic darkstar.frop.org has the
+ hostname "darkstar" and DNS (Internet Domain Name Server)
+@@ -306,8 +320,9 @@ Information Service) or YP (Yellow Pages) domainname. These two
+ domain names are in general different. For a detailed discussion
+ see the hostname(1) man page.
+ 
+-==============================================================
++
+ hardlockup_all_cpu_backtrace:
++=============================
+ 
+ This value controls the hard lockup detector behavior when a hard
+ lockup condition is detected as to whether or not to gather further
+@@ -317,9 +332,10 @@ will be initiated.
+ 0: do nothing. This is the default behavior.
+ 
+ 1: on detection capture more debug information.
+-==============================================================
++
+ 
+ hardlockup_panic:
++=================
+ 
+ This parameter can be used to control whether the kernel panics
+ when a hard lockup is detected.
+@@ -330,16 +346,16 @@ when a hard lockup is detected.
+ See Documentation/lockup-watchdogs.rst for more information.  This can
  also be set using the nmi_watchdog kernel parameter.
  
+-==============================================================
+ 
+ hotplug:
++========
+ 
+ Path for the hotplug policy agent.
+ Default value is "/sbin/hotplug".
+ 
+-==============================================================
+ 
+ hung_task_panic:
++================
+ 
+ Controls the kernel's behavior when a hung task is detected.
+ This file shows up if CONFIG_DETECT_HUNG_TASK is enabled.
+@@ -348,27 +364,28 @@ This file shows up if CONFIG_DETECT_HUNG_TASK is enabled.
+ 
+ 1: panic immediately.
+ 
+-==============================================================
+ 
+ hung_task_check_count:
++======================
+ 
+ The upper bound on the number of tasks that are checked.
+ This file shows up if CONFIG_DETECT_HUNG_TASK is enabled.
+ 
+-==============================================================
+ 
+ hung_task_timeout_secs:
++=======================
+ 
+ When a task in D state did not get scheduled
+ for more than this value report a warning.
+ This file shows up if CONFIG_DETECT_HUNG_TASK is enabled.
+ 
+ 0: means infinite timeout - no checking done.
++
+ Possible values to set are in range {0..LONG_MAX/HZ}.
+ 
+-==============================================================
+ 
+ hung_task_check_interval_secs:
++==============================
+ 
+ Hung task check interval. If hung task checking is enabled
+ (see hung_task_timeout_secs), the check is done every
+@@ -378,9 +395,9 @@ This file shows up if CONFIG_DETECT_HUNG_TASK is enabled.
+ 0 (default): means use hung_task_timeout_secs as checking interval.
+ Possible values to set are in range {0..LONG_MAX/HZ}.
+ 
+-==============================================================
+ 
+ hung_task_warnings:
++===================
+ 
+ The maximum number of warnings to report. During a check interval
+ if a hung task is detected, this value is decreased by 1.
+@@ -389,9 +406,9 @@ This file shows up if CONFIG_DETECT_HUNG_TASK is enabled.
+ 
+ -1: report an infinite number of warnings.
+ 
+-==============================================================
+ 
+ hyperv_record_panic_msg:
++========================
+ 
+ Controls whether the panic kmsg data should be reported to Hyper-V.
+ 
+@@ -399,9 +416,9 @@ Controls whether the panic kmsg data should be reported to Hyper-V.
+ 
+ 1: report the panic kmsg data. This is the default behavior.
+ 
+-==============================================================
+ 
+ kexec_load_disabled:
++====================
+ 
+ A toggle indicating if the kexec_load syscall has been disabled. This
+ value defaults to 0 (false: kexec_load enabled), but can be set to 1
+@@ -411,9 +428,9 @@ loaded before disabling the syscall, allowing a system to set up (and
+ later use) an image without it being altered. Generally used together
+ with the "modules_disabled" sysctl.
+ 
+-==============================================================
+ 
+ kptr_restrict:
++==============
+ 
+ This toggle indicates whether restrictions are placed on
+ exposing kernel addresses via /proc and other interfaces.
+@@ -436,16 +453,16 @@ values to unprivileged users is a concern.
+ When kptr_restrict is set to (2), kernel pointers printed using
+ %pK will be replaced with 0's regardless of privileges.
+ 
+-==============================================================
+ 
+ l2cr: (PPC only)
++================
+ 
+ This flag controls the L2 cache of G3 processor boards. If
+ 0, the cache is disabled. Enabled if nonzero.
+ 
+-==============================================================
+ 
+ modules_disabled:
++=================
+ 
+ A toggle value indicating if modules are allowed to be loaded
+ in an otherwise modular kernel.  This toggle defaults to off
+@@ -453,9 +470,9 @@ in an otherwise modular kernel.  This toggle defaults to off
+ neither loaded nor unloaded, and the toggle cannot be set back
+ to false.  Generally used with the "kexec_load_disabled" toggle.
+ 
+-==============================================================
+ 
+ msg_next_id, sem_next_id, and shm_next_id:
++==========================================
+ 
+ These three toggles allows to specify desired id for next allocated IPC
+ object: message, semaphore or shared memory respectively.
+@@ -464,21 +481,22 @@ By default they are equal to -1, which means generic allocation logic.
+ Possible values to set are in range {0..INT_MAX}.
+ 
+ Notes:
+-1) kernel doesn't guarantee, that new object will have desired id. So,
+-it's up to userspace, how to handle an object with "wrong" id.
+-2) Toggle with non-default value will be set back to -1 by kernel after
+-successful IPC object allocation. If an IPC object allocation syscall
+-fails, it is undefined if the value remains unmodified or is reset to -1.
++  1) kernel doesn't guarantee, that new object will have desired id. So,
++     it's up to userspace, how to handle an object with "wrong" id.
++  2) Toggle with non-default value will be set back to -1 by kernel after
++     successful IPC object allocation. If an IPC object allocation syscall
++     fails, it is undefined if the value remains unmodified or is reset to -1.
+ 
+-==============================================================
+ 
+ nmi_watchdog:
++=============
+ 
+ This parameter can be used to control the NMI watchdog
+ (i.e. the hard lockup detector) on x86 systems.
+ 
+-   0 - disable the hard lockup detector
+-   1 - enable the hard lockup detector
++0 - disable the hard lockup detector
++
++1 - enable the hard lockup detector
+ 
+ The hard lockup detector monitors each CPU for its ability to respond to
+ timer interrupts. The mechanism utilizes CPU performance counter registers
+@@ -486,15 +504,15 @@ that are programmed to generate Non-Maskable Interrupts (NMIs) periodically
+ while a CPU is busy. Hence, the alternative name 'NMI watchdog'.
+ 
+ The NMI watchdog is disabled by default if the kernel is running as a guest
+-in a KVM virtual machine. This default can be overridden by adding
++in a KVM virtual machine. This default can be overridden by adding::
+ 
+    nmi_watchdog=1
+ 
+ to the guest kernel command line (see Documentation/admin-guide/kernel-parameters.rst).
+ 
+-==============================================================
+ 
+-numa_balancing
++numa_balancing:
++===============
+ 
+ Enables/disables automatic page fault based NUMA memory
+ balancing. Memory is moved automatically to nodes
+@@ -516,10 +534,9 @@ faults may be controlled by the numa_balancing_scan_period_min_ms,
+ numa_balancing_scan_delay_ms, numa_balancing_scan_period_max_ms,
+ numa_balancing_scan_size_mb, and numa_balancing_settle_count sysctls.
+ 
+-==============================================================
++numa_balancing_scan_period_min_ms, numa_balancing_scan_delay_ms, numa_balancing_scan_period_max_ms, numa_balancing_scan_size_mb
++===============================================================================================================================
+ 
+-numa_balancing_scan_period_min_ms, numa_balancing_scan_delay_ms,
+-numa_balancing_scan_period_max_ms, numa_balancing_scan_size_mb
+ 
+ Automatic NUMA balancing scans tasks address space and unmaps pages to
+ detect if pages are properly placed or if the data should be migrated to a
+@@ -555,16 +572,18 @@ rate for each task.
+ numa_balancing_scan_size_mb is how many megabytes worth of pages are
+ scanned for a given scan.
+ 
+-==============================================================
+ 
+ osrelease, ostype & version:
++============================
+ 
+-# cat osrelease
+-2.1.88
+-# cat ostype
+-Linux
+-# cat version
+-#5 Wed Feb 25 21:49:24 MET 1998
++::
++
++  # cat osrelease
++  2.1.88
++  # cat ostype
++  Linux
++  # cat version
++  #5 Wed Feb 25 21:49:24 MET 1998
+ 
+ The files osrelease and ostype should be clear enough. Version
+ needs a little more clarification however. The '#5' means that
+@@ -572,9 +591,9 @@ this is the fifth kernel built from this source base and the
+ date behind it indicates the time the kernel was built.
+ The only way to tune these values is to rebuild the kernel :-)
+ 
+-==============================================================
+ 
+ overflowgid & overflowuid:
++==========================
+ 
+ if your architecture did not always support 32-bit UIDs (i.e. arm,
+ i386, m68k, sh, and sparc32), a fixed UID and GID will be returned to
+@@ -584,17 +603,17 @@ actual UID or GID would exceed 65535.
+ These sysctls allow you to change the value of the fixed UID and GID.
+ The default is 65534.
+ 
+-==============================================================
+ 
+ panic:
++======
+ 
+ The value in this file represents the number of seconds the kernel
+ waits before rebooting on a panic. When you use the software watchdog,
+ the recommended setting is 60.
+ 
+-==============================================================
+ 
+ panic_on_io_nmi:
++================
+ 
+ Controls the kernel's behavior when a CPU receives an NMI caused by
+ an IO error.
+@@ -607,20 +626,20 @@ an IO error.
+    servers issue this sort of NMI when the dump button is pushed,
+    and you can use this option to take a crash dump.
+ 
+-==============================================================
+ 
+ panic_on_oops:
++==============
+ 
+ Controls the kernel's behaviour when an oops or BUG is encountered.
+ 
+ 0: try to continue operation
+ 
+-1: panic immediately.  If the `panic' sysctl is also non-zero then the
++1: panic immediately.  If the `panic` sysctl is also non-zero then the
+    machine will be rebooted.
+ 
+-==============================================================
+ 
+ panic_on_stackoverflow:
++=======================
+ 
+ Controls the kernel's behavior when detecting the overflows of
+ kernel, IRQ and exception stacks except a user stack.
+@@ -630,9 +649,9 @@ This file shows up if CONFIG_DEBUG_STACKOVERFLOW is enabled.
+ 
+ 1: panic immediately.
+ 
+-==============================================================
+ 
+ panic_on_unrecovered_nmi:
++=========================
+ 
+ The default Linux behaviour on an NMI of either memory or unknown is
+ to continue operation. For many environments such as scientific
+@@ -643,9 +662,9 @@ A small number of systems do generate NMI's for bizarre random reasons
+ such as power management so the default is off. That sysctl works like
+ the existing panic controls already in that directory.
+ 
+-==============================================================
+ 
+ panic_on_warn:
++==============
+ 
+ Calls panic() in the WARN() path when set to 1.  This is useful to avoid
+ a kernel rebuild when attempting to kdump at the location of a WARN().
+@@ -654,25 +673,28 @@ a kernel rebuild when attempting to kdump at the location of a WARN().
+ 
+ 1: call panic() after printing out WARN() location.
+ 
+-==============================================================
+ 
+ panic_print:
++============
+ 
+ Bitmask for printing system info when panic happens. User can chose
+ combination of the following bits:
+ 
+-bit 0: print all tasks info
+-bit 1: print system memory info
+-bit 2: print timer info
+-bit 3: print locks info if CONFIG_LOCKDEP is on
+-bit 4: print ftrace buffer
++=====  ========================================
++bit 0  print all tasks info
++bit 1  print system memory info
++bit 2  print timer info
++bit 3  print locks info if CONFIG_LOCKDEP is on
++bit 4  print ftrace buffer
++=====  ========================================
++
++So for example to print tasks and memory info on panic, user can::
+ 
+-So for example to print tasks and memory info on panic, user can:
+   echo 3 > /proc/sys/kernel/panic_print
+ 
+-==============================================================
+ 
+ panic_on_rcu_stall:
++===================
+ 
+ When set to 1, calls panic() after RCU stall detection messages. This
+ is useful to define the root cause of RCU stalls using a vmcore.
+@@ -681,9 +703,9 @@ is useful to define the root cause of RCU stalls using a vmcore.
+ 
+ 1: panic() after printing RCU stall messages.
+ 
+-==============================================================
+ 
+ perf_cpu_time_max_percent:
++==========================
+ 
+ Hints to the kernel how much CPU time it should be allowed to
+ use to handle perf sampling events.  If the perf subsystem
+@@ -696,10 +718,12 @@ unexpectedly take too long to execute, the NMIs can become
+ stacked up next to each other so much that nothing else is
+ allowed to execute.
+ 
+-0: disable the mechanism.  Do not monitor or correct perf's
++0:
++   disable the mechanism.  Do not monitor or correct perf's
+    sampling rate no matter how CPU time it takes.
+ 
+-1-100: attempt to throttle perf's sample rate to this
++1-100:
++   attempt to throttle perf's sample rate to this
+    percentage of CPU.  Note: the kernel calculates an
+    "expected" length of each sample event.  100 here means
+    100% of that expected length.  Even if this is set to
+@@ -707,23 +731,30 @@ allowed to execute.
+    length is exceeded.  Set to 0 if you truly do not care
+    how much CPU is consumed.
+ 
+-==============================================================
+ 
+ perf_event_paranoid:
++====================
+ 
+ Controls use of the performance events system by unprivileged
+ users (without CAP_SYS_ADMIN).  The default value is 2.
+ 
+- -1: Allow use of (almost) all events by all users
++===  ==================================================================
++ -1  Allow use of (almost) all events by all users
++
+      Ignore mlock limit after perf_event_mlock_kb without CAP_IPC_LOCK
+->=0: Disallow ftrace function tracepoint by users without CAP_SYS_ADMIN
++
++>=0  Disallow ftrace function tracepoint by users without CAP_SYS_ADMIN
++
+      Disallow raw tracepoint access by users without CAP_SYS_ADMIN
+->=1: Disallow CPU event access by users without CAP_SYS_ADMIN
+->=2: Disallow kernel profiling by users without CAP_SYS_ADMIN
+ 
+-==============================================================
++>=1  Disallow CPU event access by users without CAP_SYS_ADMIN
++
++>=2  Disallow kernel profiling by users without CAP_SYS_ADMIN
++===  ==================================================================
++
+ 
+ perf_event_max_stack:
++=====================
+ 
+ Controls maximum number of stack frames to copy for (attr.sample_type &
+ PERF_SAMPLE_CALLCHAIN) configured events, for instance, when using
+@@ -734,17 +765,17 @@ enabled, otherwise writing to this file will return -EBUSY.
+ 
+ The default value is 127.
+ 
+-==============================================================
+ 
+ perf_event_mlock_kb:
++====================
+ 
+ Control size of per-cpu ring buffer not counted agains mlock limit.
+ 
+ The default value is 512 + 1 page
+ 
+-==============================================================
+ 
+ perf_event_max_contexts_per_stack:
++==================================
+ 
+ Controls maximum number of stack frame context entries for
+ (attr.sample_type & PERF_SAMPLE_CALLCHAIN) configured events, for
+@@ -755,25 +786,25 @@ enabled, otherwise writing to this file will return -EBUSY.
+ 
+ The default value is 8.
+ 
+-==============================================================
+ 
+ pid_max:
++========
+ 
+ PID allocation wrap value.  When the kernel's next PID value
+ reaches this value, it wraps back to a minimum PID value.
+ PIDs of value pid_max or larger are not allocated.
+ 
+-==============================================================
+ 
+ ns_last_pid:
++============
+ 
+ The last pid allocated in the current (the one task using this sysctl
+ lives in) pid namespace. When selecting a pid for a next task on fork
+ kernel tries to allocate a number starting from this one.
+ 
+-==============================================================
+ 
+ powersave-nap: (PPC only)
++=========================
+ 
+ If set, Linux-PPC will use the 'nap' mode of powersaving,
+ otherwise the 'doze' mode will be used.
+@@ -781,6 +812,7 @@ otherwise the 'doze' mode will be used.
  ==============================================================
-diff --git a/Documentation/sysctl/vm.txt b/Documentation/sysctl/vm.txt
-index c5f0d44433a2..046691580ba6 100644
+ 
+ printk:
++=======
+ 
+ The four values in printk denote: console_loglevel,
+ default_message_loglevel, minimum_console_loglevel and
+@@ -790,25 +822,29 @@ These values influence printk() behavior when printing or
+ logging error messages. See 'man 2 syslog' for more info on
+ the different loglevels.
+ 
+-- console_loglevel: messages with a higher priority than
+-  this will be printed to the console
+-- default_message_loglevel: messages without an explicit priority
+-  will be printed with this priority
+-- minimum_console_loglevel: minimum (highest) value to which
+-  console_loglevel can be set
+-- default_console_loglevel: default value for console_loglevel
++- console_loglevel:
++	messages with a higher priority than
++	this will be printed to the console
++- default_message_loglevel:
++	messages without an explicit priority
++	will be printed with this priority
++- minimum_console_loglevel:
++	minimum (highest) value to which
++	console_loglevel can be set
++- default_console_loglevel:
++	default value for console_loglevel
+ 
+-==============================================================
+ 
+ printk_delay:
++=============
+ 
+ Delay each printk message in printk_delay milliseconds
+ 
+ Value from 0 - 10000 is allowed.
+ 
+-==============================================================
+ 
+ printk_ratelimit:
++=================
+ 
+ Some warning messages are rate limited. printk_ratelimit specifies
+ the minimum length of time between these messages (in jiffies), by
+@@ -816,48 +852,52 @@ default we allow one every 5 seconds.
+ 
+ A value of 0 will disable rate limiting.
+ 
+-==============================================================
+ 
+ printk_ratelimit_burst:
++=======================
+ 
+ While long term we enforce one message per printk_ratelimit
+ seconds, we do allow a burst of messages to pass through.
+ printk_ratelimit_burst specifies the number of messages we can
+ send before ratelimiting kicks in.
+ 
+-==============================================================
+ 
+ printk_devkmsg:
++===============
+ 
+ Control the logging to /dev/kmsg from userspace:
+ 
+-ratelimit: default, ratelimited
++ratelimit:
++	default, ratelimited
++
+ on: unlimited logging to /dev/kmsg from userspace
++
+ off: logging to /dev/kmsg disabled
+ 
+ The kernel command line parameter printk.devkmsg= overrides this and is
+ a one-time setting until next reboot: once set, it cannot be changed by
+ this sysctl interface anymore.
+ 
+-==============================================================
+ 
+ randomize_va_space:
++===================
+ 
+ This option can be used to select the type of process address
+ space randomization that is used in the system, for architectures
+ that support this feature.
+ 
+-0 - Turn the process address space randomization off.  This is the
++==  ===========================================================================
++0   Turn the process address space randomization off.  This is the
+     default for architectures that do not support this feature anyways,
+     and kernels that are booted with the "norandmaps" parameter.
+ 
+-1 - Make the addresses of mmap base, stack and VDSO page randomized.
++1   Make the addresses of mmap base, stack and VDSO page randomized.
+     This, among other things, implies that shared libraries will be
+     loaded to random addresses.  Also for PIE-linked binaries, the
+     location of code start is randomized.  This is the default if the
+     CONFIG_COMPAT_BRK option is enabled.
+ 
+-2 - Additionally enable heap randomization.  This is the default if
++2   Additionally enable heap randomization.  This is the default if
+     CONFIG_COMPAT_BRK is disabled.
+ 
+     There are a few legacy applications out there (such as some ancient
+@@ -870,18 +910,19 @@ that support this feature.
+     Systems with ancient and/or broken binaries should be configured
+     with CONFIG_COMPAT_BRK enabled, which excludes the heap from process
+     address space randomization.
++==  ===========================================================================
+ 
+-==============================================================
+ 
+ reboot-cmd: (Sparc only)
++========================
+ 
+ ??? This seems to be a way to give an argument to the Sparc
+ ROM/Flash boot loader. Maybe to tell it what to do after
+ rebooting. ???
+ 
+-==============================================================
+ 
+ rtsig-max & rtsig-nr:
++=====================
+ 
+ The file rtsig-max can be used to tune the maximum number
+ of POSIX realtime (queued) signals that can be outstanding
+@@ -889,9 +930,9 @@ in the system.
+ 
+ rtsig-nr shows the number of RT signals currently queued.
+ 
+-==============================================================
+ 
+ sched_energy_aware:
++===================
+ 
+ Enables/disables Energy Aware Scheduling (EAS). EAS starts
+ automatically on platforms where it can run (that is,
+@@ -900,17 +941,17 @@ Model available). If your platform happens to meet the
+ requirements for EAS but you do not want to use it, change
+ this value to 0.
+ 
+-==============================================================
+ 
+ sched_schedstats:
++=================
+ 
+ Enables/disables scheduler statistics. Enabling this feature
+ incurs a small amount of overhead in the scheduler but is
+ useful for debugging and performance tuning.
+ 
+-==============================================================
+ 
+ sg-big-buff:
++============
+ 
+ This file shows the size of the generic SCSI (sg) buffer.
+ You can't tune it just yet, but you could change it on
+@@ -921,9 +962,9 @@ There shouldn't be any reason to change this value. If
+ you can come up with one, you probably know what you
+ are doing anyway :)
+ 
+-==============================================================
+ 
+ shmall:
++=======
+ 
+ This parameter sets the total amount of shared memory pages that
+ can be used system wide. Hence, SHMALL should always be at least
+@@ -932,20 +973,20 @@ ceil(shmmax/PAGE_SIZE).
+ If you are not sure what the default PAGE_SIZE is on your Linux
+ system, you can run the following command:
+ 
+-# getconf PAGE_SIZE
++	# getconf PAGE_SIZE
+ 
+-==============================================================
+ 
+ shmmax:
++=======
+ 
+ This value can be used to query and set the run time limit
+ on the maximum shared memory segment size that can be created.
+ Shared memory segments up to 1Gb are now supported in the
+ kernel.  This value defaults to SHMMAX.
+ 
+-==============================================================
+ 
+ shm_rmid_forced:
++================
+ 
+ Linux lets you set resource limits, including how much memory one
+ process can consume, via setrlimit(2).  Unfortunately, shared memory
+@@ -964,28 +1005,30 @@ need this.
+ Note that if you change this from 0 to 1, already created segments
+ without users and with a dead originative process will be destroyed.
+ 
+-==============================================================
+ 
+ sysctl_writes_strict:
++=====================
+ 
+ Control how file position affects the behavior of updating sysctl values
+ via the /proc/sys interface:
+ 
+-  -1 - Legacy per-write sysctl value handling, with no printk warnings.
++  ==   ======================================================================
++  -1   Legacy per-write sysctl value handling, with no printk warnings.
+        Each write syscall must fully contain the sysctl value to be
+        written, and multiple writes on the same sysctl file descriptor
+        will rewrite the sysctl value, regardless of file position.
+-   0 - Same behavior as above, but warn about processes that perform writes
++   0   Same behavior as above, but warn about processes that perform writes
+        to a sysctl file descriptor when the file position is not 0.
+-   1 - (default) Respect file position when writing sysctl strings. Multiple
++   1   (default) Respect file position when writing sysctl strings. Multiple
+        writes will append to the sysctl value buffer. Anything past the max
+        length of the sysctl value buffer will be ignored. Writes to numeric
+        sysctl entries must always be at file position 0 and the value must
+        be fully contained in the buffer sent in the write syscall.
++  ==   ======================================================================
+ 
+-==============================================================
+ 
+ softlockup_all_cpu_backtrace:
++=============================
+ 
+ This value controls the soft lockup detector thread's behavior
+ when a soft lockup condition is detected as to whether or not
+@@ -999,13 +1042,14 @@ NMI.
+ 
+ 1: on detection capture more debug information.
+ 
+-==============================================================
+ 
+-soft_watchdog
++soft_watchdog:
++==============
+ 
+ This parameter can be used to control the soft lockup detector.
+ 
+    0 - disable the soft lockup detector
++
+    1 - enable the soft lockup detector
+ 
+ The soft lockup detector monitors CPUs for threads that are hogging the CPUs
+@@ -1015,9 +1059,9 @@ interrupts which are needed for the 'watchdog/N' threads to be woken up by
+ the watchdog timer function, otherwise the NMI watchdog - if enabled - can
+ detect a hard lockup condition.
+ 
+-==============================================================
+ 
+-stack_erasing
++stack_erasing:
++==============
+ 
+ This parameter can be used to control kernel stack erasing at the end
+ of syscalls for kernels built with CONFIG_GCC_PLUGIN_STACKLEAK.
+@@ -1031,37 +1075,40 @@ compilation sees a 1% slowdown, other systems and workloads may vary.
+ 
+   1: kernel stack erasing is enabled (default), it is performed before
+      returning to the userspace at the end of syscalls.
+-==============================================================
++
+ 
+ tainted
++=======
+ 
+ Non-zero if the kernel has been tainted. Numeric values, which can be
+ ORed together. The letters are seen in "Tainted" line of Oops reports.
+ 
+-     1 (P): proprietary module was loaded
+-     2 (F): module was force loaded
+-     4 (S): SMP kernel oops on an officially SMP incapable processor
+-     8 (R): module was force unloaded
+-    16 (M): processor reported a Machine Check Exception (MCE)
+-    32 (B): bad page referenced or some unexpected page flags
+-    64 (U): taint requested by userspace application
+-   128 (D): kernel died recently, i.e. there was an OOPS or BUG
+-   256 (A): an ACPI table was overridden by user
+-   512 (W): kernel issued warning
+-  1024 (C): staging driver was loaded
+-  2048 (I): workaround for bug in platform firmware applied
+-  4096 (O): externally-built ("out-of-tree") module was loaded
+-  8192 (E): unsigned module was loaded
+- 16384 (L): soft lockup occurred
+- 32768 (K): kernel has been live patched
+- 65536 (X): Auxiliary taint, defined and used by for distros
+-131072 (T): The kernel was built with the struct randomization plugin
++======  =====  ==============================================================
++     1  `(P)`  proprietary module was loaded
++     2  `(F)`  module was force loaded
++     4  `(S)`  SMP kernel oops on an officially SMP incapable processor
++     8  `(R)`  module was force unloaded
++    16  `(M)`  processor reported a Machine Check Exception (MCE)
++    32  `(B)`  bad page referenced or some unexpected page flags
++    64  `(U)`  taint requested by userspace application
++   128  `(D)`  kernel died recently, i.e. there was an OOPS or BUG
++   256  `(A)`  an ACPI table was overridden by user
++   512  `(W)`  kernel issued warning
++  1024  `(C)`  staging driver was loaded
++  2048  `(I)`  workaround for bug in platform firmware applied
++  4096  `(O)`  externally-built ("out-of-tree") module was loaded
++  8192  `(E)`  unsigned module was loaded
++ 16384  `(L)`  soft lockup occurred
++ 32768  `(K)`  kernel has been live patched
++ 65536  `(X)`  Auxiliary taint, defined and used by for distros
++131072  `(T)`  The kernel was built with the struct randomization plugin
++======  =====  ==============================================================
+ 
+ See Documentation/admin-guide/tainted-kernels.rst for more information.
+ 
+-==============================================================
+ 
+-threads-max
++threads-max:
++============
+ 
+ This value controls the maximum number of threads that can be created
+ using fork().
+@@ -1071,8 +1118,10 @@ maximum number of threads is created, the thread structures occupy only
+ a part (1/8th) of the available RAM pages.
+ 
+ The minimum value that can be written to threads-max is 20.
++
+ The maximum value that can be written to threads-max is given by the
+ constant FUTEX_TID_MASK (0x3fffffff).
++
+ If a value outside of this range is written to threads-max an error
+ EINVAL occurs.
+ 
+@@ -1080,9 +1129,9 @@ The value written is checked against the available RAM pages. If the
+ thread structures would occupy too much (more than 1/8th) of the
+ available RAM pages threads-max is reduced accordingly.
+ 
+-==============================================================
+ 
+ unknown_nmi_panic:
++==================
+ 
+ The value in this file affects behavior of handling NMI. When the
+ value is non-zero, unknown NMI is trapped and then panic occurs. At
+@@ -1091,28 +1140,29 @@ that time, kernel debugging information is displayed on console.
+ NMI switch that most IA32 servers have fires unknown NMI up, for
+ example.  If a system hangs up, try pressing the NMI switch.
+ 
+-==============================================================
+ 
+ watchdog:
++=========
+ 
+ This parameter can be used to disable or enable the soft lockup detector
+ _and_ the NMI watchdog (i.e. the hard lockup detector) at the same time.
+ 
+    0 - disable both lockup detectors
++
+    1 - enable both lockup detectors
+ 
+ The soft lockup detector and the NMI watchdog can also be disabled or
+ enabled individually, using the soft_watchdog and nmi_watchdog parameters.
+-If the watchdog parameter is read, for example by executing
++If the watchdog parameter is read, for example by executing::
+ 
+    cat /proc/sys/kernel/watchdog
+ 
+ the output of this command (0 or 1) shows the logical OR of soft_watchdog
+ and nmi_watchdog.
+ 
+-==============================================================
+ 
+ watchdog_cpumask:
++=================
+ 
+ This value can be used to control on which cpus the watchdog may run.
+ The default cpumask is all possible cores, but if NO_HZ_FULL is
+@@ -1127,13 +1177,13 @@ if a kernel lockup was suspected on those cores.
+ 
+ The argument value is the standard cpulist format for cpumasks,
+ so for example to enable the watchdog on cores 0, 2, 3, and 4 you
+-might say:
++might say::
+ 
+   echo 0,2-4 > /proc/sys/kernel/watchdog_cpumask
+ 
+-==============================================================
+ 
+ watchdog_thresh:
++================
+ 
+ This value can be used to control the frequency of hrtimer and NMI
+ events and the soft and hard lockup thresholds. The default threshold
+@@ -1141,5 +1191,3 @@ is 10 seconds.
+ 
+ The softlockup threshold is (2 * watchdog_thresh). Setting this
+ tunable to zero will disable lockup detection altogether.
+-
+-==============================================================
+diff --git a/Documentation/sysctl/net.txt b/Documentation/sysctl/net.rst
+similarity index 85%
+rename from Documentation/sysctl/net.txt
+rename to Documentation/sysctl/net.rst
+index 2ae91d3873bb..a7d44e71019d 100644
+--- a/Documentation/sysctl/net.txt
++++ b/Documentation/sysctl/net.rst
+@@ -1,12 +1,25 @@
+-Documentation for /proc/sys/net/*
+-	(c) 1999		Terrehon Bowden <terrehon@pacbell.net>
+-				Bodo Bauer <bb@ricochet.net>
+-	(c) 2000		Jorge Nerin <comandante@zaralinux.com>
+-	(c) 2009		Shen Feng <shen@cn.fujitsu.com>
++================================
++Documentation for /proc/sys/net/
++================================
+ 
+-For general info and legal blurb, please look in README.
++Copyright
+ 
+-==============================================================
++Copyright (c) 1999
++
++	- Terrehon Bowden <terrehon@pacbell.net>
++	- Bodo Bauer <bb@ricochet.net>
++
++Copyright (c) 2000
++
++	- Jorge Nerin <comandante@zaralinux.com>
++
++Copyright (c) 2009
++
++	- Shen Feng <shen@cn.fujitsu.com>
++
++For general info and legal blurb, please look in index.rst.
++
++------------------------------------------------------------------------------
+ 
+ This file contains the documentation for the sysctl files in
+ /proc/sys/net
+@@ -17,20 +30,22 @@ see only some of them, depending on your kernel's configuration.
+ 
+ 
+ Table : Subdirectories in /proc/sys/net
+-..............................................................................
+- Directory Content             Directory  Content
+- core      General parameter   appletalk  Appletalk protocol
+- unix      Unix domain sockets netrom     NET/ROM
+- 802       E802 protocol       ax25       AX25
+- ethernet  Ethernet protocol   rose       X.25 PLP layer
+- ipv4      IP version 4        x25        X.25 protocol
+- ipx       IPX                 token-ring IBM token ring
+- bridge    Bridging            decnet     DEC net
+- ipv6      IP version 6        tipc       TIPC
+-..............................................................................
++
++ ========= =================== = ========== ==================
++ Directory Content               Directory  Content
++ ========= =================== = ========== ==================
++ core      General parameter     appletalk  Appletalk protocol
++ unix      Unix domain sockets   netrom     NET/ROM
++ 802       E802 protocol         ax25       AX25
++ ethernet  Ethernet protocol     rose       X.25 PLP layer
++ ipv4      IP version 4          x25        X.25 protocol
++ ipx       IPX                   token-ring IBM token ring
++ bridge    Bridging              decnet     DEC net
++ ipv6      IP version 6          tipc       TIPC
++ ========= =================== = ========== ==================
+ 
+ 1. /proc/sys/net/core - Network core options
+--------------------------------------------------------
++============================================
+ 
+ bpf_jit_enable
+ --------------
+@@ -44,6 +59,7 @@ restricted C into a sequence of BPF instructions. After program load
+ through bpf(2) and passing a verifier in the kernel, a JIT will then
+ translate these BPF proglets into native CPU instructions. There are
+ two flavors of JITs, the newer eBPF JIT currently supported on:
++
+   - x86_64
+   - x86_32
+   - arm64
+@@ -55,6 +71,7 @@ two flavors of JITs, the newer eBPF JIT currently supported on:
+   - riscv
+ 
+ And the older cBPF JIT supported on the following archs:
++
+   - mips
+   - ppc
+   - sparc
+@@ -65,10 +82,11 @@ compile them transparently. Older cBPF JITs can only translate
+ tcpdump filters, seccomp rules, etc, but not mentioned eBPF
+ programs loaded through bpf(2).
+ 
+-Values :
+-	0 - disable the JIT (default value)
+-	1 - enable the JIT
+-	2 - enable the JIT and ask the compiler to emit traces on kernel log.
++Values:
++
++	- 0 - disable the JIT (default value)
++	- 1 - enable the JIT
++	- 2 - enable the JIT and ask the compiler to emit traces on kernel log.
+ 
+ bpf_jit_harden
+ --------------
+@@ -76,10 +94,12 @@ bpf_jit_harden
+ This enables hardening for the BPF JIT compiler. Supported are eBPF
+ JIT backends. Enabling hardening trades off performance, but can
+ mitigate JIT spraying.
+-Values :
+-	0 - disable JIT hardening (default value)
+-	1 - enable JIT hardening for unprivileged users only
+-	2 - enable JIT hardening for all users
++
++Values:
++
++	- 0 - disable JIT hardening (default value)
++	- 1 - enable JIT hardening for unprivileged users only
++	- 2 - enable JIT hardening for all users
+ 
+ bpf_jit_kallsyms
+ ----------------
+@@ -89,9 +109,11 @@ addresses to the kernel, meaning they neither show up in traces nor
+ in /proc/kallsyms. This enables export of these addresses, which can
+ be used for debugging/tracing. If bpf_jit_harden is enabled, this
+ feature is disabled.
++
+ Values :
+-	0 - disable JIT kallsyms export (default value)
+-	1 - enable JIT kallsyms export for privileged users only
++
++	- 0 - disable JIT kallsyms export (default value)
++	- 1 - enable JIT kallsyms export for privileged users only
+ 
+ bpf_jit_limit
+ -------------
+@@ -102,7 +124,7 @@ been surpassed. bpf_jit_limit contains the value of the global limit
+ in bytes.
+ 
+ dev_weight
+---------------
++----------
+ 
+ The maximum number of packets that kernel can handle on a NAPI interrupt,
+ it's a Per-CPU variable. For drivers that support LRO or GRO_HW, a hardware
+@@ -111,7 +133,7 @@ aggregated packet is counted as one packet in this context.
+ Default: 64
+ 
+ dev_weight_rx_bias
+---------------
++------------------
+ 
+ RPS (e.g. RFS, aRFS) processing is competing with the registered NAPI poll function
+ of the driver for the per softirq cycle netdev_budget. This parameter influences
+@@ -120,19 +142,22 @@ processing during RX softirq cycles. It is further meant for making current
+ dev_weight adaptable for asymmetric CPU needs on RX/TX side of the network stack.
+ (see dev_weight_tx_bias) It is effective on a per CPU basis. Determination is based
+ on dev_weight and is calculated multiplicative (dev_weight * dev_weight_rx_bias).
++
+ Default: 1
+ 
+ dev_weight_tx_bias
+---------------
++------------------
+ 
+ Scales the maximum number of packets that can be processed during a TX softirq cycle.
+ Effective on a per CPU basis. Allows scaling of current dev_weight for asymmetric
+ net stack processing needs. Be careful to avoid making TX softirq processing a CPU hog.
++
+ Calculation is based on dev_weight (dev_weight * dev_weight_tx_bias).
++
+ Default: 1
+ 
+ default_qdisc
+---------------
++-------------
+ 
+ The default queuing discipline to use for network devices. This allows
+ overriding the default of pfifo_fast with an alternative. Since the default
+@@ -144,17 +169,21 @@ which require setting up classes and bandwidths. Note that physical multiqueue
+ interfaces still use mq as root qdisc, which in turn uses this default for its
+ leaves. Virtual devices (like e.g. lo or veth) ignore this setting and instead
+ default to noqueue.
++
+ Default: pfifo_fast
+ 
+ busy_read
+-----------------
++---------
++
+ Low latency busy poll timeout for socket reads. (needs CONFIG_NET_RX_BUSY_POLL)
+ Approximate time in us to busy loop waiting for packets on the device queue.
+ This sets the default value of the SO_BUSY_POLL socket option.
+ Can be set or overridden per socket by setting socket option SO_BUSY_POLL,
+ which is the preferred method of enabling. If you need to enable the feature
+ globally via sysctl, a value of 50 is recommended.
++
+ Will increase power usage.
++
+ Default: 0 (off)
+ 
+ busy_poll
+@@ -167,7 +196,9 @@ For more than that you probably want to use epoll.
+ Note that only sockets with SO_BUSY_POLL set will be busy polled,
+ so you want to either selectively set SO_BUSY_POLL on those sockets or set
+ sysctl.net.busy_read globally.
++
+ Will increase power usage.
++
+ Default: 0 (off)
+ 
+ rmem_default
+@@ -185,6 +216,7 @@ tstamp_allow_data
+ Allow processes to receive tx timestamps looped together with the original
+ packet contents. If disabled, transmit timestamp requests from unprivileged
+ processes are dropped unless socket option SOF_TIMESTAMPING_OPT_TSONLY is set.
++
+ Default: 1 (on)
+ 
+ 
+@@ -250,19 +282,24 @@ randomly generated.
+ Some user space might need to gather its content even if drivers do not
+ provide ethtool -x support yet.
+ 
+-myhost:~# cat /proc/sys/net/core/netdev_rss_key
+-84:50:f4:00:a8:15:d1:a7:e9:7f:1d:60:35:c7:47:25:42:97:74:ca:56:bb:b6:a1:d8: ... (52 bytes total)
++::
++
++  myhost:~# cat /proc/sys/net/core/netdev_rss_key
++  84:50:f4:00:a8:15:d1:a7:e9:7f:1d:60:35:c7:47:25:42:97:74:ca:56:bb:b6:a1:d8: ... (52 bytes total)
+ 
+ File contains nul bytes if no driver ever called netdev_rss_key_fill() function.
++
+ Note:
+-/proc/sys/net/core/netdev_rss_key contains 52 bytes of key,
+-but most drivers only use 40 bytes of it.
++  /proc/sys/net/core/netdev_rss_key contains 52 bytes of key,
++  but most drivers only use 40 bytes of it.
+ 
+-myhost:~# ethtool -x eth0
+-RX flow hash indirection table for eth0 with 8 RX ring(s):
+-    0:    0     1     2     3     4     5     6     7
+-RSS hash key:
+-84:50:f4:00:a8:15:d1:a7:e9:7f:1d:60:35:c7:47:25:42:97:74:ca:56:bb:b6:a1:d8:43:e3:c9:0c:fd:17:55:c2:3a:4d:69:ed:f1:42:89
++::
++
++  myhost:~# ethtool -x eth0
++  RX flow hash indirection table for eth0 with 8 RX ring(s):
++      0:    0     1     2     3     4     5     6     7
++  RSS hash key:
++  84:50:f4:00:a8:15:d1:a7:e9:7f:1d:60:35:c7:47:25:42:97:74:ca:56:bb:b6:a1:d8:43:e3:c9:0c:fd:17:55:c2:3a:4d:69:ed:f1:42:89
+ 
+ netdev_tstamp_prequeue
+ ----------------------
+@@ -293,7 +330,7 @@ user space is responsible for creating them if needed.
+ Default : 0  (for compatibility reasons)
+ 
+ devconf_inherit_init_net
+-----------------------------
++------------------------
+ 
+ Controls if a new network namespace should inherit all current
+ settings under /proc/sys/net/{ipv4,ipv6}/conf/{all,default}/. By
+@@ -307,7 +344,7 @@ forced to reset to their default values.
+ Default : 0  (for compatibility reasons)
+ 
+ 2. /proc/sys/net/unix - Parameters for Unix domain sockets
+--------------------------------------------------------
++----------------------------------------------------------
+ 
+ There is only one file in this directory.
+ unix_dgram_qlen limits the max number of datagrams queued in Unix domain
+@@ -315,13 +352,13 @@ socket's buffer. It will not take effect unless PF_UNIX flag is specified.
+ 
+ 
+ 3. /proc/sys/net/ipv4 - IPV4 settings
+--------------------------------------------------------
++-------------------------------------
+ Please see: Documentation/networking/ip-sysctl.txt and ipvs-sysctl.txt for
+ descriptions of these entries.
+ 
+ 
+ 4. Appletalk
+--------------------------------------------------------
++------------
+ 
+ The /proc/sys/net/appletalk  directory  holds the Appletalk configuration data
+ when Appletalk is loaded. The configurable parameters are:
+@@ -366,7 +403,7 @@ route flags, and the device the route is using.
+ 
+ 
+ 5. IPX
+--------------------------------------------------------
++------
+ 
+ The IPX protocol has no tunable values in proc/sys/net.
+ 
+@@ -391,14 +428,16 @@ gives the  destination  network, the router node (or Directly) and the network
+ address of the router (or Connected) for internal networks.
+ 
+ 6. TIPC
+--------------------------------------------------------
++-------
+ 
+ tipc_rmem
+-----------
++---------
+ 
+ The TIPC protocol now has a tunable for the receive memory, similar to the
+ tcp_rmem - i.e. a vector of 3 INTEGERs: (min, default, max)
+ 
++::
++
+     # cat /proc/sys/net/tipc/tipc_rmem
+     4252725 34021800        68043600
+     #
+@@ -409,7 +448,7 @@ is not at this point in time used in any meaningful way, but the triplet is
+ preserved in order to be consistent with things like tcp_rmem.
+ 
+ named_timeout
+---------------
++-------------
+ 
+ TIPC name table updates are distributed asynchronously in a cluster, without
+ any form of transaction handling. This means that different race scenarios are
+diff --git a/Documentation/sysctl/sunrpc.txt b/Documentation/sysctl/sunrpc.rst
+similarity index 62%
+rename from Documentation/sysctl/sunrpc.txt
+rename to Documentation/sysctl/sunrpc.rst
+index ae1ecac6f85a..09780a682afd 100644
+--- a/Documentation/sysctl/sunrpc.txt
++++ b/Documentation/sysctl/sunrpc.rst
+@@ -1,9 +1,14 @@
+-Documentation for /proc/sys/sunrpc/*	kernel version 2.2.10
+-	(c) 1998, 1999,  Rik van Riel <riel@nl.linux.org>
++===================================
++Documentation for /proc/sys/sunrpc/
++===================================
+ 
+-For general info and legal blurb, please look in README.
++kernel version 2.2.10
+ 
+-==============================================================
++Copyright (c) 1998, 1999,  Rik van Riel <riel@nl.linux.org>
++
++For general info and legal blurb, please look in index.rst.
++
++------------------------------------------------------------------------------
+ 
+ This file contains the documentation for the sysctl files in
+ /proc/sys/sunrpc and is valid for Linux kernel version 2.2.
+diff --git a/Documentation/sysctl/user.txt b/Documentation/sysctl/user.rst
+similarity index 77%
+rename from Documentation/sysctl/user.txt
+rename to Documentation/sysctl/user.rst
+index a5882865836e..650eaa03f15e 100644
+--- a/Documentation/sysctl/user.txt
++++ b/Documentation/sysctl/user.rst
+@@ -1,7 +1,12 @@
+-Documentation for /proc/sys/user/*	kernel version 4.9.0
+-	(c) 2016		Eric Biederman <ebiederm@xmission.com>
++=================================
++Documentation for /proc/sys/user/
++=================================
+ 
+-==============================================================
++kernel version 4.9.0
++
++Copyright (c) 2016		Eric Biederman <ebiederm@xmission.com>
++
++------------------------------------------------------------------------------
+ 
+ This file contains the documentation for the sysctl files in
+ /proc/sys/user.
+@@ -30,37 +35,44 @@ user namespace does not allow a user to escape their current limits.
+ 
+ Currently, these files are in /proc/sys/user:
+ 
+-- max_cgroup_namespaces
++max_cgroup_namespaces
++=====================
+ 
+   The maximum number of cgroup namespaces that any user in the current
+   user namespace may create.
+ 
+-- max_ipc_namespaces
++max_ipc_namespaces
++==================
+ 
+   The maximum number of ipc namespaces that any user in the current
+   user namespace may create.
+ 
+-- max_mnt_namespaces
++max_mnt_namespaces
++==================
+ 
+   The maximum number of mount namespaces that any user in the current
+   user namespace may create.
+ 
+-- max_net_namespaces
++max_net_namespaces
++==================
+ 
+   The maximum number of network namespaces that any user in the
+   current user namespace may create.
+ 
+-- max_pid_namespaces
++max_pid_namespaces
++==================
+ 
+   The maximum number of pid namespaces that any user in the current
+   user namespace may create.
+ 
+-- max_user_namespaces
++max_user_namespaces
++===================
+ 
+   The maximum number of user namespaces that any user in the current
+   user namespace may create.
+ 
+-- max_uts_namespaces
++max_uts_namespaces
++==================
+ 
+   The maximum number of user namespaces that any user in the current
+   user namespace may create.
+diff --git a/Documentation/sysctl/vm.txt b/Documentation/sysctl/vm.rst
+similarity index 85%
+rename from Documentation/sysctl/vm.txt
+rename to Documentation/sysctl/vm.rst
+index 046691580ba6..43d594877df7 100644
 --- a/Documentation/sysctl/vm.txt
-+++ b/Documentation/sysctl/vm.txt
-@@ -566,7 +566,7 @@ trimming of allocations is initiated.
++++ b/Documentation/sysctl/vm.rst
+@@ -1,10 +1,16 @@
+-Documentation for /proc/sys/vm/*	kernel version 2.6.29
+-	(c) 1998, 1999,  Rik van Riel <riel@nl.linux.org>
+-	(c) 2008         Peter W. Morreale <pmorreale@novell.com>
++===============================
++Documentation for /proc/sys/vm/
++===============================
+ 
+-For general info and legal blurb, please look in README.
++kernel version 2.6.29
+ 
+-==============================================================
++Copyright (c) 1998, 1999,  Rik van Riel <riel@nl.linux.org>
++
++Copyright (c) 2008         Peter W. Morreale <pmorreale@novell.com>
++
++For general info and legal blurb, please look in index.rst.
++
++------------------------------------------------------------------------------
+ 
+ This file contains the documentation for the sysctl files in
+ /proc/sys/vm and is valid for Linux kernel version 2.6.29.
+@@ -68,9 +74,9 @@ Currently, these files are in /proc/sys/vm:
+ - watermark_scale_factor
+ - zone_reclaim_mode
+ 
+-==============================================================
+ 
+ admin_reserve_kbytes
++====================
+ 
+ The amount of free memory in the system that should be reserved for users
+ with the capability cap_sys_admin.
+@@ -97,25 +103,25 @@ On x86_64 this is about 128MB.
+ 
+ Changing this takes effect whenever an application requests memory.
+ 
+-==============================================================
+ 
+ block_dump
++==========
+ 
+ block_dump enables block I/O debugging when set to a nonzero value. More
+ information on block I/O debugging is in Documentation/laptops/laptop-mode.rst.
+ 
+-==============================================================
+ 
+ compact_memory
++==============
+ 
+ Available only when CONFIG_COMPACTION is set. When 1 is written to the file,
+ all zones are compacted such that free memory is available in contiguous
+ blocks where possible. This can be important for example in the allocation of
+ huge pages although processes will also directly compact memory as required.
+ 
+-==============================================================
+ 
+ compact_unevictable_allowed
++===========================
+ 
+ Available only when CONFIG_COMPACTION is set. When set to 1, compaction is
+ allowed to examine the unevictable lru (mlocked pages) for pages to compact.
+@@ -123,21 +129,22 @@ This should be used on systems where stalls for minor page faults are an
+ acceptable trade for large contiguous free memory.  Set to 0 to prevent
+ compaction from moving pages that are unevictable.  Default value is 1.
+ 
+-==============================================================
+ 
+ dirty_background_bytes
++======================
+ 
+ Contains the amount of dirty memory at which the background kernel
+ flusher threads will start writeback.
+ 
+-Note: dirty_background_bytes is the counterpart of dirty_background_ratio. Only
+-one of them may be specified at a time. When one sysctl is written it is
+-immediately taken into account to evaluate the dirty memory limits and the
+-other appears as 0 when read.
++Note:
++  dirty_background_bytes is the counterpart of dirty_background_ratio. Only
++  one of them may be specified at a time. When one sysctl is written it is
++  immediately taken into account to evaluate the dirty memory limits and the
++  other appears as 0 when read.
+ 
+-==============================================================
+ 
+ dirty_background_ratio
++======================
+ 
+ Contains, as a percentage of total available memory that contains free pages
+ and reclaimable pages, the number of pages at which the background kernel
+@@ -145,9 +152,9 @@ flusher threads will start writing out dirty data.
+ 
+ The total available memory is not equal to total system memory.
+ 
+-==============================================================
+ 
+ dirty_bytes
++===========
+ 
+ Contains the amount of dirty memory at which a process generating disk writes
+ will itself start writeback.
+@@ -161,18 +168,18 @@ Note: the minimum value allowed for dirty_bytes is two pages (in bytes); any
+ value lower than this limit will be ignored and the old configuration will be
+ retained.
+ 
+-==============================================================
+ 
+ dirty_expire_centisecs
++======================
+ 
+ This tunable is used to define when dirty data is old enough to be eligible
+ for writeout by the kernel flusher threads.  It is expressed in 100'ths
+ of a second.  Data which has been dirty in-memory for longer than this
+ interval will be written out next time a flusher thread wakes up.
+ 
+-==============================================================
+ 
+ dirty_ratio
++===========
+ 
+ Contains, as a percentage of total available memory that contains free pages
+ and reclaimable pages, the number of pages at which a process which is
+@@ -180,9 +187,9 @@ generating disk writes will itself start writing out dirty data.
+ 
+ The total available memory is not equal to total system memory.
+ 
+-==============================================================
+ 
+ dirtytime_expire_seconds
++========================
+ 
+ When a lazytime inode is constantly having its pages dirtied, the inode with
+ an updated timestamp will never get chance to be written out.  And, if the
+@@ -192,34 +199,39 @@ eventually gets pushed out to disk.  This tunable is used to define when dirty
+ inode is old enough to be eligible for writeback by the kernel flusher threads.
+ And, it is also used as the interval to wakeup dirtytime_writeback thread.
+ 
+-==============================================================
+ 
+ dirty_writeback_centisecs
++=========================
+ 
+-The kernel flusher threads will periodically wake up and write `old' data
++The kernel flusher threads will periodically wake up and write `old` data
+ out to disk.  This tunable expresses the interval between those wakeups, in
+ 100'ths of a second.
+ 
+ Setting this to zero disables periodic writeback altogether.
+ 
+-==============================================================
+ 
+ drop_caches
++===========
+ 
+ Writing to this will cause the kernel to drop clean caches, as well as
+ reclaimable slab objects like dentries and inodes.  Once dropped, their
+ memory becomes free.
+ 
+-To free pagecache:
++To free pagecache::
++
+ 	echo 1 > /proc/sys/vm/drop_caches
+-To free reclaimable slab objects (includes dentries and inodes):
++
++To free reclaimable slab objects (includes dentries and inodes)::
++
+ 	echo 2 > /proc/sys/vm/drop_caches
+-To free slab objects and pagecache:
++
++To free slab objects and pagecache::
++
+ 	echo 3 > /proc/sys/vm/drop_caches
+ 
+ This is a non-destructive operation and will not free any dirty objects.
+ To increase the number of objects freed by this operation, the user may run
+-`sync' prior to writing to /proc/sys/vm/drop_caches.  This will minimize the
++`sync` prior to writing to /proc/sys/vm/drop_caches.  This will minimize the
+ number of dirty objects on the system and create more candidates to be
+ dropped.
+ 
+@@ -233,16 +245,16 @@ dropped objects, especially if they were under heavy use.  Because of this,
+ use outside of a testing or debugging environment is not recommended.
+ 
+ You may see informational messages in your kernel log when this file is
+-used:
++used::
+ 
+ 	cat (1234): drop_caches: 3
+ 
+ These are informational only.  They do not mean that anything is wrong
+ with your system.  To disable them, echo 4 (bit 2) into drop_caches.
+ 
+-==============================================================
+ 
+ extfrag_threshold
++=================
+ 
+ This parameter affects whether the kernel will compact memory or direct
+ reclaim to satisfy a high-order allocation. The extfrag/extfrag_index file in
+@@ -254,9 +266,9 @@ implies that the allocation will succeed as long as watermarks are met.
+ The kernel will not compact memory in a zone if the
+ fragmentation index is <= extfrag_threshold. The default value is 500.
+ 
+-==============================================================
+ 
+ highmem_is_dirtyable
++====================
+ 
+ Available only for systems with CONFIG_HIGHMEM enabled (32b systems).
+ 
+@@ -274,30 +286,30 @@ OOM killer because some writers (e.g. direct block device writes) can
+ only use the low memory and they can fill it up with dirty data without
+ any throttling.
+ 
+-==============================================================
+ 
+ hugetlb_shm_group
++=================
+ 
+ hugetlb_shm_group contains group id that is allowed to create SysV
+ shared memory segment using hugetlb page.
+ 
+-==============================================================
+ 
+ laptop_mode
++===========
+ 
+ laptop_mode is a knob that controls "laptop mode". All the things that are
+ controlled by this knob are discussed in Documentation/laptops/laptop-mode.rst.
+ 
+-==============================================================
+ 
+ legacy_va_layout
++================
+ 
+ If non-zero, this sysctl disables the new 32-bit mmap layout - the kernel
+ will use the legacy (2.4) layout for all processes.
+ 
+-==============================================================
+ 
+ lowmem_reserve_ratio
++====================
+ 
+ For some specialised workloads on highmem machines it is dangerous for
+ the kernel to allow process memory to be allocated from the "lowmem"
+@@ -308,7 +320,7 @@ And on large highmem machines this lack of reclaimable lowmem memory
+ can be fatal.
+ 
+ So the Linux page allocator has a mechanism which prevents allocations
+-which _could_ use highmem from using too much lowmem.  This means that
++which *could* use highmem from using too much lowmem.  This means that
+ a certain amount of lowmem is defended from the possibility of being
+ captured into pinned user memory.
+ 
+@@ -316,39 +328,37 @@ captured into pinned user memory.
+ mechanism will also defend that region from allocations which could use
+ highmem or lowmem).
+ 
+-The `lowmem_reserve_ratio' tunable determines how aggressive the kernel is
++The `lowmem_reserve_ratio` tunable determines how aggressive the kernel is
+ in defending these lower zones.
+ 
+ If you have a machine which uses highmem or ISA DMA and your
+ applications are using mlock(), or if you are running with no swap then
+ you probably should change the lowmem_reserve_ratio setting.
+ 
+-The lowmem_reserve_ratio is an array. You can see them by reading this file.
+--
+-% cat /proc/sys/vm/lowmem_reserve_ratio
+-256     256     32
+--
++The lowmem_reserve_ratio is an array. You can see them by reading this file::
++
++	% cat /proc/sys/vm/lowmem_reserve_ratio
++	256     256     32
+ 
+ But, these values are not used directly. The kernel calculates # of protection
+ pages for each zones from them. These are shown as array of protection pages
+ in /proc/zoneinfo like followings. (This is an example of x86-64 box).
+-Each zone has an array of protection pages like this.
++Each zone has an array of protection pages like this::
+ 
+--
+-Node 0, zone      DMA
+-  pages free     1355
+-        min      3
+-        low      3
+-        high     4
++  Node 0, zone      DMA
++    pages free     1355
++          min      3
++          low      3
++          high     4
+ 	:
+ 	:
+-    numa_other   0
+-        protection: (0, 2004, 2004, 2004)
++      numa_other   0
++          protection: (0, 2004, 2004, 2004)
+ 	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-  pagesets
+-    cpu: 0 pcp: 0
+-        :
+--
++    pagesets
++      cpu: 0 pcp: 0
++          :
++
+ These protections are added to score to judge whether this zone should be used
+ for page allocation or should be reclaimed.
+ 
+@@ -359,20 +369,24 @@ not be used because pages_free(1355) is smaller than watermark + protection[2]
+ normal page requirement. If requirement is DMA zone(index=0), protection[0]
+ (=0) is used.
+ 
+-zone[i]'s protection[j] is calculated by following expression.
++zone[i]'s protection[j] is calculated by following expression::
+ 
+-(i < j):
+-  zone[i]->protection[j]
+-  = (total sums of managed_pages from zone[i+1] to zone[j] on the node)
+-    / lowmem_reserve_ratio[i];
+-(i = j):
+-   (should not be protected. = 0;
+-(i > j):
+-   (not necessary, but looks 0)
++  (i < j):
++    zone[i]->protection[j]
++    = (total sums of managed_pages from zone[i+1] to zone[j] on the node)
++      / lowmem_reserve_ratio[i];
++  (i = j):
++     (should not be protected. = 0;
++  (i > j):
++     (not necessary, but looks 0)
+ 
+ The default values of lowmem_reserve_ratio[i] are
++
++    === ====================================
+     256 (if zone[i] means DMA or DMA32 zone)
+-    32  (others).
++    32  (others)
++    === ====================================
++
+ As above expression, they are reciprocal number of ratio.
+ 256 means 1/256. # of protection pages becomes about "0.39%" of total managed
+ pages of higher zones on the node.
+@@ -381,9 +395,9 @@ If you would like to protect more pages, smaller values are effective.
+ The minimum value is 1 (1/1 -> 100%). The value less than 1 completely
+ disables protection of the pages.
+ 
+-==============================================================
+ 
+ max_map_count:
++==============
+ 
+ This file contains the maximum number of memory map areas a process
+ may have. Memory map areas are used as a side-effect of calling
+@@ -396,9 +410,9 @@ e.g., up to one or two maps per allocation.
+ 
+ The default value is 65536.
+ 
+-=============================================================
+ 
+ memory_failure_early_kill:
++==========================
+ 
+ Control how to kill processes when uncorrected memory error (typically
+ a 2bit error in a memory module) is detected in the background by hardware
+@@ -424,9 +438,9 @@ check handling and depends on the hardware capabilities.
+ 
+ Applications can override this setting individually with the PR_MCE_KILL prctl
+ 
+-==============================================================
+ 
+ memory_failure_recovery
++=======================
+ 
+ Enable memory failure recovery (when supported by the platform)
+ 
+@@ -434,9 +448,9 @@ Enable memory failure recovery (when supported by the platform)
+ 
+ 0: Always panic on a memory failure.
+ 
+-==============================================================
+ 
+-min_free_kbytes:
++min_free_kbytes
++===============
+ 
+ This is used to force the Linux VM to keep a minimum number
+ of kilobytes free.  The VM uses this number to compute a
+@@ -450,9 +464,9 @@ become subtly broken, and prone to deadlock under high loads.
+ 
+ Setting this too high will OOM your machine instantly.
+ 
+-=============================================================
+ 
+-min_slab_ratio:
++min_slab_ratio
++==============
+ 
+ This is available only on NUMA kernels.
+ 
+@@ -468,9 +482,9 @@ Note that slab reclaim is triggered in a per zone / node fashion.
+ The process of reclaiming slab memory is currently not node specific
+ and may not be fast.
+ 
+-=============================================================
+ 
+-min_unmapped_ratio:
++min_unmapped_ratio
++==================
+ 
+ This is available only on NUMA kernels.
+ 
+@@ -485,9 +499,9 @@ files and similar are considered.
+ 
+ The default is 1 percent.
+ 
+-==============================================================
+ 
+ mmap_min_addr
++=============
+ 
+ This file indicates the amount of address space  which a user process will
+ be restricted from mmapping.  Since kernel null dereference bugs could
+@@ -498,9 +512,9 @@ security module.  Setting this value to something like 64k will allow the
+ vast majority of applications to work correctly and provide defense in depth
+ against future potential kernel bugs.
+ 
+-==============================================================
+ 
+-mmap_rnd_bits:
++mmap_rnd_bits
++=============
+ 
+ This value can be used to select the number of bits to use to
+ determine the random offset to the base address of vma regions
+@@ -511,9 +525,9 @@ by the architecture's minimum and maximum supported values.
+ This value can be changed after boot using the
+ /proc/sys/vm/mmap_rnd_bits tunable
+ 
+-==============================================================
+ 
+-mmap_rnd_compat_bits:
++mmap_rnd_compat_bits
++====================
+ 
+ This value can be used to select the number of bits to use to
+ determine the random offset to the base address of vma regions
+@@ -525,35 +539,35 @@ architecture's minimum and maximum supported values.
+ This value can be changed after boot using the
+ /proc/sys/vm/mmap_rnd_compat_bits tunable
+ 
+-==============================================================
+ 
+ nr_hugepages
++============
+ 
+ Change the minimum size of the hugepage pool.
+ 
+ See Documentation/admin-guide/mm/hugetlbpage.rst
+ 
+-==============================================================
+ 
+ nr_hugepages_mempolicy
++======================
+ 
+ Change the size of the hugepage pool at run-time on a specific
+ set of NUMA nodes.
+ 
+ See Documentation/admin-guide/mm/hugetlbpage.rst
+ 
+-==============================================================
+ 
+ nr_overcommit_hugepages
++=======================
+ 
+ Change the maximum size of the hugepage pool. The maximum is
+ nr_hugepages + nr_overcommit_hugepages.
+ 
+ See Documentation/admin-guide/mm/hugetlbpage.rst
+ 
+-==============================================================
+ 
+ nr_trim_pages
++=============
+ 
+ This is available only on NOMMU kernels.
+ 
+@@ -568,16 +582,17 @@ The default value is 1.
+ 
+ See Documentation/nommu-mmap.rst for more information.
+ 
+-==============================================================
+ 
+ numa_zonelist_order
++===================
+ 
+ This sysctl is only for NUMA and it is deprecated. Anything but
+ Node order will fail!
+ 
+ 'where the memory is allocated from' is controlled by zonelists.
++
+ (This documentation ignores ZONE_HIGHMEM/ZONE_DMA32 for simple explanation.
+- you may be able to read ZONE_DMA as ZONE_DMA32...)
++you may be able to read ZONE_DMA as ZONE_DMA32...)
+ 
+ In non-NUMA case, a zonelist for GFP_KERNEL is ordered as following.
+ ZONE_NORMAL -> ZONE_DMA
+@@ -585,10 +600,10 @@ This means that a memory allocation request for GFP_KERNEL will
+ get memory from ZONE_DMA only when ZONE_NORMAL is not available.
+ 
+ In NUMA case, you can think of following 2 types of order.
+-Assume 2 node NUMA and below is zonelist of Node(0)'s GFP_KERNEL
++Assume 2 node NUMA and below is zonelist of Node(0)'s GFP_KERNEL::
+ 
+-(A) Node(0) ZONE_NORMAL -> Node(0) ZONE_DMA -> Node(1) ZONE_NORMAL
+-(B) Node(0) ZONE_NORMAL -> Node(1) ZONE_NORMAL -> Node(0) ZONE_DMA.
++  (A) Node(0) ZONE_NORMAL -> Node(0) ZONE_DMA -> Node(1) ZONE_NORMAL
++  (B) Node(0) ZONE_NORMAL -> Node(1) ZONE_NORMAL -> Node(0) ZONE_DMA.
+ 
+ Type(A) offers the best locality for processes on Node(0), but ZONE_DMA
+ will be used before ZONE_NORMAL exhaustion. This increases possibility of
+@@ -616,9 +631,9 @@ order will be selected.
+ Default order is recommended unless this is causing problems for your
+ system/application.
+ 
+-==============================================================
+ 
+ oom_dump_tasks
++==============
+ 
+ Enables a system-wide task dump (excluding kernel threads) to be produced
+ when the kernel performs an OOM-killing and includes such information as
+@@ -638,9 +653,9 @@ OOM killer actually kills a memory-hogging task.
+ 
+ The default value is 1 (enabled).
+ 
+-==============================================================
+ 
+ oom_kill_allocating_task
++========================
+ 
+ This enables or disables killing the OOM-triggering task in
+ out-of-memory situations.
+@@ -659,9 +674,9 @@ is used in oom_kill_allocating_task.
+ 
+ The default value is 0.
+ 
+-==============================================================
+ 
+-overcommit_kbytes:
++overcommit_kbytes
++=================
+ 
+ When overcommit_memory is set to 2, the committed address space is not
+ permitted to exceed swap plus this amount of physical RAM. See below.
+@@ -670,9 +685,9 @@ Note: overcommit_kbytes is the counterpart of overcommit_ratio. Only one
+ of them may be specified at a time. Setting one disables the other (which
+ then appears as 0 when read).
+ 
+-==============================================================
+ 
+-overcommit_memory:
++overcommit_memory
++=================
+ 
+ This value contains a flag that enables memory overcommitment.
+ 
+@@ -695,17 +710,17 @@ The default value is 0.
+ See Documentation/vm/overcommit-accounting.rst and
+ mm/util.c::__vm_enough_memory() for more information.
+ 
+-==============================================================
+ 
+-overcommit_ratio:
++overcommit_ratio
++================
+ 
+ When overcommit_memory is set to 2, the committed address
+ space is not permitted to exceed swap plus this percentage
+ of physical RAM.  See above.
+ 
+-==============================================================
+ 
+ page-cluster
++============
+ 
+ page-cluster controls the number of pages up to which consecutive pages
+ are read in from swap in a single attempt. This is the swap counterpart
+@@ -725,9 +740,9 @@ Lower values mean lower latencies for initial faults, but at the same time
+ extra faults and I/O delays for following faults if they would have been part of
+ that consecutive pages readahead would have brought in.
+ 
+-=============================================================
+ 
+ panic_on_oom
++============
+ 
+ This enables or disables panic on out-of-memory feature.
+ 
+@@ -747,14 +762,16 @@ above-mentioned. Even oom happens under memory cgroup, the whole
+ system panics.
+ 
+ The default value is 0.
++
+ 1 and 2 are for failover of clustering. Please select either
+ according to your policy of failover.
++
+ panic_on_oom=2+kdump gives you very strong tool to investigate
+ why oom happens. You can get snapshot.
+ 
+-=============================================================
+ 
+ percpu_pagelist_fraction
++========================
+ 
+ This is the fraction of pages at most (high mark pcp->high) in each zone that
+ are allocated for each per cpu page list.  The min value for this is 8.  It
+@@ -770,16 +787,16 @@ The initial value is zero.  Kernel does not use this value at boot time to set
+ the high water marks for each per cpu page list.  If the user writes '0' to this
+ sysctl, it will revert to this default behavior.
+ 
+-==============================================================
+ 
+ stat_interval
++=============
+ 
+ The time interval between which vm statistics are updated.  The default
+ is 1 second.
+ 
+-==============================================================
+ 
+ stat_refresh
++============
+ 
+ Any read or write (by root only) flushes all the per-cpu vm statistics
+ into their global totals, for more accurate reports when testing
+@@ -790,24 +807,26 @@ as 0) and "fails" with EINVAL if any are found, with a warning in dmesg.
+ (At time of writing, a few stats are known sometimes to be found negative,
+ with no ill effects: errors and warnings on these stats are suppressed.)
+ 
+-==============================================================
+ 
+ numa_stat
++=========
+ 
+ This interface allows runtime configuration of numa statistics.
+ 
+ When page allocation performance becomes a bottleneck and you can tolerate
+ some possible tool breakage and decreased numa counter precision, you can
+-do:
++do::
++
+ 	echo 0 > /proc/sys/vm/numa_stat
+ 
+ When page allocation performance is not a bottleneck and you want all
+-tooling to work, you can do:
++tooling to work, you can do::
++
+ 	echo 1 > /proc/sys/vm/numa_stat
+ 
+-==============================================================
+ 
+ swappiness
++==========
+ 
+ This control is used to define how aggressive the kernel will swap
+ memory pages.  Higher values will increase aggressiveness, lower values
+@@ -817,9 +836,9 @@ than the high water mark in a zone.
+ 
+ The default value is 60.
+ 
+-==============================================================
+ 
+ unprivileged_userfaultfd
++========================
+ 
+ This flag controls whether unprivileged users can use the userfaultfd
+ system calls.  Set this to 1 to allow unprivileged users to use the
+@@ -828,9 +847,9 @@ privileged users (with SYS_CAP_PTRACE capability).
  
  The default value is 1.
  
--See Documentation/nommu-mmap.txt for more information.
-+See Documentation/nommu-mmap.rst for more information.
+-==============================================================
  
- ==============================================================
+-- user_reserve_kbytes
++user_reserve_kbytes
++===================
  
-diff --git a/Documentation/tee.txt b/Documentation/tee.rst
-similarity index 99%
-rename from Documentation/tee.txt
-rename to Documentation/tee.rst
-index afacdf2fd1de..5eacffb823b5 100644
---- a/Documentation/tee.txt
-+++ b/Documentation/tee.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- =============
- TEE subsystem
- =============
-diff --git a/Documentation/this_cpu_ops.txt b/Documentation/this_cpu_ops.rst
-similarity index 99%
-rename from Documentation/this_cpu_ops.txt
-rename to Documentation/this_cpu_ops.rst
-index 5cb8b883ae83..a489d25ff549 100644
---- a/Documentation/this_cpu_ops.txt
-+++ b/Documentation/this_cpu_ops.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ===================
- this_cpu operations
- ===================
-diff --git a/Documentation/trace/kprobetrace.rst b/Documentation/trace/kprobetrace.rst
-index 89ba487d4399..74f698affea1 100644
---- a/Documentation/trace/kprobetrace.rst
-+++ b/Documentation/trace/kprobetrace.rst
-@@ -40,7 +40,7 @@ Synopsis of kprobe_events
-  MEMADDR	: Address where the probe is inserted.
-  MAXACTIVE	: Maximum number of instances of the specified function that
- 		  can be probed simultaneously, or 0 for the default value
--		  as defined in Documentation/kprobes.txt section 1.3.1.
-+		  as defined in Documentation/kprobes.rst section 1.3.1.
+ When overcommit_memory is set to 2, "never overcommit" mode, reserve
+ min(3% of current process size, user_reserve_kbytes) of free memory.
+@@ -846,10 +865,9 @@ Any subsequent attempts to execute a command will result in
  
-  FETCHARGS	: Arguments. Each probe can have up to 128 args.
-   %REG		: Fetch register REG
-diff --git a/Documentation/translations/ko_KR/memory-barriers.txt b/Documentation/translations/ko_KR/memory-barriers.txt
-index 07725b1df002..03c06a7800c3 100644
---- a/Documentation/translations/ko_KR/memory-barriers.txt
-+++ b/Documentation/translations/ko_KR/memory-barriers.txt
-@@ -570,8 +570,8 @@ ACQUIRE 는 해당 오퍼레이션의 로드 부분에만 적용되고 RELEASE 
- 	[*] 버스 마스터링 DMA 와 일관성에 대해서는 다음을 참고하시기 바랍니다:
+ Changing this takes effect whenever an application requests memory.
  
- 	    Documentation/PCI/pci.rst
--	    Documentation/DMA-API-HOWTO.txt
--	    Documentation/DMA-API.txt
-+	    Documentation/DMA-API-HOWTO.rst
-+	    Documentation/DMA-API.rst
+-==============================================================
  
+ vfs_cache_pressure
+-------------------
++==================
  
- 데이터 의존성 배리어 (역사적)
-@@ -1904,7 +1904,7 @@ Mandatory 배리어들은 SMP 시스템에서도 UP 시스템에서도 SMP 효
+ This percentage value controls the tendency of the kernel to reclaim
+ the memory which is used for caching of directory and inode objects.
+@@ -867,9 +885,9 @@ performance impact. Reclaim code needs to take various locks to find freeable
+ directory and inode objects. With vfs_cache_pressure=1000, it will look for
+ ten times more freeable objects than there are.
  
-      writel_relaxed() 와 같은 완화된 I/O 접근자들에 대한 자세한 내용을 위해서는
-      "커널 I/O 배리어의 효과" 섹션을, consistent memory 에 대한 자세한 내용을
--     위해선 Documentation/DMA-API.txt 문서를 참고하세요.
-+     위해선 Documentation/DMA-API.rst 문서를 참고하세요.
+-=============================================================
  
+-watermark_boost_factor:
++watermark_boost_factor
++======================
  
- MMIO 쓰기 배리어
-diff --git a/Documentation/translations/zh_CN/IRQ.txt b/Documentation/translations/zh_CN/IRQ.txt
-index 956026d5cf82..0d9ec142e185 100644
---- a/Documentation/translations/zh_CN/IRQ.txt
-+++ b/Documentation/translations/zh_CN/IRQ.txt
-@@ -1,4 +1,4 @@
--Chinese translated version of Documentation/IRQ.txt
-+Chinese translated version of Documentation/IRQ.rst
+ This factor controls the level of reclaim when memory is being fragmented.
+ It defines the percentage of the high watermark of a zone that will be
+@@ -887,9 +905,9 @@ fragmentation events that occurred in the recent past. If this value is
+ smaller than a pageblock then a pageblocks worth of pages will be reclaimed
+ (e.g.  2MB on 64-bit x86). A boost factor of 0 will disable the feature.
  
- If you have any comment or update to the content, please contact the
- original document maintainer directly.  However, if you have a problem
-@@ -9,7 +9,7 @@ or if there is a problem with the translation.
- Maintainer: Eric W. Biederman <ebiederman@xmission.com>
- Chinese maintainer: Fu Wei <tekkamanninja@gmail.com>
- ---------------------------------------------------------------------
--Documentation/IRQ.txt 的中文翻译
-+Documentation/IRQ.rst 的中文翻译
+-=============================================================
  
- 如果想评论或更新本文的内容，请直接联系原文档的维护者。如果你使用英文
- 交流有困难的话，也可以向中文版维护者求助。如果本翻译更新不及时或者翻
-diff --git a/Documentation/translations/zh_CN/filesystems/sysfs.txt b/Documentation/translations/zh_CN/filesystems/sysfs.txt
-index 452271dda141..f5482e082399 100644
---- a/Documentation/translations/zh_CN/filesystems/sysfs.txt
-+++ b/Documentation/translations/zh_CN/filesystems/sysfs.txt
-@@ -40,7 +40,7 @@ sysfs 是一个最初基于 ramfs 且位于内存的文件系统。它提供导
- 数据结构及其属性，以及它们之间的关联到用户空间的方法。
+-watermark_scale_factor:
++watermark_scale_factor
++======================
  
- sysfs 始终与 kobject 的底层结构紧密相关。请阅读
--Documentation/kobject.txt 文档以获得更多关于 kobject 接口的
-+Documentation/kobject.rst 文档以获得更多关于 kobject 接口的
- 信息。
+ This factor controls the aggressiveness of kswapd. It defines the
+ amount of memory left in a node/system before kswapd is woken up and
+@@ -905,20 +923,22 @@ that the number of free pages kswapd maintains for latency reasons is
+ too small for the allocation bursts occurring in the system. This knob
+ can then be used to tune kswapd aggressiveness accordingly.
  
+-==============================================================
  
-diff --git a/Documentation/translations/zh_CN/io_ordering.txt b/Documentation/translations/zh_CN/io_ordering.txt
-index 1f8127bdd415..4e9727990c10 100644
---- a/Documentation/translations/zh_CN/io_ordering.txt
-+++ b/Documentation/translations/zh_CN/io_ordering.txt
-@@ -1,4 +1,4 @@
--Chinese translated version of Documentation/io_ordering.txt
-+Chinese translated version of Documentation/io_ordering.rst
+-zone_reclaim_mode:
++zone_reclaim_mode
++=================
  
- If you have any comment or update to the content, please contact the
- original document maintainer directly.  However, if you have a problem
-@@ -8,7 +8,7 @@ or if there is a problem with the translation.
+ Zone_reclaim_mode allows someone to set more or less aggressive approaches to
+ reclaim memory when a zone runs out of memory. If it is set to zero then no
+ zone reclaim occurs. Allocations will be satisfied from other zones / nodes
+ in the system.
  
- Chinese maintainer: Lin Yongting <linyongting@gmail.com>
- ---------------------------------------------------------------------
--Documentation/io_ordering.txt 的中文翻译
-+Documentation/io_ordering.rst 的中文翻译
+-This is value ORed together of
++This is value OR'ed together of
  
- 如果想评论或更新本文的内容，请直接联系原文档的维护者。如果你使用英文
- 交流有困难的话，也可以向中文版维护者求助。如果本翻译更新不及时或者翻
-diff --git a/Documentation/unaligned-memory-access.txt b/Documentation/unaligned-memory-access.rst
-similarity index 99%
-rename from Documentation/unaligned-memory-access.txt
-rename to Documentation/unaligned-memory-access.rst
-index 1ee82419d8aa..848013a8bc10 100644
---- a/Documentation/unaligned-memory-access.txt
-+++ b/Documentation/unaligned-memory-access.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- =========================
- Unaligned Memory Accesses
- =========================
-diff --git a/Documentation/vfio-mediated-device.txt b/Documentation/vfio-mediated-device.rst
-similarity index 99%
-rename from Documentation/vfio-mediated-device.txt
-rename to Documentation/vfio-mediated-device.rst
-index c3f69bcaf96e..0ea57427e7e6 100644
---- a/Documentation/vfio-mediated-device.txt
-+++ b/Documentation/vfio-mediated-device.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- .. include:: <isonum.txt>
+-1	= Zone reclaim on
+-2	= Zone reclaim writes dirty pages out
+-4	= Zone reclaim swaps pages
++=	===================================
++1	Zone reclaim on
++2	Zone reclaim writes dirty pages out
++4	Zone reclaim swaps pages
++=	===================================
  
- =====================
-@@ -408,7 +410,7 @@ card.
- References
- ==========
- 
--1. See Documentation/vfio.txt for more information on VFIO.
-+1. See Documentation/vfio.rst for more information on VFIO.
- 2. struct mdev_driver in include/linux/mdev.h
- 3. struct mdev_parent_ops in include/linux/mdev.h
- 4. struct vfio_iommu_driver_ops in include/linux/vfio.h
-diff --git a/Documentation/vfio.txt b/Documentation/vfio.rst
-similarity index 99%
-rename from Documentation/vfio.txt
-rename to Documentation/vfio.rst
-index f1a4d3c3ba0b..8a3fbd7d96f0 100644
---- a/Documentation/vfio.txt
-+++ b/Documentation/vfio.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ==================================
- VFIO - "Virtual Function I/O" [1]_
- ==================================
-diff --git a/Documentation/video-output.txt b/Documentation/video-output.rst
-similarity index 99%
-rename from Documentation/video-output.txt
-rename to Documentation/video-output.rst
-index 56d6fa2e2368..9095c4be45e5 100644
---- a/Documentation/video-output.txt
-+++ b/Documentation/video-output.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- Video Output Switcher Control
- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- 
-@@ -31,4 +33,3 @@ method for 'state' with output sysfs class. The user interface under sysfs is::
-      |-- state
-      |-- subsystem -> ../../../class/video_output
-      `-- uevent
+ zone_reclaim_mode is disabled by default.  For file servers or workloads
+ that benefit from having their data cached, zone_reclaim_mode should be
+@@ -942,5 +962,3 @@ of other processes running on other nodes will not be affected.
+ Allowing regular swap effectively restricts allocations to the local
+ node unless explicitly overridden by memory policies or cpuset
+ configurations.
 -
-diff --git a/Documentation/watchdog/hpwdt.rst b/Documentation/watchdog/hpwdt.rst
-index 94a96371113e..f4ba329f011f 100644
---- a/Documentation/watchdog/hpwdt.rst
-+++ b/Documentation/watchdog/hpwdt.rst
-@@ -44,7 +44,7 @@ Last reviewed: 08/20/2018
-  NOTE:
-        More information about watchdog drivers in general, including the ioctl
-        interface to /dev/watchdog can be found in
--       Documentation/watchdog/watchdog-api.rst and Documentation/IPMI.txt.
-+       Documentation/watchdog/watchdog-api.rst and Documentation/IPMI.rst.
- 
-  Due to limitations in the iLO hardware, the NMI pretimeout if enabled,
-  can only be set to 9 seconds.  Attempts to set pretimeout to other
-diff --git a/Documentation/x86/topology.rst b/Documentation/x86/topology.rst
-index 8e9704f61017..b06d895becce 100644
---- a/Documentation/x86/topology.rst
-+++ b/Documentation/x86/topology.rst
-@@ -9,7 +9,7 @@ representation in the kernel. Update/change when doing changes to the
- respective code.
- 
- The architecture-agnostic topology definitions are in
--Documentation/cputopology.txt. This file holds x86-specific
-+Documentation/cputopology.rst. This file holds x86-specific
- differences/specialities which must not necessarily apply to the generic
- definitions. Thus, the way to read up on Linux topology on x86 is to start
- with the generic one and look at this one in parallel for the x86 specifics.
-diff --git a/Documentation/xillybus.txt b/Documentation/xillybus.rst
-similarity index 99%
-rename from Documentation/xillybus.txt
-rename to Documentation/xillybus.rst
-index 2446ee303c09..d99f4a37e8b6 100644
---- a/Documentation/xillybus.txt
-+++ b/Documentation/xillybus.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ==========================================
- Xillybus driver for generic FPGA interface
- ==========================================
-diff --git a/Documentation/xz.txt b/Documentation/xz.rst
-similarity index 99%
-rename from Documentation/xz.txt
-rename to Documentation/xz.rst
-index b2220d03aa50..205edc6646d5 100644
---- a/Documentation/xz.txt
-+++ b/Documentation/xz.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ============================
- XZ data compression in Linux
- ============================
-diff --git a/Documentation/zorro.txt b/Documentation/zorro.rst
-similarity index 99%
-rename from Documentation/zorro.txt
-rename to Documentation/zorro.rst
-index 664072b017e3..7cd509f31d57 100644
---- a/Documentation/zorro.txt
-+++ b/Documentation/zorro.rst
-@@ -1,3 +1,5 @@
-+:orphan:
-+
- ========================================
- Writing Device Drivers for Zorro Devices
- ========================================
-@@ -77,7 +79,7 @@ The treatment of these regions depends on the type of Zorro space:
- 
-   - Zorro II address space is always mapped and does not have to be mapped
-     explicitly using z_ioremap().
--    
-+
-     Conversion from bus/physical Zorro II addresses to kernel virtual addresses
-     and vice versa is done using::
- 
-@@ -86,7 +88,7 @@ The treatment of these regions depends on the type of Zorro space:
- 
-   - Zorro III address space must be mapped explicitly using z_ioremap() first
-     before it can be accessed::
-- 
-+
- 	virt_addr = z_ioremap(bus_addr, size);
- 	...
- 	z_iounmap(virt_addr);
-@@ -101,4 +103,3 @@ References
- #. linux/arch/m68k/include/asm/zorro.h
- #. linux/drivers/zorro
- #. /proc/bus/zorro
--
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 58e103015dea..d9e214f68e52 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -4588,7 +4588,7 @@ DELL SYSTEMS MANAGEMENT BASE DRIVER (dcdbas)
- M:	Stuart Hayes <stuart.w.hayes@gmail.com>
- L:	platform-driver-x86@vger.kernel.org
- S:	Maintained
--F:	Documentation/dcdbas.txt
-+F:	Documentation/dcdbas.rst
- F:	drivers/platform/x86/dcdbas.*
- 
- DELL WMI NOTIFICATIONS DRIVER
-@@ -4966,7 +4966,7 @@ M:	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
- R:	"Rafael J. Wysocki" <rafael@kernel.org>
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git
- S:	Supported
--F:	Documentation/kobject.txt
-+F:	Documentation/kobject.rst
- F:	drivers/base/
- F:	fs/debugfs/
- F:	fs/sysfs/
-@@ -6038,7 +6038,7 @@ M:	Ard Biesheuvel <ard.biesheuvel@linaro.org>
- L:	linux-efi@vger.kernel.org
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/efi/efi.git
- S:	Maintained
--F:	Documentation/efi-stub.txt
-+F:	Documentation/efi-stub.rst
- F:	arch/*/kernel/efi.c
- F:	arch/x86/boot/compressed/eboot.[ch]
- F:	arch/*/include/asm/efi.h
-@@ -6594,7 +6594,7 @@ S:	Maintained
- F:	scripts/gcc-plugins/
- F:	scripts/gcc-plugin.sh
- F:	scripts/Makefile.gcc-plugins
--F:	Documentation/gcc-plugins.txt
-+F:	Documentation/gcc-plugins.rst
- 
- GASKET DRIVER FRAMEWORK
- M:	Rob Springer <rspringer@google.com>
-@@ -7006,7 +7006,7 @@ M:	Herbert Xu <herbert@gondor.apana.org.au>
- L:	linux-crypto@vger.kernel.org
- S:	Odd fixes
- F:	Documentation/devicetree/bindings/rng/
--F:	Documentation/hw_random.txt
-+F:	Documentation/hw_random.rst
- F:	drivers/char/hw_random/
- F:	include/linux/hw_random.h
- 
-@@ -7022,7 +7022,7 @@ L:	linux-remoteproc@vger.kernel.org
- S:	Maintained
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/ohad/hwspinlock.git
- F:	Documentation/devicetree/bindings/hwlock/
--F:	Documentation/hwspinlock.txt
-+F:	Documentation/hwspinlock.rst
- F:	drivers/hwspinlock/
- F:	include/linux/hwspinlock.h
- 
-@@ -8208,7 +8208,7 @@ L:	tboot-devel@lists.sourceforge.net
- W:	http://tboot.sourceforge.net
- T:	hg http://tboot.hg.sourceforge.net:8000/hgroot/tboot/tboot
- S:	Supported
--F:	Documentation/intel_txt.txt
-+F:	Documentation/intel_txt.rst
- F:	include/linux/tboot.h
- F:	arch/x86/kernel/tboot.c
- 
-@@ -8292,7 +8292,7 @@ L:	openipmi-developer@lists.sourceforge.net (moderated for non-subscribers)
- W:	http://openipmi.sourceforge.net/
- S:	Supported
- F:	Documentation/devicetree/bindings/ipmi/
--F:	Documentation/IPMI.txt
-+F:	Documentation/IPMI.rst
- F:	drivers/char/ipmi/
- F:	include/linux/ipmi*
- F:	include/uapi/linux/ipmi*
-@@ -8333,7 +8333,7 @@ IRQ DOMAINS (IRQ NUMBER MAPPING LIBRARY)
- M:	Marc Zyngier <marc.zyngier@arm.com>
- S:	Maintained
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git irq/core
--F:	Documentation/IRQ-domain.txt
-+F:	Documentation/IRQ-domain.rst
- F:	include/linux/irqdomain.h
- F:	kernel/irq/irqdomain.c
- F:	kernel/irq/msi.c
-@@ -8358,7 +8358,7 @@ F:	drivers/irqchip/
- ISA
- M:	William Breathitt Gray <vilhelm.gray@gmail.com>
- S:	Maintained
--F:	Documentation/isa.txt
-+F:	Documentation/isa.rst
- F:	drivers/base/isa.c
- F:	include/linux/isa.h
- 
-@@ -8373,7 +8373,7 @@ F:	drivers/media/radio/radio-isa*
- ISAPNP
- M:	Jaroslav Kysela <perex@perex.cz>
- S:	Maintained
--F:	Documentation/isapnp.txt
-+F:	Documentation/isapnp.rst
- F:	drivers/pnp/isapnp/
- F:	include/linux/isapnp.h
- 
-@@ -8823,7 +8823,7 @@ M:	Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>
- M:	"David S. Miller" <davem@davemloft.net>
- M:	Masami Hiramatsu <mhiramat@kernel.org>
- S:	Maintained
--F:	Documentation/kprobes.txt
-+F:	Documentation/kprobes.rst
- F:	include/linux/kprobes.h
- F:	include/asm-generic/kprobes.h
- F:	kernel/kprobes.c
-@@ -9182,7 +9182,7 @@ L:	linux-arch@vger.kernel.org
- S:	Supported
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev
- F:	tools/memory-model/
--F:	Documentation/atomic_bitops.txt
-+F:	Documentation/atomic_bitops.rst
- F:	Documentation/atomic_t.txt
- F:	Documentation/core-api/atomic_ops.rst
- F:	Documentation/core-api/refcount-vs-atomic.rst
-@@ -9296,7 +9296,7 @@ M:	"Richard Russon (FlatCap)" <ldm@flatcap.org>
- L:	linux-ntfs-dev@lists.sourceforge.net
- W:	http://www.linux-ntfs.org/content/view/19/37/
- S:	Maintained
--F:	Documentation/ldm.txt
-+F:	Documentation/ldm.rst
- F:	block/partitions/ldm.*
- 
- LSILOGIC MPT FUSION DRIVERS (FC/SAS/SPI)
-@@ -10240,7 +10240,7 @@ M:	Johannes Thumshirn <morbidrsa@gmail.com>
- S:	Maintained
- F:	drivers/mcb/
- F:	include/linux/mcb.h
--F:	Documentation/men-chameleon-bus.txt
-+F:	Documentation/men-chameleon-bus.rst
- 
- MEN F21BMC (Board Management Controller)
- M:	Andreas Werner <andreas.werner@men.de>
-@@ -11923,7 +11923,7 @@ L:	linux-crypto@vger.kernel.org
- S:	Maintained
- F:	kernel/padata.c
- F:	include/linux/padata.h
--F:	Documentation/padata.txt
-+F:	Documentation/padata.rst
- 
- PANASONIC LAPTOP ACPI EXTRAS DRIVER
- M:	Harald Welte <laforge@gnumonks.org>
-@@ -11947,7 +11947,7 @@ F:	drivers/parport/
- F:	include/linux/parport*.h
- F:	drivers/char/ppdev.c
- F:	include/uapi/linux/ppdev.h
--F:	Documentation/parport*.txt
-+F:	Documentation/parport*.rst
- 
- PARAVIRT_OPS INTERFACE
- M:	Juergen Gross <jgross@suse.com>
-@@ -12122,7 +12122,7 @@ M:	Kurt Schwemmer <kurt.schwemmer@microsemi.com>
- M:	Logan Gunthorpe <logang@deltatee.com>
- L:	linux-pci@vger.kernel.org
- S:	Maintained
--F:	Documentation/switchtec.txt
-+F:	Documentation/switchtec.rst
- F:	Documentation/ABI/testing/sysfs-class-switchtec
- F:	drivers/pci/switch/switchtec*
- F:	include/uapi/linux/switchtec_ioctl.h
-@@ -12884,7 +12884,7 @@ M:	Thierry Reding <thierry.reding@gmail.com>
- L:	linux-pwm@vger.kernel.org
- S:	Maintained
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git
--F:	Documentation/pwm.txt
-+F:	Documentation/pwm.rst
- F:	Documentation/devicetree/bindings/pwm/
- F:	include/linux/pwm.h
- F:	drivers/pwm/
-@@ -13354,7 +13354,7 @@ Q:	http://patchwork.ozlabs.org/project/rtc-linux/list/
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/abelloni/linux.git
- S:	Maintained
- F:	Documentation/devicetree/bindings/rtc/
--F:	Documentation/rtc.txt
-+F:	Documentation/rtc.rst
- F:	drivers/rtc/
- F:	include/linux/rtc.h
- F:	include/uapi/linux/rtc.h
-@@ -13405,7 +13405,7 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/ohad/remoteproc.git
- S:	Maintained
- F:	Documentation/devicetree/bindings/remoteproc/
- F:	Documentation/ABI/testing/sysfs-class-remoteproc
--F:	Documentation/remoteproc.txt
-+F:	Documentation/remoteproc.rst
- F:	drivers/remoteproc/
- F:	include/linux/remoteproc.h
- F:	include/linux/remoteproc/
-@@ -13417,7 +13417,7 @@ L:	linux-remoteproc@vger.kernel.org
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/ohad/rpmsg.git
- S:	Maintained
- F:	drivers/rpmsg/
--F:	Documentation/rpmsg.txt
-+F:	Documentation/rpmsg.rst
- F:	Documentation/ABI/testing/sysfs-bus-rpmsg
- F:	include/linux/rpmsg.h
- F:	include/linux/rpmsg/
-@@ -13503,7 +13503,7 @@ W:	http://wireless.kernel.org/
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git
- S:	Maintained
--F:	Documentation/rfkill.txt
-+F:	Documentation/rfkill.rst
- F:	Documentation/ABI/stable/sysfs-class-rfkill
- F:	net/rfkill/
- F:	include/linux/rfkill.h
-@@ -15174,7 +15174,7 @@ SVGA HANDLING
- M:	Martin Mares <mj@ucw.cz>
- L:	linux-video@atrey.karlin.mff.cuni.cz
- S:	Maintained
--F:	Documentation/svga.txt
-+F:	Documentation/svga.rst
- F:	arch/x86/boot/video*
- 
- SWIOTLB SUBSYSTEM
-@@ -15211,7 +15211,7 @@ F:	drivers/dma-buf/dma-fence*
- F:	drivers/dma-buf/sw_sync.c
- F:	include/linux/sync_file.h
- F:	include/uapi/linux/sync_file.h
--F:	Documentation/sync_file.txt
-+F:	Documentation/sync_file.rst
- T:	git git://anongit.freedesktop.org/drm/drm-misc
- 
- SYNOPSYS ARC ARCHITECTURE
-@@ -15537,7 +15537,7 @@ S:	Maintained
- F:	include/linux/tee_drv.h
- F:	include/uapi/linux/tee.h
- F:	drivers/tee/
--F:	Documentation/tee.txt
-+F:	Documentation/tee.rst
- 
- TEGRA ARCHITECTURE SUPPORT
- M:	Thierry Reding <thierry.reding@gmail.com>
-@@ -16706,7 +16706,7 @@ R:	Cornelia Huck <cohuck@redhat.com>
- L:	kvm@vger.kernel.org
- T:	git git://github.com/awilliam/linux-vfio.git
- S:	Maintained
--F:	Documentation/vfio.txt
-+F:	Documentation/vfio.rst
- F:	drivers/vfio/
- F:	include/linux/vfio.h
- F:	include/uapi/linux/vfio.h
-@@ -16715,7 +16715,7 @@ VFIO MEDIATED DEVICE DRIVERS
- M:	Kirti Wankhede <kwankhede@nvidia.com>
- L:	kvm@vger.kernel.org
- S:	Maintained
--F:	Documentation/vfio-mediated-device.txt
-+F:	Documentation/vfio-mediated-device.rst
- F:	drivers/vfio/mdev/
- F:	include/linux/mdev.h
- F:	samples/vfio-mdev/
-diff --git a/arch/Kconfig b/arch/Kconfig
-index e8d19c3cb91f..c2f2bee5b17b 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -141,7 +141,7 @@ config HAVE_64BIT_ALIGNED_ACCESS
- 	  accesses are required to be 64 bit aligned in this way even
- 	  though it is not a 64 bit architecture.
- 
--	  See Documentation/unaligned-memory-access.txt for more
-+	  See Documentation/unaligned-memory-access.rst for more
- 	  information on the topic of unaligned memory accesses.
- 
- config HAVE_EFFICIENT_UNALIGNED_ACCESS
-@@ -160,7 +160,7 @@ config HAVE_EFFICIENT_UNALIGNED_ACCESS
- 	  problems with received packets if doing so would not help
- 	  much.
- 
--	  See Documentation/unaligned-memory-access.txt for more
-+	  See Documentation/unaligned-memory-access.rst for more
- 	  information on the topic of unaligned memory accesses.
- 
- config ARCH_USE_BUILTIN_BSWAP
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 71b35159b4ce..2d0a14a4286c 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -1266,7 +1266,7 @@ config SMP
- 	  will run faster if you say N here.
- 
- 	  See also <file:Documentation/x86/i386/IO-APIC.rst>,
--	  <file:Documentation/lockup-watchdogs.txt> and the SMP-HOWTO available at
-+	  <file:Documentation/lockup-watchdogs.rst> and the SMP-HOWTO available at
- 	  <http://tldp.org/HOWTO/SMP-HOWTO.html>.
- 
- 	  If you don't know what to do here, say N.
-diff --git a/arch/ia64/hp/common/sba_iommu.c b/arch/ia64/hp/common/sba_iommu.c
-index 3d24cc43385b..8f97d42316e8 100644
---- a/arch/ia64/hp/common/sba_iommu.c
-+++ b/arch/ia64/hp/common/sba_iommu.c
-@@ -912,7 +912,7 @@ sba_mark_invalid(struct ioc *ioc, dma_addr_t iova, size_t byte_cnt)
-  * @dir: dma direction
-  * @attrs: optional dma attributes
-  *
-- * See Documentation/DMA-API-HOWTO.txt
-+ * See Documentation/DMA-API-HOWTO.rst
-  */
- static dma_addr_t sba_map_page(struct device *dev, struct page *page,
- 			       unsigned long poff, size_t size,
-@@ -1033,7 +1033,7 @@ sba_mark_clean(struct ioc *ioc, dma_addr_t iova, size_t size)
-  * @dir:  R/W or both.
-  * @attrs: optional dma attributes
-  *
-- * See Documentation/DMA-API-HOWTO.txt
-+ * See Documentation/DMA-API-HOWTO.rst
-  */
- static void sba_unmap_page(struct device *dev, dma_addr_t iova, size_t size,
- 			   enum dma_data_direction dir, unsigned long attrs)
-@@ -1110,7 +1110,7 @@ static void sba_unmap_page(struct device *dev, dma_addr_t iova, size_t size,
-  * @size:  number of bytes mapped in driver buffer.
-  * @dma_handle:  IOVA of new buffer.
-  *
-- * See Documentation/DMA-API-HOWTO.txt
-+ * See Documentation/DMA-API-HOWTO.rst
-  */
- static void *
- sba_alloc_coherent(struct device *dev, size_t size, dma_addr_t *dma_handle,
-@@ -1167,7 +1167,7 @@ sba_alloc_coherent(struct device *dev, size_t size, dma_addr_t *dma_handle,
-  * @vaddr:  virtual address IOVA of "consistent" buffer.
-  * @dma_handler:  IO virtual address of "consistent" buffer.
-  *
-- * See Documentation/DMA-API-HOWTO.txt
-+ * See Documentation/DMA-API-HOWTO.rst
-  */
- static void sba_free_coherent(struct device *dev, size_t size, void *vaddr,
- 			      dma_addr_t dma_handle, unsigned long attrs)
-@@ -1430,7 +1430,7 @@ static void sba_unmap_sg_attrs(struct device *dev, struct scatterlist *sglist,
-  * @dir:  R/W or both.
-  * @attrs: optional dma attributes
-  *
-- * See Documentation/DMA-API-HOWTO.txt
-+ * See Documentation/DMA-API-HOWTO.rst
-  */
- static int sba_map_sg_attrs(struct device *dev, struct scatterlist *sglist,
- 			    int nents, enum dma_data_direction dir,
-@@ -1529,7 +1529,7 @@ static int sba_map_sg_attrs(struct device *dev, struct scatterlist *sglist,
-  * @dir:  R/W or both.
-  * @attrs: optional dma attributes
-  *
-- * See Documentation/DMA-API-HOWTO.txt
-+ * See Documentation/DMA-API-HOWTO.rst
-  */
- static void sba_unmap_sg_attrs(struct device *dev, struct scatterlist *sglist,
- 			       int nents, enum dma_data_direction dir,
-diff --git a/arch/ia64/sn/pci/pci_dma.c b/arch/ia64/sn/pci/pci_dma.c
-index b7d42e4edc1f..f475fccea152 100644
---- a/arch/ia64/sn/pci/pci_dma.c
-+++ b/arch/ia64/sn/pci/pci_dma.c
-@@ -5,7 +5,7 @@
-  *
-  * Copyright (C) 2000,2002-2005 Silicon Graphics, Inc. All rights reserved.
-  *
-- * Routines for PCI DMA mapping.  See Documentation/DMA-API.txt for
-+ * Routines for PCI DMA mapping.  See Documentation/DMA-API.rst for
-  * a description of how these routines should be used.
-  */
- 
-@@ -72,7 +72,7 @@ EXPORT_SYMBOL(sn_dma_set_mask);
-  * that @dma_handle will have the %PCIIO_DMA_CMD flag set.
-  *
-  * This interface is usually used for "command" streams (e.g. the command
-- * queue for a SCSI controller).  See Documentation/DMA-API.txt for
-+ * queue for a SCSI controller).  See Documentation/DMA-API.rst for
-  * more information.
-  */
- static void *sn_dma_alloc_coherent(struct device *dev, size_t size,
-diff --git a/arch/parisc/Kconfig b/arch/parisc/Kconfig
-index 4860efa91d7b..188fdf4f5080 100644
---- a/arch/parisc/Kconfig
-+++ b/arch/parisc/Kconfig
-@@ -275,7 +275,7 @@ config SMP
- 	  machines, but will use only one CPU of a multiprocessor machine.
- 	  On a uniprocessor machine, the kernel will run faster if you say N.
- 
--	  See also <file:Documentation/lockup-watchdogs.txt> and the SMP-HOWTO
-+	  See also <file:Documentation/lockup-watchdogs.rst> and the SMP-HOWTO
- 	  available at <http://www.tldp.org/docs.html#howto>.
- 
- 	  If you don't know what to do here, say N.
-diff --git a/arch/parisc/kernel/pci-dma.c b/arch/parisc/kernel/pci-dma.c
-index 239162355b58..2bb63062f6c3 100644
---- a/arch/parisc/kernel/pci-dma.c
-+++ b/arch/parisc/kernel/pci-dma.c
-@@ -3,7 +3,7 @@
- ** PARISC 1.1 Dynamic DMA mapping support.
- ** This implementation is for PA-RISC platforms that do not support
- ** I/O TLBs (aka DMA address translation hardware).
--** See Documentation/DMA-API-HOWTO.txt for interface definitions.
-+** See Documentation/DMA-API-HOWTO.rst for interface definitions.
- **
- **      (c) Copyright 1999,2000 Hewlett-Packard Company
- **      (c) Copyright 2000 Grant Grundler
-diff --git a/arch/sh/Kconfig b/arch/sh/Kconfig
-index c7c99e18d5ff..669adef94507 100644
---- a/arch/sh/Kconfig
-+++ b/arch/sh/Kconfig
-@@ -677,7 +677,7 @@ config SMP
- 	  People using multiprocessor machines who say Y here should also say
- 	  Y to "Enhanced Real Time Clock Support", below.
- 
--	  See also <file:Documentation/lockup-watchdogs.txt> and the SMP-HOWTO
-+	  See also <file:Documentation/lockup-watchdogs.rst> and the SMP-HOWTO
- 	  available at <http://www.tldp.org/docs.html#howto>.
- 
- 	  If you don't know what to do here, say N.
-diff --git a/arch/sparc/Kconfig b/arch/sparc/Kconfig
-index 8fc95c7809ef..04a3b2246a2a 100644
---- a/arch/sparc/Kconfig
-+++ b/arch/sparc/Kconfig
-@@ -179,7 +179,7 @@ config SMP
- 	  Y to "Enhanced Real Time Clock Support", below. The "Advanced Power
- 	  Management" code will be disabled if you say Y here.
- 
--	  See also <file:Documentation/lockup-watchdogs.txt> and the SMP-HOWTO
-+	  See also <file:Documentation/lockup-watchdogs.rst> and the SMP-HOWTO
- 	  available at <http://www.tldp.org/docs.html#howto>.
- 
- 	  If you don't know what to do here, say N.
-diff --git a/arch/unicore32/include/asm/io.h b/arch/unicore32/include/asm/io.h
-index cb1d8fd2b16b..86877df4b1ee 100644
---- a/arch/unicore32/include/asm/io.h
-+++ b/arch/unicore32/include/asm/io.h
-@@ -31,7 +31,7 @@ extern void __uc32_iounmap(volatile void __iomem *addr);
-  * ioremap and friends.
-  *
-  * ioremap takes a PCI memory address, as specified in
-- * Documentation/io-mapping.txt.
-+ * Documentation/io-mapping.rst.
-  *
-  */
- #define ioremap(cookie, size)		__uc32_ioremap(cookie, size)
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index a5bee44cfb9d..0d5f0710347c 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -397,7 +397,7 @@ config SMP
- 	  Management" code will be disabled if you say Y here.
- 
- 	  See also <file:Documentation/x86/i386/IO-APIC.rst>,
--	  <file:Documentation/lockup-watchdogs.txt> and the SMP-HOWTO available at
-+	  <file:Documentation/lockup-watchdogs.rst> and the SMP-HOWTO available at
- 	  <http://www.tldp.org/docs.html#howto>.
- 
- 	  If you don't know what to do here, say N.
-@@ -1954,7 +1954,7 @@ config EFI_STUB
-           This kernel feature allows a bzImage to be loaded directly
- 	  by EFI firmware without the use of a bootloader.
- 
--	  See Documentation/efi-stub.txt for more information.
-+	  See Documentation/efi-stub.rst for more information.
- 
- config EFI_MIXED
- 	bool "EFI mixed-mode support"
-diff --git a/arch/x86/include/asm/dma-mapping.h b/arch/x86/include/asm/dma-mapping.h
-index 6b15a24930e0..dfa443fe17c2 100644
---- a/arch/x86/include/asm/dma-mapping.h
-+++ b/arch/x86/include/asm/dma-mapping.h
-@@ -3,8 +3,8 @@
- #define _ASM_X86_DMA_MAPPING_H
- 
- /*
-- * IOMMU interface. See Documentation/DMA-API-HOWTO.txt and
-- * Documentation/DMA-API.txt for documentation.
-+ * IOMMU interface. See Documentation/DMA-API-HOWTO.rst and
-+ * Documentation/DMA-API.rst for documentation.
-  */
- 
- #include <linux/scatterlist.h>
-diff --git a/arch/x86/kernel/amd_gart_64.c b/arch/x86/kernel/amd_gart_64.c
-index a585ea6f686a..03108de30105 100644
---- a/arch/x86/kernel/amd_gart_64.c
-+++ b/arch/x86/kernel/amd_gart_64.c
-@@ -6,7 +6,7 @@
-  * This allows to use PCI devices that only support 32bit addresses on systems
-  * with more than 4GB.
-  *
-- * See Documentation/DMA-API-HOWTO.txt for the interface specification.
-+ * See Documentation/DMA-API-HOWTO.rst for the interface specification.
-  *
-  * Copyright 2002 Andi Kleen, SuSE Labs.
-  */
-diff --git a/block/partitions/Kconfig b/block/partitions/Kconfig
-index 37b9710cc80a..51b28e1e225d 100644
---- a/block/partitions/Kconfig
-+++ b/block/partitions/Kconfig
-@@ -194,7 +194,7 @@ config LDM_PARTITION
- 	  Normal partitions are now called Basic Disks under Windows 2000, XP,
- 	  and Vista.
- 
--	  For a fuller description read <file:Documentation/ldm.txt>.
-+	  For a fuller description read <file:Documentation/ldm.rst>.
- 
- 	  If unsure, say N.
- 
-diff --git a/drivers/base/core.c b/drivers/base/core.c
-index b4c64528f13c..f98b33e9ec19 100644
---- a/drivers/base/core.c
-+++ b/drivers/base/core.c
-@@ -1063,7 +1063,7 @@ static void device_release(struct kobject *kobj)
- 	else if (dev->class && dev->class->dev_release)
- 		dev->class->dev_release(dev);
- 	else
--		WARN(1, KERN_ERR "Device '%s' does not have a release() function, it is broken and must be fixed. See Documentation/kobject.txt.\n",
-+		WARN(1, KERN_ERR "Device '%s' does not have a release() function, it is broken and must be fixed. See Documentation/kobject.rst.\n",
- 			dev_name(dev));
- 	kfree(p);
- }
-diff --git a/drivers/char/Kconfig b/drivers/char/Kconfig
-index bb734066075f..ba90034f5b8f 100644
---- a/drivers/char/Kconfig
-+++ b/drivers/char/Kconfig
-@@ -291,7 +291,7 @@ config RTC
- 	  and set the RTC in an SMP compatible fashion.
- 
- 	  If you think you have a use for such a device (such as periodic data
--	  sampling), then say Y here, and read <file:Documentation/rtc.txt>
-+	  sampling), then say Y here, and read <file:Documentation/rtc.rst>
- 	  for details.
- 
- 	  To compile this driver as a module, choose M here: the
-@@ -313,7 +313,7 @@ config JS_RTC
- 	  /dev/rtc.
- 
- 	  If you think you have a use for such a device (such as periodic data
--	  sampling), then say Y here, and read <file:Documentation/rtc.txt>
-+	  sampling), then say Y here, and read <file:Documentation/rtc.rst>
- 	  for details.
- 
- 	  To compile this driver as a module, choose M here: the
-diff --git a/drivers/char/hw_random/core.c b/drivers/char/hw_random/core.c
-index 95be7228f327..41acde92bedc 100644
---- a/drivers/char/hw_random/core.c
-+++ b/drivers/char/hw_random/core.c
-@@ -4,7 +4,7 @@
-  * Copyright 2006 Michael Buesch <m@bues.ch>
-  * Copyright 2005 (c) MontaVista Software, Inc.
-  *
-- * Please read Documentation/hw_random.txt for details on use.
-+ * Please read Documentation/hw_random.rst for details on use.
-  *
-  * This software may be used and distributed according to the terms
-  * of the GNU General Public License, incorporated herein by reference.
-diff --git a/drivers/char/ipmi/Kconfig b/drivers/char/ipmi/Kconfig
-index 4bad0614109b..e59ee81bc22f 100644
---- a/drivers/char/ipmi/Kconfig
-+++ b/drivers/char/ipmi/Kconfig
-@@ -14,7 +14,7 @@ menuconfig IPMI_HANDLER
-          IPMI is a standard for managing sensors (temperature,
-          voltage, etc.) in a system.
- 
--         See <file:Documentation/IPMI.txt> for more details on the driver.
-+         See <file:Documentation/IPMI.rst> for more details on the driver.
- 
- 	 If unsure, say N.
- 
-diff --git a/drivers/char/ipmi/ipmi_si_hotmod.c b/drivers/char/ipmi/ipmi_si_hotmod.c
-index 42a925f8cf69..2032f4ac52ac 100644
---- a/drivers/char/ipmi/ipmi_si_hotmod.c
-+++ b/drivers/char/ipmi/ipmi_si_hotmod.c
-@@ -18,7 +18,7 @@ static int hotmod_handler(const char *val, const struct kernel_param *kp);
- 
- module_param_call(hotmod, hotmod_handler, NULL, NULL, 0200);
- MODULE_PARM_DESC(hotmod, "Add and remove interfaces.  See"
--		 " Documentation/IPMI.txt in the kernel sources for the"
-+		 " Documentation/IPMI.rst in the kernel sources for the"
- 		 " gory details.");
- 
- /*
-diff --git a/drivers/char/ipmi/ipmi_si_intf.c b/drivers/char/ipmi/ipmi_si_intf.c
-index da5b6723329a..7f729609979c 100644
---- a/drivers/char/ipmi/ipmi_si_intf.c
-+++ b/drivers/char/ipmi/ipmi_si_intf.c
-@@ -977,7 +977,7 @@ static inline int ipmi_thread_busy_wait(enum si_sm_result smi_result,
-  * that are not BT and do not have interrupts.  It starts spinning
-  * when an operation is complete or until max_busy tells it to stop
-  * (if that is enabled).  See the paragraph on kimid_max_busy_us in
-- * Documentation/IPMI.txt for details.
-+ * Documentation/IPMI.rst for details.
-  */
- static int ipmi_thread(void *data)
- {
-diff --git a/drivers/dma-buf/Kconfig b/drivers/dma-buf/Kconfig
-index d5f915830b68..9afc7bb638c3 100644
---- a/drivers/dma-buf/Kconfig
-+++ b/drivers/dma-buf/Kconfig
-@@ -15,7 +15,7 @@ config SYNC_FILE
- 	  associated with a buffer. When a job is submitted to the GPU a fence
- 	  is attached to the buffer and is transferred via userspace, using Sync
- 	  Files fds, to the DRM driver for example. More details at
--	  Documentation/sync_file.txt.
-+	  Documentation/sync_file.rst.
- 
- config SW_SYNC
- 	bool "Sync File Validation Framework"
-diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
-index c377c989000c..85cecf58bcf5 100644
---- a/drivers/gpio/Kconfig
-+++ b/drivers/gpio/Kconfig
-@@ -1300,7 +1300,7 @@ config GPIO_BT8XX
- 	  The card needs to be physically altered for using it as a
- 	  GPIO card. For more information on how to build a GPIO card
- 	  from a BT8xx TV card, see the documentation file at
--	  Documentation/bt8xxgpio.txt
-+	  Documentation/bt8xxgpio.rst
- 
- 	  If unsure, say N.
- 
-diff --git a/drivers/parisc/sba_iommu.c b/drivers/parisc/sba_iommu.c
-index 296668caf7e5..267ceb5f7838 100644
---- a/drivers/parisc/sba_iommu.c
-+++ b/drivers/parisc/sba_iommu.c
-@@ -666,7 +666,7 @@ sba_mark_invalid(struct ioc *ioc, dma_addr_t iova, size_t byte_cnt)
-  * @dev: instance of PCI owned by the driver that's asking
-  * @mask:  number of address bits this PCI device can handle
-  *
-- * See Documentation/DMA-API-HOWTO.txt
-+ * See Documentation/DMA-API-HOWTO.rst
-  */
- static int sba_dma_supported( struct device *dev, u64 mask)
- {
-@@ -678,7 +678,7 @@ static int sba_dma_supported( struct device *dev, u64 mask)
- 		return(0);
- 	}
- 
--	/* Documentation/DMA-API-HOWTO.txt tells drivers to try 64-bit
-+	/* Documentation/DMA-API-HOWTO.rst tells drivers to try 64-bit
- 	 * first, then fall back to 32-bit if that fails.
- 	 * We are just "encouraging" 32-bit DMA masks here since we can
- 	 * never allow IOMMU bypass unless we add special support for ZX1.
-@@ -706,7 +706,7 @@ static int sba_dma_supported( struct device *dev, u64 mask)
-  * @size:  number of bytes to map in driver buffer.
-  * @direction:  R/W or both.
-  *
-- * See Documentation/DMA-API-HOWTO.txt
-+ * See Documentation/DMA-API-HOWTO.rst
-  */
- static dma_addr_t
- sba_map_single(struct device *dev, void *addr, size_t size,
-@@ -796,7 +796,7 @@ sba_map_page(struct device *dev, struct page *page, unsigned long offset,
-  * @size:  number of bytes mapped in driver buffer.
-  * @direction:  R/W or both.
-  *
-- * See Documentation/DMA-API-HOWTO.txt
-+ * See Documentation/DMA-API-HOWTO.rst
-  */
- static void
- sba_unmap_page(struct device *dev, dma_addr_t iova, size_t size,
-@@ -875,7 +875,7 @@ sba_unmap_page(struct device *dev, dma_addr_t iova, size_t size,
-  * @size:  number of bytes mapped in driver buffer.
-  * @dma_handle:  IOVA of new buffer.
-  *
-- * See Documentation/DMA-API-HOWTO.txt
-+ * See Documentation/DMA-API-HOWTO.rst
-  */
- static void *sba_alloc(struct device *hwdev, size_t size, dma_addr_t *dma_handle,
- 		gfp_t gfp, unsigned long attrs)
-@@ -906,7 +906,7 @@ static void *sba_alloc(struct device *hwdev, size_t size, dma_addr_t *dma_handle
-  * @vaddr:  virtual address IOVA of "consistent" buffer.
-  * @dma_handler:  IO virtual address of "consistent" buffer.
-  *
-- * See Documentation/DMA-API-HOWTO.txt
-+ * See Documentation/DMA-API-HOWTO.rst
-  */
- static void
- sba_free(struct device *hwdev, size_t size, void *vaddr,
-@@ -941,7 +941,7 @@ int dump_run_sg = 0;
-  * @nents:  number of entries in list
-  * @direction:  R/W or both.
-  *
-- * See Documentation/DMA-API-HOWTO.txt
-+ * See Documentation/DMA-API-HOWTO.rst
-  */
- static int
- sba_map_sg(struct device *dev, struct scatterlist *sglist, int nents,
-@@ -1025,7 +1025,7 @@ sba_map_sg(struct device *dev, struct scatterlist *sglist, int nents,
-  * @nents:  number of entries in list
-  * @direction:  R/W or both.
-  *
-- * See Documentation/DMA-API-HOWTO.txt
-+ * See Documentation/DMA-API-HOWTO.rst
-  */
- static void 
- sba_unmap_sg(struct device *dev, struct scatterlist *sglist, int nents,
-diff --git a/drivers/pci/switch/Kconfig b/drivers/pci/switch/Kconfig
-index aee28a5bb98f..c1f5226cd0e5 100644
---- a/drivers/pci/switch/Kconfig
-+++ b/drivers/pci/switch/Kconfig
-@@ -9,7 +9,7 @@ config PCI_SW_SWITCHTEC
- 	 Enables support for the management interface for the MicroSemi
- 	 Switchtec series of PCIe switches. Supports userspace access
- 	 to submit MRPC commands to the switch via /dev/switchtecX
--	 devices. See <file:Documentation/switchtec.txt> for more
-+	 devices. See <file:Documentation/switchtec.rst> for more
- 	 information.
- 
- endmenu
-diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
-index abae73f72e75..6cd4a620115d 100644
---- a/drivers/platform/x86/Kconfig
-+++ b/drivers/platform/x86/Kconfig
-@@ -118,7 +118,7 @@ config DCDBAS
- 	  Interrupts (SMIs) and Host Control Actions (system power cycle or
- 	  power off after OS shutdown) on certain Dell systems.
- 
--	  See <file:Documentation/dcdbas.txt> for more details on the driver
-+	  See <file:Documentation/dcdbas.rst> for more details on the driver
- 	  and the Dell systems on which Dell systems management software makes
- 	  use of this driver.
- 
-@@ -259,7 +259,7 @@ config DELL_RBU
- 	 DELL system. Note you need a Dell OpenManage or Dell Update package (DUP)
- 	 supporting application to communicate with the BIOS regarding the new
- 	 image for the image update to take effect.
--	 See <file:Documentation/dell_rbu.txt> for more details on the driver.
-+	 See <file:Documentation/dell_rbu.rst> for more details on the driver.
- 
- 
- config FUJITSU_LAPTOP
-diff --git a/drivers/platform/x86/dcdbas.c b/drivers/platform/x86/dcdbas.c
-index 12cf9475ac85..ba8dff3511ec 100644
---- a/drivers/platform/x86/dcdbas.c
-+++ b/drivers/platform/x86/dcdbas.c
-@@ -7,7 +7,7 @@
-  *  and Host Control Actions (power cycle or power off after OS shutdown) on
-  *  Dell systems.
-  *
-- *  See Documentation/dcdbas.txt for more information.
-+ *  See Documentation/dcdbas.rst for more information.
-  *
-  *  Copyright (C) 1995-2006 Dell Inc.
-  */
-diff --git a/drivers/platform/x86/dell_rbu.c b/drivers/platform/x86/dell_rbu.c
-index a58fc10293ee..18400bb38e09 100644
---- a/drivers/platform/x86/dell_rbu.c
-+++ b/drivers/platform/x86/dell_rbu.c
-@@ -24,7 +24,7 @@
-  * on every time the packet data is written. This driver requires an
-  * application to break the BIOS image in to fixed sized packet chunks.
-  *
-- * See Documentation/dell_rbu.txt for more info.
-+ * See Documentation/dell_rbu.rst for more info.
-  */
- #include <linux/init.h>
- #include <linux/module.h>
-diff --git a/drivers/pnp/isapnp/Kconfig b/drivers/pnp/isapnp/Kconfig
-index 4b58a3dcb52b..c4ddf41c7fb8 100644
---- a/drivers/pnp/isapnp/Kconfig
-+++ b/drivers/pnp/isapnp/Kconfig
-@@ -7,6 +7,6 @@ config ISAPNP
- 	depends on ISA || COMPILE_TEST
- 	help
- 	  Say Y here if you would like support for ISA Plug and Play devices.
--	  Some information is in <file:Documentation/isapnp.txt>.
-+	  Some information is in <file:Documentation/isapnp.rst>.
- 
- 	  If unsure, say Y.
-diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
-index e5a7a454fe17..5d6151392571 100644
---- a/drivers/vfio/Kconfig
-+++ b/drivers/vfio/Kconfig
-@@ -25,7 +25,7 @@ menuconfig VFIO
- 	select VFIO_IOMMU_TYPE1 if (X86 || S390 || ARM || ARM64)
- 	help
- 	  VFIO provides a framework for secure userspace device drivers.
--	  See Documentation/vfio.txt for more details.
-+	  See Documentation/vfio.rst for more details.
- 
- 	  If you don't know what to do here, say N.
- 
-diff --git a/drivers/vfio/mdev/Kconfig b/drivers/vfio/mdev/Kconfig
-index ba94a076887f..10ec404acbfc 100644
---- a/drivers/vfio/mdev/Kconfig
-+++ b/drivers/vfio/mdev/Kconfig
-@@ -6,7 +6,7 @@ config VFIO_MDEV
- 	default n
- 	help
- 	  Provides a framework to virtualize devices.
--	  See Documentation/vfio-mediated-device.txt for more details.
-+	  See Documentation/vfio-mediated-device.rst for more details.
- 
- 	  If you don't know what do here, say N.
- 
-diff --git a/include/asm-generic/bitops/atomic.h b/include/asm-generic/bitops/atomic.h
-index dd90c9792909..6ee11717bb65 100644
---- a/include/asm-generic/bitops/atomic.h
-+++ b/include/asm-generic/bitops/atomic.h
-@@ -8,7 +8,7 @@
- 
- /*
-  * Implementation of atomic bitops using atomic-fetch ops.
-- * See Documentation/atomic_bitops.txt for details.
-+ * See Documentation/atomic_bitops.rst for details.
-  */
- 
- static inline void set_bit(unsigned int nr, volatile unsigned long *p)
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index 6309a721394b..7ff3fcd73cec 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -14,7 +14,7 @@
- 
+-============ End of Document =================================
+diff --git a/Documentation/vm/unevictable-lru.rst b/Documentation/vm/unevictable-lru.rst
+index c6d94118fbcc..8ba656f37cd8 100644
+--- a/Documentation/vm/unevictable-lru.rst
++++ b/Documentation/vm/unevictable-lru.rst
+@@ -439,7 +439,7 @@ Compacting MLOCKED Pages
+ 
+ The unevictable LRU can be scanned for compactable regions and the default
+ behavior is to do so.  /proc/sys/vm/compact_unevictable_allowed controls
+-this behavior (see Documentation/sysctl/vm.txt).  Once scanning of the
++this behavior (see Documentation/sysctl/vm.rst).  Once scanning of the
+ unevictable LRU is enabled, the work of compaction is mostly handled by
+ the page migration code and the same work flow as described in MIGRATING
+ MLOCKED PAGES will apply.
+diff --git a/kernel/panic.c b/kernel/panic.c
+index 4d9f55bf7d38..e0ea74bbb41d 100644
+--- a/kernel/panic.c
++++ b/kernel/panic.c
+@@ -372,7 +372,7 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
  /**
-  * List of possible attributes associated with a DMA mapping. The semantics
-- * of each attribute should be defined in Documentation/DMA-attributes.txt.
-+ * of each attribute should be defined in Documentation/DMA-attributes.rst.
+  * print_tainted - return a string to represent the kernel taint state.
   *
-  * DMA_ATTR_WRITE_BARRIER: DMA to a memory region with this attribute
-  * forces all pending DMA writes to complete.
-diff --git a/include/linux/hw_random.h b/include/linux/hw_random.h
-index c0b93e0ff0c0..e533eac9942b 100644
---- a/include/linux/hw_random.h
-+++ b/include/linux/hw_random.h
-@@ -1,7 +1,7 @@
- /*
- 	Hardware Random Number Generator
- 
--	Please read Documentation/hw_random.txt for details on use.
-+	Please read Documentation/hw_random.rst for details on use.
- 
- 	----------------------------------------------------------
- 	This software may be used and distributed according to the terms
-diff --git a/include/linux/io-mapping.h b/include/linux/io-mapping.h
-index 58df02bd93c9..b90c540696a4 100644
---- a/include/linux/io-mapping.h
-+++ b/include/linux/io-mapping.h
-@@ -28,7 +28,7 @@
-  * The io_mapping mechanism provides an abstraction for mapping
-  * individual pages from an io device to the CPU in an efficient fashion.
+- * For individual taint flag meanings, see Documentation/sysctl/kernel.txt
++ * For individual taint flag meanings, see Documentation/sysctl/kernel.rst
   *
-- * See Documentation/io-mapping.txt
-+ * See Documentation/io-mapping.rst
-  */
- 
- struct io_mapping {
-diff --git a/include/linux/jump_label.h b/include/linux/jump_label.h
-index 3e113a1fa0f1..c3947cab2d27 100644
---- a/include/linux/jump_label.h
-+++ b/include/linux/jump_label.h
-@@ -68,7 +68,7 @@
-  * Lacking toolchain and or architecture support, static keys fall back to a
-  * simple conditional branch.
-  *
-- * Additional babbling in: Documentation/static-keys.txt
-+ * Additional babbling in: Documentation/static-keys.rst
-  */
- 
- #ifndef __ASSEMBLY__
-diff --git a/include/linux/kobject.h b/include/linux/kobject.h
-index e2ca0a292e21..16f66fe28ec2 100644
---- a/include/linux/kobject.h
-+++ b/include/linux/kobject.h
-@@ -7,7 +7,7 @@
-  * Copyright (c) 2006-2008 Greg Kroah-Hartman <greg@kroah.com>
-  * Copyright (c) 2006-2008 Novell Inc.
-  *
-- * Please read Documentation/kobject.txt before using the kobject
-+ * Please read Documentation/kobject.rst before using the kobject
-  * interface, ESPECIALLY the parts about reference counts and object
-  * destructors.
-  */
-diff --git a/include/linux/kobject_ns.h b/include/linux/kobject_ns.h
-index 069aa2ebef90..8c86c4641739 100644
---- a/include/linux/kobject_ns.h
-+++ b/include/linux/kobject_ns.h
+  * The string is overwritten by the next call to print_tainted(),
+  * but is always NULL terminated.
+diff --git a/mm/swap.c b/mm/swap.c
+index 607c48229a1d..83a2a15f4836 100644
+--- a/mm/swap.c
++++ b/mm/swap.c
 @@ -8,7 +8,7 @@
-  *
-  * Split from kobject.h by David Howells (dhowells@redhat.com)
-  *
-- * Please read Documentation/kobject.txt before using the kobject
-+ * Please read Documentation/kobject.rst before using the kobject
-  * interface, ESPECIALLY the parts about reference counts and object
-  * destructors.
-  */
-diff --git a/include/linux/rbtree.h b/include/linux/rbtree.h
-index e6337fce08f2..2c579b6000a5 100644
---- a/include/linux/rbtree.h
-+++ b/include/linux/rbtree.h
-@@ -11,7 +11,7 @@
-   I know it's not the cleaner way,  but in C (not in C++) to get
-   performances and genericity...
- 
--  See Documentation/rbtree.txt for documentation and samples.
-+  See Documentation/rbtree.rst for documentation and samples.
- */
- 
- #ifndef	_LINUX_RBTREE_H
-diff --git a/include/linux/rbtree_augmented.h b/include/linux/rbtree_augmented.h
-index 0f902ccb48b0..b3f64a2935ae 100644
---- a/include/linux/rbtree_augmented.h
-+++ b/include/linux/rbtree_augmented.h
-@@ -21,7 +21,7 @@
-  * rb_insert_augmented() and rb_erase_augmented() are intended to be public.
-  * The rest are implementation details you are not expected to depend on.
-  *
-- * See Documentation/rbtree.txt for documentation and samples.
-+ * See Documentation/rbtree.rst for documentation and samples.
-  */
- 
- struct rb_augment_callbacks {
-diff --git a/include/media/videobuf-dma-sg.h b/include/media/videobuf-dma-sg.h
-index 01bd142b979d..50a549e5b477 100644
---- a/include/media/videobuf-dma-sg.h
-+++ b/include/media/videobuf-dma-sg.h
-@@ -34,7 +34,7 @@
-  *	does memory allocation too using vmalloc_32().
-  *
-  * videobuf_dma_*()
-- *	see Documentation/DMA-API-HOWTO.txt, these functions to
-+ *	see Documentation/DMA-API-HOWTO.rst, these functions to
-  *	basically the same.  The map function does also build a
-  *	scatterlist for the buffer (and unmap frees it ...)
-  *
-diff --git a/init/Kconfig b/init/Kconfig
-index 1707cf0802a7..501126df6336 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -1807,7 +1807,7 @@ config MMAP_ALLOW_UNINITIALIZED
- 	  userspace.  Since that isn't generally a problem on no-MMU systems,
- 	  it is normally safe to say Y here.
- 
--	  See Documentation/nommu-mmap.txt for more information.
-+	  See Documentation/nommu-mmap.rst for more information.
- 
- config SYSTEM_DATA_VERIFICATION
- 	def_bool n
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 099002d84f46..616919c774a5 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -1069,7 +1069,7 @@ static void check_unmap(struct dma_debug_entry *ref)
- 	/*
- 	 * Drivers should use dma_mapping_error() to check the returned
- 	 * addresses of dma_map_single() and dma_map_page().
--	 * If not, print this warning message. See Documentation/DMA-API.txt.
-+	 * If not, print this warning message. See Documentation/DMA-API.rst.
- 	 */
- 	if (entry->map_err_type == MAP_ERR_NOT_CHECKED) {
- 		err_printk(ref->dev, entry,
-diff --git a/kernel/padata.c b/kernel/padata.c
-index 2d2fddbb7a4c..a567973bb1ba 100644
---- a/kernel/padata.c
-+++ b/kernel/padata.c
-@@ -2,7 +2,7 @@
  /*
-  * padata.c - generic interface to process data streams in parallel
-  *
-- * See Documentation/padata.txt for an api documentation.
-+ * See Documentation/padata.rst for an api documentation.
-  *
-  * Copyright (C) 2008, 2009 secunet Security Networks AG
-  * Copyright (C) 2008, 2009 Steffen Klassert <steffen.klassert@secunet.com>
-diff --git a/lib/Kconfig b/lib/Kconfig
-index 90623a0e1942..58e9dae6f424 100644
---- a/lib/Kconfig
-+++ b/lib/Kconfig
-@@ -420,7 +420,7 @@ config INTERVAL_TREE
- 
- 	  See:
- 
--		Documentation/rbtree.txt
-+		Documentation/rbtree.rst
- 
- 	  for more information.
- 
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 45c37f5c96ea..ce47efa5f4e4 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -1682,7 +1682,7 @@ config PROVIDE_OHCI1394_DMA_INIT
- 	  This code (~1k) is freed after boot. By then, the firewire stack
- 	  in charge of the OHCI-1394 controllers should be used instead.
- 
--	  See Documentation/debugging-via-ohci1394.txt for more information.
-+	  See Documentation/debugging-via-ohci1394.rst for more information.
- 
- menuconfig RUNTIME_TESTING_MENU
- 	bool "Runtime Testing"
-diff --git a/lib/crc32.c b/lib/crc32.c
-index 4a20455d1f61..0de37ccc70dd 100644
---- a/lib/crc32.c
-+++ b/lib/crc32.c
-@@ -24,7 +24,7 @@
-  * Version 2.  See the file COPYING for more details.
-  */
- 
--/* see: Documentation/crc32.txt for a description of algorithms */
-+/* see: Documentation/crc32.rst for a description of algorithms */
- 
- #include <linux/crc32.h>
- #include <linux/crc32poly.h>
-diff --git a/lib/kobject.c b/lib/kobject.c
-index f2ccdbac8ed9..03157ff88495 100644
---- a/lib/kobject.c
-+++ b/lib/kobject.c
-@@ -6,7 +6,7 @@
-  * Copyright (c) 2006-2007 Greg Kroah-Hartman <greg@kroah.com>
-  * Copyright (c) 2006-2007 Novell Inc.
-  *
-- * Please see the file Documentation/kobject.txt for critical information
-+ * Please see the file Documentation/kobject.rst for critical information
-  * about using the kobject interface.
-  */
- 
-@@ -668,7 +668,7 @@ static void kobject_cleanup(struct kobject *kobj)
- 		 kobject_name(kobj), kobj, __func__, kobj->parent);
- 
- 	if (t && !t->release)
--		pr_debug("kobject: '%s' (%p): does not have a release() function, it is broken and must be fixed. See Documentation/kobject.txt.\n",
-+		pr_debug("kobject: '%s' (%p): does not have a release() function, it is broken and must be fixed. See Documentation/kobject.rst.\n",
- 			 kobject_name(kobj), kobj);
- 
- 	/* send "remove" if the caller did not do it but sent "add" */
-diff --git a/lib/lzo/lzo1x_decompress_safe.c b/lib/lzo/lzo1x_decompress_safe.c
-index 2717c7963acd..1642c28e6627 100644
---- a/lib/lzo/lzo1x_decompress_safe.c
-+++ b/lib/lzo/lzo1x_decompress_safe.c
-@@ -32,7 +32,7 @@
-  * depending on the base count. Since the base count is taken from a u8
-  * and a few bits, it is safe to assume that it will always be lower than
-  * or equal to 2*255, thus we can always prevent any overflow by accepting
-- * two less 255 steps. See Documentation/lzo.txt for more information.
-+ * two less 255 steps. See Documentation/lzo.rst for more information.
-  */
- #define MAX_255_COUNT      ((((size_t)~0) / 255) - 2)
- 
-diff --git a/lib/xz/Kconfig b/lib/xz/Kconfig
-index 22528743d4ce..314a89c13545 100644
---- a/lib/xz/Kconfig
-+++ b/lib/xz/Kconfig
-@@ -5,7 +5,7 @@ config XZ_DEC
- 	help
- 	  LZMA2 compression algorithm and BCJ filters are supported using
- 	  the .xz file format as the container. For integrity checking,
--	  CRC32 is supported. See Documentation/xz.txt for more information.
-+	  CRC32 is supported. See Documentation/xz.rst for more information.
- 
- if XZ_DEC
- 
-diff --git a/mm/Kconfig b/mm/Kconfig
-index 7c41d2300e07..ed5fe68590f4 100644
---- a/mm/Kconfig
-+++ b/mm/Kconfig
-@@ -369,7 +369,7 @@ config NOMMU_INITIAL_TRIM_EXCESS
- 	  This option specifies the initial value of this option.  The default
- 	  of 1 says that all excess pages should be trimmed.
- 
--	  See Documentation/nommu-mmap.txt for more information.
-+	  See Documentation/nommu-mmap.rst for more information.
- 
- config TRANSPARENT_HUGEPAGE
- 	bool "Transparent Hugepage Support"
-diff --git a/mm/nommu.c b/mm/nommu.c
-index b2823519f8cd..30a071ba838d 100644
---- a/mm/nommu.c
-+++ b/mm/nommu.c
-@@ -5,7 +5,7 @@
-  *  Replacement code for mm functions to support CPU's that don't
-  *  have any form of memory management unit (thus no virtual memory).
-  *
-- *  See Documentation/nommu-mmap.txt
-+ *  See Documentation/nommu-mmap.rst
-  *
-  *  Copyright (c) 2004-2008 David Howells <dhowells@redhat.com>
-  *  Copyright (c) 2000-2003 David McCullough <davidm@snapgear.com>
-diff --git a/samples/kprobes/kprobe_example.c b/samples/kprobes/kprobe_example.c
-index d693c23a85e8..d76fd05304a5 100644
---- a/samples/kprobes/kprobe_example.c
-+++ b/samples/kprobes/kprobe_example.c
-@@ -5,7 +5,7 @@
-  * stack trace and selected registers when _do_fork() is called.
-  *
-  * For more information on theory of operation of kprobes, see
-- * Documentation/kprobes.txt
-+ * Documentation/kprobes.rst
-  *
-  * You will see the trace data in /var/log/messages and on the console
-  * whenever _do_fork() is invoked to create a new process.
-diff --git a/samples/kprobes/kretprobe_example.c b/samples/kprobes/kretprobe_example.c
-index 186315ca88b3..9a2234ae0286 100644
---- a/samples/kprobes/kretprobe_example.c
-+++ b/samples/kprobes/kretprobe_example.c
-@@ -11,7 +11,7 @@
-  * If no func_name is specified, _do_fork is instrumented
-  *
-  * For more information on theory of operation of kretprobes, see
-- * Documentation/kprobes.txt
-+ * Documentation/kprobes.rst
-  *
-  * Build and insert the kernel module as done in the kprobe example.
-  * You will see the trace data in /var/log/messages and on the console
-diff --git a/scripts/gcc-plugins/Kconfig b/scripts/gcc-plugins/Kconfig
-index e9c677a53c74..b4dc5b116bfe 100644
---- a/scripts/gcc-plugins/Kconfig
-+++ b/scripts/gcc-plugins/Kconfig
-@@ -23,7 +23,7 @@ config GCC_PLUGINS
- 	  GCC plugins are loadable modules that provide extra features to the
- 	  compiler. They are useful for runtime instrumentation and static analysis.
- 
--	  See Documentation/gcc-plugins.txt for details.
-+	  See Documentation/gcc-plugins.rst for details.
- 
- menu "GCC plugins"
- 	depends on GCC_PLUGINS
-diff --git a/security/Kconfig b/security/Kconfig
-index 06a30851511a..4da0d09c3e49 100644
---- a/security/Kconfig
-+++ b/security/Kconfig
-@@ -121,7 +121,7 @@ config INTEL_TXT
- 	  See <http://www.intel.com/technology/security/> for more information
- 	  about Intel(R) TXT.
- 	  See <http://tboot.sourceforge.net> for more information about tboot.
--	  See Documentation/intel_txt.txt for a description of how to enable
-+	  See Documentation/intel_txt.rst for a description of how to enable
- 	  Intel TXT support in a kernel boot.
- 
- 	  If you are unsure as to whether this is required, answer N.
-diff --git a/tools/include/linux/rbtree.h b/tools/include/linux/rbtree.h
-index d83763a5327c..e96d7120ce2b 100644
---- a/tools/include/linux/rbtree.h
-+++ b/tools/include/linux/rbtree.h
-@@ -11,7 +11,7 @@
-   I know it's not the cleaner way,  but in C (not in C++) to get
-   performances and genericity...
- 
--  See Documentation/rbtree.txt for documentation and samples.
-+  See Documentation/rbtree.rst for documentation and samples.
- */
- 
- #ifndef __TOOLS_LINUX_PERF_RBTREE_H
-diff --git a/tools/include/linux/rbtree_augmented.h b/tools/include/linux/rbtree_augmented.h
-index ddd01006ece5..c251bb16f2e9 100644
---- a/tools/include/linux/rbtree_augmented.h
-+++ b/tools/include/linux/rbtree_augmented.h
-@@ -23,7 +23,7 @@
-  * rb_insert_augmented() and rb_erase_augmented() are intended to be public.
-  * The rest are implementation details you are not expected to depend on.
-  *
-- * See Documentation/rbtree.txt for documentation and samples.
-+ * See Documentation/rbtree.rst for documentation and samples.
-  */
- 
- struct rb_augment_callbacks {
+  * This file contains the default values for the operation of the
+  * Linux VM subsystem. Fine-tuning documentation can be found in
+- * Documentation/sysctl/vm.txt.
++ * Documentation/sysctl/vm.rst.
+  * Started 18.12.91
+  * Swap aging added 23.2.95, Stephen Tweedie.
+  * Buffermem limits added 12.3.98, Rik van Riel.
 -- 
 2.21.0
 
