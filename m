@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 483BA4A852
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 19:27:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DD694A862
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 19:28:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730053AbfFRR1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 13:27:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53450 "EHLO mail.kernel.org"
+        id S1730148AbfFRR10 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 13:27:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53764 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729951AbfFRR1B (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Jun 2019 13:27:01 -0400
+        id S1729916AbfFRR1Z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Jun 2019 13:27:25 -0400
 Received: from localhost (unknown [37.142.3.125])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 85286214AF;
-        Tue, 18 Jun 2019 17:26:59 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5326221530;
+        Tue, 18 Jun 2019 17:27:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1560878820;
-        bh=NrsqX8aBYkQD8KUdKGZPVZ1EoarimW8Byo34FyAi85I=;
+        s=default; t=1560878845;
+        bh=k28jaqq5NQ7NOEtnzSnuOfrnvq+K4J2frxFl27m289M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f9vLsO9SsLvWwcc9DAddUdI0Bx1mNci/L4Go6nJGkiX6sZd5FoDLr0YzUen+2rjS0
-         XVQpZ8TU9IZ5fDOIT/P6/dlaQksigpiNe8pr6ALmfBtMn8bk9eSaYSNMqySnr4Gsx0
-         idB/UpeEaL5VMnuDuQbc13qAVlLqMoP6ghaw0eBM=
+        b=gbL3exPtjm10gBUDFAEy4DsvofkK8eR1GsBCreh3r7jzur49lekgcfov2fQC5FRXx
+         DgjQhJe6Mn1SRb1p6tSxEMpMlFPmi2Hpsa7ViYIbGiOznfE6ro0xAUZVfKe5ti0ePT
+         g7K2xgHed+gDMFTos+7bHllms5HEWUxyYDJFjs4M=
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@mellanox.com>
@@ -32,9 +32,9 @@ Cc:     Leon Romanovsky <leonro@mellanox.com>,
         Mark Zhang <markz@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>,
         linux-netdev <netdev@vger.kernel.org>
-Subject: [PATCH rdma-next v4 09/17] IB/mlx5: Support statistic q counter configuration
-Date:   Tue, 18 Jun 2019 20:26:17 +0300
-Message-Id: <20190618172625.13432-10-leon@kernel.org>
+Subject: [PATCH rdma-next v4 10/17] RDMA/nldev: Allow counter auto mode configration through RDMA netlink
+Date:   Tue, 18 Jun 2019 20:26:18 +0300
+Message-Id: <20190618172625.13432-11-leon@kernel.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190618172625.13432-1-leon@kernel.org>
 References: <20190618172625.13432-1-leon@kernel.org>
@@ -47,78 +47,146 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Mark Zhang <markz@mellanox.com>
 
-Add support for ib callbacks counter_bind_qp(), counter_unbind_qp()
-and counter_dealloc().
+Provide an option to enable/disable per-port counter auto mode through
+RDMA netlink. Limit it to users with ADMIN capability only.
 
 Signed-off-by: Mark Zhang <markz@mellanox.com>
 Reviewed-by: Majd Dibbiny <majd@mellanox.com>
 Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
 ---
- drivers/infiniband/hw/mlx5/main.c | 44 +++++++++++++++++++++++++++++++
- 1 file changed, 44 insertions(+)
+ drivers/infiniband/core/nldev.c  | 78 ++++++++++++++++++++++++++++++++
+ include/uapi/rdma/rdma_netlink.h |  8 ++++
+ 2 files changed, 86 insertions(+)
 
-diff --git a/drivers/infiniband/hw/mlx5/main.c b/drivers/infiniband/hw/mlx5/main.c
-index 4493700099d4..ec2bf52634e8 100644
---- a/drivers/infiniband/hw/mlx5/main.c
-+++ b/drivers/infiniband/hw/mlx5/main.c
-@@ -5550,6 +5550,47 @@ static int mlx5_ib_get_hw_stats(struct ib_device *ibdev,
- 	return num_counters;
- }
-
-+static int mlx5_ib_counter_bind_qp(struct rdma_counter *counter,
-+				   struct ib_qp *qp)
-+{
-+	struct mlx5_ib_dev *dev = to_mdev(qp->device);
-+	u16 cnt_set_id = 0;
-+	int err;
-+
-+	if (!counter->id) {
-+		err = mlx5_cmd_alloc_q_counter(dev->mdev,
-+					       &cnt_set_id,
-+					       MLX5_SHARED_RESOURCE_UID);
-+		if (err)
-+			return err;
-+		counter->id = cnt_set_id;
-+	}
-+
-+	err = mlx5_ib_qp_set_counter(qp, counter);
-+	if (err)
-+		goto fail_set_counter;
-+
-+	return 0;
-+
-+fail_set_counter:
-+	mlx5_core_dealloc_q_counter(dev->mdev, cnt_set_id);
-+	counter->id = 0;
-+
-+	return err;
-+}
-+
-+static int mlx5_ib_counter_unbind_qp(struct ib_qp *qp)
-+{
-+	return mlx5_ib_qp_set_counter(qp, NULL);
-+}
-+
-+static int mlx5_ib_counter_dealloc(struct rdma_counter *counter)
-+{
-+	struct mlx5_ib_dev *dev = to_mdev(counter->device);
-+
-+	return mlx5_core_dealloc_q_counter(dev->mdev, counter->id);
-+}
-+
- static int mlx5_ib_rn_get_params(struct ib_device *device, u8 port_num,
- 				 enum rdma_netdev_t type,
- 				 struct rdma_netdev_alloc_params *params)
-@@ -6471,6 +6512,9 @@ static void mlx5_ib_stage_odp_cleanup(struct mlx5_ib_dev *dev)
- static const struct ib_device_ops mlx5_ib_dev_hw_stats_ops = {
- 	.alloc_hw_stats = mlx5_ib_alloc_hw_stats,
- 	.get_hw_stats = mlx5_ib_get_hw_stats,
-+	.counter_bind_qp = mlx5_ib_counter_bind_qp,
-+	.counter_unbind_qp = mlx5_ib_counter_unbind_qp,
-+	.counter_dealloc = mlx5_ib_counter_dealloc,
+diff --git a/drivers/infiniband/core/nldev.c b/drivers/infiniband/core/nldev.c
+index 39dd9b366629..9819dc718928 100644
+--- a/drivers/infiniband/core/nldev.c
++++ b/drivers/infiniband/core/nldev.c
+@@ -120,6 +120,9 @@ static const struct nla_policy nldev_policy[RDMA_NLDEV_ATTR_MAX] = {
+ 	[RDMA_NLDEV_ATTR_DEV_PROTOCOL]		= { .type = NLA_NUL_STRING,
+ 				    .len = RDMA_NLDEV_ATTR_ENTRY_STRLEN },
+ 	[RDMA_NLDEV_NET_NS_FD]			= { .type = NLA_U32 },
++	[RDMA_NLDEV_ATTR_STAT_MODE]		= { .type = NLA_U32 },
++	[RDMA_NLDEV_ATTR_STAT_RES]		= { .type = NLA_U32 },
++	[RDMA_NLDEV_ATTR_STAT_AUTO_MODE_MASK]	= { .type = NLA_U32 },
  };
 
- static int mlx5_ib_stage_counters_init(struct mlx5_ib_dev *dev)
+ static int put_driver_name_print_type(struct sk_buff *msg, const char *name,
+@@ -1388,6 +1391,78 @@ static int nldev_set_sys_set_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	return err;
+ }
+
++static int nldev_stat_set_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
++			       struct netlink_ext_ack *extack)
++{
++	struct nlattr *tb[RDMA_NLDEV_ATTR_MAX];
++	u32 index, port, mode, mask = 0;
++	struct ib_device *device;
++	struct sk_buff *msg;
++	int ret;
++
++	ret = nlmsg_parse(nlh, 0, tb, RDMA_NLDEV_ATTR_MAX - 1,
++			  nldev_policy, extack);
++	/* Currently only counter for QP is supported */
++	if (ret || !tb[RDMA_NLDEV_ATTR_STAT_RES] ||
++	    !tb[RDMA_NLDEV_ATTR_DEV_INDEX] ||
++	    !tb[RDMA_NLDEV_ATTR_PORT_INDEX] || !tb[RDMA_NLDEV_ATTR_STAT_MODE])
++		return -EINVAL;
++
++	if (nla_get_u32(tb[RDMA_NLDEV_ATTR_STAT_RES]) != RDMA_NLDEV_ATTR_RES_QP)
++		return -EINVAL;
++
++	index = nla_get_u32(tb[RDMA_NLDEV_ATTR_DEV_INDEX]);
++	device = ib_device_get_by_index(sock_net(skb->sk), index);
++	if (!device)
++		return -EINVAL;
++
++	port = nla_get_u32(tb[RDMA_NLDEV_ATTR_PORT_INDEX]);
++	if (!rdma_is_port_valid(device, port)) {
++		ret = -EINVAL;
++		goto err;
++	}
++
++	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
++	if (!msg) {
++		ret = -ENOMEM;
++		goto err;
++	}
++	nlh = nlmsg_put(msg, NETLINK_CB(skb).portid, nlh->nlmsg_seq,
++			RDMA_NL_GET_TYPE(RDMA_NL_NLDEV,
++					 RDMA_NLDEV_CMD_STAT_SET),
++			0, 0);
++
++	mode = nla_get_u32(tb[RDMA_NLDEV_ATTR_STAT_MODE]);
++	if (mode != RDMA_COUNTER_MODE_AUTO) {
++		ret = -EMSGSIZE;
++		goto err_msg;
++	}
++
++	if (tb[RDMA_NLDEV_ATTR_STAT_AUTO_MODE_MASK])
++		mask = nla_get_u32(tb[RDMA_NLDEV_ATTR_STAT_AUTO_MODE_MASK]);
++
++	ret = rdma_counter_set_auto_mode(device, port,
++					 mask ? true : false, mask);
++	if (ret)
++		goto err_msg;
++
++	if (nla_put_u32(msg, RDMA_NLDEV_ATTR_STAT_MODE, mode) ||
++	    nla_put_u32(msg, RDMA_NLDEV_ATTR_STAT_AUTO_MODE_MASK, mask)) {
++		ret = -EMSGSIZE;
++		goto err_msg;
++	}
++
++	nlmsg_end(msg, nlh);
++	ib_device_put(device);
++	return rdma_nl_unicast(msg, NETLINK_CB(skb).portid);
++
++err_msg:
++	nlmsg_free(msg);
++err:
++	ib_device_put(device);
++	return ret;
++}
++
+ static const struct rdma_nl_cbs nldev_cb_table[RDMA_NLDEV_NUM_OPS] = {
+ 	[RDMA_NLDEV_CMD_GET] = {
+ 		.doit = nldev_get_doit,
+@@ -1438,6 +1513,9 @@ static const struct rdma_nl_cbs nldev_cb_table[RDMA_NLDEV_NUM_OPS] = {
+ 	},
+ 	[RDMA_NLDEV_CMD_SYS_SET] = {
+ 		.doit = nldev_set_sys_set_doit,
++	},
++	[RDMA_NLDEV_CMD_STAT_SET] = {
++		.doit = nldev_stat_set_doit,
+ 		.flags = RDMA_NL_ADMIN_PERM,
+ 	},
+ };
+diff --git a/include/uapi/rdma/rdma_netlink.h b/include/uapi/rdma/rdma_netlink.h
+index 56ddd4cd30a2..f33fe37b2f3e 100644
+--- a/include/uapi/rdma/rdma_netlink.h
++++ b/include/uapi/rdma/rdma_netlink.h
+@@ -279,6 +279,8 @@ enum rdma_nldev_command {
+
+ 	RDMA_NLDEV_CMD_RES_PD_GET, /* can dump */
+
++	RDMA_NLDEV_CMD_STAT_SET,
++
+ 	RDMA_NLDEV_NUM_OPS
+ };
+
+@@ -490,6 +492,12 @@ enum rdma_nldev_attr {
+ 	 * File descriptor handle of the net namespace object
+ 	 */
+ 	RDMA_NLDEV_NET_NS_FD,			/* u32 */
++	/*
++	 * Counter-specific attributes.
++	 */
++	RDMA_NLDEV_ATTR_STAT_MODE,		/* u32 */
++	RDMA_NLDEV_ATTR_STAT_RES,		/* u32 */
++	RDMA_NLDEV_ATTR_STAT_AUTO_MODE_MASK,	/* u32 */
+
+ 	/*
+ 	 * Always the end
 --
 2.20.1
 
