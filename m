@@ -2,27 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B21A84A19E
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 15:05:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06EE64A19F
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 15:05:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729073AbfFRNFh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 09:05:37 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:42272 "EHLO mx1.redhat.com"
+        id S1729087AbfFRNFn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 09:05:43 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:52240 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726739AbfFRNFh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Jun 2019 09:05:37 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        id S1728385AbfFRNFn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Jun 2019 09:05:43 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 7AFA481114;
-        Tue, 18 Jun 2019 13:05:37 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 29C64C057F3E;
+        Tue, 18 Jun 2019 13:05:43 +0000 (UTC)
 Received: from firesoul.localdomain (ovpn-200-41.brq.redhat.com [10.40.200.41])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8AA42179E3;
-        Tue, 18 Jun 2019 13:05:33 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9ABEF176BC;
+        Tue, 18 Jun 2019 13:05:38 +0000 (UTC)
 Received: from [192.168.5.1] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id B2492306665E6;
-        Tue, 18 Jun 2019 15:05:32 +0200 (CEST)
-Subject: [PATCH net-next v2 05/12] veth: use xdp_release_frame for XDP_PASS
+        by firesoul.localdomain (Postfix) with ESMTP id C4B7B306665E6;
+        Tue, 18 Jun 2019 15:05:37 +0200 (CEST)
+Subject: [PATCH net-next v2 06/12] page_pool: introduce page_pool_free and
+ use in mlx5
 From:   Jesper Dangaard Brouer <brouer@redhat.com>
 To:     netdev@vger.kernel.org,
         Ilias Apalodimas <ilias.apalodimas@linaro.org>,
@@ -31,39 +32,115 @@ To:     netdev@vger.kernel.org,
         Jesper Dangaard Brouer <brouer@redhat.com>
 Cc:     toshiaki.makita1@gmail.com, grygorii.strashko@ti.com,
         ivan.khoronzhuk@linaro.org, mcroce@redhat.com
-Date:   Tue, 18 Jun 2019 15:05:32 +0200
-Message-ID: <156086313267.27760.9434938020742252724.stgit@firesoul>
+Date:   Tue, 18 Jun 2019 15:05:37 +0200
+Message-ID: <156086313774.27760.2643106971734982182.stgit@firesoul>
 In-Reply-To: <156086304827.27760.11339786046465638081.stgit@firesoul>
 References: <156086304827.27760.11339786046465638081.stgit@firesoul>
 User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.28]); Tue, 18 Jun 2019 13:05:37 +0000 (UTC)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Tue, 18 Jun 2019 13:05:43 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Like cpumap use xdp_release_frame() when an xdp_frame got
-converted into an SKB and send towars the network stack.
+In case driver fails to register the page_pool with XDP return API (via
+xdp_rxq_info_reg_mem_model()), then the driver can free the page_pool
+resources more directly than calling page_pool_destroy(), which does a
+unnecessarily RCU free procedure.
+
+This patch is preparing for removing page_pool_destroy(), from driver
+invocation.
 
 Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
 ---
- drivers/net/veth.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c |    6 +++---
+ include/net/page_pool.h                           |   11 +++++++++++
+ net/core/page_pool.c                              |   15 +++++++++++----
+ 3 files changed, 25 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index 52110e54e621..c6916bf1017b 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -547,6 +547,7 @@ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
- 		goto err;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 457cc39423f2..07de9ca4c53c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -545,8 +545,10 @@ static int mlx5e_alloc_rq(struct mlx5e_channel *c,
  	}
+ 	err = xdp_rxq_info_reg_mem_model(&rq->xdp_rxq,
+ 					 MEM_TYPE_PAGE_POOL, rq->page_pool);
+-	if (err)
++	if (err) {
++		page_pool_free(rq->page_pool);
+ 		goto err_free;
++	}
  
-+	xdp_release_frame(frame);
- 	xdp_scrub_frame(frame);
- 	skb->protocol = eth_type_trans(skb, rq->dev);
- err:
+ 	for (i = 0; i < wq_sz; i++) {
+ 		if (rq->wq_type == MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ) {
+@@ -611,8 +613,6 @@ static int mlx5e_alloc_rq(struct mlx5e_channel *c,
+ 	if (rq->xdp_prog)
+ 		bpf_prog_put(rq->xdp_prog);
+ 	xdp_rxq_info_unreg(&rq->xdp_rxq);
+-	if (rq->page_pool)
+-		page_pool_destroy(rq->page_pool);
+ 	mlx5_wq_destroy(&rq->wq_ctrl);
+ 
+ 	return err;
+diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+index e240fac4c5b9..754d980700df 100644
+--- a/include/net/page_pool.h
++++ b/include/net/page_pool.h
+@@ -111,6 +111,17 @@ struct page_pool *page_pool_create(const struct page_pool_params *params);
+ 
+ void page_pool_destroy(struct page_pool *pool);
+ 
++void __page_pool_free(struct page_pool *pool);
++static inline void page_pool_free(struct page_pool *pool)
++{
++	/* When page_pool isn't compiled-in, net/core/xdp.c doesn't
++	 * allow registering MEM_TYPE_PAGE_POOL, but shield linker.
++	 */
++#ifdef CONFIG_PAGE_POOL
++	__page_pool_free(pool);
++#endif
++}
++
+ /* Never call this directly, use helpers below */
+ void __page_pool_put_page(struct page_pool *pool,
+ 			  struct page *page, bool allow_direct);
+diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+index 205af7bd6d09..41391b5dc14c 100644
+--- a/net/core/page_pool.c
++++ b/net/core/page_pool.c
+@@ -292,17 +292,24 @@ static void __page_pool_empty_ring(struct page_pool *pool)
+ 	}
+ }
+ 
++void __page_pool_free(struct page_pool *pool)
++{
++	WARN(pool->alloc.count, "API usage violation");
++	WARN(!ptr_ring_empty(&pool->ring), "ptr_ring is not empty");
++
++	ptr_ring_cleanup(&pool->ring, NULL);
++	kfree(pool);
++}
++EXPORT_SYMBOL(__page_pool_free);
++
+ static void __page_pool_destroy_rcu(struct rcu_head *rcu)
+ {
+ 	struct page_pool *pool;
+ 
+ 	pool = container_of(rcu, struct page_pool, rcu);
+ 
+-	WARN(pool->alloc.count, "API usage violation");
+-
+ 	__page_pool_empty_ring(pool);
+-	ptr_ring_cleanup(&pool->ring, NULL);
+-	kfree(pool);
++	__page_pool_free(pool);
+ }
+ 
+ /* Cleanup and release resources */
 
