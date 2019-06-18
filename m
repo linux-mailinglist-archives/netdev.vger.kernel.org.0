@@ -2,179 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E52334A52F
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 17:20:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9294E4A52C
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 17:20:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729308AbfFRPUj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 11:20:39 -0400
-Received: from hqemgate15.nvidia.com ([216.228.121.64]:9307 "EHLO
-        hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728982AbfFRPUj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 11:20:39 -0400
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate15.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5d0901460000>; Tue, 18 Jun 2019 08:20:38 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Tue, 18 Jun 2019 08:20:37 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Tue, 18 Jun 2019 08:20:37 -0700
-Received: from [10.21.132.148] (172.20.13.39) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 18 Jun
- 2019 15:20:35 +0000
-Subject: Re: [PATCH net-next 3/3] net: stmmac: Convert to phylink and remove
- phylib logic
-From:   Jon Hunter <jonathanh@nvidia.com>
-To:     Jose Abreu <Jose.Abreu@synopsys.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Joao Pinto <Joao.Pinto@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        linux-tegra <linux-tegra@vger.kernel.org>
-References: <cover.1560266175.git.joabreu@synopsys.com>
- <6226d6a0de5929ed07d64b20472c52a86e71383d.1560266175.git.joabreu@synopsys.com>
- <d9ffce3d-4827-fa4a-89e8-0492c4bc1848@nvidia.com>
- <78EB27739596EE489E55E81C33FEC33A0B9C8D6E@DE02WEMBXB.internal.synopsys.com>
- <26cfaeff-a310-3b79-5b57-fd9c93bd8929@nvidia.com>
- <78EB27739596EE489E55E81C33FEC33A0B9C8DD9@DE02WEMBXB.internal.synopsys.com>
- <b66c7578-172f-4443-f4c3-411525e28738@nvidia.com>
-Message-ID: <d96f8bea-f7ef-82ae-01ba-9c97aec0ee38@nvidia.com>
-Date:   Tue, 18 Jun 2019 16:20:33 +0100
+        id S1729720AbfFRPUn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 11:20:43 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:43051 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728982AbfFRPUm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 11:20:42 -0400
+Received: by mail-io1-f65.google.com with SMTP id k20so30645044ios.10
+        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 08:20:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Gm6zrt3+jyOk79FjVLjqIif+2ZGmPF1/TjoosYPa/aY=;
+        b=HhgTn3B5frcZ87brr7+01lN2WHNxic6G3R1o8OJlYQqfp1hc1M3WllIY/XNiGPHaCI
+         Y49KrIQF61r5gxzA3PSinDixPJnXEsEXx6srKhi+lH5frsHNq772xLo9rU0uJRQ0ebi3
+         3w56DiGhe4EdCPahcmsF3c9JTDGkepUtjqCViyswiVcC0HxhoXjc78KopLoqO0ENMWUL
+         AWvZTUtqNEkFjvosSqLLdX6t7RDLdskTguOS4heP41b4rfNadXsjMO1ltzxQBUjRiV9x
+         3lNj2/XsHUqF5UiCjHgOaLMMf59YVbkgLlt7NZqFdjvl3iv8Wi3VgT4dH65UXvzeg9f7
+         8obg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Gm6zrt3+jyOk79FjVLjqIif+2ZGmPF1/TjoosYPa/aY=;
+        b=KmLv+NFBy2XtCQYSYUWWa6H6O1FMffSyLhgw/wBT38vIwil3zjTJop+bOfMKGQygod
+         EPw/3zm/ZZeJrrEgiUj4VR/1x6rZUn479HkKAgJBPyAiryZE+NjQpZ2aNQJ1vZ4deTQq
+         1CrZ2yKTj4niJInHzFY4yQhzxmdp+8RjJx/RVwRrPyecxEyURJvP7ed2Jb6WE8Madw/0
+         uh7j0cliJiSdQcfLLWxgl3L05HcXhOqR0YQbl2ohgLGd6WJKwUXWrWK+3068GJtKWvw7
+         941OFF6+SyQXGnnn5I/N4Qxlk50TVEo/YCKHf17b2COw133LBEoGu2yFp87TbaUllNLH
+         ViwA==
+X-Gm-Message-State: APjAAAXeYCtFJIHF8azKsFuZ0JQgDn/yWK7MeSRFVTeZl4dvhAelfjCO
+        MMhx9duXhNIxkBdEEmNpEdiytMw69dA=
+X-Google-Smtp-Source: APXvYqzN+CqWZh0iUp59ZmRZ1rXHigzZ346x42zx/+UeRjEIKpJjL/46ZcKoAoNJbjiPleDHtpFqWg==
+X-Received: by 2002:a5d:9d90:: with SMTP id 16mr1935330ion.132.1560871241374;
+        Tue, 18 Jun 2019 08:20:41 -0700 (PDT)
+Received: from [172.22.22.26] (c-71-195-29-92.hsd1.mn.comcast.net. [71.195.29.92])
+        by smtp.googlemail.com with ESMTPSA id h18sm12796116iob.80.2019.06.18.08.20.39
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 18 Jun 2019 08:20:40 -0700 (PDT)
+Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        Arnd Bergmann <arnd@arndb.de>, Dan Williams <dcbw@redhat.com>
+Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        abhishek.esse@gmail.com, Ben Chan <benchan@google.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        cpratapa@codeaurora.org, David Miller <davem@davemloft.net>,
+        DTML <devicetree@vger.kernel.org>,
+        Eric Caruso <ejcaruso@google.com>, evgreen@chromium.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-soc@vger.kernel.org, Networking <netdev@vger.kernel.org>,
+        syadagir@codeaurora.org
+References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
+ <a94676381a5ca662c848f7a725562f721c43ce76.camel@sipsolutions.net>
+ <CAK8P3a0kV-i7BJJ2X6C=5n65rSGfo8fUiC4J_G-+M8EctYKbkg@mail.gmail.com>
+ <fc0d08912bc10ad089eb74034726308375279130.camel@redhat.com>
+ <36bca57c999f611353fd9741c55bb2a7@codeaurora.org>
+ <153fafb91267147cf22e2bf102dd822933ec823a.camel@redhat.com>
+ <CAK8P3a2Y+tcL1-V57dtypWHndNT3eDJdcKj29c_v+k8o1HHQig@mail.gmail.com>
+ <f4249aa5f5acdd90275eda35aa16f3cfb29d29be.camel@redhat.com>
+ <CAK8P3a2nzZKtshYfomOOSYkqx5HdU15Wr9b+3va0B1euNhFOAg@mail.gmail.com>
+ <dbb32f185d2c3a654083ee0a7188379e1f88d899.camel@sipsolutions.net>
+ <e6ba8a9063e63506c0b88a70418d74ca4efe85cd.camel@sipsolutions.net>
+From:   Alex Elder <elder@linaro.org>
+Message-ID: <850eed1d-0fec-c396-6e91-b5f1f8440ded@linaro.org>
+Date:   Tue, 18 Jun 2019 10:20:39 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <b66c7578-172f-4443-f4c3-411525e28738@nvidia.com>
-X-Originating-IP: [172.20.13.39]
-X-ClientProxiedBy: HQMAIL106.nvidia.com (172.18.146.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <e6ba8a9063e63506c0b88a70418d74ca4efe85cd.camel@sipsolutions.net>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1560871238; bh=Xijyofd1tXJ+PXeQ+C/T9WMQgWP9CU6Ejmt8xNjtMr0=;
-        h=X-PGP-Universal:Subject:From:To:CC:References:Message-ID:Date:
-         User-Agent:MIME-Version:In-Reply-To:X-Originating-IP:
-         X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=N/QqaHFR96yPrxOeMfuioFj6iZP1nRH8/dLIcInDbVZ/gLsX0KJyUBeBUMLEeG6ar
-         F7V2RIIJSBZW6GqVrPf9ERYUJVuBW/YwwmZkGFvtQ/VEuQZSCmBI6nJgNDVle8RfVL
-         +vHb8p4KWfbUCoqSVyXP3BDnOP3sCTnAGwTpXaMUAU6HsHEGfUfa3LKNBrYlvCi+Zc
-         pj3NGAXDPDMyU3RrOBD3TJi2cZhb+9XFUrDdNl+nmj+UYQBVZqUCTIQzruEunkKG4y
-         kE+mXMZvEBKqM6+mKD1KXOa5Y4aSP2OTg+xUP7xTGDQLUPhPHxF137uANoDokX349t
-         QkXSpaVLfprGQ==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 18/06/2019 11:18, Jon Hunter wrote:
+On 6/17/19 7:25 AM, Johannes Berg wrote:
+> On Mon, 2019-06-17 at 13:42 +0200, Johannes Berg wrote:
 > 
-> On 18/06/2019 10:46, Jose Abreu wrote:
->> From: Jon Hunter <jonathanh@nvidia.com>
->>
->>> I am not certain but I don't believe so. We are using a static IP address
->>> and mounting the root file-system via NFS when we see this ...
->>
->> Can you please add a call to napi_synchronize() before every 
->> napi_disable() calls, like this:
->>
->> if (queue < rx_queues_cnt) {
->> 	napi_synchronize(&ch->rx_napi);
->> 	napi_disable(&ch->rx_napi);
->> }
->>
->> if (queue < tx_queues_cnt) {
->> 	napi_synchronize(&ch->tx_napi);
->> 	napi_disable(&ch->tx_napi);
->> }
->>
->> [ I can send you a patch if you prefer ]
+>> But anyway, as I alluded to above, I had something like this in mind:
 > 
-> Yes I can try this and for completeness you mean ...
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> index 4ca46289a742..d4a12cb64d8e 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@ -146,10 +146,15 @@ static void stmmac_disable_all_queues(struct stmmac_priv *priv)
->         for (queue = 0; queue < maxq; queue++) {
->                 struct stmmac_channel *ch = &priv->channel[queue];
->  
-> -               if (queue < rx_queues_cnt)
-> +               if (queue < rx_queues_cnt) {
-> +                       napi_synchronize(&ch->rx_napi);
->                         napi_disable(&ch->rx_napi);
-> -               if (queue < tx_queues_cnt)
-> +               }
-> +
-> +               if (queue < tx_queues_cnt) {
-> +                       napi_synchronize(&ch->tx_napi);
->                         napi_disable(&ch->tx_napi);
-> +               }
->         }
->  }
+> I forgot to state this here, but this was *heavily* influenced by
+> discussions with Dan - many thanks to him.
 
-So good news and bad news ...
+Thanks for getting even more concrete with this.  Code is the
+most concise way of describing things, once the general ideas
+seem to be coming together.
 
-The good news is that the above change does fix the initial crash
-I am seeing. However, even with this change applied on top of
--next, it is still dying somewhere else and so there appears to
-be a second issue. 
+I'm not going to comment on the specific code bits, but I have
+some more general questions and comments on the design.  Some
+of these are simply due to my lack of knowledge of how WWAN/modem
+interactions normally work.
 
-On a successful boot I see ...
+First, a few terms (correct or improve as you like):
+- WWAN device is a hardware device (like IPA) that presents a
+  connection between AP and modem, and presents an interface
+  that allows the use of that connection to be managed.
+- WWAN netdevice represents a Linux network interface, with its
+  operations and queues, etc., but implements a standardized
+  set of WWAN-specific operations.  It represents a logical
+' channel whose data is multiplexed over the WWAN device.
+- WWAN channel is a user space abstraction that corresponds
+  with a WWAN netdevice (but I'm not clear on all the ways
+  they differ or interact).
+- The WWAN core is kernel code that presents abstractions
+  for WWAN devices and netdevices, so they can be managed
+  in a generic way.  It is for configuration and communication
+  and is not at all involved in the data path.
 
-[    6.150419] dwc-eth-dwmac 2490000.ethernet: Cannot get CSR clock
+You're saying that the WWAN driver space calls wwan_add()
+to register itself as a new WWAN device.
 
-[    6.156441] dwc-eth-dwmac 2490000.ethernet: no reset control found
+You're also saying that a WWAN device "attaches" a WWAN
+netdevice, which is basically notifying the WWAN core
+that the new netdev/channel is available for use.
+- I trust that a "tentative" attachement is necessary.  But
+  I'm not sure what makes it transition into becoming a
+  "real" one, or how that event gets communicated.
 
-[    6.175866] dwc-eth-dwmac 2490000.ethernet: User ID: 0x10, Synopsys ID: 0x41
+Some questions:
+- What causes a new channel to be created?  Is it initiated
+  by the WWAN device driver?  Does the modem request that
+  it get created?  User space?  Both?
+- What causes a created channel to be removed?
+- You distinguish between attaching a netdevice and (what
+  I'll call) activating it.  What causes activation?
+- How are the attributes of a WWAN device or channel set,
+  or communicated?
+- Are there any attributes that are only optionally supported,
+  and if so, how are the supported ones communicated?
+- Which WWAN channel attributes must be set *before* the
+  channel is activated, and can't be changed?  Are there any
+  that can be changed dynamically?
 
-[    6.182912] dwc-eth-dwmac 2490000.ethernet: 	DWMAC4/5
+And while the whole point of this is to make things generic,
+it might be nice to have a way to implement a new feature
+before it can be "standardized".
 
-[    6.187961] dwc-eth-dwmac 2490000.ethernet: DMA HW capability register supported
+Thanks.
 
-[    6.195351] dwc-eth-dwmac 2490000.ethernet: RX Checksum Offload Engine supported
+					-Alex
 
-[    6.202735] dwc-eth-dwmac 2490000.ethernet: TX Checksum insertion supported
+PS  I don't want to exclude anybody but we could probably start
+    a different mail chain on this topic...
 
-[    6.209685] dwc-eth-dwmac 2490000.ethernet: Wake-Up On Lan supported
+>> driver_dev
+>>   struct device *dev (USB, PCI, ...)
+>>   net_device NA
+>>   net_device NB
+>>   tty TA
+>>  ...
+>>
 
-[    6.216041] dwc-eth-dwmac 2490000.ethernet: TSO supported
-
-[    6.221433] dwc-eth-dwmac 2490000.ethernet: Enable RX Mitigation via HW Watchdog Timer
-
-[    6.229342] dwc-eth-dwmac 2490000.ethernet: device MAC address 9a:9b:49:6f:a5:ee
-
-[    6.236727] dwc-eth-dwmac 2490000.ethernet: TSO feature enabled
-
-[    6.242689] libphy: stmmac: probed
-
-On the latest -next with the patch applied I see ...
-
-[    6.043529] dwc-eth-dwmac 2490000.ethernet: Cannot get CSR clock
-[    6.049546] dwc-eth-dwmac 2490000.ethernet: no reset control found
-[    6.068895] dwc-eth-dwmac 2490000.ethernet: User ID: 0x10, Synopsys ID: 0x41
-[    6.075941] dwc-eth-dwmac 2490000.ethernet: 	DWMAC4/5
-[    6.080989] dwc-eth-dwmac 2490000.ethernet: DMA HW capability register supported
-[    6.088373] dwc-eth-dwmac 2490000.ethernet: RX Checksum Offload Engine supported
-[    6.095756] dwc-eth-dwmac 2490000.ethernet: TX Checksum insertion supported
-[    6.102708] dwc-eth-dwmac 2490000.ethernet: Wake-Up On Lan supported
-[    6.109074] dwc-eth-dwmac 2490000.ethernet: TSO supported
-[    6.114465] dwc-eth-dwmac 2490000.ethernet: Enable RX Mitigation via HW Watchdog Timer
-[    6.122373] dwc-eth-dwmac 2490000.ethernet: device MAC address ee:3a:9a:b0:7e:34
-[    6.129756] dwc-eth-dwmac 2490000.ethernet: TSO feature enabled
-
-And it dies here. No more output is seen. I will try to figure
-out which commit is causing this issue.
-
-Cheers
-Jon
-
--- 
-nvpublic
+. . .
