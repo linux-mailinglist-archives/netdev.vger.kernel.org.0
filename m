@@ -2,114 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 223584AA81
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 20:59:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 209BD4AA87
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 21:00:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730377AbfFRS7G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 14:59:06 -0400
-Received: from mail-yw1-f65.google.com ([209.85.161.65]:35297 "EHLO
-        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730231AbfFRS7F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 14:59:05 -0400
-Received: by mail-yw1-f65.google.com with SMTP id k128so7181741ywf.2
-        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 11:59:05 -0700 (PDT)
+        id S1730520AbfFRTAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 15:00:12 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:41267 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727386AbfFRTAM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 15:00:12 -0400
+Received: by mail-pl1-f194.google.com with SMTP id m7so2495183pls.8
+        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 12:00:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=n2DDWkzfly8h++f2u7ETcCEDtyV1BipVpATFf3iGFj8=;
-        b=ajUxc5+WJTxSIoBZ8SzOIP0EH5Oo4BIYMnTAueKHonh90SwDslBsrBqH/p5BpVV1lE
-         bd8TeYNgekt+y1cFqWvfRhaaJktj/9HlmdRNP7O58u1L65J44e2TAoQ8mMwBrd2BehYY
-         obhYCp/B5KF22P/dc7ZBTYUlxM50LS5cqX29I4OO2r4135df2kSGUOrYLAFBYkCwCbo6
-         cqjc1a96YiF6gxE5t85rWZKUyG+cGcX32J5aHJGR0RYnFzCFaVXB0BKAWWinXwoZqMuA
-         SssoPo5k02S7ZyalbCbsr+FvpZ8E+vHGkIcj1lW+J8TKA/Kd79OAsr3tVxdiBndDDKUG
-         R+bw==
+        bh=eT7kK3k/DGGgofaFnIiFVb/h7MwsbABIk+ml7U8rfOc=;
+        b=WAeGOWzC/62xUfoOrp0D84mE+4Ea8G0metTMnVChRZviACt9qPPNHjs9o73B9l8F6c
+         q6gSNwFiLPrUgA6t9NsiTiBumEFKBf7i4nt7MhMIMRf32S9puHYXkIdiEjo9G5pMDTU0
+         WTJO7Ezk4+qiiuAm7pMPdk4iBrwJ9gQgv95T+2qdiZxPiI2Pv6+uJD0ge3vfqLYJkM9A
+         7w13l7IwtRIMisZFZKyoM9pvHuCDu/+uaOxTNoKs+/P6itZ3Gu6/HM6f7YWKR95PtfGC
+         cFDJtaqEeq4GXHpw5+YweZjxLEinwiR/k+jvTsfeCb7/w50msmE+6y8h77qr9X4Dsb9f
+         ltZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=n2DDWkzfly8h++f2u7ETcCEDtyV1BipVpATFf3iGFj8=;
-        b=THHLkujpmqTR0ShfLDajXKrzJ/eBtSQnUUwF/mZj8iMIRTUfR5fQy5v7RRjLUUjfgu
-         2M3hb92K2bf+3h3PqHbPvCRm+uY6xziLV2xiWDgG0pPp9YhWpCTox3DmEJbYcM31dlwO
-         gMlCWQwAv/p6gyU39TTF9fxUqBrY6VxIbWGeMykrcXs5zOiv8sx02H1PpeDG+ZtdnRYn
-         oDENgUjG+dP8SvEshKBadSqbuOD+2NFr4eL8znzs+K4TUW43tQOBKDLWCsqv+Y1zQG2R
-         HaZOlDYwa+cVk0InrWk/iv0IQ9MVKRODllAupP1/3aK0pXjGxTOxmKpbKBdFEzMberSv
-         MZIg==
-X-Gm-Message-State: APjAAAXIW9ZoMJAaXa8n1XoL0ghwVBKqcuwcj6IJY1GZTOq7Bi0RwCR7
-        0CAx+pjllvV3bYtMcb9mT3AObVG4
-X-Google-Smtp-Source: APXvYqxznb43AwabWcCXvV1EbeVHhWWbWku68lJZmrjIJYHV5R1W1FYXcWik0g9dQ1akvnevZiJ2BQ==
-X-Received: by 2002:a81:5c82:: with SMTP id q124mr1652923ywb.461.1560884344125;
-        Tue, 18 Jun 2019 11:59:04 -0700 (PDT)
-Received: from mail-yw1-f50.google.com (mail-yw1-f50.google.com. [209.85.161.50])
-        by smtp.gmail.com with ESMTPSA id u82sm3750054ywc.8.2019.06.18.11.59.02
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Tue, 18 Jun 2019 11:59:03 -0700 (PDT)
-Received: by mail-yw1-f50.google.com with SMTP id a11so7184987ywc.1
-        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 11:59:02 -0700 (PDT)
-X-Received: by 2002:a0d:c0c4:: with SMTP id b187mr41089130ywd.389.1560884342538;
- Tue, 18 Jun 2019 11:59:02 -0700 (PDT)
+        bh=eT7kK3k/DGGgofaFnIiFVb/h7MwsbABIk+ml7U8rfOc=;
+        b=QBuI1/J9CCJPU13Ck/3POZziOCYLaMnH07TLRTMx0ouZh7IhHWAcEHc4ycqrfT6D4Y
+         i69HUlVXck2p5ExKqo1TsJrpdrZc5AmujiUeN/3qoLcDtzR99d234z8iQPUd0P3CQHjG
+         ITjihpV3sJ++h6QdX2sVW1U/9ydtMYURYHh5eHifmUl7Enhh1Ydawq2dcieHsT+5Yu0U
+         SvdHudk6Ulkxx3avD7QgH/882H278JVRylIHRoQl+0xroB6m7eFjxx1QNNOGai4QVRO7
+         ZabF31w4LqH8jTWYaOQINl5s6/LnURFYsUtG0NcxPLvnF6SZgLxrsBtxrkeDP/s8to4r
+         1teQ==
+X-Gm-Message-State: APjAAAWNQunrr4l6GuaUF8AcGiy4KuJnCHtYLxtpiDo6eBQIrAXorpVj
+        uhoN5ov1kdQh7dIOz6pOTvTH4JO0vGz7WadmBjrbkw==
+X-Google-Smtp-Source: APXvYqxtkgfrCMyVOFWD+nhtS1s2hx+NJljuwLvz8oM33DKsEoji2grMTvg4SptxAw7eGcQq4jI4lrottWmX2QHp9Ds=
+X-Received: by 2002:a17:902:b944:: with SMTP id h4mr112133301pls.179.1560884411214;
+ Tue, 18 Jun 2019 12:00:11 -0700 (PDT)
 MIME-Version: 1.0
-References: <CA+FuTSfBFqRViKfG5crEv8xLMgAkp3cZ+yeuELK5TVv61xT=Yw@mail.gmail.com>
- <20190618161036.GA28190@kroah.com> <CAF=yD-JnTHdDE8K-EaJM2fH9awvjAmOJkoZbtU+Wi58pPnyAxw@mail.gmail.com>
- <20190618.094759.539007481404905339.davem@davemloft.net> <20190618171516.GA17547@kroah.com>
- <CAF=yD-+pNrAo1wByHY6f5AZCq8xT0FDMKM-WzPkfZ36Jxj4mNg@mail.gmail.com> <20190618173906.GB3649@kroah.com>
-In-Reply-To: <20190618173906.GB3649@kroah.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 18 Jun 2019 14:58:26 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSdrphico4044QTD_-8VbanFFJx0FJuH+vVMfuHqbphkjw@mail.gmail.com>
-Message-ID: <CA+FuTSdrphico4044QTD_-8VbanFFJx0FJuH+vVMfuHqbphkjw@mail.gmail.com>
-Subject: Re: 4.19: udpgso_bench_tx: setsockopt zerocopy: Unknown error 524
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Network Development <netdev@vger.kernel.org>,
+References: <20190618083900.78eb88bd@bootlin.com> <20190618160910.62922-1-nhuck@google.com>
+In-Reply-To: <20190618160910.62922-1-nhuck@google.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Tue, 18 Jun 2019 12:00:00 -0700
+Message-ID: <CAKwvOdnoMv_Fkq02=F+RM8fRi0i4ycUxPe+VLdjHcDvy2DKo-A@mail.gmail.com>
+Subject: Re: [PATCH] net: mvpp2: cls: Add pmap to fs dump
+To:     Nathan Huckleberry <nhuck@google.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        maxime.chevallier@bootlin.com, netdev@vger.kernel.org,
         LKML <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Fred Klassen <fklassen@appneta.com>
+        clang-built-linux <clang-built-linux@googlegroups.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 18, 2019 at 1:39 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+On Tue, Jun 18, 2019 at 9:09 AM 'Nathan Huckleberry' via Clang Built
+Linux <clang-built-linux@googlegroups.com> wrote:
 >
-> On Tue, Jun 18, 2019 at 01:27:14PM -0400, Willem de Bruijn wrote:
-> > On Tue, Jun 18, 2019 at 1:15 PM Greg KH <gregkh@linuxfoundation.org> wrote:
-> > >
-> > > On Tue, Jun 18, 2019 at 09:47:59AM -0700, David Miller wrote:
-> > > > From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-> > > > Date: Tue, 18 Jun 2019 12:37:33 -0400
-> > > >
-> > > > > Specific to the above test, I can add a check command testing
-> > > > > setsockopt SO_ZEROCOPY  return value. AFAIK kselftest has no explicit
-> > > > > way to denote "skipped", so this would just return "pass". Sounds a
-> > > > > bit fragile, passing success when a feature is absent.
-> > > >
-> > > > Especially since the feature might be absent because the 'config'
-> > > > template forgot to include a necessary Kconfig option.
-> > >
-> > > That is what the "skip" response is for, don't return "pass" if the
-> > > feature just isn't present.  That lets people run tests on systems
-> > > without the config option enabled as you say, or on systems without the
-> > > needed userspace tools present.
-> >
-> > I was not aware that kselftest had this feature.
-> >
-> > But it appears that exit code KSFT_SKIP (4) will achieve this. Okay,
-> > I'll send a patch and will keep that in mind for future tests.
+> There was an unused variable 'mvpp2_dbgfs_prs_pmap_fops'
+> Added a usage consistent with other fops to dump pmap
+> to userspace.
 >
-> Wonderful, thanks for doing that!
+> Cc: clang-built-linux@googlegroups.com
+> Link: https://github.com/ClangBuiltLinux/linux/issues/529
+> Signed-off-by: Nathan Huckleberry <nhuck@google.com>
 
-One complication: an exit code works for a single test, but here
-multiple test variants are run from a single shell script.
+Looks good to me based on Maxime's suggestion.  Thanks for seeking
+clarification and following up on the feedback.
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 
-I see that in similar such cases that use the test harness
-(ksft_test_result_skip) the overall test returns success as long as
-all individual cases return either success or skip.
+Nathan, you should use Suggested-by tags (liberally, IMO) when your
+patch is based on feedback from others, in this case:
+Suggested-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
 
-I think it's preferable to return KSFT_SKIP if any of the cases did so
-(and none returned an error). I'll do that unless anyone objects.
+> ---
+>  drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c
+> index 0ee39ea47b6b..55947bc63cfd 100644
+> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c
+> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c
+> @@ -566,6 +566,9 @@ static int mvpp2_dbgfs_prs_entry_init(struct dentry *parent,
+>         debugfs_create_file("hits", 0444, prs_entry_dir, entry,
+>                             &mvpp2_dbgfs_prs_hits_fops);
+>
+> +       ddebugfs_create_file("pmap", 0444, prs_entry_dir, entry,
+> +                            &mvpp2_dbgfs_prs_pmap_fops);
+> +
+
+-- 
+Thanks,
+~Nick Desaulniers
