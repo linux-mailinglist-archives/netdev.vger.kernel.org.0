@@ -2,430 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E12CE4A4ED
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 17:13:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D69B4A1B3
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 15:08:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729793AbfFRPN5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 11:13:57 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:42977 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729755AbfFRPNz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 11:13:55 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id F1BF22241B;
-        Tue, 18 Jun 2019 11:13:53 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Tue, 18 Jun 2019 11:13:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=rYafY9OI7BTovqplsreQg6oMyvWQDcLIAzz0nxUbXXE=; b=GI5QazaC
-        0LIEn83NpvK25QUnR2lCaeJY88q1IyBwjWqkIpxOA8FKtLN0wnS+FSruB3zCUZhk
-        W63qIpaFJdtz/Ce7PwQBMx73d1IG03k/VwFZs1kLM8stmLdHqCtyMcl7UAD35/K7
-        SZ7f0g4Vdo2A4MDWWiz7F61sQaBGw4Ejs8DFyAnvrHIfUbd6usVF2jpqV5N6IINu
-        6I0PWOSTgZtWTHfcRmM5Yha1dcp9rhg0AEoYBcJmQLhW72qUVrGAmSPJovman9El
-        t20JKBNnbiW7tJ3zBeDIp2OVMGmstPs1r6jTqrSB+VXwcrHj/QlKY4njpAJbN3B4
-        2+flDDf6h0LsCw==
-X-ME-Sender: <xms:sf8IXf4fTzqHMYb9A8WLIUPzRBHIGYvGG1D5xlLKWcLziDcNIwQc8A>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrtddtgdehhecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
-    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
-    tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmh
-    grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
-    ihiivgepudef
-X-ME-Proxy: <xmx:sf8IXf3xxjspekT3j5Ukr166TEYYBIN2XqVXfR0bCjAmzwZnBmMI3g>
-    <xmx:sf8IXVfNYrrMlsoaAXffBwHnW2xtGM3j3XJQYVOQU82CrnvVOqDtJQ>
-    <xmx:sf8IXVecj93VghjJiB5sX_6O9CbYLwdIHPJl4j2wNeXqkG9W4qhZfg>
-    <xmx:sf8IXQ4-9Dhr34vckopHajN1yY6zNHpGHppgGiRuWqLQ0amPthLUyA>
-Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 55621380084;
-        Tue, 18 Jun 2019 11:13:52 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com, dsahern@gmail.com,
-        alexpe@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next v2 16/16] selftests: mlxsw: Add a test for FIB offload indication
-Date:   Tue, 18 Jun 2019 18:12:58 +0300
-Message-Id: <20190618151258.23023-17-idosch@idosch.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190618151258.23023-1-idosch@idosch.org>
-References: <20190618151258.23023-1-idosch@idosch.org>
+        id S1729020AbfFRNID (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 09:08:03 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:18600 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726428AbfFRNIC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Jun 2019 09:08:02 -0400
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 6C28A2B94719775A3256;
+        Tue, 18 Jun 2019 21:07:58 +0800 (CST)
+Received: from huawei.com (10.175.100.202) by DGGEMS404-HUB.china.huawei.com
+ (10.3.19.204) with Microsoft SMTP Server id 14.3.439.0; Tue, 18 Jun 2019
+ 21:07:50 +0800
+From:   luoshijie <luoshijie1@huawei.com>
+To:     <davem@davemloft.net>, <tgraf@suug.ch>, <dsahern@gmail.com>
+CC:     <netdev@vger.kernel.org>, <liuzhiqiang26@huawei.com>,
+        <wangxiaogang3@huawei.com>, <mingfangsen@huawei.com>,
+        <zhoukang7@huawei.com>
+Subject: [PATCH v2 0/3] fix bugs when enable route_localnet
+Date:   Tue, 18 Jun 2019 15:14:02 +0000
+Message-ID: <1560870845-172395-1-git-send-email-luoshijie1@huawei.com>
+X-Mailer: git-send-email 1.8.3.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.100.202]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+From: Shijie Luo <luoshijie1@huawei.com>
 
-Test that the offload indication for unicast routes is correctly set in
-different scenarios. IPv4 support will be added in the future.
+When enable route_localnet, route of the 127/8 address is enabled.
+But in some situations like arp_announce=2, ARP requests or reply
+work abnormally.
 
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
----
- .../drivers/net/mlxsw/fib_offload.sh          | 349 ++++++++++++++++++
- 1 file changed, 349 insertions(+)
- create mode 100755 tools/testing/selftests/drivers/net/mlxsw/fib_offload.sh
+This patchset fix some bugs when enable route_localnet. 
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/fib_offload.sh b/tools/testing/selftests/drivers/net/mlxsw/fib_offload.sh
-new file mode 100755
-index 000000000000..e99ae500f387
---- /dev/null
-+++ b/tools/testing/selftests/drivers/net/mlxsw/fib_offload.sh
-@@ -0,0 +1,349 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Test unicast FIB offload indication.
-+
-+lib_dir=$(dirname $0)/../../../net/forwarding
-+
-+ALL_TESTS="
-+	ipv6_route_add
-+	ipv6_route_replace
-+	ipv6_route_nexthop_group_share
-+	ipv6_route_rate
-+"
-+NUM_NETIFS=4
-+source $lib_dir/lib.sh
-+source $lib_dir/devlink_lib.sh
-+
-+tor1_create()
-+{
-+	simple_if_init $tor1_p1 2001:db8:1::2/128 2001:db8:1::3/128
-+}
-+
-+tor1_destroy()
-+{
-+	simple_if_fini $tor1_p1 2001:db8:1::2/128 2001:db8:1::3/128
-+}
-+
-+tor2_create()
-+{
-+	simple_if_init $tor2_p1 2001:db8:2::2/128 2001:db8:2::3/128
-+}
-+
-+tor2_destroy()
-+{
-+	simple_if_fini $tor2_p1 2001:db8:2::2/128 2001:db8:2::3/128
-+}
-+
-+spine_create()
-+{
-+	ip link set dev $spine_p1 up
-+	ip link set dev $spine_p2 up
-+
-+	__addr_add_del $spine_p1 add 2001:db8:1::1/64
-+	__addr_add_del $spine_p2 add 2001:db8:2::1/64
-+}
-+
-+spine_destroy()
-+{
-+	__addr_add_del $spine_p2 del 2001:db8:2::1/64
-+	__addr_add_del $spine_p1 del 2001:db8:1::1/64
-+
-+	ip link set dev $spine_p2 down
-+	ip link set dev $spine_p1 down
-+}
-+
-+ipv6_offload_check()
-+{
-+	local pfx="$1"; shift
-+	local expected_num=$1; shift
-+	local num
-+
-+	# Try to avoid races with route offload
-+	sleep .1
-+
-+	num=$(ip -6 route show match ${pfx} | grep "offload" | wc -l)
-+
-+	if [ $num -eq $expected_num ]; then
-+		return 0
-+	fi
-+
-+	return 1
-+}
-+
-+ipv6_route_add_prefix()
-+{
-+	RET=0
-+
-+	# Add a prefix route and check that it is offloaded.
-+	ip -6 route add 2001:db8:3::/64 dev $spine_p1 metric 100
-+	ipv6_offload_check "2001:db8:3::/64 dev $spine_p1 metric 100" 1
-+	check_err $? "prefix route not offloaded"
-+
-+	# Append an identical prefix route with an higher metric and check that
-+	# offload indication did not change.
-+	ip -6 route append 2001:db8:3::/64 dev $spine_p1 metric 200
-+	ipv6_offload_check "2001:db8:3::/64 dev $spine_p1 metric 100" 1
-+	check_err $? "lowest metric not offloaded after append"
-+	ipv6_offload_check "2001:db8:3::/64 dev $spine_p1 metric 200" 0
-+	check_err $? "highest metric offloaded when should not"
-+
-+	# Prepend an identical prefix route with lower metric and check that
-+	# it is offloaded and the others are not.
-+	ip -6 route append 2001:db8:3::/64 dev $spine_p1 metric 10
-+	ipv6_offload_check "2001:db8:3::/64 dev $spine_p1 metric 10" 1
-+	check_err $? "lowest metric not offloaded after prepend"
-+	ipv6_offload_check "2001:db8:3::/64 dev $spine_p1 metric 100" 0
-+	check_err $? "mid metric offloaded when should not"
-+	ipv6_offload_check "2001:db8:3::/64 dev $spine_p1 metric 200" 0
-+	check_err $? "highest metric offloaded when should not"
-+
-+	# Delete the routes and add the same route with a different nexthop
-+	# device. Check that it is offloaded.
-+	ip -6 route flush 2001:db8:3::/64 dev $spine_p1
-+	ip -6 route add 2001:db8:3::/64 dev $spine_p2
-+	ipv6_offload_check "2001:db8:3::/64 dev $spine_p2" 1
-+
-+	log_test "IPv6 prefix route add"
-+
-+	ip -6 route flush 2001:db8:3::/64
-+}
-+
-+ipv6_route_add_mpath()
-+{
-+	RET=0
-+
-+	# Add a multipath route and check that it is offloaded.
-+	ip -6 route add 2001:db8:3::/64 metric 100 \
-+		nexthop via 2001:db8:1::2 dev $spine_p1 \
-+		nexthop via 2001:db8:2::2 dev $spine_p2
-+	ipv6_offload_check "2001:db8:3::/64 metric 100" 2
-+	check_err $? "multipath route not offloaded when should"
-+
-+	# Append another nexthop and check that it is offloaded as well.
-+	ip -6 route append 2001:db8:3::/64 metric 100 \
-+		nexthop via 2001:db8:1::3 dev $spine_p1
-+	ipv6_offload_check "2001:db8:3::/64 metric 100" 3
-+	check_err $? "appended nexthop not offloaded when should"
-+
-+	# Mimic route replace by removing the route and adding it back with
-+	# only two nexthops.
-+	ip -6 route del 2001:db8:3::/64
-+	ip -6 route add 2001:db8:3::/64 metric 100 \
-+		nexthop via 2001:db8:1::2 dev $spine_p1 \
-+		nexthop via 2001:db8:2::2 dev $spine_p2
-+	ipv6_offload_check "2001:db8:3::/64 metric 100" 2
-+	check_err $? "multipath route not offloaded after delete & add"
-+
-+	# Append a nexthop with an higher metric and check that the offload
-+	# indication did not change.
-+	ip -6 route append 2001:db8:3::/64 metric 200 \
-+		nexthop via 2001:db8:1::3 dev $spine_p1
-+	ipv6_offload_check "2001:db8:3::/64 metric 100" 2
-+	check_err $? "lowest metric not offloaded after append"
-+	ipv6_offload_check "2001:db8:3::/64 metric 200" 0
-+	check_err $? "highest metric offloaded when should not"
-+
-+	# Prepend a nexthop with a lower metric and check that it is offloaded
-+	# and the others are not.
-+	ip -6 route append 2001:db8:3::/64 metric 10 \
-+		nexthop via 2001:db8:1::3 dev $spine_p1
-+	ipv6_offload_check "2001:db8:3::/64 metric 10" 1
-+	check_err $? "lowest metric not offloaded after prepend"
-+	ipv6_offload_check "2001:db8:3::/64 metric 100" 0
-+	check_err $? "mid metric offloaded when should not"
-+	ipv6_offload_check "2001:db8:3::/64 metric 200" 0
-+	check_err $? "highest metric offloaded when should not"
-+
-+	log_test "IPv6 multipath route add"
-+
-+	ip -6 route flush 2001:db8:3::/64
-+}
-+
-+ipv6_route_add()
-+{
-+	ipv6_route_add_prefix
-+	ipv6_route_add_mpath
-+}
-+
-+ipv6_route_replace()
-+{
-+	RET=0
-+
-+	# Replace prefix route with prefix route.
-+	ip -6 route add 2001:db8:3::/64 metric 100 dev $spine_p1
-+	ipv6_offload_check "2001:db8:3::/64 metric 100" 1
-+	check_err $? "prefix route not offloaded when should"
-+	ip -6 route replace 2001:db8:3::/64 metric 100 dev $spine_p2
-+	ipv6_offload_check "2001:db8:3::/64 metric 100" 1
-+	check_err $? "prefix route not offloaded after replace"
-+
-+	# Replace prefix route with multipath route.
-+	ip -6 route replace 2001:db8:3::/64 metric 100 \
-+		nexthop via 2001:db8:1::2 dev $spine_p1 \
-+		nexthop via 2001:db8:2::2 dev $spine_p2
-+	ipv6_offload_check "2001:db8:3::/64 metric 100" 2
-+	check_err $? "multipath route not offloaded after replace"
-+
-+	# Replace multipath route with prefix route. A prefix route cannot
-+	# replace a multipath route, so it is appended.
-+	ip -6 route replace 2001:db8:3::/64 metric 100 dev $spine_p1
-+	ipv6_offload_check "2001:db8:3::/64 metric 100 dev $spine_p1" 0
-+	check_err $? "prefix route offloaded after 'replacing' multipath route"
-+	ipv6_offload_check "2001:db8:3::/64 metric 100" 2
-+	check_err $? "multipath route not offloaded after being 'replaced' by prefix route"
-+
-+	# Replace multipath route with multipath route.
-+	ip -6 route replace 2001:db8:3::/64 metric 100 \
-+		nexthop via 2001:db8:1::3 dev $spine_p1 \
-+		nexthop via 2001:db8:2::3 dev $spine_p2
-+	ipv6_offload_check "2001:db8:3::/64 metric 100" 2
-+	check_err $? "multipath route not offloaded after replacing multipath route"
-+
-+	# Replace a non-existing multipath route with a multipath route and
-+	# check that it is appended and not offloaded.
-+	ip -6 route replace 2001:db8:3::/64 metric 200 \
-+		nexthop via 2001:db8:1::3 dev $spine_p1 \
-+		nexthop via 2001:db8:2::3 dev $spine_p2
-+	ipv6_offload_check "2001:db8:3::/64 metric 100" 2
-+	check_err $? "multipath route not offloaded after non-existing route was 'replaced'"
-+	ipv6_offload_check "2001:db8:3::/64 metric 200" 0
-+	check_err $? "multipath route offloaded after 'replacing' non-existing route"
-+
-+	log_test "IPv6 route replace"
-+
-+	ip -6 route flush 2001:db8:3::/64
-+}
-+
-+ipv6_route_nexthop_group_share()
-+{
-+	RET=0
-+
-+	# The driver consolidates identical nexthop groups in order to reduce
-+	# the resource usage in its adjacency table. Check that the deletion
-+	# of one multipath route using the group does not affect the other.
-+	ip -6 route add 2001:db8:3::/64 \
-+		nexthop via 2001:db8:1::2 dev $spine_p1 \
-+		nexthop via 2001:db8:2::2 dev $spine_p2
-+	ip -6 route add 2001:db8:4::/64 \
-+		nexthop via 2001:db8:1::2 dev $spine_p1 \
-+		nexthop via 2001:db8:2::2 dev $spine_p2
-+	ipv6_offload_check "2001:db8:3::/64" 2
-+	check_err $? "multipath route not offloaded when should"
-+	ipv6_offload_check "2001:db8:4::/64" 2
-+	check_err $? "multipath route not offloaded when should"
-+	ip -6 route del 2001:db8:3::/64
-+	ipv6_offload_check "2001:db8:4::/64" 2
-+	check_err $? "multipath route not offloaded after deletion of route sharing the nexthop group"
-+
-+	# Check that after unsharing a nexthop group the routes are still
-+	# marked as offloaded.
-+	ip -6 route add 2001:db8:3::/64 \
-+		nexthop via 2001:db8:1::2 dev $spine_p1 \
-+		nexthop via 2001:db8:2::2 dev $spine_p2
-+	ip -6 route del 2001:db8:4::/64 \
-+		nexthop via 2001:db8:1::2 dev $spine_p1
-+	ipv6_offload_check "2001:db8:4::/64" 1
-+	check_err $? "singlepath route not offloaded after unsharing the nexthop group"
-+	ipv6_offload_check "2001:db8:3::/64" 2
-+	check_err $? "multipath route not offloaded after unsharing the nexthop group"
-+
-+	log_test "IPv6 nexthop group sharing"
-+
-+	ip -6 route flush 2001:db8:3::/64
-+	ip -6 route flush 2001:db8:4::/64
-+}
-+
-+ipv6_route_rate()
-+{
-+	local batch_dir=$(mktemp -d)
-+	local num_rts=$((40 * 1024))
-+	local num_nhs=16
-+	local total
-+	local start
-+	local diff
-+	local end
-+	local nhs
-+	local i
-+
-+	RET=0
-+
-+	# Prepare 40K /64 multipath routes with 16 nexthops each and check how
-+	# long it takes to add them. A limit of 60 seconds is set. It is much
-+	# higher than insertion should take and meant to flag a serious
-+	# regression.
-+	total=$((nums_nhs * num_rts))
-+
-+	for i in $(seq 1 $num_nhs); do
-+		ip -6 address add 2001:db8:1::10:$i/128 dev $tor1_p1
-+		nexthops+=" nexthop via 2001:db8:1::10:$i dev $spine_p1"
-+	done
-+
-+	for i in $(seq 1 $num_rts); do
-+		echo "route add 2001:db8:8:$(printf "%x" $i)::/64$nexthops" \
-+			>> $batch_dir/add.batch
-+		echo "route del 2001:db8:8:$(printf "%x" $i)::/64$nexthops" \
-+			>> $batch_dir/del.batch
-+	done
-+
-+	start=$(date +%s.%N)
-+
-+	ip -batch $batch_dir/add.batch
-+	count=$(ip -6 route show | grep offload | wc -l)
-+	while [ $count -lt $total ]; do
-+		sleep .01
-+		count=$(ip -6 route show | grep offload | wc -l)
-+	done
-+
-+	end=$(date +%s.%N)
-+
-+	diff=$(echo "$end - $start" | bc -l)
-+	test "$(echo "$diff > 60" | bc -l)" -eq 0
-+	check_err $? "route insertion took too long"
-+	log_info "inserted $num_rts routes in $diff seconds"
-+
-+	log_test "IPv6 routes insertion rate"
-+
-+	ip -batch $batch_dir/del.batch
-+	for i in $(seq 1 $num_nhs); do
-+		ip -6 address del 2001:db8:1::10:$i/128 dev $tor1_p1
-+	done
-+	rm -rf $batch_dir
-+}
-+
-+setup_prepare()
-+{
-+	spine_p1=${NETIFS[p1]}
-+	tor1_p1=${NETIFS[p2]}
-+
-+	spine_p2=${NETIFS[p3]}
-+	tor2_p1=${NETIFS[p4]}
-+
-+	vrf_prepare
-+	forwarding_enable
-+
-+	tor1_create
-+	tor2_create
-+	spine_create
-+}
-+
-+cleanup()
-+{
-+	pre_cleanup
-+
-+	spine_destroy
-+	tor2_destroy
-+	tor1_destroy
-+
-+	forwarding_restore
-+	vrf_cleanup
-+}
-+
-+trap cleanup EXIT
-+
-+setup_prepare
-+setup_wait
-+
-+tests_run
-+
-+exit $EXIT_STATUS
+Change History:
+V2:
+- Change a single patch to a patchset.
+- Add bug fix for arp_ignore = 3.
+- Add a couple of test for enabling route_localnet in selftests.
+
+Shijie Luo (3):
+  ipv4: fix inet_select_addr() when enable route_localnet
+  ipv4: fix confirm_addr_indev() when enable route_localnet
+  selftests: add route_localnet test script
+
+ net/ipv4/devinet.c                            | 15 +++-
+ tools/testing/selftests/net/route_localnet.sh | 74 +++++++++++++++++++
+ 2 files changed, 86 insertions(+), 3 deletions(-)
+ create mode 100755 tools/testing/selftests/net/route_localnet.sh
+
 -- 
-2.20.1
+2.19.1
 
