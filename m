@@ -2,108 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C0574A110
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 14:45:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECCB84A132
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 14:54:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726088AbfFRMpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 08:45:39 -0400
-Received: from mail-eopbgr150079.outbound.protection.outlook.com ([40.107.15.79]:57058
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725913AbfFRMpj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Jun 2019 08:45:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=59N4dmlZe6cpScQbFBk7EXsJRA50WQIB3fvKIaqV7tM=;
- b=kO6jnu1Uyq2LIPukP8WxEHQyyKRz7SSmVlO54GRCavI0mMN3y6qjksPjb1vqIpT7RkN1STCmwlDZ3hYBkuXB/+KjsCvqmi3SKsfZIYUm/7RbWxbfVFQZNY89T8EAFmjpjSn2CGoPMj6X9AwH5zRObv/nZb6wk2nM3v9J2njbOgk=
-Received: from DB6PR0501MB2342.eurprd05.prod.outlook.com (10.168.56.21) by
- DB6PR0501MB2710.eurprd05.prod.outlook.com (10.172.226.147) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1987.12; Tue, 18 Jun 2019 12:45:36 +0000
-Received: from DB6PR0501MB2342.eurprd05.prod.outlook.com
- ([fe80::ec3d:c810:e8d8:8aef]) by DB6PR0501MB2342.eurprd05.prod.outlook.com
- ([fe80::ec3d:c810:e8d8:8aef%9]) with mapi id 15.20.1987.014; Tue, 18 Jun 2019
- 12:45:36 +0000
-From:   Shalom Toledo <shalomt@mellanox.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>, mlxsw <mlxsw@mellanox.com>,
-        "natechancellor@gmail.com" <natechancellor@gmail.com>
-Subject: [PATCH net-next] mlxsw: spectrum_ptp: Fix compilation on 32-bit ARM
-Thread-Topic: [PATCH net-next] mlxsw: spectrum_ptp: Fix compilation on 32-bit
- ARM
-Thread-Index: AQHVJdO5Vqa3KL/fh0aPyKtUWOkShg==
-Date:   Tue, 18 Jun 2019 12:45:35 +0000
-Message-ID: <20190618124521.22612-1-shalomt@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: VI1PR07CA0267.eurprd07.prod.outlook.com
- (2603:10a6:803:b4::34) To DB6PR0501MB2342.eurprd05.prod.outlook.com
- (2603:10a6:4:4c::21)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=shalomt@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-mailer: git-send-email 2.20.1
-x-originating-ip: [37.142.13.130]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a3fbbc6d-719c-4ccc-9977-08d6f3eadbc8
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:DB6PR0501MB2710;
-x-ms-traffictypediagnostic: DB6PR0501MB2710:
-x-microsoft-antispam-prvs: <DB6PR0501MB27104A3E2DA45716D355B82EC5EA0@DB6PR0501MB2710.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:221;
-x-forefront-prvs: 007271867D
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(39860400002)(376002)(366004)(136003)(346002)(189003)(199004)(52116002)(6512007)(2501003)(54906003)(186003)(6506007)(386003)(50226002)(316002)(6486002)(66446008)(64756008)(5660300002)(99286004)(14444005)(256004)(1076003)(6436002)(66556008)(26005)(66476007)(66946007)(68736007)(81156014)(102836004)(305945005)(8676002)(6916009)(7736002)(5640700003)(8936002)(73956011)(486006)(2616005)(2906002)(81166006)(3846002)(6116002)(478600001)(1730700003)(86362001)(14454004)(476003)(66066001)(71190400001)(71200400001)(53936002)(4326008)(2351001)(36756003)(25786009);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2710;H:DB6PR0501MB2342.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 1uSoNUH3+PGvSeNSW04C0YQfVbxdV3J0O+Htg/tmzLCJf5CovsHyugnUw9TIbr9IF+8ZY+3UICbOxuEsg4/l5iRMt5uob31W8DEeeheEkAhdDIXcL60jpIUVCHzWXoh8j301lxMCKWzxNgIaR1S2LaNHeVHt0Hnl082AqEtDmaMfzpbdkWLsqYvU4IKW2SP2EecGRopZSYvSGZn92q7jDKNEPnVELwhu/L8Id9yzBvPCUeOoyEdgAd4z+3P5TD/TU/Esszir3xF1Lapakoe//PwFGqdZlkDpj3wHA/XcmuLLphga3nGJDt9Ec6vbbzany6GudNd1NU3uOWdzIxlfEzjxWiaQfgmbHiwe/sDDEsTjmR8OSmqB+fUqzI4BZBLczgjoecBEzXYJA3bvqtVpIhD7WdZWmej3RF4ZohexbyE=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1728941AbfFRMyj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 08:54:39 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:41457 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725913AbfFRMyj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 08:54:39 -0400
+Received: by mail-lf1-f67.google.com with SMTP id 136so9176842lfa.8
+        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 05:54:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=rt5N3dxT6EL52OPf/1KKXYt0EJkS/0wv3B/X7MbDn5s=;
+        b=f/nm9wMIuFJwkPoGljdMS7rzRRYj+FvznuIBay2wBs7BxEbQ88bN2z11uYecjoB/Mz
+         fmMJkgM92UR3Zs8JNQwzrBM1xJEZ8L/tlPjNfmWC6osBvGHDi9mxnSEZCmPdEv+44PRP
+         AtpN0IcYQlAZeKkRMqWiW7BbajN1/zmCr5J2eNL9FvIVNpHZlJq7Z0cxxFVtwpRhgNax
+         MCL9D/V9tVmS+9Ktf+AabRFQP3UNm4HDJjNATwDZ0oqAO6QOhQYTnBF50lng6DwUot+O
+         Gkofm4HF8RfkUuz+CRmbNoLZkSCrpmGjjQvTAhjtzD2OKcIsqZltUFoKJ7b1+ANlVBIK
+         pv7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=rt5N3dxT6EL52OPf/1KKXYt0EJkS/0wv3B/X7MbDn5s=;
+        b=C/+/bk7LUXV6oA0hW8DP92ezKCmSW0TCHQY1HsNdUuTosJdHXpEQQK/J0dVHjdY0Q9
+         RcMsDbp2dsXeZNKUARtstGaqzlseADhEY/LUfLhDEGyhsohdsDIfK3TjDuMqBDUgEHDK
+         KwZHcMytYtDzFY6Rx7dsIoLzkBO1t+RBAilUrO7M76sOQHEu/O0aI8jyYujc3myewwuf
+         YRmgWRyijCl+QamA3jEuDOQvoNbylNpTz+OCd4vBJa6KclD1xmyQKjaR8sF0KQNsgiFh
+         07ARzdq+O47Dg7BYrKo8Cf4VdXAxUM7YOs80Lm2Foxl/jZZBOOeXPFNWJPnEqYmWsp2A
+         jVpQ==
+X-Gm-Message-State: APjAAAW2dl+NAcUv8Dgkg87zHHRNsJD2ecmhLMy0f9AI5lGO9WCTStM7
+        kOfHbBFxQFqukMiDOvEJKBzmXw==
+X-Google-Smtp-Source: APXvYqw0r1yWpNBvVGt4QaAfC4TNrWKmhX6mLooI80jzrctAhy4zyo4t6G/7jeNnpYOFA6BEkaeMsQ==
+X-Received: by 2002:a19:e05c:: with SMTP id g28mr44759177lfj.167.1560862476238;
+        Tue, 18 Jun 2019 05:54:36 -0700 (PDT)
+Received: from khorivan (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
+        by smtp.gmail.com with ESMTPSA id b6sm2443959lfa.54.2019.06.18.05.54.35
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 18 Jun 2019 05:54:35 -0700 (PDT)
+Date:   Tue, 18 Jun 2019 15:54:33 +0300
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     Tariq Toukan <tariqt@mellanox.com>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@toke.dk>,
+        "toshiaki.makita1@gmail.com" <toshiaki.makita1@gmail.com>,
+        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>,
+        "mcroce@redhat.com" <mcroce@redhat.com>
+Subject: Re: [PATCH net-next v1 08/11] xdp: tracking page_pool resources and
+ safe removal
+Message-ID: <20190618125431.GA5307@khorivan>
+References: <156045046024.29115.11802895015973488428.stgit@firesoul>
+ <156045052249.29115.2357668905441684019.stgit@firesoul>
+ <20190615093339.GB3771@khorivan>
+ <a02856c1-46e7-4691-6bb9-e0efb388981f@mellanox.com>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a3fbbc6d-719c-4ccc-9977-08d6f3eadbc8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jun 2019 12:45:35.8450
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: shalomt@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2710
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <a02856c1-46e7-4691-6bb9-e0efb388981f@mellanox.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Q29tcGlsYXRpb24gb24gMzItYml0IEFSTSBmYWlscyBhZnRlciBjb21taXQgOTkyYWE4NjRkY2Ew
-ICgibWx4c3c6DQpzcGVjdHJ1bV9wdHA6IEFkZCBpbXBsZW1lbnRhdGlvbiBmb3IgcGh5c2ljYWwg
-aGFyZHdhcmUgY2xvY2sgb3BlcmF0aW9ucyIpDQpiZWNhdXNlIG9mIDY0LWJpdCBkaXZpc2lvbjoN
-Cg0KYXJtLWxpbnV4LWdudWVhYmktbGQ6DQpkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9t
-bHhzdy9zcGVjdHJ1bV9wdHAubzogaW4gZnVuY3Rpb24NCmBtbHhzd19zcDFfcHRwX3BoY19zZXR0
-aW1lJzogc3BlY3RydW1fcHRwLmM6KC50ZXh0KzB4MzljKTogdW5kZWZpbmVkDQpyZWZlcmVuY2Ug
-dG8gYF9fYWVhYmlfdWxkaXZtb2QnDQoNCkZpeCBieSB1c2luZyBkaXZfdTY0KCkuDQoNCkZpeGVz
-OiA5OTJhYTg2NGRjYTAgKCJtbHhzdzogc3BlY3RydW1fcHRwOiBBZGQgaW1wbGVtZW50YXRpb24g
-Zm9yIHBoeXNpY2FsIGhhcmR3YXJlIGNsb2NrIG9wZXJhdGlvbnMiKQ0KU2lnbmVkLW9mZi1ieTog
-U2hhbG9tIFRvbGVkbyA8c2hhbG9tdEBtZWxsYW5veC5jb20+DQpSZXZpZXdlZC1ieTogSWRvIFNj
-aGltbWVsIDxpZG9zY2hAbWVsbGFub3guY29tPg0KUmVwb3J0ZWQtYnk6IE5hdGhhbiBDaGFuY2Vs
-bG9yIDxuYXRlY2hhbmNlbGxvckBnbWFpbC5jb20+DQotLS0NCiBkcml2ZXJzL25ldC9ldGhlcm5l
-dC9tZWxsYW5veC9tbHhzdy9zcGVjdHJ1bV9wdHAuYyB8IDUgKystLS0NCiAxIGZpbGUgY2hhbmdl
-ZCwgMiBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKQ0KDQpkaWZmIC0tZ2l0IGEvZHJpdmVy
-cy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4c3cvc3BlY3RydW1fcHRwLmMgYi9kcml2ZXJzL25l
-dC9ldGhlcm5ldC9tZWxsYW5veC9tbHhzdy9zcGVjdHJ1bV9wdHAuYw0KaW5kZXggMmE5YmJjOTAy
-MjVlLi5iYjZjMGNiMjU3NzEgMTAwNjQ0DQotLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxs
-YW5veC9tbHhzdy9zcGVjdHJ1bV9wdHAuYw0KKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVs
-bGFub3gvbWx4c3cvc3BlY3RydW1fcHRwLmMNCkBAIC04MSwxMyArODEsMTIgQEAgc3RhdGljIGlu
-dA0KIG1seHN3X3NwMV9wdHBfcGhjX3NldHRpbWUoc3RydWN0IG1seHN3X3NwX3B0cF9jbG9jayAq
-Y2xvY2ssIHU2NCBuc2VjKQ0KIHsNCiAJc3RydWN0IG1seHN3X2NvcmUgKm1seHN3X2NvcmUgPSBj
-bG9jay0+Y29yZTsNCisJdTY0IG5leHRfc2VjLCBuZXh0X3NlY19pbl9uc2VjLCBjeWNsZXM7DQog
-CWNoYXIgbXR1dGNfcGxbTUxYU1dfUkVHX01UVVRDX0xFTl07DQogCWNoYXIgbXRwcHNfcGxbTUxY
-U1dfUkVHX01UUFBTX0xFTl07DQotCXU2NCBuZXh0X3NlY19pbl9uc2VjLCBjeWNsZXM7DQotCXUz
-MiBuZXh0X3NlYzsNCiAJaW50IGVycjsNCiANCi0JbmV4dF9zZWMgPSBuc2VjIC8gTlNFQ19QRVJf
-U0VDICsgMTsNCisJbmV4dF9zZWMgPSBkaXZfdTY0KG5zZWMsIE5TRUNfUEVSX1NFQykgKyAxOw0K
-IAluZXh0X3NlY19pbl9uc2VjID0gbmV4dF9zZWMgKiBOU0VDX1BFUl9TRUM7DQogDQogCXNwaW5f
-bG9jaygmY2xvY2stPmxvY2spOw0KLS0gDQoyLjIwLjENCg0K
+On Sun, Jun 16, 2019 at 10:56:25AM +0000, Tariq Toukan wrote:
+
+Hi Tariq
+
+>
+>
+>On 6/15/2019 12:33 PM, Ivan Khoronzhuk wrote:
+>> On Thu, Jun 13, 2019 at 08:28:42PM +0200, Jesper Dangaard Brouer wrote:
+>> Hi, Jesper
+>>
+>>> This patch is needed before we can allow drivers to use page_pool for
+>>> DMA-mappings. Today with page_pool and XDP return API, it is possible to
+>>> remove the page_pool object (from rhashtable), while there are still
+>>> in-flight packet-pages. This is safely handled via RCU and failed
+>>> lookups in
+>>> __xdp_return() fallback to call put_page(), when page_pool object is
+>>> gone.
+>>> In-case page is still DMA mapped, this will result in page note getting
+>>> correctly DMA unmapped.
+>>>
+>>> To solve this, the page_pool is extended with tracking in-flight
+>>> pages. And
+>>> XDP disconnect system queries page_pool and waits, via workqueue, for all
+>>> in-flight pages to be returned.
+>>>
+>>> To avoid killing performance when tracking in-flight pages, the implement
+>>> use two (unsigned) counters, that in placed on different cache-lines, and
+>>> can be used to deduct in-flight packets. This is done by mapping the
+>>> unsigned "sequence" counters onto signed Two's complement arithmetic
+>>> operations. This is e.g. used by kernel's time_after macros, described in
+>>> kernel commit 1ba3aab3033b and 5a581b367b5, and also explained in
+>>> RFC1982.
+>>>
+>>> The trick is these two incrementing counters only need to be read and
+>>> compared, when checking if it's safe to free the page_pool structure.
+>>> Which
+>>> will only happen when driver have disconnected RX/alloc side. Thus, on a
+>>> non-fast-path.
+>>>
+>>> It is chosen that page_pool tracking is also enabled for the non-DMA
+>>> use-case, as this can be used for statistics later.
+>>>
+>>> After this patch, using page_pool requires more strict resource
+>>> "release",
+>>> e.g. via page_pool_release_page() that was introduced in this
+>>> patchset, and
+>>> previous patches implement/fix this more strict requirement.
+>>>
+>>> Drivers no-longer call page_pool_destroy(). Drivers already call
+>>> xdp_rxq_info_unreg() which call xdp_rxq_info_unreg_mem_model(), which
+>>> will
+>>> attempt to disconnect the mem id, and if attempt fails schedule the
+>>> disconnect for later via delayed workqueue.
+>>>
+>>> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+>>> ---
+>>> drivers/net/ethernet/mellanox/mlx5/core/en_main.c |    3 -
+>>> include/net/page_pool.h                           |   41 ++++++++++---
+>>> net/core/page_pool.c                              |   62
+>>> +++++++++++++++-----
+>>> net/core/xdp.c                                    |   65
+>>> +++++++++++++++++++--
+>>> 4 files changed, 136 insertions(+), 35 deletions(-)
+>>>
+>>> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+>>> b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+>>> index 2f647be292b6..6c9d4d7defbc 100644
+>>> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+>>> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+>>
+>> [...]
+>>
+>>> --- a/net/core/xdp.c
+>>> +++ b/net/core/xdp.c
+>>> @@ -38,6 +38,7 @@ struct xdp_mem_allocator {
+>>>     };
+>>>     struct rhash_head node;
+>>>     struct rcu_head rcu;
+>>> +    struct delayed_work defer_wq;
+>>> };
+>>>
+>>> static u32 xdp_mem_id_hashfn(const void *data, u32 len, u32 seed)
+>>> @@ -79,13 +80,13 @@ static void __xdp_mem_allocator_rcu_free(struct
+>>> rcu_head *rcu)
+>>>
+>>>     xa = container_of(rcu, struct xdp_mem_allocator, rcu);
+>>>
+>>> +    /* Allocator have indicated safe to remove before this is called */
+>>> +    if (xa->mem.type == MEM_TYPE_PAGE_POOL)
+>>> +        page_pool_free(xa->page_pool);
+>>> +
+>>
+>> What would you recommend to do for the following situation:
+>>
+>> Same receive queue is shared between 2 network devices. The receive ring is
+>> filled by pages from page_pool, but you don't know the actual port (ndev)
+>> filling this ring, because a device is recognized only after packet is
+>> received.
+>>
+>> The API is so that xdp rxq is bind to network device, each frame has
+>> reference
+>> on it, so rxq ndev must be static. That means each netdev has it's own rxq
+>> instance even no need in it. Thus, after your changes, page must be
+>> returned to
+>> the pool it was taken from, or released from old pool and recycled in
+>> new one
+>> somehow.
+>>
+>> And that is inconvenience at least. It's hard to move pages between
+>> pools w/o
+>> performance penalty. No way to use common pool either, as unreg_rxq now
+>> drops
+>> the pool and 2 rxqa can't reference same pool.
+>>
+>
+>Within the single netdev, separate page_pool instances are anyway
+>created for different RX rings, working under different NAPI's.
+
+The circumstances are so that same RX ring is shared between 2
+netdevs... and netdev can be known only after descriptor/packet is
+received. Thus, while filling RX ring, there is no actual device,
+but when packet is received it has to be recycled to appropriate
+net device pool. Before this change there were no difference from
+which pool the page was allocated to fill RX ring, as there were no
+owner. After this change there is owner - netdev page pool.
+
+For cpsw the dma unmap is common for both netdevs and no difference
+who is freeing the page, but there is difference which pool it's
+freed to.
+
+So that, while filling RX ring the page is taken from page pool of
+ndev1, but packet is received for ndev2, it has to be later
+returned/recycled to page pool of ndev1, but when xdp buffer is
+handed over to xdp prog the xdp_rxq_info has reference on ndev2 ...
+
+And no way to predict the final ndev before packet is received, so no
+way to choose appropriate page pool as now it becomes page owner.
+
+So, while RX ring filling, the page/dma recycling is needed but should
+be some way to identify page owner only after receiving packet.
+
+Roughly speaking, something like:
+
+pool->pages_state_hold_cnt++;
+
+outside of page allocation API, after packet is received.
+and free of the counter while allocation (w/o owing the page).
+
+-- 
+Regards,
+Ivan Khoronzhuk
