@@ -2,143 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03BEE4A984
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 20:10:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AA624A98D
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 20:12:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729916AbfFRSK0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 14:10:26 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:53695 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727616AbfFRSK0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 14:10:26 -0400
-Received: by mail-wm1-f65.google.com with SMTP id x15so4317412wmj.3
-        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 11:10:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=JIK6PoBMYyX432JKXrgI/wCWIvlzMlWnpljOntppPWs=;
-        b=crxsLLlGG1eD51M+sDFR2w4Nffs3cQDrJxdv4lV0XibKvwOY92YXNiJHwMSrlVt5l/
-         wOEWwT2JuNOSxOG/TJiVp9aVwHJbH0fjbwNANCAxm2ffFNTCllUR0+lOq5dk2ejmQ7hE
-         tdH6H1ezW4loriBUFJTbgVMuGXDUahNhF/MZpIQLNyve0bpP4OMJJYBy2bHM4XtpOigm
-         k4S4a/Uj6aFQJcwo2SrVEyaDNCnU1M6S1BvQd3TNJ3nV3JlCDWa48Dz/X1cTm0qVTjpt
-         Cgw2dbWmljy15gXqiC7DoA0KaIR4nEbhx5rdv49cVmvxG7q3rYqgKJkNOG5FtXulyHlf
-         LL0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=JIK6PoBMYyX432JKXrgI/wCWIvlzMlWnpljOntppPWs=;
-        b=ZuPeMqDK51zlVz6IWlAqhqJXfvS5hV5SZl7m6JfuC92GQxXcBsOyCPaZh2Xnckzi5g
-         w/BRn90T9tLFtyiw1j28U86LV5YVc00NMuxadjCuIMnUFGvSfIklZ3gvTV5nF/0UwEWS
-         5iiVoKqIOZW8XZr7u/ts5SCp2nF70/ju93Z8r65kNdnn3CmNlbAQCb4COAmQhRgoryjn
-         v3l0LfUOGO64jaYeE2lvpDUbq05dJhSOecstt0cOIPNDFla9HUrd1RCDjKikBOWQw9vl
-         QaAIqxE3Pzjo+uz3AZdV+Qs3HZ5DNnR88odSEFLlDh0dIT3bqYh4Bj+YTPugD1j0m/zF
-         MnjA==
-X-Gm-Message-State: APjAAAWXWMdx6rCPLkBE6fKhGUjIHzHrjgCZcHEvR9yz2ig270+Hd70q
-        9KFyEejrH4rW51wQ6bAAgjONUl08
-X-Google-Smtp-Source: APXvYqyIUBkJ40DPS+yKWjPgN5M6bmESc2ZuAPomTOAol5IwetIJL/hcbxyItjR/BY2UybnONAnnag==
-X-Received: by 2002:a1c:b046:: with SMTP id z67mr4438748wme.49.1560881423380;
-        Tue, 18 Jun 2019 11:10:23 -0700 (PDT)
-Received: from [10.67.49.123] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id s10sm3696469wmf.8.2019.06.18.11.10.21
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 18 Jun 2019 11:10:22 -0700 (PDT)
-Subject: Re: [RFC PATCH 1/2] net: dsa: b53: Turn on managed mode and set IMP
- port
-To:     Benedikt Spranger <b.spranger@linutronix.de>,
-        netdev@vger.kernel.org
-References: <20190618175712.71148-1-b.spranger@linutronix.de>
- <20190618175712.71148-2-b.spranger@linutronix.de>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <435e5bde-2fc5-edd3-b757-9e5f8976bfe3@gmail.com>
-Date:   Tue, 18 Jun 2019 11:10:14 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
-MIME-Version: 1.0
-In-Reply-To: <20190618175712.71148-2-b.spranger@linutronix.de>
-Content-Type: text/plain; charset=utf-8
+        id S1730176AbfFRSM0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 14:12:26 -0400
+Received: from mx0a-0014ca01.pphosted.com ([208.84.65.235]:49200 "EHLO
+        mx0a-0014ca01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727616AbfFRSM0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 14:12:26 -0400
+Received: from pps.filterd (m0042385.ppops.net [127.0.0.1])
+        by mx0a-0014ca01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5II8T1u026866;
+        Tue, 18 Jun 2019 11:12:18 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=proofpoint;
+ bh=JYKN/Bc6SG0wGsbz+2W0JK4KRKS6hzwSm5ehwAREC14=;
+ b=ZvW/XEAJvOn0lqPO+YVgOyO7zVL2FSSSHqJnHimlBCtvvQ00Hd1ToeEIJPllcqXMoDR2
+ 8qCMlhepll4oh6qoTQCh/Qj81EJVQhL7/B/x1O+lVsnWudBTAplRASKNXnGW7XnaxZlm
+ vtngHjLBg2sZrB+LkHD8F0ot5Ygxp7xFblVpAqVW72nxRINAN7Q18TmxFwP+2FMCeXcK
+ Ay2FAKPg+K1Xdl5/KVgZFvUEadBFAfFnyOmPJBjBHCEQc3q/PVI30uoQsQ7NOi3dQge8
+ kID0kA7Iov4mOitQ7+47eGYnf0ESDsMOeI75+F5E/HDHxiOgex/3UWP1J/aqpJwpWSro EA== 
+Authentication-Results: cadence.com;
+        spf=pass smtp.mailfrom=pthombar@cadence.com
+Received: from nam03-co1-obe.outbound.protection.outlook.com (mail-co1nam03lp2051.outbound.protection.outlook.com [104.47.40.51])
+        by mx0a-0014ca01.pphosted.com with ESMTP id 2t6qgsu4px-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 18 Jun 2019 11:12:18 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JYKN/Bc6SG0wGsbz+2W0JK4KRKS6hzwSm5ehwAREC14=;
+ b=VoxMaibRUFcX+WN5FB+wrHhCzzfUvmUQ/JKbHIvDl6JOoGFPSKiWjVicFQGXrX9HLlP+Y74aoOemuHRK28aOhsoA0mCLfHQnhqjgSU3BtegWgpVrD3MXq3WlaPWhsv6vYK4u4GLXM7AW07g2d6YuNU9E/ubONvPiKrQEqlT+Ra0=
+Received: from CO2PR07MB2469.namprd07.prod.outlook.com (10.166.94.21) by
+ CO2PR07MB2472.namprd07.prod.outlook.com (10.166.200.142) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1987.15; Tue, 18 Jun 2019 18:12:16 +0000
+Received: from CO2PR07MB2469.namprd07.prod.outlook.com
+ ([fe80::b9c0:ba2d:e9e8:4176]) by CO2PR07MB2469.namprd07.prod.outlook.com
+ ([fe80::b9c0:ba2d:e9e8:4176%4]) with mapi id 15.20.1987.014; Tue, 18 Jun 2019
+ 18:12:16 +0000
+From:   Parshuram Raju Thombare <pthombar@cadence.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Rafal Ciepiela <rafalc@cadence.com>,
+        Anil Joy Varughese <aniljoy@cadence.com>,
+        Piotr Sroka <piotrs@cadence.com>
+Subject: RE: [PATCH 0/6] net: macb patch set cover letter
+Thread-Topic: [PATCH 0/6] net: macb patch set cover letter
+Thread-Index: AQHVI9Rx053wx8/6CUGjNUCvusFgp6af9F2AgAHFrNA=
+Date:   Tue, 18 Jun 2019 18:12:16 +0000
+Message-ID: <CO2PR07MB24693D250D8F2BF72FC0B7E5C1EA0@CO2PR07MB2469.namprd07.prod.outlook.com>
+References: <1560642311-25585-1-git-send-email-pthombar@cadence.com>
+ <20190617150451.GG25211@lunn.ch>
+In-Reply-To: <20190617150451.GG25211@lunn.ch>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-dg-ref: PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNccHRob21iYXJcYXBwZGF0YVxyb2FtaW5nXDA5ZDg0OWI2LTMyZDMtNGE0MC04NWVlLTZiODRiYTI5ZTM1Ylxtc2dzXG1zZy05NjE1ZTQzMS05MWY0LTExZTktODRmOC0wNGQzYjAyNzc0NGFcYW1lLXRlc3RcOTYxNWU0MzMtOTFmNC0xMWU5LTg0ZjgtMDRkM2IwMjc3NDRhYm9keS50eHQiIHN6PSIxMzk5IiB0PSIxMzIwNTM1NTEyOTgxMTk2MjUiIGg9IlZIZXBBWDZTYlFpbXFNLzNlK2dQNU15WjZSST0iIGlkPSIiIGJsPSIwIiBibz0iMSIvPjwvbWV0YT4=
+x-dg-rorf: 
+x-originating-ip: [59.145.174.78]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5606f52d-1a20-4eef-174c-08d6f4187eee
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:CO2PR07MB2472;
+x-ms-traffictypediagnostic: CO2PR07MB2472:
+x-microsoft-antispam-prvs: <CO2PR07MB2472E6DD8EF7F3F44F724EDDC1EA0@CO2PR07MB2472.namprd07.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 007271867D
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(346002)(376002)(39860400002)(396003)(366004)(13464003)(199004)(189003)(36092001)(81166006)(7736002)(6246003)(107886003)(186003)(26005)(71190400001)(71200400001)(229853002)(305945005)(66066001)(14454004)(476003)(5660300002)(11346002)(316002)(256004)(446003)(486006)(54906003)(14444005)(33656002)(52536014)(68736007)(8936002)(55016002)(73956011)(9686003)(66946007)(6916009)(2906002)(76176011)(6116002)(53936002)(6436002)(66556008)(76116006)(64756008)(99286004)(7696005)(102836004)(86362001)(3846002)(4326008)(66476007)(74316002)(8676002)(25786009)(478600001)(6506007)(81156014)(66446008);DIR:OUT;SFP:1101;SCL:1;SRVR:CO2PR07MB2472;H:CO2PR07MB2469.namprd07.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: cadence.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: WodEL+L7LaecqzplPefJOkWBS3rglwQOYE/6pLFTOKmNfg1o6xXXRYzYvxNfz9HtQig7v+TJRHMjWH76dftrBqA0gZF8duiLHkKlRUl5+yBQcSSM0u650Kh+ek95AhhKEVIYsAOt9bd7unqOSqk00s842I6AXMCKtoqUdHeSkQb8RuASIMHUskjBz0akl8I8IC5XDCfbn/cmsWgxOetYF5EOpLhGujIG1iFL+2Jl8me+0W+k9TkoeM8PGYQv4tTltUyCu7wqhn0MeZ0953di7OVstv9ZDFEdzyvcTNBm1Z1F8OQNQIDM08DTE8AHA6jCAM6feS1WB2leabTBUXhjj5+XTUFlSDERBdKzkv4rlNzqrivpsZ3AHa+J0VmqUiVv6FoG4/1EWPHPDABL7Qhh+mYZwSXWs2sFGURpKRojgNQ=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: cadence.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5606f52d-1a20-4eef-174c-08d6f4187eee
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jun 2019 18:12:16.3937
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: d36035c5-6ce6-4662-a3dc-e762e61ae4c9
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: pthombar@global.cadence.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO2PR07MB2472
+X-Proofpoint-SPF-Result: pass
+X-Proofpoint-SPF-Record: v=spf1 include:spf.smktg.jp include:_spf.salesforce.com
+ include:mktomail.com include:spf-0014ca01.pphosted.com
+ include:spf.protection.outlook.com include:auth.msgapp.com
+ include:spf.mandrillapp.com ~all
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-18_08:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_check_notspam policy=outbound_check score=0
+ priorityscore=1501 malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0
+ spamscore=0 clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906180145
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/18/19 10:57 AM, Benedikt Spranger wrote:
-> From: Florian Fainelli <f.fainelli@gmail.com>
-> 
-> When enabling Broadcom tags on earlier devices such as BCM53125, we need
-> to also enable Managed mode, as well as configure which port is going to
-> be the IMP port. If we did not do that, the switch would just pass
-> through the Broadcom tags on the wire and not act on them. We need to
-> have bcm_sf2 stop overwriting the SWMODE register and let b53 deal with
-> that now.
-> 
-> Fixes: 7edc58d614d4 ("net: dsa: b53: Turn on Broadcom tags")
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> Signed-off-by: Benedikt Spranger <b.spranger@linutronix.de>
+As this change doesn't affect other users I thought it is safe to do it=20
+from PCI wrapper driver. But yes I agree that right way is to do it in PHY =
+driver.
+I would like to drop this patch, please ignore only this patch from series.
 
-This patch was part of a bigger series that you don't submit, so you are
-simply not just potentially breaking all users of b53, but you are also
-breaking bcm_sf2 which you probably don't have access to for testing,
-that's unfortunate. More on the cover letter.
--- 
-Florian
+>-----Original Message-----
+>From: Andrew Lunn <andrew@lunn.ch>
+>Sent: Monday, June 17, 2019 8:35 PM
+>To: Parshuram Raju Thombare <pthombar@cadence.com>
+>Cc: nicolas.ferre@microchip.com; davem@davemloft.net; f.fainelli@gmail.com=
+;
+>netdev@vger.kernel.org; hkallweit1@gmail.com; linux-kernel@vger.kernel.org=
+;
+>Rafal Ciepiela <rafalc@cadence.com>; Anil Joy Varughese
+><aniljoy@cadence.com>; Piotr Sroka <piotrs@cadence.com>
+>Subject: Re: [PATCH 0/6] net: macb patch set cover letter
+>
+>EXTERNAL MAIL
+>
+>
+>> 3. 003-net-macb-add-PHY-configuration-in-MACB-PCI-wrapper.patch
+>>    This patch is to configure TI PHY DP83867 in SGMII mode from
+>>    our MAC PCI wrapper driver.
+>>    With this change there is no need of PHY driver and dp83867
+>>    module must be disabled. Users wanting to setup DP83867 PHY
+>>    in SGMII mode can disable dp83867.ko driver, else dp83867.ko
+>>    overwrite this configuration and PHY is setup as per dp83867.ko.
+>
+>This sounds very wrong. Why not make the dp83867 driver support SGMII?
+>
+>     Andrew
+
+Regards,
+Parshuram Thombare
