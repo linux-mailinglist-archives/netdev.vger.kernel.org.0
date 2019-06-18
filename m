@@ -2,117 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 123604AD23
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 23:15:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0C684AD27
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 23:16:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730783AbfFRVPG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 17:15:06 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:39696 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730350AbfFRVPF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 17:15:05 -0400
-Received: by mail-wm1-f68.google.com with SMTP id z23so4697468wma.4;
-        Tue, 18 Jun 2019 14:15:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=rWwSJeLUsFHwAKGFtL8HKocirM8z2NvBy3ERORUMtdg=;
-        b=XvaZP0OFZUyDtAFm8Jt0dCdogaeIMkmtHWzy/z+NaDk2EmVHjipKfok/GCvnfBCddz
-         CCawxZfXYZOrsRu5u+tcj/ylBVY8kj/yw0E+TXT+embp8vIaj+imxJC2q/Bkil8yOV9y
-         VxoJnO3aBSTu/jvHckfrIQGBHrPgamLYxwRqmnGI9OxsOcsOj9nYbjKDX1MPYBUEUiE4
-         8/JdYqOgbJqufHOEVtpBgWmETPn6O3NqN74wa1Mx61KOwpCIL6XdHZ9HKucVmQFC9xrk
-         0qPJOEqyogNNALobB90eiNT0Uj6LugfjfspjyUSzSs6b26yAmisBmrkdcg04Bf3m0Q35
-         iB0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=rWwSJeLUsFHwAKGFtL8HKocirM8z2NvBy3ERORUMtdg=;
-        b=XBltXh21laWk5llgZW4FNNzZ5H43o1X4EL2szV7h2iXw5LAxNmO89lSP0HOaYDxvKu
-         T3onKzqcMlJVaIuZFGaPInz3pF6vYnPD4oLhqjUouYNuv8PxeCTaawRUqUxKU4i3eSGW
-         KLMzd4QHIno694U9H2XiMahPEnHYxj6GTSZy+a4xgzYLcXBsa1c9aZ1uBZEYL45hS0Nq
-         rQ5bHxXuedgilubreQQ899SYqBe717S/Zf2bhiesbKsK47yAKcrFBabPjwEDvU5EQpzx
-         xQxSmEh5r9udmZKTKSiWHylkghVFXO+/9bir97oqsf7oIswo9qerQTS0ZKmreDnFMMJ5
-         u3cg==
-X-Gm-Message-State: APjAAAXPpj6R3Var2YUi5+385jDBkUOEx7dimehGbupWOVBYM/RXjqPw
-        zxKtrqo9v55rBFUFVo9ICcGI+fDi
-X-Google-Smtp-Source: APXvYqxsrGzOaEsC2qr3FAIs6zt3ylrJo+Csd3rypjCYCc5C9R7IAL4yO6RqnzyX5RHavRuv3/vfZA==
-X-Received: by 2002:a1c:67c2:: with SMTP id b185mr4859786wmc.98.1560892503351;
-        Tue, 18 Jun 2019 14:15:03 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8bf3:bd00:28c3:39c3:997e:395f? (p200300EA8BF3BD0028C339C3997E395F.dip0.t-ipconnect.de. [2003:ea:8bf3:bd00:28c3:39c3:997e:395f])
-        by smtp.googlemail.com with ESMTPSA id q20sm35973938wra.36.2019.06.18.14.15.02
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 18 Jun 2019 14:15:02 -0700 (PDT)
-Subject: [PATCH net-next 2/2] r8169: don't activate ASPM in chip if OS can't
- control ASPM
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Bjorn Helgaas <bhelgaas@google.com>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <5ea56278-05e2-794f-5f66-23343e72164c@gmail.com>
-Message-ID: <680bce5c-44e7-b9ad-0f41-d7a4a70462b7@gmail.com>
-Date:   Tue, 18 Jun 2019 23:14:50 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.1
+        id S1730713AbfFRVPs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 17:15:48 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:55442 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730350AbfFRVPs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 17:15:48 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id A466560FED; Tue, 18 Jun 2019 21:15:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1560892546;
+        bh=YZxqpwNwj9xP1mVakWl4GnRWhuxU+h/l52kLOjkWX3Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IVOJN7iw7SLfamnGPFOAHWKxlR24qZGI+fJflD1GHP+Oo/BkYwgUJIRH8PyDeOjIX
+         yWdNc+O9P4dYI5N0wCG8AHfCVvLmPw/X/UKLIfyjXkZNDQzm9mCb+/zEFpUXJLPOBP
+         01BzNaRPwCzmRCWihbrOMK4u18fWzfMXFHFzCzHg=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED autolearn=no autolearn_force=no version=3.4.0
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by smtp.codeaurora.org (Postfix) with ESMTP id 3E048608BA;
+        Tue, 18 Jun 2019 21:15:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1560892544;
+        bh=YZxqpwNwj9xP1mVakWl4GnRWhuxU+h/l52kLOjkWX3Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TOVI6NUYG8I82CcnESxWEYgB0kYG+0CZ96pkTfQAcneB00XUWHiCLDk9M8clfZqdU
+         enPHMCLJDTDCNtKey6d8+AOJmN1NmXdJC6F943mG9WsGQugpIFqi8+l8PUVpxBt6uk
+         U7rdCNWQ7xeD9PerfSVkAPcLATq9szGad+VzOXQU=
 MIME-Version: 1.0
-In-Reply-To: <5ea56278-05e2-794f-5f66-23343e72164c@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
+Date:   Tue, 18 Jun 2019 15:15:42 -0600
+From:   Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        Alex Elder <elder@linaro.org>, abhishek.esse@gmail.com,
+        Ben Chan <benchan@google.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        cpratapa@codeaurora.org, David Miller <davem@davemloft.net>,
+        Dan Williams <dcbw@redhat.com>,
+        DTML <devicetree@vger.kernel.org>,
+        Eric Caruso <ejcaruso@google.com>, evgreen@chromium.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-soc@vger.kernel.org, Networking <netdev@vger.kernel.org>,
+        syadagir@codeaurora.org
+Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
+In-Reply-To: <CAK8P3a2onXpxiE4y9PzRwuPM2dh=h_BKz7Eb0=LLPgBbZoK1bQ@mail.gmail.com>
+References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
+ <a94676381a5ca662c848f7a725562f721c43ce76.camel@sipsolutions.net>
+ <CAK8P3a0kV-i7BJJ2X6C=5n65rSGfo8fUiC4J_G-+M8EctYKbkg@mail.gmail.com>
+ <066e9b39f937586f0f922abf801351553ec2ba1d.camel@sipsolutions.net>
+ <b3686626-e2d8-bc9c-6dd0-9ebb137715af@linaro.org>
+ <b23a83c18055470c5308fcd1eed018056371fc1d.camel@sipsolutions.net>
+ <CAK8P3a1FeUQR3pgoQxHoRK05JGORyR+TFATVQiijLWtFKTv6OQ@mail.gmail.com>
+ <613cdfde488eb23d7207c7ba6258662702d04840.camel@sipsolutions.net>
+ <CAK8P3a2onXpxiE4y9PzRwuPM2dh=h_BKz7Eb0=LLPgBbZoK1bQ@mail.gmail.com>
+Message-ID: <6c70950d0c78bc02a3d016918ec3929e@codeaurora.org>
+X-Sender: subashab@codeaurora.org
+User-Agent: Roundcube Webmail/1.2.5
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Certain chip version / board combinations have massive problems if
-ASPM is active. If BIOS enables ASPM and doesn't let OS control it,
-then we may have a problem with the current code. Therefore check the
-return code of pci_disable_link_state() and don't enable ASPM in the
-network chip if OS can't control ASPM.
+On 2019-06-18 14:55, Arnd Bergmann wrote:
+> On Tue, Jun 18, 2019 at 10:36 PM Johannes Berg
+> <johannes@sipsolutions.net> wrote:
+>> 
+>> On Tue, 2019-06-18 at 21:59 +0200, Arnd Bergmann wrote:
+>> >
+>> > From my understanding, the ioctl interface would create the lower
+>> > netdev after talking to the firmware, and then user space would use
+>> > the rmnet interface to create a matching upper-level device for that.
+>> > This is an artifact of the strong separation of ipa and rmnet in the
+>> > code.
+>> 
+>> Huh. But if rmnet has muxing, and IPA supports that, why would you 
+>> ever
+>> need multiple lower netdevs?
+> 
+> From my reading of the code, there is always exactly a 1:1 relationship
+> between an rmnet netdev an an ipa netdev. rmnet does the encapsulation/
+> decapsulation of the qmap data and forwards it to the ipa netdev,
+> which then just passes data through between a hardware queue and
+> its netdevice.
+> 
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+There is a n:1 relationship between rmnet and IPA.
+rmnet does the de-muxing to multiple netdevs based on the mux id
+in the MAP header for RX packets and vice versa.
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 2e2a74aa0..48b8a90f7 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -652,6 +652,7 @@ struct rtl8169_private {
- 
- 	unsigned irq_enabled:1;
- 	unsigned supports_gmii:1;
-+	unsigned aspm_manageable:1;
- 	dma_addr_t counters_phys_addr;
- 	struct rtl8169_counters *counters;
- 	struct rtl8169_tc_offsets tc_offset;
-@@ -4286,7 +4287,8 @@ static void rtl_pcie_state_l2l3_disable(struct rtl8169_private *tp)
- 
- static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
- {
--	if (enable) {
-+	/* Don't enable ASPM in the chip if OS can't control ASPM */
-+	if (enable && tp->aspm_manageable) {
- 		RTL_W8(tp, Config5, RTL_R8(tp, Config5) | ASPM_en);
- 		RTL_W8(tp, Config2, RTL_R8(tp, Config2) | ClkReqEn);
- 	} else {
-@@ -6678,7 +6680,9 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	/* Disable ASPM completely as that cause random device stop working
- 	 * problems as well as full system hangs for some PCIe devices users.
- 	 */
--	pci_disable_link_state(pdev, PCIE_LINK_STATE_L0S | PCIE_LINK_STATE_L1);
-+	rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L0S |
-+					  PCIE_LINK_STATE_L1);
-+	tp->aspm_manageable = !rc;
- 
- 	/* enable device (incl. PCI PM wakeup and hotplug setup) */
- 	rc = pcim_enable_device(pdev);
+> [side note: on top of that, rmnet also does "aggregation", which may
+>  be a confusing term that only means transferring multiple frames
+>  at once]
+> 
+>> > ipa definitely has multiple hardware queues, and the Alex'
+>> > driver does implement  the data path on those, just not the
+>> > configuration to enable them.
+>> 
+>> OK, but perhaps you don't actually have enough to use one for each
+>> session?
+> 
+> I'm lacking the terminology here, but what I understood was that
+> the netdev and queue again map to a session.
+> 
+>> > Guessing once more, I suspect the the XON/XOFF flow control
+>> > was a workaround for the fact that rmnet and ipa have separate
+>> > queues. The hardware channel on IPA may fill up, but user space
+>> > talks to rmnet and still add more frames to it because it doesn't
+>> > know IPA is busy.
+>> >
+>> > Another possible explanation would be that this is actually
+>> > forwarding state from the base station to tell the driver to
+>> > stop sending data over the air.
+>> 
+>> Yeah, but if you actually have a hardware queue per upper netdev then
+>> you don't really need this - you just stop the netdev queue when the
+>> hardware queue is full, and you have flow control automatically.
+>> 
+>> So I really don't see any reason to have these messages going back and
+>> forth unless you plan to have multiple sessions muxed on a single
+>> hardware queue.
+> 
+
+Hardware may flow control specific PDNs (rmnet interfaces) based on QoS 
+-
+not necessarily only in case of hardware queue full.
+
+> Sure, I definitely understand what you mean, and I agree that would
+> be the right way to do it. All I said is that this is not how it was 
+> done
+> in rmnet (this was again my main concern about the rmnet design
+> after I learned it was required for ipa) ;-)
+> 
+>      Arnd
+
 -- 
-2.22.0
-
-
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
