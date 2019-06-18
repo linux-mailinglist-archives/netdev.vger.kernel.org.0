@@ -2,194 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B18A549F64
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 13:41:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29A2049F89
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 13:46:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729714AbfFRLlU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 07:41:20 -0400
-Received: from mail-vk1-f195.google.com ([209.85.221.195]:39477 "EHLO
-        mail-vk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729744AbfFRLlO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 07:41:14 -0400
-Received: by mail-vk1-f195.google.com with SMTP id o19so2737971vkb.6
-        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 04:41:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aXKWHfiW2fK/oNHPaHV17m2/kXsIPSmEkP6INcYYU9o=;
-        b=DbVcJjtjVOUaGpNKJ/DvdYK1FZNzvJnwIpOr3/kA2dreAHCj5DcjBfjZnEnYIrIL9Q
-         gq7+EeNVE7nyL4th2fgWCodJu4sRMGXCIaIuRnP5IfcYW4NiepE4lr7gs5enJz5tCw7h
-         TtYwfBPaT23F4mPYlUpktE1WjGcT41EhSwpTjDsKDZs9r5rQu8WyDZgBYo1DAdw2a3dR
-         Nksam9I88iVRBmH9PNaflQd7Fj28V2t/rj80Z2I9WIYVyxbBH3N22NG6Cv7visa5uDhj
-         UZ1yOk9v4J+/L/pEamjjXplcvuLmdPFTyfd9tkHBax7Y6B0OBcNQlPc+nFSUEoGFDVY1
-         JKRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aXKWHfiW2fK/oNHPaHV17m2/kXsIPSmEkP6INcYYU9o=;
-        b=ZDRV6xORikCraeU891M9EYwgwrwrSw9kgeGgwsthV4epHYfXwTWbHbgk0Pw0Y+eq36
-         OEfo50xFAIYxFzRCuDdR1nAsqYbzYwu3YmlgG9Llqonvda0fhLjeBZfXZG9RcYG6mD9z
-         pbUTBwP3HpGov56eIGhbZrmoNxM1qgGrgd9UoUtm7gWafXPJAyI/pFfTpM4CuwMfX4bg
-         xXWGKQOfVGVuWVv3CRoStCK+s9ECSMwaxIru1RxkDIdSHSsbDvTl+KX1gniWo7E5ioou
-         YCKADWyOUtACZOBOZI9UBxYSfaM8xRASRp2pniByOYrMjfZM7YQaOrMx1xPSTKB81gq7
-         cZlw==
-X-Gm-Message-State: APjAAAVggGwPiqmD/A5qxz+cjIHqUFYEwZBZomcW3nyyQeAijxqp99n+
-        NMthAyVBRtpaIJcA366Cm1C/t5RT7OjwhE4LoLK95Q==
-X-Google-Smtp-Source: APXvYqzAl7wJEEH+9xHNdBIPLlWcQNm3f6xV2K4I/CyVeso07z7k2+LL7fMznGVsUFSpo4IawQFtCpaHljxygG765/Q=
-X-Received: by 2002:a1f:ab04:: with SMTP id u4mr26393129vke.40.1560858072830;
- Tue, 18 Jun 2019 04:41:12 -0700 (PDT)
+        id S1729713AbfFRLq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 07:46:56 -0400
+Received: from mx.0dd.nl ([5.2.79.48]:46496 "EHLO mx.0dd.nl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729110AbfFRLq4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Jun 2019 07:46:56 -0400
+Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx.0dd.nl (Postfix) with ESMTPS id CE1E66053E;
+        Tue, 18 Jun 2019 13:46:53 +0200 (CEST)
+Authentication-Results: mx.0dd.nl;
+        dkim=pass (2048-bit key; secure) header.d=vdorst.com header.i=@vdorst.com header.b="ka372HMW";
+        dkim-atps=neutral
+Received: from www (www.vdorst.com [192.168.2.222])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.vdorst.com (Postfix) with ESMTPSA id A24A91C8AAF3;
+        Tue, 18 Jun 2019 13:46:53 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com A24A91C8AAF3
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
+        s=default; t=1560858413;
+        bh=aXEy13LVmystdFScKdG2+jJ7/Q4WXzV3sCnx/eqveIQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ka372HMWQEGJxoSoPn0qqxx8XKULCl2pdxngnU9O3/4A5fnltxIEWot3m4CFc3vHW
+         Y4xjip4YPiTnvQ44f2TI09R+SJEBsw3CwQoS5wYK6zzJZ/FHwcKEKebP8va+r6hgmD
+         J2aMD8BY5+9+NWDJnCxivTUFvM2j5bAJmuOL+WPukF8PoBeUJixqpoYAEbcdC31JUw
+         XhiKBW8J1ZXijeavprcWleMrGe2quQuJzR6r7gZAs81wlBK9Iu6FWK06qAAxnDKkG7
+         v5jnpw+EmRthreXV4x9RbcB4ruERJJ/TiAQ2uRTMqYy7ND7rsNHS5n9FLaQ5MqWyT8
+         PooktwIq9BPoQ==
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1]) by
+ www.vdorst.com (Horde Framework) with HTTPS; Tue, 18 Jun 2019 11:46:53 +0000
+Date:   Tue, 18 Jun 2019 11:46:53 +0000
+Message-ID: <20190618114653.Horde._ZDbcd1ZKyg5vfM1JnmQJZb@www.vdorst.com>
+From:   =?utf-8?b?UmVuw6k=?= van Dorst <opensource@vdorst.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Sean Wang <sean.wang@mediatek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        netdev@vger.kernel.org, john@phrozen.org,
+        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org
+Subject: Re: [PATCH net-next 0/2] net: mediatek: Add MT7621 TRGMII mode
+ support
+References: <20190616182010.18778-1-opensource@vdorst.com>
+ <20190617140223.GC25211@lunn.ch>
+ <20190617213312.Horde.fcb9-g80Zzfd-IMC8EQy50h@www.vdorst.com>
+ <20190617214428.GO17551@lunn.ch>
+ <20190617232004.Horde.mAVymZdeb9Jjf29W2PeOggU@www.vdorst.com>
+ <20190618015309.GA18088@lunn.ch>
+ <7f2fc770-1787-72f8-b91d-e2b12e74d39e@gmail.com>
+In-Reply-To: <7f2fc770-1787-72f8-b91d-e2b12e74d39e@gmail.com>
+User-Agent: Horde Application Framework 5
+Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
 MIME-Version: 1.0
-References: <20190617175653.21756-1-dianders@chromium.org> <CAPDyKFpaX6DSM_BjtghAHUf7qYCyEG+wMagXPUdgz3Eutovqfw@mail.gmail.com>
- <87v9x39mxf.fsf@kamboji.qca.qualcomm.com>
-In-Reply-To: <87v9x39mxf.fsf@kamboji.qca.qualcomm.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Tue, 18 Jun 2019 13:40:36 +0200
-Message-ID: <CAPDyKFqGtui4+shA0TENF=h6Zk0_tgQaJTNSP1xakw7Nb12irg@mail.gmail.com>
-Subject: Re: [PATCH v5 0/5] brcmfmac: sdio: Deal better w/ transmission errors
- related to idle
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Douglas Anderson <dianders@chromium.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        brcm80211-dev-list.pdl@broadcom.com,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Double Lo <double.lo@cypress.com>,
-        Brian Norris <briannorris@chromium.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Naveen Gupta <naveen.gupta@cypress.com>,
-        Madhan Mohan R <madhanmohan.r@cypress.com>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Wright Feng <wright.feng@cypress.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        netdev <netdev@vger.kernel.org>,
-        brcm80211-dev-list <brcm80211-dev-list@cypress.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Allison Randal <allison@lohutok.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?Q?Niklas_S=C3=B6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        Ritesh Harjani <riteshh@codeaurora.org>,
-        Michael Trimarchi <michael@amarulasolutions.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Ondrej Jirman <megous@megous.com>,
-        Jiong Wu <lohengrin1024@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Avri Altman <avri.altman@wdc.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 18 Jun 2019 at 13:02, Kalle Valo <kvalo@codeaurora.org> wrote:
->
-> Ulf Hansson <ulf.hansson@linaro.org> writes:
->
-> > On Mon, 17 Jun 2019 at 19:57, Douglas Anderson <dianders@chromium.org> wrote:
-> >>
-> >> This series attempts to deal better with the expected transmission
-> >> errors related to the idle states (handled by the Always-On-Subsystem
-> >> or AOS) on the SDIO-based WiFi on rk3288-veyron-minnie,
-> >> rk3288-veyron-speedy, and rk3288-veyron-mickey.
-> >>
-> >> Some details about those errors can be found in
-> >> <https://crbug.com/960222>, but to summarize it here: if we try to
-> >> send the wakeup command to the WiFi card at the same time it has
-> >> decided to wake up itself then it will behave badly on the SDIO bus.
-> >> This can cause timeouts or CRC errors.
-> >>
-> >> When I tested on 4.19 and 4.20 these CRC errors can be seen to cause
-> >> re-tuning.  Since I am currently developing on 4.19 this was the
-> >> original problem I attempted to solve.
-> >>
-> >> On mainline it turns out that you don't see the retuning errors but
-> >> you see tons of spam about timeouts trying to wakeup from sleep.  I
-> >> tracked down the commit that was causing that and have partially
-> >> reverted it here.  I have no real knowledge about Broadcom WiFi, but
-> >> the commit that was causing problems sounds (from the descriptioin) to
-> >> be a hack commit penalizing all Broadcom WiFi users because of a bug
-> >> in a Cypress SD controller.  I will let others comment if this is
-> >> truly the case and, if so, what the right solution should be.
-> >>
-> >> For v3 of this series I have added 2 patches to the end of the series
-> >> to address errors that would show up on systems with these same SDIO
-> >> WiFi cards when used on controllers that do periodic retuning.  These
-> >> systems need an extra fix to prevent the retuning from happening when
-> >> the card is asleep.
-> >>
-> >> I believe v5 of this series is all ready to go assuming Kalle Valo is
-> >> good with it.  I've added after-the-cut notes to patches awaiting his
-> >> Ack and have added other tags collected so far.
-> >>
-> >> Changes in v5:
-> >> - Add missing sdio_retune_crc_enable() in comments (Ulf).
-> >> - /s/reneable/re-enable (Ulf).
-> >> - Remove leftover prototypes: mmc_expect_errors_begin() / end() (Ulf).
-> >> - Rewording of "sleep command" in commit message (Arend).
-> >>
-> >> Changes in v4:
-> >> - Moved to SDIO API only (Adrian, Ulf).
-> >> - Renamed to make it less generic, now retune_crc_disable (Ulf).
-> >> - Function header makes it clear host must be claimed (Ulf).
-> >> - No more WARN_ON (Ulf).
-> >> - Adjust to API rename (Adrian, Ulf).
-> >> - Moved retune hold/release to SDIO API (Adrian).
-> >> - Adjust to API rename (Adrian).
-> >>
-> >> Changes in v3:
-> >> - Took out the spinlock since I believe this is all in one context.
-> >> - Expect errors for all of brcmf_sdio_kso_control() (Adrian).
-> >> - ("mmc: core: Export mmc_retune_hold_now() mmc_retune_release()") new for v3.
-> >> - ("brcmfmac: sdio: Don't tune while the card is off") new for v3.
-> >>
-> >> Changes in v2:
-> >> - A full revert, not just a partial one (Arend).  ...with explicit Cc.
-> >> - Updated commit message to clarify based on discussion of v1.
-> >>
-> >> Douglas Anderson (5):
-> >>   Revert "brcmfmac: disable command decode in sdio_aos"
-> >>   mmc: core: API to temporarily disable retuning for SDIO CRC errors
-> >>   brcmfmac: sdio: Disable auto-tuning around commands expected to fail
-> >>   mmc: core: Add sdio_retune_hold_now() and sdio_retune_release()
-> >>   brcmfmac: sdio: Don't tune while the card is off
-> >>
-> >>  drivers/mmc/core/core.c                       |  5 +-
-> >>  drivers/mmc/core/sdio_io.c                    | 77 +++++++++++++++++++
-> >>  .../broadcom/brcm80211/brcmfmac/sdio.c        | 17 ++--
-> >>  include/linux/mmc/host.h                      |  1 +
-> >>  include/linux/mmc/sdio_func.h                 |  6 ++
-> >>  5 files changed, 99 insertions(+), 7 deletions(-)
-> >>
-> >> --
-> >> 2.22.0.410.gd8fdbe21b5-goog
-> >>
-> >
-> > Applied for fixes, thanks!
-> >
-> > Some minor changes:
-> > 1) Dropped the a few "commit notes", that was more related to version
-> > and practical information about the series.
-> > 2) Dropped fixes tags for patch 2->5, but instead put a stable tag
-> > targeted for v4.18+.
-> >
-> > Awaiting an ack from Kalle before sending the PR to Linus.
-> >
-> > Kalle, perhaps you prefer to pick patch 1, as it could go separate.
-> > Then please tell - and/or if there is anything else you want me to
-> > change.
->
-> TBH I haven't followed the thread (or patches) that closely :) So feel
-> free to take them and push them to Linus.
->
+Quoting Florian Fainelli <f.fainelli@gmail.com>:
 
-I take that as an ack and will add your tag for it, thanks!
+Hi Andrew and Florian,
 
-Kind regards
-Uffe
+> On 6/17/2019 6:53 PM, Andrew Lunn wrote:
+>>> By adding some extra speed states in the code it seems to work.
+>>>
+>>> +               if (state->speed == 1200)
+>>> +                       mcr |= PMCR_FORCE_SPEED_1000;
+>>
+>> Hi René
+>>
+>> Is TRGMII always 1.2G? Or can you set it to 1000 or 1200?
+
+In case of the MT7621 SOC yes, according to the SDKs the MT7623 has 2 options
+2GBit and 2.6Gbit. The current mt7530 driver only set TRGMII speed at 2Gbit.
+
+>> This PMCR_FORCE_SPEED_1000 feels wrong.
+>
+> It is not uncommon to have to "force" 1G to get a higher speed, there is
+> something similar with B53 switches configuring the CPU ports at 2GB/sec
+> (proprietary too and not standardized either).
+
+On the SOC MAC side it is basicly only a MAC clock change.
+MAC control registers still need to be set forced 1G.
+
+>
+>>
+>>>> We could consider adding 1200BaseT/Full?
+>>>
+>>> I don't have any opinion about this.
+>>> It is great that it shows nicely in ethtool but I think supporting more
+>>> speeds in phy_speed_to_str() is enough.
+>>>
+>>> Also you may want to add other SOCs trgmii ranges too:
+>>> - 1200BaseT/Full for mt7621 only
+>>> - 2000BaseT/Full for mt7623 and mt7683
+>>> - 2600BaseT/Full for mt7623 only
+>>
+>> Are these standardised in any way? Or MTK proprietary?  Also, is the T
+>> in BaseT correct? These speeds work over copper cables? Or should we
+>> be talking about 1200BaseKX?
+>
+> Looks like this is MTK proprietary:
+>
+> http://lists.infradead.org/pipermail/linux-mediatek/2016-September/007083.html
+> https://patchwork.kernel.org/patch/9341129/
+> --
+> Florian
+
+MTK proprietary, But I think it is equal too the RGMII but with a  
+faster clock.
+
+But do we need a "xxxxBaseT/Full" at all for these fixed-link cases?
+If I am correct a "xxxxBaseT/Full" is only needed to automatically select the
+best option. But with fixed-link we force it so extra "xxxxBaseT/Full" is not
+needed.
+
+Greats,
+
+René
+
