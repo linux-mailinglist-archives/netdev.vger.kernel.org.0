@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A61704A156
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 15:01:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE9ED4A15B
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 15:01:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729056AbfFRNA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 09:00:58 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:45922 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727105AbfFRNA4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 09:00:56 -0400
-Received: by mail-lj1-f194.google.com with SMTP id m23so12999863lje.12
-        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 06:00:55 -0700 (PDT)
+        id S1729109AbfFRNBC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 09:01:02 -0400
+Received: from mail-lf1-f42.google.com ([209.85.167.42]:40691 "EHLO
+        mail-lf1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725913AbfFRNA6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 09:00:58 -0400
+Received: by mail-lf1-f42.google.com with SMTP id a9so9200722lff.7
+        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 06:00:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=5sOcMsDPhbVf9iBUCFYvG3YKCvRBKgejwbbZq0H8wxE=;
-        b=JwDvo0IEuH7FBGYJlmimPDGSu1MEzfBVtoqrnBV5DKNqWrDjyJgynxesSVpn7xV9yK
-         2uk19Qd8kyka8xL6j6jbY81L8zUnPmY+6+knqYHe9OtI5Wv5y9B6fObhetlrTACEBO8M
-         nY3XnsZYlLimOCnXRQGAWlzJw93sP7yzWbOtE=
+        bh=4zoEiLkDtwzjc6U3bVRixKs7Xrtw9gWwjosERuQdxp4=;
+        b=FZMVB+N7Max3SAwanpu63K5nFenTnx1McVo6ElyOngU1hMMrp7KC8AfaxYYutHfFnd
+         r7FUvvSrTCwYWkHr/JSiELapAR2EfObP/T595Kd2MOAqvZDuA3oxu6Cty+79KgP7+SQ8
+         PbVdNbSxRXFl6zrqplTjpRvvQ3+G/dMcU7Qko=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=5sOcMsDPhbVf9iBUCFYvG3YKCvRBKgejwbbZq0H8wxE=;
-        b=T4bAg98vyEJ4ak/6XCfN6j3rgsIWmNeMNYM/SsXRmfRom4MgiPZb7wqqK7IXoBdcGU
-         IMLhcIIEGDWYkg/QNEDFDNFZ6YFRy00qWImuEJnrBOl5WNrGtDIjl9VF8biMcNPmeTqf
-         VAlU8s6C4/x0x58gW+QXyiapUCZdoCMGCAAPB7XAzj7PuApr/4Iw+K/IN6MPThcNEX/W
-         5r67TQNux58Bx0UlyWkVpsrV/wY7mnyhd36wZl1B+TVniCDOK3sFN30JOem8UIgfNX+G
-         Ev0WrM8U5N9dBwykGB1by384yFZEe962BcYb4Bs+MKCh5t9IyqhYuq5B/QJZ+ogpe5sq
-         hVYA==
-X-Gm-Message-State: APjAAAX6qKRrNpX1mFKN2vGiud/WajvoKPGFSLbjNd2nscgbuogoTpJy
-        4SD2msDxgPPw9jQ9sOiDyH/gLMg1mrkulA==
-X-Google-Smtp-Source: APXvYqyPIksQL+9vAj1t8upGSC5DTbR7FOzt0JhxoPyxjBGu9zl84x7bdxEimO9SIyePZdb0zg2qjg==
-X-Received: by 2002:a2e:870f:: with SMTP id m15mr16495671lji.223.1560862854563;
-        Tue, 18 Jun 2019 06:00:54 -0700 (PDT)
+        bh=4zoEiLkDtwzjc6U3bVRixKs7Xrtw9gWwjosERuQdxp4=;
+        b=B/ez06gJdbSX33TAYN+Yzp6aJBINuo0tV2qpIZ5HvKLGg+pztv4ia/JGRw0RQ0Uc+N
+         sGVqHpLxZrnvwZPssG6yjiJlX0LEkCHZvN7YZJON0YCXubheQa1Wc4ib01M5evK+H86O
+         /rHJlQkkwgjU6Y+jqeAi1+QiVcvOj6t8dDEIs0Trx4/KY0j8McuLeLTf3b+awAOsC+YZ
+         T24Y8bwJUSENXGCdnoOHSPV0n5tvl+p5Xq7UmMFWpQn/nBcmMOzbjCFAQY76B5KwRFUs
+         jV76B5sFMQhr5YFU/JGcvX5hL7SVwxqLJGKARTUXjKW0YUKpeKBD/sQ7lCGYynb23rzU
+         rJfw==
+X-Gm-Message-State: APjAAAVOuMJMZbOwp6n+NH+H5LgM71d0Mi6767Ed/fTGMkw6+naFb51j
+        fwuTegXZvFxQnWrmjGeKJpIQEwmWxefbKw==
+X-Google-Smtp-Source: APXvYqzycrMY0WSW1MH9BJbaSC4Hd3wrO9+DdIR8U9LAxvbH5szAGn4JF5ZI6Uv0Uujupz8yqVAhxw==
+X-Received: by 2002:a19:c14f:: with SMTP id r76mr11057872lff.70.1560862855937;
+        Tue, 18 Jun 2019 06:00:55 -0700 (PDT)
 Received: from cloudflare.com ([176.221.114.230])
-        by smtp.gmail.com with ESMTPSA id u9sm2180754lfb.38.2019.06.18.06.00.53
+        by smtp.gmail.com with ESMTPSA id o74sm2193843lff.46.2019.06.18.06.00.55
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 18 Jun 2019 06:00:54 -0700 (PDT)
+        Tue, 18 Jun 2019 06:00:55 -0700 (PDT)
 From:   Jakub Sitnicki <jakub@cloudflare.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     kernel-team@cloudflare.com, Marek Majkowski <marek@cloudflare.com>
-Subject: [RFC bpf-next 2/7] ipv4: Run inet_lookup bpf program on socket lookup
-Date:   Tue, 18 Jun 2019 15:00:45 +0200
-Message-Id: <20190618130050.8344-3-jakub@cloudflare.com>
+Subject: [RFC bpf-next 3/7] ipv6: Run inet_lookup bpf program on socket lookup
+Date:   Tue, 18 Jun 2019 15:00:46 +0200
+Message-Id: <20190618130050.8344-4-jakub@cloudflare.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190618130050.8344-1-jakub@cloudflare.com>
 References: <20190618130050.8344-1-jakub@cloudflare.com>
@@ -57,44 +57,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Run a BPF program before looking up the listening socket, or in case of udp
-before looking up any socket, connected or not. The program is allowed to
-change the destination address & port we use as keys for the lookup,
-providing its return code is BPF_REDIRECT.
+Following the ipv4 changes, run a BPF program attached to netns in context
+of which we're doing the socket lookup so that it can rewrite the
+destination IP and port we use as keys for the lookup.
 
-This allows us to redirect traffic destined to a set of addresses and ports
-without bindings sockets to all the addresses and ports we want to receive
-on.
+The program is called before the listening socket lookup for TCP, and
+before connected or not-connected socket lookup for UDP.
 
 Suggested-by: Marek Majkowski <marek@cloudflare.com>
 Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 ---
- include/net/inet_hashtables.h | 39 +++++++++++++++++++++++++++++++++++
- net/ipv4/inet_hashtables.c    | 11 ++++++----
- net/ipv4/udp.c                |  1 +
- 3 files changed, 47 insertions(+), 4 deletions(-)
+ include/net/inet6_hashtables.h | 39 ++++++++++++++++++++++++++++++++++
+ net/ipv6/inet6_hashtables.c    | 11 ++++++----
+ net/ipv6/udp.c                 |  6 ++++--
+ 3 files changed, 50 insertions(+), 6 deletions(-)
 
-diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-index babb14136705..7d8b58b2ded0 100644
---- a/include/net/inet_hashtables.h
-+++ b/include/net/inet_hashtables.h
-@@ -418,4 +418,43 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+diff --git a/include/net/inet6_hashtables.h b/include/net/inet6_hashtables.h
+index 9db98af46985..ab06961d33a9 100644
+--- a/include/net/inet6_hashtables.h
++++ b/include/net/inet6_hashtables.h
+@@ -108,6 +108,45 @@ struct sock *inet6_lookup(struct net *net, struct inet_hashinfo *hashinfo,
+ 			  const int dif);
  
- int inet_hash_connect(struct inet_timewait_death_row *death_row,
- 		      struct sock *sk);
+ int inet6_hash(struct sock *sk);
 +
 +#ifdef CONFIG_BPF_SYSCALL
-+static inline void inet_lookup_run_bpf(struct net *net,
-+				       const __be32 saddr,
-+				       const __be16 sport,
-+				       __be32 *daddr,
-+				       unsigned short *hnum)
++static inline void inet6_lookup_run_bpf(struct net *net,
++					const struct in6_addr *saddr,
++					const __be16 sport,
++					struct in6_addr *daddr,
++					unsigned short *hnum)
 +{
 +	struct bpf_inet_lookup_kern ctx = {
-+		.family	= AF_INET,
-+		.saddr	= saddr,
++		.family	= AF_INET6,
++		.saddr6	= *saddr,
 +		.sport	= sport,
-+		.daddr	= *daddr,
++		.daddr6	= *daddr,
 +		.hnum	= *hnum,
 +	};
 +	struct bpf_prog *prog;
@@ -107,69 +105,85 @@ index babb14136705..7d8b58b2ded0 100644
 +	rcu_read_unlock();
 +
 +	if (ret == BPF_REDIRECT) {
-+		*daddr = ctx.daddr;
++		*daddr = ctx.daddr6;
 +		*hnum = ctx.hnum;
 +	}
 +}
 +#else
-+static inline void inet_lookup_run_bpf(struct sk_buff *skb,
-+				       const __be32 saddr,
-+				       const __be16 sport,
-+				       __be32 *daddr,
-+				       unsigned short *hnum)
++static inline void inet6_lookup_run_bpf(struct net *net,
++					const struct in6_addr *saddr,
++					const __be16 sport,
++					struct in6_addr *daddr,
++					unsigned short *hnum)
 +{
 +}
-+#endif	/* CONFIG_BPF_SYSCALL */
++#endif /* CONFIG_BPF_SYSCALL */
 +
- #endif /* _INET_HASHTABLES_H */
-diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index 942265d65eb3..ae3f1da1b4f6 100644
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -300,24 +300,27 @@ struct sock *__inet_lookup_listener(struct net *net,
- 				    const int dif, const int sdif)
+ #endif /* IS_ENABLED(CONFIG_IPV6) */
+ 
+ #define INET6_MATCH(__sk, __net, __saddr, __daddr, __ports, __dif, __sdif) \
+diff --git a/net/ipv6/inet6_hashtables.c b/net/ipv6/inet6_hashtables.c
+index f3515ebe9b3a..280a9b8bf914 100644
+--- a/net/ipv6/inet6_hashtables.c
++++ b/net/ipv6/inet6_hashtables.c
+@@ -158,24 +158,27 @@ struct sock *inet6_lookup_listener(struct net *net,
+ 		const unsigned short hnum, const int dif, const int sdif)
  {
  	struct inet_listen_hashbucket *ilb2;
++	struct in6_addr daddr2 = *daddr;
 +	unsigned short hnum2 = hnum;
  	struct sock *result = NULL;
-+	__be32 daddr2 = daddr;
  	unsigned int hash2;
  
--	hash2 = ipv4_portaddr_hash(net, daddr, hnum);
-+	inet_lookup_run_bpf(net, saddr, sport, &daddr2, &hnum2);
-+	hash2 = ipv4_portaddr_hash(net, daddr2, hnum2);
+-	hash2 = ipv6_portaddr_hash(net, daddr, hnum);
++	inet6_lookup_run_bpf(net, saddr, sport, &daddr2, &hnum2);
++	hash2 = ipv6_portaddr_hash(net, &daddr2, hnum2);
  	ilb2 = inet_lhash2_bucket(hashinfo, hash2);
  
- 	result = inet_lhash2_lookup(net, ilb2, skb, doff,
--				    saddr, sport, daddr, hnum,
-+				    saddr, sport, daddr2, hnum2,
- 				    dif, sdif);
+ 	result = inet6_lhash2_lookup(net, ilb2, skb, doff,
+-				     saddr, sport, daddr, hnum,
++				     saddr, sport, &daddr2, hnum2,
+ 				     dif, sdif);
  	if (result)
  		goto done;
  
- 	/* Lookup lhash2 with INADDR_ANY */
--	hash2 = ipv4_portaddr_hash(net, htonl(INADDR_ANY), hnum);
-+	hash2 = ipv4_portaddr_hash(net, htonl(INADDR_ANY), hnum2);
+ 	/* Lookup lhash2 with in6addr_any */
+-	hash2 = ipv6_portaddr_hash(net, &in6addr_any, hnum);
++	hash2 = ipv6_portaddr_hash(net, &in6addr_any, hnum2);
  	ilb2 = inet_lhash2_bucket(hashinfo, hash2);
  
- 	result = inet_lhash2_lookup(net, ilb2, skb, doff,
--				    saddr, sport, htonl(INADDR_ANY), hnum,
-+				    saddr, sport, htonl(INADDR_ANY), hnum2,
- 				    dif, sdif);
+ 	result = inet6_lhash2_lookup(net, ilb2, skb, doff,
+-				     saddr, sport, &in6addr_any, hnum,
++				     saddr, sport, &in6addr_any, hnum2,
+ 				     dif, sdif);
  done:
  	if (unlikely(IS_ERR(result)))
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 8fb250ed53d4..c4f4c94525ec 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -467,6 +467,7 @@ struct sock *__udp4_lib_lookup(struct net *net, __be32 saddr,
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index 07fa579dfb96..6c0030ba83c6 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -196,17 +196,19 @@ struct sock *__udp6_lib_lookup(struct net *net,
+ 			       struct sk_buff *skb)
+ {
+ 	unsigned short hnum = ntohs(dport);
++	struct in6_addr daddr2 = *daddr;
+ 	unsigned int hash2, slot2;
  	struct udp_hslot *hslot2;
- 	bool exact_dif = udp_lib_exact_dif_match(net, skb);
+ 	struct sock *result;
+ 	bool exact_dif = udp6_lib_exact_dif_match(net, skb);
  
-+	inet_lookup_run_bpf(net, saddr, sport, &daddr, &hnum);
- 	hash2 = ipv4_portaddr_hash(net, daddr, hnum);
+-	hash2 = ipv6_portaddr_hash(net, daddr, hnum);
++	inet6_lookup_run_bpf(net, saddr, sport, &daddr2, &hnum);
++	hash2 = ipv6_portaddr_hash(net, &daddr2, hnum);
  	slot2 = hash2 & udptable->mask;
  	hslot2 = &udptable->hash2[slot2];
+ 
+ 	result = udp6_lib_lookup2(net, saddr, sport,
+-				  daddr, hnum, dif, sdif, exact_dif,
++				  &daddr2, hnum, dif, sdif, exact_dif,
+ 				  hslot2, skb);
+ 	if (!result) {
+ 		hash2 = ipv6_portaddr_hash(net, &in6addr_any, hnum);
 -- 
 2.20.1
 
