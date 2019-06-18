@@ -2,79 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 58FEF4A64D
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 18:10:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 880044A6BF
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 18:25:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729810AbfFRQKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 12:10:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49666 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729308AbfFRQKk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Jun 2019 12:10:40 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 67E5920B1F;
-        Tue, 18 Jun 2019 16:10:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1560874238;
-        bh=27tzGqss7W1INeTOZvlPttXLlDhuND5mt5s6cmAcYfk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cbagzbc1cxMBT3pAtPwVkyb/uAxnO7C7Px3DW0pP5qcFGUMdG/mDsiEiBqbMybScc
-         gq7/B4TtEwXLJkk3U0I/VF1/BOWli9bteBf/FHomvSizWQ+3/qf/FTWBdAgmdeolig
-         JOGMXG2UwVOX3w5PFLe9z+2SorlznJISlrSLAR3k=
-Date:   Tue, 18 Jun 2019 18:10:36 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Fred Klassen <fklassen@appneta.com>
-Subject: Re: 4.19: udpgso_bench_tx: setsockopt zerocopy: Unknown error 524
-Message-ID: <20190618161036.GA28190@kroah.com>
-References: <CA+G9fYs2+-yeYcx7oe228oo9GfDgTuPL1=TemT3R20tzCmcjsw@mail.gmail.com>
- <CA+FuTSfBFqRViKfG5crEv8xLMgAkp3cZ+yeuELK5TVv61xT=Yw@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+FuTSfBFqRViKfG5crEv8xLMgAkp3cZ+yeuELK5TVv61xT=Yw@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+        id S1729809AbfFRQZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 12:25:13 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:49590 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729320AbfFRQZN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 12:25:13 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id C0DB6150988A8;
+        Tue, 18 Jun 2019 09:25:12 -0700 (PDT)
+Date:   Tue, 18 Jun 2019 09:25:12 -0700 (PDT)
+Message-Id: <20190618.092512.1610110055396742434.davem@davemloft.net>
+To:     dsahern@gmail.com
+Cc:     sbrivio@redhat.com, jishi@redhat.com, weiwan@google.com,
+        kafai@fb.com, edumazet@google.com,
+        matti.vaittinen@fi.rohmeurope.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net v5 0/6] Fix listing (IPv4, IPv6) and flushing
+ (IPv6) of cached route exceptions
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <a88182c7-10ee-0505-3b5b-bec852e24e97@gmail.com>
+References: <cover.1560827176.git.sbrivio@redhat.com>
+        <a88182c7-10ee-0505-3b5b-bec852e24e97@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 18 Jun 2019 09:25:13 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 18, 2019 at 08:31:16AM -0400, Willem de Bruijn wrote:
-> On Tue, Jun 18, 2019 at 7:27 AM Naresh Kamboju
-> <naresh.kamboju@linaro.org> wrote:
-> >
-> > selftests: net: udpgso_bench.sh failed on 4.19, 4.14, 4.9 and 4.4 branches.
-> > PASS on stable branch 5.1, mainline and next.
-> > This failure is started happening on 4.19 and older kernel branches after
-> > kselftest upgrade to version 5.1
-> 
-> Does version 5.1 here mean running tests from Linux 5.1, against older kernels?
-> 
-> > Is there any possibilities to backport ?
-> >
-> > Error:
-> > udpgso_bench_tx: setsockopt zerocopy: Unknown error 524
-> 
-> MSG_ZEROCOPY for UDP was added in commit b5947e5d1e71 ("udp:
-> msg_zerocopy") in Linux 5.0.
-> 
-> The selftest was expanded with this feature in commit db63e489c7aa
-> ("selftests: extend zerocopy tests to udp"), also in Linux 5.0.
-> 
-> Those tests are not expected to pass on older kernels.
+From: David Ahern <dsahern@gmail.com>
+Date: Tue, 18 Jun 2019 08:51:01 -0600
 
-Any way to degrade gracefully if the feature is not present at all in
-the kernel under test?  People run the latest version of kselftests on
-older kernels all the time.
+> Changing the dump code has been notoriously tricky to get right in one
+> go, no matter how much testing you have done. Given that I think this
+> should go to net-next first and once it proves ok there we can look at a
+> backport to stable trees.
 
-thanks,
-
-greg k-h
+I agree, this is probably the wisest way forward with these changes.
