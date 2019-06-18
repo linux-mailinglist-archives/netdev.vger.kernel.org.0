@@ -2,134 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 09C8F49F2A
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 13:27:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B18A549F64
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 13:41:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729671AbfFRL1c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 07:27:32 -0400
-Received: from mail-lj1-f182.google.com ([209.85.208.182]:45467 "EHLO
-        mail-lj1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729606AbfFRL1c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 07:27:32 -0400
-Received: by mail-lj1-f182.google.com with SMTP id m23so12693669lje.12
-        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 04:27:31 -0700 (PDT)
+        id S1729714AbfFRLlU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 07:41:20 -0400
+Received: from mail-vk1-f195.google.com ([209.85.221.195]:39477 "EHLO
+        mail-vk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729744AbfFRLlO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 07:41:14 -0400
+Received: by mail-vk1-f195.google.com with SMTP id o19so2737971vkb.6
+        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 04:41:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=brDAt1OwdjUzZLkFIh3xoh/P/uJSAgSGZ5KoXsrydPw=;
-        b=M9P3Ns34+NzQKvAa4XDy5rnRQNHor1wSOLB+3hh7MwAFfhoghi+wqBGkgEqtwltf3O
-         LRGxM3kUB9DXS3q2q0YJqO0KSKItgv0z1SEoTzuxoyDo1SFWfYvxdPYZ84V5Lj0JTehy
-         hR049RP5O43STv2JpfjSQhrVM0x/Ol2PYsnZDAJwH9C4s5W0Fb45FyPoCWrylnTw+On/
-         cg/KTxT0zZZD/jLVkgcT6XOUViYeJFu2CoU73SVhuK3nZmE1Y9KYjBqJ9BFnPNwGN3AU
-         4iUxNPsDBCqHr2U8wYHcDVi3wqhd6QWFN1h9FsmJ2yHzzfZt6oDW5oi61EtiBloMKSkL
-         Vnkg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aXKWHfiW2fK/oNHPaHV17m2/kXsIPSmEkP6INcYYU9o=;
+        b=DbVcJjtjVOUaGpNKJ/DvdYK1FZNzvJnwIpOr3/kA2dreAHCj5DcjBfjZnEnYIrIL9Q
+         gq7+EeNVE7nyL4th2fgWCodJu4sRMGXCIaIuRnP5IfcYW4NiepE4lr7gs5enJz5tCw7h
+         TtYwfBPaT23F4mPYlUpktE1WjGcT41EhSwpTjDsKDZs9r5rQu8WyDZgBYo1DAdw2a3dR
+         Nksam9I88iVRBmH9PNaflQd7Fj28V2t/rj80Z2I9WIYVyxbBH3N22NG6Cv7visa5uDhj
+         UZ1yOk9v4J+/L/pEamjjXplcvuLmdPFTyfd9tkHBax7Y6B0OBcNQlPc+nFSUEoGFDVY1
+         JKRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=brDAt1OwdjUzZLkFIh3xoh/P/uJSAgSGZ5KoXsrydPw=;
-        b=iXotE4+6/9YbSb8ncsvMF5iwa1fpn/+ZSJ0megl0rBxi+Q2NoCu7PFTAQsMCdbi63O
-         rYKgTE3dwuQrpP1YuachqdRWzJBY7xzrm64XilD8MpMPiOUH0n9WfBPd68EcbXao76Xn
-         aHlY3Y2GEzLn78iHMKgDd2RQomc3FmKUO35SvuzUSVQL3+YfCK6FrEaLLD2ONiVT8p4D
-         TwASkZOa4xQQvkhH0nv3duSuAi8c37r/NHfQV60ppkSux7v3rXKhMQxXO0NDTw+aNCIn
-         vqvqDpWqkxy7nC51E06qWkaBcO1K3KY7002SMIrDMznhDcDhppYUEgku3Bf6DvkDMyNE
-         EisA==
-X-Gm-Message-State: APjAAAX4hpxKx+NNgLINaTpDmz5u0yCO6M5y9Q2x+Dd0zS+Gu7yTLWLL
-        Gr3EkeTsKkntzDIxuMh88rnvdHIq5Lz5o29zl6KJNQ==
-X-Google-Smtp-Source: APXvYqx1EYV1tuF+BN/LL6bTsafI8Gy4VLfREm11ef5BPcdANJln2vsAB8Kax781shGnUoh8m7rM3q7wj0i4H+lhzk4=
-X-Received: by 2002:a2e:824d:: with SMTP id j13mr61546174ljh.137.1560857250253;
- Tue, 18 Jun 2019 04:27:30 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aXKWHfiW2fK/oNHPaHV17m2/kXsIPSmEkP6INcYYU9o=;
+        b=ZDRV6xORikCraeU891M9EYwgwrwrSw9kgeGgwsthV4epHYfXwTWbHbgk0Pw0Y+eq36
+         OEfo50xFAIYxFzRCuDdR1nAsqYbzYwu3YmlgG9Llqonvda0fhLjeBZfXZG9RcYG6mD9z
+         pbUTBwP3HpGov56eIGhbZrmoNxM1qgGrgd9UoUtm7gWafXPJAyI/pFfTpM4CuwMfX4bg
+         xXWGKQOfVGVuWVv3CRoStCK+s9ECSMwaxIru1RxkDIdSHSsbDvTl+KX1gniWo7E5ioou
+         YCKADWyOUtACZOBOZI9UBxYSfaM8xRASRp2pniByOYrMjfZM7YQaOrMx1xPSTKB81gq7
+         cZlw==
+X-Gm-Message-State: APjAAAVggGwPiqmD/A5qxz+cjIHqUFYEwZBZomcW3nyyQeAijxqp99n+
+        NMthAyVBRtpaIJcA366Cm1C/t5RT7OjwhE4LoLK95Q==
+X-Google-Smtp-Source: APXvYqzAl7wJEEH+9xHNdBIPLlWcQNm3f6xV2K4I/CyVeso07z7k2+LL7fMznGVsUFSpo4IawQFtCpaHljxygG765/Q=
+X-Received: by 2002:a1f:ab04:: with SMTP id u4mr26393129vke.40.1560858072830;
+ Tue, 18 Jun 2019 04:41:12 -0700 (PDT)
 MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 18 Jun 2019 16:57:18 +0530
-Message-ID: <CA+G9fYs2+-yeYcx7oe228oo9GfDgTuPL1=TemT3R20tzCmcjsw@mail.gmail.com>
-Subject: 4.19: udpgso_bench_tx: setsockopt zerocopy: Unknown error 524
-To:     "David S. Miller" <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Willem de Bruijn <willemb@google.com>, fklassen@appneta.com
+References: <20190617175653.21756-1-dianders@chromium.org> <CAPDyKFpaX6DSM_BjtghAHUf7qYCyEG+wMagXPUdgz3Eutovqfw@mail.gmail.com>
+ <87v9x39mxf.fsf@kamboji.qca.qualcomm.com>
+In-Reply-To: <87v9x39mxf.fsf@kamboji.qca.qualcomm.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Tue, 18 Jun 2019 13:40:36 +0200
+Message-ID: <CAPDyKFqGtui4+shA0TENF=h6Zk0_tgQaJTNSP1xakw7Nb12irg@mail.gmail.com>
+Subject: Re: [PATCH v5 0/5] brcmfmac: sdio: Deal better w/ transmission errors
+ related to idle
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Douglas Anderson <dianders@chromium.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        brcm80211-dev-list.pdl@broadcom.com,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        Double Lo <double.lo@cypress.com>,
+        Brian Norris <briannorris@chromium.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Naveen Gupta <naveen.gupta@cypress.com>,
+        Madhan Mohan R <madhanmohan.r@cypress.com>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Wright Feng <wright.feng@cypress.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        netdev <netdev@vger.kernel.org>,
+        brcm80211-dev-list <brcm80211-dev-list@cypress.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Allison Randal <allison@lohutok.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        =?UTF-8?Q?Niklas_S=C3=B6derlund?= 
+        <niklas.soderlund+renesas@ragnatech.se>,
+        Ritesh Harjani <riteshh@codeaurora.org>,
+        Michael Trimarchi <michael@amarulasolutions.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Ondrej Jirman <megous@megous.com>,
+        Jiong Wu <lohengrin1024@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Avri Altman <avri.altman@wdc.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-selftests: net: udpgso_bench.sh failed on 4.19, 4.14, 4.9 and 4.4 branches.
-PASS on stable branch 5.1, mainline and next.
-This failure is started happening on 4.19 and older kernel branches after
-kselftest upgrade to version 5.1
+On Tue, 18 Jun 2019 at 13:02, Kalle Valo <kvalo@codeaurora.org> wrote:
+>
+> Ulf Hansson <ulf.hansson@linaro.org> writes:
+>
+> > On Mon, 17 Jun 2019 at 19:57, Douglas Anderson <dianders@chromium.org> wrote:
+> >>
+> >> This series attempts to deal better with the expected transmission
+> >> errors related to the idle states (handled by the Always-On-Subsystem
+> >> or AOS) on the SDIO-based WiFi on rk3288-veyron-minnie,
+> >> rk3288-veyron-speedy, and rk3288-veyron-mickey.
+> >>
+> >> Some details about those errors can be found in
+> >> <https://crbug.com/960222>, but to summarize it here: if we try to
+> >> send the wakeup command to the WiFi card at the same time it has
+> >> decided to wake up itself then it will behave badly on the SDIO bus.
+> >> This can cause timeouts or CRC errors.
+> >>
+> >> When I tested on 4.19 and 4.20 these CRC errors can be seen to cause
+> >> re-tuning.  Since I am currently developing on 4.19 this was the
+> >> original problem I attempted to solve.
+> >>
+> >> On mainline it turns out that you don't see the retuning errors but
+> >> you see tons of spam about timeouts trying to wakeup from sleep.  I
+> >> tracked down the commit that was causing that and have partially
+> >> reverted it here.  I have no real knowledge about Broadcom WiFi, but
+> >> the commit that was causing problems sounds (from the descriptioin) to
+> >> be a hack commit penalizing all Broadcom WiFi users because of a bug
+> >> in a Cypress SD controller.  I will let others comment if this is
+> >> truly the case and, if so, what the right solution should be.
+> >>
+> >> For v3 of this series I have added 2 patches to the end of the series
+> >> to address errors that would show up on systems with these same SDIO
+> >> WiFi cards when used on controllers that do periodic retuning.  These
+> >> systems need an extra fix to prevent the retuning from happening when
+> >> the card is asleep.
+> >>
+> >> I believe v5 of this series is all ready to go assuming Kalle Valo is
+> >> good with it.  I've added after-the-cut notes to patches awaiting his
+> >> Ack and have added other tags collected so far.
+> >>
+> >> Changes in v5:
+> >> - Add missing sdio_retune_crc_enable() in comments (Ulf).
+> >> - /s/reneable/re-enable (Ulf).
+> >> - Remove leftover prototypes: mmc_expect_errors_begin() / end() (Ulf).
+> >> - Rewording of "sleep command" in commit message (Arend).
+> >>
+> >> Changes in v4:
+> >> - Moved to SDIO API only (Adrian, Ulf).
+> >> - Renamed to make it less generic, now retune_crc_disable (Ulf).
+> >> - Function header makes it clear host must be claimed (Ulf).
+> >> - No more WARN_ON (Ulf).
+> >> - Adjust to API rename (Adrian, Ulf).
+> >> - Moved retune hold/release to SDIO API (Adrian).
+> >> - Adjust to API rename (Adrian).
+> >>
+> >> Changes in v3:
+> >> - Took out the spinlock since I believe this is all in one context.
+> >> - Expect errors for all of brcmf_sdio_kso_control() (Adrian).
+> >> - ("mmc: core: Export mmc_retune_hold_now() mmc_retune_release()") new for v3.
+> >> - ("brcmfmac: sdio: Don't tune while the card is off") new for v3.
+> >>
+> >> Changes in v2:
+> >> - A full revert, not just a partial one (Arend).  ...with explicit Cc.
+> >> - Updated commit message to clarify based on discussion of v1.
+> >>
+> >> Douglas Anderson (5):
+> >>   Revert "brcmfmac: disable command decode in sdio_aos"
+> >>   mmc: core: API to temporarily disable retuning for SDIO CRC errors
+> >>   brcmfmac: sdio: Disable auto-tuning around commands expected to fail
+> >>   mmc: core: Add sdio_retune_hold_now() and sdio_retune_release()
+> >>   brcmfmac: sdio: Don't tune while the card is off
+> >>
+> >>  drivers/mmc/core/core.c                       |  5 +-
+> >>  drivers/mmc/core/sdio_io.c                    | 77 +++++++++++++++++++
+> >>  .../broadcom/brcm80211/brcmfmac/sdio.c        | 17 ++--
+> >>  include/linux/mmc/host.h                      |  1 +
+> >>  include/linux/mmc/sdio_func.h                 |  6 ++
+> >>  5 files changed, 99 insertions(+), 7 deletions(-)
+> >>
+> >> --
+> >> 2.22.0.410.gd8fdbe21b5-goog
+> >>
+> >
+> > Applied for fixes, thanks!
+> >
+> > Some minor changes:
+> > 1) Dropped the a few "commit notes", that was more related to version
+> > and practical information about the series.
+> > 2) Dropped fixes tags for patch 2->5, but instead put a stable tag
+> > targeted for v4.18+.
+> >
+> > Awaiting an ack from Kalle before sending the PR to Linus.
+> >
+> > Kalle, perhaps you prefer to pick patch 1, as it could go separate.
+> > Then please tell - and/or if there is anything else you want me to
+> > change.
+>
+> TBH I haven't followed the thread (or patches) that closely :) So feel
+> free to take them and push them to Linus.
+>
 
-Is there any possibilities to backport ?
+I take that as an ack and will add your tag for it, thanks!
 
-Error:
-udpgso_bench_tx: setsockopt zerocopy: Unknown error 524
-
-Test output:
------------------
-selftests: net: udpgso_bench.sh
-ipv4
-tcp
-tcp rx:    469 MB/s     7930 calls/s
-tcp tx:    469 MB/s     7961 calls/s   7961 msg/s
-tcp rx:    470 MB/s     7941 calls/s
-tcp tx:    470 MB/s     7977 calls/s   7977 msg/s
-tcp rx:    470 MB/s     7933 calls/s
-tcp tx:    470 MB/s     7975 calls/s   7975 msg/s
-tcp zerocopy
-tcp tx:    357 MB/s     6064 calls/s   6064 msg/s
-tcp rx:    357 MB/s     6052 calls/s
-tcp tx:    352 MB/s     5981 calls/s   5981 msg/s
-tcp rx:    352 MB/s     5979 calls/s
-tcp tx:    350 MB/s     5937 calls/s   5937 msg/s
-tcp rx:    350 MB/s     5938 calls/s
-udp
-udp rx:     23 MB/s    16505 calls/s
-udp tx:     23 MB/s    16464 calls/s    392 msg/s
-udp rx:     23 MB/s    16500 calls/s
-udp tx:     23 MB/s    16506 calls/s    393 msg/s
-udp rx:     23 MB/s    16396 calls/s
-udp gso
-udp rx:    536 MB/s     9097 calls/s
-udp tx:    545 MB/s     9246 calls/s   9246 msg/s
-udp rx:    545 MB/s     9256 calls/s
-udp tx:    545 MB/s     9256 calls/s   9256 msg/s
-udp rx:    545 MB/s     9259 calls/s
-udp tx:    545 MB/s     9258 calls/s   9258 msg/s
-udp rx:    545 MB/s     9252 calls/s
-udp gso zerocopy
-./udpgso_bench_tx: setsockopt zerocopy: Unknown error 524
-ipv6
-tcp
-tcp tx:    470 MB/s     7979 calls/s   7979 msg/s
-tcp rx:    470 MB/s     7947 calls/s
-tcp rx:    471 MB/s     7979 calls/s
-tcp tx:    514 MB/s     8721 calls/s   8721 msg/s
-tcp zerocopy
-tcp tx:    392 MB/s     6658 calls/s   6658 msg/s
-tcp rx:    392 MB/s     6399 calls/s
-tcp rx:    350 MB/s     5936 calls/s
-tcp tx:    350 MB/s     5945 calls/s   5945 msg/s
-tcp rx:    350 MB/s     5937 calls/s
-tcp tx:    350 MB/s     5940 calls/s   5940 msg/s
-udp
-udp rx:     20 MB/s    14802 calls/s
-udp tx:     20 MB/s    14921 calls/s    347 msg/s
-udp rx:     24 MB/s    17797 calls/s
-udp tx:     24 MB/s    17802 calls/s    414 msg/s
-udp rx:     17 MB/s    12453 calls/s
-udp tx:     17 MB/s    12470 calls/s    290 msg/s
-udp rx:     17 MB/s    12409 calls/s
-udp tx:    545 MB/s     9257 calls/s   9257 msg/s
-udp rx:    545 MB/s     9249 calls/s
-udp tx:    545 MB/s     9248 calls/s   9248 msg/s
-udp rx:    545 MB/s     9254 calls/s
-udp tx:    545 MB/s     9254 calls/s   9254 msg/s
-udp rx:    545 MB/s     9260 calls/s
-udp gso zerocopy
-./udpgso_bench_tx: setsockopt zerocopy: Unknown error 524
-not ok 1.. selftests: net: udpgso_bench.sh [FAIL]
-selftests: net_udpgso_bench.sh [FAIL]
-
-Best regards
-Naresh Kamboju
+Kind regards
+Uffe
