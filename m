@@ -2,151 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 61D19497C0
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 05:21:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70623497C4
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 05:26:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728377AbfFRDVI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 23:21:08 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:34956 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725829AbfFRDVI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 23:21:08 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x5I399uk137012;
-        Tue, 18 Jun 2019 03:20:07 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2018-07-02;
- bh=O/i7AMMkUKKosjfAFp+SY89OApm68MO3nGMJOcuM8UY=;
- b=FYOTl3p47yilQEAD2tOSXuRWh3gNFBayMh3bDKZ5lPjaRURvbbcEuz68TSWGsfFiXaUS
- SA84AqA7I21wkzycLfTRKuwFe//sh0OuzkV8khR9BIigtRJMtITTLUI4hbnFiLxRKl5h
- NPKtYuI/J2ovXQW97DEIYIqebwSfMg6SxLj7RUf1qRjsd3OWvpC7CiOs6G4kBqp4dbFS
- AzRvyVjId6RuLbufF3V9kR+PhvPRo4CcOgl2g2GgcJ+1W2AX7vuGdjjItKX4d6Xq9UJV
- lvHh4fVbZyL/omBrLiYv6/HOEN8toK/SlCH185oHS41f1Yn1fIW2ZSr5/uG9Mjc9hx04 0A== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by userp2130.oracle.com with ESMTP id 2t4r3thqse-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 18 Jun 2019 03:20:07 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x5I3JKFx046047;
-        Tue, 18 Jun 2019 03:20:07 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3020.oracle.com with ESMTP id 2t5h5tg1qt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 18 Jun 2019 03:20:07 +0000
-Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x5I3K667047272;
-        Tue, 18 Jun 2019 03:20:06 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3020.oracle.com with ESMTP id 2t5h5tg1qk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 18 Jun 2019 03:20:06 +0000
-Received: from abhmp0016.oracle.com (abhmp0016.oracle.com [141.146.116.22])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x5I3K5nB021569;
-        Tue, 18 Jun 2019 03:20:05 GMT
-Received: from localhost (/10.159.211.102)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 17 Jun 2019 20:20:05 -0700
-Date:   Mon, 17 Jun 2019 23:19:59 -0400
-From:   Kris Van Hees <kris.van.hees@oracle.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Kris Van Hees <kris.van.hees@oracle.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, dtrace-devel@oss.oracle.com,
-        LKML <linux-kernel@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [RFC PATCH 00/11] bpf, trace, dtrace: DTrace BPF program type
- implementation and sample use
-Message-ID: <20190618031959.GI8794@oracle.com>
-References: <20190521213648.GK2422@oracle.com>
- <20190521232618.xyo6w3e6nkwu3h5v@ast-mbp.dhcp.thefacebook.com>
- <20190522041253.GM2422@oracle.com>
- <20190522201624.eza3pe2v55sn2t2w@ast-mbp.dhcp.thefacebook.com>
- <20190523051608.GP2422@oracle.com>
- <20190523202842.ij2quhpmem3nabii@ast-mbp.dhcp.thefacebook.com>
- <20190618012509.GF8794@oracle.com>
- <CAADnVQJoH4WOQ0t7ZhLgh4kh2obxkFs0UGDRas0y4QSqh1EMsg@mail.gmail.com>
- <20190618015442.GG8794@oracle.com>
- <CAADnVQ+zAwoH_mjJLhfEgXHHz+3WYkzhEm-mEObP0koLiSvknw@mail.gmail.com>
+        id S1726248AbfFRD0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 23:26:18 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:34360 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725870AbfFRD0S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 23:26:18 -0400
+Received: by mail-ed1-f65.google.com with SMTP id s49so19407310edb.1
+        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 20:26:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google;
+        h=date:from:to:cc:subject:in-reply-to:message-id:references
+         :user-agent:mime-version;
+        bh=QB8lwnfAWM5eSh/acU+B5HKYIehkA7mV7O4FwPzcexo=;
+        b=ULNdvw8+tq8QeUnFaQePLqg1iryaaYp/aWw9fGLemPYhJkDQ2H5XhjVIbUsBgZd64F
+         61o+JYMVnvgUgyC2GM30u6jjijf/A+ftp23F81RdhJ6D/jXzJERTFZQtARcBDdkleqUm
+         eSS18Q1TKM1uvznC79K30CCQx89bqEa2ol9lykGFnO2MgthvqOpwwdQlIaF9soPy+4eF
+         JjRf8fu6RYvl3V91iXvxVZWnUOBsUx2Y413J/6USyWI3DJBU5uVxOTO3zdofWGkN+zPM
+         NZTnFSpl1IBQtE31RIDo+sedqJJ1JRgx6wCpeaKFcOVy9par13mVHGq1nrg8fik0S7v6
+         NqCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+         :references:user-agent:mime-version;
+        bh=QB8lwnfAWM5eSh/acU+B5HKYIehkA7mV7O4FwPzcexo=;
+        b=sZz9joTf92UahcZELtgrs2HmdjvOFdHaCNeD5PxHeV7EwxulPfefxHjbn8DRk7mdeo
+         r2Pyc2dyu4bXgICw29IUnK6KLddm+qB7ZXvid53YNeYApjfYg5emiHwTJn6vQ6qfFOTv
+         0RLChM+AXvQBsBrj0HHbDhtDdquGqGP4cSGqzUWn2i7zy6KAAFUr9oSsC6wiWkjYafWh
+         USZnO6zqUCSXICveLHY82wPiNO2DsiDYFrFijIw92pF44HW4LxHR5d/07LGxYhlazdPt
+         +k8Z4CfD0onttWnS3VBG+yUHLDW/OXPYi2o3A4f3lT87j5rW5yZyGji2NbKFtKYBvMWp
+         As8w==
+X-Gm-Message-State: APjAAAWwfCEnfU2AWXVnVUnuIMG726x5fSzOgtdrOcmrCqy5fNyMW19u
+        2sanvDS1JhC932JJ1GF76bAMFA==
+X-Google-Smtp-Source: APXvYqxL2/de9bApOM2UVDgl9BgIS/9w1EYyRUg0PCwWi1lKmzkg9zrpNro5VMkplRIqrlo+htLQGA==
+X-Received: by 2002:a50:b962:: with SMTP id m89mr58857595ede.104.1560828376089;
+        Mon, 17 Jun 2019 20:26:16 -0700 (PDT)
+Received: from localhost ([81.92.102.43])
+        by smtp.gmail.com with ESMTPSA id d1sm1800559ejc.72.2019.06.17.20.26.15
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 17 Jun 2019 20:26:15 -0700 (PDT)
+Date:   Mon, 17 Jun 2019 20:26:14 -0700 (PDT)
+From:   Paul Walmsley <paul.walmsley@sifive.com>
+X-X-Sender: paulw@viisi.sifive.com
+To:     Alistair Francis <Alistair.Francis@wdc.com>
+cc:     "troy.benjegerdes@sifive.com" <troy.benjegerdes@sifive.com>,
+        "jamez@wit.com" <jamez@wit.com>,
+        "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "schwab@suse.de" <schwab@suse.de>,
+        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "aou@eecs.berkeley.edu" <aou@eecs.berkeley.edu>,
+        "sachin.ghadi@sifive.com" <sachin.ghadi@sifive.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "ynezz@true.cz" <ynezz@true.cz>,
+        "palmer@sifive.com" <palmer@sifive.com>,
+        "yash.shah@sifive.com" <yash.shah@sifive.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>
+Subject: Re: [PATCH v2 0/2] Add macb support for SiFive FU540-C000
+In-Reply-To: <d2836a90b92f3522a398d57ab8555d08956a0d1f.camel@wdc.com>
+Message-ID: <alpine.DEB.2.21.9999.1906172019040.15057@viisi.sifive.com>
+References: <1560745167-9866-1-git-send-email-yash.shah@sifive.com>  <mvmtvco62k9.fsf@suse.de>  <alpine.DEB.2.21.9999.1906170252410.19994@viisi.sifive.com>  <mvmpnnc5y49.fsf@suse.de>  <alpine.DEB.2.21.9999.1906170305020.19994@viisi.sifive.com> 
+ <mvmh88o5xi5.fsf@suse.de>  <alpine.DEB.2.21.9999.1906170419010.19994@viisi.sifive.com>  <F48A4F7F-0B0D-4191-91AD-DC51686D1E78@sifive.com> <d2836a90b92f3522a398d57ab8555d08956a0d1f.camel@wdc.com>
+User-Agent: Alpine 2.21.9999 (DEB 301 2018-08-15)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAADnVQ+zAwoH_mjJLhfEgXHHz+3WYkzhEm-mEObP0koLiSvknw@mail.gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9291 signatures=668687
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=875 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
- definitions=main-1906180024
+Content-Type: multipart/mixed; boundary="8323329-1540646092-1560828374=:15057"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 17, 2019 at 08:01:52PM -0700, Alexei Starovoitov wrote:
-> On Mon, Jun 17, 2019 at 6:54 PM Kris Van Hees <kris.van.hees@oracle.com> wrote:
-> >
-> > It is not hypothetical.  The folowing example works fine:
-> >
-> > static int noinline bpf_action(void *ctx, long fd, long buf, long count)
-> > {
-> >         int                     cpu = bpf_get_smp_processor_id();
-> >         struct data {
-> >                 u64     arg0;
-> >                 u64     arg1;
-> >                 u64     arg2;
-> >         }                       rec;
-> >
-> >         memset(&rec, 0, sizeof(rec));
-> >
-> >         rec.arg0 = fd;
-> >         rec.arg1 = buf;
-> >         rec.arg2 = count;
-> >
-> >         bpf_perf_event_output(ctx, &buffers, cpu, &rec, sizeof(rec));
-> >
-> >         return 0;
-> > }
-> >
-> > SEC("kprobe/ksys_write")
-> > int bpf_kprobe(struct pt_regs *ctx)
-> > {
-> >         return bpf_action(ctx, ctx->di, ctx->si, ctx->dx);
-> > }
-> >
-> > SEC("tracepoint/syscalls/sys_enter_write")
-> > int bpf_tp(struct syscalls_enter_write_args *ctx)
-> > {
-> >         return bpf_action(ctx, ctx->fd, ctx->buf, ctx->count);
-> > }
-> >
-> > char _license[] SEC("license") = "GPL";
-> > u32 _version SEC("version") = LINUX_VERSION_CODE;
-> 
-> Great. Then you're all set to proceed with user space dtrace tooling, right?
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-I can indeed proceed with the initial basics, yes, and have started.  I hope
-to have a first bare bones patch for review sometime next week.
+--8323329-1540646092-1560828374=:15057
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
-> What you'll discover thought that it works only for simplest things
-> like above. libbpf assumes that everything in single elf will be used
-> and passes the whole thing to the kernel.
-> The verifer removes dead code only from single program.
-> It disallows unused functions. Hence libbpf needs to start doing
-> more "linker work" than it does today.
-> When it loads .o it needs to pass to the kernel only the functions
-> that are used by the program.
-> This work should be straightforward to implement.
-> Unfortunately no one had time to do it.
+On Mon, 17 Jun 2019, Alistair Francis wrote:
 
-Ah yes, I see what you mean.  I'll work on that next since I will definitely
-be needing that.
+> > The legacy M-mode U-boot handles the phy reset already, and I=E2=80=99v=
+e been
+> > able to load upstream S-mode uboot as a payload via TFTP, and then=20
+> > load and boot a 4.19 kernel.=20
+> >=20
+> > It would be nice to get this all working with 5.x, however there are
+> > still
+> > several missing pieces to really have it work well.
+>=20
+> Let me know what is still missing/doesn't work and I can add it. At the
+> moment the only known issue I know of is a missing SD card driver in U-
+> Boot.
 
-> It's also going to be the first step to multi-elf support.
-> libbpf would need to do the same "linker work" across .o-s.
+The DT data has changed between the non-upstream data that people=20
+developed against previously, vs. the DT data that just went upstream=20
+here:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?=
+id=3D72296bde4f4207566872ee355950a59cbc29f852
+
+and
+
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?=
+id=3Dc35f1b87fc595807ff15d2834d241f9771497205
+
+So Upstream U-Boot is going to need several patches to get things working=
+=20
+again.  Clock identifiers and Ethernet are two known areas.
+
+
+- Paul
+--8323329-1540646092-1560828374=:15057--
