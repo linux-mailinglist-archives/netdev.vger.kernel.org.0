@@ -2,58 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E16124A30E
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 15:58:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4E244A332
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 16:01:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729592AbfFRN6e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 09:58:34 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:36948 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729552AbfFRN6d (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Jun 2019 09:58:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=3u1T598CsM8u4R2gZtMhFj9NuAaqaJhlE6GdTppi4nk=; b=vZs4hCUzcCwimk0bivuFBiZos/
-        Ol9pTpCRcs1I+K1UT0aO73Ruho5RNdJ5B7S82/aUzmihXenb3DhOeBj1/9b+21U+4L+EGlSUd2BFY
-        r19y7ZzrGPTvFKjMbHp5XBhSJlEmtijAY4KjBKEsGS1JMm7vare79exvVzqcjWlQymXc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hdEcz-0000h4-OY; Tue, 18 Jun 2019 15:58:25 +0200
-Date:   Tue, 18 Jun 2019 15:58:25 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Artem Bityutskiy <dedekind1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        Todd Fujinaka <todd.fujinaka@intel.com>
-Subject: Re: [PATCH 1/2] net: intel: igb: minor ethool regdump amendment
-Message-ID: <20190618135825.GC18088@lunn.ch>
-References: <20190618115513.99661-1-dedekind1@gmail.com>
+        id S1729529AbfFROAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 10:00:53 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:41642 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729485AbfFROAx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 10:00:53 -0400
+Received: by mail-lf1-f66.google.com with SMTP id 136so9361964lfa.8
+        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 07:00:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HdUV7CzfBMqln17zR8zkIO3XNGBpw5OXNtAwnyi4zUU=;
+        b=YKASZiZLPnCBby55M8HxvQ3P6hVicwek4YaqtAI8cITJMo4iBFAWa3Yij9dIdVNJQH
+         DG1Y36EZ8g1RlQ36fuSZZlWJEos08p8a8NGCJ4ePwoJ/iuXCxhpGJk/5ImxWt9stwQa3
+         yzSilSFRMmJXjChN9LX5EyZvKJu7NVi+g7+QVmSVxVxmE9hUq/fjv8eT20WOZ2CX6Gy1
+         k+gKh2jDh1GJYeEQ804FDN2kPBVAKd0Ajibuja7XLyFwf9lbnePWZmNBToWcISiz5mD+
+         aKQGxa3de+sSqrZXCcZkixnJCx3Go6nC+1fUrTBqDcbfKELH20imaBLJDuj2IuYSDZwJ
+         9DLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HdUV7CzfBMqln17zR8zkIO3XNGBpw5OXNtAwnyi4zUU=;
+        b=ipEZcwbedkXeQ8qQmzjCZcGMKLMv8kMAhjvdgOg/tjClcdprLGrFsMh+a8DwdXa/uX
+         cHqSzdIJnWdCeihfSQiqY+qI4QYyQyasEN3nj3mEZ43Fm+/eH+NnJIE8DycM8aGvV8cW
+         juTfS3X3JcAt6oiROkKouLrvZH7azYJnWAmkBmGsfQjKWqc4Pl47bBDXtm3MZ4/IbHD8
+         wnc7Q+ptgQs2LHzQhODWV/cmiH0lUFXG+KqS361obWCq4IpzWWIRZ8vkFs59F0xmJBbX
+         a9Uui1ENckKKHXr4/0dKs7BKW6qmBCnC6MaxPChq+mL2wHTMPS4XisK5P0bDIhUIxdKB
+         WEXg==
+X-Gm-Message-State: APjAAAVmota9+Of3ndSoM3cxs22tfBMHQz6jV2YV/FB4RN0HMHv8ZS9P
+        KAwbL5Hcm1STm62KDG0j926A3a3IyEzzQhS/KfQAyA==
+X-Google-Smtp-Source: APXvYqxZtj/5LSylMWRwAm5XoxiotJGXmZeOzoZYzvkHtOk3c+tM2Kf0qCRtTO0+6PRAgESjaawSeSGiHoL4zjd1R1U=
+X-Received: by 2002:ac2:5382:: with SMTP id g2mr2936130lfh.92.1560866450515;
+ Tue, 18 Jun 2019 07:00:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190618115513.99661-1-dedekind1@gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+References: <20190615100932.27101-1-martin.blumenstingl@googlemail.com> <20190615100932.27101-4-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20190615100932.27101-4-martin.blumenstingl@googlemail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 18 Jun 2019 16:00:39 +0200
+Message-ID: <CACRpkdZ8vY918mzaJyX38gENJtoA_KJq3RLGxVObdQjLKXULSQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v1 3/5] net: stmmac: drop the reset GPIO from
+ struct stmmac_mdio_bus_data
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Giuseppe CAVALLARO <peppe.cavallaro@st.com>,
+        Alexandre TORGUE <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 18, 2019 at 02:55:12PM +0300, Artem Bityutskiy wrote:
-> From: Artem Bityutskiy <artem.bityutskiy@linux.intel.com>
+On Sat, Jun 15, 2019 at 12:09 PM Martin Blumenstingl
+<martin.blumenstingl@googlemail.com> wrote:
 
-Hi Artem.
+> No platform uses the "reset_gpio" field from stmmac_mdio_bus_data
+> anymore. Drop it so we don't get any new consumers either.
+>
+> Plain GPIO numbers are being deprecated in favor of GPIO descriptors. If
+> needed any new non-OF platform can add a GPIO descriptor lookup table.
+> devm_gpiod_get_optional() will find the GPIO in that case.
+>
+> Suggested-by: Linus Walleij <linus.walleij@linaro.org>
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-The subject line is missing a t in ethtool.
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-> Signed-off-by: Artem Bityutskiy <artem.bityutskiy@linux.intel.com>
-
-Otherwise
-
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
+Yours,
+Linus Walleij
