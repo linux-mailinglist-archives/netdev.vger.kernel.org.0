@@ -2,123 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ABE404AB20
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 21:44:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1B654AB2D
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 21:47:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730502AbfFRTog (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 15:44:36 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:44311 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725909AbfFRTog (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 15:44:36 -0400
-Received: by mail-lf1-f66.google.com with SMTP id r15so10196504lfm.11
-        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 12:44:35 -0700 (PDT)
+        id S1730474AbfFRTrl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 15:47:41 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:39910 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730176AbfFRTrl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 15:47:41 -0400
+Received: by mail-wm1-f67.google.com with SMTP id z23so4471760wma.4;
+        Tue, 18 Jun 2019 12:47:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=w5MhO3HOhnJdhEh1BKTn+Hy2Jia0mXD1Kokqqc9sG00=;
-        b=ZulwLm573ji01DdOeRHyLoDmYWQ5Zhs0GbR+FScejbA7r82/8gew/YMdfC8M9srsq5
-         JnJS2XXRJrPCk1cvRAJMAYxyG7j+iqz2rIgkskWqOPCU4bswLQn5Z6WyWudgSVV/1xJ5
-         TR5u/tjfZTyfIhqcOuXqUgKotaoDP41/uZdhLQpe/vWYaanEh5YBOFg4rBAmX7bQ9FZy
-         SJa0zPLJEQDu+HHBvXUo6Diduz9w/0YDO83xJ/XJARFChmEU5wJJd8u5vqlbTRLkFWdA
-         0lWoJd004+VixJT7mStjF+u/5HHPXNkE4OzfsRH8Gi62JT8MjjFsAdIuTuV7TS6RCqEl
-         ks+g==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=OSvSO6y1MZfAEeNKZrRbq2TAlzZir3iu87Vjo4j1u8U=;
+        b=L24lwIQcCT28W/0Tgv0y8ya1Y2cnWY0dbw00YQJiS3FP2sWNeuGTfSux/UCDmJqB5e
+         i4uUaUvZrxKPL5eLCy7ovAyULfOMYlIp+L8G9swTrcMMe4D49j+VnH64YpsFow2NV4dm
+         r9aMPdiqknG1xbtbvd3QMwPb5VAN71YUiZon3Qp6KmiRXG7WqqlMlRU3QH3KjTvQRuZ0
+         Ot3YJy5rE89Y1f8Wrlrl1AaWWWEXebCJkhCjEMX4gCIwnocBmuhr3jNTfGkFA6AhoyId
+         gpUKL0QkH1CfpLx25kY47aVDOhDc0FIJAntSXDm1m4IPsgc1LdHj+Ct4F7tkzSEZ/x0l
+         KhuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=w5MhO3HOhnJdhEh1BKTn+Hy2Jia0mXD1Kokqqc9sG00=;
-        b=Ll6UB7YWR66ndfKr1av2UppPOEHRmh2nm/0wlH4Z+IR8YQcdvQrTn9wJ78G2pz2s20
-         v+/tEBR+CcVEp/eigDuZHFYs6D+eOL4lOnRUtBN6ChChj5bkkRYKbvSo/IKVYlnCoino
-         02ufJr2m6u3858lXJvKS9aDIT0sxRNj4T5coFOnIfni4ANH17Um6d/kELO35RVTjtjLR
-         Ga271JlwuGLrxuEz1zugoRSf2Q4XVMcPgypkwVTi1GP2ymhqRh6Vj0cjIHHMfOx38HFk
-         jJ6IWOQvYQnKhHJfxGipXQJtZW98vXOEgO9YDHgQLfME0xhjvuqFvUW40ZptXnVWr4Lk
-         SVjg==
-X-Gm-Message-State: APjAAAVdX/UsZ5SHSAfJB1QGjIyZQ0bKBwNDsdrt5vfybvYEmtIA30jq
-        4XEx9u6QbUqvHOPukU941s2kkE1wSf9Nw+fiRg8w3wirQmY=
-X-Google-Smtp-Source: APXvYqw7x1DqbvI1Md1RmNv8m+p9mIBRDeXizlRIzkOG8HjvjwMpgC6Iw1Qwf1t9FHYMcf1r+VEXqZI5pRPtyxEaeYw=
-X-Received: by 2002:a19:7616:: with SMTP id c22mr5117066lff.115.1560887074523;
- Tue, 18 Jun 2019 12:44:34 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=OSvSO6y1MZfAEeNKZrRbq2TAlzZir3iu87Vjo4j1u8U=;
+        b=cjgx3hzKR3MqchQ7yl12XzBcbLEbvtvx/7L+l/x6CK6K/kcTatn+K1RA9bS7Y4XIj6
+         uLuhj6QyNSzjisxmuWuJQJBMIa36o7bEGAkrd/XukcXztuGlfCl2N29gn3JT8rFRxMvD
+         /+zdeTkdclbzUrnGZVfi/RzSMjz5d1ls47kEbJTgY/xwD5Cm8P/a9WD+0iD5H/Of9/0M
+         NE4rAYw2nlI8rUUCD2T1aXyIajwfeqN5ftpSUHyNWbALRYPhWrpE9kscjchHsFun4I86
+         vPoyhG57uJQKOZ0fshmJcsfG4RDhq3eA6yGevB/91dcPlzOzdRxJ5VkyaqJmO5KkwMqM
+         hjZw==
+X-Gm-Message-State: APjAAAXni+sVYcGe045ngO4o7O/uUkTbozhqM4kS+HALzfSZGRRCUsJ1
+        QmI0cPmulBjFmfHRWhkYERGFK8wG
+X-Google-Smtp-Source: APXvYqypdP0qsDj6ZrENjcBavV7vw/Tm+vfF1StuZNGvUPgffCRxUqRQ+K1igTZIq6MMYZqJPzIULA==
+X-Received: by 2002:a1c:3b02:: with SMTP id i2mr4659596wma.23.1560887258225;
+        Tue, 18 Jun 2019 12:47:38 -0700 (PDT)
+Received: from [10.67.49.123] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id o11sm2244139wmh.37.2019.06.18.12.47.35
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 18 Jun 2019 12:47:37 -0700 (PDT)
+Subject: Re: [PATCH v2 6/6] net: macb: parameter added to cadence ethernet
+ controller DT binding
+To:     Parshuram Thombare <pthombar@cadence.com>, andrew@lunn.ch,
+        nicolas.ferre@microchip.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, hkallweit1@gmail.com,
+        linux-kernel@vger.kernel.org, rafalc@cadence.com,
+        aniljoy@cadence.com, piotrs@cadence.com
+References: <1560642579-29803-1-git-send-email-pthombar@cadence.com>
+ <1560883527-10591-1-git-send-email-pthombar@cadence.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <0375c350-ed33-728d-4106-e6f5348c5295@gmail.com>
+Date:   Tue, 18 Jun 2019 12:47:28 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-References: <20190524162229.9185-1-linus.walleij@linaro.org> <CAL_Jsq+bZsJ+SBiJa2hzXU9RkTNBhDk_Uv_Fk6V6DqRGh-xPRg@mail.gmail.com>
-In-Reply-To: <CAL_Jsq+bZsJ+SBiJa2hzXU9RkTNBhDk_Uv_Fk6V6DqRGh-xPRg@mail.gmail.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 18 Jun 2019 21:44:21 +0200
-Message-ID: <CACRpkdbkwTtS2ofpxkZLERW-b+4=d7m9qiPXGT+iMemn9zZE1A@mail.gmail.com>
-Subject: Re: [PATCH 7/8] net: ethernet: ixp4xx: Add DT bindings
-To:     Rob Herring <robh@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Krzysztof Halasa <khalasa@piap.pl>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1560883527-10591-1-git-send-email-pthombar@cadence.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 24, 2019 at 9:41 PM Rob Herring <robh@kernel.org> wrote:
+On 6/18/19 11:45 AM, Parshuram Thombare wrote:
+> New parameters added to Cadence ethernet controller DT binding
+> for USXGMII interface.
 
-> > +  reg:
-> > +    maxItems: 1
-> > +    description: Ethernet MMIO address range
-> > +
-> > +  queue-rx:
-> > +    $ref: '/schemas/types.yaml#/definitions/phandle-array'
-> > +    maxItems: 1
->
-> This doesn't actually do what you think it is doing. A $ref plus
-> additional constraints need to be under an 'allOf' list.
->
-> > +    description: phandle to the RX queue on the NPE
->
-> But this is a phandle plus 1 cell, right?
->
-> - allOf:
->     - $ref: '/schemas/types.yaml#/definitions/phandle-array'
->     - items:
->         - items:
->             - description: phandle to the RX queue on the NPE
->             - description: whatever the cell contains
->               enum: [ 1, 2, 3, 4 ] # any constraints you can put on the cell
->
-> This implicitly says you have 1 of a phandle + 1 cell.
->
-> I need to add this to example-schema.yaml...
+Please don't resubmit individual patches as replies to your previous
+ones, re-submitting the entire patch series, see this netdev-FAQ section
+for details:
 
-I just can't get this right :(
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/networking/netdev-FAQ.rst#n134
 
-I have this:
+> 
+> Signed-off-by: Parshuram Thombare <pthombar@cadence.com>
+> ---
+>  Documentation/devicetree/bindings/net/macb.txt | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/macb.txt b/Documentation/devicetree/bindings/net/macb.txt
+> index 9c5e94482b5f..b80d58ed1650 100644
+> --- a/Documentation/devicetree/bindings/net/macb.txt
+> +++ b/Documentation/devicetree/bindings/net/macb.txt
+> @@ -25,6 +25,9 @@ Required properties:
+>  	Optional elements: 'rx_clk' applies to cdns,zynqmp-gem
+>  	Optional elements: 'tsu_clk'
+>  - clocks: Phandles to input clocks.
+> +- serdes-rate External serdes rate.Mandatory for USXGMII mode.
+> +	5 - 5G
+> +	10 - 10G
 
-  queue-rx:
-    - allOf:
-      - $ref: '/schemas/types.yaml#/definitions/phandle-array'
-      - items:
-        - items:
-          - description: phandle to the RX queue on the NPE
-          - description: index of the NPE engine RX queue to use
-            enum: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+There should be an unit specifier in that property, something like:
 
-I get this from dt_binding_check:
+serdes-rate-gbps
 
-  CHKDT   Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.yaml
-Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.yaml:
-properties:queue-rx: [{'allOf': [{'$ref':
-'/schemas/types.yaml#/definitions/phandle-array'}, {'items':
-[{'items': [{'description': 'phandle to the RX queue on the NPE'},
-{'description': 'index of the NPE engine RX queue to use', 'enum': [0,
-1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}]}]}]}] is not of type 'object',
-'boolean'
-make[3]: *** [../Documentation/devicetree/bindings/Makefile:12:
-Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.example.dts]
-Error 1
+can't we somehow automatically detect that?
 
-Hm .... I just can't figure out what this recursive parsing thingie means...
-I tried to update the pip3 repo but no cigar.
+>  
+>  The MAC address will be determined using the optional properties
+>  defined in ethernet.txt.
+> 
 
-Any hints?
 
-Yours,
-Linus Walleij
+-- 
+Florian
