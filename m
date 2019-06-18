@@ -2,158 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 35C914967C
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 02:57:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B787496A5
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 03:26:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727027AbfFRA5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 20:57:33 -0400
-Received: from ushosting.nmnhosting.com ([66.55.73.32]:35430 "EHLO
-        ushosting.nmnhosting.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725829AbfFRA5d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 20:57:33 -0400
-Received: from mail2.nmnhosting.com (unknown [202.169.106.97])
-        by ushosting.nmnhosting.com (Postfix) with ESMTPS id 2797C2DC0096;
-        Mon, 17 Jun 2019 20:57:31 -0400 (EDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=d-silva.org;
-        s=201810a; t=1560819452;
-        bh=u7VpYNn8JpTLdyHPUljh2Z7wehVtDH+n9nHQNgN6N2A=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=jvSabEdrNHOl7NlBGL5YcdZQfi+fpB9BO+GaqBWlR/PP+V/1JX3MOC/vdfprE+d4q
-         W0UTx/depws8/q6fCe4qsmxzaHqtVkUa+v+Mp2PYjaUrKq1XeKLKJ3TPmwKDKYb7Ix
-         tm9Ggg2c204E7SWf1Kzm3b7UURvQRUF+YtE1qaFXWb7M1bSsECs2dxPGyAy4TwdTwu
-         YrzjrIAdGWVZDKXuSQHyDOqmmePgS4sV2lw+tlA9IZJRT1DXVvYEFcSGBy5FTId/0l
-         fqkDcrBYmDhMWn+3CZbnwx7qgnLFWM0LDHsbAyxHAnRZtM+pOmK0XpTf0aiYcsAURz
-         JAHTKkLHxAgXWfC3qIJOHW9mN0wLp5AYzfNmMC3C5ks7bZYsWq3PGnPXMMgDkMzyop
-         xeuPVBo2+37GGuWiHd1PVStu6wl0eKfSBJgyWJvhXbnAdDsbuqzYFH9Boz+O6C1oWT
-         2Stkwa1MvSezs7en91awfFUNUzrvwbjOv/IZIK0ZFoGni+dz4kIbQSJzdLLHGKQkgV
-         TVlkQn6TAJU90DRRiC92kuMldKfElutBjDwzhohJifPcEvF9T9IrE1SS4Zaz3ft2Rz
-         ho6zF2/9j+ouJCRd5AcHglBo4L8CMDItufZhI5pCGZ7PhbKy0bPXekMmqRlgelk8er
-         vDFIJF20+9ye5cMw79l/tHxg=
-Received: from adsilva.ozlabs.ibm.com (static-82-10.transact.net.au [122.99.82.10] (may be forged))
-        (authenticated bits=0)
-        by mail2.nmnhosting.com (8.15.2/8.15.2) with ESMTPSA id x5I0v17n063106
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Tue, 18 Jun 2019 10:57:17 +1000 (AEST)
-        (envelope-from alastair@d-silva.org)
-Message-ID: <b2651117ca8a55d94b7e14e273d25199515039c3.camel@d-silva.org>
-Subject: Re: [PATCH v3 2/7] lib/hexdump.c: Relax rowsize checks in
- hex_dump_to_buffer
-From:   "Alastair D'Silva" <alastair@d-silva.org>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Karsten Keil <isdn@linux-pingi.de>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Stanislaw Gruszka <sgruszka@redhat.com>,
-        Benson Leung <bleung@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-fsdevel@vger.kernel.org
-Date:   Tue, 18 Jun 2019 10:57:00 +1000
-In-Reply-To: <94413756-c927-a4ca-dd59-47e3cc87d58d@infradead.org>
-References: <20190617020430.8708-1-alastair@au1.ibm.com>
-         <20190617020430.8708-3-alastair@au1.ibm.com>
-         <94413756-c927-a4ca-dd59-47e3cc87d58d@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.32.2 (3.32.2-1.fc30) 
+        id S1726514AbfFRB0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 21:26:15 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:44480 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725829AbfFRB0P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 21:26:15 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x5I1Nws3065012;
+        Tue, 18 Jun 2019 01:25:22 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2018-07-02;
+ bh=fWOUwn/Kt303a7o48PM7Dksf/FnhFV6xPw9I+5mYDjI=;
+ b=YV0kfWLksx2B/Lz1rQFDs26aasbp91HiYbDU88eicgjG4X5c8Z+QNRCrVb0KG+cx8ErE
+ eW4n3QVRY1VBAsKCa4ufZbIdy92YWbKxIXaRjiqV8+pQsUlI3dV7Hp+8ut2z7QhjTbmh
+ IKqLPn7FxzfVTbV5/cKLOXye8tTBu1ZOPYiEK8niIAPozn/F1CDnEhkmN1V0cNvNRRx5
+ +MAnEfeWmJuEOd+yEGUCq9LP/uNeorzTgD7OMpOAeaCQ1ZOzEbf1gEdaO5PnPDSdGkPv
+ AwJCwqz/yGhzhEIZPK4KnwKLRcGUQ9gZWAxSsa4mnTLHAHQE0ofnzbC8F9r0s7uJM0Ih 7g== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by userp2130.oracle.com with ESMTP id 2t4r3thedr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 18 Jun 2019 01:25:21 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x5I1P5BC038997;
+        Tue, 18 Jun 2019 01:25:21 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3020.oracle.com with ESMTP id 2t5h5tf0b9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 18 Jun 2019 01:25:21 +0000
+Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x5I1PL1k039692;
+        Tue, 18 Jun 2019 01:25:21 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3020.oracle.com with ESMTP id 2t5h5tf0ax-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 18 Jun 2019 01:25:21 +0000
+Received: from abhmp0018.oracle.com (abhmp0018.oracle.com [141.146.116.24])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x5I1PEXc020829;
+        Tue, 18 Jun 2019 01:25:15 GMT
+Received: from localhost (/10.159.211.102)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 17 Jun 2019 18:25:13 -0700
+Date:   Mon, 17 Jun 2019 21:25:09 -0400
+From:   Kris Van Hees <kris.van.hees@oracle.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Kris Van Hees <kris.van.hees@oracle.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, dtrace-devel@oss.oracle.com,
+        linux-kernel@vger.kernel.org, rostedt@goodmis.org,
+        mhiramat@kernel.org, acme@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, peterz@infradead.org
+Subject: Re: [RFC PATCH 00/11] bpf, trace, dtrace: DTrace BPF program type
+ implementation and sample use
+Message-ID: <20190618012509.GF8794@oracle.com>
+References: <201905202347.x4KNl0cs030532@aserv0121.oracle.com>
+ <20190521175617.ipry6ue7o24a2e6n@ast-mbp.dhcp.thefacebook.com>
+ <20190521184137.GH2422@oracle.com>
+ <20190521205533.evfszcjvdouby7vp@ast-mbp.dhcp.thefacebook.com>
+ <20190521213648.GK2422@oracle.com>
+ <20190521232618.xyo6w3e6nkwu3h5v@ast-mbp.dhcp.thefacebook.com>
+ <20190522041253.GM2422@oracle.com>
+ <20190522201624.eza3pe2v55sn2t2w@ast-mbp.dhcp.thefacebook.com>
+ <20190523051608.GP2422@oracle.com>
+ <20190523202842.ij2quhpmem3nabii@ast-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail2.nmnhosting.com [10.0.1.20]); Tue, 18 Jun 2019 10:57:27 +1000 (AEST)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190523202842.ij2quhpmem3nabii@ast-mbp.dhcp.thefacebook.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9291 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1906180008
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2019-06-17 at 15:47 -0700, Randy Dunlap wrote:
-> Hi,
-> Just a comment style nit below...
-> 
-> On 6/16/19 7:04 PM, Alastair D'Silva wrote:
-> > From: Alastair D'Silva <alastair@d-silva.org>
-> > 
-> > This patch removes the hardcoded row limits and allows for
-> > other lengths. These lengths must still be a multiple of
-> > groupsize.
-> > 
-> > This allows structs that are not 16/32 bytes to display on
-> > a single line.
-> > 
-> > This patch also expands the self-tests to test row sizes
-> > up to 64 bytes (though they can now be arbitrarily long).
-> > 
-> > Signed-off-by: Alastair D'Silva <alastair@d-silva.org>
-> > ---
-> >  lib/hexdump.c      | 48 ++++++++++++++++++++++++++++--------------
-> >  lib/test_hexdump.c | 52 ++++++++++++++++++++++++++++++++++++++--
-> > ------
-> >  2 files changed, 75 insertions(+), 25 deletions(-)
-> > 
-> > diff --git a/lib/hexdump.c b/lib/hexdump.c
-> > index 81b70ed37209..3943507bc0e9 100644
-> > --- a/lib/hexdump.c
-> > +++ b/lib/hexdump.c
-> > @@ -246,17 +248,29 @@ void print_hex_dump(const char *level, const
-> > char *prefix_str, int prefix_type,
-> >  {
-> >  	const u8 *ptr = buf;
-> >  	int i, linelen, remaining = len;
-> > -	unsigned char linebuf[32 * 3 + 2 + 32 + 1];
-> > +	unsigned char *linebuf;
-> > +	unsigned int linebuf_len;
-> >  
-> > -	if (rowsize != 16 && rowsize != 32)
-> > -		rowsize = 16;
-> > +	if (rowsize % groupsize)
-> > +		rowsize -= rowsize % groupsize;
-> > +
-> > +	/* Worst case line length:
-> > +	 * 2 hex chars + space per byte in, 2 spaces, 1 char per byte
-> > in, NULL
-> > +	 */
-> 
-> According to Documentation/process/coding-style.rst:
-> 
-> The preferred style for long (multi-line) comments is:
-> 
-> .. code-block:: c
-> 
-> 	/*
-> 	 * This is the preferred style for multi-line
-> 	 * comments in the Linux kernel source code.
-> 	 * Please use it consistently.
-> 	 *
-> 	 * Description:  A column of asterisks on the left side,
-> 	 * with beginning and ending almost-blank lines.
-> 	 */
-> 
+On Thu, May 23, 2019 at 01:28:44PM -0700, Alexei Starovoitov wrote:
 
-Thanks Randy, I'll address this.
+<< stuff skipped because it is not relevant to the technical discussion... >>
 
+> > > In particular you brought up a good point that there is a use case
+> > > for sharing a piece of bpf program between kprobe and tracepoint events.
+> > > The better way to do that is via bpf2bpf call.
+> > > Example:
+> > > void bpf_subprog(arbitrary args)
+> > > {
+> > > }
+> > > 
+> > > SEC("kprobe/__set_task_comm")
+> > > int bpf_prog_kprobe(struct pt_regs *ctx)
+> > > {
+> > >   bpf_subprog(...);
+> > > }
+> > > 
+> > > SEC("tracepoint/sched/sched_switch")
+> > > int bpf_prog_tracepoint(struct sched_switch_args *ctx)
+> > > {
+> > >   bpf_subprog(...);
+> > > }
+> > > 
+> > > Such configuration is not supported by the verifier yet.
+> > > We've been discussing it for some time, but no work has started,
+> > > since there was no concrete use case.
+> > > If you can work on adding support for it everyone will benefit.
+> > > 
+> > > Could you please consider doing that as a step forward?
+> > 
+> > This definitely looks to be an interesting addition and I am happy to look into
+> > that further.  I have a few questions that I hope you can shed light on...
+> > 
+> > 1. What context would bpf_subprog execute with?  If it can be called from
+> >    multiple different prog types, would it see whichever context the caller
+> >    is executing with?  Or would you envision bpf_subprog to not be allowed to
+> >    access the execution context because it cannot know which one is in use?
+> 
+> bpf_subprog() won't be able to access 'ctx' pointer _if_ it's ambiguous.
+> The verifier already smart enough to track all the data flow, so it's fine to
+> pass 'struct pt_regs *ctx' as long as it's accessed safely.
+> For example:
+> void bpf_subprog(int kind, struct pt_regs *ctx1, struct sched_switch_args *ctx2)
+> {
+>   if (kind == 1)
+>      bpf_printk("%d", ctx1->pc);
+>   if (kind == 2)
+>      bpf_printk("%d", ctx2->next_pid);
+> }
+> 
+> SEC("kprobe/__set_task_comm")
+> int bpf_prog_kprobe(struct pt_regs *ctx)
+> {
+>   bpf_subprog(1, ctx, NULL);
+> }
+> 
+> SEC("tracepoint/sched/sched_switch")
+> int bpf_prog_tracepoint(struct sched_switch_args *ctx)
+> {
+>   bpf_subprog(2, NULL, ctx);
+> }
+> 
+> The verifier should be able to prove that the above is correct.
+> It can do so already if s/ctx1/map_value1/, s/ctx2/map_value2/
+> What's missing is an ability to have more than one 'starting' or 'root caller'
+> program.
+> 
+> Now replace SEC("tracepoint/sched/sched_switch") with SEC("cgroup/ingress")
+> and it's becoming clear that BPF_PROG_TYPE_PROBE approach is not good enough, right?
+> Folks are already sharing the bpf progs between kprobe and networking.
+> Currently it's done via code duplication and actual sharing happens via maps.
+> That's not ideal, hence we've been discussing 'shared library' approach for
+> quite some time. We need a way to support common bpf functions that can be called
+> from networking and from tracing programs.
+> 
+> > 2. Given that BPF programs are loaded with a specification of the prog type, 
+> >    how would one load a code construct as the one you outline above?  How can
+> >    you load a BPF function and have it be used as subprog from programs that
+> >    are loaded separately?  I.e. in the sample above, if bpf_subprog is loaded
+> >    as part of loading bpf_prog_kprobe (prog type KPROBE), how can it be
+> >    referenced from bpf_prog_tracepoint (prog type TRACEPOINT) which would be
+> >    loaded separately?
+> 
+> The api to support shared libraries was discussed, but not yet implemented.
+> We've discussed 'FD + name' approach.
+> FD identifies a loaded program (which is root program + a set of subprogs)
+> and other programs can be loaded at any time later. The BPF_CALL instructions
+> in such later program would refer to older subprogs via FD + name.
+> Note that both tracing and networking progs can be part of single elf file.
+> libbpf has to be smart to load progs into kernel step by step
+> and reusing subprogs that are already loaded.
+> 
+> Note that libbpf work for such feature can begin _without_ kernel changes.
+> libbpf can pass bpf_prog_kprobe+bpf_subprog as a single program first,
+> then pass bpf_prog_tracepoint+bpf_subprog second (as a separate program).
+> The bpf_subprog will be duplicated and JITed twice, but sharing will happen
+> because data structures (maps, global and static data) will be shared.
+> This way the support for 'pseudo shared libraries' can begin.
+> (later accompanied by FD+name kernel support)
 
--- 
-Alastair D'Silva           mob: 0423 762 819
-skype: alastair_dsilva    
-Twitter: @EvilDeece
-blog: http://alastair.d-silva.org
+As far as I can determine, the current libbpd implementation is already able
+to do the duplication of the called function, even when the ELF object contains
+programs of differemt program types.  I.e. the example you give at the top
+of the email actually seems to work already.  Right?
 
+In that case, I am a bit unsure what more can be done on the side of libbpf
+without needing kernel changes?
 
+> There are other things we discsused. Ideally the body of bpf_subprog()
+> wouldn't need to be kept around for future verification when this bpf
+> function is called by a different program. The idea was to
+> use BTF and similar mechanism to ongoing 'bounded loop' work.
+> So the verifier can analyze bpf_subprog() once and reuse that knowledge
+> for dynamic linking with progs that will be loaded later.
+> This is more long term work.
+> A simple short term would be to verify the full call chain every time
+> the subprog (bpf function) is reused.
