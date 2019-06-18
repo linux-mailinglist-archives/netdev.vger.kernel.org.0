@@ -2,174 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 27E0A4AD21
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 23:15:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD2664AD20
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 23:15:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730708AbfFRVPF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 17:15:05 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:34459 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730181AbfFRVPF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 17:15:05 -0400
-Received: by mail-wr1-f68.google.com with SMTP id k11so1049550wrl.1;
-        Tue, 18 Jun 2019 14:15:02 -0700 (PDT)
+        id S1730751AbfFRVOp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 17:14:45 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:41938 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729982AbfFRVOp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 17:14:45 -0400
+Received: by mail-pg1-f195.google.com with SMTP id 83so8338608pgg.8
+        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 14:14:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=GFC2U217SF+O5Fp8I6sd90iiYF5kWGFryqAnl3xENJw=;
-        b=E2NYCAjVizh2kbiYeRCOYgVAzGUadZbKlNdbvHNK0I/Nuu2pUHvJO+rtW7vhyyjZp5
-         pF1xvOq35dSN29vmWRcmIpuiU9wUzKdCfoek26+K5F3ytTUfX2Vqgqn+Lf4S8XEoByy1
-         /lMoKAMbZjgSr83VMl+r814/EePU6zOOo/2yROGAJqkqoqUFQVQvMWhySbFft9LjzoA3
-         DDU5fMxK2fXoag2Nh8hyNjAJ90LI9BRnU3zfoAOXvTFcLeNFrCRwSz4llt/uA3KV9THO
-         At15CgvnCLLdSqNo/lIZffE0sTAsgk7sBFsdi7K32DBpcl2i7Ia7IrFEoJTk0CxkXGEM
-         5BoQ==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FS2xe3EqWjVa2osnhJcZdNg83PN4WkVvVWlHL7l/qqk=;
+        b=Y+YmXflRcgQfURiuGJArsK6o25FGeuUUOwK3W1AuGqsrOnUiyasENIxuR4JhNsKkED
+         4mCaNhDAap9VjNHruD4pZhaK1UdTznr8A/O1td3EepAB4lLWkN/jhwn6QbokpmvkAYMe
+         eFwVw/QB1uhc/MjklhcZpgppWojGGLihJy92c=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=GFC2U217SF+O5Fp8I6sd90iiYF5kWGFryqAnl3xENJw=;
-        b=N45jPM28ywxAvAFmq2jR7kyRikGn1EdS0ggRdxCP5Z9y3PyOQ65UuafbBfh+ls9Xwl
-         1l8kapWaqCq2dZ48zCOg3bQ+aSZsIxgn9e1TFmxlq+SOUjIRQDXa+UET66YWfWBjVK5X
-         13e88KZj9Gw+nqLb05kyuBwvwJ/XXppoPBLa9W9MHJuHS0OLIH3cffim+t+n6tPQPJ7n
-         kOsYx6XbCm861ZAAT94pk+YUCt7LHm9QlpcV3cSluIp+SOaBA6t0T8z0cMrzuAXVApDN
-         sMLCtZhvh4n7ANDDJA41fPRQzGS6QSwKtt5+wwatgLXG4laLDSQJVqS7xcxqZiNNI7EJ
-         RsaQ==
-X-Gm-Message-State: APjAAAX6NmyxnGZWsnKagjk9u+o6iRQnhDKFWF3OC3KdGSNakt1rgbbD
-        SZwLPsV1nTmdS6Y06eVS6qfg6u3S
-X-Google-Smtp-Source: APXvYqwNIuNZWCOh05X2WAP3isXcePC9IyCyA+Y3zx3Zy2x4SwjrePsghwKNBm9oMAQgdSIR1U2dQw==
-X-Received: by 2002:a5d:50cc:: with SMTP id f12mr5509116wrt.129.1560892501933;
-        Tue, 18 Jun 2019 14:15:01 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8bf3:bd00:28c3:39c3:997e:395f? (p200300EA8BF3BD0028C339C3997E395F.dip0.t-ipconnect.de. [2003:ea:8bf3:bd00:28c3:39c3:997e:395f])
-        by smtp.googlemail.com with ESMTPSA id t1sm22599964wra.74.2019.06.18.14.15.00
+        bh=FS2xe3EqWjVa2osnhJcZdNg83PN4WkVvVWlHL7l/qqk=;
+        b=ujAee3bVzX+V6XMcIKxQ40jIxp66TTfwHp5pl0N1GzaEY/Bemsx4jnfofWYuPKJZyt
+         FbXkI9wH4BpX+S6xs+pw8yG7RYDO7zlbl/b1ppn3752zd7XpFc4Qx6jUmxMDUUC8Ieff
+         cTkMZD+bhS+vfqROvb+rDvZBZvU7QSjFkD1x2rD0zGizwO8xTc85U58L0v4RzotJhfIa
+         hzovjNk0ujrhLR2cssKTvZoxVSnTYKJvt8mXVWu2q0ZmqB0HtrQPv2nbQrxm7N+VPQTG
+         IPWqUsHgQAEr/BUIVEzxKTBZgAP1MfVLUBQdgnXcABctJvCF3is/XzvC1D/HGyuZ4ZwG
+         84Mw==
+X-Gm-Message-State: APjAAAV3NIcDYH1IZFp8j5FC5kPtikPj93fgQ+kHPuF6YJzUfYj1546N
+        saTkNhCQI0e0h3gO0gmjHeN3oQ==
+X-Google-Smtp-Source: APXvYqyf9L4vnVsrhqP4UkUwW/isWrJmFSn/+x+Z9ZC4m0lvANqoqpOnMKhw7IbwN4Gl6KS1bXKNmA==
+X-Received: by 2002:a17:90a:7146:: with SMTP id g6mr7275143pjs.45.1560892484762;
+        Tue, 18 Jun 2019 14:14:44 -0700 (PDT)
+Received: from localhost ([2620:15c:202:1:75a:3f6e:21d:9374])
+        by smtp.gmail.com with ESMTPSA id c10sm3168946pjq.14.2019.06.18.14.14.44
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 18 Jun 2019 14:15:01 -0700 (PDT)
-Subject: [PATCH net-next 1/2] PCI: let pci_disable_link_state propagate errors
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Bjorn Helgaas <bhelgaas@google.com>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <5ea56278-05e2-794f-5f66-23343e72164c@gmail.com>
-Message-ID: <604f2954-c60c-d2aa-3849-9a2f8872001c@gmail.com>
-Date:   Tue, 18 Jun 2019 23:13:48 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.1
+        Tue, 18 Jun 2019 14:14:44 -0700 (PDT)
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Alexander Duyck <alexander.h.duyck@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>
+Subject: [PATCH] net/ipv4: fib_trie: Avoid cryptic ternary expressions
+Date:   Tue, 18 Jun 2019 14:14:40 -0700
+Message-Id: <20190618211440.54179-1-mka@chromium.org>
+X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
 MIME-Version: 1.0
-In-Reply-To: <5ea56278-05e2-794f-5f66-23343e72164c@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Drivers may rely on pci_disable_link_state() having disabled certain
-ASPM link states. If OS can't control ASPM then pci_disable_link_state()
-turns into a no-op w/o informing the caller. The driver therefore may
-falsely assume the respective ASPM link states are disabled.
-Let pci_disable_link_state() propagate errors to the caller, enabling
-the caller to react accordingly.
+empty_child_inc/dec() use the ternary operator for conditional
+operations. The conditions involve the post/pre in/decrement
+operator and the operation is only performed when the condition
+is *not* true. This is hard to parse for humans, use a regular
+'if' construct instead and perform the in/decrement separately.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+This also fixes two warnings that are emitted about the value
+of the ternary expression being unused, when building the kernel
+with clang + "kbuild: Remove unnecessary -Wno-unused-value"
+(https://lore.kernel.org/patchwork/patch/1089869/):
+
+CC      net/ipv4/fib_trie.o
+net/ipv4/fib_trie.c:351:2: error: expression result unused [-Werror,-Wunused-value]
+        ++tn_info(n)->empty_children ? : ++tn_info(n)->full_children;
+
+Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
 ---
- drivers/pci/pcie/aspm.c  | 20 +++++++++++---------
- include/linux/pci-aspm.h |  7 ++++---
- 2 files changed, 15 insertions(+), 12 deletions(-)
+I have no good understanding of the fib_trie code, but the
+disentangled code looks wrong, and it should be equivalent to the
+cryptic version, unless I messed it up. In empty_child_inc()
+'full_children' is only incremented when 'empty_children' is -1. I
+suspect a bug in the cryptic code, but am surprised why it hasn't
+blown up yet. Or is it intended behavior that is just
+super-counterintuitive?
 
-diff --git a/drivers/pci/pcie/aspm.c b/drivers/pci/pcie/aspm.c
-index fd4cb7508..e44af7f4d 100644
---- a/drivers/pci/pcie/aspm.c
-+++ b/drivers/pci/pcie/aspm.c
-@@ -1062,18 +1062,18 @@ void pcie_aspm_powersave_config_link(struct pci_dev *pdev)
- 	up_read(&pci_bus_sem);
- }
+For now I'm leaving it at disentangling the cryptic expressions,
+if there is a bug we can discuss what action to take.
+---
+ net/ipv4/fib_trie.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
+index 868c74771fa9..cf7788e336b7 100644
+--- a/net/ipv4/fib_trie.c
++++ b/net/ipv4/fib_trie.c
+@@ -338,12 +338,18 @@ static struct tnode *tnode_alloc(int bits)
  
--static void __pci_disable_link_state(struct pci_dev *pdev, int state, bool sem)
-+static int __pci_disable_link_state(struct pci_dev *pdev, int state, bool sem)
+ static inline void empty_child_inc(struct key_vector *n)
  {
- 	struct pci_dev *parent = pdev->bus->self;
- 	struct pcie_link_state *link;
- 
- 	if (!pci_is_pcie(pdev))
--		return;
-+		return 0;
- 
- 	if (pdev->has_secondary_link)
- 		parent = pdev;
- 	if (!parent || !parent->link_state)
--		return;
-+		return -EINVAL;
- 
- 	/*
- 	 * A driver requested that ASPM be disabled on this device, but
-@@ -1085,7 +1085,7 @@ static void __pci_disable_link_state(struct pci_dev *pdev, int state, bool sem)
- 	 */
- 	if (aspm_disabled) {
- 		pci_warn(pdev, "can't disable ASPM; OS doesn't have ASPM control\n");
--		return;
-+		return -EPERM;
- 	}
- 
- 	if (sem)
-@@ -1105,11 +1105,13 @@ static void __pci_disable_link_state(struct pci_dev *pdev, int state, bool sem)
- 	mutex_unlock(&aspm_lock);
- 	if (sem)
- 		up_read(&pci_bus_sem);
+-	++tn_info(n)->empty_children ? : ++tn_info(n)->full_children;
++	tn_info(n)->empty_children++;
 +
-+	return 0;
++	if (!tn_info(n)->empty_children)
++		tn_info(n)->full_children++;
  }
  
--void pci_disable_link_state_locked(struct pci_dev *pdev, int state)
-+int pci_disable_link_state_locked(struct pci_dev *pdev, int state)
+ static inline void empty_child_dec(struct key_vector *n)
  {
--	__pci_disable_link_state(pdev, state, false);
-+	return __pci_disable_link_state(pdev, state, false);
+-	tn_info(n)->empty_children-- ? : tn_info(n)->full_children--;
++	if (!tn_info(n)->empty_children)
++		tn_info(n)->full_children--;
++
++	tn_info(n)->empty_children--;
  }
- EXPORT_SYMBOL(pci_disable_link_state_locked);
  
-@@ -1117,14 +1119,14 @@ EXPORT_SYMBOL(pci_disable_link_state_locked);
-  * pci_disable_link_state - Disable device's link state, so the link will
-  * never enter specific states.  Note that if the BIOS didn't grant ASPM
-  * control to the OS, this does nothing because we can't touch the LNKCTL
-- * register.
-+ * register. Returns 0 or a negative errno.
-  *
-  * @pdev: PCI device
-  * @state: ASPM link state to disable
-  */
--void pci_disable_link_state(struct pci_dev *pdev, int state)
-+int pci_disable_link_state(struct pci_dev *pdev, int state)
- {
--	__pci_disable_link_state(pdev, state, true);
-+	return __pci_disable_link_state(pdev, state, true);
- }
- EXPORT_SYMBOL(pci_disable_link_state);
- 
-diff --git a/include/linux/pci-aspm.h b/include/linux/pci-aspm.h
-index df28af5ce..67064145d 100644
---- a/include/linux/pci-aspm.h
-+++ b/include/linux/pci-aspm.h
-@@ -24,11 +24,12 @@
- #define PCIE_LINK_STATE_CLKPM	4
- 
- #ifdef CONFIG_PCIEASPM
--void pci_disable_link_state(struct pci_dev *pdev, int state);
--void pci_disable_link_state_locked(struct pci_dev *pdev, int state);
-+int pci_disable_link_state(struct pci_dev *pdev, int state);
-+int pci_disable_link_state_locked(struct pci_dev *pdev, int state);
- void pcie_no_aspm(void);
- #else
--static inline void pci_disable_link_state(struct pci_dev *pdev, int state) { }
-+static inline int pci_disable_link_state(struct pci_dev *pdev, int state)
-+{ return 0; }
- static inline void pcie_no_aspm(void) { }
- #endif
- 
+ static struct key_vector *leaf_new(t_key key, struct fib_alias *fa)
 -- 
-2.22.0
-
+2.22.0.410.gd8fdbe21b5-goog
 
