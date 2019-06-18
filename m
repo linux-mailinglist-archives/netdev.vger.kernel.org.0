@@ -2,93 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8855B4A480
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 16:53:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC4C24A490
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 16:55:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729242AbfFROxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 10:53:15 -0400
-Received: from mail-qk1-f181.google.com ([209.85.222.181]:41351 "EHLO
-        mail-qk1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727105AbfFROxO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 10:53:14 -0400
-Received: by mail-qk1-f181.google.com with SMTP id c11so8729933qkk.8;
-        Tue, 18 Jun 2019 07:53:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=0q+lDhwoSzLW/vGLXgPFr1bRPZrHxwKku/Yc4H2Wc70=;
-        b=pbyrk4o9ZgXacJhZgx6ZYLbBTYI/GQmPImCY/q9Giq0Tv3W9d861V0Cu2qiomhVjbb
-         JfpKce9xOkyJmthgWXQjAwCXlKibJ5VLVRIU4eFIt7OqNgca1DaMSFoD34o/td1Syr9n
-         CvQ/r6HlXUTC/bR2TT9yqO3kDRFBGtCp91/1D0VZRg890YIWI2c9sjMTh/x031HnckIx
-         58OfV5wltHCi0jOTJdvmbzOOQ12+wrcF3nV9hplOmrmIeetxeqLUOglQ6EaSITQ/wrPe
-         4K6/EbZUzA+gpOU9zJcsN9ZELmhWTop2AsdoGc5H0k/v6H/MjFdYbImuH5ifP1Ilzy/P
-         5czQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=0q+lDhwoSzLW/vGLXgPFr1bRPZrHxwKku/Yc4H2Wc70=;
-        b=OpqDbhAdkKG5rVnRtYBqFUQBOyk6eqo5GHBEwhoQXiCNsp4pZUDguM07qVFwbTUg8c
-         IV5XTk7WGDJwoRKxPZy26jyBafXZJbNpD5b+2P810Dk5hV6mf7ctphmLuyg9rmhylQeF
-         tG76MFzbKqCN10LQlnBniZFn1/evCxl+j564lpvkESkEWWbOKxwiN0kd/iigUMKqoQjS
-         ZfDf6E6wTvO3purhh79f40VzN9ycH6dStFLS8qYWwfu61KZhmXk1rKRuOmmbl0YkyIpj
-         VSwu0982HvK2JlmZNHnlXKWumC3viXuzRSupKijCCwQ+lGZGFTvDQ5KPphq4CX2/tozp
-         d3IA==
-X-Gm-Message-State: APjAAAUSYeLoR7sEZ6vmjK8NGH74j1uPd0JaQOzFewmUooeAcfyCPyJY
-        XrdUUiCX84tseffXc7lRQr8=
-X-Google-Smtp-Source: APXvYqwqkiOizVJT0BN9XC/wOoplesdna8o2HjjyGCz1flnMO5Yksw8V3lk+IYPg8hJf2jEL4hlwnw==
-X-Received: by 2002:ae9:eb96:: with SMTP id b144mr14015575qkg.321.1560869593227;
-        Tue, 18 Jun 2019 07:53:13 -0700 (PDT)
-Received: from localhost.localdomain ([168.181.49.32])
-        by smtp.gmail.com with ESMTPSA id o22sm7976457qkk.50.2019.06.18.07.53.12
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 18 Jun 2019 07:53:12 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id F2C2AC0FFC; Tue, 18 Jun 2019 11:53:09 -0300 (-03)
-Date:   Tue, 18 Jun 2019 11:53:09 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     syzbot <syzbot+c1a380d42b190ad1e559@syzkaller.appspotmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        "lucien.xin@gmail.com" <lucien.xin@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nhorman@tuxdriver.com" <nhorman@tuxdriver.com>,
-        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
-        "vyasevich@gmail.com" <vyasevich@gmail.com>
-Subject: Re: general protection fault in sctp_sched_prio_sched
-Message-ID: <20190618145309.GO3436@localhost.localdomain>
-References: <20190618144554.5016-1-hdanton@sina.com>
+        id S1729249AbfFROz2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 10:55:28 -0400
+Received: from relay2-d.mail.gandi.net ([217.70.183.194]:47215 "EHLO
+        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728881AbfFROz2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 10:55:28 -0400
+X-Originating-IP: 90.88.23.150
+Received: from mc-bl-xps13.lan (aaubervilliers-681-1-81-150.w90-88.abo.wanadoo.fr [90.88.23.150])
+        (Authenticated sender: maxime.chevallier@bootlin.com)
+        by relay2-d.mail.gandi.net (Postfix) with ESMTPSA id 08E8F40002;
+        Tue, 18 Jun 2019 14:55:10 +0000 (UTC)
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     davem@davemloft.net
+Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        thomas.petazzoni@bootlin.com, gregory.clement@bootlin.com,
+        miquel.raynal@bootlin.com, nadavh@marvell.com, stefanc@marvell.com,
+        mw@semihalf.com, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH net-next 0/4] net: mvpp2: cls: Allow steering based on vlan tag
+Date:   Tue, 18 Jun 2019 16:55:15 +0200
+Message-Id: <20190618145519.27705-1-maxime.chevallier@bootlin.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190618144554.5016-1-hdanton@sina.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 18, 2019 at 10:45:54PM +0800, Hillf Danton wrote:
-...
-> > Anyway, with the patch above, after calling
-> > sctp_stream_init_ext() ->ext will be either completely valid, or it
-> > will not be present at all as it is seting ->ext to NULL if sid
-> > initialization ended up failing.
-> > 
-> Correct with no doubt.
-> 
-> I was wondering if it is likely for the ->ext, loaded with a valid slab,
-> to cause a gpf in sctp_sched_prio_sched() without your patch applied.
-> And if the failure to initialise sid could likely change the result.
+The PPv2 classifier can perform flow steering based on keys extracted
+from the VLAN tag. This series adds support for using the vlan id and
+the vlan prio as keys, using the ethtool interface.
 
-Thanks, I think I understand now. Well, without the patch, yes, as
-syzbot reported. Seems you're also worried if it can happen in other
-situations as well, and end up triggering the same gpf but on a
-different situation. I don't think so. It should be either
-initialized or not initialized. Half-initialized as it was, that's a
-pain.
+Patch 1 is a preparatory patch that prevent false-positive matches,
+using a dedicated lookup id for the RSS C2 lookup.
 
-  Marcelo
+Patch 2 allows to separate the flows based on the header fields they
+contain. The main goal is to be able to separate tagged traffic from
+untagged traffic for flow steering, just as we already do for RSS.
+
+Patch 3 solves an issue we have when extracting fields that aren't full
+bytes, such as the vlan tag which is 12 bits wide, or the priority which
+is 3 bits wide.
+
+Finally, patch 4 adds support for steering based on both vlan id and
+priority, extracted from the outermost tag.
+
+Maxime Chevallier (4):
+  net: mvpp2: cls: Use a dedicated lu_type for the RSS lookup
+  net: mvpp2: cls: Only select applicable flows of classification
+    offload
+  net: mvpp2: cls: right-justify the C2 TCAM keys
+  net: mvpp2: cls: Add steering based on vlan Id and priority.
+
+ .../net/ethernet/marvell/mvpp2/mvpp2_cls.c    | 118 +++++++++++++-----
+ .../net/ethernet/marvell/mvpp2/mvpp2_cls.h    |  28 +++--
+ 2 files changed, 103 insertions(+), 43 deletions(-)
+
+-- 
+2.20.1
+
