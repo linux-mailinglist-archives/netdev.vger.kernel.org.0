@@ -2,75 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AEB174A3CB
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 16:23:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0C764A3E5
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 16:27:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729264AbfFROWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 10:22:49 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:51156 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726248AbfFROWt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 10:22:49 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
-        (Exim 4.76)
-        (envelope-from <colin.king@canonical.com>)
-        id 1hdF0W-0004yF-Dq; Tue, 18 Jun 2019 14:22:44 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][V2][next] netfilter: synproxy: ensure zero is returned on non-error return path
-Date:   Tue, 18 Jun 2019 15:22:44 +0100
-Message-Id: <20190618142244.16463-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.20.1
+        id S1729079AbfFRO1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 10:27:37 -0400
+Received: from m97179.mail.qiye.163.com ([220.181.97.179]:59553 "EHLO
+        m97179.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725919AbfFRO1g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 10:27:36 -0400
+Received: from [192.168.1.5] (unknown [116.234.3.233])
+        by m97179.mail.qiye.163.com (Hmail) with ESMTPA id 73226E01650;
+        Tue, 18 Jun 2019 22:27:23 +0800 (CST)
+Subject: Re: [PATCH] netfilter: nft_paylaod: add base type
+ NFT_PAYLOAD_LL_HEADER_NO_TAG
+To:     Florian Westphal <fw@strlen.de>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
+References: <1560151280-28908-1-git-send-email-wenxu@ucloud.cn>
+ <20190610094433.3wjmpfiph7iwguan@breakpoint.cc>
+ <20190617223004.tnqz2bl7qp63fcfy@salvia>
+ <20190617224232.55hldt4bw2qcmnll@breakpoint.cc>
+ <22ab95cb-9dca-1e48-4ca0-965d340e7d32@ucloud.cn>
+ <20190618093748.dydodhngydfcfmeh@breakpoint.cc>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <591caf69-ba08-33b5-5330-8230779cc903@ucloud.cn>
+Date:   Tue, 18 Jun 2019 22:27:12 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20190618093748.dydodhngydfcfmeh@breakpoint.cc>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUhXWQgYFAkeWUFZVkpVQ05KS0tLSkNCTENKSkJZV1koWU
+        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OUk6Eww5KTg5NhA5Sxk*AxgQ
+        LAoaCzBVSlVKTk1LQ01DS09ITE1JVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpKTVVJ
+        SE9VSFVJSEhZV1kIAVlBSEJKSTcG
+X-HM-Tid: 0a6b6afc3b9820bdkuqy73226e01650
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
 
-Currently functions nf_synproxy_{ipc4|ipv6}_init return an uninitialized
-garbage value in variable ret on a successful return.  Fix this by
-returning zero on success.
+在 2019/6/18 17:37, Florian Westphal 写道:
+> wenxu <wenxu@ucloud.cn> wrote:
+>> On 6/18/2019 6:42 AM, Florian Westphal wrote:
+>>> Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+>>>>> Subject: Change bridge l3 dependency to meta protocol
+>>>>>
+>>>>> This examines skb->protocol instead of ethernet header type, which
+>>>>> might be different when vlan is involved.
+>>>>>  
+>>>>> +	if (ctx->pctx.family == NFPROTO_BRIDGE && desc == &proto_eth) {
+>>>>> +		if (expr->payload.desc == &proto_ip ||
+>>>>> +		    expr->payload.desc == &proto_ip6)
+>>>>> +			desc = &proto_metaeth;
+>>>>> +	}i
+>>>> Is this sufficient to restrict the matching? Is this still buggy from
+>>>> ingress?
+>>> This is what netdev family uses as well (skb->protocol i mean).
+>>> I'm not sure it will work for output however (haven't checked).
+>>>
+>>>> I wonder if an explicit NFT_PAYLOAD_CHECK_VLAN flag would be useful in
+>>>> the kernel, if so we could rename NFTA_PAYLOAD_CSUM_FLAGS to
+>>>> NFTA_PAYLOAD_FLAGS and place it there. Just an idea.
+>>> Another unresolved issue is presence of multiple vlan tags, so we might
+>>> have to add yet another meta key to retrieve the l3 protocol in use
+>> Maybe add a l3proto meta key can handle the multiple vlan tags case with the l3proto dependency.  It
+>> should travese all the vlan tags and find the real l3 proto.
+> Yes, something like this.
+>
+> We also need to audit netdev and bridge expressions (reject is known broken)
+> to handle vlans properly.
+>
+> Still, switching nft to prefer skb->protocol instead of eth_hdr->type
+> for dependencies would be good as this doesn't need kernel changes and solves
+> the immediate problem of 'ip ...' not matching in case of vlan.
+>
+> If you have time, could you check if using skb->protocol works for nft
+> bridge in output, i.e. does 'nft ip protocol icmp' match when its used
+> from bridge output path with meta protocol dependency with and without
+> vlan in use?
 
-Addresses-Coverity: ("Uninitialized scalar variable")
-Fixes: d7f9b2f18eae ("netfilter: synproxy: extract SYNPROXY infrastructure from {ipt, ip6t}_SYNPROXY")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- net/netfilter/nf_synproxy_core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+I just check the kernel codes and test with the output chain, the meta protocol dependency can
 
-diff --git a/net/netfilter/nf_synproxy_core.c b/net/netfilter/nf_synproxy_core.c
-index 50677285f82e..7bf5202e3222 100644
---- a/net/netfilter/nf_synproxy_core.c
-+++ b/net/netfilter/nf_synproxy_core.c
-@@ -798,7 +798,7 @@ int nf_synproxy_ipv4_init(struct synproxy_net *snet, struct net *net)
- 	}
- 
- 	snet->hook_ref4++;
--	return err;
-+	return 0;
- }
- EXPORT_SYMBOL_GPL(nf_synproxy_ipv4_init);
- 
-@@ -1223,7 +1223,7 @@ nf_synproxy_ipv6_init(struct synproxy_net *snet, struct net *net)
- 	}
- 
- 	snet->hook_ref6++;
--	return err;
-+	return 0;
- }
- EXPORT_SYMBOL_GPL(nf_synproxy_ipv6_init);
- 
--- 
-2.20.1
+also work in the outpu chain.
+
+But this patch can't resolve the multiple vlan tags, It need another meta l3proto which do care about
+
+how many vlan tags in the frame.
 
