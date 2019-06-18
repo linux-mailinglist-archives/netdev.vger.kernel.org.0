@@ -2,151 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 123704AA57
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 20:51:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 075784AA60
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 20:54:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730469AbfFRSvv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 14:51:51 -0400
-Received: from mail-eopbgr00071.outbound.protection.outlook.com ([40.107.0.71]:58242
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730268AbfFRSvu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Jun 2019 14:51:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=31v47k/6chRyBn2sKf+SxhaQIZeC1jcTfvrLvnRGLSY=;
- b=Gj4/L2yVoHHmzrhsNAiFlr0bstKRLRoI68q4YXhbKU1KVUg/b+7VZnJVtak88A7xrNKCImQlLIbo/O1iJZpx85LG1a6dTFMTnOAXif/0x9mN2BDZ6vozjx633lMVqryalM9+3/jqTv/DMwiSp0hunwDwxAgGriWuEzLPt2kWTy0=
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
- DB6PR0501MB2472.eurprd05.prod.outlook.com (10.168.77.16) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1987.12; Tue, 18 Jun 2019 18:51:45 +0000
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::a901:6951:59de:3278]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::a901:6951:59de:3278%2]) with mapi id 15.20.1987.014; Tue, 18 Jun 2019
- 18:51:45 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     Jason Gunthorpe <jgg@mellanox.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "dledford@redhat.com" <dledford@redhat.com>
-CC:     Yishai Hadas <yishaih@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Subject: Re: [PATCH rdma-next v1 00/12] DEVX asynchronous events
-Thread-Topic: [PATCH rdma-next v1 00/12] DEVX asynchronous events
-Thread-Index: AQHVJfl5PSbKJXA400e2KA/0k+cTY6ahwcuA
-Date:   Tue, 18 Jun 2019 18:51:45 +0000
-Message-ID: <19107c92279cf4ad4d870fa54514423c5e46b748.camel@mellanox.com>
-References: <20190618171540.11729-1-leon@kernel.org>
-In-Reply-To: <20190618171540.11729-1-leon@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.2 (3.32.2-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 206cc886-4f95-4ef3-a485-08d6f41e0303
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2472;
-x-ms-traffictypediagnostic: DB6PR0501MB2472:
-x-microsoft-antispam-prvs: <DB6PR0501MB24728F103EBE15B80BE93740BEEA0@DB6PR0501MB2472.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3513;
-x-forefront-prvs: 007271867D
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(376002)(346002)(396003)(136003)(39860400002)(366004)(54534003)(199004)(189003)(6436002)(2501003)(76116006)(2201001)(99286004)(14454004)(86362001)(2906002)(3846002)(81166006)(8936002)(6486002)(91956017)(5660300002)(36756003)(81156014)(8676002)(53936002)(71190400001)(118296001)(68736007)(478600001)(71200400001)(6116002)(66556008)(14444005)(66476007)(66446008)(64756008)(256004)(73956011)(76176011)(305945005)(66066001)(7736002)(2616005)(102836004)(54906003)(58126008)(110136005)(476003)(486006)(316002)(229853002)(6506007)(6512007)(6246003)(26005)(186003)(4326008)(11346002)(446003)(66946007)(25786009);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2472;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: YoBnbA9GCCPK0rx+heowV++flQQZvOt3ubmOlX35A+qDcQ2dbbc5mLIgHmAHo04oEmC9ULqrd/GgFyKHU2B5cOYdYKdrVutU1ZgGNgrkDGKeIfYyxjWosj/JlcrTqsUPa1fZc096PqMaEetABYDPjFEgU5zxGxfE3iv3aOxndfxkE/KiPXJvw/Ijp8K/RBL6uKB/1qy1IuThDTLmsnQ1lWHXtdx+19bJ+KWalumIrlh9rxm0AciiIjerN4fLrChnnXQqcqwr9xNP41bIR4yWKJYuHIDWM3VXwtO9K8UQgE+bRWv8klWRMR3ZT1p+DE9IU6MGn0Y6aRRH/G6ukGRl4LKMs3WrlL3+dHe3D6DQ7mtqDv2YUNAk69ZVTopo7j53DamC3KQlJG9MtzJqUS5aRWJqxXg+D3vtEFET7Rm/d3Y=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <FD5DA140C74B884991F6563B38619E98@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1730418AbfFRSxz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 14:53:55 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:38984 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730341AbfFRSxz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 14:53:55 -0400
+Received: by mail-pl1-f196.google.com with SMTP id b7so6085084pls.6
+        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 11:53:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=jmVrM81H59ifNJSt4cq3fPpG2nhJ0Gp5lc98D4z5+wI=;
+        b=XKPiUQXCiT/toiTDoI6uNqg828RGKNlxgSAE7i2nOkfwaAda34IJ7f/EW9fbsx3ui5
+         9JkIILAJ1RFg3miyjqejz1aupLO9zs9QkEGBqzXwn1vJ0YxWlEqOfHmjc/3a3x8iuXyq
+         idMqsNkt0uP/4nz9daNc0aIAoxIy2gowupunZOtSe8Ibymm5mi0eUyQZrSupYkVB5/Cr
+         jmaDuFb1TJxIdEltt55i98o/bOg3uPH0l1pKP4I8bshA9dwQiiDD+xAx/SReNHXRMdYC
+         vv3pbUBCEAxJioJm8vTU9tNDT+nzh2+y9u1HHlbWsXDMETlobGtvw0QR1J2i0KDgWO1f
+         AIPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=jmVrM81H59ifNJSt4cq3fPpG2nhJ0Gp5lc98D4z5+wI=;
+        b=t0R9CgQpOOBrBZAnjPePyO8gfjcDUmR77jZo4WJlfJCi5HBCXOnMDgEXx1z/oz8rKL
+         WMOt6amfAbAEPiA604Du4dNQP5kRKQWqaYhZB1N6cBBN/yET9IoaOBxlnWYsQh1q4qI9
+         EuX18X3XFNWapplyupxbuWUuaPHAtQWgLiQBcaY7CsJG+LH8zO7xOH3vqUW1h7mphIwS
+         nIlOjKzDzuRb1IRbqHh1IuakoI42H6QhQUjD96EN3BGtpBi+l6mnFnx0/tJw+OC7klPe
+         ZWxNCrnNK/lB9UmIkeT+84zFPu1l50oBnhQK8m9t9v6LAWe5eBsuILoHWJC+0zJ+oS6E
+         DeOg==
+X-Gm-Message-State: APjAAAWL3BFDUTBlFOSn2tL+ON+ZCBDqYN3yswyDg2wNC67BxLZ+uynD
+        mKtMjB9lp2sWgYeXDpCEzDwTHA==
+X-Google-Smtp-Source: APXvYqx2SySAp9rUR8HbQ9AupN7FOYXWA+7/W/Jw1j5yv6xQBFxxIxvoTVTVoDI44JgjR/Hg1Ep5JQ==
+X-Received: by 2002:a17:902:aa8a:: with SMTP id d10mr78531487plr.159.1560884034108;
+        Tue, 18 Jun 2019 11:53:54 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id e20sm15137247pfi.35.2019.06.18.11.53.53
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 18 Jun 2019 11:53:53 -0700 (PDT)
+Date:   Tue, 18 Jun 2019 11:53:52 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin Lau <kafai@fb.com>
+Subject: Re: [PATCH bpf-next v6 1/9] bpf: implement getsockopt and setsockopt
+ hooks
+Message-ID: <20190618185352.GK9636@mini-arch>
+References: <20190617180109.34950-1-sdf@google.com>
+ <20190617180109.34950-2-sdf@google.com>
+ <20190618163117.yuw44b24lo6prsrz@ast-mbp.dhcp.thefacebook.com>
+ <20190618164913.GI9636@mini-arch>
+ <20190618180944.GJ9636@mini-arch>
+ <CAADnVQ+kymi+zJww+PfPd4WWhvNA67ynGVTd7oj6jiU+XFeguQ@mail.gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 206cc886-4f95-4ef3-a485-08d6f41e0303
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jun 2019 18:51:45.4338
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2472
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAADnVQ+kymi+zJww+PfPd4WWhvNA67ynGVTd7oj6jiU+XFeguQ@mail.gmail.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVHVlLCAyMDE5LTA2LTE4IGF0IDIwOjE1ICswMzAwLCBMZW9uIFJvbWFub3Zza3kgd3JvdGU6
-DQo+IEZyb206IExlb24gUm9tYW5vdnNreSA8bGVvbnJvQG1lbGxhbm94LmNvbT4NCj4gDQo+IENo
-YW5nZWxvZzoNCj4gIHYwIC0+IHYxOg0KDQpOb3JtYWxseSAxc3Qgc3VibWlzc2lvbiBpcyBWMSBh
-bmQgMm5kIGlzIFYyLg0Kc28gdGhpcyBzaG91bGQgaGF2ZSBiZWVuIHYxLT52Mi4NCg0KRm9yIG1s
-eDUtbmV4dCBwYXRjaGVzOg0KDQpBY2tlZC1ieTogU2FlZWQgTWFoYW1lZWQgPHNhZWVkbUBtZWxs
-YW5veC5jb20+DQoNCg0KPiAgKiBGaXggdGhlIHVuYmluZCAvIGhvdCB1bnBsdWcgZmxvd3MgdG8g
-d29yayBwcm9wZXJseS4NCj4gICogRml4IFJlZiBjb3VudCBoYW5kbGluZyBvbiB0aGUgZXZlbnRm
-ZCBtb2RlIGluIHNvbWUgZmxvdy4NCj4gICogUmViYXNlZCB0byBsYXRlc3QgcmRtYS1uZXh0DQo+
-IA0KPiBUaGFua3MNCj4gDQo+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4gLS0tLS0tLS0tLS0tLS0tLS0NCj4gRnJv
-bSBZaXNoYWk6DQo+IA0KPiBUaGlzIHNlcmllcyBlbmFibGVzIFJETUEgYXBwbGljYXRpb25zIHRo
-YXQgdXNlIHRoZSBERVZYIGludGVyZmFjZSB0bw0KPiBzdWJzY3JpYmUgYW5kIHJlYWQgZGV2aWNl
-IGFzeW5jaHJvbm91cyBldmVudHMuDQo+IA0KPiBUaGUgc29sdXRpb24gaXMgZGVzaWduZWQgdG8g
-YWxsb3cgZXh0ZW5zaW9uIG9mIGV2ZW50cyBpbiB0aGUgZnV0dXJlDQo+IHdpdGhvdXQgbmVlZCB0
-byBwZXJmb3JtIGFueSBjaGFuZ2VzIGluIHRoZSBkcml2ZXIgY29kZS4NCj4gDQo+IFRvIGVuYWJs
-ZSB0aGF0IGZldyBjaGFuZ2VzIGhhZCBiZWVuIGRvbmUgaW4gbWx4NV9jb3JlLCBpdCBpbmNsdWRl
-czoNCj4gICogUmVhZGluZyBkZXZpY2UgZXZlbnQgY2FwYWJpbGl0aWVzIHRoYXQgYXJlIHVzZXIg
-cmVsYXRlZA0KPiAgICAoYWZmaWxpYXRlZCBhbmQgdW4tYWZmaWxpYXRlZCkgYW5kIHNldCB0aGUg
-bWF0Y2hpbmcgbWFzayB1cG9uDQo+ICAgIGNyZWF0aW5nIHRoZSBtYXRjaGluZyBFUS4NCj4gICog
-RW5hYmxlIERFVlgvbWx4NV9pYiB0byByZWdpc3RlciBmb3IgQU5ZIGV2ZW50IGluc3RlYWQgb2Yg
-dGhlDQo+IG9wdGlvbiB0bw0KPiAgICBnZXQgc29tZSBoYXJkLWNvZGVkIG9uZXMuDQo+ICAqIEVu
-YWJsZSBERVZYL21seDVfaWIgdG8gZ2V0IHRoZSBkZXZpY2UgcmF3IGRhdGEgZm9yIENRIGNvbXBs
-ZXRpb24NCj4gZXZlbnRzLg0KPiAgKiBFbmhhbmNlIG1seDVfY29yZV9jcmVhdGUvZGVzdHJveSBD
-USB0byBlbmFibGUgREVWWCB1c2luZyB0aGVtIHNvDQo+IHRoYXQgQ1ENCj4gICAgZXZlbnRzIHdp
-bGwgYmUgcmVwb3J0ZWQgYXMgd2VsbC4NCj4gDQo+IEluIG1seDVfaWIgbGF5ZXIgdGhlIGJlbG93
-IGNoYW5nZXMgd2VyZSBkb25lOg0KPiAgKiBBIG5ldyBERVZYIEFQSSB3YXMgaW50cm9kdWNlZCB0
-byBhbGxvY2F0ZSBhbiBldmVudCBjaGFubmVsIGJ5DQo+IHVzaW5nDQo+ICAgIHRoZSB1dmVyYnMg
-RkQgb2JqZWN0IHR5cGUuDQo+ICAqIEltcGxlbWVudCB0aGUgRkQgY2hhbm5lbCBvcGVyYXRpb25z
-IHRvIGVuYWJsZSByZWFkL3Bvby9jbG9zZSBvdmVyDQo+IGl0Lg0KPiAgKiBBIG5ldyBERVZYIEFQ
-SSB3YXMgaW50cm9kdWNlZCB0byBzdWJzY3JpYmUgZm9yIHNwZWNpZmljIGV2ZW50cw0KPiBvdmVy
-IGFuDQo+ICAgIGV2ZW50IGNoYW5uZWwuDQo+ICAqIE1hbmFnZSBhbiBpbnRlcm5hbCBkYXRhIHN0
-cnVjdHVyZSAgb3ZlciBYQShzKSB0bw0KPiBzdWJzY3JpYmUvZGlzcGF0Y2ggZXZlbnRzDQo+ICAg
-IG92ZXIgdGhlIGRpZmZlcmVudCBldmVudCBjaGFubmVscy4NCj4gICogVXNlIGZyb20gREVWWCB0
-aGUgbWx4NV9jb3JlIEFQSXMgdG8gY3JlYXRlL2Rlc3Ryb3kgYSBDUSB0byBiZSBhYmxlDQo+IHRv
-DQo+ICAgIGdldCBpdHMgcmVsZXZhbnQgZXZlbnRzLg0KPiANCj4gWWlzaGFpDQo+IA0KPiBZaXNo
-YWkgSGFkYXMgKDEyKToNCj4gICBuZXQvbWx4NTogRml4IG1seDVfY29yZV9kZXN0cm95X2NxKCkg
-ZXJyb3IgZmxvdw0KPiAgIG5ldC9tbHg1OiBVc2UgZXZlbnQgbWFzayBiYXNlZCBvbiBkZXZpY2Ug
-Y2FwYWJpbGl0aWVzDQo+ICAgbmV0L21seDU6IEV4cG9zZSB0aGUgQVBJIHRvIHJlZ2lzdGVyIGZv
-ciBBTlkgZXZlbnQNCj4gICBuZXQvbWx4NTogbWx4NV9jb3JlX2NyZWF0ZV9jcSgpIGVuaGFuY2Vt
-ZW50cw0KPiAgIG5ldC9tbHg1OiBSZXBvcnQgYSBDUSBlcnJvciBldmVudCBvbmx5IHdoZW4gYSBo
-YW5kbGVyIHdhcyBzZXQNCj4gICBuZXQvbWx4NTogUmVwb3J0IEVRRSBkYXRhIHVwb24gQ1EgY29t
-cGxldGlvbg0KPiAgIG5ldC9tbHg1OiBFeHBvc2UgZGV2aWNlIGRlZmluaXRpb25zIGZvciBvYmpl
-Y3QgZXZlbnRzDQo+ICAgSUIvbWx4NTogSW50cm9kdWNlIE1MWDVfSUJfT0JKRUNUX0RFVlhfQVNZ
-TkNfRVZFTlRfRkQNCj4gICBJQi9tbHg1OiBSZWdpc3RlciBERVZYIHdpdGggbWx4NV9jb3JlIHRv
-IGdldCBhc3luYyBldmVudHMNCj4gICBJQi9tbHg1OiBFbmFibGUgc3Vic2NyaXB0aW9uIGZvciBk
-ZXZpY2UgZXZlbnRzIG92ZXIgREVWWA0KPiAgIElCL21seDU6IEltcGxlbWVudCBERVZYIGRpc3Bh
-dGNoaW5nIGV2ZW50DQo+ICAgSUIvbWx4NTogQWRkIERFVlggc3VwcG9ydCBmb3IgQ1EgZXZlbnRz
-DQo+IA0KPiAgZHJpdmVycy9pbmZpbmliYW5kL2h3L21seDUvY3EuYyAgICAgICAgICAgICAgIHwg
-ICAgNSArLQ0KPiAgZHJpdmVycy9pbmZpbmliYW5kL2h3L21seDUvZGV2eC5jICAgICAgICAgICAg
-IHwgMTA4Mg0KPiArKysrKysrKysrKysrKysrLQ0KPiAgZHJpdmVycy9pbmZpbmliYW5kL2h3L21s
-eDUvbWFpbi5jICAgICAgICAgICAgIHwgICAxMCArLQ0KPiAgZHJpdmVycy9pbmZpbmliYW5kL2h3
-L21seDUvbWx4NV9pYi5oICAgICAgICAgIHwgICAxMiArDQo+ICBkcml2ZXJzL2luZmluaWJhbmQv
-aHcvbWx4NS9vZHAuYyAgICAgICAgICAgICAgfCAgICAzICstDQo+ICBkcml2ZXJzL2luZmluaWJh
-bmQvaHcvbWx4NS9xcC5jICAgICAgICAgICAgICAgfCAgICAyICstDQo+ICBkcml2ZXJzL25ldC9l
-dGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvY3EuYyAgfCAgIDIxICstDQo+ICBkcml2ZXJzL25l
-dC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZW4uaCAgfCAgICAyICstDQo+ICAuLi4vbmV0
-L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbl9tYWluLmMgfCAgICAzICstDQo+ICAuLi4v
-bmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbl90eHJ4LmMgfCAgICAyICstDQo+ICBk
-cml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZXEuYyAgfCAgIDY4ICstDQo+
-ICAuLi4vZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2ZwZ2EvY29ubi5jICAgfCAgICA2ICst
-DQo+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZncuYyAgfCAgICA2
-ICsNCj4gIC4uLi9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2xpYi9lcS5oICB8ICAg
-IDUgKy0NCj4gIGluY2x1ZGUvbGludXgvbWx4NS9jcS5oICAgICAgICAgICAgICAgICAgICAgICB8
-ICAgIDYgKy0NCj4gIGluY2x1ZGUvbGludXgvbWx4NS9kZXZpY2UuaCAgICAgICAgICAgICAgICAg
-ICB8ICAgIDYgKy0NCj4gIGluY2x1ZGUvbGludXgvbWx4NS9kcml2ZXIuaCAgICAgICAgICAgICAg
-ICAgICB8ICAgIDIgKw0KPiAgaW5jbHVkZS9saW51eC9tbHg1L2VxLmggICAgICAgICAgICAgICAg
-ICAgICAgIHwgICAgNCArLQ0KPiAgaW5jbHVkZS9saW51eC9tbHg1L21seDVfaWZjLmggICAgICAg
-ICAgICAgICAgIHwgICAzNCArLQ0KPiAgaW5jbHVkZS91YXBpL3JkbWEvbWx4NV91c2VyX2lvY3Rs
-X2NtZHMuaCAgICAgIHwgICAxOSArDQo+ICBpbmNsdWRlL3VhcGkvcmRtYS9tbHg1X3VzZXJfaW9j
-dGxfdmVyYnMuaCAgICAgfCAgICA5ICsNCj4gIDIxIGZpbGVzIGNoYW5nZWQsIDEyMzcgaW5zZXJ0
-aW9ucygrKSwgNzAgZGVsZXRpb25zKC0pDQo+IA0KPiAtLQ0KPiAyLjIwLjENCj4gDQo=
+On 06/18, Alexei Starovoitov wrote:
+> On Tue, Jun 18, 2019 at 11:09 AM Stanislav Fomichev <sdf@fomichev.me> wrote:
+> >
+> > On 06/18, Stanislav Fomichev wrote:
+> > > On 06/18, Alexei Starovoitov wrote:
+> > > > On Mon, Jun 17, 2019 at 11:01:01AM -0700, Stanislav Fomichev wrote:
+> > > > > Implement new BPF_PROG_TYPE_CGROUP_SOCKOPT program type and
+> > > > > BPF_CGROUP_{G,S}ETSOCKOPT cgroup hooks.
+> > > > >
+> > > > > BPF_CGROUP_SETSOCKOPT get a read-only view of the setsockopt arguments.
+> > > > > BPF_CGROUP_GETSOCKOPT can modify the supplied buffer.
+> > > > > Both of them reuse existing PTR_TO_PACKET{,_END} infrastructure.
+> > > > >
+> > > > > The buffer memory is pre-allocated (because I don't think there is
+> > > > > a precedent for working with __user memory from bpf). This might be
+> > > > > slow to do for each {s,g}etsockopt call, that's why I've added
+> > > > > __cgroup_bpf_prog_array_is_empty that exits early if there is nothing
+> > > > > attached to a cgroup. Note, however, that there is a race between
+> > > > > __cgroup_bpf_prog_array_is_empty and BPF_PROG_RUN_ARRAY where cgroup
+> > > > > program layout might have changed; this should not be a problem
+> > > > > because in general there is a race between multiple calls to
+> > > > > {s,g}etsocktop and user adding/removing bpf progs from a cgroup.
+> > > > >
+> > > > > The return code of the BPF program is handled as follows:
+> > > > > * 0: EPERM
+> > > > > * 1: success, execute kernel {s,g}etsockopt path after BPF prog exits
+> > > > > * 2: success, do _not_ execute kernel {s,g}etsockopt path after BPF
+> > > > >      prog exits
+> > > > >
+> > > > > Note that if 0 or 2 is returned from BPF program, no further BPF program
+> > > > > in the cgroup hierarchy is executed. This is in contrast with any existing
+> > > > > per-cgroup BPF attach_type.
+> > > >
+> > > > This is drastically different from all other cgroup-bpf progs.
+> > > > I think all programs should be executed regardless of return code.
+> > > > It seems to me that 1 vs 2 difference can be expressed via bpf program logic
+> > > > instead of return code.
+> > > >
+> > > > How about we do what all other cgroup-bpf progs do:
+> > > > "any no is no. all yes is yes"
+> > > > Meaning any ret=0 - EPERM back to user.
+> > > > If all are ret=1 - kernel handles get/set.
+> > > >
+> > > > I think the desire to differentiate 1 vs 2 came from ordering issue
+> > > > on getsockopt.
+> > > > How about for setsockopt all progs run first and then kernel.
+> > > > For getsockopt kernel runs first and then all progs.
+> > > > Then progs will have an ability to overwrite anything the kernel returns.
+> > > Good idea, makes sense. For getsockopt we'd also need to pass the return
+> > > value of the kernel getsockopt to let bpf programs override it, but seems
+> > > doable. Let me play with it a bit; I'll send another version if nothing
+> > > major comes up.
+> > >
+> > > Thanks for another round of review!
+> > One clarification: we'd still probably need to have 3 return codes for
+> > setsockopt:
+> > * any 0 - EPERM
+> > * all 1 - continue with the kernel path (i.e. apply this sockopt as is)
+> > * any 2 - return after all BPF hooks are executed (bypass kernel)
+> >           (any 0 trumps any 2 -> EPERM)
+> >
+> > The context is readonly for setsockopt, so it shouldn't be an issue.
+> > Let me know if you have better idea how to handle that.
+> 
+> I think we don't really need 2.
+> The progs can reduce optlen to zero (or optname to BPF_EMPTY_SOCKOPT)
+> and do ret=1.
+> Then the kernel can see that nothing to be be done and return 0 to user space.
+> Since parent prog in the chain will be able to see that child prog
+> set optlen to zero, it will be able to overwrite if necessary.
+Ack, optlen=0 sounds good. In that case parent prog can poke into optval
+because optval_end still points to the valid end of the data (and, as you
+said, can override optlen back if necessary). Thanks!
+
+> getsockopt wil be clean as well.
+> all 1s return whatever was produced by progs to user space.
+> and progs will be able to see what kernel wanted to return because
+> the kernel's getsockopt logic ran first.
+> ret=2 doesn't have any meaning for getsockopt, so nice to keep
+> setsockopt symmetrical and don't do it there either.
+Agreed.
