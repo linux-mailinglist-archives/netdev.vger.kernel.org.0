@@ -2,138 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BC444AA7A
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 20:57:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 223584AA81
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 20:59:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730416AbfFRS54 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 14:57:56 -0400
-Received: from [195.159.176.226] ([195.159.176.226]:39312 "EHLO
-        blaine.gmane.org" rhost-flags-FAIL-FAIL-OK-OK) by vger.kernel.org
-        with ESMTP id S1730266AbfFRS54 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 14:57:56 -0400
-Received: from list by blaine.gmane.org with local (Exim 4.89)
-        (envelope-from <gl-netdev-2@m.gmane.org>)
-        id 1hdJIl-000wDw-Ef
-        for netdev@vger.kernel.org; Tue, 18 Jun 2019 20:57:51 +0200
-X-Injected-Via-Gmane: http://gmane.org/
-To:     netdev@vger.kernel.org
-From:   "Brian J. Murrell" <brian@interlinx.bc.ca>
-Subject: bonded active-backup ethernet-wifi drops packets
-Date:   Tue, 18 Jun 2019 14:57:44 -0400
-Message-ID: <0292e9eefb12f1b1e493f5af8ab78fa00744ed20.camel@interlinx.bc.ca>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-fBUPa50ZZJMU5cD3ie/M"
-User-Agent: Evolution 3.32.2 (3.32.2-1.fc30) 
+        id S1730377AbfFRS7G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 14:59:06 -0400
+Received: from mail-yw1-f65.google.com ([209.85.161.65]:35297 "EHLO
+        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730231AbfFRS7F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 14:59:05 -0400
+Received: by mail-yw1-f65.google.com with SMTP id k128so7181741ywf.2
+        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 11:59:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=n2DDWkzfly8h++f2u7ETcCEDtyV1BipVpATFf3iGFj8=;
+        b=ajUxc5+WJTxSIoBZ8SzOIP0EH5Oo4BIYMnTAueKHonh90SwDslBsrBqH/p5BpVV1lE
+         bd8TeYNgekt+y1cFqWvfRhaaJktj/9HlmdRNP7O58u1L65J44e2TAoQ8mMwBrd2BehYY
+         obhYCp/B5KF22P/dc7ZBTYUlxM50LS5cqX29I4OO2r4135df2kSGUOrYLAFBYkCwCbo6
+         cqjc1a96YiF6gxE5t85rWZKUyG+cGcX32J5aHJGR0RYnFzCFaVXB0BKAWWinXwoZqMuA
+         SssoPo5k02S7ZyalbCbsr+FvpZ8E+vHGkIcj1lW+J8TKA/Kd79OAsr3tVxdiBndDDKUG
+         R+bw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=n2DDWkzfly8h++f2u7ETcCEDtyV1BipVpATFf3iGFj8=;
+        b=THHLkujpmqTR0ShfLDajXKrzJ/eBtSQnUUwF/mZj8iMIRTUfR5fQy5v7RRjLUUjfgu
+         2M3hb92K2bf+3h3PqHbPvCRm+uY6xziLV2xiWDgG0pPp9YhWpCTox3DmEJbYcM31dlwO
+         gMlCWQwAv/p6gyU39TTF9fxUqBrY6VxIbWGeMykrcXs5zOiv8sx02H1PpeDG+ZtdnRYn
+         oDENgUjG+dP8SvEshKBadSqbuOD+2NFr4eL8znzs+K4TUW43tQOBKDLWCsqv+Y1zQG2R
+         HaZOlDYwa+cVk0InrWk/iv0IQ9MVKRODllAupP1/3aK0pXjGxTOxmKpbKBdFEzMberSv
+         MZIg==
+X-Gm-Message-State: APjAAAXIW9ZoMJAaXa8n1XoL0ghwVBKqcuwcj6IJY1GZTOq7Bi0RwCR7
+        0CAx+pjllvV3bYtMcb9mT3AObVG4
+X-Google-Smtp-Source: APXvYqxznb43AwabWcCXvV1EbeVHhWWbWku68lJZmrjIJYHV5R1W1FYXcWik0g9dQ1akvnevZiJ2BQ==
+X-Received: by 2002:a81:5c82:: with SMTP id q124mr1652923ywb.461.1560884344125;
+        Tue, 18 Jun 2019 11:59:04 -0700 (PDT)
+Received: from mail-yw1-f50.google.com (mail-yw1-f50.google.com. [209.85.161.50])
+        by smtp.gmail.com with ESMTPSA id u82sm3750054ywc.8.2019.06.18.11.59.02
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Tue, 18 Jun 2019 11:59:03 -0700 (PDT)
+Received: by mail-yw1-f50.google.com with SMTP id a11so7184987ywc.1
+        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 11:59:02 -0700 (PDT)
+X-Received: by 2002:a0d:c0c4:: with SMTP id b187mr41089130ywd.389.1560884342538;
+ Tue, 18 Jun 2019 11:59:02 -0700 (PDT)
+MIME-Version: 1.0
+References: <CA+FuTSfBFqRViKfG5crEv8xLMgAkp3cZ+yeuELK5TVv61xT=Yw@mail.gmail.com>
+ <20190618161036.GA28190@kroah.com> <CAF=yD-JnTHdDE8K-EaJM2fH9awvjAmOJkoZbtU+Wi58pPnyAxw@mail.gmail.com>
+ <20190618.094759.539007481404905339.davem@davemloft.net> <20190618171516.GA17547@kroah.com>
+ <CAF=yD-+pNrAo1wByHY6f5AZCq8xT0FDMKM-WzPkfZ36Jxj4mNg@mail.gmail.com> <20190618173906.GB3649@kroah.com>
+In-Reply-To: <20190618173906.GB3649@kroah.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 18 Jun 2019 14:58:26 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSdrphico4044QTD_-8VbanFFJx0FJuH+vVMfuHqbphkjw@mail.gmail.com>
+Message-ID: <CA+FuTSdrphico4044QTD_-8VbanFFJx0FJuH+vVMfuHqbphkjw@mail.gmail.com>
+Subject: Re: 4.19: udpgso_bench_tx: setsockopt zerocopy: Unknown error 524
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Fred Klassen <fklassen@appneta.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jun 18, 2019 at 1:39 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+>
+> On Tue, Jun 18, 2019 at 01:27:14PM -0400, Willem de Bruijn wrote:
+> > On Tue, Jun 18, 2019 at 1:15 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+> > >
+> > > On Tue, Jun 18, 2019 at 09:47:59AM -0700, David Miller wrote:
+> > > > From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> > > > Date: Tue, 18 Jun 2019 12:37:33 -0400
+> > > >
+> > > > > Specific to the above test, I can add a check command testing
+> > > > > setsockopt SO_ZEROCOPY  return value. AFAIK kselftest has no explicit
+> > > > > way to denote "skipped", so this would just return "pass". Sounds a
+> > > > > bit fragile, passing success when a feature is absent.
+> > > >
+> > > > Especially since the feature might be absent because the 'config'
+> > > > template forgot to include a necessary Kconfig option.
+> > >
+> > > That is what the "skip" response is for, don't return "pass" if the
+> > > feature just isn't present.  That lets people run tests on systems
+> > > without the config option enabled as you say, or on systems without the
+> > > needed userspace tools present.
+> >
+> > I was not aware that kselftest had this feature.
+> >
+> > But it appears that exit code KSFT_SKIP (4) will achieve this. Okay,
+> > I'll send a patch and will keep that in mind for future tests.
+>
+> Wonderful, thanks for doing that!
 
---=-fBUPa50ZZJMU5cD3ie/M
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+One complication: an exit code works for a single test, but here
+multiple test variants are run from a single shell script.
 
-Hi.
+I see that in similar such cases that use the test harness
+(ksft_test_result_skip) the overall test returns success as long as
+all individual cases return either success or skip.
 
-I have an active-backup bonded connection on a 5.1.6 kernel where the
-slaves are an Ethernet interface and a wifi interface.  The goal is to
-have network transparent (i.e. same and IP address on both interfaces)
-interface which takes advantage of high-speed and low-latency when it
-can be physically plugged into the wired network but have portability
-when unplugged through WiFi.
-
-It all works, mostly.  :-/
-
-I find that even when the primary interface, being the Ethernet
-interface is plugged in and active, the bonded interface will drop
-packets periodically.
-
-If I down the bonded interface and plumb the Ethernet interface
-directly, not as a slave of the bonded interface, no such packet
-dropping occurs.
-
-My measure of packet dropping, is by observing the output of "sudo ping
--f <ip_address>.  In less than a few minutes even, on the bonded
-interface, even with the Ethernet interface as the active slave, I will
-have a long string of dots indicating pings that were never
-replied.  On the unbonded Ethernet interface, no dots, even when
-measured over many days.
-
-My bonding config:
-
-$ cat /proc/net/bonding/bond0
-Ethernet Channel Bonding Driver: v3.7.1 (April 27, 2011)
-
-Bonding Mode: fault-tolerance (active-backup)
-Primary Slave: enp0s31f6 (primary_reselect always)
-Currently Active Slave: enp0s31f6
-MII Status: up
-MII Polling Interval (ms): 100
-Up Delay (ms): 0
-Down Delay (ms): 0
-
-Slave Interface: enp0s31f6
-MII Status: up
-Speed: 1000 Mbps
-Duplex: full
-Link Failure Count: 0
-Permanent HW addr: 0c:54:15:4a:b2:0d
-Slave queue ID: 0
-
-Slave Interface: wlp2s0
-MII Status: up
-Speed: Unknown
-Duplex: Unknown
-Link Failure Count: 1
-Permanent HW addr: 0c:54:15:4a:b2:0d
-Slave queue ID: 0
-
-Current interface config/stats:
-
-$ ifconfig bond0
-bond0: flags=3D5187<UP,BROADCAST,RUNNING,MASTER,MULTICAST>  mtu 1500
-        inet 10.75.22.245  netmask 255.255.255.0  broadcast 10.75.22.255
-        inet6 fe80::ee66:b8c9:d55:a28f  prefixlen 64  scopeid 0x20<link>
-        inet6 2001:123:ab:123:d36d:5e5d:acc8:e9bc  prefixlen 64  scopeid 0x=
-0<global>
-        ether 0c:54:15:4a:b2:0d  txqueuelen 1000  (Ethernet)
-        RX packets 1596206  bytes 165221404 (157.5 MiB)
-        RX errors 0  dropped 0  overruns 0  frame 0
-        TX packets 1590552  bytes 162689350 (155.1 MiB)
-        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-
-Devices:
-00:1f.6 Ethernet controller: Intel Corporation Ethernet Connection (2) I219=
--LM (rev 31)
-02:00.0 Network controller: Intel Corporation Wireless 8265 / 8275 (rev 78)
-
-Happy to provide any other useful information.
-
-Any ideas why the dropping, only when using the bonded interface?
-
-Cheers,
-b.
-
-
-
---=-fBUPa50ZZJMU5cD3ie/M
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEE8B/A+mOVz5cTNBuZ2sHQNBbLyKAFAl0JNCkACgkQ2sHQNBbL
-yKCw9Af8ClmWckxTha7/8NQpOH5RDugu8Vqx8lw3tgLTZ9Q7FPmPPPj3WKIkPd+u
-Dr8g7bDPqynsB+7vVpqBKfqg9Aa1yFIl7weM/gm/e0BR1tdwtj7eVMHcbaO21m+N
-NfcX3js0GkNhELHKKvibETerUUukjpFjUfQeX+0ZgbykwRf/0RJnGH7eHgexrrtN
-fXdNc1MlPpn+EnnTGgOOZbzLVoSzk1jJCvPEpbyBgA3ZYnZD2FRaOesMxZFdidzR
-toAXJj2JPcKv/o/IsXrXYQMXmhZBMlSZtB+3H5pSQ46OzKHHxZiiDULXTog5jfvN
-avB4YGP1/KHA+Ie6yv1NkZ/pwrsJsA==
-=+zDv
------END PGP SIGNATURE-----
-
---=-fBUPa50ZZJMU5cD3ie/M--
-
-
+I think it's preferable to return KSFT_SKIP if any of the cases did so
+(and none returned an error). I'll do that unless anyone objects.
