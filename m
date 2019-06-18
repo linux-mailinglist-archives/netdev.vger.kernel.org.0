@@ -2,114 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7633849DB6
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 11:46:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8883549DBB
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 11:47:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729590AbfFRJqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 05:46:18 -0400
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:51458 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729308AbfFRJqR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 05:46:17 -0400
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.89)
-        (envelope-from <fw@strlen.de>)
-        id 1hdAgv-0007OL-QD; Tue, 18 Jun 2019 11:46:13 +0200
-Date:   Tue, 18 Jun 2019 11:46:13 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Florian Westphal <fw@strlen.de>, wenxu@ucloud.cn,
-        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] netfilter: nft_paylaod: add base type
- NFT_PAYLOAD_LL_HEADER_NO_TAG
-Message-ID: <20190618094613.ztbwcclgsq54vkop@breakpoint.cc>
-References: <1560151280-28908-1-git-send-email-wenxu@ucloud.cn>
- <20190610094433.3wjmpfiph7iwguan@breakpoint.cc>
- <20190617223004.tnqz2bl7qp63fcfy@salvia>
- <20190617224232.55hldt4bw2qcmnll@breakpoint.cc>
- <20190618093508.3c5jjmmmuz3m26uj@salvia>
+        id S1729599AbfFRJrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 05:47:06 -0400
+Received: from smtprelay-out1.synopsys.com ([198.182.47.102]:60240 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729203AbfFRJrG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 05:47:06 -0400
+Received: from mailhost.synopsys.com (dc8-mailhost2.synopsys.com [10.13.135.210])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id E01AFC01A4;
+        Tue, 18 Jun 2019 09:47:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1560851225; bh=Rqzx3uY9EUXjmjAhh+pT/tAUt/DkvOXA2RUyG7eB3Iw=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=g8ZVwcnSCkJKtPUHXp0Z1d10qnnDXGbwdJiU0N+Psize73SDO8WvWLcvttGR4lqvi
+         ZZntyzawO7F+5/3p66R2eojzGp3/oe/++bkIM/NueynMti1iyofEPQIwNOs3UwIq85
+         8Pc5Z3afimrmtbymhO1uMDf7jvX0fRYgc6qWDoUL3JeO2zea4yb/gRV+3dOnhnBX2c
+         Hcr20yDRg+i+D6OO4yyZmH6XzRbVIvg7MentW4GcjBOdVv7h7tT9/169gRWzXQmrb9
+         e1tgpnLl9ohqwIBcCEXdjr4lJR5XWgxw2sF/YF5tZOsuU2ciGzRTjfiGs9wM/kGU2y
+         YeCkp0sDLxgCA==
+Received: from us01wehtc1.internal.synopsys.com (us01wehtc1-vip.internal.synopsys.com [10.12.239.236])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mailhost.synopsys.com (Postfix) with ESMTPS id 15B30A0067;
+        Tue, 18 Jun 2019 09:47:00 +0000 (UTC)
+Received: from DE02WEHTCA.internal.synopsys.com (10.225.19.92) by
+ us01wehtc1.internal.synopsys.com (10.12.239.231) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Tue, 18 Jun 2019 02:47:00 -0700
+Received: from DE02WEMBXB.internal.synopsys.com ([fe80::95ce:118a:8321:a099])
+ by DE02WEHTCA.internal.synopsys.com ([::1]) with mapi id 14.03.0415.000; Tue,
+ 18 Jun 2019 11:46:58 +0200
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     Jon Hunter <jonathanh@nvidia.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Joao Pinto <Joao.Pinto@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        linux-tegra <linux-tegra@vger.kernel.org>
+Subject: RE: [PATCH net-next 3/3] net: stmmac: Convert to phylink and remove
+ phylib logic
+Thread-Topic: [PATCH net-next 3/3] net: stmmac: Convert to phylink and
+ remove phylib logic
+Thread-Index: AQHVIGkArVRmnWNiHUiOZ+Vq9aFNYKahDpUAgAAiuoD//+CkgIAAIfYQ
+Date:   Tue, 18 Jun 2019 09:46:57 +0000
+Message-ID: <78EB27739596EE489E55E81C33FEC33A0B9C8DD9@DE02WEMBXB.internal.synopsys.com>
+References: <cover.1560266175.git.joabreu@synopsys.com>
+ <6226d6a0de5929ed07d64b20472c52a86e71383d.1560266175.git.joabreu@synopsys.com>
+ <d9ffce3d-4827-fa4a-89e8-0492c4bc1848@nvidia.com>
+ <78EB27739596EE489E55E81C33FEC33A0B9C8D6E@DE02WEMBXB.internal.synopsys.com>
+ <26cfaeff-a310-3b79-5b57-fd9c93bd8929@nvidia.com>
+In-Reply-To: <26cfaeff-a310-3b79-5b57-fd9c93bd8929@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.107.19.15]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190618093508.3c5jjmmmuz3m26uj@salvia>
-User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Pablo Neira Ayuso <pablo@netfilter.org> wrote:
-> On Tue, Jun 18, 2019 at 12:42:32AM +0200, Florian Westphal wrote:
-> > Pablo Neira Ayuso <pablo@netfilter.org> wrote:
-> > > > Subject: Change bridge l3 dependency to meta protocol
-> > > > 
-> > > > This examines skb->protocol instead of ethernet header type, which
-> > > > might be different when vlan is involved.
-> > > >  
-> > > > +	if (ctx->pctx.family == NFPROTO_BRIDGE && desc == &proto_eth) {
-> > > > +		if (expr->payload.desc == &proto_ip ||
-> > > > +		    expr->payload.desc == &proto_ip6)
-> > > > +			desc = &proto_metaeth;
-> > > > +	}i
-> > > 
-> > > Is this sufficient to restrict the matching? Is this still buggy from
-> > > ingress?
-> > 
-> > This is what netdev family uses as well (skb->protocol i mean).
-> > I'm not sure it will work for output however (haven't checked).
-> 
-> You mean for locally generated traffic?
-
-Yes.
-
-> > > I wonder if an explicit NFT_PAYLOAD_CHECK_VLAN flag would be useful in
-> > > the kernel, if so we could rename NFTA_PAYLOAD_CSUM_FLAGS to
-> > > NFTA_PAYLOAD_FLAGS and place it there. Just an idea.
-> > 
-> > What would NFT_PAYLOAD_CHECK_VLAN do?
-> 
-> Similar to the checksum approach, it provides a hint to the kernel to
-> say that "I want to look at the vlan header" from the link layer.
-
-I see.  Its a bit of a furhter problem because tags can be nested,
-so we would have to provide a more dynamic approach, similar to tunnel
-matching (vlan header 0 id 42 vlan header 1 id 23' etc).
-
-> > What might be useful is an nft switch to turn off dependeny
-> > insertion, this would also avoid the problem (if users restrict the
-> > matching properly...).
-> 
-> Hm. How does this toggle would look like?
-
-nft --nodep add rule bridge filter input ip protocol icmp # broken, has false positives
-nft --nodep add rule bridge filter input ip version 4 ip protocol icmp # might work
-nft --nodep add rule bridge filter input meta protocol ip ip protocol icmp # might work too
-
-Its kind of I-Know-What-I-Am-Doing switch ...
-
-We can already do this with raw payload expressions but those aren't that user
-friendly.
-
-> > Another unresolved issue is presence of multiple vlan tags, so we might
-> > have to add yet another meta key to retrieve the l3 protocol in use
-> > 
-> > (the problem at hand was 'ip protocol icmp' not matching traffic inside
-> >  a vlan).
-> 
-> Could you describe this problem a bit more? Small example rule plus
-> scenario.
-
-It was what wenxu reported originally:
-
-nft add rule bridge filter forward ip protocol counter ..
-
-The rule only matches if the ip packet is contained in an ethernet frame
-without vlan tag -- and thats neither expected nor desirable.
-
-This rule works when using 'meta protocol ip' as dependency instead
-of ether type ip (what we do now), because VLAN stripping will fix/alter
-skb->protocol to the inner type when the VLAN tag gets removes.
-
-It will still fail in case there are several VLAN tags, so we might
-need another meta expression that can figure out the l3 protocol type.
-
-Does that make sense so far?
+RnJvbTogSm9uIEh1bnRlciA8am9uYXRoYW5oQG52aWRpYS5jb20+DQoNCj4gSSBhbSBub3QgY2Vy
+dGFpbiBidXQgSSBkb24ndCBiZWxpZXZlIHNvLiBXZSBhcmUgdXNpbmcgYSBzdGF0aWMgSVAgYWRk
+cmVzcw0KPiBhbmQgbW91bnRpbmcgdGhlIHJvb3QgZmlsZS1zeXN0ZW0gdmlhIE5GUyB3aGVuIHdl
+IHNlZSB0aGlzIC4uLg0KDQpDYW4geW91IHBsZWFzZSBhZGQgYSBjYWxsIHRvIG5hcGlfc3luY2hy
+b25pemUoKSBiZWZvcmUgZXZlcnkgDQpuYXBpX2Rpc2FibGUoKSBjYWxscywgbGlrZSB0aGlzOg0K
+DQppZiAocXVldWUgPCByeF9xdWV1ZXNfY250KSB7DQoJbmFwaV9zeW5jaHJvbml6ZSgmY2gtPnJ4
+X25hcGkpOw0KCW5hcGlfZGlzYWJsZSgmY2gtPnJ4X25hcGkpOw0KfQ0KDQppZiAocXVldWUgPCB0
+eF9xdWV1ZXNfY250KSB7DQoJbmFwaV9zeW5jaHJvbml6ZSgmY2gtPnR4X25hcGkpOw0KCW5hcGlf
+ZGlzYWJsZSgmY2gtPnR4X25hcGkpOw0KfQ0KDQpbIEkgY2FuIHNlbmQgeW91IGEgcGF0Y2ggaWYg
+eW91IHByZWZlciBdDQoNClRoYW5rcywNCkpvc2UgTWlndWVsIEFicmV1DQo=
