@@ -2,137 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1370F4AE54
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 01:04:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A98BB4AE94
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 01:12:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730746AbfFRXEY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 19:04:24 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:42073 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730377AbfFRXEY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 19:04:24 -0400
-Received: by mail-ed1-f67.google.com with SMTP id z25so24085725edq.9;
-        Tue, 18 Jun 2019 16:04:23 -0700 (PDT)
+        id S1726238AbfFRXL7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 19:11:59 -0400
+Received: from esa6.hgst.iphmx.com ([216.71.154.45]:41881 "EHLO
+        esa6.hgst.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725955AbfFRXL7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 19:11:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1560899520; x=1592435520;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=wdGDk/rCK6MmREYzQrYgnXHm1djyjycy3pwOyCJ2Sm8=;
+  b=GoLpQBkVtzgQCyYB9QRLf8fU0NqUXQ09qtsTitHksyp9E3axurPskUR4
+   ehI3M6BhTLJq42ktNCF5jfToWLL7jmi7RqDHJyXPVxOC9yh9YVSbplvad
+   +EJ5CoDgTyKxKbgsLtkEHHtc1UZOFqvkp2OCbs8qs+vYu5qSjkWfBfReS
+   0zPMX2UZQBa5ZpCal/hHFKBm9gf9lZSPkRyuAGXw0yYbTDEDTZU4023c4
+   U8EuI0SWjyn9Rm94S4P2yqRWfgO/jDjp0LPX7eyQ/Y3DWiM7ppcj/UmTH
+   u/TfIjlRAZpALbhBD1cY3yldIE6Bc0L185wDiUN4Zm2RgoUkg8DwxOO4G
+   w==;
+X-IronPort-AV: E=Sophos;i="5.63,390,1557158400"; 
+   d="scan'208";a="112554704"
+Received: from mail-bn3nam01lp2058.outbound.protection.outlook.com (HELO NAM01-BN3-obe.outbound.protection.outlook.com) ([104.47.33.58])
+  by ob1.hgst.iphmx.com with ESMTP; 19 Jun 2019 07:11:57 +0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=3TR6tEUm9Kh0gp6UR5ta5DiQqGzKi27dpCMg1A1Ozdk=;
-        b=gV1UP54fKFEHi7N2gclALBWPSQb7uPABhuk3qejGCA7O5zEESpWqKRQgvyy8XqNXiL
-         hMfg6/7+oVMGs4Sh405ktmvMoF1QmR9R4br71mQJpVULSL4yUUM2qb9kx37a6HrdKNHz
-         eJTOgk9i8UB47DvrTtDcezGmHoJFyjfURsFExvfiGeVAs+cwjJsUAbxDOk0yHfTyvbJA
-         ROKwCzKmR4bCiJwsEL5zKA4dd+iOsGFMkPTkIAUn6BJP4eOId7EXfzO3baTCMYdFe5pj
-         M9Pruulp7GRapbdwh523B1ZM/ifxQ0S4/2TSeWaIY8yDMgsioKQgJMzrRsf2kUhPQWEc
-         3c8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=3TR6tEUm9Kh0gp6UR5ta5DiQqGzKi27dpCMg1A1Ozdk=;
-        b=qiiGxNjoAcOwThgkoGXyRaxl0KabVuFqus7eQ9zRK90spdK2u5zzWd6XHcKksOAtOR
-         fIXzmsCUoeA8HhGSA0K0U/JRxSNlbxHXgfCeyZzRDOAgmrTk/76Z3deWyj4RumSwYtJk
-         fUmNd5wMkjZdjQqKR0gJXZwd8PfTbmjMb0s4kdCRq0KwX432gMg+W7a59lNdeo+AFX0f
-         mdApU9C/PK5dsVJpZs+6EIoP1030PKKn8nmWp80W3HsplethYq71jcGwheZOzxIxkNSO
-         wbqGTNP0LOlLo2OhDPMGvarKOBjffTh6PSNNTO/WAMI1ucDQ/NDy6fTJhRU+V+hHkDPq
-         uHXw==
-X-Gm-Message-State: APjAAAWWpoOpPJW9LRvVRKVjdnhOpF03c49eSHlTCp/iut/V1yGEbd7I
-        S1V5ZAJIni6w6JDf8GJQomk=
-X-Google-Smtp-Source: APXvYqz9Lz7HewPGraid664wDZ3Gui5stBAJmA5OIyNhTdb4POG0GO+D93mxbkqNOHrMG7D+4RBnog==
-X-Received: by 2002:a50:86b9:: with SMTP id r54mr100907329eda.162.1560899062601;
-        Tue, 18 Jun 2019 16:04:22 -0700 (PDT)
-Received: from archlinux-epyc ([2a01:4f9:2b:2b15::2])
-        by smtp.gmail.com with ESMTPSA id o7sm2977595ejm.67.2019.06.18.16.04.21
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 18 Jun 2019 16:04:22 -0700 (PDT)
-Date:   Tue, 18 Jun 2019 16:04:20 -0700
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Matthias Kaehlcke <mka@chromium.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Alexander Duyck <alexander.h.duyck@redhat.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Douglas Anderson <dianders@chromium.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Huckleberry <nhuck@google.com>,
-        clang-built-linux@googlegroups.com
-Subject: Re: [PATCH] net/ipv4: fib_trie: Avoid cryptic ternary expressions
-Message-ID: <20190618230420.GA84107@archlinux-epyc>
-References: <20190618211440.54179-1-mka@chromium.org>
+ d=sharedspace.onmicrosoft.com; s=selector2-sharedspace-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wdGDk/rCK6MmREYzQrYgnXHm1djyjycy3pwOyCJ2Sm8=;
+ b=G1Qftan7ZUcsP6dKZAWN/BNMD2mJB9OEYAzEurgd0k4c87z5UcjI3n0g3jpHGWwB2jzV0a2xwRTESFPO7JzmFD++ndY9Y37LdOzF8smWhAe+EYoVMlFxAeC3XrMBXKpYDurx5YShQQ/oEVpFP8YMkeOQlxUGIAmuOlPZNREHbG4=
+Received: from BYAPR04MB4901.namprd04.prod.outlook.com (52.135.232.206) by
+ BYAPR04MB4167.namprd04.prod.outlook.com (20.176.250.139) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1987.13; Tue, 18 Jun 2019 23:11:55 +0000
+Received: from BYAPR04MB4901.namprd04.prod.outlook.com
+ ([fe80::40b0:3c4b:b778:664d]) by BYAPR04MB4901.namprd04.prod.outlook.com
+ ([fe80::40b0:3c4b:b778:664d%7]) with mapi id 15.20.1987.012; Tue, 18 Jun 2019
+ 23:11:55 +0000
+From:   Alistair Francis <Alistair.Francis@wdc.com>
+To:     "paul.walmsley@sifive.com" <paul.walmsley@sifive.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "palmer@sifive.com" <palmer@sifive.com>,
+        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
+        "aou@eecs.berkeley.edu" <aou@eecs.berkeley.edu>,
+        "yash.shah@sifive.com" <yash.shah@sifive.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "sachin.ghadi@sifive.com" <sachin.ghadi@sifive.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "ynezz@true.cz" <ynezz@true.cz>, "jamez@wit.com" <jamez@wit.com>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "schwab@suse.de" <schwab@suse.de>,
+        "troy.benjegerdes@sifive.com" <troy.benjegerdes@sifive.com>,
+        "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>
+Subject: Re: [PATCH v2 0/2] Add macb support for SiFive FU540-C000
+Thread-Topic: [PATCH v2 0/2] Add macb support for SiFive FU540-C000
+Thread-Index: AQHVJMPxUGJ6CrWTfEOSlZ7T+RNJNKafgw4CgAAZzACAAAECfoAAAOIAgAAC1UKAABYjAIAALLGAgABKKYCAAJMSAIABSp2A
+Date:   Tue, 18 Jun 2019 23:11:54 +0000
+Message-ID: <e054e1c22cc52c41cea36b005de5a5ade0f8a23e.camel@wdc.com>
+References: <1560745167-9866-1-git-send-email-yash.shah@sifive.com>
+          <mvmtvco62k9.fsf@suse.de>
+          <alpine.DEB.2.21.9999.1906170252410.19994@viisi.sifive.com>
+          <mvmpnnc5y49.fsf@suse.de>
+          <alpine.DEB.2.21.9999.1906170305020.19994@viisi.sifive.com>
+          <mvmh88o5xi5.fsf@suse.de>
+          <alpine.DEB.2.21.9999.1906170419010.19994@viisi.sifive.com>
+          <F48A4F7F-0B0D-4191-91AD-DC51686D1E78@sifive.com>
+         <d2836a90b92f3522a398d57ab8555d08956a0d1f.camel@wdc.com>
+         <alpine.DEB.2.21.9999.1906172019040.15057@viisi.sifive.com>
+In-Reply-To: <alpine.DEB.2.21.9999.1906172019040.15057@viisi.sifive.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=Alistair.Francis@wdc.com; 
+x-originating-ip: [199.255.44.250]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: b7841107-ad62-4dfd-a4d1-08d6f4425b11
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:BYAPR04MB4167;
+x-ms-traffictypediagnostic: BYAPR04MB4167:
+x-ms-exchange-purlcount: 2
+wdcipoutbound: EOP-TRUE
+x-microsoft-antispam-prvs: <BYAPR04MB4167558D7B95D6A935ED14CF90EA0@BYAPR04MB4167.namprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 007271867D
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(6029001)(39860400002)(376002)(346002)(136003)(366004)(396003)(199004)(189003)(81166006)(7736002)(6116002)(118296001)(2906002)(486006)(71200400001)(316002)(4326008)(36756003)(8936002)(6306002)(11346002)(186003)(54906003)(2351001)(6436002)(73956011)(6512007)(6246003)(53936002)(446003)(71190400001)(5640700003)(25786009)(99286004)(72206003)(305945005)(66066001)(7416002)(6916009)(3846002)(66946007)(478600001)(2616005)(229853002)(2501003)(68736007)(8676002)(966005)(6506007)(102836004)(76116006)(66556008)(6486002)(66446008)(86362001)(66476007)(64756008)(476003)(76176011)(5660300002)(14454004)(26005)(256004)(81156014);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR04MB4167;H:BYAPR04MB4901.namprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: SXMcN5hIZqKBgsnD5O6yENR/GBnGh6DilH52ZRaPKP47w5hOx7NyBj8Q8tM8zxkVpJwyFb/t6qN3G71Zs4AzxwF2ZUsDgietuXwLK2e03Da/fXG3GNoR6HK7hnWEq6jvAzGklqJZUEhLeRODpgcyOOZeqluakaJy1hxX4li9Kt8PxfZXsj4v2Ua/kIxZkjoxNii38+2BiWOJAha30LJyteOfa3rWNusB8Vpjaznh5Spskv+8jE25Ip/TiVeyvOhIgHEP392jyWdsZelmAVKFnt9CQ2AALlolWMvN/8ldYK4q3Ovm1soEYB29s0hE5SKsqyH/vhqdEGLvQM02esSPrJDoZAHzzeTRf0ZqCMMOky4ArA0QNoUXTX82q/F1GFQxmqnNzRFkkkZoa99ELhZnO0F2BF81DmUc6nHS8Pd9mjo=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <B51FAF1422A4224AB60D396DA226F398@namprd04.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190618211440.54179-1-mka@chromium.org>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+X-OriginatorOrg: wdc.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b7841107-ad62-4dfd-a4d1-08d6f4425b11
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jun 2019 23:11:55.0886
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: b61c8803-16f3-4c35-9b17-6f65f441df86
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Alistair.Francis@wdc.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR04MB4167
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 18, 2019 at 02:14:40PM -0700, Matthias Kaehlcke wrote:
-> empty_child_inc/dec() use the ternary operator for conditional
-> operations. The conditions involve the post/pre in/decrement
-> operator and the operation is only performed when the condition
-> is *not* true. This is hard to parse for humans, use a regular
-> 'if' construct instead and perform the in/decrement separately.
-> 
-> This also fixes two warnings that are emitted about the value
-> of the ternary expression being unused, when building the kernel
-> with clang + "kbuild: Remove unnecessary -Wno-unused-value"
-> (https://lore.kernel.org/patchwork/patch/1089869/):
-> 
-> CC      net/ipv4/fib_trie.o
-> net/ipv4/fib_trie.c:351:2: error: expression result unused [-Werror,-Wunused-value]
->         ++tn_info(n)->empty_children ? : ++tn_info(n)->full_children;
-> 
-
-As an FYI, this is also being fixed in clang:
-
-https://bugs.llvm.org/show_bug.cgi?id=42239
-
-https://reviews.llvm.org/D63369
-
-> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-> ---
-> I have no good understanding of the fib_trie code, but the
-> disentangled code looks wrong, and it should be equivalent to the
-> cryptic version, unless I messed it up. In empty_child_inc()
-> 'full_children' is only incremented when 'empty_children' is -1. I
-> suspect a bug in the cryptic code, but am surprised why it hasn't
-> blown up yet. Or is it intended behavior that is just
-> super-counterintuitive?
-> 
-> For now I'm leaving it at disentangling the cryptic expressions,
-> if there is a bug we can discuss what action to take.
-> ---
->  net/ipv4/fib_trie.c | 10 ++++++++--
->  1 file changed, 8 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
-> index 868c74771fa9..cf7788e336b7 100644
-> --- a/net/ipv4/fib_trie.c
-> +++ b/net/ipv4/fib_trie.c
-> @@ -338,12 +338,18 @@ static struct tnode *tnode_alloc(int bits)
->  
->  static inline void empty_child_inc(struct key_vector *n)
->  {
-> -	++tn_info(n)->empty_children ? : ++tn_info(n)->full_children;
-> +	tn_info(n)->empty_children++;
-> +
-> +	if (!tn_info(n)->empty_children)
-> +		tn_info(n)->full_children++;
->  }
->  
->  static inline void empty_child_dec(struct key_vector *n)
->  {
-> -	tn_info(n)->empty_children-- ? : tn_info(n)->full_children--;
-> +	if (!tn_info(n)->empty_children)
-> +		tn_info(n)->full_children--;
-> +
-> +	tn_info(n)->empty_children--;
->  }
->  
->  static struct key_vector *leaf_new(t_key key, struct fib_alias *fa)
-> -- 
-> 2.22.0.410.gd8fdbe21b5-goog
-> 
+T24gTW9uLCAyMDE5LTA2LTE3IGF0IDIwOjI2IC0wNzAwLCBQYXVsIFdhbG1zbGV5IHdyb3RlOg0K
+PiBPbiBNb24sIDE3IEp1biAyMDE5LCBBbGlzdGFpciBGcmFuY2lzIHdyb3RlOg0KPiANCj4gPiA+
+IFRoZSBsZWdhY3kgTS1tb2RlIFUtYm9vdCBoYW5kbGVzIHRoZSBwaHkgcmVzZXQgYWxyZWFkeSwg
+YW5kIEnigJl2ZQ0KPiA+ID4gYmVlbg0KPiA+ID4gYWJsZSB0byBsb2FkIHVwc3RyZWFtIFMtbW9k
+ZSB1Ym9vdCBhcyBhIHBheWxvYWQgdmlhIFRGVFAsIGFuZA0KPiA+ID4gdGhlbiANCj4gPiA+IGxv
+YWQgYW5kIGJvb3QgYSA0LjE5IGtlcm5lbC4gDQo+ID4gPiANCj4gPiA+IEl0IHdvdWxkIGJlIG5p
+Y2UgdG8gZ2V0IHRoaXMgYWxsIHdvcmtpbmcgd2l0aCA1LngsIGhvd2V2ZXIgdGhlcmUNCj4gPiA+
+IGFyZQ0KPiA+ID4gc3RpbGwNCj4gPiA+IHNldmVyYWwgbWlzc2luZyBwaWVjZXMgdG8gcmVhbGx5
+IGhhdmUgaXQgd29yayB3ZWxsLg0KPiA+IA0KPiA+IExldCBtZSBrbm93IHdoYXQgaXMgc3RpbGwg
+bWlzc2luZy9kb2Vzbid0IHdvcmsgYW5kIEkgY2FuIGFkZCBpdC4gQXQNCj4gPiB0aGUNCj4gPiBt
+b21lbnQgdGhlIG9ubHkga25vd24gaXNzdWUgSSBrbm93IG9mIGlzIGEgbWlzc2luZyBTRCBjYXJk
+IGRyaXZlcg0KPiA+IGluIFUtDQo+ID4gQm9vdC4NCj4gDQo+IFRoZSBEVCBkYXRhIGhhcyBjaGFu
+Z2VkIGJldHdlZW4gdGhlIG5vbi11cHN0cmVhbSBkYXRhIHRoYXQgcGVvcGxlIA0KPiBkZXZlbG9w
+ZWQgYWdhaW5zdCBwcmV2aW91c2x5LCB2cy4gdGhlIERUIGRhdGEgdGhhdCBqdXN0IHdlbnQNCj4g
+dXBzdHJlYW0gDQo+IGhlcmU6DQo+IA0KPiBodHRwczovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20v
+bGludXgva2VybmVsL2dpdC90b3J2YWxkcy9saW51eC5naXQvY29tbWl0Lz9pZD03MjI5NmJkZTRm
+NDIwNzU2Njg3MmVlMzU1OTUwYTU5Y2JjMjlmODUyDQo+IA0KPiBhbmQNCj4gDQo+IGh0dHBzOi8v
+Z2l0Lmtlcm5lbC5vcmcvcHViL3NjbS9saW51eC9rZXJuZWwvZ2l0L3RvcnZhbGRzL2xpbnV4Lmdp
+dC9jb21taXQvP2lkPWMzNWYxYjg3ZmM1OTU4MDdmZjE1ZDI4MzRkMjQxZjk3NzE0OTcyMDUNCj4g
+DQo+IFNvIFVwc3RyZWFtIFUtQm9vdCBpcyBnb2luZyB0byBuZWVkIHNldmVyYWwgcGF0Y2hlcyB0
+byBnZXQgdGhpbmdzDQo+IHdvcmtpbmcgDQo+IGFnYWluLiAgQ2xvY2sgaWRlbnRpZmllcnMgYW5k
+IEV0aGVybmV0IGFyZSB0d28ga25vd24gYXJlYXMuDQoNClllcCwgQW51cCBoYXMgc2VudCBwYXRj
+aGVzIHRvIFUtQm9vdCBhbmQgT3BlblNCSS4NCg0KQWxpc3RhaXINCg0KPiANCj4gDQo+IC0gUGF1
+bA0K
