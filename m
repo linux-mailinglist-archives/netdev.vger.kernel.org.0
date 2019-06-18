@@ -2,164 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DF4C4AA3A
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 20:49:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 969254AA3D
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 20:49:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730368AbfFRStA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 14:49:00 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:45808 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729642AbfFRStA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 14:49:00 -0400
-Received: by sipsolutions.net with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1hdJ9q-0004lc-GY; Tue, 18 Jun 2019 20:48:38 +0200
-Message-ID: <967604dd8d466a99b865649174f8b9cd34b2560e.camel@sipsolutions.net>
-Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Alex Elder <elder@linaro.org>, Arnd Bergmann <arnd@arndb.de>,
-        Dan Williams <dcbw@redhat.com>
-Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        abhishek.esse@gmail.com, Ben Chan <benchan@google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        cpratapa@codeaurora.org, David Miller <davem@davemloft.net>,
-        DTML <devicetree@vger.kernel.org>,
-        Eric Caruso <ejcaruso@google.com>, evgreen@chromium.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-arm-msm@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-soc@vger.kernel.org, Networking <netdev@vger.kernel.org>,
-        syadagir@codeaurora.org
-Date:   Tue, 18 Jun 2019 20:48:33 +0200
-In-Reply-To: <850eed1d-0fec-c396-6e91-b5f1f8440ded@linaro.org> (sfid-20190618_172042_951332_21BBC6A6)
-References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
-         <a94676381a5ca662c848f7a725562f721c43ce76.camel@sipsolutions.net>
-         <CAK8P3a0kV-i7BJJ2X6C=5n65rSGfo8fUiC4J_G-+M8EctYKbkg@mail.gmail.com>
-         <fc0d08912bc10ad089eb74034726308375279130.camel@redhat.com>
-         <36bca57c999f611353fd9741c55bb2a7@codeaurora.org>
-         <153fafb91267147cf22e2bf102dd822933ec823a.camel@redhat.com>
-         <CAK8P3a2Y+tcL1-V57dtypWHndNT3eDJdcKj29c_v+k8o1HHQig@mail.gmail.com>
-         <f4249aa5f5acdd90275eda35aa16f3cfb29d29be.camel@redhat.com>
-         <CAK8P3a2nzZKtshYfomOOSYkqx5HdU15Wr9b+3va0B1euNhFOAg@mail.gmail.com>
-         <dbb32f185d2c3a654083ee0a7188379e1f88d899.camel@sipsolutions.net>
-         <e6ba8a9063e63506c0b88a70418d74ca4efe85cd.camel@sipsolutions.net>
-         <850eed1d-0fec-c396-6e91-b5f1f8440ded@linaro.org>
-         (sfid-20190618_172042_951332_21BBC6A6)
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-2.fc28) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S1730389AbfFRStG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 14:49:06 -0400
+Received: from mail-eopbgr20059.outbound.protection.outlook.com ([40.107.2.59]:6947
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729642AbfFRStF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Jun 2019 14:49:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DFowRvl/JpJO+Q0QkrQn1JDkP+iMDIug5UwiXvS0Kmg=;
+ b=Pa6xSR3tFNHr7YmQgYF020rCeqj/xmrdYInSuTAurZDTkAyxxc2VYTTDUCcEhDQzMbGq+ihe0Liig64RzqKl1Zjnz4dgHJ7Q2+p7y1jxfaRU/IsUpfZ7Eo3KA6lfegs1A9gO9CSby+D8uOBSk8gf5UZd+Inl7c+JD+l4J2nlbFI=
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
+ DB6PR0501MB2472.eurprd05.prod.outlook.com (10.168.77.16) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1987.12; Tue, 18 Jun 2019 18:49:01 +0000
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::a901:6951:59de:3278]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::a901:6951:59de:3278%2]) with mapi id 15.20.1987.014; Tue, 18 Jun 2019
+ 18:49:01 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     Jason Gunthorpe <jgg@mellanox.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "dledford@redhat.com" <dledford@redhat.com>
+CC:     Mark Zhang <markz@mellanox.com>, Majd Dibbiny <majd@mellanox.com>,
+        Leon Romanovsky <leonro@mellanox.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH mlx5-next v4 07/17] IB/mlx5: Support set qp counter
+Thread-Topic: [PATCH mlx5-next v4 07/17] IB/mlx5: Support set qp counter
+Thread-Index: AQHVJfsG8f6qmu9vok+Y4ibq/cqu9KahwQSA
+Date:   Tue, 18 Jun 2019 18:49:01 +0000
+Message-ID: <29d643a5e342cc898b189be7f8f3f9889cf58e2c.camel@mellanox.com>
+References: <20190618172625.13432-1-leon@kernel.org>
+         <20190618172625.13432-8-leon@kernel.org>
+In-Reply-To: <20190618172625.13432-8-leon@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.32.2 (3.32.2-1.fc30) 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-originating-ip: [209.116.155.178]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 61857721-834a-4853-81d3-08d6f41da143
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2472;
+x-ms-traffictypediagnostic: DB6PR0501MB2472:
+x-microsoft-antispam-prvs: <DB6PR0501MB2472FEB96508BA667E47EE50BEEA0@DB6PR0501MB2472.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 007271867D
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(979002)(376002)(346002)(396003)(136003)(39860400002)(366004)(199004)(189003)(6436002)(2501003)(76116006)(2201001)(99286004)(14454004)(86362001)(2906002)(3846002)(81166006)(8936002)(6486002)(91956017)(5660300002)(36756003)(81156014)(8676002)(53936002)(71190400001)(118296001)(68736007)(478600001)(71200400001)(6116002)(66556008)(14444005)(66476007)(66446008)(64756008)(256004)(73956011)(76176011)(305945005)(66066001)(7736002)(2616005)(102836004)(54906003)(58126008)(110136005)(476003)(486006)(316002)(229853002)(6506007)(6512007)(6246003)(26005)(186003)(4326008)(11346002)(446003)(66946007)(25786009)(969003)(989001)(999001)(1009001)(1019001);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2472;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: LnK+/E2sA2sxZL/hA6FEAnB6E8HbPCL6bs0vgA5uVLpGLsPScTRW5wj7tM+m6FJ2HfnQeIlIma8bLkPV2u5zqallb8d8tPuQC5sq68UFOnl4fHoe0DLEGzIS4yWwV6Pcba3X9iHc7NLd5VVWeHPNK9a2hvVED8LboJZaya2YJVC917bcctWKhAnsHZd1erVWDKIry/HA3z4+cOz0XOhUcFEP6qhVLiaIdPPN4AH72qsVz2YNF75AxzCslhYBbVAPOfFtdZtTuefZwPVzo7p8yea0784xALZgto0l8Jx6mczUKggHUzTFVTkWxHKDnSexuvX9UoIILBw6FMdYepx4rCFJIks7nhnDqKLPIhngVGUtb3uiIIj+43KkraUuPtrifisk0U5xnM+RHbnZLsP4f5P38bZwiOaEdNlVoLrXuuc=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <79901AD51207B34B880B564A2C4E9827@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 61857721-834a-4853-81d3-08d6f41da143
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jun 2019 18:49:01.5117
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2472
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Just to add to Dan's response, I think he's captured our discussions and
-thoughts well.
-
-> First, a few terms (correct or improve as you like):
-
-Thanks for defining, we don't do that nearly often enough.
-
-> - WWAN device is a hardware device (like IPA) that presents a
->   connection between AP and modem, and presents an interface
->   that allows the use of that connection to be managed.
-
-Yes. But I was actually thinking of a "wwan_dev" to be a separate
-structure, not *directly* owned by a single driver and used to represent
-the hardware like a (hypothetical) "struct ipa_dev".
-
-> - WWAN netdevice represents a Linux network interface, with its
->   operations and queues, etc., but implements a standardized
->   set of WWAN-specific operations.  It represents a logical
-> ' channel whose data is multiplexed over the WWAN device.
-
-I'm not sure I'd asy it has much WWAN-specific operations? But yeah, I
-guess it might.
-
-> - WWAN channel is a user space abstraction that corresponds
->   with a WWAN netdevice (but I'm not clear on all the ways
->   they differ or interact).
-
-As Dan said, this could be a different abstraction than a netdevice,
-like a TTY, etc.
-
-> - The WWAN core is kernel code that presents abstractions
->   for WWAN devices and netdevices, so they can be managed
->   in a generic way.  It is for configuration and communication
->   and is not at all involved in the data path.
-> 
-> You're saying that the WWAN driver space calls wwan_add()
-> to register itself as a new WWAN device.
-
-Assuming it knows that it is in fact a WWAN device, like IPA.
-
-> You're also saying that a WWAN device "attaches" a WWAN
-> netdevice, which is basically notifying the WWAN core
-> that the new netdev/channel is available for use.
-> - I trust that a "tentative" attachement is necessary.  But
->   I'm not sure what makes it transition into becoming a
->   "real" one, or how that event gets communicated.
-
-I think Dan explained this one well. This wasn't actually on my radar
-until he pointed it out.
-
-Really this only exists with USB devices that appear as multiple
-functions (ethernet, tty, ...) but still represent a single WWAN device,
-with each function not necessarily being aware of that since it's just a
-function driver.
-
-Hopefully at least one of the function drivers will be able to figure it
-out, and then we can combine all of the functions into the WWAN device
-abstraction.
-
-[snip - Dan's explanations are great]
-
-Dan also said:
-
-> > I read "attach" here as simply associating an existing netdev with the
-> > "parent" WWAN device. A purely Linux operation that is only book-
-> > keeping and may not have any interaction with the modem. 
-
-Now I'm replying out of thread, but yes, that's what I had in mind. What
-I meant by attaching (in this case) is just that you actually mark that
-it is (or might be, if tentatively attached) part of a WWAN device.
-
-> - Are there any attributes that are only optionally supported,
->   and if so, how are the supported ones communicated?
-
-As Dan said, good point. I hadn't really considered that for now. I sort
-of know that we need it, but for the sake of simplicity decided to elide
-it for now. I'm just not sure what really are needed, and netlink
-attributes make adding them (and discovering the valid ones) pretty easy
-in the future, when a need arises.
-
-> - Which WWAN channel attributes must be set *before* the
->   channel is activated, and can't be changed?  Are there any
->   that can be changed dynamically?
-
-It's a good question. I threw a "u32 pdn" in there, but I'm not actually
-sure that's what you *really* need?
-
-Maybe the modem and userspace just agree on some arbitrary "session
-identifier"? Dan mentions "MUX ID" or "MBIM Session ID", maybe there
-really is no good general term for this and we should just call it a
-"session identifier" and agree that it depends on the control protocol
-(MBIM vs. QMI vs. ...)?
-
-> And while the whole point of this is to make things generic,
-> it might be nice to have a way to implement a new feature
-> before it can be "standardized".
-
-Not sure I understand this?
-
-FWIW, I actually came to this because we want to upstream a driver for
-an Intel modem, but ... can't really make up our mind on whether or not
-to use VLAN tags, something like rmnet (but we obviously cannot use
-rmnet, so that'd be another vendor specific interface like rmnet), or
-sysfs, or any of the other methods we have today ... :-)
-
-johannes
-
+T24gVHVlLCAyMDE5LTA2LTE4IGF0IDIwOjI2ICswMzAwLCBMZW9uIFJvbWFub3Zza3kgd3JvdGU6
+DQo+IEZyb206IE1hcmsgWmhhbmcgPG1hcmt6QG1lbGxhbm94LmNvbT4NCj4gDQo+IFN1cHBvcnQg
+YmluZCBhIHFwIHdpdGggY291bnRlci4gSWYgY291bnRlciBpcyBudWxsIHRoZW4gYmluZCB0aGUg
+cXANCj4gdG8NCj4gdGhlIGRlZmF1bHQgY291bnRlci4gRGlmZmVyZW50IFFQIHN0YXRlIGhhcyBk
+aWZmZXJlbnQgb3BlcmF0aW9uOg0KPiAtIFJFU0VUOiBTZXQgdGhlIGNvdW50ZXIgZmllbGQgc28g
+dGhhdCBpdCB3aWxsIHRha2UgZWZmZWN0aXZlDQo+ICAgZHVyaW5nIFJTVDJJTklUIGNoYW5nZTsN
+Cj4gLSBSVFM6IElzc3VlIGFuIFJUUzJSVFMgY2hhbmdlIHRvIHVwZGF0ZSB0aGUgUVAgY291bnRl
+cjsNCj4gLSBPdGhlcjogU2V0IHRoZSBjb3VudGVyIGZpZWxkIGFuZCBtYXJrIHRoZSBjb3VudGVy
+X3BlbmRpbmcgZmxhZywNCj4gICB3aGVuIFFQIGlzIG1vdmVkIHRvIFJUUyBzdGF0ZSBhbmQgdGhp
+cyBmbGFnIGlzIHNldCwgdGhlbiBpc3N1ZQ0KPiAgIGFuIFJUUzJSVFMgbW9kaWZpY2F0aW9uIHRv
+IHVwZGF0ZSB0aGUgY291bnRlci4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IE1hcmsgWmhhbmcgPG1h
+cmt6QG1lbGxhbm94LmNvbT4NCj4gUmV2aWV3ZWQtYnk6IE1hamQgRGliYmlueSA8bWFqZEBtZWxs
+YW5veC5jb20+DQo+IFNpZ25lZC1vZmYtYnk6IExlb24gUm9tYW5vdnNreSA8bGVvbnJvQG1lbGxh
+bm94LmNvbT4NCj4gLS0tDQo+ICBkcml2ZXJzL2luZmluaWJhbmQvaHcvbWx4NS9tbHg1X2liLmgg
+fCAgNiArKysNCj4gIGRyaXZlcnMvaW5maW5pYmFuZC9ody9tbHg1L3FwLmMgICAgICB8IDc2DQo+
+ICsrKysrKysrKysrKysrKysrKysrKysrKysrKy0NCj4gIGluY2x1ZGUvbGludXgvbWx4NS9xcC5o
+ICAgICAgICAgICAgICB8ICAxICsNCj4gIDMgZmlsZXMgY2hhbmdlZCwgODEgaW5zZXJ0aW9ucygr
+KSwgMiBkZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2luZmluaWJhbmQv
+aHcvbWx4NS9tbHg1X2liLmgNCj4gYi9kcml2ZXJzL2luZmluaWJhbmQvaHcvbWx4NS9tbHg1X2li
+LmgNCj4gaW5kZXggMzVlMmM4ZjVhZTc4Li5iN2QzNmY0ODI2YzEgMTAwNjQ0DQo+IC0tLSBhL2Ry
+aXZlcnMvaW5maW5pYmFuZC9ody9tbHg1L21seDVfaWIuaA0KPiArKysgYi9kcml2ZXJzL2luZmlu
+aWJhbmQvaHcvbWx4NS9tbHg1X2liLmgNCj4gQEAgLTQ0Miw2ICs0NDIsMTAgQEAgc3RydWN0IG1s
+eDVfaWJfcXAgew0KPiAgCXUzMgkJCWZsYWdzX2VuOw0KPiAgCS8qIHN0b3JhZ2UgZm9yIHFwIHN1
+YiB0eXBlIHdoZW4gY29yZSBxcCB0eXBlIGlzIElCX1FQVF9EUklWRVINCj4gKi8NCj4gIAllbnVt
+IGliX3FwX3R5cGUJCXFwX3N1Yl90eXBlOw0KPiArCS8qIEEgZmxhZyB0byBpbmRpY2F0ZSBpZiB0
+aGVyZSdzIGEgbmV3IGNvdW50ZXIgaXMgY29uZmlndXJlZA0KPiArCSAqIGJ1dCBub3QgdGFrZSBl
+ZmZlY3RpdmUNCj4gKwkgKi8NCj4gKwl1MzIgICAgICAgICAgICAgICAgICAgICBjb3VudGVyX3Bl
+bmRpbmc7DQo+ICB9Ow0KPiANCj4gIHN0cnVjdCBtbHg1X2liX2NxX2J1ZiB7DQo+IEBAIC0xNDQy
+LDQgKzE0NDYsNiBAQCB2b2lkIG1seDVfaWJfcHV0X3hsdF9lbWVyZ2VuY3lfcGFnZSh2b2lkKTsN
+Cj4gIGludCBiZnJlZ25fdG9fdWFyX2luZGV4KHN0cnVjdCBtbHg1X2liX2RldiAqZGV2LA0KPiAg
+CQkJc3RydWN0IG1seDVfYmZyZWdfaW5mbyAqYmZyZWdpLCB1MzIgYmZyZWduLA0KPiAgCQkJYm9v
+bCBkeW5fYmZyZWcpOw0KPiArDQo+ICtpbnQgbWx4NV9pYl9xcF9zZXRfY291bnRlcihzdHJ1Y3Qg
+aWJfcXAgKnFwLCBzdHJ1Y3QgcmRtYV9jb3VudGVyDQo+ICpjb3VudGVyKTsNCj4gICNlbmRpZiAv
+KiBNTFg1X0lCX0ggKi8NCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW5maW5pYmFuZC9ody9tbHg1
+L3FwLmMNCj4gYi9kcml2ZXJzL2luZmluaWJhbmQvaHcvbWx4NS9xcC5jDQo+IGluZGV4IGY2NjIz
+Yzc3NDQzYS4uOGRiYmVmODQzMDEwIDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL2luZmluaWJhbmQv
+aHcvbWx4NS9xcC5jDQo+ICsrKyBiL2RyaXZlcnMvaW5maW5pYmFuZC9ody9tbHg1L3FwLmMNCj4g
+QEAgLTM0LDYgKzM0LDcgQEANCj4gICNpbmNsdWRlIDxyZG1hL2liX3VtZW0uaD4NCj4gICNpbmNs
+dWRlIDxyZG1hL2liX2NhY2hlLmg+DQo+ICAjaW5jbHVkZSA8cmRtYS9pYl91c2VyX3ZlcmJzLmg+
+DQo+ICsjaW5jbHVkZSA8cmRtYS9yZG1hX2NvdW50ZXIuaD4NCj4gICNpbmNsdWRlIDxsaW51eC9t
+bHg1L2ZzLmg+DQo+ICAjaW5jbHVkZSAibWx4NV9pYi5oIg0KPiAgI2luY2x1ZGUgImliX3JlcC5o
+Ig0KPiBAQCAtMzM4Niw2ICszMzg3LDM1IEBAIHN0YXRpYyB1bnNpZ25lZCBpbnQgZ2V0X3R4X2Fm
+ZmluaXR5KHN0cnVjdA0KPiBtbHg1X2liX2RldiAqZGV2LA0KPiAgCXJldHVybiB0eF9wb3J0X2Fm
+ZmluaXR5Ow0KPiAgfQ0KPiANCj4gK3N0YXRpYyBpbnQgX19tbHg1X2liX3FwX3NldF9jb3VudGVy
+KHN0cnVjdCBpYl9xcCAqcXAsDQo+ICsJCQkJICAgIHN0cnVjdCByZG1hX2NvdW50ZXIgKmNvdW50
+ZXIpDQo+ICt7DQo+ICsJc3RydWN0IG1seDVfaWJfZGV2ICpkZXYgPSB0b19tZGV2KHFwLT5kZXZp
+Y2UpOw0KPiArCXN0cnVjdCBtbHg1X2liX3FwICptcXAgPSB0b19tcXAocXApOw0KPiArCXN0cnVj
+dCBtbHg1X3FwX2NvbnRleHQgY29udGV4dCA9IHt9Ow0KPiArCXN0cnVjdCBtbHg1X2liX3BvcnQg
+Km1pYnBvcnQgPSBOVUxMOw0KPiArCXN0cnVjdCBtbHg1X2liX3FwX2Jhc2UgKmJhc2U7DQo+ICsJ
+dTMyIHNldF9pZDsNCj4gKw0KPiArCWlmICghTUxYNV9DQVBfR0VOKGRldi0+bWRldiwgcnRzMnJ0
+c19xcF9jb3VudGVyc19zZXRfaWQpKQ0KPiArCQlyZXR1cm4gMDsNCj4gKw0KPiArCWlmIChjb3Vu
+dGVyKSB7DQo+ICsJCXNldF9pZCA9IGNvdW50ZXItPmlkOw0KPiArCX0gZWxzZSB7DQo+ICsJCW1p
+YnBvcnQgPSAmZGV2LT5wb3J0W21xcC0+cG9ydCAtIDFdOw0KPiArCQlzZXRfaWQgPSBtaWJwb3J0
+LT5jbnRzLnNldF9pZDsNCj4gKwl9DQo+ICsNCj4gKwliYXNlID0gJm1xcC0+dHJhbnNfcXAuYmFz
+ZTsNCj4gKwljb250ZXh0LnFwX2NvdW50ZXJfc2V0X3Vzcl9wYWdlICY9IGNwdV90b19iZTMyKDB4
+ZmZmZmZmKTsNCj4gKwljb250ZXh0LnFwX2NvdW50ZXJfc2V0X3Vzcl9wYWdlIHw9IGNwdV90b19i
+ZTMyKHNldF9pZCA8PCAyNCk7DQo+ICsJcmV0dXJuIG1seDVfY29yZV9xcF9tb2RpZnkoZGV2LT5t
+ZGV2LA0KPiArCQkJCSAgIE1MWDVfQ01EX09QX1JUUzJSVFNfUVAsDQo+ICsJCQkJICAgTUxYNV9R
+UF9PUFRQQVJfQ09VTlRFUl9TRVRfSUQsDQo+ICsJCQkJICAgJmNvbnRleHQsICZiYXNlLT5tcXAp
+Ow0KPiArfQ0KPiArDQo+ICBzdGF0aWMgaW50IF9fbWx4NV9pYl9tb2RpZnlfcXAoc3RydWN0IGli
+X3FwICppYnFwLA0KPiAgCQkJICAgICAgIGNvbnN0IHN0cnVjdCBpYl9xcF9hdHRyICphdHRyLCBp
+bnQNCj4gYXR0cl9tYXNrLA0KPiAgCQkJICAgICAgIGVudW0gaWJfcXBfc3RhdGUgY3VyX3N0YXRl
+LA0KPiBAQCAtMzQzOSw2ICszNDY5LDcgQEAgc3RhdGljIGludCBfX21seDVfaWJfbW9kaWZ5X3Fw
+KHN0cnVjdCBpYl9xcA0KPiAqaWJxcCwNCj4gIAlzdHJ1Y3QgbWx4NV9pYl9wb3J0ICptaWJwb3J0
+ID0gTlVMTDsNCj4gIAllbnVtIG1seDVfcXBfc3RhdGUgbWx4NV9jdXIsIG1seDVfbmV3Ow0KPiAg
+CWVudW0gbWx4NV9xcF9vcHRwYXIgb3B0cGFyOw0KPiArCXUzMiBzZXRfaWQgPSAwOw0KPiAgCWlu
+dCBtbHg1X3N0Ow0KPiAgCWludCBlcnI7DQo+ICAJdTE2IG9wOw0KPiBAQCAtMzYwMSw4ICszNjMy
+LDEyIEBAIHN0YXRpYyBpbnQgX19tbHg1X2liX21vZGlmeV9xcChzdHJ1Y3QgaWJfcXANCj4gKmli
+cXAsDQo+ICAJCQlwb3J0X251bSA9IDA7DQo+IA0KPiAgCQltaWJwb3J0ID0gJmRldi0+cG9ydFtw
+b3J0X251bV07DQo+ICsJCWlmIChpYnFwLT5jb3VudGVyKQ0KPiArCQkJc2V0X2lkID0gaWJxcC0+
+Y291bnRlci0+aWQ7DQo+ICsJCWVsc2UNCj4gKwkJCXNldF9pZCA9IG1pYnBvcnQtPmNudHMuc2V0
+X2lkOw0KPiAgCQljb250ZXh0LT5xcF9jb3VudGVyX3NldF91c3JfcGFnZSB8PQ0KPiAtCQkJY3B1
+X3RvX2JlMzIoKHUzMikobWlicG9ydC0+Y250cy5zZXRfaWQpIDw8IDI0KTsNCj4gKwkJCWNwdV90
+b19iZTMyKHNldF9pZCA8PCAyNCk7DQo+ICAJfQ0KPiANCj4gIAlpZiAoIWlicXAtPnVvYmplY3Qg
+JiYgY3VyX3N0YXRlID09IElCX1FQU19SRVNFVCAmJiBuZXdfc3RhdGUgPT0NCj4gSUJfUVBTX0lO
+SVQpDQo+IEBAIC0zNjMwLDcgKzM2NjUsNyBAQCBzdGF0aWMgaW50IF9fbWx4NV9pYl9tb2RpZnlf
+cXAoc3RydWN0IGliX3FwDQo+ICppYnFwLA0KPiANCj4gIAkJcmF3X3FwX3BhcmFtLm9wZXJhdGlv
+biA9IG9wOw0KPiAgCQlpZiAoY3VyX3N0YXRlID09IElCX1FQU19SRVNFVCAmJiBuZXdfc3RhdGUg
+PT0NCj4gSUJfUVBTX0lOSVQpIHsNCj4gLQkJCXJhd19xcF9wYXJhbS5ycV9xX2N0cl9pZCA9IG1p
+YnBvcnQtDQo+ID5jbnRzLnNldF9pZDsNCj4gKwkJCXJhd19xcF9wYXJhbS5ycV9xX2N0cl9pZCA9
+IHNldF9pZDsNCj4gIAkJCXJhd19xcF9wYXJhbS5zZXRfbWFzayB8PQ0KPiBNTFg1X1JBV19RUF9N
+T0RfU0VUX1JRX1FfQ1RSX0lEOw0KPiAgCQl9DQo+IA0KPiBAQCAtMzcwNyw2ICszNzQyLDEyIEBA
+IHN0YXRpYyBpbnQgX19tbHg1X2liX21vZGlmeV9xcChzdHJ1Y3QgaWJfcXANCj4gKmlicXAsDQo+
+ICAJCXFwLT5kYi5kYltNTFg1X1NORF9EQlJdID0gMDsNCj4gIAl9DQo+IA0KPiArCWlmICgobmV3
+X3N0YXRlID09IElCX1FQU19SVFMpICYmIHFwLT5jb3VudGVyX3BlbmRpbmcpIHsNCj4gKwkJZXJy
+ID0gX19tbHg1X2liX3FwX3NldF9jb3VudGVyKGlicXAsIGlicXAtPmNvdW50ZXIpOw0KPiArCQlp
+ZiAoIWVycikNCj4gKwkJCXFwLT5jb3VudGVyX3BlbmRpbmcgPSAwOw0KPiArCX0NCj4gKw0KPiAg
+b3V0Og0KPiAgCWtmcmVlKGNvbnRleHQpOw0KPiAgCXJldHVybiBlcnI7DQo+IEBAIC02MzY3LDMg
+KzY0MDgsMzQgQEAgdm9pZCBtbHg1X2liX2RyYWluX3JxKHN0cnVjdCBpYl9xcCAqcXApDQo+IA0K
+PiAgCWhhbmRsZV9kcmFpbl9jb21wbGV0aW9uKGNxLCAmcmRyYWluLCBkZXYpOw0KPiAgfQ0KPiAr
+DQo+ICsvKioNCj4gKyAqIEJpbmQgYSBxcCB0byBhIGNvdW50ZXIuIElmIEBjb3VudGVyIGlzIE5V
+TEwgdGhlbiBiaW5kIHRoZSBxcCB0bw0KPiArICogdGhlIGRlZmF1bHQgY291bnRlcg0KPiArICov
+DQo+ICtpbnQgbWx4NV9pYl9xcF9zZXRfY291bnRlcihzdHJ1Y3QgaWJfcXAgKnFwLCBzdHJ1Y3Qg
+cmRtYV9jb3VudGVyDQo+ICpjb3VudGVyKQ0KPiArew0KPiArCXN0cnVjdCBtbHg1X2liX3FwICpt
+cXAgPSB0b19tcXAocXApOw0KPiArCWludCBlcnIgPSAwOw0KPiArDQo+ICsJbXV0ZXhfbG9jaygm
+bXFwLT5tdXRleCk7DQo+ICsJaWYgKG1xcC0+c3RhdGUgPT0gSUJfUVBTX1JFU0VUKSB7DQo+ICsJ
+CXFwLT5jb3VudGVyID0gY291bnRlcjsNCj4gKwkJZ290byBvdXQ7DQo+ICsJfQ0KPiArDQo+ICsJ
+aWYgKG1xcC0+c3RhdGUgPT0gSUJfUVBTX1JUUykgew0KPiArCQllcnIgPSBfX21seDVfaWJfcXBf
+c2V0X2NvdW50ZXIocXAsIGNvdW50ZXIpOw0KPiArCQlpZiAoIWVycikNCj4gKwkJCXFwLT5jb3Vu
+dGVyID0gY291bnRlcjsNCj4gKw0KPiArCQlnb3RvIG91dDsNCj4gKwl9DQo+ICsNCj4gKwltcXAt
+PmNvdW50ZXJfcGVuZGluZyA9IDE7DQo+ICsJcXAtPmNvdW50ZXIgPSBjb3VudGVyOw0KPiArDQo+
+ICtvdXQ6DQo+ICsJbXV0ZXhfdW5sb2NrKCZtcXAtPm11dGV4KTsNCj4gKwlyZXR1cm4gZXJyOw0K
+PiArfQ0KPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9tbHg1L3FwLmggYi9pbmNsdWRlL2xp
+bnV4L21seDUvcXAuaA0KPiBpbmRleCAzYmE0ZWRiZDE3YTYuLjc4N2M1ZmFiZGMwNyAxMDA2NDQN
+Cj4gLS0tIGEvaW5jbHVkZS9saW51eC9tbHg1L3FwLmgNCj4gKysrIGIvaW5jbHVkZS9saW51eC9t
+bHg1L3FwLmgNCj4gQEAgLTcwLDYgKzcwLDcgQEAgZW51bSBtbHg1X3FwX29wdHBhciB7DQo+ICAJ
+TUxYNV9RUF9PUFRQQVJfQ1FOX1JDVgkJCT0gMSA8PCAxOSwNCj4gIAlNTFg1X1FQX09QVFBBUl9E
+Q19IUwkJCT0gMSA8PCAyMCwNCj4gIAlNTFg1X1FQX09QVFBBUl9EQ19LRVkJCQk9IDEgPDwgMjEs
+DQo+ICsJTUxYNV9RUF9PUFRQQVJfQ09VTlRFUl9TRVRfSUQJCT0gMSA8PCAyNSwNCj4gIH07DQo+
+IA0KDQpBY2tlZC1ieTogU2FlZWQgTWFoYW1lZWQgPHNhZWVkbUBtZWxsYW5veC5jb20+DQoNCj4g
+IGVudW0gbWx4NV9xcF9zdGF0ZSB7DQo+IC0tDQo+IDIuMjAuMQ0KPiANCg==
