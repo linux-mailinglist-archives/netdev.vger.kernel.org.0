@@ -2,586 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF4454A15E
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 15:01:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BB884A16F
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 15:03:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729073AbfFRNBG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 09:01:06 -0400
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:35885 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729107AbfFRNBE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 09:01:04 -0400
-Received: by mail-lf1-f65.google.com with SMTP id q26so9224131lfc.3
-        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 06:01:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=9AAPVRZAanCU7EFel9aSQ8UNAIvo6q29Z01mKf7ZdMg=;
-        b=Bt3P2ZEhbuJFRkzllLb6z6rPZPNsaJi8MogpyIoyemQi+u25M5sfH6mXM4BCYnedNx
-         6/3QqvBqRv69ihE2Y/pYmGTg5adkE2mPhkRhdM5bA32WeY5D1ifzKk2mpUs+feMfFFM0
-         1gsNUaDu5U5ZvAPdAG2PXj+4bi3rc99TVYNzM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=9AAPVRZAanCU7EFel9aSQ8UNAIvo6q29Z01mKf7ZdMg=;
-        b=VbjFam2mWoRvxttTzFoxhULDme5iouv7aEgbDG9+rqhDzCw7if/2N4nSqV/lZgHoc5
-         blHLEiBfpUQEgnKVgeaFOQkFoZy5Sgl77/imtbfn8krzEXVewscQNiI/hpyq8L0OHN6s
-         B12GJmsKKB0gBUtNPhWNPjLajVZr23TB0ovVDc9nD/ytm0ZSlUMx166wxE4PhQv5WfWk
-         w6XpwZDAZLaoKVkYIJeH8ApyN7TExYGi3Z+VysGfLJBh6/HgePIntvh3H8Ny0Ivq0edp
-         QGzlrOWiG10NT7O/qzWQWo7orJhb8sXyYq3TpHHVvEpqg+1v/H9f2c1JhwQ5IJpg+uJ3
-         zGmw==
-X-Gm-Message-State: APjAAAWp9xqQ23mAFb79TthDOgYjtUNlK5WvODCPEZdFmMTK9qpVKekK
-        S1smI8M0ngeILtz39aoeXGhCHAaDjW16Dg==
-X-Google-Smtp-Source: APXvYqwJqfhPsx5wJi3dL8C0H5y440ARKwjVUeuqUW5U2A8+ecFr7kPw18xc7XFn1EuHvtsRkgbgAg==
-X-Received: by 2002:ac2:4185:: with SMTP id z5mr9093602lfh.162.1560862861474;
-        Tue, 18 Jun 2019 06:01:01 -0700 (PDT)
-Received: from cloudflare.com ([176.221.114.230])
-        by smtp.gmail.com with ESMTPSA id u21sm2621533lju.2.2019.06.18.06.01.00
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 18 Jun 2019 06:01:00 -0700 (PDT)
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     kernel-team@cloudflare.com
-Subject: [RFC bpf-next 7/7] bpf: Add verifier tests for inet_lookup context access
-Date:   Tue, 18 Jun 2019 15:00:50 +0200
-Message-Id: <20190618130050.8344-8-jakub@cloudflare.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190618130050.8344-1-jakub@cloudflare.com>
-References: <20190618130050.8344-1-jakub@cloudflare.com>
+        id S1726518AbfFRNC7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 09:02:59 -0400
+Received: from mx2.suse.de ([195.135.220.15]:42614 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725913AbfFRNC7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Jun 2019 09:02:59 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id EAD26B034;
+        Tue, 18 Jun 2019 13:02:54 +0000 (UTC)
+Date:   Tue, 18 Jun 2019 15:02:53 +0200
+From:   Michal Hocko <mhocko@kernel.org>
+To:     Yang Shi <yang.shi@linux.alibaba.com>
+Cc:     akpm@linux-foundation.org, vbabka@suse.cz,
+        mgorman@techsingularity.net, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH] mm: mempolicy: handle vma with unmovable pages mapped
+ correctly in mbind
+Message-ID: <20190618130253.GH3318@dhcp22.suse.cz>
+References: <1560797290-42267-1-git-send-email-yang.shi@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1560797290-42267-1-git-send-email-yang.shi@linux.alibaba.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Exercise verifier access checks for bpf_inet_lookup context object fields.
+[Cc networking people - see a question about setsockopt below]
 
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
----
- .../selftests/bpf/verifier/ctx_inet_lookup.c  | 511 ++++++++++++++++++
- 1 file changed, 511 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/verifier/ctx_inet_lookup.c
+On Tue 18-06-19 02:48:10, Yang Shi wrote:
+> When running syzkaller internally, we ran into the below bug on 4.9.x
+> kernel:
+> 
+> kernel BUG at mm/huge_memory.c:2124!
 
-diff --git a/tools/testing/selftests/bpf/verifier/ctx_inet_lookup.c b/tools/testing/selftests/bpf/verifier/ctx_inet_lookup.c
-new file mode 100644
-index 000000000000..b4555fb03e17
---- /dev/null
-+++ b/tools/testing/selftests/bpf/verifier/ctx_inet_lookup.c
-@@ -0,0 +1,511 @@
-+{
-+	"valid 1,2,4-byte read bpf_inet_lookup remote_ip4",
-+	.insns = {
-+		/* 4-byte read */
-+		BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, remote_ip4)),
-+		/* 2-byte read */
-+		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, remote_ip4)),
-+		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, remote_ip4) + 2),
-+		/* 1-byte read */
-+		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, remote_ip4)),
-+		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, remote_ip4) + 3),
-+		BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 8-byte read bpf_inet_lookup remote_ip4",
-+	.insns = {
-+		/* 8-byte read */
-+		BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, remote_ip4)),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 8-byte write bpf_inet_lookup remote_ip4",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_0, 0x7f000001U),
-+		/* 4-byte write */
-+		BPF_STX_MEM(BPF_DW, BPF_REG_1, BPF_REG_0,
-+			    offsetof(struct bpf_inet_lookup, remote_ip4)),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 4-byte write bpf_inet_lookup remote_ip4",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_0, 0x7f000001U),
-+		/* 4-byte write */
-+		BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
-+			    offsetof(struct bpf_inet_lookup, remote_ip4)),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 2-byte write bpf_inet_lookup remote_ip4",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_0, 0x7f000001U),
-+		/* 2-byte write */
-+		BPF_STX_MEM(BPF_H, BPF_REG_1, BPF_REG_0,
-+			    offsetof(struct bpf_inet_lookup, remote_ip4)),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 1-byte write bpf_inet_lookup remote_ip4",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_0, 0x7f000001U),
-+		/* 1-byte write */
-+		BPF_STX_MEM(BPF_B, BPF_REG_1, BPF_REG_0,
-+			    offsetof(struct bpf_inet_lookup, remote_ip4)),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"valid 1,2,4-byte read bpf_inet_lookup local_ip4",
-+	.insns = {
-+		/* 4-byte read */
-+		BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, local_ip4)),
-+		/* 2-byte read */
-+		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, local_ip4)),
-+		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, local_ip4) + 2),
-+		/* 1-byte read */
-+		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, local_ip4)),
-+		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, local_ip4) + 3),
-+		BPF_MOV64_IMM(BPF_REG_0, 0),
-+		BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 8-byte read bpf_inet_lookup local_ip4",
-+	.insns = {
-+		BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, local_ip4)),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"valid 4-byte write bpf_inet_lookup local_ip4",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_0, 0x7f000001U),
-+		BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
-+			    offsetof(struct bpf_inet_lookup, local_ip4)),
-+		BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 8-byte write bpf_inet_lookup local_ip4",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_0, 0x7f000001U),
-+		BPF_STX_MEM(BPF_DW, BPF_REG_1, BPF_REG_0,
-+			    offsetof(struct bpf_inet_lookup, local_ip4)),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 2-byte write bpf_inet_lookup local_ip4",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_0, 0x7f000001U),
-+		BPF_STX_MEM(BPF_H, BPF_REG_1, BPF_REG_0,
-+			    offsetof(struct bpf_inet_lookup, local_ip4)),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 1-byte write bpf_inet_lookup local_ip4",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_0, 0x7f000001U),
-+		BPF_STX_MEM(BPF_B, BPF_REG_1, BPF_REG_0,
-+			    offsetof(struct bpf_inet_lookup, local_ip4)),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"valid 1,2,4-byte read bpf_inet_lookup remote_ip6",
-+	.insns = {
-+		/* 4-byte read */
-+		BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, remote_ip6[0])),
-+		BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, remote_ip6[3])),
-+		/* 2-byte read */
-+		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, remote_ip6[0])),
-+		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup,
-+				     remote_ip6[3]) + 2),
-+		/* 1-byte read */
-+		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, remote_ip6[0])),
-+		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup,
-+				     remote_ip6[3]) + 3),
-+		BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 8-byte read bpf_inet_lookup remote_ip6",
-+	.insns = {
-+		BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, remote_ip6[0])),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 8-byte write bpf_inet_lookup remote_ip6",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_0, 0x00000001U),
-+		BPF_STX_MEM(BPF_DW, BPF_REG_1, BPF_REG_0,
-+			    offsetof(struct bpf_inet_lookup, remote_ip6[0])),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 4-byte write bpf_inet_lookup remote_ip6",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_0, 0x00000001U),
-+		BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
-+			    offsetof(struct bpf_inet_lookup, remote_ip6[0])),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 2-byte write bpf_inet_lookup remote_ip6",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_0, 0x00000001U),
-+		BPF_STX_MEM(BPF_H, BPF_REG_1, BPF_REG_0,
-+			    offsetof(struct bpf_inet_lookup, remote_ip6[0])),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 1-byte write bpf_inet_lookup remote_ip6",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_0, 0x00000001U),
-+		BPF_STX_MEM(BPF_B, BPF_REG_1, BPF_REG_0,
-+			    offsetof(struct bpf_inet_lookup, remote_ip6[0])),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"valid 1,2,4-byte read bpf_inet_lookup local_ip6",
-+	.insns = {
-+		/* 4-byte read */
-+		BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, local_ip6[0])),
-+		BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, local_ip6[3])),
-+		/* 2-byte read */
-+		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, local_ip6[0])),
-+		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, local_ip6[3]) + 2),
-+		/* 1-byte read */
-+		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, local_ip6[0])),
-+		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, local_ip6[3]) + 3),
-+		BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 8-byte read bpf_inet_lookup local_ip6",
-+	.insns = {
-+		BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, local_ip6[0])),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 8-byte write bpf_inet_lookup local_ip6",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_0, 0x00000001U),
-+		BPF_STX_MEM(BPF_DW, BPF_REG_1, BPF_REG_0,
-+			    offsetof(struct bpf_inet_lookup, local_ip6[0])),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"valid 4-byte write bpf_inet_lookup local_ip6",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_0, 0x00000001U),
-+		BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
-+			    offsetof(struct bpf_inet_lookup, local_ip6[0])),
-+		BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 2-byte write bpf_inet_lookup local_ip6",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_0, 0x00000001U),
-+		BPF_STX_MEM(BPF_H, BPF_REG_1, BPF_REG_0,
-+			    offsetof(struct bpf_inet_lookup, local_ip6[0])),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 1-byte write bpf_inet_lookup local_ip6",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_0, 0x00000001U),
-+		BPF_STX_MEM(BPF_B, BPF_REG_1, BPF_REG_0,
-+			    offsetof(struct bpf_inet_lookup, local_ip6[0])),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"valid 4-byte read bpf_inet_lookup remote_port",
-+	.insns = {
-+		BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, remote_port)),
-+		BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 8-byte read bpf_inet_lookup remote_port",
-+	.insns = {
-+		BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, remote_port)),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 2-byte read bpf_inet_lookup remote_port",
-+	.insns = {
-+		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, remote_port)),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 1-byte read bpf_inet_lookup remote_port",
-+	.insns = {
-+		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, remote_port)),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 8-byte write bpf_inet_lookup remote_port",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_0, 1234),
-+		BPF_STX_MEM(BPF_DW, BPF_REG_1, BPF_REG_0,
-+			    offsetof(struct bpf_inet_lookup, remote_port)),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 4-byte write bpf_inet_lookup remote_port",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_0, 1234),
-+		BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
-+			    offsetof(struct bpf_inet_lookup, remote_port)),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 2-byte write bpf_inet_lookup remote_port",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_0, 1234),
-+		BPF_STX_MEM(BPF_H, BPF_REG_1, BPF_REG_0,
-+			    offsetof(struct bpf_inet_lookup, remote_port)),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 1-byte write bpf_inet_lookup remote_port",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_0, 1234),
-+		BPF_STX_MEM(BPF_B, BPF_REG_1, BPF_REG_0,
-+			    offsetof(struct bpf_inet_lookup, remote_port)),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"valid 4-byte read bpf_inet_lookup local_port",
-+	.insns = {
-+		BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, local_port)),
-+		BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 8-byte read bpf_inet_lookup local_port",
-+	.insns = {
-+		BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, local_port)),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 2-byte read bpf_inet_lookup local_port",
-+	.insns = {
-+		BPF_LDX_MEM(BPF_H, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, local_port)),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 1-byte read bpf_inet_lookup local_port",
-+	.insns = {
-+		BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_1,
-+			    offsetof(struct bpf_inet_lookup, local_port)),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"valid 4-byte write bpf_inet_lookup local_port",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_0, 1234),
-+		BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
-+			    offsetof(struct bpf_inet_lookup, local_port)),
-+		BPF_EXIT_INSN(),
-+	},
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 8-byte write bpf_inet_lookup local_port",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_0, 1234),
-+		BPF_STX_MEM(BPF_DW, BPF_REG_1, BPF_REG_0,
-+			    offsetof(struct bpf_inet_lookup, local_port)),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 2-byte write bpf_inet_lookup local_port",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_0, 1234),
-+		BPF_STX_MEM(BPF_H, BPF_REG_1, BPF_REG_0,
-+			    offsetof(struct bpf_inet_lookup, local_port)),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
-+{
-+	"invalid 1-byte write bpf_inet_lookup local_port",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_0, 1234),
-+		BPF_STX_MEM(BPF_B, BPF_REG_1, BPF_REG_0,
-+			    offsetof(struct bpf_inet_lookup, local_port)),
-+		BPF_EXIT_INSN(),
-+	},
-+	.errstr = "invalid bpf_context access",
-+	.result = REJECT,
-+	.prog_type = BPF_PROG_TYPE_INET_LOOKUP,
-+},
+What is the BUG_ON because I do not see any BUG_ON neither in v4.9 nor
+the latest stable/linux-4.9.y
+
+> invalid opcode: 0000 [#1] SMP KASAN
+[...]
+> Code: c7 80 1c 02 00 e8 26 0a 76 01 <0f> 0b 48 c7 c7 40 46 45 84 e8 4c
+> RIP  [<ffffffff81895d6b>] split_huge_page_to_list+0x8fb/0x1030 mm/huge_memory.c:2124
+>  RSP <ffff88006899f980>
+> 
+> with the below test:
+> 
+> ---8<---
+> 
+> uint64_t r[1] = {0xffffffffffffffff};
+> 
+> int main(void)
+> {
+> 	syscall(__NR_mmap, 0x20000000, 0x1000000, 3, 0x32, -1, 0);
+> 				intptr_t res = 0;
+> 	res = syscall(__NR_socket, 0x11, 3, 0x300);
+> 	if (res != -1)
+> 		r[0] = res;
+> *(uint32_t*)0x20000040 = 0x10000;
+> *(uint32_t*)0x20000044 = 1;
+> *(uint32_t*)0x20000048 = 0xc520;
+> *(uint32_t*)0x2000004c = 1;
+> 	syscall(__NR_setsockopt, r[0], 0x107, 0xd, 0x20000040, 0x10);
+> 	syscall(__NR_mmap, 0x20fed000, 0x10000, 0, 0x8811, r[0], 0);
+> *(uint64_t*)0x20000340 = 2;
+> 	syscall(__NR_mbind, 0x20ff9000, 0x4000, 0x4002, 0x20000340,
+> 0x45d4, 3);
+> 	return 0;
+> }
+> 
+> ---8<---
+> 
+> Actually the test does:
+> 
+> mmap(0x20000000, 16777216, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x20000000
+> socket(AF_PACKET, SOCK_RAW, 768)        = 3
+> setsockopt(3, SOL_PACKET, PACKET_TX_RING, {block_size=65536, block_nr=1, frame_size=50464, frame_nr=1}, 16) = 0
+> mmap(0x20fed000, 65536, PROT_NONE, MAP_SHARED|MAP_FIXED|MAP_POPULATE|MAP_DENYWRITE, 3, 0) = 0x20fed000
+> mbind(..., MPOL_MF_STRICT|MPOL_MF_MOVE) = 0
+
+Ughh. Do I get it right that that this setsockopt allows an arbitrary
+contiguous memory allocation size to be requested by a unpriviledged
+user? Or am I missing something that restricts there any restriction?
+
+> The setsockopt() would allocate compound pages (16 pages in this test)
+> for packet tx ring, then the mmap() would call packet_mmap() to map the
+> pages into the user address space specifed by the mmap() call.
+> 
+> When calling mbind(), it would scan the vma to queue the pages for
+> migration to the new node.  It would split any huge page since 4.9
+> doesn't support THP migration, however, the packet tx ring compound
+> pages are not THP and even not movable.  So, the above bug is triggered.
+> 
+> However, the later kernel is not hit by this issue due to the commit
+> d44d363f65780f2ac2ec672164555af54896d40d ("mm: don't assume anonymous
+> pages have SwapBacked flag"), which just removes the PageSwapBacked
+> check for a different reason.
+> 
+> But, there is a deeper issue.  According to the semantic of mbind(), it
+> should return -EIO if MPOL_MF_MOVE or MPOL_MF_MOVE_ALL was specified and
+> the kernel was unable to move all existing pages in the range.  The tx ring
+> of the packet socket is definitely not movable, however, mbind returns
+> success for this case.
+> 
+> Although the most socket file associates with non-movable pages, but XDP
+> may have movable pages from gup.  So, it sounds not fine to just check
+> the underlying file type of vma in vma_migratable().
+> 
+> Change migrate_page_add() to check if the page is movable or not, if it
+> is unmovable, just return -EIO.  We don't have to check non-LRU movable
+> pages since just zsmalloc and virtio-baloon support this.  And, they
+> should be not able to reach here.
+
+You are not checking whether the page is movable, right? You only rely
+on PageLRU check which is not really an equivalent thing. There are
+movable pages which are not LRU and also pages might be off LRU
+temporarily for many reasons so this could lead to false positives.
+So I do not think this fix is correct. Blowing up on a BUG_ON is
+definitely not a right thing to do but we should rely on migrate_pages
+to fail the migration and report the failure based on that.
+
+> With this change the above test would return -EIO as expected.
+> 
+> Signed-off-by: Yang Shi <yang.shi@linux.alibaba.com>
+> ---
+>  include/linux/mempolicy.h |  3 ++-
+>  mm/mempolicy.c            | 22 +++++++++++++++++-----
+>  2 files changed, 19 insertions(+), 6 deletions(-)
+> 
+> diff --git a/include/linux/mempolicy.h b/include/linux/mempolicy.h
+> index 5228c62..cce7ba3 100644
+> --- a/include/linux/mempolicy.h
+> +++ b/include/linux/mempolicy.h
+> @@ -198,7 +198,8 @@ static inline bool vma_migratable(struct vm_area_struct *vma)
+>  	if (vma->vm_file &&
+>  		gfp_zone(mapping_gfp_mask(vma->vm_file->f_mapping))
+>  								< policy_zone)
+> -			return false;
+> +		return false;
+> +
+
+Any reason to make this change?
+
+>  	return true;
+>  }
+>  
+> diff --git a/mm/mempolicy.c b/mm/mempolicy.c
+> index 2219e74..4d9e17d 100644
+> --- a/mm/mempolicy.c
+> +++ b/mm/mempolicy.c
+> @@ -403,7 +403,7 @@ void mpol_rebind_mm(struct mm_struct *mm, nodemask_t *new)
+>  	},
+>  };
+>  
+> -static void migrate_page_add(struct page *page, struct list_head *pagelist,
+> +static int migrate_page_add(struct page *page, struct list_head *pagelist,
+>  				unsigned long flags);
+>  
+>  struct queue_pages {
+> @@ -467,7 +467,9 @@ static int queue_pages_pmd(pmd_t *pmd, spinlock_t *ptl, unsigned long addr,
+>  			goto unlock;
+>  		}
+>  
+> -		migrate_page_add(page, qp->pagelist, flags);
+> +		ret = migrate_page_add(page, qp->pagelist, flags);
+> +		if (ret)
+> +			goto unlock;
+>  	} else
+>  		ret = -EIO;
+>  unlock:
+> @@ -521,7 +523,9 @@ static int queue_pages_pte_range(pmd_t *pmd, unsigned long addr,
+>  		if (flags & (MPOL_MF_MOVE | MPOL_MF_MOVE_ALL)) {
+>  			if (!vma_migratable(vma))
+>  				break;
+> -			migrate_page_add(page, qp->pagelist, flags);
+> +			ret = migrate_page_add(page, qp->pagelist, flags);
+> +			if (ret)
+> +				break;
+>  		} else
+>  			break;
+>  	}
+> @@ -940,10 +944,15 @@ static long do_get_mempolicy(int *policy, nodemask_t *nmask,
+>  /*
+>   * page migration, thp tail pages can be passed.
+>   */
+> -static void migrate_page_add(struct page *page, struct list_head *pagelist,
+> +static int migrate_page_add(struct page *page, struct list_head *pagelist,
+>  				unsigned long flags)
+>  {
+>  	struct page *head = compound_head(page);
+> +
+> +	/* Non-movable page may reach here. */
+> +	if (!PageLRU(head))
+> +		return -EIO;
+> +
+>  	/*
+>  	 * Avoid migrating a page that is shared with others.
+>  	 */
+> @@ -955,6 +964,8 @@ static void migrate_page_add(struct page *page, struct list_head *pagelist,
+>  				hpage_nr_pages(head));
+>  		}
+>  	}
+> +
+> +	return 0;
+>  }
+>  
+>  /* page allocation callback for NUMA node migration */
+> @@ -1157,9 +1168,10 @@ static struct page *new_page(struct page *page, unsigned long start)
+>  }
+>  #else
+>  
+> -static void migrate_page_add(struct page *page, struct list_head *pagelist,
+> +static int migrate_page_add(struct page *page, struct list_head *pagelist,
+>  				unsigned long flags)
+>  {
+> +	return -EIO;
+>  }
+>  
+>  int do_migrate_pages(struct mm_struct *mm, const nodemask_t *from,
+> -- 
+> 1.8.3.1
+> 
+
 -- 
-2.20.1
-
+Michal Hocko
+SUSE Labs
