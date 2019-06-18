@@ -2,168 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1B654AB2D
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 21:47:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20F414AB48
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 22:00:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730474AbfFRTrl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 15:47:41 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:39910 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730176AbfFRTrl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 15:47:41 -0400
-Received: by mail-wm1-f67.google.com with SMTP id z23so4471760wma.4;
-        Tue, 18 Jun 2019 12:47:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=OSvSO6y1MZfAEeNKZrRbq2TAlzZir3iu87Vjo4j1u8U=;
-        b=L24lwIQcCT28W/0Tgv0y8ya1Y2cnWY0dbw00YQJiS3FP2sWNeuGTfSux/UCDmJqB5e
-         i4uUaUvZrxKPL5eLCy7ovAyULfOMYlIp+L8G9swTrcMMe4D49j+VnH64YpsFow2NV4dm
-         r9aMPdiqknG1xbtbvd3QMwPb5VAN71YUiZon3Qp6KmiRXG7WqqlMlRU3QH3KjTvQRuZ0
-         Ot3YJy5rE89Y1f8Wrlrl1AaWWWEXebCJkhCjEMX4gCIwnocBmuhr3jNTfGkFA6AhoyId
-         gpUKL0QkH1CfpLx25kY47aVDOhDc0FIJAntSXDm1m4IPsgc1LdHj+Ct4F7tkzSEZ/x0l
-         KhuQ==
+        id S1730428AbfFRT7i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 15:59:38 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:43118 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730242AbfFRT7i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 15:59:38 -0400
+Received: by mail-qk1-f193.google.com with SMTP id m14so9402256qka.10;
+        Tue, 18 Jun 2019 12:59:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=OSvSO6y1MZfAEeNKZrRbq2TAlzZir3iu87Vjo4j1u8U=;
-        b=cjgx3hzKR3MqchQ7yl12XzBcbLEbvtvx/7L+l/x6CK6K/kcTatn+K1RA9bS7Y4XIj6
-         uLuhj6QyNSzjisxmuWuJQJBMIa36o7bEGAkrd/XukcXztuGlfCl2N29gn3JT8rFRxMvD
-         /+zdeTkdclbzUrnGZVfi/RzSMjz5d1ls47kEbJTgY/xwD5Cm8P/a9WD+0iD5H/Of9/0M
-         NE4rAYw2nlI8rUUCD2T1aXyIajwfeqN5ftpSUHyNWbALRYPhWrpE9kscjchHsFun4I86
-         vPoyhG57uJQKOZ0fshmJcsfG4RDhq3eA6yGevB/91dcPlzOzdRxJ5VkyaqJmO5KkwMqM
-         hjZw==
-X-Gm-Message-State: APjAAAXni+sVYcGe045ngO4o7O/uUkTbozhqM4kS+HALzfSZGRRCUsJ1
-        QmI0cPmulBjFmfHRWhkYERGFK8wG
-X-Google-Smtp-Source: APXvYqypdP0qsDj6ZrENjcBavV7vw/Tm+vfF1StuZNGvUPgffCRxUqRQ+K1igTZIq6MMYZqJPzIULA==
-X-Received: by 2002:a1c:3b02:: with SMTP id i2mr4659596wma.23.1560887258225;
-        Tue, 18 Jun 2019 12:47:38 -0700 (PDT)
-Received: from [10.67.49.123] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id o11sm2244139wmh.37.2019.06.18.12.47.35
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 18 Jun 2019 12:47:37 -0700 (PDT)
-Subject: Re: [PATCH v2 6/6] net: macb: parameter added to cadence ethernet
- controller DT binding
-To:     Parshuram Thombare <pthombar@cadence.com>, andrew@lunn.ch,
-        nicolas.ferre@microchip.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, hkallweit1@gmail.com,
-        linux-kernel@vger.kernel.org, rafalc@cadence.com,
-        aniljoy@cadence.com, piotrs@cadence.com
-References: <1560642579-29803-1-git-send-email-pthombar@cadence.com>
- <1560883527-10591-1-git-send-email-pthombar@cadence.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <0375c350-ed33-728d-4106-e6f5348c5295@gmail.com>
-Date:   Tue, 18 Jun 2019 12:47:28 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=i7s7c5OcKeclqiywXdqj12aC74/yCawdjmwihldgF1s=;
+        b=DHYGvxMY6OdMmnVu97ZGrFSVib8SRuY7TON32T/WhGsFNnFlkQ1f1kv9vMlV/haBZt
+         /6aF86FrHiAnjzCuqggjGVz6aoe4JBMOvO2d1ytDTwhFGAT9RyNFwdQnQlyKa9VtlNNF
+         lhzjnlNHnlItH3fkA2C9tHFHdM/5e2ABgVH2w6sWulkzNXLo+fey7K1AGDsprucjVqOn
+         pZq/Ow89YzMHzuMecmbQRxEYu/lzcoey7jCaLgrI8bE+F35p/ivIRazoGkoaONlvSz20
+         08hll5eQhwYvmJS/QKLby6Sl4eCk6Co4hQ+Ai62L/AoodhhJkzRM5zDSW/9ncU/J1Hs0
+         dO5w==
+X-Gm-Message-State: APjAAAWaAF1SUlyLJ36PbDZXBfnjGusFdQyksjFkp4KCHkTcBceXmbFW
+        2AGep7KUTG6v0S54p7YZirWRPJUNVyDgmvn8Yd8=
+X-Google-Smtp-Source: APXvYqy6dw17Y5hPbpJB1iwj6Y5EiqPTo9iLm7ZATxD+K27A0WaDVgnTPbaE839sYu0LKjhIqohaX9442ZVn9lHIr6Q=
+X-Received: by 2002:a37:a4d3:: with SMTP id n202mr8102665qke.84.1560887976962;
+ Tue, 18 Jun 2019 12:59:36 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1560883527-10591-1-git-send-email-pthombar@cadence.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
+ <a94676381a5ca662c848f7a725562f721c43ce76.camel@sipsolutions.net>
+ <CAK8P3a0kV-i7BJJ2X6C=5n65rSGfo8fUiC4J_G-+M8EctYKbkg@mail.gmail.com>
+ <066e9b39f937586f0f922abf801351553ec2ba1d.camel@sipsolutions.net>
+ <b3686626-e2d8-bc9c-6dd0-9ebb137715af@linaro.org> <b23a83c18055470c5308fcd1eed018056371fc1d.camel@sipsolutions.net>
+In-Reply-To: <b23a83c18055470c5308fcd1eed018056371fc1d.camel@sipsolutions.net>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Tue, 18 Jun 2019 21:59:19 +0200
+Message-ID: <CAK8P3a1FeUQR3pgoQxHoRK05JGORyR+TFATVQiijLWtFKTv6OQ@mail.gmail.com>
+Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Alex Elder <elder@linaro.org>, abhishek.esse@gmail.com,
+        Ben Chan <benchan@google.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        cpratapa@codeaurora.org, David Miller <davem@davemloft.net>,
+        Dan Williams <dcbw@redhat.com>,
+        DTML <devicetree@vger.kernel.org>,
+        Eric Caruso <ejcaruso@google.com>, evgreen@chromium.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-soc@vger.kernel.org, Networking <netdev@vger.kernel.org>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        syadagir@codeaurora.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/18/19 11:45 AM, Parshuram Thombare wrote:
-> New parameters added to Cadence ethernet controller DT binding
-> for USXGMII interface.
+On Tue, Jun 18, 2019 at 9:14 PM Johannes Berg <johannes@sipsolutions.net> wrote:
+> On Tue, 2019-06-18 at 08:16 -0500, Alex Elder wrote:
+> > On 6/17/19 6:28 AM, Johannes Berg wrote:
+> > So getting back to your question, the IPA in its current form only
+> > has a single "multiplexed" channel carried over the connection
+> > between the AP and modem.  Previously (and in the future) there
+> > was a way to add or remove channels.
+>
+> What would those channels do?
+>
+> I've not really been very clear with the differentiation between a
+> channel and what's multiplexed inside of the channel.
+>
+> Using the terminology you defined in your other mail, are you saying
+> that IPA (originally) allowed multiple *connections* to the device, or
+> is there basically just one connection, with multiple (QMAP-muxed)
+> *channels* on top of it?
+>
+> If the latter, why did IPA need ioctls, rather than rmnet?
 
-Please don't resubmit individual patches as replies to your previous
-ones, re-submitting the entire patch series, see this netdev-FAQ section
-for details:
+From my understanding, the ioctl interface would create the lower
+netdev after talking to the firmware, and then user space would use
+the rmnet interface to create a matching upper-level device for that.
+This is an artifact of the strong separation of ipa and rmnet in the
+code.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/networking/netdev-FAQ.rst#n134
+> > > The software bridging is very questionable to start with, I'd advocate
+> > > not supporting that at all but adding tracepoints or similar if needed
+> > > for debugging instead.
+> >
+> > To be honest I don't understand the connection between software
+> > bridging and debugging, but that's OK.
+>
+> It's a mess. Basically, AFAICT, the only use for the rmnet bridging is
+> in fact debugging. What it does, again AFAICT, is mirror out all the
+> rmnet packets to the bridge if you attach it to a bridge, so that then
+> you can attach another netdev to the bridge and forward all the rmnet
+> packets to another system for debugging.
+>
+> It's a very weird way of doing this, IMHO.
 
-> 
-> Signed-off-by: Parshuram Thombare <pthombar@cadence.com>
-> ---
->  Documentation/devicetree/bindings/net/macb.txt | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/macb.txt b/Documentation/devicetree/bindings/net/macb.txt
-> index 9c5e94482b5f..b80d58ed1650 100644
-> --- a/Documentation/devicetree/bindings/net/macb.txt
-> +++ b/Documentation/devicetree/bindings/net/macb.txt
-> @@ -25,6 +25,9 @@ Required properties:
->  	Optional elements: 'rx_clk' applies to cdns,zynqmp-gem
->  	Optional elements: 'tsu_clk'
->  - clocks: Phandles to input clocks.
-> +- serdes-rate External serdes rate.Mandatory for USXGMII mode.
-> +	5 - 5G
-> +	10 - 10G
+My understanding for this was that the idea is to use it for
+connecting bridging between distinct hardware devices behind
+ipa: if IPA drives both a USB-ether gadget and the 5G modem,
+you can use to talk to Linux running rmnet, but you can also
+use rmnet to provide fast usb tethering to 5g and bypass the
+rest of the network stack. That again may have been a wrong
+guess on my part.
 
-There should be an unit specifier in that property, something like:
+> > I believe the only QMAP commands are for doing essentially
+> > XON/XOFF flow control on a single channel.  In the course of
+> > the e-mail discussion in the past few weeks I've come to see
+> > why that would be necessary.
+>
+> It does make sense, because you only have a single hardware (DMA)
+> channel in these cases, so you implement flow control in software on
+> top.
+>
+> (As I said before, the Intel modem uses different hardware channels for
+> different sessions, so doesn't need something like this - the hardware
+> ring just fills up and there's your flow control)
 
-serdes-rate-gbps
+ipa definitely has multiple hardware queues, and the Alex'
+driver does implement  the data path on those, just not the
+configuration to enable them.
 
-can't we somehow automatically detect that?
+Guessing once more, I suspect the the XON/XOFF flow control
+was a workaround for the fact that rmnet and ipa have separate
+queues. The hardware channel on IPA may fill up, but user space
+talks to rmnet and still add more frames to it because it doesn't
+know IPA is busy.
 
->  
->  The MAC address will be determined using the optional properties
->  defined in ethernet.txt.
-> 
+Another possible explanation would be that this is actually
+forwarding state from the base station to tell the driver to
+stop sending data over the air.
 
-
--- 
-Florian
+       Arnd
