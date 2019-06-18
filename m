@@ -2,28 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DA44A4AA91
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 21:03:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 050EF4AAEC
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 21:15:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730461AbfFRTDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 15:03:50 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:45964 "EHLO
+        id S1730333AbfFRTPD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 15:15:03 -0400
+Received: from s3.sipsolutions.net ([144.76.43.62]:46188 "EHLO
         sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730231AbfFRTDu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 15:03:50 -0400
+        with ESMTP id S1727386AbfFRTPD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 15:15:03 -0400
 Received: by sipsolutions.net with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <johannes@sipsolutions.net>)
-        id 1hdJOJ-000510-0v; Tue, 18 Jun 2019 21:03:35 +0200
-Message-ID: <abdfc6b3a9981bcdef40f85f5442a425ce109010.camel@sipsolutions.net>
+        id 1hdJZ7-0005DR-J3; Tue, 18 Jun 2019 21:14:46 +0200
+Message-ID: <b23a83c18055470c5308fcd1eed018056371fc1d.camel@sipsolutions.net>
 Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
 From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Alex Elder <elder@linaro.org>, Arnd Bergmann <arnd@arndb.de>,
-        Dan Williams <dcbw@redhat.com>
-Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        abhishek.esse@gmail.com, Ben Chan <benchan@google.com>,
+To:     Alex Elder <elder@linaro.org>, Arnd Bergmann <arnd@arndb.de>
+Cc:     abhishek.esse@gmail.com, Ben Chan <benchan@google.com>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         cpratapa@codeaurora.org, David Miller <davem@davemloft.net>,
+        Dan Williams <dcbw@redhat.com>,
         DTML <devicetree@vger.kernel.org>,
         Eric Caruso <ejcaruso@google.com>, evgreen@chromium.org,
         Ilias Apalodimas <ilias.apalodimas@linaro.org>,
@@ -31,21 +30,16 @@ Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
         linux-arm-msm@vger.kernel.org,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         linux-soc@vger.kernel.org, Networking <netdev@vger.kernel.org>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
         syadagir@codeaurora.org
-Date:   Tue, 18 Jun 2019 21:03:31 +0200
-In-Reply-To: <d533b708-c97a-710d-1138-3ae79107f209@linaro.org> (sfid-20190618_154530_836620_A8CD82A2)
+Date:   Tue, 18 Jun 2019 21:14:39 +0200
+In-Reply-To: <b3686626-e2d8-bc9c-6dd0-9ebb137715af@linaro.org> (sfid-20190618_151608_865253_7DD4EC08)
 References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
          <a94676381a5ca662c848f7a725562f721c43ce76.camel@sipsolutions.net>
          <CAK8P3a0kV-i7BJJ2X6C=5n65rSGfo8fUiC4J_G-+M8EctYKbkg@mail.gmail.com>
-         <fc0d08912bc10ad089eb74034726308375279130.camel@redhat.com>
-         <36bca57c999f611353fd9741c55bb2a7@codeaurora.org>
-         <153fafb91267147cf22e2bf102dd822933ec823a.camel@redhat.com>
-         <CAK8P3a2Y+tcL1-V57dtypWHndNT3eDJdcKj29c_v+k8o1HHQig@mail.gmail.com>
-         <f4249aa5f5acdd90275eda35aa16f3cfb29d29be.camel@redhat.com>
-         <CAK8P3a2nzZKtshYfomOOSYkqx5HdU15Wr9b+3va0B1euNhFOAg@mail.gmail.com>
-         <dbb32f185d2c3a654083ee0a7188379e1f88d899.camel@sipsolutions.net>
-         <d533b708-c97a-710d-1138-3ae79107f209@linaro.org>
-         (sfid-20190618_154530_836620_A8CD82A2)
+         <066e9b39f937586f0f922abf801351553ec2ba1d.camel@sipsolutions.net>
+         <b3686626-e2d8-bc9c-6dd0-9ebb137715af@linaro.org>
+         (sfid-20190618_151608_865253_7DD4EC08)
 Content-Type: text/plain; charset="UTF-8"
 X-Mailer: Evolution 3.28.5 (3.28.5-2.fc28) 
 Mime-Version: 1.0
@@ -55,116 +49,205 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2019-06-18 at 08:45 -0500, Alex Elder wrote:
+On Tue, 2019-06-18 at 08:16 -0500, Alex Elder wrote:
+> On 6/17/19 6:28 AM, Johannes Berg wrote:
+> > On Tue, 2019-06-11 at 13:56 +0200, Arnd Bergmann wrote:
+> > > On Tue, Jun 11, 2019 at 10:12 AM Johannes Berg
+> > > <johannes@sipsolutions.net> wrote:
+> > > 
+> > > > > As I've made clear before, my work on this has been focused on the IPA transport,
+> > > > > and some of this higher-level LTE architecture is new to me.  But it
+> > > > > seems pretty clear that an abstracted WWAN subsystem is a good plan,
+> > > > > because these devices represent a superset of what a "normal" netdev
+> > > > > implements.
+> > > > 
+> > > > I'm not sure I'd actually call it a superset. By themselves, these
+> > > > netdevs are actually completely useless to the network stack, AFAICT.
+> > > > Therefore, the overlap with netdevs you can really use with the network
+> > > > stack is pretty small?
+> > > 
+> > > I think Alex meant the concept of having a type of netdev with a generic
+> > > user space interface for wwan and similar to a wlan device, as I understood
+> > > you had suggested as well, as opposed to a stacked device as in
+> > > rmnet or those drivers it seems to be modeled after (vlan, ip tunnel, ...)/.
+> 
+> Yes, that's pretty much what I meant by "superset."  We still need
+> netdev functionality (though not between rmnet and ipa).  And it sounds
+> like we're talking about a better framework for managing the related
+> WWAN devices that represent logical modem connections.  We're discussing
+> more than one spot in the networking stack though, so I can see why
+> "superset" wasn't the right word.
 
-> If it had a well-defined way of creating new channels to be
-> multiplexed over the connection to the modem, the IPA driver
-> (rather than the rmnet driver) could present network interfaces
-> for each and perform the multiplexing.  
+Right, ok, gotcha. I was focused (here at least) much more on the
+netdevs, rather than the whole "superset" of functionality :-)
 
-Right. That's what I was thinking of.
+> > I guess. It is indeed currently modelled after the stacked devices, but
+> > those regular netdevs are inherently useful by themselves, you don't
+> > *have* to tunnel or use VLANs after all.
+> > 
+> > With rmnet, the underlying netdev *isn't* useful by itself, because
+> > you're always forced to have the stacked rmnet device on top.
+> 
+> Well I had mentioned earlier that I thought IPA could present just
+> a single non-rmnet interface that could be used "directly" (i.e.,
+> without rmnet).  But that would be a sort of hard-wired thing, and
+> would not be part of the general WWAN framework under discussion.
 
-I actually expect this to fare much better going forward with 5G around
-the corner, since you'll want to eventually take advantage of multi-
-queue TX or RSS for RX, queue size control and what not, as speeds
-increase.
+Oh, I guess I didn't see that (got to the thread late), but is that
+actually useful? It doesn't seem very useful to me since you can't
+actually do anything there.
 
-Because of these things I think the whole "layered netdev" approach is
-actually *wrong* rather than just inconvenient.
+> Here's a little background.
 
-In particular, in the Intel driver, you're going to have multiple
-hardware queues, one for each ongoing session. This means that
-multiplexing it over a layered netdev like rmnet or something like VLAN
-(which some driver does too) actually prevents us from doing this
-properly - it means we need to implement ndo_select_queue() and multiple
-queues on the underlying netdev etc., and then we no longer have the
-ability to use actual multi-queue. It becomes messy very very quickly.
+That's great to have :-) Let me read and comment/ask questions.
 
-> As I think Arnd
-> suggested, this could at least partially be done with library
-> code (to be shared with other "back-end" interfaces) rather
-> than using a layered driver.  This applies to aggregation,
-> channel flow control, and checksum offload as well.
+> The IPA driver was very large, and in an effort to have an initial driver
+> that was more easily accepted upstream, it was carved down to support
+> a single, very simple use case.  It supports only a single channel for
+> carrying network data, and does not expose any of the IPA's other
+> capabilities like filtering and routing (and multiplexing).
 
-Right.
+Ok. But it *does* use (or even require using) rmnet, so it has multiple
+channels in a sense, no?
 
-> But I'm only familiar with IPA; I don't know whether the above
-> statements make any sense for other "back-end" drivers.
+> Originally the IPA code had an IOCTL interface for adding and removing
+> multiplexed channel IDs, but the simplified use case expected only one
+> channel to be used.  
 
-I think they do, in different ways. Intel probably wouldn't have a
-library - there isn't actually much of a MUX header because there are
-different hardware queues for the different sessions.
+What did those channels do? Create different netdevs? Something else?
 
-> This is great.  The start of a more concrete discussion of the
-> pieces that are missing...
+> IOCTLs had to be removed to make the code acceptable
+> for upstream, and again to simplify things, we went with a hard-wired
+> configuration, with a single channel with an assumed set of features
+> in use (TCP offload, basically).  Once upstream, we planned to add back
+> features in layers, including adding a netlink interface to control
+> things like managing multiplexed channels.
+
+Right, ok.
+
+> The overall design assumed that the IPA connection between the modem
+> and AP was carrying QMAP protocol though.  And the rmnet driver is
+> designed to parse and handle that, so for the design I started with
+> the use of the rmnet driver made sense:  it is a shim layer that takes
+> care of rmnet multiplexing and aggregation (and checksum offload).
+
+Sure, I can't really disagree. It's just that we have an ongoing
+discussion separately about whether or not rmnet really makes sense
+itself, mostly starting from our interest in supporting the Intel modem,
+and realizing that we have like 5 or 6 different driver-specific
+interfaces of doing the same thing.
+
+> So getting back to your question, the IPA in its current form only
+> has a single "multiplexed" channel carried over the connection
+> between the AP and modem.  Previously (and in the future) there
+> was a way to add or remove channels.
+
+What would those channels do?
+
+I've not really been very clear with the differentiation between a
+channel and what's multiplexed inside of the channel.
+
+Using the terminology you defined in your other mail, are you saying
+that IPA (originally) allowed multiple *connections* to the device, or
+is there basically just one connection, with multiple (QMAP-muxed)
+*channels* on top of it?
+
+If the latter, why did IPA need ioctls, rather than rmnet?
+
+> > The software bridging is very questionable to start with, I'd advocate
+> > not supporting that at all but adding tracepoints or similar if needed
+> > for debugging instead.
+> 
+> To be honest I don't understand the connection between software
+> bridging and debugging, but that's OK.
+
+It's a mess. Basically, AFAICT, the only use for the rmnet bridging is
+in fact debugging. What it does, again AFAICT, is mirror out all the
+rmnet packets to the bridge if you attach it to a bridge, so that then
+you can attach another netdev to the bridge and forward all the rmnet
+packets to another system for debugging.
+
+It's a very weird way of doing this, IMHO.
+
+> I'm a fan of tracepoints
+> and have always intended to make use of them in the IPA driver.
 
 :-)
 
-I think I said before - it should be pretty easy to mold some code
-around the API I proposed there and have something reasonably functional
-soon.
+> The hardware can aggregate multiple packets received from the
+> modem into a single buffer, which the rmnet driver is then able
+> to deaggregate.
 
-> That would be nice.  I believe you're saying that (in my case)
-> the IPA driver creates and owns the netdevices.
+Right, I gathered that much, but I'm not really sure I see why userspace
+would even be allowed to control this? Either the device is doing it or
+not, but the driver is going to have to cope either way?
+
+> This feature is supposed to help performance
+> but I've always been a little skeptical because it also comes
+> at a cost.  This is used as a flag in an rmnet (QMAP) header,
+> which to me seems a little odd.  (There should be a distinction
+> between flags needed in a message header and flags that represent
+> properties of a connection or channel.)
+
+I'm not going to comment on the QMAP protocol, I know nothing about it
+:-)
+
+> I believe the only QMAP commands are for doing essentially
+> XON/XOFF flow control on a single channel.  In the course of
+> the e-mail discussion in the past few weeks I've come to see
+> why that would be necessary.
+
+It does make sense, because you only have a single hardware (DMA)
+channel in these cases, so you implement flow control in software on
+top.
+
+(As I said before, the Intel modem uses different hardware channels for
+different sessions, so doesn't need something like this - the hardware
+ring just fills up and there's your flow control)
+
+> The checksum offload is done differently, depending on whether
+> it's ingress (download from modem) or egress.  For egress,
+> a header is inserted that describes what the hardware should
+> checksum and where it should place the result.  For ingress,
+> the hardware appends a trailer that contains information
+> about the computed checksum values.  The rmnet driver is
+> currently responsible for inserting the header and parsing
+> the trailer.
+
+Sure, makes sense, but again - if you can negotiate with the modem on
+whether it's going to do RX CSUM offload, you can tell it with ethtool
+(assuming you do have a netdev per channel, I guess), and for TX CSUM
+you can just have the header or not depending on whether you want it and
+the modem is capable of it.
+
+> I'm probably missing something, but I think the checksum
+> offload could be handled by the IPA driver rather than
+> rmnet.  It seems to be an add-on that is completely
+> independent of the multiplexing and aggregation capabilities
+> that QMAP provides.
+
+Agree.
+
+> > > > If true though, then I think this would be the killer argument *in
+> > > > favour* of *not* merging this - because that would mean we *don't* have
+> > > > to actually keep the rmnet API around for all foreseeable future.
+> 
+> This is because it's a user space API?  If so I now understand
+> what you mean.
 
 Yes.
 
-> But I think the IPA driver would register with the WWAN core as
-> a "provider," and then the WWAN core would subsequently request
-> that it instantiate netdevices to represent channels on demand
-> (rather than registering them).
+> As Arnd said (below) this is designed in the way out-of-tree code
+> works and expects.  I don't want to advocate for breaking that,
+> but if a general model that supports what's required can be used,
+> I'll adapt the IPA code to suit that.
+> 
+> My goal continues to be getting a baseline IPA driver accepted
+> upstream as soon as possible, so I can then start building on
+> that foundation.
 
-Yeah, I guess you could call it that way.
-
-Really there are two possible ways (and they intersect to some extent).
-
-One is the whole multi-function device, where a single WWAN device is
-composed of channels offered by actually different drivers, e.g. for a
-typical USB device you might have something like cdc_ether and the
-usb_wwan TTY driver. In this way, we need to "compose" the WWAN device
-similarly, e.g. by using the underlying USB device "struct device"
-pointer to tie it together.
-
-The other is something like IPA or the Intel modem driver, where the
-device is actually a single (e.g. PCIe) device and just has a single
-driver, but that single driver offers different channels.
-
-Now, it's not clear to me where IPA actually falls, because so far we've
-been talking about the IPA driver only as providing *netdevs*, not any
-control channels, so I'm not actually sure where the control channel is.
-
-For the Intel device, however, the control channel is definitely
-provided by exactly the same driver as the data channels (netdevs).
-
-"provider" is a good word, and in fact the Intel driver would also be a
-provider for a GNSS channel (TBD how to represent, a tty?), one or
-multiple debug/tracing channels, data channels (netdevs), AT command
-channels (mbim, ...?) (again tbd how to represent, ttys?), etc.
-
-What I showed in the header files I posted so far was the provider only
-having "data channel" ops (create/remove a netdev) but for each channel
-type we either want a new method there, or we just change the method to
-be something like
-
-	int (*create_channel)(..., enum wwan_chan_type chan_type, ...);
-
-and simply require that the channel is attached to the wwan device with
-the representation-specific call (wwan_attach_netdev, wwan_attach_tty,
-...).
-
-This is a bit less comfortable because then it's difficult to know what
-was actually created upon the request, so it's probably better to have
-different methods for the different types of representations (like I had
-- add_netdev, add_tty, ...).
-
-Note also that I said "representation-specific", while passing a
-"channel type", so for this we'd actually need a convention on what
-channel type has what kind of representation, which again gets awkward.
-Better to make it explicit.
-
-(And even then, we might be able to let userspace have some control,
-e.g. the driver might be able to create a debug channel as both a TTY or
-something else)
+Yeah. My goal is actually the same, but for the Intel driver, but I
+don't have much code yet (it's being cleaned up now) :-)
 
 johannes
 
