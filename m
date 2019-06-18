@@ -2,70 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3607A4A2D9
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 15:54:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67A644A2F8
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 15:58:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728881AbfFRNyR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 09:54:17 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:37520 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725970AbfFRNyQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 09:54:16 -0400
-Received: by mail-qk1-f193.google.com with SMTP id d15so8586358qkl.4;
-        Tue, 18 Jun 2019 06:54:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Vc9mCvqhg14Hd656oz7rVCLsRuNfaZG35kttzdMn7no=;
-        b=FMG6b0lf8NdW8PUorkYAyDG33FYO/6FcDb5i2g2Fw2gRsdwdtrneTlUjc2Ja6JeTDK
-         U/JLSbnfxE8/viejJ4HvzcrcQAk++CvrTNT8pj8NpmBn0CCg1nTLoaVjQnWUeqJaxTff
-         v5GtS1WbawrJwbGfOJLwZW5dRGFSjMIXlMQLSBEhbifPeUkZfNtRgQByQasHaFlaiIbR
-         wczeOOc14xE598lG3TInG3k+4fh8Uj/zLZjZ8n57RiDyNhyE37ba35y6zYvWaC5PXCFr
-         jgPr8/geDKoLDZGWtyI+g1lHlMdqimd9aSOzjmyzpFaIWRhk6fsfHDwxY3dadNbTjFI6
-         alCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Vc9mCvqhg14Hd656oz7rVCLsRuNfaZG35kttzdMn7no=;
-        b=YSqPr3tOV1HDumP6TkqzJfBLeYgYOSiCyunU1reJ2Dw+E29SooVBowLdtnthaW9vLe
-         XlADlUpK/QZqNvPRldD2vtVbjF//8kBQYQyKQho20ey2kXo5IEFYdd41OkGv1vRg0Sd6
-         1EzZsBLzE6q8F6NWxosipGabNhbaXyzjiTZQz2GBHItPBup6H9909Zm1wcmgeFNfYzNE
-         r0TZPoBuqqaympOrkYAQ+nr8fYSqq1GY7vNbCam3CjAfuNf58heQn6J9vBLNqQicFWtF
-         EEjcE5pXNEUzjKkQZ4DUUXhsXCrQYBTdEWJh8Pz6/ttL0N/aOtZweWnQaJPRFY+ULLTP
-         0Tbw==
-X-Gm-Message-State: APjAAAUq1cYvlaP7sNsHsdx6G0ByP5Fdmc8A+OjiXG1maeP7C/QPdLo+
-        zPjPgi3muQrTkLaoxiOgrk4=
-X-Google-Smtp-Source: APXvYqzUBjmfRuwTztl7oolOy8wRUCcpioC1pJW4wKOT6tgEnM7jpWavhL2sUmau6pqLADSYoB6qvQ==
-X-Received: by 2002:a37:ef03:: with SMTP id j3mr54208784qkk.233.1560866055076;
-        Tue, 18 Jun 2019 06:54:15 -0700 (PDT)
-Received: from localhost.localdomain ([2001:1284:f013:ed8b:101b:c686:4add:18ab])
-        by smtp.gmail.com with ESMTPSA id r39sm10985399qtc.87.2019.06.18.06.54.13
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 18 Jun 2019 06:54:14 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id DCCF0C0FFC; Tue, 18 Jun 2019 10:54:11 -0300 (-03)
-Date:   Tue, 18 Jun 2019 10:54:11 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     syzbot <syzbot+c1a380d42b190ad1e559@syzkaller.appspotmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        "lucien.xin@gmail.com" <lucien.xin@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nhorman@tuxdriver.com" <nhorman@tuxdriver.com>,
-        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
-        "vyasevich@gmail.com" <vyasevich@gmail.com>
-Subject: Re: general protection fault in sctp_sched_prio_sched
-Message-ID: <20190618135411.GN3436@localhost.localdomain>
-References: <20190618080401.11768-1-hdanton@sina.com>
+        id S1729220AbfFRN6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 09:58:14 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:50382 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728845AbfFRN6N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 09:58:13 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212])
+        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_128_CBC_SHA1:16)
+        (Exim 4.76)
+        (envelope-from <colin.king@canonical.com>)
+        id 1hdEc5-0002hY-N1; Tue, 18 Jun 2019 13:57:29 +0000
+To:     =?UTF-8?Q?St=c3=a9phane_Veyret?= <sveyret@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org
+From:   Colin Ian King <colin.king@canonical.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
+ 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
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: re: netfilter: nft_ct: add ct expectations support
+Message-ID: <dadf225f-3003-72ba-d7b5-e0467bb77ffc@canonical.com>
+Date:   Tue, 18 Jun 2019 14:57:29 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190618080401.11768-1-hdanton@sina.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -73,136 +84,31 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi,
 
-On Tue, Jun 18, 2019 at 04:04:01PM +0800, Hillf Danton wrote:
-> 
-> Hello Marcelo
-> 
-> On Mon, 17 Jun 2019 22:43:38 +0800 Marcelo Ricardo Leitner wrote:
-> > On Mon, Jun 17, 2019 at 10:49:13AM -0300, Marcelo Ricardo Leitner wrote:
-> > > Hi,
-> > >
-> > > On Sun, Jun 16, 2019 at 11:38:03PM +0800, Hillf Danton wrote:
-> > > >
-> > > > Hello Syzbot
-> > > >
-> > > > On Sat, 15 Jun 2019 16:36:06 -0700 (PDT) syzbot wrote:
-> > > > > Hello,
-> > > > >
-> > > > > syzbot found the following crash on:
-> > > > >
-> > > ...
-> > > > Check prio_head and bail out if it is not valid.
-> > > >
-> > > > Thanks
-> > > > Hillf
-> > > > ----->8---
-> > > > ---
-> > > > net/sctp/stream_sched_prio.c | 2 ++
-> > > > 1 file changed, 2 insertions(+)
-> > > >
-> > > > diff --git a/net/sctp/stream_sched_prio.c b/net/sctp/stream_sched_prio.c
-> > > > index 2245083..db25a43 100644
-> > > > --- a/net/sctp/stream_sched_prio.c
-> > > > +++ b/net/sctp/stream_sched_prio.c
-> > > > @@ -135,6 +135,8 @@ static void sctp_sched_prio_sched(struct sctp_stream *stream,
-> > > > 	struct sctp_stream_priorities *prio, *prio_head;
-> > > >
-> > > > 	prio_head = soute->prio_head;
-> > > > +	if (!prio_head)
-> > > > +		return;
-> > > >
-> > > > 	/* Nothing to do if already scheduled */
-> > > > 	if (!list_empty(&soute->prio_list))
-> > > > --
-> > >
-> > > Thanks but this is not a good fix for this. It will cause the stream
-> > > to never be scheduled.
-> > >
-> Thanks very much for the light you are casting.
-> 
-> > > The problem happens because of the fault injection that happened a bit
-> > > before the crash, in here:
-> > >
-> > > int sctp_stream_init_ext(struct sctp_stream *stream, __u16 sid)
-> > > {
-> > >         struct sctp_stream_out_ext *soute;
-> > >
-> > >         soute = kzalloc(sizeof(*soute), GFP_KERNEL);
-> > >         if (!soute)
-> > >                 return -ENOMEM;
-> > >         SCTP_SO(stream, sid)->ext = soute;  <---- [A]
-> > >
-> > >         return sctp_sched_init_sid(stream, sid, GFP_KERNEL);
-> > >                       ^^^^^^^^^^^^---- [B] failed
-> > > }
-> > >
-> Eagle eye.
-> 
-> > > This causes the 1st sendmsg to bail out with the error. When the 2nd
-> > > one gets in, it will:
-> > >
-> > > sctp_sendmsg_to_asoc()
-> > > {
-> > > ...
-> > >         if (unlikely(!SCTP_SO(&asoc->stream, sinfo->sinfo_stream)->ext)) {
-> > >                                                                  ^^^^^--- [C]
-> > >                 err = sctp_stream_init_ext(&asoc->stream, sinfo->sinfo_stream);
-> > >                 if (err)
-> > >                         goto err;
-> > >         }
-> > >
-> > > [A] leaves ext initialized, despite the failed in [B]. Then in [C], it
-> > > will not try to initialize again.
-> > >
-> Fairly concise.
-> 
-> > > We need to either uninitialize ->ext as error handling for [B], or
-> > > improve the check on [C].
-> > 
-> > The former one, please. This should be enough (untested):
-> > 
-> > diff --git a/net/sctp/stream.c b/net/sctp/stream.c
-> > index 93ed07877337..25946604af85 100644
-> > --- a/net/sctp/stream.c
-> > +++ b/net/sctp/stream.c
-> > @@ -153,13 +153,20 @@ int sctp_stream_init(struct sctp_stream *stream, __u1=
-> > 6 outcnt, __u16 incnt,
-> >  int sctp_stream_init_ext(struct sctp_stream *stream, __u16 sid)
-> >  {
-> >  	struct sctp_stream_out_ext *soute;
-> > +	int ret;
-> > 
-> >  	soute = kzalloc(sizeof(*soute), GFP_KERNEL);
-> >  	if (!soute)
-> >  		return -ENOMEM;
-> >  	SCTP_SO(stream, sid)->ext = soute;
-> > 
-> > -	return sctp_sched_init_sid(stream, sid, GFP_KERNEL);
-> > +	ret = sctp_sched_init_sid(stream, sid, GFP_KERNEL);
-> > +	if (ret) {
-> > +		kfree(SCTP_SO(stream, sid)->ext);
-> > +		SCTP_SO(stream, sid)->ext = NULL;
+Static analysis with Coverity on linux-next has found a potential issue
+with the following commit:
 
-[D]
+commit 857b46027d6f91150797295752581b7155b9d0e1
+Author: Stéphane Veyret <sveyret@gmail.com>
+Date:   Sat May 25 15:30:58 2019 +0200
 
-> > +	}
-> > +
-> > +	return ret;
-> >  }
-> > 
-> Definitely nice.
-> 
-> >  void sctp_stream_free(struct sctp_stream *stream)
-> > 
-> Hmmm, ->ext will be valid, provided it is loaded with a valid slab in
-> sctp_stream_init_ext() regardless of whether sid is successfully
-> initialised, until it is released, for instance, in sctp_stream_free(),
-> and based on that assumption, it looks hardly likely that ->ext has a
-> chance to create a gfp in sctp_sched_prio_sched().
+    netfilter: nft_ct: add ct expectations support
 
-I'm not sure I follow you. Anyway, with the patch above, after calling
-sctp_stream_init_ext() ->ext will be either completely valid, or it
-will not be present at all as it is seting ->ext to NULL if sid
-initialization ended up failing.
 
-  Marcelo
+Specifically in function nft_ct_expect_obj_eval)() in the following code:
+
++       help = nfct_help(ct);
++       if (!help)
++               help = nf_ct_helper_ext_add(ct, GFP_ATOMIC);
++
++       if (help->expecting[NF_CT_EXPECT_CLASS_DEFAULT] >= priv->size) {
++               regs->verdict.code = NFT_BREAK;
++               return;
++       }
+
+
+The call to nf_ct_helper_ext_add can potentially return NULL, however,
+this is not being checked and pointer 'help' is being dereferenced even
+though it potentially can be null.
+
+Colin
+
