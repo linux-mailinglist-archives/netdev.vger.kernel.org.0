@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E582E4A1A3
+	by mail.lfdr.de (Postfix) with ESMTP id DE16D4A1A2
 	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 15:06:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729142AbfFRNF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1729127AbfFRNF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 18 Jun 2019 09:05:57 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:34154 "EHLO mx1.redhat.com"
+Received: from mx1.redhat.com ([209.132.183.28]:45534 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729115AbfFRNF5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Jun 2019 09:05:57 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        id S1728385AbfFRNF4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Jun 2019 09:05:56 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id AA7BA30860A4;
-        Tue, 18 Jun 2019 13:05:51 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 9A5963092667;
+        Tue, 18 Jun 2019 13:05:56 +0000 (UTC)
 Received: from firesoul.localdomain (ovpn-200-41.brq.redhat.com [10.40.200.41])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C279B7D547;
-        Tue, 18 Jun 2019 13:05:48 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D53E85F58C;
+        Tue, 18 Jun 2019 13:05:53 +0000 (UTC)
 Received: from [192.168.5.1] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id EC7E2306665E6;
-        Tue, 18 Jun 2019 15:05:47 +0200 (CEST)
-Subject: [PATCH net-next v2 08/12] xdp: tracking page_pool resources and
- safe removal
+        by firesoul.localdomain (Postfix) with ESMTP id 0AD89306665E6;
+        Tue, 18 Jun 2019 15:05:53 +0200 (CEST)
+Subject: [PATCH net-next v2 09/12] xdp: force mem allocator removal and
+ periodic warning
 From:   Jesper Dangaard Brouer <brouer@redhat.com>
 To:     netdev@vger.kernel.org,
         Ilias Apalodimas <ilias.apalodimas@linaro.org>,
@@ -32,196 +32,47 @@ To:     netdev@vger.kernel.org,
         Jesper Dangaard Brouer <brouer@redhat.com>
 Cc:     toshiaki.makita1@gmail.com, grygorii.strashko@ti.com,
         ivan.khoronzhuk@linaro.org, mcroce@redhat.com
-Date:   Tue, 18 Jun 2019 15:05:47 +0200
-Message-ID: <156086314789.27760.6549333469314693352.stgit@firesoul>
+Date:   Tue, 18 Jun 2019 15:05:53 +0200
+Message-ID: <156086315298.27760.5679537697366392825.stgit@firesoul>
 In-Reply-To: <156086304827.27760.11339786046465638081.stgit@firesoul>
 References: <156086304827.27760.11339786046465638081.stgit@firesoul>
 User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.44]); Tue, 18 Jun 2019 13:05:56 +0000 (UTC)
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.43]); Tue, 18 Jun 2019 13:05:56 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is needed before we can allow drivers to use page_pool for
-DMA-mappings. Today with page_pool and XDP return API, it is possible to
-remove the page_pool object (from rhashtable), while there are still
-in-flight packet-pages. This is safely handled via RCU and failed lookups in
-__xdp_return() fallback to call put_page(), when page_pool object is gone.
-In-case page is still DMA mapped, this will result in page note getting
-correctly DMA unmapped.
+If bugs exists or are introduced later e.g. by drivers misusing the API,
+then we want to warn about the issue, such that developer notice. This patch
+will generate a bit of noise in form of periodic pr_warn every 30 seconds.
 
-To solve this, the page_pool is extended with tracking in-flight pages. And
-XDP disconnect system queries page_pool and waits, via workqueue, for all
-in-flight pages to be returned.
-
-To avoid killing performance when tracking in-flight pages, the implement
-use two (unsigned) counters, that in placed on different cache-lines, and
-can be used to deduct in-flight packets. This is done by mapping the
-unsigned "sequence" counters onto signed Two's complement arithmetic
-operations. This is e.g. used by kernel's time_after macros, described in
-kernel commit 1ba3aab3033b and 5a581b367b5, and also explained in RFC1982.
-
-The trick is these two incrementing counters only need to be read and
-compared, when checking if it's safe to free the page_pool structure. Which
-will only happen when driver have disconnected RX/alloc side. Thus, on a
-non-fast-path.
-
-It is chosen that page_pool tracking is also enabled for the non-DMA
-use-case, as this can be used for statistics later.
-
-After this patch, using page_pool requires more strict resource "release",
-e.g. via page_pool_release_page() that was introduced in this patchset, and
-previous patches implement/fix this more strict requirement.
-
-Drivers no-longer call page_pool_destroy(). Drivers already call
-xdp_rxq_info_unreg() which call xdp_rxq_info_unreg_mem_model(), which will
-attempt to disconnect the mem id, and if attempt fails schedule the
-disconnect for later via delayed workqueue.
+It is not nice to have this stall warning running forever. Thus, this patch
+will (after 120 attempts) force disconnect the mem id (from the rhashtable)
+and free the page_pool object. This will cause fallback to the put_page() as
+before, which only potentially leak DMA-mappings, if objects are really
+stuck for this long. In that unlikely case, a WARN_ONCE should show us the
+call stack.
 
 Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c |    3 -
- include/net/page_pool.h                           |   41 ++++++++++---
- net/core/page_pool.c                              |   62 +++++++++++++++-----
- net/core/xdp.c                                    |   65 +++++++++++++++++++--
- 4 files changed, 136 insertions(+), 35 deletions(-)
+ net/core/page_pool.c |   18 +++++++++++++++++-
+ net/core/xdp.c       |   37 +++++++++++++++++++++++++++++++------
+ 2 files changed, 48 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 2f647be292b6..6c9d4d7defbc 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -643,9 +643,6 @@ static void mlx5e_free_rq(struct mlx5e_rq *rq)
- 	}
- 
- 	xdp_rxq_info_unreg(&rq->xdp_rxq);
--	if (rq->page_pool)
--		page_pool_destroy(rq->page_pool);
--
- 	mlx5_wq_destroy(&rq->wq_ctrl);
- }
- 
-diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-index 754d980700df..f09b3f1994e6 100644
---- a/include/net/page_pool.h
-+++ b/include/net/page_pool.h
-@@ -16,14 +16,16 @@
-  * page_pool_alloc_pages() call.  Drivers should likely use
-  * page_pool_dev_alloc_pages() replacing dev_alloc_pages().
-  *
-- * If page_pool handles DMA mapping (use page->private), then API user
-- * is responsible for invoking page_pool_put_page() once.  In-case of
-- * elevated refcnt, the DMA state is released, assuming other users of
-- * the page will eventually call put_page().
-+ * API keeps track of in-flight pages, in-order to let API user know
-+ * when it is safe to dealloactor page_pool object.  Thus, API users
-+ * must make sure to call page_pool_release_page() when a page is
-+ * "leaving" the page_pool.  Or call page_pool_put_page() where
-+ * appropiate.  For maintaining correct accounting.
-  *
-- * If no DMA mapping is done, then it can act as shim-layer that
-- * fall-through to alloc_page.  As no state is kept on the page, the
-- * regular put_page() call is sufficient.
-+ * API user must only call page_pool_put_page() once on a page, as it
-+ * will either recycle the page, or in case of elevated refcnt, it
-+ * will release the DMA mapping and in-flight state accounting.  We
-+ * hope to lift this requirement in the future.
-  */
- #ifndef _NET_PAGE_POOL_H
- #define _NET_PAGE_POOL_H
-@@ -66,9 +68,10 @@ struct page_pool_params {
- };
- 
- struct page_pool {
--	struct rcu_head rcu;
- 	struct page_pool_params p;
- 
-+        u32 pages_state_hold_cnt;
-+
- 	/*
- 	 * Data structure for allocation side
- 	 *
-@@ -96,6 +99,8 @@ struct page_pool {
- 	 * TODO: Implement bulk return pages into this structure.
- 	 */
- 	struct ptr_ring ring;
-+
-+	atomic_t pages_state_release_cnt;
- };
- 
- struct page *page_pool_alloc_pages(struct page_pool *pool, gfp_t gfp);
-@@ -109,8 +114,6 @@ static inline struct page *page_pool_dev_alloc_pages(struct page_pool *pool)
- 
- struct page_pool *page_pool_create(const struct page_pool_params *params);
- 
--void page_pool_destroy(struct page_pool *pool);
--
- void __page_pool_free(struct page_pool *pool);
- static inline void page_pool_free(struct page_pool *pool)
- {
-@@ -143,6 +146,24 @@ static inline void page_pool_recycle_direct(struct page_pool *pool,
- 	__page_pool_put_page(pool, page, true);
- }
- 
-+/* API user MUST have disconnected alloc-side (not allowed to call
-+ * page_pool_alloc_pages()) before calling this.  The free-side can
-+ * still run concurrently, to handle in-flight packet-pages.
-+ *
-+ * A request to shutdown can fail (with false) if there are still
-+ * in-flight packet-pages.
-+ */
-+bool __page_pool_request_shutdown(struct page_pool *pool);
-+static inline bool page_pool_request_shutdown(struct page_pool *pool)
-+{
-+	/* When page_pool isn't compiled-in, net/core/xdp.c doesn't
-+	 * allow registering MEM_TYPE_PAGE_POOL, but shield linker.
-+	 */
-+#ifdef CONFIG_PAGE_POOL
-+	return __page_pool_request_shutdown(pool);
-+#endif
-+}
-+
- /* Disconnects a page (from a page_pool).  API users can have a need
-  * to disconnect a page (from a page_pool), to allow it to be used as
-  * a regular page (that will eventually be returned to the normal
 diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index 41391b5dc14c..8679e24fd665 100644
+index 8679e24fd665..42c3b0a5a259 100644
 --- a/net/core/page_pool.c
 +++ b/net/core/page_pool.c
-@@ -43,6 +43,8 @@ static int page_pool_init(struct page_pool *pool,
- 	if (ptr_ring_init(&pool->ring, ring_qsize, GFP_KERNEL) < 0)
- 		return -ENOMEM;
- 
-+	atomic_set(&pool->pages_state_release_cnt, 0);
-+
- 	return 0;
+@@ -330,11 +330,27 @@ static void __page_pool_empty_ring(struct page_pool *pool)
+ 	}
  }
  
-@@ -151,6 +153,9 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
- 	page->dma_addr = dma;
- 
- skip_dma_map:
-+	/* Track how many pages are held 'in-flight' */
-+	pool->pages_state_hold_cnt++;
-+
- 	/* When page just alloc'ed is should/must have refcnt 1. */
- 	return page;
- }
-@@ -173,6 +178,33 @@ struct page *page_pool_alloc_pages(struct page_pool *pool, gfp_t gfp)
- }
- EXPORT_SYMBOL(page_pool_alloc_pages);
- 
-+/* Calculate distance between two u32 values, valid if distance is below 2^(31)
-+ *  https://en.wikipedia.org/wiki/Serial_number_arithmetic#General_Solution
-+ */
-+#define _distance(a, b)	(s32)((a) - (b))
-+
-+static s32 page_pool_inflight(struct page_pool *pool)
++static void __warn_in_flight(struct page_pool *pool)
 +{
 +	u32 release_cnt = atomic_read(&pool->pages_state_release_cnt);
 +	u32 hold_cnt = READ_ONCE(pool->pages_state_hold_cnt);
@@ -229,203 +80,127 @@ index 41391b5dc14c..8679e24fd665 100644
 +
 +	distance = _distance(hold_cnt, release_cnt);
 +
-+	/* TODO: Add tracepoint here */
-+	return distance;
++	/* Drivers should fix this, but only problematic when DMA is used */
++	WARN(1, "Still in-flight pages:%d hold:%u released:%u",
++	     distance, hold_cnt, release_cnt);
 +}
 +
-+static bool __page_pool_safe_to_destroy(struct page_pool *pool)
-+{
-+	s32 inflight = page_pool_inflight(pool);
-+
-+	/* The distance should not be able to become negative */
-+	WARN(inflight < 0, "Negative(%d) inflight packet-pages", inflight);
-+
-+	return (inflight == 0);
-+}
-+
- /* Cleanup page_pool state from page */
- static void __page_pool_clean_page(struct page_pool *pool,
- 				   struct page *page)
-@@ -180,7 +212,7 @@ static void __page_pool_clean_page(struct page_pool *pool,
- 	dma_addr_t dma;
- 
- 	if (!(pool->p.flags & PP_FLAG_DMA_MAP))
--		return;
-+		goto skip_dma_unmap;
- 
- 	dma = page->dma_addr;
- 	/* DMA unmap */
-@@ -188,11 +220,16 @@ static void __page_pool_clean_page(struct page_pool *pool,
- 			     PAGE_SIZE << pool->p.order, pool->p.dma_dir,
- 			     DMA_ATTR_SKIP_CPU_SYNC);
- 	page->dma_addr = 0;
-+skip_dma_unmap:
-+	atomic_inc(&pool->pages_state_release_cnt);
- }
- 
- /* unmap the page and clean our state */
- void page_pool_unmap_page(struct page_pool *pool, struct page *page)
- {
-+	/* When page is unmapped, this implies page will not be
-+	 * returned to page_pool.
-+	 */
- 	__page_pool_clean_page(pool, page);
- }
- EXPORT_SYMBOL(page_pool_unmap_page);
-@@ -201,6 +238,7 @@ EXPORT_SYMBOL(page_pool_unmap_page);
- static void __page_pool_return_page(struct page_pool *pool, struct page *page)
- {
- 	__page_pool_clean_page(pool, page);
-+
- 	put_page(page);
- 	/* An optimization would be to call __free_pages(page, pool->p.order)
- 	 * knowing page is not part of page-cache (thus avoiding a
-@@ -296,24 +334,17 @@ void __page_pool_free(struct page_pool *pool)
+ void __page_pool_free(struct page_pool *pool)
  {
  	WARN(pool->alloc.count, "API usage violation");
  	WARN(!ptr_ring_empty(&pool->ring), "ptr_ring is not empty");
-+	WARN(!__page_pool_safe_to_destroy(pool), "still in-flight pages");
+-	WARN(!__page_pool_safe_to_destroy(pool), "still in-flight pages");
++
++	/* Can happen due to forced shutdown */
++	if (!__page_pool_safe_to_destroy(pool))
++		__warn_in_flight(pool);
  
  	ptr_ring_cleanup(&pool->ring, NULL);
  	kfree(pool);
- }
- EXPORT_SYMBOL(__page_pool_free);
- 
--static void __page_pool_destroy_rcu(struct rcu_head *rcu)
--{
--	struct page_pool *pool;
--
--	pool = container_of(rcu, struct page_pool, rcu);
--
--	__page_pool_empty_ring(pool);
--	__page_pool_free(pool);
--}
--
--/* Cleanup and release resources */
--void page_pool_destroy(struct page_pool *pool)
-+/* Request to shutdown: release pages cached by page_pool, and check
-+ * for in-flight pages
-+ */
-+bool __page_pool_request_shutdown(struct page_pool *pool)
- {
- 	struct page *page;
- 
-@@ -331,7 +362,6 @@ void page_pool_destroy(struct page_pool *pool)
- 	 */
- 	__page_pool_empty_ring(pool);
- 
--	/* An xdp_mem_allocator can still ref page_pool pointer */
--	call_rcu(&pool->rcu, __page_pool_destroy_rcu);
-+	return __page_pool_safe_to_destroy(pool);
- }
--EXPORT_SYMBOL(page_pool_destroy);
-+EXPORT_SYMBOL(__page_pool_request_shutdown);
 diff --git a/net/core/xdp.c b/net/core/xdp.c
-index 179d90570afe..2b7bad227030 100644
+index 2b7bad227030..53bce4fa776a 100644
 --- a/net/core/xdp.c
 +++ b/net/core/xdp.c
-@@ -38,6 +38,7 @@ struct xdp_mem_allocator {
- 	};
+@@ -39,6 +39,9 @@ struct xdp_mem_allocator {
  	struct rhash_head node;
  	struct rcu_head rcu;
-+	struct delayed_work defer_wq;
+ 	struct delayed_work defer_wq;
++	unsigned long defer_start;
++	unsigned long defer_warn;
++	int disconnect_cnt;
  };
  
  static u32 xdp_mem_id_hashfn(const void *data, u32 len, u32 seed)
-@@ -79,13 +80,13 @@ static void __xdp_mem_allocator_rcu_free(struct rcu_head *rcu)
- 
- 	xa = container_of(rcu, struct xdp_mem_allocator, rcu);
- 
-+	/* Allocator have indicated safe to remove before this is called */
-+	if (xa->mem.type == MEM_TYPE_PAGE_POOL)
-+		page_pool_free(xa->page_pool);
-+
- 	/* Allow this ID to be reused */
- 	ida_simple_remove(&mem_id_pool, xa->mem.id);
- 
--	/* Notice, driver is expected to free the *allocator,
--	 * e.g. page_pool, and MUST also use RCU free.
--	 */
--
- 	/* Poison memory */
- 	xa->mem.id = 0xFFFF;
- 	xa->mem.type = 0xF0F0;
-@@ -94,6 +95,46 @@ static void __xdp_mem_allocator_rcu_free(struct rcu_head *rcu)
+@@ -95,7 +98,7 @@ static void __xdp_mem_allocator_rcu_free(struct rcu_head *rcu)
  	kfree(xa);
  }
  
-+bool __mem_id_disconnect(int id)
-+{
-+	struct xdp_mem_allocator *xa;
-+	bool safe_to_remove = true;
-+
-+	mutex_lock(&mem_id_lock);
-+
-+	xa = rhashtable_lookup_fast(mem_id_ht, &id, mem_id_rht_params);
-+	if (!xa) {
-+		mutex_unlock(&mem_id_lock);
-+		WARN(1, "Request remove non-existing id(%d), driver bug?", id);
-+		return true;
-+	}
-+
-+	/* Detects in-flight packet-pages for page_pool */
-+	if (xa->mem.type == MEM_TYPE_PAGE_POOL)
-+		safe_to_remove = page_pool_request_shutdown(xa->page_pool);
-+
-+	if (safe_to_remove &&
-+	    !rhashtable_remove_fast(mem_id_ht, &xa->node, mem_id_rht_params))
-+		call_rcu(&xa->rcu, __xdp_mem_allocator_rcu_free);
-+
-+	mutex_unlock(&mem_id_lock);
-+	return safe_to_remove;
-+}
-+
-+#define DEFER_TIME (msecs_to_jiffies(1000))
-+
-+static void mem_id_disconnect_defer_retry(struct work_struct *wq)
-+{
-+	struct delayed_work *dwq = to_delayed_work(wq);
-+	struct xdp_mem_allocator *xa = container_of(dwq, typeof(*xa), defer_wq);
-+
-+	if (__mem_id_disconnect(xa->mem.id))
-+		return;
-+
-+	/* Still not ready to be disconnected, retry later */
-+	schedule_delayed_work(&xa->defer_wq, DEFER_TIME);
-+}
-+
- void xdp_rxq_info_unreg_mem_model(struct xdp_rxq_info *xdp_rxq)
+-bool __mem_id_disconnect(int id)
++bool __mem_id_disconnect(int id, bool force)
  {
  	struct xdp_mem_allocator *xa;
-@@ -112,16 +153,28 @@ void xdp_rxq_info_unreg_mem_model(struct xdp_rxq_info *xdp_rxq)
+ 	bool safe_to_remove = true;
+@@ -108,29 +111,47 @@ bool __mem_id_disconnect(int id)
+ 		WARN(1, "Request remove non-existing id(%d), driver bug?", id);
+ 		return true;
+ 	}
++	xa->disconnect_cnt++;
+ 
+ 	/* Detects in-flight packet-pages for page_pool */
+ 	if (xa->mem.type == MEM_TYPE_PAGE_POOL)
+ 		safe_to_remove = page_pool_request_shutdown(xa->page_pool);
+ 
+-	if (safe_to_remove &&
++	/* TODO: Tracepoint will be added here in next-patch */
++
++	if ((safe_to_remove || force) &&
+ 	    !rhashtable_remove_fast(mem_id_ht, &xa->node, mem_id_rht_params))
+ 		call_rcu(&xa->rcu, __xdp_mem_allocator_rcu_free);
+ 
+ 	mutex_unlock(&mem_id_lock);
+-	return safe_to_remove;
++	return (safe_to_remove|force);
+ }
+ 
+ #define DEFER_TIME (msecs_to_jiffies(1000))
++#define DEFER_WARN_INTERVAL (30 * HZ)
++#define DEFER_MAX_RETRIES 120
+ 
+ static void mem_id_disconnect_defer_retry(struct work_struct *wq)
+ {
+ 	struct delayed_work *dwq = to_delayed_work(wq);
+ 	struct xdp_mem_allocator *xa = container_of(dwq, typeof(*xa), defer_wq);
++	bool force = false;
++
++	if (xa->disconnect_cnt > DEFER_MAX_RETRIES)
++		force = true;
+ 
+-	if (__mem_id_disconnect(xa->mem.id))
++	if (__mem_id_disconnect(xa->mem.id, force))
+ 		return;
+ 
++	/* Periodic warning */
++	if (time_after_eq(jiffies, xa->defer_warn)) {
++		int sec = (s32)((u32)jiffies - (u32)xa->defer_start) / HZ;
++
++		pr_warn("%s() stalled mem.id=%u shutdown %d attempts %d sec\n",
++			__func__, xa->mem.id, xa->disconnect_cnt, sec);
++		xa->defer_warn = jiffies + DEFER_WARN_INTERVAL;
++	}
++
+ 	/* Still not ready to be disconnected, retry later */
+ 	schedule_delayed_work(&xa->defer_wq, DEFER_TIME);
+ }
+@@ -153,7 +174,7 @@ void xdp_rxq_info_unreg_mem_model(struct xdp_rxq_info *xdp_rxq)
  	if (id == 0)
  		return;
  
-+	if (__mem_id_disconnect(id))
-+		return;
-+
-+	/* Could not disconnect, defer new disconnect attempt to later */
- 	mutex_lock(&mem_id_lock);
+-	if (__mem_id_disconnect(id))
++	if (__mem_id_disconnect(id, false))
+ 		return;
  
- 	xa = rhashtable_lookup_fast(mem_id_ht, &id, mem_id_rht_params);
--	if (xa && !rhashtable_remove_fast(mem_id_ht, &xa->node, mem_id_rht_params))
--		call_rcu(&xa->rcu, __xdp_mem_allocator_rcu_free);
-+	if (!xa) {
-+		mutex_unlock(&mem_id_lock);
-+		return;
-+	}
+ 	/* Could not disconnect, defer new disconnect attempt to later */
+@@ -164,6 +185,8 @@ void xdp_rxq_info_unreg_mem_model(struct xdp_rxq_info *xdp_rxq)
+ 		mutex_unlock(&mem_id_lock);
+ 		return;
+ 	}
++	xa->defer_start = jiffies;
++	xa->defer_warn  = jiffies + DEFER_WARN_INTERVAL;
  
-+	INIT_DELAYED_WORK(&xa->defer_wq, mem_id_disconnect_defer_retry);
+ 	INIT_DELAYED_WORK(&xa->defer_wq, mem_id_disconnect_defer_retry);
  	mutex_unlock(&mem_id_lock);
-+	schedule_delayed_work(&xa->defer_wq, DEFER_TIME);
- }
- EXPORT_SYMBOL_GPL(xdp_rxq_info_unreg_mem_model);
- 
-+/* This unregister operation will also cleanup and destroy the
-+ * allocator. The page_pool_free() operation is first called when it's
-+ * safe to remove, possibly deferred to a workqueue.
-+ */
- void xdp_rxq_info_unreg(struct xdp_rxq_info *xdp_rxq)
- {
- 	/* Simplify driver cleanup code paths, allow unreg "unused" */
+@@ -388,10 +411,12 @@ static void __xdp_return(void *data, struct xdp_mem_info *mem, bool napi_direct,
+ 		/* mem->id is valid, checked in xdp_rxq_info_reg_mem_model() */
+ 		xa = rhashtable_lookup(mem_id_ht, &mem->id, mem_id_rht_params);
+ 		page = virt_to_head_page(data);
+-		if (xa) {
++		if (likely(xa)) {
+ 			napi_direct &= !xdp_return_frame_no_direct();
+ 			page_pool_put_page(xa->page_pool, page, napi_direct);
+ 		} else {
++			/* Hopefully stack show who to blame for late return */
++			WARN_ONCE(1, "page_pool gone mem.id=%d", mem->id);
+ 			put_page(page);
+ 		}
+ 		rcu_read_unlock();
 
