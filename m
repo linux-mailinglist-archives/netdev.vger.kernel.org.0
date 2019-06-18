@@ -2,51 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B339D4ADEE
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 00:41:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39B2F4ADF5
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 00:44:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730428AbfFRWkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 18:40:33 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:54576 "EHLO
+        id S1730809AbfFRWoL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 18:44:11 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:54632 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730176AbfFRWkc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 18:40:32 -0400
+        with ESMTP id S1730758AbfFRWoL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 18:44:11 -0400
 Received: from localhost (unknown [198.134.98.50])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id B1DB212D6B4D3;
-        Tue, 18 Jun 2019 15:40:31 -0700 (PDT)
-Date:   Tue, 18 Jun 2019 18:40:26 -0400 (EDT)
-Message-Id: <20190618.184026.1967040334284472836.davem@davemloft.net>
-To:     ard.biesheuvel@linaro.org
-Cc:     ebiggers@kernel.org, netdev@vger.kernel.org,
-        linux-crypto@vger.kernel.org, herbert@gondor.apana.org.au,
-        edumazet@google.com, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        jbaron@akamai.com, cpaasch@apple.com, David.Laight@aculab.com,
-        ycheng@google.com
-Subject: Re: [PATCH 2/2] net: fastopen: use endianness agnostic
- representation of the cookie
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 209DD12D69F76;
+        Tue, 18 Jun 2019 15:44:10 -0700 (PDT)
+Date:   Tue, 18 Jun 2019 18:44:09 -0400 (EDT)
+Message-Id: <20190618.184409.2227845117139305004.davem@davemloft.net>
+To:     willemdebruijn.kernel@gmail.com
+Cc:     gregkh@linuxfoundation.org, naresh.kamboju@linaro.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, fklassen@appneta.com
+Subject: Re: 4.19: udpgso_bench_tx: setsockopt zerocopy: Unknown error 524
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <CAKv+Gu-xBCe09B1=GvXBH3V-p7=fOZcdL5pvFi5v19LT0J4KHA@mail.gmail.com>
-References: <20190618093207.13436-3-ard.biesheuvel@linaro.org>
-        <20190618182253.GK184520@gmail.com>
-        <CAKv+Gu-xBCe09B1=GvXBH3V-p7=fOZcdL5pvFi5v19LT0J4KHA@mail.gmail.com>
+In-Reply-To: <CA+FuTSdrphico4044QTD_-8VbanFFJx0FJuH+vVMfuHqbphkjw@mail.gmail.com>
+References: <CAF=yD-+pNrAo1wByHY6f5AZCq8xT0FDMKM-WzPkfZ36Jxj4mNg@mail.gmail.com>
+        <20190618173906.GB3649@kroah.com>
+        <CA+FuTSdrphico4044QTD_-8VbanFFJx0FJuH+vVMfuHqbphkjw@mail.gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 18 Jun 2019 15:40:32 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 18 Jun 2019 15:44:10 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Date: Tue, 18 Jun 2019 20:40:18 +0200
+From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date: Tue, 18 Jun 2019 14:58:26 -0400
 
-> Can we first agree on whether we care about this or not? If so, i
-> can spin a v2.
+> I see that in similar such cases that use the test harness
+> (ksft_test_result_skip) the overall test returns success as long as
+> all individual cases return either success or skip.
+> 
+> I think it's preferable to return KSFT_SKIP if any of the cases did so
+> (and none returned an error). I'll do that unless anyone objects.
 
-Well, how can it possibly work otherwise in deployment scenerios involving
-both big and little endian hosts?
+I guess this is a question of semantics.
+
+I mean, if you report skip at the top level does that mean that all
+sub tests were skipped?  People may think so... :)
+
