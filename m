@@ -2,80 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CC44049A26
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 09:15:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C0F149A8C
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 09:27:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726643AbfFRHPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 03:15:36 -0400
-Received: from mout.kundenserver.de ([212.227.126.135]:40343 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725955AbfFRHPf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 03:15:35 -0400
-Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
- (mreue012 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1M4384-1hd8Kv47Ga-0006FN; Tue, 18 Jun 2019 09:15:22 +0200
-From:   Arnd Bergmann <arnd@arndb.de>
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Florian Westphal <fw@strlen.de>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ipsec: select CRYPTO_HASH for xfrm_algo
-Date:   Tue, 18 Jun 2019 09:14:51 +0200
-Message-Id: <20190618071514.2222319-1-arnd@arndb.de>
-X-Mailer: git-send-email 2.20.0
+        id S1726232AbfFRH1n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 03:27:43 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:33608 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725870AbfFRH1n (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Jun 2019 03:27:43 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id D5928201DB;
+        Tue, 18 Jun 2019 09:27:41 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id y-yzA7z73JUm; Tue, 18 Jun 2019 09:27:40 +0200 (CEST)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 94011200BA;
+        Tue, 18 Jun 2019 09:27:40 +0200 (CEST)
+Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
+ (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Tue, 18 Jun 2019
+ 09:27:40 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 7611C31805F8;
+ Tue, 18 Jun 2019 09:27:39 +0200 (CEST)
+Date:   Tue, 18 Jun 2019 09:27:39 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+CC:     Nicolas Dichtel <nicolas.dichtel@6wind.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, Anirudh Gupta <anirudh.gupta@sophos.com>
+Subject: Re: [PATCH ipsec] xfrm: fix sa selector validation
+Message-ID: <20190618072739.GY17989@gauss3.secunet.de>
+References: <20190614091355.18852-1-nicolas.dichtel@6wind.com>
+ <20190614161148.vti6mhvnxfwweznc@gondor.apana.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:u3psbrxat/GLqgS5cJ3IaOBxrFJa4MkaDmkx8Unot6fN0EKdDMx
- y3EvyY4XwZeNwCGB7zwuONa0vqHfcJgX0a0YzA1DQxv2snq+zMtTTeUZ4fVDsp/TLnmtZS2
- QISAHpulpONQ/r+eEqK+S+G9A+y/pze7OjmCn3mmE//syAcwak444UsX43iugg0ExoKd063
- Da9wl3RqOOjIgYUhe4ZIA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:vpVSPrVCFpY=:gklKkq23m6xWr7LcD0e3DV
- kPvzYTDTt1UybQ2J+7E5RZaFv5W7UIcw8ieP/RtfP0PhJspeHb8/oBr8FZCC5Q0xf/yZPWCVe
- MSGKO45HjS2Q8kg09Sa15Hf7mHXXyCFAcp9KkyOUGcb3kmQmqgw9qhLXNfiODPDNLJq4NjSkz
- TuH0bOoLbiczIImcf69ZA00Vz9Iyy5IMvyI2s/IgjvoGc+1od3TW07N1CNxCAYKejBBZ/UErt
- cgm4rrXnG4PYe1C9b+yDHCCJiGX2VRTFBA4n0W4Mk1MAQd9+9rXECTuDwqK6PAUFv+BNeirxl
- 4mZiVWt3AFoZNWu+Bk3t1gqSpx/JPs4eAIJTxJm5TJ4dmGpIXT/llCdVMhUkwZgfPkFhOHug2
- gVj+VWy6w9GH3RSC/GkeeWaOBp4yVvw/FI0PL/Ew+Xoy2/pH2t+1aS0pIaQO4ps8AXJZjV/9c
- lFthLRRE2IBoYdKcnMZ7opmq47Cp133TKbESaF6acf+93Z87Y8La9a/YnouaalsxoHSIhGPGi
- IX8632Q2KuxlXs4rvYn9/vthJvvzAykis291z7HtvMOI0qdzicCLwAeIAwGjw/HuzXL0C/7ZW
- /C5NUKaer/JeTwl4J81/c67okRR4fcITbseyFU2Obxe6t6zXKz57/ddRWsBYukdHxjN5TiscS
- qakAvyqmSUEyKawXH5CxYm9coFZE/flygLitNsUsEgjP2WAMDgAPdoSNMO7L44333VqdJzewA
- wVMhpKcQJx1VMqmTqmYGVwVccbgwcACh/7hTHg==
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20190614161148.vti6mhvnxfwweznc@gondor.apana.org.au>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-kernelci.org reports failed builds on arc because of what looks
-like an old missed 'select' statement:
+On Sat, Jun 15, 2019 at 12:11:48AM +0800, Herbert Xu wrote:
+> On Fri, Jun 14, 2019 at 11:13:55AM +0200, Nicolas Dichtel wrote:
+> > After commit b38ff4075a80, the following command does not work anymore:
+> > $ ip xfrm state add src 10.125.0.2 dst 10.125.0.1 proto esp spi 34 reqid 1 \
+> >   mode tunnel enc 'cbc(aes)' 0xb0abdba8b782ad9d364ec81e3a7d82a1 auth-trunc \
+> >   'hmac(sha1)' 0xe26609ebd00acb6a4d51fca13e49ea78a72c73e6 96 flag align4
+> > 
+> > In fact, the selector is not mandatory, allow the user to provide an empty
+> > selector.
+> > 
+> > Fixes: b38ff4075a80 ("xfrm: Fix xfrm sel prefix length validation")
+> > CC: Anirudh Gupta <anirudh.gupta@sophos.com>
+> > Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+> 
+> Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
 
-net/xfrm/xfrm_algo.o: In function `xfrm_probe_algs':
-xfrm_algo.c:(.text+0x1e8): undefined reference to `crypto_has_ahash'
-
-I don't see this in randconfig builds on other architectures, but
-it's fairly clear we want to select the hash code for it, like we
-do for all its other users.
-
-Fixes: 17bc19702221 ("ipsec: Use skcipher and ahash when probing algorithms")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- net/xfrm/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/net/xfrm/Kconfig b/net/xfrm/Kconfig
-index c967fc3c38c8..a5c967efe5f4 100644
---- a/net/xfrm/Kconfig
-+++ b/net/xfrm/Kconfig
-@@ -15,6 +15,7 @@ config XFRM_ALGO
- 	tristate
- 	select XFRM
- 	select CRYPTO
-+	select CRYPTO_HASH
- 
- if INET
- config XFRM_USER
--- 
-2.20.0
-
+Patch applied, thanks everyone!
