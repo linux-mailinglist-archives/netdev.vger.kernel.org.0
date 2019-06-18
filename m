@@ -2,103 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4211049AC3
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 09:39:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C052C49AFA
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 09:44:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728748AbfFRHjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 03:39:54 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:46379 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725900AbfFRHjx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 03:39:53 -0400
-Received: by mail-lj1-f196.google.com with SMTP id v24so12014296ljg.13
-        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 00:39:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tRX0G9tlBQsjku3tZENDJhsv+P6TNGsiwcvysnjW0hg=;
-        b=rLNYb7evXLxlMU81yvH6qfN0LrIGI9RFVJq/+9NJ80GDshTJhbKFG4kX7SUI4JF+nM
-         SjtDxEZZzwcJU+Tsrk7OzpLa6ZdiC7t2FvzrJw5L9CURfj0SE/rANJH44Gl2oPy9sdk6
-         +BAXXbejf0h9kJf9V+rssiEuLExEqpntLiYcr5NoqAP8Hn//W7AUyoc9oJt5y2rxm5nO
-         0A/197TtS9mlvXEodm1ZcaqrLJIENX5lgV6YAd0RlvAqSb3bUogb3oRcpascNV4yE+PZ
-         kKoSx995fazxSsmgB6oHFslGAe+OYZT70NfOxi4vyrno1rBV0a/OXZRCHI/2t6+nvOWm
-         0r2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tRX0G9tlBQsjku3tZENDJhsv+P6TNGsiwcvysnjW0hg=;
-        b=WchV5d1E1sNwrJ7Fk4fi/iY1wvutqNJjSV+T+FQj/ltkyTF/FB9JFXH0247xJbQCnw
-         uvR6T+kcg6a/bEQL1s1djO4gda+WYPNAHVeRwZeXiBKTwgabVHSIxjAkRMVZ4mw3vV4q
-         THqDLYcf8vRlWmn1mcQeDmJf6HVciYKFhN6r+kO0rcsmb3F5LqScHAL5mxffGUIZrHVK
-         EGGSzNtu+gh6BzFrfbEqzqa7AOGNl/28GLWkaNDx2VfTtXhsiheygfqn/gfBTeYvdCzs
-         Qof7FQEeJqCIeyzWeW76KI4nIOQD+VpF/HWkliLVsqLbFBkB8zLbYECRuv5sV6guH7Qs
-         llKw==
-X-Gm-Message-State: APjAAAXdYxK8lymUnC2foOt9gVnQEbIYWk7htg2HJuYweP0MfQwaHZJQ
-        r4VA2IdMV73XW1qOGNR0SNicuGtzql6KgfoHkJWWzw==
-X-Google-Smtp-Source: APXvYqyZE8EqEx/xmYcLpIOSRy1F6u+RHTKQ8684iqe3UbdIPIlYBKj9R7Dw5YkFZmJKic+1cRfhd66PYrWsrQdcBUQ=
-X-Received: by 2002:a2e:8495:: with SMTP id b21mr20733212ljh.149.1560843591554;
- Tue, 18 Jun 2019 00:39:51 -0700 (PDT)
+        id S1726912AbfFRHon convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 18 Jun 2019 03:44:43 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:52730 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725913AbfFRHon (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Jun 2019 03:44:43 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id C3D193092663;
+        Tue, 18 Jun 2019 07:44:42 +0000 (UTC)
+Received: from oldenburg2.str.redhat.com (ovpn-116-148.ams2.redhat.com [10.36.116.148])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2BCA636FA;
+        Tue, 18 Jun 2019 07:44:39 +0000 (UTC)
+From:   Florian Weimer <fweimer@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Joseph Myers <joseph@codesourcery.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linux API <linux-api@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Laura Abbott <labbott@redhat.com>,
+        Paul Burton <pburton@wavecomp.com>,
+        Deepa Dinamani <deepa.kernel@gmail.com>,
+        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] uapi: avoid namespace conflict in linux/posix_types.h
+References: <20190319165123.3967889-1-arnd@arndb.de>
+        <alpine.DEB.2.21.1905072249570.19308@digraph.polyomino.org.uk>
+        <87tvd2j9ye.fsf@oldenburg2.str.redhat.com>
+        <CAHk-=wio1e4=WUUwmo-Ph55BEgH_X3oXzBpvPyLQg2TxzfGYuw@mail.gmail.com>
+        <871s05fd8o.fsf@oldenburg2.str.redhat.com>
+        <CAHk-=wg4ijSoPq-w7ct_VuZvgHx+tUv_QX-We-62dEwK+AOf2w@mail.gmail.com>
+        <87sgs8igfj.fsf@oldenburg2.str.redhat.com>
+        <CAHk-=wjCwnk0nfgCcMYqqX6o9bBrutDtut_fzZ-2VwiZR1y4kw@mail.gmail.com>
+        <87k1dkdr9c.fsf@oldenburg2.str.redhat.com>
+        <CAHk-=wgiZNERDN7p-bsCzzYGRjeqTQw7kJxJnXAHVjqqO8PGrg@mail.gmail.com>
+        <87a7egdqgr.fsf@oldenburg2.str.redhat.com>
+        <CAHk-=wjF6ek4v04w2O3CuOaauDERfdyduW+h=u9uN5ja1ObLzQ@mail.gmail.com>
+Date:   Tue, 18 Jun 2019 09:44:38 +0200
+In-Reply-To: <CAHk-=wjF6ek4v04w2O3CuOaauDERfdyduW+h=u9uN5ja1ObLzQ@mail.gmail.com>
+        (Linus Torvalds's message of "Mon, 17 Jun 2019 11:48:47 -0700")
+Message-ID: <87lfxzbamx.fsf@oldenburg2.str.redhat.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.2 (gnu/linux)
 MIME-Version: 1.0
-References: <CA+G9fYsr_YW7PSoP+ew60TfNOj885y6j-e2weuWBuU1ccKcAAg@mail.gmail.com>
-In-Reply-To: <CA+G9fYsr_YW7PSoP+ew60TfNOj885y6j-e2weuWBuU1ccKcAAg@mail.gmail.com>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 18 Jun 2019 13:09:40 +0530
-Message-ID: <CA+G9fYvEK4F8PbvjeRK3+6WeEFXExQpQ3MS2CE2gD6phV+Q5dg@mail.gmail.com>
-Subject: Re: kernel/workqueue.c:3030 __flush_work+0x2c2/0x2d0
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        linux- stable <stable@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, sgarzare@redhat.com,
-        Daniel Borkmann <daniel@iogearbox.net>, kafai@fb.com,
-        jakub@cloudflare.com, lkft-triage@lists.linaro.org,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, john.fastabend@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.43]); Tue, 18 Jun 2019 07:44:42 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Hillf,
+* Linus Torvalds:
 
-On Tue, 18 Jun 2019 at 09:40, Hillf Danton <hdanton@sina.com> wrote:
+> On Mon, Jun 17, 2019 at 11:19 AM Florian Weimer <fweimer@redhat.com> wrote:
+>> >
+>> > Unlike the "val[]" thing, I don't think anybody is supposed to access
+>> > those fields directly.
+>>
+>> Well, glibc already calls it __val …
 >
+> Hmm. If user space already doesn't see the "val[]" array anyway, I
+> guess we could just do that in the kernel too.
 >
-> Hello
+> Looking at the glibc headers I have for fds_bits, glibc seems to do
+> *both* fds_bits[] and __fds_bits[] depending on __USE_XOPEN or not.
 >
-> On Sun, 16 Jun 2019 19:30:27 -0700 (PDT) Naresh Kamboju wrote:
-> > Kernel warning while running kernel selftest bpf test_sockmap test case on
-> > x86_64 and arm64.
-> > The kernel warning log pops up continuously.
-> >
-> > Linux version 5.1.10-rc2
-> >
-> > Steps to reproduce:
-> > Boot stable rc 5.1.10-rc2 kernel on x86_64 or arm64
-> > cd selftests/bpf
-> > ./test_sockmap
-> >
-> > [   37.600406] WARNING: CPU: 3 PID: 57 at /usr/src/kernel/kernel/workqueue.c:3030 __flush_work+0x2c2/0x2d0
-...
-> >
-> >
-> Only find this; wish it may be paving a brick perhaps for those looking to fix the
-> 3030 warning.
+> Anyway, that all implies to me that we might as well just go the truly
+> mindless way, and just do the double underscores and not bother with
+> renaming any files.
 >
+> I thought people actually might care about the "val[]" name because I
+> find that in documentation, but since apparently it's already not
+> visible to user space anyway, that can't be true.
 >
-> Hillf
+> I guess that makes the original patch acceptable, and we should just
+> do the same thing to fds_bits..
 
+Hah.
 
-Thanks for looking into this problem,
-There is a recent patch fixed this problem on 5.1.12 stable rc branch today
-and AUTOSEL on current stable review.
+I think Arnd's original patch already had both.  So it's ready to go in
+after all?
 
-bpf: sockmap, only stop/flush strp if it was enabled at some point
-
-link: https://lore.kernel.org/lkml/20190604232212.6753-12-sashal@kernel.org/
-
-Best regards
-Naresh Kamboju
+Thanks,
+Florian
