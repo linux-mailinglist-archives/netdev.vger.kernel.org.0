@@ -2,103 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F2F74AA29
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 20:45:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A70EA4ABCE
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 22:28:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730378AbfFRSpd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 14:45:33 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:40219 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730073AbfFRSpd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 14:45:33 -0400
-Received: by mail-qt1-f193.google.com with SMTP id a15so16671007qtn.7;
-        Tue, 18 Jun 2019 11:45:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=RQUmAvZKOB0n5aRHDDnkpnJkp/zZ0CD2VBmJlNueqlA=;
-        b=K11KZ0sl2ortG7zfX/UDTOyQVahCgbla4GQOd3wX7M3bncotVkdJ38UDjuEPtNIP9x
-         W4ZXRVSSnqhT4pPcbKj579ttHFK7eGKyNnjSI0o8bg2iQL10HK+pKIKiGJhQCsNaoN9f
-         K8eSTf+prQ1ZWQ05ynDCFpc7bcYRFHGxBtVsxyjmrbNlZ2Zp4+GO8LEqSEkMoVUX3JDg
-         Uan6IvuG9MkBfjLXodUDmGyZ5CfpiTL8/DopfHiIXWn7kAPTnb7tIdstJn7p/XysrYWe
-         RG6BK5UmE0PUw9/p+ag4ipzQbAWov2yKvjDEyVVLqZ7qtJmeEbPDqmzHfLIlYf7Bzcbf
-         ye2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=RQUmAvZKOB0n5aRHDDnkpnJkp/zZ0CD2VBmJlNueqlA=;
-        b=di3MPdB8JWhWl2ogta8Qkk2CAe6mni2zuGfUQqOyBbdYK76iTgkPjNvCdLcETpye8Q
-         1jFxT6TR5musgDxHygzH5vzIBKLNE1R2p2GRmGrO8ZsvidwEqAdiAx4y9TQR/7zBRcpD
-         pCSJtRaek6lVmwwPCAsrYMGKdGzBpjprYDWDl9OTDTstnSe8xr76UK/mFgO0RtSKWGD6
-         8Q0kOz2FvUsb1zLqz2a363syQmfFpirVDJDxdYP1CztYiRSBz8oikS4KY3ruJjh7jlDL
-         i/0C+ZSU+ZjmBDuoyBpi8X3eaEt5ja+zPotBx4HC3CS7DJIavvjZzEBNR1QJPyk00fK6
-         jXzQ==
-X-Gm-Message-State: APjAAAXQ9TbrzavO4nv40FTjbQCQ3ipTfvTdSBgGGIhUzLjY/XIbn64B
-        JDU2lEOf/XXivHgs/pB6yQ==
-X-Google-Smtp-Source: APXvYqwU2beKSiLDe3Z3LszvHjvWf5pMFzrl0342RAP4g96QEwvkhFuYXh9+dGykb3pt5R68KTrxUQ==
-X-Received: by 2002:ac8:768b:: with SMTP id g11mr66633971qtr.182.1560883532134;
-        Tue, 18 Jun 2019 11:45:32 -0700 (PDT)
-Received: from ubuntu ([104.238.32.106])
-        by smtp.gmail.com with ESMTPSA id h40sm11107455qth.4.2019.06.18.11.45.31
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 18 Jun 2019 11:45:31 -0700 (PDT)
-Date:   Tue, 18 Jun 2019 10:13:55 -0400
-From:   Stephen Suryaputra <ssuryaextr@gmail.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH RESEND nf-next] netfilter: add support for matching IPv4
- options
-Message-ID: <20190618141355.GA5642@ubuntu>
-References: <20190611120912.3825-1-ssuryaextr@gmail.com>
- <20190618153112.jwomdzit6mdawssi@salvia>
+        id S1730649AbfFRU2J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 16:28:09 -0400
+Received: from casper.infradead.org ([85.118.1.10]:52652 "EHLO
+        casper.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730176AbfFRU2J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 16:28:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        MIME-Version:References:In-Reply-To:Message-ID:Subject:Cc:To:From:Date:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=/yuq+528Ge2GyeWg6aQYCOiRFdbu/e3xfN3FdxpcEzY=; b=aB7KTV5ZzmCoj1Qxm3dVaqBytG
+        6+FKmt7R881qAHMbcleBouaKC3kmFz2LA9Gvif95NyyHzZYpT55h4RDehfIKQQY69CVa8wVC9pTSV
+        lM5saykAhFfav4/jsmfkmbjCMOcfAFWTC4XcOhZRfq2M8BexwvZFvq+n1RO+Q6bUZMKIXOAKqgS/z
+        Z0xhg86h0mjM6gWv9dljQS4maac4BmrXdCgsk5P5Rrbmx/H/nT9JqF0GEKhiNMUUO+RcYwIj4hQKr
+        S+oRAMGCViKI189iZwgPRWHso0mZugDsGCk+ehRnbRbif4s1O9+a3pZMmiNVfSY4BbgNtTHNIW9P3
+        VhKuGzng==;
+Received: from 177.133.86.196.dynamic.adsl.gvt.net.br ([177.133.86.196] helo=coco.lan)
+        by casper.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
+        id 1hdKi3-0001wm-Jm; Tue, 18 Jun 2019 20:28:04 +0000
+Date:   Tue, 18 Jun 2019 11:14:47 -0300
+From:   Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+To:     Jonathan Corbet <corbet@lwn.net>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Mauro Carvalho Chehab <mchehab@infradead.org>,
+        linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Greentime Hu <green.hu@gmail.com>,
+        Vincent Chen <deanbo422@gmail.com>,
+        linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH v4 00/28] Convert files to ReST - part 1
+Message-ID: <20190618111122.64cdeb59@coco.lan>
+In-Reply-To: <20190614143640.40ee353a@lwn.net>
+References: <cover.1560361364.git.mchehab+samsung@kernel.org>
+        <20190614143640.40ee353a@lwn.net>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190618153112.jwomdzit6mdawssi@salvia>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 18, 2019 at 05:31:12PM +0200, Pablo Neira Ayuso wrote:
-> > +{
-> > +	unsigned char optbuf[sizeof(struct ip_options) + 41];
+Em Fri, 14 Jun 2019 14:36:40 -0600
+Jonathan Corbet <corbet@lwn.net> escreveu:
+
+> On Wed, 12 Jun 2019 14:52:36 -0300
+> Mauro Carvalho Chehab <mchehab+samsung@kernel.org> wrote:
 > 
-> In other parts of the kernel this is + 40:
+> > This is mostly a rebase of the /33 series v3 I sent, on the top of the latest
+> > linux-next  (next-20190612).
+> > 
+> > Changes from v3:
+> > 
+> > - dropped cpufreq conversion - documents are too outdated;
+> > - infiniband patch is not here anymore - as it should be merged via RDMA;
+> > - s390 patches were already merged;
+> > - Dropped Geert as Maintainer from fb/framebuffer.rst, as per his request;
+> > - Did a minor editorial change at popwerpc/cxl.rst per Andrew Donellan
+> >   request;
+> > - Added acks/reviews;
+> > - trivial rebase fixups.  
 > 
-> net/ipv4/cipso_ipv4.c:  unsigned char optbuf[sizeof(struct ip_options) + 40];
-> 
-> here it is + 41.
->
-> ...
->
-> > +	/* Copy the options since __ip_options_compile() modifies
-> > +	 * the options. Get one byte beyond the option for target < 0
-> 
-> How does this "one byte beyond the option" trick works?
+> So I had to pull docs-next forward to -rc4, but then I was able to apply
+> this set except for parts 5, 6, 14, 18, and 19.  
 
-I used ipv6_find_hdr() as a reference. There if target is set to less
-than 0, then the offset points to the byte beyond the extension header.
-In this function, it points to the byte beyond the option. I wanted to
-be as close as a working code as possible. Also, why +41 instead of +40.
+Patch 5 went via Cgroups tree;
+Patch 18 went via power tree;
+Patch 6 is obsolete, as the cgroups-v1 CBQ chapter was removed;
 
-> > +		if (opt->end) {
-> > +			*offset = opt->end + start;
-> > +			target = IPOPT_END;
-> 
-> May I ask, what's the purpose of IPOPT_END? :-)
+So, what's left from this series are patches 14 and 19.
 
-My understanding is that in ipv6_find_hdr() if the nexthdr is
-NEXTHDR_NONE, then that's the one being returned. The same here: target
-is the return value.
+I have a rebased version of them on the top of linux-next
+on my working tree. Perhaps we should try to push those two late
+during the merge window.
 
-> Apart from the above, this looks good to me.
+> Some progress made, but
+> this is somewhat painful work...
 
-AOK for other comments. I can spin another version.
+Yeah, a change like that is not easy.
 
-Thank you,
-
-Stephen.
+Thanks,
+Mauro
