@@ -2,123 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 72B97497AA
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 05:02:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7212497BD
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 05:20:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726248AbfFRDCH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 23:02:07 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:40646 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725829AbfFRDCH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 23:02:07 -0400
-Received: by mail-lj1-f193.google.com with SMTP id a21so11442410ljh.7;
-        Mon, 17 Jun 2019 20:02:05 -0700 (PDT)
+        id S1728058AbfFRDUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 23:20:10 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:42767 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725829AbfFRDUK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 23:20:10 -0400
+Received: by mail-pf1-f194.google.com with SMTP id q10so6770186pff.9
+        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 20:20:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=yDn5xMPXHFGcl2badmhD83jM1IwEhBvIcXU77fl289c=;
-        b=MJ1Y2+NWKGyn6timkXov6EhCzRib6XdPLQu8GC/Rf6kduQ+hdMmJBYngWGn5aYHnEu
-         8szaMsw0Sce6ZVj78znJ2YYgItgW9drLGDYuM2EmFU0r/4dtPWkbUYcDfQtL6/OPLNeK
-         dmP/2WE6spq40riFAVzBdy6hnpqB8qA51f55iSrOaBe5t8bZ1wRP2dj3K3Ss5jdAKWc8
-         J39Z2/NgAIte0QsfIzYmwwhHdJh5F5ORlPbCypNJVMcvQl4gEae/aePDk0/9Cg3ShC9h
-         4fXoZNxflMcMewmlu2rdIjdm2ZnBRxTzIh02Zmzxe9n4aiFuWbCJgXShgJinWDyz6EcO
-         WjbA==
+        bh=C1Jk93XJ83NAuFApWwnZFah6NEoqsyIjEs142h2g6FM=;
+        b=muEi0+mHyMVAgk6X8ScyEbw6U9NohJRR1xlS7kqTUOBKpqNbH6lppDLXSjTAvUKVF+
+         0eTsr84vizNHIRXrslRjVoKJeOmBbAVQbhdtftTiIbQ3Ig8leK+3r0Aa54yA0hLb8Nsu
+         9XYhX3nC0qNAEd4s9t8qflHzF1SRHVPRQqVqDC5GZdWXOKJLkzdBazXwMvMxrUpP3Q3O
+         4fKzsNWST0W9NETzpZbsgy6z5dAewRn5dsG9JtJo4CVG5+gnoPrfh8qReL9odFuRJOV+
+         TWvgbkTYEzmOSth7VPyH/ND+CYNxmlftSSY0B+uS6qG7RQiynCJN5oO4kbJd3/u3nFjS
+         Uegw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=yDn5xMPXHFGcl2badmhD83jM1IwEhBvIcXU77fl289c=;
-        b=TKnw0KCDcC6hTUe939qQ9DjUcvVQ1oC8gSHnjZsw6bN5/3wCzDIOrKxSTGYAgRrTnw
-         jx5P32K2VU22T33KfWoKkRHA4N1YHjuCFSLUKnZICeAa7jExlPNn7qzbRYt5TcJ+ROf6
-         FZY+6KAfzgs8lTjbZxk2m5FA2q/8GNUUvW2FxukUuiyJGmxFU5v3f17cCXKiifUlIbLI
-         8Rf+yD/nbheNxmCLHLLqMITpACdY1l6JEBLHmHCcpXr5+h7tujgnHo5a89mz9ZA0wzZM
-         Uoi04L26MrSFrNGrM9tMty3hrjwzdi08TSvQvKbp1gQPJ64CnKbWFshf+CACLT8wQSBv
-         aFOQ==
-X-Gm-Message-State: APjAAAX8GFkt81OG0UyHANsctL+MYzqlcnTotOvpav/UPfT98f1zPwqh
-        mgMlHhIMJv14l2v6C2n80kEi5S/564EAQaJEyuc=
-X-Google-Smtp-Source: APXvYqykxYn2h7BHvGt5WniRN1+QJUJk2wsHHao2z8XHcHmk3SK91BvK7PTtwsNleuGyGFRsmF2KDgEttifH5igEyAo=
-X-Received: by 2002:a2e:9dca:: with SMTP id x10mr29785188ljj.17.1560826925180;
- Mon, 17 Jun 2019 20:02:05 -0700 (PDT)
+        bh=C1Jk93XJ83NAuFApWwnZFah6NEoqsyIjEs142h2g6FM=;
+        b=MTCg67MgjcYL0XZ1TToXGjixQUo5tNomQAClfwgs0APjzsFmJ3tbw9ldG2zVWKiMmf
+         eoVRTYCSpbv21jGh47FlDot86u4VOVBcMl2UgYBHjtePmF/Yds07OsJfJ+SNi1cR9EC+
+         hQoFYCYNToL0ddyJGvhMtNylAROHS0OvePK1uU26tEW7De3N12ZJZHedS5Bxj1FhOFA3
+         JRqhKafQD8Nv6ZVBXWysKHrKrHZGtCzfaqKOWGzVCpJn/fayLsB5ECRYciNOlQYCx0mr
+         r7407nw20q++BHsa/BVZyx0hmetLZhTMvHlrfT8tZXhyZZT8TquetG5tlqJOt/0BV8EM
+         j5vQ==
+X-Gm-Message-State: APjAAAXPZZ8IMS+1GBiHXGoief/mP3ukJ+Ho5qgEtAyZhu65x+9Y9dTe
+        g/Pbq/eH1WE+e7MhcmEs0vgzibx3dz3ZM8BdwM4=
+X-Google-Smtp-Source: APXvYqwr5AggzGKsuO6dVyqsTWfy1DjJIOClqFJd38GYJV9ANIfnf3y8nAcp29k5HVHLrT2BVSVRuasVx4FmCG2jRMM=
+X-Received: by 2002:a62:4dc5:: with SMTP id a188mr119154513pfb.8.1560828009911;
+ Mon, 17 Jun 2019 20:20:09 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190521184137.GH2422@oracle.com> <20190521205533.evfszcjvdouby7vp@ast-mbp.dhcp.thefacebook.com>
- <20190521213648.GK2422@oracle.com> <20190521232618.xyo6w3e6nkwu3h5v@ast-mbp.dhcp.thefacebook.com>
- <20190522041253.GM2422@oracle.com> <20190522201624.eza3pe2v55sn2t2w@ast-mbp.dhcp.thefacebook.com>
- <20190523051608.GP2422@oracle.com> <20190523202842.ij2quhpmem3nabii@ast-mbp.dhcp.thefacebook.com>
- <20190618012509.GF8794@oracle.com> <CAADnVQJoH4WOQ0t7ZhLgh4kh2obxkFs0UGDRas0y4QSqh1EMsg@mail.gmail.com>
- <20190618015442.GG8794@oracle.com>
-In-Reply-To: <20190618015442.GG8794@oracle.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 17 Jun 2019 20:01:52 -0700
-Message-ID: <CAADnVQ+zAwoH_mjJLhfEgXHHz+3WYkzhEm-mEObP0koLiSvknw@mail.gmail.com>
-Subject: Re: [RFC PATCH 00/11] bpf, trace, dtrace: DTrace BPF program type
- implementation and sample use
-To:     Kris Van Hees <kris.van.hees@oracle.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, dtrace-devel@oss.oracle.com,
-        LKML <linux-kernel@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Peter Zijlstra <peterz@infradead.org>
+References: <20190617170354.37770-1-edumazet@google.com> <20190617170354.37770-3-edumazet@google.com>
+ <CALMXkpYVRxgeqarp4gnmX7GqYh1sWOAt6UaRFqYBOaaNFfZ5sw@mail.gmail.com> <03cbcfdf-58a4-dbca-45b1-8b17f229fa1d@gmail.com>
+In-Reply-To: <03cbcfdf-58a4-dbca-45b1-8b17f229fa1d@gmail.com>
+From:   Christoph Paasch <christoph.paasch@gmail.com>
+Date:   Mon, 17 Jun 2019 20:19:58 -0700
+Message-ID: <CALMXkpZ4isoXpFp_5=nVUcWrt5TofYVhpdAjv7LkCH7RFW1tYw@mail.gmail.com>
+Subject: Re: [PATCH net 2/4] tcp: tcp_fragment() should apply sane memory limits
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Looney <jtl@netflix.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Tyler Hicks <tyhicks@canonical.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Bruce Curtis <brucec@netflix.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Dustin Marquess <dmarquess@apple.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 17, 2019 at 6:54 PM Kris Van Hees <kris.van.hees@oracle.com> wrote:
+On Mon, Jun 17, 2019 at 7:28 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
 >
-> It is not hypothetical.  The folowing example works fine:
 >
-> static int noinline bpf_action(void *ctx, long fd, long buf, long count)
-> {
->         int                     cpu = bpf_get_smp_processor_id();
->         struct data {
->                 u64     arg0;
->                 u64     arg1;
->                 u64     arg2;
->         }                       rec;
 >
->         memset(&rec, 0, sizeof(rec));
+> On 6/17/19 5:18 PM, Christoph Paasch wrote:
+> >
+> > Hi Eric, I now have a packetdrill test that started failing (see
+> > below). Admittedly, a bit weird test with the SO_SNDBUF forced so low.
+> >
+> > Nevertheless, previously this test would pass, now it stalls after the
+> > write() because tcp_fragment() returns -ENOMEM. Your commit-message
+> > mentions that this could trigger when one sets SO_SNDBUF low. But,
+> > here we have a complete stall of the connection and we never recover.
+> >
+> > I don't know if we care about this, but there it is :-)
 >
->         rec.arg0 = fd;
->         rec.arg1 = buf;
->         rec.arg2 = count;
+> I guess it is WAI :)
 >
->         bpf_perf_event_output(ctx, &buffers, cpu, &rec, sizeof(rec));
+> Honestly I am not sure we want to add code just to allow these degenerated use cases.
 >
->         return 0;
-> }
+> Upstream kernels could check if rtx queue is empty or not, but this check will be not trivial to backport
 >
-> SEC("kprobe/ksys_write")
-> int bpf_kprobe(struct pt_regs *ctx)
-> {
->         return bpf_action(ctx, ctx->di, ctx->si, ctx->dx);
-> }
 >
-> SEC("tracepoint/syscalls/sys_enter_write")
-> int bpf_tp(struct syscalls_enter_write_args *ctx)
-> {
->         return bpf_action(ctx, ctx->fd, ctx->buf, ctx->count);
-> }
->
-> char _license[] SEC("license") = "GPL";
-> u32 _version SEC("version") = LINUX_VERSION_CODE;
+> Can you test :
 
-Great. Then you're all set to proceed with user space dtrace tooling, right?
+Yes, this does the trick for my packetdrill-test.
 
-What you'll discover thought that it works only for simplest things
-like above. libbpf assumes that everything in single elf will be used
-and passes the whole thing to the kernel.
-The verifer removes dead code only from single program.
-It disallows unused functions. Hence libbpf needs to start doing
-more "linker work" than it does today.
-When it loads .o it needs to pass to the kernel only the functions
-that are used by the program.
-This work should be straightforward to implement.
-Unfortunately no one had time to do it.
-It's also going to be the first step to multi-elf support.
-libbpf would need to do the same "linker work" across .o-s.
+I wonder, is there a way we could end up in a situation where we can't
+retransmit anymore?
+For example, sk_wmem_queued has grown so much that the new test fails.
+Then, if we legitimately need to fragment in __tcp_retransmit_skb() we
+won't be able to do so. So we will never retransmit. And if no ACK
+comes back in to make some room we are stuck, no?
+
+
+Christoph
+
+
+
+>
+> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+> index 00c01a01b547ec67c971dc25a74c9258563cf871..06576540133806222f43d4a9532c5a929a2965b0 100644
+> --- a/net/ipv4/tcp_output.c
+> +++ b/net/ipv4/tcp_output.c
+> @@ -1296,7 +1296,8 @@ int tcp_fragment(struct sock *sk, enum tcp_queue tcp_queue,
+>         if (nsize < 0)
+>                 nsize = 0;
+>
+> -       if (unlikely((sk->sk_wmem_queued >> 1) > sk->sk_sndbuf)) {
+> +       if (unlikely((sk->sk_wmem_queued >> 1) > sk->sk_sndbuf &&
+> +                    !tcp_rtx_queue_empty(sk))) {
+>                 NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPWQUEUETOOBIG);
+>                 return -ENOMEM;
+>         }
