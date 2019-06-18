@@ -2,133 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F3C54A1B2
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 15:08:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D473C4A4F4
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 17:15:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729062AbfFRNID (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 09:08:03 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:18599 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725913AbfFRNIC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Jun 2019 09:08:02 -0400
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 681139F6EA5A97A302FE;
-        Tue, 18 Jun 2019 21:07:58 +0800 (CST)
-Received: from huawei.com (10.175.100.202) by DGGEMS404-HUB.china.huawei.com
- (10.3.19.204) with Microsoft SMTP Server id 14.3.439.0; Tue, 18 Jun 2019
- 21:07:52 +0800
-From:   luoshijie <luoshijie1@huawei.com>
-To:     <davem@davemloft.net>, <tgraf@suug.ch>, <dsahern@gmail.com>
-CC:     <netdev@vger.kernel.org>, <liuzhiqiang26@huawei.com>,
-        <wangxiaogang3@huawei.com>, <mingfangsen@huawei.com>,
-        <zhoukang7@huawei.com>
-Subject: [PATCH v2 3/3] selftests: add route_localnet test script
-Date:   Tue, 18 Jun 2019 15:14:05 +0000
-Message-ID: <1560870845-172395-4-git-send-email-luoshijie1@huawei.com>
-X-Mailer: git-send-email 1.8.3.4
-In-Reply-To: <1560870845-172395-1-git-send-email-luoshijie1@huawei.com>
-References: <1560870845-172395-1-git-send-email-luoshijie1@huawei.com>
+        id S1729678AbfFRPPP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 11:15:15 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:53304 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729038AbfFRPPP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 11:15:15 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
+        (Exim 4.76)
+        (envelope-from <colin.king@canonical.com>)
+        id 1hdFpG-0004da-Kr; Tue, 18 Jun 2019 15:15:10 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] net/mlx5: add missing void argument to function mlx5_devlink_alloc
+Date:   Tue, 18 Jun 2019 16:15:10 +0100
+Message-Id: <20190618151510.18672-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.100.202]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shijie Luo <luoshijie1@huawei.com>
+From: Colin Ian King <colin.king@canonical.com>
 
-Add a simple scripts to exercise several situations when enable
-route_localnet.
+Function mlx5_devlink_alloc is missing a void argument, add it
+to clean up the non-ANSI function declaration.
 
-Signed-off-by: Shijie Luo <luoshijie1@huawei.com>
-Signed-off-by: Zhiqiang liu <liuzhiqiang26@huawei.com>
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
 ---
- tools/testing/selftests/net/route_localnet.sh | 74 +++++++++++++++++++
- 1 file changed, 74 insertions(+)
- create mode 100755 tools/testing/selftests/net/route_localnet.sh
+ drivers/net/ethernet/mellanox/mlx5/core/devlink.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/net/route_localnet.sh b/tools/testing/selftests/net/route_localnet.sh
-new file mode 100755
-index 000000000000..116bfeab72fa
---- /dev/null
-+++ b/tools/testing/selftests/net/route_localnet.sh
-@@ -0,0 +1,74 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Run a couple of tests when route_localnet = 1.
-+
-+readonly PEER_NS="ns-peer-$(mktemp -u XXXXXX)"
-+
-+setup() {
-+    ip netns add "${PEER_NS}"
-+    ip -netns "${PEER_NS}" link set dev lo up
-+    ip link add name veth0 type veth peer name veth1
-+    ip link set dev veth0 up
-+    ip link set dev veth1 netns "${PEER_NS}"
-+
-+    # Enable route_localnet and delete useless route 127.0.0.0/8.
-+    sysctl -w net.ipv4.conf.veth0.route_localnet=1
-+    ip netns exec "${PEER_NS}" sysctl -w net.ipv4.conf.veth1.route_localnet=1
-+    ip route del 127.0.0.0/8 dev lo table local
-+    ip netns exec "${PEER_NS}" ip route del 127.0.0.0/8 dev lo table local
-+
-+    ifconfig veth0 127.25.3.4/24 up
-+    ip netns exec "${PEER_NS}" ifconfig veth1 127.25.3.14/24 up
-+
-+    ip route flush cache
-+    ip netns exec "${PEER_NS}" ip route flush cache
-+}
-+
-+cleanup() {
-+    ip link del veth0
-+    ip route add local 127.0.0.0/8 dev lo proto kernel scope host src 127.0.0.1
-+    local -r ns="$(ip netns list|grep $PEER_NS)"
-+    [ -n "$ns" ] && ip netns del $ns 2>/dev/null
-+}
-+
-+# Run test when arp_announce = 2.
-+run_arp_announce_test() {
-+    echo "run arp_announce test"
-+    setup
-+
-+    sysctl -w net.ipv4.conf.veth0.arp_announce=2
-+    ip netns exec "${PEER_NS}" sysctl -w net.ipv4.conf.veth1.arp_announce=2
-+    ping -c5 -I veth0 127.25.3.14
-+    if [ $? -ne 0 ];then
-+        echo "failed"
-+    else
-+        echo "ok"
-+    fi
-+
-+    cleanup
-+}
-+
-+# Run test when arp_ignore = 3.
-+run_arp_ignore_test() {
-+    echo "run arp_ignore test"
-+    setup
-+
-+    sysctl -w net.ipv4.conf.veth0.arp_ignore=3
-+    ip netns exec "${PEER_NS}" sysctl -w net.ipv4.conf.veth1.arp_ignore=3
-+    ping -c5 -I veth0 127.25.3.14
-+    if [ $? -ne 0 ];then
-+        echo "failed"
-+    else
-+        echo "ok"
-+    fi
-+
-+    cleanup
-+}
-+
-+run_all_tests() {
-+    run_arp_announce_test
-+    run_arp_ignore_test
-+}
-+
-+run_all_tests
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+index ed4202e883f0..1533c657220b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+@@ -37,7 +37,7 @@ static const struct devlink_ops mlx5_devlink_ops = {
+ 	.flash_update = mlx5_devlink_flash_update,
+ };
+ 
+-struct devlink *mlx5_devlink_alloc()
++struct devlink *mlx5_devlink_alloc(void)
+ {
+ 	return devlink_alloc(&mlx5_devlink_ops, sizeof(struct mlx5_core_dev));
+ }
 -- 
-2.19.1
+2.20.1
 
