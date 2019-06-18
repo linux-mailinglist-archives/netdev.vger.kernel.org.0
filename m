@@ -2,117 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A17A5497ED
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 06:08:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DD01497F1
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 06:14:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725913AbfFREIl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 00:08:41 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:40846 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725826AbfFREIl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 00:08:41 -0400
-Received: by mail-pl1-f194.google.com with SMTP id a93so5123420pla.7
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 21:08:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=dKrKCxF0RsiNuMGHoaZXRrGrN0Ri+A/IA8N+vAw2+tc=;
-        b=ea/eMCIYDGb6BtTOlmIfG5Do8Bag9htcUvq6qF3Lko5zo8xStHMTzo1+WTNxKm5UWN
-         RlnOOotKaYqH/Ffw3W36RbNsD5ZaT8H/fGO7g9ylXid065vj3QNg833ISgq61dPFLurq
-         H0JlXCaRvY+nxkcu47I1MYANoFNSvDj7Mp1lDVzBS7EQMZGA6nvMiNzD1o1rfjNou82u
-         qfnJ280KAhFvOgO2L0ru9f6YZCiHqySKckTu7fmKjKP4iE0FpJ3bVGxgD7iWh8z13d55
-         Zro5Eyk4q72KVstgM1TVywNk+w2J/yTwqVQxxbIjFbRk/6cXZJmZC4svUDSbcIWW3FQz
-         B4Mg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=dKrKCxF0RsiNuMGHoaZXRrGrN0Ri+A/IA8N+vAw2+tc=;
-        b=YK1yN/9oEwXApDMQfeWRLfS8fBMMzXbhWJOKU7JDeb6JDK8ybFJXnbJK7xAcIdbunX
-         vxexAZrHqHRyve7wNiunRq21oz8PoPHB45LtT5uUZ6O1HDlahhGtaqUIZWFp3k+ZthWz
-         VJLDmxN0Fn1Oc4eLZEZ40c4Nj3KqyW3HLZPD+EzAnDDJqRTMmujFvkSej4iisrZZyhBn
-         L9pOOY7C6bjn4ySTx58JlMJTa5Ozzi1ChhaStj7tqLXdy8CqcAmmzZVl/FqOKDM3qAyY
-         YgLGgtAVwAtubwcms1Jx9OcWYCw/TdiUaycCEK0neGxZqDHrrzT5WkwfEr9YW7h+zPdB
-         E/Yw==
-X-Gm-Message-State: APjAAAW1JLgV6GvLmFVqwAYSXBKuvhlI9b8pyVau6nWd6gw6YjDYLhxa
-        5nHwDke96N+GtwPM8Xp1E+k=
-X-Google-Smtp-Source: APXvYqzitUN3M0Ji0VB2KtNQ6sCQLI8KdUZYegMJY5I9jUllyOwBc20mfHK3RAIyT8gwI2CSNSeEBg==
-X-Received: by 2002:a17:902:8ec7:: with SMTP id x7mr35459279plo.224.1560830920762;
-        Mon, 17 Jun 2019 21:08:40 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-70.hsd1.ca.comcast.net. [73.241.150.70])
-        by smtp.gmail.com with ESMTPSA id u5sm12389299pgp.19.2019.06.17.21.08.38
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Mon, 17 Jun 2019 21:08:38 -0700 (PDT)
-Subject: Re: [PATCH net 2/4] tcp: tcp_fragment() should apply sane memory
- limits
-To:     Christoph Paasch <christoph.paasch@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Looney <jtl@netflix.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Tyler Hicks <tyhicks@canonical.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Bruce Curtis <brucec@netflix.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Dustin Marquess <dmarquess@apple.com>
-References: <20190617170354.37770-1-edumazet@google.com>
- <20190617170354.37770-3-edumazet@google.com>
- <CALMXkpYVRxgeqarp4gnmX7GqYh1sWOAt6UaRFqYBOaaNFfZ5sw@mail.gmail.com>
- <03cbcfdf-58a4-dbca-45b1-8b17f229fa1d@gmail.com>
- <CALMXkpZ4isoXpFp_5=nVUcWrt5TofYVhpdAjv7LkCH7RFW1tYw@mail.gmail.com>
- <aa0af451-5e7c-7d83-ef25-095a67cd23a1@gmail.com>
- <CALMXkpYs8KN0DmXV+37grbS0Y4Q-DAM-_GVZy+qWi2dtV+cDPA@mail.gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <e072881f-a676-f98b-19fd-4eb3315ad0f3@gmail.com>
-Date:   Mon, 17 Jun 2019 21:08:37 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1726307AbfFREOL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 00:14:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55938 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725826AbfFREOL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Jun 2019 00:14:11 -0400
+Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 29A7C2085A;
+        Tue, 18 Jun 2019 04:14:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1560831250;
+        bh=nlZXgfeO6Lsh2kyizJV7f0jo6QHVyCgeaN7az9UUvCg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kY7iHu16DRL/De7QSnn93HiZnBvHZ7nuR0sz2+igmPIjXrbIHvQb/A99QarMRMITN
+         PzUN7LxK/YihJm+Lpj2ontkYOyOMlAaoYY2NRZZA8S3h1YTlKBM8CcV780UdPlqG5S
+         Xyk4/xFcbJBcBbvDmveLcChxf6NZmuFQH1iAOta4=
+Date:   Mon, 17 Jun 2019 21:14:08 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Cc:     netdev@vger.kernel.org, linux-crypto@vger.kernel.org,
+        herbert@gondor.apana.org.au, edumazet@google.com,
+        davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        jbaron@akamai.com, cpaasch@apple.com, David.Laight@aculab.com,
+        ycheng@google.com
+Subject: Re: [PATCH v3] net: ipv4: move tcp_fastopen server side code to
+ SipHash library
+Message-ID: <20190618041408.GB2266@sol.localdomain>
+References: <20190617080933.32152-1-ard.biesheuvel@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <CALMXkpYs8KN0DmXV+37grbS0Y4Q-DAM-_GVZy+qWi2dtV+cDPA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190617080933.32152-1-ard.biesheuvel@linaro.org>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Jun 17, 2019 at 10:09:33AM +0200, Ard Biesheuvel wrote:
+> diff --git a/include/linux/tcp.h b/include/linux/tcp.h
+> index c23019a3b264..9ea0e71f5c6a 100644
+> --- a/include/linux/tcp.h
+> +++ b/include/linux/tcp.h
+> @@ -58,12 +58,7 @@ static inline unsigned int tcp_optlen(const struct sk_buff *skb)
+>  
+>  /* TCP Fast Open Cookie as stored in memory */
+>  struct tcp_fastopen_cookie {
+> -	union {
+> -		u8	val[TCP_FASTOPEN_COOKIE_MAX];
+> -#if IS_ENABLED(CONFIG_IPV6)
+> -		struct in6_addr addr;
+> -#endif
+> -	};
+> +	u64	val[TCP_FASTOPEN_COOKIE_MAX / sizeof(u64)];
+>  	s8	len;
+>  	bool	exp;	/* In RFC6994 experimental option format */
+>  };
 
+Is it okay that the cookies will depend on CPU endianness?
 
-On 6/17/19 8:53 PM, Christoph Paasch wrote:
-> On Mon, Jun 17, 2019 at 8:44 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->>
->>
->>
->> On 6/17/19 8:19 PM, Christoph Paasch wrote:
->>>
->>> Yes, this does the trick for my packetdrill-test.
->>>
->>> I wonder, is there a way we could end up in a situation where we can't
->>> retransmit anymore?
->>> For example, sk_wmem_queued has grown so much that the new test fails.
->>> Then, if we legitimately need to fragment in __tcp_retransmit_skb() we
->>> won't be able to do so. So we will never retransmit. And if no ACK
->>> comes back in to make some room we are stuck, no?
->>
->> Well, RTO will eventually fire.
-> 
-> But even the RTO would have to go through __tcp_retransmit_skb(), and
-> let's say the MTU of the interface changed and thus we need to
-> fragment. tcp_fragment() would keep on failing then, no? Sure,
-> eventually we will ETIMEOUT but that's a long way to go.
+> diff --git a/include/net/tcp.h b/include/net/tcp.h
+> index 96e0e53ff440..184930b02779 100644
+> --- a/include/net/tcp.h
+> +++ b/include/net/tcp.h
+> @@ -1628,9 +1628,9 @@ bool tcp_fastopen_defer_connect(struct sock *sk, int *err);
+>  
+>  /* Fastopen key context */
+>  struct tcp_fastopen_context {
+> -	struct crypto_cipher	*tfm[TCP_FASTOPEN_KEY_MAX];
+> -	__u8			key[TCP_FASTOPEN_KEY_BUF_LENGTH];
+> -	struct rcu_head		rcu;
+> +	__u8		key[TCP_FASTOPEN_KEY_MAX][TCP_FASTOPEN_KEY_LENGTH];
+> +	int		num;
+> +	struct rcu_head	rcu;
+>  };
 
-Also I want to point that normal skb split for not-yet transmitted skbs
-does not use tcp_fragment(), with one exception (the one you hit)
+Why not use 'siphash_key_t' here?  Then the (potentially alignment-violating)
+cast in __tcp_fastopen_cookie_gen_cipher() wouldn't be needed.
 
-Only the first skb in write queue can possibly have payload in skb->head
-and might go through tcp_fragment()
+>  int tcp_fastopen_reset_cipher(struct net *net, struct sock *sk,
+>  			      void *primary_key, void *backup_key,
+>  			      unsigned int len)
+> @@ -115,11 +75,20 @@ int tcp_fastopen_reset_cipher(struct net *net, struct sock *sk,
+>  	struct fastopen_queue *q;
+>  	int err = 0;
+>  
+> -	ctx = tcp_fastopen_alloc_ctx(primary_key, backup_key, len);
+> -	if (IS_ERR(ctx)) {
+> -		err = PTR_ERR(ctx);
+> +	ctx = kmalloc(sizeof(*ctx), GFP_KERNEL);
+> +	if (!ctx) {
+> +		err = -ENOMEM;
+>  		goto out;
+>  	}
+> +
+> +	memcpy(ctx->key[0], primary_key, len);
+> +	if (backup_key) {
+> +		memcpy(ctx->key[1], backup_key, len);
+> +		ctx->num = 2;
+> +	} else {
+> +		ctx->num = 1;
+> +	}
+> +
+>  	spin_lock(&net->ipv4.tcp_fastopen_ctx_lock);
+>  	if (sk) {
+>  		q = &inet_csk(sk)->icsk_accept_queue.fastopenq;
 
-Other splits will use tso_fragment() which does not enforce sk_wmem_queued limits (yet)
+Shouldn't there be a check that 'len == TCP_FASTOPEN_KEY_LENGTH'?  I see that
+all callers pass that, but it seems unnecessarily fragile for this to accept
+short lengths and leave uninitialized memory in that case.
 
-So things like TLP should work.
+- Eric
