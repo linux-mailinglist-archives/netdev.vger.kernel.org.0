@@ -2,113 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BBCBE4AA74
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 20:57:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BC444AA7A
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 20:57:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730301AbfFRS5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 14:57:18 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:37920 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730142AbfFRS5S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 14:57:18 -0400
-Received: by mail-qt1-f194.google.com with SMTP id n11so16707777qtl.5
-        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 11:57:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=rFniBRZB27OiVctzOe8xy2WTstm/tliD8kmZmH0GaS4=;
-        b=IsvLLY9osgDaejE7Iko5+MVIhkNcKYhKC1sR6qaFZiNgnHL32Ut55/1j+IYIJ2dT8g
-         FAz0KY20czdZNbP5RNDNFUUNOxH4o28/UIzecriLnyxNNHN3I20k3uC24Rs1V+yGJn9C
-         XCtoAyCzqNq5Y7wK3mUeajzV/CjQxUN9fw8qMATbDH3q7VtLPyLxmvCjraIG9Wc2j7IX
-         GMynm8nmnimT6WbAPoy/8TD7vt6IwI2Mi4MUJF88Ed5y8ubWiARZZulAgp3KVAExvLrg
-         n2kNwtxEwn6lrW/fqyRkNieF4So58lC8HjkmdL870Jcf0VSsY/pHK08OI+7sSrOZ2eYU
-         liWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=rFniBRZB27OiVctzOe8xy2WTstm/tliD8kmZmH0GaS4=;
-        b=r9qPX6+Bym0VB1/OOaDkCYNHpussWBWVPie5m4GTzIIa69MEnXDqQfN5BMi78cWxlR
-         jXUWr0mUpWMEGi5+6Zed9xqg+Q61V6Babrq5PXz+mLldktGOt762kfPyjR8IsC/5TiE1
-         lTui01bmlKYPJ70bNcDEPD1j10VlwcNk3pWe0yeQtohfPZrL1HZAXUadSoUduH2xYCK5
-         r0hy/FQvMkw1jk1NTpDCN9368p5WPv+v5jdRnwn0ZOvghvsgPym39S7IVtxyzB0mOfBi
-         uJg5aiBrlPglocMkFl4wIctxTYdX2J/3kTQtryZhf9VwNizhevBEVe5iSLtHTMzosNcg
-         4ZFA==
-X-Gm-Message-State: APjAAAUQ1ZXFpXZlVJbyqe6OOb83wTUmYiN9i3UAGHGDKe0LtBpYqe2L
-        xC72ndRH2q9rCXpiAbFZKUqruw==
-X-Google-Smtp-Source: APXvYqxqaW7DBU1u15nbVZ25iMiqgkOB3k+m2fKzpPWu6mIQdL0vL9+NXttxIbSy+5CIkBEv3KOxrQ==
-X-Received: by 2002:ac8:3971:: with SMTP id t46mr82479411qtb.164.1560884237453;
-        Tue, 18 Jun 2019 11:57:17 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id d38sm9819334qtb.95.2019.06.18.11.57.16
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 18 Jun 2019 11:57:17 -0700 (PDT)
-Date:   Tue, 18 Jun 2019 11:57:12 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     John Hurley <john.hurley@netronome.com>, <netdev@vger.kernel.org>,
-        <davem@davemloft.net>, <fw@strlen.de>, <jhs@mojatatu.com>,
-        <simon.horman@netronome.com>, <oss-drivers@netronome.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [RFC net-next 1/2] net: sched: refactor reinsert action
-Message-ID: <20190618115712.7bb168c2@cakuba.netronome.com>
-In-Reply-To: <dbd77b82-5951-8512-bc9d-e47abd400be3@solarflare.com>
-References: <1560522831-23952-1-git-send-email-john.hurley@netronome.com>
-        <1560522831-23952-2-git-send-email-john.hurley@netronome.com>
-        <dbd77b82-5951-8512-bc9d-e47abd400be3@solarflare.com>
-Organization: Netronome Systems, Ltd.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+        id S1730416AbfFRS54 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 14:57:56 -0400
+Received: from [195.159.176.226] ([195.159.176.226]:39312 "EHLO
+        blaine.gmane.org" rhost-flags-FAIL-FAIL-OK-OK) by vger.kernel.org
+        with ESMTP id S1730266AbfFRS54 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 14:57:56 -0400
+Received: from list by blaine.gmane.org with local (Exim 4.89)
+        (envelope-from <gl-netdev-2@m.gmane.org>)
+        id 1hdJIl-000wDw-Ef
+        for netdev@vger.kernel.org; Tue, 18 Jun 2019 20:57:51 +0200
+X-Injected-Via-Gmane: http://gmane.org/
+To:     netdev@vger.kernel.org
+From:   "Brian J. Murrell" <brian@interlinx.bc.ca>
+Subject: bonded active-backup ethernet-wifi drops packets
+Date:   Tue, 18 Jun 2019 14:57:44 -0400
+Message-ID: <0292e9eefb12f1b1e493f5af8ab78fa00744ed20.camel@interlinx.bc.ca>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-fBUPa50ZZJMU5cD3ie/M"
+User-Agent: Evolution 3.32.2 (3.32.2-1.fc30) 
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 17 Jun 2019 19:43:53 +0100, Edward Cree wrote:
-> On 14/06/2019 15:33, John Hurley wrote:
-> > Instead of
-> > returning TC_ACT_REINSERT, change the type to the new TC_ACT_CONSUMED
-> > which tells the caller that the packet has been stolen by another proce=
-ss
-> > and that no consume call is required. =20
-> Possibly a dumb question, but why does this need a new CONSUMED rather
-> =C2=A0than, say, taking an additional ref and returning TC_ACT_STOLEN?
 
-Is it okay to reinsert a shared skb into the stack?  In particular this
-looks a little scary:
+--=-fBUPa50ZZJMU5cD3ie/M
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
-		     gfp_t gfp_mask)
-{
-	int i, osize =3D skb_end_offset(skb);
-	int size =3D osize + nhead + ntail;
-	long off;
-	u8 *data;
+Hi.
 
-	BUG_ON(nhead < 0);
+I have an active-backup bonded connection on a 5.1.6 kernel where the
+slaves are an Ethernet interface and a wifi interface.  The goal is to
+have network transparent (i.e. same and IP address on both interfaces)
+interface which takes advantage of high-speed and low-latency when it
+can be physically plugged into the wired network but have portability
+when unplugged through WiFi.
 
-	BUG_ON(skb_shared(skb));
-	^^^^^^^^^^^^^^^^^^^^^^^^
+It all works, mostly.  :-/
 
-Actually looking for Paolo's address to add him to CC I found that he
-said at the time:
+I find that even when the primary interface, being the Ethernet
+interface is plugged in and active, the bonded interface will drop
+packets periodically.
 
-  With ACT_SHOT caller/upper layer will free the skb, too. We will have
-  an use after free (from either the upper layer and the xmit device).
-  Similar issues with STOLEN, TRAP, etc.
+If I down the bonded interface and plumb the Ethernet interface
+directly, not as a slave of the bonded interface, no such packet
+dropping occurs.
 
-  In the past, Changli Gao attempted to avoid the clone incrementing the
-  skb usage count:
+My measure of packet dropping, is by observing the output of "sudo ping
+-f <ip_address>.  In less than a few minutes even, on the bonded
+interface, even with the Ethernet interface as the active slave, I will
+have a long string of dots indicating pings that were never
+replied.  On the unbonded Ethernet interface, no dots, even when
+measured over many days.
 
-  commit 210d6de78c5d7c785fc532556cea340e517955e1
-  Author: Changli Gao <xiaosuo@gmail.com>
-  Date:   Thu Jun 24 16:25:12 2010 +0000
+My bonding config:
 
-      act_mirred: don't clone skb when skb isn't shared
+$ cat /proc/net/bonding/bond0
+Ethernet Channel Bonding Driver: v3.7.1 (April 27, 2011)
 
-  but some/many device drivers expect an skb usage count of 1, and that
-  caused ooops and was revered.
+Bonding Mode: fault-tolerance (active-backup)
+Primary Slave: enp0s31f6 (primary_reselect always)
+Currently Active Slave: enp0s31f6
+MII Status: up
+MII Polling Interval (ms): 100
+Up Delay (ms): 0
+Down Delay (ms): 0
 
-:)
+Slave Interface: enp0s31f6
+MII Status: up
+Speed: 1000 Mbps
+Duplex: full
+Link Failure Count: 0
+Permanent HW addr: 0c:54:15:4a:b2:0d
+Slave queue ID: 0
+
+Slave Interface: wlp2s0
+MII Status: up
+Speed: Unknown
+Duplex: Unknown
+Link Failure Count: 1
+Permanent HW addr: 0c:54:15:4a:b2:0d
+Slave queue ID: 0
+
+Current interface config/stats:
+
+$ ifconfig bond0
+bond0: flags=3D5187<UP,BROADCAST,RUNNING,MASTER,MULTICAST>  mtu 1500
+        inet 10.75.22.245  netmask 255.255.255.0  broadcast 10.75.22.255
+        inet6 fe80::ee66:b8c9:d55:a28f  prefixlen 64  scopeid 0x20<link>
+        inet6 2001:123:ab:123:d36d:5e5d:acc8:e9bc  prefixlen 64  scopeid 0x=
+0<global>
+        ether 0c:54:15:4a:b2:0d  txqueuelen 1000  (Ethernet)
+        RX packets 1596206  bytes 165221404 (157.5 MiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 1590552  bytes 162689350 (155.1 MiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+Devices:
+00:1f.6 Ethernet controller: Intel Corporation Ethernet Connection (2) I219=
+-LM (rev 31)
+02:00.0 Network controller: Intel Corporation Wireless 8265 / 8275 (rev 78)
+
+Happy to provide any other useful information.
+
+Any ideas why the dropping, only when using the bonded interface?
+
+Cheers,
+b.
+
+
+
+--=-fBUPa50ZZJMU5cD3ie/M
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEE8B/A+mOVz5cTNBuZ2sHQNBbLyKAFAl0JNCkACgkQ2sHQNBbL
+yKCw9Af8ClmWckxTha7/8NQpOH5RDugu8Vqx8lw3tgLTZ9Q7FPmPPPj3WKIkPd+u
+Dr8g7bDPqynsB+7vVpqBKfqg9Aa1yFIl7weM/gm/e0BR1tdwtj7eVMHcbaO21m+N
+NfcX3js0GkNhELHKKvibETerUUukjpFjUfQeX+0ZgbykwRf/0RJnGH7eHgexrrtN
+fXdNc1MlPpn+EnnTGgOOZbzLVoSzk1jJCvPEpbyBgA3ZYnZD2FRaOesMxZFdidzR
+toAXJj2JPcKv/o/IsXrXYQMXmhZBMlSZtB+3H5pSQ46OzKHHxZiiDULXTog5jfvN
+avB4YGP1/KHA+Ie6yv1NkZ/pwrsJsA==
+=+zDv
+-----END PGP SIGNATURE-----
+
+--=-fBUPa50ZZJMU5cD3ie/M--
+
+
