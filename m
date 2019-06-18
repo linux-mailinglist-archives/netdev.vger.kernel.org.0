@@ -2,109 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ABEBB4A622
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 18:04:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 358FC4A643
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 18:09:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729472AbfFRQDw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 12:03:52 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:38166 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729320AbfFRQDw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 12:03:52 -0400
-Received: by mail-pf1-f195.google.com with SMTP id a186so7916133pfa.5
-        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 09:03:51 -0700 (PDT)
+        id S1729898AbfFRQJR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 12:09:17 -0400
+Received: from mail-pf1-f201.google.com ([209.85.210.201]:44110 "EHLO
+        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729247AbfFRQJR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 12:09:17 -0400
+Received: by mail-pf1-f201.google.com with SMTP id 5so9574631pff.11
+        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 09:09:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+        d=google.com; s=20161025;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=dczz5zgwbgg1guB6e3ADRU38B5wXKVmi34uwnCDC2Ic=;
-        b=HoAYDleCDAkCDwBilQd5Sk9GOq9lTAGaI73DTp+pbcxKVTRryCY73mIuF7xoloKPe8
-         g3FXdlZrF42AMYfrwXdQtZjTbnyziD87Zy7z+MeWTjDEZGBNtqu4Xus+gDpc73f9ojmx
-         b2bk4SvvZk3fngGFF7kVL9PUodmrbS+7NEVRgT8EE0tnBt/2utXN0mYa/lrZasJFIBE5
-         jmc2A8S1XSXCfZyQJ9utYWpsGYdC/k2JFYpFNm8NPGWWsn8Ws5vJbjHfiXCj5abFO73V
-         yKtygD/hSKPs0lVUPAyAUsfhkZykPZ7/frJ6sNU1GFccAwkhEH5Ve/DKvVvm1VwjCuMf
-         UGaQ==
+        bh=6IDFouL/H7+c/7AlvTo7X9/eywwkp4tDYTIp5DP7IoQ=;
+        b=RTGBpnGivsxhigxzXCCAyfitf1UP+bR777ZW4X0Ba2SvpIluQba8Nf28uEO6Pd9o5s
+         +DdSidPp3cu9c3gNfbjiGWKpQeMTdOmgV0ErJWHNaAe0K7qVk7B+O1OKDTT6ILNlyls+
+         pWPCf5BrzJNSRDnYReBKEBGriap1vFXaaeb9PyfTjd3fhJ8mp/Uc7PdAJxBBm/QvZSJp
+         knf9G59aFXUt0qSOC5r8zoML2Fg9jW4Trxe1ox6ApyOhgbutcRhBbP6Kjj7oI4W0jSqH
+         +qXOzddWWWJgYAjKHtU21bNuYSe64JmBWXkGng+stzLXFms86RDD6dxgTMcJp1ySq/LL
+         8KCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dczz5zgwbgg1guB6e3ADRU38B5wXKVmi34uwnCDC2Ic=;
-        b=fNzPiFGVpk4c8AdkqmDDi5Lm2gxQWz4KXJfcDsrgZBjoLWu/mq8AiZW7PyP6C2vaLo
-         iHm2sbUQLPUadIS7jwG8YIAPjkuBQrKkAE4ribA+y9/m3Ozw8JVCzuma8MTUsQkYRODO
-         kpGZWFdeHuX++l+LF6ESJe1pVakLTcKhDWvqMSQFasmbffg4QIZiMjlnNefkKTGuqiGY
-         LslXxIXrX381KXiAru7Hid9VL7/n7GQXquBOzSoulN1NwxxqLnQg/kFAJjHGdfHtIOon
-         RG1UeIAYRdP16h+sinFL2AkToEdhU2uxJhCYJ3WtBuV8oM6dPnnh6QbrKlGq7uMq5HGx
-         NSQg==
-X-Gm-Message-State: APjAAAX6oKCtH80jNR3G2LZVu3a7qTLHhh9tf/x0KN8wTyiJQzw2RJ0e
-        Unp2L/9rw7fsNfj6q9xF+fgeisu5jxfoGp0OWGE=
-X-Google-Smtp-Source: APXvYqyUSxf1topCG53CmQcLjew+7tjtLeSzb+28HdaCMpXATBgWmsSADYWUpf87QmqAkn/E0BcsHvRCCCTzFXV8w78=
-X-Received: by 2002:aa7:804c:: with SMTP id y12mr118157346pfm.94.1560873831476;
- Tue, 18 Jun 2019 09:03:51 -0700 (PDT)
-MIME-Version: 1.0
-References: <1560259713-25603-1-git-send-email-paulb@mellanox.com>
- <1560259713-25603-2-git-send-email-paulb@mellanox.com> <87d0jkgr3r.fsf@toke.dk>
- <da87a939-9000-8371-672a-a949f834caea@mellanox.com> <877e9sgmp1.fsf@toke.dk>
- <20190611155350.GC3436@localhost.localdomain> <CAM_iQpX1jFBYCLu1t+SbuxKDMr3_c2Fip0APwLebO9tf_hqs8w@mail.gmail.com>
- <20190614192403.GK3436@localhost.localdomain>
-In-Reply-To: <20190614192403.GK3436@localhost.localdomain>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Tue, 18 Jun 2019 09:03:39 -0700
-Message-ID: <CAM_iQpWLrRKKr4v6sUWeFfaJDJe4tGHdCAfUttxV4oQim=-9Bw@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/3] net/sched: Introduce action ct
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Paul Blakey <paulb@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>,
-        Yossi Kuperman <yossiku@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Aaron Conole <aconole@redhat.com>,
-        Zhike Wang <wangzhike@jd.com>,
-        Rony Efraim <ronye@mellanox.com>,
-        "nst-kernel@redhat.com" <nst-kernel@redhat.com>,
-        John Hurley <john.hurley@netronome.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Justin Pettit <jpettit@ovn.org>,
-        Kevin Darbyshire-Bryant <kevin@darbyshire-bryant.me.uk>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=6IDFouL/H7+c/7AlvTo7X9/eywwkp4tDYTIp5DP7IoQ=;
+        b=LcmeCm0g3YL1gH7BIl2Y6IsORbudj+H4RrSn5cR03OFr74UbkT3IsH/OtYKfEGbvnF
+         ZNMsX+QfTKciR1dHNj+aWwYhHmFNZKAvGEOiko4JHqlEAx1cDzZi5vx10GhfmDGEunTe
+         fICyne00LqGLNGH5HGvVqP/K/WTOUn13D2ZiBxHs4qAmi7r/YN6kXxgNAbHskUyKrKKi
+         dtMrdISxntbNVgL0ZM8iR18L0tkjLIBkEnJI+FtjyailpXCKCYqSY9S8ugpcCXLsUHo5
+         kiow8/gX9wJJGOMHlO8FtOYPWPSeDczrpuZgfdAKuqdJbP4FVRTa5iBMBLdUQL+uvD+F
+         1Fgg==
+X-Gm-Message-State: APjAAAVpZPcMyVW9AO9mfw+o8XpV7/vhYkyFhB6TXzM8fa2qWwtpVYCn
+        MDdil1nIA+eStc64zHAkMmeR8YTHYg==
+X-Google-Smtp-Source: APXvYqyo4hLXmSpMPPPSg/4SQs1y7daEnNSSdHXidTKy9+Ir8lzk1kY1I65tbUu+DwL1MAJ839z0DtEdbg==
+X-Received: by 2002:a17:902:6902:: with SMTP id j2mr42357327plk.321.1560874156473;
+ Tue, 18 Jun 2019 09:09:16 -0700 (PDT)
+Date:   Tue, 18 Jun 2019 09:09:10 -0700
+In-Reply-To: <20190618083900.78eb88bd@bootlin.com>
+Message-Id: <20190618160910.62922-1-nhuck@google.com>
+Mime-Version: 1.0
+References: <20190618083900.78eb88bd@bootlin.com>
+X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
+Subject: [PATCH] net: mvpp2: cls: Add pmap to fs dump
+From:   Nathan Huckleberry <nhuck@google.com>
+To:     davem@davemloft.net, maxime.chevallier@bootlin.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Nathan Huckleberry <nhuck@google.com>,
+        clang-built-linux@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 14, 2019 at 12:24 PM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
->
-> On Fri, Jun 14, 2019 at 11:07:37AM -0700, Cong Wang wrote:
-> > On Tue, Jun 11, 2019 at 9:44 AM Marcelo Ricardo Leitner
-> > <marcelo.leitner@gmail.com> wrote:
-> > > I had suggested to let act_ct handle the above as well, as there is a
-> > > big chunk of code on both that is pretty similar. There is quite some
-> > > boilerplate for interfacing with conntrack which is duplicated.
-> >
-> > Why do you want to mix retrieving conntrack info with executing
-> > conntrack?
->
-> To save on the heavy boilerplate for interfacing with conntrack.
->
-> >
-> > They are totally different things to me, act_ctinfo merely retrieves
-> > information from conntrack, while this one, act_ct, is supposed to
-> > move packets to conntrack.
->
-> Seems we have a different understanding for "move packets to
-> conntrack": conntrack will not consume the packets after this.
-> But after act_ct is executed, if not with the clear flag, skb will now
-> have the skb->_nfct entry available, on which flower then will be able
-> to match. So in essence, it is also fetching information from
-> conntrack.
+There was an unused variable 'mvpp2_dbgfs_prs_pmap_fops'
+Added a usage consistent with other fops to dump pmap
+to userspace.
 
-Interesting. Is it because cls_flower uses conntrack for flow dissection?
-What's the reason behind?
+Cc: clang-built-linux@googlegroups.com
+Link: https://github.com/ClangBuiltLinux/linux/issues/529
+Signed-off-by: Nathan Huckleberry <nhuck@google.com>
+---
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Again, I am still not convinced to do L3 operations in L2, skb->_nfct
-belongs to conntrack which is L3, no matter the packet is consumed
-or not.
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c
+index 0ee39ea47b6b..55947bc63cfd 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c
+@@ -566,6 +566,9 @@ static int mvpp2_dbgfs_prs_entry_init(struct dentry *parent,
+ 	debugfs_create_file("hits", 0444, prs_entry_dir, entry,
+ 			    &mvpp2_dbgfs_prs_hits_fops);
+ 
++	ddebugfs_create_file("pmap", 0444, prs_entry_dir, entry,
++			     &mvpp2_dbgfs_prs_pmap_fops);
++
+ 	return 0;
+ }
+ 
+-- 
+2.22.0.410.gd8fdbe21b5-goog
 
-Thanks.
