@@ -2,80 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E887D4A8A5
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 19:39:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C583A4A8AB
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 19:40:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730205AbfFRRjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 13:39:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33804 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729477AbfFRRjJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Jun 2019 13:39:09 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 06B5320863;
-        Tue, 18 Jun 2019 17:39:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1560879548;
-        bh=PxrxA3UzfI7/MmrGvABpDnff3c4KY8ZcU8lFKr5WNAE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=1vxm1WDqA9x8AORz+Qlp8wyGuc3mE1KUmC1hFVAK2SdkShmEMzRzLW5hJuY35m0gA
-         NQQ/1qsNgy3R6NydgzCcYgC2jMCEt4vBZh4/8irlxBc8hZh7m8nKCTLyIRCFNZvOam
-         FMHO8jzttjGxjMrpfBw2WOJherwAhYNR1lvRPpqQ=
-Date:   Tue, 18 Jun 2019 19:39:06 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Fred Klassen <fklassen@appneta.com>
-Subject: Re: 4.19: udpgso_bench_tx: setsockopt zerocopy: Unknown error 524
-Message-ID: <20190618173906.GB3649@kroah.com>
-References: <CA+FuTSfBFqRViKfG5crEv8xLMgAkp3cZ+yeuELK5TVv61xT=Yw@mail.gmail.com>
- <20190618161036.GA28190@kroah.com>
- <CAF=yD-JnTHdDE8K-EaJM2fH9awvjAmOJkoZbtU+Wi58pPnyAxw@mail.gmail.com>
- <20190618.094759.539007481404905339.davem@davemloft.net>
- <20190618171516.GA17547@kroah.com>
- <CAF=yD-+pNrAo1wByHY6f5AZCq8xT0FDMKM-WzPkfZ36Jxj4mNg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAF=yD-+pNrAo1wByHY6f5AZCq8xT0FDMKM-WzPkfZ36Jxj4mNg@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+        id S1729835AbfFRRkj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 13:40:39 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:50770 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729337AbfFRRkj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 13:40:39 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4BFD215107498;
+        Tue, 18 Jun 2019 10:40:38 -0700 (PDT)
+Date:   Tue, 18 Jun 2019 10:40:37 -0700 (PDT)
+Message-Id: <20190618.104037.359105025150148890.davem@davemloft.net>
+To:     dledford@redhat.com
+Cc:     kda@linux-powerpc.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, mkubecek@suse.cz
+Subject: Re: [PATCH net-next v4 2/2] ipoib: show VF broadcast address
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <bd0b0a87b8bc459e172ad9396931bb69697da6c9.camel@redhat.com>
+References: <20190617085341.51592-4-dkirjanov@suse.com>
+        <20190618.100801.2026737630386139646.davem@davemloft.net>
+        <bd0b0a87b8bc459e172ad9396931bb69697da6c9.camel@redhat.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 18 Jun 2019 10:40:38 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 18, 2019 at 01:27:14PM -0400, Willem de Bruijn wrote:
-> On Tue, Jun 18, 2019 at 1:15 PM Greg KH <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Tue, Jun 18, 2019 at 09:47:59AM -0700, David Miller wrote:
-> > > From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-> > > Date: Tue, 18 Jun 2019 12:37:33 -0400
-> > >
-> > > > Specific to the above test, I can add a check command testing
-> > > > setsockopt SO_ZEROCOPY  return value. AFAIK kselftest has no explicit
-> > > > way to denote "skipped", so this would just return "pass". Sounds a
-> > > > bit fragile, passing success when a feature is absent.
-> > >
-> > > Especially since the feature might be absent because the 'config'
-> > > template forgot to include a necessary Kconfig option.
-> >
-> > That is what the "skip" response is for, don't return "pass" if the
-> > feature just isn't present.  That lets people run tests on systems
-> > without the config option enabled as you say, or on systems without the
-> > needed userspace tools present.
-> 
-> I was not aware that kselftest had this feature.
-> 
-> But it appears that exit code KSFT_SKIP (4) will achieve this. Okay,
-> I'll send a patch and will keep that in mind for future tests.
+From: Doug Ledford <dledford@redhat.com>
+Date: Tue, 18 Jun 2019 13:29:59 -0400
 
-Wonderful, thanks for doing that!
+> On Tue, 2019-06-18 at 10:08 -0700, David Miller wrote:
+>> From: Denis Kirjanov <kda@linux-powerpc.org>
+>> Date: Mon, 17 Jun 2019 10:53:41 +0200
+>> 
+>> > in IPoIB case we can't see a VF broadcast address for but
+>> > can see for PF
+>> 
+>> I just want to understand why this need to see the VF broadcast
+>> address is IPoIB specific?
+> 
+> A VF might or might not have the same security domain (P_Key) as the
+> parent, and the P_Key is encoded in the broadcast address.  In the
+> event that two vfs or a vf and a pf can't see each other over the IPoIB
+> network, it is necessary to be able to see the broadcast address in use
+> by each to make sure they are the same and not that they shouldn't be
+> able to see each other because they are on different P_Keys and
+> therefore different broadcast multicast groups.
 
-greg k-h
+Thanks for explaining.
+
+I'll apply these to net-next right now then.
+
+Thanks again.
