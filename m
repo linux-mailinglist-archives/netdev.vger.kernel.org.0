@@ -2,134 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B440E4A5FD
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 17:57:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABEBB4A622
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 18:04:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729785AbfFRP5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 11:57:33 -0400
-Received: from mail.us.es ([193.147.175.20]:57340 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729692AbfFRP5a (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Jun 2019 11:57:30 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id F1BAB81A0D
-        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 17:57:27 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id E1FE3DA71F
-        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 17:57:27 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id BF153DA718; Tue, 18 Jun 2019 17:57:27 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 70901DA701;
-        Tue, 18 Jun 2019 17:57:25 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 18 Jun 2019 17:57:25 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 22F294265A2F;
-        Tue, 18 Jun 2019 17:57:25 +0200 (CEST)
-Date:   Tue, 18 Jun 2019 17:57:23 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     linmiaohe <linmiaohe@huawei.com>
-Cc:     kadlec@blackhole.kfki.hu, fw@strlen.de, davem@davemloft.net,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dsahern@gmail.com, Mingfangsen <mingfangsen@huawei.com>
-Subject: Re: [PATCH v3] net: netfilter: Fix rpfilter dropping vrf packets by
- mistake
-Message-ID: <20190618155723.m4l5mkpo4ecmcajt@salvia>
-References: <212e4feb-39de-2627-9948-bbb117ff4d4e@huawei.com>
+        id S1729472AbfFRQDw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 12:03:52 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:38166 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729320AbfFRQDw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 12:03:52 -0400
+Received: by mail-pf1-f195.google.com with SMTP id a186so7916133pfa.5
+        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 09:03:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dczz5zgwbgg1guB6e3ADRU38B5wXKVmi34uwnCDC2Ic=;
+        b=HoAYDleCDAkCDwBilQd5Sk9GOq9lTAGaI73DTp+pbcxKVTRryCY73mIuF7xoloKPe8
+         g3FXdlZrF42AMYfrwXdQtZjTbnyziD87Zy7z+MeWTjDEZGBNtqu4Xus+gDpc73f9ojmx
+         b2bk4SvvZk3fngGFF7kVL9PUodmrbS+7NEVRgT8EE0tnBt/2utXN0mYa/lrZasJFIBE5
+         jmc2A8S1XSXCfZyQJ9utYWpsGYdC/k2JFYpFNm8NPGWWsn8Ws5vJbjHfiXCj5abFO73V
+         yKtygD/hSKPs0lVUPAyAUsfhkZykPZ7/frJ6sNU1GFccAwkhEH5Ve/DKvVvm1VwjCuMf
+         UGaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dczz5zgwbgg1guB6e3ADRU38B5wXKVmi34uwnCDC2Ic=;
+        b=fNzPiFGVpk4c8AdkqmDDi5Lm2gxQWz4KXJfcDsrgZBjoLWu/mq8AiZW7PyP6C2vaLo
+         iHm2sbUQLPUadIS7jwG8YIAPjkuBQrKkAE4ribA+y9/m3Ozw8JVCzuma8MTUsQkYRODO
+         kpGZWFdeHuX++l+LF6ESJe1pVakLTcKhDWvqMSQFasmbffg4QIZiMjlnNefkKTGuqiGY
+         LslXxIXrX381KXiAru7Hid9VL7/n7GQXquBOzSoulN1NwxxqLnQg/kFAJjHGdfHtIOon
+         RG1UeIAYRdP16h+sinFL2AkToEdhU2uxJhCYJ3WtBuV8oM6dPnnh6QbrKlGq7uMq5HGx
+         NSQg==
+X-Gm-Message-State: APjAAAX6oKCtH80jNR3G2LZVu3a7qTLHhh9tf/x0KN8wTyiJQzw2RJ0e
+        Unp2L/9rw7fsNfj6q9xF+fgeisu5jxfoGp0OWGE=
+X-Google-Smtp-Source: APXvYqyUSxf1topCG53CmQcLjew+7tjtLeSzb+28HdaCMpXATBgWmsSADYWUpf87QmqAkn/E0BcsHvRCCCTzFXV8w78=
+X-Received: by 2002:aa7:804c:: with SMTP id y12mr118157346pfm.94.1560873831476;
+ Tue, 18 Jun 2019 09:03:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <212e4feb-39de-2627-9948-bbb117ff4d4e@huawei.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+References: <1560259713-25603-1-git-send-email-paulb@mellanox.com>
+ <1560259713-25603-2-git-send-email-paulb@mellanox.com> <87d0jkgr3r.fsf@toke.dk>
+ <da87a939-9000-8371-672a-a949f834caea@mellanox.com> <877e9sgmp1.fsf@toke.dk>
+ <20190611155350.GC3436@localhost.localdomain> <CAM_iQpX1jFBYCLu1t+SbuxKDMr3_c2Fip0APwLebO9tf_hqs8w@mail.gmail.com>
+ <20190614192403.GK3436@localhost.localdomain>
+In-Reply-To: <20190614192403.GK3436@localhost.localdomain>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Tue, 18 Jun 2019 09:03:39 -0700
+Message-ID: <CAM_iQpWLrRKKr4v6sUWeFfaJDJe4tGHdCAfUttxV4oQim=-9Bw@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/3] net/sched: Introduce action ct
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Paul Blakey <paulb@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>,
+        Yossi Kuperman <yossiku@mellanox.com>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Aaron Conole <aconole@redhat.com>,
+        Zhike Wang <wangzhike@jd.com>,
+        Rony Efraim <ronye@mellanox.com>,
+        "nst-kernel@redhat.com" <nst-kernel@redhat.com>,
+        John Hurley <john.hurley@netronome.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Justin Pettit <jpettit@ovn.org>,
+        Kevin Darbyshire-Bryant <kevin@darbyshire-bryant.me.uk>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 25, 2019 at 09:43:53PM +0800, linmiaohe wrote:
-> From: Miaohe Lin <linmiaohe@huawei.com>
-> 
-> When firewalld is enabled with ipv4/ipv6 rpfilter, vrf
-> ipv4/ipv6 packets will be dropped because in device is
-> vrf but out device is an enslaved device. So failed with
-> the check of the rpfilter.
-> 
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> ---
->  net/ipv4/netfilter/ipt_rpfilter.c  |  1 +
->  net/ipv6/netfilter/ip6t_rpfilter.c | 10 +++++++++-
->  2 files changed, 10 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/ipv4/netfilter/ipt_rpfilter.c b/net/ipv4/netfilter/ipt_rpfilter.c
-> index 0b10d8812828..6e07cd0ecbec 100644
-> --- a/net/ipv4/netfilter/ipt_rpfilter.c
-> +++ b/net/ipv4/netfilter/ipt_rpfilter.c
-> @@ -81,6 +81,7 @@ static bool rpfilter_mt(const struct sk_buff *skb, struct xt_action_param *par)
->  	flow.flowi4_mark = info->flags & XT_RPFILTER_VALID_MARK ? skb->mark : 0;
->  	flow.flowi4_tos = RT_TOS(iph->tos);
->  	flow.flowi4_scope = RT_SCOPE_UNIVERSE;
-> +	flow.flowi4_oif = l3mdev_master_ifindex_rcu(xt_in(par));
-> 
->  	return rpfilter_lookup_reverse(xt_net(par), &flow, xt_in(par), info->flags) ^ invert;
->  }
-> diff --git a/net/ipv6/netfilter/ip6t_rpfilter.c b/net/ipv6/netfilter/ip6t_rpfilter.c
-> index c3c6b09acdc4..a28c81322148 100644
-> --- a/net/ipv6/netfilter/ip6t_rpfilter.c
-> +++ b/net/ipv6/netfilter/ip6t_rpfilter.c
-> @@ -58,7 +58,9 @@ static bool rpfilter_lookup_reverse6(struct net *net, const struct sk_buff *skb,
->  	if (rpfilter_addr_linklocal(&iph->saddr)) {
->  		lookup_flags |= RT6_LOOKUP_F_IFACE;
->  		fl6.flowi6_oif = dev->ifindex;
-> -	} else if ((flags & XT_RPFILTER_LOOSE) == 0)
-> +	} else if (((flags & XT_RPFILTER_LOOSE) == 0) ||
-> +		   (netif_is_l3_master(dev)) ||
-> +		   (netif_is_l3_slave(dev)))
->  		fl6.flowi6_oif = dev->ifindex;
-> 
->  	rt = (void *)ip6_route_lookup(net, &fl6, skb, lookup_flags);
-> @@ -73,6 +75,12 @@ static bool rpfilter_lookup_reverse6(struct net *net, const struct sk_buff *skb,
->  		goto out;
->  	}
-> 
-> +	if (netif_is_l3_master(dev)) {
-> +		dev = dev_get_by_index_rcu(dev_net(dev), IP6CB(skb)->iif);
-> +		if (!dev)
-> +			goto out;
-> +	}
+On Fri, Jun 14, 2019 at 12:24 PM Marcelo Ricardo Leitner
+<marcelo.leitner@gmail.com> wrote:
+>
+> On Fri, Jun 14, 2019 at 11:07:37AM -0700, Cong Wang wrote:
+> > On Tue, Jun 11, 2019 at 9:44 AM Marcelo Ricardo Leitner
+> > <marcelo.leitner@gmail.com> wrote:
+> > > I had suggested to let act_ct handle the above as well, as there is a
+> > > big chunk of code on both that is pretty similar. There is quite some
+> > > boilerplate for interfacing with conntrack which is duplicated.
+> >
+> > Why do you want to mix retrieving conntrack info with executing
+> > conntrack?
+>
+> To save on the heavy boilerplate for interfacing with conntrack.
+>
+> >
+> > They are totally different things to me, act_ctinfo merely retrieves
+> > information from conntrack, while this one, act_ct, is supposed to
+> > move packets to conntrack.
+>
+> Seems we have a different understanding for "move packets to
+> conntrack": conntrack will not consume the packets after this.
+> But after act_ct is executed, if not with the clear flag, skb will now
+> have the skb->_nfct entry available, on which flower then will be able
+> to match. So in essence, it is also fetching information from
+> conntrack.
 
-So, for the l3 device cases this makes:
+Interesting. Is it because cls_flower uses conntrack for flow dissection?
+What's the reason behind?
 
-#1 ip6_route_lookup() to fetch the route, using the device in xt_in()
-   (the _LOOSE flag is ignored for the l3 device case).
+Again, I am still not convinced to do L3 operations in L2, skb->_nfct
+belongs to conntrack which is L3, no matter the packet is consumed
+or not.
 
-#2 If this is a l3dev master, then you make a global lookup for the
-   device using IP6CB(skb)->iif.
-
-#3 You check if route matches with the device, using the new device
-   from the lookup:
-
-   if (rt->rt6i_idev->dev == dev ...
-
-If there is no other way to fix this, OK, that's fair enough.
-
-Still this fix looks a bit tricky to me.
-
-And this assymmetric between the IPv4 and IPv6 codebase looks rare.
-
-Probably someone can explain me this in more detail? I'd appreciate.
-
-Thanks!
+Thanks.
