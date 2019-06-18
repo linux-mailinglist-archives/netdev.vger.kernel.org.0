@@ -2,288 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 862C84A1D9
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 15:16:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63CC64A1EF
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 15:20:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728945AbfFRNQI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 09:16:08 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:40671 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726047AbfFRNQI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 09:16:08 -0400
-Received: by mail-io1-f65.google.com with SMTP id n5so29633372ioc.7
-        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 06:16:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=dR78zG7dX8e/qcv20iSctRC1cAVO1E4gMNVJT3ZAo/E=;
-        b=rjwMQD9svLccq2nbGYutKS/aLNXeH/vsrKNFvWrqm9MoAooMzfW/zym6qG90YW54ra
-         GgMPkpeIspRIDYkcD7Lsfyk4JBWRc7XKSp/jN2r6Ckjvt7P7IumoThoeJvWyOdJRRPgA
-         oYU1kmuPQdH6y6fEF31GIOfz+bwi8PG1ziG4YG8IpSSu4uHwwmuyN9N3pr0QdzU9IRWE
-         DkBObRvHQyB1k5I2pUgcTtKYZUhHtq9ob60J3Vev+6OFnQFNJeVEKFLLkKfj2PKzQ1x8
-         Pznr/4IoX3xoEBMtcfc59ZASu/JnJBawhMfr9Mu5iEN+4Lx/7FlZHaQhpuGXEgk3NBsv
-         +jyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=dR78zG7dX8e/qcv20iSctRC1cAVO1E4gMNVJT3ZAo/E=;
-        b=guqztK+Y2I2+Pq1KCRcHMNojTbR7rpPnzf3BAvrZ8+Ci7QyppAiYio0cO4Ntqohk9Z
-         iHXrxVr1rGv5uGvSUmxkPUQicCjsV6qawyeVEJzFSyDDDEQtcOVbaC7gCbjc7uzCQXG0
-         VORuRbxb1/52NBNiV4NBSskHwi6Ua2VovbZo5Laudx124IyGj0YsboZ93zGySfNqWZXt
-         mw98ubQjwlGL063f5JIZSYRiGmqG8x7ZjxCrit/TqcdTk1X+2zY7K9S4zY6XiPPYLhps
-         3elzftXsD0CQ9FDkc+MB3g8i3QGQu7IBNwjKLRo2KVs1qhTFrWLIXvIxWliEYb/ED0rE
-         LGkw==
-X-Gm-Message-State: APjAAAUweunOTPbYbU83yx+//Zmg4SG/PWpUQHfChvEtKO/JgMXCm63K
-        hTJaKVhqmENpzMc5D/guy/53/Q==
-X-Google-Smtp-Source: APXvYqxEgyfDSxmDStC5HAzMdzQzl4KaE6w/BHGciyIJWW3VFHHwdl8AegXIj49rvISbgbN/uw7b9Q==
-X-Received: by 2002:a02:9143:: with SMTP id b3mr2073935jag.12.1560863766913;
-        Tue, 18 Jun 2019 06:16:06 -0700 (PDT)
-Received: from [172.22.22.26] (c-71-195-29-92.hsd1.mn.comcast.net. [71.195.29.92])
-        by smtp.googlemail.com with ESMTPSA id q13sm13795359ioh.36.2019.06.18.06.16.04
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 18 Jun 2019 06:16:05 -0700 (PDT)
-Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        Arnd Bergmann <arnd@arndb.de>
-Cc:     abhishek.esse@gmail.com, Ben Chan <benchan@google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        cpratapa@codeaurora.org, David Miller <davem@davemloft.net>,
-        Dan Williams <dcbw@redhat.com>,
-        DTML <devicetree@vger.kernel.org>,
-        Eric Caruso <ejcaruso@google.com>, evgreen@chromium.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-arm-msm@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-soc@vger.kernel.org, Networking <netdev@vger.kernel.org>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        syadagir@codeaurora.org
-References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
- <a94676381a5ca662c848f7a725562f721c43ce76.camel@sipsolutions.net>
- <CAK8P3a0kV-i7BJJ2X6C=5n65rSGfo8fUiC4J_G-+M8EctYKbkg@mail.gmail.com>
- <066e9b39f937586f0f922abf801351553ec2ba1d.camel@sipsolutions.net>
-From:   Alex Elder <elder@linaro.org>
-Message-ID: <b3686626-e2d8-bc9c-6dd0-9ebb137715af@linaro.org>
-Date:   Tue, 18 Jun 2019 08:16:04 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1728881AbfFRNUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 09:20:48 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:42692 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725988AbfFRNUs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Jun 2019 09:20:48 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id DE520300181C;
+        Tue, 18 Jun 2019 13:20:47 +0000 (UTC)
+Received: from epycfail.redhat.com (unknown [10.36.112.12])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E50025C660;
+        Tue, 18 Jun 2019 13:20:44 +0000 (UTC)
+From:   Stefano Brivio <sbrivio@redhat.com>
+To:     David Miller <davem@davemloft.net>, David Ahern <dsahern@gmail.com>
+Cc:     Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        netdev@vger.kernel.org
+Subject: [PATCH net v5 0/6] Fix listing (IPv4, IPv6) and flushing (IPv6) of cached route exceptions
+Date:   Tue, 18 Jun 2019 15:20:33 +0200
+Message-Id: <cover.1560827176.git.sbrivio@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <066e9b39f937586f0f922abf801351553ec2ba1d.camel@sipsolutions.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Tue, 18 Jun 2019 13:20:47 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/17/19 6:28 AM, Johannes Berg wrote:
-> On Tue, 2019-06-11 at 13:56 +0200, Arnd Bergmann wrote:
->> On Tue, Jun 11, 2019 at 10:12 AM Johannes Berg
->> <johannes@sipsolutions.net> wrote:
->>
->>>> As I've made clear before, my work on this has been focused on the IPA transport,
->>>> and some of this higher-level LTE architecture is new to me.  But it
->>>> seems pretty clear that an abstracted WWAN subsystem is a good plan,
->>>> because these devices represent a superset of what a "normal" netdev
->>>> implements.
->>>
->>> I'm not sure I'd actually call it a superset. By themselves, these
->>> netdevs are actually completely useless to the network stack, AFAICT.
->>> Therefore, the overlap with netdevs you can really use with the network
->>> stack is pretty small?
->>
->> I think Alex meant the concept of having a type of netdev with a generic
->> user space interface for wwan and similar to a wlan device, as I understood
->> you had suggested as well, as opposed to a stacked device as in
->> rmnet or those drivers it seems to be modeled after (vlan, ip tunnel, ...)/.
+For IPv6 cached routes, the commands 'ip -6 route list cache' and
+'ip -6 route flush cache' don't work at all after route exceptions have
+been moved to a separate hash table in commit 2b760fcf5cfb ("ipv6: hook
+up exception table to store dst cache").
 
-Yes, that's pretty much what I meant by "superset."  We still need
-netdev functionality (though not between rmnet and ipa).  And it sounds
-like we're talking about a better framework for managing the related
-WWAN devices that represent logical modem connections.  We're discussing
-more than one spot in the networking stack though, so I can see why
-"superset" wasn't the right word.
+For IPv4 cached routes, the command 'ip route list cache' has also
+stopped working in kernel 3.5 after commit 4895c771c7f0 ("ipv4: Add FIB
+nexthop exceptions.") introduced storage for route exceptions as a
+separate entity.
 
-> I guess. It is indeed currently modelled after the stacked devices, but
-> those regular netdevs are inherently useful by themselves, you don't
-> *have* to tunnel or use VLANs after all.
-> 
-> With rmnet, the underlying netdev *isn't* useful by itself, because
-> you're always forced to have the stacked rmnet device on top.
+Fix this by allowing userspace to clearly request cached routes with
+the RTM_F_CLONED flag used as a filter (in conjuction with strict
+checking) and by retrieving and dumping cached routes if requested.
 
-Well I had mentioned earlier that I thought IPA could present just
-a single non-rmnet interface that could be used "directly" (i.e.,
-without rmnet).  But that would be a sort of hard-wired thing, and
-would not be part of the general WWAN framework under discussion.
+If strict checking is not requested (iproute2 < 5.0.0), we don't have a
+way to consistently filter results on other selectors (e.g. on tables),
+so skip filtering entirely and dump both regular routes and exceptions.
 
->>>> HOWEVER I disagree with your suggestion that the IPA code should
->>>> not be committed until after that is all sorted out.  In part it's
->>>> for selfish reasons, but I think there are legitimate reasons to
->>>> commit IPA now *knowing* that it will need to be adapted to fit
->>>> into the generic model that gets defined and developed.  Here
->>>> are some reasons why.
->>>
->>> I can't really argue with those, though I would point out that the
->>> converse also holds - if we commit to this now, then we will have to
->>> actually keep the API offered by IPA/rmnet today, so we cannot actually
->>> remove the netdev again, even if we do migrate it to offer support for a
->>> WWAN framework in the future.
->>
->> Right. The interface to support rmnet might be simple enough to keep
->> next to what becomes the generic interface, but it will always continue
->> to be an annoyance.
-> 
-> Not easily, because fundamentally it requires an underlying netdev to
-> have an ifindex, so it wouldn't just be another API to keep around
-> (which I'd classify as an annoyance) but also a whole separate netdev
-> that's exposed by this IPA driver, for basically this purpose only.
-> 
->>> I dunno if it really has to be months. I think we can cobble something
->>> together relatively quickly that addresses the needs of IPA more
->>> specifically, and then extend later?
->>>
->>> But OTOH it may make sense to take a more paced approach and think
->>> about the details more carefully than we have over in the other thread so far.
->>
->> I would hope that as soon as we can agree on a general approach, it
->> would also be possible to merge a minimal implementation into the kernel
->> along with IPA. Alex already mentioned that IPA in its current state does
->> not actually support more than one data channel, so the necessary
->> setup for it becomes even simpler.
-> 
-> Interesting, I'm not even sure how the driver can stop multiple channels
-> in the rmnet model?
+I'm submitting this for net as these changes fix rather relevant
+breakages. However, the scope might be a bit broad, and said breakages
+have been introduced 7 and 2 years ago, respectively, for IPv4 and IPv6.
+Let me know if I should rebase this on net-next instead.
 
-Here's a little background.
+For IPv4, cache flushing uses a completely different mechanism, so it
+wasn't affected. Listing of exception routes (modified routes pre-3.5) was
+tested against these versions of kernel and iproute2:
 
-The IPA driver was very large, and in an effort to have an initial driver
-that was more easily accepted upstream, it was carved down to support
-a single, very simple use case.  It supports only a single channel for
-carrying network data, and does not expose any of the IPA's other
-capabilities like filtering and routing (and multiplexing).
+                    iproute2
+kernel         4.14.0   4.15.0   4.19.0   5.0.0   5.1.0
+ 3.5-rc4         +        +        +        +       +
+ 4.4
+ 4.9
+ 4.14
+ 4.15
+ 4.19
+ 5.0
+ 5.1
+ fixed           +        +        +        +       +
 
-Originally the IPA code had an IOCTL interface for adding and removing
-multiplexed channel IDs, but the simplified use case expected only one
-channel to be used.  IOCTLs had to be removed to make the code acceptable
-for upstream, and again to simplify things, we went with a hard-wired
-configuration, with a single channel with an assumed set of features
-in use (TCP offload, basically).  Once upstream, we planned to add back
-features in layers, including adding a netlink interface to control
-things like managing multiplexed channels.
 
-The overall design assumed that the IPA connection between the modem
-and AP was carrying QMAP protocol though.  And the rmnet driver is
-designed to parse and handle that, so for the design I started with
-the use of the rmnet driver made sense:  it is a shim layer that takes
-care of rmnet multiplexing and aggregation (and checksum offload).
+For IPv6, a separate iproute2 patch is required. Versions of iproute2
+and kernel tested:
 
-So getting back to your question, the IPA in its current form only
-has a single "multiplexed" channel carried over the connection
-between the AP and modem.  Previously (and in the future) there
-was a way to add or remove channels.
+                    iproute2
+kernel             4.14.0   4.15.0   4.19.0   5.0.0   5.1.0    5.1.0, patched
+ 3.18    list        +        +        +        +       +            +
+         flush       +        +        +        +       +            +
+ 4.4     list        +        +        +        +       +            +
+         flush       +        +        +        +       +            +
+ 4.9     list        +        +        +        +       +            +
+         flush       +        +        +        +       +            +
+ 4.14    list        +        +        +        +       +            +
+         flush       +        +        +        +       +            +
+ 4.15    list
+         flush
+ 4.19    list
+         flush
+ 5.0     list
+         flush
+ 5.1     list
+         flush
+ with    list        +        +        +        +       +            +
+ fix     flush       +        +        +                             +
 
->> At the moment, the rmnet configuration in include/uapi/linux/if_link.h
->> is almost trivial, with the three pieces of information needed being
->> an IFLA_LINK to point to the real device (not needed if there is only
->> one device per channel, instead of two), the IFLA_RMNET_MUX_ID
->> setting the ID of the muxing channel (not needed if there is only
->> one channel ?), a way to specify software bridging between channels
->> (not useful if there is only one channel) 
-> 
-> I think the MUX ID is something we *would* want, and we'd probably want
-> a channel type as well, so as to not paint ourselves into a corner where
-> the default ends up being whatever IPA supports right now.
+v5: Skip filtering altogether if no strict checking is requested: selecting
+    routes or exceptions only would be inconsistent with the fact we can't
+    filter on tables. Drop 1/8 (non-strict dump filter function no longer
+    needed), replace 2/8 (don't use NLM_F_MATCH, decide to skip routes or
+    exceptions in filter function), drop 6/8 (2/8 is enough for IPv6 too).
+    Introduce dump_routes and dump_exceptions flags in filter, adapt other
+    patches to that.
 
-Agreed.
+v4: Fix the listing issue also for IPv4, making the behaviour consistent
+    with IPv6. Honour NLM_F_MATCH as per RFC 3549 and allow usage of
+    RTM_F_CLONED filter. Split patches into smaller logical changes.
 
-> The software bridging is very questionable to start with, I'd advocate
-> not supporting that at all but adding tracepoints or similar if needed
-> for debugging instead.
+v3: Drop check on RTM_F_CLONED and rework logic of return values of
+    rt6_dump_route()
 
-To be honest I don't understand the connection between software
-bridging and debugging, but that's OK.  I'm a fan of tracepoints
-and have always intended to make use of them in the IPA driver.
+v2: Add count of routes handled in partial dumps, and skip them, in patch 1/2.
 
->> and a few flags that I assume
->> must match the remote end:
->>
->> #define RMNET_FLAGS_INGRESS_DEAGGREGATION         (1U << 0)
->> #define RMNET_FLAGS_INGRESS_MAP_COMMANDS          (1U << 1)
->> #define RMNET_FLAGS_INGRESS_MAP_CKSUMV4           (1U << 2)
->> #define RMNET_FLAGS_EGRESS_MAP_CKSUMV4            (1U << 3)
-> 
-> I don't really know about these.
+Stefano Brivio (6):
+  fib_frontend, ip6_fib: Select routes or exceptions dump from
+    RTM_F_CLONED
+  ipv4/fib_frontend: Allow RTM_F_CLONED flag to be used for filtering
+  ipv4: Dump route exceptions if requested
+  Revert "net/ipv6: Bail early if user only wants cloned entries"
+  ipv6: Dump route exceptions if requested
+  ip6_fib: Don't discard nodes with valid routing information in
+    fib6_locate_1()
 
-The hardware can aggregate multiple packets received from the
-modem into a single buffer, which the rmnet driver is then able
-to deaggregate.  This feature is supposed to help performance
-but I've always been a little skeptical because it also comes
-at a cost.  This is used as a flag in an rmnet (QMAP) header,
-which to me seems a little odd.  (There should be a distinction
-between flags needed in a message header and flags that represent
-properties of a connection or channel.)
+ include/net/ip6_fib.h   |   1 +
+ include/net/ip6_route.h |   2 +-
+ include/net/ip_fib.h    |   2 +
+ include/net/route.h     |   3 ++
+ net/ipv4/fib_frontend.c |  12 +++--
+ net/ipv4/fib_trie.c     | 101 +++++++++++++++++++++++++++++++++++-----
+ net/ipv4/route.c        |   6 +--
+ net/ipv6/ip6_fib.c      |  27 +++++++----
+ net/ipv6/route.c        |  85 ++++++++++++++++++++++++++++-----
+ 9 files changed, 199 insertions(+), 40 deletions(-)
 
-I believe the only QMAP commands are for doing essentially
-XON/XOFF flow control on a single channel.  In the course of
-the e-mail discussion in the past few weeks I've come to see
-why that would be necessary.
-
-The checksum offload is done differently, depending on whether
-it's ingress (download from modem) or egress.  For egress,
-a header is inserted that describes what the hardware should
-checksum and where it should place the result.  For ingress,
-the hardware appends a trailer that contains information
-about the computed checksum values.  The rmnet driver is
-currently responsible for inserting the header and parsing
-the trailer.
-
-I'm probably missing something, but I think the checksum
-offload could be handled by the IPA driver rather than
-rmnet.  It seems to be an add-on that is completely
-independent of the multiplexing and aggregation capabilities
-that QMAP provides.
-
->>> If true though, then I think this would be the killer argument *in
->>> favour* of *not* merging this - because that would mean we *don't* have
->>> to actually keep the rmnet API around for all foreseeable future.
-
-This is because it's a user space API?  If so I now understand
-what you mean.
-
-As Arnd said (below) this is designed in the way out-of-tree code
-works and expects.  I don't want to advocate for breaking that,
-but if a general model that supports what's required can be used,
-I'll adapt the IPA code to suit that.
-
-My goal continues to be getting a baseline IPA driver accepted
-upstream as soon as possible, so I can then start building on
-that foundation.
-
-					-Alex
-
->> I would agree with that. From the code I can see no other driver
->> including the rmnet protocol header (see the discussion about moving
->> the header to include/linux in order to merge ipa), and I don't see
->> any other driver referencing ETH_P_MAP either. My understanding
->> is that any driver used by rmnet would require both, but they are
->> all out-of-tree at the moment.
-> 
-> I guess that would mean we have more work to do here, but it also means
-> we don't have to support these interfaces forever.
-> 
-> I'm not *entirely* convinced though. rmnet in itself doesn't really seem
-> to require anything from the underlying netdev, so if there's a driver
-> that just blindly passes things through to the hardware expecting the
-> right configuration, we wouldn't really see it this way?
-> 
-> OTOH, such a driver would probably blow up completely if somebody tried
-> to use it without rmnet on top, and so it would at least have to check
-> for ETH_P_MAP?
-> 
-> johannes
-> 
+-- 
+2.20.1
 
