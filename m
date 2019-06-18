@@ -2,105 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EDBA4ABF5
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 22:39:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62CDB4ABF7
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 22:39:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730672AbfFRUjk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 16:39:40 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:47828 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729961AbfFRUjk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 16:39:40 -0400
-Received: by sipsolutions.net with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1hdKt4-0006wN-US; Tue, 18 Jun 2019 22:39:27 +0200
-Message-ID: <54a5acb6cf26ebc6447f8ebcbdcb8e0eed693ab3.camel@sipsolutions.net>
-Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Alex Elder <elder@linaro.org>, Dan Williams <dcbw@redhat.com>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        abhishek.esse@gmail.com, Ben Chan <benchan@google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        cpratapa@codeaurora.org, David Miller <davem@davemloft.net>,
-        DTML <devicetree@vger.kernel.org>,
-        Eric Caruso <ejcaruso@google.com>, evgreen@chromium.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-arm-msm@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-soc@vger.kernel.org, Networking <netdev@vger.kernel.org>,
-        syadagir@codeaurora.org
-Date:   Tue, 18 Jun 2019 22:39:24 +0200
-In-Reply-To: <CAK8P3a29+JKbDdS9ikhgaKa-AJ1qd1sDMTAfzivGh5wN4VL88A@mail.gmail.com> (sfid-20190618_223407_865082_9D7B2E70)
-References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
-         <a94676381a5ca662c848f7a725562f721c43ce76.camel@sipsolutions.net>
-         <CAK8P3a0kV-i7BJJ2X6C=5n65rSGfo8fUiC4J_G-+M8EctYKbkg@mail.gmail.com>
-         <fc0d08912bc10ad089eb74034726308375279130.camel@redhat.com>
-         <36bca57c999f611353fd9741c55bb2a7@codeaurora.org>
-         <153fafb91267147cf22e2bf102dd822933ec823a.camel@redhat.com>
-         <CAK8P3a2Y+tcL1-V57dtypWHndNT3eDJdcKj29c_v+k8o1HHQig@mail.gmail.com>
-         <f4249aa5f5acdd90275eda35aa16f3cfb29d29be.camel@redhat.com>
-         <CAK8P3a2nzZKtshYfomOOSYkqx5HdU15Wr9b+3va0B1euNhFOAg@mail.gmail.com>
-         <dbb32f185d2c3a654083ee0a7188379e1f88d899.camel@sipsolutions.net>
-         <d533b708-c97a-710d-1138-3ae79107f209@linaro.org>
-         <abdfc6b3a9981bcdef40f85f5442a425ce109010.camel@sipsolutions.net>
-         <CAK8P3a3ksrFTo2+dLB+doLeY+kPP7rYxv2O7BwvjYgK2cwCTuQ@mail.gmail.com>
-         <97cbfb3723607c95d78e25785262ae7b0acdb11c.camel@sipsolutions.net>
-         <CAK8P3a29+JKbDdS9ikhgaKa-AJ1qd1sDMTAfzivGh5wN4VL88A@mail.gmail.com>
-         (sfid-20190618_223407_865082_9D7B2E70)
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-2.fc28) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S1730706AbfFRUjm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 16:39:42 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:40793 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730621AbfFRUjl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 16:39:41 -0400
+Received: by mail-wr1-f68.google.com with SMTP id p11so915257wre.7;
+        Tue, 18 Jun 2019 13:39:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NqLJBpTFEaLyH94sYy+DvxdzXV+8za6jehbuul9HSrg=;
+        b=kX4JD+1dVBQmI+3sx/kfhyEstODcRRW67o8XCyqJ1G8i4Bo6Mui7qTzjtQE3Y1Va+l
+         67EVtNzmXpNDu+r1DXQuOxpgjrjmOJ7PDsf9qEFqUCDMjL2qunv5UpLeOAURNi+Ghk89
+         Fq7GdyNSv4pBiKPib6z40rJdzrJd9o2ryDg8qj3trFEOUXcBjcz/FpoP0xqehmgaxMSC
+         TFvTJfYKDOL0HDsU5JKjbZ1EY6rEWfNKGLtev7WSIANb8V2tfl+UGFUZGciNwRXRSNaJ
+         o533TtRBmOnb95/UWRVvG40hSuyZxKZKHBRZ97RDNGDBazH/d/p4WLKLQ3EmZcvFetjm
+         pHbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NqLJBpTFEaLyH94sYy+DvxdzXV+8za6jehbuul9HSrg=;
+        b=PT8Wu0GEaKoK7fxl9ijcVZVFhz/2W7lxL1+8xzjPVvc9FSyuhHMy+cYTjI3CmyovTf
+         phf02qCRew4HpgK+ge6bXAye0uDThzU41nmmw2dp4f7I8kjybIZQh69sJlGp4qzNIc5A
+         2ipgEIGv4NyAaGpwc8FoRTm4A0WWlSVuCs2WjzBG/6L2ApFXM/cEVRSpO3Ix7mCARyYE
+         v9bAwGQ5TJorBzO7x6JbzDHXAWr3HIJ9oN1484KHBle0Fzaq/X/osAb0TufMsKKuxvGz
+         J8L/ASiK7avmnw6sGUTAYcHK7vKgOK99BfL8Brdvkr7ZoRWXrJB4jGEp+NrNeGE/0Nl1
+         txRQ==
+X-Gm-Message-State: APjAAAWpPhGbZvlEJz4iJ19zpDHTaiNS9Xl+j4Z0d1J16ovJofNSiJc5
+        2dICV+0uOsPb5+gEvW4MGrciB5Wr
+X-Google-Smtp-Source: APXvYqwHa7M7aKZdKxzjVqMVS6s7vB6hrd5drDzNXzzXcW0wGcX4o3k2zagiAqmKg9izcam8n76//Q==
+X-Received: by 2002:a5d:61cd:: with SMTP id q13mr10131804wrv.114.1560890378190;
+        Tue, 18 Jun 2019 13:39:38 -0700 (PDT)
+Received: from blackbox.darklights.net (p200300F133C20E0008BE4A1C4AD46470.dip0.t-ipconnect.de. [2003:f1:33c2:e00:8be:4a1c:4ad4:6470])
+        by smtp.googlemail.com with ESMTPSA id c4sm19694372wrb.68.2019.06.18.13.39.36
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 18 Jun 2019 13:39:37 -0700 (PDT)
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     linux-kernel@vger.kernel.org, joabreu@synopsys.com,
+        alexandre.torgue@st.com, peppe.cavallaro@st.com,
+        khilman@baylibre.com,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH net-next v1] net: stmmac: initialize the reset delay array
+Date:   Tue, 18 Jun 2019 22:39:27 +0200
+Message-Id: <20190618203927.5862-1-martin.blumenstingl@googlemail.com>
+X-Mailer: git-send-email 2.22.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2019-06-18 at 22:33 +0200, Arnd Bergmann wrote:
+Commit ce4ab73ab0c27c ("net: stmmac: drop the reset delays from struct
+stmmac_mdio_bus_data") moved the reset delay array from struct
+stmmac_mdio_bus_data to a stack variable.
+The values from the array inside struct stmmac_mdio_bus_data were
+previously initialized to 0 because the struct was allocated using
+devm_kzalloc(). The array on the stack has to be initialized
+explicitly, else we might be reading garbage values.
 
-> > Yeah, but where do you hang that driver? Maybe the TTY function is
-> > actually a WWAN specific USB driver, but the ethernet is something
-> > generic that can also work with pure ethernet USB devices, and it's
-> > difficult to figure out how to tie those together. The modules could
-> > load in completely different order, or even the ethernet module could
-> > load but the TTY one doesn't because it's not configured, or vice versa.
-> 
-> That was more or less my point: The current drivers exist, but don't
-> lean themselves to fitting into a new framework, so maybe the best
-> answer is not to try fitting them.
-> 
-> To clarify: I'm not suggesting to write new USB drivers for these at all,
-> but instead keep three parts that are completely unaware of each other
-> a)  a regular netdevice driver
-> b)  a regular tty driver
-> c)  the new wwan subsystem that expects a device to be created
->     from a hardware driver but knows nothing of a) and b)
-> 
-> To connect these together, we need one glue driver that implements
-> the wwan_device and talks to a) and b) as the hardware. There are
-> many ways to do that. One way would be to add a tty ldisc driver.
-> A small user space helper opens the chardev, sets the ldisc
-> and then uses an ldisc specific ioctl command to create a wwan
-> device by passing an identifier of the netdevice and then exits.
-> From that point on, you have a wwan device like any other.
+Initialize all reset delays to 0 to ensure that the values are 0 if the
+"snps,reset-delays-us" property is not defined.
+This fixes booting at least two boards (MIPS pistachio marduk and ARM
+sun8i H2+ Orange Pi Zero). These are hanging during boot when
+initializing the stmmac Ethernet controller (as found by Kernel CI).
+Both have in common that they don't define the "snps,reset-delays-us"
+property.
 
-Well, ok. I don't think it'd really work that way ("passing an
-identifier of the netdevice") because you could have multiple
-netdevices, but I see what you mean in principle.
+Fixes: ce4ab73ab0c27c ("net: stmmac: drop the reset delays from struct stmmac_mdio_bus_data")
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+On my Amlogic boards the delay values are 0 even without this patch.
+I may have been lucky with my kernel build that I'm not triggering
+the same fault as Kernel CI found on the two boards mentioned here: [0]
 
-It seems to me though that this is far more complex than what I'm
-proposing? What I'm proposing there doesn't even need any userspace
-involvement, as long as all the pieces are in the different sub-drivers, 
-they'd fall out automatically.
+Please feel free to squash this into net-next commit ce4ab73ab0c27c.
 
-And realistically, the wwan_device falls out anyway at some point, the
-only question is if we really make one specific driver be the "owner" of
-it. I'm suggesting that we don't, and just make its lifetime depend on
-the links to parts it has (unless something like IPA actually wants to
-be an owner).
+[0] https://lore.kernel.org/netdev/7hr27qdedo.fsf@baylibre.com/T/#u
 
-johannes
+
+ drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+index da310de06bf6..18cadf0b0d66 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+@@ -241,7 +241,7 @@ int stmmac_mdio_reset(struct mii_bus *bus)
+ #ifdef CONFIG_OF
+ 	if (priv->device->of_node) {
+ 		struct gpio_desc *reset_gpio;
+-		u32 delays[3];
++		u32 delays[3] = { 0, 0, 0 };
+ 
+ 		reset_gpio = devm_gpiod_get_optional(priv->device,
+ 						     "snps,reset",
+-- 
+2.22.0
 
