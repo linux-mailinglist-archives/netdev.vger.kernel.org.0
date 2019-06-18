@@ -2,61 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A6D44ACB8
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 23:08:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 242914ACC7
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 23:09:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730971AbfFRVGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 17:06:20 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:34792 "EHLO
+        id S1730999AbfFRVG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 17:06:29 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:34754 "EHLO
         bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730858AbfFRVF5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 17:05:57 -0400
+        with ESMTP id S1730852AbfFRVF4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 17:05:56 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Sender:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
-        Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Content-Type:MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:
+        To:From:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ILFlqgqUpjtOl6bcqmzPHPRjC3sELLB/zwafC8iLyLk=; b=sFLSnVYWtxVt4ZAGcxH4SZc0Cc
-        1Mjsb8jkKewfm9IaPUGyI7IeHGkSXsUkrmxiWNdiQjq3wKDA+BAivvCr1pgLD2jJ7aC1YG9CAPGYi
-        o5VgVlc6ZjvHzCgFG4eQ0ePf+EMnJnqZfg4N7YlJ/XY/e5FX9k7jrz/qWb/KWqw+EAf7Z2JvrRJto
-        Xg2WenvHPBfhrRZnoFPNjXCYUiCanBlAGZSafWsWpAAyx1vM7r+yqZ/DrBt9A5YdJsLbqrogFaJ4f
-        x9cHHrwzmC37H4jMUqv6pqm6KSz4lnEq9tWBxyu7P3YZM8asucLCMFjjnloMcwidWe77+M4+eG1Ax
-        o4wAYPyw==;
+        bh=FISmA4+yooQYp3UXQ1RSWHaYngXi1oOul8B4uyUy5LE=; b=PSJTf+ybuqVO2Rt29OuvJXzN+S
+        0KaaHzpgf1WzI7BpGiGlhRg435AgTjDzbKuSCvKpz8H61ttb+lIpYvJZmvnGGQva7XThVn0ASLdFO
+        9Sv0WxVy86ltUJNKalEO05AmMVzziCwwlqvDvuIilZ0XFgMWHZohbPsDuq6DbpuMUZ5hVKe8UKJdB
+        cdSxcGn+p3zCCT7zRTbtaWEx86QtRiVcFMv7k2KHn+aAhpmUsSQskpjRtBcp/E0lykGIQFuoLZ2Y3
+        Q3ZxPkahCCqsKocpkHHgvWrMnCriIMxK4DkNKT1Ssce+IYyScqgPdAaTh9WUWR2GG+xKPFBHd4Wpn
+        N2UAMvvg==;
 Received: from 177.133.86.196.dynamic.adsl.gvt.net.br ([177.133.86.196] helo=bombadil.infradead.org)
         by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
-        id 1hdLIc-0006yo-8m; Tue, 18 Jun 2019 21:05:51 +0000
+        id 1hdLIc-0006yu-Ff; Tue, 18 Jun 2019 21:05:52 +0000
 Received: from mchehab by bombadil.infradead.org with local (Exim 4.92)
         (envelope-from <mchehab@bombadil.infradead.org>)
-        id 1hdLIZ-0002CT-UD; Tue, 18 Jun 2019 18:05:47 -0300
+        id 1hdLIZ-0002CX-VH; Tue, 18 Jun 2019 18:05:47 -0300
 From:   Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
         Mauro Carvalho Chehab <mchehab@infradead.org>,
         linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        x86@kernel.org, cgroups@vger.kernel.org, linux-efi@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-ntfs-dev@lists.sourceforge.net,
-        linux-rtc@vger.kernel.org, linux-video@atrey.karlin.mff.cuni.cz,
-        linux-block@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-fbdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-parisc@vger.kernel.org, linux-sh@vger.kernel.org,
-        sparclinux@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-security-module@vger.kernel.org
-Subject: [PATCH v1 11/22] docs: admin-guide: add .rst files from the main dir
-Date:   Tue, 18 Jun 2019 18:05:35 -0300
-Message-Id: <eae5b48cab115c83be8dd59ee99b9e45f8142134.1560891322.git.mchehab+samsung@kernel.org>
+        linux-wireless@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-arch@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        kernel-hardening@lists.openwall.com,
+        linux-remoteproc@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net,
+        linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, linux-pwm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-watchdog@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+        linux-gpio@vger.kernel.org, linux-mm@kvack.org
+Subject: [PATCH v1 12/22] docs: driver-api: add .rst files from the main dir
+Date:   Tue, 18 Jun 2019 18:05:36 -0300
+Message-Id: <b0d24e805d5368719cc64e8104d64ee9b5b89dd0.1560891322.git.mchehab+samsung@kernel.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <cover.1560891322.git.mchehab+samsung@kernel.org>
 References: <cover.1560891322.git.mchehab+samsung@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Those files belong to the admin guide. Add them to the
-admin-guide book.
+Those files belong to the driver-api guide. Add them to the
+driver-api book.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
 ---
@@ -65,1314 +69,2299 @@ I had to remove the long list of maintainers got by
 getpatch.pl, as it was too long. I opted to keep only the
 mailing lists.
 
- Documentation/ABI/stable/sysfs-devices-node   |  2 +-
- Documentation/ABI/testing/procfs-diskstats    |  2 +-
- Documentation/ABI/testing/sysfs-block         |  2 +-
- .../ABI/testing/sysfs-devices-system-cpu      |  4 ++--
- Documentation/{ => admin-guide}/aoe/aoe.rst   |  4 ++--
- .../{ => admin-guide}/aoe/autoload.sh         |  1 -
- .../{ => admin-guide}/aoe/examples.rst        |  0
- Documentation/{ => admin-guide}/aoe/index.rst |  2 --
- Documentation/{ => admin-guide}/aoe/status.sh |  0
- Documentation/{ => admin-guide}/aoe/todo.rst  |  0
- .../{ => admin-guide}/aoe/udev-install.sh     |  4 ++--
- Documentation/{ => admin-guide}/aoe/udev.txt  |  8 +++----
- Documentation/{ => admin-guide}/btmrvl.rst    |  2 --
- .../cgroup-v1/blkio-controller.rst            |  0
- .../{ => admin-guide}/cgroup-v1/cgroups.rst   |  4 ++--
- .../{ => admin-guide}/cgroup-v1/cpuacct.rst   |  0
- .../{ => admin-guide}/cgroup-v1/cpusets.rst   |  2 +-
- .../{ => admin-guide}/cgroup-v1/devices.rst   |  0
- .../cgroup-v1/freezer-subsystem.rst           |  0
- .../{ => admin-guide}/cgroup-v1/hugetlb.rst   |  0
- .../{ => admin-guide}/cgroup-v1/index.rst     |  2 --
- .../cgroup-v1/memcg_test.rst                  |  4 ++--
- .../{ => admin-guide}/cgroup-v1/memory.rst    |  0
- .../{ => admin-guide}/cgroup-v1/net_cls.rst   |  0
- .../{ => admin-guide}/cgroup-v1/net_prio.rst  |  0
- .../{ => admin-guide}/cgroup-v1/pids.rst      |  0
- .../{ => admin-guide}/cgroup-v1/rdma.rst      |  0
- Documentation/admin-guide/cgroup-v2.rst       |  2 +-
- .../{ => admin-guide}/clearing-warn-once.rst  |  2 --
- Documentation/{ => admin-guide}/cpu-load.rst  |  2 --
- .../{ => admin-guide}/cputopology.rst         |  2 --
- Documentation/{ => admin-guide}/efi-stub.rst  |  2 --
- Documentation/{ => admin-guide}/highuid.rst   |  2 --
+ Documentation/ABI/removed/sysfs-class-rfkill  |  2 +-
+ Documentation/ABI/stable/sysfs-class-rfkill   |  2 +-
+ .../ABI/testing/sysfs-class-switchtec         |  2 +-
+ Documentation/PCI/pci.rst                     |  2 +-
  Documentation/admin-guide/hw-vuln/l1tf.rst    |  2 +-
- Documentation/{ => admin-guide}/hw_random.rst |  2 --
- Documentation/admin-guide/index.rst           | 23 +++++++++++++++++++
- Documentation/{ => admin-guide}/iostats.rst   |  2 --
- .../admin-guide/kernel-parameters.txt         |  6 ++---
- .../kernel-per-cpu-kthreads.rst}              |  4 +---
- .../lcd-panel-cgram.rst                       |  2 --
- Documentation/{ => admin-guide}/ldm.rst       |  2 --
- .../{ => admin-guide}/lockup-watchdogs.rst    |  2 --
- .../mm/cma_debugfs.rst}                       |  2 --
- .../admin-guide/mm/numa_memory_policy.rst     |  2 +-
- Documentation/{ => admin-guide}/numastat.rst  |  4 +---
- Documentation/{ => admin-guide}/pnp.rst       |  2 --
- Documentation/{ => admin-guide}/rtc.rst       |  2 --
- Documentation/{ => admin-guide}/svga.rst      |  2 --
- .../{ => admin-guide}/video-output.rst        |  2 --
- Documentation/block/bfq-iosched.rst           |  2 +-
- Documentation/device-mapper/statistics.rst    |  4 ++--
- Documentation/driver-api/index.rst            |  2 +-
- Documentation/fb/vesafb.rst                   |  2 +-
- Documentation/filesystems/tmpfs.txt           |  2 +-
- Documentation/scheduler/sched-deadline.rst    |  2 +-
- Documentation/scheduler/sched-design-CFS.rst  |  2 +-
- Documentation/scheduler/sched-rt-group.rst    |  2 +-
+ .../admin-guide/kernel-parameters.txt         |  4 +-
+ .../admin-guide/kernel-per-cpu-kthreads.rst   |  2 +-
+ .../{ => driver-api}/atomic_bitops.rst        |  2 -
+ Documentation/{ => driver-api}/bt8xxgpio.rst  |  2 -
+ .../bus-virt-phys-mapping.rst                 |  2 -
+ .../{connector => driver-api}/connector.rst   |  2 -
+ .../{console => driver-api}/console.rst       |  2 -
+ Documentation/{ => driver-api}/crc32.rst      |  2 -
+ Documentation/{ => driver-api}/dcdbas.rst     |  2 -
+ .../{ => driver-api}/debugging-modules.rst    |  2 -
+ .../debugging-via-ohci1394.rst                |  2 -
+ Documentation/{ => driver-api}/dell_rbu.rst   |  2 -
+ Documentation/{ => driver-api}/digsig.rst     |  2 -
+ .../{EDID/howto.rst => driver-api/edid.rst}   |  2 -
+ Documentation/{ => driver-api}/eisa.rst       |  2 -
+ .../{ => driver-api}/futex-requeue-pi.rst     |  2 -
+ .../{ => driver-api}/gcc-plugins.rst          |  2 -
+ Documentation/{ => driver-api}/hwspinlock.rst |  2 -
+ Documentation/driver-api/index.rst            | 66 +++++++++++++++++++
+ Documentation/{ => driver-api}/io-mapping.rst |  2 -
+ .../{ => driver-api}/io_ordering.rst          |  2 -
+ .../{IPMI.rst => driver-api/ipmi.rst}         |  2 -
+ .../irq-affinity.rst}                         |  2 -
+ .../irq-domain.rst}                           |  2 -
+ Documentation/{IRQ.rst => driver-api/irq.rst} |  2 -
+ .../{ => driver-api}/irqflags-tracing.rst     |  2 -
+ Documentation/{ => driver-api}/isa.rst        |  2 -
+ Documentation/{ => driver-api}/isapnp.rst     |  2 -
+ Documentation/{ => driver-api}/kobject.rst    |  4 +-
+ Documentation/{ => driver-api}/kprobes.rst    |  2 -
+ Documentation/{ => driver-api}/kref.rst       |  2 -
+ .../pblk.txt => driver-api/lightnvm-pblk.rst} |  0
+ Documentation/{ => driver-api}/lzo.rst        |  2 -
+ Documentation/{ => driver-api}/mailbox.rst    |  2 -
+ .../{ => driver-api}/men-chameleon-bus.rst    |  2 -
+ Documentation/{ => driver-api}/nommu-mmap.rst |  2 -
+ Documentation/{ => driver-api}/ntb.rst        |  2 -
+ Documentation/{nvmem => driver-api}/nvmem.rst |  2 -
+ Documentation/{ => driver-api}/padata.rst     |  2 -
+ .../{ => driver-api}/parport-lowlevel.rst     |  2 -
+ .../{ => driver-api}/percpu-rw-semaphore.rst  |  2 -
+ Documentation/{ => driver-api}/pi-futex.rst   |  2 -
+ Documentation/driver-api/pps.rst              |  2 -
+ .../{ => driver-api}/preempt-locking.rst      |  2 -
+ .../{pti => driver-api}/pti_intel_mid.rst     |  2 -
+ Documentation/driver-api/ptp.rst              |  2 -
+ Documentation/{ => driver-api}/pwm.rst        |  2 -
+ Documentation/{ => driver-api}/rbtree.rst     |  2 -
+ Documentation/{ => driver-api}/remoteproc.rst |  4 +-
+ Documentation/{ => driver-api}/rfkill.rst     |  2 -
+ .../{ => driver-api}/robust-futex-ABI.rst     |  2 -
+ .../{ => driver-api}/robust-futexes.rst       |  2 -
+ Documentation/{ => driver-api}/rpmsg.rst      |  2 -
+ Documentation/{ => driver-api}/sgi-ioc4.rst   |  2 -
+ .../{SM501.rst => driver-api/sm501.rst}       |  2 -
+ .../{ => driver-api}/smsc_ece1099.rst         |  2 -
+ .../{ => driver-api}/speculation.rst          |  8 +--
+ .../{ => driver-api}/static-keys.rst          |  2 -
+ Documentation/{ => driver-api}/switchtec.rst  |  4 +-
+ Documentation/{ => driver-api}/sync_file.rst  |  2 -
+ Documentation/{ => driver-api}/tee.rst        |  2 -
+ .../{ => driver-api}/this_cpu_ops.rst         |  2 -
+ .../unaligned-memory-access.rst               |  2 -
+ .../{ => driver-api}/vfio-mediated-device.rst |  4 +-
+ Documentation/{ => driver-api}/vfio.rst       |  2 -
+ Documentation/{ => driver-api}/xillybus.rst   |  2 -
+ Documentation/{ => driver-api}/xz.rst         |  2 -
+ Documentation/{ => driver-api}/zorro.rst      |  2 -
+ Documentation/driver-model/device.rst         |  2 +-
+ Documentation/fb/fbcon.rst                    |  4 +-
+ Documentation/filesystems/sysfs.txt           |  2 +-
+ Documentation/gpu/drm-mm.rst                  |  2 +-
+ Documentation/ia64/irq-redir.rst              |  2 +-
+ Documentation/laptops/thinkpad-acpi.rst       |  6 +-
+ Documentation/locking/rt-mutex.rst            |  2 +-
+ Documentation/networking/scaling.rst          |  4 +-
+ Documentation/s390/vfio-ccw.rst               |  6 +-
  Documentation/sysctl/kernel.rst               |  2 +-
- Documentation/vm/numa.rst                     |  4 ++--
- Documentation/vm/page_migration.rst           |  2 +-
- Documentation/vm/unevictable-lru.rst          |  2 +-
- Documentation/x86/topology.rst                |  2 +-
- .../x86/x86_64/fake-numa-for-cpusets.rst      |  4 ++--
- MAINTAINERS                                   | 18 +++++++--------
- arch/arm/Kconfig                              |  2 +-
- arch/parisc/Kconfig                           |  2 +-
- arch/sh/Kconfig                               |  2 +-
- arch/sparc/Kconfig                            |  2 +-
- arch/x86/Kconfig                              |  4 ++--
- block/Kconfig                                 |  2 +-
- block/partitions/Kconfig                      |  2 +-
- drivers/char/Kconfig                          |  4 ++--
- drivers/char/hw_random/core.c                 |  2 +-
- include/linux/cgroup-defs.h                   |  2 +-
- include/linux/hw_random.h                     |  2 +-
- include/uapi/linux/bpf.h                      |  2 +-
- init/Kconfig                                  |  4 ++--
- kernel/cgroup/cpuset.c                        |  2 +-
- security/device_cgroup.c                      |  2 +-
- tools/include/uapi/linux/bpf.h                |  2 +-
- 80 files changed, 94 insertions(+), 112 deletions(-)
- rename Documentation/{ => admin-guide}/aoe/aoe.rst (97%)
- rename Documentation/{ => admin-guide}/aoe/autoload.sh (99%)
- rename Documentation/{ => admin-guide}/aoe/examples.rst (100%)
- rename Documentation/{ => admin-guide}/aoe/index.rst (95%)
- rename Documentation/{ => admin-guide}/aoe/status.sh (100%)
- rename Documentation/{ => admin-guide}/aoe/todo.rst (100%)
- rename Documentation/{ => admin-guide}/aoe/udev-install.sh (92%)
- rename Documentation/{ => admin-guide}/aoe/udev.txt (91%)
- rename Documentation/{ => admin-guide}/btmrvl.rst (99%)
- rename Documentation/{ => admin-guide}/cgroup-v1/blkio-controller.rst (100%)
- rename Documentation/{ => admin-guide}/cgroup-v1/cgroups.rst (99%)
- rename Documentation/{ => admin-guide}/cgroup-v1/cpuacct.rst (100%)
- rename Documentation/{ => admin-guide}/cgroup-v1/cpusets.rst (99%)
- rename Documentation/{ => admin-guide}/cgroup-v1/devices.rst (100%)
- rename Documentation/{ => admin-guide}/cgroup-v1/freezer-subsystem.rst (100%)
- rename Documentation/{ => admin-guide}/cgroup-v1/hugetlb.rst (100%)
- rename Documentation/{ => admin-guide}/cgroup-v1/index.rst (97%)
- rename Documentation/{ => admin-guide}/cgroup-v1/memcg_test.rst (98%)
- rename Documentation/{ => admin-guide}/cgroup-v1/memory.rst (100%)
- rename Documentation/{ => admin-guide}/cgroup-v1/net_cls.rst (100%)
- rename Documentation/{ => admin-guide}/cgroup-v1/net_prio.rst (100%)
- rename Documentation/{ => admin-guide}/cgroup-v1/pids.rst (100%)
- rename Documentation/{ => admin-guide}/cgroup-v1/rdma.rst (100%)
- rename Documentation/{ => admin-guide}/clearing-warn-once.rst (96%)
- rename Documentation/{ => admin-guide}/cpu-load.rst (99%)
- rename Documentation/{ => admin-guide}/cputopology.rst (99%)
- rename Documentation/{ => admin-guide}/efi-stub.rst (99%)
- rename Documentation/{ => admin-guide}/highuid.rst (99%)
- rename Documentation/{ => admin-guide}/hw_random.rst (99%)
- rename Documentation/{ => admin-guide}/iostats.rst (99%)
- rename Documentation/{kernel-per-CPU-kthreads.rst => admin-guide/kernel-per-cpu-kthreads.rst} (99%)
- rename Documentation/{auxdisplay => admin-guide}/lcd-panel-cgram.rst (99%)
- rename Documentation/{ => admin-guide}/ldm.rst (99%)
- rename Documentation/{ => admin-guide}/lockup-watchdogs.rst (99%)
- rename Documentation/{cma/debugfs.rst => admin-guide/mm/cma_debugfs.rst} (98%)
- rename Documentation/{ => admin-guide}/numastat.rst (93%)
- rename Documentation/{ => admin-guide}/pnp.rst (99%)
- rename Documentation/{ => admin-guide}/rtc.rst (99%)
- rename Documentation/{ => admin-guide}/svga.rst (99%)
- rename Documentation/{ => admin-guide}/video-output.rst (99%)
+ Documentation/sysctl/vm.rst                   |  2 +-
+ Documentation/trace/kprobetrace.rst           |  2 +-
+ Documentation/translations/zh_CN/IRQ.txt      |  4 +-
+ .../translations/zh_CN/filesystems/sysfs.txt  |  2 +-
+ .../translations/zh_CN/io_ordering.txt        |  4 +-
+ Documentation/w1/w1.netlink                   |  2 +-
+ Documentation/watchdog/hpwdt.rst              |  2 +-
+ MAINTAINERS                                   | 46 ++++++-------
+ arch/Kconfig                                  |  4 +-
+ arch/unicore32/include/asm/io.h               |  2 +-
+ drivers/base/core.c                           |  2 +-
+ drivers/char/ipmi/Kconfig                     |  2 +-
+ drivers/char/ipmi/ipmi_si_hotmod.c            |  2 +-
+ drivers/char/ipmi/ipmi_si_intf.c              |  2 +-
+ drivers/dma-buf/Kconfig                       |  2 +-
+ drivers/gpio/Kconfig                          |  2 +-
+ drivers/gpu/drm/Kconfig                       |  2 +-
+ drivers/pci/switch/Kconfig                    |  2 +-
+ drivers/platform/x86/Kconfig                  |  4 +-
+ drivers/platform/x86/dcdbas.c                 |  2 +-
+ drivers/platform/x86/dell_rbu.c               |  2 +-
+ drivers/pnp/isapnp/Kconfig                    |  2 +-
+ drivers/tty/Kconfig                           |  2 +-
+ drivers/vfio/Kconfig                          |  2 +-
+ drivers/vfio/mdev/Kconfig                     |  2 +-
+ drivers/w1/Kconfig                            |  2 +-
+ include/asm-generic/bitops/atomic.h           |  2 +-
+ include/linux/io-mapping.h                    |  2 +-
+ include/linux/jump_label.h                    |  2 +-
+ include/linux/kobject.h                       |  2 +-
+ include/linux/kobject_ns.h                    |  2 +-
+ include/linux/rbtree.h                        |  2 +-
+ include/linux/rbtree_augmented.h              |  2 +-
+ init/Kconfig                                  |  2 +-
+ kernel/padata.c                               |  2 +-
+ lib/Kconfig                                   |  2 +-
+ lib/Kconfig.debug                             |  2 +-
+ lib/crc32.c                                   |  2 +-
+ lib/kobject.c                                 |  4 +-
+ lib/lzo/lzo1x_decompress_safe.c               |  2 +-
+ lib/xz/Kconfig                                |  2 +-
+ mm/Kconfig                                    |  2 +-
+ mm/nommu.c                                    |  2 +-
+ samples/Kconfig                               |  2 +-
+ samples/kprobes/kprobe_example.c              |  2 +-
+ samples/kprobes/kretprobe_example.c           |  2 +-
+ scripts/gcc-plugins/Kconfig                   |  2 +-
+ tools/include/linux/rbtree.h                  |  2 +-
+ tools/include/linux/rbtree_augmented.h        |  2 +-
+ 132 files changed, 173 insertions(+), 235 deletions(-)
+ rename Documentation/{ => driver-api}/atomic_bitops.rst (99%)
+ rename Documentation/{ => driver-api}/bt8xxgpio.rst (99%)
+ rename Documentation/{ => driver-api}/bus-virt-phys-mapping.rst (99%)
+ rename Documentation/{connector => driver-api}/connector.rst (99%)
+ rename Documentation/{console => driver-api}/console.rst (99%)
+ rename Documentation/{ => driver-api}/crc32.rst (99%)
+ rename Documentation/{ => driver-api}/dcdbas.rst (99%)
+ rename Documentation/{ => driver-api}/debugging-modules.rst (98%)
+ rename Documentation/{ => driver-api}/debugging-via-ohci1394.rst (99%)
+ rename Documentation/{ => driver-api}/dell_rbu.rst (99%)
+ rename Documentation/{ => driver-api}/digsig.rst (99%)
+ rename Documentation/{EDID/howto.rst => driver-api/edid.rst} (99%)
+ rename Documentation/{ => driver-api}/eisa.rst (99%)
+ rename Documentation/{ => driver-api}/futex-requeue-pi.rst (99%)
+ rename Documentation/{ => driver-api}/gcc-plugins.rst (99%)
+ rename Documentation/{ => driver-api}/hwspinlock.rst (99%)
+ rename Documentation/{ => driver-api}/io-mapping.rst (99%)
+ rename Documentation/{ => driver-api}/io_ordering.rst (99%)
+ rename Documentation/{IPMI.rst => driver-api/ipmi.rst} (99%)
+ rename Documentation/{IRQ-affinity.rst => driver-api/irq-affinity.rst} (99%)
+ rename Documentation/{IRQ-domain.rst => driver-api/irq-domain.rst} (99%)
+ rename Documentation/{IRQ.rst => driver-api/irq.rst} (99%)
+ rename Documentation/{ => driver-api}/irqflags-tracing.rst (99%)
+ rename Documentation/{ => driver-api}/isa.rst (99%)
+ rename Documentation/{ => driver-api}/isapnp.rst (98%)
+ rename Documentation/{ => driver-api}/kobject.rst (99%)
+ rename Documentation/{ => driver-api}/kprobes.rst (99%)
+ rename Documentation/{ => driver-api}/kref.rst (99%)
+ rename Documentation/{lightnvm/pblk.txt => driver-api/lightnvm-pblk.rst} (100%)
+ rename Documentation/{ => driver-api}/lzo.rst (99%)
+ rename Documentation/{ => driver-api}/mailbox.rst (99%)
+ rename Documentation/{ => driver-api}/men-chameleon-bus.rst (99%)
+ rename Documentation/{ => driver-api}/nommu-mmap.rst (99%)
+ rename Documentation/{ => driver-api}/ntb.rst (99%)
+ rename Documentation/{nvmem => driver-api}/nvmem.rst (99%)
+ rename Documentation/{ => driver-api}/padata.rst (99%)
+ rename Documentation/{ => driver-api}/parport-lowlevel.rst (99%)
+ rename Documentation/{ => driver-api}/percpu-rw-semaphore.rst (99%)
+ rename Documentation/{ => driver-api}/pi-futex.rst (99%)
+ rename Documentation/{ => driver-api}/preempt-locking.rst (99%)
+ rename Documentation/{pti => driver-api}/pti_intel_mid.rst (99%)
+ rename Documentation/{ => driver-api}/pwm.rst (99%)
+ rename Documentation/{ => driver-api}/rbtree.rst (99%)
+ rename Documentation/{ => driver-api}/remoteproc.rst (99%)
+ rename Documentation/{ => driver-api}/rfkill.rst (99%)
+ rename Documentation/{ => driver-api}/robust-futex-ABI.rst (99%)
+ rename Documentation/{ => driver-api}/robust-futexes.rst (99%)
+ rename Documentation/{ => driver-api}/rpmsg.rst (99%)
+ rename Documentation/{ => driver-api}/sgi-ioc4.rst (99%)
+ rename Documentation/{SM501.rst => driver-api/sm501.rst} (99%)
+ rename Documentation/{ => driver-api}/smsc_ece1099.rst (99%)
+ rename Documentation/{ => driver-api}/speculation.rst (99%)
+ rename Documentation/{ => driver-api}/static-keys.rst (99%)
+ rename Documentation/{ => driver-api}/switchtec.rst (97%)
+ rename Documentation/{ => driver-api}/sync_file.rst (99%)
+ rename Documentation/{ => driver-api}/tee.rst (99%)
+ rename Documentation/{ => driver-api}/this_cpu_ops.rst (99%)
+ rename Documentation/{ => driver-api}/unaligned-memory-access.rst (99%)
+ rename Documentation/{ => driver-api}/vfio-mediated-device.rst (99%)
+ rename Documentation/{ => driver-api}/vfio.rst (99%)
+ rename Documentation/{ => driver-api}/xillybus.rst (99%)
+ rename Documentation/{ => driver-api}/xz.rst (99%)
+ rename Documentation/{ => driver-api}/zorro.rst (99%)
 
-diff --git a/Documentation/ABI/stable/sysfs-devices-node b/Documentation/ABI/stable/sysfs-devices-node
-index de1d022c0864..df8413cf1468 100644
---- a/Documentation/ABI/stable/sysfs-devices-node
-+++ b/Documentation/ABI/stable/sysfs-devices-node
-@@ -61,7 +61,7 @@ Date:		October 2002
- Contact:	Linux Memory Management list <linux-mm@kvack.org>
- Description:
- 		The node's hit/miss statistics, in units of pages.
--		See Documentation/numastat.rst
-+		See Documentation/admin-guide/numastat.rst
- 
- What:		/sys/devices/system/node/nodeX/distance
- Date:		October 2002
-diff --git a/Documentation/ABI/testing/procfs-diskstats b/Documentation/ABI/testing/procfs-diskstats
-index 26661dd5188b..2c44b4f1b060 100644
---- a/Documentation/ABI/testing/procfs-diskstats
-+++ b/Documentation/ABI/testing/procfs-diskstats
-@@ -29,4 +29,4 @@ Description:
- 		17 - sectors discarded
- 		18 - time spent discarding
- 
--		For more details refer to Documentation/iostats.rst
-+		For more details refer to Documentation/admin-guide/iostats.rst
-diff --git a/Documentation/ABI/testing/sysfs-block b/Documentation/ABI/testing/sysfs-block
-index d300a6b9d17c..f8c7c7126bb1 100644
---- a/Documentation/ABI/testing/sysfs-block
-+++ b/Documentation/ABI/testing/sysfs-block
-@@ -15,7 +15,7 @@ Description:
- 		 9 - I/Os currently in progress
- 		10 - time spent doing I/Os (ms)
- 		11 - weighted time spent doing I/Os (ms)
--		For more details refer Documentation/iostats.rst
-+		For more details refer Documentation/admin-guide/iostats.rst
- 
- 
- What:		/sys/block/<disk>/<part>/stat
-diff --git a/Documentation/ABI/testing/sysfs-devices-system-cpu b/Documentation/ABI/testing/sysfs-devices-system-cpu
-index 1a2653f5261f..d1aad0ea0ab9 100644
---- a/Documentation/ABI/testing/sysfs-devices-system-cpu
-+++ b/Documentation/ABI/testing/sysfs-devices-system-cpu
-@@ -34,7 +34,7 @@ Description:	CPU topology files that describe kernel limits related to
- 		present: cpus that have been identified as being present in
- 		the system.
- 
--		See Documentation/cputopology.rst for more information.
-+		See Documentation/admin-guide/cputopology.rst for more information.
- 
- 
- What:		/sys/devices/system/cpu/probe
-@@ -103,7 +103,7 @@ Description:	CPU topology files that describe a logical CPU's relationship
- 		thread_siblings_list: human-readable list of cpu#'s hardware
- 		threads within the same core as cpu#
- 
--		See Documentation/cputopology.rst for more information.
-+		See Documentation/admin-guide/cputopology.rst for more information.
- 
- 
- What:		/sys/devices/system/cpu/cpuidle/current_driver
-diff --git a/Documentation/aoe/aoe.rst b/Documentation/admin-guide/aoe/aoe.rst
-similarity index 97%
-rename from Documentation/aoe/aoe.rst
-rename to Documentation/admin-guide/aoe/aoe.rst
-index 58747ecec71d..a05e751363a0 100644
---- a/Documentation/aoe/aoe.rst
-+++ b/Documentation/admin-guide/aoe/aoe.rst
-@@ -20,7 +20,7 @@ driver.  The aoetools are on sourceforge.
- 
-   http://aoetools.sourceforge.net/
- 
--The scripts in this Documentation/aoe directory are intended to
-+The scripts in this Documentation/admin-guide/aoe directory are intended to
- document the use of the driver and are not necessary if you install
- the aoetools.
- 
-@@ -86,7 +86,7 @@ Using sysfs
-   a convenient way.  Users with aoetools should use the aoe-stat
-   command::
- 
--    root@makki root# sh Documentation/aoe/status.sh
-+    root@makki root# sh Documentation/admin-guide/aoe/status.sh
-        e10.0            eth3              up
-        e10.1            eth3              up
-        e10.2            eth3              up
-diff --git a/Documentation/aoe/autoload.sh b/Documentation/admin-guide/aoe/autoload.sh
-similarity index 99%
-rename from Documentation/aoe/autoload.sh
-rename to Documentation/admin-guide/aoe/autoload.sh
-index 815dff4691c9..591a58d6c3c6 100644
---- a/Documentation/aoe/autoload.sh
-+++ b/Documentation/admin-guide/aoe/autoload.sh
-@@ -14,4 +14,3 @@ if [ $? = 1 ]; then
- 	echo alias block-major-152 aoe >> $f
- 	echo alias char-major-152 aoe >> $f
- fi
--
-diff --git a/Documentation/aoe/examples.rst b/Documentation/admin-guide/aoe/examples.rst
-similarity index 100%
-rename from Documentation/aoe/examples.rst
-rename to Documentation/admin-guide/aoe/examples.rst
-diff --git a/Documentation/aoe/index.rst b/Documentation/admin-guide/aoe/index.rst
-similarity index 95%
-rename from Documentation/aoe/index.rst
-rename to Documentation/admin-guide/aoe/index.rst
-index 4394b9b7913c..d71c5df15922 100644
---- a/Documentation/aoe/index.rst
-+++ b/Documentation/admin-guide/aoe/index.rst
-@@ -1,5 +1,3 @@
--:orphan:
--
- =======================
- ATA over Ethernet (AoE)
- =======================
-diff --git a/Documentation/aoe/status.sh b/Documentation/admin-guide/aoe/status.sh
-similarity index 100%
-rename from Documentation/aoe/status.sh
-rename to Documentation/admin-guide/aoe/status.sh
-diff --git a/Documentation/aoe/todo.rst b/Documentation/admin-guide/aoe/todo.rst
-similarity index 100%
-rename from Documentation/aoe/todo.rst
-rename to Documentation/admin-guide/aoe/todo.rst
-diff --git a/Documentation/aoe/udev-install.sh b/Documentation/admin-guide/aoe/udev-install.sh
-similarity index 92%
-rename from Documentation/aoe/udev-install.sh
-rename to Documentation/admin-guide/aoe/udev-install.sh
-index 15e86f58c036..1404d629a249 100644
---- a/Documentation/aoe/udev-install.sh
-+++ b/Documentation/admin-guide/aoe/udev-install.sh
+diff --git a/Documentation/ABI/removed/sysfs-class-rfkill b/Documentation/ABI/removed/sysfs-class-rfkill
+index 1652b2381dda..9c08c7f98ffb 100644
+--- a/Documentation/ABI/removed/sysfs-class-rfkill
++++ b/Documentation/ABI/removed/sysfs-class-rfkill
 @@ -1,6 +1,6 @@
--# install the aoe-specific udev rules from udev.txt into 
-+# install the aoe-specific udev rules from udev.txt into
- # the system's udev configuration
--# 
-+#
+ rfkill - radio frequency (RF) connector kill switch support
  
- me="`basename $0`"
+-For details to this subsystem look at Documentation/rfkill.rst.
++For details to this subsystem look at Documentation/driver-api/rfkill.rst.
  
-diff --git a/Documentation/aoe/udev.txt b/Documentation/admin-guide/aoe/udev.txt
-similarity index 91%
-rename from Documentation/aoe/udev.txt
-rename to Documentation/admin-guide/aoe/udev.txt
-index 54feda5a0772..d55ecb411c21 100644
---- a/Documentation/aoe/udev.txt
-+++ b/Documentation/admin-guide/aoe/udev.txt
-@@ -2,7 +2,7 @@
- # They may be installed along the following lines.  Check the section
- # 8 udev manpage to see whether your udev supports SUBSYSTEM, and
- # whether it uses one or two equal signs for SUBSYSTEM and KERNEL.
--# 
-+#
- #   ecashin@makki ~$ su
- #   Password:
- #   bash# find /etc -type f -name udev.conf
-@@ -11,9 +11,9 @@
- #   udev_rules="/etc/udev/rules.d/"
- #   bash# ls /etc/udev/rules.d/
- #   10-wacom.rules  50-udev.rules
--#   bash# cp /path/to/linux/Documentation/aoe/udev.txt \
-+#   bash# cp /path/to/linux/Documentation/admin-guide/aoe/udev.txt \
- #           /etc/udev/rules.d/60-aoe.rules
--#  
-+#
+ What:		/sys/class/rfkill/rfkill[0-9]+/claim
+ Date:		09-Jul-2007
+diff --git a/Documentation/ABI/stable/sysfs-class-rfkill b/Documentation/ABI/stable/sysfs-class-rfkill
+index 68fd0afdad0d..5b154f922643 100644
+--- a/Documentation/ABI/stable/sysfs-class-rfkill
++++ b/Documentation/ABI/stable/sysfs-class-rfkill
+@@ -1,6 +1,6 @@
+ rfkill - radio frequency (RF) connector kill switch support
  
- # aoe char devices
- SUBSYSTEM=="aoe", KERNEL=="discover",	NAME="etherd/%k", GROUP="disk", MODE="0220"
-@@ -22,5 +22,5 @@ SUBSYSTEM=="aoe", KERNEL=="interfaces",	NAME="etherd/%k", GROUP="disk", MODE="02
- SUBSYSTEM=="aoe", KERNEL=="revalidate",	NAME="etherd/%k", GROUP="disk", MODE="0220"
- SUBSYSTEM=="aoe", KERNEL=="flush",	NAME="etherd/%k", GROUP="disk", MODE="0220"
+-For details to this subsystem look at Documentation/rfkill.rst.
++For details to this subsystem look at Documentation/driver-api/rfkill.rst.
  
--# aoe block devices     
-+# aoe block devices
- KERNEL=="etherd*",       GROUP="disk"
-diff --git a/Documentation/btmrvl.rst b/Documentation/admin-guide/btmrvl.rst
-similarity index 99%
-rename from Documentation/btmrvl.rst
-rename to Documentation/admin-guide/btmrvl.rst
-index e6dd1c96e842..ec57740ead0c 100644
---- a/Documentation/btmrvl.rst
-+++ b/Documentation/admin-guide/btmrvl.rst
-@@ -1,5 +1,3 @@
--:orphan:
--
- =============
- btmrvl driver
- =============
-diff --git a/Documentation/cgroup-v1/blkio-controller.rst b/Documentation/admin-guide/cgroup-v1/blkio-controller.rst
-similarity index 100%
-rename from Documentation/cgroup-v1/blkio-controller.rst
-rename to Documentation/admin-guide/cgroup-v1/blkio-controller.rst
-diff --git a/Documentation/cgroup-v1/cgroups.rst b/Documentation/admin-guide/cgroup-v1/cgroups.rst
-similarity index 99%
-rename from Documentation/cgroup-v1/cgroups.rst
-rename to Documentation/admin-guide/cgroup-v1/cgroups.rst
-index 46bbe7e022d4..b0688011ed06 100644
---- a/Documentation/cgroup-v1/cgroups.rst
-+++ b/Documentation/admin-guide/cgroup-v1/cgroups.rst
-@@ -3,7 +3,7 @@ Control Groups
- ==============
+ For the deprecated /sys/class/rfkill/*/claim knobs of this interface look in
+ Documentation/ABI/removed/sysfs-class-rfkill.
+diff --git a/Documentation/ABI/testing/sysfs-class-switchtec b/Documentation/ABI/testing/sysfs-class-switchtec
+index c8d80db1e32c..76c7a661a595 100644
+--- a/Documentation/ABI/testing/sysfs-class-switchtec
++++ b/Documentation/ABI/testing/sysfs-class-switchtec
+@@ -1,6 +1,6 @@
+ switchtec - Microsemi Switchtec PCI Switch Management Endpoint
  
- Written by Paul Menage <menage@google.com> based on
--Documentation/cgroup-v1/cpusets.rst
-+Documentation/admin-guide/cgroup-v1/cpusets.rst
+-For details on this subsystem look at Documentation/switchtec.rst.
++For details on this subsystem look at Documentation/driver-api/switchtec.rst.
  
- Original copyright statements from cpusets.txt:
+ What: 		/sys/class/switchtec
+ Date:		05-Jan-2017
+diff --git a/Documentation/PCI/pci.rst b/Documentation/PCI/pci.rst
+index 840cbf5f37a7..0f52d172c9ac 100644
+--- a/Documentation/PCI/pci.rst
++++ b/Documentation/PCI/pci.rst
+@@ -239,7 +239,7 @@ from the PCI device config space. Use the values in the pci_dev structure
+ as the PCI "bus address" might have been remapped to a "host physical"
+ address by the arch/chip-set specific kernel support.
  
-@@ -76,7 +76,7 @@ On their own, the only use for cgroups is for simple job
- tracking. The intention is that other subsystems hook into the generic
- cgroup support to provide new attributes for cgroups, such as
- accounting/limiting the resources which processes in a cgroup can
--access. For example, cpusets (see Documentation/cgroup-v1/cpusets.rst) allow
-+access. For example, cpusets (see Documentation/admin-guide/cgroup-v1/cpusets.rst) allow
- you to associate a set of CPUs and a set of memory nodes with the
- tasks in each cgroup.
+-See Documentation/io-mapping.rst for how to access device registers
++See Documentation/driver-api/io-mapping.rst for how to access device registers
+ or device memory.
  
-diff --git a/Documentation/cgroup-v1/cpuacct.rst b/Documentation/admin-guide/cgroup-v1/cpuacct.rst
-similarity index 100%
-rename from Documentation/cgroup-v1/cpuacct.rst
-rename to Documentation/admin-guide/cgroup-v1/cpuacct.rst
-diff --git a/Documentation/cgroup-v1/cpusets.rst b/Documentation/admin-guide/cgroup-v1/cpusets.rst
-similarity index 99%
-rename from Documentation/cgroup-v1/cpusets.rst
-rename to Documentation/admin-guide/cgroup-v1/cpusets.rst
-index b6a42cdea72b..86a6ae995d54 100644
---- a/Documentation/cgroup-v1/cpusets.rst
-+++ b/Documentation/admin-guide/cgroup-v1/cpusets.rst
-@@ -49,7 +49,7 @@ hooks, beyond what is already present, required to manage dynamic
- job placement on large systems.
- 
- Cpusets use the generic cgroup subsystem described in
--Documentation/cgroup-v1/cgroups.rst.
-+Documentation/admin-guide/cgroup-v1/cgroups.rst.
- 
- Requests by a task, using the sched_setaffinity(2) system call to
- include CPUs in its CPU affinity mask, and using the mbind(2) and
-diff --git a/Documentation/cgroup-v1/devices.rst b/Documentation/admin-guide/cgroup-v1/devices.rst
-similarity index 100%
-rename from Documentation/cgroup-v1/devices.rst
-rename to Documentation/admin-guide/cgroup-v1/devices.rst
-diff --git a/Documentation/cgroup-v1/freezer-subsystem.rst b/Documentation/admin-guide/cgroup-v1/freezer-subsystem.rst
-similarity index 100%
-rename from Documentation/cgroup-v1/freezer-subsystem.rst
-rename to Documentation/admin-guide/cgroup-v1/freezer-subsystem.rst
-diff --git a/Documentation/cgroup-v1/hugetlb.rst b/Documentation/admin-guide/cgroup-v1/hugetlb.rst
-similarity index 100%
-rename from Documentation/cgroup-v1/hugetlb.rst
-rename to Documentation/admin-guide/cgroup-v1/hugetlb.rst
-diff --git a/Documentation/cgroup-v1/index.rst b/Documentation/admin-guide/cgroup-v1/index.rst
-similarity index 97%
-rename from Documentation/cgroup-v1/index.rst
-rename to Documentation/admin-guide/cgroup-v1/index.rst
-index fe76d42edc11..10bf48bae0b0 100644
---- a/Documentation/cgroup-v1/index.rst
-+++ b/Documentation/admin-guide/cgroup-v1/index.rst
-@@ -1,5 +1,3 @@
--:orphan:
--
- ========================
- Control Groups version 1
- ========================
-diff --git a/Documentation/cgroup-v1/memcg_test.rst b/Documentation/admin-guide/cgroup-v1/memcg_test.rst
-similarity index 98%
-rename from Documentation/cgroup-v1/memcg_test.rst
-rename to Documentation/admin-guide/cgroup-v1/memcg_test.rst
-index 91bd18c6a514..3f7115e07b5d 100644
---- a/Documentation/cgroup-v1/memcg_test.rst
-+++ b/Documentation/admin-guide/cgroup-v1/memcg_test.rst
-@@ -10,7 +10,7 @@ Because VM is getting complex (one of reasons is memcg...), memcg's behavior
- is complex. This is a document for memcg's internal behavior.
- Please note that implementation details can be changed.
- 
--(*) Topics on API should be in Documentation/cgroup-v1/memory.rst)
-+(*) Topics on API should be in Documentation/admin-guide/cgroup-v1/memory.rst)
- 
- 0. How to record usage ?
- ========================
-@@ -327,7 +327,7 @@ Under below explanation, we assume CONFIG_MEM_RES_CTRL_SWAP=y.
- 	You can see charges have been moved by reading ``*.usage_in_bytes`` or
- 	memory.stat of both A and B.
- 
--	See 8.2 of Documentation/cgroup-v1/memory.rst to see what value should
-+	See 8.2 of Documentation/admin-guide/cgroup-v1/memory.rst to see what value should
- 	be written to move_charge_at_immigrate.
- 
- 9.10 Memory thresholds
-diff --git a/Documentation/cgroup-v1/memory.rst b/Documentation/admin-guide/cgroup-v1/memory.rst
-similarity index 100%
-rename from Documentation/cgroup-v1/memory.rst
-rename to Documentation/admin-guide/cgroup-v1/memory.rst
-diff --git a/Documentation/cgroup-v1/net_cls.rst b/Documentation/admin-guide/cgroup-v1/net_cls.rst
-similarity index 100%
-rename from Documentation/cgroup-v1/net_cls.rst
-rename to Documentation/admin-guide/cgroup-v1/net_cls.rst
-diff --git a/Documentation/cgroup-v1/net_prio.rst b/Documentation/admin-guide/cgroup-v1/net_prio.rst
-similarity index 100%
-rename from Documentation/cgroup-v1/net_prio.rst
-rename to Documentation/admin-guide/cgroup-v1/net_prio.rst
-diff --git a/Documentation/cgroup-v1/pids.rst b/Documentation/admin-guide/cgroup-v1/pids.rst
-similarity index 100%
-rename from Documentation/cgroup-v1/pids.rst
-rename to Documentation/admin-guide/cgroup-v1/pids.rst
-diff --git a/Documentation/cgroup-v1/rdma.rst b/Documentation/admin-guide/cgroup-v1/rdma.rst
-similarity index 100%
-rename from Documentation/cgroup-v1/rdma.rst
-rename to Documentation/admin-guide/cgroup-v1/rdma.rst
-diff --git a/Documentation/admin-guide/cgroup-v2.rst b/Documentation/admin-guide/cgroup-v2.rst
-index 4b971a0bc99a..125c5cc15fe7 100644
---- a/Documentation/admin-guide/cgroup-v2.rst
-+++ b/Documentation/admin-guide/cgroup-v2.rst
-@@ -9,7 +9,7 @@ This is the authoritative documentation on the design, interface and
- conventions of cgroup v2.  It describes all userland-visible aspects
- of cgroup including core and specific controller behaviors.  All
- future changes must be reflected in this document.  Documentation for
--v1 is available under Documentation/cgroup-v1/.
-+v1 is available under Documentation/admin-guide/cgroup-v1/.
- 
- .. CONTENTS
- 
-diff --git a/Documentation/clearing-warn-once.rst b/Documentation/admin-guide/clearing-warn-once.rst
-similarity index 96%
-rename from Documentation/clearing-warn-once.rst
-rename to Documentation/admin-guide/clearing-warn-once.rst
-index cdfa892c7fdf..211fd926cf00 100644
---- a/Documentation/clearing-warn-once.rst
-+++ b/Documentation/admin-guide/clearing-warn-once.rst
-@@ -1,5 +1,3 @@
--:orphan:
--
- Clearing WARN_ONCE
- ------------------
- 
-diff --git a/Documentation/cpu-load.rst b/Documentation/admin-guide/cpu-load.rst
-similarity index 99%
-rename from Documentation/cpu-load.rst
-rename to Documentation/admin-guide/cpu-load.rst
-index 6b2815b78683..2d01ce43d2a2 100644
---- a/Documentation/cpu-load.rst
-+++ b/Documentation/admin-guide/cpu-load.rst
-@@ -1,5 +1,3 @@
--:orphan:
--
- ========
- CPU load
- ========
-diff --git a/Documentation/cputopology.rst b/Documentation/admin-guide/cputopology.rst
-similarity index 99%
-rename from Documentation/cputopology.rst
-rename to Documentation/admin-guide/cputopology.rst
-index ef1e6b105957..b90dafcc8237 100644
---- a/Documentation/cputopology.rst
-+++ b/Documentation/admin-guide/cputopology.rst
-@@ -1,5 +1,3 @@
--:orphan:
--
- ===========================================
- How CPU topology info is exported via sysfs
- ===========================================
-diff --git a/Documentation/efi-stub.rst b/Documentation/admin-guide/efi-stub.rst
-similarity index 99%
-rename from Documentation/efi-stub.rst
-rename to Documentation/admin-guide/efi-stub.rst
-index 29256cad8af3..833edb0d0bc4 100644
---- a/Documentation/efi-stub.rst
-+++ b/Documentation/admin-guide/efi-stub.rst
-@@ -1,5 +1,3 @@
--:orphan:
--
- =================
- The EFI Boot Stub
- =================
-diff --git a/Documentation/highuid.rst b/Documentation/admin-guide/highuid.rst
-similarity index 99%
-rename from Documentation/highuid.rst
-rename to Documentation/admin-guide/highuid.rst
-index d1cbc71a59a2..1ab59d7807d1 100644
---- a/Documentation/highuid.rst
-+++ b/Documentation/admin-guide/highuid.rst
-@@ -1,5 +1,3 @@
--:orphan:
--
- ===================================================
- Notes on the change from 16-bit UIDs to 32-bit UIDs
- ===================================================
+ The device driver needs to call pci_request_region() to verify
 diff --git a/Documentation/admin-guide/hw-vuln/l1tf.rst b/Documentation/admin-guide/hw-vuln/l1tf.rst
-index 5668fc2013ce..9b1e6aafea1f 100644
+index 9b1e6aafea1f..29449ba7773c 100644
 --- a/Documentation/admin-guide/hw-vuln/l1tf.rst
 +++ b/Documentation/admin-guide/hw-vuln/l1tf.rst
-@@ -241,7 +241,7 @@ Guest mitigation mechanisms
-    For further information about confining guests to a single or to a group
-    of cores consult the cpusets documentation:
+@@ -268,7 +268,7 @@ Guest mitigation mechanisms
+    /proc/irq/$NR/smp_affinity[_list] files. Limited documentation is
+    available at:
  
--   https://www.kernel.org/doc/Documentation/cgroup-v1/cpusets.rst
-+   https://www.kernel.org/doc/Documentation/admin-guide/cgroup-v1/cpusets.rst
+-   https://www.kernel.org/doc/Documentation/IRQ-affinity.rst
++   https://www.kernel.org/doc/Documentation/driver-api/irq-affinity.rst
  
- .. _interrupt_isolation:
+ .. _smt_control:
  
-diff --git a/Documentation/hw_random.rst b/Documentation/admin-guide/hw_random.rst
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 95885726778c..2f8751323f6d 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -930,7 +930,7 @@
+ 			edid/1680x1050.bin, or edid/1920x1080.bin is given
+ 			and no file with the same name exists. Details and
+ 			instructions how to build your own EDID data are
+-			available in Documentation/EDID/howto.rst. An EDID
++			available in Documentation/driver-api/edid.rst. An EDID
+ 			data set will only be used for a particular connector,
+ 			if its name and a colon are prepended to the EDID
+ 			name. Each connector may use a unique EDID data
+@@ -3162,7 +3162,7 @@
+ 			See Documentation/sysctl/vm.rst for details.
+ 
+ 	ohci1394_dma=early	[HW] enable debugging via the ohci1394 driver.
+-			See Documentation/debugging-via-ohci1394.rst for more
++			See Documentation/driver-api/debugging-via-ohci1394.rst for more
+ 			info.
+ 
+ 	olpc_ec_timeout= [OLPC] ms delay when issuing EC commands
+diff --git a/Documentation/admin-guide/kernel-per-cpu-kthreads.rst b/Documentation/admin-guide/kernel-per-cpu-kthreads.rst
+index d430048a0307..942b7835b9f6 100644
+--- a/Documentation/admin-guide/kernel-per-cpu-kthreads.rst
++++ b/Documentation/admin-guide/kernel-per-cpu-kthreads.rst
+@@ -10,7 +10,7 @@ them to a "housekeeping" CPU dedicated to such work.
+ References
+ ==========
+ 
+--	Documentation/IRQ-affinity.rst:  Binding interrupts to sets of CPUs.
++-	Documentation/driver-api/irq-affinity.rst:  Binding interrupts to sets of CPUs.
+ 
+ -	Documentation/admin-guide/cgroup-v1:  Using cgroups to bind tasks to sets of CPUs.
+ 
+diff --git a/Documentation/atomic_bitops.rst b/Documentation/driver-api/atomic_bitops.rst
 similarity index 99%
-rename from Documentation/hw_random.rst
-rename to Documentation/admin-guide/hw_random.rst
-index fb5e32fae384..121de96e395e 100644
---- a/Documentation/hw_random.rst
-+++ b/Documentation/admin-guide/hw_random.rst
+rename from Documentation/atomic_bitops.rst
+rename to Documentation/driver-api/atomic_bitops.rst
+index b683bcb71185..7c7d33ee64f7 100644
+--- a/Documentation/atomic_bitops.rst
++++ b/Documentation/driver-api/atomic_bitops.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ =============
+ Atomic bitops
+ =============
+diff --git a/Documentation/bt8xxgpio.rst b/Documentation/driver-api/bt8xxgpio.rst
+similarity index 99%
+rename from Documentation/bt8xxgpio.rst
+rename to Documentation/driver-api/bt8xxgpio.rst
+index 093875e1b0aa..4f937bead52c 100644
+--- a/Documentation/bt8xxgpio.rst
++++ b/Documentation/driver-api/bt8xxgpio.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ===================================================================
+ A driver for a selfmade cheap BT8xx based PCI GPIO-card (bt8xxgpio)
+ ===================================================================
+diff --git a/Documentation/bus-virt-phys-mapping.rst b/Documentation/driver-api/bus-virt-phys-mapping.rst
+similarity index 99%
+rename from Documentation/bus-virt-phys-mapping.rst
+rename to Documentation/driver-api/bus-virt-phys-mapping.rst
+index eefb0ae99ba8..80972916e88c 100644
+--- a/Documentation/bus-virt-phys-mapping.rst
++++ b/Documentation/driver-api/bus-virt-phys-mapping.rst
 @@ -1,5 +1,3 @@
 -:orphan:
 -
  ==========================================================
- Linux support for random number generator in i8xx chipsets
+ How to access I/O mapped memory from within device drivers
  ==========================================================
-diff --git a/Documentation/admin-guide/index.rst b/Documentation/admin-guide/index.rst
-index 8001917ee012..ba9ff8e3b45a 100644
---- a/Documentation/admin-guide/index.rst
-+++ b/Documentation/admin-guide/index.rst
-@@ -56,6 +56,7 @@ configure specific aspects of kernel behavior to your liking.
+diff --git a/Documentation/connector/connector.rst b/Documentation/driver-api/connector.rst
+similarity index 99%
+rename from Documentation/connector/connector.rst
+rename to Documentation/driver-api/connector.rst
+index 24e26dc22dbf..2cf9b5adfe2a 100644
+--- a/Documentation/connector/connector.rst
++++ b/Documentation/driver-api/connector.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ================
+ Kernel Connector
+ ================
+diff --git a/Documentation/console/console.rst b/Documentation/driver-api/console.rst
+similarity index 99%
+rename from Documentation/console/console.rst
+rename to Documentation/driver-api/console.rst
+index b374141b027e..8b0205d27a71 100644
+--- a/Documentation/console/console.rst
++++ b/Documentation/driver-api/console.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ===============
+ Console Drivers
+ ===============
+diff --git a/Documentation/crc32.rst b/Documentation/driver-api/crc32.rst
+similarity index 99%
+rename from Documentation/crc32.rst
+rename to Documentation/driver-api/crc32.rst
+index f7c73d713a35..8a6860f33b4e 100644
+--- a/Documentation/crc32.rst
++++ b/Documentation/driver-api/crc32.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ =================================
+ brief tutorial on CRC computation
+ =================================
+diff --git a/Documentation/dcdbas.rst b/Documentation/driver-api/dcdbas.rst
+similarity index 99%
+rename from Documentation/dcdbas.rst
+rename to Documentation/driver-api/dcdbas.rst
+index abbc2bfd58a7..309cc57a7c1c 100644
+--- a/Documentation/dcdbas.rst
++++ b/Documentation/driver-api/dcdbas.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ===================================
+ Dell Systems Management Base Driver
+ ===================================
+diff --git a/Documentation/debugging-modules.rst b/Documentation/driver-api/debugging-modules.rst
+similarity index 98%
+rename from Documentation/debugging-modules.rst
+rename to Documentation/driver-api/debugging-modules.rst
+index 994f4b021a81..172ad4aec493 100644
+--- a/Documentation/debugging-modules.rst
++++ b/Documentation/driver-api/debugging-modules.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ Debugging Modules after 2.6.3
+ -----------------------------
  
-    initrd
-    cgroup-v2
-+   cgroup-v1/index
-    serial-console
-    braille-console
-    parport
-@@ -74,9 +75,31 @@ configure specific aspects of kernel behavior to your liking.
-    thunderbolt
-    LSM/index
-    mm/index
-+   aoe/index
-    perf-security
+diff --git a/Documentation/debugging-via-ohci1394.rst b/Documentation/driver-api/debugging-via-ohci1394.rst
+similarity index 99%
+rename from Documentation/debugging-via-ohci1394.rst
+rename to Documentation/driver-api/debugging-via-ohci1394.rst
+index ead0196d94b7..981ad4f89fd3 100644
+--- a/Documentation/debugging-via-ohci1394.rst
++++ b/Documentation/driver-api/debugging-via-ohci1394.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ===========================================================================
+ Using physical DMA provided by OHCI-1394 FireWire controllers for debugging
+ ===========================================================================
+diff --git a/Documentation/dell_rbu.rst b/Documentation/driver-api/dell_rbu.rst
+similarity index 99%
+rename from Documentation/dell_rbu.rst
+rename to Documentation/driver-api/dell_rbu.rst
+index 45cd18abd98f..f3bfa1a17961 100644
+--- a/Documentation/dell_rbu.rst
++++ b/Documentation/driver-api/dell_rbu.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ =============================================================
+ Usage of the new open sourced rbu (Remote BIOS Update) driver
+ =============================================================
+diff --git a/Documentation/digsig.rst b/Documentation/driver-api/digsig.rst
+similarity index 99%
+rename from Documentation/digsig.rst
+rename to Documentation/driver-api/digsig.rst
+index 3597711d0df1..f6a8902d3ef7 100644
+--- a/Documentation/digsig.rst
++++ b/Documentation/driver-api/digsig.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ==================================
+ Digital Signature Verification API
+ ==================================
+diff --git a/Documentation/EDID/howto.rst b/Documentation/driver-api/edid.rst
+similarity index 99%
+rename from Documentation/EDID/howto.rst
+rename to Documentation/driver-api/edid.rst
+index 725fd49a88ca..9a9b512e0ac9 100644
+--- a/Documentation/EDID/howto.rst
++++ b/Documentation/driver-api/edid.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ====
+ EDID
+ ====
+diff --git a/Documentation/eisa.rst b/Documentation/driver-api/eisa.rst
+similarity index 99%
+rename from Documentation/eisa.rst
+rename to Documentation/driver-api/eisa.rst
+index d98949908405..f388545a85a7 100644
+--- a/Documentation/eisa.rst
++++ b/Documentation/driver-api/eisa.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ================
+ EISA bus support
+ ================
+diff --git a/Documentation/futex-requeue-pi.rst b/Documentation/driver-api/futex-requeue-pi.rst
+similarity index 99%
+rename from Documentation/futex-requeue-pi.rst
+rename to Documentation/driver-api/futex-requeue-pi.rst
+index a90dbff26629..14ab5787b9a7 100644
+--- a/Documentation/futex-requeue-pi.rst
++++ b/Documentation/driver-api/futex-requeue-pi.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ================
+ Futex Requeue PI
+ ================
+diff --git a/Documentation/gcc-plugins.rst b/Documentation/driver-api/gcc-plugins.rst
+similarity index 99%
+rename from Documentation/gcc-plugins.rst
+rename to Documentation/driver-api/gcc-plugins.rst
+index e08d013c6de2..8502f24396fb 100644
+--- a/Documentation/gcc-plugins.rst
++++ b/Documentation/driver-api/gcc-plugins.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ =========================
+ GCC plugin infrastructure
+ =========================
+diff --git a/Documentation/hwspinlock.rst b/Documentation/driver-api/hwspinlock.rst
+similarity index 99%
+rename from Documentation/hwspinlock.rst
+rename to Documentation/driver-api/hwspinlock.rst
+index 68297473647c..ed640a278185 100644
+--- a/Documentation/hwspinlock.rst
++++ b/Documentation/driver-api/hwspinlock.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ===========================
+ Hardware Spinlock Framework
+ ===========================
+diff --git a/Documentation/driver-api/index.rst b/Documentation/driver-api/index.rst
+index c76a101c2a6b..bb2621b17212 100644
+--- a/Documentation/driver-api/index.rst
++++ b/Documentation/driver-api/index.rst
+@@ -60,6 +60,72 @@ available subsections can be seen below.
     acpi/index
+    generic-counter
  
-+   btmrvl
-+   clearing-warn-once
-+   cpu-load
-+   cputopology
-+   highuid
-+   hw_random
-+   ldm
-+   pnp
-+   rtc
-+   video-output
-+   efi-stub
-+   iostats
-+   kernel-per-cpu-kthreads
-+   lcd-panel-cgram
-+   lockup-watchdogs
-+   mm/cma_debugfs
-+   numastat
-+   svga
-+
-+
++   atomic_bitops
++   bt8xxgpio
++   bus-virt-phys-mapping
++   connector
++   console
++   crc32
++   dcdbas
++   debugging-modules
++   debugging-via-ohci1394
++   dell_rbu
++   digsig
++   edid
++   eisa
++   futex-requeue-pi
++   gcc-plugins
++   hwspinlock
++   io-mapping
++   io_ordering
++   ipmi
++   irq
++   irq-affinity
++   irq-domain
++   irqflags-tracing
++   isa
++   isapnp
++   kobject
++   kprobes
++   kref
++   lightnvm-pblk
++   lzo
++   mailbox
++   men-chameleon-bus
++   nommu-mmap
++   ntb
++   nvmem
++   padata
++   parport-lowlevel
++   percpu-rw-semaphore
++   pi-futex
++   pps
++   preempt-locking
++   pti_intel_mid
++   ptp
++   pwm
++   rbtree
++   remoteproc
++   rfkill
++   robust-futex-ABI
++   robust-futexes
++   rpmsg
++   sgi-ioc4
++   sm501
++   smsc_ece1099
++   speculation
++   static-keys
++   switchtec
++   sync_file
++   tee
++   this_cpu_ops
++   unaligned-memory-access
++   vfio
++   vfio-mediated-device
++   xillybus
++   xz
++   zorro
 +
  .. only::  subproject and html
  
     Indices
-diff --git a/Documentation/iostats.rst b/Documentation/admin-guide/iostats.rst
+diff --git a/Documentation/io-mapping.rst b/Documentation/driver-api/io-mapping.rst
 similarity index 99%
-rename from Documentation/iostats.rst
-rename to Documentation/admin-guide/iostats.rst
-index f4d37d812c30..5d63b18bd6d1 100644
---- a/Documentation/iostats.rst
-+++ b/Documentation/admin-guide/iostats.rst
+rename from Documentation/io-mapping.rst
+rename to Documentation/driver-api/io-mapping.rst
+index 82a2cacf9a29..a966239f04e4 100644
+--- a/Documentation/io-mapping.rst
++++ b/Documentation/driver-api/io-mapping.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ========================
+ The io_mapping functions
+ ========================
+diff --git a/Documentation/io_ordering.rst b/Documentation/driver-api/io_ordering.rst
+similarity index 99%
+rename from Documentation/io_ordering.rst
+rename to Documentation/driver-api/io_ordering.rst
+index 18ef889c100e..2ab303ce9a0d 100644
+--- a/Documentation/io_ordering.rst
++++ b/Documentation/driver-api/io_ordering.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ==============================================
+ Ordering I/O writes to memory-mapped addresses
+ ==============================================
+diff --git a/Documentation/IPMI.rst b/Documentation/driver-api/ipmi.rst
+similarity index 99%
+rename from Documentation/IPMI.rst
+rename to Documentation/driver-api/ipmi.rst
+index f6c2d11710fe..5ef1047e2e66 100644
+--- a/Documentation/IPMI.rst
++++ b/Documentation/driver-api/ipmi.rst
 @@ -1,5 +1,3 @@
 -:orphan:
 -
  =====================
- I/O statistics fields
+ The Linux IPMI Driver
  =====================
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index d11b8a745897..95885726778c 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -4098,7 +4098,7 @@
- 
- 	relax_domain_level=
- 			[KNL, SMP] Set scheduler's default relax_domain_level.
--			See Documentation/cgroup-v1/cpusets.rst.
-+			See Documentation/admin-guide/cgroup-v1/cpusets.rst.
- 
- 	reserve=	[KNL,BUGS] Force kernel to ignore I/O ports or memory
- 			Format: <base1>,<size1>[,<base2>,<size2>,...]
-@@ -4608,7 +4608,7 @@
- 	swapaccount=[0|1]
- 			[KNL] Enable accounting of swap in memory resource
- 			controller if no parameter or 1 is given or disable
--			it if 0 is given (See Documentation/cgroup-v1/memory.rst)
-+			it if 0 is given (See Documentation/admin-guide/cgroup-v1/memory.rst)
- 
- 	swiotlb=	[ARM,IA-64,PPC,MIPS,X86]
- 			Format: { <int> | force | noforce }
-@@ -5075,7 +5075,7 @@
- 
- 	vga=		[BOOT,X86-32] Select a particular video mode
- 			See Documentation/x86/boot.rst and
--			Documentation/svga.rst.
-+			Documentation/admin-guide/svga.rst.
- 			Use vga=ask for menu.
- 			This is actually a boot loader parameter; the value is
- 			passed to the kernel using a special protocol.
-diff --git a/Documentation/kernel-per-CPU-kthreads.rst b/Documentation/admin-guide/kernel-per-cpu-kthreads.rst
+diff --git a/Documentation/IRQ-affinity.rst b/Documentation/driver-api/irq-affinity.rst
 similarity index 99%
-rename from Documentation/kernel-per-CPU-kthreads.rst
-rename to Documentation/admin-guide/kernel-per-cpu-kthreads.rst
-index 765c7b9bd7fd..d430048a0307 100644
---- a/Documentation/kernel-per-CPU-kthreads.rst
-+++ b/Documentation/admin-guide/kernel-per-cpu-kthreads.rst
+rename from Documentation/IRQ-affinity.rst
+rename to Documentation/driver-api/irq-affinity.rst
+index 49ba271349d6..29da5000836a 100644
+--- a/Documentation/IRQ-affinity.rst
++++ b/Documentation/driver-api/irq-affinity.rst
 @@ -1,5 +1,3 @@
 -:orphan:
 -
- ==========================================
- Reducing OS jitter due to per-cpu kthreads
- ==========================================
-@@ -14,7 +12,7 @@ References
- 
- -	Documentation/IRQ-affinity.rst:  Binding interrupts to sets of CPUs.
- 
---	Documentation/cgroup-v1:  Using cgroups to bind tasks to sets of CPUs.
-+-	Documentation/admin-guide/cgroup-v1:  Using cgroups to bind tasks to sets of CPUs.
- 
- -	man taskset:  Using the taskset command to bind tasks to sets
- 	of CPUs.
-diff --git a/Documentation/auxdisplay/lcd-panel-cgram.rst b/Documentation/admin-guide/lcd-panel-cgram.rst
+ ================
+ SMP IRQ affinity
+ ================
+diff --git a/Documentation/IRQ-domain.rst b/Documentation/driver-api/irq-domain.rst
 similarity index 99%
-rename from Documentation/auxdisplay/lcd-panel-cgram.rst
-rename to Documentation/admin-guide/lcd-panel-cgram.rst
-index dfef50286018..a3eb00c62f53 100644
---- a/Documentation/auxdisplay/lcd-panel-cgram.rst
-+++ b/Documentation/admin-guide/lcd-panel-cgram.rst
+rename from Documentation/IRQ-domain.rst
+rename to Documentation/driver-api/irq-domain.rst
+index a610a8ea9a92..507775cce753 100644
+--- a/Documentation/IRQ-domain.rst
++++ b/Documentation/driver-api/irq-domain.rst
 @@ -1,5 +1,3 @@
 -:orphan:
 -
- ======================================
- Parallel port LCD/Keypad Panel support
- ======================================
-diff --git a/Documentation/ldm.rst b/Documentation/admin-guide/ldm.rst
+ ===============================================
+ The irq_domain interrupt number mapping library
+ ===============================================
+diff --git a/Documentation/IRQ.rst b/Documentation/driver-api/irq.rst
 similarity index 99%
-rename from Documentation/ldm.rst
-rename to Documentation/admin-guide/ldm.rst
-index 1e8739669541..90ccf24ebfdd 100644
---- a/Documentation/ldm.rst
-+++ b/Documentation/admin-guide/ldm.rst
+rename from Documentation/IRQ.rst
+rename to Documentation/driver-api/irq.rst
+index a9f3e192c2cb..4273806a606b 100644
+--- a/Documentation/IRQ.rst
++++ b/Documentation/driver-api/irq.rst
 @@ -1,5 +1,3 @@
 -:orphan:
 -
- ==========================================
- LDM - Logical Disk Manager (Dynamic Disks)
- ==========================================
-diff --git a/Documentation/lockup-watchdogs.rst b/Documentation/admin-guide/lockup-watchdogs.rst
+ ===============
+ What is an IRQ?
+ ===============
+diff --git a/Documentation/irqflags-tracing.rst b/Documentation/driver-api/irqflags-tracing.rst
 similarity index 99%
-rename from Documentation/lockup-watchdogs.rst
-rename to Documentation/admin-guide/lockup-watchdogs.rst
-index a60598bfd50f..290840c160af 100644
---- a/Documentation/lockup-watchdogs.rst
-+++ b/Documentation/admin-guide/lockup-watchdogs.rst
+rename from Documentation/irqflags-tracing.rst
+rename to Documentation/driver-api/irqflags-tracing.rst
+index a2fbbb1a62b9..27d0d5a9d6b4 100644
+--- a/Documentation/irqflags-tracing.rst
++++ b/Documentation/driver-api/irqflags-tracing.rst
 @@ -1,5 +1,3 @@
 -:orphan:
 -
- ===============================================================
- Softlockup detector and hardlockup detector (aka nmi_watchdog)
- ===============================================================
-diff --git a/Documentation/cma/debugfs.rst b/Documentation/admin-guide/mm/cma_debugfs.rst
+ =======================
+ IRQ-flags state tracing
+ =======================
+diff --git a/Documentation/isa.rst b/Documentation/driver-api/isa.rst
+similarity index 99%
+rename from Documentation/isa.rst
+rename to Documentation/driver-api/isa.rst
+index f3a412d266b0..def4a7b690b5 100644
+--- a/Documentation/isa.rst
++++ b/Documentation/driver-api/isa.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ===========
+ ISA Drivers
+ ===========
+diff --git a/Documentation/isapnp.rst b/Documentation/driver-api/isapnp.rst
 similarity index 98%
-rename from Documentation/cma/debugfs.rst
-rename to Documentation/admin-guide/mm/cma_debugfs.rst
-index 518fe401b5ee..4e06ffabd78a 100644
---- a/Documentation/cma/debugfs.rst
-+++ b/Documentation/admin-guide/mm/cma_debugfs.rst
+rename from Documentation/isapnp.rst
+rename to Documentation/driver-api/isapnp.rst
+index 136a5e92be27..8d0840ac847b 100644
+--- a/Documentation/isapnp.rst
++++ b/Documentation/driver-api/isapnp.rst
 @@ -1,5 +1,3 @@
 -:orphan:
 -
- =====================
- CMA Debugfs Interface
- =====================
-diff --git a/Documentation/admin-guide/mm/numa_memory_policy.rst b/Documentation/admin-guide/mm/numa_memory_policy.rst
-index 546f174e5d6a..8463f5538fda 100644
---- a/Documentation/admin-guide/mm/numa_memory_policy.rst
-+++ b/Documentation/admin-guide/mm/numa_memory_policy.rst
-@@ -15,7 +15,7 @@ document attempts to describe the concepts and APIs of the 2.6 memory policy
- support.
- 
- Memory policies should not be confused with cpusets
--(``Documentation/cgroup-v1/cpusets.rst``)
-+(``Documentation/admin-guide/cgroup-v1/cpusets.rst``)
- which is an administrative mechanism for restricting the nodes from which
- memory may be allocated by a set of processes. Memory policies are a
- programming interface that a NUMA-aware application can take advantage of.  When
-diff --git a/Documentation/numastat.rst b/Documentation/admin-guide/numastat.rst
-similarity index 93%
-rename from Documentation/numastat.rst
-rename to Documentation/admin-guide/numastat.rst
-index 762925cfe882..94b7f0477f97 100644
---- a/Documentation/numastat.rst
-+++ b/Documentation/admin-guide/numastat.rst
-@@ -1,5 +1,3 @@
--:orphan:
--
- ===============================
- Numa policy hit/miss statistics
- ===============================
-@@ -22,7 +20,7 @@ local_node	A process ran on this node and got memory from it.
- 
- other_node	A process ran on this node and got memory from another node.
- 
--interleave_hit 	Interleaving wanted to allocate from this node
-+interleave_hit	Interleaving wanted to allocate from this node
- 		and succeeded.
- =============== ============================================================
- 
-diff --git a/Documentation/pnp.rst b/Documentation/admin-guide/pnp.rst
+ ==========================================================
+ ISA Plug & Play support by Jaroslav Kysela <perex@suse.cz>
+ ==========================================================
+diff --git a/Documentation/kobject.rst b/Documentation/driver-api/kobject.rst
 similarity index 99%
-rename from Documentation/pnp.rst
-rename to Documentation/admin-guide/pnp.rst
-index ef84f35a9b47..c103acb9ad99 100644
---- a/Documentation/pnp.rst
-+++ b/Documentation/admin-guide/pnp.rst
+rename from Documentation/kobject.rst
+rename to Documentation/driver-api/kobject.rst
+index 6117192bf3e6..9f8c42b48867 100644
+--- a/Documentation/kobject.rst
++++ b/Documentation/driver-api/kobject.rst
 @@ -1,5 +1,3 @@
 -:orphan:
 -
- =================================
- Linux Plug and Play Documentation
- =================================
-diff --git a/Documentation/rtc.rst b/Documentation/admin-guide/rtc.rst
+ =====================================================================
+ Everything you never wanted to know about kobjects, ksets, and ktypes
+ =====================================================================
+@@ -212,7 +210,7 @@ statically and will warn the developer of this improper usage.
+ If all that you want to use a kobject for is to provide a reference counter
+ for your structure, please use the struct kref instead; a kobject would be
+ overkill.  For more information on how to use struct kref, please see the
+-file Documentation/kref.rst in the Linux kernel source tree.
++file Documentation/driver-api/kref.rst in the Linux kernel source tree.
+ 
+ 
+ Creating "simple" kobjects
+diff --git a/Documentation/kprobes.rst b/Documentation/driver-api/kprobes.rst
 similarity index 99%
-rename from Documentation/rtc.rst
-rename to Documentation/admin-guide/rtc.rst
-index 6893bb5cf0ef..c7647de33c69 100644
---- a/Documentation/rtc.rst
-+++ b/Documentation/admin-guide/rtc.rst
+rename from Documentation/kprobes.rst
+rename to Documentation/driver-api/kprobes.rst
+index 6c0011755e68..a44cb5f49846 100644
+--- a/Documentation/kprobes.rst
++++ b/Documentation/driver-api/kprobes.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ =======================
+ Kernel Probes (Kprobes)
+ =======================
+diff --git a/Documentation/kref.rst b/Documentation/driver-api/kref.rst
+similarity index 99%
+rename from Documentation/kref.rst
+rename to Documentation/driver-api/kref.rst
+index 470e3c1bacdc..3af384156d7e 100644
+--- a/Documentation/kref.rst
++++ b/Documentation/driver-api/kref.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ===================================================
+ Adding reference counters (krefs) to kernel objects
+ ===================================================
+diff --git a/Documentation/lightnvm/pblk.txt b/Documentation/driver-api/lightnvm-pblk.rst
+similarity index 100%
+rename from Documentation/lightnvm/pblk.txt
+rename to Documentation/driver-api/lightnvm-pblk.rst
+diff --git a/Documentation/lzo.rst b/Documentation/driver-api/lzo.rst
+similarity index 99%
+rename from Documentation/lzo.rst
+rename to Documentation/driver-api/lzo.rst
+index 36965db785af..ca983328976b 100644
+--- a/Documentation/lzo.rst
++++ b/Documentation/driver-api/lzo.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ===========================================================
+ LZO stream format as understood by Linux's LZO decompressor
+ ===========================================================
+diff --git a/Documentation/mailbox.rst b/Documentation/driver-api/mailbox.rst
+similarity index 99%
+rename from Documentation/mailbox.rst
+rename to Documentation/driver-api/mailbox.rst
+index 02e754db3567..0ed95009cc30 100644
+--- a/Documentation/mailbox.rst
++++ b/Documentation/driver-api/mailbox.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ============================
+ The Common Mailbox Framework
+ ============================
+diff --git a/Documentation/men-chameleon-bus.rst b/Documentation/driver-api/men-chameleon-bus.rst
+similarity index 99%
+rename from Documentation/men-chameleon-bus.rst
+rename to Documentation/driver-api/men-chameleon-bus.rst
+index 2d6175229e58..1b1f048aa748 100644
+--- a/Documentation/men-chameleon-bus.rst
++++ b/Documentation/driver-api/men-chameleon-bus.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ =================
+ MEN Chameleon Bus
+ =================
+diff --git a/Documentation/nommu-mmap.rst b/Documentation/driver-api/nommu-mmap.rst
+similarity index 99%
+rename from Documentation/nommu-mmap.rst
+rename to Documentation/driver-api/nommu-mmap.rst
+index f7f75813dc9c..530fed08de2c 100644
+--- a/Documentation/nommu-mmap.rst
++++ b/Documentation/driver-api/nommu-mmap.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ =============================
+ No-MMU memory mapping support
+ =============================
+diff --git a/Documentation/ntb.rst b/Documentation/driver-api/ntb.rst
+similarity index 99%
+rename from Documentation/ntb.rst
+rename to Documentation/driver-api/ntb.rst
+index a25e7814b898..87d1372da879 100644
+--- a/Documentation/ntb.rst
++++ b/Documentation/driver-api/ntb.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ===========
+ NTB Drivers
+ ===========
+diff --git a/Documentation/nvmem/nvmem.rst b/Documentation/driver-api/nvmem.rst
+similarity index 99%
+rename from Documentation/nvmem/nvmem.rst
+rename to Documentation/driver-api/nvmem.rst
+index 3866b6e066d5..c93a9c6cd878 100644
+--- a/Documentation/nvmem/nvmem.rst
++++ b/Documentation/driver-api/nvmem.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ===============
+ NVMEM Subsystem
+ ===============
+diff --git a/Documentation/padata.rst b/Documentation/driver-api/padata.rst
+similarity index 99%
+rename from Documentation/padata.rst
+rename to Documentation/driver-api/padata.rst
+index f8369d18c846..b103d0c82000 100644
+--- a/Documentation/padata.rst
++++ b/Documentation/driver-api/padata.rst
 @@ -1,5 +1,3 @@
 -:orphan:
 -
  =======================================
- Real Time Clock (RTC) Drivers for Linux
+ The padata parallel execution mechanism
  =======================================
-diff --git a/Documentation/svga.rst b/Documentation/admin-guide/svga.rst
+diff --git a/Documentation/parport-lowlevel.rst b/Documentation/driver-api/parport-lowlevel.rst
 similarity index 99%
-rename from Documentation/svga.rst
-rename to Documentation/admin-guide/svga.rst
-index 1bfd54d9fb59..b6c2f9acca92 100644
---- a/Documentation/svga.rst
-+++ b/Documentation/admin-guide/svga.rst
+rename from Documentation/parport-lowlevel.rst
+rename to Documentation/driver-api/parport-lowlevel.rst
+index b8574d83d328..0633d70ffda7 100644
+--- a/Documentation/parport-lowlevel.rst
++++ b/Documentation/driver-api/parport-lowlevel.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ===============================
+ PARPORT interface documentation
+ ===============================
+diff --git a/Documentation/percpu-rw-semaphore.rst b/Documentation/driver-api/percpu-rw-semaphore.rst
+similarity index 99%
+rename from Documentation/percpu-rw-semaphore.rst
+rename to Documentation/driver-api/percpu-rw-semaphore.rst
+index 5c39c88d3719..247de6410855 100644
+--- a/Documentation/percpu-rw-semaphore.rst
++++ b/Documentation/driver-api/percpu-rw-semaphore.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ====================
+ Percpu rw semaphores
+ ====================
+diff --git a/Documentation/pi-futex.rst b/Documentation/driver-api/pi-futex.rst
+similarity index 99%
+rename from Documentation/pi-futex.rst
+rename to Documentation/driver-api/pi-futex.rst
+index 884ba7f2aa10..c33ba2befbf8 100644
+--- a/Documentation/pi-futex.rst
++++ b/Documentation/driver-api/pi-futex.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ======================
+ Lightweight PI-futexes
+ ======================
+diff --git a/Documentation/driver-api/pps.rst b/Documentation/driver-api/pps.rst
+index 1456d2c32ebd..262151a6dad5 100644
+--- a/Documentation/driver-api/pps.rst
++++ b/Documentation/driver-api/pps.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ======================
+ PPS - Pulse Per Second
+ ======================
+diff --git a/Documentation/preempt-locking.rst b/Documentation/driver-api/preempt-locking.rst
+similarity index 99%
+rename from Documentation/preempt-locking.rst
+rename to Documentation/driver-api/preempt-locking.rst
+index 4dfa1512a75b..291c2a45b3e8 100644
+--- a/Documentation/preempt-locking.rst
++++ b/Documentation/driver-api/preempt-locking.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ===========================================================================
+ Proper Locking Under a Preemptible Kernel: Keeping Kernel Code Preempt-Safe
+ ===========================================================================
+diff --git a/Documentation/pti/pti_intel_mid.rst b/Documentation/driver-api/pti_intel_mid.rst
+similarity index 99%
+rename from Documentation/pti/pti_intel_mid.rst
+rename to Documentation/driver-api/pti_intel_mid.rst
+index ea05725174cb..a674317790ba 100644
+--- a/Documentation/pti/pti_intel_mid.rst
++++ b/Documentation/driver-api/pti_intel_mid.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ =============
+ Intel MID PTI
+ =============
+diff --git a/Documentation/driver-api/ptp.rst b/Documentation/driver-api/ptp.rst
+index b6e65d66d37a..65c84a72e9fc 100644
+--- a/Documentation/driver-api/ptp.rst
++++ b/Documentation/driver-api/ptp.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ===========================================
+ PTP hardware clock infrastructure for Linux
+ ===========================================
+diff --git a/Documentation/pwm.rst b/Documentation/driver-api/pwm.rst
+similarity index 99%
+rename from Documentation/pwm.rst
+rename to Documentation/driver-api/pwm.rst
+index 78d06b7f5427..8fbf0aa3ba2d 100644
+--- a/Documentation/pwm.rst
++++ b/Documentation/driver-api/pwm.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ======================================
+ Pulse Width Modulation (PWM) interface
+ ======================================
+diff --git a/Documentation/rbtree.rst b/Documentation/driver-api/rbtree.rst
+similarity index 99%
+rename from Documentation/rbtree.rst
+rename to Documentation/driver-api/rbtree.rst
+index c0cbda408050..8bbfcac8db46 100644
+--- a/Documentation/rbtree.rst
++++ b/Documentation/driver-api/rbtree.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ =================================
+ Red-black Trees (rbtree) in Linux
+ =================================
+diff --git a/Documentation/remoteproc.rst b/Documentation/driver-api/remoteproc.rst
+similarity index 99%
+rename from Documentation/remoteproc.rst
+rename to Documentation/driver-api/remoteproc.rst
+index 71eb7728fcf3..2f525b00f8e7 100644
+--- a/Documentation/remoteproc.rst
++++ b/Documentation/driver-api/remoteproc.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ==========================
+ Remote Processor Framework
+ ==========================
+@@ -24,7 +22,7 @@ for remote processors that supports this kind of communication. This way,
+ platform-specific remoteproc drivers only need to provide a few low-level
+ handlers, and then all rpmsg drivers will then just work
+ (for more information about the virtio-based rpmsg bus and its drivers,
+-please read Documentation/rpmsg.rst).
++please read Documentation/driver-api/rpmsg.rst).
+ Registration of other types of virtio devices is now also possible. Firmwares
+ just need to publish what kind of virtio devices do they support, and then
+ remoteproc will add those devices. This makes it possible to reuse the
+diff --git a/Documentation/rfkill.rst b/Documentation/driver-api/rfkill.rst
+similarity index 99%
+rename from Documentation/rfkill.rst
+rename to Documentation/driver-api/rfkill.rst
+index 4da9994e9bb4..7d3684e81df6 100644
+--- a/Documentation/rfkill.rst
++++ b/Documentation/driver-api/rfkill.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ===============================
+ rfkill - RF kill switch support
+ ===============================
+diff --git a/Documentation/robust-futex-ABI.rst b/Documentation/driver-api/robust-futex-ABI.rst
+similarity index 99%
+rename from Documentation/robust-futex-ABI.rst
+rename to Documentation/driver-api/robust-futex-ABI.rst
+index 6d359b46610c..8a5d34abf726 100644
+--- a/Documentation/robust-futex-ABI.rst
++++ b/Documentation/driver-api/robust-futex-ABI.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ====================
+ The robust futex ABI
+ ====================
+diff --git a/Documentation/robust-futexes.rst b/Documentation/driver-api/robust-futexes.rst
+similarity index 99%
+rename from Documentation/robust-futexes.rst
+rename to Documentation/driver-api/robust-futexes.rst
+index 20beef77597a..6361fb01c9c1 100644
+--- a/Documentation/robust-futexes.rst
++++ b/Documentation/driver-api/robust-futexes.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ========================================
+ A description of what robust futexes are
+ ========================================
+diff --git a/Documentation/rpmsg.rst b/Documentation/driver-api/rpmsg.rst
+similarity index 99%
+rename from Documentation/rpmsg.rst
+rename to Documentation/driver-api/rpmsg.rst
+index ad53931f3e43..24b7a9e1a5f9 100644
+--- a/Documentation/rpmsg.rst
++++ b/Documentation/driver-api/rpmsg.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ============================================
+ Remote Processor Messaging (rpmsg) Framework
+ ============================================
+diff --git a/Documentation/sgi-ioc4.rst b/Documentation/driver-api/sgi-ioc4.rst
+similarity index 99%
+rename from Documentation/sgi-ioc4.rst
+rename to Documentation/driver-api/sgi-ioc4.rst
+index e6ed2e9b055b..72709222d3c0 100644
+--- a/Documentation/sgi-ioc4.rst
++++ b/Documentation/driver-api/sgi-ioc4.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ====================================
+ SGI IOC4 PCI (multi function) device
+ ====================================
+diff --git a/Documentation/SM501.rst b/Documentation/driver-api/sm501.rst
+similarity index 99%
+rename from Documentation/SM501.rst
+rename to Documentation/driver-api/sm501.rst
+index 772a9b5c7d49..882507453ba4 100644
+--- a/Documentation/SM501.rst
++++ b/Documentation/driver-api/sm501.rst
 @@ -1,5 +1,3 @@
 -:orphan:
 -
  .. include:: <isonum.txt>
  
- =================================
-diff --git a/Documentation/video-output.rst b/Documentation/admin-guide/video-output.rst
+ ============
+diff --git a/Documentation/smsc_ece1099.rst b/Documentation/driver-api/smsc_ece1099.rst
 similarity index 99%
-rename from Documentation/video-output.rst
-rename to Documentation/admin-guide/video-output.rst
-index 9095c4be45e5..aab623cfb2f3 100644
---- a/Documentation/video-output.rst
-+++ b/Documentation/admin-guide/video-output.rst
+rename from Documentation/smsc_ece1099.rst
+rename to Documentation/driver-api/smsc_ece1099.rst
+index a403fcd7c64d..079277421eaf 100644
+--- a/Documentation/smsc_ece1099.rst
++++ b/Documentation/driver-api/smsc_ece1099.rst
 @@ -1,5 +1,3 @@
 -:orphan:
 -
- Video Output Switcher Control
- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ =================================================
+ Msc Keyboard Scan Expansion/GPIO Expansion device
+ =================================================
+diff --git a/Documentation/speculation.rst b/Documentation/driver-api/speculation.rst
+similarity index 99%
+rename from Documentation/speculation.rst
+rename to Documentation/driver-api/speculation.rst
+index e240f01b0983..47f8ad300695 100644
+--- a/Documentation/speculation.rst
++++ b/Documentation/driver-api/speculation.rst
+@@ -1,12 +1,10 @@
+-:orphan:
++===========
++Speculation
++===========
  
-diff --git a/Documentation/block/bfq-iosched.rst b/Documentation/block/bfq-iosched.rst
-index 3fd9e8029347..6636ad2dad3f 100644
---- a/Documentation/block/bfq-iosched.rst
-+++ b/Documentation/block/bfq-iosched.rst
-@@ -547,7 +547,7 @@ As for cgroups-v1 (blkio controller), the exact set of stat files
- created, and kept up-to-date by bfq, depends on whether
- CONFIG_DEBUG_BLK_CGROUP is set. If it is set, then bfq creates all
- the stat files documented in
--Documentation/cgroup-v1/blkio-controller.rst. If, instead,
-+Documentation/admin-guide/cgroup-v1/blkio-controller.rst. If, instead,
- CONFIG_DEBUG_BLK_CGROUP is not set, then bfq creates only the files::
+ This document explains potential effects of speculation, and how undesirable
+ effects can be mitigated portably using common APIs.
  
-   blkio.bfq.io_service_bytes
-diff --git a/Documentation/device-mapper/statistics.rst b/Documentation/device-mapper/statistics.rst
-index 39f74af35abb..41ded0bc5933 100644
---- a/Documentation/device-mapper/statistics.rst
-+++ b/Documentation/device-mapper/statistics.rst
-@@ -13,7 +13,7 @@ the range specified.
+-===========
+-Speculation
+-===========
+-
+ To improve performance and minimize average latencies, many contemporary CPUs
+ employ speculative execution techniques such as branch prediction, performing
+ work which may be discarded at a later stage.
+diff --git a/Documentation/static-keys.rst b/Documentation/driver-api/static-keys.rst
+similarity index 99%
+rename from Documentation/static-keys.rst
+rename to Documentation/driver-api/static-keys.rst
+index bdf545e3a37f..9803e14639bf 100644
+--- a/Documentation/static-keys.rst
++++ b/Documentation/driver-api/static-keys.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ===========
+ Static Keys
+ ===========
+diff --git a/Documentation/switchtec.rst b/Documentation/driver-api/switchtec.rst
+similarity index 97%
+rename from Documentation/switchtec.rst
+rename to Documentation/driver-api/switchtec.rst
+index 6879c92de8e2..7611fdc53e19 100644
+--- a/Documentation/switchtec.rst
++++ b/Documentation/driver-api/switchtec.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ========================
+ Linux Switchtec Support
+ ========================
+@@ -99,6 +97,6 @@ the following configuration settings:
+ NT EP BAR 2 will be dynamically configured as a Direct Window, and
+ the configuration file does not need to configure it explicitly.
  
- The I/O statistics counters for each step-sized area of a region are
- in the same format as `/sys/block/*/stat` or `/proc/diskstats` (see:
--Documentation/iostats.rst).  But two extra counters (12 and 13) are
-+Documentation/admin-guide/iostats.rst).  But two extra counters (12 and 13) are
- provided: total time spent reading and writing.  When the histogram
- argument is used, the 14th parameter is reported that represents the
- histogram of latencies.  All these counters may be accessed by sending
-@@ -151,7 +151,7 @@ Messages
- 	  The first 11 counters have the same meaning as
- 	  `/sys/block/*/stat or /proc/diskstats`.
+-Please refer to Documentation/ntb.rst in Linux source tree for an overall
++Please refer to Documentation/driver-api/ntb.rst in Linux source tree for an overall
+ understanding of the Linux NTB stack. ntb_hw_switchtec works as an NTB
+ Hardware Driver in this stack.
+diff --git a/Documentation/sync_file.rst b/Documentation/driver-api/sync_file.rst
+similarity index 99%
+rename from Documentation/sync_file.rst
+rename to Documentation/driver-api/sync_file.rst
+index a65a67cc06fa..496fb2c3b3e6 100644
+--- a/Documentation/sync_file.rst
++++ b/Documentation/driver-api/sync_file.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ===================
+ Sync File API Guide
+ ===================
+diff --git a/Documentation/tee.rst b/Documentation/driver-api/tee.rst
+similarity index 99%
+rename from Documentation/tee.rst
+rename to Documentation/driver-api/tee.rst
+index 5eacffb823b5..afacdf2fd1de 100644
+--- a/Documentation/tee.rst
++++ b/Documentation/driver-api/tee.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ =============
+ TEE subsystem
+ =============
+diff --git a/Documentation/this_cpu_ops.rst b/Documentation/driver-api/this_cpu_ops.rst
+similarity index 99%
+rename from Documentation/this_cpu_ops.rst
+rename to Documentation/driver-api/this_cpu_ops.rst
+index a489d25ff549..5cb8b883ae83 100644
+--- a/Documentation/this_cpu_ops.rst
++++ b/Documentation/driver-api/this_cpu_ops.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ===================
+ this_cpu operations
+ ===================
+diff --git a/Documentation/unaligned-memory-access.rst b/Documentation/driver-api/unaligned-memory-access.rst
+similarity index 99%
+rename from Documentation/unaligned-memory-access.rst
+rename to Documentation/driver-api/unaligned-memory-access.rst
+index 848013a8bc10..1ee82419d8aa 100644
+--- a/Documentation/unaligned-memory-access.rst
++++ b/Documentation/driver-api/unaligned-memory-access.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ =========================
+ Unaligned Memory Accesses
+ =========================
+diff --git a/Documentation/vfio-mediated-device.rst b/Documentation/driver-api/vfio-mediated-device.rst
+similarity index 99%
+rename from Documentation/vfio-mediated-device.rst
+rename to Documentation/driver-api/vfio-mediated-device.rst
+index 0ea57427e7e6..25eb7d5b834b 100644
+--- a/Documentation/vfio-mediated-device.rst
++++ b/Documentation/driver-api/vfio-mediated-device.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ .. include:: <isonum.txt>
  
--	  Please refer to Documentation/iostats.rst for details.
-+	  Please refer to Documentation/admin-guide/iostats.rst for details.
+ =====================
+@@ -410,7 +408,7 @@ card.
+ References
+ ==========
  
- 	  1. the number of reads completed
- 	  2. the number of reads merged
-diff --git a/Documentation/driver-api/index.rst b/Documentation/driver-api/index.rst
-index 0dbaa987aa11..c76a101c2a6b 100644
---- a/Documentation/driver-api/index.rst
-+++ b/Documentation/driver-api/index.rst
-@@ -29,8 +29,8 @@ available subsections can be seen below.
-    regulator
-    iio/index
-    input
--   usb/index
-    firewire
-+   usb/index
-    pci/index
-    spi
-    i2c
-diff --git a/Documentation/fb/vesafb.rst b/Documentation/fb/vesafb.rst
-index a0b658091b07..6821c87b7893 100644
---- a/Documentation/fb/vesafb.rst
-+++ b/Documentation/fb/vesafb.rst
-@@ -30,7 +30,7 @@ How to use it?
- ==============
+-1. See Documentation/vfio.rst for more information on VFIO.
++1. See Documentation/driver-api/vfio.rst for more information on VFIO.
+ 2. struct mdev_driver in include/linux/mdev.h
+ 3. struct mdev_parent_ops in include/linux/mdev.h
+ 4. struct vfio_iommu_driver_ops in include/linux/vfio.h
+diff --git a/Documentation/vfio.rst b/Documentation/driver-api/vfio.rst
+similarity index 99%
+rename from Documentation/vfio.rst
+rename to Documentation/driver-api/vfio.rst
+index 8a3fbd7d96f0..f1a4d3c3ba0b 100644
+--- a/Documentation/vfio.rst
++++ b/Documentation/driver-api/vfio.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ==================================
+ VFIO - "Virtual Function I/O" [1]_
+ ==================================
+diff --git a/Documentation/xillybus.rst b/Documentation/driver-api/xillybus.rst
+similarity index 99%
+rename from Documentation/xillybus.rst
+rename to Documentation/driver-api/xillybus.rst
+index d99f4a37e8b6..2446ee303c09 100644
+--- a/Documentation/xillybus.rst
++++ b/Documentation/driver-api/xillybus.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ==========================================
+ Xillybus driver for generic FPGA interface
+ ==========================================
+diff --git a/Documentation/xz.rst b/Documentation/driver-api/xz.rst
+similarity index 99%
+rename from Documentation/xz.rst
+rename to Documentation/driver-api/xz.rst
+index 205edc6646d5..b2220d03aa50 100644
+--- a/Documentation/xz.rst
++++ b/Documentation/driver-api/xz.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ============================
+ XZ data compression in Linux
+ ============================
+diff --git a/Documentation/zorro.rst b/Documentation/driver-api/zorro.rst
+similarity index 99%
+rename from Documentation/zorro.rst
+rename to Documentation/driver-api/zorro.rst
+index 7cd509f31d57..59fb1634d903 100644
+--- a/Documentation/zorro.rst
++++ b/Documentation/driver-api/zorro.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ ========================================
+ Writing Device Drivers for Zorro Devices
+ ========================================
+diff --git a/Documentation/driver-model/device.rst b/Documentation/driver-model/device.rst
+index 17bcc483c4b1..b0734caf6b8f 100644
+--- a/Documentation/driver-model/device.rst
++++ b/Documentation/driver-model/device.rst
+@@ -53,7 +53,7 @@ Attributes of devices can be exported by a device driver through sysfs.
+ Please see Documentation/filesystems/sysfs.txt for more information
+ on how sysfs works.
  
- Switching modes is done using the vga=... boot parameter.  Read
--Documentation/svga.rst for details.
-+Documentation/admin-guide/svga.rst for details.
+-As explained in Documentation/kobject.rst, device attributes must be
++As explained in Documentation/driver-api/kobject.rst, device attributes must be
+ created before the KOBJ_ADD uevent is generated. The only way to realize
+ that is by defining an attribute group.
  
- You should compile in both vgacon (for text mode) and vesafb (for
- graphics mode). Which of them takes over the console depends on
-diff --git a/Documentation/filesystems/tmpfs.txt b/Documentation/filesystems/tmpfs.txt
-index cad797a8a39e..5ecbc03e6b2f 100644
---- a/Documentation/filesystems/tmpfs.txt
-+++ b/Documentation/filesystems/tmpfs.txt
-@@ -98,7 +98,7 @@ A memory policy with a valid NodeList will be saved, as specified, for
- use at file creation time.  When a task allocates a file in the file
- system, the mount option memory policy will be applied with a NodeList,
- if any, modified by the calling task's cpuset constraints
--[See Documentation/cgroup-v1/cpusets.rst] and any optional flags, listed
-+[See Documentation/admin-guide/cgroup-v1/cpusets.rst] and any optional flags, listed
- below.  If the resulting NodeLists is the empty set, the effective memory
- policy for the file will revert to "default" policy.
+diff --git a/Documentation/fb/fbcon.rst b/Documentation/fb/fbcon.rst
+index 22112718dd5d..b9aafb733db9 100644
+--- a/Documentation/fb/fbcon.rst
++++ b/Documentation/fb/fbcon.rst
+@@ -187,7 +187,7 @@ the hardware. Thus, in a VGA console::
+ Assuming the VGA driver can be unloaded, one must first unbind the VGA driver
+ from the console layer before unloading the driver.  The VGA driver cannot be
+ unloaded if it is still bound to the console layer. (See
+-Documentation/console/console.rst for more information).
++Documentation/driver-api/console.rst for more information).
  
-diff --git a/Documentation/scheduler/sched-deadline.rst b/Documentation/scheduler/sched-deadline.rst
-index 3391e86d810c..14a2f7bf63fe 100644
---- a/Documentation/scheduler/sched-deadline.rst
-+++ b/Documentation/scheduler/sched-deadline.rst
-@@ -669,7 +669,7 @@ Deadline Task Scheduling
+ This is more complicated in the case of the framebuffer console (fbcon),
+ because fbcon is an intermediate layer between the console and the drivers::
+@@ -204,7 +204,7 @@ fbcon. Thus, there is no need to explicitly unbind the fbdev drivers from
+ fbcon.
  
-  -deadline tasks cannot have an affinity mask smaller that the entire
-  root_domain they are created on. However, affinities can be specified
-- through the cpuset facility (Documentation/cgroup-v1/cpusets.rst).
-+ through the cpuset facility (Documentation/admin-guide/cgroup-v1/cpusets.rst).
+ So, how do we unbind fbcon from the console? Part of the answer is in
+-Documentation/console/console.rst. To summarize:
++Documentation/driver-api/console.rst. To summarize:
  
- 5.1 SCHED_DEADLINE and cpusets HOWTO
- ------------------------------------
-diff --git a/Documentation/scheduler/sched-design-CFS.rst b/Documentation/scheduler/sched-design-CFS.rst
-index 53b30d1967cf..a96c72651877 100644
---- a/Documentation/scheduler/sched-design-CFS.rst
-+++ b/Documentation/scheduler/sched-design-CFS.rst
-@@ -222,7 +222,7 @@ SCHED_BATCH) tasks.
+ Echo a value to the bind file that represents the framebuffer console
+ driver. So assuming vtcon1 represents fbcon, then::
+diff --git a/Documentation/filesystems/sysfs.txt b/Documentation/filesystems/sysfs.txt
+index d159826c5cf3..20ab929c0e0c 100644
+--- a/Documentation/filesystems/sysfs.txt
++++ b/Documentation/filesystems/sysfs.txt
+@@ -16,7 +16,7 @@ a means to export kernel data structures, their attributes, and the
+ linkages between them to userspace. 
  
-    These options need CONFIG_CGROUPS to be defined, and let the administrator
-    create arbitrary groups of tasks, using the "cgroup" pseudo filesystem.  See
--   Documentation/cgroup-v1/cgroups.rst for more information about this filesystem.
-+   Documentation/admin-guide/cgroup-v1/cgroups.rst for more information about this filesystem.
+ sysfs is tied inherently to the kobject infrastructure. Please read
+-Documentation/kobject.rst for more information concerning the kobject
++Documentation/driver-api/kobject.rst for more information concerning the kobject
+ interface. 
  
- When CONFIG_FAIR_GROUP_SCHED is defined, a "cpu.shares" file is created for each
- group created using the pseudo filesystem.  See example steps below to create
-diff --git a/Documentation/scheduler/sched-rt-group.rst b/Documentation/scheduler/sched-rt-group.rst
-index d27d3f3712fd..655a096ec8fb 100644
---- a/Documentation/scheduler/sched-rt-group.rst
-+++ b/Documentation/scheduler/sched-rt-group.rst
-@@ -133,7 +133,7 @@ This uses the cgroup virtual file system and "<cgroup>/cpu.rt_runtime_us"
- to control the CPU time reserved for each control group.
  
- For more information on working with control groups, you should read
--Documentation/cgroup-v1/cgroups.rst as well.
-+Documentation/admin-guide/cgroup-v1/cgroups.rst as well.
+diff --git a/Documentation/gpu/drm-mm.rst b/Documentation/gpu/drm-mm.rst
+index fa30dfcfc3c8..b0f948d8733b 100644
+--- a/Documentation/gpu/drm-mm.rst
++++ b/Documentation/gpu/drm-mm.rst
+@@ -320,7 +320,7 @@ struct :c:type:`struct file_operations <file_operations>` get_unmapped_area
+ field with a pointer on :c:func:`drm_gem_cma_get_unmapped_area`.
  
- Group settings are checked against the following limits in order to keep the
- configuration schedulable:
+ More detailed information about get_unmapped_area can be found in
+-Documentation/nommu-mmap.rst
++Documentation/driver-api/nommu-mmap.rst
+ 
+ Memory Coherency
+ ----------------
+diff --git a/Documentation/ia64/irq-redir.rst b/Documentation/ia64/irq-redir.rst
+index 0abc7b35f6c0..0cd7ba1b0b08 100644
+--- a/Documentation/ia64/irq-redir.rst
++++ b/Documentation/ia64/irq-redir.rst
+@@ -7,7 +7,7 @@ IRQ affinity on IA64 platforms
+ 
+ By writing to /proc/irq/IRQ#/smp_affinity the interrupt routing can be
+ controlled. The behavior on IA64 platforms is slightly different from
+-that described in Documentation/IRQ-affinity.rst for i386 systems.
++that described in Documentation/driver-api/irq-affinity.rst for i386 systems.
+ 
+ Because of the usage of SAPIC mode and physical destination mode the
+ IRQ target is one particular CPU and cannot be a mask of several
+diff --git a/Documentation/laptops/thinkpad-acpi.rst b/Documentation/laptops/thinkpad-acpi.rst
+index d0f0d16c21b9..adea0bf2acc5 100644
+--- a/Documentation/laptops/thinkpad-acpi.rst
++++ b/Documentation/laptops/thinkpad-acpi.rst
+@@ -643,7 +643,7 @@ Sysfs notes
+ 	2010.
+ 
+ 	rfkill controller switch "tpacpi_bluetooth_sw": refer to
+-	Documentation/rfkill.rst for details.
++	Documentation/driver-api/rfkill.rst for details.
+ 
+ 
+ Video output control -- /proc/acpi/ibm/video
+@@ -1406,7 +1406,7 @@ Sysfs notes
+ 	2010.
+ 
+ 	rfkill controller switch "tpacpi_wwan_sw": refer to
+-	Documentation/rfkill.rst for details.
++	Documentation/driver-api/rfkill.rst for details.
+ 
+ 
+ EXPERIMENTAL: UWB
+@@ -1426,7 +1426,7 @@ Sysfs notes
+ ^^^^^^^^^^^
+ 
+ 	rfkill controller switch "tpacpi_uwb_sw": refer to
+-	Documentation/rfkill.rst for details.
++	Documentation/driver-api/rfkill.rst for details.
+ 
+ Adaptive keyboard
+ -----------------
+diff --git a/Documentation/locking/rt-mutex.rst b/Documentation/locking/rt-mutex.rst
+index 6e3dcff802f9..18b5f0f0418e 100644
+--- a/Documentation/locking/rt-mutex.rst
++++ b/Documentation/locking/rt-mutex.rst
+@@ -4,7 +4,7 @@ RT-mutex subsystem with PI support
+ 
+ RT-mutexes with priority inheritance are used to support PI-futexes,
+ which enable pthread_mutex_t priority inheritance attributes
+-(PTHREAD_PRIO_INHERIT). [See Documentation/pi-futex.rst for more details
++(PTHREAD_PRIO_INHERIT). [See Documentation/driver-api/pi-futex.rst for more details
+ about PI-futexes.]
+ 
+ This technology was developed in the -rt tree and streamlined for
+diff --git a/Documentation/networking/scaling.rst b/Documentation/networking/scaling.rst
+index 05f0feb99320..a20325aa1330 100644
+--- a/Documentation/networking/scaling.rst
++++ b/Documentation/networking/scaling.rst
+@@ -81,7 +81,7 @@ of queues to IRQs can be determined from /proc/interrupts. By default,
+ an IRQ may be handled on any CPU. Because a non-negligible part of packet
+ processing takes place in receive interrupt handling, it is advantageous
+ to spread receive interrupts between CPUs. To manually adjust the IRQ
+-affinity of each interrupt see Documentation/IRQ-affinity.rst. Some systems
++affinity of each interrupt see Documentation/driver-api/irq-affinity.rst. Some systems
+ will be running irqbalance, a daemon that dynamically optimizes IRQ
+ assignments and as a result may override any manual settings.
+ 
+@@ -160,7 +160,7 @@ can be configured for each receive queue using a sysfs file entry::
+ 
+ This file implements a bitmap of CPUs. RPS is disabled when it is zero
+ (the default), in which case packets are processed on the interrupting
+-CPU. Documentation/IRQ-affinity.rst explains how CPUs are assigned to
++CPU. Documentation/driver-api/irq-affinity.rst explains how CPUs are assigned to
+ the bitmap.
+ 
+ 
+diff --git a/Documentation/s390/vfio-ccw.rst b/Documentation/s390/vfio-ccw.rst
+index 87b5bb49b2f3..1e210c6afa88 100644
+--- a/Documentation/s390/vfio-ccw.rst
++++ b/Documentation/s390/vfio-ccw.rst
+@@ -38,7 +38,7 @@ every detail. More information/reference could be found here:
+   qemu/hw/s390x/css.c
+ 
+ For vfio mediated device framework:
+-- Documentation/vfio-mediated-device.rst
++- Documentation/driver-api/vfio-mediated-device.rst
+ 
+ Motivation of vfio-ccw
+ ----------------------
+@@ -322,5 +322,5 @@ Reference
+ 2. ESA/390 Common I/O Device Commands manual (IBM Form. No. SA22-7204)
+ 3. https://en.wikipedia.org/wiki/Channel_I/O
+ 4. Documentation/s390/cds.rst
+-5. Documentation/vfio.rst
+-6. Documentation/vfio-mediated-device.rst
++5. Documentation/driver-api/vfio.rst
++6. Documentation/driver-api/vfio-mediated-device.rst
 diff --git a/Documentation/sysctl/kernel.rst b/Documentation/sysctl/kernel.rst
-index 29a5bbca9bee..9324c3b1aa3e 100644
+index 9324c3b1aa3e..6e9144bfba9c 100644
 --- a/Documentation/sysctl/kernel.rst
 +++ b/Documentation/sysctl/kernel.rst
-@@ -343,7 +343,7 @@ when a hard lockup is detected.
-    0 - don't panic on hard lockup
-    1 - panic on hard lockup
+@@ -50,7 +50,7 @@ show up in /proc/sys/kernel:
+ - kexec_load_disabled
+ - kptr_restrict
+ - l2cr                        [ PPC only ]
+-- modprobe                    ==> Documentation/debugging-modules.rst
++- modprobe                    ==> Documentation/driver-api/debugging-modules.rst
+ - modules_disabled
+ - msg_next_id		      [ sysv ipc ]
+ - msgmax
+diff --git a/Documentation/sysctl/vm.rst b/Documentation/sysctl/vm.rst
+index 43d594877df7..4940ab610eb7 100644
+--- a/Documentation/sysctl/vm.rst
++++ b/Documentation/sysctl/vm.rst
+@@ -580,7 +580,7 @@ trimming of allocations is initiated.
  
--See Documentation/lockup-watchdogs.rst for more information.  This can
-+See Documentation/admin-guide/lockup-watchdogs.rst for more information.  This can
- also be set using the nmi_watchdog kernel parameter.
+ The default value is 1.
+ 
+-See Documentation/nommu-mmap.rst for more information.
++See Documentation/driver-api/nommu-mmap.rst for more information.
  
  
-diff --git a/Documentation/vm/numa.rst b/Documentation/vm/numa.rst
-index 130f3cfa1c19..99fdeca917ca 100644
---- a/Documentation/vm/numa.rst
-+++ b/Documentation/vm/numa.rst
-@@ -67,7 +67,7 @@ nodes.  Each emulated node will manage a fraction of the underlying cells'
- physical memory.  NUMA emluation is useful for testing NUMA kernel and
- application features on non-NUMA platforms, and as a sort of memory resource
- management mechanism when used together with cpusets.
--[see Documentation/cgroup-v1/cpusets.rst]
-+[see Documentation/admin-guide/cgroup-v1/cpusets.rst]
+ numa_zonelist_order
+diff --git a/Documentation/trace/kprobetrace.rst b/Documentation/trace/kprobetrace.rst
+index 74f698affea1..caa0a8ba081e 100644
+--- a/Documentation/trace/kprobetrace.rst
++++ b/Documentation/trace/kprobetrace.rst
+@@ -40,7 +40,7 @@ Synopsis of kprobe_events
+  MEMADDR	: Address where the probe is inserted.
+  MAXACTIVE	: Maximum number of instances of the specified function that
+ 		  can be probed simultaneously, or 0 for the default value
+-		  as defined in Documentation/kprobes.rst section 1.3.1.
++		  as defined in Documentation/driver-api/kprobes.rst section 1.3.1.
  
- For each node with memory, Linux constructs an independent memory management
- subsystem, complete with its own free page lists, in-use page lists, usage
-@@ -114,7 +114,7 @@ allocation behavior using Linux NUMA memory policy. [see
+  FETCHARGS	: Arguments. Each probe can have up to 128 args.
+   %REG		: Fetch register REG
+diff --git a/Documentation/translations/zh_CN/IRQ.txt b/Documentation/translations/zh_CN/IRQ.txt
+index 0d9ec142e185..c6e77a1b14e7 100644
+--- a/Documentation/translations/zh_CN/IRQ.txt
++++ b/Documentation/translations/zh_CN/IRQ.txt
+@@ -1,4 +1,4 @@
+-Chinese translated version of Documentation/IRQ.rst
++Chinese translated version of Documentation/driver-api/irq.rst
  
- System administrators can restrict the CPUs and nodes' memories that a non-
- privileged user can specify in the scheduling or NUMA commands and functions
--using control groups and CPUsets.  [see Documentation/cgroup-v1/cpusets.rst]
-+using control groups and CPUsets.  [see Documentation/admin-guide/cgroup-v1/cpusets.rst]
+ If you have any comment or update to the content, please contact the
+ original document maintainer directly.  However, if you have a problem
+@@ -9,7 +9,7 @@ or if there is a problem with the translation.
+ Maintainer: Eric W. Biederman <ebiederman@xmission.com>
+ Chinese maintainer: Fu Wei <tekkamanninja@gmail.com>
+ ---------------------------------------------------------------------
+-Documentation/IRQ.rst 的中文翻译
++Documentation/driver-api/irq.rst 的中文翻译
  
- On architectures that do not hide memoryless nodes, Linux will include only
- zones [nodes] with memory in the zonelists.  This means that for a memoryless
-diff --git a/Documentation/vm/page_migration.rst b/Documentation/vm/page_migration.rst
-index 35bba27d5fff..1d6cd7db4e43 100644
---- a/Documentation/vm/page_migration.rst
-+++ b/Documentation/vm/page_migration.rst
-@@ -41,7 +41,7 @@ locations.
- Larger installations usually partition the system using cpusets into
- sections of nodes. Paul Jackson has equipped cpusets with the ability to
- move pages when a task is moved to another cpuset (See
--Documentation/cgroup-v1/cpusets.rst).
-+Documentation/admin-guide/cgroup-v1/cpusets.rst).
- Cpusets allows the automation of process locality. If a task is moved to
- a new cpuset then also all its pages are moved with it so that the
- performance of the process does not sink dramatically. Also the pages
-diff --git a/Documentation/vm/unevictable-lru.rst b/Documentation/vm/unevictable-lru.rst
-index 8ba656f37cd8..997dfbf13b99 100644
---- a/Documentation/vm/unevictable-lru.rst
-+++ b/Documentation/vm/unevictable-lru.rst
-@@ -98,7 +98,7 @@ Memory Control Group Interaction
- --------------------------------
+ 如果想评论或更新本文的内容，请直接联系原文档的维护者。如果你使用英文
+ 交流有困难的话，也可以向中文版维护者求助。如果本翻译更新不及时或者翻
+diff --git a/Documentation/translations/zh_CN/filesystems/sysfs.txt b/Documentation/translations/zh_CN/filesystems/sysfs.txt
+index f5482e082399..0e0c6d3d4129 100644
+--- a/Documentation/translations/zh_CN/filesystems/sysfs.txt
++++ b/Documentation/translations/zh_CN/filesystems/sysfs.txt
+@@ -40,7 +40,7 @@ sysfs 是一个最初基于 ramfs 且位于内存的文件系统。它提供导
+ 数据结构及其属性，以及它们之间的关联到用户空间的方法。
  
- The unevictable LRU facility interacts with the memory control group [aka
--memory controller; see Documentation/cgroup-v1/memory.rst] by extending the
-+memory controller; see Documentation/admin-guide/cgroup-v1/memory.rst] by extending the
- lru_list enum.
+ sysfs 始终与 kobject 的底层结构紧密相关。请阅读
+-Documentation/kobject.rst 文档以获得更多关于 kobject 接口的
++Documentation/driver-api/kobject.rst 文档以获得更多关于 kobject 接口的
+ 信息。
  
- The memory controller data structure automatically gets a per-zone unevictable
-diff --git a/Documentation/x86/topology.rst b/Documentation/x86/topology.rst
-index b06d895becce..e29739904e37 100644
---- a/Documentation/x86/topology.rst
-+++ b/Documentation/x86/topology.rst
-@@ -9,7 +9,7 @@ representation in the kernel. Update/change when doing changes to the
- respective code.
  
- The architecture-agnostic topology definitions are in
--Documentation/cputopology.rst. This file holds x86-specific
-+Documentation/admin-guide/cputopology.rst. This file holds x86-specific
- differences/specialities which must not necessarily apply to the generic
- definitions. Thus, the way to read up on Linux topology on x86 is to start
- with the generic one and look at this one in parallel for the x86 specifics.
-diff --git a/Documentation/x86/x86_64/fake-numa-for-cpusets.rst b/Documentation/x86/x86_64/fake-numa-for-cpusets.rst
-index 30108684ae87..ff9bcfd2cc14 100644
---- a/Documentation/x86/x86_64/fake-numa-for-cpusets.rst
-+++ b/Documentation/x86/x86_64/fake-numa-for-cpusets.rst
-@@ -15,7 +15,7 @@ assign them to cpusets and their attached tasks.  This is a way of limiting the
- amount of system memory that are available to a certain class of tasks.
+diff --git a/Documentation/translations/zh_CN/io_ordering.txt b/Documentation/translations/zh_CN/io_ordering.txt
+index 4e9727990c10..7bb3086227ae 100644
+--- a/Documentation/translations/zh_CN/io_ordering.txt
++++ b/Documentation/translations/zh_CN/io_ordering.txt
+@@ -1,4 +1,4 @@
+-Chinese translated version of Documentation/io_ordering.rst
++Chinese translated version of Documentation/driver-api/io_ordering.rst
  
- For more information on the features of cpusets, see
--Documentation/cgroup-v1/cpusets.rst.
-+Documentation/admin-guide/cgroup-v1/cpusets.rst.
- There are a number of different configurations you can use for your needs.  For
- more information on the numa=fake command line option and its various ways of
- configuring fake nodes, see Documentation/x86/x86_64/boot-options.rst.
-@@ -40,7 +40,7 @@ A machine may be split as follows with "numa=fake=4*512," as reported by dmesg::
- 	On node 3 totalpages: 131072
+ If you have any comment or update to the content, please contact the
+ original document maintainer directly.  However, if you have a problem
+@@ -8,7 +8,7 @@ or if there is a problem with the translation.
  
- Now following the instructions for mounting the cpusets filesystem from
--Documentation/cgroup-v1/cpusets.rst, you can assign fake nodes (i.e. contiguous memory
-+Documentation/admin-guide/cgroup-v1/cpusets.rst, you can assign fake nodes (i.e. contiguous memory
- address spaces) to individual cpusets::
+ Chinese maintainer: Lin Yongting <linyongting@gmail.com>
+ ---------------------------------------------------------------------
+-Documentation/io_ordering.rst 的中文翻译
++Documentation/driver-api/io_ordering.rst 的中文翻译
  
- 	[root@xroads /]# mkdir exampleset
+ 如果想评论或更新本文的内容，请直接联系原文档的维护者。如果你使用英文
+ 交流有困难的话，也可以向中文版维护者求助。如果本翻译更新不及时或者翻
+diff --git a/Documentation/w1/w1.netlink b/Documentation/w1/w1.netlink
+index ef2727192d69..94ad4c420828 100644
+--- a/Documentation/w1/w1.netlink
++++ b/Documentation/w1/w1.netlink
+@@ -183,7 +183,7 @@ acknowledge number is set to seq+1.
+ Additional documantion, source code examples.
+ ============================================
+ 
+-1. Documentation/connector
++1. Documentation/driver-api/connector.rst
+ 2. http://www.ioremap.net/archive/w1
+ This archive includes userspace application w1d.c which uses
+ read/write/search commands for all master/slave devices found on the bus.
+diff --git a/Documentation/watchdog/hpwdt.rst b/Documentation/watchdog/hpwdt.rst
+index f4ba329f011f..437456bd91a4 100644
+--- a/Documentation/watchdog/hpwdt.rst
++++ b/Documentation/watchdog/hpwdt.rst
+@@ -44,7 +44,7 @@ Last reviewed: 08/20/2018
+  NOTE:
+        More information about watchdog drivers in general, including the ioctl
+        interface to /dev/watchdog can be found in
+-       Documentation/watchdog/watchdog-api.rst and Documentation/IPMI.rst.
++       Documentation/watchdog/watchdog-api.rst and Documentation/driver-api/ipmi.rst.
+ 
+  Due to limitations in the iLO hardware, the NMI pretimeout if enabled,
+  can only be set to 9 seconds.  Attempts to set pretimeout to other
 diff --git a/MAINTAINERS b/MAINTAINERS
-index d850d7f15a38..98723afdbf0b 100644
+index 98723afdbf0b..85a6f090ccc0 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -2651,7 +2651,7 @@ ATA OVER ETHERNET (AOE) DRIVER
- M:	"Justin Sanders" <justin@coraid.com>
- W:	http://www.openaoe.org/
+@@ -4588,7 +4588,7 @@ DELL SYSTEMS MANAGEMENT BASE DRIVER (dcdbas)
+ M:	Stuart Hayes <stuart.w.hayes@gmail.com>
+ L:	platform-driver-x86@vger.kernel.org
+ S:	Maintained
+-F:	Documentation/dcdbas.rst
++F:	Documentation/driver-api/dcdbas.rst
+ F:	drivers/platform/x86/dcdbas.*
+ 
+ DELL WMI NOTIFICATIONS DRIVER
+@@ -4966,7 +4966,7 @@ M:	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+ R:	"Rafael J. Wysocki" <rafael@kernel.org>
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git
  S:	Supported
--F:	Documentation/aoe/
-+F:	Documentation/admin-guide/aoe/
- F:	drivers/block/aoe/
+-F:	Documentation/kobject.rst
++F:	Documentation/driver-api/kobject.rst
+ F:	drivers/base/
+ F:	fs/debugfs/
+ F:	fs/sysfs/
+@@ -6584,7 +6584,7 @@ F:	include/linux/futex.h
+ F:	include/uapi/linux/futex.h
+ F:	tools/testing/selftests/futex/
+ F:	tools/perf/bench/futex*
+-F:	Documentation/*futex*
++F:	Documentation/driver-api/*futex*
  
- ATHEROS 71XX/9XXX GPIO DRIVER
-@@ -4105,7 +4105,7 @@ L:	cgroups@vger.kernel.org
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/tj/cgroup.git
+ GCC PLUGINS
+ M:	Kees Cook <keescook@chromium.org>
+@@ -6594,7 +6594,7 @@ S:	Maintained
+ F:	scripts/gcc-plugins/
+ F:	scripts/gcc-plugin.sh
+ F:	scripts/Makefile.gcc-plugins
+-F:	Documentation/gcc-plugins.rst
++F:	Documentation/driver-api/gcc-plugins.rst
+ 
+ GASKET DRIVER FRAMEWORK
+ M:	Rob Springer <rspringer@google.com>
+@@ -7022,7 +7022,7 @@ L:	linux-remoteproc@vger.kernel.org
  S:	Maintained
- F:	Documentation/admin-guide/cgroup-v2.rst
--F:	Documentation/cgroup-v1/
-+F:	Documentation/admin-guide/cgroup-v1/
- F:	include/linux/cgroup*
- F:	kernel/cgroup/
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/ohad/hwspinlock.git
+ F:	Documentation/devicetree/bindings/hwlock/
+-F:	Documentation/hwspinlock.rst
++F:	Documentation/driver-api/hwspinlock.rst
+ F:	drivers/hwspinlock/
+ F:	include/linux/hwspinlock.h
  
-@@ -4116,7 +4116,7 @@ W:	http://www.bullopensource.org/cpuset/
- W:	http://oss.sgi.com/projects/cpusets/
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/tj/cgroup.git
+@@ -8292,7 +8292,7 @@ L:	openipmi-developer@lists.sourceforge.net (moderated for non-subscribers)
+ W:	http://openipmi.sourceforge.net/
+ S:	Supported
+ F:	Documentation/devicetree/bindings/ipmi/
+-F:	Documentation/IPMI.rst
++F:	Documentation/driver-api/ipmi.rst
+ F:	drivers/char/ipmi/
+ F:	include/linux/ipmi*
+ F:	include/uapi/linux/ipmi*
+@@ -8333,7 +8333,7 @@ IRQ DOMAINS (IRQ NUMBER MAPPING LIBRARY)
+ M:	Marc Zyngier <marc.zyngier@arm.com>
  S:	Maintained
--F:	Documentation/cgroup-v1/cpusets.rst
-+F:	Documentation/admin-guide/cgroup-v1/cpusets.rst
- F:	include/linux/cpuset.h
- F:	kernel/cgroup/cpuset.c
- 
-@@ -6038,7 +6038,7 @@ M:	Ard Biesheuvel <ard.biesheuvel@linaro.org>
- L:	linux-efi@vger.kernel.org
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/efi/efi.git
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git irq/core
+-F:	Documentation/IRQ-domain.rst
++F:	Documentation/driver-api/irq-domain.rst
+ F:	include/linux/irqdomain.h
+ F:	kernel/irq/irqdomain.c
+ F:	kernel/irq/msi.c
+@@ -8358,7 +8358,7 @@ F:	drivers/irqchip/
+ ISA
+ M:	William Breathitt Gray <vilhelm.gray@gmail.com>
  S:	Maintained
--F:	Documentation/efi-stub.rst
-+F:	Documentation/admin-guide/efi-stub.rst
- F:	arch/*/kernel/efi.c
- F:	arch/x86/boot/compressed/eboot.[ch]
- F:	arch/*/include/asm/efi.h
-@@ -7006,7 +7006,7 @@ M:	Herbert Xu <herbert@gondor.apana.org.au>
- L:	linux-crypto@vger.kernel.org
- S:	Odd fixes
- F:	Documentation/devicetree/bindings/rng/
--F:	Documentation/hw_random.rst
-+F:	Documentation/admin-guide/hw_random.rst
- F:	drivers/char/hw_random/
- F:	include/linux/hw_random.h
+-F:	Documentation/isa.rst
++F:	Documentation/driver-api/isa.rst
+ F:	drivers/base/isa.c
+ F:	include/linux/isa.h
  
-@@ -9296,7 +9296,7 @@ M:	"Richard Russon (FlatCap)" <ldm@flatcap.org>
- L:	linux-ntfs-dev@lists.sourceforge.net
- W:	http://www.linux-ntfs.org/content/view/19/37/
+@@ -8373,7 +8373,7 @@ F:	drivers/media/radio/radio-isa*
+ ISAPNP
+ M:	Jaroslav Kysela <perex@perex.cz>
  S:	Maintained
--F:	Documentation/ldm.rst
-+F:	Documentation/admin-guide/ldm.rst
- F:	block/partitions/ldm.*
+-F:	Documentation/isapnp.rst
++F:	Documentation/driver-api/isapnp.rst
+ F:	drivers/pnp/isapnp/
+ F:	include/linux/isapnp.h
  
- LSILOGIC MPT FUSION DRIVERS (FC/SAS/SPI)
-@@ -11935,7 +11935,7 @@ PARALLEL LCD/KEYPAD PANEL DRIVER
- M:	Willy Tarreau <willy@haproxy.com>
- M:	Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
- S:	Odd Fixes
--F:	Documentation/auxdisplay/lcd-panel-cgram.rst
-+F:	Documentation/admin-guide/lcd-panel-cgram.rst
- F:	drivers/auxdisplay/panel.c
- 
- PARALLEL PORT SUBSYSTEM
-@@ -13354,7 +13354,7 @@ Q:	http://patchwork.ozlabs.org/project/rtc-linux/list/
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/abelloni/linux.git
+@@ -8823,7 +8823,7 @@ M:	Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>
+ M:	"David S. Miller" <davem@davemloft.net>
+ M:	Masami Hiramatsu <mhiramat@kernel.org>
  S:	Maintained
- F:	Documentation/devicetree/bindings/rtc/
--F:	Documentation/rtc.rst
-+F:	Documentation/admin-guide/rtc.rst
- F:	drivers/rtc/
- F:	include/linux/rtc.h
- F:	include/uapi/linux/rtc.h
-@@ -15174,7 +15174,7 @@ SVGA HANDLING
- M:	Martin Mares <mj@ucw.cz>
- L:	linux-video@atrey.karlin.mff.cuni.cz
+-F:	Documentation/kprobes.rst
++F:	Documentation/driver-api/kprobes.rst
+ F:	include/linux/kprobes.h
+ F:	include/asm-generic/kprobes.h
+ F:	kernel/kprobes.c
+@@ -9182,7 +9182,7 @@ L:	linux-arch@vger.kernel.org
+ S:	Supported
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev
+ F:	tools/memory-model/
+-F:	Documentation/atomic_bitops.rst
++F:	Documentation/driver-api/atomic_bitops.rst
+ F:	Documentation/atomic_t.txt
+ F:	Documentation/core-api/atomic_ops.rst
+ F:	Documentation/core-api/refcount-vs-atomic.rst
+@@ -10240,7 +10240,7 @@ M:	Johannes Thumshirn <morbidrsa@gmail.com>
  S:	Maintained
--F:	Documentation/svga.rst
-+F:	Documentation/admin-guide/svga.rst
- F:	arch/x86/boot/video*
+ F:	drivers/mcb/
+ F:	include/linux/mcb.h
+-F:	Documentation/men-chameleon-bus.rst
++F:	Documentation/driver-api/men-chameleon-bus.rst
  
- SWIOTLB SUBSYSTEM
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 2d0a14a4286c..ff0e247573d8 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -1266,7 +1266,7 @@ config SMP
- 	  will run faster if you say N here.
+ MEN F21BMC (Board Management Controller)
+ M:	Andreas Werner <andreas.werner@men.de>
+@@ -11923,7 +11923,7 @@ L:	linux-crypto@vger.kernel.org
+ S:	Maintained
+ F:	kernel/padata.c
+ F:	include/linux/padata.h
+-F:	Documentation/padata.rst
++F:	Documentation/driver-api/padata.rst
  
- 	  See also <file:Documentation/x86/i386/IO-APIC.rst>,
--	  <file:Documentation/lockup-watchdogs.rst> and the SMP-HOWTO available at
-+	  <file:Documentation/admin-guide/lockup-watchdogs.rst> and the SMP-HOWTO available at
- 	  <http://tldp.org/HOWTO/SMP-HOWTO.html>.
+ PANASONIC LAPTOP ACPI EXTRAS DRIVER
+ M:	Harald Welte <laforge@gnumonks.org>
+@@ -11947,7 +11947,7 @@ F:	drivers/parport/
+ F:	include/linux/parport*.h
+ F:	drivers/char/ppdev.c
+ F:	include/uapi/linux/ppdev.h
+-F:	Documentation/parport*.rst
++F:	Documentation/driver-api/parport*.rst
  
- 	  If you don't know what to do here, say N.
-diff --git a/arch/parisc/Kconfig b/arch/parisc/Kconfig
-index 188fdf4f5080..071640ecafea 100644
---- a/arch/parisc/Kconfig
-+++ b/arch/parisc/Kconfig
-@@ -275,7 +275,7 @@ config SMP
- 	  machines, but will use only one CPU of a multiprocessor machine.
- 	  On a uniprocessor machine, the kernel will run faster if you say N.
+ PARAVIRT_OPS INTERFACE
+ M:	Juergen Gross <jgross@suse.com>
+@@ -12122,7 +12122,7 @@ M:	Kurt Schwemmer <kurt.schwemmer@microsemi.com>
+ M:	Logan Gunthorpe <logang@deltatee.com>
+ L:	linux-pci@vger.kernel.org
+ S:	Maintained
+-F:	Documentation/switchtec.rst
++F:	Documentation/driver-api/switchtec.rst
+ F:	Documentation/ABI/testing/sysfs-class-switchtec
+ F:	drivers/pci/switch/switchtec*
+ F:	include/uapi/linux/switchtec_ioctl.h
+@@ -12884,7 +12884,7 @@ M:	Thierry Reding <thierry.reding@gmail.com>
+ L:	linux-pwm@vger.kernel.org
+ S:	Maintained
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git
+-F:	Documentation/pwm.rst
++F:	Documentation/driver-api/pwm.rst
+ F:	Documentation/devicetree/bindings/pwm/
+ F:	include/linux/pwm.h
+ F:	drivers/pwm/
+@@ -13405,7 +13405,7 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/ohad/remoteproc.git
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/remoteproc/
+ F:	Documentation/ABI/testing/sysfs-class-remoteproc
+-F:	Documentation/remoteproc.rst
++F:	Documentation/driver-api/remoteproc.rst
+ F:	drivers/remoteproc/
+ F:	include/linux/remoteproc.h
+ F:	include/linux/remoteproc/
+@@ -13417,7 +13417,7 @@ L:	linux-remoteproc@vger.kernel.org
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/ohad/rpmsg.git
+ S:	Maintained
+ F:	drivers/rpmsg/
+-F:	Documentation/rpmsg.rst
++F:	Documentation/driver-api/rpmsg.rst
+ F:	Documentation/ABI/testing/sysfs-bus-rpmsg
+ F:	include/linux/rpmsg.h
+ F:	include/linux/rpmsg/
+@@ -13503,7 +13503,7 @@ W:	http://wireless.kernel.org/
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git
+ S:	Maintained
+-F:	Documentation/rfkill.rst
++F:	Documentation/driver-api/rfkill.rst
+ F:	Documentation/ABI/stable/sysfs-class-rfkill
+ F:	net/rfkill/
+ F:	include/linux/rfkill.h
+@@ -15211,7 +15211,7 @@ F:	drivers/dma-buf/dma-fence*
+ F:	drivers/dma-buf/sw_sync.c
+ F:	include/linux/sync_file.h
+ F:	include/uapi/linux/sync_file.h
+-F:	Documentation/sync_file.rst
++F:	Documentation/driver-api/sync_file.rst
+ T:	git git://anongit.freedesktop.org/drm/drm-misc
  
--	  See also <file:Documentation/lockup-watchdogs.rst> and the SMP-HOWTO
-+	  See also <file:Documentation/admin-guide/lockup-watchdogs.rst> and the SMP-HOWTO
- 	  available at <http://www.tldp.org/docs.html#howto>.
+ SYNOPSYS ARC ARCHITECTURE
+@@ -15537,7 +15537,7 @@ S:	Maintained
+ F:	include/linux/tee_drv.h
+ F:	include/uapi/linux/tee.h
+ F:	drivers/tee/
+-F:	Documentation/tee.rst
++F:	Documentation/driver-api/tee.rst
  
- 	  If you don't know what to do here, say N.
-diff --git a/arch/sh/Kconfig b/arch/sh/Kconfig
-index 669adef94507..7440639510a0 100644
---- a/arch/sh/Kconfig
-+++ b/arch/sh/Kconfig
-@@ -677,7 +677,7 @@ config SMP
- 	  People using multiprocessor machines who say Y here should also say
- 	  Y to "Enhanced Real Time Clock Support", below.
+ TEGRA ARCHITECTURE SUPPORT
+ M:	Thierry Reding <thierry.reding@gmail.com>
+@@ -16706,7 +16706,7 @@ R:	Cornelia Huck <cohuck@redhat.com>
+ L:	kvm@vger.kernel.org
+ T:	git git://github.com/awilliam/linux-vfio.git
+ S:	Maintained
+-F:	Documentation/vfio.rst
++F:	Documentation/driver-api/vfio.rst
+ F:	drivers/vfio/
+ F:	include/linux/vfio.h
+ F:	include/uapi/linux/vfio.h
+@@ -16715,7 +16715,7 @@ VFIO MEDIATED DEVICE DRIVERS
+ M:	Kirti Wankhede <kwankhede@nvidia.com>
+ L:	kvm@vger.kernel.org
+ S:	Maintained
+-F:	Documentation/vfio-mediated-device.rst
++F:	Documentation/driver-api/vfio-mediated-device.rst
+ F:	drivers/vfio/mdev/
+ F:	include/linux/mdev.h
+ F:	samples/vfio-mdev/
+diff --git a/arch/Kconfig b/arch/Kconfig
+index c2f2bee5b17b..bfc372208609 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -141,7 +141,7 @@ config HAVE_64BIT_ALIGNED_ACCESS
+ 	  accesses are required to be 64 bit aligned in this way even
+ 	  though it is not a 64 bit architecture.
  
--	  See also <file:Documentation/lockup-watchdogs.rst> and the SMP-HOWTO
-+	  See also <file:Documentation/admin-guide/lockup-watchdogs.rst> and the SMP-HOWTO
- 	  available at <http://www.tldp.org/docs.html#howto>.
+-	  See Documentation/unaligned-memory-access.rst for more
++	  See Documentation/driver-api/unaligned-memory-access.rst for more
+ 	  information on the topic of unaligned memory accesses.
  
- 	  If you don't know what to do here, say N.
-diff --git a/arch/sparc/Kconfig b/arch/sparc/Kconfig
-index 04a3b2246a2a..6a31f240840d 100644
---- a/arch/sparc/Kconfig
-+++ b/arch/sparc/Kconfig
-@@ -179,7 +179,7 @@ config SMP
- 	  Y to "Enhanced Real Time Clock Support", below. The "Advanced Power
- 	  Management" code will be disabled if you say Y here.
+ config HAVE_EFFICIENT_UNALIGNED_ACCESS
+@@ -160,7 +160,7 @@ config HAVE_EFFICIENT_UNALIGNED_ACCESS
+ 	  problems with received packets if doing so would not help
+ 	  much.
  
--	  See also <file:Documentation/lockup-watchdogs.rst> and the SMP-HOWTO
-+	  See also <file:Documentation/admin-guide/lockup-watchdogs.rst> and the SMP-HOWTO
- 	  available at <http://www.tldp.org/docs.html#howto>.
+-	  See Documentation/unaligned-memory-access.rst for more
++	  See Documentation/driver-api/unaligned-memory-access.rst for more
+ 	  information on the topic of unaligned memory accesses.
  
- 	  If you don't know what to do here, say N.
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 0d5f0710347c..586dd3529d14 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -397,7 +397,7 @@ config SMP
- 	  Management" code will be disabled if you say Y here.
+ config ARCH_USE_BUILTIN_BSWAP
+diff --git a/arch/unicore32/include/asm/io.h b/arch/unicore32/include/asm/io.h
+index 86877df4b1ee..e396d4f658f9 100644
+--- a/arch/unicore32/include/asm/io.h
++++ b/arch/unicore32/include/asm/io.h
+@@ -31,7 +31,7 @@ extern void __uc32_iounmap(volatile void __iomem *addr);
+  * ioremap and friends.
+  *
+  * ioremap takes a PCI memory address, as specified in
+- * Documentation/io-mapping.rst.
++ * Documentation/driver-api/io-mapping.rst.
+  *
+  */
+ #define ioremap(cookie, size)		__uc32_ioremap(cookie, size)
+diff --git a/drivers/base/core.c b/drivers/base/core.c
+index f98b33e9ec19..e40e4a171cdd 100644
+--- a/drivers/base/core.c
++++ b/drivers/base/core.c
+@@ -1063,7 +1063,7 @@ static void device_release(struct kobject *kobj)
+ 	else if (dev->class && dev->class->dev_release)
+ 		dev->class->dev_release(dev);
+ 	else
+-		WARN(1, KERN_ERR "Device '%s' does not have a release() function, it is broken and must be fixed. See Documentation/kobject.rst.\n",
++		WARN(1, KERN_ERR "Device '%s' does not have a release() function, it is broken and must be fixed. See Documentation/driver-api/kobject.rst.\n",
+ 			dev_name(dev));
+ 	kfree(p);
+ }
+diff --git a/drivers/char/ipmi/Kconfig b/drivers/char/ipmi/Kconfig
+index e59ee81bc22f..d7f89cce656f 100644
+--- a/drivers/char/ipmi/Kconfig
++++ b/drivers/char/ipmi/Kconfig
+@@ -14,7 +14,7 @@ menuconfig IPMI_HANDLER
+          IPMI is a standard for managing sensors (temperature,
+          voltage, etc.) in a system.
  
- 	  See also <file:Documentation/x86/i386/IO-APIC.rst>,
--	  <file:Documentation/lockup-watchdogs.rst> and the SMP-HOWTO available at
-+	  <file:Documentation/admin-guide/lockup-watchdogs.rst> and the SMP-HOWTO available at
- 	  <http://www.tldp.org/docs.html#howto>.
+-         See <file:Documentation/IPMI.rst> for more details on the driver.
++         See <file:Documentation/driver-api/ipmi.rst> for more details on the driver.
  
- 	  If you don't know what to do here, say N.
-@@ -1954,7 +1954,7 @@ config EFI_STUB
-           This kernel feature allows a bzImage to be loaded directly
- 	  by EFI firmware without the use of a bootloader.
+ 	 If unsure, say N.
  
--	  See Documentation/efi-stub.rst for more information.
-+	  See Documentation/admin-guide/efi-stub.rst for more information.
+diff --git a/drivers/char/ipmi/ipmi_si_hotmod.c b/drivers/char/ipmi/ipmi_si_hotmod.c
+index 2032f4ac52ac..4fbb4e18bae2 100644
+--- a/drivers/char/ipmi/ipmi_si_hotmod.c
++++ b/drivers/char/ipmi/ipmi_si_hotmod.c
+@@ -18,7 +18,7 @@ static int hotmod_handler(const char *val, const struct kernel_param *kp);
  
- config EFI_MIXED
- 	bool "EFI mixed-mode support"
-diff --git a/block/Kconfig b/block/Kconfig
-index b16b3e075d31..8b5f8e560eb4 100644
---- a/block/Kconfig
-+++ b/block/Kconfig
-@@ -89,7 +89,7 @@ config BLK_DEV_THROTTLING
- 	one needs to mount and use blkio cgroup controller for creating
- 	cgroups and specifying per device IO rate policies.
+ module_param_call(hotmod, hotmod_handler, NULL, NULL, 0200);
+ MODULE_PARM_DESC(hotmod, "Add and remove interfaces.  See"
+-		 " Documentation/IPMI.rst in the kernel sources for the"
++		 " Documentation/driver-api/ipmi.rst in the kernel sources for the"
+ 		 " gory details.");
  
--	See Documentation/cgroup-v1/blkio-controller.rst for more information.
-+	See Documentation/admin-guide/cgroup-v1/blkio-controller.rst for more information.
+ /*
+diff --git a/drivers/char/ipmi/ipmi_si_intf.c b/drivers/char/ipmi/ipmi_si_intf.c
+index 7f729609979c..4a0258f886cf 100644
+--- a/drivers/char/ipmi/ipmi_si_intf.c
++++ b/drivers/char/ipmi/ipmi_si_intf.c
+@@ -977,7 +977,7 @@ static inline int ipmi_thread_busy_wait(enum si_sm_result smi_result,
+  * that are not BT and do not have interrupts.  It starts spinning
+  * when an operation is complete or until max_busy tells it to stop
+  * (if that is enabled).  See the paragraph on kimid_max_busy_us in
+- * Documentation/IPMI.rst for details.
++ * Documentation/driver-api/ipmi.rst for details.
+  */
+ static int ipmi_thread(void *data)
+ {
+diff --git a/drivers/dma-buf/Kconfig b/drivers/dma-buf/Kconfig
+index 9afc7bb638c3..b6a9c2f1bc41 100644
+--- a/drivers/dma-buf/Kconfig
++++ b/drivers/dma-buf/Kconfig
+@@ -15,7 +15,7 @@ config SYNC_FILE
+ 	  associated with a buffer. When a job is submitted to the GPU a fence
+ 	  is attached to the buffer and is transferred via userspace, using Sync
+ 	  Files fds, to the DRM driver for example. More details at
+-	  Documentation/sync_file.rst.
++	  Documentation/driver-api/sync_file.rst.
  
- config BLK_DEV_THROTTLING_LOW
- 	bool "Block throttling .low limit interface support (EXPERIMENTAL)"
-diff --git a/block/partitions/Kconfig b/block/partitions/Kconfig
-index 51b28e1e225d..702689a628f0 100644
---- a/block/partitions/Kconfig
-+++ b/block/partitions/Kconfig
-@@ -194,7 +194,7 @@ config LDM_PARTITION
- 	  Normal partitions are now called Basic Disks under Windows 2000, XP,
- 	  and Vista.
- 
--	  For a fuller description read <file:Documentation/ldm.rst>.
-+	  For a fuller description read <file:Documentation/admin-guide/ldm.rst>.
+ config SW_SYNC
+ 	bool "Sync File Validation Framework"
+diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
+index 85cecf58bcf5..49f04621279c 100644
+--- a/drivers/gpio/Kconfig
++++ b/drivers/gpio/Kconfig
+@@ -1300,7 +1300,7 @@ config GPIO_BT8XX
+ 	  The card needs to be physically altered for using it as a
+ 	  GPIO card. For more information on how to build a GPIO card
+ 	  from a BT8xx TV card, see the documentation file at
+-	  Documentation/bt8xxgpio.rst
++	  Documentation/driver-api/bt8xxgpio.rst
  
  	  If unsure, say N.
  
-diff --git a/drivers/char/Kconfig b/drivers/char/Kconfig
-index ba90034f5b8f..3a0f94929814 100644
---- a/drivers/char/Kconfig
-+++ b/drivers/char/Kconfig
-@@ -291,7 +291,7 @@ config RTC
- 	  and set the RTC in an SMP compatible fashion.
+diff --git a/drivers/gpu/drm/Kconfig b/drivers/gpu/drm/Kconfig
+index c3a6dd284c91..3c2cd3bf9ffc 100644
+--- a/drivers/gpu/drm/Kconfig
++++ b/drivers/gpu/drm/Kconfig
+@@ -141,7 +141,7 @@ config DRM_LOAD_EDID_FIRMWARE
+ 	  monitor are unable to provide appropriate EDID data. Since this
+ 	  feature is provided as a workaround for broken hardware, the
+ 	  default case is N. Details and instructions how to build your own
+-	  EDID data are given in Documentation/EDID/howto.rst.
++	  EDID data are given in Documentation/driver-api/edid.rst.
  
- 	  If you think you have a use for such a device (such as periodic data
--	  sampling), then say Y here, and read <file:Documentation/rtc.rst>
-+	  sampling), then say Y here, and read <file:Documentation/admin-guide/rtc.rst>
- 	  for details.
+ config DRM_DP_CEC
+ 	bool "Enable DisplayPort CEC-Tunneling-over-AUX HDMI support"
+diff --git a/drivers/pci/switch/Kconfig b/drivers/pci/switch/Kconfig
+index c1f5226cd0e5..d370f4ce0492 100644
+--- a/drivers/pci/switch/Kconfig
++++ b/drivers/pci/switch/Kconfig
+@@ -9,7 +9,7 @@ config PCI_SW_SWITCHTEC
+ 	 Enables support for the management interface for the MicroSemi
+ 	 Switchtec series of PCIe switches. Supports userspace access
+ 	 to submit MRPC commands to the switch via /dev/switchtecX
+-	 devices. See <file:Documentation/switchtec.rst> for more
++	 devices. See <file:Documentation/driver-api/switchtec.rst> for more
+ 	 information.
  
- 	  To compile this driver as a module, choose M here: the
-@@ -313,7 +313,7 @@ config JS_RTC
- 	  /dev/rtc.
+ endmenu
+diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
+index 6cd4a620115d..9d866b6753fe 100644
+--- a/drivers/platform/x86/Kconfig
++++ b/drivers/platform/x86/Kconfig
+@@ -118,7 +118,7 @@ config DCDBAS
+ 	  Interrupts (SMIs) and Host Control Actions (system power cycle or
+ 	  power off after OS shutdown) on certain Dell systems.
  
- 	  If you think you have a use for such a device (such as periodic data
--	  sampling), then say Y here, and read <file:Documentation/rtc.rst>
-+	  sampling), then say Y here, and read <file:Documentation/admin-guide/rtc.rst>
- 	  for details.
+-	  See <file:Documentation/dcdbas.rst> for more details on the driver
++	  See <file:Documentation/driver-api/dcdbas.rst> for more details on the driver
+ 	  and the Dell systems on which Dell systems management software makes
+ 	  use of this driver.
  
- 	  To compile this driver as a module, choose M here: the
-diff --git a/drivers/char/hw_random/core.c b/drivers/char/hw_random/core.c
-index 41acde92bedc..9044d31ab1a1 100644
---- a/drivers/char/hw_random/core.c
-+++ b/drivers/char/hw_random/core.c
-@@ -4,7 +4,7 @@
-  * Copyright 2006 Michael Buesch <m@bues.ch>
-  * Copyright 2005 (c) MontaVista Software, Inc.
+@@ -259,7 +259,7 @@ config DELL_RBU
+ 	 DELL system. Note you need a Dell OpenManage or Dell Update package (DUP)
+ 	 supporting application to communicate with the BIOS regarding the new
+ 	 image for the image update to take effect.
+-	 See <file:Documentation/dell_rbu.rst> for more details on the driver.
++	 See <file:Documentation/driver-api/dell_rbu.rst> for more details on the driver.
+ 
+ 
+ config FUJITSU_LAPTOP
+diff --git a/drivers/platform/x86/dcdbas.c b/drivers/platform/x86/dcdbas.c
+index ba8dff3511ec..84f4cc839cc3 100644
+--- a/drivers/platform/x86/dcdbas.c
++++ b/drivers/platform/x86/dcdbas.c
+@@ -7,7 +7,7 @@
+  *  and Host Control Actions (power cycle or power off after OS shutdown) on
+  *  Dell systems.
   *
-- * Please read Documentation/hw_random.rst for details on use.
-+ * Please read Documentation/admin-guide/hw_random.rst for details on use.
+- *  See Documentation/dcdbas.rst for more information.
++ *  See Documentation/driver-api/dcdbas.rst for more information.
   *
-  * This software may be used and distributed according to the terms
-  * of the GNU General Public License, incorporated herein by reference.
-diff --git a/include/linux/cgroup-defs.h b/include/linux/cgroup-defs.h
-index c5311935239d..430e219e3aba 100644
---- a/include/linux/cgroup-defs.h
-+++ b/include/linux/cgroup-defs.h
-@@ -624,7 +624,7 @@ struct cftype {
- 
- /*
-  * Control Group subsystem type.
-- * See Documentation/cgroup-v1/cgroups.rst for details
-+ * See Documentation/admin-guide/cgroup-v1/cgroups.rst for details
+  *  Copyright (C) 1995-2006 Dell Inc.
   */
- struct cgroup_subsys {
- 	struct cgroup_subsys_state *(*css_alloc)(struct cgroup_subsys_state *parent_css);
-diff --git a/include/linux/hw_random.h b/include/linux/hw_random.h
-index e533eac9942b..8e6dd908da21 100644
---- a/include/linux/hw_random.h
-+++ b/include/linux/hw_random.h
-@@ -1,7 +1,7 @@
- /*
- 	Hardware Random Number Generator
- 
--	Please read Documentation/hw_random.rst for details on use.
-+	Please read Documentation/admin-guide/hw_random.rst for details on use.
- 
- 	----------------------------------------------------------
- 	This software may be used and distributed according to the terms
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 19d9ee7e0518..c2fa3dc1d167 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -803,7 +803,7 @@ union bpf_attr {
-  * 		based on a user-provided identifier for all traffic coming from
-  * 		the tasks belonging to the related cgroup. See also the related
-  * 		kernel documentation, available from the Linux sources in file
-- * 		*Documentation/cgroup-v1/net_cls.rst*.
-+ * 		*Documentation/admin-guide/cgroup-v1/net_cls.rst*.
+diff --git a/drivers/platform/x86/dell_rbu.c b/drivers/platform/x86/dell_rbu.c
+index 18400bb38e09..3691391fea6b 100644
+--- a/drivers/platform/x86/dell_rbu.c
++++ b/drivers/platform/x86/dell_rbu.c
+@@ -24,7 +24,7 @@
+  * on every time the packet data is written. This driver requires an
+  * application to break the BIOS image in to fixed sized packet chunks.
   *
-  * 		The Linux kernel has two versions for cgroups: there are
-  * 		cgroups v1 and cgroups v2. Both are available to users, who can
+- * See Documentation/dell_rbu.rst for more info.
++ * See Documentation/driver-api/dell_rbu.rst for more info.
+  */
+ #include <linux/init.h>
+ #include <linux/module.h>
+diff --git a/drivers/pnp/isapnp/Kconfig b/drivers/pnp/isapnp/Kconfig
+index c4ddf41c7fb8..d0479a563123 100644
+--- a/drivers/pnp/isapnp/Kconfig
++++ b/drivers/pnp/isapnp/Kconfig
+@@ -7,6 +7,6 @@ config ISAPNP
+ 	depends on ISA || COMPILE_TEST
+ 	help
+ 	  Say Y here if you would like support for ISA Plug and Play devices.
+-	  Some information is in <file:Documentation/isapnp.rst>.
++	  Some information is in <file:Documentation/driver-api/isapnp.rst>.
+ 
+ 	  If unsure, say Y.
+diff --git a/drivers/tty/Kconfig b/drivers/tty/Kconfig
+index 1cb50f19d58c..ee51b9514225 100644
+--- a/drivers/tty/Kconfig
++++ b/drivers/tty/Kconfig
+@@ -93,7 +93,7 @@ config VT_HW_CONSOLE_BINDING
+          select the console driver that will serve as the backend for the
+          virtual terminals.
+ 
+-	 See <file:Documentation/console/console.rst> for more
++	 See <file:Documentation/driver-api/console.rst> for more
+ 	 information. For framebuffer console users, please refer to
+ 	 <file:Documentation/fb/fbcon.rst>.
+ 
+diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
+index 5d6151392571..fd17db9b432f 100644
+--- a/drivers/vfio/Kconfig
++++ b/drivers/vfio/Kconfig
+@@ -25,7 +25,7 @@ menuconfig VFIO
+ 	select VFIO_IOMMU_TYPE1 if (X86 || S390 || ARM || ARM64)
+ 	help
+ 	  VFIO provides a framework for secure userspace device drivers.
+-	  See Documentation/vfio.rst for more details.
++	  See Documentation/driver-api/vfio.rst for more details.
+ 
+ 	  If you don't know what to do here, say N.
+ 
+diff --git a/drivers/vfio/mdev/Kconfig b/drivers/vfio/mdev/Kconfig
+index 10ec404acbfc..5da27f2100f9 100644
+--- a/drivers/vfio/mdev/Kconfig
++++ b/drivers/vfio/mdev/Kconfig
+@@ -6,7 +6,7 @@ config VFIO_MDEV
+ 	default n
+ 	help
+ 	  Provides a framework to virtualize devices.
+-	  See Documentation/vfio-mediated-device.rst for more details.
++	  See Documentation/driver-api/vfio-mediated-device.rst for more details.
+ 
+ 	  If you don't know what do here, say N.
+ 
+diff --git a/drivers/w1/Kconfig b/drivers/w1/Kconfig
+index 160053c0baea..3e7ad7b232fe 100644
+--- a/drivers/w1/Kconfig
++++ b/drivers/w1/Kconfig
+@@ -19,7 +19,7 @@ config W1_CON
+ 	default y
+ 	---help---
+ 	  This allows to communicate with userspace using connector. For more
+-	  information see <file:Documentation/connector/connector.rst>.
++	  information see <file:Documentation/driver-api/connector.rst>.
+ 	  There are three types of messages between w1 core and userspace:
+ 	  1. Events. They are generated each time new master or slave device found
+ 		either due to automatic or requested search.
+diff --git a/include/asm-generic/bitops/atomic.h b/include/asm-generic/bitops/atomic.h
+index 6ee11717bb65..0afe930eec72 100644
+--- a/include/asm-generic/bitops/atomic.h
++++ b/include/asm-generic/bitops/atomic.h
+@@ -8,7 +8,7 @@
+ 
+ /*
+  * Implementation of atomic bitops using atomic-fetch ops.
+- * See Documentation/atomic_bitops.rst for details.
++ * See Documentation/driver-api/atomic_bitops.rst for details.
+  */
+ 
+ static inline void set_bit(unsigned int nr, volatile unsigned long *p)
+diff --git a/include/linux/io-mapping.h b/include/linux/io-mapping.h
+index b90c540696a4..c8bf4852b352 100644
+--- a/include/linux/io-mapping.h
++++ b/include/linux/io-mapping.h
+@@ -28,7 +28,7 @@
+  * The io_mapping mechanism provides an abstraction for mapping
+  * individual pages from an io device to the CPU in an efficient fashion.
+  *
+- * See Documentation/io-mapping.rst
++ * See Documentation/driver-api/io-mapping.rst
+  */
+ 
+ struct io_mapping {
+diff --git a/include/linux/jump_label.h b/include/linux/jump_label.h
+index c3947cab2d27..32bdce895487 100644
+--- a/include/linux/jump_label.h
++++ b/include/linux/jump_label.h
+@@ -68,7 +68,7 @@
+  * Lacking toolchain and or architecture support, static keys fall back to a
+  * simple conditional branch.
+  *
+- * Additional babbling in: Documentation/static-keys.rst
++ * Additional babbling in: Documentation/driver-api/static-keys.rst
+  */
+ 
+ #ifndef __ASSEMBLY__
+diff --git a/include/linux/kobject.h b/include/linux/kobject.h
+index 16f66fe28ec2..d32720743004 100644
+--- a/include/linux/kobject.h
++++ b/include/linux/kobject.h
+@@ -7,7 +7,7 @@
+  * Copyright (c) 2006-2008 Greg Kroah-Hartman <greg@kroah.com>
+  * Copyright (c) 2006-2008 Novell Inc.
+  *
+- * Please read Documentation/kobject.rst before using the kobject
++ * Please read Documentation/driver-api/kobject.rst before using the kobject
+  * interface, ESPECIALLY the parts about reference counts and object
+  * destructors.
+  */
+diff --git a/include/linux/kobject_ns.h b/include/linux/kobject_ns.h
+index 8c86c4641739..b5b7d387d63d 100644
+--- a/include/linux/kobject_ns.h
++++ b/include/linux/kobject_ns.h
+@@ -8,7 +8,7 @@
+  *
+  * Split from kobject.h by David Howells (dhowells@redhat.com)
+  *
+- * Please read Documentation/kobject.rst before using the kobject
++ * Please read Documentation/driver-api/kobject.rst before using the kobject
+  * interface, ESPECIALLY the parts about reference counts and object
+  * destructors.
+  */
+diff --git a/include/linux/rbtree.h b/include/linux/rbtree.h
+index 2c579b6000a5..d49f78a8be37 100644
+--- a/include/linux/rbtree.h
++++ b/include/linux/rbtree.h
+@@ -11,7 +11,7 @@
+   I know it's not the cleaner way,  but in C (not in C++) to get
+   performances and genericity...
+ 
+-  See Documentation/rbtree.rst for documentation and samples.
++  See Documentation/driver-api/rbtree.rst for documentation and samples.
+ */
+ 
+ #ifndef	_LINUX_RBTREE_H
+diff --git a/include/linux/rbtree_augmented.h b/include/linux/rbtree_augmented.h
+index b3f64a2935ae..5f31af0da0a9 100644
+--- a/include/linux/rbtree_augmented.h
++++ b/include/linux/rbtree_augmented.h
+@@ -21,7 +21,7 @@
+  * rb_insert_augmented() and rb_erase_augmented() are intended to be public.
+  * The rest are implementation details you are not expected to depend on.
+  *
+- * See Documentation/rbtree.rst for documentation and samples.
++ * See Documentation/driver-api/rbtree.rst for documentation and samples.
+  */
+ 
+ struct rb_augment_callbacks {
 diff --git a/init/Kconfig b/init/Kconfig
-index 501126df6336..e02cfae73ce5 100644
+index e02cfae73ce5..b9cfef1452e3 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -735,7 +735,7 @@ menuconfig CGROUPS
- 	  controls or device isolation.
- 	  See
- 		- Documentation/scheduler/sched-design-CFS.rst	(CFS)
--		- Documentation/cgroup-v1/ (features for grouping, isolation
-+		- Documentation/admin-guide/cgroup-v1/ (features for grouping, isolation
- 					  and resource control)
+@@ -1807,7 +1807,7 @@ config MMAP_ALLOW_UNINITIALIZED
+ 	  userspace.  Since that isn't generally a problem on no-MMU systems,
+ 	  it is normally safe to say Y here.
  
- 	  Say N if unsure.
-@@ -797,7 +797,7 @@ config BLK_CGROUP
- 	CONFIG_CFQ_GROUP_IOSCHED=y; for enabling throttling policy, set
- 	CONFIG_BLK_DEV_THROTTLING=y.
+-	  See Documentation/nommu-mmap.rst for more information.
++	  See Documentation/driver-api/nommu-mmap.rst for more information.
  
--	See Documentation/cgroup-v1/blkio-controller.rst for more information.
-+	See Documentation/admin-guide/cgroup-v1/blkio-controller.rst for more information.
- 
- config DEBUG_BLK_CGROUP
- 	bool "IO controller debugging"
-diff --git a/kernel/cgroup/cpuset.c b/kernel/cgroup/cpuset.c
-index b3b02b9c4405..863e434a6020 100644
---- a/kernel/cgroup/cpuset.c
-+++ b/kernel/cgroup/cpuset.c
-@@ -729,7 +729,7 @@ static inline int nr_cpusets(void)
-  * load balancing domains (sched domains) as specified by that partial
-  * partition.
+ config SYSTEM_DATA_VERIFICATION
+ 	def_bool n
+diff --git a/kernel/padata.c b/kernel/padata.c
+index a567973bb1ba..fa3fb3b4705e 100644
+--- a/kernel/padata.c
++++ b/kernel/padata.c
+@@ -2,7 +2,7 @@
+ /*
+  * padata.c - generic interface to process data streams in parallel
   *
-- * See "What is sched_load_balance" in Documentation/cgroup-v1/cpusets.rst
-+ * See "What is sched_load_balance" in Documentation/admin-guide/cgroup-v1/cpusets.rst
-  * for a background explanation of this.
+- * See Documentation/padata.rst for an api documentation.
++ * See Documentation/driver-api/padata.rst for an api documentation.
   *
-  * Does not return errors, on the theory that the callers of this
-diff --git a/security/device_cgroup.c b/security/device_cgroup.c
-index c07196502577..725674f3276d 100644
---- a/security/device_cgroup.c
-+++ b/security/device_cgroup.c
-@@ -509,7 +509,7 @@ static inline int may_allow_all(struct dev_cgroup *parent)
-  * This is one of the three key functions for hierarchy implementation.
-  * This function is responsible for re-evaluating all the cgroup's active
-  * exceptions due to a parent's exception change.
-- * Refer to Documentation/cgroup-v1/devices.rst for more details.
-+ * Refer to Documentation/admin-guide/cgroup-v1/devices.rst for more details.
+  * Copyright (C) 2008, 2009 secunet Security Networks AG
+  * Copyright (C) 2008, 2009 Steffen Klassert <steffen.klassert@secunet.com>
+diff --git a/lib/Kconfig b/lib/Kconfig
+index 58e9dae6f424..f4785afbfd10 100644
+--- a/lib/Kconfig
++++ b/lib/Kconfig
+@@ -420,7 +420,7 @@ config INTERVAL_TREE
+ 
+ 	  See:
+ 
+-		Documentation/rbtree.rst
++		Documentation/driver-api/rbtree.rst
+ 
+ 	  for more information.
+ 
+diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+index ce47efa5f4e4..47072d67fca1 100644
+--- a/lib/Kconfig.debug
++++ b/lib/Kconfig.debug
+@@ -1682,7 +1682,7 @@ config PROVIDE_OHCI1394_DMA_INIT
+ 	  This code (~1k) is freed after boot. By then, the firewire stack
+ 	  in charge of the OHCI-1394 controllers should be used instead.
+ 
+-	  See Documentation/debugging-via-ohci1394.rst for more information.
++	  See Documentation/driver-api/debugging-via-ohci1394.rst for more information.
+ 
+ menuconfig RUNTIME_TESTING_MENU
+ 	bool "Runtime Testing"
+diff --git a/lib/crc32.c b/lib/crc32.c
+index 0de37ccc70dd..78d4cd8b709e 100644
+--- a/lib/crc32.c
++++ b/lib/crc32.c
+@@ -24,7 +24,7 @@
+  * Version 2.  See the file COPYING for more details.
   */
- static void revalidate_active_exceptions(struct dev_cgroup *devcg)
- {
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 19d9ee7e0518..c2fa3dc1d167 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -803,7 +803,7 @@ union bpf_attr {
-  * 		based on a user-provided identifier for all traffic coming from
-  * 		the tasks belonging to the related cgroup. See also the related
-  * 		kernel documentation, available from the Linux sources in file
-- * 		*Documentation/cgroup-v1/net_cls.rst*.
-+ * 		*Documentation/admin-guide/cgroup-v1/net_cls.rst*.
+ 
+-/* see: Documentation/crc32.rst for a description of algorithms */
++/* see: Documentation/driver-api/crc32.rst for a description of algorithms */
+ 
+ #include <linux/crc32.h>
+ #include <linux/crc32poly.h>
+diff --git a/lib/kobject.c b/lib/kobject.c
+index 03157ff88495..fe01ed0504e2 100644
+--- a/lib/kobject.c
++++ b/lib/kobject.c
+@@ -6,7 +6,7 @@
+  * Copyright (c) 2006-2007 Greg Kroah-Hartman <greg@kroah.com>
+  * Copyright (c) 2006-2007 Novell Inc.
   *
-  * 		The Linux kernel has two versions for cgroups: there are
-  * 		cgroups v1 and cgroups v2. Both are available to users, who can
+- * Please see the file Documentation/kobject.rst for critical information
++ * Please see the file Documentation/driver-api/kobject.rst for critical information
+  * about using the kobject interface.
+  */
+ 
+@@ -668,7 +668,7 @@ static void kobject_cleanup(struct kobject *kobj)
+ 		 kobject_name(kobj), kobj, __func__, kobj->parent);
+ 
+ 	if (t && !t->release)
+-		pr_debug("kobject: '%s' (%p): does not have a release() function, it is broken and must be fixed. See Documentation/kobject.rst.\n",
++		pr_debug("kobject: '%s' (%p): does not have a release() function, it is broken and must be fixed. See Documentation/driver-api/kobject.rst.\n",
+ 			 kobject_name(kobj), kobj);
+ 
+ 	/* send "remove" if the caller did not do it but sent "add" */
+diff --git a/lib/lzo/lzo1x_decompress_safe.c b/lib/lzo/lzo1x_decompress_safe.c
+index 1642c28e6627..27401806c355 100644
+--- a/lib/lzo/lzo1x_decompress_safe.c
++++ b/lib/lzo/lzo1x_decompress_safe.c
+@@ -32,7 +32,7 @@
+  * depending on the base count. Since the base count is taken from a u8
+  * and a few bits, it is safe to assume that it will always be lower than
+  * or equal to 2*255, thus we can always prevent any overflow by accepting
+- * two less 255 steps. See Documentation/lzo.rst for more information.
++ * two less 255 steps. See Documentation/driver-api/lzo.rst for more information.
+  */
+ #define MAX_255_COUNT      ((((size_t)~0) / 255) - 2)
+ 
+diff --git a/lib/xz/Kconfig b/lib/xz/Kconfig
+index 314a89c13545..9d8a66fdea9b 100644
+--- a/lib/xz/Kconfig
++++ b/lib/xz/Kconfig
+@@ -5,7 +5,7 @@ config XZ_DEC
+ 	help
+ 	  LZMA2 compression algorithm and BCJ filters are supported using
+ 	  the .xz file format as the container. For integrity checking,
+-	  CRC32 is supported. See Documentation/xz.rst for more information.
++	  CRC32 is supported. See Documentation/driver-api/xz.rst for more information.
+ 
+ if XZ_DEC
+ 
+diff --git a/mm/Kconfig b/mm/Kconfig
+index ed5fe68590f4..9a0bbbeafb58 100644
+--- a/mm/Kconfig
++++ b/mm/Kconfig
+@@ -369,7 +369,7 @@ config NOMMU_INITIAL_TRIM_EXCESS
+ 	  This option specifies the initial value of this option.  The default
+ 	  of 1 says that all excess pages should be trimmed.
+ 
+-	  See Documentation/nommu-mmap.rst for more information.
++	  See Documentation/driver-api/nommu-mmap.rst for more information.
+ 
+ config TRANSPARENT_HUGEPAGE
+ 	bool "Transparent Hugepage Support"
+diff --git a/mm/nommu.c b/mm/nommu.c
+index 30a071ba838d..d44944512f07 100644
+--- a/mm/nommu.c
++++ b/mm/nommu.c
+@@ -5,7 +5,7 @@
+  *  Replacement code for mm functions to support CPU's that don't
+  *  have any form of memory management unit (thus no virtual memory).
+  *
+- *  See Documentation/nommu-mmap.rst
++ *  See Documentation/driver-api/nommu-mmap.rst
+  *
+  *  Copyright (c) 2004-2008 David Howells <dhowells@redhat.com>
+  *  Copyright (c) 2000-2003 David McCullough <davidm@snapgear.com>
+diff --git a/samples/Kconfig b/samples/Kconfig
+index 9ec524b2e003..2b1b4d241e47 100644
+--- a/samples/Kconfig
++++ b/samples/Kconfig
+@@ -100,7 +100,7 @@ config SAMPLE_CONNECTOR
+ 	  When enabled, this builds both a sample kernel module for
+ 	  the connector interface and a user space tool to communicate
+ 	  with it.
+-	  See also Documentation/connector/connector.rst
++	  See also Documentation/driver-api/connector.rst
+ 
+ config SAMPLE_SECCOMP
+ 	bool "Build seccomp sample code"
+diff --git a/samples/kprobes/kprobe_example.c b/samples/kprobes/kprobe_example.c
+index d76fd05304a5..1928cef27fd1 100644
+--- a/samples/kprobes/kprobe_example.c
++++ b/samples/kprobes/kprobe_example.c
+@@ -5,7 +5,7 @@
+  * stack trace and selected registers when _do_fork() is called.
+  *
+  * For more information on theory of operation of kprobes, see
+- * Documentation/kprobes.rst
++ * Documentation/driver-api/kprobes.rst
+  *
+  * You will see the trace data in /var/log/messages and on the console
+  * whenever _do_fork() is invoked to create a new process.
+diff --git a/samples/kprobes/kretprobe_example.c b/samples/kprobes/kretprobe_example.c
+index 9a2234ae0286..d007feaa92d4 100644
+--- a/samples/kprobes/kretprobe_example.c
++++ b/samples/kprobes/kretprobe_example.c
+@@ -11,7 +11,7 @@
+  * If no func_name is specified, _do_fork is instrumented
+  *
+  * For more information on theory of operation of kretprobes, see
+- * Documentation/kprobes.rst
++ * Documentation/driver-api/kprobes.rst
+  *
+  * Build and insert the kernel module as done in the kprobe example.
+  * You will see the trace data in /var/log/messages and on the console
+diff --git a/scripts/gcc-plugins/Kconfig b/scripts/gcc-plugins/Kconfig
+index b4dc5b116bfe..4a568069728d 100644
+--- a/scripts/gcc-plugins/Kconfig
++++ b/scripts/gcc-plugins/Kconfig
+@@ -23,7 +23,7 @@ config GCC_PLUGINS
+ 	  GCC plugins are loadable modules that provide extra features to the
+ 	  compiler. They are useful for runtime instrumentation and static analysis.
+ 
+-	  See Documentation/gcc-plugins.rst for details.
++	  See Documentation/driver-api/gcc-plugins.rst for details.
+ 
+ menu "GCC plugins"
+ 	depends on GCC_PLUGINS
+diff --git a/tools/include/linux/rbtree.h b/tools/include/linux/rbtree.h
+index e96d7120ce2b..0a36c807f65d 100644
+--- a/tools/include/linux/rbtree.h
++++ b/tools/include/linux/rbtree.h
+@@ -11,7 +11,7 @@
+   I know it's not the cleaner way,  but in C (not in C++) to get
+   performances and genericity...
+ 
+-  See Documentation/rbtree.rst for documentation and samples.
++  See Documentation/driver-api/rbtree.rst for documentation and samples.
+ */
+ 
+ #ifndef __TOOLS_LINUX_PERF_RBTREE_H
+diff --git a/tools/include/linux/rbtree_augmented.h b/tools/include/linux/rbtree_augmented.h
+index c251bb16f2e9..201a873c2111 100644
+--- a/tools/include/linux/rbtree_augmented.h
++++ b/tools/include/linux/rbtree_augmented.h
+@@ -23,7 +23,7 @@
+  * rb_insert_augmented() and rb_erase_augmented() are intended to be public.
+  * The rest are implementation details you are not expected to depend on.
+  *
+- * See Documentation/rbtree.rst for documentation and samples.
++ * See Documentation/driver-api/rbtree.rst for documentation and samples.
+  */
+ 
+ struct rb_augment_callbacks {
 -- 
 2.21.0
 
