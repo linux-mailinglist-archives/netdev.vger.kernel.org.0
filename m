@@ -2,94 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B95CF4A2C0
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 15:49:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E3834A2C1
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 15:49:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729592AbfFRNsx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 09:48:53 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:35096 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726158AbfFRNsw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 09:48:52 -0400
-Received: by mail-qt1-f194.google.com with SMTP id d23so15363849qto.2;
-        Tue, 18 Jun 2019 06:48:52 -0700 (PDT)
+        id S1729606AbfFRNs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 09:48:57 -0400
+Received: from mail-lj1-f178.google.com ([209.85.208.178]:45986 "EHLO
+        mail-lj1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729042AbfFRNsy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 09:48:54 -0400
+Received: by mail-lj1-f178.google.com with SMTP id m23so13176726lje.12
+        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 06:48:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=2XSUCZ0hfV9Jy2YXAPU07DGuQS9VkJpn8ZDKakZw2ao=;
+        b=cASq4s6Irpuqsm1J7nwJT7suGd1mR7SsCqPxbgqfLHz3r6dlgh+sCVe6aq4kqSwyEc
+         OGG3WC9/vfgk4W/hK7FoMiSEifobC97HrUiBEdVo11onVr6lf2B4RLIi1P7BPDaQuCJ+
+         rsL0A/hP5CGzqhZnxUgD9XGsRw43SbnbHXohQey8m7Hrfv6KFFz3tez+WKNErUacVo6Q
+         fNWdQtiT7ZG5AMxLGycuojysK+x3Bwj8RESZ+sb22HlxRg9IjX2Gvbp5ssDgM3bemYWF
+         7GqTRCZBlXobX9PPmAUkLLra+ksk1Ycz/QD1z1C2/txKwUSPVzgC5hKaLU8tAVjt6OLW
+         zLIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=adlKPrwpF847OzhxpvAIaUJHnKpv+DcgWsB6FU5ma+M=;
-        b=g28SISNBz50q7A99LjE5M18cWIZlm6vRN+3UCA7OqcaxUDZecvAOeTl4512khAESXt
-         hjq7Qecf9LP2QhYgLS85/oIlUTSm+bX68dGrmSfkbxjPqdY2pGgf9zCh0b7IAaKvpHW/
-         GPmBIyABkND63KP/u0j82NJmz3+qRBSA+hrjdyPNlXWWKBsnsdGQFUuFI7STv2LnMOqj
-         M7Sd4K8HVmboM532kxixvZ6WwT13c69N9+/gQ3Wx9DSdwuzC2KsG6Z2/pTOYL2cXSrFv
-         588HvWsbm7sgBzZ4gb0C29CUCFIK3vTrq8qYhzO33ypusWtuSveFB0tciOQeM6HdYjGI
-         SzRg==
-X-Gm-Message-State: APjAAAX8OaYUjEQMYD6xHb5nzFLkvi8w2xK0ii6NUDdLYyJPGATzt47B
-        t0lJXcmekMcFCQStj0HX/tPMdEi0gTxhXBLXYYNUWsMrYz0=
-X-Google-Smtp-Source: APXvYqwe5peIXb0dsyQ2lB/6iiVZYwjfA6+1m0/GVEMvpLamKwpY6BkfJDyFTbULruc/oWfp/h23fC2OdT9a520+YBw=
-X-Received: by 2002:a0c:8b49:: with SMTP id d9mr26718089qvc.63.1560865731462;
- Tue, 18 Jun 2019 06:48:51 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=2XSUCZ0hfV9Jy2YXAPU07DGuQS9VkJpn8ZDKakZw2ao=;
+        b=rUAnVXrWcdyGaK/+2d06n0S8SbrSaYv6JHPX1B0dgCpro1n4SuSUNbGSDvi65cIYoI
+         xR/+ZaHOJSFw46WLyACDXPswMmI0TZOSJNsG9EZvSCdU3nNE6vkLKLp2rr14DX8IoMbx
+         MFYvO6eOts5v3ovN2lo6ivYUK1xGAxp+GnPFViNi1Lv4bVFJKlP3oY14YvGGu7lXxLjO
+         26ocl1IJv6YglyOZasHYAoHnZYbobp9FuIRyZA1g6Lx2eSpBUZdQV3BhLV0Iv8Wmb6iW
+         RDf97mqXK/OH/xcgvkZJju/nTMaDsMSOo8YE1CmxeK0jj6FkZP9XmS74NOpWCcXabotR
+         SVEg==
+X-Gm-Message-State: APjAAAXjoV5Va3KJ85IlFLPcGh66dQs3+l+KAAejbLV1XCuNS5Zt7UpX
+        nzJrrbh4kTlmnOc5yMwPgi+VfQ==
+X-Google-Smtp-Source: APXvYqyDrnN5bUCguopNTb2f/GS5rs55WE9t5MJPLJAtnkbadfnsVPkvC+fjWOAKn272gXV3CY3/yQ==
+X-Received: by 2002:a2e:8195:: with SMTP id e21mr40998966ljg.62.1560865731560;
+        Tue, 18 Jun 2019 06:48:51 -0700 (PDT)
+Received: from khorivan (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
+        by smtp.gmail.com with ESMTPSA id k4sm2635569ljj.41.2019.06.18.06.48.50
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 18 Jun 2019 06:48:51 -0700 (PDT)
+Date:   Tue, 18 Jun 2019 16:48:48 +0300
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     Tariq Toukan <tariqt@mellanox.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@toke.dk>,
+        "toshiaki.makita1@gmail.com" <toshiaki.makita1@gmail.com>,
+        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>,
+        "mcroce@redhat.com" <mcroce@redhat.com>
+Subject: Re: [PATCH net-next v1 08/11] xdp: tracking page_pool resources and
+ safe removal
+Message-ID: <20190618134847.GB5307@khorivan>
+References: <156045046024.29115.11802895015973488428.stgit@firesoul>
+ <156045052249.29115.2357668905441684019.stgit@firesoul>
+ <20190615093339.GB3771@khorivan>
+ <a02856c1-46e7-4691-6bb9-e0efb388981f@mellanox.com>
+ <20190618125431.GA5307@khorivan>
+ <20190618133012.GA2055@apalos>
 MIME-Version: 1.0
-References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
- <a94676381a5ca662c848f7a725562f721c43ce76.camel@sipsolutions.net>
- <CAK8P3a0kV-i7BJJ2X6C=5n65rSGfo8fUiC4J_G-+M8EctYKbkg@mail.gmail.com>
- <066e9b39f937586f0f922abf801351553ec2ba1d.camel@sipsolutions.net> <b3686626-e2d8-bc9c-6dd0-9ebb137715af@linaro.org>
-In-Reply-To: <b3686626-e2d8-bc9c-6dd0-9ebb137715af@linaro.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 18 Jun 2019 15:48:32 +0200
-Message-ID: <CAK8P3a0sL+nPmduZd=DNSsntq62e+o3upYsWg=iPNwzvgBp+Mg@mail.gmail.com>
-Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
-To:     Alex Elder <elder@linaro.org>
-Cc:     Johannes Berg <johannes@sipsolutions.net>, abhishek.esse@gmail.com,
-        Ben Chan <benchan@google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        cpratapa@codeaurora.org, David Miller <davem@davemloft.net>,
-        Dan Williams <dcbw@redhat.com>,
-        DTML <devicetree@vger.kernel.org>,
-        Eric Caruso <ejcaruso@google.com>, evgreen@chromium.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-arm-msm@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-soc@vger.kernel.org, Networking <netdev@vger.kernel.org>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        syadagir@codeaurora.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20190618133012.GA2055@apalos>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 18, 2019 at 3:16 PM Alex Elder <elder@linaro.org> wrote:
-> On 6/17/19 6:28 AM, Johannes Berg wrote:
-> > On Tue, 2019-06-11 at 13:56 +0200, Arnd Bergmann wrote:
+On Tue, Jun 18, 2019 at 04:30:12PM +0300, Ilias Apalodimas wrote:
+>Hi Ivan, Tariq,
 >
-> I'm probably missing something, but I think the checksum
-> offload could be handled by the IPA driver rather than
-> rmnet.  It seems to be an add-on that is completely
-> independent of the multiplexing and aggregation capabilities
-> that QMAP provides.
+>> >>>+
+>[...]
+>> >>
+>> >>What would you recommend to do for the following situation:
+>> >>
+>> >>Same receive queue is shared between 2 network devices. The receive ring is
+>> >>filled by pages from page_pool, but you don't know the actual port (ndev)
+>> >>filling this ring, because a device is recognized only after packet is
+>> >>received.
+>> >>
+>> >>The API is so that xdp rxq is bind to network device, each frame has
+>> >>reference
+>> >>on it, so rxq ndev must be static. That means each netdev has it's own rxq
+>> >>instance even no need in it. Thus, after your changes, page must be
+>> >>returned to
+>> >>the pool it was taken from, or released from old pool and recycled in
+>> >>new one
+>> >>somehow.
+>> >>
+>> >>And that is inconvenience at least. It's hard to move pages between
+>> >>pools w/o
+>> >>performance penalty. No way to use common pool either, as unreg_rxq now
+>> >>drops
+>> >>the pool and 2 rxqa can't reference same pool.
+>> >>
+>> >
+>> >Within the single netdev, separate page_pool instances are anyway
+>> >created for different RX rings, working under different NAPI's.
+>>
+>> The circumstances are so that same RX ring is shared between 2
+>> netdevs... and netdev can be known only after descriptor/packet is
+>> received. Thus, while filling RX ring, there is no actual device,
+>> but when packet is received it has to be recycled to appropriate
+>> net device pool. Before this change there were no difference from
+>> which pool the page was allocated to fill RX ring, as there were no
+>> owner. After this change there is owner - netdev page pool.
+>>
+>> For cpsw the dma unmap is common for both netdevs and no difference
+>> who is freeing the page, but there is difference which pool it's
+>> freed to.
+>Since 2 netdevs are sharing one queue you'll need locking right?
+>(Assuming that the rx-irq per device can end up on a different core)
+No, rx-irq is not per device, same queue is shared only for descs,
+farther it's separate queue with separate pool. Even rx-irq is per
+device, no issues, as I said, it has it's own page pool, every queue
+and every ndev, no need in locking, for pools...
 
-My best guess is that it is part of rmnet simply because this can
-be done in a generic way for any qmap based back-end, and rmnet
-was intended as the abstraction for qmap.
+>We discussed that ideally page pools should be alocated per hardware queue.
+This is about one hw queue shared between ndevs. Page pool is separate
+for each hw queues and each ndevs ofc.
 
-A better implementation of the checksumming might be to split
-it out into a library that is in turn used by qmap drivers. Since this
-should be transparent to the user interface, it can be moved
-there later.
+>If you indeed need locking (and pay the performance penalty anyway) i wonder if
+>there's anything preventing you from keeping the same principle, i.e allocate a
+>pool per queue
+page pool is per queue.
 
-> >>> If true though, then I think this would be the killer argument *in
-> >>> favour* of *not* merging this - because that would mean we *don't* have
-> >>> to actually keep the rmnet API around for all foreseeable future.
->
-> This is because it's a user space API?  If so I now understand
-> what you mean.
+>pool per queue and handle the recycling to the proper ndev internally.
+>That way only the first device will be responsible of
+>allocating/recycling/maintaining the pool state.
+No. There is more dependencies then it looks like, see rxq_info ...
+The final recycling is ended not internally.
 
-Yes, I think agreeing on the general user interface is (as usual) the
-one thing that has to be done as a prerequisite. I had originally
-hoped that by removing the ioctl interface portion of the driver,
-this could be avoided, but that was before I had any idea on the
-upper layers.
-
-     Arnd
+-- 
+Regards,
+Ivan Khoronzhuk
