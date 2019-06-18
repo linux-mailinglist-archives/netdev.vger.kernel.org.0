@@ -2,120 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B5AE4AB83
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 22:16:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BD614AB93
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 22:22:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730519AbfFRUPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 16:15:55 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:47524 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729331AbfFRUPz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 16:15:55 -0400
-Received: by sipsolutions.net with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1hdKW4-0006Xp-Hi; Tue, 18 Jun 2019 22:15:40 +0200
-Message-ID: <97cbfb3723607c95d78e25785262ae7b0acdb11c.camel@sipsolutions.net>
-Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Alex Elder <elder@linaro.org>, Dan Williams <dcbw@redhat.com>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        abhishek.esse@gmail.com, Ben Chan <benchan@google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        cpratapa@codeaurora.org, David Miller <davem@davemloft.net>,
-        DTML <devicetree@vger.kernel.org>,
-        Eric Caruso <ejcaruso@google.com>, evgreen@chromium.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-arm-msm@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-soc@vger.kernel.org, Networking <netdev@vger.kernel.org>,
-        syadagir@codeaurora.org
-Date:   Tue, 18 Jun 2019 22:15:38 +0200
-In-Reply-To: <CAK8P3a3ksrFTo2+dLB+doLeY+kPP7rYxv2O7BwvjYgK2cwCTuQ@mail.gmail.com> (sfid-20190618_220958_615605_BA64D8AA)
-References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
-         <a94676381a5ca662c848f7a725562f721c43ce76.camel@sipsolutions.net>
-         <CAK8P3a0kV-i7BJJ2X6C=5n65rSGfo8fUiC4J_G-+M8EctYKbkg@mail.gmail.com>
-         <fc0d08912bc10ad089eb74034726308375279130.camel@redhat.com>
-         <36bca57c999f611353fd9741c55bb2a7@codeaurora.org>
-         <153fafb91267147cf22e2bf102dd822933ec823a.camel@redhat.com>
-         <CAK8P3a2Y+tcL1-V57dtypWHndNT3eDJdcKj29c_v+k8o1HHQig@mail.gmail.com>
-         <f4249aa5f5acdd90275eda35aa16f3cfb29d29be.camel@redhat.com>
-         <CAK8P3a2nzZKtshYfomOOSYkqx5HdU15Wr9b+3va0B1euNhFOAg@mail.gmail.com>
-         <dbb32f185d2c3a654083ee0a7188379e1f88d899.camel@sipsolutions.net>
-         <d533b708-c97a-710d-1138-3ae79107f209@linaro.org>
-         <abdfc6b3a9981bcdef40f85f5442a425ce109010.camel@sipsolutions.net>
-         <CAK8P3a3ksrFTo2+dLB+doLeY+kPP7rYxv2O7BwvjYgK2cwCTuQ@mail.gmail.com>
-         (sfid-20190618_220958_615605_BA64D8AA)
+        id S1730560AbfFRUWv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 16:22:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47932 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729961AbfFRUWv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Jun 2019 16:22:51 -0400
+Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D3FB521479;
+        Tue, 18 Jun 2019 20:22:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1560889370;
+        bh=wxfkFUvlWwSzclJIifv04kWQfo423I3PSoSFued6BFE=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=rQnmLx4oyLJFzI2gHXYZzEZ+dyifC/qB1Z/Z6A3eL09zfcZvlAgQDpmv48INK3DTl
+         HravmwwoY2CzeLr9Yi2mwo53TfQy7n7QV14K1hgad85qYd0j8zhAz/rPYNUK6tHm4H
+         aGq/JVZNVvLYSeGFQmYe/uez4rl2P7vzWOL3YhKQ=
+Received: by mail-qt1-f169.google.com with SMTP id w17so10674016qto.10;
+        Tue, 18 Jun 2019 13:22:49 -0700 (PDT)
+X-Gm-Message-State: APjAAAUgfZ9O/i5N02LqW1GNfjoAdLeg8k0UNCd1T9i6LORT+hM+kLk6
+        BeI078isJmrMn52BDFWvG1JJ+iVjSDTKZbDVOg==
+X-Google-Smtp-Source: APXvYqyaYZdyU75vrLYz7F8KjcRIk4qbW7GNvaf0PzyOfAyduE/UQs47mo5PrsLrH1gZEyRv1TI7g3FSh5Ik+wsow4w=
+X-Received: by 2002:ac8:3908:: with SMTP id s8mr100915416qtb.224.1560889369080;
+ Tue, 18 Jun 2019 13:22:49 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190524162229.9185-1-linus.walleij@linaro.org>
+ <CAL_Jsq+bZsJ+SBiJa2hzXU9RkTNBhDk_Uv_Fk6V6DqRGh-xPRg@mail.gmail.com> <CACRpkdbkwTtS2ofpxkZLERW-b+4=d7m9qiPXGT+iMemn9zZE1A@mail.gmail.com>
+In-Reply-To: <CACRpkdbkwTtS2ofpxkZLERW-b+4=d7m9qiPXGT+iMemn9zZE1A@mail.gmail.com>
+From:   Rob Herring <robh@kernel.org>
+Date:   Tue, 18 Jun 2019 14:22:36 -0600
+X-Gmail-Original-Message-ID: <CAL_Jsq+qwmA1hHRj73B1uf0WY76waK7M96Ndj1RSKHuAi1v=Cw@mail.gmail.com>
+Message-ID: <CAL_Jsq+qwmA1hHRj73B1uf0WY76waK7M96Ndj1RSKHuAi1v=Cw@mail.gmail.com>
+Subject: Re: [PATCH 7/8] net: ethernet: ixp4xx: Add DT bindings
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Krzysztof Halasa <khalasa@piap.pl>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-2.fc28) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2019-06-18 at 22:09 +0200, Arnd Bergmann wrote:
-> 
-> > One is the whole multi-function device, where a single WWAN device is
-> > composed of channels offered by actually different drivers, e.g. for a
-> > typical USB device you might have something like cdc_ether and the
-> > usb_wwan TTY driver. In this way, we need to "compose" the WWAN device
-> > similarly, e.g. by using the underlying USB device "struct device"
-> > pointer to tie it together.
-> > 
-> > The other is something like IPA or the Intel modem driver, where the
-> > device is actually a single (e.g. PCIe) device and just has a single
-> > driver, but that single driver offers different channels.
-> 
-> I would hope we can simplify this to expect only the second model,
-> where you have a 'struct device' corresponding to hardware and the
-> driver for it creates one wwan_device that user space talks to.
+On Tue, Jun 18, 2019 at 1:44 PM Linus Walleij <linus.walleij@linaro.org> wrote:
+>
+> On Fri, May 24, 2019 at 9:41 PM Rob Herring <robh@kernel.org> wrote:
+>
+> > > +  reg:
+> > > +    maxItems: 1
+> > > +    description: Ethernet MMIO address range
+> > > +
+> > > +  queue-rx:
+> > > +    $ref: '/schemas/types.yaml#/definitions/phandle-array'
+> > > +    maxItems: 1
+> >
+> > This doesn't actually do what you think it is doing. A $ref plus
+> > additional constraints need to be under an 'allOf' list.
+> >
+> > > +    description: phandle to the RX queue on the NPE
+> >
+> > But this is a phandle plus 1 cell, right?
+> >
+> > - allOf:
+> >     - $ref: '/schemas/types.yaml#/definitions/phandle-array'
+> >     - items:
+> >         - items:
+> >             - description: phandle to the RX queue on the NPE
+> >             - description: whatever the cell contains
+> >               enum: [ 1, 2, 3, 4 ] # any constraints you can put on the cell
+> >
+> > This implicitly says you have 1 of a phandle + 1 cell.
+> >
+> > I need to add this to example-schema.yaml...
+>
+> I just can't get this right :(
+>
+> I have this:
+>
+>   queue-rx:
+>     - allOf:
 
-I'm not sure.
+Properties take a schema/object/dict or boolean. You are making
+queue-rx a list. Drop the '-'.
 
-Fundamentally, we have drivers in Linux for the ethernet part, for the
-TTY part, and for whatever other part might be in a given USB multi-
-function device.
+>       - $ref: '/schemas/types.yaml#/definitions/phandle-array'
+>       - items:
+>         - items:
+>           - description: phandle to the RX queue on the NPE
+>           - description: index of the NPE engine RX queue to use
+>             enum: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+>
+> I get this from dt_binding_check:
+>
+>   CHKDT   Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.yaml
+> Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.yaml:
+> properties:queue-rx: [{'allOf': [{'$ref':
+> '/schemas/types.yaml#/definitions/phandle-array'}, {'items':
+> [{'items': [{'description': 'phandle to the RX queue on the NPE'},
+> {'description': 'index of the NPE engine RX queue to use', 'enum': [0,
+> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}]}]}]}] is not of type 'object',
+> 'boolean'
+> make[3]: *** [../Documentation/devicetree/bindings/Makefile:12:
+> Documentation/devicetree/bindings/net/intel,ixp4xx-ethernet.example.dts]
+> Error 1
+>
+> Hm .... I just can't figure out what this recursive parsing thingie means...
+> I tried to update the pip3 repo but no cigar.
 
-> Clearly the multi-function device hardware has to be handled somehow,
-> but it would seem much cleaner in the long run to do that using
-> a special workaround rather than putting this into the core interface.
+What do you mean pip didn't work?
 
-I don't think it really makes the core interface much more complex or
-difficult though, and it feels easier than writing a completely
-different USB driver yet again for all these devices?
-
-As far as I understand from Dan, sometimes they really are no different
-from a generic USB TTY and a generic USB ethernet, except you know that
-if those show up together it's a modem.
-
-> E.g. have a driver that lets you create a wwan_device by passing
-> netdev and a tty chardev into a configuration interface, and from that
-> point on use the generic wwan abstraction.
-
-Yeah, but where do you hang that driver? Maybe the TTY function is
-actually a WWAN specific USB driver, but the ethernet is something
-generic that can also work with pure ethernet USB devices, and it's
-difficult to figure out how to tie those together. The modules could
-load in completely different order, or even the ethernet module could
-load but the TTY one doesn't because it's not configured, or vice versa.
-
-> > Now, it's not clear to me where IPA actually falls, because so far we've
-> > been talking about the IPA driver only as providing *netdevs*, not any
-> > control channels, so I'm not actually sure where the control channel is.
-> 
-> The IPA driver today only handles the data path, because Alex removed
-> the control channel. IPA is the driver that needs to talk to the hardware,
-> both for data and control when finished. rmnet is a pure software construct
-> that also contains both a data and control side and is designed to be
-> independent of the lower hardware.
-
-I'd actually be interested in what the control path should be like.
-
-Is it also muxed on QMAP in the same way?
-
-johannes
-
+Rob
