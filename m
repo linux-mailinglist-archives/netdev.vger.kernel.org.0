@@ -2,90 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D28F74A47B
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 16:51:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8855B4A480
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 16:53:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729442AbfFROvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 10:51:24 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:39405 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729189AbfFROvX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 10:51:23 -0400
-Received: by mail-io1-f67.google.com with SMTP id r185so24487055iod.6
-        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 07:51:23 -0700 (PDT)
+        id S1729242AbfFROxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 10:53:15 -0400
+Received: from mail-qk1-f181.google.com ([209.85.222.181]:41351 "EHLO
+        mail-qk1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727105AbfFROxO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 10:53:14 -0400
+Received: by mail-qk1-f181.google.com with SMTP id c11so8729933qkk.8;
+        Tue, 18 Jun 2019 07:53:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=9j7oCHE5zUCiZe1BNBhmdvX1Klq+foQyK5ygvulbnlo=;
-        b=IkP25tj5DpvbV1oyF3jVje51kgEaMnNfxFjh+WNTxIIUGD0bUJzzf1/dLYWXCPHYuf
-         89/mhzwCk56ERsQUkyzDCf0AsampmtUAKYYQrRk9kzuq7FWEEcW2JNrncVwLnVBYJ5s3
-         VYdchJ25b/Nwo9EINrdArT60WQIG1XCcDCvYTAkBQA/O5HhxHMfvSNEtdLdtTjYkKehB
-         ZnD1QYdU8IdoRF0Cm9/5ITvC32WbUpN2TqdvDT0gHh+FH5FjcVFwrtXgq8ZHKUJb2fc0
-         slW+DlpbH2qWT8eYQA/IjirFC/WHtNSngoEn8ow1Vl2AfNw8eNxwiUjJwrHT+1UzCCSw
-         +OCQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=0q+lDhwoSzLW/vGLXgPFr1bRPZrHxwKku/Yc4H2Wc70=;
+        b=pbyrk4o9ZgXacJhZgx6ZYLbBTYI/GQmPImCY/q9Giq0Tv3W9d861V0Cu2qiomhVjbb
+         JfpKce9xOkyJmthgWXQjAwCXlKibJ5VLVRIU4eFIt7OqNgca1DaMSFoD34o/td1Syr9n
+         CvQ/r6HlXUTC/bR2TT9yqO3kDRFBGtCp91/1D0VZRg890YIWI2c9sjMTh/x031HnckIx
+         58OfV5wltHCi0jOTJdvmbzOOQ12+wrcF3nV9hplOmrmIeetxeqLUOglQ6EaSITQ/wrPe
+         4K6/EbZUzA+gpOU9zJcsN9ZELmhWTop2AsdoGc5H0k/v6H/MjFdYbImuH5ifP1Ilzy/P
+         5czQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=9j7oCHE5zUCiZe1BNBhmdvX1Klq+foQyK5ygvulbnlo=;
-        b=Aq/I56TalsdWYa+SqAUzg7zVwAB7IgHkGYME3K7q+KxjFjW+8uSj1uAQmA9nnrqijR
-         ACVpvJ7DPS0IbKNg3YXPhwlRHcTttxW78sVMhEs6lrsNy0OWBZasRKYEh8a8xXO8whN5
-         5eXzuG17f8j8WFc50x4svvcPNwjqneFRmMuNOTJN/87WdnyZKyFQJdSiaugS4xFB0kz7
-         /ivE/4BnjZepAM7WADGctd6N0l65PZvzd6HT+daJRG4d12+hqYsr1XiayPmobB1tsfFJ
-         Piy2Y9VkZBQQ1Nq8lqfMGKpa5h+Vh85/qNh714Evxrb6eh9mc6tX2zu4LL0oaFm8Dmp7
-         GR2w==
-X-Gm-Message-State: APjAAAVdKAShFs99n8dOAew8vIhHNavC/G/ZitXBKVMLxpFxZ0f3jNLm
-        AKDczRp1CXva8B/9n0yroHbIg83v
-X-Google-Smtp-Source: APXvYqwlX1upvg671kiSg++9T/O9PWGXwT1lfD/YBL7m8aAeeoqkxSxXwkT2GjOZRblYFuUzt+zzpw==
-X-Received: by 2002:a5d:960e:: with SMTP id w14mr988123iol.189.1560869482340;
-        Tue, 18 Jun 2019 07:51:22 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:fd97:2a7b:2975:7041? ([2601:282:800:fd80:fd97:2a7b:2975:7041])
-        by smtp.googlemail.com with ESMTPSA id c17sm11710763ioo.82.2019.06.18.07.51.21
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 18 Jun 2019 07:51:21 -0700 (PDT)
-Subject: Re: [PATCH net v5 4/6] Revert "net/ipv6: Bail early if user only
- wants cloned entries"
-To:     Stefano Brivio <sbrivio@redhat.com>,
-        David Miller <davem@davemloft.net>
-Cc:     Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        netdev@vger.kernel.org
-References: <cover.1560827176.git.sbrivio@redhat.com>
- <6c7a9a747d667a581addca95370dd2532a55c015.1560827176.git.sbrivio@redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <d0789e11-ecae-289c-eae3-1f2a9de9b85a@gmail.com>
-Date:   Tue, 18 Jun 2019 08:51:20 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=0q+lDhwoSzLW/vGLXgPFr1bRPZrHxwKku/Yc4H2Wc70=;
+        b=OpqDbhAdkKG5rVnRtYBqFUQBOyk6eqo5GHBEwhoQXiCNsp4pZUDguM07qVFwbTUg8c
+         IV5XTk7WGDJwoRKxPZy26jyBafXZJbNpD5b+2P810Dk5hV6mf7ctphmLuyg9rmhylQeF
+         tG76MFzbKqCN10LQlnBniZFn1/evCxl+j564lpvkESkEWWbOKxwiN0kd/iigUMKqoQjS
+         ZfDf6E6wTvO3purhh79f40VzN9ycH6dStFLS8qYWwfu61KZhmXk1rKRuOmmbl0YkyIpj
+         VSwu0982HvK2JlmZNHnlXKWumC3viXuzRSupKijCCwQ+lGZGFTvDQ5KPphq4CX2/tozp
+         d3IA==
+X-Gm-Message-State: APjAAAUSYeLoR7sEZ6vmjK8NGH74j1uPd0JaQOzFewmUooeAcfyCPyJY
+        XrdUUiCX84tseffXc7lRQr8=
+X-Google-Smtp-Source: APXvYqwqkiOizVJT0BN9XC/wOoplesdna8o2HjjyGCz1flnMO5Yksw8V3lk+IYPg8hJf2jEL4hlwnw==
+X-Received: by 2002:ae9:eb96:: with SMTP id b144mr14015575qkg.321.1560869593227;
+        Tue, 18 Jun 2019 07:53:13 -0700 (PDT)
+Received: from localhost.localdomain ([168.181.49.32])
+        by smtp.gmail.com with ESMTPSA id o22sm7976457qkk.50.2019.06.18.07.53.12
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 18 Jun 2019 07:53:12 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id F2C2AC0FFC; Tue, 18 Jun 2019 11:53:09 -0300 (-03)
+Date:   Tue, 18 Jun 2019 11:53:09 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     syzbot <syzbot+c1a380d42b190ad1e559@syzkaller.appspotmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        "lucien.xin@gmail.com" <lucien.xin@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "nhorman@tuxdriver.com" <nhorman@tuxdriver.com>,
+        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
+        "vyasevich@gmail.com" <vyasevich@gmail.com>
+Subject: Re: general protection fault in sctp_sched_prio_sched
+Message-ID: <20190618145309.GO3436@localhost.localdomain>
+References: <20190618144554.5016-1-hdanton@sina.com>
 MIME-Version: 1.0
-In-Reply-To: <6c7a9a747d667a581addca95370dd2532a55c015.1560827176.git.sbrivio@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190618144554.5016-1-hdanton@sina.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/18/19 7:20 AM, Stefano Brivio wrote:
-> This reverts commit 08e814c9e8eb5a982cbd1e8f6bd255d97c51026f: as we
-> are preparing to fix listing and dumping of IPv6 cached routes, we
-> need to allow RTM_F_CLONED as a flag to match routes against while
-> dumping them.
+On Tue, Jun 18, 2019 at 10:45:54PM +0800, Hillf Danton wrote:
+...
+> > Anyway, with the patch above, after calling
+> > sctp_stream_init_ext() ->ext will be either completely valid, or it
+> > will not be present at all as it is seting ->ext to NULL if sid
+> > initialization ended up failing.
+> > 
+> Correct with no doubt.
 > 
-> Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
-> ---
-> v5: No changes
-> 
-> v4: New patch
-> 
->  net/ipv6/ip6_fib.c | 7 ++-----
->  1 file changed, 2 insertions(+), 5 deletions(-)
-> 
+> I was wondering if it is likely for the ->ext, loaded with a valid slab,
+> to cause a gpf in sctp_sched_prio_sched() without your patch applied.
+> And if the failure to initialise sid could likely change the result.
 
-Reviewed-by: David Ahern <dsahern@gmail.com>
+Thanks, I think I understand now. Well, without the patch, yes, as
+syzbot reported. Seems you're also worried if it can happen in other
+situations as well, and end up triggering the same gpf but on a
+different situation. I don't think so. It should be either
+initialized or not initialized. Half-initialized as it was, that's a
+pain.
 
+  Marcelo
