@@ -2,128 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8361049E21
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 12:19:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8A8C49E32
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 12:24:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729147AbfFRKTk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 06:19:40 -0400
-Received: from mail-eopbgr10062.outbound.protection.outlook.com ([40.107.1.62]:15294
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        id S1728945AbfFRKYy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 06:24:54 -0400
+Received: from mail-eopbgr150080.outbound.protection.outlook.com ([40.107.15.80]:39951
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725934AbfFRKTk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Jun 2019 06:19:40 -0400
+        id S1725934AbfFRKYy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Jun 2019 06:24:54 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IHHgmcHeV+yHP/i5GVfIh5VN4UeNC8IKsoOqzdkrN+8=;
- b=nnS9NKUevDHU0+eSUrgJnmlHSMsJt4ywLADshNRcHyV9ARnuBpvmIBN2DaUaeBHGQ/jXlsq6aKQ2fAeo4HBlBE9InF44XfiawsTBHrKIIJqON9/AZtZ750Y81Oi+q8n6HBMIYqaqV3JFGsfZVrE0Sw1acA2ayDdpC4Wo2RoycvM=
-Received: from AM4PR05MB3137.eurprd05.prod.outlook.com (10.171.186.14) by
- AM4PR05MB3138.eurprd05.prod.outlook.com (10.171.186.15) with Microsoft SMTP
+ bh=dv++fUQ/Dp5IFclZMTRaTiQva/Ub/IU7oHHIZxLlpjo=;
+ b=C9jcB8k5NGzZTWJcxAU7ZM6puH6aDlY3yY2T6bgH8+/Y58LyOC8UrsHf0uc1onXX+lEfPJl8ZJgtWDU9+gzyxTZTDipTGLEA/vT72SoNhE+/w/ctLuZLOoJGMStkuHswCwNjyu4aViNJuh7Lb60BWfCewZMbgyLT1EfaOvlCM5Y=
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
+ AM0PR05MB4132.eurprd05.prod.outlook.com (52.134.126.155) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1987.10; Tue, 18 Jun 2019 10:19:31 +0000
-Received: from AM4PR05MB3137.eurprd05.prod.outlook.com
- ([fe80::bc5a:ba8b:1a69:91b6]) by AM4PR05MB3137.eurprd05.prod.outlook.com
- ([fe80::bc5a:ba8b:1a69:91b6%6]) with mapi id 15.20.1987.014; Tue, 18 Jun 2019
- 10:19:31 +0000
-From:   Leon Romanovsky <leonro@mellanox.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>
+ 15.20.1987.11; Tue, 18 Jun 2019 10:24:49 +0000
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::217d:2cd7:c8da:9279]) by AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::217d:2cd7:c8da:9279%5]) with mapi id 15.20.1987.014; Tue, 18 Jun 2019
+ 10:24:49 +0000
+From:   Parav Pandit <parav@mellanox.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leonro@mellanox.com>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
         Jianbo Liu <jianbol@mellanox.com>,
         Roi Dayan <roid@mellanox.com>, Mark Bloch <markb@mellanox.com>
-Subject: Re: [PATCH mlx5-next 11/15] RDMA/mlx5: Add vport metadata matching
- for IB representors
-Thread-Topic: [PATCH mlx5-next 11/15] RDMA/mlx5: Add vport metadata matching
- for IB representors
-Thread-Index: AQHVJUIm1iT82BVB3kyl3BqmLAQTwaahNBoA
-Date:   Tue, 18 Jun 2019 10:19:31 +0000
-Message-ID: <20190618101928.GE4690@mtr-leonro.mtl.com>
+Subject: RE: [PATCH mlx5-next 12/15] net/mlx5: E-Switch, Enable vport metadata
+ matching if firmware supports it
+Thread-Topic: [PATCH mlx5-next 12/15] net/mlx5: E-Switch, Enable vport
+ metadata matching if firmware supports it
+Thread-Index: AQHVJUI8ZTP0CV1vxEetV/c8jOwcF6ahNWfg
+Date:   Tue, 18 Jun 2019 10:24:49 +0000
+Message-ID: <AM0PR05MB4866AA7738F3DE1D3CF47FFBD1EA0@AM0PR05MB4866.eurprd05.prod.outlook.com>
 References: <20190617192247.25107-1-saeedm@mellanox.com>
- <20190617192247.25107-12-saeedm@mellanox.com>
-In-Reply-To: <20190617192247.25107-12-saeedm@mellanox.com>
+ <20190617192247.25107-13-saeedm@mellanox.com>
+In-Reply-To: <20190617192247.25107-13-saeedm@mellanox.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-clientproxiedby: PR2PR09CA0021.eurprd09.prod.outlook.com
- (2603:10a6:101:16::33) To AM4PR05MB3137.eurprd05.prod.outlook.com
- (2603:10a6:205:3::14)
 authentication-results: spf=none (sender IP is )
- smtp.mailfrom=leonro@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [193.47.165.251]
+ smtp.mailfrom=parav@mellanox.com; 
+x-originating-ip: [106.51.22.216]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9ab55ec3-80ae-48e8-2b29-08d6f3d673c4
+x-ms-office365-filtering-correlation-id: 05ad5d18-dbe2-4ca5-c442-08d6f3d731c1
 x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR05MB3138;
-x-ms-traffictypediagnostic: AM4PR05MB3138:
-x-microsoft-antispam-prvs: <AM4PR05MB31389357FA1B92911E5CEB88B0EA0@AM4PR05MB3138.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM0PR05MB4132;
+x-ms-traffictypediagnostic: AM0PR05MB4132:
+x-microsoft-antispam-prvs: <AM0PR05MB413237DE7F4B2250DBCC4AA1D1EA0@AM0PR05MB4132.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2803;
 x-forefront-prvs: 007271867D
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(979002)(366004)(376002)(346002)(136003)(396003)(39860400002)(189003)(199004)(305945005)(6636002)(6116002)(6246003)(1076003)(386003)(53936002)(76176011)(26005)(316002)(478600001)(107886003)(52116002)(486006)(68736007)(99286004)(6486002)(446003)(11346002)(54906003)(102836004)(6436002)(229853002)(6506007)(256004)(81156014)(6862004)(14454004)(81166006)(71190400001)(71200400001)(86362001)(8676002)(2906002)(9686003)(476003)(450100002)(6512007)(25786009)(66476007)(5660300002)(66446008)(66946007)(66556008)(64756008)(7736002)(33656002)(66066001)(8936002)(73956011)(3846002)(4326008)(186003)(969003)(989001)(999001)(1009001)(1019001);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR05MB3138;H:AM4PR05MB3137.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(376002)(366004)(39860400002)(346002)(396003)(136003)(13464003)(199004)(189003)(6506007)(26005)(52536014)(33656002)(229853002)(102836004)(66066001)(76176011)(71200400001)(71190400001)(68736007)(54906003)(186003)(7696005)(256004)(99286004)(78486014)(6636002)(55236004)(53546011)(66476007)(25786009)(64756008)(3846002)(66946007)(73956011)(316002)(66556008)(110136005)(66446008)(450100002)(14454004)(76116006)(6116002)(11346002)(4326008)(9686003)(53936002)(478600001)(107886003)(74316002)(8676002)(8936002)(55016002)(86362001)(81156014)(81166006)(486006)(6436002)(9456002)(476003)(7736002)(6246003)(5660300002)(2906002)(446003)(305945005);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB4132;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: S44Q3BzbU9eTx6PZn29vWbbt4bm3ZFTvJ4DGe3MfrwMSh7y8XvI5NyKRl+A+kkYt/6gpHl65/rXUTfcmWPEN1o3JT3o3mxjKMQ3npkhOLm/bEDww0Hen6SKSTQcIcjACfpj0+j1ZjfBzDhBxajzgPPIm6Oy7JItQbGxtU3dJZotfZ7JhC24JDwDNvgF7HwFdXk2GrTO4q+GZqIoiHReDa4wyW03SIKgnRmodF1eUMdaTTEY77SkUpQhdQxA8MmvmUfY1nVbOKniTYNUpZo8kq00GB3Tkt5qg5VjUBmefndDaD7BQGGaZVLdkqnVjEL138/V/kg11SAypIJZ9pGLzxKYXrcwOnblzvDJzDnMMviRAJwqdvQWQ9xIL87MR+X8PpcwamsovlsXNxR6ozp95STeG53TodjiRqgIG3y3chew=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <E77D49567320B841AFDC4B9A6D11C371@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+x-microsoft-antispam-message-info: Ak1xyrs8a26zcUGSH/KWXROSvGUR8R4PIGrbPkK4Sjw8t10k0v8pdh0frgto7wQTNopSpZZTdMO1fZa76kFePBnwvSlxPk5LdvpGBjF4tMD2PJpju86pCRWnYcmiZoYM0te+Bjlg1HDa/eeTA9jOqDRa4AVYC2I9fPl5Mp4a7ayFzA/ydjosq5h+5/62w67nhqbJRQc/3pOQTt9QqT8CSmB/YDGsq5hAhJM+nTE+bMOdgvO3X+vm6A/MoVmgZv7w4P/K+YPVxv7sYLSQC3oBR7ZVzL3JiTUGKYBk6uuVn96BjT22KMPf669xQZ8P/zceoiiJPoHflL/uNBlE6wwR+oOJ5oDqTd2kOYYiUn+5/i7J0nQeqEQ/Cu2ewbBKtaNqSSWElHSTlJfyhHUexu0if2ZiVi8LElxA36aUGSJDJW0=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9ab55ec3-80ae-48e8-2b29-08d6f3d673c4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jun 2019 10:19:31.3229
+X-MS-Exchange-CrossTenant-Network-Message-Id: 05ad5d18-dbe2-4ca5-c442-08d6f3d731c1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jun 2019 10:24:49.5785
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: leonro@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR05MB3138
+X-MS-Exchange-CrossTenant-userprincipalname: parav@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4132
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 17, 2019 at 07:23:30PM +0000, Saeed Mahameed wrote:
-> From: Jianbo Liu <jianbol@mellanox.com>
->
-> If vport metadata matching is enabled in eswitch, the rule created
-> must be changed to match on the metadata, instead of source port.
->
-> Signed-off-by: Jianbo Liu <jianbol@mellanox.com>
-> Reviewed-by: Roi Dayan <roid@mellanox.com>
-> Reviewed-by: Mark Bloch <markb@mellanox.com>
-> Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
-> ---
->  drivers/infiniband/hw/mlx5/ib_rep.c | 11 +++++++
->  drivers/infiniband/hw/mlx5/ib_rep.h | 16 ++++++++++
->  drivers/infiniband/hw/mlx5/main.c   | 45 +++++++++++++++++++++++------
->  3 files changed, 63 insertions(+), 9 deletions(-)
->
-> diff --git a/drivers/infiniband/hw/mlx5/ib_rep.c b/drivers/infiniband/hw/=
-mlx5/ib_rep.c
-> index 22e651cb5534..d4ed611de35d 100644
-> --- a/drivers/infiniband/hw/mlx5/ib_rep.c
-> +++ b/drivers/infiniband/hw/mlx5/ib_rep.c
-> @@ -131,6 +131,17 @@ struct mlx5_eswitch_rep *mlx5_ib_vport_rep(struct ml=
-x5_eswitch *esw, int vport)
->  	return mlx5_eswitch_vport_rep(esw, vport);
->  }
->
-> +u32 mlx5_ib_eswitch_vport_match_metadata_enabled(struct mlx5_eswitch *es=
-w)
-> +{
-> +	return mlx5_eswitch_vport_match_metadata_enabled(esw);
-> +}
-> +
-> +u32 mlx5_ib_eswitch_get_vport_metadata_for_match(struct mlx5_eswitch *es=
-w,
-> +						 u16 vport)
-> +{
-> +	return mlx5_eswitch_get_vport_metadata_for_match(esw, vport);
-> +}
-
-1. There is no need to introduce one line functions, call to that code dire=
-ctly.
-2. It should be bool and not u32.
-
-Thanks
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogbGludXgtcmRtYS1vd25l
+ckB2Z2VyLmtlcm5lbC5vcmcgPGxpbnV4LXJkbWEtDQo+IG93bmVyQHZnZXIua2VybmVsLm9yZz4g
+T24gQmVoYWxmIE9mIFNhZWVkIE1haGFtZWVkDQo+IFNlbnQ6IFR1ZXNkYXksIEp1bmUgMTgsIDIw
+MTkgMTI6NTQgQU0NCj4gVG86IFNhZWVkIE1haGFtZWVkIDxzYWVlZG1AbWVsbGFub3guY29tPjsg
+TGVvbiBSb21hbm92c2t5DQo+IDxsZW9ucm9AbWVsbGFub3guY29tPg0KPiBDYzogbmV0ZGV2QHZn
+ZXIua2VybmVsLm9yZzsgbGludXgtcmRtYUB2Z2VyLmtlcm5lbC5vcmc7IEppYW5ibyBMaXUNCj4g
+PGppYW5ib2xAbWVsbGFub3guY29tPjsgUm9pIERheWFuIDxyb2lkQG1lbGxhbm94LmNvbT47IE1h
+cmsgQmxvY2gNCj4gPG1hcmtiQG1lbGxhbm94LmNvbT4NCj4gU3ViamVjdDogW1BBVENIIG1seDUt
+bmV4dCAxMi8xNV0gbmV0L21seDU6IEUtU3dpdGNoLCBFbmFibGUgdnBvcnQgbWV0YWRhdGENCj4g
+bWF0Y2hpbmcgaWYgZmlybXdhcmUgc3VwcG9ydHMgaXQNCj4gDQo+IEZyb206IEppYW5ibyBMaXUg
+PGppYW5ib2xAbWVsbGFub3guY29tPg0KPiANCj4gQXMgdGhlIGluZ3Jlc3MgQUNMIHJ1bGVzIHNh
+dmUgdmhjYSBpZCBhbmQgdnBvcnQgbnVtYmVyIHRvIHBhY2tldCdzIG1ldGFkYXRhDQo+IFJFR19D
+XzAsIGFuZCB0aGUgbWV0YWRhdGEgbWF0Y2hpbmcgZm9yIHRoZSBydWxlcyBpbiBib3RoIGZhc3Qg
+cGF0aCBhbmQgc2xvdw0KPiBwYXRoIGFyZSBhbGwgYWRkZWQsIGVuYWJsZSB0aGlzIGZlYXR1cmUg
+aWYgc3VwcG9ydGVkLg0KPiANCj4gU2lnbmVkLW9mZi1ieTogSmlhbmJvIExpdSA8amlhbmJvbEBt
+ZWxsYW5veC5jb20+DQo+IFJldmlld2VkLWJ5OiBSb2kgRGF5YW4gPHJvaWRAbWVsbGFub3guY29t
+Pg0KPiBSZXZpZXdlZC1ieTogTWFyayBCbG9jaCA8bWFya2JAbWVsbGFub3guY29tPg0KPiBTaWdu
+ZWQtb2ZmLWJ5OiBTYWVlZCBNYWhhbWVlZCA8c2FlZWRtQG1lbGxhbm94LmNvbT4NCj4gLS0tDQo+
+ICAuLi4vZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2Vzd2l0Y2hfb2ZmbG9hZHMuYyAgfCAx
+MyArKysrKysrKysrKysrDQo+ICAxIGZpbGUgY2hhbmdlZCwgMTMgaW5zZXJ0aW9ucygrKQ0KPiAN
+Cj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9l
+c3dpdGNoX29mZmxvYWRzLmMNCj4gYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1
+L2NvcmUvZXN3aXRjaF9vZmZsb2Fkcy5jDQo+IGluZGV4IDM2MzUxN2UyOWQ0Yy4uNTEyNDIxOWEz
+MWRlIDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2Nv
+cmUvZXN3aXRjaF9vZmZsb2Fkcy5jDQo+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxh
+bm94L21seDUvY29yZS9lc3dpdGNoX29mZmxvYWRzLmMNCj4gQEAgLTE5MDYsMTIgKzE5MDYsMjUg
+QEAgc3RhdGljIGludA0KPiBlc3dfdnBvcnRfaW5ncmVzc19jb21tb25fY29uZmlnKHN0cnVjdCBt
+bHg1X2Vzd2l0Y2ggKmVzdywNCj4gIAlyZXR1cm4gZXJyOw0KPiAgfQ0KPiANCj4gK3N0YXRpYyBp
+bnQgZXN3X2NoZWNrX3Zwb3J0X21hdGNoX21ldGFkYXRhX3N1cHBvcnRlZChzdHJ1Y3QgbWx4NV9l
+c3dpdGNoDQo+ICsqZXN3KSB7DQo+ICsJcmV0dXJuIChNTFg1X0NBUF9FU1dfRkxPV1RBQkxFKGVz
+dy0+ZGV2LA0KPiBmZGJfdG9fdnBvcnRfcmVnX2NfaWQpICYNCj4gKwkJTUxYNV9GREJfVE9fVlBP
+UlRfUkVHX0NfMCkgJiYNCj4gKwkgICAgICAgTUxYNV9DQVBfRVNXX0ZMT1dUQUJMRShlc3ctPmRl
+diwgZmxvd19zb3VyY2UpICYmDQo+ICsJICAgICAgIE1MWDVfQ0FQX0VTVyhlc3ctPmRldiwgZXN3
+X3VwbGlua19pbmdyZXNzX2FjbCkgJiYNCj4gKwkgICAgICAgIW1seDVfY29yZV9pc19lY3BmX2Vz
+d19tYW5hZ2VyKGVzdy0+ZGV2KSAmJg0KPiArCSAgICAgICAhbWx4NV9lY3BmX3Zwb3J0X2V4aXN0
+cyhlc3ctPmRldik7DQo+ICt9DQo+ICsNCnN0cnVjdCBtbHg1X2Vzd2l0Y2gqIHNob3VsZCBiZSBj
+b25zdC4NCnJldHVybiB0eXBlIHNob3VsZCBiZSBib29sLg0K
