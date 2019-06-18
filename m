@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BDB884A26B
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 15:36:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F6A74A264
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 15:36:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729473AbfFRNgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 09:36:19 -0400
+        id S1729499AbfFRNgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 09:36:22 -0400
 Received: from mga07.intel.com ([134.134.136.100]:21689 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728572AbfFRNgS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Jun 2019 09:36:18 -0400
+        id S1729253AbfFRNgV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Jun 2019 09:36:21 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Jun 2019 06:36:17 -0700
+  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Jun 2019 06:36:21 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.63,389,1557212400"; 
-   d="scan'208";a="164705629"
+   d="scan'208";a="164705640"
 Received: from wvoon-ilbpg2.png.intel.com ([10.88.227.88])
-  by orsmga006.jf.intel.com with ESMTP; 18 Jun 2019 06:36:14 -0700
+  by orsmga006.jf.intel.com with ESMTP; 18 Jun 2019 06:36:17 -0700
 From:   Voon Weifeng <weifeng.voon@intel.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>
@@ -32,9 +32,9 @@ Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Vinicius Costa Gomes <vinicius.gomes@intel.com>,
         Ong Boon Leong <boon.leong.ong@intel.com>,
         Voon Weifeng <weifeng.voon@intel.com>
-Subject: [RFC net-next 3/5] taprio: Add support for hardware offloading
-Date:   Wed, 19 Jun 2019 05:36:16 +0800
-Message-Id: <1560893778-6838-4-git-send-email-weifeng.voon@intel.com>
+Subject: [RFC net-next 4/5] net: stmmac: enable HW offloading for tc taprio
+Date:   Wed, 19 Jun 2019 05:36:17 +0800
+Message-Id: <1560893778-6838-5-git-send-email-weifeng.voon@intel.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1560893778-6838-1-git-send-email-weifeng.voon@intel.com>
 References: <1560893778-6838-1-git-send-email-weifeng.voon@intel.com>
@@ -43,466 +43,195 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+This patch enable iproute2's tc taprio to run IEEE802.1Qbv using HW.
+tc taprio manual can refer to:
+http://man7.org/linux/man-pages/man8/tc-taprio.8.html
 
-This allows taprio to offload the schedule enforcement to capable
-network cards, resulting in more precise windows and less CPU usage.
+To enable HW offloading, an extra argument need to be added:
+offload 1
 
-The important detail here is the difference between the gate_mask in
-taprio and gate_mask for the network driver. For the driver, each bit
-in gate_mask references a transmission queue: bit 0 for queue 0, bit 1
-for queue 1, and so on. This is done so the driver doesn't need to
-know about traffic classes.
+Example to run:
+$ tc qdisc add dev IFACE parent root handle 100 taprio \
+      num_tc 3 \
+      map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \
+      queues 1@0 1@1 2@2 \
+      base-time 10000000 \
+      sched-entry S 03 300000 \
+      sched-entry S 02 300000 \
+      sched-entry S 06 400000 \
+      clockid CLOCK_TAI
+      offload 1
 
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
 ---
- include/linux/netdevice.h      |   1 +
- include/net/pkt_sched.h        |  18 +++
- include/uapi/linux/pkt_sched.h |   4 +
- net/sched/sch_taprio.c         | 263 ++++++++++++++++++++++++++++++++++++++++-
- 4 files changed, 284 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/hwif.h        |  5 ++
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |  2 +
+ drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c   | 96 +++++++++++++++++++++++
+ 3 files changed, 103 insertions(+)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index eeacebd7debb..e6bf0ede8cfa 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -845,6 +845,7 @@ enum tc_setup_type {
- 	TC_SETUP_QDISC_ETF,
- 	TC_SETUP_ROOT_QDISC,
- 	TC_SETUP_QDISC_GRED,
-+	TC_SETUP_QDISC_TAPRIO,
+diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.h b/drivers/net/ethernet/stmicro/stmmac/hwif.h
+index dec9b1f5c557..c9fa60934710 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/hwif.h
++++ b/drivers/net/ethernet/stmicro/stmmac/hwif.h
+@@ -514,6 +514,7 @@ struct stmmac_mode_ops {
+ struct stmmac_priv;
+ struct tc_cls_u32_offload;
+ struct tc_cbs_qopt_offload;
++struct tc_taprio_qopt_offload;
+ 
+ struct stmmac_tc_ops {
+ 	int (*init)(struct stmmac_priv *priv);
+@@ -521,6 +522,8 @@ struct stmmac_tc_ops {
+ 			     struct tc_cls_u32_offload *cls);
+ 	int (*setup_cbs)(struct stmmac_priv *priv,
+ 			 struct tc_cbs_qopt_offload *qopt);
++	int (*setup_taprio)(struct stmmac_priv *priv,
++			    struct tc_taprio_qopt_offload *qopt);
  };
  
- /* These structures hold the attributes of bpf state that are being passed
-diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
-index a16fbe9a2a67..3333c107f920 100644
---- a/include/net/pkt_sched.h
-+++ b/include/net/pkt_sched.h
-@@ -161,4 +161,22 @@ struct tc_etf_qopt_offload {
- 	s32 queue;
- };
+ #define stmmac_tc_init(__priv, __args...) \
+@@ -529,6 +532,8 @@ struct stmmac_tc_ops {
+ 	stmmac_do_callback(__priv, tc, setup_cls_u32, __args)
+ #define stmmac_tc_setup_cbs(__priv, __args...) \
+ 	stmmac_do_callback(__priv, tc, setup_cbs, __args)
++#define stmmac_tc_setup_taprio(__priv, __args...) \
++	stmmac_do_callback(__priv, tc, setup_taprio, __args)
  
-+struct tc_taprio_sched_entry {
-+	u8 command; /* TC_TAPRIO_CMD_* */
-+
-+	/* The gate_mask in the offloading side refers to HW queues */
-+	u32 gate_mask;
-+	u32 interval;
-+};
-+
-+struct tc_taprio_qopt_offload {
-+	u8 enable;
-+	ktime_t base_time;
-+	u64 cycle_time;
-+	u64 cycle_time_extension;
-+
-+	size_t num_entries;
-+	struct tc_taprio_sched_entry entries[0];
-+};
-+
- #endif
-diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
-index 8b2f993cbb77..08a260fd7843 100644
---- a/include/uapi/linux/pkt_sched.h
-+++ b/include/uapi/linux/pkt_sched.h
-@@ -1158,6 +1158,9 @@ enum {
-  *       [TCA_TAPRIO_ATTR_SCHED_ENTRY_INTERVAL]
-  */
+ struct stmmac_counters;
  
-+#define TCA_TAPRIO_ATTR_OFFLOAD_FLAG_FULL_OFFLOAD 0x1
-+#define TCA_TAPRIO_ATTR_OFFLOAD_FLAG_TXTIME_OFFLOAD 0x2
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index c28b5e69f2cd..a443c42fa58b 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -3811,6 +3811,8 @@ static int stmmac_setup_tc(struct net_device *ndev, enum tc_setup_type type,
+ 		return stmmac_setup_tc_block(priv, type_data);
+ 	case TC_SETUP_QDISC_CBS:
+ 		return stmmac_tc_setup_cbs(priv, priv, type_data);
++	case TC_SETUP_QDISC_TAPRIO:
++		return stmmac_tc_setup_taprio(priv, priv, type_data);
+ 	default:
+ 		return -EOPNOTSUPP;
+ 	}
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
+index 58ea18af9813..d118e3636d50 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
+@@ -7,10 +7,13 @@
+ #include <net/pkt_cls.h>
+ #include <net/tc_act/tc_gact.h>
+ #include "common.h"
++#include "dw_tsn_lib.h"
+ #include "dwmac4.h"
+ #include "dwmac5.h"
+ #include "stmmac.h"
+ 
++#define ONE_SEC_IN_NANOSEC 1000000000ULL
 +
- enum {
- 	TCA_TAPRIO_ATTR_UNSPEC,
- 	TCA_TAPRIO_ATTR_PRIOMAP, /* struct tc_mqprio_qopt */
-@@ -1169,6 +1172,7 @@ enum {
- 	TCA_TAPRIO_ATTR_ADMIN_SCHED, /* The admin sched, only used in dump */
- 	TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME, /* s64 */
- 	TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME_EXTENSION, /* s64 */
-+	TCA_TAPRIO_ATTR_OFFLOAD_FLAGS, /* u32 */
- 	__TCA_TAPRIO_ATTR_MAX,
- };
- 
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 9ecfb8f5902a..9e8f066a2474 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -26,6 +26,9 @@
- static DEFINE_SPINLOCK(taprio_list_lock);
- 
- #define TAPRIO_ALL_GATES_OPEN -1
-+#define FULL_OFFLOAD_IS_ON(flags) ((flags) & TCA_TAPRIO_ATTR_OFFLOAD_FLAG_FULL_OFFLOAD)
-+#define TXTIME_OFFLOAD_IS_ON(flags) ((flags) & TCA_TAPRIO_ATTR_OFFLOAD_FLAG_TXTIME_OFFLOAD)
-+#define VALID_OFFLOAD(flags) ((flags) != U32_MAX)
- 
- struct sched_entry {
- 	struct list_head list;
-@@ -55,6 +58,8 @@ struct sched_gate_list {
- struct taprio_sched {
- 	struct Qdisc **qdiscs;
- 	struct Qdisc *root;
-+	struct tc_mqprio_qopt mqprio;
-+	u32 offload_flags;
- 	int clockid;
- 	atomic64_t picos_per_byte; /* Using picoseconds because for 10Gbps+
- 				    * speeds it's sub-nanoseconds per byte
-@@ -66,6 +71,8 @@ struct taprio_sched {
- 	struct sched_gate_list __rcu *oper_sched;
- 	struct sched_gate_list __rcu *admin_sched;
- 	ktime_t (*get_time)(void);
-+	struct sk_buff *(*dequeue)(struct Qdisc *sch);
-+	struct sk_buff *(*peek)(struct Qdisc *sch);
- 	struct hrtimer advance_timer;
- 	struct list_head taprio_list;
- };
-@@ -143,7 +150,30 @@ static int taprio_enqueue(struct sk_buff *skb, struct Qdisc *sch,
- 	return qdisc_enqueue(skb, child, to_free);
+ static void tc_fill_all_pass_entry(struct stmmac_tc_entry *entry)
+ {
+ 	memset(entry, 0, sizeof(*entry));
+@@ -349,8 +352,101 @@ static int tc_setup_cbs(struct stmmac_priv *priv,
+ 	return 0;
  }
  
--static struct sk_buff *taprio_peek(struct Qdisc *sch)
-+static struct sk_buff *taprio_peek_offload(struct Qdisc *sch)
++static int tc_setup_taprio(struct stmmac_priv *priv,
++			   struct tc_taprio_qopt_offload *qopt)
 +{
-+	struct taprio_sched *q = qdisc_priv(sch);
-+	struct net_device *dev = qdisc_dev(sch);
-+	struct sk_buff *skb;
++	u64 time_extension = qopt->cycle_time_extension;
++	u64 base_time = ktime_to_ns(qopt->base_time);
++	u64 cycle_time = qopt->cycle_time;
++	struct est_gcrr egcrr;
++	u32 extension_ns;
++	u32 extension_s;
++	u32 cycle_ns;
++	u32 cycle_s;
++	u32 base_ns;
++	u32 base_s;
++	int ret;
 +	int i;
 +
-+	for (i = 0; i < dev->num_tx_queues; i++) {
-+		struct Qdisc *child = q->qdiscs[i];
-+
-+		if (unlikely(!child))
-+			continue;
-+
-+		skb = child->ops->peek(child);
-+		if (!skb)
-+			continue;
-+
-+		return skb;
++	if (qopt->enable) {
++		stmmac_set_est_enable(priv, priv->ioaddr, 1);
++		dev_info(priv->device, "taprio: EST enabled\n");
++	} else {
++		stmmac_set_est_enable(priv, priv->ioaddr, 0);
++		dev_info(priv->device, "taprio: EST disabled\n");
++		return 0;
 +	}
 +
-+	return NULL;
-+}
++	dev_dbg(priv->device, "taprio: time_extension %lld, base_time %lld, cycle_time %lld\n",
++		qopt->cycle_time_extension, qopt->base_time, qopt->cycle_time);
 +
-+static struct sk_buff *taprio_peek_soft(struct Qdisc *sch)
- {
- 	struct taprio_sched *q = qdisc_priv(sch);
- 	struct net_device *dev = qdisc_dev(sch);
-@@ -184,6 +214,13 @@ static struct sk_buff *taprio_peek(struct Qdisc *sch)
- 	return NULL;
- }
- 
-+static struct sk_buff *taprio_peek(struct Qdisc *sch)
-+{
-+	struct taprio_sched *q = qdisc_priv(sch);
++	for (i = 0; i < qopt->num_entries; i++) {
++		struct est_gc_entry sgce;
 +
-+	return q->peek(sch);
-+}
++		sgce.gates = qopt->entries[i].gate_mask;
++		sgce.ti_nsec = qopt->entries[i].interval;
 +
- static inline int length_to_duration(struct taprio_sched *q, int len)
- {
- 	return div_u64(len * atomic64_read(&q->picos_per_byte), 1000);
-@@ -196,7 +233,7 @@ static void taprio_set_budget(struct taprio_sched *q, struct sched_entry *entry)
- 			     atomic64_read(&q->picos_per_byte)));
- }
- 
--static struct sk_buff *taprio_dequeue(struct Qdisc *sch)
-+static struct sk_buff *taprio_dequeue_soft(struct Qdisc *sch)
- {
- 	struct taprio_sched *q = qdisc_priv(sch);
- 	struct net_device *dev = qdisc_dev(sch);
-@@ -275,6 +312,40 @@ static struct sk_buff *taprio_dequeue(struct Qdisc *sch)
- 	return skb;
- }
- 
-+static struct sk_buff *taprio_dequeue_offload(struct Qdisc *sch)
-+{
-+	struct taprio_sched *q = qdisc_priv(sch);
-+	struct net_device *dev = qdisc_dev(sch);
-+	struct sk_buff *skb;
-+	int i;
-+
-+	for (i = 0; i < dev->num_tx_queues; i++) {
-+		struct Qdisc *child = q->qdiscs[i];
-+
-+		if (unlikely(!child))
-+			continue;
-+
-+		skb = child->ops->dequeue(child);
-+		if (unlikely(!skb))
-+			continue;
-+
-+		qdisc_bstats_update(sch, skb);
-+		qdisc_qstats_backlog_dec(sch, skb);
-+		sch->q.qlen--;
-+
-+		return skb;
-+	}
-+
-+	return NULL;
-+}
-+
-+static struct sk_buff *taprio_dequeue(struct Qdisc *sch)
-+{
-+	struct taprio_sched *q = qdisc_priv(sch);
-+
-+	return q->dequeue(sch);
-+}
-+
- static bool should_restart_cycle(const struct sched_gate_list *oper,
- 				 const struct sched_entry *entry)
- {
-@@ -707,6 +778,165 @@ static int taprio_dev_notifier(struct notifier_block *nb, unsigned long event,
- 	return NOTIFY_DONE;
- }
- 
-+static u32 tc_mask_to_queue_mask(const struct tc_mqprio_qopt *mqprio,
-+				 u32 tc_mask)
-+{
-+	u32 i, queue_mask = 0;
-+
-+	for (i = 0; i < mqprio->num_tc; i++) {
-+		u32 offset, count;
-+
-+		if (!(tc_mask & BIT(i)))
-+			continue;
-+
-+		offset = mqprio->offset[i];
-+		count = mqprio->count[i];
-+
-+		queue_mask |= GENMASK(offset + count - 1, offset);
-+	}
-+
-+	return queue_mask;
-+}
-+
-+static void taprio_sched_to_offload(struct taprio_sched *q,
-+				    struct sched_gate_list *sched,
-+				    struct tc_taprio_qopt_offload *taprio)
-+{
-+	struct sched_entry *entry;
-+	int i = 0;
-+
-+	taprio->base_time = sched->base_time;
-+
-+	list_for_each_entry(entry, &sched->entries, list) {
-+		struct tc_taprio_sched_entry *e = &taprio->entries[i];
-+
-+		e->command = entry->command;
-+		e->interval = entry->interval;
-+
-+		/* We do this transformation because the NIC
-+		 * has no knowledge of traffic classes, but it
-+		 * knows about queues.
++		/* cycle_time will be sum of all time interval
++		 * of the entries in the schedule if the
++		 * cycle_time is not provided
 +		 */
-+		e->gate_mask = tc_mask_to_queue_mask(&q->mqprio,
-+						     entry->gate_mask);
-+		i++;
++		if (!qopt->cycle_time)
++			cycle_time += qopt->entries[i].interval;
++
++		dev_dbg(priv->device, "taprio: gates 0x%x, ti_ns %d, cycle_ns %d\n",
++			sgce.gates, sgce.ti_nsec, cycle_ns);
++
++		ret = stmmac_set_est_gce(priv, priv->ioaddr, &sgce, i, 0, 0);
++
++		if (ret) {
++			dev_err(priv->device,
++				"taprio: fail to program GC entry(%d).\n", i);
++
++			return ret;
++		}
 +	}
 +
-+	taprio->num_entries = i;
++	ret = stmmac_set_est_gcrr_llr(priv, priv->ioaddr,
++				      qopt->num_entries,
++				      0, 0);
++	if (ret) {
++		dev_err(priv->device,
++			"taprio: fail to program GC into HW\n");
++	}
++
++	/* set est_info */
++	base_ns = do_div(base_time, ONE_SEC_IN_NANOSEC);
++	base_s = base_time;
++	dev_dbg(priv->device, "taprio: base_s %d, base_ns %d\n",
++		base_s, base_ns);
++
++	cycle_ns = do_div(cycle_time, ONE_SEC_IN_NANOSEC);
++	cycle_s = cycle_time;
++	dev_dbg(priv->device, "taprio: cycle_s %d, cycle_ns %d\n",
++		cycle_s, cycle_ns);
++
++	extension_ns = do_div(time_extension, ONE_SEC_IN_NANOSEC);
++	extension_s = time_extension;
++	dev_dbg(priv->device, "taprio: extension_s %d, extension_ns %d\n",
++		extension_s, extension_ns);
++
++	if (extension_s) {
++		dev_err(priv->device, "taprio: extension in seconds not supported.\n");
++		return -EINVAL;
++	}
++
++	egcrr.cycle_sec = cycle_s;
++	egcrr.cycle_nsec = cycle_ns;
++	egcrr.base_sec = base_s;
++	egcrr.base_nsec = base_ns;
++	egcrr.ter_nsec = extension_ns;
++
++	return stmmac_set_est_gcrr_times(priv, priv->ioaddr, &egcrr, 0, 0);
 +}
 +
-+static void taprio_disable_offload(struct net_device *dev,
-+				   struct taprio_sched *q)
-+{
-+	const struct net_device_ops *ops = dev->netdev_ops;
-+	struct tc_taprio_qopt_offload taprio = { };
-+	int err;
-+
-+	if (!q->offload_flags)
-+		return;
-+
-+	if (!ops->ndo_setup_tc)
-+		return;
-+
-+	taprio.enable = 0;
-+
-+	err = ops->ndo_setup_tc(dev, TC_SETUP_QDISC_TAPRIO, &taprio);
-+	if (err < 0)
-+		return;
-+
-+	/* Just to be sure to keep the function pointers in a
-+	 * consistent state always.
-+	 */
-+	q->dequeue = taprio_dequeue_soft;
-+	q->peek = taprio_peek_soft;
-+
-+	q->advance_timer.function = advance_sched;
-+
-+	q->offload_flags = 0;
-+}
-+
-+static enum hrtimer_restart next_sched(struct hrtimer *timer)
-+{
-+	struct taprio_sched *q = container_of(timer, struct taprio_sched,
-+					      advance_timer);
-+	struct sched_gate_list *oper, *admin;
-+
-+	spin_lock(&q->current_entry_lock);
-+	oper = rcu_dereference_protected(q->oper_sched,
-+					 lockdep_is_held(&q->current_entry_lock));
-+	admin = rcu_dereference_protected(q->admin_sched,
-+					  lockdep_is_held(&q->current_entry_lock));
-+
-+	rcu_assign_pointer(q->oper_sched, admin);
-+	rcu_assign_pointer(q->admin_sched, NULL);
-+
-+	if (oper)
-+		call_rcu(&oper->rcu, taprio_free_sched_cb);
-+
-+	spin_unlock(&q->current_entry_lock);
-+
-+	return HRTIMER_NORESTART;
-+}
-+
-+static int taprio_enable_offload(struct net_device *dev,
-+				 struct tc_mqprio_qopt *mqprio,
-+				 struct taprio_sched *q,
-+				 struct sched_gate_list *sched,
-+				 struct netlink_ext_ack *extack,
-+				 u32 offload_flags)
-+{
-+	const struct net_device_ops *ops = dev->netdev_ops;
-+	struct tc_taprio_qopt_offload *taprio;
-+	size_t size;
-+	int err = 0;
-+
-+	if (!FULL_OFFLOAD_IS_ON(offload_flags)) {
-+		NL_SET_ERR_MSG(extack, "Offload mode is not supported");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (!ops->ndo_setup_tc) {
-+		NL_SET_ERR_MSG(extack, "Specified device does not support taprio offload");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	size = sizeof(*taprio) +
-+		sched->num_entries * sizeof(struct tc_taprio_sched_entry);
-+
-+	taprio = kzalloc(size, GFP_ATOMIC);
-+	if (!taprio) {
-+		NL_SET_ERR_MSG(extack, "Not enough memory for enabling offload mode");
-+		return -ENOMEM;
-+	}
-+
-+	taprio->enable = 1;
-+	taprio_sched_to_offload(q, sched, taprio);
-+
-+	err = ops->ndo_setup_tc(dev, TC_SETUP_QDISC_TAPRIO, taprio);
-+	if (err < 0) {
-+		NL_SET_ERR_MSG(extack, "Specified device failed to setup taprio hardware offload");
-+		goto done;
-+	}
-+
-+	q->dequeue = taprio_dequeue_offload;
-+	q->peek = taprio_peek_offload;
-+
-+	/* This function will only serve to keep the pointers to the
-+	 * "oper" and "admin" schedules valid in relation to their
-+	 * base times, so when calling dump() the users looks at the
-+	 * right schedules.
-+	 */
-+	q->advance_timer.function = next_sched;
-+
-+done:
-+	kfree(taprio);
-+
-+	if (err == 0)
-+		q->offload_flags = offload_flags;
-+
-+	return err;
-+}
-+
- static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
- 			 struct netlink_ext_ack *extack)
- {
-@@ -715,6 +945,7 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
- 	struct taprio_sched *q = qdisc_priv(sch);
- 	struct net_device *dev = qdisc_dev(sch);
- 	struct tc_mqprio_qopt *mqprio = NULL;
-+	u32 offload_flags = U32_MAX;
- 	int i, err, clockid;
- 	unsigned long flags;
- 	ktime_t start;
-@@ -731,6 +962,9 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
- 	if (err < 0)
- 		return err;
- 
-+	if (tb[TCA_TAPRIO_ATTR_OFFLOAD_FLAGS])
-+		offload_flags = nla_get_u32(tb[TCA_TAPRIO_ATTR_OFFLOAD_FLAGS]);
-+
- 	new_admin = kzalloc(sizeof(*new_admin), GFP_KERNEL);
- 	if (!new_admin) {
- 		NL_SET_ERR_MSG(extack, "Not enough memory for a new schedule");
-@@ -749,6 +983,12 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
- 		goto free_sched;
- 	}
- 
-+	if (offload_flags != U32_MAX && (oper || admin)) {
-+		NL_SET_ERR_MSG(extack, "Changing 'offload' of a running schedule is not supported");
-+		err = -ENOTSUPP;
-+		goto free_sched;
-+	}
-+
- 	err = parse_taprio_schedule(tb, new_admin, extack);
- 	if (err < 0)
- 		goto free_sched;
-@@ -802,6 +1042,8 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
- 		for (i = 0; i < TC_BITMASK + 1; i++)
- 			netdev_set_prio_tc_map(dev, i,
- 					       mqprio->prio_tc_map[i]);
-+
-+		memcpy(&q->mqprio, mqprio, sizeof(q->mqprio));
- 	}
- 
- 	switch (q->clockid) {
-@@ -823,6 +1065,15 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
- 		goto unlock;
- 	}
- 
-+	if (!offload_flags) {
-+		taprio_disable_offload(dev, q);
-+	} else if (VALID_OFFLOAD(offload_flags) || q->offload_flags) {
-+		err = taprio_enable_offload(dev, mqprio, q,
-+					    new_admin, extack, offload_flags);
-+		if (err)
-+			goto unlock;
-+	}
-+
- 	err = taprio_get_start_time(sch, new_admin, &start);
- 	if (err < 0) {
- 		NL_SET_ERR_MSG(extack, "Internal error: failed get start time");
-@@ -866,6 +1117,8 @@ static void taprio_destroy(struct Qdisc *sch)
- 
- 	hrtimer_cancel(&q->advance_timer);
- 
-+	taprio_disable_offload(dev, q);
-+
- 	if (q->qdiscs) {
- 		for (i = 0; i < dev->num_tx_queues && q->qdiscs[i]; i++)
- 			qdisc_put(q->qdiscs[i]);
-@@ -895,6 +1148,9 @@ static int taprio_init(struct Qdisc *sch, struct nlattr *opt,
- 	hrtimer_init(&q->advance_timer, CLOCK_TAI, HRTIMER_MODE_ABS);
- 	q->advance_timer.function = advance_sched;
- 
-+	q->dequeue = taprio_dequeue_soft;
-+	q->peek = taprio_peek_soft;
-+
- 	q->root = sch;
- 
- 	/* We only support static clockids. Use an invalid value as default
-@@ -1080,6 +1336,9 @@ static int taprio_dump(struct Qdisc *sch, struct sk_buff *skb)
- 	if (nla_put_s32(skb, TCA_TAPRIO_ATTR_SCHED_CLOCKID, q->clockid))
- 		goto options_error;
- 
-+	if (nla_put_u32(skb, TCA_TAPRIO_ATTR_OFFLOAD_FLAGS, q->offload_flags))
-+		goto options_error;
-+
- 	if (oper && dump_schedule(skb, oper))
- 		goto options_error;
- 
+ const struct stmmac_tc_ops dwmac510_tc_ops = {
+ 	.init = tc_init,
+ 	.setup_cls_u32 = tc_setup_cls_u32,
+ 	.setup_cbs = tc_setup_cbs,
++	.setup_taprio = tc_setup_taprio,
+ };
 -- 
 1.9.1
 
