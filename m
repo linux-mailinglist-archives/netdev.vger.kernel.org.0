@@ -2,99 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 77CFB4971C
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 03:46:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8782F4972A
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 03:53:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727338AbfFRBqJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 21:46:09 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:45557 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726091AbfFRBqI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 21:46:08 -0400
-Received: by mail-ed1-f68.google.com with SMTP id a14so19010476edv.12;
-        Mon, 17 Jun 2019 18:46:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=hCsjQGiJ/7GDnkV2qpxf/QtLQthLwVtSs+DYwUa5jk8=;
-        b=HGDCbsFDI7LLKV3hHB3E1XrST8R8KCEkFk2FIomgo6oUnOkB8cq0vup6ospX8dwhAW
-         3ZTGKRbGX3E/DnrwXH/dUTSCxMkt+WBNIZ1vQ0bE7qdMbScLb7kGBewe58duFb7Gfj69
-         LznJy34U0P2h44aiQ1DxD/vb1KwVbffGqEc6Sl+51QWxZvQqoMIh27sBhbhRfYRM4ADO
-         22k0E8xOSvarx45kknuRLsAydvjvU5kpUIubzYpALdSZh8ufIPBdesCg0g1I63mt8AQu
-         5L0f90WGMcDLJ1OKzSxiDmbKJ+FYMntw7OZSBj/YZIFRaATPssP3hwZfHWSzebKoLUoM
-         zqyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=hCsjQGiJ/7GDnkV2qpxf/QtLQthLwVtSs+DYwUa5jk8=;
-        b=l0/X35ORcBIErbDcGBHKrk8hkDdqG1JalfbZu5Fj+KUcFAM6MpZcToSFnHuNTURhq9
-         Cnx4g4VbywI2gYpBiiwcN8uNQXkjdmdf+pyJGkp0VFZIbkiBojvQGS7mRbnekA/TP9Z6
-         O75hks9CfgtwgWGu+jpHY2H3Ip9l5am2VFDafGgymwAh+xHMx6EMPq0govTUdc8yfA4C
-         JtptQVEAZX0V9p4vo0YqkucZDmeNn4EGfP2IqXHF4l2qvqkFmlYCpUuPbZuXoemTR6WT
-         By2EKdW4KxQiQmD4t2zYjanhmXb6bEuTfTmptYONWdHj8KOGlCZS+WWS0v3Ihtb4UQkc
-         l+7Q==
-X-Gm-Message-State: APjAAAU3+9H7MIvk+As1KRjSR9nYVL2feZfHPiF+kupHryivrOAGLTGy
-        MLydoT316tF1I/66Qyi8GlM=
-X-Google-Smtp-Source: APXvYqyBmn6jjXjEvQ0g9uSunUAKnSmOBPkqp8jGMObGmSFfQYREM6TYXHsk0qz8+CWWF/gHFAdZpA==
-X-Received: by 2002:a50:fb0a:: with SMTP id d10mr41206347edq.124.1560822366854;
-        Mon, 17 Jun 2019 18:46:06 -0700 (PDT)
-Received: from archlinux-epyc ([2a01:4f9:2b:2b15::2])
-        by smtp.gmail.com with ESMTPSA id m31sm4306805edd.42.2019.06.17.18.46.05
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 17 Jun 2019 18:46:06 -0700 (PDT)
-Date:   Mon, 17 Jun 2019 18:46:04 -0700
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Shalom Toledo <shalomt@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Cc:     Petr Machata <petrm@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: arm32 build failure after 992aa864dca068554802a65a467a2640985cc213
-Message-ID: <20190618014604.GA17174@archlinux-epyc>
+        id S1726292AbfFRBxZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 21:53:25 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:35466 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726088AbfFRBxZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 17 Jun 2019 21:53:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=npsIcZKfycgIAiEwGdw9g2XfI8tUu7kcKJPmBU4VaZQ=; b=NgwBf+r/5H6byWz8hbuUd9nSdM
+        oCAimxT1hX7C7ZIwwIFzDTAVO7no2f9SGd2RuelhO0hUZxu4UnJ9F4lNHBr0Ox2ghd2DJveWRgfv4
+        C6+7dIhY9j+kA6738Np5DXCIdE4g4+ODvhUuqxBSPLoua4Ko1qjgMa9izRJdLeMkB4kQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hd3J7-0005Pp-3s; Tue, 18 Jun 2019 03:53:09 +0200
+Date:   Tue, 18 Jun 2019 03:53:09 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        netdev@vger.kernel.org, john@phrozen.org,
+        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org
+Subject: Re: [PATCH net-next 0/2] net: mediatek: Add MT7621 TRGMII mode
+ support
+Message-ID: <20190618015309.GA18088@lunn.ch>
+References: <20190616182010.18778-1-opensource@vdorst.com>
+ <20190617140223.GC25211@lunn.ch>
+ <20190617213312.Horde.fcb9-g80Zzfd-IMC8EQy50h@www.vdorst.com>
+ <20190617214428.GO17551@lunn.ch>
+ <20190617232004.Horde.mAVymZdeb9Jjf29W2PeOggU@www.vdorst.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190617232004.Horde.mAVymZdeb9Jjf29W2PeOggU@www.vdorst.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+> By adding some extra speed states in the code it seems to work.
+> 
+> +               if (state->speed == 1200)
+> +                       mcr |= PMCR_FORCE_SPEED_1000;
 
-A 32-bit ARM allyesconfig fails to link after commit 992aa864dca0
-("mlxsw: spectrum_ptp: Add implementation for physical hardware clock
-operations") because of 64-bit division:
+Hi René
 
-arm-linux-gnueabi-ld:
-drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.o: in function
-`mlxsw_sp1_ptp_phc_settime':
-spectrum_ptp.c:(.text+0x39c): undefined reference to `__aeabi_uldivmod'
+Is TRGMII always 1.2G? Or can you set it to 1000 or 1200? This
+PMCR_FORCE_SPEED_1000 feels wrong.
 
-The following diff fixes it but I have no idea if it is proper or not
-(hence reaching out before sending it, in case one of you has a more
-proper idea).
+> >We could consider adding 1200BaseT/Full?
+> 
+> I don't have any opinion about this.
+> It is great that it shows nicely in ethtool but I think supporting more
+> speeds in phy_speed_to_str() is enough.
+> 
+> Also you may want to add other SOCs trgmii ranges too:
+> - 1200BaseT/Full for mt7621 only
+> - 2000BaseT/Full for mt7623 and mt7683
+> - 2600BaseT/Full for mt7623 only
 
-Cheers,
-Nathan
+Are these standardised in any way? Or MTK proprietary?  Also, is the T
+in BaseT correct? These speeds work over copper cables? Or should we
+be talking about 1200BaseKX?
 
----
-
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
-index 2a9bbc90225e..65686f0b6834 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
-@@ -87,7 +87,7 @@ mlxsw_sp1_ptp_phc_settime(struct mlxsw_sp_ptp_clock *clock, u64 nsec)
-        u32 next_sec;
-        int err;
- 
--       next_sec = nsec / NSEC_PER_SEC + 1;
-+       next_sec = (u32)div64_u64(nsec, NSEC_PER_SEC + 1);
-        next_sec_in_nsec = next_sec * NSEC_PER_SEC;
- 
-        spin_lock(&clock->lock);
-
-
+   Thanks
+	Andrew
