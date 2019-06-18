@@ -2,117 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E628497EB
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 06:04:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A17A5497ED
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 06:08:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726233AbfFREEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 00:04:41 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:33066 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726171AbfFREEk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 00:04:40 -0400
-Received: by mail-lj1-f195.google.com with SMTP id h10so11571394ljg.0
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 21:04:39 -0700 (PDT)
+        id S1725913AbfFREIl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 00:08:41 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:40846 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725826AbfFREIl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 00:08:41 -0400
+Received: by mail-pl1-f194.google.com with SMTP id a93so5123420pla.7
+        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 21:08:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sJLmkVwnPans9/iuFpcwnbTM7EUsIIBXDTl8TGQaxjk=;
-        b=fNNVvfjLstujPCDm6U22v9kUb8V+ystPZzxjPsEpjTbMtRt6UZtFM3QfkWDyzAQMIW
-         E6KfxvJkYCAiMigfxeNfkJbvlgJdvzEEfyDNXcSQ4hGpsd9Yv0PN3VCeG9Syybma3zAA
-         YweVCf2jDX7KE7OToEgZ3Hm86et1Zzc1wT1rS2GKgDnXDs7wUV3rbSDjUKshW4DDBFiv
-         WiW8rczljYaGap+qcx/bFr34QWpznmS62Lv9HHybuJDuuqKHqJD4Khp833m98/pUJhJR
-         z/Wi3GOSjsiZFAWusKz/vCsNsKbGzD11ktzwf/VoHCT35CeFpX/vlTnPTD2hFmBTUNJt
-         WypA==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=dKrKCxF0RsiNuMGHoaZXRrGrN0Ri+A/IA8N+vAw2+tc=;
+        b=ea/eMCIYDGb6BtTOlmIfG5Do8Bag9htcUvq6qF3Lko5zo8xStHMTzo1+WTNxKm5UWN
+         RlnOOotKaYqH/Ffw3W36RbNsD5ZaT8H/fGO7g9ylXid065vj3QNg833ISgq61dPFLurq
+         H0JlXCaRvY+nxkcu47I1MYANoFNSvDj7Mp1lDVzBS7EQMZGA6nvMiNzD1o1rfjNou82u
+         qfnJ280KAhFvOgO2L0ru9f6YZCiHqySKckTu7fmKjKP4iE0FpJ3bVGxgD7iWh8z13d55
+         Zro5Eyk4q72KVstgM1TVywNk+w2J/yTwqVQxxbIjFbRk/6cXZJmZC4svUDSbcIWW3FQz
+         B4Mg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sJLmkVwnPans9/iuFpcwnbTM7EUsIIBXDTl8TGQaxjk=;
-        b=PlgvB7HNPamsmRJmhfQe/QyG3us9acVIVSiUaXX5+8lfvhem0DcLVtbmX7uJiKh00i
-         dMeyVWIU3GkcFz4cg3ywMDPgTJJBlyLe2bvzITPBlexXdQvFlcgThuZF9cZjNdwThym9
-         3ciG843HYSXBT1MgDUpOoojcb8MAIKG1VZTXDyg/86lMNTMqZ1U7UPJqetlxa/50Z88a
-         D7Yr8pjKmFzIzoSkHX4WkxGdO9yufQTkGzMsZElIRiid1W0RRc4UoFzSRCpZIHQc8iFl
-         tw6DJ5gl90drJH99oKN5Z74FDM10OUKb9B588aovKEMKi217evEK6PT0agcZODWKGIYj
-         cW6A==
-X-Gm-Message-State: APjAAAXI0sEEAz9qU+ZDgCgANF6NIMx/7dv0WVV8iWorrGU9PPEbrkLp
-        LhBrmx2/E1CnjqFJDm1qNZ8fFjMGoaYwe1qH+l03Ww==
-X-Google-Smtp-Source: APXvYqzHxAVSyFWFoE5KWadzgd5NrlnSBkdcYDfnoz898BtjOkb8yWEu0/Ss3PN8knMcABE84pxCcZt3rdAD2rwB66w=
-X-Received: by 2002:a2e:b047:: with SMTP id d7mr13909677ljl.8.1560830679001;
- Mon, 17 Jun 2019 21:04:39 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=dKrKCxF0RsiNuMGHoaZXRrGrN0Ri+A/IA8N+vAw2+tc=;
+        b=YK1yN/9oEwXApDMQfeWRLfS8fBMMzXbhWJOKU7JDeb6JDK8ybFJXnbJK7xAcIdbunX
+         vxexAZrHqHRyve7wNiunRq21oz8PoPHB45LtT5uUZ6O1HDlahhGtaqUIZWFp3k+ZthWz
+         VJLDmxN0Fn1Oc4eLZEZ40c4Nj3KqyW3HLZPD+EzAnDDJqRTMmujFvkSej4iisrZZyhBn
+         L9pOOY7C6bjn4ySTx58JlMJTa5Ozzi1ChhaStj7tqLXdy8CqcAmmzZVl/FqOKDM3qAyY
+         YgLGgtAVwAtubwcms1Jx9OcWYCw/TdiUaycCEK0neGxZqDHrrzT5WkwfEr9YW7h+zPdB
+         E/Yw==
+X-Gm-Message-State: APjAAAW1JLgV6GvLmFVqwAYSXBKuvhlI9b8pyVau6nWd6gw6YjDYLhxa
+        5nHwDke96N+GtwPM8Xp1E+k=
+X-Google-Smtp-Source: APXvYqzitUN3M0Ji0VB2KtNQ6sCQLI8KdUZYegMJY5I9jUllyOwBc20mfHK3RAIyT8gwI2CSNSeEBg==
+X-Received: by 2002:a17:902:8ec7:: with SMTP id x7mr35459279plo.224.1560830920762;
+        Mon, 17 Jun 2019 21:08:40 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-70.hsd1.ca.comcast.net. [73.241.150.70])
+        by smtp.gmail.com with ESMTPSA id u5sm12389299pgp.19.2019.06.17.21.08.38
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Mon, 17 Jun 2019 21:08:38 -0700 (PDT)
+Subject: Re: [PATCH net 2/4] tcp: tcp_fragment() should apply sane memory
+ limits
+To:     Christoph Paasch <christoph.paasch@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Looney <jtl@netflix.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Tyler Hicks <tyhicks@canonical.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Bruce Curtis <brucec@netflix.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Dustin Marquess <dmarquess@apple.com>
+References: <20190617170354.37770-1-edumazet@google.com>
+ <20190617170354.37770-3-edumazet@google.com>
+ <CALMXkpYVRxgeqarp4gnmX7GqYh1sWOAt6UaRFqYBOaaNFfZ5sw@mail.gmail.com>
+ <03cbcfdf-58a4-dbca-45b1-8b17f229fa1d@gmail.com>
+ <CALMXkpZ4isoXpFp_5=nVUcWrt5TofYVhpdAjv7LkCH7RFW1tYw@mail.gmail.com>
+ <aa0af451-5e7c-7d83-ef25-095a67cd23a1@gmail.com>
+ <CALMXkpYs8KN0DmXV+37grbS0Y4Q-DAM-_GVZy+qWi2dtV+cDPA@mail.gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <e072881f-a676-f98b-19fd-4eb3315ad0f3@gmail.com>
+Date:   Mon, 17 Jun 2019 21:08:37 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-References: <1560745167-9866-1-git-send-email-yash.shah@sifive.com>
- <1560745167-9866-3-git-send-email-yash.shah@sifive.com> <20190617155834.GK25211@lunn.ch>
-In-Reply-To: <20190617155834.GK25211@lunn.ch>
-From:   Yash Shah <yash.shah@sifive.com>
-Date:   Tue, 18 Jun 2019 09:34:02 +0530
-Message-ID: <CAJ2_jOEm1+HFewpvq6fdoHaTtghpnxkkz9LWTz3-xWJAtYp8-g@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] macb: Add support for SiFive FU540-C000
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     David Miller <davem@davemloft.net>, devicetree@vger.kernel.org,
-        netdev <netdev@vger.kernel.org>, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org, Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Palmer Dabbelt <palmer@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        =?UTF-8?Q?Petr_=C5=A0tetiar?= <ynezz@true.cz>,
-        Sachin Ghadi <sachin.ghadi@sifive.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CALMXkpYs8KN0DmXV+37grbS0Y4Q-DAM-_GVZy+qWi2dtV+cDPA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 17, 2019 at 9:28 PM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Mon, Jun 17, 2019 at 09:49:27AM +0530, Yash Shah wrote:
-...
-> >  static const struct macb_config at91sam9260_config = {
-> >       .caps = MACB_CAPS_USRIO_HAS_CLKEN | MACB_CAPS_USRIO_DEFAULT_IS_MII_GMII,
-> >       .clk_init = macb_clk_init,
-> > @@ -3992,6 +4112,9 @@ static int at91ether_init(struct platform_device *pdev)
-> >       { .compatible = "cdns,emac", .data = &emac_config },
-> >       { .compatible = "cdns,zynqmp-gem", .data = &zynqmp_config},
-> >       { .compatible = "cdns,zynq-gem", .data = &zynq_config },
-> > +#ifdef CONFIG_MACB_SIFIVE_FU540
-> > +     { .compatible = "sifive,fu540-macb", .data = &fu540_c000_config },
-> > +#endif
->
-> This #ifdef should not be needed.
->
-> >       { /* sentinel */ }
-> >  };
-> >  MODULE_DEVICE_TABLE(of, macb_dt_ids);
-> > @@ -4199,6 +4322,9 @@ static int macb_probe(struct platform_device *pdev)
-> >
-> >  err_disable_clocks:
-> >       clk_disable_unprepare(tx_clk);
-> > +#ifdef CONFIG_MACB_SIFIVE_FU540
-> > +     clk_unregister(tx_clk);
-> > +#endif
->
-> So long as tx_clk is NULL, you can call clk_unregister(). So please
-> remove the #ifdef.
->
->
-> >       clk_disable_unprepare(hclk);
-> >       clk_disable_unprepare(pclk);
-> >       clk_disable_unprepare(rx_clk);
-> > @@ -4233,6 +4359,9 @@ static int macb_remove(struct platform_device *pdev)
-> >               pm_runtime_dont_use_autosuspend(&pdev->dev);
-> >               if (!pm_runtime_suspended(&pdev->dev)) {
-> >                       clk_disable_unprepare(bp->tx_clk);
-> > +#ifdef CONFIG_MACB_SIFIVE_FU540
-> > +                     clk_unregister(bp->tx_clk);
-> > +#endif
->
-> Same here.
->
-> In general try to avoid #ifdef in C code.
 
-Will remove all the #ifdef in v3.
-Thanks for your comments.
 
-- Yash
+On 6/17/19 8:53 PM, Christoph Paasch wrote:
+> On Mon, Jun 17, 2019 at 8:44 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>>
+>>
+>>
+>> On 6/17/19 8:19 PM, Christoph Paasch wrote:
+>>>
+>>> Yes, this does the trick for my packetdrill-test.
+>>>
+>>> I wonder, is there a way we could end up in a situation where we can't
+>>> retransmit anymore?
+>>> For example, sk_wmem_queued has grown so much that the new test fails.
+>>> Then, if we legitimately need to fragment in __tcp_retransmit_skb() we
+>>> won't be able to do so. So we will never retransmit. And if no ACK
+>>> comes back in to make some room we are stuck, no?
+>>
+>> Well, RTO will eventually fire.
+> 
+> But even the RTO would have to go through __tcp_retransmit_skb(), and
+> let's say the MTU of the interface changed and thus we need to
+> fragment. tcp_fragment() would keep on failing then, no? Sure,
+> eventually we will ETIMEOUT but that's a long way to go.
+
+Also I want to point that normal skb split for not-yet transmitted skbs
+does not use tcp_fragment(), with one exception (the one you hit)
+
+Only the first skb in write queue can possibly have payload in skb->head
+and might go through tcp_fragment()
+
+Other splits will use tso_fragment() which does not enforce sk_wmem_queued limits (yet)
+
+So things like TLP should work.
