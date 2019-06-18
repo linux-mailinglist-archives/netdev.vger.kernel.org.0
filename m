@@ -2,121 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EFB64AC5E
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 22:57:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFCB74AC6D
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 22:58:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731062AbfFRUzn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 16:55:43 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:40707 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730696AbfFRUzn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 16:55:43 -0400
-Received: by mail-qk1-f196.google.com with SMTP id c70so9510297qkg.7;
-        Tue, 18 Jun 2019 13:55:42 -0700 (PDT)
+        id S1730614AbfFRU6g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 16:58:36 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:40801 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730102AbfFRU6f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 16:58:35 -0400
+Received: by mail-ot1-f66.google.com with SMTP id e8so15969250otl.7;
+        Tue, 18 Jun 2019 13:58:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eWOlIQpBoXx+dBn8lseeqeYMHmFuOji9HYHAzsBj+Yo=;
+        b=lTtpIIik85r71kD7QuF+ci8JCVP6HSQJwrWbglXjJOHHWVSCFPBaEzidFE1P1szIvW
+         uyN+6I3/3CeGSgDFBJSKpUqJ+bZFNFvPbIvkugH31w9jGgajx5rZp5S8eX2eafs3HYEA
+         z7U6sC9z6XhaKTgQ5usQK1k+KMV30FqPrWd0nyr/PzUKElTBMHWSdyA4/po+vihp3lhW
+         QIPsR7HmvZG6opDQNl9Y2AKrLZHeJHdKe8x+5iR/vZcdjXA6NKSdcsPeHuKrMnZ1e04i
+         M9hcai3YmZYBqE8NU7og9mjkzIv+vTOG6eYHIrGm5HsehFPmEkqhjr57nrOXc0aeskRk
+         SpNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=z9lpWmnxIWG+yn/Q8Kt9kwRJEp4w7nP1RsHOAevW2cM=;
-        b=Lx9Lm9CcnfKktj4As+zPwaFTt0OTeUrHAf77gSVInDvmQltvUYWM3kQAEdI1Lqq7W7
-         OQDotAMRlw26NGgIuudnjT+8LbOlXA+ru+sEaiyQLRx0JGfAAShJK59tKGq9VdeJk5x4
-         zq8iDS2x85Fb8QdyGBMXYlR7N0lh9EOoc3n+5MSyVWtXs5dGuH6BLRuWQNgpAQIZm/gc
-         77FJvxVtldaSQTzY3OPZslDGK0MZx471Sq2tvpUIv/UZ7qyw44E717BDpr0oVBHvP4Q4
-         gF2rSqXsx+5383F41tcTRr2t2rwWW1zJH0xkGokB0+iPQyYQ0X2/zOrgxI7U4i6pD8NS
-         RiAg==
-X-Gm-Message-State: APjAAAXTg+BMEMuYycDGfCEsKcBMNRAJVt352Tls34f7k2xXrGWQp8X7
-        5AZNRh79EcBpXvO6BcBSaHTzdqGsGWEzcEppbSM=
-X-Google-Smtp-Source: APXvYqzMQnj8mooGUNvWO59G0b2ABKwAdRoB6ahNoB3XWyhRG2+Kc2tlKvSqhoNGKyDN+miPCnbs/N9GlnSM6tCUpFo=
-X-Received: by 2002:a37:a4d3:: with SMTP id n202mr8318000qke.84.1560891341993;
- Tue, 18 Jun 2019 13:55:41 -0700 (PDT)
+        bh=eWOlIQpBoXx+dBn8lseeqeYMHmFuOji9HYHAzsBj+Yo=;
+        b=bmP/hPxqcDWrCOCipNHesGWbE1nusTlrqTutvqRqRrHi6lRgxm4L1cxcy6DAjKTB3n
+         eZtV/3hzHiSIHqPB25peN46tJayaRE/Ep+gfmSDQCbM3yD3Pp85PXnMLIO3vwkN0+9NO
+         E/d24MxtaEsVLScob86hcb0IcQSQACgXYc2i65MKBgvOgR56DVnjCn0+rNzCq3GI0Izj
+         BTghP6sFGOIeC6Gpk8u5pityUrg/drpWXI9hviRFGSvxgNT1XKyuhjnRx+qGPvaVnDas
+         bxK3h0gbZCYRGeGQhRjTypN9wdtkI9WvYSMXpjXsKyD1tx5mkduVcHaeK448Y6+lJWye
+         NHTw==
+X-Gm-Message-State: APjAAAX9UdpgD37f55mtCeDh7iv3kNkaB7WKGJmBUSpa4T8Vvoc4R9GB
+        YAcfdixE1mcHjsW8EkWRmLWXiBf0GvGzNgkDU3E=
+X-Google-Smtp-Source: APXvYqwkdc6hhspveBKMMLkcBtJO+FzMapbB2HHbr7srIo2djZJcZ+0uZld5b+z55f3sgyxFjDXdwUv6VaCslijIKmw=
+X-Received: by 2002:a9d:6405:: with SMTP id h5mr54059515otl.42.1560891514777;
+ Tue, 18 Jun 2019 13:58:34 -0700 (PDT)
 MIME-Version: 1.0
-References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
- <a94676381a5ca662c848f7a725562f721c43ce76.camel@sipsolutions.net>
- <CAK8P3a0kV-i7BJJ2X6C=5n65rSGfo8fUiC4J_G-+M8EctYKbkg@mail.gmail.com>
- <066e9b39f937586f0f922abf801351553ec2ba1d.camel@sipsolutions.net>
- <b3686626-e2d8-bc9c-6dd0-9ebb137715af@linaro.org> <b23a83c18055470c5308fcd1eed018056371fc1d.camel@sipsolutions.net>
- <CAK8P3a1FeUQR3pgoQxHoRK05JGORyR+TFATVQiijLWtFKTv6OQ@mail.gmail.com> <613cdfde488eb23d7207c7ba6258662702d04840.camel@sipsolutions.net>
-In-Reply-To: <613cdfde488eb23d7207c7ba6258662702d04840.camel@sipsolutions.net>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 18 Jun 2019 22:55:23 +0200
-Message-ID: <CAK8P3a2onXpxiE4y9PzRwuPM2dh=h_BKz7Eb0=LLPgBbZoK1bQ@mail.gmail.com>
-Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     Alex Elder <elder@linaro.org>, abhishek.esse@gmail.com,
-        Ben Chan <benchan@google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        cpratapa@codeaurora.org, David Miller <davem@davemloft.net>,
-        Dan Williams <dcbw@redhat.com>,
-        DTML <devicetree@vger.kernel.org>,
-        Eric Caruso <ejcaruso@google.com>, evgreen@chromium.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-arm-msm@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-soc@vger.kernel.org, Networking <netdev@vger.kernel.org>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        syadagir@codeaurora.org
+References: <5d089fb6.1c69fb81.4f92.9134@mx.google.com> <7hr27qdedo.fsf@baylibre.com>
+ <CAFBinCCrpQNU_JtL0SwEGbwWZ2Qy-b2m5rdjuE0__nDRORGTiQ@mail.gmail.com> <7d0a9da1-0b42-d4e9-0690-32d58a6d27de@collabora.com>
+In-Reply-To: <7d0a9da1-0b42-d4e9-0690-32d58a6d27de@collabora.com>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Tue, 18 Jun 2019 22:58:23 +0200
+Message-ID: <CAFBinCA7gMLJ=jPqgRgHcBABBvC7bWVt8VJhLZ5uN=03WL1UWQ@mail.gmail.com>
+Subject: Re: next/master boot bisection: next-20190617 on sun8i-h2-plus-orangepi-zero
+To:     Guillaume Tucker <guillaume.tucker@collabora.com>
+Cc:     Kevin Hilman <khilman@baylibre.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        tomeu.vizoso@collabora.com, mgalka@collabora.com,
+        broonie@kernel.org, matthew.hart@linaro.org,
+        enric.balletbo@collabora.com, Jose Abreu <joabreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 18, 2019 at 10:36 PM Johannes Berg
-<johannes@sipsolutions.net> wrote:
+Hi Guillaume,
+
+On Tue, Jun 18, 2019 at 10:53 PM Guillaume Tucker
+<guillaume.tucker@collabora.com> wrote:
 >
-> On Tue, 2019-06-18 at 21:59 +0200, Arnd Bergmann wrote:
+> On 18/06/2019 21:42, Martin Blumenstingl wrote:
+> > On Tue, Jun 18, 2019 at 6:53 PM Kevin Hilman <khilman@baylibre.com> wrote:
+> > [...]
+> >> This seems to have broken on several sunxi SoCs, but also a MIPS SoC
+> >> (pistachio_marduk):
+> >>
+> >> https://storage.kernelci.org/next/master/next-20190618/mips/pistachio_defconfig/gcc-8/lab-baylibre-seattle/boot-pistachio_marduk.html
+> > today I learned why initializing arrays on the stack is important
+> > too bad gcc didn't warn that I was about to shoot myself (or someone
+> > else) in the foot :/
 > >
-> > From my understanding, the ioctl interface would create the lower
-> > netdev after talking to the firmware, and then user space would use
-> > the rmnet interface to create a matching upper-level device for that.
-> > This is an artifact of the strong separation of ipa and rmnet in the
-> > code.
->
-> Huh. But if rmnet has muxing, and IPA supports that, why would you ever
-> need multiple lower netdevs?
-
-From my reading of the code, there is always exactly a 1:1 relationship
-between an rmnet netdev an an ipa netdev. rmnet does the encapsulation/
-decapsulation of the qmap data and forwards it to the ipa netdev,
-which then just passes data through between a hardware queue and
-its netdevice.
-
-[side note: on top of that, rmnet also does "aggregation", which may
- be a confusing term that only means transferring multiple frames
- at once]
-
-> > ipa definitely has multiple hardware queues, and the Alex'
-> > driver does implement  the data path on those, just not the
-> > configuration to enable them.
->
-> OK, but perhaps you don't actually have enough to use one for each
-> session?
-
-I'm lacking the terminology here, but what I understood was that
-the netdev and queue again map to a session.
-
-> > Guessing once more, I suspect the the XON/XOFF flow control
-> > was a workaround for the fact that rmnet and ipa have separate
-> > queues. The hardware channel on IPA may fill up, but user space
-> > talks to rmnet and still add more frames to it because it doesn't
-> > know IPA is busy.
+> > I just sent a fix: [0]
 > >
-> > Another possible explanation would be that this is actually
-> > forwarding state from the base station to tell the driver to
-> > stop sending data over the air.
+> > sorry for this issue and thanks to Kernel CI for even pointing out the
+> > offending commit (this makes things a lot easier than just yelling
+> > that "something is broken")
 >
-> Yeah, but if you actually have a hardware queue per upper netdev then
-> you don't really need this - you just stop the netdev queue when the
-> hardware queue is full, and you have flow control automatically.
+> Glad that helped :)
 >
-> So I really don't see any reason to have these messages going back and
-> forth unless you plan to have multiple sessions muxed on a single
-> hardware queue.
+> If you would be so kind as to credit our robot friend in your
+> patch, it'll be forever grateful:
+>
+>   Reported-by: "kernelci.org bot" <bot@kernelci.org>
+sure
+do you want me to re-send my other patch or should I just reply to it
+adding the Reported-by tag and hope that Dave will catch it when
+applying the patch?
+in either case: I did mention in the patch description that Kernel CI caught it
 
-Sure, I definitely understand what you mean, and I agree that would
-be the right way to do it. All I said is that this is not how it was done
-in rmnet (this was again my main concern about the rmnet design
-after I learned it was required for ipa) ;-)
+by the way: I didn't know how to credit the Kernel CI bot.
+syzbot / syzkaller makes that bit easy as it's mentioned in the
+generated email, see [0] for a (random) example
+have you considered adding the Reported-by to the generated email?
 
-     Arnd
+
+Martin
+
+
+[0] https://lkml.org/lkml/2019/4/19/638
