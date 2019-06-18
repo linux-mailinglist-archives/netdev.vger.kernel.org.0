@@ -2,93 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 389BA4A551
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 17:28:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 308EE4A56B
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 17:31:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729386AbfFRP2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 11:28:05 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:45591 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728982AbfFRP2F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 11:28:05 -0400
-Received: by mail-io1-f67.google.com with SMTP id e3so30666995ioc.12
-        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 08:28:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=kCg5TixV3kZtc727Mfv9yC2tysgzxF24OFRCZLS3NVM=;
-        b=AZ5OMNCi+splm/75iW/UCdmmKTRsKtaHKWC4qmYACTyVtua0bLWH/XhRdwQuA5t4bv
-         cgznmCzp1X7jrRA1jKVC+xlsqqHnEohLIxnkpxlxLSzQPvgwH5kQCuGP4Upiqifghmqg
-         EU1ezJwiL6Aa/f5jSACQmR/9GBnBwldF3u44SCWR5BpfHgoMHwTu+6ML0A2z2EvuWDSC
-         +WggDyEkyejmfcfgzNwjnjgMYqh/t+I78oZ0a0C9xpDSt2FKeh1eu4+yjqd+kjNVhij2
-         gDUD4TraAjadOM8l1KJ/a5zHYWlzAJGT93FzL1/LLTpwb3Kh8Dop8TkpXfvAL3ghti+X
-         4NOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=kCg5TixV3kZtc727Mfv9yC2tysgzxF24OFRCZLS3NVM=;
-        b=VwDarGwffMWWt+cL/FCsKyMWbbO666EoGw7ZqEH91UXtSVsuaHMMKjjPTrQh/8gNYQ
-         BbfnPjsV2zPxVJ5Wvmft70yF8OsBLqhKelAbYryLZioCUz4HSZQlbR46fIXjSdF9/tZV
-         FMprZ72fCBTqfKhVZmYCJDJFcsyEiitJiyxxy8+1nquA+/OQIYw+Swc11iaWx78Dxd9R
-         W0+cGsvXuji8i4Y8c0Wxz8tCCbRRFp18HibJrpg9ACqKMibsL6ZGM9iBIagjURaSY3E7
-         NmnqoxnnPHdUfFCOsJxsNrgdjyQY1Z73YDPO2UeFICsnSHcCyIBOyU3UjktTJxHENsTt
-         0hTg==
-X-Gm-Message-State: APjAAAWcYwOJhimr40uUw8gnDLYPjNDXlGgOUPVMbldpiQuOPw/cYmLh
-        /wmkrySM6HAp0EpuqlSFxtJY7hyZ
-X-Google-Smtp-Source: APXvYqy9jyvad1x6y/JEuFW5M5vOsyZ5ClBPAOCMBZaNLfJlA2rv4IOQ5O8qfnYzH7bB0uPdNOsTVg==
-X-Received: by 2002:a02:938f:: with SMTP id z15mr27504531jah.108.1560871685098;
-        Tue, 18 Jun 2019 08:28:05 -0700 (PDT)
-Received: from [172.16.99.114] (c-73-169-115-106.hsd1.co.comcast.net. [73.169.115.106])
-        by smtp.googlemail.com with ESMTPSA id y20sm12345420ion.77.2019.06.18.08.28.04
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 18 Jun 2019 08:28:04 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 15/16] ipv6: Stop sending in-kernel
- notifications for each nexthop
-To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com, alexpe@mellanox.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-References: <20190618151258.23023-1-idosch@idosch.org>
- <20190618151258.23023-16-idosch@idosch.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <d84bf20a-ee6d-0f15-7cad-ce1f013b7256@gmail.com>
-Date:   Tue, 18 Jun 2019 09:28:03 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        id S1729209AbfFRPbR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 11:31:17 -0400
+Received: from mail.us.es ([193.147.175.20]:45338 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729189AbfFRPbR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Jun 2019 11:31:17 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 807CF10328F
+        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 17:31:15 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 6F2D9DA705
+        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 17:31:15 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 6E82EDA702; Tue, 18 Jun 2019 17:31:15 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 596BBDA708;
+        Tue, 18 Jun 2019 17:31:13 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 18 Jun 2019 17:31:13 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 32A1C4265A31;
+        Tue, 18 Jun 2019 17:31:13 +0200 (CEST)
+Date:   Tue, 18 Jun 2019 17:31:12 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Stephen Suryaputra <ssuryaextr@gmail.com>
+Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH RESEND nf-next] netfilter: add support for matching IPv4
+ options
+Message-ID: <20190618153112.jwomdzit6mdawssi@salvia>
+References: <20190611120912.3825-1-ssuryaextr@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190618151258.23023-16-idosch@idosch.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190611120912.3825-1-ssuryaextr@gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/18/19 9:12 AM, Ido Schimmel wrote:
-> From: Ido Schimmel <idosch@mellanox.com>
-> 
-> Both listeners - mlxsw and netdevsim - of IPv6 FIB notifications are now
-> ready to handle IPv6 multipath notifications.
-> 
-> Therefore, stop ignoring such notifications in both drivers and stop
-> sending notification for each added / deleted nexthop.
-> 
-> v2:
-> * Remove 'multipath_rt' from 'struct fib6_entry_notifier_info'
-> 
-> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-> Acked-by: Jiri Pirko <jiri@mellanox.com>
-> ---
->  .../ethernet/mellanox/mlxsw/spectrum_router.c |  2 --
->  drivers/net/netdevsim/fib.c                   |  7 -----
->  include/net/ip6_fib.h                         |  1 -
->  net/ipv6/ip6_fib.c                            | 29 +++++++++++--------
->  4 files changed, 17 insertions(+), 22 deletions(-)
-> 
+On Tue, Jun 11, 2019 at 08:09:12AM -0400, Stephen Suryaputra wrote:
+[...]
+> diff --git a/net/netfilter/nft_exthdr.c b/net/netfilter/nft_exthdr.c
+> index a940c9fd9045..4155a32fade7 100644
+> --- a/net/netfilter/nft_exthdr.c
+> +++ b/net/netfilter/nft_exthdr.c
+> @@ -62,6 +62,125 @@ static void nft_exthdr_ipv6_eval(const struct nft_expr *expr,
+>  	regs->verdict.code = NFT_BREAK;
+>  }
+>  
+> +/* find the offset to specified option or the header beyond the options
+> + * if target < 0.
+> + *
+> + * If target header is found, its offset is set in *offset and return option
+> + * number. Otherwise, return negative error.
+> + *
+> + * If the first fragment doesn't contain the End of Options it is considered
+> + * invalid.
+> + */
+> +static int ipv4_find_option(struct net *net, struct sk_buff *skb,
+> +			    unsigned int *offset, int target,
+> +			    unsigned short *fragoff, int *flags)
 
-Reviewed-by: David Ahern <dsahern@gmail.com>
+flags is never used, please remove it.
 
+> +{
+> +	unsigned char optbuf[sizeof(struct ip_options) + 41];
 
+In other parts of the kernel this is + 40:
+
+net/ipv4/cipso_ipv4.c:  unsigned char optbuf[sizeof(struct ip_options) + 40];
+
+here it is + 41.
+
+> +	struct ip_options *opt = (struct ip_options *)optbuf;
+> +	struct iphdr *iph, _iph;
+> +	unsigned int start;
+> +	bool found = false;
+> +	__be32 info;
+> +	int optlen;
+> +
+> +	if (fragoff)
+> +		*fragoff = 0;
+
+fragoff is set and never used. Please, remove this parameter.
+
+> +	iph = skb_header_pointer(skb, 0, sizeof(_iph), &_iph);
+> +	if (!iph || iph->version != 4)
+> +		return -EBADMSG;
+> +	start = sizeof(struct iphdr);
+> +
+> +	optlen = iph->ihl * 4 - (int)sizeof(struct iphdr);
+> +	if (optlen <= 0)
+> +		return -ENOENT;
+> +
+> +	memset(opt, 0, sizeof(struct ip_options));
+> +	/* Copy the options since __ip_options_compile() modifies
+> +	 * the options. Get one byte beyond the option for target < 0
+
+How does this "one byte beyond the option" trick works?
+
+> +	 */
+> +	if (skb_copy_bits(skb, start, opt->__data, optlen + 1))
+> +		return -EBADMSG;
+> +	opt->optlen = optlen;
+> +
+> +	if (__ip_options_compile(net, opt, NULL, &info))
+> +		return -EBADMSG;
+> +
+> +	switch (target) {
+> +	case IPOPT_SSRR:
+> +	case IPOPT_LSRR:
+> +		if (!opt->srr)
+> +			break;
+> +		found = target == IPOPT_SSRR ? opt->is_strictroute :
+> +					       !opt->is_strictroute;
+> +		if (found)
+> +			*offset = opt->srr + start;
+> +		break;
+> +	case IPOPT_RR:
+> +		if (opt->rr)
+> +			break;
+> +		*offset = opt->rr + start;
+> +		found = true;
+> +		break;
+> +	case IPOPT_RA:
+> +		if (opt->router_alert)
+> +			break;
+> +		*offset = opt->router_alert + start;
+> +		found = true;
+> +		break;
+> +	default:
+> +		/* Either not supported or not a specific search, treated as
+> +		 * found
+> +		 */
+> +		found = true;
+> +		if (target >= 0) {
+> +			target = -EOPNOTSUPP;
+> +			break;
+> +		}
+> +		if (opt->end) {
+> +			*offset = opt->end + start;
+> +			target = IPOPT_END;
+
+May I ask, what's the purpose of IPOPT_END? :-)
+
+> +		} else {
+> +			/* Point to beyond the options. */
+> +			*offset = optlen + start;
+> +			target = opt->__data[optlen];
+> +		}
+> +	}
+> +	if (!found)
+> +		target = -ENOENT;
+> +	return target;
+
+nitpick: Probably replace code above.
+
+        return found ? target : -ENOENT;
+
+Apart from the above, this looks good to me.
+
+Thanks!
