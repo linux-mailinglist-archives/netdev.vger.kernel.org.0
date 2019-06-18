@@ -2,121 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 02A144A786
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 18:50:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A41874A7A3
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 18:52:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729774AbfFRQtz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 12:49:55 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:41821 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729472AbfFRQtz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 12:49:55 -0400
-Received: by mail-io1-f67.google.com with SMTP id w25so31341566ioc.8
-        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 09:49:55 -0700 (PDT)
+        id S1729878AbfFRQvw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 12:51:52 -0400
+Received: from mail-pl1-f175.google.com ([209.85.214.175]:45058 "EHLO
+        mail-pl1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729319AbfFRQvv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 12:51:51 -0400
+Received: by mail-pl1-f175.google.com with SMTP id bi6so5936237plb.12
+        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 09:51:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=J5nux9DmROYeE56s/BQAf6HcvIGxMJ51i9fQdjtJRGo=;
-        b=hqS5I/CprE/DXrjhB2RtBrF+oejKGdk3zNCPfvhEilNd8g6oS+9FCyeX5xoWyR95Pv
-         QXfQpUrDVSyyPbwMEGtN/Anc7PQkgQch9Ion+L5uVbaRRsodXcJAWiAUSSTp5br1+rqC
-         Nob53UB4jzbHqZydh8I42+TynMH/npouE7S2Z4PEOQ+I9MAAdV002tFiTkmYHOab8byS
-         jhMHwalM8OjU3wLxgs3gZ4IwWYogLkZl4yUaunnYG6H9SmzH9RHYFHwmJYqs59Dx7kzn
-         QlOSOVrA6U7UdmnKfYIHqVc7p0uQD/EUtAdDuexdd4hLamN0a9q8EEJCyuLh6ELLJcYO
-         G+oA==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=FlltVR/XsALb+JL+y43zL1E8EKO/23686wqaMw7nrDM=;
+        b=qQw8YSEWz6fylwKdPZbuQCh4hGX5F3mes+iiy6woz8BRf7P8X+E+dfFDk5Q2ZRqlWq
+         JIb889J3fUnIt4nim3XITn38pYhpvTwr3AsMVltxlmr7EpfflKo4jIX9x2CkPGyU9Q1T
+         jMIXgn2u7cysh6fbS8ci/MmIrlThkQ+zJZfQxnBLqTYs6KQGHxMIxucjoJfhH5usGk6f
+         CNJAXnlPLQEESrX19KgAHSbZWwPnMX0xeE1a4m3cVx6tOpRCSinT6oOI9nK8+XFDjeoC
+         hM0AmUGtiIXB/jd+uwOw8/J4/6uXES5RD+y7nHbAT5edSeXPZL1E5C6IbgM3pk8GULPt
+         Eq6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=J5nux9DmROYeE56s/BQAf6HcvIGxMJ51i9fQdjtJRGo=;
-        b=E7QDvR6qUaQbvFo2r5SY5/5dEWbhu1/BknHUmtTzlc/QyxkNXSc5fIRuyycE7+kNPe
-         lgLU9Zv8EnHw4KGGIOUdAyGJ+eFofDs2jyC47cNCgMgt+RclV9ocJSM0KzqSk8k7ljWE
-         pWLa8FNnm2fPvNIRrlP5kiabJlPzkVmC20knmQ6AedMCCuytouSJOy+6TEnlWBr+2JU9
-         L3P94z/w1ALPuHntVMW1q2jJtIt2k7xwYDygchymE8bvwOMGAqosriztmHBsbVgTUs04
-         lvg0qCGrQxAuhVLpMvG8bCA9rjXIQcUn+apoai171lS6Ve9ygpntPIbrb3Dn9zl62rCJ
-         ERlw==
-X-Gm-Message-State: APjAAAW1+0Ogcl+uQmPSNG6Z9FnGPk339Y7r5dTxwmH1uxBX9hbRgtWK
-        /dvFShI29q94ZsiLkWmP8/B9Kw==
-X-Google-Smtp-Source: APXvYqyQiMRJSW+WsgFrJq67pivLuHVMSleBEdiKqkJFj7YjDFmJQLp16dpykNpYQIUlonlZMP6LSA==
-X-Received: by 2002:a5d:9291:: with SMTP id s17mr3521902iom.10.1560876593344;
-        Tue, 18 Jun 2019 09:49:53 -0700 (PDT)
-Received: from [192.168.1.196] ([216.160.37.230])
-        by smtp.gmail.com with ESMTPSA id b6sm11518234iok.71.2019.06.18.09.49.52
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 18 Jun 2019 09:49:52 -0700 (PDT)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 11.5 \(3445.9.1\))
-Subject: Re: [PATCH v2 0/2] Add macb support for SiFive FU540-C000
-From:   Troy Benjegerdes <troy.benjegerdes@sifive.com>
-In-Reply-To: <CAAhSdy3zODw=JFaN=2F4K5-umihJDivLO8J8LBdkFkuZgzu41Q@mail.gmail.com>
-Date:   Tue, 18 Jun 2019 11:49:51 -0500
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        "palmer@sifive.com" <palmer@sifive.com>,
-        Alistair Francis <Alistair.Francis@wdc.com>,
-        "jamez@wit.com" <jamez@wit.com>,
-        "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "schwab@suse.de" <schwab@suse.de>,
-        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "aou@eecs.berkeley.edu" <aou@eecs.berkeley.edu>,
-        "sachin.ghadi@sifive.com" <sachin.ghadi@sifive.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ynezz@true.cz" <ynezz@true.cz>,
-        "yash.shah@sifive.com" <yash.shah@sifive.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        Atish Patra <atish.patra@wdc.com>,
-        Bin Meng <bmeng.cn@gmail.com>,
-        Lukas Auer <lukas.auer@aisec.fraunhofer.de>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <946B2B53-7A16-4B8D-8CB9-34EFFB9E84D6@sifive.com>
-References: <1560745167-9866-1-git-send-email-yash.shah@sifive.com>
- <mvmtvco62k9.fsf@suse.de>
- <alpine.DEB.2.21.9999.1906170252410.19994@viisi.sifive.com>
- <mvmpnnc5y49.fsf@suse.de>
- <alpine.DEB.2.21.9999.1906170305020.19994@viisi.sifive.com>
- <mvmh88o5xi5.fsf@suse.de>
- <alpine.DEB.2.21.9999.1906170419010.19994@viisi.sifive.com>
- <F48A4F7F-0B0D-4191-91AD-DC51686D1E78@sifive.com>
- <d2836a90b92f3522a398d57ab8555d08956a0d1f.camel@wdc.com>
- <alpine.DEB.2.21.9999.1906172019040.15057@viisi.sifive.com>
- <CAAhSdy3zODw=JFaN=2F4K5-umihJDivLO8J8LBdkFkuZgzu41Q@mail.gmail.com>
-To:     Anup Patel <anup@brainfault.org>
-X-Mailer: Apple Mail (2.3445.9.1)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=FlltVR/XsALb+JL+y43zL1E8EKO/23686wqaMw7nrDM=;
+        b=fMtyTI0gXuTXTbvQ7cZpu/WDTOu6SclZY/fuHy8DotV99A/FnhJsRqAQVWXwvTu4Cu
+         vgE9520W5JqO6InSFzXx1Tm/bE45+quIh555OcW/naKWxWxTADOSwSH8MQJA5FNsYFMf
+         eHJVWgmJt8Qa4mZlvzuX8CmriWZInQnQBTN8midMdaHLHhFJS6THEQA3VYOwcEXieTa/
+         2Sh0jjZenuh0IoZAY6k08pCl1sVjri9r2oAMkUqTXKn8P98t7Rg3wNP1rEOJMcj14+kN
+         RI+Fr3RNQzF96FC1mGpHFJczHKb2iwcxlOBBdGxGER8KXnIVxVEQLlYqxJKB3sITvWnR
+         bgIg==
+X-Gm-Message-State: APjAAAXjXAa9roBeGI1X+U7pc/rddkF+07C0u7+zqeP/+eQ+hM2Fi5kz
+        Ijc7TbeAp3ZDvBfC6ppOh4Sc6A==
+X-Google-Smtp-Source: APXvYqzXdzzCqU4+WWmyhrTT/BwhEe9Jl4njGcfsCfF9Wckc0YMWrSri3z1my0Q6BJo5CjT6xL/TTw==
+X-Received: by 2002:a17:902:7d8d:: with SMTP id a13mr2110361plm.98.1560876710919;
+        Tue, 18 Jun 2019 09:51:50 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id d5sm46075pgm.49.2019.06.18.09.51.50
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 18 Jun 2019 09:51:50 -0700 (PDT)
+Date:   Tue, 18 Jun 2019 09:51:44 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Denis Kirjanov <kda@linux-powerpc.org>
+Cc:     dledford@redhat.com, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, mkubecek@suse.cz
+Subject: Re: [iproute2] ipaddress: correctly print a VF hw address in the
+ IPoIB case
+Message-ID: <20190618095144.4ef794a9@hermes.lan>
+In-Reply-To: <20190615114056.100808-2-dkirjanov@suse.com>
+References: <20190615114056.100808-1-dkirjanov@suse.com>
+        <20190615114056.100808-2-dkirjanov@suse.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, 15 Jun 2019 13:40:56 +0200
+Denis Kirjanov <kda@linux-powerpc.org> wrote:
 
+> diff --git a/include/uapi/linux/netdevice.h b/include/uapi/linux/netdevice.h
+> index 86d961c9..aaa48818 100644
+> --- a/include/uapi/linux/netdevice.h
+> +++ b/include/uapi/linux/netdevice.h
+> @@ -30,7 +30,7 @@
+>  #include <linux/if_ether.h>
+>  #include <linux/if_packet.h>
+>  #include <linux/if_link.h>
+> -
+> +#include <linux/if_infiniband.h>
 
-> On Jun 18, 2019, at 4:32 AM, Anup Patel <anup@brainfault.org> wrote:
->=20
->> =
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/=
-?id=3D72296bde4f4207566872ee355950a59cbc29f852
+You can't modify kernel headers in iproute.
+These are updated by a script and your change will get overwritten.
 
-I added your patches, along with two of mine, and rebased them
-to the latest U-boot master, and put them on the =E2=80=98to-upstream=E2=80=
-=99 branch
-at https://github.com/sifive/u-boot/tree/to-upstream
-
-I am most interested in review of the patch that adds the DTS files
-from Linux to U-boot, along with a =E2=80=98-u-boot.dtsi=E2=80=99 file =
-which includes
-several extra things, most notably an ethernet entry [1] which does
-not match the new proposed changes for the MacB driver that Yash
-is working on.
-
-How close are we to consensus on the new =E2=80=9Csifive,fu540-macb=E2=80=9D=
-
-device tree entry format? Is this something that is stable enough to
-start basing some work in M-mode U-boot on yet, or do we expect
-more changes?
-
-[1] =
-https://github.com/sifive/u-boot/commit/35e4168e36139722f30143a0ca0aa8637d=
-d3ee04#diff-27d2d375ddac52f1bca71594075e1be4R93=
+I did go ahead and put if_link.h and if_infiniband.h in already.
