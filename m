@@ -2,150 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DBD44A523
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 17:20:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6BA14A51F
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 17:20:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729678AbfFRPUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 11:20:05 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:53148 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729038AbfFRPUE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Jun 2019 11:20:04 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 380AC882FF;
-        Tue, 18 Jun 2019 15:19:59 +0000 (UTC)
-Received: from carbon (ovpn-200-16.brq.redhat.com [10.40.200.16])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 10C364D1;
-        Tue, 18 Jun 2019 15:19:52 +0000 (UTC)
-Date:   Tue, 18 Jun 2019 17:19:51 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Cc:     Tariq Toukan <tariqt@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@toke.dk>,
-        "toshiaki.makita1@gmail.com" <toshiaki.makita1@gmail.com>,
-        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>,
-        "mcroce@redhat.com" <mcroce@redhat.com>, brouer@redhat.com
-Subject: Re: [PATCH net-next v1 08/11] xdp: tracking page_pool resources and
- safe removal
-Message-ID: <20190618171951.17128ed8@carbon>
-In-Reply-To: <20190618125431.GA5307@khorivan>
-References: <156045046024.29115.11802895015973488428.stgit@firesoul>
-        <156045052249.29115.2357668905441684019.stgit@firesoul>
-        <20190615093339.GB3771@khorivan>
-        <a02856c1-46e7-4691-6bb9-e0efb388981f@mellanox.com>
-        <20190618125431.GA5307@khorivan>
+        id S1729554AbfFRPT4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 11:19:56 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:41141 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728572AbfFRPT4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 11:19:56 -0400
+Received: by mail-io1-f65.google.com with SMTP id w25so30636385ioc.8
+        for <netdev@vger.kernel.org>; Tue, 18 Jun 2019 08:19:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=wEtu+zKt9aOYeCzxAQKVhku0Wtsy4qhw2dzfrbpYR7k=;
+        b=WPJ2aXQyUTaG9F0g7WOrQxAeD5aBmaekUTyNuXjzpUEkmtOTHixf7ExaJEs8nbonjM
+         xifRyEBLfQKGwhs3MlaC4bKAPFlqAD9NYFl45/CXImBiQ1st8wXU7SDK/W1dMU+oiJPl
+         XNC6CFwukq2C77LKWqGUL1TMnSnkqgoZFNC1W2IJ2/ZwSgUq38nTGsHsJcKp9Fn+kgqH
+         vo08Mxc4nR3VFaosjZyUgCZdUh//j9s5xOyoPOEUR9ly3j0lNYYZszJeQM3pvdch8OPP
+         HG356QycWHKVc1FtKbROTWnip5LQT+UoLohPKekrIyV92dXeSu1bS28WTgoAZ0nn+3mT
+         QyeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=wEtu+zKt9aOYeCzxAQKVhku0Wtsy4qhw2dzfrbpYR7k=;
+        b=ZUme6MIz6gRGbDRoSc0X3cxQLYiwuaAcOqoUvdC30OO8dXIz0c6MRKNcksO3vRHRHt
+         p9B6IBo47mrGufd98nkyG6+I/vYK5L9p8dfJVAElveR6j+B5fyvoOJaQdtcoyT0XVlk3
+         0+NER2IUd8+NkiCuPLkt61Tewhu9vODj3a3RNNpSKoXY2fJMwIGnUjI4r4vAEo2i4YjF
+         IVbIkgNoHQlbAuCR7VMeUv6pndja8vLrkyUF09+JKoJEKndemFx48u//MSIgvvjbfZWJ
+         EcAmCPeFrXRR6cpxFKCu8iU0QAW4EqgEE/NRy/l27PRNECcm7pbrFC2smGE9ty+DOOfI
+         UxKg==
+X-Gm-Message-State: APjAAAVD7mBwtcjm8d3pvveD8SSWQbctb5Gh5ovyoV5p2Q2MXkhzUdXg
+        che7xfZlovgUng8DNEV9R53f+TVE
+X-Google-Smtp-Source: APXvYqzRC2zr1TAsTQ366KP6M2Rg7gzoA0Ef4I+I9I2XUQ2CaO5ntzXmHsfiYq370dlpIDVwMJLJzQ==
+X-Received: by 2002:a5d:9416:: with SMTP id v22mr2119709ion.4.1560871194953;
+        Tue, 18 Jun 2019 08:19:54 -0700 (PDT)
+Received: from ?IPv6:2601:282:800:fd80:fd97:2a7b:2975:7041? ([2601:282:800:fd80:fd97:2a7b:2975:7041])
+        by smtp.googlemail.com with ESMTPSA id t133sm30848562iof.21.2019.06.18.08.19.53
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 18 Jun 2019 08:19:54 -0700 (PDT)
+Subject: Re: [PATCH net v5 5/6] ipv6: Dump route exceptions if requested
+To:     Stefano Brivio <sbrivio@redhat.com>,
+        David Miller <davem@davemloft.net>
+Cc:     Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        netdev@vger.kernel.org
+References: <cover.1560827176.git.sbrivio@redhat.com>
+ <364403cca3d7836557f8ffe83c9c48b436be76eb.1560827176.git.sbrivio@redhat.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <333b0a08-07dd-3c70-1268-2d9eb5646564@gmail.com>
+Date:   Tue, 18 Jun 2019 09:19:53 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <364403cca3d7836557f8ffe83c9c48b436be76eb.1560827176.git.sbrivio@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.28]); Tue, 18 Jun 2019 15:20:04 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 6/18/19 7:20 AM, Stefano Brivio wrote:
+> diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+> index 0f60eb3a2873..7375f3b7d310 100644
+> --- a/net/ipv6/route.c
+> +++ b/net/ipv6/route.c
+> @@ -4854,33 +4854,94 @@ static bool fib6_info_uses_dev(const struct fib6_info *f6i,
+>  	return false;
+>  }
+>  
+> -int rt6_dump_route(struct fib6_info *rt, void *p_arg)
+> +/* Return -1 if done with node, number of handled routes on partial dump */
+> +int rt6_dump_route(struct fib6_info *rt, void *p_arg, unsigned int skip)
 
-On Tue, 18 Jun 2019 15:54:33 +0300 Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
+Changing the return code of rt6_dump_route should be a separate patch.
 
-> On Sun, Jun 16, 2019 at 10:56:25AM +0000, Tariq Toukan wrote:
-> >
-> >On 6/15/2019 12:33 PM, Ivan Khoronzhuk wrote:  
-> >> On Thu, Jun 13, 2019 at 08:28:42PM +0200, Jesper Dangaard Brouer wrote:
-[...]
-> >>
-> >> What would you recommend to do for the following situation:
-> >>
-> >> Same receive queue is shared between 2 network devices. The receive ring is
-> >> filled by pages from page_pool, but you don't know the actual port (ndev)
-> >> filling this ring, because a device is recognized only after packet is
-> >> received.
-> >>
-> >> The API is so that xdp rxq is bind to network device, each frame has
-> >> reference
-> >> on it, so rxq ndev must be static. That means each netdev has it's own rxq
-> >> instance even no need in it. Thus, after your changes, page must be
-> >> returned to
-> >> the pool it was taken from, or released from old pool and recycled in
-> >> new one
-> >> somehow.
-> >>
-> >> And that is inconvenience at least. It's hard to move pages between
-> >> pools w/o performance penalty. No way to use common pool either,
-> >> as unreg_rxq now drops the pool and 2 rxqa can't reference same
-> >> pool. 
-> >
-> >Within the single netdev, separate page_pool instances are anyway
-> >created for different RX rings, working under different NAPI's.  
+
+>  {
+>  	struct rt6_rtnl_dump_arg *arg = (struct rt6_rtnl_dump_arg *) p_arg;
+>  	struct fib_dump_filter *filter = &arg->filter;
+> +	struct rt6_exception_bucket *bucket;
+>  	unsigned int flags = NLM_F_MULTI;
+> +	struct rt6_exception *rt6_ex;
+>  	struct net *net = arg->net;
+> +	int i, count = 0;
+>  
+>  	if (rt == net->ipv6.fib6_null_entry)
+> -		return 0;
+> +		return -1;
+>  
+>  	if ((filter->flags & RTM_F_PREFIX) &&
+>  	    !(rt->fib6_flags & RTF_PREFIX_RT)) {
+>  		/* success since this is not a prefix route */
+> -		return 1;
+> +		return -1;
+>  	}
+> -	if (filter->filter_set) {
+> -		if ((filter->rt_type && rt->fib6_type != filter->rt_type) ||
+> -		    (filter->dev && !fib6_info_uses_dev(rt, filter->dev)) ||
+> -		    (filter->protocol && rt->fib6_protocol != filter->protocol)) {
+> -			return 1;
+> -		}
+> +	if (filter->filter_set &&
+> +	    ((filter->rt_type  && rt->fib6_type != filter->rt_type) ||
+> +	     (filter->dev      && !fib6_info_uses_dev(rt, filter->dev)) ||
+> +	     (filter->protocol && rt->fib6_protocol != filter->protocol))) {
+> +		return -1;
+> +	}
+> +
+> +	if (filter->filter_set ||
+> +	    !filter->dump_routes || !filter->dump_exceptions) {
+>  		flags |= NLM_F_DUMP_FILTERED;
+>  	}
+>  
+> -	return rt6_fill_node(net, arg->skb, rt, NULL, NULL, NULL, 0,
+> -			     RTM_NEWROUTE, NETLINK_CB(arg->cb->skb).portid,
+> -			     arg->cb->nlh->nlmsg_seq, flags);
+> +	if (filter->dump_routes) {
+> +		if (skip) {
+> +			skip--;
+> +		} else {
+> +			if (rt6_fill_node(net, arg->skb, rt, NULL, NULL, NULL,
+> +					  0, RTM_NEWROUTE,
+> +					  NETLINK_CB(arg->cb->skb).portid,
+> +					  arg->cb->nlh->nlmsg_seq, flags)) {
+> +				return 0;
+> +			}
+> +			count++;
+> +		}
+> +	}
+> +
+> +	if (!filter->dump_exceptions)
+> +		return -1;
+> +
+
+And the dump of the exception bucket should be a standalone function.
+You will see why with net-next (it is per fib6_nh).
+
+> +	bucket = rcu_dereference(rt->rt6i_exception_bucket);
+> +	if (!bucket)
+> +		return -1;
+> +
+> +	for (i = 0; i < FIB6_EXCEPTION_BUCKET_SIZE; i++) {
+> +		hlist_for_each_entry(rt6_ex, &bucket->chain, hlist) {
+> +			if (skip) {
+> +				skip--;
+> +				continue;
+> +			}
+> +
+> +			/* Expiration of entries doesn't bump sernum, insertion
+> +			 * does. Removal is triggered by insertion, so we can
+> +			 * rely on the fact that if entries change between two
+> +			 * partial dumps, this node is scanned again completely,
+> +			 * see rt6_insert_exception() and fib6_dump_table().
+> +			 *
+> +			 * Count expired entries we go through as handled
+> +			 * entries that we'll skip next time, in case of partial
+> +			 * node dump. Otherwise, if entries expire meanwhile,
+> +			 * we'll skip the wrong amount.
+> +			 */
+> +			if (rt6_check_expired(rt6_ex->rt6i)) {
+> +				count++;
+> +				continue;
+> +			}
+> +
+> +			if (rt6_fill_node(net, arg->skb, rt, &rt6_ex->rt6i->dst,
+> +					  NULL, NULL, 0, RTM_NEWROUTE,
+> +					  NETLINK_CB(arg->cb->skb).portid,
+> +					  arg->cb->nlh->nlmsg_seq, flags)) {
+> +				return count;
+> +			}
+> +
+> +			count++;
+> +		}
+> +		bucket++;
+> +	}
+> +
+> +	return -1;
+>  }
+>  
+>  static int inet6_rtm_valid_getroute_req(struct sk_buff *skb,
 > 
-> The circumstances are so that same RX ring is shared between 2
-> netdevs... and netdev can be known only after descriptor/packet is
-> received. Thus, while filling RX ring, there is no actual device,
-> but when packet is received it has to be recycled to appropriate
-> net device pool. Before this change there were no difference from
-> which pool the page was allocated to fill RX ring, as there were no
-> owner. After this change there is owner - netdev page pool.
 
-It not really a dependency added in this patchset.  A page_pool is
-strictly bound to a single RX-queue, for performance, as this allow us
-a NAPI fast-path return used for early drop (XDP_DROP).
-
-I can see that the API xdp_rxq_info_reg_mem_model() make it possible to
-call it on different xdp_rxq_info structs with the same page_pool
-pointer.  But it was never intended to be used like that, and I
-consider it an API usage violation.  I originally wanted to add the
-allocator pointer to xdp_rxq_info_reg() call, but the API was extended
-in different versions, so I didn't want to break users.  I've actually
-tried hard to catch when drivers use the API wrong, via WARN(), but I
-guess you found a loop hole.
-
-Besides, we already have a dependency from the RX-queue to the netdev
-in the xdp_rxq_info structure.  E.g. the xdp_rxq_info->dev is sort of
-central, and dereferenced by BPF-code to read xdp_md->ingress_ifindex,
-and also used by cpumap when creating SKBs.
-
-
-> For cpsw the dma unmap is common for both netdevs and no difference
-> who is freeing the page, but there is difference which pool it's
-> freed to.
-> 
-> So that, while filling RX ring the page is taken from page pool of
-> ndev1, but packet is received for ndev2, it has to be later
-> returned/recycled to page pool of ndev1, but when xdp buffer is
-> handed over to xdp prog the xdp_rxq_info has reference on ndev2 ...
->
-> And no way to predict the final ndev before packet is received, so no
-> way to choose appropriate page pool as now it becomes page owner.
-> 
-> So, while RX ring filling, the page/dma recycling is needed but should
-> be some way to identify page owner only after receiving packet.
-> 
-> Roughly speaking, something like:
-> 
-> pool->pages_state_hold_cnt++;
-> 
-> outside of page allocation API, after packet is received.
-
-Don't EVER manipulate the internal state outside of page allocation
-API.  That kills the purpose of defining any API.
-
-> and free of the counter while allocation (w/o owing the page).
-
-You use-case of two netdev's sharing the same RX-queue sounds dubious,
-and very hardware specific.  I'm not sure why we want to bend the APIs
-to support this?
- If we had to allow page_pool to be registered twice, via
-xdp_rxq_info_reg_mem_model() then I guess we could extend page_pool
-with a usage/users reference count, and then only really free the
-page_pool when refcnt reach zero.  But it just seems and looks wrong
-(in the code) as the hole trick to get performance is to only have one
-user.
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
