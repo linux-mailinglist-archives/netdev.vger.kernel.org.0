@@ -2,109 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DDB3A4A6EC
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 18:31:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB83A4A723
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 18:38:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729774AbfFRQbX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 12:31:23 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:39192 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729319AbfFRQbW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 12:31:22 -0400
-Received: by mail-pg1-f193.google.com with SMTP id 196so7983070pgc.6;
-        Tue, 18 Jun 2019 09:31:22 -0700 (PDT)
+        id S1730005AbfFRQiL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 12:38:11 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:46594 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729349AbfFRQiL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 12:38:11 -0400
+Received: by mail-ed1-f66.google.com with SMTP id d4so22613605edr.13;
+        Tue, 18 Jun 2019 09:38:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=WtfrveQ0bUvGWi+775oMSKdo/rRpDj0TtPUP6WR2xho=;
-        b=k7URCFdM7+EN3pMgCqRGsJyXpqc9QY4r6Cjvy8BO8QFs9Hs1/movCJlaXfGuHmoTn2
-         uZmTYE8kgQ5zAVLZGwWXB+KKRtN3hs2jLnGs8MHPWDpder5gGkHmM01H/yZ1sgJkkC28
-         tKRZZcqH1IbWzkP1YJXE0ZY48y9uEhwYU8ljC4G9fz8noeu/97vNR6ffmWBqEt2uGNJJ
-         x955YBhxHyjAfWHO4rVplduxhmPqOTftXY3EasG/r/++cJdtda1PRHnsbfN15KOevyLU
-         QtdKHKQbQzQ/HUMoqIl85Dit9KnralCJNolQijCJGibejexx7pVk4NUY5t0htvpTggky
-         8vPw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jXvYZkP3QgcqTxDSuncKgo4ShXluNam18sSbFv5z5xQ=;
+        b=aqBX0fp2a5KdzVqzyq88Qk4VrNCAp8+J6RpZE5ov+uxD89jHzVXUWhbsp5un/nw7s4
+         WHy7YH2Lf528kIC9QWinidXkZUMYkpmhxFwuW3nyjfvdo/PTPz6ywVz9REjup6lLTmn5
+         TAayu7vmEnQ0Wq0owMSpG5v/eRq8JezKJeF56TNsJn5FGiAGO7+IivzCe5V//Jw25bp7
+         NTnDqKJqXQTiqdMSSJRpvwkIerLwk2MWQos+WP0YQzRmNek2qBCcJXmKww8bDT8k0T0m
+         Y9l/f1tsoCJQH2qyyo3yUyG7xQBY8nelnODKBWckIb8z2cJs2CqUiNE8M9GRC53kBCRb
+         ioPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=WtfrveQ0bUvGWi+775oMSKdo/rRpDj0TtPUP6WR2xho=;
-        b=pX9OzfAo27vriJwRUQit5JW8VADhAh8GTppiqgK2OimwL3Quj9/oyX5DONVTdlUjvu
-         pvzfPLqqrfkBU6k1e2m1z78agSEQIZ/1JXxtxJbR+7T8NbalZ/zAs0qCTlr0xdwwiSzm
-         Zd3SdB5+bP/aAR1wuQQ36Apcf/Pxaz9CBGIv2wzGQ8wrsS7d6ogLSEeF2IYZRNeQroBM
-         An6lOKeIMikUlGFcZAOH4WkLSikxhkCWIkZ3pharUoJb/b9MUlejaaOlVHV1vjwVS/k6
-         IAjkWaRkZ708f1HbZdGzGU51Ggxfr4bxFJLOX2OAamfE2OZvUc242bhruQ/KABlDQw56
-         DtOg==
-X-Gm-Message-State: APjAAAWV4qB+kwlgQS2OBM2nToO5CRDijkdl2jyfjSoKX59AVjCDlWhL
-        3dajlBx1Le+7da5u2ky4Ppw=
-X-Google-Smtp-Source: APXvYqzrWHEe11DhVkVNZWOwq/uYPHhgjgA5ECFnpdyqA0m1tOrWAJ3hBKrzk5cDHnLBRi2p2yLu9Q==
-X-Received: by 2002:a63:31c7:: with SMTP id x190mr3462393pgx.376.1560875481657;
-        Tue, 18 Jun 2019 09:31:21 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::3:ae73])
-        by smtp.gmail.com with ESMTPSA id e22sm15888266pgb.9.2019.06.18.09.31.20
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 18 Jun 2019 09:31:20 -0700 (PDT)
-Date:   Tue, 18 Jun 2019 09:31:19 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        ast@kernel.org, daniel@iogearbox.net, Martin Lau <kafai@fb.com>
-Subject: Re: [PATCH bpf-next v6 1/9] bpf: implement getsockopt and setsockopt
- hooks
-Message-ID: <20190618163117.yuw44b24lo6prsrz@ast-mbp.dhcp.thefacebook.com>
-References: <20190617180109.34950-1-sdf@google.com>
- <20190617180109.34950-2-sdf@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jXvYZkP3QgcqTxDSuncKgo4ShXluNam18sSbFv5z5xQ=;
+        b=NVGBgIimjXr4k3cSNJFpe6YHxJK2R7wxFgHsI7Ia8S9OHiCZY9dXiXCGTcWOYntqDh
+         eqZvp3fvJX45U8P97l6P4f/J3IXe9wnxpidv6Ha2tZj2xmZgL+zTHYV8lQ0r7wC+u3kp
+         91TlQpAOur7JHJBKCcz5AuWXfS7TSAye7VmVTV0Q+7aAnOufbRSfL9uUXMrkefuYKmxt
+         ymJ5Sbl/Z1X4FYg+LeY4h8jtRh0naBf8vw7dBnsUHY49gKubZRK/2vSojNmk8Pkckl2o
+         LgkD19Kj4fBQkHSwzyYLE6jJeAlwZ6NffhCyV5/ZrjuU/r9b4J7N57KIj89X1DW7OVIO
+         od3w==
+X-Gm-Message-State: APjAAAW/g5E8qfmtOytwRQMj9M+0mDTQ29cs8W4XCeq2tVRcAOAya69T
+        2O6j/JX6/r1t72X12IpgyoNAv7YHJrTrvizk3HT4tQ==
+X-Google-Smtp-Source: APXvYqw9pH+6wam8u8vh6qWJbTBhm1QeTozsFqj2bAghBHPIFlFM+3Jo3Umal/5U93AZZRzO8XGL3Im4JLIhd+6rzbI=
+X-Received: by 2002:a17:906:2acf:: with SMTP id m15mr101493524eje.31.1560875889268;
+ Tue, 18 Jun 2019 09:38:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190617180109.34950-2-sdf@google.com>
-User-Agent: NeoMutt/20180223
+References: <CA+G9fYs2+-yeYcx7oe228oo9GfDgTuPL1=TemT3R20tzCmcjsw@mail.gmail.com>
+ <CA+FuTSfBFqRViKfG5crEv8xLMgAkp3cZ+yeuELK5TVv61xT=Yw@mail.gmail.com> <20190618161036.GA28190@kroah.com>
+In-Reply-To: <20190618161036.GA28190@kroah.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 18 Jun 2019 12:37:33 -0400
+Message-ID: <CAF=yD-JnTHdDE8K-EaJM2fH9awvjAmOJkoZbtU+Wi58pPnyAxw@mail.gmail.com>
+Subject: Re: 4.19: udpgso_bench_tx: setsockopt zerocopy: Unknown error 524
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Fred Klassen <fklassen@appneta.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 17, 2019 at 11:01:01AM -0700, Stanislav Fomichev wrote:
-> Implement new BPF_PROG_TYPE_CGROUP_SOCKOPT program type and
-> BPF_CGROUP_{G,S}ETSOCKOPT cgroup hooks.
-> 
-> BPF_CGROUP_SETSOCKOPT get a read-only view of the setsockopt arguments.
-> BPF_CGROUP_GETSOCKOPT can modify the supplied buffer.
-> Both of them reuse existing PTR_TO_PACKET{,_END} infrastructure.
-> 
-> The buffer memory is pre-allocated (because I don't think there is
-> a precedent for working with __user memory from bpf). This might be
-> slow to do for each {s,g}etsockopt call, that's why I've added
-> __cgroup_bpf_prog_array_is_empty that exits early if there is nothing
-> attached to a cgroup. Note, however, that there is a race between
-> __cgroup_bpf_prog_array_is_empty and BPF_PROG_RUN_ARRAY where cgroup
-> program layout might have changed; this should not be a problem
-> because in general there is a race between multiple calls to
-> {s,g}etsocktop and user adding/removing bpf progs from a cgroup.
-> 
-> The return code of the BPF program is handled as follows:
-> * 0: EPERM
-> * 1: success, execute kernel {s,g}etsockopt path after BPF prog exits
-> * 2: success, do _not_ execute kernel {s,g}etsockopt path after BPF
->      prog exits
-> 
-> Note that if 0 or 2 is returned from BPF program, no further BPF program
-> in the cgroup hierarchy is executed. This is in contrast with any existing
-> per-cgroup BPF attach_type.
+On Tue, Jun 18, 2019 at 12:10 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+>
+> On Tue, Jun 18, 2019 at 08:31:16AM -0400, Willem de Bruijn wrote:
+> > On Tue, Jun 18, 2019 at 7:27 AM Naresh Kamboju
+> > <naresh.kamboju@linaro.org> wrote:
+> > >
+> > > selftests: net: udpgso_bench.sh failed on 4.19, 4.14, 4.9 and 4.4 branches.
+> > > PASS on stable branch 5.1, mainline and next.
+> > > This failure is started happening on 4.19 and older kernel branches after
+> > > kselftest upgrade to version 5.1
+> >
+> > Does version 5.1 here mean running tests from Linux 5.1, against older kernels?
+> >
+> > > Is there any possibilities to backport ?
+> > >
+> > > Error:
+> > > udpgso_bench_tx: setsockopt zerocopy: Unknown error 524
+> >
+> > MSG_ZEROCOPY for UDP was added in commit b5947e5d1e71 ("udp:
+> > msg_zerocopy") in Linux 5.0.
+> >
+> > The selftest was expanded with this feature in commit db63e489c7aa
+> > ("selftests: extend zerocopy tests to udp"), also in Linux 5.0.
+> >
+> > Those tests are not expected to pass on older kernels.
+>
+> Any way to degrade gracefully if the feature is not present at all in
+> the kernel under test?  People run the latest version of kselftests on
+> older kernels all the time.
 
-This is drastically different from all other cgroup-bpf progs.
-I think all programs should be executed regardless of return code.
-It seems to me that 1 vs 2 difference can be expressed via bpf program logic
-instead of return code.
+We add new tests along with new features and bug fixes all the time.
+All of those will fail on older kernels, as expected.
 
-How about we do what all other cgroup-bpf progs do:
-"any no is no. all yes is yes"
-Meaning any ret=0 - EPERM back to user.
-If all are ret=1 - kernel handles get/set.
+I'm honestly surprised to hear that we run newer tests against older
+kernels. Is the idea to validate fixes in stable branches? If so,
+should we instead backport the relevant tests to those stable
+branches? Only the tests that verify fixes, leaving out those for new
+features, of course.
 
-I think the desire to differentiate 1 vs 2 came from ordering issue
-on getsockopt.
-How about for setsockopt all progs run first and then kernel.
-For getsockopt kernel runs first and then all progs.
-Then progs will have an ability to overwrite anything the kernel returns.
-
+Specific to the above test, I can add a check command testing
+setsockopt SO_ZEROCOPY  return value. AFAIK kselftest has no explicit
+way to denote "skipped", so this would just return "pass". Sounds a
+bit fragile, passing success when a feature is absent.
