@@ -2,123 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E26249E1E
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 12:19:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8361049E21
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 12:19:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728945AbfFRKTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 06:19:02 -0400
-Received: from hqemgate16.nvidia.com ([216.228.121.65]:3961 "EHLO
-        hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725934AbfFRKTB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 06:19:01 -0400
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate16.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5d08ba940000>; Tue, 18 Jun 2019 03:19:00 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Tue, 18 Jun 2019 03:19:00 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Tue, 18 Jun 2019 03:19:00 -0700
-Received: from [10.21.132.148] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 18 Jun
- 2019 10:18:55 +0000
-Subject: Re: [PATCH net-next 3/3] net: stmmac: Convert to phylink and remove
- phylib logic
-To:     Jose Abreu <Jose.Abreu@synopsys.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Joao Pinto <Joao.Pinto@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        linux-tegra <linux-tegra@vger.kernel.org>
-References: <cover.1560266175.git.joabreu@synopsys.com>
- <6226d6a0de5929ed07d64b20472c52a86e71383d.1560266175.git.joabreu@synopsys.com>
- <d9ffce3d-4827-fa4a-89e8-0492c4bc1848@nvidia.com>
- <78EB27739596EE489E55E81C33FEC33A0B9C8D6E@DE02WEMBXB.internal.synopsys.com>
- <26cfaeff-a310-3b79-5b57-fd9c93bd8929@nvidia.com>
- <78EB27739596EE489E55E81C33FEC33A0B9C8DD9@DE02WEMBXB.internal.synopsys.com>
-From:   Jon Hunter <jonathanh@nvidia.com>
-Message-ID: <b66c7578-172f-4443-f4c3-411525e28738@nvidia.com>
-Date:   Tue, 18 Jun 2019 11:18:53 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
-MIME-Version: 1.0
-In-Reply-To: <78EB27739596EE489E55E81C33FEC33A0B9C8DD9@DE02WEMBXB.internal.synopsys.com>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL108.nvidia.com (172.18.146.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"
+        id S1729147AbfFRKTk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 06:19:40 -0400
+Received: from mail-eopbgr10062.outbound.protection.outlook.com ([40.107.1.62]:15294
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725934AbfFRKTk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Jun 2019 06:19:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IHHgmcHeV+yHP/i5GVfIh5VN4UeNC8IKsoOqzdkrN+8=;
+ b=nnS9NKUevDHU0+eSUrgJnmlHSMsJt4ywLADshNRcHyV9ARnuBpvmIBN2DaUaeBHGQ/jXlsq6aKQ2fAeo4HBlBE9InF44XfiawsTBHrKIIJqON9/AZtZ750Y81Oi+q8n6HBMIYqaqV3JFGsfZVrE0Sw1acA2ayDdpC4Wo2RoycvM=
+Received: from AM4PR05MB3137.eurprd05.prod.outlook.com (10.171.186.14) by
+ AM4PR05MB3138.eurprd05.prod.outlook.com (10.171.186.15) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1987.10; Tue, 18 Jun 2019 10:19:31 +0000
+Received: from AM4PR05MB3137.eurprd05.prod.outlook.com
+ ([fe80::bc5a:ba8b:1a69:91b6]) by AM4PR05MB3137.eurprd05.prod.outlook.com
+ ([fe80::bc5a:ba8b:1a69:91b6%6]) with mapi id 15.20.1987.014; Tue, 18 Jun 2019
+ 10:19:31 +0000
+From:   Leon Romanovsky <leonro@mellanox.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        Jianbo Liu <jianbol@mellanox.com>,
+        Roi Dayan <roid@mellanox.com>, Mark Bloch <markb@mellanox.com>
+Subject: Re: [PATCH mlx5-next 11/15] RDMA/mlx5: Add vport metadata matching
+ for IB representors
+Thread-Topic: [PATCH mlx5-next 11/15] RDMA/mlx5: Add vport metadata matching
+ for IB representors
+Thread-Index: AQHVJUIm1iT82BVB3kyl3BqmLAQTwaahNBoA
+Date:   Tue, 18 Jun 2019 10:19:31 +0000
+Message-ID: <20190618101928.GE4690@mtr-leonro.mtl.com>
+References: <20190617192247.25107-1-saeedm@mellanox.com>
+ <20190617192247.25107-12-saeedm@mellanox.com>
+In-Reply-To: <20190617192247.25107-12-saeedm@mellanox.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1560853140; bh=c8UwikRvDDyA/O40zAYZCjzIgqKqCU4r3za0BT5rFTA=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
-         User-Agent:MIME-Version:In-Reply-To:X-Originating-IP:
-         X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=IsghBDLD+HugcVDANvNXIEr2nq0Ib1u64NXqu+Ay16gh1k9ojVjTsu4x4bdXfe1g/
-         VmU2CT8xtjRftJV+sWZSHorPeT4jtD+y1jjn+sNYXQtGVyifGo1md9pPYu+uGjrXN2
-         b6mJg+22AUQ5lwNIalMN+aIAK2ISzNJc9biAA5QioZDxKV3NBPe9PB52X2jRVUQn2c
-         eSssvwvCsRvUp2Tl0Il8cczvjvKXObfwzq5SWoqoPQtSSGe/eJKl4t+1DJPWw/60TC
-         5YbexGEtqWZ5KbB3jT+VQpnPVoEfwrkn8vMuO+qlYFAACjfKdpBP+pNe3PcaRA6nHb
-         PB5cN7ElL+k9w==
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: PR2PR09CA0021.eurprd09.prod.outlook.com
+ (2603:10a6:101:16::33) To AM4PR05MB3137.eurprd05.prod.outlook.com
+ (2603:10a6:205:3::14)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=leonro@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [193.47.165.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9ab55ec3-80ae-48e8-2b29-08d6f3d673c4
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR05MB3138;
+x-ms-traffictypediagnostic: AM4PR05MB3138:
+x-microsoft-antispam-prvs: <AM4PR05MB31389357FA1B92911E5CEB88B0EA0@AM4PR05MB3138.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-forefront-prvs: 007271867D
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(979002)(366004)(376002)(346002)(136003)(396003)(39860400002)(189003)(199004)(305945005)(6636002)(6116002)(6246003)(1076003)(386003)(53936002)(76176011)(26005)(316002)(478600001)(107886003)(52116002)(486006)(68736007)(99286004)(6486002)(446003)(11346002)(54906003)(102836004)(6436002)(229853002)(6506007)(256004)(81156014)(6862004)(14454004)(81166006)(71190400001)(71200400001)(86362001)(8676002)(2906002)(9686003)(476003)(450100002)(6512007)(25786009)(66476007)(5660300002)(66446008)(66946007)(66556008)(64756008)(7736002)(33656002)(66066001)(8936002)(73956011)(3846002)(4326008)(186003)(969003)(989001)(999001)(1009001)(1019001);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR05MB3138;H:AM4PR05MB3137.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: S44Q3BzbU9eTx6PZn29vWbbt4bm3ZFTvJ4DGe3MfrwMSh7y8XvI5NyKRl+A+kkYt/6gpHl65/rXUTfcmWPEN1o3JT3o3mxjKMQ3npkhOLm/bEDww0Hen6SKSTQcIcjACfpj0+j1ZjfBzDhBxajzgPPIm6Oy7JItQbGxtU3dJZotfZ7JhC24JDwDNvgF7HwFdXk2GrTO4q+GZqIoiHReDa4wyW03SIKgnRmodF1eUMdaTTEY77SkUpQhdQxA8MmvmUfY1nVbOKniTYNUpZo8kq00GB3Tkt5qg5VjUBmefndDaD7BQGGaZVLdkqnVjEL138/V/kg11SAypIJZ9pGLzxKYXrcwOnblzvDJzDnMMviRAJwqdvQWQ9xIL87MR+X8PpcwamsovlsXNxR6ozp95STeG53TodjiRqgIG3y3chew=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <E77D49567320B841AFDC4B9A6D11C371@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9ab55ec3-80ae-48e8-2b29-08d6f3d673c4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jun 2019 10:19:31.3229
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: leonro@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR05MB3138
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Jun 17, 2019 at 07:23:30PM +0000, Saeed Mahameed wrote:
+> From: Jianbo Liu <jianbol@mellanox.com>
+>
+> If vport metadata matching is enabled in eswitch, the rule created
+> must be changed to match on the metadata, instead of source port.
+>
+> Signed-off-by: Jianbo Liu <jianbol@mellanox.com>
+> Reviewed-by: Roi Dayan <roid@mellanox.com>
+> Reviewed-by: Mark Bloch <markb@mellanox.com>
+> Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+> ---
+>  drivers/infiniband/hw/mlx5/ib_rep.c | 11 +++++++
+>  drivers/infiniband/hw/mlx5/ib_rep.h | 16 ++++++++++
+>  drivers/infiniband/hw/mlx5/main.c   | 45 +++++++++++++++++++++++------
+>  3 files changed, 63 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/infiniband/hw/mlx5/ib_rep.c b/drivers/infiniband/hw/=
+mlx5/ib_rep.c
+> index 22e651cb5534..d4ed611de35d 100644
+> --- a/drivers/infiniband/hw/mlx5/ib_rep.c
+> +++ b/drivers/infiniband/hw/mlx5/ib_rep.c
+> @@ -131,6 +131,17 @@ struct mlx5_eswitch_rep *mlx5_ib_vport_rep(struct ml=
+x5_eswitch *esw, int vport)
+>  	return mlx5_eswitch_vport_rep(esw, vport);
+>  }
+>
+> +u32 mlx5_ib_eswitch_vport_match_metadata_enabled(struct mlx5_eswitch *es=
+w)
+> +{
+> +	return mlx5_eswitch_vport_match_metadata_enabled(esw);
+> +}
+> +
+> +u32 mlx5_ib_eswitch_get_vport_metadata_for_match(struct mlx5_eswitch *es=
+w,
+> +						 u16 vport)
+> +{
+> +	return mlx5_eswitch_get_vport_metadata_for_match(esw, vport);
+> +}
 
-On 18/06/2019 10:46, Jose Abreu wrote:
-> From: Jon Hunter <jonathanh@nvidia.com>
-> 
->> I am not certain but I don't believe so. We are using a static IP address
->> and mounting the root file-system via NFS when we see this ...
-> 
-> Can you please add a call to napi_synchronize() before every 
-> napi_disable() calls, like this:
-> 
-> if (queue < rx_queues_cnt) {
-> 	napi_synchronize(&ch->rx_napi);
-> 	napi_disable(&ch->rx_napi);
-> }
-> 
-> if (queue < tx_queues_cnt) {
-> 	napi_synchronize(&ch->tx_napi);
-> 	napi_disable(&ch->tx_napi);
-> }
-> 
-> [ I can send you a patch if you prefer ]
+1. There is no need to introduce one line functions, call to that code dire=
+ctly.
+2. It should be bool and not u32.
 
-Yes I can try this and for completeness you mean ...
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 4ca46289a742..d4a12cb64d8e 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -146,10 +146,15 @@ static void stmmac_disable_all_queues(struct stmmac_priv *priv)
-        for (queue = 0; queue < maxq; queue++) {
-                struct stmmac_channel *ch = &priv->channel[queue];
- 
--               if (queue < rx_queues_cnt)
-+               if (queue < rx_queues_cnt) {
-+                       napi_synchronize(&ch->rx_napi);
-                        napi_disable(&ch->rx_napi);
--               if (queue < tx_queues_cnt)
-+               }
-+
-+               if (queue < tx_queues_cnt) {
-+                       napi_synchronize(&ch->tx_napi);
-                        napi_disable(&ch->tx_napi);
-+               }
-        }
- }
-
-Cheers
-Jon
-
--- 
-nvpublic
+Thanks
