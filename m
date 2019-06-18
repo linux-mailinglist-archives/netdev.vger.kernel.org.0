@@ -2,119 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 70623497C4
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 05:26:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A087497D3
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 05:44:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726248AbfFRD0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 17 Jun 2019 23:26:18 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:34360 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725870AbfFRD0S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 23:26:18 -0400
-Received: by mail-ed1-f65.google.com with SMTP id s49so19407310edb.1
-        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 20:26:17 -0700 (PDT)
+        id S1727731AbfFRDoe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 17 Jun 2019 23:44:34 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:36540 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726091AbfFRDoe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 17 Jun 2019 23:44:34 -0400
+Received: by mail-pf1-f193.google.com with SMTP id r7so6812985pfl.3
+        for <netdev@vger.kernel.org>; Mon, 17 Jun 2019 20:44:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :user-agent:mime-version;
-        bh=QB8lwnfAWM5eSh/acU+B5HKYIehkA7mV7O4FwPzcexo=;
-        b=ULNdvw8+tq8QeUnFaQePLqg1iryaaYp/aWw9fGLemPYhJkDQ2H5XhjVIbUsBgZd64F
-         61o+JYMVnvgUgyC2GM30u6jjijf/A+ftp23F81RdhJ6D/jXzJERTFZQtARcBDdkleqUm
-         eSS18Q1TKM1uvznC79K30CCQx89bqEa2ol9lykGFnO2MgthvqOpwwdQlIaF9soPy+4eF
-         JjRf8fu6RYvl3V91iXvxVZWnUOBsUx2Y413J/6USyWI3DJBU5uVxOTO3zdofWGkN+zPM
-         NZTnFSpl1IBQtE31RIDo+sedqJJ1JRgx6wCpeaKFcOVy9par13mVHGq1nrg8fik0S7v6
-         NqCw==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=BoH6OeopVPa/ALDlBdCFpTUJ2t7OvduFfVbwi6u4IFM=;
+        b=stEp9Ey9m0ykeur5JULgCYo2wd44zctNckxauDwT98+JnhhPqtp+6kH0bT8rF7l1rc
+         oj9LNKZgoU5AW8C9MMirWutR+grKjoof03BVhKkh3yXh+werObMm21/109yO7VgUV/aQ
+         rMRyXV4mEUMKVdTy+CCyI3rOvNPE9s32qKvZYrcLj3WXAPSE/GqKxqXGu84wSzQ/MvND
+         ZwtzqNjeP3HgR5ORXJylj/5NHyhosxJvS2MVy/Rz7qwTPRlRhRfXLCmoGrxdZmBKPxbQ
+         2W091qLI10BR0Bn7mr6vn9IxkouOkItdK9mzH0fgim5MvhkUGGX8wZG5+E8TbsJAGYQd
+         hqUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:user-agent:mime-version;
-        bh=QB8lwnfAWM5eSh/acU+B5HKYIehkA7mV7O4FwPzcexo=;
-        b=sZz9joTf92UahcZELtgrs2HmdjvOFdHaCNeD5PxHeV7EwxulPfefxHjbn8DRk7mdeo
-         r2Pyc2dyu4bXgICw29IUnK6KLddm+qB7ZXvid53YNeYApjfYg5emiHwTJn6vQ6qfFOTv
-         0RLChM+AXvQBsBrj0HHbDhtDdquGqGP4cSGqzUWn2i7zy6KAAFUr9oSsC6wiWkjYafWh
-         USZnO6zqUCSXICveLHY82wPiNO2DsiDYFrFijIw92pF44HW4LxHR5d/07LGxYhlazdPt
-         +k8Z4CfD0onttWnS3VBG+yUHLDW/OXPYi2o3A4f3lT87j5rW5yZyGji2NbKFtKYBvMWp
-         As8w==
-X-Gm-Message-State: APjAAAWwfCEnfU2AWXVnVUnuIMG726x5fSzOgtdrOcmrCqy5fNyMW19u
-        2sanvDS1JhC932JJ1GF76bAMFA==
-X-Google-Smtp-Source: APXvYqxL2/de9bApOM2UVDgl9BgIS/9w1EYyRUg0PCwWi1lKmzkg9zrpNro5VMkplRIqrlo+htLQGA==
-X-Received: by 2002:a50:b962:: with SMTP id m89mr58857595ede.104.1560828376089;
-        Mon, 17 Jun 2019 20:26:16 -0700 (PDT)
-Received: from localhost ([81.92.102.43])
-        by smtp.gmail.com with ESMTPSA id d1sm1800559ejc.72.2019.06.17.20.26.15
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 17 Jun 2019 20:26:15 -0700 (PDT)
-Date:   Mon, 17 Jun 2019 20:26:14 -0700 (PDT)
-From:   Paul Walmsley <paul.walmsley@sifive.com>
-X-X-Sender: paulw@viisi.sifive.com
-To:     Alistair Francis <Alistair.Francis@wdc.com>
-cc:     "troy.benjegerdes@sifive.com" <troy.benjegerdes@sifive.com>,
-        "jamez@wit.com" <jamez@wit.com>,
-        "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "schwab@suse.de" <schwab@suse.de>,
-        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "aou@eecs.berkeley.edu" <aou@eecs.berkeley.edu>,
-        "sachin.ghadi@sifive.com" <sachin.ghadi@sifive.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ynezz@true.cz" <ynezz@true.cz>,
-        "palmer@sifive.com" <palmer@sifive.com>,
-        "yash.shah@sifive.com" <yash.shah@sifive.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>
-Subject: Re: [PATCH v2 0/2] Add macb support for SiFive FU540-C000
-In-Reply-To: <d2836a90b92f3522a398d57ab8555d08956a0d1f.camel@wdc.com>
-Message-ID: <alpine.DEB.2.21.9999.1906172019040.15057@viisi.sifive.com>
-References: <1560745167-9866-1-git-send-email-yash.shah@sifive.com>  <mvmtvco62k9.fsf@suse.de>  <alpine.DEB.2.21.9999.1906170252410.19994@viisi.sifive.com>  <mvmpnnc5y49.fsf@suse.de>  <alpine.DEB.2.21.9999.1906170305020.19994@viisi.sifive.com> 
- <mvmh88o5xi5.fsf@suse.de>  <alpine.DEB.2.21.9999.1906170419010.19994@viisi.sifive.com>  <F48A4F7F-0B0D-4191-91AD-DC51686D1E78@sifive.com> <d2836a90b92f3522a398d57ab8555d08956a0d1f.camel@wdc.com>
-User-Agent: Alpine 2.21.9999 (DEB 301 2018-08-15)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=BoH6OeopVPa/ALDlBdCFpTUJ2t7OvduFfVbwi6u4IFM=;
+        b=NYKgR74c6AUhtofsJevvDVeB/SNOVI2wDFNB5itoagYHvkao+6P2Gci9iBOzoRGIYy
+         jiYfKoQH73YJCBYAo8NNlYh2n1zCLM0tD0ZDz1L9FGAbH87vH6e8LKN8k3iZhqrRV+uJ
+         O4nR11hihv3ief0SITJqUsCpEusSy7ZyPBlTEZvn8Y06w5ruPiq6C4nq9pNqjqw/+hbf
+         t6gUfWx6WjK/S51KXMFn2dcZef0MJu6MeUgYt/cIlPGGT6PH0maYmU4K3y8GgvmNrGfM
+         0Tf+zDDTsFUDtbNDHsgW63fGBqM0JeeDT8gbWS1ddT+OKikFBKQBCqf98W9R6IkBMfqJ
+         6Q6g==
+X-Gm-Message-State: APjAAAXzvia3RWt5m4Vt40BH0mFkWow9mjdvXTUyWh/Uw6xpOTBidJVt
+        4VBdYPfOZ7nQlbPuT6yOOuA=
+X-Google-Smtp-Source: APXvYqzQUjdRm0vHRkTN0RHDCZJC4fG5dviX+T5o8zPcisDc8Ah4JPSXt8HRR62M0mWQP5/Kc0mUiA==
+X-Received: by 2002:a17:90a:ad86:: with SMTP id s6mr2763074pjq.42.1560829473968;
+        Mon, 17 Jun 2019 20:44:33 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-70.hsd1.ca.comcast.net. [73.241.150.70])
+        by smtp.gmail.com with ESMTPSA id u4sm12625505pfu.26.2019.06.17.20.44.31
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Mon, 17 Jun 2019 20:44:32 -0700 (PDT)
+Subject: Re: [PATCH net 2/4] tcp: tcp_fragment() should apply sane memory
+ limits
+To:     Christoph Paasch <christoph.paasch@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Looney <jtl@netflix.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Tyler Hicks <tyhicks@canonical.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Bruce Curtis <brucec@netflix.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Dustin Marquess <dmarquess@apple.com>
+References: <20190617170354.37770-1-edumazet@google.com>
+ <20190617170354.37770-3-edumazet@google.com>
+ <CALMXkpYVRxgeqarp4gnmX7GqYh1sWOAt6UaRFqYBOaaNFfZ5sw@mail.gmail.com>
+ <03cbcfdf-58a4-dbca-45b1-8b17f229fa1d@gmail.com>
+ <CALMXkpZ4isoXpFp_5=nVUcWrt5TofYVhpdAjv7LkCH7RFW1tYw@mail.gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <aa0af451-5e7c-7d83-ef25-095a67cd23a1@gmail.com>
+Date:   Mon, 17 Jun 2019 20:44:30 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1540646092-1560828374=:15057"
+In-Reply-To: <CALMXkpZ4isoXpFp_5=nVUcWrt5TofYVhpdAjv7LkCH7RFW1tYw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-1540646092-1560828374=:15057
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-
-On Mon, 17 Jun 2019, Alistair Francis wrote:
-
-> > The legacy M-mode U-boot handles the phy reset already, and I=E2=80=99v=
-e been
-> > able to load upstream S-mode uboot as a payload via TFTP, and then=20
-> > load and boot a 4.19 kernel.=20
-> >=20
-> > It would be nice to get this all working with 5.x, however there are
-> > still
-> > several missing pieces to really have it work well.
->=20
-> Let me know what is still missing/doesn't work and I can add it. At the
-> moment the only known issue I know of is a missing SD card driver in U-
-> Boot.
-
-The DT data has changed between the non-upstream data that people=20
-developed against previously, vs. the DT data that just went upstream=20
-here:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?=
-id=3D72296bde4f4207566872ee355950a59cbc29f852
-
-and
-
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?=
-id=3Dc35f1b87fc595807ff15d2834d241f9771497205
-
-So Upstream U-Boot is going to need several patches to get things working=
-=20
-again.  Clock identifiers and Ethernet are two known areas.
 
 
-- Paul
---8323329-1540646092-1560828374=:15057--
+On 6/17/19 8:19 PM, Christoph Paasch wrote:
+> 
+> Yes, this does the trick for my packetdrill-test.
+> 
+> I wonder, is there a way we could end up in a situation where we can't
+> retransmit anymore?
+> For example, sk_wmem_queued has grown so much that the new test fails.
+> Then, if we legitimately need to fragment in __tcp_retransmit_skb() we
+> won't be able to do so. So we will never retransmit. And if no ACK
+> comes back in to make some room we are stuck, no?
+
+Well, RTO will eventually fire.
+
+Really TCP can not work well with tiny sndbuf limits.
+
+There is really no point trying to be nice.
+
+There is precedent in TCP stack where we always allow one packet in RX or TX queue
+even with tiny rcv/sndbuf limits (or global memory pressure)
+
+We only need to make sure to allow having at least one packet in rtx queue as well.
