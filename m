@@ -2,106 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC4484ACE4
-	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 23:09:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D7464ACD6
+	for <lists+netdev@lfdr.de>; Tue, 18 Jun 2019 23:09:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731064AbfFRVHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 17:07:12 -0400
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:35634 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730696AbfFRVHK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 17:07:10 -0400
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: gtucker)
-        with ESMTPSA id EFF1D285136
-Subject: Re: next/master boot bisection: next-20190617 on
- sun8i-h2-plus-orangepi-zero
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     Kevin Hilman <khilman@baylibre.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        tomeu.vizoso@collabora.com, mgalka@collabora.com,
-        broonie@kernel.org, matthew.hart@linaro.org,
-        enric.balletbo@collabora.com, Jose Abreu <joabreu@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-References: <5d089fb6.1c69fb81.4f92.9134@mx.google.com>
- <7hr27qdedo.fsf@baylibre.com>
- <CAFBinCCrpQNU_JtL0SwEGbwWZ2Qy-b2m5rdjuE0__nDRORGTiQ@mail.gmail.com>
- <7d0a9da1-0b42-d4e9-0690-32d58a6d27de@collabora.com>
- <CAFBinCA7gMLJ=jPqgRgHcBABBvC7bWVt8VJhLZ5uN=03WL1UWQ@mail.gmail.com>
-From:   Guillaume Tucker <guillaume.tucker@collabora.com>
-Message-ID: <2af9b9a5-cdf8-afce-5a75-d66c99eb82a2@collabora.com>
-Date:   Tue, 18 Jun 2019 22:07:06 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1730850AbfFRVIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 17:08:43 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:42918 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730350AbfFRVIm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 18 Jun 2019 17:08:42 -0400
+Received: by mail-ot1-f66.google.com with SMTP id l15so7311704otn.9;
+        Tue, 18 Jun 2019 14:08:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Si7YN0Ac+8aO2OL5bpmY6oXT3u6BP9ERrdrqLEwWqkk=;
+        b=GWWg2QF9YTbOrhn0UN49AHzzOLF/xn6veX8mpU4RShBxXUEgJ7jG9ZJgVGvdQjscKv
+         NOBl2KSfYOZtVnsJ3hrz2McNGlYtXYS4GbBz87J9YG/pHS2yVNQ3mCtkub0nOsARDTdD
+         rBP02DNR6k34taS8RuX8c6lwsUEXQkgYxrr/YdApz6GLXJyh31ovrbwgTmic+++ETY5s
+         N3ZHgXEtObH+vmpeaRBLUTyGdrJDku/gVtEjW4XOahZ3k+iEYa9gO5RwVrfykB49jr4V
+         w5neKmVLjeywrdy8lTirIvVF48pOLmT6cRXCVVd2e3c8j+MLhv3PxwL+48UhjivGvmDt
+         WzMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Si7YN0Ac+8aO2OL5bpmY6oXT3u6BP9ERrdrqLEwWqkk=;
+        b=obOPQIQ4N8txweo9TAXBg8XtjgmBWcWtH2Vmp0prbXF79NPk9z/11+DW8uys8uBj4W
+         WgKZPrw24qZ2vIQAw9NjWGx5btsWOet5mWxg/p4ZPXWpW0ocCeegvs+imtjX8DgT8iLz
+         aJoqQbzkJsn5lWw8saedeY+9h6sLY9u3ToneAUd01hHUxRnfwYYqI/kcVaYZydyCVMU+
+         HgNfj9JdsK6U1k2Z7xyXBVJOgnW8RazzbzsUHzd0NGTkzpjC3/gWgf/DuDtEOQhPu1vV
+         PatJqUzqFfCSOoaTdvB0Zc7dZZokyBh046nRuMymLC+Is/4zspePOgdugk0U172w6T6+
+         hWYw==
+X-Gm-Message-State: APjAAAUk2s5pQIdpvalK7RDi4ITpOcI5jNWAlWKEb9GJ6UMeRiNp6fc+
+        2ZuWa2HSoLXHtoMcObuJ+Bu+vjPpDaFPmQTXQK0t8ygF
+X-Google-Smtp-Source: APXvYqy5JCmsbwM5wBUTKhssuXBd9BwTugt+pIVBVM3h43MxZALgsMxF+ZE2IABegnBep6WSQ2xnb5t5u/NcHuXamyI=
+X-Received: by 2002:a9d:39a6:: with SMTP id y35mr23969406otb.81.1560892120971;
+ Tue, 18 Jun 2019 14:08:40 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAFBinCA7gMLJ=jPqgRgHcBABBvC7bWVt8VJhLZ5uN=03WL1UWQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20190618203927.5862-1-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20190618203927.5862-1-martin.blumenstingl@googlemail.com>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Tue, 18 Jun 2019 23:08:30 +0200
+Message-ID: <CAFBinCB8OHC+2KqP6ufceTSPDbSWH8dg1RuqWHAeqy2tR3k=5Q@mail.gmail.com>
+Subject: Re: [PATCH net-next v1] net: stmmac: initialize the reset delay array
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     linux-kernel@vger.kernel.org, joabreu@synopsys.com,
+        alexandre.torgue@st.com, peppe.cavallaro@st.com,
+        khilman@baylibre.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Martin,
-
-On 18/06/2019 21:58, Martin Blumenstingl wrote:
-> Hi Guillaume,
-> 
-> On Tue, Jun 18, 2019 at 10:53 PM Guillaume Tucker
-> <guillaume.tucker@collabora.com> wrote:
->>
->> On 18/06/2019 21:42, Martin Blumenstingl wrote:
->>> On Tue, Jun 18, 2019 at 6:53 PM Kevin Hilman <khilman@baylibre.com> wrote:
->>> [...]
->>>> This seems to have broken on several sunxi SoCs, but also a MIPS SoC
->>>> (pistachio_marduk):
->>>>
->>>> https://storage.kernelci.org/next/master/next-20190618/mips/pistachio_defconfig/gcc-8/lab-baylibre-seattle/boot-pistachio_marduk.html
->>> today I learned why initializing arrays on the stack is important
->>> too bad gcc didn't warn that I was about to shoot myself (or someone
->>> else) in the foot :/
->>>
->>> I just sent a fix: [0]
->>>
->>> sorry for this issue and thanks to Kernel CI for even pointing out the
->>> offending commit (this makes things a lot easier than just yelling
->>> that "something is broken")
->>
->> Glad that helped :)
->>
->> If you would be so kind as to credit our robot friend in your
->> patch, it'll be forever grateful:
->>
->>   Reported-by: "kernelci.org bot" <bot@kernelci.org>
-> sure
-> do you want me to re-send my other patch or should I just reply to it
-> adding the Reported-by tag and hope that Dave will catch it when
-> applying the patch?
-
-Well that's no big deal so replying would already be great.  The
-important part is that the fix gets applied.
-
-> in either case: I did mention in the patch description that Kernel CI caught it
-
-I see, thanks!
-
-> by the way: I didn't know how to credit the Kernel CI bot.
-> syzbot / syzkaller makes that bit easy as it's mentioned in the
-> generated email, see [0] for a (random) example
-> have you considered adding the Reported-by to the generated email?
-
-Yes, we've got some bugs to fix first but that will be added to
-the email report soon (next week I guess).  Thanks for the
-suggestion though.
-
-Guillaume
-
-> [0] https://lkml.org/lkml/2019/4/19/638
+On Tue, Jun 18, 2019 at 10:39 PM Martin Blumenstingl
+<martin.blumenstingl@googlemail.com> wrote:
+>
+> Commit ce4ab73ab0c27c ("net: stmmac: drop the reset delays from struct
+> stmmac_mdio_bus_data") moved the reset delay array from struct
+> stmmac_mdio_bus_data to a stack variable.
+> The values from the array inside struct stmmac_mdio_bus_data were
+> previously initialized to 0 because the struct was allocated using
+> devm_kzalloc(). The array on the stack has to be initialized
+> explicitly, else we might be reading garbage values.
+>
+> Initialize all reset delays to 0 to ensure that the values are 0 if the
+> "snps,reset-delays-us" property is not defined.
+> This fixes booting at least two boards (MIPS pistachio marduk and ARM
+> sun8i H2+ Orange Pi Zero). These are hanging during boot when
+> initializing the stmmac Ethernet controller (as found by Kernel CI).
+> Both have in common that they don't define the "snps,reset-delays-us"
+> property.
+>
+> Fixes: ce4ab73ab0c27c ("net: stmmac: drop the reset delays from struct stmmac_mdio_bus_data")
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+to complete what I already wrote as part of the patch description this
+issue was:
+Reported-by: "kernelci.org bot" <bot@kernelci.org>
