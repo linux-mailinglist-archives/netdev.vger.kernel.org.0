@@ -2,93 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1E724C289
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 22:46:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3B7A4C298
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 22:57:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730182AbfFSUqs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 16:46:48 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:38405 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726244AbfFSUqr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 16:46:47 -0400
-Received: by mail-pl1-f195.google.com with SMTP id g4so335633plb.5
-        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 13:46:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=i1hoWgXM/3sJXE0yzoEO9MJswGh6V3NEiQS35pfe8xs=;
-        b=DE7SwvGJQoDgdPZwnJjXq3/xBzZ49J16GbQvaq3+CHo3OOGAmoQxMsckz7arQjwRdZ
-         wiy5it8XOYRDMaIHk6idFtABMqjrytaCLe209QHxK1RVnszyZi7t5OF9mAniHjiaVosK
-         MQrSwl2pxkdIep5s5ZEzTstBCVBdsK8/Y6T6UPnLLp8r6AIcap5hUwQYcAURuSovAHf9
-         avuU8OxdSGnoCZ86gtmaud6e2GjZm1ouMLwslCxcxcWnHPf/GOwg0wZe0mA48TcXdLPY
-         X87SVTjIufSVYzM27oh0Hoxt3nHUpGoOCcl+AnYyiA+h3/5X7FMPGwrQGE2Pt92c7f3m
-         fTcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=i1hoWgXM/3sJXE0yzoEO9MJswGh6V3NEiQS35pfe8xs=;
-        b=J7hkRA/o8tVGU8jOomXPBMiqbMexEGFnxOhlE1pa7DxrjLdywdBSb9bZgXxr/tVOYn
-         3+ic9VEyiAaV9Nn5tg6yRdkHuNSGeT6pdk9c52VWWTxyfzD1H5x2A5jQ59Y95Hio0Ydr
-         N9iXuHhX4kBfM8S6ZreTqLOa8UEQ5fngEU42vOohVkrbQURZgG5EYyhyL3+biYCYue9x
-         nB+py9d1hwfz0dytPYq4J/NNLLUKuLZ6CgEt2nai2EwUGrzuZiTLCdvKbDTpOiT0AQYY
-         ezB2w/qcOFFIJsR6PuVhCUZOqTgT8xv4c82gK1SA0aCmfvYiXaAmeERrd1ujhet0zbj0
-         VETg==
-X-Gm-Message-State: APjAAAX1yg4rMZwyJIkqe1PrM/SM7fiLi74mTXIEe9Vi9U5nQ+HtqwtM
-        o9NfFfZmdWGIU2KbEF7i4JUQ+SZLfOuV+VeNjoKWgg==
-X-Google-Smtp-Source: APXvYqyHoOeUqsmfRiTdpCJaQhtM0n+ZHM7LvnKSRbOhC6JZDM1tV2GWvItN2O+RfkS2vCrqHX0e9cQ54R0YoJpWBnM=
-X-Received: by 2002:a17:902:9f93:: with SMTP id g19mr105536923plq.223.1560977206524;
- Wed, 19 Jun 2019 13:46:46 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190619084921.7e1310e0@bootlin.com> <20190619181715.253903-1-nhuck@google.com>
-In-Reply-To: <20190619181715.253903-1-nhuck@google.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Wed, 19 Jun 2019 13:46:35 -0700
-Message-ID: <CAKwvOdk7xOF8=xv5A7TQUWY29dH4agDWgMJVeO9emTMbH8CNQA@mail.gmail.com>
-Subject: Re: [PATCH v2] net: mvpp2: debugfs: Add pmap to fs dump
-To:     Nathan Huckleberry <nhuck@google.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        maxime.chevallier@bootlin.com, netdev@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>
+        id S1730089AbfFSU5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 16:57:09 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:38236 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726244AbfFSU5J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Jun 2019 16:57:09 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id A385B30C1330;
+        Wed, 19 Jun 2019 20:57:06 +0000 (UTC)
+Received: from ovpn-112-53.rdu2.redhat.com (ovpn-112-53.rdu2.redhat.com [10.10.112.53])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DACED608A7;
+        Wed, 19 Jun 2019 20:56:59 +0000 (UTC)
+Message-ID: <414bc504bf62ea8de2ad195c00ce64dc0acb773c.camel@redhat.com>
+Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
+From:   Dan Williams <dcbw@redhat.com>
+To:     Arnd Bergmann <arnd@arndb.de>,
+        Johannes Berg <johannes@sipsolutions.net>
+Cc:     Alex Elder <elder@linaro.org>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        abhishek.esse@gmail.com, Ben Chan <benchan@google.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        cpratapa@codeaurora.org, David Miller <davem@davemloft.net>,
+        DTML <devicetree@vger.kernel.org>,
+        Eric Caruso <ejcaruso@google.com>, evgreen@chromium.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-soc@vger.kernel.org, Networking <netdev@vger.kernel.org>,
+        syadagir@codeaurora.org
+Date:   Wed, 19 Jun 2019 15:56:58 -0500
+In-Reply-To: <CAK8P3a3r95gXMdq7s9GF=37v6t4kR+-2iyC6bnmUDVuM+bn80Q@mail.gmail.com>
+References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
+         <a94676381a5ca662c848f7a725562f721c43ce76.camel@sipsolutions.net>
+         <CAK8P3a0kV-i7BJJ2X6C=5n65rSGfo8fUiC4J_G-+M8EctYKbkg@mail.gmail.com>
+         <fc0d08912bc10ad089eb74034726308375279130.camel@redhat.com>
+         <36bca57c999f611353fd9741c55bb2a7@codeaurora.org>
+         <153fafb91267147cf22e2bf102dd822933ec823a.camel@redhat.com>
+         <CAK8P3a2Y+tcL1-V57dtypWHndNT3eDJdcKj29c_v+k8o1HHQig@mail.gmail.com>
+         <f4249aa5f5acdd90275eda35aa16f3cfb29d29be.camel@redhat.com>
+         <CAK8P3a2nzZKtshYfomOOSYkqx5HdU15Wr9b+3va0B1euNhFOAg@mail.gmail.com>
+         <dbb32f185d2c3a654083ee0a7188379e1f88d899.camel@sipsolutions.net>
+         <d533b708-c97a-710d-1138-3ae79107f209@linaro.org>
+         <abdfc6b3a9981bcdef40f85f5442a425ce109010.camel@sipsolutions.net>
+         <CAK8P3a3ksrFTo2+dLB+doLeY+kPP7rYxv2O7BwvjYgK2cwCTuQ@mail.gmail.com>
+         <97cbfb3723607c95d78e25785262ae7b0acdb11c.camel@sipsolutions.net>
+         <CAK8P3a29+JKbDdS9ikhgaKa-AJ1qd1sDMTAfzivGh5wN4VL88A@mail.gmail.com>
+         <54a5acb6cf26ebc6447f8ebcbdcb8e0eed693ab3.camel@sipsolutions.net>
+         <CAK8P3a3r95gXMdq7s9GF=37v6t4kR+-2iyC6bnmUDVuM+bn80Q@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Wed, 19 Jun 2019 20:57:07 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 19, 2019 at 11:17 AM 'Nathan Huckleberry' via Clang Built
-Linux <clang-built-linux@googlegroups.com> wrote:
->
-> There was an unused variable 'mvpp2_dbgfs_prs_pmap_fops'
-> Added a usage consistent with other fops to dump pmap
-> to userspace.
+On Tue, 2019-06-18 at 23:06 +0200, Arnd Bergmann wrote:
+> On Tue, Jun 18, 2019 at 10:39 PM Johannes Berg
+> <johannes@sipsolutions.net> wrote:
+> > On Tue, 2019-06-18 at 22:33 +0200, Arnd Bergmann wrote:
+> > It seems to me though that this is far more complex than what I'm
+> > proposing? What I'm proposing there doesn't even need any userspace
+> > involvement, as long as all the pieces are in the different sub-
+> > drivers,
+> > they'd fall out automatically.
+> > 
+> > And realistically, the wwan_device falls out anyway at some point,
+> > the
+> > only question is if we really make one specific driver be the
+> > "owner" of
+> > it. I'm suggesting that we don't, and just make its lifetime depend
+> > on
+> > the links to parts it has (unless something like IPA actually wants
+> > to
+> > be an owner).
+> 
+> My feeling so far is that having the wwan_device be owned by a device
+> gives a nicer abstraction model that is also simpler for the common
+> case. A device driver like ipa would end up with a probe() function
+> that does does wwan_device_alloc/wwan_device_register, corresponding
+> to alloc_etherdev/register_netdev, and then communicates through
+> callbacks.
+> 
+> I agree the compound device case would get more complex by
+> shoehorning it into this model, but that can be a valid tradeoff
+> if it's the exceptional case rather than the common one.
 
-> Changes from v1 -> v2
-> * Fix typo
-> * Change commit prefix to debugfs
+In my experience, the compound device model is by far the most
+prevalent for regular Linux distros or anything *not* running on an SoC
+with an integrated modem.
 
-Compile-
-Tested-by: Nick Desaulniers <ndesaulniers@google.com>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+But it's also quite common for Android, no? drivers/net/ethernet/msm/
+has rmnet and IPA ethernet drivers while arch/arm/mach-msm/ has various
+SMD-related control channel drivers like smd_tty.c and smd_qmi.c and
+smd_nmea.c. At least that's how I remember older SMD-based devices
+being in the 8xxx and 9xxx time.
 
-Requires `make ... W=1` before the patch to observe the warning.
+Ideally those setups can benefit from this framework as well, without
+having to write entirely new composite drivers for those devices.
 
->  drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c
-> index 0ee39ea47b6b..274fb07362cb 100644
-> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c
-> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c
-> @@ -566,6 +566,9 @@ static int mvpp2_dbgfs_prs_entry_init(struct dentry *parent,
->         debugfs_create_file("hits", 0444, prs_entry_dir, entry,
->                             &mvpp2_dbgfs_prs_hits_fops);
->
-> +       debugfs_create_file("pmap", 0444, prs_entry_dir, entry,
-> +                            &mvpp2_dbgfs_prs_pmap_fops);
-> +
+Dan
 
-Thanks,
-~Nick Desaulniers
