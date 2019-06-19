@@ -2,88 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4D7B4BD6B
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 18:02:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DCA94BD7A
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 18:04:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729371AbfFSQCj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 12:02:39 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:39471 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726091AbfFSQCj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 12:02:39 -0400
-Received: by mail-lj1-f196.google.com with SMTP id v18so3801374ljh.6
-        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 09:02:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=e2TZYFZlX9e62I/OKOgYgScEFw66m8yxPTXTWjgcCpk=;
-        b=fRzB1EbE2KvLOrtDYcH6Bmx/ekekTfKr6UqmgWpisdXrEnoJmgdOSbNhSwH8IGWmJM
-         x0zgMnRrBbm8rA19uw67e1raz3rUnXncZTKLdtnzrPqhu/AoNvA0EuxPb841QUtrhDz/
-         CNSZNYYnZ99WL3xLojQwD6lDC1u35yUIjRoy8eenp+vvCZEKp+FtOgAPDYsT2WL9WZci
-         wjH6KqBZUdsR/scmzhyDdh8SjbTY7eX0oy0Vti/mDgiwBRXrY+VzUZ2NRi3z8Yw215Z9
-         Ayoj4uf7n8ccnFYMX1XSUVPQPQ72nzZGxstDzYWt/vUfXw/qybwEVOXjwNu8LYuSXd8u
-         PLqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=e2TZYFZlX9e62I/OKOgYgScEFw66m8yxPTXTWjgcCpk=;
-        b=eF4nWQ7z8SP9KmKndRCHYXWuQBAc66Hp/NWpus0M9Bf7OxXr594wNzLLfFSH3jfHxp
-         zh5wEz40S3fQG+2oPnBfjeiK2FoBsJhn6bV9f4ACEbAA3gcOoNkjqyCY3vrp0MHg7QtJ
-         jT3t7Ue3QkLu7xd+aWNd/a/NoEjkAb+zqc9n6BHD28Kw6QaKZ4FOj7/cGgTLgMmUFO1Z
-         W9scWCiMlW5t3J1FvQ/u/9sgu1PyIjBFbTjKUTk86M7eVoAjOPR38kmjdIc/170hY528
-         faJYBQH/axi++maoEbUMKi0A8fMrOD9n7mNpAnfDFsSObOlJ8eDDYHZwYzr3mKl/wOik
-         WX3Q==
-X-Gm-Message-State: APjAAAVvurj5VLUr6R2bjF/D86CHoSVt/Fjv8q24I2ZgGcpP/fo2Jh7m
-        igfLjeB1QY4RqMEhO51j0zkz95Jo5cIqpL7DbwoeUQ==
-X-Google-Smtp-Source: APXvYqxiUARD7JkUyt9VKeDlYQDMGfcvoKTnLRUfAO3zrZVdUm5KJtR+u/L7XFzMK/jdLnA65048lF47M7mRlJIbDcU=
-X-Received: by 2002:a2e:8847:: with SMTP id z7mr4510054ljj.51.1560960156976;
- Wed, 19 Jun 2019 09:02:36 -0700 (PDT)
+        id S1729753AbfFSQE3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 12:04:29 -0400
+Received: from mail.us.es ([193.147.175.20]:34050 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727584AbfFSQE2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Jun 2019 12:04:28 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 8DBFAF2694
+        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 18:04:25 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 7F285DA707
+        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 18:04:25 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 622F9DA70F; Wed, 19 Jun 2019 18:04:25 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 07631DA70E;
+        Wed, 19 Jun 2019 18:04:23 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Wed, 19 Jun 2019 18:04:23 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id D1B614265A2F;
+        Wed, 19 Jun 2019 18:04:22 +0200 (CEST)
+Date:   Wed, 19 Jun 2019 18:04:22 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Fernando Fernandez Mancera <ffmancera@riseup.net>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] netfilter: synproxy: fix nf_synproxy_ipv{4,6}_init()
+ return code
+Message-ID: <20190619160422.t33ckepbusdtfjzq@salvia>
+References: <20190619125314.1005993-1-arnd@arndb.de>
 MIME-Version: 1.0
-References: <20190617132636.72496-1-lifei.shirley@bytedance.com> <20190618.105548.2200622033433520074.davem@davemloft.net>
-In-Reply-To: <20190618.105548.2200622033433520074.davem@davemloft.net>
-From:   =?UTF-8?B?5p2O6I+y?= <lifei.shirley@bytedance.com>
-Date:   Thu, 20 Jun 2019 00:02:26 +0800
-Message-ID: <CA+=e4K42mM7-KprPbPjWvDbu8QOrv5=s4QxpWJieeUM73dfS_g@mail.gmail.com>
-Subject: Re: [External Email] Re: [PATCH net v2] tun: wake up waitqueues after
- IFF_UP is set
-To:     David Miller <davem@davemloft.net>
-Cc:     Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, zhengfeiran@bytedance.com,
-        duanxiongchun@bytedance.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190619125314.1005993-1-arnd@arndb.de>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks.
+On Wed, Jun 19, 2019 at 02:53:07PM +0200, Arnd Bergmann wrote:
+> We return an uninitialized variable on success:
+> 
+> net/netfilter/nf_synproxy_core.c:793:6: error: variable 'err' is used uninitialized whenever 'if' condition is false [-Werror,-Wsometimes-uninitialized]
+>         if (snet->hook_ref4 == 0) {
+>             ^~~~~~~~~~~~~~~~~~~~
+> 
+> Initialize the return code to zero first.
 
-Have a nice day
-Fei
+Thanks Arnd. We got a fix for this:
 
-On Wed, Jun 19, 2019 at 1:55 AM David Miller <davem@davemloft.net> wrote:
->
-> From: Fei Li <lifei.shirley@bytedance.com>
-> Date: Mon, 17 Jun 2019 21:26:36 +0800
->
-> > Currently after setting tap0 link up, the tun code wakes tx/rx waited
-> > queues up in tun_net_open() when .ndo_open() is called, however the
-> > IFF_UP flag has not been set yet. If there's already a wait queue, it
-> > would fail to transmit when checking the IFF_UP flag in tun_sendmsg().
-> > Then the saving vhost_poll_start() will add the wq into wqh until it
-> > is waken up again. Although this works when IFF_UP flag has been set
-> > when tun_chr_poll detects; this is not true if IFF_UP flag has not
-> > been set at that time. Sadly the latter case is a fatal error, as
-> > the wq will never be waken up in future unless later manually
-> > setting link up on purpose.
-> >
-> > Fix this by moving the wakeup process into the NETDEV_UP event
-> > notifying process, this makes sure IFF_UP has been set before all
-> > waited queues been waken up.
-> >
-> > Signed-off-by: Fei Li <lifei.shirley@bytedance.com>
-> > Acked-by: Jason Wang <jasowang@redhat.com>
->
-> Applied and queued up for -stable, thanks.
+https://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git/commit/?id=72c5e11854afb842e157353be0291d65b91725f5
