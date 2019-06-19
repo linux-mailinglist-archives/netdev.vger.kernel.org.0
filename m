@@ -2,53 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A7BA74BB78
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 16:29:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A224C4BB80
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 16:30:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730196AbfFSO3E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 10:29:04 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:34976 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725901AbfFSO3E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 10:29:04 -0400
-Received: from localhost (unknown [144.121.20.163])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 5E11A152474A2;
-        Wed, 19 Jun 2019 07:29:03 -0700 (PDT)
-Date:   Wed, 19 Jun 2019 10:29:02 -0400 (EDT)
-Message-Id: <20190619.102902.987299091903565700.davem@davemloft.net>
-To:     ilias.apalodimas@linaro.org
-Cc:     jaswinder.singh@linaro.org, netdev@vger.kernel.org,
-        ard.biesheuvel@linaro.org, masahisa.kojima@linaro.org
-Subject: Re: [net-next, PATCH 2/2, v2] net: netsec: remove loops in napi Rx
- process
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1560938641-16778-2-git-send-email-ilias.apalodimas@linaro.org>
-References: <1560938641-16778-1-git-send-email-ilias.apalodimas@linaro.org>
-        <1560938641-16778-2-git-send-email-ilias.apalodimas@linaro.org>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 19 Jun 2019 07:29:03 -0700 (PDT)
+        id S1729188AbfFSOav (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 10:30:51 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:56887 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725899AbfFSOav (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 10:30:51 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
+        (Exim 4.76)
+        (envelope-from <colin.king@canonical.com>)
+        id 1hdbbp-0005sO-5S; Wed, 19 Jun 2019 14:30:45 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][net-next] iavf: fix dereference of null rx_buffer pointer
+Date:   Wed, 19 Jun 2019 15:30:44 +0100
+Message-Id: <20190619143044.10259-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Date: Wed, 19 Jun 2019 13:04:01 +0300
+From: Colin Ian King <colin.king@canonical.com>
 
-> netsec_process_rx was running in a loop trying to process as many packets
-> as possible before re-enabling interrupts. With the recent DMA changes
-> this is not needed anymore as we manage to consume all the budget without
-> looping over the function.
-> Since it has no performance penalty let's remove that and simplify the Rx
-> path a bit
-> 
-> Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-> Acked-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+A recent commit efa14c3985828d ("iavf: allow null RX descriptors") added
+a null pointer sanity check on rx_buffer, however, rx_buffer is being
+dereferenced before that check, which implies a null pointer dereference
+bug can potentially occur.  Fix this by only dereferencing rx_buffer
+until after the null pointer check.
 
-Applied.
+Addresses-Coverity: ("Dereference before null check")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/ethernet/intel/iavf/iavf_txrx.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_txrx.c b/drivers/net/ethernet/intel/iavf/iavf_txrx.c
+index 1cde1601bc32..0cca1b589b56 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_txrx.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_txrx.c
+@@ -1296,7 +1296,7 @@ static struct sk_buff *iavf_construct_skb(struct iavf_ring *rx_ring,
+ 					  struct iavf_rx_buffer *rx_buffer,
+ 					  unsigned int size)
+ {
+-	void *va = page_address(rx_buffer->page) + rx_buffer->page_offset;
++	void *va;
+ #if (PAGE_SIZE < 8192)
+ 	unsigned int truesize = iavf_rx_pg_size(rx_ring) / 2;
+ #else
+@@ -1308,6 +1308,7 @@ static struct sk_buff *iavf_construct_skb(struct iavf_ring *rx_ring,
+ 	if (!rx_buffer)
+ 		return NULL;
+ 	/* prefetch first cache line of first page */
++	va = page_address(rx_buffer->page) + rx_buffer->page_offset;
+ 	prefetch(va);
+ #if L1_CACHE_BYTES < 128
+ 	prefetch(va + L1_CACHE_BYTES);
+@@ -1362,7 +1363,7 @@ static struct sk_buff *iavf_build_skb(struct iavf_ring *rx_ring,
+ 				      struct iavf_rx_buffer *rx_buffer,
+ 				      unsigned int size)
+ {
+-	void *va = page_address(rx_buffer->page) + rx_buffer->page_offset;
++	void *va;
+ #if (PAGE_SIZE < 8192)
+ 	unsigned int truesize = iavf_rx_pg_size(rx_ring) / 2;
+ #else
+@@ -1374,6 +1375,7 @@ static struct sk_buff *iavf_build_skb(struct iavf_ring *rx_ring,
+ 	if (!rx_buffer)
+ 		return NULL;
+ 	/* prefetch first cache line of first page */
++	va = page_address(rx_buffer->page) + rx_buffer->page_offset;
+ 	prefetch(va);
+ #if L1_CACHE_BYTES < 128
+ 	prefetch(va + L1_CACHE_BYTES);
+-- 
+2.20.1
+
