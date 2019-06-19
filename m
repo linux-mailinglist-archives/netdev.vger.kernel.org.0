@@ -2,184 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AF744BD34
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 17:47:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B40834BD4D
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 17:54:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729937AbfFSPrJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 11:47:09 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:38302 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727552AbfFSPrI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 11:47:08 -0400
-Received: by mail-io1-f71.google.com with SMTP id h4so21827891iol.5
-        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 08:47:08 -0700 (PDT)
+        id S1729951AbfFSPyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 11:54:15 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:42029 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726091AbfFSPyN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 11:54:13 -0400
+Received: by mail-pf1-f194.google.com with SMTP id q10so10004673pff.9
+        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 08:54:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ASmM9gQmF/3k+Nfuv02EdnEKhKJvjuRw3mP4uOO9qGg=;
+        b=iIY5sOfQvEbdAvdDmTqt+ZKKVRAmAe+1wv4aDXwi3CtVBmymL8Kl/SzPiB8tII3vqx
+         wpNurwisErBzTOqcEVGYYX9Ccw0G9CXo7BznCfjAP7Ad/y0kRLuyenatQ+3a7mfZTakF
+         KzbDC5ny3jaGNLEEYXxKD9mPHNhzOs7UgA1qH2dJtKkuHu5rupPE8vNGy4YFkt1MW/Je
+         NP0/TAvz6hXzMKAGQdKUk44Gn/nGXmcYgNIZ9UuaQYkS5C4VtnanXTL62w7udZXzilOj
+         na5D2x52ohy1Z14M0giqYfa9LsdUhyI2SsMPYOWTfBOF8x+9Pq8ddlkLMHnONCGWBj6B
+         2A/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=hHZuSqbZ2UJO3F7wlo6ZhKddlrieBiNbmp48U00E8fw=;
-        b=g4FVaAtEapUDHmnxAbtCPbmex0wqRzLmiSlM5cAdezCwDK11KQhsJd8H/oxwMgw/0t
-         gFEq41at8zTr/AFOT/8RfmWGKNFG2FO7B6qIqbfr+QnJD4gjzh6cPQDMwJcAx1taPquK
-         evzwBR3MhCgCHjSoDGQS1qOI49GHP0sL8SadjuprOnv1g8EbZcxMikGJWP1voLlntcON
-         r0A4ctBt+ChtzXsc5t0DD7g+WEFMydIMaDbkx+Xt1aJmAMo2TGqK9ZfrUd41X64q5Dge
-         ndRVd7Pef24LPYw7R+GBV5cVLUwDdQOyHLn/ebqJjYZNonSN1K0W6iMyVdd3pPZ0Wa6R
-         1/8g==
-X-Gm-Message-State: APjAAAXMmjVBq5SinHkLXzJM1L1B8C7OZyLcgTBfY/eSB/hNFDhYN/G1
-        ENinJ+/floyEvyM/z9ZhJnwJyvb2loFj1G8/MU8EGEpKOgxh
-X-Google-Smtp-Source: APXvYqwhGg/njNrbsjgF+X1iruI5O5ZpW2m9d6clI7bswQPMf3AcspTNW93k7VEime5skQC4mXueAFfu0Wb6Z06/DJQ1OjXATx0T
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ASmM9gQmF/3k+Nfuv02EdnEKhKJvjuRw3mP4uOO9qGg=;
+        b=jVnFFU6YrPW02pRh5nWQvvr5B3hp1WkU7EMZ6gA1+WbmSKp694iVsr55dwETeI1mVp
+         drtULCpJL86dDCzvHR94rNF2CcuuJqaG+hmekSeFpfcMS4hfSts3yVpNI8nid+u6YL11
+         1Rcp1quBDNQ+Rp0c+Wn99RCltqAuFstTEFHztFhPUBEnrBGUc3kMcJF52hVcuXEoBM3Y
+         +DBe71XcVme4TswC4wIX8/sUyUpdrtoWJrgUEdIX1GbGfutbc4HQ38sg0gE0bFhm/AI3
+         WopZG0mUqnvbN1UiLkZKEb3UQyVVOe5aGSplDI+BKVTbsGFYksGfvR4MKomWPnW6XDze
+         5I5g==
+X-Gm-Message-State: APjAAAVXgzv+66yBBbH4/Op3BWxM7BheMe31bA0eL6MzzAJio5Ir7CIU
+        csPlzh/EbdSaUlAw0ckfF+UHmW5R
+X-Google-Smtp-Source: APXvYqwbeIWURPm9w1tvoEj5lqfCiyp2I+pgSI/R5Ld6uIi5VBYr8AzT2LJKCpPgwfMBV9B2a3M6Vw==
+X-Received: by 2002:a63:4104:: with SMTP id o4mr8637149pga.345.1560959652892;
+        Wed, 19 Jun 2019 08:54:12 -0700 (PDT)
+Received: from [172.31.75.235] ([216.9.110.12])
+        by smtp.gmail.com with ESMTPSA id p23sm2308371pjo.4.2019.06.19.08.54.11
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Wed, 19 Jun 2019 08:54:12 -0700 (PDT)
+Subject: Re: [PATCH net-next 4/8] tcp: undo init congestion window on false
+ SYNACK timeout
+To:     Yuchung Cheng <ycheng@google.com>, davem@davemloft.net,
+        edumazet@google.com
+Cc:     netdev@vger.kernel.org, ncardwell@google.com, soheil@google.com
+References: <20190429224620.151064-1-ycheng@google.com>
+ <20190429224620.151064-5-ycheng@google.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <c0d35c03-0d95-b316-7ae9-64ca4251bba7@gmail.com>
+Date:   Wed, 19 Jun 2019 08:54:10 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-X-Received: by 2002:a02:22c6:: with SMTP id o189mr8090464jao.35.1560959227952;
- Wed, 19 Jun 2019 08:47:07 -0700 (PDT)
-Date:   Wed, 19 Jun 2019 08:47:07 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000004a8875058baf24f7@google.com>
-Subject: KASAN: use-after-free Read in brnf_exit_net
-From:   syzbot <syzbot+43a3fa52c0d9c5c94f41@syzkaller.appspotmail.com>
-To:     a.hajda@samsung.com, airlied@linux.ie, airlied@redhat.com,
-        alexander.deucher@amd.com, bridge@lists.linux-foundation.org,
-        christian.koenig@amd.com, coreteam@netfilter.org, daniel@ffwll.ch,
-        davem@davemloft.net, dri-devel@lists.freedesktop.org,
-        enric.balletbo@collabora.com, fw@strlen.de, harry.wentland@amd.com,
-        heiko@sntech.de, intel-gfx@lists.freedesktop.org,
-        jani.nikula@linux.intel.com, jerry.zhang@amd.com, jonas@kwiboo.se,
-        joonas.lahtinen@linux.intel.com, kadlec@netfilter.org,
-        laurent.pinchart@ideasonboard.com, linux-kernel@vger.kernel.org,
-        maarten.lankhorst@linux.intel.com, marc.zyngier@arm.com,
-        maxime.ripard@bootlin.com, narmstrong@baylibre.com,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        nikolay@cumulusnetworks.com, pablo@netfilter.org,
-        patrik.r.jakobsson@gmail.com, rodrigo.vivi@intel.com,
-        roopa@cumulusnetworks.com, sam@ravnborg.org, sean@poorly.run,
-        sfr@canb.auug.org.au, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+In-Reply-To: <20190429224620.151064-5-ycheng@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following crash on:
-
-HEAD commit:    1c6b4050 Add linux-next specific files for 20190618
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=10126209a00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3c614278993de456
-dashboard link: https://syzkaller.appspot.com/bug?extid=43a3fa52c0d9c5c94f41
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16291176a00000
-
-The bug was bisected to:
-
-commit b38d37a08ec4b19a9b9ec3a1ff5566781fcae1f1
-Author: Stephen Rothwell <sfr@canb.auug.org.au>
-Date:   Tue Jun 18 04:19:55 2019 +0000
-
-     Merge remote-tracking branch 'drm/drm-next'
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=146f914ea00000
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=166f914ea00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=126f914ea00000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+43a3fa52c0d9c5c94f41@syzkaller.appspotmail.com
-Fixes: b38d37a08ec4 ("Merge remote-tracking branch 'drm/drm-next'")
-
-==================================================================
-BUG: KASAN: use-after-free in br_netfilter_sysctl_exit_net  
-net/bridge/br_netfilter_hooks.c:1121 [inline]
-BUG: KASAN: use-after-free in brnf_exit_net+0x38c/0x3a0  
-net/bridge/br_netfilter_hooks.c:1141
-Read of size 8 at addr ffff8880a4078d60 by task kworker/u4:4/8749
-
-CPU: 0 PID: 8749 Comm: kworker/u4:4 Not tainted 5.2.0-rc5-next-20190618 #17
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Workqueue: netns cleanup_net
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
-  print_address_description.cold+0xd4/0x306 mm/kasan/report.c:351
-  __kasan_report.cold+0x1b/0x36 mm/kasan/report.c:482
-  kasan_report+0x12/0x20 mm/kasan/common.c:614
-  __asan_report_load8_noabort+0x14/0x20 mm/kasan/generic_report.c:132
-  br_netfilter_sysctl_exit_net net/bridge/br_netfilter_hooks.c:1121 [inline]
-  brnf_exit_net+0x38c/0x3a0 net/bridge/br_netfilter_hooks.c:1141
-  ops_exit_list.isra.0+0xaa/0x150 net/core/net_namespace.c:154
-  cleanup_net+0x3fb/0x960 net/core/net_namespace.c:553
-  process_one_work+0x989/0x1790 kernel/workqueue.c:2269
-  worker_thread+0x98/0xe40 kernel/workqueue.c:2415
-  kthread+0x354/0x420 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-
-Allocated by task 11374:
-  save_stack+0x23/0x90 mm/kasan/common.c:71
-  set_track mm/kasan/common.c:79 [inline]
-  __kasan_kmalloc mm/kasan/common.c:489 [inline]
-  __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:462
-  kasan_kmalloc+0x9/0x10 mm/kasan/common.c:503
-  __do_kmalloc mm/slab.c:3645 [inline]
-  __kmalloc+0x15c/0x740 mm/slab.c:3654
-  kmalloc include/linux/slab.h:552 [inline]
-  kzalloc include/linux/slab.h:743 [inline]
-  __register_sysctl_table+0xc7/0xef0 fs/proc/proc_sysctl.c:1327
-  register_net_sysctl+0x29/0x30 net/sysctl_net.c:121
-  br_netfilter_sysctl_init_net net/bridge/br_netfilter_hooks.c:1105 [inline]
-  brnf_init_net+0x379/0x6a0 net/bridge/br_netfilter_hooks.c:1126
-  ops_init+0xb3/0x410 net/core/net_namespace.c:130
-  setup_net+0x2d3/0x740 net/core/net_namespace.c:316
-  copy_net_ns+0x1df/0x340 net/core/net_namespace.c:439
-  create_new_namespaces+0x400/0x7b0 kernel/nsproxy.c:103
-  unshare_nsproxy_namespaces+0xc2/0x200 kernel/nsproxy.c:202
-  ksys_unshare+0x444/0x980 kernel/fork.c:2822
-  __do_sys_unshare kernel/fork.c:2890 [inline]
-  __se_sys_unshare kernel/fork.c:2888 [inline]
-  __x64_sys_unshare+0x31/0x40 kernel/fork.c:2888
-  do_syscall_64+0xfd/0x680 arch/x86/entry/common.c:301
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-Freed by task 9:
-  save_stack+0x23/0x90 mm/kasan/common.c:71
-  set_track mm/kasan/common.c:79 [inline]
-  __kasan_slab_free+0x102/0x150 mm/kasan/common.c:451
-  kasan_slab_free+0xe/0x10 mm/kasan/common.c:459
-  __cache_free mm/slab.c:3417 [inline]
-  kfree+0x10a/0x2c0 mm/slab.c:3746
-  __rcu_reclaim kernel/rcu/rcu.h:215 [inline]
-  rcu_do_batch kernel/rcu/tree.c:2092 [inline]
-  invoke_rcu_callbacks kernel/rcu/tree.c:2310 [inline]
-  rcu_core+0xcc7/0x1500 kernel/rcu/tree.c:2291
-  __do_softirq+0x25c/0x94c kernel/softirq.c:292
-
-The buggy address belongs to the object at ffff8880a4078d40
-  which belongs to the cache kmalloc-512 of size 512
-The buggy address is located 32 bytes inside of
-  512-byte region [ffff8880a4078d40, ffff8880a4078f40)
-The buggy address belongs to the page:
-page:ffffea0002901e00 refcount:1 mapcount:0 mapping:ffff8880aa400a80  
-index:0xffff8880a40785c0
-flags: 0x1fffc0000000200(slab)
-raw: 01fffc0000000200 ffffea0001d636c8 ffffea0001b07308 ffff8880aa400a80
-raw: ffff8880a40785c0 ffff8880a40780c0 0000000100000004 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
-  ffff8880a4078c00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-  ffff8880a4078c80: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
-> ffff8880a4078d00: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
-                                                        ^
-  ffff8880a4078d80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-  ffff8880a4078e00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
 
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+On 4/29/19 3:46 PM, Yuchung Cheng wrote:
+> Linux implements RFC6298 and use an initial congestion window
+> of 1 upon establishing the connection if the SYNACK packet is
+> retransmitted 2 or more times. In cellular networks SYNACK timeouts
+> are often spurious if the wireless radio was dormant or idle. Also
+> some network path is longer than the default SYNACK timeout. In
+> both cases falsely starting with a minimal cwnd are detrimental
+> to performance.
+> 
+> This patch avoids doing so when the final ACK's TCP timestamp
+> indicates the original SYNACK was delivered. It remembers the
+> original SYNACK timestamp when SYNACK timeout has occurred and
+> re-uses the function to detect spurious SYN timeout conveniently.
+> 
+> Note that a server may receives multiple SYNs from and immediately
+> retransmits SYNACKs without any SYNACK timeout. This often happens
+> on when the client SYNs have timed out due to wireless delay
+> above. In this case since the server will still use the default
+> initial congestion (e.g. 10) because tp->undo_marker is reset in
+> tcp_init_metrics(). This is an intentional design because packets
+> are not lost but delayed.
+> 
+> This patch only covers regular TCP passive open. Fast Open is
+> supported in the next patch.
+> 
+> Signed-off-by: Yuchung Cheng <ycheng@google.com>
+> Signed-off-by: Neal Cardwell <ncardwell@google.com>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> ---
+>  net/ipv4/tcp_input.c     | 2 ++
+>  net/ipv4/tcp_minisocks.c | 5 +++++
+>  2 files changed, 7 insertions(+)
+> 
+> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+> index 30c6a42b1f5b..53b4c5a3113b 100644
+> --- a/net/ipv4/tcp_input.c
+> +++ b/net/ipv4/tcp_input.c
+> @@ -6101,6 +6101,8 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+>  			 */
+>  			tcp_rearm_rto(sk);
+>  		} else {
+> +			tcp_try_undo_spurious_syn(sk);
+> +			tp->retrans_stamp = 0;
+>  			tcp_init_transfer(sk, BPF_SOCK_OPS_PASSIVE_ESTABLISHED_CB);
+>  			tp->copied_seq = tp->rcv_nxt;
+>  		}
+> diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
+> index 79900f783e0d..9c2a0d36fb20 100644
+> --- a/net/ipv4/tcp_minisocks.c
+> +++ b/net/ipv4/tcp_minisocks.c
+> @@ -522,6 +522,11 @@ struct sock *tcp_create_openreq_child(const struct sock *sk,
+>  		newtp->rx_opt.ts_recent_stamp = 0;
+>  		newtp->tcp_header_len = sizeof(struct tcphdr);
+>  	}
+> +	if (req->num_timeout) {
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+It seems that req->num_timeout could contain garbage value at this point.
+
+That is because we clear req->num_timeout late (in reqsk_queue_hash_req())
+
+I will send a fix.
+
+
+> +		newtp->undo_marker = treq->snt_isn;
+> +		newtp->retrans_stamp = div_u64(treq->snt_synack,
+> +					       USEC_PER_SEC / TCP_TS_HZ);
+> +	}
+>  	newtp->tsoffset = treq->ts_off;
+>  #ifdef CONFIG_TCP_MD5SIG
+>  	newtp->md5sig_info = NULL;	/*XXX*/
+> 
