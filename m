@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 667974C44C
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 02:00:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B5C74C44D
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 02:00:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730937AbfFTAAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 20:00:38 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:34866 "EHLO mx1.redhat.com"
+        id S1730954AbfFTAAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 20:00:41 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:59598 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726322AbfFTAAh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Jun 2019 20:00:37 -0400
+        id S1726322AbfFTAAk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Jun 2019 20:00:40 -0400
 Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 73111223886;
-        Thu, 20 Jun 2019 00:00:37 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 338D030BB559;
+        Thu, 20 Jun 2019 00:00:40 +0000 (UTC)
 Received: from epycfail.redhat.com (unknown [10.36.112.13])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 03EAE19C5B;
-        Thu, 20 Jun 2019 00:00:34 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D655F19C79;
+        Thu, 20 Jun 2019 00:00:37 +0000 (UTC)
 From:   Stefano Brivio <sbrivio@redhat.com>
 To:     David Miller <davem@davemloft.net>
 Cc:     Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
@@ -27,78 +27,118 @@ Cc:     Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
         Eric Dumazet <edumazet@google.com>,
         Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
         netdev@vger.kernel.org
-Subject: [PATCH net-next v6 09/11] ip6_fib: Don't discard nodes with valid routing information in fib6_locate_1()
-Date:   Thu, 20 Jun 2019 01:59:49 +0200
-Message-Id: <32e5feb86ee8951074df71126122726eb3d7a949.1560987611.git.sbrivio@redhat.com>
+Subject: [PATCH net-next v6 10/11] selftests: pmtu: Introduce list_flush_ipv4_exception test case
+Date:   Thu, 20 Jun 2019 01:59:50 +0200
+Message-Id: <1a0f37f619b130017cbff583c059e3f3c86ccded.1560987611.git.sbrivio@redhat.com>
 In-Reply-To: <cover.1560987611.git.sbrivio@redhat.com>
 References: <cover.1560987611.git.sbrivio@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.39]); Thu, 20 Jun 2019 00:00:37 +0000 (UTC)
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Thu, 20 Jun 2019 00:00:40 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When we perform an inexact match on FIB nodes via fib6_locate_1(), longer
-prefixes will be preferred to shorter ones. However, it might happen that
-a node, with higher fn_bit value than some other, has no valid routing
-information.
+This test checks that route exceptions can be successfully listed and
+flushed using ip -6 route {list,flush} cache.
 
-In this case, we'll pick that node, but it will be discarded by the check
-on RTN_RTINFO in fib6_locate(), and we might miss nodes with valid routing
-information but with lower fn_bit value.
+v6:
+  - Merge this patch into series including fix, as it's also targeted
+    for net-next
+  - Drop left-over print of 'ip route list cache | wc -l'
 
-This is apparent when a routing exception is created for a default route:
- # ip -6 route list
- fc00:1::/64 dev veth_A-R1 proto kernel metric 256 pref medium
- fc00:2::/64 dev veth_A-R2 proto kernel metric 256 pref medium
- fc00:4::1 via fc00:2::2 dev veth_A-R2 metric 1024 pref medium
- fe80::/64 dev veth_A-R1 proto kernel metric 256 pref medium
- fe80::/64 dev veth_A-R2 proto kernel metric 256 pref medium
- default via fc00:1::2 dev veth_A-R1 metric 1024 pref medium
- # ip -6 route list cache
- fc00:4::1 via fc00:2::2 dev veth_A-R2 metric 1024 expires 593sec mtu 1500 pref medium
- fc00:3::1 via fc00:1::2 dev veth_A-R1 metric 1024 expires 593sec mtu 1500 pref medium
- # ip -6 route flush cache    # node for default route is discarded
- Failed to send flush request: No such process
- # ip -6 route list cache
- fc00:3::1 via fc00:1::2 dev veth_A-R1 metric 1024 expires 586sec mtu 1500 pref medium
-
-Check right away if the node has a RTN_RTINFO flag, before replacing the
-'prev' pointer, that indicates the longest matching prefix found so far.
-
-Fixes: 38fbeeeeccdb ("ipv6: prepare fib6_locate() for exception table")
 Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
 ---
-v6: Rebased onto net-next, no changes
+ tools/testing/selftests/net/pmtu.sh | 60 +++++++++++++++++++++++++++++
+ 1 file changed, 60 insertions(+)
 
-v5: No changes
-
-v4: No changes
-
-v3: No changes
-
-v2: No changes
-
- net/ipv6/ip6_fib.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
-index 92a6bde57594..8f36e6742c36 100644
---- a/net/ipv6/ip6_fib.c
-+++ b/net/ipv6/ip6_fib.c
-@@ -1595,7 +1595,8 @@ static struct fib6_node *fib6_locate_1(struct fib6_node *root,
- 		if (plen == fn->fn_bit)
- 			return fn;
+diff --git a/tools/testing/selftests/net/pmtu.sh b/tools/testing/selftests/net/pmtu.sh
+index 269e839b747e..f5004a9df229 100755
+--- a/tools/testing/selftests/net/pmtu.sh
++++ b/tools/testing/selftests/net/pmtu.sh
+@@ -112,6 +112,10 @@
+ # - cleanup_ipv6_exception
+ #	Same as above, but use IPv6 transport from A to B
+ #
++# - list_flush_ipv4_exception
++#	Using the same topology as in pmtu_ipv4, create exceptions, and check
++#	they are shown when listing exception caches, gone after flushing them
++#
+ # - list_flush_ipv6_exception
+ #	Using the same topology as in pmtu_ipv6, create exceptions, and check
+ #	they are shown when listing exception caches, gone after flushing them
+@@ -156,6 +160,7 @@ tests="
+ 	pmtu_vti6_link_change_mtu	vti6: MTU changes on link changes	0
+ 	cleanup_ipv4_exception		ipv4: cleanup of cached exceptions	1
+ 	cleanup_ipv6_exception		ipv6: cleanup of cached exceptions	1
++	list_flush_ipv4_exception	ipv4: list and flush cached exceptions	1
+ 	list_flush_ipv6_exception	ipv6: list and flush cached exceptions	1"
  
--		prev = fn;
-+		if (fn->fn_flags & RTN_RTINFO)
-+			prev = fn;
+ NS_A="ns-A"
+@@ -1207,6 +1212,61 @@ run_test_nh() {
+ 	USE_NH=no
+ }
  
- next:
- 		/*
++test_list_flush_ipv4_exception() {
++	setup namespaces routing || return 2
++	trace "${ns_a}"  veth_A-R1    "${ns_r1}" veth_R1-A \
++	      "${ns_r1}" veth_R1-B    "${ns_b}"  veth_B-R1 \
++	      "${ns_a}"  veth_A-R2    "${ns_r2}" veth_R2-A \
++	      "${ns_r2}" veth_R2-B    "${ns_b}"  veth_B-R2
++
++	dst_prefix1="${prefix4}.${b_r1}."
++	dst2="${prefix4}.${b_r2}.1"
++
++	# Set up initial MTU values
++	mtu "${ns_a}"  veth_A-R1 2000
++	mtu "${ns_r1}" veth_R1-A 2000
++	mtu "${ns_r1}" veth_R1-B 1500
++	mtu "${ns_b}"  veth_B-R1 1500
++
++	mtu "${ns_a}"  veth_A-R2 2000
++	mtu "${ns_r2}" veth_R2-A 2000
++	mtu "${ns_r2}" veth_R2-B 1500
++	mtu "${ns_b}"  veth_B-R2 1500
++
++	fail=0
++
++	# Add 100 addresses for veth endpoint on B reached by default A route
++	for i in $(seq 100 199); do
++		run_cmd ${ns_b} ip addr add "${dst_prefix1}${i}" dev veth_B-R1
++	done
++
++	# Create 100 cached route exceptions for path via R1, one via R2. Note
++	# that with IPv4 we need to actually cause a route lookup that matches
++	# the exception caused by ICMP, in order to actually have a cached
++	# route, so we need to ping each destination twice
++	for i in $(seq 100 199); do
++		run_cmd ${ns_a} ping -q -M want -i 0.1 -c 2 -s 1800 "${dst_prefix1}${i}"
++	done
++	run_cmd ${ns_a} ping -q -M want -i 0.1 -c 2 -s 1800 "${dst2}"
++
++	# Each exception is printed as two lines
++	if [ "$(${ns_a} ip route list cache | wc -l)" -ne 202 ]; then
++		err "  can't list cached exceptions"
++		fail=1
++	fi
++
++	run_cmd ${ns_a} ip route flush cache
++	pmtu1="$(route_get_dst_pmtu_from_exception "${ns_a}" ${dst_prefix}1)"
++	pmtu2="$(route_get_dst_pmtu_from_exception "${ns_a}" ${dst_prefix}2)"
++	if [ -n "${pmtu1}" ] || [ -n "${pmtu2}" ] || \
++	   [ -n "$(${ns_a} ip route list cache)" ]; then
++		err "  can't flush cached exceptions"
++		fail=1
++	fi
++
++	return ${fail}
++}
++
+ test_list_flush_ipv6_exception() {
+ 	setup namespaces routing || return 2
+ 	trace "${ns_a}"  veth_A-R1    "${ns_r1}" veth_R1-A \
 -- 
 2.20.1
 
