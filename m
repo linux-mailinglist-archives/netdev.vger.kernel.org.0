@@ -2,59 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FB9E4BE6D
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 18:40:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 112DF4BE7F
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 18:45:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729810AbfFSQj4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 12:39:56 -0400
-Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:56916 "EHLO
-        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726091AbfFSQj4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 12:39:56 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=yang.shi@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0TUccqUw_1560962390;
-Received: from US-143344MP.local(mailfrom:yang.shi@linux.alibaba.com fp:SMTPD_---0TUccqUw_1560962390)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 20 Jun 2019 00:39:52 +0800
-Subject: Re: [PATCH] mm: mempolicy: handle vma with unmovable pages mapped
- correctly in mbind
-To:     Vlastimil Babka <vbabka@suse.cz>, Michal Hocko <mhocko@kernel.org>
-Cc:     akpm@linux-foundation.org, mgorman@techsingularity.net,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <1560797290-42267-1-git-send-email-yang.shi@linux.alibaba.com>
- <20190618130253.GH3318@dhcp22.suse.cz>
- <cf33b724-fdd5-58e3-c06a-1bc563525311@linux.alibaba.com>
- <2c30d86f-43e4-f43c-411d-c916fb1de44e@suse.cz>
-From:   Yang Shi <yang.shi@linux.alibaba.com>
-Message-ID: <68b67faf-d1c3-bc36-3db4-c86c6dfd8f11@linux.alibaba.com>
-Date:   Wed, 19 Jun 2019 09:39:48 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:52.0)
- Gecko/20100101 Thunderbird/52.7.0
+        id S1729072AbfFSQpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 12:45:24 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:60774 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726332AbfFSQpY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 12:45:24 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
+        (Exim 4.76)
+        (envelope-from <colin.king@canonical.com>)
+        id 1hddi2-0001iD-9W; Wed, 19 Jun 2019 16:45:18 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Michal Simek <michal.simek@xilinx.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] can: xilinx_can: clean up indentation issue
+Date:   Wed, 19 Jun 2019 17:45:17 +0100
+Message-Id: <20190619164518.5683-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <2c30d86f-43e4-f43c-411d-c916fb1de44e@suse.cz>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Colin Ian King <colin.king@canonical.com>
 
+A statement is indented one level too deep, fix this.
 
-On 6/19/19 1:18 AM, Vlastimil Babka wrote:
-> On 6/18/19 7:06 PM, Yang Shi wrote:
->> The BUG_ON was removed by commit
->> d44d363f65780f2ac2ec672164555af54896d40d ("mm: don't assume anonymous
->> pages have SwapBacked flag") since 4.12.
-> Perhaps that commit should be sent to stable@ ? Although with
-> VM_BUG_ON() this is less critical than plain BUG_ON().
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/can/xilinx_can.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I don't think we have to. I agree it is less critical,  VM_DEBUG should 
-be not enabled for production environment.
-
-And, it doesn't actually break anything since split_huge_page would just 
-return error, and those unmovable pages are silently ignored by isolate.
-
+diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
+index 63203ff452b5..a3940141555c 100644
+--- a/drivers/net/can/xilinx_can.c
++++ b/drivers/net/can/xilinx_can.c
+@@ -924,7 +924,7 @@ static void xcan_err_interrupt(struct net_device *ndev, u32 isr)
+ 				cf->data[3] = CAN_ERR_PROT_LOC_CRC_SEQ;
+ 			}
+ 		}
+-			priv->can.can_stats.bus_error++;
++		priv->can.can_stats.bus_error++;
+ 	}
+ 
+ 	if (skb) {
+-- 
+2.20.1
 
