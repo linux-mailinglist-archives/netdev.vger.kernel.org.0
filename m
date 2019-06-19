@@ -2,123 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B12E94C078
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 20:04:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63F2D4C08E
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 20:10:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726482AbfFSSEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 14:04:23 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:36262 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726191AbfFSSEW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 14:04:22 -0400
-Received: by mail-io1-f68.google.com with SMTP id h6so396872ioh.3
-        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 11:04:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=bY2Pdgxjl8QBtsjUINphEntPK3jfC/Ak6GNxyygmigo=;
-        b=VkybdO5szSQoqsCVNU3CNvztJwBLITMX5WwtErnOYPP33xZQZA9gVzz6aeV21kCbn5
-         ObwWjqDCTa2/Bb2qCTbAbK6xqxkdiHO/Mwj3z8YEH/KyXQrkohwjDJjxkKABz0ZhAhkW
-         RpTbQvkIB8kS8Zn2Qbo1olUPr8yqDON/ekOis=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=bY2Pdgxjl8QBtsjUINphEntPK3jfC/Ak6GNxyygmigo=;
-        b=j+9YYT/PVBSzWe4OBuCJtjkiL6JpO3rVyGEdXz2K0CWDjfDhXq8LLebR9qYDrZfY1t
-         neYvwjphn3E0gSJs2aPl5H4u4NoOpq+PQVz4tJfL4Wla36xqFAXIlB/xl3vGUSiirYDr
-         LzOjV77JHutAjFj8ihIcjMcIJKFoKI2o3X4nObUcg8wXFpItfVqZd/oSKD9Wuh/QGAvD
-         5TqaMLXFRTVX0kDyCStVokBg47kol1YlHJgvnOa/3F0g4Ly1v7/wjPK8kD1FEBm/UBTG
-         Z7V5ex2GFg+6hQca0yAs2Sl9p+EX6lpwPEYt7NsCahAFGcNEN5UrzKgvmld88N4o9Jlb
-         Ix0w==
-X-Gm-Message-State: APjAAAUA/4dFd+VdJl8z24gAm1hFJ4pny226iHrMQ2vIbWnrBMZ5pACV
-        zHH1i/ter7JpR8d2RxkJg5GcrA==
-X-Google-Smtp-Source: APXvYqw4Tz4USEoEvxV705R5eyOixcvvXbf7l0fifGzCyJPxmQS1jpqwotommwl09kmMHgcdPEDAXg==
-X-Received: by 2002:a6b:b40b:: with SMTP id d11mr3987486iof.122.1560967461187;
-        Wed, 19 Jun 2019 11:04:21 -0700 (PDT)
-Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
-        by smtp.gmail.com with ESMTPSA id y20sm17970542iol.34.2019.06.19.11.04.20
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 19 Jun 2019 11:04:20 -0700 (PDT)
-Subject: Re: [PATCH] net: fddi: skfp: Include generic PCI definitions from
- pci_regs.h
-To:     Puranjay Mohan <puranjay12@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Bjorn Helgaas <bjorn@helgaas.com>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20190619174556.21194-1-puranjay12@gmail.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <e49daf89-1bf0-77e8-c71f-ec0802f25f6c@linuxfoundation.org>
-Date:   Wed, 19 Jun 2019 12:04:19 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1726628AbfFSSKw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 14:10:52 -0400
+Received: from smtprelay0174.hostedemail.com ([216.40.44.174]:56895 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726175AbfFSSKw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 14:10:52 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay03.hostedemail.com (Postfix) with ESMTP id 311F7837F27D;
+        Wed, 19 Jun 2019 18:10:50 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::::::::::::::,RULES_HIT:41:355:379:599:800:960:967:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1540:1593:1594:1711:1730:1747:1777:1792:2198:2199:2393:2525:2553:2559:2563:2682:2685:2731:2828:2859:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3352:3622:3865:3867:3868:3870:3871:3872:3873:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4250:4321:5007:6119:6742:7903:8957:9010:9025:10004:10400:10848:11232:11658:11914:12043:12438:12555:12663:12679:12740:12760:12895:13019:13069:13073:13095:13311:13357:13439:14181:14659:14721:21080:21324:21365:21433:21451:21627:21740:30054:30060:30083:30090:30091,0,RBL:error,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:34,LUA_SUMMARY:none
+X-HE-Tag: way23_7b66ca55ffa0b
+X-Filterd-Recvd-Size: 2550
+Received: from XPS-9350 (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
+        (Authenticated sender: joe@perches.com)
+        by omf04.hostedemail.com (Postfix) with ESMTPA;
+        Wed, 19 Jun 2019 18:10:47 +0000 (UTC)
+Message-ID: <6bb0ac7f70a12a4bb9cb6238b4e50e23674bde43.camel@perches.com>
+Subject: Re: [PATCH] net/ipv4: fib_trie: Avoid cryptic ternary expressions
+From:   Joe Perches <joe@perches.com>
+To:     Nick Desaulniers <ndesaulniers@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Matthias Kaehlcke <mka@chromium.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Alexander Duyck <alexander.h.duyck@redhat.com>,
+        netdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Nathan Huckleberry <nhuck@google.com>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        Nathan Chancellor <natechancellor@gmail.com>
+Date:   Wed, 19 Jun 2019 11:10:46 -0700
+In-Reply-To: <CAKwvOdkJCt7Du01e3LreLdpREPuZXWYnUad6WzqwO_o4i0yk7A@mail.gmail.com>
+References: <20190618211440.54179-1-mka@chromium.org>
+         <20190618230420.GA84107@archlinux-epyc>
+         <CAKwvOd=i2qsEO90cHn-Zvgd7vbhK5Z4RH89gJGy=Cjzbi9QRMA@mail.gmail.com>
+         <f22006fedb0204ad05858609bc9d3ed0abc6078e.camel@perches.com>
+         <CAKwvOdkJCt7Du01e3LreLdpREPuZXWYnUad6WzqwO_o4i0yk7A@mail.gmail.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
 MIME-Version: 1.0
-In-Reply-To: <20190619174556.21194-1-puranjay12@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/19/19 11:45 AM, Puranjay Mohan wrote:
-> Include the generic PCI definitions from include/uapi/linux/pci_regs.h
-> change PCI_REV_ID to PCI_REVISION_ID to make it compatible with the
-> generic define.
-> This driver uses only one generic PCI define.
+On Wed, 2019-06-19 at 10:41 -0700, Nick Desaulniers wrote:
+> On Wed, Jun 19, 2019 at 2:36 AM Joe Perches <joe@perches.com> wrote:
+> > On Tue, 2019-06-18 at 16:23 -0700, Nick Desaulniers wrote:
+> > > As a side note, I'm going to try to see if MAINTAINERS and
+> > > scripts/get_maintainers.pl supports regexes on the commit messages in
+> > > order to cc our mailing list
+> > 
+> > Neither.  Why should either?
 > 
-> Signed-off-by: Puranjay Mohan <puranjay12@gmail.com>
-> ---
->   drivers/net/fddi/skfp/drvfbi.c | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/fddi/skfp/drvfbi.c b/drivers/net/fddi/skfp/drvfbi.c
-> index bdd5700e71fa..38f6d943385d 100644
-> --- a/drivers/net/fddi/skfp/drvfbi.c
-> +++ b/drivers/net/fddi/skfp/drvfbi.c
-> @@ -20,6 +20,7 @@
->   #include "h/supern_2.h"
->   #include "h/skfbiinc.h"
->   #include <linux/bitrev.h>
-> +#include <uapi/linux/pci_regs.h>
->   
->   #ifndef	lint
->   static const char ID_sccs[] = "@(#)drvfbi.c	1.63 99/02/11 (C) SK " ;
-> @@ -127,7 +128,7 @@ static void card_start(struct s_smc *smc)
->   	 *	 at very first before any other initialization functions is
->   	 *	 executed.
->   	 */
-> -	rev_id = inp(PCI_C(PCI_REV_ID)) ;
-> +	rev_id = inp(PCI_C(PCI_REVISION_ID)) ;
->   	if ((rev_id & 0xf0) == SK_ML_ID_1 || (rev_id & 0xf0) == SK_ML_ID_2) {
->   		smc->hw.hw_is_64bit = TRUE ;
->   	} else {
-> 
+> Looks like `K:` is exactly what I'm looking for.
 
-Why not delete the PCI_REV_ID define in:
+Using K: for commit message content isn't the intended
+use, but if it works for you, fine by me.
 
-drivers/net/fddi/skfp/h/skfbi.h
+> Joe, how does:
+> https://github.com/ClangBuiltLinux/linux/commit/a0a64b8d65c4e7e033f49e48cc610d6e4002927e
+> look?
 
-It looks like this header has duplicate PCI config space header defines,
-not just this one. Some of them are slightly different names:
+You might consider using
 
-e.g:
+K:	\b(?i:clang|llvm)\b
 
-#define PCI_CACHE_LSZ   0x0c    /*  8 bit       Cache Line Size */
+to get case insensitive matches.
 
-Looks like it defines the standard PCI config space instead of
-including and using the standard defines from uapi/linux/pci_regs.h
+> Is there a maintainer for MAINTAINERS or do I just send the
+> patch to Linus?
 
-Something to look into.
-
-thanks,
--- Shuah
-
-
+Generally MAINTAINER patches go via Andrew Morton or
+indirectly along with other changes via a pull request
+to Linus.
 
 
 
