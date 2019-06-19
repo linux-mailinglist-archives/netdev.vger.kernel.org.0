@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FECB4BD3A
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 17:47:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97A314BD35
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 17:47:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729766AbfFSPrJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1729902AbfFSPrJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 19 Jun 2019 11:47:09 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:43733 "EHLO
+Received: from mail-io1-f71.google.com ([209.85.166.71]:36472 "EHLO
         mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726839AbfFSPrI (ORCPT
+        with ESMTP id S1726091AbfFSPrI (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 11:47:08 -0400
-Received: by mail-io1-f71.google.com with SMTP id y5so21722936ioj.10
+Received: by mail-io1-f71.google.com with SMTP id k21so21776550ioj.3
         for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 08:47:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=G35OJz6sjhkbUbQl7PzvWn/reajdAg+kBApbnx/fYHU=;
-        b=dG9QyjegkgksCMv79/IiuNUULBxWDBqH1XWYFl+uC1U404BlVBWiEZj4ZcNqUxV3E7
-         fMfRLpeCWyhBzuxctRM2i90RxKjb6LVRX1atvYdxSfU5nKQbAFZQDPdVBUT8FsOw6Y1S
-         dOiRoOLcx7Vf27XdxQl+aK6CV4olapZ/StUIDs4cyZn1wFu3g2ZLS2qKnxoMDCoKc0xD
-         pG+9DCKn/QeyanFfrEwD7Wwjxk6s+FkRVDE3bUi2X3EjLzRCrLb/B2ZxEX0nQB32QJ7y
-         WyUEagby3gWuN7lUgSFMLFnw5xBLO1qJZvXAqWCRoM7YlJ2crTGYZd5R3XI5Ebx/XRV3
-         LaDQ==
-X-Gm-Message-State: APjAAAVMZ/+wi/HYDbFaix00FKNJeEcu2XYMNEKPOMR0Sn9xDvSqKOSU
-        bk4CcSGi1ta3SZ3BveqJu47rUPhXKhU4nt5F96VaRstabnpt
-X-Google-Smtp-Source: APXvYqzq4EUif8uTIkSHcyc+eYTxq38OopdKHHNqsUg4jZEvXH37Sh6ZpEE3MHsTEo3MlyJaDFmS1geYq/r+Re3NYNGnFVWLfXLb
+        bh=HcDITllUPfSPDG1JQqG6leFos4NEv4NFO7VcX2wuMAM=;
+        b=Z+LSb/76XXkCuQJWBtBtihRQhvsxZnSJC0v4a0cBi5GrphXjUtIJ+LCugvEfRcwdgU
+         /cmo2/sC34Pce2n47ZAiLbyrmRSmRMsaRaxoFKjmkZQG/MDyOTP3qytRIkZxrf2UpEWb
+         Xu1XJlmRjUDqTWGwpFvU7+J/P6y84LOMtFxfTxN9qnU2SGatkkOIKCGLSivmtvp8TnIR
+         yZAJQoFGMztefTM/ocnuF+bpcze8PMPKNwfMZTpnPIei/Ep+8UhcsjbdTyvfa9X3/kZl
+         Z7xbAaYzqRJkCMztlygavU7n7SCpCQVivazBn9ASlO4Lp43aZRLkAUOyHCCgkZP2c2zW
+         AUow==
+X-Gm-Message-State: APjAAAUbIzfwuGWPIqz2hzwjsSy0WEgburrb2AcrJwTY1uzE8ePXlQan
+        ssYXBnRBfn9dHmukUpv8t5WquPXIx1rPcouyRHiTjfpinceo
+X-Google-Smtp-Source: APXvYqzHT+/h5fzHBH9/4STY90y7enbUfAXXMhdUUAhSQrtLQji30V+Q0KFaTyRBM1d+dDCB1/lW2XSmUUkJECIoXf6PsZcY5dQy
 MIME-Version: 1.0
-X-Received: by 2002:a5e:890f:: with SMTP id k15mr5521851ioj.121.1560959227647;
+X-Received: by 2002:a6b:b843:: with SMTP id i64mr3626822iof.81.1560959227406;
  Wed, 19 Jun 2019 08:47:07 -0700 (PDT)
 Date:   Wed, 19 Jun 2019 08:47:07 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000045db72058baf24f7@google.com>
-Subject: KMSAN: uninit-value in tipc_nl_compat_bearer_disable
-From:   syzbot <syzbot+30eaa8bf392f7fafffaf@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, glider@google.com, jon.maloy@ericsson.com,
+Message-ID: <0000000000004237d7058baf24e3@google.com>
+Subject: general protection fault in call_fib6_multipath_entry_notifiers
+From:   syzbot <syzbot+382566d339d52cd1a204@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dsahern@gmail.com, idosch@mellanox.com,
+        jiri@mellanox.com, kuznet@ms2.inr.ac.ru,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        tipc-discussion@lists.sourceforge.net, ying.xue@windriver.com
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
 Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -49,88 +49,100 @@ Hello,
 
 syzbot found the following crash on:
 
-HEAD commit:    f75e4cfe kmsan: use kmsan_handle_urb() in urb.c
-git tree:       kmsan
-console output: https://syzkaller.appspot.com/x/log.txt?x=13d0a6fea00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=602468164ccdc30a
-dashboard link: https://syzkaller.appspot.com/bug?extid=30eaa8bf392f7fafffaf
-compiler:       clang version 9.0.0 (/home/glider/llvm/clang  
-06d00afa61eef8f7f501ebdb4e8612ea43ec2d78)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15b4a95aa00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=162fc761a00000
+HEAD commit:    39f58860 net/mlx5: add missing void argument to function m..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=115eb99ea00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=4937094fc643655f
+dashboard link: https://syzkaller.appspot.com/bug?extid=382566d339d52cd1a204
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=120c9e11a00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=120c3d21a00000
+
+The bug was bisected to:
+
+commit ebee3cad835f7fe7250213225cf6d62c7cf3b2ca
+Author: Ido Schimmel <idosch@mellanox.com>
+Date:   Tue Jun 18 15:12:48 2019 +0000
+
+     ipv6: Add IPv6 multipath notifications for add / replace
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1529970aa00000
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=1729970aa00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1329970aa00000
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+30eaa8bf392f7fafffaf@syzkaller.appspotmail.com
+Reported-by: syzbot+382566d339d52cd1a204@syzkaller.appspotmail.com
+Fixes: ebee3cad835f ("ipv6: Add IPv6 multipath notifications for add /  
+replace")
 
-IPv6: ADDRCONF(NETDEV_CHANGE): hsr0: link becomes ready
-8021q: adding VLAN 0 to HW filter on device batadv0
-==================================================================
-BUG: KMSAN: uninit-value in memchr+0xce/0x110 lib/string.c:981
-CPU: 0 PID: 12554 Comm: syz-executor731 Not tainted 5.1.0+ #1
+kasan: CONFIG_KASAN_INLINE enabled
+kasan: GPF could be caused by NULL-ptr deref or user memory access
+general protection fault: 0000 [#1] PREEMPT SMP KASAN
+CPU: 0 PID: 9190 Comm: syz-executor149 Not tainted 5.2.0-rc5+ #38
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
 Google 01/01/2011
+RIP: 0010:call_fib6_multipath_entry_notifiers+0xd1/0x1a0  
+net/ipv6/ip6_fib.c:396
+Code: 8b b5 30 ff ff ff 48 c7 85 68 ff ff ff 00 00 00 00 48 c7 85 70 ff ff  
+ff 00 00 00 00 89 45 88 4c 89 e0 48 c1 e8 03 4c 89 65 80 <42> 80 3c 28 00  
+0f 85 9a 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d
+RSP: 0018:ffff88809788f2c0 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 1ffff11012f11e59 RCX: 00000000ffffffff
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: ffff88809788f390 R08: ffff88809788f8c0 R09: 000000000000000c
+R10: ffff88809788f5d8 R11: ffff88809788f527 R12: 0000000000000000
+R13: dffffc0000000000 R14: ffff88809788f8c0 R15: ffffffff89541d80
+FS:  000055555632c880(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020000080 CR3: 000000009ba7c000 CR4: 00000000001406f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x191/0x1f0 lib/dump_stack.c:113
-  kmsan_report+0x130/0x2a0 mm/kmsan/kmsan.c:622
-  __msan_warning+0x75/0xe0 mm/kmsan/kmsan_instr.c:310
-  memchr+0xce/0x110 lib/string.c:981
-  string_is_valid net/tipc/netlink_compat.c:176 [inline]
-  tipc_nl_compat_bearer_disable+0x2a1/0x480 net/tipc/netlink_compat.c:449
-  __tipc_nl_compat_doit net/tipc/netlink_compat.c:327 [inline]
-  tipc_nl_compat_doit+0x3ac/0xb00 net/tipc/netlink_compat.c:360
-  tipc_nl_compat_handle net/tipc/netlink_compat.c:1178 [inline]
-  tipc_nl_compat_recv+0x1b1b/0x27b0 net/tipc/netlink_compat.c:1281
-  genl_family_rcv_msg net/netlink/genetlink.c:602 [inline]
-  genl_rcv_msg+0x185a/0x1a40 net/netlink/genetlink.c:627
-  netlink_rcv_skb+0x431/0x620 net/netlink/af_netlink.c:2486
-  genl_rcv+0x63/0x80 net/netlink/genetlink.c:638
-  netlink_unicast_kernel net/netlink/af_netlink.c:1311 [inline]
-  netlink_unicast+0xf3e/0x1020 net/netlink/af_netlink.c:1337
-  netlink_sendmsg+0x127e/0x12f0 net/netlink/af_netlink.c:1926
-  sock_sendmsg_nosec net/socket.c:651 [inline]
-  sock_sendmsg net/socket.c:661 [inline]
-  ___sys_sendmsg+0xcc6/0x1200 net/socket.c:2260
-  __sys_sendmsg net/socket.c:2298 [inline]
-  __do_sys_sendmsg net/socket.c:2307 [inline]
-  __se_sys_sendmsg+0x305/0x460 net/socket.c:2305
-  __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2305
-  do_syscall_64+0xbc/0xf0 arch/x86/entry/common.c:291
-  entry_SYSCALL_64_after_hwframe+0x63/0xe7
-RIP: 0033:0x442639
-Code: 41 02 00 85 c0 b8 00 00 00 00 48 0f 44 c3 5b c3 90 48 89 f8 48 89 f7  
+  ip6_route_multipath_add+0xc55/0x1490 net/ipv6/route.c:5094
+  inet6_rtm_newroute+0xed/0x180 net/ipv6/route.c:5208
+  rtnetlink_rcv_msg+0x463/0xb00 net/core/rtnetlink.c:5219
+  netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
+  rtnetlink_rcv+0x1d/0x30 net/core/rtnetlink.c:5237
+  netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
+  netlink_unicast+0x531/0x710 net/netlink/af_netlink.c:1328
+  netlink_sendmsg+0x8ae/0xd70 net/netlink/af_netlink.c:1917
+  sock_sendmsg_nosec net/socket.c:646 [inline]
+  sock_sendmsg+0xd7/0x130 net/socket.c:665
+  ___sys_sendmsg+0x803/0x920 net/socket.c:2286
+  __sys_sendmsg+0x105/0x1d0 net/socket.c:2324
+  __do_sys_sendmsg net/socket.c:2333 [inline]
+  __se_sys_sendmsg net/socket.c:2331 [inline]
+  __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2331
+  do_syscall_64+0xfd/0x680 arch/x86/entry/common.c:301
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x4401f9
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7  
 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 fb 10 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00000000007efea8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000442639
+ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffc09fd0028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 00000000004401f9
 RDX: 0000000000000000 RSI: 0000000020000080 RDI: 0000000000000003
-RBP: 00000000007eff00 R08: 0000000000000003 R09: 0000000000000003
-R10: 00000000bb1414ac R11: 0000000000000246 R12: 0000000000000003
-R13: 0000000000403c50 R14: 0000000000000000 R15: 0000000000000000
-
-Uninit was created at:
-  kmsan_save_stack_with_flags mm/kmsan/kmsan.c:208 [inline]
-  kmsan_internal_poison_shadow+0x92/0x150 mm/kmsan/kmsan.c:162
-  kmsan_kmalloc+0xa4/0x130 mm/kmsan/kmsan_hooks.c:175
-  kmsan_slab_alloc+0xe/0x10 mm/kmsan/kmsan_hooks.c:184
-  slab_post_alloc_hook mm/slab.h:442 [inline]
-  slab_alloc_node mm/slub.c:2771 [inline]
-  __kmalloc_node_track_caller+0xcba/0xf30 mm/slub.c:4399
-  __kmalloc_reserve net/core/skbuff.c:140 [inline]
-  __alloc_skb+0x306/0xa10 net/core/skbuff.c:208
-  alloc_skb include/linux/skbuff.h:1059 [inline]
-  netlink_alloc_large_skb net/netlink/af_netlink.c:1183 [inline]
-  netlink_sendmsg+0xb81/0x12f0 net/netlink/af_netlink.c:1901
-  sock_sendmsg_nosec net/socket.c:651 [inline]
-  sock_sendmsg net/socket.c:661 [inline]
-  ___sys_sendmsg+0xcc6/0x1200 net/socket.c:2260
-  __sys_sendmsg net/socket.c:2298 [inline]
-  __do_sys_sendmsg net/socket.c:2307 [inline]
-  __se_sys_sendmsg+0x305/0x460 net/socket.c:2305
-  __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2305
-  do_syscall_64+0xbc/0xf0 arch/x86/entry/common.c:291
-  entry_SYSCALL_64_after_hwframe+0x63/0xe7
-==================================================================
+RBP: 00000000006ca018 R08: 0000000000000000 R09: 00000000004002c8
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401a80
+R13: 0000000000401b10 R14: 0000000000000000 R15: 0000000000000000
+Modules linked in:
+---[ end trace 77949df4cfac115c ]---
+RIP: 0010:call_fib6_multipath_entry_notifiers+0xd1/0x1a0  
+net/ipv6/ip6_fib.c:396
+Code: 8b b5 30 ff ff ff 48 c7 85 68 ff ff ff 00 00 00 00 48 c7 85 70 ff ff  
+ff 00 00 00 00 89 45 88 4c 89 e0 48 c1 e8 03 4c 89 65 80 <42> 80 3c 28 00  
+0f 85 9a 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d
+RSP: 0018:ffff88809788f2c0 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 1ffff11012f11e59 RCX: 00000000ffffffff
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: ffff88809788f390 R08: ffff88809788f8c0 R09: 000000000000000c
+R10: ffff88809788f5d8 R11: ffff88809788f527 R12: 0000000000000000
+R13: dffffc0000000000 R14: ffff88809788f8c0 R15: ffffffff89541d80
+FS:  000055555632c880(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020000080 CR3: 000000009ba7c000 CR4: 00000000001406f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
 
 ---
@@ -140,5 +152,6 @@ syzbot engineers can be reached at syzkaller@googlegroups.com.
 
 syzbot will keep track of this bug report. See:
 https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
 syzbot can test patches for this bug, for details see:
 https://goo.gl/tpsmEJ#testing-patches
