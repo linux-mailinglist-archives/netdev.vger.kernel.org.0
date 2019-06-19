@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 22AC84C13B
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 21:10:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7897C4C161
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 21:19:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730269AbfFSTKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 15:10:37 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:36905 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726482AbfFSTKh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 15:10:37 -0400
-Received: by mail-wr1-f68.google.com with SMTP id v14so419108wrr.4
-        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 12:10:35 -0700 (PDT)
+        id S1730405AbfFSTTE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 15:19:04 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:45830 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726479AbfFSTTE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 15:19:04 -0400
+Received: by mail-wr1-f67.google.com with SMTP id f9so393915wre.12
+        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 12:19:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=UFheggzxmMplOeeQYmoI5B0vCJ1cyWY14SZKvEdIZeI=;
-        b=q2WfLwCClZoa+WhRbyKt/Y+TgErSvoQ/t5ka8vLOi11eKndyFdaMIphrq5wGGRpPx0
-         w74c0Bd6HbL1fwpWqUKNj6kHbJyjS9bevT3l+au26572bSk6OLA9tz3vCKl5B7lQ3YMp
-         59fj8s9I0t80eOe2RdRSoMCtic8jR1S6+NI4lJVCt/kVnhsRgdsGPkuzdO0vwRS7HGGZ
-         fWL021Josk7Je+oTIjDlgfo2c+0SBwY9f/Hm7/+V4w+t6Vym486kIGSe5Aiypxhs8oIn
-         XkN6ASaGDOG/TSsv0EbPrdzGLx+NVycg/i6oOwCLGJQap5BpUh3MBTqYafhQpd18vQ27
-         D7Lg==
+        bh=vbGrC613Mx9I72tXYJMhbBLz41UWVEnBEWP2gav1xeQ=;
+        b=aBXr1jsV1jbWttXEi3sHL8+qOgrX4SCK7Q3uVbbDXijKLs+hC8dMHeBclHmHaH6RMG
+         60Sikq/JtAo1788WW1xNUDDiZXT7CZ+qVyBbd62Fo7/fAn6hFgwGegqGpeknn2dB0yUf
+         7raHu/ONKbVQk+H9+fbOslfRAmfjkRsXWfKXkSytn2bBymBdjum5F8wEKkLXmPQi/YQM
+         X0KZqYHQsxRt94MBnne1YpVayCpgxK6N7chjzpeIKRdiV9Kzb1QXNtmpkTK7VxHX06lB
+         vaupuO9MA/NB0v/5tqVim2rAsJLyLDTKP1nJgwUtNCvVZKExW9sGtS8PKkfr5P6s6WYe
+         pqjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=UFheggzxmMplOeeQYmoI5B0vCJ1cyWY14SZKvEdIZeI=;
-        b=TSPahl4UC1uj8QMTuj2cXFsdlulAqs7vz3WrlbYK7fNodVlr9bnRmjEkqMBO4VBJHS
-         kVWV/cprWHHUyLYRYA+zV792omMAfx66spXpMjt5lmYKVzUDd1C5ZHEs+iz7Ljh9Ckur
-         DykjK4wfsj8wX2+8sAu/bvBlUEXC2q/r76SnqkbpjlTaHhqLDmjaoXi9bY70xBXwP5/9
-         faDm22wleQJLglvhMQdlCplXtXjLzqA3BX31wUoOeUUphbaqY1i1tsjyvXG8iVe7JsQ8
-         +Z/9tcE/jJSg36sZiidnvU3ZVtbcmJypWAzYag0EkQWvhP/3ohoDtGUXKq6Fy1aMZPQp
-         i+5g==
-X-Gm-Message-State: APjAAAWpEr700SxQlvHtnMCu92oFd1Oj2h0KB/H6JfWhetf+/8+KSoLd
-        5xvEhIQvvXCThK2DeCj7nh985ciPvN63m1fEoFrm
-X-Google-Smtp-Source: APXvYqzXZlrQCF4QZiuxDbGDLIvTOXeukxMx+PQ/5nfVH3ZEWFzwBQjV68ETEYVe1v6+Rjh1FKW41QrqKc5YBvCYJxs=
-X-Received: by 2002:adf:dfc4:: with SMTP id q4mr14402268wrn.54.1560971434605;
- Wed, 19 Jun 2019 12:10:34 -0700 (PDT)
+        bh=vbGrC613Mx9I72tXYJMhbBLz41UWVEnBEWP2gav1xeQ=;
+        b=DBL01OA1YjjCJrHwf4D9pkyhKZxLFtx+vnhZmuglZb8vKc5Y0fqj3RpeBbwX3SNVEX
+         M6e1rr6+RqB6lnZnepxCohR4OBjDbb+R267byP5ix/gvaJduxTsuORs5Pa0+ND8aGoQn
+         YJXVDHMwltjpPR1pFSRwenrTncSwBwr54FVZlFqzTUq8s3+KG9U4s9VOSNYkCbeAoAW8
+         FDMK/QfC6WfkrF6kB2Uyo59fH1SOAlHeRhr541YGo2/pwAYvPXarvQ6SfiRIY6MYhD8A
+         kYNDQBhbBcDzY8TErFVlKdwFXayT/1N6loBg0856b8EO+OTF2dupHz+ks8EhEAmlam2V
+         bPyA==
+X-Gm-Message-State: APjAAAU++dlKxFYZoNJxVISkNUNAEtrE1PJAbC0Mn8T0pTDrcWAc9f6T
+        RK1ysoi4M6WV+w7KMbtSnbo8a/L7hranLWi69Gpy
+X-Google-Smtp-Source: APXvYqzpL3l1WIqajnOtkCbtEf+ZBROZneTV4UfC6rTgSLtpIqrDjIMSBhzB2YWe0R2HLSHUurnOCdjUz96H3tPb7GI=
+X-Received: by 2002:a5d:680d:: with SMTP id w13mr920295wru.141.1560971942128;
+ Wed, 19 Jun 2019 12:19:02 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190619174643.21456-1-puranjay12@gmail.com>
-In-Reply-To: <20190619174643.21456-1-puranjay12@gmail.com>
+References: <20190619174556.21194-1-puranjay12@gmail.com>
+In-Reply-To: <20190619174556.21194-1-puranjay12@gmail.com>
 From:   Bjorn Helgaas <bhelgaas@google.com>
-Date:   Wed, 19 Jun 2019 14:10:22 -0500
-Message-ID: <CAErSpo7-AjCAc8pGpTftd7U-W2kjp1jfbPzk3SOa=Bg5-d6W5w@mail.gmail.com>
-Subject: Re: [PATCH] net: fddi: skfp: remove generic PCI defines from skfbi.h
+Date:   Wed, 19 Jun 2019 14:18:49 -0500
+Message-ID: <CAErSpo6SnVVufzTeChiM+k7YcNebPcmabKS5EQR-mP-HYz1aGw@mail.gmail.com>
+Subject: Re: [PATCH] net: fddi: skfp: Include generic PCI definitions from pci_regs.h
 To:     Puranjay Mohan <puranjay12@gmail.com>
 Cc:     Shuah Khan <skhan@linuxfoundation.org>,
         netdev <netdev@vger.kernel.org>,
@@ -59,80 +59,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 19, 2019 at 12:48 PM Puranjay Mohan <puranjay12@gmail.com> wrote:
+On Wed, Jun 19, 2019 at 12:46 PM Puranjay Mohan <puranjay12@gmail.com> wrote:
 >
-> skfbi.h defines its own copies of PCI_COMMAND, PCI_STATUS, etc.
-> remove them in favor of the generic definitions in
-> include/uapi/linux/pci_regs.h
+> Include the generic PCI definitions from include/uapi/linux/pci_regs.h
+> change PCI_REV_ID to PCI_REVISION_ID to make it compatible with the
+> generic define.
+> This driver uses only one generic PCI define.
 
-1) Since you're sending several related patches, send them as a
-"series" with a cover letter, e.g.,
+1) Start every sentence with a capital letter.
 
-  [PATCH v2 0/2] Use PCI generic definitions instead of private duplicates
-  [PATCH v2 1/2] Include generic PCI definitions
-  [PATCH v2 2/2] Remove unused private PCI definitions
+2) Use a period at the end of every sentence.
 
-Patches 1/2 and 2/2 should be replies to the 0/2 cover letter.  "git
-send-email" will do this for you if you figure out the right options.
+3) Use a blank line between paragraphs.  A short line (like "generic
+define" above) *suggests* a new paragraph, but it's ambiguous, which
+makes it hard to read.
 
-2) Make sure all your subject lines match.  One started with "Include"
-and the other with "remove".  They should both be capitalized.
-
-3) Start sentences with a capital letter, i.e., "Remove them" above.
-
-4) This commit log needs to explicitly say that you're removing
-*unused* symbols.  Since they're unused, you don't even need to refer
-to pci_regs.h.
-
-5) "git grep PCI_ drivers/net/fddi/skfp" says there are many more
-unused PCI symbols than just the ones below.  I would just remove them
-all at once.
-
-6) Obviously you should compile this to make sure it builds.  It must
-build cleanly after every patch, not just at the end.  I assume you've
-done this already.
-
-7) Please cc: linux-pci@vger.kernel.org since you're making PCI-related changes.
+4) This patch must build correctly by itself.  I didn't try it, but
+I'm a little suspicious that including pci_regs.h will cause
+redefinition of PCI_STATUS and other #defines that are the same
+between pci_regs.h and skfbi.h.  You could either combine the two
+patches, or make the first patch simply rename PCI_REV_ID to
+PCI_REVISION_ID in skfbi.h and drvfbi.c  Then the second patch could
+add the #include of pci_regs.h and remove the corresponding #defines
+from skfbi.h.  Maybe a third patch would remove all the other unused
+PCI_* definitions.  Arguably the second and third could be combined.
+But it's much easier for a maintainer to squash patches together than
+to split them apart, so err on the side of splitting them up.
 
 > Signed-off-by: Puranjay Mohan <puranjay12@gmail.com>
 > ---
->  drivers/net/fddi/skfp/h/skfbi.h | 23 -----------------------
->  1 file changed, 23 deletions(-)
+>  drivers/net/fddi/skfp/drvfbi.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 >
-> diff --git a/drivers/net/fddi/skfp/h/skfbi.h b/drivers/net/fddi/skfp/h/skfbi.h
-> index 89557457b352..ed144a8e78d1 100644
-> --- a/drivers/net/fddi/skfp/h/skfbi.h
-> +++ b/drivers/net/fddi/skfp/h/skfbi.h
-> @@ -27,29 +27,6 @@
->  /*
->   * Configuration Space header
->   */
-> -#define        PCI_VENDOR_ID   0x00    /* 16 bit       Vendor ID */
-> -#define        PCI_DEVICE_ID   0x02    /* 16 bit       Device ID */
-> -#define        PCI_COMMAND     0x04    /* 16 bit       Command */
-> -#define        PCI_STATUS      0x06    /* 16 bit       Status */
-> -#define        PCI_REV_ID      0x08    /*  8 bit       Revision ID */
-> -#define        PCI_CLASS_CODE  0x09    /* 24 bit       Class Code */
-> -#define        PCI_CACHE_LSZ   0x0c    /*  8 bit       Cache Line Size */
-> -#define        PCI_LAT_TIM     0x0d    /*  8 bit       Latency Timer */
-> -#define        PCI_HEADER_T    0x0e    /*  8 bit       Header Type */
-> -#define        PCI_BIST        0x0f    /*  8 bit       Built-in selftest */
-> -#define        PCI_BASE_1ST    0x10    /* 32 bit       1st Base address */
-> -#define        PCI_BASE_2ND    0x14    /* 32 bit       2nd Base address */
-> -/* Byte 18..2b:        Reserved */
-> -#define        PCI_SUB_VID     0x2c    /* 16 bit       Subsystem Vendor ID */
-> -#define        PCI_SUB_ID      0x2e    /* 16 bit       Subsystem ID */
-> -#define        PCI_BASE_ROM    0x30    /* 32 bit       Expansion ROM Base Address */
-> -/* Byte 34..33:        Reserved */
-> -#define PCI_CAP_PTR    0x34    /*  8 bit (ML)  Capabilities Ptr */
-> -/* Byte 35..3b:        Reserved */
-> -#define        PCI_IRQ_LINE    0x3c    /*  8 bit       Interrupt Line */
-> -#define        PCI_IRQ_PIN     0x3d    /*  8 bit       Interrupt Pin */
-> -#define        PCI_MIN_GNT     0x3e    /*  8 bit       Min_Gnt */
-> -#define        PCI_MAX_LAT     0x3f    /*  8 bit       Max_Lat */
->  /* Device Dependent Region */
->  #define        PCI_OUR_REG     0x40    /* 32 bit (DV)  Our Register */
->  #define        PCI_OUR_REG_1   0x40    /* 32 bit (ML)  Our Register 1 */
+> diff --git a/drivers/net/fddi/skfp/drvfbi.c b/drivers/net/fddi/skfp/drvfbi.c
+> index bdd5700e71fa..38f6d943385d 100644
+> --- a/drivers/net/fddi/skfp/drvfbi.c
+> +++ b/drivers/net/fddi/skfp/drvfbi.c
+> @@ -20,6 +20,7 @@
+>  #include "h/supern_2.h"
+>  #include "h/skfbiinc.h"
+>  #include <linux/bitrev.h>
+> +#include <uapi/linux/pci_regs.h>
+>
+>  #ifndef        lint
+>  static const char ID_sccs[] = "@(#)drvfbi.c    1.63 99/02/11 (C) SK " ;
+> @@ -127,7 +128,7 @@ static void card_start(struct s_smc *smc)
+>          *       at very first before any other initialization functions is
+>          *       executed.
+>          */
+> -       rev_id = inp(PCI_C(PCI_REV_ID)) ;
+> +       rev_id = inp(PCI_C(PCI_REVISION_ID)) ;
+>         if ((rev_id & 0xf0) == SK_ML_ID_1 || (rev_id & 0xf0) == SK_ML_ID_2) {
+>                 smc->hw.hw_is_64bit = TRUE ;
+>         } else {
 > --
 > 2.21.0
 >
