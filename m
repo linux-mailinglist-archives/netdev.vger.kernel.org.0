@@ -2,96 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 70B8A4BF94
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 19:25:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DB5D4BFDA
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 19:40:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730061AbfFSRZm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 13:25:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59858 "EHLO mail.kernel.org"
+        id S1729659AbfFSRkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 13:40:22 -0400
+Received: from mga04.intel.com ([192.55.52.120]:19728 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726380AbfFSRZm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Jun 2019 13:25:42 -0400
-Received: from gmail.com (unknown [104.132.1.77])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D21A9206E0;
-        Wed, 19 Jun 2019 17:25:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1560965141;
-        bh=uchaO/9EZShyrzG9yuh3hTznaXKVjy1sKlpIJ0tQ3Bs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TpqKRz9ParHJz0TXk1T5Y+Ro+RnOT/hdUjUfRBGqPQZM4ZrEzByhAhN9rTwpGlJ6m
-         DgBSIetc7h2ywycoF6S9swp6nH4Rk/qCy/ZC8tpSaElDB6XigK/OygrW0VytAuUpgZ
-         6KvTdzfGhdRu7oixUiBqBT/g4cKJAZ+2J/8G9T8U=
-Date:   Wed, 19 Jun 2019 10:25:39 -0700
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Cc:     netdev@vger.kernel.org, linux-crypto@vger.kernel.org,
-        herbert@gondor.apana.org.au, edumazet@google.com,
-        davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        jbaron@akamai.com, cpaasch@apple.com, David.Laight@aculab.com,
-        ycheng@google.com
-Subject: Re: [PATCH net-next v2 1/1] net: fastopen: robustness and endianness
- fixes for SipHash
-Message-ID: <20190619172538.GA33328@gmail.com>
-References: <20190619065510.23514-1-ard.biesheuvel@linaro.org>
- <20190619065510.23514-2-ard.biesheuvel@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190619065510.23514-2-ard.biesheuvel@linaro.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1726380AbfFSRkV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Jun 2019 13:40:21 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 19 Jun 2019 10:40:21 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.63,393,1557212400"; 
+   d="scan'208";a="311413543"
+Received: from vpatel-desk.jf.intel.com (HELO localhost.localdomain) ([10.7.159.52])
+  by orsmga004.jf.intel.com with ESMTP; 19 Jun 2019 10:40:20 -0700
+From:   Vedang Patel <vedang.patel@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     jeffrey.t.kirsher@intel.com, davem@davemloft.net, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        intel-wired-lan@lists.osuosl.org, vinicius.gomes@intel.com,
+        l@dorileo.org, jakub.kicinski@netronome.com, m-karicheri2@ti.com,
+        sergei.shtylyov@cogentembedded.com,
+        Vedang Patel <vedang.patel@intel.com>
+Subject: [PATCH net-next v4 0/7] net/sched: Add txtime-assist support for taprio.
+Date:   Wed, 19 Jun 2019 10:40:09 -0700
+Message-Id: <1560966016-28254-1-git-send-email-vedang.patel@intel.com>
+X-Mailer: git-send-email 2.7.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 19, 2019 at 08:55:10AM +0200, Ard Biesheuvel wrote:
->  int tcp_fastopen_reset_cipher(struct net *net, struct sock *sk,
-> -			      void *primary_key, void *backup_key,
-> -			      unsigned int len)
-> +			      void *primary_key, void *backup_key)
->  {
->  	struct tcp_fastopen_context *ctx, *octx;
->  	struct fastopen_queue *q;
-> @@ -81,9 +79,15 @@ int tcp_fastopen_reset_cipher(struct net *net, struct sock *sk,
->  		goto out;
->  	}
->  
-> -	memcpy(ctx->key[0], primary_key, len);
-> +	ctx->key[0] = (siphash_key_t){
-> +		get_unaligned_le64(primary_key),
-> +		get_unaligned_le64(primary_key + 8)
-> +	};
->  	if (backup_key) {
-> -		memcpy(ctx->key[1], backup_key, len);
-> +		ctx->key[1] = (siphash_key_t){
-> +			get_unaligned_le64(backup_key),
-> +			get_unaligned_le64(backup_key + 8)
-> +		};
->  		ctx->num = 2;
->  	} else {
->  		ctx->num = 1;
+Changes in v4:
+- Remove inline directive from functions in foo.c.
+- Fix spacing in pkt_sched.h (for etf patch).
 
-These initializers are missing a level of braces.
+Changes in v3:
+- Simplify implementation for taprio flags. 
+- txtime_delay can only be set if txtime-assist mode is enabled.
+- txtime_delay and flags will only be visible in tc output if set by user.
+- Minor changes in error reporting.
 
-Otherwise this patch looks good to me.
+Changes in v2:
+- Txtime-offload has now been renamed to txtime-assist mode.
+- Renamed the offload parameter to flags.
+- Removed the code which introduced the hardware offloading functionality.
 
-net/ipv4/tcp_fastopen.c: In function ‘tcp_fastopen_reset_cipher’:
-net/ipv4/tcp_fastopen.c:82:16: warning: missing braces around initializer [-Wmissing-braces]
-  ctx->key[0] = (siphash_key_t){
-                ^
-   get_unaligned_le64(primary_key),
-   {
-net/ipv4/tcp_fastopen.c:85:2:
-  };
-  }
-net/ipv4/tcp_fastopen.c:87:17: warning: missing braces around initializer [-Wmissing-braces]
-   ctx->key[1] = (siphash_key_t){
-                 ^
-    get_unaligned_le64(backup_key),
-    {
-net/ipv4/tcp_fastopen.c:90:3:
-   };
-   }
+Original Cover letter (with above changes included)
+--------------------------------------------------
+
+Currently, we are seeing packets being transmitted outside their
+timeslices. We can confirm that the packets are being dequeued at the right
+time. So, the delay is induced after the packet is dequeued, because
+taprio, without any offloading, has no control of when a packet is actually
+transmitted.
+
+In order to solve this, we are making use of the txtime feature provided by
+ETF qdisc. Hardware offloading needs to be supported by the ETF qdisc in
+order to take advantage of this feature. The taprio qdisc will assign
+txtime (in skb->tstamp) for all the packets which do not have the txtime
+allocated via the SO_TXTIME socket option. For the packets which already
+have SO_TXTIME set, taprio will validate whether the packet will be
+transmitted in the correct interval.
+
+In order to support this, the following parameters have been added:
+- flags (taprio): This is added in order to support different offloading
+  modes which will be added in the future.
+- txtime-delay (taprio): This indicates the minimum time it will take for
+  the packet to hit the wire after it reaches taprio_enqueue(). This is
+  useful in determining whether we can transmit the packet in the remaining
+  time if the gate corresponding to the packet is currently open.
+- skip_skb_check (ETF): ETF currently drops any packet which does not have
+  the SO_TXTIME socket option set. This check can be skipped by specifying
+  this option.
+
+Following is an example configuration:
+
+tc qdisc replace dev $IFACE parent root handle 100 taprio \\
+    num_tc 3 \\
+    map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \\
+    queues 1@0 1@0 1@0 \\
+    base-time $BASE_TIME \\
+    sched-entry S 01 300000 \\
+    sched-entry S 02 300000 \\
+    sched-entry S 04 400000 \\
+    flags 0x1 \\
+    txtime-delay 200000 \\
+    clockid CLOCK_TAI
+
+tc qdisc replace dev $IFACE parent 100:1 etf \\
+    offload delta 200000 clockid CLOCK_TAI skip_skb_check
+
+Here, the "flags" parameter is indicating that the txtime-assist mode is
+enabled. Also, all the traffic classes have been assigned the same queue.
+This is to prevent the traffic classes in the lower priority queues from
+getting starved. Note that this configuration is specific to the i210
+ethernet card. Other network cards where the hardware queues are given the
+same priority, might be able to utilize more than one queue.
+
+Following are some of the other highlights of the series:
+- Fix a bug where hardware timestamping and SO_TXTIME options cannot be
+  used together. (Patch 1)
+- Introduces the skip_skb_check option.  (Patch 2)
+- Make TxTime assist mode work with TCP packets (Patch 7).
+
+The following changes are recommended to be done in order to get the best
+performance from taprio in this mode:
+# TSN in general does not allow Jumbo frames.
+ip link set dev enp1s0 mtu 1514
+# Disable segmentation offload. This is to prevent NIC from sending packets
+# after the gate for a traffic class has closed.
+ethtool -K eth0 gso off 
+ethtool -K eth0 tso off
+# Disable energy efficient ethernet to make sure there are no latency
+# spikes when NIC is trying to wake up when the packet is supposed to be
+# sent.
+ethtool --set-eee eth0 eee off
+
+Thanks,
+Vedang Patel
+
+Vedang Patel (7):
+  igb: clear out tstamp after sending the packet
+  etf: Add skip_sock_check
+  taprio: calculate cycle_time when schedule is installed
+  taprio: Remove inline directive
+  taprio: Add support for txtime-assist mode
+  taprio: make clock reference conversions easier
+  taprio: Adjust timestamps for TCP packets
+
+ drivers/net/ethernet/intel/igb/igb_main.c |   1 +
+ include/uapi/linux/pkt_sched.h            |   5 +
+ net/sched/sch_etf.c                       |  10 +
+ net/sched/sch_taprio.c                    | 431 +++++++++++++++++++++++++++---
+ 4 files changed, 413 insertions(+), 34 deletions(-)
+
+-- 
+2.7.3
+
