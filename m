@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EFFC34B3D5
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 10:18:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 808584B3FD
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 10:23:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731322AbfFSISF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 04:18:05 -0400
-Received: from mx2.suse.de ([195.135.220.15]:48466 "EHLO mx1.suse.de"
+        id S1731325AbfFSIW7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 04:22:59 -0400
+Received: from mx2.suse.de ([195.135.220.15]:49818 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730783AbfFSISE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Jun 2019 04:18:04 -0400
+        id S1731259AbfFSIW7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Jun 2019 04:22:59 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 1B4ADAF1F;
-        Wed, 19 Jun 2019 08:18:02 +0000 (UTC)
+        by mx1.suse.de (Postfix) with ESMTP id 8DE2CAF30;
+        Wed, 19 Jun 2019 08:22:57 +0000 (UTC)
 Subject: Re: [PATCH] mm: mempolicy: handle vma with unmovable pages mapped
  correctly in mbind
-To:     Yang Shi <yang.shi@linux.alibaba.com>,
-        Michal Hocko <mhocko@kernel.org>
+To:     Michal Hocko <mhocko@kernel.org>,
+        Yang Shi <yang.shi@linux.alibaba.com>
 Cc:     akpm@linux-foundation.org, mgorman@techsingularity.net,
         linux-mm@kvack.org, linux-kernel@vger.kernel.org,
         Eric Dumazet <edumazet@google.com>,
@@ -26,6 +26,9 @@ Cc:     akpm@linux-foundation.org, mgorman@techsingularity.net,
 References: <1560797290-42267-1-git-send-email-yang.shi@linux.alibaba.com>
  <20190618130253.GH3318@dhcp22.suse.cz>
  <cf33b724-fdd5-58e3-c06a-1bc563525311@linux.alibaba.com>
+ <20190618182848.GJ3318@dhcp22.suse.cz>
+ <68c2592d-b747-e6eb-329f-7a428bff1f86@linux.alibaba.com>
+ <20190619052133.GB2968@dhcp22.suse.cz>
 From:   Vlastimil Babka <vbabka@suse.cz>
 Openpgp: preference=signencrypt
 Autocrypt: addr=vbabka@suse.cz; prefer-encrypt=mutual; keydata=
@@ -88,24 +91,45 @@ Autocrypt: addr=vbabka@suse.cz; prefer-encrypt=mutual; keydata=
  5ZFJyfGsOiNUcMoO/17FO4EBxSDP3FDLllpuzlFD7SXkfJaMWYmXIlO0jLzdfwfcnDzBbPwO
  hBM8hvtsyq8lq8vJOxv6XD6xcTtj5Az8t2JjdUX6SF9hxJpwhBU0wrCoGDkWp4Bbv6jnF7zP
  Nzftr4l8RuJoywDIiJpdaNpSlXKpj/K6KrnyAI/joYc7
-Message-ID: <2c30d86f-43e4-f43c-411d-c916fb1de44e@suse.cz>
-Date:   Wed, 19 Jun 2019 10:18:01 +0200
+Message-ID: <21a0b20c-5b62-490e-ad8e-26b4b78ac095@suse.cz>
+Date:   Wed, 19 Jun 2019 10:22:57 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <cf33b724-fdd5-58e3-c06a-1bc563525311@linux.alibaba.com>
+In-Reply-To: <20190619052133.GB2968@dhcp22.suse.cz>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/18/19 7:06 PM, Yang Shi wrote:
-> The BUG_ON was removed by commit 
-> d44d363f65780f2ac2ec672164555af54896d40d ("mm: don't assume anonymous 
-> pages have SwapBacked flag") since 4.12.
+On 6/19/19 7:21 AM, Michal Hocko wrote:
+> On Tue 18-06-19 14:13:16, Yang Shi wrote:
+> [...]
+>>
+>> I used to have !__PageMovable(page), but it was removed since the
+>> aforementioned reason. I could add it back.
+>>
+>> For the temporary off LRU page, I did a quick search, it looks the most
+>> paths have to acquire mmap_sem, so it can't race with us here. Page
+>> reclaim/compaction looks like the only race. But, since the mapping should
+>> be preserved even though the page is off LRU temporarily unless the page is
+>> reclaimed, so we should be able to exclude temporary off LRU pages by
+>> calling page_mapping() and page_anon_vma().
+>>
+>> So, the fix may look like:
+>>
+>> if (!PageLRU(head) && !__PageMovable(page)) {
+>>     if (!(page_mapping(page) || page_anon_vma(page)))
+>>         return -EIO;
+> 
+> This is getting even more muddy TBH. Is there any reason that we have to
+> handle this problem during the isolation phase rather the migration?
 
-Perhaps that commit should be sent to stable@ ? Although with
-VM_BUG_ON() this is less critical than plain BUG_ON().
+I think it was already said that if pages can't be isolated, then
+migration phase won't process them, so they're just ignored.
+However I think the patch is wrong to abort immediately when
+encountering such page that cannot be isolated (AFAICS). IMHO it should
+still try to migrate everything it can, and only then return -EIO.
