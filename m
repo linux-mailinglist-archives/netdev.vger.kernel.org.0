@@ -2,144 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 42CC84B567
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 11:49:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9E024B5CE
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 12:02:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731581AbfFSJtI convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 19 Jun 2019 05:49:08 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:6938 "EHLO huawei.com"
+        id S1731447AbfFSKCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 06:02:17 -0400
+Received: from mail-eopbgr40122.outbound.protection.outlook.com ([40.107.4.122]:51326
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731186AbfFSJtH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Jun 2019 05:49:07 -0400
-Received: from DGGEMM401-HUB.china.huawei.com (unknown [172.30.72.55])
-        by Forcepoint Email with ESMTP id 55BFF979A653C45FD5B1;
-        Wed, 19 Jun 2019 17:49:05 +0800 (CST)
-Received: from dggeme763-chm.china.huawei.com (10.3.19.109) by
- DGGEMM401-HUB.china.huawei.com (10.3.20.209) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Wed, 19 Jun 2019 17:49:04 +0800
-Received: from dggeme763-chm.china.huawei.com (10.3.19.109) by
- dggeme763-chm.china.huawei.com (10.3.19.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1591.10; Wed, 19 Jun 2019 17:49:04 +0800
-Received: from dggeme763-chm.china.huawei.com ([10.6.66.36]) by
- dggeme763-chm.china.huawei.com ([10.6.66.36]) with mapi id 15.01.1591.008;
- Wed, 19 Jun 2019 17:49:04 +0800
-From:   linmiaohe <linmiaohe@huawei.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-CC:     "kadlec@blackhole.kfki.hu" <kadlec@blackhole.kfki.hu>,
-        "fw@strlen.de" <fw@strlen.de>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
-        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
-        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
-        "coreteam@netfilter.org" <coreteam@netfilter.org>,
+        id S1726479AbfFSKCR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Jun 2019 06:02:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.se;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0R3/DfLeWtBK0rONwx/vvXic/zkqzi9q3WzjJjlOcDs=;
+ b=ZGvkIJ+cVRc1MuoI75Qi1fKG3QEb3Baw4c0ddAivhav1zjUe+1A7GsRX0/68XdYcEO7dzVTGfKZQavon5ls8d5uNAA1gg3zd6ENWwAmCkcRoBra3/wF0rBpKNXhJnBkkW4k4iXdqVQY1HU526W/EhZh1bSOzhrtEFpX+dQKQrfY=
+Received: from AM0PR10MB3027.EURPRD10.PROD.OUTLOOK.COM (10.255.30.92) by
+ AM0PR10MB2450.EURPRD10.PROD.OUTLOOK.COM (20.177.110.225) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1987.11; Wed, 19 Jun 2019 10:02:13 +0000
+Received: from AM0PR10MB3027.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::4c4f:7a8e:cfcc:5d5a]) by AM0PR10MB3027.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::4c4f:7a8e:cfcc:5d5a%6]) with mapi id 15.20.1987.014; Wed, 19 Jun 2019
+ 10:02:13 +0000
+From:   Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+CC:     Rasmus Villemoes <Rasmus.Villemoes@prevas.se>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "dsahern@gmail.com" <dsahern@gmail.com>,
-        Mingfangsen <mingfangsen@huawei.com>
-Subject: Re: [PATCH v3] net: netfilter: Fix rpfilter dropping vrf packets by
- mistake
-Thread-Topic: [PATCH v3] net: netfilter: Fix rpfilter dropping vrf packets by
- mistake
-Thread-Index: AdUmfDnLJBRdmfpcd0eT0vsD259sjw==
-Date:   Wed, 19 Jun 2019 09:49:04 +0000
-Message-ID: <30442ee669c44d9db01fb374b73fd2dd@huawei.com>
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: [PATCH net] net: dsa: mv88e6xxx: fix shift of FID bits in
+ mv88e6185_g1_vtu_loadpurge()
+Thread-Topic: [PATCH net] net: dsa: mv88e6xxx: fix shift of FID bits in
+ mv88e6185_g1_vtu_loadpurge()
+Thread-Index: AQHVJoYRfeUHVxjOPU6bwM7pmbWvXQ==
+Date:   Wed, 19 Jun 2019 10:02:13 +0000
+Message-ID: <20190619100203.11749-1-rasmus.villemoes@prevas.dk>
 Accept-Language: en-US
-Content-Language: zh-CN
+Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-originating-ip: [10.184.189.20]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+x-clientproxiedby: HE1PR0102CA0064.eurprd01.prod.exchangelabs.com
+ (2603:10a6:7:7d::41) To AM0PR10MB3027.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:208:160::28)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=Rasmus.Villemoes@prevas.se; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-mailer: git-send-email 2.20.1
+x-originating-ip: [81.216.59.226]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: ded65fa4-4417-4312-1b7c-08d6f49d3354
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:AM0PR10MB2450;
+x-ms-traffictypediagnostic: AM0PR10MB2450:
+x-microsoft-antispam-prvs: <AM0PR10MB2450E7189F5D4399357A1D368AE50@AM0PR10MB2450.EURPRD10.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:5516;
+x-forefront-prvs: 0073BFEF03
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(366004)(396003)(39850400004)(376002)(136003)(199004)(189003)(3846002)(6116002)(5660300002)(25786009)(6436002)(6486002)(8936002)(8976002)(71190400001)(4326008)(71200400001)(53936002)(14444005)(256004)(2906002)(4744005)(6512007)(36756003)(1076003)(99286004)(66556008)(64756008)(66446008)(73956011)(66946007)(305945005)(66066001)(52116002)(74482002)(7736002)(66476007)(81166006)(81156014)(26005)(186003)(14454004)(2616005)(476003)(486006)(102836004)(8676002)(50226002)(6506007)(68736007)(316002)(386003)(44832011)(110136005)(54906003)(42882007)(72206003)(478600001);DIR:OUT;SFP:1102;SCL:1;SRVR:AM0PR10MB2450;H:AM0PR10MB3027.EURPRD10.PROD.OUTLOOK.COM;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: prevas.se does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: r02zuaGvRfOM6onJfAVE7iK6odJjkWbLUmcELT+lRcE57X35edCkQK2KCqiWtqNcfnaoWpvwa5NRqq+oKHmJBJI8epj/5UyOsa2IT9HcOwEft8WtoEHwCxxmp63X//zymfr0D4HfMycgWOx/LZ2rDOSTrido/ZpnVcMqCWPO9yH4dO9HR4yc0Ydyk2Gki/wvOpq7Nwi4sMU1hNMKld5b/jgATiQsGYg9mren5Yt8JeaMzvhAEmn5Sd7ImxDZKnj7JILUIFZrPQn8jk5I35q7RIWz65KeiV3a452DVt7HSv2MqUhn9im8kWWsctLHW9hKcnSHYivBxvg3a0oMxcRBUA4zeH9tdkjyqp1gQQJvCb8i+Hzbp8jXnffVtks10c4rlJNJ7AzaUD0URgABEB0KJC8pVObQSmdBZVg8dyGCqSg=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+X-OriginatorOrg: prevas.dk
+X-MS-Exchange-CrossTenant-Network-Message-Id: ded65fa4-4417-4312-1b7c-08d6f49d3354
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Jun 2019 10:02:13.2663
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: d350cf71-778d-4780-88f5-071a4cb1ed61
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Rasmus.Villemoes@prevas.dk
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR10MB2450
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2019/6/18 23:58, Pablo Neira Ayuso wrote:
-> On Thu, Apr 25, 2019 at 09:43:53PM +0800, linmiaohe wrote:
->> From: Miaohe Lin <linmiaohe@huawei.com>
->>
->> When firewalld is enabled with ipv4/ipv6 rpfilter, vrf
->> ipv4/ipv6 packets will be dropped because in device is vrf but out 
->> device is an enslaved device. So failed with the check of the 
->> rpfilter.
->>
->> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
->> ---
->> --- a/net/ipv4/netfilter/ipt_rpfilter.c
->> +++ b/net/ipv4/netfilter/ipt_rpfilter.c
->> @@ -81,6 +81,7 @@ static bool rpfilter_mt(const struct sk_buff *skb, struct xt_action_param *par)
->>  	flow.flowi4_mark = info->flags & XT_RPFILTER_VALID_MARK ? skb->mark : 0;
->>  	flow.flowi4_tos = RT_TOS(iph->tos);
->>  	flow.flowi4_scope = RT_SCOPE_UNIVERSE;
->> +	flow.flowi4_oif = l3mdev_master_ifindex_rcu(xt_in(par));
->>
->>  	return rpfilter_lookup_reverse(xt_net(par), &flow, xt_in(par),
->> --- a/net/ipv6/netfilter/ip6t_rpfilter.c
->> +++ b/net/ipv6/netfilter/ip6t_rpfilter.c
->> @@ -58,7 +58,9 @@ static bool rpfilter_lookup_reverse6(struct net *net, const struct sk_buff *skb,
->>  	if (rpfilter_addr_linklocal(&iph->saddr)) {
->>  		lookup_flags |= RT6_LOOKUP_F_IFACE;
->>  		fl6.flowi6_oif = dev->ifindex;
->> -	} else if ((flags & XT_RPFILTER_LOOSE) == 0)
->> +	} else if (((flags & XT_RPFILTER_LOOSE) == 0) ||
->> +		   (netif_is_l3_master(dev)) ||
->> +		   (netif_is_l3_slave(dev)))
->>  		fl6.flowi6_oif = dev->ifindex;
->>
->>  	rt = (void *)ip6_route_lookup(net, &fl6, skb, lookup_flags); @@
->> -73,6 +75,12 @@ static bool rpfilter_lookup_reverse6(struct net *net, const struct sk_buff *skb,
->>  		goto out;
->>  	}
->>
->> +	if (netif_is_l3_master(dev)) {
->> +		dev = dev_get_by_index_rcu(dev_net(dev), IP6CB(skb)->iif);
->> +		if (!dev)
->> +			goto out;
->> +	}
-> 
-> So, for the l3 device cases this makes:
-> 
-> #1 ip6_route_lookup() to fetch the route, using the device in xt_in()
->    (the _LOOSE flag is ignored for the l3 device case).
-> 
-> #2 If this is a l3dev master, then you make a global lookup for the
->    device using IP6CB(skb)->iif.
-> 
-> #3 You check if route matches with the device, using the new device
->    from the lookup:
-> 
->    if (rt->rt6i_idev->dev == dev ...
-> 
-> If there is no other way to fix this, OK, that's fair enough.
-> 
-> Still this fix looks a bit tricky to me.
-> 
-> And this assymmetric between the IPv4 and IPv6 codebase looks rare.
-> 
-> Probably someone can explain me this in more detail? I'd appreciate.
-> 
-> Thanks!
-> 
-    Thanks for your reply. I will try to explain this in more detail.
-    Vrf device will pass through netfilter hook twice. One with skb->dev=l3mdev
-Slave device and another one with skb->dev=l3mdev master deivce.
-    If a device is an l3mdev,  l3mdev_master_ifindex_rcu will return l3mdev
-master device ifindex otherwise 0 . So for non l3mdev cases,  v4 version is
-as same as the previous one. And for l3mdev cases,  flow.flowi4_oif
-will be l3mdev master device ifindex, so we can do a fib lookup in l3mdev
-domain as expected. Since fib_info_nh_uses_dev help us handle the case with
-dev=l3mdev slave or master and  XT_RPFILTER_LOOSE do not lookup route
-table, we finish v4.
-    For v6 version we need to set fl6.flowi6_oif as we are supposed to lookup 
-fib in l3mdev domain even in XT_RPFILTER_LOOSE mode.
-    And fib result rt->rt6i_idev->dev is l3mdev slave device, we need change
-dev to enslaved l3mdev device when dev passed in is l3mdev master device.
-    The key is l3mdev will pass through netfilter hook twice with skb dev is l3mdev slave
-and master . And we need to set flowi6_oif as fib lookup should in the l3mdev
-domain.
-    Thanks a lot. Have a good day!
+VGhlIGNvbW1lbnQgaXMgY29ycmVjdCwgYnV0IHRoZSBjb2RlIGVuZHMgdXAgbW92aW5nIHRoZSBi
+aXRzIGZvdXINCnBsYWNlcyB0b28gZmFyLCBpbnRvIHRoZSBWVFVPcCBmaWVsZC4NCg0KRml4ZXM6
+IDExZWE4MDlmMWE3NCAobmV0OiBkc2E6IG12ODhlNnh4eDogc3VwcG9ydCAyNTYgZGF0YWJhc2Vz
+KQ0KU2lnbmVkLW9mZi1ieTogUmFzbXVzIFZpbGxlbW9lcyA8cmFzbXVzLnZpbGxlbW9lc0BwcmV2
+YXMuZGs+DQotLS0NCiBkcml2ZXJzL25ldC9kc2EvbXY4OGU2eHh4L2dsb2JhbDFfdnR1LmMgfCAy
+ICstDQogMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0pDQoNCmRp
+ZmYgLS1naXQgYS9kcml2ZXJzL25ldC9kc2EvbXY4OGU2eHh4L2dsb2JhbDFfdnR1LmMgYi9kcml2
+ZXJzL25ldC9kc2EvbXY4OGU2eHh4L2dsb2JhbDFfdnR1LmMNCmluZGV4IDRmN2I1MjJlNWU1OS4u
+NzY0Mzc4ZGNiYzBjIDEwMDY0NA0KLS0tIGEvZHJpdmVycy9uZXQvZHNhL212ODhlNnh4eC9nbG9i
+YWwxX3Z0dS5jDQorKysgYi9kcml2ZXJzL25ldC9kc2EvbXY4OGU2eHh4L2dsb2JhbDFfdnR1LmMN
+CkBAIC00NzMsNyArNDczLDcgQEAgaW50IG12ODhlNjE4NV9nMV92dHVfbG9hZHB1cmdlKHN0cnVj
+dCBtdjg4ZTZ4eHhfY2hpcCAqY2hpcCwNCiAJCSAqIFZUVSBEQk51bVs3OjRdIGFyZSBsb2NhdGVk
+IGluIFZUVSBPcGVyYXRpb24gMTE6OA0KIAkJICovDQogCQlvcCB8PSBlbnRyeS0+ZmlkICYgMHgw
+MDBmOw0KLQkJb3AgfD0gKGVudHJ5LT5maWQgJiAweDAwZjApIDw8IDg7DQorCQlvcCB8PSAoZW50
+cnktPmZpZCAmIDB4MDBmMCkgPDwgNDsNCiAJfQ0KIA0KIAlyZXR1cm4gbXY4OGU2eHh4X2cxX3Z0
+dV9vcChjaGlwLCBvcCk7DQotLSANCjIuMjAuMQ0KDQo=
