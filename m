@@ -2,117 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D2994BEF1
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 18:50:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 727234BEFD
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 18:51:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726518AbfFSQup (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 12:50:45 -0400
-Received: from mail.us.es ([193.147.175.20]:52032 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726109AbfFSQuo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Jun 2019 12:50:44 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 98021F278D
-        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 18:50:42 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 86397DA702
-        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 18:50:42 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 7B82EDA70E; Wed, 19 Jun 2019 18:50:42 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 715C0DA704;
-        Wed, 19 Jun 2019 18:50:40 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 19 Jun 2019 18:50:40 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 501424265A2F;
-        Wed, 19 Jun 2019 18:50:40 +0200 (CEST)
-Date:   Wed, 19 Jun 2019 18:50:39 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Stephen Suryaputra <ssuryaextr@gmail.com>
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH RESEND nf-next] netfilter: add support for matching IPv4
- options
-Message-ID: <20190619165039.yg3gzhkg2kvze5py@salvia>
-References: <20190611120912.3825-1-ssuryaextr@gmail.com>
- <20190618153112.jwomdzit6mdawssi@salvia>
- <20190618141355.GA5642@ubuntu>
+        id S1730194AbfFSQvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 12:51:42 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:37482 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726109AbfFSQvm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 12:51:42 -0400
+Received: by mail-io1-f65.google.com with SMTP id e5so115990iok.4
+        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 09:51:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CbQ6fOuQmgLNSHpyYdf+NRAIyiJLwuCO10kZvh4pIh4=;
+        b=riIIl32O4c6VEvYwgxKFshQTAqUhYNyuF1RQW4zf9Mw7Cr+FdfeuQ8lIDFhmK1O9mD
+         mwWRqcq4GcDoDulI269o4bIEagKi7/dhOyGf4JEo2vVPdLHYWPwHhQBR1bg6HHkGzP86
+         SZWBoPfa340JMKPi7262NJ5XDHF74yRbyemMUEk6Wd+07ZhCnnNW+fRz87ivqTDewW04
+         EB8NQ9fWagckQVauIMN7ur8VSAZDv/rl6S+4ByyD7VgitBKZtWSSv4YpheHKZDuwVIs3
+         8V27Prt2fyicyTm8uLGhLF0yLg1RbxK8Y078ANJM8o1PRPq1w+Vs8kjd7RNBNvLQhaNn
+         o4xA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CbQ6fOuQmgLNSHpyYdf+NRAIyiJLwuCO10kZvh4pIh4=;
+        b=LcOnCaBX++Fpe2AGVUt2OJKaZThXDAFMYRLvVGgGJR1wyIk2R4XABWES/uwbwMuCQ0
+         Z6PdU9UOf1L6o215o6iqehqI4A99pjYoqZfuvGUG1PepVbZlK09DosUWSKYoYfj6SzTZ
+         xFmXs0HvhwVObGPCK7borWeQYFZH2lwyrck2XEVXhjKaznSPwRlZkvOaZkCiy6c+asQg
+         VHKASyUqvihfCJX2RDMS/FW2qQ4FX0840UE+Bog74ojtbcmL2atGGKHwLJRpqJ1iLtsH
+         g9Lkmuze83SFiw59w8URfR1HnpnDpbr0ZJ8vJNqfI4JZ6RlA84uXcvzi2LwsjtpD/MIg
+         MfLw==
+X-Gm-Message-State: APjAAAUGsLowXRX0e3W1cRuaC+76ruPwlbzrynyc5J5ne+N/qjwPIy5b
+        LNT/nVCtDlT28oaJ2/EMMStVOo5jFWVUnrMUYqteZQ==
+X-Google-Smtp-Source: APXvYqymzHkSXUPND/qw5VEeMpvA54/kQa+UsosyNoHtAdYk4UgaBfWjP2vCaHUDyLmTZEBKkvkZlkkJtYcN02tbG6o=
+X-Received: by 2002:a02:394c:: with SMTP id w12mr11537380jae.126.1560963101367;
+ Wed, 19 Jun 2019 09:51:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190618141355.GA5642@ubuntu>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+References: <20190618182543.65477-1-tracywwnj@gmail.com> <20190618182543.65477-4-tracywwnj@gmail.com>
+ <20190619.120726.374612750372065747.davem@davemloft.net>
+In-Reply-To: <20190619.120726.374612750372065747.davem@davemloft.net>
+From:   Wei Wang <weiwan@google.com>
+Date:   Wed, 19 Jun 2019 09:51:30 -0700
+Message-ID: <CAEA6p_Cz31v798F=9+54hnf7yy8diPzXR2FjPuANeaWu0xD7YQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 3/5] ipv6: honor RT6_LOOKUP_F_DST_NOREF in rule
+ lookup logic
+To:     David Miller <davem@davemloft.net>
+Cc:     =?UTF-8?B?546L6JSa?= <tracywwnj@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Mahesh Bandewar <maheshb@google.com>,
+        David Ahern <dsahern@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 18, 2019 at 10:13:55AM -0400, Stephen Suryaputra wrote:
-> On Tue, Jun 18, 2019 at 05:31:12PM +0200, Pablo Neira Ayuso wrote:
-> > > +{
-> > > +	unsigned char optbuf[sizeof(struct ip_options) + 41];
-> > 
-> > In other parts of the kernel this is + 40:
-> > 
-> > net/ipv4/cipso_ipv4.c:  unsigned char optbuf[sizeof(struct ip_options) + 40];
-> > 
-> > here it is + 41.
-> >
-> > ...
-> >
-> > > +	/* Copy the options since __ip_options_compile() modifies
-> > > +	 * the options. Get one byte beyond the option for target < 0
-> > 
-> > How does this "one byte beyond the option" trick works?
-> 
-> I used ipv6_find_hdr() as a reference. There if target is set to less
-> than 0, then the offset points to the byte beyond the extension header.
-> In this function, it points to the byte beyond the option. I wanted to
-> be as close as a working code as possible. Also, why +41 instead of +40.
+On Wed, Jun 19, 2019 at 9:07 AM David Miller <davem@davemloft.net> wrote:
+>
+> From: Wei Wang <tracywwnj@gmail.com>
+> Date: Tue, 18 Jun 2019 11:25:41 -0700
+>
+> > @@ -237,13 +240,16 @@ static int __fib6_rule_action(struct fib_rule *rule, struct flowi *flp,
+> >                       goto out;
+> >       }
+> >  again:
+> > -     ip6_rt_put(rt);
+> > +     if (!(flags & RT6_LOOKUP_F_DST_NOREF) ||
+> > +         !list_empty(&rt->rt6i_uncached))
+> > +             ip6_rt_put(rt);
+>
+> This conditional release logic, with the special treatment of uncache items
+> when using DST_NOREF, seems error prone.
+>
+> Maybe you can put this logic into a helper like ip6_rt_put_any() and do the
+> list empty test etc. there?
+>
+>         ip6_rt_put_any(struct rt6_info *rt, int flags);
+>
+> What do you think?
 
-OK. But this is never used in this new extension, priv->type is always
-set. I mean, we already have a pointer to the transport header via
-nft_pktinfo->xt.thoff.
-
-> > > +		if (opt->end) {
-> > > +			*offset = opt->end + start;
-> > > +			target = IPOPT_END;
-> > 
-> > May I ask, what's the purpose of IPOPT_END? :-)
-> 
-> My understanding is that in ipv6_find_hdr() if the nexthdr is
-> NEXTHDR_NONE, then that's the one being returned. The same here: target
-> is the return value.
-
-Code that falls under the default: case that deals with IPOPT_END is
-never exercised, right?
-
-priv->type is always set to >= 0, so the opt->end never happens.
-Hence, we can remove the chunk in net/ipv4/ip_options.c.
-
-> > Apart from the above, this looks good to me.
-> 
-> AOK for other comments. I can spin another version.
-
-Please, do.
-
-Thanks for explaining. I understand motivation is to mimic
-ipv6_find_hdr() which is a good idea indeed... if this functions
-becomes used away from the netfilter tree at some point that would be
-a good pattern to extend it. However, so far - please correct me if
-I'm mistaken - for the requirements of nft_exthdr to support IPv4
-options, we don't seem to need it, so I would prefer to start with the
-bare minimum code that nft_exthdr needs, if possible.
-
-Thanks!
+Thanks David. Sure. Will update.
