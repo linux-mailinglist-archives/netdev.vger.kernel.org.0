@@ -2,59 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D3454B507
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 11:36:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 218984B517
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 11:40:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731485AbfFSJgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 05:36:37 -0400
-Received: from smtprelay0073.hostedemail.com ([216.40.44.73]:54387 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727068AbfFSJgf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 05:36:35 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay07.hostedemail.com (Postfix) with ESMTP id 6B6F91803EF2F;
-        Wed, 19 Jun 2019 09:36:34 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::::::::::::,RULES_HIT:41:355:379:599:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1537:1561:1593:1594:1711:1714:1730:1747:1777:1792:2198:2199:2393:2559:2562:2731:2828:3138:3139:3140:3141:3142:3622:3865:3867:3868:3870:4321:5007:6119:7903:9010:10004:10400:10848:11232:11658:11914:12663:12740:12760:12895:13069:13311:13357:13439:14659:21080:21433:21627:30054:30060:30091,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.14.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:25,LUA_SUMMARY:none
-X-HE-Tag: lake79_906b73ef29727
-X-Filterd-Recvd-Size: 1631
-Received: from XPS-9350 (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
-        (Authenticated sender: joe@perches.com)
-        by omf19.hostedemail.com (Postfix) with ESMTPA;
-        Wed, 19 Jun 2019 09:36:32 +0000 (UTC)
-Message-ID: <f22006fedb0204ad05858609bc9d3ed0abc6078e.camel@perches.com>
-Subject: Re: [PATCH] net/ipv4: fib_trie: Avoid cryptic ternary expressions
-From:   Joe Perches <joe@perches.com>
-To:     Nick Desaulniers <ndesaulniers@google.com>,
-        Matthias Kaehlcke <mka@chromium.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Alexander Duyck <alexander.h.duyck@redhat.com>,
-        netdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Nathan Huckleberry <nhuck@google.com>,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Nathan Chancellor <natechancellor@gmail.com>
-Date:   Wed, 19 Jun 2019 02:36:30 -0700
-In-Reply-To: <CAKwvOd=i2qsEO90cHn-Zvgd7vbhK5Z4RH89gJGy=Cjzbi9QRMA@mail.gmail.com>
-References: <20190618211440.54179-1-mka@chromium.org>
-         <20190618230420.GA84107@archlinux-epyc>
-         <CAKwvOd=i2qsEO90cHn-Zvgd7vbhK5Z4RH89gJGy=Cjzbi9QRMA@mail.gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
+        id S1727085AbfFSJkx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 05:40:53 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:40689 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726958AbfFSJkx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 05:40:53 -0400
+Received: by mail-io1-f68.google.com with SMTP id n5so36644077ioc.7
+        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 02:40:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9E1KRk5GS4oXR0jhMk478AJenwyDL2d36E4SSe6bTfY=;
+        b=rf6a5cJs06tJrrTZmHnLdC8Gjfs7W+yHXhA4qwh7zeLGcPlWT738lJj525LMLKY/D0
+         KgeZHPmH9F76TeK2BMd3eFDmQXuvdqsLQ1Ek87u4u9myNbWgug1jHdcQ/EwpaPJJOFa7
+         B/4Yf0E8w50fKzPHUHl1F4RGjl0K0Uy6ExRqQcF25h3epouYswZoQxRKh618oiB7uyLq
+         /UWU3x2JHTI1AXqefa16J7pvhwBBvIIERLhOtE/vWasuf2VvKQIfrUn3+aHuafFnEQMW
+         foCbR+DLnk8jW3CbPhzOWm6+IYv2Kyj7G69wAwLDH3/rZGtfIcLTzb38FBy96ZPqp8Wm
+         EBJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9E1KRk5GS4oXR0jhMk478AJenwyDL2d36E4SSe6bTfY=;
+        b=CLNop+0gcOCAnuDwhpXqyPkuLj3nRlaU+lUyITBtDOJsC2ZJZJzdOQ+s/mm7tBXI1I
+         wCQsTLiC6acarMte7Rfn25UNqXhARb591Gok3t+uy38z0ZeFIAMykJECVDUEAitRkmtC
+         sFUDNIBu5G+P0IrUchVQrR6D8lqwzW+7NB+FCSCgnSOtXY4N3plpmnZz4QEOeBr5keB+
+         dd/QJ06yx66gsp0+JZST7lCcd40wyVe0zO4DQurxuiD3jwadyJjX8w8sP4Y971qcoxgx
+         PIzTjZrOqpkQAtw57cIC/I7cQ1PQriSQpdxuj/sj9YENNYbj56neb/a6XneCxvNK/YIA
+         /Lag==
+X-Gm-Message-State: APjAAAWIRc9sidC4lgXOlaT/zD0rKPG4Ntt5VTGwj7h7EvNA/mBCJT+q
+        bAm8DsbpdmfNtAJkmyltS/+S/mnST9Kjqp3GMi2WaA==
+X-Google-Smtp-Source: APXvYqy7T8RjpR6oMBuJd3OM0JdQHtc5Kq3bDBD+rmy9SSDEtlq1zYV/s8cgopMpkgQhVywNiuJ2n7OnUkGrFQM3k1Y=
+X-Received: by 2002:a5d:9d97:: with SMTP id 23mr10861363ion.204.1560937252081;
+ Wed, 19 Jun 2019 02:40:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <1560931034-6810-1-git-send-email-ilias.apalodimas@linaro.org>
+In-Reply-To: <1560931034-6810-1-git-send-email-ilias.apalodimas@linaro.org>
+From:   Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Date:   Wed, 19 Jun 2019 11:40:40 +0200
+Message-ID: <CAKv+Gu9tdWM=ECwB0HaPuc=dCvPS0=3jtye8gctW9SoVi0b18Q@mail.gmail.com>
+Subject: Re: [net-next, PATCH 1/2] net: netsec: initialize tx ring on ndo_open
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     Jaswinder Singh <jaswinder.singh@linaro.org>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
+        Masahisa Kojima <masahisa.kojima@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2019-06-18 at 16:23 -0700, Nick Desaulniers wrote:
-> As a side note, I'm going to try to see if MAINTAINERS and
-> scripts/get_maintainers.pl supports regexes on the commit messages in
-> order to cc our mailing list
+On Wed, 19 Jun 2019 at 09:57, Ilias Apalodimas
+<ilias.apalodimas@linaro.org> wrote:
+>
+> Since we changed the Tx ring handling and now depend not bit31 to figure
 
-Neither.  Why should either?
+s/not/on/
 
+> out the owner of the descriptor, we should initialize this every time
+> the device goes down-up instead of doing it once on driver init. If the
+> value is not correctly initialized the device won't have any available
+> descriptors
+>
+> Fixes: 35e07d23473972b8876f98bcfc631ebcf779e870 ("net: socionext: remove mmio reads on Tx")
+>
+> Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
 
+Acked-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+
+> ---
+>  drivers/net/ethernet/socionext/netsec.c | 32 ++++++++++++++-----------
+>  1 file changed, 18 insertions(+), 14 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
+> index cba5881b2746..a10ef700f16d 100644
+> --- a/drivers/net/ethernet/socionext/netsec.c
+> +++ b/drivers/net/ethernet/socionext/netsec.c
+> @@ -1029,7 +1029,6 @@ static void netsec_free_dring(struct netsec_priv *priv, int id)
+>  static int netsec_alloc_dring(struct netsec_priv *priv, enum ring_id id)
+>  {
+>         struct netsec_desc_ring *dring = &priv->desc_ring[id];
+> -       int i;
+>
+>         dring->vaddr = dma_alloc_coherent(priv->dev, DESC_SZ * DESC_NUM,
+>                                           &dring->desc_dma, GFP_KERNEL);
+> @@ -1040,19 +1039,6 @@ static int netsec_alloc_dring(struct netsec_priv *priv, enum ring_id id)
+>         if (!dring->desc)
+>                 goto err;
+>
+> -       if (id == NETSEC_RING_TX) {
+> -               for (i = 0; i < DESC_NUM; i++) {
+> -                       struct netsec_de *de;
+> -
+> -                       de = dring->vaddr + (DESC_SZ * i);
+> -                       /* de->attr is not going to be accessed by the NIC
+> -                        * until netsec_set_tx_de() is called.
+> -                        * No need for a dma_wmb() here
+> -                        */
+> -                       de->attr = 1U << NETSEC_TX_SHIFT_OWN_FIELD;
+> -               }
+> -       }
+> -
+>         return 0;
+>  err:
+>         netsec_free_dring(priv, id);
+> @@ -1060,6 +1046,23 @@ static int netsec_alloc_dring(struct netsec_priv *priv, enum ring_id id)
+>         return -ENOMEM;
+>  }
+>
+> +static void netsec_setup_tx_dring(struct netsec_priv *priv)
+> +{
+> +       struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_TX];
+> +       int i;
+> +
+> +       for (i = 0; i < DESC_NUM; i++) {
+> +               struct netsec_de *de;
+> +
+> +               de = dring->vaddr + (DESC_SZ * i);
+> +               /* de->attr is not going to be accessed by the NIC
+> +                * until netsec_set_tx_de() is called.
+> +                * No need for a dma_wmb() here
+> +                */
+> +               de->attr = 1U << NETSEC_TX_SHIFT_OWN_FIELD;
+> +       }
+> +}
+> +
+>  static int netsec_setup_rx_dring(struct netsec_priv *priv)
+>  {
+>         struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
+> @@ -1361,6 +1364,7 @@ static int netsec_netdev_open(struct net_device *ndev)
+>
+>         pm_runtime_get_sync(priv->dev);
+>
+> +       netsec_setup_tx_dring(priv);
+>         ret = netsec_setup_rx_dring(priv);
+>         if (ret) {
+>                 netif_err(priv, probe, priv->ndev,
+> --
+> 2.20.1
+>
