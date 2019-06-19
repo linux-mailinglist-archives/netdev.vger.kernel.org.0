@@ -2,131 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F8A84BFE6
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 19:40:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4890D4BFFE
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 19:42:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730367AbfFSRkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 13:40:31 -0400
-Received: from mga04.intel.com ([192.55.52.120]:19740 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730301AbfFSRk3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Jun 2019 13:40:29 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 19 Jun 2019 10:40:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.63,393,1557212400"; 
-   d="scan'208";a="311413672"
-Received: from vpatel-desk.jf.intel.com (HELO localhost.localdomain) ([10.7.159.52])
-  by orsmga004.jf.intel.com with ESMTP; 19 Jun 2019 10:40:29 -0700
-From:   Vedang Patel <vedang.patel@intel.com>
+        id S1730242AbfFSRmW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 13:42:22 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:39423 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727314AbfFSRmW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 13:42:22 -0400
+Received: by mail-wm1-f66.google.com with SMTP id z23so356164wma.4
+        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 10:42:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=darbyshire-bryant.me.uk; s=google;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Mr6WZ5OSFO4WU2Gm6yevlMWjzMzjrI5TVzLu9UHe+VE=;
+        b=l7GLuS59WwVeZIrFDj1tWPmC9vI/dUSVLP0TUytU5hIpEIzva5m+ME4aE6IIycCfRx
+         Dqc5xzSXQW4yOha4IBXHqT/yVAdtJ3rRmIlbVsGlYLM5U3+xs8O3sjhfuZzywRrCIjP0
+         ENhpPx8w+Crcnv6vw7RvDUzKsPgX5RlvxKzKk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=Mr6WZ5OSFO4WU2Gm6yevlMWjzMzjrI5TVzLu9UHe+VE=;
+        b=AYOQH5kYRwsxfVSKyzO7YHk2p3J16yh8N4jwmNfNdPCDY7/pQy4vRvjFYk7OKF0QoB
+         wAF3upc7B5sksIbwceqtErom2FayVTrqiZrwv0arpLT3LYptwERU6V2Dk6A8aVbHzlfJ
+         nZd+4F0uV1REcPDvUpAwlf5A3ZmOgWOLKltFNzFfUbYD3aCBSJnk0sc3Qad7KjKXIHh6
+         rFpaACxHDZk/PA1HWh3WxSDRZ8TnagEreDOjl7GXmZ5IHZCE+lgzlO2hHhOxcoEivM10
+         nlk9fjD4x5Z3vZMs+Nl+u53OG5aQafd9hjHo8YJDARyB1erjC2HjxjnIM/tzZOxU8gO7
+         TYKQ==
+X-Gm-Message-State: APjAAAVSHJUgZjMWWDx3aQk0H49pVRJcYFlj5dmU2AtfwtOMIoKRNyI6
+        054Eww7wTrpjAoxRmiuZljlm1yy96/pqaQ==
+X-Google-Smtp-Source: APXvYqxQDeoDcQ4LKJuDV+25VM5Ib5llnwtOLBOQFfgKiZ3ihmyX64HYh/XcKXIPwHdnq3MhHYlaGg==
+X-Received: by 2002:a7b:c144:: with SMTP id z4mr9800755wmi.50.1560966139563;
+        Wed, 19 Jun 2019 10:42:19 -0700 (PDT)
+Received: from Kevins-MBP.lan.darbyshire-bryant.me.uk ([2a02:c7f:1268:6500::dc83])
+        by smtp.gmail.com with ESMTPSA id a81sm2381958wmh.3.2019.06.19.10.42.17
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 19 Jun 2019 10:42:18 -0700 (PDT)
+From:   Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
 To:     netdev@vger.kernel.org
-Cc:     jeffrey.t.kirsher@intel.com, davem@davemloft.net, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        intel-wired-lan@lists.osuosl.org, vinicius.gomes@intel.com,
-        l@dorileo.org, jakub.kicinski@netronome.com, m-karicheri2@ti.com,
-        sergei.shtylyov@cogentembedded.com,
-        Vedang Patel <vedang.patel@intel.com>
-Subject: [PATCH net-next v4 7/7] taprio: Adjust timestamps for TCP packets
-Date:   Wed, 19 Jun 2019 10:40:16 -0700
-Message-Id: <1560966016-28254-8-git-send-email-vedang.patel@intel.com>
-X-Mailer: git-send-email 2.7.3
-In-Reply-To: <1560966016-28254-1-git-send-email-vedang.patel@intel.com>
-References: <1560966016-28254-1-git-send-email-vedang.patel@intel.com>
+Cc:     Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
+Subject: [PATCH net-next] net: sched: act_ctinfo: tidy UAPI definition
+Date:   Wed, 19 Jun 2019 18:41:10 +0100
+Message-Id: <20190619174109.55695-1-ldir@darbyshire-bryant.me.uk>
+X-Mailer: git-send-email 2.20.1 (Apple Git-117)
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the taprio qdisc is running in "txtime offload" mode, it will
-set the launchtime value (in skb->tstamp) for all the packets which do
-not have the SO_TXTIME socket option. But, the TCP packets already have
-this value set and it indicates the earliest departure time represented
-in CLOCK_MONOTONIC clock.
+Remove some enums from the UAPI definition that were only used
+internally and are NOT part of the UAPI.
 
-We need to respect the timestamp set by the TCP subsystem. So, convert
-this time to the clock which taprio is using and ensure that the packet
-is not transmitted before the deadline set by TCP.
-
-Signed-off-by: Vedang Patel <vedang.patel@intel.com>
+Signed-off-by: Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
 ---
- net/sched/sch_taprio.c | 41 ++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 40 insertions(+), 1 deletion(-)
+ include/net/tc_act/tc_ctinfo.h        | 5 +++++
+ include/uapi/linux/tc_act/tc_ctinfo.h | 5 -----
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 44540c30887e..36cad8d68883 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -22,6 +22,7 @@
- #include <net/pkt_cls.h>
- #include <net/sch_generic.h>
- #include <net/sock.h>
-+#include <net/tcp.h>
+diff --git a/include/net/tc_act/tc_ctinfo.h b/include/net/tc_act/tc_ctinfo.h
+index d6a688571672..f071c1d70a25 100644
+--- a/include/net/tc_act/tc_ctinfo.h
++++ b/include/net/tc_act/tc_ctinfo.h
+@@ -23,6 +23,11 @@ struct tcf_ctinfo {
+ 	u64 stats_cpmark_set;
+ };
  
- static LIST_HEAD(taprio_list);
- static DEFINE_SPINLOCK(taprio_list_lock);
-@@ -277,6 +278,41 @@ static ktime_t get_cycle_start(struct sched_gate_list *sched,
- 	return ktime_sub(time, cycle_elapsed);
- }
++enum {
++	CTINFO_MODE_DSCP	= BIT(0),
++	CTINFO_MODE_CPMARK	= BIT(1)
++};
++
+ #define to_ctinfo(a) ((struct tcf_ctinfo *)a)
  
-+/* This returns the tstamp value set by TCP in terms of the set clock. */
-+static ktime_t get_tcp_tstamp(struct taprio_sched *q, struct sk_buff *skb)
-+{
-+	unsigned int offset = skb_network_offset(skb);
-+	const struct ipv6hdr *ipv6h;
-+	const struct iphdr *iph;
-+	struct ipv6hdr _ipv6h;
-+
-+	ipv6h = skb_header_pointer(skb, offset, sizeof(_ipv6h), &_ipv6h);
-+	if (!ipv6h)
-+		return 0;
-+
-+	if (ipv6h->version == 4) {
-+		iph = (struct iphdr *)ipv6h;
-+		offset += iph->ihl * 4;
-+
-+		/* special-case 6in4 tunnelling, as that is a common way to get
-+		 * v6 connectivity in the home
-+		 */
-+		if (iph->protocol == IPPROTO_IPV6) {
-+			ipv6h = skb_header_pointer(skb, offset,
-+						   sizeof(_ipv6h), &_ipv6h);
-+
-+			if (!ipv6h || ipv6h->nexthdr != IPPROTO_TCP)
-+				return 0;
-+		} else if (iph->protocol != IPPROTO_TCP) {
-+			return 0;
-+		}
-+	} else if (ipv6h->version == 6 && ipv6h->nexthdr != IPPROTO_TCP) {
-+		return 0;
-+	}
-+
-+	return ktime_mono_to_any(skb->skb_mstamp_ns, q->tk_offset);
-+}
-+
- /* There are a few scenarios where we will have to modify the txtime from
-  * what is read from next_txtime in sched_entry. They are:
-  * 1. If txtime is in the past,
-@@ -294,7 +330,7 @@ static ktime_t get_cycle_start(struct sched_gate_list *sched,
-  */
- static long get_packet_txtime(struct sk_buff *skb, struct Qdisc *sch)
- {
--	ktime_t transmit_end_time, interval_end, interval_start;
-+	ktime_t transmit_end_time, interval_end, interval_start, tcp_tstamp;
- 	struct taprio_sched *q = qdisc_priv(sch);
- 	struct sched_gate_list *sched, *admin;
- 	ktime_t minimum_time, now, txtime;
-@@ -305,6 +341,9 @@ static long get_packet_txtime(struct sk_buff *skb, struct Qdisc *sch)
- 	now = taprio_get_time(q);
- 	minimum_time = ktime_add_ns(now, q->txtime_delay);
+ #endif /* __NET_TC_CTINFO_H */
+diff --git a/include/uapi/linux/tc_act/tc_ctinfo.h b/include/uapi/linux/tc_act/tc_ctinfo.h
+index 32337304fbe5..f5f26d95d0e7 100644
+--- a/include/uapi/linux/tc_act/tc_ctinfo.h
++++ b/include/uapi/linux/tc_act/tc_ctinfo.h
+@@ -26,9 +26,4 @@ enum {
  
-+	tcp_tstamp = get_tcp_tstamp(q, skb);
-+	minimum_time = max_t(ktime_t, minimum_time, tcp_tstamp);
-+
- 	rcu_read_lock();
- 	admin = rcu_dereference(q->admin_sched);
- 	sched = rcu_dereference(q->oper_sched);
+ #define TCA_CTINFO_MAX (__TCA_CTINFO_MAX - 1)
+ 
+-enum {
+-	CTINFO_MODE_DSCP	= _BITUL(0),
+-	CTINFO_MODE_CPMARK	= _BITUL(1)
+-};
+-
+ #endif
 -- 
-2.7.3
+2.20.1 (Apple Git-117)
 
