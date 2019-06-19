@@ -2,88 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3FF54BAD3
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 16:10:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 647044BAD8
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 16:11:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726958AbfFSOK0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 10:10:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55454 "EHLO mail.kernel.org"
+        id S1727198AbfFSOLa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 10:11:30 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:40340 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725893AbfFSOK0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Jun 2019 10:10:26 -0400
-Received: from mail-qk1-f175.google.com (mail-qk1-f175.google.com [209.85.222.175])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 75EEF206BF;
-        Wed, 19 Jun 2019 14:10:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1560953425;
-        bh=eAkETR1airFEdkrvmqxKAnHpAPALZYjF/U5gjIALrUM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=UuVQ+dfW0se8BadL24kxy8KpYt7nswO2DeKP9VFDc4smOqGT+DUiRX0yB2SodJEw6
-         CeSGRrMV5AncEhb1NwIH0SZMxo3PI6/ZbYRrgYvx+eCJzBIBd/BfQAnhOGveFtLUgY
-         NJcF4UvAjiAAShvHlsvcpVNeAgNYZa70+fg9sNY8=
-Received: by mail-qk1-f175.google.com with SMTP id m14so10963159qka.10;
-        Wed, 19 Jun 2019 07:10:25 -0700 (PDT)
-X-Gm-Message-State: APjAAAW/e6WePJDk6xWx4CwxqR7ZBprbuWNta+bxsGQTAxZjoyEpGKK+
-        1FJ5wzF9HGkviYc7Lq764or3B5BndWMOh1dfRw==
-X-Google-Smtp-Source: APXvYqw9X46Mgu2RprjLazOYn0ITq1U9dAZj6F7rqFtXuTxJ4ZNpg2PAEqixE+a2M0Jx4daY2/u8dIsGscF4zKKrR5U=
-X-Received: by 2002:a37:a6c9:: with SMTP id p192mr102502666qke.184.1560953424738;
- Wed, 19 Jun 2019 07:10:24 -0700 (PDT)
-MIME-Version: 1.0
-References: <27aeb33cf5b896900d5d11bd6957eda268014f0c.1560937626.git-series.maxime.ripard@bootlin.com>
- <a9c556114ab21793d100f31361da01a579bae84e.1560937626.git-series.maxime.ripard@bootlin.com>
-In-Reply-To: <a9c556114ab21793d100f31361da01a579bae84e.1560937626.git-series.maxime.ripard@bootlin.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Wed, 19 Jun 2019 08:10:13 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqLyByqjpdSoebU7xboupmnbZb5q3D2L_oQt_sigBQeMnQ@mail.gmail.com>
-Message-ID: <CAL_JsqLyByqjpdSoebU7xboupmnbZb5q3D2L_oQt_sigBQeMnQ@mail.gmail.com>
-Subject: Re: [PATCH v3 10/16] dt-bindings: net: sun8i-emac: Convert the
- binding to a schemas
+        id S1725893AbfFSOL3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Jun 2019 10:11:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=v0kj21FKTfc8hI0Hhv3Jpr9qgTaeqZ90JjRurjLbLxE=; b=aJW4ugajucQKu9Yyy9ttcxLUbB
+        /OMtxcJOC9W9XEDDqR5MHfWCpOiBiRNCkdDCCcFQ8QwEcWC1OGDIZ3P/ln8CWphBQqcIU32s1MFqI
+        85ao32RIPpUllKTmvCc8SsxJDxiRkXmohQ4E6ID7RzulnFWX2s6mBzFc2CNy8ESYZZ28=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hdbJ2-0001ul-Hn; Wed, 19 Jun 2019 16:11:20 +0200
+Date:   Wed, 19 Jun 2019 16:11:20 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
 To:     Maxime Ripard <maxime.ripard@bootlin.com>
 Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
         Frank Rowand <frowand.list@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Chen-Yu Tsai <wens@csie.org>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         Alexandre Torgue <alexandre.torgue@st.com>,
-        netdev <netdev@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org,
         linux-stm32@st-md-mailman.stormreply.com,
         Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        =?UTF-8?Q?Antoine_T=C3=A9nart?= <antoine.tenart@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
+        Antoine =?iso-8859-1?Q?T=E9nart?= <antoine.tenart@bootlin.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH v3 14/16] ARM: dts: sunxi: Switch from phy-mode to
+ phy-connection-type
+Message-ID: <20190619141120.GD18352@lunn.ch>
+References: <27aeb33cf5b896900d5d11bd6957eda268014f0c.1560937626.git-series.maxime.ripard@bootlin.com>
+ <50f869f466acb110c5924d7e8a67087fd97106fd.1560937626.git-series.maxime.ripard@bootlin.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <50f869f466acb110c5924d7e8a67087fd97106fd.1560937626.git-series.maxime.ripard@bootlin.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 19, 2019 at 3:48 AM Maxime Ripard <maxime.ripard@bootlin.com> wrote:
->
-> Switch our Allwinner H3 EMAC controller binding to a YAML schema to enable
-> the DT validation. Since that controller is based on a Synopsys IP, let's
-> add the validation to that schemas with a bunch of conditionals.
->
-> Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
->
-> ---
->
-> Changes from v2:
->   - Switch to phy-connection-type instead of phy-mode
->   - Change the delay enum to using multipleOf
->
-> Changes from v1:
->   - Add specific binding document
-> ---
->  Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml | 321 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-
->  Documentation/devicetree/bindings/net/dwmac-sun8i.txt                | 201 +---------------------------------------------
->  Documentation/devicetree/bindings/net/snps,dwmac.yaml                |  15 +++-
->  3 files changed, 336 insertions(+), 201 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/net/allwinner,sun8i-a83t-emac.yaml
->  delete mode 100644 Documentation/devicetree/bindings/net/dwmac-sun8i.txt
+On Wed, Jun 19, 2019 at 11:47:23AM +0200, Maxime Ripard wrote:
+> The phy-mode device tree property has been deprecated in favor of
+> phy-connection-type, let's replace it.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Hi Maxime
+
+net/ethernet/stmicro/stmmac/dwmac-mediatek.c:		dev_err(plat->dev, "not find phy-mode\n");
+net/ethernet/stmicro/stmmac/dwmac-anarion.c:		dev_err(&pdev->dev, "Unsupported phy-mode (%d)\n",
+net/ethernet/stmicro/stmmac/dwmac-meson8b.c:		dev_err(dwmac->dev, "fail to set phy-mode %s\n",
+net/ethernet/stmicro/stmmac/dwmac-meson8b.c:		dev_err(dwmac->dev, "fail to set phy-mode %s\n",
+net/ethernet/stmicro/stmmac/dwmac-meson8b.c:		dev_err(dwmac->dev, "unsupported phy-mode %s\n",
+net/ethernet/stmicro/stmmac/dwmac-meson8b.c:		dev_err(&pdev->dev, "missing phy-mode property\n");
+
+As a follow up patch, you might want to change these error messages.
+
+   Andrew
