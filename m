@@ -2,53 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B281E4C417
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 01:25:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE94E4C41D
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 01:29:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730819AbfFSXZ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 19:25:29 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:43197 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726298AbfFSXZ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 19:25:29 -0400
-Received: by mail-io1-f66.google.com with SMTP id k20so1319929ios.10
-        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 16:25:28 -0700 (PDT)
+        id S1730611AbfFSX3J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 19:29:09 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:47020 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726251AbfFSX3I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 19:29:08 -0400
+Received: by mail-io1-f68.google.com with SMTP id i10so2394782iol.13
+        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 16:29:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=zK1mBFGFSIEUT6yEnOKa5a8Rj/3QRywxbfnHokzPPhA=;
-        b=tINeIAiWkiPJnUrv1Qn0AmopyBtnb9vxVhQ75d9oGc2LKOjFef6gfZJMvkY/zdUHki
-         APitifZY0YM1RcV3eJQeVo/4iT4PPbUSXEk27v3mFp4YaCh30kgFsUHqblwb7gf176Yt
-         24kFDMyI6q7kxWg5o4f1cwF3fo8q5Eg61i8P/DqoVL6k/QpE5Ce78fMDOsVpz8VZqPgv
-         kY+CaziXQWkqTnn2X4G0VaLhsdPTegXtXyPT98miiYsJU1BDCrgM8aTYrZAm59pirJEH
-         ooC6pYPDU6Jy/yDi1HZw7wDn9mQVCcd4dMp0DbS93KQA/rL4+qU0/+LRoVfdQr9pmZWR
-         wmQQ==
+        bh=JIKT2A+7xbF/qfbQ040F1fNEOR0i1CMLXEq+iT8Qz1U=;
+        b=RgImnaVo3WVKTXPRIsBPYfx9nzdTc9i1dC33G3sPmjXw/l+nMGuG1cVuesUwDWxkEd
+         bkaUP65+eQqykxfRKBUw7nqeRfcsR5h/4blYBNWkNcy7Ttm5Jl2GKtFdH9Mvl6lE2ml0
+         L9FvM5pNzwT3oZctkUHInWX5ZF+hULeO0/31dI6CPnXa0V5d4x6e+vst1MQ/Nlry3I+r
+         pO/uovcTMIFJuP9/1C8IPxg8dgBdmnzTvdz3G2g7k50H62u81sdF1k/3PcoVVzdtc59W
+         b7zlwMMEmWI0sFWH05UeyQm/s46bkcW4wupHIt7PctlcL9S6mHjBAewiH6uCNBkKXcqj
+         Dluw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=zK1mBFGFSIEUT6yEnOKa5a8Rj/3QRywxbfnHokzPPhA=;
-        b=gJmwxEwz6tsLMHXWI5jslFXTfVcOWO2NytIbvmk3PmRIFA/EyZJwUzSrumKnA0HmPL
-         q7w1gZTyHBPSHA8NEpt8TJ1R3Wu9eDg6EvsFByKCPYMJhSqxJ1HBO47GDt2sOc7JiJ5v
-         ALdj1/CE7n1TMR18gqV37+exd4Xg5karW3V7mYtuuLlIoqVYXjcfXG/EBEJmbzRLZvPm
-         SIn4zQZ0bhQSnjqq32mPk2BNV5k2Jep0WW27TOHlBluRD57ZTV7MKJZjo1xrq6hU50SX
-         rb4HeDqvN4Eg80wC6IVHaEMsXWrO0EzocjyNG5lC7+mDYSBqdy/UPzU7TvHKMt1XDxL3
-         ClnQ==
-X-Gm-Message-State: APjAAAUX77Er5NKUCmUDBOn8ka4sQVNr4p3htAleHSpFz8BuYdadcyg2
-        f0pJFY8zRbfwQn9qzH5FpiW30wDrYH+Z9gELYziVEA==
-X-Google-Smtp-Source: APXvYqytSpJcHvNqN549d2CsqIWmiaX2S9JY8MawQQeTwSQiYgaShv1pqjOfLiPMGv000VzQ+7sxRVF3h70Ap2N0S8Q=
-X-Received: by 2002:a6b:cb07:: with SMTP id b7mr15583927iog.7.1560986728189;
- Wed, 19 Jun 2019 16:25:28 -0700 (PDT)
+        bh=JIKT2A+7xbF/qfbQ040F1fNEOR0i1CMLXEq+iT8Qz1U=;
+        b=n9xb92UF12w+6ToNBLFM9yr5O1BQrIE39p3VitEv1hCYLmOnG8K/MMcU+KzTLHzBSy
+         EEUCg2NHbCIAMkgXk8vLZA52V+SXzN89gQShHONm7SzI9/Ufe+GbKsJZq22EVAtK++Gw
+         d+kv1cLmHmMRka3Oyew0u1n0KgiB/Ku271U7xRQh22B8F/AGOWjio2ag3jzxudETepgW
+         HdgSuAj8R4OCy4tsy2FqS/mIRC0zIz7ub4k9FEscUgTXZ6P0D6LG9lMDWWDds/8A+OGD
+         J8Nuwefk5CanYBtKWCE8vIqV70kcd09S/68EDg5c6fjGiPVIxQlAvFg6eK84bMDyJixw
+         LkHw==
+X-Gm-Message-State: APjAAAUqu30x8lNzfKZCVntOCTu2px206+ztFZdI8cC5P902Jek0w+C6
+        8m48vjUiZmDnQhwhA0OuMcsKDPNy9lvQjbXiZV3stA==
+X-Google-Smtp-Source: APXvYqx89Eh8fxpFDdYmMyczSiyxdkZdhxAVweOIDE+To1tVGdGFwjf7Ylw6JvpMg3hv8UnB4EnNML+Rg2KZYmgAL34=
+X-Received: by 2002:a6b:7606:: with SMTP id g6mr2067570iom.288.1560986947746;
+ Wed, 19 Jun 2019 16:29:07 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190619223158.35829-1-tracywwnj@gmail.com> <20190619223158.35829-4-tracywwnj@gmail.com>
- <857851ee-c610-0b19-b5b1-1948bebe84ab@gmail.com>
-In-Reply-To: <857851ee-c610-0b19-b5b1-1948bebe84ab@gmail.com>
+References: <20190619223158.35829-1-tracywwnj@gmail.com> <20190619223158.35829-6-tracywwnj@gmail.com>
+ <c0860def-4b20-610f-3fde-f9601eb1600e@gmail.com>
+In-Reply-To: <c0860def-4b20-610f-3fde-f9601eb1600e@gmail.com>
 From:   Wei Wang <weiwan@google.com>
-Date:   Wed, 19 Jun 2019 16:25:16 -0700
-Message-ID: <CAEA6p_AeFQb6H3+43_NgSEYTyo+9QePYG4OkjNih+LuAWs2GFg@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 3/5] ipv6: honor RT6_LOOKUP_F_DST_NOREF in
- rule lookup logic
+Date:   Wed, 19 Jun 2019 16:28:56 -0700
+Message-ID: <CAEA6p_DMFdBeC_RZ6sgBt1NXxWN1fdBzCtSoR+K3nRtDrLuOJg@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next 5/5] ipv6: convert major tx path to use RT6_LOOKUP_F_DST_NOREF
 To:     David Ahern <dsahern@gmail.com>
 Cc:     Wei Wang <tracywwnj@gmail.com>, David Miller <davem@davemloft.net>,
         Linux Kernel Network Developers <netdev@vger.kernel.org>,
@@ -61,36 +60,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 19, 2019 at 4:12 PM David Ahern <dsahern@gmail.com> wrote:
+On Wed, Jun 19, 2019 at 4:21 PM David Ahern <dsahern@gmail.com> wrote:
 >
 > On 6/19/19 4:31 PM, Wei Wang wrote:
-> > diff --git a/net/ipv6/fib6_rules.c b/net/ipv6/fib6_rules.c
-> > index bcfae13409b5..d22b6c140f23 100644
-> > --- a/net/ipv6/fib6_rules.c
-> > +++ b/net/ipv6/fib6_rules.c
-> > @@ -113,14 +113,15 @@ struct dst_entry *fib6_rule_lookup(struct net *net, struct flowi6 *fl6,
-> >               rt = lookup(net, net->ipv6.fib6_local_tbl, fl6, skb, flags);
-> >               if (rt != net->ipv6.ip6_null_entry && rt->dst.error != -EAGAIN)
-> >                       return &rt->dst;
-> > -             ip6_rt_put(rt);
-> > +             ip6_rt_put_flags(rt, flags);
-> >               rt = lookup(net, net->ipv6.fib6_main_tbl, fl6, skb, flags);
-> >               if (rt->dst.error != -EAGAIN)
-> >                       return &rt->dst;
-> > -             ip6_rt_put(rt);
-> > +             ip6_rt_put_flags(rt, flags);
-> >       }
+> > diff --git a/include/net/l3mdev.h b/include/net/l3mdev.h
+> > index e942372b077b..d8c37317bb86 100644
+> > --- a/include/net/l3mdev.h
+> > +++ b/include/net/l3mdev.h
+> > @@ -31,8 +31,9 @@ struct l3mdev_ops {
+> >                                         u16 proto);
 > >
-> > -     dst_hold(&net->ipv6.ip6_null_entry->dst);
-> > +     if (!(flags & RT6_LOOKUP_F_DST_NOREF))
-> > +             dst_hold(&net->ipv6.ip6_null_entry->dst);
-> >       return &net->ipv6.ip6_null_entry->dst;
-> >  }
-> >
+> >       /* IPv6 ops */
+> > -     struct dst_entry * (*l3mdev_link_scope_lookup)(const struct net_device *dev,
+> > -                                              struct flowi6 *fl6);
+> > +     struct dst_entry * (*l3mdev_link_scope_lookup_noref)(
+> > +                                         const struct net_device *dev,
+> > +                                         struct flowi6 *fl6);
 >
-> What about the fib6_rule_lookup when CONFIG_IPV6_MULTIPLE_TABLES is
-> configured off? If caller passes in RT6_LOOKUP_F_DST_NOREF that version
-> is still taking a reference in the error path and does a put after the
-> lookup.
+> I would prefer to add a comment about not taking a references vs adding
+> the _noref extension. There is only 1 user for 1 context and the name
+> length is getting out of hand (as evidenced by the line wrapping below).
 
-True. I missed that part. Thanks for catching it. Will update.
+Hmm OK. I was trying to make it clear to make sure future callers do
+not misuse it.
