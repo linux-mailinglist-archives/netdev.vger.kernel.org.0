@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EE8AD4B24A
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 08:43:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72EA04B24B
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 08:43:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731170AbfFSGmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 02:42:06 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:33585 "EHLO
+        id S1731172AbfFSGmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 02:42:09 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:45463 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731111AbfFSGmF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 02:42:05 -0400
+        by vger.kernel.org with ESMTP id S1725881AbfFSGmI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 02:42:08 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id BF90F21C46;
-        Wed, 19 Jun 2019 02:42:04 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id B69B022355;
+        Wed, 19 Jun 2019 02:42:07 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Wed, 19 Jun 2019 02:42:04 -0400
+  by compute3.internal (MEProxy); Wed, 19 Jun 2019 02:42:07 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=9WZpGhH/bEAdki7EGuIG+hCEOHDJA3tDfRL+CrfGqBg=; b=HBI+8Ge6
-        VsJsuJPSS+KOwyf5ZHh7flpd7Z95bwXWKTsDY3QyqOkI1z70u23c3iks/F3W//NV
-        YMq0ZYiqGQLsovt5ZihZchdSEvfib8R++ZJlaqwS+P3ykj1/j6EQrCFzniH80Qq+
-        oq4z0ZFh5IuVhfx0wpuo7io/P6+J8Y4Nx4/q/RQnFYuMj5jtw6iE4yU0BoZDQEgw
-        qf3XvfPW4EdfAMnrVjY2yUfhn9mAm7w1MB3bLXVtCcXHp+gp1SqKAKtwZBImzgVC
-        xbCOSjevZF5TthuKMEBoxoyjNxlHhWasWSu1OFZts12We8GiZq4rPUnhyJ7DokL+
-        WYaU79J8zZCbRg==
-X-ME-Sender: <xms:PNkJXW2dnZy4khbFscIxPkjk43zM8F_Ti7hE2KsV90kBbVQIFvJLRQ>
+        fm3; bh=T7vO6D57dhNqM+RHHAfox1VHCb2MVflY8yi6U5c7I3g=; b=JXcb43Zm
+        Ho4RiF0TV2A8mRyqOC69tBRJ3BFrXCDqNLUPfDww5kOjJXGGKMBBTyVWVgM8eR2S
+        YPWMilw46WWYE83MPbvFaguASWpNppAnc3qe7F+cabwAOufqyJ4LbR47NqvsQpHm
+        uVkBScFDBYZ9ExIcsutfdNpw5PN3n+/B2Gh1g3s07h2fFt7P8HQWg/Ekki0JyWRk
+        q4pCNkCRt7Fw8WGgTFAgmYpjzyDuD/piehmrM9gbTWKJDgq4prlD8v+YC+eNNeaO
+        JlKDGW+9XZ8z+2pEcEeNsdywssX7p98fTOiyWPVGfGsmgqq+BshEt7R6ZVrocImt
+        XgGGZh6viSDMiA==
+X-ME-Sender: <xms:P9kJXQ33-hLUc3SCcYHsqpUJ29UucA3laQiy_deE8fHw-kGAx-t9VA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrtddugdduudduucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -35,22 +35,22 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrtddugdduudduucetufdoteggod
     shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
     hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
     ufhiiigvpeei
-X-ME-Proxy: <xmx:PNkJXav80AZ79G5_gCnuTfCahCGu1-IpY70TSudZi1oOySMaxhdbDw>
-    <xmx:PNkJXS8cY0i0hJV1lVXsEWPga4lVtSXF9VX6wZZlcXxfRo7YDF70oQ>
-    <xmx:PNkJXeTg6mA2pm_UR8nXWzwN7bqV-Ebi06tx1cFbfhOV02yDRzTDPA>
-    <xmx:PNkJXWYemjJHIbKq9aU5S4WV6lkf6YkiBAU1o-_VQsD6xlt17BD_bw>
+X-ME-Proxy: <xmx:P9kJXVrstgIgsp_x9x6tr2ZQo8YXVXObVtEc1zL6AOvcYGB-ZRJCKA>
+    <xmx:P9kJXVeMU0gXOJkEJNmcgpR6eP1q8c04K-Lf5WWrCGW24ULxiYMEJw>
+    <xmx:P9kJXcogHltUNIYieK8TwMIYoBWYR9Cjjm8Z0y2GaFUwBlabANnTPw>
+    <xmx:P9kJXUwLQlRXafmEGguNYOxC9V8MOjE_1UnH7pi9UFmoHfzBGJc9Rg>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id CA4DF8005B;
-        Wed, 19 Jun 2019 02:42:01 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id EA3738005B;
+        Wed, 19 Jun 2019 02:42:04 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, jhs@mojatatu.com,
         xiyou.wangcong@gmail.com, pablo@netfilter.org,
         ecree@solarflare.com, jakub.kicinski@netronome.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 7/8] mlxsw: spectrum_flower: Implement support for ingress device matching
-Date:   Wed, 19 Jun 2019 09:41:08 +0300
-Message-Id: <20190619064109.849-8-idosch@idosch.org>
+Subject: [PATCH net-next 8/8] selftests: tc: add ingress device matching support
+Date:   Wed, 19 Jun 2019 09:41:09 +0300
+Message-Id: <20190619064109.849-9-idosch@idosch.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190619064109.849-1-idosch@idosch.org>
 References: <20190619064109.849-1-idosch@idosch.org>
@@ -63,139 +63,289 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-Benefit from the previously extended flow_dissector infrastructure and
-offload matching on ingress port.
+Extend tc_flower to test plain ingress device matching and also
+tc_shblock to test ingress device matching on shared block.
+Add new tc_flower_router.sh where ingress device matching on egress
+(after routing) is done.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- .../net/ethernet/mellanox/mlxsw/spectrum.h    |  9 ++++
- .../ethernet/mellanox/mlxsw/spectrum_acl.c    |  9 +---
- .../ethernet/mellanox/mlxsw/spectrum_flower.c | 50 ++++++++++++++++++-
- 3 files changed, 59 insertions(+), 9 deletions(-)
+ .../selftests/net/forwarding/tc_flower.sh     |  26 ++-
+ .../net/forwarding/tc_flower_router.sh        | 172 ++++++++++++++++++
+ .../selftests/net/forwarding/tc_shblocks.sh   |  29 ++-
+ 3 files changed, 225 insertions(+), 2 deletions(-)
+ create mode 100755 tools/testing/selftests/net/forwarding/tc_flower_router.sh
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-index ea4d56486ea3..84f4276193b3 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-@@ -623,6 +623,15 @@ enum mlxsw_sp_acl_profile {
- 	MLXSW_SP_ACL_PROFILE_MR,
- };
+diff --git a/tools/testing/selftests/net/forwarding/tc_flower.sh b/tools/testing/selftests/net/forwarding/tc_flower.sh
+index 124803eea4a9..058c746ee300 100755
+--- a/tools/testing/selftests/net/forwarding/tc_flower.sh
++++ b/tools/testing/selftests/net/forwarding/tc_flower.sh
+@@ -3,7 +3,7 @@
  
-+struct mlxsw_sp_acl_block {
-+	struct list_head binding_list;
-+	struct mlxsw_sp_acl_ruleset *ruleset_zero;
-+	struct mlxsw_sp *mlxsw_sp;
-+	unsigned int rule_count;
-+	unsigned int disable_count;
-+	struct net *net;
-+};
-+
- struct mlxsw_afk *mlxsw_sp_acl_afk(struct mlxsw_sp_acl *acl);
- struct mlxsw_sp *mlxsw_sp_acl_block_mlxsw_sp(struct mlxsw_sp_acl_block *block);
- unsigned int mlxsw_sp_acl_block_rule_count(struct mlxsw_sp_acl_block *block);
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
-index a146a44634e9..e8ac90564dbe 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
-@@ -45,14 +45,6 @@ struct mlxsw_sp_acl_block_binding {
- 	bool ingress;
- };
- 
--struct mlxsw_sp_acl_block {
--	struct list_head binding_list;
--	struct mlxsw_sp_acl_ruleset *ruleset_zero;
--	struct mlxsw_sp *mlxsw_sp;
--	unsigned int rule_count;
--	unsigned int disable_count;
--};
--
- struct mlxsw_sp_acl_ruleset_ht_key {
- 	struct mlxsw_sp_acl_block *block;
- 	u32 chain_index;
-@@ -221,6 +213,7 @@ struct mlxsw_sp_acl_block *mlxsw_sp_acl_block_create(struct mlxsw_sp *mlxsw_sp,
- 		return NULL;
- 	INIT_LIST_HEAD(&block->binding_list);
- 	block->mlxsw_sp = mlxsw_sp;
-+	block->net = net;
- 	return block;
+ ALL_TESTS="match_dst_mac_test match_src_mac_test match_dst_ip_test \
+ 	match_src_ip_test match_ip_flags_test match_pcp_test match_vlan_test \
+-	match_ip_tos_test"
++	match_ip_tos_test match_indev_test"
+ NUM_NETIFS=2
+ source tc_common.sh
+ source lib.sh
+@@ -310,6 +310,30 @@ match_ip_tos_test()
+ 	log_test "ip_tos match ($tcflags)"
  }
  
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-index 96b23c856f4d..a83e1a986ef1 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-@@ -120,6 +120,49 @@ static int mlxsw_sp_flower_parse_actions(struct mlxsw_sp *mlxsw_sp,
- 	return 0;
- }
- 
-+static int mlxsw_sp_flower_parse_meta(struct mlxsw_sp_acl_rule_info *rulei,
-+				      struct tc_cls_flower_offload *f,
-+				      struct mlxsw_sp_acl_block *block)
++match_indev_test()
 +{
-+	struct flow_rule *rule = tc_cls_flower_offload_flow_rule(f);
-+	struct mlxsw_sp_port *mlxsw_sp_port;
-+	struct net_device *ingress_dev;
-+	struct flow_match_meta match;
++	RET=0
 +
-+	if (!flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_META))
-+		return 0;
++	tc filter add dev $h2 ingress protocol ip pref 1 handle 101 flower \
++		$tcflags indev $h1 dst_mac $h2mac action drop
++	tc filter add dev $h2 ingress protocol ip pref 2 handle 102 flower \
++		$tcflags indev $h2 dst_mac $h2mac action drop
 +
-+	flow_rule_match_meta(rule, &match);
-+	if (match.mask->ingress_ifindex != 0xFFFFFFFF) {
-+		NL_SET_ERR_MSG_MOD(f->common.extack, "Unsupported ingress ifindex mask");
-+		return -EINVAL;
-+	}
++	$MZ $h1 -c 1 -p 64 -a $h1mac -b $h2mac -A 192.0.2.1 -B 192.0.2.2 \
++		-t ip -q
 +
-+	ingress_dev = __dev_get_by_index(block->net,
-+					 match.key->ingress_ifindex);
-+	if (!ingress_dev) {
-+		NL_SET_ERR_MSG_MOD(f->common.extack, "Can't find specified ingress port to match on");
-+		return -EINVAL;
-+	}
++	tc_check_packets "dev $h2 ingress" 101 1
++	check_fail $? "Matched on a wrong filter"
 +
-+	if (!mlxsw_sp_port_dev_check(ingress_dev)) {
-+		NL_SET_ERR_MSG_MOD(f->common.extack, "Can't match on non-mlxsw ingress port");
-+		return -EINVAL;
-+	}
++	tc_check_packets "dev $h2 ingress" 102 1
++	check_err $? "Did not match on correct filter"
 +
-+	mlxsw_sp_port = netdev_priv(ingress_dev);
-+	if (mlxsw_sp_port->mlxsw_sp != block->mlxsw_sp) {
-+		NL_SET_ERR_MSG_MOD(f->common.extack, "Can't match on a port from different device");
-+		return -EINVAL;
-+	}
++	tc filter del dev $h2 ingress protocol ip pref 2 handle 102 flower
++	tc filter del dev $h2 ingress protocol ip pref 1 handle 101 flower
 +
-+	mlxsw_sp_acl_rulei_keymask_u32(rulei,
-+				       MLXSW_AFK_ELEMENT_SRC_SYS_PORT,
-+				       mlxsw_sp_port->local_port,
-+				       0xFFFFFFFF);
-+	return 0;
++	log_test "indev match ($tcflags)"
 +}
 +
- static void mlxsw_sp_flower_parse_ipv4(struct mlxsw_sp_acl_rule_info *rulei,
- 				       struct tc_cls_flower_offload *f)
+ setup_prepare()
  {
-@@ -267,7 +310,8 @@ static int mlxsw_sp_flower_parse(struct mlxsw_sp *mlxsw_sp,
- 	int err;
- 
- 	if (dissector->used_keys &
--	    ~(BIT(FLOW_DISSECTOR_KEY_CONTROL) |
-+	    ~(BIT(FLOW_DISSECTOR_KEY_META) |
-+	      BIT(FLOW_DISSECTOR_KEY_CONTROL) |
- 	      BIT(FLOW_DISSECTOR_KEY_BASIC) |
- 	      BIT(FLOW_DISSECTOR_KEY_ETH_ADDRS) |
- 	      BIT(FLOW_DISSECTOR_KEY_IPV4_ADDRS) |
-@@ -283,6 +327,10 @@ static int mlxsw_sp_flower_parse(struct mlxsw_sp *mlxsw_sp,
- 
- 	mlxsw_sp_acl_rulei_priority(rulei, f->common.prio);
- 
-+	err = mlxsw_sp_flower_parse_meta(rulei, f, block);
-+	if (err)
-+		return err;
+ 	h1=${NETIFS[p1]}
+diff --git a/tools/testing/selftests/net/forwarding/tc_flower_router.sh b/tools/testing/selftests/net/forwarding/tc_flower_router.sh
+new file mode 100755
+index 000000000000..4aee9c9e69f6
+--- /dev/null
++++ b/tools/testing/selftests/net/forwarding/tc_flower_router.sh
+@@ -0,0 +1,172 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
 +
- 	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_CONTROL)) {
- 		struct flow_match_control match;
++ALL_TESTS="match_indev_egress_test"
++NUM_NETIFS=6
++source tc_common.sh
++source lib.sh
++
++h1_create()
++{
++	simple_if_init $h1 192.0.1.1/24
++
++	ip route add 192.0.2.0/24 vrf v$h1 nexthop via 192.0.1.2
++	ip route add 192.0.3.0/24 vrf v$h1 nexthop via 192.0.1.2
++}
++
++h1_destroy()
++{
++	ip route del 192.0.3.0/24 vrf v$h1
++	ip route del 192.0.2.0/24 vrf v$h1
++
++	simple_if_fini $h1 192.0.1.1/24
++}
++
++h2_create()
++{
++	simple_if_init $h2 192.0.2.1/24
++
++	ip route add 192.0.1.0/24 vrf v$h2 nexthop via 192.0.2.2
++	ip route add 192.0.3.0/24 vrf v$h2 nexthop via 192.0.2.2
++}
++
++h2_destroy()
++{
++	ip route del 192.0.3.0/24 vrf v$h2
++	ip route del 192.0.1.0/24 vrf v$h2
++
++	simple_if_fini $h2 192.0.2.1/24
++}
++
++h3_create()
++{
++	simple_if_init $h3 192.0.3.1/24
++
++	ip route add 192.0.1.0/24 vrf v$h3 nexthop via 192.0.3.2
++	ip route add 192.0.2.0/24 vrf v$h3 nexthop via 192.0.3.2
++}
++
++h3_destroy()
++{
++	ip route del 192.0.2.0/24 vrf v$h3
++	ip route del 192.0.1.0/24 vrf v$h3
++
++	simple_if_fini $h3 192.0.3.1/24
++}
++
++
++router_create()
++{
++	ip link set dev $rp1 up
++	ip link set dev $rp2 up
++	ip link set dev $rp3 up
++
++	tc qdisc add dev $rp3 clsact
++
++	ip address add 192.0.1.2/24 dev $rp1
++	ip address add 192.0.2.2/24 dev $rp2
++	ip address add 192.0.3.2/24 dev $rp3
++}
++
++router_destroy()
++{
++	ip address del 192.0.3.2/24 dev $rp3
++	ip address del 192.0.2.2/24 dev $rp2
++	ip address del 192.0.1.2/24 dev $rp1
++
++	tc qdisc del dev $rp3 clsact
++
++	ip link set dev $rp3 down
++	ip link set dev $rp2 down
++	ip link set dev $rp1 down
++}
++
++match_indev_egress_test()
++{
++	RET=0
++
++	tc filter add dev $rp3 egress protocol ip pref 1 handle 101 flower \
++		$tcflags indev $rp1 dst_ip 192.0.3.1 action drop
++	tc filter add dev $rp3 egress protocol ip pref 2 handle 102 flower \
++		$tcflags indev $rp2 dst_ip 192.0.3.1 action drop
++
++	$MZ $h1 -c 1 -p 64 -a $h1mac -b $rp1mac -A 192.0.1.1 -B 192.0.3.1 \
++		-t ip -q
++
++	tc_check_packets "dev $rp3 egress" 102 1
++	check_fail $? "Matched on a wrong filter"
++
++	tc_check_packets "dev $rp3 egress" 101 1
++	check_err $? "Did not match on correct filter"
++
++	$MZ $h2 -c 1 -p 64 -a $h2mac -b $rp2mac -A 192.0.2.1 -B 192.0.3.1 \
++		-t ip -q
++
++	tc_check_packets "dev $rp3 egress" 101 2
++	check_fail $? "Matched on a wrong filter"
++
++	tc_check_packets "dev $rp3 egress" 102 1
++	check_err $? "Did not match on correct filter"
++
++	tc filter del dev $rp3 egress protocol ip pref 2 handle 102 flower
++	tc filter del dev $rp3 egress protocol ip pref 1 handle 101 flower
++
++	log_test "indev egress match ($tcflags)"
++}
++
++setup_prepare()
++{
++	h1=${NETIFS[p1]}
++	rp1=${NETIFS[p2]}
++
++	h2=${NETIFS[p3]}
++	rp2=${NETIFS[p4]}
++
++	h3=${NETIFS[p5]}
++	rp3=${NETIFS[p6]}
++
++	h1mac=$(mac_get $h1)
++	rp1mac=$(mac_get $rp1)
++	h2mac=$(mac_get $h2)
++	rp2mac=$(mac_get $rp2)
++
++	vrf_prepare
++
++	h1_create
++	h2_create
++	h3_create
++
++	router_create
++
++	forwarding_enable
++}
++
++cleanup()
++{
++	pre_cleanup
++
++	forwarding_restore
++
++	router_destroy
++
++	h3_destroy
++	h2_destroy
++	h1_destroy
++
++	vrf_cleanup
++}
++
++trap cleanup EXIT
++
++setup_prepare
++setup_wait
++
++tc_offload_check
++if [[ $? -ne 0 ]]; then
++	log_info "Could not test offloaded functionality"
++else
++	tcflags="skip_sw"
++	tests_run
++fi
++
++exit $EXIT_STATUS
+diff --git a/tools/testing/selftests/net/forwarding/tc_shblocks.sh b/tools/testing/selftests/net/forwarding/tc_shblocks.sh
+index 9826a446e2c0..772e00ac3230 100755
+--- a/tools/testing/selftests/net/forwarding/tc_shblocks.sh
++++ b/tools/testing/selftests/net/forwarding/tc_shblocks.sh
+@@ -1,7 +1,7 @@
+ #!/bin/bash
+ # SPDX-License-Identifier: GPL-2.0
  
+-ALL_TESTS="shared_block_test"
++ALL_TESTS="shared_block_test match_indev_test"
+ NUM_NETIFS=4
+ source tc_common.sh
+ source lib.sh
+@@ -70,6 +70,33 @@ shared_block_test()
+ 	log_test "shared block ($tcflags)"
+ }
+ 
++match_indev_test()
++{
++	RET=0
++
++	tc filter add block 22 protocol ip pref 1 handle 101 flower \
++		$tcflags indev $swp1 dst_mac $swmac action drop
++	tc filter add block 22 protocol ip pref 2 handle 102 flower \
++		$tcflags indev $swp2 dst_mac $swmac action drop
++
++	$MZ $h1 -c 1 -p 64 -a $h1mac -b $swmac -A 192.0.2.1 -B 192.0.2.2 \
++		-t ip -q
++
++	tc_check_packets "block 22" 101 1
++	check_err $? "Did not match first incoming packet on a block"
++
++	$MZ $h2 -c 1 -p 64 -a $h2mac -b $swmac -A 192.0.2.1 -B 192.0.2.2 \
++		-t ip -q
++
++	tc_check_packets "block 22" 102 1
++	check_err $? "Did not match second incoming packet on a block"
++
++	tc filter del block 22 protocol ip pref 1 handle 101 flower
++	tc filter del block 22 protocol ip pref 2 handle 102 flower
++
++	log_test "indev match ($tcflags)"
++}
++
+ setup_prepare()
+ {
+ 	h1=${NETIFS[p1]}
 -- 
 2.20.1
 
