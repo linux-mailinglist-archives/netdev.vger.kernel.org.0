@@ -2,139 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7350E4B059
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 05:07:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C5E44B06B
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 05:23:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729856AbfFSDHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 18 Jun 2019 23:07:36 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:38822 "EHLO vps0.lunn.ch"
+        id S1730249AbfFSDXb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 18 Jun 2019 23:23:31 -0400
+Received: from ozlabs.org ([203.11.71.1]:36817 "EHLO ozlabs.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726037AbfFSDHg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 18 Jun 2019 23:07:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=AixH9ESZvfDH28I8mSEmpRr0X0vbsD2WpNmHZWsXSvo=; b=G096vJ/mvORPe5syshMT/McfRZ
-        GQp7+YgCBOxqh8/3F+cgK5JMNRkAEoQwr4UecZfmws1MCx8AnFA2l2UY08LjW4wTUP2jgHHHggG7Y
-        bkPv+0VdzdcqH1BxqcBzDu6koTwDzPi62OvZG1Sm9S5M2jSnXoXOT5equNJ/KCaur08M=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hdQwb-000725-Ue; Wed, 19 Jun 2019 05:07:29 +0200
-Date:   Wed, 19 Jun 2019 05:07:29 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Voon Weifeng <weifeng.voon@intel.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jose Abreu <joabreu@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: Re: [RFC net-next 1/5] net: stmmac: introduce IEEE 802.1Qbv
- configuration functionalities
-Message-ID: <20190619030729.GA26784@lunn.ch>
-References: <1560893778-6838-1-git-send-email-weifeng.voon@intel.com>
- <1560893778-6838-2-git-send-email-weifeng.voon@intel.com>
+        id S1726037AbfFSDXb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 18 Jun 2019 23:23:31 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 45T9Jb4zWRz9s4V;
+        Wed, 19 Jun 2019 13:23:26 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1560914608;
+        bh=XNdIJ2ZE/J4YNi6lmuA5/rpiKhu8nYiFcyeg4wJYpek=;
+        h=Date:From:To:Cc:Subject:From;
+        b=rM9Lv4VpP8jRohc5sxUugCj1OaqbVBnRh3qUa/5qBX1yn2KykFnz6v1iYeGTHySK+
+         x009DMMi0EvQwkU0oXE3nIW6xhmX+s0WA0U62Hht8GfaR9PTHjKFnDUHSOsVShcNwB
+         /0zMkScIPnVfMUnnebOmOXb3YVRmcIhFm25YhiYk3FMVF7n9MkxhsbSLFGYjQTNpI+
+         25IeIagQ78m0g7BvONlBAw3tq3tF+2Cle27IMLhNBGS2ll+4XdTjS5jUfVmzI19M9Q
+         BTSyX15IhMP0ikt6E3Cmo0QS4GiAUmH7kqhZKG5p+rCOFou6jG6y9IkqMTCQkRanKN
+         C1lM5PbtDLRFw==
+Date:   Wed, 19 Jun 2019 13:23:26 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>
+Subject: linux-next: build failure after merge of the net-next tree
+Message-ID: <20190619132326.1846345b@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1560893778-6838-2-git-send-email-weifeng.voon@intel.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ boundary="Sig_/Oe8kv/g+2rA5hJ_o/risALj"; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 19, 2019 at 05:36:14AM +0800, Voon Weifeng wrote:
+--Sig_/Oe8kv/g+2rA5hJ_o/risALj
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Hi Voon
+Hi all,
 
-> +static int est_poll_srwo(void *ioaddr)
-> +{
-> +	/* Poll until the EST GCL Control[SRWO] bit clears.
-> +	 * Total wait = 12 x 50ms ~= 0.6s.
-> +	 */
-> +	unsigned int retries = 12;
-> +	unsigned int value;
-> +
-> +	do {
-> +		value = TSN_RD32(ioaddr + MTL_EST_GCL_CTRL);
-> +		if (!(value & MTL_EST_GCL_CTRL_SRWO))
-> +			return 0;
-> +		msleep(50);
-> +	} while (--retries);
-> +
-> +	return -ETIMEDOUT;
+After merging the net-next tree, today's linux-next build (x86_64
+allmodconfig) failed like this:
 
-Maybe use one of the readx_poll_timeout() macros?
+In file included from usr/include/linux/tc_act/tc_ctinfo.hdrtest.c:1:
+./usr/include/linux/tc_act/tc_ctinfo.h:30:21: error: implicit declaration o=
+f function 'BIT' [-Werror=3Dimplicit-function-declaration]
+  CTINFO_MODE_DSCP =3D BIT(0),
+                     ^~~
+./usr/include/linux/tc_act/tc_ctinfo.h:30:2: error: enumerator value for 'C=
+TINFO_MODE_DSCP' is not an integer constant
+  CTINFO_MODE_DSCP =3D BIT(0),
+  ^~~~~~~~~~~~~~~~
+./usr/include/linux/tc_act/tc_ctinfo.h:32:1: error: enumerator value for 'C=
+TINFO_MODE_CPMARK' is not an integer constant
+ };
+ ^
 
-> +static int est_read_gce(void *ioaddr, unsigned int row,
-> +			unsigned int *gates, unsigned int *ti_nsec,
-> +			unsigned int dbgb, unsigned int dbgm)
-> +{
-> +	struct tsn_hw_cap *cap = &dw_tsn_hwcap;
-> +	unsigned int ti_wid = cap->ti_wid;
-> +	unsigned int gates_mask;
-> +	unsigned int ti_mask;
-> +	unsigned int value;
-> +	int ret;
-> +
-> +	gates_mask = (1 << cap->txqcnt) - 1;
-> +	ti_mask = (1 << ti_wid) - 1;
-> +
-> +	ret = est_read_gcl_config(ioaddr, &value, row, 0, dbgb, dbgm);
-> +	if (ret) {
-> +		TSN_ERR("Read GCE failed! row=%u\n", row);
+Caused by commit
 
-It is generally not a good idea to put wrappers around the kernel
-print functions. It would be better if all these functions took struct
-stmmac_priv *priv rather than ioaddr, so you could then do
+  24ec483cec98 ("net: sched: Introduce act_ctinfo action")
 
-	netdev_err(priv->dev, "Read GCE failed! row=%u\n", row);
+Presumably exposed by commit
 
-> +	/* Ensure that HW is not in the midst of GCL transition */
-> +	value = TSN_RD32(ioaddr + MTL_EST_CTRL);
+  b91976b7c0e3 ("kbuild: compile-test UAPI headers to ensure they are self-=
+contained")
 
-Also, don't put wrapper around readl()/writel().
+from the kbuild tree.
 
-> +	value &= ~MTL_EST_CTRL_SSWL;
-> +
-> +	/* MTL_EST_CTRL value has been read earlier, if TILS value
-> +	 * differs, we update here.
-> +	 */
-> +	if (tils != dw_tsn_hwtunable[TSN_HWTUNA_TX_EST_TILS]) {
-> +		value &= ~MTL_EST_CTRL_TILS;
-> +		value |= (tils << MTL_EST_CTRL_TILS_SHIFT);
-> +
-> +		TSN_WR32(value, ioaddr + MTL_EST_CTRL);
-> +		dw_tsn_hwtunable[TSN_HWTUNA_TX_EST_TILS] = tils;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int est_set_ov(void *ioaddr,
-> +		      const unsigned int *ptov,
-> +		      const unsigned int *ctov)
-> +{
-> +	unsigned int value;
-> +
-> +	if (!dw_tsn_feat_en[TSN_FEAT_ID_EST])
-> +		return -ENOTSUPP;
-> +
-> +	value = TSN_RD32(ioaddr + MTL_EST_CTRL);
-> +	value &= ~MTL_EST_CTRL_SSWL;
-> +
-> +	if (ptov) {
-> +		if (*ptov > EST_PTOV_MAX) {
-> +			TSN_WARN("EST: invalid PTOV(%u), max=%u\n",
-> +				 *ptov, EST_PTOV_MAX);
+I have applied the following (obvious) patch for today.
 
-It looks like most o the TSN_WARN should actually be netdev_dbg().
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Wed, 19 Jun 2019 13:15:22 +1000
+Subject: [PATCH] net: sched: don't use BIT() in uapi headers
 
-   Andrew
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+---
+ include/uapi/linux/tc_act/tc_ctinfo.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/uapi/linux/tc_act/tc_ctinfo.h b/include/uapi/linux/tc_=
+act/tc_ctinfo.h
+index da803e05a89b..6166c62dd7dd 100644
+--- a/include/uapi/linux/tc_act/tc_ctinfo.h
++++ b/include/uapi/linux/tc_act/tc_ctinfo.h
+@@ -27,8 +27,8 @@ enum {
+ #define TCA_CTINFO_MAX (__TCA_CTINFO_MAX - 1)
+=20
+ enum {
+-	CTINFO_MODE_DSCP	=3D BIT(0),
+-	CTINFO_MODE_CPMARK	=3D BIT(1)
++	CTINFO_MODE_DSCP	=3D (1UL << 0),
++	CTINFO_MODE_CPMARK	=3D (1UL << 1)
+ };
+=20
+ #endif
+--=20
+2.20.1
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/Oe8kv/g+2rA5hJ_o/risALj
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl0Jqq4ACgkQAVBC80lX
+0GyVIgf/VbrXFbohWE6yqO7OKKSo9BQo0IpNZQBM1Ivy3Ohdj6mLaAKBc+gZ2JXa
+ELRGN9ZQprRInANOywYU9w0+PN08rNXxR9uIZZWkDJXKoMg4bA/vLjT1OYsh/Pwj
+T2rj/4R7jal8HOvV5A3VvT5BJ9ga4ysasn7Hyq44afXJzIc35hcTFO1K3wv8R4ha
+g0Ex3LqE6nZzABvw8jEX2Aj/3NRThg2vt++DjumFWJqSrr/CqdeluVwrfO8GvvxI
+J5e/VPt9gqwO7pe7Ye2CKyJ2N/2r7ctyfh+sRJdu8Eaqu2mLFAlnHkNWlyasvTVZ
+tSzKgLsGxjLHCQEBqzCI1CRKzlbYiQ==
+=q3GV
+-----END PGP SIGNATURE-----
+
+--Sig_/Oe8kv/g+2rA5hJ_o/risALj--
