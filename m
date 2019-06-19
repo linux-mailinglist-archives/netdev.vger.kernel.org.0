@@ -2,134 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 808584B3FD
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 10:23:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C01B64B40A
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 10:28:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731325AbfFSIW7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 04:22:59 -0400
-Received: from mx2.suse.de ([195.135.220.15]:49818 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731259AbfFSIW7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Jun 2019 04:22:59 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 8DE2CAF30;
-        Wed, 19 Jun 2019 08:22:57 +0000 (UTC)
-Subject: Re: [PATCH] mm: mempolicy: handle vma with unmovable pages mapped
- correctly in mbind
-To:     Michal Hocko <mhocko@kernel.org>,
-        Yang Shi <yang.shi@linux.alibaba.com>
-Cc:     akpm@linux-foundation.org, mgorman@techsingularity.net,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <1560797290-42267-1-git-send-email-yang.shi@linux.alibaba.com>
- <20190618130253.GH3318@dhcp22.suse.cz>
- <cf33b724-fdd5-58e3-c06a-1bc563525311@linux.alibaba.com>
- <20190618182848.GJ3318@dhcp22.suse.cz>
- <68c2592d-b747-e6eb-329f-7a428bff1f86@linux.alibaba.com>
- <20190619052133.GB2968@dhcp22.suse.cz>
-From:   Vlastimil Babka <vbabka@suse.cz>
-Openpgp: preference=signencrypt
-Autocrypt: addr=vbabka@suse.cz; prefer-encrypt=mutual; keydata=
- mQINBFZdmxYBEADsw/SiUSjB0dM+vSh95UkgcHjzEVBlby/Fg+g42O7LAEkCYXi/vvq31JTB
- KxRWDHX0R2tgpFDXHnzZcQywawu8eSq0LxzxFNYMvtB7sV1pxYwej2qx9B75qW2plBs+7+YB
- 87tMFA+u+L4Z5xAzIimfLD5EKC56kJ1CsXlM8S/LHcmdD9Ctkn3trYDNnat0eoAcfPIP2OZ+
- 9oe9IF/R28zmh0ifLXyJQQz5ofdj4bPf8ecEW0rhcqHfTD8k4yK0xxt3xW+6Exqp9n9bydiy
- tcSAw/TahjW6yrA+6JhSBv1v2tIm+itQc073zjSX8OFL51qQVzRFr7H2UQG33lw2QrvHRXqD
- Ot7ViKam7v0Ho9wEWiQOOZlHItOOXFphWb2yq3nzrKe45oWoSgkxKb97MVsQ+q2SYjJRBBH4
- 8qKhphADYxkIP6yut/eaj9ImvRUZZRi0DTc8xfnvHGTjKbJzC2xpFcY0DQbZzuwsIZ8OPJCc
- LM4S7mT25NE5kUTG/TKQCk922vRdGVMoLA7dIQrgXnRXtyT61sg8PG4wcfOnuWf8577aXP1x
- 6mzw3/jh3F+oSBHb/GcLC7mvWreJifUL2gEdssGfXhGWBo6zLS3qhgtwjay0Jl+kza1lo+Cv
- BB2T79D4WGdDuVa4eOrQ02TxqGN7G0Biz5ZLRSFzQSQwLn8fbwARAQABtCBWbGFzdGltaWwg
- QmFia2EgPHZiYWJrYUBzdXNlLmN6PokCVAQTAQoAPgIbAwULCQgHAwUVCgkICwUWAgMBAAIe
- AQIXgBYhBKlA1DSZLC6OmRA9UCJPp+fMgqZkBQJcbbyGBQkH8VTqAAoJECJPp+fMgqZkpGoP
- /1jhVihakxw1d67kFhPgjWrbzaeAYOJu7Oi79D8BL8Vr5dmNPygbpGpJaCHACWp+10KXj9yz
- fWABs01KMHnZsAIUytVsQv35DMMDzgwVmnoEIRBhisMYOQlH2bBn/dqBjtnhs7zTL4xtqEcF
- 1hoUFEByMOey7gm79utTk09hQE/Zo2x0Ikk98sSIKBETDCl4mkRVRlxPFl4O/w8dSaE4eczH
- LrKezaFiZOv6S1MUKVKzHInonrCqCNbXAHIeZa3JcXCYj1wWAjOt9R3NqcWsBGjFbkgoKMGD
- usiGabetmQjXNlVzyOYdAdrbpVRNVnaL91sB2j8LRD74snKsV0Wzwt90YHxDQ5z3M75YoIdl
- byTKu3BUuqZxkQ/emEuxZ7aRJ1Zw7cKo/IVqjWaQ1SSBDbZ8FAUPpHJxLdGxPRN8Pfw8blKY
- 8mvLJKoF6i9T6+EmlyzxqzOFhcc4X5ig5uQoOjTIq6zhLO+nqVZvUDd2Kz9LMOCYb516cwS/
- Enpi0TcZ5ZobtLqEaL4rupjcJG418HFQ1qxC95u5FfNki+YTmu6ZLXy+1/9BDsPuZBOKYpUm
- 3HWSnCS8J5Ny4SSwfYPH/JrtberWTcCP/8BHmoSpS/3oL3RxrZRRVnPHFzQC6L1oKvIuyXYF
- rkybPXYbmNHN+jTD3X8nRqo+4Qhmu6SHi3VquQENBFsZNQwBCACuowprHNSHhPBKxaBX7qOv
- KAGCmAVhK0eleElKy0sCkFghTenu1sA9AV4okL84qZ9gzaEoVkgbIbDgRbKY2MGvgKxXm+kY
- n8tmCejKoeyVcn9Xs0K5aUZiDz4Ll9VPTiXdf8YcjDgeP6/l4kHb4uSW4Aa9ds0xgt0gP1Xb
- AMwBlK19YvTDZV5u3YVoGkZhspfQqLLtBKSt3FuxTCU7hxCInQd3FHGJT/IIrvm07oDO2Y8J
- DXWHGJ9cK49bBGmK9B4ajsbe5GxtSKFccu8BciNluF+BqbrIiM0upJq5Xqj4y+Xjrpwqm4/M
- ScBsV0Po7qdeqv0pEFIXKj7IgO/d4W2bABEBAAGJA3IEGAEKACYWIQSpQNQ0mSwujpkQPVAi
- T6fnzIKmZAUCWxk1DAIbAgUJA8JnAAFACRAiT6fnzIKmZMB0IAQZAQoAHRYhBKZ2GgCcqNxn
- k0Sx9r6Fd25170XjBQJbGTUMAAoJEL6Fd25170XjDBUH/2jQ7a8g+FC2qBYxU/aCAVAVY0NE
- YuABL4LJ5+iWwmqUh0V9+lU88Cv4/G8fWwU+hBykSXhZXNQ5QJxyR7KWGy7LiPi7Cvovu+1c
- 9Z9HIDNd4u7bxGKMpn19U12ATUBHAlvphzluVvXsJ23ES/F1c59d7IrgOnxqIcXxr9dcaJ2K
- k9VP3TfrjP3g98OKtSsyH0xMu0MCeyewf1piXyukFRRMKIErfThhmNnLiDbaVy6biCLx408L
- Mo4cCvEvqGKgRwyckVyo3JuhqreFeIKBOE1iHvf3x4LU8cIHdjhDP9Wf6ws1XNqIvve7oV+w
- B56YWoalm1rq00yUbs2RoGcXmtX1JQ//aR/paSuLGLIb3ecPB88rvEXPsizrhYUzbe1TTkKc
- 4a4XwW4wdc6pRPVFMdd5idQOKdeBk7NdCZXNzoieFntyPpAq+DveK01xcBoXQ2UktIFIsXey
- uSNdLd5m5lf7/3f0BtaY//f9grm363NUb9KBsTSnv6Vx7Co0DWaxgC3MFSUhxzBzkJNty+2d
- 10jvtwOWzUN+74uXGRYSq5WefQWqqQNnx+IDb4h81NmpIY/X0PqZrapNockj3WHvpbeVFAJ0
- 9MRzYP3x8e5OuEuJfkNnAbwRGkDy98nXW6fKeemREjr8DWfXLKFWroJzkbAVmeIL0pjXATxr
- +tj5JC0uvMrrXefUhXTo0SNoTsuO/OsAKOcVsV/RHHTwCDR2e3W8mOlA3QbYXsscgjghbuLh
- J3oTRrOQa8tUXWqcd5A0+QPo5aaMHIK0UAthZsry5EmCY3BrbXUJlt+23E93hXQvfcsmfi0N
- rNh81eknLLWRYvMOsrbIqEHdZBT4FHHiGjnck6EYx/8F5BAZSodRVEAgXyC8IQJ+UVa02QM5
- D2VL8zRXZ6+wARKjgSrW+duohn535rG/ypd0ctLoXS6dDrFokwTQ2xrJiLbHp9G+noNTHSan
- ExaRzyLbvmblh3AAznb68cWmM3WVkceWACUalsoTLKF1sGrrIBj5updkKkzbKOq5gcC5AQ0E
- Wxk1NQEIAJ9B+lKxYlnKL5IehF1XJfknqsjuiRzj5vnvVrtFcPlSFL12VVFVUC2tT0A1Iuo9
- NAoZXEeuoPf1dLDyHErrWnDyn3SmDgb83eK5YS/K363RLEMOQKWcawPJGGVTIRZgUSgGusKL
- NuZqE5TCqQls0x/OPljufs4gk7E1GQEgE6M90Xbp0w/r0HB49BqjUzwByut7H2wAdiNAbJWZ
- F5GNUS2/2IbgOhOychHdqYpWTqyLgRpf+atqkmpIJwFRVhQUfwztuybgJLGJ6vmh/LyNMRr8
- J++SqkpOFMwJA81kpjuGR7moSrUIGTbDGFfjxmskQV/W/c25Xc6KaCwXah3OJ40AEQEAAYkC
- PAQYAQoAJhYhBKlA1DSZLC6OmRA9UCJPp+fMgqZkBQJbGTU1AhsMBQkDwmcAAAoJECJPp+fM
- gqZkPN4P/Ra4NbETHRj5/fM1fjtngt4dKeX/6McUPDIRuc58B6FuCQxtk7sX3ELs+1+w3eSV
- rHI5cOFRSdgw/iKwwBix8D4Qq0cnympZ622KJL2wpTPRLlNaFLoe5PkoORAjVxLGplvQIlhg
- miljQ3R63ty3+MZfkSVsYITlVkYlHaSwP2t8g7yTVa+q8ZAx0NT9uGWc/1Sg8j/uoPGrctml
- hFNGBTYyPq6mGW9jqaQ8en3ZmmJyw3CHwxZ5FZQ5qc55xgshKiy8jEtxh+dgB9d8zE/S/UGI
- E99N/q+kEKSgSMQMJ/CYPHQJVTi4YHh1yq/qTkHRX+ortrF5VEeDJDv+SljNStIxUdroPD29
- 2ijoaMFTAU+uBtE14UP5F+LWdmRdEGS1Ah1NwooL27uAFllTDQxDhg/+LJ/TqB8ZuidOIy1B
- xVKRSg3I2m+DUTVqBy7Lixo73hnW69kSjtqCeamY/NSu6LNP+b0wAOKhwz9hBEwEHLp05+mj
- 5ZFJyfGsOiNUcMoO/17FO4EBxSDP3FDLllpuzlFD7SXkfJaMWYmXIlO0jLzdfwfcnDzBbPwO
- hBM8hvtsyq8lq8vJOxv6XD6xcTtj5Az8t2JjdUX6SF9hxJpwhBU0wrCoGDkWp4Bbv6jnF7zP
- Nzftr4l8RuJoywDIiJpdaNpSlXKpj/K6KrnyAI/joYc7
-Message-ID: <21a0b20c-5b62-490e-ad8e-26b4b78ac095@suse.cz>
-Date:   Wed, 19 Jun 2019 10:22:57 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
-MIME-Version: 1.0
-In-Reply-To: <20190619052133.GB2968@dhcp22.suse.cz>
-Content-Type: text/plain; charset=utf-8
+        id S1731314AbfFSI2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 04:28:25 -0400
+Received: from mx0a-0014ca01.pphosted.com ([208.84.65.235]:9406 "EHLO
+        mx0a-0014ca01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726142AbfFSI2Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 04:28:25 -0400
+Received: from pps.filterd (m0042385.ppops.net [127.0.0.1])
+        by mx0a-0014ca01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5J8Lb3m008925;
+        Wed, 19 Jun 2019 01:28:06 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=proofpoint;
+ bh=3U5799OqhmrDiSCfVD7/pXnxe43WLl6wNlOWVnhWcb0=;
+ b=d85AMMdzVtchZrajiVvk/2NJasAVZMS7urRTy+w1OpmNv6h8jJ0iYmagJtIY70VTgzKv
+ HCZRJooYwcCGKYa+UtVdkKC1t0039VySGlL5yKUixwx2FxreOSUWyhToFHhWQNU2cZuG
+ 2F2T7e6+I2GWvBSmBj/9uvC2Mesn3WMwzbsyHlTTEBEgl8LCgENNCbN+lgkufmQn7JJi
+ yOBhYJ8yvUuB7ym8lZSsHAyEMSxOB8TBv3xpJboswvenSTDdocX2VbVC9Z6xdp9BfhxR
+ Z7XOjgwvsJWz3hWV+MhozDb0zKI71UZ1FimR/q8PcXmk/kRaFn4KGdEogHoAoVsjZDBV nQ== 
+Authentication-Results: cadence.com;
+        spf=pass smtp.mailfrom=pthombar@cadence.com
+Received: from nam05-co1-obe.outbound.protection.outlook.com (mail-co1nam05lp2056.outbound.protection.outlook.com [104.47.48.56])
+        by mx0a-0014ca01.pphosted.com with ESMTP id 2t7805ae3q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 19 Jun 2019 01:28:06 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3U5799OqhmrDiSCfVD7/pXnxe43WLl6wNlOWVnhWcb0=;
+ b=OFnfxX4g4x6KiWB6p8PI2s3vn2Q1S0LjbbQchhlw3FhvkGfZQePB4/81i9Tji2zBQTCg4sSsuU16yt5ha5ryaG0n7d8jomg/AxX8pvlFaci/3IYDtwey9zHlThOA9dCavGNDau3cslT2m/YbPGNS9uuDd/kLHkyI8ox9TQMhnmo=
+Received: from CO2PR07MB2469.namprd07.prod.outlook.com (10.166.94.21) by
+ CO2PR07MB2613.namprd07.prod.outlook.com (10.166.94.151) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1987.13; Wed, 19 Jun 2019 08:28:04 +0000
+Received: from CO2PR07MB2469.namprd07.prod.outlook.com
+ ([fe80::b9c0:ba2d:e9e8:4176]) by CO2PR07MB2469.namprd07.prod.outlook.com
+ ([fe80::b9c0:ba2d:e9e8:4176%4]) with mapi id 15.20.1987.014; Wed, 19 Jun 2019
+ 08:28:04 +0000
+From:   Parshuram Raju Thombare <pthombar@cadence.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Rafal Ciepiela <rafalc@cadence.com>,
+        Anil Joy Varughese <aniljoy@cadence.com>,
+        Piotr Sroka <piotrs@cadence.com>,
+        Russell King <rmk+kernel@arm.linux.org.uk>
+Subject: RE: [PATCH v2 1/6] net: macb: add phylink support
+Thread-Topic: [PATCH v2 1/6] net: macb: add phylink support
+Thread-Index: AQHVJgVonjJRgVP9fE6tX1Jh4Fpdgaah7sGAgAC2z8A=
+Date:   Wed, 19 Jun 2019 08:28:04 +0000
+Message-ID: <CO2PR07MB246919CA8A28E5F3A9ECD2F8C1E50@CO2PR07MB2469.namprd07.prod.outlook.com>
+References: <1560642367-26425-1-git-send-email-pthombar@cadence.com>
+ <1560883265-6057-1-git-send-email-pthombar@cadence.com>
+ <20190618213259.GB18352@lunn.ch>
+In-Reply-To: <20190618213259.GB18352@lunn.ch>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-dg-ref: PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNccHRob21iYXJcYXBwZGF0YVxyb2FtaW5nXDA5ZDg0OWI2LTMyZDMtNGE0MC04NWVlLTZiODRiYTI5ZTM1Ylxtc2dzXG1zZy0yNTk3YzgzZS05MjZjLTExZTktODRmOC0wNGQzYjAyNzc0NGFcYW1lLXRlc3RcMjU5N2M4NDAtOTI2Yy0xMWU5LTg0ZjgtMDRkM2IwMjc3NDRhYm9keS50eHQiIHN6PSIxMDI3IiB0PSIxMzIwNTQwNjQ4MDY1Mjg5MjQiIGg9InR1eFByRFVBbFM4QXIzVFRnVXVqa3dCSzN1TT0iIGlkPSIiIGJsPSIwIiBibz0iMSIvPjwvbWV0YT4=
+x-dg-rorf: 
+x-originating-ip: [14.143.9.161]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: fb64277a-891c-4599-8411-08d6f4900ca6
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:CO2PR07MB2613;
+x-ms-traffictypediagnostic: CO2PR07MB2613:
+x-microsoft-antispam-prvs: <CO2PR07MB26133CB8DA81B9287E4E246DC1E50@CO2PR07MB2613.namprd07.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4303;
+x-forefront-prvs: 0073BFEF03
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39860400002)(136003)(396003)(376002)(346002)(366004)(13464003)(36092001)(199004)(189003)(71190400001)(73956011)(66446008)(64756008)(8676002)(316002)(81156014)(66556008)(66946007)(6916009)(81166006)(76116006)(6116002)(74316002)(508600001)(66066001)(186003)(76176011)(102836004)(55236004)(2906002)(446003)(26005)(7696005)(6246003)(229853002)(3846002)(66476007)(6506007)(11346002)(8936002)(14454004)(7736002)(33656002)(99286004)(4744005)(6436002)(78486014)(5660300002)(305945005)(476003)(54906003)(71200400001)(9686003)(53936002)(55016002)(25786009)(256004)(4326008)(68736007)(86362001)(486006)(52536014);DIR:OUT;SFP:1101;SCL:1;SRVR:CO2PR07MB2613;H:CO2PR07MB2469.namprd07.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: cadence.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: go0OItA0/LK8vwGqoYAptLdmtVWAmMdEoATht6MoJoHoBZ9vzmszg1X73CkE2rT6aV42g7vcF5iebKgPvwl+9ppn9yL9qv2XHpM5fYmpGw5G9sIsqi7/GBDwC/ek7GSjc3bd/xTfcv3qWSBlehq4xgB6p55Fdq2GCG5KwTGePsYH4Tr616YcpL2hxYedHnXYn0wI72n2UHrFj61irRdIUNGwaWq2spiglCTShwkcdklIY7hZkinKvdqXICkdQrufFNyIlnJJ2th7ZkyI8/eSO1UVnlSVOkUtfzkdokc6GzFb2ds0+CxLShT9zd10Je4WQmW74/wL7+t/5q3wzd6NIYi6AQINTMCsFmtRqJea3LbPHgEQDF9GRodJR+FjoM572JwIejr+TgZHabNSfIHs+XWb4c5j9KVmHfY3+stiWSU=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: cadence.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fb64277a-891c-4599-8411-08d6f4900ca6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Jun 2019 08:28:04.2109
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: d36035c5-6ce6-4662-a3dc-e762e61ae4c9
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: pthombar@global.cadence.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO2PR07MB2613
+X-Proofpoint-SPF-Result: pass
+X-Proofpoint-SPF-Record: v=spf1 include:spf.smktg.jp include:_spf.salesforce.com
+ include:mktomail.com include:spf-0014ca01.pphosted.com
+ include:spf.protection.outlook.com include:auth.msgapp.com
+ include:spf.mandrillapp.com ~all
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-19_04:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_check_notspam policy=outbound_check score=0
+ priorityscore=1501 malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0
+ spamscore=0 clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906190070
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/19/19 7:21 AM, Michal Hocko wrote:
-> On Tue 18-06-19 14:13:16, Yang Shi wrote:
-> [...]
->>
->> I used to have !__PageMovable(page), but it was removed since the
->> aforementioned reason. I could add it back.
->>
->> For the temporary off LRU page, I did a quick search, it looks the most
->> paths have to acquire mmap_sem, so it can't race with us here. Page
->> reclaim/compaction looks like the only race. But, since the mapping should
->> be preserved even though the page is off LRU temporarily unless the page is
->> reclaimed, so we should be able to exclude temporary off LRU pages by
->> calling page_mapping() and page_anon_vma().
->>
->> So, the fix may look like:
->>
->> if (!PageLRU(head) && !__PageMovable(page)) {
->>     if (!(page_mapping(page) || page_anon_vma(page)))
->>         return -EIO;
-> 
-> This is getting even more muddy TBH. Is there any reason that we have to
-> handle this problem during the isolation phase rather the migration?
+Hi Andrew,
 
-I think it was already said that if pages can't be isolated, then
-migration phase won't process them, so they're just ignored.
-However I think the patch is wrong to abort immediately when
-encountering such page that cannot be isolated (AFAICS). IMHO it should
-still try to migrate everything it can, and only then return -EIO.
+Sure, I will Cc Russel King in next version of patch series.
+
+Regards,
+Parshuram Thombare
+
+>-----Original Message-----
+>From: Andrew Lunn <andrew@lunn.ch>
+>Sent: Wednesday, June 19, 2019 3:03 AM
+>To: Parshuram Raju Thombare <pthombar@cadence.com>
+>Cc: nicolas.ferre@microchip.com; davem@davemloft.net;
+>f.fainelli@gmail.com; netdev@vger.kernel.org; hkallweit1@gmail.com; linux-
+>kernel@vger.kernel.org; Rafal Ciepiela <rafalc@cadence.com>; Anil Joy
+>Varughese <aniljoy@cadence.com>; Piotr Sroka <piotrs@cadence.com>;
+>Russell King <rmk+kernel@arm.linux.org.uk>
+>Subject: Re: [PATCH v2 1/6] net: macb: add phylink support
+>
+>EXTERNAL MAIL
+>
+>
+>On Tue, Jun 18, 2019 at 07:41:05PM +0100, Parshuram Thombare wrote:
+>> This patch replace phylib API's by phylink API's.
+>
+>Hi Parshuram
+>
+>When you repost as a proper threaded patchset, please Cc: Russell King, th=
+e
+>phylink maintainer.
+>
+>      Thanks
+>	Andrew
