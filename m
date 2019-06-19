@@ -2,91 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1053D4C440
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 01:57:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4EDB4C443
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 02:00:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730859AbfFSX5j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 19:57:39 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:47480 "EHLO mx1.redhat.com"
+        id S1730182AbfFTAAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 20:00:13 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:60100 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726298AbfFSX5j (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Jun 2019 19:57:39 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        id S1726496AbfFTAAM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Jun 2019 20:00:12 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 25081308302F;
-        Wed, 19 Jun 2019 23:57:39 +0000 (UTC)
-Received: from localhost (unknown [10.36.112.13])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 9516F1001B30;
-        Wed, 19 Jun 2019 23:57:36 +0000 (UTC)
-Date:   Thu, 20 Jun 2019 01:57:32 +0200
+        by mx1.redhat.com (Postfix) with ESMTPS id 0EC2236807;
+        Thu, 20 Jun 2019 00:00:12 +0000 (UTC)
+Received: from epycfail.redhat.com (unknown [10.36.112.13])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8C58C19C5B;
+        Thu, 20 Jun 2019 00:00:09 +0000 (UTC)
 From:   Stefano Brivio <sbrivio@redhat.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     David Miller <davem@davemloft.net>, Jianlin Shi <jishi@redhat.com>,
-        Wei Wang <weiwan@google.com>, Martin KaFai Lau <kafai@fb.com>,
+To:     David Miller <davem@davemloft.net>
+Cc:     Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
+        David Ahern <dsahern@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
         Eric Dumazet <edumazet@google.com>,
         Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
         netdev@vger.kernel.org
-Subject: Re: [PATCH net v5 5/6] ipv6: Dump route exceptions if requested
-Message-ID: <20190620015732.7650f506@redhat.com>
-In-Reply-To: <333b0a08-07dd-3c70-1268-2d9eb5646564@gmail.com>
-References: <cover.1560827176.git.sbrivio@redhat.com>
-        <364403cca3d7836557f8ffe83c9c48b436be76eb.1560827176.git.sbrivio@redhat.com>
-        <333b0a08-07dd-3c70-1268-2d9eb5646564@gmail.com>
-Organization: Red Hat
+Subject: [PATCH net-next v6 00/11] Fix listing (IPv4, IPv6) and flushing (IPv6) of cached route exceptions
+Date:   Thu, 20 Jun 2019 01:59:40 +0200
+Message-Id: <cover.1560987611.git.sbrivio@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Wed, 19 Jun 2019 23:57:39 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.30]); Thu, 20 Jun 2019 00:00:12 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 18 Jun 2019 09:19:53 -0600
-David Ahern <dsahern@gmail.com> wrote:
+For IPv6 cached routes, the commands 'ip -6 route list cache' and
+'ip -6 route flush cache' don't work at all after route exceptions have
+been moved to a separate hash table in commit 2b760fcf5cfb ("ipv6: hook
+up exception table to store dst cache").
 
-> On 6/18/19 7:20 AM, Stefano Brivio wrote:
-> > diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-> > index 0f60eb3a2873..7375f3b7d310 100644
-> > --- a/net/ipv6/route.c
-> > +++ b/net/ipv6/route.c
-> > @@ -4854,33 +4854,94 @@ static bool fib6_info_uses_dev(const struct fib6_info *f6i,
-> >  	return false;
-> >  }
-> >  
-> > -int rt6_dump_route(struct fib6_info *rt, void *p_arg)
-> > +/* Return -1 if done with node, number of handled routes on partial dump */
-> > +int rt6_dump_route(struct fib6_info *rt, void *p_arg, unsigned int skip)  
-> 
-> Changing the return code of rt6_dump_route should be a separate patch.
+For IPv4 cached routes, the command 'ip route list cache' has also
+stopped working in kernel 3.5 after commit 4895c771c7f0 ("ipv4: Add FIB
+nexthop exceptions.") introduced storage for route exceptions as a
+separate entity.
 
-I guess the purpose would be to highlight how existing cases are
-changed, but that looks rather trivial to me. Anyway, changed in v6.
+Fix this by allowing userspace to clearly request cached routes with
+the RTM_F_CLONED flag used as a filter (in conjuction with strict
+checking) and by retrieving and dumping cached routes if requested.
 
-> > +	if (filter->dump_routes) {
-> > +		if (skip) {
-> > +			skip--;
-> > +		} else {
-> > +			if (rt6_fill_node(net, arg->skb, rt, NULL, NULL, NULL,
-> > +					  0, RTM_NEWROUTE,
-> > +					  NETLINK_CB(arg->cb->skb).portid,
-> > +					  arg->cb->nlh->nlmsg_seq, flags)) {
-> > +				return 0;
-> > +			}
-> > +			count++;
-> > +		}
-> > +	}
-> > +
-> > +	if (!filter->dump_exceptions)
-> > +		return -1;
-> > +  
-> 
-> And the dump of the exception bucket should be a standalone function.
-> You will see why with net-next (it is per fib6_nh).
+If strict checking is not requested (iproute2 < 5.0.0), we don't have a
+way to consistently filter results on other selectors (e.g. on tables),
+so skip filtering entirely and dump both regular routes and exceptions.
 
-Sure, no way around it now, changed in v6.
+For IPv4, cache flushing uses a completely different mechanism, so it
+wasn't affected. Listing of exception routes (modified routes pre-3.5) was
+tested against these versions of kernel and iproute2:
+
+                    iproute2
+kernel         4.14.0   4.15.0   4.19.0   5.0.0   5.1.0
+ 3.5-rc4         +        +        +        +       +
+ 4.4
+ 4.9
+ 4.14
+ 4.15
+ 4.19
+ 5.0
+ 5.1
+ fixed           +        +        +        +       +
+
+
+For IPv6, a separate iproute2 patch is required. Versions of iproute2
+and kernel tested:
+
+                    iproute2
+kernel             4.14.0   4.15.0   4.19.0   5.0.0   5.1.0    5.1.0, patched
+ 3.18    list        +        +        +        +       +            +
+         flush       +        +        +        +       +            +
+ 4.4     list        +        +        +        +       +            +
+         flush       +        +        +        +       +            +
+ 4.9     list        +        +        +        +       +            +
+         flush       +        +        +        +       +            +
+ 4.14    list        +        +        +        +       +            +
+         flush       +        +        +        +       +            +
+ 4.15    list
+         flush
+ 4.19    list
+         flush
+ 5.0     list
+         flush
+ 5.1     list
+         flush
+ with    list        +        +        +        +       +            +
+ fix     flush       +        +        +                             +
+
+v6: Target for net-next, rebase and adapt to nexthop objects for IPv6 paths.
+    Merge selftests into this series (as they were addressed for net-next).
+    A number of minor changes detailed in logs of single patches.
+
+v5: Skip filtering altogether if no strict checking is requested: selecting
+    routes or exceptions only would be inconsistent with the fact we can't
+    filter on tables. Drop 1/8 (non-strict dump filter function no longer
+    needed), replace 2/8 (don't use NLM_F_MATCH, decide to skip routes or
+    exceptions in filter function), drop 6/8 (2/8 is enough for IPv6 too).
+    Introduce dump_routes and dump_exceptions flags in filter, adapt other
+    patches to that.
+
+v4: Fix the listing issue also for IPv4, making the behaviour consistent
+    with IPv6. Honour NLM_F_MATCH as per RFC 3549 and allow usage of
+    RTM_F_CLONED filter. Split patches into smaller logical changes.
+
+v3: Drop check on RTM_F_CLONED and rework logic of return values of
+    rt6_dump_route()
+
+v2: Add count of routes handled in partial dumps, and skip them, in patch 1/2.
+
+Stefano Brivio (11):
+  fib_frontend, ip6_fib: Select routes or exceptions dump from
+    RTM_F_CLONED
+  ipv4/fib_frontend: Allow RTM_F_CLONED flag to be used for filtering
+  ipv4/route: Allow NULL flowinfo in rt_fill_info()
+  ipv4: Dump route exceptions if requested
+  Revert "net/ipv6: Bail early if user only wants cloned entries"
+  ipv6/route: Don't match on fc_nh_id if not set in ip6_route_del()
+  ipv6/route: Change return code of rt6_dump_route() for partial node
+    dumps
+  ipv6: Dump route exceptions if requested
+  ip6_fib: Don't discard nodes with valid routing information in
+    fib6_locate_1()
+  selftests: pmtu: Introduce list_flush_ipv4_exception test case
+  selftests: pmtu: Make list_flush_ipv6_exception test more demanding
+
+ include/net/ip6_fib.h               |   1 +
+ include/net/ip6_route.h             |   2 +-
+ include/net/ip_fib.h                |   2 +
+ include/net/route.h                 |   4 +
+ net/ipv4/fib_frontend.c             |  12 ++-
+ net/ipv4/fib_trie.c                 |  60 +++++++++++---
+ net/ipv4/route.c                    | 113 +++++++++++++++++++------
+ net/ipv6/ip6_fib.c                  |  27 ++++--
+ net/ipv6/route.c                    | 123 +++++++++++++++++++++++++---
+ tools/testing/selftests/net/pmtu.sh |  82 +++++++++++++++++--
+ 10 files changed, 354 insertions(+), 72 deletions(-)
 
 -- 
-Stefano
+2.20.1
+
