@@ -2,142 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB98F4C05C
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 19:55:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 762BE4C068
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 19:58:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726518AbfFSRz2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 13:55:28 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:43321 "EHLO
-        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726175AbfFSRz1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 13:55:27 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id D59C52222B;
-        Wed, 19 Jun 2019 13:55:26 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 19 Jun 2019 13:55:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=cdRwB7b2QqNpoMnvu
-        MO9vhi02LRs9PcEHqazLHPo+EI=; b=mlS97UB1A8hcEL1vB8CW3ufWWroYrLGM8
-        /YtDvBNtSAFzGfPOAZb+hFSQoSZt9XmGFJsYOOeNU4NH13Qrdq8pnLzrwBWozNxK
-        ztvbpYmy9WuS2cnRd1aQLJFMxad/xzqKO7MYHOY3DYWWyGcienvPyAAT6EfY6fNY
-        Xmp3glyTlLmFZqUaORJGbGblT2snAv8TGmMje9du25vXRSDCxmRq7Dy0Sin9qwK9
-        zTsawEZBCcqmJtA936qEHNcxphlVxzCGWkFBh2qW1kX3IdjUGNVmaKujHyE+Edyr
-        6AB4u6GETonNdExwYdT3lqgxkcZ2nCWJS79i6ZF0mdtA4PKdyn6IA==
-X-ME-Sender: <xms:DncKXYLEFMw-FbSVlIWvAsCKuk3QMjMDoU-TwsuEu7TPWKB9KY63NQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrtddvgdelhecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
-    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
-    rdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrih
-    hlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihii
-    vgeptd
-X-ME-Proxy: <xmx:DncKXUZ4h-AaOgGcEjeJOSxwBcDF5MR1JIMmmqrmQl7KLA7pcWJw_w>
-    <xmx:DncKXSWiLQCYLH6a_SHnDSIsYkGmNr3NOFrA9uhJUJMLQ2tUE7V1Mw>
-    <xmx:DncKXVt5VhaUO9vEeX5ST9fbqmCzKbG1ah8sYG3H9SVIx2Rgih2uwA>
-    <xmx:DncKXZ6ZblbqQ81B0ZXippMOXxxoRGlqTvTK0cIFKDYb9gz8g_8Y4A>
-Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 8ABB0380074;
-        Wed, 19 Jun 2019 13:55:24 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, dsahern@gmail.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next] ipv6: Check if route exists before notifying it
-Date:   Wed, 19 Jun 2019 20:55:00 +0300
-Message-Id: <20190619175500.7145-1-idosch@idosch.org>
-X-Mailer: git-send-email 2.20.1
+        id S1726332AbfFSR6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 13:58:12 -0400
+Received: from mail-qt1-f172.google.com ([209.85.160.172]:33769 "EHLO
+        mail-qt1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726047AbfFSR6M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 13:58:12 -0400
+Received: by mail-qt1-f172.google.com with SMTP id x2so100529qtr.0;
+        Wed, 19 Jun 2019 10:58:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=0W0itFPfY7xYg7LY+IR5dqlXHG0CFEKKluwnbGZQxeQ=;
+        b=GhErCDSKnXlYp6pBkPM00480dl4XcXb27fp9GftJ5Ul/lDSwIGmgGKhX+/z7GNWmWW
+         ByM2yg1cCwIS9mKxPYFGXorK93tRIem6/ijEuWrM88dtFgvtUXN4L0N6jfpXLf1OgG7L
+         xPVqQ8hkBPK/NSXLqLmGu3YVdSbWnsPrUma4q/7EaWYRc5xfxvUdUrF0ermbheKfoOKk
+         SQCBDFaHn5+tZSadVxJPeTO/Rc9hQYypGEKKxIkf1JIG1Xq3nqa+ukRwcrNe9rODEIRj
+         fh7NuEnenKAW5zEKDdz9XtLhjEcBLw1foPuEJ2KpV9xgVUCnBCKP8Ussl4JcEPJbM3ZE
+         EYjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=0W0itFPfY7xYg7LY+IR5dqlXHG0CFEKKluwnbGZQxeQ=;
+        b=c0JERv1XeLsItouSOrinV/sT8Or2mDI5Oh+A/AKimwc7/Atno4AdHOh5X3nMbiC4He
+         Bt8Eb1yildJ9+dGhvW3AglA4UJJSsjYdMsMPSQ7utIpbc7cAg+CRiZw7PJBxaPtK2t37
+         4Wyx38z4bvVa6jYUVjNdOxxnNtlIpLPwMGu2TOHtU6uDnInFEhJfNy/kVUCNzBAp5MHx
+         J++Y/1h7DUPx843qgp45ElQwhgh2WoGWaYUgym3LGNTFHZP4Vi97k80ky2Xn/f9MX5cm
+         xs66uTB666RLzeN5tJzQ5riXJu5f1ZicFdZxKcqrj6+ewDk31VMfm6O6SB/3Hb6F2LaC
+         hFZw==
+X-Gm-Message-State: APjAAAUeZbG2hu4OEotXIIs+lBBFlctkgTbzocr5ja5HMREDVAiuwOcR
+        hIg0yXkEoR+aLIi8sfEf7jkqGMw=
+X-Google-Smtp-Source: APXvYqzbhU2OKh0y/yT5q91FaQ+D3qvbj5zy/GxdOUZHIFS3ikY0bh0O7ELgnL7+LdDEYl2UHLPtlA==
+X-Received: by 2002:a0c:bd9a:: with SMTP id n26mr34728869qvg.25.1560967091576;
+        Wed, 19 Jun 2019 10:58:11 -0700 (PDT)
+Received: from ubuntu ([104.238.32.30])
+        by smtp.gmail.com with ESMTPSA id g10sm9643885qki.37.2019.06.19.10.58.10
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 19 Jun 2019 10:58:11 -0700 (PDT)
+Date:   Wed, 19 Jun 2019 13:58:02 -0400
+From:   Stephen Suryaputra <ssuryaextr@gmail.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH RESEND nf-next] netfilter: add support for matching IPv4
+ options
+Message-ID: <20190619175801.GA3859@ubuntu>
+References: <20190611120912.3825-1-ssuryaextr@gmail.com>
+ <20190619171832.om7losybbkysuk4r@salvia>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190619171832.om7losybbkysuk4r@salvia>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
-
-When user space sends invalid information in RTA_MULTIPATH, the nexthop
-list in ip6_route_multipath_add() is empty and there is no route to
-notify.
-
-The code that emits the netlink notifications correctly checks if the
-route is not NULL, but I missed that for the in-kernel notifications.
-Add the check to avoid NULL pointer dereference [1].
-
-[1]
-kasan: CONFIG_KASAN_INLINE enabled
-kasan: GPF could be caused by NULL-ptr deref or user memory access
-general protection fault: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 9190 Comm: syz-executor149 Not tainted 5.2.0-rc5+ #38
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-Google 01/01/2011
-RIP: 0010:call_fib6_multipath_entry_notifiers+0xd1/0x1a0
-net/ipv6/ip6_fib.c:396
-Code: 8b b5 30 ff ff ff 48 c7 85 68 ff ff ff 00 00 00 00 48 c7 85 70 ff ff
-ff 00 00 00 00 89 45 88 4c 89 e0 48 c1 e8 03 4c 89 65 80 <42> 80 3c 28 00
-0f 85 9a 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d
-RSP: 0018:ffff88809788f2c0 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: 1ffff11012f11e59 RCX: 00000000ffffffff
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: ffff88809788f390 R08: ffff88809788f8c0 R09: 000000000000000c
-R10: ffff88809788f5d8 R11: ffff88809788f527 R12: 0000000000000000
-R13: dffffc0000000000 R14: ffff88809788f8c0 R15: ffffffff89541d80
-FS:  000055555632c880(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000080 CR3: 000000009ba7c000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-  ip6_route_multipath_add+0xc55/0x1490 net/ipv6/route.c:5094
-  inet6_rtm_newroute+0xed/0x180 net/ipv6/route.c:5208
-  rtnetlink_rcv_msg+0x463/0xb00 net/core/rtnetlink.c:5219
-  netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
-  rtnetlink_rcv+0x1d/0x30 net/core/rtnetlink.c:5237
-  netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
-  netlink_unicast+0x531/0x710 net/netlink/af_netlink.c:1328
-  netlink_sendmsg+0x8ae/0xd70 net/netlink/af_netlink.c:1917
-  sock_sendmsg_nosec net/socket.c:646 [inline]
-  sock_sendmsg+0xd7/0x130 net/socket.c:665
-  ___sys_sendmsg+0x803/0x920 net/socket.c:2286
-  __sys_sendmsg+0x105/0x1d0 net/socket.c:2324
-  __do_sys_sendmsg net/socket.c:2333 [inline]
-  __se_sys_sendmsg net/socket.c:2331 [inline]
-  __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2331
-  do_syscall_64+0xfd/0x680 arch/x86/entry/common.c:301
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x4401f9
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff
-ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffc09fd0028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 00000000004401f9
-RDX: 0000000000000000 RSI: 0000000020000080 RDI: 0000000000000003
-RBP: 00000000006ca018 R08: 0000000000000000 R09: 00000000004002c8
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401a80
-R13: 0000000000401b10 R14: 0000000000000000 R15: 0000000000000000
-
-Reported-by: syzbot+382566d339d52cd1a204@syzkaller.appspotmail.com
-Fixes: ebee3cad835f ("ipv6: Add IPv6 multipath notifications for add / replace")
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
----
- net/ipv6/ip6_fib.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
-index 1d16a01eccf5..241a0e9a07c3 100644
---- a/net/ipv6/ip6_fib.c
-+++ b/net/ipv6/ip6_fib.c
-@@ -393,6 +393,8 @@ int call_fib6_multipath_entry_notifiers(struct net *net,
- 		.nsiblings = nsiblings,
- 	};
- 
-+	if (!rt)
-+		return -EINVAL;
- 	rt->fib6_table->fib_seq++;
- 	return call_fib6_notifiers(net, event_type, &info.info);
- }
--- 
-2.20.1
-
+On Wed, Jun 19, 2019 at 07:18:32PM +0200, Pablo Neira Ayuso wrote:
+> 
+> Rules with this options will load fine:
+> 
+> ip option eol type 1
+> ip option noop type 1
+> ip option sec type 1
+> ip option timestamp type 1
+> ip option rr type 1
+> ip option sid type 1
+> 
+> However, they will not ever match I think.
+> 
+> found is set to true, but target is set to EOPNOTSUPP, then...
+> 
+> [...]
+> > +	err = ipv4_find_option(nft_net(pkt), skb, &offset, priv->type, NULL, NULL);
+> 
+> ... ipv4_find_option() returns -EOPNOTSUPP which says header does
+> not exist.
+> 
+Yes. My goal in writing this is mainly to block loose and/or strict
+source routing. The system also will need to block RA and RR. Others are
+not fully supported since we (my employer) don't need it. They can be
+added later on if desired...
