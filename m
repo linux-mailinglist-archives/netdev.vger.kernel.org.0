@@ -2,86 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 63CF14C345
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 23:47:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 157134C346
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 23:48:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730596AbfFSVrd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 17:47:33 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:33338 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726321AbfFSVrd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 17:47:33 -0400
-Received: by mail-io1-f65.google.com with SMTP id u13so1226237iop.0
-        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 14:47:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jn7rTsnoTMINgPGQpUAUNP/1ZCSKZbUiyrspL4IPrIQ=;
-        b=aoMXkXVUNysZd1OrGPLYLxbG1L1WIqZrN++sOPLGf5wLhzrpv/HyMBSWHaOqdby9L/
-         GRzrD2jhF4Tjv7ZXw/krKAuSvvPEri4IfhP184lovzMb9ZZOZWN3flbPXHUbYouRboTB
-         N83QI2LaI7RAgFNrEq5pxgZaNPry9y78ug5mxC9CqUBsHfJj3a1ehexiKAmDJDyQ4GAk
-         EESxIL14siyPmN+fIxtwntOVZkENSNFLpAnPoENtF1qRC/ScqSKjAZtfYAyceqagTyC4
-         aCkmW3jYhKuyEs0eS9BnPVYZe5AKxj4ESv5UR4ZZanEqtF2MORQsBKhoR70thUuG+J12
-         tUmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jn7rTsnoTMINgPGQpUAUNP/1ZCSKZbUiyrspL4IPrIQ=;
-        b=JGFLATLOw4GXy18VONzfV+qECiOq5kUe9CALznbwyUTNB3EgpzU+AuGvAbKnGXFXb1
-         v4PfLyKWiZwRVuTDUBoB/L72y4W7Hty3sjIIa7MVsqlfZ/n/dVJGOtm7q7FBiJcAHm1X
-         jepbX3TKjG/f+iBj3cx9tY4siWrJ+/huEDFwZWtPyd7C8seFJSKe1V+5Wz5pIRcJ2lK5
-         Cwwgs2mQWYIxXbhxdIRQiKiftLLkwuXAgV3fBq8W15K8SCJfHgNSfaCEzXZo9ewJVfno
-         rzU6GfFO5+HDEh9Tzb2Zps6i6klGwmVWyFF9rDI6Q/gqNFOOT+JrdL79DnqWVHjbXMdi
-         r2vA==
-X-Gm-Message-State: APjAAAVpS5l7oqoHXZ7MeeRM9kMeoyKHHcya9RAP8EsH6QuFDGGniSq8
-        hr9M7ERcJ+psKDr4DksLCQLi7TU0W4qZ47kLNQ/N5g==
-X-Google-Smtp-Source: APXvYqwubEzC2W3o+M/c7dg3wspsTqDJRo7V9LviqwzAh4/9pKsymlPU4a8TvgNldaxNRieGyMcrWmR2PWbukIQGy8o=
-X-Received: by 2002:a5e:820a:: with SMTP id l10mr13045052iom.283.1560980852010;
- Wed, 19 Jun 2019 14:47:32 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190619065510.23514-1-ard.biesheuvel@linaro.org>
- <20190619065510.23514-2-ard.biesheuvel@linaro.org> <20190619.174234.2210089047219514238.davem@davemloft.net>
-In-Reply-To: <20190619.174234.2210089047219514238.davem@davemloft.net>
-From:   Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Date:   Wed, 19 Jun 2019 23:47:19 +0200
-Message-ID: <CAKv+Gu9h7tJo=faEOceZ=6Zk1sBOCh-jBa3bgBAd3jr-sATbJQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 1/1] net: fastopen: robustness and endianness
- fixes for SipHash
-To:     David Miller <davem@davemloft.net>
-Cc:     "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        Eric Biggers <ebiggers@kernel.org>,
-        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
-        <linux-crypto@vger.kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jason Baron <jbaron@akamai.com>,
-        Christoph Paasch <cpaasch@apple.com>,
-        David Laight <David.Laight@aculab.com>,
-        Yuchung Cheng <ycheng@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1730317AbfFSVsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 17:48:19 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:51528 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726230AbfFSVsT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Jun 2019 17:48:19 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 489BD30C0DC7;
+        Wed, 19 Jun 2019 21:48:19 +0000 (UTC)
+Received: from localhost (ovpn-112-10.rdu2.redhat.com [10.10.112.10])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 10A551813B;
+        Wed, 19 Jun 2019 21:48:17 +0000 (UTC)
+Date:   Wed, 19 Jun 2019 17:48:17 -0400 (EDT)
+Message-Id: <20190619.174817.1569045758201960209.davem@redhat.com>
+To:     edumazet@google.com
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com, ycheng@google.com,
+        ncardwell@google.com, soheil@google.com, syzkaller@googlegroups.com
+Subject: Re: [PATCH net] inet: clear num_timeout reqsk_alloc()
+From:   David Miller <davem@redhat.com>
+In-Reply-To: <20190619163838.150971-1-edumazet@google.com>
+References: <20190619163838.150971-1-edumazet@google.com>
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Wed, 19 Jun 2019 21:48:19 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 19 Jun 2019 at 23:42, David Miller <davem@davemloft.net> wrote:
->
-> From: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-> Date: Wed, 19 Jun 2019 08:55:10 +0200
->
-> > +     ctx->key[0] = (siphash_key_t){
-> > +             get_unaligned_le64(primary_key),
-> > +             get_unaligned_le64(primary_key + 8)
-> > +     };
->
-> Please just use normal assignment(s), because not only does this warn
-> it looks not so nice.
->
+From: Eric Dumazet <edumazet@google.com>
+Date: Wed, 19 Jun 2019 09:38:38 -0700
 
-OK
+> KMSAN caught uninit-value in tcp_create_openreq_child() [1]
+> This is caused by a recent change, combined by the fact
+> that TCP cleared num_timeout, num_retrans and sk fields only
+> when a request socket was about to be queued.
+> 
+> Under syncookie mode, a temporary request socket is used,
+> and req->num_timeout could contain garbage.
+> 
+> Lets clear these three fields sooner, there is really no
+> point trying to defer this and risk other bugs.
+> 
+> [1]
+> 
+> BUG: KMSAN: uninit-value in tcp_create_openreq_child+0x157f/0x1cc0 net/ipv4/tcp_minisocks.c:526
+ ...
+> Fixes: 336c39a03151 ("tcp: undo init congestion window on false SYNACK timeout")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Yuchung Cheng <ycheng@google.com>
+> Cc: Neal Cardwell <ncardwell@google.com>
+> Cc: Soheil Hassas Yeganeh <soheil@google.com>
+> Reported-by: syzbot <syzkaller@googlegroups.com>
 
-Please disregard the v3 I just sent out, v4 has ordinary assignments.
+Applied, thanks Eric.
