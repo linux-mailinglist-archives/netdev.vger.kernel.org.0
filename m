@@ -2,287 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 16BC64C33E
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 23:45:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A6794C340
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 23:46:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730549AbfFSVpd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 17:45:33 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:42907 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726230AbfFSVpc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 17:45:32 -0400
-Received: by mail-qt1-f195.google.com with SMTP id s15so875263qtk.9;
-        Wed, 19 Jun 2019 14:45:32 -0700 (PDT)
+        id S1730625AbfFSVqo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 17:46:44 -0400
+Received: from mail-wr1-f49.google.com ([209.85.221.49]:42178 "EHLO
+        mail-wr1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726246AbfFSVqo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 17:46:44 -0400
+Received: by mail-wr1-f49.google.com with SMTP id x17so775503wrl.9
+        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 14:46:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=U0KKo1iM2qIRuspQZlPaLXTnOkB8zW1DJbMrcSFDewA=;
-        b=AZ1oiNMtCkrWEm8hKutOf2WkDWYoiRzPTIMHCFmiG81NWP+Iee75VAMKaur7pZqmgw
-         GYaOOAuitYsbYwFLBA9/XWO95+cMdNoLD/S/h/P2ph1LT7GoKKyjc77H6B27FCCxOSeA
-         SmVvmcNEHvJydnrGeWoZfVE+4iUg7Nf0HNwZDuOeGUp9Kgr7plzJJeBAZ2gFYaQfOJE+
-         XhTtmG2NXejzoTkUMyUIkovy7j20H0nCSzeQu6NiSPH5F0wav5h31uwmjwFv5BvWCsYU
-         0+yPKLYlwTxRzq9OJGXVmhmQzQhOgL6KlugddE+ebAXyv7d2QjBqF8iiukzIhWZEo9vZ
-         ksqw==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=4X0q3ZGdXuAsyGij9zP0aVkSV4m6i3hNuHj/bJtzKbk=;
+        b=V2tgXRj2y7m8VatJglNmR4l1fo6bmm2YaN8EoREejtR0jsORmMM9ZCorHrE2w6n1mb
+         VtXpUQo+78fLl314yU2crd1RAc5mBsQ4zIIYScU3IcbK5wJoUO1y0y1D57LiYvhM+Ic5
+         NgyYJSQ7o6b19VVMaVtye2xhMgKyJGLsrt05ikuK/lh+EwvqMY5Wb+saHAzyXP0qVXix
+         +jOOvkhSOQ9CV+rIbT+3UDV0Al17tcODW6DxaWwp4UExvbFuW1mmq5UndEH71YbSz6jz
+         7K07BofXvg/81Npv2WsxGB9WO4gYzr5hFPhiKTBwczs/o201oS5vQkibTJXUmpL6qmuy
+         gGew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=U0KKo1iM2qIRuspQZlPaLXTnOkB8zW1DJbMrcSFDewA=;
-        b=tqTM+rXiqybnnxcnrr08Gef8iOesDFxQyDIOCwq6jGQlIPEx7R4HrnILhoaa7w4AyK
-         oA2TcRkkDkxMqL/xQ6hvcRhKsSls3AowTVJQIKPFZ9rHBNmBV9bT/j52lY0m6DF3/gLF
-         KN3PC8LxuL3xC9pTlXEsSscBYGMf0A1FPirINJgMRT/lBM3NrYIASzFJ3dTnsNc3NTch
-         E+SqODq75OcNOkFbnFFcblMj3UFs1Ul/dfKvroqlGLFuYsJby6J/OixehmX8FoOFEzoi
-         f1A45uvTveNzy89NnxOpQqTAejOvdtHptsUc+KGg34jxGOBHvlAmcEHjrm6o0boleOQa
-         BdbQ==
-X-Gm-Message-State: APjAAAU3dgCg6ikKIMKyWKDNKG9Md6GXsSUiizwL3GioMv3Jg6ja8fWi
-        NWLJsNo419fw06OX3/+SwxmCMyuv/oJG8hZm60pWJz+L09k=
-X-Google-Smtp-Source: APXvYqzQwjTvapcK9dmGHZdNxmXOFHnkeHytzsKW+iMOrdmqrPjHhSj9wdkuyAUQV6Wo8VgyBxjPe0KZv9Z3xmjwNbQ=
-X-Received: by 2002:a0c:ae50:: with SMTP id z16mr34794509qvc.60.1560980731337;
- Wed, 19 Jun 2019 14:45:31 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190619165957.235580-1-sdf@google.com> <20190619165957.235580-2-sdf@google.com>
- <CAEf4BzZWJVWr295-6TY=pbTNoeB9cfRwpDiuRyAxajOsV_6yDQ@mail.gmail.com> <20190619201710.GB19111@mini-arch>
-In-Reply-To: <20190619201710.GB19111@mini-arch>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 19 Jun 2019 14:45:20 -0700
-Message-ID: <CAEf4BzbTfCG3Mk9=78=Kh5u4ofxdYePm=xVEcN8g38cXQ_gq6Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v7 1/9] bpf: implement getsockopt and setsockopt hooks
-To:     Stanislav Fomichev <sdf@fomichev.me>
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=4X0q3ZGdXuAsyGij9zP0aVkSV4m6i3hNuHj/bJtzKbk=;
+        b=P16ro4dhP4tFDD0epTZE4yv82ipUkz2w+r1+iwUB0bcHT1XxdWOZSAKGj82nakWb5L
+         oUh4FemFEUZgCL6fM/SMO+cIgWrHLlksaYhEMATU3ZvYLKVgh57zrwUYXFT9gbIfPwNA
+         pIX1iZdISys4XMYlL0g7aC2dMa0dxs2UCCEFUkI+nm+rFgwZKB1s17Ut8ziMI9clGelg
+         Iq5dGlZ990zrBiM7rLZZjo6ErfG7YqsqASerLvWGL4DHNrkK0lmrM6WXSZcf9V7NTSrB
+         0pRPC4sosI+91fhn1SWXMirL++Zh0fgEmyF9r/DoDTpjAHJZQDnTc/7AOGbiMYP9hp0B
+         l1UA==
+X-Gm-Message-State: APjAAAXWkYsyd9lvj0g/Ka3kVWYa6+SZ12Sid5crdTOw0YRKiTirFeMO
+        ips0bfI8J0jzXqcDYlO7X6HsIfTpLzndnQ==
+X-Google-Smtp-Source: APXvYqyhlX71hdDu1lnaipaoZVv6xw9RoP1WLkgKxwcF3V8ym1cNvVwJAbq7BIIgZwtUAC4SuTV8xQ==
+X-Received: by 2002:adf:ea88:: with SMTP id s8mr71248991wrm.68.1560980801901;
+        Wed, 19 Jun 2019 14:46:41 -0700 (PDT)
+Received: from e111045-lin.arm.com (lfbn-nic-1-216-10.w2-15.abo.wanadoo.fr. [2.15.62.10])
+        by smtp.gmail.com with ESMTPSA id e11sm27109620wrc.9.2019.06.19.14.46.40
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 19 Jun 2019 14:46:41 -0700 (PDT)
+From:   Ard Biesheuvel <ard.biesheuvel@linaro.org>
+To:     netdev@vger.kernel.org
+Cc:     Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        Eric Biggers <ebiggers@kernel.org>,
+        linux-crypto@vger.kernel.org, herbert@gondor.apana.org.au,
+        edumazet@google.com, davem@davemloft.net, kuznet@ms2.inr.ac.ru,
+        yoshfuji@linux-ipv6.org, jbaron@akamai.com, cpaasch@apple.com,
+        David.Laight@aculab.com, ycheng@google.com
+Subject: [PATCH v4 0/1] net: fastopen: follow-up tweaks for SipHash switch
+Date:   Wed, 19 Jun 2019 23:46:27 +0200
+Message-Id: <20190619214628.2960-1-ard.biesheuvel@linaro.org>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 19, 2019 at 1:17 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
->
-> On 06/19, Andrii Nakryiko wrote:
-> > On Wed, Jun 19, 2019 at 10:00 AM Stanislav Fomichev <sdf@google.com> wrote:
-> > >
-> > > Implement new BPF_PROG_TYPE_CGROUP_SOCKOPT program type and
-> > > BPF_CGROUP_{G,S}ETSOCKOPT cgroup hooks.
-> > >
-> > > BPF_CGROUP_SETSOCKOPT get a read-only view of the setsockopt arguments.
-> > > BPF_CGROUP_GETSOCKOPT can modify the supplied buffer.
-> > > Both of them reuse existing PTR_TO_PACKET{,_END} infrastructure.
-> > >
-> > > The buffer memory is pre-allocated (because I don't think there is
-> > > a precedent for working with __user memory from bpf). This might be
-> > > slow to do for each {s,g}etsockopt call, that's why I've added
-> > > __cgroup_bpf_prog_array_is_empty that exits early if there is nothing
-> > > attached to a cgroup. Note, however, that there is a race between
-> > > __cgroup_bpf_prog_array_is_empty and BPF_PROG_RUN_ARRAY where cgroup
-> > > program layout might have changed; this should not be a problem
-> > > because in general there is a race between multiple calls to
-> > > {s,g}etsocktop and user adding/removing bpf progs from a cgroup.
-> > >
-> > > The return code of the BPF program is handled as follows:
-> > > * 0: EPERM
-> > > * 1: success, continue with next BPF program in the cgroup chain
-> > >
-> > > v7:
-> > > * return only 0 or 1 (Alexei Starovoitov)
-> > > * always run all progs (Alexei Starovoitov)
-> > > * use optval=0 as kernel bypass in setsockopt (Alexei Starovoitov)
-> > >   (decided to use optval=-1 instead, optval=0 might be a valid input)
-> > > * call getsockopt hook after kernel handlers (Alexei Starovoitov)
-> > >
-> > > v6:
-> > > * rework cgroup chaining; stop as soon as bpf program returns
-> > >   0 or 2; see patch with the documentation for the details
-> > > * drop Andrii's and Martin's Acked-by (not sure they are comfortable
-> > >   with the new state of things)
-> >
-> > I like the general approach, just overall unclear about seemingly
-> > artificial restrictions I mentioned below.
-> >
-> > >
-> > > v5:
-> > > * skip copy_to_user() and put_user() when ret == 0 (Martin Lau)
-> > >
-> > > v4:
-> > > * don't export bpf_sk_fullsock helper (Martin Lau)
-> > > * size != sizeof(__u64) for uapi pointers (Martin Lau)
-> > > * offsetof instead of bpf_ctx_range when checking ctx access (Martin Lau)
-> > >
-> > > v3:
-> > > * typos in BPF_PROG_CGROUP_SOCKOPT_RUN_ARRAY comments (Andrii Nakryiko)
-> > > * reverse christmas tree in BPF_PROG_CGROUP_SOCKOPT_RUN_ARRAY (Andrii
-> > >   Nakryiko)
-> > > * use __bpf_md_ptr instead of __u32 for optval{,_end} (Martin Lau)
-> > > * use BPF_FIELD_SIZEOF() for consistency (Martin Lau)
-> > > * new CG_SOCKOPT_ACCESS macro to wrap repeated parts
-> > >
-> > > v2:
-> > > * moved bpf_sockopt_kern fields around to remove a hole (Martin Lau)
-> > > * aligned bpf_sockopt_kern->buf to 8 bytes (Martin Lau)
-> > > * bpf_prog_array_is_empty instead of bpf_prog_array_length (Martin Lau)
-> > > * added [0,2] return code check to verifier (Martin Lau)
-> > > * dropped unused buf[64] from the stack (Martin Lau)
-> > > * use PTR_TO_SOCKET for bpf_sockopt->sk (Martin Lau)
-> > > * dropped bpf_target_off from ctx rewrites (Martin Lau)
-> > > * use return code for kernel bypass (Martin Lau & Andrii Nakryiko)
-> > >
-> > > Cc: Martin Lau <kafai@fb.com>
-> > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > > ---
-> >
-> > <snip>
-> >
-> > >
-> > > +struct bpf_sockopt_kern {
-> > > +       struct sock     *sk;
-> > > +       u8              *optval;
-> > > +       u8              *optval_end;
-> > > +       s32             level;
-> > > +       s32             optname;
-> > > +       u32             optlen;
-> >
-> > Optlen is used below as signed integer, so switch it to s32?
-> Good catch, should be s32 here and below, thanks!
->
-> > > +       s32             retval;
-> > > +
-> > > +       /* Small on-stack optval buffer to avoid small allocations.
-> > > +        */
-> > > +       u8 buf[64] __aligned(8);
-> > > +};
-> > > +
-> >
-> > <snip>
-> >
-> > >
-> > > +struct bpf_sockopt {
-> > > +       __bpf_md_ptr(struct bpf_sock *, sk);
-> > > +       __bpf_md_ptr(void *, optval);
-> > > +       __bpf_md_ptr(void *, optval_end);
-> > > +
-> > > +       __s32   level;
-> > > +       __s32   optname;
-> > > +       __u32   optlen;
-> >
-> > Same as above, we expect BPF program to be able to set it to -1, so __s32?
-> >
-> > > +       __s32   retval;
-> > > +};
-> > > +
-> > >  #endif /* _UAPI__LINUX_BPF_H__ */
-> > > diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-> >
-> > <snip>
-> >
-> > > +
-> > > +       if (ctx.optlen == -1)
-> > > +               /* optlen set to -1, bypass kernel */
-> > > +               ret = 1;
-> > > +       else if (ctx.optlen == optlen)
-> > > +               /* optlen not changed, run kernel handler */
-> > > +               ret = 0;
-> > > +       else
-> > > +               /* any other value is rejected */
-> > > +               ret = -EFAULT;
-> >
-> > I'm consufed about this assymetry between getsockopt and setsockopt
-> > behavior. Why we are disallowing setsockopt from changing optlen (and
-> > value itself)? Is there any harm in allowing that? Imagining some use
-> > case that provides transparent "support" for some option, you'd need
-> > to be able to intercept and provide custom values both for setsockopt
-> > and getsockopt. So unless I'm missing some security implications, why
-> > not make both sides able to write?
-> Because kernel setsockopt handlers use get_user to read the data. We
-> can definitely allow changing optval+optlen, but we'd have to copy
-> that data back to userspace to let kernel handle it. I'm not sure how
-> userspace might feel about it. Can it be a buffer in the readonly
-> elf section?
+Some fixes for the fastopen code after switching to SipHash, which were
+spotted in review after the change had already been queued.
 
-Ah, ok, now I see why :) Yeah, I guess it can be in read-only section.
-Alright, I don't see an easy solution to that, I guess we can live
-with that for now.
+Changes since v3:
+- switch from compount literals to individual assignments of the siphash
+  key fields
 
->
-> > Similar will apply w.r.t. retval, why can't setsockopt return EINVAL
-> > to reject some options? This seems very useful and very similar to
-> > what sysctl BPF hooks do.
-> I was just being defensive because I'm not sure what's the use-case.
-> We can already return EPERM, why do we need to return a different
-> error code? Are we comfortable letting progs return arbitrary number?
-> Or you just want to allow a bunch of pre-defined error codes?
->
-> I haven't seen the ability to return arbitrary error from the sysctl
-> hooks, but maybe I didn't look hard enough.
+Changes since v2:
+- add missing pairs of braces in compound literals used to assign the
+  fastopen keys
 
-Yeah, seems like sysctl is only 0 or EPERM. I missed for a moment that
-there is return value from BPF program and retval from the context. I
-think it's good enough as is.
+cc: Eric Biggers <ebiggers@kernel.org>
+cc: linux-crypto@vger.kernel.org
+cc: herbert@gondor.apana.org.au
+cc: edumazet@google.com
+cc: davem@davemloft.net
+cc: kuznet@ms2.inr.ac.ru
+cc: yoshfuji@linux-ipv6.org
+cc: jbaron@akamai.com
+cc: cpaasch@apple.com
+cc: David.Laight@aculab.com
+cc: ycheng@google.com
 
->
-> > > +
-> > > +out:
-> > > +       sockopt_free_buf(&ctx);
-> > > +       return ret;
-> > > +}
-> > > +EXPORT_SYMBOL(__cgroup_bpf_run_filter_setsockopt);
-> > > +
-> > > +int __cgroup_bpf_run_filter_getsockopt(struct sock *sk, int level,
-> > > +                                      int optname, char __user *optval,
-> > > +                                      int __user *optlen, int max_optlen,
-> > > +                                      int retval)
-> > > +{
-> >
-> > <snip>
-> >
-> > > +
-> > > +       if (ctx.optlen > max_optlen) {
-> > > +               ret = -EFAULT;
-> > > +               goto out;
-> > > +       }
-> > > +
-> > > +       /* BPF programs only allowed to set retval to 0, not some
-> > > +        * arbitrary value.
-> > > +        */
-> > > +       if (ctx.retval != 0 && ctx.retval != retval) {
-> >
-> > Lookin at manpage of getsockopt, seems like at least two error codes
-> > are relevant and generally useful for BPF program to be able to
-> > return: EINVAL and ENOPROTOOPT? Why we are disallowing anything but 0
-> > (or preserving original retval)?
-> I was thinking about simple use-case where it's either BPF that
-> handles the opt or the kernel. And then it's BFP returning success or
-> EPERM. I don't think I understand why BPF needs to be able to
-> return different error codes. We can certainly do that if you think
-> that it makes sense; alternatively, we can start with 0 or kernel retval
-> and relax the requirements if someone really needs that in the future.
->
-> (I don't have a strong opinion here tbh).
+Ard Biesheuvel (1):
+  net: fastopen: robustness and endianness fixes for SipHash
 
-As replied above, EPERM is probably good enough for practical
-purposes, I was being a bit pedantic :)
+ include/linux/tcp.h        |  2 +-
+ include/net/tcp.h          |  8 ++---
+ net/ipv4/sysctl_net_ipv4.c |  3 +-
+ net/ipv4/tcp.c             |  3 +-
+ net/ipv4/tcp_fastopen.c    | 35 ++++++++++----------
+ 5 files changed, 24 insertions(+), 27 deletions(-)
 
->
-> > > +               ret = -EFAULT;
-> > > +               goto out;
-> > > +       }
-> > > +
-> > > +       if (copy_to_user(optval, ctx.optval, ctx.optlen) ||
-> > > +           put_user(ctx.optlen, optlen)) {
-> > > +               ret = -EFAULT;
-> > > +               goto out;
-> > > +       }
-> > > +
-> > > +       ret = ctx.retval;
-> > > +
-> > > +out:
-> > > +       sockopt_free_buf(&ctx);
-> > > +       return ret;
-> > > +}
-> > > +EXPORT_SYMBOL(__cgroup_bpf_run_filter_getsockopt);
-> > > +
-> >
-> > <snip>
+-- 
+2.17.1
+
