@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CABEE4C445
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 02:00:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9951D4C446
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 02:00:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730865AbfFTAAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 20:00:18 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:58466 "EHLO mx1.redhat.com"
+        id S1730872AbfFTAAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 20:00:21 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:58480 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726496AbfFTAAR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Jun 2019 20:00:17 -0400
+        id S1726322AbfFTAAV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Jun 2019 20:00:21 -0400
 Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id A6C55C18B2DB;
-        Thu, 20 Jun 2019 00:00:17 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 7527DC18B2E5;
+        Thu, 20 Jun 2019 00:00:20 +0000 (UTC)
 Received: from epycfail.redhat.com (unknown [10.36.112.13])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 39BEE19C5B;
-        Thu, 20 Jun 2019 00:00:15 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1F77319C5B;
+        Thu, 20 Jun 2019 00:00:17 +0000 (UTC)
 From:   Stefano Brivio <sbrivio@redhat.com>
 To:     David Miller <davem@davemloft.net>
 Cc:     Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
@@ -27,55 +27,122 @@ Cc:     Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
         Eric Dumazet <edumazet@google.com>,
         Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
         netdev@vger.kernel.org
-Subject: [PATCH net-next v6 02/11] ipv4/fib_frontend: Allow RTM_F_CLONED flag to be used for filtering
-Date:   Thu, 20 Jun 2019 01:59:42 +0200
-Message-Id: <0ac0368a645f434feed639ec33309300e86ee790.1560987611.git.sbrivio@redhat.com>
+Subject: [PATCH net-next v6 03/11] ipv4/route: Allow NULL flowinfo in rt_fill_info()
+Date:   Thu, 20 Jun 2019 01:59:43 +0200
+Message-Id: <5ba00822d7e86cdcb9231b39fda3cc4a04e2836f.1560987611.git.sbrivio@redhat.com>
 In-Reply-To: <cover.1560987611.git.sbrivio@redhat.com>
 References: <cover.1560987611.git.sbrivio@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.31]); Thu, 20 Jun 2019 00:00:17 +0000 (UTC)
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.31]); Thu, 20 Jun 2019 00:00:20 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This functionally reverts the check introduced by commit
-e8ba330ac0c5 ("rtnetlink: Update fib dumps for strict data checking")
-as modified by commit e4e92fb160d7 ("net/ipv4: Bail early if user only
-wants prefix entries").
+In the next patch, we're going to use rt_fill_info() to dump exception
+routes upon RTM_GETROUTE with NLM_F_ROOT, meaning userspace is requesting
+a dump and not a specific route selection, which in turn implies the input
+interface is not relevant. Update rt_fill_info() to handle a NULL
+flowinfo.
 
-As we are preparing to fix listing of IPv4 cached routes, we need to
-give userspace a way to request them.
-
+Suggested-by: David Ahern <dsahern@gmail.com>
 Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
-Reviewed-by: David Ahern <dsahern@gmail.com>
 ---
-v6: Rebase onto net-next, no changes
+v6: New patch
 
-v5: No changes
+ net/ipv4/route.c | 57 ++++++++++++++++++++++++++----------------------
+ 1 file changed, 31 insertions(+), 26 deletions(-)
 
-v4: New patch
-
- net/ipv4/fib_frontend.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
-index ed7fb5fd885c..317339cd7f03 100644
---- a/net/ipv4/fib_frontend.c
-+++ b/net/ipv4/fib_frontend.c
-@@ -987,8 +987,8 @@ static int inet_dump_fib(struct sk_buff *skb, struct netlink_callback *cb)
- 		filter.flags = rtm->rtm_flags & (RTM_F_PREFIX | RTM_F_CLONED);
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index 66cbe8a7a168..052a80373b1d 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -2699,7 +2699,8 @@ static int rt_fill_info(struct net *net, __be32 dst, __be32 src,
+ 	r->rtm_family	 = AF_INET;
+ 	r->rtm_dst_len	= 32;
+ 	r->rtm_src_len	= 0;
+-	r->rtm_tos	= fl4->flowi4_tos;
++	if (fl4)
++		r->rtm_tos	= fl4->flowi4_tos;
+ 	r->rtm_table	= table_id < 256 ? table_id : RT_TABLE_COMPAT;
+ 	if (nla_put_u32(skb, RTA_TABLE, table_id))
+ 		goto nla_put_failure;
+@@ -2727,7 +2728,7 @@ static int rt_fill_info(struct net *net, __be32 dst, __be32 src,
+ 	    nla_put_u32(skb, RTA_FLOW, rt->dst.tclassid))
+ 		goto nla_put_failure;
+ #endif
+-	if (!rt_is_input_route(rt) &&
++	if (fl4 && !rt_is_input_route(rt) &&
+ 	    fl4->saddr != src) {
+ 		if (nla_put_in_addr(skb, RTA_PREFSRC, fl4->saddr))
+ 			goto nla_put_failure;
+@@ -2767,36 +2768,40 @@ static int rt_fill_info(struct net *net, __be32 dst, __be32 src,
+ 	if (rtnetlink_put_metrics(skb, metrics) < 0)
+ 		goto nla_put_failure;
+ 
+-	if (fl4->flowi4_mark &&
+-	    nla_put_u32(skb, RTA_MARK, fl4->flowi4_mark))
+-		goto nla_put_failure;
+-
+-	if (!uid_eq(fl4->flowi4_uid, INVALID_UID) &&
+-	    nla_put_u32(skb, RTA_UID,
+-			from_kuid_munged(current_user_ns(), fl4->flowi4_uid)))
+-		goto nla_put_failure;
++	if (fl4) {
++		if (fl4->flowi4_mark &&
++		    nla_put_u32(skb, RTA_MARK, fl4->flowi4_mark))
++			goto nla_put_failure;
+ 
+-	error = rt->dst.error;
++		if (!uid_eq(fl4->flowi4_uid, INVALID_UID) &&
++		    nla_put_u32(skb, RTA_UID,
++				from_kuid_munged(current_user_ns(),
++						 fl4->flowi4_uid)))
++			goto nla_put_failure;
+ 
+-	if (rt_is_input_route(rt)) {
++		if (rt_is_input_route(rt)) {
+ #ifdef CONFIG_IP_MROUTE
+-		if (ipv4_is_multicast(dst) && !ipv4_is_local_multicast(dst) &&
+-		    IPV4_DEVCONF_ALL(net, MC_FORWARDING)) {
+-			int err = ipmr_get_route(net, skb,
+-						 fl4->saddr, fl4->daddr,
+-						 r, portid);
+-
+-			if (err <= 0) {
+-				if (err == 0)
+-					return 0;
+-				goto nla_put_failure;
+-			}
+-		} else
++			if (ipv4_is_multicast(dst) &&
++			    !ipv4_is_local_multicast(dst) &&
++			    IPV4_DEVCONF_ALL(net, MC_FORWARDING)) {
++				int err = ipmr_get_route(net, skb,
++							 fl4->saddr, fl4->daddr,
++							 r, portid);
++
++				if (err <= 0) {
++					if (err == 0)
++						return 0;
++					goto nla_put_failure;
++				}
++			} else
+ #endif
+-			if (nla_put_u32(skb, RTA_IIF, fl4->flowi4_iif))
+-				goto nla_put_failure;
++				if (nla_put_u32(skb, RTA_IIF, fl4->flowi4_iif))
++					goto nla_put_failure;
++		}
  	}
  
--	/* fib entries are never clones and ipv4 does not use prefix flag */
--	if (filter.flags & (RTM_F_PREFIX | RTM_F_CLONED))
-+	/* ipv4 does not use prefix flag */
-+	if (filter.flags & RTM_F_PREFIX)
- 		return skb->len;
++	error = rt->dst.error;
++
+ 	if (rtnl_put_cacheinfo(skb, &rt->dst, 0, expires, error) < 0)
+ 		goto nla_put_failure;
  
- 	if (filter.table_id) {
 -- 
 2.20.1
 
