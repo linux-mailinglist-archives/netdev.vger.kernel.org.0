@@ -2,24 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F9FA4BD88
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 18:06:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FF894BD8C
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 18:06:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729681AbfFSQGH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 12:06:07 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:42108 "EHLO mx1.redhat.com"
+        id S1729955AbfFSQGP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 12:06:15 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:35892 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726091AbfFSQGG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Jun 2019 12:06:06 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        id S1726518AbfFSQGP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Jun 2019 12:06:15 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 171BE3087945;
-        Wed, 19 Jun 2019 16:06:06 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 33FF26696C;
+        Wed, 19 Jun 2019 16:06:14 +0000 (UTC)
 Received: from warthog.procyon.org.uk (ovpn-120-57.rdu2.redhat.com [10.10.120.57])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A3AFE5D9E5;
-        Wed, 19 Jun 2019 16:06:01 +0000 (UTC)
-Subject: [PATCH 0/9] keys: Namespacing [ver #4]
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 09699608A7;
+        Wed, 19 Jun 2019 16:06:11 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+ Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+ Kingdom.
+ Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH 1/9] keys: Simplify key description management [ver #4]
 From:   David Howells <dhowells@redhat.com>
 To:     ebiederm@xmission.com, keyrings@vger.kernel.org
 Cc:     linux-cifs@vger.kernel.org, linux-nfs@vger.kernel.org,
@@ -27,127 +31,257 @@ Cc:     linux-cifs@vger.kernel.org, linux-nfs@vger.kernel.org,
         dhowells@redhat.com, dwalsh@redhat.com, vgoyal@redhat.com,
         linux-security-module@vger.kernel.org,
         linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Wed, 19 Jun 2019 17:06:00 +0100
-Message-ID: <156096036064.6697.2432500504898119675.stgit@warthog.procyon.org.uk>
+Date:   Wed, 19 Jun 2019 17:06:11 +0100
+Message-ID: <156096037132.6697.518054118891337103.stgit@warthog.procyon.org.uk>
+In-Reply-To: <156096036064.6697.2432500504898119675.stgit@warthog.procyon.org.uk>
+References: <156096036064.6697.2432500504898119675.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/unknown-version
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Wed, 19 Jun 2019 16:06:06 +0000 (UTC)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.38]); Wed, 19 Jun 2019 16:06:14 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Simplify key description management by cramming the word containing the
+length with the first few chars of the description also.  This simplifies
+the code that generates the index-key used by assoc_array.  It should speed
+up key searching a bit too.
 
-Here are some patches to make keys and keyrings more namespace aware.
-
-Firstly some miscellaneous patches to make the process easier:
-
- (1) Simplify key index_key handling so that the word-sized chunks
-     assoc_array requires don't have to be shifted about, making it easier
-     to add more bits into the key.
-
- (2) Cache the hash value in the key so that we don't have to calculate on
-     every key we examine during a search (it involves a bunch of
-     multiplications).
-
- (3) Allow keying_search() to search non-recursively.
-
-Then the main patches:
-
- (4) Make it so that keyring names are per-user_namespace from the point of
-     view of KEYCTL_JOIN_SESSION_KEYRING so that they're not accessible
-     cross-user_namespace.
-
-     keyctl_capabilities() shows KEYCTL_CAPS1_NS_KEYRING_NAME for this.
-
- (5) Move the user and user-session keyrings to the user_namespace rather
-     than the user_struct.  This prevents them propagating directly across
-     user_namespaces boundaries (ie. the KEY_SPEC_* flags will only pick
-     from the current user_namespace).
-
- (6) Make it possible to include the target namespace in which the key shall
-     operate in the index_key.  This will allow the possibility of multiple
-     keys with the same description, but different target domains to be held
-     in the same keyring.
-
-     keyctl_capabilities() shows KEYCTL_CAPS1_NS_KEY_TAG for this.
-
- (7) Make it so that keys are implicitly invalidated by removal of a domain
-     tag, causing them to be garbage collected.
-
- (8) Institute a network namespace domain tag that allows keys to be
-     differentiated by the network namespace in which they operate.  New keys
-     that are of a type marked 'KEY_TYPE_NET_DOMAIN' are assigned the network
-     domain in force when they are created.
-
- (9) Make it so that the desired network namespace can be handed down into the
-     request_key() mechanism.  This allows AFS, NFS, etc. to request keys
-     specific to the network namespace of the superblock.
-
-     This also means that the keys in the DNS record cache are thenceforth
-     namespaced, provided network filesystems pass the appropriate network
-     namespace down into dns_query().
-
-     For DNS, AFS and NFS are good; CIFS and Ceph are not.  Other cache
-     keyrings, such as idmapper keyrings, also need to set the domain tag -
-     for which they need access to the network namespace of the superblock.
-
-The patches can be found on the following branch:
-
-	https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/log/?h=keys-namespace
-
-David
+Signed-off-by: David Howells <dhowells@redhat.com>
 ---
-David Howells (9):
-      keys: Simplify key description management
-      keys: Cache the hash value to avoid lots of recalculation
-      keys: Add a 'recurse' flag for keyring searches
-      keys: Namespace keyring names
-      keys: Move the user and user-session keyrings to the user_namespace
-      keys: Include target namespace in match criteria
-      keys: Garbage collect keys for which the domain has been removed
-      keys: Network namespace domain tag
-      keys: Pass the network namespace into request_key mechanism
 
+ include/linux/key.h        |   14 ++++++++-
+ security/keys/internal.h   |    6 ++++
+ security/keys/key.c        |    2 +
+ security/keys/keyring.c    |   70 +++++++++++++-------------------------------
+ security/keys/persistent.c |    1 +
+ 5 files changed, 43 insertions(+), 50 deletions(-)
 
- Documentation/security/keys/core.rst        |   38 +++-
- Documentation/security/keys/request-key.rst |   29 ++-
- certs/blacklist.c                           |    2 
- crypto/asymmetric_keys/asymmetric_type.c    |    2 
- fs/afs/addr_list.c                          |    4 
- fs/afs/dynroot.c                            |    8 +
- fs/cifs/dns_resolve.c                       |    3 
- fs/nfs/dns_resolve.c                        |    3 
- fs/nfs/nfs4idmap.c                          |    2 
- include/linux/dns_resolver.h                |    3 
- include/linux/key-type.h                    |    3 
- include/linux/key.h                         |   81 ++++++++
- include/linux/sched/user.h                  |   14 -
- include/linux/user_namespace.h              |   12 +
- include/net/net_namespace.h                 |    3 
- include/uapi/linux/keyctl.h                 |    2 
- kernel/user.c                               |    8 -
- kernel/user_namespace.c                     |    9 -
- lib/digsig.c                                |    2 
- net/ceph/messenger.c                        |    3 
- net/core/net_namespace.c                    |   19 ++
- net/dns_resolver/dns_key.c                  |    1 
- net/dns_resolver/dns_query.c                |    7 +
- net/rxrpc/key.c                             |    6 -
- net/rxrpc/security.c                        |    2 
- security/integrity/digsig_asymmetric.c      |    4 
- security/keys/gc.c                          |    2 
- security/keys/internal.h                    |   10 +
- security/keys/key.c                         |    5 -
- security/keys/keyctl.c                      |    6 -
- security/keys/keyring.c                     |  263 +++++++++++++++------------
- security/keys/persistent.c                  |   10 +
- security/keys/proc.c                        |    3 
- security/keys/process_keys.c                |  262 +++++++++++++++++----------
- security/keys/request_key.c                 |   62 ++++--
- security/keys/request_key_auth.c            |    3 
- 36 files changed, 587 insertions(+), 309 deletions(-)
+diff --git a/include/linux/key.h b/include/linux/key.h
+index 4cd5669184f3..86ccc2d010f6 100644
+--- a/include/linux/key.h
++++ b/include/linux/key.h
+@@ -86,9 +86,20 @@ struct keyring_list;
+ struct keyring_name;
+ 
+ struct keyring_index_key {
++	union {
++		struct {
++#ifdef __LITTLE_ENDIAN /* Put desc_len at the LSB of x */
++			u8	desc_len;
++			char	desc[sizeof(long) - 1];	/* First few chars of description */
++#else
++			char	desc[sizeof(long) - 1];	/* First few chars of description */
++			u8	desc_len;
++#endif
++		};
++		unsigned long x;
++	};
+ 	struct key_type		*type;
+ 	const char		*description;
+-	size_t			desc_len;
+ };
+ 
+ union key_payload {
+@@ -202,6 +213,7 @@ struct key {
+ 	union {
+ 		struct keyring_index_key index_key;
+ 		struct {
++			unsigned long	len_desc;
+ 			struct key_type	*type;		/* type of key */
+ 			char		*description;
+ 		};
+diff --git a/security/keys/internal.h b/security/keys/internal.h
+index 3d5c08db74d2..ee71c72fc5f0 100644
+--- a/security/keys/internal.h
++++ b/security/keys/internal.h
+@@ -90,6 +90,12 @@ extern struct mutex key_construction_mutex;
+ extern wait_queue_head_t request_key_conswq;
+ 
+ 
++static inline void key_set_index_key(struct keyring_index_key *index_key)
++{
++	size_t n = min_t(size_t, index_key->desc_len, sizeof(index_key->desc));
++	memcpy(index_key->desc, index_key->description, n);
++}
++
+ extern struct key_type *key_type_lookup(const char *type);
+ extern void key_type_put(struct key_type *ktype);
+ 
+diff --git a/security/keys/key.c b/security/keys/key.c
+index e792d65c0af8..0a3828f15f57 100644
+--- a/security/keys/key.c
++++ b/security/keys/key.c
+@@ -285,6 +285,7 @@ struct key *key_alloc(struct key_type *type, const char *desc,
+ 	key->index_key.description = kmemdup(desc, desclen + 1, GFP_KERNEL);
+ 	if (!key->index_key.description)
+ 		goto no_memory_3;
++	key_set_index_key(&key->index_key);
+ 
+ 	refcount_set(&key->usage, 1);
+ 	init_rwsem(&key->sem);
+@@ -868,6 +869,7 @@ key_ref_t key_create_or_update(key_ref_t keyring_ref,
+ 			goto error_free_prep;
+ 	}
+ 	index_key.desc_len = strlen(index_key.description);
++	key_set_index_key(&index_key);
+ 
+ 	ret = __key_link_lock(keyring, &index_key);
+ 	if (ret < 0) {
+diff --git a/security/keys/keyring.c b/security/keys/keyring.c
+index afa6d4024c67..ebf52077598f 100644
+--- a/security/keys/keyring.c
++++ b/security/keys/keyring.c
+@@ -179,9 +179,9 @@ static unsigned long hash_key_type_and_desc(const struct keyring_index_key *inde
+ 	int n, desc_len = index_key->desc_len;
+ 
+ 	type = (unsigned long)index_key->type;
+-
+ 	acc = mult_64x32_and_fold(type, desc_len + 13);
+ 	acc = mult_64x32_and_fold(acc, 9207);
++
+ 	for (;;) {
+ 		n = desc_len;
+ 		if (n <= 0)
+@@ -215,23 +215,13 @@ static unsigned long hash_key_type_and_desc(const struct keyring_index_key *inde
+ /*
+  * Build the next index key chunk.
+  *
+- * On 32-bit systems the index key is laid out as:
+- *
+- *	0	4	5	9...
+- *	hash	desclen	typeptr	desc[]
+- *
+- * On 64-bit systems:
+- *
+- *	0	8	9	17...
+- *	hash	desclen	typeptr	desc[]
+- *
+  * We return it one word-sized chunk at a time.
+  */
+ static unsigned long keyring_get_key_chunk(const void *data, int level)
+ {
+ 	const struct keyring_index_key *index_key = data;
+ 	unsigned long chunk = 0;
+-	long offset = 0;
++	const u8 *d;
+ 	int desc_len = index_key->desc_len, n = sizeof(chunk);
+ 
+ 	level /= ASSOC_ARRAY_KEY_CHUNK_SIZE;
+@@ -239,33 +229,23 @@ static unsigned long keyring_get_key_chunk(const void *data, int level)
+ 	case 0:
+ 		return hash_key_type_and_desc(index_key);
+ 	case 1:
+-		return ((unsigned long)index_key->type << 8) | desc_len;
++		return index_key->x;
+ 	case 2:
+-		if (desc_len == 0)
+-			return (u8)((unsigned long)index_key->type >>
+-				    (ASSOC_ARRAY_KEY_CHUNK_SIZE - 8));
+-		n--;
+-		offset = 1;
+-		/* fall through */
++		return (unsigned long)index_key->type;
+ 	default:
+-		offset += sizeof(chunk) - 1;
+-		offset += (level - 3) * sizeof(chunk);
+-		if (offset >= desc_len)
++		level -= 3;
++		if (desc_len <= sizeof(index_key->desc))
+ 			return 0;
+-		desc_len -= offset;
++
++		d = index_key->description + sizeof(index_key->desc);
++		d += level * sizeof(long);
++		desc_len -= sizeof(index_key->desc);
+ 		if (desc_len > n)
+ 			desc_len = n;
+-		offset += desc_len;
+ 		do {
+ 			chunk <<= 8;
+-			chunk |= ((u8*)index_key->description)[--offset];
++			chunk |= *d++;
+ 		} while (--desc_len > 0);
+-
+-		if (level == 2) {
+-			chunk <<= 8;
+-			chunk |= (u8)((unsigned long)index_key->type >>
+-				      (ASSOC_ARRAY_KEY_CHUNK_SIZE - 8));
+-		}
+ 		return chunk;
+ 	}
+ }
+@@ -304,39 +284,28 @@ static int keyring_diff_objects(const void *object, const void *data)
+ 	seg_b = hash_key_type_and_desc(b);
+ 	if ((seg_a ^ seg_b) != 0)
+ 		goto differ;
++	level += ASSOC_ARRAY_KEY_CHUNK_SIZE / 8;
+ 
+ 	/* The number of bits contributed by the hash is controlled by a
+ 	 * constant in the assoc_array headers.  Everything else thereafter we
+ 	 * can deal with as being machine word-size dependent.
+ 	 */
+-	level += ASSOC_ARRAY_KEY_CHUNK_SIZE / 8;
+-	seg_a = a->desc_len;
+-	seg_b = b->desc_len;
++	seg_a = a->x;
++	seg_b = b->x;
+ 	if ((seg_a ^ seg_b) != 0)
+ 		goto differ;
++	level += sizeof(unsigned long);
+ 
+ 	/* The next bit may not work on big endian */
+-	level++;
+ 	seg_a = (unsigned long)a->type;
+ 	seg_b = (unsigned long)b->type;
+ 	if ((seg_a ^ seg_b) != 0)
+ 		goto differ;
+-
+ 	level += sizeof(unsigned long);
+-	if (a->desc_len == 0)
+-		goto same;
+ 
+-	i = 0;
+-	if (((unsigned long)a->description | (unsigned long)b->description) &
+-	    (sizeof(unsigned long) - 1)) {
+-		do {
+-			seg_a = *(unsigned long *)(a->description + i);
+-			seg_b = *(unsigned long *)(b->description + i);
+-			if ((seg_a ^ seg_b) != 0)
+-				goto differ_plus_i;
+-			i += sizeof(unsigned long);
+-		} while (i < (a->desc_len & (sizeof(unsigned long) - 1)));
+-	}
++	i = sizeof(a->desc);
++	if (a->desc_len <= i)
++		goto same;
+ 
+ 	for (; i < a->desc_len; i++) {
+ 		seg_a = *(unsigned char *)(a->description + i);
+@@ -662,6 +631,9 @@ static bool search_nested_keyrings(struct key *keyring,
+ 	BUG_ON((ctx->flags & STATE_CHECKS) == 0 ||
+ 	       (ctx->flags & STATE_CHECKS) == STATE_CHECKS);
+ 
++	if (ctx->index_key.description)
++		key_set_index_key(&ctx->index_key);
++
+ 	/* Check to see if this top-level keyring is what we are looking for
+ 	 * and whether it is valid or not.
+ 	 */
+diff --git a/security/keys/persistent.c b/security/keys/persistent.c
+index d0cb5b32eff7..fc29ec59efa7 100644
+--- a/security/keys/persistent.c
++++ b/security/keys/persistent.c
+@@ -87,6 +87,7 @@ static long key_get_persistent(struct user_namespace *ns, kuid_t uid,
+ 	index_key.type = &key_type_keyring;
+ 	index_key.description = buf;
+ 	index_key.desc_len = sprintf(buf, "_persistent.%u", from_kuid(ns, uid));
++	key_set_index_key(&index_key);
+ 
+ 	if (ns->persistent_keyring_register) {
+ 		reg_ref = make_key_ref(ns->persistent_keyring_register, true);
 
