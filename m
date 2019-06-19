@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F38494C3A3
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 00:32:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBB814C3A4
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 00:32:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730435AbfFSWcR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 18:32:17 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:34208 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730182AbfFSWcP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 18:32:15 -0400
-Received: by mail-pf1-f196.google.com with SMTP id c85so441860pfc.1
-        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 15:32:15 -0700 (PDT)
+        id S1730564AbfFSWcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 18:32:19 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:45586 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730259AbfFSWcQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 18:32:16 -0400
+Received: by mail-pg1-f195.google.com with SMTP id s21so421046pga.12
+        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 15:32:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=UtXeAU0owx71Zr1h7JGJYmNFV8PORkz4rS8g11qc07g=;
-        b=rIdl9wATc5QuJqo0iIr9w3OwayT7lC7QaTNgAEq2UEdxAUaBSRL6pgOZ7vmMr8hJsx
-         3iv8Kq5udC4uVCPSW2DlZft/AXpE0SO6pnaI9U260indjMwvnpGLdz819h4Vd7hwB/j1
-         aMdGscakUC+eQUoPbSXU0B/9hmPdt+6t6dVEkvCrWkiWS/kvIteaz5cJv/QzFGY4jG/D
-         ewLka2nn4nn9gz9YtZaZeUpm5dlnNBnlU14W5xGiUKC3mxSGN88J7m7J35wMJHGBU4RV
-         4WYE/4/DtBHcDlBQ2E0YEOs4jnm1l3mpCm3OWZPn50PpxkBQBqzpgBOb0FRVy161uNJ0
-         teDg==
+        bh=2F/7HrSaq4HN4leZCeGphvq0LzpgNEDY/DjINVDcoZ8=;
+        b=TdjyCxLKljYJgdc3avWSMPBdR3f/4Rd6iJpo9SpTQe1k7YBmtwTHjSDr2+WTf1HjOh
+         ciqeBJPzZ3dAZ+FLAR4qRk6TWZWI6hgzI7v+xSyQNJC0wGpMqQjDUNddyuwek+m+z1cE
+         1rkgLIYUTECr6wBGP3cAIvvp+5ptMjL/HDiYrgvoO8xFSFXQ1DPx9s6zUQDSgUbqdO1B
+         l1g7CBA+75hYKABOWfpvSo9mZdecfbFe+4Uz+rVYSgVJWxrvq7cNGaEgOeMnFbJXoObq
+         KmZU4jeAItFAZMLxvILzhjMOUZ6q3y7kRxFk/Rxrj3aCOjxjFUiK+meC6ez9l+pP1puS
+         RAXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=UtXeAU0owx71Zr1h7JGJYmNFV8PORkz4rS8g11qc07g=;
-        b=SmQq4wxYtBz9fZ6P1sboQi0IBmmWxj+qcl5Z8bipCXv9mQAVz6r0WhQt69IOnuOhl5
-         bm4OGCWDI1pduSlidyabD+N3reZ+/W+CJ9SJf8Hdl5VdbS+8uqxDgdK0DZMV4DkVbtlp
-         jlVhFfQcrjVjLwC256lY+KURNZTlbfOP27BrM211Z/lZ7SZzwETdoMSA5MBmmhC0c0Ev
-         W7DpT+hLfTHE6Gh22fN5EXdyIpijlklWV1LLnnHK440JLPLbxGauablzmMwF9LKKTZOQ
-         benJFebcIsjyaHgbIVzMq+zc+vbpVMUZbuolQ9wkUshkUBzQ2cnicJH2BwjbCr/FOHZs
-         6nvQ==
-X-Gm-Message-State: APjAAAVlJJ0egZao0DtyJem37P+G5157UJH3wSNTlzGiCtu8qvTvrrvZ
-        SSKX+O98/xwo02qRW/ACORI=
-X-Google-Smtp-Source: APXvYqz6rFKEL2TUtZ3/6scnDRSKH4udbCrXQkvEFux7C8+d81+E1eGZA56ewT/3q+3uwqHbBKOehA==
-X-Received: by 2002:a17:90a:208e:: with SMTP id f14mr13825998pjg.57.1560983534780;
-        Wed, 19 Jun 2019 15:32:14 -0700 (PDT)
+        bh=2F/7HrSaq4HN4leZCeGphvq0LzpgNEDY/DjINVDcoZ8=;
+        b=h+Oz28rVKqcNxNNBTk8ctO2ADUkDsa3siXUY5J3PozXUGq+rvNEX3O9ZZPCPVwawsC
+         +6PkKCp6/En/0/eDP4Vkbt/fb3VR8ZYehtsVFEKwZniiffNaxiZ1nYp7rG7XNDKJkyJh
+         xdt23PtYBV/nDPqDektSJC6LnREqnx/swtck+ccThN8uB+ILvbrMNbKiT8g+zNI3tikQ
+         APCcoIvAQ1In2EyJqjiDTGMKlidOYss6AZyqL3OqaJ+srCw5xE32dOtfNgv+yRj/Ck2W
+         w1j8EorkP3C620ueFjBCMXTtFEARh/s6OLDlo6y1hJ2+g37KlpfsIWalRNy5j9JJt3sP
+         ibTA==
+X-Gm-Message-State: APjAAAV3AqEtW1YSCqWAQcNDwNUljISgLNR4Jf/jJ9hdXJ4fTF1DIZH3
+        8q0ExyWL0mesO4Kepw7VLug=
+X-Google-Smtp-Source: APXvYqzKlFLjUHKssMHCPrxwAPvpEVn0K94MJzc4K+cYQAOLEkApGJKyYGgj2Auf6VXXenH4xN0yPg==
+X-Received: by 2002:a17:90b:d8b:: with SMTP id bg11mr13647863pjb.30.1560983535930;
+        Wed, 19 Jun 2019 15:32:15 -0700 (PDT)
 Received: from weiwan0.svl.corp.google.com ([2620:15c:2c4:201:9310:64cb:677b:dcba])
-        by smtp.gmail.com with ESMTPSA id g8sm20037687pgd.29.2019.06.19.15.32.13
+        by smtp.gmail.com with ESMTPSA id g8sm20037687pgd.29.2019.06.19.15.32.14
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 19 Jun 2019 15:32:14 -0700 (PDT)
+        Wed, 19 Jun 2019 15:32:15 -0700 (PDT)
 From:   Wei Wang <tracywwnj@gmail.com>
 To:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org
 Cc:     Eric Dumazet <edumazet@google.com>,
         Mahesh Bandewar <maheshb@google.com>,
         Martin KaFai Lau <kafai@fb.com>,
         David Ahern <dsahern@gmail.com>, Wei Wang <weiwan@google.com>
-Subject: [PATCH v2 net-next 3/5] ipv6: honor RT6_LOOKUP_F_DST_NOREF in rule lookup logic
-Date:   Wed, 19 Jun 2019 15:31:56 -0700
-Message-Id: <20190619223158.35829-4-tracywwnj@gmail.com>
+Subject: [PATCH v2 net-next 4/5] ipv6: convert rx data path to not take refcnt on dst
+Date:   Wed, 19 Jun 2019 15:31:57 -0700
+Message-Id: <20190619223158.35829-5-tracywwnj@gmail.com>
 X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
 In-Reply-To: <20190619223158.35829-1-tracywwnj@gmail.com>
 References: <20190619223158.35829-1-tracywwnj@gmail.com>
@@ -65,80 +65,50 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Wei Wang <weiwan@google.com>
 
-This patch specifically converts the rule lookup logic to honor this
-flag and not release refcnt when traversing each rule and calling
-lookup() on each routing table.
-Similar to previous patch, we also need some special handling of dst
-entries in uncached list because there is always 1 refcnt taken for them
-even if RT6_LOOKUP_F_DST_NOREF flag is set.
+ip6_route_input() is the key function to do the route lookup in the
+rx data path. All the callers to this function are already holding rcu
+lock. So it is fairly easy to convert it to not take refcnt on the dst:
+We pass in flag RT6_LOOKUP_F_DST_NOREF and do skb_dst_set_noref().
+This saves a few atomic inc or dec operations and should boost
+performance overall.
+This also makes the logic more aligned with v4.
 
 Signed-off-by: Wei Wang <weiwan@google.com>
+Acked-by: Eric Dumazet <edumazet@google.com>
+Acked-by: Mahesh Bandewar <maheshb@google.com>
 ---
- include/net/ip6_route.h | 10 ++++++++++
- net/ipv6/fib6_rules.c   | 12 +++++++-----
- 2 files changed, 17 insertions(+), 5 deletions(-)
+ net/ipv6/route.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/ip6_route.h b/include/net/ip6_route.h
-index 82bced2fc1e3..0709835c01ad 100644
---- a/include/net/ip6_route.h
-+++ b/include/net/ip6_route.h
-@@ -94,6 +94,16 @@ static inline struct dst_entry *ip6_route_output(struct net *net,
- 	return ip6_route_output_flags(net, sk, fl6, 0);
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 33dc8af9a4bf..d2b287635aab 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -2375,11 +2375,12 @@ u32 rt6_multipath_hash(const struct net *net, const struct flowi6 *fl6,
+ 	return mhash >> 1;
  }
  
-+/* Only conditionally release dst if flags indicates
-+ * !RT6_LOOKUP_F_DST_NOREF or dst is in uncached_list.
-+ */
-+static inline void ip6_rt_put_flags(struct rt6_info *rt, int flags)
-+{
-+	if (!(flags & RT6_LOOKUP_F_DST_NOREF) ||
-+	    !list_empty(&rt->rt6i_uncached))
-+		ip6_rt_put(rt);
-+}
-+
- struct dst_entry *ip6_route_lookup(struct net *net, struct flowi6 *fl6,
- 				   const struct sk_buff *skb, int flags);
- struct rt6_info *ip6_pol_route(struct net *net, struct fib6_table *table,
-diff --git a/net/ipv6/fib6_rules.c b/net/ipv6/fib6_rules.c
-index bcfae13409b5..d22b6c140f23 100644
---- a/net/ipv6/fib6_rules.c
-+++ b/net/ipv6/fib6_rules.c
-@@ -113,14 +113,15 @@ struct dst_entry *fib6_rule_lookup(struct net *net, struct flowi6 *fl6,
- 		rt = lookup(net, net->ipv6.fib6_local_tbl, fl6, skb, flags);
- 		if (rt != net->ipv6.ip6_null_entry && rt->dst.error != -EAGAIN)
- 			return &rt->dst;
--		ip6_rt_put(rt);
-+		ip6_rt_put_flags(rt, flags);
- 		rt = lookup(net, net->ipv6.fib6_main_tbl, fl6, skb, flags);
- 		if (rt->dst.error != -EAGAIN)
- 			return &rt->dst;
--		ip6_rt_put(rt);
-+		ip6_rt_put_flags(rt, flags);
- 	}
- 
--	dst_hold(&net->ipv6.ip6_null_entry->dst);
-+	if (!(flags & RT6_LOOKUP_F_DST_NOREF))
-+		dst_hold(&net->ipv6.ip6_null_entry->dst);
- 	return &net->ipv6.ip6_null_entry->dst;
++/* Called with rcu held */
+ void ip6_route_input(struct sk_buff *skb)
+ {
+ 	const struct ipv6hdr *iph = ipv6_hdr(skb);
+ 	struct net *net = dev_net(skb->dev);
+-	int flags = RT6_LOOKUP_F_HAS_SADDR;
++	int flags = RT6_LOOKUP_F_HAS_SADDR | RT6_LOOKUP_F_DST_NOREF;
+ 	struct ip_tunnel_info *tun_info;
+ 	struct flowi6 fl6 = {
+ 		.flowi6_iif = skb->dev->ifindex,
+@@ -2401,8 +2402,8 @@ void ip6_route_input(struct sk_buff *skb)
+ 	if (unlikely(fl6.flowi6_proto == IPPROTO_ICMPV6))
+ 		fl6.mp_hash = rt6_multipath_hash(net, &fl6, skb, flkeys);
+ 	skb_dst_drop(skb);
+-	skb_dst_set(skb,
+-		    ip6_route_input_lookup(net, skb->dev, &fl6, skb, flags));
++	skb_dst_set_noref(skb, ip6_route_input_lookup(net, skb->dev,
++						      &fl6, skb, flags));
  }
  
-@@ -237,13 +238,14 @@ static int __fib6_rule_action(struct fib_rule *rule, struct flowi *flp,
- 			goto out;
- 	}
- again:
--	ip6_rt_put(rt);
-+	ip6_rt_put_flags(rt, flags);
- 	err = -EAGAIN;
- 	rt = NULL;
- 	goto out;
- 
- discard_pkt:
--	dst_hold(&rt->dst);
-+	if (!(flags & RT6_LOOKUP_F_DST_NOREF))
-+		dst_hold(&rt->dst);
- out:
- 	res->rt6 = rt;
- 	return err;
+ static struct rt6_info *ip6_pol_route_output(struct net *net,
 -- 
 2.22.0.410.gd8fdbe21b5-goog
 
