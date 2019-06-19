@@ -2,125 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B2C704C404
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 01:16:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 505834C40E
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 01:22:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730758AbfFSXQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 19:16:30 -0400
-Received: from ushosting.nmnhosting.com ([66.55.73.32]:42028 "EHLO
-        ushosting.nmnhosting.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726251AbfFSXQ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 19:16:29 -0400
-Received: from mail2.nmnhosting.com (unknown [202.169.106.97])
-        by ushosting.nmnhosting.com (Postfix) with ESMTPS id 5F37E2DC005B;
-        Wed, 19 Jun 2019 19:16:28 -0400 (EDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=d-silva.org;
-        s=201810a; t=1560986188;
-        bh=P+nFrCYIAy9nbAT3inDjyh5Nu1AGlpkuYDjYYSTo8SU=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=UMKHysbwL4zdfy50KqutmgBEIg3sB7A1AG+8ItwZQtNEjbw3/kefwvZoa3HJ/qPue
-         FtHy3iQpmn+NaSFA3Mu2gOfCMETJuOCnHShThOrTrRi0524godGZCgjbLwEXdIrujV
-         xDt+bXPG551xLU30DowKCzCX4sh2ZLCYlpwKny3nSfu6TdTO04XxEEAerz4PtGaObB
-         mK5WkSsuK3ES4PAPxgZb+pSYtoFroMpH18T3PLybvLGSjfjyn/CtIMs+blM8XYmdPJ
-         TvkZW6Ca8pzYT9RsBfJRAJWjf4qfNG6J0j+xJvEaD7SP/MIMGo1VZ5d/zw4b3FdeYt
-         JetXAd65Zd6yavahdde3VtkKoryPECl8+glQZ+N2eRG9ycQ1RafCdpTqdv72F0hGkL
-         4apz6zp0SeF0J1KA9qT4u68PJKa7dlMEnKXEomd5VE+2hLj+H2XT6HltLJdB5+pK9G
-         cMe1+bLK+ayAWxIXuyZ1/r/oJ5pzAFraInvomTVKBkCfLFy8CdlSIihUmPfej/4psJ
-         72/lVeYRJl+IifxxJ9hEA9A+QWlY8W986ROsAQ5xOTxmaRzXMnnZRdFLVPZt5axFGD
-         EQ+IOd3b5ZUWjk3U7T3wAvcchJQaqLNw/Njxg2yMVkYsKSYnAMuX4DYn+A7LJX3oLF
-         sv3nSS3HZsRxp6mS1j36fWkI=
-Received: from adsilva.ozlabs.ibm.com (static-82-10.transact.net.au [122.99.82.10] (may be forged))
-        (authenticated bits=0)
-        by mail2.nmnhosting.com (8.15.2/8.15.2) with ESMTPSA id x5JNFxcT078663
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Thu, 20 Jun 2019 09:16:14 +1000 (AEST)
-        (envelope-from alastair@d-silva.org)
-Message-ID: <c68cb819257f251cbb66f8998a95c31cebe2d72e.camel@d-silva.org>
-Subject: Re: [PATCH v3 0/7] Hexdump Enhancements
-From:   "Alastair D'Silva" <alastair@d-silva.org>
-To:     Joe Perches <joe@perches.com>
-Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Karsten Keil <isdn@linux-pingi.de>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Stanislaw Gruszka <sgruszka@redhat.com>,
-        Benson Leung <bleung@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-fsdevel@vger.kernel.org
-Date:   Thu, 20 Jun 2019 09:15:58 +1000
-In-Reply-To: <9a000734375c0801fc16b71f4be1235f9b857772.camel@perches.com>
-References: <20190617020430.8708-1-alastair@au1.ibm.com>
-         <9a000734375c0801fc16b71f4be1235f9b857772.camel@perches.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.32.2 (3.32.2-1.fc30) 
+        id S1727124AbfFSXVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 19:21:41 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:45164 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726251AbfFSXVl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 19:21:41 -0400
+Received: by mail-io1-f65.google.com with SMTP id e3so1481253ioc.12
+        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 16:21:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=d3hmDUmXI7PB3F2/jxEksOSHFq1xVZ3WVny9rGmWBZ0=;
+        b=UIeOPHNvK9WGuVslx0qodX78+E7pd+flL3J/dE+dPnz8iunybNx97oZH8UT0n1Xejj
+         5LMhUVrOfindEL+CvC3HtH9Xy0F0ZvIKkbfYltsfyOxtesAwuMcAKGEgSZX91+Tes0OT
+         finYw5mN2f9aRUSpw3LgrmLnSOzHRO3QvesL8lp4fW3wWX8D1zq9Uhs8XoO6v0QElpiD
+         wgMQA9HLBb7ZnpMAWnofujuKWmO4pgdPco55g4Msz8apQmLh5U3KNyiUN7ZRnFABh+oI
+         chdlCbAe0Z4uT6rBoZwR3fg37tfjVbVvDj/fJOsGS0/Dvp86oWnz9L1kuxgVO3rz6Qro
+         E0FQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=d3hmDUmXI7PB3F2/jxEksOSHFq1xVZ3WVny9rGmWBZ0=;
+        b=hg3QIr4l6eUHo6OfBmLgHd69VmLa6NEg7cbo+Y9CFVBE8CW68fHTUVIaq39rGwbPAF
+         9rbKN6d9Pakvk1BqNI/llBi/VYDkC0kTM3Z8XoIkHS0NuTZ2uofc1WcwmI35jB5oWw1V
+         3nHCcPf++QJQDZfQW+vyVlI2O9lIxkgwouCUg4fMNGJ0jjyR5ltpM+r60bN/2a3OD2o1
+         2zb0UE4FLswSHIoOofWCmyD84d4374lrfwEEVX4g5lV6RPXF+HAbrp7hBEx6nQbdduDE
+         RoT3gORyjC1Q0NAr46L2kNg7xFNJYVV4I07Z/uaTFN5sD6nuRZj9r9Jyk003UNIIlW8g
+         85jg==
+X-Gm-Message-State: APjAAAXtFgw3WE0HHc5wWnOc8XPOmmjF4/UPO3nUdWRsJlKA3uBf+WsG
+        U7aPZryH4N3w8mPD4UJU6tQ=
+X-Google-Smtp-Source: APXvYqxOPxtAtXyFXfhesiG6s5RbSYJyx8yEODS067hzdXajQXTFTfJThtmVSsnaUQt+MJtN4UZ38g==
+X-Received: by 2002:a02:b050:: with SMTP id q16mr10368707jah.120.1560986500707;
+        Wed, 19 Jun 2019 16:21:40 -0700 (PDT)
+Received: from ?IPv6:2601:284:8200:5cfb:60fa:7b0e:5ad7:3d30? ([2601:284:8200:5cfb:60fa:7b0e:5ad7:3d30])
+        by smtp.googlemail.com with ESMTPSA id 20sm20143692iog.62.2019.06.19.16.21.39
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 19 Jun 2019 16:21:39 -0700 (PDT)
+Subject: Re: [PATCH v2 net-next 5/5] ipv6: convert major tx path to use
+ RT6_LOOKUP_F_DST_NOREF
+To:     Wei Wang <tracywwnj@gmail.com>, David Miller <davem@davemloft.net>,
+        netdev@vger.kernel.org
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Martin KaFai Lau <kafai@fb.com>, Wei Wang <weiwan@google.com>
+References: <20190619223158.35829-1-tracywwnj@gmail.com>
+ <20190619223158.35829-6-tracywwnj@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <c0860def-4b20-610f-3fde-f9601eb1600e@gmail.com>
+Date:   Wed, 19 Jun 2019 17:21:38 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
+In-Reply-To: <20190619223158.35829-6-tracywwnj@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail2.nmnhosting.com [10.0.1.20]); Thu, 20 Jun 2019 09:16:24 +1000 (AEST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2019-06-19 at 09:31 -0700, Joe Perches wrote:
-> On Mon, 2019-06-17 at 12:04 +1000, Alastair D'Silva wrote:
-> > From: Alastair D'Silva <alastair@d-silva.org>
-> > 
-> > Apologies for the large CC list, it's a heads up for those
-> > responsible
-> > for subsystems where a prototype change in generic code causes a
-> > change
-> > in those subsystems.
-> > 
-> > This series enhances hexdump.
-> 
-> Still not a fan of these patches.
+On 6/19/19 4:31 PM, Wei Wang wrote:
+> diff --git a/include/net/l3mdev.h b/include/net/l3mdev.h
+> index e942372b077b..d8c37317bb86 100644
+> --- a/include/net/l3mdev.h
+> +++ b/include/net/l3mdev.h
+> @@ -31,8 +31,9 @@ struct l3mdev_ops {
+>  					  u16 proto);
+>  
+>  	/* IPv6 ops */
+> -	struct dst_entry * (*l3mdev_link_scope_lookup)(const struct net_device *dev,
+> -						 struct flowi6 *fl6);
+> +	struct dst_entry * (*l3mdev_link_scope_lookup_noref)(
+> +					    const struct net_device *dev,
+> +					    struct flowi6 *fl6);
 
-I'm afraid there's not too much action I can take on that, I'm happy to
-address specific issues though.
-
-> 
-> > These improve the readability of the dumped data in certain
-> > situations
-> > (eg. wide terminals are available, many lines of empty bytes exist,
-> > etc).
-> 
-> Changing hexdump's last argument from bool to int is odd.
-> 
-
-Think of it as replacing a single boolean with many booleans.
-
-> Perhaps a new function should be added instead of changing
-> the existing hexdump.
-> 
-
-There's only a handful of consumers, I don't think there is a value-add 
-in creating more wrappers vs updating the existing callers.
-
--- 
-Alastair D'Silva           mob: 0423 762 819
-skype: alastair_dsilva    
-Twitter: @EvilDeece
-blog: http://alastair.d-silva.org
-
-
+I would prefer to add a comment about not taking a references vs adding
+the _noref extension. There is only 1 user for 1 context and the name
+length is getting out of hand (as evidenced by the line wrapping below).
