@@ -2,202 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 95CD74BF41
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 19:06:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E39064BF46
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 19:06:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726197AbfFSRGD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 13:06:03 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:35201 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726091AbfFSRGD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 13:06:03 -0400
-Received: by mail-wm1-f66.google.com with SMTP id c6so276570wml.0
-        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 10:06:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brauner.io; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zeXh/Ro65LQc5uvcve+gyhUQ9cliS1x+BAON+3PoZgM=;
-        b=QpxpoPeI2rvNksq0DDfgSyQsu765Y60qMh131MvhLuak/kzzJ/V5ZipZb/EJKvkhVx
-         WvL+TLFveZES9V+bCHENdOZsccOSBwzybEPXR0ExDNxWDukFj/CypZ73DdtJ9u1EhA6V
-         5IReu9oCVW53ZEVhczLxKkuin7uOkkIBwaUmaP7WhhzDHqqtwELxk1f4EgKQ3iBWQKNK
-         U22JbFD36KlZDdYqReIf2wJf/suhY8rj75X08UABX+GORkEdgse6P6J7E2K6LQY/FH8k
-         Qw64SaVd92QoKgNegn10FnHC0zPkSjZ/5kBc+5yFF30ynK81Ez5RqovFo7JyB2+sUGdP
-         jyGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zeXh/Ro65LQc5uvcve+gyhUQ9cliS1x+BAON+3PoZgM=;
-        b=UCx123CpWnUH4uy7qhcMGX+Q91vMhohTNP96DafzbuNdj0dv3asLPqvla7DHGxcJ0H
-         MgjknUXsF+Tki4EMxsMgHyRRyFZorJCzdeXXrFbQbQ+dPmJr4JGSQVYGFi6PEVczEWOU
-         2PbkijKl+Xw1IQ6LOXM2MCmWBnXTV5POkgjZbEYdSi+AbFgaogNPx5wz6BmD9jf7t2yQ
-         qCTd08aqvRt0ZIUl3NDoyh0w8ipg53tz5GmnnSGjgCHXe9DPXFEuHGEZyuyvIxJMrdJR
-         TQv6DdQ9JTdLdczjvLSN0Os2EPku3Tv7eifCH4/nLYEBmvnJT0qvVOEvGbu0jG4lfYbS
-         LNeA==
-X-Gm-Message-State: APjAAAUiT+59nfzh++9oWUQLhO/w41ilQNBazTQ6rUED4FxSNu4xTn+g
-        xjNBgpDKAQLQNF54XK8bWx/LNg==
-X-Google-Smtp-Source: APXvYqyEuwcoiOYRwwHbfn9qOJfacaKslCWAXjb9fgbsjM8Qm+62s15ZI3aXa38T0jo+s+a9e90TIw==
-X-Received: by 2002:a1c:b757:: with SMTP id h84mr9711003wmf.127.1560963960192;
-        Wed, 19 Jun 2019 10:06:00 -0700 (PDT)
-Received: from localhost.localdomain ([212.91.227.56])
-        by smtp.gmail.com with ESMTPSA id 35sm2940609wrj.87.2019.06.19.10.05.58
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 19 Jun 2019 10:05:59 -0700 (PDT)
-From:   Christian Brauner <christian@brauner.io>
-To:     syzbot+43a3fa52c0d9c5c94f41@syzkaller.appspotmail.com,
-        pablo@netfilter.org
-Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, a.hajda@samsung.com,
-        airlied@linux.ie, airlied@redhat.com, alexander.deucher@amd.com,
-        bridge@lists.linux-foundation.org, christian.koenig@amd.com,
-        coreteam@netfilter.org, daniel@ffwll.ch, davem@davemloft.net,
-        dri-devel@lists.freedesktop.org, enric.balletbo@collabora.com,
-        fw@strlen.de, harry.wentland@amd.com, heiko@sntech.de,
-        intel-gfx@lists.freedesktop.org, jani.nikula@linux.intel.com,
-        jerry.zhang@amd.com, jonas@kwiboo.se,
-        joonas.lahtinen@linux.intel.com, kadlec@netfilter.org,
-        laurent.pinchart@ideasonboard.com,
-        maarten.lankhorst@linux.intel.com, marc.zyngier@arm.com,
-        maxime.ripard@bootlin.com, narmstrong@baylibre.com,
-        nikolay@cumulusnetworks.com, patrik.r.jakobsson@gmail.com,
-        rodrigo.vivi@intel.com, roopa@cumulusnetworks.com,
-        sam@ravnborg.org, sean@poorly.run, sfr@canb.auug.org.au,
-        syzkaller-bugs@googlegroups.com,
-        Christian Brauner <christian@brauner.io>
-Subject: [PATCH net-next] br_netfilter: prevent UAF in brnf_exit_net()
-Date:   Wed, 19 Jun 2019 19:05:47 +0200
-Message-Id: <20190619170547.6290-1-christian@brauner.io>
-X-Mailer: git-send-email 2.21.0
+        id S1726839AbfFSRGs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 13:06:48 -0400
+Received: from mail.us.es ([193.147.175.20]:58030 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726143AbfFSRGs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Jun 2019 13:06:48 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 26186C1DED
+        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 19:06:46 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 14E57DA705
+        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 19:06:46 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 0A23BDA708; Wed, 19 Jun 2019 19:06:46 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id F3B7CDA705;
+        Wed, 19 Jun 2019 19:06:43 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Wed, 19 Jun 2019 19:06:43 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id D05B44265A31;
+        Wed, 19 Jun 2019 19:06:43 +0200 (CEST)
+Date:   Wed, 19 Jun 2019 19:06:43 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     wenxu@ucloud.cn
+Cc:     fw@strlen.de, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 2/2 nf-next] netfilter: nft_meta: Add NFT_META_BRI_VLAN
+ support
+Message-ID: <20190619170643.7gw4ohaoogqqybua@salvia>
+References: <1560928585-18352-1-git-send-email-wenxu@ucloud.cn>
+ <1560928585-18352-2-git-send-email-wenxu@ucloud.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1560928585-18352-2-git-send-email-wenxu@ucloud.cn>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Prevent a UAF in brnf_exit_net().
+On Wed, Jun 19, 2019 at 03:16:25PM +0800, wenxu@ucloud.cn wrote:
+> From: wenxu <wenxu@ucloud.cn>
+> 
+> nft add table bridge firewall
+> nft add chain bridge firewall zones { type filter hook prerouting priority - 300 \; }
+> nft add rule bridge firewall zones counter ct zone set vlan id map { 100 : 1, 200 : 2 }
+> 
+> As above set the bridge port with pvid, the received packet don't contain
+> the vlan tag which means the packet should belong to vlan 200 through pvid.
+> With this pacth user can set the pvid in the prerouting hook before set zone
+> id and conntrack: "meta brvlan set meta brpvid"
 
-When unregister_net_sysctl_table() is called the ctl_hdr pointer will
-obviously be freed and so accessing it righter after is invalid. Fix
-this by stashing a pointer to the table we want to free before we
-unregister the sysctl header.
+A real ruleset explaining how you use this would help in the commit
+message would help. I also would like to see the patch for nftables.
 
-Note that syzkaller falsely chased this down to the drm tree so the
-Fixes tag that syzkaller requested would be wrong. This commit uses a
-different but the correct Fixes tag.
+> Signed-off-by: wenxu <wenxu@ucloud.cn>
+> ---
+>  include/uapi/linux/netfilter/nf_tables.h |  2 ++
+>  net/netfilter/nft_meta.c                 | 20 ++++++++++++++++++++
+>  2 files changed, 22 insertions(+)
+> 
+> diff --git a/include/uapi/linux/netfilter/nf_tables.h b/include/uapi/linux/netfilter/nf_tables.h
+> index 4a16124..7be0307 100644
+> --- a/include/uapi/linux/netfilter/nf_tables.h
+> +++ b/include/uapi/linux/netfilter/nf_tables.h
+> @@ -794,6 +794,7 @@ enum nft_exthdr_attributes {
+>   * @NFT_META_IIFKIND: packet input interface kind name (dev->rtnl_link_ops->kind)
+>   * @NFT_META_OIFKIND: packet output interface kind name (dev->rtnl_link_ops->kind)
+>   * @NFT_META_BRI_PVID: packet input bridge port pvid
+> + * @NFT_META_BRI_VLAN: set vlan tag on packet
+>   */
+>  enum nft_meta_keys {
+>  	NFT_META_LEN,
+> @@ -825,6 +826,7 @@ enum nft_meta_keys {
+>  	NFT_META_IIFKIND,
+>  	NFT_META_OIFKIND,
+>  	NFT_META_BRI_PVID,
+> +	NFT_META_BRI_VLAN,
+>  };
+>  
+>  /**
+> diff --git a/net/netfilter/nft_meta.c b/net/netfilter/nft_meta.c
+> index 1fdb565..5c3817b 100644
+> --- a/net/netfilter/nft_meta.c
+> +++ b/net/netfilter/nft_meta.c
+> @@ -282,8 +282,13 @@ static void nft_meta_set_eval(const struct nft_expr *expr,
+>  {
+>  	const struct nft_meta *meta = nft_expr_priv(expr);
+>  	struct sk_buff *skb = pkt->skb;
+> +	const struct net_device *in = nft_in(pkt);
+>  	u32 *sreg = &regs->data[meta->sreg];
+> +#ifdef CONFIG_NF_TABLES_BRIDGE
+> +	const struct net_bridge_port *p;
+> +#endif
+>  	u32 value = *sreg;
+> +	u16 value16;
+>  	u8 value8;
+>  
+>  	switch (meta->key) {
+> @@ -306,6 +311,14 @@ static void nft_meta_set_eval(const struct nft_expr *expr,
+>  
+>  		skb->nf_trace = !!value8;
+>  		break;
+> +#ifdef CONFIG_NF_TABLES_BRIDGE
+> +	case NFT_META_BRI_VLAN:
+> +		value16 = nft_reg_load16(sreg);
+> +		if (in && (p = br_port_get_rtnl_rcu(in)) &&
+> +		    !skb_vlan_tag_present(skb))
 
-/* Splat */
+Why does this skip if there is a vlan tag?
 
-BUG: KASAN: use-after-free in br_netfilter_sysctl_exit_net
-net/bridge/br_netfilter_hooks.c:1121 [inline]
-BUG: KASAN: use-after-free in brnf_exit_net+0x38c/0x3a0
-net/bridge/br_netfilter_hooks.c:1141
-Read of size 8 at addr ffff8880a4078d60 by task kworker/u4:4/8749
+I guess it should be possible to update an existing vlan tag?
 
-CPU: 0 PID: 8749 Comm: kworker/u4:4 Not tainted 5.2.0-rc5-next-20190618 #17
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google
-01/01/2011
-Workqueue: netns cleanup_net
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x172/0x1f0 lib/dump_stack.c:113
- print_address_description.cold+0xd4/0x306 mm/kasan/report.c:351
- __kasan_report.cold+0x1b/0x36 mm/kasan/report.c:482
- kasan_report+0x12/0x20 mm/kasan/common.c:614
- __asan_report_load8_noabort+0x14/0x20 mm/kasan/generic_report.c:132
- br_netfilter_sysctl_exit_net net/bridge/br_netfilter_hooks.c:1121 [inline]
- brnf_exit_net+0x38c/0x3a0 net/bridge/br_netfilter_hooks.c:1141
- ops_exit_list.isra.0+0xaa/0x150 net/core/net_namespace.c:154
- cleanup_net+0x3fb/0x960 net/core/net_namespace.c:553
- process_one_work+0x989/0x1790 kernel/workqueue.c:2269
- worker_thread+0x98/0xe40 kernel/workqueue.c:2415
- kthread+0x354/0x420 kernel/kthread.c:255
- ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-
-Allocated by task 11374:
- save_stack+0x23/0x90 mm/kasan/common.c:71
- set_track mm/kasan/common.c:79 [inline]
- __kasan_kmalloc mm/kasan/common.c:489 [inline]
- __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:462
- kasan_kmalloc+0x9/0x10 mm/kasan/common.c:503
- __do_kmalloc mm/slab.c:3645 [inline]
- __kmalloc+0x15c/0x740 mm/slab.c:3654
- kmalloc include/linux/slab.h:552 [inline]
- kzalloc include/linux/slab.h:743 [inline]
- __register_sysctl_table+0xc7/0xef0 fs/proc/proc_sysctl.c:1327
- register_net_sysctl+0x29/0x30 net/sysctl_net.c:121
- br_netfilter_sysctl_init_net net/bridge/br_netfilter_hooks.c:1105 [inline]
- brnf_init_net+0x379/0x6a0 net/bridge/br_netfilter_hooks.c:1126
- ops_init+0xb3/0x410 net/core/net_namespace.c:130
- setup_net+0x2d3/0x740 net/core/net_namespace.c:316
- copy_net_ns+0x1df/0x340 net/core/net_namespace.c:439
- create_new_namespaces+0x400/0x7b0 kernel/nsproxy.c:103
- unshare_nsproxy_namespaces+0xc2/0x200 kernel/nsproxy.c:202
- ksys_unshare+0x444/0x980 kernel/fork.c:2822
- __do_sys_unshare kernel/fork.c:2890 [inline]
- __se_sys_unshare kernel/fork.c:2888 [inline]
- __x64_sys_unshare+0x31/0x40 kernel/fork.c:2888
- do_syscall_64+0xfd/0x680 arch/x86/entry/common.c:301
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-Freed by task 9:
- save_stack+0x23/0x90 mm/kasan/common.c:71
- set_track mm/kasan/common.c:79 [inline]
- __kasan_slab_free+0x102/0x150 mm/kasan/common.c:451
- kasan_slab_free+0xe/0x10 mm/kasan/common.c:459
- __cache_free mm/slab.c:3417 [inline]
- kfree+0x10a/0x2c0 mm/slab.c:3746
- __rcu_reclaim kernel/rcu/rcu.h:215 [inline]
- rcu_do_batch kernel/rcu/tree.c:2092 [inline]
- invoke_rcu_callbacks kernel/rcu/tree.c:2310 [inline]
- rcu_core+0xcc7/0x1500 kernel/rcu/tree.c:2291
- __do_softirq+0x25c/0x94c kernel/softirq.c:292
-
-The buggy address belongs to the object at ffff8880a4078d40
- which belongs to the cache kmalloc-512 of size 512
-The buggy address is located 32 bytes inside of
- 512-byte region [ffff8880a4078d40, ffff8880a4078f40)
-The buggy address belongs to the page:
-page:ffffea0002901e00 refcount:1 mapcount:0 mapping:ffff8880aa400a80
-index:0xffff8880a40785c0
-flags: 0x1fffc0000000200(slab)
-raw: 01fffc0000000200 ffffea0001d636c8 ffffea0001b07308 ffff8880aa400a80
-raw: ffff8880a40785c0 ffff8880a40780c0 0000000100000004 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff8880a4078c00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff8880a4078c80: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
-> ffff8880a4078d00: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
-                                                       ^
- ffff8880a4078d80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff8880a4078e00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-
-Reported-by: syzbot+43a3fa52c0d9c5c94f41@syzkaller.appspotmail.com
-Fixes: 22567590b2e6 ("netfilter: bridge: namespace bridge netfilter sysctls")
-Signed-off-by: Christian Brauner <christian@brauner.io>
----
- net/bridge/br_netfilter_hooks.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/net/bridge/br_netfilter_hooks.c b/net/bridge/br_netfilter_hooks.c
-index fd9e991c1189..d3f9592f4ff8 100644
---- a/net/bridge/br_netfilter_hooks.c
-+++ b/net/bridge/br_netfilter_hooks.c
-@@ -1116,9 +1116,11 @@ static int br_netfilter_sysctl_init_net(struct net *net)
- static void br_netfilter_sysctl_exit_net(struct net *net,
- 					 struct brnf_net *brnet)
- {
-+	struct ctl_table *table = brnet->ctl_hdr->ctl_table_arg;
-+
- 	unregister_net_sysctl_table(brnet->ctl_hdr);
- 	if (!net_eq(net, &init_net))
--		kfree(brnet->ctl_hdr->ctl_table_arg);
-+		kfree(table);
- }
- 
- static int __net_init brnf_init_net(struct net *net)
--- 
-2.21.0
-
+Thanks.
