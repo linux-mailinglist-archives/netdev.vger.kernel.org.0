@@ -2,105 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7B674B242
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 08:43:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 196B74BBFC
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 16:46:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730418AbfFSGlh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 02:41:37 -0400
-Received: from mga14.intel.com ([192.55.52.115]:57632 "EHLO mga14.intel.com"
+        id S1729569AbfFSOqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 10:46:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46972 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725892AbfFSGlh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Jun 2019 02:41:37 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Jun 2019 23:41:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.63,392,1557212400"; 
-   d="scan'208";a="150518994"
-Received: from wvoon-ilbpg2.png.intel.com ([10.88.227.88])
-  by orsmga007.jf.intel.com with ESMTP; 18 Jun 2019 23:41:33 -0700
-From:   Voon Weifeng <weifeng.voon@intel.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jose Abreu <joabreu@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        id S1726246AbfFSOqm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Jun 2019 10:46:42 -0400
+Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6FC112183F;
+        Wed, 19 Jun 2019 14:46:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1560955601;
+        bh=ybVW7Ea5eMfZg+bToe1PcrWBxJTqfPTPZQ35pTPG7h4=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=ZzUwgQGkvk0bBDa2uRT/zR74u7nL2T25/qTALzzZADu6+sV93WrM6REYlJw1kQFtE
+         HkeRAKjQYkEm+W5fJMYLgui2FKCdjvgMdjJHMsqg82p41ZW47pMylujCsT+bcr/Jko
+         FioKfD/f3GZuW6jMkoGxLVe+gDSTSHr9KjyZtnqY=
+Received: by mail-qt1-f177.google.com with SMTP id x2so20223612qtr.0;
+        Wed, 19 Jun 2019 07:46:41 -0700 (PDT)
+X-Gm-Message-State: APjAAAVRSXNUmsl7PwpAtvfNKwrxBtHdvoUvYlV8iK9Q7ym0BhelX75q
+        majC6itg9CEyFLFoF0sf9huvEOZ/gVRKKl9aLw==
+X-Google-Smtp-Source: APXvYqxsL55tBpnh7d1D58N3IolGY5fTDOQVrJmdjfIwoxLtWxuN1egPqybHkL3wTo4GaEANYh8XHiHR9+TvMpfENos=
+X-Received: by 2002:aed:3f10:: with SMTP id p16mr41487170qtf.110.1560955600704;
+ Wed, 19 Jun 2019 07:46:40 -0700 (PDT)
+MIME-Version: 1.0
+References: <27aeb33cf5b896900d5d11bd6957eda268014f0c.1560937626.git-series.maxime.ripard@bootlin.com>
+ <e7c13fc3c4e287df6292dbee27ae1caeca0c06c4.1560937626.git-series.maxime.ripard@bootlin.com>
+In-Reply-To: <e7c13fc3c4e287df6292dbee27ae1caeca0c06c4.1560937626.git-series.maxime.ripard@bootlin.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Wed, 19 Jun 2019 08:46:28 -0600
+X-Gmail-Original-Message-ID: <CAL_Jsq+A+jspyCpu9USL6FQ9y5qL_yqYS=DTE=aM5YzyeZwd0w@mail.gmail.com>
+Message-ID: <CAL_Jsq+A+jspyCpu9USL6FQ9y5qL_yqYS=DTE=aM5YzyeZwd0w@mail.gmail.com>
+Subject: Re: [PATCH v3 06/16] dt-bindings: net: sun4i-emac: Convert the
+ binding to a schemas
+To:     Maxime Ripard <maxime.ripard@bootlin.com>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        netdev <netdev@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        =?UTF-8?Q?Antoine_T=C3=A9nart?= <antoine.tenart@bootlin.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>
-Subject: [net v1] net: stmmac: set IC bit when transmitting frames with HW timestamp
-Date:   Wed, 19 Jun 2019 22:41:48 +0800
-Message-Id: <1560955308-15190-1-git-send-email-weifeng.voon@intel.com>
-X-Mailer: git-send-email 1.9.1
+        Heiner Kallweit <hkallweit1@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roland Hii <roland.king.guan.hii@intel.com>
+On Wed, Jun 19, 2019 at 3:48 AM Maxime Ripard <maxime.ripard@bootlin.com> wrote:
+>
+> Switch our Allwinner A10 EMAC controller binding to a YAML schema to enable
+> the DT validation.
+>
+> Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
+>
+> ---
+>
+> Changes from v2:
+>   - Switch from the deprecated phy property to phy-handle
+> ---
+>  Documentation/devicetree/bindings/net/allwinner,sun4i-a10-emac.yaml | 55 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+>  Documentation/devicetree/bindings/net/allwinner,sun4i-emac.txt      | 19 -------------------
+>  2 files changed, 55 insertions(+), 19 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/net/allwinner,sun4i-a10-emac.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/net/allwinner,sun4i-emac.txt
+>
+> diff --git a/Documentation/devicetree/bindings/net/allwinner,sun4i-a10-emac.yaml b/Documentation/devicetree/bindings/net/allwinner,sun4i-a10-emac.yaml
+> new file mode 100644
+> index 000000000000..2ff9e605cd26
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/allwinner,sun4i-a10-emac.yaml
+> @@ -0,0 +1,55 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/allwinner,sun4i-a10-emac.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Allwinner A10 EMAC Ethernet Controller Device Tree Bindings
+> +
+> +allOf:
+> +  - $ref: "ethernet-controller.yaml#"
+> +
+> +maintainers:
+> +  - Chen-Yu Tsai <wens@csie.org>
+> +  - Maxime Ripard <maxime.ripard@bootlin.com>
+> +
+> +properties:
+> +  compatible:
+> +    const: allwinner,sun4i-a10-emac
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +  allwinner,sram:
+> +    description: Phandle to the device SRAM
+> +    $ref: /schemas/types.yaml#/definitions/phandle-array
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - clocks
+> +  - phy-handle
 
-When transmitting certain PTP frames, e.g. SYNC and DELAY_REQ, the
-PTP daemon, e.g. ptp4l, is polling the driver for the frame transmit
-hardware timestamp. The polling will most likely timeout if the tx
-coalesce is enabled due to the Interrupt-on-Completion (IC) bit is
-not set in tx descriptor for those frames.
+Doesn't this throw an error if not listed in properties?
 
-This patch will ignore the tx coalesce parameter and set the IC bit
-when transmitting PTP frames which need to report out the frame
-transmit hardware timestamp to user space.
-
-Fixes: f748be531d70 ("net: stmmac: Rework coalesce timer and fix multi-queue races")
-Signed-off-by: Roland Hii <roland.king.guan.hii@intel.com>
-Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
-Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 06dd51f47cfd..06358fe5b245 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -2947,12 +2947,15 @@ static netdev_tx_t stmmac_tso_xmit(struct sk_buff *skb, struct net_device *dev)
- 
- 	/* Manage tx mitigation */
- 	tx_q->tx_count_frames += nfrags + 1;
--	if (priv->tx_coal_frames <= tx_q->tx_count_frames) {
-+	if (likely(priv->tx_coal_frames > tx_q->tx_count_frames) &&
-+	    !(priv->synopsys_id >= DWMAC_CORE_4_00 &&
-+	    (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
-+	    priv->hwts_tx_en)) {
-+		stmmac_tx_timer_arm(priv, queue);
-+	} else {
-+		tx_q->tx_count_frames = 0;
- 		stmmac_set_tx_ic(priv, desc);
- 		priv->xstats.tx_set_ic_bit++;
--		tx_q->tx_count_frames = 0;
--	} else {
--		stmmac_tx_timer_arm(priv, queue);
- 	}
- 
- 	skb_tx_timestamp(skb);
-@@ -3166,12 +3169,15 @@ static netdev_tx_t stmmac_xmit(struct sk_buff *skb, struct net_device *dev)
- 	 * element in case of no SG.
- 	 */
- 	tx_q->tx_count_frames += nfrags + 1;
--	if (priv->tx_coal_frames <= tx_q->tx_count_frames) {
-+	if (likely(priv->tx_coal_frames > tx_q->tx_count_frames) &&
-+	    !(priv->synopsys_id >= DWMAC_CORE_4_00 &&
-+	    (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
-+	    priv->hwts_tx_en)) {
-+		stmmac_tx_timer_arm(priv, queue);
-+	} else {
-+		tx_q->tx_count_frames = 0;
- 		stmmac_set_tx_ic(priv, desc);
- 		priv->xstats.tx_set_ic_bit++;
--		tx_q->tx_count_frames = 0;
--	} else {
--		stmmac_tx_timer_arm(priv, queue);
- 	}
- 
- 	skb_tx_timestamp(skb);
--- 
-1.9.1
-
+Rob
