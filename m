@@ -2,119 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AD764C136
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 21:08:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C87304C138
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 21:10:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730066AbfFSTIU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 15:08:20 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:44674 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726380AbfFSTIU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 15:08:20 -0400
-Received: by mail-qt1-f196.google.com with SMTP id x47so291812qtk.11;
-        Wed, 19 Jun 2019 12:08:19 -0700 (PDT)
+        id S1730089AbfFSTKP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 15:10:15 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:39894 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726265AbfFSTKP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 15:10:15 -0400
+Received: by mail-io1-f65.google.com with SMTP id r185so1057592iod.6
+        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 12:10:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/NuX+3WkUD8MPqANFCqpmo76cOhvITNkLzdl91UF+IU=;
-        b=dvBuK+hN7ZFK3WmZdGGBaTeYz0CTAFLkM7kx3R+awqIzgrsJQIng6FbpsRJfYdyqEp
-         av1ax6F5N14h0nIez3tsA6GD59qvszwBNMigOsh9bWeS6Gw1iZUPUuye/OandwecczK3
-         m85N8o2xD+OMO3011fWa0Bn/KkLCFIzSgbGjui0/Jk4vZlNm7PxLMdXNk9RvALaRS9Zi
-         24S8rjsXrrru+b/P8hi04y+UB8NkfdSLg79w+qknxzFBxxW3huHD151NF2/B+v7A7PrC
-         HLjWQVJ0bYMvtW8k67mq7GjK/DD2cPk/kNhg9I90eyqm6j+iWFL7ZABZ1ol0Nu+VkVHB
-         ALzQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=fAmFLnSMsnvQLlq+D5qRp2YHlP+Qbfata1Y9h/i5BuA=;
+        b=TXs1tmCnobLiqUFg36C+kFsdaC1ZC8JzxgVgAwagcYU1oGFoRCqSmuGSdEvvtuCFTK
+         iNv0R1b4X0h/QFEukcWO5c7LmdphgOOFVoAaU9xp8+SyohOTIS8P6XoOJfwRFZ7sR72B
+         lnvroQ4u7Na0ugWh+qAMVG3xYn7lrBL2FoMr0vzeDHv1OEdpvwUW51O++DTPxZK+ebar
+         MhNhF5NmsPHqvhUvzUgbGyJFXaz73Z/OwSIin4BXKx6oLQiT/4RXQ+b/hAxVVrk5SBAU
+         Th0UVHNnMtVmzfoQxeGnBdeIPJbrJvetGYjzu/p7ui1oC29Gd5x72YNSi+qsjvbzfelv
+         BnYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/NuX+3WkUD8MPqANFCqpmo76cOhvITNkLzdl91UF+IU=;
-        b=U41RwmzgOuq6DwHW8WgvrACiC2yyuFkqM1QC5lTgYc75uWh7LHw1TZsLpTj0m4TuQI
-         rotcJjS6bCFrWx4M21FvLC4cJM3nXAVgMPoqFaQUTQUiod51yduzVWUAU3K7icEr0VRx
-         l3ZtHpF2LDFJnQrw++UDHkB08T6jBD2qa3frHpgZLqNF7cSww28/iUdqWYMNigpTfwvg
-         bxgnsX/pdXsTzk89eClpUEV3mR2jzroejh1s8S14cA/K3QZDQqn0Jn3R8wRqLo8s049K
-         xFpBYTqYOZ2j7EDouHta57fETh0LxZT1nhU30FFFFSKM2B+EtWlRBQ5PV2AHGa5bZKTt
-         XrCw==
-X-Gm-Message-State: APjAAAXIZPViZ/rt+OkigbgXRd6T49ou1eK4gYQHoDycP4A2+M9qHFP6
-        saeex0mZKmnw+scGC9FKG34RU9XSO5NgyIu6W+g=
-X-Google-Smtp-Source: APXvYqwmh86CGNfbPYHjkFMIcguxAOBFlx1bU2wpGoJ38+Rs/i1L5bWESEOQBTQ9mILAtFEKG3whilsLSaMhrUoOtRE=
-X-Received: by 2002:a05:6214:1306:: with SMTP id a6mr22103594qvv.38.1560971299127;
- Wed, 19 Jun 2019 12:08:19 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=fAmFLnSMsnvQLlq+D5qRp2YHlP+Qbfata1Y9h/i5BuA=;
+        b=LCOXv+eTCyasYLpvSlWKDo+milanQz0EWZxKSimVucMnnlHi/pN9w0HtoHKm/CY2Mm
+         uXNN4FBGyrU4h9jh89PYXKDrHfgOFYKdCGcg0N78f2yDKDjdXeSsGAKe+1a6Dfr6yoYh
+         jQTEDS+ubgkwRAeAHMcPXRhutLn/XVDN6CgevMGdllBi+oA2bhWlzzOWV8yHbpQOsWy5
+         S0cj6xU0swmiWSgQuRRJs2Tstvy+pOmnV/ebDebwApBwJxsIb2spW115R6Af1IYgNHCs
+         CQBSoOL1TWe2W0rmceIC9iHUsC1KuSI/CaOPeYPw8NflleQ15thPEq8Q92pepuu5V66I
+         Gf7A==
+X-Gm-Message-State: APjAAAXOYcyotPLsV6zz1bXCaHSzpF0m6yV2TRgEOX1eMNBE2bzgDhyf
+        ZQvH3el/4NV5TD8G1MXRS+Sk2Jq4
+X-Google-Smtp-Source: APXvYqzUWXJP2l2pmmmc/JeY+nK3WaJUt7BzMa/R8fONFFSAuAlWCGxe0IbuEQ3Rm+8X+dBmwrXglg==
+X-Received: by 2002:a5d:9f4a:: with SMTP id u10mr13346544iot.243.1560971414960;
+        Wed, 19 Jun 2019 12:10:14 -0700 (PDT)
+Received: from ?IPv6:2601:284:8200:5cfb:60fa:7b0e:5ad7:3d30? ([2601:284:8200:5cfb:60fa:7b0e:5ad7:3d30])
+        by smtp.googlemail.com with ESMTPSA id r139sm25468548iod.61.2019.06.19.12.10.12
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 19 Jun 2019 12:10:13 -0700 (PDT)
+Subject: Re: [PATCH net-next] ipv6: Check if route exists before notifying it
+To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+References: <20190619175500.7145-1-idosch@idosch.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <69f3262d-e6d0-943e-20a0-c711be4d35d7@gmail.com>
+Date:   Wed, 19 Jun 2019 13:10:08 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-References: <20190619190105.261533-1-sdf@google.com>
-In-Reply-To: <20190619190105.261533-1-sdf@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 19 Jun 2019 12:08:07 -0700
-Message-ID: <CAEf4BzZ73LvgvQDLaNm3YwUwCbfr-RQ14cACw+wcpkfExmEnJA@mail.gmail.com>
-Subject: Re: [PATCH bpf] bpf: fix NULL deref in btf_type_is_resolve_source_only
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        syzbot <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190619175500.7145-1-idosch@idosch.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 19, 2019 at 12:01 PM Stanislav Fomichev <sdf@google.com> wrote:
->
-> Commit 1dc92851849c ("bpf: kernel side support for BTF Var and DataSec")
-> added invocations of btf_type_is_resolve_source_only before
-> btf_type_nosize_or_null which checks for the NULL pointer.
-> Swap the order of btf_type_nosize_or_null and
-> btf_type_is_resolve_source_only to make sure the do the NULL pointer
-> check first.
->
-> Fixes: 1dc92851849c ("bpf: kernel side support for BTF Var and DataSec")
-> Reported-by: syzbot <syzkaller@googlegroups.com>
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> ---
+On 6/19/19 11:55 AM, Ido Schimmel wrote:
+> diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
+> index 1d16a01eccf5..241a0e9a07c3 100644
+> --- a/net/ipv6/ip6_fib.c
+> +++ b/net/ipv6/ip6_fib.c
+> @@ -393,6 +393,8 @@ int call_fib6_multipath_entry_notifiers(struct net *net,
+>  		.nsiblings = nsiblings,
+>  	};
+>  
+> +	if (!rt)
+> +		return -EINVAL;
+>  	rt->fib6_table->fib_seq++;
+>  	return call_fib6_notifiers(net, event_type, &info.info);
+>  }
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+The call to call_fib6_multipath_entry_notifiers in
+ip6_route_multipath_add happens without rt_notif set because the MPATH
+spec is empty? It seems like that check should be done in
+ip6_route_multipath_add rather than call_fib6_multipath_entry_notifiers
+with an extack saying the reason for the failure.
 
->  kernel/bpf/btf.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
->
-> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> index cad09858a5f2..546ebee39e2a 100644
-> --- a/kernel/bpf/btf.c
-> +++ b/kernel/bpf/btf.c
-> @@ -1928,8 +1928,8 @@ static int btf_array_resolve(struct btf_verifier_env *env,
->         /* Check array->index_type */
->         index_type_id = array->index_type;
->         index_type = btf_type_by_id(btf, index_type_id);
-> -       if (btf_type_is_resolve_source_only(index_type) ||
-> -           btf_type_nosize_or_null(index_type)) {
-> +       if (btf_type_nosize_or_null(index_type) ||
-> +           btf_type_is_resolve_source_only(index_type)) {
->                 btf_verifier_log_type(env, v->t, "Invalid index");
->                 return -EINVAL;
->         }
-> @@ -1948,8 +1948,8 @@ static int btf_array_resolve(struct btf_verifier_env *env,
->         /* Check array->type */
->         elem_type_id = array->type;
->         elem_type = btf_type_by_id(btf, elem_type_id);
-> -       if (btf_type_is_resolve_source_only(elem_type) ||
-> -           btf_type_nosize_or_null(elem_type)) {
-> +       if (btf_type_nosize_or_null(elem_type) ||
-> +           btf_type_is_resolve_source_only(elem_type)) {
->                 btf_verifier_log_type(env, v->t,
->                                       "Invalid elem");
->                 return -EINVAL;
-> @@ -2170,8 +2170,8 @@ static int btf_struct_resolve(struct btf_verifier_env *env,
->                 const struct btf_type *member_type = btf_type_by_id(env->btf,
->                                                                 member_type_id);
->
-> -               if (btf_type_is_resolve_source_only(member_type) ||
-> -                   btf_type_nosize_or_null(member_type)) {
-> +               if (btf_type_nosize_or_null(member_type) ||
-> +                   btf_type_is_resolve_source_only(member_type)) {
->                         btf_verifier_log_member(env, v->t, member,
->                                                 "Invalid member");
->                         return -EINVAL;
-> --
-> 2.22.0.410.gd8fdbe21b5-goog
->
+My expectation for call_fib6_multipath_entry_notifiers is any errors are
+only for offload handlers. (And we need to get extack added to that for
+relaying reasons.)
