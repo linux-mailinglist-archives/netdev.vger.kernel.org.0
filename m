@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 545214B53F
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 11:47:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B16D4B542
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 11:48:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731527AbfFSJru (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 05:47:50 -0400
-Received: from relay5-d.mail.gandi.net ([217.70.183.197]:49655 "EHLO
-        relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731186AbfFSJrt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 05:47:49 -0400
+        id S1731532AbfFSJr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 05:47:59 -0400
+Received: from relay1-d.mail.gandi.net ([217.70.183.193]:59517 "EHLO
+        relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727144AbfFSJr7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 05:47:59 -0400
 X-Originating-IP: 90.88.23.150
 Received: from localhost (aaubervilliers-681-1-81-150.w90-88.abo.wanadoo.fr [90.88.23.150])
         (Authenticated sender: maxime.ripard@bootlin.com)
-        by relay5-d.mail.gandi.net (Postfix) with ESMTPSA id 84E271C001C;
-        Wed, 19 Jun 2019 09:47:45 +0000 (UTC)
+        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id 53F0D24003A;
+        Wed, 19 Jun 2019 09:47:47 +0000 (UTC)
 From:   Maxime Ripard <maxime.ripard@bootlin.com>
 To:     Mark Rutland <mark.rutland@arm.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -32,10 +32,11 @@ Cc:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         =?UTF-8?q?Antoine=20T=C3=A9nart?= <antoine.tenart@bootlin.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH v3 04/16] MAINTAINERS: Add Ethernet PHY YAML file
-Date:   Wed, 19 Jun 2019 11:47:13 +0200
-Message-Id: <c57c6df433fa93ce336be468b3f1aa22b1fab418.1560937626.git-series.maxime.ripard@bootlin.com>
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v3 05/16] dt-bindings: net: phy: The interrupt property is not mandatory
+Date:   Wed, 19 Jun 2019 11:47:14 +0200
+Message-Id: <e1b378af6eccfc80e5ee4b73ce25b1059f560f96.1560937626.git-series.maxime.ripard@bootlin.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <27aeb33cf5b896900d5d11bd6957eda268014f0c.1560937626.git-series.maxime.ripard@bootlin.com>
 References: <27aeb33cf5b896900d5d11bd6957eda268014f0c.1560937626.git-series.maxime.ripard@bootlin.com>
@@ -46,32 +47,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While the Ethernet PHY framework was marked as maintained, the device tree
-bindings associated to that framework was not listed under the maintained
-files. Fix that.
+Unlike what was initially claimed in the PHY binding, the interrupt
+property of a PHY can be omitted, and the OS will turn to polling instead.
+
+Document that.
 
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
-
 ---
+ Documentation/devicetree/bindings/net/ethernet-phy.yaml | 1 -
+ 1 file changed, 1 deletion(-)
 
-Changes from v1:
-  - New patch
----
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 731b8879bce9..9f629ed4624f 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -6000,6 +6000,7 @@ M:	Heiner Kallweit <hkallweit1@gmail.com>
- L:	netdev@vger.kernel.org
- S:	Maintained
- F:	Documentation/ABI/testing/sysfs-bus-mdio
-+F:	Documentation/devicetree/bindings/net/ethernet-phy.yaml
- F:	Documentation/devicetree/bindings/net/mdio*
- F:	Documentation/networking/phy.rst
- F:	drivers/net/phy/
+diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+index 81d2016d7232..c77f97cbd54b 100644
+--- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
++++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+@@ -156,7 +156,6 @@ properties:
+ 
+ required:
+   - reg
+-  - interrupts
+ 
+ examples:
+   - |
 -- 
 git-series 0.9.1
