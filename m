@@ -2,139 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 34B0B4B92F
-	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 14:55:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9EE14B9FA
+	for <lists+netdev@lfdr.de>; Wed, 19 Jun 2019 15:31:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731931AbfFSMzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 08:55:22 -0400
-Received: from mout.kundenserver.de ([212.227.126.133]:52609 "EHLO
+        id S1729947AbfFSNbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 09:31:36 -0400
+Received: from mout.kundenserver.de ([212.227.126.131]:38789 "EHLO
         mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731770AbfFSMzW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 08:55:22 -0400
+        with ESMTP id S1725562AbfFSNbf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 09:31:35 -0400
 Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
- (mreue011 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1M2w4S-1hcUib3o9k-003KN8; Wed, 19 Jun 2019 14:55:06 +0200
+ (mreue010 [212.227.15.129]) with ESMTPA (Nemesis) id
+ 1MvKL3-1iUrtQ41zN-00rI0D; Wed, 19 Jun 2019 15:31:30 +0200
 From:   Arnd Bergmann <arnd@arndb.de>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+To:     Jiri Pirko <jiri@mellanox.com>, Ido Schimmel <idosch@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>
 Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Fernando Fernandez Mancera <ffmancera@riseup.net>,
-        wenxu <wenxu@ucloud.cn>, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH] netfilter: synproxy: fix building syncookie calls
-Date:   Wed, 19 Jun 2019 14:54:36 +0200
-Message-Id: <20190619125500.1054426-1-arnd@arndb.de>
+        Shalom Toledo <shalomt@mellanox.com>,
+        Petr Machata <petrm@mellanox.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] mlxsw: spectrum_ptp: fix 32-bit build
+Date:   Wed, 19 Jun 2019 15:31:20 +0200
+Message-Id: <20190619133128.2259960-1-arnd@arndb.de>
 X-Mailer: git-send-email 2.20.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:xZ3TMz67ZOJPH0ye7NMGfik9gT3NNsynu5AzNJdutOeiOL4FIS+
- WAWs6+suEpnTzZ0LzUoZyVkCVr1RxNHd20j4ksTpwlFIPQxcMO5a9ZcyxLcotOgwe3uGlOB
- 1rUhA3r55CeT4b39lG/fNvkOu+NH9MlldXRpHp+zIZHBl1jlpZXUFAeA7s2aAzOnrbYgInB
- CM/7zqvrJ+PwsLR9lYTaA==
+X-Provags-ID: V03:K1:1TWk/Z00tbKqf5RqEcaX5nccgV/fe9V9aNFZmpdUUYBakGdbGvV
+ C+8I324XtE3JT/iwJHKTqKf1+NU7h1FM9RiZJoUaisjO1vKrymmldWMUctjLMLiZLcCGIix
+ YYekoaHxNiKne20tF5Y62n7BA7XD4z5k5uDEobwOxEdN8dPVjfGTQs90R+yRoynQ4/1W6Ev
+ Ygo3OIn9RDZA4vrnpVGUw==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:QNzBUpn2b2I=:HHSLfW4VycGyqlqjJGBf1q
- fdgoN5ybxex4s6O5gaO7m7glXbbkeG+zpqnv/+J7PcPaAZsuJI4jX0awEBftE3tWXouk5AFBQ
- 7wGCEYH8Krmv7DfRx/lRWw/NT2Ud9NaS89PZ30JNeHPpPcGcMoYvGOXp4wBoVFOuLXlwLPRaw
- k6p4G94DRpiD1U2mzw5j0Gw0aQJHIG0IeC7kpwrmdgwc2Kf9+tu0wnUI3EzSHccyelPMn7fyo
- LPlyIcZOUcjRrjhO+rBz1w03EOWL6TAFzMJMJYJkB3u0SaGz0OzeLyf82QM0o79WOxMRSIR1L
- MT57jVBhuAdsTmoV+sesjbAgvjAHdSx1tOd+OmFFVTd/UNTEmKFSYA4EDlrB1IH0g9aaRX2bB
- oV6debd+6899coOTyIyk95qQzAYbdhIe/Rpf5mpimOfki6Tefm9mP7xFoG4y4EjEl/OqbhzVC
- 0SbQJc8NNXij6OMRadEflf+DZ2FgdNF7F6pCBV19bmV0Rzb87yl+hTeGvSphxSxvi5JobW5pC
- Umgre0T3SfAhvELEsXFq4m51iCssETNixScH3NREJc4kHeexV+g3T96PfeTxk7o3KR2YcuA6R
- PCrVKn+sFcl2xO7yqHKc2UWl1zjkegg8D+h3k5QkksWlDhU7slSUB9VMqbdRBRzpe+j3MpziH
- dUf3TFpYKj0d7WmJnQ37eH7enuwxokIPfPARLkLtvkU/CBQiEF+Un91ncd7TjWboRs/r44J6/
- C4qzRdDKXLFuITe/kDDoYHGEjFZ0JXQtp7bbFw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:hijGal6cEgc=:RGWiW7YwuVIpQI4lNop8tf
+ R1vbjyIRNCvZb9IH8qwZaAtofbWWx2zA+vrPrTxI9C4+4oEI8Rwrcpkv8jtfM3tAtbjDN/ZoG
+ rwrga+kU4m97DPnxFvVxxXJXNUTgIngENLbgegyonF8Qe6Xj8H5vLSz9Mu8OKY/F63iT1OGGv
+ n8iaA5fGA8yJ3Eb9ZNpYE+4Tz66SbauxsYhrkVrydCY7Xm00UfpJeHoAkKo/9T6irlfkHwEAN
+ /v2hHCn2bjZCWrY6R6K/LKuDu9zQmzZh8mtQcvzOMG0MOr+JYS9iGygAXR7YdalOAPmhePqE6
+ t2XEfMUYsEQSV6KWQpw6mB/itCX1jrurN9SzA/uGcpxuPtKKqc3SaD2kGllf4ELGiUEO3/Ck3
+ NNVfq5rV/Co/hAbB8AmDhsqM97ufmDR8IZhUMqymqt21nzher4HYghw+SvnGBfppllbUVL2wd
+ SrlIR8KuKjyIKBmIFHLIgTpnMusbdZqsfShztCjRXQYeJJXXhuaoAGv0RryxX/UYRK+E/JOb5
+ QtL5feupo7TwWfLmSoaVIc+YtZ1abfFRgOhYIYIe3WUrOIa8vHthCHq324GTo9JWxHOAVmzkQ
+ UwYI0u6D5G44bvKQ+yQkKdh4fjr5R2iiyc8unWCG+4EHXI7FuwgNoiInhCXEZRuq+2EOrobc1
+ zcKb82PdwCk91FEhFSk5D3sL1pnXTDy+UFNd1E1Tf5YBwwabk39lLJiszyuc5+1Hk4XW0xNZu
+ fWKIg9P+u3Wb2uxHysiODn/4KxZlcDN2rpPqmQ==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When either CONFIG_IPV6 or CONFIG_SYN_COOKIES are disabled, the kernel
-fails to build:
+On 32-bit architectures, we cannot easily device 64-bit numbers:
 
-include/linux/netfilter_ipv6.h:180:9: error: implicit declaration of function '__cookie_v6_init_sequence'
-      [-Werror,-Wimplicit-function-declaration]
-        return __cookie_v6_init_sequence(iph, th, mssp);
-include/linux/netfilter_ipv6.h:194:9: error: implicit declaration of function '__cookie_v6_check'
-      [-Werror,-Wimplicit-function-declaration]
-        return __cookie_v6_check(iph, th, cookie);
-net/ipv6/netfilter.c:237:26: error: use of undeclared identifier '__cookie_v6_init_sequence'; did you mean 'cookie_init_sequence'?
-net/ipv6/netfilter.c:238:21: error: use of undeclared identifier '__cookie_v6_check'; did you mean '__cookie_v4_check'?
+ERROR: "__aeabi_uldivmod" [drivers/net/ethernet/mellanox/mlxsw/mlxsw_spectrum.ko] undefined!
 
-Fix the IS_ENABLED() checks to match the function declaration
-and definitions for these.
+Use do_div() to annotate the fact that we know this is an
+expensive operation.
 
-Fixes: 3006a5224f15 ("netfilter: synproxy: remove module dependency on IPv6 SYNPROXY")
+Fixes: 992aa864dca0 ("mlxsw: spectrum_ptp: Add implementation for physical hardware clock operations")
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- include/linux/netfilter_ipv6.h | 14 ++++++++------
- net/ipv6/netfilter.c           |  2 ++
- 2 files changed, 10 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/netfilter_ipv6.h b/include/linux/netfilter_ipv6.h
-index 1aa3a23744df..7beb681e1ce5 100644
---- a/include/linux/netfilter_ipv6.h
-+++ b/include/linux/netfilter_ipv6.h
-@@ -171,31 +171,33 @@ static inline u32 nf_ipv6_cookie_init_sequence(const struct ipv6hdr *iph,
- 					       const struct tcphdr *th,
- 					       u16 *mssp)
- {
-+#if IS_ENABLED(CONFIG_SYN_COOKIES)
- #if IS_MODULE(CONFIG_IPV6)
- 	const struct nf_ipv6_ops *v6_ops = nf_get_ipv6_ops();
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
+index 2a9bbc90225e..618e329e1490 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
+@@ -87,7 +87,7 @@ mlxsw_sp1_ptp_phc_settime(struct mlxsw_sp_ptp_clock *clock, u64 nsec)
+ 	u32 next_sec;
+ 	int err;
  
- 	if (v6_ops)
- 		return v6_ops->cookie_init_sequence(iph, th, mssp);
--
--	return 0;
--#else
-+#elif IS_BUILTIN(CONFIG_IPV6)
- 	return __cookie_v6_init_sequence(iph, th, mssp);
- #endif
-+#endif
-+	return 0;
- }
+-	next_sec = nsec / NSEC_PER_SEC + 1;
++	next_sec = div_u64(nsec, NSEC_PER_SEC) + 1;
+ 	next_sec_in_nsec = next_sec * NSEC_PER_SEC;
  
- static inline int nf_cookie_v6_check(const struct ipv6hdr *iph,
- 				     const struct tcphdr *th, __u32 cookie)
- {
-+#if IS_ENABLED(CONFIG_SYN_COOKIES)
- #if IS_MODULE(CONFIG_IPV6)
- 	const struct nf_ipv6_ops *v6_ops = nf_get_ipv6_ops();
- 
- 	if (v6_ops)
- 		return v6_ops->cookie_v6_check(iph, th, cookie);
--
--	return 0;
--#else
-+#elif IS_BUILTIN(CONFIG_IPV6)
- 	return __cookie_v6_check(iph, th, cookie);
- #endif
-+#endif
-+	return 0;
- }
- 
- __sum16 nf_ip6_checksum(struct sk_buff *skb, unsigned int hook,
-diff --git a/net/ipv6/netfilter.c b/net/ipv6/netfilter.c
-index dffb10fdc3e8..61819ed858b1 100644
---- a/net/ipv6/netfilter.c
-+++ b/net/ipv6/netfilter.c
-@@ -234,8 +234,10 @@ static const struct nf_ipv6_ops ipv6ops = {
- 	.route_me_harder	= ip6_route_me_harder,
- 	.dev_get_saddr		= ipv6_dev_get_saddr,
- 	.route			= __nf_ip6_route,
-+#if IS_ENABLED(CONFIG_SYN_COOKIES)
- 	.cookie_init_sequence	= __cookie_v6_init_sequence,
- 	.cookie_v6_check	= __cookie_v6_check,
-+#endif
- #endif
- 	.route_input		= ip6_route_input,
- 	.fragment		= ip6_fragment,
+ 	spin_lock(&clock->lock);
 -- 
 2.20.0
 
