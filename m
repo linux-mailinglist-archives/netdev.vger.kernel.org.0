@@ -2,121 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 24DDE4CB89
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 12:07:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 040744CB99
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 12:12:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726371AbfFTKHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 06:07:32 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:47084 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726072AbfFTKHc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 06:07:32 -0400
-Received: by mail-pf1-f194.google.com with SMTP id 81so1369742pfy.13;
-        Thu, 20 Jun 2019 03:07:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=IfwA+i6YnmMV9WMF2Z9ZZedLVyNXMmnDcYm2Z0HfTLk=;
-        b=EDKGNiyDRTJsmKCDATuGi950qlcuZ5tMqnt3WkbO1NdIPDSoYtg0C5wfe5rtUUdHE9
-         iygeHSQJTt39HVqIwb2S/X12rYRDN4ytdaPkucJFvx8yUB03PI2nqBbYJYD7pmzT1fBS
-         kwB4Jkt7kshH9GVk7whaGWId/2XUyPDU5UfKjbvj5CuFrVJX5oNYziO0+8kLy5veu4Pk
-         yRzKl/ykRWHFH2/v82Lq00ygPENQLt6Xgr349FF3yrh9JI9lrQyhgqdUSevtJuUCBT/J
-         +mPnVSj/Qe2RDVTjj1GZTQC2x2A+uDJvXDDA6sT1leKTcQMNRbKYJdmKkGwBuuKdgLrV
-         np7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=IfwA+i6YnmMV9WMF2Z9ZZedLVyNXMmnDcYm2Z0HfTLk=;
-        b=QDTYUp9CALNQZkVUbV5FJC0bYPsI30PCJxmIuwBZvG1tJ/7g+yoV59IrJEbVOp4aVU
-         xqZkwKxjbxVL0EdYoddf/AM2OLo3SdxHGoNRfHNvz8N3XmLn4qMavbg83JVKs68V4yw/
-         DqRFkgvoR7+p+x3EsMu9SVT1SGDPuRFgbPaprFq/c5Hm537zibve0nD/nnQMkIDPK3K8
-         toOSEuKeubLSbQhYb0h/gY7fTzINqNh9x9zz6vouTRoCAucuPSGGaICw7AJJy/rXHRAM
-         buorbh4ii2ymgdf0Hho71PU7sNs+B0uFl+bMIbxS715ze23BVbi4um33Bbn46kumkOMC
-         Vnuw==
-X-Gm-Message-State: APjAAAVPCvpe3z4dTCdbl2rAEEPNL/7qEQVQZc9kByLhPNbzUkAA7JOZ
-        m4K2oqmc3zN0gQ30je1q8+c=
-X-Google-Smtp-Source: APXvYqwTWk6Pxr6Q216d7K6EIDBd91tsL13ybgoiYOgL/Z2P3m/QPkuAK/6smY5OanprNR4qZzeRkA==
-X-Received: by 2002:a63:18c:: with SMTP id 134mr7476375pgb.432.1561025251420;
-        Thu, 20 Jun 2019 03:07:31 -0700 (PDT)
-Received: from btopel-mobl.ger.intel.com ([192.55.54.41])
-        by smtp.gmail.com with ESMTPSA id y22sm41574267pgj.38.2019.06.20.03.07.27
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 20 Jun 2019 03:07:31 -0700 (PDT)
-From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        magnus.karlsson@intel.com, bruce.richardson@intel.com,
-        songliubraving@fb.com, bpf@vger.kernel.org
-Subject: [PATCH bpf-next v3 2/2] xsk: support BPF_EXIST and BPF_NOEXIST flags in XSKMAP
-Date:   Thu, 20 Jun 2019 12:06:52 +0200
-Message-Id: <20190620100652.31283-3-bjorn.topel@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190620100652.31283-1-bjorn.topel@gmail.com>
-References: <20190620100652.31283-1-bjorn.topel@gmail.com>
+        id S1726300AbfFTKM4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 06:12:56 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:37435 "EHLO
+        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726081AbfFTKMz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 06:12:55 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id ADCEE221FB;
+        Thu, 20 Jun 2019 06:12:54 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Thu, 20 Jun 2019 06:12:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=BICJki
+        kO1pqeAKqFclJvZTa5QLEKlMvNvzQTH8/ESkQ=; b=QGBAPRoqPuJDv4An/YM2Pj
+        nbhCYmJddHpRZX2hajArb5TmTuC6t1nI0LG0AvoEG/zWifi+c2C5V5ym+tbOJTcv
+        VErt4gPwYVPMlfbcTKpcMuoi6bL0VHpxbmC4VHiR1fh9ed3I6ehFDwzsyU7LzfJ1
+        2ecOKL0+y70McPilF4+TRFi2er6OG3wKs5wmdr3p/qQ3xk04mcny0jTAsoEplK+H
+        DjSzi6ZHeVY1f7VSV8QejWXgS81X1/ucPqP+SsPUrCyPsMBaSCmM9ync9b0fhHm/
+        +dSLHlINm2dXbvDrXeqdzQJ83zc6pEF30P1Kac/pgynkm5ZNC8PTIopJ7ZxNbs6A
+        ==
+X-ME-Sender: <xms:JVwLXXvBDORgKnrFD2sTGgqN1vd2Xi3pucDsQqwIvIjSwWU_8vq6ng>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrtdeggddviecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepudelfe
+    drgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhes
+    ihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
+X-ME-Proxy: <xmx:JVwLXUrRoYVz6ODtVoG9OPhp3xhbpss6FdOwo-mbaXv-A_C5MNyR-A>
+    <xmx:JVwLXdpOxd4ZbDhExft_38sjSKfjYDZvhxhvERPFfnL5kktj2T9lnQ>
+    <xmx:JVwLXU1x1rcBEdNTjAy7B4uj9Y9LzXFKjGGcpydIB-yqC9ak0IUmrw>
+    <xmx:JlwLXfurpOKn7O7indjcNmZWmTnW8hrMucWwCYeyIJz6nhncoAWpPw>
+Received: from localhost (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id CDE61380084;
+        Thu, 20 Jun 2019 06:12:52 -0400 (EDT)
+Date:   Thu, 20 Jun 2019 13:12:50 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, dsahern@gmail.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next v2] ipv6: Error when route does not have any
+ valid nexthops
+Message-ID: <20190620101250.GA18869@splinter>
+References: <20190620091021.18210-1-idosch@idosch.org>
+ <20190620092202.GC2504@nanopsycho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190620092202.GC2504@nanopsycho>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Björn Töpel <bjorn.topel@intel.com>
+On Thu, Jun 20, 2019 at 11:22:03AM +0200, Jiri Pirko wrote:
+> Thu, Jun 20, 2019 at 11:10:21AM CEST, idosch@idosch.org wrote:
+> >+	if (list_empty(&rt6_nh_list)) {
+> >+		NL_SET_ERR_MSG(extack,
+> >+			       "Invalid nexthop configuration - no valid nexthops");
+> 
+> No need for a line wrap.
 
-The XSKMAP did not honor the BPF_EXIST/BPF_NOEXIST flags when updating
-an entry. This patch addresses that.
-
-Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
----
- kernel/bpf/xskmap.c | 18 +++++++++++++++---
- 1 file changed, 15 insertions(+), 3 deletions(-)
-
-diff --git a/kernel/bpf/xskmap.c b/kernel/bpf/xskmap.c
-index af802c89ebab..096cb4b92283 100644
---- a/kernel/bpf/xskmap.c
-+++ b/kernel/bpf/xskmap.c
-@@ -227,8 +227,6 @@ static int xsk_map_update_elem(struct bpf_map *map, void *key, void *value,
- 		return -EINVAL;
- 	if (unlikely(i >= m->map.max_entries))
- 		return -E2BIG;
--	if (unlikely(map_flags == BPF_NOEXIST))
--		return -EEXIST;
- 
- 	sock = sockfd_lookup(fd, &err);
- 	if (!sock)
-@@ -254,15 +252,29 @@ static int xsk_map_update_elem(struct bpf_map *map, void *key, void *value,
- 
- 	spin_lock_bh(&m->lock);
- 	entry = &m->xsk_map[i];
-+	old_xs = *entry;
-+	if (old_xs && map_flags == BPF_NOEXIST) {
-+		err = -EEXIST;
-+		goto out;
-+	} else if (!old_xs && map_flags == BPF_EXIST) {
-+		err = -ENOENT;
-+		goto out;
-+	}
- 	xsk_map_node_init(node, m, entry);
- 	xsk_map_add_node(xs, node);
--	old_xs = xchg(entry, xs);
-+	*entry = xs;
- 	if (old_xs)
- 		xsk_map_del_node(old_xs, entry);
- 	spin_unlock_bh(&m->lock);
- 
- 	sockfd_put(sock);
- 	return 0;
-+
-+out:
-+	spin_unlock_bh(&m->lock);
-+	sockfd_put(sock);
-+	xsk_map_node_free(node);
-+	return err;
- }
- 
- static int xsk_map_delete_elem(struct bpf_map *map, void *key)
--- 
-2.20.1
-
+I wanted to be consistent with the rest of the extack usage in this
+function.
