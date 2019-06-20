@@ -2,259 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A1454D9F5
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 21:05:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E43C4DA17
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 21:21:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726075AbfFTTFd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 15:05:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50494 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725905AbfFTTFd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Jun 2019 15:05:33 -0400
-Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E87D8206BA;
-        Thu, 20 Jun 2019 19:05:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1561057532;
-        bh=vbQF7E5G/vbCAF3u7DRHI6QgbDz43KOGuXGk0Wsw8Xo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=FX9T45hWrcwF4Xhg3RGSKt/4tVjGaaIGKJTSfG3N/DcoiH9jXferZrdvaDqlE0VfD
-         nEqBxTMaXMooG7NBwPZKcZ+uW9AP2DU774SEpyxAiUscSQT/SjCqWMblLVIx5yw5cR
-         QbikWb7YFS+ozXOXOQ+HRFtQsKnYNDtXhah1wGvc=
-From:   David Ahern <dsahern@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kafai@fb.com, weiwan@google.com,
-        David Ahern <dsahern@gmail.com>
-Subject: [PATCH net-next] ipv6: Convert gateway validation to use fib6_info
-Date:   Thu, 20 Jun 2019 12:05:36 -0700
-Message-Id: <20190620190536.3157-1-dsahern@kernel.org>
-X-Mailer: git-send-email 2.11.0
+        id S1726215AbfFTTVm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 15:21:42 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:47015 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725993AbfFTTVm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 15:21:42 -0400
+Received: by mail-io1-f65.google.com with SMTP id i10so30975iol.13
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 12:21:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=doFuf7onE1P54BGFmBlaNCzAkdABdToSNU8H2ymfIME=;
+        b=t/RdPzPxE0SpgvbaNjXgy0VZK1rQ+PWhWxbUmIPAGja28KeFynLi6n2K5G3KPrDa2V
+         jHyeD0OB0SkvJqUpktAFTFugVKbntsLJhmFu4tAFy0Wl2WeG8nc1czYCPcsQzzR79HVe
+         jzOSUOjLua8Cg5KPRwM48Uj1EdqCxErKa8DFnu9SsDsTwQbUToK2I2voVM9ukybWkJEX
+         714KuuFx8dxQSebkUxeYFPmUVZgDZxJnR7EdNAlqJ4RzHOdCo5Cl3xkpy2nIlo9xTif5
+         yRNonUZTqZtxoZSGAHJ5wUVQYmlwpOP1zCQYNnVysoR8g0bUbr8PP+gq+Sk7gTkOGOsv
+         yOMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=doFuf7onE1P54BGFmBlaNCzAkdABdToSNU8H2ymfIME=;
+        b=kz6Sxv9JS5W9PYqWn33hy4O5P3mLTUJaAxqCTXt5rpbCuAQewk+Tql/yOuqwlVgrxI
+         GfkirCNWlHHIaCmEyj1FEaaMxwB8xOdc/rsjAMHVcIZFbV27Ab9aHS60xz7Dq99+z3xf
+         kJatB+AzQ1yXqrN5REmQCCWZvK7GxhHABebjB5kC1CSls8NhQ/a+MGTXW7O2oCe/CkRC
+         iHsyjqvwOIu5O7KkxW+U8+PeQJYfUzvBwVv5Zh0eCmqupcRc/s2W/lQju/gVx/t65O+g
+         yp/W0ggn1GrVcUbB1HW8BZqxJGBSzwelgLEl5HA2r4X0VuJaIBK2ZsIDPTBUsJ/IIwYc
+         kiXQ==
+X-Gm-Message-State: APjAAAVKq1Mdr9+MO/LIH+Cv2Zieu6NpnhVDJ2m7kqHM53LK5fXDkI1T
+        zTlleMQMASNc6HHDcaUyl9FJrftU
+X-Google-Smtp-Source: APXvYqxjqG9S7F6lq6QgqUsiBScYRYtWzWlNm6jV78BPKxnkHQYAdld6B1029CiTcqsVXMFZ3wSc8Q==
+X-Received: by 2002:a02:c7c9:: with SMTP id s9mr102709884jao.82.1561058500498;
+        Thu, 20 Jun 2019 12:21:40 -0700 (PDT)
+Received: from ?IPv6:2601:284:8200:5cfb:9c46:f142:c937:3c50? ([2601:284:8200:5cfb:9c46:f142:c937:3c50])
+        by smtp.googlemail.com with ESMTPSA id p63sm972900iof.45.2019.06.20.12.21.39
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 20 Jun 2019 12:21:39 -0700 (PDT)
+Subject: Re: [PATCH net-next v6 04/11] ipv4: Dump route exceptions if
+ requested
+To:     Stefano Brivio <sbrivio@redhat.com>
+Cc:     David Miller <davem@davemloft.net>, Jianlin Shi <jishi@redhat.com>,
+        Wei Wang <weiwan@google.com>, Martin KaFai Lau <kafai@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        netdev@vger.kernel.org
+References: <cover.1560987611.git.sbrivio@redhat.com>
+ <b5aacd9a3a3f4b256dfd091cdd8771d0f6a1aea2.1560987611.git.sbrivio@redhat.com>
+ <777387d8-fa15-388e-875a-02aa5df977dd@gmail.com>
+ <20190620210113.6aa2c022@redhat.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <8bbfc49b-79a1-6a0a-bf7b-9e4ee723ee1b@gmail.com>
+Date:   Thu, 20 Jun 2019 13:21:35 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
+MIME-Version: 1.0
+In-Reply-To: <20190620210113.6aa2c022@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
+On 6/20/19 1:01 PM, Stefano Brivio wrote:
+>>> diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
+>>> index 94e5d83db4db..03f51e5192e5 100644
+>>> --- a/net/ipv4/fib_trie.c
+>>> +++ b/net/ipv4/fib_trie.c
+>>> @@ -2078,28 +2078,51 @@ void fib_free_table(struct fib_table *tb)
+>>>  	call_rcu(&tb->rcu, __trie_free_rcu);
+>>>  }
+>>>  
+>>> +static int fib_dump_fnhe_from_leaf(struct fib_alias *fa, struct sk_buff *skb,
+>>> +				   struct netlink_callback *cb,
+>>> +				   int *fa_index, int fa_start)
+>>> +{
+>>> +	struct fib_info *fi = fa->fa_info;
+>>> +	int nhsel;
+>>> +
+>>> +	if (!fi || fi->fib_flags & RTNH_F_DEAD)
+>>> +		return 0;
+>>> +
+>>> +	for (nhsel = 0; nhsel < fib_info_num_path(fi); nhsel++) {
+>>> +		int err;
+>>> +
+>>> +		err = fnhe_dump_buckets(fa, nhsel, skb, cb, fa_index, fa_start);
+>>> +		if (err)
+>>> +			return err;
+>>> +	}
+>>> +
+>>> +	return 0;
+>>> +}  
+>>
+>> fib_info would be the better argument to pass in to the fnhe dump, and
+> 
+> ...we need to pass the table ID to rt_fill_info(). Sure, I can pass
+> that explicitly, but doing so kind of tells me I'm not passing the
+> right argument, with sufficient information. What do you think?
 
-Gateway validation does not need a dst_entry, it only needs the fib
-entry to validate the gateway resolution and egress device. So,
-convert ip6_nh_lookup_table from ip6_pol_route to fib6_table_lookup
-and ip6_route_check_nh to use fib6_lookup over rt6_lookup.
+I think that is preferable to passing fib_alias.
 
-ip6_pol_route is a call to fib6_table_lookup and if successful a call
-to fib6_select_path. From there the exception cache is searched for an
-entry or a dst_entry is created to return to the caller. The exception
-entry is not relevant for gateway validation, so what matters are the
-calls to fib6_table_lookup and then fib6_select_path.
+> 
+>> I think the loop over where the bucket is should be in route.c as well.
+>> So how about fib_info_dump_fnhe() as the helper exposed from route.c,
+>> and it does the loop over nexthops and calls fnhe_dump_buckets.
+> 
+> Yes, I could do that conveniently if I'm passing a fib_info there. I'm
+> stlll undecided if it's worth it, I guess I don't really have a
+> preference.
+> 
+>> As for the loop, you could fill an skb without finishing a bucket inside
+>> of a nexthop so you need top track which nexthop is current as well.
+> 
+> I think this is not a problem, and also checked that selftests trigger
+> this. Buckets are transparent to the counter for partial dumps (s_fa),
+> they are just an arbitrary grouping from that perspective, just like
+> items on the chain for the same bucket.
+> 
+> Take this example, s_i values in [], s_fa values in ():
+> 
+>   node (fa) #1 [1]
+>     nexthop #1
+>     bucket #1 -> #0 in chain (1)
+>     bucket #2 -> #0 in chain (2) -> #1 in chain (3) -> #2 in chain (4)
+>     bucket #3 -> #0 in chain (5) -> #1 in chain (6)
+> 
+>     nexthop #2
+>     bucket #1 -> #0 in chain (7) -> #1 in chain (8)
+>     bucket #2 -> #0 in chain (9)
+>   --
+>   node (fa) #2 [2]
+>     nexthop #1
+>     bucket #1 -> #0 in chain (1) -> #1 in chain (2)
+>     bucket #2 -> #0 in chain (3)
+> 
+> 
+> If I stop at (3), (4), (7) for "node #1", or at (2) for "node #2", it
+> doesn't really matter, because nexthops and buckets are always
+> traversed in the same way (walking flattens all that).
+> 
+> For IPv4, I could even drop the in-tree/in-node distinction (s_i/s_fa).
+> But accounting becomes terribly inconvenient though, and it would be
+> inconsistent with what I needed to do for IPv6 (skip/skip_in_node): we
+> have 'sernum' there, which is used to mark what node we need to restart
+> from in case of changes. Within a node, however, I can't make any
+> assumptions like that, so if the fib6 tree changes, I'll restart from
+> the beginning of the node (see discussion with Martin on v1).
+> 
+> My idea would be to keep it like it is at the moment, and later make it
+> as "accurate" as it is on IPv6, introducing something like 'sernum'. If
+> we start with this, it will be more convenient to do that later.
+> 
 
-Similarly, rt6_lookup can be replaced with a call to fib6_lookup with
-RT6_LOOKUP_F_IFACE set in flags (saddr is not set for gateway validation,
-so RT6_LOOKUP_F_HAS_SADDR is not relevant). From there ip6_pol_route_lookup
-lookup function is flipped to fib6_table_lookup for the per-table search.
-Again, the exception cache search is not relevant, only the lookup with
-path selection.
-
-Adjust the users, ip6_route_check_nh_onlink and ip6_route_check_nh to
-handle a fib6_info vs a rt6_info when performing validation checks.
-
-Existing selftests fib-onlink-tests.sh and fib_tests.sh used to verify
-the changes.
-
-Signed-off-by: David Ahern <dsahern@gmail.com>
----
- net/ipv6/route.c | 119 ++++++++++++++++++++++++++-----------------------------
- 1 file changed, 57 insertions(+), 62 deletions(-)
-
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index c4d285fe0adc..4937084610b5 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -3131,10 +3131,9 @@ static int ip6_dst_gc(struct dst_ops *ops)
- 	return entries > rt_max_size;
- }
- 
--static struct rt6_info *ip6_nh_lookup_table(struct net *net,
--					    struct fib6_config *cfg,
--					    const struct in6_addr *gw_addr,
--					    u32 tbid, int flags)
-+static int ip6_nh_lookup_table(struct net *net, struct fib6_config *cfg,
-+			       const struct in6_addr *gw_addr, u32 tbid,
-+			       int flags, struct fib6_result *res)
- {
- 	struct flowi6 fl6 = {
- 		.flowi6_oif = cfg->fc_ifindex,
-@@ -3142,25 +3141,23 @@ static struct rt6_info *ip6_nh_lookup_table(struct net *net,
- 		.saddr = cfg->fc_prefsrc,
- 	};
- 	struct fib6_table *table;
--	struct rt6_info *rt;
-+	int err;
- 
- 	table = fib6_get_table(net, tbid);
- 	if (!table)
--		return NULL;
-+		return -EINVAL;
- 
- 	if (!ipv6_addr_any(&cfg->fc_prefsrc))
- 		flags |= RT6_LOOKUP_F_HAS_SADDR;
- 
- 	flags |= RT6_LOOKUP_F_IGNORE_LINKSTATE;
--	rt = ip6_pol_route(net, table, cfg->fc_ifindex, &fl6, NULL, flags);
- 
--	/* if table lookup failed, fall back to full lookup */
--	if (rt == net->ipv6.ip6_null_entry) {
--		ip6_rt_put(rt);
--		rt = NULL;
--	}
-+	err = fib6_table_lookup(net, table, cfg->fc_ifindex, &fl6, res, flags);
-+	if (!err && res->f6i != net->ipv6.fib6_null_entry)
-+		fib6_select_path(net, res, &fl6, cfg->fc_ifindex,
-+				 cfg->fc_ifindex != 0, NULL, flags);
- 
--	return rt;
-+	return err;
- }
- 
- static int ip6_route_check_nh_onlink(struct net *net,
-@@ -3168,29 +3165,19 @@ static int ip6_route_check_nh_onlink(struct net *net,
- 				     const struct net_device *dev,
- 				     struct netlink_ext_ack *extack)
- {
--	u32 tbid = l3mdev_fib_table(dev) ? : RT_TABLE_MAIN;
-+	u32 tbid = l3mdev_fib_table_rcu(dev) ? : RT_TABLE_MAIN;
- 	const struct in6_addr *gw_addr = &cfg->fc_gateway;
--	u32 flags = RTF_LOCAL | RTF_ANYCAST | RTF_REJECT;
--	struct fib6_info *from;
--	struct rt6_info *grt;
-+	struct fib6_result res = {};
- 	int err;
- 
--	err = 0;
--	grt = ip6_nh_lookup_table(net, cfg, gw_addr, tbid, 0);
--	if (grt) {
--		rcu_read_lock();
--		from = rcu_dereference(grt->from);
--		if (!grt->dst.error &&
--		    /* ignore match if it is the default route */
--		    from && !ipv6_addr_any(&from->fib6_dst.addr) &&
--		    (grt->rt6i_flags & flags || dev != grt->dst.dev)) {
--			NL_SET_ERR_MSG(extack,
--				       "Nexthop has invalid gateway or device mismatch");
--			err = -EINVAL;
--		}
--		rcu_read_unlock();
--
--		ip6_rt_put(grt);
-+	err = ip6_nh_lookup_table(net, cfg, gw_addr, tbid, 0, &res);
-+	if (!err && !(res.fib6_flags & RTF_REJECT) &&
-+	    /* ignore match if it is the default route */
-+	    !ipv6_addr_any(&res.f6i->fib6_dst.addr) &&
-+	    (res.fib6_type != RTN_UNICAST || dev != res.nh->fib_nh_dev)) {
-+		NL_SET_ERR_MSG(extack,
-+			       "Nexthop has invalid gateway or device mismatch");
-+		err = -EINVAL;
- 	}
- 
- 	return err;
-@@ -3203,47 +3190,51 @@ static int ip6_route_check_nh(struct net *net,
- {
- 	const struct in6_addr *gw_addr = &cfg->fc_gateway;
- 	struct net_device *dev = _dev ? *_dev : NULL;
--	struct rt6_info *grt = NULL;
-+	int flags = RT6_LOOKUP_F_IFACE;
-+	struct fib6_result res = {};
- 	int err = -EHOSTUNREACH;
- 
- 	if (cfg->fc_table) {
--		int flags = RT6_LOOKUP_F_IFACE;
--
--		grt = ip6_nh_lookup_table(net, cfg, gw_addr,
--					  cfg->fc_table, flags);
--		if (grt) {
--			if (grt->rt6i_flags & RTF_GATEWAY ||
--			    (dev && dev != grt->dst.dev)) {
--				ip6_rt_put(grt);
--				grt = NULL;
--			}
--		}
-+		err = ip6_nh_lookup_table(net, cfg, gw_addr,
-+					  cfg->fc_table, flags, &res);
-+		/* gw_addr can not require a gateway or resolve to a reject
-+		 * route. If a device is given, it must match the result.
-+		 */
-+		if (err || res.fib6_flags & RTF_REJECT ||
-+		    res.nh->fib_nh_gw_family ||
-+		    (dev && dev != res.nh->fib_nh_dev))
-+			err = -EHOSTUNREACH;
- 	}
- 
--	if (!grt)
--		grt = rt6_lookup(net, gw_addr, NULL, cfg->fc_ifindex, NULL, 1);
-+	if (err < 0) {
-+		struct flowi6 fl6 = {
-+			.flowi6_oif = cfg->fc_ifindex,
-+			.daddr = *gw_addr,
-+		};
- 
--	if (!grt)
--		goto out;
-+		err = fib6_lookup(net, cfg->fc_ifindex, &fl6, &res, flags);
-+		if (err || res.fib6_flags & RTF_REJECT ||
-+		    res.nh->fib_nh_gw_family)
-+			err = -EHOSTUNREACH;
-+
-+		if (err)
-+			return err;
-+
-+		fib6_select_path(net, &res, &fl6, cfg->fc_ifindex,
-+				 cfg->fc_ifindex != 0, NULL, flags);
-+	}
- 
-+	err = 0;
- 	if (dev) {
--		if (dev != grt->dst.dev) {
--			ip6_rt_put(grt);
--			goto out;
--		}
-+		if (dev != res.nh->fib_nh_dev)
-+			err = -EHOSTUNREACH;
- 	} else {
--		*_dev = dev = grt->dst.dev;
--		*idev = grt->rt6i_idev;
-+		*_dev = dev = res.nh->fib_nh_dev;
-+		*idev = __in6_dev_get(dev);
- 		dev_hold(dev);
--		in6_dev_hold(grt->rt6i_idev);
-+		in6_dev_hold(*idev);
- 	}
- 
--	if (!(grt->rt6i_flags & RTF_GATEWAY))
--		err = 0;
--
--	ip6_rt_put(grt);
--
--out:
- 	return err;
- }
- 
-@@ -3284,11 +3275,15 @@ static int ip6_validate_gw(struct net *net, struct fib6_config *cfg,
- 			goto out;
- 		}
- 
-+		rcu_read_lock();
-+
- 		if (cfg->fc_flags & RTNH_F_ONLINK)
- 			err = ip6_route_check_nh_onlink(net, cfg, dev, extack);
- 		else
- 			err = ip6_route_check_nh(net, cfg, _dev, idev);
- 
-+		rcu_read_unlock();
-+
- 		if (err)
- 			goto out;
- 	}
--- 
-2.11.0
+ok, if you have it covered. can you add that description above to the
+commit message. Be good to capture how it is covered.
 
