@@ -2,95 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E35C4C53E
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 04:16:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D91114C54A
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 04:20:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731069AbfFTCP7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 22:15:59 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:57213 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726349AbfFTCP6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Jun 2019 22:15:58 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 45TlmB4tdGz9s3l;
-        Thu, 20 Jun 2019 12:15:54 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1560996955;
-        bh=WYZIHceZurM550G0nBpWksLmBz0WZT6hiqxdE989L4g=;
-        h=Date:From:To:Cc:Subject:From;
-        b=K0CYk8QswAeS0bsySxycLfLgZuK6PaglPJhch5ZKldiFYhr4oSHQ/2081ZvkZEULr
-         fWsWVtSkLO8+wdRYfZO5nWCt/s8Fnj4KlaiZzd4Y6SMWkviivp0f7WHemK8JjYj7zV
-         ye2aQaeP4tqoVNRZ7rIBzoNhqpHUNjpj9E1Cc/PzslXAK4Gk0HX7xksgIkww867mCz
-         kqLxtcq9Y4rh3wK2mpu07W61DqZT/3uR0mwddOhk56UA6IOTVDm2KMKQ2AQ9EtZIX8
-         FBtp/QbCVZFBvIYC98s7U2wLGBR4mfQogTJIDyB6s3pkKy+iSYXPESw62nf3u8eSth
-         xTgvVyWdB/PVA==
-Date:   Thu, 20 Jun 2019 12:15:53 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@mellanox.com>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Florian Westphal <fw@strlen.de>
-Subject: linux-next: manual merge of the net-next tree with the rdma tree
-Message-ID: <20190620121553.16f2297f@canb.auug.org.au>
+        id S1731289AbfFTCUL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 22:20:11 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:39841 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726389AbfFTCUG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 22:20:06 -0400
+Received: by mail-io1-f69.google.com with SMTP id y13so2288609iol.6
+        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 19:20:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=Iu/xrxl9AYtNlQ8bWEvL7In5eO8Bm3o3UBlzw7LpR/M=;
+        b=kHM3S9QAsrMNd99QlmXT3gmiWmh15TkwmUcpiD0y/6Lo9jVOS++L5H0LprHl1kWIXu
+         h703DL8tCZE2NQxWMBjx8yzhZ47l7TjZ8NdGYvA0Hmz43wIHQURYzrRbQbaGb7cSnk5i
+         HBif5RMW7qsY/oVShK09p8qqHqO/pXpnhIglXb2lUjinnJkYe7N3dkX1aYUGeZggK//y
+         GnWhnXNXvXRJVrQxz/EZnFrQhaTuRYoR0kjpeKCBC/XAVFFyAwPnU8/L5q3J+w6szTym
+         lKWUTq50CsE8imfW0gYc5byAUhgGVLiE2eH9+cwStvipolMNLxRRnizNCj9QHgZ/cp8K
+         K4AQ==
+X-Gm-Message-State: APjAAAUCX2j8i7EBwTt0nqKMDkXokOCOJyjdUCusMB9gqEpGBjpaJr4D
+        msUrR247xXJHMEiU6bUzV0167ubnnh/EIL7fbXIjbZh+iipO
+X-Google-Smtp-Source: APXvYqz2n//t+tr5NDxBvenma2q2JRIDk3hW0Mt3KSesG2RKEmakpCn7oKjUbjOoPYEOB4m8eG5DFCgOJBJolyCrwoaKO691U600
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- boundary="Sig_/AQcJa7AwP=cW.Tdh_kvnKV="; protocol="application/pgp-signature"
+X-Received: by 2002:a5d:9b1a:: with SMTP id y26mr12461285ion.238.1560997205638;
+ Wed, 19 Jun 2019 19:20:05 -0700 (PDT)
+Date:   Wed, 19 Jun 2019 19:20:05 -0700
+In-Reply-To: <00000000000001de810588363aaf@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f00cf1058bb7fb56@google.com>
+Subject: Re: KASAN: slab-out-of-bounds Read in p54u_load_firmware_cb
+From:   syzbot <syzbot+6d237e74cdc13f036473@syzkaller.appspotmail.com>
+To:     andreyknvl@google.com, chunkeey@googlemail.com,
+        davem@davemloft.net, kvalo@codeaurora.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/AQcJa7AwP=cW.Tdh_kvnKV=
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+syzbot has found a reproducer for the following crash on:
 
-Hi all,
+HEAD commit:    9939f56e usb-fuzzer: main usb gadget fuzzer driver
+git tree:       https://github.com/google/kasan.git usb-fuzzer
+console output: https://syzkaller.appspot.com/x/log.txt?x=135e29faa00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=df134eda130bb43a
+dashboard link: https://syzkaller.appspot.com/bug?extid=6d237e74cdc13f036473
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=175d946ea00000
 
-Today's linux-next merge of the net-next tree got a conflict in:
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+6d237e74cdc13f036473@syzkaller.appspotmail.com
 
-  drivers/infiniband/hw/nes/nes.c
+usb 3-1: Direct firmware load for isl3887usb failed with error -2
+usb 3-1: Firmware not found.
+==================================================================
+BUG: KASAN: slab-out-of-bounds in p54u_load_firmware_cb.cold+0x97/0x13d  
+drivers/net/wireless/intersil/p54/p54usb.c:936
+Read of size 8 at addr ffff8881c9cf7588 by task kworker/1:5/2759
 
-between commit:
+CPU: 1 PID: 2759 Comm: kworker/1:5 Not tainted 5.2.0-rc5+ #11
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Workqueue: events request_firmware_work_func
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0xca/0x13e lib/dump_stack.c:113
+  print_address_description+0x67/0x231 mm/kasan/report.c:188
+  __kasan_report.cold+0x1a/0x32 mm/kasan/report.c:317
+  kasan_report+0xe/0x20 mm/kasan/common.c:614
+  p54u_load_firmware_cb.cold+0x97/0x13d  
+drivers/net/wireless/intersil/p54/p54usb.c:936
+  request_firmware_work_func+0x126/0x242  
+drivers/base/firmware_loader/main.c:785
+  process_one_work+0x905/0x1570 kernel/workqueue.c:2269
+  worker_thread+0x96/0xe20 kernel/workqueue.c:2415
+  kthread+0x30b/0x410 kernel/kthread.c:255
+  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
 
-  2d3c72ed5041 ("rdma: Remove nes")
+Allocated by task 1612:
+  save_stack+0x1b/0x80 mm/kasan/common.c:71
+  set_track mm/kasan/common.c:79 [inline]
+  __kasan_kmalloc mm/kasan/common.c:489 [inline]
+  __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:462
+  kmalloc include/linux/slab.h:547 [inline]
+  syslog_print kernel/printk/printk.c:1346 [inline]
+  do_syslog kernel/printk/printk.c:1519 [inline]
+  do_syslog+0x4f4/0x12e0 kernel/printk/printk.c:1493
+  kmsg_read+0x8a/0xb0 fs/proc/kmsg.c:40
+  proc_reg_read+0x1c1/0x280 fs/proc/inode.c:221
+  __vfs_read+0x76/0x100 fs/read_write.c:425
+  vfs_read+0x18e/0x3d0 fs/read_write.c:461
+  ksys_read+0x127/0x250 fs/read_write.c:587
+  do_syscall_64+0xb7/0x560 arch/x86/entry/common.c:301
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
-from the rdma tree and commit:
+Freed by task 1612:
+  save_stack+0x1b/0x80 mm/kasan/common.c:71
+  set_track mm/kasan/common.c:79 [inline]
+  __kasan_slab_free+0x130/0x180 mm/kasan/common.c:451
+  slab_free_hook mm/slub.c:1421 [inline]
+  slab_free_freelist_hook mm/slub.c:1448 [inline]
+  slab_free mm/slub.c:2994 [inline]
+  kfree+0xd7/0x280 mm/slub.c:3949
+  syslog_print kernel/printk/printk.c:1405 [inline]
+  do_syslog kernel/printk/printk.c:1519 [inline]
+  do_syslog+0xff3/0x12e0 kernel/printk/printk.c:1493
+  kmsg_read+0x8a/0xb0 fs/proc/kmsg.c:40
+  proc_reg_read+0x1c1/0x280 fs/proc/inode.c:221
+  __vfs_read+0x76/0x100 fs/read_write.c:425
+  vfs_read+0x18e/0x3d0 fs/read_write.c:461
+  ksys_read+0x127/0x250 fs/read_write.c:587
+  do_syscall_64+0xb7/0x560 arch/x86/entry/common.c:301
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
-  2638eb8b50cf ("net: ipv4: provide __rcu annotation for ifa_list")
+The buggy address belongs to the object at ffff8881c9cf7180
+  which belongs to the cache kmalloc-1k of size 1024
+The buggy address is located 8 bytes to the right of
+  1024-byte region [ffff8881c9cf7180, ffff8881c9cf7580)
+The buggy address belongs to the page:
+page:ffffea0007273d00 refcount:1 mapcount:0 mapping:ffff8881dac02a00  
+index:0x0 compound_mapcount: 0
+flags: 0x200000000010200(slab|head)
+raw: 0200000000010200 dead000000000100 dead000000000200 ffff8881dac02a00
+raw: 0000000000000000 00000000000e000e 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
 
-from the net-next tree.
+Memory state around the buggy address:
+  ffff8881c9cf7480: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff8881c9cf7500: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> ffff8881c9cf7580: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+                       ^
+  ffff8881c9cf7600: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff8881c9cf7680: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
 
-I fixed it up (I removed the file) and can carry the fix as necessary.
-This is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/AQcJa7AwP=cW.Tdh_kvnKV=
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl0K7FkACgkQAVBC80lX
-0GwxCwf/T2n4IKaulRdTQDeyekS+YVT3LeCTwTxZNvrRJkU1dAHJZ6DA2xxey8lP
-nAts5MFB1X0FHxjqPghUBnTh5Ki+ssBAuDEgoNXxTSdVQpHa7FUlXmsTfpikCOUs
-fJL0oblVxnjAtcM7DGo2oDJFLc28h5uUnS30UH5dbLM8IFIcEwtxYQ8Rueu4aRlP
-4W5ngdslZZSC/P9l5+uixNocLZEGWBv0nq3YJY7EzKi9/RHUntmNf2V3EN3dt7mC
-30m7ABR98uaFHdlmoveOBhccT9lywOEqA3Ma01s3e6XM4trrP5KBu4kOBbCkw7tw
-Fr9//fVNf69LVKN+X3vVBXpzbgEKWg==
-=CpmS
------END PGP SIGNATURE-----
-
---Sig_/AQcJa7AwP=cW.Tdh_kvnKV=--
