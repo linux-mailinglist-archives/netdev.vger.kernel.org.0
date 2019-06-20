@@ -2,136 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 752704D27A
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 17:53:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3562F4D27E
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 17:54:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727071AbfFTPxh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 11:53:37 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:51855 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726551AbfFTPxh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 11:53:37 -0400
-Received: by mail-wm1-f66.google.com with SMTP id 207so3601992wma.1
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 08:53:35 -0700 (PDT)
+        id S1727144AbfFTPyF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 11:54:05 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:46613 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726562AbfFTPyF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 11:54:05 -0400
+Received: by mail-wr1-f68.google.com with SMTP id n4so3521282wrw.13;
+        Thu, 20 Jun 2019 08:54:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=59sOw1Oebt3fIvV/+8aXEs4eROjOmxKYdJI1aO6UkgQ=;
-        b=SISGPHft8zTQqSB7wq9CtPBCrHv7OnTSGwBse3rRTdsMB0RWWaf1RHLrT00hMVfeTW
-         M2UW6hMTOaUuCTNr7ieSaeMF+xgAU5ikzJaJFSIv/Yapd0nB28qJJwAsGPPRrUZ5lgSa
-         xo8OfLTkfmmTe1bjGw3XibDB2iXyZCvrlpqTitRgCl9LgF55HDyvbf3WRseKSHdP20ro
-         bgU5e1lQ4v6/l3CJYgWxUGFtBc570LRgiaCAkypokEid2/TjnhmGPTx3UlVJjASgGmX3
-         NsivP/b8m2CssCFQoHhdFi2mgyFb2M/DRAPFGQJIBDJ2WU6ZT+TnJtqcI0MdBebjPzSf
-         IlVw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=q2BZSgLwxymATwcz5mZeMXxgTAlopkINs/PMNefIvUU=;
+        b=V44Esc+XKQSOQjNnaxw2MmMTKdJaJKQDxq17rl0lBAneRfZN1f8XeL5yyjyQyrOSOa
+         FOfj2kwyNRS6HcW9PAPst6IjjKKkU3xxvrLkESfhmQZAPNvN6EkfJnAbjkY3PoX1v35I
+         0monHG7qNbVh+PckIESPcARdhbOow9+mlJxI6YjsIIqmz532OE0y3GP28s3Ogpzt4z6/
+         /n/pZlnjpYEvB1tlUCbEZawOHnoFxPDA+q5gLVoWxYEuh5iN8f5oZEqewN4ttmGHe0P3
+         XoQRJJUakLeW6GigtSRWsIH0o1zAzuVucDEgR2zJlzBu4kv0rX7gVRK2zoVE0SSAu+rV
+         +ajg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=59sOw1Oebt3fIvV/+8aXEs4eROjOmxKYdJI1aO6UkgQ=;
-        b=OaM4Q5osBU4W1aXbYVO9sbOCeGAVy1OppeiizUsbq8Ab8WYaOOBtv2ieoBs/NQ9oze
-         0fUzqnuL+l6O067bQ6FZv2Cc02jCoV6lAIY4YbCmD4KNDNkXidI7uJtgzCTPa77SX2jk
-         ISZgSPMQbSyR4BlbVw+C3ngE+XPYPZg/AIrCM77t5x5xRFck5k34k4zkJgrpgzoSXMmL
-         OCArpILSamItt6XYRg7g15pIs5Dc17jMRIZ4OhlEsQHS0xFRF6fJshNlmnitLtk8Catc
-         hnzhfFqGtnsqZcSAWJ1b5hCg04K5oD3rPjdnZNtk3ISwBinLv5qQd0mBaYIrmEhdfUdv
-         ZUrw==
-X-Gm-Message-State: APjAAAWovV51VHKPfmRZi/c1MQQW0IoukP2C0rSuuzx62156AQcFP1yB
-        o36/Mr6fgwMgy/+qFL0eJBI=
-X-Google-Smtp-Source: APXvYqxDVaxLlh9Pgi3fgjO+oeP/eh0en3IwzT1vQwqAGLE2Dmzj3CCJ9WSGtoatnLTotlSoJqFsFA==
-X-Received: by 2002:a1c:e718:: with SMTP id e24mr237949wmh.104.1561046015032;
-        Thu, 20 Jun 2019 08:53:35 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8bf3:bd00:fdf8:4ce8:7b2:7440? (p200300EA8BF3BD00FDF84CE807B27440.dip0.t-ipconnect.de. [2003:ea:8bf3:bd00:fdf8:4ce8:7b2:7440])
-        by smtp.googlemail.com with ESMTPSA id u25sm5113845wmc.3.2019.06.20.08.53.34
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 20 Jun 2019 08:53:34 -0700 (PDT)
-Subject: Re: network unstable on odroid-c1/meson8b.
-To:     Aymeric <mulx@aplu.fr>
-Cc:     netdev@vger.kernel.org, linux-amlogic@lists.infradead.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-References: <ff9a72bf-7eeb-542b-6292-dd70abdc4e79@aplu.fr>
- <0df100ad-b331-43db-10a5-3257bd09938d@gmail.com>
- <d2e298040f4887c547da11178f9ea64f@aplu.fr>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <1f34f3b6-2c70-9ff3-3f5a-597e4bd9c66f@gmail.com>
-Date:   Thu, 20 Jun 2019 17:53:25 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.1
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=q2BZSgLwxymATwcz5mZeMXxgTAlopkINs/PMNefIvUU=;
+        b=W1a5DR7QWla8dMqL7ZJkF2lwXYFaTo2zPESK+khtRq6oIn86dz/GmeM9mRifljfJsv
+         RQa1HcktTBD8+JRdR8yNqeVkxlLnYdD9Y9+2tusDRSSTFo3wUdAjb874ZnZ3lDu640OG
+         CJ4+lCgGh6/sTy+evNMbcfoMwjY5SoWze0bcGCd1CJ1gU9LGY24kMnFwkiZa4u897dWA
+         xPuvW3o7sx+lz3OZsmnszDdLUlh1cA8ymj7MLwMzHH88ouOxn6F/nXVF1aD91o37ndwn
+         xs3xy4BgQSV+iuGShBD/yHktxdmMO0MYFkBET8R1+L+nLBDo2uxppDNmGxxvzIVXspIP
+         iSYA==
+X-Gm-Message-State: APjAAAUhD40wkoY+aPoNRLkloVG9xDAF+PDl+F4gKy5dYgwoEw3SUYJ4
+        9WTMQXzWkPHLggu3tteHNCgr2Y9tdEU=
+X-Google-Smtp-Source: APXvYqwjinCWK/aSKbDmwODZdByqPtonNAHy81M6XwA7AeZJB8EfRvgjyd6heFibzYj9+zCcNldc5Q==
+X-Received: by 2002:adf:b1ca:: with SMTP id r10mr15094293wra.156.1561046042286;
+        Thu, 20 Jun 2019 08:54:02 -0700 (PDT)
+Received: from jernej-laptop.localnet (cpe-86-58-52-202.static.triera.net. [86.58.52.202])
+        by smtp.gmail.com with ESMTPSA id o13sm34914608wra.92.2019.06.20.08.53.59
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 20 Jun 2019 08:54:00 -0700 (PDT)
+From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To:     linux-sunxi@googlegroups.com, megous@megous.com
+Cc:     Maxime Ripard <maxime.ripard@bootlin.com>,
+        Chen-Yu Tsai <wens@csie.org>, Rob Herring <robh+dt@kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com
+Subject: Re: [linux-sunxi] [PATCH v7 0/6] Add support for Orange Pi 3
+Date:   Thu, 20 Jun 2019 17:53:58 +0200
+Message-ID: <2263144.KN5DhQ2VKD@jernej-laptop>
+In-Reply-To: <20190620134748.17866-1-megous@megous.com>
+References: <20190620134748.17866-1-megous@megous.com>
 MIME-Version: 1.0
-In-Reply-To: <d2e298040f4887c547da11178f9ea64f@aplu.fr>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20.06.2019 09:55, Aymeric wrote:
-> Hi,
-> On 2019-06-20 00:14, Heiner Kallweit wrote:
->> On 19.06.2019 22:18, Aymeric wrote:
->>> Hello all,
->>>
-> 
->> Kernel 3.10 didn't have a dedicated RTL8211F PHY driver yet, therefore
->> I assume the genphy driver was used. Do you have a line with
->> "attached PHY driver" in dmesg output of the vendor kernel?
-> 
-> No.
-> Here is the full output of the dmesg from vendor kernel [¹].
-> 
-> I've also noticed something strange, it might be linked, but mac address of the board is set to a random value when using mainline kernel and I've to set it manually but not when using vendor kernel.
-> 
->>
->> The dedicated PHY driver takes care of the tx delay, if the genphy
->> driver is used we have to rely on what uboot configured.
->> But if we indeed had an issue with a misconfigured delay, I think
->> the connection shouldn't be fine with just another link partner.
->> Just to have it tested you could make rtl8211f_config_init() in
->> drivers/net/phy/realtek.c a no-op (in current kernels).
->>
-> 
-> I'm not an expert here, just adding a "return 0;" here[²] would be enough?
-> 
->> And you could compare at least the basic PHY registers 0x00 - 0x30
->> with both kernel versions, e.g. with phytool.
->>
-> 
-> They are not the same but I don't know what I'm looking for, so for kernel 3.10 [³] and for kernel 5.1.12 [⁴].
-> 
-> Aymeric
-> 
-> [¹]: https://paste.aplu.fr/?38ef95b44ebdbfc3#G666/YbhgU+O+tdC/2HaimUCigm8ZTB44qvQip/HJ5A=
-> [²]: https://github.com/torvalds/linux/blob/241e39004581475b2802cd63c111fec43bb0123e/drivers/net/phy/realtek.c#L164
-> [³]: https://paste.aplu.fr/?2dde1c32d5c68f4c#6xIa8MjTm6jpI6citEJAqFTLMMHDjFZRet/M00/EwjU=
-> [⁴]: https://paste.aplu.fr/?32130e9bcb05dde7#N/xdnvb5GklcJtiOxMpTCm+9gsUliRwH8X3dcwSV+ng=
-> 
+Hi!
 
-The vendor kernel has some, but not really much magic:
-https://github.com/hardkernel/linux/blob/odroidc-3.10.y/drivers/amlogic/ethernet/phy/am_rtl8211f.c
-The write to RTL8211F_PHYCR2 is overwritten later, therefore we don't have to consider it.
+Dne =C4=8Detrtek, 20. junij 2019 ob 15:47:42 CEST je megous via linux-sunxi=
+=20
+napisal(a):
+> From: Ondrej Jirman <megous@megous.com>
+>=20
+> This series implements support for Xunlong Orange Pi 3 board.
+>=20
+> - ethernet support (patches 1-3)
 
-The following should make the current Realtek PHY driver behave like in the vendor driver.
-Could you test it?
+Correct me if I'm wrong, but patches 1-2 aren't strictly necessary for=20
+OrangePi 3, right? H6 DTSI already has emac node with dual compatible (H6 a=
+nd=20
+A64) and since OrangePi 3 uses gigabit ethernet, quirk introduced by patche=
+s=20
+1-2 are not needed.
+
+However, it is nice to have this 100 Mbit fix, because most STB DTS will ne=
+ed=20
+it.
+
+Best regards,
+Jernej
+
+> - HDMI support (patches 4-6)
+>=20
+> For some people, ethernet doesn't work after reboot (but works on cold
+> boot), when the stmmac driver is built into the kernel. It works when
+> the driver is built as a module. It's either some timing issue, or power
+> supply issue or a combination of both. Module build induces a power
+> cycling of the phy.
+>=20
+> I encourage people with this issue, to build the driver into the kernel,
+> and try to alter the reset timings for the phy in DTS or
+> startup-delay-us and report the findings.
+>=20
+>=20
+> Please take a look.
+>=20
+> thank you and regards,
+>   Ondrej Jirman
+>=20
+>=20
+> Changes in v7:
+> - dropped stored reference to connector_pdev as suggested by Jernej
+> - added forgotten dt-bindings reviewed-by tag
+>=20
+> Changes in v6:
+> - added dt-bindings reviewed-by tag
+> - fix wording in stmmac commit (as suggested by Sergei)
+>=20
+> Changes in v5:
+> - dropped already applied patches (pinctrl patches, mmc1 pinconf patch)
+> - rename GMAC-3V3 -> GMAC-3V to match the schematic (Jagan)
+> - changed hdmi-connector's ddc-supply property to ddc-en-gpios
+>   (Rob Herring)
+>=20
+> Changes in v4:
+> - fix checkpatch warnings/style issues
+> - use enum in struct sunxi_desc_function for io_bias_cfg_variant
+> - collected acked-by's
+> - fix compile error in drivers/pinctrl/sunxi/pinctrl-sun9i-a80-r.c:156
+>   caused by missing conversion from has_io_bias_cfg struct member
+>   (I've kept the acked-by, because it's a trivial change, but feel free
+>   to object.) (reported by Martin A. on github)
+>   I did not have A80 pinctrl enabled for some reason, so I did not catch
+>   this sooner.
+> - dropped brcm firmware patch (was already applied)
+> - dropped the wifi dts patch (will re-send after H6 RTC gets merged,
+>   along with bluetooth support, in a separate series)
+>=20
+> Changes in v3:
+> - dropped already applied patches
+> - changed pinctrl I/O bias selection constants to enum and renamed
+> - added /omit-if-no-ref/ to mmc1_pins
+> - made mmc1_pins default pinconf for mmc1 in H6 dtsi
+> - move ddc-supply to HDMI connector node, updated patch descriptions,
+>   changed dt-bindings docs
+>=20
+> Changes in v2:
+> - added dt-bindings documentation for the board's compatible string
+>   (suggested by Clement)
+> - addressed checkpatch warnings and code formatting issues (on Maxime's
+>   suggestions)
+> - stmmac: dropped useless parenthesis, reworded description of the patch
+>   (suggested by Sergei)
+> - drop useles dev_info() about the selected io bias voltage
+> - docummented io voltage bias selection variant macros
+> - wifi: marked WiFi DTS patch and realted mmc1_pins as "DO NOT MERGE",
+>   because wifi depends on H6 RTC support that's not merged yet (suggested
+>   by Clement)
+> - added missing signed-of-bys
+> - changed &usb2otg dr_mode to otg, and added a note about VBUS
+> - improved wording of HDMI driver's DDC power supply patch
+>=20
+> Icenowy Zheng (2):
+>   net: stmmac: sun8i: add support for Allwinner H6 EMAC
+>   net: stmmac: sun8i: force select external PHY when no internal one
+>=20
+> Ondrej Jirman (4):
+>   arm64: dts: allwinner: orange-pi-3: Enable ethernet
+>   dt-bindings: display: hdmi-connector: Support DDC bus enable
+>   drm: sun4i: Add support for enabling DDC I2C bus to sun8i_dw_hdmi glue
+>   arm64: dts: allwinner: orange-pi-3: Enable HDMI output
+>=20
+>  .../display/connector/hdmi-connector.txt      |  1 +
+>  .../dts/allwinner/sun50i-h6-orangepi-3.dts    | 70 +++++++++++++++++++
+>  drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c         | 54 ++++++++++++--
+>  drivers/gpu/drm/sun4i/sun8i_dw_hdmi.h         |  2 +
+>  .../net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 21 ++++++
+>  5 files changed, 144 insertions(+), 4 deletions(-)
 
 
-diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-index a669945eb..f300b1cc9 100644
---- a/drivers/net/phy/realtek.c
-+++ b/drivers/net/phy/realtek.c
-@@ -163,6 +163,10 @@ static int rtl8211f_config_init(struct phy_device *phydev)
- {
- 	u16 val;
- 
-+	phy_write_paged(phydev, 0x0a43, 0x19, 0x0803);
-+	genphy_soft_reset(phydev);
-+	return 0;
-+
- 	/* enable TX-delay for rgmii-{id,txid}, and disable it for rgmii and
- 	 * rgmii-rxid. The RX-delay can be enabled by the external RXDLY pin.
- 	 */
--- 
-2.22.0
 
 
