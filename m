@@ -2,158 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6E8A4C7DC
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 09:07:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AF204C830
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 09:18:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726081AbfFTHHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 03:07:12 -0400
-Received: from mail-eopbgr30083.outbound.protection.outlook.com ([40.107.3.83]:3590
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        id S1726218AbfFTHSq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 03:18:46 -0400
+Received: from mx2.suse.de ([195.135.220.15]:46108 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725872AbfFTHHM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Jun 2019 03:07:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zeSNjYlA6QH4c3HM42jlKgrI5kW2umtF+XqY2HVdudA=;
- b=IZ60QUj2SezKQZ7YqGD/DuMCj6GKp8/pxersFz6Grh+WFVss4JvZVkv7w1XV5YWYyhEaLTm79VTQrXthXhajhfPY8Mm3hB1nGj4ZksFNf8hXpoBWHFUsdSaXPmn8sTVdBCwAblCbHjy4b5ubPL9t9kZBXEvQwW76UPjMPJMRfUE=
-Received: from AM4PR05MB3411.eurprd05.prod.outlook.com (10.171.190.30) by
- AM4PR05MB3492.eurprd05.prod.outlook.com (10.171.187.161) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1987.12; Thu, 20 Jun 2019 07:07:07 +0000
-Received: from AM4PR05MB3411.eurprd05.prod.outlook.com
- ([fe80::1180:59ab:b53a:a27f]) by AM4PR05MB3411.eurprd05.prod.outlook.com
- ([fe80::1180:59ab:b53a:a27f%3]) with mapi id 15.20.1987.014; Thu, 20 Jun 2019
- 07:07:07 +0000
-From:   Paul Blakey <paulb@mellanox.com>
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-CC:     Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>,
-        Yossi Kuperman <yossiku@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Aaron Conole <aconole@redhat.com>,
-        Zhike Wang <wangzhike@jd.com>,
-        Rony Efraim <ronye@mellanox.com>,
-        "nst-kernel@redhat.com" <nst-kernel@redhat.com>,
-        John Hurley <john.hurley@netronome.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Justin Pettit <jpettit@ovn.org>
-Subject: Re: [PATCH net-next 1/3] net/sched: Introduce action ct
-Thread-Topic: [PATCH net-next 1/3] net/sched: Introduce action ct
-Thread-Index: AQHVIFmsY/4/azwa5kOjF2Jw4P/H36ajWjSAgADSnoA=
-Date:   Thu, 20 Jun 2019 07:07:07 +0000
-Message-ID: <a0f2c46b-b559-bcb3-4dd9-500c062405a1@mellanox.com>
-References: <1560259713-25603-1-git-send-email-paulb@mellanox.com>
- <1560259713-25603-2-git-send-email-paulb@mellanox.com>
- <20190619183313.GA2746@localhost.localdomain>
-In-Reply-To: <20190619183313.GA2746@localhost.localdomain>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: PR0P264CA0095.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:100:18::35) To AM4PR05MB3411.eurprd05.prod.outlook.com
- (2603:10a6:205:b::30)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=paulb@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [193.47.165.251]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d6161be2-8aa5-4f6b-8084-08d6f54de7f1
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR05MB3492;
-x-ms-traffictypediagnostic: AM4PR05MB3492:
-x-microsoft-antispam-prvs: <AM4PR05MB34921320C2995D7B5B08971ECFE40@AM4PR05MB3492.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3631;
-x-forefront-prvs: 0074BBE012
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(366004)(346002)(396003)(376002)(39860400002)(189003)(199004)(66066001)(8936002)(31686004)(316002)(478600001)(4326008)(6916009)(53546011)(6506007)(386003)(31696002)(256004)(81166006)(52116002)(6246003)(54906003)(102836004)(64756008)(7736002)(99286004)(66446008)(5660300002)(305945005)(66946007)(76176011)(81156014)(66556008)(3846002)(71200400001)(446003)(66476007)(73956011)(2906002)(8676002)(36756003)(6512007)(25786009)(86362001)(2616005)(71190400001)(53936002)(186003)(6486002)(14454004)(486006)(6436002)(68736007)(26005)(11346002)(476003)(229853002)(6116002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR05MB3492;H:AM4PR05MB3411.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 21iC2EfYWP821Oz3mTtRdydGQoBr9QtKSeB1c7YOGMw5Ljc3trKOkAjN41i/R2ISyYQXXsAOuoUhLIMcLAx22c8C59oDB16NrfqiFolQ+NKfqjiToJKL2xu4tLmIrJ0uVQNgaQSTO4Scz6xnUhgT7QiZrpw1eC8IgDchmQ5Y1nZnGGndDL5MGPLACPVLcP0zFADKtSax0Q5WNBfBgSA0P7FwgsC2M1xt9HujDjYDju692bhgiirxOV5cNIHc1TiIPNRam3eH4HPrSPlOH3TQt4/sUmrlpQrjxAPDkXkZ/F3dMVzwESvcYd2DwmZYS0fXz72YwUUxrdFdIYzyV5qDmSB3jI0qSs7rGgRNsXNBlfx3Wu7Ahzy1o0GC8w/nRehc5O0uGelWC5cpgS75d2TXsoDweS+w8vF5jiWcBcy/jOo=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <919E97A2D8D7F04488DA3066B08A3EC5@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1725875AbfFTHSp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Jun 2019 03:18:45 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 90EBFAF3B;
+        Thu, 20 Jun 2019 07:18:43 +0000 (UTC)
+Subject: Re: [PATCH] mm: mempolicy: handle vma with unmovable pages mapped
+ correctly in mbind
+To:     Yang Shi <yang.shi@linux.alibaba.com>,
+        Michal Hocko <mhocko@kernel.org>
+Cc:     akpm@linux-foundation.org, mgorman@techsingularity.net,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+References: <1560797290-42267-1-git-send-email-yang.shi@linux.alibaba.com>
+ <20190618130253.GH3318@dhcp22.suse.cz>
+ <cf33b724-fdd5-58e3-c06a-1bc563525311@linux.alibaba.com>
+ <20190618182848.GJ3318@dhcp22.suse.cz>
+ <68c2592d-b747-e6eb-329f-7a428bff1f86@linux.alibaba.com>
+ <20190619052133.GB2968@dhcp22.suse.cz>
+ <21a0b20c-5b62-490e-ad8e-26b4b78ac095@suse.cz>
+ <687f4e57-5c50-7900-645e-6ef3a5c1c0c7@linux.alibaba.com>
+ <55eb2ea9-2c74-87b1-4568-b620c7913e17@linux.alibaba.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+Openpgp: preference=signencrypt
+Autocrypt: addr=vbabka@suse.cz; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <d81b36bb-876e-917a-6115-cedf496b4923@suse.cz>
+Date:   Thu, 20 Jun 2019 09:18:41 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.1
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d6161be2-8aa5-4f6b-8084-08d6f54de7f1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jun 2019 07:07:07.4998
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: paulb@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR05MB3492
+In-Reply-To: <55eb2ea9-2c74-87b1-4568-b620c7913e17@linux.alibaba.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpPbiA2LzE5LzIwMTkgOTozMyBQTSwgTWFyY2VsbyBSaWNhcmRvIExlaXRuZXIgd3JvdGU6DQo+
-IE9uIFR1ZSwgSnVuIDExLCAyMDE5IGF0IDA0OjI4OjMxUE0gKzAzMDAsIFBhdWwgQmxha2V5IHdy
-b3RlOg0KPiAuLi4NCj4+ICtzdGF0aWMgaW50IHRjZl9jdF9maWxsX3BhcmFtc19uYXQoc3RydWN0
-IHRjZl9jdF9wYXJhbXMgKnAsDQo+PiArCQkJCSAgc3RydWN0IHRjX2N0ICpwYXJtLA0KPj4gKwkJ
-CQkgIHN0cnVjdCBubGF0dHIgKip0YiwNCj4+ICsJCQkJICBzdHJ1Y3QgbmV0bGlua19leHRfYWNr
-ICpleHRhY2spDQo+PiArew0KPj4gKwlzdHJ1Y3QgbmZfbmF0X3JhbmdlMiAqcmFuZ2U7DQo+PiAr
-DQo+PiArCWlmICghKHAtPmN0X2FjdGlvbiAmIFRDQV9DVF9BQ1RfTkFUKSkNCj4+ICsJCXJldHVy
-biAwOw0KPj4gKw0KPj4gKwlpZiAoIUlTX0VOQUJMRUQoQ09ORklHX05GX05BVCkpIHsNCj4+ICsJ
-CU5MX1NFVF9FUlJfTVNHX01PRChleHRhY2ssICJOZXRmaWx0ZXIgbmF0IGlzbid0IGVuYWJsZWQg
-aW4ga2VybmVsIik7DQo+PiArCQlyZXR1cm4gLUVPUE5PVFNVUFA7DQo+PiArCX0NCj4+ICsNCj4+
-ICsJaWYgKCEocC0+Y3RfYWN0aW9uICYgKFRDQV9DVF9BQ1RfTkFUX1NSQyB8IFRDQV9DVF9BQ1Rf
-TkFUX0RTVCkpKQ0KPj4gKwkJcmV0dXJuIDA7DQo+PiArDQo+PiArCWlmICgocC0+Y3RfYWN0aW9u
-ICYgVENBX0NUX0FDVF9OQVRfU1JDKSAmJg0KPj4gKwkgICAgKHAtPmN0X2FjdGlvbiAmIFRDQV9D
-VF9BQ1RfTkFUX0RTVCkpIHsNCj4+ICsJCU5MX1NFVF9FUlJfTVNHX01PRChleHRhY2ssICJkbmF0
-IGFuZCBzbmF0IGNhbid0IGJlIGVuYWJsZWQgYXQgdGhlIHNhbWUgdGltZSIpOw0KPj4gKwkJcmV0
-dXJuIC1FT1BOT1RTVVBQOw0KPj4gKwl9DQo+PiArDQo+PiArCXJhbmdlID0gJnAtPnJhbmdlOw0K
-Pj4gKwlpZiAodGJbVENBX0NUX05BVF9JUFY0X01JTl0pIHsNCj4+ICsJCXJhbmdlLT5taW5fYWRk
-ci5pcCA9DQo+PiArCQkJbmxhX2dldF9pbl9hZGRyKHRiW1RDQV9DVF9OQVRfSVBWNF9NSU5dKTsN
-Cj4+ICsJCXJhbmdlLT5mbGFncyB8PSBORl9OQVRfUkFOR0VfTUFQX0lQUzsNCj4+ICsJCXAtPmlw
-djRfcmFuZ2UgPSB0cnVlOw0KPj4gKwl9DQo+PiArCWlmICh0YltUQ0FfQ1RfTkFUX0lQVjRfTUFY
-XSkgew0KPj4gKwkJcmFuZ2UtPm1heF9hZGRyLmlwID0NCj4+ICsJCQlubGFfZ2V0X2luX2FkZHIo
-dGJbVENBX0NUX05BVF9JUFY0X01BWF0pOw0KPj4gKwkJcmFuZ2UtPmZsYWdzIHw9IE5GX05BVF9S
-QU5HRV9NQVBfSVBTOw0KPj4gKwkJcC0+aXB2NF9yYW5nZSA9IHRydWU7DQo+PiArCX0gZWxzZSBp
-ZiAocmFuZ2UtPm1pbl9hZGRyLmlwKSB7DQo+PiArCQlyYW5nZS0+bWF4X2FkZHIuaXAgPSByYW5n
-ZS0+bWluX2FkZHIuaXA7DQo+PiArCX0NCj4+ICsNCj4+ICsJaWYgKHRiW1RDQV9DVF9OQVRfSVBW
-Nl9NSU5dKSB7DQo+PiArCQlyYW5nZS0+bWluX2FkZHIuaW42ID0NCj4+ICsJCQlubGFfZ2V0X2lu
-Nl9hZGRyKHRiW1RDQV9DVF9OQVRfSVBWNl9NSU5dKTsNCj4+ICsJCXJhbmdlLT5mbGFncyB8PSBO
-Rl9OQVRfUkFOR0VfTUFQX0lQUzsNCj4+ICsJCXAtPmlwdjRfcmFuZ2UgPSBmYWxzZTsNCj4+ICsJ
-fQ0KPj4gKwlpZiAodGJbVENBX0NUX05BVF9JUFY2X01BWF0pIHsNCj4+ICsJCXJhbmdlLT5tYXhf
-YWRkci5pbjYgPQ0KPj4gKwkJCW5sYV9nZXRfaW42X2FkZHIodGJbVENBX0NUX05BVF9JUFY2X01B
-WF0pOw0KPj4gKwkJcmFuZ2UtPmZsYWdzIHw9IE5GX05BVF9SQU5HRV9NQVBfSVBTOw0KPj4gKwkJ
-cC0+aXB2NF9yYW5nZSA9IGZhbHNlOw0KPj4gKwl9IGVsc2UgaWYgKG1lbWNocl9pbnYoJnJhbmdl
-LT5taW5fYWRkci5pbjYsIDAsDQo+PiArCQkgICBzaXplb2YocmFuZ2UtPm1pbl9hZGRyLmluNikp
-KSB7DQo+PiArCQlyYW5nZS0+bWF4X2FkZHIuaW42ID0gcmFuZ2UtPm1pbl9hZGRyLmluNjsNCj4g
-VGhpcyB3aWxsIG92ZXJ3cml0ZSBpcHY0X21heCBpZiBpdCB3YXMgdXNlZCwgYXMgbWluL21heF9h
-ZGRyIGFyZQ0KPiB1bmlvbnMuDQo+IFdoYXQgYWJvdXQgaGF2aW5nIHRoZSBfTUFYIGhhbmRsaW5n
-IChmb3IgYm90aCBpcHY0LzYpIGluc2lkZSB0aGUNCj4gICBpZiAoLi5fTUlOKSB7IH0gIGJsb2Nr
-ID8NCg0KWWVzIHRoYXQgd2hhdCBJIHBsYW5uZWQgb24gZG9pbmc6DQoNCiDCoMKgwqDCoMKgwqDC
-oCByYW5nZSA9ICZwLT5yYW5nZTsNCiDCoMKgwqDCoMKgwqDCoCBpZiAodGJbVENBX0NUX05BVF9J
-UFY0X01JTl0pIHsNCiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgcC0+aXB2NF9yYW5n
-ZSA9IHRydWU7DQogwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHJhbmdlLT5mbGFncyB8
-PSBORl9OQVRfUkFOR0VfTUFQX0lQUzsNCiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
-cmFuZ2UtPm1pbl9hZGRyLmlwID0NCiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgIG5sYV9nZXRfaW5fYWRkcih0YltUQ0FfQ1RfTkFUX0lQVjRfTUlOXSk7DQoN
-CiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgcmFuZ2UtPm1heF9hZGRyLmlwID0gdGJb
-VENBX0NUX05BVF9JUFY0X01BWF0gPw0KbmxhX2dldF9pbl9hZGRyKHRiW1RDQV9DVF9OQVRfSVBW
-NF9NQVhdKSA6DQogwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHJhbmdlLT5taW5fYWRkci5pcDsNCiDCoMKgwqDC
-oMKgwqDCoCB9IGVsc2UgaWYgKHRiW1RDQV9DVF9OQVRfSVBWNl9NSU5dKSB7DQogwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgIHAtPmlwdjRfcmFuZ2UgPSBmYWxzZTsNCiDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqAgcmFuZ2UtPmZsYWdzIHw9IE5GX05BVF9SQU5HRV9NQVBfSVBT
-Ow0KIMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByYW5nZS0+bWluX2FkZHIuaW42ID0N
-CiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIG5sYV9nZXRf
-aW42X2FkZHIodGJbVENBX0NUX05BVF9JUFY2X01JTl0pOw0KDQogwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgIHJhbmdlLT5tYXhfYWRkci5pbjYgPSB0YltUQ0FfQ1RfTkFUX0lQVjZfTUFY
-XSA/DQpubGFfZ2V0X2luNl9hZGRyKHRiW1RDQV9DVF9OQVRfSVBWNl9NQVhdKSA6DQogwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqAgcmFuZ2UtPm1pbl9hZGRyLmluNjsNCiDCoMKgwqDCoMKgwqDCoCB9DQoNCiDC
-oMKgwqDCoMKgwqDCoCBpZiAodGJbVENBX0NUX05BVF9QT1JUX01JTl0pIHsNCiDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqAgcmFuZ2UtPmZsYWdzIHw9IE5GX05BVF9SQU5HRV9QUk9UT19T
-UEVDSUZJRUQ7DQogwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHJhbmdlLT5taW5fcHJv
-dG8uYWxsID0gDQpubGFfZ2V0X2JlMTYodGJbVENBX0NUX05BVF9QT1JUX01JTl0pOw0KDQogwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHJhbmdlLT5tYXhfcHJvdG8uYWxsID0gdGJbVENB
-X0NUX05BVF9QT1JUX01BWF0/DQpubGFfZ2V0X2JlMTYodGJbVENBX0NUX05BVF9QT1JUX01BWF0p
-IDoNCiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHJhbmdlLT5taW5fcHJvdG8uYWxsOw0KDQoNCg0KDQoN
-Cj4+ICsJfQ0KPj4gKw0K
+On 6/19/19 8:19 PM, Yang Shi wrote:
+>>>> This is getting even more muddy TBH. Is there any reason that we 
+>>>> have to
+>>>> handle this problem during the isolation phase rather the migration?
+>>> I think it was already said that if pages can't be isolated, then
+>>> migration phase won't process them, so they're just ignored.
+>>
+>> Yes，exactly.
+>>
+>>> However I think the patch is wrong to abort immediately when
+>>> encountering such page that cannot be isolated (AFAICS). IMHO it should
+>>> still try to migrate everything it can, and only then return -EIO.
+>>
+>> It is fine too. I don't see mbind semantics define how to handle such 
+>> case other than returning -EIO.
+
+I think it does. There's:
+If MPOL_MF_MOVE is specified in flags, then the kernel *will attempt to
+move all the existing pages* ... If MPOL_MF_STRICT is also specified,
+then the call fails with the error *EIO if some pages could not be moved*
+
+Aborting immediately would be against the attempt to move all.
+
+> By looking into the code, it looks not that easy as what I thought. 
+> do_mbind() would check the return value of queue_pages_range(), it just 
+> applies the policy and manipulates vmas as long as the return value is 0 
+> (success), then migrate pages on the list. We could put the movable 
+> pages on the list by not breaking immediately, but they will be ignored. 
+> If we migrate the pages regardless of the return value, it may break the 
+> policy since the policy will *not* be applied at all.
+
+I think we just need to remember if there was at least one page that
+failed isolation or migration, but keep working, and in the end return
+EIO if there was such page(s). I don't think it breaks the policy. Once
+pages are allocated in a mapping, changing the policy is a best effort
+thing anyway.
+
+>>
+>>
+> 
+
