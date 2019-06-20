@@ -2,74 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED59B4D41B
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 18:47:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E3CC4D422
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 18:49:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726866AbfFTQrl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 12:47:41 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:44518 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726530AbfFTQrk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 12:47:40 -0400
-Received: by mail-io1-f65.google.com with SMTP id s7so568197iob.11
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 09:47:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=o/hnT29lMWp6QTRQYtQKymeDS+vV9ovN1umc06HzvYk=;
-        b=srtOcl/r9aXiqa8ytoKtaZ5RL8Fxh0FcQnqlZkQ1qbb4X/AM3Pcoky77bMyoMd9ffS
-         R/8dRxALs9NerquX6+YCBevy1hmi7rsPDsO057CGwRPSHAyJGARwxz0vtkgqL5gYXa+Y
-         iqOqgqKYOKcfu5xphg0lG1XldEmCecF/B8yCItLtld7nRbIhqYDYuDTA4IZ3+39NqEGG
-         YXSCctLS/CoiS02OR8P9VrIMqn1vx/rV4OYEdYUFo+EydMrQIxwbOsj0wMClyW7+RI+n
-         tkRNTK4SIiQPAIsNqForZ+16+B/+kiheeYRu6KeNwj9N8mxZOdXBKwoRsWu1jeeYayes
-         M56g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=o/hnT29lMWp6QTRQYtQKymeDS+vV9ovN1umc06HzvYk=;
-        b=ejSwdF5uSaoBeBuhrBR/VznWWEjuFTwRFpOPa3Wk/yWAlgsutJ2/kbntBmtiZcsUpy
-         DcW0kD+p72Sed2Ia7yL/QbvtXECkxRa0pi9yrjYi0pExUrTrQQ9JUOUMF6sb3KtpcwYY
-         +603omdQTObPItE7MrqUXbkuSKiaCetg6XACRkYtAAK05iet9YDjON3j+BL0O8ep1YYA
-         XMlJn8e9LJLzMPFbGTPn3dZhsmJBhkWeSVH5rdtkEGir+l5M8QkrjgYQEGhrQ7O2dmQi
-         75iX5Ziv/O4DmanIM6mTjggsVnlAn27y2eoS+sxFNpffDfg6xh/hdwLdxBHy5FcdwQ7t
-         oPPQ==
-X-Gm-Message-State: APjAAAUi7SDeh6ENdNJynZXby8K2ftVjkV3KT+kCjf4q0+HQD+t+KFst
-        0Sg8vC7wP9a3r2PwW24lcjSNWe4o
-X-Google-Smtp-Source: APXvYqykfP/8crkZjnW6uwvDC7xzBJQyZCywO7jzweIQDJ/hhwKC3JpmwoM9Uk/zKyt1CeCBQ88/QQ==
-X-Received: by 2002:a02:a581:: with SMTP id b1mr42899873jam.84.1561049259841;
-        Thu, 20 Jun 2019 09:47:39 -0700 (PDT)
-Received: from ?IPv6:2601:284:8200:5cfb:9c46:f142:c937:3c50? ([2601:284:8200:5cfb:9c46:f142:c937:3c50])
-        by smtp.googlemail.com with ESMTPSA id a2sm211786iod.57.2019.06.20.09.47.38
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 20 Jun 2019 09:47:39 -0700 (PDT)
-Subject: Re: [PATCH net] ipv6: fix neighbour resolution with raw socket
-To:     nicolas.dichtel@6wind.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org
-References: <20190620123434.7219-1-nicolas.dichtel@6wind.com>
- <fb3ed305-0161-8d6a-975c-54b29cfcb0ef@gmail.com>
- <3066f846-f549-f982-7bc0-1f9bc3d87b94@6wind.com>
- <c1e3d444-a7c9-def4-9f16-37db5dd071fe@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <86a573b4-0fae-b9bb-341c-7ce78f97e888@gmail.com>
-Date:   Thu, 20 Jun 2019 10:47:35 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
-MIME-Version: 1.0
-In-Reply-To: <c1e3d444-a7c9-def4-9f16-37db5dd071fe@gmail.com>
-Content-Type: text/plain; charset=utf-8
+        id S1731773AbfFTQtO convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 20 Jun 2019 12:49:14 -0400
+Received: from mga14.intel.com ([192.55.52.115]:40441 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726675AbfFTQtN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Jun 2019 12:49:13 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 20 Jun 2019 09:49:12 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.63,397,1557212400"; 
+   d="scan'208";a="154181740"
+Received: from orsmsx104.amr.corp.intel.com ([10.22.225.131])
+  by orsmga008.jf.intel.com with ESMTP; 20 Jun 2019 09:49:10 -0700
+Received: from orsmsx163.amr.corp.intel.com (10.22.240.88) by
+ ORSMSX104.amr.corp.intel.com (10.22.225.131) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 20 Jun 2019 09:49:10 -0700
+Received: from orsmsx115.amr.corp.intel.com ([169.254.4.248]) by
+ ORSMSX163.amr.corp.intel.com ([169.254.9.84]) with mapi id 14.03.0439.000;
+ Thu, 20 Jun 2019 09:49:09 -0700
+From:   "Patel, Vedang" <vedang.patel@intel.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        David Miller <davem@davemloft.net>,
+        "Jamal Hadi Salim" <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        "Jiri Pirko" <jiri@resnulli.us>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
+        "l@dorileo.org" <l@dorileo.org>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Subject: Re: [PATCH net-next v4 1/7] igb: clear out tstamp after sending the
+ packet
+Thread-Topic: [PATCH net-next v4 1/7] igb: clear out tstamp after sending
+ the packet
+Thread-Index: AQHVJsYWP6DikpavGkiqH8wEAgHHrKak0uSAgABk7YA=
+Date:   Thu, 20 Jun 2019 16:49:05 +0000
+Message-ID: <A1A5CF42-A7D4-4DC4-9D57-ED0340B04A6F@intel.com>
+References: <1560966016-28254-1-git-send-email-vedang.patel@intel.com>
+ <1560966016-28254-2-git-send-email-vedang.patel@intel.com>
+ <d6655497-5246-c24e-de35-fc6acdad0bf1@gmail.com>
+In-Reply-To: <d6655497-5246-c24e-de35-fc6acdad0bf1@gmail.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.24.14.150]
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <240ADF7AD22D274989F89AB520E5E961@intel.com>
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/20/19 10:36 AM, David Ahern wrote:
-> 
-> Also, this does not fix the forwarding case. For the forwarding case I
-> still see it trying to resolve fd00:200::fa from dut.
 
-nevermind. I used the wrong address for the forwarding case.
+
+> On Jun 20, 2019, at 3:47 AM, Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> 
+> 
+> 
+> On 6/19/19 10:40 AM, Vedang Patel wrote:
+>> skb->tstamp is being used at multiple places. On the transmit side, it
+>> is used to determine the launchtime of the packet. It is also used to
+>> determine the software timestamp after the packet has been transmitted.
+>> 
+>> So, clear out the tstamp value after it has been read so that we do not
+>> report false software timestamp on the receive side.
+>> 
+>> Signed-off-by: Vedang Patel <vedang.patel@intel.com>
+>> ---
+>> drivers/net/ethernet/intel/igb/igb_main.c | 1 +
+>> 1 file changed, 1 insertion(+)
+>> 
+>> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+>> index fc925adbd9fa..f66dae72fe37 100644
+>> --- a/drivers/net/ethernet/intel/igb/igb_main.c
+>> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
+>> @@ -5688,6 +5688,7 @@ static void igb_tx_ctxtdesc(struct igb_ring *tx_ring,
+>> 	 */
+>> 	if (tx_ring->launchtime_enable) {
+>> 		ts = ns_to_timespec64(first->skb->tstamp);
+>> +		first->skb->tstamp = 0;
+> 
+> Please provide more explanations.
+> 
+> Why only this driver would need this ?
+> 
+Currently, igb is the only driver which uses the skb->tstamp option on the transmit side (to set the hardware transmit timestamp). All the other drivers only use it on the receive side (to collect and send the hardware transmit timestamp to the userspace after packet has been sent).
+
+So, any driver which supports the hardware txtime in the future will have to clear skb->tstamp to make sure that hardware tx transmit and tx timestamping can be done on the same packet.
+
+Thanks,
+Vedang
+> 
+>> 		context_desc->seqnum_seed = cpu_to_le32(ts.tv_nsec / 32);
+>> 	} else {
+>> 		context_desc->seqnum_seed = 0;
+>> 
+
