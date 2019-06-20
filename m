@@ -2,64 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 317FE4C9ED
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 10:54:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9859F4CA21
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 10:58:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730504AbfFTIyW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 04:54:22 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:42199 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725925AbfFTIyV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 04:54:21 -0400
-Received: by mail-lj1-f193.google.com with SMTP id t28so1912859lje.9
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 01:54:20 -0700 (PDT)
+        id S1731264AbfFTI6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 04:58:45 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:45011 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726175AbfFTI6p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 04:58:45 -0400
+Received: by mail-lf1-f67.google.com with SMTP id r15so1821003lfm.11
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 01:58:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=XV+YrUigCDDIRUveyB1XDbziMO/ZiZxaiH7FYVcJoGA=;
-        b=oqo/RX2HVGGth+PchSW9tgaJlBbosx7yeOeKiv2xpeptiCb0zw8dSM60I9Qk5CjNLl
-         uhvO5+S8++Yv3BfNO7ZQzBgjcAZnkHAPscqBDhxJvetgYLWbosZ4l927qqQa/chrJtR7
-         A3uKtCybx70wqQmW4ObJCkVb6c1dRTESQzCN8dE66a2j6mY989zO0eu89/Guino7kOID
-         N6Db8x+eP/gyGsXv73A59ly40QRQjjHD4uFuUiGLgDjgGRKQl+reY4gVhqjKShU9QtQ3
-         nV6zmcOuPFlVnSz4E8yPjoExAiD5USTpr3PZsyY6cNa2uhF7yDpBQVuljOF0vdXVqHVZ
-         biOQ==
+        bh=dfxJ4a2QTSJhkHiDqzwqK9Tivfex2EusFAKfwRKgyto=;
+        b=tA2EL2AFfZRqDrIIYLfmZxNarz18c+FrlQ9uWa9jZGI2Xz7DlZylft13OUaLaZKFFh
+         XsQbVTBSNkhBHWR/ZMnTfshfgmfCSmYhtz59wxZN9OVHXRxxt5CkEQAn5aNXS5PdZHJ/
+         H0NpPb+3EpxxnyOjrnDB2IsVRG+jR5J7egrYr+dqo/gf9fDtEbWaKLakQol6Zfa1J0pk
+         BIFoi6pCIPadQHBmH9Wq0BDx88ZiZd5R+tINXxFhqiq6F+gIF1QMQXvmFw1tsyC1uhhL
+         cgLkRfeP/f8Zy3eW4DOPLZIRQc1fTRKn8lR1qkBBhzTRJBgewbfwPLmxlwuWpQ8A1Z01
+         fJsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=XV+YrUigCDDIRUveyB1XDbziMO/ZiZxaiH7FYVcJoGA=;
-        b=myKrLxafXGeCRc+D+v91m0cUUHpEk3D8H/4J3KuYCXnQCgXTrgGx5+oHBCLa9W/qCA
-         sK0AnePLK5FAzZWCZGhSjmt4vQu6C68uRKOh7xBKQ3H5GRMefCVlb4+4vdeoHdcRHc0B
-         3+LQDs1JyAZfINhFkstT1JBhMaVLlghCCP8ENRL+jUDLpl/U05stgk4C6EGM52DCrulH
-         nxD2zAeKPgpjBNg5+NTCSNbF6gb1T5ngZ0n2MFojB0eOMpvM04DZHAb4A/2AwMXHMwIy
-         UUTbrB4yCtkqIUVIZRC5D9e9FtMM1AlxSgXeXLFNPikdXwnahUsAXBr63P2vKptS9PM8
-         tXFg==
-X-Gm-Message-State: APjAAAVjuunGfVqgFVdn/YWaKkkvq8ywmu112xiERbg/FVIAl0jrzPmj
-        uFse3g4ze5HXb+0XkOr+yxwBow==
-X-Google-Smtp-Source: APXvYqyJjdTh32uiq2m1OlJfja/u0w5AOiM1eNFaRWsQXrUo9GwtQy8LhikCB+Bm2QgsDSkFzZt1HA==
-X-Received: by 2002:a2e:8082:: with SMTP id i2mr7925357ljg.121.1561020859602;
-        Thu, 20 Jun 2019 01:54:19 -0700 (PDT)
+        bh=dfxJ4a2QTSJhkHiDqzwqK9Tivfex2EusFAKfwRKgyto=;
+        b=pAyV23fz8JXzGPZjqbd1hqU4ZJN1G79/kIgrW6qlOnYjj7qezExtfYSSGec7gHqb4E
+         wvRsEZvTp/RbYSneme22HOdLBOYHbqLqNqwG3JfS8oPUqpK7Oo9PKQ2rFvBM6iycG7tr
+         ULRmCfoSqr0dJR7vtA6NnTC2bRfjz8X6tUqYKMdpbM6G6XrW4zMr/vNOzwctKLOU4KzF
+         gyXzw/wXs9eKI429YfMoXz+NWE/u/qYkuH1NL2LIbn9nJeKJkYVW2+fGHtUlj1CuE+R5
+         m+wzkAtw4x6BJdKFm4cq+HajOFKS1kQTOfkPFQ9R5u/yykyFE3CFfEbLIsCq1o2MCvgv
+         jEtg==
+X-Gm-Message-State: APjAAAVnp2OQsoR0O/a4eecFaurCH3MU6HBz3cw9RMBOpYFDJ/imv0+Z
+        O6Rxf7fKcU59sDiCHoqKp4HsIg==
+X-Google-Smtp-Source: APXvYqx5ktYLTZynXGSE+vTJdFLuUIHLNqlOp0FQpxzu8dC2WHR3IFfJrM3Ppk6ii7J96jDCV+r9Nw==
+X-Received: by 2002:ac2:46ef:: with SMTP id q15mr2537282lfo.63.1561021123413;
+        Thu, 20 Jun 2019 01:58:43 -0700 (PDT)
 Received: from [192.168.0.199] ([31.173.80.13])
-        by smtp.gmail.com with ESMTPSA id 137sm3429314ljj.46.2019.06.20.01.54.18
+        by smtp.gmail.com with ESMTPSA id m25sm3062325lfp.97.2019.06.20.01.58.42
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 20 Jun 2019 01:54:19 -0700 (PDT)
-Subject: Re: [PATCH] mlxsw: spectrum_ptp: fix 32-bit build
-To:     Arnd Bergmann <arnd@arndb.de>, Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Shalom Toledo <shalomt@mellanox.com>,
-        Petr Machata <petrm@mellanox.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20190619133128.2259960-1-arnd@arndb.de>
+        Thu, 20 Jun 2019 01:58:42 -0700 (PDT)
+Subject: Re: [PATCH net] net: mvpp2: prs: Don't override the sign bit in SRAM
+ parser shift
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        thomas.petazzoni@bootlin.com, gregory.clement@bootlin.com,
+        nadavh@marvell.com, stefanc@marvell.com, mw@semihalf.com,
+        Alan Winkowski <walan@marvell.com>
+References: <20190619145413.21852-1-maxime.chevallier@bootlin.com>
 From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Message-ID: <099199e8-bf5a-4124-d850-0bb5a764f17a@cogentembedded.com>
-Date:   Thu, 20 Jun 2019 11:53:55 +0300
+Message-ID: <64727f68-866b-b2eb-38c9-5670efe68aaf@cogentembedded.com>
+Date:   Thu, 20 Jun 2019 11:58:18 +0300
 User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.1
 MIME-Version: 1.0
-In-Reply-To: <20190619133128.2259960-1-arnd@arndb.de>
+In-Reply-To: <20190619145413.21852-1-maxime.chevallier@bootlin.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -68,40 +70,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+On 19.06.2019 17:54, Maxime Chevallier wrote:
 
-On 19.06.2019 16:31, Arnd Bergmann wrote:
+> The Header Parser allows identifying various fields in the packet
+> headers, used for for various kind of filtering and classification
 
-> On 32-bit architectures, we cannot easily device 64-bit numbers:
+    One "for" is enough. :-)
 
-    s/device/divide/?
-
-> ERROR: "__aeabi_uldivmod" [drivers/net/ethernet/mellanox/mlxsw/mlxsw_spectrum.ko] undefined!
+> steps.
 > 
-> Use do_div() to annotate the fact that we know this is an
-
-    div_u64() really?
-
-> expensive operation.
+> This is a re-entrant process, where the offset in the packet header
+> depends on the previous lookup results. This offset is represented in
+> the SRAM results of the TCAM, as a shift to be operated.
 > 
-> Fixes: 992aa864dca0 ("mlxsw: spectrum_ptp: Add implementation for physical hardware clock operations")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->   drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+> This shift can be negative in some cases, such as in IPv6 parsing.
 > 
-> diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
-> index 2a9bbc90225e..618e329e1490 100644
-> --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
-> +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
-> @@ -87,7 +87,7 @@ mlxsw_sp1_ptp_phc_settime(struct mlxsw_sp_ptp_clock *clock, u64 nsec)
->   	u32 next_sec;
->   	int err;
->   
-> -	next_sec = nsec / NSEC_PER_SEC + 1;
-> +	next_sec = div_u64(nsec, NSEC_PER_SEC) + 1;
->   	next_sec_in_nsec = next_sec * NSEC_PER_SEC;
->   
->   	spin_lock(&clock->lock);
+> This commit prevents overriding the sign bit when setting the shift
+> value, which could cause instabilities when parsing IPv6 flows.
+> 
+> Fixes: 3f518509dedc ("ethernet: Add new driver for Marvell Armada 375 network unit")
+> Suggested-by: Alan Winkowski <walan@marvell.com>
+> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+[...]
 
 MBR, Sergei
