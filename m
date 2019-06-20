@@ -2,111 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E3CC4D422
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 18:49:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F8424D481
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 19:05:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731773AbfFTQtO convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 20 Jun 2019 12:49:14 -0400
-Received: from mga14.intel.com ([192.55.52.115]:40441 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726675AbfFTQtN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Jun 2019 12:49:13 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 20 Jun 2019 09:49:12 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.63,397,1557212400"; 
-   d="scan'208";a="154181740"
-Received: from orsmsx104.amr.corp.intel.com ([10.22.225.131])
-  by orsmga008.jf.intel.com with ESMTP; 20 Jun 2019 09:49:10 -0700
-Received: from orsmsx163.amr.corp.intel.com (10.22.240.88) by
- ORSMSX104.amr.corp.intel.com (10.22.225.131) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Thu, 20 Jun 2019 09:49:10 -0700
-Received: from orsmsx115.amr.corp.intel.com ([169.254.4.248]) by
- ORSMSX163.amr.corp.intel.com ([169.254.9.84]) with mapi id 14.03.0439.000;
- Thu, 20 Jun 2019 09:49:09 -0700
-From:   "Patel, Vedang" <vedang.patel@intel.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        David Miller <davem@davemloft.net>,
-        "Jamal Hadi Salim" <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        "Jiri Pirko" <jiri@resnulli.us>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "Gomes, Vinicius" <vinicius.gomes@intel.com>,
-        "l@dorileo.org" <l@dorileo.org>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Subject: Re: [PATCH net-next v4 1/7] igb: clear out tstamp after sending the
+        id S1726943AbfFTRF0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 13:05:26 -0400
+Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:37776 "EHLO
+        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726530AbfFTRF0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 13:05:26 -0400
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.89)
+        (envelope-from <fw@strlen.de>)
+        id 1he0V0-0001Op-0g; Thu, 20 Jun 2019 19:05:22 +0200
+Date:   Thu, 20 Jun 2019 19:05:22 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     wenxu@ucloud.cn
+Cc:     pablo@netfilter.org, fw@strlen.de, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH nf-next] netfilter: bridge: Fix non-untagged fragment
  packet
-Thread-Topic: [PATCH net-next v4 1/7] igb: clear out tstamp after sending
- the packet
-Thread-Index: AQHVJsYWP6DikpavGkiqH8wEAgHHrKak0uSAgABk7YA=
-Date:   Thu, 20 Jun 2019 16:49:05 +0000
-Message-ID: <A1A5CF42-A7D4-4DC4-9D57-ED0340B04A6F@intel.com>
-References: <1560966016-28254-1-git-send-email-vedang.patel@intel.com>
- <1560966016-28254-2-git-send-email-vedang.patel@intel.com>
- <d6655497-5246-c24e-de35-fc6acdad0bf1@gmail.com>
-In-Reply-To: <d6655497-5246-c24e-de35-fc6acdad0bf1@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.24.14.150]
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <240ADF7AD22D274989F89AB520E5E961@intel.com>
-Content-Transfer-Encoding: 8BIT
+Message-ID: <20190620170522.cn6utaviil7gmldo@breakpoint.cc>
+References: <1560954907-20071-1-git-send-email-wenxu@ucloud.cn>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1560954907-20071-1-git-send-email-wenxu@ucloud.cn>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+wenxu@ucloud.cn <wenxu@ucloud.cn> wrote:
+> From: wenxu <wenxu@ucloud.cn>
+> 
+> ip netns exec ns1 ip a a dev eth0 10.0.0.7/24
+> ip netns exec ns2 ip link a link eth0 name vlan type vlan id 200
+> ip netns exec ns2 ip a a dev vlan 10.0.0.8/24
+> 
+> ip l add dev br0 type bridge vlan_filtering 1
+> brctl addif br0 veth1
+> brctl addif br0 veth2
+> 
+> bridge vlan add dev veth1 vid 200 pvid untagged
+> bridge vlan add dev veth2 vid 200
+> 
+> A two fragment packets send from ns2 contained with vlan tag 200.
+> In the bridge conntrack, packet will defrag to one skb with fraglist.
+> When the packet forward to ns1 through veth1, the first skb vlan tag
+> will be cleared for "untagged" flags. But the vlan tag in the second
+> skb still tagged, which lead the second fragment send with tag 200 to
+> ns1.
+> So if the first fragment packet don't contain vlan tag, all of the
+> remain should not contain vlan tag..
+> 
+> Fixes: 3c171f496ef5 ("netfilter: bridge: add connection tracking system")
+> Signed-off-by: wenxu <wenxu@ucloud.cn>
 
-
-> On Jun 20, 2019, at 3:47 AM, Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> 
-> 
-> 
-> On 6/19/19 10:40 AM, Vedang Patel wrote:
->> skb->tstamp is being used at multiple places. On the transmit side, it
->> is used to determine the launchtime of the packet. It is also used to
->> determine the software timestamp after the packet has been transmitted.
->> 
->> So, clear out the tstamp value after it has been read so that we do not
->> report false software timestamp on the receive side.
->> 
->> Signed-off-by: Vedang Patel <vedang.patel@intel.com>
->> ---
->> drivers/net/ethernet/intel/igb/igb_main.c | 1 +
->> 1 file changed, 1 insertion(+)
->> 
->> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
->> index fc925adbd9fa..f66dae72fe37 100644
->> --- a/drivers/net/ethernet/intel/igb/igb_main.c
->> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
->> @@ -5688,6 +5688,7 @@ static void igb_tx_ctxtdesc(struct igb_ring *tx_ring,
->> 	 */
->> 	if (tx_ring->launchtime_enable) {
->> 		ts = ns_to_timespec64(first->skb->tstamp);
->> +		first->skb->tstamp = 0;
-> 
-> Please provide more explanations.
-> 
-> Why only this driver would need this ?
-> 
-Currently, igb is the only driver which uses the skb->tstamp option on the transmit side (to set the hardware transmit timestamp). All the other drivers only use it on the receive side (to collect and send the hardware transmit timestamp to the userspace after packet has been sent).
-
-So, any driver which supports the hardware txtime in the future will have to clear skb->tstamp to make sure that hardware tx transmit and tx timestamping can be done on the same packet.
-
-Thanks,
-Vedang
-> 
->> 		context_desc->seqnum_seed = cpu_to_le32(ts.tv_nsec / 32);
->> 	} else {
->> 		context_desc->seqnum_seed = 0;
->> 
-
+Acked-by: Florian Westphal <fw@strlen.de>
