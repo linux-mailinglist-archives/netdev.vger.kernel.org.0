@@ -2,111 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4981D4C836
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 09:20:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFA674C86B
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 09:31:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726353AbfFTHUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 03:20:12 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:42910 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725872AbfFTHUM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 03:20:12 -0400
-Received: by mail-wr1-f65.google.com with SMTP id x17so1810544wrl.9
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 00:20:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=5+cZZQUiAbSFZ5vyqDnl6i0sE8+BN4xzCapTjFH6GZ0=;
-        b=NKyS9gvG9OoNVIU+wvtPkKl9LryqEO3a6YKp09Ltgm2Fy2zXIaW8+E4EQ12u7PS2e5
-         8SdpcYMCN6RM9rvJzkG08F/aN5s6RwMWqJBrW6VgRebiPjO4Cn/K87QL7bLl9IHdCIhn
-         UPNizEIG4VXvN0Hn+imu5VErvswc4D7xZte6EuJyp/h0q/Y3YHkIMjmrCjEZiUbUvF6Y
-         ruTi9vRSxs7IkMW0vU9Tagcc4F4LV1PGouu5bl7W1pU+LpTWskTQrVAI99PkoEWuJX7/
-         hIINIgntTJZjYDmA3oVCKI8raOCSyNQSnoDdAO+rvA/gM70m8rf5V/g14DMv3MTB7YGY
-         0SlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=5+cZZQUiAbSFZ5vyqDnl6i0sE8+BN4xzCapTjFH6GZ0=;
-        b=JaVNuJpfUBrRMa3uAjLjefYMTTmLGdVuVKMH9E5qw0Ed/SCXqquumiywoCaresxM/f
-         yVwUF2bRq/K4VtdLPHv2bwVNi+PE1Z3QOkYJWMJmEtP9NejhJIqRj0XZ8CkCKHK9NTSk
-         kcziHCoNzFOrfjb212q6dty4m+15R5/rBHjmnQu0dnGiZNDPDKdPdtrG8UeksOhqWx0g
-         jsK9wVkekA6ZcNbuTaL+wfq5dZQojlGHTBD3DMRJbamwM9cbO+DtzoFcNBuOxBkdGgAi
-         yLA3AuWlZoJ0jAXFS4Qc+f+iiDqN85Tw4Oz2hNk9B/AdNG66bR6JZ9R6XSVybo1pRuad
-         dODw==
-X-Gm-Message-State: APjAAAUJCeMuQpN3pRUmedwTRCXYsPH8UysMRd7vZdBEmgAQPwChM1pe
-        f96cicPOoa++4Ia7flkRPwAoew==
-X-Google-Smtp-Source: APXvYqzCBzd8J2M9XQvdsbL6G2OSFawF+v3rk18ZoTrCxdyxSjJU1aALri4iTJCgU4AEHIzAuQvoZw==
-X-Received: by 2002:a05:6000:100a:: with SMTP id a10mr20639918wrx.154.1561015210289;
-        Thu, 20 Jun 2019 00:20:10 -0700 (PDT)
-Received: from localhost (ip-78-45-163-56.net.upcbroadband.cz. [78.45.163.56])
-        by smtp.gmail.com with ESMTPSA id f204sm5291869wme.18.2019.06.20.00.20.09
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 20 Jun 2019 00:20:09 -0700 (PDT)
-Date:   Thu, 20 Jun 2019 09:20:09 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Stanislav Fomichev <sdf@fomichev.me>
-Cc:     YueHaibing <yuehaibing@huawei.com>, davem@davemloft.net,
-        sdf@google.com, jianbol@mellanox.com, jiri@mellanox.com,
-        mirq-linux@rere.qmqm.pl, willemb@google.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] flow_dissector: Fix vlan header offset in
- __skb_flow_dissect
-Message-ID: <20190620072009.GA2504@nanopsycho>
-References: <20190619160132.38416-1-yuehaibing@huawei.com>
- <20190619183938.GA19111@mini-arch>
+        id S1726122AbfFTHbK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 03:31:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53146 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725872AbfFTHbK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Jun 2019 03:31:10 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 141742084B;
+        Thu, 20 Jun 2019 07:31:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1561015869;
+        bh=bnuYCgKUmuvtRTQdc4tFWDGE47kO98WZzTCc0MazlCM=;
+        h=Date:From:To:Cc:Subject:From;
+        b=TJ5oGd0mHfdNp12K3kbvX/+TO/nh7HGYYsD4HaGPHm3YG1gg2gswe4syU93uhPP6z
+         dm37CECwapiz4SPoQ//LM/jTNJJR55sLDqEeGs8MhH0OMB1s57CKFlX9aWZ+Sjq175
+         6jMZWCnXtYACjfP8aRTCh4VDfj6u+Kloq+wO5C2M=
+Date:   Thu, 20 Jun 2019 09:31:06 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Yangtao Li <tiny.windzz@gmail.com>
+Subject: [PATCH] fjes: no need to check return value of debugfs_create
+ functions
+Message-ID: <20190620073106.GA22356@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190619183938.GA19111@mini-arch>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Jun 19, 2019 at 08:39:38PM CEST, sdf@fomichev.me wrote:
->On 06/20, YueHaibing wrote:
->> We build vlan on top of bonding interface, which vlan offload
->> is off, bond mode is 802.3ad (LACP) and xmit_hash_policy is
->> BOND_XMIT_POLICY_ENCAP34.
->> 
->> __skb_flow_dissect() fails to get information from protocol headers
->> encapsulated within vlan, because 'nhoff' is points to IP header,
->> so bond hashing is based on layer 2 info, which fails to distribute
->> packets across slaves.
->> 
->> Fixes: d5709f7ab776 ("flow_dissector: For stripped vlan, get vlan info from skb->vlan_tci")
->> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
->> ---
->>  net/core/flow_dissector.c | 3 +++
->>  1 file changed, 3 insertions(+)
->> 
->> diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
->> index 415b95f..2a52abb 100644
->> --- a/net/core/flow_dissector.c
->> +++ b/net/core/flow_dissector.c
->> @@ -785,6 +785,9 @@ bool __skb_flow_dissect(const struct sk_buff *skb,
->>  		    skb && skb_vlan_tag_present(skb)) {
->>  			proto = skb->protocol;
->>  		} else {
->> +			if (dissector_vlan == FLOW_DISSECTOR_KEY_MAX)
->> +				nhoff -=  sizeof(*vlan);
->> +
->Should we instead fix the place where the skb is allocated to properly
->pull vlan (skb_vlan_untag)? I'm not sure this particular place is
+When calling debugfs functions, there is no need to ever check the
+return value.  The function can work or not, but the code logic should
+never do something different based on this.
 
-Yes.
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Yangtao Li <tiny.windzz@gmail.com>
+Cc: netdev@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/fjes/fjes_debugfs.c | 15 ++-------------
+ 1 file changed, 2 insertions(+), 13 deletions(-)
 
->supposed to work with an skb. Having an skb with nhoff pointing to
->IP header but missing skb_vlan_tag_present() when with
->proto==ETH_P_8021xx seems weird.
->
->>  			vlan = __skb_header_pointer(skb, nhoff, sizeof(_vlan),
->>  						    data, hlen, &_vlan);
->>  			if (!vlan) {
->> -- 
->> 2.7.0
->> 
->> 
+diff --git a/drivers/net/fjes/fjes_debugfs.c b/drivers/net/fjes/fjes_debugfs.c
+index 7fed88ea27a5..25599edb4ceb 100644
+--- a/drivers/net/fjes/fjes_debugfs.c
++++ b/drivers/net/fjes/fjes_debugfs.c
+@@ -67,20 +67,11 @@ DEFINE_SHOW_ATTRIBUTE(fjes_dbg_status);
+ void fjes_dbg_adapter_init(struct fjes_adapter *adapter)
+ {
+ 	const char *name = dev_name(&adapter->plat_dev->dev);
+-	struct dentry *pfile;
+ 
+ 	adapter->dbg_adapter = debugfs_create_dir(name, fjes_debug_root);
+-	if (!adapter->dbg_adapter) {
+-		dev_err(&adapter->plat_dev->dev,
+-			"debugfs entry for %s failed\n", name);
+-		return;
+-	}
+ 
+-	pfile = debugfs_create_file("status", 0444, adapter->dbg_adapter,
+-				    adapter, &fjes_dbg_status_fops);
+-	if (!pfile)
+-		dev_err(&adapter->plat_dev->dev,
+-			"debugfs status for %s failed\n", name);
++	debugfs_create_file("status", 0444, adapter->dbg_adapter, adapter,
++			    &fjes_dbg_status_fops);
+ }
+ 
+ void fjes_dbg_adapter_exit(struct fjes_adapter *adapter)
+@@ -92,8 +83,6 @@ void fjes_dbg_adapter_exit(struct fjes_adapter *adapter)
+ void fjes_dbg_init(void)
+ {
+ 	fjes_debug_root = debugfs_create_dir(fjes_driver_name, NULL);
+-	if (!fjes_debug_root)
+-		pr_info("init of debugfs failed\n");
+ }
+ 
+ void fjes_dbg_exit(void)
+-- 
+2.22.0
+
