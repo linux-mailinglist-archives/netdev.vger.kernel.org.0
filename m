@@ -2,92 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2343B4D978
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 20:37:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 734B24D9E4
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 21:00:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726424AbfFTShP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 14:37:15 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:37278 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726355AbfFTShO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 14:37:14 -0400
-Received: by mail-pf1-f195.google.com with SMTP id 19so2148516pfa.4
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 11:37:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5s/l0ITYvPky32c4CeJ1RE7LMqmdddmdnmEyaty1EJM=;
-        b=OrHZBkERHshvedquCJ9byOzjBT0TgnCiZhTLxTEfgjlTEDWkSZ7xm23SjABY2IV7Z7
-         LjPocB8AGYGUUdHub0lz5lCaFc3zI4O9Pjb91wTwdEDIWnm4jqCZrdMNYbE6VUcOg21X
-         xR+ch30YLe6NWjWRVf3BuBgQB9GQgDT+BoCz9VmF4MlXGzEhS+JCzFvBvaRbh67UrflN
-         rtSy8aWlvd36lTbrlM/2epUswK1yO6E2GkG1zrkLYoDQEabNqXm3J3bCOl/hRxnLDsbQ
-         vvN0Vg/f8B4wxfWplrEqSz4wd9o0VEYsCaSvbEV1c8y9DN1LgA8ABi2PGT/cQsHTR9Dw
-         njcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5s/l0ITYvPky32c4CeJ1RE7LMqmdddmdnmEyaty1EJM=;
-        b=T4dfQI5CUe1Ag0QtQ3i1K/nfLY/tasZrLf4Bb8s9vIWE+/6sss7ZbzUKewoVzACaNe
-         1HT+7z7Af75w5tvkiAwPpBz7Wlr7rxc7p/OYvcNPV7D9Su4BvrHV4WVLIWE7wjF/Pcgi
-         ZHm7Eq7+x98j6yrDOYmhFvyTzORe3djt70YgRzAyFjWGEfiXWodxUYRTTZVZ10FsQwWq
-         UaNC3MPC3JpnMJKY0yOhCXjYAs5VgZsnqrJ7r2PbH2kdu6j/42N4mpHMSBzGePEYRqyS
-         a/tqFobdFMvdtFuxujansN+8B4JOdgW1gs5FzZPsd2TNCXIdJwpFp518FxF2MVWN2Dvj
-         6vdA==
-X-Gm-Message-State: APjAAAV2l7o8SQPhRATCL0YNO1hAJtgh6iqf7Zj91NYDQT53scArJHD4
-        /QYd+iBgl/dOC4yUACtZUKPLiw==
-X-Google-Smtp-Source: APXvYqy9uXyk4M5pYOIQFJAB76riuo9dsfgvNobIZLhtZVZfQ8ZXqn6fA3MIbw3Om8NFAwMk9dnxlA==
-X-Received: by 2002:a63:2249:: with SMTP id t9mr14261464pgm.149.1561055833946;
-        Thu, 20 Jun 2019 11:37:13 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id y22sm386613pgj.38.2019.06.20.11.37.13
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 20 Jun 2019 11:37:13 -0700 (PDT)
-Date:   Thu, 20 Jun 2019 11:37:12 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Puranjay Mohan <puranjay12@gmail.com>
-Cc:     Shuah Khan <skhan@linuxfoundation.org>,
-        Bjorn Helgaas <bjorn@helgaas.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-pci@vger.kernel.org
-Subject: Re: [PATCH v2 0/3] net: fddi: skfp: Use PCI generic definitions
- instead of private duplicates
-Message-ID: <20190620113712.4630f60f@hermes.lan>
-In-Reply-To: <20190620180754.15413-1-puranjay12@gmail.com>
-References: <20190620180754.15413-1-puranjay12@gmail.com>
+        id S1726068AbfFTTAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 15:00:36 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:32055 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725905AbfFTTAg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Jun 2019 15:00:36 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id B75AA31628FE;
+        Thu, 20 Jun 2019 19:00:30 +0000 (UTC)
+Received: from localhost (unknown [10.36.112.13])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 50D91601B6;
+        Thu, 20 Jun 2019 19:00:27 +0000 (UTC)
+Date:   Thu, 20 Jun 2019 21:00:22 +0200
+From:   Stefano Brivio <sbrivio@redhat.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     David Miller <davem@davemloft.net>, Jianlin Shi <jishi@redhat.com>,
+        Wei Wang <weiwan@google.com>, Martin KaFai Lau <kafai@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v6 03/11] ipv4/route: Allow NULL flowinfo in
+ rt_fill_info()
+Message-ID: <20190620205946.7ecd5ae7@redhat.com>
+In-Reply-To: <9efa65d3-5797-fde0-d5c2-3c7747d591ad@gmail.com>
+References: <cover.1560987611.git.sbrivio@redhat.com>
+        <5ba00822d7e86cdcb9231b39fda3cc4a04e2836f.1560987611.git.sbrivio@redhat.com>
+        <9efa65d3-5797-fde0-d5c2-3c7747d591ad@gmail.com>
+Organization: Red Hat
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Thu, 20 Jun 2019 19:00:36 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 20 Jun 2019 23:37:51 +0530
-Puranjay Mohan <puranjay12@gmail.com> wrote:
+On Thu, 20 Jun 2019 07:15:55 -0600
+David Ahern <dsahern@gmail.com> wrote:
 
-> This patch series removes the private duplicates of PCI definitions in
-> favour of generic definitions defined in pci_regs.h.
+> On 6/19/19 5:59 PM, Stefano Brivio wrote:
+> > In the next patch, we're going to use rt_fill_info() to dump exception
+> > routes upon RTM_GETROUTE with NLM_F_ROOT, meaning userspace is requesting
+> > a dump and not a specific route selection, which in turn implies the input
+> > interface is not relevant. Update rt_fill_info() to handle a NULL
+> > flowinfo.
+> > 
+> > Suggested-by: David Ahern <dsahern@gmail.com>
+> > Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
+> > ---
+> > v6: New patch
+> > 
+> >  net/ipv4/route.c | 57 ++++++++++++++++++++++++++----------------------
+> >  1 file changed, 31 insertions(+), 26 deletions(-)
+> > 
+> > diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+> > index 66cbe8a7a168..052a80373b1d 100644
+> > --- a/net/ipv4/route.c
+> > +++ b/net/ipv4/route.c
+> > @@ -2699,7 +2699,8 @@ static int rt_fill_info(struct net *net, __be32 dst, __be32 src,
+> >  	r->rtm_family	 = AF_INET;
+> >  	r->rtm_dst_len	= 32;
+> >  	r->rtm_src_len	= 0;
+> > -	r->rtm_tos	= fl4->flowi4_tos;
+> > +	if (fl4)
+> > +		r->rtm_tos	= fl4->flowi4_tos;  
 > 
-> This driver only uses one of the generic PCI definitons, i.e.
-> PCI_REVISION_ID, which is included from pci_regs.h and its private
-> version is removed from skfbi.h with all other private defines.
-> 
-> The skfbi.h defines PCI_REV_ID which is renamed to PCI_REVISION_ID in
-> drvfbi.c to make it compatible with the generic define in pci_regs.h.
-> 
-> Puranjay Mohan (3):
->   net: fddi: skfp: Rename PCI_REV_ID to PCI_REVISION_ID
->   net: fddi: skfp: Include generic PCI definitions
->   net: fddi: skfp: Remove unused private PCI definitions
-> 
->  drivers/net/fddi/skfp/drvfbi.c  |   4 +-
->  drivers/net/fddi/skfp/h/skfbi.h | 207 +-------------------------------
->  2 files changed, 3 insertions(+), 208 deletions(-)
-> 
+> tracing back to the alloc_skb it does not appear to be initialized to 0,
+> so this should be:
+> 	r->rtm_tos	= fl4 ? fl4->flowi4_tos : 0;
 
-Does anyone still have the hardware to test this?
-Maybe FDDI should be put out to pasture.
+I guess you're right, but I'm still wondering why I'm not seeing it
+with KMSAN. Thanks for catching this, I'll fix it.
+
+-- 
+Stefano
