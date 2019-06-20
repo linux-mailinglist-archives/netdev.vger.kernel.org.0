@@ -2,105 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 819AF4CB7D
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 12:02:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDF9C4CB85
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 12:07:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731450AbfFTKCm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 06:02:42 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:18644 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726268AbfFTKCm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Jun 2019 06:02:42 -0400
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 201F6524BC4FF94BC2CB;
-        Thu, 20 Jun 2019 18:02:39 +0800 (CST)
-Received: from [127.0.0.1] (10.133.213.239) by DGGEMS413-HUB.china.huawei.com
- (10.3.19.213) with Microsoft SMTP Server id 14.3.439.0; Thu, 20 Jun 2019
- 18:02:35 +0800
-Subject: Re: [PATCH] flow_dissector: Fix vlan header offset in
- __skb_flow_dissect
-To:     Stanislav Fomichev <sdf@fomichev.me>
-References: <20190619160132.38416-1-yuehaibing@huawei.com>
- <20190619183938.GA19111@mini-arch>
-CC:     <davem@davemloft.net>, <sdf@google.com>, <jianbol@mellanox.com>,
-        <jiri@mellanox.com>, <mirq-linux@rere.qmqm.pl>,
-        <willemb@google.com>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-From:   Yuehaibing <yuehaibing@huawei.com>
-Message-ID: <00a5d09f-a23e-661f-60c0-75fba6227451@huawei.com>
-Date:   Thu, 20 Jun 2019 18:02:34 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.2.0
+        id S1726435AbfFTKHX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 06:07:23 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:42859 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726268AbfFTKHX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 06:07:23 -0400
+Received: by mail-pf1-f196.google.com with SMTP id q10so1379526pff.9;
+        Thu, 20 Jun 2019 03:07:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LIIZTinoKgJ1YU1uWDUn+rFYAPOlDhLPa51iI7JhAfQ=;
+        b=GnZu5jDImxbJEGt4N+Khm3Og1TXWC/T/dXTQ6IDcjolCbwNqA5fSF33cR+ssMSz9y0
+         rIqq8UUVjXYLDJTSk6ezY/bsHHAX/psn8Sd9/r6KnURGmd3puxwrHvf3zT0+pNjetxMT
+         FBxp+FQoGbDUk4sNHYkO1DI+mVr4yvJ0+Ja3i/Yxee969TtWjUYKvObTKM/zuQnnVBv5
+         oMGMirehNqr8XS8zBRaef/JPmnZveQkruS/aWJc7BZjnnbeUX+s5xYC4ebC1JKuxMsza
+         BnCkKhiYtcIZeEfxc3mi0v7P4fGOmE4MOTgrblalj3E3vYkvyMrsbIqTspJSja4pGVRW
+         3/9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LIIZTinoKgJ1YU1uWDUn+rFYAPOlDhLPa51iI7JhAfQ=;
+        b=SGk4Su08bsnbWRAdJxOVD0kBAwhbPzeh0GBLOO64/ZiGmSywS/L55/udDrZjyIcEHc
+         EKcKvdcY4ZvpiA9Kbc+/FDvG65HzvTI+NhViQVVHES/veBwsFWO3hzUmSHZxc1+M/g/N
+         sdwdQL8skhkvJj1ZLLBZKE8Ia9c6Ce643fJWUF9D2fQAVnTck4JjHx5MRHHa3+Mt3uZn
+         WRdGUIr1eAQKv6T7/j5UnHEVvI/xeGi1mzss28DkhFIG5Q8NVVQv7Z6e2YPXumJ583fB
+         ono1q4dlMcXX+ObW7A6RXGMXterZTwEFNMdGuTm3Cpga0oRBPbt8Qd+3bENAuNHWn/E7
+         q+gw==
+X-Gm-Message-State: APjAAAW7hpVwSxQHiVZVp0c3cWeM2BBHaZwNcFxQgdl+dlSEwvLLM+bC
+        08N5H0NaGJWw3xHnyQ4kXoYX3kRcOZE70w==
+X-Google-Smtp-Source: APXvYqwd56C3jfO5jgJdGmzvloHjCQo0f4S9qOOP+Tt7xqcDMEjmIEtk3xv0aK6NCcTuCKovcHjhAw==
+X-Received: by 2002:a63:8341:: with SMTP id h62mr1300186pge.206.1561025242339;
+        Thu, 20 Jun 2019 03:07:22 -0700 (PDT)
+Received: from btopel-mobl.ger.intel.com ([192.55.54.41])
+        by smtp.gmail.com with ESMTPSA id y22sm41574267pgj.38.2019.06.20.03.07.17
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 20 Jun 2019 03:07:21 -0700 (PDT)
+From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
+        magnus.karlsson@intel.com, bjorn.topel@intel.com,
+        bruce.richardson@intel.com, songliubraving@fb.com,
+        bpf@vger.kernel.org
+Subject: [PATCH bpf-next v3 0/2] net: xdp: XSKMAP improvements
+Date:   Thu, 20 Jun 2019 12:06:50 +0200
+Message-Id: <20190620100652.31283-1-bjorn.topel@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20190619183938.GA19111@mini-arch>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.133.213.239]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019/6/20 2:39, Stanislav Fomichev wrote:
-> On 06/20, YueHaibing wrote:
->> We build vlan on top of bonding interface, which vlan offload
->> is off, bond mode is 802.3ad (LACP) and xmit_hash_policy is
->> BOND_XMIT_POLICY_ENCAP34.
->>
->> __skb_flow_dissect() fails to get information from protocol headers
->> encapsulated within vlan, because 'nhoff' is points to IP header,
->> so bond hashing is based on layer 2 info, which fails to distribute
->> packets across slaves.
->>
->> Fixes: d5709f7ab776 ("flow_dissector: For stripped vlan, get vlan info from skb->vlan_tci")
->> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
->> ---
->>  net/core/flow_dissector.c | 3 +++
->>  1 file changed, 3 insertions(+)
->>
->> diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
->> index 415b95f..2a52abb 100644
->> --- a/net/core/flow_dissector.c
->> +++ b/net/core/flow_dissector.c
->> @@ -785,6 +785,9 @@ bool __skb_flow_dissect(const struct sk_buff *skb,
->>  		    skb && skb_vlan_tag_present(skb)) {
->>  			proto = skb->protocol;
->>  		} else {
->> +			if (dissector_vlan == FLOW_DISSECTOR_KEY_MAX)
->> +				nhoff -=  sizeof(*vlan);
->> +
-> Should we instead fix the place where the skb is allocated to properly
-> pull vlan (skb_vlan_untag)? I'm not sure this particular place is
-> supposed to work with an skb. Having an skb with nhoff pointing to
-> IP header but missing skb_vlan_tag_present() when with
-> proto==ETH_P_8021xx seems weird.
+This series add two improvements for the XSKMAP, used by AF_XDP
+sockets.
 
-The skb is a forwarded vxlan packet, it send through vlan interface like this:
+1. Automatic cleanup when an AF_XDP socket goes out of scope. Instead
+   of manually cleaning out the "released" state socket from the map,
+   this is done automatically. This mimics the SOCKMAP behavior; Each
+   socket tracks which maps it resides in, and remove itself from
+   those maps at relase.
 
-   vlan_dev_hard_start_xmit
-    --> __vlan_hwaccel_put_tag //vlan_tci and VLAN_TAG_PRESENT is set
-    --> dev_queue_xmit
-        --> validate_xmit_skb
-          --> validate_xmit_vlan // vlan_hw_offload_capable is false
-             --> __vlan_hwaccel_push_inside //here skb_push vlan_hlen, then clear skb->tci
+2. The XSKMAP did not honor the BPF_EXIST/BPF_NOEXIST flag on insert,
+   which this patch addresses.
 
-    --> bond_start_xmit
-       --> bond_xmit_hash
-         --> __skb_flow_dissect // nhoff point to IP header
-            -->  case htons(ETH_P_8021Q)
-            // skb_vlan_tag_present is false, so
-              vlan = __skb_header_pointer(skb, nhoff, sizeof(_vlan), //vlan point to ip header wrongly
+Song, this v3 of the series doesn't have any code changes, it's just a
+rebase onto the latest bpf-next. You had some questions on the
+map_entry pointer, but the thread died after that.
 
-> 
->>  			vlan = __skb_header_pointer(skb, nhoff, sizeof(_vlan),
->>  						    data, hlen, &_vlan);
->>  			if (!vlan) {
->> -- 
->> 2.7.0
->>
->>
-> 
-> .
-> 
+
+Thanks,
+Björn
+
+v1->v2: Fixed deadlock and broken cleanup. (Daniel)
+v2->v3: Rebased onto bpf-next
+
+
+Björn Töpel (2):
+  xsk: remove AF_XDP socket from map when the socket is released
+  xsk: support BPF_EXIST and BPF_NOEXIST flags in XSKMAP
+
+ include/net/xdp_sock.h |   3 ++
+ kernel/bpf/xskmap.c    | 117 +++++++++++++++++++++++++++++++++++------
+ net/xdp/xsk.c          |  25 +++++++++
+ 3 files changed, 130 insertions(+), 15 deletions(-)
+
+-- 
+2.20.1
 
