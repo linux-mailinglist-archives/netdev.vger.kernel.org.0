@@ -2,144 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7481C4C52B
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 04:00:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E35C4C53E
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 04:16:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731211AbfFTCAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 22:00:33 -0400
-Received: from smtprelay0204.hostedemail.com ([216.40.44.204]:58509 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726370AbfFTCAc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 22:00:32 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay01.hostedemail.com (Postfix) with ESMTP id 61216100E86C2;
-        Thu, 20 Jun 2019 02:00:30 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 
-X-HE-Tag: tent82_3890fedb2856
-X-Filterd-Recvd-Size: 4880
-Received: from XPS-9350.home (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
-        (Authenticated sender: joe@perches.com)
-        by omf13.hostedemail.com (Postfix) with ESMTPA;
-        Thu, 20 Jun 2019 02:00:24 +0000 (UTC)
-Message-ID: <fcf57339aea60fb1744cea2a2593656c728c4ec4.camel@perches.com>
-Subject: Re: [PATCH v3 0/7] Hexdump Enhancements
-From:   Joe Perches <joe@perches.com>
-To:     Alastair D'Silva <alastair@d-silva.org>
-Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Karsten Keil <isdn@linux-pingi.de>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Stanislaw Gruszka <sgruszka@redhat.com>,
-        Benson Leung <bleung@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-fsdevel@vger.kernel.org
-Date:   Wed, 19 Jun 2019 19:00:22 -0700
-In-Reply-To: <9456ca2a4ae827635bb6d864e5095a9e51f2ac45.camel@d-silva.org>
-References: <20190617020430.8708-1-alastair@au1.ibm.com>
-         <9a000734375c0801fc16b71f4be1235f9b857772.camel@perches.com>
-         <c68cb819257f251cbb66f8998a95c31cebe2d72e.camel@d-silva.org>
-         <d8316be322f33ea67640ff83f2248fe433078407.camel@perches.com>
-         <9456ca2a4ae827635bb6d864e5095a9e51f2ac45.camel@d-silva.org>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
+        id S1731069AbfFTCP7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 22:15:59 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:57213 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726349AbfFTCP6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Jun 2019 22:15:58 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 45TlmB4tdGz9s3l;
+        Thu, 20 Jun 2019 12:15:54 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1560996955;
+        bh=WYZIHceZurM550G0nBpWksLmBz0WZT6hiqxdE989L4g=;
+        h=Date:From:To:Cc:Subject:From;
+        b=K0CYk8QswAeS0bsySxycLfLgZuK6PaglPJhch5ZKldiFYhr4oSHQ/2081ZvkZEULr
+         fWsWVtSkLO8+wdRYfZO5nWCt/s8Fnj4KlaiZzd4Y6SMWkviivp0f7WHemK8JjYj7zV
+         ye2aQaeP4tqoVNRZ7rIBzoNhqpHUNjpj9E1Cc/PzslXAK4Gk0HX7xksgIkww867mCz
+         kqLxtcq9Y4rh3wK2mpu07W61DqZT/3uR0mwddOhk56UA6IOTVDm2KMKQ2AQ9EtZIX8
+         FBtp/QbCVZFBvIYC98s7U2wLGBR4mfQogTJIDyB6s3pkKy+iSYXPESw62nf3u8eSth
+         xTgvVyWdB/PVA==
+Date:   Thu, 20 Jun 2019 12:15:53 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@mellanox.com>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Florian Westphal <fw@strlen.de>
+Subject: linux-next: manual merge of the net-next tree with the rdma tree
+Message-ID: <20190620121553.16f2297f@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ boundary="Sig_/AQcJa7AwP=cW.Tdh_kvnKV="; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2019-06-20 at 11:14 +1000, Alastair D'Silva wrote:
-> On Wed, 2019-06-19 at 17:35 -0700, Joe Perches wrote:
-> > On Thu, 2019-06-20 at 09:15 +1000, Alastair D'Silva wrote:
-> > > On Wed, 2019-06-19 at 09:31 -0700, Joe Perches wrote:
-> > > > On Mon, 2019-06-17 at 12:04 +1000, Alastair D'Silva wrote:
-> > > > > From: Alastair D'Silva <alastair@d-silva.org>
-> > > > > 
-> > > > > Apologies for the large CC list, it's a heads up for those
-> > > > > responsible
-> > > > > for subsystems where a prototype change in generic code causes
-> > > > > a
-> > > > > change
-> > > > > in those subsystems.
-> > > > > 
-> > > > > This series enhances hexdump.
-> > > > 
-> > > > Still not a fan of these patches.
-> > > 
-> > > I'm afraid there's not too much action I can take on that, I'm
-> > > happy to
-> > > address specific issues though.
-> > > 
-> > > > > These improve the readability of the dumped data in certain
-> > > > > situations
-> > > > > (eg. wide terminals are available, many lines of empty bytes
-> > > > > exist,
-> > > > > etc).
-> > 
-> > I think it's generally overkill for the desired uses.
-> 
-> I understand where you're coming from, however, these patches make it a
-> lot easier to work with large chucks of binary data. I think it makes
-> more sense to have these patches upstream, even though committed code
-> may not necessarily have all the features enabled, as it means that
-> devs won't have to apply out-of-tree patches during development to make
-> larger dumps manageable.
-> 
-> > > > Changing hexdump's last argument from bool to int is odd.
-> > > > 
-> > > 
-> > > Think of it as replacing a single boolean with many booleans.
-> > 
-> > I understand it.  It's odd.
-> > 
-> > I would rather not have a mixture of true, false, and apparently
-> > random collections of bitfields like 0xd or 0b1011 or their
-> > equivalent or'd defines.
-> > 
-> 
-> Where's the mixture? What would you propose instead?
+--Sig_/AQcJa7AwP=cW.Tdh_kvnKV=
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-create a hex_dump_to_buffer_ext with a new argument
-and a new static inline for the old hex_dump_to_buffer
-without modifying the argument list that calls
-hex_dump_to_buffer with whatever added argument content
-you need.
+Hi all,
 
-Something like:
+Today's linux-next merge of the net-next tree got a conflict in:
 
-static inline
-int hex_dump_to_buffer(const void *buf, size_t len, int rowsize,
-		       int groupsize, char *linebuf, size_t linebuflen,
-		       bool ascii)
-{
-	return hex_dump_to_buffer_ext(buf, len, rowsize, groupsize,
-				      linebuf, linebuflen, ascii, 0);
-}
+  drivers/infiniband/hw/nes/nes.c
 
-and remove EXPORT_SYMBOL(hex_dump_to_buffer)
-				      
+between commit:
 
+  2d3c72ed5041 ("rdma: Remove nes")
 
+from the rdma tree and commit:
+
+  2638eb8b50cf ("net: ipv4: provide __rcu annotation for ifa_list")
+
+from the net-next tree.
+
+I fixed it up (I removed the file) and can carry the fix as necessary.
+This is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/AQcJa7AwP=cW.Tdh_kvnKV=
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl0K7FkACgkQAVBC80lX
+0GwxCwf/T2n4IKaulRdTQDeyekS+YVT3LeCTwTxZNvrRJkU1dAHJZ6DA2xxey8lP
+nAts5MFB1X0FHxjqPghUBnTh5Ki+ssBAuDEgoNXxTSdVQpHa7FUlXmsTfpikCOUs
+fJL0oblVxnjAtcM7DGo2oDJFLc28h5uUnS30UH5dbLM8IFIcEwtxYQ8Rueu4aRlP
+4W5ngdslZZSC/P9l5+uixNocLZEGWBv0nq3YJY7EzKi9/RHUntmNf2V3EN3dt7mC
+30m7ABR98uaFHdlmoveOBhccT9lywOEqA3Ma01s3e6XM4trrP5KBu4kOBbCkw7tw
+Fr9//fVNf69LVKN+X3vVBXpzbgEKWg==
+=CpmS
+-----END PGP SIGNATURE-----
+
+--Sig_/AQcJa7AwP=cW.Tdh_kvnKV=--
