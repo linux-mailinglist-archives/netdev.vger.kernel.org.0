@@ -2,73 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 040744CB99
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 12:12:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 941804CBA7
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 12:20:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726300AbfFTKM4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 06:12:56 -0400
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:37435 "EHLO
-        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726081AbfFTKMz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 06:12:55 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id ADCEE221FB;
-        Thu, 20 Jun 2019 06:12:54 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Thu, 20 Jun 2019 06:12:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=BICJki
-        kO1pqeAKqFclJvZTa5QLEKlMvNvzQTH8/ESkQ=; b=QGBAPRoqPuJDv4An/YM2Pj
-        nbhCYmJddHpRZX2hajArb5TmTuC6t1nI0LG0AvoEG/zWifi+c2C5V5ym+tbOJTcv
-        VErt4gPwYVPMlfbcTKpcMuoi6bL0VHpxbmC4VHiR1fh9ed3I6ehFDwzsyU7LzfJ1
-        2ecOKL0+y70McPilF4+TRFi2er6OG3wKs5wmdr3p/qQ3xk04mcny0jTAsoEplK+H
-        DjSzi6ZHeVY1f7VSV8QejWXgS81X1/ucPqP+SsPUrCyPsMBaSCmM9ync9b0fhHm/
-        +dSLHlINm2dXbvDrXeqdzQJ83zc6pEF30P1Kac/pgynkm5ZNC8PTIopJ7ZxNbs6A
-        ==
-X-ME-Sender: <xms:JVwLXXvBDORgKnrFD2sTGgqN1vd2Xi3pucDsQqwIvIjSwWU_8vq6ng>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrtdeggddviecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepudelfe
-    drgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhes
-    ihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
-X-ME-Proxy: <xmx:JVwLXUrRoYVz6ODtVoG9OPhp3xhbpss6FdOwo-mbaXv-A_C5MNyR-A>
-    <xmx:JVwLXdpOxd4ZbDhExft_38sjSKfjYDZvhxhvERPFfnL5kktj2T9lnQ>
-    <xmx:JVwLXU1x1rcBEdNTjAy7B4uj9Y9LzXFKjGGcpydIB-yqC9ak0IUmrw>
-    <xmx:JlwLXfurpOKn7O7indjcNmZWmTnW8hrMucWwCYeyIJz6nhncoAWpPw>
-Received: from localhost (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id CDE61380084;
-        Thu, 20 Jun 2019 06:12:52 -0400 (EDT)
-Date:   Thu, 20 Jun 2019 13:12:50 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, dsahern@gmail.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next v2] ipv6: Error when route does not have any
- valid nexthops
-Message-ID: <20190620101250.GA18869@splinter>
-References: <20190620091021.18210-1-idosch@idosch.org>
- <20190620092202.GC2504@nanopsycho>
+        id S1730987AbfFTKUZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 06:20:25 -0400
+Received: from mail.us.es ([193.147.175.20]:38798 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726234AbfFTKUW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Jun 2019 06:20:22 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id A09ACEA479
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 12:20:18 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 8B973DA712
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 12:20:18 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 6D97BDA70E; Thu, 20 Jun 2019 12:20:18 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 3E125DA704;
+        Thu, 20 Jun 2019 12:20:16 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Thu, 20 Jun 2019 12:20:16 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 12DDD4265A2F;
+        Thu, 20 Jun 2019 12:20:16 +0200 (CEST)
+Date:   Thu, 20 Jun 2019 12:20:15 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Fernando Fernandez Mancera <ffmancera@riseup.net>,
+        wenxu <wenxu@ucloud.cn>, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] netfilter: synproxy: fix building syncookie calls
+Message-ID: <20190620102015.gzanaci6aztfhv76@salvia>
+References: <20190619125500.1054426-1-arnd@arndb.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190620092202.GC2504@nanopsycho>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+In-Reply-To: <20190619125500.1054426-1-arnd@arndb.de>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 20, 2019 at 11:22:03AM +0200, Jiri Pirko wrote:
-> Thu, Jun 20, 2019 at 11:10:21AM CEST, idosch@idosch.org wrote:
-> >+	if (list_empty(&rt6_nh_list)) {
-> >+		NL_SET_ERR_MSG(extack,
-> >+			       "Invalid nexthop configuration - no valid nexthops");
+On Wed, Jun 19, 2019 at 02:54:36PM +0200, Arnd Bergmann wrote:
+> When either CONFIG_IPV6 or CONFIG_SYN_COOKIES are disabled, the kernel
+> fails to build:
 > 
-> No need for a line wrap.
+> include/linux/netfilter_ipv6.h:180:9: error: implicit declaration of function '__cookie_v6_init_sequence'
+>       [-Werror,-Wimplicit-function-declaration]
+>         return __cookie_v6_init_sequence(iph, th, mssp);
+> include/linux/netfilter_ipv6.h:194:9: error: implicit declaration of function '__cookie_v6_check'
+>       [-Werror,-Wimplicit-function-declaration]
+>         return __cookie_v6_check(iph, th, cookie);
+> net/ipv6/netfilter.c:237:26: error: use of undeclared identifier '__cookie_v6_init_sequence'; did you mean 'cookie_init_sequence'?
+> net/ipv6/netfilter.c:238:21: error: use of undeclared identifier '__cookie_v6_check'; did you mean '__cookie_v4_check'?
+> 
+> Fix the IS_ENABLED() checks to match the function declaration
+> and definitions for these.
 
-I wanted to be consistent with the rest of the extack usage in this
-function.
+Applied, thanks Arnd.
