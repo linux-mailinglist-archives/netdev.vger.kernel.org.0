@@ -2,95 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FD114CA32
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 11:03:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08A924CA59
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 11:09:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731299AbfFTJDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 05:03:00 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:44417 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725939AbfFTJC7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 05:02:59 -0400
-Received: by mail-ed1-f66.google.com with SMTP id k8so3558283edr.11
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 02:02:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=HNmoLH7L65zh+oviWZRmLVKzaZLwx+ZIkWckjpUyKBQ=;
-        b=qnaFRngisyT+p14PuQM4uTC8dlxFiXIfU6jhp7Cwm2GDz6fgwVmQt8USkBDUT9Ux95
-         L1xy6efGE6QX/urt3iDy8AkQY9e0rp6dzWbjonUY8fW69+l5UovSuqt+APkg2MRZ/vax
-         ZToLBDjPMXcvoLE3x4JCXrn4nq3ZmQp2Gg/cQwe/0MJbVu3oFmvGCflWisu10SPdO9rz
-         3Ch4QLir3pcuVONevW3GpvAhUm7AO8Cf8T5gA0Zc00A6ti2K2s4ITCI3oFQU79TXOAHo
-         ntIvsahdv/hv2/2QAKy9u2VPAeoy0pWCtp1vFHcvhjzF/uUxk+F7Edz4Dz+6Eq9RY5Sk
-         iuRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=HNmoLH7L65zh+oviWZRmLVKzaZLwx+ZIkWckjpUyKBQ=;
-        b=sr5eEMDKqeuz0K0O6wwOQ0wWfC/SdjzY7XeyMTSRfFfW+JgRhgOXUNX3rBsyf/ZfW2
-         xbd8B6WIlIh8U6ZZxdoVdJlH1P+2Ee9d9MadZ/N/n/uy5/A8ZI0j1fsuEhzxwXHv/zvq
-         9e0nYO/eNQQoRDUI0huQOVW+EbNaofhSGh9Lgs11D+GOsiNGzTIhkH0duKVv7Q+MQ+XT
-         dKTA4607Ks2mMhCymxWAQZoNn48UXQNpUY9CVf0ZU/EnbqJv3sWlhPjYd/elP8oj8cQC
-         cRVrdMkXixvOLmOnaCp+y/4CEsBth3RQ+sx3iSXDmTDvafR3OsbOf4GU67p4j1ebHZdN
-         UPeg==
-X-Gm-Message-State: APjAAAXr1ooI+jyiBEr2nethz1S+ZeFU688d3Ltv4GS90/G/cz7BIvDs
-        kYnZn6hoYefCCWEw78VQWiwkDA==
-X-Google-Smtp-Source: APXvYqzrbhv+xcfbMgnz6jmUlvVpz6aC2jzgDXXjRbBQJJaUWmHpbKIPoK1CcFCy4e77AdJLom+Oqg==
-X-Received: by 2002:a17:906:158c:: with SMTP id k12mr187614ejd.83.1561021378154;
-        Thu, 20 Jun 2019 02:02:58 -0700 (PDT)
-Received: from tegmen.arch.suse.de (nat.nue.novell.com. [195.135.221.2])
-        by smtp.gmail.com with ESMTPSA id i18sm3765803ede.65.2019.06.20.02.02.57
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 20 Jun 2019 02:02:57 -0700 (PDT)
-From:   Denis Kirjanov <kda@linux-powerpc.org>
-X-Google-Original-From: Denis Kirjanov <dkirjanov@suse.com>
-To:     stephen@networkplumber.org
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        dledford@redhat.com, mkubecek@suse.cz,
-        Denis Kirjanov <kda@linux-powerpc.org>
-Subject: [PATCH iproute2-next v2 2/2] uapi: update if_link.h
-Date:   Thu, 20 Jun 2019 11:02:49 +0200
-Message-Id: <20190620090249.106704-2-dkirjanov@suse.com>
-X-Mailer: git-send-email 2.12.3
-In-Reply-To: <20190620090249.106704-1-dkirjanov@suse.com>
-References: <20190620090249.106704-1-dkirjanov@suse.com>
+        id S1731557AbfFTJJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 05:09:03 -0400
+Received: from relay9-d.mail.gandi.net ([217.70.183.199]:48317 "EHLO
+        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731164AbfFTJJD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 05:09:03 -0400
+X-Originating-IP: 90.88.23.150
+Received: from localhost (aaubervilliers-681-1-81-150.w90-88.abo.wanadoo.fr [90.88.23.150])
+        (Authenticated sender: maxime.ripard@bootlin.com)
+        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id 145D4FF80E;
+        Thu, 20 Jun 2019 09:08:57 +0000 (UTC)
+Date:   Thu, 20 Jun 2019 11:08:57 +0200
+From:   Maxime Ripard <maxime.ripard@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Antoine =?utf-8?Q?T=C3=A9nart?= <antoine.tenart@bootlin.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v3 01/16] dt-bindings: net: Add YAML schemas for the
+ generic Ethernet options
+Message-ID: <20190620090857.z6gru4cilq6z7e4w@flea>
+References: <27aeb33cf5b896900d5d11bd6957eda268014f0c.1560937626.git-series.maxime.ripard@bootlin.com>
+ <20190619140314.GC18352@lunn.ch>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="52tq5ryctgrkeugj"
+Content-Disposition: inline
+In-Reply-To: <20190619140314.GC18352@lunn.ch>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-update if_link.h to commit 75345f888f700c4ab2448287e35d48c760b202e6
-("ipoib: show VF broadcast address")
 
-Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
----
- include/uapi/linux/if_link.h | 5 +++++
- 1 file changed, 5 insertions(+)
+--52tq5ryctgrkeugj
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index bfe7f9e6..5f271d84 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -692,6 +692,7 @@ enum {
- 	IFLA_VF_IB_NODE_GUID,	/* VF Infiniband node GUID */
- 	IFLA_VF_IB_PORT_GUID,	/* VF Infiniband port GUID */
- 	IFLA_VF_VLAN_LIST,	/* nested list of vlans, option for QinQ */
-+	IFLA_VF_BROADCAST,      /* VF broadcast */
- 	__IFLA_VF_MAX,
- };
- 
-@@ -702,6 +703,10 @@ struct ifla_vf_mac {
- 	__u8 mac[32]; /* MAX_ADDR_LEN */
- };
- 
-+struct ifla_vf_broadcast {
-+	__u8 broadcast[32];
-+};
-+
- struct ifla_vf_vlan {
- 	__u32 vf;
- 	__u32 vlan; /* 0 - 4095, 0 disables VLAN filter */
--- 
-2.12.3
+Hi Andrew,
 
+On Wed, Jun 19, 2019 at 04:03:14PM +0200, Andrew Lunn wrote:
+> > +  phy-connection-type:
+> > +    description:
+> > +      Operation mode of the PHY interface
+> > +    enum:
+> > +      # There is not a standard bus between the MAC and the PHY,
+> > +      # something proprietary is being used to embed the PHY in the
+> > +      # MAC.
+>
+> ...
+>
+> > +
+> > +  phy-mode:
+> > +    $ref: "#/properties/phy-connection-type"
+> > +    deprecated: true
+>
+> I don't think phy-mode is actually deprecated. ethernet.txt actually says:
+>
+> "This is now a de-facto standard property;" and no mentions that is
+> should not be used. Looking at actual device trees, phy-mode is by far
+> more popular than phy-connection-type.
+
+Looking at the phy-connection-type documentation, I was under this
+impression, sorry.
+
+I'll drop it then.
+
+> fwnode_get_phy_mode() first looks for phy-mode and only falls back to
+> phy-connection-type if it is not present. The same is true for
+> of_get_phy_mode().
+>
+> > +  fixed-link:
+> > +    allOf:
+> > +      - if:
+> > +          type: array
+> > +        then:
+> > +          minItems: 1
+> > +          maxItems: 1
+> > +          items:
+> > +            items:
+> > +              - minimum: 0
+> > +                maximum: 31
+> > +                description:
+> > +                  Emulated PHY ID, choose any but unique to the all
+> > +                  specified fixed-links
+> > +
+> > +              - enum: [0, 1]
+> > +                description:
+> > +                  Duplex configuration. 0 for half duplex or 1 for
+> > +                  full duplex
+> > +
+> > +              - enum: [10, 100, 1000]
+> > +                description:
+> > +                  Link speed in Mbits/sec.
+> > +
+> > +              - enum: [0, 1]
+> > +                description:
+> > +                  Pause configuration. 0 for no pause, 1 for pause
+> > +
+> > +              - enum: [0, 1]
+> > +                description:
+> > +                  Asymmetric pause configuration. 0 for no asymmetric
+> > +                  pause, 1 for asymmetric pause
+> > +
+>
+> This array of 5 values format should be marked as deprecated.
+
+Right, I'll add it.
+
+> > +
+> > +      - if:
+> > +          type: object
+> > +        then:
+> > +          properties:
+> > +            speed:
+> > +              allOf:
+> > +                - $ref: /schemas/types.yaml#definitions/uint32
+> > +                - enum: [10, 100, 1000]
+>
+> This recently changed, depending on context. If PHYLINK is being used,
+> any speed is allowed. If phylib is used, then only these speeds are
+> allowed. And we are starting to see some speeds other than listed
+> here.
+
+phylink seems to be described in a separate binding document, maybe we
+can adjust that later?
+
+Maxime
+
+--
+Maxime Ripard, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
+
+--52tq5ryctgrkeugj
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXQtNKQAKCRDj7w1vZxhR
+xU1mAP9UxX/bUs/+sGjv2lf1IVQAuWCDAFQPe+SNpltGaaRbzAD/Z9kZa0JhhgBo
+aIO1LH2YT0uPFhUlcf7U7bvipC2mnQ0=
+=QITW
+-----END PGP SIGNATURE-----
+
+--52tq5ryctgrkeugj--
