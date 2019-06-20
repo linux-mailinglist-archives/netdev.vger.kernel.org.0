@@ -2,104 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AA9064C4FF
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 03:34:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7481C4C52B
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 04:00:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731073AbfFTBeb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 21:34:31 -0400
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:41615 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726325AbfFTBea (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 21:34:30 -0400
-Received: by mail-oi1-f196.google.com with SMTP id g7so885533oia.8;
-        Wed, 19 Jun 2019 18:34:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nYuOW5lyxxT0zsgk7qqZi/7w20Oi72vHiGCqLTnTrl8=;
-        b=XxxTCKxD/5Hh4mP6+R4KSzkOEhkkx9EXfAH8omqHrIeXVmLMBa406JF09S5I9/dOxR
-         wc9h4G7Dflde6RcyDAZnRIMTkl43HRI69tjffugAWRVlUFXSiEWEbbvf1v8Dkv333ACz
-         fPBTlaPJtNz1tic4Y8+juQsuQ6mnFj5eYHNiMilXbbr3elf5dvc2xJrALVZVKGSFd1iZ
-         efEFfZAArnZa7GOg/IseyJDpc7KuRCJF8XYefzt5VhBC48jDwJGyC0kRcJOnDLUKC0In
-         eFPF3hEUJBXxsibzw51TwqvsjDFIP78hjGH3zMbetl9Rq5+bOJEMbbz3Y1EtDIbZufot
-         ZLMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nYuOW5lyxxT0zsgk7qqZi/7w20Oi72vHiGCqLTnTrl8=;
-        b=BNEsDTidFziHEymSbkUyEdskkuyBeBVCwziwa7rvAqOIrSG4eWjQmmVQRyUab2orZx
-         zxXuwZkUEH9/ObfyEqpl5lo+HUwsCu6cKMUFXBL5OKadPQIO9RSab+5rtXoi4fiW4WRP
-         gaIM8mmk1XlSA9kiSUecIQ3A3ikCuA8ixUNodUc6e3ax9LALBF4LruvmQ53Iym6Ar+Ws
-         87jnzSdlyDcUQRO4pIeAAbpolXwcZgUmFZX5veAKUK223JZwMJ2fcPr9+f38iHVI0Q/u
-         oAJMt+6+wMXL11JDT8yvu0jAUb/vzf7yfMPfb1dBHXLgjUR3FI+4L1EexMGCWyaAMdxF
-         xApQ==
-X-Gm-Message-State: APjAAAVhVyePyzMFVsj/BNAvEbOQe0LSxwyVEQhXR/A6aTrfzovv39li
-        wcL7KPZ9hpOlMc7LE4DnPmjtMijzQx2SBhMPaXE=
-X-Google-Smtp-Source: APXvYqwrykrLtbD0pG9V8vBrsbsTo35v6Soy95FKONjQ0aI87GQhODvgpXAK5RhK2mM0+AszFXum8RjavMf7MOSMXic=
-X-Received: by 2002:aca:4403:: with SMTP id r3mr4853308oia.39.1560994469747;
- Wed, 19 Jun 2019 18:34:29 -0700 (PDT)
+        id S1731211AbfFTCAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 22:00:33 -0400
+Received: from smtprelay0204.hostedemail.com ([216.40.44.204]:58509 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726370AbfFTCAc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 22:00:32 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay01.hostedemail.com (Postfix) with ESMTP id 61216100E86C2;
+        Thu, 20 Jun 2019 02:00:30 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 
+X-HE-Tag: tent82_3890fedb2856
+X-Filterd-Recvd-Size: 4880
+Received: from XPS-9350.home (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
+        (Authenticated sender: joe@perches.com)
+        by omf13.hostedemail.com (Postfix) with ESMTPA;
+        Thu, 20 Jun 2019 02:00:24 +0000 (UTC)
+Message-ID: <fcf57339aea60fb1744cea2a2593656c728c4ec4.camel@perches.com>
+Subject: Re: [PATCH v3 0/7] Hexdump Enhancements
+From:   Joe Perches <joe@perches.com>
+To:     Alastair D'Silva <alastair@d-silva.org>
+Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Karsten Keil <isdn@linux-pingi.de>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Stanislaw Gruszka <sgruszka@redhat.com>,
+        Benson Leung <bleung@chromium.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        David Laight <David.Laight@ACULAB.COM>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-fsdevel@vger.kernel.org
+Date:   Wed, 19 Jun 2019 19:00:22 -0700
+In-Reply-To: <9456ca2a4ae827635bb6d864e5095a9e51f2ac45.camel@d-silva.org>
+References: <20190617020430.8708-1-alastair@au1.ibm.com>
+         <9a000734375c0801fc16b71f4be1235f9b857772.camel@perches.com>
+         <c68cb819257f251cbb66f8998a95c31cebe2d72e.camel@d-silva.org>
+         <d8316be322f33ea67640ff83f2248fe433078407.camel@perches.com>
+         <9456ca2a4ae827635bb6d864e5095a9e51f2ac45.camel@d-silva.org>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
 MIME-Version: 1.0
-References: <20190617165836.4673-1-colin.king@canonical.com>
- <20190619051308.23582-1-martin.blumenstingl@googlemail.com> <92f9e5a6-d2a2-6bf2-ff8a-2430fe977f93@canonical.com>
-In-Reply-To: <92f9e5a6-d2a2-6bf2-ff8a-2430fe977f93@canonical.com>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Thu, 20 Jun 2019 03:34:18 +0200
-Message-ID: <CAFBinCDmYVPDMcwAAYhMfxxuTsG=xunduN58_8e20zE_Mhmb7Q@mail.gmail.com>
-Subject: Re: [PATCH] net: stmmac: add sanity check to device_property_read_u32_array
- call
-To:     Colin Ian King <colin.king@canonical.com>
-Cc:     alexandre.torgue@st.com, davem@davemloft.net, joabreu@synopsys.com,
-        kernel-janitors@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
-        peppe.cavallaro@st.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Colin,
+On Thu, 2019-06-20 at 11:14 +1000, Alastair D'Silva wrote:
+> On Wed, 2019-06-19 at 17:35 -0700, Joe Perches wrote:
+> > On Thu, 2019-06-20 at 09:15 +1000, Alastair D'Silva wrote:
+> > > On Wed, 2019-06-19 at 09:31 -0700, Joe Perches wrote:
+> > > > On Mon, 2019-06-17 at 12:04 +1000, Alastair D'Silva wrote:
+> > > > > From: Alastair D'Silva <alastair@d-silva.org>
+> > > > > 
+> > > > > Apologies for the large CC list, it's a heads up for those
+> > > > > responsible
+> > > > > for subsystems where a prototype change in generic code causes
+> > > > > a
+> > > > > change
+> > > > > in those subsystems.
+> > > > > 
+> > > > > This series enhances hexdump.
+> > > > 
+> > > > Still not a fan of these patches.
+> > > 
+> > > I'm afraid there's not too much action I can take on that, I'm
+> > > happy to
+> > > address specific issues though.
+> > > 
+> > > > > These improve the readability of the dumped data in certain
+> > > > > situations
+> > > > > (eg. wide terminals are available, many lines of empty bytes
+> > > > > exist,
+> > > > > etc).
+> > 
+> > I think it's generally overkill for the desired uses.
+> 
+> I understand where you're coming from, however, these patches make it a
+> lot easier to work with large chucks of binary data. I think it makes
+> more sense to have these patches upstream, even though committed code
+> may not necessarily have all the features enabled, as it means that
+> devs won't have to apply out-of-tree patches during development to make
+> larger dumps manageable.
+> 
+> > > > Changing hexdump's last argument from bool to int is odd.
+> > > > 
+> > > 
+> > > Think of it as replacing a single boolean with many booleans.
+> > 
+> > I understand it.  It's odd.
+> > 
+> > I would rather not have a mixture of true, false, and apparently
+> > random collections of bitfields like 0xd or 0b1011 or their
+> > equivalent or'd defines.
+> > 
+> 
+> Where's the mixture? What would you propose instead?
 
-On Wed, Jun 19, 2019 at 8:55 AM Colin Ian King <colin.king@canonical.com> wrote:
->
-> On 19/06/2019 06:13, Martin Blumenstingl wrote:
-> > Hi Colin,
-> >
-> >> Currently the call to device_property_read_u32_array is not error checked
-> >> leading to potential garbage values in the delays array that are then used
-> >> in msleep delays.  Add a sanity check to the property fetching.
-> >>
-> >> Addresses-Coverity: ("Uninitialized scalar variable")
-> >> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> > I have also sent a patch [0] to fix initialize the array.
-> > can you please look at my patch so we can work out which one to use?
-> >
-> > my concern is that the "snps,reset-delays-us" property is optional,
-> > the current dt-bindings documentation states that it's a required
-> > property. in reality it isn't, there are boards (two examples are
-> > mentioned in my patch: [0]) without it.
-> >
-> > so I believe that the resulting behavior has to be:
-> > 1. don't delay if this property is missing (instead of delaying for
-> >    <garbage value> ms)
-> > 2. don't error out if this property is missing
-> >
-> > your patch covers #1, can you please check whether #2 is also covered?
-> > I tested case #2 when submitting my patch and it worked fine (even
-> > though I could not reproduce the garbage values which are being read
-> > on some boards)
-> >
-> >
-> > Thank you!
-> > Martin
-> >
-> >
-> > [0] https://lkml.org/lkml/2019/4/19/638
-> >
-> Is that the correct link?
-sorry, that is a totally unrelated link
-the correct link is: https://patchwork.ozlabs.org/patch/1118313/
+create a hex_dump_to_buffer_ext with a new argument
+and a new static inline for the old hex_dump_to_buffer
+without modifying the argument list that calls
+hex_dump_to_buffer with whatever added argument content
+you need.
+
+Something like:
+
+static inline
+int hex_dump_to_buffer(const void *buf, size_t len, int rowsize,
+		       int groupsize, char *linebuf, size_t linebuflen,
+		       bool ascii)
+{
+	return hex_dump_to_buffer_ext(buf, len, rowsize, groupsize,
+				      linebuf, linebuflen, ascii, 0);
+}
+
+and remove EXPORT_SYMBOL(hex_dump_to_buffer)
+				      
+
+
