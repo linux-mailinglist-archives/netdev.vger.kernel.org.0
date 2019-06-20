@@ -2,163 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A37D44CA30
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 11:02:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6369E4CA33
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 11:03:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730650AbfFTJCk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 05:02:40 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:40716 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726468AbfFTJCk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 05:02:40 -0400
-Received: by mail-wr1-f68.google.com with SMTP id p11so2162474wre.7
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 02:02:38 -0700 (PDT)
+        id S1731398AbfFTJDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 05:03:01 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:41072 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731250AbfFTJDA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 05:03:00 -0400
+Received: by mail-ed1-f67.google.com with SMTP id p15so3586664eds.8
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 02:02:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
+        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id;
-        bh=H3f+Gbu3ZphTI08lq/1MCi2N3aTwRJaSw4Xo248eExg=;
-        b=Gb3bLdsB8zKT0i0zjSm6O1nYp4FbbrXdDdf0yLhCXzQv9Ym8uds/8r0VB74l/6NpwH
-         P3F1xHtwiGhs8O8J4f06XBMbAWQXma24XyR0UHv+s3olTYYAgDlx8t73FwTfsXSDuaSR
-         4Yc+W9VkgwvRJvtm6w3Ew60csY5HUMXGDyjlE9phXwyk3IWHYiYYTTnDpW3+VujR5mXR
-         G6MgOv8S7Cj4pWlvsPKraWZ0oTl7zsRJdlIXbIbN7gnASAvfr8sceLRyyf2iaKbu3h42
-         LjHtx3VETfmcalGj+C0bgdhCrM2ppWn5eJRt/Pn1OAjykKIqmZ9l0Vfu+kn5DUOJOVbP
-         tXFA==
+        bh=/HYBIY590cdJS2RAEvrEQw5uxHga9dzdyPJdjb+NVxA=;
+        b=nQolUwC1kVi2ylKBbIliVjJyQfQ3saSQqmmP8refzxTVTGQ+lBwMto3JVbl6zUrWk5
+         3dIhoRSfwzQXiseDJfiNc/33qeci4+glMBm6rdbrrTLxx0K2aBu2ZfjQwAPk5WymRpj3
+         jnmzpI4ZXdXG/wE8JvDm7PHSFFScsT8yPnOZeGm05yN4HTanGGxslqsbE4jqQCL5TgQm
+         sRdp00j+KROEgCWBQH3LKG4WvRMxQ2Bp///zNVE8L6S1P3qjAV+Z/vBmrxXl1RIu1q7Q
+         A9cCUdjm1uQPVpq35UzxQpbOfUJjj3tiGFMGcLO7FmJCYuaHxgEB+F+UzSFXPOuMFyHJ
+         XCrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=H3f+Gbu3ZphTI08lq/1MCi2N3aTwRJaSw4Xo248eExg=;
-        b=uaK82/29vhcHOY+4ebN1igu6ELGfrTAovEyu2EFSCcN+fg/1ca0y89lBH55aEIjYVq
-         VQDuxvSkuH1oSdwdVfNrkWsnjAe2Ferc7ejtbzWc9widsiufhiRjxnF7WRF8GY407dZy
-         EGwi9FtmIfyX4IIyEpHzntUzO0kZr8G6L/w0zdUN80V1Y2tXa1Kl0J8mKwcP/CeyBdXa
-         oYVp8n6lvnOMxmnpFmmJxsW9fgbWrWk2j7wagVqT4Gk5yZABqR2Y2E1fNM3fXW0NbSRa
-         M78Cxx5M7U5Vx35zOvxELR8k9PAnGibbjOLi2+tddA0WhVJRwQjI+RIjCZiM4OmX8LzC
-         /IBw==
-X-Gm-Message-State: APjAAAWv+Eh/yhNbY27wqxbe8OBf8WEh8eDVlA0tQlgUHCOJVB6roQuB
-        JrZ4yXNwZRfMmA==
-X-Google-Smtp-Source: APXvYqzix/XftpVqfP/1S2AGVPEPNRm+lhnNrwEDfsYscMlbPjLX/Z6h9VcywpZrcOoym8IDOFJJkQ==
-X-Received: by 2002:a5d:6443:: with SMTP id d3mr9894862wrw.279.1561021358050;
-        Thu, 20 Jun 2019 02:02:38 -0700 (PDT)
-Received: from x-Inspiron-15-5568.fritz.box (ip-95-223-112-76.hsi16.unitymediagroup.de. [95.223.112.76])
-        by smtp.gmail.com with ESMTPSA id x11sm3659289wmg.23.2019.06.20.02.02.37
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 20 Jun 2019 02:02:37 -0700 (PDT)
-From:   Sergej Benilov <sergej.benilov@googlemail.com>
-To:     venza@brownhat.org, netdev@vger.kernel.org
-Cc:     Sergej Benilov <sergej.benilov@googlemail.com>
-Subject: [PATCH] sis900: fix TX completion
-Date:   Thu, 20 Jun 2019 11:02:18 +0200
-Message-Id: <20190620090218.11549-1-sergej.benilov@googlemail.com>
-X-Mailer: git-send-email 2.17.1
+        bh=/HYBIY590cdJS2RAEvrEQw5uxHga9dzdyPJdjb+NVxA=;
+        b=bBgmRgKopcikFnxPbnNCQof///hr5a5iiO0XrsJFXybnPfEYPengS5WPov8g8ppZYN
+         1YY/r2AZBF8pn/jC06pLlUIJrsiHp6omuwD9Pq90VaDA+HEYUnnSUlVdpOEdA4AHWFRC
+         lnBYyp30Uyfnb/ZU/8btkXgNqrs/zRryEIkLD/mVuZdFXVgAjLkOKQ6M8Qgzu3PBRThf
+         rrfwXBhOdqzb4nBHRXqZlcyDzeW44GAz64f8Dlnq7wIxYY7nk7SspiGTbQgRI8ewZVPr
+         bbnUgx2/s3a54gi5BCcthRMPPjbgP3t9I3Mv23SkUqvAKrK24js1KptZdCtmmyJWc8dl
+         6s7g==
+X-Gm-Message-State: APjAAAV6NSVcuf360gxtJC/QcfYskEok4AQBwWAY61FcVKBwNmUsvCJq
+        Tjpp+Ow5k+8P5xWe/vrPTZLTiOmDQrtGDQ==
+X-Google-Smtp-Source: APXvYqywpfElHlweszHIQoqj/S4P9scQLle01LSqJ18yONUE9Sx+eaXek7c9vGHJDX7DbJBMoIsulw==
+X-Received: by 2002:a50:be01:: with SMTP id a1mr20445837edi.287.1561021377345;
+        Thu, 20 Jun 2019 02:02:57 -0700 (PDT)
+Received: from tegmen.arch.suse.de (nat.nue.novell.com. [195.135.221.2])
+        by smtp.gmail.com with ESMTPSA id i18sm3765803ede.65.2019.06.20.02.02.56
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 20 Jun 2019 02:02:56 -0700 (PDT)
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+X-Google-Original-From: Denis Kirjanov <dkirjanov@suse.com>
+To:     stephen@networkplumber.org
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        dledford@redhat.com, mkubecek@suse.cz,
+        Denis Kirjanov <kda@linux-powerpc.org>
+Subject: [PATCH iproute2-next v2 1/2] ipaddress: correctly print a VF hw address in the IPoIB case
+Date:   Thu, 20 Jun 2019 11:02:48 +0200
+Message-Id: <20190620090249.106704-1-dkirjanov@suse.com>
+X-Mailer: git-send-email 2.12.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since commit 605ad7f184b60cfaacbc038aa6c55ee68dee3c89 "tcp: refine TSO autosizing",
-outbound throughput is dramatically reduced for some connections, as sis900
-is doing TX completion within idle states only.
+Current code assumes that we print Etheret mac and
+that doesn't work in IPoIB case with SRIOV-enabled hardware
 
-Make TX completion happen after every transmitted packet.
+Before:
+11: ib1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2044 qdisc pfifo_fast
+state UP mode DEFAULT group default qlen 256
+        link/infiniband
+80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
+00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
+        vf 0 MAC 14:80:00:00:66:fe, spoof checking off, link-state disable,
+    trust off, query_rss off
+    ...
 
-Test:
-netperf
+After:
+11: ib1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2044 qdisc pfifo_fast
+state UP mode DEFAULT group default qlen 256
+        link/infiniband
+80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
+00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
+        vf 0     link/infiniband
+80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
+00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff, spoof
+checking off, link-state disable, trust off, query_rss off
 
-before patch:
-> netperf -H remote -l -2000000 -- -s 1000000
-MIGRATED TCP STREAM TEST from 0.0.0.0 () port 0 AF_INET to 95.223.112.76 () port 0 AF_INET : demo
-Recv   Send    Send
-Socket Socket  Message  Elapsed
-Size   Size    Size     Time     Throughput
-bytes  bytes   bytes    secs.    10^6bits/sec
+v1->v2: updated kernel headers to uapi commit
 
- 87380 327680 327680    253.44      0.06
-
-after patch:
-> netperf -H remote -l -10000000 -- -s 1000000
-MIGRATED TCP STREAM TEST from 0.0.0.0 () port 0 AF_INET to 95.223.112.76 () port 0 AF_INET : demo
-Recv   Send    Send
-Socket Socket  Message  Elapsed
-Size   Size    Size     Time     Throughput
-bytes  bytes   bytes    secs.    10^6bits/sec
-
- 87380 327680 327680    5.38       14.89
-
-Thx to Dave Miller and Eric Dumazet for helpful hints
-
-Signed-off-by: Sergej Benilov <sergej.benilov@googlemail.com>
+Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
 ---
- drivers/net/ethernet/sis/sis900.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ ip/ipaddress.c | 42 +++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 37 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/sis/sis900.c b/drivers/net/ethernet/sis/sis900.c
-index fd812d2e..dff5b567 100644
---- a/drivers/net/ethernet/sis/sis900.c
-+++ b/drivers/net/ethernet/sis/sis900.c
-@@ -1058,7 +1058,7 @@ sis900_open(struct net_device *net_dev)
- 	sis900_set_mode(sis_priv, HW_SPEED_10_MBPS, FDX_CAPABLE_HALF_SELECTED);
+diff --git a/ip/ipaddress.c b/ip/ipaddress.c
+index b504200b..13ad76dd 100644
+--- a/ip/ipaddress.c
++++ b/ip/ipaddress.c
+@@ -26,6 +26,7 @@
  
- 	/* Enable all known interrupts by setting the interrupt mask. */
--	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxIDLE);
-+	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxIDLE | TxDESC);
- 	sw32(cr, RxENA | sr32(cr));
- 	sw32(ier, IE);
+ #include <linux/netdevice.h>
+ #include <linux/if_arp.h>
++#include <linux/if_infiniband.h>
+ #include <linux/sockios.h>
+ #include <linux/net_namespace.h>
  
-@@ -1581,7 +1581,7 @@ static void sis900_tx_timeout(struct net_device *net_dev)
- 	sw32(txdp, sis_priv->tx_ring_dma);
+@@ -349,9 +350,10 @@ static void print_af_spec(FILE *fp, struct rtattr *af_spec_attr)
  
- 	/* Enable all known interrupts by setting the interrupt mask. */
--	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxIDLE);
-+	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxIDLE | TxDESC);
- }
+ static void print_vf_stats64(FILE *fp, struct rtattr *vfstats);
  
- /**
-@@ -1621,7 +1621,7 @@ sis900_start_xmit(struct sk_buff *skb, struct net_device *net_dev)
- 			spin_unlock_irqrestore(&sis_priv->lock, flags);
- 			return NETDEV_TX_OK;
- 	}
--	sis_priv->tx_ring[entry].cmdsts = (OWN | skb->len);
-+	sis_priv->tx_ring[entry].cmdsts = (OWN | INTR | skb->len);
- 	sw32(cr, TxENA | sr32(cr));
+-static void print_vfinfo(FILE *fp, struct rtattr *vfinfo)
++static void print_vfinfo(struct ifinfomsg *ifi, FILE *fp, struct rtattr *vfinfo)
+ {
+ 	struct ifla_vf_mac *vf_mac;
++	struct ifla_vf_broadcast *vf_broadcast;
+ 	struct ifla_vf_tx_rate *vf_tx_rate;
+ 	struct rtattr *vf[IFLA_VF_MAX + 1] = {};
  
- 	sis_priv->cur_tx ++;
-@@ -1677,7 +1677,7 @@ static irqreturn_t sis900_interrupt(int irq, void *dev_instance)
- 	do {
- 		status = sr32(isr);
+@@ -365,13 +367,43 @@ static void print_vfinfo(FILE *fp, struct rtattr *vfinfo)
+ 	parse_rtattr_nested(vf, IFLA_VF_MAX, vfinfo);
  
--		if ((status & (HIBERR|TxURN|TxERR|TxIDLE|RxORN|RxERR|RxOK)) == 0)
-+		if ((status & (HIBERR|TxURN|TxERR|TxIDLE|TxDESC|RxORN|RxERR|RxOK)) == 0)
- 			/* nothing intresting happened */
- 			break;
- 		handled = 1;
-@@ -1687,7 +1687,7 @@ static irqreturn_t sis900_interrupt(int irq, void *dev_instance)
- 			/* Rx interrupt */
- 			sis900_rx(net_dev);
+ 	vf_mac = RTA_DATA(vf[IFLA_VF_MAC]);
++	vf_broadcast = RTA_DATA(vf[IFLA_VF_BROADCAST]);
+ 	vf_tx_rate = RTA_DATA(vf[IFLA_VF_TX_RATE]);
  
--		if (status & (TxURN | TxERR | TxIDLE))
-+		if (status & (TxURN | TxERR | TxIDLE | TxDESC))
- 			/* Tx interrupt */
- 			sis900_finish_xmit(net_dev);
+ 	print_string(PRINT_FP, NULL, "%s    ", _SL_);
+ 	print_int(PRINT_ANY, "vf", "vf %d ", vf_mac->vf);
+-	print_string(PRINT_ANY, "mac", "MAC %s",
+-		     ll_addr_n2a((unsigned char *) &vf_mac->mac,
+-				 ETH_ALEN, 0, b1, sizeof(b1)));
++
++	print_string(PRINT_ANY,
++			"link_type",
++			"    link/%s ",
++			ll_type_n2a(ifi->ifi_type, b1, sizeof(b1)));
++
++	print_color_string(PRINT_ANY,
++				COLOR_MAC,
++				"address",
++				"%s",
++				ll_addr_n2a((unsigned char *) &vf_mac->mac,
++					ifi->ifi_type == ARPHRD_ETHER ? ETH_ALEN : INFINIBAND_ALEN,
++					ifi->ifi_type,
++					b1, sizeof(b1)));
++
++	if (vf[IFLA_VF_BROADCAST]) {
++		if (ifi->ifi_flags&IFF_POINTOPOINT) {
++			print_string(PRINT_FP, NULL, " peer ", NULL);
++			print_bool(PRINT_JSON,
++					"link_pointtopoint", NULL, true);
++                        } else {
++				print_string(PRINT_FP, NULL, " brd ", NULL);
++                        }
++                        print_color_string(PRINT_ANY,
++                                           COLOR_MAC,
++                                           "broadcast",
++                                           "%s",
++                                           ll_addr_n2a((unsigned char *) &vf_broadcast->broadcast,
++                                                       ifi->ifi_type == ARPHRD_ETHER ? ETH_ALEN : INFINIBAND_ALEN,
++                                                       ifi->ifi_type,
++                                                       b1, sizeof(b1)));
++	}
  
-@@ -1899,8 +1899,8 @@ static void sis900_finish_xmit (struct net_device *net_dev)
- 
- 		if (tx_status & OWN) {
- 			/* The packet is not transmitted yet (owned by hardware) !
--			 * Note: the interrupt is generated only when Tx Machine
--			 * is idle, so this is an almost impossible case */
-+			 * Note: this is an almost impossible condition
-+			 * in case of TxDESC ('descriptor interrupt') */
- 			break;
+ 	if (vf[IFLA_VF_VLAN_LIST]) {
+ 		struct rtattr *i, *vfvlanlist = vf[IFLA_VF_VLAN_LIST];
+@@ -1102,7 +1134,7 @@ int print_linkinfo(struct nlmsghdr *n, void *arg)
+ 		open_json_array(PRINT_JSON, "vfinfo_list");
+ 		for (i = RTA_DATA(vflist); RTA_OK(i, rem); i = RTA_NEXT(i, rem)) {
+ 			open_json_object(NULL);
+-			print_vfinfo(fp, i);
++			print_vfinfo(ifi, fp, i);
+ 			close_json_object();
  		}
- 
-@@ -2476,7 +2476,7 @@ static int sis900_resume(struct pci_dev *pci_dev)
- 	sis900_set_mode(sis_priv, HW_SPEED_10_MBPS, FDX_CAPABLE_HALF_SELECTED);
- 
- 	/* Enable all known interrupts by setting the interrupt mask. */
--	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxIDLE);
-+	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxIDLE | TxDESC);
- 	sw32(cr, RxENA | sr32(cr));
- 	sw32(ier, IE);
- 
+ 		close_json_array(PRINT_JSON, NULL);
 -- 
-2.17.1
+2.12.3
 
