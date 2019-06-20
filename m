@@ -2,180 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A929C4DACE
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 21:56:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D5144DB18
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 22:24:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726993AbfFTT4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 15:56:07 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:39465 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726002AbfFTT4G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 15:56:06 -0400
-Received: by mail-wm1-f66.google.com with SMTP id z23so4328638wma.4;
-        Thu, 20 Jun 2019 12:56:04 -0700 (PDT)
+        id S1726329AbfFTUYa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 16:24:30 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:34037 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725907AbfFTUYa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 16:24:30 -0400
+Received: by mail-pf1-f196.google.com with SMTP id c85so2309275pfc.1
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 13:24:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=9F+TFz278OvmgGveVAhnZx9blmEE+B73SBakz05khe0=;
-        b=gofsVpmFqog4HJSmRiaLdyy9/YouIMxG4iLoMDrKXafy2ro+czdIbou6rpmNF6M/gS
-         sQCOORj1sNfaxIgIjCXiCK/+33nyQTd6Cyyq6NoC9xFjBfIOGJrNyGLyVY/OKLmxRBy4
-         Mn27T7r5LjIInNpxlR71SOVbjZGYgh8jva2h9OMitwu3nohzA4BWjBHoM9Y1lqfAHOIU
-         RVIi4afL/quV9l/CW+scH6GolGkmmJ3mK5CTO005KBUqKe6VJ9dH1XyAptH2guH/Ejic
-         +82iTeHU452CghcvbeDwAW4QBh+g1oqiD8ODjR3mnznWoL6n+1l8sIXlPv0oZm4t7MfK
-         6WjA==
+        d=pensando.io; s=google;
+        h=from:to:subject:date:message-id;
+        bh=+Tswyip86KzEvgXYLEuKg7xqXSR0Gt/6G5Gl4ekk9gc=;
+        b=ZJPJ8o9YUyQIguxq3psw6YIMbuj7QpLrKTE1KRh2+GCpm2qUc0xdwxEbEUiK4BmrjQ
+         sp7BuWMcfrcJzbNVX6nLW4cW6aQibAemaAsF+f7cTUb3m5WnDXTD+POocFRaCnkqWVjt
+         CzEBAWjwi7skFRxJIA2vpmd4JUAaB7PoO6FrKXlgwF+0BEqPf7jjCEpFKEQNuR1s68Im
+         I2u9FpfBmcNwcXElAZ6z1uzurJtVoxuXB1DBMGipn3jU65ONgoXV5l9cv2PBY8ZdcY7A
+         VhJ1Eurs2xafzgzbiABJBtc3p2/EGKq6H5RBsV47wPTI76mJgdeLnn2HHhmATfM7ogjU
+         hlLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=9F+TFz278OvmgGveVAhnZx9blmEE+B73SBakz05khe0=;
-        b=tjrqyfrzPHeZmvzJWZ3Duj7XSwAKiWSy0Lmxkgm4yr7ubbB2NEIRsKS6x6eWuEbpTs
-         OQAj3Wk+DiqBa2bJLBkbtPOJ/9Yl5m7jndHMVNJ/5U4/IQpJncnn3Em5ppS7q2NkwyA2
-         Urq7QxqvAWbzjg+OsDAZTKB8IKbNqOdrtPQ4foLQz9/AxaV7fNzvl3p1zPp34PoYFfPh
-         yGcPurrKlLrtfynnbOtElaFOtDaXXxO8EFL4O63iZSlf9Wq6ptubMO+/6sTlTKTKAxz3
-         +U9u8315dMGlVuA020fPOSZNtpGXT/lfS0VGtBTMyCUIpBi9GXmrSNLYaBosRYPQQWkH
-         lFMw==
-X-Gm-Message-State: APjAAAXpDKt4rjtqx+ZsSDK1zirj7GVCljcV0aY2pYzSVURUpDF8smtJ
-        0qtoX6bA3nVEBgq72T5dpYpJcQ2xE6g=
-X-Google-Smtp-Source: APXvYqwbDIinMwKnV9v5XAMP5U3w+vsZny31TDHhpYUtcVJVEgHmncpvrKiXHUL7dHQiXpsqWs32/g==
-X-Received: by 2002:a1c:618a:: with SMTP id v132mr762793wmb.17.1561060564147;
-        Thu, 20 Jun 2019 12:56:04 -0700 (PDT)
-Received: from debian64.daheim (pD9E29A96.dip0.t-ipconnect.de. [217.226.154.150])
-        by smtp.gmail.com with ESMTPSA id q20sm1100856wra.36.2019.06.20.12.56.03
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 20 Jun 2019 12:56:03 -0700 (PDT)
-Received: from localhost.daheim ([127.0.0.1] helo=debian64.localnet)
-        by debian64.daheim with esmtp (Exim 4.92)
-        (envelope-from <chunkeey@gmail.com>)
-        id 1he3AA-000692-Us; Thu, 20 Jun 2019 21:56:02 +0200
-From:   Christian Lamparter <chunkeey@gmail.com>
-To:     Alan Stern <stern@rowland.harvard.edu>
-Cc:     syzbot <syzbot+6d237e74cdc13f036473@syzkaller.appspotmail.com>,
-        andreyknvl@google.com, chunkeey@googlemail.com,
-        davem@davemloft.net, kvalo@codeaurora.org,
-        Kernel development list <linux-kernel@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: KASAN: slab-out-of-bounds Read in p54u_load_firmware_cb
-Date:   Thu, 20 Jun 2019 21:56:02 +0200
-Message-ID: <3232861.cjm3rXpEJU@debian64>
-In-Reply-To: <Pine.LNX.4.44L0.1906201544001.1346-100000@iolanthe.rowland.org>
-References: <Pine.LNX.4.44L0.1906201544001.1346-100000@iolanthe.rowland.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+        h=x-gm-message-state:from:to:subject:date:message-id;
+        bh=+Tswyip86KzEvgXYLEuKg7xqXSR0Gt/6G5Gl4ekk9gc=;
+        b=Z0E8liq6Qx/gUOl+UZgn78RVwjGypo5UnPCzepknsuE9tp3xfmu5DSCKgoKzse6Gd9
+         YBbq5Hibw9zm5/yago+EenhT+h9TAaJqcn9ve2UroM3hgKxypcSIvYUSsuAb5q1eox+W
+         H6C12JcFJOrA4XVkQV2OnO0bO/dhnW4uTrzfks3yYI+MkRdLHUG4AA5qjWOJTf6qSjYv
+         CW4pwwGnH8vSI9TGQlW2Tau8efPxdt2wzZ0psBTgRkn0JaoIeteEqkEN8iCYYqyO8va5
+         pMA2vCj3/OrxBLY+XFWJyGCZfHZxuRPvys4TVO1YjDbuC9T9a4T0LLLb7ozBnTpF7zlF
+         rpdg==
+X-Gm-Message-State: APjAAAWe2Da4qy48SEMXdTnTD1Eoowb8eNWWEge7QTBA944O1+XYOo7k
+        AEkXqqICfnfsXEoXPA0tfz4UgQ==
+X-Google-Smtp-Source: APXvYqznyNT9cwQoIH9dV66I3EZz973LlAO2mEAD85QYWvVNEMXAC7hCFMFqy/Wd7lHu0vXaomuJ3Q==
+X-Received: by 2002:a63:2c43:: with SMTP id s64mr14387152pgs.50.1561062269395;
+        Thu, 20 Jun 2019 13:24:29 -0700 (PDT)
+Received: from driver-dev1.pensando.io ([12.1.37.26])
+        by smtp.gmail.com with ESMTPSA id h26sm340537pfq.64.2019.06.20.13.24.28
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 20 Jun 2019 13:24:28 -0700 (PDT)
+From:   Shannon Nelson <snelson@pensando.io>
+To:     snelson@pensando.io, netdev@vger.kernel.org
+Subject: [PATCH net-next 00/18] Add ionic driver
+Date:   Thu, 20 Jun 2019 13:24:06 -0700
+Message-Id: <20190620202424.23215-1-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thursday, June 20, 2019 9:46:32 PM CEST Alan Stern wrote:
-> On Wed, 19 Jun 2019, syzbot wrote:
-> 
-> > syzbot has found a reproducer for the following crash on:
-> > 
-> > HEAD commit:    9939f56e usb-fuzzer: main usb gadget fuzzer driver
-> > git tree:       https://github.com/google/kasan.git usb-fuzzer
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=135e29faa00000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=df134eda130bb43a
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=6d237e74cdc13f036473
-> > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=175d946ea00000
-> > 
-> > IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> > Reported-by: syzbot+6d237e74cdc13f036473@syzkaller.appspotmail.com
-> > 
-> > usb 3-1: Direct firmware load for isl3887usb failed with error -2
-> > usb 3-1: Firmware not found.
-> > ==================================================================
-> > BUG: KASAN: slab-out-of-bounds in p54u_load_firmware_cb.cold+0x97/0x13d  
-> > drivers/net/wireless/intersil/p54/p54usb.c:936
-> > Read of size 8 at addr ffff8881c9cf7588 by task kworker/1:5/2759
-> > 
-> > CPU: 1 PID: 2759 Comm: kworker/1:5 Not tainted 5.2.0-rc5+ #11
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-> > Google 01/01/2011
-> > Workqueue: events request_firmware_work_func
-> > Call Trace:
-> >   __dump_stack lib/dump_stack.c:77 [inline]
-> >   dump_stack+0xca/0x13e lib/dump_stack.c:113
-> >   print_address_description+0x67/0x231 mm/kasan/report.c:188
-> >   __kasan_report.cold+0x1a/0x32 mm/kasan/report.c:317
-> >   kasan_report+0xe/0x20 mm/kasan/common.c:614
-> >   p54u_load_firmware_cb.cold+0x97/0x13d  
-> > drivers/net/wireless/intersil/p54/p54usb.c:936
-> >   request_firmware_work_func+0x126/0x242  
-> > drivers/base/firmware_loader/main.c:785
-> >   process_one_work+0x905/0x1570 kernel/workqueue.c:2269
-> >   worker_thread+0x96/0xe20 kernel/workqueue.c:2415
-> >   kthread+0x30b/0x410 kernel/kthread.c:255
-> >   ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-> > 
-> > Allocated by task 1612:
-> >   save_stack+0x1b/0x80 mm/kasan/common.c:71
-> >   set_track mm/kasan/common.c:79 [inline]
-> >   __kasan_kmalloc mm/kasan/common.c:489 [inline]
-> >   __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:462
-> >   kmalloc include/linux/slab.h:547 [inline]
-> >   syslog_print kernel/printk/printk.c:1346 [inline]
-> >   do_syslog kernel/printk/printk.c:1519 [inline]
-> >   do_syslog+0x4f4/0x12e0 kernel/printk/printk.c:1493
-> >   kmsg_read+0x8a/0xb0 fs/proc/kmsg.c:40
-> >   proc_reg_read+0x1c1/0x280 fs/proc/inode.c:221
-> >   __vfs_read+0x76/0x100 fs/read_write.c:425
-> >   vfs_read+0x18e/0x3d0 fs/read_write.c:461
-> >   ksys_read+0x127/0x250 fs/read_write.c:587
-> >   do_syscall_64+0xb7/0x560 arch/x86/entry/common.c:301
-> >   entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> > 
-> > Freed by task 1612:
-> >   save_stack+0x1b/0x80 mm/kasan/common.c:71
-> >   set_track mm/kasan/common.c:79 [inline]
-> >   __kasan_slab_free+0x130/0x180 mm/kasan/common.c:451
-> >   slab_free_hook mm/slub.c:1421 [inline]
-> >   slab_free_freelist_hook mm/slub.c:1448 [inline]
-> >   slab_free mm/slub.c:2994 [inline]
-> >   kfree+0xd7/0x280 mm/slub.c:3949
-> >   syslog_print kernel/printk/printk.c:1405 [inline]
-> >   do_syslog kernel/printk/printk.c:1519 [inline]
-> >   do_syslog+0xff3/0x12e0 kernel/printk/printk.c:1493
-> >   kmsg_read+0x8a/0xb0 fs/proc/kmsg.c:40
-> >   proc_reg_read+0x1c1/0x280 fs/proc/inode.c:221
-> >   __vfs_read+0x76/0x100 fs/read_write.c:425
-> >   vfs_read+0x18e/0x3d0 fs/read_write.c:461
-> >   ksys_read+0x127/0x250 fs/read_write.c:587
-> >   do_syscall_64+0xb7/0x560 arch/x86/entry/common.c:301
-> >   entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> > 
-> > The buggy address belongs to the object at ffff8881c9cf7180
-> >   which belongs to the cache kmalloc-1k of size 1024
-> > The buggy address is located 8 bytes to the right of
-> >   1024-byte region [ffff8881c9cf7180, ffff8881c9cf7580)
-> > The buggy address belongs to the page:
-> > page:ffffea0007273d00 refcount:1 mapcount:0 mapping:ffff8881dac02a00  
-> > index:0x0 compound_mapcount: 0
-> > flags: 0x200000000010200(slab|head)
-> > raw: 0200000000010200 dead000000000100 dead000000000200 ffff8881dac02a00
-> > raw: 0000000000000000 00000000000e000e 00000001ffffffff 0000000000000000
-> > page dumped because: kasan: bad access detected
-> > 
-> > Memory state around the buggy address:
-> >   ffff8881c9cf7480: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> >   ffff8881c9cf7500: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> > > ffff8881c9cf7580: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-> >                        ^
-> >   ffff8881c9cf7600: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> >   ffff8881c9cf7680: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> > ==================================================================
-> 
-> Isn't this the same as syzkaller bug 200d4bb11b23d929335f ?  Doesn't
-> the same patch fix it?
-> 
-I think Kalle hasn't applied it yet? It's still sitting on the patchwork queue:
-<https://patchwork.kernel.org/patch/10951527/>
+This is the first version of a patch series that adds the ionic driver,
+supporting the Pensando ethernet devices.
 
-Regards,
-Christian
+In this first patchset we implement basic network driver functionality.
+Later patchsets will add more advanced features.
 
+
+Shannon Nelson (18):
+  ionic: Add basic framework for IONIC Network device driver
+  ionic: Add hardware init and device commands
+  ionic: Add port management commands
+  ionic: Add basic lif support
+  ionic: Add interrupts and doorbells
+  ionic: Add basic adminq support
+  ionic: Add adminq action
+  ionic: Add notifyq support
+  ionic: Add the basic NDO callbacks for netdev support
+  ionic: Add management of rx filters
+  ionic: Add Rx filter and rx_mode nod support
+  ionic: Add async link status check and basic stats
+  ionic: Add initial ethtool support
+  ionic: Add Tx and Rx handling
+  ionic: Add netdev-event handling
+  ionic: Add driver stats
+  ionic: Add RSS support
+  ionic: Add coalesce and other features
+
+ .../networking/device_drivers/index.rst       |    1 +
+ .../device_drivers/pensando/ionic.rst         |   75 +
+ MAINTAINERS                                   |    8 +
+ drivers/net/ethernet/Kconfig                  |    1 +
+ drivers/net/ethernet/Makefile                 |    1 +
+ drivers/net/ethernet/pensando/Kconfig         |   32 +
+ drivers/net/ethernet/pensando/Makefile        |    6 +
+ drivers/net/ethernet/pensando/ionic/Makefile  |    8 +
+ drivers/net/ethernet/pensando/ionic/ionic.h   |   74 +
+ .../net/ethernet/pensando/ionic/ionic_bus.h   |   16 +
+ .../ethernet/pensando/ionic/ionic_bus_pci.c   |  295 ++
+ .../ethernet/pensando/ionic/ionic_debugfs.c   |  499 ++++
+ .../ethernet/pensando/ionic/ionic_debugfs.h   |   38 +
+ .../net/ethernet/pensando/ionic/ionic_dev.c   |  535 ++++
+ .../net/ethernet/pensando/ionic/ionic_dev.h   |  284 ++
+ .../ethernet/pensando/ionic/ionic_ethtool.c   |  820 ++++++
+ .../ethernet/pensando/ionic/ionic_ethtool.h   |    9 +
+ .../net/ethernet/pensando/ionic/ionic_if.h    | 2553 +++++++++++++++++
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 2304 +++++++++++++++
+ .../net/ethernet/pensando/ionic/ionic_lif.h   |  276 ++
+ .../net/ethernet/pensando/ionic/ionic_main.c  |  556 ++++
+ .../net/ethernet/pensando/ionic/ionic_regs.h  |  133 +
+ .../ethernet/pensando/ionic/ionic_rx_filter.c |  139 +
+ .../ethernet/pensando/ionic/ionic_rx_filter.h |   34 +
+ .../net/ethernet/pensando/ionic/ionic_stats.c |  325 +++
+ .../net/ethernet/pensando/ionic/ionic_stats.h |   53 +
+ .../net/ethernet/pensando/ionic/ionic_txrx.c  |  880 ++++++
+ .../net/ethernet/pensando/ionic/ionic_txrx.h  |   15 +
+ 28 files changed, 9970 insertions(+)
+ create mode 100644 Documentation/networking/device_drivers/pensando/ionic.rst
+ create mode 100644 drivers/net/ethernet/pensando/Kconfig
+ create mode 100644 drivers/net/ethernet/pensando/Makefile
+ create mode 100644 drivers/net/ethernet/pensando/ionic/Makefile
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_bus.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_debugfs.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_dev.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_dev.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_ethtool.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_if.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_lif.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_lif.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_main.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_regs.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_rx_filter.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_stats.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_stats.h
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+ create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_txrx.h
+
+-- 
+2.17.1
 
