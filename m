@@ -2,43 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F2144CE76
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 15:17:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 596DF4CE72
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 15:17:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732007AbfFTNRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1731987AbfFTNRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 20 Jun 2019 09:17:07 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:44624 "EHLO
+Received: from mail-io1-f70.google.com ([209.85.166.70]:39146 "EHLO
         mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731954AbfFTNRG (ORCPT
+        with ESMTP id S1731957AbfFTNRG (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 09:17:06 -0400
-Received: by mail-io1-f70.google.com with SMTP id i133so5170915ioa.11
+Received: by mail-io1-f70.google.com with SMTP id y13so5194441iol.6
         for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 06:17:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=pFl57I7Gu7LJtpS4kZ7e5rZsSSBo5xMttzXo6P3hq6Y=;
-        b=gDU1kBvgq430ZSEj3MYWeavx2i3BnOrffrYoyuUI2f+YGLyd0lAR8XoOo/r/qe/8o2
-         jTdHRrk1Skwk7XN8lX/JA/bqwst+fN2sMTx+eGfWlIVMxQp2xTzDRTXvSwDBaq8N/6Fp
-         ksaJpA+Rano0mXgnqoT7IQXVRkr0cl/iFOtijzmk21Mydt9JVHR/t4tCVC116kkNYsyw
-         +50oNfLk6qFao30UKTewu/ufPW2z8eJmOgoI8MZThW4pXoItLXac9VPa3CxJT5JXzxol
-         BnLvzGn+hYv8m9JJXdO6VkfcX7ljuH/E60u7wIA8CxaOn+UJZ6qppEjXhZnbhC0KNZcV
-         YeWQ==
-X-Gm-Message-State: APjAAAXjPYpb8oD3s0hui6RSHL/TOB7tKa6faHjcaPn+T88+N/U+adDq
-        IpIt0v0hxBhGI8FvqaFWP29CSXfTHk0MC0pBdOAJR4EF8i+x
-X-Google-Smtp-Source: APXvYqwLnQfND50vIn2AJG13GUkJ3L6wdGfUhNSiK9/TZfF1gRHnqct2uCCZoIge4fY7fgOyrrONXpJorYI3kaD1zSbhdUhm7tSO
+        bh=qnpm2ey2SaMdFsp844f8fqM6l7lFZy4hxhn4zu2c9Q0=;
+        b=emnsxWli7f4hUxwD7Znl59st20J0vrHcEcWkyydkwm2WiKQ/Mzb95eeOi6XFOBylcA
+         Dwi4JaCHnzSUJYbUk/p3ixjzY1kahVUrwuG5EqhGUTwp1cgCk0uQLK8va9ONAcw2JIOx
+         gkqlTpGg9SRpU3qsI6h/ocgBuos35eOqrOnchQebsWHRoy6Ljv9tLfx6kicvbdUPNe1a
+         kpdzhG1CACW8EU6TYbvSO6NOZewQZPuwNUXJXvy843DJb/PETyFJZDPp94asRBTyMxuy
+         E5uEUHrJlisblBDlHZbGgDgEfZnZMpLlnpcSYNw9pxCeqeW4HlHgz7gct5yoDo2OZPXS
+         4fkw==
+X-Gm-Message-State: APjAAAU1d0zetxc0db/h86AwTpM7TNZgW9uNG4lGODDnr8yzriekU5Si
+        DDdGd3H++Yr67c8reufoI33oonLEmhrW2X+DZx8MqlWbk9Wb
+X-Google-Smtp-Source: APXvYqz5aZ3aKR/AVT0K9maciDso0v/J6cBLOy939L8NQzi44H2SoxoDLRpc5re9zZKKtPXX0im9kkZl2LTzEGPzwVpwenkSXcxE
 MIME-Version: 1.0
-X-Received: by 2002:a5d:9ec4:: with SMTP id a4mr955576ioe.125.1561036625845;
- Thu, 20 Jun 2019 06:17:05 -0700 (PDT)
-Date:   Thu, 20 Jun 2019 06:17:05 -0700
+X-Received: by 2002:a5e:cb43:: with SMTP id h3mr6987571iok.252.1561036626090;
+ Thu, 20 Jun 2019 06:17:06 -0700 (PDT)
+Date:   Thu, 20 Jun 2019 06:17:06 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000090ae7a058bc12946@google.com>
-Subject: WARNING in debug_check_no_obj_freed
-From:   syzbot <syzbot+b972214bb803a343f4fe@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kgraul@linux.ibm.com,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        ubraun@linux.ibm.com
+Message-ID: <000000000000946842058bc1291d@google.com>
+Subject: WARNING in add_event_to_ctx
+From:   syzbot <syzbot+704bfe2c7d156640ad7a@syzkaller.appspotmail.com>
+To:     acme@kernel.org, alexander.shishkin@linux.intel.com,
+        ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
+        jolsa@redhat.com, kafai@fb.com, linux-kernel@vger.kernel.org,
+        mingo@redhat.com, namhyung@kernel.org, netdev@vger.kernel.org,
+        peterz@infradead.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
 Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -49,30 +51,25 @@ Hello,
 
 syzbot found the following crash on:
 
-HEAD commit:    bed3c0d8 Merge tag 'for-5.2-rc5-tag' of git://git.kernel.o..
+HEAD commit:    abf02e29 Merge tag 'pm-5.2-rc6' of git://git.kernel.org/pu..
 git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=13cc2c3aa00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=129072e6a00000
 kernel config:  https://syzkaller.appspot.com/x/.config?x=28ec3437a5394ee0
-dashboard link: https://syzkaller.appspot.com/bug?extid=b972214bb803a343f4fe
+dashboard link: https://syzkaller.appspot.com/bug?extid=704bfe2c7d156640ad7a
 compiler:       clang version 9.0.0 (/home/glider/llvm/clang  
 80fee25776c2fb61e74c1ecb1a523375c2500b69)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12fcf0b2a00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17a22ad6a00000
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16d8b732a00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17f7a5e6a00000
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+b972214bb803a343f4fe@syzkaller.appspotmail.com
+Reported-by: syzbot+704bfe2c7d156640ad7a@syzkaller.appspotmail.com
 
-------------[ cut here ]------------
-ODEBUG: free active (active state 0) object type: work_struct hint:  
-smc_tx_work+0x0/0x260 net/smc/smc_tx.c:264
-WARNING: CPU: 0 PID: 8158 at lib/debugobjects.c:328 debug_print_object  
-lib/debugobjects.c:325 [inline]
-WARNING: CPU: 0 PID: 8158 at lib/debugobjects.c:328  
-__debug_check_no_obj_freed lib/debugobjects.c:785 [inline]
-WARNING: CPU: 0 PID: 8158 at lib/debugobjects.c:328  
-debug_check_no_obj_freed+0x5c0/0x740 lib/debugobjects.c:817
+WARNING: CPU: 0 PID: 8131 at kernel/events/core.c:1835 perf_group_attach  
+kernel/events/core.c:1835 [inline]
+WARNING: CPU: 0 PID: 8131 at kernel/events/core.c:1835  
+add_event_to_ctx+0x1351/0x1630 kernel/events/core.c:2393
 Kernel panic - not syncing: panic_on_warn set ...
-CPU: 0 PID: 8158 Comm: syz-executor878 Not tainted 5.2.0-rc5+ #3
+CPU: 0 PID: 8131 Comm: syz-executor982 Not tainted 5.2.0-rc5+ #4
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
 Google 01/01/2011
 Call Trace:
@@ -85,49 +82,40 @@ Call Trace:
   do_error_trap+0xd7/0x450 arch/x86/kernel/traps.c:272
   do_invalid_op+0x36/0x40 arch/x86/kernel/traps.c:291
   invalid_op+0x14/0x20 arch/x86/entry/entry_64.S:986
-RIP: 0010:debug_print_object lib/debugobjects.c:325 [inline]
-RIP: 0010:__debug_check_no_obj_freed lib/debugobjects.c:785 [inline]
-RIP: 0010:debug_check_no_obj_freed+0x5c0/0x740 lib/debugobjects.c:817
-Code: 96 5c 4e fe 4c 89 fa 48 8b 4d b8 4c 8b 01 48 c7 c7 9c 55 66 88 48 c7  
-c6 ec 63 7e 88 44 89 e1 4c 8b 4d b0 31 c0 e8 30 05 e7 fd <0f> 0b 48 8b 4d  
-d0 48 8b 55 c8 ff 05 e8 b2 7c 05 48 b8 00 00 00 00
-RSP: 0018:ffff888084ba7b60 EFLAGS: 00010046
-RAX: ff4ab4ef149ca600 RBX: 1ffff110152b3acd RCX: ffff88808a330040
-RDX: 0000000000000000 RSI: 0000000080000001 RDI: 0000000000000000
-RBP: ffff888084ba7c00 R08: ffffffff815e87e4 R09: ffffed1015d440c2
-R10: ffffed1015d440c2 R11: 1ffff11015d440c1 R12: 0000000000000000
-R13: 1ffff110152b3acf R14: ffff888085381798 R15: dffffc0000000000
-  kmem_cache_free+0xb9/0x170 mm/slab.c:3697
-  sk_prot_free net/core/sock.c:1637 [inline]
-  __sk_destruct+0x558/0x660 net/core/sock.c:1725
-  sk_destruct net/core/sock.c:1733 [inline]
-  __sk_free+0x307/0x3d0 net/core/sock.c:1744
-  sk_free+0x2a/0x40 net/core/sock.c:1755
-  sock_put include/net/sock.h:1725 [inline]
-  smc_release+0x4b3/0x620 net/smc/af_smc.c:182
-  __sock_release net/socket.c:601 [inline]
-  sock_close+0xdb/0x280 net/socket.c:1273
-  __fput+0x2e4/0x740 fs/file_table.c:280
-  ____fput+0x15/0x20 fs/file_table.c:313
-  task_work_run+0x17e/0x1b0 kernel/task_work.c:113
-  tracehook_notify_resume include/linux/tracehook.h:185 [inline]
-  exit_to_usermode_loop arch/x86/entry/common.c:168 [inline]
-  prepare_exit_to_usermode+0x402/0x4f0 arch/x86/entry/common.c:199
-  syscall_return_slowpath+0x110/0x440 arch/x86/entry/common.c:279
-  do_syscall_64+0x126/0x140 arch/x86/entry/common.c:304
+RIP: 0010:perf_group_attach kernel/events/core.c:1835 [inline]
+RIP: 0010:add_event_to_ctx+0x1351/0x1630 kernel/events/core.c:2393
+Code: ff e8 d3 19 e6 ff 0f 0b e9 88 ed ff ff e8 c7 19 e6 ff 0f 0b e9 42 ed  
+ff ff e8 bb 19 e6 ff 0f 0b e9 4f f8 ff ff e8 af 19 e6 ff <0f> 0b e9 d5 f8  
+ff ff 48 c7 c1 a0 31 dd 88 80 e1 07 80 c1 03 38 c1
+RSP: 0018:ffff888094cdf900 EFLAGS: 00010093
+RAX: ffffffff818f9841 RBX: ffff888085d7c418 RCX: ffff888099a064c0
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: ffff888094cdf988 R08: ffffffff818f90aa R09: ffffed101299bf21
+R10: ffffed101299bf20 R11: 1ffff1101299bf20 R12: dffffc0000000000
+R13: ffff888085d7c200 R14: ffffe8ffffc15758 R15: ffff888085d7ca80
+  __perf_install_in_context+0x54a/0x7e0 kernel/events/core.c:2544
+  remote_function+0xeb/0x170 kernel/events/core.c:86
+  generic_exec_single+0x114/0x420 kernel/smp.c:154
+  smp_call_function_single+0x1a5/0x410 kernel/smp.c:300
+  cpu_function_call kernel/events/core.c:140 [inline]
+  perf_install_in_context+0x26b/0x5a0 kernel/events/core.c:2580
+  __do_sys_perf_event_open kernel/events/core.c:11110 [inline]
+  __se_sys_perf_event_open+0x224a/0x3270 kernel/events/core.c:10739
+  __x64_sys_perf_event_open+0xbf/0xd0 kernel/events/core.c:10739
+  do_syscall_64+0xfe/0x140 arch/x86/entry/common.c:301
   entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x402720
-Code: 01 f0 ff ff 0f 83 40 0d 00 00 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f  
-44 00 00 83 3d 0d 94 2d 00 00 75 14 b8 03 00 00 00 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 14 0d 00 00 c3 48 83 ec 08 e8 7a 02 00 00
-RSP: 002b:00007ffda70c1198 EFLAGS: 00000246 ORIG_RAX: 0000000000000003
-RAX: 0000000000000000 RBX: 0000000000000004 RCX: 0000000000402720
-RDX: 0000000000000001 RSI: 0000000000000006 RDI: 0000000000000003
-RBP: 0000000000000000 R08: 0000000000000028 R09: 00000000004aa1df
-R10: 0000000020000000 R11: 0000000000000246 R12: 0000000000000001
-R13: 0000000000403950 R14: 0000000000000000 R15: 0000000000000000
-
-======================================================
+RIP: 0033:0x446b69
+Code: e8 8c 19 03 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7  
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 7b 0c fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007f2b0c7bddb8 EFLAGS: 00000246 ORIG_RAX: 000000000000012a
+RAX: ffffffffffffffda RBX: 00000000006dcc28 RCX: 0000000000446b69
+RDX: 0000000000000000 RSI: 00000000ffffffff RDI: 0000000020000000
+RBP: 00000000006dcc20 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000003 R11: 0000000000000246 R12: 00000000006dcc2c
+R13: 00007fff27b1f69f R14: 00007f2b0c7be9c0 R15: 0000000000000000
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
 
 
 ---
