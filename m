@@ -2,88 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C9C14CE74
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 15:17:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CABAD4CE9F
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 15:28:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732016AbfFTNRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 09:17:07 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:51890 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731973AbfFTNRH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 09:17:07 -0400
-Received: by mail-io1-f69.google.com with SMTP id c5so5122101iom.18
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 06:17:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=JAp964cdDgxAeZ/fEiLlQKzdZjvEC1DMOUlTNPPD+ak=;
-        b=ASi+PhRN3VtKwrpUSgnPEzgGVVtogtpvf8hyK9Q9PoQQDvRdFAAqvQjTyyLD7EgPgn
-         +oTNJ60/XALt3C48u51BHukRD8StEQ90s6HwVTQ/MAgMR0A3ZDSp2zPc5zLQQyNFVtee
-         R6bLPbewPyJoQYgdv95Vg1pWothqXVpI1spTJpB5uvLnFqwbTbfTWeXUg+RHU0Te3aRK
-         WKgVKzAdfHvg1oCIZtKlpzkF4qm+fLECwKLa6zMheg9GIgcfWe4BXH3B4vuCH2txNSDL
-         QlZG42ZBZTlih4okaU64sJuw9pQanbVKjnl7NzGS5usixI3KaYMuQma/BlBbWJLpBXTa
-         vfNA==
-X-Gm-Message-State: APjAAAXMkb97LAWDVaiPYodwhfiOjPHof98FpABhgLln6JivrUDmOn5G
-        6tAc0fyY2+NRHTMF4pFjbiNxE01IrQIyCiKCqy62vMvyKUub
-X-Google-Smtp-Source: APXvYqx20x9VK2DkdtdztpD7beSEgz6YK52k03WlW+Pbg6uT7A6nmuqAF+hnrydrRKgb6flxT1Xo/L+AoMoG9LM4MkGByikbE8Fc
+        id S1729563AbfFTN1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 09:27:55 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:57397 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726428AbfFTN1z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 09:27:55 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
+        (Exim 4.76)
+        (envelope-from <colin.king@canonical.com>)
+        id 1hdx6V-0004Te-Cq; Thu, 20 Jun 2019 13:27:51 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Xue Chaojing <xuechaojing@huawei.com>,
+        Aviad Krawczyk <aviad.krawczyk@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][net-next] hinic: fix dereference of pointer hwdev before it is null checked
+Date:   Thu, 20 Jun 2019 14:27:51 +0100
+Message-Id: <20190620132751.26438-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-X-Received: by 2002:a6b:5812:: with SMTP id m18mr24035611iob.13.1561036626313;
- Thu, 20 Jun 2019 06:17:06 -0700 (PDT)
-Date:   Thu, 20 Jun 2019 06:17:06 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000097ca41058bc129cc@google.com>
-Subject: kernel panic: corrupted stack end in corrupted
-From:   syzbot <syzbot+b764c7ca388222ddfb17@syzkaller.appspotmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, john.fastabend@gmail.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+From: Colin Ian King <colin.king@canonical.com>
 
-syzbot found the following crash on:
+Currently pointer hwdev is dereferenced when assigning hwif before
+hwdev is null checked.  Fix this by only derefencing hwdev after the
+null check.
 
-HEAD commit:    29f785ff Merge branch 'fixes' of git://git.kernel.org/pub/..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=1158d411a00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e5c77f8090a3b96b
-dashboard link: https://syzkaller.appspot.com/bug?extid=b764c7ca388222ddfb17
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=100ca932a00000
-
-The bug was bisected to:
-
-commit e9db4ef6bf4ca9894bb324c76e01b8f1a16b2650
-Author: John Fastabend <john.fastabend@gmail.com>
-Date:   Sat Jun 30 13:17:47 2018 +0000
-
-     bpf: sockhash fix omitted bucket lock in sock_close
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=135e8a3aa00000
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=10de8a3aa00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=175e8a3aa00000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+b764c7ca388222ddfb17@syzkaller.appspotmail.com
-Fixes: e9db4ef6bf4c ("bpf: sockhash fix omitted bucket lock in sock_close")
-
-Kernel panic - not syncing: corrupted stack end detected inside scheduler
-CPU: 0 PID: 8770 Comm: syz-executor.4 Not tainted 5.2.0-rc5+ #57
-Hardware name: Google GooglSeaBIOS (version 1.8.2-20190503_170316-google)
-
-
+Addresses-Coverity: ("Dereference before null check")
+Fixes: 4fdc51bb4e92 ("hinic: add support for rss parameters with ethtool")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
 ---
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ .../net/ethernet/huawei/hinic/hinic_port.c    | 21 +++++++++++++------
+ 1 file changed, 15 insertions(+), 6 deletions(-)
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_port.c b/drivers/net/ethernet/huawei/hinic/hinic_port.c
+index 6b933962de46..1c3b3c0d6298 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_port.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_port.c
+@@ -711,14 +711,17 @@ int hinic_get_rss_type(struct hinic_dev *nic_dev, u32 tmpl_idx,
+ {
+ 	struct hinic_rss_context_table ctx_tbl = { 0 };
+ 	struct hinic_hwdev *hwdev = nic_dev->hwdev;
+-	struct hinic_hwif *hwif = hwdev->hwif;
+-	struct pci_dev *pdev = hwif->pdev;
++	struct hinic_hwif *hwif;
++	struct pci_dev *pdev;
+ 	u16 out_size = sizeof(ctx_tbl);
+ 	int err;
+ 
+ 	if (!hwdev || !rss_type)
+ 		return -EINVAL;
+ 
++	hwif = hwdev->hwif;
++	pdev = hwif->pdev;
++
+ 	ctx_tbl.func_id = HINIC_HWIF_FUNC_IDX(hwif);
+ 	ctx_tbl.template_id = tmpl_idx;
+ 
+@@ -776,14 +779,17 @@ int hinic_rss_get_template_tbl(struct hinic_dev *nic_dev, u32 tmpl_idx,
+ {
+ 	struct hinic_rss_template_key temp_key = { 0 };
+ 	struct hinic_hwdev *hwdev = nic_dev->hwdev;
+-	struct hinic_hwif *hwif = hwdev->hwif;
+-	struct pci_dev *pdev = hwif->pdev;
++	struct hinic_hwif *hwif;
++	struct pci_dev *pdev;
+ 	u16 out_size = sizeof(temp_key);
+ 	int err;
+ 
+ 	if (!hwdev || !temp)
+ 		return -EINVAL;
+ 
++	hwif = hwdev->hwif;
++	pdev = hwif->pdev;
++
+ 	temp_key.func_id = HINIC_HWIF_FUNC_IDX(hwif);
+ 	temp_key.template_id = tmpl_idx;
+ 
+@@ -832,14 +838,17 @@ int hinic_rss_get_hash_engine(struct hinic_dev *nic_dev, u8 tmpl_idx, u8 *type)
+ {
+ 	struct hinic_rss_engine_type hash_type = { 0 };
+ 	struct hinic_hwdev *hwdev = nic_dev->hwdev;
+-	struct hinic_hwif *hwif = hwdev->hwif;
+-	struct pci_dev *pdev = hwif->pdev;
++	struct hinic_hwif *hwif;
++	struct pci_dev *pdev;
+ 	u16 out_size = sizeof(hash_type);
+ 	int err;
+ 
+ 	if (!hwdev || !type)
+ 		return -EINVAL;
+ 
++	hwif = hwdev->hwif;
++	pdev = hwif->pdev;
++
+ 	hash_type.func_id = HINIC_HWIF_FUNC_IDX(hwif);
+ 	hash_type.template_id = tmpl_idx;
+ 
+-- 
+2.20.1
+
