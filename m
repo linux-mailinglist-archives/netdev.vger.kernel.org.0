@@ -2,174 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 97E804D542
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 19:32:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97AEC4D545
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 19:32:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726659AbfFTRcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 13:32:19 -0400
-Received: from charlotte.tuxdriver.com ([70.61.120.58]:59060 "EHLO
-        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726551AbfFTRcT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 13:32:19 -0400
-Received: from [107.15.85.130] (helo=localhost)
-        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
-        (Exim 4.63)
-        (envelope-from <nhorman@tuxdriver.com>)
-        id 1he0ut-00016k-4L; Thu, 20 Jun 2019 13:32:15 -0400
-Date:   Thu, 20 Jun 2019 13:31:54 -0400
-From:   Neil Horman <nhorman@tuxdriver.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Matteo Croce <mcroce@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net] af_packet: Block execution of tasks waiting for
- transmit to complete in AF_PACKET
-Message-ID: <20190620173154.GF18890@hmswarspite.think-freely.org>
-References: <20190619202533.4856-1-nhorman@tuxdriver.com>
- <CA+FuTSe=kJSSvcYwCE9-omRF5Snd9AyesZac61PYyAHDStPt=A@mail.gmail.com>
- <20190620142354.GB18890@hmswarspite.think-freely.org>
- <CAF=yD-KFZBS7PpvvBkHS5jQdjRr4tWpeHmb7=9QPmvD-RTcpYw@mail.gmail.com>
- <20190620161411.GE18890@hmswarspite.think-freely.org>
- <CAF=yD-KtqhHfzRtMVm17f1gfZRuSacB1M-QBSP8dY5Kz_Cn+Yw@mail.gmail.com>
+        id S1726719AbfFTRcx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 13:32:53 -0400
+Received: from mout.gmx.net ([212.227.15.19]:56057 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726551AbfFTRcw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Jun 2019 13:32:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1561051945;
+        bh=b/EYg7frIiOEmVO+jC5QgzH+HdXi9h+6Yrw5OYnfDig=;
+        h=X-UI-Sender-Class:Date:In-Reply-To:References:Subject:Reply-to:To:
+         CC:From;
+        b=Gu7nyI4deTxSMkboNCOlV0EYjr3oPehMyPRdOXDKzcN8QkXUXKPUmRd6EX2nQ20l0
+         WMy7LHs8Bqw+Y3C48WSSoiEnVCkqCFAjqu3IiScIJvbO48s+cjaSvZMOiD7ImPADKO
+         WAWt4Ylf+6RPN8R8k/t4eloIF3U9xzsV4y6x8SUU=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [10.218.201.146] ([88.128.81.70]) by mail.gmx.com (mrgmx002
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 0MhAAr-1hzgXg1GXR-00MMgv; Thu, 20
+ Jun 2019 19:32:25 +0200
+Date:   Thu, 20 Jun 2019 19:32:19 +0200
+User-Agent: K-9 Mail for Android
+In-Reply-To: <20190620122155.32078-3-opensource@vdorst.com>
+References: <20190620122155.32078-1-opensource@vdorst.com> <20190620122155.32078-3-opensource@vdorst.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAF=yD-KtqhHfzRtMVm17f1gfZRuSacB1M-QBSP8dY5Kz_Cn+Yw@mail.gmail.com>
-User-Agent: Mutt/1.11.3 (2019-02-01)
-X-Spam-Score: -2.9 (--)
-X-Spam-Status: No
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v2 net-next 2/2] net: dsa: mt7530: Add MT7621 TRGMII mode support
+Reply-to: frank-w@public-files.de
+To:     =?ISO-8859-1?Q?Ren=E9_van_Dorst?= <opensource@vdorst.com>,
+        sean.wang@mediatek.com, f.fainelli@gmail.com, davem@davemloft.net,
+        matthias.bgg@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com
+CC:     netdev@vger.kernel.org, john@phrozen.org,
+        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org
+From:   Frank Wunderlich <frank-w@public-files.de>
+Message-ID: <E48021B2-3B82-4630-A9D1-290479988806@public-files.de>
+X-Provags-ID: V03:K1:6VMlnX0wvZhaTY+S0ue9uKAasb97bCR4UAmPo4NG4svsppHAHCd
+ Dx3o7Giw8H2uGj4oh6BqbOU30jlj7Jw6fhlHvsfaQNtR+0FQRgLzrdjjGWon/Z2VKVyiqMT
+ 6ip/DMzMbQTXACvHiAZyGXhUOfgnDLwX2dwnO8IGmzKlY8LY9c5EnsVbB1iSHZKL7viJDh6
+ 4tMJu0uhKNbkGhkK9N+Fw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:qnjLQTpK8m4=:4zXdyWggRS2y6JkYb8I8+c
+ y7SdBphUSX7GIXnlTBAGdfkXL17yqbiPMVNF+wfSMISe8tv3Kw+5A8QUGC//PVbLE+RuLeQ1o
+ QFixWkMGCpJ2EXpNThrnwJWLtq+FYWSjYY8sphsE0ZuMj9cEnhjc5BRc9h9/r3VGb/IvlcaFt
+ ivmzCDy6F8+n04iwJDG4frTWWIZKiGZeYmsCluHYNqcYgeYWF6m2+NArFy+4TqmSnoeeasyO3
+ Occi1esioOwh71QK01at9jJsWUlIfkkmMi3KG0TAzlxtdHT1URZWfDZNCxNpkuxfwnB2+VWTN
+ iNbaA7homH5KKQym5DIGx2345boXhPgmX2aReep7YF1F3koLAmeBG9CLPlvkiSrTIzmntZHkn
+ wFvbVUB4Oqgv+hBrCaiNMJnT0q0wxe+q2RApI9tXrGVkjgDsH2Xmkf3g8At/7fDlWTsgw1PPs
+ FapN+qk4aVgQGMp9DvRKWNPz/ImcnMVEPpe4UxNsv/zcOO4FwV2d23xLf+1ySyB/xymuyDv1c
+ 6+dZIEYxsacHPwdQE56XH7LHBH8vtCQxexztqbBVVVcAgXS0XBR6n/OwcWJyFJ0aRENV5rGr9
+ wUBYZggIFLbv7b1wkLd//b0xhITRiuw1tzzEkISVm/uDyjNOSTYN7JMDHOcA/9mTNdfhwa+yi
+ z1FXEDMebJD8k3fljeugk5pSuUTPHziCNthXNXuVnga2KmHzQQXkpjX0O0IfJ9O1a/wIHQS3+
+ 0xtuEfe5su5UYE0d64Gr+XXoJLd7xcL9rQzHbq/zdglGzVeyxLyRUiazQ/xxctFpnUcv8VKw/
+ kzcqH0GqVZjS77XVTj3zAL+KxxywfW5XWC3WqhXYvdsczsoKMAaJ2xOUSQbUQK/gGZ+c+RUeF
+ 649mLTV1PE/gCBovx0JaejSolsuFCtqGGA8lfVFYS2AKUvo0ubZKJS2w0ZMznGd5WcFyoxZnI
+ HkkCq/3O65r3ZgVQ1J3+gxWxnTWwM5IWEhw4gHsVtMIjZXINP3twW
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 20, 2019 at 12:18:41PM -0400, Willem de Bruijn wrote:
-> On Thu, Jun 20, 2019 at 12:14 PM Neil Horman <nhorman@tuxdriver.com> wrote:
-> >
-> > On Thu, Jun 20, 2019 at 11:16:13AM -0400, Willem de Bruijn wrote:
-> > > On Thu, Jun 20, 2019 at 10:24 AM Neil Horman <nhorman@tuxdriver.com> wrote:
-> > > >
-> > > > On Thu, Jun 20, 2019 at 09:41:30AM -0400, Willem de Bruijn wrote:
-> > > > > On Wed, Jun 19, 2019 at 4:26 PM Neil Horman <nhorman@tuxdriver.com> wrote:
-> > > > > >
-> > > > > > When an application is run that:
-> > > > > > a) Sets its scheduler to be SCHED_FIFO
-> > > > > > and
-> > > > > > b) Opens a memory mapped AF_PACKET socket, and sends frames with the
-> > > > > > MSG_DONTWAIT flag cleared, its possible for the application to hang
-> > > > > > forever in the kernel.  This occurs because when waiting, the code in
-> > > > > > tpacket_snd calls schedule, which under normal circumstances allows
-> > > > > > other tasks to run, including ksoftirqd, which in some cases is
-> > > > > > responsible for freeing the transmitted skb (which in AF_PACKET calls a
-> > > > > > destructor that flips the status bit of the transmitted frame back to
-> > > > > > available, allowing the transmitting task to complete).
-> > > > > >
-> > > > > > However, when the calling application is SCHED_FIFO, its priority is
-> > > > > > such that the schedule call immediately places the task back on the cpu,
-> > > > > > preventing ksoftirqd from freeing the skb, which in turn prevents the
-> > > > > > transmitting task from detecting that the transmission is complete.
-> > > > > >
-> > > > > > We can fix this by converting the schedule call to a completion
-> > > > > > mechanism.  By using a completion queue, we force the calling task, when
-> > > > > > it detects there are no more frames to send, to schedule itself off the
-> > > > > > cpu until such time as the last transmitted skb is freed, allowing
-> > > > > > forward progress to be made.
-> > > > > >
-> > > > > > Tested by myself and the reporter, with good results
-> > > > > >
-> > > > > > Appies to the net tree
-> > > > > >
-> > > > > > Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
-> > > > > > Reported-by: Matteo Croce <mcroce@redhat.com>
-> > > > > > CC: "David S. Miller" <davem@davemloft.net>
-> > > > > > ---
-> > > > >
-> > > > > This is a complex change for a narrow configuration. Isn't a
-> > > > > SCHED_FIFO process preempting ksoftirqd a potential problem for other
-> > > > > networking workloads as well? And the right configuration to always
-> > > > > increase ksoftirqd priority when increasing another process's
-> > > > > priority? Also, even when ksoftirqd kicks in, isn't some progress
-> > > > > still made on the local_bh_enable reached from schedule()?
-> > > > >
-> > > >
-> > > > A few questions here to answer:
-> > >
-> > > Thanks for the detailed explanation.
-> > >
-> > Gladly.
-> >
-> > > > Regarding other protocols having this problem, thats not the case, because non
-> > > > packet sockets honor the SK_SNDTIMEO option here (i.e. they sleep for a period
-> > > > of time specified by the SNDTIMEO option if MSG_DONTWAIT isn't set.  We could
-> > > > certainly do that, but the current implementation doesn't (opting instead to
-> > > > wait indefinately until the respective packet(s) have transmitted or errored
-> > > > out), and I wanted to maintain that behavior.  If there is consensus that packet
-> > > > sockets should honor SNDTIMEO, then I can certainly do that.
-> > > >
-> > > > As for progress made by calling local_bh_enable, My read of the code doesn't
-> > > > have the scheduler calling local_bh_enable at all.  Instead schedule uses
-> > > > preempt_disable/preempt_enable_no_resched() to gain exlcusive access to the cpu,
-> > > > which ignores pending softirqs on re-enablement.
-> > >
-> > > Ah, I'm mistaken there, then.
-> > >
-> > > >  Perhaps that needs to change,
-> > > > but I'm averse to making scheduler changes for this (the aforementioned concern
-> > > > about complex changes for a narrow use case)
-> > > >
-> > > > Regarding raising the priority of ksoftirqd, that could be a solution, but the
-> > > > priority would need to be raised to a high priority SCHED_FIFO parameter, and
-> > > > that gets back to making complex changes for a narrow problem domain
-> > > >
-> > > > As for the comlexity of the of the solution, I think this is, given your
-> > > > comments the least complex and intrusive change to solve the given problem.
-> > >
-> > > Could it be simpler to ensure do_softirq() gets run here? That would
-> > > allow progress for this case.
-> > >
-> > I'm not sure.  On the surface, we certainly could do it, but inserting a call to
-> > do_softirq, either directly, or indirectly through some other mechanism seems
-> > like a non-obvious fix, and may lead to confusion down the road.  I'm hesitant
-> > to pursue such a soultion without some evidence it would make a better solution.
-> >
-> > > >  We
-> > > > need to find a way to force the calling task off the cpu while the asynchronous
-> > > > operations in the transmit path complete, and we can do that this way, or by
-> > > > honoring SK_SNDTIMEO.  I'm fine with doing the latter, but I didn't want to
-> > > > alter the current protocol behavior without consensus on that.
-> > >
-> > > In general SCHED_FIFO is dangerous with regard to stalling other
-> > > progress, incl. ksoftirqd. But it does appear that this packet socket
-> > > case is special inside networking in calling schedule() directly here.
-> > >
-> > > If converting that, should it convert to logic more akin to other
-> > > sockets, like sock_wait_for_wmem? I haven't had a chance to read up on
-> > > the pros and cons of completion here yet, sorry. Didn't want to delay
-> > > responding until after I get a chance.
-> > >
-> > That would be the solution described above (i.e. honoring SK_SNDTIMEO.
-> > Basically you call sock_send_waittimeo, which returns a timeout value, or 0 if
-> > MSG_DONTWAIT is set), then you block for that period of time waiting for
-> > transmit completion.
-> 
-> From an ABI point of view, starting to support SK_SNDTIMEO where it
-> currently is not implemented certainly seems fine.
-> 
-I would agree, I was just thinking since AF_PACKET is something of a unique
-protocol (i.e. no real protocol), there may have been reason to ignore that
-option, but I agree, it probably makes sense, barring no counter reasoning.
+Tested on Bananapi R2 (mt7623) with 5=2E2-rc5 + net-next
 
-> >  I'm happy to implement that solution, but I'd like to get
-> > some clarity as to if there is a reason we don't currently honor that socket
-> > option now before I change the behavior that way.
-> >
-> > Dave, do you have any insight into AF_PACKET history as to why we would ignore
-> > the send timeout socket option here?
-> 
-> On the point of calling schedule(): even if that is rare, there are a lot of
-> other cond_resched() calls that may have the same starvation issue
-> with SCHED_FIFO and ksoftirqd.
-> 
-Agreed, but I've not found any yet
-Neil
+Tested-by: Frank Wunderlich <frank-w@public-files=2Ede>
 
+Am 20=2E Juni 2019 14:21:55 MESZ schrieb "Ren=C3=A9 van Dorst" <opensource=
+@vdorst=2Ecom>:
+>This patch add support TRGMII mode for MT7621 internal MT7530 switch=2E
+>MT7621 TRGMII has only one fix speed mode of 1200MBit=2E
+>
+>Also adding support for mt7530 25MHz and 40MHz crystal clocksource=2E
+>Values are based on Banana Pi R2 bsp [1]=2E
+>
+>Don't change MT7623 registers on a MT7621 device=2E
+>
+>[1]
+>https://github=2Ecom/BPI-SINOVOIP/BPI-R2-bsp/blob/master/linux-mt/drivers=
+/net/ethernet/mediatek/gsw_mt7623=2Ec#L769
+>
+>Signed-off-by: Ren=C3=A9 van Dorst <opensource@vdorst=2Ecom>
+>---
+> drivers/net/dsa/mt7530=2Ec | 46 +++++++++++++++++++++++++++++++---------
+> drivers/net/dsa/mt7530=2Eh |  4 ++++
+> 2 files changed, 40 insertions(+), 10 deletions(-)
+>
+>diff --git a/drivers/net/dsa/mt7530=2Ec b/drivers/net/dsa/mt7530=2Ec
+>index c7d352da5448=2E=2E3181e95586d6 100644
+>--- a/drivers/net/dsa/mt7530=2Ec
+>+++ b/drivers/net/dsa/mt7530=2Ec
+>@@ -428,24 +428,48 @@ static int
+> mt7530_pad_clk_setup(struct dsa_switch *ds, int mode)
+> {
+> 	struct mt7530_priv *priv =3D ds->priv;
+>-	u32 ncpo1, ssc_delta, trgint, i;
+>+	u32 ncpo1, ssc_delta, trgint, i, xtal;
+>+
+>+	xtal =3D mt7530_read(priv, MT7530_MHWTRAP) & HWTRAP_XTAL_MASK;
+>+
+>+	if (xtal =3D=3D HWTRAP_XTAL_20MHZ) {
+>+		dev_err(priv->dev,
+>+			"%s: MT7530 with a 20MHz XTAL is not supported!\n",
+>+			__func__);
+>+		return -EINVAL;
+>+	}
+>=20
+> 	switch (mode) {
+> 	case PHY_INTERFACE_MODE_RGMII:
+> 		trgint =3D 0;
+>+		/* PLL frequency: 125MHz */
+> 		ncpo1 =3D 0x0c80;
+>-		ssc_delta =3D 0x87;
+> 		break;
+> 	case PHY_INTERFACE_MODE_TRGMII:
+> 		trgint =3D 1;
+>-		ncpo1 =3D 0x1400;
+>-		ssc_delta =3D 0x57;
+>+		if (priv->id =3D=3D ID_MT7621) {
+>+			/* PLL frequency: 150MHz: 1=2E2GBit */
+>+			if (xtal =3D=3D HWTRAP_XTAL_40MHZ)
+>+				ncpo1 =3D 0x0780;
+>+			if (xtal =3D=3D HWTRAP_XTAL_25MHZ)
+>+				ncpo1 =3D 0x0a00;
+>+		} else { /* PLL frequency: 250MHz: 2=2E0Gbit */
+>+			if (xtal =3D=3D HWTRAP_XTAL_40MHZ)
+>+				ncpo1 =3D 0x0c80;
+>+			if (xtal =3D=3D HWTRAP_XTAL_25MHZ)
+>+				ncpo1 =3D 0x1400;
+>+		}
+> 		break;
+> 	default:
+> 		dev_err(priv->dev, "xMII mode %d not supported\n", mode);
+> 		return -EINVAL;
+> 	}
+>=20
+>+	if (xtal =3D=3D HWTRAP_XTAL_25MHZ)
+>+		ssc_delta =3D 0x57;
+>+	else
+>+		ssc_delta =3D 0x87;
+>+
+> 	mt7530_rmw(priv, MT7530_P6ECR, P6_INTF_MODE_MASK,
+> 		   P6_INTF_MODE(trgint));
+>=20
+>@@ -507,7 +531,9 @@ mt7530_pad_clk_setup(struct dsa_switch *ds, int
+>mode)
+> 			mt7530_rmw(priv, MT7530_TRGMII_RD(i),
+> 				   RD_TAP_MASK, RD_TAP(16));
+> 	else
+>-		mt7623_trgmii_set(priv, GSW_INTF_MODE, INTF_MODE_TRGMII);
+>+		if (priv->id !=3D ID_MT7621)
+>+			mt7623_trgmii_set(priv, GSW_INTF_MODE,
+>+					  INTF_MODE_TRGMII);
+>=20
+> 	return 0;
+> }
+>@@ -613,13 +639,13 @@ static void mt7530_adjust_link(struct dsa_switch
+>*ds, int port,
+> 	struct mt7530_priv *priv =3D ds->priv;
+>=20
+> 	if (phy_is_pseudo_fixed_link(phydev)) {
+>-		if (priv->id =3D=3D ID_MT7530) {
+>-			dev_dbg(priv->dev, "phy-mode for master device =3D %x\n",
+>-				phydev->interface);
+>+		dev_dbg(priv->dev, "phy-mode for master device =3D %x\n",
+>+			phydev->interface);
+>=20
+>-			/* Setup TX circuit incluing relevant PAD and driving */
+>-			mt7530_pad_clk_setup(ds, phydev->interface);
+>+		/* Setup TX circuit incluing relevant PAD and driving */
+>+		mt7530_pad_clk_setup(ds, phydev->interface);
+>=20
+>+		if (priv->id =3D=3D ID_MT7530) {
+> 			/* Setup RX circuit, relevant PAD and driving on the
+> 			 * host which must be placed after the setup on the
+> 			 * device side is all finished=2E
+>diff --git a/drivers/net/dsa/mt7530=2Eh b/drivers/net/dsa/mt7530=2Eh
+>index 4331429969fa=2E=2Ebfac90f48102 100644
+>--- a/drivers/net/dsa/mt7530=2Eh
+>+++ b/drivers/net/dsa/mt7530=2Eh
+>@@ -244,6 +244,10 @@ enum mt7530_vlan_port_attr {
+>=20
+> /* Register for hw trap status */
+> #define MT7530_HWTRAP			0x7800
+>+#define  HWTRAP_XTAL_MASK		(BIT(10) | BIT(9))
+>+#define  HWTRAP_XTAL_25MHZ		(BIT(10) | BIT(9))
+>+#define  HWTRAP_XTAL_40MHZ		(BIT(10))
+>+#define  HWTRAP_XTAL_20MHZ		(BIT(9))
+>=20
+> /* Register for hw trap modification */
+> #define MT7530_MHWTRAP			0x7804
