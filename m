@@ -2,89 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 749024CE23
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 15:02:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EF284CE69
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 15:15:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731801AbfFTNCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 09:02:43 -0400
-Received: from mout.gmx.net ([212.227.15.15]:51751 "EHLO mout.gmx.net"
+        id S1731926AbfFTNPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 09:15:36 -0400
+Received: from mail.us.es ([193.147.175.20]:56246 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726569AbfFTNCn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Jun 2019 09:02:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1561035730;
-        bh=+afkOThX5iGh2rB1ktgwAzNdjRHJupZfIJ7drdFwZgo=;
-        h=X-UI-Sender-Class:Date:In-Reply-To:References:Subject:Reply-to:To:
-         CC:From;
-        b=TC6fSpvQ6YnvG0rajSAOfWrG2Mb3JxwuuxBAF0IkUB1Y1BYY0nugbPs/eJFg7b+yw
-         iaajMPYRVNVAbl0qqnxHvTAFv20Ja1sZgUDeDyI7i6gZnE2G1hNcRWdtG0p5JYeouy
-         VPm4A9AbzbPWQR77dXmhxz8OoqhRIqjTr+dCp95A=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [10.218.201.144] ([88.128.80.145]) by mail.gmx.com (mrgmx001
- [212.227.17.190]) with ESMTPSA (Nemesis) id 0MbOoG-1hwiXe0qhA-00Illb; Thu, 20
- Jun 2019 15:02:10 +0200
-Date:   Thu, 20 Jun 2019 15:02:04 +0200
-User-Agent: K-9 Mail for Android
-In-Reply-To: <20190620122155.32078-1-opensource@vdorst.com>
-References: <20190620122155.32078-1-opensource@vdorst.com>
+        id S1726952AbfFTNPg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Jun 2019 09:15:36 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 4144AC1D49
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 15:15:34 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 2EC7EDA702
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 15:15:34 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 24573DA706; Thu, 20 Jun 2019 15:15:34 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 16554DA702;
+        Thu, 20 Jun 2019 15:15:32 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Thu, 20 Jun 2019 15:15:32 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id E66D04265A2F;
+        Thu, 20 Jun 2019 15:15:31 +0200 (CEST)
+Date:   Thu, 20 Jun 2019 15:15:31 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Stephen Suryaputra <ssuryaextr@gmail.com>
+Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH nfnext v4] netfilter: add support for matching IPv4
+ options
+Message-ID: <20190620131531.26kkdnvcpwuemw2d@salvia>
+References: <20190620115140.3518-1-ssuryaextr@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v2 net-next 0/2] net: mediatek: Add MT7621 TRGMII mode support
-Reply-to: frank-w@public-files.de
-To:     =?ISO-8859-1?Q?Ren=E9_van_Dorst?= <opensource@vdorst.com>,
-        sean.wang@mediatek.com, f.fainelli@gmail.com, davem@davemloft.net,
-        matthias.bgg@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com
-CC:     netdev@vger.kernel.org, john@phrozen.org,
-        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org
-From:   Frank Wunderlich <frank-w@public-files.de>
-Message-ID: <74C80E79-877C-4DEC-BC82-1195C3D0981F@public-files.de>
-X-Provags-ID: V03:K1:xIO+yH9i6OHFj2f10Rv4UCkFlBt3qm7Dlkf80DSU+4Hpi3dZzfR
- X2JpvTbtZM7DauCbrwia3F9oqlqikYHqEb1eHHiCmXGxbY+Wk6sXXVfcy7Qkk98dOvvBKTJ
- hfIBxOf2QVeHwX3zEHsgf4F/dS/QKHaFp0uT5lOFoJAK94yHJOnnCi39AnzjtWiMGHfMU1/
- NDOIhG+ZNQHIyBIPIyzUA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:gLuq2wC3/5I=:8NE4223G084VtT9X+ICDmP
- +EYJ6KJjR+o1VJHowytLI7SHiRVkjpLGZcnhHD8Opk9tPxtmsAXMjnRxHqVcslTw+WvhREoob
- s6IYBbOHnZwRTON6fDr0YKCfBDxuVd/zxOv9hqlzB45cA/3kGSvd6I2WdsjRr1gNO7zPpGOL9
- OrZWraERWMDznpDAlWoRCTGLSpt+1P6XaWsWCdzcAInXmXZUPG2Dn7v80YkT1ibteOJOtJfc9
- G4UD8CHN3vvDk0+OFWGaBEVXliS5dLqZGyAu+6Le+mmaQM2262OR7lhShMPDeD+dCWpifhHIx
- cuL8rn8WIY3rdR2Os0EOBwxiDSZYV8Hzrnk2D8zai5VlxknekjU1i2XXIh/kDDcOylgDftADg
- YCQbm/YLB5MBVbypGSHdW8SZM6IfDf2ys/8ve964Ah2IR3IkgGY1YxZ5nu7jLauMiYT8WIDZl
- /Zhz1LZpQa9yeaTkoeH/eU3TSVxbVWVyHcK2+emENJMc1YHw9tB1A8J46K9tX3kb9sR45oXDb
- 2R0K6wupIdi3246GKxU8xApf/wxL/MSNVxE8OgmH9DbZt7tzSAQRY8vGmPVTYRM37ZcafeBjn
- flT+hLmqupzTz+zS9eZrIL8J5U4VVNF89G6IXTRvjklnv7cPGFwN2ZiJb3/6C69L1il+wa4pl
- LdGAxK62hyKIboRTO6wnw8rtvPLNjUvHU/oH9q94QUTEDfc3/UeU1VvDTRDnhjnqqidKADE86
- zpQF+122RTNZATc+3LSzA4I0RkeTxrNKh9NgRUYgqrI3C5oz2BxovjlaGyquucBB5MHKPp8w9
- kuyQgsc0PyHEbDGuFx6FK0LiV6r0gO2Zba0OkVRocxKH05w98Gcj/3ejoOVSn1M4ATYd/WCoH
- 8IKqvnaK2pFQNq9SaAB5NCXQEww9lFlgDDPZyY7c8ToaXC35/NQZ56Kb+cl2DccCdWS4KaDg3
- 2GWXN4ZJv6pkn5vKWmn7tT30R8rCHteg0J00M6jxYB67azbua8cKA
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190620115140.3518-1-ssuryaextr@gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tested on Bananapi R2 (mt7623)
+On Thu, Jun 20, 2019 at 07:51:40AM -0400, Stephen Suryaputra wrote:
+[...]
+> diff --git a/net/netfilter/nft_exthdr.c b/net/netfilter/nft_exthdr.c
+> index a940c9fd9045..703269359dba 100644
+> --- a/net/netfilter/nft_exthdr.c
+> +++ b/net/netfilter/nft_exthdr.c
+> @@ -62,6 +62,103 @@ static void nft_exthdr_ipv6_eval(const struct nft_expr *expr,
+>  	regs->verdict.code = NFT_BREAK;
+>  }
+>  
+> +/* find the offset to specified option.
+> + *
+> + * If target header is found, its offset is set in *offset and return option
+> + * number. Otherwise, return negative error.
+> + *
+> + * If the first fragment doesn't contain the End of Options it is considered
+> + * invalid.
+> + */
+> +static int ipv4_find_option(struct net *net, struct sk_buff *skb,
+> +			    unsigned int *offset, int target)
+> +{
+> +	unsigned char optbuf[sizeof(struct ip_options) + 40];
+> +	struct ip_options *opt = (struct ip_options *)optbuf;
+> +	struct iphdr *iph, _iph;
+> +	unsigned int start;
+> +	bool found = false;
+> +	__be32 info;
+> +	int optlen;
+> +
+> +	iph = skb_header_pointer(skb, 0, sizeof(_iph), &_iph);
+> +	if (!iph || iph->version != 4)
 
-Tested-by: "Frank Wunderlich" <frank-w@public-files=2Ede>
+Nitpick: I think you can remove this check for iph->version != 4, if
+skb->protocol already points to ETH_P_IP, then this already has a
+valid IP version 4 header.
 
-Am 20=2E Juni 2019 14:21:53 MESZ schrieb "Ren=C3=A9 van Dorst" <opensource=
-@vdorst=2Ecom>:
->Like many other mediatek SOCs, the MT7621 SOC and the internal MT7530
->switch both supports TRGMII mode=2E MT7621 TRGMII speed is fix 1200MBit=
-=2E
->
->v1->v2:=20
-> - Fix breakage on non MT7621 SOC
-> - Support 25MHz and 40MHz XTAL as MT7530 clocksource
->
->Ren=C3=A9 van Dorst (2):
->  net: ethernet: mediatek: Add MT7621 TRGMII mode support
->  net: dsa: mt7530: Add MT7621 TRGMII mode support
->
-> drivers/net/dsa/mt7530=2Ec                    | 46 ++++++++++++++++-----
-> drivers/net/dsa/mt7530=2Eh                    |  4 ++
-> drivers/net/ethernet/mediatek/mtk_eth_soc=2Ec | 38 +++++++++++++++--
-> drivers/net/ethernet/mediatek/mtk_eth_soc=2Eh | 11 +++++
-> 4 files changed, 85 insertions(+), 14 deletions(-)
+> +		return -EBADMSG;
+> +	start = sizeof(struct iphdr);
+> +
+> +	optlen = iph->ihl * 4 - (int)sizeof(struct iphdr);
+> +	if (optlen <= 0)
+> +		return -ENOENT;
+> +
+> +	memset(opt, 0, sizeof(struct ip_options));
+> +	/* Copy the options since __ip_options_compile() modifies
+> +	 * the options.
+> +	 */
+> +	if (skb_copy_bits(skb, start, opt->__data, optlen))
+> +		return -EBADMSG;
+> +	opt->optlen = optlen;
+> +
+> +	if (__ip_options_compile(net, opt, NULL, &info))
+> +		return -EBADMSG;
+> +
+> +	switch (target) {
+> +	case IPOPT_SSRR:
+> +	case IPOPT_LSRR:
+> +		if (!opt->srr)
+> +			break;
+> +		found = target == IPOPT_SSRR ? opt->is_strictroute :
+> +					       !opt->is_strictroute;
+> +		if (found)
+> +			*offset = opt->srr + start;
+> +		break;
+> +	case IPOPT_RR:
+> +		if (!opt->rr)
+> +			break;
+> +		*offset = opt->rr + start;
+> +		found = true;
+> +		break;
+> +	case IPOPT_RA:
+> +		if (!opt->router_alert)
+> +			break;
+> +		*offset = opt->router_alert + start;
+> +		found = true;
+> +		break;
+> +	default:
+> +		return -EOPNOTSUPP;
+> +	}
+> +	return found ? target : -ENOENT;
+> +}
+> +
+> +static void nft_exthdr_ipv4_eval(const struct nft_expr *expr,
+> +				 struct nft_regs *regs,
+> +				 const struct nft_pktinfo *pkt)
+> +{
+> +	struct nft_exthdr *priv = nft_expr_priv(expr);
+> +	u32 *dest = &regs->data[priv->dreg];
+> +	struct sk_buff *skb = pkt->skb;
+> +	unsigned int offset;
+> +	int err;
+> +
+> +	if (skb->protocol != htons(ETH_P_IP))
+> +		goto err;
+> +
+> +	err = ipv4_find_option(nft_net(pkt), skb, &offset, priv->type);
+> +	if (priv->flags & NFT_EXTHDR_F_PRESENT) {
+> +		*dest = (err >= 0);
+> +		return;
+> +	} else if (err < 0) {
+> +		goto err;
+> +	}
+> +	offset += priv->offset;
+> +
+> +	dest[priv->len / NFT_REG32_SIZE] = 0;
+> +	if (skb_copy_bits(pkt->skb, offset, dest, priv->len) < 0)
+> +		goto err;
+> +	return;
+> +err:
+> +	regs->verdict.code = NFT_BREAK;
+> +}
+> +
+>  static void *
+>  nft_tcp_header_pointer(const struct nft_pktinfo *pkt,
+>  		       unsigned int len, void *buffer, unsigned int *tcphdr_len)
+> @@ -360,6 +457,14 @@ static const struct nft_expr_ops nft_exthdr_ipv6_ops = {
+>  	.dump		= nft_exthdr_dump,
+>  };
+>  
+> +static const struct nft_expr_ops nft_exthdr_ipv4_ops = {
+> +	.type		= &nft_exthdr_type,
+> +	.size		= NFT_EXPR_SIZE(sizeof(struct nft_exthdr)),
+> +	.eval		= nft_exthdr_ipv4_eval,
+> +	.init		= nft_exthdr_init,
+
+Sorry, I just realized this one. Could you add a new
+nft_exthdr_ipv4_init() function?
+
+The idea is if priv->type different from:
+
+IPOPT_SSRR
+IPOPT_LSRR
+IPOPT_RR
+IPOPT_RA
+
+are rejected with -EOPNOTSUPP.
+
+If anyone extends this to support for more options, old kernels with
+new nft binaries will result in EOPNOTSUPP for options that are not
+supported.
+
+The existing TCP options extension does not need this, since it
+matches any type. This IPv4 option extension is special, since we
+require the option parser to match on options.
+
+I can see you return -EOPNOTSUPP from _eval() path, but that is too
+late. It would be good to validate this from the control plane path.
+
+Thanks for your patience.
