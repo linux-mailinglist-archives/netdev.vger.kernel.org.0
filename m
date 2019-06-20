@@ -2,206 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EF284CE69
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 15:15:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F6574CE6A
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 15:16:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731926AbfFTNPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 09:15:36 -0400
-Received: from mail.us.es ([193.147.175.20]:56246 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726952AbfFTNPg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Jun 2019 09:15:36 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 4144AC1D49
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 15:15:34 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 2EC7EDA702
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 15:15:34 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 24573DA706; Thu, 20 Jun 2019 15:15:34 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 16554DA702;
-        Thu, 20 Jun 2019 15:15:32 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 20 Jun 2019 15:15:32 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id E66D04265A2F;
-        Thu, 20 Jun 2019 15:15:31 +0200 (CEST)
-Date:   Thu, 20 Jun 2019 15:15:31 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Stephen Suryaputra <ssuryaextr@gmail.com>
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH nfnext v4] netfilter: add support for matching IPv4
- options
-Message-ID: <20190620131531.26kkdnvcpwuemw2d@salvia>
-References: <20190620115140.3518-1-ssuryaextr@gmail.com>
+        id S1731834AbfFTNQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 09:16:01 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:38236 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726952AbfFTNQB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 09:16:01 -0400
+Received: by mail-io1-f67.google.com with SMTP id j6so1501407ioa.5
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 06:16:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=I/O/yyALdCbsqKYK1a9DcWSXjStvVGaq6qBlcx4Muio=;
+        b=MHywfs/nm337cGrusxf5U3yNCrkYeYHqQE4P7Mk/QviPsIvQ9lF6G6c6WwGzIXcaxG
+         YCO0WWMxJn5tc9vMF5+rze4LBUZfKt++0+H82YSbHq6RkyRtIlkrs9/385LkzvSwXvqd
+         EM0wflKKoY0tUckmUC0ypLyjQPF69aJHE2NLVYZewvQKeKCcGEMJt8PUodMGv7deGx8Q
+         XDiuyYdYvJ2scWzWOEQOsP3lflrrQrLz3IaEYgPsvfPBWNVHkUZSnFsquiFfGjZTG4//
+         u0+GqyFDS482GoVwf+wadrH2Bwa8xA9bQal6Z2TbXmxUn7wEKSgmDE3WmJI8b9mOU7kn
+         VVzw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=I/O/yyALdCbsqKYK1a9DcWSXjStvVGaq6qBlcx4Muio=;
+        b=HcJdQJZnC+0fe0HUR6GKepJQmJK3zC8EE2alXCdYZnuaPYCpeLes9OA/u2JyeLEmGH
+         YPmlF39p9LOibphOH8lBSuoxlCGMxZxM2iwHpmOAmia0OHLl6usezGojTdFp9nCVAX9K
+         eFVtGFFg0ZSgR9H3F24EjGsjGqPVZ9h5jmzHuKAHLWGMVQ81aOphddegJb6AF/zwFhf7
+         40yUfKY+10/jCSsptEHC1eP07C+b2Xya3VJK+DuuDjzQP0nQlSyUSjG7/QslcTvqnl0M
+         vdxEG7t+E5Js8undVLBsg740JEZFdcdeIREhExv9IHrC3Y0ddsLvyDmjoaqOiccomiBt
+         uS+A==
+X-Gm-Message-State: APjAAAW1mS/luZdZBEcZKOUbb/WiGIpPtugPfIV4k45CUrgTZ7OGNwhU
+        hN9owI2Yk56sTEE2WYgQvcNcrHfD
+X-Google-Smtp-Source: APXvYqz5J/lZEYG/XPpmfxWel9m4wHFO3LAUXFNEWKhxXtRv+33Z5q/ZkJVQM015C9kQiU4vxK91zA==
+X-Received: by 2002:a5e:8306:: with SMTP id x6mr18966659iom.130.1561036560428;
+        Thu, 20 Jun 2019 06:16:00 -0700 (PDT)
+Received: from ?IPv6:2601:284:8200:5cfb:9c46:f142:c937:3c50? ([2601:284:8200:5cfb:9c46:f142:c937:3c50])
+        by smtp.googlemail.com with ESMTPSA id c1sm16596573ioc.43.2019.06.20.06.15.58
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 20 Jun 2019 06:15:59 -0700 (PDT)
+Subject: Re: [PATCH net-next v6 03/11] ipv4/route: Allow NULL flowinfo in
+ rt_fill_info()
+To:     Stefano Brivio <sbrivio@redhat.com>,
+        David Miller <davem@davemloft.net>
+Cc:     Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        netdev@vger.kernel.org
+References: <cover.1560987611.git.sbrivio@redhat.com>
+ <5ba00822d7e86cdcb9231b39fda3cc4a04e2836f.1560987611.git.sbrivio@redhat.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <9efa65d3-5797-fde0-d5c2-3c7747d591ad@gmail.com>
+Date:   Thu, 20 Jun 2019 07:15:55 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190620115140.3518-1-ssuryaextr@gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <5ba00822d7e86cdcb9231b39fda3cc4a04e2836f.1560987611.git.sbrivio@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 20, 2019 at 07:51:40AM -0400, Stephen Suryaputra wrote:
-[...]
-> diff --git a/net/netfilter/nft_exthdr.c b/net/netfilter/nft_exthdr.c
-> index a940c9fd9045..703269359dba 100644
-> --- a/net/netfilter/nft_exthdr.c
-> +++ b/net/netfilter/nft_exthdr.c
-> @@ -62,6 +62,103 @@ static void nft_exthdr_ipv6_eval(const struct nft_expr *expr,
->  	regs->verdict.code = NFT_BREAK;
->  }
->  
-> +/* find the offset to specified option.
-> + *
-> + * If target header is found, its offset is set in *offset and return option
-> + * number. Otherwise, return negative error.
-> + *
-> + * If the first fragment doesn't contain the End of Options it is considered
-> + * invalid.
-> + */
-> +static int ipv4_find_option(struct net *net, struct sk_buff *skb,
-> +			    unsigned int *offset, int target)
-> +{
-> +	unsigned char optbuf[sizeof(struct ip_options) + 40];
-> +	struct ip_options *opt = (struct ip_options *)optbuf;
-> +	struct iphdr *iph, _iph;
-> +	unsigned int start;
-> +	bool found = false;
-> +	__be32 info;
-> +	int optlen;
-> +
-> +	iph = skb_header_pointer(skb, 0, sizeof(_iph), &_iph);
-> +	if (!iph || iph->version != 4)
+On 6/19/19 5:59 PM, Stefano Brivio wrote:
+> In the next patch, we're going to use rt_fill_info() to dump exception
+> routes upon RTM_GETROUTE with NLM_F_ROOT, meaning userspace is requesting
+> a dump and not a specific route selection, which in turn implies the input
+> interface is not relevant. Update rt_fill_info() to handle a NULL
+> flowinfo.
+> 
+> Suggested-by: David Ahern <dsahern@gmail.com>
+> Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
+> ---
+> v6: New patch
+> 
+>  net/ipv4/route.c | 57 ++++++++++++++++++++++++++----------------------
+>  1 file changed, 31 insertions(+), 26 deletions(-)
+> 
+> diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+> index 66cbe8a7a168..052a80373b1d 100644
+> --- a/net/ipv4/route.c
+> +++ b/net/ipv4/route.c
+> @@ -2699,7 +2699,8 @@ static int rt_fill_info(struct net *net, __be32 dst, __be32 src,
+>  	r->rtm_family	 = AF_INET;
+>  	r->rtm_dst_len	= 32;
+>  	r->rtm_src_len	= 0;
+> -	r->rtm_tos	= fl4->flowi4_tos;
+> +	if (fl4)
+> +		r->rtm_tos	= fl4->flowi4_tos;
 
-Nitpick: I think you can remove this check for iph->version != 4, if
-skb->protocol already points to ETH_P_IP, then this already has a
-valid IP version 4 header.
+tracing back to the alloc_skb it does not appear to be initialized to 0,
+so this should be:
+	r->rtm_tos	= fl4 ? fl4->flowi4_tos : 0;
 
-> +		return -EBADMSG;
-> +	start = sizeof(struct iphdr);
-> +
-> +	optlen = iph->ihl * 4 - (int)sizeof(struct iphdr);
-> +	if (optlen <= 0)
-> +		return -ENOENT;
-> +
-> +	memset(opt, 0, sizeof(struct ip_options));
-> +	/* Copy the options since __ip_options_compile() modifies
-> +	 * the options.
-> +	 */
-> +	if (skb_copy_bits(skb, start, opt->__data, optlen))
-> +		return -EBADMSG;
-> +	opt->optlen = optlen;
-> +
-> +	if (__ip_options_compile(net, opt, NULL, &info))
-> +		return -EBADMSG;
-> +
-> +	switch (target) {
-> +	case IPOPT_SSRR:
-> +	case IPOPT_LSRR:
-> +		if (!opt->srr)
-> +			break;
-> +		found = target == IPOPT_SSRR ? opt->is_strictroute :
-> +					       !opt->is_strictroute;
-> +		if (found)
-> +			*offset = opt->srr + start;
-> +		break;
-> +	case IPOPT_RR:
-> +		if (!opt->rr)
-> +			break;
-> +		*offset = opt->rr + start;
-> +		found = true;
-> +		break;
-> +	case IPOPT_RA:
-> +		if (!opt->router_alert)
-> +			break;
-> +		*offset = opt->router_alert + start;
-> +		found = true;
-> +		break;
-> +	default:
-> +		return -EOPNOTSUPP;
-> +	}
-> +	return found ? target : -ENOENT;
-> +}
-> +
-> +static void nft_exthdr_ipv4_eval(const struct nft_expr *expr,
-> +				 struct nft_regs *regs,
-> +				 const struct nft_pktinfo *pkt)
-> +{
-> +	struct nft_exthdr *priv = nft_expr_priv(expr);
-> +	u32 *dest = &regs->data[priv->dreg];
-> +	struct sk_buff *skb = pkt->skb;
-> +	unsigned int offset;
-> +	int err;
-> +
-> +	if (skb->protocol != htons(ETH_P_IP))
-> +		goto err;
-> +
-> +	err = ipv4_find_option(nft_net(pkt), skb, &offset, priv->type);
-> +	if (priv->flags & NFT_EXTHDR_F_PRESENT) {
-> +		*dest = (err >= 0);
-> +		return;
-> +	} else if (err < 0) {
-> +		goto err;
-> +	}
-> +	offset += priv->offset;
-> +
-> +	dest[priv->len / NFT_REG32_SIZE] = 0;
-> +	if (skb_copy_bits(pkt->skb, offset, dest, priv->len) < 0)
-> +		goto err;
-> +	return;
-> +err:
-> +	regs->verdict.code = NFT_BREAK;
-> +}
-> +
->  static void *
->  nft_tcp_header_pointer(const struct nft_pktinfo *pkt,
->  		       unsigned int len, void *buffer, unsigned int *tcphdr_len)
-> @@ -360,6 +457,14 @@ static const struct nft_expr_ops nft_exthdr_ipv6_ops = {
->  	.dump		= nft_exthdr_dump,
->  };
->  
-> +static const struct nft_expr_ops nft_exthdr_ipv4_ops = {
-> +	.type		= &nft_exthdr_type,
-> +	.size		= NFT_EXPR_SIZE(sizeof(struct nft_exthdr)),
-> +	.eval		= nft_exthdr_ipv4_eval,
-> +	.init		= nft_exthdr_init,
 
-Sorry, I just realized this one. Could you add a new
-nft_exthdr_ipv4_init() function?
+other than that it looks fine to me.
 
-The idea is if priv->type different from:
-
-IPOPT_SSRR
-IPOPT_LSRR
-IPOPT_RR
-IPOPT_RA
-
-are rejected with -EOPNOTSUPP.
-
-If anyone extends this to support for more options, old kernels with
-new nft binaries will result in EOPNOTSUPP for options that are not
-supported.
-
-The existing TCP options extension does not need this, since it
-matches any type. This IPv4 option extension is special, since we
-require the option parser to match on options.
-
-I can see you return -EOPNOTSUPP from _eval() path, but that is too
-late. It would be good to validate this from the control plane path.
-
-Thanks for your patience.
+Reviewed-by: David Ahern <dsahern@gmail.com>
