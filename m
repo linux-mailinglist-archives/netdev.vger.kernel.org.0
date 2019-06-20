@@ -2,128 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A213B4C4E7
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 03:19:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 926C34C4EF
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 03:25:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730913AbfFTBTw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 21:19:52 -0400
-Received: from m9783.mail.qiye.163.com ([220.181.97.83]:41434 "EHLO
-        m9783.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726096AbfFTBTv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 21:19:51 -0400
-Received: from [192.168.1.3] (unknown [58.38.4.250])
-        by m9783.mail.qiye.163.com (Hmail) with ESMTPA id E7349C1875;
-        Thu, 20 Jun 2019 09:19:46 +0800 (CST)
-Subject: Re: [PATCH 1/2 nf-next] netfilter: nft_meta: add NFT_META_BRI_PVID
- support
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     fw@strlen.de, netfilter-devel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <1560928585-18352-1-git-send-email-wenxu@ucloud.cn>
- <20190619170254.an2aklx6abqh646l@salvia>
-From:   wenxu <wenxu@ucloud.cn>
-Message-ID: <26bb807a-4021-b06e-53cb-d30f3f188555@ucloud.cn>
-Date:   Thu, 20 Jun 2019 09:19:36 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1731087AbfFTBZQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 21:25:16 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:37384 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726096AbfFTBZQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Jun 2019 21:25:16 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id C2744307D925;
+        Thu, 20 Jun 2019 01:25:15 +0000 (UTC)
+Received: from ovpn-112-53.rdu2.redhat.com (ovpn-112-53.rdu2.redhat.com [10.10.112.53])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5B4E81001DD2;
+        Thu, 20 Jun 2019 01:25:12 +0000 (UTC)
+Message-ID: <7c0e8909cee17623565ef88445b0497d5504fe1c.camel@redhat.com>
+Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
+From:   Dan Williams <dcbw@redhat.com>
+To:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        Alex Elder <elder@linaro.org>, abhishek.esse@gmail.com,
+        Ben Chan <benchan@google.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        cpratapa@codeaurora.org, David Miller <davem@davemloft.net>,
+        DTML <devicetree@vger.kernel.org>,
+        Eric Caruso <ejcaruso@google.com>, evgreen@chromium.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-soc@vger.kernel.org, Networking <netdev@vger.kernel.org>,
+        syadagir@codeaurora.org
+Date:   Wed, 19 Jun 2019 20:25:11 -0500
+In-Reply-To: <2926e45fd7ff62fd7c4af9b338bf0caa@codeaurora.org>
+References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
+         <a94676381a5ca662c848f7a725562f721c43ce76.camel@sipsolutions.net>
+         <CAK8P3a0kV-i7BJJ2X6C=5n65rSGfo8fUiC4J_G-+M8EctYKbkg@mail.gmail.com>
+         <066e9b39f937586f0f922abf801351553ec2ba1d.camel@sipsolutions.net>
+         <b3686626-e2d8-bc9c-6dd0-9ebb137715af@linaro.org>
+         <b23a83c18055470c5308fcd1eed018056371fc1d.camel@sipsolutions.net>
+         <CAK8P3a1FeUQR3pgoQxHoRK05JGORyR+TFATVQiijLWtFKTv6OQ@mail.gmail.com>
+         <613cdfde488eb23d7207c7ba6258662702d04840.camel@sipsolutions.net>
+         <CAK8P3a2onXpxiE4y9PzRwuPM2dh=h_BKz7Eb0=LLPgBbZoK1bQ@mail.gmail.com>
+         <6c70950d0c78bc02a3d016918ec3929e@codeaurora.org>
+         <CAK8P3a3e+U85yHTeE4dHa4okLVHgBd8Kke9=FytzvMwz+wB0sQ@mail.gmail.com>
+         <2926e45fd7ff62fd7c4af9b338bf0caa@codeaurora.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
 MIME-Version: 1.0
-In-Reply-To: <20190619170254.an2aklx6abqh646l@salvia>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUhXWQgYFAkeWUFZVkpVTk1CS0tLSE1ISE9CQkpZV1koWU
-        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6N006Lww4PTgxHBcdFgFOOA8B
-        TjEwCkJVSlVKTk1LQkJITkNMT0xKVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWU5DVUhD
-        VU9VSU5LWVdZCAFZQU9ITE03Bg++
-X-HM-Tid: 0a6b7277e0092085kuqye7349c1875
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Thu, 20 Jun 2019 01:25:16 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I will post the nftable patches latter. Thanks!
+On Wed, 2019-06-19 at 12:47 -0600, Subash Abhinov Kasiviswanathan
+wrote:
+> > > There is a n:1 relationship between rmnet and IPA.
+> > > rmnet does the de-muxing to multiple netdevs based on the mux id
+> > > in the MAP header for RX packets and vice versa.
+> > 
+> > Oh, so you mean that even though IPA supports multiple channels
+> > and multiple netdev instances for a physical device, all the
+> > rmnet devices end up being thrown into a single channel in IPA?
+> > 
+> > What are the other channels for in IPA? I understand that there
+> > is one channel for commands that is separate, while the others
+> > are for network devices, but that seems to make no sense if
+> > we only use a single channel for rmnet data.
+> > 
+> 
+> AFAIK, the other channels are for use cases like tethering.
+> There is only a single channel which is used for RX
+> data which is then de-muxed using rmnet.
 
-在 2019/6/20 1:02, Pablo Neira Ayuso 写道:
-> On Wed, Jun 19, 2019 at 03:16:24PM +0800, wenxu@ucloud.cn wrote:
->> From: wenxu <wenxu@ucloud.cn>
->>
->> nft add table bridge firewall
->> nft add chain bridge firewall zones { type filter hook prerouting priority - 300 \; }
->> nft add rule bridge firewall zones counter ct zone set vlan id map { 100 : 1, 200 : 2 }
->> As above set the bridge port with pvid, the received packet don't contain
->> the vlan tag which means the packet should belong to vlan 200 through pvid.
->> With this pacth user can get the pvid of bridge ports: "meta brpvid"
-> Would you also post the patches for nftables for review?
->
-> Would you post an example on how you use "meta brpvid" in your
-> ruleset? I don't see this is used in the example above,
->
-> More comments below.
->
->> Signed-off-by: wenxu <wenxu@ucloud.cn>
->> ---
->>  include/uapi/linux/netfilter/nf_tables.h |  2 ++
->>  net/netfilter/nft_meta.c                 | 17 +++++++++++++++++
->>  2 files changed, 19 insertions(+)
->>
->> diff --git a/include/uapi/linux/netfilter/nf_tables.h b/include/uapi/linux/netfilter/nf_tables.h
->> index 31a6b8f..4a16124 100644
->> --- a/include/uapi/linux/netfilter/nf_tables.h
->> +++ b/include/uapi/linux/netfilter/nf_tables.h
->> @@ -793,6 +793,7 @@ enum nft_exthdr_attributes {
->>   * @NFT_META_SECPATH: boolean, secpath_exists (!!skb->sp)
->>   * @NFT_META_IIFKIND: packet input interface kind name (dev->rtnl_link_ops->kind)
->>   * @NFT_META_OIFKIND: packet output interface kind name (dev->rtnl_link_ops->kind)
->> + * @NFT_META_BRI_PVID: packet input bridge port pvid
->>   */
->>  enum nft_meta_keys {
->>  	NFT_META_LEN,
->> @@ -823,6 +824,7 @@ enum nft_meta_keys {
->>  	NFT_META_SECPATH,
->>  	NFT_META_IIFKIND,
->>  	NFT_META_OIFKIND,
->> +	NFT_META_BRI_PVID,
->>  };
->>  
->>  /**
->> diff --git a/net/netfilter/nft_meta.c b/net/netfilter/nft_meta.c
->> index 987d2d6..1fdb565 100644
->> --- a/net/netfilter/nft_meta.c
->> +++ b/net/netfilter/nft_meta.c
->> @@ -243,6 +243,18 @@ void nft_meta_get_eval(const struct nft_expr *expr,
->>  			goto err;
->>  		strncpy((char *)dest, p->br->dev->name, IFNAMSIZ);
->>  		return;
->> +	case NFT_META_BRI_PVID:
->> +		if (in == NULL || (p = br_port_get_rtnl_rcu(in)) == NULL)
->> +			goto err;
->> +		if (br_opt_get(p->br, BROPT_VLAN_ENABLED)) {
->> +			u16 pvid = br_get_pvid(nbp_vlan_group_rcu(p));
->> +
->> +			if (pvid) {
->> +				nft_reg_store16(dest, pvid);
-> I think you should store pvid into dest if pvid is zero too, right?
-> You cannot assume destination register is set to zero.
->
->> +				return;
->> +			}
->> +		}
->> +		goto err;
->>  #endif
->>  	case NFT_META_IIFKIND:
->>  		if (in == NULL || in->rtnl_link_ops == NULL)
->> @@ -370,6 +382,11 @@ static int nft_meta_get_init(const struct nft_ctx *ctx,
->>  			return -EOPNOTSUPP;
->>  		len = IFNAMSIZ;
->>  		break;
->> +	case NFT_META_BRI_PVID:
->> +		if (ctx->family != NFPROTO_BRIDGE)
->> +			return -EOPNOTSUPP;
->> +		len = sizeof(u16);
->> +		break;
->>  #endif
->>  	default:
->>  		return -EOPNOTSUPP;
->> -- 
->> 1.8.3.1
->>
+That seems odd, since tethering is no different than any other data
+channel in QMI, just that it may have a different APN and QoS
+guarantees.
+
+Dan
+
