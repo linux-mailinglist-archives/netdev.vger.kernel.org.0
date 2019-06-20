@@ -2,80 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DC134DA1A
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 21:22:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CE344DA84
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 21:46:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726287AbfFTTWb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 15:22:31 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:37541 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725993AbfFTTWb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 15:22:31 -0400
-Received: by mail-io1-f67.google.com with SMTP id e5so282509iok.4
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 12:22:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=GpW/+qj9o3OJ5b2wITE4G+NuTjxqWZBI74hTP6D4IPw=;
-        b=jQlZ9XvmHmofGU35j6sKmdqFQApzAqoDJ2wjzTDBNDUv1vnqoRZYzCqH6a7nDrybzy
-         j7dtmmlcx9jGj8MFWFiQLK5xY3Ufoyuyn26Zqc1LvxxI7b4EJWp0GEaLI9+uhpBISs7E
-         u5ZSTT0uIDUpZXvikMa76Y18NlofNclPCQWAvdyy2tEqYIQwMj/XDAmJE0MKjy12mQnO
-         ujDhEUgewR4rZX9A5BzXaKPLuKxWwRsFpzEGgpd79/9AQBDpqY1I9JVoqKcVNZtBJogI
-         QLYx8trLh8LnomirJ7KvCouAHo8u+6HHsO0h90k+qmlXYwgEfD8jeDAN6LFlbF7dO0mu
-         3jXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=GpW/+qj9o3OJ5b2wITE4G+NuTjxqWZBI74hTP6D4IPw=;
-        b=rHkm/WyLLLKisvl0XPzpba8P3w5u5Oh97GkC+34YfBfy5WpJLXNmbJFGSU7yLSiCza
-         aQLJHYbf0E6B/KxTuj9qFxOrpa0G/9nmE8lpRwra+KRa9U+rVOnDcy8iqxD9q+GQYOuE
-         ChuKLPWy3RRiYBdJIfF4L/Rrt32YVRR++SFuW8nGjwzG/ANLvl7658TsjRZflutZR1cg
-         wEhWIfWzqx/9T8LdaAkyy1WqvNcijhr/XMJIj8EG3r5yhR7xraZvy/gVQwg1lZ3SyCM+
-         t6a5gtfNhrp+ddmrsXh8HKIhhVHmaO2cAszg/W4nsnWzcsiB8d0gDttO3ZX/jV3TcWbW
-         qaeA==
-X-Gm-Message-State: APjAAAWuxiQFLVBw8oafzE/0su0V2RXP13g6B74KbneeAahPDpe0awXn
-        UcJQrNEEX2ihUqL4qXGpT26WEzrG
-X-Google-Smtp-Source: APXvYqzIAKFj2ZqjWocGgv2YiKiaDyJNRAqsrIaUURmFvHXflxrRkSxs32FgirxAzHq7C+4ch88YGg==
-X-Received: by 2002:a5d:890d:: with SMTP id b13mr62432296ion.124.1561058549884;
-        Thu, 20 Jun 2019 12:22:29 -0700 (PDT)
-Received: from ?IPv6:2601:284:8200:5cfb:9c46:f142:c937:3c50? ([2601:284:8200:5cfb:9c46:f142:c937:3c50])
-        by smtp.googlemail.com with ESMTPSA id z1sm998022ioh.52.2019.06.20.12.22.28
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 20 Jun 2019 12:22:29 -0700 (PDT)
-Subject: Re: [PATCH net-next v6 08/11] ipv6: Dump route exceptions if
- requested
-To:     Stefano Brivio <sbrivio@redhat.com>
-Cc:     David Miller <davem@davemloft.net>, Jianlin Shi <jishi@redhat.com>,
-        Wei Wang <weiwan@google.com>, Martin KaFai Lau <kafai@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        netdev@vger.kernel.org
-References: <cover.1560987611.git.sbrivio@redhat.com>
- <13c143591fe786dc452ec6c99b8ff1414ef8929d.1560987611.git.sbrivio@redhat.com>
- <26efcecf-5a96-330b-c315-5d9750c99766@gmail.com>
- <20190620210226.724c2893@redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <de992236-46a0-228f-4992-f0909c52c539@gmail.com>
-Date:   Thu, 20 Jun 2019 13:22:28 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        id S1726290AbfFTTqe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 15:46:34 -0400
+Received: from iolanthe.rowland.org ([192.131.102.54]:56506 "HELO
+        iolanthe.rowland.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with SMTP id S1726169AbfFTTqd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 15:46:33 -0400
+Received: (qmail 2765 invoked by uid 2102); 20 Jun 2019 15:46:32 -0400
+Received: from localhost (sendmail-bs@127.0.0.1)
+  by localhost with SMTP; 20 Jun 2019 15:46:32 -0400
+Date:   Thu, 20 Jun 2019 15:46:32 -0400 (EDT)
+From:   Alan Stern <stern@rowland.harvard.edu>
+X-X-Sender: stern@iolanthe.rowland.org
+To:     syzbot <syzbot+6d237e74cdc13f036473@syzkaller.appspotmail.com>
+cc:     andreyknvl@google.com, <chunkeey@googlemail.com>,
+        <davem@davemloft.net>, <kvalo@codeaurora.org>,
+        Kernel development list <linux-kernel@vger.kernel.org>,
+        USB list <linux-usb@vger.kernel.org>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <syzkaller-bugs@googlegroups.com>
+Subject: Re: KASAN: slab-out-of-bounds Read in p54u_load_firmware_cb
+In-Reply-To: <000000000000f00cf1058bb7fb56@google.com>
+Message-ID: <Pine.LNX.4.44L0.1906201544001.1346-100000@iolanthe.rowland.org>
 MIME-Version: 1.0
-In-Reply-To: <20190620210226.724c2893@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/20/19 1:02 PM, Stefano Brivio wrote:
-> Same as my comment about IPv4, except that, for IPv6, distinction
-> between skip and skip_in_node is strictly needed, but buckets and
-> nexthops are traversed in the same order and 'sernum' changes don't
-> affect that.
+On Wed, 19 Jun 2019, syzbot wrote:
 
-ok
+> syzbot has found a reproducer for the following crash on:
+> 
+> HEAD commit:    9939f56e usb-fuzzer: main usb gadget fuzzer driver
+> git tree:       https://github.com/google/kasan.git usb-fuzzer
+> console output: https://syzkaller.appspot.com/x/log.txt?x=135e29faa00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=df134eda130bb43a
+> dashboard link: https://syzkaller.appspot.com/bug?extid=6d237e74cdc13f036473
+> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=175d946ea00000
+> 
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+6d237e74cdc13f036473@syzkaller.appspotmail.com
+> 
+> usb 3-1: Direct firmware load for isl3887usb failed with error -2
+> usb 3-1: Firmware not found.
+> ==================================================================
+> BUG: KASAN: slab-out-of-bounds in p54u_load_firmware_cb.cold+0x97/0x13d  
+> drivers/net/wireless/intersil/p54/p54usb.c:936
+> Read of size 8 at addr ffff8881c9cf7588 by task kworker/1:5/2759
+> 
+> CPU: 1 PID: 2759 Comm: kworker/1:5 Not tainted 5.2.0-rc5+ #11
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+> Google 01/01/2011
+> Workqueue: events request_firmware_work_func
+> Call Trace:
+>   __dump_stack lib/dump_stack.c:77 [inline]
+>   dump_stack+0xca/0x13e lib/dump_stack.c:113
+>   print_address_description+0x67/0x231 mm/kasan/report.c:188
+>   __kasan_report.cold+0x1a/0x32 mm/kasan/report.c:317
+>   kasan_report+0xe/0x20 mm/kasan/common.c:614
+>   p54u_load_firmware_cb.cold+0x97/0x13d  
+> drivers/net/wireless/intersil/p54/p54usb.c:936
+>   request_firmware_work_func+0x126/0x242  
+> drivers/base/firmware_loader/main.c:785
+>   process_one_work+0x905/0x1570 kernel/workqueue.c:2269
+>   worker_thread+0x96/0xe20 kernel/workqueue.c:2415
+>   kthread+0x30b/0x410 kernel/kthread.c:255
+>   ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+> 
+> Allocated by task 1612:
+>   save_stack+0x1b/0x80 mm/kasan/common.c:71
+>   set_track mm/kasan/common.c:79 [inline]
+>   __kasan_kmalloc mm/kasan/common.c:489 [inline]
+>   __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:462
+>   kmalloc include/linux/slab.h:547 [inline]
+>   syslog_print kernel/printk/printk.c:1346 [inline]
+>   do_syslog kernel/printk/printk.c:1519 [inline]
+>   do_syslog+0x4f4/0x12e0 kernel/printk/printk.c:1493
+>   kmsg_read+0x8a/0xb0 fs/proc/kmsg.c:40
+>   proc_reg_read+0x1c1/0x280 fs/proc/inode.c:221
+>   __vfs_read+0x76/0x100 fs/read_write.c:425
+>   vfs_read+0x18e/0x3d0 fs/read_write.c:461
+>   ksys_read+0x127/0x250 fs/read_write.c:587
+>   do_syscall_64+0xb7/0x560 arch/x86/entry/common.c:301
+>   entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> 
+> Freed by task 1612:
+>   save_stack+0x1b/0x80 mm/kasan/common.c:71
+>   set_track mm/kasan/common.c:79 [inline]
+>   __kasan_slab_free+0x130/0x180 mm/kasan/common.c:451
+>   slab_free_hook mm/slub.c:1421 [inline]
+>   slab_free_freelist_hook mm/slub.c:1448 [inline]
+>   slab_free mm/slub.c:2994 [inline]
+>   kfree+0xd7/0x280 mm/slub.c:3949
+>   syslog_print kernel/printk/printk.c:1405 [inline]
+>   do_syslog kernel/printk/printk.c:1519 [inline]
+>   do_syslog+0xff3/0x12e0 kernel/printk/printk.c:1493
+>   kmsg_read+0x8a/0xb0 fs/proc/kmsg.c:40
+>   proc_reg_read+0x1c1/0x280 fs/proc/inode.c:221
+>   __vfs_read+0x76/0x100 fs/read_write.c:425
+>   vfs_read+0x18e/0x3d0 fs/read_write.c:461
+>   ksys_read+0x127/0x250 fs/read_write.c:587
+>   do_syscall_64+0xb7/0x560 arch/x86/entry/common.c:301
+>   entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> 
+> The buggy address belongs to the object at ffff8881c9cf7180
+>   which belongs to the cache kmalloc-1k of size 1024
+> The buggy address is located 8 bytes to the right of
+>   1024-byte region [ffff8881c9cf7180, ffff8881c9cf7580)
+> The buggy address belongs to the page:
+> page:ffffea0007273d00 refcount:1 mapcount:0 mapping:ffff8881dac02a00  
+> index:0x0 compound_mapcount: 0
+> flags: 0x200000000010200(slab|head)
+> raw: 0200000000010200 dead000000000100 dead000000000200 ffff8881dac02a00
+> raw: 0000000000000000 00000000000e000e 00000001ffffffff 0000000000000000
+> page dumped because: kasan: bad access detected
+> 
+> Memory state around the buggy address:
+>   ffff8881c9cf7480: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>   ffff8881c9cf7500: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> > ffff8881c9cf7580: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>                        ^
+>   ffff8881c9cf7600: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>   ffff8881c9cf7680: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> ==================================================================
+
+Isn't this the same as syzkaller bug 200d4bb11b23d929335f ?  Doesn't
+the same patch fix it?
+
+Alan Stern
+
