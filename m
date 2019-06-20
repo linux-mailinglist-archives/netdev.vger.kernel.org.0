@@ -2,528 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 439724DDAE
-	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 01:10:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CEE84DDB5
+	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 01:18:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726200AbfFTXKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 19:10:33 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:45194 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725985AbfFTXKa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 19:10:30 -0400
-Received: from pps.filterd (m0001255.ppops.net [127.0.0.1])
-        by mx0b-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5KN6qra020995
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 16:10:30 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=7WiuzXGPcyjb/Y/cjmhxDi2935+jdaqDqmdrkkZdOKE=;
- b=JqnZik8IolqIFvI7aa8xGNQOq4vjbmxoPPcGeU6cuNcv3HI3l8nPa6E5hoI3jt+HYi+4
- giQfHrb5fuuALecxzI3hBQ+2N8zg4o/BfiTOsjg1z181b+ok1tOdbDzbQivaJ5BTFi9t
- rler3YG2KZtCk91ZAXXm+S1zXggCblrQ/6o= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0b-00082601.pphosted.com with ESMTP id 2t8aj9a3gy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 16:10:29 -0700
-Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 20 Jun 2019 16:10:28 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id 7E81186173D; Thu, 20 Jun 2019 16:10:26 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <andrii.nakryiko@gmail.com>, <ast@fb.com>, <daniel@iogearbox.net>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <kernel-team@fb.com>
-CC:     Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH bpf-next 7/7] selftests/bpf: convert existing tracepoint tests to new APIs
-Date:   Thu, 20 Jun 2019 16:09:51 -0700
-Message-ID: <20190620230951.3155955-8-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190620230951.3155955-1-andriin@fb.com>
-References: <20190620230951.3155955-1-andriin@fb.com>
-X-FB-Internal: Safe
+        id S1726017AbfFTXR4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 19:17:56 -0400
+Received: from mga06.intel.com ([134.134.136.31]:64109 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725815AbfFTXR4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Jun 2019 19:17:56 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 20 Jun 2019 16:17:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.63,398,1557212400"; 
+   d="scan'208";a="160817196"
+Received: from orsmsx106.amr.corp.intel.com ([10.22.225.133])
+  by fmsmga008.fm.intel.com with ESMTP; 20 Jun 2019 16:17:54 -0700
+Received: from orsmsx103.amr.corp.intel.com ([169.254.5.135]) by
+ ORSMSX106.amr.corp.intel.com ([169.254.1.191]) with mapi id 14.03.0439.000;
+ Thu, 20 Jun 2019 16:17:54 -0700
+From:   "Brown, Aaron F" <aaron.f.brown@intel.com>
+To:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        Detlev Casanova <detlev.casanova@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [Intel-wired-lan] [PATCH v2] e1000e: Make watchdog use delayed
+ work
+Thread-Topic: [Intel-wired-lan] [PATCH v2] e1000e: Make watchdog use delayed
+ work
+Thread-Index: AQHVJ75j4XGWnFmuIUe2kn/rlt2I9A==
+Date:   Thu, 20 Jun 2019 23:17:54 +0000
+Message-ID: <309B89C4C689E141A5FF6A0C5FB2118B970B111B@ORSMSX103.amr.corp.intel.com>
+References: <20190618220846.19486-1-detlev.casanova@gmail.com>
+In-Reply-To: <20190618220846.19486-1-detlev.casanova@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.22.254.139]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-20_15:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906200163
-X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert existing tests that attach to tracepoints to use
-bpf_program__attach_tracepoint API instead.
-
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- .../bpf/prog_tests/stacktrace_build_id.c      | 49 +++-------------
- .../selftests/bpf/prog_tests/stacktrace_map.c | 42 +++-----------
- .../bpf/prog_tests/stacktrace_map_raw_tp.c    | 14 ++++-
- .../bpf/prog_tests/task_fd_query_rawtp.c      | 10 +++-
- .../bpf/prog_tests/task_fd_query_tp.c         | 51 +++++------------
- .../bpf/prog_tests/tp_attach_query.c          | 56 ++++++-------------
- 6 files changed, 65 insertions(+), 157 deletions(-)
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id.c b/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id.c
-index 3aab2b083c71..9ef3b66f3644 100644
---- a/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id.c
-+++ b/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id.c
-@@ -4,10 +4,11 @@
- void test_stacktrace_build_id(void)
- {
- 	int control_map_fd, stackid_hmap_fd, stackmap_fd, stack_amap_fd;
-+	const char *prog_name = "tracepoint/random/urandom_read";
- 	const char *file = "./test_stacktrace_build_id.o";
--	int bytes, efd, err, pmu_fd, prog_fd, stack_trace_len;
--	struct perf_event_attr attr = {};
-+	int err, pmu_fd, prog_fd, stack_trace_len;
- 	__u32 key, previous_key, val, duration = 0;
-+	struct bpf_program *prog;
- 	struct bpf_object *obj;
- 	char buf[256];
- 	int i, j;
-@@ -20,42 +21,14 @@ void test_stacktrace_build_id(void)
- 	if (CHECK(err, "prog_load", "err %d errno %d\n", err, errno))
- 		goto out;
- 
--	/* Get the ID for the sched/sched_switch tracepoint */
--	snprintf(buf, sizeof(buf),
--		 "/sys/kernel/debug/tracing/events/random/urandom_read/id");
--	efd = open(buf, O_RDONLY, 0);
--	if (CHECK(efd < 0, "open", "err %d errno %d\n", efd, errno))
-+	prog = bpf_object__find_program_by_title(obj, prog_name);
-+	if (CHECK(!prog, "find_prog", "prog '%s' not found\n", prog_name))
- 		goto close_prog;
- 
--	bytes = read(efd, buf, sizeof(buf));
--	close(efd);
--	if (CHECK(bytes <= 0 || bytes >= sizeof(buf),
--		  "read", "bytes %d errno %d\n", bytes, errno))
-+	pmu_fd = bpf_program__attach_tracepoint(prog, "random", "urandom_read");
-+	if (CHECK(pmu_fd < 0, "attach_tp", "err %d\n", pmu_fd))
- 		goto close_prog;
- 
--	/* Open the perf event and attach bpf progrram */
--	attr.config = strtol(buf, NULL, 0);
--	attr.type = PERF_TYPE_TRACEPOINT;
--	attr.sample_type = PERF_SAMPLE_RAW | PERF_SAMPLE_CALLCHAIN;
--	attr.sample_period = 1;
--	attr.wakeup_events = 1;
--	pmu_fd = syscall(__NR_perf_event_open, &attr, -1 /* pid */,
--			 0 /* cpu 0 */, -1 /* group id */,
--			 0 /* flags */);
--	if (CHECK(pmu_fd < 0, "perf_event_open", "err %d errno %d\n",
--		  pmu_fd, errno))
--		goto close_prog;
--
--	err = ioctl(pmu_fd, PERF_EVENT_IOC_ENABLE, 0);
--	if (CHECK(err, "perf_event_ioc_enable", "err %d errno %d\n",
--		  err, errno))
--		goto close_pmu;
--
--	err = ioctl(pmu_fd, PERF_EVENT_IOC_SET_BPF, prog_fd);
--	if (CHECK(err, "perf_event_ioc_set_bpf", "err %d errno %d\n",
--		  err, errno))
--		goto disable_pmu;
--
- 	/* find map fds */
- 	control_map_fd = bpf_find_map(__func__, obj, "control_map");
- 	if (CHECK(control_map_fd < 0, "bpf_find_map control_map",
-@@ -133,8 +106,7 @@ void test_stacktrace_build_id(void)
- 	 * try it one more time.
- 	 */
- 	if (build_id_matches < 1 && retry--) {
--		ioctl(pmu_fd, PERF_EVENT_IOC_DISABLE);
--		close(pmu_fd);
-+		libbpf_perf_event_disable_and_close(pmu_fd);
- 		bpf_object__close(obj);
- 		printf("%s:WARN:Didn't find expected build ID from the map, retrying\n",
- 		       __func__);
-@@ -152,10 +124,7 @@ void test_stacktrace_build_id(void)
- 	      "err %d errno %d\n", err, errno);
- 
- disable_pmu:
--	ioctl(pmu_fd, PERF_EVENT_IOC_DISABLE);
--
--close_pmu:
--	close(pmu_fd);
-+	libbpf_perf_event_disable_and_close(pmu_fd);
- 
- close_prog:
- 	bpf_object__close(obj);
-diff --git a/tools/testing/selftests/bpf/prog_tests/stacktrace_map.c b/tools/testing/selftests/bpf/prog_tests/stacktrace_map.c
-index 2bfd50a0d6d1..df0716e69b96 100644
---- a/tools/testing/selftests/bpf/prog_tests/stacktrace_map.c
-+++ b/tools/testing/selftests/bpf/prog_tests/stacktrace_map.c
-@@ -4,50 +4,25 @@
- void test_stacktrace_map(void)
- {
- 	int control_map_fd, stackid_hmap_fd, stackmap_fd, stack_amap_fd;
-+	const char *prog_name = "tracepoint/sched/sched_switch";
-+	int efd, err, prog_fd, stack_trace_len;
- 	const char *file = "./test_stacktrace_map.o";
--	int bytes, efd, err, pmu_fd, prog_fd, stack_trace_len;
--	struct perf_event_attr attr = {};
- 	__u32 key, val, duration = 0;
-+	struct bpf_program *prog;
- 	struct bpf_object *obj;
--	char buf[256];
- 
- 	err = bpf_prog_load(file, BPF_PROG_TYPE_TRACEPOINT, &obj, &prog_fd);
- 	if (CHECK(err, "prog_load", "err %d errno %d\n", err, errno))
- 		return;
- 
--	/* Get the ID for the sched/sched_switch tracepoint */
--	snprintf(buf, sizeof(buf),
--		 "/sys/kernel/debug/tracing/events/sched/sched_switch/id");
--	efd = open(buf, O_RDONLY, 0);
--	if (CHECK(efd < 0, "open", "err %d errno %d\n", efd, errno))
-+	prog = bpf_object__find_program_by_title(obj, prog_name);
-+	if (CHECK(!prog, "find_prog", "prog '%s' not found\n", prog_name))
- 		goto close_prog;
- 
--	bytes = read(efd, buf, sizeof(buf));
--	close(efd);
--	if (bytes <= 0 || bytes >= sizeof(buf))
--		goto close_prog;
--
--	/* Open the perf event and attach bpf progrram */
--	attr.config = strtol(buf, NULL, 0);
--	attr.type = PERF_TYPE_TRACEPOINT;
--	attr.sample_type = PERF_SAMPLE_RAW | PERF_SAMPLE_CALLCHAIN;
--	attr.sample_period = 1;
--	attr.wakeup_events = 1;
--	pmu_fd = syscall(__NR_perf_event_open, &attr, -1 /* pid */,
--			 0 /* cpu 0 */, -1 /* group id */,
--			 0 /* flags */);
--	if (CHECK(pmu_fd < 0, "perf_event_open", "err %d errno %d\n",
--		  pmu_fd, errno))
-+	efd = bpf_program__attach_tracepoint(prog, "sched", "sched_switch");
-+	if (CHECK(efd < 0, "attach_tp", "err %d\n", efd))
- 		goto close_prog;
- 
--	err = ioctl(pmu_fd, PERF_EVENT_IOC_ENABLE, 0);
--	if (err)
--		goto disable_pmu;
--
--	err = ioctl(pmu_fd, PERF_EVENT_IOC_SET_BPF, prog_fd);
--	if (err)
--		goto disable_pmu;
--
- 	/* find map fds */
- 	control_map_fd = bpf_find_map(__func__, obj, "control_map");
- 	if (control_map_fd < 0)
-@@ -96,8 +71,7 @@ void test_stacktrace_map(void)
- disable_pmu:
- 	error_cnt++;
- disable_pmu_noerr:
--	ioctl(pmu_fd, PERF_EVENT_IOC_DISABLE);
--	close(pmu_fd);
-+	close(efd);
- close_prog:
- 	bpf_object__close(obj);
- }
-diff --git a/tools/testing/selftests/bpf/prog_tests/stacktrace_map_raw_tp.c b/tools/testing/selftests/bpf/prog_tests/stacktrace_map_raw_tp.c
-index 1f8387d80fd7..4d14a08b1d99 100644
---- a/tools/testing/selftests/bpf/prog_tests/stacktrace_map_raw_tp.c
-+++ b/tools/testing/selftests/bpf/prog_tests/stacktrace_map_raw_tp.c
-@@ -3,18 +3,24 @@
- 
- void test_stacktrace_map_raw_tp(void)
- {
-+	const char *prog_name = "tracepoint/sched/sched_switch";
- 	int control_map_fd, stackid_hmap_fd, stackmap_fd;
- 	const char *file = "./test_stacktrace_map.o";
--	int efd, err, prog_fd;
- 	__u32 key, val, duration = 0;
-+	int efd = -1, err, prog_fd;
-+	struct bpf_program *prog;
- 	struct bpf_object *obj;
- 
- 	err = bpf_prog_load(file, BPF_PROG_TYPE_RAW_TRACEPOINT, &obj, &prog_fd);
- 	if (CHECK(err, "prog_load raw tp", "err %d errno %d\n", err, errno))
- 		return;
- 
--	efd = bpf_raw_tracepoint_open("sched_switch", prog_fd);
--	if (CHECK(efd < 0, "raw_tp_open", "err %d errno %d\n", efd, errno))
-+	prog = bpf_object__find_program_by_title(obj, prog_name);
-+	if (CHECK(!prog, "find_prog", "prog '%s' not found\n", prog_name))
-+		goto close_prog;
-+
-+	efd = bpf_program__attach_raw_tracepoint(prog, "sched_switch");
-+	if (CHECK(efd < 0, "attach_raw_tp", "err %d\n", efd))
- 		goto close_prog;
- 
- 	/* find map fds */
-@@ -55,5 +61,7 @@ void test_stacktrace_map_raw_tp(void)
- close_prog:
- 	error_cnt++;
- close_prog_noerr:
-+	if (efd >= 0)
-+		close(efd);
- 	bpf_object__close(obj);
- }
-diff --git a/tools/testing/selftests/bpf/prog_tests/task_fd_query_rawtp.c b/tools/testing/selftests/bpf/prog_tests/task_fd_query_rawtp.c
-index 958a3d88de99..6ad73cb8c7e3 100644
---- a/tools/testing/selftests/bpf/prog_tests/task_fd_query_rawtp.c
-+++ b/tools/testing/selftests/bpf/prog_tests/task_fd_query_rawtp.c
-@@ -3,9 +3,11 @@
- 
- void test_task_fd_query_rawtp(void)
- {
-+	const char *prog_name = "tracepoint/raw_syscalls/sys_enter";
- 	const char *file = "./test_get_stack_rawtp.o";
- 	__u64 probe_offset, probe_addr;
- 	__u32 len, prog_id, fd_type;
-+	struct bpf_program *prog;
- 	struct bpf_object *obj;
- 	int efd, err, prog_fd;
- 	__u32 duration = 0;
-@@ -15,8 +17,12 @@ void test_task_fd_query_rawtp(void)
- 	if (CHECK(err, "prog_load raw tp", "err %d errno %d\n", err, errno))
- 		return;
- 
--	efd = bpf_raw_tracepoint_open("sys_enter", prog_fd);
--	if (CHECK(efd < 0, "raw_tp_open", "err %d errno %d\n", efd, errno))
-+	prog = bpf_object__find_program_by_title(obj, prog_name);
-+	if (CHECK(!prog, "find_prog", "prog '%s' not found\n", prog_name))
-+		goto close_prog;
-+
-+	efd = bpf_program__attach_raw_tracepoint(prog, "sys_enter");
-+	if (CHECK(efd < 0, "attach_raw_tp", "err %d\n", efd))
- 		goto close_prog;
- 
- 	/* query (getpid(), efd) */
-diff --git a/tools/testing/selftests/bpf/prog_tests/task_fd_query_tp.c b/tools/testing/selftests/bpf/prog_tests/task_fd_query_tp.c
-index f9b70e81682b..034870692636 100644
---- a/tools/testing/selftests/bpf/prog_tests/task_fd_query_tp.c
-+++ b/tools/testing/selftests/bpf/prog_tests/task_fd_query_tp.c
-@@ -1,15 +1,16 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
- 
--static void test_task_fd_query_tp_core(const char *probe_name,
-+static void test_task_fd_query_tp_core(const char *tp_category,
- 				       const char *tp_name)
- {
-+	const char *prog_name = "tracepoint/sched/sched_switch";
- 	const char *file = "./test_tracepoint.o";
--	int err, bytes, efd, prog_fd, pmu_fd;
--	struct perf_event_attr attr = {};
- 	__u64 probe_offset, probe_addr;
- 	__u32 len, prog_id, fd_type;
-+	int err, prog_fd, pmu_fd;
- 	struct bpf_object *obj = NULL;
-+	struct bpf_program *prog;
- 	__u32 duration = 0;
- 	char buf[256];
- 
-@@ -17,37 +18,13 @@ static void test_task_fd_query_tp_core(const char *probe_name,
- 	if (CHECK(err, "bpf_prog_load", "err %d errno %d\n", err, errno))
- 		goto close_prog;
- 
--	snprintf(buf, sizeof(buf),
--		 "/sys/kernel/debug/tracing/events/%s/id", probe_name);
--	efd = open(buf, O_RDONLY, 0);
--	if (CHECK(efd < 0, "open", "err %d errno %d\n", efd, errno))
-+	prog = bpf_object__find_program_by_title(obj, prog_name);
-+	if (CHECK(!prog, "find_prog", "prog '%s' not found\n", prog_name))
- 		goto close_prog;
--	bytes = read(efd, buf, sizeof(buf));
--	close(efd);
--	if (CHECK(bytes <= 0 || bytes >= sizeof(buf), "read",
--		  "bytes %d errno %d\n", bytes, errno))
--		goto close_prog;
--
--	attr.config = strtol(buf, NULL, 0);
--	attr.type = PERF_TYPE_TRACEPOINT;
--	attr.sample_type = PERF_SAMPLE_RAW;
--	attr.sample_period = 1;
--	attr.wakeup_events = 1;
--	pmu_fd = syscall(__NR_perf_event_open, &attr, -1 /* pid */,
--			 0 /* cpu 0 */, -1 /* group id */,
--			 0 /* flags */);
--	if (CHECK(err, "perf_event_open", "err %d errno %d\n", err, errno))
--		goto close_pmu;
- 
--	err = ioctl(pmu_fd, PERF_EVENT_IOC_ENABLE, 0);
--	if (CHECK(err, "perf_event_ioc_enable", "err %d errno %d\n", err,
--		  errno))
--		goto close_pmu;
--
--	err = ioctl(pmu_fd, PERF_EVENT_IOC_SET_BPF, prog_fd);
--	if (CHECK(err, "perf_event_ioc_set_bpf", "err %d errno %d\n", err,
--		  errno))
--		goto close_pmu;
-+	pmu_fd = bpf_program__attach_tracepoint(prog, tp_category, tp_name);
-+	if (CHECK(pmu_fd < 0, "attach_tp", "err %d\n", pmu_fd))
-+		goto close_prog;
- 
- 	/* query (getpid(), pmu_fd) */
- 	len = sizeof(buf);
-@@ -62,11 +39,11 @@ static void test_task_fd_query_tp_core(const char *probe_name,
- 		  fd_type, buf))
- 		goto close_pmu;
- 
--	close(pmu_fd);
-+	libbpf_perf_event_disable_and_close(pmu_fd);
- 	goto close_prog_noerr;
- 
- close_pmu:
--	close(pmu_fd);
-+	libbpf_perf_event_disable_and_close(pmu_fd);
- close_prog:
- 	error_cnt++;
- close_prog_noerr:
-@@ -75,8 +52,6 @@ static void test_task_fd_query_tp_core(const char *probe_name,
- 
- void test_task_fd_query_tp(void)
- {
--	test_task_fd_query_tp_core("sched/sched_switch",
--				   "sched_switch");
--	test_task_fd_query_tp_core("syscalls/sys_enter_read",
--				   "sys_enter_read");
-+	test_task_fd_query_tp_core("sched", "sched_switch");
-+	test_task_fd_query_tp_core("syscalls", "sys_enter_read");
- }
-diff --git a/tools/testing/selftests/bpf/prog_tests/tp_attach_query.c b/tools/testing/selftests/bpf/prog_tests/tp_attach_query.c
-index fb095e5cd9af..5e129eb3eb47 100644
---- a/tools/testing/selftests/bpf/prog_tests/tp_attach_query.c
-+++ b/tools/testing/selftests/bpf/prog_tests/tp_attach_query.c
-@@ -6,9 +6,9 @@ void test_tp_attach_query(void)
- 	const int num_progs = 3;
- 	int i, j, bytes, efd, err, prog_fd[num_progs], pmu_fd[num_progs];
- 	__u32 duration = 0, info_len, saved_prog_ids[num_progs];
-+	const char *prog_name = "tracepoint/sched/sched_switch";
- 	const char *file = "./test_tracepoint.o";
- 	struct perf_event_query_bpf *query;
--	struct perf_event_attr attr = {};
- 	struct bpf_object *obj[num_progs];
- 	struct bpf_prog_info prog_info;
- 	char buf[256];
-@@ -27,19 +27,19 @@ void test_tp_attach_query(void)
- 		  "read", "bytes %d errno %d\n", bytes, errno))
- 		return;
- 
--	attr.config = strtol(buf, NULL, 0);
--	attr.type = PERF_TYPE_TRACEPOINT;
--	attr.sample_type = PERF_SAMPLE_RAW | PERF_SAMPLE_CALLCHAIN;
--	attr.sample_period = 1;
--	attr.wakeup_events = 1;
--
- 	query = malloc(sizeof(*query) + sizeof(__u32) * num_progs);
- 	for (i = 0; i < num_progs; i++) {
-+		struct bpf_program *prog;
-+
- 		err = bpf_prog_load(file, BPF_PROG_TYPE_TRACEPOINT, &obj[i],
- 				    &prog_fd[i]);
- 		if (CHECK(err, "prog_load", "err %d errno %d\n", err, errno))
- 			goto cleanup1;
- 
-+		prog = bpf_object__find_program_by_title(obj[i], prog_name);
-+		if (CHECK(!prog, "find_prog", "prog '%s' not found\n", prog_name))
-+			goto cleanup1;
-+
- 		bzero(&prog_info, sizeof(prog_info));
- 		prog_info.jited_prog_len = 0;
- 		prog_info.xlated_prog_len = 0;
-@@ -51,32 +51,10 @@ void test_tp_attach_query(void)
- 			goto cleanup1;
- 		saved_prog_ids[i] = prog_info.id;
- 
--		pmu_fd[i] = syscall(__NR_perf_event_open, &attr, -1 /* pid */,
--				    0 /* cpu 0 */, -1 /* group id */,
--				    0 /* flags */);
--		if (CHECK(pmu_fd[i] < 0, "perf_event_open", "err %d errno %d\n",
--			  pmu_fd[i], errno))
-+		pmu_fd[i] = bpf_program__attach_tracepoint(prog, "sched",
-+							   "sched_switch");
-+		if (CHECK(pmu_fd[i] < 0, "attach_tp", "err %d\n", pmu_fd[i]))
- 			goto cleanup2;
--		err = ioctl(pmu_fd[i], PERF_EVENT_IOC_ENABLE, 0);
--		if (CHECK(err, "perf_event_ioc_enable", "err %d errno %d\n",
--			  err, errno))
--			goto cleanup3;
--
--		if (i == 0) {
--			/* check NULL prog array query */
--			query->ids_len = num_progs;
--			err = ioctl(pmu_fd[i], PERF_EVENT_IOC_QUERY_BPF, query);
--			if (CHECK(err || query->prog_cnt != 0,
--				  "perf_event_ioc_query_bpf",
--				  "err %d errno %d query->prog_cnt %u\n",
--				  err, errno, query->prog_cnt))
--				goto cleanup3;
--		}
--
--		err = ioctl(pmu_fd[i], PERF_EVENT_IOC_SET_BPF, prog_fd[i]);
--		if (CHECK(err, "perf_event_ioc_set_bpf", "err %d errno %d\n",
--			  err, errno))
--			goto cleanup3;
- 
- 		if (i == 1) {
- 			/* try to get # of programs only */
-@@ -86,7 +64,7 @@ void test_tp_attach_query(void)
- 				  "perf_event_ioc_query_bpf",
- 				  "err %d errno %d query->prog_cnt %u\n",
- 				  err, errno, query->prog_cnt))
--				goto cleanup3;
-+				goto cleanup2;
- 
- 			/* try a few negative tests */
- 			/* invalid query pointer */
-@@ -95,7 +73,7 @@ void test_tp_attach_query(void)
- 			if (CHECK(!err || errno != EFAULT,
- 				  "perf_event_ioc_query_bpf",
- 				  "err %d errno %d\n", err, errno))
--				goto cleanup3;
-+				goto cleanup2;
- 
- 			/* no enough space */
- 			query->ids_len = 1;
-@@ -104,7 +82,7 @@ void test_tp_attach_query(void)
- 				  "perf_event_ioc_query_bpf",
- 				  "err %d errno %d query->prog_cnt %u\n",
- 				  err, errno, query->prog_cnt))
--				goto cleanup3;
-+				goto cleanup2;
- 		}
- 
- 		query->ids_len = num_progs;
-@@ -113,21 +91,19 @@ void test_tp_attach_query(void)
- 			  "perf_event_ioc_query_bpf",
- 			  "err %d errno %d query->prog_cnt %u\n",
- 			  err, errno, query->prog_cnt))
--			goto cleanup3;
-+			goto cleanup2;
- 		for (j = 0; j < i + 1; j++)
- 			if (CHECK(saved_prog_ids[j] != query->ids[j],
- 				  "perf_event_ioc_query_bpf",
- 				  "#%d saved_prog_id %x query prog_id %x\n",
- 				  j, saved_prog_ids[j], query->ids[j]))
--				goto cleanup3;
-+				goto cleanup2;
- 	}
- 
- 	i = num_progs - 1;
- 	for (; i >= 0; i--) {
-- cleanup3:
--		ioctl(pmu_fd[i], PERF_EVENT_IOC_DISABLE);
-  cleanup2:
--		close(pmu_fd[i]);
-+		libbpf_perf_event_disable_and_close(pmu_fd[i]);
-  cleanup1:
- 		bpf_object__close(obj[i]);
- 	}
--- 
-2.17.1
-
+T24gVHVlLCAyMDE5LTA2LTE4IGF0IDE4OjA4IC0wNDAwLCBEZXRsZXYgQ2FzYW5vdmEgd3JvdGU6
+Cj4gVXNlIGRlbGF5ZWQgd29yayBpbnN0ZWFkIG9mIHRpbWVycyB0byBydW4gdGhlIHdhdGNoZG9n
+IG9mIHRoZSBlMTAwMGUKPiBkcml2ZXIuCj4gCj4gU2ltcGxpZnkgdGhlIGNvZGUgd2l0aCBvbmUg
+bGVzcyBtaWRkbGUgZnVuY3Rpb24uCj4gCj4gU2lnbmVkLW9mZi1ieTogRGV0bGV2IENhc2Fub3Zh
+IDxkZXRsZXYuY2FzYW5vdmFAZ21haWwuY29tPgo+IC0tLQo+ICBkcml2ZXJzL25ldC9ldGhlcm5l
+dC9pbnRlbC9lMTAwMGUvZTEwMDAuaCAgfCAgMyArLQo+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9p
+bnRlbC9lMTAwMGUvbmV0ZGV2LmMgfCA1NCArKysrKysrKysrKystLS0tLS0tLS0tCj4gIDIgZmls
+ZXMgY2hhbmdlZCwgMzAgaW5zZXJ0aW9ucygrKSwgMjcgZGVsZXRpb25zKC0pCj4gCgpUaGlzIHBh
+dGNoIGlzIGNhdXNpbmcgYSBOVUxMIHBvaW50ZXIgZGVyZWZlcmVuY2UgdHJhY2UgKG9yIGp1c3Qg
+YSBmcmVlemUpIG9uIGEgbnVtYmVyIG9mIG15IHJlZ3Jlc3Npb24gc3lzdGVtcyB3aGVuIEkgdW5s
+b2FkIHRoZSBlMTAwMGUgZHJpdmVyLiAgVGhlIGNyYXNoaW5nIHRlc3Qgc3lzdGVtcyBlYWNoIGhh
+dmUgbXVsdGlwbGUgZTEwMDBlCmJhc2VkIHBvcnRzLCBJIGNhbiBwdWxsIHRoZSBzeXN0ZW1zIGZy
+b20gdGhlIHJhY2sgYW5kIGNoYW5nZSBjYXJkcyBvdXQgaWYgbmVjZXNzYXJ5LCB0aG91Z2ggaXQn
+cyBub3QgYSB0cml2aWFsIHRhc2sgZ2V0dGluZyB0byB0aGVtLgoKU3lzdGVtcyBhZmZlY3RlZCBo
+YWQgdGhlIGZvbGxvd2luZyBlMTAwMGUgY2hpcHNldHM6Ci0gODI1NzlMTSBHaWdhYml0IE5ldHdv
+cmsgQ29ubmVjdGlvbiByZXYgMDUpIExPTQotIDgyNTc0TCBMT00KCi0gSTIxNy1MTSBMT00KLSA4
+MjU3MkVJIChSaW1vbikKCi0gODAwMDNFUzJMQU4geDIgTE9NcwotIDgyNTcyRUkgQWRkIGluIGNh
+cmQKCi0gODAwMDNFUzJMQU4geDIgTE9NcwotIDgyNTcxRUIgKE9waGlyKSBjb3BwZXIgKGR1YWwg
+cG9ydCBjYXJkKQotIDgyNTcxRUIgKE9waGlyKSBmaWJyZSAgKGR1YWwgcG9ydCBjYXJkKQoKSGVy
+ZSBpcyB0aGUgdHJhY2UgY2FwdXRydWVkIGZyb20gdGhlIGxhc3Qgc3lzdGVtIGxpc3RlZCwgdGhl
+IDgwMDAzRVMyTEFOIExPTXMgYW5kIDIgZHVhbCBwb3J0IE9waGlyIGNhcmRzOgotLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCnUxNDYy
+Olt0dHlTMV0vcm9vdD4gcm1tb2QgZTEwMDBlClsgIDEzMS43OTk3MzldIEJVRzoga2VybmVsIE5V
+TEwgcG9pbnRlciBkZXJlZmVyZW5jZSwgYWRkcmVzczogMDAwMDAwMDAwMDAwMDAwMApbICAxMzEu
+ODA2OTA4XSAjUEY6IHN1cGVydmlzb3Igd3JpdGUgYWNjZXNzIGluIGtlcm5lbCBtb2RlClsgIDEz
+MS44MTIyODVdICNQRjogZXJyb3JfY29kZSgweDAwMDIpIC0gbm90LXByZXNlbnQgcGFnZQpbICAx
+MzEuODE3NTY1XSBQR0QgODAwMDAwMDA3MjMyNzA2NyBQNEQgODAwMDAwMDA3MjMyNzA2NyBQVUQg
+MzA1MGYwNjcgUE1EIDAKWyAgMTMxLjgyNDU0MF0gT29wczogMDAwMiBbIzFdIFNNUCBQVEkKWyAg
+MTMxLjgyODEzM10gQ1BVOiAzIFBJRDogNDMwNiBDb21tOiBybW1vZCBOb3QgdGFpbnRlZCA1LjIu
+MC1yYzVfbmV4dC1xdWV1ZV9kZXYtcXVldWVfMTViZjFjNysgIzkKWyAgMTMxLjgzNzA3M10gSGFy
+ZHdhcmUgbmFtZTogU3VwZXJtaWNybyBYN0RCWC9YN0RCWCwgQklPUyAyLjEgMDYvMjMvMjAwOApb
+ICAxMzEuODQzNzkxXSBSSVA6IDAwMTA6X3Jhd19zcGluX2xvY2tfaXJxKzB4MTMvMHgzMApbICAx
+MzEuODQ4NzIyXSBDb2RlOiAwMCA3NSAwMiBmMyBjMyBlOSAzZCAxNiA4YSBmZiAwZiAxZiAwMCA2
+NiAyZSAwZiAxZiA4NCAwMCAwMCAwMCAwMCAwMCA2NiA2NiA2NiA2NiA5MCBmYSA2NiA2NiA5MCA2
+NiA2NiA5MCAzMSBjMCBiYSAwMSAwMCAwMCAwMCA8ZjA+IDBmIGIxIDE3IDBmIDk0IGMyIDg0IGQy
+IDc0IDAyIGYzIGMzIDg5IGM2IGU5IGIyCmZkIDg5IGZmIDY2IDBmClsgIDEzMS44Njc5OThdIFJT
+UDogMDAxODpmZmZmYjg1NjAxZjg3ZDU4IEVGTEFHUzogMDAwMTAwNDYKWyAgMTMxLjg3MzM3N10g
+UkFYOiAwMDAwMDAwMDAwMDAwMDAwIFJCWDogZmZmZjlhNWE5ZmFhNWI5MCBSQ1g6IDAwMDAwMDAw
+MDAwMDAwMDMKWyAgMTMxLjg4MDcwMl0gUkRYOiAwMDAwMDAwMDAwMDAwMDAxIFJTSTogMDAwMDAw
+MDAwMDAwMDAwMiBSREk6IDAwMDAwMDAwMDAwMDAwMDAKWyAgMTMxLjg4ODAzMl0gUkJQOiAwMDAw
+MDAwMDAwMDAwMDAyIFIwODogMDAwMDAwMDAwMDAwMDAwMCBSMDk6IDAwMDAwMDAwMDAwMDAwMDAK
+WyAgMTMxLjg5NTM1Nl0gUjEwOiBmZmZmOWE1YWIzNDBhNTUwIFIxMTogZmZmZmUxMzUwMGNkMDI4
+MCBSMTI6IDAwMDAwMDAwMDAwMDAwMDMKWyAgMTMxLjkwMjY3OV0gUjEzOiAwMDAwMDAwMDAwMDAw
+MDAyIFIxNDogZmZmZjlhNWE5ZmFhNDQwMCBSMTU6IDAwMDAwMDAwMDAwMDAwMDAKWyAgMTMxLjkx
+MDAwM10gRlM6ICAwMDAwN2YzNzk0OGE5NzQwKDAwMDApIEdTOmZmZmY5YTVhZmNhYzAwMDAoMDAw
+MCkga25sR1M6MDAwMDAwMDAwMDAwMDAwMApbICAxMzEuOTE4MzI1XSBDUzogIDAwMTAgRFM6IDAw
+MDAgRVM6IDAwMDAgQ1IwOiAwMDAwMDAwMDgwMDUwMDMzClsgIDEzMS45MjQyMjldIENSMjogMDAw
+MDAwMDAwMDAwMDAwMCBDUjM6IDAwMDAwMDAwMjA2MDIwMDAgQ1I0OiAwMDAwMDAwMDAwMDAwNmUw
+ClsgIDEzMS45MzE1NTddIENhbGwgVHJhY2U6ClsgIDEzMS45MzQwOTNdICBmbHVzaF93b3JrcXVl
+dWVfcHJlcF9wd3FzKzB4NTUvMHgxMjAKWyAgMTMxLjkzODkyOV0gIGZsdXNoX3dvcmtxdWV1ZSsw
+eDFiNi8weDQ2MApbICAxMzEuOTQyOTg3XSAgZTEwMDBfcmVtb3ZlKzB4OTMvMHgxOTAgW2UxMDAw
+ZV0KWyAgMTMxLjk0NzQ2Nl0gIHBjaV9kZXZpY2VfcmVtb3ZlKzB4M2IvMHhjMApbICAxMzEuOTUx
+NTExXSAgZGV2aWNlX3JlbGVhc2VfZHJpdmVyX2ludGVybmFsKzB4ZGYvMHgxYTAKWyAgMTMxLjk1
+Njc5N10gIGRyaXZlcl9kZXRhY2grMHg0My8weDgwClsgIDEzMS45NjA0ODddICBidXNfcmVtb3Zl
+X2RyaXZlcisweDU1LzB4ZDAKWyAgMTMxLjk2NDUzNV0gIHBjaV91bnJlZ2lzdGVyX2RyaXZlcisw
+eDI2LzB4YTAKWyAgMTMxLjk2ODkzOF0gIF9feDY0X3N5c19kZWxldGVfbW9kdWxlKzB4MTZjLzB4
+MjUwClsgIDEzMS45NzM2OThdICA/IGV4aXRfdG9fdXNlcm1vZGVfbG9vcCsweGFhLzB4YzYKWyAg
+MTMxLjk3ODI3MF0gIGRvX3N5c2NhbGxfNjQrMHg1Yi8weDFiMApbICAxMzEuOTgyMDQxXSAgZW50
+cnlfU1lTQ0FMTF82NF9hZnRlcl9od2ZyYW1lKzB4NDQvMHhhOQpbICAxMzEuOTg3MjM3XSBSSVA6
+IDAwMzM6MHg3ZjM3OTNkODIzOTcKWyAgMTMxLjk5MDkyM10gQ29kZTogNzMgMDEgYzMgNDggOGIg
+MGQgZjkgN2EgMmMgMDAgZjcgZDggNjQgODkgMDEgNDggODMgYzggZmYgYzMgNjYgMmUgMGYgMWYg
+ODQgMDAgMDAgMDAgMDAgMDAgMGYgMWYgNDQgMDAgMDAgYjggYjAgMDAgMDAgMDAgMGYgMDUgPDQ4
+PiAzZCAwMSBmMCBmZiBmZiA3MyAwMSBjMyA0OCA4YiAwZCBjOSA3YSAyYyAwMCBmNwpkOCA2NCA4
+OSAwMSA0OApbICAxMzIuMDEwMTkwXSBSU1A6IDAwMmI6MDAwMDdmZmM2YjNkZWExOCBFRkxBR1M6
+IDAwMDAwMjA2IE9SSUdfUkFYOiAwMDAwMDAwMDAwMDAwMGIwClsgIDEzMi4wMTc5NzJdIFJBWDog
+ZmZmZmZmZmZmZmZmZmZkYSBSQlg6IDAwMDAwMDAwMDFhMjMxOTAgUkNYOiAwMDAwN2YzNzkzZDgy
+Mzk3ClsgIDEzMi4wMzQyMzNdIFJEWDogMDAwMDdmMzc5M2RmNmIyMCBSU0k6IDAwMDAwMDAwMDAw
+MDA4MDAgUkRJOiAwMDAwMDAwMDAxYTIzMWY4ClsgIDEzMi4wNTA0NzldIFJCUDogMDAwMDAwMDAw
+MDAwMDAwMCBSMDg6IDAwMDA3ZjM3OTQwNGIwNjAgUjA5OiAwMDAwN2YzNzkzZGY2YjIwClsgIDEz
+Mi4wNjY2ODNdIFIxMDogMDAwMDdmZmM2YjNkZTVlMCBSMTE6IDAwMDAwMDAwMDAwMDAyMDYgUjEy
+OiAwMDAwN2ZmYzZiM2UwZDRhClsgIDEzMi4wODI4NzRdIFIxMzogMDAwMDAwMDAwMDAwMDAwMCBS
+MTQ6IDAwMDAwMDAwMDFhMjMxOTAgUjE1OiAwMDAwMDAwMDAxYTIzMDEwClsgIDEzMi4wOTg5NjFd
+IE1vZHVsZXMgbGlua2VkIGluOiB4dF9DSEVDS1NVTSBpcHRhYmxlX21hbmdsZSB4dF9NQVNRVUVS
+QURFIGlwdGFibGVfbmF0IG5mX25hdCB4dF9jb25udHJhY2sgbmZfY29ubnRyYWNrIG5mX2RlZnJh
+Z19pcHY2IG5mX2RlZnJhZ19pcHY0IGlwdF9SRUpFQ1QgbmZfcmVqZWN0X2lwdjQgdHVuIGJyaWRn
+ZSBzdHAgbGxjCmVidGFibGVfZmlsdGVyIGVidGFibGVzIGlwNnRhYmxlX2ZpbHRlciBpcDZfdGFi
+bGVzIGlwdGFibGVfZmlsdGVyIGRtX21pcnJvciBkbV9yZWdpb25faGFzaCBkbV9sb2cgZG1fbW9k
+IGNvcmV0ZW1wIGt2bV9pbnRlbCBrdm0gaVRDT193ZHQgaTJjX2k4MDEgZ3Bpb19pY2ggaVRDT192
+ZW5kb3Jfc3VwcG9ydCBscGNfaWNoIHBjc3BrciBpNTAwMF9lZGFjCnNnIGlycWJ5cGFzcyBhY3Bp
+X2NwdWZyZXEgaTVrX2FtYiBuZnNkIGF1dGhfcnBjZ3NzIG5mc19hY2wgbG9ja2QgZ3JhY2Ugc3Vu
+cnBjIGlwX3RhYmxlcyB4ZnMgbGliY3JjMzJjIHJhZGVvbiBzcl9tb2Qgc2RfbW9kIGNkcm9tIGF0
+YV9nZW5lcmljIHBhdGFfYWNwaSBpMmNfYWxnb19iaXQgZHJtX2ttc19oZWxwZXIgc3lzY29weWFy
+ZWEKc3lzZmlsbHJlY3Qgc3lzaW1nYmx0IGZiX3N5c19mb3BzIHR0bSBkcm0gYXRhX3BpaXggbGli
+YXRhIHNlcmlvX3JhdyBlMTAwMGUoLSkgZTEwMDAKWyAgMTMyLjIxNTk2MV0gQ1IyOiAwMDAwMDAw
+MDAwMDAwMDAwClsgIDEzMi4yMjk0NzNdIC0tLVsgZW5kIHRyYWNlIDMxYTkyYTY1YmI1NDNiOTgg
+XS0tLQpbICAxMzIuMjQ0MjYwXSBSSVA6IDAwMTA6X3Jhd19zcGluX2xvY2tfaXJxKzB4MTMvMHgz
+MApbICAxMzIuMjU5MjE3XSBDb2RlOiAwMCA3NSAwMiBmMyBjMyBlOSAzZCAxNiA4YSBmZiAwZiAx
+ZiAwMCA2NiAyZSAwZiAxZiA4NCAwMCAwMCAwMCAwMCAwMCA2NiA2NiA2NiA2NiA5MCBmYSA2NiA2
+NiA5MCA2NiA2NiA5MCAzMSBjMCBiYSAwMSAwMCAwMCAwMCA8ZjA+IDBmIGIxIDE3IDBmIDk0IGMy
+IDg0IGQyIDc0IDAyIGYzIGMzIDg5IGM2IGU5IGIyCmZkIDg5IGZmIDY2IDBmClsgIDEzMi4yOTky
+NTRdIFJTUDogMDAxODpmZmZmYjg1NjAxZjg3ZDU4IEVGTEFHUzogMDAwMTAwNDYKWyAgMTMyLjMx
+NTE2Nl0gUkFYOiAwMDAwMDAwMDAwMDAwMDAwIFJCWDogZmZmZjlhNWE5ZmFhNWI5MCBSQ1g6IDAw
+MDAwMDAwMDAwMDAwMDMKWyAgMTMyLjMzMzAwMF0gUkRYOiAwMDAwMDAwMDAwMDAwMDAxIFJTSTog
+MDAwMDAwMDAwMDAwMDAwMiBSREk6IDAwMDAwMDAwMDAwMDAwMDAKWyAgMTMyLjM1MDc0OV0gUkJQ
+OiAwMDAwMDAwMDAwMDAwMDAyIFIwODogMDAwMDAwMDAwMDAwMDAwMCBSMDk6IDAwMDAwMDAwMDAw
+MDAwMDAKWyAgMTMyLjM2ODE1MF0gUjEwOiBmZmZmOWE1YWIzNDBhNTUwIFIxMTogZmZmZmUxMzUw
+MGNkMDI4MCBSMTI6IDAwMDAwMDAwMDAwMDAwMDMKWyAgMTMyLjM4NTI1N10gUjEzOiAwMDAwMDAw
+MDAwMDAwMDAyIFIxNDogZmZmZjlhNWE5ZmFhNDQwMCBSMTU6IDAwMDAwMDAwMDAwMDAwMDAKWyAg
+MTMyLjQwMjIwMl0gRlM6ICAwMDAwN2YzNzk0OGE5NzQwKDAwMDApIEdTOmZmZmY5YTVhZmNhYzAw
+MDAoMDAwMCkga25sR1M6MDAwMDAwMDAwMDAwMDAwMApbICAxMzIuNDIwMTY1XSBDUzogIDAwMTAg
+RFM6IDAwMDAgRVM6IDAwMDAgQ1IwOiAwMDAwMDAwMDgwMDUwMDMzClsgIDEzMi40MzU4MThdIENS
+MjogMDAwMDAwMDAwMDAwMDAwMCBDUjM6IDAwMDAwMDAwMjA2MDIwMDAgQ1I0OiAwMDAwMDAwMDAw
+MDAwNmUwClsgIDEzMi40NTMwMzBdIEtlcm5lbCBwYW5pYyAtIG5vdCBzeW5jaW5nOiBGYXRhbCBl
+eGNlcHRpb24KWyAgMTMyLjQ2ODMyM10gS2VybmVsIE9mZnNldDogMHg3ZTAwMDAwIGZyb20gMHhm
+ZmZmZmZmZjgxMDAwMDAwIChyZWxvY2F0aW9uIHJhbmdlOiAweGZmZmZmZmZmODAwMDAwMDAtMHhm
+ZmZmZmZmZmJmZmZmZmZmKQpbICAxMzIuNDg5Mzg2XSAtLS1bIGVuZCBLZXJuZWwgcGFuaWMgLSBu
+b3Qgc3luY2luZzogRmF0YWwgZXhjZXB0aW9uIF0tLS0KICAgICAgICAgICAgICAgICAgICAgIAo=
