@@ -2,182 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F1FA24DC6A
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 23:24:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 124104DC97
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 23:31:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726063AbfFTVYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 17:24:50 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:45020 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725815AbfFTVYu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Jun 2019 17:24:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=6ZBQKs2/yVUjNvtjwcTFDBVkLpiqErioK4XMeYKkv3Y=; b=ksyu4vVwc4ueBi222BLlN6VaZY
-        V5xMqWkPZo2CyueIzNtHs6kHIjCndfDq7/HKxGqmd0xGAiUugydMKnBbt0qZctBsxCez0lIKBnHpo
-        L9vOocINxjhpDUm5F8RCBn3bLHPF988McCUWdmqcFaPnFBhhzlCfLZUnT5mM0+LhSvhE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1he4Y3-0002Cp-IG; Thu, 20 Jun 2019 23:24:47 +0200
-Date:   Thu, 20 Jun 2019 23:24:47 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 01/18] ionic: Add basic framework for IONIC
- Network device driver
-Message-ID: <20190620212447.GJ31306@lunn.ch>
-References: <20190620202424.23215-1-snelson@pensando.io>
- <20190620202424.23215-2-snelson@pensando.io>
+        id S1726542AbfFTVbz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 17:31:55 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:39715 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725905AbfFTVby (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 17:31:54 -0400
+Received: by mail-pf1-f196.google.com with SMTP id j2so2386957pfe.6
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 14:31:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=LZKhWu5rzgWFMxJcBgmnI02JbwUBvtkff5v0cavArRE=;
+        b=L4Haammp5JsKQq+L6pyAUeIp1/rPaUl3NYxvbAfMva1bdaFrUxSiJpjicGBaD1FqSN
+         XIXc9rYdXoSiwwHf4+K5YAqIJXWi4qnlYbKg9Cjx0PTOEkXczTk9SYtta69ubYq2IXJj
+         gouWxNb6CnO+s9ZwKtL/fdJpnHgZ/wltudUuBfL8fXGYkrQpaj9y8GZTS7oWGWqEnc8D
+         9a7GoKfXxOcm7LAvwa+wwjLL+UcuZB2Dm1km9LC+QOY3c1kVaxc1cMoPmt2WoGdPoFZI
+         Sz6oiR3vc++X5nTQEJevjDOoXSoeDstbMdxsJx5fHR9Qdor6WqLUNpNKmXo2pqEmhYGN
+         ZT1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=LZKhWu5rzgWFMxJcBgmnI02JbwUBvtkff5v0cavArRE=;
+        b=MZRkQWAtxiWEVrmqA8kNhoD+sk77hMGq/syP9irVZdIphm+14tcLG8ka9OYHB83f6t
+         VSvVMzxn5nJFNtmts7MCHTdtmDW9Rmov3o6MWqFgwnVPgynJVpPssMrhZgYE4eoPg17i
+         5loUNq/VSt2WtTaes6UftJ8DTBPb4aF48u6diIsvMhSEmMhnpWyn9wqWyedZN9LTzKp7
+         w70t7U8KaqDqqyoBnp9fOTCufmUeRtop9prORMyi+Il6JTNk+d01xp83dhWSUZdrfHt8
+         ucRD4YVaHyxHKFrfoyAs4TpVRkSegV73IqD2nd6K3pEX9Nrvr5lW3F+COUpphJaAY1va
+         uoMA==
+X-Gm-Message-State: APjAAAXUNdXDSEcqSxdTeyBz35MnbTUdNeHppzThyQsZucIelLFZTw5o
+        t/iMIJneYbzXW0kDZY3aicKFW9pt1uc=
+X-Google-Smtp-Source: APXvYqxmrSdi1OnRNF21/XVwWopAXCIYIoxSLT0cbi2m95gaVl+NF0oHUQTK6iy7oP+3R2KJNhyVVA==
+X-Received: by 2002:a17:90a:36e4:: with SMTP id t91mr1759402pjb.22.1561066313979;
+        Thu, 20 Jun 2019 14:31:53 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id x25sm403098pfm.48.2019.06.20.14.31.53
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 20 Jun 2019 14:31:53 -0700 (PDT)
+Date:   Thu, 20 Jun 2019 14:31:46 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Matteo Croce <mcroce@redhat.com>
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>,
+        Andrea Claudi <aclaudi@redhat.com>
+Subject: Re: [PATCH iproute2 v2 0/3] refactor the cmd_exec()
+Message-ID: <20190620143146.6b45e9bb@hermes.lan>
+In-Reply-To: <20190618144935.31405-1-mcroce@redhat.com>
+References: <20190618144935.31405-1-mcroce@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190620202424.23215-2-snelson@pensando.io>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic.h
-> @@ -0,0 +1,27 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
-> +
-> +#ifndef _IONIC_H_
-> +#define _IONIC_H_
-> +
-> +#define DRV_NAME		"ionic"
-> +#define DRV_DESCRIPTION		"Pensando Ethernet NIC Driver"
-> +#define DRV_VERSION		"0.11.0-k"
+On Tue, 18 Jun 2019 16:49:32 +0200
+Matteo Croce <mcroce@redhat.com> wrote:
 
-DRV_VERSION is pretty useless. What you really want to know is the
-kernel git tree and commit. The big distributions might backport this
-version of the driver back to the old kernel with a million
-patches. At which point 0.11.0-k tells you nothing much.
-> +
-> +// TODO: register these with the official include/linux/pci_ids.h
-> +#define PCI_VENDOR_ID_PENSANDO			0x1dd8
+> Refactor the netns and ipvrf code so less steps are needed to exec commands
+> in a netns or a VRF context.
+> Also remove some code which became dead. bloat-o-meter shows a tiny saving.
+> 
+> Matteo Croce (3):
+>   netns: switch netns in the child when executing commands
+>   ip vrf: use hook to change VRF in the child
+>   netns: make netns_{save,restore} static
+> 
+>  include/namespace.h |  2 --
+>  include/utils.h     |  6 ++---
+>  ip/ip.c             |  1 -
+>  ip/ipnetns.c        | 61 ++++++++++++++++++++++++++++++++++-----------
+>  ip/ipvrf.c          | 12 ++++++---
+>  lib/exec.c          |  7 +++++-
+>  lib/namespace.c     | 31 -----------------------
+>  lib/utils.c         | 27 --------------------
+>  8 files changed, 63 insertions(+), 84 deletions(-)
+> 
 
-That file has a comment:
-
- *      Do not add new entries to this file unless the definitions
- *      are shared between multiple drivers.
-
-Is it going to be shared?
-
- +
-> +#define PCI_DEVICE_ID_PENSANDO_IONIC_ETH_PF	0x1002
-> +#define PCI_DEVICE_ID_PENSANDO_IONIC_ETH_VF	0x1003
-> +#define PCI_DEVICE_ID_PENSANDO_IONIC_ETH_MGMT	0x1004
-> +
-> +#define IONIC_SUBDEV_ID_NAPLES_25	0x4000
-> +#define IONIC_SUBDEV_ID_NAPLES_100_4	0x4001
-> +#define IONIC_SUBDEV_ID_NAPLES_100_8	0x4002
-> +
-> +struct ionic {
-> +	struct pci_dev *pdev;
-> +	struct device *dev;
-> +};
-> +
-> +#endif /* _IONIC_H_ */
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus.h b/drivers/net/ethernet/pensando/ionic/ionic_bus.h
-> new file mode 100644
-> index 000000000000..94ba0afc6f38
-> --- /dev/null
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_bus.h
-> @@ -0,0 +1,10 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
-> +
-> +#ifndef _IONIC_BUS_H_
-> +#define _IONIC_BUS_H_
-> +
-> +int ionic_bus_register_driver(void);
-> +void ionic_bus_unregister_driver(void);
-> +
-> +#endif /* _IONIC_BUS_H_ */
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-> new file mode 100644
-> index 000000000000..ab6206c162d4
-> --- /dev/null
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-> @@ -0,0 +1,61 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
-> +
-> +#include <linux/module.h>
-> +#include <linux/netdevice.h>
-> +#include <linux/etherdevice.h>
-> +#include <linux/pci.h>
-> +
-> +#include "ionic.h"
-> +#include "ionic_bus.h"
-> +
-> +/* Supported devices */
-> +static const struct pci_device_id ionic_id_table[] = {
-> +	{ PCI_VDEVICE(PENSANDO, PCI_DEVICE_ID_PENSANDO_IONIC_ETH_PF) },
-> +	{ PCI_VDEVICE(PENSANDO, PCI_DEVICE_ID_PENSANDO_IONIC_ETH_VF) },
-> +	{ PCI_VDEVICE(PENSANDO, PCI_DEVICE_ID_PENSANDO_IONIC_ETH_MGMT) },
-> +	{ 0, }	/* end of table */
-> +};
-> +MODULE_DEVICE_TABLE(pci, ionic_id_table);
-> +
-> +static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct ionic *ionic;
-> +
-> +	ionic = devm_kzalloc(dev, sizeof(*ionic), GFP_KERNEL);
-> +	if (!ionic)
-> +		return -ENOMEM;
-> +
-> +	ionic->pdev = pdev;
-> +	pci_set_drvdata(pdev, ionic);
-> +	ionic->dev = dev;
-> +	dev_info(ionic->dev, "attached\n");
-
-probed would be more accurate. But in general, please avoid all but
-the minimum of such info messages.
-
-> +
-> +	return 0;
-> +}
-> +
-> +static void ionic_remove(struct pci_dev *pdev)
-> +{
-> +	struct ionic *ionic = pci_get_drvdata(pdev);
-> +
-> +	pci_set_drvdata(pdev, NULL);
-> +	dev_info(ionic->dev, "removed\n");
-
-Not very useful dev_info().
-
-Also, i think the core will NULL out the drive data for you. But you
-should check.
-> +}
-> +
-> +static struct pci_driver ionic_driver = {
-> +	.name = DRV_NAME,
-> +	.id_table = ionic_id_table,
-> +	.probe = ionic_probe,
-> +	.remove = ionic_remove,
-> +};
-> +
-> +int ionic_bus_register_driver(void)
-> +{
-> +	return pci_register_driver(&ionic_driver);
-> +}
-> +
-> +void ionic_bus_unregister_driver(void)
-> +{
-> +	pci_unregister_driver(&ionic_driver);
-> +}
-
-It looks like you can use module_pci_driver() and remove a lot of
-boilerplate.
-
-	Andrew
+Ok, applied.
