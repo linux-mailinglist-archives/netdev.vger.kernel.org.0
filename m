@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E0DC04D826
+	by mail.lfdr.de (Postfix) with ESMTP id 037AA4D824
 	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 20:24:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728493AbfFTSIf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 14:08:35 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:34854 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728486AbfFTSId (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 14:08:33 -0400
-Received: by mail-pl1-f195.google.com with SMTP id p1so1714179plo.2;
-        Thu, 20 Jun 2019 11:08:32 -0700 (PDT)
+        id S1726329AbfFTSYW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 14:24:22 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:43188 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728123AbfFTSIg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 14:08:36 -0400
+Received: by mail-pf1-f196.google.com with SMTP id i189so2092708pfg.10;
+        Thu, 20 Jun 2019 11:08:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=m48O7FRi8r+gWyNb3X9q+djqhmJvKoGCXjsAReJFTG8=;
-        b=oOdnCN4kibi8UdpRROgkAuatPNdLADRR5vMRpA6WbXvPjlpFyAcbAvd+0xqxUgV0h4
-         SPHGlofI0JU1zboGi/T4cSFHDikLE4dLIa+UrDbLWwGfBNsXb0EIBv3OXMhrHideSCX8
-         Kb/QgY2rEsAhiBZ36H5UvnIllETIYM2WsQ6jjCfaq24hyHxENTBazYfnFpMVCOdIMGTd
-         O6siub7W7CNaF82pTIdXx19jyJQuKAIwIIOiXiKYK9G6ZN1WO5ZbTl5XEoYVRDtKBFqH
-         BGtOYJDCygj5v/Z6yrMKy2PPJ5KhcAaQSYwIuSsEKZZRbTn1JMWpLHCSCJVjA7iczOQe
-         AcsQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=1iF2ZB803XlTIr6nvosftGxcuWC6YkTcPa42GxL7qVg=;
+        b=dXqdQ5v4XNwaaSAeTuU/PFr+LTjbmJXHwYjb0XyYvUBuN1fuVNXpXtrzzLLJV2DqFt
+         ePdGTtvXjb0HKW6pyn6Do5vapM/0MCv8TfUqpxe+NuLY0Tbjm2c9PN2wm9xlvJmh8e01
+         X7A3ISf11wSmgXOCTDj0L2S8xdkXAdDx4MFSspFKaVxhsKfpFsT2eEWA2kFbwUo/wgwX
+         2b1zvHol0U7XHUKAWYDsAUqV7C7wwOpbVqzevhBKJS+X+Vm2uxm3o13oraST3skyY+XE
+         jsBlIXnFjZMtx+E6qRh+FgSE6FlUEYbM0RqhBmfkxPq5dYpjqEgPk+Lu3nctvRAqg6qY
+         JpmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=m48O7FRi8r+gWyNb3X9q+djqhmJvKoGCXjsAReJFTG8=;
-        b=m7MoS/svtJEZO0SM70Ig6QTVW/3udszz9J7XmKHyD2FHlz5E5rKIkT0fRtViyTyDx3
-         CUNrXFQVsTFGTd4DDOivw4fldX8ObRYh9hFNAMM3u/nhNkZqdFAXhO/rvzvVpnOxlTML
-         wGLfsKXYfcB5RFmHuu/9t/ADPPffV49k3vbeFTqRiKlxtPy9vMDwsOrOu4uL4ovinQyd
-         ETtpspNezdI6iqRGYFw+2nhCaCkfoIGbGNrY2ZUANxLrMjF40LW2IGrx81/A3WZq3e3r
-         2O/rmKEEfepUlu2aSoKdiCdf333EbYiZuU2bwKWg78fPLblAbwb0shynaczRbzKp4HZR
-         A+CA==
-X-Gm-Message-State: APjAAAUhpVIKdYKVCKaPIepvxqs3sBWsusRPw4HJcY/RI/8xk5vDOCsL
-        DLImU6ts/4QZboIjlK5MLNA=
-X-Google-Smtp-Source: APXvYqyqnqQIhs6j31ORV6H+CICacUP1ugT9/edQHjN+VwobCmftwnkoxQ+fW2POJwSWWxlAl1DhFQ==
-X-Received: by 2002:a17:902:7883:: with SMTP id q3mr124656755pll.89.1561054112215;
-        Thu, 20 Jun 2019 11:08:32 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=1iF2ZB803XlTIr6nvosftGxcuWC6YkTcPa42GxL7qVg=;
+        b=nkFgRK/Ipc4KxZL7wookTAJET2Q6QDMBQmY7qBFD0RiFi0RZAzTc9uk+sOoMY0kkHx
+         EkmXgDrH8v2tyOWFdj3t0VshlPAArL98WCTTfGDprRzbyFbJfzET39YPfvIz+VDpbevW
+         OK3tSuQIx2IP2yQ5PnoNJI16L8cK7NZu9U+PPtq507ndtYU7NXvzWdx7i5/WA+Q6vseK
+         rbCCv/pdRv428SiCwLfybzdqy9xPcA2+XfReVAXW6nn+OOVq5bXO+Paa9IP6clHOjrwO
+         xtOqmNMzMcDMeEYKhSssDhLOtdKQQB+ybCnP0m6wQf72mEOLUobiE+ovoAvlxkh0Eec7
+         ByqQ==
+X-Gm-Message-State: APjAAAVayS1x1B8wyevmildZrhzacVDAmt8Gf9kRZYy5GXGTdJBNn7Um
+        6xPgk0+CgmgPME53bzxDsl8=
+X-Google-Smtp-Source: APXvYqxCWD78/GO2Q+QXxWvVYQNthB+ZkCB4FDaOHC/jm3YD8nwpf6T00fKGG+aufWRx466WdoPyHg==
+X-Received: by 2002:aa7:9190:: with SMTP id x16mr119008844pfa.86.1561054115722;
+        Thu, 20 Jun 2019 11:08:35 -0700 (PDT)
 Received: from localhost.localdomain ([112.196.181.13])
-        by smtp.googlemail.com with ESMTPSA id 85sm289016pgb.52.2019.06.20.11.08.28
+        by smtp.googlemail.com with ESMTPSA id 85sm289016pgb.52.2019.06.20.11.08.32
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 20 Jun 2019 11:08:31 -0700 (PDT)
+        Thu, 20 Jun 2019 11:08:35 -0700 (PDT)
 From:   Puranjay Mohan <puranjay12@gmail.com>
 To:     Shuah Khan <skhan@linuxfoundation.org>
 Cc:     Puranjay Mohan <puranjay12@gmail.com>,
@@ -52,10 +52,12 @@ Cc:     Puranjay Mohan <puranjay12@gmail.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         linux-kernel-mentees@lists.linuxfoundation.org,
         linux-pci@vger.kernel.org
-Subject: [PATCH v2 0/3] net: fddi: skfp: Use PCI generic definitions instead of private duplicates
-Date:   Thu, 20 Jun 2019 23:37:51 +0530
-Message-Id: <20190620180754.15413-1-puranjay12@gmail.com>
+Subject: [PATCH v2 1/3] net: fddi: skfp: Rename PCI_REV_ID to PCI_REVISION_ID
+Date:   Thu, 20 Jun 2019 23:37:52 +0530
+Message-Id: <20190620180754.15413-2-puranjay12@gmail.com>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190620180754.15413-1-puranjay12@gmail.com>
+References: <20190620180754.15413-1-puranjay12@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -63,25 +65,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series removes the private duplicates of PCI definitions in
-favour of generic definitions defined in pci_regs.h.
+Rename the PCI_REV_ID define to PCI_REVISION_ID in skfbi.h
+and drvfbi.c to make it compatible with the pci_regs.h
+which defines it as PCI_REVISION_ID.
 
-This driver only uses one of the generic PCI definitons, i.e.
-PCI_REVISION_ID, which is included from pci_regs.h and its private
-version is removed from skfbi.h with all other private defines.
+Signed-off-by: Puranjay Mohan <puranjay12@gmail.com>
+---
+ drivers/net/fddi/skfp/drvfbi.c  | 2 +-
+ drivers/net/fddi/skfp/h/skfbi.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-The skfbi.h defines PCI_REV_ID which is renamed to PCI_REVISION_ID in
-drvfbi.c to make it compatible with the generic define in pci_regs.h.
-
-Puranjay Mohan (3):
-  net: fddi: skfp: Rename PCI_REV_ID to PCI_REVISION_ID
-  net: fddi: skfp: Include generic PCI definitions
-  net: fddi: skfp: Remove unused private PCI definitions
-
- drivers/net/fddi/skfp/drvfbi.c  |   4 +-
- drivers/net/fddi/skfp/h/skfbi.h | 207 +-------------------------------
- 2 files changed, 3 insertions(+), 208 deletions(-)
-
+diff --git a/drivers/net/fddi/skfp/drvfbi.c b/drivers/net/fddi/skfp/drvfbi.c
+index bdd5700e71fa..b324c1acf195 100644
+--- a/drivers/net/fddi/skfp/drvfbi.c
++++ b/drivers/net/fddi/skfp/drvfbi.c
+@@ -127,7 +127,7 @@ static void card_start(struct s_smc *smc)
+ 	 *	 at very first before any other initialization functions is
+ 	 *	 executed.
+ 	 */
+-	rev_id = inp(PCI_C(PCI_REV_ID)) ;
++	rev_id = inp(PCI_C(PCI_REVISION_ID)) ;
+ 	if ((rev_id & 0xf0) == SK_ML_ID_1 || (rev_id & 0xf0) == SK_ML_ID_2) {
+ 		smc->hw.hw_is_64bit = TRUE ;
+ 	} else {
+diff --git a/drivers/net/fddi/skfp/h/skfbi.h b/drivers/net/fddi/skfp/h/skfbi.h
+index 89557457b352..a05ce16171be 100644
+--- a/drivers/net/fddi/skfp/h/skfbi.h
++++ b/drivers/net/fddi/skfp/h/skfbi.h
+@@ -31,7 +31,7 @@
+ #define	PCI_DEVICE_ID	0x02	/* 16 bit	Device ID */
+ #define	PCI_COMMAND	0x04	/* 16 bit	Command */
+ #define	PCI_STATUS	0x06	/* 16 bit	Status */
+-#define	PCI_REV_ID	0x08	/*  8 bit	Revision ID */
++#define	PCI_REVISION_ID	0x08	/*  8 bit	Revision ID */
+ #define	PCI_CLASS_CODE	0x09	/* 24 bit	Class Code */
+ #define	PCI_CACHE_LSZ	0x0c	/*  8 bit	Cache Line Size */
+ #define	PCI_LAT_TIM	0x0d	/*  8 bit	Latency Timer */
 -- 
 2.21.0
 
