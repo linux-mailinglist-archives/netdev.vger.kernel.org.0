@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13D8D4D6DF
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 20:13:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C3264D6A5
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 20:10:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729181AbfFTSNL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 14:13:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41080 "EHLO mail.kernel.org"
+        id S1728825AbfFTSKe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 14:10:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38054 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728894AbfFTSNK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Jun 2019 14:13:10 -0400
+        id S1728816AbfFTSK3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Jun 2019 14:10:29 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9F77E2084E;
-        Thu, 20 Jun 2019 18:13:08 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3DD0F2084E;
+        Thu, 20 Jun 2019 18:10:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1561054389;
+        s=default; t=1561054228;
         bh=YVtlttnl81jCDsQm5FgclaSwVngRwlFS1G2pxgAc0g0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dr3wsDNnF2NbcE9WmTfBjntyGFtCijagv91B1yoefmstWM/ystI/gj2y5aF9k1Md8
-         dgK3HK/Fn/tjosTF1BIAn18tJiWTiL/TrupFKQ1zXwoJSG1zD6Sjug3SecK8qQcdmp
-         cE+THvxXh1u05SgfBYjickBpJ3BqZt1Hq2eEhVTM=
+        b=asu8nKj7RtNKuyhm933Jpcp4O4SGWqwsgx31zh7SXByUr04IMyklOvImRnjQyVHJY
+         VWvcj1I5qoGd9B8vKgf449l1jgrCY43TlJgwBNXa4gmndq0dNLGFt9t9RkmkyvFnqr
+         4lB6tuL7qcT2Wh6Ei5BnRKXlIH+/dZcrlMMS/6Yk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -31,12 +31,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         Xin Long <lucien.xin@gmail.com>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH 5.1 12/98] sctp: Free cookie before we memdup a new one
-Date:   Thu, 20 Jun 2019 19:56:39 +0200
-Message-Id: <20190620174349.888204564@linuxfoundation.org>
+Subject: [PATCH 4.19 10/61] sctp: Free cookie before we memdup a new one
+Date:   Thu, 20 Jun 2019 19:57:05 +0200
+Message-Id: <20190620174339.137345137@linuxfoundation.org>
 X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20190620174349.443386789@linuxfoundation.org>
-References: <20190620174349.443386789@linuxfoundation.org>
+In-Reply-To: <20190620174336.357373754@linuxfoundation.org>
+References: <20190620174336.357373754@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
