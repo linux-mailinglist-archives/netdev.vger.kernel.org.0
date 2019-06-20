@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C3264D6A5
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 20:10:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 455EE4D7AB
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 20:23:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728825AbfFTSKe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 14:10:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38054 "EHLO mail.kernel.org"
+        id S1728545AbfFTSIw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 14:08:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36224 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728816AbfFTSK3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Jun 2019 14:10:29 -0400
+        id S1728537AbfFTSIs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Jun 2019 14:08:48 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3DD0F2084E;
-        Thu, 20 Jun 2019 18:10:28 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D6EA82084E;
+        Thu, 20 Jun 2019 18:08:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1561054228;
-        bh=YVtlttnl81jCDsQm5FgclaSwVngRwlFS1G2pxgAc0g0=;
+        s=default; t=1561054127;
+        bh=l/yJKou2oDHAdhnzdsC8NyeBypmK5iwGNwUo+9N61XY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=asu8nKj7RtNKuyhm933Jpcp4O4SGWqwsgx31zh7SXByUr04IMyklOvImRnjQyVHJY
-         VWvcj1I5qoGd9B8vKgf449l1jgrCY43TlJgwBNXa4gmndq0dNLGFt9t9RkmkyvFnqr
-         4lB6tuL7qcT2Wh6Ei5BnRKXlIH+/dZcrlMMS/6Yk=
+        b=JLBLhQTpFh5aNFU/xWxb97iIdTrJ98zYyfYiWfSgzyk0qzN3oupKy9i1xnQP4dd4f
+         kzAeWSmdmlj74QMPt6go1xNvxdY6En7vzR5Gf3EHeCj1eX3GZycnYch8y1d7a6YZau
+         J/MxgPS8ze1AkxPYPz5h4wUQdlNWN7M3YFZItqLk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -31,12 +31,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         Xin Long <lucien.xin@gmail.com>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH 4.19 10/61] sctp: Free cookie before we memdup a new one
-Date:   Thu, 20 Jun 2019 19:57:05 +0200
-Message-Id: <20190620174339.137345137@linuxfoundation.org>
+Subject: [PATCH 4.14 08/45] sctp: Free cookie before we memdup a new one
+Date:   Thu, 20 Jun 2019 19:57:10 +0200
+Message-Id: <20190620174333.093872702@linuxfoundation.org>
 X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20190620174336.357373754@linuxfoundation.org>
-References: <20190620174336.357373754@linuxfoundation.org>
+In-Reply-To: <20190620174328.608036501@linuxfoundation.org>
+References: <20190620174328.608036501@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -87,7 +87,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/net/sctp/sm_make_chunk.c
 +++ b/net/sctp/sm_make_chunk.c
-@@ -2600,6 +2600,8 @@ do_addr_param:
+@@ -2586,6 +2586,8 @@ do_addr_param:
  	case SCTP_PARAM_STATE_COOKIE:
  		asoc->peer.cookie_len =
  			ntohs(param.p->length) - sizeof(struct sctp_paramhdr);
@@ -96,7 +96,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  		asoc->peer.cookie = kmemdup(param.cookie->body, asoc->peer.cookie_len, gfp);
  		if (!asoc->peer.cookie)
  			retval = 0;
-@@ -2664,6 +2666,8 @@ do_addr_param:
+@@ -2650,6 +2652,8 @@ do_addr_param:
  			goto fall_through;
  
  		/* Save peer's random parameter */
@@ -105,7 +105,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  		asoc->peer.peer_random = kmemdup(param.p,
  					    ntohs(param.p->length), gfp);
  		if (!asoc->peer.peer_random) {
-@@ -2677,6 +2681,8 @@ do_addr_param:
+@@ -2663,6 +2667,8 @@ do_addr_param:
  			goto fall_through;
  
  		/* Save peer's HMAC list */
@@ -114,7 +114,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  		asoc->peer.peer_hmacs = kmemdup(param.p,
  					    ntohs(param.p->length), gfp);
  		if (!asoc->peer.peer_hmacs) {
-@@ -2692,6 +2698,8 @@ do_addr_param:
+@@ -2678,6 +2684,8 @@ do_addr_param:
  		if (!ep->auth_enable)
  			goto fall_through;
  
