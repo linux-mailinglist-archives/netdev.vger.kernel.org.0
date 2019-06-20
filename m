@@ -2,166 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 967704CAA3
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 11:22:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75AA04CAD6
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 11:28:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726211AbfFTJWH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 05:22:07 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:33905 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725875AbfFTJWG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 05:22:06 -0400
-Received: by mail-wr1-f68.google.com with SMTP id k11so2270553wrl.1
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 02:22:04 -0700 (PDT)
+        id S1725953AbfFTJ2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 05:28:05 -0400
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:38003 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725925AbfFTJ2F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 05:28:05 -0400
+Received: by mail-oi1-f193.google.com with SMTP id v186so1648949oie.5
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 02:28:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=VUW8pghrki7VFfJ8lAarbeR/4uI+3sn1OoEoiPpk2Ec=;
-        b=oQAqVFEEfbga36MiBEkzhXwaIeumqGWR8YTgDUJT9RAWHjblipVj9K1+A0BuaFeKm8
-         +lqEnjgsfhob+PJoHi+1fdnOII4HyPkNvNjbYI/Q3pTmnSDDybvx5wz5I3mQBZeQPSfJ
-         zq0zN1H8VUHXspfF6hZng1LuVSXRcrsC4BG1zRgNLEaY4MO6qg93oQvh+j5hTuB6BAPm
-         iodBr6YvcI279lktL2s2cqtFx11LQ/JnW/YJtKOMgvQdrH0YytagPK674JmX6PVzkN56
-         jNTundnS0E88nUi5/Vn03nbXJyJVTMvNMBlAdrD4oymWk/LLKfvO1oelXqMGIwgrLN9j
-         gsow==
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PmHWG4qMmWEGCOF+kdqEk3VRt4YU2iablP4KfL7mAEw=;
+        b=MjJEWHVuMucicTQDHG/57dvSgYokPHQjo4P7x2IS2BhfDe83rJewRx0pPvgnLRPMhD
+         gNDagD9UZu95PX+UVoQexWt0qHIPG765pdJ83AfAhmniVjgc+8lkJ1+mWJm+zMxORR5D
+         EULNDf5hx67aBZ0o9Wk+wZOPTP39USccZe8AE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=VUW8pghrki7VFfJ8lAarbeR/4uI+3sn1OoEoiPpk2Ec=;
-        b=T3tOnqZFs481Wla+jmcKPkxPTdMDG/1ZcPUmj2L9/4Oaep5K/g+yBGd+e770KFO85s
-         jLuVcowOBA9fQnzxlt8Sg0f4PoA/dq2nnlR5mtSlErkCzYb2eGrbq4V/zT4tjWi6E+Vi
-         7eFJxUO/JeBL44RWtJDiLh0xBCd6wEAKZD+iuzJdMIyNhqps0+3rilBm17PSvIKS3EIG
-         E05R2lsrAZhZlZdscW+T8mf6ZPkQEsDBS8DC1CvAIhPVPZjjaz8mwHqD/tOSVIpTIXMU
-         A6waIBULEMPQE7PRbcaj2Trt1DcO9fpxi+oVtHPlP50tLi+uwnFTKZgC4jiYOavMXvqm
-         yjYQ==
-X-Gm-Message-State: APjAAAWl0OsFeVsjED7fximE09Hlz06fdGLry5+D5ybtpaTTR6hjWJAI
-        tJ1n/qoBkhIx60Tyy/aFDJMHZQ==
-X-Google-Smtp-Source: APXvYqw5b4fIqlt6GiUR3C6yAZWC49fRdnOf3a/NqbQxqxUIHekVa87vhxCTnGvu1yTAf6zmjLH62A==
-X-Received: by 2002:adf:ec49:: with SMTP id w9mr22119287wrn.303.1561022524006;
-        Thu, 20 Jun 2019 02:22:04 -0700 (PDT)
-Received: from localhost (ip-78-45-163-56.net.upcbroadband.cz. [78.45.163.56])
-        by smtp.gmail.com with ESMTPSA id x17sm22385673wrq.64.2019.06.20.02.22.03
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 20 Jun 2019 02:22:03 -0700 (PDT)
-Date:   Thu, 20 Jun 2019 11:22:03 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, dsahern@gmail.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next v2] ipv6: Error when route does not have any
- valid nexthops
-Message-ID: <20190620092202.GC2504@nanopsycho>
-References: <20190620091021.18210-1-idosch@idosch.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PmHWG4qMmWEGCOF+kdqEk3VRt4YU2iablP4KfL7mAEw=;
+        b=hgrQUqVshTCJoMN1/jSQDyR1lLy7aNDPUQSH6umz7mmVhQ/vl1VplX3hAfgMGgMSeZ
+         rHeUfqRTVFpb9u9o8Pjvi5LW+vXHjhtU2MfoPzRh8YWUMrQRH+6jVj68DJil9KLVLsiG
+         CKjCW9G/Yumb1AsMt7tookwNIYGt/QLQJG+8LKM8PBnyWtB1QN9Ib/Ag0RyiIMjcinBi
+         f5AeyJMROeTo+Ocmuuxc3Kf0KeYsZShDrKC+X3AY+dYp9Qy0zfph4KaK6OBZl99HViXG
+         CwKbqotgNP3Pw5vwEDmOtd3jKGcS2l1HtnNvGwUnATD7DldrRUM4zyp/x7dT9lb6nxiI
+         qNdw==
+X-Gm-Message-State: APjAAAVYRugIXXyC/SAuX+U7t5xD+Zuk9W65Ig6m9b0vUBDTqWPjIqRT
+        KiH58elhNLpSApv3cbRKQUybOPcD6KjH5jBdOYiPYQ==
+X-Google-Smtp-Source: APXvYqwhYi5HxRDKe0OHNu8Mys7NdMy75GnitIl3Wx9yZw71NUc7iY9rlm5FUfPiMOdf0emDnBB3CpCYDgThmfiu4tU=
+X-Received: by 2002:aca:55d8:: with SMTP id j207mr5251042oib.78.1561022884464;
+ Thu, 20 Jun 2019 02:28:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190620091021.18210-1-idosch@idosch.org>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+References: <20190531202132.379386-1-andriin@fb.com> <20190531202132.379386-7-andriin@fb.com>
+ <CACAyw99wD+7mXXeger6WoBTTu3aYHDW8EJV9_tP7MfXOnT0ODg@mail.gmail.com>
+ <CAEf4BzamSjSa-7ddzyVsqygbtT6WSwsWpCFGX-4Rav4Aev8UsA@mail.gmail.com>
+ <CACAyw9_Yr=pmvCRYsVHoQBrH7qBwmcaXZezmqafwJTxaCmDf6A@mail.gmail.com> <CAEf4Bzbpm0pSvXU8gfSTL2xECTDb+Z9HKKO2Y-Ap=L6VTWL9MQ@mail.gmail.com>
+In-Reply-To: <CAEf4Bzbpm0pSvXU8gfSTL2xECTDb+Z9HKKO2Y-Ap=L6VTWL9MQ@mail.gmail.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Thu, 20 Jun 2019 10:27:52 +0100
+Message-ID: <CACAyw98hwj5hpT00P5JiW3V+QPdyddKfN_yQj=okXvg89eTgsA@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 6/8] libbpf: allow specifying map definitions
+ using BTF
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jun 20, 2019 at 11:10:21AM CEST, idosch@idosch.org wrote:
->From: Ido Schimmel <idosch@mellanox.com>
+On Mon, 17 Jun 2019 at 22:00, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+> > In my mind, BPF loaders should be able to pass through BTF to the kernel
+> > as a binary blob as much as possible. That's why I want the format to
+> > be "self describing". Compatibility then becomes a question of: what
+> > feature are you using on which kernel. The kernel itself can then still be
+> > strict-by-default or what have you.
 >
->When user space sends invalid information in RTA_MULTIPATH, the nexthop
->list in ip6_route_multipath_add() is empty and 'rt_notif' is set to
->NULL.
->
->The code that emits the in-kernel notifications does not check for this
->condition, which results in a NULL pointer dereference [1].
->
->Fix this by bailing earlier in the function if the parsed nexthop list
->is empty. This is consistent with the corresponding IPv4 code.
->
->v2:
->* Check if parsed nexthop list is empty and bail with extack set
->
->[1]
->kasan: CONFIG_KASAN_INLINE enabled
->kasan: GPF could be caused by NULL-ptr deref or user memory access
->general protection fault: 0000 [#1] PREEMPT SMP KASAN
->CPU: 0 PID: 9190 Comm: syz-executor149 Not tainted 5.2.0-rc5+ #38
->Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
->Google 01/01/2011
->RIP: 0010:call_fib6_multipath_entry_notifiers+0xd1/0x1a0
->net/ipv6/ip6_fib.c:396
->Code: 8b b5 30 ff ff ff 48 c7 85 68 ff ff ff 00 00 00 00 48 c7 85 70 ff ff
->ff 00 00 00 00 89 45 88 4c 89 e0 48 c1 e8 03 4c 89 65 80 <42> 80 3c 28 00
->0f 85 9a 00 00 00 48 b8 00 00 00 00 00 fc ff df 4d
->RSP: 0018:ffff88809788f2c0 EFLAGS: 00010246
->RAX: 0000000000000000 RBX: 1ffff11012f11e59 RCX: 00000000ffffffff
->RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
->RBP: ffff88809788f390 R08: ffff88809788f8c0 R09: 000000000000000c
->R10: ffff88809788f5d8 R11: ffff88809788f527 R12: 0000000000000000
->R13: dffffc0000000000 R14: ffff88809788f8c0 R15: ffffffff89541d80
->FS:  000055555632c880(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
->CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->CR2: 0000000020000080 CR3: 000000009ba7c000 CR4: 00000000001406f0
->DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->Call Trace:
->  ip6_route_multipath_add+0xc55/0x1490 net/ipv6/route.c:5094
->  inet6_rtm_newroute+0xed/0x180 net/ipv6/route.c:5208
->  rtnetlink_rcv_msg+0x463/0xb00 net/core/rtnetlink.c:5219
->  netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
->  rtnetlink_rcv+0x1d/0x30 net/core/rtnetlink.c:5237
->  netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
->  netlink_unicast+0x531/0x710 net/netlink/af_netlink.c:1328
->  netlink_sendmsg+0x8ae/0xd70 net/netlink/af_netlink.c:1917
->  sock_sendmsg_nosec net/socket.c:646 [inline]
->  sock_sendmsg+0xd7/0x130 net/socket.c:665
->  ___sys_sendmsg+0x803/0x920 net/socket.c:2286
->  __sys_sendmsg+0x105/0x1d0 net/socket.c:2324
->  __do_sys_sendmsg net/socket.c:2333 [inline]
->  __se_sys_sendmsg net/socket.c:2331 [inline]
->  __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2331
->  do_syscall_64+0xfd/0x680 arch/x86/entry/common.c:301
->  entry_SYSCALL_64_after_hwframe+0x49/0xbe
->RIP: 0033:0x4401f9
->Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7
->48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff
->ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
->RSP: 002b:00007ffc09fd0028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
->RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 00000000004401f9
->RDX: 0000000000000000 RSI: 0000000020000080 RDI: 0000000000000003
->RBP: 00000000006ca018 R08: 0000000000000000 R09: 00000000004002c8
->R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401a80
->R13: 0000000000401b10 R14: 0000000000000000 R15: 0000000000000000
->
->Reported-by: syzbot+382566d339d52cd1a204@syzkaller.appspotmail.com
->Fixes: ebee3cad835f ("ipv6: Add IPv6 multipath notifications for add / replace")
->Signed-off-by: Ido Schimmel <idosch@mellanox.com>
->---
-> net/ipv6/route.c | 6 ++++++
-> 1 file changed, 6 insertions(+)
->
->diff --git a/net/ipv6/route.c b/net/ipv6/route.c
->index c4d285fe0adc..891c8cd27712 100644
->--- a/net/ipv6/route.c
->+++ b/net/ipv6/route.c
->@@ -5043,6 +5043,12 @@ static int ip6_route_multipath_add(struct fib6_config *cfg,
-> 		rtnh = rtnh_next(rtnh, &remaining);
-> 	}
-> 
->+	if (list_empty(&rt6_nh_list)) {
->+		NL_SET_ERR_MSG(extack,
->+			       "Invalid nexthop configuration - no valid nexthops");
+> That would work in ideal world, where kernel is updated frequently
+> (and BTF is self-describing, which it is not). In practice, though,
+> libbpf is far more up-to-date and lends its hand on "sanitizing" .BTF
+> from kernel-unsupported features (so far we manage to pull this off
+> very reasonably). If you have a good proposal how to make .BTF
+> self-describing, that would be great!
 
-No need for a line wrap.
+I think sanitizing is going to become a problem, but we've been around
+that argument a few times :)
 
-Anyway, the fix looks fine.
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+Making .BTF self describing need at least adding length to certain fields,
+as I mentioned in another thread. Plus an interface to interrogate the
+kernel about a loaded BTF blob.
 
-
->+		return -EINVAL;
->+	}
->+
-> 	/* for add and replace send one notification with all nexthops.
-> 	 * Skip the notification in fib6_add_rt2node and send one with
-> 	 * the full route when done
->-- 
->2.20.1
+> > I agree with you, the syntax probably has to be different. I'd just like it to
+> > differ by more than a "*" in the struct definition, because that is too small
+> > to notice.
 >
+> So let's lay out how it will be done in practice:
+>
+> 1. Simple map w/ custom key/value
+>
+> struct my_key { ... };
+> struct my_value { ... };
+>
+> struct {
+>     __u32 type;
+>     __u32 max_entries;
+>     struct my_key *key;
+>     struct my_value *value;
+> } my_simple_map BPF_MAP = {
+>     .type = BPF_MAP_TYPE_ARRAY,
+>     .max_entries = 16,
+> };
+>
+> 2. Now map-in-map:
+>
+> struct {
+>     __u32 type;
+>     __u32 max_entries;
+>     struct my_key *key;
+>     struct {
+>         __u32 type;
+>         __u32 max_entries;
+>         __u64 *key;
+>         struct my_value *value;
+>     } value;
+> } my_map_in_map BPF_MAP = {
+>     .type = BPF_MAP_TYPE_HASH_OF_MAPS,
+>     .max_entries = 16,
+>     .value = {
+>         .type = BPF_MAP_TYPE_ARRAY,
+>         .max_entries = 100,
+>     },
+> };
+>
+> It's clearly hard to misinterpret inner map definition for a custom
+> anonymous struct type, right?
+
+That's not what I'm concerned about. My point is: sometimes you
+have to use a pointer, sometimes you don't. Every user has to learn this.
+Chance is, they'll probably get it wrong first. Is there a way to give a
+reasonable error message for this?
+
+> > I kind of assumed that BTF support for those maps would at some point
+> > appear, maybe I should have checked that.
+>
+> It will. Current situation with maps not supporting specifying BTF for
+> key and/or value looks more like a bug, than feature and we should fix
+> that. But even if we fix it today, kernels are updated much slower
+> than libbpf, so by not supporting key_size/value_size, we force people
+> to get stuck with legacy bpf_map_def for a really long time.
+
+OK.
+
+I'll go and look at the newest revision of the patch set now :o)
+
+-- 
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+
+www.cloudflare.com
