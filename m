@@ -2,189 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3562F4D27E
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 17:54:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB75C4D2C0
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 18:08:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727144AbfFTPyF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 11:54:05 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:46613 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726562AbfFTPyF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 11:54:05 -0400
-Received: by mail-wr1-f68.google.com with SMTP id n4so3521282wrw.13;
-        Thu, 20 Jun 2019 08:54:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=q2BZSgLwxymATwcz5mZeMXxgTAlopkINs/PMNefIvUU=;
-        b=V44Esc+XKQSOQjNnaxw2MmMTKdJaJKQDxq17rl0lBAneRfZN1f8XeL5yyjyQyrOSOa
-         FOfj2kwyNRS6HcW9PAPst6IjjKKkU3xxvrLkESfhmQZAPNvN6EkfJnAbjkY3PoX1v35I
-         0monHG7qNbVh+PckIESPcARdhbOow9+mlJxI6YjsIIqmz532OE0y3GP28s3Ogpzt4z6/
-         /n/pZlnjpYEvB1tlUCbEZawOHnoFxPDA+q5gLVoWxYEuh5iN8f5oZEqewN4ttmGHe0P3
-         XoQRJJUakLeW6GigtSRWsIH0o1zAzuVucDEgR2zJlzBu4kv0rX7gVRK2zoVE0SSAu+rV
-         +ajg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=q2BZSgLwxymATwcz5mZeMXxgTAlopkINs/PMNefIvUU=;
-        b=W1a5DR7QWla8dMqL7ZJkF2lwXYFaTo2zPESK+khtRq6oIn86dz/GmeM9mRifljfJsv
-         RQa1HcktTBD8+JRdR8yNqeVkxlLnYdD9Y9+2tusDRSSTFo3wUdAjb874ZnZ3lDu640OG
-         CJ4+lCgGh6/sTy+evNMbcfoMwjY5SoWze0bcGCd1CJ1gU9LGY24kMnFwkiZa4u897dWA
-         xPuvW3o7sx+lz3OZsmnszDdLUlh1cA8ymj7MLwMzHH88ouOxn6F/nXVF1aD91o37ndwn
-         xs3xy4BgQSV+iuGShBD/yHktxdmMO0MYFkBET8R1+L+nLBDo2uxppDNmGxxvzIVXspIP
-         iSYA==
-X-Gm-Message-State: APjAAAUhD40wkoY+aPoNRLkloVG9xDAF+PDl+F4gKy5dYgwoEw3SUYJ4
-        9WTMQXzWkPHLggu3tteHNCgr2Y9tdEU=
-X-Google-Smtp-Source: APXvYqwjinCWK/aSKbDmwODZdByqPtonNAHy81M6XwA7AeZJB8EfRvgjyd6heFibzYj9+zCcNldc5Q==
-X-Received: by 2002:adf:b1ca:: with SMTP id r10mr15094293wra.156.1561046042286;
-        Thu, 20 Jun 2019 08:54:02 -0700 (PDT)
-Received: from jernej-laptop.localnet (cpe-86-58-52-202.static.triera.net. [86.58.52.202])
-        by smtp.gmail.com with ESMTPSA id o13sm34914608wra.92.2019.06.20.08.53.59
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 20 Jun 2019 08:54:00 -0700 (PDT)
-From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To:     linux-sunxi@googlegroups.com, megous@megous.com
-Cc:     Maxime Ripard <maxime.ripard@bootlin.com>,
-        Chen-Yu Tsai <wens@csie.org>, Rob Herring <robh+dt@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com
-Subject: Re: [linux-sunxi] [PATCH v7 0/6] Add support for Orange Pi 3
-Date:   Thu, 20 Jun 2019 17:53:58 +0200
-Message-ID: <2263144.KN5DhQ2VKD@jernej-laptop>
-In-Reply-To: <20190620134748.17866-1-megous@megous.com>
-References: <20190620134748.17866-1-megous@megous.com>
+        id S1732205AbfFTQIm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 12:08:42 -0400
+Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:51365 "EHLO
+        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1732184AbfFTQIl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 12:08:41 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R771e4;CH=green;DM=||false|;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01f04446;MF=yang.shi@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0TUlBe2E_1561046914;
+Received: from US-143344MP.local(mailfrom:yang.shi@linux.alibaba.com fp:SMTPD_---0TUlBe2E_1561046914)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 21 Jun 2019 00:08:37 +0800
+Subject: Re: [PATCH] mm: mempolicy: handle vma with unmovable pages mapped
+ correctly in mbind
+To:     Vlastimil Babka <vbabka@suse.cz>, Michal Hocko <mhocko@kernel.org>
+Cc:     akpm@linux-foundation.org, mgorman@techsingularity.net,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+References: <1560797290-42267-1-git-send-email-yang.shi@linux.alibaba.com>
+ <20190618130253.GH3318@dhcp22.suse.cz>
+ <cf33b724-fdd5-58e3-c06a-1bc563525311@linux.alibaba.com>
+ <20190618182848.GJ3318@dhcp22.suse.cz>
+ <68c2592d-b747-e6eb-329f-7a428bff1f86@linux.alibaba.com>
+ <20190619052133.GB2968@dhcp22.suse.cz>
+ <21a0b20c-5b62-490e-ad8e-26b4b78ac095@suse.cz>
+ <687f4e57-5c50-7900-645e-6ef3a5c1c0c7@linux.alibaba.com>
+ <55eb2ea9-2c74-87b1-4568-b620c7913e17@linux.alibaba.com>
+ <d81b36bb-876e-917a-6115-cedf496b4923@suse.cz>
+From:   Yang Shi <yang.shi@linux.alibaba.com>
+Message-ID: <d185f277-85ed-4dc1-8ff2-2984b54a0d64@linux.alibaba.com>
+Date:   Thu, 20 Jun 2019 09:08:30 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:52.0)
+ Gecko/20100101 Thunderbird/52.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <d81b36bb-876e-917a-6115-cedf496b4923@suse.cz>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
-
-Dne =C4=8Detrtek, 20. junij 2019 ob 15:47:42 CEST je megous via linux-sunxi=
-=20
-napisal(a):
-> From: Ondrej Jirman <megous@megous.com>
->=20
-> This series implements support for Xunlong Orange Pi 3 board.
->=20
-> - ethernet support (patches 1-3)
-
-Correct me if I'm wrong, but patches 1-2 aren't strictly necessary for=20
-OrangePi 3, right? H6 DTSI already has emac node with dual compatible (H6 a=
-nd=20
-A64) and since OrangePi 3 uses gigabit ethernet, quirk introduced by patche=
-s=20
-1-2 are not needed.
-
-However, it is nice to have this 100 Mbit fix, because most STB DTS will ne=
-ed=20
-it.
-
-Best regards,
-Jernej
-
-> - HDMI support (patches 4-6)
->=20
-> For some people, ethernet doesn't work after reboot (but works on cold
-> boot), when the stmmac driver is built into the kernel. It works when
-> the driver is built as a module. It's either some timing issue, or power
-> supply issue or a combination of both. Module build induces a power
-> cycling of the phy.
->=20
-> I encourage people with this issue, to build the driver into the kernel,
-> and try to alter the reset timings for the phy in DTS or
-> startup-delay-us and report the findings.
->=20
->=20
-> Please take a look.
->=20
-> thank you and regards,
->   Ondrej Jirman
->=20
->=20
-> Changes in v7:
-> - dropped stored reference to connector_pdev as suggested by Jernej
-> - added forgotten dt-bindings reviewed-by tag
->=20
-> Changes in v6:
-> - added dt-bindings reviewed-by tag
-> - fix wording in stmmac commit (as suggested by Sergei)
->=20
-> Changes in v5:
-> - dropped already applied patches (pinctrl patches, mmc1 pinconf patch)
-> - rename GMAC-3V3 -> GMAC-3V to match the schematic (Jagan)
-> - changed hdmi-connector's ddc-supply property to ddc-en-gpios
->   (Rob Herring)
->=20
-> Changes in v4:
-> - fix checkpatch warnings/style issues
-> - use enum in struct sunxi_desc_function for io_bias_cfg_variant
-> - collected acked-by's
-> - fix compile error in drivers/pinctrl/sunxi/pinctrl-sun9i-a80-r.c:156
->   caused by missing conversion from has_io_bias_cfg struct member
->   (I've kept the acked-by, because it's a trivial change, but feel free
->   to object.) (reported by Martin A. on github)
->   I did not have A80 pinctrl enabled for some reason, so I did not catch
->   this sooner.
-> - dropped brcm firmware patch (was already applied)
-> - dropped the wifi dts patch (will re-send after H6 RTC gets merged,
->   along with bluetooth support, in a separate series)
->=20
-> Changes in v3:
-> - dropped already applied patches
-> - changed pinctrl I/O bias selection constants to enum and renamed
-> - added /omit-if-no-ref/ to mmc1_pins
-> - made mmc1_pins default pinconf for mmc1 in H6 dtsi
-> - move ddc-supply to HDMI connector node, updated patch descriptions,
->   changed dt-bindings docs
->=20
-> Changes in v2:
-> - added dt-bindings documentation for the board's compatible string
->   (suggested by Clement)
-> - addressed checkpatch warnings and code formatting issues (on Maxime's
->   suggestions)
-> - stmmac: dropped useless parenthesis, reworded description of the patch
->   (suggested by Sergei)
-> - drop useles dev_info() about the selected io bias voltage
-> - docummented io voltage bias selection variant macros
-> - wifi: marked WiFi DTS patch and realted mmc1_pins as "DO NOT MERGE",
->   because wifi depends on H6 RTC support that's not merged yet (suggested
->   by Clement)
-> - added missing signed-of-bys
-> - changed &usb2otg dr_mode to otg, and added a note about VBUS
-> - improved wording of HDMI driver's DDC power supply patch
->=20
-> Icenowy Zheng (2):
->   net: stmmac: sun8i: add support for Allwinner H6 EMAC
->   net: stmmac: sun8i: force select external PHY when no internal one
->=20
-> Ondrej Jirman (4):
->   arm64: dts: allwinner: orange-pi-3: Enable ethernet
->   dt-bindings: display: hdmi-connector: Support DDC bus enable
->   drm: sun4i: Add support for enabling DDC I2C bus to sun8i_dw_hdmi glue
->   arm64: dts: allwinner: orange-pi-3: Enable HDMI output
->=20
->  .../display/connector/hdmi-connector.txt      |  1 +
->  .../dts/allwinner/sun50i-h6-orangepi-3.dts    | 70 +++++++++++++++++++
->  drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c         | 54 ++++++++++++--
->  drivers/gpu/drm/sun4i/sun8i_dw_hdmi.h         |  2 +
->  .../net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 21 ++++++
->  5 files changed, 144 insertions(+), 4 deletions(-)
 
 
+On 6/20/19 12:18 AM, Vlastimil Babka wrote:
+> On 6/19/19 8:19 PM, Yang Shi wrote:
+>>>>> This is getting even more muddy TBH. Is there any reason that we
+>>>>> have to
+>>>>> handle this problem during the isolation phase rather the migration?
+>>>> I think it was already said that if pages can't be isolated, then
+>>>> migration phase won't process them, so they're just ignored.
+>>> Yes，exactly.
+>>>
+>>>> However I think the patch is wrong to abort immediately when
+>>>> encountering such page that cannot be isolated (AFAICS). IMHO it should
+>>>> still try to migrate everything it can, and only then return -EIO.
+>>> It is fine too. I don't see mbind semantics define how to handle such
+>>> case other than returning -EIO.
+> I think it does. There's:
+> If MPOL_MF_MOVE is specified in flags, then the kernel *will attempt to
+> move all the existing pages* ... If MPOL_MF_STRICT is also specified,
+> then the call fails with the error *EIO if some pages could not be moved*
+>
+> Aborting immediately would be against the attempt to move all.
+>
+>> By looking into the code, it looks not that easy as what I thought.
+>> do_mbind() would check the return value of queue_pages_range(), it just
+>> applies the policy and manipulates vmas as long as the return value is 0
+>> (success), then migrate pages on the list. We could put the movable
+>> pages on the list by not breaking immediately, but they will be ignored.
+>> If we migrate the pages regardless of the return value, it may break the
+>> policy since the policy will *not* be applied at all.
+> I think we just need to remember if there was at least one page that
+> failed isolation or migration, but keep working, and in the end return
+> EIO if there was such page(s). I don't think it breaks the policy. Once
+> pages are allocated in a mapping, changing the policy is a best effort
+> thing anyway.
 
+The current behavior is:
+If queue_pages_range() return -EIO (vma is not migratable, ignore other 
+conditions since we just focus on page migration), the policy won't be 
+set and no page will be migrated.
+
+However, the problem here is the vma might look migratable, but some or 
+all the underlying pages are unmovable. So, my patch assumes the vma is 
+*not* migratable if at least one page is unmovable. I'm not sure if it 
+is possible to have both movable and unmovable pages for the same 
+mapping or not, I'm supposed the vma would be split much earlier.
+
+If we don't abort immediately, then we record if there is unmovable 
+page, then we could do:
+#1. Still follows the current behavior (then why not abort immediately?)
+#2. Set mempolicy then migrate all the migratable pages. But, we may end 
+up with the pages on node A, but the policy says node B. Doesn't it 
+break the policy?
+
+>
+>>>
 
