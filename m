@@ -2,119 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF5DF4C8B7
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 09:55:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5DE74C8FF
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 10:08:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726168AbfFTHzz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 03:55:55 -0400
-Received: from eva.aplu.fr ([91.224.149.41]:45462 "EHLO eva.aplu.fr"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725912AbfFTHzy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Jun 2019 03:55:54 -0400
-Received: from eva.aplu.fr (localhost [127.0.0.1])
-        by eva.aplu.fr (Postfix) with ESMTP id 70A66E23;
-        Thu, 20 Jun 2019 09:55:53 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=aplu.fr; s=s4096;
-        t=1561017353; bh=I9yh62n62fOtNAxNA/Rg9Z/P51cUAU9tBtya1CFeQ4I=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=p7RBchzzmk6hkXYtqI8ZUGkEwLxzkkh2qiS28PucY+cog9jBqx/1vkL1lOwcouYfT
-         n3Q5i27eoASHk9uajGNyycUqpAAqA5dPWaDC0Xw8bXZPFafH9uW6S6w0/9wzRQYLHy
-         dhz3MzoghXK0q8ivU7E7Tyri6QFlc8RdgEzc2jGAyPlqZU6KLHIO2KDzPD8zER6dd8
-         jLX5wKw/lXQr1bzTllPxv7NRb5iIzr1zFy1gufDCduA6Q2ARjogKR3b1fPa1OMoua6
-         /Rqg8RCux3pEYAdGyic6xtwVBLohWBFBg4Jz/jVNRy/Z9MFhie1zhzhPk203tHE9bf
-         EDqQbRraISNP1V0cLe/lOqjpfYLeW1FJFfAPyPLOxbd8AHpz2oSrLpbjAZqaruCKGO
-         zmj5lvKlOmDsrL+2CqL0FQLb8Hd8XM7JszK8UOfWXpPuHoQoo1XMGAVjwzKs64duFq
-         S9yBzx7SzoFSD+e+P8fl3l1vmW9sPsrdzMSN/3B/u5S3TYUJ+G/joozse1Aj0rkTNk
-         nAcDuKV1tQa0knWaeyjwV1v9ujnE0rm9Qbi4lEZVrZVwHnZHnxopTZBqNbN8v65jj7
-         Sa302DQ/mozPyoH2e/PPnjs7/xMQZZKXuJHlCP+BFoVcuPI+FgJW9tcfJKODHtI4Gd
-         NO5OQJlD4YV6GXXCSU3EUjtU=
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on eva.aplu.fr
-X-Spam-Level: 
-X-Spam-Status: No, score=-102.5 required=5.0 tests=ALL_TRUSTED,BAYES_00,
-        SHORTCIRCUIT shortcircuit=ham autolearn=disabled version=3.4.2
-Received: from mail.aplu.fr (localhost [IPv6:::1])
-        by eva.aplu.fr (Postfix) with ESMTPA id 8AA1FBED;
-        Thu, 20 Jun 2019 09:55:52 +0200 (CEST)
-Authentication-Results: eva.aplu.fr; dmarc=fail (p=none dis=none) header.from=aplu.fr
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=aplu.fr; s=s4096;
-        t=1561017352; bh=I9yh62n62fOtNAxNA/Rg9Z/P51cUAU9tBtya1CFeQ4I=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RbquC23fVadb2GRbKQQ7XNWjEadEkEfGI/tzy5jbgqGuXdRkqfd0O7JaGoqiEqvVK
-         iA7uH35Ty5wIArRlwEK37Eh2uPihtTFZi+YfmT4fhZNOze6HtGwpZmyAYPK3h01VIK
-         bI0W0Xu+5iXEmCJ83Mc0bP7pR3eEt/HKWtDcE06Kt1QWZ9sBf8zWakByOClfPTOey6
-         q+Ru+dGtHDWWcLRz0f7E2oiz5WybqdvFwPNfdvj5aRqmegmb4ilQcDi4ItIUJNQjMY
-         WHJMU9ffkq15T33xhSqeWk0mblmZl8cwF+JoMUWsE2OH9HM5Gxr/MNmpQ7oKltKJv7
-         w/+R5z1SsZPvpbNZTlptMh1jBDZl1IAHzeWuPWn7mMKUrqJZpHg9IALHQAUEB2irak
-         KyOqnHdQT314oBSFqm61xTRNxWp1y5bRoIyUlCad4qr/hh6ZYjGTUhAuEmQ83x37q/
-         5/Qal684FNbY0g1ygqSilQQs71Nn1ZBNQx8lmaL6iswf0MqTTuclRuer3tZ7TkAkan
-         snZZE7NYcc1sjtRfqDAybXgOE3gEGRl2XY98or7DRxLz6YP6u6XG7XXV5AWO6+zbOi
-         Hr6vTSia+jkQIRSSV5AGo4A1BbdW4LHWxWowOPCtJrjxyT2UhL05Z7IBDuQVEgKwoN
-         OYXZ/Gw6VrKK5fGA010kD64g=
+        id S1730593AbfFTIIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 04:08:06 -0400
+Received: from mail-lf1-f48.google.com ([209.85.167.48]:36628 "EHLO
+        mail-lf1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726124AbfFTIIF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 04:08:05 -0400
+Received: by mail-lf1-f48.google.com with SMTP id q26so1748741lfc.3
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 01:08:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=5nLDF4KvNjOO0UGhzTbw+kgDFdu3GO4N4s2vFIPF9iU=;
+        b=OmXGcAXDCg5tpnkC3zM065z42PKi+z/FVjoDHqkRFwQQ351XflSo05WQbSV3o17OA1
+         ZCsdnjvvy8dS/tX2Yrk0+vtSVbKzdotrcrp1d3vJpozy0Jdb5LybpVHsiW48i/dDVI4m
+         ck78rIIOF3bMUbZaiZAMkWKmJcJn6Z/ZVjyWEsqoSws8e7XxsYNIIMXEHmshvOdBKAcx
+         J/hpS3vishBxStBuT5Vd6dFmaBnP06wN4IJ6LTtHWz3vxRs0dzNXAKspTbq1O91EelUW
+         7USUCZOQGv2Sw7kPzWpfZs5oEBsiyWFpcnyvM6d2Eb0IbXkpG8FtvbT1xWFcC5FeFvd/
+         egbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=5nLDF4KvNjOO0UGhzTbw+kgDFdu3GO4N4s2vFIPF9iU=;
+        b=ptvURURvVF0PYduJFoc/jaLaPwnArYnbpt/kvwU90VwGBaqoxqZf8aYuxui+DCy6F7
+         ivuxw4LiaL8VNb6AXDn5cs2a4RmdCrkNwHNev6Oi3AmbyStIKBz+WBqHgyHsff2PF78e
+         Fi7seFP5kdhL19q9P1DVOUAG/Pg0fwtWGEaAn3X+9FAIo08XOuPEQSlPaTMZPXyUONyC
+         nxum6YN47yOlYYAKHL/Eg8zm2ytOHwUSruazZgZOT1cZ2jHs0Hu3UY5lxX2tC/waRLdg
+         fHYVzeECsbARsEkAnqivw4Q+ZwPuWQ0gfb+tKzudfqXb74hDep0qlJlfIIy9O4B3lDKV
+         q3ww==
+X-Gm-Message-State: APjAAAV63sWVJm5R7i420dAAvzb7F5zjpJjNYo3ZXeIECQHZ/57U47rX
+        qPPjxrKQXdvfgNu8ntkEylvZmGMFKQXKeRUFC3q+OA==
+X-Google-Smtp-Source: APXvYqyU7SYZ3r1zFZE21AN1DFeMgGQwh6SguX3BRtEUzUX/aM0TrfFkxtA08Wzok29Qq+v25QAmavsjX/AI8Qz4iuA=
+X-Received: by 2002:a19:671c:: with SMTP id b28mr12475324lfc.164.1561018083426;
+ Thu, 20 Jun 2019 01:08:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Date:   Thu, 20 Jun 2019 09:55:50 +0200
-From:   Aymeric <mulx@aplu.fr>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-amlogic@lists.infradead.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: Re: network unstable on odroid-c1/meson8b.
-In-Reply-To: <0df100ad-b331-43db-10a5-3257bd09938d@gmail.com>
-References: <ff9a72bf-7eeb-542b-6292-dd70abdc4e79@aplu.fr>
- <0df100ad-b331-43db-10a5-3257bd09938d@gmail.com>
-Message-ID: <d2e298040f4887c547da11178f9ea64f@aplu.fr>
-X-Sender: mulx@aplu.fr
-User-Agent: Roundcube Webmail/1.2.9
-X-AV-Checked: ClamAV using ClamSMTP
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Thu, 20 Jun 2019 13:37:52 +0530
+Message-ID: <CA+G9fYsMcdHmKY66CNhsrizO-gErkOQCkTcBSyOHLpOs+8g5=g@mail.gmail.com>
+Subject: selftests: bpf: test_libbpf.sh failed at file test_l4lb.o
+To:     "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, bpf@vger.kernel.org,
+        Netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        xdp-newbies@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>, kafai@fb.com,
+        Yonghong Song <yhs@fb.com>, john.fastabend@gmail.com,
+        hawk@kernel.org, jakub.kicinski@netronome.com,
+        Shuah Khan <shuah@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-On 2019-06-20 00:14, Heiner Kallweit wrote:
-> On 19.06.2019 22:18, Aymeric wrote:
->> Hello all,
->> 
+selftests: bpf test_libbpf.sh failed running Linux -next kernel
+20190618 and 20190619.
 
-> Kernel 3.10 didn't have a dedicated RTL8211F PHY driver yet, therefore
-> I assume the genphy driver was used. Do you have a line with
-> "attached PHY driver" in dmesg output of the vendor kernel?
+Here is the log from x86_64,
+# selftests bpf test_libbpf.sh
+bpf: test_libbpf.sh_ #
+# [0] libbpf BTF is required, but is missing or corrupted.
+libbpf: BTF_is #
+# test_libbpf failed at file test_l4lb.o
+failed: at_file #
+# selftests test_libbpf [FAILED]
+test_libbpf: [FAILED]_ #
+[FAIL] 29 selftests bpf test_libbpf.sh
+selftests: bpf_test_libbpf.sh [FAIL]
 
-No.
-Here is the full output of the dmesg from vendor kernel [¹].
+Full test log,
+https://qa-reports.linaro.org/lkft/linux-next-oe/build/next-20190619/testrun/781777/log
 
-I've also noticed something strange, it might be linked, but mac address 
-of the board is set to a random value when using mainline kernel and 
-I've to set it manually but not when using vendor kernel.
+Test results comparison,
+https://qa-reports.linaro.org/lkft/linux-next-oe/tests/kselftest/bpf_test_libbpf.sh
 
-> 
-> The dedicated PHY driver takes care of the tx delay, if the genphy
-> driver is used we have to rely on what uboot configured.
-> But if we indeed had an issue with a misconfigured delay, I think
-> the connection shouldn't be fine with just another link partner.
-> Just to have it tested you could make rtl8211f_config_init() in
-> drivers/net/phy/realtek.c a no-op (in current kernels).
-> 
+Good linux -next tag: next-20190617
+Bad linux -next tag: next-20190618
+git branch     master
+git commit    1c6b40509daf5190b1fd2c758649f7df1da4827b
+git repo
+https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
 
-I'm not an expert here, just adding a "return 0;" here[²] would be 
-enough?
-
-> And you could compare at least the basic PHY registers 0x00 - 0x30
-> with both kernel versions, e.g. with phytool.
-> 
-
-They are not the same but I don't know what I'm looking for, so for 
-kernel 3.10 [³] and for kernel 5.1.12 [⁴].
-
-Aymeric
-
-[¹]: 
-https://paste.aplu.fr/?38ef95b44ebdbfc3#G666/YbhgU+O+tdC/2HaimUCigm8ZTB44qvQip/HJ5A=
-[²]: 
-https://github.com/torvalds/linux/blob/241e39004581475b2802cd63c111fec43bb0123e/drivers/net/phy/realtek.c#L164
-[³]: 
-https://paste.aplu.fr/?2dde1c32d5c68f4c#6xIa8MjTm6jpI6citEJAqFTLMMHDjFZRet/M00/EwjU=
-[⁴]: 
-https://paste.aplu.fr/?32130e9bcb05dde7#N/xdnvb5GklcJtiOxMpTCm+9gsUliRwH8X3dcwSV+ng=
+Best regards
+Naresh Kamboju
