@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1098B4DB2C
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 22:25:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3D9F4DB20
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 22:24:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727112AbfFTUYk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 16:24:40 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:43291 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726873AbfFTUYi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 16:24:38 -0400
-Received: by mail-pl1-f195.google.com with SMTP id cl9so1822296plb.10
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 13:24:38 -0700 (PDT)
+        id S1727165AbfFTUYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 16:24:46 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:40191 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727106AbfFTUYk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 16:24:40 -0400
+Received: by mail-pg1-f194.google.com with SMTP id w10so2151158pgj.7
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 13:24:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:subject:date:message-id:in-reply-to:references;
-        bh=npUjZ6j2WdJedZLCGkIXGyJ6QFHbM86oSVsxa7VHxlE=;
-        b=AKmy0PTeXB6LRzifgkUFEWeAdGppanFHn9a1X9dA7vqZnbfjtnsqQYT4y9ZYbx2iWe
-         tpbQejJmasy5/vPUDcEmHBLhd1Pz12YeTeUH/Rr1XvkLq0Z5IVLMpeO5DXiaFX7lFRud
-         6TZ6elweGRLTD5LvxnlvQleHLOTaK3b9oZ5ZagdZw35I7ge7iCIWw9SrviYUcmILuojQ
-         jo5VKlrzy9pOY7Ly10zw7xSfAYwFJhcNSXuf7uZVvjOUziRT34v2lsComWuNh2H8mTX2
-         5/qAaB5jkVtQ5zaPn3hRm0HUGPMf+t324rNvFaXBSNB+IsPqIf+kXNM4Jz8Lt3FIyygK
-         y6XQ==
+        bh=t2gNxAC7C8r0cfwhsRckBF943J+O5Te09bAs6kH05uk=;
+        b=CAeKpXzAu7IaanLGMJatMVCmZxOz8R1znsjr7nI/Ye//rq/Jyqc0O9YMq06TYnHymV
+         eOZgHJO3KfYttvw/spI/dLI403YuIusF+ueL51JOenvKDW3i+GHp/Ml7X5rQ+r0PCx4g
+         GHM2uMiIG2miYdJSECL1QKakeg7hhex/F/Lb/jfdvY2V9jnWxcS6aLXI7IEDOZ0LlY1N
+         JZCMTJV37AjBYmx9adiWo/SaucBr4MEXQZTWOF5CpVE2sP5+aLZHp1CUg+bxlTCAYdTf
+         t5Y83GqZrrLiNNlMWhSdBl/B/X5AlUCRLNKib5NCas74u5WnDAfgC1f19O+T8lDkxR9M
+         t6Pw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references;
-        bh=npUjZ6j2WdJedZLCGkIXGyJ6QFHbM86oSVsxa7VHxlE=;
-        b=XOs5wR2V1GljlMZhy2sXp7gDZzkN+oeI7rWL1K2elr76QR339ReB2aZxb6eXtkcOzL
-         PEiz5aCwria6+85jMyyBXDCDM1zh++DxezOlmOp6L3j7eTp2vI2Vo+s4sYoYT+OfQNMb
-         LPAz3gObrxm97b5jWWjKxkRvfzW/YFHlv2EhJSP2tckAoEr71iF+0ZgEdCczLiytQTM8
-         IgUp1d4X7pft/V6MQBZUYSD400WIDSu4ydZCcq+77XQq7DAadzo4rVmQc0kJRMOh5aqA
-         iFwDUcGtjhGxzEqzz597RBT3Xgf3+wonECwszAUSKqhrbZ/2YdUIzZ8jlflzE8hXzz/I
-         Noqg==
-X-Gm-Message-State: APjAAAX+6kP762BpI1txUVJAg6hwrChUYQi4Bjr3h78NmRF4Z4JL5sZl
-        gGUhtYlgAWtNbXLt00riJm0k/pd6iKs=
-X-Google-Smtp-Source: APXvYqy4ZyA+RLdvyDAE0d3iqVrw/DcQGD1hVi4k3Xc74AvNsKOOVmaC1YvtN+YxNxYmxHI4Fki/Hg==
-X-Received: by 2002:a17:902:2983:: with SMTP id h3mr83225372plb.45.1561062277635;
-        Thu, 20 Jun 2019 13:24:37 -0700 (PDT)
+        bh=t2gNxAC7C8r0cfwhsRckBF943J+O5Te09bAs6kH05uk=;
+        b=FsKPwEryy+neXR0fi6KftM+6FtfLCVEhmSg6zU3MSKY9W40gYWvAynF6IWZmG+CiXx
+         rULDEHghvGchBw0ovHxmoQIR45WR9u22Xtche7PmF9hkQu2qutw8hO77cg+VzobCH41p
+         l12WcilUV94xwHqnpJwtI1puNHoJuk/rjeWJv+QHbM0tlOhLzcIZteJ3o6vnpAiReDnK
+         YVHdhIGU/k9SQkzqmDrwY/OApA1hHBkqbVqjfVkbFwQJ5Vkq2K8lp/y9GWRA/586gFoI
+         MDqLSoGuRi4r8zDWjhjXpuAcnGoqx1w7IKONWlgr8WrE7M4aWdTJ67+t2lPrtrPYeiBn
+         lN9w==
+X-Gm-Message-State: APjAAAVD2J/LZLYXPiAbJRERILyunzQJYkct5oW+04v5SJ6+j3BWMMbS
+        Qm02ii7w0I5WSwWd2RFxrAEMoQ==
+X-Google-Smtp-Source: APXvYqyOWihmFCdhF8uw4V7XfSO67T6+wPw7GJ1P4U/HP4Xq2v1HXk21ScI/9UYH+nyHRpRxmWbp5w==
+X-Received: by 2002:a17:90a:8d0c:: with SMTP id c12mr1459015pjo.140.1561062279242;
+        Thu, 20 Jun 2019 13:24:39 -0700 (PDT)
 Received: from driver-dev1.pensando.io ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id h26sm340537pfq.64.2019.06.20.13.24.36
+        by smtp.gmail.com with ESMTPSA id h26sm340537pfq.64.2019.06.20.13.24.37
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 20 Jun 2019 13:24:37 -0700 (PDT)
+        Thu, 20 Jun 2019 13:24:38 -0700 (PDT)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     snelson@pensando.io, netdev@vger.kernel.org
-Subject: [PATCH net-next 08/18] ionic: Add notifyq support
-Date:   Thu, 20 Jun 2019 13:24:14 -0700
-Message-Id: <20190620202424.23215-9-snelson@pensando.io>
+Subject: [PATCH net-next 09/18] ionic: Add the basic NDO callbacks for netdev support
+Date:   Thu, 20 Jun 2019 13:24:15 -0700
+Message-Id: <20190620202424.23215-10-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190620202424.23215-1-snelson@pensando.io>
 References: <20190620202424.23215-1-snelson@pensando.io>
@@ -56,275 +56,425 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The AdminQ is fine for sending messages and requests to the NIC,
-but we also need to have events published from the NIC to the
-driver.  The NotifyQ handles this for us, using the same interrupt
-as AdminQ.
+Set up the initial NDO structure and callbacks for netdev
+to use, and register the netdev.  This will allow us to do
+a few basic operations on the device, but no traffic yet.
 
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- .../ethernet/pensando/ionic/ionic_debugfs.c   |  16 ++
- .../net/ethernet/pensando/ionic/ionic_lif.c   | 187 +++++++++++++++++-
- .../net/ethernet/pensando/ionic/ionic_lif.h   |   4 +
- 3 files changed, 206 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/pensando/ionic/ionic.h   |   1 +
+ .../ethernet/pensando/ionic/ionic_bus_pci.c   |   9 +
+ .../net/ethernet/pensando/ionic/ionic_dev.h   |   2 +
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 353 ++++++++++++++++++
+ .../net/ethernet/pensando/ionic/ionic_lif.h   |   5 +
+ 5 files changed, 370 insertions(+)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c b/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
-index e01126f3f6bd..5ebfaa320edf 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
-@@ -298,6 +298,7 @@ int ionic_debugfs_add_qcq(struct lif *lif, struct qcq *qcq)
- 	struct debugfs_blob_wrapper *desc_blob;
- 	struct device *dev = lif->ionic->dev;
- 	struct intr *intr = &qcq->intr;
-+	struct dentry *stats_dentry;
- 	struct queue *q = &qcq->q;
- 	struct cq *cq = &qcq->cq;
- 
-@@ -391,6 +392,21 @@ int ionic_debugfs_add_qcq(struct lif *lif, struct qcq *qcq)
- 					intr_ctrl_regset);
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic.h b/drivers/net/ethernet/pensando/ionic/ionic.h
+index c79bf5450495..90128a54d800 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic.h
+@@ -36,6 +36,7 @@ struct ionic {
+ 	unsigned int num_bars;
+ 	struct identity ident;
+ 	struct list_head lifs;
++	struct lif *master_lif;
+ 	bool is_mgmt_nic;
+ 	unsigned int nnqs_per_lif;
+ 	unsigned int neqs_per_lif;
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+index bb65a6518817..8be9342980c7 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+@@ -214,10 +214,18 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		goto err_out_free_lifs;
  	}
  
-+	if (qcq->flags & QCQ_F_NOTIFYQ) {
-+		stats_dentry = debugfs_create_dir("notifyblock", qcq_dentry);
-+		if (IS_ERR_OR_NULL(stats_dentry))
-+			return PTR_ERR(stats_dentry);
-+
-+		debugfs_create_u64("eid", 0400, stats_dentry,
-+				   (u64 *)&lif->info->status.eid);
-+		debugfs_create_u16("link_status", 0400, stats_dentry,
-+				   (u16 *)&lif->info->status.link_status);
-+		debugfs_create_u32("link_speed", 0400, stats_dentry,
-+				   (u32 *)&lif->info->status.link_speed);
-+		debugfs_create_u16("link_down_count", 0400, stats_dentry,
-+				   (u16 *)&lif->info->status.link_down_count);
++	err = ionic_lifs_register(ionic);
++	if (err) {
++		dev_err(dev, "Cannot register LIFs: %d, aborting\n", err);
++		goto err_out_deinit_lifs;
 +	}
 +
- 	return 0;
- }
+ 	dev_info(ionic->dev, "attached\n");
  
+ 	return 0;
+ 
++err_out_deinit_lifs:
++	ionic_lifs_deinit(ionic);
+ err_out_free_lifs:
+ 	ionic_lifs_free(ionic);
+ err_out_free_irqs:
+@@ -249,6 +257,7 @@ static void ionic_remove(struct pci_dev *pdev)
+ 	struct ionic *ionic = pci_get_drvdata(pdev);
+ 
+ 	if (ionic) {
++		ionic_lifs_unregister(ionic);
+ 		ionic_lifs_deinit(ionic);
+ 		ionic_lifs_free(ionic);
+ 		ionic_bus_free_irq_vectors(ionic);
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.h b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
+index 7014acd70b98..d44220c1d430 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_dev.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
+@@ -10,6 +10,8 @@
+ #include "ionic_if.h"
+ #include "ionic_regs.h"
+ 
++#define IONIC_MIN_MTU			ETH_MIN_MTU
++#define IONIC_MAX_MTU			9194
+ #define IONIC_LIFS_MAX			1024
+ 
+ struct ionic_dev_bar {
 diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index 1cfc571dc13e..2a5c2383e2f3 100644
+index 2a5c2383e2f3..c6444174f649 100644
 --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
 +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -12,6 +12,8 @@
+@@ -12,8 +12,74 @@
  #include "ionic_lif.h"
  #include "ionic_debugfs.h"
  
-+static int ionic_notifyq_clean(struct lif *lif, int budget);
++static int ionic_set_nic_features(struct lif *lif, netdev_features_t features);
+ static int ionic_notifyq_clean(struct lif *lif, int budget);
+ 
++int ionic_open(struct net_device *netdev)
++{
++	struct lif *lif = netdev_priv(netdev);
++
++	netif_carrier_off(netdev);
++
++	set_bit(LIF_UP, lif->state);
++
++	if (netif_carrier_ok(netdev))
++		netif_tx_wake_all_queues(netdev);
++
++	return 0;
++}
++
++static int ionic_lif_stop(struct lif *lif)
++{
++	struct net_device *ndev = lif->netdev;
++	int err = 0;
++
++	if (!test_bit(LIF_UP, lif->state)) {
++		dev_dbg(lif->ionic->dev, "%s: %s state=DOWN\n",
++			__func__, lif->name);
++		return 0;
++	}
++	dev_dbg(lif->ionic->dev, "%s: %s state=UP\n", __func__, lif->name);
++	clear_bit(LIF_UP, lif->state);
++
++	/* carrier off before disabling queues to avoid watchdog timeout */
++	netif_carrier_off(ndev);
++	netif_tx_stop_all_queues(ndev);
++	netif_tx_disable(ndev);
++	synchronize_rcu();
++
++	return err;
++}
++
++int ionic_stop(struct net_device *netdev)
++{
++	struct lif *lif = netdev_priv(netdev);
++
++	return ionic_lif_stop(lif);
++}
++
++int ionic_reset_queues(struct lif *lif)
++{
++	bool running;
++	int err = 0;
++
++	/* Put off the next watchdog timeout */
++	netif_trans_update(lif->netdev);
++
++	while (test_and_set_bit(LIF_QUEUE_RESET, lif->state))
++		usleep_range(100, 200);
++
++	running = netif_running(lif->netdev);
++	if (running)
++		err = ionic_stop(lif->netdev);
++	if (!err && running)
++		ionic_open(lif->netdev);
++
++	clear_bit(LIF_QUEUE_RESET, lif->state);
++
++	return err;
++}
 +
  static bool ionic_adminq_service(struct cq *cq, struct cq_info *cq_info)
  {
  	struct admin_comp *comp = cq_info->cq_desc;
-@@ -26,7 +28,94 @@ static bool ionic_adminq_service(struct cq *cq, struct cq_info *cq_info)
- 
- static int ionic_adminq_napi(struct napi_struct *napi, int budget)
- {
--	return ionic_napi(napi, budget, ionic_adminq_service, NULL, NULL);
-+	struct lif *lif = napi_to_cq(napi)->lif;
-+	int n_work = 0;
-+	int a_work = 0;
-+
-+	if (likely(lif->notifyqcq && lif->notifyqcq->flags & QCQ_F_INITED))
-+		n_work = ionic_notifyq_clean(lif, budget);
-+	a_work = ionic_napi(napi, budget, ionic_adminq_service, NULL, NULL);
-+
-+	return max(n_work, a_work);
-+}
-+
-+static bool ionic_notifyq_service(struct cq *cq, struct cq_info *cq_info)
-+{
-+	union notifyq_comp *comp = cq_info->cq_desc;
-+	struct net_device *netdev;
-+	struct queue *q;
-+	struct lif *lif;
-+	u64 eid;
-+
-+	q = cq->bound_q;
-+	lif = q->info[0].cb_arg;
-+	netdev = lif->netdev;
-+	eid = le64_to_cpu(comp->event.eid);
-+
-+	/* Have we run out of new completions to process? */
-+	if (eid <= lif->last_eid)
-+		return false;
-+
-+	lif->last_eid = eid;
-+
-+	dev_dbg(lif->ionic->dev, "notifyq event:\n");
-+	dynamic_hex_dump("event ", DUMP_PREFIX_OFFSET, 16, 1,
-+			 comp, sizeof(*comp), true);
-+
-+	switch (le16_to_cpu(comp->event.ecode)) {
-+	case EVENT_OPCODE_LINK_CHANGE:
-+		netdev_info(netdev, "Notifyq EVENT_OPCODE_LINK_CHANGE eid=%lld\n",
-+			    eid);
-+		netdev_info(netdev,
-+			    "  link_status=%d link_speed=%d\n",
-+			    le16_to_cpu(comp->link_change.link_status),
-+			    le32_to_cpu(comp->link_change.link_speed));
-+		break;
-+	case EVENT_OPCODE_RESET:
-+		netdev_info(netdev, "Notifyq EVENT_OPCODE_RESET eid=%lld\n",
-+			    eid);
-+		netdev_info(netdev, "  reset_code=%d state=%d\n",
-+			    comp->reset.reset_code,
-+			    comp->reset.state);
-+		break;
-+	case EVENT_OPCODE_HEARTBEAT:
-+		netdev_info(netdev, "Notifyq EVENT_OPCODE_HEARTBEAT eid=%lld\n",
-+			    eid);
-+		break;
-+	case EVENT_OPCODE_LOG:
-+		netdev_info(netdev, "Notifyq EVENT_OPCODE_LOG eid=%lld\n", eid);
-+		print_hex_dump(KERN_INFO, "notifyq ", DUMP_PREFIX_OFFSET, 16, 1,
-+			       comp->log.data, sizeof(comp->log.data), true);
-+		break;
-+	default:
-+		netdev_warn(netdev, "Notifyq bad event ecode=%d eid=%lld\n",
-+			    comp->event.ecode, eid);
-+		break;
-+	}
-+
-+	return true;
-+}
-+
-+static int ionic_notifyq_clean(struct lif *lif, int budget)
-+{
-+	struct ionic_dev *idev = &lif->ionic->idev;
-+	struct cq *cq = &lif->notifyqcq->cq;
-+	u32 work_done;
-+
-+	work_done = ionic_cq_service(cq, budget, ionic_notifyq_service,
-+				     NULL, NULL);
-+	if (work_done)
-+		ionic_intr_credits(idev->intr_ctrl, cq->bound_intr->index,
-+				   work_done, IONIC_INTR_CRED_RESET_COALESCE);
-+
-+	/* If we ran out of budget, there are more events
-+	 * to process and napi will reschedule us soon
-+	 */
-+	if (work_done == budget)
-+		goto return_to_napi;
-+
-+return_to_napi:
-+	return work_done;
+@@ -118,6 +184,86 @@ static int ionic_notifyq_clean(struct lif *lif, int budget)
+ 	return work_done;
  }
  
- static irqreturn_t ionic_isr(int irq, void *data)
-@@ -62,6 +151,17 @@ static void ionic_intr_free(struct lif *lif, int index)
- 		clear_bit(index, lif->ionic->intrs);
- }
- 
-+static void ionic_link_qcq_interrupts(struct qcq *src_qcq, struct qcq *n_qcq)
++static int ionic_set_features(struct net_device *netdev,
++			      netdev_features_t features)
 +{
-+	if (WARN_ON(n_qcq->flags & QCQ_F_INTR)) {
-+		ionic_intr_free(n_qcq->cq.lif, n_qcq->intr.index);
-+		n_qcq->flags &= ~QCQ_F_INTR;
-+	}
-+
-+	n_qcq->intr.vector = src_qcq->intr.vector;
-+	n_qcq->intr.index = src_qcq->intr.index;
-+}
-+
- static int ionic_qcq_alloc(struct lif *lif, unsigned int type,
- 			   unsigned int index,
- 			   const char *name, unsigned int flags,
-@@ -236,11 +336,36 @@ static int ionic_qcqs_alloc(struct lif *lif)
- 	if (err)
- 		return err;
- 
-+	if (lif->ionic->nnqs_per_lif) {
-+		flags = QCQ_F_NOTIFYQ;
-+		err = ionic_qcq_alloc(lif, IONIC_QTYPE_NOTIFYQ, 0, "notifyq",
-+				      flags, IONIC_NOTIFYQ_LENGTH,
-+				      sizeof(struct notifyq_cmd),
-+				      sizeof(union notifyq_comp),
-+				      0, lif->kern_pid, &lif->notifyqcq);
-+		if (err)
-+			goto err_out_free_adminqcq;
-+
-+		/* Let the notifyq ride on the adminq interrupt */
-+		ionic_link_qcq_interrupts(lif->adminqcq, lif->notifyqcq);
-+	}
-+
- 	return 0;
-+
-+err_out_free_adminqcq:
-+	ionic_qcq_free(lif, lif->adminqcq);
-+	lif->adminqcq = NULL;
-+
-+	return err;
- }
- 
- static void ionic_qcqs_free(struct lif *lif)
- {
-+	if (lif->notifyqcq) {
-+		ionic_qcq_free(lif, lif->notifyqcq);
-+		lif->notifyqcq = NULL;
-+	}
-+
- 	if (lif->adminqcq) {
- 		ionic_qcq_free(lif, lif->adminqcq);
- 		lif->adminqcq = NULL;
-@@ -402,6 +527,7 @@ static void ionic_lif_deinit(struct lif *lif)
- 	clear_bit(LIF_INITED, lif->state);
- 
- 	napi_disable(&lif->adminqcq->napi);
-+	ionic_lif_qcq_deinit(lif, lif->notifyqcq);
- 	ionic_lif_qcq_deinit(lif, lif->adminqcq);
- 
- 	ionic_lif_reset(lif);
-@@ -489,6 +615,57 @@ static int ionic_lif_adminq_init(struct lif *lif)
- 	return 0;
- }
- 
-+static int ionic_lif_notifyq_init(struct lif *lif)
-+{
-+	struct device *dev = lif->ionic->dev;
-+	struct qcq *qcq = lif->notifyqcq;
-+	struct queue *q = &qcq->q;
++	struct lif *lif = netdev_priv(netdev);
 +	int err;
 +
++	netdev_dbg(netdev, "%s: lif->features=0x%08llx new_features=0x%08llx\n",
++		   __func__, (u64)lif->netdev->features, (u64)features);
++
++	err = ionic_set_nic_features(lif, features);
++
++	return err;
++}
++
++static int ionic_set_mac_address(struct net_device *netdev, void *sa)
++{
++	netdev_info(netdev, "%s: stubbed\n", __func__);
++	return 0;
++}
++
++static int ionic_change_mtu(struct net_device *netdev, int new_mtu)
++{
++	struct lif *lif = netdev_priv(netdev);
 +	struct ionic_admin_ctx ctx = {
 +		.work = COMPLETION_INITIALIZER_ONSTACK(ctx.work),
-+		.cmd.q_init = {
-+			.opcode = CMD_OPCODE_Q_INIT,
-+			.lif_index = cpu_to_le16(lif->index),
-+			.type = q->type,
-+			.index = cpu_to_le32(q->index),
-+			.flags = cpu_to_le16(IONIC_QINIT_F_IRQ |
-+					     IONIC_QINIT_F_ENA),
-+			.intr_index = cpu_to_le16(lif->adminqcq->intr.index),
-+			.pid = cpu_to_le16(q->pid),
-+			.ring_size = ilog2(q->num_descs),
-+			.ring_base = cpu_to_le64(q->base_pa),
-+		}
++		.cmd.lif_setattr = {
++			.opcode = CMD_OPCODE_LIF_SETATTR,
++			.index = cpu_to_le16(lif->index),
++			.attr = IONIC_LIF_ATTR_MTU,
++			.mtu = cpu_to_le32(new_mtu),
++		},
 +	};
++	int err;
 +
-+	dev_dbg(dev, "notifyq_init.pid %d\n", ctx.cmd.q_init.pid);
-+	dev_dbg(dev, "notifyq_init.index %d\n", ctx.cmd.q_init.index);
-+	dev_dbg(dev, "notifyq_init.ring_base 0x%llx\n", ctx.cmd.q_init.ring_base);
-+	dev_dbg(dev, "notifyq_init.ring_size %d\n", ctx.cmd.q_init.ring_size);
++	if (new_mtu < IONIC_MIN_MTU || new_mtu > IONIC_MAX_MTU) {
++		netdev_err(netdev, "Invalid MTU %d\n", new_mtu);
++		return -EINVAL;
++	}
 +
 +	err = ionic_adminq_post_wait(lif, &ctx);
 +	if (err)
 +		return err;
 +
-+	q->hw_type = ctx.comp.q_init.hw_type;
-+	q->hw_index = le32_to_cpu(ctx.comp.q_init.hw_index);
-+	q->dbval = IONIC_DBELL_QID(q->hw_index);
++	netdev->mtu = new_mtu;
++	err = ionic_reset_queues(lif);
 +
-+	dev_dbg(dev, "notifyq->hw_type %d\n", q->hw_type);
-+	dev_dbg(dev, "notifyq->hw_index %d\n", q->hw_index);
++	return err;
++}
 +
-+	/* preset the callback info */
-+	q->info[0].cb_arg = lif;
++static void ionic_tx_timeout(struct net_device *netdev)
++{
++	netdev_info(netdev, "%s: stubbed\n", __func__);
++}
 +
-+	qcq->flags |= QCQ_F_INITED;
++static int ionic_vlan_rx_add_vid(struct net_device *netdev, __be16 proto,
++				 u16 vid)
++{
++	netdev_info(netdev, "%s: stubbed\n", __func__);
++	return 0;
++}
 +
-+	err = ionic_debugfs_add_qcq(lif, qcq);
++static int ionic_vlan_rx_kill_vid(struct net_device *netdev, __be16 proto,
++				  u16 vid)
++{
++	netdev_info(netdev, "%s: stubbed\n", __func__);
++	return 0;
++}
++
++static const struct net_device_ops ionic_netdev_ops = {
++	.ndo_open               = ionic_open,
++	.ndo_stop               = ionic_stop,
++	.ndo_set_features	= ionic_set_features,
++	.ndo_set_mac_address	= ionic_set_mac_address,
++	.ndo_validate_addr	= eth_validate_addr,
++	.ndo_tx_timeout         = ionic_tx_timeout,
++	.ndo_change_mtu         = ionic_change_mtu,
++	.ndo_vlan_rx_add_vid    = ionic_vlan_rx_add_vid,
++	.ndo_vlan_rx_kill_vid   = ionic_vlan_rx_kill_vid,
++};
++
+ static irqreturn_t ionic_isr(int irq, void *data)
+ {
+ 	struct napi_struct *napi = data;
+@@ -392,6 +538,12 @@ static struct lif *ionic_lif_alloc(struct ionic *ionic, unsigned int index)
+ 
+ 	lif = netdev_priv(netdev);
+ 	lif->netdev = netdev;
++	ionic->master_lif = lif;
++	netdev->netdev_ops = &ionic_netdev_ops;
++
++	netdev->watchdog_timeo = 2 * HZ;
++	netdev->min_mtu = IONIC_MIN_MTU;
++	netdev->max_mtu = IONIC_MAX_MTU;
+ 
+ 	lif->neqs = ionic->neqs_per_lif;
+ 	lif->nxqs = ionic->ntxqs_per_lif;
+@@ -666,6 +818,177 @@ static int ionic_lif_notifyq_init(struct lif *lif)
+ 	return 0;
+ }
+ 
++static __le64 ionic_netdev_features_to_nic(netdev_features_t features)
++{
++	u64 wanted = 0;
++
++	if (features & NETIF_F_HW_VLAN_CTAG_TX)
++		wanted |= ETH_HW_VLAN_TX_TAG;
++	if (features & NETIF_F_HW_VLAN_CTAG_RX)
++		wanted |= ETH_HW_VLAN_RX_STRIP;
++	if (features & NETIF_F_HW_VLAN_CTAG_FILTER)
++		wanted |= ETH_HW_VLAN_RX_FILTER;
++	if (features & NETIF_F_RXHASH)
++		wanted |= ETH_HW_RX_HASH;
++	if (features & NETIF_F_RXCSUM)
++		wanted |= ETH_HW_RX_CSUM;
++	if (features & NETIF_F_SG)
++		wanted |= ETH_HW_TX_SG;
++	if (features & NETIF_F_HW_CSUM)
++		wanted |= ETH_HW_TX_CSUM;
++	if (features & NETIF_F_TSO)
++		wanted |= ETH_HW_TSO;
++	if (features & NETIF_F_TSO6)
++		wanted |= ETH_HW_TSO_IPV6;
++	if (features & NETIF_F_TSO_ECN)
++		wanted |= ETH_HW_TSO_ECN;
++	if (features & NETIF_F_GSO_GRE)
++		wanted |= ETH_HW_TSO_GRE;
++	if (features & NETIF_F_GSO_GRE_CSUM)
++		wanted |= ETH_HW_TSO_GRE_CSUM;
++	if (features & NETIF_F_GSO_IPXIP4)
++		wanted |= ETH_HW_TSO_IPXIP4;
++	if (features & NETIF_F_GSO_IPXIP6)
++		wanted |= ETH_HW_TSO_IPXIP6;
++	if (features & NETIF_F_GSO_UDP_TUNNEL)
++		wanted |= ETH_HW_TSO_UDP;
++	if (features & NETIF_F_GSO_UDP_TUNNEL_CSUM)
++		wanted |= ETH_HW_TSO_UDP_CSUM;
++
++	return cpu_to_le64(wanted);
++}
++
++static int ionic_set_nic_features(struct lif *lif, netdev_features_t features)
++{
++	struct device *dev = lif->ionic->dev;
++	struct ionic_admin_ctx ctx = {
++		.work = COMPLETION_INITIALIZER_ONSTACK(ctx.work),
++		.cmd.lif_setattr = {
++			.opcode = CMD_OPCODE_LIF_SETATTR,
++			.index = cpu_to_le16(lif->index),
++			.attr = IONIC_LIF_ATTR_FEATURES,
++		},
++	};
++	u64 vlan_flags = ETH_HW_VLAN_TX_TAG |
++			 ETH_HW_VLAN_RX_STRIP |
++			 ETH_HW_VLAN_RX_FILTER;
++	int err;
++
++	ctx.cmd.lif_setattr.features = ionic_netdev_features_to_nic(features);
++	err = ionic_adminq_post_wait(lif, &ctx);
 +	if (err)
-+		dev_warn(dev, "debugfs add for notifyq failed %d\n", err);
++		return err;
++
++	lif->hw_features = le64_to_cpu(ctx.cmd.lif_setattr.features &
++				       ctx.comp.lif_setattr.features);
++
++	if ((vlan_flags & features) &&
++	    !(vlan_flags & le64_to_cpu(ctx.comp.lif_setattr.features)))
++		dev_info_once(lif->ionic->dev, "NIC is not supporting vlan offload, likely in SmartNIC mode\n");
++
++	if (lif->hw_features & ETH_HW_VLAN_TX_TAG)
++		dev_dbg(dev, "feature ETH_HW_VLAN_TX_TAG\n");
++	if (lif->hw_features & ETH_HW_VLAN_RX_STRIP)
++		dev_dbg(dev, "feature ETH_HW_VLAN_RX_STRIP\n");
++	if (lif->hw_features & ETH_HW_VLAN_RX_FILTER)
++		dev_dbg(dev, "feature ETH_HW_VLAN_RX_FILTER\n");
++	if (lif->hw_features & ETH_HW_RX_HASH)
++		dev_dbg(dev, "feature ETH_HW_RX_HASH\n");
++	if (lif->hw_features & ETH_HW_TX_SG)
++		dev_dbg(dev, "feature ETH_HW_TX_SG\n");
++	if (lif->hw_features & ETH_HW_TX_CSUM)
++		dev_dbg(dev, "feature ETH_HW_TX_CSUM\n");
++	if (lif->hw_features & ETH_HW_RX_CSUM)
++		dev_dbg(dev, "feature ETH_HW_RX_CSUM\n");
++	if (lif->hw_features & ETH_HW_TSO)
++		dev_dbg(dev, "feature ETH_HW_TSO\n");
++	if (lif->hw_features & ETH_HW_TSO_IPV6)
++		dev_dbg(dev, "feature ETH_HW_TSO_IPV6\n");
++	if (lif->hw_features & ETH_HW_TSO_ECN)
++		dev_dbg(dev, "feature ETH_HW_TSO_ECN\n");
++	if (lif->hw_features & ETH_HW_TSO_GRE)
++		dev_dbg(dev, "feature ETH_HW_TSO_GRE\n");
++	if (lif->hw_features & ETH_HW_TSO_GRE_CSUM)
++		dev_dbg(dev, "feature ETH_HW_TSO_GRE_CSUM\n");
++	if (lif->hw_features & ETH_HW_TSO_IPXIP4)
++		dev_dbg(dev, "feature ETH_HW_TSO_IPXIP4\n");
++	if (lif->hw_features & ETH_HW_TSO_IPXIP6)
++		dev_dbg(dev, "feature ETH_HW_TSO_IPXIP6\n");
++	if (lif->hw_features & ETH_HW_TSO_UDP)
++		dev_dbg(dev, "feature ETH_HW_TSO_UDP\n");
++	if (lif->hw_features & ETH_HW_TSO_UDP_CSUM)
++		dev_dbg(dev, "feature ETH_HW_TSO_UDP_CSUM\n");
++
++	return 0;
++}
++
++static int ionic_init_nic_features(struct lif *lif)
++{
++	struct net_device *netdev = lif->netdev;
++	netdev_features_t features;
++	int err;
++
++	/* set up what we expect to support by default */
++	features = NETIF_F_HW_VLAN_CTAG_TX |
++		   NETIF_F_HW_VLAN_CTAG_RX |
++		   NETIF_F_HW_VLAN_CTAG_FILTER |
++		   NETIF_F_RXHASH |
++		   NETIF_F_SG |
++		   NETIF_F_HW_CSUM |
++		   NETIF_F_RXCSUM |
++		   NETIF_F_TSO |
++		   NETIF_F_TSO6 |
++		   NETIF_F_TSO_ECN;
++
++	err = ionic_set_nic_features(lif, features);
++	if (err)
++		return err;
++
++	/* tell the netdev what we actually can support */
++	netdev->features |= NETIF_F_HIGHDMA;
++
++	if (lif->hw_features & ETH_HW_VLAN_TX_TAG)
++		netdev->hw_features |= NETIF_F_HW_VLAN_CTAG_TX;
++	if (lif->hw_features & ETH_HW_VLAN_RX_STRIP)
++		netdev->hw_features |= NETIF_F_HW_VLAN_CTAG_RX;
++	if (lif->hw_features & ETH_HW_VLAN_RX_FILTER)
++		netdev->hw_features |= NETIF_F_HW_VLAN_CTAG_FILTER;
++	if (lif->hw_features & ETH_HW_RX_HASH)
++		netdev->hw_features |= NETIF_F_RXHASH;
++	if (lif->hw_features & ETH_HW_TX_SG)
++		netdev->hw_features |= NETIF_F_SG;
++
++	if (lif->hw_features & ETH_HW_TX_CSUM)
++		netdev->hw_enc_features |= NETIF_F_HW_CSUM;
++	if (lif->hw_features & ETH_HW_RX_CSUM)
++		netdev->hw_enc_features |= NETIF_F_RXCSUM;
++	if (lif->hw_features & ETH_HW_TSO)
++		netdev->hw_enc_features |= NETIF_F_TSO;
++	if (lif->hw_features & ETH_HW_TSO_IPV6)
++		netdev->hw_enc_features |= NETIF_F_TSO6;
++	if (lif->hw_features & ETH_HW_TSO_ECN)
++		netdev->hw_enc_features |= NETIF_F_TSO_ECN;
++	if (lif->hw_features & ETH_HW_TSO_GRE)
++		netdev->hw_enc_features |= NETIF_F_GSO_GRE;
++	if (lif->hw_features & ETH_HW_TSO_GRE_CSUM)
++		netdev->hw_enc_features |= NETIF_F_GSO_GRE_CSUM;
++	if (lif->hw_features & ETH_HW_TSO_IPXIP4)
++		netdev->hw_enc_features |= NETIF_F_GSO_IPXIP4;
++	if (lif->hw_features & ETH_HW_TSO_IPXIP6)
++		netdev->hw_enc_features |= NETIF_F_GSO_IPXIP6;
++	if (lif->hw_features & ETH_HW_TSO_UDP)
++		netdev->hw_enc_features |= NETIF_F_GSO_UDP_TUNNEL;
++	if (lif->hw_features & ETH_HW_TSO_UDP_CSUM)
++		netdev->hw_enc_features |= NETIF_F_GSO_UDP_TUNNEL_CSUM;
++
++	netdev->hw_features |= netdev->hw_enc_features;
++	netdev->features |= netdev->hw_features;
++
++	netdev->priv_flags |= IFF_UNICAST_FLT;
 +
 +	return 0;
 +}
@@ -332,54 +482,80 @@ index 1cfc571dc13e..2a5c2383e2f3 100644
  static int ionic_lif_init(struct lif *lif)
  {
  	struct ionic_dev *idev = &lif->ionic->idev;
-@@ -543,10 +720,18 @@ static int ionic_lif_init(struct lif *lif)
- 	if (err)
- 		goto err_out_adminq_deinit;
+@@ -726,6 +1049,10 @@ static int ionic_lif_init(struct lif *lif)
+ 			goto err_out_notifyq_deinit;
+ 	}
  
-+	if (lif->ionic->nnqs_per_lif) {
-+		err = ionic_lif_notifyq_init(lif);
-+		if (err)
-+			goto err_out_notifyq_deinit;
-+	}
++	err = ionic_init_nic_features(lif);
++	if (err)
++		goto err_out_notifyq_deinit;
 +
  	set_bit(LIF_INITED, lif->state);
  
  	return 0;
+@@ -760,6 +1087,32 @@ int ionic_lifs_init(struct ionic *ionic)
+ 	return 0;
+ }
  
-+err_out_notifyq_deinit:
-+	ionic_lif_qcq_deinit(lif, lif->notifyqcq);
- err_out_adminq_deinit:
- 	ionic_lif_qcq_deinit(lif, lif->adminqcq);
- 	ionic_lif_reset(lif);
++int ionic_lifs_register(struct ionic *ionic)
++{
++	int err;
++
++	/* only register LIF0 for now */
++	err = register_netdev(ionic->master_lif->netdev);
++	if (err) {
++		dev_err(ionic->dev, "Cannot register net device, aborting\n");
++		return err;
++	}
++
++	ionic->master_lif->registered = true;
++
++	return 0;
++}
++
++void ionic_lifs_unregister(struct ionic *ionic)
++{
++	/* There is only one lif ever registered in the
++	 * current model, so don't bother searching the
++	 * ionic->lif for candidates to unregister
++	 */
++	if (ionic->master_lif->netdev->reg_state == NETREG_REGISTERED)
++		unregister_netdev(ionic->master_lif->netdev);
++}
++
+ int ionic_lif_identify(struct ionic *ionic, u8 lif_type,
+ 		       union lif_identity *lid)
+ {
 diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.h b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-index b9e2dd799a05..0a88a7df6c2b 100644
+index 0a88a7df6c2b..03d3685ad98e 100644
 --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.h
 +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-@@ -7,6 +7,7 @@
- #include <linux/pci.h>
+@@ -61,6 +61,8 @@ struct qcq {
  
- #define IONIC_ADMINQ_LENGTH	16	/* must be a power of two */
-+#define IONIC_NOTIFYQ_LENGTH	64	/* must be a power of two */
+ enum lif_state_flags {
+ 	LIF_INITED,
++	LIF_UP,
++	LIF_QUEUE_RESET,
  
- #define GET_NAPI_CNTR_IDX(work_done)	(work_done)
- #define MAX_NUM_NAPI_CNTR	(NAPI_POLL_WEIGHT + 1)
-@@ -26,6 +27,7 @@ struct rx_stats {
- #define QCQ_F_INITED		BIT(0)
- #define QCQ_F_SG		BIT(1)
- #define QCQ_F_INTR		BIT(2)
-+#define QCQ_F_NOTIFYQ		BIT(5)
- 
- struct napi_stats {
- 	u64 poll_count;
-@@ -78,6 +80,8 @@ struct lif {
- 	u64 __iomem *kern_dbpage;
- 	spinlock_t adminq_lock;		/* lock for AdminQ operations */
- 	struct qcq *adminqcq;
-+	struct qcq *notifyqcq;
-+	u64 last_eid;
+ 	/* leave this as last */
+ 	LIF_STATE_SIZE
+@@ -84,6 +86,7 @@ struct lif {
+ 	u64 last_eid;
  	unsigned int neqs;
  	unsigned int nxqs;
++	u64 hw_features;
  
+ 	struct lif_info *info;
+ 	dma_addr_t info_pa;
+@@ -130,6 +133,8 @@ int ionic_lifs_alloc(struct ionic *ionic);
+ void ionic_lifs_free(struct ionic *ionic);
+ void ionic_lifs_deinit(struct ionic *ionic);
+ int ionic_lifs_init(struct ionic *ionic);
++int ionic_lifs_register(struct ionic *ionic);
++void ionic_lifs_unregister(struct ionic *ionic);
+ int ionic_lif_identify(struct ionic *ionic, u8 lif_type,
+ 		       union lif_identity *lif_ident);
+ int ionic_lifs_size(struct ionic *ionic);
 -- 
 2.17.1
 
