@@ -2,86 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 124104DC97
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 23:31:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E05004DCA4
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 23:37:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726542AbfFTVbz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 17:31:55 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:39715 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725905AbfFTVby (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 17:31:54 -0400
-Received: by mail-pf1-f196.google.com with SMTP id j2so2386957pfe.6
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 14:31:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=LZKhWu5rzgWFMxJcBgmnI02JbwUBvtkff5v0cavArRE=;
-        b=L4Haammp5JsKQq+L6pyAUeIp1/rPaUl3NYxvbAfMva1bdaFrUxSiJpjicGBaD1FqSN
-         XIXc9rYdXoSiwwHf4+K5YAqIJXWi4qnlYbKg9Cjx0PTOEkXczTk9SYtta69ubYq2IXJj
-         gouWxNb6CnO+s9ZwKtL/fdJpnHgZ/wltudUuBfL8fXGYkrQpaj9y8GZTS7oWGWqEnc8D
-         9a7GoKfXxOcm7LAvwa+wwjLL+UcuZB2Dm1km9LC+QOY3c1kVaxc1cMoPmt2WoGdPoFZI
-         Sz6oiR3vc++X5nTQEJevjDOoXSoeDstbMdxsJx5fHR9Qdor6WqLUNpNKmXo2pqEmhYGN
-         ZT1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=LZKhWu5rzgWFMxJcBgmnI02JbwUBvtkff5v0cavArRE=;
-        b=MZRkQWAtxiWEVrmqA8kNhoD+sk77hMGq/syP9irVZdIphm+14tcLG8ka9OYHB83f6t
-         VSvVMzxn5nJFNtmts7MCHTdtmDW9Rmov3o6MWqFgwnVPgynJVpPssMrhZgYE4eoPg17i
-         5loUNq/VSt2WtTaes6UftJ8DTBPb4aF48u6diIsvMhSEmMhnpWyn9wqWyedZN9LTzKp7
-         w70t7U8KaqDqqyoBnp9fOTCufmUeRtop9prORMyi+Il6JTNk+d01xp83dhWSUZdrfHt8
-         ucRD4YVaHyxHKFrfoyAs4TpVRkSegV73IqD2nd6K3pEX9Nrvr5lW3F+COUpphJaAY1va
-         uoMA==
-X-Gm-Message-State: APjAAAXUNdXDSEcqSxdTeyBz35MnbTUdNeHppzThyQsZucIelLFZTw5o
-        t/iMIJneYbzXW0kDZY3aicKFW9pt1uc=
-X-Google-Smtp-Source: APXvYqxmrSdi1OnRNF21/XVwWopAXCIYIoxSLT0cbi2m95gaVl+NF0oHUQTK6iy7oP+3R2KJNhyVVA==
-X-Received: by 2002:a17:90a:36e4:: with SMTP id t91mr1759402pjb.22.1561066313979;
-        Thu, 20 Jun 2019 14:31:53 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id x25sm403098pfm.48.2019.06.20.14.31.53
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 20 Jun 2019 14:31:53 -0700 (PDT)
-Date:   Thu, 20 Jun 2019 14:31:46 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Matteo Croce <mcroce@redhat.com>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Andrea Claudi <aclaudi@redhat.com>
-Subject: Re: [PATCH iproute2 v2 0/3] refactor the cmd_exec()
-Message-ID: <20190620143146.6b45e9bb@hermes.lan>
-In-Reply-To: <20190618144935.31405-1-mcroce@redhat.com>
-References: <20190618144935.31405-1-mcroce@redhat.com>
+        id S1726231AbfFTVhX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 17:37:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46396 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725815AbfFTVhW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Jun 2019 17:37:22 -0400
+Received: from localhost (odyssey.drury.edu [64.22.249.253])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id DCD92206BA;
+        Thu, 20 Jun 2019 21:37:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1561066642;
+        bh=KEOsoSrb9GsSalzLDzqg7oM6M3w4KE8UClR5usfMJ1Q=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Q5uC+Cfu5/t9zh8Kv34dJcRj/KqPoNmIcR7JTUgi6pP3MCvNOE0KMP1xi5plXrb7S
+         vNTBkhiveZjiKHxdAr5tlkUVlXgFMD3L1EYk0Oxm17AFLEZAjVuLNTc3m8p/fEX6RU
+         /hWtSewfL3fPw70qmZ9m5N3ww3e2jpIZIBVVqss8=
+Date:   Thu, 20 Jun 2019 16:37:21 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Puranjay Mohan <puranjay12@gmail.com>
+Cc:     Shuah Khan <skhan@linuxfoundation.org>,
+        Bjorn Helgaas <bjorn@helgaas.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-pci@vger.kernel.org
+Subject: Re: [PATCH v2 3/3] net: fddi: skfp: Remove unused private PCI
+ definitions
+Message-ID: <20190620213721.GD110859@google.com>
+References: <20190620180754.15413-1-puranjay12@gmail.com>
+ <20190620180754.15413-4-puranjay12@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190620180754.15413-4-puranjay12@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 18 Jun 2019 16:49:32 +0200
-Matteo Croce <mcroce@redhat.com> wrote:
+On Thu, Jun 20, 2019 at 11:37:54PM +0530, Puranjay Mohan wrote:
+> Remove unused and private PCI definitions from skfbi.h because generic PCI
+> symbols are already included from pci_regs.h.
+> 
+> Signed-off-by: Puranjay Mohan <puranjay12@gmail.com>
+> ---
+>  drivers/net/fddi/skfp/h/skfbi.h | 207 +-------------------------------
+>  1 file changed, 1 insertion(+), 206 deletions(-)
+> 
+> diff --git a/drivers/net/fddi/skfp/h/skfbi.h b/drivers/net/fddi/skfp/h/skfbi.h
+> index a05ce16171be..a8af80148022 100644
+> --- a/drivers/net/fddi/skfp/h/skfbi.h
+> +++ b/drivers/net/fddi/skfp/h/skfbi.h
+> @@ -27,46 +27,6 @@
+>  /*
+>   * Configuration Space header
+>   */
 
-> Refactor the netns and ipvrf code so less steps are needed to exec commands
-> in a netns or a VRF context.
-> Also remove some code which became dead. bloat-o-meter shows a tiny saving.
-> 
-> Matteo Croce (3):
->   netns: switch netns in the child when executing commands
->   ip vrf: use hook to change VRF in the child
->   netns: make netns_{save,restore} static
-> 
->  include/namespace.h |  2 --
->  include/utils.h     |  6 ++---
->  ip/ip.c             |  1 -
->  ip/ipnetns.c        | 61 ++++++++++++++++++++++++++++++++++-----------
->  ip/ipvrf.c          | 12 ++++++---
->  lib/exec.c          |  7 +++++-
->  lib/namespace.c     | 31 -----------------------
->  lib/utils.c         | 27 --------------------
->  8 files changed, 63 insertions(+), 84 deletions(-)
-> 
+This comment should be removed because it goes along with the
+definitions below (the ones from PCI_VENDOR_ID to PCI_MAX_LAT).
 
-Ok, applied.
+> -#define	PCI_VENDOR_ID	0x00	/* 16 bit	Vendor ID */
+> -#define	PCI_DEVICE_ID	0x02	/* 16 bit	Device ID */
+
+> @@ -74,179 +34,14 @@
+>   * Note: The temperature and voltage sensors are relocated on a different
+>   *	 I2C bus.
+>   */
+> -#define I2C_ADDR_VPD	0xA0	/* I2C address for the VPD EEPROM */ 
+> +#define I2C_ADDR_VPD	0xA0	/* I2C address for the VPD EEPROM */
+
+You removed the space at the end of the I2C_ADDR_VPD line.  That space
+*is* a whitespace error, but generally you should avoid fixing random
+unrelated issues in the middle of your patch.  Those random fixes make
+it harder because the reviewer is expecting to see unused PCI-related
+things removed and seeing an I2C diff is surprising and forces him/her
+to do some investigation.
+
+> -/*	PCI_STATUS	16 bit	Status */
+>  #define	PCI_PERR	0x8000	/* Bit 15:	Parity Error */
+>  #define	PCI_SERR	0x4000	/* Bit 14:	Signaled SERR */
+>  #define	PCI_RMABORT	0x2000	/* Bit 13:	Received Master Abort */
+
+These should be replaced by PCI_STATUS_DETECTED_PARITY and similar
+generic definitions.  You could do this in your 1/1 patch along with
+PCI_REVISION_ID.
+
+> -#define	PCI_RTABORT	0x1000	/* Bit 12:	Received Target Abort */
+>  #define	PCI_STABORT	0x0800	/* Bit 11:	Sent Target Abort */
+> -#define	PCI_DEVSEL	0x0600	/* Bit 10..9:	DEVSEL Timing */
+> -#define	PCI_DEV_FAST	(0<<9)	/*		fast */
+> -#define	PCI_DEV_MEDIUM	(1<<9)	/*		medium */
+> -#define	PCI_DEV_SLOW	(2<<9)	/*		slow */
+>  #define	PCI_DATAPERR	0x0100	/* Bit 8:	DATA Parity error detected */
+> -#define	PCI_FB2BCAP	0x0080	/* Bit 7:	Fast Back-to-Back Capability */
+> -#define	PCI_UDF		0x0040	/* Bit 6:	User Defined Features */
+> -#define PCI_66MHZCAP	0x0020	/* Bit 5:	66 MHz PCI bus clock capable */
+> -#define PCI_NEWCAP	0x0010	/* Bit 4:	New cap. list implemented */
+> -
+>  #define PCI_ERRBITS	(PCI_PERR|PCI_SERR|PCI_RMABORT|PCI_STABORT|PCI_DATAPERR)
