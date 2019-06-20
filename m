@@ -2,98 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CDC9D4D0F5
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 16:53:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1C1E4D102
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 16:55:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732049AbfFTOxA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 10:53:00 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:46986 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726675AbfFTOw6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 10:52:58 -0400
-Received: by mail-qk1-f193.google.com with SMTP id x18so2055817qkn.13
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 07:52:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=lca.pw; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=5oMdsQsw1n7pkd5dZK0BAR68goU9Cphs7Z7vjhmXNXA=;
-        b=if6+rXaoBnz+H02oYwem3HWXB48VPwWoSvmotiKQcqueZkz88R/UOJrQJGPnqSxWh0
-         X3WWxz+KMriBFBvZG0/EZYb9KDDdGilbulSCa5O193BQx6OEd9S4APxsT3UV78tLkx6n
-         9WXhfxiDzSEcl6WRrOWKy533PY7TkmIDzQcBW47lcU6tBxY6A/Leti2v2Qxk0TsMDGA6
-         1hqoNBZw/ZyMe154WWMQCmMz6g4Lj58hgSdmjM6+cwvRNW3fbMoFd6qdZ0iPJMu4of9V
-         y7ZbI0HRLfHcm8QOkYoc0KpKXqUbujLWeiBtQ02Z71c6zN+vOkispdwvmTBl0TJGOVHZ
-         H8Bw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=5oMdsQsw1n7pkd5dZK0BAR68goU9Cphs7Z7vjhmXNXA=;
-        b=pOSsilWEKrNPorhhynqXEGR7evyKUuWeih3Nt4XbbbvrKdDWYfv8ZFhKbQQnYO/Gi8
-         iWalrc2uoH+HKZs6rB/pd/tmwDoREfxzn95H9wTmpPQZMJ9jSbJSAltlDBRIlttsmAhg
-         p689VjREL++LJkU5zBCjv0srKvEZgoHll5OUKH2U1ktlFFP3Bc9u0sZ+p5izQnBx9rd+
-         hCK1YGtRxCo33o+UJM9hGW7hTD36lyhbxXw8gtcGDwbj0YLXrvElEXGQgij9bAVZEDwq
-         uhN/KkR0OP8AO3uRJFtbWQOUgKQGNOnnRJyLjdq1SkvnaRQRM8LOpJoiMy8kF1kItcIs
-         adkw==
-X-Gm-Message-State: APjAAAUO46uiXRZdnA3kTJANVGC1jZNXq/z5DN9/uCCAMZt8EvWzjmcX
-        wI99X2oxXF6GXPeRBbc8++4yXQ==
-X-Google-Smtp-Source: APXvYqyLJk0+3HOrUCnuJqkk0jfG4hnZ4d747OQBhmE1HQEm9E2OZkcZvXeiDoYq6X0FOJ8JYq4oTw==
-X-Received: by 2002:ae9:eb96:: with SMTP id b144mr25466663qkg.321.1561042377583;
-        Thu, 20 Jun 2019 07:52:57 -0700 (PDT)
-Received: from qcai.nay.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id f9sm10553867qtl.75.2019.06.20.07.52.56
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 20 Jun 2019 07:52:57 -0700 (PDT)
-From:   Qian Cai <cai@lca.pw>
-To:     davem@davemloft.net
-Cc:     edumazet@google.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Qian Cai <cai@lca.pw>
-Subject: [PATCH -next] inet: fix compilation warnings in fqdir_pre_exit()
-Date:   Thu, 20 Jun 2019 10:52:40 -0400
-Message-Id: <1561042360-20480-1-git-send-email-cai@lca.pw>
-X-Mailer: git-send-email 1.8.3.1
+        id S1726686AbfFTOzZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 10:55:25 -0400
+Received: from smtp2.ono.com ([62.42.230.179]:12916 "EHLO smtp2.ono.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726530AbfFTOzZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Jun 2019 10:55:25 -0400
+X-Junkmail-Premium-Raw: score=17/50,refid=2.7.2:2019.6.20.134817:17:17.509,ip=62.42.230.133,rules=__HAS_MSGID,
+ __SANE_MSGID, MSGID_JMAIL_DEFAULT, INVALID_MSGID_NO_FQDN, __HAS_FROM,
+ __HAS_REPLYTO, __FRAUD_WEBMAIL_REPLYTO, __SUBJECT_NOLC, __SUBJECT_ALLCAPS,
+ SUBJ_1WORD, __MIME_VERSION, __CT, __CT_TEXT_PLAIN, __CTE, MISSING_HEADERS,
+ __FRAUD_TRUST, __FRAUD_LOC, ECARD_GREETING_WORD, __NO_HTML_TAG_RAW,
+ BODYTEXTP_SIZE_3000_LESS, BODY_SIZE_800_899, __MIME_TEXT_P1,
+ __MIME_TEXT_ONLY, HTML_00_01, HTML_00_10, FRAUD_X3, BODY_SIZE_5000_LESS,
+ __FRAUD_WEBMAIL, WEBMAIL_REPLYTO_NOT_FROM, FRAUD_WEBMAIL_R_NOT_F,
+ __FRAUD_COMMON, __MIME_TEXT_P, NO_URI_FOUND, NO_CTA_URI_FOUND,
+ __PHISH_SPEAR_STRUCTURE_1, BODY_SIZE_1000_LESS, BODY_SIZE_2000_LESS,
+ __PHISH_SPEAR_STRUCTURE_2, REPLYTO_FROM_DIFF_ADDY, NO_URI_HTTPS,
+ BODY_SIZE_7000_LESS, TO_MALFORMED
+Received: from resprs03 (62.42.230.133) by smtp2.ono.com (9.0.019.09-1)
+        id 5CAF0F5D037DF9CF; Thu, 20 Jun 2019 16:55:10 +0200
+Received: from (149.126.75.8) by webmailcpr03n.ono.com;  Thu, 20 Jun 2019 16:55:10 +0200
+Message-ID: <17302969.744101561042510360.JavaMail.defaultUser@defaultHost>
+Date:   Thu, 20 Jun 2019 16:55:10 +0200 (CEST)
+From:   James Williams <celias@ono.com>
+Reply-To: jw97798@gmail.com
+Subject: HI
+MIME-Version: 1.0
+Content-Type: text/plain;charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The linux-next commit "inet: fix various use-after-free in defrags
-units" [1] introduced compilation warnings,
 
-./include/net/inet_frag.h:117:1: warning: 'inline' is not at beginning
-of declaration [-Wold-style-declaration]
- static void inline fqdir_pre_exit(struct fqdir *fqdir)
- ^~~~~~
-In file included from ./include/net/netns/ipv4.h:10,
-                 from ./include/net/net_namespace.h:20,
-                 from ./include/linux/netdevice.h:38,
-                 from ./include/linux/icmpv6.h:13,
-                 from ./include/linux/ipv6.h:86,
-                 from ./include/net/ipv6.h:12,
-                 from ./include/rdma/ib_verbs.h:51,
-                 from ./include/linux/mlx5/device.h:37,
-                 from ./include/linux/mlx5/driver.h:51,
-                 from
-drivers/net/ethernet/mellanox/mlx5/core/pagealloc.c:37:
 
-[1] https://lore.kernel.org/netdev/20190618180900.88939-3-edumazet@google.com/
 
-Signed-off-by: Qian Cai <cai@lca.pw>
----
- include/net/inet_frag.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+--
+My greeting to you and your family,
+I am Captain JAMES WILLIAMS. I'm 49 years old, from the united states, 
+but I am currently in Syria for peace keeping mission. I am the 
+commanding officer of the third Battalion soldier regime.
 
-diff --git a/include/net/inet_frag.h b/include/net/inet_frag.h
-index 46574d996f1d..010f26b31c89 100644
---- a/include/net/inet_frag.h
-+++ b/include/net/inet_frag.h
-@@ -114,7 +114,7 @@ struct inet_frags {
- 
- int fqdir_init(struct fqdir **fqdirp, struct inet_frags *f, struct net *net);
- 
--static void inline fqdir_pre_exit(struct fqdir *fqdir)
-+static inline void fqdir_pre_exit(struct fqdir *fqdir)
- {
- 	fqdir->high_thresh = 0; /* prevent creation of new frags */
- 	fqdir->dead = true;
--- 
-1.8.3.1
+Please forgive my manners I am not good when it comes to the Internet 
+because that is not really my field.
+
+I came across your email confidently when I was searching for a 
+reliable person and I suddenly got your email address and I guess it's 
+for a good purpose,here in Syria we are not allowed to go out that 
+makes it very bored for me so I just think I need a friend to talk to 
+outside to keep me going. I would love to get to know you as a friend.
+
+Where are you from I will like to know more about you.
+
+Respectfully,
+James Williams   
+--
 
