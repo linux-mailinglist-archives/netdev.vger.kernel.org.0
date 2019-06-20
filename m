@@ -2,164 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08A924CA59
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 11:09:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FFFD4D4E0
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 19:24:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731557AbfFTJJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 05:09:03 -0400
-Received: from relay9-d.mail.gandi.net ([217.70.183.199]:48317 "EHLO
-        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731164AbfFTJJD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 05:09:03 -0400
-X-Originating-IP: 90.88.23.150
-Received: from localhost (aaubervilliers-681-1-81-150.w90-88.abo.wanadoo.fr [90.88.23.150])
-        (Authenticated sender: maxime.ripard@bootlin.com)
-        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id 145D4FF80E;
-        Thu, 20 Jun 2019 09:08:57 +0000 (UTC)
-Date:   Thu, 20 Jun 2019 11:08:57 +0200
-From:   Maxime Ripard <maxime.ripard@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Antoine =?utf-8?Q?T=C3=A9nart?= <antoine.tenart@bootlin.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v3 01/16] dt-bindings: net: Add YAML schemas for the
- generic Ethernet options
-Message-ID: <20190620090857.z6gru4cilq6z7e4w@flea>
-References: <27aeb33cf5b896900d5d11bd6957eda268014f0c.1560937626.git-series.maxime.ripard@bootlin.com>
- <20190619140314.GC18352@lunn.ch>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="52tq5ryctgrkeugj"
-Content-Disposition: inline
-In-Reply-To: <20190619140314.GC18352@lunn.ch>
-User-Agent: NeoMutt/20180716
+        id S1732476AbfFTRYg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 13:24:36 -0400
+Received: from mga12.intel.com ([192.55.52.136]:64663 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732425AbfFTRYf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Jun 2019 13:24:35 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 20 Jun 2019 10:24:34 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.63,397,1557212400"; 
+   d="scan'208";a="359020306"
+Received: from silpixa00399838.ir.intel.com (HELO silpixa00399838.ger.corp.intel.com) ([10.237.223.110])
+  by fmsmga006.fm.intel.com with ESMTP; 20 Jun 2019 10:24:32 -0700
+From:   Kevin Laatz <kevin.laatz@intel.com>
+To:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        bjorn.topel@intel.com, magnus.karlsson@intel.com
+Cc:     bpf@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        bruce.richardson@intel.com, ciara.loftus@intel.com,
+        Kevin Laatz <kevin.laatz@intel.com>
+Subject: [PATCH 00/11] XDP unaligned chunk placement support
+Date:   Thu, 20 Jun 2019 09:09:47 +0000
+Message-Id: <20190620090958.2135-1-kevin.laatz@intel.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patchset adds the ability to use unaligned chunks in the XDP umem.
 
---52tq5ryctgrkeugj
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Currently, all chunk addresses passed to the umem are masked to be chunk
+size aligned (default is 2k, max is PAGE_SIZE). This limits where we can
+place chunks within the umem as well as limiting the packet sizes that are
+supported.
 
-Hi Andrew,
+The changes in this patchset removes these restrictions, allowing XDP to be
+more flexible in where it can place a chunk within a umem. By relaxing where
+the chunks can be placed, it allows us to use an arbitrary buffer size and
+place that wherever we have a free address in the umem. These changes add the
+ability to support jumboframes and make it easy to integrate with other
+existing frameworks that have their own memory management systems, such as
+DPDK.
 
-On Wed, Jun 19, 2019 at 04:03:14PM +0200, Andrew Lunn wrote:
-> > +  phy-connection-type:
-> > +    description:
-> > +      Operation mode of the PHY interface
-> > +    enum:
-> > +      # There is not a standard bus between the MAC and the PHY,
-> > +      # something proprietary is being used to embed the PHY in the
-> > +      # MAC.
->
-> ...
->
-> > +
-> > +  phy-mode:
-> > +    $ref: "#/properties/phy-connection-type"
-> > +    deprecated: true
->
-> I don't think phy-mode is actually deprecated. ethernet.txt actually says:
->
-> "This is now a de-facto standard property;" and no mentions that is
-> should not be used. Looking at actual device trees, phy-mode is by far
-> more popular than phy-connection-type.
+Structure of the patchset:
+Patch 1:
+  - Remove unnecessary masking and headroom addition during zero-copy Rx
+    buffer recycling in i40e. This change is required in order for the
+    buffer recycling to work in the unaligned chunk mode.
 
-Looking at the phy-connection-type documentation, I was under this
-impression, sorry.
+Patch 2:
+  - Remove unnecessary masking and headroom addition during
+    zero-copy Rx buffer recycling in ixgbe. This change is required in
+    order for the  buffer recycling to work in the unaligned chunk mode.
 
-I'll drop it then.
+Patch 3:
+  - Adds an offset parameter to zero_copy_allocator. This change will
+    enable us to calculate the original handle in zca_free. This will be
+    required for unaligned chunk mode since we can't easily mask back to
+    the original handle.
 
-> fwnode_get_phy_mode() first looks for phy-mode and only falls back to
-> phy-connection-type if it is not present. The same is true for
-> of_get_phy_mode().
->
-> > +  fixed-link:
-> > +    allOf:
-> > +      - if:
-> > +          type: array
-> > +        then:
-> > +          minItems: 1
-> > +          maxItems: 1
-> > +          items:
-> > +            items:
-> > +              - minimum: 0
-> > +                maximum: 31
-> > +                description:
-> > +                  Emulated PHY ID, choose any but unique to the all
-> > +                  specified fixed-links
-> > +
-> > +              - enum: [0, 1]
-> > +                description:
-> > +                  Duplex configuration. 0 for half duplex or 1 for
-> > +                  full duplex
-> > +
-> > +              - enum: [10, 100, 1000]
-> > +                description:
-> > +                  Link speed in Mbits/sec.
-> > +
-> > +              - enum: [0, 1]
-> > +                description:
-> > +                  Pause configuration. 0 for no pause, 1 for pause
-> > +
-> > +              - enum: [0, 1]
-> > +                description:
-> > +                  Asymmetric pause configuration. 0 for no asymmetric
-> > +                  pause, 1 for asymmetric pause
-> > +
->
-> This array of 5 values format should be marked as deprecated.
+Patch 4:
+  - Adds the offset parameter to i40e_zca_free. This change is needed for
+    calculating the handle since we can't easily mask back to the original
+    handle like we can in the aligned case.
 
-Right, I'll add it.
+Patch 5:
+  - Adds the offset parameter to ixgbe_zca_free. This change is needed for
+    calculating the handle since we can't easily mask back to the original
+    handle like we can in the aligned case.
 
-> > +
-> > +      - if:
-> > +          type: object
-> > +        then:
-> > +          properties:
-> > +            speed:
-> > +              allOf:
-> > +                - $ref: /schemas/types.yaml#definitions/uint32
-> > +                - enum: [10, 100, 1000]
->
-> This recently changed, depending on context. If PHYLINK is being used,
-> any speed is allowed. If phylib is used, then only these speeds are
-> allowed. And we are starting to see some speeds other than listed
-> here.
 
-phylink seems to be described in a separate binding document, maybe we
-can adjust that later?
+Patch 6:
+  - Add infrastructure for unaligned chunks. Since we are dealing
+    with unaligned chunks that could potentially cross a physical page
+    boundary, we add checks to keep track of that information. We can
+    later use this information to correctly handle buffers that are
+    placed at an address where they cross a page boundary.
 
-Maxime
+Patch 7:
+  - Add flags for umem configuration to libbpf
 
---
-Maxime Ripard, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+Patch 8:
+  - Modify xdpsock application to add a command line option for
+    unaligned chunks
 
---52tq5ryctgrkeugj
-Content-Type: application/pgp-signature; name="signature.asc"
+Patch 9:
+  - Addition of command line argument to pass in a desired buffer size
+    and buffer recycling for unaligned mode. Passing in a buffer size will
+    allow the application to use unaligned chunks with the unaligned chunk
+    mode. Since we are now using unaligned chunks, we need to recycle our
+    buffers in a slightly different way.
 
------BEGIN PGP SIGNATURE-----
+Patch 10:
+  - Adds hugepage support to the xdpsock application
 
-iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXQtNKQAKCRDj7w1vZxhR
-xU1mAP9UxX/bUs/+sGjv2lf1IVQAuWCDAFQPe+SNpltGaaRbzAD/Z9kZa0JhhgBo
-aIO1LH2YT0uPFhUlcf7U7bvipC2mnQ0=
-=QITW
------END PGP SIGNATURE-----
+Patch 11:
+  - Documentation update to include the unaligned chunk scenario. We need
+    to explicitly state that the incoming addresses are only masked in the
+    aligned chunk mode and not the unaligned chunk mode.
 
---52tq5ryctgrkeugj--
+Kevin Laatz (11):
+  i40e: simplify Rx buffer recycle
+  ixgbe: simplify Rx buffer recycle
+  xdp: add offset param to zero_copy_allocator
+  i40e: add offset to zca_free
+  ixgbe: add offset to zca_free
+  xsk: add support to allow unaligned chunk placement
+  libbpf: add flags to umem config
+  samples/bpf: add unaligned chunks mode support to xdpsock
+  samples/bpf: add buffer recycling for unaligned chunks to xdpsock
+  samples/bpf: use hugepages in xdpsock app
+  doc/af_xdp: include unaligned chunk case
+
+ Documentation/networking/af_xdp.rst           | 10 +-
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c    | 21 ++--
+ drivers/net/ethernet/intel/i40e/i40e_xsk.h    |  3 +-
+ .../ethernet/intel/ixgbe/ixgbe_txrx_common.h  |  3 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  | 21 ++--
+ include/net/xdp.h                             |  3 +-
+ include/net/xdp_sock.h                        |  2 +
+ include/uapi/linux/if_xdp.h                   |  4 +
+ net/core/xdp.c                                | 11 ++-
+ net/xdp/xdp_umem.c                            | 17 ++--
+ net/xdp/xsk.c                                 | 60 +++++++++--
+ net/xdp/xsk_queue.h                           | 60 +++++++++--
+ samples/bpf/xdpsock_user.c                    | 99 ++++++++++++++-----
+ tools/include/uapi/linux/if_xdp.h             |  4 +
+ tools/lib/bpf/xsk.c                           |  7 ++
+ tools/lib/bpf/xsk.h                           |  2 +
+ 16 files changed, 241 insertions(+), 86 deletions(-)
+
+-- 
+2.17.1
+
