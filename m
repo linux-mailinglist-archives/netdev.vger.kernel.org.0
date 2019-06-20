@@ -2,77 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F14E4C758
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 08:17:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4EE24C7BE
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 08:58:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726230AbfFTGRT convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 20 Jun 2019 02:17:19 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:55612 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725872AbfFTGRS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 02:17:18 -0400
-Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x5K6HCMf015697, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtitcasv01.realtek.com.tw[172.21.6.18])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x5K6HCMf015697
-        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Thu, 20 Jun 2019 14:17:12 +0800
-Received: from RTITMBSVM03.realtek.com.tw ([fe80::e1fe:b2c1:57ec:f8e1]) by
- RTITCASV01.realtek.com.tw ([::1]) with mapi id 14.03.0439.000; Thu, 20 Jun
- 2019 14:17:11 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "palmer@sifive.com" <palmer@sifive.com>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>
-Subject: skb_to_sgvec() casuses sg_pcopy_to_buffer() wrong
-Thread-Topic: skb_to_sgvec() casuses sg_pcopy_to_buffer() wrong
-Thread-Index: AdUnKF3JjX6iqdk4SWCfeWKY5qIZzA==
-Date:   Thu, 20 Jun 2019 06:17:10 +0000
-Message-ID: <0835B3720019904CB8F7AA43166CEEB2F189FDF5@RTITMBSVM03.realtek.com.tw>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.214]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1726122AbfFTG60 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 02:58:26 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:43238 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725977AbfFTG60 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 02:58:26 -0400
+Received: by mail-pg1-f196.google.com with SMTP id f25so1051891pgv.10;
+        Wed, 19 Jun 2019 23:58:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5tq+X4wXXrZG/wbS6SMtHzkOdEnpgI5MI2Re6q1RlzY=;
+        b=kQTPnYOo24zaVfkMSvmceTasBcY1+Fa4BgqJpcnvR4ft3F4lz3Feod/vAHtj2Gf/PK
+         lzoDy9jUETyt3/rJSPOyd+YsCTNuJtQley+Wfz0x4dFrukJkpKWhAD6xHT7zaYDXqK5N
+         SJFttAcv/I9wk0iae5Qe0Z5OCnHaD/xL6OC8x8DXSmJdFkrjCSStz5NfotSbVaBr128s
+         5HsLZ2ZofOefY7S1KRjL0uHCcOwTetPzlDjs7+rlskLPpoo+7To8HjCflYIzEtC4UaPD
+         Gb5lIg6JblGqSZdHpKow/MyomKtK5IE1UW7YCAu1aSjlohTxxawnqGAVxCiXz3tTzF11
+         9b9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5tq+X4wXXrZG/wbS6SMtHzkOdEnpgI5MI2Re6q1RlzY=;
+        b=NMYxv7AROVUt7BZqp7BfzQVoTtrdnWdISR5IcvQ5nWVP9GrPKtYuuRVf9wlN5ZjDb/
+         79lgmSX3UgRyyf1RhU2ig9X4VtbdZvhgfSpPWe7/rjZ996kuLmyDtbsMw1AsvhZ90l4i
+         o6vP/WtCGRQoXUgUM1XEds4Cn9VOF7/7kyAM0UO+VGSJ28bxI3sTt138B8Ze/Ka3D/D7
+         KLAnHe6l7Y+SrQ+wcxY+O3ULlvRRu9YkqM+14nW7/Bw98QrbXstBXdovrFJIqSjWTK8X
+         S5C8Y33WPyPbTrSp5cC0o2gg7gvIDWfuyFGimj5cd0zbiwpXZFMKQAFvWw5VLXzuo3bP
+         v+ug==
+X-Gm-Message-State: APjAAAW5wAPtw0SJGlp3kufO6O/fGX0qUv1iXVjXIqb7sQ5hRndvQCUo
+        ODGPoazkL3xR68usQ99iY8Y=
+X-Google-Smtp-Source: APXvYqyMJEY7PxlxA1/4Q8uaahhdBJwmbXOc6UbM+Z4zfMfygklvdBTS1l+bCE78VCyjJ0onYTHtyg==
+X-Received: by 2002:a17:90a:7148:: with SMTP id g8mr1508670pjs.51.1561013906103;
+        Wed, 19 Jun 2019 23:58:26 -0700 (PDT)
+Received: from localhost.localdomain ([222.151.198.97])
+        by smtp.gmail.com with ESMTPSA id t19sm3574203pjo.11.2019.06.19.23.58.23
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 19 Jun 2019 23:58:25 -0700 (PDT)
+From:   Prashant Bhole <prashantbhole.linux@gmail.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Prashant Bhole <prashantbhole.linux@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH bpf] samples/bpf: xdp_redirect, correctly get dummy program id
+Date:   Thu, 20 Jun 2019 15:58:15 +0900
+Message-Id: <20190620065815.7698-1-prashantbhole.linux@gmail.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use skb_to_sgvec() to set scatter list, and sometime we would get a
-sg->offset which is more than PAGE_SIZE. Call sg_pcopy_to_buffer()
-with this scatter list would get wrong data.
+When we terminate xdp_redirect, it ends up with following message:
+"Program on iface OUT changed, not removing"
+This results in dummy prog still attached to OUT interface.
+It is because signal handler checks if the programs are the same that
+we had attached. But while fetching dummy_prog_id, current code uses
+prog_fd instead of dummy_prog_fd. This patch passes the correct fd.
 
-In sg_miter_get_next_page(), you would get wrong miter->__remaining,
-when the sg->offset is more than PAGE_SIZE.
+Fixes: 3b7a8ec2dec3 ("samples/bpf: Check the prog id before exiting")
+Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
+---
+ samples/bpf/xdp_redirect_user.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-static bool sg_miter_get_next_page(struct sg_mapping_iter *miter)
-{
-	if (!miter->__remaining) {
-		struct scatterlist *sg;
-		unsigned long pgoffset;
-
-		if (!__sg_page_iter_next(&miter->piter))
-			return false;
-
-		sg = miter->piter.sg;
-		pgoffset = miter->piter.sg_pgoffset;
-
-		miter->__offset = pgoffset ? 0 : sg->offset;
-		miter->__remaining = sg->offset + sg->length -
-				(pgoffset << PAGE_SHIFT) - miter->__offset;
-		miter->__remaining = min_t(unsigned long, miter->__remaining,
-					   PAGE_SIZE - miter->__offset);
-	}
-
-	return true;
-}
-
-Best Regards,
-Hayes
+diff --git a/samples/bpf/xdp_redirect_user.c b/samples/bpf/xdp_redirect_user.c
+index e9054c0269ff..1299e0f61dad 100644
+--- a/samples/bpf/xdp_redirect_user.c
++++ b/samples/bpf/xdp_redirect_user.c
+@@ -197,7 +197,7 @@ int main(int argc, char **argv)
+ 	}
+ 
+ 	memset(&info, 0, sizeof(info));
+-	ret = bpf_obj_get_info_by_fd(prog_fd, &info, &info_len);
++	ret = bpf_obj_get_info_by_fd(dummy_prog_fd, &info, &info_len);
+ 	if (ret) {
+ 		printf("can't get prog info - %s\n", strerror(errno));
+ 		return ret;
+-- 
+2.20.1
 
