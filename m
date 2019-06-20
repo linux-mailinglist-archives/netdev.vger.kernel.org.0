@@ -2,187 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0798B4C674
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 07:04:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E30174C6B3
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 07:14:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726072AbfFTFEU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 01:04:20 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:38579 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725872AbfFTFET (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 01:04:19 -0400
-Received: by mail-io1-f65.google.com with SMTP id j6so25407ioa.5;
-        Wed, 19 Jun 2019 22:04:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=XJopMC6Rv6u1E7+6BykshXCvF47B9L6+sT4w8Ns8DQI=;
-        b=Sf4XiY+/o0kBVnVFtGVGCFlIZI9kfCKPo8X2enFgR2Uw3beH6IamQWTzoSYg0QIetj
-         CNZQjUA9OI2BiKa9AKJQu8Eye8kHOGsPzzN6fONA3f9uYQGK9DumLFGaS0P2OH5wmLAk
-         jxuFQ7spcajRhLIkZYGTcpOYd9nVhpnC3w4COz/pCtEczkf01dJdLFfSKMHy7haoa7DC
-         zsrj91Knwc06Ha3FLjSOEs+FvrEhUhl5nUb3oQ5afrtAbglZRMGpbn8QYzyqqkwWWRdc
-         HRkTNDafUQ1GfSr1PpbtoJYh2i672xw04ZgjsSUpY7WKCBx7GHrtZbLcgp/1JcgI3aCt
-         TOcg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=XJopMC6Rv6u1E7+6BykshXCvF47B9L6+sT4w8Ns8DQI=;
-        b=NZ9oplW3kA3PU4d7091Wv0o8DfVaBpQyWmBYb5af4HiIzQZiynphIO7cmRCTAHE3PD
-         YTEa33Os6MNB1vm4qRdzSOfsnXpSoRYwknMqN0ftIQKWtl1KP8z+D+B/pG549cs2v/dQ
-         4EUuDdMPAaJKIo5ByJFZJ2cg+IIEC+eGQIg55eQBkIoSQx+/xFQtSfcLjF5UrqoYF4zg
-         HxB2h51RgKFwhms5coomnGQ7VXIrrPOjaODek6UovRQ9aEB4DFi3Fh2lonU/3hJy0rOx
-         oo9aPjTb9SFMZ1v6Zy0ogq65hKy0V1bewdkYRMMr5musgn9wq8XHxUxX334G//AmApr/
-         yDWA==
-X-Gm-Message-State: APjAAAU7SxHnRDE7Nmb2zN3OXrRQhH5s9TZ2ihR2ItkH9HJJN9iBOE+D
-        qpHSytoYE+f77hX2yC0rq7k=
-X-Google-Smtp-Source: APXvYqweBiQagR1wAJXwCmJNwKax4ApVKg5h7bmMyoKasx9O8ayl2DcP4HblhQLy0/BwgqJt6nyvyg==
-X-Received: by 2002:a5e:c70c:: with SMTP id f12mr16831315iop.293.1561007058624;
-        Wed, 19 Jun 2019 22:04:18 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id f4sm21102608iok.56.2019.06.19.22.04.15
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 19 Jun 2019 22:04:17 -0700 (PDT)
-Date:   Wed, 19 Jun 2019 22:04:09 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>, davem@davemloft.net,
-        daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@fb.com
-Message-ID: <5d0b13c990eaa_21bb2acd7a54c5b4a0@john-XPS-13-9370.notmuch>
-In-Reply-To: <20190620033538.4oou4mbck6xs64mj@ast-mbp.dhcp.thefacebook.com>
-References: <20190615191225.2409862-1-ast@kernel.org>
- <20190615191225.2409862-2-ast@kernel.org>
- <5d0ad24027106_8822adea29a05b47c@john-XPS-13-9370.notmuch>
- <20190620033538.4oou4mbck6xs64mj@ast-mbp.dhcp.thefacebook.com>
-Subject: Re: [PATCH v3 bpf-next 1/9] bpf: track spill/fill of constants
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S1731354AbfFTFNn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 01:13:43 -0400
+Received: from mga09.intel.com ([134.134.136.24]:48862 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725857AbfFTFNn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Jun 2019 01:13:43 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 19 Jun 2019 22:13:42 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.63,395,1557212400"; 
+   d="scan'208";a="154011514"
+Received: from pgsmsx105.gar.corp.intel.com ([10.221.44.96])
+  by orsmga008.jf.intel.com with ESMTP; 19 Jun 2019 22:13:39 -0700
+Received: from pgsmsx114.gar.corp.intel.com ([169.254.4.160]) by
+ PGSMSX105.gar.corp.intel.com ([169.254.4.28]) with mapi id 14.03.0439.000;
+ Thu, 20 Jun 2019 13:13:38 +0800
+From:   "Ong, Boon Leong" <boon.leong.ong@intel.com>
+To:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        biao huang <biao.huang@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Giuseppe Cavallaro" <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "Kweh, Hock Leong" <hock.leong.kweh@intel.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "Voon, Weifeng" <weifeng.voon@intel.com>
+Subject: RE: [PATCH net-next v6 2/5] net: stmmac: introducing support for
+ DWC xPCS logics
+Thread-Topic: [PATCH net-next v6 2/5] net: stmmac: introducing support for
+ DWC xPCS logics
+Thread-Index: AQHVGsR8mZhQFRvu0EOiETyHTmqFxaaLcWMAgAET3gCAATg0IIAWWfBQ
+Date:   Thu, 20 Jun 2019 05:13:38 +0000
+Message-ID: <AF233D1473C1364ABD51D28909A1B1B75C17F73B@pgsmsx114.gar.corp.intel.com>
+References: <1559674736-2190-1-git-send-email-weifeng.voon@intel.com>
+ <1559674736-2190-3-git-send-email-weifeng.voon@intel.com>
+ <05cf54dc-7c40-471e-f08a-7fdf5fe4ef54@gmail.com>
+ <78EB27739596EE489E55E81C33FEC33A0B93EF69@DE02WEMBXB.internal.synopsys.com>
+ <AF233D1473C1364ABD51D28909A1B1B75C12D381@pgsmsx114.gar.corp.intel.com>
+In-Reply-To: <AF233D1473C1364ABD51D28909A1B1B75C12D381@pgsmsx114.gar.corp.intel.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ctpclassification: CTP_NT
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiMmQ4ZWFhNWMtOTIxZS00YmRmLWJhNDUtZTkxZDZkMTQ2ZDBmIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiNzY2c2YxY0p5Z2RUcVwvM3RWOTFabHVBaHBvR3ZKZm1aUUV3dGNoWWsrdWtYSG1hRW5YcEpGc0lVWVVKUWxsclwvIn0=
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [172.30.20.206]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov wrote:
-> On Wed, Jun 19, 2019 at 05:24:32PM -0700, John Fastabend wrote:
-> > Alexei Starovoitov wrote:
-> > > Compilers often spill induction variables into the stack,
-> > > hence it is necessary for the verifier to track scalar values
-> > > of the registers through stack slots.
-> > > 
-> > > Also few bpf programs were incorrectly rejected in the past,
-> > > since the verifier was not able to track such constants while
-> > > they were used to compute offsets into packet headers.
-> > > 
-> > > Tracking constants through the stack significantly decreases
-> > > the chances of state pruning, since two different constants
-> > > are considered to be different by state equivalency.
-> > > End result that cilium tests suffer serious degradation in the number
-> > > of states processed and corresponding verification time increase.
-> > > 
-> > >                      before  after
-> > > bpf_lb-DLB_L3.o      1838    6441
-> > > bpf_lb-DLB_L4.o      3218    5908
-> > > bpf_lb-DUNKNOWN.o    1064    1064
-> > > bpf_lxc-DDROP_ALL.o  26935   93790
-> > > bpf_lxc-DUNKNOWN.o   34439   123886
-> > > bpf_netdev.o         9721    31413
-> > > bpf_overlay.o        6184    18561
-> > > bpf_lxc_jit.o        39389   359445
-> > > 
-> > > After further debugging turned out that cillium progs are
-> > > getting hurt by clang due to the same constant tracking issue.
-> > > Newer clang generates better code by spilling less to the stack.
-> > > Instead it keeps more constants in the registers which
-> > > hurts state pruning since the verifier already tracks constants
-> > > in the registers:
-> > >                   old clang  new clang
-> > >                          (no spill/fill tracking introduced by this patch)
-> > > bpf_lb-DLB_L3.o      1838    1923
-> > > bpf_lb-DLB_L4.o      3218    3077
-> > > bpf_lb-DUNKNOWN.o    1064    1062
-> > > bpf_lxc-DDROP_ALL.o  26935   166729
-> > > bpf_lxc-DUNKNOWN.o   34439   174607
-> >                        ^^^^^^^^^^^^^^
-> > Any idea what happened here? Going from 34439 -> 174607 on the new clang?
-> 
-> As I was alluding in commit log newer clang is smarter and generates
-> less spill/fill of constants.
-> In particular older clang loads two constants into r8 and r9
-> and immediately spills them into stack. Then fills later,
-> does a bunch of unrelated code and calls into helper that
-> has ARG_ANYTHING for that position. Then doing a bit more math
-> on filled constants, spills them again and so on.
-> Before this patch (that tracks spill/fill of constants into stack)
-> pruning points were equivalent, but with the patch it sees the difference
-> in registers and declares states not equivalent, though any constant
-> is fine from safety standpoint.
-> With new clang only r9 has this pattern of spill/fill.
-> New clang manages to keep constant in r8 to be around without spill/fill.
-> Existing verifier tracks constants so even without this patch
-> the same pathalogical behavior is observed.
-> The verifier need to walk a lot more instructions only because
-> r8 has different constants.
-> 
-
-Got it I'll try out latest clang.
-
-> > > bpf_netdev.o         9721    8407
-> > > bpf_overlay.o        6184    5420
-> > > bpf_lcx_jit.o        39389   39389
-> > > 
-> > > The final table is depressing:
-> > >                   old clang  old clang    new clang  new clang
-> > >                            const spill/fill        const spill/fill
-> > > bpf_lb-DLB_L3.o      1838    6441          1923      8128
-> > > bpf_lb-DLB_L4.o      3218    5908          3077      6707
-> > > bpf_lb-DUNKNOWN.o    1064    1064          1062      1062
-> > > bpf_lxc-DDROP_ALL.o  26935   93790         166729    380712
-> > > bpf_lxc-DUNKNOWN.o   34439   123886        174607    440652
-> > > bpf_netdev.o         9721    31413         8407      31904
-> > > bpf_overlay.o        6184    18561         5420      23569
-> > > bpf_lxc_jit.o        39389   359445        39389     359445
-> > > 
-> > > Tracking constants in the registers hurts state pruning already.
-> > > Adding tracking of constants through stack hurts pruning even more.
-> > > The later patch address this general constant tracking issue
-> > > with coarse/precise logic.
-> > > 
-> > > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> > > Acked-by: Andrii Nakryiko <andriin@fb.com>
-> > > ---
-> > >  kernel/bpf/verifier.c | 90 +++++++++++++++++++++++++++++++------------
-> > >  1 file changed, 65 insertions(+), 25 deletions(-)
-> > 
-> > I know these are already in bpf-next sorry it took me awhile to get
-> > time to review, but looks good to me. Thanks! We had something similar
-> > in the earlier loop test branch from last year.
-> 
-> It's not in bpf-next yet :)
-
-oops was looking at the wrong branch on my side.
-
-> Code reviews are appreciated at any time.
-> Looks like we were just lucky with older clang.
-> I haven't tracked which clang version became smarter.
-> If you haven't seen this issue and haven't changed cilium C source
-> to workaround that then there is chance you'll hit it as well.
-> By "new clang" I meant version 9.0
-
-I'll take a look at Cilium sources with version 9.0
-
-> "old clang" is unknown. I just had cilium elf .o around that
-> I kept using for testing without recompiling them.
-> Just by chance I recompiled them to see annotated verifier line info
-> messages with BTF and hit this interesting issue.
-> See patch 9 backtracking logic that resolves this 'precision of scalar'
-> issue for progs compiled with both new and old clangs.
-> 
-
-working my way through the series now, but for this patch
-
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+Pj5Gcm9tOiBKb3NlIEFicmV1IFttYWlsdG86Sm9zZS5BYnJldUBzeW5vcHN5cy5jb21dDQo+PkZy
+b206IEZsb3JpYW4gRmFpbmVsbGkgPGYuZmFpbmVsbGlAZ21haWwuY29tPg0KPj4NCj4+PiArUnVz
+c2VsbCwNCj4+Pg0KPj4+IE9uIDYvNC8yMDE5IDExOjU4IEFNLCBWb29uIFdlaWZlbmcgd3JvdGU6
+DQo+Pj4gPiBGcm9tOiBPbmcgQm9vbiBMZW9uZyA8Ym9vbi5sZW9uZy5vbmdAaW50ZWwuY29tPg0K
+Pj4+ID4NCj4+PiA+IHhQQ1MgaXMgRFdDIEV0aGVybmV0IFBoeXNpY2FsIENvZGluZyBTdWJsYXll
+ciB0aGF0IG1heSBiZSBpbnRlZ3JhdGVkDQo+Pj4gPiBpbnRvIGEgR2JFIGNvbnRyb2xsZXIgdGhh
+dCB1c2VzIERXQyBFUW9TIE1BQyBjb250cm9sbGVyLiBBbiBleGFtcGxlIG9mDQo+Pj4gPiBIVyBj
+b25maWd1cmF0aW9uIGlzIHNob3duIGJlbG93Oi0NCj4+PiA+DQo+Pj4gPiAgIDwtLS0tLS0tLS0t
+LS0tLS0tLUdCRSBDb250cm9sbGVyLS0tLS0tLS0tLT58PC0tRXh0ZXJuYWwgUEhZIGNoaXAtLT4N
+Cj4+PiA+DQo+Pj4gPiAgICstLS0tLS0tLS0tKyAgICAgICAgICstLS0tKyAgICArLS0tKyAgICAg
+ICAgICAgICAgICstLS0tLS0tLS0tLS0tLSsNCj4+PiA+ICAgfCAgIEVRb1MgICB8IDwtR01JSS0+
+fCBEVyB8PC0tPnxQSFl8IDwtLSBTR01JSSAtLT4gfCBFeHRlcm5hbCBHYkUgfA0KPj4+ID4gICB8
+ICAgTUFDICAgIHwgICAgICAgICB8eFBDU3wgICAgfElGIHwgICAgICAgICAgICAgICB8IFBIWSBD
+aGlwICAgICB8DQo+Pj4gPiAgICstLS0tLS0tLS0tKyAgICAgICAgICstLS0tKyAgICArLS0tKyAg
+ICAgICAgICAgICAgICstLS0tLS0tLS0tLS0tLSsNCj4+PiA+ICAgICAgICAgIF4gICAgICAgICAg
+ICAgICBeICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIF4NCj4+PiA+ICAgICAgICAg
+IHwgICAgICAgICAgICAgICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwNCj4+
+PiA+ICAgICAgICAgICstLS0tLS0tLS0tLS0tLS0tLS0tLS1NRElPLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLSsNCj4+PiA+DQo+Pj4gPiB4UENTIGlzIGEgQ2xhdXNlLTQ1IE1ESU8gTWFuYWdlYWJs
+ZSBEZXZpY2UgKE1NRCkgYW5kIHdlIG5lZWQgYSB3YXkNCj4+dG8NCj4+PiA+IGRpZmZlcmVudGlh
+dGUgaXQgZnJvbSBleHRlcm5hbCBQSFkgY2hpcCB0aGF0IGlzIGRpc2NvdmVyZWQgb3ZlciBNRElP
+Lg0KPj4+ID4gVGhlcmVmb3JlLCB4cGNzX3BoeV9hZGRyIGlzIGludHJvZHVjZWQgaW4gc3RtbWFj
+IHBsYXRmb3JtIGRhdGENCj4+PiA+IChwbGF0X3N0bW1hY2VuZXRfZGF0YSkgZm9yIGRpZmZlcmVu
+dGlhdGluZyB4UENTIGZyb20gJ3BoeV9hZGRyJyB0aGF0DQo+Pj4gPiBiZWxvbmdzIHRvIGV4dGVy
+bmFsIFBIWS4NCj4+Pg0KPj4+IEFzc3VtaW5nIHRoaXMgRFcgeFBDUyBjYW4gYmUgZm91bmQgd2l0
+aCBkZXNpZ25zIG90aGVyIHRoYW4gU1RNTUFDDQo+PndvdWxkDQo+Pj4gbm90IGl0IG1ha2Ugc2Vu
+c2UgdG8gbW9kZWwgdGhpcyBhcyBzb21lIGtpbmQgb2YgUEhZL01ESU8gYnJpZGdlPyBBDQo+Pj4g
+bGl0dGxlIGJpdCBsaWtlIHdoYXQgZHJpdmVycy9uZXQvcGh5L3hpbGlueF9nbWlpMnJnbWlpLmMg
+dHJpZXMgdG8gZG8/DQo+Pg0KPj5ZZXMsIERXIFhQQ1MgaXMgYSBzZXBhcmF0ZSBJUCB0aGF0IGNh
+biBiZSBzb2xkIHdpdGhvdXQgdGhlIE1BQy4NCj4NCj5IaSBGbG9yaWFuLCB0aGFua3MgZm9yIHBv
+aW50aW5nIG91dCB0aGUgUEhZIGRyaXZlciBmb3IgR01JSSB0byBSR01JSSBjb252ZXJ0ZXINCj5p
+bXBsZW1lbnRhdGlvbi4gSXQgc2VlbXMgbGlrZSBjb21tdW5pdHkgd291bGQgbGlrZSBkd3hwY3Mg
+dG8gdGFrZSB0aGUNCj5jb252ZXJ0ZXIgcGh5IGRyaXZlciBkaXJlY3Rpb24uDQo+DQo+V2Ugd291
+bGQgbGlrZSB0byBjaGVjayB3aXRoIGNvbW11bml0eSB3aGF0IGlzIHRoZSBNQUMgY29udHJvbGxl
+ciB0aGF0IGlzDQo+dXNpbmcgYWJvdmUgUEhZIGRyaXZlciBzbyB0aGF0IHdlIGNhbiBkaWcgZGVl
+cGVyIGludG8gdGhlIFBIWSAmIE1BQyBkcml2ZXINCj5hcmNoaXRlY3R1cmUuIFdlIHdvdWxkIGxp
+a2UgdG8gbWFwIHRoZSBleGlzdGluZyB1c2FnZSBvZiBkd3hwY3MuYyBpbiAzLzUgb2YNCj50aGlz
+IHNlcmllcyBpcyBhcmNoaXRlY3R1cmFsbHkgcmVhZHkgZm9yIFBIWSBkcml2ZXIgZnJhbWV3b3Jr
+IG9yIG5ldyBBUElzDQo+d291bGQgbmVlZCB0byBiZSBkZWZpbmVkLg0KDQpKdXN0IHRvIGN5Y2xl
+LWJhY2sgdG8gdGhpcyB0cmFjaywgd2UgYXJlIHdvcmtpbmcgdG93YXJkcyBnZXR0aW5nIHRoZSBB
+Q1BJIGRldmljZQ0KSUQgZm9yIHRoaXMgSVAuIE1lYW53aGlsZSwgc2luY2UgdGhlIEM0NSBNRElP
+IHBhdHljaCBpcyBhbHNvIG5lZWRlZCBieSANCkJpYW8sIHdlIHBsYW4gdG8gbGluZSB1cCB0aGUg
+YmVsb3cgcGF0Y2ggZm9yIG1lcmdlLg0KDQpbUEFUQ0ggbmV0LW5leHQgdjYgMS81XSBuZXQ6IHN0
+bW1hYzogZW5hYmxlIGNsYXVzZSA0NSBtZGlvIHN1cHBvcnQNCg0KSXMgdGhlcmUgYW55IGNvbmNl
+cm4gd2l0aCB0aGlzIGFwcHJvYWNoPyANCg==
