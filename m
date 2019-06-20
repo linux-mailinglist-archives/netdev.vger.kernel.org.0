@@ -2,110 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DE7A74C44E
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 02:00:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4AB04C46E
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 02:24:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730962AbfFTAAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 20:00:44 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:53820 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726322AbfFTAAn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 19 Jun 2019 20:00:43 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 14BCAC05D419;
-        Thu, 20 Jun 2019 00:00:43 +0000 (UTC)
-Received: from epycfail.redhat.com (unknown [10.36.112.13])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 97C6919722;
-        Thu, 20 Jun 2019 00:00:40 +0000 (UTC)
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
-        David Ahern <dsahern@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        netdev@vger.kernel.org
-Subject: [PATCH net-next v6 11/11] selftests: pmtu: Make list_flush_ipv6_exception test more demanding
-Date:   Thu, 20 Jun 2019 01:59:51 +0200
-Message-Id: <b724ee0aa5514bc0d091827324209b4b4dd6929c.1560987611.git.sbrivio@redhat.com>
-In-Reply-To: <cover.1560987611.git.sbrivio@redhat.com>
-References: <cover.1560987611.git.sbrivio@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Thu, 20 Jun 2019 00:00:43 +0000 (UTC)
+        id S1726732AbfFTAYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 20:24:41 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:35999 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726479AbfFTAYl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 20:24:41 -0400
+Received: by mail-io1-f65.google.com with SMTP id h6so396746ioh.3;
+        Wed, 19 Jun 2019 17:24:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=0rPREAEEvj0DOdC10jYRNjjv2DqithI2viZzgrekVqs=;
+        b=hKl42BpjP60NrTP7OWfGLyM0B/u5WDL86RzUL9BdJcIawshcqe1GLHTHeD/6xtLLea
+         qW4o3/XoiU+vbbfh/KfH/MD6Y5NysjmhKXhkQvVNa/4pHRAJ0Tls5mi2//gbm9y/pcGh
+         SZ1wqidZRbinaMxuhLydHzN0AzCZ2yl+bLvtZDL07jjC0xPksmivhuPVNEKXsVg9j9go
+         +PlBGlygQy2pcBoHrrygkQiUI5TTQ52PEfM+tffK9iEtCOqPoNNidZ/QvAVT/E/KOCp1
+         RSC3YVyN/9gd/EM2lVEOpfNjLJ/qpegYqryV1zkexvpZOz837VJonqp5dG9Y/aNU2pNb
+         2eTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=0rPREAEEvj0DOdC10jYRNjjv2DqithI2viZzgrekVqs=;
+        b=IfVDI4gZHnWz83YMpTxfCY0AWwXB/zzZ1Rl5WXMgODuFU5SD8Vvfykb5w6IKQx/n5O
+         Hh+rU73PdZVIyBLAIXhL72XvfzS9pcqWL0G0X6WPIob+Rfu/dqniCVe4K5mNYgKuca5X
+         njwME7F0M13gvw57ElmaWw7ZzWQzSUpSIdd26oJp+i0TkHj5Orx094FNCGNVNM57ZJjQ
+         rTPDZnjaH/+i/7HraHL8UMJiv9OLp0rUaDhV/q5o+1PbNuWrOoLsOAnytMbR6iPwmnGZ
+         k7t6w7Wemd3G0kltMCRmqmkeVTyIFbTQMQbHU2dTpS7wYNZwG3awN3lDufhoFKOer3U2
+         mccA==
+X-Gm-Message-State: APjAAAXY60NecbTEnKn4HCvUu7QW2fOjlrIo39eyOtOfUvROEYaMRMTt
+        tBSO18a8lgqyufEaIDF7Ah8=
+X-Google-Smtp-Source: APXvYqxakt5e35+Kzf+yWcvKUUOB5oHMyefqtHfk8mUyO3hgWDj7ZszUGijykPc5XlTW2lkoCpBjrQ==
+X-Received: by 2002:a6b:6012:: with SMTP id r18mr1972276iog.241.1560990280452;
+        Wed, 19 Jun 2019 17:24:40 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id b14sm23560790iod.33.2019.06.19.17.24.38
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 19 Jun 2019 17:24:40 -0700 (PDT)
+Date:   Wed, 19 Jun 2019 17:24:32 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Alexei Starovoitov <ast@kernel.org>, davem@davemloft.net
+Cc:     daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@fb.com
+Message-ID: <5d0ad24027106_8822adea29a05b47c@john-XPS-13-9370.notmuch>
+In-Reply-To: <20190615191225.2409862-2-ast@kernel.org>
+References: <20190615191225.2409862-1-ast@kernel.org>
+ <20190615191225.2409862-2-ast@kernel.org>
+Subject: RE: [PATCH v3 bpf-next 1/9] bpf: track spill/fill of constants
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of just listing and flushing two cached exceptions, create
-a relatively big number of them, and count how many are listed. Single
-netlink dump messages contain approximately 25 entries each, and this
-way we can make sure the partial dump tracking mechanism is working
-properly.
+Alexei Starovoitov wrote:
+> Compilers often spill induction variables into the stack,
+> hence it is necessary for the verifier to track scalar values
+> of the registers through stack slots.
+> 
+> Also few bpf programs were incorrectly rejected in the past,
+> since the verifier was not able to track such constants while
+> they were used to compute offsets into packet headers.
+> 
+> Tracking constants through the stack significantly decreases
+> the chances of state pruning, since two different constants
+> are considered to be different by state equivalency.
+> End result that cilium tests suffer serious degradation in the number
+> of states processed and corresponding verification time increase.
+> 
+>                      before  after
+> bpf_lb-DLB_L3.o      1838    6441
+> bpf_lb-DLB_L4.o      3218    5908
+> bpf_lb-DUNKNOWN.o    1064    1064
+> bpf_lxc-DDROP_ALL.o  26935   93790
+> bpf_lxc-DUNKNOWN.o   34439   123886
+> bpf_netdev.o         9721    31413
+> bpf_overlay.o        6184    18561
+> bpf_lxc_jit.o        39389   359445
+> 
+> After further debugging turned out that cillium progs are
+> getting hurt by clang due to the same constant tracking issue.
+> Newer clang generates better code by spilling less to the stack.
+> Instead it keeps more constants in the registers which
+> hurts state pruning since the verifier already tracks constants
+> in the registers:
+>                   old clang  new clang
+>                          (no spill/fill tracking introduced by this patch)
+> bpf_lb-DLB_L3.o      1838    1923
+> bpf_lb-DLB_L4.o      3218    3077
+> bpf_lb-DUNKNOWN.o    1064    1062
+> bpf_lxc-DDROP_ALL.o  26935   166729
+> bpf_lxc-DUNKNOWN.o   34439   174607
+                       ^^^^^^^^^^^^^^
+Any idea what happened here? Going from 34439 -> 174607 on the new clang?
 
-While at it, also ensure that no cached routes can be listed after
-flush, and remove 'sleep 1' calls, they are not actually needed.
+> bpf_netdev.o         9721    8407
+> bpf_overlay.o        6184    5420
+> bpf_lcx_jit.o        39389   39389
+> 
+> The final table is depressing:
+>                   old clang  old clang    new clang  new clang
+>                            const spill/fill        const spill/fill
+> bpf_lb-DLB_L3.o      1838    6441          1923      8128
+> bpf_lb-DLB_L4.o      3218    5908          3077      6707
+> bpf_lb-DUNKNOWN.o    1064    1064          1062      1062
+> bpf_lxc-DDROP_ALL.o  26935   93790         166729    380712
+> bpf_lxc-DUNKNOWN.o   34439   123886        174607    440652
+> bpf_netdev.o         9721    31413         8407      31904
+> bpf_overlay.o        6184    18561         5420      23569
+> bpf_lxc_jit.o        39389   359445        39389     359445
+> 
+> Tracking constants in the registers hurts state pruning already.
+> Adding tracking of constants through stack hurts pruning even more.
+> The later patch address this general constant tracking issue
+> with coarse/precise logic.
+> 
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
+> ---
+>  kernel/bpf/verifier.c | 90 +++++++++++++++++++++++++++++++------------
+>  1 file changed, 65 insertions(+), 25 deletions(-)
 
-v6:
-  - Merge this patch into series including fix, as it's also targeted
-    for net-next. No actual changes
-
-Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
----
- tools/testing/selftests/net/pmtu.sh | 22 ++++++++++++++--------
- 1 file changed, 14 insertions(+), 8 deletions(-)
-
-diff --git a/tools/testing/selftests/net/pmtu.sh b/tools/testing/selftests/net/pmtu.sh
-index f5004a9df229..ab367e75f095 100755
---- a/tools/testing/selftests/net/pmtu.sh
-+++ b/tools/testing/selftests/net/pmtu.sh
-@@ -1274,7 +1274,7 @@ test_list_flush_ipv6_exception() {
- 	      "${ns_a}"  veth_A-R2    "${ns_r2}" veth_R2-A \
- 	      "${ns_r2}" veth_R2-B    "${ns_b}"  veth_B-R2
- 
--	dst1="${prefix6}:${b_r1}::1"
-+	dst_prefix1="${prefix6}:${b_r1}::"
- 	dst2="${prefix6}:${b_r2}::1"
- 
- 	# Set up initial MTU values
-@@ -1290,20 +1290,26 @@ test_list_flush_ipv6_exception() {
- 
- 	fail=0
- 
--	# Create route exceptions
--	run_cmd ${ns_a} ${ping6} -q -M want -i 0.1 -w 1 -s 1800 ${dst1}
--	run_cmd ${ns_a} ${ping6} -q -M want -i 0.1 -w 1 -s 1800 ${dst2}
-+	# Add 100 addresses for veth endpoint on B reached by default A route
-+	for i in $(seq 100 199); do
-+		run_cmd ${ns_b} ip addr add "${dst_prefix1}${i}" dev veth_B-R1
-+	done
- 
--	if [ "$(${ns_a} ip -6 route list cache | wc -l)" -ne 2 ]; then
-+	# Create 100 cached route exceptions for path via R1, one via R2
-+	for i in $(seq 100 199); do
-+		run_cmd ${ns_a} ping -q -M want -i 0.1 -w 1 -s 1800 "${dst_prefix1}${i}"
-+	done
-+	run_cmd ${ns_a} ping -q -M want -i 0.1 -w 1 -s 1800 "${dst2}"
-+	if [ "$(${ns_a} ip -6 route list cache | wc -l)" -ne 101 ]; then
- 		err "  can't list cached exceptions"
- 		fail=1
- 	fi
- 
- 	run_cmd ${ns_a} ip -6 route flush cache
--	sleep 1
--	pmtu1="$(route_get_dst_pmtu_from_exception "${ns_a}" ${dst1})"
-+	pmtu1="$(route_get_dst_pmtu_from_exception "${ns_a}" "${dst_prefix1}100")"
- 	pmtu2="$(route_get_dst_pmtu_from_exception "${ns_a}" ${dst2})"
--	if [ -n "${pmtu1}" ] || [ -n "${pmtu2}" ]; then
-+	if [ -n "${pmtu1}" ] || [ -n "${pmtu2}" ] || \
-+	   [ -n "$(${ns_a} ip -6 route list cache)" ]; then
- 		err "  can't flush cached exceptions"
- 		fail=1
- 	fi
--- 
-2.20.1
-
+I know these are already in bpf-next sorry it took me awhile to get
+time to review, but looks good to me. Thanks! We had something similar
+in the earlier loop test branch from last year.
