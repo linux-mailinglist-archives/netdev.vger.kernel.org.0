@@ -2,176 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4BE94CDA3
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 14:23:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 065CE4CDCC
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 14:34:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731813AbfFTMXQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 08:23:16 -0400
-Received: from mx.0dd.nl ([5.2.79.48]:53448 "EHLO mx.0dd.nl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731720AbfFTMXP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Jun 2019 08:23:15 -0400
-Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx.0dd.nl (Postfix) with ESMTPS id 2B26E5FEA5;
-        Thu, 20 Jun 2019 14:23:12 +0200 (CEST)
-Authentication-Results: mx.0dd.nl;
-        dkim=pass (2048-bit key) header.d=vdorst.com header.i=@vdorst.com header.b="GZQTCvCo";
-        dkim-atps=neutral
-Received: from pc-rene.vdorst.com (pc-rene.vdorst.com [192.168.2.125])
-        by mail.vdorst.com (Postfix) with ESMTPA id D9B1C1CB7227;
-        Thu, 20 Jun 2019 14:23:11 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com D9B1C1CB7227
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
-        s=default; t=1561033391;
-        bh=sWaETIGykh20OLdc6TDZc2DkdMJJZTMSUT4mTh+FG9g=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GZQTCvComuttNcdNwsmuknmfdxnT7xxm7MuX9DG6Dn/MRYZ9Mdd0/OSVsaDaVCC8D
-         VRouGoWGVrV+KsStCOWtEMMx74nPNxxBrj/Zh0uogYsMIlmr6peSyMiPXn1livIi9z
-         /x1+Ubk4iJ9nzli2tCMYxdCAkv+32/UwKy19QmbUClo1ZlPV6Q6aI2Qqp2dXDZHrHM
-         GJH3Rs4DW6CnuKDTsVz5SN+Ic0A9ciYAHYdhdpUoZbNDWqkhfRSq1zZYcgY+09XG14
-         sTqawHOOJpiINs0v54g2ZmZredlRtawbcswwE5H83p811Ep1g49h8KnMHvQBI7/kT1
-         0CYedXS52G9aw==
-From:   =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
-To:     frank-w@public-files.de, sean.wang@mediatek.com,
-        f.fainelli@gmail.com, davem@davemloft.net, matthias.bgg@gmail.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com
-Cc:     netdev@vger.kernel.org, john@phrozen.org,
-        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org,
-        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
-Subject: [PATCH v2 net-next 2/2] net: dsa: mt7530: Add MT7621 TRGMII mode support
-Date:   Thu, 20 Jun 2019 14:21:55 +0200
-Message-Id: <20190620122155.32078-3-opensource@vdorst.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190620122155.32078-1-opensource@vdorst.com>
-References: <20190620122155.32078-1-opensource@vdorst.com>
+        id S1731758AbfFTMel (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 08:34:41 -0400
+Received: from host.76.145.23.62.rev.coltfrance.com ([62.23.145.76]:33595 "EHLO
+        proxy.6wind.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726294AbfFTMel (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 08:34:41 -0400
+Received: from bretzel.dev.6wind.com (unknown [10.16.0.19])
+        by proxy.6wind.com (Postfix) with ESMTPS id 857B62D21BB;
+        Thu, 20 Jun 2019 14:34:36 +0200 (CEST)
+Received: from dichtel by bretzel.dev.6wind.com with local (Exim 4.89)
+        (envelope-from <dichtel@bretzel.dev.6wind.com>)
+        id 1hdwGy-0001th-7S; Thu, 20 Jun 2019 14:34:36 +0200
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Subject: [PATCH net] ipv6: fix neighbour resolution with raw socket
+Date:   Thu, 20 Jun 2019 14:34:34 +0200
+Message-Id: <20190620123434.7219-1-nicolas.dichtel@6wind.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch add support TRGMII mode for MT7621 internal MT7530 switch.
-MT7621 TRGMII has only one fix speed mode of 1200MBit.
+The scenario is the following: the user uses a raw socket to send an ipv6
+packet, destinated to a not-connected network, and specify a connected nh.
+Here is the corresponding python script to reproduce this scenario:
 
-Also adding support for mt7530 25MHz and 40MHz crystal clocksource.
-Values are based on Banana Pi R2 bsp [1].
+ import socket
+ IPPROTO_RAW = 255
+ send_s = socket.socket(socket.AF_INET6, socket.SOCK_RAW, IPPROTO_RAW)
+ # scapy
+ # p = IPv6(src='fd00:100::1', dst='fd00:200::fa')/ICMPv6EchoRequest()
+ # str(p)
+ req = b'`\x00\x00\x00\x00\x08:@\xfd\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\xfd\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xfa\x80\x00\x81\xc0\x00\x00\x00\x00'
+ send_s.sendto(req, ('fd00:175::2', 0, 0, 0))
 
-Don't change MT7623 registers on a MT7621 device.
+fd00:175::/64 is a connected route and fd00:200::fa is not a connected
+host.
 
-[1] https://github.com/BPI-SINOVOIP/BPI-R2-bsp/blob/master/linux-mt/drivers/net/ethernet/mediatek/gsw_mt7623.c#L769
+With this scenario, the kernel starts by sending a NS to resolve
+fd00:175::2. When it receives the NA, it flushes its queue and try to send
+the initial packet. But instead of sending it, it sends another NS to
+resolve fd00:200::fa, which obvioulsy fails, thus the packet is dropped. If
+the user sends again the packet, it now uses the right nh (fd00:175::2).
 
-Signed-off-by: René van Dorst <opensource@vdorst.com>
+The problem is that ip6_dst_lookup_neigh() uses the rt6i_gateway, which is
+:: because the associated route is a connected route, thus it uses the dst
+addr of the packet. Let's use rt6_nexthop() to choose the right nh.
+
+Note that rt and in6addr_any are const in ip6_dst_lookup_neigh(), thus
+let's constify rt6_nexthop() to avoid ugly cast.
+
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 ---
- drivers/net/dsa/mt7530.c | 46 +++++++++++++++++++++++++++++++---------
- drivers/net/dsa/mt7530.h |  4 ++++
- 2 files changed, 40 insertions(+), 10 deletions(-)
+ include/net/ip6_route.h | 4 ++--
+ net/ipv6/ip6_output.c   | 2 +-
+ net/ipv6/route.c        | 3 ++-
+ 3 files changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index c7d352da5448..3181e95586d6 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -428,24 +428,48 @@ static int
- mt7530_pad_clk_setup(struct dsa_switch *ds, int mode)
- {
- 	struct mt7530_priv *priv = ds->priv;
--	u32 ncpo1, ssc_delta, trgint, i;
-+	u32 ncpo1, ssc_delta, trgint, i, xtal;
-+
-+	xtal = mt7530_read(priv, MT7530_MHWTRAP) & HWTRAP_XTAL_MASK;
-+
-+	if (xtal == HWTRAP_XTAL_20MHZ) {
-+		dev_err(priv->dev,
-+			"%s: MT7530 with a 20MHz XTAL is not supported!\n",
-+			__func__);
-+		return -EINVAL;
-+	}
- 
- 	switch (mode) {
- 	case PHY_INTERFACE_MODE_RGMII:
- 		trgint = 0;
-+		/* PLL frequency: 125MHz */
- 		ncpo1 = 0x0c80;
--		ssc_delta = 0x87;
- 		break;
- 	case PHY_INTERFACE_MODE_TRGMII:
- 		trgint = 1;
--		ncpo1 = 0x1400;
--		ssc_delta = 0x57;
-+		if (priv->id == ID_MT7621) {
-+			/* PLL frequency: 150MHz: 1.2GBit */
-+			if (xtal == HWTRAP_XTAL_40MHZ)
-+				ncpo1 = 0x0780;
-+			if (xtal == HWTRAP_XTAL_25MHZ)
-+				ncpo1 = 0x0a00;
-+		} else { /* PLL frequency: 250MHz: 2.0Gbit */
-+			if (xtal == HWTRAP_XTAL_40MHZ)
-+				ncpo1 = 0x0c80;
-+			if (xtal == HWTRAP_XTAL_25MHZ)
-+				ncpo1 = 0x1400;
-+		}
- 		break;
- 	default:
- 		dev_err(priv->dev, "xMII mode %d not supported\n", mode);
- 		return -EINVAL;
- 	}
- 
-+	if (xtal == HWTRAP_XTAL_25MHZ)
-+		ssc_delta = 0x57;
-+	else
-+		ssc_delta = 0x87;
-+
- 	mt7530_rmw(priv, MT7530_P6ECR, P6_INTF_MODE_MASK,
- 		   P6_INTF_MODE(trgint));
- 
-@@ -507,7 +531,9 @@ mt7530_pad_clk_setup(struct dsa_switch *ds, int mode)
- 			mt7530_rmw(priv, MT7530_TRGMII_RD(i),
- 				   RD_TAP_MASK, RD_TAP(16));
- 	else
--		mt7623_trgmii_set(priv, GSW_INTF_MODE, INTF_MODE_TRGMII);
-+		if (priv->id != ID_MT7621)
-+			mt7623_trgmii_set(priv, GSW_INTF_MODE,
-+					  INTF_MODE_TRGMII);
- 
- 	return 0;
+diff --git a/include/net/ip6_route.h b/include/net/ip6_route.h
+index 4790beaa86e0..ee7405e759ba 100644
+--- a/include/net/ip6_route.h
++++ b/include/net/ip6_route.h
+@@ -262,8 +262,8 @@ static inline bool ip6_sk_ignore_df(const struct sock *sk)
+ 	       inet6_sk(sk)->pmtudisc == IPV6_PMTUDISC_OMIT;
  }
-@@ -613,13 +639,13 @@ static void mt7530_adjust_link(struct dsa_switch *ds, int port,
- 	struct mt7530_priv *priv = ds->priv;
  
- 	if (phy_is_pseudo_fixed_link(phydev)) {
--		if (priv->id == ID_MT7530) {
--			dev_dbg(priv->dev, "phy-mode for master device = %x\n",
--				phydev->interface);
-+		dev_dbg(priv->dev, "phy-mode for master device = %x\n",
-+			phydev->interface);
+-static inline struct in6_addr *rt6_nexthop(struct rt6_info *rt,
+-					   struct in6_addr *daddr)
++static inline const struct in6_addr *rt6_nexthop(const struct rt6_info *rt,
++						 const struct in6_addr *daddr)
+ {
+ 	if (rt->rt6i_flags & RTF_GATEWAY)
+ 		return &rt->rt6i_gateway;
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index 834475717110..21efcd02f337 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -59,8 +59,8 @@ static int ip6_finish_output2(struct net *net, struct sock *sk, struct sk_buff *
+ {
+ 	struct dst_entry *dst = skb_dst(skb);
+ 	struct net_device *dev = dst->dev;
++	const struct in6_addr *nexthop;
+ 	struct neighbour *neigh;
+-	struct in6_addr *nexthop;
+ 	int ret;
  
--			/* Setup TX circuit incluing relevant PAD and driving */
--			mt7530_pad_clk_setup(ds, phydev->interface);
-+		/* Setup TX circuit incluing relevant PAD and driving */
-+		mt7530_pad_clk_setup(ds, phydev->interface);
+ 	if (ipv6_addr_is_multicast(&ipv6_hdr(skb)->daddr)) {
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 11ad62effd56..b6449bc03f11 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -218,7 +218,8 @@ static struct neighbour *ip6_dst_neigh_lookup(const struct dst_entry *dst,
+ {
+ 	const struct rt6_info *rt = container_of(dst, struct rt6_info, dst);
  
-+		if (priv->id == ID_MT7530) {
- 			/* Setup RX circuit, relevant PAD and driving on the
- 			 * host which must be placed after the setup on the
- 			 * device side is all finished.
-diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-index 4331429969fa..bfac90f48102 100644
---- a/drivers/net/dsa/mt7530.h
-+++ b/drivers/net/dsa/mt7530.h
-@@ -244,6 +244,10 @@ enum mt7530_vlan_port_attr {
+-	return ip6_neigh_lookup(&rt->rt6i_gateway, dst->dev, skb, daddr);
++	return ip6_neigh_lookup(rt6_nexthop(rt, &in6addr_any),
++				dst->dev, skb, daddr);
+ }
  
- /* Register for hw trap status */
- #define MT7530_HWTRAP			0x7800
-+#define  HWTRAP_XTAL_MASK		(BIT(10) | BIT(9))
-+#define  HWTRAP_XTAL_25MHZ		(BIT(10) | BIT(9))
-+#define  HWTRAP_XTAL_40MHZ		(BIT(10))
-+#define  HWTRAP_XTAL_20MHZ		(BIT(9))
- 
- /* Register for hw trap modification */
- #define MT7530_MHWTRAP			0x7804
+ static void ip6_confirm_neigh(const struct dst_entry *dst, const void *daddr)
 -- 
-2.20.1
+2.21.0
 
