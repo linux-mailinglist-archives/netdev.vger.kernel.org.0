@@ -2,74 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 839AD4D1FF
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 17:21:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECDBD4D219
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 17:26:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731980AbfFTPVU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 11:21:20 -0400
-Received: from mail-yb1-f176.google.com ([209.85.219.176]:33943 "EHLO
-        mail-yb1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726757AbfFTPVU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 11:21:20 -0400
-Received: by mail-yb1-f176.google.com with SMTP id x32so1393365ybh.1
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 08:21:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WWcTTKF/82/ExwUFM1sAVWc5mPz5k5o+tscsjovzbdY=;
-        b=sIyWfeXi6KwmuxnVzP1J8xyTlUH5LBx2rOkbUmIHEEbH4qtiKxfEot6fOUNodIzm22
-         BOJW1KLRlcqTIDUm8mvA/hgZCQETxs35ZW/FmAUe6Zz32N7cSqPifP+EbGHCidGq3khp
-         Eof5Mn2YrAR2RN89YJGr1V3fs4rAfIqkKhf4LvfOAOrYz+abZYmErCDqSUVwQkTUMKRq
-         Vx4ZzS+Hgyd1dAsgOYqaHRnJYgP/FhxvvhspEM7MWOkB6uUALFE/ST9Kwm4Agq9rbdul
-         Lbs78S9dLslqZ+yiWdtzwaU9D+5G10ulweUt/JDewc/ksWRSjfGvLCDAoDnMHSTGA8bi
-         YjrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WWcTTKF/82/ExwUFM1sAVWc5mPz5k5o+tscsjovzbdY=;
-        b=rjKZVyboYUy+KgHa332jGacec0O7S0Na4hM9dYfICB8CjTDTyPTk+/33ASt4JvSjPj
-         AxppsVydEpbJxiyLpovgGfymE2DkuPzrWFmtYGtxKrPOFeqU0roH2UIhHFSvkgJm/rDn
-         r5dvBlVdgYU1XyrRI4y7ZC6KgqeZEkAPNZETVOnpBQ19TEv2U4DzaEZg/26loFh3ANFp
-         YGPMJNXVoa64tsJE6qmFMEiw1xutPYkyr0aRq99wjCf9cMEivtBcjrJefpc0Rwrq5rfR
-         H5vMyFfAA5WbAA8lyuqKbnwDhds9w6Wh2QyYwL2Ll+rvsjcFeYwQ6Ku2Mcd5Pz6kYL1k
-         VsLg==
-X-Gm-Message-State: APjAAAUd+rkV4vJF8pN/lWChd4/B7RaRHSXPMBPa9np4EBDs/5eP0PqA
-        +qNk40pL5mFdkSW39H+hsaUPMQxiHqxpT52IPgGtbQI5U8gEAA==
-X-Google-Smtp-Source: APXvYqw+46mmXl47rsAlKbBelFwFwq7OOcf4h9cRWpPp+rUk2J7SVChb5VwvnPH8XQ2VsyehJ0FK86XudESDLPdUqXs=
-X-Received: by 2002:a25:bf83:: with SMTP id l3mr67617590ybk.446.1561044078765;
- Thu, 20 Jun 2019 08:21:18 -0700 (PDT)
+        id S1726757AbfFTP0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 11:26:09 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:19049 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726428AbfFTP0J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Jun 2019 11:26:09 -0400
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 00609F52E4A9FE473DD7;
+        Thu, 20 Jun 2019 23:26:05 +0800 (CST)
+Received: from [127.0.0.1] (10.133.213.239) by DGGEMS404-HUB.china.huawei.com
+ (10.3.19.204) with Microsoft SMTP Server id 14.3.439.0; Thu, 20 Jun 2019
+ 23:26:02 +0800
+Subject: Re: [PATCH net-next] netfilter: ipv6: Fix build error without
+ CONFIG_IPV6
+To:     <pablo@netfilter.org>, <kadlec@blackhole.kfki.hu>, <fw@strlen.de>,
+        <davem@davemloft.net>, <rdunlap@infradead.org>
+References: <20190612084715.21656-1-yuehaibing@huawei.com>
+CC:     <linux-kernel@vger.kernel.org>, <coreteam@netfilter.org>,
+        <netfilter-devel@vger.kernel.org>, <netdev@vger.kernel.org>
+From:   Yuehaibing <yuehaibing@huawei.com>
+Message-ID: <d2eba9e4-34be-f9bb-f0fd-024fe81d2b02@huawei.com>
+Date:   Thu, 20 Jun 2019 23:26:01 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
 MIME-Version: 1.0
-References: <1561042360-20480-1-git-send-email-cai@lca.pw>
-In-Reply-To: <1561042360-20480-1-git-send-email-cai@lca.pw>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 20 Jun 2019 11:21:07 -0400
-Message-ID: <CANn89iLBy+u3KTjjfvyc8-r4eUdL2b6VX=fNgqFg8f7t84EUNw@mail.gmail.com>
-Subject: Re: [PATCH -next] inet: fix compilation warnings in fqdir_pre_exit()
-To:     Qian Cai <cai@lca.pw>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190612084715.21656-1-yuehaibing@huawei.com>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.133.213.239]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 20, 2019 at 10:52 AM Qian Cai <cai@lca.pw> wrote:
->
-> The linux-next commit "inet: fix various use-after-free in defrags
-> units" [1] introduced compilation warnings,
->
-> ./include/net/inet_frag.h:117:1: warning: 'inline' is not at beginning
-> of declaration [-Wold-style-declaration]
->  static void inline fqdir_pre_exit(struct fqdir *fqdir)
->  ^~~~~~
+Friendly ping...
 
-Interesting warning, this is kind of new compiler major feature I guess :/
+On 2019/6/12 16:47, YueHaibing wrote:
+> If CONFIG_IPV6 is not set, building fails:
+> 
+> net/bridge/netfilter/nf_conntrack_bridge.o: In function `nf_ct_bridge_pre':
+> nf_conntrack_bridge.c:(.text+0x41c): undefined symbol `nf_ct_frag6_gather'
+> net/bridge/netfilter/nf_conntrack_bridge.o: In function `nf_ct_bridge_post':
+> nf_conntrack_bridge.c:(.text+0x820): undefined symbol `br_ip6_fragment'
+> 
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> Fixes: c9bb6165a16e ("netfilter: nf_conntrack_bridge: fix CONFIG_IPV6=y")
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> ---
+>  include/linux/netfilter_ipv6.h | 10 ++++++++--
+>  1 file changed, 8 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/linux/netfilter_ipv6.h b/include/linux/netfilter_ipv6.h
+> index 3a3dc4b..0e1febc 100644
+> --- a/include/linux/netfilter_ipv6.h
+> +++ b/include/linux/netfilter_ipv6.h
+> @@ -108,8 +108,11 @@ static inline int nf_ipv6_br_defrag(struct net *net, struct sk_buff *skb,
+>  		return 1;
+>  
+>  	return v6_ops->br_defrag(net, skb, user);
+> -#else
+> +#endif
+> +#if IS_BUILTIN(CONFIG_IPV6)
+>  	return nf_ct_frag6_gather(net, skb, user);
+> +#else
+> +	return 1;
+>  #endif
+>  }
+>  
+> @@ -133,8 +136,11 @@ static inline int nf_br_ip6_fragment(struct net *net, struct sock *sk,
+>  		return 1;
+>  
+>  	return v6_ops->br_fragment(net, sk, skb, data, output);
+> -#else
+> +#endif
+> +#if IS_BUILTIN(CONFIG_IPV6)
+>  	return br_ip6_fragment(net, sk, skb, data, output);
+> +#else
+> +	return 1;
+>  #endif
+>  }
+>  
+> 
 
-BTW :
-
-$ git grep -n "static void inline"  | wc -l
-9
