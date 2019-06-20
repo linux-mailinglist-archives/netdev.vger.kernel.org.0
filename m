@@ -2,209 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A7914D0C1
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 16:49:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDC9D4D0F5
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 16:53:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729569AbfFTOtS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 10:49:18 -0400
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:37178 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726866AbfFTOtS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 10:49:18 -0400
-Received: by mail-oi1-f195.google.com with SMTP id t76so2361325oih.4
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 07:49:17 -0700 (PDT)
+        id S1732049AbfFTOxA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 10:53:00 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:46986 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726675AbfFTOw6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 10:52:58 -0400
+Received: by mail-qk1-f193.google.com with SMTP id x18so2055817qkn.13
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 07:52:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oc33oE2xRX7hMJGSAcFuY8lZKfgw7nROACFzsI0WwOI=;
-        b=Eh7ICkKyXMkCv/TtpjgQ8JZjnmbd0naf8A1vhbqimu7ktZFIbjgJPzEAa/wfGQsrW9
-         VbVQEy9L3U6EY0VcOVbsb3XgLAi9E28VEHCjNrzKVyfHW4NENPRwQRvp0gh4gEHhjtho
-         ok9T+XPuS0rlpe2RHpY4CPaLT0UltGy3Gmhk8=
+        d=lca.pw; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=5oMdsQsw1n7pkd5dZK0BAR68goU9Cphs7Z7vjhmXNXA=;
+        b=if6+rXaoBnz+H02oYwem3HWXB48VPwWoSvmotiKQcqueZkz88R/UOJrQJGPnqSxWh0
+         X3WWxz+KMriBFBvZG0/EZYb9KDDdGilbulSCa5O193BQx6OEd9S4APxsT3UV78tLkx6n
+         9WXhfxiDzSEcl6WRrOWKy533PY7TkmIDzQcBW47lcU6tBxY6A/Leti2v2Qxk0TsMDGA6
+         1hqoNBZw/ZyMe154WWMQCmMz6g4Lj58hgSdmjM6+cwvRNW3fbMoFd6qdZ0iPJMu4of9V
+         y7ZbI0HRLfHcm8QOkYoc0KpKXqUbujLWeiBtQ02Z71c6zN+vOkispdwvmTBl0TJGOVHZ
+         H8Bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oc33oE2xRX7hMJGSAcFuY8lZKfgw7nROACFzsI0WwOI=;
-        b=Hm1Hkxquf31ix/URcP9p1LpmHP+9YTfIOVI6p5iesTvbb/HC7Msvq248l8E5SelENO
-         ga9jnCClFt3T/lgznuzR+Rfes+mppVCpTH0drVFsz6ZmvGe0Lzo13YvZO2Kjkf5L2Oim
-         7o9725J+QeB+rnfscxVZNSud/BAyx62Z9OuKUsGqaig7+F1vcB2JE3yD+SzSSTadEWQR
-         mGhO3o4oUrVWdxLLJSCiULHMajR7v75XS4uDm+amXxZji6PLWxBFN2LOJ42+VaVO2J2y
-         IRpge8k6zUqJ3TR05YwmNG+AX2jReDjAjlqW0trZRGjAhZ+/fCxY+B34CAYmYdtR8dxp
-         ocEQ==
-X-Gm-Message-State: APjAAAUyfQKBbm0B70kTDV9grf1vHPK40s1Sv2lqI5/2yubW79QEvl4d
-        4maGd/11wBkk/ofxnlIJ/7mv+/JKMVfWm3tHkJtIPA==
-X-Google-Smtp-Source: APXvYqxvxYTmfVhDwJTa+n6k0phZmVmXhu18TJeHQfxiQuwIspSmS+eyKRyGDEE8nlpM4YMv7tt2YJhqAY0aTJEe8eA=
-X-Received: by 2002:aca:ea0b:: with SMTP id i11mr5821710oih.102.1561042157221;
- Thu, 20 Jun 2019 07:49:17 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190617192700.2313445-1-andriin@fb.com> <30a2c470-5057-bd96-1889-e77fd5536960@iogearbox.net>
- <CAEf4Bzae1CPDkhPrESa2ZmiOH8Mqf0KA_4ty9z=xnYn=q7Frhw@mail.gmail.com>
-In-Reply-To: <CAEf4Bzae1CPDkhPrESa2ZmiOH8Mqf0KA_4ty9z=xnYn=q7Frhw@mail.gmail.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Thu, 20 Jun 2019 15:49:06 +0100
-Message-ID: <CACAyw9-L0qx8d9O66SaYhJGjsyKo_6iozqLAQHEVa1AW-U=2Tg@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 00/11] BTF-defined BPF map definitions
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Joe Stringer <joe@wand.net.nz>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=5oMdsQsw1n7pkd5dZK0BAR68goU9Cphs7Z7vjhmXNXA=;
+        b=pOSsilWEKrNPorhhynqXEGR7evyKUuWeih3Nt4XbbbvrKdDWYfv8ZFhKbQQnYO/Gi8
+         iWalrc2uoH+HKZs6rB/pd/tmwDoREfxzn95H9wTmpPQZMJ9jSbJSAltlDBRIlttsmAhg
+         p689VjREL++LJkU5zBCjv0srKvEZgoHll5OUKH2U1ktlFFP3Bc9u0sZ+p5izQnBx9rd+
+         hCK1YGtRxCo33o+UJM9hGW7hTD36lyhbxXw8gtcGDwbj0YLXrvElEXGQgij9bAVZEDwq
+         uhN/KkR0OP8AO3uRJFtbWQOUgKQGNOnnRJyLjdq1SkvnaRQRM8LOpJoiMy8kF1kItcIs
+         adkw==
+X-Gm-Message-State: APjAAAUO46uiXRZdnA3kTJANVGC1jZNXq/z5DN9/uCCAMZt8EvWzjmcX
+        wI99X2oxXF6GXPeRBbc8++4yXQ==
+X-Google-Smtp-Source: APXvYqyLJk0+3HOrUCnuJqkk0jfG4hnZ4d747OQBhmE1HQEm9E2OZkcZvXeiDoYq6X0FOJ8JYq4oTw==
+X-Received: by 2002:ae9:eb96:: with SMTP id b144mr25466663qkg.321.1561042377583;
+        Thu, 20 Jun 2019 07:52:57 -0700 (PDT)
+Received: from qcai.nay.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id f9sm10553867qtl.75.2019.06.20.07.52.56
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 20 Jun 2019 07:52:57 -0700 (PDT)
+From:   Qian Cai <cai@lca.pw>
+To:     davem@davemloft.net
+Cc:     edumazet@google.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Qian Cai <cai@lca.pw>
+Subject: [PATCH -next] inet: fix compilation warnings in fqdir_pre_exit()
+Date:   Thu, 20 Jun 2019 10:52:40 -0400
+Message-Id: <1561042360-20480-1-git-send-email-cai@lca.pw>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 18 Jun 2019 at 22:37, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+The linux-next commit "inet: fix various use-after-free in defrags
+units" [1] introduced compilation warnings,
 
-> > I would just drop the object-scope pinning. We avoided using it and I'm not
-> > aware if anyone else make use. It also has the ugly side-effect that this
-> > relies on AF_ALG which e.g. on some cloud provider shipped kernels is disabled.
-> > The pinning attribute should be part of the standard set of map attributes for
-> > libbpf though as it's generally useful for networking applications.
->
-> Sounds good. I'll do some more surveying of use cases inside FB to see
-> if anyone needs object-scope pinning, just to be sure we are not
-> short-cutting anyone.
+./include/net/inet_frag.h:117:1: warning: 'inline' is not at beginning
+of declaration [-Wold-style-declaration]
+ static void inline fqdir_pre_exit(struct fqdir *fqdir)
+ ^~~~~~
+In file included from ./include/net/netns/ipv4.h:10,
+                 from ./include/net/net_namespace.h:20,
+                 from ./include/linux/netdevice.h:38,
+                 from ./include/linux/icmpv6.h:13,
+                 from ./include/linux/ipv6.h:86,
+                 from ./include/net/ipv6.h:12,
+                 from ./include/rdma/ib_verbs.h:51,
+                 from ./include/linux/mlx5/device.h:37,
+                 from ./include/linux/mlx5/driver.h:51,
+                 from
+drivers/net/ethernet/mellanox/mlx5/core/pagealloc.c:37:
 
-I'm also curious what the use cases for declarative pinning are. From my
-limited POV it doesn't seem that useful? There are a couple of factors:
+[1] https://lore.kernel.org/netdev/20190618180900.88939-3-edumazet@google.com/
 
-* Systemd mounts the default location only accessible to root, so I have to
-  used my own bpffs mount.
-* Since I don't want to hard code that, I put it in a config file.
-* After loading the ELF we pin maps from the daemon managing the XDP.
+Signed-off-by: Qian Cai <cai@lca.pw>
+---
+ include/net/inet_frag.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-How do other people work around this? Hard coding it in the ELF seems
-suboptimal.
-
-> > And the loader should figure this out and combine everything in the background.
-> > Otherwise above 'struct inner_map_t value' would be mixing convention of using
-> > pointer vs non-pointer which may be even more confusing.
->
-> There are two reasons I didn't want to go with that approach:
->
-> 1. This syntax makes my_inner_map usable as a stand-alone map, while
-> it's purpose is to serve as a inner map prototype. While technically
-> it is ok to use my_inner_map as real map, it's kind of confusing and
-> feels unclean.
-
-I agree, avoiding this problem is good.
-
-> So we came up with a way to "encode" integer constants as part of BTF
-> type information, so that *all* declarative information is part of BTF
-> type, w/o the need to compile-time initialization. We tried to go the
-> other way (what Jakub was pushing for), but we couldn't figure out
-> anything that would work w/o more compiler hacks. So here's the
-> updated proposal:
->
-> #define __int(name, val) int (*name)[val]
-
-Consider my mind blown: https://cdecl.org/?q=int+%28*foo%29%5B10%5D
-
-> #define __type(name, val) val (*foo)
-
-Maybe it's enough to just hide the pointer-ness?
-
-  #define __member(name) (*name)
-  struct my_value __member(value);
-
-> struct my_inner_map {
->         __int(type, BPF_MAP_TYPE_ARRAY);
->         __int(max_entries, 1000);
->         __type(key, int);
->         __type(value, struct my_value);
-
-What if this did
-
-  __type(value, struct my_value)[1000];
-  struct my_value __member(value)[1000]; // alternative
-
-instead, and skipped max_entries?
-
-> static struct {
->         __int(type, BPF_MAP_TYPE_ARRAY_OF_MAPS);
->         __int(max_entries, 1000);
->         __type(key, int);
->         __type(value, struct my_inner_map);
->         struct my_inner_map *values[];
-> } my_initialized_outer_map SEC(".maps") = {
->         .values = {
->                 &imap1,
->                 [500] = &imap2,
->         },
-> };
->
-> Here struct my_inner_map is complete definition of array map w/ 1000
-> elements w/ all the type info for k/v. That struct is used as a
-> template for my_outer_map map-in-map. my_initialized_outer_map is the
-> case of pre-initialization of array-of-maps w/ instances of existing
-> maps imap1 and imap2.
-
-For my_initialized_outer_map, which section does .values end up in the
-generated ELF? How much space is going to be allocated? 501 * 4 bytes?
-
-> The idea is that we encode integer fields as array dimensions + use
-> pointer to an array to save space. Given that syntax in plain C is a
-> bit ugly and hard to remember, we hide that behind __int macro. Then
-> in line with __int, we also have __type macro, that hides that hateful
-> pointer for key/value types. This allows map definition to be
-> self-describing w/o having to look at initialized ELF data section at
-> all, except for special cases of explicitly initializing map-in-map or
-> prog_array.
->
-> What do you think?
-
-I think this is an interesting approach. One thing I'm not sure of is handling
-these types from C. For example:
-
-  sizeof(my_outer_map.value)
-
-This compiles, but doesn't produce the intended result. Correct would be:
-
-  sizeof(my_outer_map.value[0])
-
-At that point you have to understand that value is a pointer so all of
-our efforts
-are for naught. I suspect there is other weirdness like this, but I need to play
-with it a little bit more.
-
-> Yeah I can definitely see some confusion here. But it seems like this
-> is more of a semantics of map sharing, and maybe it should be some
-> extra option for when we have automatic support for extern (shared)
-> maps. E.g., something like
->
-> __int(sharing, SHARE_STRATEGY_MERGE) vs __int(sharing, SHARE_STRATEGY_OVERWRITE)
->
-> Haven't though through exact syntax, naming, semantics, but it seems
-> doable to support both, depending on desired behavior.
->
-> Maybe we should also unify this w/ pinning? E.g., there are many
-> sensible ways to handle already existing pinned map:
->
-> 1. Reject program (e.g., if BPF application is the source of truth for that map)
-> 2. Use pinned as is (e.g., if BPF application wants to consume data
-> from source of truth app)
-> 3. Merge (what you described above)
-> 4. Replace/reset - not sure if useful/desirable.
-
-From my experience, trying to support many use cases in a purely declarative
-fashion ends up creating many edge cases, and quirky behaviour that is hard to
-fix later on. It's a bit like merging dictionaries in $LANGUAGE,
-which starts out simple and then gets complicated because sometimes you
-want to override a key, but lists should be concatenated, except in
-that one case...
-
-I wonder: are there many use cases where writing some glue code isn't
-possible? With libbpf getting more mature APIs that should become easier and
-easier. We could probably support existing iproute2 features that way as well.
-
+diff --git a/include/net/inet_frag.h b/include/net/inet_frag.h
+index 46574d996f1d..010f26b31c89 100644
+--- a/include/net/inet_frag.h
++++ b/include/net/inet_frag.h
+@@ -114,7 +114,7 @@ struct inet_frags {
+ 
+ int fqdir_init(struct fqdir **fqdirp, struct inet_frags *f, struct net *net);
+ 
+-static void inline fqdir_pre_exit(struct fqdir *fqdir)
++static inline void fqdir_pre_exit(struct fqdir *fqdir)
+ {
+ 	fqdir->high_thresh = 0; /* prevent creation of new frags */
+ 	fqdir->dead = true;
 -- 
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+1.8.3.1
 
-www.cloudflare.com
