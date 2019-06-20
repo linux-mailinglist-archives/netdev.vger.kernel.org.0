@@ -2,135 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 924E54CEB1
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 15:31:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D60354CF00
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 15:37:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726773AbfFTNbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 09:31:36 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:45906 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726491AbfFTNbf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 09:31:35 -0400
-Received: by mail-io1-f68.google.com with SMTP id e3so5726870ioc.12
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 06:31:35 -0700 (PDT)
+        id S1726697AbfFTNhv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 09:37:51 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:40483 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726391AbfFTNhu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 09:37:50 -0400
+Received: by mail-wm1-f68.google.com with SMTP id v19so3205771wmj.5
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 06:37:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=fag5wbxXspdvI0E/nq/PzUvz4eKC1B2Ly1U/ljGAEug=;
-        b=RL7cBiizm2jE2H1gAGkZciGVxLExxyS2QyVwVnssdWH2YKZKeaaxDSIGIXUgyHDXD1
-         Q5wK851v34hTtcqWAfGxWBq/HmADC71FF1EvJxNNPCGZqHHijnC1/cbEHx0di+q2jnGP
-         qIp/aIGAZ3OOmQlkaYfsqLKy3CIBw+eZfTSNFwaCLGWITC97D2sPn8YoR6COc3gJx9JY
-         N34UWTISLz2BKpDjZq7txC42xLB25lT6V3ZjTUjP1UPgA/MlUhZJsPZSgQXabbdsrSPK
-         Ix9E2uJO8k9r3erGRmlS82VGmgr7dUbMEMpfevNfuLwKht+oYFva58iom4yfF2MVCpWw
-         woAA==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=oFRRwxv0XVler1vA71mJJMEoafgkZL5b47dVSJn/UrE=;
+        b=YFqmJY5ErCsKFw6wd7xnu1lUJKbcztkjLv6ZWgb06eCocM4TIMpNC0e6sZRrSEO/sm
+         sytqj9Fy86EPX9UzYD/3ibdXMSTpu3armPxSbDb45478mJce3zIdhrwHAdymcxco3k28
+         oWEAI8rGj2aXDKWiXr6XtCesdMkyeU876/kLaT1oWmh8a0Ra+43WXGRhGTraxJ9hZkfA
+         AS4Cnz8HVzgNMG77Y5CAm1P4vsL5PUixvjcuynGjq5gcoYKwNcyl0YYpl8SCobUuEtkh
+         p6M2/o1/LT7K53OslHOd8Y+SiPXD6Z2zZ9ItWL+H+/jy/8Fn4ISVC8Ni4J8qiNIZu6C7
+         0vyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=fag5wbxXspdvI0E/nq/PzUvz4eKC1B2Ly1U/ljGAEug=;
-        b=qY7vHsdzVWDcJdK4j9bcZZDXRV9+v/8zSlHytsxQw3qMBnHuznQ1QqgaLT/YeGzXcN
-         rG5Ty9f2KgJ2cPKCTt7VJe64Nvx9JkERlGud2CBjOR9q9nZZhZYIpNWvDTcModo1BaR4
-         1M4MS1fFR+TFN1EnVBL6ojwlncrcAOYibPC9DFO14423FL8OmdK/SlYsI75Q7vme55xI
-         ZArfNHxkZmkU/oIXXRXywx6EGoaPvvyZ+G3q76PDY4xeJnwUwt0S/q5jsZKnk8HHxcJq
-         tETLacfA3lwtsJ0gbUzA+myJi4mfQKLgQ19wJaaAzOBGO4e1XHClXJmSWKljL4t8q8CX
-         oSrQ==
-X-Gm-Message-State: APjAAAVJZ4X/nZfISzYZ3lf4yrSqe1estY4Q3GhcGAswNy/F9bG6d0BK
-        zu1oOu9nEFoYXYxTpSqNXwzK46Fk
-X-Google-Smtp-Source: APXvYqzuzwwxJaIpnK8Gu3aJ5e3tfvg5jo91EyHDUoTjdk2nbFFdltTGcbB1+PvPyKA3aeW5lOqrvA==
-X-Received: by 2002:a6b:e20a:: with SMTP id z10mr19172121ioc.76.1561037494886;
-        Thu, 20 Jun 2019 06:31:34 -0700 (PDT)
-Received: from ?IPv6:2601:284:8200:5cfb:9c46:f142:c937:3c50? ([2601:284:8200:5cfb:9c46:f142:c937:3c50])
-        by smtp.googlemail.com with ESMTPSA id y20sm17454678ion.77.2019.06.20.06.31.33
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 20 Jun 2019 06:31:34 -0700 (PDT)
-Subject: Re: [PATCH net-next v6 04/11] ipv4: Dump route exceptions if
- requested
-To:     Stefano Brivio <sbrivio@redhat.com>,
-        David Miller <davem@davemloft.net>
-Cc:     Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        netdev@vger.kernel.org
-References: <cover.1560987611.git.sbrivio@redhat.com>
- <b5aacd9a3a3f4b256dfd091cdd8771d0f6a1aea2.1560987611.git.sbrivio@redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <777387d8-fa15-388e-875a-02aa5df977dd@gmail.com>
-Date:   Thu, 20 Jun 2019 07:31:32 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=oFRRwxv0XVler1vA71mJJMEoafgkZL5b47dVSJn/UrE=;
+        b=a7y79obGXKsN+RxhuvcWXTC0R7Z8WDmQZIZDp4gmovLNpUnODAhhlFvtrxW8R5L/r7
+         dyPkYJObTRXf4Wn9p3s2XDwMUPOButFjqvqSL4jhqyxS1Aiggn6XsFdKC5lpS81vFxcy
+         FlQqa2QXfjUMiW3UrxOu2LApclFUIadQ8QaGvkS8iNQd2aZ9pyUqdVQA6J5Aa2SRU3vo
+         hqswfIrnYCgTrjYhyUIi3+u7bvx6f8MyfxKC+qwy1DGXtBX5t9IyRjjecaC2Mis5OaJp
+         N2zu2SnIL4BelSJnuAiLs4FWqyeagSjpk0+QvwvXzTd/KHjiKf9qFttOIFSw3I+yUNiD
+         IApQ==
+X-Gm-Message-State: APjAAAUsYzstEvd2LOzwx4Q5FP568xM8juTCHJoISNTXiSZs8OS/58+W
+        nYwE5wL03vStrJ6o6PZ8rtmrAlVWN94=
+X-Google-Smtp-Source: APXvYqwsbe2Y0kuUkpC+dfNWDM7IgeFtsSYsV/Wo/nKbcRxfTqdmvCYODUJapOHZBe3MJ0Lj5QEZqQ==
+X-Received: by 2002:a1c:700b:: with SMTP id l11mr2940499wmc.106.1561037869082;
+        Thu, 20 Jun 2019 06:37:49 -0700 (PDT)
+Received: from localhost (ip-78-45-163-56.net.upcbroadband.cz. [78.45.163.56])
+        by smtp.gmail.com with ESMTPSA id s3sm5555967wmh.27.2019.06.20.06.37.48
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 20 Jun 2019 06:37:48 -0700 (PDT)
+Date:   Thu, 20 Jun 2019 15:37:48 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Sudarsana Reddy Kalluru <skalluru@marvell.com>
+Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Michal Kalderon <mkalderon@marvell.com>,
+        Ariel Elior <aelior@marvell.com>
+Subject: Re: [EXT] Re: [PATCH net-next 4/4] qed: Add devlink support for
+ configuration attributes.
+Message-ID: <20190620133748.GD2504@nanopsycho>
+References: <20190617114528.17086-1-skalluru@marvell.com>
+ <20190617114528.17086-5-skalluru@marvell.com>
+ <20190617155411.53cf07cf@cakuba.netronome.com>
+ <MN2PR18MB25289FE6D99432939990C979D3E40@MN2PR18MB2528.namprd18.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <b5aacd9a3a3f4b256dfd091cdd8771d0f6a1aea2.1560987611.git.sbrivio@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <MN2PR18MB25289FE6D99432939990C979D3E40@MN2PR18MB2528.namprd18.prod.outlook.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/19/19 5:59 PM, Stefano Brivio wrote:
-> diff --git a/include/net/route.h b/include/net/route.h
-> index 065b47754f05..e7f65388a6d4 100644
-> --- a/include/net/route.h
-> +++ b/include/net/route.h
-> @@ -44,6 +44,7 @@
->  #define RT_CONN_FLAGS_TOS(sk,tos)   (RT_TOS(tos) | sock_flag(sk, SOCK_LOCALROUTE))
->  
->  struct fib_nh;
-> +struct fib_alias;
->  struct fib_info;
->  struct uncached_list;
->  struct rtable {
+Thu, Jun 20, 2019 at 02:09:29PM CEST, skalluru@marvell.com wrote:
+>> -----Original Message-----
+>> From: Jakub Kicinski <jakub.kicinski@netronome.com>
+>> Sent: Tuesday, June 18, 2019 4:24 AM
+>> To: Sudarsana Reddy Kalluru <skalluru@marvell.com>
+>> Cc: davem@davemloft.net; netdev@vger.kernel.org; Michal Kalderon
+>> <mkalderon@marvell.com>; Ariel Elior <aelior@marvell.com>; Jiri Pirko
+>> <jiri@resnulli.us>
+>> Subject: [EXT] Re: [PATCH net-next 4/4] qed: Add devlink support for
+>> configuration attributes.
+>> 
+>> External Email
+>> 
+>> ----------------------------------------------------------------------
+>> On Mon, 17 Jun 2019 04:45:28 -0700, Sudarsana Reddy Kalluru wrote:
+>> > This patch adds implementation for devlink callbacks for reading/
+>> > configuring the device attributes.
+>> >
+>> > Signed-off-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
+>> > Signed-off-by: Ariel Elior <aelior@marvell.com>
+>> 
+>> You need to provide documentation for your parameters, plus some of them
+>> look like they should potentially be port params, not device params.
+>
+>Thanks a lot for your review. Will add the required documentation. In case of Marvell adapter, any of the device/adapter/port parameters can be read/configurable via any PF (ethdev) on the port. Hence adding the commands at device level. Hope this is fine.
 
-we should not expose fib_alias to route.c.
+No it is not. Port param should be port param.
 
-> @@ -230,6 +231,9 @@ void fib_modify_prefix_metric(struct in_ifaddr *ifa, u32 new_metric);
->  void rt_add_uncached_list(struct rtable *rt);
->  void rt_del_uncached_list(struct rtable *rt);
->  
-> +int fnhe_dump_buckets(struct fib_alias *fa, int nhsel, struct sk_buff *skb,
-> +		      struct netlink_callback *cb, int *fa_index, int fa_start);
-> +
->  static inline void ip_rt_put(struct rtable *rt)
->  {
->  	/* dst_release() accepts a NULL parameter.
-> diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
-> index 94e5d83db4db..03f51e5192e5 100644
-> --- a/net/ipv4/fib_trie.c
-> +++ b/net/ipv4/fib_trie.c
-> @@ -2078,28 +2078,51 @@ void fib_free_table(struct fib_table *tb)
->  	call_rcu(&tb->rcu, __trie_free_rcu);
->  }
->  
-> +static int fib_dump_fnhe_from_leaf(struct fib_alias *fa, struct sk_buff *skb,
-> +				   struct netlink_callback *cb,
-> +				   int *fa_index, int fa_start)
-> +{
-> +	struct fib_info *fi = fa->fa_info;
-> +	int nhsel;
-> +
-> +	if (!fi || fi->fib_flags & RTNH_F_DEAD)
-> +		return 0;
-> +
-> +	for (nhsel = 0; nhsel < fib_info_num_path(fi); nhsel++) {
-> +		int err;
-> +
-> +		err = fnhe_dump_buckets(fa, nhsel, skb, cb, fa_index, fa_start);
-> +		if (err)
-> +			return err;
-> +	}
-> +
-> +	return 0;
-> +}
+Also please be careful not to add any generic param as driver specific.
 
-fib_info would be the better argument to pass in to the fnhe dump, and
-I think the loop over where the bucket is should be in route.c as well.
-So how about fib_info_dump_fnhe() as the helper exposed from route.c,
-and it does the loop over nexthops and calls fnhe_dump_buckets.
-
-As for the loop, you could fill an skb without finishing a bucket inside
-of a nexthop so you need top track which nexthop is current as well.
-
+Thanks!
