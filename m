@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BFFB4DB1F
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 22:24:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D4A84DB2A
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 22:25:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727156AbfFTUYo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 16:24:44 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:36737 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727125AbfFTUYl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 16:24:41 -0400
-Received: by mail-pl1-f195.google.com with SMTP id k8so1846012plt.3
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 13:24:40 -0700 (PDT)
+        id S1727224AbfFTUZA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 16:25:00 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:42618 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727141AbfFTUYm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 16:24:42 -0400
+Received: by mail-pl1-f194.google.com with SMTP id ay6so1824048plb.9
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 13:24:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:subject:date:message-id:in-reply-to:references;
-        bh=n9pN/D3HOEDApM/r9Ym/VuhVtqeeV9YpstcV+NPTJ5Y=;
-        b=eTTqqxcDVzk8+JnJ4nyrKfSej2J3GcC8o0f5BffxzCIR1C+D2/edmpNTXXtAPWtolp
-         ZW8b8gkMS/eZ+SD1Bu+f8rbZyxZuCuzD1yzgQ7XVYD3vwSKysoUMF6drIfmFws0BLo+D
-         qU//IR/DbVKbNxDUmT24YhXT6b7kKNVR7couvW6KKrR2+G7dJKsgty4WYyyHJLJmS9oJ
-         NDBcII/SM1miUbCHGaMZVAgiBVI++MzhwOtR3TlePFqMJCnDjXt+I/gzhw4SFIh0dGje
-         JRLBHoFsKKkJAOUYYvfYm5yF80VL1LukbBb7C4Xpe/PIz59iMb0AzKy97kT8lBmpSsDN
-         LKqw==
+        bh=6KntXYz9l5CeMckN/5laiL3oyqmH7ZPbyZ+XP/S+Qeg=;
+        b=jx8yPCbiENQ5M6kk8mC7VFppxjdkYQeNwHv+wi1YyrhWAYQtTU9UngyejEYKNmzXbi
+         M101l1VaqMQeUzANwsW87a5qvSUVp3lZotMuaNyyUQpQqH4A4IZe0Lxqtytc1P4d7mNf
+         VAI61cNunWPKm+Af/GI8kuVrxSpnmeSt7TLhC0kRxNyYgv5eECpPbOsPvmf9E7XHNv7k
+         BdOG7alJFYnCZytj3tiBXLNRFnjbbuwHtHq9DtWj0QZFbhLXI9psxmD37PX4pmsU0ftq
+         1vnRsAYc5Eo4qZckfK5m2oOP5tJ7tZiOK6hn40gY4lP6TiwZy8xo9mYo5CcD8nRE+gSP
+         L1Ng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references;
-        bh=n9pN/D3HOEDApM/r9Ym/VuhVtqeeV9YpstcV+NPTJ5Y=;
-        b=Qm5FeUsC72MpkGb9zWWQSxqw0vc8dnE0UTF/uzNnUpm5lzZzxBj/bin2GwjuE4dCKX
-         1r9OP9wrB26EZeAYl5MQfKEJI82C+eldELMqBOuq2K6pl1T9caGGjx/MSzpnEXa/SsN3
-         qzxXFGzl5Kno4a8OlDpkJmv6hRKWWwcz4SLkhZnlO7JeJ4ADJ0ZKcN5tqTnkYXK64jcy
-         +atbHJal+aOH+iyRUh6bctS0T7BAPn038OMy0KTncUg350uaNmgpiRTkAjO8LI3FUDr0
-         K57J2wnQWMTX9dM6/kYAmQI2GRdwzfXYxGedSQEELrFYOKMEzF5FPrdzxh8O8pmPKGd4
-         KW4Q==
-X-Gm-Message-State: APjAAAUk6SX4bhTL17J7AL1soMoNDD4XZHJE0virMCVmnxoBOLZB9OyE
-        I/+DAxjG6empQCrdiS/8EVeeDulCTE8=
-X-Google-Smtp-Source: APXvYqxMM6qzk8fD2bZpVoN/APbtW6qj2zi75DhjLWTL9zKYPnpIEwjvWaN+Z5n9dA1V50o6FtzRaA==
-X-Received: by 2002:a17:902:2a29:: with SMTP id i38mr99399900plb.46.1561062280113;
-        Thu, 20 Jun 2019 13:24:40 -0700 (PDT)
+        bh=6KntXYz9l5CeMckN/5laiL3oyqmH7ZPbyZ+XP/S+Qeg=;
+        b=EWJJ3bQCCk/ANMT91HWNQwdAYUcFA1gkvId87y6ntvVkpzrOnPXUbz5VbkUaDqBkV5
+         muZthf1cGxU1oSnrhu0KWT01tJmNQVN1vsSKZl/gWefxGrEATX54D7giidCEtbF6HRNK
+         Bbm2c/IPKb0zlxjUWpTbJoNMlaHPPV9o/zvUt+h4au/n7tNhP4N1PFFOFU7IuYo7R5AX
+         CNu6+6AQb1vYODL4NeRV4iEHJRfaP3RFmclDF+GG87/ilvm5wnw/RlLtY2JQdn9UKSKs
+         UEbfdNKjEebKRnCgWSf4869PIM2Yy4HflaFg9cM+ReqLTCrynK2+co6GYz7G+5VjYIfj
+         5s3g==
+X-Gm-Message-State: APjAAAW4/fqjABpvCEUnPg0mfGz5moDLdmRBNIVmLdXUaBMjNLTO5k1c
+        3yVSCRTGzlb8+1LDV0YCPPoeddPKyL4=
+X-Google-Smtp-Source: APXvYqy0fyvSYCBUshgG3joec0BD4RnL9OvqR4DWSni3hUebvWkMHCnib0Xn4sSr6ciklrrT70awXg==
+X-Received: by 2002:a17:902:b608:: with SMTP id b8mr29390201pls.303.1561062281016;
+        Thu, 20 Jun 2019 13:24:41 -0700 (PDT)
 Received: from driver-dev1.pensando.io ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id h26sm340537pfq.64.2019.06.20.13.24.39
+        by smtp.gmail.com with ESMTPSA id h26sm340537pfq.64.2019.06.20.13.24.40
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 20 Jun 2019 13:24:39 -0700 (PDT)
+        Thu, 20 Jun 2019 13:24:40 -0700 (PDT)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     snelson@pensando.io, netdev@vger.kernel.org
-Subject: [PATCH net-next 10/18] ionic: Add management of rx filters
-Date:   Thu, 20 Jun 2019 13:24:16 -0700
-Message-Id: <20190620202424.23215-11-snelson@pensando.io>
+Subject: [PATCH net-next 11/18] ionic: Add Rx filter and rx_mode nod support
+Date:   Thu, 20 Jun 2019 13:24:17 -0700
+Message-Id: <20190620202424.23215-12-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190620202424.23215-1-snelson@pensando.io>
 References: <20190620202424.23215-1-snelson@pensando.io>
@@ -56,51 +56,475 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Set up the infrastructure for managing Rx filters.  We can't ask the
-hardware for what filters it has, so we keep a local list of filters
-that we've pushed into the HW.
+Add the Rx filtering and rx_mode NDO callbacks.  Also add
+the deferred work thread handling needed to manage the filter
+requests otuside of the netif_addr_lock spinlock.
 
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- drivers/net/ethernet/pensando/ionic/Makefile  |   4 +-
- .../net/ethernet/pensando/ionic/ionic_lif.c   |   6 +
- .../net/ethernet/pensando/ionic/ionic_lif.h   |   2 +
- .../ethernet/pensando/ionic/ionic_rx_filter.c | 139 ++++++++++++++++++
- .../ethernet/pensando/ionic/ionic_rx_filter.h |  34 +++++
- 5 files changed, 183 insertions(+), 2 deletions(-)
- create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c
- create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_rx_filter.h
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 391 +++++++++++++++++-
+ .../net/ethernet/pensando/ionic/ionic_lif.h   |  29 ++
+ 2 files changed, 415 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/Makefile b/drivers/net/ethernet/pensando/ionic/Makefile
-index 04d519d00be6..7d9cdc5f02a1 100644
---- a/drivers/net/ethernet/pensando/ionic/Makefile
-+++ b/drivers/net/ethernet/pensando/ionic/Makefile
-@@ -3,5 +3,5 @@
- 
- obj-$(CONFIG_IONIC) := ionic.o
- 
--ionic-y := ionic_main.o ionic_bus_pci.o ionic_dev.o ionic_debugfs.o \
--	   ionic_lif.o
-+ionic-y := ionic_main.o ionic_bus_pci.o ionic_dev.o \
-+	   ionic_lif.o ionic_rx_filter.o ionic_debugfs.o
 diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index c6444174f649..ac4a8dbd33fb 100644
+index ac4a8dbd33fb..fa48648b68b7 100644
 --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
 +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -678,6 +678,8 @@ static void ionic_lif_deinit(struct lif *lif)
+@@ -12,9 +12,54 @@
+ #include "ionic_lif.h"
+ #include "ionic_debugfs.h"
  
- 	clear_bit(LIF_INITED, lif->state);
- 
-+	ionic_rx_filters_deinit(lif);
++static void ionic_lif_rx_mode(struct lif *lif, unsigned int rx_mode);
++static int ionic_lif_addr_add(struct lif *lif, const u8 *addr);
++static int ionic_lif_addr_del(struct lif *lif, const u8 *addr);
 +
- 	napi_disable(&lif->adminqcq->napi);
- 	ionic_lif_qcq_deinit(lif, lif->notifyqcq);
- 	ionic_lif_qcq_deinit(lif, lif->adminqcq);
-@@ -1053,6 +1055,10 @@ static int ionic_lif_init(struct lif *lif)
+ static int ionic_set_nic_features(struct lif *lif, netdev_features_t features);
+ static int ionic_notifyq_clean(struct lif *lif, int budget);
+ 
++static void ionic_lif_deferred_work(struct work_struct *work)
++{
++	struct lif *lif = container_of(work, struct lif, deferred.work);
++	struct deferred *def = &lif->deferred;
++	struct deferred_work *w = NULL;
++
++	spin_lock_bh(&def->lock);
++	if (!list_empty(&def->list)) {
++		w = list_first_entry(&def->list, struct deferred_work, list);
++		list_del(&w->list);
++	}
++	spin_unlock_bh(&def->lock);
++
++	if (w) {
++		switch (w->type) {
++		case DW_TYPE_RX_MODE:
++			ionic_lif_rx_mode(lif, w->rx_mode);
++			break;
++		case DW_TYPE_RX_ADDR_ADD:
++			ionic_lif_addr_add(lif, w->addr);
++			break;
++		case DW_TYPE_RX_ADDR_DEL:
++			ionic_lif_addr_del(lif, w->addr);
++			break;
++		default:
++			break;
++		};
++		kfree(w);
++		schedule_work(&def->work);
++	}
++}
++
++static void ionic_lif_deferred_enqueue(struct deferred *def,
++				       struct deferred_work *work)
++{
++	spin_lock_bh(&def->lock);
++	list_add_tail(&work->list, &def->list);
++	spin_unlock_bh(&def->lock);
++	schedule_work(&def->work);
++}
++
+ int ionic_open(struct net_device *netdev)
+ {
+ 	struct lif *lif = netdev_priv(netdev);
+@@ -184,6 +229,235 @@ static int ionic_notifyq_clean(struct lif *lif, int budget)
+ 	return work_done;
+ }
+ 
++static int ionic_lif_addr_add(struct lif *lif, const u8 *addr)
++{
++	struct ionic_admin_ctx ctx = {
++		.work = COMPLETION_INITIALIZER_ONSTACK(ctx.work),
++		.cmd.rx_filter_add = {
++			.opcode = CMD_OPCODE_RX_FILTER_ADD,
++			.lif_index = cpu_to_le16(lif->index),
++			.match = cpu_to_le16(RX_FILTER_MATCH_MAC),
++		},
++	};
++	struct rx_filter *f;
++	int err;
++
++	/* don't bother if we already have it */
++	spin_lock_bh(&lif->rx_filters.lock);
++	f = ionic_rx_filter_by_addr(lif, addr);
++	spin_unlock_bh(&lif->rx_filters.lock);
++	if (f)
++		return 0;
++
++	netdev_dbg(lif->netdev, "rx_filter add ADDR %pM (id %d)\n", addr,
++		   ctx.comp.rx_filter_add.filter_id);
++
++	memcpy(ctx.cmd.rx_filter_add.mac.addr, addr, ETH_ALEN);
++	err = ionic_adminq_post_wait(lif, &ctx);
++	if (err)
++		return err;
++
++	return ionic_rx_filter_save(lif, 0, RXQ_INDEX_ANY, 0, &ctx);
++}
++
++static int ionic_lif_addr_del(struct lif *lif, const u8 *addr)
++{
++	struct ionic_admin_ctx ctx = {
++		.work = COMPLETION_INITIALIZER_ONSTACK(ctx.work),
++		.cmd.rx_filter_del = {
++			.opcode = CMD_OPCODE_RX_FILTER_DEL,
++			.lif_index = cpu_to_le16(lif->index),
++		},
++	};
++	struct rx_filter *f;
++	int err;
++
++	spin_lock_bh(&lif->rx_filters.lock);
++	f = ionic_rx_filter_by_addr(lif, addr);
++	if (!f) {
++		spin_unlock_bh(&lif->rx_filters.lock);
++		return -ENOENT;
++	}
++
++	ctx.cmd.rx_filter_del.filter_id = cpu_to_le32(f->filter_id);
++	ionic_rx_filter_free(lif, f);
++	spin_unlock_bh(&lif->rx_filters.lock);
++
++	err = ionic_adminq_post_wait(lif, &ctx);
++	if (err)
++		return err;
++
++	netdev_dbg(lif->netdev, "rx_filter del ADDR %pM (id %d)\n", addr,
++		   ctx.cmd.rx_filter_del.filter_id);
++
++	return 0;
++}
++
++static int ionic_lif_addr(struct lif *lif, const u8 *addr, bool add)
++{
++	struct ionic *ionic = lif->ionic;
++	struct deferred_work *work;
++	unsigned int nmfilters;
++	unsigned int nufilters;
++
++	if (add) {
++		/* Do we have space for this filter?  We test the counters
++		 * here before checking the need for deferral so that we
++		 * can return an overflow error to the stack.
++		 */
++		nmfilters = le32_to_cpu(ionic->ident.lif.eth.max_mcast_filters);
++		nufilters = le32_to_cpu(ionic->ident.lif.eth.max_ucast_filters);
++
++		if ((is_multicast_ether_addr(addr) && lif->nmcast < nmfilters))
++			lif->nmcast++;
++		else if (!is_multicast_ether_addr(addr) &&
++			 lif->nucast < nufilters)
++			lif->nucast++;
++		else
++			return -ENOSPC;
++	} else {
++		if (is_multicast_ether_addr(addr) && lif->nmcast)
++			lif->nmcast--;
++		else if (!is_multicast_ether_addr(addr) && lif->nucast)
++			lif->nucast--;
++	}
++
++	if (in_interrupt()) {
++		work = kzalloc(sizeof(*work), GFP_ATOMIC);
++		if (!work) {
++			netdev_err(lif->netdev, "%s OOM\n", __func__);
++			return -ENOMEM;
++		}
++		work->type = add ? DW_TYPE_RX_ADDR_ADD : DW_TYPE_RX_ADDR_DEL;
++		memcpy(work->addr, addr, ETH_ALEN);
++		netdev_dbg(lif->netdev, "deferred: rx_filter %s %pM\n",
++			   add ? "add" : "del", addr);
++		ionic_lif_deferred_enqueue(&lif->deferred, work);
++	} else {
++		netdev_dbg(lif->netdev, "rx_filter %s %pM\n",
++			   add ? "add" : "del", addr);
++		if (add)
++			return ionic_lif_addr_add(lif, addr);
++		else
++			return ionic_lif_addr_del(lif, addr);
++	}
++
++	return 0;
++}
++
++static int ionic_addr_add(struct net_device *netdev, const u8 *addr)
++{
++	return ionic_lif_addr(netdev_priv(netdev), addr, true);
++}
++
++static int ionic_addr_del(struct net_device *netdev, const u8 *addr)
++{
++	return ionic_lif_addr(netdev_priv(netdev), addr, false);
++}
++
++static void ionic_lif_rx_mode(struct lif *lif, unsigned int rx_mode)
++{
++	struct ionic_admin_ctx ctx = {
++		.work = COMPLETION_INITIALIZER_ONSTACK(ctx.work),
++		.cmd.rx_mode_set = {
++			.opcode = CMD_OPCODE_RX_MODE_SET,
++			.lif_index = cpu_to_le16(lif->index),
++			.rx_mode = cpu_to_le16(rx_mode),
++		},
++	};
++	char buf[128];
++	int err;
++	int i;
++#define REMAIN(__x) (sizeof(buf) - (__x))
++
++	i = snprintf(buf, sizeof(buf), "rx_mode 0x%04x -> 0x%04x:",
++		     lif->rx_mode, rx_mode);
++	if (rx_mode & RX_MODE_F_UNICAST)
++		i += snprintf(&buf[i], REMAIN(i), " RX_MODE_F_UNICAST");
++	if (rx_mode & RX_MODE_F_MULTICAST)
++		i += snprintf(&buf[i], REMAIN(i), " RX_MODE_F_MULTICAST");
++	if (rx_mode & RX_MODE_F_BROADCAST)
++		i += snprintf(&buf[i], REMAIN(i), " RX_MODE_F_BROADCAST");
++	if (rx_mode & RX_MODE_F_PROMISC)
++		i += snprintf(&buf[i], REMAIN(i), " RX_MODE_F_PROMISC");
++	if (rx_mode & RX_MODE_F_ALLMULTI)
++		i += snprintf(&buf[i], REMAIN(i), " RX_MODE_F_ALLMULTI");
++	netdev_dbg(lif->netdev, "lif%d %s\n", lif->index, buf);
++
++	err = ionic_adminq_post_wait(lif, &ctx);
++	if (err)
++		netdev_warn(lif->netdev, "set rx_mode 0x%04x failed: %d\n",
++			    rx_mode, err);
++	else
++		lif->rx_mode = rx_mode;
++}
++
++static void _ionic_lif_rx_mode(struct lif *lif, unsigned int rx_mode)
++{
++	struct deferred_work *work;
++
++	if (in_interrupt()) {
++		work = kzalloc(sizeof(*work), GFP_ATOMIC);
++		if (!work) {
++			netdev_err(lif->netdev, "%s OOM\n", __func__);
++			return;
++		}
++		work->type = DW_TYPE_RX_MODE;
++		work->rx_mode = rx_mode;
++		netdev_dbg(lif->netdev, "deferred: rx_mode\n");
++		ionic_lif_deferred_enqueue(&lif->deferred, work);
++	} else {
++		ionic_lif_rx_mode(lif, rx_mode);
++	}
++}
++
++static void ionic_set_rx_mode(struct net_device *netdev)
++{
++	struct lif *lif = netdev_priv(netdev);
++	struct identity *ident = &lif->ionic->ident;
++	unsigned int nfilters;
++	unsigned int rx_mode;
++
++	rx_mode = RX_MODE_F_UNICAST;
++	rx_mode |= (netdev->flags & IFF_MULTICAST) ? RX_MODE_F_MULTICAST : 0;
++	rx_mode |= (netdev->flags & IFF_BROADCAST) ? RX_MODE_F_BROADCAST : 0;
++	rx_mode |= (netdev->flags & IFF_PROMISC) ? RX_MODE_F_PROMISC : 0;
++	rx_mode |= (netdev->flags & IFF_ALLMULTI) ? RX_MODE_F_ALLMULTI : 0;
++
++	/* sync unicast addresses
++	 * next check to see if we're in an overflow state
++	 *    if so, we track that we overflowed and enable NIC PROMISC
++	 *    else if the overflow is set and not needed
++	 *       we remove our overflow flag and check the netdev flags
++	 *       to see if we can disable NIC PROMISC
++	 */
++	__dev_uc_sync(netdev, ionic_addr_add, ionic_addr_del);
++	nfilters = le32_to_cpu(ident->lif.eth.max_ucast_filters);
++	if (netdev_uc_count(netdev) + 1 > nfilters) {
++		rx_mode |= RX_MODE_F_PROMISC;
++		lif->uc_overflow = true;
++	} else if (lif->uc_overflow) {
++		lif->uc_overflow = false;
++		if (!(netdev->flags & IFF_PROMISC))
++			rx_mode &= ~RX_MODE_F_PROMISC;
++	}
++
++	/* same for multicast */
++	__dev_mc_sync(netdev, ionic_addr_add, ionic_addr_del);
++	nfilters = le32_to_cpu(ident->lif.eth.max_mcast_filters);
++	if (netdev_mc_count(netdev) > nfilters) {
++		rx_mode |= RX_MODE_F_ALLMULTI;
++		lif->mc_overflow = true;
++	} else if (lif->mc_overflow) {
++		lif->mc_overflow = false;
++		if (!(netdev->flags & IFF_ALLMULTI))
++			rx_mode &= ~RX_MODE_F_ALLMULTI;
++	}
++
++	if (lif->rx_mode != rx_mode)
++		_ionic_lif_rx_mode(lif, rx_mode);
++}
++
+ static int ionic_set_features(struct net_device *netdev,
+ 			      netdev_features_t features)
+ {
+@@ -200,8 +474,26 @@ static int ionic_set_features(struct net_device *netdev,
+ 
+ static int ionic_set_mac_address(struct net_device *netdev, void *sa)
+ {
+-	netdev_info(netdev, "%s: stubbed\n", __func__);
+-	return 0;
++	struct sockaddr *addr = sa;
++	u8 *mac;
++
++	mac = (u8 *)addr->sa_data;
++	if (ether_addr_equal(netdev->dev_addr, mac))
++		return 0;
++
++	if (!is_valid_ether_addr(mac))
++		return -EADDRNOTAVAIL;
++
++	if (!is_zero_ether_addr(netdev->dev_addr)) {
++		netdev_info(netdev, "deleting mac addr %pM\n",
++			    netdev->dev_addr);
++		ionic_addr_del(netdev, netdev->dev_addr);
++	}
++
++	memcpy(netdev->dev_addr, mac, netdev->addr_len);
++	netdev_info(netdev, "updating mac addr %pM\n", mac);
++
++	return ionic_addr_add(netdev, mac);
+ }
+ 
+ static int ionic_change_mtu(struct net_device *netdev, int new_mtu)
+@@ -241,20 +533,68 @@ static void ionic_tx_timeout(struct net_device *netdev)
+ static int ionic_vlan_rx_add_vid(struct net_device *netdev, __be16 proto,
+ 				 u16 vid)
+ {
+-	netdev_info(netdev, "%s: stubbed\n", __func__);
+-	return 0;
++	struct lif *lif = netdev_priv(netdev);
++	struct ionic_admin_ctx ctx = {
++		.work = COMPLETION_INITIALIZER_ONSTACK(ctx.work),
++		.cmd.rx_filter_add = {
++			.opcode = CMD_OPCODE_RX_FILTER_ADD,
++			.lif_index = cpu_to_le16(lif->index),
++			.match = cpu_to_le16(RX_FILTER_MATCH_VLAN),
++			.vlan.vlan = cpu_to_le16(vid),
++		},
++	};
++	int err;
++
++	err = ionic_adminq_post_wait(lif, &ctx);
++	if (err)
++		return err;
++
++	netdev_dbg(netdev, "rx_filter add VLAN %d (id %d)\n", vid,
++		   ctx.comp.rx_filter_add.filter_id);
++
++	return ionic_rx_filter_save(lif, 0, RXQ_INDEX_ANY, 0, &ctx);
+ }
+ 
+ static int ionic_vlan_rx_kill_vid(struct net_device *netdev, __be16 proto,
+ 				  u16 vid)
+ {
+-	netdev_info(netdev, "%s: stubbed\n", __func__);
++	struct lif *lif = netdev_priv(netdev);
++	struct ionic_admin_ctx ctx = {
++		.work = COMPLETION_INITIALIZER_ONSTACK(ctx.work),
++		.cmd.rx_filter_del = {
++			.opcode = CMD_OPCODE_RX_FILTER_DEL,
++			.lif_index = cpu_to_le16(lif->index),
++		},
++	};
++	struct rx_filter *f;
++	int err;
++
++	spin_lock_bh(&lif->rx_filters.lock);
++
++	f = ionic_rx_filter_by_vlan(lif, vid);
++	if (!f) {
++		spin_unlock_bh(&lif->rx_filters.lock);
++		return -ENOENT;
++	}
++
++	netdev_dbg(netdev, "rx_filter del VLAN %d (id %d)\n", vid,
++		   le32_to_cpu(ctx.cmd.rx_filter_del.filter_id));
++
++	ctx.cmd.rx_filter_del.filter_id = cpu_to_le32(f->filter_id);
++	ionic_rx_filter_free(lif, f);
++	spin_unlock_bh(&lif->rx_filters.lock);
++
++	err = ionic_adminq_post_wait(lif, &ctx);
++	if (err)
++		return err;
++
+ 	return 0;
+ }
+ 
+ static const struct net_device_ops ionic_netdev_ops = {
+ 	.ndo_open               = ionic_open,
+ 	.ndo_stop               = ionic_stop,
++	.ndo_set_rx_mode	= ionic_set_rx_mode,
+ 	.ndo_set_features	= ionic_set_features,
+ 	.ndo_set_mac_address	= ionic_set_mac_address,
+ 	.ndo_validate_addr	= eth_validate_addr,
+@@ -555,6 +895,10 @@ static struct lif *ionic_lif_alloc(struct ionic *ionic, unsigned int index)
+ 
+ 	spin_lock_init(&lif->adminq_lock);
+ 
++	spin_lock_init(&lif->deferred.lock);
++	INIT_LIST_HEAD(&lif->deferred.list);
++	INIT_WORK(&lif->deferred.work, ionic_lif_deferred_work);
++
+ 	/* allocate lif info */
+ 	lif->info_sz = ALIGN(sizeof(*lif->info), PAGE_SIZE);
+ 	lif->info = dma_alloc_coherent(dev, lif->info_sz,
+@@ -616,6 +960,8 @@ static void ionic_lif_free(struct lif *lif)
+ 	ionic_qcqs_free(lif);
+ 	ionic_lif_reset(lif);
+ 
++	cancel_work_sync(&lif->deferred.work);
++
+ 	/* free lif info */
+ 	if (lif->info) {
+ 		dma_free_coherent(dev, lif->info_sz, lif->info, lif->info_pa);
+@@ -991,6 +1337,37 @@ static int ionic_init_nic_features(struct lif *lif)
+ 	return 0;
+ }
+ 
++static int ionic_station_set(struct lif *lif)
++{
++	struct net_device *netdev = lif->netdev;
++	struct ionic_admin_ctx ctx = {
++		.work = COMPLETION_INITIALIZER_ONSTACK(ctx.work),
++		.cmd.lif_getattr = {
++			.opcode = CMD_OPCODE_LIF_GETATTR,
++			.index = cpu_to_le16(lif->index),
++			.attr = IONIC_LIF_ATTR_MAC,
++		},
++	};
++	int err;
++
++	err = ionic_adminq_post_wait(lif, &ctx);
++	if (err)
++		return err;
++
++	if (!is_zero_ether_addr(netdev->dev_addr)) {
++		netdev_dbg(lif->netdev, "deleting station MAC addr %pM\n",
++			   netdev->dev_addr);
++		ionic_lif_addr(lif, netdev->dev_addr, false);
++	}
++	memcpy(netdev->dev_addr, ctx.comp.lif_getattr.mac,
++	       netdev->addr_len);
++	netdev_dbg(lif->netdev, "adding station MAC addr %pM\n",
++		   netdev->dev_addr);
++	ionic_lif_addr(lif, netdev->dev_addr, true);
++
++	return 0;
++}
++
+ static int ionic_lif_init(struct lif *lif)
+ {
+ 	struct ionic_dev *idev = &lif->ionic->idev;
+@@ -1059,6 +1436,10 @@ static int ionic_lif_init(struct lif *lif)
  	if (err)
  		goto err_out_notifyq_deinit;
  
-+	err = ionic_rx_filters_init(lif);
++	err = ionic_station_set(lif);
 +	if (err)
 +		goto err_out_notifyq_deinit;
 +
@@ -108,210 +532,59 @@ index c6444174f649..ac4a8dbd33fb 100644
  
  	return 0;
 diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.h b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-index 03d3685ad98e..8129fa20695a 100644
+index 8129fa20695a..c3ecf1df9c2c 100644
 --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.h
 +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-@@ -5,6 +5,7 @@
- #define _IONIC_LIF_H_
+@@ -60,6 +60,29 @@ struct qcq {
+ #define napi_to_qcq(napi)	container_of(napi, struct qcq, napi)
+ #define napi_to_cq(napi)	(&napi_to_qcq(napi)->cq)
  
- #include <linux/pci.h>
-+#include "ionic_rx_filter.h"
++enum deferred_work_type {
++	DW_TYPE_RX_MODE,
++	DW_TYPE_RX_ADDR_ADD,
++	DW_TYPE_RX_ADDR_DEL,
++	DW_TYPE_LINK_STATUS,
++	DW_TYPE_LIF_RESET,
++};
++
++struct deferred_work {
++	struct list_head list;
++	enum deferred_work_type type;
++	union {
++		unsigned int rx_mode;
++		u8 addr[ETH_ALEN];
++	};
++};
++
++struct deferred {
++	spinlock_t lock;		/* lock for deferred work list */
++	struct list_head list;
++	struct work_struct work;
++};
++
+ enum lif_state_flags {
+ 	LIF_INITED,
+ 	LIF_UP,
+@@ -87,13 +110,19 @@ struct lif {
+ 	u64 last_eid;
+ 	unsigned int neqs;
+ 	unsigned int nxqs;
++	unsigned int rx_mode;
+ 	u64 hw_features;
++	bool mc_overflow;
++	unsigned int nmcast;
++	bool uc_overflow;
++	unsigned int nucast;
  
- #define IONIC_ADMINQ_LENGTH	16	/* must be a power of two */
- #define IONIC_NOTIFYQ_LENGTH	64	/* must be a power of two */
-@@ -92,6 +93,7 @@ struct lif {
+ 	struct lif_info *info;
  	dma_addr_t info_pa;
  	u32 info_sz;
  
-+	struct rx_filters rx_filters;
+ 	struct rx_filters rx_filters;
++	struct deferred deferred;
  	unsigned long *dbid_inuse;
  	unsigned int dbid_count;
  	struct dentry *dentry;
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c b/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c
-new file mode 100644
-index 000000000000..618b7c4b9674
---- /dev/null
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c
-@@ -0,0 +1,139 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
-+
-+#include <linux/netdevice.h>
-+#include <linux/etherdevice.h>
-+
-+#include "ionic.h"
-+#include "ionic_lif.h"
-+#include "ionic_rx_filter.h"
-+
-+void ionic_rx_filter_free(struct lif *lif, struct rx_filter *f)
-+{
-+	struct device *dev = lif->ionic->dev;
-+
-+	hlist_del(&f->by_id);
-+	hlist_del(&f->by_hash);
-+	devm_kfree(dev, f);
-+}
-+
-+int ionic_rx_filter_del(struct lif *lif, struct rx_filter *f)
-+{
-+	struct ionic_admin_ctx ctx = {
-+		.work = COMPLETION_INITIALIZER_ONSTACK(ctx.work),
-+		.cmd.rx_filter_del = {
-+			.opcode = CMD_OPCODE_RX_FILTER_DEL,
-+			.filter_id = cpu_to_le32(f->filter_id),
-+		},
-+	};
-+
-+	return ionic_adminq_post_wait(lif, &ctx);
-+}
-+
-+int ionic_rx_filters_init(struct lif *lif)
-+{
-+	unsigned int i;
-+
-+	spin_lock_init(&lif->rx_filters.lock);
-+
-+	for (i = 0; i < RX_FILTER_HLISTS; i++) {
-+		INIT_HLIST_HEAD(&lif->rx_filters.by_hash[i]);
-+		INIT_HLIST_HEAD(&lif->rx_filters.by_id[i]);
-+	}
-+
-+	return 0;
-+}
-+
-+void ionic_rx_filters_deinit(struct lif *lif)
-+{
-+	struct hlist_head *head;
-+	struct hlist_node *tmp;
-+	struct rx_filter *f;
-+	unsigned int i;
-+
-+	for (i = 0; i < RX_FILTER_HLISTS; i++) {
-+		head = &lif->rx_filters.by_id[i];
-+		hlist_for_each_entry_safe(f, tmp, head, by_id)
-+			ionic_rx_filter_free(lif, f);
-+	}
-+}
-+
-+int ionic_rx_filter_save(struct lif *lif, u32 flow_id, u16 rxq_index,
-+			 u32 hash, struct ionic_admin_ctx *ctx)
-+{
-+	struct device *dev = lif->ionic->dev;
-+	struct hlist_head *head;
-+	struct rx_filter *f;
-+	unsigned int key;
-+
-+	f = devm_kzalloc(dev, sizeof(*f), GFP_KERNEL);
-+	if (!f)
-+		return -ENOMEM;
-+
-+	f->flow_id = flow_id;
-+	f->filter_id = le32_to_cpu(ctx->comp.rx_filter_add.filter_id);
-+	f->rxq_index = rxq_index;
-+	memcpy(&f->cmd, &ctx->cmd, sizeof(f->cmd));
-+
-+	INIT_HLIST_NODE(&f->by_hash);
-+	INIT_HLIST_NODE(&f->by_id);
-+
-+	switch (le16_to_cpu(f->cmd.match)) {
-+	case RX_FILTER_MATCH_VLAN:
-+		key = le16_to_cpu(f->cmd.vlan.vlan) & RX_FILTER_HLISTS_MASK;
-+		break;
-+	case RX_FILTER_MATCH_MAC:
-+		key = *(u32 *)f->cmd.mac.addr & RX_FILTER_HLISTS_MASK;
-+		break;
-+	case RX_FILTER_MATCH_MAC_VLAN:
-+		key = le16_to_cpu(f->cmd.mac_vlan.vlan) & RX_FILTER_HLISTS_MASK;
-+		break;
-+	default:
-+		return -ENOTSUPP;
-+	}
-+
-+	spin_lock_bh(&lif->rx_filters.lock);
-+
-+	head = &lif->rx_filters.by_hash[key];
-+	hlist_add_head(&f->by_hash, head);
-+
-+	key = f->filter_id & RX_FILTER_HLISTS_MASK;
-+	head = &lif->rx_filters.by_id[key];
-+	hlist_add_head(&f->by_id, head);
-+
-+	spin_unlock_bh(&lif->rx_filters.lock);
-+
-+	return 0;
-+}
-+
-+struct rx_filter *ionic_rx_filter_by_vlan(struct lif *lif, u16 vid)
-+{
-+	unsigned int key = vid & RX_FILTER_HLISTS_MASK;
-+	struct hlist_head *head = &lif->rx_filters.by_hash[key];
-+	struct rx_filter *f;
-+
-+	hlist_for_each_entry(f, head, by_hash) {
-+		if (le16_to_cpu(f->cmd.match) != RX_FILTER_MATCH_VLAN)
-+			continue;
-+		if (le16_to_cpu(f->cmd.vlan.vlan) == vid)
-+			return f;
-+	}
-+
-+	return NULL;
-+}
-+
-+struct rx_filter *ionic_rx_filter_by_addr(struct lif *lif, const u8 *addr)
-+{
-+	unsigned int key = *(u32 *)addr & RX_FILTER_HLISTS_MASK;
-+	struct hlist_head *head = &lif->rx_filters.by_hash[key];
-+	struct rx_filter *f;
-+
-+	hlist_for_each_entry(f, head, by_hash) {
-+		if (le16_to_cpu(f->cmd.match) != RX_FILTER_MATCH_MAC)
-+			continue;
-+		if (memcmp(addr, f->cmd.mac.addr, ETH_ALEN) == 0)
-+			return f;
-+	}
-+
-+	return NULL;
-+}
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.h b/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.h
-new file mode 100644
-index 000000000000..c8688124465a
---- /dev/null
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.h
-@@ -0,0 +1,34 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
-+
-+#ifndef _IONIC_RX_FILTER_H_
-+#define _IONIC_RX_FILTER_H_
-+
-+#define RXQ_INDEX_ANY		(0xFFFF)
-+struct rx_filter {
-+	u32 flow_id;
-+	u32 filter_id;
-+	u16 rxq_index;
-+	struct rx_filter_add_cmd cmd;
-+	struct hlist_node by_hash;
-+	struct hlist_node by_id;
-+};
-+
-+#define RX_FILTER_HLISTS	BIT(10)
-+#define RX_FILTER_HLISTS_MASK	(RX_FILTER_HLISTS - 1)
-+struct rx_filters {
-+	spinlock_t lock;				/* filter list lock */
-+	struct hlist_head by_hash[RX_FILTER_HLISTS];	/* by skb hash */
-+	struct hlist_head by_id[RX_FILTER_HLISTS];	/* by filter_id */
-+};
-+
-+void ionic_rx_filter_free(struct lif *lif, struct rx_filter *f);
-+int ionic_rx_filter_del(struct lif *lif, struct rx_filter *f);
-+int ionic_rx_filters_init(struct lif *lif);
-+void ionic_rx_filters_deinit(struct lif *lif);
-+int ionic_rx_filter_save(struct lif *lif, u32 flow_id, u16 rxq_index,
-+			 u32 hash, struct ionic_admin_ctx *ctx);
-+struct rx_filter *ionic_rx_filter_by_vlan(struct lif *lif, u16 vid);
-+struct rx_filter *ionic_rx_filter_by_addr(struct lif *lif, const u8 *addr);
-+
-+#endif /* _IONIC_RX_FILTER_H_ */
 -- 
 2.17.1
 
