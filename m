@@ -2,88 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 099094C936
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 10:17:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F2A74D449
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 18:53:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725937AbfFTIRK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 04:17:10 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:33028 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725875AbfFTIRJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 04:17:09 -0400
-Received: by mail-lf1-f66.google.com with SMTP id y17so1786588lfe.0
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 01:17:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=gg0yMFESYjeQyXwPEmDygv0Cu836J6Ow1bSJiNUhAfA=;
-        b=lXQ2XvatpLV2xgDnqIUkwDCGYPWhYsLI0WWTA2FiEIGXMow5y8LEkIyRMes8/dCBey
-         OAEASfT/UkV5Bs0DiEEmgyYxR1e55hMqiA65gc3xVyrN97fr0BK1oTAkacru05rQBkoH
-         Hm2/7f+OqilVDA8T6a7RD2scg78sG0/dv/ZOd5A6EWmG/XacdcqKikjTvqZvM+mSsSa8
-         b+NUpsNmKIgyRZYd+uhAFgBImfr0jtgbBzeY9CpOhxC2kQYkMsB4aMlbdPWd8W0PEpig
-         7W0+N1ITFgv1czTPRzBxgsko816o8nB6r7cBzojm69Xjcfons0DZz3gst0yKISwruthg
-         WsIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=gg0yMFESYjeQyXwPEmDygv0Cu836J6Ow1bSJiNUhAfA=;
-        b=gLQ3H6xIJ7kYwGisrB29iT/RwMtDOPqIPTcuXJ8EL1CPN9zqIXYLzuBKkgmLukwIQv
-         +MMNUhwcGw6R3t0xPwRxWtqnh4jKJiJAr1NHjt/o4dAo7kFZhDKP2mkFUk6pyegjbb2f
-         /PJ1K/qYSKWNlXVnBipLHJiGVqmZ2/UH4UuwyR6L/+Lmib4Ggomfuauzc4JNH+6D0//q
-         THqnvgoiIJwnVX1P6jvTTDmDxb7sAMyyYEBTYPn4VQExVYEEas+L5Y/1GDI1qvYyi3kH
-         +aqgdAFZKcDF1dYo8lh6/bUtUSHxWyJM7duzAvcQ/hbiiqxglI29q1Zl7oFu6rdm7MVO
-         sRvw==
-X-Gm-Message-State: APjAAAV2kmnt6wwtnX8fMmrPejxap1p2hiFi80AWriWYXEen8jyyHEbD
-        zAfuvsl/Z1Y7qt8NtyNXkjXDeg==
-X-Google-Smtp-Source: APXvYqzTZakyuNZDE8DK/MgRpMC90V3ffgUu/ysZXi87rs7r9zd7fTy2dAGZ+NUtxNBgw/EMeRrrBQ==
-X-Received: by 2002:a19:428b:: with SMTP id p133mr23949059lfa.179.1561018627786;
-        Thu, 20 Jun 2019 01:17:07 -0700 (PDT)
-Received: from [192.168.0.199] ([31.173.80.13])
-        by smtp.gmail.com with ESMTPSA id l23sm3448650lje.106.2019.06.20.01.17.06
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 20 Jun 2019 01:17:07 -0700 (PDT)
-Subject: Re: [PATCH net-next v4 2/7] etf: Add skip_sock_check
-To:     Vedang Patel <vedang.patel@intel.com>, netdev@vger.kernel.org
-Cc:     jeffrey.t.kirsher@intel.com, davem@davemloft.net, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        intel-wired-lan@lists.osuosl.org, vinicius.gomes@intel.com,
-        l@dorileo.org, jakub.kicinski@netronome.com, m-karicheri2@ti.com
-References: <1560966016-28254-1-git-send-email-vedang.patel@intel.com>
- <1560966016-28254-3-git-send-email-vedang.patel@intel.com>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Message-ID: <c304970a-1973-cdce-17b5-682f28856306@cogentembedded.com>
-Date:   Thu, 20 Jun 2019 11:16:43 +0300
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.1
-MIME-Version: 1.0
-In-Reply-To: <1560966016-28254-3-git-send-email-vedang.patel@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1731455AbfFTQxp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 12:53:45 -0400
+Received: from mga04.intel.com ([192.55.52.120]:16957 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726530AbfFTQxp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Jun 2019 12:53:45 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 20 Jun 2019 09:53:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.63,397,1557212400"; 
+   d="scan'208";a="183135101"
+Received: from silpixa00399838.ir.intel.com (HELO silpixa00399838.ger.corp.intel.com) ([10.237.223.110])
+  by fmsmga004.fm.intel.com with ESMTP; 20 Jun 2019 09:53:42 -0700
+From:   Kevin Laatz <kevin.laatz@intel.com>
+To:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        bjorn.topel@intel.com, magnus.karlsson@intel.com
+Cc:     bpf@vger.kernel.com, intel-wired-lan@lists.osuosl.org,
+        bruce.richardson@intel.com, ciara.loftus@intel.com,
+        Kevin Laatz <kevin.laatz@intel.com>
+Subject: [PATCH 00/11] XDP unaligned chunk placement support
+Date:   Thu, 20 Jun 2019 08:39:13 +0000
+Message-Id: <20190620083924.1996-1-kevin.laatz@intel.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19.06.2019 20:40, Vedang Patel wrote:
+This patchset adds the ability to use unaligned chunks in the XDP umem.
 
-> Currently, etf expects a socket with SO_TXTIME option set for each packet
-> it encounters. So, it will drop all other packets. But, in the future
-> commits we are planning to add functionality which where tstamp value will
+Currently, all chunk addresses passed to the umem are masked to be chunk
+size aligned (default is 2k, max is PAGE_SIZE). This limits where we can
+place chunks within the umem as well as limiting the packet sizes that are
+supported.
 
-    One of "which" and "where", not both. :-)
+The changes in this patchset removes these restrictions, allowing XDP to be
+more flexible in where it can place a chunk within a umem. By relaxing where
+the chunks can be placed, it allows us to use an arbitrary buffer size and
+place that wherever we have a free address in the umem. These changes add the
+ability to support jumboframes and make it easy to integrate with other
+existing frameworks that have their own memory management systems, such as
+DPDK.
 
-> be set by another qdisc. Also, some packets which are generated from within
-> the kernel (e.g. ICMP packets) do not have any socket associated with them.
-> 
-> So, this commit adds support for skip_sock_check. When this option is set,
-> etf will skip checking for a socket and other associated options for all
-> skbs.
-> 
-> Signed-off-by: Vedang Patel <vedang.patel@intel.com>
-[...]
+Structure of the patchset:
+Patch 1:
+  - Remove unnecessary masking and headroom addition during zero-copy Rx
+    buffer recycling in i40e. This change is required in order for the
+    buffer recycling to work in the unaligned chunk mode.
 
-MBR, Sergei
+Patch 2:
+  - Remove unnecessary masking and headroom addition during
+    zero-copy Rx buffer recycling in ixgbe. This change is required in
+    order for the  buffer recycling to work in the unaligned chunk mode.
+
+Patch 3:
+  - Adds an offset parameter to zero_copy_allocator. This change will
+    enable us to calculate the original handle in zca_free. This will be
+    required for unaligned chunk mode since we can't easily mask back to
+    the original handle.
+
+Patch 4:
+  - Adds the offset parameter to i40e_zca_free. This change is needed for
+    calculating the handle since we can't easily mask back to the original
+    handle like we can in the aligned case.
+
+Patch 5:
+  - Adds the offset parameter to ixgbe_zca_free. This change is needed for
+    calculating the handle since we can't easily mask back to the original
+    handle like we can in the aligned case.
+
+
+Patch 6:
+  - Add infrastructure for unaligned chunks. Since we are dealing
+    with unaligned chunks that could potentially cross a physical page
+    boundary, we add checks to keep track of that information. We can
+    later use this information to correctly handle buffers that are
+    placed at an address where they cross a page boundary.
+
+Patch 7:
+  - Add flags for umem configuration to libbpf
+
+Patch 8:
+  - Modify xdpsock application to add a command line option for
+    unaligned chunks
+
+Patch 9:
+  - Addition of command line argument to pass in a desired buffer size
+    and buffer recycling for unaligned mode. Passing in a buffer size will
+    allow the application to use unaligned chunks with the unaligned chunk
+    mode. Since we are now using unaligned chunks, we need to recycle our
+    buffers in a slightly different way.
+
+Patch 10:
+  - Adds hugepage support to the xdpsock application
+
+Patch 11:
+  - Documentation update to include the unaligned chunk scenario. We need
+    to explicitly state that the incoming addresses are only masked in the
+    aligned chunk mode and not the unaligned chunk mode.
+
+Kevin Laatz (11):
+  i40e: simplify Rx buffer recycle
+  ixgbe: simplify Rx buffer recycle
+  xdp: add offset param to zero_copy_allocator
+  i40e: add offset to zca_free
+  ixgbe: add offset to zca_free
+  xsk: add support to allow unaligned chunk placement
+  libbpf: add flags to umem config
+  samples/bpf: add unaligned chunks mode support to xdpsock
+  samples/bpf: add buffer recycling for unaligned chunks to xdpsock
+  samples/bpf: use hugepages in xdpsock app
+  doc/af_xdp: include unaligned chunk case
+
+ Documentation/networking/af_xdp.rst           | 10 +-
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c    | 21 ++--
+ drivers/net/ethernet/intel/i40e/i40e_xsk.h    |  3 +-
+ .../ethernet/intel/ixgbe/ixgbe_txrx_common.h  |  3 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  | 21 ++--
+ include/net/xdp.h                             |  3 +-
+ include/net/xdp_sock.h                        |  2 +
+ include/uapi/linux/if_xdp.h                   |  4 +
+ net/core/xdp.c                                | 11 ++-
+ net/xdp/xdp_umem.c                            | 17 ++--
+ net/xdp/xsk.c                                 | 60 +++++++++--
+ net/xdp/xsk_queue.h                           | 60 +++++++++--
+ samples/bpf/xdpsock_user.c                    | 99 ++++++++++++++-----
+ tools/include/uapi/linux/if_xdp.h             |  4 +
+ tools/lib/bpf/xsk.c                           |  7 ++
+ tools/lib/bpf/xsk.h                           |  2 +
+ 16 files changed, 241 insertions(+), 86 deletions(-)
+
+-- 
+2.17.1
+
