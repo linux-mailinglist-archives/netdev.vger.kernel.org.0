@@ -2,109 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B89B64CF28
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 15:42:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EA914CF33
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 15:42:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726777AbfFTNmK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 09:42:10 -0400
-Received: from mail-yw1-f67.google.com ([209.85.161.67]:36647 "EHLO
-        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726391AbfFTNmK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 09:42:10 -0400
-Received: by mail-yw1-f67.google.com with SMTP id t126so1195520ywf.3
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 06:42:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1SNbj8tQqUbUemTcp/cBsJE/BR2k5cu1MZ2DHW7xgQM=;
-        b=iwi2dCsWOv1Tyf5kUkQu1W1rVJWmUCVgkCKK9rL55DyU6LbB2XBO/F15Ng61H/GSJq
-         8Ulc2Ofy7NpvB08jM/4I6drWfbU6pt9BL//5ZYyQtWz+PtSBhkPmTnHnlpKMxudVMSVa
-         pjgk692fvDPGxcW0ve5PgZ6y10sHxQW9bRnxoLvNb2HdC2501VLYnRaemc/ICYyeiWfM
-         d10Pr2qK1LTjcWGO1aA1lY52tVpULFjrkia3rZJItMjq4gMo1m0m7yV5w5KjAZqyU8MW
-         7+qcFVDitCl15jBPgk67EJV2vRACQKtwrY9qGM98AoXvJRcQIz2yawEoqfh8OnRB9Inp
-         43Tg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1SNbj8tQqUbUemTcp/cBsJE/BR2k5cu1MZ2DHW7xgQM=;
-        b=SLy5azI1of4JHvtETU4inAYAXd52sQJEmxHv+gJhHNt3CTyd904eJHhMF4D5+FvpPG
-         CPTqeS+ADHcguBRNlm9Q2YJnr+X29WEogLy6ztdhRpEAqyiEgMcGvyQXtL++i2bij9mj
-         QXahoQl3g4dKLJKJncPpAgUzcLRU58IZ8HLMtUbWQFVDLR+Ro8JdwvsTbYVPJnTAZbsX
-         DlAgcZdOvDFmWFzQN88Q4uOgbVp2OzW4keaEHdiRZ8FGcFCKxkEh1+3mps62Y9tFWnGt
-         T/SqQCWuLzjRNb8AXkDPYXk/J2JshOkat4ASROzZoM+XPADGKnIW57u1uxA9iUHzM7t+
-         DLKg==
-X-Gm-Message-State: APjAAAXfl6YjCN8HfoC3sxfCTBMwovbCV0xzgiTViEs+CCW7ly56JMHB
-        8DEeAzsxxRFvUuBLScDgm+BotI/y
-X-Google-Smtp-Source: APXvYqxV/o6Mz9/oAzxAgqiEzVbEWBt5chsZVUdn0okz7GzoJq8+etRR/kYwK6XfhvS4ZcLWH/7gMw==
-X-Received: by 2002:a81:6ed7:: with SMTP id j206mr72977747ywc.214.1561038128996;
-        Thu, 20 Jun 2019 06:42:08 -0700 (PDT)
-Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com. [209.85.219.172])
-        by smtp.gmail.com with ESMTPSA id q13sm6184302ywl.27.2019.06.20.06.42.07
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Thu, 20 Jun 2019 06:42:07 -0700 (PDT)
-Received: by mail-yb1-f172.google.com with SMTP id 189so1253709ybh.4
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 06:42:07 -0700 (PDT)
-X-Received: by 2002:a25:d9cc:: with SMTP id q195mr67247211ybg.390.1561038127317;
- Thu, 20 Jun 2019 06:42:07 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190619202533.4856-1-nhorman@tuxdriver.com>
-In-Reply-To: <20190619202533.4856-1-nhorman@tuxdriver.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 20 Jun 2019 09:41:30 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSe=kJSSvcYwCE9-omRF5Snd9AyesZac61PYyAHDStPt=A@mail.gmail.com>
-Message-ID: <CA+FuTSe=kJSSvcYwCE9-omRF5Snd9AyesZac61PYyAHDStPt=A@mail.gmail.com>
-Subject: Re: [PATCH net] af_packet: Block execution of tasks waiting for
- transmit to complete in AF_PACKET
-To:     Neil Horman <nhorman@tuxdriver.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Matteo Croce <mcroce@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+        id S1731954AbfFTNmg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 09:42:36 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:43629 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1731743AbfFTNme (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 09:42:34 -0400
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from paulb@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 20 Jun 2019 16:42:29 +0300
+Received: from reg-r-vrt-019-180.mtr.labs.mlnx (reg-r-vrt-019-180.mtr.labs.mlnx [10.213.19.180])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x5KDgSlL022418;
+        Thu, 20 Jun 2019 16:42:28 +0300
+From:   Paul Blakey <paulb@mellanox.com>
+To:     Jiri Pirko <jiri@mellanox.com>, Paul Blakey <paulb@mellanox.com>,
+        Roi Dayan <roid@mellanox.com>,
+        Yossi Kuperman <yossiku@mellanox.com>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        Aaron Conole <aconole@redhat.com>,
+        Zhike Wang <wangzhike@jd.com>
+Cc:     Rony Efraim <ronye@mellanox.com>, nst-kernel@redhat.com,
+        John Hurley <john.hurley@netronome.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Justin Pettit <jpettit@ovn.org>
+Subject: [PATCH net-next v2 0/4] net/sched: Introduce tc connection tracking
+Date:   Thu, 20 Jun 2019 16:42:17 +0300
+Message-Id: <1561038141-31370-1-git-send-email-paulb@mellanox.com>
+X-Mailer: git-send-email 1.8.4.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 19, 2019 at 4:26 PM Neil Horman <nhorman@tuxdriver.com> wrote:
->
-> When an application is run that:
-> a) Sets its scheduler to be SCHED_FIFO
-> and
-> b) Opens a memory mapped AF_PACKET socket, and sends frames with the
-> MSG_DONTWAIT flag cleared, its possible for the application to hang
-> forever in the kernel.  This occurs because when waiting, the code in
-> tpacket_snd calls schedule, which under normal circumstances allows
-> other tasks to run, including ksoftirqd, which in some cases is
-> responsible for freeing the transmitted skb (which in AF_PACKET calls a
-> destructor that flips the status bit of the transmitted frame back to
-> available, allowing the transmitting task to complete).
->
-> However, when the calling application is SCHED_FIFO, its priority is
-> such that the schedule call immediately places the task back on the cpu,
-> preventing ksoftirqd from freeing the skb, which in turn prevents the
-> transmitting task from detecting that the transmission is complete.
->
-> We can fix this by converting the schedule call to a completion
-> mechanism.  By using a completion queue, we force the calling task, when
-> it detects there are no more frames to send, to schedule itself off the
-> cpu until such time as the last transmitted skb is freed, allowing
-> forward progress to be made.
->
-> Tested by myself and the reporter, with good results
->
-> Appies to the net tree
->
-> Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
-> Reported-by: Matteo Croce <mcroce@redhat.com>
-> CC: "David S. Miller" <davem@davemloft.net>
-> ---
+Hi,
 
-This is a complex change for a narrow configuration. Isn't a
-SCHED_FIFO process preempting ksoftirqd a potential problem for other
-networking workloads as well? And the right configuration to always
-increase ksoftirqd priority when increasing another process's
-priority? Also, even when ksoftirqd kicks in, isn't some progress
-still made on the local_bh_enable reached from schedule()?
+This patch series add connection tracking capabilities in tc sw datapath.
+It does so via a new tc action, called act_ct, and new tc flower classifier matching
+on conntrack state, mark and label.
+
+Usage is as follows:
+$ tc qdisc add dev ens1f0_0 ingress
+$ tc qdisc add dev ens1f0_1 ingress
+
+$ tc filter add dev ens1f0_0 ingress \
+  prio 1 chain 0 proto ip \
+  flower ip_proto tcp ct_state -trk \
+  action ct zone 2 pipe \
+  action goto chain 2
+$ tc filter add dev ens1f0_0 ingress \
+  prio 1 chain 2 proto ip \
+  flower ct_state +trk+new \
+  action ct zone 2 commit mark 0xbb nat src addr 5.5.5.7 pipe \
+  action mirred egress redirect dev ens1f0_1
+$ tc filter add dev ens1f0_0 ingress \
+  prio 1 chain 2 proto ip \
+  flower ct_zone 2 ct_mark 0xbb ct_state +trk+est \
+  action ct nat pipe \
+  action mirred egress redirect dev ens1f0_1
+
+$ tc filter add dev ens1f0_1 ingress \
+  prio 1 chain 0 proto ip \
+  flower ip_proto tcp ct_state -trk \
+  action ct zone 2 pipe \
+  action goto chain 1
+$ tc filter add dev ens1f0_1 ingress \
+  prio 1 chain 1 proto ip \
+  flower ct_zone 2 ct_mark 0xbb ct_state +trk+est \
+  action ct nat pipe \
+  action mirred egress redirect dev ens1f0_0
+
+The pattern used in the design here closely resembles OvS, as the plan is to also offload
+OvS conntrack rules to tc. OvS datapath rules uses it's recirculation mechanism to send
+specific packets to conntrack, and return with the new conntrack state (ct_state) on some other recirc_id
+to be matched again (we use goto chain for this).
+
+This results in the following OvS datapath rules:
+
+recirc_id(0),in_port(ens1f0_0),ct_state(-trk),... actions:ct(zone=2),recirc(2)
+recirc_id(2),in_port(ens1f0_0),ct_state(+new+trk),ct_mark(0xbb),... actions:ct(commit,zone=2,nat(src=5.5.5.7),mark=0xbb),ens1f0_1
+recirc_id(2),in_port(ens1f0_0),ct_state(+est+trk),ct_mark(0xbb),... actions:ct(zone=2,nat),ens1f0_1
+
+recirc_id(1),in_port(ens1f0_1),ct_state(-trk),... actions:ct(zone=2),recirc(1)
+recirc_id(1),in_port(ens1f0_1),ct_state(+est+trk),... actions:ct(zone=2,nat),ens1f0_0
+
+Changelog:
+	See individual patches.
+
+Paul Blakey (4):
+  net/sched: Introduce action ct
+  net/flow_dissector: add connection tracking dissection
+  net/sched: cls_flower: Add matching on conntrack info
+  tc-tests: Add tc action ct tests
+
+ include/linux/skbuff.h                             |  10 +
+ include/net/flow_dissector.h                       |  15 +
+ include/net/flow_offload.h                         |   5 +
+ include/net/tc_act/tc_ct.h                         |  64 ++
+ include/uapi/linux/pkt_cls.h                       |  17 +
+ include/uapi/linux/tc_act/tc_ct.h                  |  41 +
+ net/core/flow_dissector.c                          |  44 +
+ net/sched/Kconfig                                  |  11 +
+ net/sched/Makefile                                 |   1 +
+ net/sched/act_ct.c                                 | 978 +++++++++++++++++++++
+ net/sched/cls_api.c                                |   5 +
+ net/sched/cls_flower.c                             | 127 ++-
+ .../selftests/tc-testing/tc-tests/actions/ct.json  | 314 +++++++
+ 13 files changed, 1627 insertions(+), 5 deletions(-)
+ create mode 100644 include/net/tc_act/tc_ct.h
+ create mode 100644 include/uapi/linux/tc_act/tc_ct.h
+ create mode 100644 net/sched/act_ct.c
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/actions/ct.json
+
+-- 
+1.8.3.1
+
