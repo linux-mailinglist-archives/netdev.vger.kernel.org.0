@@ -2,151 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 12E374CA68
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 11:13:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AE3A4CA6C
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 11:14:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730487AbfFTJNg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 05:13:36 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:41327 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725889AbfFTJNg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 05:13:36 -0400
-Received: by mail-qk1-f194.google.com with SMTP id c11so1401664qkk.8;
-        Thu, 20 Jun 2019 02:13:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=X6bKwZxURv5deJWTCBXduGArgXHOHNe9PzEhrDNybaw=;
-        b=LjHiGkCQgGrOCV9VPwsq0TFHizch7kzd1nmyInQGvD7MdWCl7jTWNrw3fMPtK+VoN2
-         GtTee4zKmCUKG+F1C46YrOMrqxVmA6vb5pzt+MmF/V1zlM0QatZm5flLvPat15yrJKsC
-         CmDAJ5CnxJTsTEzolLefmc6GkFz3lcR3hWRy7IN6EA+0GnlryYOoI1E7kB5w9baYHkU0
-         tzmerJ1QyJtRugAfGvik0NLu5OiBpZZgG4PcAt0LZp4fM4Fpbaywb339Q9ZAJ6c6SiYX
-         /D3/YBQzbQWCBq/hofyunFugRPms8k8Vl/tmOq71TRt51Hy8u4NXAPSzlvfPggOeyWCZ
-         +uRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=X6bKwZxURv5deJWTCBXduGArgXHOHNe9PzEhrDNybaw=;
-        b=TaE+OypZS5kfpxGNVEMWdbCAWVNPBazPI680mparUMVn+weoaTrfraLyr4G+DgnRcf
-         3hNi4DkEMEBiiN/mbBBwU2H19ZbE9CJScmzUxOLbKzx0KghY5ISg+78KJrCLvNvOUYQh
-         nSNWmQRWCJ6OSgOI2f7PGqOurtGGZeIOcVrJtyF+BFE3PTFN4oLuqz3RCVFP6r7L+1w1
-         VP6oNi5b64AogQp7Nj5rPb1GVrkJI5C/RzO/dMMUJQyG5sbOk7ZW8GE2gtQfj4clZJYD
-         tsioxn3X844q+D9MWqdrrhBmQX1WdjzxKhgh2G2q9qrrcb8dwDnBZgLgrsYxPGwUfrIP
-         jYqQ==
-X-Gm-Message-State: APjAAAXDfErkVevs4kgkhJCC1GEPyhx59JKgSNK+k/PVQxaWVgK8A2lf
-        PmnCd3Nys6p2M6VfBZ/BZ3Q1nfsssg5PReTSCko=
-X-Google-Smtp-Source: APXvYqyRSSmVWRdQ+mFdOeY83EeFv/xT4VmqNVjx51xDnWaiiLYQ21KYkAyRUuO8XiejeNfl6ZgMKynq8mEbWvyLUuY=
-X-Received: by 2002:a05:620a:16a6:: with SMTP id s6mr106160992qkj.39.1561022014963;
- Thu, 20 Jun 2019 02:13:34 -0700 (PDT)
+        id S1731164AbfFTJN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 05:13:59 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:34395 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725889AbfFTJN7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Jun 2019 05:13:59 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 45Tx2W3tSSz9sBp;
+        Thu, 20 Jun 2019 19:13:54 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1561022035;
+        bh=3ogxtSLbOL9KRURpoi0VkKWC0IJQT7xb0iOjjqVwozw=;
+        h=Date:From:To:Cc:Subject:From;
+        b=auiPQb38+XA9l/L7OlInCRyw5eJ0fUnCqcnmWbUpWxYOXnqwIcgKLXhutFUX2y48J
+         st+koiBYS/TTAxWioBH13lWE/PXpY/5knYrszNuyyxpqKa/01dYizLL2ABY3UzF2FO
+         2k+2jlEhu6tAZa1LmR1CtU8yoyUUUDgilaTt0WD18yVNxbH+91Z3fwUn4ZdO4OQpSL
+         IYVEvonOrptLldTlVDTc+QGbSyFPayKWy1JcKiWOe1vnVR5+smCrcURe+kJtJvNVvO
+         GiA9V8EGZyMkOpncDBt7CkCcXwxmTd0Y03JAAlS0wL5sz0Px6WsyXEDFWwvP2HkfBp
+         8E+KQTK+tbLnA==
+Date:   Thu, 20 Jun 2019 19:13:48 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Yash Shah <yash.shah@sifive.com>
+Subject: linux-next: build failure after merge of the net-next tree
+Message-ID: <20190620191348.335b011d@canb.auug.org.au>
 MIME-Version: 1.0
-References: <20190618120024.16788-1-maximmi@mellanox.com>
-In-Reply-To: <20190618120024.16788-1-maximmi@mellanox.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Thu, 20 Jun 2019 11:13:23 +0200
-Message-ID: <CAJ+HfNia-vUv7Eumfs8aMYGGkxPbbUQ++F+BQ=9C1NtP0Jt3hA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 00/16] AF_XDP infrastructure improvements and
- mlx5e support
-To:     Maxim Mikityanskiy <maximmi@mellanox.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Jonathan Lemon <bsd@fb.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ boundary="Sig_/Nw5D.vzFc._WbxGzv9ij1SB"; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 18 Jun 2019 at 14:00, Maxim Mikityanskiy <maximmi@mellanox.com> wro=
-te:
->
-> This series contains improvements to the AF_XDP kernel infrastructure
-> and AF_XDP support in mlx5e. The infrastructure improvements are
-> required for mlx5e, but also some of them benefit to all drivers, and
-> some can be useful for other drivers that want to implement AF_XDP.
->
-> The performance testing was performed on a machine with the following
-> configuration:
->
-> - 24 cores of Intel Xeon E5-2620 v3 @ 2.40 GHz
-> - Mellanox ConnectX-5 Ex with 100 Gbit/s link
->
-> The results with retpoline disabled, single stream:
->
-> txonly: 33.3 Mpps (21.5 Mpps with queue and app pinned to the same CPU)
-> rxdrop: 12.2 Mpps
-> l2fwd: 9.4 Mpps
->
-> The results with retpoline enabled, single stream:
->
-> txonly: 21.3 Mpps (14.1 Mpps with queue and app pinned to the same CPU)
-> rxdrop: 9.9 Mpps
-> l2fwd: 6.8 Mpps
->
-> v2 changes:
->
-> Added patches for mlx5e and addressed the comments for v1. Rebased for
-> bpf-next.
->
-> v3 changes:
->
-> Rebased for the newer bpf-next, resolved conflicts in libbpf. Addressed
-> Bj=C3=B6rn's comments for coding style. Fixed a bug in error handling flo=
-w in
-> mlx5e_open_xsk.
->
-> v4 changes:
->
-> UAPI is not changed, XSK RX queues are exposed to the kernel. The lower
-> half of the available amount of RX queues are regular queues, and the
-> upper half are XSK RX queues. The patch "xsk: Extend channels to support
-> combined XSK/non-XSK traffic" was dropped. The final patch was reworked
-> accordingly.
->
-> Added "net/mlx5e: Attach/detach XDP program safely", as the changes
-> introduced in the XSK patch base on the stuff from this one.
->
-> Added "libbpf: Support drivers with non-combined channels", which aligns
-> the condition in libbpf with the condition in the kernel.
->
-> Rebased over the newer bpf-next.
->
-> v5 changes:
->
-> In v4, ethtool reports the number of channels as 'combined' and the
-> number of XSK RX queues as 'rx' for mlx5e. It was changed, so that 'rx'
-> is 0, and 'combined' reports the double amount of channels if there is
-> an active UMEM - to make libbpf happy.
->
-> The patch for libbpf was dropped. Although it's still useful and fixes
-> things, it raises some disagreement, so I'm dropping it - it's no longer
-> useful for mlx5e anymore after the change above.
->
+--Sig_/Nw5D.vzFc._WbxGzv9ij1SB
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Just a heads-up: There are some checkpatch warnings (>80 chars/line)
-for the mlnx5 driver parts, and the series didn't apply cleanly on
-bpf-next for me.
+Hi all,
 
-I haven't been able to test the mlnx5 parts.
+After merging the net-next tree, today's linux-next build (powerpc
+allyesconfig) failed like this:
 
-Parts of the series are unrelated/orthogonal, and could be submitted
-as separate series, e.g. patches {1,7} and patches {3,4}. No blockers
-for me, though.
+drivers/net/ethernet/cadence/macb_main.c:48:16: error: field 'hw' has incom=
+plete type
+  struct clk_hw hw;
+                ^~
+drivers/net/ethernet/cadence/macb_main.c:4003:21: error: variable 'fu540_c0=
+00_ops' has initializer but incomplete type
+ static const struct clk_ops fu540_c000_ops =3D {
+                     ^~~~~~~
+drivers/net/ethernet/cadence/macb_main.c:4004:3: error: 'const struct clk_o=
+ps' has no member named 'recalc_rate'
+  .recalc_rate =3D fu540_macb_tx_recalc_rate,
+   ^~~~~~~~~~~
+drivers/net/ethernet/cadence/macb_main.c:4004:17: warning: excess elements =
+in struct initializer
+  .recalc_rate =3D fu540_macb_tx_recalc_rate,
+                 ^~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/cadence/macb_main.c:4004:17: note: (near initializatio=
+n for 'fu540_c000_ops')
+drivers/net/ethernet/cadence/macb_main.c:4005:3: error: 'const struct clk_o=
+ps' has no member named 'round_rate'
+  .round_rate =3D fu540_macb_tx_round_rate,
+   ^~~~~~~~~~
+drivers/net/ethernet/cadence/macb_main.c:4005:16: warning: excess elements =
+in struct initializer
+  .round_rate =3D fu540_macb_tx_round_rate,
+                ^~~~~~~~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/cadence/macb_main.c:4005:16: note: (near initializatio=
+n for 'fu540_c000_ops')
+drivers/net/ethernet/cadence/macb_main.c:4006:3: error: 'const struct clk_o=
+ps' has no member named 'set_rate'
+  .set_rate =3D fu540_macb_tx_set_rate,
+   ^~~~~~~~
+drivers/net/ethernet/cadence/macb_main.c:4006:14: warning: excess elements =
+in struct initializer
+  .set_rate =3D fu540_macb_tx_set_rate,
+              ^~~~~~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/cadence/macb_main.c:4006:14: note: (near initializatio=
+n for 'fu540_c000_ops')
+drivers/net/ethernet/cadence/macb_main.c: In function 'fu540_c000_clk_init':
+drivers/net/ethernet/cadence/macb_main.c:4013:23: error: storage size of 'i=
+nit' isn't known
+  struct clk_init_data init;
+                       ^~~~
+drivers/net/ethernet/cadence/macb_main.c:4032:12: error: implicit declarati=
+on of function 'clk_register'; did you mean 'sock_register'? [-Werror=3Dimp=
+licit-function-declaration]
+  *tx_clk =3D clk_register(NULL, &mgmt->hw);
+            ^~~~~~~~~~~~
+            sock_register
+drivers/net/ethernet/cadence/macb_main.c:4013:23: warning: unused variable =
+'init' [-Wunused-variable]
+  struct clk_init_data init;
+                       ^~~~
+drivers/net/ethernet/cadence/macb_main.c: In function 'macb_probe':
+drivers/net/ethernet/cadence/macb_main.c:4366:2: error: implicit declaratio=
+n of function 'clk_unregister'; did you mean 'sock_unregister'? [-Werror=3D=
+implicit-function-declaration]
+  clk_unregister(tx_clk);
+  ^~~~~~~~~~~~~~
+  sock_unregister
+drivers/net/ethernet/cadence/macb_main.c: At top level:
+drivers/net/ethernet/cadence/macb_main.c:4003:29: error: storage size of 'f=
+u540_c000_ops' isn't known
+ static const struct clk_ops fu540_c000_ops =3D {
+                             ^~~~~~~~~~~~~~
 
-Thanks for the hard work!
+Caused by commit
 
-For the series:
-Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+  c218ad559020 ("macb: Add support for SiFive FU540-C000")
+
+CONFIG_COMMON_CLK is not set for this build.
+
+I have reverted that commit for today.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/Nw5D.vzFc._WbxGzv9ij1SB
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl0LTkwACgkQAVBC80lX
+0GwvKgf+MOyZ+jds7FH8o/xKQ20gLbF3lcZsyYEcdPy6I9IhJD1KgdIA10apJ0AJ
+msoC3q8JtYTw/kLOWsEi699vDwwiYe01EYaNKG8BtUeH6YizNATgRW/W6Rjod4gK
+5AhnW/Kx+9W7hyfSqCGqZ4uGvcBN/0B8SWQAKe9GDZX0U+gX4oGQ/tYwMM2q6P1u
+2cU+jCnpOKL9XvbsTdB3NXJq4rV5E2sesKrVIYbM9JFdA1dyusR0I6IzK/qdDPv9
+sYZ6tCPU56WhAByBEDfMyoHVSlSXGs7aL7eqAFYTGZTXEPYbHSEdWdGAG0ZQgdrX
+uvrzd9xTf2KoCFUdKbQ+v4MAdfmkUg==
+=DWBe
+-----END PGP SIGNATURE-----
+
+--Sig_/Nw5D.vzFc._WbxGzv9ij1SB--
