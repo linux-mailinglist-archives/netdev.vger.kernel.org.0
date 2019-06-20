@@ -2,140 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EAC94D092
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 16:40:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A7914D0C1
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 16:49:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731980AbfFTOkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 10:40:19 -0400
-Received: from mail-eopbgr60075.outbound.protection.outlook.com ([40.107.6.75]:7380
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726758AbfFTOkT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Jun 2019 10:40:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wzzIh9LJUekQ1gBuhD/7eziHhO/VaA8LErdeV3LMZBI=;
- b=RgGYkP83zs41E1jZA3vORCHxrlgSupDQ4WXNViaG2sXHOFrlKmR8lh3AfFTyhp3lG44FQVzHkWO8OAG6n8tH/E/1rUweAU3R1dJcjlmnzwvcMCvQqWdu6FNViKTCGNN1es4UHNtn+hkc8n2P5QXYq/ikDJKuKFKSFTXF8oGmCEw=
-Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com (10.175.24.138) by
- VI1PR0402MB2765.eurprd04.prod.outlook.com (10.175.20.142) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1987.12; Thu, 20 Jun 2019 14:40:15 +0000
-Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com
- ([fe80::714d:36e8:3ca4:f188]) by VI1PR0402MB2800.eurprd04.prod.outlook.com
- ([fe80::714d:36e8:3ca4:f188%3]) with mapi id 15.20.1987.014; Thu, 20 Jun 2019
- 14:40:15 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        David Miller <davem@davemloft.net>
-CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH] net: phylink: set the autoneg state in phylink_phy_change
-Thread-Topic: [PATCH] net: phylink: set the autoneg state in
- phylink_phy_change
-Thread-Index: AQHVIbKP9yXQ7A3ipUiyPT36szP9naadLumAgAAczwCAADEEAIAAj3sAgAaboRA=
-Date:   Thu, 20 Jun 2019 14:40:15 +0000
-Message-ID: <VI1PR0402MB28003F352AFC71FEB1524B71E0E40@VI1PR0402MB2800.eurprd04.prod.outlook.com>
-References: <1560407871-5642-1-git-send-email-ioana.ciornei@nxp.com>
- <20190615.133021.572699563162351841.davem@davemloft.net>
- <20190615221328.4diebpopfzyfi4og@shell.armlinux.org.uk>
- <20190615.180854.999160704288745945.davem@davemloft.net>
- <20190616094226.bnhivshhnzeokplu@shell.armlinux.org.uk>
-In-Reply-To: <20190616094226.bnhivshhnzeokplu@shell.armlinux.org.uk>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=ioana.ciornei@nxp.com; 
-x-originating-ip: [188.26.252.192]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 318d7de2-cf04-42dc-ce84-08d6f58d359f
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR0402MB2765;
-x-ms-traffictypediagnostic: VI1PR0402MB2765:
-x-ms-exchange-purlcount: 1
-x-microsoft-antispam-prvs: <VI1PR0402MB2765713CC139272CACFC1267E0E40@VI1PR0402MB2765.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 0074BBE012
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(346002)(376002)(396003)(366004)(39850400004)(136003)(51914003)(53754006)(189003)(199004)(64756008)(53936002)(68736007)(305945005)(9686003)(66476007)(186003)(76176011)(4326008)(76116006)(256004)(73956011)(26005)(476003)(6506007)(71190400001)(5660300002)(66446008)(71200400001)(14454004)(229853002)(14444005)(86362001)(52536014)(3846002)(102836004)(55016002)(6306002)(81156014)(316002)(966005)(66066001)(81166006)(446003)(110136005)(99286004)(25786009)(66946007)(33656002)(486006)(2906002)(6436002)(54906003)(7736002)(44832011)(8936002)(66556008)(11346002)(74316002)(478600001)(6246003)(8676002)(7696005)(6116002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB2765;H:VI1PR0402MB2800.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: GoqS6V79BN19ZPgKuAmAxNlCrm4TrX57HXTuklVWESGHPth8I5xaMKPxgiZ39w7lrYZAkClBQ638nJL+hbm2lXa/qmrw44ufQeZ2QJ7Xv5V6Hcp0jt55AGxQiUACVb/Jaz+yVIwiBWbcZPnLAMnHgKx4Rrjz4jMIYo2A3pw6eoVHHll0LiZ0m20fNhVl+5E+fG1G/2mmfnfFsaIRrElpmy5L6YKLhuVuN9ZqCAfRLfLVIPaWIW6l3O5vBN1rAD4UaL9RFbL49gKoVkbassTlJ0GbwZ/1BfrW4SspIMsT5Vo6OAyH2AIfOKWgcIrTsox1k1tpOorOdiLtGJYwXPCQB5vmZ+AzcavraeGwQqHB36rjNb1psXgQN3RyjkFfyM07Ho2NSHGvTYWzp0Cgzj/Ukzjf5mkqqRLFbEQMfBQUWZE=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1729569AbfFTOtS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 10:49:18 -0400
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:37178 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726866AbfFTOtS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 10:49:18 -0400
+Received: by mail-oi1-f195.google.com with SMTP id t76so2361325oih.4
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 07:49:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oc33oE2xRX7hMJGSAcFuY8lZKfgw7nROACFzsI0WwOI=;
+        b=Eh7ICkKyXMkCv/TtpjgQ8JZjnmbd0naf8A1vhbqimu7ktZFIbjgJPzEAa/wfGQsrW9
+         VbVQEy9L3U6EY0VcOVbsb3XgLAi9E28VEHCjNrzKVyfHW4NENPRwQRvp0gh4gEHhjtho
+         ok9T+XPuS0rlpe2RHpY4CPaLT0UltGy3Gmhk8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oc33oE2xRX7hMJGSAcFuY8lZKfgw7nROACFzsI0WwOI=;
+        b=Hm1Hkxquf31ix/URcP9p1LpmHP+9YTfIOVI6p5iesTvbb/HC7Msvq248l8E5SelENO
+         ga9jnCClFt3T/lgznuzR+Rfes+mppVCpTH0drVFsz6ZmvGe0Lzo13YvZO2Kjkf5L2Oim
+         7o9725J+QeB+rnfscxVZNSud/BAyx62Z9OuKUsGqaig7+F1vcB2JE3yD+SzSSTadEWQR
+         mGhO3o4oUrVWdxLLJSCiULHMajR7v75XS4uDm+amXxZji6PLWxBFN2LOJ42+VaVO2J2y
+         IRpge8k6zUqJ3TR05YwmNG+AX2jReDjAjlqW0trZRGjAhZ+/fCxY+B34CAYmYdtR8dxp
+         ocEQ==
+X-Gm-Message-State: APjAAAUyfQKBbm0B70kTDV9grf1vHPK40s1Sv2lqI5/2yubW79QEvl4d
+        4maGd/11wBkk/ofxnlIJ/7mv+/JKMVfWm3tHkJtIPA==
+X-Google-Smtp-Source: APXvYqxvxYTmfVhDwJTa+n6k0phZmVmXhu18TJeHQfxiQuwIspSmS+eyKRyGDEE8nlpM4YMv7tt2YJhqAY0aTJEe8eA=
+X-Received: by 2002:aca:ea0b:: with SMTP id i11mr5821710oih.102.1561042157221;
+ Thu, 20 Jun 2019 07:49:17 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 318d7de2-cf04-42dc-ce84-08d6f58d359f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jun 2019 14:40:15.6561
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ioana.ciornei@nxp.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB2765
+References: <20190617192700.2313445-1-andriin@fb.com> <30a2c470-5057-bd96-1889-e77fd5536960@iogearbox.net>
+ <CAEf4Bzae1CPDkhPrESa2ZmiOH8Mqf0KA_4ty9z=xnYn=q7Frhw@mail.gmail.com>
+In-Reply-To: <CAEf4Bzae1CPDkhPrESa2ZmiOH8Mqf0KA_4ty9z=xnYn=q7Frhw@mail.gmail.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Thu, 20 Jun 2019 15:49:06 +0100
+Message-ID: <CACAyw9-L0qx8d9O66SaYhJGjsyKo_6iozqLAQHEVa1AW-U=2Tg@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 00/11] BTF-defined BPF map definitions
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Alexei Starovoitov <ast@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Joe Stringer <joe@wand.net.nz>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: [PATCH] net: phylink: set the autoneg state in phylink_phy_c=
-hange
->=20
-> On Sat, Jun 15, 2019 at 06:08:54PM -0700, David Miller wrote:
-> > From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-> > Date: Sat, 15 Jun 2019 23:13:28 +0100
-> >
-> > > On Sat, Jun 15, 2019 at 01:30:21PM -0700, David Miller wrote:
-> > >> From: Ioana Ciornei <ioana.ciornei@nxp.com>
-> > >> Date: Thu, 13 Jun 2019 09:37:51 +0300
-> > >>
-> > >> > The phy_state field of phylink should carry only valid
-> > >> > information especially when this can be passed to the .mac_config
-> callback.
-> > >> > Update the an_enabled field with the autoneg state in the
-> > >> > phylink_phy_change function.
-> > >> >
-> > >> > Fixes: 9525ae83959b ("phylink: add phylink infrastructure")
-> > >> > Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-> > >>
-> > >> Applied and queued up for -stable, thanks.
-> > >
-> > > This is not a fix; it is an attempt to make phylink work differently
-> > > from how it's been designed for the dpaa2 driver.  I've already
-> > > stated that this field is completely meaningless, so I'm surprised
-> > > you applied it.
-> >
-> > I'm sorry, I did wait a day or so to see any direct responses to this
-> > patch and I saw no feedback.
-> >
-> > I'll revert.
->=20
-> Hi Dave,
->=20
-> Thanks for the revert.  There was discussion surrounding this patch:
->=20
-> https://www.mail-archive.com/netdev@vger.kernel.org/thrd2.html#302220=20
->=20
-> It was then re-posted as part of a later RFC series ("DPAA2 MAC
-> Driver") which shows why the change was proposed, where the discussion
-> continued on Friday.  The patch ended up with a slightly different subjec=
-t line.
->=20
-> There is still further discussion required to try and work out a way forw=
-ard.
->=20
-> Thanks.
->=20
+On Tue, 18 Jun 2019 at 22:37, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
 
-Hi all,=20
+> > I would just drop the object-scope pinning. We avoided using it and I'm not
+> > aware if anyone else make use. It also has the ugly side-effect that this
+> > relies on AF_ALG which e.g. on some cloud provider shipped kernels is disabled.
+> > The pinning attribute should be part of the standard set of map attributes for
+> > libbpf though as it's generally useful for networking applications.
+>
+> Sounds good. I'll do some more surveying of use cases inside FB to see
+> if anyone needs object-scope pinning, just to be sure we are not
+> short-cutting anyone.
 
-Sorry for not commenting on this until now but last weekend I had an unfort=
-unate accident and ended up with a broken ankle. I'll start responding to a=
-ll the emails and get back into this.
+I'm also curious what the use cases for declarative pinning are. From my
+limited POV it doesn't seem that useful? There are a couple of factors:
 
---
-Ioana
+* Systemd mounts the default location only accessible to root, so I have to
+  used my own bpffs mount.
+* Since I don't want to hard code that, I put it in a config file.
+* After loading the ELF we pin maps from the daemon managing the XDP.
 
+How do other people work around this? Hard coding it in the ELF seems
+suboptimal.
+
+> > And the loader should figure this out and combine everything in the background.
+> > Otherwise above 'struct inner_map_t value' would be mixing convention of using
+> > pointer vs non-pointer which may be even more confusing.
+>
+> There are two reasons I didn't want to go with that approach:
+>
+> 1. This syntax makes my_inner_map usable as a stand-alone map, while
+> it's purpose is to serve as a inner map prototype. While technically
+> it is ok to use my_inner_map as real map, it's kind of confusing and
+> feels unclean.
+
+I agree, avoiding this problem is good.
+
+> So we came up with a way to "encode" integer constants as part of BTF
+> type information, so that *all* declarative information is part of BTF
+> type, w/o the need to compile-time initialization. We tried to go the
+> other way (what Jakub was pushing for), but we couldn't figure out
+> anything that would work w/o more compiler hacks. So here's the
+> updated proposal:
+>
+> #define __int(name, val) int (*name)[val]
+
+Consider my mind blown: https://cdecl.org/?q=int+%28*foo%29%5B10%5D
+
+> #define __type(name, val) val (*foo)
+
+Maybe it's enough to just hide the pointer-ness?
+
+  #define __member(name) (*name)
+  struct my_value __member(value);
+
+> struct my_inner_map {
+>         __int(type, BPF_MAP_TYPE_ARRAY);
+>         __int(max_entries, 1000);
+>         __type(key, int);
+>         __type(value, struct my_value);
+
+What if this did
+
+  __type(value, struct my_value)[1000];
+  struct my_value __member(value)[1000]; // alternative
+
+instead, and skipped max_entries?
+
+> static struct {
+>         __int(type, BPF_MAP_TYPE_ARRAY_OF_MAPS);
+>         __int(max_entries, 1000);
+>         __type(key, int);
+>         __type(value, struct my_inner_map);
+>         struct my_inner_map *values[];
+> } my_initialized_outer_map SEC(".maps") = {
+>         .values = {
+>                 &imap1,
+>                 [500] = &imap2,
+>         },
+> };
+>
+> Here struct my_inner_map is complete definition of array map w/ 1000
+> elements w/ all the type info for k/v. That struct is used as a
+> template for my_outer_map map-in-map. my_initialized_outer_map is the
+> case of pre-initialization of array-of-maps w/ instances of existing
+> maps imap1 and imap2.
+
+For my_initialized_outer_map, which section does .values end up in the
+generated ELF? How much space is going to be allocated? 501 * 4 bytes?
+
+> The idea is that we encode integer fields as array dimensions + use
+> pointer to an array to save space. Given that syntax in plain C is a
+> bit ugly and hard to remember, we hide that behind __int macro. Then
+> in line with __int, we also have __type macro, that hides that hateful
+> pointer for key/value types. This allows map definition to be
+> self-describing w/o having to look at initialized ELF data section at
+> all, except for special cases of explicitly initializing map-in-map or
+> prog_array.
+>
+> What do you think?
+
+I think this is an interesting approach. One thing I'm not sure of is handling
+these types from C. For example:
+
+  sizeof(my_outer_map.value)
+
+This compiles, but doesn't produce the intended result. Correct would be:
+
+  sizeof(my_outer_map.value[0])
+
+At that point you have to understand that value is a pointer so all of
+our efforts
+are for naught. I suspect there is other weirdness like this, but I need to play
+with it a little bit more.
+
+> Yeah I can definitely see some confusion here. But it seems like this
+> is more of a semantics of map sharing, and maybe it should be some
+> extra option for when we have automatic support for extern (shared)
+> maps. E.g., something like
+>
+> __int(sharing, SHARE_STRATEGY_MERGE) vs __int(sharing, SHARE_STRATEGY_OVERWRITE)
+>
+> Haven't though through exact syntax, naming, semantics, but it seems
+> doable to support both, depending on desired behavior.
+>
+> Maybe we should also unify this w/ pinning? E.g., there are many
+> sensible ways to handle already existing pinned map:
+>
+> 1. Reject program (e.g., if BPF application is the source of truth for that map)
+> 2. Use pinned as is (e.g., if BPF application wants to consume data
+> from source of truth app)
+> 3. Merge (what you described above)
+> 4. Replace/reset - not sure if useful/desirable.
+
+From my experience, trying to support many use cases in a purely declarative
+fashion ends up creating many edge cases, and quirky behaviour that is hard to
+fix later on. It's a bit like merging dictionaries in $LANGUAGE,
+which starts out simple and then gets complicated because sometimes you
+want to override a key, but lists should be concatenated, except in
+that one case...
+
+I wonder: are there many use cases where writing some glue code isn't
+possible? With libbpf getting more mature APIs that should become easier and
+easier. We could probably support existing iproute2 features that way as well.
+
+-- 
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+
+www.cloudflare.com
