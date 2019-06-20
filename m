@@ -2,144 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 60E3F4CD1B
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 13:51:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A09684CD26
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 13:52:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726562AbfFTLvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 07:51:17 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:40210 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726391AbfFTLvR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 07:51:17 -0400
-Received: by mail-pf1-f196.google.com with SMTP id p184so1537278pfp.7
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 04:51:17 -0700 (PDT)
+        id S1731729AbfFTLwG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 07:52:06 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:39054 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731670AbfFTLwF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 07:52:05 -0400
+Received: by mail-pg1-f194.google.com with SMTP id 196so1466487pgc.6;
+        Thu, 20 Jun 2019 04:52:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=4qVPpUo96t7fW1xT7laUuFCBqeaMMGxzWSW3DaeTS7I=;
-        b=hnsUnl8rr3YuKv5LIBp/cAwPl9Y+tWpvEHTVIduwkzanrcb8w7QfZzhDnB10DcX+yN
-         sPKEwBcGivbWLCW8OgRyxiplmGlOvqJGXQSQ574KQhfEJrIYMrFG8IpkNCL52HScWkrb
-         dZ6mejKqUR8hILwsXYPQCgr6QM8rFBj0QeiAt9VNDocLrE0Urz0hFvNINGD0SFRvPPED
-         8eiQB4gYtV89vSbnXxjsjun7sHEpZMcYBXlVTta5gMQKpROKsxe231zj0kU8D5LszcqH
-         lmmAcmoPoyhygqUErOfULD9Q4ltLgRIUrf/mL+yHJx8y+Ai7bV6kL67T5sX5UktpciPC
-         p+tw==
+        bh=Z6qFnOPxGsxbBs0N1zHQ2cWMgLe8sCLq4jvA0AzCvtE=;
+        b=DW7smYrl6VnTxf+mDW+fMhUBEgw71IO+UEx+WeJv5RmKsCPtJVgcZTOZ6uzRK9cpg+
+         3F2GWDrvnFusDEEYOJfX/7wRA9gn4s3Y7+z8vwVcDOg1rWKRJACpXAofncOF/FpglibW
+         pD+ddsWMArLdOQeVchNjZYgGPPIdQc8luRwtMQwuDFybRye0LiaLmkNj4VFOTdUedv2L
+         kxkqPvoF3dXTORFvMwV/WFwKMtDrRXj4ZKm6XeRkJIKYpp1VFOYvkvZg0xokbieShECo
+         qXYCyIKaPsFUrSEG/PD7dKPUSNfQZOr/SWOGhSRhHf1VIBa8kEL04xPIvpFwDatAQVrp
+         D7tw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=4qVPpUo96t7fW1xT7laUuFCBqeaMMGxzWSW3DaeTS7I=;
-        b=m7y8XZW32KWh1K5XJQus2ozle1gZDLJbPHGin8OHenlEKmsdOcdFQTu1gj+ZBb5AtW
-         CWsiqlOLyELQJj570yfy4Su2Whg0G9yw3zyrdF+u1uiHC56d9B3HiCQokWvFkHmOo8bO
-         x70u/VFO/w03SA74GlcKDDbrSwVjfyUfH9TJ8KH+UglDoiY5IFLi9TzSmv1xh1TFyBl6
-         aAi6UkzMlGfviECPIgXIALz+fgMi6HPmBog3nYjmw62P3vjo7Lfk2NtiJTupyrUe5gk0
-         hHpOsQmG7hHymlaD32hX/BufplWuTBpUQyyhqswOlz4Klk6eiuidV/O+HlrxWx2rWe2B
-         Iq6A==
-X-Gm-Message-State: APjAAAUs/LGdO9f6/XQvyULneBRO0Sh2/f0uvHmVO9a8wgQRLe9qqouA
-        tQaK5UzZNuMULVn4cOHbz5g=
-X-Google-Smtp-Source: APXvYqybrsiFKoH+xulm1KR4i7jKz05LUhDec3bAGGBnDFkUi3vOtKstlNV7xj4oi9dFxXiEAk990w==
-X-Received: by 2002:a62:d45d:: with SMTP id u29mr65684500pfl.135.1561031476437;
-        Thu, 20 Jun 2019 04:51:16 -0700 (PDT)
-Received: from ap-To-be-filled-by-O-E-M.8.8.8.8 ([14.33.120.60])
-        by smtp.gmail.com with ESMTPSA id d4sm4234101pju.19.2019.06.20.04.51.14
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 20 Jun 2019 04:51:15 -0700 (PDT)
-From:   Taehee Yoo <ap420073@gmail.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     ap420073@gmail.com
-Subject: [PATCH net] vxlan: do not destroy fdb if register_netdevice() is failed
-Date:   Thu, 20 Jun 2019 20:51:08 +0900
-Message-Id: <20190620115108.5701-1-ap420073@gmail.com>
+        bh=Z6qFnOPxGsxbBs0N1zHQ2cWMgLe8sCLq4jvA0AzCvtE=;
+        b=pQraYfvSKvU7l20ql+B+mNmyEQOzd6b/ClXwTFGbJw40QlG/7VqBf9PvXOkh8KY97k
+         EmcCCnWcORDuwx8cmz5KME+TRJtscthT3/Uxjpv2TjjKuc8qpXHQqIsgKuGypIAL5WFF
+         cx887Yz+u6vMBvs1wjuFyo85H+PWMAk8GV+9EIw3xT9OMx7GJ/o07Lgq//L2HU9ucRhe
+         Lsmz2yjek6PHFEgeAdGWngq7b6HjjeisJ7rA35UfN4XPWdQKOuQ0e/z947ibUvBNkoI3
+         32issgfMNZsMgHYoTHomEpdojNstgboAbhRuOfqUgNlyMNLjT9ko56lMpcRjNZHomsAI
+         COxg==
+X-Gm-Message-State: APjAAAWbhD9H85usDys4pe0PDuPmJkrK0FBtVxBrRB/xF7Xgn83IM0sR
+        BOk/PoZQffH5hu5ignhdTni8ag8UxA==
+X-Google-Smtp-Source: APXvYqyBR46+C8J5ufb+LcDaaLVeD8vQ3BWqbC3COAVNxMzLqA684j0K4yYzWKateXwAJRLxXAQZvQ==
+X-Received: by 2002:a65:5a42:: with SMTP id z2mr12830723pgs.421.1561031524630;
+        Thu, 20 Jun 2019 04:52:04 -0700 (PDT)
+Received: from ubuntu.extremenetworks.com ([12.38.14.8])
+        by smtp.gmail.com with ESMTPSA id x25sm21862942pfm.48.2019.06.20.04.52.01
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 20 Jun 2019 04:52:03 -0700 (PDT)
+From:   Stephen Suryaputra <ssuryaextr@gmail.com>
+To:     netfilter-devel@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Stephen Suryaputra <ssuryaextr@gmail.com>
+Subject: [PATCH nfnext v4] netfilter: add support for matching IPv4 options
+Date:   Thu, 20 Jun 2019 07:51:40 -0400
+Message-Id: <20190620115140.3518-1-ssuryaextr@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-__vxlan_dev_create() destroys FDB using specific pointer which indicates
-a fdb when error occurs.
-But that pointer should not be used when register_netdevice() fails because
-register_netdevice() internally destroys fdb when error occurs.
+This is the kernel change for the overall changes with this description:
+Add capability to have rules matching IPv4 options. This is developed
+mainly to support dropping of IP packets with loose and/or strict source
+route route options.
 
-In order to avoid un-registered dev's notification, fdb destroying routine
-checks dev's register status before notification.
+v2: Fix style issues. Make this work with NFPROTO_INET (inet tables),
+    NFPROTO_BRIDGE and the NFPROTO_NETDEV families. Check skb->protocol.
+    Remove ability to input IP header offset for ipv4_find_option()
+    function (all per Pablo Neira Ayuso).
+v3: Remove unused ipv4_find_option() arguments (per Pablo Neira Ayuso).
+v4: Change the code to not follow ipv6_find_hdr() and just do what are
+    needed to support source-route, record route and router alert (per
+    Pablo Neira Ayuso). Fix bugs that are introduced while addressing
+    review comments.
 
-Test command
-    ip link add bonding_masters type vxlan id 0 group 239.1.1.1 \
-	    dev enp0s9 dstport 4789
-
-Splat looks like:
-[  130.396714] kasan: CONFIG_KASAN_INLINE enabled
-[  130.397649] kasan: GPF could be caused by NULL-ptr deref or user memory access
-[  130.398939] general protection fault: 0000 [#1] SMP DEBUG_PAGEALLOC KASAN PTI
-[  130.399829] CPU: 0 PID: 991 Comm: ip Not tainted 5.2.0-rc3+ #41
-[  130.401581] RIP: 0010:vxlan_fdb_destroy+0x120/0x220 [vxlan]
-[  130.402280] Code: df 48 8b 2b 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 06 01 00 00 4c 8b 63 08 48 b8 00 00 00 00d
-[  130.404578] RSP: 0018:ffff8880cfac7080 EFLAGS: 00010a02
-[  130.405235] RAX: dffffc0000000000 RBX: ffff8880d0613348 RCX: 0000000000000000
-[  130.406172] RDX: 1bd5a00000000040 RSI: ffff8880d0613348 RDI: ffff8880d0613350
-[  130.407056] RBP: 0000000000000000 R08: fffffbfff4378005 R09: 0000000000000000
-[  130.408011] R10: 00000000ffffffef R11: 0000000000000000 R12: dead000000000200
-[  130.408921] R13: ffff8880cfac71d8 R14: ffff8880b5d8cda0 R15: ffff8880b5d8cda0
-[  130.409811] FS:  00007f9ef157e0c0(0000) GS:ffff8880da400000(0000) knlGS:0000000000000000
-[  130.410805] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  130.411515] CR2: 0000560fe8118d54 CR3: 00000000bc684006 CR4: 00000000000606f0
-[  130.412385] Call Trace:
-[  130.412708]  __vxlan_dev_create+0x3a9/0x7d0 [vxlan]
-[  130.413314]  ? vxlan_changelink+0x780/0x780 [vxlan]
-[  130.413919]  ? rcu_read_unlock+0x60/0x60 [vxlan]
-[  130.414497]  ? __kasan_kmalloc.constprop.3+0xa0/0xd0
-[  130.415112]  vxlan_newlink+0x99/0xf0 [vxlan]
-[  130.415640]  ? __vxlan_dev_create+0x7d0/0x7d0 [vxlan]
-[  130.416270]  ? __netlink_ns_capable+0xc3/0xf0
-[  130.416806]  __rtnl_newlink+0xb9f/0x11b0
-[ ... ]
-
-Fixes: 0241b836732f ("vxlan: fix default fdb entry netlink notify ordering during netdev create")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+Signed-off-by: Stephen Suryaputra <ssuryaextr@gmail.com>
 ---
- drivers/net/vxlan.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ include/uapi/linux/netfilter/nf_tables.h |   2 +
+ net/ipv4/ip_options.c                    |   1 +
+ net/netfilter/nft_exthdr.c               | 111 +++++++++++++++++++++++
+ 3 files changed, 114 insertions(+)
 
-diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index 4c9bc29fe3d5..0bc07e3232c4 100644
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
-@@ -861,7 +861,7 @@ static void vxlan_fdb_destroy(struct vxlan_dev *vxlan, struct vxlan_fdb *f,
- 	netdev_dbg(vxlan->dev, "delete %pM\n", f->eth_addr);
+diff --git a/include/uapi/linux/netfilter/nf_tables.h b/include/uapi/linux/netfilter/nf_tables.h
+index 505393c6e959..168d741f42c5 100644
+--- a/include/uapi/linux/netfilter/nf_tables.h
++++ b/include/uapi/linux/netfilter/nf_tables.h
+@@ -730,10 +730,12 @@ enum nft_exthdr_flags {
+  *
+  * @NFT_EXTHDR_OP_IPV6: match against ipv6 extension headers
+  * @NFT_EXTHDR_OP_TCP: match against tcp options
++ * @NFT_EXTHDR_OP_IPV4: match against ipv4 options
+  */
+ enum nft_exthdr_op {
+ 	NFT_EXTHDR_OP_IPV6,
+ 	NFT_EXTHDR_OP_TCPOPT,
++	NFT_EXTHDR_OP_IPV4,
+ 	__NFT_EXTHDR_OP_MAX
+ };
+ #define NFT_EXTHDR_OP_MAX	(__NFT_EXTHDR_OP_MAX - 1)
+diff --git a/net/ipv4/ip_options.c b/net/ipv4/ip_options.c
+index 3db31bb9df50..ddaa01ec2bce 100644
+--- a/net/ipv4/ip_options.c
++++ b/net/ipv4/ip_options.c
+@@ -473,6 +473,7 @@ int __ip_options_compile(struct net *net,
+ 		*info = htonl((pp_ptr-iph)<<24);
+ 	return -EINVAL;
+ }
++EXPORT_SYMBOL(__ip_options_compile);
  
- 	--vxlan->addrcnt;
--	if (do_notify)
-+	if (do_notify && vxlan->dev->reg_state >= NETREG_REGISTERED)
- 		list_for_each_entry(rd, &f->remotes, list)
- 			vxlan_fdb_notify(vxlan, f, rd, RTM_DELNEIGH,
- 					 swdev_notify, NULL);
-@@ -3542,7 +3542,6 @@ static int __vxlan_dev_create(struct net *net, struct net_device *dev,
- 	struct vxlan_net *vn = net_generic(net, vxlan_net_id);
- 	struct vxlan_dev *vxlan = netdev_priv(dev);
- 	struct vxlan_fdb *f = NULL;
--	bool unregister = false;
- 	int err;
- 
- 	err = vxlan_dev_configure(net, dev, conf, false, extack);
-@@ -3567,8 +3566,7 @@ static int __vxlan_dev_create(struct net *net, struct net_device *dev,
- 
- 	err = register_netdevice(dev);
- 	if (err)
--		goto errout;
--	unregister = true;
-+		return err;
- 
- 	err = rtnl_configure_link(dev, NULL);
- 	if (err)
-@@ -3592,8 +3590,7 @@ static int __vxlan_dev_create(struct net *net, struct net_device *dev,
- 	 */
- 	if (f)
- 		vxlan_fdb_destroy(vxlan, f, false, false);
--	if (unregister)
--		unregister_netdevice(dev);
-+	unregister_netdevice(dev);
- 	return err;
+ int ip_options_compile(struct net *net,
+ 		       struct ip_options *opt, struct sk_buff *skb)
+diff --git a/net/netfilter/nft_exthdr.c b/net/netfilter/nft_exthdr.c
+index a940c9fd9045..703269359dba 100644
+--- a/net/netfilter/nft_exthdr.c
++++ b/net/netfilter/nft_exthdr.c
+@@ -62,6 +62,103 @@ static void nft_exthdr_ipv6_eval(const struct nft_expr *expr,
+ 	regs->verdict.code = NFT_BREAK;
  }
  
++/* find the offset to specified option.
++ *
++ * If target header is found, its offset is set in *offset and return option
++ * number. Otherwise, return negative error.
++ *
++ * If the first fragment doesn't contain the End of Options it is considered
++ * invalid.
++ */
++static int ipv4_find_option(struct net *net, struct sk_buff *skb,
++			    unsigned int *offset, int target)
++{
++	unsigned char optbuf[sizeof(struct ip_options) + 40];
++	struct ip_options *opt = (struct ip_options *)optbuf;
++	struct iphdr *iph, _iph;
++	unsigned int start;
++	bool found = false;
++	__be32 info;
++	int optlen;
++
++	iph = skb_header_pointer(skb, 0, sizeof(_iph), &_iph);
++	if (!iph || iph->version != 4)
++		return -EBADMSG;
++	start = sizeof(struct iphdr);
++
++	optlen = iph->ihl * 4 - (int)sizeof(struct iphdr);
++	if (optlen <= 0)
++		return -ENOENT;
++
++	memset(opt, 0, sizeof(struct ip_options));
++	/* Copy the options since __ip_options_compile() modifies
++	 * the options.
++	 */
++	if (skb_copy_bits(skb, start, opt->__data, optlen))
++		return -EBADMSG;
++	opt->optlen = optlen;
++
++	if (__ip_options_compile(net, opt, NULL, &info))
++		return -EBADMSG;
++
++	switch (target) {
++	case IPOPT_SSRR:
++	case IPOPT_LSRR:
++		if (!opt->srr)
++			break;
++		found = target == IPOPT_SSRR ? opt->is_strictroute :
++					       !opt->is_strictroute;
++		if (found)
++			*offset = opt->srr + start;
++		break;
++	case IPOPT_RR:
++		if (!opt->rr)
++			break;
++		*offset = opt->rr + start;
++		found = true;
++		break;
++	case IPOPT_RA:
++		if (!opt->router_alert)
++			break;
++		*offset = opt->router_alert + start;
++		found = true;
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
++	return found ? target : -ENOENT;
++}
++
++static void nft_exthdr_ipv4_eval(const struct nft_expr *expr,
++				 struct nft_regs *regs,
++				 const struct nft_pktinfo *pkt)
++{
++	struct nft_exthdr *priv = nft_expr_priv(expr);
++	u32 *dest = &regs->data[priv->dreg];
++	struct sk_buff *skb = pkt->skb;
++	unsigned int offset;
++	int err;
++
++	if (skb->protocol != htons(ETH_P_IP))
++		goto err;
++
++	err = ipv4_find_option(nft_net(pkt), skb, &offset, priv->type);
++	if (priv->flags & NFT_EXTHDR_F_PRESENT) {
++		*dest = (err >= 0);
++		return;
++	} else if (err < 0) {
++		goto err;
++	}
++	offset += priv->offset;
++
++	dest[priv->len / NFT_REG32_SIZE] = 0;
++	if (skb_copy_bits(pkt->skb, offset, dest, priv->len) < 0)
++		goto err;
++	return;
++err:
++	regs->verdict.code = NFT_BREAK;
++}
++
+ static void *
+ nft_tcp_header_pointer(const struct nft_pktinfo *pkt,
+ 		       unsigned int len, void *buffer, unsigned int *tcphdr_len)
+@@ -360,6 +457,14 @@ static const struct nft_expr_ops nft_exthdr_ipv6_ops = {
+ 	.dump		= nft_exthdr_dump,
+ };
+ 
++static const struct nft_expr_ops nft_exthdr_ipv4_ops = {
++	.type		= &nft_exthdr_type,
++	.size		= NFT_EXPR_SIZE(sizeof(struct nft_exthdr)),
++	.eval		= nft_exthdr_ipv4_eval,
++	.init		= nft_exthdr_init,
++	.dump		= nft_exthdr_dump,
++};
++
+ static const struct nft_expr_ops nft_exthdr_tcp_ops = {
+ 	.type		= &nft_exthdr_type,
+ 	.size		= NFT_EXPR_SIZE(sizeof(struct nft_exthdr)),
+@@ -400,6 +505,12 @@ nft_exthdr_select_ops(const struct nft_ctx *ctx,
+ 		if (tb[NFTA_EXTHDR_DREG])
+ 			return &nft_exthdr_ipv6_ops;
+ 		break;
++	case NFT_EXTHDR_OP_IPV4:
++		if (ctx->family != NFPROTO_IPV6) {
++			if (tb[NFTA_EXTHDR_DREG])
++				return &nft_exthdr_ipv4_ops;
++		}
++		break;
+ 	}
+ 
+ 	return ERR_PTR(-EOPNOTSUPP);
 -- 
 2.17.1
 
