@@ -2,138 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CE344DA84
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 21:46:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 452364DA91
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 21:49:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726290AbfFTTqe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 15:46:34 -0400
-Received: from iolanthe.rowland.org ([192.131.102.54]:56506 "HELO
-        iolanthe.rowland.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with SMTP id S1726169AbfFTTqd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 15:46:33 -0400
-Received: (qmail 2765 invoked by uid 2102); 20 Jun 2019 15:46:32 -0400
-Received: from localhost (sendmail-bs@127.0.0.1)
-  by localhost with SMTP; 20 Jun 2019 15:46:32 -0400
-Date:   Thu, 20 Jun 2019 15:46:32 -0400 (EDT)
-From:   Alan Stern <stern@rowland.harvard.edu>
-X-X-Sender: stern@iolanthe.rowland.org
-To:     syzbot <syzbot+6d237e74cdc13f036473@syzkaller.appspotmail.com>
-cc:     andreyknvl@google.com, <chunkeey@googlemail.com>,
-        <davem@davemloft.net>, <kvalo@codeaurora.org>,
-        Kernel development list <linux-kernel@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <syzkaller-bugs@googlegroups.com>
-Subject: Re: KASAN: slab-out-of-bounds Read in p54u_load_firmware_cb
-In-Reply-To: <000000000000f00cf1058bb7fb56@google.com>
-Message-ID: <Pine.LNX.4.44L0.1906201544001.1346-100000@iolanthe.rowland.org>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+        id S1726610AbfFTTtf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 15:49:35 -0400
+Received: from mail.us.es ([193.147.175.20]:53838 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726299AbfFTTtf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Jun 2019 15:49:35 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id BF3CAB6C8F
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 21:49:30 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 8E9F5DA706
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 21:49:30 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 46339DA708; Thu, 20 Jun 2019 21:49:29 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id E706DDA702;
+        Thu, 20 Jun 2019 21:49:26 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Thu, 20 Jun 2019 21:49:26 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from salvia.here (sys.soleta.eu [212.170.55.40])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id AA4804265A2F;
+        Thu, 20 Jun 2019 21:49:25 +0200 (CEST)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netdev@vger.kernel.org
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        thomas.lendacky@amd.com, f.fainelli@gmail.com,
+        ariel.elior@cavium.com, michael.chan@broadcom.com,
+        santosh@chelsio.com, madalin.bucur@nxp.com,
+        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        jeffrey.t.kirsher@intel.com, tariqt@mellanox.com,
+        saeedm@mellanox.com, jiri@mellanox.com, idosch@mellanox.com,
+        jakub.kicinski@netronome.com, peppe.cavallaro@st.com,
+        grygorii.strashko@ti.com, andrew@lunn.ch,
+        vivien.didelot@savoirfairelinux.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, linux-net-drivers@solarflare.com,
+        ganeshgr@chelsio.com, ogerlitz@mellanox.com,
+        Manish.Chopra@cavium.com, marcelo.leitner@gmail.com,
+        mkubecek@suse.cz, venkatkumar.duvvuru@broadcom.com,
+        cphealy@gmail.com
+Subject: [PATCH net-next 00/12] netfilter: add hardware offload infrastructure
+Date:   Thu, 20 Jun 2019 21:49:05 +0200
+Message-Id: <20190620194917.2298-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.11.0
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 19 Jun 2019, syzbot wrote:
+Hi,
 
-> syzbot has found a reproducer for the following crash on:
-> 
-> HEAD commit:    9939f56e usb-fuzzer: main usb gadget fuzzer driver
-> git tree:       https://github.com/google/kasan.git usb-fuzzer
-> console output: https://syzkaller.appspot.com/x/log.txt?x=135e29faa00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=df134eda130bb43a
-> dashboard link: https://syzkaller.appspot.com/bug?extid=6d237e74cdc13f036473
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=175d946ea00000
-> 
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+6d237e74cdc13f036473@syzkaller.appspotmail.com
-> 
-> usb 3-1: Direct firmware load for isl3887usb failed with error -2
-> usb 3-1: Firmware not found.
-> ==================================================================
-> BUG: KASAN: slab-out-of-bounds in p54u_load_firmware_cb.cold+0x97/0x13d  
-> drivers/net/wireless/intersil/p54/p54usb.c:936
-> Read of size 8 at addr ffff8881c9cf7588 by task kworker/1:5/2759
-> 
-> CPU: 1 PID: 2759 Comm: kworker/1:5 Not tainted 5.2.0-rc5+ #11
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-> Google 01/01/2011
-> Workqueue: events request_firmware_work_func
-> Call Trace:
->   __dump_stack lib/dump_stack.c:77 [inline]
->   dump_stack+0xca/0x13e lib/dump_stack.c:113
->   print_address_description+0x67/0x231 mm/kasan/report.c:188
->   __kasan_report.cold+0x1a/0x32 mm/kasan/report.c:317
->   kasan_report+0xe/0x20 mm/kasan/common.c:614
->   p54u_load_firmware_cb.cold+0x97/0x13d  
-> drivers/net/wireless/intersil/p54/p54usb.c:936
->   request_firmware_work_func+0x126/0x242  
-> drivers/base/firmware_loader/main.c:785
->   process_one_work+0x905/0x1570 kernel/workqueue.c:2269
->   worker_thread+0x96/0xe20 kernel/workqueue.c:2415
->   kthread+0x30b/0x410 kernel/kthread.c:255
->   ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-> 
-> Allocated by task 1612:
->   save_stack+0x1b/0x80 mm/kasan/common.c:71
->   set_track mm/kasan/common.c:79 [inline]
->   __kasan_kmalloc mm/kasan/common.c:489 [inline]
->   __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:462
->   kmalloc include/linux/slab.h:547 [inline]
->   syslog_print kernel/printk/printk.c:1346 [inline]
->   do_syslog kernel/printk/printk.c:1519 [inline]
->   do_syslog+0x4f4/0x12e0 kernel/printk/printk.c:1493
->   kmsg_read+0x8a/0xb0 fs/proc/kmsg.c:40
->   proc_reg_read+0x1c1/0x280 fs/proc/inode.c:221
->   __vfs_read+0x76/0x100 fs/read_write.c:425
->   vfs_read+0x18e/0x3d0 fs/read_write.c:461
->   ksys_read+0x127/0x250 fs/read_write.c:587
->   do_syscall_64+0xb7/0x560 arch/x86/entry/common.c:301
->   entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> 
-> Freed by task 1612:
->   save_stack+0x1b/0x80 mm/kasan/common.c:71
->   set_track mm/kasan/common.c:79 [inline]
->   __kasan_slab_free+0x130/0x180 mm/kasan/common.c:451
->   slab_free_hook mm/slub.c:1421 [inline]
->   slab_free_freelist_hook mm/slub.c:1448 [inline]
->   slab_free mm/slub.c:2994 [inline]
->   kfree+0xd7/0x280 mm/slub.c:3949
->   syslog_print kernel/printk/printk.c:1405 [inline]
->   do_syslog kernel/printk/printk.c:1519 [inline]
->   do_syslog+0xff3/0x12e0 kernel/printk/printk.c:1493
->   kmsg_read+0x8a/0xb0 fs/proc/kmsg.c:40
->   proc_reg_read+0x1c1/0x280 fs/proc/inode.c:221
->   __vfs_read+0x76/0x100 fs/read_write.c:425
->   vfs_read+0x18e/0x3d0 fs/read_write.c:461
->   ksys_read+0x127/0x250 fs/read_write.c:587
->   do_syscall_64+0xb7/0x560 arch/x86/entry/common.c:301
->   entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> 
-> The buggy address belongs to the object at ffff8881c9cf7180
->   which belongs to the cache kmalloc-1k of size 1024
-> The buggy address is located 8 bytes to the right of
->   1024-byte region [ffff8881c9cf7180, ffff8881c9cf7580)
-> The buggy address belongs to the page:
-> page:ffffea0007273d00 refcount:1 mapcount:0 mapping:ffff8881dac02a00  
-> index:0x0 compound_mapcount: 0
-> flags: 0x200000000010200(slab|head)
-> raw: 0200000000010200 dead000000000100 dead000000000200 ffff8881dac02a00
-> raw: 0000000000000000 00000000000e000e 00000001ffffffff 0000000000000000
-> page dumped because: kasan: bad access detected
-> 
-> Memory state around the buggy address:
->   ffff8881c9cf7480: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->   ffff8881c9cf7500: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> > ffff8881c9cf7580: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->                        ^
->   ffff8881c9cf7600: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->   ffff8881c9cf7680: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> ==================================================================
+This patchset adds support for Netfilter hardware offloads.
 
-Isn't this the same as syzkaller bug 200d4bb11b23d929335f ?  Doesn't
-the same patch fix it?
+This patchset reuses the existing block infrastructure, the
+netdev_ops->ndo_setup_tc() interface, TC_SETUP_CLSFLOWER classifier and
+the flow rule API.
 
-Alan Stern
+Patch #1 moves tcf_block_cb code before the indirect block
+	 infrastructure to avoid forward declarations in the next
+	 patches. This is just a preparation patch.
+
+Patch #2 adds tcf_block_cb_alloc() to allocate flow block callbacks.
+
+Patch #3 adds tcf_block_cb_free() to release flow block callbacks.
+
+Patch #4 adds the tcf_block_setup() infrastructure, which allows drivers
+         to set up flow block callbacks. This infrastructure transports
+         these objects via list (through the tc_block_offload object)
+	 back to the core for registration.
+
+            CLS_API                           DRIVER
+        TC_SETUP_BLOCK    ---------->  setup flow_block_cb object &
+                                 it adds object to flow_block_offload->cb_list
+                                                |
+            CLS_API     <-----------------------'
+           registers                     list if flow block
+         flow_block_cb &                   travels back to
+       calls ->reoffload               the core for registration
+
+Patch #5 extends tcf_block_cb_alloc() to allow drivers to set a release
+	 callback that is invoked from tcf_block_cb_free() to release
+         private driver block information.
+
+Patch #6 adds tcf_setup_block_offload(), this helper function is used by
+         most drivers to setup the block, including common bind and
+         unbind operations.
+
+Patch #7 adapts drivers to use the infrastructure introduced in Patch #4.
+
+Patch #8 stops exposing the tc block structure to drivers, by caching
+	 the only information that drivers need, ie. block is shared
+	 flag.
+
+Patch #9 removes the tcf_block_cb_register() / _unregister()
+	 infrastructure, since it is now unused after Patch #7.
+
+Patch #10 moves the flow_block API to the net/core/flow_offload.c core.
+          This renames tcf_block_cb to flow_block_cb as well as the
+	  functions to allocate, release, lookup and setup flow block
+	  callbacks.
+
+Patch #11 makes sure that only one flow block callback per device is
+          possible by now. This means only one of the ethtool / tc /
+          netfilter subsystems can use hardware offloads, until drivers
+	  are updated to remove this limitation.
+
+Patch #12 introduces basic netfilter hardware offload infrastructure
+	  for the ingress chain. This includes 5-tuple matching and
+          accept / drop actions. Only basechains are supported at this
+          stage, no .reoffload callback is implemented either.
+
+Please, apply, thanks.
+
+Pablo Neira Ayuso (12):
+  net: sched: move tcf_block_cb before indr_block
+  net: sched: add tcf_block_cb_alloc()
+  net: sched: add tcf_block_cb_free()
+  net: sched: add tcf_block_setup()
+  net: sched: add release callback to struct tcf_block_cb
+  net: sched: add tcf_setup_block_offload()
+  net: use tcf_block_setup() infrastructure
+  net: cls_api: do not expose tcf_block to drivers
+  net: sched: remove tcf_block_cb_{register,unregister}()
+  net: flow_offload: add flow_block_cb API
+  net: flow_offload: don't allow block sharing until drivers support this
+  netfilter: nf_tables: add hardware offload support
+
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c          |  26 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c      |  28 +-
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c    |  26 +-
+ drivers/net/ethernet/intel/i40e/i40e_main.c        |  26 +-
+ drivers/net/ethernet/intel/iavf/iavf_main.c        |  35 +-
+ drivers/net/ethernet/intel/igb/igb_main.c          |  24 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c      |  27 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  27 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |  62 ++-
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.c     |  87 ++--
+ drivers/net/ethernet/mscc/ocelot_ace.h             |   4 +-
+ drivers/net/ethernet/mscc/ocelot_flower.c          |  45 +-
+ drivers/net/ethernet/mscc/ocelot_tc.c              |  28 +-
+ drivers/net/ethernet/netronome/nfp/abm/cls.c       |  19 +-
+ drivers/net/ethernet/netronome/nfp/abm/main.h      |   2 +-
+ drivers/net/ethernet/netronome/nfp/bpf/main.c      |  29 +-
+ .../net/ethernet/netronome/nfp/flower/offload.c    |  63 ++-
+ drivers/net/ethernet/qlogic/qede/qede_main.c       |  23 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  |  22 +-
+ drivers/net/netdevsim/netdev.c                     |  26 +-
+ include/net/flow_offload.h                         |  52 +++
+ include/net/netfilter/nf_tables.h                  |  13 +
+ include/net/netfilter/nf_tables_offload.h          |  76 ++++
+ include/net/pkt_cls.h                              |  90 +---
+ include/uapi/linux/netfilter/nf_tables.h           |   2 +
+ net/core/flow_offload.c                            | 121 +++++
+ net/dsa/slave.c                                    |  16 +-
+ net/netfilter/Makefile                             |   2 +-
+ net/netfilter/nf_tables_api.c                      |  22 +-
+ net/netfilter/nf_tables_offload.c                  | 233 ++++++++++
+ net/netfilter/nft_cmp.c                            |  53 +++
+ net/netfilter/nft_immediate.c                      |  31 ++
+ net/netfilter/nft_meta.c                           |  27 ++
+ net/netfilter/nft_payload.c                        | 187 ++++++++
+ net/sched/cls_api.c                                | 502 ++++++++++-----------
+ 35 files changed, 1305 insertions(+), 751 deletions(-)
+ create mode 100644 include/net/netfilter/nf_tables_offload.h
+ create mode 100644 net/netfilter/nf_tables_offload.c
+
+-- 
+2.11.0
 
