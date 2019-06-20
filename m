@@ -2,194 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 97AEC4D545
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 19:32:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49B524D54C
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 19:33:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726719AbfFTRcx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 13:32:53 -0400
-Received: from mout.gmx.net ([212.227.15.19]:56057 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726551AbfFTRcw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Jun 2019 13:32:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1561051945;
-        bh=b/EYg7frIiOEmVO+jC5QgzH+HdXi9h+6Yrw5OYnfDig=;
-        h=X-UI-Sender-Class:Date:In-Reply-To:References:Subject:Reply-to:To:
-         CC:From;
-        b=Gu7nyI4deTxSMkboNCOlV0EYjr3oPehMyPRdOXDKzcN8QkXUXKPUmRd6EX2nQ20l0
-         WMy7LHs8Bqw+Y3C48WSSoiEnVCkqCFAjqu3IiScIJvbO48s+cjaSvZMOiD7ImPADKO
-         WAWt4Ylf+6RPN8R8k/t4eloIF3U9xzsV4y6x8SUU=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [10.218.201.146] ([88.128.81.70]) by mail.gmx.com (mrgmx002
- [212.227.17.190]) with ESMTPSA (Nemesis) id 0MhAAr-1hzgXg1GXR-00MMgv; Thu, 20
- Jun 2019 19:32:25 +0200
-Date:   Thu, 20 Jun 2019 19:32:19 +0200
-User-Agent: K-9 Mail for Android
-In-Reply-To: <20190620122155.32078-3-opensource@vdorst.com>
-References: <20190620122155.32078-1-opensource@vdorst.com> <20190620122155.32078-3-opensource@vdorst.com>
+        id S1726649AbfFTRdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 13:33:51 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:32786 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726530AbfFTRdv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 13:33:51 -0400
+Received: by mail-pl1-f196.google.com with SMTP id c14so1680539plo.0
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 10:33:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UQqEfv3UpRWp6Dt7KK/Wm/iXTV5IlIFQTO5HkcqCWkU=;
+        b=Y3lDTsVkncrgNbv3u6+zlQ1u0Uo5xgxjEzouyL7IIXM4mf4KkzUd4qYf5KQkJvJcWM
+         A6Q3+dNQ6lamSmVqIdOd/q1XqYL4wLKn+0EYwH2/Z/FEZktXwHTxl5iwKPrjMT78B4Ia
+         zx/ogtLORGxTRa5QoFNdnNITSJ2EKRvR6Yiyxo9GDZRPrmFVhNoBzGPNlFmMOY1fE5IC
+         8wS8t+87WISSfPFHrYTBfUHZNIcLiKmWejVsi2AEiucF66ErpBvAnWSzLkKCCLKjDBZv
+         V/lQ1Zp1rNqtRju/y4/0Pst3hvlB1ZQKe3LFmCi3fUVxV/YFK7NmdrrXiNk4ZSjeypBT
+         KbrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UQqEfv3UpRWp6Dt7KK/Wm/iXTV5IlIFQTO5HkcqCWkU=;
+        b=D2L9+qAUM2G62MiF2ax7nHCqFaGgh7en5EdRq9mkYoids6ZRLeoUzpbgLETQBUlzaL
+         UK306Iedstov6Ve5JU+Z8Lt3/DpIjE0iDxJMoIYmePJPnFCC4kxlEitw4UDAFyI1mjMJ
+         /juE2yDbcVE6adICOCyQyEgcCCC+Bd1t8RpiTdhdkntj+MEKEuy7F4eDFFsenQO5EGn5
+         EqKQr47MK+oiI8erckkpA+VNI47Yiy7sR/i3AkCUn3UPQfSws8K05OSBiwUpwSSocUN1
+         lUdvubUffajduTNVtDP3R4sk3ls8rLkw1QhShU1rNpryQOHwamlfaFXDZ9crc5SgP3z8
+         X7Uw==
+X-Gm-Message-State: APjAAAWsU2+GyC0c2CV3sF6EdcxZFXDOiTtfp27dO0jKoTrEBUBC2kkp
+        Lg79hiFAul04/h115TQ2B2Gbfevtaxo9zLsVhFcFOw5ZnqY=
+X-Google-Smtp-Source: APXvYqzhWwLHgyVfOZjp2sPXuWTigLTaKLH4U9jFm7Gy087GG+hzFz3+efZtlTev/oGU54w6scNxyfOnPuIqBfg5S1Y=
+X-Received: by 2002:a17:902:ac88:: with SMTP id h8mr48491243plr.12.1561052030491;
+ Thu, 20 Jun 2019 10:33:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v2 net-next 2/2] net: dsa: mt7530: Add MT7621 TRGMII mode support
-Reply-to: frank-w@public-files.de
-To:     =?ISO-8859-1?Q?Ren=E9_van_Dorst?= <opensource@vdorst.com>,
-        sean.wang@mediatek.com, f.fainelli@gmail.com, davem@davemloft.net,
-        matthias.bgg@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com
-CC:     netdev@vger.kernel.org, john@phrozen.org,
-        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org
-From:   Frank Wunderlich <frank-w@public-files.de>
-Message-ID: <E48021B2-3B82-4630-A9D1-290479988806@public-files.de>
-X-Provags-ID: V03:K1:6VMlnX0wvZhaTY+S0ue9uKAasb97bCR4UAmPo4NG4svsppHAHCd
- Dx3o7Giw8H2uGj4oh6BqbOU30jlj7Jw6fhlHvsfaQNtR+0FQRgLzrdjjGWon/Z2VKVyiqMT
- 6ip/DMzMbQTXACvHiAZyGXhUOfgnDLwX2dwnO8IGmzKlY8LY9c5EnsVbB1iSHZKL7viJDh6
- 4tMJu0uhKNbkGhkK9N+Fw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:qnjLQTpK8m4=:4zXdyWggRS2y6JkYb8I8+c
- y7SdBphUSX7GIXnlTBAGdfkXL17yqbiPMVNF+wfSMISe8tv3Kw+5A8QUGC//PVbLE+RuLeQ1o
- QFixWkMGCpJ2EXpNThrnwJWLtq+FYWSjYY8sphsE0ZuMj9cEnhjc5BRc9h9/r3VGb/IvlcaFt
- ivmzCDy6F8+n04iwJDG4frTWWIZKiGZeYmsCluHYNqcYgeYWF6m2+NArFy+4TqmSnoeeasyO3
- Occi1esioOwh71QK01at9jJsWUlIfkkmMi3KG0TAzlxtdHT1URZWfDZNCxNpkuxfwnB2+VWTN
- iNbaA7homH5KKQym5DIGx2345boXhPgmX2aReep7YF1F3koLAmeBG9CLPlvkiSrTIzmntZHkn
- wFvbVUB4Oqgv+hBrCaiNMJnT0q0wxe+q2RApI9tXrGVkjgDsH2Xmkf3g8At/7fDlWTsgw1PPs
- FapN+qk4aVgQGMp9DvRKWNPz/ImcnMVEPpe4UxNsv/zcOO4FwV2d23xLf+1ySyB/xymuyDv1c
- 6+dZIEYxsacHPwdQE56XH7LHBH8vtCQxexztqbBVVVcAgXS0XBR6n/OwcWJyFJ0aRENV5rGr9
- wUBYZggIFLbv7b1wkLd//b0xhITRiuw1tzzEkISVm/uDyjNOSTYN7JMDHOcA/9mTNdfhwa+yi
- z1FXEDMebJD8k3fljeugk5pSuUTPHziCNthXNXuVnga2KmHzQQXkpjX0O0IfJ9O1a/wIHQS3+
- 0xtuEfe5su5UYE0d64Gr+XXoJLd7xcL9rQzHbq/zdglGzVeyxLyRUiazQ/xxctFpnUcv8VKw/
- kzcqH0GqVZjS77XVTj3zAL+KxxywfW5XWC3WqhXYvdsczsoKMAaJ2xOUSQbUQK/gGZ+c+RUeF
- 649mLTV1PE/gCBovx0JaejSolsuFCtqGGA8lfVFYS2AKUvo0ubZKJS2w0ZMznGd5WcFyoxZnI
- HkkCq/3O65r3ZgVQ1J3+gxWxnTWwM5IWEhw4gHsVtMIjZXINP3twW
+References: <9068475730862e1d9014c16cee0ad2734a4dd1f9.1560978242.git.dcaratti@redhat.com>
+ <CAM_iQpUVJ9sG9ETE0zZ_azbDgWp_oi320nWy_g-uh2YJWYDOXw@mail.gmail.com> <53b8c3118900b31536594e98952640c03a4456e0.camel@redhat.com>
+In-Reply-To: <53b8c3118900b31536594e98952640c03a4456e0.camel@redhat.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu, 20 Jun 2019 10:33:38 -0700
+Message-ID: <CAM_iQpVVMBUdhv3o=doLhpWxee91zUPKjAOtUwryUEj0pfowdg@mail.gmail.com>
+Subject: Re: [PATCH net] net/sched: flower: fix infinite loop in fl_walk()
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     Vlad Buslov <vladbu@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Lucas Bates <lucasb@mojatatu.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tested on Bananapi R2 (mt7623) with 5=2E2-rc5 + net-next
+On Thu, Jun 20, 2019 at 5:52 AM Davide Caratti <dcaratti@redhat.com> wrote:
+>
+> hello Cong, thanks for reading.
+>
+> On Wed, 2019-06-19 at 15:04 -0700, Cong Wang wrote:
+> > On Wed, Jun 19, 2019 at 2:10 PM Davide Caratti <dcaratti@redhat.com> wrote:
+> > > on some CPUs (e.g. i686), tcf_walker.cookie has the same size as the IDR.
+> > > In this situation, the following script:
+> > >
+> > >  # tc filter add dev eth0 ingress handle 0xffffffff flower action ok
+> > >  # tc filter show dev eth0 ingress
+> > >
+> > > results in an infinite loop. It happened also on other CPUs (e.g x86_64),
+> > > before commit 061775583e35 ("net: sched: flower: introduce reference
+> > > counting for filters"), because 'handle' + 1 made the u32 overflow before
+> > > it was assigned to 'cookie'; but that commit replaced the assignment with
+> > > a self-increment of 'cookie', so the problem was indirectly fixed.
+> >
+> > Interesting... Is this really specific to cls_flower? To me it looks like
+> > a bug of idr_*_ul() API's, especially for idr_for_each_entry_ul().
+>
+> good question, I have to investigate this better (idr_for_each_entry_ul()
+> expands in a iteration of idr_get_next_ul()). It surely got in cls_flower
+> when it was converted to use IDRs, but it's true that there might be other
+> points in TC where IDR are used and the same pattern is present (see
+> below).
 
-Tested-by: Frank Wunderlich <frank-w@public-files=2Ede>
 
-Am 20=2E Juni 2019 14:21:55 MESZ schrieb "Ren=C3=A9 van Dorst" <opensource=
-@vdorst=2Ecom>:
->This patch add support TRGMII mode for MT7621 internal MT7530 switch=2E
->MT7621 TRGMII has only one fix speed mode of 1200MBit=2E
+Yeah, this means we probably want to fix it in idr_get_next_ul() or its
+callers like idr_for_each_entry_ul().
+
 >
->Also adding support for mt7530 25MHz and 40MHz crystal clocksource=2E
->Values are based on Banana Pi R2 bsp [1]=2E
+> > Can you test if the following command has the same problem on i386?
+> >
+> > tc actions add action ok index 4294967295
 >
->Don't change MT7623 registers on a MT7621 device=2E
->
->[1]
->https://github=2Ecom/BPI-SINOVOIP/BPI-R2-bsp/blob/master/linux-mt/drivers=
-/net/ethernet/mediatek/gsw_mt7623=2Ec#L769
->
->Signed-off-by: Ren=C3=A9 van Dorst <opensource@vdorst=2Ecom>
->---
-> drivers/net/dsa/mt7530=2Ec | 46 +++++++++++++++++++++++++++++++---------
-> drivers/net/dsa/mt7530=2Eh |  4 ++++
-> 2 files changed, 40 insertions(+), 10 deletions(-)
->
->diff --git a/drivers/net/dsa/mt7530=2Ec b/drivers/net/dsa/mt7530=2Ec
->index c7d352da5448=2E=2E3181e95586d6 100644
->--- a/drivers/net/dsa/mt7530=2Ec
->+++ b/drivers/net/dsa/mt7530=2Ec
->@@ -428,24 +428,48 @@ static int
-> mt7530_pad_clk_setup(struct dsa_switch *ds, int mode)
-> {
-> 	struct mt7530_priv *priv =3D ds->priv;
->-	u32 ncpo1, ssc_delta, trgint, i;
->+	u32 ncpo1, ssc_delta, trgint, i, xtal;
->+
->+	xtal =3D mt7530_read(priv, MT7530_MHWTRAP) & HWTRAP_XTAL_MASK;
->+
->+	if (xtal =3D=3D HWTRAP_XTAL_20MHZ) {
->+		dev_err(priv->dev,
->+			"%s: MT7530 with a 20MHz XTAL is not supported!\n",
->+			__func__);
->+		return -EINVAL;
->+	}
->=20
-> 	switch (mode) {
-> 	case PHY_INTERFACE_MODE_RGMII:
-> 		trgint =3D 0;
->+		/* PLL frequency: 125MHz */
-> 		ncpo1 =3D 0x0c80;
->-		ssc_delta =3D 0x87;
-> 		break;
-> 	case PHY_INTERFACE_MODE_TRGMII:
-> 		trgint =3D 1;
->-		ncpo1 =3D 0x1400;
->-		ssc_delta =3D 0x57;
->+		if (priv->id =3D=3D ID_MT7621) {
->+			/* PLL frequency: 150MHz: 1=2E2GBit */
->+			if (xtal =3D=3D HWTRAP_XTAL_40MHZ)
->+				ncpo1 =3D 0x0780;
->+			if (xtal =3D=3D HWTRAP_XTAL_25MHZ)
->+				ncpo1 =3D 0x0a00;
->+		} else { /* PLL frequency: 250MHz: 2=2E0Gbit */
->+			if (xtal =3D=3D HWTRAP_XTAL_40MHZ)
->+				ncpo1 =3D 0x0c80;
->+			if (xtal =3D=3D HWTRAP_XTAL_25MHZ)
->+				ncpo1 =3D 0x1400;
->+		}
-> 		break;
-> 	default:
-> 		dev_err(priv->dev, "xMII mode %d not supported\n", mode);
-> 		return -EINVAL;
-> 	}
->=20
->+	if (xtal =3D=3D HWTRAP_XTAL_25MHZ)
->+		ssc_delta =3D 0x57;
->+	else
->+		ssc_delta =3D 0x87;
->+
-> 	mt7530_rmw(priv, MT7530_P6ECR, P6_INTF_MODE_MASK,
-> 		   P6_INTF_MODE(trgint));
->=20
->@@ -507,7 +531,9 @@ mt7530_pad_clk_setup(struct dsa_switch *ds, int
->mode)
-> 			mt7530_rmw(priv, MT7530_TRGMII_RD(i),
-> 				   RD_TAP_MASK, RD_TAP(16));
-> 	else
->-		mt7623_trgmii_set(priv, GSW_INTF_MODE, INTF_MODE_TRGMII);
->+		if (priv->id !=3D ID_MT7621)
->+			mt7623_trgmii_set(priv, GSW_INTF_MODE,
->+					  INTF_MODE_TRGMII);
->=20
-> 	return 0;
-> }
->@@ -613,13 +639,13 @@ static void mt7530_adjust_link(struct dsa_switch
->*ds, int port,
-> 	struct mt7530_priv *priv =3D ds->priv;
->=20
-> 	if (phy_is_pseudo_fixed_link(phydev)) {
->-		if (priv->id =3D=3D ID_MT7530) {
->-			dev_dbg(priv->dev, "phy-mode for master device =3D %x\n",
->-				phydev->interface);
->+		dev_dbg(priv->dev, "phy-mode for master device =3D %x\n",
->+			phydev->interface);
->=20
->-			/* Setup TX circuit incluing relevant PAD and driving */
->-			mt7530_pad_clk_setup(ds, phydev->interface);
->+		/* Setup TX circuit incluing relevant PAD and driving */
->+		mt7530_pad_clk_setup(ds, phydev->interface);
->=20
->+		if (priv->id =3D=3D ID_MT7530) {
-> 			/* Setup RX circuit, relevant PAD and driving on the
-> 			 * host which must be placed after the setup on the
-> 			 * device side is all finished=2E
->diff --git a/drivers/net/dsa/mt7530=2Eh b/drivers/net/dsa/mt7530=2Eh
->index 4331429969fa=2E=2Ebfac90f48102 100644
->--- a/drivers/net/dsa/mt7530=2Eh
->+++ b/drivers/net/dsa/mt7530=2Eh
->@@ -244,6 +244,10 @@ enum mt7530_vlan_port_attr {
->=20
-> /* Register for hw trap status */
-> #define MT7530_HWTRAP			0x7800
->+#define  HWTRAP_XTAL_MASK		(BIT(10) | BIT(9))
->+#define  HWTRAP_XTAL_25MHZ		(BIT(10) | BIT(9))
->+#define  HWTRAP_XTAL_40MHZ		(BIT(10))
->+#define  HWTRAP_XTAL_20MHZ		(BIT(9))
->=20
-> /* Register for hw trap modification */
-> #define MT7530_MHWTRAP			0x7804
+> the action is added, but then reading it back results in an infinite loop.
+> And again, the infinite loop happens on i686 and not on x86_64. I will try
+> to see where's the problem also here.
+
+Right, this is what I expect, thanks for confirming it.
+
+I am not sure it is better to handle this overflow inside idr_get_next_ul()
+or just let its callers to handle it. According to the comments above
+idr_get_next_ul() it sounds like it is not expected to overflow, so...
+
+diff --git a/lib/idr.c b/lib/idr.c
+index c34e256d2f01..a38f5e391cec 100644
+--- a/lib/idr.c
++++ b/lib/idr.c
+@@ -267,6 +267,9 @@ void *idr_get_next_ul(struct idr *idr, unsigned
+long *nextid)
+        if (!slot)
+                return NULL;
+
++       /* overflow */
++       if (iter.index < id)
++               return NULL;
+        *nextid = iter.index + base;
+        return rcu_dereference_raw(*slot);
+ }
