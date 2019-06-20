@@ -2,150 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC1CE4CC13
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 12:39:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C443A4CC2C
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 12:47:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726635AbfFTKjh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 06:39:37 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:45791 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726222AbfFTKjh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 06:39:37 -0400
-Received: by mail-pl1-f195.google.com with SMTP id bi6so1215427plb.12
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 03:39:36 -0700 (PDT)
+        id S1726729AbfFTKr2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 06:47:28 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:46297 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726211AbfFTKr2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 06:47:28 -0400
+Received: by mail-qt1-f196.google.com with SMTP id h21so2669338qtn.13
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 03:47:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=G56EJR4CDaOVipFaGpOmwgcg3yfaZR33njgvmNZYV7k=;
-        b=F9myMm4Alh7g1D2pSmZChyGaOcXDuYyHJ9vr9xCmtEKS41LRFMxdEYaq3IRG+ViL5s
-         7XKH74gsZGdn4u7RqJenR7rfjBFJgCbhoFCEU6NaNz1e3D0xW5fPO2tLcwLPdG9Cch7a
-         OGxfrUmCRV2wUQhvRlmXUxBd80ZDkP2ny/6r7KgkxOyKt/Wte8q4sl7bLI44qaz2Hyf8
-         e11E7PYk1jbqbcaJ8S8pLa0mxB19snPvJu8OKjxucDEEOhl274BRqbyto/Bk7bivvhK1
-         3Yp8gltNgJwpu8hRV0ciry7zj7j6ClQrieQxqFw7vg+h05KiBEWOnuL0qP4Mm3i5xjLk
-         ttnQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=4sRUxc78T3PiDag50aqEMvObqexRwokvbb2vXdTDTY0=;
+        b=psmTWWhJp8n3q0p/lOK+kqddqEDQpFU1cdpSEJyXmr1m7ohPKevUOsusMGmDNSFuD+
+         cuEblhLd4g/pdyVfWHRR3NqIPeBhFnpcxIuXdry36EN8M94oLgtQPibDRMUxj/MnL0ma
+         vW7vkfDXMScsJPaJTS4ZKt4UWqJwj/ESQ0Z3FI0O/FPq/kcVYcr4aTd3SPgf3O9gAsAR
+         fLWBjaHrzSYRUl7YqY6AtrchaiaR8goC/nhlCe4+GMygu4afwsG1MKx+QeEVXEDzlCnL
+         ZvWXEBDb5/xM36GoEuIYN3rQQusPgUEyBBSigToDDtOGF8YceAEu0f5dmjDwYjxsRQoj
+         D7Cg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=G56EJR4CDaOVipFaGpOmwgcg3yfaZR33njgvmNZYV7k=;
-        b=aODjNlUSyy43BTSupZeTVBhKDJVPcrrpia/PVx3nUqesBoLF5wGxyW7tFZ1tGLCeB1
-         ldBC4oqsThS6FnJNzXlRsGpiKsTpWfLR3xGb2OJizOFwrZKTeQCTpnMc/CJrD0sZS3nC
-         3YZpDNB1eOqRWU46wMeJxVI8wwsuV3zSLR2zI/NdubslRCYw5qiAwpdUmtjTZN8bVUQy
-         4Z9nWpJn5PdSDqauzZS4tIEEr1nHzlbw8YZFMLhtE9vADDHK2W9eXCzKSO3+rNN1kh9R
-         SWKS273eXfj4S1I7DAeFR+mFGTJdtJLIYqDPJLuC7GR3p2TOtI4ntLmjwf40qrnI+V7e
-         r4HQ==
-X-Gm-Message-State: APjAAAXh8+B+5EbNfr7gm7WY3FgDBePTljvyUgPSW1D6PDML7IMu3Wac
-        FXZ6K9JQ5OUpB2G5D9RLsTNY7hln
-X-Google-Smtp-Source: APXvYqzTbfbFvY06aMG3VNEI+CCG/8vkmBEXkuPmkD/YRGYTnbWYxACbRhQ6+RZHjyVRarssLRI/0w==
-X-Received: by 2002:a17:902:8205:: with SMTP id x5mr26029583pln.279.1561027176254;
-        Thu, 20 Jun 2019 03:39:36 -0700 (PDT)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id s64sm21850566pfb.160.2019.06.20.03.39.34
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 20 Jun 2019 03:39:35 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>
-Cc:     davem@davemloft.net, Jon Maloy <jon.maloy@ericsson.com>,
-        Ying Xue <ying.xue@windriver.com>,
-        tipc-discussion@lists.sourceforge.net
-Subject: [PATCH net] tipc: change to use register_pernet_device
-Date:   Thu, 20 Jun 2019 18:39:28 +0800
-Message-Id: <1a8f3ada3e0a65b6e9250c4580a7c420b4ddddac.1561027168.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=4sRUxc78T3PiDag50aqEMvObqexRwokvbb2vXdTDTY0=;
+        b=rFmxvC7Q2HlzafT9M3a2CX/081Rpx/SIJ7/VttVpeid90l+vQwDeLoLEYQb0Fhiz6q
+         TYT3o49Z7/ByVIVHt6da+KZeF5sXDNHlP6lTcE0q6dyD6WViHCJvfvKO3dc+QKbKuxNC
+         5DmKtumClWz37z1jzQbXbMlhIwN1OErgVSS/0W5X3vRXsGuYTxY+nM1eBjJVB6DGA70N
+         fNCgbJM9XSXsSTZiUk8+Gvd+8PRfTg3y45Or97CICBR7Isab+ZTs5k4fV17pv+vWE3aD
+         mZnQVEiGi+KYluCA+aCGXYAnGwFvk7SPborJbH3PI7cqk4WvS6lTB4XeWaRHo8ivK0Fj
+         z8sw==
+X-Gm-Message-State: APjAAAU224VW0tNKIhOF298fAST30yLw9ADA5ud17IwnHLxxQ+T9IuDi
+        0M7z6kztIlX1QHcTxBcK1W8=
+X-Google-Smtp-Source: APXvYqxWmZypaMzjKk/9r7pkngeJ+lFeIzyvqlZDuP2NGsnNPsP5Bh3kR9sGBZGWuJ3hCXtaZvuusQ==
+X-Received: by 2002:ac8:3908:: with SMTP id s8mr110014212qtb.224.1561027647385;
+        Thu, 20 Jun 2019 03:47:27 -0700 (PDT)
+Received: from [10.246.221.134] ([50.234.174.228])
+        by smtp.gmail.com with ESMTPSA id p64sm13329230qkf.60.2019.06.20.03.47.26
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Thu, 20 Jun 2019 03:47:26 -0700 (PDT)
+Subject: Re: [PATCH net-next v4 1/7] igb: clear out tstamp after sending the
+ packet
+To:     Vedang Patel <vedang.patel@intel.com>, netdev@vger.kernel.org
+Cc:     jeffrey.t.kirsher@intel.com, davem@davemloft.net, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        intel-wired-lan@lists.osuosl.org, vinicius.gomes@intel.com,
+        l@dorileo.org, jakub.kicinski@netronome.com, m-karicheri2@ti.com,
+        sergei.shtylyov@cogentembedded.com
+References: <1560966016-28254-1-git-send-email-vedang.patel@intel.com>
+ <1560966016-28254-2-git-send-email-vedang.patel@intel.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <d6655497-5246-c24e-de35-fc6acdad0bf1@gmail.com>
+Date:   Thu, 20 Jun 2019 06:47:25 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
+MIME-Version: 1.0
+In-Reply-To: <1560966016-28254-2-git-send-email-vedang.patel@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is to fix a dst defcnt leak, which can be reproduced by doing:
 
-  # ip net a c; ip net a s; modprobe tipc
-  # ip net e s ip l a n eth1 type veth peer n eth1 netns c
-  # ip net e c ip l s lo up; ip net e c ip l s eth1 up
-  # ip net e s ip l s lo up; ip net e s ip l s eth1 up
-  # ip net e c ip a a 1.1.1.2/8 dev eth1
-  # ip net e s ip a a 1.1.1.1/8 dev eth1
-  # ip net e c tipc b e m udp n u1 localip 1.1.1.2
-  # ip net e s tipc b e m udp n u1 localip 1.1.1.1
-  # ip net d c; ip net d s; rmmod tipc
 
-and it will get stuck and keep logging the error:
+On 6/19/19 10:40 AM, Vedang Patel wrote:
+> skb->tstamp is being used at multiple places. On the transmit side, it
+> is used to determine the launchtime of the packet. It is also used to
+> determine the software timestamp after the packet has been transmitted.
+> 
+> So, clear out the tstamp value after it has been read so that we do not
+> report false software timestamp on the receive side.
+> 
+> Signed-off-by: Vedang Patel <vedang.patel@intel.com>
+> ---
+>  drivers/net/ethernet/intel/igb/igb_main.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+> index fc925adbd9fa..f66dae72fe37 100644
+> --- a/drivers/net/ethernet/intel/igb/igb_main.c
+> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
+> @@ -5688,6 +5688,7 @@ static void igb_tx_ctxtdesc(struct igb_ring *tx_ring,
+>  	 */
+>  	if (tx_ring->launchtime_enable) {
+>  		ts = ns_to_timespec64(first->skb->tstamp);
+> +		first->skb->tstamp = 0;
 
-  unregister_netdevice: waiting for lo to become free. Usage count = 1
+Please provide more explanations.
 
-The cause is that a dst is held by the udp sock's sk_rx_dst set on udp rx
-path with udp_early_demux == 1, and this dst (eventually holding lo dev)
-can't be released as bearer's removal in tipc pernet .exit happens after
-lo dev's removal, default_device pernet .exit.
+Why only this driver would need this ?
 
- "There are two distinct types of pernet_operations recognized: subsys and
-  device.  At creation all subsys init functions are called before device
-  init functions, and at destruction all device exit functions are called
-  before subsys exit function."
 
-So by calling register_pernet_device instead to register tipc_net_ops, the
-pernet .exit() will be invoked earlier than loopback dev's removal when a
-netns is being destroyed, as fou/gue does.
-
-Note that vxlan and geneve udp tunnels don't have this issue, as the udp
-sock is released in their device ndo_stop().
-
-This fix is also necessary for tipc dst_cache, which will hold dsts on tx
-path and I will introduce in my next patch.
-
-Reported-by: Li Shuang <shuali@redhat.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- net/tipc/core.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
-
-diff --git a/net/tipc/core.c b/net/tipc/core.c
-index ed536c0..c837072 100644
---- a/net/tipc/core.c
-+++ b/net/tipc/core.c
-@@ -134,7 +134,7 @@ static int __init tipc_init(void)
- 	if (err)
- 		goto out_sysctl;
- 
--	err = register_pernet_subsys(&tipc_net_ops);
-+	err = register_pernet_device(&tipc_net_ops);
- 	if (err)
- 		goto out_pernet;
- 
-@@ -142,7 +142,7 @@ static int __init tipc_init(void)
- 	if (err)
- 		goto out_socket;
- 
--	err = register_pernet_subsys(&tipc_topsrv_net_ops);
-+	err = register_pernet_device(&tipc_topsrv_net_ops);
- 	if (err)
- 		goto out_pernet_topsrv;
- 
-@@ -153,11 +153,11 @@ static int __init tipc_init(void)
- 	pr_info("Started in single node mode\n");
- 	return 0;
- out_bearer:
--	unregister_pernet_subsys(&tipc_topsrv_net_ops);
-+	unregister_pernet_device(&tipc_topsrv_net_ops);
- out_pernet_topsrv:
- 	tipc_socket_stop();
- out_socket:
--	unregister_pernet_subsys(&tipc_net_ops);
-+	unregister_pernet_device(&tipc_net_ops);
- out_pernet:
- 	tipc_unregister_sysctl();
- out_sysctl:
-@@ -172,9 +172,9 @@ static int __init tipc_init(void)
- static void __exit tipc_exit(void)
- {
- 	tipc_bearer_cleanup();
--	unregister_pernet_subsys(&tipc_topsrv_net_ops);
-+	unregister_pernet_device(&tipc_topsrv_net_ops);
- 	tipc_socket_stop();
--	unregister_pernet_subsys(&tipc_net_ops);
-+	unregister_pernet_device(&tipc_net_ops);
- 	tipc_netlink_stop();
- 	tipc_netlink_compat_stop();
- 	tipc_unregister_sysctl();
--- 
-2.1.0
-
+>  		context_desc->seqnum_seed = cpu_to_le32(ts.tv_nsec / 32);
+>  	} else {
+>  		context_desc->seqnum_seed = 0;
+> 
