@@ -2,99 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D0F074D030
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 16:17:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 185AD59309
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 06:54:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731773AbfFTORZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 10:17:25 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:34744 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726786AbfFTORY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 10:17:24 -0400
-Received: by mail-io1-f66.google.com with SMTP id k8so266613iot.1
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 07:17:24 -0700 (PDT)
+        id S1726659AbfF1Ex6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 00:53:58 -0400
+Received: from mail-pf1-f229.google.com ([209.85.210.229]:42798 "EHLO
+        mail-pf1-f229.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726505AbfF1Ex5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 00:53:57 -0400
+Received: by mail-pf1-f229.google.com with SMTP id q10so2324111pff.9
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 21:53:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+cHd3hlDMk328Fbkhm+V+uGjcM1FaFH1lPxMqID03fs=;
-        b=mLYOAw0PTVSH7k/x1k397R4NYh5ty6AWDn666JGc+KiUs0pKkH/NEfu9I3Aw0rAtLT
-         eD5d00kI/bf+nV5tCwWDZgbogQWvIkH8GNnvteFkJf4AEIlyEB7ZPlAT1ciRWP9o7Mfu
-         pP0VRBAe5BfEMVbxrTJ2gHUvAOmsTanp23w2v+65wPsn0CYXkI2VvOcWgM98y5fEsZl4
-         bFy64xoYpZzd1GfhQzoDl3u0FiaOk1weoDRJEbJB560/kQ9px1XF/UUIu2DFABpzclhJ
-         1RxJczWkUmxYqv/IJLilE1Z5vb1RZ8QoF/ndrMOr8hgPaKNz81H5aVuMKJ0zEq2iCIqk
-         KWZg==
+        d=ctcd-edu.20150623.gappssmtp.com; s=20150623;
+        h=from:subject:thread-topic:thread-index:date:message-id
+         :accept-language:content-language:content-transfer-encoding
+         :mime-version;
+        bh=uja0RKLj8/ZClYB7/xee4WJU8BS3tEVS8HkeIEY1v6o=;
+        b=Pp6ugwMblAVk8EdSg2uZmnwCkjDnAeUEtYkyl/2pd63LjuHbk2LC1q+xge5CQIC/GH
+         pNJGwVNnOYcmjYXoYf2oan/rFHg6jNqjzfTJF61crDfC7ANiGAwRM8eGWxPOMRhAUQyg
+         lvdfAI0FfcjnvflgOXPvcA6EYs2cbKrmPfHb1o4wQKeSph2+crg4HdF4tb7L54XcZta/
+         /fnDZjiJQb5VzkHj3lI0XB3f129ALqpevx0mKDb5YpjTfAqrLwH+19+2nC7YgxGKaPst
+         vrV+q9eb+0yRY8GkmSrqDs/6aTIyTKO1scCH0BR7nb5KP/AyjnoZR+d5eS80Idxrzoet
+         bK/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=+cHd3hlDMk328Fbkhm+V+uGjcM1FaFH1lPxMqID03fs=;
-        b=M4ntE00eae6EVqp2lscEh+ljeufMIghk5Rj8H66MZ1MmsHkNdtsK+LzPM4ERQoX8HY
-         3VzseJN0IjGf152ll+McXmx36KhDOTjj9K70+5zxgMRfv0HjEzIuYLeEiymEDHaBXqQH
-         G3wMfH3SiwMc1RsMMr65vcBReooVLs5lrqlUyLC8l+vaMJJJX8IIOxCX7/NCPRfRx2Fd
-         lxazg6eFW205Hi3/GFRcP0F/YCVj7E/4S1bs/wXQPQhrCCW9u9wgXLX9+zERNnjnGviA
-         7wBeDe8S/v+7X1iRkuB2/zrq+oVgJw8b3Djx04ZTdIncg3SLGWO2/X4dHMa+A3XEqgkX
-         n8QQ==
-X-Gm-Message-State: APjAAAXMCDt8qL2iGEfTzxsrUrliWzv1r3fxQeu7sG59+3LzGvJhjEuF
-        sf9lGJBzKpPdc/pr/okLCCKNfvZ6
-X-Google-Smtp-Source: APXvYqyljC1i2dh2zTla2pdE5ZLzAGPgmKOkCkfWA8hur7Sd8A/dWcHxd53JCm/b1+SN9KhBU8OlmQ==
-X-Received: by 2002:a02:7b2d:: with SMTP id q45mr102250305jac.127.1561040243698;
-        Thu, 20 Jun 2019 07:17:23 -0700 (PDT)
-Received: from ?IPv6:2601:284:8200:5cfb:9c46:f142:c937:3c50? ([2601:284:8200:5cfb:9c46:f142:c937:3c50])
-        by smtp.googlemail.com with ESMTPSA id f20sm21182162ioh.17.2019.06.20.07.17.22
+        h=x-gm-message-state:from:subject:thread-topic:thread-index:date
+         :message-id:accept-language:content-language
+         :content-transfer-encoding:mime-version;
+        bh=uja0RKLj8/ZClYB7/xee4WJU8BS3tEVS8HkeIEY1v6o=;
+        b=bLGOgZx0DexBdcegmjlWjHa1Qn7WHW6Pv0tYmULHkTQpNfPC7F6/hVaTgDZQm0s2i9
+         1KeS7u5uvqVf/O899h3OYwrZPBB7JzhewTY0GS783UukxqIehFF7at1zqSrzTWRHTadB
+         bJsP/FWsznm+xNmMF/dMnI16BwT1x8LO6syK6y/eDZWfPrGePbsoYSUKy3Yk13A/l0dN
+         QU8FbPgMJOGMW4JTf/ZfDceqL6A1k6uZ89dPoM1zGFUtO4+mi6hZLXHU2vM4QT94HqZi
+         ilYRJZ3wiKlzLiE+W5Nz7c2rOBc9CkMzdT+gBikqZl8zYHh3h2gdVhEolKe0NrPGj7LK
+         3/7Q==
+X-Gm-Message-State: APjAAAV3Tr0g2c8lR0g1RD0VLvb48KDzj8gOj8LFUOPkrjao5IgAIMsF
+        S6EUPhAt7oH50j7o3h6fmnzQnNclGgEzIVG2B+6molGazVhqfA==
+X-Google-Smtp-Source: APXvYqyDOfZDdbFJ4o/JaxBjQfLRRMqZEDtH+CcFi8WIpV2AIUfzPQ1HX/vVf+o0DsKm/s5gVaROJ/mA9eje
+X-Received: by 2002:a17:90a:cb18:: with SMTP id z24mr10369284pjt.108.1561697634618;
+        Thu, 27 Jun 2019 21:53:54 -0700 (PDT)
+Received: from mail.ctcd.edu (rrcs-67-79-90-89.sw.biz.rr.com. [67.79.90.89])
+        by smtp-relay.gmail.com with ESMTPS id n69sm110753pjb.9.2019.06.27.21.53.54
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 20 Jun 2019 07:17:23 -0700 (PDT)
-Subject: Re: [PATCH net-next v6 07/11] ipv6/route: Change return code of
- rt6_dump_route() for partial node dumps
-To:     Stefano Brivio <sbrivio@redhat.com>,
-        David Miller <davem@davemloft.net>
-Cc:     Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        netdev@vger.kernel.org
-References: <cover.1560987611.git.sbrivio@redhat.com>
- <7a1a6fc83cfa3bf2af8fffa31b5e9b2b14078d9f.1560987611.git.sbrivio@redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <9505b31c-9ebe-d168-308d-6530b312e7b9@gmail.com>
-Date:   Thu, 20 Jun 2019 08:17:21 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
-MIME-Version: 1.0
-In-Reply-To: <7a1a6fc83cfa3bf2af8fffa31b5e9b2b14078d9f.1560987611.git.sbrivio@redhat.com>
-Content-Type: text/plain; charset=utf-8
+        Thu, 27 Jun 2019 21:53:54 -0700 (PDT)
+X-Relaying-Domain: ctcd.edu
+Received: from CTCEmail02.campus.ctcd.org (172.17.139.89) by
+ CTCEmail01.campus.ctcd.org (172.17.139.87) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.845.34; Thu, 20 Jun 2019 09:18:40 -0500
+Received: from CTCEmail02.campus.ctcd.org ([fe80::a0bb:ad1f:8c21:8800]) by
+ CTCEmail02.campus.ctcd.org ([fe80::a0bb:ad1f:8c21:8800%2]) with mapi id
+ 15.01.0845.034; Thu, 20 Jun 2019 09:18:40 -0500
+From:   "Chambers, Marcine" <MChambers@ctcd.edu>
+Subject: GOOD DAY
+Thread-Topic: GOOD DAY
+Thread-Index: AQHVJ3MOz3fw4vybV0CezupQuoA3uw==
+Date:   Thu, 20 Jun 2019 14:18:40 +0000
+Message-ID: <6406a540a0c54cb4900afa0f5889c847@ctcd.edu>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.17.139.254]
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/19/19 5:59 PM, Stefano Brivio wrote:
-> In the next patch, we are going to add optional dump of exceptions to
-> rt6_dump_route().
-> 
-> Change the return code of rt6_dump_route() to accomodate partial node
-> dumps: we might dump multiple routes per node, and might be able to dump
-> only a given number of them, so fib6_dump_node() will need to know how
-> many routes have been dumped on partial dump, to restart the dump from the
-> point where it was interrupted.
-> 
-> Note that fib6_dump_node() is the only caller and already handles all
-> non-negative return codes as success: those become -1 to signal that we're
-> done with the node. If we fail, return 0, as we were unable to dump the
-> single route in the node, but we're not done with it.
-> 
-> Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
-> ---
-> v6: New patch
-> 
->  net/ipv6/ip6_fib.c |  2 +-
->  net/ipv6/route.c   | 16 ++++++++++------
->  2 files changed, 11 insertions(+), 7 deletions(-)
-> 
+I am Vice Chairman of Hang Seng Bank, I have Important Matter to Discuss wi=
+th you concerning my late client, Died without a NEXT OF KIN. Send me your =
+private email for full details information. email me at (chienkraymond@outl=
+ook.com)
 
-Reviewed-by: David Ahern <dsahern@gmail.com>
+Mail:infocarfer@aim.com
 
+Regards
+Dr.Raymond Chien Kuo Fung
 
