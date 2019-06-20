@@ -2,92 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 062644D26A
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 17:47:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3B9B4D272
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 17:50:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726863AbfFTPrg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 11:47:36 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:42921 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726530AbfFTPrg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 11:47:36 -0400
-Received: by mail-wr1-f68.google.com with SMTP id x17so3523559wrl.9;
-        Thu, 20 Jun 2019 08:47:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=j8+O/FpjGEp5DMwDwlNn6YYVJi0XgVp0kNC/STZbtEU=;
-        b=a7G2DL7iS4UbSDyFHlZOt6gKtJamMp/qfpGySB+qvl5QIMgRi8u3Ut0Sa2Dw/k1Pz2
-         7iNZ4pUk8GMd46O4PxGk80ppkgFDfnAFNxbKL14h+yTOiF5f3BwkZbir65F4Y7xEGLJ9
-         SI8cLSGVyRynl6LsNTsshElVDLAUUteWO9o8hESIO7QPzimF/9fCHcBJlyYhURyy1mHN
-         l3bA475pko/ng+rpoWW0GaKL8F9oXrRuIqDLQ6bKdlwMGmGvaDmf1iq8afXYilHH2cN+
-         1GrCeS/EuTcD9sOJqC2aUIhCbsJx2E/XvOaN1zKIYif8YqE1a37uYInaoJqf/1f5dM0d
-         tVKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=j8+O/FpjGEp5DMwDwlNn6YYVJi0XgVp0kNC/STZbtEU=;
-        b=fcO94G/ilIKmB1Waxm8AwWsYrrQCa/TzApurrz8aIHLDyavOMBBdOuF7CJQCF2/fhn
-         2gjmBz4wra/JHC54m3TnFGeRga2/66WpG5t5k0UQvpz+bt/n5HwHSfpXbpn//iBkDEnP
-         HSm4mWafTG4Dom2dl7JVy2AcEAI/CiEMHHAIlIiRFW/uUVYA0RbDBbFlyOCfbMGHsUbu
-         boiMis6cy7O5WY7AjhPOvyp7AaXlTyxSrpFKbEdNtDp7VIjVHpIxlpbeCFg/DvazFr5/
-         MoKq5DegHMuKpffrSCm8H/n4NQKebOeHGzy465ctOmhW80xH1N8WPX44COqUYI4mZXTJ
-         08FA==
-X-Gm-Message-State: APjAAAXU4l2j4pnB97cDDk9Dwor8TEFf6X7WOBkK3Dl97Q68gDL6Moum
-        mNcOEhMYIJox4Q6chVh+oFk=
-X-Google-Smtp-Source: APXvYqzHNm9RBSmLyiRY/o0XRv5jhDv7AQySfI5uddGuB8TuFA9tiBLHxxYFpdEKryoOHuXSd1FtIw==
-X-Received: by 2002:adf:db4c:: with SMTP id f12mr11932674wrj.342.1561045653597;
-        Thu, 20 Jun 2019 08:47:33 -0700 (PDT)
-Received: from jernej-laptop.localnet (cpe-86-58-52-202.static.triera.net. [86.58.52.202])
-        by smtp.gmail.com with ESMTPSA id f1sm6408689wml.28.2019.06.20.08.47.30
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 20 Jun 2019 08:47:32 -0700 (PDT)
-From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To:     linux-sunxi@googlegroups.com, megous@megous.com
-Cc:     Maxime Ripard <maxime.ripard@bootlin.com>,
-        Chen-Yu Tsai <wens@csie.org>, Rob Herring <robh+dt@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com
-Subject: Re: [linux-sunxi] [PATCH v7 5/6] drm: sun4i: Add support for enabling DDC I2C bus to sun8i_dw_hdmi glue
-Date:   Thu, 20 Jun 2019 17:47:29 +0200
-Message-ID: <3014360.88acaTKTIR@jernej-laptop>
-In-Reply-To: <20190620134748.17866-6-megous@megous.com>
-References: <20190620134748.17866-1-megous@megous.com> <20190620134748.17866-6-megous@megous.com>
+        id S1727071AbfFTPuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 11:50:22 -0400
+Received: from mail.us.es ([193.147.175.20]:50916 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726675AbfFTPuV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Jun 2019 11:50:21 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id C3362C1B44
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 17:50:19 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id B4830DA707
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 17:50:19 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id A7750DA70D; Thu, 20 Jun 2019 17:50:19 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 4D70EDA702;
+        Thu, 20 Jun 2019 17:50:17 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Thu, 20 Jun 2019 17:50:17 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 253FB4265A2F;
+        Thu, 20 Jun 2019 17:50:17 +0200 (CEST)
+Date:   Thu, 20 Jun 2019 17:50:16 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Yuehaibing <yuehaibing@huawei.com>
+Cc:     kadlec@blackhole.kfki.hu, fw@strlen.de, davem@davemloft.net,
+        rdunlap@infradead.org, linux-kernel@vger.kernel.org,
+        coreteam@netfilter.org, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] netfilter: ipv6: Fix build error without
+ CONFIG_IPV6
+Message-ID: <20190620155016.6kk7xi4wldm5ijyh@salvia>
+References: <20190612084715.21656-1-yuehaibing@huawei.com>
+ <d2eba9e4-34be-f9bb-f0fd-024fe81d2b02@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d2eba9e4-34be-f9bb-f0fd-024fe81d2b02@huawei.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dne =C4=8Detrtek, 20. junij 2019 ob 15:47:47 CEST je megous via linux-sunxi=
-=20
-napisal(a):
-> From: Ondrej Jirman <megous@megous.com>
->=20
-> Orange Pi 3 board requires enabling a voltage shifting circuit via GPIO
-> for the DDC bus to be usable.
->=20
-> Add support for hdmi-connector node's optional ddc-en-gpios property to
-> support this use case.
->=20
-> Signed-off-by: Ondrej Jirman <megous@megous.com>
+On Thu, Jun 20, 2019 at 11:26:01PM +0800, Yuehaibing wrote:
+> Friendly ping...
+> 
+> On 2019/6/12 16:47, YueHaibing wrote:
+> > If CONFIG_IPV6 is not set, building fails:
+> > 
+> > net/bridge/netfilter/nf_conntrack_bridge.o: In function `nf_ct_bridge_pre':
+> > nf_conntrack_bridge.c:(.text+0x41c): undefined symbol `nf_ct_frag6_gather'
+> > net/bridge/netfilter/nf_conntrack_bridge.o: In function `nf_ct_bridge_post':
+> > nf_conntrack_bridge.c:(.text+0x820): undefined symbol `br_ip6_fragment'
 
-Reviewed-by: Jernej Skrabec <jernej.skrabec@siol.net>
+Is this one enough to fix this problem?
 
-Best regards,
-Jernej
+https://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git/commit/?id=16e6427c88c5b7e7b6612f6c286d5f71d659e5be
 
+Thanks.
 
+> > Reported-by: Hulk Robot <hulkci@huawei.com>
+> > Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> > Fixes: c9bb6165a16e ("netfilter: nf_conntrack_bridge: fix CONFIG_IPV6=y")
+> > Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> > ---
+> >  include/linux/netfilter_ipv6.h | 10 ++++++++--
+> >  1 file changed, 8 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/include/linux/netfilter_ipv6.h b/include/linux/netfilter_ipv6.h
+> > index 3a3dc4b..0e1febc 100644
+> > --- a/include/linux/netfilter_ipv6.h
+> > +++ b/include/linux/netfilter_ipv6.h
+> > @@ -108,8 +108,11 @@ static inline int nf_ipv6_br_defrag(struct net *net, struct sk_buff *skb,
+> >  		return 1;
+> >  
+> >  	return v6_ops->br_defrag(net, skb, user);
+> > -#else
+> > +#endif
+> > +#if IS_BUILTIN(CONFIG_IPV6)
+> >  	return nf_ct_frag6_gather(net, skb, user);
+> > +#else
+> > +	return 1;
+> >  #endif
+> >  }
+> >  
+> > @@ -133,8 +136,11 @@ static inline int nf_br_ip6_fragment(struct net *net, struct sock *sk,
+> >  		return 1;
+> >  
+> >  	return v6_ops->br_fragment(net, sk, skb, data, output);
+> > -#else
+> > +#endif
+> > +#if IS_BUILTIN(CONFIG_IPV6)
+> >  	return br_ip6_fragment(net, sk, skb, data, output);
+> > +#else
+> > +	return 1;
+> >  #endif
+> >  }
+> >  
+> > 
+> 
