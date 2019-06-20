@@ -2,145 +2,294 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D91114C54A
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 04:20:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D5844C55C
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 04:23:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731289AbfFTCUL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 22:20:11 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:39841 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726389AbfFTCUG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 22:20:06 -0400
-Received: by mail-io1-f69.google.com with SMTP id y13so2288609iol.6
-        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 19:20:06 -0700 (PDT)
+        id S1731546AbfFTCXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 22:23:47 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:35209 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726370AbfFTCXp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 22:23:45 -0400
+Received: by mail-pg1-f194.google.com with SMTP id s27so720448pgl.2;
+        Wed, 19 Jun 2019 19:23:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uXEldHMfNr4STLrSJDkwpcTDRF1aPJqHVLnszkg829M=;
+        b=EQsgQgN/yhpyV+w+MQ3FEV/kSJnVpnlluzd4JJzWqXebvkt5KnwXUIcNGc8tGVcRJq
+         jzRPve6/FT0StGYJpkscyFGjOgu6s8B4zVBLJGbpWAI+mBYAHP5eOzOMyNYfotaM0kKq
+         Uh92ApldC6mvZFjNujMGc4+Cwj9PB4u6YcNveY36v+CjthwX8CtsmyV7xrFiHkEVPMFx
+         Z5c2mbrbvFBSgqKDUfDkGdJhRCXG1oOnlZhMyS/kFY1CFl3h1oRzDkpgC/k1FYteDEFy
+         J8Edluye3dlmN/bdIhPF/Thi7si2FyL7l6j1B0jKqBRnnRilNfYk5b1w3Dm28tGmzERs
+         bhog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=Iu/xrxl9AYtNlQ8bWEvL7In5eO8Bm3o3UBlzw7LpR/M=;
-        b=kHM3S9QAsrMNd99QlmXT3gmiWmh15TkwmUcpiD0y/6Lo9jVOS++L5H0LprHl1kWIXu
-         h703DL8tCZE2NQxWMBjx8yzhZ47l7TjZ8NdGYvA0Hmz43wIHQURYzrRbQbaGb7cSnk5i
-         HBif5RMW7qsY/oVShK09p8qqHqO/pXpnhIglXb2lUjinnJkYe7N3dkX1aYUGeZggK//y
-         GnWhnXNXvXRJVrQxz/EZnFrQhaTuRYoR0kjpeKCBC/XAVFFyAwPnU8/L5q3J+w6szTym
-         lKWUTq50CsE8imfW0gYc5byAUhgGVLiE2eH9+cwStvipolMNLxRRnizNCj9QHgZ/cp8K
-         K4AQ==
-X-Gm-Message-State: APjAAAUCX2j8i7EBwTt0nqKMDkXokOCOJyjdUCusMB9gqEpGBjpaJr4D
-        msUrR247xXJHMEiU6bUzV0167ubnnh/EIL7fbXIjbZh+iipO
-X-Google-Smtp-Source: APXvYqz2n//t+tr5NDxBvenma2q2JRIDk3hW0Mt3KSesG2RKEmakpCn7oKjUbjOoPYEOB4m8eG5DFCgOJBJolyCrwoaKO691U600
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uXEldHMfNr4STLrSJDkwpcTDRF1aPJqHVLnszkg829M=;
+        b=o/R7avBvSTdaBjr+Q8YaCiKp/nQu1JCvx5z34FfT+ltYSu1ZlBmnYm98VvyBrPn2PU
+         Z+DlJ+bH/2TWs6cqFhe8h0yIJlGhPEa4YyoU0pc/2Tua7vcaI9//mo5pgrT/Sozbqjed
+         A2x2wPuh/d8lHSD8jpeh73GWVezzbdWensCab0PJRQ+4C39u9UUXUkytX14Be6mmNeKQ
+         MQpdh1CoOP4iFwjKNdiL7hBTMiCdMwaJC2d4ndYV3QIuIrXciLTbuxY1dDJnMr5XvMri
+         g5mJSJ4yscnYamuytCD6UaDnm+bBGurTWT49hXSnbAp2sxTqPLmYPF+s21RYCugOJ9ov
+         aBNg==
+X-Gm-Message-State: APjAAAUlIGue75pU78376sv1RDsBM0tML0B4tCI7Poiunt+NSarzR7DA
+        GqHedqPpLHsJ7KTqTOfmhZ0=
+X-Google-Smtp-Source: APXvYqy7i3XC7mqdxyX5B/1q312dYYoDVqNle6CbOeW5geEmUA5NKIh7izMI8V7AE/g5sGeQjpqrHw==
+X-Received: by 2002:a17:90a:342c:: with SMTP id o41mr420622pjb.1.1560997424511;
+        Wed, 19 Jun 2019 19:23:44 -0700 (PDT)
+Received: from z400-fedora29.kern.oss.ntt.co.jp ([222.151.198.97])
+        by smtp.gmail.com with ESMTPSA id g2sm18873362pgi.92.2019.06.19.19.23.41
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 19 Jun 2019 19:23:44 -0700 (PDT)
+From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        netdev@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH bpf-next] selftests: Add test for veth native XDP
+Date:   Thu, 20 Jun 2019 11:23:23 +0900
+Message-Id: <20190620022323.19243-1-toshiaki.makita1@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-X-Received: by 2002:a5d:9b1a:: with SMTP id y26mr12461285ion.238.1560997205638;
- Wed, 19 Jun 2019 19:20:05 -0700 (PDT)
-Date:   Wed, 19 Jun 2019 19:20:05 -0700
-In-Reply-To: <00000000000001de810588363aaf@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f00cf1058bb7fb56@google.com>
-Subject: Re: KASAN: slab-out-of-bounds Read in p54u_load_firmware_cb
-From:   syzbot <syzbot+6d237e74cdc13f036473@syzkaller.appspotmail.com>
-To:     andreyknvl@google.com, chunkeey@googlemail.com,
-        davem@davemloft.net, kvalo@codeaurora.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following crash on:
+Add a test case for veth native XDP. It checks if XDP_PASS, XDP_TX and
+XDP_REDIRECT work properly.
 
-HEAD commit:    9939f56e usb-fuzzer: main usb gadget fuzzer driver
-git tree:       https://github.com/google/kasan.git usb-fuzzer
-console output: https://syzkaller.appspot.com/x/log.txt?x=135e29faa00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=df134eda130bb43a
-dashboard link: https://syzkaller.appspot.com/bug?extid=6d237e74cdc13f036473
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=175d946ea00000
+  $ cd tools/testing/selftests/bpf
+  $ make \
+  	TEST_CUSTOM_PROGS= \
+  	TEST_GEN_PROGS= \
+  	TEST_GEN_PROGS_EXTENDED= \
+  	TEST_PROGS_EXTENDED= \
+  	TEST_PROGS="test_xdp_veth.sh" \
+  	run_tests
+  TAP version 13
+  1..1
+  # selftests: bpf: test_xdp_veth.sh
+  # PING 10.1.1.33 (10.1.1.33) 56(84) bytes of data.
+  # 64 bytes from 10.1.1.33: icmp_seq=1 ttl=64 time=0.073 ms
+  #
+  # --- 10.1.1.33 ping statistics ---
+  # 1 packets transmitted, 1 received, 0% packet loss, time 0ms
+  # rtt min/avg/max/mdev = 0.073/0.073/0.073/0.000 ms
+  # selftests: xdp_veth [PASS]
+  ok 1 selftests: bpf: test_xdp_veth.sh
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+6d237e74cdc13f036473@syzkaller.appspotmail.com
+Signed-off-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
+---
+ tools/testing/selftests/bpf/Makefile               |   1 +
+ .../testing/selftests/bpf/progs/xdp_redirect_map.c |  31 ++++++
+ tools/testing/selftests/bpf/progs/xdp_tx.c         |  12 +++
+ tools/testing/selftests/bpf/test_xdp_veth.sh       | 118 +++++++++++++++++++++
+ 4 files changed, 162 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/progs/xdp_redirect_map.c
+ create mode 100644 tools/testing/selftests/bpf/progs/xdp_tx.c
+ create mode 100755 tools/testing/selftests/bpf/test_xdp_veth.sh
 
-usb 3-1: Direct firmware load for isl3887usb failed with error -2
-usb 3-1: Firmware not found.
-==================================================================
-BUG: KASAN: slab-out-of-bounds in p54u_load_firmware_cb.cold+0x97/0x13d  
-drivers/net/wireless/intersil/p54/p54usb.c:936
-Read of size 8 at addr ffff8881c9cf7588 by task kworker/1:5/2759
-
-CPU: 1 PID: 2759 Comm: kworker/1:5 Not tainted 5.2.0-rc5+ #11
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Workqueue: events request_firmware_work_func
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0xca/0x13e lib/dump_stack.c:113
-  print_address_description+0x67/0x231 mm/kasan/report.c:188
-  __kasan_report.cold+0x1a/0x32 mm/kasan/report.c:317
-  kasan_report+0xe/0x20 mm/kasan/common.c:614
-  p54u_load_firmware_cb.cold+0x97/0x13d  
-drivers/net/wireless/intersil/p54/p54usb.c:936
-  request_firmware_work_func+0x126/0x242  
-drivers/base/firmware_loader/main.c:785
-  process_one_work+0x905/0x1570 kernel/workqueue.c:2269
-  worker_thread+0x96/0xe20 kernel/workqueue.c:2415
-  kthread+0x30b/0x410 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-
-Allocated by task 1612:
-  save_stack+0x1b/0x80 mm/kasan/common.c:71
-  set_track mm/kasan/common.c:79 [inline]
-  __kasan_kmalloc mm/kasan/common.c:489 [inline]
-  __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:462
-  kmalloc include/linux/slab.h:547 [inline]
-  syslog_print kernel/printk/printk.c:1346 [inline]
-  do_syslog kernel/printk/printk.c:1519 [inline]
-  do_syslog+0x4f4/0x12e0 kernel/printk/printk.c:1493
-  kmsg_read+0x8a/0xb0 fs/proc/kmsg.c:40
-  proc_reg_read+0x1c1/0x280 fs/proc/inode.c:221
-  __vfs_read+0x76/0x100 fs/read_write.c:425
-  vfs_read+0x18e/0x3d0 fs/read_write.c:461
-  ksys_read+0x127/0x250 fs/read_write.c:587
-  do_syscall_64+0xb7/0x560 arch/x86/entry/common.c:301
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-Freed by task 1612:
-  save_stack+0x1b/0x80 mm/kasan/common.c:71
-  set_track mm/kasan/common.c:79 [inline]
-  __kasan_slab_free+0x130/0x180 mm/kasan/common.c:451
-  slab_free_hook mm/slub.c:1421 [inline]
-  slab_free_freelist_hook mm/slub.c:1448 [inline]
-  slab_free mm/slub.c:2994 [inline]
-  kfree+0xd7/0x280 mm/slub.c:3949
-  syslog_print kernel/printk/printk.c:1405 [inline]
-  do_syslog kernel/printk/printk.c:1519 [inline]
-  do_syslog+0xff3/0x12e0 kernel/printk/printk.c:1493
-  kmsg_read+0x8a/0xb0 fs/proc/kmsg.c:40
-  proc_reg_read+0x1c1/0x280 fs/proc/inode.c:221
-  __vfs_read+0x76/0x100 fs/read_write.c:425
-  vfs_read+0x18e/0x3d0 fs/read_write.c:461
-  ksys_read+0x127/0x250 fs/read_write.c:587
-  do_syscall_64+0xb7/0x560 arch/x86/entry/common.c:301
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-The buggy address belongs to the object at ffff8881c9cf7180
-  which belongs to the cache kmalloc-1k of size 1024
-The buggy address is located 8 bytes to the right of
-  1024-byte region [ffff8881c9cf7180, ffff8881c9cf7580)
-The buggy address belongs to the page:
-page:ffffea0007273d00 refcount:1 mapcount:0 mapping:ffff8881dac02a00  
-index:0x0 compound_mapcount: 0
-flags: 0x200000000010200(slab|head)
-raw: 0200000000010200 dead000000000100 dead000000000200 ffff8881dac02a00
-raw: 0000000000000000 00000000000e000e 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
-  ffff8881c9cf7480: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-  ffff8881c9cf7500: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> ffff8881c9cf7580: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-                       ^
-  ffff8881c9cf7600: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-  ffff8881c9cf7680: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index 44fb61f..11128ba 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -46,6 +46,7 @@ TEST_PROGS := test_kmod.sh \
+ 	test_libbpf.sh \
+ 	test_xdp_redirect.sh \
+ 	test_xdp_meta.sh \
++	test_xdp_veth.sh \
+ 	test_offload.py \
+ 	test_sock_addr.sh \
+ 	test_tunnel.sh \
+diff --git a/tools/testing/selftests/bpf/progs/xdp_redirect_map.c b/tools/testing/selftests/bpf/progs/xdp_redirect_map.c
+new file mode 100644
+index 0000000..e87a985
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/xdp_redirect_map.c
+@@ -0,0 +1,31 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include <linux/bpf.h>
++#include "bpf_helpers.h"
++
++struct bpf_map_def SEC("maps") tx_port = {
++	.type = BPF_MAP_TYPE_DEVMAP,
++	.key_size = sizeof(int),
++	.value_size = sizeof(int),
++	.max_entries = 8,
++};
++
++SEC("redirect_map_0")
++int xdp_redirect_map_0(struct xdp_md *xdp)
++{
++	return bpf_redirect_map(&tx_port, 0, 0);
++}
++
++SEC("redirect_map_1")
++int xdp_redirect_map_1(struct xdp_md *xdp)
++{
++	return bpf_redirect_map(&tx_port, 1, 0);
++}
++
++SEC("redirect_map_2")
++int xdp_redirect_map_2(struct xdp_md *xdp)
++{
++	return bpf_redirect_map(&tx_port, 2, 0);
++}
++
++char _license[] SEC("license") = "GPL";
+diff --git a/tools/testing/selftests/bpf/progs/xdp_tx.c b/tools/testing/selftests/bpf/progs/xdp_tx.c
+new file mode 100644
+index 0000000..57912e7
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/xdp_tx.c
+@@ -0,0 +1,12 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include <linux/bpf.h>
++#include "bpf_helpers.h"
++
++SEC("tx")
++int xdp_tx(struct xdp_md *xdp)
++{
++	return XDP_TX;
++}
++
++char _license[] SEC("license") = "GPL";
+diff --git a/tools/testing/selftests/bpf/test_xdp_veth.sh b/tools/testing/selftests/bpf/test_xdp_veth.sh
+new file mode 100755
+index 0000000..ba8ffcd
+--- /dev/null
++++ b/tools/testing/selftests/bpf/test_xdp_veth.sh
+@@ -0,0 +1,118 @@
++#!/bin/sh
++# SPDX-License-Identifier: GPL-2.0
++#
++# Create 3 namespaces with 3 veth peers, and
++# forward packets in-between using native XDP
++#
++#                      XDP_TX
++# NS1(veth11)        NS2(veth22)        NS3(veth33)
++#      |                  |                  |
++#      |                  |                  |
++#   (veth1,            (veth2,            (veth3,
++#   id:111)            id:122)            id:133)
++#     ^ |                ^ |                ^ |
++#     | |  XDP_REDIRECT  | |  XDP_REDIRECT  | |
++#     | ------------------ ------------------ |
++#     -----------------------------------------
++#                    XDP_REDIRECT
++
++# Kselftest framework requirement - SKIP code is 4.
++ksft_skip=4
++
++TESTNAME=xdp_veth
++BPF_FS=$(awk '$3 == "bpf" {print $2; exit}' /proc/mounts)
++BPF_DIR=$BPF_FS/test_$TESTNAME
++
++_cleanup()
++{
++	set +e
++	ip link del veth1 2> /dev/null
++	ip link del veth2 2> /dev/null
++	ip link del veth3 2> /dev/null
++	ip netns del ns1 2> /dev/null
++	ip netns del ns2 2> /dev/null
++	ip netns del ns3 2> /dev/null
++	rm -rf $BPF_DIR 2> /dev/null
++}
++
++cleanup_skip()
++{
++	echo "selftests: $TESTNAME [SKIP]"
++	_cleanup
++
++	exit $ksft_skip
++}
++
++cleanup()
++{
++	if [ "$?" = 0 ]; then
++		echo "selftests: $TESTNAME [PASS]"
++	else
++		echo "selftests: $TESTNAME [FAILED]"
++	fi
++	_cleanup
++}
++
++if [ $(id -u) -ne 0 ]; then
++	echo "selftests: $TESTNAME [SKIP] Need root privileges"
++	exit $ksft_skip
++fi
++
++if ! ip link set dev lo xdp off > /dev/null 2>&1; then
++	echo "selftests: $TESTNAME [SKIP] Could not run test without the ip xdp support"
++	exit $ksft_skip
++fi
++
++if [ -z "$BPF_FS" ]; then
++	echo "selftests: $TESTNAME [SKIP] Could not run test without bpffs mounted"
++	exit $ksft_skip
++fi
++
++if ! bpftool version > /dev/null 2>&1; then
++	echo "selftests: $TESTNAME [SKIP] Could not run test without bpftool"
++	exit $ksft_skip
++fi
++
++set -e
++
++trap cleanup_skip EXIT
++
++ip netns add ns1
++ip netns add ns2
++ip netns add ns3
++
++ip link add veth1 index 111 type veth peer name veth11 netns ns1
++ip link add veth2 index 122 type veth peer name veth22 netns ns2
++ip link add veth3 index 133 type veth peer name veth33 netns ns3
++
++ip link set veth1 up
++ip link set veth2 up
++ip link set veth3 up
++
++ip -n ns1 addr add 10.1.1.11/24 dev veth11
++ip -n ns3 addr add 10.1.1.33/24 dev veth33
++
++ip -n ns1 link set dev veth11 up
++ip -n ns2 link set dev veth22 up
++ip -n ns3 link set dev veth33 up
++
++mkdir $BPF_DIR
++bpftool prog loadall \
++	xdp_redirect_map.o $BPF_DIR/progs type xdp \
++	pinmaps $BPF_DIR/maps
++bpftool map update pinned $BPF_DIR/maps/tx_port key 0 0 0 0 value 122 0 0 0
++bpftool map update pinned $BPF_DIR/maps/tx_port key 1 0 0 0 value 133 0 0 0
++bpftool map update pinned $BPF_DIR/maps/tx_port key 2 0 0 0 value 111 0 0 0
++ip link set dev veth1 xdp pinned $BPF_DIR/progs/redirect_map_0
++ip link set dev veth2 xdp pinned $BPF_DIR/progs/redirect_map_1
++ip link set dev veth3 xdp pinned $BPF_DIR/progs/redirect_map_2
++
++ip -n ns1 link set dev veth11 xdp obj xdp_dummy.o sec xdp_dummy
++ip -n ns2 link set dev veth22 xdp obj xdp_tx.o sec tx
++ip -n ns3 link set dev veth33 xdp obj xdp_dummy.o sec xdp_dummy
++
++trap cleanup EXIT
++
++ip netns exec ns1 ping -c 1 -W 1 10.1.1.33
++
++exit 0
+-- 
+1.8.3.1
 
