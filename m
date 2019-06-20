@@ -2,126 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 24D0C4C5D0
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 05:35:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 159FD4C5D3
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 05:35:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726596AbfFTDfd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Jun 2019 23:35:33 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:46411 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726419AbfFTDfd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 23:35:33 -0400
-Received: by mail-pf1-f195.google.com with SMTP id 81so811804pfy.13
-        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 20:35:33 -0700 (PDT)
+        id S1731398AbfFTDfq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Jun 2019 23:35:46 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:40146 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726370AbfFTDfq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 23:35:46 -0400
+Received: by mail-pg1-f193.google.com with SMTP id w10so791607pgj.7;
+        Wed, 19 Jun 2019 20:35:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=HOSCj25pO6a386fSVkhPsk9edlxIx4b0dfihdZfuotE=;
-        b=R24VUbUFz5qZKeynsTUrq4c3dB1nc/QoAc5x5U+zHBRKmgP4irX+Qd/uz+TvIn9Dde
-         8hzyvekv6Gzm2FKO8q3HSyEgq8Vud578ah6rtzQ3QyhfF5il00SiTGRbeo9J2kI61H8l
-         DMJK9uVuztUlxcdwCN4uQbImQDCa4vCH+p4Ik6/xlqe2I/Xw/gE2bLIDTnJTSR+Y4tqu
-         8gHa8kqfrF68JmH/Ra/8/AFn7cJw4OyG1GD5rh5Ao3DrXQ12KqDFI/Zb0oyBe3+S23fW
-         A9aA+b8dH+CO2S4ymvs047VKJGaK3Gxqu0jofHWcLZ38fOEqvft10X5TfRunYq1TrEN+
-         lZKQ==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=zOa1e8oAtRxerEx6kd/Fw1r45fnTVWgZRg3Uxwi0TJw=;
+        b=OEIoM2/X9thwmJuYNhWXcFwNix9ajM8mHleBbahR31DvIUagWIzWj8oT+ibYiL5vxY
+         BLKdrNKj80R9pCGF/sjgerhCQa9Zwj118HOdc1GNNXjWdtcKVThlvIdjd5gpbSa6rPrO
+         qeuB5IPIt1cAOg1Akp0drdZF58OoYZh1HgXPKq2IvkNN32XFkdFpjw0MoRTDLLjvmj74
+         KQJ3mbVE0Mub1H66xq8wFeOllIowM+N6YKpHjXt9C0Nk31ZkpuhqyRZgfR9SYfz9c/Pk
+         OxBRDIevBrpOCSePGPhUJtLOX5lcPkrCCXDs0xwuPweunJofSXW1Ute/5Y9QFgQmgW4g
+         CD6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=HOSCj25pO6a386fSVkhPsk9edlxIx4b0dfihdZfuotE=;
-        b=p17H9w2aI4vKEkYPUVFKrkJl76uJNLOiFuvTuUQCKcVeiGorayV4Jjax7yA0WiVXEe
-         O62F+d1NukvsqZ3xs9Qoea0ZayA3yJbN5uhnr2a8U152Xi3f2OCSU52MxHnLk09weGKD
-         DQOL5AxNW3sFQlgHyd2rYC3mlCnCsidbEjIrbtrlN4H9FKAwyfsTJkx+U6R6OSu20YYr
-         CVjkwEIZf1qg0VMbPMxLgpTXnfrrNl/55bbNI0Y2oiSZe7dNGK6Ce7KiAWttkpw8ZR9i
-         Im7eEH5kcMVb8Yvp6kBwyPQVOCOrhoHGZW75RG7R6cCSO14r3Ykh7iKcDS7WkSQQJM7I
-         BooA==
-X-Gm-Message-State: APjAAAX3WmNegokwdX3QaFea+ry7+Me+k0E7y+9JQdDUWSLJw366lBQt
-        C2fevXtqqdju8nEZH4VSV3RvEwncUn68dg==
-X-Google-Smtp-Source: APXvYqymLvsH5Jne+eK0EsJ3Q4/Y0qf5ZzWcO17TxweQkCCIYK/LjuDERiWhe89FjMEwwQO+ynf3Mw==
-X-Received: by 2002:a63:df46:: with SMTP id h6mr10696443pgj.181.1561001732439;
-        Wed, 19 Jun 2019 20:35:32 -0700 (PDT)
-Received: from localhost ([2601:602:9200:a1a5:ec6a:e4cb:28b2:e322])
-        by smtp.googlemail.com with ESMTPSA id 133sm23896859pfa.92.2019.06.19.20.35.30
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 19 Jun 2019 20:35:31 -0700 (PDT)
-From:   Kevin Hilman <khilman@baylibre.com>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        linux-amlogic@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        netdev@vger.kernel.org, linus.walleij@linaro.org, andrew@lunn.ch,
-        robin.murphy@arm.com, narmstrong@baylibre.com,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: Re: [PATCH v3 0/4] Ethernet PHY reset GPIO updates for Amlogic SoCs
-In-Reply-To: <20190615103832.5126-1-martin.blumenstingl@googlemail.com>
-References: <20190615103832.5126-1-martin.blumenstingl@googlemail.com>
-Date:   Wed, 19 Jun 2019 20:35:27 -0700
-Message-ID: <7hh88lhqtc.fsf@baylibre.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=zOa1e8oAtRxerEx6kd/Fw1r45fnTVWgZRg3Uxwi0TJw=;
+        b=tRe+3bji9VDf3Nr0FotWa6W2wLzbo8+AF6kIv+by3XjKuhRJ9cDUyz/wOC+tuHjVO6
+         WHf638VzCELDf+zsOhFhfDleWRm3sxJ3RLBcNLGaQj9wBLudfNt014iyO27oYrPvLZgu
+         foxHAPMr+RJfXpjyR2MqyDwZXdaYaCEObTGe0ShcfzOcFl6eJdXK5WxW+KnsG0dGVJIJ
+         71u8t6uJT/4j4wUTUWLuan0jSV3R8GWt0Png9isCsYQcwYdUbmHFRO2n2BBcAS2sQ3eg
+         oQy5i1aZ3ngpKsNW+GQjM1484chXiYAfxuDNJDSKJltH7Bcl9eZf3g5Hkz1oCn9ANloK
+         taGA==
+X-Gm-Message-State: APjAAAWP2ZgP0w69Whe/DqVhtjZWdno6FZJcdpzpNjnJdtLz5Ij6lXRZ
+        SC2mWPdd4VMBeS5n8yreZ1c=
+X-Google-Smtp-Source: APXvYqw1P3mUG3ns3NOr/FWd1Lfmw6O29/m6sZbB4KDBSoE2m48JW1eZzvKu4PbyCD0qvXlwsUnqoQ==
+X-Received: by 2002:a62:6d47:: with SMTP id i68mr130221237pfc.189.1561001745232;
+        Wed, 19 Jun 2019 20:35:45 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::1:bbbf])
+        by smtp.gmail.com with ESMTPSA id l13sm2797416pjq.20.2019.06.19.20.35.43
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 19 Jun 2019 20:35:44 -0700 (PDT)
+Date:   Wed, 19 Jun 2019 23:35:40 -0400
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>, davem@davemloft.net,
+        daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@fb.com
+Subject: Re: [PATCH v3 bpf-next 1/9] bpf: track spill/fill of constants
+Message-ID: <20190620033538.4oou4mbck6xs64mj@ast-mbp.dhcp.thefacebook.com>
+References: <20190615191225.2409862-1-ast@kernel.org>
+ <20190615191225.2409862-2-ast@kernel.org>
+ <5d0ad24027106_8822adea29a05b47c@john-XPS-13-9370.notmuch>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5d0ad24027106_8822adea29a05b47c@john-XPS-13-9370.notmuch>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Martin Blumenstingl <martin.blumenstingl@googlemail.com> writes:
+On Wed, Jun 19, 2019 at 05:24:32PM -0700, John Fastabend wrote:
+> Alexei Starovoitov wrote:
+> > Compilers often spill induction variables into the stack,
+> > hence it is necessary for the verifier to track scalar values
+> > of the registers through stack slots.
+> > 
+> > Also few bpf programs were incorrectly rejected in the past,
+> > since the verifier was not able to track such constants while
+> > they were used to compute offsets into packet headers.
+> > 
+> > Tracking constants through the stack significantly decreases
+> > the chances of state pruning, since two different constants
+> > are considered to be different by state equivalency.
+> > End result that cilium tests suffer serious degradation in the number
+> > of states processed and corresponding verification time increase.
+> > 
+> >                      before  after
+> > bpf_lb-DLB_L3.o      1838    6441
+> > bpf_lb-DLB_L4.o      3218    5908
+> > bpf_lb-DUNKNOWN.o    1064    1064
+> > bpf_lxc-DDROP_ALL.o  26935   93790
+> > bpf_lxc-DUNKNOWN.o   34439   123886
+> > bpf_netdev.o         9721    31413
+> > bpf_overlay.o        6184    18561
+> > bpf_lxc_jit.o        39389   359445
+> > 
+> > After further debugging turned out that cillium progs are
+> > getting hurt by clang due to the same constant tracking issue.
+> > Newer clang generates better code by spilling less to the stack.
+> > Instead it keeps more constants in the registers which
+> > hurts state pruning since the verifier already tracks constants
+> > in the registers:
+> >                   old clang  new clang
+> >                          (no spill/fill tracking introduced by this patch)
+> > bpf_lb-DLB_L3.o      1838    1923
+> > bpf_lb-DLB_L4.o      3218    3077
+> > bpf_lb-DUNKNOWN.o    1064    1062
+> > bpf_lxc-DDROP_ALL.o  26935   166729
+> > bpf_lxc-DUNKNOWN.o   34439   174607
+>                        ^^^^^^^^^^^^^^
+> Any idea what happened here? Going from 34439 -> 174607 on the new clang?
 
-> While trying to add the Ethernet PHY interrupt on the X96 Max I found
-> that the current reset line definition is incorrect. Patch #1 fixes
-> this.
->
-> Since the fix requires moving from the deprecated "snps,reset-gpio"
-> property to the generic Ethernet PHY reset bindings I decided to move
-> all Amlogic boards over to the non-deprecated bindings. That's what
-> patches #2 and #3 do.
->
-> Finally I found that Odroid-N2 doesn't define the Ethernet PHY's reset
-> GPIO yet. I don't have that board so I can't test whether it really
-> works but based on the schematics it should. 
->
-> This series is a partial successor to "stmmac: honor the GPIO flags
-> for the PHY reset GPIO" from [0]. I decided not to take Linus W.'s
-> Reviewed-by from patch #4 of that series because I had to change the
-> wording and I want to be sure that he's happy with that now.
->
-> One quick note regarding patches #1 and #4: I decided to violate the
-> "max 80 characters per line" (by 4 characters) limit because I find
-> that the result is easier to read then it would be if I split the
-> line.
->
->
-> Changes since v1 at [1]:
-> - fixed the reset deassert delay for RTL8211F PHYs - spotted by Robin
->   Murphy (thank you). according to the public RTL8211E datasheet the
->   correct values seem to be: 10ms assert, 30ms deassert
-> - fixed the reset assert and deassert delays for IP101GR PHYs. There
->   are two values given in the public datasheet, use the higher one
->   (10ms instead of 2.5)
-> - update the patch descriptions to quote the datasheets (the RTL8211F
->   quotes are taken from the public RTL8211E datasheet because as far
->   as I can tell the reset sequence is identical on both PHYs)
->
-> Changes since v2 at [2]:
-> - add Neil's Reviewed/Acked/Tested-by's (thank you!)
-> - rebased on top of "arm64: dts: meson-g12a-x96-max: add sound card"
->
->
-> [0] https://patchwork.kernel.org/cover/10983801/
-> [1] https://patchwork.kernel.org/cover/10985155/
-> [2] https://patchwork.kernel.org/cover/10990863/
+As I was alluding in commit log newer clang is smarter and generates
+less spill/fill of constants.
+In particular older clang loads two constants into r8 and r9
+and immediately spills them into stack. Then fills later,
+does a bunch of unrelated code and calls into helper that
+has ARG_ANYTHING for that position. Then doing a bit more math
+on filled constants, spills them again and so on.
+Before this patch (that tracks spill/fill of constants into stack)
+pruning points were equivalent, but with the patch it sees the difference
+in registers and declares states not equivalent, though any constant
+is fine from safety standpoint.
+With new clang only r9 has this pattern of spill/fill.
+New clang manages to keep constant in r8 to be around without spill/fill.
+Existing verifier tracks constants so even without this patch
+the same pathalogical behavior is observed.
+The verifier need to walk a lot more instructions only because
+r8 has different constants.
 
-Queued for v5.3...
+> > bpf_netdev.o         9721    8407
+> > bpf_overlay.o        6184    5420
+> > bpf_lcx_jit.o        39389   39389
+> > 
+> > The final table is depressing:
+> >                   old clang  old clang    new clang  new clang
+> >                            const spill/fill        const spill/fill
+> > bpf_lb-DLB_L3.o      1838    6441          1923      8128
+> > bpf_lb-DLB_L4.o      3218    5908          3077      6707
+> > bpf_lb-DUNKNOWN.o    1064    1064          1062      1062
+> > bpf_lxc-DDROP_ALL.o  26935   93790         166729    380712
+> > bpf_lxc-DUNKNOWN.o   34439   123886        174607    440652
+> > bpf_netdev.o         9721    31413         8407      31904
+> > bpf_overlay.o        6184    18561         5420      23569
+> > bpf_lxc_jit.o        39389   359445        39389     359445
+> > 
+> > Tracking constants in the registers hurts state pruning already.
+> > Adding tracking of constants through stack hurts pruning even more.
+> > The later patch address this general constant tracking issue
+> > with coarse/precise logic.
+> > 
+> > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> > Acked-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+> >  kernel/bpf/verifier.c | 90 +++++++++++++++++++++++++++++++------------
+> >  1 file changed, 65 insertions(+), 25 deletions(-)
+> 
+> I know these are already in bpf-next sorry it took me awhile to get
+> time to review, but looks good to me. Thanks! We had something similar
+> in the earlier loop test branch from last year.
 
-> Martin Blumenstingl (4):
->   arm64: dts: meson: g12a: x96-max: fix the Ethernet PHY reset line
->   ARM: dts: meson: switch to the generic Ethernet PHY reset bindings
+It's not in bpf-next yet :)
+Code reviews are appreciated at any time.
+Looks like we were just lucky with older clang.
+I haven't tracked which clang version became smarter.
+If you haven't seen this issue and haven't changed cilium C source
+to workaround that then there is chance you'll hit it as well.
+By "new clang" I meant version 9.0
+"old clang" is unknown. I just had cilium elf .o around that
+I kept using for testing without recompiling them.
+Just by chance I recompiled them to see annotated verifier line info
+messages with BTF and hit this interesting issue.
+See patch 9 backtracking logic that resolves this 'precision of scalar'
+issue for progs compiled with both new and old clangs.
 
-...in branch v5.3/dt
-
->   arm64: dts: meson: use the generic Ethernet PHY reset GPIO bindings
->   arm64: dts: meson: g12b: odroid-n2: add the Ethernet PHY reset line
-
-The other 3 in v5.3/dt64,
-
-Thanks,
-
-Kevin
