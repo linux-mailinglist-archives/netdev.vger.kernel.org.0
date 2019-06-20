@@ -2,91 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D5DE74C8FF
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 10:08:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 099094C936
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 10:17:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730593AbfFTIIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 04:08:06 -0400
-Received: from mail-lf1-f48.google.com ([209.85.167.48]:36628 "EHLO
-        mail-lf1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726124AbfFTIIF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 04:08:05 -0400
-Received: by mail-lf1-f48.google.com with SMTP id q26so1748741lfc.3
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 01:08:04 -0700 (PDT)
+        id S1725937AbfFTIRK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 04:17:10 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:33028 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725875AbfFTIRJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 04:17:09 -0400
+Received: by mail-lf1-f66.google.com with SMTP id y17so1786588lfe.0
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 01:17:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=5nLDF4KvNjOO0UGhzTbw+kgDFdu3GO4N4s2vFIPF9iU=;
-        b=OmXGcAXDCg5tpnkC3zM065z42PKi+z/FVjoDHqkRFwQQ351XflSo05WQbSV3o17OA1
-         ZCsdnjvvy8dS/tX2Yrk0+vtSVbKzdotrcrp1d3vJpozy0Jdb5LybpVHsiW48i/dDVI4m
-         ck78rIIOF3bMUbZaiZAMkWKmJcJn6Z/ZVjyWEsqoSws8e7XxsYNIIMXEHmshvOdBKAcx
-         J/hpS3vishBxStBuT5Vd6dFmaBnP06wN4IJ6LTtHWz3vxRs0dzNXAKspTbq1O91EelUW
-         7USUCZOQGv2Sw7kPzWpfZs5oEBsiyWFpcnyvM6d2Eb0IbXkpG8FtvbT1xWFcC5FeFvd/
-         egbg==
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=gg0yMFESYjeQyXwPEmDygv0Cu836J6Ow1bSJiNUhAfA=;
+        b=lXQ2XvatpLV2xgDnqIUkwDCGYPWhYsLI0WWTA2FiEIGXMow5y8LEkIyRMes8/dCBey
+         OAEASfT/UkV5Bs0DiEEmgyYxR1e55hMqiA65gc3xVyrN97fr0BK1oTAkacru05rQBkoH
+         Hm2/7f+OqilVDA8T6a7RD2scg78sG0/dv/ZOd5A6EWmG/XacdcqKikjTvqZvM+mSsSa8
+         b+NUpsNmKIgyRZYd+uhAFgBImfr0jtgbBzeY9CpOhxC2kQYkMsB4aMlbdPWd8W0PEpig
+         7W0+N1ITFgv1czTPRzBxgsko816o8nB6r7cBzojm69Xjcfons0DZz3gst0yKISwruthg
+         WsIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=5nLDF4KvNjOO0UGhzTbw+kgDFdu3GO4N4s2vFIPF9iU=;
-        b=ptvURURvVF0PYduJFoc/jaLaPwnArYnbpt/kvwU90VwGBaqoxqZf8aYuxui+DCy6F7
-         ivuxw4LiaL8VNb6AXDn5cs2a4RmdCrkNwHNev6Oi3AmbyStIKBz+WBqHgyHsff2PF78e
-         Fi7seFP5kdhL19q9P1DVOUAG/Pg0fwtWGEaAn3X+9FAIo08XOuPEQSlPaTMZPXyUONyC
-         nxum6YN47yOlYYAKHL/Eg8zm2ytOHwUSruazZgZOT1cZ2jHs0Hu3UY5lxX2tC/waRLdg
-         fHYVzeECsbARsEkAnqivw4Q+ZwPuWQ0gfb+tKzudfqXb74hDep0qlJlfIIy9O4B3lDKV
-         q3ww==
-X-Gm-Message-State: APjAAAV63sWVJm5R7i420dAAvzb7F5zjpJjNYo3ZXeIECQHZ/57U47rX
-        qPPjxrKQXdvfgNu8ntkEylvZmGMFKQXKeRUFC3q+OA==
-X-Google-Smtp-Source: APXvYqyU7SYZ3r1zFZE21AN1DFeMgGQwh6SguX3BRtEUzUX/aM0TrfFkxtA08Wzok29Qq+v25QAmavsjX/AI8Qz4iuA=
-X-Received: by 2002:a19:671c:: with SMTP id b28mr12475324lfc.164.1561018083426;
- Thu, 20 Jun 2019 01:08:03 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=gg0yMFESYjeQyXwPEmDygv0Cu836J6Ow1bSJiNUhAfA=;
+        b=gLQ3H6xIJ7kYwGisrB29iT/RwMtDOPqIPTcuXJ8EL1CPN9zqIXYLzuBKkgmLukwIQv
+         +MMNUhwcGw6R3t0xPwRxWtqnh4jKJiJAr1NHjt/o4dAo7kFZhDKP2mkFUk6pyegjbb2f
+         /PJ1K/qYSKWNlXVnBipLHJiGVqmZ2/UH4UuwyR6L/+Lmib4Ggomfuauzc4JNH+6D0//q
+         THqnvgoiIJwnVX1P6jvTTDmDxb7sAMyyYEBTYPn4VQExVYEEas+L5Y/1GDI1qvYyi3kH
+         +aqgdAFZKcDF1dYo8lh6/bUtUSHxWyJM7duzAvcQ/hbiiqxglI29q1Zl7oFu6rdm7MVO
+         sRvw==
+X-Gm-Message-State: APjAAAV2kmnt6wwtnX8fMmrPejxap1p2hiFi80AWriWYXEen8jyyHEbD
+        zAfuvsl/Z1Y7qt8NtyNXkjXDeg==
+X-Google-Smtp-Source: APXvYqzTZakyuNZDE8DK/MgRpMC90V3ffgUu/ysZXi87rs7r9zd7fTy2dAGZ+NUtxNBgw/EMeRrrBQ==
+X-Received: by 2002:a19:428b:: with SMTP id p133mr23949059lfa.179.1561018627786;
+        Thu, 20 Jun 2019 01:17:07 -0700 (PDT)
+Received: from [192.168.0.199] ([31.173.80.13])
+        by smtp.gmail.com with ESMTPSA id l23sm3448650lje.106.2019.06.20.01.17.06
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 20 Jun 2019 01:17:07 -0700 (PDT)
+Subject: Re: [PATCH net-next v4 2/7] etf: Add skip_sock_check
+To:     Vedang Patel <vedang.patel@intel.com>, netdev@vger.kernel.org
+Cc:     jeffrey.t.kirsher@intel.com, davem@davemloft.net, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        intel-wired-lan@lists.osuosl.org, vinicius.gomes@intel.com,
+        l@dorileo.org, jakub.kicinski@netronome.com, m-karicheri2@ti.com
+References: <1560966016-28254-1-git-send-email-vedang.patel@intel.com>
+ <1560966016-28254-3-git-send-email-vedang.patel@intel.com>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Message-ID: <c304970a-1973-cdce-17b5-682f28856306@cogentembedded.com>
+Date:   Thu, 20 Jun 2019 11:16:43 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.1
 MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Thu, 20 Jun 2019 13:37:52 +0530
-Message-ID: <CA+G9fYsMcdHmKY66CNhsrizO-gErkOQCkTcBSyOHLpOs+8g5=g@mail.gmail.com>
-Subject: selftests: bpf: test_libbpf.sh failed at file test_l4lb.o
-To:     "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, bpf@vger.kernel.org,
-        Netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        xdp-newbies@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>, kafai@fb.com,
-        Yonghong Song <yhs@fb.com>, john.fastabend@gmail.com,
-        hawk@kernel.org, jakub.kicinski@netronome.com,
-        Shuah Khan <shuah@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1560966016-28254-3-git-send-email-vedang.patel@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-selftests: bpf test_libbpf.sh failed running Linux -next kernel
-20190618 and 20190619.
+On 19.06.2019 20:40, Vedang Patel wrote:
 
-Here is the log from x86_64,
-# selftests bpf test_libbpf.sh
-bpf: test_libbpf.sh_ #
-# [0] libbpf BTF is required, but is missing or corrupted.
-libbpf: BTF_is #
-# test_libbpf failed at file test_l4lb.o
-failed: at_file #
-# selftests test_libbpf [FAILED]
-test_libbpf: [FAILED]_ #
-[FAIL] 29 selftests bpf test_libbpf.sh
-selftests: bpf_test_libbpf.sh [FAIL]
+> Currently, etf expects a socket with SO_TXTIME option set for each packet
+> it encounters. So, it will drop all other packets. But, in the future
+> commits we are planning to add functionality which where tstamp value will
 
-Full test log,
-https://qa-reports.linaro.org/lkft/linux-next-oe/build/next-20190619/testrun/781777/log
+    One of "which" and "where", not both. :-)
 
-Test results comparison,
-https://qa-reports.linaro.org/lkft/linux-next-oe/tests/kselftest/bpf_test_libbpf.sh
+> be set by another qdisc. Also, some packets which are generated from within
+> the kernel (e.g. ICMP packets) do not have any socket associated with them.
+> 
+> So, this commit adds support for skip_sock_check. When this option is set,
+> etf will skip checking for a socket and other associated options for all
+> skbs.
+> 
+> Signed-off-by: Vedang Patel <vedang.patel@intel.com>
+[...]
 
-Good linux -next tag: next-20190617
-Bad linux -next tag: next-20190618
-git branch     master
-git commit    1c6b40509daf5190b1fd2c758649f7df1da4827b
-git repo
-https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-
-Best regards
-Naresh Kamboju
+MBR, Sergei
