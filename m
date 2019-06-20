@@ -2,75 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 95AB64CD4A
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 13:56:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DA1E4CD62
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 14:05:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731655AbfFTL4s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 07:56:48 -0400
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:36226 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726392AbfFTL4r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 07:56:47 -0400
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.89)
-        (envelope-from <fw@strlen.de>)
-        id 1hdvgM-0007va-17; Thu, 20 Jun 2019 13:56:46 +0200
-Date:   Thu, 20 Jun 2019 13:56:46 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, kernel-team@cloudflare.com
-Subject: Re: [RFC bpf-next 0/7] Programming socket lookup with BPF
-Message-ID: <20190620115646.zrt5brpqxtniczhx@breakpoint.cc>
-References: <20190618130050.8344-1-jakub@cloudflare.com>
- <20190618135258.spo6c457h6dfknt2@breakpoint.cc>
- <87sgs6ey43.fsf@cloudflare.com>
+        id S1731722AbfFTMFA convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 20 Jun 2019 08:05:00 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:42684 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731678AbfFTMFA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 08:05:00 -0400
+Received: by mail-ed1-f68.google.com with SMTP id z25so4336455edq.9
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 05:04:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=HG+KkhYMDkBh6yTSLxKMxMt66aeJ+AV/PAMDiZRpj78=;
+        b=GZp3g55Khzhycgis8YhU65cWq9aDT0mv1jJCNbs/MMJYkKSZcKl5NFw0EcQZSFxrv6
+         NjIWsHY8D0qgfI9s2vAgKzYwuiT/Q4UeTO5+44+PGyEWfmKhxxtj3iqZxdcYxLeZZ96G
+         7zX6TBs88OLKQ9RttsxJ06suGpJnqpTv5F/N8jJhhahQo9HtnCUCi7PnS9WkkRoVzfEe
+         dyy3U9tpcgwGhZzHKiFL5iOGnRdTcsaN8DK6svuAf2I8WJnymnVAPrO0iUB3MPMkbo3+
+         tKGfPSz5BROS4Wvevf6uxK38nkLafvxYHTaivEtBjEr/dQNFfIW4wGVIgOl9dYWwckld
+         ItBQ==
+X-Gm-Message-State: APjAAAXHHtni/j7DyJW90GB1ryQ2d/G5C+wgGDq/+GniMqKtww1CHifg
+        Uku0BmwDJagR4GDHNGRyysQK3g==
+X-Google-Smtp-Source: APXvYqzsZFWB0VaHqfx6NP6Jbe+EWR9eOWHHs81WS6UsqOyYfeLG3lCdiBEgYgeyU8yq/xkQSmsBmg==
+X-Received: by 2002:a17:907:20db:: with SMTP id qq27mr90675612ejb.30.1561032298590;
+        Thu, 20 Jun 2019 05:04:58 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
+        by smtp.gmail.com with ESMTPSA id d28sm7091780edn.31.2019.06.20.05.04.57
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 20 Jun 2019 05:04:57 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 714E3181CED; Thu, 20 Jun 2019 07:57:11 -0400 (EDT)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Prashant Bhole <prashantbhole.linux@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Prashant Bhole <prashantbhole.linux@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH bpf] samples/bpf: xdp_redirect, correctly get dummy program id
+In-Reply-To: <20190620065815.7698-1-prashantbhole.linux@gmail.com>
+References: <20190620065815.7698-1-prashantbhole.linux@gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 20 Jun 2019 07:57:11 -0400
+Message-ID: <87muic8o6g.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87sgs6ey43.fsf@cloudflare.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Sitnicki <jakub@cloudflare.com> wrote:
-> > Sorry for the question, but where is the problem?
-> > (i.e., is it with TPROXY or bpf side)?
-> 
-> The way I see it is that the problem is that we have mappings for
-> steering traffic into sockets split between two places: (1) the socket
-> lookup tables, and (2) the TPROXY rules.
-> 
-> BPF programs that need to check if there is a socket the packet is
-> destined for have access to the socket lookup tables, via the mentioned
-> bpf_sk_lookup helper, but are unaware of TPROXY redirects.
+Prashant Bhole <prashantbhole.linux@gmail.com> writes:
 
-Oh, right.
+> When we terminate xdp_redirect, it ends up with following message:
+> "Program on iface OUT changed, not removing"
+> This results in dummy prog still attached to OUT interface.
+> It is because signal handler checks if the programs are the same that
+> we had attached. But while fetching dummy_prog_id, current code uses
+> prog_fd instead of dummy_prog_fd. This patch passes the correct fd.
+>
+> Fixes: 3b7a8ec2dec3 ("samples/bpf: Check the prog id before exiting")
+> Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
 
-[ TPROXY setup ]
+Huh, I seem to recall fixing this for the other example program, but
+guess I missed this one.
 
-Thanks for sharing, it will take me some time to digest this.
-It would be good to have a simpler way to express this.
-
-> One thing I haven't touched on in the cover letter is that to use TPROXY
-> you need to set IP_TRANSPARENT on the listening socket. This requires
-> that your process runs with CAP_NET_RAW or CAP_NET_ADMIN, or that you
-> get the socket from systemd.
-> 
-> I haven't been able to explain why the process needs to be privileged to
-> receive traffic steered with TPROXY, but it turns out to be a pain point
-> too. We end up having to lock down the service to ensure it doesn't use
-> the elevated privileges for anything else than setting IP_TRANSPARENT.
-
-Marek thinks its security measure:
-1. TPROXY rule to redirect 80 to 8080 is added
-2. UNPRIV binds 8080 -> Unpriv can then intercept packets for privileged
-    port (it can't, as TPROXY rule refuses to redirect to sk that did not
-    have IP_TRANSPARENT set).
-
-AFAICS purely from stack pov, it sets IP_REPLY_ARG_NOSRCCHECK which in
-turn sets FLOWI_FLAG_ANYSRC which bypasses a "fl->saddr is configured on
-this machine" check in ip_route_output_key_hash_rcu.
-
-I did not yet find similar entanglement for ipv6, will check.
+Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
