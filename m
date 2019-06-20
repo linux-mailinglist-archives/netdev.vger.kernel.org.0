@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C6EE34CDA4
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 14:23:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4BE94CDA3
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 14:23:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731820AbfFTMXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 08:23:17 -0400
-Received: from mx.0dd.nl ([5.2.79.48]:53442 "EHLO mx.0dd.nl"
+        id S1731813AbfFTMXQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 08:23:16 -0400
+Received: from mx.0dd.nl ([5.2.79.48]:53448 "EHLO mx.0dd.nl"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731788AbfFTMXP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1731720AbfFTMXP (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 20 Jun 2019 08:23:15 -0400
 Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx.0dd.nl (Postfix) with ESMTPS id 107CC5FEA3;
+        by mx.0dd.nl (Postfix) with ESMTPS id 2B26E5FEA5;
         Thu, 20 Jun 2019 14:23:12 +0200 (CEST)
 Authentication-Results: mx.0dd.nl;
-        dkim=pass (2048-bit key; secure) header.d=vdorst.com header.i=@vdorst.com header.b="g7BR92yl";
+        dkim=pass (2048-bit key) header.d=vdorst.com header.i=@vdorst.com header.b="GZQTCvCo";
         dkim-atps=neutral
 Received: from pc-rene.vdorst.com (pc-rene.vdorst.com [192.168.2.125])
-        by mail.vdorst.com (Postfix) with ESMTPA id BE5AE1CB7226;
+        by mail.vdorst.com (Postfix) with ESMTPA id D9B1C1CB7227;
         Thu, 20 Jun 2019 14:23:11 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com BE5AE1CB7226
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com D9B1C1CB7227
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
         s=default; t=1561033391;
-        bh=t3u4+GFTt7AWzr0gX5MB+fy6a8Ysaz6JhNtAzReRx1s=;
+        bh=sWaETIGykh20OLdc6TDZc2DkdMJJZTMSUT4mTh+FG9g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g7BR92ylFiMAx5nRGIDi2XQrD2KPcZc9sIFU67kvHHcO2PCUHmikUifqlBee1IcGE
-         MgO78VJP3mNGstXyonYjfi6U7mJlQ3UXKE6f0lcNypi/SeTzhLVQOWpTIM9bkqQGZa
-         ngsR2T1/AYYZDdt2ddoypnKyV5TdEBt1X5UwrFjyISZPY7KQ+1pQ7W0zwSdpwdY8cW
-         VgmRWj+60ZJhe7po/d8TMtC0MFSQe1TxqAtll6C/UfgkX2+nkJ98KUronhxzS2QXuv
-         QdaX9l8qKQwtwNzFIrwY7hNyxnNClZpN46k83AdVrbxZdbtMlabVjNKPjtC/WA0VS/
-         C7HyUL9B0VTNg==
+        b=GZQTCvComuttNcdNwsmuknmfdxnT7xxm7MuX9DG6Dn/MRYZ9Mdd0/OSVsaDaVCC8D
+         VRouGoWGVrV+KsStCOWtEMMx74nPNxxBrj/Zh0uogYsMIlmr6peSyMiPXn1livIi9z
+         /x1+Ubk4iJ9nzli2tCMYxdCAkv+32/UwKy19QmbUClo1ZlPV6Q6aI2Qqp2dXDZHrHM
+         GJH3Rs4DW6CnuKDTsVz5SN+Ic0A9ciYAHYdhdpUoZbNDWqkhfRSq1zZYcgY+09XG14
+         sTqawHOOJpiINs0v54g2ZmZredlRtawbcswwE5H83p811Ep1g49h8KnMHvQBI7/kT1
+         0CYedXS52G9aw==
 From:   =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
 To:     frank-w@public-files.de, sean.wang@mediatek.com,
         f.fainelli@gmail.com, davem@davemloft.net, matthias.bgg@gmail.com,
@@ -40,9 +40,9 @@ To:     frank-w@public-files.de, sean.wang@mediatek.com,
 Cc:     netdev@vger.kernel.org, john@phrozen.org,
         linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org,
         =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
-Subject: [PATCH v2 net-next 1/2] net: ethernet: mediatek: Add MT7621 TRGMII mode support
-Date:   Thu, 20 Jun 2019 14:21:54 +0200
-Message-Id: <20190620122155.32078-2-opensource@vdorst.com>
+Subject: [PATCH v2 net-next 2/2] net: dsa: mt7530: Add MT7621 TRGMII mode support
+Date:   Thu, 20 Jun 2019 14:21:55 +0200
+Message-Id: <20190620122155.32078-3-opensource@vdorst.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190620122155.32078-1-opensource@vdorst.com>
 References: <20190620122155.32078-1-opensource@vdorst.com>
@@ -54,121 +54,124 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-MT7621 SOC also supports TRGMII.
-TRGMII speed is 1200MBit.
+This patch add support TRGMII mode for MT7621 internal MT7530 switch.
+MT7621 TRGMII has only one fix speed mode of 1200MBit.
+
+Also adding support for mt7530 25MHz and 40MHz crystal clocksource.
+Values are based on Banana Pi R2 bsp [1].
+
+Don't change MT7623 registers on a MT7621 device.
+
+[1] https://github.com/BPI-SINOVOIP/BPI-R2-bsp/blob/master/linux-mt/drivers/net/ethernet/mediatek/gsw_mt7623.c#L769
 
 Signed-off-by: René van Dorst <opensource@vdorst.com>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 38 ++++++++++++++++++---
- drivers/net/ethernet/mediatek/mtk_eth_soc.h | 11 ++++++
- 2 files changed, 45 insertions(+), 4 deletions(-)
+ drivers/net/dsa/mt7530.c | 46 +++++++++++++++++++++++++++++++---------
+ drivers/net/dsa/mt7530.h |  4 ++++
+ 2 files changed, 40 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index f27efe4110cc..066712f2e985 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -134,6 +134,28 @@ static int mtk_mdio_read(struct mii_bus *bus, int phy_addr, int phy_reg)
- 	return _mtk_mdio_read(eth, phy_addr, phy_reg);
- }
- 
-+static int mt7621_gmac0_rgmii_adjust(struct mtk_eth *eth,
-+				     phy_interface_t interface)
-+{
-+	u32 val;
-+
-+	/* Check DDR memory type. Currently DDR2 is not supported. */
-+	regmap_read(eth->ethsys, ETHSYS_SYSCFG, &val);
-+	if (val & SYSCFG_DRAM_TYPE_DDR2) {
-+		dev_err(eth->dev,
-+			"TRGMII mode with DDR2 memory is not supported!\n");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	val = (interface == PHY_INTERFACE_MODE_TRGMII) ?
-+		ETHSYS_TRGMII_MT7621_DDR_PLL : 0;
-+
-+	regmap_update_bits(eth->ethsys, ETHSYS_CLKCFG0,
-+			   ETHSYS_TRGMII_MT7621_MASK, val);
-+
-+	return 0;
-+}
-+
- static void mtk_gmac0_rgmii_adjust(struct mtk_eth *eth, int speed)
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index c7d352da5448..3181e95586d6 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -428,24 +428,48 @@ static int
+ mt7530_pad_clk_setup(struct dsa_switch *ds, int mode)
  {
- 	u32 val;
-@@ -183,9 +205,17 @@ static void mtk_phy_link_adjust(struct net_device *dev)
+ 	struct mt7530_priv *priv = ds->priv;
+-	u32 ncpo1, ssc_delta, trgint, i;
++	u32 ncpo1, ssc_delta, trgint, i, xtal;
++
++	xtal = mt7530_read(priv, MT7530_MHWTRAP) & HWTRAP_XTAL_MASK;
++
++	if (xtal == HWTRAP_XTAL_20MHZ) {
++		dev_err(priv->dev,
++			"%s: MT7530 with a 20MHz XTAL is not supported!\n",
++			__func__);
++		return -EINVAL;
++	}
+ 
+ 	switch (mode) {
+ 	case PHY_INTERFACE_MODE_RGMII:
+ 		trgint = 0;
++		/* PLL frequency: 125MHz */
+ 		ncpo1 = 0x0c80;
+-		ssc_delta = 0x87;
  		break;
+ 	case PHY_INTERFACE_MODE_TRGMII:
+ 		trgint = 1;
+-		ncpo1 = 0x1400;
+-		ssc_delta = 0x57;
++		if (priv->id == ID_MT7621) {
++			/* PLL frequency: 150MHz: 1.2GBit */
++			if (xtal == HWTRAP_XTAL_40MHZ)
++				ncpo1 = 0x0780;
++			if (xtal == HWTRAP_XTAL_25MHZ)
++				ncpo1 = 0x0a00;
++		} else { /* PLL frequency: 250MHz: 2.0Gbit */
++			if (xtal == HWTRAP_XTAL_40MHZ)
++				ncpo1 = 0x0c80;
++			if (xtal == HWTRAP_XTAL_25MHZ)
++				ncpo1 = 0x1400;
++		}
+ 		break;
+ 	default:
+ 		dev_err(priv->dev, "xMII mode %d not supported\n", mode);
+ 		return -EINVAL;
  	}
  
--	if (MTK_HAS_CAPS(mac->hw->soc->caps, MTK_GMAC1_TRGMII) &&
--	    !mac->id && !mac->trgmii)
--		mtk_gmac0_rgmii_adjust(mac->hw, dev->phydev->speed);
-+	if (MTK_HAS_CAPS(mac->hw->soc->caps, MTK_GMAC1_TRGMII) && !mac->id) {
-+		if (MTK_HAS_CAPS(mac->hw->soc->caps, MTK_TRGMII_MT7621_CLK)) {
-+			if (mt7621_gmac0_rgmii_adjust(mac->hw,
-+						      dev->phydev->interface))
-+				return;
-+		} else {
-+			if (!mac->trgmii)
-+				mtk_gmac0_rgmii_adjust(mac->hw,
-+						       dev->phydev->speed);
-+		}
-+	}
- 
- 	if (dev->phydev->link)
- 		mcr |= MAC_MCR_FORCE_LINK;
-@@ -2607,7 +2637,7 @@ static const struct mtk_soc_data mt2701_data = {
- };
- 
- static const struct mtk_soc_data mt7621_data = {
--	.caps = MTK_SHARED_INT,
-+	.caps = MT7621_CAPS,
- 	.required_clks = MT7621_CLKS_BITMAP,
- 	.required_pctl = false,
- };
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index 85e3144f1af5..876ce6798709 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -363,6 +363,10 @@
- #define MT7622_ETH		7622
- #define MT7621_ETH		7621
- 
-+/* ethernet system control register */
-+#define ETHSYS_SYSCFG		0x10
-+#define SYSCFG_DRAM_TYPE_DDR2	BIT(4)
++	if (xtal == HWTRAP_XTAL_25MHZ)
++		ssc_delta = 0x57;
++	else
++		ssc_delta = 0x87;
 +
- /* ethernet subsystem config register */
- #define ETHSYS_SYSCFG0		0x14
- #define SYSCFG0_GE_MASK		0x3
-@@ -377,6 +381,9 @@
- /* ethernet subsystem clock register */
- #define ETHSYS_CLKCFG0		0x2c
- #define ETHSYS_TRGMII_CLK_SEL362_5	BIT(11)
-+#define ETHSYS_TRGMII_MT7621_MASK	(BIT(5) | BIT(6))
-+#define ETHSYS_TRGMII_MT7621_APLL	BIT(6)
-+#define ETHSYS_TRGMII_MT7621_DDR_PLL	BIT(5)
+ 	mt7530_rmw(priv, MT7530_P6ECR, P6_INTF_MODE_MASK,
+ 		   P6_INTF_MODE(trgint));
  
- /* ethernet reset control register */
- #define ETHSYS_RSTCTRL		0x34
-@@ -616,6 +623,7 @@ enum mtk_eth_path {
- #define MTK_SHARED_SGMII		BIT(7)
- #define MTK_HWLRO			BIT(8)
- #define MTK_SHARED_INT			BIT(9)
-+#define MTK_TRGMII_MT7621_CLK		BIT(10)
+@@ -507,7 +531,9 @@ mt7530_pad_clk_setup(struct dsa_switch *ds, int mode)
+ 			mt7530_rmw(priv, MT7530_TRGMII_RD(i),
+ 				   RD_TAP_MASK, RD_TAP(16));
+ 	else
+-		mt7623_trgmii_set(priv, GSW_INTF_MODE, INTF_MODE_TRGMII);
++		if (priv->id != ID_MT7621)
++			mt7623_trgmii_set(priv, GSW_INTF_MODE,
++					  INTF_MODE_TRGMII);
  
- /* Supported path present on SoCs */
- #define MTK_PATH_BIT(x)         BIT((x) + 10)
-@@ -667,6 +675,9 @@ enum mtk_eth_path {
+ 	return 0;
+ }
+@@ -613,13 +639,13 @@ static void mt7530_adjust_link(struct dsa_switch *ds, int port,
+ 	struct mt7530_priv *priv = ds->priv;
  
- #define MTK_HAS_CAPS(caps, _x)		(((caps) & (_x)) == (_x))
+ 	if (phy_is_pseudo_fixed_link(phydev)) {
+-		if (priv->id == ID_MT7530) {
+-			dev_dbg(priv->dev, "phy-mode for master device = %x\n",
+-				phydev->interface);
++		dev_dbg(priv->dev, "phy-mode for master device = %x\n",
++			phydev->interface);
  
-+#define MT7621_CAPS  (MTK_GMAC1_RGMII | MTK_GMAC1_TRGMII | \
-+		      MTK_GMAC2_RGMII | MTK_SHARED_INT | MTK_TRGMII_MT7621_CLK)
-+
- #define MT7622_CAPS  (MTK_GMAC1_RGMII | MTK_GMAC1_SGMII | MTK_GMAC2_RGMII | \
- 		      MTK_GMAC2_SGMII | MTK_GDM1_ESW | \
- 		      MTK_MUX_GDM1_TO_GMAC1_ESW | \
+-			/* Setup TX circuit incluing relevant PAD and driving */
+-			mt7530_pad_clk_setup(ds, phydev->interface);
++		/* Setup TX circuit incluing relevant PAD and driving */
++		mt7530_pad_clk_setup(ds, phydev->interface);
+ 
++		if (priv->id == ID_MT7530) {
+ 			/* Setup RX circuit, relevant PAD and driving on the
+ 			 * host which must be placed after the setup on the
+ 			 * device side is all finished.
+diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+index 4331429969fa..bfac90f48102 100644
+--- a/drivers/net/dsa/mt7530.h
++++ b/drivers/net/dsa/mt7530.h
+@@ -244,6 +244,10 @@ enum mt7530_vlan_port_attr {
+ 
+ /* Register for hw trap status */
+ #define MT7530_HWTRAP			0x7800
++#define  HWTRAP_XTAL_MASK		(BIT(10) | BIT(9))
++#define  HWTRAP_XTAL_25MHZ		(BIT(10) | BIT(9))
++#define  HWTRAP_XTAL_40MHZ		(BIT(10))
++#define  HWTRAP_XTAL_20MHZ		(BIT(9))
+ 
+ /* Register for hw trap modification */
+ #define MT7530_MHWTRAP			0x7804
 -- 
 2.20.1
 
