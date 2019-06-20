@@ -2,107 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F6574CE6A
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 15:16:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F2144CE76
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 15:17:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731834AbfFTNQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 09:16:01 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:38236 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726952AbfFTNQB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 09:16:01 -0400
-Received: by mail-io1-f67.google.com with SMTP id j6so1501407ioa.5
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 06:16:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=I/O/yyALdCbsqKYK1a9DcWSXjStvVGaq6qBlcx4Muio=;
-        b=MHywfs/nm337cGrusxf5U3yNCrkYeYHqQE4P7Mk/QviPsIvQ9lF6G6c6WwGzIXcaxG
-         YCO0WWMxJn5tc9vMF5+rze4LBUZfKt++0+H82YSbHq6RkyRtIlkrs9/385LkzvSwXvqd
-         EM0wflKKoY0tUckmUC0ypLyjQPF69aJHE2NLVYZewvQKeKCcGEMJt8PUodMGv7deGx8Q
-         XDiuyYdYvJ2scWzWOEQOsP3lflrrQrLz3IaEYgPsvfPBWNVHkUZSnFsquiFfGjZTG4//
-         u0+GqyFDS482GoVwf+wadrH2Bwa8xA9bQal6Z2TbXmxUn7wEKSgmDE3WmJI8b9mOU7kn
-         VVzw==
+        id S1732007AbfFTNRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 09:17:07 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:44624 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731954AbfFTNRG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 09:17:06 -0400
+Received: by mail-io1-f70.google.com with SMTP id i133so5170915ioa.11
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 06:17:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=I/O/yyALdCbsqKYK1a9DcWSXjStvVGaq6qBlcx4Muio=;
-        b=HcJdQJZnC+0fe0HUR6GKepJQmJK3zC8EE2alXCdYZnuaPYCpeLes9OA/u2JyeLEmGH
-         YPmlF39p9LOibphOH8lBSuoxlCGMxZxM2iwHpmOAmia0OHLl6usezGojTdFp9nCVAX9K
-         eFVtGFFg0ZSgR9H3F24EjGsjGqPVZ9h5jmzHuKAHLWGMVQ81aOphddegJb6AF/zwFhf7
-         40yUfKY+10/jCSsptEHC1eP07C+b2Xya3VJK+DuuDjzQP0nQlSyUSjG7/QslcTvqnl0M
-         vdxEG7t+E5Js8undVLBsg740JEZFdcdeIREhExv9IHrC3Y0ddsLvyDmjoaqOiccomiBt
-         uS+A==
-X-Gm-Message-State: APjAAAW1mS/luZdZBEcZKOUbb/WiGIpPtugPfIV4k45CUrgTZ7OGNwhU
-        hN9owI2Yk56sTEE2WYgQvcNcrHfD
-X-Google-Smtp-Source: APXvYqz5J/lZEYG/XPpmfxWel9m4wHFO3LAUXFNEWKhxXtRv+33Z5q/ZkJVQM015C9kQiU4vxK91zA==
-X-Received: by 2002:a5e:8306:: with SMTP id x6mr18966659iom.130.1561036560428;
-        Thu, 20 Jun 2019 06:16:00 -0700 (PDT)
-Received: from ?IPv6:2601:284:8200:5cfb:9c46:f142:c937:3c50? ([2601:284:8200:5cfb:9c46:f142:c937:3c50])
-        by smtp.googlemail.com with ESMTPSA id c1sm16596573ioc.43.2019.06.20.06.15.58
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 20 Jun 2019 06:15:59 -0700 (PDT)
-Subject: Re: [PATCH net-next v6 03/11] ipv4/route: Allow NULL flowinfo in
- rt_fill_info()
-To:     Stefano Brivio <sbrivio@redhat.com>,
-        David Miller <davem@davemloft.net>
-Cc:     Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        netdev@vger.kernel.org
-References: <cover.1560987611.git.sbrivio@redhat.com>
- <5ba00822d7e86cdcb9231b39fda3cc4a04e2836f.1560987611.git.sbrivio@redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <9efa65d3-5797-fde0-d5c2-3c7747d591ad@gmail.com>
-Date:   Thu, 20 Jun 2019 07:15:55 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=pFl57I7Gu7LJtpS4kZ7e5rZsSSBo5xMttzXo6P3hq6Y=;
+        b=gDU1kBvgq430ZSEj3MYWeavx2i3BnOrffrYoyuUI2f+YGLyd0lAR8XoOo/r/qe/8o2
+         jTdHRrk1Skwk7XN8lX/JA/bqwst+fN2sMTx+eGfWlIVMxQp2xTzDRTXvSwDBaq8N/6Fp
+         ksaJpA+Rano0mXgnqoT7IQXVRkr0cl/iFOtijzmk21Mydt9JVHR/t4tCVC116kkNYsyw
+         +50oNfLk6qFao30UKTewu/ufPW2z8eJmOgoI8MZThW4pXoItLXac9VPa3CxJT5JXzxol
+         BnLvzGn+hYv8m9JJXdO6VkfcX7ljuH/E60u7wIA8CxaOn+UJZ6qppEjXhZnbhC0KNZcV
+         YeWQ==
+X-Gm-Message-State: APjAAAXjPYpb8oD3s0hui6RSHL/TOB7tKa6faHjcaPn+T88+N/U+adDq
+        IpIt0v0hxBhGI8FvqaFWP29CSXfTHk0MC0pBdOAJR4EF8i+x
+X-Google-Smtp-Source: APXvYqwLnQfND50vIn2AJG13GUkJ3L6wdGfUhNSiK9/TZfF1gRHnqct2uCCZoIge4fY7fgOyrrONXpJorYI3kaD1zSbhdUhm7tSO
 MIME-Version: 1.0
-In-Reply-To: <5ba00822d7e86cdcb9231b39fda3cc4a04e2836f.1560987611.git.sbrivio@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a5d:9ec4:: with SMTP id a4mr955576ioe.125.1561036625845;
+ Thu, 20 Jun 2019 06:17:05 -0700 (PDT)
+Date:   Thu, 20 Jun 2019 06:17:05 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000090ae7a058bc12946@google.com>
+Subject: WARNING in debug_check_no_obj_freed
+From:   syzbot <syzbot+b972214bb803a343f4fe@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kgraul@linux.ibm.com,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        ubraun@linux.ibm.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/19/19 5:59 PM, Stefano Brivio wrote:
-> In the next patch, we're going to use rt_fill_info() to dump exception
-> routes upon RTM_GETROUTE with NLM_F_ROOT, meaning userspace is requesting
-> a dump and not a specific route selection, which in turn implies the input
-> interface is not relevant. Update rt_fill_info() to handle a NULL
-> flowinfo.
-> 
-> Suggested-by: David Ahern <dsahern@gmail.com>
-> Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
-> ---
-> v6: New patch
-> 
->  net/ipv4/route.c | 57 ++++++++++++++++++++++++++----------------------
->  1 file changed, 31 insertions(+), 26 deletions(-)
-> 
-> diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-> index 66cbe8a7a168..052a80373b1d 100644
-> --- a/net/ipv4/route.c
-> +++ b/net/ipv4/route.c
-> @@ -2699,7 +2699,8 @@ static int rt_fill_info(struct net *net, __be32 dst, __be32 src,
->  	r->rtm_family	 = AF_INET;
->  	r->rtm_dst_len	= 32;
->  	r->rtm_src_len	= 0;
-> -	r->rtm_tos	= fl4->flowi4_tos;
-> +	if (fl4)
-> +		r->rtm_tos	= fl4->flowi4_tos;
+Hello,
 
-tracing back to the alloc_skb it does not appear to be initialized to 0,
-so this should be:
-	r->rtm_tos	= fl4 ? fl4->flowi4_tos : 0;
+syzbot found the following crash on:
+
+HEAD commit:    bed3c0d8 Merge tag 'for-5.2-rc5-tag' of git://git.kernel.o..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=13cc2c3aa00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=28ec3437a5394ee0
+dashboard link: https://syzkaller.appspot.com/bug?extid=b972214bb803a343f4fe
+compiler:       clang version 9.0.0 (/home/glider/llvm/clang  
+80fee25776c2fb61e74c1ecb1a523375c2500b69)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12fcf0b2a00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17a22ad6a00000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+b972214bb803a343f4fe@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+ODEBUG: free active (active state 0) object type: work_struct hint:  
+smc_tx_work+0x0/0x260 net/smc/smc_tx.c:264
+WARNING: CPU: 0 PID: 8158 at lib/debugobjects.c:328 debug_print_object  
+lib/debugobjects.c:325 [inline]
+WARNING: CPU: 0 PID: 8158 at lib/debugobjects.c:328  
+__debug_check_no_obj_freed lib/debugobjects.c:785 [inline]
+WARNING: CPU: 0 PID: 8158 at lib/debugobjects.c:328  
+debug_check_no_obj_freed+0x5c0/0x740 lib/debugobjects.c:817
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 0 PID: 8158 Comm: syz-executor878 Not tainted 5.2.0-rc5+ #3
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x1d8/0x2f8 lib/dump_stack.c:113
+  panic+0x28a/0x7c9 kernel/panic.c:219
+  __warn+0x216/0x220 kernel/panic.c:576
+  report_bug+0x190/0x290 lib/bug.c:186
+  fixup_bug arch/x86/kernel/traps.c:179 [inline]
+  do_error_trap+0xd7/0x450 arch/x86/kernel/traps.c:272
+  do_invalid_op+0x36/0x40 arch/x86/kernel/traps.c:291
+  invalid_op+0x14/0x20 arch/x86/entry/entry_64.S:986
+RIP: 0010:debug_print_object lib/debugobjects.c:325 [inline]
+RIP: 0010:__debug_check_no_obj_freed lib/debugobjects.c:785 [inline]
+RIP: 0010:debug_check_no_obj_freed+0x5c0/0x740 lib/debugobjects.c:817
+Code: 96 5c 4e fe 4c 89 fa 48 8b 4d b8 4c 8b 01 48 c7 c7 9c 55 66 88 48 c7  
+c6 ec 63 7e 88 44 89 e1 4c 8b 4d b0 31 c0 e8 30 05 e7 fd <0f> 0b 48 8b 4d  
+d0 48 8b 55 c8 ff 05 e8 b2 7c 05 48 b8 00 00 00 00
+RSP: 0018:ffff888084ba7b60 EFLAGS: 00010046
+RAX: ff4ab4ef149ca600 RBX: 1ffff110152b3acd RCX: ffff88808a330040
+RDX: 0000000000000000 RSI: 0000000080000001 RDI: 0000000000000000
+RBP: ffff888084ba7c00 R08: ffffffff815e87e4 R09: ffffed1015d440c2
+R10: ffffed1015d440c2 R11: 1ffff11015d440c1 R12: 0000000000000000
+R13: 1ffff110152b3acf R14: ffff888085381798 R15: dffffc0000000000
+  kmem_cache_free+0xb9/0x170 mm/slab.c:3697
+  sk_prot_free net/core/sock.c:1637 [inline]
+  __sk_destruct+0x558/0x660 net/core/sock.c:1725
+  sk_destruct net/core/sock.c:1733 [inline]
+  __sk_free+0x307/0x3d0 net/core/sock.c:1744
+  sk_free+0x2a/0x40 net/core/sock.c:1755
+  sock_put include/net/sock.h:1725 [inline]
+  smc_release+0x4b3/0x620 net/smc/af_smc.c:182
+  __sock_release net/socket.c:601 [inline]
+  sock_close+0xdb/0x280 net/socket.c:1273
+  __fput+0x2e4/0x740 fs/file_table.c:280
+  ____fput+0x15/0x20 fs/file_table.c:313
+  task_work_run+0x17e/0x1b0 kernel/task_work.c:113
+  tracehook_notify_resume include/linux/tracehook.h:185 [inline]
+  exit_to_usermode_loop arch/x86/entry/common.c:168 [inline]
+  prepare_exit_to_usermode+0x402/0x4f0 arch/x86/entry/common.c:199
+  syscall_return_slowpath+0x110/0x440 arch/x86/entry/common.c:279
+  do_syscall_64+0x126/0x140 arch/x86/entry/common.c:304
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x402720
+Code: 01 f0 ff ff 0f 83 40 0d 00 00 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f  
+44 00 00 83 3d 0d 94 2d 00 00 75 14 b8 03 00 00 00 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 14 0d 00 00 c3 48 83 ec 08 e8 7a 02 00 00
+RSP: 002b:00007ffda70c1198 EFLAGS: 00000246 ORIG_RAX: 0000000000000003
+RAX: 0000000000000000 RBX: 0000000000000004 RCX: 0000000000402720
+RDX: 0000000000000001 RSI: 0000000000000006 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000000000028 R09: 00000000004aa1df
+R10: 0000000020000000 R11: 0000000000000246 R12: 0000000000000001
+R13: 0000000000403950 R14: 0000000000000000 R15: 0000000000000000
+
+======================================================
 
 
-other than that it looks fine to me.
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Reviewed-by: David Ahern <dsahern@gmail.com>
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
