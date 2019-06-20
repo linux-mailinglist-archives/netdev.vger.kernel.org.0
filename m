@@ -2,236 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CC90F4CDF3
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 14:47:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5FC44CDF0
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 14:47:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731849AbfFTMrk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 08:47:40 -0400
-Received: from forwardcorp1j.mail.yandex.net ([5.45.199.163]:36564 "EHLO
-        forwardcorp1j.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726838AbfFTMrj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 08:47:39 -0400
-X-Greylist: delayed 438 seconds by postgrey-1.27 at vger.kernel.org; Thu, 20 Jun 2019 08:47:37 EDT
-Received: from mxbackcorp1g.mail.yandex.net (mxbackcorp1g.mail.yandex.net [IPv6:2a02:6b8:0:1402::301])
-        by forwardcorp1j.mail.yandex.net (Yandex) with ESMTP id 740152E0A55;
-        Thu, 20 Jun 2019 15:40:17 +0300 (MSK)
-Received: from smtpcorp1p.mail.yandex.net (smtpcorp1p.mail.yandex.net [2a02:6b8:0:1472:2741:0:8b6:10])
-        by mxbackcorp1g.mail.yandex.net (nwsmtp/Yandex) with ESMTP id rW3WrpNMFh-eH5OgRV3;
-        Thu, 20 Jun 2019 15:40:17 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1561034417; bh=8zUumKf1qeYuTC1ownuhlHgHCHk6qEa6psiv56trKZ0=;
-        h=In-Reply-To:References:Date:Message-ID:From:To:Subject;
-        b=j+2Xmh4sT8D479rVDfmbVGmhxUaSriUW7RJV/wFTW7+nSuxMANixYXGe2CpyZhdVd
-         zRbpFjgUxB8h+o+nyPocDh1FL+zZtt6Zb0nWHS+6ak+vtAsAlEHDbRGbRpUZeKNQv7
-         TO/sLQdOt2nOwqdHRUE133ZykzX5WajwXnKpGdiA=
-Authentication-Results: mxbackcorp1g.mail.yandex.net; dkim=pass header.i=@yandex-team.ru
-Received: from dynamic-red.dhcp.yndx.net (dynamic-red.dhcp.yndx.net [2a02:6b8:0:40c:a1b1:2ca9:8cc0:4c56])
-        by smtpcorp1p.mail.yandex.net (nwsmtp/Yandex) with ESMTPSA id ado0pY8xXj-eGqqONGn;
-        Thu, 20 Jun 2019 15:40:17 +0300
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (Client certificate not present)
-Subject: Re: [PATCH RFC] proc/meminfo: add NetBuffers counter for socket
- buffers
-To:     Vlastimil Babka <vbabka@suse.cz>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-References: <155792134187.1641.3858215257559626632.stgit@buzz>
- <9f611f72-c883-45e9-cb2a-824ba27356d9@suse.cz>
-From:   Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
-Message-ID: <fe7a4739-556f-69b1-fe30-f4b6e1b31e64@yandex-team.ru>
-Date:   Thu, 20 Jun 2019 15:40:16 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1726931AbfFTMrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 08:47:06 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:40900 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726757AbfFTMrG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 08:47:06 -0400
+Received: by mail-io1-f72.google.com with SMTP id v11so5004095iop.7
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 05:47:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=iNr4pXoRjHYJxCsQLDFZzgF3wWUq5wqzMUmtkVEWxlA=;
+        b=fZl1RwqEoHjmg4egwgd7b62uNon9DFfrOxJe1GcS1u36JPfn8XpSxsVfdDLgSYkAE3
+         tXTk4cSTEKM1q3GhOvUZMsLeExQxauiJ47lekvCNbDNO4cCWNUgcp/6cxss5qEl5Ovz5
+         fWBOlgd006VId9elLZLac26qyFoA/WhWq52Vp1w6H9J7ckf4V2I9ixoThs1ob0z8ZObx
+         8U2hDDmKzrYPDWgkkTALn3/Ynq7mLkiC+wVubAbeJvjMK2OoRy+6El35Zyx3sBkSQ5aH
+         Pc6AQ+8yVF+Xr68nZaFj398HW/qIoSjQd3Zg+dOI3TWr+Y7E79+/+wVqfMUVBBQ1iCKD
+         z6Uw==
+X-Gm-Message-State: APjAAAWTygA/9jZlcU3TSzyjz/KvW7n8RaBKRsi6nktR3gF/gC5blH9B
+        vXpiIfBCH4WAorPMHvPyns0qo2dsFclrAJ0gIp9tQPdTluA8
+X-Google-Smtp-Source: APXvYqxBEHjp/DDJw2j8KTmEawpYVu43gY57TO7tXs5XOqKu3i1FHbungXu60i/kZebeYG996fqJaVdfNDLYBo+ixzhSL8MOVyTb
 MIME-Version: 1.0
-In-Reply-To: <9f611f72-c883-45e9-cb2a-824ba27356d9@suse.cz>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-CA
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a5e:9701:: with SMTP id w1mr7660813ioj.294.1561034825492;
+ Thu, 20 Jun 2019 05:47:05 -0700 (PDT)
+Date:   Thu, 20 Jun 2019 05:47:05 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000417551058bc0bef9@google.com>
+Subject: kernel BUG at ./include/linux/scatterlist.h:LINE!
+From:   syzbot <syzbot+ef0daa6ce95facb233c1@syzkaller.appspotmail.com>
+To:     ast@kernel.org, aviadye@mellanox.com, borisp@mellanox.com,
+        bpf@vger.kernel.org, daniel@iogearbox.net, davejwatson@fb.com,
+        davem@davemloft.net, john.fastabend@gmail.com, kafai@fb.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com,
+        vakul.garg@nxp.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20.06.2019 15:03, Vlastimil Babka wrote:
-> On 5/15/19 1:55 PM, Konstantin Khlebnikov wrote:
->> Socket buffers always were dark-matter that lives by its own rules.
-> 
-> Is the information even exported somewhere e.g. in sysfs or via netlink yet?
+Hello,
 
-in /proc/self/net/protocols
+syzbot found the following crash on:
 
-protocol  size sockets  memory press maxhdr  slab module     cl co di ac io in de sh ss gs se re sp bi br ha uh gp em
-PACKET    1408      0      -1   NI       0   no   kernel      n  n  n  n  n  n  n  n  n  n  n  n  n  n  n  n  n  n  n
-PINGv6    1088      0      -1   NI       0   yes  kernel      y  y  y  n  n  y  n  n  y  y  y  y  n  y  y  y  y  y  n
-RAWv6     1088      0      -1   NI       0   yes  kernel      y  y  y  n  y  y  y  n  y  y  y  y  n  y  y  y  y  n  n
-UDPLITEv6 1080      0      -1   NI       0   yes  kernel      y  y  y  n  y  y  y  n  y  y  y  y  n  n  y  y  y  y  n
-UDPv6     1080     21     111   NI       0   yes  kernel      y  y  y  n  y  n  y  n  y  y  y  y  n  n  y  y  y  y  n
-TCPv6     2048  49297  442697   no     304   yes  kernel      y  y  y  y  y  y  y  y  y  y  y  y  y  n  y  y  y  y  y
-UNIX      1024    158      -1   NI       0   yes  kernel      n  n  n  n  n  n  n  n  n  n  n  n  n  n  n  n  n  n  n
-UDP-Lite   920      0      -1   NI       0   yes  kernel      y  y  y  n  y  y  y  n  y  y  y  y  y  n  y  y  y  y  n
-PING       880      0      -1   NI       0   yes  kernel      y  y  y  n  n  y  n  n  y  y  y  y  n  y  y  y  y  y  n
-RAW        888      0      -1   NI       0   yes  kernel      y  y  y  n  y  y  y  n  y  y  y  y  n  y  y  y  y  n  n
-UDP        920      0     111   NI       0   yes  kernel      y  y  y  n  y  n  y  n  y  y  y  y  y  n  y  y  y  y  n
-TCP       1888      0  442697   no     304   yes  kernel      y  y  y  y  y  y  y  y  y  y  y  y  y  n  y  y  y  y  y
-NETLINK   1040      1      -1   NI       0   no   kernel      n  n  n  n  n  n  n  n  n  n  n  n  n  n  n  n  n  n  n
+HEAD commit:    bed3c0d8 Merge tag 'for-5.2-rc5-tag' of git://git.kernel.o..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=138d485ea00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=28ec3437a5394ee0
+dashboard link: https://syzkaller.appspot.com/bug?extid=ef0daa6ce95facb233c1
+compiler:       clang version 9.0.0 (/home/glider/llvm/clang  
+80fee25776c2fb61e74c1ecb1a523375c2500b69)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13175731a00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=126947faa00000
 
-column 'sockets' is virtualized, while 'memory' is not
+The bug was bisected to:
 
-> 
->> This patch adds line NetBuffers that exposes most common kinds of them.
-> 
-> Did you encounter a situation where the number was significant and this
-> would help finding out why memory is occupied?
+commit f295b3ae9f5927e084bd5decdff82390e3471801
+Author: Vakul Garg <vakul.garg@nxp.com>
+Date:   Wed Mar 20 02:03:36 2019 +0000
 
-Might be. In example above tcp buffers are 1,7G.
-This is real server, with 0.5T ram though.
+     net/tls: Add support of AES128-CCM based ciphers
 
-> 
->> TCP and UDP are most important species.
->> SCTP is added as example of modular protocol.
->> UNIX have no memory counter for now, should be easy to add.
->>
->> Signed-off-by: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
-> 
-> Right now it's a sum of a few values, which should be fine wrt
-> /proc/meminfo overhead. But I guess netdev guys should have a say in
-> this. Also you should update the corresponding Documentation/ file.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1738b732a00000
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=14b8b732a00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=10b8b732a00000
 
-Later I send another proposal: even bigger sum - "MemKernel".
-https://lore.kernel.org/linux-mm/155853600919.381.8172097084053782598.stgit@buzz/
-Which gives estimation for all kinds of 'kernel' memory. It seems more useful for me.
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+ef0daa6ce95facb233c1@syzkaller.appspotmail.com
+Fixes: f295b3ae9f59 ("net/tls: Add support of AES128-CCM based ciphers")
 
-> 
-> Thanks,
-> Vlastimil
-> 
->> ---
->>   fs/proc/meminfo.c  |    5 ++++-
->>   include/linux/mm.h |    6 ++++++
->>   mm/page_alloc.c    |    3 ++-
->>   net/core/sock.c    |   20 ++++++++++++++++++++
->>   net/sctp/socket.c  |    2 +-
->>   5 files changed, 33 insertions(+), 3 deletions(-)
->>
->> diff --git a/fs/proc/meminfo.c b/fs/proc/meminfo.c
->> index 7bc14716fc5d..0ee2300a916d 100644
->> --- a/fs/proc/meminfo.c
->> +++ b/fs/proc/meminfo.c
->> @@ -41,6 +41,7 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
->>   	unsigned long sreclaimable, sunreclaim, misc_reclaimable;
->>   	unsigned long kernel_stack_kb, page_tables, percpu_pages;
->>   	unsigned long anon_pages, file_pages, swap_cached;
->> +	unsigned long net_buffers;
->>   	long kernel_misc;
->>   	int lru;
->>   
->> @@ -66,12 +67,13 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
->>   	kernel_stack_kb = global_zone_page_state(NR_KERNEL_STACK_KB);
->>   	page_tables = global_zone_page_state(NR_PAGETABLE);
->>   	percpu_pages = pcpu_nr_pages();
->> +	net_buffers = total_netbuffer_pages();
->>   
->>   	/* all other kinds of kernel memory allocations */
->>   	kernel_misc = i.totalram - i.freeram - anon_pages - file_pages
->>   		      - sreclaimable - sunreclaim - misc_reclaimable
->>   		      - (kernel_stack_kb >> (PAGE_SHIFT - 10))
->> -		      - page_tables - percpu_pages;
->> +		      - page_tables - percpu_pages - net_buffers;
->>   	if (kernel_misc < 0)
->>   		kernel_misc = 0;
->>   
->> @@ -137,6 +139,7 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
->>   	show_val_kb(m, "VmallocUsed:    ", 0ul);
->>   	show_val_kb(m, "VmallocChunk:   ", 0ul);
->>   	show_val_kb(m, "Percpu:         ", percpu_pages);
->> +	show_val_kb(m, "NetBuffers:     ", net_buffers);
->>   	show_val_kb(m, "KernelMisc:     ", kernel_misc);
->>   
->>   #ifdef CONFIG_MEMORY_FAILURE
->> diff --git a/include/linux/mm.h b/include/linux/mm.h
->> index 0e8834ac32b7..d0a58355bfb7 100644
->> --- a/include/linux/mm.h
->> +++ b/include/linux/mm.h
->> @@ -2254,6 +2254,12 @@ extern void si_meminfo_node(struct sysinfo *val, int nid);
->>   extern unsigned long arch_reserved_kernel_pages(void);
->>   #endif
->>   
->> +#ifdef CONFIG_NET
->> +extern unsigned long total_netbuffer_pages(void);
->> +#else
->> +static inline unsigned long total_netbuffer_pages(void) { return 0; }
->> +#endif
->> +
->>   extern __printf(3, 4)
->>   void warn_alloc(gfp_t gfp_mask, nodemask_t *nodemask, const char *fmt, ...);
->>   
->> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
->> index 3b13d3914176..fcdd7c6e72b9 100644
->> --- a/mm/page_alloc.c
->> +++ b/mm/page_alloc.c
->> @@ -5166,7 +5166,7 @@ void show_free_areas(unsigned int filter, nodemask_t *nodemask)
->>   		" active_file:%lu inactive_file:%lu isolated_file:%lu\n"
->>   		" unevictable:%lu dirty:%lu writeback:%lu unstable:%lu\n"
->>   		" slab_reclaimable:%lu slab_unreclaimable:%lu\n"
->> -		" mapped:%lu shmem:%lu pagetables:%lu bounce:%lu\n"
->> +		" mapped:%lu shmem:%lu pagetables:%lu bounce:%lu net_buffers:%lu\n"
->>   		" free:%lu free_pcp:%lu free_cma:%lu\n",
->>   		global_node_page_state(NR_ACTIVE_ANON),
->>   		global_node_page_state(NR_INACTIVE_ANON),
->> @@ -5184,6 +5184,7 @@ void show_free_areas(unsigned int filter, nodemask_t *nodemask)
->>   		global_node_page_state(NR_SHMEM),
->>   		global_zone_page_state(NR_PAGETABLE),
->>   		global_zone_page_state(NR_BOUNCE),
->> +		total_netbuffer_pages(),
->>   		global_zone_page_state(NR_FREE_PAGES),
->>   		free_pcp,
->>   		global_zone_page_state(NR_FREE_CMA_PAGES));
->> diff --git a/net/core/sock.c b/net/core/sock.c
->> index 75b1c950b49f..dfca4e024b74 100644
->> --- a/net/core/sock.c
->> +++ b/net/core/sock.c
->> @@ -142,6 +142,7 @@
->>   #include <trace/events/sock.h>
->>   
->>   #include <net/tcp.h>
->> +#include <net/udp.h>
->>   #include <net/busy_poll.h>
->>   
->>   static DEFINE_MUTEX(proto_list_mutex);
->> @@ -3573,3 +3574,22 @@ bool sk_busy_loop_end(void *p, unsigned long start_time)
->>   }
->>   EXPORT_SYMBOL(sk_busy_loop_end);
->>   #endif /* CONFIG_NET_RX_BUSY_POLL */
->> +
->> +#if IS_ENABLED(CONFIG_IP_SCTP)
->> +atomic_long_t sctp_memory_allocated;
->> +EXPORT_SYMBOL_GPL(sctp_memory_allocated);
->> +#endif
->> +
->> +unsigned long total_netbuffer_pages(void)
->> +{
->> +	unsigned long ret = 0;
->> +
->> +#if IS_ENABLED(CONFIG_IP_SCTP)
->> +	ret += atomic_long_read(&sctp_memory_allocated);
->> +#endif
->> +#ifdef CONFIG_INET
->> +	ret += atomic_long_read(&tcp_memory_allocated);
->> +	ret += atomic_long_read(&udp_memory_allocated);
->> +#endif
->> +	return ret;
->> +}
->> diff --git a/net/sctp/socket.c b/net/sctp/socket.c
->> index e4e892cc5644..9d11afdeeae4 100644
->> --- a/net/sctp/socket.c
->> +++ b/net/sctp/socket.c
->> @@ -107,7 +107,7 @@ static int sctp_sock_migrate(struct sock *oldsk, struct sock *newsk,
->>   			     enum sctp_socket_type type);
->>   
->>   static unsigned long sctp_memory_pressure;
->> -static atomic_long_t sctp_memory_allocated;
->> +extern atomic_long_t sctp_memory_allocated;
->>   struct percpu_counter sctp_sockets_allocated;
->>   
->>   static void sctp_enter_memory_pressure(struct sock *sk)
->>
-> 
+RAX: ffffffffffffffda RBX: 00007ffd6d3365b0 RCX: 0000000000441ba9
+RDX: 0000000000000004 RSI: 0000000000000000 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000100000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: ffffffffffffffff
+R13: 0000000000000005 R14: 0000000000000000 R15: 0000000000000000
+------------[ cut here ]------------
+kernel BUG at ./include/linux/scatterlist.h:97!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 8023 Comm: syz-executor694 Not tainted 5.2.0-rc5+ #3
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+RIP: 0010:sg_assign_page include/linux/scatterlist.h:97 [inline]
+RIP: 0010:sg_set_page include/linux/scatterlist.h:119 [inline]
+RIP: 0010:sk_msg_page_add include/linux/skmsg.h:246 [inline]
+RIP: 0010:tls_sw_do_sendpage net/tls/tls_sw.c:1170 [inline]
+RIP: 0010:tls_sw_sendpage+0x11b5/0x11e0 net/tls/tls_sw.c:1229
+Code: c1 38 c1 0f 8c 12 fe ff ff 4c 89 f7 e8 14 bb 27 fb e9 05 fe ff ff e8  
+0a 92 ee fa 44 8b 7c 24 18 e9 b2 fe ff ff e8 fb 91 ee fa <0f> 0b e8 f4 91  
+ee fa 0f 0b e8 ed 91 ee fa 4c 89 f7 48 c7 c6 87 e5
+RSP: 0018:ffff888094adf7c0 EFLAGS: 00010293
+RAX: ffffffff86871ff5 RBX: 0000000000000001 RCX: ffff888095bfc300
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
+RBP: ffff888094adf998 R08: ffffffff8687170c R09: fffff9400045851f
+R10: fffff9400045851f R11: 1ffffd400045851e R12: 0000000000000000
+R13: 0000000000000080 R14: ffffea00022c28c0 R15: 1ffff110124d0d01
+FS:  0000555556a2f880(0000) GS:ffff8880aeb00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffc5c9d1f18 CR3: 00000000a8a2c000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+  inet_sendpage+0x16d/0x340 net/ipv4/af_inet.c:815
+  kernel_sendpage net/socket.c:3642 [inline]
+  sock_sendpage+0xd3/0x120 net/socket.c:940
+  pipe_to_sendpage+0x23e/0x310 fs/splice.c:449
+  splice_from_pipe_feed fs/splice.c:500 [inline]
+  __splice_from_pipe+0x2f7/0x8a0 fs/splice.c:624
+  splice_from_pipe fs/splice.c:659 [inline]
+  generic_splice_sendpage+0x172/0x200 fs/splice.c:829
+  do_splice_from fs/splice.c:848 [inline]
+  do_splice fs/splice.c:1155 [inline]
+  __do_sys_splice fs/splice.c:1425 [inline]
+  __se_sys_splice+0x12ec/0x1db0 fs/splice.c:1405
+  __x64_sys_splice+0xe5/0x100 fs/splice.c:1405
+  do_syscall_64+0xfe/0x140 arch/x86/entry/common.c:301
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x441ba9
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7  
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 bb 10 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffd6d336548 EFLAGS: 00000246 ORIG_RAX: 0000000000000113
+RAX: ffffffffffffffda RBX: 00007ffd6d3365b0 RCX: 0000000000441ba9
+RDX: 0000000000000004 RSI: 0000000000000000 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000100000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: ffffffffffffffff
+R13: 0000000000000005 R14: 0000000000000000 R15: 0000000000000000
+Modules linked in:
+---[ end trace 3b5328faabff785c ]---
+RIP: 0010:sg_assign_page include/linux/scatterlist.h:97 [inline]
+RIP: 0010:sg_set_page include/linux/scatterlist.h:119 [inline]
+RIP: 0010:sk_msg_page_add include/linux/skmsg.h:246 [inline]
+RIP: 0010:tls_sw_do_sendpage net/tls/tls_sw.c:1170 [inline]
+RIP: 0010:tls_sw_sendpage+0x11b5/0x11e0 net/tls/tls_sw.c:1229
+Code: c1 38 c1 0f 8c 12 fe ff ff 4c 89 f7 e8 14 bb 27 fb e9 05 fe ff ff e8  
+0a 92 ee fa 44 8b 7c 24 18 e9 b2 fe ff ff e8 fb 91 ee fa <0f> 0b e8 f4 91  
+ee fa 0f 0b e8 ed 91 ee fa 4c 89 f7 48 c7 c6 87 e5
+RSP: 0018:ffff888094adf7c0 EFLAGS: 00010293
+RAX: ffffffff86871ff5 RBX: 0000000000000001 RCX: ffff888095bfc300
+RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000000
+RBP: ffff888094adf998 R08: ffffffff8687170c R09: fffff9400045851f
+R10: fffff9400045851f R11: 1ffffd400045851e R12: 0000000000000000
+R13: 0000000000000080 R14: ffffea00022c28c0 R15: 1ffff110124d0d01
+FS:  0000555556a2f880(0000) GS:ffff8880aeb00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffc5c9d1f18 CR3: 00000000a8a2c000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
