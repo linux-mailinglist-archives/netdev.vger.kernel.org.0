@@ -2,288 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BCED4C5F8
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 05:57:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90E164C611
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 06:18:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731390AbfFTD5d convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 19 Jun 2019 23:57:33 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:52084 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726419AbfFTD5c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Jun 2019 23:57:32 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5K3vUVQ015476
-        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 20:57:31 -0700
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2t7wwcgunp-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 19 Jun 2019 20:57:31 -0700
-Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 19 Jun 2019 20:57:27 -0700
-Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
-        id B20D3760CC1; Wed, 19 Jun 2019 20:57:26 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Alexei Starovoitov <ast@kernel.org>
-Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
-To:     <davem@davemloft.net>
-CC:     <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <kernel-team@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: pull-request: bpf-next 2019-06-19
-Date:   Wed, 19 Jun 2019 20:57:26 -0700
-Message-ID: <20190620035726.3942971-1-ast@kernel.org>
-X-Mailer: git-send-email 2.20.0
+        id S1726124AbfFTESF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 00:18:05 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:43682 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725781AbfFTESF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 00:18:05 -0400
+Received: by mail-pl1-f193.google.com with SMTP id cl9so812264plb.10;
+        Wed, 19 Jun 2019 21:18:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=uIKAfcrE5wvjrEwo/ngslnyTESd49q8bNyvlhkJI9LI=;
+        b=ErUXyLwyQCwKHSZAS0VjZD5xhd+A30Wo/fHnePHtZPsaNEXtoCe9J+HCHYIhptN2Wd
+         yIUfiNzk6TMpAceTKhtA06BmCDi4BTUUBXREnFSUjK2GI0oQ+IF+VxupF2leJe9J0VVZ
+         3B7DPrcHOhpMIaclC/k79dQJTCpIccHOH1kV8mF4oCPmewjD44P196Od+1BiStleTEie
+         quTOZRg/BMk1sEIr9p+W0rF81P/DGzdXhTbpezwFswLjFLoruDKKyaONXkCvTZWmINT3
+         YDfvTmD2FIwGQRWNYjod2YaWg9XaIgBFpXEZSDdxEKZdTheN5g/Zl+1WOceMbPHI8D98
+         fcJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=uIKAfcrE5wvjrEwo/ngslnyTESd49q8bNyvlhkJI9LI=;
+        b=Ya23Z9LLO2eKompdh3Duk0dFKrBBRakWC18Gqcz7NDGNdTROICWxY7IlbTb0fErmke
+         D8iz7uDu32jzdz2bx/HaZe54K9W/t8S07lkmSRuhXHWwxruX9M/lmdes+B7vn7+NkIiI
+         zQLg2VoqU2zvrub0pS88hFhizR0roOI9uJR4j2bx+N0MLDddochfZ67JOiy3fsqnO4Cv
+         8FtULbcsuEvBgvBWletxghYdXcAGhkds11unrjVYQ+KbmF0wwyr7N/CEGSBMnNqaKqgl
+         TGuc6VVf+bKPEUSGl0Fzn3hj2xWyUt9nRwbJHp14JCGEJx9ms1Isl7aqaNNcZ7/r0eTi
+         dnhw==
+X-Gm-Message-State: APjAAAU86vP2Ohks5r0PFGX5nSBG7BSCqTsrH2+z87CZWEglNQ2Hw9Y4
+        u3INlGLeMEFIyge+QgIqrnc=
+X-Google-Smtp-Source: APXvYqwCMcfwt8z1yRvGP466jwPF7+Yv6bmJDIB66iCMbDJqxjXXP+UziDsPgqIau2/Dttcr1/5rXw==
+X-Received: by 2002:a17:902:7295:: with SMTP id d21mr104244303pll.299.1561004284069;
+        Wed, 19 Jun 2019 21:18:04 -0700 (PDT)
+Received: from arch ([2405:204:3084:2253:a5c0:c41b:d911:976b])
+        by smtp.gmail.com with ESMTPSA id y5sm18704348pgv.12.2019.06.19.21.17.59
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 19 Jun 2019 21:18:03 -0700 (PDT)
+Date:   Thu, 20 Jun 2019 09:47:46 +0530
+From:   Puranjay Mohan <puranjay12@gmail.com>
+To:     Bjorn Helgaas <bhelgaas@google.com>
+Cc:     Shuah Khan <skhan@linuxfoundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-kernel-mentees@lists.linuxfoundation.org
+Subject: Re: [PATCH] net: fddi: skfp: remove generic PCI defines from skfbi.h
+Message-ID: <20190620041744.GA6343@arch>
+References: <20190619174643.21456-1-puranjay12@gmail.com>
+ <CAErSpo7-AjCAc8pGpTftd7U-W2kjp1jfbPzk3SOa=Bg5-d6W5w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-20_03:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1034 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906200030
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAErSpo7-AjCAc8pGpTftd7U-W2kjp1jfbPzk3SOa=Bg5-d6W5w@mail.gmail.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+On Wed, Jun 19, 2019 at 02:10:22PM -0500, Bjorn Helgaas wrote:
+> On Wed, Jun 19, 2019 at 12:48 PM Puranjay Mohan <puranjay12@gmail.com> wrote:
+> >
+> > skfbi.h defines its own copies of PCI_COMMAND, PCI_STATUS, etc.
+> > remove them in favor of the generic definitions in
+> > include/uapi/linux/pci_regs.h
+> 
+> 1) Since you're sending several related patches, send them as a
+> "series" with a cover letter, e.g.,
+> 
+>   [PATCH v2 0/2] Use PCI generic definitions instead of private duplicates
+>   [PATCH v2 1/2] Include generic PCI definitions
+>   [PATCH v2 2/2] Remove unused private PCI definitions
+> 
+> Patches 1/2 and 2/2 should be replies to the 0/2 cover letter.  "git
+> send-email" will do this for you if you figure out the right options.
+> 
+> 2) Make sure all your subject lines match.  One started with "Include"
+> and the other with "remove".  They should both be capitalized.
+> 
+> 3) Start sentences with a capital letter, i.e., "Remove them" above.
+> 
+> 4) This commit log needs to explicitly say that you're removing
+> *unused* symbols.  Since they're unused, you don't even need to refer
+> to pci_regs.h.
+> 
+> 5) "git grep PCI_ drivers/net/fddi/skfp" says there are many more
+> unused PCI symbols than just the ones below.  I would just remove them
+> all at once.
+> 
+> 6) Obviously you should compile this to make sure it builds.  It must
+> build cleanly after every patch, not just at the end.  I assume you've
+> done this already.
+>
+Yes, I build the driver after every change and I do it again before
+sending the patch to be sure that it works.
+> 7) Please cc: linux-pci@vger.kernel.org since you're making PCI-related changes.
+> 
+sure.
+> > Signed-off-by: Puranjay Mohan <puranjay12@gmail.com>
+> > ---
+> >  drivers/net/fddi/skfp/h/skfbi.h | 23 -----------------------
+> >  1 file changed, 23 deletions(-)
+> >
+> > diff --git a/drivers/net/fddi/skfp/h/skfbi.h b/drivers/net/fddi/skfp/h/skfbi.h
+> > index 89557457b352..ed144a8e78d1 100644
+> > --- a/drivers/net/fddi/skfp/h/skfbi.h
+> > +++ b/drivers/net/fddi/skfp/h/skfbi.h
+> > @@ -27,29 +27,6 @@
+> >  /*
+> >   * Configuration Space header
+> >   */
+> > -#define        PCI_VENDOR_ID   0x00    /* 16 bit       Vendor ID */
+> > -#define        PCI_DEVICE_ID   0x02    /* 16 bit       Device ID */
+> > -#define        PCI_COMMAND     0x04    /* 16 bit       Command */
+> > -#define        PCI_STATUS      0x06    /* 16 bit       Status */
+> > -#define        PCI_REV_ID      0x08    /*  8 bit       Revision ID */
+> > -#define        PCI_CLASS_CODE  0x09    /* 24 bit       Class Code */
+> > -#define        PCI_CACHE_LSZ   0x0c    /*  8 bit       Cache Line Size */
+> > -#define        PCI_LAT_TIM     0x0d    /*  8 bit       Latency Timer */
+> > -#define        PCI_HEADER_T    0x0e    /*  8 bit       Header Type */
+> > -#define        PCI_BIST        0x0f    /*  8 bit       Built-in selftest */
+> > -#define        PCI_BASE_1ST    0x10    /* 32 bit       1st Base address */
+> > -#define        PCI_BASE_2ND    0x14    /* 32 bit       2nd Base address */
+> > -/* Byte 18..2b:        Reserved */
+> > -#define        PCI_SUB_VID     0x2c    /* 16 bit       Subsystem Vendor ID */
+> > -#define        PCI_SUB_ID      0x2e    /* 16 bit       Subsystem ID */
+> > -#define        PCI_BASE_ROM    0x30    /* 32 bit       Expansion ROM Base Address */
+> > -/* Byte 34..33:        Reserved */
+> > -#define PCI_CAP_PTR    0x34    /*  8 bit (ML)  Capabilities Ptr */
+> > -/* Byte 35..3b:        Reserved */
+> > -#define        PCI_IRQ_LINE    0x3c    /*  8 bit       Interrupt Line */
+> > -#define        PCI_IRQ_PIN     0x3d    /*  8 bit       Interrupt Pin */
+> > -#define        PCI_MIN_GNT     0x3e    /*  8 bit       Min_Gnt */
+> > -#define        PCI_MAX_LAT     0x3f    /*  8 bit       Max_Lat */
+> >  /* Device Dependent Region */
+> >  #define        PCI_OUR_REG     0x40    /* 32 bit (DV)  Our Register */
+> >  #define        PCI_OUR_REG_1   0x40    /* 32 bit (ML)  Our Register 1 */
+> > --
+> > 2.21.0
+> >
 
-The following pull-request contains BPF updates for your *net-next* tree.
+Thanks for the feedback!
+I will send the patch series soon.
 
-The main changes are:
+Thanks
 
-1) new SO_REUSEPORT_DETACH_BPF setsocktopt, from Martin.
-
-2) BTF based map definition, from Andrii.
-
-3) support bpf_map_lookup_elem for xskmap, from Jonathan.
-
-4) bounded loops and scalar precision logic in the verifier, from Alexei.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
-
-Thanks a lot!
-
-----------------------------------------------------------------
-
-The following changes since commit 0462eaacee493f7e2d87551a35d38be93ca723f8:
-
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next (2019-05-31 21:21:18 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git 
-
-for you to fetch changes up to 94079b64255fe40b9b53fd2e4081f68b9b14f54a:
-
-  Merge branch 'bpf-bounded-loops' (2019-06-19 02:22:53 +0200)
-
-----------------------------------------------------------------
-Alexei Starovoitov (10):
-      Merge branch 'xskmap-lookup'
-      bpf: track spill/fill of constants
-      selftests/bpf: fix tests due to const spill/fill
-      bpf: extend is_branch_taken to registers
-      bpf: introduce bounded loops
-      bpf: fix callees pruning callers
-      selftests/bpf: fix tests
-      selftests/bpf: add basic verifier tests for loops
-      selftests/bpf: add realistic loop tests
-      bpf: precise scalar_value tracking
-
-Andrii Nakryiko (13):
-      selftests/bpf: fix constness of source arg for bpf helpers
-      libbpf: fix check for presence of associated BTF for map creation
-      libbpf: add common min/max macro to libbpf_internal.h
-      libbpf: extract BTF loading logic
-      libbpf: streamline ELF parsing error-handling
-      libbpf: refactor map initialization
-      libbpf: identify maps by section index in addition to offset
-      libbpf: split initialization and loading of BTF
-      libbpf: allow specifying map definitions using BTF
-      selftests/bpf: add test for BTF-defined maps
-      selftests/bpf: switch BPF_ANNOTATE_KV_PAIR tests to BTF-defined maps
-      selftests/bpf: convert tests w/ custom values to BTF-defined maps
-      libbpf: constify getter APIs
-
-Colin Ian King (2):
-      bpf: hbm: fix spelling mistake "notifcations" -> "notificiations"
-      bpf: remove redundant assignment to err
-
-Dan Carpenter (1):
-      selftests/bpf: signedness bug in enable_all_controllers()
-
-Daniel Borkmann (3):
-      Merge branch 'bpf-libbpf-num-cpus'
-      Merge branch 'bpf-libbpf-btf-defined-maps'
-      Merge branch 'bpf-bounded-loops'
-
-Daniel T. Lee (2):
-      samples: bpf: remove unnecessary include options in Makefile
-      samples: bpf: refactor header include path
-
-Hechao Li (4):
-      selftests/bpf : clean up feature/ when make clean
-      bpf: add a new API libbpf_num_possible_cpus()
-      selftests/bpf: remove bpf_util.h from BPF C progs
-      bpf: use libbpf_num_possible_cpus internally
-
-Jakub Kicinski (2):
-      samples: bpf: print a warning about headers_install
-      samples: bpf: don't run probes at the local make stage
-
-Jonathan Lemon (4):
-      bpf: Allow bpf_map_lookup_elem() on an xskmap
-      bpf/tools: sync bpf.h
-      tools/bpf: Add bpf_map_lookup_elem selftest for xskmap
-      libbpf: remove qidconf and better support external bpf programs.
-
-Martin KaFai Lau (3):
-      bpf: net: Add SO_DETACH_REUSEPORT_BPF
-      bpf: Sync asm-generic/socket.h to tools/
-      bpf: Add test for SO_REUSEPORT_DETACH_BPF
-
-Prashant Bhole (1):
-      samples/bpf: fix include path in Makefile
-
-Roman Gushchin (1):
-      bpf: allow CGROUP_SKB programs to use bpf_skb_cgroup_id() helper
-
-Stanislav Fomichev (4):
-      bpf: export bpf_sock for BPF_PROG_TYPE_CGROUP_SOCK_ADDR prog type
-      bpf: export bpf_sock for BPF_PROG_TYPE_SOCK_OPS prog type
-      bpf/tools: sync bpf.h
-      selftests/bpf: convert socket_cookie test to sk storage
-
-Valdis Kletnieks (1):
-      bpf: silence warning messages in core
-
-YueHaibing (1):
-      bpf: Fix build error without CONFIG_INET
-
- arch/alpha/include/uapi/asm/socket.h               |   2 +
- arch/mips/include/uapi/asm/socket.h                |   2 +
- arch/parisc/include/uapi/asm/socket.h              |   2 +
- arch/sparc/include/uapi/asm/socket.h               |   2 +
- include/linux/bpf.h                                |  25 +
- include/linux/bpf_verifier.h                       |  69 +-
- include/net/sock_reuseport.h                       |   2 +
- include/net/xdp_sock.h                             |   4 +-
- include/uapi/asm-generic/socket.h                  |   2 +
- include/uapi/linux/bpf.h                           |   6 +
- kernel/bpf/Makefile                                |   1 +
- kernel/bpf/devmap.c                                |   2 +-
- kernel/bpf/verifier.c                              | 793 ++++++++++++++++--
- kernel/bpf/xskmap.c                                |   9 +-
- net/core/filter.c                                  |  86 ++
- net/core/sock.c                                    |   4 +
- net/core/sock_reuseport.c                          |  24 +
- samples/bpf/Makefile                               |  23 +-
- samples/bpf/fds_example.c                          |   2 +-
- samples/bpf/hbm.c                                  |   6 +-
- samples/bpf/ibumad_user.c                          |   2 +-
- samples/bpf/sockex1_user.c                         |   2 +-
- samples/bpf/sockex2_user.c                         |   2 +-
- samples/bpf/xdp1_user.c                            |   4 +-
- samples/bpf/xdp_adjust_tail_user.c                 |   4 +-
- samples/bpf/xdp_fwd_user.c                         |   2 +-
- samples/bpf/xdp_redirect_cpu_user.c                |   2 +-
- samples/bpf/xdp_redirect_map_user.c                |   2 +-
- samples/bpf/xdp_redirect_user.c                    |   2 +-
- samples/bpf/xdp_router_ipv4_user.c                 |   2 +-
- samples/bpf/xdp_rxq_info_user.c                    |   4 +-
- samples/bpf/xdp_tx_iptunnel_user.c                 |   2 +-
- samples/bpf/xdpsock_user.c                         |   4 +-
- tools/bpf/bpftool/common.c                         |  53 +-
- tools/include/uapi/asm-generic/socket.h            | 147 ++++
- tools/include/uapi/linux/bpf.h                     |   6 +
- tools/lib/bpf/bpf.c                                |   7 +-
- tools/lib/bpf/bpf_prog_linfo.c                     |   5 +-
- tools/lib/bpf/btf.c                                |   3 -
- tools/lib/bpf/btf.h                                |   1 +
- tools/lib/bpf/btf_dump.c                           |   3 -
- tools/lib/bpf/libbpf.c                             | 927 +++++++++++++++------
- tools/lib/bpf/libbpf.h                             |  78 +-
- tools/lib/bpf/libbpf.map                           |   1 +
- tools/lib/bpf/libbpf_internal.h                    |   7 +
- tools/lib/bpf/xsk.c                                | 103 +--
- tools/testing/selftests/bpf/Makefile               |   3 +-
- tools/testing/selftests/bpf/bpf_endian.h           |   1 +
- tools/testing/selftests/bpf/bpf_helpers.h          |   4 +-
- tools/testing/selftests/bpf/bpf_util.h             |  37 +-
- tools/testing/selftests/bpf/cgroup_helpers.c       |   2 +-
- .../selftests/bpf/prog_tests/bpf_verif_scale.c     |  67 +-
- tools/testing/selftests/bpf/progs/bpf_flow.c       |  18 +-
- tools/testing/selftests/bpf/progs/loop1.c          |  28 +
- tools/testing/selftests/bpf/progs/loop2.c          |  28 +
- tools/testing/selftests/bpf/progs/loop3.c          |  22 +
- tools/testing/selftests/bpf/progs/netcnt_prog.c    |  22 +-
- tools/testing/selftests/bpf/progs/pyperf.h         |   6 +-
- tools/testing/selftests/bpf/progs/pyperf600.c      |   9 +
- .../selftests/bpf/progs/pyperf600_nounroll.c       |   8 +
- .../selftests/bpf/progs/socket_cookie_prog.c       |  49 +-
- .../selftests/bpf/progs/sockmap_parse_prog.c       |   1 -
- .../selftests/bpf/progs/sockmap_tcp_msg_prog.c     |   2 +-
- .../selftests/bpf/progs/sockmap_verdict_prog.c     |   1 -
- tools/testing/selftests/bpf/progs/strobemeta.c     |  10 +
- tools/testing/selftests/bpf/progs/strobemeta.h     | 528 ++++++++++++
- .../selftests/bpf/progs/strobemeta_nounroll1.c     |   9 +
- .../selftests/bpf/progs/strobemeta_nounroll2.c     |   9 +
- tools/testing/selftests/bpf/progs/test_btf_newkv.c |  73 ++
- .../selftests/bpf/progs/test_get_stack_rawtp.c     |  27 +-
- .../testing/selftests/bpf/progs/test_global_data.c |  27 +-
- tools/testing/selftests/bpf/progs/test_l4lb.c      |  45 +-
- .../selftests/bpf/progs/test_l4lb_noinline.c       |  45 +-
- tools/testing/selftests/bpf/progs/test_map_lock.c  |  22 +-
- tools/testing/selftests/bpf/progs/test_seg6_loop.c | 261 ++++++
- .../bpf/progs/test_select_reuseport_kern.c         |  45 +-
- .../selftests/bpf/progs/test_send_signal_kern.c    |  22 +-
- .../selftests/bpf/progs/test_sock_fields_kern.c    |  60 +-
- tools/testing/selftests/bpf/progs/test_spin_lock.c |  33 +-
- .../selftests/bpf/progs/test_stacktrace_build_id.c |  44 +-
- .../selftests/bpf/progs/test_stacktrace_map.c      |  40 +-
- .../selftests/bpf/progs/test_sysctl_loop1.c        |  71 ++
- .../selftests/bpf/progs/test_sysctl_loop2.c        |  72 ++
- .../testing/selftests/bpf/progs/test_sysctl_prog.c |   5 +-
- .../testing/selftests/bpf/progs/test_tcp_estats.c  |   9 +-
- .../testing/selftests/bpf/progs/test_tcpbpf_kern.c |  18 +-
- .../selftests/bpf/progs/test_tcpnotify_kern.c      |  18 +-
- tools/testing/selftests/bpf/progs/test_xdp.c       |  18 +-
- tools/testing/selftests/bpf/progs/test_xdp_loop.c  | 231 +++++
- .../selftests/bpf/progs/test_xdp_noinline.c        |  60 +-
- tools/testing/selftests/bpf/test_btf.c             |  10 +-
- .../testing/selftests/bpf/test_select_reuseport.c  |  54 ++
- tools/testing/selftests/bpf/test_socket_cookie.c   |  24 +-
- tools/testing/selftests/bpf/test_verifier.c        |  11 +-
- tools/testing/selftests/bpf/verifier/calls.c       |  22 +-
- tools/testing/selftests/bpf/verifier/cfg.c         |  11 +-
- .../selftests/bpf/verifier/direct_packet_access.c  |   3 +-
- .../selftests/bpf/verifier/helper_access_var_len.c |  28 +-
- tools/testing/selftests/bpf/verifier/loops1.c      | 161 ++++
- .../selftests/bpf/verifier/prevent_map_lookup.c    |  15 -
- tools/testing/selftests/bpf/verifier/sock.c        |  18 +
- 101 files changed, 4048 insertions(+), 860 deletions(-)
- create mode 100644 tools/include/uapi/asm-generic/socket.h
- create mode 100644 tools/testing/selftests/bpf/progs/loop1.c
- create mode 100644 tools/testing/selftests/bpf/progs/loop2.c
- create mode 100644 tools/testing/selftests/bpf/progs/loop3.c
- create mode 100644 tools/testing/selftests/bpf/progs/pyperf600.c
- create mode 100644 tools/testing/selftests/bpf/progs/pyperf600_nounroll.c
- create mode 100644 tools/testing/selftests/bpf/progs/strobemeta.c
- create mode 100644 tools/testing/selftests/bpf/progs/strobemeta.h
- create mode 100644 tools/testing/selftests/bpf/progs/strobemeta_nounroll1.c
- create mode 100644 tools/testing/selftests/bpf/progs/strobemeta_nounroll2.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_btf_newkv.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_seg6_loop.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_sysctl_loop1.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_sysctl_loop2.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_loop.c
- create mode 100644 tools/testing/selftests/bpf/verifier/loops1.c
+--Puranjay
