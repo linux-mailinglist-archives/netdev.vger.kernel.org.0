@@ -2,44 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 20C474CE09
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 14:53:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D73D4CE0F
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 14:54:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731733AbfFTMxy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 08:53:54 -0400
-Received: from mail-eopbgr700073.outbound.protection.outlook.com ([40.107.70.73]:32192
-        "EHLO NAM04-SN1-obe.outbound.protection.outlook.com"
+        id S1731823AbfFTMyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 08:54:41 -0400
+Received: from mail-eopbgr770070.outbound.protection.outlook.com ([40.107.77.70]:38368
+        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726569AbfFTMxy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Jun 2019 08:53:54 -0400
+        id S1726569AbfFTMyl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Jun 2019 08:54:41 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ericsson.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9sDCGNmZUECGsr3nVdfuQiGkdHI94DvBf23hSyYSvto=;
- b=mx1C4gtceMjGWWMlxlZBGnxuE6o47kHdgfO1gIqDeoVMQ/dp+lHGn49iLspRSgVUeHi2GVm32eOJELd9mDHs25Q15K7dFG4hvbOmdLsKQMUbECSl1IdwRDL2jOo8uBFg7ifmRPaqv67bWIMv5RE4b1QlpGYhQAaHfc1Y49VeKyI=
+ bh=CidO0yKQjwgkjJw3BY98JjijXAQuGrgvKx41rqCyk+U=;
+ b=LutsJg51OXshWfCdZFgeMwT8Tmf/lNAZjp4UBqBOAeFUj5ZaQET1WATQac/lMuxrg5lssSkb4DWNTvtm0U8bkLRl+sWxPZaN0ejBFKwGs/CCWxsfQQHhdp906qqmeRnShEyiq5/MpyazcMv97Nh2ikmYahBMwb5ycBLnu/5H9H4=
 Received: from CH2PR15MB3575.namprd15.prod.outlook.com (52.132.228.77) by
- CH2PR15MB3718.namprd15.prod.outlook.com (52.132.230.32) with Microsoft SMTP
+ CH2PR15MB3560.namprd15.prod.outlook.com (52.132.228.13) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1987.11; Thu, 20 Jun 2019 12:53:47 +0000
+ 15.20.1987.12; Thu, 20 Jun 2019 12:53:57 +0000
 Received: from CH2PR15MB3575.namprd15.prod.outlook.com
  ([fe80::8d6a:e759:6fd:5ee0]) by CH2PR15MB3575.namprd15.prod.outlook.com
  ([fe80::8d6a:e759:6fd:5ee0%7]) with mapi id 15.20.1987.014; Thu, 20 Jun 2019
- 12:53:47 +0000
+ 12:53:57 +0000
 From:   Jon Maloy <jon.maloy@ericsson.com>
 To:     Xin Long <lucien.xin@gmail.com>,
         network dev <netdev@vger.kernel.org>
 CC:     "davem@davemloft.net" <davem@davemloft.net>,
         Ying Xue <ying.xue@windriver.com>,
         "tipc-discussion@lists.sourceforge.net" 
-        <tipc-discussion@lists.sourceforge.net>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: RE: [PATCH net] tipc: add dst_cache support for udp media
-Thread-Topic: [PATCH net] tipc: add dst_cache support for udp media
-Thread-Index: AQHVJ1fdyQpCetQ/80yiS387zwmpZqakf6Bw
-Date:   Thu, 20 Jun 2019 12:53:47 +0000
-Message-ID: <CH2PR15MB357599BE22BDF91442D5E5469AE40@CH2PR15MB3575.namprd15.prod.outlook.com>
-References: <0ea2e8519f14d5c9e7bb7ba82a5be371bd4cb9ab.1561028621.git.lucien.xin@gmail.com>
-In-Reply-To: <0ea2e8519f14d5c9e7bb7ba82a5be371bd4cb9ab.1561028621.git.lucien.xin@gmail.com>
+        <tipc-discussion@lists.sourceforge.net>
+Subject: RE: [PATCH net] tipc: change to use register_pernet_device
+Thread-Topic: [PATCH net] tipc: change to use register_pernet_device
+Thread-Index: AQHVJ1R7YAlg7caNfkmzB0tqLYARp6akfyJw
+Date:   Thu, 20 Jun 2019 12:53:57 +0000
+Message-ID: <CH2PR15MB3575BD179FA3B0DB95BAFA149AE40@CH2PR15MB3575.namprd15.prod.outlook.com>
+References: <1a8f3ada3e0a65b6e9250c4580a7c420b4ddddac.1561027168.git.lucien.xin@gmail.com>
+In-Reply-To: <1a8f3ada3e0a65b6e9250c4580a7c420b4ddddac.1561027168.git.lucien.xin@gmail.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -48,29 +47,29 @@ authentication-results: spf=none (sender IP is )
  smtp.mailfrom=jon.maloy@ericsson.com; 
 x-originating-ip: [198.24.6.220]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ea87bf2e-ee2d-4819-e195-08d6f57e5626
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:CH2PR15MB3718;
-x-ms-traffictypediagnostic: CH2PR15MB3718:
-x-microsoft-antispam-prvs: <CH2PR15MB3718E5D3348A42206CBA7E6C9AE40@CH2PR15MB3718.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:125;
+x-ms-office365-filtering-correlation-id: 39e1338f-ff69-44ae-989b-08d6f57e5bf5
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:CH2PR15MB3560;
+x-ms-traffictypediagnostic: CH2PR15MB3560:
+x-microsoft-antispam-prvs: <CH2PR15MB35607DB049FC0BC1FACEE93B9AE40@CH2PR15MB3560.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2043;
 x-forefront-prvs: 0074BBE012
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(136003)(39850400004)(346002)(396003)(376002)(199004)(189003)(13464003)(256004)(64756008)(66066001)(305945005)(74316002)(86362001)(66946007)(33656002)(7736002)(71200400001)(55016002)(68736007)(25786009)(2906002)(6436002)(53936002)(54906003)(9686003)(26005)(3846002)(229853002)(6506007)(6116002)(8936002)(53546011)(14444005)(4326008)(8676002)(71190400001)(316002)(14454004)(99286004)(6246003)(76176011)(7696005)(102836004)(81156014)(476003)(44832011)(81166006)(52536014)(5660300002)(66556008)(478600001)(486006)(186003)(110136005)(446003)(66476007)(11346002)(76116006)(66446008)(73956011)(237434003);DIR:OUT;SFP:1101;SCL:1;SRVR:CH2PR15MB3718;H:CH2PR15MB3575.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(376002)(366004)(396003)(346002)(39850400004)(199004)(189003)(13464003)(486006)(102836004)(53546011)(26005)(186003)(66556008)(73956011)(66066001)(44832011)(11346002)(76176011)(76116006)(25786009)(476003)(6506007)(66446008)(64756008)(66476007)(446003)(478600001)(4326008)(316002)(81156014)(110136005)(8936002)(6246003)(86362001)(55016002)(52536014)(6436002)(66946007)(14454004)(229853002)(9686003)(8676002)(81166006)(33656002)(6116002)(3846002)(53936002)(54906003)(99286004)(5660300002)(71190400001)(74316002)(7696005)(2906002)(71200400001)(256004)(7736002)(305945005)(68736007);DIR:OUT;SFP:1101;SCL:1;SRVR:CH2PR15MB3560;H:CH2PR15MB3575.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: ericsson.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: XKUrB1BRCSFdiQV74c0YSa0BrApKMsdFDtVtCc2hAefl1tdm4dn1wwuc+ofH0VrEldhEry4zipY4awgY/3fJUgOQtRucXDOpM5qKkGhsyG48BYxjyOsSNUJCLhbTgSgpHE9siY2PptG3ilzop4iJE7mnvyba7if+zNxiAin7py0XyAokLooIlyttVEZONUPkvNmtfZEWTtxQ0XSZIcSBm6FXt5sMh06IJCT/ORP9UfabA0nfzA5VaxJuaaZmG4R0QJ5EhSfYVvDd1FrUNSPU9NYGGS9fSXbSm6ylv5QiB+ly93HxfQ1rGhXHv2gIFLweKN4jidY5SGCi280A/P3x/Cytxew6x+lj1/nPJ66PtoJfT1CDGM0oCqmsQao5wW4h27kXjRYiYqG99u+OI6e0BKZfUvz98XmiFIE8XDGEOEk=
+x-microsoft-antispam-message-info: 7C7P8UMUxMfewkB5FXG3FYwuefJsjQFY6xTP7XKZcMRA3zt4mIZYNQsQYpjxzKwkuI/btYsWuNFymsDn9mQTlT0ngAGsILWEWbIHYDlsPo4mNv0YFYpXl/luPawLvaMvHIb701UVvg3oyS8K/yd7E5zujzCovEvEOt6luDRgGrnuo9C1InE7tQbjEHCC2PH7Gz9TPHAWBlHpEX8tUej2ytoDMARmgzVInxBvKnD5cyQWOMwRo3ST9YqlT4fgM9aUEvubuIAivCB1hRR8hmU+NiPPFh5bHYYSnZK4M9nMnpap1R8mN0kyGNBaJLkEVLdFaZ7Hw9CGgFkL8YpAVuGK7sS2KRt0OBruskugx/hxogQB43WeHzdIMcuygb+wrRksDC9hSw+9U7U2E5ajj4+ijPMHBTasoobzCQ/7gTlj9Mc=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: ericsson.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ea87bf2e-ee2d-4819-e195-08d6f57e5626
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jun 2019 12:53:47.7937
+X-MS-Exchange-CrossTenant-Network-Message-Id: 39e1338f-ff69-44ae-989b-08d6f57e5bf5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jun 2019 12:53:57.5201
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 92e84ceb-fbfd-47ab-be52-080c6b87953f
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
 X-MS-Exchange-CrossTenant-userprincipalname: jon.maloy@ericsson.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR15MB3718
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR15MB3560
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -81,182 +80,108 @@ Acked-by: Jon Maloy <jon.maloy@ericsson.com>
 > -----Original Message-----
 > From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org> On
 > Behalf Of Xin Long
-> Sent: 20-Jun-19 07:04
+> Sent: 20-Jun-19 06:39
 > To: network dev <netdev@vger.kernel.org>
 > Cc: davem@davemloft.net; Jon Maloy <jon.maloy@ericsson.com>; Ying Xue
-> <ying.xue@windriver.com>; tipc-discussion@lists.sourceforge.net; Paolo
-> Abeni <pabeni@redhat.com>
-> Subject: [PATCH net] tipc: add dst_cache support for udp media
+> <ying.xue@windriver.com>; tipc-discussion@lists.sourceforge.net
+> Subject: [PATCH net] tipc: change to use register_pernet_device
 >=20
-> As other udp/ip tunnels do, tipc udp media should also have a lockless
-> dst_cache supported on its tx path.
+> This patch is to fix a dst defcnt leak, which can be reproduced by doing:=
+.ericsson.com>
 >=20
-> Here we add dst_cache into udp_replicast to support dst cache for both
-> rmcast and rcast, and rmcast uses ub->rcast and each rcast uses its own n=
-ode
-> in ub->rcast.list.
+>   # ip net a c; ip net a s; modprobe tipc
+>   # ip net e s ip l a n eth1 type veth peer n eth1 netns c
+>   # ip net e c ip l s lo up; ip net e c ip l s eth1 up
+>   # ip net e s ip l s lo up; ip net e s ip l s eth1 up
+>   # ip net e c ip a a 1.1.1.2/8 dev eth1
+>   # ip net e s ip a a 1.1.1.1/8 dev eth1
+>   # ip net e c tipc b e m udp n u1 localip 1.1.1.2
+>   # ip net e s tipc b e m udp n u1 localip 1.1.1.1
+>   # ip net d c; ip net d s; rmmod tipc
 >=20
+> and it will get stuck and keep logging the error:
+>=20
+>   unregister_netdevice: waiting for lo to become free. Usage count =3D 1
+>=20
+> The cause is that a dst is held by the udp sock's sk_rx_dst set on udp rx=
+ path
+> with udp_early_demux =3D=3D 1, and this dst (eventually holding lo dev) c=
+an't be
+> released as bearer's removal in tipc pernet .exit happens after lo dev's
+> removal, default_device pernet .exit.
+>=20
+>  "There are two distinct types of pernet_operations recognized: subsys an=
+d
+>   device.  At creation all subsys init functions are called before device
+>   init functions, and at destruction all device exit functions are called
+>   before subsys exit function."
+>=20
+> So by calling register_pernet_device instead to register tipc_net_ops, th=
+e
+> pernet .exit() will be invoked earlier than loopback dev's removal when a
+> netns is being destroyed, as fou/gue does.
+>=20
+> Note that vxlan and geneve udp tunnels don't have this issue, as the udp =
+sock
+> is released in their device ndo_stop().
+>=20
+> This fix is also necessary for tipc dst_cache, which will hold dsts on tx=
+ path and
+> I will introduce in my next patch.
+>=20
+> Reported-by: Li Shuang <shuali@redhat.com>
 > Signed-off-by: Xin Long <lucien.xin@gmail.com>
 > ---
->  net/tipc/udp_media.c | 72 ++++++++++++++++++++++++++++++++++-------
-> -----------
->  1 file changed, 47 insertions(+), 25 deletions(-)
+>  net/tipc/core.c | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
 >=20
-> diff --git a/net/tipc/udp_media.c b/net/tipc/udp_media.c index
-> 1405ccc..b8962df 100644
-> --- a/net/tipc/udp_media.c
-> +++ b/net/tipc/udp_media.c
-> @@ -76,6 +76,7 @@ struct udp_media_addr {
->  /* struct udp_replicast - container for UDP remote addresses */  struct
-> udp_replicast {
->  	struct udp_media_addr addr;
-> +	struct dst_cache dst_cache;
->  	struct rcu_head rcu;
->  	struct list_head list;
->  };
-> @@ -158,22 +159,27 @@ static int tipc_udp_addr2msg(char *msg, struct
-> tipc_media_addr *a)
->  /* tipc_send_msg - enqueue a send request */  static int tipc_udp_xmit(s=
-truct
-> net *net, struct sk_buff *skb,
->  			 struct udp_bearer *ub, struct udp_media_addr *src,
-> -			 struct udp_media_addr *dst)
-> +			 struct udp_media_addr *dst, struct dst_cache *cache)
->  {
-> +	struct dst_entry *ndst =3D dst_cache_get(cache);
->  	int ttl, err =3D 0;
-> -	struct rtable *rt;
+> diff --git a/net/tipc/core.c b/net/tipc/core.c index ed536c0..c837072 100=
+644
+> --- a/net/tipc/core.c
+> +++ b/net/tipc/core.c
+> @@ -134,7 +134,7 @@ static int __init tipc_init(void)
+>  	if (err)
+>  		goto out_sysctl;
 >=20
->  	if (dst->proto =3D=3D htons(ETH_P_IP)) {
-> -		struct flowi4 fl =3D {
-> -			.daddr =3D dst->ipv4.s_addr,
-> -			.saddr =3D src->ipv4.s_addr,
-> -			.flowi4_mark =3D skb->mark,
-> -			.flowi4_proto =3D IPPROTO_UDP
-> -		};
-> -		rt =3D ip_route_output_key(net, &fl);
-> -		if (IS_ERR(rt)) {
-> -			err =3D PTR_ERR(rt);
-> -			goto tx_error;
-> +		struct rtable *rt =3D (struct rtable *)ndst;
-> +
-> +		if (!rt) {
-> +			struct flowi4 fl =3D {
-> +				.daddr =3D dst->ipv4.s_addr,
-> +				.saddr =3D src->ipv4.s_addr,
-> +				.flowi4_mark =3D skb->mark,
-> +				.flowi4_proto =3D IPPROTO_UDP
-> +			};
-> +			rt =3D ip_route_output_key(net, &fl);
-> +			if (IS_ERR(rt)) {
-> +				err =3D PTR_ERR(rt);
-> +				goto tx_error;
-> +			}
-> +			dst_cache_set_ip4(cache, &rt->dst, fl.saddr);
->  		}
+> -	err =3D register_pernet_subsys(&tipc_net_ops);
+> +	err =3D register_pernet_device(&tipc_net_ops);
+>  	if (err)
+>  		goto out_pernet;
 >=20
->  		ttl =3D ip4_dst_hoplimit(&rt->dst);
-> @@ -182,17 +188,19 @@ static int tipc_udp_xmit(struct net *net, struct
-> sk_buff *skb,
->  				    dst->port, false, true);
->  #if IS_ENABLED(CONFIG_IPV6)
->  	} else {
-> -		struct dst_entry *ndst;
-> -		struct flowi6 fl6 =3D {
-> -			.flowi6_oif =3D ub->ifindex,
-> -			.daddr =3D dst->ipv6,
-> -			.saddr =3D src->ipv6,
-> -			.flowi6_proto =3D IPPROTO_UDP
-> -		};
-> -		err =3D ipv6_stub->ipv6_dst_lookup(net, ub->ubsock->sk, &ndst,
-> -						 &fl6);
-> -		if (err)
-> -			goto tx_error;
-> +		if (!ndst) {
-> +			struct flowi6 fl6 =3D {
-> +				.flowi6_oif =3D ub->ifindex,
-> +				.daddr =3D dst->ipv6,
-> +				.saddr =3D src->ipv6,
-> +				.flowi6_proto =3D IPPROTO_UDP
-> +			};
-> +			err =3D ipv6_stub->ipv6_dst_lookup(net, ub->ubsock->sk,
-> +							 &ndst, &fl6);
-> +			if (err)
-> +				goto tx_error;
-> +			dst_cache_set_ip6(cache, ndst, &fl6.saddr);
-> +		}
->  		ttl =3D ip6_dst_hoplimit(ndst);
->  		err =3D udp_tunnel6_xmit_skb(ndst, ub->ubsock->sk, skb, NULL,
->  					   &src->ipv6, &dst->ipv6, 0, ttl, 0, @@ -230,7
-> +238,8 @@ static int tipc_udp_send_msg(struct net *net, struct sk_buff *s=
-kb,
->  	}
+> @@ -142,7 +142,7 @@ static int __init tipc_init(void)
+>  	if (err)
+>  		goto out_socket;
 >=20
->  	if (addr->broadcast !=3D TIPC_REPLICAST_SUPPORT)
-> -		return tipc_udp_xmit(net, skb, ub, src, dst);
-> +		return tipc_udp_xmit(net, skb, ub, src, dst,
-> +				     &ub->rcast.dst_cache);
+> -	err =3D register_pernet_subsys(&tipc_topsrv_net_ops);
+> +	err =3D register_pernet_device(&tipc_topsrv_net_ops);
+>  	if (err)
+>  		goto out_pernet_topsrv;
 >=20
->  	/* Replicast, send an skb to each configured IP address */
->  	list_for_each_entry_rcu(rcast, &ub->rcast.list, list) { @@ -242,7 +251,=
-8
-> @@ static int tipc_udp_send_msg(struct net *net, struct sk_buff *skb,
->  			goto out;
->  		}
->=20
-> -		err =3D tipc_udp_xmit(net, _skb, ub, src, &rcast->addr);
-> +		err =3D tipc_udp_xmit(net, _skb, ub, src, &rcast->addr,
-> +				    &rcast->dst_cache);
->  		if (err)
->  			goto out;
->  	}
-> @@ -286,6 +296,11 @@ static int tipc_udp_rcast_add(struct tipc_bearer *b,
->  	if (!rcast)
->  		return -ENOMEM;
->=20
-> +	if (dst_cache_init(&rcast->dst_cache, GFP_ATOMIC)) {
-> +		kfree(rcast);
-> +		return -ENOMEM;
-> +	}
-> +
->  	memcpy(&rcast->addr, addr, sizeof(struct udp_media_addr));
->=20
->  	if (ntohs(addr->proto) =3D=3D ETH_P_IP)
-> @@ -742,6 +757,10 @@ static int tipc_udp_enable(struct net *net, struct
-> tipc_bearer *b,
->  	tuncfg.encap_destroy =3D NULL;
->  	setup_udp_tunnel_sock(net, ub->ubsock, &tuncfg);
->=20
-> +	err =3D dst_cache_init(&ub->rcast.dst_cache, GFP_ATOMIC);
-> +	if (err)
-> +		goto err;
-> +
->  	/**
->  	 * The bcast media address port is used for all peers and the ip
->  	 * is used if it's a multicast address.
-> @@ -756,6 +775,7 @@ static int tipc_udp_enable(struct net *net, struct
-> tipc_bearer *b,
->=20
+> @@ -153,11 +153,11 @@ static int __init tipc_init(void)
+>  	pr_info("Started in single node mode\n");
 >  	return 0;
->  err:
-> +	dst_cache_destroy(&ub->rcast.dst_cache);
->  	if (ub->ubsock)
->  		udp_tunnel_sock_release(ub->ubsock);
->  	kfree(ub);
-> @@ -769,10 +789,12 @@ static void cleanup_bearer(struct work_struct
-> *work)
->  	struct udp_replicast *rcast, *tmp;
->=20
->  	list_for_each_entry_safe(rcast, tmp, &ub->rcast.list, list) {
-> +		dst_cache_destroy(&rcast->dst_cache);
->  		list_del_rcu(&rcast->list);
->  		kfree_rcu(rcast, rcu);
->  	}
->=20
-> +	dst_cache_destroy(&ub->rcast.dst_cache);
->  	if (ub->ubsock)
->  		udp_tunnel_sock_release(ub->ubsock);
->  	synchronize_net();
+>  out_bearer:
+> -	unregister_pernet_subsys(&tipc_topsrv_net_ops);
+> +	unregister_pernet_device(&tipc_topsrv_net_ops);
+>  out_pernet_topsrv:
+>  	tipc_socket_stop();
+>  out_socket:
+> -	unregister_pernet_subsys(&tipc_net_ops);
+> +	unregister_pernet_device(&tipc_net_ops);
+>  out_pernet:
+>  	tipc_unregister_sysctl();
+>  out_sysctl:
+> @@ -172,9 +172,9 @@ static int __init tipc_init(void)  static void __exit
+> tipc_exit(void)  {
+>  	tipc_bearer_cleanup();
+> -	unregister_pernet_subsys(&tipc_topsrv_net_ops);
+> +	unregister_pernet_device(&tipc_topsrv_net_ops);
+>  	tipc_socket_stop();
+> -	unregister_pernet_subsys(&tipc_net_ops);
+> +	unregister_pernet_device(&tipc_net_ops);
+>  	tipc_netlink_stop();
+>  	tipc_netlink_compat_stop();
+>  	tipc_unregister_sysctl();
 > --
 > 2.1.0
 
