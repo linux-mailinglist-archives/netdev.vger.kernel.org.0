@@ -2,144 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 058CA4CFEA
-	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 16:05:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEF054D029
+	for <lists+netdev@lfdr.de>; Thu, 20 Jun 2019 16:16:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731770AbfFTOF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 10:05:29 -0400
-Received: from hqemgate14.nvidia.com ([216.228.121.143]:11708 "EHLO
-        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726562AbfFTOF2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 10:05:28 -0400
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5d0b92a50001>; Thu, 20 Jun 2019 07:05:25 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Thu, 20 Jun 2019 07:05:26 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Thu, 20 Jun 2019 07:05:26 -0700
-Received: from [10.21.132.148] (172.20.13.39) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 20 Jun
- 2019 14:05:24 +0000
-Subject: Re: [PATCH net-next 3/3] net: stmmac: Convert to phylink and remove
- phylib logic
-From:   Jon Hunter <jonathanh@nvidia.com>
-To:     Jose Abreu <Jose.Abreu@synopsys.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Joao Pinto <Joao.Pinto@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        linux-tegra <linux-tegra@vger.kernel.org>
-References: <cover.1560266175.git.joabreu@synopsys.com>
- <6226d6a0de5929ed07d64b20472c52a86e71383d.1560266175.git.joabreu@synopsys.com>
- <d9ffce3d-4827-fa4a-89e8-0492c4bc1848@nvidia.com>
- <78EB27739596EE489E55E81C33FEC33A0B9C8D6E@DE02WEMBXB.internal.synopsys.com>
- <26cfaeff-a310-3b79-5b57-fd9c93bd8929@nvidia.com>
- <78EB27739596EE489E55E81C33FEC33A0B9C8DD9@DE02WEMBXB.internal.synopsys.com>
- <b66c7578-172f-4443-f4c3-411525e28738@nvidia.com>
- <d96f8bea-f7ef-82ae-01ba-9c97aec0ee38@nvidia.com>
- <6f36b6b6-8209-ed98-e7e1-3dac0a92f6cd@nvidia.com>
-Message-ID: <7f0f2ed0-f47c-4670-d169-25f0413c1fd3@nvidia.com>
-Date:   Thu, 20 Jun 2019 15:05:22 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1732070AbfFTOQc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 10:16:32 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:38508 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726686AbfFTOQc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 10:16:32 -0400
+Received: by mail-io1-f65.google.com with SMTP id j6so1952088ioa.5
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 07:16:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=xAl7DrbbI/ECIry2Iy7DKv6jS+SBAOcqni7wIydNAi0=;
+        b=qW9HM31bf7khFMxJyCc4tTMIa+OYpRngJUgaqsiKTM2EJMi0rPFR6GSt/kLjm/dbe+
+         fvfThFat50k6d4dihTJsUIJHH33aQz+9jNLP149PypIiArOIr0sLsadQr+8LtgSjqb1c
+         ITxLdw8ZugfOMDFRAU/kSqlUXP1G1+JEIU9NBTI13LP4vO/RVExGhAGcyiYVCmLBTlK6
+         w7Dp0ZuEu1bO14Y19MPulIgPSVvMqXKLcsgMt06oxznL0itUc1m5XX0PAArKx8x4ITM9
+         +dO/X2UYrF2pyro0QXWTK+BM5IQNi8Wv539YWnEYz+IPOqdCuQSvTFDyyfcz88fIsn54
+         WRVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=xAl7DrbbI/ECIry2Iy7DKv6jS+SBAOcqni7wIydNAi0=;
+        b=fcQINCZMe9xcP0SqGhNPTuNvRPRtjHZrt7DPMadRKFV2Ngatef1pjWY9e6J3qc7kzw
+         g1HB36VBXC5iwIN6scy+AWkuMXAfnN/hswJ0D4mMMNxeKqYcze5w5tBsH/Hk1vEFZqx5
+         p2loLRulwZoAHYe75dUAw4Mj6DeBEOuViW4TtE20okXZJ4N9NGBVYY8d5jgqm+kYXrFb
+         yo529tJs+kdGApa3cNbw21Xl9I8i9uUfObA7mttYZcM51zs/LO1ihjVQKLmLyyQ25lgX
+         xyfMleQ/gDDUdQt9dFJztwBjSRqMA2it9AUdZoctmEbE9TIdE5FmpYRDYhO/BSgLavIZ
+         2rDA==
+X-Gm-Message-State: APjAAAU7CNjljguwGHEtThq60DUpPj77Ncwpp0TsrG0HHt76jGVosi9R
+        D+pBwVD3bIoVqzaElRO65o5Ffv8C
+X-Google-Smtp-Source: APXvYqxumpwjRpKPhP6iaPDAU9Z7DZX0li0T2ZlIlXquv8FaXYMVUT6PllZzwakzeH+FJFf1+3jIMw==
+X-Received: by 2002:a02:5b05:: with SMTP id g5mr98797252jab.114.1561040190945;
+        Thu, 20 Jun 2019 07:16:30 -0700 (PDT)
+Received: from ?IPv6:2601:284:8200:5cfb:9c46:f142:c937:3c50? ([2601:284:8200:5cfb:9c46:f142:c937:3c50])
+        by smtp.googlemail.com with ESMTPSA id p10sm14067740iob.54.2019.06.20.07.16.28
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 20 Jun 2019 07:16:29 -0700 (PDT)
+Subject: Re: [PATCH net-next v6 06/11] ipv6/route: Don't match on fc_nh_id if
+ not set in ip6_route_del()
+To:     Stefano Brivio <sbrivio@redhat.com>,
+        David Miller <davem@davemloft.net>
+Cc:     Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        netdev@vger.kernel.org
+References: <cover.1560987611.git.sbrivio@redhat.com>
+ <18a49a3a5d0274df90f059f37d3601abd0bac879.1560987611.git.sbrivio@redhat.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <402be9f4-262c-b185-46a9-d5d4bb531cf1@gmail.com>
+Date:   Thu, 20 Jun 2019 08:16:28 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-In-Reply-To: <6f36b6b6-8209-ed98-e7e1-3dac0a92f6cd@nvidia.com>
-X-Originating-IP: [172.20.13.39]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <18a49a3a5d0274df90f059f37d3601abd0bac879.1560987611.git.sbrivio@redhat.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1561039525; bh=kk0iROuiBw86L8JMDa5UasFqeu4eaEGk4Y4zy76zYa0=;
-        h=X-PGP-Universal:Subject:From:To:CC:References:Message-ID:Date:
-         User-Agent:MIME-Version:In-Reply-To:X-Originating-IP:
-         X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=FMk4shXHyUbeAy1dildJ33Lcn3gZ2iR/fQjUlgiuSdiiES3WHLIV9lz409RfTMOJ1
-         GtXnMNJB5cYBuyP9R24/pinO1sWsYrELeJiRFD0cQxHHguiE6fbLbuLES3oix3t92n
-         F4eyUg9mbIyrLWFVdpBKvOOTqtffCQ7fwfcq57AhvVP7WxKmCppZvbifhTO7yBd2Tt
-         8YPZWiSDbZ3AkQkelKGq4TuYmv+wfI4o/Gy9fktBMcI+cW4yt0Rc3Euh+2K5XRiKEF
-         J87DSIyAM6fZQlDOkJA8xeiEqL2R+/JvuSKyj6BornoIZ3E9T5bJz5veXRm/lUVsfB
-         NVigdYX6UlNyQ==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 18/06/2019 20:44, Jon Hunter wrote:
+On 6/19/19 5:59 PM, Stefano Brivio wrote:
+> If fc_nh_id isn't set, we shouldn't try to match against it. This
+> actually matters just for the RTF_CACHE case below (where this is
+> already handled): if iproute2 gets a route exception and tries to
+> delete it, it won't reference its fc_nh_id, even if a nexthop
+> object might be associated to the originating route.
 > 
-> On 18/06/2019 16:20, Jon Hunter wrote:
->>
->> On 18/06/2019 11:18, Jon Hunter wrote:
->>>
->>> On 18/06/2019 10:46, Jose Abreu wrote:
->>>> From: Jon Hunter <jonathanh@nvidia.com>
->>>>
->>>>> I am not certain but I don't believe so. We are using a static IP address
->>>>> and mounting the root file-system via NFS when we see this ...
->>>>
->>>> Can you please add a call to napi_synchronize() before every 
->>>> napi_disable() calls, like this:
->>>>
->>>> if (queue < rx_queues_cnt) {
->>>> 	napi_synchronize(&ch->rx_napi);
->>>> 	napi_disable(&ch->rx_napi);
->>>> }
->>>>
->>>> if (queue < tx_queues_cnt) {
->>>> 	napi_synchronize(&ch->tx_napi);
->>>> 	napi_disable(&ch->tx_napi);
->>>> }
->>>>
->>>> [ I can send you a patch if you prefer ]
->>>
->>> Yes I can try this and for completeness you mean ...
->>>
->>> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
->>> index 4ca46289a742..d4a12cb64d8e 100644
->>> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
->>> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
->>> @@ -146,10 +146,15 @@ static void stmmac_disable_all_queues(struct stmmac_priv *priv)
->>>         for (queue = 0; queue < maxq; queue++) {
->>>                 struct stmmac_channel *ch = &priv->channel[queue];
->>>  
->>> -               if (queue < rx_queues_cnt)
->>> +               if (queue < rx_queues_cnt) {
->>> +                       napi_synchronize(&ch->rx_napi);
->>>                         napi_disable(&ch->rx_napi);
->>> -               if (queue < tx_queues_cnt)
->>> +               }
->>> +
->>> +               if (queue < tx_queues_cnt) {
->>> +                       napi_synchronize(&ch->tx_napi);
->>>                         napi_disable(&ch->tx_napi);
->>> +               }
->>>         }
->>>  }
->>
->> So good news and bad news ...
->>
->> The good news is that the above change does fix the initial crash
->> I am seeing. However, even with this change applied on top of
->> -next, it is still dying somewhere else and so there appears to
->> be a second issue. 
+> Fixes: 5b98324ebe29 ("ipv6: Allow routes to use nexthop objects")
+> Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
+> ---
+> v6: New patch
 > 
-> Further testing has shown that actually this does NOT resolve the issue
-> and I am still seeing the crash. Sorry for the false-positive.
+>  net/ipv6/route.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
 
-Any further feedback? I am still seeing this issue on today's -next.
+Thanks for catching that.
 
-Thanks
-Jon
-
--- 
-nvpublic
+Reviewed-by: David Ahern <dsahern@gmail.com>
