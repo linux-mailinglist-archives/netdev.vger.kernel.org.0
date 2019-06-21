@@ -2,85 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B1DF4ECE5
-	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 18:17:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20D8C4ECE8
+	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 18:18:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726049AbfFUQRs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jun 2019 12:17:48 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:39786 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726045AbfFUQRs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 12:17:48 -0400
-Received: by mail-wm1-f68.google.com with SMTP id z23so7186626wma.4
-        for <netdev@vger.kernel.org>; Fri, 21 Jun 2019 09:17:46 -0700 (PDT)
+        id S1726168AbfFUQR4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jun 2019 12:17:56 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:34605 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726125AbfFUQRz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 12:17:55 -0400
+Received: by mail-io1-f67.google.com with SMTP id k8so1407117iot.1
+        for <netdev@vger.kernel.org>; Fri, 21 Jun 2019 09:17:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=0WhGkVvXAmBoYoHlHOUW5I79x+b+d+ygHBfaP4wj7UI=;
-        b=NnDQCSBp5dskskWoplKReGI/YNp+762rMHkEdQ9aY2+2xQhAhUax04usUMR5R4kfgm
-         z/c7sNf7YlUKOSZ6IZMW46XTD7HiVceDwIXadPQ8Q2U9MUvIJDNqnC8SG9L4ABUKO/s7
-         708n7timHqRHoVhyfRbq8nNPvqm/IGpq3lGJJDLbnBgA/FdX6oUhgboM02uetku/Wbdk
-         g3VG1d8QsbYbhIJXXvoT9xmqGWx/Q4WcSaOJdB3MkrUj15WjigJGm/FnGt6SFPXtzFPT
-         DHtbIOw2SBO058iPhxSSefyVRSWxZhXdtE1LNFQpL7S1w3hIlqiCSrLik4VA9yyiZiPj
-         hhjw==
+        bh=Sw0tar4GKNYE+fKeYGxgNKh8+9qTX2z35GEBt1SVpc0=;
+        b=EkOlu8qlRhzBLmqK/JdjBqIW5qryF2RdLS3wOFZsu3n9PHhrG1wi6n0hFXLG1MFQ5/
+         KTBVBI7etM1aU/ONn6Qx3W6uNfI4Yqqc6fdLe5cj+t0vt2i/1/wqMnkttynIQB8/u5cO
+         IAm1ffnYDxs7vAskpJvZyQo38g5G44Rx2R77/kU2bM/oNK5GsXdJG5uhioKfysrK8Lm8
+         2OktVp8osiuoXqbOEL9B58NPIk3A4R/seH4kyi0MzEh7I3xwtNwX/a0GWSgv23582DWp
+         dHjg6Aw7vupuRHaqil5vjLFXql1/9Tc+p0qGWipiN27RVTQV9X4JNJKSd+NJpC5BQfeW
+         PZMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=0WhGkVvXAmBoYoHlHOUW5I79x+b+d+ygHBfaP4wj7UI=;
-        b=nie/yM9oW15BexPPCLs7MtzdoMwneeWsNldkC64LwYEaCraKRYOL8R5kKkj4p0dkFr
-         H6WibuBNgGkPL6qmVL2wz782/1UTbzDwbmLDRWlA7DaSnc9aagdTamZHqIL73MnW1qNb
-         vdztpzXE8MYZe9AGHSMx2DxVNSU7MxCU+DgPZy1SrWueaqNFcgN2wkAk/jbb7P07eEAc
-         WrKuND2TrrjRcHN95kc6dic7Eycvf4+W3BdKMZTl7GonMGwhd4yHpFdoRgRsvFngxYJq
-         GXQuUIcIBZBot4SAa7LYu8yZofl8qna7IpRpLUtQubAu+JUtOeEDded2sXHcuT4aCtSM
-         TZcQ==
-X-Gm-Message-State: APjAAAWSBVycM6lHJJDS1Wm+kAJnWQQUf7+kMJZxziNrQ38YDmqJ4i4c
-        dn7w6uzLMtzTLtopAHT/JwVCBQ==
-X-Google-Smtp-Source: APXvYqyoaENggUaApEIFyy6YSKvFS4yfgT6HccBOLLnp4Rm1TBDYFbVlGaihV+v4zRDahyz/jxnVig==
-X-Received: by 2002:a1c:bbc1:: with SMTP id l184mr4580579wmf.111.1561133866028;
-        Fri, 21 Jun 2019 09:17:46 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id d4sm6321052wra.38.2019.06.21.09.17.45
+        bh=Sw0tar4GKNYE+fKeYGxgNKh8+9qTX2z35GEBt1SVpc0=;
+        b=bvowVHcZ/EqbR0GudHBOA3X0wpFke/OwIfRX0D5aX7kUXWH+7WNjoPsmHuw1YOB/L0
+         Fe51vdsM6ZFQ/Tw4FJ65UlJSVjo+JG6mrPC1tJT+WEKa6EOD3l+amwN5klQ7Kc/rwjpc
+         VGNGUvzL4zX3Q9zFbSnJCNCxX8QKtYZY/ZN4XN8yE/WnHWwybfNdYk7zreQtnOHHr4us
+         vfmha3xrSVWLi74rCfveatIy2VSge6xRcWhTIBZMSJcGG6zLeP2XkJ+TAqXsmvbFeQuT
+         FGdUY3Bd46iSrG4PhxnBlNKO+RE3bDWraX44v0K9r0eNBWumXFFHfBSX8smlRQwmbl9P
+         2lFw==
+X-Gm-Message-State: APjAAAVtuPv0weGBSeXh1ZTdrK7YyqhpsBsT2+vpY6r28djJGgLjRys2
+        5LDM6WCWSTm5UVzw5CfaMoOPbQ==
+X-Google-Smtp-Source: APXvYqwrP5rrf+639Ym7wMFWZQdU1WfoVNcgUP+bsXyCprN6Jo1hWnpDosiQ8jA1YW4OBOu8ZR8yFw==
+X-Received: by 2002:a02:22c6:: with SMTP id o189mr3228179jao.35.1561133874834;
+        Fri, 21 Jun 2019 09:17:54 -0700 (PDT)
+Received: from localhost (c-73-24-4-37.hsd1.mn.comcast.net. [73.24.4.37])
+        by smtp.gmail.com with ESMTPSA id f20sm3921317ioh.17.2019.06.21.09.17.53
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 21 Jun 2019 09:17:45 -0700 (PDT)
-Date:   Fri, 21 Jun 2019 18:17:45 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        davem@davemloft.net, thomas.lendacky@amd.com, f.fainelli@gmail.com,
-        ariel.elior@cavium.com, michael.chan@broadcom.com,
-        santosh@chelsio.com, madalin.bucur@nxp.com,
-        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        jeffrey.t.kirsher@intel.com, tariqt@mellanox.com,
-        saeedm@mellanox.com, jiri@mellanox.com, idosch@mellanox.com,
-        jakub.kicinski@netronome.com, peppe.cavallaro@st.com,
-        grygorii.strashko@ti.com, andrew@lunn.ch,
-        vivien.didelot@savoirfairelinux.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, linux-net-drivers@solarflare.com,
-        ganeshgr@chelsio.com, ogerlitz@mellanox.com,
-        Manish.Chopra@cavium.com, marcelo.leitner@gmail.com,
-        mkubecek@suse.cz, venkatkumar.duvvuru@broadcom.com,
-        cphealy@gmail.com
-Subject: Re: [PATCH net-next 08/12] net: cls_api: do not expose tcf_block to
- drivers
-Message-ID: <20190621161745.GD2414@nanopsycho.orion>
-References: <20190620194917.2298-1-pablo@netfilter.org>
- <20190620194917.2298-9-pablo@netfilter.org>
+        Fri, 21 Jun 2019 09:17:53 -0700 (PDT)
+Date:   Fri, 21 Jun 2019 11:17:52 -0500
+From:   Dan Rue <dan.rue@linaro.org>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        xdp-newbies@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>, hawk@kernel.org,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Shuah Khan <shuah@kernel.org>
+Subject: Re: selftests: bpf: test_libbpf.sh failed at file test_l4lb.o
+Message-ID: <20190621161752.d7d7n4m5q67uivys@xps.therub.org>
+References: <CA+G9fYsMcdHmKY66CNhsrizO-gErkOQCkTcBSyOHLpOs+8g5=g@mail.gmail.com>
+ <CAEf4BzbTD8G_zKkj-S3MOeG5Hq3_2zz3bGoXhQtpt0beG8nWJA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190620194917.2298-9-pablo@netfilter.org>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <CAEf4BzbTD8G_zKkj-S3MOeG5Hq3_2zz3bGoXhQtpt0beG8nWJA@mail.gmail.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jun 20, 2019 at 09:49:13PM CEST, pablo@netfilter.org wrote:
->Expose the block index which is sufficient to look up for the
->tcf_block_cb object.
+On Thu, Jun 20, 2019 at 10:17:04PM -0700, Andrii Nakryiko wrote:
+> On Thu, Jun 20, 2019 at 1:08 AM Naresh Kamboju
+> <naresh.kamboju@linaro.org> wrote:
+> >
+> > selftests: bpf test_libbpf.sh failed running Linux -next kernel
+> > 20190618 and 20190619.
+> >
+> > Here is the log from x86_64,
+> > # selftests bpf test_libbpf.sh
+> > bpf: test_libbpf.sh_ #
+> > # [0] libbpf BTF is required, but is missing or corrupted.
+> 
+> You need at least clang-9.0.0 (not yet released) to run some of these
+> tests successfully, as they rely on Clang's support for
+> BTF_KIND_VAR/BTF_KIND_DATASEC.
 
-This patch is not exposing block index. I guess this is a leftover.
+Can there be a runtime check for BTF that emits a skip instead of a fail
+in such a case?
 
+Thanks,
+Dan
 
+> 
+> > libbpf: BTF_is #
+> > # test_libbpf failed at file test_l4lb.o
+> > failed: at_file #
+> > # selftests test_libbpf [FAILED]
+> > test_libbpf: [FAILED]_ #
+> > [FAIL] 29 selftests bpf test_libbpf.sh
+> > selftests: bpf_test_libbpf.sh [FAIL]
+> >
+> > Full test log,
+> > https://qa-reports.linaro.org/lkft/linux-next-oe/build/next-20190619/testrun/781777/log
+> >
+> > Test results comparison,
+> > https://qa-reports.linaro.org/lkft/linux-next-oe/tests/kselftest/bpf_test_libbpf.sh
+> >
+> > Good linux -next tag: next-20190617
+> > Bad linux -next tag: next-20190618
+> > git branch     master
+> > git commit    1c6b40509daf5190b1fd2c758649f7df1da4827b
+> > git repo
+> > https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
+> >
+> > Best regards
+> > Naresh Kamboju
+
+-- 
+Linaro - Kernel Validation
