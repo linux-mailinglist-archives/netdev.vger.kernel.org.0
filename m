@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 43BBE4EC64
-	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 17:43:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 713FC4EC65
+	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 17:43:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726138AbfFUPnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jun 2019 11:43:01 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:46224 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726010AbfFUPnA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 11:43:00 -0400
-Received: by mail-pg1-f194.google.com with SMTP id v9so3542039pgr.13
-        for <netdev@vger.kernel.org>; Fri, 21 Jun 2019 08:43:00 -0700 (PDT)
+        id S1726225AbfFUPnf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jun 2019 11:43:35 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:35248 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726010AbfFUPnf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 11:43:35 -0400
+Received: by mail-pl1-f193.google.com with SMTP id p1so3200420plo.2
+        for <netdev@vger.kernel.org>; Fri, 21 Jun 2019 08:43:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=VU5fPpWVToE49ocBRa3LlHEIV7AaGbTYKFU+jFizyxI=;
-        b=PxTkgyZ6ee+072mN2hgmI8ZgSeZCNVOLXZ5qCklBqFRXW28Gyj0Tmy2aIHWSyo5l+Q
-         4xpA7M99KgCVipt32bs+QKSizrsV59jnRZMvWTLTe6IOaCI5cqYEM4sOwh1VEFoz+Y+r
-         Ruo+M3uXkSM7TCk8iFU+GniLHhYuuRF8E94R7YzV4nD6d5NZFDZZonZPOB5YnOefJfwG
-         X43ZimyDEqQZ7a2CWnBnEjnsPNoxqmFJuEleBohYLpqHqeatWXCKDTUUAchrZB0NJUst
-         aq0iFbMXXAWzDgJiMr5p0VZAFFAglIIZpFDjVc8Qqmo1qqOzKUy5Z6UOXHczvyliCf3f
-         YiQw==
+        bh=qwmVPhBGGNDEc4hO6wco4zyTL6mDTS06smzAyYx82zE=;
+        b=2sj50xV1nLcKEmmbG0EjVwhjGK+YsSK3DU4kSd1gOtx+spjZqgxMGJMR1BNNMY/6mB
+         O13oZ+SNiIYRWSjg7kaNBo+WYhmp4Pukr2in25xia1+1GS+KKAO2eNv8KVVQfiBwa0vs
+         9Ks7DmM2AQmEi5IbTE6L+tpwZifx0BP5FnzqPVFPEGwIECMioNRryjGzudefQLCM6clS
+         CRF3cdVGEh7WNfOpXMhWvVmG8YeqHb3DpfIa4IV5v4qs4wEH6P2M+X+/LWZ0QCXg+2Eh
+         dJ4plXyOsSHOT0dE65PxV6o3NgKmyN0j9MKWgOjbMXjMKfZR0t9L7QX9dnfH7BoVWlS1
+         qOtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-transfer-encoding
          :content-language;
-        bh=VU5fPpWVToE49ocBRa3LlHEIV7AaGbTYKFU+jFizyxI=;
-        b=H27B04eUN4hfe0sen3rKCvPSkbJrLA4ii234TtBhedNE7ZX7UDcFYn26cbSlBy7A54
-         q7LpHxYvsLyHBqUmJj245BEz4P6JJVF2DUGXLBWyRF2NIw63ykXDXEpVscbLg24R7rpl
-         qBnxqKXlyjPzHrLJMiwxt/8H8WxNGQI9E1iN0NELkuyvPDKQMAj3xDEpuLG0W6jkJlTM
-         uJbyW3AXh1xAYns2LWvn6H0G/a7VpXv0/alUwYcu++Iw5d3FsqjTjLoWX5E1+k6uBHUz
-         iGLzgAAXU7Fp7Qnl5iYi9HuZpSyQjOnb0DbcETfROHERgYN32wmjY7FHRdAkRcD16B1Y
-         +DcA==
-X-Gm-Message-State: APjAAAV5Hda/tWwMw5/3lEhZ1sXm+ebL9+QoG9yrzb9wlmuaNevqLR+U
-        PRxXfi8PsRdMR2ZBUyhXYM3+UmkTUDE=
-X-Google-Smtp-Source: APXvYqzkWTwddXyh1UH/1BAIciQugmWT434vVsrZPPSct7B6Zu3eKmzFbDV0tRZs0GY8ryAfFtaiXA==
-X-Received: by 2002:a17:90a:3688:: with SMTP id t8mr7273621pjb.35.1561131780083;
-        Fri, 21 Jun 2019 08:43:00 -0700 (PDT)
+        bh=qwmVPhBGGNDEc4hO6wco4zyTL6mDTS06smzAyYx82zE=;
+        b=kjJkFvTjiKMB8AcN7Wwgxt/xpgDM0Ft/N3mC64TCb8YdupdXy43YZ/QUmVd/WvnVdr
+         5U2Wjh7QLqTB1kDxYXKI0X2AwQ1/Qkk9j8JEdBlB/oSVf0+BPv/jUYr8Y1l4avl2/yoX
+         zomnabFzV012eExvUkK+RcarYfAPV7KqJiH+Zm7b2mROXuqDsLKRYRh+tOqE46NMTyvL
+         52akOMGpMDsvuB14sSSqMLDISRLE3xMloth4fbW0GV+9Lp9K3q3RqR7Hd3mensX1OKHS
+         PX+CbFlfYDMx3bT8Fpft7GLTAccY5OHjSPCd9+0jxm2f2MYXATDHLz6xrHm+wb1qVAh/
+         HFqQ==
+X-Gm-Message-State: APjAAAUYbWO4gDInC6LjFMzcJpsLdTZ3q3p0HrNYqOfVttDGVfkeg76u
+        DkVo1IFLohc8dir1h6ATULutoM28MOg=
+X-Google-Smtp-Source: APXvYqxeFDDZAZfxf4CYJF91nLITzVdX2kfK8OK2gcwjf8a9X8fxemyO0oQ+m3aOMOdAZ1gfcaG2kg==
+X-Received: by 2002:a17:902:7d86:: with SMTP id a6mr107804969plm.199.1561131814195;
+        Fri, 21 Jun 2019 08:43:34 -0700 (PDT)
 Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id 22sm4007161pfu.179.2019.06.21.08.42.59
+        by smtp.gmail.com with ESMTPSA id j21sm3175345pfh.86.2019.06.21.08.43.32
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 21 Jun 2019 08:42:59 -0700 (PDT)
-Subject: Re: [PATCH] ionic: fix simple_open.cocci warnings
+        Fri, 21 Jun 2019 08:43:33 -0700 (PDT)
+Subject: Re: [PATCH] ionic: fix semicolon.cocci warnings
 To:     kbuild test robot <lkp@intel.com>
 Cc:     kbuild-all@01.org, netdev@vger.kernel.org
-References: <20190620202424.23215-3-snelson@pensando.io>
- <20190621092723.GA96768@lkp-kbuild10>
+References: <20190620202424.23215-12-snelson@pensando.io>
+ <20190621103047.GA134374@lkp-kbuild10>
 From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <a91de813-c268-4c3d-3547-1272641fa9dc@pensando.io>
-Date:   Fri, 21 Jun 2019 08:42:58 -0700
+Message-ID: <1eaed3c3-7592-fdf9-3a8c-f51ef99a6b43@pensando.io>
+Date:   Fri, 21 Jun 2019 08:43:31 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
  Gecko/20100101 Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <20190621092723.GA96768@lkp-kbuild10>
+In-Reply-To: <20190621103047.GA134374@lkp-kbuild10>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Content-Language: en-US
@@ -65,53 +65,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/21/19 2:27 AM, kbuild test robot wrote:
+
+
+On 6/21/19 3:30 AM, kbuild test robot wrote:
 > From: kbuild test robot <lkp@intel.com>
 >
-> drivers/net/ethernet/pensando/ionic/ionic_debugfs.c:12:11-20: WARNING opportunity for simple_open, see also structure on line 56
+> drivers/net/ethernet/pensando/ionic/ionic_lif.c:48:3-4: Unneeded semicolon
 >
->   Remove an open coded simple_open() function
->   and replace file operations references to the function
->   with simple_open() instead.
 >
-> Generated by: scripts/coccinelle/api/simple_open.cocci
+>   Remove unneeded semicolon.
 >
-> Fixes: fb4f52d18a75 ("ionic: Add hardware init and device commands")
+> Generated by: scripts/coccinelle/misc/semicolon.cocci
+>
+> Fixes: 311c0c084b51 ("ionic: Add Rx filter and rx_mode nod support")
 > CC: Shannon Nelson <snelson@pensando.io>
 > Signed-off-by: kbuild test robot <lkp@intel.com>
+> ---
 
-Thanks, I'll roll this into the next verison of the patchset.
+Thanks, I'll roll this into the next version of the patchset.
 sln
 
-> ---
+
 >
 > url:    https://github.com/0day-ci/linux/commits/Shannon-Nelson/ionic-Add-basic-framework-for-IONIC-Network-device-driver/20190621-110046
 >
->   ionic_debugfs.c |    8 +-------
->   1 file changed, 1 insertion(+), 7 deletions(-)
+>   ionic_lif.c |    2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> --- a/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
-> @@ -9,12 +9,6 @@
->   
->   #ifdef CONFIG_DEBUG_FS
->   
-> -static int blob_open(struct inode *inode, struct file *filp)
-> -{
-> -	filp->private_data = inode->i_private;
-> -	return 0;
-> -}
-> -
->   static ssize_t blob_read(struct file *filp, char __user *buffer,
->   			 size_t count, loff_t *ppos)
->   {
-> @@ -53,7 +47,7 @@ static ssize_t blob_write(struct file *f
->   
->   static const struct file_operations blob_fops = {
->   	.owner = THIS_MODULE,
-> -	.open = blob_open,
-> +	.open = simple_open,
->   	.read = blob_read,
->   	.write = blob_write,
->   };
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+> @@ -45,7 +45,7 @@ static void ionic_lif_deferred_work(stru
+>   			break;
+>   		default:
+>   			break;
+> -		};
+> +		}
+>   		kfree(w);
+>   		schedule_work(&def->work);
+>   	}
 
