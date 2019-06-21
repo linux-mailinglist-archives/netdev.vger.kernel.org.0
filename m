@@ -2,126 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 362C04F0D8
-	for <lists+netdev@lfdr.de>; Sat, 22 Jun 2019 00:45:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF0864F0DE
+	for <lists+netdev@lfdr.de>; Sat, 22 Jun 2019 00:50:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726067AbfFUWpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jun 2019 18:45:24 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:35828 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726043AbfFUWpY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 18:45:24 -0400
-Received: by mail-pf1-f193.google.com with SMTP id d126so4305009pfd.2;
-        Fri, 21 Jun 2019 15:45:23 -0700 (PDT)
+        id S1726059AbfFUWu1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jun 2019 18:50:27 -0400
+Received: from mail-io1-f44.google.com ([209.85.166.44]:42289 "EHLO
+        mail-io1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726017AbfFUWu1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 18:50:27 -0400
+Received: by mail-io1-f44.google.com with SMTP id u19so2156081ior.9
+        for <netdev@vger.kernel.org>; Fri, 21 Jun 2019 15:50:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iuGdW6sX88KLfCjHMKLY49KKsvlSOj2HqpD/7s+bllQ=;
-        b=MH9gcHjajms6Gyn8wPcgrt/a4VokIAMBa5DfZ7wmVaXrWS/K80A5xDhsRJaugR6yAC
-         3/4s1DsWC5EXpOiTmrBMTw1Nno7unbWJViyyF2bnpsT/D6upVJGSUFsjutys4jBAJe9x
-         QdW7ahsojf9L00i+2R94ukyA2XZykcmPZ0ZMwv1ZyVTrlzA8s6FLijRfOfsokkZEE2Fm
-         EoyuCRiaDgIeHd9NbKSkLwdVUYRSdxgs0yAIOXUfTjhgN2fIuP7sRbLHeiF/FWca3Jnt
-         RZmMWdGPoWdKLC+OvebpVyBsSKrvL9j1ANXxCUNHOIrV/Sx3IgPgFerGVYy0XfFwmuH2
-         gTHA==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=YCOzph2wGcYVLVaGle1iSXg6yQr7Owol90CS3p4g0kk=;
+        b=cup4cG7uRhvGDZO/IXNJQx4J3IWOfmLjvViJ43dy2G68Wn0zkNCXSacMjJzYa8L2ob
+         +Q59wKo1EnLlZ9xOaCPYUtZ9ppdwSzCW7fsTtH3SIEJZFbLRXOtldrjqF7SZUn5oxrpi
+         iScX+1qkDITg3PSpJboR8fA+YPDb08rOG8X+w0zjDyCAIE7SBOCaBsYSM9QAiJtyndIB
+         9BU/aXejUybKHtGv7QWqrUYt6E/KhuJ14wGR9MZg/eNFbAWnigSIR98mZ9fIzrppnFMC
+         PwW9/pn+4ELHro2jKL5aInVIkUA4kg37bDvnS7TeFIaCHlEa7NusqHy+D+2ICJFpNog8
+         otIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iuGdW6sX88KLfCjHMKLY49KKsvlSOj2HqpD/7s+bllQ=;
-        b=HcvP/07PoW/iV4YemsZ0v9h1CFvvYxlaPz789ft0FQOZkpuqX4STHHLZLZPj3MCSzA
-         lo9+a8iGhPg1Fh0db53wqvkYGxPVhRoYyrvtWXA/8pWEf9GeZf80+lQPnGXb8e9kQd1E
-         jXsTMow9NbVUgOgqhUld/ZXo+8ifAR9I5H5ndXnWmaG4AuqN/jXjg8/9YipQmRHBpUpm
-         8HOq68qpHSHmMwDW9kysIuTQ92VKAtm1mxq2thihTxWuJtKj+1gNBg9vCSekg6rQi/e1
-         68gBo3yhFeeTnQxKjUFq5BeTd+bcqhMXDj8jB1F5wsYg4v50VuGZmVu0F7O9cGBeMuxc
-         5kSA==
-X-Gm-Message-State: APjAAAXCyHEgUhVMzsZfl1Rkwv6jJqhwCBszDKENh8QSDmj9Vcb7N1c/
-        jU/PBsUfCWJemsaLdy479I7tiqxPIgkWmpxMVGs=
-X-Google-Smtp-Source: APXvYqy9dBhygx88ZimvDfxuqLbtOuGacbVwbzt4VSlgkBYCzVTfmqcKSFqT/f/zCSPuyVlcP7UIOXNNSrlEjiEMpdM=
-X-Received: by 2002:a63:490d:: with SMTP id w13mr20971630pga.355.1561157122919;
- Fri, 21 Jun 2019 15:45:22 -0700 (PDT)
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=YCOzph2wGcYVLVaGle1iSXg6yQr7Owol90CS3p4g0kk=;
+        b=Jcq3H4GiINiq0YgPyfqxyOir2e6XOGurfDxSav/1AlV7CX2dnlTNy9cXtSNXZGgBD1
+         C9ihn7AdEsnnwYAmG8fA60jr89lNHbcrygeSN07Yeo5uJwXwxF2k2pzyeKcHpGxq79uF
+         dITZGTjolQwQ/7kAOrqS8V3i4/clWBROXnGoNmtzpS+y3lQUrMTxfvLdRqHtgEkMeBJv
+         oYg8Ctt09cr2tV/X+ll4vYlIjkf/LHcnmu8qsZWW6p9RHROoyyiWOEoAJvQmGCzcIUKQ
+         gVZAUjGCpq07BEk/OG43DcdpNcnA/RLw/EnqA+lnVXcj0dTCaGbfNTkbQlq7VPkWzHp9
+         hO0A==
+X-Gm-Message-State: APjAAAVPFkvKRU6izhnJI2XVYF2KvR9FWs2/PD8LmCo0koQh1Mdt+92w
+        /8oj/Eq1oQRVZxk+iz21A14UqXKx
+X-Google-Smtp-Source: APXvYqwDRQqocusvzMV7SqwCW5L9YYRVxnwFPl+u8PpiUEb+yXNpmo29C3bBy1cz6xfviroNz8Nw0w==
+X-Received: by 2002:a5d:8404:: with SMTP id i4mr1224594ion.146.1561157426531;
+        Fri, 21 Jun 2019 15:50:26 -0700 (PDT)
+Received: from ?IPv6:2601:284:8200:5cfb:563:6fa4:e349:a2f8? ([2601:284:8200:5cfb:563:6fa4:e349:a2f8])
+        by smtp.googlemail.com with ESMTPSA id r5sm3251057iom.42.2019.06.21.15.50.24
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 21 Jun 2019 15:50:25 -0700 (PDT)
+Subject: Re: [iproute2-next v5] tipc: support interface name when activating
+ UDP bearer
+To:     Hoang Le <hoang.h.le@dektech.com.au>, dsahern@gmail.com,
+        jon.maloy@ericsson.com, maloy@donjonn.com, ying.xue@windriver.com,
+        netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net
+References: <20190613080719.22081-1-hoang.h.le@dektech.com.au>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <d4bef444-f009-5415-f27d-8cfde945ddab@gmail.com>
+Date:   Fri, 21 Jun 2019 16:50:23 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-References: <20190621163921.26188-1-puranjay12@gmail.com> <CAErSpo5TMPokae7BMY8ZcOXtW=GeGsWXX_bqS8SrZnh0pEQYxw@mail.gmail.com>
- <698d3e3614ae903ae9582547d64c6a9846629e57.camel@perches.com>
- <CAErSpo6iRVWU-yL5CRF_GEY7CWg5iV=Jw0BrdNV4h3Jvh5AuAw@mail.gmail.com> <838b8e84523151418ab8cda4abdbb114ce24a497.camel@perches.com>
-In-Reply-To: <838b8e84523151418ab8cda4abdbb114ce24a497.camel@perches.com>
-From:   Chris Snook <chris.snook@gmail.com>
-Date:   Fri, 21 Jun 2019 15:45:11 -0700
-Message-ID: <CAMXMK6uUgLSz=DXazLY81pkiMjtyxKxNeR_VcWOOh1NvaEyS8w@mail.gmail.com>
-Subject: Re: [PATCH 0/3] net: ethernet: atheros: atlx: Use PCI generic
- definitions instead of private duplicates
-To:     Joe Perches <joe@perches.com>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Puranjay Mohan <puranjay12@gmail.com>,
-        Jay Cliburn <jcliburn@gmail.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Bjorn Helgaas <bjorn@helgaas.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Linux PCI <linux-pci@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190613080719.22081-1-hoang.h.le@dektech.com.au>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 21, 2019 at 11:33 AM Joe Perches <joe@perches.com> wrote:
->
-> On Fri, 2019-06-21 at 13:12 -0500, Bjorn Helgaas wrote:
-> > On Fri, Jun 21, 2019 at 12:27 PM Joe Perches <joe@perches.com> wrote:
-> []
-> > > Subsystem specific local PCI #defines without generic
-> > > naming is poor style and makes treewide grep and
-> > > refactoring much more difficult.
-> >
-> > Don't worry, we have the same objectives.  I totally agree that local
-> > #defines are a bad thing, which is why I proposed this project in the
-> > first place.
->
-> Hi again Bjorn.
->
-> I didn't know that was your idea.  Good idea.
->
-> > I'm just saying that this is a "first-patch" sort of learning project
-> > and I think it'll avoid some list spamming and discouragement if we
-> > can figure out the scope and shake out some of the teething problems
-> > ahead of time.  I don't want to end up with multiple versions of
-> > dozens of little 2-3 patch series posted every week or two.
->
-> Great, that's sensible.
->
-> > I'd rather be able to deal with a whole block of them at one time.
->
-> Also very sensible.
->
-> > > 2: Show that you compiled the object files and verified
-> > >    where possible that there are no object file changes.
-> >
-> > Do you have any pointers for the best way to do this?  Is it as simple
-> > as comparing output of "objdump -d"?
->
-> Generically, yes.
->
-> I have a little script that does the equivalent of:
->
-> <git reset>
-> make <foo.o>
-> mv <foo.o> <foo.o>.old
-> patch -P1 < <foo_patch>
-> make <foo.o>
-> mv <foo.o> <foo.o>.new
-> diff -urN <(objdump -d <foo.o>.old) <(objdump -d <foo.o>.new)
->
-> But it's not foolproof as gcc does not guarantee
-> compilation repeatability.
->
-> And some subsystems Makefiles do not allow per-file
-> compilation.
->
+On 6/13/19 2:07 AM, Hoang Le wrote:
+> @@ -119,6 +121,74 @@ static int generate_multicast(short af, char *buf, int bufsize)
+>  	return 0;
+>  }
+>  
+> +static struct ifreq ifr = {};
 
-This should work, but be aware that the older atlx drivers did some
-regrettable things with file structure, so not all .c files are
-expected to generate a corresponding .o file.
+you don't need to initialize globals, but you could pass a a struct as
+the arg to the filter here which is both the addr buffer and the ifindex
+of interest.
 
-- Chris
+> +static int nl_dump_addr_filter(struct nlmsghdr *nlh, void *arg)
+> +{
+> +	struct ifaddrmsg *ifa = NLMSG_DATA(nlh);
+> +	char *r_addr = (char *)arg;
+> +	int len = nlh->nlmsg_len;
+> +	struct rtattr *addr_attr;
+> +
+> +	if (ifr.ifr_ifindex != ifa->ifa_index)
+> +		return 0;
+> +
+> +	if (strlen(r_addr) > 0)
+> +		return 1;
+> +
+> +	addr_attr = parse_rtattr_one(IFA_ADDRESS, IFA_RTA(ifa),
+> +				     len - NLMSG_LENGTH(sizeof(*ifa)));
+> +	if (!addr_attr)
+> +		return 0;
+> +
+> +	if (ifa->ifa_family == AF_INET) {
+> +		struct sockaddr_in ip4addr;
+> +		memcpy(&ip4addr.sin_addr, RTA_DATA(addr_attr),
+> +		       sizeof(struct in_addr));
+> +		if (inet_ntop(AF_INET, &ip4addr.sin_addr, r_addr,
+> +			      INET_ADDRSTRLEN) == NULL)
+> +			return 0;
+> +	} else if (ifa->ifa_family == AF_INET6) {
+> +		struct sockaddr_in6 ip6addr;
+> +		memcpy(&ip6addr.sin6_addr, RTA_DATA(addr_attr),
+> +		       sizeof(struct in6_addr));
+> +		if (inet_ntop(AF_INET6, &ip6addr.sin6_addr, r_addr,
+> +			      INET6_ADDRSTRLEN) == NULL)
+> +			return 0;
+> +	}
+> +	return 1;
+> +}
+> +
+> +static int cmd_bearer_validate_and_get_addr(const char *name, char *r_addr)
+> +{
+> +	struct rtnl_handle rth ={ .fd = -1 };
+
+space between '={'
+
+> +
+> +	memset(&ifr, 0, sizeof(ifr));
+> +	if (!name || !r_addr || get_ifname(ifr.ifr_name, name))
+> +		return 0;
+> +
+> +	ifr.ifr_ifindex = ll_name_to_index(ifr.ifr_name);
+> +	if (!ifr.ifr_ifindex)
+> +		return 0;
+> +
+> +	/* remove from cache */
+> +	ll_drop_by_index(ifr.ifr_ifindex);
+
+why the call to ll_drop_by_index? doing so means that ifindex is looked
+up again.
+
+> +
+> +	if (rtnl_open(&rth, 0) < 0)
+> +		return 0;
+> +
+> +	if (rtnl_addrdump_req(&rth, AF_UNSPEC, 0) < 0) {
+
+If you pass a filter here to set ifa_index, this command on newer
+kernels will be much more efficient. See ipaddr_dump_filter.
+
+
+> +		rtnl_close(&rth);
+> +		return 0;
+> +	}
+> +
+> +	if (rtnl_dump_filter(&rth, nl_dump_addr_filter, r_addr) < 0) {
+> +		rtnl_close(&rth);
+> +		return 0;
+> +	}
+> +	rtnl_close(&rth);
+> +	return 1;
+> +}
+
+it would better to have 1 exit with the rtnl_close and return rc based
+on above.
