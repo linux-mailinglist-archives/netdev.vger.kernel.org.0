@@ -2,153 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 470B74EEC0
-	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 20:25:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06DDA4EEC8
+	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 20:32:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726369AbfFUSXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jun 2019 14:23:51 -0400
-Received: from out30-130.freemail.mail.aliyun.com ([115.124.30.130]:55244 "EHLO
-        out30-130.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726032AbfFUSXv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 14:23:51 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=yang.shi@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0TUqdGdq_1561141423;
-Received: from US-143344MP.local(mailfrom:yang.shi@linux.alibaba.com fp:SMTPD_---0TUqdGdq_1561141423)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Sat, 22 Jun 2019 02:23:46 +0800
-Subject: Re: [PATCH] mm: mempolicy: handle vma with unmovable pages mapped
- correctly in mbind
-To:     Vlastimil Babka <vbabka@suse.cz>, Michal Hocko <mhocko@kernel.org>
-Cc:     akpm@linux-foundation.org, mgorman@techsingularity.net,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <1560797290-42267-1-git-send-email-yang.shi@linux.alibaba.com>
- <20190618130253.GH3318@dhcp22.suse.cz>
- <cf33b724-fdd5-58e3-c06a-1bc563525311@linux.alibaba.com>
- <20190618182848.GJ3318@dhcp22.suse.cz>
- <68c2592d-b747-e6eb-329f-7a428bff1f86@linux.alibaba.com>
- <20190619052133.GB2968@dhcp22.suse.cz>
- <21a0b20c-5b62-490e-ad8e-26b4b78ac095@suse.cz>
- <687f4e57-5c50-7900-645e-6ef3a5c1c0c7@linux.alibaba.com>
- <55eb2ea9-2c74-87b1-4568-b620c7913e17@linux.alibaba.com>
- <d81b36bb-876e-917a-6115-cedf496b4923@suse.cz>
- <d185f277-85ed-4dc1-8ff2-2984b54a0d64@linux.alibaba.com>
- <9945a66f-4434-b2a6-63ac-3240ef1d52c9@suse.cz>
-From:   Yang Shi <yang.shi@linux.alibaba.com>
-Message-ID: <7d770cda-3f62-f1a2-6f48-529ca71bd6bd@linux.alibaba.com>
-Date:   Fri, 21 Jun 2019 11:23:40 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:52.0)
- Gecko/20100101 Thunderbird/52.7.0
+        id S1726311AbfFUSb6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jun 2019 14:31:58 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:47034 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726032AbfFUSb6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 14:31:58 -0400
+Received: by mail-ed1-f65.google.com with SMTP id d4so11302424edr.13
+        for <netdev@vger.kernel.org>; Fri, 21 Jun 2019 11:31:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=y0vsw3aNxn4er0Ip3Ik7DqA5KY7Xeb7igVONoiy3Hzk=;
+        b=vZ0JMXRn7Z1gKLvWj/vwnLn7dSWaRwCeVom0sBQ7PXS8BXweci6I1ecbwo1vOHHbl7
+         /p2ZtbOXG6gICJfd5+y+axNB0pRwoh4g/OOwfTIQbWclkdo+oRfRtRPbr4XlCs8nmZgf
+         h3HXqwETw3eYVDbCKv/xm00qejKrGBtTy5KY+SeBiitVjIkpONgwVYIURmUyUzPqvwm6
+         t1aVOYOCy/Ft6sAqg2nDkbghi7fvbf/hGMFbss0i1lxyKOekPfT6l3A1VM3VNcl0OdUY
+         aghXFOd+DJq+O7imhnK50cEZTId+EZGTmosmf8m8rEJiByrTvit+VqoUwipJ0CyLepfj
+         /1Cg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=y0vsw3aNxn4er0Ip3Ik7DqA5KY7Xeb7igVONoiy3Hzk=;
+        b=QEXeCowLPOEczMPMv0JewJqDjKxfkFX8ivqkUD/fP3pIUPCEAkKD3fqqnktf+kCzYU
+         jwrPwMwtAC2Vq89rbexulSm75VclOqt8nMEjSQF8SWbDBk4LQmrhGKPpTuHYW2BOFzGJ
+         aLTd2QU42Aumi5yWES20AhyvdYFY5GOZIa4++GrETBRYfjnwPmFc3r21mtFafEULfVmh
+         4oC6Up4H5U4d0GJFxWn+b/N3Q0x6eA+gosd6XgLcSXlUQg/SnKfUgwotVlyeHmWKynw7
+         NSMjODRNSGPJVmPH+o03nd92COOHSoHhI5jfMatlA6LnG1CXODOBknTQ+B36oYwQOYtY
+         Cdzw==
+X-Gm-Message-State: APjAAAW779udWAiVcpSK7hSSmV4AptpXy4mskS+tN6qFI7IH3xmkHEkL
+        tO+izDrRl6qTI1obAAZNFJouyaq834nd4XxobDs=
+X-Google-Smtp-Source: APXvYqzERfPiNd0wD4hDi/mrWQrxnRntwrUJfOTzHhMh5vfQd2STzWGMIUh+sAdKXL02IFHJo0ZxfKoWNOo3Kff/On4=
+X-Received: by 2002:a17:906:2acf:: with SMTP id m15mr117984967eje.31.1561141915399;
+ Fri, 21 Jun 2019 11:31:55 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <9945a66f-4434-b2a6-63ac-3240ef1d52c9@suse.cz>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+References: <20190619202533.4856-1-nhorman@tuxdriver.com> <CA+FuTSe=kJSSvcYwCE9-omRF5Snd9AyesZac61PYyAHDStPt=A@mail.gmail.com>
+ <20190620142354.GB18890@hmswarspite.think-freely.org> <CAF=yD-KFZBS7PpvvBkHS5jQdjRr4tWpeHmb7=9QPmvD-RTcpYw@mail.gmail.com>
+ <20190621164156.GB21895@hmswarspite.think-freely.org>
+In-Reply-To: <20190621164156.GB21895@hmswarspite.think-freely.org>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 21 Jun 2019 14:31:17 -0400
+Message-ID: <CAF=yD-+MA398hTu7qCxfRhAMYrpeYp-+znc7bKNbupLYRRv5ug@mail.gmail.com>
+Subject: Re: [PATCH net] af_packet: Block execution of tasks waiting for
+ transmit to complete in AF_PACKET
+To:     Neil Horman <nhorman@tuxdriver.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Matteo Croce <mcroce@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Jun 21, 2019 at 12:42 PM Neil Horman <nhorman@tuxdriver.com> wrote:
+>
+> On Thu, Jun 20, 2019 at 11:16:13AM -0400, Willem de Bruijn wrote:
+> > On Thu, Jun 20, 2019 at 10:24 AM Neil Horman <nhorman@tuxdriver.com> wrote:
+> > >
+> > > On Thu, Jun 20, 2019 at 09:41:30AM -0400, Willem de Bruijn wrote:
+> > > > On Wed, Jun 19, 2019 at 4:26 PM Neil Horman <nhorman@tuxdriver.com> wrote:
+> > > > >
+> > > > > When an application is run that:
+> > > > > a) Sets its scheduler to be SCHED_FIFO
+> > > > > and
+> > > > > b) Opens a memory mapped AF_PACKET socket, and sends frames with the
+> > > > > MSG_DONTWAIT flag cleared, its possible for the application to hang
+> > > > > forever in the kernel.  This occurs because when waiting, the code in
+> > > > > tpacket_snd calls schedule, which under normal circumstances allows
+> > > > > other tasks to run, including ksoftirqd, which in some cases is
+> > > > > responsible for freeing the transmitted skb (which in AF_PACKET calls a
+> > > > > destructor that flips the status bit of the transmitted frame back to
+> > > > > available, allowing the transmitting task to complete).
+> > > > >
+> > > > > However, when the calling application is SCHED_FIFO, its priority is
+> > > > > such that the schedule call immediately places the task back on the cpu,
+> > > > > preventing ksoftirqd from freeing the skb, which in turn prevents the
+> > > > > transmitting task from detecting that the transmission is complete.
+> > > > >
+> > > > > We can fix this by converting the schedule call to a completion
+> > > > > mechanism.  By using a completion queue, we force the calling task, when
+> > > > > it detects there are no more frames to send, to schedule itself off the
+> > > > > cpu until such time as the last transmitted skb is freed, allowing
+> > > > > forward progress to be made.
+> > > > >
+> > > > > Tested by myself and the reporter, with good results
+> > > > >
+> > > > > Appies to the net tree
+> > > > >
+> > > > > Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
+> > > > > Reported-by: Matteo Croce <mcroce@redhat.com>
+> > > > > CC: "David S. Miller" <davem@davemloft.net>
+> > > > > ---
+> > > >
+> > > > This is a complex change for a narrow configuration. Isn't a
+> > > > SCHED_FIFO process preempting ksoftirqd a potential problem for other
+> > > > networking workloads as well? And the right configuration to always
+> > > > increase ksoftirqd priority when increasing another process's
+> > > > priority? Also, even when ksoftirqd kicks in, isn't some progress
+> > > > still made on the local_bh_enable reached from schedule()?
+> > > >
+> > >
+> > > A few questions here to answer:
+> >
+> > Thanks for the detailed explanation.
+> >
+> > > Regarding other protocols having this problem, thats not the case, because non
+> > > packet sockets honor the SK_SNDTIMEO option here (i.e. they sleep for a period
+> > > of time specified by the SNDTIMEO option if MSG_DONTWAIT isn't set.  We could
+> > > certainly do that, but the current implementation doesn't (opting instead to
+> > > wait indefinately until the respective packet(s) have transmitted or errored
+> > > out), and I wanted to maintain that behavior.  If there is consensus that packet
+> > > sockets should honor SNDTIMEO, then I can certainly do that.
+> > >
+> > > As for progress made by calling local_bh_enable, My read of the code doesn't
+> > > have the scheduler calling local_bh_enable at all.  Instead schedule uses
+> > > preempt_disable/preempt_enable_no_resched() to gain exlcusive access to the cpu,
+> > > which ignores pending softirqs on re-enablement.
+> >
+> > Ah, I'm mistaken there, then.
+> >
+> > >  Perhaps that needs to change,
+> > > but I'm averse to making scheduler changes for this (the aforementioned concern
+> > > about complex changes for a narrow use case)
+> > >
+> > > Regarding raising the priority of ksoftirqd, that could be a solution, but the
+> > > priority would need to be raised to a high priority SCHED_FIFO parameter, and
+> > > that gets back to making complex changes for a narrow problem domain
+> > >
+> > > As for the comlexity of the of the solution, I think this is, given your
+> > > comments the least complex and intrusive change to solve the given problem.
+> >
+> > Could it be simpler to ensure do_softirq() gets run here? That would
+> > allow progress for this case.
+> >
+> > >  We
+> > > need to find a way to force the calling task off the cpu while the asynchronous
+> > > operations in the transmit path complete, and we can do that this way, or by
+> > > honoring SK_SNDTIMEO.  I'm fine with doing the latter, but I didn't want to
+> > > alter the current protocol behavior without consensus on that.
+> >
+> > In general SCHED_FIFO is dangerous with regard to stalling other
+> > progress, incl. ksoftirqd. But it does appear that this packet socket
+> > case is special inside networking in calling schedule() directly here.
+> >
+> > If converting that, should it convert to logic more akin to other
+> > sockets, like sock_wait_for_wmem? I haven't had a chance to read up on
+> > the pros and cons of completion here yet, sorry. Didn't want to delay
+> > responding until after I get a chance.
+> >
+> So, I started looking at implementing SOCK_SNDTIMEO for this patch, and
+> something occured to me....We still need a mechanism to block in tpacket_snd.
+> That is to say, other protocol use SK_SNDTIMEO to wait for socket memory to
+> become available, and that requirement doesn't exist for memory mapped sockets
+> in AF_PACKET (which tpacket_snd implements the kernel side for).  We have memory
+> mapped frame buffers, which we marshall with an otherwise empty skb, and just
+> send that (i.e. no waiting on socket memory, we just product an error if we
+> don't have enough ram to allocate an sk_buff).  Given that, we only ever need to
+> wait for a frame to complete transmission, or get freed in an error path further
+> down the stack.  This probably explains why SK_SNDTIMEO doesn't exist for
+> AF_PACKET.
 
+SNDTIMEO behavior would still be useful: to wait for frame slot to
+become available, but only up to a timeout?
 
-On 6/21/19 4:33 AM, Vlastimil Babka wrote:
-> On 6/20/19 6:08 PM, Yang Shi wrote:
->>
->> On 6/20/19 12:18 AM, Vlastimil Babka wrote:
->>> On 6/19/19 8:19 PM, Yang Shi wrote:
->>>>>>> This is getting even more muddy TBH. Is there any reason that we
->>>>>>> have to
->>>>>>> handle this problem during the isolation phase rather the migration?
->>>>>> I think it was already said that if pages can't be isolated, then
->>>>>> migration phase won't process them, so they're just ignored.
->>>>> Yes，exactly.
->>>>>
->>>>>> However I think the patch is wrong to abort immediately when
->>>>>> encountering such page that cannot be isolated (AFAICS). IMHO it should
->>>>>> still try to migrate everything it can, and only then return -EIO.
->>>>> It is fine too. I don't see mbind semantics define how to handle such
->>>>> case other than returning -EIO.
->>> I think it does. There's:
->>> If MPOL_MF_MOVE is specified in flags, then the kernel *will attempt to
->>> move all the existing pages* ... If MPOL_MF_STRICT is also specified,
->>> then the call fails with the error *EIO if some pages could not be moved*
->>>
->>> Aborting immediately would be against the attempt to move all.
->>>
->>>> By looking into the code, it looks not that easy as what I thought.
->>>> do_mbind() would check the return value of queue_pages_range(), it just
->>>> applies the policy and manipulates vmas as long as the return value is 0
->>>> (success), then migrate pages on the list. We could put the movable
->>>> pages on the list by not breaking immediately, but they will be ignored.
->>>> If we migrate the pages regardless of the return value, it may break the
->>>> policy since the policy will *not* be applied at all.
->>> I think we just need to remember if there was at least one page that
->>> failed isolation or migration, but keep working, and in the end return
->>> EIO if there was such page(s). I don't think it breaks the policy. Once
->>> pages are allocated in a mapping, changing the policy is a best effort
->>> thing anyway.
->> The current behavior is:
->> If queue_pages_range() return -EIO (vma is not migratable, ignore other
->> conditions since we just focus on page migration), the policy won't be
->> set and no page will be migrated.
-> Ah, I see. IIUC the current behavior is due to your recent commit
-> a7f40cfe3b7a ("mm: mempolicy: make mbind() return -EIO when
-> MPOL_MF_STRICT is specified") in order to fix commit 6f4576e3687b
-> ("mempolicy: apply page table walker on queue_pages_range()"), which
-> caused -EIO to be not returned enough. But I think you went too far and
-> instead return -EIO too much. If I look at the code in parent commit of
-> 6f4576e3687b, I can see in queue_pages_range():
->
-> if ((flags & MPOL_MF_STRICT) ||
->          ((flags & (MPOL_MF_MOVE | MPOL_MF_MOVE_ALL)) &&
->          vma_migratable(vma))) {
->
->          err = queue_pages_pgd_range(vma, start, endvma, nodes,
->                                  flags, private);
->          if (err)
->                  break;
-> }
->
-> and in queue_pages_pte_range():
->
-> if (flags & (MPOL_MF_MOVE | MPOL_MF_MOVE_ALL))
->          migrate_page_add(page, private, flags);
-> else
->          break;
->
-> So originally, there was no returning of -EIO due to !vma_migratable() -
-> as long as MPOL_MF_STRICT and MPOL_MF_MOVE* was specified, the code
-> tried to queue for migration everything it could and didn't ever abort,
-> AFAICS. And I still think that's the best possible behavior.
->
->> However, the problem here is the vma might look migratable, but some or
->> all the underlying pages are unmovable. So, my patch assumes the vma is
->> *not* migratable if at least one page is unmovable. I'm not sure if it
->> is possible to have both movable and unmovable pages for the same
->> mapping or not, I'm supposed the vma would be split much earlier.
->>
->> If we don't abort immediately, then we record if there is unmovable
->> page, then we could do:
->> #1. Still follows the current behavior (then why not abort immediately?)
-> See above how the current behavior differs from the original one.
->
->> #2. Set mempolicy then migrate all the migratable pages. But, we may end
->> up with the pages on node A, but the policy says node B. Doesn't it
->> break the policy?
-> The policy can already be "broken" (violated is probably better word) by
-> migrate_pages() failing. If that happens, we don't rollback the migrated
-> pages and reset the policy back, right? I think the manpage is clear
-> that MPOL_MF_MOVE is a best-effort. Userspace will know that not
-> everything was successfully migrated (via -EIO), and can take whatever
-> steps it deems necessary - attempt rollback, determine which exact
-> page(s) are violating the policy, etc.
+To be clear, adding that is not a prerequisite for fixing this
+specific issue, of course. It would just be nice if the one happens to
+be fixed by adding the other.
 
-I see your point. It makes some sense to me. So, the policy should be 
-set if MPOL_MF_MOVE* is specified even though no page is migrated so 
-that we have consistent behavior for different cases:
-* vma is not migratable
-* vma is migratable, but pages are unmovable
-* vma is migratable, pages are movable, but migrate_pages() fails
+My main question is wrt the implementation details of struct
+completion. Without dynamic memory allocation,
+sock_wait_for_wmem/sk_stream_write_space obviously does not make
+sense. But should we still use sk_wq and more importantly does this
+need the same wait semantics (TASK_INTERRUPTIBLE) and does struct
+completion give those?
 
 >
-
+> Given that, is it worth implementing (as it will just further complicate this
+> patch, for no additional value), or can we move forward with it as it is?
+>
+> Neil
+>
