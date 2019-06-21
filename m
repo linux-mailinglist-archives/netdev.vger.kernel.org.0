@@ -2,73 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 98AAF4F0A3
-	for <lists+netdev@lfdr.de>; Sat, 22 Jun 2019 00:09:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 372CC4F0AB
+	for <lists+netdev@lfdr.de>; Sat, 22 Jun 2019 00:13:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726112AbfFUWJs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jun 2019 18:09:48 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:48452 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726017AbfFUWJs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 18:09:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=noal6GHI820xc2hIyBVZZOEwuVzPIcsq1ZVRxOSKR2w=; b=o65eU7i1C+7edpuOZx02q/iuL
-        MqafjJR/04vthXUqtYoG/QwbfrQykQ7v5Jw+AYEggxbaDNtPGuv8Dm87N0c+wgma3qCSZxc8V8K8R
-        e0lOUpeNmYYgf8X98iFOZ4MwpgDpGx0bfHOPhqFOK0iwjMfBbCGrv+DXnnwIsaBabE6yooVYamF0S
-        eXiaH6hij/OxcpVHIA8sn4EO+enDaOKCFKo7I5PrfykdrcFNOvz10b3E8m0pdyXCV1honZ1U4B1Kd
-        yVzrBY4hbQj9TerF2MxXYLktU7Vg23JXexa7GVFHxoz+H/xDZlc2l6VRCGyYA/9T9r+Q7i+jpKHOR
-        /hIPlpHQw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:59872)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1heRj6-00080Z-Ab; Fri, 21 Jun 2019 23:09:44 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1heRj3-0003c7-IV; Fri, 21 Jun 2019 23:09:41 +0100
-Date:   Fri, 21 Jun 2019 23:09:41 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
-        idosch@mellanox.com, Jiri Pirko <jiri@resnulli.us>, andrew@lunn.ch,
-        davem@davemloft.net
-Subject: Re: [RFC net-next] net: dsa: add support for MC_DISABLED attribute
-Message-ID: <20190621220941.zaqbaf4wpnxnvoy5@shell.armlinux.org.uk>
-References: <20190620235639.24102-1-vivien.didelot@gmail.com>
- <5d653a4d-3270-8e53-a5e0-88ea5e7a4d3f@gmail.com>
- <20190621172952.GB9284@t480s.localdomain>
+        id S1726243AbfFUWNf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jun 2019 18:13:35 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:33809 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726031AbfFUWNf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 18:13:35 -0400
+Received: by mail-pf1-f193.google.com with SMTP id c85so4277436pfc.1
+        for <netdev@vger.kernel.org>; Fri, 21 Jun 2019 15:13:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=4wGy/EHTtgR+nb6HgklMzpGmIfgU3V/xGQjb3MbOQ2U=;
+        b=EJPtGQiJHQPEUhCdzbPiH7MTsYxP1RD/0RzpgOjTE2v0GMEWRsp9KM7M3C/h5rQzkQ
+         tsmbWiI4EQt6Q26JsWZV3k99VvP6KAVxvJnU12MikgX60Ov+KniDyt61MxyofoH6KLZW
+         OVbwXCxmCbbM7gvKhlpLXGF2d5nP7UtXHZA8hOARYMzmtX2hG6x1dq1MHn2sXYS8KTAd
+         ox+xY5TWUMEurVj7aKGOvecRzL9Ad5mMsRa2Zb0+43ZrKJQ14aJ769YvN0EL6VvS9xiT
+         kj51K7QGHMilyHFdO+FQV4wzvLiNlIaUUnwSteG+3osbH3IkvYUFRx/EdjXhA5yN5KJW
+         QvBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=4wGy/EHTtgR+nb6HgklMzpGmIfgU3V/xGQjb3MbOQ2U=;
+        b=atk5vh1GuoMq+5IcN4tLHVZ6Tbvzj/ytoxZLyNg5jHwO9CZ9G6DE79dZM0Jughspxi
+         cIPq9NYFyuG/ntJ5k2mX4ILIVJnkoG3bZ9PtaD0sfPGtHiimoyx9+iWPxGXAqs/izBjI
+         1JBccx4OB5q2ebfa58hwmwmn2dJ+oOXhdpwF8q4WWHnQlNGQoX2Sj2VNvzEaFHu6dqmm
+         CykdA9KHXWV1DBpaP8D68e/OEsIqZauiWHpIjd38ZBbMY1HVDPqOT8ToVqiruq9lBBkK
+         +2rbQZYc/3a1vh3DQ/Jb0U6ihdKGp/OPMpnghifvoHmPvV1/BUlsj8ecW6Vj3MgB1llx
+         4wxA==
+X-Gm-Message-State: APjAAAXNjQLVmEnR4Gvwn3Rb0X/rGU/b48kkIJQ0+8ktLC3aYMO87Ner
+        qKKfs4NNf9uPkxNkb9BFkeOQgYvLXYA=
+X-Google-Smtp-Source: APXvYqxGseV+ahhksRjXHHshlvXOqI3cr2k0QmjAhajRQvuOVfXk1DAh4GxXvIhaLcfOPFL2Hzh6OA==
+X-Received: by 2002:a17:90a:b011:: with SMTP id x17mr9512062pjq.113.1561155213823;
+        Fri, 21 Jun 2019 15:13:33 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
+        by smtp.gmail.com with ESMTPSA id f10sm3820369pfd.151.2019.06.21.15.13.32
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 21 Jun 2019 15:13:33 -0700 (PDT)
+Subject: Re: [PATCH net-next 01/18] ionic: Add basic framework for IONIC
+ Network device driver
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org
+References: <20190620202424.23215-1-snelson@pensando.io>
+ <20190620202424.23215-2-snelson@pensando.io> <20190620212447.GJ31306@lunn.ch>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <7f1fcda2-dce4-feb6-ec3a-c54bfb691e5d@pensando.io>
+Date:   Fri, 21 Jun 2019 15:13:31 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190621172952.GB9284@t480s.localdomain>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <20190620212447.GJ31306@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 21, 2019 at 05:29:52PM -0400, Vivien Didelot wrote:
-> Russell, Ido, Florian, so far I understand that a multicast-unaware
-> bridge must flood unknown traffic everywhere (CPU included);
-                           ^
-			multicast
+On 6/20/19 2:24 PM, Andrew Lunn wrote:
 
-> and a multicast-aware bridge must only flood its ports if their
-                                              ^
-				unknown multicast traffic to
+Hi Andrew, thanks for your time and comments.  Responses below...
 
-> mcast_flood is on, and known traffic targeting the bridge must be
-> offloaded accordingly. Do you guys agree with this?
+>> +++ b/drivers/net/ethernet/pensando/ionic/ionic.h
+>> @@ -0,0 +1,27 @@
+>> +/* SPDX-License-Identifier: GPL-2.0 */
+>> +/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
+>> +
+>> +#ifndef _IONIC_H_
+>> +#define _IONIC_H_
+>> +
+>> +#define DRV_NAME		"ionic"
+>> +#define DRV_DESCRIPTION		"Pensando Ethernet NIC Driver"
+>> +#define DRV_VERSION		"0.11.0-k"
+> DRV_VERSION is pretty useless. What you really want to know is the
+> kernel git tree and commit. The big distributions might backport this
+> version of the driver back to the old kernel with a million
+> patches. At which point 0.11.0-k tells you nothing much.
+Yes, any version numbering thing from the big distros is put into 
+question, but I find this number useful to me for tracking what has been 
+put into the upstream kernel.  This plus the full kernel version gives 
+me a pretty good idea of what I'm looking at.
 
-I don't see a problem with that with the clarification that we're
-talking about multicast packets here.
+>> +
+>> +// TODO: register these with the official include/linux/pci_ids.h
+>> +#define PCI_VENDOR_ID_PENSANDO			0x1dd8
+> That file has a comment:
+>
+>   *      Do not add new entries to this file unless the definitions
+>   *      are shared between multiple drivers.
+>
+> Is it going to be shared?
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+Yes, there is an instance of sharing planned.
+
+>
+>   +
+>> +#define PCI_DEVICE_ID_PENSANDO_IONIC_ETH_PF	0x1002
+>> +#define PCI_DEVICE_ID_PENSANDO_IONIC_ETH_VF	0x1003
+>> +#define PCI_DEVICE_ID_PENSANDO_IONIC_ETH_MGMT	0x1004
+>> +
+>> +#define IONIC_SUBDEV_ID_NAPLES_25	0x4000
+>> +#define IONIC_SUBDEV_ID_NAPLES_100_4	0x4001
+>> +#define IONIC_SUBDEV_ID_NAPLES_100_8	0x4002
+>> +
+>> +struct ionic {
+>> +	struct pci_dev *pdev;
+>> +	struct device *dev;
+>> +};
+>> +
+>> +#endif /* _IONIC_H_ */
+>> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus.h b/drivers/net/ethernet/pensando/ionic/ionic_bus.h
+>> new file mode 100644
+>> index 000000000000..94ba0afc6f38
+>> --- /dev/null
+>> +++ b/drivers/net/ethernet/pensando/ionic/ionic_bus.h
+>> @@ -0,0 +1,10 @@
+>> +/* SPDX-License-Identifier: GPL-2.0 */
+>> +/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
+>> +
+>> +#ifndef _IONIC_BUS_H_
+>> +#define _IONIC_BUS_H_
+>> +
+>> +int ionic_bus_register_driver(void);
+>> +void ionic_bus_unregister_driver(void);
+>> +
+>> +#endif /* _IONIC_BUS_H_ */
+>> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+>> new file mode 100644
+>> index 000000000000..ab6206c162d4
+>> --- /dev/null
+>> +++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+>> @@ -0,0 +1,61 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
+>> +
+>> +#include <linux/module.h>
+>> +#include <linux/netdevice.h>
+>> +#include <linux/etherdevice.h>
+>> +#include <linux/pci.h>
+>> +
+>> +#include "ionic.h"
+>> +#include "ionic_bus.h"
+>> +
+>> +/* Supported devices */
+>> +static const struct pci_device_id ionic_id_table[] = {
+>> +	{ PCI_VDEVICE(PENSANDO, PCI_DEVICE_ID_PENSANDO_IONIC_ETH_PF) },
+>> +	{ PCI_VDEVICE(PENSANDO, PCI_DEVICE_ID_PENSANDO_IONIC_ETH_VF) },
+>> +	{ PCI_VDEVICE(PENSANDO, PCI_DEVICE_ID_PENSANDO_IONIC_ETH_MGMT) },
+>> +	{ 0, }	/* end of table */
+>> +};
+>> +MODULE_DEVICE_TABLE(pci, ionic_id_table);
+>> +
+>> +static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>> +{
+>> +	struct device *dev = &pdev->dev;
+>> +	struct ionic *ionic;
+>> +
+>> +	ionic = devm_kzalloc(dev, sizeof(*ionic), GFP_KERNEL);
+>> +	if (!ionic)
+>> +		return -ENOMEM;
+>> +
+>> +	ionic->pdev = pdev;
+>> +	pci_set_drvdata(pdev, ionic);
+>> +	ionic->dev = dev;
+>> +	dev_info(ionic->dev, "attached\n");
+> probed would be more accurate. But in general, please avoid all but
+> the minimum of such info messages.
+Sure
+>
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static void ionic_remove(struct pci_dev *pdev)
+>> +{
+>> +	struct ionic *ionic = pci_get_drvdata(pdev);
+>> +
+>> +	pci_set_drvdata(pdev, NULL);
+>> +	dev_info(ionic->dev, "removed\n");
+> Not very useful dev_info().
+It has been useful in testing, but it can go away.
+>
+> Also, i think the core will NULL out the drive data for you. But you
+> should check.
+I'll check.
+>> +}
+>> +
+>> +static struct pci_driver ionic_driver = {
+>> +	.name = DRV_NAME,
+>> +	.id_table = ionic_id_table,
+>> +	.probe = ionic_probe,
+>> +	.remove = ionic_remove,
+>> +};
+>> +
+>> +int ionic_bus_register_driver(void)
+>> +{
+>> +	return pci_register_driver(&ionic_driver);
+>> +}
+>> +
+>> +void ionic_bus_unregister_driver(void)
+>> +{
+>> +	pci_unregister_driver(&ionic_driver);
+>> +}
+> It looks like you can use module_pci_driver() and remove a lot of
+> boilerplate.
+Thanks, I'll look at that.
+
+Cheers,
+sln
+>
+> 	Andrew
+
