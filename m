@@ -2,93 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 82D7A4DF6C
-	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 05:55:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C87F4DF7E
+	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 06:05:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726067AbfFUDza (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 23:55:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58952 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725906AbfFUDza (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Jun 2019 23:55:30 -0400
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B649520675;
-        Fri, 21 Jun 2019 03:55:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1561089330;
-        bh=CB0BVuWRQkXTBVGb9UHWbA6rwa6WvzmY/NDqRPZYwwU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=XqPDN2ZNzQB7DkBCUx2OniciL88yDnBFNm/5PmwYB93b79pLI7Z17M2QDvSTXMHHj
-         F7o6gG+d1hqN8C8vmFdKyx+tbk1OYLK75yqwvKJM6fAquijXJBT3Z0KydXF/UNM2RY
-         sBdJHRE1y9eY9ZHD6OE+gYe/IXrb2O7Y7U+dXy7c=
-Received: by mail-wr1-f47.google.com with SMTP id p11so5047791wre.7;
-        Thu, 20 Jun 2019 20:55:29 -0700 (PDT)
-X-Gm-Message-State: APjAAAUq1bhcLGo1rA4vXD0ulrmCRHIjxnlwsI3hrsQQT0w2T7BV6tQH
-        zhuVBq83waSw5awCj9hc7q94kLito1NU6ZiwLH4=
-X-Google-Smtp-Source: APXvYqw1oBEMTWkRYK4KwUGgtatvlFEs4uRUsVCarkwsEYrBQV82ffY92H9Yw+zgQ2sCr1HJP1H7CJMT60ddiXTlSDw=
-X-Received: by 2002:adf:afd5:: with SMTP id y21mr92411754wrd.12.1561089328389;
- Thu, 20 Jun 2019 20:55:28 -0700 (PDT)
+        id S1725974AbfFUEFt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jun 2019 00:05:49 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:42255 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725818AbfFUEFs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 00:05:48 -0400
+Received: by mail-qk1-f193.google.com with SMTP id b18so3477666qkc.9;
+        Thu, 20 Jun 2019 21:05:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6YmRrujmQ4lsaMmeiMiJdmMPnCKf9eM+r6csPeOuwgI=;
+        b=GV1BeA9CqHRlwnHcaNufk7UyhjRwrqLv9yckpZCmBQVyvcCc/WAYvbi4ju0L94QNfu
+         fH4/uiY+253kME+bQRCLKrQh4yUWD5fblBWJkezZXcaaxPIukVRInFPJyb5SQ701NnK2
+         KLEJyjvUAZln42bFRae9L3iFiCR2s3ovv8aYPhnVVYYxD3z75b1b0ydnRfcXWyHpLRm1
+         JY+E+9xf94ZdhoHjCJd/wq/jmSrI0myC26K7GjDPuTI2Kqn1ixHMgKtowZBFHHWyEGYD
+         /ANTmAHq6KEH6Agl8Yj0f6aQ6DzhDcT8IDgUjaCPvTtLLPHUEieRObqaDUvXsRyB/Hox
+         OsFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6YmRrujmQ4lsaMmeiMiJdmMPnCKf9eM+r6csPeOuwgI=;
+        b=NFyygKTvf0kjPtQFvXmCqrJH9C9OjLf5Xr5TZ5lXYNtKX3PPGa5rWrETjvGLMN3Y4V
+         ly4aVpixayBECFB+RjJUT+in0F80LBV0QYbPZghYXebmxs7JmS6e3zyqx+J5xfo2jlxr
+         prjR/0JklXyVPWwPBXXz72/zjr+9SAUcpfCnHgjh998ZQsu6ReVqG8FKFwWZPNRRh1cD
+         t4ahQGfJkt9fU/We3FqwdO6Gk87NRpTujTa2ntBJrkHDf552+pw5gc7f2bO5gPWDordI
+         QNylrE3QeUgNh7qTlJVxRDAVIFldZuetNv6hnCn76AMtgSRH3qKDglvfzH2dQ6DewHfy
+         Zjig==
+X-Gm-Message-State: APjAAAXy3qtocCowE3fXwWvhaRfZjvwuY+Dj1mcaJJzdft3z8glz1djd
+        UHTcH6ceATvXe+kjdFtc1EsWazg1DNRGPaC5AzA=
+X-Google-Smtp-Source: APXvYqwWP0hNCZUg9/nJ262moGsFzJfG+Ay6PyIgdB1jt8vK0CVxOg7pv2Q0VRkiPnUr8XM/HPg/OtWfRDzsG7552rI=
+X-Received: by 2002:a05:620a:16a6:: with SMTP id s6mr2421821qkj.39.1561089947171;
+ Thu, 20 Jun 2019 21:05:47 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190620122155.32078-1-opensource@vdorst.com> <74C80E79-877C-4DEC-BC82-1195C3D0981F@public-files.de>
-In-Reply-To: <74C80E79-877C-4DEC-BC82-1195C3D0981F@public-files.de>
-From:   Sean Wang <sean.wang@kernel.org>
-Date:   Thu, 20 Jun 2019 20:55:17 -0700
-X-Gmail-Original-Message-ID: <CAGp9Lzon8QMO3=jwLYNO_je+x2E3E-Zocm=Do-=5x334GqZZLw@mail.gmail.com>
-Message-ID: <CAGp9Lzon8QMO3=jwLYNO_je+x2E3E-Zocm=Do-=5x334GqZZLw@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 0/2] net: mediatek: Add MT7621 TRGMII mode support
-To:     Frank Wunderlich <frank-w@public-files.de>
-Cc:     =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
-        =?UTF-8?B?U2VhbiBXYW5nICjnjovlv5fkupgp?= <sean.wang@mediatek.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, vivien.didelot@gmail.com,
-        netdev@vger.kernel.org,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>, linux-mips@vger.kernel.org,
-        John Crispin <john@phrozen.org>
+References: <20190531202132.379386-1-andriin@fb.com> <20190531202132.379386-7-andriin@fb.com>
+ <CACAyw99wD+7mXXeger6WoBTTu3aYHDW8EJV9_tP7MfXOnT0ODg@mail.gmail.com>
+ <CAEf4BzamSjSa-7ddzyVsqygbtT6WSwsWpCFGX-4Rav4Aev8UsA@mail.gmail.com>
+ <CACAyw9_Yr=pmvCRYsVHoQBrH7qBwmcaXZezmqafwJTxaCmDf6A@mail.gmail.com>
+ <CAEf4Bzbpm0pSvXU8gfSTL2xECTDb+Z9HKKO2Y-Ap=L6VTWL9MQ@mail.gmail.com> <CACAyw98hwj5hpT00P5JiW3V+QPdyddKfN_yQj=okXvg89eTgsA@mail.gmail.com>
+In-Reply-To: <CACAyw98hwj5hpT00P5JiW3V+QPdyddKfN_yQj=okXvg89eTgsA@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 20 Jun 2019 21:05:35 -0700
+Message-ID: <CAEf4BzYMAkXVobfWppMtF1d9c_vSFFHEoXC8MdZPq-OXFrMzLA@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 6/8] libbpf: allow specifying map definitions
+ using BTF
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 20, 2019 at 6:02 AM Frank Wunderlich
-<frank-w@public-files.de> wrote:
+On Thu, Jun 20, 2019 at 2:28 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
 >
-> Tested on Bananapi R2 (mt7623)
->
-> Tested-by: "Frank Wunderlich" <frank-w@public-files.de>
-
-These changes also look good to me, thanks for add the patch to enrich
-different application variants.
-
-Acked-by: Sean Wang <sean.wang@kernel.org>
-
->
-> Am 20. Juni 2019 14:21:53 MESZ schrieb "Ren=C3=A9 van Dorst" <opensource@=
-vdorst.com>:
-> >Like many other mediatek SOCs, the MT7621 SOC and the internal MT7530
-> >switch both supports TRGMII mode. MT7621 TRGMII speed is fix 1200MBit.
+> On Mon, 17 Jun 2019 at 22:00, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+> > > In my mind, BPF loaders should be able to pass through BTF to the kernel
+> > > as a binary blob as much as possible. That's why I want the format to
+> > > be "self describing". Compatibility then becomes a question of: what
+> > > feature are you using on which kernel. The kernel itself can then still be
+> > > strict-by-default or what have you.
 > >
-> >v1->v2:
-> > - Fix breakage on non MT7621 SOC
-> > - Support 25MHz and 40MHz XTAL as MT7530 clocksource
-> >
-> >Ren=C3=A9 van Dorst (2):
-> >  net: ethernet: mediatek: Add MT7621 TRGMII mode support
-> >  net: dsa: mt7530: Add MT7621 TRGMII mode support
-> >
-> > drivers/net/dsa/mt7530.c                    | 46 ++++++++++++++++-----
-> > drivers/net/dsa/mt7530.h                    |  4 ++
-> > drivers/net/ethernet/mediatek/mtk_eth_soc.c | 38 +++++++++++++++--
-> > drivers/net/ethernet/mediatek/mtk_eth_soc.h | 11 +++++
-> > 4 files changed, 85 insertions(+), 14 deletions(-)
+> > That would work in ideal world, where kernel is updated frequently
+> > (and BTF is self-describing, which it is not). In practice, though,
+> > libbpf is far more up-to-date and lends its hand on "sanitizing" .BTF
+> > from kernel-unsupported features (so far we manage to pull this off
+> > very reasonably). If you have a good proposal how to make .BTF
+> > self-describing, that would be great!
 >
-> _______________________________________________
-> Linux-mediatek mailing list
-> Linux-mediatek@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-mediatek
+> I think sanitizing is going to become a problem, but we've been around
+> that argument a few times :)
+
+Yep :)
+
+>
+> Making .BTF self describing need at least adding length to certain fields,
+> as I mentioned in another thread. Plus an interface to interrogate the
+> kernel about a loaded BTF blob.
+>
+> > > I agree with you, the syntax probably has to be different. I'd just like it to
+> > > differ by more than a "*" in the struct definition, because that is too small
+> > > to notice.
+> >
+> > So let's lay out how it will be done in practice:
+> >
+> > 1. Simple map w/ custom key/value
+> >
+> > struct my_key { ... };
+> > struct my_value { ... };
+> >
+> > struct {
+> >     __u32 type;
+> >     __u32 max_entries;
+> >     struct my_key *key;
+> >     struct my_value *value;
+> > } my_simple_map BPF_MAP = {
+> >     .type = BPF_MAP_TYPE_ARRAY,
+> >     .max_entries = 16,
+> > };
+> >
+> > 2. Now map-in-map:
+> >
+> > struct {
+> >     __u32 type;
+> >     __u32 max_entries;
+> >     struct my_key *key;
+> >     struct {
+> >         __u32 type;
+> >         __u32 max_entries;
+> >         __u64 *key;
+> >         struct my_value *value;
+> >     } value;
+> > } my_map_in_map BPF_MAP = {
+> >     .type = BPF_MAP_TYPE_HASH_OF_MAPS,
+> >     .max_entries = 16,
+> >     .value = {
+> >         .type = BPF_MAP_TYPE_ARRAY,
+> >         .max_entries = 100,
+> >     },
+> > };
+> >
+> > It's clearly hard to misinterpret inner map definition for a custom
+> > anonymous struct type, right?
+>
+> That's not what I'm concerned about. My point is: sometimes you
+> have to use a pointer, sometimes you don't. Every user has to learn this.
+> Chance is, they'll probably get it wrong first. Is there a way to give a
+> reasonable error message for this?
+
+Right now pointer is always required. My initial intent for map-in-map
+was to not use pointer, but since then I've proposed a slightly
+different approach, which eliminates all these concerns you mentioned.
+As for messaging, yeah, that the simplest part, which can always be
+improved.
+
+>
+> > > I kind of assumed that BTF support for those maps would at some point
+> > > appear, maybe I should have checked that.
+> >
+> > It will. Current situation with maps not supporting specifying BTF for
+> > key and/or value looks more like a bug, than feature and we should fix
+> > that. But even if we fix it today, kernels are updated much slower
+> > than libbpf, so by not supporting key_size/value_size, we force people
+> > to get stuck with legacy bpf_map_def for a really long time.
+>
+> OK.
+>
+> I'll go and look at the newest revision of the patch set now :o)
+>
+> --
+> Lorenz Bauer  |  Systems Engineer
+> 6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+>
+> www.cloudflare.com
