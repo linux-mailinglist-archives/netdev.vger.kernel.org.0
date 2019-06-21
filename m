@@ -2,75 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E4164E160
-	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 09:49:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97F304E1A3
+	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 10:09:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726054AbfFUHtD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jun 2019 03:49:03 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:52613 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726025AbfFUHtC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 03:49:02 -0400
-Received: by mail-wm1-f67.google.com with SMTP id s3so5402206wms.2
-        for <netdev@vger.kernel.org>; Fri, 21 Jun 2019 00:49:01 -0700 (PDT)
+        id S1726308AbfFUIJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jun 2019 04:09:20 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:42179 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726030AbfFUIJU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 04:09:20 -0400
+Received: by mail-wr1-f66.google.com with SMTP id x17so5582223wrl.9
+        for <netdev@vger.kernel.org>; Fri, 21 Jun 2019 01:09:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=6wind.com; s=google;
         h=reply-to:subject:to:cc:references:from:organization:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=nHThIuIfrVMnglTEV9GlrOiwAPFC9u5y9ZkeZILZ1Ks=;
-        b=hkdIGPhnzc/Xc72FRHWloS6gf35UNw0obhQbODyRZ97wLApSTXXOcafLim7RQpdPNP
-         c5ouCUy3Ya2Y85wt4YivpjTX4WjmOe4nDNbAFtJfjkxuNL9R8zEyCmwGiaoOMxXx32F5
-         ILClng/GaJVaAmqgZT0TOXE5DHJ+ZN0S1+Dp29DA+8NHPKr7s7YNW2XWHcDTDfW9T/Wk
-         E+OsWvNaiMyLfInW1K4UTVHJs5ht48HZis8EpC2pul7vhtVGkrQP6sTySvbYU4KE/FVP
-         VLgrrW3r21xFBHQfV9YrYscXAOtYdCJSTQRdPzc5pLF7N5t7hJcw0ggsxG/a0qdUllYf
-         9IoQ==
+        bh=PR92/JEMZwnNKU2C3DGFGBbemU42hIRwRLnglrS7YJc=;
+        b=OCEY2h2afyHj7uKtsRtGIiYH8Cu74iwLjbtKxwB2llxE7Xm0Uc5cXYEfqRxHkr1O8R
+         y5iCFmNWkQV0tJA9S3kUmIDUiQdwcRAYCLm3Oxwu9aK4W0z6j8MRGsGWmI1A8Xex1paz
+         BjQebDXLPzM7pKHDkLys+NYPRhRgbt8jt/i0LsO/Q0dy5vBJq5+1g6bQqsJ0VD3Wj1B2
+         sS2jsibSFxWkzA2kfcatT6PEGE+Kx474YuuksG+UaRbKCrGbHAPeTuzStkQ1yz8rV9K2
+         fuYkUnP9/a1zIcoW8dPl2yg7ZKo8sxJBCKjLm5Ff2vSJw8GrghOt2fv+y8c0KHDGfek6
+         2QYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:reply-to:subject:to:cc:references:from
          :organization:message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=nHThIuIfrVMnglTEV9GlrOiwAPFC9u5y9ZkeZILZ1Ks=;
-        b=S6Opj5jITKhUeD7Z15xS5nICed06nMZL3xBLVg0BjpY9sWB7bndW5wwISDZ7wqGqrY
-         ELqIqJa8f7R/fKWMj4mfgQmGzWZ6ceb+Fs8GrUI1WUGauU6vhblQmc1+IO+dCOCK+/9L
-         mxx9/X9oogbmKN3qHgSexE/cVkO9tP+v4WIxWl0UNg9co5GdIicZfUJIvbDEwEKbo3Im
-         NsgL0E2kZcvznZk/MH0yG9CKsAs8LEid6edKCxWPyKQ8pRpo2CTUmifMe/fIBpXj5/ZW
-         V1Hku5LqFxaS4CGUJU6AlXzHPxEOElvqBXNY8NTZXp2IEveMyjaxyay1mYKcJfViDt7T
-         6ORA==
-X-Gm-Message-State: APjAAAUnMmpyHFsNtZz81IziURF2SVaAgbCAGzkfQ1BCy/bxVcj8NQW/
-        OredRWP7rMBsqIZq8yv5sOByLg==
-X-Google-Smtp-Source: APXvYqzrDh2/Nb4xW4Tel4uq27WAKRBNk/5yTtbMJ8ahdEusVdzFciJKWx7Gd6Y1GdL6kRWWNYoydw==
-X-Received: by 2002:a1c:9d48:: with SMTP id g69mr3059332wme.31.1561103340242;
-        Fri, 21 Jun 2019 00:49:00 -0700 (PDT)
+        bh=PR92/JEMZwnNKU2C3DGFGBbemU42hIRwRLnglrS7YJc=;
+        b=XHfUL16qv0tSgbN2aAJ0BPPhUN0r7mLWO4l/idjsWELvEN956lNLcvo0TF5yOMxylY
+         cCPB+2Gz1K/c3qD/8hiV/yCn9whkt4kVokOyjOYUU0+dtCDw4tiFrSuu2TVuxwXp0scV
+         My1E6iQ8mLThhOkXi9/P7+AWxzRd05dH6m7+oImoianaD+8sG/VOQEO5U/R+paIEd4kK
+         egPCNAk2iguqrcOyvFRZhGUXKv0H69cj26+pahun3RsCJQ1ZMGA7ZnI0TADwK0D+KvuR
+         MbFrTLV7Qpin3SsFf3JUPv0zpISfrFe8qZ87GyfO2eU4sJwitvI3LN79D1d3YK0zy4Cz
+         PUzg==
+X-Gm-Message-State: APjAAAV2ttsyEYFSbjnvGs1cY5LNiqM6TKdqsLonenNKqKY45nPl0CBf
+        9klwhflpWilBq1/pTYiXLY6CJOPtkYs=
+X-Google-Smtp-Source: APXvYqx2sx+MNAVgwkFSkVzi1t6J9KTOcpA7PtjyGZXLUwkkVfUeHl1p9hcVc18AQZlvhZufukjQog==
+X-Received: by 2002:a5d:49c6:: with SMTP id t6mr22279666wrs.64.1561104557516;
+        Fri, 21 Jun 2019 01:09:17 -0700 (PDT)
 Received: from ?IPv6:2a01:e35:8b63:dc30:519:49a0:d5f3:b366? ([2a01:e35:8b63:dc30:519:49a0:d5f3:b366])
-        by smtp.gmail.com with ESMTPSA id u18sm1401013wmd.19.2019.06.21.00.48.58
+        by smtp.gmail.com with ESMTPSA id j7sm2607389wru.54.2019.06.21.01.09.16
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 21 Jun 2019 00:48:58 -0700 (PDT)
+        Fri, 21 Jun 2019 01:09:16 -0700 (PDT)
 Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [RFC PATCH net-next 1/1] tc-testing: Restore original behaviour
- for namespaces in tdc
-To:     Lucas Bates <lucasb@mojatatu.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>, kernel@mojatatu.com,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Marcelo Ricardo Leitner <mleitner@redhat.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Davide Caratti <dcaratti@redhat.com>
-References: <1559768882-12628-1-git-send-email-lucasb@mojatatu.com>
- <30354b87-e692-f1f0-fed7-22c587f9029f@6wind.com>
- <CAMDBHYJdeh_AO-FEunTuTNVFAEtixuniq1b6vRqa_oS_Ru5wjg@mail.gmail.com>
- <0bd19bf9-f499-dc9f-1b26-ee0a075391ac@6wind.com>
- <CAMDBHYLYpbARw1P3YadLMbm8R3CDaT83R2J0n6P22OwYFxi-Pg@mail.gmail.com>
+Subject: Re: [PATCH net] ipv6: fix neighbour resolution with raw socket
+To:     David Ahern <dsahern@gmail.com>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org
+References: <20190620123434.7219-1-nicolas.dichtel@6wind.com>
+ <fb3ed305-0161-8d6a-975c-54b29cfcb0ef@gmail.com>
+ <3066f846-f549-f982-7bc0-1f9bc3d87b94@6wind.com>
+ <c1e3d444-a7c9-def4-9f16-37db5dd071fe@gmail.com>
 From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
 Organization: 6WIND
-Message-ID: <fed29b14-b8b3-bfc6-fa4c-abdee7d67c09@6wind.com>
-Date:   Fri, 21 Jun 2019 09:48:57 +0200
+Message-ID: <483e9d45-dd9b-45ea-a2e8-0b3ae6d25a82@6wind.com>
+Date:   Fri, 21 Jun 2019 10:09:16 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.1
 MIME-Version: 1.0
-In-Reply-To: <CAMDBHYLYpbARw1P3YadLMbm8R3CDaT83R2J0n6P22OwYFxi-Pg@mail.gmail.com>
+In-Reply-To: <c1e3d444-a7c9-def4-9f16-37db5dd071fe@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -79,21 +70,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 21/06/2019 à 02:45, Lucas Bates a écrit :
+Le 20/06/2019 à 18:36, David Ahern a écrit :
 [snip]
-> Very true. I think I just put that one in quickly and meant to come
-> back to it later, but either way it's a bit too vague.
-I understand. As a developer, we tend to focus on the technical part, but we
-need to remember to look at the big picture at the end ;-)
-
-> 
-> I'll get that corrected, but I believe I'll add it to a separate patch
-> after the requires functionality goes in.  I want to update some of
-Sure, not problem.
-
-> the documentation as well.
-Fine.
-
-
-Thank you,
-Nicolas
+> You don't have a fixes tag, but this should go to stable releases.
+Yeah, I was not able to point a specific commit. The bug is reproducible with a
+4.4 from ubuntu-16.04, with a 3.10 from redhat-7 but not with a vanilla 3.10.20.
