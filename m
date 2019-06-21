@@ -2,123 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 493C34F071
-	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 23:21:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AE574F079
+	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 23:26:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726215AbfFUVVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jun 2019 17:21:13 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:37867 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725985AbfFUVVM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 17:21:12 -0400
-Received: by mail-pf1-f196.google.com with SMTP id 19so4212113pfa.4
-        for <netdev@vger.kernel.org>; Fri, 21 Jun 2019 14:21:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=lf/zzWbu1p+7OZLhl2YtTpKCGw8MMulN9uhF5nuMqCI=;
-        b=r3U4/GAx1NlqiBaFHo4dgUuRt4R1I113stunqIxHWb8g8lre/apwMg5gHcounI4nsG
-         sCkUj3QnxtRPW+v0FYbq189D3k5Cv9RW+0Jv1k6CWP9UDa0NKdp/EmqZLHScc7C/zOMQ
-         3JqLXMwnpW5bbP4vGKo1r+qafrfYTu4ZcYJIuqbdEamPS4eo+bZh/hOdbSY6VxJXN3Ws
-         6OnD21PM9KCRrVg2KIfLg2ZRKQil+RlryMWz9sX3FPsCO6Y5EMvQe6mxDlz0dIzKA4Vy
-         7mnPZTW3hgv4PtV0b442JOlQHiojqkWv7GP73l5LOT9Xp09/KFblinDc7hOetX2uBIFN
-         GG3g==
+        id S1726058AbfFUV0l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jun 2019 17:26:41 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:42574 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725985AbfFUV0l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 17:26:41 -0400
+Received: from mail-qk1-f199.google.com ([209.85.222.199])
+        by youngberry.canonical.com with esmtps (TLS1.0:RSA_AES_128_CBC_SHA1:16)
+        (Exim 4.76)
+        (envelope-from <gpiccoli@canonical.com>)
+        id 1heR3O-000404-Kw
+        for netdev@vger.kernel.org; Fri, 21 Jun 2019 21:26:38 +0000
+Received: by mail-qk1-f199.google.com with SMTP id k13so9027685qkj.4
+        for <netdev@vger.kernel.org>; Fri, 21 Jun 2019 14:26:38 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=lf/zzWbu1p+7OZLhl2YtTpKCGw8MMulN9uhF5nuMqCI=;
-        b=mhBm7i9xT2+/wpJYAFh+KsUGaRbMWz00rJBA33zpHj7BbGyZ9mN7zb61XH02JVRK16
-         NrZjdq0AmBT36JMFaSETDzZSw49UHWlsphxW9ZlvjMjN4d1Dfq+cu9hs5lP5m7B4kdn1
-         2tcSuz4HYwNbTHyVNdFDo13JjJAcI8kaciyax2uZ6TEm9Z3/QknDirl5Awt3xM8mLg8f
-         mAujJaE2mAUYXiywH3TrNQeNjwN9KCSfGseB7xE1NptbWzowwKYlx3YSfQK8z/SXpgrr
-         9DWlgukix4z9g/h8FJCUoYz4iqgqjDUYtwkMC3vGdUslXqMeDJnU7dm6Hn050Fi2Mc4M
-         vCsQ==
-X-Gm-Message-State: APjAAAUiWIcJn7JBy9BvNCeCaBH1eCdPtoSxRDYbE2vOa6PgagJXJ6zt
-        PlYC3x0aR5oHFYnfZIqJ+ywx5Q==
-X-Google-Smtp-Source: APXvYqxeI+sdlGgEjcfeFJKlxpAJ9zOhTuvdbI3+rOcVFkRl6SEr8gF4p42xLM8MfC54zCNdCDwqGQ==
-X-Received: by 2002:a17:90a:ad89:: with SMTP id s9mr9313573pjq.41.1561152072111;
-        Fri, 21 Jun 2019 14:21:12 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id x3sm4205768pja.7.2019.06.21.14.21.11
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 21 Jun 2019 14:21:11 -0700 (PDT)
-Date:   Fri, 21 Jun 2019 14:21:10 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     andrii.nakryiko@gmail.com, ast@fb.com, daniel@iogearbox.net,
-        bpf@vger.kernel.org, netdev@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH v2 bpf-next 0/7] libbpf: add tracing attach APIs
-Message-ID: <20190621212110.GG1383@mini-arch>
-References: <20190621045555.4152743-1-andriin@fb.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ATE8lhTswCbMgIcjrXZsyDzJSAxzG424RDwYUdGXPWQ=;
+        b=jMxJZCtUm8BGmQqEVni/SIFxF69K45PzeVltYv1QH4d3PY6VYiUbZFF9SsegJ23MlO
+         JumJMUYjo97Dzrhuob0vYW1ckjL8C+Kj7Dy4iHnYBe84WFzFknbWTt3XalZeUnh7LyGX
+         nuZd74MdKWtIRO2V4clSUUudizd0kvENSciInuLn/E6LuDfk1ChHk1RCe6UmvB9FCZZi
+         1YZGClcqdR2PFHnnVDqIAw681XwVGQRwYqdp/r3KdGN52zQJVMZFs93SJiBBjfhSTB4s
+         sETrZxKHchBoYzHZgktIDpnLsTkOn0wNTF4rZjMwTDHUQ/jyl77Qbf6MVJ3ZiOXbiU30
+         4+vA==
+X-Gm-Message-State: APjAAAXDqen1te1j6q5woR8L5dNVluyEnCZkWjSw3kkvfl5ZeqFDEpD7
+        u/v/fNXvRQT9vZZlJR4NpAHDcPJnChnzPVHgwjhXkgPlt7J4vB/bC1rdXfyHUzK1mOnKLYaVueF
+        rdGJusTZg+nmjk6H2apYkC0IU4OQVrb7wtg==
+X-Received: by 2002:a37:9fd4:: with SMTP id i203mr7219177qke.419.1561152397824;
+        Fri, 21 Jun 2019 14:26:37 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqwSlZndd/FfHuV6c+nIx7MADPyDWWFcBGy1qD7yeobx5X2sXi2R0z/8NWdgtnaJlHh9FN9eiA==
+X-Received: by 2002:a37:9fd4:: with SMTP id i203mr7219159qke.419.1561152397609;
+        Fri, 21 Jun 2019 14:26:37 -0700 (PDT)
+Received: from localhost ([152.249.30.79])
+        by smtp.gmail.com with ESMTPSA id h4sm1904935qkk.39.2019.06.21.14.26.36
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 21 Jun 2019 14:26:36 -0700 (PDT)
+From:   "Guilherme G. Piccoli" <gpiccoli@canonical.com>
+To:     GR-everest-linux-l2@marvell.com, netdev@vger.kernel.org
+Cc:     aelior@marvell.com, skalluru@marvell.com, gpiccoli@canonical.com,
+        jay.vosburgh@canonical.com
+Subject: [PATCH] bnx2x: Prevent ptp_task to be rescheduled indefinitely
+Date:   Fri, 21 Jun 2019 18:26:34 -0300
+Message-Id: <20190621212634.25441-1-gpiccoli@canonical.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190621045555.4152743-1-andriin@fb.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/20, Andrii Nakryiko wrote:
-> This patchset adds the following APIs to allow attaching BPF programs to
-> tracing entities:
-> - bpf_program__attach_perf_event for attaching to any opened perf event FD,
->   allowing users full control;
-> - bpf_program__attach_kprobe for attaching to kernel probes (both entry and
->   return probes);
-> - bpf_program__attach_uprobe for attaching to user probes (both entry/return);
-> - bpf_program__attach_tracepoint for attaching to kernel tracepoints;
-> - bpf_program__attach_raw_tracepoint for attaching to raw kernel tracepoint
->   (wrapper around bpf_raw_tracepoint_open);
-> 
-> This set of APIs makes libbpf more useful for tracing applications.
-> 
-> Pre-patch #1 makes internal libbpf_strerror_r helper function work w/ negative
-> error codes, lifting the burder off callers to keep track of error sign.
-> Patch #2 adds attach_perf_event, which is the base for all other APIs.
-> Patch #3 adds kprobe/uprobe APIs.
-> Patch #4 adds tracepoint/raw_tracepoint APIs.
-> Patch #5 converts one existing test to use attach_perf_event.
-> Patch #6 adds new kprobe/uprobe tests.
-> Patch #7 converts all the selftests currently using tracepoint to new APIs.
-> 
-> v1->v2:
-> - preserve errno before close() call (Stanislav);
-> - use libbpf_perf_event_disable_and_close in selftest (Stanislav);
-> - remove unnecessary memset (Stanislav);
-Reviewed-by: Stanislav Fomichev <sdf@google.com>
+Currently bnx2x ptp worker tries to read a register with timestamp
+information in case of TX packet timestamping and in case it fails,
+the routine reschedules itself indefinitely. This was reported as a
+kworker always at 100% of CPU usage, which was narrowed down to be
+bnx2x ptp_task.
 
-Thanks!
+By following the ioctl handler, we could narrow down the problem to an
+NTP tool (chrony) requesting HW timestamping from bnx2x NIC with RX
+filter zeroed; this isn't reproducible for example with linuxptp since
+this tool request a supported RX filter. It seems the NIC HW timestamp
+mechanism cannot work well with RX_FILTER_NONE - in driver's PTP filter
+initialization routine, when there's not a supported filter request the
+function does not perform a specific register write to the adapter.
 
-> Andrii Nakryiko (7):
->   libbpf: make libbpf_strerror_r agnostic to sign of error
->   libbpf: add ability to attach/detach BPF to perf event
->   libbpf: add kprobe/uprobe attach API
->   libbpf: add tracepoint/raw tracepoint attach API
->   selftests/bpf: switch test to new attach_perf_event API
->   selftests/bpf: add kprobe/uprobe selftests
->   selftests/bpf: convert existing tracepoint tests to new APIs
-> 
->  tools/lib/bpf/libbpf.c                        | 346 ++++++++++++++++++
->  tools/lib/bpf/libbpf.h                        |  17 +
->  tools/lib/bpf/libbpf.map                      |   6 +
->  tools/lib/bpf/str_error.c                     |   2 +-
->  .../selftests/bpf/prog_tests/attach_probe.c   | 151 ++++++++
->  .../bpf/prog_tests/stacktrace_build_id.c      |  49 +--
->  .../bpf/prog_tests/stacktrace_build_id_nmi.c  |  24 +-
->  .../selftests/bpf/prog_tests/stacktrace_map.c |  42 +--
->  .../bpf/prog_tests/stacktrace_map_raw_tp.c    |  14 +-
->  .../bpf/prog_tests/task_fd_query_rawtp.c      |  10 +-
->  .../bpf/prog_tests/task_fd_query_tp.c         |  51 +--
->  .../bpf/prog_tests/tp_attach_query.c          |  56 +--
->  .../selftests/bpf/progs/test_attach_probe.c   |  55 +++
->  13 files changed, 651 insertions(+), 172 deletions(-)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/attach_probe.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_attach_probe.c
-> 
-> -- 
-> 2.17.1
-> 
+This patch addresses the problem of the everlasting reschedule of the
+ptp worker by limiting that to 3 attempts (the first one plus two
+reschedules), in order to prevent the unbound resource consumption
+from the driver. It's not correct behavior for a driver to not take
+into account potential problems in a routine reading a device register,
+be it an invalid RX filter (leading to a non-functional HW clock) or
+even a potential device FW issue causing the register value to be wrong,
+hence we believe the fix is relevant to ensure proper driver behavior.
+
+This has no functional change in the succeeding path of the HW
+timestamping code in the driver, only portion of code it changes
+is the error path for TX timestamping. It was tested using both
+linuxptp and chrony.
+
+Reported-and-tested-by: Przemyslaw Hausman <przemyslaw.hausman@canonical.com>
+Signed-off-by: Guilherme G. Piccoli <gpiccoli@canonical.com>
+---
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x.h    |  1 +
+ .../net/ethernet/broadcom/bnx2x/bnx2x_cmn.c    |  1 +
+ .../net/ethernet/broadcom/bnx2x/bnx2x_main.c   | 18 +++++++++++++-----
+ 3 files changed, 15 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
+index 6026b53137aa..349965135227 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
+@@ -1838,6 +1838,7 @@ struct bnx2x {
+ 	bool timecounter_init_done;
+ 	struct sk_buff *ptp_tx_skb;
+ 	unsigned long ptp_tx_start;
++	u8 ptp_retry_count;
+ 	bool hwtstamp_ioctl_called;
+ 	u16 tx_type;
+ 	u16 rx_filter;
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
+index 008ad0ca89ba..990ec049f357 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
+@@ -3865,6 +3865,7 @@ netdev_tx_t bnx2x_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 			/* schedule check for Tx timestamp */
+ 			bp->ptp_tx_skb = skb_get(skb);
+ 			bp->ptp_tx_start = jiffies;
++			bp->ptp_retry_count = 0;
+ 			schedule_work(&bp->ptp_task);
+ 		}
+ 	}
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+index 03ac10b1cd1e..872ae672faaa 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+@@ -15233,16 +15233,24 @@ static void bnx2x_ptp_task(struct work_struct *work)
+ 		memset(&shhwtstamps, 0, sizeof(shhwtstamps));
+ 		shhwtstamps.hwtstamp = ns_to_ktime(ns);
+ 		skb_tstamp_tx(bp->ptp_tx_skb, &shhwtstamps);
+-		dev_kfree_skb_any(bp->ptp_tx_skb);
+-		bp->ptp_tx_skb = NULL;
+-
+ 		DP(BNX2X_MSG_PTP, "Tx timestamp, timestamp cycles = %llu, ns = %llu\n",
+ 		   timestamp, ns);
++		goto clear;
+ 	} else {
+ 		DP(BNX2X_MSG_PTP, "There is no valid Tx timestamp yet\n");
+-		/* Reschedule to keep checking for a valid timestamp value */
+-		schedule_work(&bp->ptp_task);
++		/* Reschedule twice to check again for a valid timestamp */
++		if (++bp->ptp_retry_count < 3) {
++			schedule_work(&bp->ptp_task);
++			return;
++		}
++		DP(BNX2X_MSG_PTP, "Gave up Tx timestamp, register read %u\n", val_seq);
++		netdev_warn_once(bp->dev,
++				 "Gave up Tx timestamp, register read %u\n", val_seq);
+ 	}
++clear:
++	dev_kfree_skb_any(bp->ptp_tx_skb);
++	bp->ptp_tx_skb = NULL;
++	bp->ptp_retry_count = 0;
+ }
+ 
+ void bnx2x_set_rx_ts(struct bnx2x *bp, struct sk_buff *skb)
+-- 
+2.21.0
+
