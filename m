@@ -2,70 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1187F4EBD2
-	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 17:21:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22A1C4EBF0
+	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 17:25:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726286AbfFUPUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jun 2019 11:20:46 -0400
-Received: from mail.us.es ([193.147.175.20]:46944 "EHLO mail.us.es"
+        id S1726067AbfFUPZy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jun 2019 11:25:54 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:35790 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726002AbfFUPUp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Jun 2019 11:20:45 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 5FF44EDB05
-        for <netdev@vger.kernel.org>; Fri, 21 Jun 2019 17:20:43 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 50EA5DA70F
-        for <netdev@vger.kernel.org>; Fri, 21 Jun 2019 17:20:43 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 465E9DA707; Fri, 21 Jun 2019 17:20:43 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 9BA14DA706;
-        Fri, 21 Jun 2019 17:20:40 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Fri, 21 Jun 2019 17:20:40 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726002AbfFUPZy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 Jun 2019 11:25:54 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 754194265A2F;
-        Fri, 21 Jun 2019 17:20:40 +0200 (CEST)
-Date:   Fri, 21 Jun 2019 17:20:40 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Yuehaibing <yuehaibing@huawei.com>
-Cc:     kadlec@blackhole.kfki.hu, fw@strlen.de, davem@davemloft.net,
-        rdunlap@infradead.org, linux-kernel@vger.kernel.org,
-        coreteam@netfilter.org, netfilter-devel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] netfilter: ipv6: Fix build error without
- CONFIG_IPV6
-Message-ID: <20190621152040.jxct6a5smwo3wi6q@salvia>
-References: <20190612084715.21656-1-yuehaibing@huawei.com>
- <d2eba9e4-34be-f9bb-f0fd-024fe81d2b02@huawei.com>
- <20190620155016.6kk7xi4wldm5ijyh@salvia>
- <cceb80d8-8997-5831-cb39-14801c1cfe39@huawei.com>
+        by mx1.redhat.com (Postfix) with ESMTPS id 4CD4D3082B67;
+        Fri, 21 Jun 2019 15:25:54 +0000 (UTC)
+Received: from T460ec.redhat.com (ovpn-116-108.ams2.redhat.com [10.36.116.108])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AA8756090E;
+        Fri, 21 Jun 2019 15:25:50 +0000 (UTC)
+From:   Eelco Chaudron <echaudro@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com
+Subject: [PATCH bpf-next] libbpf: add xsk_ring_prod__free() function
+Date:   Fri, 21 Jun 2019 17:25:48 +0200
+Message-Id: <49d3ddb42f531618584f60c740d9469e5406e114.1561130674.git.echaudro@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cceb80d8-8997-5831-cb39-14801c1cfe39@huawei.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Fri, 21 Jun 2019 15:25:54 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Actually, I'm going to take this one:
+When an AF_XDP application received X packets, it does not mean X
+frames can be stuffed into the producer ring. To make it easier for
+AF_XDP applications this API allows them to check how many frames can
+be added into the ring.
 
-https://patchwork.ozlabs.org/patch/1117011/
+Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+---
+ tools/lib/bpf/xsk.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-which looks more complete.
+diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
+index 82ea71a0f3ec..86f3d485e957 100644
+--- a/tools/lib/bpf/xsk.h
++++ b/tools/lib/bpf/xsk.h
+@@ -95,6 +95,12 @@ static inline __u32 xsk_prod_nb_free(struct xsk_ring_prod *r, __u32 nb)
+ 	return r->cached_cons - r->cached_prod;
+ }
+ 
++static inline __u32 xsk_ring_prod__free(struct xsk_ring_prod *r)
++{
++	r->cached_cons = *r->consumer + r->size;
++	return r->cached_cons - r->cached_prod;
++}
++
+ static inline __u32 xsk_cons_nb_avail(struct xsk_ring_cons *r, __u32 nb)
+ {
+ 	__u32 entries = r->cached_prod - r->cached_cons;
+-- 
+2.20.1
 
-Thanks a lot for reporting in any case.
