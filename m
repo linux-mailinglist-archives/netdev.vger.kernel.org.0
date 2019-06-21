@@ -2,124 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 20D8C4ECE8
-	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 18:18:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEE9E4ED30
+	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 18:36:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726168AbfFUQR4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jun 2019 12:17:56 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:34605 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726125AbfFUQRz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 12:17:55 -0400
-Received: by mail-io1-f67.google.com with SMTP id k8so1407117iot.1
-        for <netdev@vger.kernel.org>; Fri, 21 Jun 2019 09:17:55 -0700 (PDT)
+        id S1726073AbfFUQgF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jun 2019 12:36:05 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:40444 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726018AbfFUQgF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 12:36:05 -0400
+Received: by mail-io1-f68.google.com with SMTP id n5so433773ioc.7
+        for <netdev@vger.kernel.org>; Fri, 21 Jun 2019 09:36:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Sw0tar4GKNYE+fKeYGxgNKh8+9qTX2z35GEBt1SVpc0=;
-        b=EkOlu8qlRhzBLmqK/JdjBqIW5qryF2RdLS3wOFZsu3n9PHhrG1wi6n0hFXLG1MFQ5/
-         KTBVBI7etM1aU/ONn6Qx3W6uNfI4Yqqc6fdLe5cj+t0vt2i/1/wqMnkttynIQB8/u5cO
-         IAm1ffnYDxs7vAskpJvZyQo38g5G44Rx2R77/kU2bM/oNK5GsXdJG5uhioKfysrK8Lm8
-         2OktVp8osiuoXqbOEL9B58NPIk3A4R/seH4kyi0MzEh7I3xwtNwX/a0GWSgv23582DWp
-         dHjg6Aw7vupuRHaqil5vjLFXql1/9Tc+p0qGWipiN27RVTQV9X4JNJKSd+NJpC5BQfeW
-         PZMQ==
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=k0Gv8DfD1efOdqhlugZQYcDCnL+VjkQIY1zETUpyLmE=;
+        b=OMHj9VHPqt6HJV5QqUNQBFucnZ816kuNESW2vX7vWTjN2NKZQ0Ssors2vl9q/oyuMH
+         L4gD9fWAwVneJlkOZ5wKA4kPos2/DA0u7tENNy0CRpi1DpOTAoeLOYZzZNuUhqa3NYoO
+         l+m/HJGVQEyGbWRa42bxOPQn5wxbmn1nC6c8E=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Sw0tar4GKNYE+fKeYGxgNKh8+9qTX2z35GEBt1SVpc0=;
-        b=bvowVHcZ/EqbR0GudHBOA3X0wpFke/OwIfRX0D5aX7kUXWH+7WNjoPsmHuw1YOB/L0
-         Fe51vdsM6ZFQ/Tw4FJ65UlJSVjo+JG6mrPC1tJT+WEKa6EOD3l+amwN5klQ7Kc/rwjpc
-         VGNGUvzL4zX3Q9zFbSnJCNCxX8QKtYZY/ZN4XN8yE/WnHWwybfNdYk7zreQtnOHHr4us
-         vfmha3xrSVWLi74rCfveatIy2VSge6xRcWhTIBZMSJcGG6zLeP2XkJ+TAqXsmvbFeQuT
-         FGdUY3Bd46iSrG4PhxnBlNKO+RE3bDWraX44v0K9r0eNBWumXFFHfBSX8smlRQwmbl9P
-         2lFw==
-X-Gm-Message-State: APjAAAVtuPv0weGBSeXh1ZTdrK7YyqhpsBsT2+vpY6r28djJGgLjRys2
-        5LDM6WCWSTm5UVzw5CfaMoOPbQ==
-X-Google-Smtp-Source: APXvYqwrP5rrf+639Ym7wMFWZQdU1WfoVNcgUP+bsXyCprN6Jo1hWnpDosiQ8jA1YW4OBOu8ZR8yFw==
-X-Received: by 2002:a02:22c6:: with SMTP id o189mr3228179jao.35.1561133874834;
-        Fri, 21 Jun 2019 09:17:54 -0700 (PDT)
-Received: from localhost (c-73-24-4-37.hsd1.mn.comcast.net. [73.24.4.37])
-        by smtp.gmail.com with ESMTPSA id f20sm3921317ioh.17.2019.06.21.09.17.53
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 21 Jun 2019 09:17:53 -0700 (PDT)
-Date:   Fri, 21 Jun 2019 11:17:52 -0500
-From:   Dan Rue <dan.rue@linaro.org>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        xdp-newbies@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>, hawk@kernel.org,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Shuah Khan <shuah@kernel.org>
-Subject: Re: selftests: bpf: test_libbpf.sh failed at file test_l4lb.o
-Message-ID: <20190621161752.d7d7n4m5q67uivys@xps.therub.org>
-References: <CA+G9fYsMcdHmKY66CNhsrizO-gErkOQCkTcBSyOHLpOs+8g5=g@mail.gmail.com>
- <CAEf4BzbTD8G_zKkj-S3MOeG5Hq3_2zz3bGoXhQtpt0beG8nWJA@mail.gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=k0Gv8DfD1efOdqhlugZQYcDCnL+VjkQIY1zETUpyLmE=;
+        b=EL7LKS4YBzX4ZHCTvVpEhTtmS2cnaakuJV+EyOnKzZ/Qbv0r97/q5hG/9tUBj23eKa
+         eCmVD4Oo22uXsuk9hDjDrBW6JHcsjvvDmX/sVuZv+m4Og5Nu+Z2t5b2rhmTAz2kOPtjZ
+         PWRlTbcY9TwEeTSJT8DTHepEcOzWUETSq/4MAldAuXwyQif2j7r77Lr+eIcSYOYSQcpX
+         /C+v+hDraOGrBZ/LPMRo+i8qQlikd+HbrZnyjxpf4RuD6uw2DnF89rsTcQNVRdZFlYwZ
+         FWCG9BO6s5IKY0g8OncP8fKXZcm2GjaBJKWfgDTPJRO3p6kAGAkrzfPuWNzStMU6g6hL
+         eNDg==
+X-Gm-Message-State: APjAAAVlUz6Jml0a5dDgvpjcA4knzpg8hcLIXXXrT0P6TNKEUfRStbaY
+        ke7pKTMHFlg5JREhtLPEgnhH1Q==
+X-Google-Smtp-Source: APXvYqzGFfCvLzH6zCFRfbW14LQqv78O/rLPC0RhDAbvKNQeJ9kfbYFCwBGc/fq8J4aAggu64E2IhQ==
+X-Received: by 2002:a5d:8508:: with SMTP id q8mr14433265ion.31.1561134964449;
+        Fri, 21 Jun 2019 09:36:04 -0700 (PDT)
+Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
+        by smtp.gmail.com with ESMTPSA id c11sm4374026ioi.72.2019.06.21.09.36.03
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 21 Jun 2019 09:36:04 -0700 (PDT)
+Subject: Re: [PATCH v3 0/3] net: fddi: skfp: Use PCI generic definitions
+ instead of private duplicates
+To:     Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
+        Puranjay Mohan <puranjay12@gmail.com>,
+        Bjorn Helgaas <bjorn@helgaas.com>, stephen@networkplumber.org,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-pci@vger.kernel.org
+References: <20190621094607.15011-1-puranjay12@gmail.com>
+ <20190621162024.53620dd9@alans-desktop>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <5f04f52d-8911-4db9-4321-00334d357d54@linuxfoundation.org>
+Date:   Fri, 21 Jun 2019 10:36:02 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzbTD8G_zKkj-S3MOeG5Hq3_2zz3bGoXhQtpt0beG8nWJA@mail.gmail.com>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20190621162024.53620dd9@alans-desktop>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 20, 2019 at 10:17:04PM -0700, Andrii Nakryiko wrote:
-> On Thu, Jun 20, 2019 at 1:08 AM Naresh Kamboju
-> <naresh.kamboju@linaro.org> wrote:
-> >
-> > selftests: bpf test_libbpf.sh failed running Linux -next kernel
-> > 20190618 and 20190619.
-> >
-> > Here is the log from x86_64,
-> > # selftests bpf test_libbpf.sh
-> > bpf: test_libbpf.sh_ #
-> > # [0] libbpf BTF is required, but is missing or corrupted.
+On 6/21/19 9:20 AM, Alan Cox wrote:
+> On Fri, 21 Jun 2019 15:16:04 +0530
+> Puranjay Mohan <puranjay12@gmail.com> wrote:
 > 
-> You need at least clang-9.0.0 (not yet released) to run some of these
-> tests successfully, as they rely on Clang's support for
-> BTF_KIND_VAR/BTF_KIND_DATASEC.
-
-Can there be a runtime check for BTF that emits a skip instead of a fail
-in such a case?
-
-Thanks,
-Dan
-
+>> This patch series removes the private duplicates of PCI definitions in
+>> favour of generic definitions defined in pci_regs.h.
 > 
-> > libbpf: BTF_is #
-> > # test_libbpf failed at file test_l4lb.o
-> > failed: at_file #
-> > # selftests test_libbpf [FAILED]
-> > test_libbpf: [FAILED]_ #
-> > [FAIL] 29 selftests bpf test_libbpf.sh
-> > selftests: bpf_test_libbpf.sh [FAIL]
-> >
-> > Full test log,
-> > https://qa-reports.linaro.org/lkft/linux-next-oe/build/next-20190619/testrun/781777/log
-> >
-> > Test results comparison,
-> > https://qa-reports.linaro.org/lkft/linux-next-oe/tests/kselftest/bpf_test_libbpf.sh
-> >
-> > Good linux -next tag: next-20190617
-> > Bad linux -next tag: next-20190618
-> > git branch     master
-> > git commit    1c6b40509daf5190b1fd2c758649f7df1da4827b
-> > git repo
-> > https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-> >
-> > Best regards
-> > Naresh Kamboju
+> Why bother ? It's an ancient obsolete card ?
+> 
+> Do you even have one to test ?
+> 
+>>
+>> This driver only uses some of the generic PCI definitons,
+>> which are included from pci_regs.h and thier private versions
+>> are removed from skfbi.h with all other private defines.
+>>
+>> The skfbi.h defines PCI_REV_ID and other private defines with different
+>> names, these are renamed to Generic PCI names to make them
+>> compatible with defines in pci_regs.h.
+>>
+>> All unused defines are removed from skfbi.h.
+> 
+> I sincerely doubt anyone on the planet is using this card any more.
+> 
+> Alan
+> 
 
--- 
-Linaro - Kernel Validation
+Thanks Alan!
+
+Stephen Hemminger is suggesting removal as well. Makes sense to me.
+
+David!
+
+What would you recommend the next steps are? Would like driver removed?
+
+thanks,
+-- Shuah
