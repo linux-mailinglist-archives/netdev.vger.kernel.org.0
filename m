@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 32FB54DDFF
-	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 02:07:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43A7E4DE02
+	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 02:08:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726002AbfFUAHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 20:07:06 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:44943 "EHLO
+        id S1726135AbfFUAIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 20:08:21 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:40575 "EHLO
         mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725906AbfFUAHG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 20:07:06 -0400
-Received: by mail-pf1-f194.google.com with SMTP id t16so2563718pfe.11
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 17:07:05 -0700 (PDT)
+        with ESMTP id S1725911AbfFUAIV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 20:08:21 -0400
+Received: by mail-pf1-f194.google.com with SMTP id p184so2575216pfp.7
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 17:08:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=fomichev-me.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=StIE6v7U5HAOa9bemwMa9PRQlT4TJuB7JizOWyHuTRA=;
-        b=DGtskwLmmZmUlzbDl5But6cSa9W+OYogMXV2qLhVm+WO56yXQOmn+tJf3rIOPlT5rd
-         u7xeho71onooB/Lv+ERkkJgqIlORdm0CCycumCatStj6kkbWhbDaXD9AQ13VRcJxXouk
-         CEHNcmFaMHIdSrPDH9Zjuowo/re/1eyrzhZNlt8I/cBDmP/KHTlfCUhuNVQvUB6u/oUS
-         I4IbGQTlhmWHSxNVh0fcf8J9VmY9u1wI/ow2IoTO0rxSoKx/cZlUnZ02Sg4chZvqfMVE
-         ryozx7vzZXJS1lBQA2TKHpMqIeGyPTrCZM7rQKJOw+fdq4O0UTnHwniwTnVugr72HxmV
-         02bA==
+        bh=CtcKIxOBJDXb1YMFFIKUvp1vj9xeUODj/cxc0fShO6E=;
+        b=JR+vY5ckPMpLQTFRWE+dKEzucxSXr3U8cKh2SX70QW3oRIM5NQiQofHAHaqUcUin/w
+         JWhBfabLkE8q1TKlsVYB7wWIsp+xECyB/2hX0EEyvOZZNs9PDszBZSDS+ReRDNALQBmX
+         q+KICZEeoSs1v/HyBbxrlsS2b/tCrRCrmXcxFalgJs3mYr59KHQ+jEoQaaN6KgvVO2nJ
+         3PwCrM2LCwjPw2DLEO8rW+XihvpTWn9t2mdW1x4dpMJlDQF4Eo9vTKFYVLp/AaJw7WP5
+         M2RJ+xEui2m2Dc+LFRosM0LAyBGzfatBskHXexbDLX/k+LXmyRcAHgCyn4UkSXoGhs9i
+         VY2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=StIE6v7U5HAOa9bemwMa9PRQlT4TJuB7JizOWyHuTRA=;
-        b=Ihj7M9gpxUNqW6LtW3s2qsNW84aMGy6xld98frSaVMZBS+zL9kHGdtt7SKtVlmFR7t
-         NXPnqYuwCkOnv4Sp9uXEyC/sD1T+7cHX8W2TranNU/HP/uyV3iUgKdjtq4Zzj0obi6wy
-         CM9Um+50xOXy5MNU20ZYIZmjl/ADO3wDhnraOi6dJb3HH4bdVeBHEqWXGri5qVCBTuzc
-         cvwN8goGErv/s1mXOYHhrfkfZifjtQrBcD+9rEJ/wRFZqYuncr+9EbyULFHA7HWW7le6
-         r/Sd4RB1U4Z/8tNbj0Cy+A8zmhJcx8T1FSoqRWbqB/wuqIBbPlWF9wp9u9seWN0BQ3zS
-         5/Lw==
-X-Gm-Message-State: APjAAAU7RknEU7t8iC0xS0cJrIs8X0pUTMNlZoatpEXE7d2vROvy/R9r
-        2pc2gF0+yrucgx2odF80q/jDag==
-X-Google-Smtp-Source: APXvYqx9wFYxo3e7M/mZRGUhONpbh0AVXSTpzuD8gPECgCu/7LdDVobYRZy9W5ssfEzqs/walaO2PA==
-X-Received: by 2002:a63:6245:: with SMTP id w66mr8998037pgb.117.1561075625275;
-        Thu, 20 Jun 2019 17:07:05 -0700 (PDT)
+        bh=CtcKIxOBJDXb1YMFFIKUvp1vj9xeUODj/cxc0fShO6E=;
+        b=ubv6gNfUOhx6VFAsy/xT1f2Ht8vDq9yLS1WOwErcoy8k/y5e7ZjlEjjfQvzVkN5rYt
+         x2Z6SLjqfNqyULmhMfZEgH/w56dDyGe1amwb6E85V9cnCFOc0z1EyRtonGEK/R4Pte9v
+         Wn8RieF/ThaSQGmecdwDrZ3UZkqKTUaE3ZWWh/vfQ14smgnMR0fEHhAg/hSsgio3DdyQ
+         FsFTFNt4hJrAzUBvLmsoCNtZe5t+u3JlGvCfsyiw40dqE2U8mNNJt4Bu7PrYTNU+0lyE
+         hF/WqsSwKDTTJok2Gbap0ZEDbaaIPa/EyGQpjnliTgCmEwDVxa+tuCIa3FWcpvI0npmX
+         FMcA==
+X-Gm-Message-State: APjAAAWko0ADqQZTbN78NXWy1UR0OPQkvmfG5gXXki+VkjtOyE94Ctjg
+        NgpdwI9E7/n5/4uXWSlCSttRBA==
+X-Google-Smtp-Source: APXvYqxgYBWiFOrj5HNpz+/FCpzyLc7TZlx+EJAQx5cJoqMOCKZUY1H+JFA3fOapkxLNA+Ssa5evfg==
+X-Received: by 2002:a17:90a:216f:: with SMTP id a102mr2521250pje.29.1561075700506;
+        Thu, 20 Jun 2019 17:08:20 -0700 (PDT)
 Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id f2sm609339pgs.83.2019.06.20.17.07.04
+        by smtp.gmail.com with ESMTPSA id k13sm659448pgq.45.2019.06.20.17.08.19
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 20 Jun 2019 17:07:04 -0700 (PDT)
-Date:   Thu, 20 Jun 2019 17:07:04 -0700
+        Thu, 20 Jun 2019 17:08:20 -0700 (PDT)
+Date:   Thu, 20 Jun 2019 17:08:19 -0700
 From:   Stanislav Fomichev <sdf@fomichev.me>
 To:     Andrii Nakryiko <andriin@fb.com>
 Cc:     andrii.nakryiko@gmail.com, ast@fb.com, daniel@iogearbox.net,
         netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next 4/7] libbpf: add tracepoint/raw tracepoint
- attach API
-Message-ID: <20190621000704.GC1383@mini-arch>
+Subject: Re: [PATCH bpf-next 5/7] selftests/bpf: switch test to new
+ attach_perf_event API
+Message-ID: <20190621000819.GD1383@mini-arch>
 References: <20190620230951.3155955-1-andriin@fb.com>
- <20190620230951.3155955-5-andriin@fb.com>
+ <20190620230951.3155955-6-andriin@fb.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190620230951.3155955-5-andriin@fb.com>
+In-Reply-To: <20190620230951.3155955-6-andriin@fb.com>
 User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -65,172 +65,66 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 06/20, Andrii Nakryiko wrote:
-> Add APIs allowing to attach BPF program to kernel tracepoints. Raw
-> tracepoint attach API is also added for uniform per-BPF-program API,
-> but is mostly a wrapper around existing bpf_raw_tracepoint_open call.
-> 
+> Use new bpf_program__attach_perf_event() in test previously relying on
+> direct ioctl manipulations.
+Maybe use new detach/disable routine at the end of the
+test_stacktrace_build_id_nmi as well?
+
 > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 > ---
->  tools/lib/bpf/libbpf.c   | 99 ++++++++++++++++++++++++++++++++++++++++
->  tools/lib/bpf/libbpf.h   |  5 ++
->  tools/lib/bpf/libbpf.map |  2 +
->  3 files changed, 106 insertions(+)
+>  .../bpf/prog_tests/stacktrace_build_id_nmi.c     | 16 ++++++++--------
+>  1 file changed, 8 insertions(+), 8 deletions(-)
 > 
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 11329e05530e..cefe67ba160b 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -4176,6 +4176,105 @@ int bpf_program__attach_uprobe(struct bpf_program *prog, bool retprobe,
->  	return pfd;
->  }
+> diff --git a/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id_nmi.c b/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id_nmi.c
+> index 1c1a2f75f3d8..1bbdb0b82ac5 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id_nmi.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id_nmi.c
+> @@ -17,6 +17,7 @@ static __u64 read_perf_max_sample_freq(void)
+>  void test_stacktrace_build_id_nmi(void)
+>  {
+>  	int control_map_fd, stackid_hmap_fd, stackmap_fd, stack_amap_fd;
+> +	const char *prog_name = "tracepoint/random/urandom_read";
+>  	const char *file = "./test_stacktrace_build_id.o";
+>  	int err, pmu_fd, prog_fd;
+>  	struct perf_event_attr attr = {
+> @@ -25,6 +26,7 @@ void test_stacktrace_build_id_nmi(void)
+>  		.config = PERF_COUNT_HW_CPU_CYCLES,
+>  	};
+>  	__u32 key, previous_key, val, duration = 0;
+> +	struct bpf_program *prog;
+>  	struct bpf_object *obj;
+>  	char buf[256];
+>  	int i, j;
+> @@ -39,6 +41,10 @@ void test_stacktrace_build_id_nmi(void)
+>  	if (CHECK(err, "prog_load", "err %d errno %d\n", err, errno))
+>  		return;
 >  
-> +static int determine_tracepoint_id(const char* tp_category, const char* tp_name)
-> +{
-> +	char file[PATH_MAX];
-> +	int ret;
+> +	prog = bpf_object__find_program_by_title(obj, prog_name);
+> +	if (CHECK(!prog, "find_prog", "prog '%s' not found\n", prog_name))
+> +		goto close_prog;
 > +
-> +	ret = snprintf(file, sizeof(file),
-> +		       "/sys/kernel/debug/tracing/events/%s/%s/id",
-> +		       tp_category, tp_name);
-> +	if (ret < 0)
-> +		return -errno;
-> +	if (ret >= sizeof(file)) {
-> +		pr_debug("tracepoint %s/%s path is too long\n",
-> +			 tp_category, tp_name);
-> +		return -E2BIG;
-> +	}
-> +	return parse_uint_from_file(file);
-> +}
-> +
-> +static int perf_event_open_tracepoint(const char* tp_category,
-> +				      const char* tp_name)
-> +{
-> +	struct perf_event_attr attr = {};
-> +	char errmsg[STRERR_BUFSIZE];
-> +	int tp_id, pfd, err;
-> +
-[..]
-> +	tp_id = determine_tracepoint_id(tp_category, tp_name);
-Why no assign to attr.config directly here?
-You can move all other constants to the initialization as well:
-
-struct perf_event_attr attr = {
-	.type = PERF_TYPE_TRACEPON,
-	.size = sizeof(struct perf_event_attr),
-};
-
-attr.config = determine_tracepoint_id(...);
-
-(I guess that's a matter of style, but something to consider).
-
-> +	if (tp_id < 0){
-> +		pr_warning("failed to determine tracepoint '%s/%s' perf ID: %s\n",
-> +			   tp_category, tp_name,
-> +			   libbpf_strerror_r(tp_id, errmsg, sizeof(errmsg)));
-> +		return tp_id;
-> +	}
-> +
-[..]
-> +	memset(&attr, 0, sizeof(attr));
-Not needed since you do attr = {}; above?
-
-> +	attr.type = PERF_TYPE_TRACEPOINT;
-> +	attr.size = sizeof(attr);
-> +	attr.config = tp_id;
-> +
-> +	pfd = syscall( __NR_perf_event_open, &attr, -1 /* pid */, 0 /* cpu */,
-> +			-1 /* group_fd */, PERF_FLAG_FD_CLOEXEC);
-> +	if (pfd < 0) {
-> +		err = -errno;
-> +		pr_warning("tracepoint '%s/%s' perf_event_open() failed: %s\n",
-> +			   tp_category, tp_name,
-> +			   libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
-> +		return err;
-> +	}
-> +	return pfd;
-> +}
-> +
-> +int bpf_program__attach_tracepoint(struct bpf_program *prog,
-> +				   const char *tp_category,
-> +				   const char *tp_name)
-> +{
-> +	char errmsg[STRERR_BUFSIZE];
-> +	int pfd, err;
-> +
-> +	pfd = perf_event_open_tracepoint(tp_category, tp_name);
-> +	if (pfd < 0) {
-> +		pr_warning("program '%s': failed to create tracepoint '%s/%s' perf event: %s\n",
-> +			   bpf_program__title(prog, false),
-> +			   tp_category, tp_name,
-> +			   libbpf_strerror_r(pfd, errmsg, sizeof(errmsg)));
-> +		return pfd;
-> +	}
-> +	err = bpf_program__attach_perf_event(prog, pfd);
-> +	if (err) {
-> +		libbpf_perf_event_disable_and_close(pfd);
-> +		pr_warning("program '%s': failed to attach to tracepoint '%s/%s': %s\n",
-> +			   bpf_program__title(prog, false),
-> +			   tp_category, tp_name,
-> +			   libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
-> +		return err;
-> +	}
-> +	return pfd;
-> +}
-> +
-> +int bpf_program__attach_raw_tracepoint(struct bpf_program *prog,
-> +				       const char *tp_name)
-> +{
-> +	char errmsg[STRERR_BUFSIZE];
-> +	int bpf_fd, pfd;
-> +
-> +	bpf_fd = bpf_program__fd(prog);
-> +	if (bpf_fd < 0) {
-> +		pr_warning("program '%s': can't attach before loaded\n",
-> +			   bpf_program__title(prog, false));
-> +		return -EINVAL;
-> +	}
-> +	pfd = bpf_raw_tracepoint_open(tp_name, bpf_fd);
-> +	if (pfd < 0) {
-> +		pr_warning("program '%s': failed to attach to raw tracepoint '%s': %s\n",
-> +			   bpf_program__title(prog, false), tp_name,
-> +			   libbpf_strerror_r(pfd, errmsg, sizeof(errmsg)));
-> +		return pfd;
-> +	}
-> +	return pfd;
-> +}
-> +
->  enum bpf_perf_event_ret
->  bpf_perf_event_read_simple(void *mmap_mem, size_t mmap_size, size_t page_size,
->  			   void **copy_mem, size_t *copy_size,
-> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> index a7264f06aa5f..bf7020a565c6 100644
-> --- a/tools/lib/bpf/libbpf.h
-> +++ b/tools/lib/bpf/libbpf.h
-> @@ -176,6 +176,11 @@ LIBBPF_API int bpf_program__attach_uprobe(struct bpf_program *prog,
->  					  pid_t pid,
->  					  const char *binary_path,
->  					  size_t func_offset);
-> +LIBBPF_API int bpf_program__attach_tracepoint(struct bpf_program *prog,
-> +					      const char *tp_category,
-> +					      const char *tp_name);
-> +LIBBPF_API int bpf_program__attach_raw_tracepoint(struct bpf_program *prog,
-> +						  const char *tp_name);
+>  	pmu_fd = syscall(__NR_perf_event_open, &attr, -1 /* pid */,
+>  			 0 /* cpu 0 */, -1 /* group id */,
+>  			 0 /* flags */);
+> @@ -47,16 +53,10 @@ void test_stacktrace_build_id_nmi(void)
+>  		  pmu_fd, errno))
+>  		goto close_prog;
 >  
->  struct bpf_insn;
+> -	err = ioctl(pmu_fd, PERF_EVENT_IOC_ENABLE, 0);
+> -	if (CHECK(err, "perf_event_ioc_enable", "err %d errno %d\n",
+> -		  err, errno))
+> +	err = bpf_program__attach_perf_event(prog, pmu_fd);
+> +	if (CHECK(err, "attach_perf_event", "err %d\n", err))
+>  		goto close_pmu;
 >  
-> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> index 1a982c2e1751..2382fbda4cbb 100644
-> --- a/tools/lib/bpf/libbpf.map
-> +++ b/tools/lib/bpf/libbpf.map
-> @@ -174,6 +174,8 @@ LIBBPF_0.0.4 {
->  		bpf_object__load_xattr;
->  		bpf_program__attach_kprobe;
->  		bpf_program__attach_perf_event;
-> +		bpf_program__attach_raw_tracepoint;
-> +		bpf_program__attach_tracepoint;
->  		bpf_program__attach_uprobe;
->  		libbpf_num_possible_cpus;
->  		libbpf_perf_event_disable_and_close;
+> -	err = ioctl(pmu_fd, PERF_EVENT_IOC_SET_BPF, prog_fd);
+> -	if (CHECK(err, "perf_event_ioc_set_bpf", "err %d errno %d\n",
+> -		  err, errno))
+> -		goto disable_pmu;
+> -
+>  	/* find map fds */
+>  	control_map_fd = bpf_find_map(__func__, obj, "control_map");
+>  	if (CHECK(control_map_fd < 0, "bpf_find_map control_map",
 > -- 
 > 2.17.1
 > 
