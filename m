@@ -2,202 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C21D94E71C
-	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 13:30:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AED654E72A
+	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 13:33:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726556AbfFULas (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jun 2019 07:30:48 -0400
-Received: from mout.web.de ([212.227.15.4]:55765 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726218AbfFULar (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Jun 2019 07:30:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1561116623;
-        bh=ohriBF6Qa7tVQ2jjGMp4RJRZn6wx7ZoLrZZ5Ug7zEPQ=;
-        h=X-UI-Sender-Class:From:Subject:To:Cc:References:Date:In-Reply-To;
-        b=bVn5kQwOil1SMa4VFPYnDQSa2b/R0aDXTLCrDS6EZMRr74WhhqZhhmgNHMtv2mgUn
-         /IToy3dXK5PKoJyejjfNCxtsJiLrEYt4TVng7Gcg89VQq904meXQJXhEqxEcqXF7Rb
-         Dc3giAowNSVkzxiWJqO0S2Xk16Btr3ygWWVwIDTI=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.43.108] ([89.15.238.141]) by smtp.web.de (mrweb001
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0LZeou-1iInVD11FE-00lTMR; Fri, 21
- Jun 2019 13:30:23 +0200
-From:   Soeren Moch <smoch@web.de>
-Subject: Re: [PATCH] rt2x00: fix rx queue hang
-To:     Stanislaw Gruszka <sgruszka@redhat.com>
-Cc:     Helmut Schaa <helmut.schaa@googlemail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-References: <20190617094656.3952-1-smoch@web.de>
- <20190618093431.GA2577@redhat.com>
+        id S1726731AbfFULdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jun 2019 07:33:50 -0400
+Received: from mx2.suse.de ([195.135.220.15]:43712 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726285AbfFULdu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 Jun 2019 07:33:50 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id A88BEAD76;
+        Fri, 21 Jun 2019 11:33:48 +0000 (UTC)
+Subject: Re: [PATCH] mm: mempolicy: handle vma with unmovable pages mapped
+ correctly in mbind
+To:     Yang Shi <yang.shi@linux.alibaba.com>,
+        Michal Hocko <mhocko@kernel.org>
+Cc:     akpm@linux-foundation.org, mgorman@techsingularity.net,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+References: <1560797290-42267-1-git-send-email-yang.shi@linux.alibaba.com>
+ <20190618130253.GH3318@dhcp22.suse.cz>
+ <cf33b724-fdd5-58e3-c06a-1bc563525311@linux.alibaba.com>
+ <20190618182848.GJ3318@dhcp22.suse.cz>
+ <68c2592d-b747-e6eb-329f-7a428bff1f86@linux.alibaba.com>
+ <20190619052133.GB2968@dhcp22.suse.cz>
+ <21a0b20c-5b62-490e-ad8e-26b4b78ac095@suse.cz>
+ <687f4e57-5c50-7900-645e-6ef3a5c1c0c7@linux.alibaba.com>
+ <55eb2ea9-2c74-87b1-4568-b620c7913e17@linux.alibaba.com>
+ <d81b36bb-876e-917a-6115-cedf496b4923@suse.cz>
+ <d185f277-85ed-4dc1-8ff2-2984b54a0d64@linux.alibaba.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
 Openpgp: preference=signencrypt
-Autocrypt: addr=smoch@web.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <b6899d78-447c-3cb3-4bec-e4050660ccaa@web.de>
-Date:   Fri, 21 Jun 2019 13:30:01 +0200
+Autocrypt: addr=vbabka@suse.cz; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <9945a66f-4434-b2a6-63ac-3240ef1d52c9@suse.cz>
+Date:   Fri, 21 Jun 2019 13:33:47 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+ Thunderbird/60.7.1
 MIME-Version: 1.0
-In-Reply-To: <20190618093431.GA2577@redhat.com>
+In-Reply-To: <d185f277-85ed-4dc1-8ff2-2984b54a0d64@linux.alibaba.com>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
 Content-Language: en-US
-X-Provags-ID: V03:K1:ejyXhG/mBQ/WrzMP3Mmx9IX2BSWonozc/bSHWkrHyjsjB8cKFWc
- GfSE67GnuQVjuyDKsGoKPtMKpPYBYOv7kCrtU1gonuFbUetA502CeeMjebsszEZdKV80g0j
- BordgU2APkXKkLYGHIDvSm6vjKBCFeRuRuV/jEzaB4of5xBC1gnJu1u+B1XN6IgvJ8xwloa
- U1lu9JLHy8Xk8hu2klTVA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:pRgjwDXAj78=:RDFFs2kiOmKIpI8TrAZzu9
- /gjuxpS5/K/kg1zVxiZMSM+ZcxF1QmK/qUFcaZGI6bfma1Ddwh0g7y4+mLOJR5g0GiRHM3PQs
- 7lr8Y/hgOfHqfOggkChELk0wI6BmKnEUo7g0p2hBth0GVI/v1s4QvEg320GL2WouKmuUVXu0+
- h91Ky9XqHmgXGJ4OCl1OSlsF/e967CeyeBYUZbjaK7Fy0Z4fHQdzZUcl6MVz85N8Z402JRtE6
- mH4G+QCYXBcxJnFAKKn3UkNqecs2kLNM830sIvE5ShWm5nOWFnAP+H78IfCaU1VBqsFawkran
- 8YgdRJ6/0PsnXjajRZQx0u3gFFPPKkweDI6xNpkqFo1KBaCzw+gj1GptaBxh9ZpII0MpDjcCa
- HUSaPjHYagx8aJLSiponeAWOwDSX3MG72p2lKMnqMWO9X2l3UarPNYMI1oFGTt4yL+9asDqDY
- AbkB2+9eyewGG97yDXUGEwsW3W3/ff3S390abCAYqY3GLv2bopR2xr6vD1NpDuWJ9Z/vUMqZo
- OCNBxBBjNUbduyRURC2rpOb6C3vTdB6Vd79OmLJGZV8vlug5dnuyy/kAtCVA/DxyVnfTsuwS0
- rdPchZrVeTCzEaFHXDMOicJDOk+iducSX5sJjv7CkB4LwaxKSEDy08ZsSlyn5isZNGj41mqCY
- M8nzlRoWDVT8WZR2n6m/oBbJbBHXJzT4IwjFbI4J7kks30+l3sdT/IU87WoD3Gee31FYFtgBf
- wyFOVGOufT1b/NnBBLyhFzEJhgpnKF9iLiV9c3ce1NIEEF22oCR9ssgrMsfLy7AAy8sRhuEuK
- NrO5R1D7yvnmPMGCmCBjltCDacUHHQ9bFUYLZuRERnvR157+IFWQKJxaQQr64H7VMD5l97t0l
- 8FLLmFS4rXSJUuxxOLpPfvJPapvxfL2T+6wyx3ohyJAXPs32bDDzI8w5N/xI2Rqumle0aaVBB
- dVCAKwO9/HFzkKwAbPXUhV8ynLc6xixPYN1gt/3xEkLLcexrpLi2O
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
-
-On 18.06.19 11:34, Stanislaw Gruszka wrote:
-> Hi
->
-> On Mon, Jun 17, 2019 at 11:46:56AM +0200, Soeren Moch wrote:
->> Since commit ed194d136769 ("usb: core: remove local_irq_save() around
->>  ->complete() handler") the handlers rt2x00usb_interrupt_rxdone() and
->> rt2x00usb_interrupt_txdone() are not running with interrupts disabled
->> anymore. So these handlers are not guaranteed to run completely before=
-
->> workqueue processing starts. So only mark entries ready for workqueue
->> processing after proper accounting in the dma done queue.
-> It was always the case on SMP machines that rt2x00usb_interrupt_{tx/rx}=
-done
-> can run concurrently with rt2x00_work_{rx,tx}done, so I do not
-> understand how removing local_irq_save() around complete handler broke
-> things.
-I think because completion handlers can be interrupted now and scheduled
-away
-in the middle of processing.
-> Have you reverted commit ed194d136769 and the revert does solve the pro=
-blem ?
-Yes, I already sent a patch for this, see [1]. But this was not considere=
-d
-an acceptablesolution. Especially RT folks do not like code running with
-interrupts disabled,particularly when trying to acquire spinlocks then.
-
-[1] https://lkml.org/lkml/2019/5/31/863
-> Between 4.19 and 4.20 we have some quite big changes in rt2x00 driver:
->
-> 0240564430c0 rt2800: flush and txstatus rework for rt2800mmio
-> adf26a356f13 rt2x00: use different txstatus timeouts when flushing
-> 5022efb50f62 rt2x00: do not check for txstatus timeout every time on ta=
-sklet
-> 0b0d556e0ebb rt2800mmio: use txdone/txstatus routines from lib
-> 5c656c71b1bf rt2800: move usb specific txdone/txstatus routines to rt28=
-00lib
->
-> so I'm a bit afraid that one of those changes is real cause of
-> the issue not ed194d136769 .
-I tested 4.20 and 5.1 and see the exact same behavior. Reverting this
-usb core patchsolves the problem.
-4.19.x (before this usb core patch) is running fine.
->> Note that rt2x00usb_work_rxdone() processes all available entries, not=
-
->> only such for which queue_work() was called.
+On 6/20/19 6:08 PM, Yang Shi wrote:
+> 
+> 
+> On 6/20/19 12:18 AM, Vlastimil Babka wrote:
+>> On 6/19/19 8:19 PM, Yang Shi wrote:
+>>>>>> This is getting even more muddy TBH. Is there any reason that we
+>>>>>> have to
+>>>>>> handle this problem during the isolation phase rather the migration?
+>>>>> I think it was already said that if pages can't be isolated, then
+>>>>> migration phase won't process them, so they're just ignored.
+>>>> Yes，exactly.
+>>>>
+>>>>> However I think the patch is wrong to abort immediately when
+>>>>> encountering such page that cannot be isolated (AFAICS). IMHO it should
+>>>>> still try to migrate everything it can, and only then return -EIO.
+>>>> It is fine too. I don't see mbind semantics define how to handle such
+>>>> case other than returning -EIO.
+>> I think it does. There's:
+>> If MPOL_MF_MOVE is specified in flags, then the kernel *will attempt to
+>> move all the existing pages* ... If MPOL_MF_STRICT is also specified,
+>> then the call fails with the error *EIO if some pages could not be moved*
 >>
->> This fixes a regression on a RT5370 based wifi stick in AP mode, which=
-
->> suddenly stopped data transmission after some period of heavy load. Al=
-so
->> stopping the hanging hostapd resulted in the error message "ieee80211
->> phy0: rt2x00queue_flush_queue: Warning - Queue 14 failed to flush".
->> Other operation modes are probably affected as well, this just was
->> the used testcase.
-> Do you know what actually make the traffic stop,
-> TX queue hung or RX queue hung?
-I think RX queue hang, as stated in the patch title. "Queue 14" means QID=
-_RX
-(rt2x00queue.h, enum data_queue_qid).
-I also tried to re-add local_irq_save() in only one of the handlers. Addi=
-ng
-this tort2x00usb_interrupt_rxdone() alone solved the issue, while doing s=
-o
-for tx alonedid not.
-
-Note that this doesn't mean there is no problem for tx, that's maybe
-just more
-difficult to trigger.
->> diff --git a/drivers/net/wireless/ralink/rt2x00/rt2x00dev.c b/drivers/=
-net/wireless/ralink/rt2x00/rt2x00dev.c
->> index 1b08b01db27b..9c102a501ee6 100644
->> --- a/drivers/net/wireless/ralink/rt2x00/rt2x00dev.c
->> +++ b/drivers/net/wireless/ralink/rt2x00/rt2x00dev.c
->> @@ -263,9 +263,9 @@ EXPORT_SYMBOL_GPL(rt2x00lib_dmastart);
+>> Aborting immediately would be against the attempt to move all.
 >>
->>  void rt2x00lib_dmadone(struct queue_entry *entry)
->>  {
->> -	set_bit(ENTRY_DATA_STATUS_PENDING, &entry->flags);
->>  	clear_bit(ENTRY_OWNER_DEVICE_DATA, &entry->flags);
->>  	rt2x00queue_index_inc(entry, Q_INDEX_DMA_DONE);
->> +	set_bit(ENTRY_DATA_STATUS_PENDING, &entry->flags);
-> Unfortunately I do not understand how this suppose to fix the problem,
-> could you elaborate more about this change?
->
-Re-adding local_irq_save() around thisrt2x00lib_dmadone()solved
-the issue. So I also tried to reverse the order of these calls.
-It seems totally plausible to me, that the correct sequence is to
-first clear the device assignment, then to set the status to dma_done,
-then to trigger the workqueue processing for this entry. When the handler=
+>>> By looking into the code, it looks not that easy as what I thought.
+>>> do_mbind() would check the return value of queue_pages_range(), it just
+>>> applies the policy and manipulates vmas as long as the return value is 0
+>>> (success), then migrate pages on the list. We could put the movable
+>>> pages on the list by not breaking immediately, but they will be ignored.
+>>> If we migrate the pages regardless of the return value, it may break the
+>>> policy since the policy will *not* be applied at all.
+>> I think we just need to remember if there was at least one page that
+>> failed isolation or migration, but keep working, and in the end return
+>> EIO if there was such page(s). I don't think it breaks the policy. Once
+>> pages are allocated in a mapping, changing the policy is a best effort
+>> thing anyway.
+> 
+> The current behavior is:
+> If queue_pages_range() return -EIO (vma is not migratable, ignore other 
+> conditions since we just focus on page migration), the policy won't be 
+> set and no page will be migrated.
 
-is scheduled away in the middle of this sequence, now there is no
-strange state where the entry can be processed by the workqueue while
-not declared dma_done for it.
-With this changed sequence there is no need anymore to disable interrupts=
+Ah, I see. IIUC the current behavior is due to your recent commit
+a7f40cfe3b7a ("mm: mempolicy: make mbind() return -EIO when
+MPOL_MF_STRICT is specified") in order to fix commit 6f4576e3687b
+("mempolicy: apply page table walker on queue_pages_range()"), which
+caused -EIO to be not returned enough. But I think you went too far and
+instead return -EIO too much. If I look at the code in parent commit of
+6f4576e3687b, I can see in queue_pages_range():
 
-for solving the hang issue.
+if ((flags & MPOL_MF_STRICT) ||
+        ((flags & (MPOL_MF_MOVE | MPOL_MF_MOVE_ALL)) &&
+        vma_migratable(vma))) {
 
-Regards,
-Soeren
+        err = queue_pages_pgd_range(vma, start, endvma, nodes,
+                                flags, private);
+        if (err)
+                break;
+}
 
+and in queue_pages_pte_range():
+
+if (flags & (MPOL_MF_MOVE | MPOL_MF_MOVE_ALL))
+        migrate_page_add(page, private, flags);
+else
+        break;
+
+So originally, there was no returning of -EIO due to !vma_migratable() -
+as long as MPOL_MF_STRICT and MPOL_MF_MOVE* was specified, the code
+tried to queue for migration everything it could and didn't ever abort,
+AFAICS. And I still think that's the best possible behavior.
+
+> However, the problem here is the vma might look migratable, but some or 
+> all the underlying pages are unmovable. So, my patch assumes the vma is 
+> *not* migratable if at least one page is unmovable. I'm not sure if it 
+> is possible to have both movable and unmovable pages for the same 
+> mapping or not, I'm supposed the vma would be split much earlier.
+> 
+> If we don't abort immediately, then we record if there is unmovable 
+> page, then we could do:
+> #1. Still follows the current behavior (then why not abort immediately?)
+
+See above how the current behavior differs from the original one.
+
+> #2. Set mempolicy then migrate all the migratable pages. But, we may end 
+> up with the pages on node A, but the policy says node B. Doesn't it 
+> break the policy?
+
+The policy can already be "broken" (violated is probably better word) by
+migrate_pages() failing. If that happens, we don't rollback the migrated
+pages and reset the policy back, right? I think the manpage is clear
+that MPOL_MF_MOVE is a best-effort. Userspace will know that not
+everything was successfully migrated (via -EIO), and can take whatever
+steps it deems necessary - attempt rollback, determine which exact
+page(s) are violating the policy, etc.
+
+>>
+>>>>
+> 
 
