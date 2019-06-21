@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D20654DFDA
-	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 06:56:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C6034DFDB
+	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 06:56:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726059AbfFUE4F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jun 2019 00:56:05 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:13188 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725989AbfFUE4F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 00:56:05 -0400
-Received: from pps.filterd (m0044008.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5L4nC2U015960
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 21:56:04 -0700
+        id S1726100AbfFUE4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jun 2019 00:56:09 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:11944 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725856AbfFUE4I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 00:56:08 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x5L4q0k7003099
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 21:56:06 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=eqtrz4MZzZORZdr9zndzJnKMl94lTWPr73zQtJ0dS18=;
- b=IUYXbTga1JP9js808w2xMk3tpKUwnW/AnqTqVMbOiBQBiRluoABtKMW+S6ex0MZrnCCA
- RIjym5Mj+m0OLiFHTi88QlrfcnPnjVKm1O2pjyvl8ec4ffZU9BGwZYWtBnHKPCwzOYtG
- 4kwIov4+Xc676T7Q41N61CxT3wAi4dKctPg= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2t8f1n1wrs-6
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 21:56:04 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Thu, 20 Jun 2019 21:56:01 -0700
+ content-type; s=facebook; bh=Y1FWKdBI5j0avkYfXEmpyA8NTajFIFgoZI9ySoULmg8=;
+ b=Ex8UpC49jY/aIqd1AhgHJ4rjhGswed/kooZQxBwsS9vkskctNXVvylOzlVDhsXA3AdUB
+ 63oS8qnsbVW+SpyMKbY9qmIbxoA2lKWhAxGdQ1RR/yCjISeSoUaa6I5JH0oVG/V86R/Z
+ RFGhk1Ql5m94LtGOX+hRxHZ3TVouxLTHFG8= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0001303.ppops.net with ESMTP id 2t7rtdea7h-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 21:56:06 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 20 Jun 2019 21:56:04 -0700
 Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id 0AB2B861776; Thu, 20 Jun 2019 21:56:00 -0700 (PDT)
+        id 1D4DF861776; Thu, 20 Jun 2019 21:56:02 -0700 (PDT)
 Smtp-Origin-Hostprefix: dev
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: dev101.prn2.facebook.com
@@ -38,9 +38,9 @@ To:     <andrii.nakryiko@gmail.com>, <ast@fb.com>, <daniel@iogearbox.net>,
         <kernel-team@fb.com>
 CC:     Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH v2 bpf-next 1/7] libbpf: make libbpf_strerror_r agnostic to sign of error
-Date:   Thu, 20 Jun 2019 21:55:49 -0700
-Message-ID: <20190621045555.4152743-2-andriin@fb.com>
+Subject: [PATCH v2 bpf-next 2/7] libbpf: add ability to attach/detach BPF to perf event
+Date:   Thu, 20 Jun 2019 21:55:50 -0700
+Message-ID: <20190621045555.4152743-3-andriin@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190621045555.4152743-1-andriin@fb.com>
 References: <20190621045555.4152743-1-andriin@fb.com>
@@ -52,7 +52,7 @@ X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
  malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
  clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=739 adultscore=0 classifier=spam adjust=0 reason=mlx
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
  scancount=1 engine=8.0.1-1810050000 definitions=main-1906210041
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
@@ -60,27 +60,106 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's often inconvenient to switch sign of error when passing it into
-libbpf_strerror_r. It's better for it to handle that automatically.
+bpf_program__attach_perf_event allows to attach BPF program to existing
+perf event, providing most generic and most low-level way to attach BPF
+programs.
+
+libbpf_perf_event_disable_and_close API is added to disable and close
+existing perf event by its FD.
 
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- tools/lib/bpf/str_error.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/lib/bpf/libbpf.c   | 41 ++++++++++++++++++++++++++++++++++++++++
+ tools/lib/bpf/libbpf.h   |  4 ++++
+ tools/lib/bpf/libbpf.map |  2 ++
+ 3 files changed, 47 insertions(+)
 
-diff --git a/tools/lib/bpf/str_error.c b/tools/lib/bpf/str_error.c
-index 00e48ac5b806..b8064eedc177 100644
---- a/tools/lib/bpf/str_error.c
-+++ b/tools/lib/bpf/str_error.c
-@@ -11,7 +11,7 @@
-  */
- char *libbpf_strerror_r(int err, char *dst, int len)
- {
--	int ret = strerror_r(err, dst, len);
-+	int ret = strerror_r(err < 0 ? -err : err, dst, len);
- 	if (ret)
- 		snprintf(dst, len, "ERROR: strerror_r(%d)=%d", err, ret);
- 	return dst;
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 8ce3beba8551..2bb1fa008be3 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -32,6 +32,7 @@
+ #include <linux/limits.h>
+ #include <linux/perf_event.h>
+ #include <linux/ring_buffer.h>
++#include <sys/ioctl.h>
+ #include <sys/stat.h>
+ #include <sys/types.h>
+ #include <sys/vfs.h>
+@@ -3928,6 +3929,46 @@ int bpf_prog_load_xattr(const struct bpf_prog_load_attr *attr,
+ 	return 0;
+ }
+ 
++int libbpf_perf_event_disable_and_close(int pfd)
++{
++	int err;
++
++	if (pfd < 0)
++		return 0;
++
++	err = ioctl(pfd, PERF_EVENT_IOC_DISABLE, 0);
++	close(pfd);
++	return err;
++}
++
++int bpf_program__attach_perf_event(struct bpf_program *prog, int pfd)
++{
++	char errmsg[STRERR_BUFSIZE];
++	int bpf_fd, err;
++
++	bpf_fd = bpf_program__fd(prog);
++	if (bpf_fd < 0) {
++		pr_warning("program '%s': can't attach before loaded\n",
++			   bpf_program__title(prog, false));
++		return -EINVAL;
++	}
++	if (ioctl(pfd, PERF_EVENT_IOC_SET_BPF, bpf_fd) < 0) {
++		err = -errno;
++		pr_warning("program '%s': failed to attach to pfd %d: %s\n",
++			   bpf_program__title(prog, false), pfd,
++			   libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
++		return err;
++	}
++	if (ioctl(pfd, PERF_EVENT_IOC_ENABLE, 0) < 0) {
++		err = -errno;
++		pr_warning("program '%s': failed to enable pfd %d: %s\n",
++			   bpf_program__title(prog, false), pfd,
++			   libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
++		return err;
++	}
++	return 0;
++}
++
+ enum bpf_perf_event_ret
+ bpf_perf_event_read_simple(void *mmap_mem, size_t mmap_size, size_t page_size,
+ 			   void **copy_mem, size_t *copy_size,
+diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+index d639f47e3110..76db1bbc0dac 100644
+--- a/tools/lib/bpf/libbpf.h
++++ b/tools/lib/bpf/libbpf.h
+@@ -165,6 +165,10 @@ LIBBPF_API int bpf_program__pin(struct bpf_program *prog, const char *path);
+ LIBBPF_API int bpf_program__unpin(struct bpf_program *prog, const char *path);
+ LIBBPF_API void bpf_program__unload(struct bpf_program *prog);
+ 
++LIBBPF_API int libbpf_perf_event_disable_and_close(int pfd);
++LIBBPF_API int bpf_program__attach_perf_event(struct bpf_program *prog,
++					      int pfd);
++
+ struct bpf_insn;
+ 
+ /*
+diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+index 2c6d835620d2..d27406982b5a 100644
+--- a/tools/lib/bpf/libbpf.map
++++ b/tools/lib/bpf/libbpf.map
+@@ -172,5 +172,7 @@ LIBBPF_0.0.4 {
+ 		btf_dump__new;
+ 		btf__parse_elf;
+ 		bpf_object__load_xattr;
++		bpf_program__attach_perf_event;
+ 		libbpf_num_possible_cpus;
++		libbpf_perf_event_disable_and_close;
+ } LIBBPF_0.0.3;
 -- 
 2.17.1
 
