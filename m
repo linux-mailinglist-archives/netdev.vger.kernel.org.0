@@ -2,103 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A59994EECA
-	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 20:33:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2B4D4EEE7
+	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 20:49:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726395AbfFUSdc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jun 2019 14:33:32 -0400
-Received: from smtprelay0111.hostedemail.com ([216.40.44.111]:43146 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726032AbfFUSdc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 14:33:32 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay03.hostedemail.com (Postfix) with ESMTP id 3DF02837F24D;
-        Fri, 21 Jun 2019 18:33:30 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::::::::,RULES_HIT:41:355:379:599:800:960:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:1978:1981:2194:2199:2393:2553:2559:2562:2736:2828:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3870:3871:3872:3873:3874:4321:5007:6119:7903:9010:9108:10004:10400:10471:10848:11232:11658:11914:12050:12257:12297:12663:12740:12760:12895:13069:13071:13255:13311:13357:13439:14096:14097:14180:14181:14659:14721:21060:21080:21451:21627:30054:30060:30070:30090:30091,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.8.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:30,LUA_SUMMARY:none
-X-HE-Tag: value78_13e1d23df325
-X-Filterd-Recvd-Size: 3044
-Received: from XPS-9350.home (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
-        (Authenticated sender: joe@perches.com)
-        by omf03.hostedemail.com (Postfix) with ESMTPA;
-        Fri, 21 Jun 2019 18:33:28 +0000 (UTC)
-Message-ID: <838b8e84523151418ab8cda4abdbb114ce24a497.camel@perches.com>
-Subject: Re: [PATCH 0/3] net: ethernet: atheros: atlx: Use PCI generic
- definitions instead of private duplicates
-From:   Joe Perches <joe@perches.com>
-To:     Bjorn Helgaas <bhelgaas@google.com>
-Cc:     Puranjay Mohan <puranjay12@gmail.com>,
-        Jay Cliburn <jcliburn@gmail.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Bjorn Helgaas <bjorn@helgaas.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Linux PCI <linux-pci@vger.kernel.org>
-Date:   Fri, 21 Jun 2019 11:33:27 -0700
-In-Reply-To: <CAErSpo6iRVWU-yL5CRF_GEY7CWg5iV=Jw0BrdNV4h3Jvh5AuAw@mail.gmail.com>
-References: <20190621163921.26188-1-puranjay12@gmail.com>
-         <CAErSpo5TMPokae7BMY8ZcOXtW=GeGsWXX_bqS8SrZnh0pEQYxw@mail.gmail.com>
-         <698d3e3614ae903ae9582547d64c6a9846629e57.camel@perches.com>
-         <CAErSpo6iRVWU-yL5CRF_GEY7CWg5iV=Jw0BrdNV4h3Jvh5AuAw@mail.gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
+        id S1726163AbfFUStF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jun 2019 14:49:05 -0400
+Received: from mga09.intel.com ([134.134.136.24]:34424 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726017AbfFUStF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 Jun 2019 14:49:05 -0400
+X-Amp-Result: UNSCANNABLE
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 21 Jun 2019 11:49:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.63,401,1557212400"; 
+   d="scan'208";a="165730818"
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 21 Jun 2019 11:49:03 -0700
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1heOat-0007Cd-FP; Sat, 22 Jun 2019 02:49:03 +0800
+Date:   Sat, 22 Jun 2019 02:48:23 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc:     kbuild-all@01.org, davem@davemloft.net, netdev@vger.kernel.org,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Subject: Re: [PATCH net] ipv6: fix neighbour resolution with raw socket
+Message-ID: <201906220241.iq6BXV95%lkp@intel.com>
+References: <20190620123434.7219-1-nicolas.dichtel@6wind.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190620123434.7219-1-nicolas.dichtel@6wind.com>
+X-Patchwork-Hint: ignore
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2019-06-21 at 13:12 -0500, Bjorn Helgaas wrote:
-> On Fri, Jun 21, 2019 at 12:27 PM Joe Perches <joe@perches.com> wrote:
-[]
-> > Subsystem specific local PCI #defines without generic
-> > naming is poor style and makes treewide grep and
-> > refactoring much more difficult.
-> 
-> Don't worry, we have the same objectives.  I totally agree that local
-> #defines are a bad thing, which is why I proposed this project in the
-> first place.
+Hi Nicolas,
 
-Hi again Bjorn.
+Thank you for the patch! Perhaps something to improve:
 
-I didn't know that was your idea.  Good idea.
+[auto build test WARNING on net/master]
 
-> I'm just saying that this is a "first-patch" sort of learning project
-> and I think it'll avoid some list spamming and discouragement if we
-> can figure out the scope and shake out some of the teething problems
-> ahead of time.  I don't want to end up with multiple versions of
-> dozens of little 2-3 patch series posted every week or two.
+url:    https://github.com/0day-ci/linux/commits/Nicolas-Dichtel/ipv6-fix-neighbour-resolution-with-raw-socket/20190621-115455
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.1-rc1-7-g2b96cd8-dirty
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
 
-Great, that's sensible.
+If you fix the issue, kindly add following tag
+Reported-by: kbuild test robot <lkp@intel.com>
 
-> I'd rather be able to deal with a whole block of them at one time.
 
-Also very sensible.
+sparse warnings: (new ones prefixed by >>)
 
-> > 2: Show that you compiled the object files and verified
-> >    where possible that there are no object file changes.
-> 
-> Do you have any pointers for the best way to do this?  Is it as simple
-> as comparing output of "objdump -d"?
+>> drivers/net/vrf.c:363:17: sparse: sparse: incorrect type in assignment (different modifiers) @@    expected struct in6_addr *nexthop @@    got structstruct in6_addr *nexthop @@
+>> drivers/net/vrf.c:363:17: sparse:    expected struct in6_addr *nexthop
+>> drivers/net/vrf.c:363:17: sparse:    got struct in6_addr const *
+   include/net/route.h:356:48: sparse: sparse: incorrect type in argument 2 (different base types) @@    expected unsigned int [usertype] key @@    got restrunsigned int [usertype] key @@
+   include/net/route.h:356:48: sparse:    expected unsigned int [usertype] key
+   include/net/route.h:356:48: sparse:    got restricted __be32 [usertype] daddr
+   include/net/route.h:356:48: sparse: sparse: incorrect type in argument 2 (different base types) @@    expected unsigned int [usertype] key @@    got restrunsigned int [usertype] key @@
+   include/net/route.h:356:48: sparse:    expected unsigned int [usertype] key
+   include/net/route.h:356:48: sparse:    got restricted __be32 [usertype] daddr
+--
+>> net/bluetooth/6lowpan.c:188:25: sparse: sparse: incorrect type in assignment (different modifiers) @@    expected struct in6_addr *[assigned] nexthop @@    got t in6_addr *[assigned] nexthop @@
+>> net/bluetooth/6lowpan.c:188:25: sparse:    expected struct in6_addr *[assigned] nexthop
+>> net/bluetooth/6lowpan.c:188:25: sparse:    got struct in6_addr const *
 
-Generically, yes.
+vim +363 drivers/net/vrf.c
 
-I have a little script that does the equivalent of:
+dcdd43c4 David Ahern      2017-03-20  345  
+35402e31 David Ahern      2015-10-12  346  #if IS_ENABLED(CONFIG_IPV6)
+35402e31 David Ahern      2015-10-12  347  /* modelled after ip6_finish_output2 */
+35402e31 David Ahern      2015-10-12  348  static int vrf_finish_output6(struct net *net, struct sock *sk,
+35402e31 David Ahern      2015-10-12  349  			      struct sk_buff *skb)
+35402e31 David Ahern      2015-10-12  350  {
+35402e31 David Ahern      2015-10-12  351  	struct dst_entry *dst = skb_dst(skb);
+35402e31 David Ahern      2015-10-12  352  	struct net_device *dev = dst->dev;
+35402e31 David Ahern      2015-10-12  353  	struct neighbour *neigh;
+35402e31 David Ahern      2015-10-12  354  	struct in6_addr *nexthop;
+35402e31 David Ahern      2015-10-12  355  	int ret;
+35402e31 David Ahern      2015-10-12  356  
+eb63ecc1 David Ahern      2016-12-14  357  	nf_reset(skb);
+eb63ecc1 David Ahern      2016-12-14  358  
+35402e31 David Ahern      2015-10-12  359  	skb->protocol = htons(ETH_P_IPV6);
+35402e31 David Ahern      2015-10-12  360  	skb->dev = dev;
+35402e31 David Ahern      2015-10-12  361  
+35402e31 David Ahern      2015-10-12  362  	rcu_read_lock_bh();
+35402e31 David Ahern      2015-10-12 @363  	nexthop = rt6_nexthop((struct rt6_info *)dst, &ipv6_hdr(skb)->daddr);
+35402e31 David Ahern      2015-10-12  364  	neigh = __ipv6_neigh_lookup_noref(dst->dev, nexthop);
+35402e31 David Ahern      2015-10-12  365  	if (unlikely(!neigh))
+35402e31 David Ahern      2015-10-12  366  		neigh = __neigh_create(&nd_tbl, nexthop, dst->dev, false);
+35402e31 David Ahern      2015-10-12  367  	if (!IS_ERR(neigh)) {
+4ff06203 Julian Anastasov 2017-02-06  368  		sock_confirm_neigh(skb, neigh);
+0353f282 David Ahern      2019-04-05  369  		ret = neigh_output(neigh, skb, false);
+35402e31 David Ahern      2015-10-12  370  		rcu_read_unlock_bh();
+35402e31 David Ahern      2015-10-12  371  		return ret;
+35402e31 David Ahern      2015-10-12  372  	}
+35402e31 David Ahern      2015-10-12  373  	rcu_read_unlock_bh();
+35402e31 David Ahern      2015-10-12  374  
+35402e31 David Ahern      2015-10-12  375  	IP6_INC_STATS(dev_net(dst->dev),
+35402e31 David Ahern      2015-10-12  376  		      ip6_dst_idev(dst), IPSTATS_MIB_OUTNOROUTES);
+35402e31 David Ahern      2015-10-12  377  	kfree_skb(skb);
+35402e31 David Ahern      2015-10-12  378  	return -EINVAL;
+35402e31 David Ahern      2015-10-12  379  }
+35402e31 David Ahern      2015-10-12  380  
 
-<git reset>
-make <foo.o>
-mv <foo.o> <foo.o>.old
-patch -P1 < <foo_patch>
-make <foo.o>
-mv <foo.o> <foo.o>.new
-diff -urN <(objdump -d <foo.o>.old) <(objdump -d <foo.o>.new)
+:::::: The code at line 363 was first introduced by commit
+:::::: 35402e31366349a32b505afdfe856aeeb8d939a0 net: Add IPv6 support to VRF device
 
-But it's not foolproof as gcc does not guarantee
-compilation repeatability.
+:::::: TO: David Ahern <dsa@cumulusnetworks.com>
+:::::: CC: David S. Miller <davem@davemloft.net>
 
-And some subsystems Makefiles do not allow per-file
-compilation.
-
+---
+0-DAY kernel test infrastructure                Open Source Technology Center
+https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
