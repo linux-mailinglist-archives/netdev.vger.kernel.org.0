@@ -2,104 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CCA784F039
-	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 22:59:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 524104F042
+	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 23:04:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726080AbfFUU7i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jun 2019 16:59:38 -0400
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:44948 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725992AbfFUU7i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 16:59:38 -0400
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.89)
-        (envelope-from <fw@strlen.de>)
-        id 1heQdD-0002FZ-Bo; Fri, 21 Jun 2019 22:59:35 +0200
-Date:   Fri, 21 Jun 2019 22:59:35 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Joe Stringer <joe@wand.net.nz>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Florian Westphal <fw@strlen.de>,
-        netdev <netdev@vger.kernel.org>,
-        john fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: Removing skb_orphan() from ip_rcv_core()
-Message-ID: <20190621205935.og7ajx57j7usgycq@breakpoint.cc>
-References: <CAOftzPisP-3jN8drC6RXcTigXJjdwEnvTRvTHR-Kv4LKn4rhQQ@mail.gmail.com>
+        id S1726203AbfFUVEp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jun 2019 17:04:45 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:40787 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726049AbfFUVEp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 17:04:45 -0400
+Received: by mail-io1-f67.google.com with SMTP id n5so455442ioc.7
+        for <netdev@vger.kernel.org>; Fri, 21 Jun 2019 14:04:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=GUv/2Go+C+l8UoDaXQAtiqkeqgUULLjeW1QkMNAIGKU=;
+        b=QICFnwZLqcJlpqG+SKQi+8ZQ6oI7EBh0wfEejcEMoD9s1UT+yH37rnZ7jQXQ1g4T14
+         aDbi9I+0iUXnwTE7ZhX7Kk8NNnmI+IVMR6okaVkdQoLBnNbfvRheR/+UfSr8XOvqP3td
+         aIJrHCB5uHc8uoQ/zgJz3EAYHZE7orNpoEOZW8rSSmxJZXUaIXP2xwuxDkWsngNHnZx7
+         YrRJbjZEPnExMAkiJg0OurEtHgLnWim3cG4rBYPXY0F8eJoo/8HcPw8gIzLuK8P3VAlj
+         vJ20cPhyR29KfiGxkkEmsEkJOty2fO0wnxmUtM2b5iCnDBZIaX6j/GiopMVQEuE3KcIr
+         6SGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=GUv/2Go+C+l8UoDaXQAtiqkeqgUULLjeW1QkMNAIGKU=;
+        b=XXBjhCMD5WYqYotoKyZJipn+xBQ9o+DMjYgkTikGJQljH+dcD4VzqsPr25txOCbbcn
+         RLhI1yT2vEwunX1dpYsR+28aeB5yyOEfbRrJOWUHjWjE5OEWytGuOW8dxiUPviIJVpOC
+         KDt/Ei5ruwT+Xk6x4Av7m6mWM1JAeeW7VxEQksKVwUQwKsrCkTwqWE74ieNIxHUJmEiq
+         iqFaa8qBvKpM6Os6xSwxkWVgT+RBsB3p8yk7GHRfNmf6b3SEYBZFm5KC9bI0ym5aa7LO
+         mBdOKsHztsCCBuErGrFnD4HVUxQiuOWvmbmJ6Nj3JWjYeFGX76vCBPVCydSEZwBbfwU/
+         05pQ==
+X-Gm-Message-State: APjAAAU4IfWWlWldx3ZPLbH4ML9Y/8yDYO2AFZsbVWEB6em9/V8rmsxf
+        x15wBWWkIdddtaB5av6HXKE=
+X-Google-Smtp-Source: APXvYqw2XwHBs83sBLPHe3Hhd1FkJU1pnCH6MEB2a6UFN3tkroqsXorqT0u2KxN+c/9HbOOxLI/reQ==
+X-Received: by 2002:a05:6638:2a9:: with SMTP id d9mr108373291jaq.94.1561151084463;
+        Fri, 21 Jun 2019 14:04:44 -0700 (PDT)
+Received: from ?IPv6:2601:284:8200:5cfb:563:6fa4:e349:a2f8? ([2601:284:8200:5cfb:563:6fa4:e349:a2f8])
+        by smtp.googlemail.com with ESMTPSA id r139sm7009021iod.61.2019.06.21.14.04.43
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 21 Jun 2019 14:04:43 -0700 (PDT)
+Subject: Re: [PATCH net-next] ipv6: Convert gateway validation to use
+ fib6_info
+To:     Wei Wang <weiwan@google.com>, David Ahern <dsahern@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>
+References: <20190620190536.3157-1-dsahern@kernel.org>
+ <CAEA6p_BUSFUCJJ_WsAAM2JRhQBBHjUepNZPpFX6DrTSCancD_g@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <5b43374f-bcc4-bb58-ae61-b0f191330f20@gmail.com>
+Date:   Fri, 21 Jun 2019 15:04:42 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOftzPisP-3jN8drC6RXcTigXJjdwEnvTRvTHR-Kv4LKn4rhQQ@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <CAEA6p_BUSFUCJJ_WsAAM2JRhQBBHjUepNZPpFX6DrTSCancD_g@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Joe Stringer <joe@wand.net.nz> wrote:
-> As discussed during LSFMM, I've been looking at adding something like
-> an `skb_sk_assign()` helper to BPF so that logic similar to TPROXY can
-> be implemented with integration into other BPF logic, however
-> currently any attempts to do so are blocked by the skb_orphan() call
-> in ip_rcv_core() (which will effectively ignore any socket assign
-> decision made by the TC BPF program).
-> 
-> Recently I was attempting to remove the skb_orphan() call, and I've
-> been trying different things but there seems to be some context I'm
-> missing. Here's the core of the patch:
-> 
-> diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
-> index ed97724c5e33..16aea980318a 100644
-> --- a/net/ipv4/ip_input.c
-> +++ b/net/ipv4/ip_input.c
-> @@ -500,8 +500,6 @@ static struct sk_buff *ip_rcv_core(struct sk_buff
-> *skb, struct net *net)
->        memset(IPCB(skb), 0, sizeof(struct inet_skb_parm));
->        IPCB(skb)->iif = skb->skb_iif;
-> 
-> -       /* Must drop socket now because of tproxy. */
-> -       skb_orphan(skb);
-> 
->        return skb;
-> 
-> The statement that the socket must be dropped because of tproxy
-> doesn't make sense to me, because the PRE_ROUTING hook is hit after
-> this, which will call into the tproxy logic and eventually
-> nf_tproxy_assign_sock() which already does the skb_orphan() itself.
+On 6/20/19 5:43 PM, Wei Wang wrote:
+> I am not very convinced that fib6_lookup() could be equivalent to
+> rt6_lookup(). Specifically, rt6_lookup() calls rt6_device_match()
+> while fib6_lookup() calls rt6_select() to match the oif. From a brief
+> glance, it does seem to be similar, especially considering that saddr
+> is NULL. So it probably is OK?
 
-in comment: s/tproxy/skb_steal_sock/
 
-at least thats what I concluded a few years ago when I looked into
-the skb_oprhan() need.
+When you remove the rt6_check_neigh call since RT6_LOOKUP_F_REACHABLE is
+not set that removes the RT6_NUD_FAIL_DO_RR return and round-robin
+logic. I am reasonably confident that given the use case - validate the
+gateway and optionally given the device - it is the same.
 
-IIRC some device drivers use skb->sk for backpressure, so without this
-non-tcp socket would be stolen by skb_steal_sock.
+rt6_select is much more complicated than rt6_device_match, so there is a
+small possibility that in some corner case gateway validation fails /
+succeeds with fib6_table_lookup where it would succeed / fail with
+ip6_pol_route_lookup. But, ip6_pol_route and fib6_table_lookup is the
+code path actually used for packet Rx and Tx, so it seems to me to be
+the more proper one for gateway validation.
 
-We also recently removed skb orphan when crossing netns:
-
-commit 9c4c325252c54b34d53b3d0ffd535182b744e03d
-Author: Flavio Leitner <fbl@redhat.com>
-skbuff: preserve sock reference when scrubbing the skb.
-
-So thats another case where this orphan is needed.
-
-What could be done is adding some way to delay/defer the orphaning
-further, but we would need at the very least some annotation for
-skb_steal_sock to know when the skb->sk is really from TPROXY or
-if it has to orphan.
-
-Same for the safety check in the forwarding path.
-Netfilter modules need o be audited as well, they might make assumptions
-wrt. skb->sk being inet sockets (set by local stack or early demux).
-
-> However, if I drop these lines then I end up causing sockets to
-> release references too many times. Seems like if we don't orphan the
-> skb here, then later logic assumes that we have one more reference
-> than we actually have, and decrements the count when it shouldn't
-> (perhaps the skb_steal_sock() call in __inet_lookup_skb() which seems
-> to assume we always have a reference to the socket?)
-
-We might be calling the wrong destructor (i.e., the one set by tcp
-receive instead of the one set at tx time)?
+I will send a v2 with idev change you mentioned.
