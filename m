@@ -2,79 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A03F24EA28
-	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 16:05:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAA044EAAE
+	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 16:34:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726132AbfFUOFH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jun 2019 10:05:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36608 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725975AbfFUOFG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Jun 2019 10:05:06 -0400
-Received: from localhost (unknown [69.71.4.100])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2D5E82075E;
-        Fri, 21 Jun 2019 14:05:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1561125906;
-        bh=9SpD7uZXF12Lgn71hZIUmDAfAlF2fpqc8oZvSOye1Ac=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Gduhdc+w/cr/kolxidI6ZyawEhqHL84tr773iV8OL8RKQMfeOdtzbEe4enD/Z2N6/
-         fV/1UP8V1+YW/UFNIJjStUdRgpNlmVzKI4kMQZ1D5/xf8kD4AFoHJ1/leobK9PPc8x
-         O3HnQ33TbfucZ4IAcL8n2m9hBviPF58L6F90iA9c=
-Date:   Fri, 21 Jun 2019 09:05:05 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Puranjay Mohan <puranjay12@gmail.com>
-Cc:     Shuah Khan <skhan@linuxfoundation.org>,
-        Bjorn Helgaas <bjorn@helgaas.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-pci@vger.kernel.org,
-        Stephen Hemminger <stephen@networkplumber.org>
-Subject: Re: [PATCH v3 0/3] net: fddi: skfp: Use PCI generic definitions
- instead of private duplicates
-Message-ID: <20190621140505.GF82584@google.com>
-References: <20190621094607.15011-1-puranjay12@gmail.com>
+        id S1726420AbfFUOeC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jun 2019 10:34:02 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:33924 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726415AbfFUOeB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 10:34:01 -0400
+Received: by mail-qt1-f196.google.com with SMTP id m29so7151831qtu.1;
+        Fri, 21 Jun 2019 07:34:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Dg3NQA4s7i7yXiqLc8b8VYabNDHnBzjqCi0/49y+82o=;
+        b=u/egA7TKy7DGFgGyQycnlnknW/8rbe49PdZLkFSd6JNo1v0PYbB2iidrTq6JcLK0V9
+         8U2RxCIjYqxOK8GGlYs45/R5rUZQx40Cl2YukrpjBlDUQjX7ircTjtqf+h8Q2tP+X426
+         0Rcm1fzzcu5gjau2bzv+40o5h8RU3yhc3o1R1Nk17OkV1l3c7eaqME+MSyG0WqEDRV+M
+         V6ruRXxxaQPtfKbcVMbzNFge84yh9w3MfiwbHJv00OOrC2a820+8IP4yAYHigusTgtjx
+         RHRoyf4loY3jivqvAjN765xjBwKfaiMdQSZvlb2dnOPy3uCji4uSGGgEQYY8Ygi4CgmI
+         kxVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Dg3NQA4s7i7yXiqLc8b8VYabNDHnBzjqCi0/49y+82o=;
+        b=b+UvS4mkL/PJvemO5PJgGY3W+g4OUd/qQQwagjIvzJi0xWg69b7mtoSrRn/0SzguwU
+         S1gPN4rKa3cMcw0z0kqlvDB7pqhHtMzEsYsvA/KlogmSSfEISKLO/MSyZi3GVUeTJOIb
+         l9QcTrANSkuWSJ6KnRAE0U75/Wita7v9/He0gLXSoUt4fcAqllGTr8asYX7TePrL1PVW
+         A/ajnbHeHecIzFujgUApZl5td5xBUY23c1G4FG2PKNeIU4LHN+V6itRgNym/11B+dvxb
+         AZ1hYJO8NVHTtwIaGzdHOJ00QZZzzdOFKHLfcYAF/QArgdERlUWTZBxn66rg2BlEZgag
+         WkyA==
+X-Gm-Message-State: APjAAAXEdLIXnkCFIdPutRYt9aGhywwhT50wH8W+oBhoO/T6AqtflQZn
+        iALlZuLecnz3T7okKuSkgjQ=
+X-Google-Smtp-Source: APXvYqxWfwNjNsoILKb6y2tR1gWm3EAhsYEvuapj9cKy1cbkrjG/ZjvYwcyVWuqjyhXCtwoq/19Rig==
+X-Received: by 2002:aed:254c:: with SMTP id w12mr121359074qtc.127.1561127640187;
+        Fri, 21 Jun 2019 07:34:00 -0700 (PDT)
+Received: from [10.195.149.182] ([144.121.20.163])
+        by smtp.gmail.com with ESMTPSA id e8sm1333389qkn.95.2019.06.21.07.33.58
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Fri, 21 Jun 2019 07:33:59 -0700 (PDT)
+Subject: Re: [RFC bpf-next 0/7] Programming socket lookup with BPF
+To:     Florian Westphal <fw@strlen.de>,
+        Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@cloudflare.com
+References: <20190618130050.8344-1-jakub@cloudflare.com>
+ <20190618135258.spo6c457h6dfknt2@breakpoint.cc>
+ <87sgs6ey43.fsf@cloudflare.com>
+ <20190621125155.2sdw7pugepj3ityx@breakpoint.cc>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <f373a4d7-c16b-bce2-739d-788525ea4f96@gmail.com>
+Date:   Fri, 21 Jun 2019 10:33:58 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190621094607.15011-1-puranjay12@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20190621125155.2sdw7pugepj3ityx@breakpoint.cc>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[+cc Stephen]
 
-On Fri, Jun 21, 2019 at 03:16:04PM +0530, Puranjay Mohan wrote:
-> This patch series removes the private duplicates of PCI definitions in
-> favour of generic definitions defined in pci_regs.h.
-> 
-> This driver only uses some of the generic PCI definitons,
-> which are included from pci_regs.h and thier private versions
-> are removed from skfbi.h with all other private defines.
-> 
-> The skfbi.h defines PCI_REV_ID and other private defines with different
-> names, these are renamed to Generic PCI names to make them
-> compatible with defines in pci_regs.h.
-> 
-> All unused defines are removed from skfbi.h.
-> 
-> Puranjay Mohan (3):
->   net: fddi: skfp: Rename local PCI defines to match generic PCI defines
->   net: fddi: skfp: Include generic PCI definitions
->   net: fddi: skfp: Remove unused private PCI definitions
-> 
->  drivers/net/fddi/skfp/drvfbi.c  |  3 +-
->  drivers/net/fddi/skfp/h/skfbi.h | 80 +--------------------------------
->  2 files changed, 4 insertions(+), 79 deletions(-)
 
-It's good form to CC people who have commented on previous versions of
-your series, so I added Stephen.
+On 6/21/19 5:51 AM, Florian Westphal wrote:
+> Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>>> So, at least for this part I don't see a technical reason why this
+>>> has to grab a reference for listener socket.
+>>
+>> That's helpful, thanks! We rely on TPROXY, so I would like to help with
+>> that. Let me see if I can get time to work on it.
+> 
+> AFAICS so far this would be enough:
+> 
+> 1. remove the BUG_ON() in skb_orphan, letting it clear skb->sk instead
+> 2. in nf_queue_entry_get_refs(), if skb->sk and no destructor:
+>    call nf_tproxy_assign_sock() so a reference gets taken.
+> 3. change skb_steal_sock:
+>    static inline struct sock *skb_steal_sock(struct sk_buff *skb, bool *refcounted)
+>     [..]
+>     *refcounted = skb->destructor != NULL;
+> 4. make tproxy sk assign elide the destructor assigment in case of
+>    a listening sk.
+> 
 
-FWIW,
+Okay, but how do we make sure the skb->sk association does not leak from rcu section ?
 
-Reviewed-by: Bjorn Helgaas <bhelgaas@google.com>
+Note we have the noref/refcounted magic for skb_dst(), we might try to use something similar
+for skb->sk
+
+> This should work because TPROXY target is restricted to PRE_ROUTING, and
+> __netif_receive_skb_core runs with rcu readlock already held.
+> 
+> On a side note, it would also be interesting to see what breaks if the
+> nf_tproxy_sk_is_transparent() check in the tprox eval function is
+> removed -- if we need the transparent:1 marker only for output, i think
+> it would be ok to raise the bit transparently in the kernel in case
+> we assign skb->sk = found_sk; i.e.
+>  if (unlikely(!sk_is_transparent(sk))
+> 	 make_sk_transparent(sk);
+> 
+> I don't see a reason why we need the explicit setsockopt(IP_TRANSPARENT)
+> from userspace.
+> 
