@@ -2,184 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 770F84EADC
-	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 16:37:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2EF44ED85
+	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 18:59:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726184AbfFUOhR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jun 2019 10:37:17 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:57328 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725985AbfFUOhR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 10:37:17 -0400
-Received: from localhost (junagarh.blr.asicdesigners.com [10.193.185.238])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id x5LEb8IA018086;
-        Fri, 21 Jun 2019 07:37:14 -0700
-From:   Raju Rangoju <rajur@chelsio.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     nirranjan@chelsio.com, dt@chelsio.com, rajur@chelsio.com
-Subject: [PATCH net-next 4/4] cxgb4: Add MPS refcounting for alloc/free mac filters
-Date:   Fri, 21 Jun 2019 20:06:36 +0530
-Message-Id: <20190621143636.20422-5-rajur@chelsio.com>
-X-Mailer: git-send-email 2.12.0
-In-Reply-To: <20190621143636.20422-1-rajur@chelsio.com>
-References: <20190621143636.20422-1-rajur@chelsio.com>
+        id S1726206AbfFUQ7q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jun 2019 12:59:46 -0400
+Received: from ma1-aaemail-dr-lapp03.apple.com ([17.171.2.72]:48882 "EHLO
+        ma1-aaemail-dr-lapp03.apple.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725985AbfFUQ7p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 12:59:45 -0400
+X-Greylist: delayed 7764 seconds by postgrey-1.27 at vger.kernel.org; Fri, 21 Jun 2019 12:59:44 EDT
+Received: from pps.filterd (ma1-aaemail-dr-lapp03.apple.com [127.0.0.1])
+        by ma1-aaemail-dr-lapp03.apple.com (8.16.0.27/8.16.0.27) with SMTP id x5LEWCGX056758;
+        Fri, 21 Jun 2019 07:50:14 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=apple.com; h=mime-version :
+ content-type : sender : content-transfer-encoding : from : subject : date
+ : message-id : references : cc : in-reply-to : to; s=20180706;
+ bh=MAS72gXIipSQElTQDNhMasZswrxCuR0t732RihcAB6o=;
+ b=SmNTGDF+yw9vBH0JzZOON/lSL8U1CY/pyXx/iU/RPaNqGP2iWwsFZiYzIhOrm3Zl+FMa
+ O7HwdYhUEEyBjKGIoxLXLJfQqIw7ouZJ+ljWdTPrFbhIoMu0AUxYkBEQ4pXhEcaUQy08
+ tpn/x8RQrN0XsB9MrSsxaHglFm8sXpYE5EafyeZJvxF8L9j5qzgnPDEvWZpLQm0KhwqG
+ yQQn7jfb5pqexDYBzuryOFvMNV7JmRweS/979fobGKuOcFbKlKqAyMxF4yFGYUPHmO+9
+ yQuCn4vxVcCN2Nvc2YCSdgaxi5+dA9E6BTCWRo6iwg6fRmOcQVNeVOOuNdLZC0H9CPi+ RQ== 
+Received: from mr2-mtap-s03.rno.apple.com (mr2-mtap-s03.rno.apple.com [17.179.226.135])
+        by ma1-aaemail-dr-lapp03.apple.com with ESMTP id 2t77yh2y0j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
+        Fri, 21 Jun 2019 07:50:14 -0700
+MIME-version: 1.0
+Content-type: text/plain; charset=utf-8
+Received: from ma1-mmpp-sz08.apple.com
+ (ma1-mmpp-sz08.apple.com [17.171.128.176]) by mr2-mtap-s03.rno.apple.com
+ (Oracle Communications Messaging Server 8.0.2.4.20190507 64bit (built May  7
+ 2019)) with ESMTPS id <0PTG00GP8EJPCD30@mr2-mtap-s03.rno.apple.com>; Fri,
+ 21 Jun 2019 07:50:13 -0700 (PDT)
+Received: from process_milters-daemon.ma1-mmpp-sz08.apple.com by
+ ma1-mmpp-sz08.apple.com
+ (Oracle Communications Messaging Server 8.0.2.4.20190507 64bit (built May  7
+ 2019)) id <0PTG00E00DYJBF00@ma1-mmpp-sz08.apple.com>; Fri,
+ 21 Jun 2019 07:50:13 -0700 (PDT)
+X-Va-A: 
+X-Va-T-CD: bc678b9122560d8c54cbc590864445c6
+X-Va-E-CD: 926145c2a755c95e264e3bb54de443a0
+X-Va-R-CD: 529e77057a3221d602404d42522b11d5
+X-Va-CD: 0
+X-Va-ID: 5954521f-375e-4010-a7d4-e171c82b7783
+X-V-A:  
+X-V-T-CD: bc678b9122560d8c54cbc590864445c6
+X-V-E-CD: 926145c2a755c95e264e3bb54de443a0
+X-V-R-CD: 529e77057a3221d602404d42522b11d5
+X-V-CD: 0
+X-V-ID: fa6fc1be-0f40-41d4-9816-02ab9e23c0a9
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,,
+ definitions=2019-06-21_10:,, signatures=0
+Received: from [17.234.145.56] (unknown [17.234.145.56])
+ by ma1-mmpp-sz08.apple.com
+ (Oracle Communications Messaging Server 8.0.2.4.20190507 64bit (built May  7
+ 2019)) with ESMTPSA id <0PTG00KTZEJEDM20@ma1-mmpp-sz08.apple.com>; Fri,
+ 21 Jun 2019 07:50:13 -0700 (PDT)
+Content-transfer-encoding: quoted-printable
+From:   Christoph Paasch <cpaasch@apple.com>
+Subject: Re: [PATCH net] tcp: refine memory limit test in tcp_fragment()
+Date:   Fri, 21 Jun 2019 07:50:00 -0700
+Message-id: <848C9ED5-6AE6-437F-8261-75EA43359140@apple.com>
+References: <20190621130955.147974-1-edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+In-reply-to: <20190621130955.147974-1-edumazet@google.com>
+To:     Eric Dumazet <edumazet@google.com>
+X-Mailer: iPhone Mail (17A517a)
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-21_10:,,
+ signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds reference counting support for
-alloc/free mac filters
 
-Signed-off-by: Raju Rangoju <rajur@chelsio.com>
----
- drivers/net/ethernet/chelsio/cxgb4/cxgb4.h      |  6 +++
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c | 12 +++--
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_mps.c  | 72 +++++++++++++++++++++++++
- 3 files changed, 87 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-index 206332c..078b8aa 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-@@ -1915,6 +1915,12 @@ int cxgb4_change_mac(struct port_info *pi, unsigned int viid,
- 		     int *tcam_idx, const u8 *addr,
- 		     bool persistent, u8 *smt_idx);
- 
-+int cxgb4_alloc_mac_filt(struct adapter *adap, unsigned int viid,
-+			 bool free, unsigned int naddr,
-+			 const u8 **addr, u16 *idx,
-+			 u64 *hash, bool sleep_ok);
-+int cxgb4_free_mac_filt(struct adapter *adap, unsigned int viid,
-+			unsigned int naddr, const u8 **addr, bool sleep_ok);
- int cxgb4_init_mps_ref_entries(struct adapter *adap);
- void cxgb4_free_mps_ref_entries(struct adapter *adap);
- int cxgb4_alloc_encap_mac_filt(struct adapter *adap, unsigned int viid,
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-index 1520e52..b08efc4 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-@@ -366,13 +366,19 @@ static int cxgb4_mac_sync(struct net_device *netdev, const u8 *mac_addr)
- 	int ret;
- 	u64 mhash = 0;
- 	u64 uhash = 0;
-+	/* idx stores the index of allocated filters,
-+	 * its size should be modified based on the number of
-+	 * MAC addresses that we allocate filters for
-+	 */
-+
-+	u16 idx[1] = {};
- 	bool free = false;
- 	bool ucast = is_unicast_ether_addr(mac_addr);
- 	const u8 *maclist[1] = {mac_addr};
- 	struct hash_mac_addr *new_entry;
- 
--	ret = t4_alloc_mac_filt(adap, adap->mbox, pi->viid, free, 1, maclist,
--				NULL, ucast ? &uhash : &mhash, false);
-+	ret = cxgb4_alloc_mac_filt(adap, pi->viid, free, 1, maclist,
-+				   idx, ucast ? &uhash : &mhash, false);
- 	if (ret < 0)
- 		goto out;
- 	/* if hash != 0, then add the addr to hash addr list
-@@ -410,7 +416,7 @@ static int cxgb4_mac_unsync(struct net_device *netdev, const u8 *mac_addr)
- 		}
- 	}
- 
--	ret = t4_free_mac_filt(adap, adap->mbox, pi->viid, 1, maclist, false);
-+	ret = cxgb4_free_mac_filt(adap, pi->viid, 1, maclist, false);
- 	return ret < 0 ? -EINVAL : 0;
- }
- 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_mps.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_mps.c
-index d503baf..a9ade68 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_mps.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_mps.c
-@@ -3,6 +3,31 @@
- 
- #include "cxgb4.h"
- 
-+static int cxgb4_mps_ref_dec_by_mac(struct adapter *adap,
-+				    const u8 *addr, const u8 *mask)
-+{
-+	u8 bitmask[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
-+	struct mps_entries_ref *mps_entry, *tmp;
-+	int ret = -EINVAL;
-+
-+	spin_lock_bh(&adap->mps_ref_lock);
-+	list_for_each_entry_safe(mps_entry, tmp, &adap->mps_ref, list) {
-+		if (ether_addr_equal(mps_entry->addr, addr) &&
-+		    ether_addr_equal(mps_entry->mask, mask ? mask : bitmask)) {
-+			if (!atomic_dec_and_test(&mps_entry->refcnt)) {
-+				spin_unlock_bh(&adap->mps_ref_lock);
-+				return -EBUSY;
-+			}
-+			list_del(&mps_entry->list);
-+			kfree(mps_entry);
-+			ret = 0;
-+			break;
-+		}
-+	}
-+	spin_unlock_bh(&adap->mps_ref_lock);
-+	return ret;
-+}
-+
- static int cxgb4_mps_ref_dec(struct adapter *adap, u16 idx)
- {
- 	struct mps_entries_ref *mps_entry, *tmp;
-@@ -54,6 +79,53 @@ static int cxgb4_mps_ref_inc(struct adapter *adap, const u8 *mac_addr,
- 	return ret;
- }
- 
-+int cxgb4_free_mac_filt(struct adapter *adap, unsigned int viid,
-+			unsigned int naddr, const u8 **addr, bool sleep_ok)
-+{
-+	int ret, i;
-+
-+	for (i = 0; i < naddr; i++) {
-+		if (!cxgb4_mps_ref_dec_by_mac(adap, addr[i], NULL)) {
-+			ret = t4_free_mac_filt(adap, adap->mbox, viid,
-+					       1, &addr[i], sleep_ok);
-+			if (ret < 0)
-+				return ret;
-+		}
-+	}
-+
-+	/* return number of filters freed */
-+	return naddr;
-+}
-+
-+int cxgb4_alloc_mac_filt(struct adapter *adap, unsigned int viid,
-+			 bool free, unsigned int naddr, const u8 **addr,
-+			 u16 *idx, u64 *hash, bool sleep_ok)
-+{
-+	int ret, i;
-+
-+	ret = t4_alloc_mac_filt(adap, adap->mbox, viid, free,
-+				naddr, addr, idx, hash, sleep_ok);
-+	if (ret < 0)
-+		return ret;
-+
-+	for (i = 0; i < naddr; i++) {
-+		if (idx[i] != 0xffff) {
-+			if (cxgb4_mps_ref_inc(adap, addr[i], idx[i], NULL)) {
-+				ret = -ENOMEM;
-+				goto error;
-+			}
-+		}
-+	}
-+
-+	goto out;
-+error:
-+	cxgb4_free_mac_filt(adap, viid, naddr, addr, sleep_ok);
-+
-+out:
-+	/* Returns a negative error number or the number of filters allocated */
-+	return ret;
-+}
-+
- int cxgb4_update_mac_filt(struct port_info *pi, unsigned int viid,
- 			  int *tcam_idx, const u8 *addr,
- 			  bool persistent, u8 *smt_idx)
--- 
-1.8.3.1
+> On Jun 21, 2019, at 6:11 AM, Eric Dumazet <edumazet@google.com> wrote:
+>=20
+> =EF=BB=BFtcp_fragment() might be called for skbs in the write queue.
+>=20
+> Memory limits might have been exceeded because tcp_sendmsg() only
+> checks limits at full skb (64KB) boundaries.
+>=20
+> Therefore, we need to make sure tcp_fragment() wont punish applications
+> that might have setup very low SO_SNDBUF values.
+>=20
+> Fixes: f070ef2ac667 ("tcp: tcp_fragment() should apply sane memory limits"=
+)
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Reported-by: Christoph Paasch <cpaasch@apple.com>
+> ---
+> net/ipv4/tcp_output.c | 3 ++-
+> 1 file changed, 2 insertions(+), 1 deletion(-)
 
+Tested-by: Christoph Paasch <cpaasch@apple.com>
+
+
+Thanks!
+
+
+>=20
+> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+> index 00c01a01b547ec67c971dc25a74c9258563cf871..0ebc33d1c9e5099d163a234930=
+e213ee35e9fbd1 100644
+> --- a/net/ipv4/tcp_output.c
+> +++ b/net/ipv4/tcp_output.c
+> @@ -1296,7 +1296,8 @@ int tcp_fragment(struct sock *sk, enum tcp_queue tcp=
+_queue,
+>    if (nsize < 0)
+>        nsize =3D 0;
+>=20
+> -    if (unlikely((sk->sk_wmem_queued >> 1) > sk->sk_sndbuf)) {
+> +    if (unlikely((sk->sk_wmem_queued >> 1) > sk->sk_sndbuf &&
+> +             tcp_queue !=3D TCP_FRAG_IN_WRITE_QUEUE)) {
+>        NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPWQUEUETOOBIG);
+>        return -ENOMEM;
+>    }
+> --=20
+> 2.22.0.410.gd8fdbe21b5-goog
+>=20
