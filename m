@@ -2,159 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 198584E5E7
-	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 12:29:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 835844E5E9
+	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 12:30:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726210AbfFUK3z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jun 2019 06:29:55 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:38517 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726282AbfFUK3y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 06:29:54 -0400
-Received: by mail-ot1-f66.google.com with SMTP id d17so5830674oth.5
-        for <netdev@vger.kernel.org>; Fri, 21 Jun 2019 03:29:54 -0700 (PDT)
+        id S1726518AbfFUKag (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jun 2019 06:30:36 -0400
+Received: from mail-vk1-f193.google.com ([209.85.221.193]:34997 "EHLO
+        mail-vk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726425AbfFUKag (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 06:30:36 -0400
+Received: by mail-vk1-f193.google.com with SMTP id k1so1191411vkb.2
+        for <netdev@vger.kernel.org>; Fri, 21 Jun 2019 03:30:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
          :cc;
-        bh=vABUrhDDlgLaEgsGYnr/fcBvwyUpWVTqO8p1TtDrOes=;
-        b=Ggf5g8mV1RaLfhmi+55Hhcpvg4Cp6BH2/Tcn+fpGfUQ9h9LUe6rCX8Xbe3OPSigdTZ
-         4xm0uQHwoNTm1xtFSfocJXBGHywpv0VddCYw+YWFKvG9RGnsgrEny61YAo6vpBmxaONq
-         kh9EaiVpkq4Ym4nj510rrp+CWDMtuDi2IzxmM=
+        bh=EI8t6T/6+jeUJe3ag7opmiiNB/kHV5Pq6I8JuKgpxZw=;
+        b=lOc3A8tiNcD/NYwFlIsDajmUL807WO335nB6SDppp8K/JBhz/eUQJmMdDW+seDFeq8
+         W6rXJBqJFiP3rtp7qcj9kPXpIv5I7z+gFdkx0LDheZgPS8g62pLzNf08uLlZczHpsxCp
+         Lloe/BIwUA43qojuX5PPzZAkwNXABTHeFj73pSmFQnhp0hiLkWx+F9wzJuNa4+OQVQRt
+         6b48JdFs+aA1DICnuaOw9TD3eXnIYeW3ziHRjx1QWeeZSvaSbL/3mOeVGdBZSERFl8SB
+         7on5cw9oHcFYJzZXWfnjwb5ZkUBccRzbv8gJjg7f23OPNb2wkDExONMyncCUPV1vqwD3
+         qy9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
          :message-id:subject:to:cc;
-        bh=vABUrhDDlgLaEgsGYnr/fcBvwyUpWVTqO8p1TtDrOes=;
-        b=CXU3e7xEPG4Cs1pQY10C13gKjqtAtogrTjvIMHY7PQ9dmwHSExJYy9nzoHTvhO2T2V
-         DamxtXpihNXdGUXkJSr0A3nl57oPSbwSUox0R3dNg4gtGkh1YO0hUuUZVu5JQe9EymCr
-         p8fDVbHEojiRxUxV+cmJ1RtXu1oTuJbJNE8KwEogitZiZ71bFJv0JIpya3JvKQ9rp4x8
-         MnoCZEydP+kjoVEOFuFd0+UJ+aswSKZtNjXfvMJBSlWi3apK5XxMicZ7G4hG+GwdiOsg
-         RQxh1eqEAQvSTYCOA5EYeg6JZrpecFfw5Rrq5DZO+Y24xryAd9LR1mIjFslUYH43ty+X
-         f7Mw==
-X-Gm-Message-State: APjAAAWRqfrrfa3z5IDsqYzYSVAAkCld5Wlb+KUf5d+jmU1/fpm+1/m+
-        WRQ5WTsw3Iebem4eAKL3+XCXdHbXwQvF+VzLCbT/JA==
-X-Google-Smtp-Source: APXvYqzTpSPH+cBe6LlLDSpKphkGr0r0xfPseC0JOnxcRKwD1PfhAR8nsM73tuVcqTixadrdxhwNYlNrXApm8Ndkppo=
-X-Received: by 2002:a9d:6548:: with SMTP id q8mr15942333otl.132.1561112993753;
- Fri, 21 Jun 2019 03:29:53 -0700 (PDT)
+        bh=EI8t6T/6+jeUJe3ag7opmiiNB/kHV5Pq6I8JuKgpxZw=;
+        b=avN0xJm3pJSm1c+yJussUkEt/wOnAbUT76tSLsxBpKapvrQOnm19YZt0Losl4F11a0
+         FB66vDWD2GAppQSCERqK/bLCvgHTT2WHNx8nMlcrpF3TLNxXEnwpqb2Jjy/o1/mg/7tn
+         td5Ro1LW3zme9xnIJJWABlw/4AZnXbdbNbmqoremH2EbA/2Y2AsTZDPfMIDZDPCGgr1K
+         lyzWXxWpd3feYPllrjDCDc6hxdkjFJW47KApDecteRJtsbMEAOzx5oKfwOYMU9buBl7t
+         ryvEkyEMZpN173yL5E8PZRIcPiu99GUH5XUiyGwEFPYl19SyrZfC7AvoXPYKGgmB/Xgb
+         DcqA==
+X-Gm-Message-State: APjAAAXXKaP8vEXSZ2jvlZQKs/V5N9DXeI3zggOs5LgJ8Z7WWyYBJfOi
+        +Rhz0pnSymg/sxfffbL9L4U5PIXiZvTF3qbdRgmA6g==
+X-Google-Smtp-Source: APXvYqwT2XTSUYNbyLe4kErqtt7gbdsZFKxyD2YEt9xQeg4JWbsZZ8kauxqAM34aCbA3HtgGFeNcI05z6HxzJqJzP+M=
+X-Received: by 2002:a1f:5302:: with SMTP id h2mr7039137vkb.37.1561113034959;
+ Fri, 21 Jun 2019 03:30:34 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190617192700.2313445-1-andriin@fb.com> <30a2c470-5057-bd96-1889-e77fd5536960@iogearbox.net>
- <CAEf4Bzae1CPDkhPrESa2ZmiOH8Mqf0KA_4ty9z=xnYn=q7Frhw@mail.gmail.com>
- <CACAyw9-L0qx8d9O66SaYhJGjsyKo_6iozqLAQHEVa1AW-U=2Tg@mail.gmail.com> <CAEf4BzYaHG9Z_eFQCtwxA7t5GwQq2wr=AEeFWZpqx9vdQqKv1g@mail.gmail.com>
-In-Reply-To: <CAEf4BzYaHG9Z_eFQCtwxA7t5GwQq2wr=AEeFWZpqx9vdQqKv1g@mail.gmail.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Fri, 21 Jun 2019 11:29:42 +0100
-Message-ID: <CACAyw98JqwZbcTdpRNcG_fT6A-ekEqn9D5Zx4myB8oiX73uZkw@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 00/11] BTF-defined BPF map definitions
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Joe Stringer <joe@wand.net.nz>
+Received: by 2002:ab0:2616:0:0:0:0:0 with HTTP; Fri, 21 Jun 2019 03:30:34
+ -0700 (PDT)
+X-Originating-IP: [5.35.70.113]
+In-Reply-To: <20190620090249.106704-1-dkirjanov@suse.com>
+References: <20190620090249.106704-1-dkirjanov@suse.com>
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+Date:   Fri, 21 Jun 2019 13:30:34 +0300
+Message-ID: <CAOJe8K3ugk1SvBKOhv5d7C8gHjJ+Tjpi9UgqNQhEan=Pf9Qx2g@mail.gmail.com>
+Subject: Re: [PATCH iproute2-next v2 1/2] ipaddress: correctly print a VF hw
+ address in the IPoIB case
+To:     stephen@networkplumber.org
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        dledford@redhat.com, mkubecek@suse.cz,
+        Denis Kirjanov <kda@linux-powerpc.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 21 Jun 2019 at 05:20, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+On 6/20/19, Denis Kirjanov <kda@linux-powerpc.org> wrote:
+> Current code assumes that we print Etheret mac and
+> that doesn't work in IPoIB case with SRIOV-enabled hardware
 >
-> On Thu, Jun 20, 2019 at 7:49 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
-> >
-> > On Tue, 18 Jun 2019 at 22:37, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
-> >
-> > > > I would just drop the object-scope pinning. We avoided using it and I'm not
-> > > > aware if anyone else make use. It also has the ugly side-effect that this
-> > > > relies on AF_ALG which e.g. on some cloud provider shipped kernels is disabled.
-> > > > The pinning attribute should be part of the standard set of map attributes for
-> > > > libbpf though as it's generally useful for networking applications.
-> > >
-> > > Sounds good. I'll do some more surveying of use cases inside FB to see
-> > > if anyone needs object-scope pinning, just to be sure we are not
-> > > short-cutting anyone.
-> >
-> > I'm also curious what the use cases for declarative pinning are. From my
-> > limited POV it doesn't seem that useful? There are a couple of factors:
+> Before:
+> 11: ib1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2044 qdisc pfifo_fast
+> state UP mode DEFAULT group default qlen 256
+>         link/infiniband
+> 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
+> 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
+>         vf 0 MAC 14:80:00:00:66:fe, spoof checking off, link-state disable,
+>     trust off, query_rss off
+>     ...
 >
-> Cilium is using it pretty extensively, so there are clearly use cases.
-> The most straigtforward use case is using a map created and shared by
-> another BPF program (to communicate, read stats, what have you).
-
-I think Cilium is in the quirky position that it has a persistent daemon, but
-shells out to tc for loading programs. They are probably also the most
-advanced (open-source) users of BPF out there. If I understood their comments
-correctly they want to move to using a library for loading their ELF. At that
-point whether something is possible in a declarative way is less important,
-because you have the much more powerful APIs at your disposal.
-
-Maybe Daniel or someone else from the Cilium team can chime in here?
-
-> > * Systemd mounts the default location only accessible to root, so I have to
-> >   used my own bpffs mount.
-> > * Since I don't want to hard code that, I put it in a config file.
-> > * After loading the ELF we pin maps from the daemon managing the XDP.
+> After:
+> 11: ib1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2044 qdisc pfifo_fast
+> state UP mode DEFAULT group default qlen 256
+>         link/infiniband
+> 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
+> 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
+>         vf 0     link/infiniband
+> 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
+> 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff, spoof
+> checking off, link-state disable, trust off, query_rss off
 >
-> So mounting root would be specified per bpf_object, before maps are
-> created, so user-land driving application will have an opportunity to
-> tune everything. Declarative is only the per-map decision of whether
-> that map should be exposed to outer world (for sharing) or not.
-
-So `tc filter add bpf obj foo.elf pin-root /gobbledygook`?
-
-> Then check tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
-> for more crazy syntax ;)
+> v1->v2: updated kernel headers to uapi commit
 >
-> typedef char * (* const (* const fn_ptr_arr2_t[5])())(char * (*)(int));
+> Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
 
-Not on a Friday ;P
+Hi Stephen,
 
-> > What if this did
-> >
-> >   __type(value, struct my_value)[1000];
-> >   struct my_value __member(value)[1000]; // alternative
-> >
-> > instead, and skipped max_entries?
+are you going to take the patches?
+
+Thanks!
+
+> ---
+>  ip/ipaddress.c | 42 +++++++++++++++++++++++++++++++++++++-----
+>  1 file changed, 37 insertions(+), 5 deletions(-)
 >
-> I considered that, but decided for now to keep all those attributes
-> orthogonal for more flexibility and uniformity. This syntax might be
-> considered a nice "syntax sugar" and can be added in the future, if
-> necessary.
-
-Ack.
-
-> > At that point you have to understand that value is a pointer so all of
-> > our efforts
-> > are for naught. I suspect there is other weirdness like this, but I need to play
-> > with it a little bit more.
+> diff --git a/ip/ipaddress.c b/ip/ipaddress.c
+> index b504200b..13ad76dd 100644
+> --- a/ip/ipaddress.c
+> +++ b/ip/ipaddress.c
+> @@ -26,6 +26,7 @@
 >
-> Yes, C can let you do crazy stuff, if you wish, but I think that
-> shouldn't be a blocker for this proposal. I haven't seen any BPF
-> program doing that, usually you duplicate the type of inner value
-> inside your function anyway, so there is no point in taking
-> sizeof(map.value) from BPF program side. From outside, though, all the
-> types will make sense, as expected.
-
-Right, but in my mind that is a bit of a cop out. I like BTF map definitions,
-and I want them to be as unsurprising as possible, so that they are
-easy to use and adopt.
-
-If a type encodes all the information we need via the array dimension hack,
-couldn't we make the map variable itself a pointer, and drop the inner pointers?
-
-struct my_map_def {
-  int type[BPF_MAP_TYPE_HASH];
-  int value;
-  struct foo key;
-  ...
-}
-
-struct my_map_def *my_map;
-
--- 
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
-
-www.cloudflare.com
+>  #include <linux/netdevice.h>
+>  #include <linux/if_arp.h>
+> +#include <linux/if_infiniband.h>
+>  #include <linux/sockios.h>
+>  #include <linux/net_namespace.h>
+>
+> @@ -349,9 +350,10 @@ static void print_af_spec(FILE *fp, struct rtattr
+> *af_spec_attr)
+>
+>  static void print_vf_stats64(FILE *fp, struct rtattr *vfstats);
+>
+> -static void print_vfinfo(FILE *fp, struct rtattr *vfinfo)
+> +static void print_vfinfo(struct ifinfomsg *ifi, FILE *fp, struct rtattr
+> *vfinfo)
+>  {
+>  	struct ifla_vf_mac *vf_mac;
+> +	struct ifla_vf_broadcast *vf_broadcast;
+>  	struct ifla_vf_tx_rate *vf_tx_rate;
+>  	struct rtattr *vf[IFLA_VF_MAX + 1] = {};
+>
+> @@ -365,13 +367,43 @@ static void print_vfinfo(FILE *fp, struct rtattr
+> *vfinfo)
+>  	parse_rtattr_nested(vf, IFLA_VF_MAX, vfinfo);
+>
+>  	vf_mac = RTA_DATA(vf[IFLA_VF_MAC]);
+> +	vf_broadcast = RTA_DATA(vf[IFLA_VF_BROADCAST]);
+>  	vf_tx_rate = RTA_DATA(vf[IFLA_VF_TX_RATE]);
+>
+>  	print_string(PRINT_FP, NULL, "%s    ", _SL_);
+>  	print_int(PRINT_ANY, "vf", "vf %d ", vf_mac->vf);
+> -	print_string(PRINT_ANY, "mac", "MAC %s",
+> -		     ll_addr_n2a((unsigned char *) &vf_mac->mac,
+> -				 ETH_ALEN, 0, b1, sizeof(b1)));
+> +
+> +	print_string(PRINT_ANY,
+> +			"link_type",
+> +			"    link/%s ",
+> +			ll_type_n2a(ifi->ifi_type, b1, sizeof(b1)));
+> +
+> +	print_color_string(PRINT_ANY,
+> +				COLOR_MAC,
+> +				"address",
+> +				"%s",
+> +				ll_addr_n2a((unsigned char *) &vf_mac->mac,
+> +					ifi->ifi_type == ARPHRD_ETHER ? ETH_ALEN : INFINIBAND_ALEN,
+> +					ifi->ifi_type,
+> +					b1, sizeof(b1)));
+> +
+> +	if (vf[IFLA_VF_BROADCAST]) {
+> +		if (ifi->ifi_flags&IFF_POINTOPOINT) {
+> +			print_string(PRINT_FP, NULL, " peer ", NULL);
+> +			print_bool(PRINT_JSON,
+> +					"link_pointtopoint", NULL, true);
+> +                        } else {
+> +				print_string(PRINT_FP, NULL, " brd ", NULL);
+> +                        }
+> +                        print_color_string(PRINT_ANY,
+> +                                           COLOR_MAC,
+> +                                           "broadcast",
+> +                                           "%s",
+> +                                           ll_addr_n2a((unsigned char *)
+> &vf_broadcast->broadcast,
+> +                                                       ifi->ifi_type ==
+> ARPHRD_ETHER ? ETH_ALEN : INFINIBAND_ALEN,
+> +                                                       ifi->ifi_type,
+> +                                                       b1, sizeof(b1)));
+> +	}
+>
+>  	if (vf[IFLA_VF_VLAN_LIST]) {
+>  		struct rtattr *i, *vfvlanlist = vf[IFLA_VF_VLAN_LIST];
+> @@ -1102,7 +1134,7 @@ int print_linkinfo(struct nlmsghdr *n, void *arg)
+>  		open_json_array(PRINT_JSON, "vfinfo_list");
+>  		for (i = RTA_DATA(vflist); RTA_OK(i, rem); i = RTA_NEXT(i, rem)) {
+>  			open_json_object(NULL);
+> -			print_vfinfo(fp, i);
+> +			print_vfinfo(ifi, fp, i);
+>  			close_json_object();
+>  		}
+>  		close_json_array(PRINT_JSON, NULL);
+> --
+> 2.12.3
+>
+>
