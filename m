@@ -2,124 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E60D4DE13
-	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 02:33:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAB324DE19
+	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 02:37:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726029AbfFUAdU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 20:33:20 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:36069 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725921AbfFUAdU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 20:33:20 -0400
-Received: by mail-pg1-f196.google.com with SMTP id f21so2457813pgi.3
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 17:33:19 -0700 (PDT)
+        id S1725941AbfFUAhC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 20:37:02 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:42618 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725869AbfFUAhC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 20:37:02 -0400
+Received: by mail-pf1-f193.google.com with SMTP id q10so2605426pff.9
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 17:37:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=VWCFU1NtUy1SLx0P04uvsBj+Xrz/jdAYg/mA6p5ibZI=;
-        b=fhB2iXQOxt0Df3GjN40VkZ9tXjPjZNZoZO3igKZZxEYyR3nven7fpjRelb3jUm2Sfo
-         Il/TUTEZNtgolHPyvbLRktFPs9V48tjRCgAURSb1mOTme54GZzjN1z9o5+P9M6Ovwp+F
-         6BzRKexLuOi/kSJoVCOlSmEcUTMa85wsRN5xqor+cYmRRyOMUiitJU538yqxO2NQFBdx
-         Jo6Xob8iNHVZrayIJgmpDsGGgNNSsI7S1wtAk2GrfbuyJm0wANKfNKdDpU/GUsEDM0sy
-         KmT4DFvnifcmiuIxfIn1/expYZchYkOd9AfNfJlP0hjk/tID7iw0V+yAR6lrH1R+3MO+
-         fsbg==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Wr1twM+xbU0bTo4nC05aFTd0j09bncxms61V7GCjnuU=;
+        b=MR5Ru88sEqc6GYScfo0XI05B8zt946lA5WZkLfxdIPLIxhTuXEhKBcXg+EevnfRMzQ
+         dXy0oJx0s7s+nSWkpUDf8AOLei5Ca+gr5MinQto7b1BLOweuAVW47KBGNIw9Qg0PPtF0
+         cLga0qpiCUvqp2fMa6wTUJi3yOxDsoRsUz9kNsXXVAHBt72n6YTJLt8O+TPWF1It2TeG
+         7qQzFoWftLvsEp3NuvKg4IrEzahSa4xqczaQL4UStOF7YaEAmeLH5GAFe0SzOXxI8uVf
+         yt5DF1NN2e0osPvlDQxH96Tqdmrl2y+fez7nOB50QezJUldg9R49T2wTI3vIzrM2jbEB
+         zerA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=VWCFU1NtUy1SLx0P04uvsBj+Xrz/jdAYg/mA6p5ibZI=;
-        b=Ywbl0gJdWYwLTlitXs/yPf/mA+rOiXTVS+3/uykd2GrB4PwHW7LcJMy1ftAGmqA2ha
-         Gm2kOKl3Vnt2ou3N9vkq6rDhHoHXV/5PrTWh/KQxOz2xzC8RCcIw5nfUrkbv4iJdY6KG
-         v2Ks+hbRM2por4UU07HRMTN6Z3lNrG7bEu4rkU8JueyadWugbQdzCFusnhzUFOhd6pbB
-         ecajHl2UVOuLDJLqc8m5ZfZRj1MSBkNFPKJqNxROYWdvvRINIbmmHvO0QkGDqpXYEgSO
-         9EwgLXvAbzO/6RwVpOp8Jiy2jmVVjgDBdGa0NMs/oSoxCVKov9Qp73teh0CnNx5Y4ZBG
-         Qr3A==
-X-Gm-Message-State: APjAAAV7Ba26r7+DtkvgM39CdF+dflNLio6HkbZrBZdMan0iHiJg+gPz
-        NF3yEsEi341mHTYNmg6gYfu95A==
-X-Google-Smtp-Source: APXvYqx8XHF2lzyJRvlD0WQnCu3FXRxUp23oyFjChE34lsemufCBaNkdLqKB5bQVDLc8iKIqu0qW7Q==
-X-Received: by 2002:a63:e001:: with SMTP id e1mr15482674pgh.306.1561077199414;
-        Thu, 20 Jun 2019 17:33:19 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id q198sm625125pfq.155.2019.06.20.17.33.18
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Wr1twM+xbU0bTo4nC05aFTd0j09bncxms61V7GCjnuU=;
+        b=SnA2BUAPh8d8yJNx9nfZ1ubKE7jgKPIFBIwMuOhjeiVp0duvxsUDUQSatMrhDoSYFd
+         UZ5jJHhd2NehyqbGaa430kuXXIpwAGEK6NwmHju1h6RqLHfQp2CpjaIk0COQ2KMTtRtY
+         6MOsXFSd4ho9G6sl3/Icc+5337vOgV3cPU4zbzTnmpvt3ZXiOqIkEB0tBVp2xuMSHFFe
+         FQfOx+onRmfv4I01QN4VOokj7QVTc02W7Wdk0Wf7nim76Vji8Opj6Y+Lekp58PXHwoAo
+         stsiwEOBwz2wqIS8/jYvq5rOtMGO43xsdho1rq/7HUDUhF1y5Z4P8tu429kCm4h/tbDO
+         vtew==
+X-Gm-Message-State: APjAAAW/QyPWbeND2XgrXoUX5N3NjcX03pcXMPylTg0w3uR9eJQ8Imea
+        GSCJ71hHz371Tuq996FZXzg=
+X-Google-Smtp-Source: APXvYqxyQuWRZqvOhJwsF1hRWjX05EQw+xslWnh1GKHVQvkoK3oiEeNkRxP51AvmevuTXzDpwdnYqA==
+X-Received: by 2002:a63:1d53:: with SMTP id d19mr15362790pgm.152.1561077421018;
+        Thu, 20 Jun 2019 17:37:01 -0700 (PDT)
+Received: from weiwan0.svl.corp.google.com ([2620:15c:2c4:201:9310:64cb:677b:dcba])
+        by smtp.gmail.com with ESMTPSA id 2sm588206pff.174.2019.06.20.17.36.59
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 20 Jun 2019 17:33:18 -0700 (PDT)
-Date:   Thu, 20 Jun 2019 17:33:17 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Yuehaibing <yuehaibing@huawei.com>
-Cc:     davem@davemloft.net, sdf@google.com, jianbol@mellanox.com,
-        jiri@mellanox.com, mirq-linux@rere.qmqm.pl, willemb@google.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] flow_dissector: Fix vlan header offset in
- __skb_flow_dissect
-Message-ID: <20190621003317.GE1383@mini-arch>
-References: <20190619160132.38416-1-yuehaibing@huawei.com>
- <20190619183938.GA19111@mini-arch>
- <00a5d09f-a23e-661f-60c0-75fba6227451@huawei.com>
+        Thu, 20 Jun 2019 17:36:59 -0700 (PDT)
+From:   Wei Wang <tracywwnj@gmail.com>
+To:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Ahern <dsahern@gmail.com>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Wei Wang <weiwan@google.com>
+Subject: [PATCH v3 net-next 0/5] ipv6: avoid taking refcnt on dst during route lookup
+Date:   Thu, 20 Jun 2019 17:36:36 -0700
+Message-Id: <20190621003641.168591-1-tracywwnj@gmail.com>
+X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <00a5d09f-a23e-661f-60c0-75fba6227451@huawei.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/20, Yuehaibing wrote:
-> On 2019/6/20 2:39, Stanislav Fomichev wrote:
-> > On 06/20, YueHaibing wrote:
-> >> We build vlan on top of bonding interface, which vlan offload
-> >> is off, bond mode is 802.3ad (LACP) and xmit_hash_policy is
-> >> BOND_XMIT_POLICY_ENCAP34.
-> >>
-> >> __skb_flow_dissect() fails to get information from protocol headers
-> >> encapsulated within vlan, because 'nhoff' is points to IP header,
-> >> so bond hashing is based on layer 2 info, which fails to distribute
-> >> packets across slaves.
-> >>
-> >> Fixes: d5709f7ab776 ("flow_dissector: For stripped vlan, get vlan info from skb->vlan_tci")
-> >> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> >> ---
-> >>  net/core/flow_dissector.c | 3 +++
-> >>  1 file changed, 3 insertions(+)
-> >>
-> >> diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
-> >> index 415b95f..2a52abb 100644
-> >> --- a/net/core/flow_dissector.c
-> >> +++ b/net/core/flow_dissector.c
-> >> @@ -785,6 +785,9 @@ bool __skb_flow_dissect(const struct sk_buff *skb,
-> >>  		    skb && skb_vlan_tag_present(skb)) {
-> >>  			proto = skb->protocol;
-> >>  		} else {
-> >> +			if (dissector_vlan == FLOW_DISSECTOR_KEY_MAX)
-> >> +				nhoff -=  sizeof(*vlan);
-> >> +
-> > Should we instead fix the place where the skb is allocated to properly
-> > pull vlan (skb_vlan_untag)? I'm not sure this particular place is
-> > supposed to work with an skb. Having an skb with nhoff pointing to
-> > IP header but missing skb_vlan_tag_present() when with
-> > proto==ETH_P_8021xx seems weird.
-> 
-> The skb is a forwarded vxlan packet, it send through vlan interface like this:
-> 
->    vlan_dev_hard_start_xmit
->     --> __vlan_hwaccel_put_tag //vlan_tci and VLAN_TAG_PRESENT is set
->     --> dev_queue_xmit
->         --> validate_xmit_skb
->           --> validate_xmit_vlan // vlan_hw_offload_capable is false
->              --> __vlan_hwaccel_push_inside //here skb_push vlan_hlen, then clear skb->tci
-> 
->     --> bond_start_xmit
->        --> bond_xmit_hash
->          --> __skb_flow_dissect // nhoff point to IP header
->             -->  case htons(ETH_P_8021Q)
->             // skb_vlan_tag_present is false, so
->               vlan = __skb_header_pointer(skb, nhoff, sizeof(_vlan), //vlan point to ip header wrongly
-I see, so bonding device propagates hw VLAN support from the slaves.
-If one of the slaves doesn't have it, its disabled for the bond device.
-Any idea why we do that? Why not pass skbs to the slave devices
-instead and let them handle the hw/sw vlan implementation?
-I see the propagation was added in 278339a42a1b 10 years ago and
-I don't see any rationale in the commit description.
-Somebody with more context should probably chime in :-)
+From: Wei Wang <weiwan@google.com>
+
+Ipv6 route lookup code always grabs refcnt on the dst for the caller.
+But for certain cases, grabbing refcnt is not always necessary if the
+call path is rcu protected and the caller does not cache the dst.
+Another issue in the route lookup logic is:
+When there are multiple custom rules, we have to do the lookup into
+each table associated to each rule individually. And when we can't
+find the route in one table, we grab and release refcnt on
+net->ipv6.ip6_null_entry before going to the next table.
+This operation is completely redundant, and causes false issue because
+net->ipv6.ip6_null_entry is a shared object.
+
+This patch set introduces a new flag RT6_LOOKUP_F_DST_NOREF for route
+lookup callers to set, to avoid any manipulation on the dst refcnt. And
+it converts the major input and output path to use it.
+
+The performance gain is noticable.
+I ran synflood tests between 2 hosts under the same switch. Both hosts
+have 20G mlx NIC, and 8 tx/rx queues.
+Sender sends pure SYN flood with random src IPs and ports using trafgen.
+Receiver has a simple TCP listener on the target port.
+Both hosts have multiple custom rules:
+- For incoming packets, only local table is traversed.
+- For outgoing packets, 3 tables are traversed to find the route.
+The packet processing rate on the receiver is as follows:
+- Before the fix: 3.78Mpps
+- After the fix:  5.50Mpps
+
+v2->v3:
+- Handled fib6_rule_lookup() when CONFIG_IPV6_MULTIPLE_TABLES is not
+  configured in patch 03 (suggested by David Ahern)
+- Removed the renaming of l3mdev_link_scope_lookup() in patch 05
+  (suggested by David Ahern)
+- Moved definition of ip6_route_output_flags() from an inline function
+  in /net/ipv6/route.c to net/ipv6/route.c in order to address kbuild
+  error in patch 05
+
+v1->v2:
+- Added a helper ip6_rt_put_flags() in patch 3 suggested by David Miller
+
+
+Wei Wang (5):
+  ipv6: introduce RT6_LOOKUP_F_DST_NOREF flag in ip6_pol_route()
+  ipv6: initialize rt6->rt6i_uncached in all pre-allocated dst entries
+  ipv6: honor RT6_LOOKUP_F_DST_NOREF in rule lookup logic
+  ipv6: convert rx data path to not take refcnt on dst
+  ipv6: convert major tx path to use RT6_LOOKUP_F_DST_NOREF
+
+ drivers/net/vrf.c       |   5 +-
+ include/net/ip6_route.h |  15 ++++++
+ net/ipv6/fib6_rules.c   |  12 +++--
+ net/ipv6/ip6_fib.c      |   5 +-
+ net/ipv6/route.c        | 112 +++++++++++++++++++++++-----------------
+ net/l3mdev/l3mdev.c     |   7 ++-
+ 6 files changed, 95 insertions(+), 61 deletions(-)
+
+-- 
+2.22.0.410.gd8fdbe21b5-goog
+
