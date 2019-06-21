@@ -2,79 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BFE094DFD6
-	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 06:51:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D6E84DFD8
+	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 06:56:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725975AbfFUEvB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jun 2019 00:51:01 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:36690 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725832AbfFUEvA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 00:51:00 -0400
-Received: by mail-qk1-f195.google.com with SMTP id g18so3574388qkl.3;
-        Thu, 20 Jun 2019 21:51:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5VvnORda2iqkRVhpfLhDked+KLobLp7Na4ZF1KkXC1M=;
-        b=AJNrsTdJqrIRa55j4xh/JPVC7tydQoIHhDWlLtIZ7x7SK7yCSV2y3mJDLZlWvYREol
-         gB6tPU5SiT/kM7Oz+FyxGUSqtWdQB5PTIzSntTLNz9M5BOZ/6N/acTtG1ez1AfxpQ7Wm
-         SWxbWhMCsUEjWkXCx5MaaV/4nR93RdpdYPZnxHQUblHQJTgeL/TTHQP8ZVjnKA38JDs+
-         UIVv5yNEDZE5rRyspsmrHR6y/LJBp/6zx9XS48RZd0OoRymvlh0hXuEyjhvOQwWJrkFe
-         U+vk4dzxK7Ho4uG4BOFDhbXvSA5OHqM2/GvwbjBYpcI8cbzanZjtJ+aCtW7GnbwzEcUZ
-         iosw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5VvnORda2iqkRVhpfLhDked+KLobLp7Na4ZF1KkXC1M=;
-        b=pdc+DdNxvGFuhEN1rBbSiizOU3eqomb1ZmuJLb4w+iTRNhWfKkmZlmRqbsav50hhex
-         /l7qUgGwZHzt6brABemr3eO2MmT3Qqfeeryvly3kPoxqFXzB3B21MPCcYI168LcTVO8Y
-         VPWyHGeRb1N89ozkaWdG6j6ENiv3QjmIDF8LKuTOEUK9RZBQG01+4R2+bT2S7iKoMh9S
-         HacfPOsEklu0l81nWSVRL0ocCGDN7m2uuk1T/920WLp3CTwU1M6UgymY2cx3+eCtnD53
-         w5qq2Tehadzcx1aMzH/1WwqHGfCFYEcc7Av2SHS5C+yDlfSxyQ2+5wJiJDRFozKTwdOC
-         4hZg==
-X-Gm-Message-State: APjAAAWaAYefud0EsWzNFRl+1DUlqwWh8UMBR2odI+yx56kjhQDvD8hE
-        2mdCjy52o1pHbFjEitDXlCpi8UykeGWoojlAEI7fBqfVZdM=
-X-Google-Smtp-Source: APXvYqxGsmIviPGcxtIqZ+0nFPSOAKg+2xr8nk8cYa9m109icqq3pHietRkMK4Ur0Mw56yAGUcAu7AJiAWo2CATogzo=
-X-Received: by 2002:ae9:d803:: with SMTP id u3mr4033947qkf.437.1561092659505;
- Thu, 20 Jun 2019 21:50:59 -0700 (PDT)
+        id S1725958AbfFUE4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jun 2019 00:56:03 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:13878 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725906AbfFUE4C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 00:56:02 -0400
+Received: from pps.filterd (m0044008.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5L4nCCf015953
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 21:56:01 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=5Yn0ZDnb74de51fMxv2vGlGQO3iVays1fhgT8OicZog=;
+ b=XBFyQCx9VILxUmd3nvTFfVwc+6fDMqwbEVi2vLNwwSfmwH+YrpfcGElmf9Ki7u602+B/
+ oqvcGuIAJsRxvAnQoEQZbCM8aF5xxy9MDsfYqSlzpln1bVuA3zZlyeOl0nNlpg1ksHLf
+ 4jD++P9QB9/NFomGESiDX6X7q7ZhiFOkMls= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2t8f1n1wrn-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 21:56:01 -0700
+Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Thu, 20 Jun 2019 21:55:59 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id 017F2861776; Thu, 20 Jun 2019 21:55:57 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <andrii.nakryiko@gmail.com>, <ast@fb.com>, <daniel@iogearbox.net>,
+        <sdf@fomichev.me>, <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <kernel-team@fb.com>
+CC:     Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH v2 bpf-next 0/7] libbpf: add tracing attach APIs
+Date:   Thu, 20 Jun 2019 21:55:48 -0700
+Message-ID: <20190621045555.4152743-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-References: <20190620230951.3155955-1-andriin@fb.com> <20190620230951.3155955-6-andriin@fb.com>
- <20190621000819.GD1383@mini-arch>
-In-Reply-To: <20190621000819.GD1383@mini-arch>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 20 Jun 2019 21:50:48 -0700
-Message-ID: <CAEf4Bzakcj122-ZnQn3M3bjr8nhQPGXPw8wTYvA018K7Afoh6A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 5/7] selftests/bpf: switch test to new
- attach_perf_event API
-To:     Stanislav Fomichev <sdf@fomichev.me>
-Cc:     Andrii Nakryiko <andriin@fb.com>, Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-21_04:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=694 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906210041
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 20, 2019 at 5:08 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
->
-> On 06/20, Andrii Nakryiko wrote:
-> > Use new bpf_program__attach_perf_event() in test previously relying on
-> > direct ioctl manipulations.
-> Maybe use new detach/disable routine at the end of the
-> test_stacktrace_build_id_nmi as well?
->
+This patchset adds the following APIs to allow attaching BPF programs to
+tracing entities:
+- bpf_program__attach_perf_event for attaching to any opened perf event FD,
+  allowing users full control;
+- bpf_program__attach_kprobe for attaching to kernel probes (both entry and
+  return probes);
+- bpf_program__attach_uprobe for attaching to user probes (both entry/return);
+- bpf_program__attach_tracepoint for attaching to kernel tracepoints;
+- bpf_program__attach_raw_tracepoint for attaching to raw kernel tracepoint
+  (wrapper around bpf_raw_tracepoint_open);
 
-yeah, totally, missed that.
+This set of APIs makes libbpf more useful for tracing applications.
 
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
-> >  .../bpf/prog_tests/stacktrace_build_id_nmi.c     | 16 ++++++++--------
-> >  1 file changed, 8 insertions(+), 8 deletions(-)
-> >
+Pre-patch #1 makes internal libbpf_strerror_r helper function work w/ negative
+error codes, lifting the burder off callers to keep track of error sign.
+Patch #2 adds attach_perf_event, which is the base for all other APIs.
+Patch #3 adds kprobe/uprobe APIs.
+Patch #4 adds tracepoint/raw_tracepoint APIs.
+Patch #5 converts one existing test to use attach_perf_event.
+Patch #6 adds new kprobe/uprobe tests.
+Patch #7 converts all the selftests currently using tracepoint to new APIs.
 
-<snip>
+v1->v2:
+- preserve errno before close() call (Stanislav);
+- use libbpf_perf_event_disable_and_close in selftest (Stanislav);
+- remove unnecessary memset (Stanislav);
+
+Andrii Nakryiko (7):
+  libbpf: make libbpf_strerror_r agnostic to sign of error
+  libbpf: add ability to attach/detach BPF to perf event
+  libbpf: add kprobe/uprobe attach API
+  libbpf: add tracepoint/raw tracepoint attach API
+  selftests/bpf: switch test to new attach_perf_event API
+  selftests/bpf: add kprobe/uprobe selftests
+  selftests/bpf: convert existing tracepoint tests to new APIs
+
+ tools/lib/bpf/libbpf.c                        | 346 ++++++++++++++++++
+ tools/lib/bpf/libbpf.h                        |  17 +
+ tools/lib/bpf/libbpf.map                      |   6 +
+ tools/lib/bpf/str_error.c                     |   2 +-
+ .../selftests/bpf/prog_tests/attach_probe.c   | 151 ++++++++
+ .../bpf/prog_tests/stacktrace_build_id.c      |  49 +--
+ .../bpf/prog_tests/stacktrace_build_id_nmi.c  |  24 +-
+ .../selftests/bpf/prog_tests/stacktrace_map.c |  42 +--
+ .../bpf/prog_tests/stacktrace_map_raw_tp.c    |  14 +-
+ .../bpf/prog_tests/task_fd_query_rawtp.c      |  10 +-
+ .../bpf/prog_tests/task_fd_query_tp.c         |  51 +--
+ .../bpf/prog_tests/tp_attach_query.c          |  56 +--
+ .../selftests/bpf/progs/test_attach_probe.c   |  55 +++
+ 13 files changed, 651 insertions(+), 172 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/attach_probe.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_attach_probe.c
+
+-- 
+2.17.1
+
