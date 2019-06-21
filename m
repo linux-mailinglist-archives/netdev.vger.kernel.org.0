@@ -2,66 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 22A1C4EBF0
-	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 17:25:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D44964EC05
+	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 17:30:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726067AbfFUPZy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jun 2019 11:25:54 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:35790 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726002AbfFUPZy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Jun 2019 11:25:54 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 4CD4D3082B67;
-        Fri, 21 Jun 2019 15:25:54 +0000 (UTC)
-Received: from T460ec.redhat.com (ovpn-116-108.ams2.redhat.com [10.36.116.108])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AA8756090E;
-        Fri, 21 Jun 2019 15:25:50 +0000 (UTC)
-From:   Eelco Chaudron <echaudro@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com
-Subject: [PATCH bpf-next] libbpf: add xsk_ring_prod__free() function
-Date:   Fri, 21 Jun 2019 17:25:48 +0200
-Message-Id: <49d3ddb42f531618584f60c740d9469e5406e114.1561130674.git.echaudro@redhat.com>
+        id S1726155AbfFUPaF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jun 2019 11:30:05 -0400
+Received: from relay3-d.mail.gandi.net ([217.70.183.195]:48095 "EHLO
+        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726045AbfFUPaF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 11:30:05 -0400
+X-Originating-IP: 90.88.16.156
+Received: from localhost (aaubervilliers-681-1-41-156.w90-88.abo.wanadoo.fr [90.88.16.156])
+        (Authenticated sender: antoine.tenart@bootlin.com)
+        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id D4C076000D;
+        Fri, 21 Jun 2019 15:30:01 +0000 (UTC)
+From:   Antoine Tenart <antoine.tenart@bootlin.com>
+To:     davem@davemloft.net, nicolas.ferre@microchip.com
+Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ludovic.desroches@microchip.com, alexandre.belloni@bootlin.com
+Subject: [PATCH net] net: macb: do not copy the mac address if NULL
+Date:   Fri, 21 Jun 2019 17:26:35 +0200
+Message-Id: <20190621152635.29689-1-antoine.tenart@bootlin.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Fri, 21 Jun 2019 15:25:54 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When an AF_XDP application received X packets, it does not mean X
-frames can be stuffed into the producer ring. To make it easier for
-AF_XDP applications this API allows them to check how many frames can
-be added into the ring.
+This patch fixes the MAC address setup in the probe. The MAC address
+retrieved using of_get_mac_address was checked for not containing an
+error, but it may also be NULL which wasn't tested. Fix it by replacing
+IS_ERR with IS_ERR_OR_NULL.
 
-Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+Fixes: 541ddc66d665 ("net: macb: support of_get_mac_address new ERR_PTR error")
+Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
 ---
- tools/lib/bpf/xsk.h | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/ethernet/cadence/macb_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
-index 82ea71a0f3ec..86f3d485e957 100644
---- a/tools/lib/bpf/xsk.h
-+++ b/tools/lib/bpf/xsk.h
-@@ -95,6 +95,12 @@ static inline __u32 xsk_prod_nb_free(struct xsk_ring_prod *r, __u32 nb)
- 	return r->cached_cons - r->cached_prod;
- }
- 
-+static inline __u32 xsk_ring_prod__free(struct xsk_ring_prod *r)
-+{
-+	r->cached_cons = *r->consumer + r->size;
-+	return r->cached_cons - r->cached_prod;
-+}
-+
- static inline __u32 xsk_cons_nb_avail(struct xsk_ring_cons *r, __u32 nb)
- {
- 	__u32 entries = r->cached_prod - r->cached_cons;
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 1241a2a73438..1cd1f2c36d6f 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -4304,7 +4304,7 @@ static int macb_probe(struct platform_device *pdev)
+ 	if (PTR_ERR(mac) == -EPROBE_DEFER) {
+ 		err = -EPROBE_DEFER;
+ 		goto err_out_free_netdev;
+-	} else if (!IS_ERR(mac)) {
++	} else if (!IS_ERR_OR_NULL(mac)) {
+ 		ether_addr_copy(bp->dev->dev_addr, mac);
+ 	} else {
+ 		macb_get_hwaddr(bp);
 -- 
-2.20.1
+2.21.0
 
