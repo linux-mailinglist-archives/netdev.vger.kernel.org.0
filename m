@@ -2,189 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 06DDA4EEC8
-	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 20:32:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A59994EECA
+	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 20:33:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726311AbfFUSb6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jun 2019 14:31:58 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:47034 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726032AbfFUSb6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 14:31:58 -0400
-Received: by mail-ed1-f65.google.com with SMTP id d4so11302424edr.13
-        for <netdev@vger.kernel.org>; Fri, 21 Jun 2019 11:31:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=y0vsw3aNxn4er0Ip3Ik7DqA5KY7Xeb7igVONoiy3Hzk=;
-        b=vZ0JMXRn7Z1gKLvWj/vwnLn7dSWaRwCeVom0sBQ7PXS8BXweci6I1ecbwo1vOHHbl7
-         /p2ZtbOXG6gICJfd5+y+axNB0pRwoh4g/OOwfTIQbWclkdo+oRfRtRPbr4XlCs8nmZgf
-         h3HXqwETw3eYVDbCKv/xm00qejKrGBtTy5KY+SeBiitVjIkpONgwVYIURmUyUzPqvwm6
-         t1aVOYOCy/Ft6sAqg2nDkbghi7fvbf/hGMFbss0i1lxyKOekPfT6l3A1VM3VNcl0OdUY
-         aghXFOd+DJq+O7imhnK50cEZTId+EZGTmosmf8m8rEJiByrTvit+VqoUwipJ0CyLepfj
-         /1Cg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=y0vsw3aNxn4er0Ip3Ik7DqA5KY7Xeb7igVONoiy3Hzk=;
-        b=QEXeCowLPOEczMPMv0JewJqDjKxfkFX8ivqkUD/fP3pIUPCEAkKD3fqqnktf+kCzYU
-         jwrPwMwtAC2Vq89rbexulSm75VclOqt8nMEjSQF8SWbDBk4LQmrhGKPpTuHYW2BOFzGJ
-         aLTd2QU42Aumi5yWES20AhyvdYFY5GOZIa4++GrETBRYfjnwPmFc3r21mtFafEULfVmh
-         4oC6Up4H5U4d0GJFxWn+b/N3Q0x6eA+gosd6XgLcSXlUQg/SnKfUgwotVlyeHmWKynw7
-         NSMjODRNSGPJVmPH+o03nd92COOHSoHhI5jfMatlA6LnG1CXODOBknTQ+B36oYwQOYtY
-         Cdzw==
-X-Gm-Message-State: APjAAAW779udWAiVcpSK7hSSmV4AptpXy4mskS+tN6qFI7IH3xmkHEkL
-        tO+izDrRl6qTI1obAAZNFJouyaq834nd4XxobDs=
-X-Google-Smtp-Source: APXvYqzERfPiNd0wD4hDi/mrWQrxnRntwrUJfOTzHhMh5vfQd2STzWGMIUh+sAdKXL02IFHJo0ZxfKoWNOo3Kff/On4=
-X-Received: by 2002:a17:906:2acf:: with SMTP id m15mr117984967eje.31.1561141915399;
- Fri, 21 Jun 2019 11:31:55 -0700 (PDT)
+        id S1726395AbfFUSdc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jun 2019 14:33:32 -0400
+Received: from smtprelay0111.hostedemail.com ([216.40.44.111]:43146 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726032AbfFUSdc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 14:33:32 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay03.hostedemail.com (Postfix) with ESMTP id 3DF02837F24D;
+        Fri, 21 Jun 2019 18:33:30 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::::::::,RULES_HIT:41:355:379:599:800:960:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:1978:1981:2194:2199:2393:2553:2559:2562:2736:2828:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3870:3871:3872:3873:3874:4321:5007:6119:7903:9010:9108:10004:10400:10471:10848:11232:11658:11914:12050:12257:12297:12663:12740:12760:12895:13069:13071:13255:13311:13357:13439:14096:14097:14180:14181:14659:14721:21060:21080:21451:21627:30054:30060:30070:30090:30091,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.8.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:30,LUA_SUMMARY:none
+X-HE-Tag: value78_13e1d23df325
+X-Filterd-Recvd-Size: 3044
+Received: from XPS-9350.home (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
+        (Authenticated sender: joe@perches.com)
+        by omf03.hostedemail.com (Postfix) with ESMTPA;
+        Fri, 21 Jun 2019 18:33:28 +0000 (UTC)
+Message-ID: <838b8e84523151418ab8cda4abdbb114ce24a497.camel@perches.com>
+Subject: Re: [PATCH 0/3] net: ethernet: atheros: atlx: Use PCI generic
+ definitions instead of private duplicates
+From:   Joe Perches <joe@perches.com>
+To:     Bjorn Helgaas <bhelgaas@google.com>
+Cc:     Puranjay Mohan <puranjay12@gmail.com>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Bjorn Helgaas <bjorn@helgaas.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Linux PCI <linux-pci@vger.kernel.org>
+Date:   Fri, 21 Jun 2019 11:33:27 -0700
+In-Reply-To: <CAErSpo6iRVWU-yL5CRF_GEY7CWg5iV=Jw0BrdNV4h3Jvh5AuAw@mail.gmail.com>
+References: <20190621163921.26188-1-puranjay12@gmail.com>
+         <CAErSpo5TMPokae7BMY8ZcOXtW=GeGsWXX_bqS8SrZnh0pEQYxw@mail.gmail.com>
+         <698d3e3614ae903ae9582547d64c6a9846629e57.camel@perches.com>
+         <CAErSpo6iRVWU-yL5CRF_GEY7CWg5iV=Jw0BrdNV4h3Jvh5AuAw@mail.gmail.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
 MIME-Version: 1.0
-References: <20190619202533.4856-1-nhorman@tuxdriver.com> <CA+FuTSe=kJSSvcYwCE9-omRF5Snd9AyesZac61PYyAHDStPt=A@mail.gmail.com>
- <20190620142354.GB18890@hmswarspite.think-freely.org> <CAF=yD-KFZBS7PpvvBkHS5jQdjRr4tWpeHmb7=9QPmvD-RTcpYw@mail.gmail.com>
- <20190621164156.GB21895@hmswarspite.think-freely.org>
-In-Reply-To: <20190621164156.GB21895@hmswarspite.think-freely.org>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 21 Jun 2019 14:31:17 -0400
-Message-ID: <CAF=yD-+MA398hTu7qCxfRhAMYrpeYp-+znc7bKNbupLYRRv5ug@mail.gmail.com>
-Subject: Re: [PATCH net] af_packet: Block execution of tasks waiting for
- transmit to complete in AF_PACKET
-To:     Neil Horman <nhorman@tuxdriver.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Matteo Croce <mcroce@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 21, 2019 at 12:42 PM Neil Horman <nhorman@tuxdriver.com> wrote:
->
-> On Thu, Jun 20, 2019 at 11:16:13AM -0400, Willem de Bruijn wrote:
-> > On Thu, Jun 20, 2019 at 10:24 AM Neil Horman <nhorman@tuxdriver.com> wrote:
-> > >
-> > > On Thu, Jun 20, 2019 at 09:41:30AM -0400, Willem de Bruijn wrote:
-> > > > On Wed, Jun 19, 2019 at 4:26 PM Neil Horman <nhorman@tuxdriver.com> wrote:
-> > > > >
-> > > > > When an application is run that:
-> > > > > a) Sets its scheduler to be SCHED_FIFO
-> > > > > and
-> > > > > b) Opens a memory mapped AF_PACKET socket, and sends frames with the
-> > > > > MSG_DONTWAIT flag cleared, its possible for the application to hang
-> > > > > forever in the kernel.  This occurs because when waiting, the code in
-> > > > > tpacket_snd calls schedule, which under normal circumstances allows
-> > > > > other tasks to run, including ksoftirqd, which in some cases is
-> > > > > responsible for freeing the transmitted skb (which in AF_PACKET calls a
-> > > > > destructor that flips the status bit of the transmitted frame back to
-> > > > > available, allowing the transmitting task to complete).
-> > > > >
-> > > > > However, when the calling application is SCHED_FIFO, its priority is
-> > > > > such that the schedule call immediately places the task back on the cpu,
-> > > > > preventing ksoftirqd from freeing the skb, which in turn prevents the
-> > > > > transmitting task from detecting that the transmission is complete.
-> > > > >
-> > > > > We can fix this by converting the schedule call to a completion
-> > > > > mechanism.  By using a completion queue, we force the calling task, when
-> > > > > it detects there are no more frames to send, to schedule itself off the
-> > > > > cpu until such time as the last transmitted skb is freed, allowing
-> > > > > forward progress to be made.
-> > > > >
-> > > > > Tested by myself and the reporter, with good results
-> > > > >
-> > > > > Appies to the net tree
-> > > > >
-> > > > > Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
-> > > > > Reported-by: Matteo Croce <mcroce@redhat.com>
-> > > > > CC: "David S. Miller" <davem@davemloft.net>
-> > > > > ---
-> > > >
-> > > > This is a complex change for a narrow configuration. Isn't a
-> > > > SCHED_FIFO process preempting ksoftirqd a potential problem for other
-> > > > networking workloads as well? And the right configuration to always
-> > > > increase ksoftirqd priority when increasing another process's
-> > > > priority? Also, even when ksoftirqd kicks in, isn't some progress
-> > > > still made on the local_bh_enable reached from schedule()?
-> > > >
-> > >
-> > > A few questions here to answer:
-> >
-> > Thanks for the detailed explanation.
-> >
-> > > Regarding other protocols having this problem, thats not the case, because non
-> > > packet sockets honor the SK_SNDTIMEO option here (i.e. they sleep for a period
-> > > of time specified by the SNDTIMEO option if MSG_DONTWAIT isn't set.  We could
-> > > certainly do that, but the current implementation doesn't (opting instead to
-> > > wait indefinately until the respective packet(s) have transmitted or errored
-> > > out), and I wanted to maintain that behavior.  If there is consensus that packet
-> > > sockets should honor SNDTIMEO, then I can certainly do that.
-> > >
-> > > As for progress made by calling local_bh_enable, My read of the code doesn't
-> > > have the scheduler calling local_bh_enable at all.  Instead schedule uses
-> > > preempt_disable/preempt_enable_no_resched() to gain exlcusive access to the cpu,
-> > > which ignores pending softirqs on re-enablement.
-> >
-> > Ah, I'm mistaken there, then.
-> >
-> > >  Perhaps that needs to change,
-> > > but I'm averse to making scheduler changes for this (the aforementioned concern
-> > > about complex changes for a narrow use case)
-> > >
-> > > Regarding raising the priority of ksoftirqd, that could be a solution, but the
-> > > priority would need to be raised to a high priority SCHED_FIFO parameter, and
-> > > that gets back to making complex changes for a narrow problem domain
-> > >
-> > > As for the comlexity of the of the solution, I think this is, given your
-> > > comments the least complex and intrusive change to solve the given problem.
-> >
-> > Could it be simpler to ensure do_softirq() gets run here? That would
-> > allow progress for this case.
-> >
-> > >  We
-> > > need to find a way to force the calling task off the cpu while the asynchronous
-> > > operations in the transmit path complete, and we can do that this way, or by
-> > > honoring SK_SNDTIMEO.  I'm fine with doing the latter, but I didn't want to
-> > > alter the current protocol behavior without consensus on that.
-> >
-> > In general SCHED_FIFO is dangerous with regard to stalling other
-> > progress, incl. ksoftirqd. But it does appear that this packet socket
-> > case is special inside networking in calling schedule() directly here.
-> >
-> > If converting that, should it convert to logic more akin to other
-> > sockets, like sock_wait_for_wmem? I haven't had a chance to read up on
-> > the pros and cons of completion here yet, sorry. Didn't want to delay
-> > responding until after I get a chance.
-> >
-> So, I started looking at implementing SOCK_SNDTIMEO for this patch, and
-> something occured to me....We still need a mechanism to block in tpacket_snd.
-> That is to say, other protocol use SK_SNDTIMEO to wait for socket memory to
-> become available, and that requirement doesn't exist for memory mapped sockets
-> in AF_PACKET (which tpacket_snd implements the kernel side for).  We have memory
-> mapped frame buffers, which we marshall with an otherwise empty skb, and just
-> send that (i.e. no waiting on socket memory, we just product an error if we
-> don't have enough ram to allocate an sk_buff).  Given that, we only ever need to
-> wait for a frame to complete transmission, or get freed in an error path further
-> down the stack.  This probably explains why SK_SNDTIMEO doesn't exist for
-> AF_PACKET.
+On Fri, 2019-06-21 at 13:12 -0500, Bjorn Helgaas wrote:
+> On Fri, Jun 21, 2019 at 12:27 PM Joe Perches <joe@perches.com> wrote:
+[]
+> > Subsystem specific local PCI #defines without generic
+> > naming is poor style and makes treewide grep and
+> > refactoring much more difficult.
+> 
+> Don't worry, we have the same objectives.  I totally agree that local
+> #defines are a bad thing, which is why I proposed this project in the
+> first place.
 
-SNDTIMEO behavior would still be useful: to wait for frame slot to
-become available, but only up to a timeout?
+Hi again Bjorn.
 
-To be clear, adding that is not a prerequisite for fixing this
-specific issue, of course. It would just be nice if the one happens to
-be fixed by adding the other.
+I didn't know that was your idea.  Good idea.
 
-My main question is wrt the implementation details of struct
-completion. Without dynamic memory allocation,
-sock_wait_for_wmem/sk_stream_write_space obviously does not make
-sense. But should we still use sk_wq and more importantly does this
-need the same wait semantics (TASK_INTERRUPTIBLE) and does struct
-completion give those?
+> I'm just saying that this is a "first-patch" sort of learning project
+> and I think it'll avoid some list spamming and discouragement if we
+> can figure out the scope and shake out some of the teething problems
+> ahead of time.  I don't want to end up with multiple versions of
+> dozens of little 2-3 patch series posted every week or two.
 
->
-> Given that, is it worth implementing (as it will just further complicate this
-> patch, for no additional value), or can we move forward with it as it is?
->
-> Neil
->
+Great, that's sensible.
+
+> I'd rather be able to deal with a whole block of them at one time.
+
+Also very sensible.
+
+> > 2: Show that you compiled the object files and verified
+> >    where possible that there are no object file changes.
+> 
+> Do you have any pointers for the best way to do this?  Is it as simple
+> as comparing output of "objdump -d"?
+
+Generically, yes.
+
+I have a little script that does the equivalent of:
+
+<git reset>
+make <foo.o>
+mv <foo.o> <foo.o>.old
+patch -P1 < <foo_patch>
+make <foo.o>
+mv <foo.o> <foo.o>.new
+diff -urN <(objdump -d <foo.o>.old) <(objdump -d <foo.o>.new)
+
+But it's not foolproof as gcc does not guarantee
+compilation repeatability.
+
+And some subsystems Makefiles do not allow per-file
+compilation.
+
