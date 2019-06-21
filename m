@@ -2,221 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 372CC4F0AB
-	for <lists+netdev@lfdr.de>; Sat, 22 Jun 2019 00:13:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D66404F0B5
+	for <lists+netdev@lfdr.de>; Sat, 22 Jun 2019 00:19:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726243AbfFUWNf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jun 2019 18:13:35 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:33809 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726031AbfFUWNf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 18:13:35 -0400
-Received: by mail-pf1-f193.google.com with SMTP id c85so4277436pfc.1
-        for <netdev@vger.kernel.org>; Fri, 21 Jun 2019 15:13:34 -0700 (PDT)
+        id S1726058AbfFUWT0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jun 2019 18:19:26 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:36152 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726031AbfFUWTZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 18:19:25 -0400
+Received: by mail-io1-f68.google.com with SMTP id h6so192913ioh.3
+        for <netdev@vger.kernel.org>; Fri, 21 Jun 2019 15:19:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
+        d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=4wGy/EHTtgR+nb6HgklMzpGmIfgU3V/xGQjb3MbOQ2U=;
-        b=EJPtGQiJHQPEUhCdzbPiH7MTsYxP1RD/0RzpgOjTE2v0GMEWRsp9KM7M3C/h5rQzkQ
-         tsmbWiI4EQt6Q26JsWZV3k99VvP6KAVxvJnU12MikgX60Ov+KniDyt61MxyofoH6KLZW
-         OVbwXCxmCbbM7gvKhlpLXGF2d5nP7UtXHZA8hOARYMzmtX2hG6x1dq1MHn2sXYS8KTAd
-         ox+xY5TWUMEurVj7aKGOvecRzL9Ad5mMsRa2Zb0+43ZrKJQ14aJ769YvN0EL6VvS9xiT
-         kj51K7QGHMilyHFdO+FQV4wzvLiNlIaUUnwSteG+3osbH3IkvYUFRx/EdjXhA5yN5KJW
-         QvBQ==
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=GUIYc3BMgWTMshibkat/P6qVD73AEtGAiNbNZGy+94A=;
+        b=hUH8lXLIDuRbx+H0zOsupgKeLPpRhairMWi/eIU7M2OS0kktnkva2P2PsETD66Jxu1
+         ZnWk1myyNeq5SIwl3wFYDmTwFXtGM167MbxDM9gnLmmwuB+ab/yRl/9kz7mG7ou2qLWj
+         WhIIDQvw+sYujRuqvpd50E77357I2SOAvPY4UqSf5jdjtFdZJ7BKpRiBUHqJzIj6L8d/
+         7g4nSdqMKAf0rAzGpbpfJ4szu7UA1s7duqdMhfuPVN6CXm3xdmlmaw1zfPrHGe0EChh2
+         mhPXq6WEmjgZPySEPXCdS4U3yRiG4jYaPKaoR5eSe00jMAUq4zZ6lpuCuux9Mlj/Zezx
+         Y9EA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=4wGy/EHTtgR+nb6HgklMzpGmIfgU3V/xGQjb3MbOQ2U=;
-        b=atk5vh1GuoMq+5IcN4tLHVZ6Tbvzj/ytoxZLyNg5jHwO9CZ9G6DE79dZM0Jughspxi
-         cIPq9NYFyuG/ntJ5k2mX4ILIVJnkoG3bZ9PtaD0sfPGtHiimoyx9+iWPxGXAqs/izBjI
-         1JBccx4OB5q2ebfa58hwmwmn2dJ+oOXhdpwF8q4WWHnQlNGQoX2Sj2VNvzEaFHu6dqmm
-         CykdA9KHXWV1DBpaP8D68e/OEsIqZauiWHpIjd38ZBbMY1HVDPqOT8ToVqiruq9lBBkK
-         +2rbQZYc/3a1vh3DQ/Jb0U6ihdKGp/OPMpnghifvoHmPvV1/BUlsj8ecW6Vj3MgB1llx
-         4wxA==
-X-Gm-Message-State: APjAAAXNjQLVmEnR4Gvwn3Rb0X/rGU/b48kkIJQ0+8ktLC3aYMO87Ner
-        qKKfs4NNf9uPkxNkb9BFkeOQgYvLXYA=
-X-Google-Smtp-Source: APXvYqxGseV+ahhksRjXHHshlvXOqI3cr2k0QmjAhajRQvuOVfXk1DAh4GxXvIhaLcfOPFL2Hzh6OA==
-X-Received: by 2002:a17:90a:b011:: with SMTP id x17mr9512062pjq.113.1561155213823;
-        Fri, 21 Jun 2019 15:13:33 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id f10sm3820369pfd.151.2019.06.21.15.13.32
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=GUIYc3BMgWTMshibkat/P6qVD73AEtGAiNbNZGy+94A=;
+        b=fqjTYWOewESLlieqMeBxijp3Wb4K79BhUA6ziWRI85Pf8C82sX9lQEAn7Xh5zb9Zm2
+         PYPZgmf0tzCjEsUy8gAgpQAIiwKj5CHw2WZiUy15Z1uQKVUOWHYbGxCbQxX91GzBD+uM
+         ohverYDtgh4gQt5MXf2kCCWe5WGSeAnxunNqfQHZwEztMB8G/PtnOswWvxnMt8wHVxkA
+         Vgh29z18lG8jtj3BO6oYAzydnupCEEHdnC3PD3/0iNdsjvcglfcHB/v8nfJR3Ke2FNWQ
+         1QKkq139wRGiLQelG24eUQkBq3dI3PKI2T4TCQr3THNpm8SjKG+i8Eq+ORtmTG+bXAB1
+         LSdg==
+X-Gm-Message-State: APjAAAX4YLOjLOVik9eAdFCDHrR3O51bwyLGVfuiYEn+FptjaOQipdsS
+        Z3hH51YFk7AIDqDN0+6sB73devUl
+X-Google-Smtp-Source: APXvYqxJylcNQFRiq5Pn9FX86/PMYRKc+X9Q10tZTCJCSdtR4HGshx2Iakk4vV/ONOw9ZDnQ0W1kFQ==
+X-Received: by 2002:a02:ac09:: with SMTP id a9mr28752202jao.48.1561155564602;
+        Fri, 21 Jun 2019 15:19:24 -0700 (PDT)
+Received: from ?IPv6:2601:284:8200:5cfb:563:6fa4:e349:a2f8? ([2601:284:8200:5cfb:563:6fa4:e349:a2f8])
+        by smtp.googlemail.com with ESMTPSA id l11sm4910408ioj.32.2019.06.21.15.19.22
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 21 Jun 2019 15:13:33 -0700 (PDT)
-Subject: Re: [PATCH net-next 01/18] ionic: Add basic framework for IONIC
- Network device driver
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org
-References: <20190620202424.23215-1-snelson@pensando.io>
- <20190620202424.23215-2-snelson@pensando.io> <20190620212447.GJ31306@lunn.ch>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <7f1fcda2-dce4-feb6-ec3a-c54bfb691e5d@pensando.io>
-Date:   Fri, 21 Jun 2019 15:13:31 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.7.0
+        Fri, 21 Jun 2019 15:19:23 -0700 (PDT)
+Subject: Re: [PATCH net-next v7 04/11] ipv4: Dump route exceptions if
+ requested
+To:     Stefano Brivio <sbrivio@redhat.com>,
+        David Miller <davem@davemloft.net>
+Cc:     Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        netdev@vger.kernel.org
+References: <cover.1561131177.git.sbrivio@redhat.com>
+ <8d3b68cd37fb5fddc470904cdd6793fcf480c6c1.1561131177.git.sbrivio@redhat.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <542d653a-37c8-66b3-df34-71a0e0273f8b@gmail.com>
+Date:   Fri, 21 Jun 2019 16:19:21 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-In-Reply-To: <20190620212447.GJ31306@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <8d3b68cd37fb5fddc470904cdd6793fcf480c6c1.1561131177.git.sbrivio@redhat.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/20/19 2:24 PM, Andrew Lunn wrote:
+On 6/21/19 9:45 AM, Stefano Brivio wrote:
+> Since commit 4895c771c7f0 ("ipv4: Add FIB nexthop exceptions."), cached
+> exception routes are stored as a separate entity, so they are not dumped
+> on a FIB dump, even if the RTM_F_CLONED flag is passed.
+> 
+> This implies that the command 'ip route list cache' doesn't return any
+> result anymore.
+> 
+> If the RTM_F_CLONED is passed, and strict checking requested, retrieve
+> nexthop exception routes and dump them. If no strict checking is
+> requested, filtering can't be performed consistently: dump everything in
+> that case.
+> 
+> With this, we need to add an argument to the netlink callback in order to
+> track how many entries were already dumped for the last leaf included in
+> a partial netlink dump.
+> 
+> A single additional argument is sufficient, even if we traverse logically
+> nested structures (nexthop objects, hash table buckets, bucket chains): it
+> doesn't matter if we stop in the middle of any of those, because they are
+> always traversed the same way. As an example, s_i values in [], s_fa
+> values in ():
+> 
+>   node (fa) #1 [1]
+>     nexthop #1
+>     bucket #1 -> #0 in chain (1)
+>     bucket #2 -> #0 in chain (2) -> #1 in chain (3) -> #2 in chain (4)
+>     bucket #3 -> #0 in chain (5) -> #1 in chain (6)
+> 
+>     nexthop #2
+>     bucket #1 -> #0 in chain (7) -> #1 in chain (8)
+>     bucket #2 -> #0 in chain (9)
+>   --
+>   node (fa) #2 [2]
+>     nexthop #1
+>     bucket #1 -> #0 in chain (1) -> #1 in chain (2)
+>     bucket #2 -> #0 in chain (3)
+> 
+> it doesn't matter if we stop at (3), (4), (7) for "node #1", or at (2)
+> for "node #2": walking flattens all that.
+> 
+> It would even be possible to drop the distinction between the in-tree
+> (s_i) and in-node (s_fa) counter, but a further improvement might
+> advise against this. This is only as accurate as the existing tracking
+> mechanism for leaves: if a partial dump is restarted after exceptions
+> are removed or expired, we might skip some non-dumped entries.
 
-Hi Andrew, thanks for your time and comments.  Responses below...
+...
 
->> +++ b/drivers/net/ethernet/pensando/ionic/ionic.h
->> @@ -0,0 +1,27 @@
->> +/* SPDX-License-Identifier: GPL-2.0 */
->> +/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
->> +
->> +#ifndef _IONIC_H_
->> +#define _IONIC_H_
->> +
->> +#define DRV_NAME		"ionic"
->> +#define DRV_DESCRIPTION		"Pensando Ethernet NIC Driver"
->> +#define DRV_VERSION		"0.11.0-k"
-> DRV_VERSION is pretty useless. What you really want to know is the
-> kernel git tree and commit. The big distributions might backport this
-> version of the driver back to the old kernel with a million
-> patches. At which point 0.11.0-k tells you nothing much.
-Yes, any version numbering thing from the big distros is put into 
-question, but I find this number useful to me for tracking what has been 
-put into the upstream kernel.  This plus the full kernel version gives 
-me a pretty good idea of what I'm looking at.
+> 
+> Fixes: 4895c771c7f0 ("ipv4: Add FIB nexthop exceptions.")
+> Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
+> ---
+>  include/net/route.h |  4 +++
+>  net/ipv4/fib_trie.c | 44 +++++++++++++++++++--------
+>  net/ipv4/route.c    | 73 +++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 108 insertions(+), 13 deletions(-)
+> 
 
->> +
->> +// TODO: register these with the official include/linux/pci_ids.h
->> +#define PCI_VENDOR_ID_PENSANDO			0x1dd8
-> That file has a comment:
->
->   *      Do not add new entries to this file unless the definitions
->   *      are shared between multiple drivers.
->
-> Is it going to be shared?
+Reviewed-by: David Ahern <dsahern@gmail.com>
 
-Yes, there is an instance of sharing planned.
-
->
->   +
->> +#define PCI_DEVICE_ID_PENSANDO_IONIC_ETH_PF	0x1002
->> +#define PCI_DEVICE_ID_PENSANDO_IONIC_ETH_VF	0x1003
->> +#define PCI_DEVICE_ID_PENSANDO_IONIC_ETH_MGMT	0x1004
->> +
->> +#define IONIC_SUBDEV_ID_NAPLES_25	0x4000
->> +#define IONIC_SUBDEV_ID_NAPLES_100_4	0x4001
->> +#define IONIC_SUBDEV_ID_NAPLES_100_8	0x4002
->> +
->> +struct ionic {
->> +	struct pci_dev *pdev;
->> +	struct device *dev;
->> +};
->> +
->> +#endif /* _IONIC_H_ */
->> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus.h b/drivers/net/ethernet/pensando/ionic/ionic_bus.h
->> new file mode 100644
->> index 000000000000..94ba0afc6f38
->> --- /dev/null
->> +++ b/drivers/net/ethernet/pensando/ionic/ionic_bus.h
->> @@ -0,0 +1,10 @@
->> +/* SPDX-License-Identifier: GPL-2.0 */
->> +/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
->> +
->> +#ifndef _IONIC_BUS_H_
->> +#define _IONIC_BUS_H_
->> +
->> +int ionic_bus_register_driver(void);
->> +void ionic_bus_unregister_driver(void);
->> +
->> +#endif /* _IONIC_BUS_H_ */
->> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
->> new file mode 100644
->> index 000000000000..ab6206c162d4
->> --- /dev/null
->> +++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
->> @@ -0,0 +1,61 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
->> +
->> +#include <linux/module.h>
->> +#include <linux/netdevice.h>
->> +#include <linux/etherdevice.h>
->> +#include <linux/pci.h>
->> +
->> +#include "ionic.h"
->> +#include "ionic_bus.h"
->> +
->> +/* Supported devices */
->> +static const struct pci_device_id ionic_id_table[] = {
->> +	{ PCI_VDEVICE(PENSANDO, PCI_DEVICE_ID_PENSANDO_IONIC_ETH_PF) },
->> +	{ PCI_VDEVICE(PENSANDO, PCI_DEVICE_ID_PENSANDO_IONIC_ETH_VF) },
->> +	{ PCI_VDEVICE(PENSANDO, PCI_DEVICE_ID_PENSANDO_IONIC_ETH_MGMT) },
->> +	{ 0, }	/* end of table */
->> +};
->> +MODULE_DEVICE_TABLE(pci, ionic_id_table);
->> +
->> +static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->> +{
->> +	struct device *dev = &pdev->dev;
->> +	struct ionic *ionic;
->> +
->> +	ionic = devm_kzalloc(dev, sizeof(*ionic), GFP_KERNEL);
->> +	if (!ionic)
->> +		return -ENOMEM;
->> +
->> +	ionic->pdev = pdev;
->> +	pci_set_drvdata(pdev, ionic);
->> +	ionic->dev = dev;
->> +	dev_info(ionic->dev, "attached\n");
-> probed would be more accurate. But in general, please avoid all but
-> the minimum of such info messages.
-Sure
->
->> +
->> +	return 0;
->> +}
->> +
->> +static void ionic_remove(struct pci_dev *pdev)
->> +{
->> +	struct ionic *ionic = pci_get_drvdata(pdev);
->> +
->> +	pci_set_drvdata(pdev, NULL);
->> +	dev_info(ionic->dev, "removed\n");
-> Not very useful dev_info().
-It has been useful in testing, but it can go away.
->
-> Also, i think the core will NULL out the drive data for you. But you
-> should check.
-I'll check.
->> +}
->> +
->> +static struct pci_driver ionic_driver = {
->> +	.name = DRV_NAME,
->> +	.id_table = ionic_id_table,
->> +	.probe = ionic_probe,
->> +	.remove = ionic_remove,
->> +};
->> +
->> +int ionic_bus_register_driver(void)
->> +{
->> +	return pci_register_driver(&ionic_driver);
->> +}
->> +
->> +void ionic_bus_unregister_driver(void)
->> +{
->> +	pci_unregister_driver(&ionic_driver);
->> +}
-> It looks like you can use module_pci_driver() and remove a lot of
-> boilerplate.
-Thanks, I'll look at that.
-
-Cheers,
-sln
->
-> 	Andrew
 
