@@ -2,111 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B047B4EBC6
-	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 17:19:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C8914EBCD
+	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 17:19:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726010AbfFUPTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jun 2019 11:19:30 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:35668 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726017AbfFUPTa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 11:19:30 -0400
-Received: by mail-wr1-f68.google.com with SMTP id m3so7005853wrv.2
-        for <netdev@vger.kernel.org>; Fri, 21 Jun 2019 08:19:28 -0700 (PDT)
+        id S1726186AbfFUPTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jun 2019 11:19:43 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:33178 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726070AbfFUPTn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 11:19:43 -0400
+Received: by mail-pf1-f194.google.com with SMTP id x15so3786165pfq.0;
+        Fri, 21 Jun 2019 08:19:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=3VbzSB5yjaWLuskB1X5KhErGhgQBo8TZe9ClLCDNvO8=;
-        b=gJQ2uBPnHJjzvdAqxeUsYwzMBXQNFRmJGysF4PhRRXj1N7M08zil1kDmCYId7ChgTy
-         YCQwRA66ur8Jn6tz5yK5+fTy8xjO3VuCx9+MtPjyyDA91rw0LZu/5QQ8pHOXbOKgb68p
-         tvFJzqihOuqvtKkxYIvnQJeTIrRp5iNMG/Z0XlixJN60go1kT64511pMV2nLRvUDWthZ
-         cKd5T7CO/bD6lhn4yFP5rZDqNIZDHrRYahQ/oqWoAddQcv3C9WkqfFy3hD7VxMSWyXnq
-         CY46AVVJZhYLRIU1fSHc7VZZRKhrfdk3zpAGboWzTYVMwSZC63cWAUZZnC64Cgtxh6bz
-         6ncQ==
+        bh=wkYJv093Ph/iPqswb4+lpc13NRD+hmqJJxad6v6T4Wg=;
+        b=JG74n1GEpv3kCeplvo4x/WuN7VNLAV3o6XmJ5NxsplUNZojG8xOuo4wLMtEfwA3UFP
+         DNVnx7x8a6Hwedzhz84nYPdNwjT4Y4ft0QUOtVSaiIR6QP2p1WZOQbdNz8PraDw2nFRr
+         lzIRaPAJMrJy+XiaQ7RJcHOoI06br0TzTijIq5ar1nuEvTHTgNm0JArmd9FGbnBKOvJC
+         9lJbEzJOrgYrfCW8jYb27HnFH8NS8Fqqi02DpvXiAdNN/8gL2O0A0C2kzqZKwZqJd2hU
+         2FohhOBL3ghbeKuNnGJnCiTMpNNV7mDXryE4UTyCHHub3QD2HLm8Tx43UroDd1+r4yQ4
+         RHDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=3VbzSB5yjaWLuskB1X5KhErGhgQBo8TZe9ClLCDNvO8=;
-        b=aC1FbhMsq6ml4uIuoTuHZUljeI9cO2TXonMStux3ZCazzGLFncCFAtahk5XnhaRuFw
-         tlLMENBHHcqV4lmW0Z+H/6VTW6wkII4sKRB92rfdS66Wi5J+rIh9aXIyInTNbqMSpywb
-         N7hYSkgF2LoWXvzDiIL3ks88lBCC6gCF9JdEEDihO8nW+Yu8KgZeBk9vVAFV1+eb14sl
-         I0/TYyb9e4+Xv4j4OqBQYXv1qpJu2SvKxp0IL2tucbz8QBY5TxTOU8FcDeM/j1c8WYpu
-         X6jyzTcmsZhm7ndPPev5NMOWeyAxpJWGfPrWOG/1TRLXvtR0ynHdcIh7YBUnPdnRCN2M
-         aYnw==
-X-Gm-Message-State: APjAAAWrCjDYb5vvHqdEe6WSVd+NRj1DVVpccTiD3ptsXyLwoF71trc9
-        6AmXo/L4BPQ5mMELKzsh09w4qw==
-X-Google-Smtp-Source: APXvYqzW3VtV8IUseUl13rO/O/bJcMZ87gCzy5RXZirZEP0WAh788Mbt9OB81YzwihqnHsYgNU8aYQ==
-X-Received: by 2002:adf:afe8:: with SMTP id y40mr17211181wrd.328.1561130368127;
-        Fri, 21 Jun 2019 08:19:28 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id p3sm1947749wrd.47.2019.06.21.08.19.27
+        bh=wkYJv093Ph/iPqswb4+lpc13NRD+hmqJJxad6v6T4Wg=;
+        b=BH+6Xoill4yCvbKRHnxRSwDNICrkudVi5THQLaQRltiQHMCpShY+KxAVhM/ZbjEYqc
+         CRE/u5ltQbwQ9tZgetD9OxwLe5HV/nHMJLSv7dP62qFNuW8eL6LMrOAixxVvbODvoLCt
+         k4iV2axa/fHPfNb/5hPQ0iL7Bhr87XWQ7YJ9hf0NnnyO/M6BVTJSRSGvI6xry34OMtim
+         c7mJiM+wxNgSm+USaAXx1K1MMuoASx8sqgIK0FTFFUqfCq8AEq/NnnwJdR13o19e8qbI
+         E+RrtGESeaGsUW/yoc+l9S8l6NDKq2cqaZfea/PBhaM0xnQ6QZ4EfGqbQCJXXwIkIjSo
+         h1Aw==
+X-Gm-Message-State: APjAAAUSpFl4XCRp67YL1ZzgfZ1ky6MRTTAvHG35I4wtfArSQVF14EAR
+        XtPbfa/ZSGumUS5k0Zsm/EuCSLRBJXVIPQ==
+X-Google-Smtp-Source: APXvYqwdKO8QnReTZDmtgPmfnr2ABDKp3jxXDz3DL9xxFZWLD9xyLVdfrqcULfi/6Fo47NOHO+Wksw==
+X-Received: by 2002:a63:5c19:: with SMTP id q25mr19314252pgb.215.1561130382498;
+        Fri, 21 Jun 2019 08:19:42 -0700 (PDT)
+Received: from arch ([112.196.181.13])
+        by smtp.gmail.com with ESMTPSA id b6sm2800521pgd.5.2019.06.21.08.19.38
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 21 Jun 2019 08:19:27 -0700 (PDT)
-Date:   Fri, 21 Jun 2019 17:19:27 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        davem@davemloft.net, thomas.lendacky@amd.com, f.fainelli@gmail.com,
-        ariel.elior@cavium.com, michael.chan@broadcom.com,
-        santosh@chelsio.com, madalin.bucur@nxp.com,
-        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        jeffrey.t.kirsher@intel.com, tariqt@mellanox.com,
-        saeedm@mellanox.com, jiri@mellanox.com, idosch@mellanox.com,
-        jakub.kicinski@netronome.com, peppe.cavallaro@st.com,
-        grygorii.strashko@ti.com, andrew@lunn.ch,
-        vivien.didelot@savoirfairelinux.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, linux-net-drivers@solarflare.com,
-        ganeshgr@chelsio.com, ogerlitz@mellanox.com,
-        Manish.Chopra@cavium.com, marcelo.leitner@gmail.com,
-        mkubecek@suse.cz, venkatkumar.duvvuru@broadcom.com,
-        cphealy@gmail.com
-Subject: Re: [PATCH net-next 10/12] net: flow_offload: add flow_block_cb API
-Message-ID: <20190621151927.GB2414@nanopsycho.orion>
-References: <20190620194917.2298-1-pablo@netfilter.org>
- <20190620194917.2298-11-pablo@netfilter.org>
+        Fri, 21 Jun 2019 08:19:42 -0700 (PDT)
+Date:   Fri, 21 Jun 2019 20:49:28 +0530
+From:   Puranjay Mohan <puranjay12@gmail.com>
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     Puranjay Mohan <puranjay12@gmail.com>,
+        Bjorn Helgaas <bjorn@helgaas.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-pci@vger.kernel.org,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: Re: [PATCH v4 0/3] net: fddi: skfp: Use PCI generic definitions
+ instead of private duplicates
+Message-ID: <20190621151927.GA12091@arch>
+References: <20190621151415.10795-1-puranjay12@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190620194917.2298-11-pablo@netfilter.org>
+In-Reply-To: <20190621151415.10795-1-puranjay12@gmail.com>
 User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jun 20, 2019 at 09:49:15PM CEST, pablo@netfilter.org wrote:
-
-[...]
-
->diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
->index 36127c1858a4..728ded7e4361 100644
->--- a/include/net/flow_offload.h
->+++ b/include/net/flow_offload.h
->@@ -232,4 +232,56 @@ static inline void flow_stats_update(struct flow_stats *flow_stats,
-> 	flow_stats->lastused	= max_t(u64, flow_stats->lastused, lastused);
-> }
+On Fri, Jun 21, 2019 at 08:44:12PM +0530, Puranjay Mohan wrote:
+> This patch series removes the private duplicates of PCI definitions in
+> favour of generic definitions defined in pci_regs.h.
 > 
->+#include <net/sch_generic.h> /* for tc_setup_cb_t. */
->+
->+enum flow_block_command {
->+	TC_BLOCK_BIND,
->+	TC_BLOCK_UNBIND,
-
-It's not TC now. You should name these FLOW_BLOCK_BIND/UNBIND
-
-
->+};
->+
->+enum flow_block_binder_type {
->+	TCF_BLOCK_BINDER_TYPE_UNSPEC,
->+	TCF_BLOCK_BINDER_TYPE_CLSACT_INGRESS,
->+	TCF_BLOCK_BINDER_TYPE_CLSACT_EGRESS,
-
-Same here.
-
->+};
->+
-
-[...]
+> This driver only uses some of the generic PCI definitons,
+> which are included from pci_regs.h and thier private versions
+> are removed from skfbi.h with all other private defines.
+> 
+> The skfbi.h defines PCI_REV_ID and other private defines with different
+> names, these are renamed to Generic PCI names to make them
+> compatible with defines in pci_regs.h.
+> 
+> All unused defines are removed from skfbi.h.
+>
+I left some of the definitions in v4 too!
+will remove them all and send v5
+sorry for the inconvenience
+> Changes in v4:
+> Removed unused PCI definitions which were left in v3
+> 
+> Changes in v3:
+> Renamed all local PCI definitions to Generic names.
+> Corrected coding style mistakes.
+> 
+> Changes in v2:
+> Converted individual patches to a series.
+> Made sure that individual patches build correctly
+> 
+> Puranjay Mohan (3):
+>   net: fddi: skfp: Rename local PCI defines to match generic PCI defines
+>   net: fddi: skfp: Include generic PCI definitions
+>   net: fddi: skfp: Remove unused private PCI definitions
+> 
+>  drivers/net/fddi/skfp/drvfbi.c  |   3 +-
+>  drivers/net/fddi/skfp/h/skfbi.h | 217 +-------------------------------
+>  2 files changed, 6 insertions(+), 214 deletions(-)
+> 
+> -- 
+> 2.21.0
+> 
