@@ -2,119 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6B7E4EE40
-	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 19:59:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDF154EE42
+	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 19:59:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726187AbfFUR7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jun 2019 13:59:08 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:50438 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725992AbfFUR7H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 13:59:07 -0400
-Received: by mail-wm1-f66.google.com with SMTP id c66so7116226wmf.0
-        for <netdev@vger.kernel.org>; Fri, 21 Jun 2019 10:59:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=XbG+M/su6pkc7+Il073k2uQdZNpQNluZQlODsDqLVc8=;
-        b=NmThPT/wVJfQ0a9AzSB9mMxlmhBK0S0BMOZST9ov/9sPqv64dE5p7CJqboGqEIHk6R
-         zNFJ9aIy3veZeR9ofoAUi+bKZ3IDrHPqPjp3jcPl9yyTMrN5zPQfzpW6ijSVF6JNs9EB
-         1KSc8yeRVH2z1FWv2skZc7eebNrl+qiLWK5OA4UMMua0P+6w7pgeHBhXgeW2k12J7yaI
-         MV60w9OFvbiE6QwyZc1dQtv4Jw/7DpTVlRyDylLai3BN5IU4hk3OuDHBlSUoEUUK/lp1
-         XocZSC6+XQ2VmDMjZCxVcoDw7F/9EU2fQMhhCqE9gkFVpQ25B/lXI7AzbXJRMPtuR1T8
-         ohHg==
-X-Gm-Message-State: APjAAAXxknm16UfSGOD3q4ht/o5nti4BJIUFVynbsBjWi9VAku9vSqWx
-        ZK0RjdvA9u4I00R2hacdqtuBzSgUuo7bNK+4K2g=
-X-Google-Smtp-Source: APXvYqym9xnTFz2Lx0pYTeVkaxhlUWTm1u+kPGijyOpxWOMtjhy0alS/4zE/koYYg6MdGVN0RDJvUv+ZqnnQRjEyxMA=
-X-Received: by 2002:a7b:cc81:: with SMTP id p1mr4731094wma.107.1561139945484;
- Fri, 21 Jun 2019 10:59:05 -0700 (PDT)
+        id S1726259AbfFUR70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jun 2019 13:59:26 -0400
+Received: from smtprelay0062.hostedemail.com ([216.40.44.62]:39534 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725992AbfFUR7Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 13:59:25 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay03.hostedemail.com (Postfix) with ESMTP id 2CFC9837F24D;
+        Fri, 21 Jun 2019 17:59:24 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::::::,RULES_HIT:41:355:379:599:800:960:967:968:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:1978:1981:2194:2199:2393:2525:2553:2559:2563:2682:2685:2828:2859:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3870:3871:3872:3874:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4250:4321:4384:5007:6117:6119:7514:9010:9025:10004:10400:10848:10967:11232:11658:11914:12043:12296:12297:12555:12740:12760:12895:13069:13255:13311:13357:13439:13845:14096:14097:14181:14659:14721:21080:21627:30009:30041:30054:30060:30090:30091,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.8.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:25,LUA_SUMMARY:none
+X-HE-Tag: paint61_8c15a38e8ef39
+X-Filterd-Recvd-Size: 2525
+Received: from XPS-9350 (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
+        (Authenticated sender: joe@perches.com)
+        by omf06.hostedemail.com (Postfix) with ESMTPA;
+        Fri, 21 Jun 2019 17:59:22 +0000 (UTC)
+Message-ID: <5025da034080c6653b23d7362e06cf211d2cec3c.camel@perches.com>
+Subject: Re: [PATCH v3 0/3] net: fddi: skfp: Use PCI generic definitions
+ instead of private duplicates
+From:   Joe Perches <joe@perches.com>
+To:     Bjorn Helgaas <helgaas@kernel.org>,
+        Alan Cox <gnomes@lxorguk.ukuu.org.uk>
+Cc:     Puranjay Mohan <puranjay12@gmail.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Bjorn Helgaas <bjorn@helgaas.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-pci@vger.kernel.org
+Date:   Fri, 21 Jun 2019 10:59:21 -0700
+In-Reply-To: <20190621164429.GA187016@google.com>
+References: <20190621094607.15011-1-puranjay12@gmail.com>
+         <20190621162024.53620dd9@alans-desktop>
+         <20190621164429.GA187016@google.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
 MIME-Version: 1.0
-From:   Joe Stringer <joe@wand.net.nz>
-Date:   Fri, 21 Jun 2019 10:58:54 -0700
-Message-ID: <CAOftzPisP-3jN8drC6RXcTigXJjdwEnvTRvTHR-Kv4LKn4rhQQ@mail.gmail.com>
-Subject: Removing skb_orphan() from ip_rcv_core()
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Florian Westphal <fw@strlen.de>
-Cc:     netdev <netdev@vger.kernel.org>,
-        john fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi folks, picking this up again..
+On Fri, 2019-06-21 at 11:44 -0500, Bjorn Helgaas wrote:
+> On Fri, Jun 21, 2019 at 04:20:24PM +0100, Alan Cox wrote:
+> > On Fri, 21 Jun 2019 15:16:04 +0530
+> > Puranjay Mohan <puranjay12@gmail.com> wrote:
+> > 
+> > > This patch series removes the private duplicates of PCI definitions in
+> > > favour of generic definitions defined in pci_regs.h.
+> > 
+> > Why bother ? It's an ancient obsolete card ?
+> 
+> That's a fair question.
+> 
+> Is there anything that would indicate that "this file is obsolete and
+> problems shouldn't be fixed"?  Nobody wants to waste time on things
+> that don't need to be fixed, but I don't know how to tell if something
+> is obsolete.
+> 
+> My naive assumption is that if something is in the tree, it's fair
+> game for fixes and cleanups.
 
-As discussed during LSFMM, I've been looking at adding something like
-an `skb_sk_assign()` helper to BPF so that logic similar to TPROXY can
-be implemented with integration into other BPF logic, however
-currently any attempts to do so are blocked by the skb_orphan() call
-in ip_rcv_core() (which will effectively ignore any socket assign
-decision made by the TC BPF program).
+I'd prefer to move the old, crufty, obsolete and generally
+unsupported drivers to new directory trees and possibly
+symlink those drivers to their current locations.
 
-Recently I was attempting to remove the skb_orphan() call, and I've
-been trying different things but there seems to be some context I'm
-missing. Here's the core of the patch:
+I suggested on the kernel summit list:
+https://lists.linuxfoundation.org/pipermail/ksummit-discuss/2019-June/006482.html
 
-diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
-index ed97724c5e33..16aea980318a 100644
---- a/net/ipv4/ip_input.c
-+++ b/net/ipv4/ip_input.c
-@@ -500,8 +500,6 @@ static struct sk_buff *ip_rcv_core(struct sk_buff
-*skb, struct net *net)
-       memset(IPCB(skb), 0, sizeof(struct inet_skb_parm));
-       IPCB(skb)->iif = skb->skb_iif;
+---
 
--       /* Must drop socket now because of tproxy. */
--       skb_orphan(skb);
+Perhaps a mechanism to move these old, generally unsupported
+by an actual maintainer, and rarely tested drivers out of the
+mainline drivers directory into a separate obsolete directory
+would help isolate the whitespace and trivial api changes.
 
-       return skb;
 
-The statement that the socket must be dropped because of tproxy
-doesn't make sense to me, because the PRE_ROUTING hook is hit after
-this, which will call into the tproxy logic and eventually
-nf_tproxy_assign_sock() which already does the skb_orphan() itself.
-
-However, if I drop these lines then I end up causing sockets to
-release references too many times. Seems like if we don't orphan the
-skb here, then later logic assumes that we have one more reference
-than we actually have, and decrements the count when it shouldn't
-(perhaps the skb_steal_sock() call in __inet_lookup_skb() which seems
-to assume we always have a reference to the socket?)
-
-Splat:
-
-refcount_t hit zero at sk_stop_timer+0x2c/0x30 in cilium-agent[16359],
-uid/euid: 0/0
-WARNING: CPU: 0 PID: 16359 at kernel/panic.c:686 refcount_error_report+0x9c/0xa1
-...
-? inet_put_port+0xa6/0xd0
-inet_csk_clear_xmit_timers+0x2e/0x50
-tcp_done+0x8b/0xf0
-tcp_reset+0x49/0xc0
-tcp_validate_incoming+0x2f7/0x410
-tcp_rcv_state_process+0x250/0xdb6
-? tcp_v4_connect+0x46f/0x4e0
-tcp_v4_do_rcv+0xbd/0x1f0
-__release_sock+0x84/0xd0
-release_sock+0x30/0xa0
-inet_stream_connect+0x47/0x60
-
-(Full version: https://gist.github.com/joestringer/d5313e4bf4231e2c46405bd7a3053936
-)
-
-This seems potentially related to some of the socket referencing
-discussion in the peer thread "[RFC bpf-next 0/7] Programming socket
-lookup with BPF".
-
-During LSFMM, it seemed like no-one knew quite why the skb_orphan() is
-necessary in that path in the current version of the code, and that we
-may be able to remove it. Florian, I know you weren't in the room for
-that discussion, so raising it again now with a stack trace, Do you
-have some sense what's going on here and whether there's a path
-towards removing it from this path or allowing the skb->sk to be
-retained during ip_rcv() in some conditions?
