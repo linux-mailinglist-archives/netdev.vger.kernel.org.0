@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D66404F0B5
-	for <lists+netdev@lfdr.de>; Sat, 22 Jun 2019 00:19:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FCC64F0BC
+	for <lists+netdev@lfdr.de>; Sat, 22 Jun 2019 00:22:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726058AbfFUWT0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jun 2019 18:19:26 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:36152 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726031AbfFUWTZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 18:19:25 -0400
-Received: by mail-io1-f68.google.com with SMTP id h6so192913ioh.3
-        for <netdev@vger.kernel.org>; Fri, 21 Jun 2019 15:19:25 -0700 (PDT)
+        id S1726285AbfFUWWA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jun 2019 18:22:00 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:44704 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726017AbfFUWV7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 18:21:59 -0400
+Received: by mail-io1-f67.google.com with SMTP id s7so377513iob.11
+        for <netdev@vger.kernel.org>; Fri, 21 Jun 2019 15:21:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=GUIYc3BMgWTMshibkat/P6qVD73AEtGAiNbNZGy+94A=;
-        b=hUH8lXLIDuRbx+H0zOsupgKeLPpRhairMWi/eIU7M2OS0kktnkva2P2PsETD66Jxu1
-         ZnWk1myyNeq5SIwl3wFYDmTwFXtGM167MbxDM9gnLmmwuB+ab/yRl/9kz7mG7ou2qLWj
-         WhIIDQvw+sYujRuqvpd50E77357I2SOAvPY4UqSf5jdjtFdZJ7BKpRiBUHqJzIj6L8d/
-         7g4nSdqMKAf0rAzGpbpfJ4szu7UA1s7duqdMhfuPVN6CXm3xdmlmaw1zfPrHGe0EChh2
-         mhPXq6WEmjgZPySEPXCdS4U3yRiG4jYaPKaoR5eSe00jMAUq4zZ6lpuCuux9Mlj/Zezx
-         Y9EA==
+        bh=o3xNIiVFqoC5vA5k7IgEBua4kJAok6hMhe9JcbUCvuw=;
+        b=Cx8ESbmxGNhcKI2RUgNKXQXglcYGI1VsASNr0eUXXbfB14hr4STx9UZc77ljnwyT5z
+         ECsfWVAg5NT6RnN0z/UHbegEAZ/UZ0UYJtaBMbHUWt+T96qIWy8rFPxY3p2zscj65fwS
+         9w18dGiOVgl0+g1e8y04xsoutXmCJWyiy20kWTKlEUWg9F58VQLfExp+aPBYxmNBXukj
+         nuZm45PQJfQvMA748PnJPtbjuQzIyDY3FO9fqYl+UzgtCDD8QkOp7afrfIXpyjlx15OP
+         yzF9HyBm0qV+fJzMXKSm6GR6jc5qje9mmPWbag2qMyelckeRQZMtQKxMSpLRKrmznqUl
+         n5OA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=GUIYc3BMgWTMshibkat/P6qVD73AEtGAiNbNZGy+94A=;
-        b=fqjTYWOewESLlieqMeBxijp3Wb4K79BhUA6ziWRI85Pf8C82sX9lQEAn7Xh5zb9Zm2
-         PYPZgmf0tzCjEsUy8gAgpQAIiwKj5CHw2WZiUy15Z1uQKVUOWHYbGxCbQxX91GzBD+uM
-         ohverYDtgh4gQt5MXf2kCCWe5WGSeAnxunNqfQHZwEztMB8G/PtnOswWvxnMt8wHVxkA
-         Vgh29z18lG8jtj3BO6oYAzydnupCEEHdnC3PD3/0iNdsjvcglfcHB/v8nfJR3Ke2FNWQ
-         1QKkq139wRGiLQelG24eUQkBq3dI3PKI2T4TCQr3THNpm8SjKG+i8Eq+ORtmTG+bXAB1
-         LSdg==
-X-Gm-Message-State: APjAAAX4YLOjLOVik9eAdFCDHrR3O51bwyLGVfuiYEn+FptjaOQipdsS
-        Z3hH51YFk7AIDqDN0+6sB73devUl
-X-Google-Smtp-Source: APXvYqxJylcNQFRiq5Pn9FX86/PMYRKc+X9Q10tZTCJCSdtR4HGshx2Iakk4vV/ONOw9ZDnQ0W1kFQ==
-X-Received: by 2002:a02:ac09:: with SMTP id a9mr28752202jao.48.1561155564602;
-        Fri, 21 Jun 2019 15:19:24 -0700 (PDT)
+        bh=o3xNIiVFqoC5vA5k7IgEBua4kJAok6hMhe9JcbUCvuw=;
+        b=a9w2gxPRVcHQKw7qvbE4VDadjx4vZ7QI35C4bpHnx0Bd31UftpcJvdZHSTROAMlIhU
+         Q0/ZlZXePMc6ATt4rwUmhrsENOLBbuHZKYOpP0wsaH1iYsMz8Clc3KX9HZnJZuWpIwSY
+         84r5nfdBK4tfWYTdasVp6m3795LI2U0GseSqch2rZobKUTpdcCZo8r3oPYvlY8lIYied
+         2oj3t+eSKypi2zNSckrTexoGYjHkhtQz8hfhID9layuzvKkbFduDhYGmLCpmveFngTN1
+         zhn6miRUkHXzro0EtLwlEHPfDxDyckG4FF4CKz+Me90LZ5RF1AtQTTFKdhr9Pl6U9uxz
+         IJIQ==
+X-Gm-Message-State: APjAAAXavUBH3wHlhNjFQHlHeMtvP0yDNpnRkwcMqdSkCk/3//EJ30rV
+        Y/AXj2qYNVs3qxhFxwYYejyDhm0F
+X-Google-Smtp-Source: APXvYqxjYdZ+vXVLvAF203J6gOpNiQ3Y1bmLxrQoQ5jW2nEhkI/EaCRWlZXuxLkIqZOzVmYnds8DIg==
+X-Received: by 2002:a6b:ba07:: with SMTP id k7mr95207933iof.98.1561155718789;
+        Fri, 21 Jun 2019 15:21:58 -0700 (PDT)
 Received: from ?IPv6:2601:284:8200:5cfb:563:6fa4:e349:a2f8? ([2601:284:8200:5cfb:563:6fa4:e349:a2f8])
-        by smtp.googlemail.com with ESMTPSA id l11sm4910408ioj.32.2019.06.21.15.19.22
+        by smtp.googlemail.com with ESMTPSA id r139sm7427772iod.61.2019.06.21.15.21.57
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 21 Jun 2019 15:19:23 -0700 (PDT)
-Subject: Re: [PATCH net-next v7 04/11] ipv4: Dump route exceptions if
+        Fri, 21 Jun 2019 15:21:57 -0700 (PDT)
+Subject: Re: [PATCH net-next v7 08/11] ipv6: Dump route exceptions if
  requested
 To:     Stefano Brivio <sbrivio@redhat.com>,
         David Miller <davem@davemloft.net>
@@ -55,14 +55,14 @@ Cc:     Jianlin Shi <jishi@redhat.com>, Wei Wang <weiwan@google.com>,
         Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
         netdev@vger.kernel.org
 References: <cover.1561131177.git.sbrivio@redhat.com>
- <8d3b68cd37fb5fddc470904cdd6793fcf480c6c1.1561131177.git.sbrivio@redhat.com>
+ <4af136ad187cdd167bac5effcf7e7b2932db87b9.1561131177.git.sbrivio@redhat.com>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <542d653a-37c8-66b3-df34-71a0e0273f8b@gmail.com>
-Date:   Fri, 21 Jun 2019 16:19:21 -0600
+Message-ID: <ccff4f14-2ac6-50ae-f78d-5361cb4a5f34@gmail.com>
+Date:   Fri, 21 Jun 2019 16:21:56 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
  Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-In-Reply-To: <8d3b68cd37fb5fddc470904cdd6793fcf480c6c1.1561131177.git.sbrivio@redhat.com>
+In-Reply-To: <4af136ad187cdd167bac5effcf7e7b2932db87b9.1561131177.git.sbrivio@redhat.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -72,62 +72,69 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 6/21/19 9:45 AM, Stefano Brivio wrote:
-> Since commit 4895c771c7f0 ("ipv4: Add FIB nexthop exceptions."), cached
-> exception routes are stored as a separate entity, so they are not dumped
-> on a FIB dump, even if the RTM_F_CLONED flag is passed.
+> Since commit 2b760fcf5cfb ("ipv6: hook up exception table to store dst
+> cache"), route exceptions reside in a separate hash table, and won't be
+> found by walking the FIB, so they won't be dumped to userspace on a
+> RTM_GETROUTE message.
 > 
-> This implies that the command 'ip route list cache' doesn't return any
-> result anymore.
+> This causes 'ip -6 route list cache' and 'ip -6 route flush cache' to
+> have no function anymore:
 > 
-> If the RTM_F_CLONED is passed, and strict checking requested, retrieve
-> nexthop exception routes and dump them. If no strict checking is
-> requested, filtering can't be performed consistently: dump everything in
-> that case.
+>  # ip -6 route get fc00:3::1
+>  fc00:3::1 via fc00:1::2 dev veth_A-R1 src fc00:1::1 metric 1024 expires 539sec mtu 1400 pref medium
+>  # ip -6 route get fc00:4::1
+>  fc00:4::1 via fc00:2::2 dev veth_A-R2 src fc00:2::1 metric 1024 expires 536sec mtu 1500 pref medium
+>  # ip -6 route list cache
+>  # ip -6 route flush cache
+>  # ip -6 route get fc00:3::1
+>  fc00:3::1 via fc00:1::2 dev veth_A-R1 src fc00:1::1 metric 1024 expires 520sec mtu 1400 pref medium
+>  # ip -6 route get fc00:4::1
+>  fc00:4::1 via fc00:2::2 dev veth_A-R2 src fc00:2::1 metric 1024 expires 519sec mtu 1500 pref medium
 > 
-> With this, we need to add an argument to the netlink callback in order to
-> track how many entries were already dumped for the last leaf included in
-> a partial netlink dump.
+> because iproute2 lists cached routes using RTM_GETROUTE, and flushes them
+> by listing all the routes, and deleting them with RTM_DELROUTE one by one.
 > 
-> A single additional argument is sufficient, even if we traverse logically
-> nested structures (nexthop objects, hash table buckets, bucket chains): it
-> doesn't matter if we stop in the middle of any of those, because they are
-> always traversed the same way. As an example, s_i values in [], s_fa
-> values in ():
+> If cached routes are requested using the RTM_F_CLONED flag together with
+> strict checking, or if no strict checking is requested (and hence we can't
+> consistently apply filters), look up exceptions in the hash table
+> associated with the current fib6_info in rt6_dump_route(), and, if present
+> and not expired, add them to the dump.
 > 
->   node (fa) #1 [1]
->     nexthop #1
->     bucket #1 -> #0 in chain (1)
->     bucket #2 -> #0 in chain (2) -> #1 in chain (3) -> #2 in chain (4)
->     bucket #3 -> #0 in chain (5) -> #1 in chain (6)
+> We might be unable to dump all the entries for a given node in a single
+> message, so keep track of how many entries were handled for the current
+> node in fib6_walker, and skip that amount in case we start from the same
+> partially dumped node.
 > 
->     nexthop #2
->     bucket #1 -> #0 in chain (7) -> #1 in chain (8)
->     bucket #2 -> #0 in chain (9)
->   --
->   node (fa) #2 [2]
->     nexthop #1
->     bucket #1 -> #0 in chain (1) -> #1 in chain (2)
->     bucket #2 -> #0 in chain (3)
+> When a partial dump restarts, as the starting node might change when
+> 'sernum' changes, we have no guarantee that we need to skip the same
+> amount of in-node entries. Therefore, we need two counters, and we need to
+> zero the in-node counter if the node from which the dump is resumed
+> differs.
 > 
-> it doesn't matter if we stop at (3), (4), (7) for "node #1", or at (2)
-> for "node #2": walking flattens all that.
+> Note that, with the current version of iproute2, this only fixes the
+> 'ip -6 route list cache': on a flush command, iproute2 doesn't pass
+> RTM_F_CLONED and, due to this inconsistency, 'ip -6 route flush cache' is
+> still unable to fetch the routes to be flushed. This will be addressed in
+> a patch for iproute2.
 > 
-> It would even be possible to drop the distinction between the in-tree
-> (s_i) and in-node (s_fa) counter, but a further improvement might
-> advise against this. This is only as accurate as the existing tracking
-> mechanism for leaves: if a partial dump is restarted after exceptions
-> are removed or expired, we might skip some non-dumped entries.
+> To flush cached routes, a procfs entry could be introduced instead: that's
+> how it works for IPv4. We already have a rt6_flush_exception() function
+> ready to be wired to it. However, this would not solve the issue for
+> listing.
+> 
 
 ...
 
 > 
-> Fixes: 4895c771c7f0 ("ipv4: Add FIB nexthop exceptions.")
+> Reported-by: Jianlin Shi <jishi@redhat.com>
+> Fixes: 2b760fcf5cfb ("ipv6: hook up exception table to store dst cache")
 > Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
 > ---
->  include/net/route.h |  4 +++
->  net/ipv4/fib_trie.c | 44 +++++++++++++++++++--------
->  net/ipv4/route.c    | 73 +++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 108 insertions(+), 13 deletions(-)
+>  include/net/ip6_fib.h   |   1 +
+>  include/net/ip6_route.h |   2 +-
+>  net/ipv6/ip6_fib.c      |  12 ++++-
+>  net/ipv6/route.c        | 114 ++++++++++++++++++++++++++++++++++++----
+>  4 files changed, 116 insertions(+), 13 deletions(-)
 > 
 
 Reviewed-by: David Ahern <dsahern@gmail.com>
