@@ -2,92 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2195D4DE2C
-	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 02:49:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B34064DE26
+	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 02:45:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725951AbfFUAtp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Jun 2019 20:49:45 -0400
-Received: from mail-io1-f54.google.com ([209.85.166.54]:46563 "EHLO
-        mail-io1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725869AbfFUAtp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 20:49:45 -0400
-Received: by mail-io1-f54.google.com with SMTP id i10so155987iol.13
-        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 17:49:45 -0700 (PDT)
+        id S1725936AbfFUApx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Jun 2019 20:45:53 -0400
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:46974 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725869AbfFUApx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Jun 2019 20:45:53 -0400
+Received: by mail-ot1-f68.google.com with SMTP id z23so4586234ote.13
+        for <netdev@vger.kernel.org>; Thu, 20 Jun 2019 17:45:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=fCNHOZHMZbkI2r13lZfSqE17QUXUQLFaOs3rdEwJpus=;
-        b=IGxqFxBxOptZk5udL8dE4lm+pE+RCYWyMHTJDGvn8C3Tfq7sOTUyBPSoHlLqpenFds
-         pztZvILOv+uRerFQgRTtGEh5DoiKbwXSeM/OOfHwbTtNuJ3oW/ykAAoW7HS2EkelU0lj
-         QrAM5OwpbnmO/j/o5WcdMR9jVWXtA1ytD/l8LCFFEev1Q2irfKHHw1SjjxkllEgSpZZo
-         lbOeJlP7ymRufmnR5QX9D6OxfqPARszGNIDcyW+NzKrezmOMK130esomdzMKH7orQo5A
-         IEqoSDqYJKUNqQOPBkyoynQ91foMI+iz/NvWROHd3UR/upZ3QGb3MixPFqRToir28dg+
-         ksdw==
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Yn83a1qnKvst/9+tB+MPPbc1m+I8WEQi/GEdO9P6tXE=;
+        b=AfdscoZY8FTKhS/IU/se9zotn8sYAlkd6CkW3o6sriJoE2iCHvbectl6id1/oCMtgj
+         w3ggqtPxzCartLjblSnXJBiutJjc7hQ6+wRdehNSFGytK470P942O/5PzJBNZyc0FS1E
+         i2UWf/0XJ7aEeTzbV5jsaIjcEqQ/arY+PoYnfecaZgJAnHoozI4pQ0aYNgX6j8xR8BNS
+         3U1WL3nMx6cB0RA7ttgMFYQ7eu4ED6vH3nzOEEcxpeRkKZlJbQexMJoztJuCDK45zX7F
+         lNWQSMCTyv37HslFvxqWK6eAZn8wjS0mJvivj9dTBfm5+bLj0rFJmPirIFJ/IWS6RK5t
+         mkeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=fCNHOZHMZbkI2r13lZfSqE17QUXUQLFaOs3rdEwJpus=;
-        b=DNERrQbEL5kPcybdCOntltxuspZE+cdXBeWXkBkYR09+1Cx9v1YNeptygiJKnbtcVQ
-         ZAWMGsPdY2WeuI9vlICKk4oEI/g13SruDhD3biEUs+8fGPV1HkaNXEHfqP5FsPFggahN
-         to8lnOWhgKj7fkkD8cTfwUnSKd3k8TPTq2mXteAJAX0qyxqg1i+dWEPcT163vVRWF6XL
-         V84CJnIE6fPL+8FrLBlZBd0B2+VWR3vNSTWA3IK1Zm/AzhzBaAjdZG9hGVv76qDdgUzf
-         KE8OGHPLBjdnVsFgHEBspM1PP62tvFXi1DX0cAe/0s5FcGCPd+mDC59DX10Y8cLjBUsy
-         jKIw==
-X-Gm-Message-State: APjAAAVdb/pOyAE9VRRigBQkysIkKGZuYf7Aa5smZgybJxasZHCIQjOo
-        WPGhTpJxKiLG+BCYGDn/3gt5PViz
-X-Google-Smtp-Source: APXvYqxH8+H9FT9zH21j/35x/Xzu8F1AODugL2iGQ6Ym7P+SabPBsYmRexEkTiLMzFC1NcLPYjwJLQ==
-X-Received: by 2002:a5d:9448:: with SMTP id x8mr22299537ior.102.1561077740103;
-        Thu, 20 Jun 2019 17:42:20 -0700 (PDT)
-Received: from ?IPv6:2601:284:8200:5cfb:4cec:f7ec:4bbc:cb19? ([2601:284:8200:5cfb:4cec:f7ec:4bbc:cb19])
-        by smtp.googlemail.com with ESMTPSA id w23sm1212906iod.12.2019.06.20.17.42.18
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 20 Jun 2019 17:42:19 -0700 (PDT)
-Subject: Re: Stats for XDP actions
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     David Miller <davem@davemloft.net>, mst@redhat.com,
-        makita.toshiaki@lab.ntt.co.jp, jasowang@redhat.com,
-        netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        hawk@kernel.org, Jakub Kicinski <jakub.kicinski@netronome.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Tariq Toukan <tariqt@mellanox.com>
-References: <1548934830-2389-1-git-send-email-makita.toshiaki@lab.ntt.co.jp>
- <20190131101516-mutt-send-email-mst@kernel.org>
- <20190131.094523.2248120325911339180.davem@davemloft.net>
- <20190131211555.3b15c81f@carbon>
- <b8c97120-851f-450f-dc71-59350236329e@gmail.com>
- <20190204125307.08492005@redhat.com>
- <bdcfedd6-465d-4485-e268-25c4ce6b9fcf@gmail.com> <87tvevpf0y.fsf@toke.dk>
- <44ae964a-d3dd-6b7f-4bcc-21e07525bf41@gmail.com> <87sgs46la6.fsf@toke.dk>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <cd9136ff-4127-72a5-0857-2e5641ba5252@gmail.com>
-Date:   Thu, 20 Jun 2019 18:42:18 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Yn83a1qnKvst/9+tB+MPPbc1m+I8WEQi/GEdO9P6tXE=;
+        b=Ds2xcgq0U0C4Qyw3LmNAmPhZMNnnL+YS7VgoDGrduIrZM3M8UM9AYV+fuz3LG+SFbM
+         HuDGef8wB2qH1XM3AQAImp2oqKSItqxUM6iH6EkAlU73NRkuueWFE+q8LUktADDQ62YV
+         HSDUcxcKRoQDVw12VAop5GpSyJxd9Xu5GANgWL1M8HfwfcbzL29yEodwE76O/z+O9nYL
+         IBhbyJPjsPpR4BPsfuV9m/tQqGqgEhqfQRa5LEqV0f+F9cJBUqvo01+mbRSlao8YFRou
+         qwuO2sICvf1kYuyOVAJrCCkAQ3Pfng4mZ8HTq1O3iZxaby0vsLT0Josa0ckBbWC0js0i
+         +i9g==
+X-Gm-Message-State: APjAAAUXFxN6Bys1cI5+gpEpJVGj5IYgwCDIDYaBW+LMZlzmq0cdN1iH
+        mVaofP5691jbQzkbb9MIVYzHmNUR2PGluvM6keNJWA==
+X-Google-Smtp-Source: APXvYqyBrPyZHtEKg52tGGot/2xwoVfzPk3+J8qs5bRpCw7GC47U/QeXwAok2m7h8+rRa11dfED6WRWrU5GMZQnTKJg=
+X-Received: by 2002:a9d:7184:: with SMTP id o4mr6978816otj.65.1561077953046;
+ Thu, 20 Jun 2019 17:45:53 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <87sgs46la6.fsf@toke.dk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <1559768882-12628-1-git-send-email-lucasb@mojatatu.com>
+ <30354b87-e692-f1f0-fed7-22c587f9029f@6wind.com> <CAMDBHYJdeh_AO-FEunTuTNVFAEtixuniq1b6vRqa_oS_Ru5wjg@mail.gmail.com>
+ <0bd19bf9-f499-dc9f-1b26-ee0a075391ac@6wind.com>
+In-Reply-To: <0bd19bf9-f499-dc9f-1b26-ee0a075391ac@6wind.com>
+From:   Lucas Bates <lucasb@mojatatu.com>
+Date:   Thu, 20 Jun 2019 20:45:42 -0400
+Message-ID: <CAMDBHYLYpbARw1P3YadLMbm8R3CDaT83R2J0n6P22OwYFxi-Pg@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next 1/1] tc-testing: Restore original behaviour
+ for namespaces in tdc
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>, kernel@mojatatu.com,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Marcelo Ricardo Leitner <mleitner@redhat.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        Davide Caratti <dcaratti@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/20/19 2:42 PM, Toke Høiland-Jørgensen wrote:
->>> I don't recall seeing any follow-up on this. Did you have a chance to
->>> formulate your ideas? :)
->>>
->>
->> Not yet. Almost done with the nexthop changes. Once that is out of the
->> way I can come back to this.
-> 
-> Ping? :)
-> 
+On Tue, Jun 18, 2019 at 4:52 AM Nicolas Dichtel
+<nicolas.dichtel@6wind.com> wrote:
+> >> From my point of view, if all tests are not successful by default, it scares
+> >> users and prevent them to use those tests suite to validate their patches.
+> >
+> > For me, explicitly telling the user that a test was skipped, and /why/
+> > it was skipped, is far better than excluding the test from the
+> > results: I don't want to waste someone's time with troubleshooting the
+> > script if they're expecting to see results for those tests when
+> > running tdc and nothing appears, or worse yet, stop using it because
+> > they think it doesn't work properly.
+> >
+> > I do believe the skip message should be improved so it better
+> > indicates why those tests are being skipped.  And the '-d' feature
+> > should be documented.  How do these changes sound?
+> If the error message is clear enough, I agree with you. The skip message should
+> not feel like an error message ;-)
 
-Definitely back to this after the July 4th holiday.
+Very true. I think I just put that one in quickly and meant to come
+back to it later, but either way it's a bit too vague.
+
+I'll get that corrected, but I believe I'll add it to a separate patch
+after the requires functionality goes in.  I want to update some of
+the documentation as well.
+
+Thanks,
+Lucas
