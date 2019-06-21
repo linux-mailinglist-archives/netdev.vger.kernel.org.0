@@ -2,109 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EBA654EDCA
-	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 19:27:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCE5E4EDCF
+	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 19:28:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726059AbfFUR1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jun 2019 13:27:46 -0400
-Received: from smtprelay0186.hostedemail.com ([216.40.44.186]:50306 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726032AbfFUR1q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 13:27:46 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay01.hostedemail.com (Postfix) with ESMTP id 3F510100E806B;
-        Fri, 21 Jun 2019 17:27:45 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::::::::,RULES_HIT:41:355:379:599:800:960:968:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:1978:1981:2194:2199:2393:2553:2559:2562:2693:2828:3138:3139:3140:3141:3142:3354:3865:3866:3867:3868:3870:3871:3872:3873:3874:4250:4321:4362:5007:7514:7809:7903:9010:10004:10400:10471:10848:11232:11657:11658:11914:12043:12048:12050:12296:12297:12663:12740:12760:12895:13161:13229:13255:13439:14096:14097:14181:14659:14721:21080:21451:21627:30030:30045:30054:30060:30090:30091,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.14.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:24,LUA_SUMMARY:none
-X-HE-Tag: cream64_93b04b7d1048
-X-Filterd-Recvd-Size: 3436
-Received: from XPS-9350 (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
-        (Authenticated sender: joe@perches.com)
-        by omf06.hostedemail.com (Postfix) with ESMTPA;
-        Fri, 21 Jun 2019 17:27:43 +0000 (UTC)
-Message-ID: <698d3e3614ae903ae9582547d64c6a9846629e57.camel@perches.com>
-Subject: Re: [PATCH 0/3] net: ethernet: atheros: atlx: Use PCI generic
- definitions instead of private duplicates
-From:   Joe Perches <joe@perches.com>
-To:     Bjorn Helgaas <bhelgaas@google.com>,
-        Puranjay Mohan <puranjay12@gmail.com>,
-        Jay Cliburn <jcliburn@gmail.com>,
-        Chris Snook <chris.snook@gmail.com>
-Cc:     Shuah Khan <skhan@linuxfoundation.org>,
-        Bjorn Helgaas <bjorn@helgaas.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Linux PCI <linux-pci@vger.kernel.org>
-Date:   Fri, 21 Jun 2019 10:27:41 -0700
-In-Reply-To: <CAErSpo5TMPokae7BMY8ZcOXtW=GeGsWXX_bqS8SrZnh0pEQYxw@mail.gmail.com>
-References: <20190621163921.26188-1-puranjay12@gmail.com>
-         <CAErSpo5TMPokae7BMY8ZcOXtW=GeGsWXX_bqS8SrZnh0pEQYxw@mail.gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S1726180AbfFUR2s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jun 2019 13:28:48 -0400
+Received: from mga09.intel.com ([134.134.136.24]:30241 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726031AbfFUR2r (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 Jun 2019 13:28:47 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 21 Jun 2019 10:28:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.63,401,1557212400"; 
+   d="scan'208";a="171282951"
+Received: from vpatel-desk.jf.intel.com (HELO localhost.localdomain) ([10.7.159.52])
+  by orsmga002.jf.intel.com with ESMTP; 21 Jun 2019 10:28:46 -0700
+From:   Vedang Patel <vedang.patel@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     jeffrey.t.kirsher@intel.com, davem@davemloft.net, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        intel-wired-lan@lists.osuosl.org, vinicius.gomes@intel.com,
+        l@dorileo.org, jakub.kicinski@netronome.com, m-karicheri2@ti.com,
+        sergei.shtylyov@cogentembedded.com, eric.dumazet@gmail.com,
+        aaron.f.brown@intel.com, Vedang Patel <vedang.patel@intel.com>
+Subject: [PATCH net-next v5 0/7] net/sched: Add txtime-assist support for taprio.
+Date:   Fri, 21 Jun 2019 10:28:21 -0700
+Message-Id: <1561138108-12943-1-git-send-email-vedang.patel@intel.com>
+X-Mailer: git-send-email 2.7.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-(adding the atlx maintainers to cc)
+Changes in v5:
+- Commit message improved for the igb patch (patch #1).
+- Fixed typo in commit message for etf patch (patch #2).
 
-On Fri, 2019-06-21 at 12:11 -0500, Bjorn Helgaas wrote:
-> On Fri, Jun 21, 2019 at 11:39 AM Puranjay Mohan <puranjay12@gmail.com> wrote:
-> > This patch series removes the private duplicates of PCI definitions in
-> > favour of generic definitions defined in pci_regs.h.
-> > 
-> > Puranjay Mohan (3):
-> >   net: ethernet: atheros: atlx: Rename local PCI defines to generic
-> >     names
-> >   net: ethernet: atheros: atlx: Include generic PCI definitions
-> >   net: ethernet: atheros: atlx: Remove unused and private PCI
-> >     definitions
-> > 
-> >  drivers/net/ethernet/atheros/atlx/atl2.c | 5 +++--
-> >  drivers/net/ethernet/atheros/atlx/atl2.h | 2 --
-> >  drivers/net/ethernet/atheros/atlx/atlx.h | 1 -
-> >  3 files changed, 3 insertions(+), 5 deletions(-)
-> 
-> Let's slow this down a little bit; I'm afraid we're going to overwhelm folks.
+Changes in v4:
+- Remove inline directive from functions in foo.c.
+- Fix spacing in pkt_sched.h (for etf patch).
 
-I generally disagree.
+Changes in v3:
+- Simplify implementation for taprio flags. 
+- txtime_delay can only be set if txtime-assist mode is enabled.
+- txtime_delay and flags will only be visible in tc output if set by user.
+- Minor changes in error reporting.
 
-Consolidation of these sorts of changes are generally
-better done treewide all at once, posted as a series to
-a list and maintainers allowing time (weeks to months)
-for the specific maintainers to accept them and then
-whatever remainder exists reposted and possibly applied
-by an overall maintainer (e.g.: Dave M)
+Changes in v2:
+- Txtime-offload has now been renamed to txtime-assist mode.
+- Renamed the offload parameter to flags.
+- Removed the code which introduced the hardware offloading functionality.
 
-> Before posting more to LKML/netdev, how about we first complete a
-> sweep of all the drivers to see what we're getting into.  It could be
-> that this will end up being more churn than it's worth.
+Original Cover letter (with above changes included)
+--------------------------------------------------
 
-Also doubtful.
+Currently, we are seeing packets being transmitted outside their
+timeslices. We can confirm that the packets are being dequeued at the right
+time. So, the delay is induced after the packet is dequeued, because
+taprio, without any offloading, has no control of when a packet is actually
+transmitted.
 
-Subsystem specific local PCI #defines without generic
-naming is poor style and makes treewide grep and
-refactoring much more difficult.
+In order to solve this, we are making use of the txtime feature provided by
+ETF qdisc. Hardware offloading needs to be supported by the ETF qdisc in
+order to take advantage of this feature. The taprio qdisc will assign
+txtime (in skb->tstamp) for all the packets which do not have the txtime
+allocated via the SO_TXTIME socket option. For the packets which already
+have SO_TXTIME set, taprio will validate whether the packet will be
+transmitted in the correct interval.
 
-The atlx maintainers should definitely have been cc'd
-on these patches.
+In order to support this, the following parameters have been added:
+- flags (taprio): This is added in order to support different offloading
+  modes which will be added in the future.
+- txtime-delay (taprio): This indicates the minimum time it will take for
+  the packet to hit the wire after it reaches taprio_enqueue(). This is
+  useful in determining whether we can transmit the packet in the remaining
+  time if the gate corresponding to the packet is currently open.
+- skip_skb_check (ETF): ETF currently drops any packet which does not have
+  the SO_TXTIME socket option set. This check can be skipped by specifying
+  this option.
 
-Jay Cliburn <jcliburn@gmail.com> (maintainer:ATLX ETHERNET DRIVERS)
-Chris Snook <chris.snook@gmail.com> (maintainer:ATLX ETHERNET DRIVERS)
+Following is an example configuration:
 
-Puranjay, can you please do a few things more here:
+tc qdisc replace dev $IFACE parent root handle 100 taprio \\
+    num_tc 3 \\
+    map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \\
+    queues 1@0 1@0 1@0 \\
+    base-time $BASE_TIME \\
+    sched-entry S 01 300000 \\
+    sched-entry S 02 300000 \\
+    sched-entry S 04 400000 \\
+    flags 0x1 \\
+    txtime-delay 200000 \\
+    clockid CLOCK_TAI
 
-1: Make sure you use scripts/get_maintainer.pl to cc the
-   appropriate people.
+tc qdisc replace dev $IFACE parent 100:1 etf \\
+    offload delta 200000 clockid CLOCK_TAI skip_skb_check
 
-2: Show that you compiled the object files and verified
-   where possible that there are no object file changes.
+Here, the "flags" parameter is indicating that the txtime-assist mode is
+enabled. Also, all the traffic classes have been assigned the same queue.
+This is to prevent the traffic classes in the lower priority queues from
+getting starved. Note that this configuration is specific to the i210
+ethernet card. Other network cards where the hardware queues are given the
+same priority, might be able to utilize more than one queue.
 
-3: State that there are no object changes in the proposed
-   commit log.
+Following are some of the other highlights of the series:
+- Fix a bug where hardware timestamping and SO_TXTIME options cannot be
+  used together. (Patch 1)
+- Introduces the skip_skb_check option.  (Patch 2)
+- Make TxTime assist mode work with TCP packets (Patch 7).
 
-thanks.
+The following changes are recommended to be done in order to get the best
+performance from taprio in this mode:
+# TSN in general does not allow Jumbo frames.
+ip link set dev enp1s0 mtu 1514
+# Disable segmentation offload. This is to prevent NIC from sending packets
+# after the gate for a traffic class has closed.
+ethtool -K eth0 gso off 
+ethtool -K eth0 tso off
+# Disable energy efficient ethernet to make sure there are no latency
+# spikes when NIC is trying to wake up when the packet is supposed to be
+# sent.
+ethtool --set-eee eth0 eee off
+
+Thanks,
+Vedang Patel
+
+Vedang Patel (7):
+  igb: clear out skb->tstamp after reading the txtime
+  etf: Add skip_sock_check
+  taprio: calculate cycle_time when schedule is installed
+  taprio: Remove inline directive
+  taprio: Add support for txtime-assist mode
+  taprio: make clock reference conversions easier
+  taprio: Adjust timestamps for TCP packets
+
+ drivers/net/ethernet/intel/igb/igb_main.c |   1 +
+ include/uapi/linux/pkt_sched.h            |   5 +
+ net/sched/sch_etf.c                       |  10 +
+ net/sched/sch_taprio.c                    | 431 +++++++++++++++++++++++++++---
+ 4 files changed, 413 insertions(+), 34 deletions(-)
+
+-- 
+2.7.3
 
