@@ -2,197 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E6AB4EF50
-	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 21:18:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0F424EFA2
+	for <lists+netdev@lfdr.de>; Fri, 21 Jun 2019 21:50:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726370AbfFUTSg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Jun 2019 15:18:36 -0400
-Received: from charlotte.tuxdriver.com ([70.61.120.58]:51333 "EHLO
-        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726108AbfFUTSg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 15:18:36 -0400
-Received: from [107.15.85.130] (helo=localhost)
-        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
-        (Exim 4.63)
-        (envelope-from <nhorman@tuxdriver.com>)
-        id 1heP3N-00005k-1k; Fri, 21 Jun 2019 15:18:33 -0400
-Date:   Fri, 21 Jun 2019 15:18:23 -0400
-From:   Neil Horman <nhorman@tuxdriver.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Matteo Croce <mcroce@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net] af_packet: Block execution of tasks waiting for
- transmit to complete in AF_PACKET
-Message-ID: <20190621191823.GD21895@hmswarspite.think-freely.org>
-References: <20190619202533.4856-1-nhorman@tuxdriver.com>
- <CA+FuTSe=kJSSvcYwCE9-omRF5Snd9AyesZac61PYyAHDStPt=A@mail.gmail.com>
- <20190620142354.GB18890@hmswarspite.think-freely.org>
- <CAF=yD-KFZBS7PpvvBkHS5jQdjRr4tWpeHmb7=9QPmvD-RTcpYw@mail.gmail.com>
- <20190621164156.GB21895@hmswarspite.think-freely.org>
- <CAF=yD-+MA398hTu7qCxfRhAMYrpeYp-+znc7bKNbupLYRRv5ug@mail.gmail.com>
+        id S1726125AbfFUTuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Jun 2019 15:50:18 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:60978 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725992AbfFUTuS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Jun 2019 15:50:18 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5LJkxF7020069;
+        Fri, 21 Jun 2019 12:49:46 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pfpt0818;
+ bh=+TJBII/D8ARsx67+78TKxIHCLx0ecmTBOfssQbznH8I=;
+ b=aBbrKLl7PZAx/vsmemStGQQ0OigqqhRi0eDluF29AaYfap1ryC1Z8eFI0op7ROdJbvX6
+ dhcYI3zFOVMk8D/jT6DG6NXOUMkj7f+Nd/5A4cwAOA6kX1EB4o0qD292w3tPU5RhQnwR
+ 32DgD8k77ZGRVYI3G0nYJk7PP4v+xUSVWBqRiS3jHS05+LIhkwkSL8NwNgYg41uUe405
+ W2ycWGOGJJm4zq1BtNFuzbzfL8J6GaQP0voSHIEQ82qYkveCBdlSoJyBn6fYcULMd/oQ
+ cK4LxDli+JYpkln+fPx1Rx09JZHbVv765H1IUAxpsxb3sCxUA7BOsWdkloporb5JJ2CE BQ== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0b-0016f401.pphosted.com with ESMTP id 2t8yp21cxx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 21 Jun 2019 12:49:45 -0700
+Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Fri, 21 Jun
+ 2019 12:49:43 -0700
+Received: from NAM02-CY1-obe.outbound.protection.outlook.com (104.47.37.58) by
+ SC-EXCH03.marvell.com (10.93.176.83) with Microsoft SMTP Server (TLS) id
+ 15.0.1367.3 via Frontend Transport; Fri, 21 Jun 2019 12:49:43 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=marvell.onmicrosoft.com; s=selector2-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+TJBII/D8ARsx67+78TKxIHCLx0ecmTBOfssQbznH8I=;
+ b=gUBGHqokhktOgB/umDnLKDR+QzsmCnD+xUyQEl9STjgM4Z6Q8oyCsIVLiVD3QIuMxF+yjeQmLtGqj+ze7QqoUpwtkSjGebJmdM5zNjxZIrbd3YvF6yGyo3hnEOPQoOahkiIIE+4CMSHbE+WbeKUEdc8O9/1dbkB7dPp7KgQEmaY=
+Received: from MN2PR18MB3182.namprd18.prod.outlook.com (10.255.236.143) by
+ MN2PR18MB2813.namprd18.prod.outlook.com (20.179.21.23) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2008.16; Fri, 21 Jun 2019 19:49:40 +0000
+Received: from MN2PR18MB3182.namprd18.prod.outlook.com
+ ([fe80::9880:2b8b:52e5:b413]) by MN2PR18MB3182.namprd18.prod.outlook.com
+ ([fe80::9880:2b8b:52e5:b413%3]) with mapi id 15.20.1987.014; Fri, 21 Jun 2019
+ 19:49:39 +0000
+From:   Michal Kalderon <mkalderon@marvell.com>
+To:     Doug Ledford <dledford@redhat.com>,
+        Ariel Elior <aelior@marvell.com>, "jgg@ziepe.ca" <jgg@ziepe.ca>
+CC:     "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH v3 rdma-next 0/3] RDMA/qedr: Use the doorbell overflow
+ recovery mechanism for RDMA
+Thread-Topic: [PATCH v3 rdma-next 0/3] RDMA/qedr: Use the doorbell overflow
+ recovery mechanism for RDMA
+Thread-Index: AQHVIcOPS8dQZZiCAk+T2CNQdiy87KamTmsAgABA6RA=
+Date:   Fri, 21 Jun 2019 19:49:39 +0000
+Message-ID: <MN2PR18MB3182498CA8C9C7EB3259F62FA1E70@MN2PR18MB3182.namprd18.prod.outlook.com>
+References: <20190613083819.6998-1-michal.kalderon@marvell.com>
+ <bda0321cb362bc93f5428b1df7daf69fed083656.camel@redhat.com>
+In-Reply-To: <bda0321cb362bc93f5428b1df7daf69fed083656.camel@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [79.181.29.27]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: b79f0393-1901-43c2-4da2-08d6f68198f7
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MN2PR18MB2813;
+x-ms-traffictypediagnostic: MN2PR18MB2813:
+x-microsoft-antispam-prvs: <MN2PR18MB28131B7AC35612E3CC50D537A1E70@MN2PR18MB2813.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 0075CB064E
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(39860400002)(396003)(346002)(376002)(136003)(189003)(51914003)(199004)(66476007)(14444005)(64756008)(256004)(73956011)(66556008)(66446008)(476003)(6246003)(66946007)(11346002)(6506007)(7696005)(8936002)(66066001)(33656002)(99286004)(305945005)(5660300002)(7736002)(74316002)(86362001)(76116006)(2906002)(446003)(486006)(52536014)(53936002)(229853002)(71200400001)(71190400001)(186003)(478600001)(2501003)(8676002)(316002)(102836004)(26005)(4326008)(6116002)(3846002)(68736007)(9686003)(54906003)(110136005)(76176011)(6436002)(14454004)(81166006)(81156014)(55016002)(25786009);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR18MB2813;H:MN2PR18MB3182.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: marvell.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: FpjBa99kAfK9jXOr+u3bwF/pKBSpVj73QpQHvgHnGmkhILmIrwqZMLuDZ8EH25utfOTwTtunZe25e3Ur/vgoXsIy8nM3BEFjfUYvb3vsOd30WndNt9/pDQwEkt0EkV6eEutRsflzRWdeFYSswHrU3u2eNufV4SC7plnIz44lyd/xdZlFda8FyFiXxQEQMqh4gRWnOIi/dXhCD8SYJSaqX3d4U3qm6LFh0SOe8efAC3A7+ltC9jC5h/aJ5AZZYN/6KxLydH3fx5rG2flbpc6AcB/vxLk+pc0hxlgoM1gXZZklfbf8cBWmqamXmHbMd/83CRK/Z67XPayB5SYd3IMnoswslN6H994/VAlzvzqPoRsfOvKJ3USOYBoW6rfs8ugMwjdX6PEup/AVuMC5tryBJpq9djwKE93A7Nu7Xg5b/ng=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAF=yD-+MA398hTu7qCxfRhAMYrpeYp-+znc7bKNbupLYRRv5ug@mail.gmail.com>
-User-Agent: Mutt/1.11.3 (2019-02-01)
-X-Spam-Score: -2.9 (--)
-X-Spam-Status: No
+X-MS-Exchange-CrossTenant-Network-Message-Id: b79f0393-1901-43c2-4da2-08d6f68198f7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jun 2019 19:49:39.4803
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: mkalderon@marvell.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR18MB2813
+X-OriginatorOrg: marvell.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-21_14:,,
+ signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 21, 2019 at 02:31:17PM -0400, Willem de Bruijn wrote:
-> On Fri, Jun 21, 2019 at 12:42 PM Neil Horman <nhorman@tuxdriver.com> wrote:
-> >
-> > On Thu, Jun 20, 2019 at 11:16:13AM -0400, Willem de Bruijn wrote:
-> > > On Thu, Jun 20, 2019 at 10:24 AM Neil Horman <nhorman@tuxdriver.com> wrote:
-> > > >
-> > > > On Thu, Jun 20, 2019 at 09:41:30AM -0400, Willem de Bruijn wrote:
-> > > > > On Wed, Jun 19, 2019 at 4:26 PM Neil Horman <nhorman@tuxdriver.com> wrote:
-> > > > > >
-> > > > > > When an application is run that:
-> > > > > > a) Sets its scheduler to be SCHED_FIFO
-> > > > > > and
-> > > > > > b) Opens a memory mapped AF_PACKET socket, and sends frames with the
-> > > > > > MSG_DONTWAIT flag cleared, its possible for the application to hang
-> > > > > > forever in the kernel.  This occurs because when waiting, the code in
-> > > > > > tpacket_snd calls schedule, which under normal circumstances allows
-> > > > > > other tasks to run, including ksoftirqd, which in some cases is
-> > > > > > responsible for freeing the transmitted skb (which in AF_PACKET calls a
-> > > > > > destructor that flips the status bit of the transmitted frame back to
-> > > > > > available, allowing the transmitting task to complete).
-> > > > > >
-> > > > > > However, when the calling application is SCHED_FIFO, its priority is
-> > > > > > such that the schedule call immediately places the task back on the cpu,
-> > > > > > preventing ksoftirqd from freeing the skb, which in turn prevents the
-> > > > > > transmitting task from detecting that the transmission is complete.
-> > > > > >
-> > > > > > We can fix this by converting the schedule call to a completion
-> > > > > > mechanism.  By using a completion queue, we force the calling task, when
-> > > > > > it detects there are no more frames to send, to schedule itself off the
-> > > > > > cpu until such time as the last transmitted skb is freed, allowing
-> > > > > > forward progress to be made.
-> > > > > >
-> > > > > > Tested by myself and the reporter, with good results
-> > > > > >
-> > > > > > Appies to the net tree
-> > > > > >
-> > > > > > Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
-> > > > > > Reported-by: Matteo Croce <mcroce@redhat.com>
-> > > > > > CC: "David S. Miller" <davem@davemloft.net>
-> > > > > > ---
-> > > > >
-> > > > > This is a complex change for a narrow configuration. Isn't a
-> > > > > SCHED_FIFO process preempting ksoftirqd a potential problem for other
-> > > > > networking workloads as well? And the right configuration to always
-> > > > > increase ksoftirqd priority when increasing another process's
-> > > > > priority? Also, even when ksoftirqd kicks in, isn't some progress
-> > > > > still made on the local_bh_enable reached from schedule()?
-> > > > >
-> > > >
-> > > > A few questions here to answer:
-> > >
-> > > Thanks for the detailed explanation.
-> > >
-> > > > Regarding other protocols having this problem, thats not the case, because non
-> > > > packet sockets honor the SK_SNDTIMEO option here (i.e. they sleep for a period
-> > > > of time specified by the SNDTIMEO option if MSG_DONTWAIT isn't set.  We could
-> > > > certainly do that, but the current implementation doesn't (opting instead to
-> > > > wait indefinately until the respective packet(s) have transmitted or errored
-> > > > out), and I wanted to maintain that behavior.  If there is consensus that packet
-> > > > sockets should honor SNDTIMEO, then I can certainly do that.
-> > > >
-> > > > As for progress made by calling local_bh_enable, My read of the code doesn't
-> > > > have the scheduler calling local_bh_enable at all.  Instead schedule uses
-> > > > preempt_disable/preempt_enable_no_resched() to gain exlcusive access to the cpu,
-> > > > which ignores pending softirqs on re-enablement.
-> > >
-> > > Ah, I'm mistaken there, then.
-> > >
-> > > >  Perhaps that needs to change,
-> > > > but I'm averse to making scheduler changes for this (the aforementioned concern
-> > > > about complex changes for a narrow use case)
-> > > >
-> > > > Regarding raising the priority of ksoftirqd, that could be a solution, but the
-> > > > priority would need to be raised to a high priority SCHED_FIFO parameter, and
-> > > > that gets back to making complex changes for a narrow problem domain
-> > > >
-> > > > As for the comlexity of the of the solution, I think this is, given your
-> > > > comments the least complex and intrusive change to solve the given problem.
-> > >
-> > > Could it be simpler to ensure do_softirq() gets run here? That would
-> > > allow progress for this case.
-> > >
-> > > >  We
-> > > > need to find a way to force the calling task off the cpu while the asynchronous
-> > > > operations in the transmit path complete, and we can do that this way, or by
-> > > > honoring SK_SNDTIMEO.  I'm fine with doing the latter, but I didn't want to
-> > > > alter the current protocol behavior without consensus on that.
-> > >
-> > > In general SCHED_FIFO is dangerous with regard to stalling other
-> > > progress, incl. ksoftirqd. But it does appear that this packet socket
-> > > case is special inside networking in calling schedule() directly here.
-> > >
-> > > If converting that, should it convert to logic more akin to other
-> > > sockets, like sock_wait_for_wmem? I haven't had a chance to read up on
-> > > the pros and cons of completion here yet, sorry. Didn't want to delay
-> > > responding until after I get a chance.
-> > >
-> > So, I started looking at implementing SOCK_SNDTIMEO for this patch, and
-> > something occured to me....We still need a mechanism to block in tpacket_snd.
-> > That is to say, other protocol use SK_SNDTIMEO to wait for socket memory to
-> > become available, and that requirement doesn't exist for memory mapped sockets
-> > in AF_PACKET (which tpacket_snd implements the kernel side for).  We have memory
-> > mapped frame buffers, which we marshall with an otherwise empty skb, and just
-> > send that (i.e. no waiting on socket memory, we just product an error if we
-> > don't have enough ram to allocate an sk_buff).  Given that, we only ever need to
-> > wait for a frame to complete transmission, or get freed in an error path further
-> > down the stack.  This probably explains why SK_SNDTIMEO doesn't exist for
-> > AF_PACKET.
-> 
-> SNDTIMEO behavior would still be useful: to wait for frame slot to
-> become available, but only up to a timeout?
-> 
-Ok, thats fair.  To be clear, memory_mapped packets aren't waiting here for a
-frame to become available for sending (thats done in userspace, where the
-application checks a specific memory location for the TP_AVAILABLE status to be
-set, so a new frame can be written).  tpacket_snd is wating for the transmission
-of a specific frame to complete the transmit action, which is a different thing.
-Still, I suppose theres no reason we couldn't contrain that wait on a timeout
-set by SK_SNDTIMEO
-
-> To be clear, adding that is not a prerequisite for fixing this
-> specific issue, of course. It would just be nice if the one happens to
-> be fixed by adding the other.
-> 
-> My main question is wrt the implementation details of struct
-> completion. Without dynamic memory allocation,
-> sock_wait_for_wmem/sk_stream_write_space obviously does not make
-> sense. But should we still use sk_wq and more importantly does this
-> need the same wait semantics (TASK_INTERRUPTIBLE) and does struct
-> completion give those?
-> 
-I suppose we could overload its use here, but I would be worried that such an
-overload would be confusing.  Nominally, sk_wq is used, as you note, to block
-sockets whose allocated send space is full, until such time as enough frames
-have been sent to make space for the next write.  In this scenario, we already
-know we have space to send a frame (by virtue of the fact that we are executing
-in tpakcet_snd, which is only called after userspace has written a frame to the
-memory mapped buffer already allocated for frame transmission).  In this case we
-are simply waiting for the last frame that we have sent to complete
-transmission, at which point we can look to see if more frames are available to
-send, or return from the system call.  I'm happy to take an alternate consensus
-into account, but for the sake of clarity I think I would rather use the
-completion queue, as it makes clear the correlation between the waiter and the
-event we are waiting on.
-
-
-> >
-> > Given that, is it worth implementing (as it will just further complicate this
-> > patch, for no additional value), or can we move forward with it as it is?
-> >
-> > Neil
-> >
-> 
+PiBGcm9tOiBsaW51eC1yZG1hLW93bmVyQHZnZXIua2VybmVsLm9yZyA8bGludXgtcmRtYS0NCj4g
+b3duZXJAdmdlci5rZXJuZWwub3JnPiBPbiBCZWhhbGYgT2YgRG91ZyBMZWRmb3JkDQo+IA0KPiBP
+biBUaHUsIDIwMTktMDYtMTMgYXQgMTE6MzggKzAzMDAsIE1pY2hhbCBLYWxkZXJvbiB3cm90ZToN
+Cj4gPiBUaGlzIHBhdGNoIHNlcmllcyB1c2VkIHRoZSBkb29yYmVsbCBvdmVyZmxvdyByZWNvdmVy
+eSBtZWNoYW5pc20NCj4gPiBpbnRyb2R1Y2VkIGluIGNvbW1pdCAzNjkwN2NkNWNkNzIgKCJxZWQ6
+IEFkZCBkb29yYmVsbCBvdmVyZmxvdw0KPiA+IHJlY292ZXJ5IG1lY2hhbmlzbSIpIGZvciByZG1h
+ICggUm9DRSBhbmQgaVdBUlAgKQ0KPiA+DQo+ID4gcmRtYS1jb3JlIHB1bGwgcmVxdWVzdCAjNDkz
+DQo+ID4NCj4gPiBDaGFuZ2VzIGZyb20gVjI6DQo+ID4gLSBEb24ndCB1c2UgbG9uZy1saXZlZCBr
+bWFwLiBJbnN0ZWFkIHVzZSB1c2VyLXRyaWdnZXIgbW1hcCBmb3IgdGhlDQo+ID4gICBkb29yYmVs
+bCByZWNvdmVyeSBlbnRyaWVzLg0KPiA+IC0gTW9kaWZ5IGRwaV9hZGRyIHRvIGJlIGRlbm90ZWQg
+d2l0aCBfX2lvbWVtIGFuZCBhdm9pZCByZWR1bmRhbnQNCj4gPiAgIGNhc3RzDQo+ID4NCj4gPiBD
+aGFuZ2VzIGZyb20gVjE6DQo+ID4gLSBjYWxsIGttYXAgdG8gbWFwIHZpcnR1YWwgYWRkcmVzcyBp
+bnRvIGtlcm5lbCBzcGFjZQ0KPiA+IC0gbW9kaWZ5IGRiX3JlY19kZWxldGUgdG8gYmUgdm9pZA0K
+PiA+IC0gcmVtb3ZlIHNvbWUgY3B1X3RvX2xlMTYgdGhhdCB3ZXJlIGFkZGVkIHRvIHByZXZpb3Vz
+IHBhdGNoIHdoaWNoIGFyZQ0KPiA+ICAgY29ycmVjdCBidXQgbm90IHJlbGF0ZWQgdG8gdGhlIG92
+ZXJmbG93IHJlY292ZXJ5IG1lY2hhbmlzbS4gV2lsbCBiZQ0KPiA+ICAgc3VibWl0dGVkIGFzIHBh
+cnQgb2YgYSBkaWZmZXJlbnQgcGF0Y2gNCj4gPg0KPiA+DQo+ID4gTWljaGFsIEthbGRlcm9uICgz
+KToNCj4gPiAgIHFlZCo6IENoYW5nZSBkcGlfYWRkciB0byBiZSBkZW5vdGVkIHdpdGggX19pb21l
+bQ0KPiA+ICAgUkRNQS9xZWRyOiBBZGQgZG9vcmJlbGwgb3ZlcmZsb3cgcmVjb3Zlcnkgc3VwcG9y
+dA0KPiA+ICAgUkRNQS9xZWRyOiBBZGQgaVdBUlAgZG9vcmJlbGwgcmVjb3Zlcnkgc3VwcG9ydA0K
+PiA+DQo+ID4gIGRyaXZlcnMvaW5maW5pYmFuZC9ody9xZWRyL21haW4uYyAgICAgICAgICB8ICAg
+MiArLQ0KPiA+ICBkcml2ZXJzL2luZmluaWJhbmQvaHcvcWVkci9xZWRyLmggICAgICAgICAgfCAg
+MjcgKy0NCj4gPiAgZHJpdmVycy9pbmZpbmliYW5kL2h3L3FlZHIvdmVyYnMuYyAgICAgICAgIHwg
+Mzg3DQo+ID4gKysrKysrKysrKysrKysrKysrKysrKysrLS0tLS0NCj4gPiAgZHJpdmVycy9uZXQv
+ZXRoZXJuZXQvcWxvZ2ljL3FlZC9xZWRfcmRtYS5jIHwgICA2ICstDQo+ID4gIGluY2x1ZGUvbGlu
+dXgvcWVkL3FlZF9yZG1hX2lmLmggICAgICAgICAgICB8ICAgMiArLQ0KPiA+ICBpbmNsdWRlL3Vh
+cGkvcmRtYS9xZWRyLWFiaS5oICAgICAgICAgICAgICAgfCAgMjUgKysNCj4gPiAgNiBmaWxlcyBj
+aGFuZ2VkLCAzNzggaW5zZXJ0aW9ucygrKSwgNzEgZGVsZXRpb25zKC0pDQo+ID4NCj4gDQo+IEhp
+IE1pY2hhbCwNCj4gDQo+IEluIHBhdGNoIDIgYW5kIDMgYm90aCwgeW91IHN0aWxsIGhhdmUgcXVp
+dGUgYSBmZXcgY2FzdHMgdG8gKHU4IF9faW9tZW0gKikuDQo+IFdoeSBub3QganVzdCBkZWZpbmUg
+dGhlIHN0cnVjdCBlbGVtZW50cyBhcyB1OCBfX2lvbWVtICogaW5zdGVhZCBvZiB2b2lkDQo+IF9f
+aW9tZW0gKiBhbmQgYXZvaWQgYWxsIHRoZSBjYXN0cz8NCj4gDQpIaSBEb3VnLCANCg0KVGhhbmtz
+IGZvciB0aGUgcmV2aWV3LiBUaGUgcmVtYWluaW5nIGNhc3RzIGFyZSBkdWUgdG8gcG9pbnRlciBh
+cml0aG1ldGljIGFuZCBub3QgdmFyaWFibGUgYXNzaWdubWVudHMNCmFzIGJlZm9yZS4gUmVtb3Zp
+bmcgdGhlIGNhc3QgZW50aXJlbHkgd2lsbCByZXF1aXJlIHF1aXRlIGEgbG90IG9mIGNoYW5nZXMg
+aW4gcWVkIGFuZCBpbiByZG1hLWNvcmUNCndoaWNoIEkgd291bGQgYmUgaGFwcHkgdG8gYXZvaWQg
+YXQgdGhpcyB0aW1lLiANClBsZWFzZSByZWNvbnNpZGVyLCANClRoYW5rcyBhZ2FpbiANCk1pY2hh
+bA0KDQoNCj4gLS0NCj4gRG91ZyBMZWRmb3JkIDxkbGVkZm9yZEByZWRoYXQuY29tPg0KPiAgICAg
+R1BHIEtleUlEOiBCODI2QTMzMzBFNTcyRkREDQo+ICAgICBGaW5nZXJwcmludCA9IEFFNkIgMUJE
+QSAxMjJCIDIzQjQgMjY1QiAgMTI3NCBCODI2IEEzMzMgMEU1NyAyRkREDQo=
