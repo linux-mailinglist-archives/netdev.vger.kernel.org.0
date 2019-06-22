@@ -2,116 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 765E74F3E7
-	for <lists+netdev@lfdr.de>; Sat, 22 Jun 2019 07:40:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D5A14F3EE
+	for <lists+netdev@lfdr.de>; Sat, 22 Jun 2019 07:44:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726098AbfFVFkc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Jun 2019 01:40:32 -0400
-Received: from conssluserg-02.nifty.com ([210.131.2.81]:55098 "EHLO
-        conssluserg-02.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726049AbfFVFkc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jun 2019 01:40:32 -0400
-Received: from mail-ua1-f54.google.com (mail-ua1-f54.google.com [209.85.222.54]) (authenticated)
-        by conssluserg-02.nifty.com with ESMTP id x5M5eC9L014968;
-        Sat, 22 Jun 2019 14:40:13 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com x5M5eC9L014968
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1561182013;
-        bh=JxBG390b3AdnCwZiQOKsk1HAVj5lXZJFRQcpOMWwHbY=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=vfztd4BrukAdjcSvvO2e/ZaIiyZ9mx12XbkLTV+W2nuoyC48frSlNAvAwwbP73Vyr
-         Tn+tVvlKIzCwwccAQjVD1cg72WyVKXSwN1+zOr7lOr0xep66UxomKkozXKaAAqJ+CV
-         SfVa4bLXejWLmgX1RRFqEBQRb5vCW/M+iBtN1UirSWuQ9L3Xh33Fs3k5t2oCFMw6Ld
-         Z7kiY+Xf7S5QA3YRLzTg1M2Ye9HAaaVOTunAB6PxPorlGZDFETkls1kQhr8wgHXtMf
-         YjfN2RgtEjH09lnD0+PgldC7gF8hrf52UOZ7yY1R/DkdUlmXGwi5iBOm4amb4+aKnQ
-         LTT74SXqb15DQ==
-X-Nifty-SrcIP: [209.85.222.54]
-Received: by mail-ua1-f54.google.com with SMTP id v18so3739081uad.12;
-        Fri, 21 Jun 2019 22:40:13 -0700 (PDT)
-X-Gm-Message-State: APjAAAUuZhCGgH9XL0FGqr+jjF6Fh1RUhfsTRGXzsgdXdgTZS4cMprPS
-        afVQByBwbpOU9AaM+w1rJfdhJIl9V7gAVvOKBM4=
-X-Google-Smtp-Source: APXvYqzlKgWISF72/2l3BCTzXtxOrbxlLww7I4OL4+Gvksq0C26omqpvWWFe0eb5vghy8UgM0iBbJXyRxsNhrZQR8a0=
-X-Received: by 2002:ab0:5ea6:: with SMTP id y38mr48367542uag.40.1561182012133;
- Fri, 21 Jun 2019 22:40:12 -0700 (PDT)
+        id S1726138AbfFVFoH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Jun 2019 01:44:07 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:42796 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726049AbfFVFoH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jun 2019 01:44:07 -0400
+Received: by mail-pg1-f196.google.com with SMTP id l19so4338385pgh.9;
+        Fri, 21 Jun 2019 22:44:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=NWS4f+aR6LO6iXUHr6HD4me4LkyrGwLq4KbFdEdeA6c=;
+        b=ULCKOc6OtZqjLETG5AND4K3JctUd3iKXZPNNT2E0muNoUNAA9yxkl3s01HndlEUcEv
+         bnxzvmijdiRM1wm/AYc5BgudSln6kCDuNzZvWHicF8D8tL/kQU15XKLlJirX2XKu4RkD
+         yq3Pxk4d0jKq4HtCSyqto/FRl3hFItwvNmfWYbJYZujgTLY5I0msV5B/5AUZc94yO2pe
+         rDy1g2xk3sDw0lM9jcgpTF1cOar/9rj34kuMov8LEYggEYtYzZwnODZ6ycfvgPU9V9iE
+         0/YNnvfZCQKlD/McuQ40dqUKTnWVkXubzGwFR12jXy4GUIsjqzH5PDkkJYVEX8lLRma9
+         3cmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=NWS4f+aR6LO6iXUHr6HD4me4LkyrGwLq4KbFdEdeA6c=;
+        b=skjdCaNFXBOVPiBgeYrVMEyqBp/cilgYeE2xyAaEFsbc9kg4OiAVB1fyGHN93qYUZv
+         T8dbnJFugHlbZ6/0JK22z35wgnoemIu82ctggRLevtuynn6817RCgV2N7nsXaLWTgwPG
+         L1ovqYvtvR/mB8iYk9Q3GWvLzCeszYAUf7sc3/y4q75KMJI7sJ7HtokVeay/IrBJvLLA
+         l7G0R5OMIvcNmSFLuf5SCJNNkagwLLwrfQ1wN8GvnPtgqvhFIDEYqh+n0vKsGMFfAdNO
+         UFEBY4PHHkvvbfW2vnc1l5heewQhoUAaU0zouXNSeGlY1w4D78e4LlUOUk99NZKMiptJ
+         O2aw==
+X-Gm-Message-State: APjAAAWTKXNBWrndpoQBvuKWvxhb/BG748taTSQCRERt5HzCT0Ronc+q
+        mC8JjRRFSbP8nlueS2nWr74=
+X-Google-Smtp-Source: APXvYqy44LRkDO3jBpFKRB2NBMTaoymaDYjBhrhVQpMK53mfBq31Cyq1LzAcH5uU0qmHOEHjbCCYmQ==
+X-Received: by 2002:a63:d60c:: with SMTP id q12mr21757037pgg.176.1561182246687;
+        Fri, 21 Jun 2019 22:44:06 -0700 (PDT)
+Received: from Gentoo ([103.231.91.74])
+        by smtp.gmail.com with ESMTPSA id a3sm6753566pfi.63.2019.06.21.22.44.00
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 21 Jun 2019 22:44:05 -0700 (PDT)
+Date:   Sat, 22 Jun 2019 11:13:47 +0530
+From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     pr-tracker-bot@kernel.org, David Miller <davem@davemloft.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>
+Subject: Re: [GIT] Networking
+Message-ID: <20190622054347.GA27816@Gentoo>
+References: <20190621.212137.1249209897243384684.davem@davemloft.net>
+ <156118140484.25946.9601116477028790363.pr-tracker-bot@kernel.org>
+ <CAHk-=whArwYU0KwEps4A6oRniRJ-B8K6VFX7gF=YGuFFaxDxqA@mail.gmail.com>
 MIME-Version: 1.0
-References: <20190604101409.2078-1-yamada.masahiro@socionext.com>
- <20190604101409.2078-16-yamada.masahiro@socionext.com> <CAK8P3a08f25WYP5r57JHPcZWieS2+07=_qTphLosS4M2w8F0Zw@mail.gmail.com>
- <CAK7LNATt8BSrMfrOVjZ_SbA0awsh4CvRhu6TF3gYYynirpviWw@mail.gmail.com>
-In-Reply-To: <CAK7LNATt8BSrMfrOVjZ_SbA0awsh4CvRhu6TF3gYYynirpviWw@mail.gmail.com>
-From:   Masahiro Yamada <yamada.masahiro@socionext.com>
-Date:   Sat, 22 Jun 2019 14:39:35 +0900
-X-Gmail-Original-Message-ID: <CAK7LNATi1kX_j9-7CoT24hohgTCQB1dSc9j8DNdmjnmEg1-kRg@mail.gmail.com>
-Message-ID: <CAK7LNATi1kX_j9-7CoT24hohgTCQB1dSc9j8DNdmjnmEg1-kRg@mail.gmail.com>
-Subject: Re: [PATCH 15/15] kbuild: compile test UAPI headers to ensure they
- are self-contained
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        David Howells <dhowells@redhat.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Jani Nikula <jani.nikula@intel.com>,
-        Song Liu <songliubraving@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-riscv@lists.infradead.org,
-        Michal Marek <michal.lkml@markovi.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Palmer Dabbelt <palmer@sifive.com>, bpf@vger.kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Albert Ou <aou@eecs.berkeley.edu>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="PNTmBPCT7hxwcZjr"
+Content-Disposition: inline
+In-Reply-To: <CAHk-=whArwYU0KwEps4A6oRniRJ-B8K6VFX7gF=YGuFFaxDxqA@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jun 22, 2019 at 2:12 PM Masahiro Yamada
-<yamada.masahiro@socionext.com> wrote:
->
-> On Sat, Jun 22, 2019 at 4:05 AM Arnd Bergmann <arnd@arndb.de> wrote:
-> >
-> > On Tue, Jun 4, 2019 at 12:16 PM Masahiro Yamada
-> > <yamada.masahiro@socionext.com> wrote:
-> >
-> > > --- a/Makefile
-> > > +++ b/Makefile
-> > > @@ -1363,7 +1363,7 @@ CLEAN_DIRS  +=3D $(MODVERDIR) include/ksym
-> > >  CLEAN_FILES +=3D modules.builtin.modinfo
-> > >
-> > >  # Directories & files removed with 'make mrproper'
-> > > -MRPROPER_DIRS  +=3D include/config usr/include include/generated    =
-      \
-> > > +MRPROPER_DIRS  +=3D include/config include/generated          \
-> > >                   arch/$(SRCARCH)/include/generated .tmp_objdiff
-> > >  MRPROPER_FILES +=3D .config .config.old .version \
-> > >                   Module.symvers tags TAGS cscope* GPATH GTAGS GRTAGS=
- GSYMS \
-> >
-> > This change seems to have caused a minor regression:
-> >
-> > $ make clean ; make clean
-> > find: =E2=80=98*=E2=80=99: No such file or directory
->
-> Hmm, I cannot reproduce this.
->
-> I checked the latest linux-next.
->
->
-> masahiro@grover:~/ref/linux-next$ git describe
-> next-20190621
-> masahiro@grover:~/ref/linux-next$ make clean; make clean
-> masahiro@grover:~/ref/linux-next$
->
->
 
-Ah, now I was able to reproduce it.
+--PNTmBPCT7hxwcZjr
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
 
-Will fix it soon. Thanks.
+ROFL ....bots gets confused ...we are blurring the boundaries Linus...:)
 
+On 22:36 Fri 21 Jun , Linus Torvalds wrote:
+>On Fri, Jun 21, 2019 at 10:30 PM <pr-tracker-bot@kernel.org> wrote:
+>>
+>> The pull request you sent on Fri, 21 Jun 2019 21:21:37 -0400 (EDT):
+>>
+>> > (unable to parse the git remote)
+>
+>This "unable to parse the git remote" is apparently because the pull
+>request had an extraneous ':' in the remote description
+>
+>  git://git.kernel.org:/pub/scm/linux/kernel/git/davem/net.git
+>                     ^^^
+>
+>which seems to have confused the pr-tracker-bot.
+>
+>               Linus
 
+--PNTmBPCT7hxwcZjr
+Content-Type: application/pgp-signature; name="signature.asc"
 
---=20
-Best Regards
-Masahiro Yamada
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEnwF+nWawchZUPOuwsjqdtxFLKRUFAl0NwA8ACgkQsjqdtxFL
+KRWQpggAulPoFvWzafYH4jgSKEhcIJQhnfnU+aBviuV9tu5Bz/qaBKeHEO7Anwa6
+8X+PTQSfdS/vhugNI/R1x7le1pkW4XfA7VYUGNNnSx1ortPByx+nf1gmNPh9mrFW
+ThXq+x8Ii8AI8zTHzha7W2KoT/g+OkjagVGL+9TP7eIQCxn6CCU5HJ9jjGi8xjkj
+BAZtZ54gD3wOFN/2tbRVz5+z25lD8AGwpho7m4/wI96MOrNLm3wXX12dNrUrkygC
+pa7gPcAwl3R6lIkSrNBPAhpSuyh3QP8KY1XoBPfE1N9BYJj2fmfBTDl7vHgh7HL/
+CjrigEK2r/wwZe+YXqNu34sbk4eS1Q==
+=2ky6
+-----END PGP SIGNATURE-----
+
+--PNTmBPCT7hxwcZjr--
