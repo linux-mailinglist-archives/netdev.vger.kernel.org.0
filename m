@@ -2,111 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 235904F758
-	for <lists+netdev@lfdr.de>; Sat, 22 Jun 2019 19:07:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B0E54F77F
+	for <lists+netdev@lfdr.de>; Sat, 22 Jun 2019 19:42:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726357AbfFVRHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Jun 2019 13:07:40 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:39795 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726304AbfFVRHj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jun 2019 13:07:39 -0400
-Received: by mail-pf1-f194.google.com with SMTP id j2so5156506pfe.6
-        for <netdev@vger.kernel.org>; Sat, 22 Jun 2019 10:07:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=zO3o9tKYa+QH0pVT+9fR33alGMYM6CVZWsxMQ9ej5DA=;
-        b=F7g1UnpSgmsYA67zk2qa+bARB8wBx92w8a6jZDDErCpHCBcc1tWvO6KR+g8C7KgXp0
-         ApAW/qROaKpaVsXg3Pz5GEkgs1Quz/Pe+nUHudE2I7r7G5ueMdppb7w91uW4teLmhGXT
-         V9oj7eupYxych3pBHXZ6E7NWzSK+Yu8jelEGE8A/V+C/c47rYN4tJcTmVX0mvuH263aA
-         hvUwheNHwIotVvWvAs2YxeR3EYxm+W3Dhim1uyRKwumKhiOQN4zefu9IQY6T8eKravQm
-         0oJekouM+LKJznmpX5A2i2LGcs7HKqqjjNi9Mbs3ewdoM97yGcDiRODgw7Nge9iosl5r
-         +iOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=zO3o9tKYa+QH0pVT+9fR33alGMYM6CVZWsxMQ9ej5DA=;
-        b=XmVepJpTYsv43cMJPtw4PWoHz92ExASE1jWk6bLiPVaeTr5FpgDHnk4OxZBsn7YvUY
-         ANv87eBHa5+Y9hWGzLZGdqpEwqYMQxR6bWrhF7NUn1IkH60mUh5Q+BCj/WW6yYQPjti/
-         WEB3mZ63ZHH7qBHVRbBe83ZP7ekVCyl1aOzJGpWdhfmXFSEo6WJy/w1r+HNFESbQpy6b
-         Iycu9Mf5hhZtGCJS5hd7PFKx7WwplxM9fhJ7GijMlqmXrgvPXmXizMhOYTuxylTqFKPE
-         GDaovyJF/h3Xum0dC9RvozUewRuG4qGg9C07U/sqci07Vkds/2xJSto7mblmo2p2Hyl7
-         hQwA==
-X-Gm-Message-State: APjAAAXPKysCe9yFycB/c8SFnRbFGoaFnn6Mk4Z2PZ6pZCp9BPBdO9Gb
-        wyB8K9DnOtR91IOLvGAcIb/u6NF04hc=
-X-Google-Smtp-Source: APXvYqxm/BgPjVo0ydHnmddExfZBGY4qVKNoGUihLbrTEMSVVnijMaj4FhRV4zHMpHBwyb2OpH8Hqg==
-X-Received: by 2002:a17:90a:dd45:: with SMTP id u5mr13624999pjv.109.1561223258827;
-        Sat, 22 Jun 2019 10:07:38 -0700 (PDT)
-Received: from dancer.lab.teklibre.com ([2603:3024:1536:86f0:eea8:6bff:fefe:9a2])
-        by smtp.gmail.com with ESMTPSA id e66sm6121632pfe.50.2019.06.22.10.07.38
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Sat, 22 Jun 2019 10:07:38 -0700 (PDT)
-From:   Dave Taht <dave.taht@gmail.com>
+        id S1726326AbfFVRmZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Jun 2019 13:42:25 -0400
+Received: from charlotte.tuxdriver.com ([70.61.120.58]:55588 "EHLO
+        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726286AbfFVRmY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jun 2019 13:42:24 -0400
+Received: from [107.15.85.130] (helo=localhost)
+        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
+        (Exim 4.63)
+        (envelope-from <nhorman@tuxdriver.com>)
+        id 1hek1n-0007u9-H6; Sat, 22 Jun 2019 13:42:20 -0400
+From:   Neil Horman <nhorman@tuxdriver.com>
 To:     netdev@vger.kernel.org
-Cc:     Dave Taht <dave.taht@gmail.com>, John Gilmore <gnu@toad.com>
-Subject: [PATCH net-next 1/1] Allow 0.0.0.0/8 as a valid address range
-Date:   Sat, 22 Jun 2019 10:07:34 -0700
-Message-Id: <1561223254-13589-2-git-send-email-dave.taht@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1561223254-13589-1-git-send-email-dave.taht@gmail.com>
-References: <1561223254-13589-1-git-send-email-dave.taht@gmail.com>
+Cc:     Neil Horman <nhorman@tuxdriver.com>,
+        Matteo Croce <mcroce@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Subject: [PATCH v2 net] af_packet: Block execution of tasks waiting for transmit to complete in AF_PACKET
+Date:   Sat, 22 Jun 2019 13:41:54 -0400
+Message-Id: <20190622174154.14473-1-nhorman@tuxdriver.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190619202533.4856-1-nhorman@tuxdriver.com>
+References: <20190619202533.4856-1-nhorman@tuxdriver.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Spam-Score: -2.9 (--)
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The longstanding prohibition against using 0.0.0.0/8 dates back
-to two issues with the early internet.
+When an application is run that:
+a) Sets its scheduler to be SCHED_FIFO
+and
+b) Opens a memory mapped AF_PACKET socket, and sends frames with the
+MSG_DONTWAIT flag cleared, its possible for the application to hang
+forever in the kernel.  This occurs because when waiting, the code in
+tpacket_snd calls schedule, which under normal circumstances allows
+other tasks to run, including ksoftirqd, which in some cases is
+responsible for freeing the transmitted skb (which in AF_PACKET calls a
+destructor that flips the status bit of the transmitted frame back to
+available, allowing the transmitting task to complete).
 
-There was an interoperability problem with BSD 4.2 in 1984, fixed in
-BSD 4.3 in 1986. BSD 4.2 has long since been retired. 
+However, when the calling application is SCHED_FIFO, its priority is
+such that the schedule call immediately places the task back on the cpu,
+preventing ksoftirqd from freeing the skb, which in turn prevents the
+transmitting task from detecting that the transmission is complete.
 
-Secondly, addresses of the form 0.x.y.z were initially defined only as
-a source address in an ICMP datagram, indicating "node number x.y.z on
-this IPv4 network", by nodes that know their address on their local
-network, but do not yet know their network prefix, in RFC0792 (page
-19).  This usage of 0.x.y.z was later repealed in RFC1122 (section
-3.2.2.7), because the original ICMP-based mechanism for learning the
-network prefix was unworkable on many networks such as Ethernet (which
-have longer addresses that would not fit into the 24 "node number"
-bits).  Modern networks use reverse ARP (RFC0903) or BOOTP (RFC0951)
-or DHCP (RFC2131) to find their full 32-bit address and CIDR netmask
-(and other parameters such as default gateways). 0.x.y.z has had
-16,777,215 addresses in 0.0.0.0/8 space left unused and reserved for
-future use, since 1989.
+We can fix this by converting the schedule call to a completion
+mechanism.  By using a completion queue, we force the calling task, when
+it detects there are no more frames to send, to schedule itself off the
+cpu until such time as the last transmitted skb is freed, allowing
+forward progress to be made.
 
-This patch allows for these 16m new IPv4 addresses to appear within
-a box or on the wire. Layer 2 switches don't care.
+Tested by myself and the reporter, with good results
 
-0.0.0.0/32 is still prohibited, of course.
+Appies to the net tree
 
-Signed-off-by: Dave Taht <dave.taht@gmail.com>
-Signed-off-by: John Gilmore <gnu@toad.com>
-Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
+Reported-by: Matteo Croce <mcroce@redhat.com>
+CC: "David S. Miller" <davem@davemloft.net>
+CC: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
 
+Change Notes:
+
+V1->V2:
+	Enhance the sleep logic to support being interruptible and
+allowing for honoring to SK_SNDTIMEO (Willem de Bruijn)
 ---
- include/linux/in.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/packet/af_packet.c | 60 ++++++++++++++++++++++++++++++++----------
+ net/packet/internal.h  |  2 ++
+ 2 files changed, 48 insertions(+), 14 deletions(-)
 
-diff --git a/include/linux/in.h b/include/linux/in.h
-index 4d2fedfb753a..1873ef642605 100644
---- a/include/linux/in.h
-+++ b/include/linux/in.h
-@@ -63,7 +63,7 @@ static inline bool ipv4_is_all_snoopers(__be32 addr)
- 
- static inline bool ipv4_is_zeronet(__be32 addr)
- {
--	return (addr & htonl(0xff000000)) == htonl(0x00000000);
-+	return (addr == 0);
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index a29d66da7394..8ddb2f7aebb4 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -358,7 +358,8 @@ static inline struct page * __pure pgv_to_page(void *addr)
+ 	return virt_to_page(addr);
  }
  
- /* Special-Use IPv4 Addresses (RFC3330) */
+-static void __packet_set_status(struct packet_sock *po, void *frame, int status)
++static void __packet_set_status(struct packet_sock *po, void *frame, int status,
++				bool call_complete)
+ {
+ 	union tpacket_uhdr h;
+ 
+@@ -381,6 +382,8 @@ static void __packet_set_status(struct packet_sock *po, void *frame, int status)
+ 		BUG();
+ 	}
+ 
++	if (po->wait_on_complete && call_complete)
++		complete(&po->skb_completion);
+ 	smp_wmb();
+ }
+ 
+@@ -1148,6 +1151,14 @@ static void *packet_previous_frame(struct packet_sock *po,
+ 	return packet_lookup_frame(po, rb, previous, status);
+ }
+ 
++static void *packet_next_frame(struct packet_sock *po,
++		struct packet_ring_buffer *rb,
++		int status)
++{
++	unsigned int next = rb->head != rb->frame_max ? rb->head+1 : 0;
++	return packet_lookup_frame(po, rb, next, status);
++}
++
+ static void packet_increment_head(struct packet_ring_buffer *buff)
+ {
+ 	buff->head = buff->head != buff->frame_max ? buff->head+1 : 0;
+@@ -2360,7 +2371,7 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
+ #endif
+ 
+ 	if (po->tp_version <= TPACKET_V2) {
+-		__packet_set_status(po, h.raw, status);
++		__packet_set_status(po, h.raw, status, false);
+ 		sk->sk_data_ready(sk);
+ 	} else {
+ 		prb_clear_blk_fill_status(&po->rx_ring);
+@@ -2400,7 +2411,7 @@ static void tpacket_destruct_skb(struct sk_buff *skb)
+ 		packet_dec_pending(&po->tx_ring);
+ 
+ 		ts = __packet_set_timestamp(po, ph, skb);
+-		__packet_set_status(po, ph, TP_STATUS_AVAILABLE | ts);
++		__packet_set_status(po, ph, TP_STATUS_AVAILABLE | ts, true);
+ 	}
+ 
+ 	sock_wfree(skb);
+@@ -2585,13 +2596,13 @@ static int tpacket_parse_header(struct packet_sock *po, void *frame,
+ 
+ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+ {
+-	struct sk_buff *skb;
++	struct sk_buff *skb = NULL;
+ 	struct net_device *dev;
+ 	struct virtio_net_hdr *vnet_hdr = NULL;
+ 	struct sockcm_cookie sockc;
+ 	__be16 proto;
+ 	int err, reserve = 0;
+-	void *ph;
++	void *ph = NULL;
+ 	DECLARE_SOCKADDR(struct sockaddr_ll *, saddr, msg->msg_name);
+ 	bool need_wait = !(msg->msg_flags & MSG_DONTWAIT);
+ 	unsigned char *addr = NULL;
+@@ -2600,9 +2611,12 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+ 	int len_sum = 0;
+ 	int status = TP_STATUS_AVAILABLE;
+ 	int hlen, tlen, copylen = 0;
++	long timeo;
+ 
+ 	mutex_lock(&po->pg_vec_lock);
+ 
++	timeo = sock_sndtimeo(&po->sk, msg->msg_flags & MSG_DONTWAIT);
++
+ 	if (likely(saddr == NULL)) {
+ 		dev	= packet_cached_dev_get(po);
+ 		proto	= po->num;
+@@ -2647,16 +2661,29 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+ 		size_max = dev->mtu + reserve + VLAN_HLEN;
+ 
+ 	do {
++
++		if (po->wait_on_complete && need_wait) {
++			timeo = wait_for_completion_interruptible_timeout(&po->skb_completion, timeo);
++			po->wait_on_complete = 0;
++			if (!timeo) {
++				/* We timed out, break out and notify userspace */
++				err = -ETIMEDOUT;
++				goto out_status;
++			} else if (timeo == -ERESTARTSYS) {
++				err = -ERESTARTSYS;
++				goto out_status;
++			}
++		}
++
+ 		ph = packet_current_frame(po, &po->tx_ring,
+ 					  TP_STATUS_SEND_REQUEST);
+-		if (unlikely(ph == NULL)) {
+-			if (need_wait && need_resched())
+-				schedule();
+-			continue;
+-		}
++
++		if (likely(ph == NULL))
++			break;
+ 
+ 		skb = NULL;
+ 		tp_len = tpacket_parse_header(po, ph, size_max, &data);
++
+ 		if (tp_len < 0)
+ 			goto tpacket_error;
+ 
+@@ -2699,7 +2726,7 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+ tpacket_error:
+ 			if (po->tp_loss) {
+ 				__packet_set_status(po, ph,
+-						TP_STATUS_AVAILABLE);
++						TP_STATUS_AVAILABLE, false);
+ 				packet_increment_head(&po->tx_ring);
+ 				kfree_skb(skb);
+ 				continue;
+@@ -2719,7 +2746,9 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+ 		}
+ 
+ 		skb->destructor = tpacket_destruct_skb;
+-		__packet_set_status(po, ph, TP_STATUS_SENDING);
++		__packet_set_status(po, ph, TP_STATUS_SENDING, false);
++		if (!packet_next_frame(po, &po->tx_ring, TP_STATUS_SEND_REQUEST))
++			po->wait_on_complete = 1;
+ 		packet_inc_pending(&po->tx_ring);
+ 
+ 		status = TP_STATUS_SEND_REQUEST;
+@@ -2753,8 +2782,10 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+ 	goto out_put;
+ 
+ out_status:
+-	__packet_set_status(po, ph, status);
+-	kfree_skb(skb);
++	if (ph)
++		__packet_set_status(po, ph, status, false);
++	if (skb)
++		kfree_skb(skb);
+ out_put:
+ 	dev_put(dev);
+ out:
+@@ -3207,6 +3238,7 @@ static int packet_create(struct net *net, struct socket *sock, int protocol,
+ 	sock_init_data(sock, sk);
+ 
+ 	po = pkt_sk(sk);
++	init_completion(&po->skb_completion);
+ 	sk->sk_family = PF_PACKET;
+ 	po->num = proto;
+ 	po->xmit = dev_queue_xmit;
+diff --git a/net/packet/internal.h b/net/packet/internal.h
+index 3bb7c5fb3bff..bbb4be2c18e7 100644
+--- a/net/packet/internal.h
++++ b/net/packet/internal.h
+@@ -128,6 +128,8 @@ struct packet_sock {
+ 	unsigned int		tp_hdrlen;
+ 	unsigned int		tp_reserve;
+ 	unsigned int		tp_tstamp;
++	struct completion	skb_completion;
++	unsigned int		wait_on_complete;
+ 	struct net_device __rcu	*cached_dev;
+ 	int			(*xmit)(struct sk_buff *skb);
+ 	struct packet_type	prot_hook ____cacheline_aligned_in_smp;
 -- 
-2.17.1
+2.20.1
 
