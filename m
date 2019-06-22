@@ -2,58 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 605184F610
-	for <lists+netdev@lfdr.de>; Sat, 22 Jun 2019 15:53:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE8544F651
+	for <lists+netdev@lfdr.de>; Sat, 22 Jun 2019 16:55:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726312AbfFVNxe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Jun 2019 09:53:34 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:54514 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726276AbfFVNxe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jun 2019 09:53:34 -0400
-Received: from localhost (unknown [8.46.76.25])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id C9F77153DF648;
-        Sat, 22 Jun 2019 06:53:27 -0700 (PDT)
-Date:   Sat, 22 Jun 2019 09:53:23 -0400 (EDT)
-Message-Id: <20190622.095323.1495992426494142587.davem@davemloft.net>
-To:     tanhuazhong@huawei.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        salil.mehta@huawei.com, yisen.zhuang@huawei.com,
-        linuxarm@huawei.com
-Subject: Re: [PATCH net-next 00/11] net: hns3: some code optimizations &
- bugfixes
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1561020765-14481-1-git-send-email-tanhuazhong@huawei.com>
-References: <1561020765-14481-1-git-send-email-tanhuazhong@huawei.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 22 Jun 2019 06:53:33 -0700 (PDT)
+        id S1726313AbfFVOy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Jun 2019 10:54:59 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:49094 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726276AbfFVOy7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 22 Jun 2019 10:54:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=+UsBFNXh4ENWlTV/lM1RjdOaGGLoEu+kgMsM/uuDJ84=; b=jXOJSCNHsmzaa1S7bIter8Ga1V
+        ol7WvoMZlAJXSrXjLJG2K65ZkSonPpjJd9LXsw2Z+XuwUpxafCGIvJp/yT0GJeIV18ZiSMlrHm5qG
+        ga7ab87IE0JDb2lmFywd+cg5/pmOFfT3o0Za5R/L7tfpvmdCX0iSBFKMh6rttOfvuPX4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hehPk-0002Vh-4X; Sat, 22 Jun 2019 16:54:48 +0200
+Date:   Sat, 22 Jun 2019 16:54:48 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Parshuram Raju Thombare <pthombar@cadence.com>
+Cc:     "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Rafal Ciepiela <rafalc@cadence.com>,
+        Anil Joy Varughese <aniljoy@cadence.com>,
+        Piotr Sroka <piotrs@cadence.com>
+Subject: Re: [PATCH v3 0/5] net: macb: cover letter
+Message-ID: <20190622145448.GA8497@lunn.ch>
+References: <1561106037-6859-1-git-send-email-pthombar@cadence.com>
+ <20190621131611.GB21188@lunn.ch>
+ <CO2PR07MB2469E07AEBF64DFC8A3E3FAFC1E60@CO2PR07MB2469.namprd07.prod.outlook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CO2PR07MB2469E07AEBF64DFC8A3E3FAFC1E60@CO2PR07MB2469.namprd07.prod.outlook.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Huazhong Tan <tanhuazhong@huawei.com>
-Date: Thu, 20 Jun 2019 16:52:34 +0800
+On Sat, Jun 22, 2019 at 03:18:42AM +0000, Parshuram Raju Thombare wrote:
+> Hi Andrew,
+> 
+> >On Fri, Jun 21, 2019 at 09:33:57AM +0100, Parshuram Thombare wrote:
+> >> Hello !
+> >>
+> >> 2. 0002-net-macb-add-support-for-sgmii-MAC-PHY-interface.patch
+> >>    This patch add support for SGMII mode.
+> >
+> >Hi Parshuram
+> >
+> >What PHYs are using to test this? You mention TI PHY DP83867, but that seems to
+> >be a plain old 10/100/1000 RGMII PHY.
+> It is DP83867ISRGZ on VCU118 board.
 
-> This patch-set includes code optimizations and bugfixes for
-> the HNS3 ethernet controller driver.
-> 
-> [patch 1/11] fixes a selftest issue when doing autoneg.
-> 
-> [patch 2/11 - 3-11] adds two code optimizations about VLAN issue.
-> 
-> [patch 4/11] restores the MAC autoneg state after reset.
-> 
-> [patch 5/11 - 8/11] adds some code optimizations and bugfixes about
-> HW errors handling.
-> 
-> [patch 9/11 - 11/11] fixes some issues related to driver loading and
-> unloading.
+Thanks.
 
-Series applied, thanks.
+As Russell says, this is still a 10/100/1000 PHY. What are you using
+for the higher speeds?
+
+    Thanks
+	Andrew
