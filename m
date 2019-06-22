@@ -2,72 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3BDB4F677
-	for <lists+netdev@lfdr.de>; Sat, 22 Jun 2019 17:18:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A37A64F693
+	for <lists+netdev@lfdr.de>; Sat, 22 Jun 2019 17:36:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726326AbfFVPSq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Jun 2019 11:18:46 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:49146 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726138AbfFVPSp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 22 Jun 2019 11:18:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=109yTA8WVLcNXNY+uTfvlDNYMd4+6cA+EC1oJNs2Dvs=; b=WBzo0w5kOnoO5Z8D1feM2ynbSy
-        8gQKNzqbS9ANpLpwY+2sd+LLv+zp4BRJgHlKrBn7BIylz1VvmEw78Yh7OQVUnmmJ2spgjpUR1bqqn
-        W6sWLMpwoGKB+yXz+OAIsQw1fBiXMbxZ1DjRrEoDmbFKVt//rLOTfrtcK5E5Uz3IowYI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hehmp-0002fG-Ea; Sat, 22 Jun 2019 17:18:39 +0200
-Date:   Sat, 22 Jun 2019 17:18:39 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Igor Russkikh <Igor.Russkikh@aquantia.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 3/7] maintainers: declare aquantia atlantic
- driver maintenance
-Message-ID: <20190622151839.GD8497@lunn.ch>
-References: <cover.1561210852.git.igor.russkikh@aquantia.com>
- <83a97b48060f078beac0953cc6e8ced7112d03c1.1561210852.git.igor.russkikh@aquantia.com>
+        id S1726326AbfFVPgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Jun 2019 11:36:00 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:36308 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726290AbfFVPgA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jun 2019 11:36:00 -0400
+Received: by mail-io1-f66.google.com with SMTP id h6so154160ioh.3
+        for <netdev@vger.kernel.org>; Sat, 22 Jun 2019 08:35:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=UiSSfSB0BJJLMfacmdxJ2fSanXoz8qvP6og2pUxtT5I=;
+        b=T2sQ+3ZV+WS/rSuyHg5QE5V40rIorhrS9UlS8ax08PJ+sMpkIAA8Oki5/nEmUd3KjP
+         axFlKuacZ75ImzHWVPp2XOqml8xLewr/6dFnM00Cw07q+MgzF+BkqyM3utV6VCi3Ijro
+         r2sxdASRIoepQJy/Uw3/wyVqQx6SAXY05nYgQoWUv+ttNgS+vKn40ZUoL2FHkMnYnoCc
+         3mvQ9M7IRE09lgpzf1boGWSDoXNRQg+3Yp/nxp78l7lwwguWEaBCWXqCwOS7Z24fabNA
+         F14T1VNolUEBU1sTHMfSLqt38O+jwdKrf4q84WUx94nNzPbCaQWfc5tEiq/cwJKrwOLd
+         b20g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=UiSSfSB0BJJLMfacmdxJ2fSanXoz8qvP6og2pUxtT5I=;
+        b=nua2hr3RsqG859VkfOEedSlN53ZSmDxvDCx1mCjKd+MAVbkxkLsj3hoBmBinWgH9J7
+         BTwPEKdExtwEHTeogW6x7C3+2bLq9cFmVqREpdWBUtcTfKSfykqMgMI1WFsMqLPOW6pQ
+         zvVPg2fhtiM902EnAjOar+aE4GM9ntl1KwnGgphsHBcPHl+TDO4pEUw75IPE7iPV7R30
+         MIrpP4f+yU8gKV/CbqboGDpq+CG6G3OabL6kQe8K2fmF1ixak03qvjKoyo5n8q1EjAlT
+         XKY8BFCJ4maUffwQgKjIzzYCSwaSjyOubIEujw1qhfmT7QNFOGCPmKkjH4ZbNmt1ig2r
+         Vjjw==
+X-Gm-Message-State: APjAAAWRpn0DHCI89jN3CUnhe09xeJyDl4NsaKykLhotQE1cuRWrxDoZ
+        CQr2+EdEu8l+fmwQn6tArauSB5pn
+X-Google-Smtp-Source: APXvYqwDZyHAQoUfet+FObQSAuc8cxT045D58f/BcG0whu2zVSEY+/kwv+JjMTgknxuaNWopqxetVg==
+X-Received: by 2002:a5e:c241:: with SMTP id w1mr30781896iop.58.1561217759235;
+        Sat, 22 Jun 2019 08:35:59 -0700 (PDT)
+Received: from ?IPv6:2601:284:8200:5cfb:198e:d534:dcaf:d5c9? ([2601:284:8200:5cfb:198e:d534:dcaf:d5c9])
+        by smtp.googlemail.com with ESMTPSA id k26sm4695760ios.38.2019.06.22.08.35.57
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 22 Jun 2019 08:35:57 -0700 (PDT)
+Subject: Re: [PATCH next 0/3] blackhole device to invalidate dst
+To:     Mahesh Bandewar <maheshb@google.com>,
+        Netdev <netdev@vger.kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Daniel Axtens <dja@axtens.net>,
+        Mahesh Bandewar <mahesh@bandewar.net>
+References: <20190622004519.89335-1-maheshb@google.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <5441f3f1-0672-fbb1-e875-7f8ceb68d719@gmail.com>
+Date:   Sat, 22 Jun 2019 09:35:53 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <83a97b48060f078beac0953cc6e8ced7112d03c1.1561210852.git.igor.russkikh@aquantia.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <20190622004519.89335-1-maheshb@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jun 22, 2019 at 01:45:17PM +0000, Igor Russkikh wrote:
-> Aquantia is resposible now for all new features and bugfixes.
-> Reflect that in MAINTAINERS.
+On 6/21/19 6:45 PM, Mahesh Bandewar wrote:
+> When we invalidate dst or mark it "dead", we assign 'lo' to
+> dst->dev. First of all this assignment is racy and more over,
+> it has MTU implications.
 > 
-> Signed-off-by: Igor Russkikh <igor.russkikh@aquantia.com>
-> ---
->  MAINTAINERS | 8 ++++++++
->  1 file changed, 8 insertions(+)
+> The standard dev MTU is 1500 while the Loopback MTU is 64k. TCP
+> code when dereferencing the dst don't check if the dst is valid
+> or not. TCP when dereferencing a dead-dst while negotiating a
+> new connection, may use dst device which is 'lo' instead of
+> using the correct device. Consider the following scenario:
 > 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 0c55b0fedbe2..0f525f1a12dd 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -1139,6 +1139,14 @@ L:	linux-media@vger.kernel.org
->  S:	Maintained
->  F:	drivers/media/i2c/aptina-pll.*
->  
-> +AQUANTIA ETHERNET DRIVER (atlantic)
-> +M:	Igor Russkikh <igor.russkikh@aquantia.com>
-> +L:	netdev@vger.kernel.org
-> +S:	Supported
-> +W:	http://www.aquantia.com
-> +Q:	http://patchwork.ozlabs.org/project/netdev/list/
-> +F:	drivers/net/ethernet/aquantia/atlantic/
 
-Please add a F: for the documentation you just added.
-
-       Andrew
+Why doesn't the TCP code (or any code) check if a cached dst is valid?
+That's the whole point of marking it dead - to tell users not to rely on
+it.
