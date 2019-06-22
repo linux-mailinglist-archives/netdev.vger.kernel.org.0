@@ -2,65 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A580D4F8E7
-	for <lists+netdev@lfdr.de>; Sun, 23 Jun 2019 01:18:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B8774F8E9
+	for <lists+netdev@lfdr.de>; Sun, 23 Jun 2019 01:20:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726484AbfFVXSb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Jun 2019 19:18:31 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:60762 "EHLO
+        id S1726410AbfFVXT4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Jun 2019 19:19:56 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:60772 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726468AbfFVXSa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jun 2019 19:18:30 -0400
+        with ESMTP id S1726342AbfFVXT4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jun 2019 19:19:56 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 04821153A9D77;
-        Sat, 22 Jun 2019 16:18:29 -0700 (PDT)
-Date:   Sat, 22 Jun 2019 16:18:29 -0700 (PDT)
-Message-Id: <20190622.161829.532888207521796213.davem@davemloft.net>
-To:     weifeng.voon@intel.com
-Cc:     mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, joabreu@synopsys.com,
-        peppe.cavallaro@st.com, andrew@lunn.ch, f.fainelli@gmail.com,
-        alexandre.torgue@st.com, boon.leong.ong@intel.com
-Subject: Re: [net v1] net: stmmac: fixed new system time seconds value
- calculation
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id DD98B153E7EA2;
+        Sat, 22 Jun 2019 16:19:55 -0700 (PDT)
+Date:   Sat, 22 Jun 2019 16:19:55 -0700 (PDT)
+Message-Id: <20190622.161955.2030310177158651781.davem@davemloft.net>
+To:     yuehaibing@huawei.com
+Cc:     sdf@google.com, jianbol@mellanox.com, jiri@mellanox.com,
+        mirq-linux@rere.qmqm.pl, willemb@google.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] flow_dissector: Fix vlan header offset in
+ __skb_flow_dissect
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1560953628-3248-1-git-send-email-weifeng.voon@intel.com>
-References: <1560953628-3248-1-git-send-email-weifeng.voon@intel.com>
+In-Reply-To: <20190619160132.38416-1-yuehaibing@huawei.com>
+References: <20190619160132.38416-1-yuehaibing@huawei.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 22 Jun 2019 16:18:30 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 22 Jun 2019 16:19:56 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Voon Weifeng <weifeng.voon@intel.com>
-Date: Wed, 19 Jun 2019 22:13:48 +0800
+From: YueHaibing <yuehaibing@huawei.com>
+Date: Thu, 20 Jun 2019 00:01:32 +0800
 
-> From: Roland Hii <roland.king.guan.hii@intel.com>
-> 
-> When ADDSUB bit is set, the system time seconds field is calculated as
-> the complement of the seconds part of the update value.
-> 
-> For example, if 3.000000001 seconds need to be subtracted from the
-> system time, this field is calculated as
-> 2^32 - 3 = 4294967296 - 3 = 0x100000000 - 3 = 0xFFFFFFFD
-> 
-> Previously, the 0x100000000 is mistakenly written as 100000000.
-> 
-> This is further simplified from
->   sec = (0x100000000ULL - sec);
-> to
->   sec = -sec;
-> 
-> Fixes: ba1ffd74df74 ("stmmac: fix PTP support for GMAC4")
-> Signed-off-by: Roland Hii <roland.king.guan.hii@intel.com>
-> Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
-> Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
+> @@ -785,6 +785,9 @@ bool __skb_flow_dissect(const struct sk_buff *skb,
+>  		    skb && skb_vlan_tag_present(skb)) {
+>  			proto = skb->protocol;
+>  		} else {
+> +			if (dissector_vlan == FLOW_DISSECTOR_KEY_MAX)
+> +				nhoff -=  sizeof(*vlan);
 
-Applied and queued up for -stable.
+Even if this would have turned out to be the desired fix, you would need
+to get rid of the extra spaces in that last statement.
