@@ -2,68 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF3FB4F46B
-	for <lists+netdev@lfdr.de>; Sat, 22 Jun 2019 10:42:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92F2C4F46F
+	for <lists+netdev@lfdr.de>; Sat, 22 Jun 2019 10:46:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726307AbfFVIm0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Jun 2019 04:42:26 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:19057 "EHLO huawei.com"
+        id S1726278AbfFVIql (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Jun 2019 04:46:41 -0400
+Received: from mail-eopbgr760057.outbound.protection.outlook.com ([40.107.76.57]:22500
+        "EHLO NAM02-CY1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726114AbfFVIm0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 22 Jun 2019 04:42:26 -0400
-Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id CBE42D2710D1EC99A889;
-        Sat, 22 Jun 2019 16:42:23 +0800 (CST)
-Received: from [127.0.0.1] (10.184.225.177) by DGGEMS410-HUB.china.huawei.com
- (10.3.19.210) with Microsoft SMTP Server id 14.3.439.0; Sat, 22 Jun 2019
- 16:42:16 +0800
-Subject: Re: [PATCH v2 0/3] fix bugs when enable route_localnet
-To:     luoshijie <luoshijie1@huawei.com>, <davem@davemloft.net>,
-        <tgraf@suug.ch>, <dsahern@gmail.com>
-CC:     <netdev@vger.kernel.org>, <wangxiaogang3@huawei.com>,
-        <mingfangsen@huawei.com>, <zhoukang7@huawei.com>
-References: <1560870845-172395-1-git-send-email-luoshijie1@huawei.com>
-From:   Zhiqiang Liu <liuzhiqiang26@huawei.com>
-Message-ID: <e52787a0-86fe-bf5f-28f4-3a29dd8ced7b@huawei.com>
-Date:   Sat, 22 Jun 2019 16:41:49 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.5.0
+        id S1726114AbfFVIql (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 22 Jun 2019 04:46:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=AQUANTIA1COM.onmicrosoft.com; s=selector1-AQUANTIA1COM-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Pf9Slzkh6N0DsGUGN6kOBpOAqVzQabNUHg1VLdDOGzw=;
+ b=AKXELj8GHaTIvWbNI2jFirASyl9Zj8rzlmqzzQmIMNLz6E21PQ4yTdVjMr+mYK0CI8IyUj+3iPyO7ZXFMoh7qr5t3VmA0cXBMqY/DP7SvOWzJIJmyjRlAR4AUPFtormsQlTbZrHN3SR5jcSV2E52AJ/qCZpJfSnD0xWnaxYU9K4=
+Received: from MWHPR11MB1968.namprd11.prod.outlook.com (10.175.55.144) by
+ MWHPR11MB1391.namprd11.prod.outlook.com (10.169.233.143) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2008.13; Sat, 22 Jun 2019 08:46:37 +0000
+Received: from MWHPR11MB1968.namprd11.prod.outlook.com
+ ([fe80::eda4:c685:f6f8:8a1b]) by MWHPR11MB1968.namprd11.prod.outlook.com
+ ([fe80::eda4:c685:f6f8:8a1b%7]) with mapi id 15.20.2008.014; Sat, 22 Jun 2019
+ 08:46:37 +0000
+From:   Igor Russkikh <Igor.Russkikh@aquantia.com>
+To:     "David S . Miller" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Igor Russkikh <Igor.Russkikh@aquantia.com>,
+        Dmitry Bogdanov <Dmitry.Bogdanov@aquantia.com>
+Subject: [PATCH net] net: aquantia: fix vlans not working over bridged network
+Thread-Topic: [PATCH net] net: aquantia: fix vlans not working over bridged
+ network
+Thread-Index: AQHVKNcAlwq4lPfWckCWkcwbbnvPGg==
+Date:   Sat, 22 Jun 2019 08:46:37 +0000
+Message-ID: <f9ccf4959d8efed1ee8832c56c59f5adfe2f9fd7.1561028841.git.igor.russkikh@aquantia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: HE1P189CA0032.EURP189.PROD.OUTLOOK.COM (2603:10a6:7:53::45)
+ To MWHPR11MB1968.namprd11.prod.outlook.com (2603:10b6:300:113::16)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=Igor.Russkikh@aquantia.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-mailer: git-send-email 2.17.1
+x-originating-ip: [95.79.108.179]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c4692b2d-9590-4be8-4dc1-08d6f6ee22e0
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR11MB1391;
+x-ms-traffictypediagnostic: MWHPR11MB1391:
+x-microsoft-antispam-prvs: <MWHPR11MB139137B1D54669FC84E907D198E60@MWHPR11MB1391.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1002;
+x-forefront-prvs: 0076F48C8A
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39840400004)(136003)(346002)(366004)(396003)(376002)(199004)(189003)(99286004)(118296001)(53936002)(6512007)(71190400001)(66946007)(66476007)(66446008)(64756008)(186003)(66556008)(305945005)(66066001)(71200400001)(52116002)(6916009)(2906002)(73956011)(36756003)(478600001)(486006)(4326008)(7736002)(6436002)(6506007)(6486002)(6116002)(25786009)(14444005)(256004)(72206003)(386003)(476003)(86362001)(81166006)(81156014)(5660300002)(14454004)(2616005)(50226002)(107886003)(3846002)(102836004)(316002)(8936002)(8676002)(68736007)(26005)(44832011)(54906003);DIR:OUT;SFP:1101;SCL:1;SRVR:MWHPR11MB1391;H:MWHPR11MB1968.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: aquantia.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: QMorQcLbjKjWiNbVh3yPe6+A7MS3NLL3+ouP1545Mkj561+G6f+RhSPxK3bjYVcdvBvidtvRBKWAdbDZzGro39de5mGExfVOQCPCB1cwsuyBQaWrZ1i1I0kpRtJCes1G3lTGgsXuKmaDsCp2wZff7c8wb5d5bKkTV0hvCFr4akgHqx80v5jhYGu9RuGvnfOI/FajgrXOUmN+SQxXS+qhXJpYzVSeLi/ALmngsfN1IhNl24ynDFaccO3FdAVq0u6v6FXzXr9qho7z9MR/ZE/unbyfvPzLen9BI9H7K/q24yPZbtSerKioH+h/LN/hquwjQ0hjAL5k6fPHPwzlAz8RVb8Sx7Q9dk2rKEoGmlDCTs51GXLq0rHB86oEJxIbAY3N+5EJIxn/7Nolft7rFBqYYHf0yHPHdRFyZZsoYVtICyw=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <1560870845-172395-1-git-send-email-luoshijie1@huawei.com>
-Content-Type: text/plain; charset="gbk"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.184.225.177]
-X-CFilter-Loop: Reflected
+X-OriginatorOrg: aquantia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c4692b2d-9590-4be8-4dc1-08d6f6ee22e0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Jun 2019 08:46:37.2462
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 83e2e134-991c-4ede-8ced-34d47e38e6b1
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: irusski@aquantia.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1391
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Friendly ping ...
-
-
-> From: Shijie Luo <luoshijie1@huawei.com>
-> 
-> When enable route_localnet, route of the 127/8 address is enabled.
-> But in some situations like arp_announce=2, ARP requests or reply
-> work abnormally.
-> 
-> This patchset fix some bugs when enable route_localnet. 
-> 
-> Change History:
-> V2:
-> - Change a single patch to a patchset.
-> - Add bug fix for arp_ignore = 3.
-> - Add a couple of test for enabling route_localnet in selftests.
-> 
-> Shijie Luo (3):
->   ipv4: fix inet_select_addr() when enable route_localnet
->   ipv4: fix confirm_addr_indev() when enable route_localnet
->   selftests: add route_localnet test script
-> 
->  net/ipv4/devinet.c                            | 15 +++-
->  tools/testing/selftests/net/route_localnet.sh | 74 +++++++++++++++++++
->  2 files changed, 86 insertions(+), 3 deletions(-)
->  create mode 100755 tools/testing/selftests/net/route_localnet.sh
-> 
-
+RnJvbTogRG1pdHJ5IEJvZ2Rhbm92IDxkbWl0cnkuYm9nZGFub3ZAYXF1YW50aWEuY29tPg0KDQpJ
+biBjb25maWd1cmF0aW9uIG9mIHZsYW4gb3ZlciBicmlkZ2Ugb3ZlciBhcXVhbnRpYSBkZXZpY2UN
+Cml0IHdhcyBmb3VuZCB0aGF0IHZsYW4gdGFnZ2VkIHRyYWZmaWMgaXMgZHJvcHBlZCBvbiBjaGlw
+Lg0KDQpUaGUgcmVhc29uIGlzIHRoYXQgYnJpZGdlIGRldmljZSBlbmFibGVzIHByb21pc2MgbW9k
+ZSwNCmJ1dCBpbiBhdGxhbnRpYyBjaGlwIHZsYW4gZmlsdGVycyB3aWxsIHN0aWxsIGFwcGx5Lg0K
+U28gd2UgaGF2ZSB0byBjb3JlbGxhdGUgcHJvbWlzYyBzZXR0aW5ncyB3aXRoIHZsYW4gY29uZmln
+dXJhdGlvbi4NCg0KVGhlIHNvbHV0aW9uIGlzIHRvIHRyYWNrIGluIGEgc2VwYXJhdGUgc3RhdGUg
+dmFyaWFibGUgdGhlDQpuZWVkIG9mIHZsYW4gZm9yY2VkIHByb21pc2MuIEFuZCBhbHNvIGNvbnNp
+ZGVyIGdlbmVyaWMNCnByb21pc2MgY29uZmlndXJhdGlvbiB3aGVuIGRvaW5nIHZsYW4gZmlsdGVy
+IGNvbmZpZy4NCg0KRml4ZXM6IDc5NzVkMmFmZjVhZiAoIm5ldDogYXF1YW50aWE6IGFkZCBzdXBw
+b3J0IG9mIHJ4LXZsYW4tZmlsdGVyIG9mZmxvYWQiKQ0KU2lnbmVkLW9mZi1ieTogRG1pdHJ5IEJv
+Z2Rhbm92IDxkbWl0cnkuYm9nZGFub3ZAYXF1YW50aWEuY29tPg0KU2lnbmVkLW9mZi1ieTogSWdv
+ciBSdXNza2lraCA8aWdvci5ydXNza2lraEBhcXVhbnRpYS5jb20+DQotLS0NCiAuLi4vZXRoZXJu
+ZXQvYXF1YW50aWEvYXRsYW50aWMvYXFfZmlsdGVycy5jICAgfCAxMCArKysrKysrKy0tDQogLi4u
+L25ldC9ldGhlcm5ldC9hcXVhbnRpYS9hdGxhbnRpYy9hcV9uaWMuYyAgIHwgIDEgKw0KIC4uLi9u
+ZXQvZXRoZXJuZXQvYXF1YW50aWEvYXRsYW50aWMvYXFfbmljLmggICB8ICAxICsNCiAuLi4vYXF1
+YW50aWEvYXRsYW50aWMvaHdfYXRsL2h3X2F0bF9iMC5jICAgICAgfCAxOSArKysrKysrKysrKysr
+LS0tLS0tDQogNCBmaWxlcyBjaGFuZ2VkLCAyMyBpbnNlcnRpb25zKCspLCA4IGRlbGV0aW9ucygt
+KQ0KDQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvYXF1YW50aWEvYXRsYW50aWMv
+YXFfZmlsdGVycy5jIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvYXF1YW50aWEvYXRsYW50aWMvYXFf
+ZmlsdGVycy5jDQppbmRleCAxOGJjMDM1ZGE4NTAuLjFmZmY0NjJhNDE3NSAxMDA2NDQNCi0tLSBh
+L2RyaXZlcnMvbmV0L2V0aGVybmV0L2FxdWFudGlhL2F0bGFudGljL2FxX2ZpbHRlcnMuYw0KKysr
+IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvYXF1YW50aWEvYXRsYW50aWMvYXFfZmlsdGVycy5jDQpA
+QCAtODQzLDkgKzg0MywxNCBAQCBpbnQgYXFfZmlsdGVyc192bGFuc191cGRhdGUoc3RydWN0IGFx
+X25pY19zICphcV9uaWMpDQogCQlyZXR1cm4gZXJyOw0KIA0KIAlpZiAoYXFfbmljLT5uZGV2LT5m
+ZWF0dXJlcyAmIE5FVElGX0ZfSFdfVkxBTl9DVEFHX0ZJTFRFUikgew0KLQkJaWYgKGh3ZWlnaHQg
+PCBBUV9WTEFOX01BWF9GSUxURVJTKQ0KLQkJCWVyciA9IGFxX2h3X29wcy0+aHdfZmlsdGVyX3Zs
+YW5fY3RybChhcV9odywgdHJ1ZSk7DQorCQlpZiAoaHdlaWdodCA8IEFRX1ZMQU5fTUFYX0ZJTFRF
+UlMgJiYgaHdlaWdodCA+IDApIHsNCisJCQllcnIgPSBhcV9od19vcHMtPmh3X2ZpbHRlcl92bGFu
+X2N0cmwoYXFfaHcsDQorCQkJCSEoYXFfbmljLT5wYWNrZXRfZmlsdGVyICYgSUZGX1BST01JU0Mp
+KTsNCisJCQlhcV9uaWMtPmFxX25pY19jZmcuaXNfdmxhbl9mb3JjZV9wcm9taXNjID0gZmFsc2U7
+DQorCQl9IGVsc2Ugew0KIAkJLyogb3RoZXJ3aXNlIGxlZnQgaW4gcHJvbWlzY3VlIG1vZGUgKi8N
+CisJCQlhcV9uaWMtPmFxX25pY19jZmcuaXNfdmxhbl9mb3JjZV9wcm9taXNjID0gdHJ1ZTsNCisJ
+CX0NCiAJfQ0KIA0KIAlyZXR1cm4gZXJyOw0KQEAgLTg2Niw2ICs4NzEsNyBAQCBpbnQgYXFfZmls
+dGVyc192bGFuX29mZmxvYWRfb2ZmKHN0cnVjdCBhcV9uaWNfcyAqYXFfbmljKQ0KIAlpZiAodW5s
+aWtlbHkoIWFxX2h3X29wcy0+aHdfZmlsdGVyX3ZsYW5fY3RybCkpDQogCQlyZXR1cm4gLUVPUE5P
+VFNVUFA7DQogDQorCWFxX25pYy0+YXFfbmljX2NmZy5pc192bGFuX2ZvcmNlX3Byb21pc2MgPSB0
+cnVlOw0KIAllcnIgPSBhcV9od19vcHMtPmh3X2ZpbHRlcl92bGFuX2N0cmwoYXFfaHcsIGZhbHNl
+KTsNCiAJaWYgKGVycikNCiAJCXJldHVybiBlcnI7DQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQv
+ZXRoZXJuZXQvYXF1YW50aWEvYXRsYW50aWMvYXFfbmljLmMgYi9kcml2ZXJzL25ldC9ldGhlcm5l
+dC9hcXVhbnRpYS9hdGxhbnRpYy9hcV9uaWMuYw0KaW5kZXggMGRhNWUxNjFlYzVkLi40MTE3MmZi
+ZWJkZGQgMTAwNjQ0DQotLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9hcXVhbnRpYS9hdGxhbnRp
+Yy9hcV9uaWMuYw0KKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvYXF1YW50aWEvYXRsYW50aWMv
+YXFfbmljLmMNCkBAIC0xMjYsNiArMTI2LDcgQEAgdm9pZCBhcV9uaWNfY2ZnX3N0YXJ0KHN0cnVj
+dCBhcV9uaWNfcyAqc2VsZikNCiANCiAJY2ZnLT5saW5rX3NwZWVkX21zayAmPSBjZmctPmFxX2h3
+X2NhcHMtPmxpbmtfc3BlZWRfbXNrOw0KIAljZmctPmZlYXR1cmVzID0gY2ZnLT5hcV9od19jYXBz
+LT5od19mZWF0dXJlczsNCisJY2ZnLT5pc192bGFuX2ZvcmNlX3Byb21pc2MgPSB0cnVlOw0KIH0N
+CiANCiBzdGF0aWMgaW50IGFxX25pY191cGRhdGVfbGlua19zdGF0dXMoc3RydWN0IGFxX25pY19z
+ICpzZWxmKQ0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2FxdWFudGlhL2F0bGFu
+dGljL2FxX25pYy5oIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvYXF1YW50aWEvYXRsYW50aWMvYXFf
+bmljLmgNCmluZGV4IGViMmUzYzdjMzZmOS4uMGYyMmY1ZDU2OTFiIDEwMDY0NA0KLS0tIGEvZHJp
+dmVycy9uZXQvZXRoZXJuZXQvYXF1YW50aWEvYXRsYW50aWMvYXFfbmljLmgNCisrKyBiL2RyaXZl
+cnMvbmV0L2V0aGVybmV0L2FxdWFudGlhL2F0bGFudGljL2FxX25pYy5oDQpAQCAtMzUsNiArMzUs
+NyBAQCBzdHJ1Y3QgYXFfbmljX2NmZ19zIHsNCiAJdTMyIGZsb3dfY29udHJvbDsNCiAJdTMyIGxp
+bmtfc3BlZWRfbXNrOw0KIAl1MzIgd29sOw0KKwlib29sIGlzX3ZsYW5fZm9yY2VfcHJvbWlzYzsN
+CiAJdTE2IGlzX21jX2xpc3RfZW5hYmxlZDsNCiAJdTE2IG1jX2xpc3RfY291bnQ7DQogCWJvb2wg
+aXNfYXV0b25lZzsNCmRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9hcXVhbnRpYS9h
+dGxhbnRpYy9od19hdGwvaHdfYXRsX2IwLmMgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9hcXVhbnRp
+YS9hdGxhbnRpYy9od19hdGwvaHdfYXRsX2IwLmMNCmluZGV4IDFjNzU5M2Q1NDAzNS4uMTNhYzI2
+NjFhNDczIDEwMDY0NA0KLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvYXF1YW50aWEvYXRsYW50
+aWMvaHdfYXRsL2h3X2F0bF9iMC5jDQorKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9hcXVhbnRp
+YS9hdGxhbnRpYy9od19hdGwvaHdfYXRsX2IwLmMNCkBAIC03NzgsOCArNzc4LDE1IEBAIHN0YXRp
+YyBpbnQgaHdfYXRsX2IwX2h3X3BhY2tldF9maWx0ZXJfc2V0KHN0cnVjdCBhcV9od19zICpzZWxm
+LA0KIAkJCQkJICB1bnNpZ25lZCBpbnQgcGFja2V0X2ZpbHRlcikNCiB7DQogCXVuc2lnbmVkIGlu
+dCBpID0gMFU7DQorCXN0cnVjdCBhcV9uaWNfY2ZnX3MgKmNmZyA9IHNlbGYtPmFxX25pY19jZmc7
+DQorDQorCWh3X2F0bF9ycGZsMnByb21pc2N1b3VzX21vZGVfZW5fc2V0KHNlbGYsDQorCQkJCQkg
+ICAgSVNfRklMVEVSX0VOQUJMRUQoSUZGX1BST01JU0MpKTsNCisNCisJaHdfYXRsX3JwZl92bGFu
+X3Byb21fbW9kZV9lbl9zZXQoc2VsZiwNCisJCQkJICAgICBJU19GSUxURVJfRU5BQkxFRChJRkZf
+UFJPTUlTQykgfHwNCisJCQkJICAgICBjZmctPmlzX3ZsYW5fZm9yY2VfcHJvbWlzYyk7DQogDQot
+CWh3X2F0bF9ycGZsMnByb21pc2N1b3VzX21vZGVfZW5fc2V0KHNlbGYsIElTX0ZJTFRFUl9FTkFC
+TEVEKElGRl9QUk9NSVNDKSk7DQogCWh3X2F0bF9ycGZsMm11bHRpY2FzdF9mbHJfZW5fc2V0KHNl
+bGYsDQogCQkJCQkgSVNfRklMVEVSX0VOQUJMRUQoSUZGX0FMTE1VTFRJKSwgMCk7DQogDQpAQCAt
+Nzg4LDEzICs3OTUsMTMgQEAgc3RhdGljIGludCBod19hdGxfYjBfaHdfcGFja2V0X2ZpbHRlcl9z
+ZXQoc3RydWN0IGFxX2h3X3MgKnNlbGYsDQogDQogCWh3X2F0bF9ycGZsMmJyb2FkY2FzdF9lbl9z
+ZXQoc2VsZiwgSVNfRklMVEVSX0VOQUJMRUQoSUZGX0JST0FEQ0FTVCkpOw0KIA0KLQlzZWxmLT5h
+cV9uaWNfY2ZnLT5pc19tY19saXN0X2VuYWJsZWQgPSBJU19GSUxURVJfRU5BQkxFRChJRkZfTVVM
+VElDQVNUKTsNCisJY2ZnLT5pc19tY19saXN0X2VuYWJsZWQgPSBJU19GSUxURVJfRU5BQkxFRChJ
+RkZfTVVMVElDQVNUKTsNCiANCiAJZm9yIChpID0gSFdfQVRMX0IwX01BQ19NSU47IGkgPCBIV19B
+VExfQjBfTUFDX01BWDsgKytpKQ0KIAkJaHdfYXRsX3JwZmwyX3VjX2Zscl9lbl9zZXQoc2VsZiwN
+Ci0JCQkJCSAgIChzZWxmLT5hcV9uaWNfY2ZnLT5pc19tY19saXN0X2VuYWJsZWQgJiYNCi0JCQkJ
+ICAgIChpIDw9IHNlbGYtPmFxX25pY19jZmctPm1jX2xpc3RfY291bnQpKSA/DQotCQkJCSAgICAx
+VSA6IDBVLCBpKTsNCisJCQkJCSAgIChjZmctPmlzX21jX2xpc3RfZW5hYmxlZCAmJg0KKwkJCQkJ
+ICAgIChpIDw9IGNmZy0+bWNfbGlzdF9jb3VudCkpID8NCisJCQkJCSAgIDFVIDogMFUsIGkpOw0K
+IA0KIAlyZXR1cm4gYXFfaHdfZXJyX2Zyb21fZmxhZ3Moc2VsZik7DQogfQ0KQEAgLTEwODYsNyAr
+MTA5Myw3IEBAIHN0YXRpYyBpbnQgaHdfYXRsX2IwX2h3X3ZsYW5fc2V0KHN0cnVjdCBhcV9od19z
+ICpzZWxmLA0KIHN0YXRpYyBpbnQgaHdfYXRsX2IwX2h3X3ZsYW5fY3RybChzdHJ1Y3QgYXFfaHdf
+cyAqc2VsZiwgYm9vbCBlbmFibGUpDQogew0KIAkvKiBzZXQgcHJvbWlzYyBpbiBjYXNlIG9mIGRp
+c2FiaW5nIHRoZSB2bGFuZCBmaWx0ZXIgKi8NCi0JaHdfYXRsX3JwZl92bGFuX3Byb21fbW9kZV9l
+bl9zZXQoc2VsZiwgISEhZW5hYmxlKTsNCisJaHdfYXRsX3JwZl92bGFuX3Byb21fbW9kZV9lbl9z
+ZXQoc2VsZiwgIWVuYWJsZSk7DQogDQogCXJldHVybiBhcV9od19lcnJfZnJvbV9mbGFncyhzZWxm
+KTsNCiB9DQotLSANCjIuMTcuMQ0KDQo=
