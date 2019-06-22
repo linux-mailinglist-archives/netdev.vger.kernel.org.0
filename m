@@ -2,168 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92F2C4F46F
-	for <lists+netdev@lfdr.de>; Sat, 22 Jun 2019 10:46:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB46B4F47A
+	for <lists+netdev@lfdr.de>; Sat, 22 Jun 2019 10:50:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726278AbfFVIql (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Jun 2019 04:46:41 -0400
-Received: from mail-eopbgr760057.outbound.protection.outlook.com ([40.107.76.57]:22500
-        "EHLO NAM02-CY1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726114AbfFVIql (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 22 Jun 2019 04:46:41 -0400
+        id S1726372AbfFVIuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Jun 2019 04:50:20 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:46197 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726114AbfFVIuT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jun 2019 04:50:19 -0400
+Received: by mail-pf1-f194.google.com with SMTP id 81so4749975pfy.13;
+        Sat, 22 Jun 2019 01:50:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=AQUANTIA1COM.onmicrosoft.com; s=selector1-AQUANTIA1COM-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Pf9Slzkh6N0DsGUGN6kOBpOAqVzQabNUHg1VLdDOGzw=;
- b=AKXELj8GHaTIvWbNI2jFirASyl9Zj8rzlmqzzQmIMNLz6E21PQ4yTdVjMr+mYK0CI8IyUj+3iPyO7ZXFMoh7qr5t3VmA0cXBMqY/DP7SvOWzJIJmyjRlAR4AUPFtormsQlTbZrHN3SR5jcSV2E52AJ/qCZpJfSnD0xWnaxYU9K4=
-Received: from MWHPR11MB1968.namprd11.prod.outlook.com (10.175.55.144) by
- MWHPR11MB1391.namprd11.prod.outlook.com (10.169.233.143) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2008.13; Sat, 22 Jun 2019 08:46:37 +0000
-Received: from MWHPR11MB1968.namprd11.prod.outlook.com
- ([fe80::eda4:c685:f6f8:8a1b]) by MWHPR11MB1968.namprd11.prod.outlook.com
- ([fe80::eda4:c685:f6f8:8a1b%7]) with mapi id 15.20.2008.014; Sat, 22 Jun 2019
- 08:46:37 +0000
-From:   Igor Russkikh <Igor.Russkikh@aquantia.com>
-To:     "David S . Miller" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Igor Russkikh <Igor.Russkikh@aquantia.com>,
-        Dmitry Bogdanov <Dmitry.Bogdanov@aquantia.com>
-Subject: [PATCH net] net: aquantia: fix vlans not working over bridged network
-Thread-Topic: [PATCH net] net: aquantia: fix vlans not working over bridged
- network
-Thread-Index: AQHVKNcAlwq4lPfWckCWkcwbbnvPGg==
-Date:   Sat, 22 Jun 2019 08:46:37 +0000
-Message-ID: <f9ccf4959d8efed1ee8832c56c59f5adfe2f9fd7.1561028841.git.igor.russkikh@aquantia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: HE1P189CA0032.EURP189.PROD.OUTLOOK.COM (2603:10a6:7:53::45)
- To MWHPR11MB1968.namprd11.prod.outlook.com (2603:10b6:300:113::16)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=Igor.Russkikh@aquantia.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-mailer: git-send-email 2.17.1
-x-originating-ip: [95.79.108.179]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c4692b2d-9590-4be8-4dc1-08d6f6ee22e0
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR11MB1391;
-x-ms-traffictypediagnostic: MWHPR11MB1391:
-x-microsoft-antispam-prvs: <MWHPR11MB139137B1D54669FC84E907D198E60@MWHPR11MB1391.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1002;
-x-forefront-prvs: 0076F48C8A
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39840400004)(136003)(346002)(366004)(396003)(376002)(199004)(189003)(99286004)(118296001)(53936002)(6512007)(71190400001)(66946007)(66476007)(66446008)(64756008)(186003)(66556008)(305945005)(66066001)(71200400001)(52116002)(6916009)(2906002)(73956011)(36756003)(478600001)(486006)(4326008)(7736002)(6436002)(6506007)(6486002)(6116002)(25786009)(14444005)(256004)(72206003)(386003)(476003)(86362001)(81166006)(81156014)(5660300002)(14454004)(2616005)(50226002)(107886003)(3846002)(102836004)(316002)(8936002)(8676002)(68736007)(26005)(44832011)(54906003);DIR:OUT;SFP:1101;SCL:1;SRVR:MWHPR11MB1391;H:MWHPR11MB1968.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: aquantia.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: QMorQcLbjKjWiNbVh3yPe6+A7MS3NLL3+ouP1545Mkj561+G6f+RhSPxK3bjYVcdvBvidtvRBKWAdbDZzGro39de5mGExfVOQCPCB1cwsuyBQaWrZ1i1I0kpRtJCes1G3lTGgsXuKmaDsCp2wZff7c8wb5d5bKkTV0hvCFr4akgHqx80v5jhYGu9RuGvnfOI/FajgrXOUmN+SQxXS+qhXJpYzVSeLi/ALmngsfN1IhNl24ynDFaccO3FdAVq0u6v6FXzXr9qho7z9MR/ZE/unbyfvPzLen9BI9H7K/q24yPZbtSerKioH+h/LN/hquwjQ0hjAL5k6fPHPwzlAz8RVb8Sx7Q9dk2rKEoGmlDCTs51GXLq0rHB86oEJxIbAY3N+5EJIxn/7Nolft7rFBqYYHf0yHPHdRFyZZsoYVtICyw=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=HuyUZznnr+2KTzyGeAevDXOnX1L1s36jECfUjJLEBVY=;
+        b=nQ9fUmlGL1p1hlKj1JC+UdErZcBkQhP+ho3nGSAmkPtmsC1G3BEwYna7ZG/a/zxLnN
+         JEigT7Srdnge2JzAruVO2eDmflLWCk8VO0UYq7RIlj2V3MSFjBJBW9mUcBAKuqT8ecIG
+         JH9JK0i1KvjA9zaZDt+vv9IX+Nlz0l95T0Q/3H64y3jX1mHLjcV40gXsMN35mps9HxAT
+         U8K2LQCQFT8AWkUfuWmgGuPFhuSeS4pNcZaxQGt7g9AiJRpPIBx7ENZCF8P4Loaza2bT
+         2dYB/AhAGQ8/dAfJ7+ALVcU5pOpSaHvUF9KrgREet7st0Ex6qtbFFIswh+VQ6E3RwgHj
+         mYrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=HuyUZznnr+2KTzyGeAevDXOnX1L1s36jECfUjJLEBVY=;
+        b=eOmZ+QlJzDnaZ157PtadpYQ1JAPTxZ6OyIMPMhkmFyTVqKGz/PxC7xBowGKpUvgrQz
+         lD1M4OEfZBgShz0+fGnkKmrCAEYWH23Jkov+iGmguWdriIUh26muUryCWTipjEaUCj3O
+         YA+/NqEcNJyNzjJp2wA3r6dUmvhhI7gCosrv91LhWKUTzWNvXU8IEk4L8ver+Plh/fWf
+         hbHM3FuL5WMaJTKeo0MZUmZXk42Pcbt1CwVobW0499cH2BE+HdQeXZygmhglJSBHHDn0
+         /w0aW4L9qnA3dr3pHOuqngdM2UwLT2soGtTSaemA+iIq7wNi/zBFKguVxzQW+kuZsTyA
+         Logg==
+X-Gm-Message-State: APjAAAW3Bv/wGAoTKYLS9VtDeIq8zHtGQ88YPPhCgPQ0Gy7jzZBd2zI5
+        xDIYdr64dzNtbyxyunyrKyzjpOPgjJND+A==
+X-Google-Smtp-Source: APXvYqxW7xK3j4Vyr1xnfpkzg5t2peLxlCmlJFBZ1lfX9JqIduSzNbSdUfryVMoVr10zrQXZOaysrg==
+X-Received: by 2002:a17:90a:fa18:: with SMTP id cm24mr3869488pjb.120.1561193418682;
+        Sat, 22 Jun 2019 01:50:18 -0700 (PDT)
+Received: from arch ([112.196.181.13])
+        by smtp.gmail.com with ESMTPSA id j13sm8240054pgh.44.2019.06.22.01.50.14
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Sat, 22 Jun 2019 01:50:18 -0700 (PDT)
+Date:   Sat, 22 Jun 2019 14:20:01 +0530
+From:   Puranjay Mohan <puranjay12@gmail.com>
+To:     Joe Perches <joe@perches.com>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Puranjay Mohan <puranjay12@gmail.com>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Bjorn Helgaas <bjorn@helgaas.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        Chris Snook <chris.snook@gmail.com>
+Subject: Re: [PATCH 0/3] net: ethernet: atheros: atlx: Use PCI generic
+ definitions instead of private duplicates
+Message-ID: <20190622085001.GA11032@arch>
+References: <20190621163921.26188-1-puranjay12@gmail.com>
+ <CAErSpo5TMPokae7BMY8ZcOXtW=GeGsWXX_bqS8SrZnh0pEQYxw@mail.gmail.com>
+ <698d3e3614ae903ae9582547d64c6a9846629e57.camel@perches.com>
+ <CAErSpo6iRVWU-yL5CRF_GEY7CWg5iV=Jw0BrdNV4h3Jvh5AuAw@mail.gmail.com>
+ <838b8e84523151418ab8cda4abdbb114ce24a497.camel@perches.com>
 MIME-Version: 1.0
-X-OriginatorOrg: aquantia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c4692b2d-9590-4be8-4dc1-08d6f6ee22e0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Jun 2019 08:46:37.2462
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 83e2e134-991c-4ede-8ced-34d47e38e6b1
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: irusski@aquantia.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1391
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <838b8e84523151418ab8cda4abdbb114ce24a497.camel@perches.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogRG1pdHJ5IEJvZ2Rhbm92IDxkbWl0cnkuYm9nZGFub3ZAYXF1YW50aWEuY29tPg0KDQpJ
-biBjb25maWd1cmF0aW9uIG9mIHZsYW4gb3ZlciBicmlkZ2Ugb3ZlciBhcXVhbnRpYSBkZXZpY2UN
-Cml0IHdhcyBmb3VuZCB0aGF0IHZsYW4gdGFnZ2VkIHRyYWZmaWMgaXMgZHJvcHBlZCBvbiBjaGlw
-Lg0KDQpUaGUgcmVhc29uIGlzIHRoYXQgYnJpZGdlIGRldmljZSBlbmFibGVzIHByb21pc2MgbW9k
-ZSwNCmJ1dCBpbiBhdGxhbnRpYyBjaGlwIHZsYW4gZmlsdGVycyB3aWxsIHN0aWxsIGFwcGx5Lg0K
-U28gd2UgaGF2ZSB0byBjb3JlbGxhdGUgcHJvbWlzYyBzZXR0aW5ncyB3aXRoIHZsYW4gY29uZmln
-dXJhdGlvbi4NCg0KVGhlIHNvbHV0aW9uIGlzIHRvIHRyYWNrIGluIGEgc2VwYXJhdGUgc3RhdGUg
-dmFyaWFibGUgdGhlDQpuZWVkIG9mIHZsYW4gZm9yY2VkIHByb21pc2MuIEFuZCBhbHNvIGNvbnNp
-ZGVyIGdlbmVyaWMNCnByb21pc2MgY29uZmlndXJhdGlvbiB3aGVuIGRvaW5nIHZsYW4gZmlsdGVy
-IGNvbmZpZy4NCg0KRml4ZXM6IDc5NzVkMmFmZjVhZiAoIm5ldDogYXF1YW50aWE6IGFkZCBzdXBw
-b3J0IG9mIHJ4LXZsYW4tZmlsdGVyIG9mZmxvYWQiKQ0KU2lnbmVkLW9mZi1ieTogRG1pdHJ5IEJv
-Z2Rhbm92IDxkbWl0cnkuYm9nZGFub3ZAYXF1YW50aWEuY29tPg0KU2lnbmVkLW9mZi1ieTogSWdv
-ciBSdXNza2lraCA8aWdvci5ydXNza2lraEBhcXVhbnRpYS5jb20+DQotLS0NCiAuLi4vZXRoZXJu
-ZXQvYXF1YW50aWEvYXRsYW50aWMvYXFfZmlsdGVycy5jICAgfCAxMCArKysrKysrKy0tDQogLi4u
-L25ldC9ldGhlcm5ldC9hcXVhbnRpYS9hdGxhbnRpYy9hcV9uaWMuYyAgIHwgIDEgKw0KIC4uLi9u
-ZXQvZXRoZXJuZXQvYXF1YW50aWEvYXRsYW50aWMvYXFfbmljLmggICB8ICAxICsNCiAuLi4vYXF1
-YW50aWEvYXRsYW50aWMvaHdfYXRsL2h3X2F0bF9iMC5jICAgICAgfCAxOSArKysrKysrKysrKysr
-LS0tLS0tDQogNCBmaWxlcyBjaGFuZ2VkLCAyMyBpbnNlcnRpb25zKCspLCA4IGRlbGV0aW9ucygt
-KQ0KDQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvYXF1YW50aWEvYXRsYW50aWMv
-YXFfZmlsdGVycy5jIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvYXF1YW50aWEvYXRsYW50aWMvYXFf
-ZmlsdGVycy5jDQppbmRleCAxOGJjMDM1ZGE4NTAuLjFmZmY0NjJhNDE3NSAxMDA2NDQNCi0tLSBh
-L2RyaXZlcnMvbmV0L2V0aGVybmV0L2FxdWFudGlhL2F0bGFudGljL2FxX2ZpbHRlcnMuYw0KKysr
-IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvYXF1YW50aWEvYXRsYW50aWMvYXFfZmlsdGVycy5jDQpA
-QCAtODQzLDkgKzg0MywxNCBAQCBpbnQgYXFfZmlsdGVyc192bGFuc191cGRhdGUoc3RydWN0IGFx
-X25pY19zICphcV9uaWMpDQogCQlyZXR1cm4gZXJyOw0KIA0KIAlpZiAoYXFfbmljLT5uZGV2LT5m
-ZWF0dXJlcyAmIE5FVElGX0ZfSFdfVkxBTl9DVEFHX0ZJTFRFUikgew0KLQkJaWYgKGh3ZWlnaHQg
-PCBBUV9WTEFOX01BWF9GSUxURVJTKQ0KLQkJCWVyciA9IGFxX2h3X29wcy0+aHdfZmlsdGVyX3Zs
-YW5fY3RybChhcV9odywgdHJ1ZSk7DQorCQlpZiAoaHdlaWdodCA8IEFRX1ZMQU5fTUFYX0ZJTFRF
-UlMgJiYgaHdlaWdodCA+IDApIHsNCisJCQllcnIgPSBhcV9od19vcHMtPmh3X2ZpbHRlcl92bGFu
-X2N0cmwoYXFfaHcsDQorCQkJCSEoYXFfbmljLT5wYWNrZXRfZmlsdGVyICYgSUZGX1BST01JU0Mp
-KTsNCisJCQlhcV9uaWMtPmFxX25pY19jZmcuaXNfdmxhbl9mb3JjZV9wcm9taXNjID0gZmFsc2U7
-DQorCQl9IGVsc2Ugew0KIAkJLyogb3RoZXJ3aXNlIGxlZnQgaW4gcHJvbWlzY3VlIG1vZGUgKi8N
-CisJCQlhcV9uaWMtPmFxX25pY19jZmcuaXNfdmxhbl9mb3JjZV9wcm9taXNjID0gdHJ1ZTsNCisJ
-CX0NCiAJfQ0KIA0KIAlyZXR1cm4gZXJyOw0KQEAgLTg2Niw2ICs4NzEsNyBAQCBpbnQgYXFfZmls
-dGVyc192bGFuX29mZmxvYWRfb2ZmKHN0cnVjdCBhcV9uaWNfcyAqYXFfbmljKQ0KIAlpZiAodW5s
-aWtlbHkoIWFxX2h3X29wcy0+aHdfZmlsdGVyX3ZsYW5fY3RybCkpDQogCQlyZXR1cm4gLUVPUE5P
-VFNVUFA7DQogDQorCWFxX25pYy0+YXFfbmljX2NmZy5pc192bGFuX2ZvcmNlX3Byb21pc2MgPSB0
-cnVlOw0KIAllcnIgPSBhcV9od19vcHMtPmh3X2ZpbHRlcl92bGFuX2N0cmwoYXFfaHcsIGZhbHNl
-KTsNCiAJaWYgKGVycikNCiAJCXJldHVybiBlcnI7DQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQv
-ZXRoZXJuZXQvYXF1YW50aWEvYXRsYW50aWMvYXFfbmljLmMgYi9kcml2ZXJzL25ldC9ldGhlcm5l
-dC9hcXVhbnRpYS9hdGxhbnRpYy9hcV9uaWMuYw0KaW5kZXggMGRhNWUxNjFlYzVkLi40MTE3MmZi
-ZWJkZGQgMTAwNjQ0DQotLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9hcXVhbnRpYS9hdGxhbnRp
-Yy9hcV9uaWMuYw0KKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvYXF1YW50aWEvYXRsYW50aWMv
-YXFfbmljLmMNCkBAIC0xMjYsNiArMTI2LDcgQEAgdm9pZCBhcV9uaWNfY2ZnX3N0YXJ0KHN0cnVj
-dCBhcV9uaWNfcyAqc2VsZikNCiANCiAJY2ZnLT5saW5rX3NwZWVkX21zayAmPSBjZmctPmFxX2h3
-X2NhcHMtPmxpbmtfc3BlZWRfbXNrOw0KIAljZmctPmZlYXR1cmVzID0gY2ZnLT5hcV9od19jYXBz
-LT5od19mZWF0dXJlczsNCisJY2ZnLT5pc192bGFuX2ZvcmNlX3Byb21pc2MgPSB0cnVlOw0KIH0N
-CiANCiBzdGF0aWMgaW50IGFxX25pY191cGRhdGVfbGlua19zdGF0dXMoc3RydWN0IGFxX25pY19z
-ICpzZWxmKQ0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2FxdWFudGlhL2F0bGFu
-dGljL2FxX25pYy5oIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvYXF1YW50aWEvYXRsYW50aWMvYXFf
-bmljLmgNCmluZGV4IGViMmUzYzdjMzZmOS4uMGYyMmY1ZDU2OTFiIDEwMDY0NA0KLS0tIGEvZHJp
-dmVycy9uZXQvZXRoZXJuZXQvYXF1YW50aWEvYXRsYW50aWMvYXFfbmljLmgNCisrKyBiL2RyaXZl
-cnMvbmV0L2V0aGVybmV0L2FxdWFudGlhL2F0bGFudGljL2FxX25pYy5oDQpAQCAtMzUsNiArMzUs
-NyBAQCBzdHJ1Y3QgYXFfbmljX2NmZ19zIHsNCiAJdTMyIGZsb3dfY29udHJvbDsNCiAJdTMyIGxp
-bmtfc3BlZWRfbXNrOw0KIAl1MzIgd29sOw0KKwlib29sIGlzX3ZsYW5fZm9yY2VfcHJvbWlzYzsN
-CiAJdTE2IGlzX21jX2xpc3RfZW5hYmxlZDsNCiAJdTE2IG1jX2xpc3RfY291bnQ7DQogCWJvb2wg
-aXNfYXV0b25lZzsNCmRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9hcXVhbnRpYS9h
-dGxhbnRpYy9od19hdGwvaHdfYXRsX2IwLmMgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9hcXVhbnRp
-YS9hdGxhbnRpYy9od19hdGwvaHdfYXRsX2IwLmMNCmluZGV4IDFjNzU5M2Q1NDAzNS4uMTNhYzI2
-NjFhNDczIDEwMDY0NA0KLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvYXF1YW50aWEvYXRsYW50
-aWMvaHdfYXRsL2h3X2F0bF9iMC5jDQorKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9hcXVhbnRp
-YS9hdGxhbnRpYy9od19hdGwvaHdfYXRsX2IwLmMNCkBAIC03NzgsOCArNzc4LDE1IEBAIHN0YXRp
-YyBpbnQgaHdfYXRsX2IwX2h3X3BhY2tldF9maWx0ZXJfc2V0KHN0cnVjdCBhcV9od19zICpzZWxm
-LA0KIAkJCQkJICB1bnNpZ25lZCBpbnQgcGFja2V0X2ZpbHRlcikNCiB7DQogCXVuc2lnbmVkIGlu
-dCBpID0gMFU7DQorCXN0cnVjdCBhcV9uaWNfY2ZnX3MgKmNmZyA9IHNlbGYtPmFxX25pY19jZmc7
-DQorDQorCWh3X2F0bF9ycGZsMnByb21pc2N1b3VzX21vZGVfZW5fc2V0KHNlbGYsDQorCQkJCQkg
-ICAgSVNfRklMVEVSX0VOQUJMRUQoSUZGX1BST01JU0MpKTsNCisNCisJaHdfYXRsX3JwZl92bGFu
-X3Byb21fbW9kZV9lbl9zZXQoc2VsZiwNCisJCQkJICAgICBJU19GSUxURVJfRU5BQkxFRChJRkZf
-UFJPTUlTQykgfHwNCisJCQkJICAgICBjZmctPmlzX3ZsYW5fZm9yY2VfcHJvbWlzYyk7DQogDQot
-CWh3X2F0bF9ycGZsMnByb21pc2N1b3VzX21vZGVfZW5fc2V0KHNlbGYsIElTX0ZJTFRFUl9FTkFC
-TEVEKElGRl9QUk9NSVNDKSk7DQogCWh3X2F0bF9ycGZsMm11bHRpY2FzdF9mbHJfZW5fc2V0KHNl
-bGYsDQogCQkJCQkgSVNfRklMVEVSX0VOQUJMRUQoSUZGX0FMTE1VTFRJKSwgMCk7DQogDQpAQCAt
-Nzg4LDEzICs3OTUsMTMgQEAgc3RhdGljIGludCBod19hdGxfYjBfaHdfcGFja2V0X2ZpbHRlcl9z
-ZXQoc3RydWN0IGFxX2h3X3MgKnNlbGYsDQogDQogCWh3X2F0bF9ycGZsMmJyb2FkY2FzdF9lbl9z
-ZXQoc2VsZiwgSVNfRklMVEVSX0VOQUJMRUQoSUZGX0JST0FEQ0FTVCkpOw0KIA0KLQlzZWxmLT5h
-cV9uaWNfY2ZnLT5pc19tY19saXN0X2VuYWJsZWQgPSBJU19GSUxURVJfRU5BQkxFRChJRkZfTVVM
-VElDQVNUKTsNCisJY2ZnLT5pc19tY19saXN0X2VuYWJsZWQgPSBJU19GSUxURVJfRU5BQkxFRChJ
-RkZfTVVMVElDQVNUKTsNCiANCiAJZm9yIChpID0gSFdfQVRMX0IwX01BQ19NSU47IGkgPCBIV19B
-VExfQjBfTUFDX01BWDsgKytpKQ0KIAkJaHdfYXRsX3JwZmwyX3VjX2Zscl9lbl9zZXQoc2VsZiwN
-Ci0JCQkJCSAgIChzZWxmLT5hcV9uaWNfY2ZnLT5pc19tY19saXN0X2VuYWJsZWQgJiYNCi0JCQkJ
-ICAgIChpIDw9IHNlbGYtPmFxX25pY19jZmctPm1jX2xpc3RfY291bnQpKSA/DQotCQkJCSAgICAx
-VSA6IDBVLCBpKTsNCisJCQkJCSAgIChjZmctPmlzX21jX2xpc3RfZW5hYmxlZCAmJg0KKwkJCQkJ
-ICAgIChpIDw9IGNmZy0+bWNfbGlzdF9jb3VudCkpID8NCisJCQkJCSAgIDFVIDogMFUsIGkpOw0K
-IA0KIAlyZXR1cm4gYXFfaHdfZXJyX2Zyb21fZmxhZ3Moc2VsZik7DQogfQ0KQEAgLTEwODYsNyAr
-MTA5Myw3IEBAIHN0YXRpYyBpbnQgaHdfYXRsX2IwX2h3X3ZsYW5fc2V0KHN0cnVjdCBhcV9od19z
-ICpzZWxmLA0KIHN0YXRpYyBpbnQgaHdfYXRsX2IwX2h3X3ZsYW5fY3RybChzdHJ1Y3QgYXFfaHdf
-cyAqc2VsZiwgYm9vbCBlbmFibGUpDQogew0KIAkvKiBzZXQgcHJvbWlzYyBpbiBjYXNlIG9mIGRp
-c2FiaW5nIHRoZSB2bGFuZCBmaWx0ZXIgKi8NCi0JaHdfYXRsX3JwZl92bGFuX3Byb21fbW9kZV9l
-bl9zZXQoc2VsZiwgISEhZW5hYmxlKTsNCisJaHdfYXRsX3JwZl92bGFuX3Byb21fbW9kZV9lbl9z
-ZXQoc2VsZiwgIWVuYWJsZSk7DQogDQogCXJldHVybiBhcV9od19lcnJfZnJvbV9mbGFncyhzZWxm
-KTsNCiB9DQotLSANCjIuMTcuMQ0KDQo=
+On Fri, Jun 21, 2019 at 11:33:27AM -0700, Joe Perches wrote:
+> On Fri, 2019-06-21 at 13:12 -0500, Bjorn Helgaas wrote:
+> > On Fri, Jun 21, 2019 at 12:27 PM Joe Perches <joe@perches.com> wrote:
+> []
+> > > Subsystem specific local PCI #defines without generic
+> > > naming is poor style and makes treewide grep and
+> > > refactoring much more difficult.
+> > 
+> > Don't worry, we have the same objectives.  I totally agree that local
+> > #defines are a bad thing, which is why I proposed this project in the
+> > first place.
+> 
+> Hi again Bjorn.
+> 
+> I didn't know that was your idea.  Good idea.
+> 
+> > I'm just saying that this is a "first-patch" sort of learning project
+> > and I think it'll avoid some list spamming and discouragement if we
+> > can figure out the scope and shake out some of the teething problems
+> > ahead of time.  I don't want to end up with multiple versions of
+> > dozens of little 2-3 patch series posted every week or two.
+> 
+> Great, that's sensible.
+> 
+> > I'd rather be able to deal with a whole block of them at one time.
+> 
+> Also very sensible.
+> 
+> > > 2: Show that you compiled the object files and verified
+> > >    where possible that there are no object file changes.
+> > 
+> > Do you have any pointers for the best way to do this?  Is it as simple
+> > as comparing output of "objdump -d"?
+> 
+> Generically, yes.
+> 
+> I have a little script that does the equivalent of:
+> 
+> <git reset>
+> make <foo.o>
+> mv <foo.o> <foo.o>.old
+> patch -P1 < <foo_patch>
+> make <foo.o>
+> mv <foo.o> <foo.o>.new
+> diff -urN <(objdump -d <foo.o>.old) <(objdump -d <foo.o>.new)
+> 
+> But it's not foolproof as gcc does not guarantee
+> compilation repeatability.
+> 
+> And some subsystems Makefiles do not allow per-file
+> compilation.
+>
+Hi Joe,
+I tried using your specified technique here are the steps I took and the
+results I got.
+
+I built the object file before the patch named it "atl2-old.o"
+then I built it after the patch, named it "atl2-new.o"
+
+then i ran these commands:-
+$ objdump -d atl2-old.o > 1
+$ objdump -d atl2-new.o > 2
+$ diff -urN 1 2
+
+--- 1	2019-06-22 13:56:17.881392372 +0530
++++ 2	2019-06-22 13:56:35.228018053 +0530
+@@ -1,5 +1,5 @@
+
+-atl2-old.o:     file format elf64-x86-64
++atl2-new.o:     file format elf64-x86-64
+
+
+ Disassembly of section .text:
+
+So both the object files are similar.
+
+Thanks,
+--Puranjay
+
+
+
