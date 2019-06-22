@@ -2,257 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B0E54F77F
-	for <lists+netdev@lfdr.de>; Sat, 22 Jun 2019 19:42:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 109214F7B2
+	for <lists+netdev@lfdr.de>; Sat, 22 Jun 2019 20:00:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726326AbfFVRmZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Jun 2019 13:42:25 -0400
-Received: from charlotte.tuxdriver.com ([70.61.120.58]:55588 "EHLO
-        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726286AbfFVRmY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jun 2019 13:42:24 -0400
-Received: from [107.15.85.130] (helo=localhost)
-        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
-        (Exim 4.63)
-        (envelope-from <nhorman@tuxdriver.com>)
-        id 1hek1n-0007u9-H6; Sat, 22 Jun 2019 13:42:20 -0400
-From:   Neil Horman <nhorman@tuxdriver.com>
-To:     netdev@vger.kernel.org
-Cc:     Neil Horman <nhorman@tuxdriver.com>,
-        Matteo Croce <mcroce@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Subject: [PATCH v2 net] af_packet: Block execution of tasks waiting for transmit to complete in AF_PACKET
-Date:   Sat, 22 Jun 2019 13:41:54 -0400
-Message-Id: <20190622174154.14473-1-nhorman@tuxdriver.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190619202533.4856-1-nhorman@tuxdriver.com>
-References: <20190619202533.4856-1-nhorman@tuxdriver.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Score: -2.9 (--)
-X-Spam-Status: No
+        id S1726342AbfFVSAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Jun 2019 14:00:48 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:38806 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726299AbfFVSAr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jun 2019 14:00:47 -0400
+Received: by mail-ed1-f68.google.com with SMTP id r12so15022293edo.5
+        for <netdev@vger.kernel.org>; Sat, 22 Jun 2019 11:00:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=+0dbgQdh1alJJ8L/rg8gILoxp7pGVLPVx2FbN8k3ou0=;
+        b=W6ocLpkY1BE3FvpAj/Jx2f6VWeoA/iUUTN/X2eIOvl27L6nCgo++0PqLtJy698W++x
+         g3jUlIBbvG1iFb6WM/8u36Es4C/l3yMRdZEHXifHH/j2EV9ls5hW7nFi8sm/D+RoU8qQ
+         sqW2j/YNTpMigadivf4KmQzFYQ6bqu16DMLJinQOswPpTY5woTM9ksjRpgYBRRfixz6S
+         WFDWbxA9vrUi+2Zc8RIN+Un9A4vb8CZbXmqhIGxstbAnzMa8ASWYP0iwDzs+OyAAiIDo
+         OaTsZtABQ5Tqkbxl8ttqxE2xIiBRTreYZyqytnmWURrPmbdV+L2nuPCOiily5NTSSqOQ
+         cM6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=+0dbgQdh1alJJ8L/rg8gILoxp7pGVLPVx2FbN8k3ou0=;
+        b=IKu8SlZ+wkr4akmNARXysqOGbU7eAZk63pEbTwpTBT+ur89QDiozVKulOyZWI0wus+
+         IIceBSXNWRSF2fIaTpRUPzQTXc0E7W/iFRhhD+hN9pyCBmIMMS2XFuJDM8ygPOeXy/0n
+         9tfLho6Hi3Pe1EeJ45DwiA2JaJc3GvW7wXLmqXPcebehW5PK3ummrevwRqU0HCfyfPIh
+         ijHBxiUzsltGzniLIsid7XnBxLfETu7ZqtPKdr5JmxnFHRxlEVArlNxkRchAwtsv6g/q
+         Fdo7sV2PZxNPTZZbIuVNtjU/ZG19rguiIG3Pll3JHuyZ51JhEH/qKZE/F/J3dJrvS9aC
+         IEuA==
+X-Gm-Message-State: APjAAAX5dIJNlxFhK9tcQSMMbNmYidfvbYe3UKJDHWGFHclAKU9sPhyd
+        jsnJp4QW/X5cGeMeoICFtTGpXQ==
+X-Google-Smtp-Source: APXvYqwXlufYaLKyjX9Ki5Ml6RroaUqNe7GnNmZwa5YLKqKaBVznDoxRw1c5StvkWEmTouBHjnVOuQ==
+X-Received: by 2002:a50:86dc:: with SMTP id 28mr126658112edu.132.1561226445983;
+        Sat, 22 Jun 2019 11:00:45 -0700 (PDT)
+Received: from tegmen.arch.suse.de (charybdis-ext.suse.de. [195.135.221.2])
+        by smtp.gmail.com with ESMTPSA id a8sm1955560edt.56.2019.06.22.11.00.45
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 22 Jun 2019 11:00:45 -0700 (PDT)
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+X-Google-Original-From: Denis Kirjanov <dkirjanov@suse.com>
+To:     stephen@networkplumber.org, dsahern@gmail.com
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        dledford@redhat.com, mkubecek@suse.cz,
+        Denis Kirjanov <kda@linux-powerpc.org>
+Subject: [PATCH iproute2-next v3 1/2] ipaddress: correctly print a VF hw address in the IPoIB case
+Date:   Sat, 22 Jun 2019 20:00:34 +0200
+Message-Id: <20190622180035.40245-1-dkirjanov@suse.com>
+X-Mailer: git-send-email 2.12.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When an application is run that:
-a) Sets its scheduler to be SCHED_FIFO
-and
-b) Opens a memory mapped AF_PACKET socket, and sends frames with the
-MSG_DONTWAIT flag cleared, its possible for the application to hang
-forever in the kernel.  This occurs because when waiting, the code in
-tpacket_snd calls schedule, which under normal circumstances allows
-other tasks to run, including ksoftirqd, which in some cases is
-responsible for freeing the transmitted skb (which in AF_PACKET calls a
-destructor that flips the status bit of the transmitted frame back to
-available, allowing the transmitting task to complete).
+Current code assumes that we print ethernet mac and
+that doesn't work in the IPoIB case with SRIOV-enabled hardware
 
-However, when the calling application is SCHED_FIFO, its priority is
-such that the schedule call immediately places the task back on the cpu,
-preventing ksoftirqd from freeing the skb, which in turn prevents the
-transmitting task from detecting that the transmission is complete.
+Before:
+11: ib1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2044 qdisc pfifo_fast
+state UP mode DEFAULT group default qlen 256
+        link/infiniband
+80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
+00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
+        vf 0 MAC 14:80:00:00:66:fe, spoof checking off, link-state disable,
+    trust off, query_rss off
+    ...
 
-We can fix this by converting the schedule call to a completion
-mechanism.  By using a completion queue, we force the calling task, when
-it detects there are no more frames to send, to schedule itself off the
-cpu until such time as the last transmitted skb is freed, allowing
-forward progress to be made.
+After:
+11: ib1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2044 qdisc pfifo_fast
+state UP mode DEFAULT group default qlen 256
+        link/infiniband
+80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
+00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
+        vf 0     link/infiniband
+80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
+00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff, spoof
+checking off, link-state disable, trust off, query_rss off
 
-Tested by myself and the reporter, with good results
+v1->v2: updated kernel headers to uapi commit
+v2->v3: fixed alignment
 
-Appies to the net tree
-
-Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
-Reported-by: Matteo Croce <mcroce@redhat.com>
-CC: "David S. Miller" <davem@davemloft.net>
-CC: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-
-Change Notes:
-
-V1->V2:
-	Enhance the sleep logic to support being interruptible and
-allowing for honoring to SK_SNDTIMEO (Willem de Bruijn)
+Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
 ---
- net/packet/af_packet.c | 60 ++++++++++++++++++++++++++++++++----------
- net/packet/internal.h  |  2 ++
- 2 files changed, 48 insertions(+), 14 deletions(-)
+ ip/ipaddress.c | 44 +++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 39 insertions(+), 5 deletions(-)
 
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index a29d66da7394..8ddb2f7aebb4 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -358,7 +358,8 @@ static inline struct page * __pure pgv_to_page(void *addr)
- 	return virt_to_page(addr);
- }
+diff --git a/ip/ipaddress.c b/ip/ipaddress.c
+index b504200b..52078675 100644
+--- a/ip/ipaddress.c
++++ b/ip/ipaddress.c
+@@ -26,6 +26,7 @@
  
--static void __packet_set_status(struct packet_sock *po, void *frame, int status)
-+static void __packet_set_status(struct packet_sock *po, void *frame, int status,
-+				bool call_complete)
+ #include <linux/netdevice.h>
+ #include <linux/if_arp.h>
++#include <linux/if_infiniband.h>
+ #include <linux/sockios.h>
+ #include <linux/net_namespace.h>
+ 
+@@ -349,9 +350,10 @@ static void print_af_spec(FILE *fp, struct rtattr *af_spec_attr)
+ 
+ static void print_vf_stats64(FILE *fp, struct rtattr *vfstats);
+ 
+-static void print_vfinfo(FILE *fp, struct rtattr *vfinfo)
++static void print_vfinfo(struct ifinfomsg *ifi, FILE *fp, struct rtattr *vfinfo)
  {
- 	union tpacket_uhdr h;
+ 	struct ifla_vf_mac *vf_mac;
++	struct ifla_vf_broadcast *vf_broadcast;
+ 	struct ifla_vf_tx_rate *vf_tx_rate;
+ 	struct rtattr *vf[IFLA_VF_MAX + 1] = {};
  
-@@ -381,6 +382,8 @@ static void __packet_set_status(struct packet_sock *po, void *frame, int status)
- 		BUG();
- 	}
+@@ -365,13 +367,45 @@ static void print_vfinfo(FILE *fp, struct rtattr *vfinfo)
+ 	parse_rtattr_nested(vf, IFLA_VF_MAX, vfinfo);
  
-+	if (po->wait_on_complete && call_complete)
-+		complete(&po->skb_completion);
- 	smp_wmb();
- }
+ 	vf_mac = RTA_DATA(vf[IFLA_VF_MAC]);
++	vf_broadcast = RTA_DATA(vf[IFLA_VF_BROADCAST]);
+ 	vf_tx_rate = RTA_DATA(vf[IFLA_VF_TX_RATE]);
  
-@@ -1148,6 +1151,14 @@ static void *packet_previous_frame(struct packet_sock *po,
- 	return packet_lookup_frame(po, rb, previous, status);
- }
- 
-+static void *packet_next_frame(struct packet_sock *po,
-+		struct packet_ring_buffer *rb,
-+		int status)
-+{
-+	unsigned int next = rb->head != rb->frame_max ? rb->head+1 : 0;
-+	return packet_lookup_frame(po, rb, next, status);
-+}
+ 	print_string(PRINT_FP, NULL, "%s    ", _SL_);
+ 	print_int(PRINT_ANY, "vf", "vf %d ", vf_mac->vf);
+-	print_string(PRINT_ANY, "mac", "MAC %s",
+-		     ll_addr_n2a((unsigned char *) &vf_mac->mac,
+-				 ETH_ALEN, 0, b1, sizeof(b1)));
 +
- static void packet_increment_head(struct packet_ring_buffer *buff)
- {
- 	buff->head = buff->head != buff->frame_max ? buff->head+1 : 0;
-@@ -2360,7 +2371,7 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
- #endif
- 
- 	if (po->tp_version <= TPACKET_V2) {
--		__packet_set_status(po, h.raw, status);
-+		__packet_set_status(po, h.raw, status, false);
- 		sk->sk_data_ready(sk);
- 	} else {
- 		prb_clear_blk_fill_status(&po->rx_ring);
-@@ -2400,7 +2411,7 @@ static void tpacket_destruct_skb(struct sk_buff *skb)
- 		packet_dec_pending(&po->tx_ring);
- 
- 		ts = __packet_set_timestamp(po, ph, skb);
--		__packet_set_status(po, ph, TP_STATUS_AVAILABLE | ts);
-+		__packet_set_status(po, ph, TP_STATUS_AVAILABLE | ts, true);
- 	}
- 
- 	sock_wfree(skb);
-@@ -2585,13 +2596,13 @@ static int tpacket_parse_header(struct packet_sock *po, void *frame,
- 
- static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
- {
--	struct sk_buff *skb;
-+	struct sk_buff *skb = NULL;
- 	struct net_device *dev;
- 	struct virtio_net_hdr *vnet_hdr = NULL;
- 	struct sockcm_cookie sockc;
- 	__be16 proto;
- 	int err, reserve = 0;
--	void *ph;
-+	void *ph = NULL;
- 	DECLARE_SOCKADDR(struct sockaddr_ll *, saddr, msg->msg_name);
- 	bool need_wait = !(msg->msg_flags & MSG_DONTWAIT);
- 	unsigned char *addr = NULL;
-@@ -2600,9 +2611,12 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
- 	int len_sum = 0;
- 	int status = TP_STATUS_AVAILABLE;
- 	int hlen, tlen, copylen = 0;
-+	long timeo;
- 
- 	mutex_lock(&po->pg_vec_lock);
- 
-+	timeo = sock_sndtimeo(&po->sk, msg->msg_flags & MSG_DONTWAIT);
++	print_string(PRINT_ANY,
++			"link_type",
++			"    link/%s ",
++			ll_type_n2a(ifi->ifi_type, b1, sizeof(b1)));
 +
- 	if (likely(saddr == NULL)) {
- 		dev	= packet_cached_dev_get(po);
- 		proto	= po->num;
-@@ -2647,16 +2661,29 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
- 		size_max = dev->mtu + reserve + VLAN_HLEN;
++	print_color_string(PRINT_ANY,
++				COLOR_MAC,
++				"address",
++				"%s",
++				ll_addr_n2a((unsigned char *) &vf_mac->mac,
++					ifi->ifi_type == ARPHRD_ETHER ?
++					ETH_ALEN : INFINIBAND_ALEN,
++					ifi->ifi_type,
++					b1, sizeof(b1)));
++
++	if (vf[IFLA_VF_BROADCAST]) {
++		if (ifi->ifi_flags&IFF_POINTOPOINT) {
++			print_string(PRINT_FP, NULL, " peer ", NULL);
++			print_bool(PRINT_JSON,
++					"link_pointtopoint", NULL, true);
++		} else
++			print_string(PRINT_FP, NULL, " brd ", NULL);
++
++		print_color_string(PRINT_ANY,
++				COLOR_MAC,
++				"broadcast",
++				"%s",
++				ll_addr_n2a((unsigned char *) &vf_broadcast->broadcast,
++					ifi->ifi_type == ARPHRD_ETHER ?
++					ETH_ALEN : INFINIBAND_ALEN,
++					ifi->ifi_type,
++					b1, sizeof(b1)));
++	}
  
- 	do {
-+
-+		if (po->wait_on_complete && need_wait) {
-+			timeo = wait_for_completion_interruptible_timeout(&po->skb_completion, timeo);
-+			po->wait_on_complete = 0;
-+			if (!timeo) {
-+				/* We timed out, break out and notify userspace */
-+				err = -ETIMEDOUT;
-+				goto out_status;
-+			} else if (timeo == -ERESTARTSYS) {
-+				err = -ERESTARTSYS;
-+				goto out_status;
-+			}
-+		}
-+
- 		ph = packet_current_frame(po, &po->tx_ring,
- 					  TP_STATUS_SEND_REQUEST);
--		if (unlikely(ph == NULL)) {
--			if (need_wait && need_resched())
--				schedule();
--			continue;
--		}
-+
-+		if (likely(ph == NULL))
-+			break;
- 
- 		skb = NULL;
- 		tp_len = tpacket_parse_header(po, ph, size_max, &data);
-+
- 		if (tp_len < 0)
- 			goto tpacket_error;
- 
-@@ -2699,7 +2726,7 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
- tpacket_error:
- 			if (po->tp_loss) {
- 				__packet_set_status(po, ph,
--						TP_STATUS_AVAILABLE);
-+						TP_STATUS_AVAILABLE, false);
- 				packet_increment_head(&po->tx_ring);
- 				kfree_skb(skb);
- 				continue;
-@@ -2719,7 +2746,9 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+ 	if (vf[IFLA_VF_VLAN_LIST]) {
+ 		struct rtattr *i, *vfvlanlist = vf[IFLA_VF_VLAN_LIST];
+@@ -1102,7 +1136,7 @@ int print_linkinfo(struct nlmsghdr *n, void *arg)
+ 		open_json_array(PRINT_JSON, "vfinfo_list");
+ 		for (i = RTA_DATA(vflist); RTA_OK(i, rem); i = RTA_NEXT(i, rem)) {
+ 			open_json_object(NULL);
+-			print_vfinfo(fp, i);
++			print_vfinfo(ifi, fp, i);
+ 			close_json_object();
  		}
- 
- 		skb->destructor = tpacket_destruct_skb;
--		__packet_set_status(po, ph, TP_STATUS_SENDING);
-+		__packet_set_status(po, ph, TP_STATUS_SENDING, false);
-+		if (!packet_next_frame(po, &po->tx_ring, TP_STATUS_SEND_REQUEST))
-+			po->wait_on_complete = 1;
- 		packet_inc_pending(&po->tx_ring);
- 
- 		status = TP_STATUS_SEND_REQUEST;
-@@ -2753,8 +2782,10 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
- 	goto out_put;
- 
- out_status:
--	__packet_set_status(po, ph, status);
--	kfree_skb(skb);
-+	if (ph)
-+		__packet_set_status(po, ph, status, false);
-+	if (skb)
-+		kfree_skb(skb);
- out_put:
- 	dev_put(dev);
- out:
-@@ -3207,6 +3238,7 @@ static int packet_create(struct net *net, struct socket *sock, int protocol,
- 	sock_init_data(sock, sk);
- 
- 	po = pkt_sk(sk);
-+	init_completion(&po->skb_completion);
- 	sk->sk_family = PF_PACKET;
- 	po->num = proto;
- 	po->xmit = dev_queue_xmit;
-diff --git a/net/packet/internal.h b/net/packet/internal.h
-index 3bb7c5fb3bff..bbb4be2c18e7 100644
---- a/net/packet/internal.h
-+++ b/net/packet/internal.h
-@@ -128,6 +128,8 @@ struct packet_sock {
- 	unsigned int		tp_hdrlen;
- 	unsigned int		tp_reserve;
- 	unsigned int		tp_tstamp;
-+	struct completion	skb_completion;
-+	unsigned int		wait_on_complete;
- 	struct net_device __rcu	*cached_dev;
- 	int			(*xmit)(struct sk_buff *skb);
- 	struct packet_type	prot_hook ____cacheline_aligned_in_smp;
+ 		close_json_array(PRINT_JSON, NULL);
 -- 
-2.20.1
+2.12.3
 
