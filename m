@@ -2,64 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A25AC4F908
-	for <lists+netdev@lfdr.de>; Sun, 23 Jun 2019 01:51:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8CBB4F918
+	for <lists+netdev@lfdr.de>; Sun, 23 Jun 2019 01:54:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726342AbfFVXvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Jun 2019 19:51:12 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:32876 "EHLO
+        id S1726511AbfFVXyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Jun 2019 19:54:16 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:32904 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725844AbfFVXvM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jun 2019 19:51:12 -0400
+        with ESMTP id S1726296AbfFVXyQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jun 2019 19:54:16 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 26AD4136DDD20;
-        Sat, 22 Jun 2019 16:51:12 -0700 (PDT)
-Date:   Sat, 22 Jun 2019 16:51:11 -0700 (PDT)
-Message-Id: <20190622.165111.1722448155363637012.davem@davemloft.net>
-To:     idosch@idosch.org
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com, mlxsw@mellanox.com,
-        idosch@mellanox.com
-Subject: Re: [PATCH net-next v2] ipv6: Error when route does not have any
- valid nexthops
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 5E1D81540C178;
+        Sat, 22 Jun 2019 16:54:15 -0700 (PDT)
+Date:   Sat, 22 Jun 2019 16:54:14 -0700 (PDT)
+Message-Id: <20190622.165414.71029280359569399.davem@davemloft.net>
+To:     lucien.xin@gmail.com
+Cc:     netdev@vger.kernel.org, jon.maloy@ericsson.com,
+        ying.xue@windriver.com, tipc-discussion@lists.sourceforge.net
+Subject: Re: [PATCH net] tipc: change to use register_pernet_device
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190620091021.18210-1-idosch@idosch.org>
-References: <20190620091021.18210-1-idosch@idosch.org>
+In-Reply-To: <1a8f3ada3e0a65b6e9250c4580a7c420b4ddddac.1561027168.git.lucien.xin@gmail.com>
+References: <1a8f3ada3e0a65b6e9250c4580a7c420b4ddddac.1561027168.git.lucien.xin@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 22 Jun 2019 16:51:12 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 22 Jun 2019 16:54:15 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@idosch.org>
-Date: Thu, 20 Jun 2019 12:10:21 +0300
+From: Xin Long <lucien.xin@gmail.com>
+Date: Thu, 20 Jun 2019 18:39:28 +0800
 
-> From: Ido Schimmel <idosch@mellanox.com>
+> This patch is to fix a dst defcnt leak, which can be reproduced by doing:
 > 
-> When user space sends invalid information in RTA_MULTIPATH, the nexthop
-> list in ip6_route_multipath_add() is empty and 'rt_notif' is set to
-> NULL.
+>   # ip net a c; ip net a s; modprobe tipc
+>   # ip net e s ip l a n eth1 type veth peer n eth1 netns c
+>   # ip net e c ip l s lo up; ip net e c ip l s eth1 up
+>   # ip net e s ip l s lo up; ip net e s ip l s eth1 up
+>   # ip net e c ip a a 1.1.1.2/8 dev eth1
+>   # ip net e s ip a a 1.1.1.1/8 dev eth1
+>   # ip net e c tipc b e m udp n u1 localip 1.1.1.2
+>   # ip net e s tipc b e m udp n u1 localip 1.1.1.1
+>   # ip net d c; ip net d s; rmmod tipc
 > 
-> The code that emits the in-kernel notifications does not check for this
-> condition, which results in a NULL pointer dereference [1].
+> and it will get stuck and keep logging the error:
 > 
-> Fix this by bailing earlier in the function if the parsed nexthop list
-> is empty. This is consistent with the corresponding IPv4 code.
+>   unregister_netdevice: waiting for lo to become free. Usage count = 1
 > 
-> v2:
-> * Check if parsed nexthop list is empty and bail with extack set
+> The cause is that a dst is held by the udp sock's sk_rx_dst set on udp rx
+> path with udp_early_demux == 1, and this dst (eventually holding lo dev)
+> can't be released as bearer's removal in tipc pernet .exit happens after
+> lo dev's removal, default_device pernet .exit.
 > 
-> [1]
- ...
+>  "There are two distinct types of pernet_operations recognized: subsys and
+>   device.  At creation all subsys init functions are called before device
+>   init functions, and at destruction all device exit functions are called
+>   before subsys exit function."
 > 
-> Reported-by: syzbot+382566d339d52cd1a204@syzkaller.appspotmail.com
-> Fixes: ebee3cad835f ("ipv6: Add IPv6 multipath notifications for add / replace")
-> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+> So by calling register_pernet_device instead to register tipc_net_ops, the
+> pernet .exit() will be invoked earlier than loopback dev's removal when a
+> netns is being destroyed, as fou/gue does.
+> 
+> Note that vxlan and geneve udp tunnels don't have this issue, as the udp
+> sock is released in their device ndo_stop().
+> 
+> This fix is also necessary for tipc dst_cache, which will hold dsts on tx
+> path and I will introduce in my next patch.
+> 
+> Reported-by: Li Shuang <shuali@redhat.com>
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
 
 Applied.
