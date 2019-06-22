@@ -2,185 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 493C04F557
-	for <lists+netdev@lfdr.de>; Sat, 22 Jun 2019 12:46:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E0A44F577
+	for <lists+netdev@lfdr.de>; Sat, 22 Jun 2019 13:08:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726278AbfFVKqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Jun 2019 06:46:22 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:50239 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726130AbfFVKqW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jun 2019 06:46:22 -0400
-Received: by mail-wm1-f65.google.com with SMTP id c66so8457723wmf.0
-        for <netdev@vger.kernel.org>; Sat, 22 Jun 2019 03:46:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=2Nrlxsx+Gz/SixwTHGIo/kJmiDEFkscBqwJrwGCY8Qg=;
-        b=IhoSuUEz99LHBbk0+osJF4XpdaIoYd6Qs2QXEpYMVETDpTQ+b1+8etOYXFb415r864
-         iXO67j91qoHoi2Do4Lnenrz5TN/I5PsFCFo4KgpcQ+C0bjkXoDEB3IMbB80GhTwZJfCr
-         gD7DCJIONF2hvGabebe6VOAbmbv0ZDIp0u71m2zG6rKYofoIRgAoBEUpFNhCbAWo41N7
-         f8NrSzX+xK+y4438O5rHtWZeJxk+vuynOwV4cZFMliM8/IBP87/iVqmRSzFKUt1LyQoH
-         wVLkWPrUH6xhMNWBHUZLtkNg2UbGXU/FojS182eX0Ii1gLHWPzDckbxyCyzHJhCLT1Cr
-         /HMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=2Nrlxsx+Gz/SixwTHGIo/kJmiDEFkscBqwJrwGCY8Qg=;
-        b=ZMAEK+hYcH97IKl9CFVX44oafVjEuTrCCFyIvSTBZaZNQFK7DlWaj1j8GRzEW3JMNx
-         YZVWxqo5VPypbmSZd8ESXoVUIGZQxyBPO6vv64ATzjTC7Zgi+T34dTM7CS8lom3phyMH
-         JxncXtfYljnJxuzuVp7+YGxMFncQg8vT0JHpLQaGE6zc1rnN9ByOaFiHukf8qfmIRyc7
-         rlI5wlySiMRtpMCCFBB3ifXzrp0ZxaJZ5+1Bp5WVxd2zUDceMSJTQNSED3wmzDJybeuj
-         megR7tBsCv5g2Hl1F5TlZaRZ4rNkbD/gp/pK2EHNo10AGnspbuHmqZtOaH8GYS3Y0ByY
-         0l/w==
-X-Gm-Message-State: APjAAAU/aImn1//6HlhUnVMTI9tmBnXhYk/Q8TmjnAu3WyIb8IUz5hiR
-        g2SvcJD+VusGgw==
-X-Google-Smtp-Source: APXvYqyQs8sOB1JD3VCGUkbLwFEQHknIKywydRmFLmLenRjhS1eLH4YOl9gse8v4ZG+L49EXteYdlQ==
-X-Received: by 2002:a1c:c583:: with SMTP id v125mr7357635wmf.158.1561200379261;
-        Sat, 22 Jun 2019 03:46:19 -0700 (PDT)
-Received: from x-Inspiron-15-5568.fritz.box (ip-95-223-112-76.hsi16.unitymediagroup.de. [95.223.112.76])
-        by smtp.gmail.com with ESMTPSA id o8sm4840695wrj.71.2019.06.22.03.46.18
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sat, 22 Jun 2019 03:46:18 -0700 (PDT)
-From:   Sergej Benilov <sergej.benilov@googlemail.com>
-To:     venza@brownhat.org, netdev@vger.kernel.org
-Cc:     Sergej Benilov <sergej.benilov@googlemail.com>
-Subject: [PATCH] sis900: remove TxIDLE
-Date:   Sat, 22 Jun 2019 12:43:58 +0200
-Message-Id: <20190622104358.19782-1-sergej.benilov@googlemail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726301AbfFVLIu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Jun 2019 07:08:50 -0400
+Received: from charlotte.tuxdriver.com ([70.61.120.58]:54186 "EHLO
+        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726112AbfFVLIu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jun 2019 07:08:50 -0400
+Received: from [107.15.85.130] (helo=localhost)
+        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
+        (Exim 4.63)
+        (envelope-from <nhorman@tuxdriver.com>)
+        id 1hedsu-0005Q0-0D; Sat, 22 Jun 2019 07:08:48 -0400
+Date:   Sat, 22 Jun 2019 07:08:34 -0400
+From:   Neil Horman <nhorman@tuxdriver.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Matteo Croce <mcroce@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net] af_packet: Block execution of tasks waiting for
+ transmit to complete in AF_PACKET
+Message-ID: <20190622110834.GA16476@hmswarspite.think-freely.org>
+References: <20190619202533.4856-1-nhorman@tuxdriver.com>
+ <CA+FuTSe=kJSSvcYwCE9-omRF5Snd9AyesZac61PYyAHDStPt=A@mail.gmail.com>
+ <20190620142354.GB18890@hmswarspite.think-freely.org>
+ <CAF=yD-KFZBS7PpvvBkHS5jQdjRr4tWpeHmb7=9QPmvD-RTcpYw@mail.gmail.com>
+ <20190621164156.GB21895@hmswarspite.think-freely.org>
+ <CAF=yD-+MA398hTu7qCxfRhAMYrpeYp-+znc7bKNbupLYRRv5ug@mail.gmail.com>
+ <20190621191823.GD21895@hmswarspite.think-freely.org>
+ <CAF=yD-JdmguAAtS-qBTQ5f0PVspea0f-Es+Lv9wEEkiHP-k-oA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAF=yD-JdmguAAtS-qBTQ5f0PVspea0f-Es+Lv9wEEkiHP-k-oA@mail.gmail.com>
+User-Agent: Mutt/1.11.3 (2019-02-01)
+X-Spam-Score: -2.9 (--)
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Before "sis900: fix TX completion" patch, TX completion was done on TxIDLE interrupt.
-TX completion also was the only thing done on TxIDLE interrupt.
-Since "sis900: fix TX completion", TX completion is done on TxDESC interrupt.
-So it is not necessary any more to set and to check for TxIDLE.
+On Fri, Jun 21, 2019 at 04:06:09PM -0400, Willem de Bruijn wrote:
+> On Fri, Jun 21, 2019 at 3:18 PM Neil Horman <nhorman@tuxdriver.com> wrote:
+> >
+> > On Fri, Jun 21, 2019 at 02:31:17PM -0400, Willem de Bruijn wrote:
+> > > On Fri, Jun 21, 2019 at 12:42 PM Neil Horman <nhorman@tuxdriver.com> wrote:
+> > > >
+> > > > On Thu, Jun 20, 2019 at 11:16:13AM -0400, Willem de Bruijn wrote:
+> > > > > On Thu, Jun 20, 2019 at 10:24 AM Neil Horman <nhorman@tuxdriver.com> wrote:
+> > > > > >
+> > > > > > On Thu, Jun 20, 2019 at 09:41:30AM -0400, Willem de Bruijn wrote:
+> > > > > > > On Wed, Jun 19, 2019 at 4:26 PM Neil Horman <nhorman@tuxdriver.com> wrote:
+> > > > > > > >
+> > > > > > > > When an application is run that:
+> > > > > > > > a) Sets its scheduler to be SCHED_FIFO
+> > > > > > > > and
+> > > > > > > > b) Opens a memory mapped AF_PACKET socket, and sends frames with the
+> > > > > > > > MSG_DONTWAIT flag cleared, its possible for the application to hang
+> > > > > > > > forever in the kernel.  This occurs because when waiting, the code in
+> > > > > > > > tpacket_snd calls schedule, which under normal circumstances allows
+> > > > > > > > other tasks to run, including ksoftirqd, which in some cases is
+> > > > > > > > responsible for freeing the transmitted skb (which in AF_PACKET calls a
+> > > > > > > > destructor that flips the status bit of the transmitted frame back to
+> > > > > > > > available, allowing the transmitting task to complete).
+> > > > > > > >
+> > > > > > > > However, when the calling application is SCHED_FIFO, its priority is
+> > > > > > > > such that the schedule call immediately places the task back on the cpu,
+> > > > > > > > preventing ksoftirqd from freeing the skb, which in turn prevents the
+> > > > > > > > transmitting task from detecting that the transmission is complete.
+> > > > > > > >
+> > > > > > > > We can fix this by converting the schedule call to a completion
+> > > > > > > > mechanism.  By using a completion queue, we force the calling task, when
+> > > > > > > > it detects there are no more frames to send, to schedule itself off the
+> > > > > > > > cpu until such time as the last transmitted skb is freed, allowing
+> > > > > > > > forward progress to be made.
+> > > > > > > >
+> > > > > > > > Tested by myself and the reporter, with good results
+> > > > > > > >
+> > > > > > > > Appies to the net tree
+> > > > > > > >
+> > > > > > > > Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
+> > > > > > > > Reported-by: Matteo Croce <mcroce@redhat.com>
+> > > > > > > > CC: "David S. Miller" <davem@davemloft.net>
+> > > > > > > > ---
+> > > > > > >
+> > > > > > > This is a complex change for a narrow configuration. Isn't a
+> > > > > > > SCHED_FIFO process preempting ksoftirqd a potential problem for other
+> > > > > > > networking workloads as well? And the right configuration to always
+> > > > > > > increase ksoftirqd priority when increasing another process's
+> > > > > > > priority? Also, even when ksoftirqd kicks in, isn't some progress
+> > > > > > > still made on the local_bh_enable reached from schedule()?
+> > > > > > >
+> > > > > >
+> > > > > > A few questions here to answer:
+> > > > >
+> > > > > Thanks for the detailed explanation.
+> > > > >
+> > > > > > Regarding other protocols having this problem, thats not the case, because non
+> > > > > > packet sockets honor the SK_SNDTIMEO option here (i.e. they sleep for a period
+> > > > > > of time specified by the SNDTIMEO option if MSG_DONTWAIT isn't set.  We could
+> > > > > > certainly do that, but the current implementation doesn't (opting instead to
+> > > > > > wait indefinately until the respective packet(s) have transmitted or errored
+> > > > > > out), and I wanted to maintain that behavior.  If there is consensus that packet
+> > > > > > sockets should honor SNDTIMEO, then I can certainly do that.
+> > > > > >
+> > > > > > As for progress made by calling local_bh_enable, My read of the code doesn't
+> > > > > > have the scheduler calling local_bh_enable at all.  Instead schedule uses
+> > > > > > preempt_disable/preempt_enable_no_resched() to gain exlcusive access to the cpu,
+> > > > > > which ignores pending softirqs on re-enablement.
+> > > > >
+> > > > > Ah, I'm mistaken there, then.
+> > > > >
+> > > > > >  Perhaps that needs to change,
+> > > > > > but I'm averse to making scheduler changes for this (the aforementioned concern
+> > > > > > about complex changes for a narrow use case)
+> > > > > >
+> > > > > > Regarding raising the priority of ksoftirqd, that could be a solution, but the
+> > > > > > priority would need to be raised to a high priority SCHED_FIFO parameter, and
+> > > > > > that gets back to making complex changes for a narrow problem domain
+> > > > > >
+> > > > > > As for the comlexity of the of the solution, I think this is, given your
+> > > > > > comments the least complex and intrusive change to solve the given problem.
+> > > > >
+> > > > > Could it be simpler to ensure do_softirq() gets run here? That would
+> > > > > allow progress for this case.
+> > > > >
+> > > > > >  We
+> > > > > > need to find a way to force the calling task off the cpu while the asynchronous
+> > > > > > operations in the transmit path complete, and we can do that this way, or by
+> > > > > > honoring SK_SNDTIMEO.  I'm fine with doing the latter, but I didn't want to
+> > > > > > alter the current protocol behavior without consensus on that.
+> > > > >
+> > > > > In general SCHED_FIFO is dangerous with regard to stalling other
+> > > > > progress, incl. ksoftirqd. But it does appear that this packet socket
+> > > > > case is special inside networking in calling schedule() directly here.
+> > > > >
+> > > > > If converting that, should it convert to logic more akin to other
+> > > > > sockets, like sock_wait_for_wmem? I haven't had a chance to read up on
+> > > > > the pros and cons of completion here yet, sorry. Didn't want to delay
+> > > > > responding until after I get a chance.
+> > > > >
+> > > > So, I started looking at implementing SOCK_SNDTIMEO for this patch, and
+> > > > something occured to me....We still need a mechanism to block in tpacket_snd.
+> > > > That is to say, other protocol use SK_SNDTIMEO to wait for socket memory to
+> > > > become available, and that requirement doesn't exist for memory mapped sockets
+> > > > in AF_PACKET (which tpacket_snd implements the kernel side for).  We have memory
+> > > > mapped frame buffers, which we marshall with an otherwise empty skb, and just
+> > > > send that (i.e. no waiting on socket memory, we just product an error if we
+> > > > don't have enough ram to allocate an sk_buff).  Given that, we only ever need to
+> > > > wait for a frame to complete transmission, or get freed in an error path further
+> > > > down the stack.  This probably explains why SK_SNDTIMEO doesn't exist for
+> > > > AF_PACKET.
+> > >
+> > > SNDTIMEO behavior would still be useful: to wait for frame slot to
+> > > become available, but only up to a timeout?
+> > >
+> > Ok, thats fair.  To be clear, memory_mapped packets aren't waiting here for a
+> > frame to become available for sending (thats done in userspace, where the
+> > application checks a specific memory location for the TP_AVAILABLE status to be
+> > set, so a new frame can be written).  tpacket_snd is wating for the transmission
+> > of a specific frame to complete the transmit action, which is a different thing.
+> 
+> Right. Until this report I was actually not even aware of this
+> behavior without MSG_DONTWAIT.
+> 
+> Though the wait is not for a specific frame, right? Wait as long as
+> the pending_refcnt, which is incremented on every loop.
+> 
+> > Still, I suppose theres no reason we couldn't contrain that wait on a timeout
+> > set by SK_SNDTIMEO
+> >
+> > > To be clear, adding that is not a prerequisite for fixing this
+> > > specific issue, of course. It would just be nice if the one happens to
+> > > be fixed by adding the other.
+> > >
+> > > My main question is wrt the implementation details of struct
+> > > completion. Without dynamic memory allocation,
+> > > sock_wait_for_wmem/sk_stream_write_space obviously does not make
+> > > sense. But should we still use sk_wq and more importantly does this
+> > > need the same wait semantics (TASK_INTERRUPTIBLE) and does struct
+> > > completion give those?
+> > >
+> > I suppose we could overload its use here, but I would be worried that such an
+> > overload would be confusing.  Nominally, sk_wq is used, as you note, to block
+> > sockets whose allocated send space is full, until such time as enough frames
+> > have been sent to make space for the next write.  In this scenario, we already
+> > know we have space to send a frame (by virtue of the fact that we are executing
+> > in tpakcet_snd, which is only called after userspace has written a frame to the
+> > memory mapped buffer already allocated for frame transmission).  In this case we
+> > are simply waiting for the last frame that we have sent to complete
+> > transmission, at which point we can look to see if more frames are available to
+> > send, or return from the system call.  I'm happy to take an alternate consensus
+> > into account, but for the sake of clarity I think I would rather use the
+> > completion queue, as it makes clear the correlation between the waiter and the
+> > event we are waiting on.
+> 
+> That will be less likely to have unexpected side-effects. Agreed.
+> Thanks for the explanation.
+> 
+> Only last question, does it have the right wait behavior? Should this
+> be wait_for_completion_interruptible?
+> 
+Thats a good point.  Other protocols use the socket timeout along with
+sk_wait_event, which sets the task state TASK_INTERRUPTIBLE, so we should
+probably use wait_for_completion_interruptible_timeout
 
-Eliminate TxIDLE from sis900.
-Correct some typos, too.
-
-Signed-off-by: Sergej Benilov <sergej.benilov@googlemail.com>
----
- drivers/net/ethernet/sis/sis900.c | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/net/ethernet/sis/sis900.c b/drivers/net/ethernet/sis/sis900.c
-index dff5b567..abb9b42e 100644
---- a/drivers/net/ethernet/sis/sis900.c
-+++ b/drivers/net/ethernet/sis/sis900.c
-@@ -176,7 +176,7 @@ struct sis900_private {
- 
- 	u32 msg_enable;
- 
--	unsigned int cur_rx, dirty_rx; /* producer/comsumer pointers for Tx/Rx ring */
-+	unsigned int cur_rx, dirty_rx; /* producer/consumer pointers for Tx/Rx ring */
- 	unsigned int cur_tx, dirty_tx;
- 
- 	/* The saved address of a sent/receive-in-place packet buffer */
-@@ -360,8 +360,8 @@ static int sis635_get_mac_addr(struct pci_dev *pci_dev,
-  *	SiS962 or SiS963 model, use EEPROM to store MAC address. And EEPROM
-  *	is shared by
-  *	LAN and 1394. When access EEPROM, send EEREQ signal to hardware first
-- *	and wait for EEGNT. If EEGNT is ON, EEPROM is permitted to be access
-- *	by LAN, otherwise is not. After MAC address is read from EEPROM, send
-+ *	and wait for EEGNT. If EEGNT is ON, EEPROM is permitted to be accessed
-+ *	by LAN, otherwise it is not. After MAC address is read from EEPROM, send
-  *	EEDONE signal to refuse EEPROM access by LAN.
-  *	The EEPROM map of SiS962 or SiS963 is different to SiS900.
-  *	The signature field in SiS962 or SiS963 spec is meaningless.
-@@ -883,7 +883,7 @@ static void mdio_reset(struct sis900_private *sp)
-  *	mdio_read - read MII PHY register
-  *	@net_dev: the net device to read
-  *	@phy_id: the phy address to read
-- *	@location: the phy regiester id to read
-+ *	@location: the phy register id to read
-  *
-  *	Read MII registers through MDIO and MDC
-  *	using MDIO management frame structure and protocol(defined by ISO/IEC).
-@@ -927,7 +927,7 @@ static int mdio_read(struct net_device *net_dev, int phy_id, int location)
-  *	mdio_write - write MII PHY register
-  *	@net_dev: the net device to write
-  *	@phy_id: the phy address to write
-- *	@location: the phy regiester id to write
-+ *	@location: the phy register id to write
-  *	@value: the register value to write with
-  *
-  *	Write MII registers with @value through MDIO and MDC
-@@ -1058,7 +1058,7 @@ sis900_open(struct net_device *net_dev)
- 	sis900_set_mode(sis_priv, HW_SPEED_10_MBPS, FDX_CAPABLE_HALF_SELECTED);
- 
- 	/* Enable all known interrupts by setting the interrupt mask. */
--	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxIDLE | TxDESC);
-+	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxDESC);
- 	sw32(cr, RxENA | sr32(cr));
- 	sw32(ier, IE);
- 
-@@ -1104,7 +1104,7 @@ sis900_init_rxfilter (struct net_device * net_dev)
- 		sw32(rfdr, w);
- 
- 		if (netif_msg_hw(sis_priv)) {
--			printk(KERN_DEBUG "%s: Receive Filter Addrss[%d]=%x\n",
-+			printk(KERN_DEBUG "%s: Receive Filter Address[%d]=%x\n",
- 			       net_dev->name, i, sr32(rfdr));
- 		}
- 	}
-@@ -1151,7 +1151,7 @@ sis900_init_tx_ring(struct net_device *net_dev)
-  *	@net_dev: the net device to initialize for
-  *
-  *	Initialize the Rx descriptor ring,
-- *	and pre-allocate recevie buffers (socket buffer)
-+ *	and pre-allocate receive buffers (socket buffer)
-  */
- 
- static void
-@@ -1581,7 +1581,7 @@ static void sis900_tx_timeout(struct net_device *net_dev)
- 	sw32(txdp, sis_priv->tx_ring_dma);
- 
- 	/* Enable all known interrupts by setting the interrupt mask. */
--	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxIDLE | TxDESC);
-+	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxDESC);
- }
- 
- /**
-@@ -1677,7 +1677,7 @@ static irqreturn_t sis900_interrupt(int irq, void *dev_instance)
- 	do {
- 		status = sr32(isr);
- 
--		if ((status & (HIBERR|TxURN|TxERR|TxIDLE|TxDESC|RxORN|RxERR|RxOK)) == 0)
-+		if ((status & (HIBERR|TxURN|TxERR|TxDESC|RxORN|RxERR|RxOK)) == 0)
- 			/* nothing intresting happened */
- 			break;
- 		handled = 1;
-@@ -1687,7 +1687,7 @@ static irqreturn_t sis900_interrupt(int irq, void *dev_instance)
- 			/* Rx interrupt */
- 			sis900_rx(net_dev);
- 
--		if (status & (TxURN | TxERR | TxIDLE | TxDESC))
-+		if (status & (TxURN | TxERR | TxDESC))
- 			/* Tx interrupt */
- 			sis900_finish_xmit(net_dev);
- 
-@@ -1900,7 +1900,7 @@ static void sis900_finish_xmit (struct net_device *net_dev)
- 		if (tx_status & OWN) {
- 			/* The packet is not transmitted yet (owned by hardware) !
- 			 * Note: this is an almost impossible condition
--			 * in case of TxDESC ('descriptor interrupt') */
-+			 * on TxDESC interrupt ('descriptor interrupt') */
- 			break;
- 		}
- 
-@@ -2476,7 +2476,7 @@ static int sis900_resume(struct pci_dev *pci_dev)
- 	sis900_set_mode(sis_priv, HW_SPEED_10_MBPS, FDX_CAPABLE_HALF_SELECTED);
- 
- 	/* Enable all known interrupts by setting the interrupt mask. */
--	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxIDLE | TxDESC);
-+	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxDESC);
- 	sw32(cr, RxENA | sr32(cr));
- 	sw32(ier, IE);
- 
--- 
-2.17.1
-
+Thanks!
