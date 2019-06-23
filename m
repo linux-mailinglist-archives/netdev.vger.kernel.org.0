@@ -2,39 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C86F4FB7F
-	for <lists+netdev@lfdr.de>; Sun, 23 Jun 2019 14:13:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0C254FBAE
+	for <lists+netdev@lfdr.de>; Sun, 23 Jun 2019 14:57:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726596AbfFWMNm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Jun 2019 08:13:42 -0400
-Received: from mail-out.m-online.net ([212.18.0.9]:45509 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726429AbfFWMNm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jun 2019 08:13:42 -0400
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 45WrtX2Z6Sz1rBnV;
-        Sun, 23 Jun 2019 14:13:39 +0200 (CEST)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 45WrtW4sF1z1qrQJ;
-        Sun, 23 Jun 2019 14:13:39 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id 8z0YSPObSAJ5; Sun, 23 Jun 2019 14:13:38 +0200 (CEST)
-X-Auth-Info: EA9wDjsQOFuzV5l0sdEOr7tWyDgkkwru5hfQTVAApSw=
-Received: from kurokawa.lan (ip-86-49-110-70.net.upcbroadband.cz [86.49.110.70])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Sun, 23 Jun 2019 14:13:38 +0200 (CEST)
-From:   Marek Vasut <marex@denx.de>
+        id S1726441AbfFWM5U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Jun 2019 08:57:20 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:59317 "EHLO
+        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726086AbfFWM5U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jun 2019 08:57:20 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id A00B222077;
+        Sun, 23 Jun 2019 08:57:18 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Sun, 23 Jun 2019 08:57:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=aS/1Cx7S5X9tG+4lE
+        UqI45zzYbZ5GxZ/F+ve4UHZ/QI=; b=e9EwJGj7nBZzLo7g/1JwurLY4GZGeORiS
+        629pg9xryOBZhpM0JLOuSKrSAgN7qg50zMWyCXdLrHpYA3ZZb98eM5HBxQt9qZwe
+        VQF+KSpIpPfX8rKUdR1nMZ6RU3SXlLJUTYfkScri72lNMRKdOZnAXb3suAXxGGmp
+        o9Gw6ldvNhqYesC5ppP5wpqhd8RtypzJbXCAhz7WJYTbCpUdowUXdymHTsKxPosa
+        uMStrYWCPvKQ9Fi4M9QaNW56BIDbzo9ytPnmQyPlxm67Lsr7CJ1qqp7kdHIX9FxV
+        j4AgOkNrPSChWKzv2pVT95uNzWzciSap/r31DF5X0tjPb3vKWIR4A==
+X-ME-Sender: <xms:LncPXWurlEdxAl8WUj8spFNUVMza5cIi_2Ue3iDH3bFpZ6EYGjLJjA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddruddtgdeigecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
+    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
+    rdhorhhgqeenucffohhmrghinhepohiilhgrsghsrdhorhhgnecukfhppeduleefrdegje
+    drudeihedrvdehudenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiugho
+    shgthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
+X-ME-Proxy: <xmx:LncPXYWn3K87d-5Tbj8o2bLwgB8AxztGSw6NXF3sa27hOtaLww4xaA>
+    <xmx:LncPXUyHFjAysssssDzJc-1HmF7pIbn4PnVKHHvUxI6GBC_0yu7jbg>
+    <xmx:LncPXWEzrD7Kd1W3BmWPSGgmrbl_uASYHKI1FwmWijUzFS_eW7p7ig>
+    <xmx:LncPXegH8Wo5Hot9hnVn5hn11Tb3nD497Zk8_mE9hBGNaIzSchfC4g>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id A3F11380079;
+        Sun, 23 Jun 2019 08:57:16 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
-Cc:     Marek Vasut <marex@denx.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Subject: [PATCH] net: ethernet: ti: cpsw: Assign OF node to slave devices
-Date:   Sun, 23 Jun 2019 14:11:43 +0200
-Message-Id: <20190623121143.3492-1-marex@denx.de>
+Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next 0/3] mlxsw: Thermal and hwmon extensions
+Date:   Sun, 23 Jun 2019 15:56:42 +0300
+Message-Id: <20190623125645.2663-1-idosch@idosch.org>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -43,59 +56,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Assign OF node to CPSW slave devices, otherwise it is not possible to
-bind e.g. DSA switch to them. Without this patch, the DSA code tries
-to find the ethernet device by OF match, but fails to do so because
-the slave device has NULL OF node.
+From: Ido Schimmel <idosch@mellanox.com>
 
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
----
- drivers/net/ethernet/ti/cpsw.c      | 3 +++
- drivers/net/ethernet/ti/cpsw_priv.h | 1 +
- 2 files changed, 4 insertions(+)
+This patchset from Vadim includes various enhancements to thermal and
+hwmon code in mlxsw.
 
-diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
-index 7bdd287074fc..c39790e21276 100644
---- a/drivers/net/ethernet/ti/cpsw.c
-+++ b/drivers/net/ethernet/ti/cpsw.c
-@@ -2179,6 +2179,7 @@ static int cpsw_probe_dt(struct cpsw_platform_data *data,
- 			return ret;
- 		}
- 
-+		slave_data->slave_node = slave_node;
- 		slave_data->phy_node = of_parse_phandle(slave_node,
- 							"phy-handle", 0);
- 		parp = of_get_property(slave_node, "phy_id", &lenp);
-@@ -2329,6 +2330,7 @@ static int cpsw_probe_dual_emac(struct cpsw_priv *priv)
- 
- 	/* register the network device */
- 	SET_NETDEV_DEV(ndev, cpsw->dev);
-+	ndev->dev.of_node = cpsw->slaves[1].data->slave_node;
- 	ret = register_netdev(ndev);
- 	if (ret)
- 		dev_err(cpsw->dev, "cpsw: error registering net device\n");
-@@ -2506,6 +2508,7 @@ static int cpsw_probe(struct platform_device *pdev)
- 
- 	/* register the network device */
- 	SET_NETDEV_DEV(ndev, dev);
-+	ndev->dev.of_node = cpsw->slaves[0].data->slave_node;
- 	ret = register_netdev(ndev);
- 	if (ret) {
- 		dev_err(dev, "error registering net device\n");
-diff --git a/drivers/net/ethernet/ti/cpsw_priv.h b/drivers/net/ethernet/ti/cpsw_priv.h
-index 04795b97ee71..e32f11da2dce 100644
---- a/drivers/net/ethernet/ti/cpsw_priv.h
-+++ b/drivers/net/ethernet/ti/cpsw_priv.h
-@@ -272,6 +272,7 @@ struct cpsw_host_regs {
- };
- 
- struct cpsw_slave_data {
-+	struct device_node *slave_node;
- 	struct device_node *phy_node;
- 	char		phy_id[MII_BUS_ID_SIZE];
- 	int		phy_if;
+Patch #1 adds a thermal zone for each inter-connect device (gearbox).
+These devices are present in SN3800 systems and code to expose their
+temperature via hwmon was added in commit 2e265a8b6c09 ("mlxsw: core:
+Extend hwmon interface with inter-connect temperature attributes").
+
+Currently, there are multiple thermal zones in mlxsw and only a few
+cooling devices. Patch #2 detects the hottest thermal zone and the
+cooling devices are switched to follow its trends. RFC was sent last
+month [1].
+
+Patch #3 allows to read and report negative temperature of the sensors
+mlxsw exposes via hwmon and thermal subsystems.
+
+[1] https://patchwork.ozlabs.org/patch/1107161/
+
+Vadim Pasternak (3):
+  mlxsw: core: Extend thermal core with per inter-connect device thermal
+    zones
+  mlxsw: core: Add the hottest thermal zone detection
+  mlxsw: core: Add support for negative temperature readout
+
+ .../net/ethernet/mellanox/mlxsw/core_hwmon.c  |  12 +-
+ .../ethernet/mellanox/mlxsw/core_thermal.c    | 208 +++++++++++++++++-
+ drivers/net/ethernet/mellanox/mlxsw/reg.h     |  12 +-
+ 3 files changed, 208 insertions(+), 24 deletions(-)
+
 -- 
 2.20.1
 
