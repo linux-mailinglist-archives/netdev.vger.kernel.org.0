@@ -2,176 +2,316 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 103D84F956
-	for <lists+netdev@lfdr.de>; Sun, 23 Jun 2019 02:09:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B224F4F97C
+	for <lists+netdev@lfdr.de>; Sun, 23 Jun 2019 04:13:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726567AbfFWAJi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Jun 2019 20:09:38 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:37924 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726494AbfFWAJi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jun 2019 20:09:38 -0400
-Received: by mail-pf1-f195.google.com with SMTP id y15so795436pfn.5
-        for <netdev@vger.kernel.org>; Sat, 22 Jun 2019 17:09:38 -0700 (PDT)
+        id S1726387AbfFWCNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Jun 2019 22:13:25 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:43850 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725844AbfFWCNZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jun 2019 22:13:25 -0400
+Received: by mail-ed1-f67.google.com with SMTP id e3so15898373edr.10
+        for <netdev@vger.kernel.org>; Sat, 22 Jun 2019 19:13:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=NG7nomNIPwxqmG4LxRLswXls78O7wQ5+xJa/DwxCyKE=;
-        b=H/Hji0SYg1fH86DYvsJI7X+8dn5kU6pRmDUpmPkjU13nWthuxcr1seWrhpVyesUTGc
-         McVlNxmMiLfLd5s5iZTniqL7krDztr1k0t2qVKQqqG8VkkYi0/ZYxp80p53z9T0s9i+0
-         41FhnKUukzsuXpG07A+yrT4id43WUqhW2d1M8=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nzsb1yOq1Jr9oz4E7sKRK6EoEaP6hlfKXwG1VW8Qjdw=;
+        b=rNz47hX3rWaVLaaZN5GZ6SEQdf9Sj44q/rftBX4VGw43pz3bjdpmC8vSer4+dzcZTX
+         krUzMAGuCfcp684vQkLELe2CQ8OubEjIIeijoAA7MyQgXkJQAZBRwtYksQrWMLQeVtiR
+         MjhZyfQPJDh7/MnoFJYJrFOtD8NaOtoj9v2QXBN5Ttpz59jMcuVU4N/QdtF6+42bGMIR
+         2zZrRJ1KG2HdlrjeSETz8UEsZIrQvz/Wfa9smrhLnrywjrGbqDG1fGEh8rzSh3Y/t2dd
+         SKzGXswpb+VpdFdXr6+BfQPlKtHOzAVauMoBYonzSSngwr9tLxqIxHsgrtrvm0K3L1WB
+         Bg6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=NG7nomNIPwxqmG4LxRLswXls78O7wQ5+xJa/DwxCyKE=;
-        b=Am2F6jgPpG+Rj4b2a1WzVXlDDc/HbJY6GK2A5lheQEptMaFGV/VvWaxrUgh2TTOw+5
-         kbigg7UUheXYAGX+e5no++P3sNiPwGr6Sh9aAFOwirm0s9AZj/k95krYE6ABFnmlS4Ly
-         xC3lvUiF3v1f3+hXbK+H8jlk+KOtud2IX/zeer1uLiShaciSVKWE6dx0W/nMIqCXvitP
-         qJLucWWoYS+kWRLag9R1KPlQmDdWAHe68RfFd8oojH+JPeNbg/2mnxjZt2VagSV3i13m
-         fS78WFuuEz8C0tF9o/UGAHDSQjsFckZoezOdXlVoI7KyK00G01F5RyHmOjLb0E64YZPO
-         rorQ==
-X-Gm-Message-State: APjAAAXsTA+kT1LlGwWL6QweATg9DbzF45kh69zOL7w335crnFkhviFQ
-        77nx1EkSElt1/njtI9/zoiU2UQ==
-X-Google-Smtp-Source: APXvYqzfQ41nLARmjJBxC3IkKJB9ycWuosbFzRin+JI6rCXZ5UAltKqk9/1Va+B7GLM4m+2MD6Bkaw==
-X-Received: by 2002:a17:90a:372a:: with SMTP id u39mr15770033pjb.2.1561248577993;
-        Sat, 22 Jun 2019 17:09:37 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id h62sm11402153pgc.54.2019.06.22.17.09.36
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 22 Jun 2019 17:09:36 -0700 (PDT)
-Date:   Sat, 22 Jun 2019 17:09:35 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Matthew Garrett <matthewgarrett@google.com>
-Cc:     jmorris@namei.org, linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-api@vger.kernel.org,
-        David Howells <dhowells@redhat.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Matthew Garrett <mjg59@google.com>, netdev@vger.kernel.org,
-        Chun-Yi Lee <jlee@suse.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: Re: [PATCH V34 23/29] bpf: Restrict bpf when kernel lockdown is in
- confidentiality mode
-Message-ID: <201906221709.FC3AA888B@keescook>
-References: <20190622000358.19895-1-matthewgarrett@google.com>
- <20190622000358.19895-24-matthewgarrett@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nzsb1yOq1Jr9oz4E7sKRK6EoEaP6hlfKXwG1VW8Qjdw=;
+        b=aqWbz5tiWB36nuw9lHRGyZUSL+u1kz/3G8wReFYHXshLqtRyP6XXw6htl94yiAiS/y
+         iSif07T7dBDFs2VRPyGxzRDujq/JbS3nPwenH+/5sxkvMZAha4oAU5Kr1Q8Dbrg6C9hp
+         bVIOYTfN1GzIw5ODp2nlmkMSl6UPXRMyuDLXKmxase+ex5Bx3HbiS7d87GDRmGK6lS1Q
+         bud+nLq/wasBgo4aOX6/9kOrfJB5lIYYxzQ7zAAxJuKzNwh46+DdVQKCGL32y7Vsbfdj
+         KLceZoGHp96EqPhTRp8cvfcOWm19dK62N5kWq2sEboyiSSckurDAP1dlvP0lUY+amoAv
+         ZpaA==
+X-Gm-Message-State: APjAAAVIRoF3ZeURU4G9nGJmz+MlToRTluWTaEx+5PYLOzwc4+60QBFl
+        Z+/gasrCT2/jNts0yHieC4ApIOvy7QifbdAX8uBEGA==
+X-Google-Smtp-Source: APXvYqxZWULi8UxyFn5D9WfkK6X9RT8eeux/HUVuRrpPxM08qP/afhNrTT0UR78Ji5tGd//Q2BkkoVDG/JdBd0WAqNo=
+X-Received: by 2002:a17:906:d7a8:: with SMTP id pk8mr28891951ejb.246.1561256002558;
+ Sat, 22 Jun 2019 19:13:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190622000358.19895-24-matthewgarrett@google.com>
+References: <20190619202533.4856-1-nhorman@tuxdriver.com> <20190622174154.14473-1-nhorman@tuxdriver.com>
+In-Reply-To: <20190622174154.14473-1-nhorman@tuxdriver.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Sat, 22 Jun 2019 22:12:46 -0400
+Message-ID: <CAF=yD-JC_r1vjitN1ccyvQ3DXiP9BNCwq9iiWU11cXznmhAY8Q@mail.gmail.com>
+Subject: Re: [PATCH v2 net] af_packet: Block execution of tasks waiting for
+ transmit to complete in AF_PACKET
+To:     Neil Horman <nhorman@tuxdriver.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Matteo Croce <mcroce@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 21, 2019 at 05:03:52PM -0700, Matthew Garrett wrote:
-> From: David Howells <dhowells@redhat.com>
-> 
-> There are some bpf functions can be used to read kernel memory:
-> bpf_probe_read, bpf_probe_write_user and bpf_trace_printk.  These allow
-> private keys in kernel memory (e.g. the hibernation image signing key) to
-> be read by an eBPF program and kernel memory to be altered without
-> restriction. Disable them if the kernel has been locked down in
-> confidentiality mode.
-> 
-> Suggested-by: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-> Signed-off-by: David Howells <dhowells@redhat.com>
-
-Reviewed-by: Kees Cook <keescook@chromium.org>
-
--Kees
-
-> Signed-off-by: Matthew Garrett <mjg59@google.com>
-> cc: netdev@vger.kernel.org
-> cc: Chun-Yi Lee <jlee@suse.com>
-> cc: Alexei Starovoitov <alexei.starovoitov@gmail.com>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
+On Sat, Jun 22, 2019 at 1:42 PM Neil Horman <nhorman@tuxdriver.com> wrote:
+>
+> When an application is run that:
+> a) Sets its scheduler to be SCHED_FIFO
+> and
+> b) Opens a memory mapped AF_PACKET socket, and sends frames with the
+> MSG_DONTWAIT flag cleared, its possible for the application to hang
+> forever in the kernel.  This occurs because when waiting, the code in
+> tpacket_snd calls schedule, which under normal circumstances allows
+> other tasks to run, including ksoftirqd, which in some cases is
+> responsible for freeing the transmitted skb  (which in AF_PACKET calls a
+> destructor that flips the status bit of the transmitted frame back to
+> available, allowing the transmitting task to complete).
+>
+> However, when the calling application is SCHED_FIFO, its priority is
+> such that the schedule call immediately places the task back on the cpu,
+> preventing ksoftirqd from freeing the skb, which in turn prevents the
+> transmitting task from detecting that the transmission is complete.
+>
+> We can fix this by converting the schedule call to a completion
+> mechanism.  By using a completion queue, we force the calling task, when
+> it detects there are no more frames to send, to schedule itself off the
+> cpu until such time as the last transmitted skb is freed, allowing
+> forward progress to be made.
+>
+> Tested by myself and the reporter, with good results
+>
+> Appies to the net tree
+>
+> Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
+> Reported-by: Matteo Croce <mcroce@redhat.com>
+> CC: "David S. Miller" <davem@davemloft.net>
+> CC: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+>
+> Change Notes:
+>
+> V1->V2:
+>         Enhance the sleep logic to support being interruptible and
+> allowing for honoring to SK_SNDTIMEO (Willem de Bruijn)
 > ---
->  include/linux/security.h     |  1 +
->  kernel/trace/bpf_trace.c     | 20 +++++++++++++++++++-
->  security/lockdown/lockdown.c |  1 +
->  3 files changed, 21 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/linux/security.h b/include/linux/security.h
-> index e6e3e2403474..de0d37b1fe79 100644
-> --- a/include/linux/security.h
-> +++ b/include/linux/security.h
-> @@ -97,6 +97,7 @@ enum lockdown_reason {
->  	LOCKDOWN_INTEGRITY_MAX,
->  	LOCKDOWN_KCORE,
->  	LOCKDOWN_KPROBES,
-> +	LOCKDOWN_BPF_READ,
->  	LOCKDOWN_CONFIDENTIALITY_MAX,
->  };
->  
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index d64c00afceb5..638f9b00a8df 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -137,6 +137,10 @@ BPF_CALL_3(bpf_probe_read, void *, dst, u32, size, const void *, unsafe_ptr)
+>  net/packet/af_packet.c | 60 ++++++++++++++++++++++++++++++++----------
+>  net/packet/internal.h  |  2 ++
+>  2 files changed, 48 insertions(+), 14 deletions(-)
+>
+> diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+> index a29d66da7394..8ddb2f7aebb4 100644
+> --- a/net/packet/af_packet.c
+> +++ b/net/packet/af_packet.c
+> @@ -358,7 +358,8 @@ static inline struct page * __pure pgv_to_page(void *addr)
+>         return virt_to_page(addr);
+>  }
+>
+> -static void __packet_set_status(struct packet_sock *po, void *frame, int status)
+> +static void __packet_set_status(struct packet_sock *po, void *frame, int status,
+> +                               bool call_complete)
 >  {
->  	int ret;
->  
-> +	ret = security_locked_down(LOCKDOWN_BPF_READ);
-> +	if (ret)
-> +		return ret;
-> +
->  	ret = probe_kernel_read(dst, unsafe_ptr, size);
->  	if (unlikely(ret < 0))
->  		memset(dst, 0, size);
-> @@ -156,6 +160,12 @@ static const struct bpf_func_proto bpf_probe_read_proto = {
->  BPF_CALL_3(bpf_probe_write_user, void *, unsafe_ptr, const void *, src,
->  	   u32, size)
->  {
-> +	int ret;
-> +
-> +	ret = security_locked_down(LOCKDOWN_BPF_READ);
-> +	if (ret)
-> +		return ret;
-> +
->  	/*
->  	 * Ensure we're in user context which is safe for the helper to
->  	 * run. This helper has no business in a kthread.
-> @@ -205,7 +215,11 @@ BPF_CALL_5(bpf_trace_printk, char *, fmt, u32, fmt_size, u64, arg1,
->  	int fmt_cnt = 0;
->  	u64 unsafe_addr;
->  	char buf[64];
-> -	int i;
-> +	int i, ret;
-> +
-> +	ret = security_locked_down(LOCKDOWN_BPF_READ);
-> +	if (ret)
-> +		return ret;
->  
->  	/*
->  	 * bpf_check()->check_func_arg()->check_stack_boundary()
-> @@ -534,6 +548,10 @@ BPF_CALL_3(bpf_probe_read_str, void *, dst, u32, size,
->  {
->  	int ret;
->  
-> +	ret = security_locked_down(LOCKDOWN_BPF_READ);
-> +	if (ret)
-> +		return ret;
-> +
->  	/*
->  	 * The strncpy_from_unsafe() call will likely not fill the entire
->  	 * buffer, but that's okay in this circumstance as we're probing
-> diff --git a/security/lockdown/lockdown.c b/security/lockdown/lockdown.c
-> index 5a08c17f224d..2eea2cc13117 100644
-> --- a/security/lockdown/lockdown.c
-> +++ b/security/lockdown/lockdown.c
-> @@ -33,6 +33,7 @@ static char *lockdown_reasons[LOCKDOWN_CONFIDENTIALITY_MAX+1] = {
->  	[LOCKDOWN_INTEGRITY_MAX] = "integrity",
->  	[LOCKDOWN_KCORE] = "/proc/kcore access",
->  	[LOCKDOWN_KPROBES] = "use of kprobes",
-> +	[LOCKDOWN_BPF_READ] = "use of bpf to read kernel RAM",
->  	[LOCKDOWN_CONFIDENTIALITY_MAX] = "confidentiality",
->  };
->  
-> -- 
-> 2.22.0.410.gd8fdbe21b5-goog
-> 
+>         union tpacket_uhdr h;
+>
+> @@ -381,6 +382,8 @@ static void __packet_set_status(struct packet_sock *po, void *frame, int status)
+>                 BUG();
+>         }
+>
+> +       if (po->wait_on_complete && call_complete)
+> +               complete(&po->skb_completion);
 
--- 
-Kees Cook
+This wake need not happen before the barrier. Only one caller of
+__packet_set_status passes call_complete (tpacket_destruct_skb).
+Moving this branch to the caller avoids a lot of code churn.
+
+Also, multiple packets may be released before the process is awoken.
+The process will block until packet_read_pending drops to zero. Can
+defer the wait_on_complete to that one instance.
+
+>         smp_wmb();
+>  }
+>
+> @@ -1148,6 +1151,14 @@ static void *packet_previous_frame(struct packet_sock *po,
+>         return packet_lookup_frame(po, rb, previous, status);
+>  }
+>
+> +static void *packet_next_frame(struct packet_sock *po,
+> +               struct packet_ring_buffer *rb,
+> +               int status)
+> +{
+> +       unsigned int next = rb->head != rb->frame_max ? rb->head+1 : 0;
+> +       return packet_lookup_frame(po, rb, next, status);
+> +}
+> +
+>  static void packet_increment_head(struct packet_ring_buffer *buff)
+>  {
+>         buff->head = buff->head != buff->frame_max ? buff->head+1 : 0;
+> @@ -2360,7 +2371,7 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
+>  #endif
+>
+>         if (po->tp_version <= TPACKET_V2) {
+> -               __packet_set_status(po, h.raw, status);
+> +               __packet_set_status(po, h.raw, status, false);
+>                 sk->sk_data_ready(sk);
+>         } else {
+>                 prb_clear_blk_fill_status(&po->rx_ring);
+> @@ -2400,7 +2411,7 @@ static void tpacket_destruct_skb(struct sk_buff *skb)
+>                 packet_dec_pending(&po->tx_ring);
+>
+>                 ts = __packet_set_timestamp(po, ph, skb);
+> -               __packet_set_status(po, ph, TP_STATUS_AVAILABLE | ts);
+> +               __packet_set_status(po, ph, TP_STATUS_AVAILABLE | ts, true);
+>         }
+>
+>         sock_wfree(skb);
+> @@ -2585,13 +2596,13 @@ static int tpacket_parse_header(struct packet_sock *po, void *frame,
+>
+>  static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+>  {
+> -       struct sk_buff *skb;
+> +       struct sk_buff *skb = NULL;
+>         struct net_device *dev;
+>         struct virtio_net_hdr *vnet_hdr = NULL;
+>         struct sockcm_cookie sockc;
+>         __be16 proto;
+>         int err, reserve = 0;
+> -       void *ph;
+> +       void *ph = NULL;
+>         DECLARE_SOCKADDR(struct sockaddr_ll *, saddr, msg->msg_name);
+>         bool need_wait = !(msg->msg_flags & MSG_DONTWAIT);
+>         unsigned char *addr = NULL;
+> @@ -2600,9 +2611,12 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+>         int len_sum = 0;
+>         int status = TP_STATUS_AVAILABLE;
+>         int hlen, tlen, copylen = 0;
+> +       long timeo;
+>
+>         mutex_lock(&po->pg_vec_lock);
+>
+> +       timeo = sock_sndtimeo(&po->sk, msg->msg_flags & MSG_DONTWAIT);
+> +
+>         if (likely(saddr == NULL)) {
+>                 dev     = packet_cached_dev_get(po);
+>                 proto   = po->num;
+> @@ -2647,16 +2661,29 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+>                 size_max = dev->mtu + reserve + VLAN_HLEN;
+>
+>         do {
+> +
+> +               if (po->wait_on_complete && need_wait) {
+> +                       timeo = wait_for_completion_interruptible_timeout(&po->skb_completion, timeo);
+
+Why move the sleeping location from where it was with schedule()?
+Without that change, ph and skb are both guaranteed to be NULL after
+packet_current_frame, so can jump to out_put and avoid adding branches
+at out_status. And no need for packet_next_frame.
+
+Just replace schedule with a sleeping function in place (removing the
+then obsolete need_resched call).
+
+That is a much shorter patch and easier to compare for correctness
+with the current code.
+
+minor: probably preferable to first check local variable need_wait
+before reading a struct member.
+
+> +                       po->wait_on_complete = 0;
+> +                       if (!timeo) {
+> +                               /* We timed out, break out and notify userspace */
+> +                               err = -ETIMEDOUT;
+> +                               goto out_status;
+> +                       } else if (timeo == -ERESTARTSYS) {
+> +                               err = -ERESTARTSYS;
+> +                               goto out_status;
+> +                       }
+> +               }
+> +
+>                 ph = packet_current_frame(po, &po->tx_ring,
+>                                           TP_STATUS_SEND_REQUEST);
+> -               if (unlikely(ph == NULL)) {
+> -                       if (need_wait && need_resched())
+> -                               schedule();
+> -                       continue;
+> -               }
+> +
+> +               if (likely(ph == NULL))
+
+why switch from unlikely to likely?
+
+> +                       break;
+>
+>                 skb = NULL;
+>                 tp_len = tpacket_parse_header(po, ph, size_max, &data);
+> +
+
+nit: irrelevant
+
+>                 if (tp_len < 0)
+>                         goto tpacket_error;
+>
+> @@ -2699,7 +2726,7 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+>  tpacket_error:
+>                         if (po->tp_loss) {
+>                                 __packet_set_status(po, ph,
+> -                                               TP_STATUS_AVAILABLE);
+> +                                               TP_STATUS_AVAILABLE, false);
+>                                 packet_increment_head(&po->tx_ring);
+>                                 kfree_skb(skb);
+>                                 continue;
+> @@ -2719,7 +2746,9 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+>                 }
+>
+>                 skb->destructor = tpacket_destruct_skb;
+> -               __packet_set_status(po, ph, TP_STATUS_SENDING);
+> +               __packet_set_status(po, ph, TP_STATUS_SENDING, false);
+> +               if (!packet_next_frame(po, &po->tx_ring, TP_STATUS_SEND_REQUEST))
+> +                       po->wait_on_complete = 1;
+>                 packet_inc_pending(&po->tx_ring);
+>
+>                 status = TP_STATUS_SEND_REQUEST;
+> @@ -2753,8 +2782,10 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+>         goto out_put;
+>
+>  out_status:
+> -       __packet_set_status(po, ph, status);
+> -       kfree_skb(skb);
+> +       if (ph)
+> +               __packet_set_status(po, ph, status, false);
+> +       if (skb)
+> +               kfree_skb(skb);
+>  out_put:
+>         dev_put(dev);
+>  out:
+> @@ -3207,6 +3238,7 @@ static int packet_create(struct net *net, struct socket *sock, int protocol,
+>         sock_init_data(sock, sk);
+>
+>         po = pkt_sk(sk);
+> +       init_completion(&po->skb_completion);
+>         sk->sk_family = PF_PACKET;
+>         po->num = proto;
+>         po->xmit = dev_queue_xmit;
+> diff --git a/net/packet/internal.h b/net/packet/internal.h
+> index 3bb7c5fb3bff..bbb4be2c18e7 100644
+> --- a/net/packet/internal.h
+> +++ b/net/packet/internal.h
+> @@ -128,6 +128,8 @@ struct packet_sock {
+>         unsigned int            tp_hdrlen;
+>         unsigned int            tp_reserve;
+>         unsigned int            tp_tstamp;
+> +       struct completion       skb_completion;
+> +       unsigned int            wait_on_complete;
+
+Probably belong in packet_ring_buffer. Near pending_refcnt as touched
+in the same code. And because protected by the ring buffer mutex.
+
+
+
+>         struct net_device __rcu *cached_dev;
+>         int                     (*xmit)(struct sk_buff *skb);
+>         struct packet_type      prot_hook ____cacheline_aligned_in_smp;
+> --
+> 2.20.1
+>
