@@ -2,91 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 128264FA97
-	for <lists+netdev@lfdr.de>; Sun, 23 Jun 2019 09:11:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 872184FA9A
+	for <lists+netdev@lfdr.de>; Sun, 23 Jun 2019 09:26:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726285AbfFWHL2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Jun 2019 03:11:28 -0400
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:38307 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725268AbfFWHL1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jun 2019 03:11:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1561273887; x=1592809887;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=cncU9le643RubrS0CTUy2hKr1Q/YtB0ZgOcvsWtuFcw=;
-  b=e+mF60ldTMLDgHa9NdPowVg7ndmD28BkDQmsl0MI/OgCBeRlZ3gagsRw
-   5gg2fN8ZxhbhRf3jjoRceigDAtpR+oqv+6OE36uOnWohRnyca1kdQxBU7
-   fwCZspwxv6lwokBhzSzJwq6dDZEQnlWQVbfa39+Ci/xiH6orpT6IAp+5X
-   s=;
-X-IronPort-AV: E=Sophos;i="5.62,407,1554768000"; 
-   d="scan'208";a="807089739"
-Received: from sea3-co-svc-lb6-vlan3.sea.amazon.com (HELO email-inbound-relay-1d-37fd6b3d.us-east-1.amazon.com) ([10.47.22.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 23 Jun 2019 07:11:26 +0000
-Received: from EX13MTAUEB001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
-        by email-inbound-relay-1d-37fd6b3d.us-east-1.amazon.com (Postfix) with ESMTPS id EDAFF282353;
-        Sun, 23 Jun 2019 07:11:25 +0000 (UTC)
-Received: from EX13D08UEB002.ant.amazon.com (10.43.60.107) by
- EX13MTAUEB001.ant.amazon.com (10.43.60.129) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Sun, 23 Jun 2019 07:11:25 +0000
-Received: from EX13MTAUEA001.ant.amazon.com (10.43.61.82) by
- EX13D08UEB002.ant.amazon.com (10.43.60.107) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Sun, 23 Jun 2019 07:11:24 +0000
-Received: from HFA16-8226Y22.hfa16.amazon.com (10.218.52.81) by
- mail-relay.amazon.com (10.43.61.243) with Microsoft SMTP Server id
- 15.0.1367.3 via Frontend Transport; Sun, 23 Jun 2019 07:11:22 +0000
-From:   <sameehj@amazon.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     Sameeh Jubran <sameehj@amazon.com>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <akiyano@amazon.com>
-Subject: [PATCH V1 net-next] net: ena: Fix bug where ring allocation backoff stopped too late
-Date:   Sun, 23 Jun 2019 10:11:10 +0300
-Message-ID: <20190623071110.18687-1-sameehj@amazon.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726362AbfFWH0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Jun 2019 03:26:18 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:41770 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725268AbfFWH0S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jun 2019 03:26:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=m43ZE8MKC+K0JHxy+/izRqvSnOUhggHQ6xBTF5EVfHE=; b=qxpbWdFwmIy3iRch8hfOdoGLe
+        OryEpd5UP394tqY25/VmZeDAz87HGv167MRLQ5MVuFKil3Z/CM9FROzLAnshsunC1im2Y4TOXmrgY
+        u2RrGkKIcou7GAu/KPEJA36XF9rIB87xmMIEvlYEVujyZ2CmkR0lFaNnuxW49Y2bTjtf/jwdq+v8/
+        gkfhfeKu3BKdsPGqafn8OTV+Ef0bTgha4oMIShparNRFSSgUxe17hBFKuYabIsAoLsr1ONxw4BmZx
+        R35WFwzHBq5oE2BaBNvNFx+SYH4VzDzQi1RK3wvnC7m+Zc7ZGoPeSe76wWpzUqcdADrBXE8Rdte2b
+        6FJggLgFg==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:58912)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1hewtC-0008Rg-Ea; Sun, 23 Jun 2019 08:26:14 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1hewt4-0004qj-2B; Sun, 23 Jun 2019 08:26:06 +0100
+Date:   Sun, 23 Jun 2019 08:26:05 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Ido Schimmel <idosch@mellanox.com>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: Re: [RFC net-next] net: dsa: add support for MC_DISABLED attribute
+Message-ID: <20190623072605.2xqb56tjydqz2jkx@shell.armlinux.org.uk>
+References: <20190620235639.24102-1-vivien.didelot@gmail.com>
+ <5d653a4d-3270-8e53-a5e0-88ea5e7a4d3f@gmail.com>
+ <20190621172952.GB9284@t480s.localdomain>
+ <20190623070949.GB13466@splinter>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190623070949.GB13466@splinter>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sameeh Jubran <sameehj@amazon.com>
+On Sun, Jun 23, 2019 at 07:09:52AM +0000, Ido Schimmel wrote:
+> When multicast snooping is enabled unregistered multicast traffic should
+> only be flooded to mrouter ports.
 
-The current code of create_queues_with_size_backoff() allows the ring size
-to become as small as ENA_MIN_RING_SIZE/2. This is a bug since we don't
-want the queue ring to be smaller than ENA_MIN_RING_SIZE
+Given that IPv6 relies upon multicast working, and multicast snooping
+is a kernel configuration option, and MLD messages will only be sent
+when whenever the configuration on the target changes, and there may
+not be a multicast querier in the system, who does that ensure that
+IPv6 can work on a bridge where the kernel configured and built with
+multicast snooping enabled?
 
-In this commit we change the loop's termination condition to look at the
-queue size of the next iteration instead of that of the current one,
-so that the minimal queue size again becomes ENA_MIN_RING_SIZE.
-
-Fixes: eece4d2ab9d2 ("net: ena: add ethtool function for changing io queue sizes")
-
-Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
-Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
----
- drivers/net/ethernet/amazon/ena/ena_netdev.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index b7865ee1d..20ec8ff03 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -1839,8 +1839,8 @@ err_setup_tx:
- 		if (cur_rx_ring_size >= cur_tx_ring_size)
- 			new_rx_ring_size = cur_rx_ring_size / 2;
- 
--		if (cur_tx_ring_size < ENA_MIN_RING_SIZE ||
--		    cur_rx_ring_size < ENA_MIN_RING_SIZE) {
-+		if (new_tx_ring_size < ENA_MIN_RING_SIZE ||
-+		    new_rx_ring_size < ENA_MIN_RING_SIZE) {
- 			netif_err(adapter, ifup, adapter->netdev,
- 				  "Queue creation failed with the smallest possible queue size of %d for both queues. Not retrying with smaller queues\n",
- 				  ENA_MIN_RING_SIZE);
 -- 
-2.17.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
