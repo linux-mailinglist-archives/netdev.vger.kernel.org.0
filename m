@@ -2,53 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 83A474FA89
-	for <lists+netdev@lfdr.de>; Sun, 23 Jun 2019 08:48:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 625E84FA8A
+	for <lists+netdev@lfdr.de>; Sun, 23 Jun 2019 08:49:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726263AbfFWGqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Jun 2019 02:46:19 -0400
-Received: from sonic311-17.consmr.mail.bf2.yahoo.com ([74.6.131.240]:42428
-        "EHLO sonic311-17.consmr.mail.bf2.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725268AbfFWGqS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jun 2019 02:46:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1561272377; bh=ASdX86yUYRsxIlZvXAdrB/RwQ9ZomONpQNmJPYz3O9E=; h=Date:From:Reply-To:Subject:References:From:Subject; b=bFDZb9QljMgoaHzyDHSM/ruHFcUwpfz+AqTUEludJytXaVFa+cDhpFcEiFQOcxzyd9XOFDdWthrqDTqVipQKhjrrlHkf9UKH7bNB9NmA4R70TqPrtXJ992/sj3KlxGipQkISK3qjmO5FLoSf2DCkOzmKC14Tp2Gfffgl+W18phxTQf51814tIsBksGdQMjvdjT0q4+ErxO27/LTMYVA8FV9cZg5+34tJjJNORz8f6eLMub3zh2Hxfl14nQu7McRDUxNPyY14tZI+H35CybHJE4GuPlReHfL+JgfPjTZ1/o4i0gFs7YH/g2Cik/YpCcLJn4lH+vEflTOVbFzQ38YbxQ==
-X-YMail-OSG: 0bsF8u4VM1kptpPzMugp5KygQhss7lQHdWrFu9eKfHBk2Byux5XpmzWdjxQmpBl
- UHw5jyA2oRpsus2kb1psNN6bw2ueWKYfvL8lhEIxFPSN9CS8tfjlL0MP0NPkqrh9exrlk_YfbCeB
- cw.XM9UNhe8tyjZgIcAUSL2Sc6fSBMvIWmH.Tm0cPfxH1nkKhIdXBxtrNRxR3CPV1OswPNZALM0F
- 2iyLlgdDAtEvwFmfJKVIAvu2ocpFwJ1qf3RWqdg7SydLhSKp2IJGLnfYKoaez8w56bHxPU0oMU_H
- 0AdTSBeq_kuutBWFm.ccGBOdonfg4g77e0n.QEs.Jrej.ogF.Ho9I8BRi.6OYuVv2bHKylurw0IX
- TXZutVZe4fC8VDsSQRNlCWAJSlgHUViyw3WLXDYXDWc.Caoh519KAcjdKMtU4zRGTwAkMOLtXVnq
- u7Z9WX9JPXUbCzoU42tMt3xnVSwJsQm_xddFGOK7boLH1Fb4OS850Q.YFk19iKB0o00AuusWBZ.M
- vIw1KPaxTJ3hii9mB3kRXp7PmSFBZkAUae_2_kNjAdWLIaUc8xtdUgZL_aO04iqhRnyRVuu5KXbJ
- bLvCBB.tELoa_TRDHUk6ZPoKiPYMhC.h_bDptxxc5CZWjGD5EC_NR3JpbvwwYfZlMOoG1LvwYcmd
- W6YueJOxBBzkJvFdKwRSmo1weu4O56N8TYsylcKOFSMIpnHUjZRWctzlJV9DeUC5itF8IUx9Unar
- XRpPzAHfttA6wRbKNQOco1ymj97k2FBDZQ3osDpnT20JjaiUpFNi7imA6dx2wxnCNPmUQdFI6PF8
- bEfAsT.3aMgoRA0M_vuiLPVxRmCDglpYqoayMXGqqys6wdhvBoEb5vy.APLDcx9ogj2yt_88z9cP
- haU1lZbuS6vJw3erfLeCt4LQkq.rYRmhNVGenkh3tVqUihG5G.Ea0LMRBKWZrfb6Vp27DzxD3zX_
- 7jh4KxkAzCnIsQsffrRx_rcxxHGZNvp8XaJrBcL1kWh4Aa7DgL9Dgn7PnOwfA6mXvb28.aagW12X
- G7gZgSjluZo4Vh0SaPbR6kdwMNB64gXP4UmSnHYdrtf10iI9192FxB2AF_HoEFX.d5_S9rtP_WsS
- M2FDT2UNr9orIDdR1MLq_DyeiLAm0Vsum71.L6FaK054wu_HyHv02pxxmfcz7Js65BzUQ1GYzExU
- 67uNRCpZ1QNwhnPSw.STy7UePIGvDURrHR14wIGnfU3N9Vo27F40kGc8MZZr4uq7T2wVSj3T_LYV
- 8OBiC10n86diuwUCZ82mk
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic311.consmr.mail.bf2.yahoo.com with HTTP; Sun, 23 Jun 2019 06:46:17 +0000
-Date:   Sun, 23 Jun 2019 06:44:16 +0000 (UTC)
-From:   "cd8 ." <cd8@gajdm.org.in>
-Reply-To: "cd8 ." <cd8@gajdm.org.in>
-Message-ID: <52860076.377779.1561272256850@mail.yahoo.com>
-Subject: 
+        id S1726365AbfFWGsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Jun 2019 02:48:45 -0400
+Received: from mail-eopbgr10079.outbound.protection.outlook.com ([40.107.1.79]:30240
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725268AbfFWGsp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 23 Jun 2019 02:48:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cOMo6BuhHZrqSo3jf7TkmzMAVlSPCTtrz/POdG39H1Y=;
+ b=IFiGmkWGIy/69COwndF1Y3l8a0A1JzAFAvPnMsXWDemOHczfvpQEHxhN9p8ZWxIL7mWNPDhgOA/xW4hB2c1tAu8lViAK+DoPwTJZJKPMHozs6dLdkOQsQNh9+00jMrhyq37gQWJVhprNDMtyt9Ye3Jb2jPlyaJNu/1mMHMpdN1k=
+Received: from DB7PR05MB5338.eurprd05.prod.outlook.com (20.178.41.21) by
+ DB7PR05MB5371.eurprd05.prod.outlook.com (20.178.42.85) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1987.12; Sun, 23 Jun 2019 06:48:41 +0000
+Received: from DB7PR05MB5338.eurprd05.prod.outlook.com
+ ([fe80::8117:4e6b:da4a:b15a]) by DB7PR05MB5338.eurprd05.prod.outlook.com
+ ([fe80::8117:4e6b:da4a:b15a%6]) with mapi id 15.20.1987.014; Sun, 23 Jun 2019
+ 06:48:41 +0000
+From:   Ido Schimmel <idosch@mellanox.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+CC:     Vivien Didelot <vivien.didelot@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: Re: [RFC net-next] net: dsa: add support for MC_DISABLED attribute
+Thread-Topic: [RFC net-next] net: dsa: add support for MC_DISABLED attribute
+Thread-Index: AQHVJ8PhRAFcpJgH8Em8x841rflAZKalYXWAgANuYgA=
+Date:   Sun, 23 Jun 2019 06:48:41 +0000
+Message-ID: <20190623064838.GA13466@splinter>
+References: <20190620235639.24102-1-vivien.didelot@gmail.com>
+ <5d653a4d-3270-8e53-a5e0-88ea5e7a4d3f@gmail.com>
+In-Reply-To: <5d653a4d-3270-8e53-a5e0-88ea5e7a4d3f@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: AM6PR0202CA0014.eurprd02.prod.outlook.com
+ (2603:10a6:209:15::27) To DB7PR05MB5338.eurprd05.prod.outlook.com
+ (2603:10a6:10:64::21)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=idosch@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [193.47.165.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 84e6e53b-727a-4729-e3c2-08d6f7a6d3ac
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:DB7PR05MB5371;
+x-ms-traffictypediagnostic: DB7PR05MB5371:
+x-microsoft-antispam-prvs: <DB7PR05MB5371DF7E7668DE4C8BA8CF5EBFE10@DB7PR05MB5371.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 00770C4423
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(7916004)(376002)(366004)(136003)(396003)(346002)(39850400004)(189003)(199004)(66556008)(99286004)(14454004)(26005)(86362001)(256004)(53546011)(102836004)(14444005)(6506007)(76176011)(52116002)(6486002)(4326008)(9686003)(6916009)(53936002)(6246003)(2906002)(316002)(33716001)(33656002)(25786009)(6512007)(6116002)(54906003)(3846002)(229853002)(66476007)(64756008)(66946007)(71200400001)(8676002)(71190400001)(66066001)(6436002)(386003)(81166006)(81156014)(1076003)(476003)(305945005)(186003)(7736002)(486006)(478600001)(8936002)(5660300002)(73956011)(66446008)(446003)(68736007)(11346002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR05MB5371;H:DB7PR05MB5338.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: oUO1sqQ11L+79AEkdls+aW4oFgBPu8QoRbEx/8I+8qfCmL5RR5/MyRDZ2P+TiOF9BEc++CnqyKJ8M64rLGDWVhEfeEEVtBzVHrbxDdeaCq66xVmjlRaEaOaXNgg4iVpGCLp8iiqC5s8mbzkqfS54F3ZtxqNiQIw/pSw1g/wl03w9JVM1e6PP+tmzvTacbwYk8r9pIBPeGF9DFchVccpfnBerVfNigNxQKqz36mZYltHTGsFMYxcbQdW4foE++iHArBshoo6q0gb5ZrqNknKwKDbbzo1YjXQ3ADSL92EqzAltEd0Zs9c+GqTScnNzbU3un5mxpzKYB8dm4RAD7D0xTHY1y26/dVJyQVGxRobpeIMDxZ+SW8AXPm+078zETzO4dqA8bVEhRaDc3oLSpcdJJRLN7YUqIfgUfmrGloy49bY=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <E06F02ABD328AB4BB8435EA41600E9DA@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-References: <52860076.377779.1561272256850.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.13837 YahooMailBasic Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36
-To:     unlisted-recipients:; (no To-header on input)
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 84e6e53b-727a-4729-e3c2-08d6f7a6d3ac
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jun 2019 06:48:41.1136
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: idosch@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR05MB5371
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Jun 20, 2019 at 07:24:47PM -0700, Florian Fainelli wrote:
+> On 6/20/2019 4:56 PM, Vivien Didelot wrote:
+> > This patch adds support for enabling or disabling the flooding of
+> > unknown multicast traffic on the CPU ports, depending on the value
+> > of the switchdev SWITCHDEV_ATTR_ID_BRIDGE_MC_DISABLED attribute.
+> >=20
+> > This allows the user to prevent the CPU to be flooded with a lot of
+> > undesirable traffic that the network stack needs to filter in software.
+> >=20
+> > The bridge has multicast snooping enabled by default, hence CPU ports
+> > aren't bottlenecked with arbitrary network applications anymore.
+> > But this can be an issue in some scenarios such as pinging the bridge's
+> > IPv6 address. Setting /sys/class/net/br0/bridge/multicast_snooping to
+> > 0 would restore unknown multicast flooding and thus fix ICMPv6. As
+> > an alternative, enabling multicast_querier would program the bridge
+> > address into the switch.
+> From what I can read from mlxsw, we should probably also implement the
+> SWITCHDEV_ATTR_ID_PORT_MROUTER attribute in order to be consistent.
+>=20
+> Since the attribute MC_DISABLED is on the bridge master, we should also
+> iterate over the list of switch ports being a member of that bridge and
+> change their flooding attribute, taking into account whether
+> BR_MCAST_FLOOD is set on that particular port or not. Just paraphrasing
+> what mlxsw does here again...
 
-I am in the military unit here in Afghanistan, we have some amount of funds that we want to move out of the country. My partners and I need a good partner someone we can trust. It is risk free and legal. Reply to this email: hornbeckmajordennis635@gmail.com
+When multicast snooping is enabled, unregistered multicast traffic
+should be flooded to mrouter ports only. Otherwise, it should be flooded
+to all ports.
 
-Regards,
-Major Dennis Hornbeck.
+> Once you act on the user-facing ports, you might be able to leave the
+> CPU port flooding unconditionally, since it would only "flood" the CPU
+> port either because an user-facing port has BR_MCAST_FLOOD set, or
+> because this is known MC traffic that got programmed via the bridge's
+> MDB. Would that work?
+>=20
+> On a higher level, I really wish we did not have to re-implement a lot
+> of identical or similar logic in each switch drivers and had a more
+> central model of what is behaviorally expected.
+
+Well, that model is the bridge driver... But I agree that we can
+probably simplify the interface towards drivers and move more code up
+the stack.
+
+For example, two things mlxsw is doing when multicast snooping is
+enabled:
+
+1. Writing MDB entries to the device. When multicast snooping is
+disabled, MDB entries are ignored by the bridge driver. Can we agree to
+have the bridge driver generate SWITCHDEV_OBJ_ID_PORT_MDB add / delete
+for all MDB entries when multicast snooping is toggled?
+
+2. Flooding unregistered multicast traffic only to mrouter ports. The
+bridge driver can iterate over the bridge members and toggle
+BR_MCAST_FLOOD accordingly. It will not actually change this value. Only
+emulate this change towards drivers.
+
+I will try to come up with a more detailed list later this week. I
+really want to start moving more logic out of drivers.
