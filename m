@@ -2,175 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 006624F986
-	for <lists+netdev@lfdr.de>; Sun, 23 Jun 2019 04:24:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EE204F99E
+	for <lists+netdev@lfdr.de>; Sun, 23 Jun 2019 05:17:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726350AbfFWCYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Jun 2019 22:24:12 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:45187 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725839AbfFWCYM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jun 2019 22:24:12 -0400
-Received: by mail-pg1-f194.google.com with SMTP id z19so2255453pgl.12
-        for <netdev@vger.kernel.org>; Sat, 22 Jun 2019 19:24:11 -0700 (PDT)
+        id S1726378AbfFWDOy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Jun 2019 23:14:54 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:35230 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726342AbfFWDOy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Jun 2019 23:14:54 -0400
+Received: by mail-qt1-f195.google.com with SMTP id d23so11088690qto.2;
+        Sat, 22 Jun 2019 20:14:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language;
-        bh=XQL8KH/0y/MYrB5gBqSf/mTFOmdMsh82TlV3Muptnqs=;
-        b=Z0qG0mq4bZdW5kRBumQAfNo7JmZS+1zet7uhrByDfHTCY0lJ8ejUfMw/Jb/S2nkgnn
-         7ZSReYLYPdCCwDRXjhDLs+28Wg3cPEg4UxFTvlFl+vNqaDRKcg0J9FEHmmNtJ59UBdlB
-         eA0/92XGjtBl5/DgJscztHWdUEy5CNC0EfPUhB3R1qbFkR6rMLG24bJGAIBcWbb5gMti
-         gu/yeVwmtjWazG7hhjeo3PoP9y/XEUCt1XTeUaV9xsuOFEiROIGA846FPdq8gHGK10Qb
-         SMRQnBAvhu8Q1ZvYWadzoMzTUVLw4RoMg4VbRKHQ05sx76zHpH+RiIovhnumhZ70S/7c
-         ZzYA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Yt/Wn2k1Bs2ZNvwnGQBOScs+RF3isMwjxUfPlb4LBKg=;
+        b=X1gfy35mNI+e94xiZ939SZN6GbHePbNBZZkziEt5W4an4xwwXAhGVgu5QW1b9Lf1h+
+         rqCzYVSWO0wsb4CYwJf0GER4adKeIyUEICkxgwXclfzDuY0HxO7PCJv0RKE/GD1VX67d
+         bE+IEC2AQ4Nh8TBK4KWPvkLgm4mrvJYKcpfeIWEwLVi11N5fugcPslwL0qcBe92xn4kd
+         RLrblb3V02DOhKqHmXN5ciG2nID2jGwdmV2szsVsckW9IuTGW0lgT8b3rV2n64/mcTXB
+         pm8gq2CwMCjTjQkSpt2zTIe3VGAgkIVnO9W45vEV+Xeahbs3esxjJg/I26yayg4oCW9V
+         XQ2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language;
-        bh=XQL8KH/0y/MYrB5gBqSf/mTFOmdMsh82TlV3Muptnqs=;
-        b=goLP+kb6qXwJgbrKGkhu75A1OL02QM2SlMA7JzON7hM6n8moRLzJqICVGNA4ebWhs2
-         iUG2y27bQJ+czFQ/zOWQlyKTB0L4jUaPaM6Eu3OkNwt2k1tSz3GTcL2kps8sNN5zi1Xi
-         YewZ4+5pqrVz+KjOG5TiFpNFMmKSNYfv4n60pE+48ePLk+Daj4fiS9C9//ZIByrz050c
-         2BmpU1EePQwkfz5YrM8OUzmnqYztkpH156c7820mi8Idez7hf8PbpMdLsF+JzPKlFS+S
-         Kc20iRdZqS60lPVj1zD8QkwnWJF/60aPIk+GBTOHcNlqMCyxX3xKo9RLtI1jvchHXwET
-         0Ymw==
-X-Gm-Message-State: APjAAAUjqDPzcNSmZJou03ptmeBYzavyZ6AndjWJwLC8liQsQR/8ci2z
-        9o6lZ44ZkEbg6SDSJ6sgH+CLqzSu
-X-Google-Smtp-Source: APXvYqwxq64qTk5UF+6KyTehmMYxOipe3hmxjw8+gbjjXipjf3z1J7vN2wHM0kxfGDutOXY1ipTysw==
-X-Received: by 2002:a17:90a:2228:: with SMTP id c37mr16405864pje.9.1561256651227;
-        Sat, 22 Jun 2019 19:24:11 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-101-123-102.oc.oc.cox.net. [68.101.123.102])
-        by smtp.gmail.com with ESMTPSA id 1sm6731795pfe.102.2019.06.22.19.24.09
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 22 Jun 2019 19:24:10 -0700 (PDT)
-Subject: Re: [RFC PATCH 0/2] enable broadcom tagging for bcm531x5 switches
-To:     Benedikt Spranger <b.spranger@linutronix.de>
-Cc:     netdev@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Kurt Kanzenbach <kurt@linutronix.de>
-References: <20190618175712.71148-1-b.spranger@linutronix.de>
- <bc932af1-d957-bd40-fa65-ee05b9478ec7@gmail.com>
- <20190619111832.16935a93@mitra>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Message-ID: <f1f45e1d-5079-ab24-87d8-99b8c6710a08@gmail.com>
-Date:   Sat, 22 Jun 2019 19:24:10 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Yt/Wn2k1Bs2ZNvwnGQBOScs+RF3isMwjxUfPlb4LBKg=;
+        b=Q4PiAiyJu1xdsLeZzw7+sPXTK2n1We8+ipAJjkQsKwYYAYot/6ORxwbRmIgf7z/Y+O
+         z7x8GDZI36Pcv1RPET+C5hla4/x5cpsMFhiKgA/aTaprKsfL0qo4IcYf5oc0DEQ0jxnx
+         Nyi/b6BdyEOwl3xcF4etv3uMoqpYYBz928oVFcG6A5qfkoNIuSSSp79xnEkkBcybc6B9
+         FrnHMuVzfGC3KgVlwqIYGVBH/qUi6gZyKMUcDQr/8Tm52io9cNYU2uz67EneTCr19SYF
+         LCx47+HgH/L3JwrbWetGYxUILTAf6C4/9yE91J06KpSi9T9no98FSJEpOadqZVz6NE69
+         8xRA==
+X-Gm-Message-State: APjAAAWeglbqsKn0Zx7HLPh/V6FWVMprnTjrbHTV9ste8BytPNeEW/a4
+        rH/oPkKlyLGlHXdHVrS7ZxqS3td+wIrvfA==
+X-Google-Smtp-Source: APXvYqxCGNBcuKFQ4RXBDWQ1dl4eZSToIxxEtg7OoyyTqUXYgDq0sORS7PsHXgaihXySepxDAzW0Yg==
+X-Received: by 2002:aed:21c6:: with SMTP id m6mr61980185qtc.173.1561259693181;
+        Sat, 22 Jun 2019 20:14:53 -0700 (PDT)
+Received: from localhost.localdomain (mtrlpq02hsy-lp140-01-174-93-144-21.dsl.bell.ca. [174.93.144.21])
+        by smtp.gmail.com with ESMTPSA id j6sm3721176qkf.119.2019.06.22.20.14.51
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Sat, 22 Jun 2019 20:14:51 -0700 (PDT)
+From:   Detlev Casanova <detlev.casanova@gmail.com>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Detlev Casanova <detlev.casanova@gmail.com>
+Subject: [PATCH v3] e1000e: Make watchdog use delayed work
+Date:   Sat, 22 Jun 2019 23:14:37 -0400
+Message-Id: <20190623031437.19716-1-detlev.casanova@gmail.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-In-Reply-To: <20190619111832.16935a93@mitra>
-Content-Type: multipart/mixed;
- boundary="------------D176783D47549ADEBE3CF121"
-Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------D176783D47549ADEBE3CF121
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Use delayed work instead of timers to run the watchdog of the e1000e
+driver.
 
+Simplify the code with one less middle function.
 
+Signed-off-by: Detlev Casanova <detlev.casanova@gmail.com>
+---
+ drivers/net/ethernet/intel/e1000e/e1000.h  |  5 +-
+ drivers/net/ethernet/intel/e1000e/netdev.c | 54 ++++++++++++----------
+ 2 files changed, 32 insertions(+), 27 deletions(-)
 
-On 6/19/2019 2:18 AM, Benedikt Spranger wrote:
-> On Tue, 18 Jun 2019 11:16:23 -0700
-> Florian Fainelli <f.fainelli@gmail.com> wrote:
-> 
->> How is that a problem for other machines? Does that lead to some kind
->> of broadcast storm because there are machines that keep trying to
->> respond to ARP solicitations?
-> Mirroring broadcast packages on the interface they are coming in, is
-> IMHO a poor idea. As a result any switch connected to wan update the
-> MAC table and send packages on a port where they do not belong to.
-> Just imagine to send a DHCP request. The BPi R1 acts as nearly perfect
-> black hole in such a situation.
-
-Fair enough.
-
-> 
->> The few aspects that bother me, not in any particular order, are that:
->>
->> - you might be able to not change anything and just get away with the
->> one line patch below that sets skb->offload_fwd_mark to 1 to indicate
->> to the bridge, not to bother with sending a copy of the packet, since
->> the HW took care of that already
-> 
-> I can test it, but i like to note that the changed function is not
-> executed in case of bcm53125.
-
-Indeed, that won't work, how about implementing port_egress_flood() for
-b53? That would make sure that multicast is flooded (as well as unicast)
-before the switch port is enslaved into the bridge and this should take
-care of both your problem and the lack of multicast flooding once
-Broadcom tags are turned on. You might also need to set
-skb->fwd_offload_mark accordingly in case you still see duplicate
-packets, though that should not happen anymore AFAICT.
-
-Something like this should take care of that (untested). You might have
-to explicitly set the IMP port (port 8) in B53_UC_FWD_EN and
-B53_MC_FWD_EN, though since you turn on management mode, this may not be
-required. I might have some time tomorrow to test that on a Lamobo R1.
+diff --git a/drivers/net/ethernet/intel/e1000e/e1000.h b/drivers/net/ethernet/intel/e1000e/e1000.h
+index be13227f1697..34cd67951aec 100644
+--- a/drivers/net/ethernet/intel/e1000e/e1000.h
++++ b/drivers/net/ethernet/intel/e1000e/e1000.h
+@@ -186,12 +186,13 @@ struct e1000_phy_regs {
+ 
+ /* board specific private data structure */
+ struct e1000_adapter {
+-	struct timer_list watchdog_timer;
+ 	struct timer_list phy_info_timer;
+ 	struct timer_list blink_timer;
+ 
+ 	struct work_struct reset_task;
+-	struct work_struct watchdog_task;
++	struct delayed_work watchdog_task;
++
++	struct workqueue_struct *e1000_workqueue;
+ 
+ 	const struct e1000_info *ei;
+ 
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index 0e09bede42a2..6fb6918bc136 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -1780,7 +1780,8 @@ static irqreturn_t e1000_intr_msi(int __always_unused irq, void *data)
+ 		}
+ 		/* guard against interrupt when we're going down */
+ 		if (!test_bit(__E1000_DOWN, &adapter->state))
+-			mod_timer(&adapter->watchdog_timer, jiffies + 1);
++			queue_delayed_work(adapter->e1000_workqueue,
++					   &adapter->watchdog_task, 1);
+ 	}
+ 
+ 	/* Reset on uncorrectable ECC error */
+@@ -1860,7 +1861,8 @@ static irqreturn_t e1000_intr(int __always_unused irq, void *data)
+ 		}
+ 		/* guard against interrupt when we're going down */
+ 		if (!test_bit(__E1000_DOWN, &adapter->state))
+-			mod_timer(&adapter->watchdog_timer, jiffies + 1);
++			queue_delayed_work(adapter->e1000_workqueue,
++					   &adapter->watchdog_task, 1);
+ 	}
+ 
+ 	/* Reset on uncorrectable ECC error */
+@@ -1905,7 +1907,8 @@ static irqreturn_t e1000_msix_other(int __always_unused irq, void *data)
+ 		hw->mac.get_link_status = true;
+ 		/* guard against interrupt when we're going down */
+ 		if (!test_bit(__E1000_DOWN, &adapter->state))
+-			mod_timer(&adapter->watchdog_timer, jiffies + 1);
++			queue_delayed_work(adapter->e1000_workqueue,
++					   &adapter->watchdog_task, 1);
+ 	}
+ 
+ 	if (!test_bit(__E1000_DOWN, &adapter->state))
+@@ -4278,7 +4281,6 @@ void e1000e_down(struct e1000_adapter *adapter, bool reset)
+ 
+ 	napi_synchronize(&adapter->napi);
+ 
+-	del_timer_sync(&adapter->watchdog_timer);
+ 	del_timer_sync(&adapter->phy_info_timer);
+ 
+ 	spin_lock(&adapter->stats64_lock);
+@@ -5150,25 +5152,11 @@ static void e1000e_check_82574_phy_workaround(struct e1000_adapter *adapter)
+ 	}
+ }
+ 
+-/**
+- * e1000_watchdog - Timer Call-back
+- * @data: pointer to adapter cast into an unsigned long
+- **/
+-static void e1000_watchdog(struct timer_list *t)
+-{
+-	struct e1000_adapter *adapter = from_timer(adapter, t, watchdog_timer);
+-
+-	/* Do the rest outside of interrupt context */
+-	schedule_work(&adapter->watchdog_task);
+-
+-	/* TODO: make this use queue_delayed_work() */
+-}
+-
+ static void e1000_watchdog_task(struct work_struct *work)
+ {
+ 	struct e1000_adapter *adapter = container_of(work,
+ 						     struct e1000_adapter,
+-						     watchdog_task);
++						     watchdog_task.work);
+ 	struct net_device *netdev = adapter->netdev;
+ 	struct e1000_mac_info *mac = &adapter->hw.mac;
+ 	struct e1000_phy_info *phy = &adapter->hw.phy;
+@@ -5395,8 +5383,9 @@ static void e1000_watchdog_task(struct work_struct *work)
+ 
+ 	/* Reset the timer */
+ 	if (!test_bit(__E1000_DOWN, &adapter->state))
+-		mod_timer(&adapter->watchdog_timer,
+-			  round_jiffies(jiffies + 2 * HZ));
++		queue_delayed_work(adapter->e1000_workqueue,
++				   &adapter->watchdog_task,
++				   round_jiffies(2 * HZ));
+ }
+ 
+ #define E1000_TX_FLAGS_CSUM		0x00000001
+@@ -7251,11 +7240,21 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		goto err_eeprom;
+ 	}
+ 
+-	timer_setup(&adapter->watchdog_timer, e1000_watchdog, 0);
++	adapter->e1000_workqueue = alloc_workqueue("%s", WQ_MEM_RECLAIM, 0,
++						   e1000e_driver_name);
++
++	if (!adapter->e1000_workqueue) {
++		err = -ENOMEM;
++		goto err_workqueue;
++	}
++
++	INIT_DELAYED_WORK(&adapter->watchdog_task, e1000_watchdog_task);
++	queue_delayed_work(adapter->e1000_workqueue, &adapter->watchdog_task,
++			   0);
++
+ 	timer_setup(&adapter->phy_info_timer, e1000_update_phy_info, 0);
+ 
+ 	INIT_WORK(&adapter->reset_task, e1000_reset_task);
+-	INIT_WORK(&adapter->watchdog_task, e1000_watchdog_task);
+ 	INIT_WORK(&adapter->downshift_task, e1000e_downshift_workaround);
+ 	INIT_WORK(&adapter->update_phy_task, e1000e_update_phy_task);
+ 	INIT_WORK(&adapter->print_hang_task, e1000_print_hw_hang);
+@@ -7349,6 +7348,9 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	return 0;
+ 
+ err_register:
++	flush_workqueue(adapter->e1000_workqueue);
++	destroy_workqueue(adapter->e1000_workqueue);
++err_workqueue:
+ 	if (!(adapter->flags & FLAG_HAS_AMT))
+ 		e1000e_release_hw_control(adapter);
+ err_eeprom:
+@@ -7395,15 +7397,17 @@ static void e1000_remove(struct pci_dev *pdev)
+ 	 */
+ 	if (!down)
+ 		set_bit(__E1000_DOWN, &adapter->state);
+-	del_timer_sync(&adapter->watchdog_timer);
+ 	del_timer_sync(&adapter->phy_info_timer);
+ 
+ 	cancel_work_sync(&adapter->reset_task);
+-	cancel_work_sync(&adapter->watchdog_task);
+ 	cancel_work_sync(&adapter->downshift_task);
+ 	cancel_work_sync(&adapter->update_phy_task);
+ 	cancel_work_sync(&adapter->print_hang_task);
+ 
++	cancel_delayed_work(&adapter->watchdog_task);
++	flush_workqueue(adapter->e1000_workqueue);
++	destroy_workqueue(adapter->e1000_workqueue);
++
+ 	if (adapter->flags & FLAG_HAS_HW_TIMESTAMP) {
+ 		cancel_work_sync(&adapter->tx_hwtstamp_work);
+ 		if (adapter->tx_hwtstamp_skb) {
 -- 
-Florian
+2.22.0
 
---------------D176783D47549ADEBE3CF121
-Content-Type: text/plain; charset=UTF-8;
- name="b53-egress-floods.patch"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename="b53-egress-floods.patch"
-
-ZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2RzYS9iNTMvYjUzX2NvbW1vbi5jIGIvZHJpdmVy
-cy9uZXQvZHNhL2I1My9iNTNfY29tbW9uLmMKaW5kZXggYzgwNDBlY2Y0NDI1Li5hNDdmNWJj
-NjY3YmQgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvbmV0L2RzYS9iNTMvYjUzX2NvbW1vbi5jCisr
-KyBiL2RyaXZlcnMvbmV0L2RzYS9iNTMvYjUzX2NvbW1vbi5jCkBAIC0zNDIsNiArMzQyLDEz
-IEBAIHN0YXRpYyB2b2lkIGI1M19zZXRfZm9yd2FyZGluZyhzdHJ1Y3QgYjUzX2RldmljZSAq
-ZGV2LCBpbnQgZW5hYmxlKQogCWI1M19yZWFkOChkZXYsIEI1M19DVFJMX1BBR0UsIEI1M19T
-V0lUQ0hfQ1RSTCwgJm1nbXQpOwogCW1nbXQgfD0gQjUzX01JSV9EVU1CX0ZXREdfRU47CiAJ
-YjUzX3dyaXRlOChkZXYsIEI1M19DVFJMX1BBR0UsIEI1M19TV0lUQ0hfQ1RSTCwgbWdtdCk7
-CisKKwkvKiBMb29rIGF0IEI1M19VQ19GV0RfRU4gYW5kIEI1M19NQ19GV0RfRU4gdG8gZGVj
-aWRlIHdoZXRoZXIKKwkgKiBmcmFtZXMgc2hvdWxkIGJlIGZsb29lZCBvciBub3QuCisJICov
-CisJYjUzX3JlYWQ4KGRldiwgQjUzX0NUUkxfUEFHRSwgQjUzX0lQX01VTFRJQ0FTVF9DVFJM
-LCAmbWdtdCk7CisJbWdtdCB8PSBCNTNfVUNfRldEX0VOIHwgQjUzX01DX0ZXRF9FTjsKKwli
-NTNfd3JpdGU4KGRldiwgQjUzX0NUUkxfUEFHRSwgQjUzX0lQX01VTFRJQ0FTVF9DVFJMLCBt
-Z210KTsKIH0KIAogc3RhdGljIHZvaWQgYjUzX2VuYWJsZV92bGFuKHN0cnVjdCBiNTNfZGV2
-aWNlICpkZXYsIGJvb2wgZW5hYmxlLApAQCAtMTc0OCw2ICsxNzU1LDMxIEBAIHZvaWQgYjUz
-X2JyX2Zhc3RfYWdlKHN0cnVjdCBkc2Ffc3dpdGNoICpkcywgaW50IHBvcnQpCiB9CiBFWFBP
-UlRfU1lNQk9MKGI1M19icl9mYXN0X2FnZSk7CiAKK2ludCBiNTNfYnJfZWdyZXNzX2Zsb29k
-cyhzdHJ1Y3QgZHNhX3N3aXRjaCAqZHMsIGludCBwb3J0LAorCQkJIGJvb2wgdW5pY2FzdCwg
-Ym9vbCBtdWx0aWNhc3QpCit7CisJc3RydWN0IGI1M19kZXZpY2UgKmRldiA9IGRzLT5wcml2
-OworCXUxNiB1YywgbWM7CisKKwliNTNfcmVhZDE2KGRldiwgQjUzX0NUUkxfUEFHRSwgQjUz
-X1VDX0ZXRF9FTiwgJnVjKTsKKwlpZiAodW5pY2FzdCkKKwkJdWMgfD0gQklUKHBvcnQpOwor
-CWVsc2UKKwkJdWMgJj0gfkJJVChwb3J0KTsKKwliNTNfd3JpdGUxNihkZXYsIEI1M19DVFJM
-X1BBR0UsIEI1M19VQ19GV0RfRU4sIHVjKTsKKworCWI1M19yZWFkMTYoZGV2LCBCNTNfQ1RS
-TF9QQUdFLCBCNTNfTUNfRldEX0VOLCAmbWMpOworCWlmIChtdWx0aWNhc3QpCisJCW1jIHw9
-IEJJVChwb3J0KTsKKwllbHNlCisJCW1jICY9IH5CSVQocG9ydCk7CisJYjUzX3dyaXRlMTYo
-ZGV2LCBCNTNfQ1RSTF9QQUdFLCBCNTNfTUNfRldEX0VOLCBtYyk7CisKKwlyZXR1cm4gMDsK
-KworfQorRVhQT1JUX1NZTUJPTChiNTNfYnJfZWdyZXNzX2Zsb29kcyk7CisKIHN0YXRpYyBi
-b29sIGI1M19wb3NzaWJsZV9jcHVfcG9ydChzdHJ1Y3QgZHNhX3N3aXRjaCAqZHMsIGludCBw
-b3J0KQogewogCS8qIEJyb2FkY29tIHN3aXRjaGVzIHdpbGwgYWNjZXB0IGVuYWJsaW5nIEJy
-b2FkY29tIHRhZ3Mgb24gdGhlCkBAIC0xOTQ4LDYgKzE5ODAsNyBAQCBzdGF0aWMgY29uc3Qg
-c3RydWN0IGRzYV9zd2l0Y2hfb3BzIGI1M19zd2l0Y2hfb3BzID0gewogCS5wb3J0X2JyaWRn
-ZV9sZWF2ZQk9IGI1M19icl9sZWF2ZSwKIAkucG9ydF9zdHBfc3RhdGVfc2V0CT0gYjUzX2Jy
-X3NldF9zdHBfc3RhdGUsCiAJLnBvcnRfZmFzdF9hZ2UJCT0gYjUzX2JyX2Zhc3RfYWdlLAor
-CS5wb3J0X2VncmVzc19mbG9vZHMJPSBiNTNfYnJfZWdyZXNzX2Zsb29kcywKIAkucG9ydF92
-bGFuX2ZpbHRlcmluZwk9IGI1M192bGFuX2ZpbHRlcmluZywKIAkucG9ydF92bGFuX3ByZXBh
-cmUJPSBiNTNfdmxhbl9wcmVwYXJlLAogCS5wb3J0X3ZsYW5fYWRkCQk9IGI1M192bGFuX2Fk
-ZCwKZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2RzYS9iNTMvYjUzX3ByaXYuaCBiL2RyaXZl
-cnMvbmV0L2RzYS9iNTMvYjUzX3ByaXYuaAppbmRleCBmMjViYzgwYzRmZmMuLmE3ZGQ4YWNj
-MjgxYiAxMDA2NDQKLS0tIGEvZHJpdmVycy9uZXQvZHNhL2I1My9iNTNfcHJpdi5oCisrKyBi
-L2RyaXZlcnMvbmV0L2RzYS9iNTMvYjUzX3ByaXYuaApAQCAtMzE5LDYgKzMxOSw4IEBAIGlu
-dCBiNTNfYnJfam9pbihzdHJ1Y3QgZHNhX3N3aXRjaCAqZHMsIGludCBwb3J0LCBzdHJ1Y3Qg
-bmV0X2RldmljZSAqYnJpZGdlKTsKIHZvaWQgYjUzX2JyX2xlYXZlKHN0cnVjdCBkc2Ffc3dp
-dGNoICpkcywgaW50IHBvcnQsIHN0cnVjdCBuZXRfZGV2aWNlICpicmlkZ2UpOwogdm9pZCBi
-NTNfYnJfc2V0X3N0cF9zdGF0ZShzdHJ1Y3QgZHNhX3N3aXRjaCAqZHMsIGludCBwb3J0LCB1
-OCBzdGF0ZSk7CiB2b2lkIGI1M19icl9mYXN0X2FnZShzdHJ1Y3QgZHNhX3N3aXRjaCAqZHMs
-IGludCBwb3J0KTsKK2ludCBiNTNfYnJfZWdyZXNzX2Zsb29kcyhzdHJ1Y3QgZHNhX3N3aXRj
-aCAqZHMsIGludCBwb3J0LAorCQkJIGJvb2wgdW5pY2FzdCwgYm9vbCBtdWx0aWNhc3QpOwog
-dm9pZCBiNTNfcG9ydF9ldmVudChzdHJ1Y3QgZHNhX3N3aXRjaCAqZHMsIGludCBwb3J0KTsK
-IHZvaWQgYjUzX3BoeWxpbmtfdmFsaWRhdGUoc3RydWN0IGRzYV9zd2l0Y2ggKmRzLCBpbnQg
-cG9ydCwKIAkJCSAgdW5zaWduZWQgbG9uZyAqc3VwcG9ydGVkLAo=
---------------D176783D47549ADEBE3CF121--
