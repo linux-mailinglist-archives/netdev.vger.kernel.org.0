@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 38EF24FB55
-	for <lists+netdev@lfdr.de>; Sun, 23 Jun 2019 13:34:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FF8C4FB59
+	for <lists+netdev@lfdr.de>; Sun, 23 Jun 2019 13:40:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726494AbfFWLem (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Jun 2019 07:34:42 -0400
-Received: from charlotte.tuxdriver.com ([70.61.120.58]:57496 "EHLO
+        id S1726502AbfFWLkc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Jun 2019 07:40:32 -0400
+Received: from charlotte.tuxdriver.com ([70.61.120.58]:57513 "EHLO
         smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726350AbfFWLem (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jun 2019 07:34:42 -0400
+        with ESMTP id S1726467AbfFWLkc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jun 2019 07:40:32 -0400
 Received: from [107.15.85.130] (helo=localhost)
         by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
         (Exim 4.63)
         (envelope-from <nhorman@tuxdriver.com>)
-        id 1hf0lQ-0007zr-Cy; Sun, 23 Jun 2019 07:34:40 -0400
-Date:   Sun, 23 Jun 2019 07:34:22 -0400
+        id 1hf0rD-00081E-QE; Sun, 23 Jun 2019 07:40:29 -0400
+Date:   Sun, 23 Jun 2019 07:40:21 -0400
 From:   Neil Horman <nhorman@tuxdriver.com>
 To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
 Cc:     Network Development <netdev@vger.kernel.org>,
@@ -24,14 +24,15 @@ Cc:     Network Development <netdev@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>
 Subject: Re: [PATCH v2 net] af_packet: Block execution of tasks waiting for
  transmit to complete in AF_PACKET
-Message-ID: <20190623113422.GA10908@hmswarspite.think-freely.org>
+Message-ID: <20190623114021.GB10908@hmswarspite.think-freely.org>
 References: <20190619202533.4856-1-nhorman@tuxdriver.com>
  <20190622174154.14473-1-nhorman@tuxdriver.com>
  <CAF=yD-JC_r1vjitN1ccyvQ3DXiP9BNCwq9iiWU11cXznmhAY8Q@mail.gmail.com>
+ <CAF=yD-+8NDiL0dxM+eOFyiwi1ZhCW29dW--+VeEkssUaJqedWg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAF=yD-JC_r1vjitN1ccyvQ3DXiP9BNCwq9iiWU11cXznmhAY8Q@mail.gmail.com>
+In-Reply-To: <CAF=yD-+8NDiL0dxM+eOFyiwi1ZhCW29dW--+VeEkssUaJqedWg@mail.gmail.com>
 User-Agent: Mutt/1.11.3 (2019-02-01)
 X-Spam-Score: -2.9 (--)
 X-Spam-Status: No
@@ -40,266 +41,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jun 22, 2019 at 10:12:46PM -0400, Willem de Bruijn wrote:
-> On Sat, Jun 22, 2019 at 1:42 PM Neil Horman <nhorman@tuxdriver.com> wrote:
+On Sat, Jun 22, 2019 at 10:21:31PM -0400, Willem de Bruijn wrote:
+> > > -static void __packet_set_status(struct packet_sock *po, void *frame, int status)
+> > > +static void __packet_set_status(struct packet_sock *po, void *frame, int status,
+> > > +                               bool call_complete)
+> > >  {
+> > >         union tpacket_uhdr h;
+> > >
+> > > @@ -381,6 +382,8 @@ static void __packet_set_status(struct packet_sock *po, void *frame, int status)
+> > >                 BUG();
+> > >         }
+> > >
+> > > +       if (po->wait_on_complete && call_complete)
+> > > +               complete(&po->skb_completion);
 > >
-> > When an application is run that:
-> > a) Sets its scheduler to be SCHED_FIFO
-> > and
-> > b) Opens a memory mapped AF_PACKET socket, and sends frames with the
-> > MSG_DONTWAIT flag cleared, its possible for the application to hang
-> > forever in the kernel.  This occurs because when waiting, the code in
-> > tpacket_snd calls schedule, which under normal circumstances allows
-> > other tasks to run, including ksoftirqd, which in some cases is
-> > responsible for freeing the transmitted skb  (which in AF_PACKET calls a
-> > destructor that flips the status bit of the transmitted frame back to
-> > available, allowing the transmitting task to complete).
+> > This wake need not happen before the barrier. Only one caller of
+> > __packet_set_status passes call_complete (tpacket_destruct_skb).
+> > Moving this branch to the caller avoids a lot of code churn.
 > >
-> > However, when the calling application is SCHED_FIFO, its priority is
-> > such that the schedule call immediately places the task back on the cpu,
-> > preventing ksoftirqd from freeing the skb, which in turn prevents the
-> > transmitting task from detecting that the transmission is complete.
-> >
-> > We can fix this by converting the schedule call to a completion
-> > mechanism.  By using a completion queue, we force the calling task, when
-> > it detects there are no more frames to send, to schedule itself off the
-> > cpu until such time as the last transmitted skb is freed, allowing
-> > forward progress to be made.
-> >
-> > Tested by myself and the reporter, with good results
-> >
-> > Appies to the net tree
-> >
-> > Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
-> > Reported-by: Matteo Croce <mcroce@redhat.com>
-> > CC: "David S. Miller" <davem@davemloft.net>
-> > CC: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-> >
-> > Change Notes:
-> >
-> > V1->V2:
-> >         Enhance the sleep logic to support being interruptible and
-> > allowing for honoring to SK_SNDTIMEO (Willem de Bruijn)
-> > ---
-> >  net/packet/af_packet.c | 60 ++++++++++++++++++++++++++++++++----------
-> >  net/packet/internal.h  |  2 ++
-> >  2 files changed, 48 insertions(+), 14 deletions(-)
-> >
-> > diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-> > index a29d66da7394..8ddb2f7aebb4 100644
-> > --- a/net/packet/af_packet.c
-> > +++ b/net/packet/af_packet.c
-> > @@ -358,7 +358,8 @@ static inline struct page * __pure pgv_to_page(void *addr)
-> >         return virt_to_page(addr);
-> >  }
-> >
-> > -static void __packet_set_status(struct packet_sock *po, void *frame, int status)
-> > +static void __packet_set_status(struct packet_sock *po, void *frame, int status,
-> > +                               bool call_complete)
-> >  {
-> >         union tpacket_uhdr h;
-> >
-> > @@ -381,6 +382,8 @@ static void __packet_set_status(struct packet_sock *po, void *frame, int status)
-> >                 BUG();
-> >         }
-> >
-> > +       if (po->wait_on_complete && call_complete)
-> > +               complete(&po->skb_completion);
+> > Also, multiple packets may be released before the process is awoken.
+> > The process will block until packet_read_pending drops to zero. Can
+> > defer the wait_on_complete to that one instance.
 > 
-> This wake need not happen before the barrier. Only one caller of
-> __packet_set_status passes call_complete (tpacket_destruct_skb).
-> Moving this branch to the caller avoids a lot of code churn.
+> Eh no. The point of having this sleep in the send loop is that
+> additional slots may be released for transmission (flipped to
+> TP_STATUS_SEND_REQUEST) from another thread while this thread is
+> waiting.
 > 
-Yeah, thats a fair point, I'll adjust that.
+Thats incorrect.  The entirety of tpacket_snd is protected by a mutex. No other
+thread can alter the state of the frames in the vector from the kernel send path
+while this thread is waiting.
 
-> Also, multiple packets may be released before the process is awoken.
-> The process will block until packet_read_pending drops to zero. Can
-> defer the wait_on_complete to that one instance.
+> Else, it would have been much simpler to move the wait below the send
+> loop: send as many packets as possible, then wait for all of them
+> having been released. Much clearer control flow.
 > 
-Also true, we can gate the complete call on wait_on_complete and
-pack_read_pending(...) == 0
-> >         smp_wmb();
-> >  }
-> >
-> > @@ -1148,6 +1151,14 @@ static void *packet_previous_frame(struct packet_sock *po,
-> >         return packet_lookup_frame(po, rb, previous, status);
-> >  }
-> >
-> > +static void *packet_next_frame(struct packet_sock *po,
-> > +               struct packet_ring_buffer *rb,
-> > +               int status)
-> > +{
-> > +       unsigned int next = rb->head != rb->frame_max ? rb->head+1 : 0;
-> > +       return packet_lookup_frame(po, rb, next, status);
-> > +}
-> > +
-> >  static void packet_increment_head(struct packet_ring_buffer *buff)
-> >  {
-> >         buff->head = buff->head != buff->frame_max ? buff->head+1 : 0;
-> > @@ -2360,7 +2371,7 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
-> >  #endif
-> >
-> >         if (po->tp_version <= TPACKET_V2) {
-> > -               __packet_set_status(po, h.raw, status);
-> > +               __packet_set_status(po, h.raw, status, false);
-> >                 sk->sk_data_ready(sk);
-> >         } else {
-> >                 prb_clear_blk_fill_status(&po->rx_ring);
-> > @@ -2400,7 +2411,7 @@ static void tpacket_destruct_skb(struct sk_buff *skb)
-> >                 packet_dec_pending(&po->tx_ring);
-> >
-> >                 ts = __packet_set_timestamp(po, ph, skb);
-> > -               __packet_set_status(po, ph, TP_STATUS_AVAILABLE | ts);
-> > +               __packet_set_status(po, ph, TP_STATUS_AVAILABLE | ts, true);
-> >         }
-> >
-> >         sock_wfree(skb);
-> > @@ -2585,13 +2596,13 @@ static int tpacket_parse_header(struct packet_sock *po, void *frame,
-> >
-> >  static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
-> >  {
-> > -       struct sk_buff *skb;
-> > +       struct sk_buff *skb = NULL;
-> >         struct net_device *dev;
-> >         struct virtio_net_hdr *vnet_hdr = NULL;
-> >         struct sockcm_cookie sockc;
-> >         __be16 proto;
-> >         int err, reserve = 0;
-> > -       void *ph;
-> > +       void *ph = NULL;
-> >         DECLARE_SOCKADDR(struct sockaddr_ll *, saddr, msg->msg_name);
-> >         bool need_wait = !(msg->msg_flags & MSG_DONTWAIT);
-> >         unsigned char *addr = NULL;
-> > @@ -2600,9 +2611,12 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
-> >         int len_sum = 0;
-> >         int status = TP_STATUS_AVAILABLE;
-> >         int hlen, tlen, copylen = 0;
-> > +       long timeo;
-> >
-> >         mutex_lock(&po->pg_vec_lock);
-> >
-> > +       timeo = sock_sndtimeo(&po->sk, msg->msg_flags & MSG_DONTWAIT);
-> > +
-> >         if (likely(saddr == NULL)) {
-> >                 dev     = packet_cached_dev_get(po);
-> >                 proto   = po->num;
-> > @@ -2647,16 +2661,29 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
-> >                 size_max = dev->mtu + reserve + VLAN_HLEN;
-> >
-> >         do {
-> > +
-> > +               if (po->wait_on_complete && need_wait) {
-> > +                       timeo = wait_for_completion_interruptible_timeout(&po->skb_completion, timeo);
-> 
-> Why move the sleeping location from where it was with schedule()?
-> Without that change, ph and skb are both guaranteed to be NULL after
-> packet_current_frame, so can jump to out_put and avoid adding branches
-> at out_status. And no need for packet_next_frame.
-> 
-> Just replace schedule with a sleeping function in place (removing the
-> then obsolete need_resched call).
-> 
-> That is a much shorter patch and easier to compare for correctness
-> with the current code.
-> 
-> minor: probably preferable to first check local variable need_wait
-> before reading a struct member.
-> 
-> > +                       po->wait_on_complete = 0;
-> > +                       if (!timeo) {
-> > +                               /* We timed out, break out and notify userspace */
-> > +                               err = -ETIMEDOUT;
-> > +                               goto out_status;
-> > +                       } else if (timeo == -ERESTARTSYS) {
-> > +                               err = -ERESTARTSYS;
-> > +                               goto out_status;
-> > +                       }
-> > +               }
-> > +
-> >                 ph = packet_current_frame(po, &po->tx_ring,
-> >                                           TP_STATUS_SEND_REQUEST);
-> > -               if (unlikely(ph == NULL)) {
-> > -                       if (need_wait && need_resched())
-> > -                               schedule();
-> > -                       continue;
-> > -               }
-> > +
-> > +               if (likely(ph == NULL))
-> 
-> why switch from unlikely to likely?
-> 
-> > +                       break;
-> >
-> >                 skb = NULL;
-> >                 tp_len = tpacket_parse_header(po, ph, size_max, &data);
-> > +
-> 
-> nit: irrelevant
-> 
-> >                 if (tp_len < 0)
-> >                         goto tpacket_error;
-> >
-> > @@ -2699,7 +2726,7 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
-> >  tpacket_error:
-> >                         if (po->tp_loss) {
-> >                                 __packet_set_status(po, ph,
-> > -                                               TP_STATUS_AVAILABLE);
-> > +                                               TP_STATUS_AVAILABLE, false);
-> >                                 packet_increment_head(&po->tx_ring);
-> >                                 kfree_skb(skb);
-> >                                 continue;
-> > @@ -2719,7 +2746,9 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
-> >                 }
-> >
-> >                 skb->destructor = tpacket_destruct_skb;
-> > -               __packet_set_status(po, ph, TP_STATUS_SENDING);
-> > +               __packet_set_status(po, ph, TP_STATUS_SENDING, false);
-> > +               if (!packet_next_frame(po, &po->tx_ring, TP_STATUS_SEND_REQUEST))
-> > +                       po->wait_on_complete = 1;
-> >                 packet_inc_pending(&po->tx_ring);
-> >
-> >                 status = TP_STATUS_SEND_REQUEST;
-> > @@ -2753,8 +2782,10 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
-> >         goto out_put;
-> >
-> >  out_status:
-> > -       __packet_set_status(po, ph, status);
-> > -       kfree_skb(skb);
-> > +       if (ph)
-> > +               __packet_set_status(po, ph, status, false);
-> > +       if (skb)
-> > +               kfree_skb(skb);
-> >  out_put:
-> >         dev_put(dev);
-> >  out:
-> > @@ -3207,6 +3238,7 @@ static int packet_create(struct net *net, struct socket *sock, int protocol,
-> >         sock_init_data(sock, sk);
-> >
-> >         po = pkt_sk(sk);
-> > +       init_completion(&po->skb_completion);
-> >         sk->sk_family = PF_PACKET;
-> >         po->num = proto;
-> >         po->xmit = dev_queue_xmit;
-> > diff --git a/net/packet/internal.h b/net/packet/internal.h
-> > index 3bb7c5fb3bff..bbb4be2c18e7 100644
-> > --- a/net/packet/internal.h
-> > +++ b/net/packet/internal.h
-> > @@ -128,6 +128,8 @@ struct packet_sock {
-> >         unsigned int            tp_hdrlen;
-> >         unsigned int            tp_reserve;
-> >         unsigned int            tp_tstamp;
-> > +       struct completion       skb_completion;
-> > +       unsigned int            wait_on_complete;
-> 
-> Probably belong in packet_ring_buffer. Near pending_refcnt as touched
-> in the same code. And because protected by the ring buffer mutex.
-> 
-> 
-> 
-> >         struct net_device __rcu *cached_dev;
-> >         int                     (*xmit)(struct sk_buff *skb);
-> >         struct packet_type      prot_hook ____cacheline_aligned_in_smp;
-> > --
-> > 2.20.1
-> >
+Thats (almost) what happens now.  The only difference is that with this
+implementation, the waiting thread has the opportunity to see if userspace has
+queued more frames for transmission during the wait period.  We could
+potentially change that, but thats outside the scope of this fix.
+
+> Where to set and clear the wait_on_complete boolean remains. Integer
+> assignment is fragile, as the compiler and processor may optimize or
+> move simple seemingly independent operations. As complete() takes a
+> spinlock, avoiding that in the DONTWAIT case is worthwhile. But probably
+> still preferable to set when beginning waiting and clear when calling
+> complete.
+We avoid any call to wait_for_complete or complete already, based on the gating
+of the need_wait variable in tpacket_snd.  If the transmitting thread doesn't
+set MSG_DONTWAIT in the flags of the msg structure, we will never set
+wait_for_complete, and so we will never manipulate the completion queue.
+
+Neil
+
 > 
