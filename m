@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 28C0A4FC68
-	for <lists+netdev@lfdr.de>; Sun, 23 Jun 2019 17:16:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A992B4FC6B
+	for <lists+netdev@lfdr.de>; Sun, 23 Jun 2019 17:16:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727047AbfFWPQc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Jun 2019 11:16:32 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:32790 "EHLO
+        id S1726878AbfFWPQl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Jun 2019 11:16:41 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:37965 "EHLO
         mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726399AbfFWPQb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jun 2019 11:16:31 -0400
-Received: by mail-pf1-f196.google.com with SMTP id x15so6073029pfq.0;
-        Sun, 23 Jun 2019 08:16:30 -0700 (PDT)
+        with ESMTP id S1726399AbfFWPQl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jun 2019 11:16:41 -0400
+Received: by mail-pf1-f196.google.com with SMTP id y15so1412329pfn.5;
+        Sun, 23 Jun 2019 08:16:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:subject:date:message-id:in-reply-to:references;
-        bh=ZxzCRyv0CcL1EwsY/PU88e+Vu4wijfnzZQqmGfRcvmQ=;
-        b=vgTCL0YBz+SjMkIA6M21UqkDR5Sm+MyXUpUAt2ppFbRP6h4lQkU1ALA8+1lifxZEqC
-         CrHNO4PI9dNjKUmiw53MJEiUKVo4QWpH/TYezTMZGEVvV632GITn4gTxn7XWyrz9Y/Ha
-         yRq07HeukfO0uzwequyJA8X/R39UE2QsHIWyY0KH8k4ElHtAZoKH0j+NJFiZHH+6O1Jl
-         0b22ljuBF+fFNV4xIrj917s+IRzHbm1Hbai3C4Kp20nRBh+6vANvN0qniAx7/KVSTTVz
-         n1/3ZvCv4h8Dq/Y2KI8Tq3eFpkRDadVzgekap6P7+iCBB5qWI7zHOcmQMHSL9/y8VxCi
-         YFuA==
+        bh=gTw6yUmcZHJimu/ktruUQIMzL1J4HTeSTmGQzakysDY=;
+        b=pRTo9t5gEbwGCdgtlgE/sRyNUZUkGzIY+GVrMnSrH5utlADoDicfMIHdIPuBgZqukn
+         N/v4pDQGf2s6UHxnNq9XweGqJfmaU27n6ijPpM/UlUFQS0iKMliUDAsHbc5fvw46FGg4
+         jK56RVnA7XoNtipqHCK8NYI9Vczr6+eGkeuDnPHkMzQfPwCIJEjsaSd8B1L1fInCwE6j
+         5pOaikS0g9vIOIrexW2iHm5axz8mKOd9oXfu8BDF2JZVGIRehaFeaK5A/y/hwODO/483
+         C0e5mqfIFvjlLlpW4fIAgvAezptIHIveBuhpj8flHEKONnawuh1W613EqtDJR4AsjbVD
+         CJfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references;
-        bh=ZxzCRyv0CcL1EwsY/PU88e+Vu4wijfnzZQqmGfRcvmQ=;
-        b=DW/RhgUpIWaUXk1wyEEUi/2DS3dTITAEU4Qy4F2p0vCz4vXyGfHhUigMcbTxJnkCLs
-         RCZavpG7a1oNL6oSs6zEgMld0vP3kSC2wMi4h227OLlWHMoUzmGnejkEyrnV7TBVAY2R
-         KTx7JcwwHpl5GMcJoEkBOCSjtQkSwsK2ayxURYpBtIfRAErxUHsp8SLk00L94hweMMr0
-         2ypJaDmUIOHANQS+zfo4bQQSPZHFxYofI9HG0T5vrUpEKuT2SGW/un0a2cmrhKbFS4PF
-         csGHZLPwTXS7VXn6qEjtvtIG6r/bcB72MdMPEpcS+qfuBhlYGv6epN5Sl2IULczNTS48
-         IPiw==
-X-Gm-Message-State: APjAAAVuRPfu77A2HPbDqvLXGykb+yRw3HbGKfeYfDcHqMUuwwsb+LPV
-        JlvI+LqY14cIzIge/WEBEO4=
-X-Google-Smtp-Source: APXvYqwo4amEEfrtcLpVpipuvjZjsG52wTMkzw5+Un4n/rYYWv3AaPkXLqYWhMVMyCD0gqJ8amTsiw==
-X-Received: by 2002:a17:90a:9b88:: with SMTP id g8mr19522545pjp.100.1561302990450;
-        Sun, 23 Jun 2019 08:16:30 -0700 (PDT)
+        bh=gTw6yUmcZHJimu/ktruUQIMzL1J4HTeSTmGQzakysDY=;
+        b=hyfBFzjXdh2jgtOhXeUAY+RWjCD0JhM58wqQRGQUSqpssZqc9229hXLsHT2TCmvwBt
+         FUA3uehJgkkujl3XO/baDeRTjLoqL9eAA9FFCJ1J/6YGnAh8DBjGrvTWQvsFMkTLYNWE
+         xYaao4yv1gKvCRONAq/u/AnQFoMoQQq6L5UUQaWgDX2R/JHL/Xe+J0A57AP7O9pmX/Yx
+         T4fFdFjwkMq7k+rCSsEzSA37yJmqImgR5KpavjUQPjIcOkm8QjhnnlItI/DgPX1/xyaC
+         BZPle42n8X6RCqFgEG4fTisIFGgpRujAsOB9nl6AgMn6hcXfbB83ejYn/l0uXyF2NSEQ
+         NFSA==
+X-Gm-Message-State: APjAAAUMbZIQUz28hbgICiUu0fhH8e6RF10U7ut5PuEgXlQj9m7aGQKG
+        R3BfJs4GP6OHKsFxqb+3FFQ=
+X-Google-Smtp-Source: APXvYqzDPpdUQzLN7OSl2ecKXpCU6pxiTuhlPOsPlocnkmlcQNSQFdwdUvwwGxFqETV2an13ftQR2g==
+X-Received: by 2002:a17:90a:5887:: with SMTP id j7mr18995083pji.136.1561303000400;
+        Sun, 23 Jun 2019 08:16:40 -0700 (PDT)
 Received: from debian.net.fpt ([1.55.47.94])
-        by smtp.gmail.com with ESMTPSA id p6sm8329194pgs.77.2019.06.23.08.16.20
+        by smtp.gmail.com with ESMTPSA id p6sm8329194pgs.77.2019.06.23.08.16.30
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 23 Jun 2019 08:16:29 -0700 (PDT)
+        Sun, 23 Jun 2019 08:16:39 -0700 (PDT)
 From:   Phong Tran <tranmanphong@gmail.com>
 To:     mark.rutland@arm.com, kstewart@linuxfoundation.org,
         songliubraving@fb.com, andrew@lunn.ch, peterz@infradead.org,
@@ -66,9 +66,9 @@ To:     mark.rutland@arm.com, kstewart@linuxfoundation.org,
         kgene@kernel.org, kernel@pengutronix.de, sudeep.holla@arm.com,
         bpf@vger.kernel.org, shawnguo@kernel.org, kafai@fb.com,
         daniel@zonque.org
-Subject: [PATCH 14/15] ARM: bpf: cleanup cppcheck shifting error
-Date:   Sun, 23 Jun 2019 22:13:12 +0700
-Message-Id: <20190623151313.970-15-tranmanphong@gmail.com>
+Subject: [PATCH 15/15] ARM: vfp: cleanup cppcheck shifting errors
+Date:   Sun, 23 Jun 2019 22:13:13 +0700
+Message-Id: <20190623151313.970-16-tranmanphong@gmail.com>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190623151313.970-1-tranmanphong@gmail.com>
 References: <20190623151313.970-1-tranmanphong@gmail.com>
@@ -77,27 +77,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[arch/arm/net/bpf_jit_32.c:618]: (error) Shifting signed 32-bit value by
+[arch/arm/vfp/vfpdouble.c:397]: (error) Shifting signed 32-bit value by
+31 bits is undefined behaviour
+[arch/arm/vfp/vfpdouble.c:407]: (error) Shifting signed 32-bit value by
+31 bits is undefined behaviour
+[arch/arm/vfp/vfpmodule.c:263]: (error) Shifting signed 32-bit value by
+31 bits is undefined behaviour
+[arch/arm/vfp/vfpmodule.c:264]: (error) Shifting signed 32-bit value by
+31 bits is undefined behaviour
+[arch/arm/vfp/vfpsingle.c:441]: (error) Shifting signed 32-bit value by
+31 bits is undefined behaviour
+[arch/arm/vfp/vfpsingle.c:451]: (error) Shifting signed 32-bit value by
 31 bits is undefined behaviour
 
 Signed-off-by: Phong Tran <tranmanphong@gmail.com>
 ---
- arch/arm/net/bpf_jit_32.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/vfp/vfpinstr.h | 28 ++++++++++++++--------------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
 
-diff --git a/arch/arm/net/bpf_jit_32.c b/arch/arm/net/bpf_jit_32.c
-index adff54c312bf..9c3f8fb871e5 100644
---- a/arch/arm/net/bpf_jit_32.c
-+++ b/arch/arm/net/bpf_jit_32.c
-@@ -612,7 +612,7 @@ static inline void emit_a32_mov_se_i64(const bool is64, const s8 dst[],
- 				       const u32 val, struct jit_ctx *ctx) {
- 	u64 val64 = val;
+diff --git a/arch/arm/vfp/vfpinstr.h b/arch/arm/vfp/vfpinstr.h
+index 38dc154e39ff..377ab0ced8d8 100644
+--- a/arch/arm/vfp/vfpinstr.h
++++ b/arch/arm/vfp/vfpinstr.h
+@@ -8,8 +8,8 @@
+  * VFP instruction masks.
+  */
+ #define INST_CPRTDO(inst)	(((inst) & 0x0f000000) == 0x0e000000)
+-#define INST_CPRT(inst)		((inst) & (1 << 4))
+-#define INST_CPRT_L(inst)	((inst) & (1 << 20))
++#define INST_CPRT(inst)		((inst) & (1U << 4))
++#define INST_CPRT_L(inst)	((inst) & (1U << 20))
+ #define INST_CPRT_Rd(inst)	(((inst) & (15 << 12)) >> 12)
+ #define INST_CPRT_OP(inst)	(((inst) >> 21) & 7)
+ #define INST_CPNUM(inst)	((inst) & 0xf00)
+@@ -27,7 +27,7 @@
+ #define FOP_FDIV	(0x00800000)
+ #define FOP_EXT		(0x00b00040)
  
--	if (is64 && (val & (1<<31)))
-+	if (is64 && (val & (1U<<31)))
- 		val64 |= 0xffffffff00000000ULL;
- 	emit_a32_mov_i64(dst, val64, ctx);
- }
+-#define FOP_TO_IDX(inst)	((inst & 0x00b00000) >> 20 | (inst & (1 << 6)) >> 4)
++#define FOP_TO_IDX(inst)	((inst & 0x00b00000) >> 20 | (inst & (1U << 6)) >> 4)
+ 
+ #define FEXT_MASK	(0x000f0080)
+ #define FEXT_FCPY	(0x00000000)
+@@ -46,21 +46,21 @@
+ #define FEXT_FTOSI	(0x000d0000)
+ #define FEXT_FTOSIZ	(0x000d0080)
+ 
+-#define FEXT_TO_IDX(inst)	((inst & 0x000f0000) >> 15 | (inst & (1 << 7)) >> 7)
++#define FEXT_TO_IDX(inst)	((inst & 0x000f0000) >> 15 | (inst & (1U << 7)) >> 7)
+ 
+-#define vfp_get_sd(inst)	((inst & 0x0000f000) >> 11 | (inst & (1 << 22)) >> 22)
+-#define vfp_get_dd(inst)	((inst & 0x0000f000) >> 12 | (inst & (1 << 22)) >> 18)
+-#define vfp_get_sm(inst)	((inst & 0x0000000f) << 1 | (inst & (1 << 5)) >> 5)
+-#define vfp_get_dm(inst)	((inst & 0x0000000f) | (inst & (1 << 5)) >> 1)
+-#define vfp_get_sn(inst)	((inst & 0x000f0000) >> 15 | (inst & (1 << 7)) >> 7)
+-#define vfp_get_dn(inst)	((inst & 0x000f0000) >> 16 | (inst & (1 << 7)) >> 3)
++#define vfp_get_sd(inst)	((inst & 0x0000f000) >> 11 | (inst & (1U << 22)) >> 22)
++#define vfp_get_dd(inst)	((inst & 0x0000f000) >> 12 | (inst & (1U << 22)) >> 18)
++#define vfp_get_sm(inst)	((inst & 0x0000000f) << 1 | (inst & (1U << 5)) >> 5)
++#define vfp_get_dm(inst)	((inst & 0x0000000f) | (inst & (1U << 5)) >> 1)
++#define vfp_get_sn(inst)	((inst & 0x000f0000) >> 15 | (inst & (1U << 7)) >> 7)
++#define vfp_get_dn(inst)	((inst & 0x000f0000) >> 16 | (inst & (1U << 7)) >> 3)
+ 
+ #define vfp_single(inst)	(((inst) & 0x0000f00) == 0xa00)
+ 
+-#define FPSCR_N	(1 << 31)
+-#define FPSCR_Z	(1 << 30)
+-#define FPSCR_C (1 << 29)
+-#define FPSCR_V	(1 << 28)
++#define FPSCR_N	(1U << 31)
++#define FPSCR_Z	(1U << 30)
++#define FPSCR_C (1U << 29)
++#define FPSCR_V	(1U << 28)
+ 
+ /*
+  * Since we aren't building with -mfpu=vfp, we need to code
 -- 
 2.11.0
 
