@@ -2,218 +2,304 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C660F4FB21
-	for <lists+netdev@lfdr.de>; Sun, 23 Jun 2019 12:39:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38EF24FB55
+	for <lists+netdev@lfdr.de>; Sun, 23 Jun 2019 13:34:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726559AbfFWKhG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Jun 2019 06:37:06 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:56594 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726467AbfFWKhG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jun 2019 06:37:06 -0400
-Received: by mail-io1-f72.google.com with SMTP id u25so17753568iol.23
-        for <netdev@vger.kernel.org>; Sun, 23 Jun 2019 03:37:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=R+foo+kvOx4dze7eA0jrIqas8dcjlWlwn4IxLmthvzc=;
-        b=HnYrpYR3845d5oBaQwLnZ/Gi4yJsiV9Fd9vtfpfYueoihK2W3n5gtAomAlELuDbSlk
-         xJFs8phj3VFGqTq5n5l/9kQP7qVcitsQmQCbBQC/UrMKJOCu2G4QkClogLU4RxX7ncAC
-         CKtNCP/MqkEIcabEksNGLLDgUS+JYRHPtwVDU4Ls+gpkCrSvLJN2SYXEBJTgSIKDFxPD
-         E1WbKhad12w1jlRxs74TcEpCfI/xF76//pqeTdPWLhdunE3Y7LPsOf5V6kiXvJgL4Iiz
-         kb9tB7zySzatgRSkOlSjTW8uULdx2OTJ0M0ZYf4Zzy/iWu2hWlm1viZMcnsEkIdJI55J
-         oIbg==
-X-Gm-Message-State: APjAAAWcaZ/E1IOoI9p3u/ag/EfANQPslt7Dc3BvpRdbV58lReGYaRqT
-        aie9ZWvZYKiBWwzwRdmT/BB+95+J1V2QIqmnfuX1wYmMaO9j
-X-Google-Smtp-Source: APXvYqyPxwE4xAz+WhN3dfZXCppVb0lL7NKPYBVn3COzs2MWVK0jgJS4T4arjDFDY7e+4G6g6DxZHZNUAnAn/hhS8aVRYB718/BZ
+        id S1726494AbfFWLem (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Jun 2019 07:34:42 -0400
+Received: from charlotte.tuxdriver.com ([70.61.120.58]:57496 "EHLO
+        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726350AbfFWLem (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jun 2019 07:34:42 -0400
+Received: from [107.15.85.130] (helo=localhost)
+        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
+        (Exim 4.63)
+        (envelope-from <nhorman@tuxdriver.com>)
+        id 1hf0lQ-0007zr-Cy; Sun, 23 Jun 2019 07:34:40 -0400
+Date:   Sun, 23 Jun 2019 07:34:22 -0400
+From:   Neil Horman <nhorman@tuxdriver.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Matteo Croce <mcroce@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v2 net] af_packet: Block execution of tasks waiting for
+ transmit to complete in AF_PACKET
+Message-ID: <20190623113422.GA10908@hmswarspite.think-freely.org>
+References: <20190619202533.4856-1-nhorman@tuxdriver.com>
+ <20190622174154.14473-1-nhorman@tuxdriver.com>
+ <CAF=yD-JC_r1vjitN1ccyvQ3DXiP9BNCwq9iiWU11cXznmhAY8Q@mail.gmail.com>
 MIME-Version: 1.0
-X-Received: by 2002:a6b:7a42:: with SMTP id k2mr29879531iop.214.1561286225444;
- Sun, 23 Jun 2019 03:37:05 -0700 (PDT)
-Date:   Sun, 23 Jun 2019 03:37:05 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000dc4531058bfb4605@google.com>
-Subject: KMSAN: uninit-value in gre_parse_header
-From:   syzbot <syzbot+f583ce3d4ddf9836b27a@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, glider@google.com, kuznet@ms2.inr.ac.ru,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, xeb@mail.ru,
-        yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAF=yD-JC_r1vjitN1ccyvQ3DXiP9BNCwq9iiWU11cXznmhAY8Q@mail.gmail.com>
+User-Agent: Mutt/1.11.3 (2019-02-01)
+X-Spam-Score: -2.9 (--)
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sat, Jun 22, 2019 at 10:12:46PM -0400, Willem de Bruijn wrote:
+> On Sat, Jun 22, 2019 at 1:42 PM Neil Horman <nhorman@tuxdriver.com> wrote:
+> >
+> > When an application is run that:
+> > a) Sets its scheduler to be SCHED_FIFO
+> > and
+> > b) Opens a memory mapped AF_PACKET socket, and sends frames with the
+> > MSG_DONTWAIT flag cleared, its possible for the application to hang
+> > forever in the kernel.  This occurs because when waiting, the code in
+> > tpacket_snd calls schedule, which under normal circumstances allows
+> > other tasks to run, including ksoftirqd, which in some cases is
+> > responsible for freeing the transmitted skb  (which in AF_PACKET calls a
+> > destructor that flips the status bit of the transmitted frame back to
+> > available, allowing the transmitting task to complete).
+> >
+> > However, when the calling application is SCHED_FIFO, its priority is
+> > such that the schedule call immediately places the task back on the cpu,
+> > preventing ksoftirqd from freeing the skb, which in turn prevents the
+> > transmitting task from detecting that the transmission is complete.
+> >
+> > We can fix this by converting the schedule call to a completion
+> > mechanism.  By using a completion queue, we force the calling task, when
+> > it detects there are no more frames to send, to schedule itself off the
+> > cpu until such time as the last transmitted skb is freed, allowing
+> > forward progress to be made.
+> >
+> > Tested by myself and the reporter, with good results
+> >
+> > Appies to the net tree
+> >
+> > Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
+> > Reported-by: Matteo Croce <mcroce@redhat.com>
+> > CC: "David S. Miller" <davem@davemloft.net>
+> > CC: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> >
+> > Change Notes:
+> >
+> > V1->V2:
+> >         Enhance the sleep logic to support being interruptible and
+> > allowing for honoring to SK_SNDTIMEO (Willem de Bruijn)
+> > ---
+> >  net/packet/af_packet.c | 60 ++++++++++++++++++++++++++++++++----------
+> >  net/packet/internal.h  |  2 ++
+> >  2 files changed, 48 insertions(+), 14 deletions(-)
+> >
+> > diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+> > index a29d66da7394..8ddb2f7aebb4 100644
+> > --- a/net/packet/af_packet.c
+> > +++ b/net/packet/af_packet.c
+> > @@ -358,7 +358,8 @@ static inline struct page * __pure pgv_to_page(void *addr)
+> >         return virt_to_page(addr);
+> >  }
+> >
+> > -static void __packet_set_status(struct packet_sock *po, void *frame, int status)
+> > +static void __packet_set_status(struct packet_sock *po, void *frame, int status,
+> > +                               bool call_complete)
+> >  {
+> >         union tpacket_uhdr h;
+> >
+> > @@ -381,6 +382,8 @@ static void __packet_set_status(struct packet_sock *po, void *frame, int status)
+> >                 BUG();
+> >         }
+> >
+> > +       if (po->wait_on_complete && call_complete)
+> > +               complete(&po->skb_completion);
+> 
+> This wake need not happen before the barrier. Only one caller of
+> __packet_set_status passes call_complete (tpacket_destruct_skb).
+> Moving this branch to the caller avoids a lot of code churn.
+> 
+Yeah, thats a fair point, I'll adjust that.
 
-syzbot found the following crash on:
-
-HEAD commit:    088c01ea kmsan: fix comment, NFC
-git tree:       kmsan
-console output: https://syzkaller.appspot.com/x/log.txt?x=15efc163200000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=68044283f8b8640d
-dashboard link: https://syzkaller.appspot.com/bug?extid=f583ce3d4ddf9836b27a
-compiler:       clang version 8.0.0 (trunk 350509)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10775ecd200000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1364b30f200000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+f583ce3d4ddf9836b27a@syzkaller.appspotmail.com
-
-IPv6: ADDRCONF(NETDEV_CHANGE): hsr_slave_1: link becomes ready
-IPv6: ADDRCONF(NETDEV_CHANGE): hsr0: link becomes ready
-8021q: adding VLAN 0 to HW filter on device batadv0
-raw_sendmsg: syz-executor949 forgot to set AF_INET. Fix it!
-==================================================================
-BUG: KMSAN: uninit-value in __arch_swab32  
-arch/x86/include/uapi/asm/swab.h:10 [inline]
-BUG: KMSAN: uninit-value in __fswab32 include/uapi/linux/swab.h:59 [inline]
-BUG: KMSAN: uninit-value in gre_parse_header+0x1396/0x1690  
-net/ipv4/gre_demux.c:136
-CPU: 1 PID: 10485 Comm: syz-executor949 Not tainted 5.1.0-rc2+ #21
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Call Trace:
-  <IRQ>
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x173/0x1d0 lib/dump_stack.c:113
-  kmsan_report+0x131/0x2a0 mm/kmsan/kmsan.c:624
-  __msan_warning+0x7a/0xf0 mm/kmsan/kmsan_instr.c:310
-  __arch_swab32 arch/x86/include/uapi/asm/swab.h:10 [inline]
-  __fswab32 include/uapi/linux/swab.h:59 [inline]
-  gre_parse_header+0x1396/0x1690 net/ipv4/gre_demux.c:136
-  gre_rcv+0x1c3/0x1800 net/ipv4/ip_gre.c:409
-  gre_rcv+0x2dd/0x3c0 net/ipv4/gre_demux.c:160
-  ip_protocol_deliver_rcu+0x584/0xbb0 net/ipv4/ip_input.c:208
-  ip_local_deliver_finish net/ipv4/ip_input.c:234 [inline]
-  NF_HOOK include/linux/netfilter.h:289 [inline]
-  ip_local_deliver+0x624/0x7b0 net/ipv4/ip_input.c:255
-  dst_input include/net/dst.h:450 [inline]
-  ip_rcv_finish net/ipv4/ip_input.c:414 [inline]
-  NF_HOOK include/linux/netfilter.h:289 [inline]
-  ip_rcv+0x6bd/0x740 net/ipv4/ip_input.c:524
-  __netif_receive_skb_one_core net/core/dev.c:4973 [inline]
-  __netif_receive_skb net/core/dev.c:5083 [inline]
-  process_backlog+0x756/0x10e0 net/core/dev.c:5923
-  napi_poll net/core/dev.c:6346 [inline]
-  net_rx_action+0x78b/0x1a60 net/core/dev.c:6412
-  __do_softirq+0x53f/0x93a kernel/softirq.c:294
-  do_softirq_own_stack+0x49/0x80 arch/x86/entry/entry_64.S:1039
-  </IRQ>
-  do_softirq kernel/softirq.c:339 [inline]
-  __local_bh_enable_ip+0x1a3/0x1f0 kernel/softirq.c:191
-  local_bh_enable+0x36/0x40 include/linux/bottom_half.h:32
-  rcu_read_unlock_bh include/linux/rcupdate.h:684 [inline]
-  ip_finish_output2+0x1721/0x1930 net/ipv4/ip_output.c:231
-  ip_finish_output+0xd2b/0xfd0 net/ipv4/ip_output.c:317
-  NF_HOOK_COND include/linux/netfilter.h:278 [inline]
-  ip_output+0x53f/0x610 net/ipv4/ip_output.c:405
-  dst_output include/net/dst.h:444 [inline]
-  ip_local_out net/ipv4/ip_output.c:124 [inline]
-  ip_send_skb net/ipv4/ip_output.c:1465 [inline]
-  ip_push_pending_frames+0x243/0x460 net/ipv4/ip_output.c:1485
-  raw_sendmsg+0x2e31/0x4650 net/ipv4/raw.c:676
-  inet_sendmsg+0x54a/0x720 net/ipv4/af_inet.c:798
-  sock_sendmsg_nosec net/socket.c:622 [inline]
-  sock_sendmsg net/socket.c:632 [inline]
-  ___sys_sendmsg+0xdb3/0x1220 net/socket.c:2137
-  __sys_sendmmsg+0x580/0xad0 net/socket.c:2232
-  __do_sys_sendmmsg net/socket.c:2261 [inline]
-  __se_sys_sendmmsg+0xbd/0xe0 net/socket.c:2258
-  __x64_sys_sendmmsg+0x56/0x70 net/socket.c:2258
-  do_syscall_64+0xbc/0xf0 arch/x86/entry/common.c:291
-  entry_SYSCALL_64_after_hwframe+0x63/0xe7
-RIP: 0033:0x441999
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7  
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 bb 10 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffd647de1c8 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000441999
-RDX: 0000000000000001 RSI: 00000000200006c0 RDI: 0000000000000004
-RBP: 00000000004a9030 R08: 0000000001bbbbbb R09: 0000000001bbbbbb
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000402ee0
-R13: 0000000000402f70 R14: 0000000000000000 R15: 0000000000000000
-
-Uninit was stored to memory at:
-  kmsan_save_stack_with_flags mm/kmsan/kmsan.c:205 [inline]
-  kmsan_save_stack mm/kmsan/kmsan.c:220 [inline]
-  kmsan_internal_chain_origin+0x134/0x230 mm/kmsan/kmsan.c:426
-  kmsan_memcpy_memmove_metadata+0xb5b/0xfe0 mm/kmsan/kmsan.c:304
-  kmsan_memcpy_metadata+0xb/0x10 mm/kmsan/kmsan.c:324
-  __msan_memcpy+0x58/0x70 mm/kmsan/kmsan_instr.c:139
-  pskb_expand_head+0x3aa/0x1a30 net/core/skbuff.c:1478
-  __skb_cow include/linux/skbuff.h:3029 [inline]
-  skb_cow_head include/linux/skbuff.h:3063 [inline]
-  ip_tunnel_xmit+0x2c4e/0x3310 net/ipv4/ip_tunnel.c:824
-  __gre_xmit net/ipv4/ip_gre.c:444 [inline]
-  erspan_xmit+0x1f5e/0x3640 net/ipv4/ip_gre.c:679
-  __netdev_start_xmit include/linux/netdevice.h:4411 [inline]
-  netdev_start_xmit include/linux/netdevice.h:4420 [inline]
-  xmit_one net/core/dev.c:3278 [inline]
-  dev_hard_start_xmit+0x604/0xc40 net/core/dev.c:3294
-  sch_direct_xmit+0x58a/0x880 net/sched/sch_generic.c:327
-  qdisc_restart net/sched/sch_generic.c:390 [inline]
-  __qdisc_run+0x1cd7/0x34b0 net/sched/sch_generic.c:398
-  qdisc_run include/net/pkt_sched.h:121 [inline]
-  __dev_xmit_skb net/core/dev.c:3473 [inline]
-  __dev_queue_xmit+0x1e51/0x3ce0 net/core/dev.c:3832
-  dev_queue_xmit+0x4b/0x60 net/core/dev.c:3897
-  neigh_resolve_output+0xab7/0xb40 net/core/neighbour.c:1487
-  neigh_output include/net/neighbour.h:508 [inline]
-  ip_finish_output2+0x1709/0x1930 net/ipv4/ip_output.c:229
-  ip_finish_output+0xd2b/0xfd0 net/ipv4/ip_output.c:317
-  NF_HOOK_COND include/linux/netfilter.h:278 [inline]
-  ip_output+0x53f/0x610 net/ipv4/ip_output.c:405
-  dst_output include/net/dst.h:444 [inline]
-  ip_local_out net/ipv4/ip_output.c:124 [inline]
-  ip_send_skb net/ipv4/ip_output.c:1465 [inline]
-  ip_push_pending_frames+0x243/0x460 net/ipv4/ip_output.c:1485
-  raw_sendmsg+0x2e31/0x4650 net/ipv4/raw.c:676
-  inet_sendmsg+0x54a/0x720 net/ipv4/af_inet.c:798
-  sock_sendmsg_nosec net/socket.c:622 [inline]
-  sock_sendmsg net/socket.c:632 [inline]
-  ___sys_sendmsg+0xdb3/0x1220 net/socket.c:2137
-  __sys_sendmmsg+0x580/0xad0 net/socket.c:2232
-  __do_sys_sendmmsg net/socket.c:2261 [inline]
-  __se_sys_sendmmsg+0xbd/0xe0 net/socket.c:2258
-  __x64_sys_sendmmsg+0x56/0x70 net/socket.c:2258
-  do_syscall_64+0xbc/0xf0 arch/x86/entry/common.c:291
-  entry_SYSCALL_64_after_hwframe+0x63/0xe7
-
-Uninit was created at:
-  kmsan_save_stack_with_flags mm/kmsan/kmsan.c:205 [inline]
-  kmsan_internal_poison_shadow+0x92/0x150 mm/kmsan/kmsan.c:159
-  kmsan_kmalloc+0xa9/0x130 mm/kmsan/kmsan_hooks.c:173
-  kmsan_slab_alloc+0xe/0x10 mm/kmsan/kmsan_hooks.c:182
-  slab_post_alloc_hook mm/slab.h:441 [inline]
-  slab_alloc_node mm/slub.c:2771 [inline]
-  __kmalloc_node_track_caller+0xead/0x1000 mm/slub.c:4396
-  __kmalloc_reserve net/core/skbuff.c:140 [inline]
-  __alloc_skb+0x309/0xa20 net/core/skbuff.c:208
-  alloc_skb include/linux/skbuff.h:1059 [inline]
-  __ip_append_data+0x3671/0x5000 net/ipv4/ip_output.c:1005
-  ip_append_data+0x324/0x480 net/ipv4/ip_output.c:1220
-  raw_sendmsg+0x2d2a/0x4650 net/ipv4/raw.c:670
-  inet_sendmsg+0x54a/0x720 net/ipv4/af_inet.c:798
-  sock_sendmsg_nosec net/socket.c:622 [inline]
-  sock_sendmsg net/socket.c:632 [inline]
-  ___sys_sendmsg+0xdb3/0x1220 net/socket.c:2137
-  __sys_sendmmsg+0x580/0xad0 net/socket.c:2232
-  __do_sys_sendmmsg net/socket.c:2261 [inline]
-  __se_sys_sendmmsg+0xbd/0xe0 net/socket.c:2258
-  __x64_sys_sendmmsg+0x56/0x70 net/socket.c:2258
-  do_syscall_64+0xbc/0xf0 arch/x86/entry/common.c:291
-  entry_SYSCALL_64_after_hwframe+0x63/0xe7
-==================================================================
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+> Also, multiple packets may be released before the process is awoken.
+> The process will block until packet_read_pending drops to zero. Can
+> defer the wait_on_complete to that one instance.
+> 
+Also true, we can gate the complete call on wait_on_complete and
+pack_read_pending(...) == 0
+> >         smp_wmb();
+> >  }
+> >
+> > @@ -1148,6 +1151,14 @@ static void *packet_previous_frame(struct packet_sock *po,
+> >         return packet_lookup_frame(po, rb, previous, status);
+> >  }
+> >
+> > +static void *packet_next_frame(struct packet_sock *po,
+> > +               struct packet_ring_buffer *rb,
+> > +               int status)
+> > +{
+> > +       unsigned int next = rb->head != rb->frame_max ? rb->head+1 : 0;
+> > +       return packet_lookup_frame(po, rb, next, status);
+> > +}
+> > +
+> >  static void packet_increment_head(struct packet_ring_buffer *buff)
+> >  {
+> >         buff->head = buff->head != buff->frame_max ? buff->head+1 : 0;
+> > @@ -2360,7 +2371,7 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
+> >  #endif
+> >
+> >         if (po->tp_version <= TPACKET_V2) {
+> > -               __packet_set_status(po, h.raw, status);
+> > +               __packet_set_status(po, h.raw, status, false);
+> >                 sk->sk_data_ready(sk);
+> >         } else {
+> >                 prb_clear_blk_fill_status(&po->rx_ring);
+> > @@ -2400,7 +2411,7 @@ static void tpacket_destruct_skb(struct sk_buff *skb)
+> >                 packet_dec_pending(&po->tx_ring);
+> >
+> >                 ts = __packet_set_timestamp(po, ph, skb);
+> > -               __packet_set_status(po, ph, TP_STATUS_AVAILABLE | ts);
+> > +               __packet_set_status(po, ph, TP_STATUS_AVAILABLE | ts, true);
+> >         }
+> >
+> >         sock_wfree(skb);
+> > @@ -2585,13 +2596,13 @@ static int tpacket_parse_header(struct packet_sock *po, void *frame,
+> >
+> >  static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+> >  {
+> > -       struct sk_buff *skb;
+> > +       struct sk_buff *skb = NULL;
+> >         struct net_device *dev;
+> >         struct virtio_net_hdr *vnet_hdr = NULL;
+> >         struct sockcm_cookie sockc;
+> >         __be16 proto;
+> >         int err, reserve = 0;
+> > -       void *ph;
+> > +       void *ph = NULL;
+> >         DECLARE_SOCKADDR(struct sockaddr_ll *, saddr, msg->msg_name);
+> >         bool need_wait = !(msg->msg_flags & MSG_DONTWAIT);
+> >         unsigned char *addr = NULL;
+> > @@ -2600,9 +2611,12 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+> >         int len_sum = 0;
+> >         int status = TP_STATUS_AVAILABLE;
+> >         int hlen, tlen, copylen = 0;
+> > +       long timeo;
+> >
+> >         mutex_lock(&po->pg_vec_lock);
+> >
+> > +       timeo = sock_sndtimeo(&po->sk, msg->msg_flags & MSG_DONTWAIT);
+> > +
+> >         if (likely(saddr == NULL)) {
+> >                 dev     = packet_cached_dev_get(po);
+> >                 proto   = po->num;
+> > @@ -2647,16 +2661,29 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+> >                 size_max = dev->mtu + reserve + VLAN_HLEN;
+> >
+> >         do {
+> > +
+> > +               if (po->wait_on_complete && need_wait) {
+> > +                       timeo = wait_for_completion_interruptible_timeout(&po->skb_completion, timeo);
+> 
+> Why move the sleeping location from where it was with schedule()?
+> Without that change, ph and skb are both guaranteed to be NULL after
+> packet_current_frame, so can jump to out_put and avoid adding branches
+> at out_status. And no need for packet_next_frame.
+> 
+> Just replace schedule with a sleeping function in place (removing the
+> then obsolete need_resched call).
+> 
+> That is a much shorter patch and easier to compare for correctness
+> with the current code.
+> 
+> minor: probably preferable to first check local variable need_wait
+> before reading a struct member.
+> 
+> > +                       po->wait_on_complete = 0;
+> > +                       if (!timeo) {
+> > +                               /* We timed out, break out and notify userspace */
+> > +                               err = -ETIMEDOUT;
+> > +                               goto out_status;
+> > +                       } else if (timeo == -ERESTARTSYS) {
+> > +                               err = -ERESTARTSYS;
+> > +                               goto out_status;
+> > +                       }
+> > +               }
+> > +
+> >                 ph = packet_current_frame(po, &po->tx_ring,
+> >                                           TP_STATUS_SEND_REQUEST);
+> > -               if (unlikely(ph == NULL)) {
+> > -                       if (need_wait && need_resched())
+> > -                               schedule();
+> > -                       continue;
+> > -               }
+> > +
+> > +               if (likely(ph == NULL))
+> 
+> why switch from unlikely to likely?
+> 
+> > +                       break;
+> >
+> >                 skb = NULL;
+> >                 tp_len = tpacket_parse_header(po, ph, size_max, &data);
+> > +
+> 
+> nit: irrelevant
+> 
+> >                 if (tp_len < 0)
+> >                         goto tpacket_error;
+> >
+> > @@ -2699,7 +2726,7 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+> >  tpacket_error:
+> >                         if (po->tp_loss) {
+> >                                 __packet_set_status(po, ph,
+> > -                                               TP_STATUS_AVAILABLE);
+> > +                                               TP_STATUS_AVAILABLE, false);
+> >                                 packet_increment_head(&po->tx_ring);
+> >                                 kfree_skb(skb);
+> >                                 continue;
+> > @@ -2719,7 +2746,9 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+> >                 }
+> >
+> >                 skb->destructor = tpacket_destruct_skb;
+> > -               __packet_set_status(po, ph, TP_STATUS_SENDING);
+> > +               __packet_set_status(po, ph, TP_STATUS_SENDING, false);
+> > +               if (!packet_next_frame(po, &po->tx_ring, TP_STATUS_SEND_REQUEST))
+> > +                       po->wait_on_complete = 1;
+> >                 packet_inc_pending(&po->tx_ring);
+> >
+> >                 status = TP_STATUS_SEND_REQUEST;
+> > @@ -2753,8 +2782,10 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+> >         goto out_put;
+> >
+> >  out_status:
+> > -       __packet_set_status(po, ph, status);
+> > -       kfree_skb(skb);
+> > +       if (ph)
+> > +               __packet_set_status(po, ph, status, false);
+> > +       if (skb)
+> > +               kfree_skb(skb);
+> >  out_put:
+> >         dev_put(dev);
+> >  out:
+> > @@ -3207,6 +3238,7 @@ static int packet_create(struct net *net, struct socket *sock, int protocol,
+> >         sock_init_data(sock, sk);
+> >
+> >         po = pkt_sk(sk);
+> > +       init_completion(&po->skb_completion);
+> >         sk->sk_family = PF_PACKET;
+> >         po->num = proto;
+> >         po->xmit = dev_queue_xmit;
+> > diff --git a/net/packet/internal.h b/net/packet/internal.h
+> > index 3bb7c5fb3bff..bbb4be2c18e7 100644
+> > --- a/net/packet/internal.h
+> > +++ b/net/packet/internal.h
+> > @@ -128,6 +128,8 @@ struct packet_sock {
+> >         unsigned int            tp_hdrlen;
+> >         unsigned int            tp_reserve;
+> >         unsigned int            tp_tstamp;
+> > +       struct completion       skb_completion;
+> > +       unsigned int            wait_on_complete;
+> 
+> Probably belong in packet_ring_buffer. Near pending_refcnt as touched
+> in the same code. And because protected by the ring buffer mutex.
+> 
+> 
+> 
+> >         struct net_device __rcu *cached_dev;
+> >         int                     (*xmit)(struct sk_buff *skb);
+> >         struct packet_type      prot_hook ____cacheline_aligned_in_smp;
+> > --
+> > 2.20.1
+> >
+> 
