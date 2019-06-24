@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 016335107C
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 17:30:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E448351088
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 17:31:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729909AbfFXPag (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 11:30:36 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:34143 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726708AbfFXPag (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 11:30:36 -0400
-Received: by mail-qt1-f195.google.com with SMTP id m29so14957485qtu.1;
-        Mon, 24 Jun 2019 08:30:35 -0700 (PDT)
+        id S1730713AbfFXPbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 11:31:31 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:46684 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726708AbfFXPbb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 11:31:31 -0400
+Received: by mail-qk1-f193.google.com with SMTP id x18so10020782qkn.13;
+        Mon, 24 Jun 2019 08:31:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uO8h/FxgnyTvba83hS63h/+pbp5njycXsHdBYpaJQgs=;
-        b=UFWodPqbRC0KE4NdEPT2o5CQbkgCC6WBymgDEu9V9GQDx+RWoTMYGK7P2raA/2UOTf
-         2au5U+iZbdNsJ7PTA71aH0ktHjurCYLlRLQGD8cqILGlF1e69nGWG2UF8XKXJiLGgQkx
-         PA1zFx1+6TqBhBbjk3jp0MFMOebBL7E9mu+K7206BFortLXYR1UePiM2Dut6Unbe0Wl5
-         SRlmt1105IrDdraYxaGEW9x5Ew/kEZ36u3+/IOTE40dEPQt5DTdeHOMi0vIcKX0u5nOK
-         Qybk2WjK37Ro18y2vIQLotaVrE5sUnHaDEQmFlfyW1UBHmXX5xOQcHxr62UGOd5cGDlv
-         /Cew==
+         :cc:content-transfer-encoding;
+        bh=rw7Ix2QAqLxTiUw5AmV1AKBnYuLcc6WLLs23EmfkFCk=;
+        b=WD8QA4tGbiHfidk/A4VQDka4j6W/lOjOh+MlD1a+QSUpY6l3wk6XAnmOij3UFXbR4/
+         FR5NFLouGvkeC1aNGg21mKhYWJitJuI9TcvHfoseeqadTk2YAiwdvoMab7NNtNbSX98v
+         OvmUQ2O9m63lcHXCyJjUyxiVVp4hUWG+uQa2vQt8a1gS2yy58T170jCPrAnocOzgxVWI
+         axtDjwPwGbHYQ8PPdw/jffxGytlmV9alC8ARNeTbkKrkG98GoDWZEk+qURvWfit7zp8+
+         Vp9HQ4OM8zw7bFU9Y6geUIUcNP/nK7JCmewKnO9DAzwqG9ampk9kORFJX88D/tiTXmMQ
+         MQ0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uO8h/FxgnyTvba83hS63h/+pbp5njycXsHdBYpaJQgs=;
-        b=RmmKdzsCMwYxbs6/1voigWy3gXEUY4qEH4RSuMy0G8TrKoHPsxV66LIjw/X7JhDlqa
-         WFdecF7uhFIZ3blceEH5Mu8XrZlvq1qmv0GGT12PDHOOvP3/D+yx7AlIeOQWukzhTl6p
-         e+41eYgWoG4P2NL2NEnD9q7bx0ZRVMb5SFDSj5YcvrE02G58W0dcYMTAGc605DNt0wbX
-         7qw/DUQOOhtQbr/C/u5eExb9mvLIsVLXXrX9R2Awb7z+QkwwHqJWodUhJAlq6xVc/sjo
-         SYWm9FmxAy9HWXzzdEaM/e2kPDL30e7PtMsU2Es2Ie3qlxAlqLWE/wjzwQ78DfUWnSDx
-         26Cg==
-X-Gm-Message-State: APjAAAWBNicLWloV6in9aKp+6GTmuEU9hEj+AZEjByNJf7Dcdql2Y9Gs
-        Fue/wCb7+kLrtUpYVQP8TMiBb4wCKHX7Z6gGEkw=
-X-Google-Smtp-Source: APXvYqzlSrEM2D9kNi0B0f4/2yLu29pfkiVe7Zz9poO72Tdgi2OEa1K9LrFdv8akj1yfUQGMnSFA6gKbzyJuR30WaZ0=
-X-Received: by 2002:ac8:2f07:: with SMTP id j7mr118883469qta.359.1561390234918;
- Mon, 24 Jun 2019 08:30:34 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=rw7Ix2QAqLxTiUw5AmV1AKBnYuLcc6WLLs23EmfkFCk=;
+        b=YvDPUsNgFgOjOltEM2pK7MUmf41s9HEzavDQYKodMUnDYdtLnQWeD6IvO1G5KSnPlZ
+         fVbvSsRe81zwj1rnkDUadgRaHK1ONkhPSZOTBEl/5ABQi31tW7b0NbPUlKm3xetQiZDe
+         wjLOpVqvYZPDFkAJZiyST0wF+ugcmQMxqC1i7N63FJYHSLUP7XDlAim0LhHMTdWfaUHV
+         1G4fiRXRrRxcP5EGYXNN5S9MU7BSzVJg7QxWHvNRGtZlfqlN95Yga8Yd1Ju4EZq2Sj3d
+         XI66IwoAnM36Xj1jWGUjSfPlkHFGgJX91b76VgLcQ0yNQr4ysYC52GRNw4l5c6VNgG60
+         JLUw==
+X-Gm-Message-State: APjAAAVdEvuFq72WgUk8IOWkk3xxOPk2w+rEtnojcAeOFKv2V1+8UOaD
+        jAVdzvZBzg9ql9rvu64jug1w9tQ8wHO0rJwcBSg=
+X-Google-Smtp-Source: APXvYqx4V4RU9M+lFiMybe2PmHblR9vuN7NRlzY0nhX947XJwvuX07AHd6CaqhhB02e2GXNZE59rumVxnW+sjlR+MBw=
+X-Received: by 2002:a37:9e4b:: with SMTP id h72mr120267915qke.297.1561390290029;
+ Mon, 24 Jun 2019 08:31:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190620090958.2135-1-kevin.laatz@intel.com> <20190620090958.2135-8-kevin.laatz@intel.com>
-In-Reply-To: <20190620090958.2135-8-kevin.laatz@intel.com>
+References: <20190620090958.2135-1-kevin.laatz@intel.com> <20190620090958.2135-9-kevin.laatz@intel.com>
+In-Reply-To: <20190620090958.2135-9-kevin.laatz@intel.com>
 From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Mon, 24 Jun 2019 17:30:24 +0200
-Message-ID: <CAJ+HfNjzXpOQPjPS4Pg6iAmOG=2H=nku-1Rt8YXN5oZf06Uefw@mail.gmail.com>
-Subject: Re: [PATCH 07/11] libbpf: add flags to umem config
+Date:   Mon, 24 Jun 2019 17:31:19 +0200
+Message-ID: <CAJ+HfNi=QtGEGq=4PaxEMUrBxsSg8JsJcQHik_8WGVdAawJHKA@mail.gmail.com>
+Subject: Re: [PATCH 08/11] samples/bpf: add unaligned chunks mode support to xdpsock
 To:     Kevin Laatz <kevin.laatz@intel.com>
 Cc:     Netdev <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -58,103 +58,114 @@ Cc:     Netdev <netdev@vger.kernel.org>,
         Bruce Richardson <bruce.richardson@intel.com>,
         ciara.loftus@intel.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 20 Jun 2019 at 19:26, Kevin Laatz <kevin.laatz@intel.com> wrote:
+On Thu, 20 Jun 2019 at 19:25, Kevin Laatz <kevin.laatz@intel.com> wrote:
 >
-> This patch adds a 'flags' field to the umem_config and umem_reg structs.
-> This will allow for more options to be added for configuring umems.
+> This patch adds support for the unaligned chunks mode. The addition of th=
+e
+> unaligned chunks option will allow users to run the application with more
+> relaxed chunk placement in the XDP umem.
 >
-> The first use for the flags field is to add a flag for unaligned chunks
-> mode. These flags can either be user-provided or filled with a default.
+> Unaligned chunks mode can be used with the '-u' or '--unaligned' command
+> line options.
 >
 > Signed-off-by: Kevin Laatz <kevin.laatz@intel.com>
 > Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
+
+Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+
 > ---
->  tools/include/uapi/linux/if_xdp.h | 4 ++++
->  tools/lib/bpf/xsk.c               | 7 +++++++
->  tools/lib/bpf/xsk.h               | 2 ++
->  3 files changed, 13 insertions(+)
+>  samples/bpf/xdpsock_user.c | 20 ++++++++++++++++++--
+>  1 file changed, 18 insertions(+), 2 deletions(-)
 >
-> diff --git a/tools/include/uapi/linux/if_xdp.h b/tools/include/uapi/linux/if_xdp.h
-> index caed8b1614ff..8548f2110a77 100644
-> --- a/tools/include/uapi/linux/if_xdp.h
-> +++ b/tools/include/uapi/linux/if_xdp.h
-> @@ -17,6 +17,9 @@
->  #define XDP_COPY       (1 << 1) /* Force copy-mode */
->  #define XDP_ZEROCOPY   (1 << 2) /* Force zero-copy mode */
+> diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
+> index d08ee1ab7bb4..e26f43382d01 100644
+> --- a/samples/bpf/xdpsock_user.c
+> +++ b/samples/bpf/xdpsock_user.c
+> @@ -67,6 +67,8 @@ static int opt_ifindex;
+>  static int opt_queue;
+>  static int opt_poll;
+>  static int opt_interval =3D 1;
+> +static u32 opt_umem_flags;
+> +static int opt_unaligned_chunks;
+>  static u32 opt_xdp_bind_flags;
+>  static __u32 prog_id;
 >
-> +/* Flags for xsk_umem_config flags */
-> +#define XDP_UMEM_UNALIGNED_CHUNKS (1 << 0)
+> @@ -276,14 +278,21 @@ static size_t gen_eth_frame(struct xsk_umem_info *u=
+mem, u64 addr)
+>  static struct xsk_umem_info *xsk_configure_umem(void *buffer, u64 size)
+>  {
+>         struct xsk_umem_info *umem;
+> +       struct xsk_umem_config umem_cfg;
+>         int ret;
+>
+>         umem =3D calloc(1, sizeof(*umem));
+>         if (!umem)
+>                 exit_with_error(errno);
+>
+> +       umem_cfg.fill_size =3D XSK_RING_PROD__DEFAULT_NUM_DESCS;
+> +       umem_cfg.comp_size =3D XSK_RING_CONS__DEFAULT_NUM_DESCS;
+> +       umem_cfg.frame_size =3D XSK_UMEM__DEFAULT_FRAME_SIZE;
+> +       umem_cfg.frame_headroom =3D XSK_UMEM__DEFAULT_FRAME_HEADROOM;
+> +       umem_cfg.flags =3D opt_umem_flags;
 > +
->  struct sockaddr_xdp {
->         __u16 sxdp_family;
->         __u16 sxdp_flags;
-> @@ -52,6 +55,7 @@ struct xdp_umem_reg {
->         __u64 len; /* Length of packet data area */
->         __u32 chunk_size;
->         __u32 headroom;
-> +       __u32 flags;
+>         ret =3D xsk_umem__create(&umem->umem, buffer, size, &umem->fq, &u=
+mem->cq,
+> -                              NULL);
+> +                              &umem_cfg);
+>         if (ret)
+>                 exit_with_error(-ret);
+>
+> @@ -346,6 +355,7 @@ static struct option long_options[] =3D {
+>         {"interval", required_argument, 0, 'n'},
+>         {"zero-copy", no_argument, 0, 'z'},
+>         {"copy", no_argument, 0, 'c'},
+> +       {"unaligned", no_argument, 0, 'u'},
+>         {0, 0, 0, 0}
 >  };
 >
->  struct xdp_statistics {
-> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-> index 7ef6293b4fd7..df4207d4ff4a 100644
-> --- a/tools/lib/bpf/xsk.c
-> +++ b/tools/lib/bpf/xsk.c
-> @@ -115,6 +115,7 @@ static void xsk_set_umem_config(struct xsk_umem_config *cfg,
->                 cfg->comp_size = XSK_RING_CONS__DEFAULT_NUM_DESCS;
->                 cfg->frame_size = XSK_UMEM__DEFAULT_FRAME_SIZE;
->                 cfg->frame_headroom = XSK_UMEM__DEFAULT_FRAME_HEADROOM;
-> +               cfg->flags = XSK_UMEM__DEFAULT_FLAGS;
->                 return;
->         }
+> @@ -365,6 +375,7 @@ static void usage(const char *prog)
+>                 "  -n, --interval=3Dn     Specify statistics update inter=
+val (default 1 sec).\n"
+>                 "  -z, --zero-copy      Force zero-copy mode.\n"
+>                 "  -c, --copy           Force copy mode.\n"
+> +               "  -u, --unaligned      Enable unaligned chunk placement\=
+n"
+>                 "\n";
+>         fprintf(stderr, str, prog);
+>         exit(EXIT_FAILURE);
+> @@ -377,7 +388,7 @@ static void parse_command_line(int argc, char **argv)
+>         opterr =3D 0;
 >
-> @@ -122,6 +123,7 @@ static void xsk_set_umem_config(struct xsk_umem_config *cfg,
->         cfg->comp_size = usr_cfg->comp_size;
->         cfg->frame_size = usr_cfg->frame_size;
->         cfg->frame_headroom = usr_cfg->frame_headroom;
-> +       cfg->flags = usr_cfg->flags;
->  }
->
->  static int xsk_set_xdp_socket_config(struct xsk_socket_config *cfg,
-> @@ -181,6 +183,11 @@ int xsk_umem__create(struct xsk_umem **umem_ptr, void *umem_area, __u64 size,
->         mr.len = size;
->         mr.chunk_size = umem->config.frame_size;
->         mr.headroom = umem->config.frame_headroom;
-> +       mr.flags = umem->config.flags;
+>         for (;;) {
+> -               c =3D getopt_long(argc, argv, "Frtli:q:psSNn:cz", long_op=
+tions,
+> +               c =3D getopt_long(argc, argv, "Frtli:q:psSNn:czu", long_o=
+ptions,
+>                                 &option_index);
+>                 if (c =3D=3D -1)
+>                         break;
+> @@ -417,9 +428,14 @@ static void parse_command_line(int argc, char **argv=
+)
+>                 case 'c':
+>                         opt_xdp_bind_flags |=3D XDP_COPY;
+>                         break;
+> +               case 'u':
+> +                       opt_umem_flags |=3D XDP_UMEM_UNALIGNED_CHUNKS;
+> +                       opt_unaligned_chunks =3D 1;
+> +                       break;
+>                 case 'F':
+>                         opt_xdp_flags &=3D ~XDP_FLAGS_UPDATE_IF_NOEXIST;
+>                         break;
 > +
-> +       /* Headroom must be 0 for unaligned chunks */
-> +       if ((mr.flags & XDP_UMEM_UNALIGNED_CHUNKS) && mr.headroom != 0)
-> +               return -EINVAL;
-
-Ah. :-) I'd prefer that this is done in the bind syscall.
-
->
->         err = setsockopt(umem->fd, SOL_XDP, XDP_UMEM_REG, &mr, sizeof(mr));
->         if (err) {
-> diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
-> index 82ea71a0f3ec..8d393873b70f 100644
-> --- a/tools/lib/bpf/xsk.h
-> +++ b/tools/lib/bpf/xsk.h
-> @@ -170,12 +170,14 @@ LIBBPF_API int xsk_socket__fd(const struct xsk_socket *xsk);
->  #define XSK_UMEM__DEFAULT_FRAME_SHIFT    11 /* 2048 bytes */
->  #define XSK_UMEM__DEFAULT_FRAME_SIZE     (1 << XSK_UMEM__DEFAULT_FRAME_SHIFT)
->  #define XSK_UMEM__DEFAULT_FRAME_HEADROOM 0
-> +#define XSK_UMEM__DEFAULT_FLAGS 0
->
->  struct xsk_umem_config {
->         __u32 fill_size;
->         __u32 comp_size;
->         __u32 frame_size;
->         __u32 frame_headroom;
-> +       __u32 flags;
->  };
->
->  /* Flags for the libbpf_flags field. */
+>                 default:
+>                         usage(basename(argv[0]));
+>                 }
 > --
 > 2.17.1
 >
