@@ -2,139 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0D8551E08
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 00:14:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6567651E0B
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 00:16:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727136AbfFXWOu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 18:14:50 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:41933 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726393AbfFXWOt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 18:14:49 -0400
-Received: by mail-ed1-f66.google.com with SMTP id p15so23902504eds.8
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 15:14:48 -0700 (PDT)
+        id S1727170AbfFXWQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 18:16:09 -0400
+Received: from mail-ed1-f43.google.com ([209.85.208.43]:33547 "EHLO
+        mail-ed1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725916AbfFXWQJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 18:16:09 -0400
+Received: by mail-ed1-f43.google.com with SMTP id i11so23987081edq.0
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 15:16:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=x4+rpoOW+R7APWuWBhJuh8MoLkBsDMPtItA5+c/ZNQM=;
-        b=jRQPWvbeZChpGDYQX0iJlY0obaitrU/+I3Yrl3PWgPwXioPDUQEMO0uEhViH9cdqm5
-         Ko0neGIOe7NDuEnNd2sWyTqxbNEWUth9UnPx73U49rQB8aSmE4BXaTxDHjnGtEhsN5z7
-         GwhFLxVg9NnCfdadEjs3kYDVHjYPaUre5vUjFPgB/W2uVrUjooEQ4ywCh1ww4nm5e2T5
-         g8f+Xi7+RkI1NkKrKJrWydVCmYos3MCVvV6VgFyimCBpgPCSaXROKYdlt9BLyWtsb9SR
-         lXB9XT9gA7l9lVvWMneapaWix54Y8TaYzfNn04fwt4nGPfxGUQ0qHZA3fcED4WjCkQGv
-         cKeg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yETplX9a9S6QCDUlAtzRBGEPw40CZOE8ZJJ8RviXy6Q=;
+        b=p7kUsjpPPHX40hKDJ1GFskRe9VKYTkpb5x2DsnWM59fefoOlhoOkowNLQbHgi33+vd
+         abPs/+C/LdL0N/j9H7yDy4fjq43l6otsGlPv6Ufair5wBtujmPDvw8ve81ndEfbZKpkq
+         o3LZiyDQjL1QNN9nCRkA7/3IYcyx2eoVg1ZpEGgyDeoJjVd/3zyFtjQ3PWpTdZ7UoYhx
+         f9AYn2XQrsiCubE5lkcNlf8J71WorLaz0mnGfFkvdZhzBjKxyTvYuvW4K42vZRv+r4s+
+         62/ReCf71IWoZqYZ9d/VDp4qDpuLC6Hitq1qYQINghcG99oUQx+MUcIWncDnloVUdC8f
+         V/Jw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=x4+rpoOW+R7APWuWBhJuh8MoLkBsDMPtItA5+c/ZNQM=;
-        b=aT1Oa4yXHukfCPJGCbLywO1SAnu28P57z8ZQYPyQ5+MGTL2Gd02P3x9mNBNzeDQ46n
-         AHOYEQhao+OgR9d3c9W3grLNulxJrGoK+CUj5Cph/LQmacgXkwHaNMvogc6758VtI9fl
-         KnGVZgdIkdh5y2vXMCfa41x+2p9SH1eQ60T6+iP62hSlX2WItQARiQmUrlzhiYAbzZCg
-         5SoglB4N9muFaLQsf9RlDTkDegxmieB8lxPZWzvGVCiQqN3Z5zc1lSJOyOxeNpNb/QPf
-         /wbpuWgSxtKBH5l7JTPKUFPmL9UusCOMdud8wN6xxF3cUl7jaqmLbQs/Rjskkn0Gr+x5
-         0+EQ==
-X-Gm-Message-State: APjAAAVRRNXSKvUs60G+hvly4MpcSpBE/++2Dl1HLxHdxbaK09tAIVnv
-        1CCuViyVcD+YFlAI4jNG4QuWpUxxtjI=
-X-Google-Smtp-Source: APXvYqw01kfQ5boAJrUuPPL0ncL52Iu38rwrUhWz+cQFv3lFvCkOY3rd7cCRVnAekNRtu80pIXNiOw==
-X-Received: by 2002:a17:906:6055:: with SMTP id p21mr58545489ejj.35.1561414487785;
-        Mon, 24 Jun 2019 15:14:47 -0700 (PDT)
-Received: from jhurley-Precision-Tower-3420.netronome.com ([80.76.204.157])
-        by smtp.gmail.com with ESMTPSA id y3sm4046025edr.27.2019.06.24.15.14.46
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Mon, 24 Jun 2019 15:14:47 -0700 (PDT)
-From:   John Hurley <john.hurley@netronome.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, fw@strlen.de, jhs@mojatatu.com,
-        simon.horman@netronome.com, jakub.kicinski@netronome.com,
-        oss-drivers@netronome.com, John Hurley <john.hurley@netronome.com>
-Subject: [PATCH net-next 2/2] net: sched: protect against stack overflow in TC act_mirred
-Date:   Mon, 24 Jun 2019 23:13:36 +0100
-Message-Id: <1561414416-29732-3-git-send-email-john.hurley@netronome.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1561414416-29732-1-git-send-email-john.hurley@netronome.com>
-References: <1561414416-29732-1-git-send-email-john.hurley@netronome.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yETplX9a9S6QCDUlAtzRBGEPw40CZOE8ZJJ8RviXy6Q=;
+        b=jvWJqsDfhBUkG/hqMwfgEey3UxevqIiZspAuP1o/yPUDncsQqKqKB7qQb1To2O0vHK
+         z41/rQITHQi3IVRf2dQeeueIe956qMQFWBk85c8vGZQBIiTyjYG0ErC8CYAVNDdsBI8y
+         c6qPq4ERNMwqd4ZsQxxVGZSuQo1j3B0U2Fh+lHo7Wc5by+r4tp82R4lrSTRUYpPYKZSl
+         RYhy+rmFcvUjUBKwbTG0glIIRGyJC8+ePI/q2KS+Kzl+f9BxiqPHz8o5htrfzN+GvQ7I
+         6QsI1d4lPLyJRIrPxquPfXHJWOYHNQj6GgAmjnfE7Lmd84N+bJM0goCqaqgbZt5lNEbf
+         SYlg==
+X-Gm-Message-State: APjAAAVk+2or1xSIlpAUV3U3sIokU7U/xU9/d3i7PfdA4w101FHuHg+T
+        t2XqJbZ/5vhF14el6CbDw6gfNuCSD8tGm4Eksyc=
+X-Google-Smtp-Source: APXvYqxSgaWEnLbTUdEasWNC1mKJbK8Q5xozxiDLy9s+4WUiCBtavAClLzntecwpN8cS263YYUQYdu10G5Wslr0ilio=
+X-Received: by 2002:aa7:d30b:: with SMTP id p11mr128627200edq.23.1561414567087;
+ Mon, 24 Jun 2019 15:16:07 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190619202533.4856-1-nhorman@tuxdriver.com> <20190624004604.25607-1-nhorman@tuxdriver.com>
+ <CAF=yD-JE9DEbmh6hJEN=DEdc+SCz_5Lv74mngPBuv=4nNH=zxQ@mail.gmail.com> <20190624215142.GA8181@hmswarspite.think-freely.org>
+In-Reply-To: <20190624215142.GA8181@hmswarspite.think-freely.org>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 24 Jun 2019 18:15:29 -0400
+Message-ID: <CAF=yD-L2dgypSCTDwdEXa7EUYyWTcD_hLwW_kuUkk0tA_iggDw@mail.gmail.com>
+Subject: Re: [PATCH v3 net] af_packet: Block execution of tasks waiting for
+ transmit to complete in AF_PACKET
+To:     Neil Horman <nhorman@tuxdriver.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Matteo Croce <mcroce@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TC hooks allow the application of filters and actions to packets at both
-ingress and egress of the network stack. It is possible, with poor
-configuration, that this can produce loops whereby an ingress hook calls
-a mirred egress action that has an egress hook that redirects back to
-the first ingress etc. The TC core classifier protects against loops when
-doing reclassifies but there is no protection against a packet looping
-between multiple hooks and recursively calling act_mirred. This can lead
-to stack overflow panics.
+> > > +               if (need_wait && !packet_next_frame(po, &po->tx_ring, TP_STATUS_SEND_REQUEST)) {
+> > > +                       po->wait_on_complete = 1;
+> > > +                       timeo = sock_sndtimeo(&po->sk, msg->msg_flags & MSG_DONTWAIT);
+> >
+> > This resets timeout on every loop. should only set above the loop once.
+> >
+> I explained exactly why I did that in the change log.  Its because I reuse the
+> timeout variable to get the return value of the wait_for_complete call.
+> Otherwise I need to add additional data to the stack, which I don't want to do.
+> Sock_sndtimeo is an inline function and really doesn't add any overhead to this
+> path, so I see no reason not to reuse the variable.
 
-Add a per CPU counter to act_mirred that is incremented for each recursive
-call of the action function when processing a packet. If a limit is passed
-then the packet is dropped and CPU counter reset.
+The issue isn't the reuse. It is that timeo is reset to sk_sndtimeo
+each time. Whereas wait_for_common and its variants return the
+number of jiffies left in case the loop needs to sleep again later.
 
-Note that this patch does not protect against loops in TC datapaths. Its
-aim is to prevent stack overflow kernel panics that can be a consequence
-of such loops.
+Reading sock_sndtimeo once and passing it to wait_.. repeatedly is a
+common pattern across the stack.
 
-Signed-off-by: John Hurley <john.hurley@netronome.com>
-Reviewed-by: Simon Horman <simon.horman@netronome.com>
----
- net/sched/act_mirred.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+> > > @@ -2728,6 +2755,11 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+> > >                         err = net_xmit_errno(err);
+> > >                         if (err && __packet_get_status(po, ph) ==
+> > >                                    TP_STATUS_AVAILABLE) {
+> > > +                               /* re-init completion queue to avoid subsequent fallthrough
+> > > +                                * on a future thread calling wait_on_complete_interruptible_timeout
+> > > +                                */
+> > > +                               po->wait_on_complete = 0;
+> >
+> > If setting where sleeping, no need for resetting if a failure happens
+> > between those blocks.
+> >
+> > > +                               init_completion(&po->skb_completion);
+> >
+> > no need to reinit between each use?
+> >
+> I explained exactly why I did this in the comment above.  We have to set
+> wait_for_complete prior to calling transmit, so as to ensure that we call
+> wait_for_completion before we exit the loop. However, in this error case, we
+> exit the loop prior to calling wait_for_complete, so we need to reset the
+> completion variable and the wait_for_complete flag.  Otherwise we will be in a
+> case where, on the next entrace to this loop we will have a completion variable
+> with completion->done > 0, meaning the next wait will be a fall through case,
+> which we don't want.
 
-diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
-index 8c1d736..c3fce36 100644
---- a/net/sched/act_mirred.c
-+++ b/net/sched/act_mirred.c
-@@ -27,6 +27,9 @@
- static LIST_HEAD(mirred_list);
- static DEFINE_SPINLOCK(mirred_list_lock);
- 
-+#define MIRRED_RECURSION_LIMIT    4
-+static DEFINE_PER_CPU(unsigned int, mirred_rec_level);
-+
- static bool tcf_mirred_is_act_redirect(int action)
- {
- 	return action == TCA_EGRESS_REDIR || action == TCA_INGRESS_REDIR;
-@@ -210,6 +213,7 @@ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
- 	struct sk_buff *skb2 = skb;
- 	bool m_mac_header_xmit;
- 	struct net_device *dev;
-+	unsigned int rec_level;
- 	int retval, err = 0;
- 	bool use_reinsert;
- 	bool want_ingress;
-@@ -217,6 +221,14 @@ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
- 	int m_eaction;
- 	int mac_len;
- 
-+	rec_level = __this_cpu_inc_return(mirred_rec_level);
-+	if (unlikely(rec_level > MIRRED_RECURSION_LIMIT)) {
-+		net_warn_ratelimited("Packet exceeded mirred recursion limit on dev %s\n",
-+				     netdev_name(skb->dev));
-+		__this_cpu_dec(mirred_rec_level);
-+		return TC_ACT_SHOT;
-+	}
-+
- 	tcf_lastuse_update(&m->tcf_tm);
- 	bstats_cpu_update(this_cpu_ptr(m->common.cpu_bstats), skb);
- 
-@@ -278,6 +290,7 @@ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
- 			res->ingress = want_ingress;
- 			res->qstats = this_cpu_ptr(m->common.cpu_qstats);
- 			skb_tc_reinsert(skb, res);
-+			__this_cpu_dec(mirred_rec_level);
- 			return TC_ACT_CONSUMED;
- 		}
- 	}
-@@ -293,6 +306,7 @@ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
- 		if (tcf_mirred_is_act_redirect(m_eaction))
- 			retval = TC_ACT_SHOT;
- 	}
-+	__this_cpu_dec(mirred_rec_level);
- 
- 	return retval;
- }
--- 
-2.7.4
+By moving back to the point where schedule() is called, hopefully this
+complexity automatically goes away. Same as my comment to the line
+immediately above.
 
+> > > @@ -2740,6 +2772,20 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+> > >                 }
+> > >                 packet_increment_head(&po->tx_ring);
+> > >                 len_sum += tp_len;
+> > > +
+> > > +               if (po->wait_on_complete) {
+> > > +                       timeo = wait_for_completion_interruptible_timeout(&po->skb_completion, timeo);
+> > > +                       po->wait_on_complete = 0;
+> >
+> > I was going to argue for clearing in tpacket_destruct_skb. But then we
+> > would have to separate clear on timeout instead of signal, too.
+> >
+> >   po->wait_on_complete = 1;
+> >   timeo = wait_for_completion...
+> >   po->wait_on_complete = 0;
+> >
+> Also, we would have a race condition, since the destructor may be called from
+> softirq context (the first cause of the bug I'm fixing here), and so if the
+> packet is freed prior to us checking wait_for_complete in tpacket_snd, we will
+> be in the above situation again, exiting the loop with a completion variable in
+> an improper state.
+
+Good point.
+
+The common pattern is to clear in tpacket_destruct_skb. Then
+we do need to handle the case where the wait is interrupted or
+times out and reset it in those cases.
+
+> > This is basically replacing a busy-wait with schedule() with sleeping
+> > using wait_for_completion_interruptible_timeout. My main question is
+> > does this really need to move control flow around and add
+> > packet_next_frame? If not, especially for net, the shortest, simplest
+> > change is preferable.
+> >
+> Its not replacing a busy wait at all, its replacing a non-blocking schedule with
+> a blocking schedule (via completion queues).  As for control flow, Im not sure I
+> why you are bound to the existing control flow, and given that we already have
+> packet_previous_frame, I didn't see anything egregious about adding
+> packet_next_frame as well, but since you've seen a way to eliminate it, I'm ok
+> with it.
+
+The benefit of keeping to the existing control flow is that that is a
+smaller change, so easier to verify.
+
+I understand the benefit of moving the wait outside the loop. Before
+this report, I was not even aware of that behavior on !MSG_DONTWAIT,
+because it is so co-located.
+
+But moving it elsewhere in the loop does not have the same benefit,
+imho. Either way, I think we better leave any such code improvements
+to net-next and focus on the minimal , least risky, patch for net.
