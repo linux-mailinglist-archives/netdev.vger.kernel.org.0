@@ -2,147 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B1CC350067
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 05:59:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5352C500BB
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 06:27:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727644AbfFXD7t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Jun 2019 23:59:49 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:39041 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727552AbfFXD7s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jun 2019 23:59:48 -0400
-Received: by mail-pg1-f196.google.com with SMTP id 196so6356516pgc.6
-        for <netdev@vger.kernel.org>; Sun, 23 Jun 2019 20:59:48 -0700 (PDT)
+        id S1727161AbfFXE1I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 00:27:08 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:38666 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726572AbfFXE1H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 00:27:07 -0400
+Received: by mail-qt1-f193.google.com with SMTP id n11so1886295qtl.5
+        for <netdev@vger.kernel.org>; Sun, 23 Jun 2019 21:27:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TpfEq+s9BJouFPdTNLC/BNws0AXhM6t7c+nUi8pwy3M=;
+        b=N4AO9uAgy4G0uCcEd/vWPMrgswbuVCILRAlhSRPIgyZLq9TaLj6nEDLXLYJNxOojoh
+         8xT+PFzszGnGhEeG8FZ0ZrfQH8odkyXXjHPdpEbOU7GHmWVnOH1eR71V5En0c7IBTyWN
+         cb7IHcs+GTbjsdbIUKWeuxJuhps5PeCsBQoHSXFZFJB+Wl/ZVPs0U6F9HQziFxq2woL4
+         BdZgZWgJwumTMUSvTu7MbKRgUecJkuv7LAfROid6pEYyd43bN28OCn6RYyCsmswMokpy
+         5PmP3OmpuGArQM+dRXwVGTUnIxZ2xIvDnuBr9e8Fqw08dX8fLOCnEhvk5w/J1W47OifR
+         o5jA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
-         :mime-version:content-transfer-encoding;
-        bh=DephS9aF1RqbAgEf2w/teieLK755TA9/UUG6864ldTk=;
-        b=Vivnc44Cq/zjUu9nQulKIL7j/swrrLmVnwwWAMVYkVp5pm4NBnEX7FuGyzdmRwoBHe
-         SjEC9dwjJi/xni/8cwjqhkvF4ovAqY14/LH9NICIwdIdGLNzRfrh559ITTqm62twOcOn
-         UA6Z9T+qjv1CoWca7hn3CQFn0JCMsOdgHWWFfsiz9/pzYY/8+STWnnmMhMyUGTGcyxD2
-         Zbm163ROj1OmaW0z56E6FhF78zHVNt3zPDUWefnSt/+Hgz7FP1FI/ZeLUcGQ++d/+kFV
-         VxsMabkFbM0WaA8p+BUa/Fekp+Hpo7uo+bvaXSnSNOX6ffZft+fvNUEfE7EkaK/fuFXs
-         HqkA==
-X-Gm-Message-State: APjAAAXtVMLQNl6WtVBTmyhSYzKLXpFDcJKxO6faZlygI+VQYBQRMNxg
-        eQ2dyc3QrrdCCIuIdPQB0CJ22Q==
-X-Google-Smtp-Source: APXvYqx0vYrtGNTNl5KXc2DpVQEG5bwKvqspWyryVid6mzUIPcvfQcnDFMCtCb5rPpbnT1bu7BxQuw==
-X-Received: by 2002:a63:3d09:: with SMTP id k9mr24980118pga.321.1561348787037;
-        Sun, 23 Jun 2019 20:59:47 -0700 (PDT)
-Received: from localhost (220-132-236-182.HINET-IP.hinet.net. [220.132.236.182])
-        by smtp.gmail.com with ESMTPSA id t24sm9569893pfh.113.2019.06.23.20.59.46
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sun, 23 Jun 2019 20:59:46 -0700 (PDT)
-Date:   Sun, 23 Jun 2019 20:59:46 -0700 (PDT)
-X-Google-Original-Date: Sun, 23 Jun 2019 20:59:43 PDT (-0700)
-Subject:     Re: linux-next: build failure after merge of the net-next tree
-In-Reply-To: <20190624131245.359e59a4@canb.auug.org.au>
-CC:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-next@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yash.shah@sifive.com
-From:   Palmer Dabbelt <palmer@sifive.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Message-ID: <mhng-24035d0e-a382-4a48-89eb-eb00213fca7e@palmer-si-x1e>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TpfEq+s9BJouFPdTNLC/BNws0AXhM6t7c+nUi8pwy3M=;
+        b=AyG0oBOrFirbqpkLWwshHom6cUJI92ajKRsW27CJDWjyeWQhFzoSalZuME5mua61xG
+         M3pIzaBxsqJdxxNvn+Q3idA2SvNHWxBbprh8cHMuIajnHNhjqIbgN5Dwh/dquq51Px9q
+         r0DX0iN30LrXyyBnlDMHhpqsWKRGcrHAqp+emwAb3VmDiRuaixluuDMMNQU1wKJZQpV7
+         KxgLYf0co87kuiMPOV/PPFmFQ5+DgOXe6Vf7L4zY3aceV23mxEsXAXLok21uOLZthGo1
+         /jlLaifAfFPCjd8XT0Zu1aaHqHhEyd16/HIBSs7Mpcpa0uGFKlF8KAmB+9/KPAKGbqM5
+         6iPg==
+X-Gm-Message-State: APjAAAVERAv0zu15k66ZFsyDkvKMLuIUnnUqyAKqJsH0PZkxeTeCLaID
+        YvzrOXjUbPsCSNkQYUwBUtnhfA==
+X-Google-Smtp-Source: APXvYqzY00wNvldLgMZCkTPmUNJx7xZtcBwA12DQu2g2UgVJ5Cw2WSHxJpKBNI/Ez8R7Z7A/M6PukQ==
+X-Received: by 2002:ac8:2309:: with SMTP id a9mr64085470qta.103.1561350426574;
+        Sun, 23 Jun 2019 21:27:06 -0700 (PDT)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id t29sm6745997qtt.42.2019.06.23.21.27.04
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 23 Jun 2019 21:27:05 -0700 (PDT)
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        john.fastabend@gmail.com, vakul.garg@nxp.com, borisp@mellanox.com,
+        alexei.starovoitov@gmail.com,
+        Dirk van der Merwe <dirk.vandermerwe@netronome.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: [PATCH net] net/tls: fix page double free on TX cleanup
+Date:   Sun, 23 Jun 2019 21:26:58 -0700
+Message-Id: <20190624042658.19198-1-jakub.kicinski@netronome.com>
+X-Mailer: git-send-email 2.21.0
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 23 Jun 2019 20:12:45 PDT (-0700), Stephen Rothwell wrote:
-> Hi all,
->
-> On Thu, 20 Jun 2019 19:13:48 +1000 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
->>
->> After merging the net-next tree, today's linux-next build (powerpc
->> allyesconfig) failed like this:
->> 
->> drivers/net/ethernet/cadence/macb_main.c:48:16: error: field 'hw' has incomplete type
->>   struct clk_hw hw;
->>                 ^~
->> drivers/net/ethernet/cadence/macb_main.c:4003:21: error: variable 'fu540_c000_ops' has initializer but incomplete type
->>  static const struct clk_ops fu540_c000_ops = {
->>                      ^~~~~~~
->> drivers/net/ethernet/cadence/macb_main.c:4004:3: error: 'const struct clk_ops' has no member named 'recalc_rate'
->>   .recalc_rate = fu540_macb_tx_recalc_rate,
->>    ^~~~~~~~~~~
->> drivers/net/ethernet/cadence/macb_main.c:4004:17: warning: excess elements in struct initializer
->>   .recalc_rate = fu540_macb_tx_recalc_rate,
->>                  ^~~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/net/ethernet/cadence/macb_main.c:4004:17: note: (near initialization for 'fu540_c000_ops')
->> drivers/net/ethernet/cadence/macb_main.c:4005:3: error: 'const struct clk_ops' has no member named 'round_rate'
->>   .round_rate = fu540_macb_tx_round_rate,
->>    ^~~~~~~~~~
->> drivers/net/ethernet/cadence/macb_main.c:4005:16: warning: excess elements in struct initializer
->>   .round_rate = fu540_macb_tx_round_rate,
->>                 ^~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/net/ethernet/cadence/macb_main.c:4005:16: note: (near initialization for 'fu540_c000_ops')
->> drivers/net/ethernet/cadence/macb_main.c:4006:3: error: 'const struct clk_ops' has no member named 'set_rate'
->>   .set_rate = fu540_macb_tx_set_rate,
->>    ^~~~~~~~
->> drivers/net/ethernet/cadence/macb_main.c:4006:14: warning: excess elements in struct initializer
->>   .set_rate = fu540_macb_tx_set_rate,
->>               ^~~~~~~~~~~~~~~~~~~~~~
->> drivers/net/ethernet/cadence/macb_main.c:4006:14: note: (near initialization for 'fu540_c000_ops')
->> drivers/net/ethernet/cadence/macb_main.c: In function 'fu540_c000_clk_init':
->> drivers/net/ethernet/cadence/macb_main.c:4013:23: error: storage size of 'init' isn't known
->>   struct clk_init_data init;
->>                        ^~~~
->> drivers/net/ethernet/cadence/macb_main.c:4032:12: error: implicit declaration of function 'clk_register'; did you mean 'sock_register'? [-Werror=implicit-function-declaration]
->>   *tx_clk = clk_register(NULL, &mgmt->hw);
->>             ^~~~~~~~~~~~
->>             sock_register
->> drivers/net/ethernet/cadence/macb_main.c:4013:23: warning: unused variable 'init' [-Wunused-variable]
->>   struct clk_init_data init;
->>                        ^~~~
->> drivers/net/ethernet/cadence/macb_main.c: In function 'macb_probe':
->> drivers/net/ethernet/cadence/macb_main.c:4366:2: error: implicit declaration of function 'clk_unregister'; did you mean 'sock_unregister'? [-Werror=implicit-function-declaration]
->>   clk_unregister(tx_clk);
->>   ^~~~~~~~~~~~~~
->>   sock_unregister
->> drivers/net/ethernet/cadence/macb_main.c: At top level:
->> drivers/net/ethernet/cadence/macb_main.c:4003:29: error: storage size of 'fu540_c000_ops' isn't known
->>  static const struct clk_ops fu540_c000_ops = {
->>                              ^~~~~~~~~~~~~~
->> 
->> Caused by commit
->> 
->>   c218ad559020 ("macb: Add support for SiFive FU540-C000")
->> 
->> CONFIG_COMMON_CLK is not set for this build.
->> 
->> I have reverted that commit for today.
->
-> I am still reverting that commit.  Has this problem been fixed in some
-> subtle way?
+From: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
 
-I don't think so.  I'm assuming something like this is necessary
+With commit 94850257cf0f ("tls: Fix tls_device handling of partial records")
+a new path was introduced to cleanup partial records during sk_proto_close.
+This path does not handle the SW KTLS tx_list cleanup.
 
-diff --git a/drivers/net/ethernet/cadence/Kconfig b/drivers/net/ethernet/cadence/Kconfig
-index 1766697c9c5a..d13db9e9c818 100644
---- a/drivers/net/ethernet/cadence/Kconfig
-+++ b/drivers/net/ethernet/cadence/Kconfig
-@@ -23,6 +23,7 @@ config MACB
-        tristate "Cadence MACB/GEM support"
-        depends on HAS_DMA
-        select PHYLIB
-+       depends on COMMON_CLK
-        ---help---
-          The Cadence MACB ethernet interface is found on many Atmel AT32 and
-          AT91 parts.  This driver also supports the Cadence GEM (Gigabit
-@@ -42,7 +43,7 @@ config MACB_USE_HWSTAMP
+This is unnecessary though since the free_resources calls for both
+SW and offload paths will cleanup a partial record.
 
- config MACB_PCI
-        tristate "Cadence PCI MACB/GEM support"
--       depends on MACB && PCI && COMMON_CLK
-+       depends on MACB && PCI
-        ---help---
-          This is PCI wrapper for MACB driver.
+The visible effect is the following warning, but this bug also causes
+a page double free.
 
-at a minimum, though it may be saner to #ifdef support for the SiFive clock
-driver as that's only useful on some systems.  Assuming I can reproduce the
-build failure (which shouldn't be too hard), I'll send out a patch that adds a
-Kconfig for the FU540 clock driver to avoid adding a COMMON_CLK dependency for
-all MACB systems.
+    WARNING: CPU: 7 PID: 4000 at net/core/stream.c:206 sk_stream_kill_queues+0x103/0x110
+    RIP: 0010:sk_stream_kill_queues+0x103/0x110
+    RSP: 0018:ffffb6df87e07bd0 EFLAGS: 00010206
+    RAX: 0000000000000000 RBX: ffff8c21db4971c0 RCX: 0000000000000007
+    RDX: ffffffffffffffa0 RSI: 000000000000001d RDI: ffff8c21db497270
+    RBP: ffff8c21db497270 R08: ffff8c29f4748600 R09: 000000010020001a
+    R10: ffffb6df87e07aa0 R11: ffffffff9a445600 R12: 0000000000000007
+    R13: 0000000000000000 R14: ffff8c21f03f2900 R15: ffff8c21f03b8df0
+    Call Trace:
+     inet_csk_destroy_sock+0x55/0x100
+     tcp_close+0x25d/0x400
+     ? tcp_check_oom+0x120/0x120
+     tls_sk_proto_close+0x127/0x1c0
+     inet_release+0x3c/0x60
+     __sock_release+0x3d/0xb0
+     sock_close+0x11/0x20
+     __fput+0xd8/0x210
+     task_work_run+0x84/0xa0
+     do_exit+0x2dc/0xb90
+     ? release_sock+0x43/0x90
+     do_group_exit+0x3a/0xa0
+     get_signal+0x295/0x720
+     do_signal+0x36/0x610
+     ? SYSC_recvfrom+0x11d/0x130
+     exit_to_usermode_loop+0x69/0xb0
+     do_syscall_64+0x173/0x180
+     entry_SYSCALL_64_after_hwframe+0x3d/0xa2
+    RIP: 0033:0x7fe9b9abc10d
+    RSP: 002b:00007fe9b19a1d48 EFLAGS: 00000246 ORIG_RAX: 00000000000000ca
+    RAX: fffffffffffffe00 RBX: 0000000000000006 RCX: 00007fe9b9abc10d
+    RDX: 0000000000000002 RSI: 0000000000000080 RDI: 00007fe948003430
+    RBP: 00007fe948003410 R08: 00007fe948003430 R09: 0000000000000000
+    R10: 0000000000000000 R11: 0000000000000246 R12: 00005603739d9080
+    R13: 00007fe9b9ab9f90 R14: 00007fe948003430 R15: 0000000000000000
+
+Fixes: 94850257cf0f ("tls: Fix tls_device handling of partial records")
+Signed-off-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+---
+ include/net/tls.h  | 15 ---------------
+ net/tls/tls_main.c |  3 ++-
+ 2 files changed, 2 insertions(+), 16 deletions(-)
+
+diff --git a/include/net/tls.h b/include/net/tls.h
+index 4a55ce6a303f..53d96bca220d 100644
+--- a/include/net/tls.h
++++ b/include/net/tls.h
+@@ -373,21 +373,6 @@ static inline bool tls_is_partially_sent_record(struct tls_context *ctx)
+ 	return !!ctx->partially_sent_record;
+ }
+ 
+-static inline int tls_complete_pending_work(struct sock *sk,
+-					    struct tls_context *ctx,
+-					    int flags, long *timeo)
+-{
+-	int rc = 0;
+-
+-	if (unlikely(sk->sk_write_pending))
+-		rc = wait_on_pending_writer(sk, timeo);
+-
+-	if (!rc && tls_is_partially_sent_record(ctx))
+-		rc = tls_push_partial_record(sk, ctx, flags);
+-
+-	return rc;
+-}
+-
+ static inline bool tls_is_pending_open_record(struct tls_context *tls_ctx)
+ {
+ 	return tls_ctx->pending_open_record_frags;
+diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+index fc81ae18cc44..e2b69e805d46 100644
+--- a/net/tls/tls_main.c
++++ b/net/tls/tls_main.c
+@@ -279,7 +279,8 @@ static void tls_sk_proto_close(struct sock *sk, long timeout)
+ 		goto skip_tx_cleanup;
+ 	}
+ 
+-	if (!tls_complete_pending_work(sk, ctx, 0, &timeo))
++	if (unlikely(sk->sk_write_pending) &&
++	    !wait_on_pending_writer(sk, &timeo))
+ 		tls_handle_open_record(sk, 0);
+ 
+ 	/* We need these for tls_sw_fallback handling of other packets */
+-- 
+2.21.0
+
