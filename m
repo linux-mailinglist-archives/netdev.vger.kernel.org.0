@@ -2,84 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 15BA150D2A
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 16:01:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B55AF50D33
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 16:02:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731789AbfFXOBN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 10:01:13 -0400
-Received: from host.76.145.23.62.rev.coltfrance.com ([62.23.145.76]:43711 "EHLO
-        proxy.6wind.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726263AbfFXOBM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 10:01:12 -0400
-Received: from bretzel.dev.6wind.com (unknown [10.16.0.19])
-        by proxy.6wind.com (Postfix) with ESMTPS id 255002D4ABC;
-        Mon, 24 Jun 2019 16:01:10 +0200 (CEST)
-Received: from dichtel by bretzel.dev.6wind.com with local (Exim 4.89)
-        (envelope-from <dichtel@bretzel.dev.6wind.com>)
-        id 1hfPWw-0003zo-1u; Mon, 24 Jun 2019 16:01:10 +0200
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, ndesaulniers@google.com,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Subject: [PATCH net v2 2/2] ipv6: fix neighbour resolution with raw socket
-Date:   Mon, 24 Jun 2019 16:01:09 +0200
-Message-Id: <20190624140109.14775-3-nicolas.dichtel@6wind.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190624140109.14775-1-nicolas.dichtel@6wind.com>
-References: <20190622.170816.1879839685931480272.davem@davemloft.net>
- <20190624140109.14775-1-nicolas.dichtel@6wind.com>
+        id S1728574AbfFXOCg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 10:02:36 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:35196 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727901AbfFXOCf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 10:02:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=zZSxwVvfCril3he0j5sVVnq9Oums5ivrZ078cOx8kAU=; b=T1kGrnSSYrMNPlLFuiEIzBqNx
+        rS2N5cBpI30qrO9Oq02nPbzVZPV48XXtXtAO8PYzmgSVdD1duTRlScBD/3WxhXcQUVVbgs6h6f2cg
+        k6E3rCHcqypJyRJX8kPVVDhX8dfNr9kkMNtCVDS3xJfapvb1rixKwuiPGSEyeEsfy824ZXthgg2rw
+        6YcJij50Pp1ffta9EeCAneztN+8M2gJQW60gx/G7ZexA9CZqPV93lQb9ZcGvJwua4EGrw+iSdvXO/
+        y8h5UvoRXRpXNzE7XxtVh/IAZ+FmE/EwDRUIxkVPtzeBbnQF4LCupNMk3rj+9qAY8Vj22BbwN8Bji
+        VGTUcDTiw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:59944)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1hfPY3-0008Uf-6a; Mon, 24 Jun 2019 15:02:19 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1hfPXx-0006Lb-0M; Mon, 24 Jun 2019 15:02:13 +0100
+Date:   Mon, 24 Jun 2019 15:02:12 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Phong Tran <tranmanphong@gmail.com>
+Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com,
+        alexander.sverdlin@gmail.com, allison@lohutok.net, andrew@lunn.ch,
+        ast@kernel.org, bgolaszewski@baylibre.com, bpf@vger.kernel.org,
+        daniel@iogearbox.net, daniel@zonque.org, dmg@turingmachine.org,
+        festevam@gmail.com, gerg@uclinux.org, gregkh@linuxfoundation.org,
+        gregory.clement@bootlin.com, haojian.zhuang@gmail.com,
+        hsweeten@visionengravers.com, illusionist.neo@gmail.com,
+        info@metux.net, jason@lakedaemon.net, jolsa@redhat.com,
+        kafai@fb.com, kernel@pengutronix.de, kgene@kernel.org,
+        krzk@kernel.org, kstewart@linuxfoundation.org,
+        linux-arm-kernel@lists.infradead.org, linux-imx@nxp.com,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, liviu.dudau@arm.com,
+        lkundrak@v3.sk, lorenzo.pieralisi@arm.com, mark.rutland@arm.com,
+        mingo@redhat.com, namhyung@kernel.org, netdev@vger.kernel.org,
+        nsekhar@ti.com, peterz@infradead.org, robert.jarzmik@free.fr,
+        s.hauer@pengutronix.de, sebastian.hesselbarth@gmail.com,
+        shawnguo@kernel.org, songliubraving@fb.com, sudeep.holla@arm.com,
+        swinslow@gmail.com, tglx@linutronix.de, tony@atomide.com,
+        will@kernel.org, yhs@fb.com
+Subject: Re: [PATCH V2 00/15] cleanup cppcheck signed shifting errors
+Message-ID: <20190624140212.p6xvcg5lhtgeeogc@shell.armlinux.org.uk>
+References: <20190623151313.970-1-tranmanphong@gmail.com>
+ <20190624135105.15579-1-tranmanphong@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190624135105.15579-1-tranmanphong@gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The scenario is the following: the user uses a raw socket to send an ipv6
-packet, destinated to a not-connected network, and specify a connected nh.
-Here is the corresponding python script to reproduce this scenario:
+On Mon, Jun 24, 2019 at 08:50:50PM +0700, Phong Tran wrote:
+> There are errors with cppcheck 
+> 
+> "Shifting signed 32-bit value by 31 bits is undefined behaviour errors"
+> 
+> This is just a mirror changing. 
 
- import socket
- IPPROTO_RAW = 255
- send_s = socket.socket(socket.AF_INET6, socket.SOCK_RAW, IPPROTO_RAW)
- # scapy
- # p = IPv6(src='fd00:100::1', dst='fd00:200::fa')/ICMPv6EchoRequest()
- # str(p)
- req = b'`\x00\x00\x00\x00\x08:@\xfd\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\xfd\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xfa\x80\x00\x81\xc0\x00\x00\x00\x00'
- send_s.sendto(req, ('fd00:175::2', 0, 0, 0))
+"mirror" ?
 
-fd00:175::/64 is a connected route and fd00:200::fa is not a connected
-host.
+Apart from that and the extra unnecessary parens (which ought to be
+cleaned up) this looks fine to me.
 
-With this scenario, the kernel starts by sending a NS to resolve
-fd00:175::2. When it receives the NA, it flushes its queue and try to send
-the initial packet. But instead of sending it, it sends another NS to
-resolve fd00:200::fa, which obvioulsy fails, thus the packet is dropped. If
-the user sends again the packet, it now uses the right nh (fd00:175::2).
+When there's too many parens next to each other, it makes reading
+the expression more difficult - and that is definitely bad, so please
+avoid unecessary parens where possible.
 
-The problem is that ip6_dst_lookup_neigh() uses the rt6i_gateway, which is
-:: because the associated route is a connected route, thus it uses the dst
-addr of the packet. Let's use rt6_nexthop() to choose the right nh.
+Thanks.
 
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
----
- net/ipv6/route.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> V2: Using BIT() macro instead of (1UL << nr) 
+> 
+> Phong Tran (15):
+>   arm: perf: cleanup cppcheck shifting error
+>   ARM: davinci: cleanup cppcheck shifting errors
+>   ARM: ep93xx: cleanup cppcheck shifting errors
+>   ARM: exynos: cleanup cppcheck shifting error
+>   ARM: footbridge: cleanup cppcheck shifting error
+>   ARM: imx: cleanup cppcheck shifting errors
+>   ARM: ks8695: cleanup cppcheck shifting error
+>   ARM: mmp: cleanup cppcheck shifting errors
+>   ARM: omap2: cleanup cppcheck shifting error
+>   ARM: orion5x: cleanup cppcheck shifting errors
+>   ARM: pxa: cleanup cppcheck shifting errors
+>   ARM: vexpress: cleanup cppcheck shifting error
+>   ARM: mm: cleanup cppcheck shifting errors
+>   ARM: bpf: cleanup cppcheck shifting error
+>   ARM: vfp: cleanup cppcheck shifting errors
+> 
+>  arch/arm/kernel/perf_event_v7.c    |   6 +-
+>  arch/arm/mach-davinci/ddr2.h       |   6 +-
+>  arch/arm/mach-ep93xx/soc.h         | 132 ++++++++++++++++++-------------------
+>  arch/arm/mach-exynos/suspend.c     |   2 +-
+>  arch/arm/mach-footbridge/dc21285.c |   2 +-
+>  arch/arm/mach-imx/iomux-mx3.h      |  64 +++++++++---------
+>  arch/arm/mach-ks8695/regs-pci.h    |   4 +-
+>  arch/arm/mach-mmp/pm-mmp2.h        |  40 +++++------
+>  arch/arm/mach-mmp/pm-pxa910.h      |  76 ++++++++++-----------
+>  arch/arm/mach-omap2/powerdomain.c  |   2 +-
+>  arch/arm/mach-orion5x/pci.c        |   8 +--
+>  arch/arm/mach-pxa/irq.c            |   4 +-
+>  arch/arm/mach-vexpress/spc.c       |  12 ++--
+>  arch/arm/mm/fault.h                |   6 +-
+>  arch/arm/net/bpf_jit_32.c          |   2 +-
+>  arch/arm/vfp/vfpinstr.h            |   8 +--
+>  16 files changed, 187 insertions(+), 187 deletions(-)
+> 
+> -- 
+> 2.11.0
+> 
+> 
 
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 11ad62effd56..b6449bc03f11 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -218,7 +218,8 @@ static struct neighbour *ip6_dst_neigh_lookup(const struct dst_entry *dst,
- {
- 	const struct rt6_info *rt = container_of(dst, struct rt6_info, dst);
- 
--	return ip6_neigh_lookup(&rt->rt6i_gateway, dst->dev, skb, daddr);
-+	return ip6_neigh_lookup(rt6_nexthop(rt, &in6addr_any),
-+				dst->dev, skb, daddr);
- }
- 
- static void ip6_confirm_neigh(const struct dst_entry *dst, const void *daddr)
 -- 
-2.21.0
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
