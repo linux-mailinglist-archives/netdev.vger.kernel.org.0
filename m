@@ -2,127 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF4A551A94
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 20:32:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7ED651B11
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 21:00:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727613AbfFXSci (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 14:32:38 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:45608 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726381AbfFXSch (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 14:32:37 -0400
-Received: by mail-qt1-f195.google.com with SMTP id j19so15531946qtr.12;
-        Mon, 24 Jun 2019 11:32:37 -0700 (PDT)
+        id S1729742AbfFXTA1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 15:00:27 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:41216 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727014AbfFXTA1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 15:00:27 -0400
+Received: by mail-qk1-f195.google.com with SMTP id c11so10593082qkk.8;
+        Mon, 24 Jun 2019 12:00:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=J3jnGKxooPL3xDQZEUnhmGipQscWMmnQn6jkJBtpMqE=;
-        b=O9IwJyrfa9XVmop+4ZXUoyUKP/+LLFb2lX4NEpd0UW0+WZ59F9idc2Maywb8qEDhKr
-         8DlXiGcJ9nJtBlg30JV0dngS2CtvkKknvlLq1/OEMKbfcgxIgsKze5LZ1uXlgXrtt2dW
-         BfgphpRBzaNKHlcqCRYyrtDmTaKhdE+ozVhFow/CGn81+DH+zGOR/aZyRoAwjmTYSGyX
-         cCJO/bUkx61l0m00xbX5W2OvCh27klIV5dabCR0/nekB1hKK49emK9g/qy39yihT6mmL
-         R69tVdxxIOc4EG6YEWmX8n/Uaq/n3UJ7NByaqn4rLYpf+bkU+fSM8ZxTDJLaN4U/HoGC
-         OHJw==
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=jLe9rsWPnlF5E8hqDCO/kSAryjkkZLhq+lQJt0LPNsM=;
+        b=cFOczVForZZ0SZUzzYOzAfpcG3WInUSHcvbb4qSoAWCggO67XYv3JHFiSUina2IauF
+         lxnZUyt3yQCuKxuxpg/mB4fR0I0u+O6SYuGInjQvp6INdWnuyI0y6AlzaVcdUxPcQFxt
+         ulFy3aBZAidsEm39HpWgXluE5Aegt5TOsUi8+PiOeAsjUjeLaGWV75LcscnSPVmbpaK+
+         Fu/D/LEUe34Q/BPRdJS8Ov9WpCpt4BdmlWUpnbZA1sbyqqjovoxLtXby9T/a9CiABEzq
+         Z46qn20dL+LR3GTH5UJHi6VoiwMRPhJU0UbxwZcdKvlBWavlo3Km6rCGB3+gc1ZHBw9L
+         IjVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=J3jnGKxooPL3xDQZEUnhmGipQscWMmnQn6jkJBtpMqE=;
-        b=t/ojTEByeraMzqVinQiUm+E28X9Di6I0v45iUNcDdSzoKZDuBk36i3myopq9s05ACg
-         qjADypxUjgzI5XJiyYHR7cD5l4hjjI6NtuRXvNw3+KRdgn7nph/MzZUohdQHjrkZ+Lme
-         K7FUmIXVM4hT8pKE9helczBP+3PWemycI+eEFsTUKmWoIOoUwC0ocn/QyLnZHC6lZ1gB
-         HJdm4TlWBUfmKvTL3UELabJIfDjWYH3c6qq9x7DCTKcT3wq+V4nOmzsHkxM9+vNE5ECx
-         +gzWjQuQR5sc5wh22BpaYDUjXHN+O/tP1DbIyI9Yu/eQJ+v4Cdoo1L4xqcQblvTAoNaY
-         Qmuw==
-X-Gm-Message-State: APjAAAUcc8jJpdHCu9PLtxPifcfjHrzpzKSXXor2pQAVfMDOBbIpESDS
-        zpC3DXdueQuUmpNJ4Zm9Jav9LWjrKa5KkFk893btQAVnfkE=
-X-Google-Smtp-Source: APXvYqzu5wK0bFdVRmdS56gP0qOLmqSq0Ud6J6e0GpGfoPvJ1kW2Jlx7M9lC2spMz01sRl+RSWSecJ3WgVPxAQtbFug=
-X-Received: by 2002:ac8:2d56:: with SMTP id o22mr79429363qta.171.1561401156508;
- Mon, 24 Jun 2019 11:32:36 -0700 (PDT)
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=jLe9rsWPnlF5E8hqDCO/kSAryjkkZLhq+lQJt0LPNsM=;
+        b=aYZ6cUX9u7djsljri6cEkt/hucQUOFoDPJ1xgj66baY3CV+5rbDPlr0DKWSFJiXoa0
+         RlBWJvB4QwULsFLtYrY6iXb7bbgzMGZtac09XH7FqqAwKVeUjrXqJnynBWV4IMTuOSUQ
+         K6vLErdSXq+v546dzFZLtc8KypbZp7yeKpRMqTYxjBYKMa4E7/pS/uWU/vCUhbXGIrpL
+         d3nvoET+HK6Wr6k3sh4F3F83b/ZAsml1AXwjRc+8vTmLCk3ylkSSLJ6hJotJXp3ghH5p
+         p8hhszx5KuBbJMSQelCqqCIkg9VOJ5z35Ewh/OKsL2M4/tJVqBtgNwf+bqVrt6EYy1Ub
+         4uqg==
+X-Gm-Message-State: APjAAAV7NEHh9msTDUai476xhLNOsEXzhHBZ+jOdUr6a2pWe6rLG6Vwp
+        Jhn7xOWcTUAjKZ4pZjKG/WY=
+X-Google-Smtp-Source: APXvYqxH1PPatDijts/eOpzI83A95Elb5STnJn33I/c01bWUEAHnudlt9D1Fy2HNQWV0ACtjkgbKiw==
+X-Received: by 2002:a37:a643:: with SMTP id p64mr103665746qke.36.1561402825968;
+        Mon, 24 Jun 2019 12:00:25 -0700 (PDT)
+Received: from quaco.ghostprotocols.net ([179.97.35.11])
+        by smtp.gmail.com with ESMTPSA id d199sm6062744qkg.116.2019.06.24.12.00.24
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 24 Jun 2019 12:00:25 -0700 (PDT)
+From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id F01D341153; Mon, 24 Jun 2019 16:00:09 -0300 (-03)
+Date:   Mon, 24 Jun 2019 16:00:09 -0300
+To:     Leo Yan <leo.yan@linaro.org>
+Cc:     Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Suzuki Poulouse <suzuki.poulose@arm.com>,
+        Coresight ML <coresight@lists.linaro.org>
+Subject: Re: [PATCH] perf cs-etm: Improve completeness for kernel address
+ space
+Message-ID: <20190624190009.GE4181@kernel.org>
+References: <20190617150024.11787-1-leo.yan@linaro.org>
+ <CANLsYkyMW=WG+=yWTLSyMT3JXqd_2kvsrx9c-EwCoKEnRZvErA@mail.gmail.com>
+ <20190620005829.GH24549@leoy-ThinkPad-X240s>
 MIME-Version: 1.0
-References: <CA+G9fYsMcdHmKY66CNhsrizO-gErkOQCkTcBSyOHLpOs+8g5=g@mail.gmail.com>
- <CAEf4BzbTD8G_zKkj-S3MOeG5Hq3_2zz3bGoXhQtpt0beG8nWJA@mail.gmail.com> <20190621161752.d7d7n4m5q67uivys@xps.therub.org>
-In-Reply-To: <20190621161752.d7d7n4m5q67uivys@xps.therub.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 24 Jun 2019 11:32:25 -0700
-Message-ID: <CAEf4BzaSoKA5H5rN=w+OAtUz4bD30-VOjjjY+Qv9tTAnhMweiA@mail.gmail.com>
-Subject: Re: selftests: bpf: test_libbpf.sh failed at file test_l4lb.o
-To:     Dan Rue <dan.rue@linaro.org>
-Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        xdp-newbies@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>, hawk@kernel.org,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Shuah Khan <shuah@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190620005829.GH24549@leoy-ThinkPad-X240s>
+X-Url:  http://acmel.wordpress.com
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 21, 2019 at 9:17 AM Dan Rue <dan.rue@linaro.org> wrote:
->
-> On Thu, Jun 20, 2019 at 10:17:04PM -0700, Andrii Nakryiko wrote:
-> > On Thu, Jun 20, 2019 at 1:08 AM Naresh Kamboju
-> > <naresh.kamboju@linaro.org> wrote:
+Em Thu, Jun 20, 2019 at 08:58:29AM +0800, Leo Yan escreveu:
+> Hi Mathieu,
+> 
+> On Wed, Jun 19, 2019 at 11:49:44AM -0600, Mathieu Poirier wrote:
+> 
+> [...]
+> 
+> > > diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
+> > > index 51dd00f65709..4776c2c1fb6d 100644
+> > > --- a/tools/perf/Makefile.config
+> > > +++ b/tools/perf/Makefile.config
+> > > @@ -418,6 +418,30 @@ ifdef CORESIGHT
+> > >      endif
+> > >      LDFLAGS += $(LIBOPENCSD_LDFLAGS)
+> > >      EXTLIBS += $(OPENCSDLIBS)
+> > > +    ifneq ($(wildcard $(srctree)/arch/arm64/kernel/vmlinux.lds),)
+> > > +      # Extract info from lds:
+> > > +      #  . = ((((((((0xffffffffffffffff)) - (((1)) << (48)) + 1) + (0)) + (0x08000000))) + (0x08000000))) + 0x00080000;
+> > > +      # ARM64_PRE_START_SIZE := (0x08000000 + 0x08000000 + 0x00080000)
+> > > +      ARM64_PRE_START_SIZE := $(shell egrep ' \. \= \({8}0x[0-9a-fA-F]+\){2}' \
+> > > +        $(srctree)/arch/arm64/kernel/vmlinux.lds | \
+> > > +        sed -e 's/[(|)|.|=|+|<|;|-]//g' -e 's/ \+/ /g' -e 's/^[ \t]*//' | \
+> > > +        awk -F' ' '{print "("$$6 "+"  $$7 "+" $$8")"}' 2>/dev/null)
+> > > +    else
+> > > +      ARM64_PRE_START_SIZE := 0
+> > > +    endif
+> > > +    CFLAGS += -DARM64_PRE_START_SIZE="$(ARM64_PRE_START_SIZE)"
+> > > +    ifneq ($(wildcard $(srctree)/arch/arm/kernel/vmlinux.lds),)
+> > > +      # Extract info from lds:
+> > > +      #   . = ((0xC0000000)) + 0x00208000;
+> > > +      # ARM_PRE_START_SIZE := 0x00208000
+> > > +      ARM_PRE_START_SIZE := $(shell egrep ' \. \= \({2}0x[0-9a-fA-F]+\){2}' \
+> > > +        $(srctree)/arch/arm/kernel/vmlinux.lds | \
+> > > +        sed -e 's/[(|)|.|=|+|<|;|-]//g' -e 's/ \+/ /g' -e 's/^[ \t]*//' | \
+> > > +        awk -F' ' '{print "("$$2")"}' 2>/dev/null)
+> > > +    else
+> > > +      ARM_PRE_START_SIZE := 0
+> > > +    endif
+> > > +    CFLAGS += -DARM_PRE_START_SIZE="$(ARM_PRE_START_SIZE)"
+> > >      $(call detected,CONFIG_LIBOPENCSD)
+> > >      ifdef CSTRACE_RAW
+> > >        CFLAGS += -DCS_DEBUG_RAW
+> > > diff --git a/tools/perf/util/cs-etm.c b/tools/perf/util/cs-etm.c
+> > > index 0c7776b51045..ae831f836c70 100644
+> > > --- a/tools/perf/util/cs-etm.c
+> > > +++ b/tools/perf/util/cs-etm.c
+> > > @@ -613,10 +613,34 @@ static void cs_etm__free(struct perf_session *session)
+> > >  static u8 cs_etm__cpu_mode(struct cs_etm_queue *etmq, u64 address)
+> > >  {
+> > >         struct machine *machine;
+> > > +       u64 fixup_kernel_start = 0;
+> > > +       const char *arch;
 > > >
-> > > selftests: bpf test_libbpf.sh failed running Linux -next kernel
-> > > 20190618 and 20190619.
+> > >         machine = etmq->etm->machine;
+> > > +       arch = perf_env__arch(machine->env);
 > > >
-> > > Here is the log from x86_64,
-> > > # selftests bpf test_libbpf.sh
-> > > bpf: test_libbpf.sh_ #
-> > > # [0] libbpf BTF is required, but is missing or corrupted.
-> >
-> > You need at least clang-9.0.0 (not yet released) to run some of these
-> > tests successfully, as they rely on Clang's support for
-> > BTF_KIND_VAR/BTF_KIND_DATASEC.
->
-> Can there be a runtime check for BTF that emits a skip instead of a fail
-> in such a case?
-
-I'm not sure how to do this simply and minimally intrusively. The best
-I can come up with is setting some envvar from Makefile and checking
-for that in each inidividual test, which honestly sounds a bit gross.
-
-How hard is it for you guys to upgrade compiler used to run these test?
-
->
+> > > -       if (address >= etmq->etm->kernel_start) {
+> > > +       /*
+> > > +        * Since arm and arm64 specify some memory regions prior to
+> > > +        * 'kernel_start', kernel addresses can be less than 'kernel_start'.
+> > > +        *
+> > > +        * For arm architecture, the 16MB virtual memory space prior to
+> > > +        * 'kernel_start' is allocated to device modules, a PMD table if
+> > > +        * CONFIG_HIGHMEM is enabled and a PGD table.
+> > > +        *
+> > > +        * For arm64 architecture, the root PGD table, device module memory
+> > > +        * region and BPF jit region are prior to 'kernel_start'.
+> > > +        *
+> > > +        * To reflect the complete kernel address space, compensate these
+> > > +        * pre-defined regions for kernel start address.
+> > > +        */
+> > > +       if (!strcmp(arch, "arm64"))
+> > > +               fixup_kernel_start = etmq->etm->kernel_start -
+> > > +                                    ARM64_PRE_START_SIZE;
+> > > +       else if (!strcmp(arch, "arm"))
+> > > +               fixup_kernel_start = etmq->etm->kernel_start -
+> > > +                                    ARM_PRE_START_SIZE;
+> > 
+> > I will test your work but from a quick look wouldn't it be better to
+> > have a single define name here?  From looking at the modifications you
+> > did to Makefile.config there doesn't seem to be a reason to have two.
+> 
+> Thanks for suggestion.  I changed to use single define
+> ARM_PRE_START_SIZE and sent patch v2 [1].
+> 
+> If possible, please test patch v2.
+> 
 > Thanks,
-> Dan
->
-> >
-> > > libbpf: BTF_is #
-> > > # test_libbpf failed at file test_l4lb.o
-> > > failed: at_file #
-> > > # selftests test_libbpf [FAILED]
-> > > test_libbpf: [FAILED]_ #
-> > > [FAIL] 29 selftests bpf test_libbpf.sh
-> > > selftests: bpf_test_libbpf.sh [FAIL]
+> Leo Yan
+
+So just for the record, I'm waiting for Mathieu on this one, i.e. for
+him to test/ack v3.
+
+- Arnaldo
+ 
+> [1] https://lore.kernel.org/linux-arm-kernel/20190620005428.20883-1-leo.yan@linaro.org/T/#u
+> 
+> > > +
+> > > +       if (address >= fixup_kernel_start) {
+> > >                 if (machine__is_host(machine))
+> > >                         return PERF_RECORD_MISC_KERNEL;
+> > >                 else
+> > > --
+> > > 2.17.1
 > > >
-> > > Full test log,
-> > > https://qa-reports.linaro.org/lkft/linux-next-oe/build/next-20190619/testrun/781777/log
-> > >
-> > > Test results comparison,
-> > > https://qa-reports.linaro.org/lkft/linux-next-oe/tests/kselftest/bpf_test_libbpf.sh
-> > >
-> > > Good linux -next tag: next-20190617
-> > > Bad linux -next tag: next-20190618
-> > > git branch     master
-> > > git commit    1c6b40509daf5190b1fd2c758649f7df1da4827b
-> > > git repo
-> > > https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-> > >
-> > > Best regards
-> > > Naresh Kamboju
->
-> --
-> Linaro - Kernel Validation
+
+-- 
+
+- Arnaldo
