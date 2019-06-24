@@ -2,87 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D691F500F6
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 07:25:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4129950211
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 08:19:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726452AbfFXFZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 01:25:26 -0400
-Received: from mail-pf1-f180.google.com ([209.85.210.180]:33340 "EHLO
-        mail-pf1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726304AbfFXFZ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 01:25:26 -0400
-Received: by mail-pf1-f180.google.com with SMTP id x15so6837717pfq.0;
-        Sun, 23 Jun 2019 22:25:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=V9rJzZcXuoLDtrkFWHRyX992s5fq2c3C47qbTibbjGA=;
-        b=NtT27z9mEL3sPywpIcjvYkcqf8gzwetcS51Vcbi96TFxCO0UFvLYs13K4iBJOpjnbO
-         iwmPl5GZFxyWjkBYeaaDN51L5o1dz0qftaZx2MioHfap6X1STSxvfQTI4xUD8E2mMjOn
-         Ror3Od8S5vm1D83gV4yj9rWjpfDXygKc5dQMp8MJn2DEEoJMygwAmtKwvkJoqcc9nvEt
-         opSyDNMOsQBpN5NE6sgEHs23wdkYnSBogOB6+jCYkZJHi77Vdg0KpWARSd3S9ySOMz6J
-         stNpYv31sawg/1ll66XGLDsmjl3Sn5fwbV4Er71I/CBoh3lgbrONGa9XVbH7NPQ1xYjL
-         G0oA==
+        id S1727224AbfFXGTF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 02:19:05 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:33438 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726312AbfFXGTF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 02:19:05 -0400
+Received: by mail-pl1-f194.google.com with SMTP id c14so6281026plo.0
+        for <netdev@vger.kernel.org>; Sun, 23 Jun 2019 23:19:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=V9rJzZcXuoLDtrkFWHRyX992s5fq2c3C47qbTibbjGA=;
-        b=tD6TEBKJmMPw5abLZO1ROUImk6OU6e2ZlJX2tdh8y9m04O7KuRgsuXvpUiqiD5UWDl
-         L/pv78LBIXRTu1pnNIX6MzUMOSzQAWh9QDzNd+pVoTFcGd/N9UIxDpt9dC0a43crrQKZ
-         6g1uHrU5WU88CKq2DNxaEtJ0qznMYkb606rH0cmwwHR40s+/VBV+osDeOYrxXtPaXXa6
-         JElruSbKsK4JAD5MYJjJyXpLz1RklhonxSi1ZsciOM29gvlM/1f0xus2JxdwlNtZBZbm
-         PuCc525/yfg5+6/hYb00x2/VTM/V8zhjybU5uf5aB652yIRHaoWypzipgP0gNNecROIM
-         QGJQ==
-X-Gm-Message-State: APjAAAWDrnwRK7CMaXhex/WaaB5OjCvoC4rQiazmUbB1O6UrB7RrOHy4
-        2aoLX10kvolBboCbfEZcMUU=
-X-Google-Smtp-Source: APXvYqzl3tWhsX9AhmihDCClNnGFkHMUpa0GR83mr4cNgtGbHnwb3Lp47MsL81G/Qfoy6DM/N/XsjQ==
-X-Received: by 2002:a63:735d:: with SMTP id d29mr18372263pgn.276.1561353925515;
-        Sun, 23 Jun 2019 22:25:25 -0700 (PDT)
-Received: from btopel-mobl.ger.intel.com ([192.55.54.44])
-        by smtp.gmail.com with ESMTPSA id y193sm9333002pgd.41.2019.06.23.22.25.20
+        h=x-gm-message-state:subject:date:message-id:mime-version
+         :content-transfer-encoding:cc:from:to;
+        bh=Yk5g4E1oOOxyZWouEDSkn3wBtFgCalVkAqRyr4Twh04=;
+        b=UDLRhVcsxM+kEoT+/ulpIPmBVfMqX99hEqMC989C47SzOxZBxlpcUQRiS1Gf6z+InE
+         pGPtRfvLE8PXvzPSnlhU7GScHr0xkOdjC/bEYbt3MGUTsVMtfkyAEoB7sAXqGIxFjoif
+         QVHxJvIEKwYvCVczmvrLQOV987zsMAqTbQf72DE6KQUGzMCiurfNoMRjAOswGlz/e9m+
+         q9eu6gL5Itl2uDb2Xf7EgXJzi/IiX2lYTKg32bhTPn877zJfjBmqoFUA0GykM6oI+39g
+         yHUkG+YW2fK4QZlMsJlxoLDpt6jFqT3s8ldjo9X8ddkqoJjHBf2sQRCaAaK3LzKvXQ2i
+         VUig==
+X-Gm-Message-State: APjAAAVn2XyOT4tkG8J5ILDz/XlA1dMM4d9m7ryblq5MdQ7UEShOvlxb
+        6gGdMBhIRN3Um8AY4buKi5zPyOPBlscS1Q==
+X-Google-Smtp-Source: APXvYqzwssm7ZD70bnrrYdcH/DhTHZHfURHw6XroLCE2C6HFfBMDxWngPW9zv7qCLGInB6xuxsOJDw==
+X-Received: by 2002:a17:902:ba82:: with SMTP id k2mr141275004pls.323.1561357144505;
+        Sun, 23 Jun 2019 23:19:04 -0700 (PDT)
+Received: from localhost (220-132-236-182.HINET-IP.hinet.net. [220.132.236.182])
+        by smtp.gmail.com with ESMTPSA id v9sm9874143pfm.34.2019.06.23.23.19.03
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sun, 23 Jun 2019 22:25:24 -0700 (PDT)
-From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        magnus.karlsson@intel.com, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jonathan.lemon@gmail.com
-Subject: [PATCH bpf-next] MAINTAINERS: add reviewer to maintainers entry
-Date:   Mon, 24 Jun 2019 07:24:55 +0200
-Message-Id: <20190624052455.10659-1-bjorn.topel@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        Sun, 23 Jun 2019 23:19:04 -0700 (PDT)
+Subject: net: macb: Fix compilation on systems without COMMON_CLK
+Date:   Sun, 23 Jun 2019 23:16:01 -0700
+Message-Id: <20190624061603.1704-1-palmer@sifive.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Cc:     nicolas.ferre@microchip.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+From:   Palmer Dabbelt <palmer@sifive.com>
+To:     davem@davemloft.net
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Björn Töpel <bjorn.topel@intel.com>
+Our patch to add support for the FU540-C000 broke compilation on at
+least powerpc allyesconfig, which was found as part of the linux-next
+build regression tests.  This must have somehow slipped through the
+cracks, as the patch has been reverted in linux-next for a while now.  This
+patch applies on top of the offending commit, which is the only one I've even
+tried it on as I'm not sure how this subsystem makes it to Linus.
 
-Jonathan Lemon has volunteered as an official AF_XDP reviewer. Thank
-you, Jonathan!
+This patch set fixes the issue by adding another Kconfig entry to
+conditionally enable the FU540-C000 support.  It would be less code to
+just make MACB depend on COMMON_CLK, but I'm not sure if that dependency
+would cause trouble for anyone so I didn't do it that way.  I'm happy to
+re-spin the patch to add the dependency, but as it's a very small change
+I'm also happy if you do it yourself :).
 
-Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
----
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 0cfe98a6761a..dd875578d53c 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -17284,6 +17284,7 @@ N:	xdp
- XDP SOCKETS (AF_XDP)
- M:	Björn Töpel <bjorn.topel@intel.com>
- M:	Magnus Karlsson <magnus.karlsson@intel.com>
-+R:	Jonathan Lemon <jonathan.lemon@gmail.com>
- L:	netdev@vger.kernel.org
- L:	bpf@vger.kernel.org
- S:	Maintained
--- 
-2.20.1
-
+I've also included a second patch to indicate this is a Cadence driver,
+not an Atmel driver.  As far as I know the controller is from Cadence,
+but it looks like maybe it showed up first on some Atmel chips.  I'm
+fine either way, so feel free to just drop it if you think the old name
+is better.  The only relation is that I stumbled across it when writing the
+first patch.
