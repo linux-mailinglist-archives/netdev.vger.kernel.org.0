@@ -2,80 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 07DDE51965
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 19:17:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A8CA51967
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 19:17:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732356AbfFXRRC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 13:17:02 -0400
-Received: from mail-io1-f44.google.com ([209.85.166.44]:39980 "EHLO
-        mail-io1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726628AbfFXRRC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 13:17:02 -0400
-Received: by mail-io1-f44.google.com with SMTP id n5so3816908ioc.7;
-        Mon, 24 Jun 2019 10:17:01 -0700 (PDT)
+        id S1732369AbfFXRRQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 13:17:16 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:40500 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726628AbfFXRRQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 13:17:16 -0400
+Received: by mail-pl1-f194.google.com with SMTP id a93so7282404pla.7
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 10:17:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=HKVZVeTIp0VzP4z4Uro5y3TTUO1hlLUucOTNEWyo+tU=;
-        b=kqK76VCJ2Tc+wIyI2JOQ/ZV6Fh/BExUX9pt0s72wbQbVVyV1s3YFexA2Gu8SlQXp/I
-         EtwsZB2BoZlFJ983KZ+zCm7b6Hx46/GF4b2NSjWh7Cibsg0DXEe892VrJteOTB1cH4oX
-         qtNqLS6uspEqD/Kv7ScBHkdRbALxcS/Lx/QzuVUazygm6YFZt1yG7WFkhytp0HSKX72H
-         x0m2BId2noXj/eTO969WTKThIe7izvrU6zXhLBJ0b6nid0VrT2YnaAJLuR5+rju5cVwW
-         mRvhGzNcNLwu+FZcbkOT1TVBV0gHEjmj9EuSB+Dy2PBTIzgnpRd31SbVOnGG3LWWElb2
-         D5Dw==
+         :cc;
+        bh=W5Gq+2eu7C9ykEOTkG4/e0ZCq1GlpToVxjnuUB6QS0E=;
+        b=e+m3F1Wl/WpzEh7TSomGYCUUyLBG5VXN4NoOP2r5YXQqyGWXol9jVSa5pmO2T/cZSU
+         paEaof8Tqq0P8ZksnX34rcXxeVOCqBJr9h8i8m8tXh9uwuAgeFIFwOOoGeidObCh761K
+         zx3aXOAtCHkPBAsa/rQI3E3phwlZ8uNVZ/1Wm/kTjV4PeLPkT1waFQvNgfp38x06ovPU
+         7ZtMLJBk9h/e2FO7F1xluvYWirqjH8hLVHh0uElRf9mmTxSPl8VjGsGPdDlyBl5ryA06
+         7YnsNl2ZXQGZu6SZAIZB1xHaKmaHsGrdGCibxVrrhAYAZfJD3TizhI8tqczemyuMUGjw
+         1m1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=HKVZVeTIp0VzP4z4Uro5y3TTUO1hlLUucOTNEWyo+tU=;
-        b=sgl0e1leW2n3EZ7cZRckUajBpqBZtKtfiSewpfrsVKrZwt3Q9RqpL4/brTGPwTqZCk
-         LMo3boGzDRIY2/kYnkK3SWCj4nWK83Kda4VEEKBD8/mQpSSS+Br7uJgNSUtzcZ8GWhpr
-         gZ8SmyGCMYzlAhu8BLknD8I3jaQK9/1LDrYai9/kPb7EKNFVzp4tqg+ltiisRM222IGM
-         ie7qhZV4T4xG+9IhjULrnsHDu72TjlVk6kcLFmm9gSuFbSyLHimquirODQsBZB0aRH8K
-         E+PW3xAmkXrwHnHE+FB8hmfrZgI84arOHuEwV4Vp/N/RA9Yx0LTZpKD0Gz8ksM2NAGH+
-         hrKw==
-X-Gm-Message-State: APjAAAWwq5EVPbVz4LCiAcYQI9auYU3ies39Ocy23jJeBvG4fO5IeKWb
-        r89Ek00fUj3cKyEKikz2VEZ/N2+7SHwt5bViAyw=
-X-Google-Smtp-Source: APXvYqys+HijZUTbiXSyiQ6GHQWE2ih7NaysqfQN4H4DvhAB8KcMe+qfcJYvq6imH+Gw3Fh/B+mOTRB6JLhN8F9jSlk=
-X-Received: by 2002:a5e:8f42:: with SMTP id x2mr15878117iop.35.1561396621141;
- Mon, 24 Jun 2019 10:17:01 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=W5Gq+2eu7C9ykEOTkG4/e0ZCq1GlpToVxjnuUB6QS0E=;
+        b=ntNBuslJ3kR1bDrBLUHCr/FRv3QvQZQZG2TTvSc6BKr4NPDimDz2fpY5V/lto3+OS3
+         8GE4LrB+NhbDhJCm1wubjiqRWRJ03Gmiz/wTvONSOI3PvZoxL/wfGCHyaQ0m+L3zU9Pe
+         QhcFbPt+RLW8M5tUja18wrENrEic9jOBZEeanSUYG9O7/B9zuiolmkXV2xT1S+8qZGdy
+         axEg8tMbjtKAOE0CPnFvdzdXdBLQn1Z9jmmL5qqrilzKoRnFbyJz4hWONRK9vCwBu0KP
+         bNFfAOyIsbLCvjrsHDZ4VUUDtSVE/CLtVdqd3FPMy9HQ0z8jHEyp+UKzf9SRicjdp3Mp
+         bAYw==
+X-Gm-Message-State: APjAAAVLxH1bhgltqtScBvOotu6eG/SPVmoGrbww3Ry8SGGWibyKwo+h
+        o3ORBQnoCgJaliEzewP7yHF/c9kKm5XtR1iybGGSKQ==
+X-Google-Smtp-Source: APXvYqzk3XgqisxGz6B4+5GibM3s9dZptD4wbuZSbb0l20gFK+wQJwpa1ekUEfro5xfkEGkWM6T1z3F6D+5Z2g9zMsM=
+X-Received: by 2002:a17:902:4aa3:: with SMTP id x32mr26626062pld.119.1561396634970;
+ Mon, 24 Jun 2019 10:17:14 -0700 (PDT)
 MIME-Version: 1.0
-References: <0000000000008f19f7058c10a633@google.com> <871rzj6sww.fsf@miraculix.mork.no>
- <87tvcf54qc.fsf@miraculix.mork.no>
-In-Reply-To: <87tvcf54qc.fsf@miraculix.mork.no>
-From:   Kristian Evensen <kristian.evensen@gmail.com>
-Date:   Mon, 24 Jun 2019 19:16:50 +0200
-Message-ID: <CAKfDRXjnUZx2rAVV1-9em9YyNvJbFG+vciZHihsKiu66Uz2Dgw@mail.gmail.com>
-Subject: Re: KASAN: global-out-of-bounds Read in qmi_wwan_probe
-To:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-Cc:     Hillf Danton <hdanton@sina.com>,
-        syzbot <syzbot+b68605d7fadd21510de1@syzkaller.appspotmail.com>,
-        andreyknvl@google.com, David Miller <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        Network Development <netdev@vger.kernel.org>,
-        syzkaller-bugs@googlegroups.com
+References: <20190624140109.14775-1-nicolas.dichtel@6wind.com>
+ <20190624140109.14775-2-nicolas.dichtel@6wind.com> <CAKwvOdk9yxnO_2yDwuG8ECw2o8kP=w8pvdbCqDuwO4_03rj5gw@mail.gmail.com>
+ <20190624.100609.1416082266723674267.davem@davemloft.net>
+In-Reply-To: <20190624.100609.1416082266723674267.davem@davemloft.net>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Mon, 24 Jun 2019 10:17:03 -0700
+Message-ID: <CAKwvOdmd2AooQrpPhBVhcRHGNsMoGFiXSyBA4_aBf7=oVeOx1g@mail.gmail.com>
+Subject: Re: [PATCH net v2 1/2] ipv6: constify rt6_nexthop()
+To:     David Miller <davem@davemloft.net>
+Cc:     Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        netdev@vger.kernel.org, kbuild test robot <lkp@intel.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Mon, Jun 24, 2019 at 6:26 PM Bj=C3=B8rn Mork <bjorn@mork.no> wrote:
-> Doh! Right you are.  Thanks to both you and Andrey for quick and good
-> help.
+On Mon, Jun 24, 2019 at 10:06 AM David Miller <davem@davemloft.net> wrote:
 >
-> We obviously have some bad code patterns here, since this apparently
-> worked for Kristian by pure luck.
+> From: Nick Desaulniers <ndesaulniers@google.com>
+> Date: Mon, 24 Jun 2019 09:45:14 -0700
+>
+> > https://groups.google.com/forum/#!searchin/clang-built-linux/const%7Csort:date/clang-built-linux/umkS84jS9m8/GAVVEgNYBgAJ
+>
+> Inaccessible...
+>
+>         This group either doesn't exist, or you don't have permission
+>         to access it. If you're sure this group exists, contact the
+>         Owner of the group and ask them to give you access.
 
-Thanks a lot to everyone for spotting and fixing my mistake, and sorry
-for not replying earlier. The patch from Bj=C3=B8rn is probably a candidate
-for stable as well. I don't remember exactly when the quirk was
-accepted in the kernel, but I recently submitted and got the quirk
-accepted into 4.14.
+Sorry, I set up the mailing list not too long ago, seem to have a long
+tail of permissions related issues.  I confirmed that the link was
+borked in an incognito window.  Via
+https://support.google.com/a/answer/9325317#Visibility I was able to
+change the obscure setting.  I now confirmed the above link works in
+an incognito window.  Thanks for reporting; can you please triple
+check?
 
-BR,
-Kristian
+>
+> And you mean just changing to 'const' fixes something, how?
+
+See the warning in the above link (assuming now you have access).
+Assigning a non-const variable the result of a function call that
+returns const discards the const qualifier.
+
+-- 
+Thanks,
+~Nick Desaulniers
