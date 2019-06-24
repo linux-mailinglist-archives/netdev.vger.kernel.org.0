@@ -2,52 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 880AA50CC0
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 15:54:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6494F50CC9
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 15:55:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731683AbfFXNyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 09:54:04 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:39396 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727140AbfFXNyD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 09:54:03 -0400
-Received: by mail-pg1-f196.google.com with SMTP id 196so7165424pgc.6;
-        Mon, 24 Jun 2019 06:54:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=zQjmLUgEgoPYdrEskiQd4eI/hvTCG1dio5TGPGs8EvU=;
-        b=UXviz1FYWv8LN1KB9XAPp5ETo+uB/IhP6eA5IhifyHK/8l+NW03wtZF7RX4PrIXsHx
-         dp8ULP35iE7bckUFcqETJi1pxJxGwde4NNtkPv9J6pmTKcJq7Lq0/QzBWaMH1cXxjmK1
-         VVk1vfcf54VSZJz1ijVnEwQQnYomeeJ/gRPYU++4kuF8C0B6Nb+AptRraMhGsMGuCC5U
-         kk+PG4vkVCWPqKSKvkJklXXFevySyZbuyoWMaKpu8ZKML1tybp8WFKgDuOugpXza09O2
-         ax9D28gHNmZ/4fR2gzO9BDBcY1gTo9oJJpt57uo+9h4sUyRp87sAjnYObb8pGDxn37MI
-         sroA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=zQjmLUgEgoPYdrEskiQd4eI/hvTCG1dio5TGPGs8EvU=;
-        b=jV3wuEbYwB1DE2z+wkofAR+sE0v6SaTjUYNwiL+qz2dbXJy4X+xxYhdymSLj0IktXw
-         4JA3wZPbxet8l3TT0EkcIzYIslpBWX5FaD1iyHkGzrwH0ZvsqT6EkHT6VtOJOp2vCq08
-         PK0JrlFmYKVvVwQb48Hjlf65iwAeqpjCIhFtWDzMRC1sTr6/1AbWEq0yXJPzMzEj0SPs
-         I3et15C1Sxo47d+vbeBCSm6J7j/T+1gKsHM+Ur7gaAov5PQ4d4ZkyMRxLAmBekpZztUD
-         M2Wb+RGuJey5l+ncgNFMe/L+c+J1hGTn03+6La2YX+Qjmy8JS7xkscoOSaNLkDoqGplv
-         WOrQ==
-X-Gm-Message-State: APjAAAVlFUfIAHBVw1SQ/LFzbh930oHDWIxx+OpHLC0JpXYzhiPkAtDV
-        ytYBHaHQqt25fhUnAWul09s=
-X-Google-Smtp-Source: APXvYqwsnArH+danaJWoE22SfrR+t5xwX6bWxe/Zdpf+y6WnyhMXlbKolknDOiUoSOzrR5fKf1OJdw==
-X-Received: by 2002:a17:90a:cb12:: with SMTP id z18mr23838087pjt.82.1561384442876;
-        Mon, 24 Jun 2019 06:54:02 -0700 (PDT)
-Received: from debian.net.fpt ([58.187.168.105])
-        by smtp.gmail.com with ESMTPSA id 85sm11187901pgb.52.2019.06.24.06.53.52
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 24 Jun 2019 06:54:02 -0700 (PDT)
-From:   Phong Tran <tranmanphong@gmail.com>
-To:     tranmanphong@gmail.com
+        id S1731336AbfFXNzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 09:55:15 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:53376 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728762AbfFXNzO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Jun 2019 09:55:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=KptglKiorU95pwI/pjmagyuGLuNXr9MKuaB4FPPE9s8=; b=uJ0CROumKYnIINu/Kn05ZH0uoL
+        GfiyAMb3GcFHu3H/GBB9sorrbrNTlWHcX79EvuuSUHHm3uJb0o6sXAEEY7hTrc/5+lwnEITziu049
+        oGsn/V/hBpIdbBKKOY5yOnyy8MQTaUqCBiKrLW7orid9XoeakRedtH6uFFHTsz+8OVaY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hfPQV-0005Ig-9V; Mon, 24 Jun 2019 15:54:31 +0200
+Date:   Mon, 24 Jun 2019 15:54:31 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Phong Tran <tranmanphong@gmail.com>
 Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com,
-        alexander.sverdlin@gmail.com, allison@lohutok.net, andrew@lunn.ch,
-        ast@kernel.org, bgolaszewski@baylibre.com, bpf@vger.kernel.org,
+        alexander.sverdlin@gmail.com, allison@lohutok.net, ast@kernel.org,
+        bgolaszewski@baylibre.com, bpf@vger.kernel.org,
         daniel@iogearbox.net, daniel@zonque.org, dmg@turingmachine.org,
         festevam@gmail.com, gerg@uclinux.org, gregkh@linuxfoundation.org,
         gregory.clement@bootlin.com, haojian.zhuang@gmail.com,
@@ -65,55 +46,30 @@ Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com,
         sebastian.hesselbarth@gmail.com, shawnguo@kernel.org,
         songliubraving@fb.com, sudeep.holla@arm.com, swinslow@gmail.com,
         tglx@linutronix.de, tony@atomide.com, will@kernel.org, yhs@fb.com
-Subject: [PATCH V2 15/15] ARM: vfp: cleanup cppcheck shifting errors
-Date:   Mon, 24 Jun 2019 20:51:05 +0700
-Message-Id: <20190624135105.15579-16-tranmanphong@gmail.com>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20190624135105.15579-1-tranmanphong@gmail.com>
+Subject: Re: [PATCH V2 10/15] ARM: orion5x: cleanup cppcheck shifting errors
+Message-ID: <20190624135431.GO31306@lunn.ch>
 References: <20190623151313.970-1-tranmanphong@gmail.com>
  <20190624135105.15579-1-tranmanphong@gmail.com>
+ <20190624135105.15579-11-tranmanphong@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190624135105.15579-11-tranmanphong@gmail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[arch/arm/vfp/vfpdouble.c:397]: (error) Shifting signed 32-bit value by
-31 bits is undefined behaviour
-[arch/arm/vfp/vfpdouble.c:407]: (error) Shifting signed 32-bit value by
-31 bits is undefined behaviour
-[arch/arm/vfp/vfpmodule.c:263]: (error) Shifting signed 32-bit value by
-31 bits is undefined behaviour
-[arch/arm/vfp/vfpmodule.c:264]: (error) Shifting signed 32-bit value by
-31 bits is undefined behaviour
-[arch/arm/vfp/vfpsingle.c:441]: (error) Shifting signed 32-bit value by
-31 bits is undefined behaviour
-[arch/arm/vfp/vfpsingle.c:451]: (error) Shifting signed 32-bit value by
-31 bits is undefined behaviour
+On Mon, Jun 24, 2019 at 08:51:00PM +0700, Phong Tran wrote:
+> [arch/arm/mach-orion5x/pci.c:281]: (error) Shifting signed 32-bit value
+> by 31 bits is undefined behaviour
+> [arch/arm/mach-orion5x/pci.c:305]: (error) Shifting signed 32-bit value
+> by 31 bits is undefined behaviour
+> 
+> Signed-off-by: Phong Tran <tranmanphong@gmail.com>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Signed-off-by: Phong Tran <tranmanphong@gmail.com>
----
- arch/arm/vfp/vfpinstr.h | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Thanks for swapping to the BIT macro.
 
-diff --git a/arch/arm/vfp/vfpinstr.h b/arch/arm/vfp/vfpinstr.h
-index 38dc154e39ff..8951637c58ff 100644
---- a/arch/arm/vfp/vfpinstr.h
-+++ b/arch/arm/vfp/vfpinstr.h
-@@ -57,10 +57,10 @@
- 
- #define vfp_single(inst)	(((inst) & 0x0000f00) == 0xa00)
- 
--#define FPSCR_N	(1 << 31)
--#define FPSCR_Z	(1 << 30)
--#define FPSCR_C (1 << 29)
--#define FPSCR_V	(1 << 28)
-+#define FPSCR_N	BIT(31)
-+#define FPSCR_Z	BIT(30)
-+#define FPSCR_C BIT(29)
-+#define FPSCR_V	BIT(28)
- 
- /*
-  * Since we aren't building with -mfpu=vfp, we need to code
--- 
-2.11.0
-
+       Andrew
