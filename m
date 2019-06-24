@@ -2,180 +2,276 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03A445026E
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 08:36:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5037B50296
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 08:55:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727173AbfFXGgC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 02:36:02 -0400
-Received: from mx0a-0014ca01.pphosted.com ([208.84.65.235]:14072 "EHLO
-        mx0a-0014ca01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726312AbfFXGgC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 02:36:02 -0400
-Received: from pps.filterd (m0042385.ppops.net [127.0.0.1])
-        by mx0a-0014ca01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5O6VkTL026986;
-        Sun, 23 Jun 2019 23:35:48 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=proofpoint;
- bh=AQ4H9uaYGF71LOGrIlYzKFZuvlHnBiu6MVo+x8icqo0=;
- b=j0cww7/4SwwbLLaWI0bllPkR3uNBmkRAR/p7dRliC64X/ebVbrvkPujDSif6BOmm87jE
- 912TYtCR+IEbHi8GN7QQB1f+fsaCn6+wE/UpMZnlRifOeWfCbbxeg4ytU3oWdOi25TWZ
- R/1h6jOG8rpoh6cuA9SHEq+gfamUhKb1y7Ri3+UvtxCrSUYZ8aNtIU7FeFBYRbyaVw3r
- lHcfA3IMoX8rT/ySfXg2dxvZUvm0/WKo/01Tp4b0V80CXVgmIP1oTZi267/Nss5njBl9
- CyX7fw8vtbbYx/5yBmDXCOCCl3g+HJOZ2iGuF33JW0E0Kkr8P/3/a0tNVHD4EzVElZmX tA== 
-Authentication-Results: cadence.com;
-        spf=pass smtp.mailfrom=pthombar@cadence.com
-Received: from nam04-co1-obe.outbound.protection.outlook.com (mail-co1nam04lp2053.outbound.protection.outlook.com [104.47.45.53])
-        by mx0a-0014ca01.pphosted.com with ESMTP id 2t9gvs5y80-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 23 Jun 2019 23:35:48 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AQ4H9uaYGF71LOGrIlYzKFZuvlHnBiu6MVo+x8icqo0=;
- b=sLB2g8s5wPr6af0zRiNdYQmmueF+vREqJvj7JiNA8BbW1TGfTi7KGPQPZIJwPhCsLPzbVu8CyUFcGoXYY6eAgLrgYgNGdGbaSuaCaReahl2Qv22P3bSkQk+m2Qm6KfXG5HcZAGsy5cfCuMkTM9tWLy+CyiQe5ejO6Pbo6LAvDKc=
-Received: from CO2PR07MB2469.namprd07.prod.outlook.com (10.166.94.21) by
- CO2PR07MB2726.namprd07.prod.outlook.com (10.166.201.26) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1987.13; Mon, 24 Jun 2019 06:35:44 +0000
-Received: from CO2PR07MB2469.namprd07.prod.outlook.com
- ([fe80::b9c0:ba2d:e9e8:4176]) by CO2PR07MB2469.namprd07.prod.outlook.com
- ([fe80::b9c0:ba2d:e9e8:4176%4]) with mapi id 15.20.1987.014; Mon, 24 Jun 2019
- 06:35:44 +0000
-From:   Parshuram Raju Thombare <pthombar@cadence.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Rafal Ciepiela <rafalc@cadence.com>,
-        Anil Joy Varughese <aniljoy@cadence.com>,
-        Piotr Sroka <piotrs@cadence.com>
-Subject: RE: [PATCH v4 2/5] net: macb: add support for sgmii MAC-PHY interface
-Thread-Topic: [PATCH v4 2/5] net: macb: add support for sgmii MAC-PHY
- interface
-Thread-Index: AQHVKaVHMt019Pka20mPugoFl8ah06apBQMAgAFRdiA=
-Date:   Mon, 24 Jun 2019 06:35:44 +0000
-Message-ID: <CO2PR07MB246931C79F736F39D0523D3BC1E00@CO2PR07MB2469.namprd07.prod.outlook.com>
-References: <1561281419-6030-1-git-send-email-pthombar@cadence.com>
- <1561281781-13479-1-git-send-email-pthombar@cadence.com>
- <20190623101224.nzwodgfo6vvv65cx@shell.armlinux.org.uk>
-In-Reply-To: <20190623101224.nzwodgfo6vvv65cx@shell.armlinux.org.uk>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-dg-ref: PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNccHRob21iYXJcYXBwZGF0YVxyb2FtaW5nXDA5ZDg0OWI2LTMyZDMtNGE0MC04NWVlLTZiODRiYTI5ZTM1Ylxtc2dzXG1zZy00OGU1MmYyYi05NjRhLTExZTktODRmOC0wNGQzYjAyNzc0NGFcYW1lLXRlc3RcNDhlNTJmMmMtOTY0YS0xMWU5LTg0ZjgtMDRkM2IwMjc3NDRhYm9keS50eHQiIHN6PSIyNTU5IiB0PSIxMzIwNTgzMTc0MTY2NjEwMzIiIGg9InQya3BnV1kwbm83UlJ3dG41LzNsZEthQ2JuUT0iIGlkPSIiIGJsPSIwIiBibz0iMSIvPjwvbWV0YT4=
-x-dg-rorf: 
-x-originating-ip: [14.143.9.161]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 0f81ee8c-8a8d-46dc-b55a-08d6f86e2f5f
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:CO2PR07MB2726;
-x-ms-traffictypediagnostic: CO2PR07MB2726:
-x-microsoft-antispam-prvs: <CO2PR07MB2726A11418566BC2DEB49603C1E00@CO2PR07MB2726.namprd07.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 007814487B
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(366004)(39860400002)(376002)(396003)(346002)(36092001)(189003)(199004)(66556008)(11346002)(76176011)(478600001)(76116006)(305945005)(3846002)(71200400001)(33656002)(6436002)(66946007)(2906002)(8676002)(55016002)(74316002)(25786009)(229853002)(4326008)(66476007)(53936002)(68736007)(81156014)(99286004)(52536014)(316002)(73956011)(6116002)(71190400001)(8936002)(6506007)(6246003)(86362001)(107886003)(9686003)(66446008)(64756008)(6916009)(81166006)(78486014)(486006)(7696005)(66066001)(5660300002)(14454004)(54906003)(186003)(7736002)(256004)(476003)(26005)(446003)(102836004)(55236004);DIR:OUT;SFP:1101;SCL:1;SRVR:CO2PR07MB2726;H:CO2PR07MB2469.namprd07.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: cadence.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: zKA8Hespm6ospKv5SOkGP9AEUfHfNPhgiX3a819xkoWggG3hHtIHzaJeqnFwq+yzvQWF8fV8YuLLD7UgWziZIaIVjlJ3aORDuJ5DuIxXwugE3K1bamcrJl4nd2YWEg4DyN70XaDTWQlITy62eN1SaVnE/JQ95F0HDoJML7hlAZ90a+q6LhOUgtrx6xYrWbwNwfLMAd8KpsWEik5sGUX6fq0+DE5AuEFBHN2jzx9eJQh24dALy+HmKIeBmhYkieN32A4R4YYo7wpDF4m2IAh2VY2XxL3yKKxkwuPRjYt0FmXDFFoz8BmUwVmaGqfGhzzrq+iSyOD81qw5qOp63iPatww++l8k7b+VZGo3xZxslC0bNeakEAsaKYh/oIsz1qQtuEp3kwJV218/h+B/7gOlt/KorE35iR7O80+goxi5GTA=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: cadence.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0f81ee8c-8a8d-46dc-b55a-08d6f86e2f5f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jun 2019 06:35:44.2144
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: d36035c5-6ce6-4662-a3dc-e762e61ae4c9
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: pthombar@global.cadence.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO2PR07MB2726
-X-Proofpoint-SPF-Result: pass
-X-Proofpoint-SPF-Record: v=spf1 include:spf.smktg.jp include:_spf.salesforce.com
- include:mktomail.com include:spf-0014ca01.pphosted.com
- include:spf.protection.outlook.com include:auth.msgapp.com
- include:spf.mandrillapp.com ~all
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-24_05:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_check_notspam policy=outbound_check score=0
- priorityscore=1501 malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0
- spamscore=0 clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906240055
+        id S1727198AbfFXGzr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 02:55:47 -0400
+Received: from f0-dek.dektech.com.au ([210.10.221.142]:52003 "EHLO
+        mail.dektech.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726399AbfFXGzr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 02:55:47 -0400
+X-Greylist: delayed 653 seconds by postgrey-1.27 at vger.kernel.org; Mon, 24 Jun 2019 02:55:44 EDT
+Received: from localhost (localhost [127.0.0.1])
+        by mail.dektech.com.au (Postfix) with ESMTP id 4AFEE45887;
+        Mon, 24 Jun 2019 16:44:48 +1000 (AEST)
+X-Virus-Scanned: amavisd-new at dektech.com.au
+Received: from mail.dektech.com.au ([127.0.0.1])
+        by localhost (mail2.dektech.com.au [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id fx8p1iYoQmKo; Mon, 24 Jun 2019 16:44:48 +1000 (AEST)
+Received: from cba01.dek-tpc.internal (cba01.dek-tpc.internal [172.16.83.49])
+        by mail.dektech.com.au (Postfix) with ESMTP id 316D84586B;
+        Mon, 24 Jun 2019 16:44:48 +1000 (AEST)
+Received: by cba01.dek-tpc.internal (Postfix, from userid 1014)
+        id 201671812EC; Mon, 24 Jun 2019 16:44:48 +1000 (AEST)
+From:   john.rutherford@dektech.com.au
+To:     netdev@vger.kernel.org
+Cc:     John Rutherford <john.rutherford@dektech.com.au>
+Subject: [net-next v2] tipc: add loopback device tracking
+Date:   Mon, 24 Jun 2019 16:44:35 +1000
+Message-Id: <20190624064435.22357-1-john.rutherford@dektech.com.au>
+X-Mailer: git-send-email 2.13.7
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Since node internal messages are passed directly to socket it is not
+possible to observe this message exchange via tcpdump or wireshark.
 
->> +	if (change_interface) {
->> +		if (bp->phy_interface =3D=3D PHY_INTERFACE_MODE_SGMII) {
->> +			gem_writel(bp, NCFGR, ~GEM_BIT(SGMIIEN) &
->> +				   ~GEM_BIT(PCSSEL) &
->> +				   gem_readl(bp, NCFGR));
->> +			gem_writel(bp, NCR, ~GEM_BIT(TWO_PT_FIVE_GIG) &
->> +				   gem_readl(bp, NCR));
->> +			gem_writel(bp, PCS_CTRL, gem_readl(bp, PCS_CTRL) |
->> +				   GEM_BIT(PCS_CTRL_RST));
->> +		}
->I still don't think this makes much sense, splitting the interface
->configuration between here and below.
-Do you mean splitting mac_config in two *_configure functions ?
-This was done as per Andrew's suggestion to make code mode readable
-and easy to manage by splitting MAC configuration for different interfaces.
+We now remedy this by making it possible to clone such messages and send
+the clones to the loopback interface.  The clones are dropped at reception
+and have no functional role except making the traffic visible.
 
->> +		bp->phy_interface =3D state->interface;
->> +	}
->> +
->>  	if (!phylink_autoneg_inband(mode) &&
->>  	    (bp->speed !=3D state->speed ||
->> -	     bp->duplex !=3D state->duplex)) {
->> +	     bp->duplex !=3D state->duplex ||
->> +	     change_interface)) {
->>  		u32 reg;
->>
->>  		reg =3D macb_readl(bp, NCFGR);
->>  		reg &=3D ~(MACB_BIT(SPD) | MACB_BIT(FD));
->>  		if (macb_is_gem(bp))
->>  			reg &=3D ~GEM_BIT(GBE);
->> +		macb_or_gem_writel(bp, NCFGR, reg);
->> +
->> +		if (bp->phy_interface =3D=3D PHY_INTERFACE_MODE_SGMII)
->> +			gem_writel(bp, NCFGR, GEM_BIT(SGMIIEN) |
->> +				   GEM_BIT(PCSSEL) |
->> +				   gem_readl(bp, NCFGR));
->This will only be executed when we are not using inband mode, which
->basically means it's not possible to switch to SGMII in-band mode.
-SGMII is used in default PHY mode. And above code is to program MAC to=20
-select PCS and SGMII interface.
+The feature is turned on/off by enabling/disabling the loopback "bearer"
+"eth:lo".
 
->> +
->> +		if (!interface_supported) {
->> +			netdev_err(dev, "Phy mode %s not supported",
->> +				   phy_modes(phy_mode));
->> +			goto err_out_free_netdev;
->> +		}
->> +
->>  		bp->phy_interface =3D phy_mode;
->> +	} else {
->> +		bp->phy_interface =3D phy_mode;
->> +	}
->If bp->phy_interface is PHY_INTERFACE_MODE_SGMII here, and mac_config()
->is called with state->interface =3D PHY_INTERFACE_MODE_SGMII, then
->mac_config() won't configure the MAC for the interface type - is that
->intentional?
-In mac_config configure MAC for non in-band mode, there is also check for s=
-peed, duplex
-changes. bp->speed and bp->duplex are initialized to SPEED_UNKNOWN and DUPL=
-EX_UNKNOWN
-values so it is expected that for non in band mode state contains valid spe=
-ed and duplex mode
-which are different from *_UNKNOWN values.
+Acked-by: Jon Maloy <jon.maloy@ericsson.com>
+Signed-off-by: John Rutherford <john.rutherford@dektech.com.au>
+---
+ net/tipc/bcast.c  |  4 +++-
+ net/tipc/bearer.c | 67 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ net/tipc/bearer.h |  3 +++
+ net/tipc/core.c   |  5 ++++-
+ net/tipc/core.h   | 12 ++++++++++
+ net/tipc/node.c   |  1 +
+ net/tipc/topsrv.c |  2 ++
+ 7 files changed, 92 insertions(+), 2 deletions(-)
 
-Regards,
-Parshuram Thombare
+diff --git a/net/tipc/bcast.c b/net/tipc/bcast.c
+index 6c997d4..235331d 100644
+--- a/net/tipc/bcast.c
++++ b/net/tipc/bcast.c
+@@ -406,8 +406,10 @@ int tipc_mcast_xmit(struct net *net, struct sk_buff_head *pkts,
+ 			rc = tipc_bcast_xmit(net, pkts, cong_link_cnt);
+ 	}
+ 
+-	if (dests->local)
++	if (dests->local) {
++		tipc_loopback_trace(net, &localq);
+ 		tipc_sk_mcast_rcv(net, &localq, &inputq);
++	}
+ exit:
+ 	/* This queue should normally be empty by now */
+ 	__skb_queue_purge(pkts);
+diff --git a/net/tipc/bearer.c b/net/tipc/bearer.c
+index 2bed658..27b4fd7 100644
+--- a/net/tipc/bearer.c
++++ b/net/tipc/bearer.c
+@@ -836,6 +836,12 @@ int __tipc_nl_bearer_disable(struct sk_buff *skb, struct genl_info *info)
+ 
+ 	name = nla_data(attrs[TIPC_NLA_BEARER_NAME]);
+ 
++	if (!strcmp(name, "eth:lo")) {
++		tipc_net(net)->loopback_trace = false;
++		pr_info("Disabled packet tracing on loopback interface\n");
++		return 0;
++	}
++
+ 	bearer = tipc_bearer_find(net, name);
+ 	if (!bearer)
+ 		return -EINVAL;
+@@ -881,6 +887,12 @@ int __tipc_nl_bearer_enable(struct sk_buff *skb, struct genl_info *info)
+ 
+ 	bearer = nla_data(attrs[TIPC_NLA_BEARER_NAME]);
+ 
++	if (!strcmp(bearer, "eth:lo")) {
++		tipc_net(net)->loopback_trace = true;
++		pr_info("Enabled packet tracing on loopback interface\n");
++		return 0;
++	}
++
+ 	if (attrs[TIPC_NLA_BEARER_DOMAIN])
+ 		domain = nla_get_u32(attrs[TIPC_NLA_BEARER_DOMAIN]);
+ 
+@@ -1021,6 +1033,61 @@ int tipc_nl_bearer_set(struct sk_buff *skb, struct genl_info *info)
+ 	return err;
+ }
+ 
++void tipc_clone_to_loopback(struct net *net, struct sk_buff_head *xmitq)
++{
++	struct net_device *dev = net->loopback_dev;
++	struct sk_buff *skb, *_skb;
++	int exp;
++
++	skb_queue_walk(xmitq, _skb) {
++		skb = pskb_copy(_skb, GFP_ATOMIC);
++		if (!skb)
++			continue;
++		exp = SKB_DATA_ALIGN(dev->hard_header_len - skb_headroom(skb));
++		if (exp > 0 && pskb_expand_head(skb, exp, 0, GFP_ATOMIC)) {
++			kfree_skb(skb);
++			continue;
++		}
++		skb_reset_network_header(skb);
++		skb->dev = dev;
++		skb->protocol = htons(ETH_P_TIPC);
++		dev_hard_header(skb, dev, ETH_P_TIPC, dev->dev_addr,
++				dev->dev_addr, skb->len);
++		dev_queue_xmit(skb);
++	}
++}
++
++static int tipc_loopback_rcv_pkt(struct sk_buff *skb, struct net_device *dev,
++				 struct packet_type *pt, struct net_device *od)
++{
++	consume_skb(skb);
++	return NET_RX_SUCCESS;
++}
++
++int tipc_attach_loopback(struct net *net)
++{
++	struct net_device *dev = net->loopback_dev;
++	struct tipc_net *tn = tipc_net(net);
++
++	if (!dev)
++		return -ENODEV;
++	dev_hold(dev);
++	tn->loopback_pt.dev = dev;
++	tn->loopback_pt.type = htons(ETH_P_TIPC);
++	tn->loopback_pt.func = tipc_loopback_rcv_pkt;
++	tn->loopback_trace = false;
++	dev_add_pack(&tn->loopback_pt);
++	return 0;
++}
++
++void tipc_detach_loopback(struct net *net)
++{
++	struct tipc_net *tn = tipc_net(net);
++
++	dev_remove_pack(&tn->loopback_pt);
++	dev_put(net->loopback_dev);
++}
++
+ static int __tipc_nl_add_media(struct tipc_nl_msg *msg,
+ 			       struct tipc_media *media, int nlflags)
+ {
+diff --git a/net/tipc/bearer.h b/net/tipc/bearer.h
+index 7f4c569..ef7fad9 100644
+--- a/net/tipc/bearer.h
++++ b/net/tipc/bearer.h
+@@ -232,6 +232,9 @@ void tipc_bearer_xmit(struct net *net, u32 bearer_id,
+ 		      struct tipc_media_addr *dst);
+ void tipc_bearer_bc_xmit(struct net *net, u32 bearer_id,
+ 			 struct sk_buff_head *xmitq);
++void tipc_clone_to_loopback(struct net *net, struct sk_buff_head *xmitq);
++int tipc_attach_loopback(struct net *net);
++void tipc_detach_loopback(struct net *net);
+ 
+ /* check if device MTU is too low for tipc headers */
+ static inline bool tipc_mtu_bad(struct net_device *dev, unsigned int reserve)
+diff --git a/net/tipc/core.c b/net/tipc/core.c
+index ed536c0..1867687 100644
+--- a/net/tipc/core.c
++++ b/net/tipc/core.c
+@@ -81,7 +81,9 @@ static int __net_init tipc_init_net(struct net *net)
+ 	err = tipc_bcast_init(net);
+ 	if (err)
+ 		goto out_bclink;
+-
++	err = tipc_attach_loopback(net);
++	if (err)
++		goto out_bclink;
+ 	return 0;
+ 
+ out_bclink:
+@@ -94,6 +96,7 @@ static int __net_init tipc_init_net(struct net *net)
+ 
+ static void __net_exit tipc_exit_net(struct net *net)
+ {
++	tipc_detach_loopback(net);
+ 	tipc_net_stop(net);
+ 	tipc_bcast_stop(net);
+ 	tipc_nametbl_stop(net);
+diff --git a/net/tipc/core.h b/net/tipc/core.h
+index 7a68e1b..c1c2906 100644
+--- a/net/tipc/core.h
++++ b/net/tipc/core.h
+@@ -67,6 +67,7 @@ struct tipc_link;
+ struct tipc_name_table;
+ struct tipc_topsrv;
+ struct tipc_monitor;
++void tipc_clone_to_loopback(struct net *net, struct sk_buff_head *pkts);
+ 
+ #define TIPC_MOD_VER "2.0.0"
+ 
+@@ -125,6 +126,10 @@ struct tipc_net {
+ 
+ 	/* Cluster capabilities */
+ 	u16 capabilities;
++
++	/* Tracing of node internal messages */
++	struct packet_type loopback_pt;
++	bool loopback_trace;
+ };
+ 
+ static inline struct tipc_net *tipc_net(struct net *net)
+@@ -152,6 +157,13 @@ static inline struct tipc_topsrv *tipc_topsrv(struct net *net)
+ 	return tipc_net(net)->topsrv;
+ }
+ 
++static inline void tipc_loopback_trace(struct net *net,
++				       struct sk_buff_head *pkts)
++{
++	if (unlikely(tipc_net(net)->loopback_trace))
++		tipc_clone_to_loopback(net, pkts);
++}
++
+ static inline unsigned int tipc_hashfn(u32 addr)
+ {
+ 	return addr & (NODE_HTABLE_SIZE - 1);
+diff --git a/net/tipc/node.c b/net/tipc/node.c
+index 9e106d3..7e58831 100644
+--- a/net/tipc/node.c
++++ b/net/tipc/node.c
+@@ -1439,6 +1439,7 @@ int tipc_node_xmit(struct net *net, struct sk_buff_head *list,
+ 	int rc;
+ 
+ 	if (in_own_node(net, dnode)) {
++		tipc_loopback_trace(net, list);
+ 		tipc_sk_rcv(net, list);
+ 		return 0;
+ 	}
+diff --git a/net/tipc/topsrv.c b/net/tipc/topsrv.c
+index f345662..e3a6ba1 100644
+--- a/net/tipc/topsrv.c
++++ b/net/tipc/topsrv.c
+@@ -40,6 +40,7 @@
+ #include "socket.h"
+ #include "addr.h"
+ #include "msg.h"
++#include "bearer.h"
+ #include <net/sock.h>
+ #include <linux/module.h>
+ 
+@@ -608,6 +609,7 @@ static void tipc_topsrv_kern_evt(struct net *net, struct tipc_event *evt)
+ 	memcpy(msg_data(buf_msg(skb)), evt, sizeof(*evt));
+ 	skb_queue_head_init(&evtq);
+ 	__skb_queue_tail(&evtq, skb);
++	tipc_loopback_trace(net, &evtq);
+ 	tipc_sk_rcv(net, &evtq);
+ }
+ 
+-- 
+2.11.0
+
