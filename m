@@ -2,147 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 886F4508FA
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 12:33:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E1075090A
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 12:37:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728826AbfFXKcu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 06:32:50 -0400
-Received: from mx0b-0014ca01.pphosted.com ([208.86.201.193]:10232 "EHLO
-        mx0a-0014ca01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726716AbfFXKcu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 06:32:50 -0400
-Received: from pps.filterd (m0042333.ppops.net [127.0.0.1])
-        by mx0b-0014ca01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5OASfF9016582;
-        Mon, 24 Jun 2019 03:32:38 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com; h=from : to : cc :
+        id S1728947AbfFXKg5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 06:36:57 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:29246 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726774AbfFXKg5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 06:36:57 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5OAV1Hr029003;
+        Mon, 24 Jun 2019 03:36:39 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=proofpoint;
- bh=SIzodM/1O8sKxUQR7RXb+TWq6k8pVWUGxSWg3o6QMlg=;
- b=Jkq7HmHO7gg/WNn8k4i7FtitF59kTPtNEW2v7d5r4PYYZr4jxzjkzdEvxuuhQZP3CEka
- Fpe6k8F3xDdVWwx2Uu7mO5qkvEqFGtfu9f2heZ4fLUXdrVARlxOunhWQU86RuErpElMu
- wUvbwJvmX/kTCbGkB9IR1Ct90IObsQZ/5CgO6013pu0YC1lpCF7VV/W+2iCLOTc1JBrR
- 5vOR6yWvaAvPZLyDGb47zqnz7LhZX4Z2F1WyMa9vbKdcmppgUSXqkVmMEpsVof6xom0X
- K3rWtMnIofLoDW/pHirWO1MnXyU1q0MBuzx21rZpynmn+2Ezt+jnrMfIUY5CIcaofqvq 7w== 
-Authentication-Results: cadence.com;
-        spf=pass smtp.mailfrom=pthombar@cadence.com
-Received: from nam02-cy1-obe.outbound.protection.outlook.com (mail-cys01nam02lp2051.outbound.protection.outlook.com [104.47.37.51])
-        by mx0b-0014ca01.pphosted.com with ESMTP id 2t9fwtqgq1-1
+ content-transfer-encoding : mime-version; s=pfpt0818;
+ bh=n8xvpJhSHEpJhSQUwHzBWcLEFLx7jkmRurAyQTccSRc=;
+ b=QB6sEOeJl48S6JPlzH+awhGqUXkhvNCugwbjPHJC+zkX6+aUPuZNB5lyzBKhL3p+9DKr
+ SfX484eudjjuAovScjdpX6ekgYiUW2pGtZnmNkYnMC4ARAMkTSx7INhgJa7TmE/2ERzX
+ ug24v1MXND0BQ2050Cy8WSHg9bC07L6bom440ENTwtn9jfFWF0YzFYUFTJ9V5oWZMWJX
+ HxPgvI9j1x1BP+7X5GPgU+vib2ik57JGFwxgFLbW0v7Ss/VGt0lJfP0/quXUZGmbnQWB
+ ISjB6EXaqGvbp2f/NLozh6dypP4Rw9U0vUlPmd4ohJTzdg2nZLFoRnSgdpLizyp+UXdm cw== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0b-0016f401.pphosted.com with ESMTP id 2t9kujeag4-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 24 Jun 2019 03:32:38 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com;
- s=selector1;
+        Mon, 24 Jun 2019 03:36:37 -0700
+Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Mon, 24 Jun
+ 2019 03:36:35 -0700
+Received: from NAM05-CO1-obe.outbound.protection.outlook.com (104.47.48.57) by
+ SC-EXCH03.marvell.com (10.93.176.83) with Microsoft SMTP Server (TLS) id
+ 15.0.1367.3 via Frontend Transport; Mon, 24 Jun 2019 03:36:35 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=marvell.onmicrosoft.com; s=selector2-marvell-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SIzodM/1O8sKxUQR7RXb+TWq6k8pVWUGxSWg3o6QMlg=;
- b=YerRWkBk3PSF+klJNEjKH1bSAzsUfl4FczLTQvdYRJKytGB3zwD5fXy89//SBPDqYddVvdw3TPviD2R22scABO72ikQ6qrE2CgRCxrrGWVZKzb3LKNwsXofmoci2ZI/JER9ABoWW8kuf4FZXpEpnOZW3N6eiieSP9d0an6s22OE=
-Received: from CO2PR07MB2469.namprd07.prod.outlook.com (10.166.94.21) by
- CO2PR07MB2568.namprd07.prod.outlook.com (10.166.92.151) with Microsoft SMTP
+ bh=n8xvpJhSHEpJhSQUwHzBWcLEFLx7jkmRurAyQTccSRc=;
+ b=OMvTmj45TcvBXn5OHZXJ/5uQBs+R7LQ6GiofCTi/onMq57u+VeokSmQYXbx68ZYwRM4TqzMIhp6JM9KP0DsuHSOheRTG0qZlOr6NfdiuGTRq7luplU5sh5sVhKKg4MYG90anx0RiAdAK5e78kw2BmxbZqI5sdFrDnMV9vJL36Tw=
+Received: from MN2PR18MB3182.namprd18.prod.outlook.com (10.255.236.143) by
+ MN2PR18MB3230.namprd18.prod.outlook.com (10.255.237.15) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2008.16; Mon, 24 Jun 2019 10:32:36 +0000
-Received: from CO2PR07MB2469.namprd07.prod.outlook.com
- ([fe80::b9c0:ba2d:e9e8:4176]) by CO2PR07MB2469.namprd07.prod.outlook.com
- ([fe80::b9c0:ba2d:e9e8:4176%4]) with mapi id 15.20.1987.014; Mon, 24 Jun 2019
- 10:32:36 +0000
-From:   Parshuram Raju Thombare <pthombar@cadence.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
+ 15.20.2008.13; Mon, 24 Jun 2019 10:36:30 +0000
+Received: from MN2PR18MB3182.namprd18.prod.outlook.com
+ ([fe80::9880:2b8b:52e5:b413]) by MN2PR18MB3182.namprd18.prod.outlook.com
+ ([fe80::9880:2b8b:52e5:b413%3]) with mapi id 15.20.2008.014; Mon, 24 Jun 2019
+ 10:36:30 +0000
+From:   Michal Kalderon <mkalderon@marvell.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>, Doug Ledford <dledford@redhat.com>
+CC:     Ariel Elior <aelior@marvell.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
         "davem@davemloft.net" <davem@davemloft.net>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Rafal Ciepiela <rafalc@cadence.com>,
-        Anil Joy Varughese <aniljoy@cadence.com>,
-        Piotr Sroka <piotrs@cadence.com>
-Subject: RE: [PATCH v4 2/5] net: macb: add support for sgmii MAC-PHY interface
-Thread-Topic: [PATCH v4 2/5] net: macb: add support for sgmii MAC-PHY
- interface
-Thread-Index: AQHVKaVHMt019Pka20mPugoFl8ah06apBQMAgAFRdiCAADaTgIAABQ5QgAAICQCAAAGfcA==
-Date:   Mon, 24 Jun 2019 10:32:36 +0000
-Message-ID: <CO2PR07MB246978081887C195B9005039C1E00@CO2PR07MB2469.namprd07.prod.outlook.com>
-References: <1561281419-6030-1-git-send-email-pthombar@cadence.com>
- <1561281781-13479-1-git-send-email-pthombar@cadence.com>
- <20190623101224.nzwodgfo6vvv65cx@shell.armlinux.org.uk>
- <CO2PR07MB246931C79F736F39D0523D3BC1E00@CO2PR07MB2469.namprd07.prod.outlook.com>
- <20190624093533.4vhvjmqqrucq2ixf@shell.armlinux.org.uk>
- <CO2PR07MB24699250A3773DE76B6D2E9EC1E00@CO2PR07MB2469.namprd07.prod.outlook.com>
- <20190624102224.6gudxxdaz43wrlcc@shell.armlinux.org.uk>
-In-Reply-To: <20190624102224.6gudxxdaz43wrlcc@shell.armlinux.org.uk>
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [EXT] Re: [PATCH v3 rdma-next 0/3] RDMA/qedr: Use the doorbell
+ overflow recovery mechanism for RDMA
+Thread-Topic: [EXT] Re: [PATCH v3 rdma-next 0/3] RDMA/qedr: Use the doorbell
+ overflow recovery mechanism for RDMA
+Thread-Index: AQHVIcOPS8dQZZiCAk+T2CNQdiy87KamTmsAgABA6RCAAAR7AIAEGdzA
+Date:   Mon, 24 Jun 2019 10:36:29 +0000
+Message-ID: <MN2PR18MB3182104653BC4373602BE7B9A1E00@MN2PR18MB3182.namprd18.prod.outlook.com>
+References: <20190613083819.6998-1-michal.kalderon@marvell.com>
+ <bda0321cb362bc93f5428b1df7daf69fed083656.camel@redhat.com>
+ <MN2PR18MB3182498CA8C9C7EB3259F62FA1E70@MN2PR18MB3182.namprd18.prod.outlook.com>
+ <20190621195818.GY19891@ziepe.ca>
+In-Reply-To: <20190621195818.GY19891@ziepe.ca>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-dg-ref: PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNccHRob21iYXJcYXBwZGF0YVxyb2FtaW5nXDA5ZDg0OWI2LTMyZDMtNGE0MC04NWVlLTZiODRiYTI5ZTM1Ylxtc2dzXG1zZy01ZjlmMjU2Zi05NjZiLTExZTktODRmOS0xMDY1MzBlNmVmM2VcYW1lLXRlc3RcNWY5ZjI1NzEtOTY2Yi0xMWU5LTg0ZjktMTA2NTMwZTZlZjNlYm9keS50eHQiIHN6PSIxNTEwIiB0PSIxMzIwNTg0NTk1MzE2NTgwMTIiIGg9IjhRcFpVZ28ydkprMDhMRXNBQ1V1UUdHbFBOOD0iIGlkPSIiIGJsPSIwIiBibz0iMSIvPjwvbWV0YT4=
-x-dg-rorf: 
-x-originating-ip: [14.143.9.161]
+x-originating-ip: [212.199.69.1]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b8176837-9008-472e-2ae5-08d6f88f4653
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:CO2PR07MB2568;
-x-ms-traffictypediagnostic: CO2PR07MB2568:
-x-microsoft-antispam-prvs: <CO2PR07MB25686FC60470809BBA1F7D3AC1E00@CO2PR07MB2568.namprd07.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-office365-filtering-correlation-id: 5fe59707-26a9-4cc5-d029-08d6f88fd1e1
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MN2PR18MB3230;
+x-ms-traffictypediagnostic: MN2PR18MB3230:
+x-microsoft-antispam-prvs: <MN2PR18MB32306EEFCF30074B98B6CA67A1E00@MN2PR18MB3230.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
 x-forefront-prvs: 007814487B
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39860400002)(376002)(346002)(136003)(396003)(366004)(199004)(189003)(36092001)(5660300002)(478600001)(6506007)(53936002)(33656002)(81156014)(68736007)(86362001)(3846002)(256004)(8676002)(81166006)(7736002)(229853002)(2906002)(446003)(78486014)(66446008)(11346002)(66476007)(486006)(6916009)(66556008)(71190400001)(71200400001)(476003)(73956011)(76116006)(99286004)(64756008)(66946007)(54906003)(76176011)(102836004)(55016002)(9686003)(7696005)(25786009)(107886003)(74316002)(6246003)(6116002)(6436002)(316002)(66066001)(55236004)(4326008)(8936002)(14454004)(52536014)(186003)(26005)(305945005);DIR:OUT;SFP:1101;SCL:1;SRVR:CO2PR07MB2568;H:CO2PR07MB2469.namprd07.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: cadence.com does not designate
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(346002)(376002)(39850400004)(366004)(136003)(189003)(51914003)(199004)(486006)(7736002)(74316002)(14454004)(53936002)(478600001)(66946007)(110136005)(11346002)(305945005)(66446008)(26005)(66476007)(25786009)(476003)(229853002)(99286004)(73956011)(6436002)(4326008)(33656002)(446003)(8676002)(55016002)(5660300002)(6506007)(316002)(81156014)(81166006)(54906003)(6246003)(9686003)(2906002)(86362001)(71200400001)(71190400001)(8936002)(76116006)(68736007)(52536014)(256004)(186003)(7696005)(6116002)(14444005)(3846002)(76176011)(66066001)(64756008)(66556008)(102836004);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR18MB3230;H:MN2PR18MB3182.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: marvell.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: g/M9/9XOj2li40GgixmF1n+sJTEQgJTj3Xo2k3mHedCuAZyB+YJfSP/nvmamypgas8odzN6Nqha6z1kgxxra+WBONFBYO9HfhqogyL+Yt/96pWnuwNEsIawSt4gamNqOrFtSD17+F4bmKW1sMW0oriAJMLayIlMa9X6f1+vLpkuCimssa424olT5ALaKUrWRjc0CojQq967yYzt6yob78SHecHk97N3p1ayrc7Rc6Jb99H5okVwpB6mPOHPRFdlqy7Ajmcgn27ZLIrvFPoYNw6UTLCmTKqV6rp8EE9Nx8oob1Fmt9PsBCoNnt7w3u531PJPJN13RUMEz2ApEkeACKDwCgp5wZMyCtTR5x2+3zWtpeo+iTTUIxcD8a3886RYkEPJp07LEaloN4hzFDLHzawpZyLLR12ur7sRxws+5p/k=
+x-microsoft-antispam-message-info: ddOmOGDtGjMG/zP1/7idYfwjaCHesg+qrSnj+49/Wh9Yk1bScK8IK1wfARKybTWWFFd1CrfFOlOp8n2Q9goxzcFTrvwBMNszhaZeMLUMd07ZsGCVz2mhSGXCo9SUyg74Xj6JangTgBK+jmGXKUXXoK78ENwjRs3J59stza1OSaPHQKB95DaY5+y9P+GyJB1vpDH4fnkfbJOXpc8zsgtM3ZqScqP4/WDtyGMSr6bvae8enB78I7UsdlViheIiIhsyoN8IxGH/4mxUJLHLF+bILWmcq98jEBwBqrwSMQqmdV/mLl0wTZLl5WktcGAHD40bfE525ZkpvKRx/LSMMKylmHt4n0q/8Sct3DuFSpA4/J6LcCP9tJVIEOOzUkzuQA/mBwNVtsq9UKD0hguQ3gvA1m2Kni53e53fsqq3cfN0sA0=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: cadence.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b8176837-9008-472e-2ae5-08d6f88f4653
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jun 2019 10:32:36.2380
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5fe59707-26a9-4cc5-d029-08d6f88fd1e1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jun 2019 10:36:30.2353
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: d36035c5-6ce6-4662-a3dc-e762e61ae4c9
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: pthombar@global.cadence.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO2PR07MB2568
-X-Proofpoint-SPF-Result: pass
-X-Proofpoint-SPF-Record: v=spf1 include:spf.smktg.jp include:_spf.salesforce.com
- include:mktomail.com include:spf-0014ca01.pphosted.com
- include:spf.protection.outlook.com include:auth.msgapp.com
- include:spf.mandrillapp.com ~all
+X-MS-Exchange-CrossTenant-userprincipalname: mkalderon@marvell.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR18MB3230
+X-OriginatorOrg: marvell.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-24_08:,,
  signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_check_notspam policy=outbound_check score=0
- priorityscore=1501 malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0
- spamscore=0 clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906240089
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->> >Sorry, this reply doesn't answer my question.  I'm not asking about
->> >bp->speed and bp->duplex.  I'm asking:
->> >1) why you are initialising bp->phy_interface here
->> >2) you to consider the impact that has on the mac_config() implementati=
-on
->> >  you are proposing
->> > because I think it's buggy.
->> bp->phy_interface is to store phy mode value from device tree. This is u=
-sed
->later
->> to know what phy interface user has selected for PHY-MAC. Same is used
->> to configure MAC correctly and based on your suggestion code is
->> added to handle PHY dynamically changing phy interface, in which
->> case bp->phy_interface is also updated. Though it may not be what user
->> want,
->> if phy interface is totally decided by PHY and is anyway going to be dif=
-ferent
->> from what user has selected in DT, initializing it here doesn't make sen=
-se.
->> But in case of PHY not changing phy_interface dynamically bp-
->>phy_interface need to be initialized with value from DT.
->When phylink_start() is called, you will receive a mac_config() call to
->configure the MAC for the initial operating settings, which will include
->the current PHY interface mode.  This will initially be whatever
->interface mode was passed in to phylink_create().
-Yes, and same bp->phy_interface is passed to phylink_create().
-We need this to know what phy interface is selected by user.
+> From: Jason Gunthorpe <jgg@ziepe.ca>
+> Sent: Friday, June 21, 2019 10:58 PM
+>=20
+> External Email
+>=20
+> ----------------------------------------------------------------------
+> On Fri, Jun 21, 2019 at 07:49:39PM +0000, Michal Kalderon wrote:
+> > > From: linux-rdma-owner@vger.kernel.org <linux-rdma-
+> > > owner@vger.kernel.org> On Behalf Of Doug Ledford
+> > >
+> > > On Thu, 2019-06-13 at 11:38 +0300, Michal Kalderon wrote:
+> > > > This patch series used the doorbell overflow recovery mechanism
+> > > > introduced in commit 36907cd5cd72 ("qed: Add doorbell overflow
+> > > > recovery mechanism") for rdma ( RoCE and iWARP )
+> > > >
+> > > > rdma-core pull request #493
+> > > >
+> > > > Changes from V2:
+> > > > - Don't use long-lived kmap. Instead use user-trigger mmap for the
+> > > >   doorbell recovery entries.
+> > > > - Modify dpi_addr to be denoted with __iomem and avoid redundant
+> > > >   casts
+> > > >
+> > > > Changes from V1:
+> > > > - call kmap to map virtual address into kernel space
+> > > > - modify db_rec_delete to be void
+> > > > - remove some cpu_to_le16 that were added to previous patch which
+> are
+> > > >   correct but not related to the overflow recovery mechanism. Will =
+be
+> > > >   submitted as part of a different patch
+> > > >
+> > > >
+> > > > Michal Kalderon (3):
+> > > >   qed*: Change dpi_addr to be denoted with __iomem
+> > > >   RDMA/qedr: Add doorbell overflow recovery support
+> > > >   RDMA/qedr: Add iWARP doorbell recovery support
+> > > >
+> > > >  drivers/infiniband/hw/qedr/main.c          |   2 +-
+> > > >  drivers/infiniband/hw/qedr/qedr.h          |  27 +-
+> > > >  drivers/infiniband/hw/qedr/verbs.c         | 387
+> > > > ++++++++++++++++++++++++-----
+> > > >  drivers/net/ethernet/qlogic/qed/qed_rdma.c |   6 +-
+> > > >  include/linux/qed/qed_rdma_if.h            |   2 +-
+> > > >  include/uapi/rdma/qedr-abi.h               |  25 ++
+> > > >  6 files changed, 378 insertions(+), 71 deletions(-)
+> > > >
+> > >
+> > > Hi Michal,
+> > >
+> > > In patch 2 and 3 both, you still have quite a few casts to (u8 __iome=
+m *).
+> > > Why not just define the struct elements as u8 __iomem * instead of
+> > > void __iomem * and avoid all the casts?
+> > >
+> > Hi Doug,
+> >
+> > Thanks for the review. The remaining casts are due to pointer
+> > arithmetic and not variable assignments as before. Removing the cast
+> > entirely will require quite a lot of changes in qed and in rdma-core wh=
+ich I
+> would be happy to avoid at this time.
+>=20
+> In linux pointer math on a void * acts the same as a u8 so you should nev=
+er
+> need to cast a void * to a u8 just to do math?
+>=20
+Ok, thanks. Sent v4.
+Michal
 
-Regards,
-Parshuram Thombare
+> Jason
+
