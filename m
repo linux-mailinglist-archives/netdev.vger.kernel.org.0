@@ -2,70 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 65A2151D67
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 23:53:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A5C251D6A
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 23:53:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729990AbfFXVxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 17:53:06 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:55224 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726301AbfFXVxG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Jun 2019 17:53:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=nXnV3K3041bH5KruAWVhU8YbjxtW4QexjPRk7ueMrxw=; b=yQJ1V4usWaBbw+NMeyj/ryK2xj
-        P76Xpng2LDJXCDNb6veATOD5UX2BR1h7nI5uITh7RWHJsXSymSGylua2omlgDwdTXkuzJ0TymxYZd
-        qBmiAliSpIZZEarBxXCNTSzlOjzNSdQ7yG2y0RaUQYk7fez4x7ckQ3rE434tVbcAmI64=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hfWtM-0000jm-Dc; Mon, 24 Jun 2019 23:52:48 +0200
-Date:   Mon, 24 Jun 2019 23:52:48 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>
-Cc:     sean.wang@mediatek.com, f.fainelli@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net, matthias.bgg@gmail.com,
-        vivien.didelot@gmail.com, frank-w@public-files.de,
-        netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-mips@vger.kernel.org
-Subject: Re: [PATCH RFC net-next 5/5] net: dsa: mt7530: Add
- mediatek,ephy-handle to isolate external phy
-Message-ID: <20190624215248.GC31306@lunn.ch>
-References: <20190624145251.4849-1-opensource@vdorst.com>
- <20190624145251.4849-6-opensource@vdorst.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190624145251.4849-6-opensource@vdorst.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+        id S1732526AbfFXVxZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 17:53:25 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:33340 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726301AbfFXVxY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 17:53:24 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3BCEE133E97CE;
+        Mon, 24 Jun 2019 14:53:24 -0700 (PDT)
+Date:   Mon, 24 Jun 2019 14:53:21 -0700 (PDT)
+Message-Id: <20190624.145321.933638237488043613.davem@davemloft.net>
+To:     jakub.kicinski@netronome.com
+Cc:     snelson@pensando.io, netdev@vger.kernel.org, andrew@lunn.ch
+Subject: Re: [PATCH net-next 00/18] Add ionic driver
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190624131952.0b90206e@cakuba.netronome.com>
+References: <20190620202424.23215-1-snelson@pensando.io>
+        <20190624131952.0b90206e@cakuba.netronome.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 24 Jun 2019 14:53:24 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static int mt7530_isolate_ephy(struct dsa_switch *ds,
-> +			       struct device_node *ephy_node)
-> +{
-> +	struct phy_device *phydev = of_phy_find_device(ephy_node);
-> +	int ret;
-> +
-> +	if (!phydev)
-> +		return 0;
-> +
-> +	ret = phy_modify(phydev, MII_BMCR, 0, (BMCR_ISOLATE | BMCR_PDOWN));
+From: Jakub Kicinski <jakub.kicinski@netronome.com>
+Date: Mon, 24 Jun 2019 13:19:52 -0700
 
-genphy_suspend() does what you want.
+> On Thu, 20 Jun 2019 13:24:06 -0700, Shannon Nelson wrote:
+>>  28 files changed, 9970 insertions(+)
+> 
+> Dave, could we consider setting a LoC limit for series and patches?
+> I know this is a new driver, but there's gotta be a way to split 
+> this up more, even if it's painful for the submitter :S
+> 
+> All the debugfs stuff shouldn't be necessary in the first version,
+> just looking at first 2 patches...
 
-> +	if (ret)
-> +		dev_err(ds->dev, "Failed to put phy %s in isolation mode!\n",
-> +			ephy_node->full_name);
-> +	else
-> +		dev_info(ds->dev, "Phy %s in isolation mode!\n",
-> +			 ephy_node->full_name);
+I hear what you're saying.  But I have to balance this with the concern
+for creating a barrier for entry to submitting new drivers.
 
-No need to clog up the system with yet more kernel messages.
+However, looking from another perspective you are right that review
+burdon is not purely on a number of patches level, but rather the
+product of number of patches and lines per patch and thus LoC.
 
-   Andrew
+I'd hate to specify a hard nuber and would rather try to apply
+judgment onto individual submissions and deal with it on a case
+by case basis.
+
+If someone thinks a submission is too large, anyone can just say that
+and we'll see what happens.
+
+Thanks.
