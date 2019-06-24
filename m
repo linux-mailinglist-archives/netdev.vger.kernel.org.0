@@ -2,128 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C76B150E12
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 16:30:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53ACB50E16
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 16:31:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727406AbfFXOa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 10:30:58 -0400
-Received: from mail-eopbgr10046.outbound.protection.outlook.com ([40.107.1.46]:10158
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726376AbfFXOa5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Jun 2019 10:30:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=toXb0uLVrlzaKw47HGpiiZEZ+J9mj/8cPfrwj9NuwLI=;
- b=b6lHAwh9iRq5Q5u2cMSdC7aCNysMLuKQWG7T06pyrzWTX/0+vlE9xf/HvwqWkOtjzsjr/Is9JpGLhHhgYwbZ+F7n4x/HpX8t7OK8KR2Rn9vQLgHZs85B4asRvQTMKwpW1Fzb/17UPrU541730L1ySYh0R7W7iRoEeefZCE9cquw=
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (10.171.182.144) by
- VI1PR05MB3279.eurprd05.prod.outlook.com (10.170.238.24) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2008.16; Mon, 24 Jun 2019 14:30:51 +0000
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::f5d8:df9:731:682e]) by VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::f5d8:df9:731:682e%5]) with mapi id 15.20.2008.014; Mon, 24 Jun 2019
- 14:30:51 +0000
-From:   Jason Gunthorpe <jgg@mellanox.com>
-To:     Yishai Hadas <yishaih@dev.mellanox.co.il>
-CC:     Leon Romanovsky <leon@kernel.org>,
-        Doug Ledford <dledford@redhat.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Yishai Hadas <yishaih@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH rdma-next v1 09/12] IB/mlx5: Register DEVX with mlx5_core
- to get async events
-Thread-Topic: [PATCH rdma-next v1 09/12] IB/mlx5: Register DEVX with mlx5_core
- to get async events
-Thread-Index: AQHVJfmSu0XgQnFVQEaPQvnXI+7VUqaquooAgAAdPACAAA8agA==
-Date:   Mon, 24 Jun 2019 14:30:51 +0000
-Message-ID: <20190624143047.GD7418@mellanox.com>
-References: <20190618171540.11729-1-leon@kernel.org>
- <20190618171540.11729-10-leon@kernel.org>
- <20190624115206.GB5479@mellanox.com>
- <3bc6780f-5c3e-b121-e4ea-f7b8f00cbd13@dev.mellanox.co.il>
-In-Reply-To: <3bc6780f-5c3e-b121-e4ea-f7b8f00cbd13@dev.mellanox.co.il>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: PR0P264CA0118.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:100:19::34) To VI1PR05MB4141.eurprd05.prod.outlook.com
- (2603:10a6:803:4d::16)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=jgg@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [66.187.232.66]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f34c146f-010f-457b-902b-08d6f8b08e93
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR05MB3279;
-x-ms-traffictypediagnostic: VI1PR05MB3279:
-x-microsoft-antispam-prvs: <VI1PR05MB32790762C80296165337F66FCFE00@VI1PR05MB3279.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 007814487B
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(346002)(396003)(376002)(366004)(39860400002)(189003)(199004)(6246003)(6862004)(14454004)(5660300002)(71200400001)(52116002)(71190400001)(66946007)(53936002)(186003)(446003)(316002)(7736002)(486006)(476003)(229853002)(66476007)(8936002)(6436002)(66446008)(53546011)(25786009)(76176011)(66556008)(86362001)(64756008)(73956011)(81156014)(1076003)(8676002)(6512007)(81166006)(6506007)(99286004)(386003)(14444005)(6486002)(305945005)(26005)(102836004)(66066001)(3846002)(6116002)(2616005)(54906003)(11346002)(33656002)(36756003)(2906002)(478600001)(68736007)(4326008)(256004);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB3279;H:VI1PR05MB4141.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 3SimkgAaltii4pQy7jozAKXsOSXFsYLIbbWQHColAwdv7Nqlwy9j5on+Wg9hXwbhwmdV4yebZ/bxlqvxTZNa+8tjoM4FSsvXpg/qlhEVOOGZMTYtrBGzy47yGT63plWBJklSq9hLCo4voPIFJSi4NqaCBl4iIxP3oQAl4fBPAjkuosme9bJE8HMSP8/zYJ8lkXtwBiawuzLssP550d13TYO0XFQb6td+oFmV/ya4rFAry7WRp6SypiepICDPaa5yGC0WkYSTvjn4BxzhyYSmmEW5n733DNs3rD8ZCQY3Nu6ru4INvaH94gmKHOSO0Yu04UjNsO5rMeHMJNL33IFIXu/D8x5YE4OChdx9i8ezpkebJZAtvNxhtP/KOiNYS2O7+GB/G8KbY/0UeLjXJPJSb5KH7MiNgRci80ezqUSVsiQ=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <C68FF18D75BE184DAA10F58247D6D7A2@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1726891AbfFXObz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 10:31:55 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:38991 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726381AbfFXObz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 10:31:55 -0400
+Received: by mail-qt1-f195.google.com with SMTP id i34so14657822qta.6;
+        Mon, 24 Jun 2019 07:31:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=sVtypU4GWHEacgVvfmmVLLLgLvOwlxf2kDRa2VvrYBQ=;
+        b=ZVruZtP96IoLEkNyypwJqhTSgJ6YnuOHFrX917RuTgSB57y9Q+pb1Uo2N/xpOxs7yf
+         fCUbZtCzTwf6UwVYA+kqaa9lMHw6eBqNlVJpZsX9wGszIKtWjSGa6WujG3vnk6p4djmt
+         dmnx9xuSAi8VLsEeqJnm7d96wLqCl6KNRtdDstJpau1rTrLq4LMDAifwfKXBDhrui3+K
+         4ZLq+TVJmU/jxX/HTkZDOczUFbYrzAuATdCVdQg01Sq86fctikKBKMtAcN5JgkS8FZOv
+         byTTY2WSbIl62DYlaeZIpS5JxvVRsmCAmJYU2LorEr0mjkWZUVeul1Mp1ifV838MNoe2
+         yGgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=sVtypU4GWHEacgVvfmmVLLLgLvOwlxf2kDRa2VvrYBQ=;
+        b=Zkp532TDObgikhSmLNSwgso9hLwHfsgADgfBqg7CpotW6emsnPpp0f/zVVxSLTkivZ
+         C/DfFTHGiT4PJODWmDFTqXcCFScWEYfWqeBd2Z7kUFyHygIg24TQhH6HOwftdVk/iKbc
+         4IVNzB9tcqCafNXOAGH4mfn6gc+s4G8/IKGrUHAT473D8NL5Wkraj/kWzpoFCLqkQ9aD
+         9DP6z6vnm0iDq8yI8umfRty8lZ5fmhO8gUsCArPFwEVnvqbJQOYkDifIjhyrnmNXHX+d
+         udIfa0VPvG4LI0IArTLh8Se6cm7+iCahx0xIHCZ0JKBws+h8KskDkBIqXvRbn5FTKKic
+         QCcw==
+X-Gm-Message-State: APjAAAWIIqO8czp8IHa4IxlkbIafiScyuwwU8V188hcBY0fNZJOEHFLG
+        m37Y2Q6cNskC9pqP3D18NBPpapqA2wmBnm8YX0Y=
+X-Google-Smtp-Source: APXvYqwAW3w08f3oZ69dGFCTKo1OTjPVYf5ev9zdr256/Xqvra9e0ccYdfVo8LB42FI5PzP+fHj+Ry92VjocaRUuC5E=
+X-Received: by 2002:ac8:4442:: with SMTP id m2mr50657396qtn.107.1561386713971;
+ Mon, 24 Jun 2019 07:31:53 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f34c146f-010f-457b-902b-08d6f8b08e93
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jun 2019 14:30:51.2310
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: jgg@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB3279
+References: <20190620090958.2135-1-kevin.laatz@intel.com> <20190620090958.2135-4-kevin.laatz@intel.com>
+In-Reply-To: <20190620090958.2135-4-kevin.laatz@intel.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Mon, 24 Jun 2019 16:31:42 +0200
+Message-ID: <CAJ+HfNgkJJZhbUbK-DU70tNMRjT62WVO5_asCiX28zGQkHhmsg@mail.gmail.com>
+Subject: Re: [PATCH 03/11] xdp: add offset param to zero_copy_allocator
+To:     Kevin Laatz <kevin.laatz@intel.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        bpf <bpf@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        Bruce Richardson <bruce.richardson@intel.com>,
+        ciara.loftus@intel.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 24, 2019 at 04:36:44PM +0300, Yishai Hadas wrote:
-> On 6/24/2019 2:52 PM, Jason Gunthorpe wrote:
-> > On Tue, Jun 18, 2019 at 08:15:37PM +0300, Leon Romanovsky wrote:
-> > >   void __mlx5_ib_remove(struct mlx5_ib_dev *dev,
-> > > diff --git a/drivers/infiniband/hw/mlx5/mlx5_ib.h b/drivers/infiniban=
-d/hw/mlx5/mlx5_ib.h
-> > > index 9cf23ae6324e..556af34b788b 100644
-> > > +++ b/drivers/infiniband/hw/mlx5/mlx5_ib.h
-> > > @@ -944,6 +944,13 @@ struct mlx5_ib_pf_eq {
-> > >   	mempool_t *pool;
-> > >   };
-> > > +struct mlx5_devx_event_table {
-> > > +	struct mlx5_nb devx_nb;
-> > > +	/* serialize updating the event_xa */
-> > > +	struct mutex event_xa_lock;
-> > > +	struct xarray event_xa;
-> > > +};
-> > > +
-> > >   struct mlx5_ib_dev {
-> > >   	struct ib_device		ib_dev;
-> > >   	struct mlx5_core_dev		*mdev;
-> > > @@ -994,6 +1001,7 @@ struct mlx5_ib_dev {
-> > >   	struct mlx5_srq_table   srq_table;
-> > >   	struct mlx5_async_ctx   async_ctx;
-> > >   	int			free_port;
-> > > +	struct mlx5_devx_event_table devx_event_table;
-> >=20
-> > I really question if adding all these structs really does anything for
-> > readability..
-> >=20
->=20
-> I would prefer this option to add only one structure (i.e.
-> mlx5_devx_event_table) on ib_dev, it will hold internally the other relat=
-ed
-> stuff.
+On Thu, 20 Jun 2019 at 19:25, Kevin Laatz <kevin.laatz@intel.com> wrote:
+>
+> This patch adds an offset parameter for zero_copy_allocator.
+>
+> This change is required for the unaligned chunk mode which will come late=
+r
+> in this patch set. The offset parameter is required for calculating the
+> original handle in unaligned mode since we can't easily mask back to it
+> like in the aligned case.
+>
+> Signed-off-by: Kevin Laatz <kevin.laatz@intel.com>
 
-It seems confounding but generally is the style in this struct :\
+Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
 
-Jason
+
+> ---
+>  include/net/xdp.h |  3 ++-
+>  net/core/xdp.c    | 11 ++++++-----
+>  2 files changed, 8 insertions(+), 6 deletions(-)
+>
+> diff --git a/include/net/xdp.h b/include/net/xdp.h
+> index 0f25b3675c5c..ea801fd2bf98 100644
+> --- a/include/net/xdp.h
+> +++ b/include/net/xdp.h
+> @@ -53,7 +53,8 @@ struct xdp_mem_info {
+>  struct page_pool;
+>
+>  struct zero_copy_allocator {
+> -       void (*free)(struct zero_copy_allocator *zca, unsigned long handl=
+e);
+> +       void (*free)(struct zero_copy_allocator *zca, unsigned long handl=
+e,
+> +                       off_t off);
+>  };
+>
+>  struct xdp_rxq_info {
+> diff --git a/net/core/xdp.c b/net/core/xdp.c
+> index 4b2b194f4f1f..a77a7162d213 100644
+> --- a/net/core/xdp.c
+> +++ b/net/core/xdp.c
+> @@ -322,7 +322,7 @@ EXPORT_SYMBOL_GPL(xdp_rxq_info_reg_mem_model);
+>   * of xdp_frames/pages in those cases.
+>   */
+>  static void __xdp_return(void *data, struct xdp_mem_info *mem, bool napi=
+_direct,
+> -                        unsigned long handle)
+> +                        unsigned long handle, off_t off)
+>  {
+>         struct xdp_mem_allocator *xa;
+>         struct page *page;
+> @@ -353,7 +353,7 @@ static void __xdp_return(void *data, struct xdp_mem_i=
+nfo *mem, bool napi_direct,
+>                 rcu_read_lock();
+>                 /* mem->id is valid, checked in xdp_rxq_info_reg_mem_mode=
+l() */
+>                 xa =3D rhashtable_lookup(mem_id_ht, &mem->id, mem_id_rht_=
+params);
+> -               xa->zc_alloc->free(xa->zc_alloc, handle);
+> +               xa->zc_alloc->free(xa->zc_alloc, handle, off);
+>                 rcu_read_unlock();
+>         default:
+>                 /* Not possible, checked in xdp_rxq_info_reg_mem_model() =
+*/
+> @@ -363,19 +363,20 @@ static void __xdp_return(void *data, struct xdp_mem=
+_info *mem, bool napi_direct,
+>
+>  void xdp_return_frame(struct xdp_frame *xdpf)
+>  {
+> -       __xdp_return(xdpf->data, &xdpf->mem, false, 0);
+> +       __xdp_return(xdpf->data, &xdpf->mem, false, 0, 0);
+>  }
+>  EXPORT_SYMBOL_GPL(xdp_return_frame);
+>
+>  void xdp_return_frame_rx_napi(struct xdp_frame *xdpf)
+>  {
+> -       __xdp_return(xdpf->data, &xdpf->mem, true, 0);
+> +       __xdp_return(xdpf->data, &xdpf->mem, true, 0, 0);
+>  }
+>  EXPORT_SYMBOL_GPL(xdp_return_frame_rx_napi);
+>
+>  void xdp_return_buff(struct xdp_buff *xdp)
+>  {
+> -       __xdp_return(xdp->data, &xdp->rxq->mem, true, xdp->handle);
+> +       __xdp_return(xdp->data, &xdp->rxq->mem, true, xdp->handle,
+> +                       xdp->data - xdp->data_hard_start);
+>  }
+>  EXPORT_SYMBOL_GPL(xdp_return_buff);
+>
+> --
+> 2.17.1
+>
