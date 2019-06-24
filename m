@@ -2,116 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ACB2451937
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 19:03:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A640D5193F
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 19:04:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729130AbfFXRDN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 13:03:13 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:53517 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728271AbfFXRDN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 13:03:13 -0400
-Received: by mail-wm1-f68.google.com with SMTP id x15so91793wmj.3
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 10:03:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dev-mellanox-co-il.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=0C2e1A1aXVp8J6zVjc9tXUTAJcFU7AL/DG7qB6u941o=;
-        b=NdwV/mIfMiC13hnlsDmxa3A9e4BdR437jykUHpAvUwNktsFbmfg2+mXgojOeXxqm/K
-         SacJQ1s+zF5+YWj454NaavpJ0iZaNabohE5OL5vxIbBOzTDcJIY7ckRygH01nIjSGrUC
-         nmCdaQmZCb+sTys3K4KQvBxKxTCNzEBbgAL6jmafbSEhih5cKFgN3V+pkm23gh5aTM/z
-         v0j/X/FiED/3hpY8DfJZXnDTGNUai07Zi+ZSRmK+jV2ny8w65MmqKMDVpU0NajgJ7Oti
-         BY8MI6QHKFaybP7BJ2qdpODNBlgUbB22612CwdwRALyj8kE8rkqKMj08QM6WMlFwpjPB
-         gFlA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=0C2e1A1aXVp8J6zVjc9tXUTAJcFU7AL/DG7qB6u941o=;
-        b=Xn03+CrhaNv6h98GM2602u38EhZRjQ5nPPgwdsptaMKC1LuYmwaBBHAxjDwGsk0O5r
-         9X7pjrubALqz5Wo30bp7Pbf9ObrNMzD7NEalVsZ9YwOxlBVh8w8HTENQwNSSBLMkyw1Z
-         UqxlTcuTZB0kvwW/viwZ3sS1tQrucAWtX1V1ZbWdVDHWPbwQ4q0hOiKigo/q9e5BwBpC
-         QabgKOFhRJTqcQtg+KKS4xiLNDLdYoYd+2OkUvmXKG0j6Hh40lvL3Fgq9e0gUT+d6A0O
-         w3M8yIk5vscHEo8ZQqF22UeYIFs8MAknl5lDkskyiDW+b03PYNrepyoSK62KGNzS8m8K
-         hjFA==
-X-Gm-Message-State: APjAAAVF8IAvTClCFkhVvg/efiv99cnk+RF7opgZyfVHhx8tQXzB5eNv
-        BmVquKwygNPtXCpUxmxmB8ICs+aoD6c=
-X-Google-Smtp-Source: APXvYqx8hs9mDTHsoZYA0LY5tJx47I7TbUNJ6KTA5eE2Gt3MkpvlCrIShJDJjtUw+KyXch/6+BXcoA==
-X-Received: by 2002:a7b:c398:: with SMTP id s24mr12061681wmj.53.1561395791429;
-        Mon, 24 Jun 2019 10:03:11 -0700 (PDT)
-Received: from [10.8.2.125] ([193.47.165.251])
-        by smtp.googlemail.com with ESMTPSA id r4sm9774901wrv.34.2019.06.24.10.03.08
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 24 Jun 2019 10:03:11 -0700 (PDT)
-Subject: Re: [PATCH rdma-next v1 12/12] IB/mlx5: Add DEVX support for CQ
- events
-To:     Jason Gunthorpe <jgg@mellanox.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Doug Ledford <dledford@redhat.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Yishai Hadas <yishaih@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-References: <20190618171540.11729-1-leon@kernel.org>
- <20190618171540.11729-13-leon@kernel.org>
- <20190624120416.GE5479@mellanox.com>
-From:   Yishai Hadas <yishaih@dev.mellanox.co.il>
-Message-ID: <a076a050-871b-c468-f62e-95bb4f0ac2c2@dev.mellanox.co.il>
-Date:   Mon, 24 Jun 2019 20:03:07 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <20190624120416.GE5479@mellanox.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+        id S1730648AbfFXREj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 13:04:39 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:57584 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726920AbfFXREi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 13:04:38 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id DB7DC15061484;
+        Mon, 24 Jun 2019 10:04:37 -0700 (PDT)
+Date:   Mon, 24 Jun 2019 10:04:35 -0700 (PDT)
+Message-Id: <20190624.100435.1535171955176516330.davem@davemloft.net>
+To:     lucien.xin@gmail.com
+Cc:     netdev@vger.kernel.org, edumazet@google.com,
+        jon.maloy@ericsson.com, ying.xue@windriver.com,
+        tipc-discussion@lists.sourceforge.net,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [PATCHv2 net] tipc: check msg->req data len in
+ tipc_nl_compat_bearer_disable
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <58c46f0c73a4c1aea970e52de69188e2dd20d3b4.1561393699.git.lucien.xin@gmail.com>
+References: <58c46f0c73a4c1aea970e52de69188e2dd20d3b4.1561393699.git.lucien.xin@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 24 Jun 2019 10:04:38 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/24/2019 3:04 PM, Jason Gunthorpe wrote:
-> On Tue, Jun 18, 2019 at 08:15:40PM +0300, Leon Romanovsky wrote:
->> From: Yishai Hadas <yishaih@mellanox.com>
->>
->> Add DEVX support for CQ events by creating and destroying the CQ via
->> mlx5_core and set an handler to manage its completions.
->>
->> Signed-off-by: Yishai Hadas <yishaih@mellanox.com>
->> Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
->>   drivers/infiniband/hw/mlx5/devx.c | 40 +++++++++++++++++++++++++++++++
->>   1 file changed, 40 insertions(+)
->>
->> diff --git a/drivers/infiniband/hw/mlx5/devx.c b/drivers/infiniband/hw/mlx5/devx.c
->> index 49fdce95d6d9..91ccd58ebc05 100644
->> +++ b/drivers/infiniband/hw/mlx5/devx.c
->> @@ -19,9 +19,12 @@
->>   #define UVERBS_MODULE_NAME mlx5_ib
->>   #include <rdma/uverbs_named_ioctl.h>
->>   
->> +static void dispatch_event_fd(struct list_head *fd_list, const void *data);
->> +
->>   enum devx_obj_flags {
->>   	DEVX_OBJ_FLAGS_INDIRECT_MKEY = 1 << 0,
->>   	DEVX_OBJ_FLAGS_DCT = 1 << 1,
->> +	DEVX_OBJ_FLAGS_CQ = 1 << 2,
->>   };
->>   
->>   struct devx_async_data {
->> @@ -94,6 +97,7 @@ struct devx_async_event_file {
->>   #define MLX5_MAX_DESTROY_INBOX_SIZE_DW MLX5_ST_SZ_DW(delete_fte_in)
->>   struct devx_obj {
->>   	struct mlx5_core_dev	*mdev;
->> +	struct mlx5_ib_dev	*ib_dev;
-> 
-> This seems strange, why would we need to store the core_dev and the ib_dev
-> in a struct when ibdev->mdev == core_dev?
-> 
+From: Xin Long <lucien.xin@gmail.com>
+Date: Tue, 25 Jun 2019 00:28:19 +0800
 
-We need to add the ib_dev as we can't access it from the core_dev.
-Most of this patch we can probably go and drop the mdev and access it 
-from ib_dev, I preferred to not handle that in this patch.
+> This patch is to fix an uninit-value issue, reported by syzbot:
+ ...
+> TLV_GET_DATA_LEN() may return a negtive int value, which will be
+> used as size_t (becoming a big unsigned long) passed into memchr,
+> cause this issue.
+> 
+> Similar to what it does in tipc_nl_compat_bearer_enable(), this
+> fix is to return -EINVAL when TLV_GET_DATA_LEN() is negtive in
+> tipc_nl_compat_bearer_disable(), as well as in
+> tipc_nl_compat_link_stat_dump() and tipc_nl_compat_link_reset_stats().
+> 
+> v1->v2:
+>   - add the missing Fixes tags per Eric's request.
+> 
+> Fixes: 0762216c0ad2 ("tipc: fix uninit-value in tipc_nl_compat_bearer_enable")
+> Fixes: 8b66fee7f8ee ("tipc: fix uninit-value in tipc_nl_compat_link_reset_stats")
+> Reported-by: syzbot+30eaa8bf392f7fafffaf@syzkaller.appspotmail.com
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
 
+Applied and queued up for -stable, thanks.
