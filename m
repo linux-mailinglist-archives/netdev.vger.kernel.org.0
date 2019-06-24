@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7564E50CE6
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 15:58:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC0A750CF5
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 15:58:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729142AbfFXN55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 09:57:57 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:34784 "EHLO
+        id S1731706AbfFXN6f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 09:58:35 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:34828 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728664AbfFXN55 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 09:57:57 -0400
+        with ESMTP id S1727170AbfFXN6e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 09:58:34 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
         MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=J+znOVyKIP4YC32RqBS1C9KhPqih43zJm7vHjG7mLE8=; b=L0aOs5+8LuV5WNLDJCJxTC4o+
-        6AyC48v+UQfYq79WfO5ytWyy4l5TcxrddC2ehtlDX95f4oqzxU2LzggM2duS1PZ4cwD2cFJF42Rdv
-        QEgl94LTcRYgdyeVQP7kK9hiz/G5QBRMNksBnGjaQb57612kM8csbmJCvPMI7Fr2DJ71gKKKKRxs3
-        JNEWhrrTfkSfe5u/pKMmhV1bd8An723+q2VvIKyFAddQAJW8fpFhqhSgQb+Z+TVN4yT9Tho2Xkl7U
-        70pH3gJyMz8ZtAq4vjt87Jlt4bmjhS83h5iFJfdz791q7KRqREIkmOK05+LjkAPYWZal68fqnn7WA
-        G8evw7PpA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:59936)
+         bh=5smB2m4Y0klWGWmyQa1vij++fAOVw9JkYbzzRYavqp0=; b=RqvOmp3XCu8FvyJ4/NnZgL9F9
+        O+oWz0ngTcwSIz0vq1xJMc7pIDWXKVxRJsS0GDEIixdtmJvp8JkDEj03OSWb5lIP1iKSSifK7IrBt
+        5qVxBYLQJ0Nq5iS2OLrnVZ0rOpf6XH5bcGjBlB69YPrlPghhFQIZNj/xtO2MSpOHdMg25LVQ7GZXc
+        heHcRY08SNZ7sPS8jk5zUua9UQYFPzuWBilAO3eqxm/U5MxAxi+tUnyBT9UfcGnxTc6A+Z1p1sZ7o
+        MLF3aXvnzV4T6Ynia00aB8mrNldelIynZsG4wpG1V4bMhNpxEX4UOfIDX+RT8vtpNrbOonXhcJxwk
+        Yp8JldWCw==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:58948)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
         (envelope-from <linux@armlinux.org.uk>)
-        id 1hfPTZ-0008PC-EF; Mon, 24 Jun 2019 14:57:41 +0100
+        id 1hfPUA-0008Pi-EE; Mon, 24 Jun 2019 14:58:18 +0100
 Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
         (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hfPTN-0006L1-Tn; Mon, 24 Jun 2019 14:57:29 +0100
-Date:   Mon, 24 Jun 2019 14:57:29 +0100
+        id 1hfPU6-0006L9-0v; Mon, 24 Jun 2019 14:58:14 +0100
+Date:   Mon, 24 Jun 2019 14:58:13 +0100
 From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
 To:     Phong Tran <tranmanphong@gmail.com>
 Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com,
@@ -54,79 +54,46 @@ Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com,
         shawnguo@kernel.org, songliubraving@fb.com, sudeep.holla@arm.com,
         swinslow@gmail.com, tglx@linutronix.de, tony@atomide.com,
         will@kernel.org, yhs@fb.com
-Subject: Re: [PATCH V2 12/15] ARM: vexpress: cleanup cppcheck shifting error
-Message-ID: <20190624135729.q6k5hjq3ajwhi4gb@shell.armlinux.org.uk>
+Subject: Re: [PATCH V2 04/15] ARM: exynos: cleanup cppcheck shifting error
+Message-ID: <20190624135813.ojywq36nljk4ukyj@shell.armlinux.org.uk>
 References: <20190623151313.970-1-tranmanphong@gmail.com>
  <20190624135105.15579-1-tranmanphong@gmail.com>
- <20190624135105.15579-13-tranmanphong@gmail.com>
+ <20190624135105.15579-5-tranmanphong@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190624135105.15579-13-tranmanphong@gmail.com>
+In-Reply-To: <20190624135105.15579-5-tranmanphong@gmail.com>
 User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 24, 2019 at 08:51:02PM +0700, Phong Tran wrote:
-> [arch/arm/mach-vexpress/spc.c:366]: (error) Shifting signed 32-bit value
-> by 31 bits is undefined behaviour
+On Mon, Jun 24, 2019 at 08:50:54PM +0700, Phong Tran wrote:
+> [arch/arm/mach-exynos/suspend.c:288]: (error) Shifting signed 32-bit
+> value by 31 bits is undefined behaviour
 > 
 > Signed-off-by: Phong Tran <tranmanphong@gmail.com>
 > ---
->  arch/arm/mach-vexpress/spc.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
+>  arch/arm/mach-exynos/suspend.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/arch/arm/mach-vexpress/spc.c b/arch/arm/mach-vexpress/spc.c
-> index 0f5381d13494..425ce633667a 100644
-> --- a/arch/arm/mach-vexpress/spc.c
-> +++ b/arch/arm/mach-vexpress/spc.c
-> @@ -57,8 +57,8 @@
->  
->  /* SPC CPU/cluster reset statue */
->  #define STANDBYWFI_STAT		0x3c
-> -#define STANDBYWFI_STAT_A15_CPU_MASK(cpu)	(1 << (cpu))
-> -#define STANDBYWFI_STAT_A7_CPU_MASK(cpu)	(1 << (3 + (cpu)))
-> +#define STANDBYWFI_STAT_A15_CPU_MASK(cpu)	BIT((cpu))
-> +#define STANDBYWFI_STAT_A7_CPU_MASK(cpu)	BIT((3 + (cpu)))
+> diff --git a/arch/arm/mach-exynos/suspend.c b/arch/arm/mach-exynos/suspend.c
+> index be122af0de8f..b6a73dc5bde4 100644
+> --- a/arch/arm/mach-exynos/suspend.c
+> +++ b/arch/arm/mach-exynos/suspend.c
+> @@ -285,7 +285,7 @@ static void exynos_pm_set_wakeup_mask(void)
+>  	 * Set wake-up mask registers
+>  	 * EXYNOS_EINT_WAKEUP_MASK is set by pinctrl driver in late suspend.
+>  	 */
+> -	pmu_raw_writel(exynos_irqwake_intmask & ~(1 << 31), S5P_WAKEUP_MASK);
+> +	pmu_raw_writel(exynos_irqwake_intmask & ~(BIT(31)), S5P_WAKEUP_MASK);
 
-I guess you did this using a script, however, in the above two cases,
-you don't need the extra parens - it was necessary in the original
-though.
+Parens around BIT() are no longer required.
 
+>  }
 >  
->  /* SPC system config interface registers */
->  #define SYSCFG_WDATA		0x70
-> @@ -69,7 +69,7 @@
->  #define A7_PERFVAL_BASE		0xC30
->  
->  /* Config interface control bits */
-> -#define SYSCFG_START		(1 << 31)
-> +#define SYSCFG_START		BIT(31)
->  #define SYSCFG_SCC		(6 << 20)
->  #define SYSCFG_STAT		(14 << 20)
->  
-> @@ -90,8 +90,8 @@
->  #define CA15_DVFS	0
->  #define CA7_DVFS	1
->  #define SPC_SYS_CFG	2
-> -#define STAT_COMPLETE(type)	((1 << 0) << (type << 2))
-> -#define STAT_ERR(type)		((1 << 1) << (type << 2))
-> +#define STAT_COMPLETE(type)	(BIT(0) << (type << 2))
-> +#define STAT_ERR(type)		(BIT(1) << (type << 2))
->  #define RESPONSE_MASK(type)	(STAT_COMPLETE(type) | STAT_ERR(type))
->  
->  struct ve_spc_opp {
-> @@ -162,7 +162,7 @@ void ve_spc_cpu_wakeup_irq(u32 cluster, u32 cpu, bool set)
->  	if (cluster >= MAX_CLUSTERS)
->  		return;
->  
-> -	mask = 1 << cpu;
-> +	mask = BIT(cpu);
->  
->  	if (!cluster_is_a15(cluster))
->  		mask <<= 4;
+>  static void exynos_pm_enter_sleep_mode(void)
 > -- 
 > 2.11.0
 > 
