@@ -2,83 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FCAD51D61
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 23:51:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B21A51D62
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 23:51:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729846AbfFXVvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 17:51:09 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:46706 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726301AbfFXVvJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 17:51:09 -0400
-Received: by mail-io1-f66.google.com with SMTP id i10so771372iol.13
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 14:51:08 -0700 (PDT)
+        id S1729943AbfFXVvQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 17:51:16 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:37840 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726301AbfFXVvP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 17:51:15 -0400
+Received: by mail-qk1-f193.google.com with SMTP id d15so10992656qkl.4
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 14:51:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=PpfUZhccgL5mSq46PdVN5B+h0OQ4Od9Wcwg5XIblWi0=;
-        b=dcQ05BwUuYogvOyUojzft4cNo/8ADUwGCLnC9nQtYvG1Dnp85XanAjMRCYLdgoaeZE
-         ubPO8Xie0NV6TBeHY1vvnGmUjrkLzUlO/2Zna2NucbjChaygy5ewVfSsf9jkjtMSMGr7
-         Ikn+8Qbt0m3Pvm/OeLiDzUOAYhQnjvY4yG+MJYd5XNqTIW1JW2u33S6OwGoLhI6VaCOP
-         bSPT/UkC/TCQUF/4hx2J8U0tI58MU96Zpf/zs8Y53VdZQ7RY9nk6Cdf9JzqZCu8NJuTb
-         dyp8RF8FPhUcmTUG7CQzf+fxoYZahLyKof70tx69y6pnIfHWMS5w96WfzZpy/fc1/DnS
-         AlbQ==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=JtZJ1L4mEHJrpTVc7Bh187AF9hr6CX92oOJfS5iiy/Y=;
+        b=hOiY8m4E/HMnStttqjIul0WQDgpYs7gPSazRpvWr63oyhn/wCcYmx+5Mhr6hDEbtV6
+         TLboAg5/B/ycWKiQXyzxc1rJcFQzyVwWGLRSZvJ+G5ifq3ZaatW0ZtmEp3F9vEh4sjKB
+         n/A9WHQ28RmiGZkEq1DcOjueWko0K9TiVvvrPz5scUZ5c0H58dBcJ1oDlb1Y4rQlk8QK
+         DS5fy8FIUCPG+QfFB7VUgOij/ClIKAoFgYA0KRI/XqV+Rl6zajabbiQB1/Cco3FF4bLA
+         uwsbC5GLZ/hiv7VW3I3q2jSCgn8BWMcs46X9nQ839VQu4yemK/bCyoi/HSEWB6gc+4IR
+         w0Nw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=PpfUZhccgL5mSq46PdVN5B+h0OQ4Od9Wcwg5XIblWi0=;
-        b=gdyGO61sPL1AS5bfVA93+20APlAOIrFXk4H3Bo0yd50kBOMCvIdfD2+qCQiKaR1AeA
-         CtMv17AmzE3NMWwGXuwGbDg0QTQwwMyWcBWwo1rhp7uw/Kj/RmIi222UpTXPB0voskxh
-         qMFArQrbTRzWjw3ogzHC+vl5aRSj+XsRYEsjG7NQen0Zjx4z+CpbJuaxRbumCHdZT9x6
-         npCBp+vfOEx824vkuYs2ob46PnF5Vt5naHigwGDbsGm3C5nDee0hCE818qhJVHaPsdsB
-         mAII83Hw+6mOoGFvK4MTwhnDrxyul0sw8V7n8OMJmM2e1djTxGDxadJFs1uaUC9nj6AZ
-         HMLw==
-X-Gm-Message-State: APjAAAUeXCCfoj5CWdoC+borTDeQVM3ZyEy5GoAr60gWoBfFwDyK8JLr
-        1fwRaWzn7KQhTJwrMfrVfZE=
-X-Google-Smtp-Source: APXvYqwnK/qV2/2KeKJ6v8zYMFOg7hYwjCLwIYkcOAEKMSxc8LkdwqjXzWMNo4XuE8s9TbB1m5BHtQ==
-X-Received: by 2002:a05:6638:38f:: with SMTP id y15mr28768429jap.143.1561413068321;
-        Mon, 24 Jun 2019 14:51:08 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:f558:9f3d:eff4:2876? ([2601:282:800:fd80:f558:9f3d:eff4:2876])
-        by smtp.googlemail.com with ESMTPSA id t133sm23312613iof.21.2019.06.24.14.51.07
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 24 Jun 2019 14:51:07 -0700 (PDT)
-Subject: Re: [PATCH iproute2 0/3] do not set IPv6-only options on IPv4
- addresses
-To:     Andrea Claudi <aclaudi@redhat.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>
-References: <cover.1561394228.git.aclaudi@redhat.com>
- <20190624102041.25224fae@hermes.lan>
- <CAPpH65wG9OXhEnXd2LrL0wQc9P4G7MKQjQ4bUTHN1CVqAc6bMg@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <c344be9c-2194-c138-4fe2-cfaeb5d44cec@gmail.com>
-Date:   Mon, 24 Jun 2019 15:51:06 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=JtZJ1L4mEHJrpTVc7Bh187AF9hr6CX92oOJfS5iiy/Y=;
+        b=MN+oqChhwMYZqm4mz1jqP5dITSqAl+PYmNwC8OAyZY062OB4BcZO3+Odfs/XvG4RRt
+         U5+ksjO6/tFO7Nnb76G514nLMj+yxmDszOceYDoIXQvz9uf58lF8IC5aH8+qFumbmrgF
+         LZRXhtJeqrH9htZYkLn8Rttt5wZqFbWeKDG65mNyvU0NVTV2ryYkMEApwh3dFGdpU4um
+         3VF0Ypau9+Rz3LsfnXCnmsKpcWkaXjMQwrjWQiVSddBPkt0PQHcCD17gWuOnl92O0pj8
+         KtvX2+OTGXpzy/ol9VslSAqeoC2q7Dxc4xOi4uhYPdXFbJah1+8+wDxgfZu5QiO1NvJM
+         2mhA==
+X-Gm-Message-State: APjAAAXuq9biz1f49plyisfYFbqMmsyTOxJWtuD6wi1DIVgG40QHQoOZ
+        KqRmtPFb5+iRsADHAmlS/bheGA==
+X-Google-Smtp-Source: APXvYqzxF5p5XE8xqv/dh3qi1H+Lpwizj+C/H5xSPHDoLrx3SrdVllgN4VPFutVDi+X/UR597oPXPw==
+X-Received: by 2002:ae9:ef92:: with SMTP id d140mr18659588qkg.443.1561413074838;
+        Mon, 24 Jun 2019 14:51:14 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id v2sm6007335qtf.24.2019.06.24.14.51.13
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 24 Jun 2019 14:51:14 -0700 (PDT)
+Date:   Mon, 24 Jun 2019 14:51:11 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Takshak Chahande <ctakshak@fb.com>, netdev@vger.kernel.org,
+        ast@kernel.org, rdna@fb.com, kernel-team@fb.com,
+        Stanislav Fomichev <sdf@google.com>
+Subject: Re: [PATCH bpf-next] bpftool: Add BPF_F_QUERY_EFFECTIVE support in
+ bpftool cgroup [show|tree]
+Message-ID: <20190624145111.49176d8e@cakuba.netronome.com>
+In-Reply-To: <6fe292ee-fff0-119c-8524-e25783901167@iogearbox.net>
+References: <20190621223311.1380295-1-ctakshak@fb.com>
+        <6fe292ee-fff0-119c-8524-e25783901167@iogearbox.net>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <CAPpH65wG9OXhEnXd2LrL0wQc9P4G7MKQjQ4bUTHN1CVqAc6bMg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/24/19 3:38 PM, Andrea Claudi wrote:
-> I think that if a script wrongly uses some of these flags on a IPv4
-> address, it most probably operates on an unexpected address, since
-> everyone is aware that these flags are IPv6 only. In other words we
-> are breaking a scripted setup that is already broken.
-> In this case it's probably worth exiting with error and give the
-> author the chance to fix the script, otherwise the error can go
-> unnoticed.
+On Mon, 24 Jun 2019 16:22:25 +0200, Daniel Borkmann wrote:
+> On 06/22/2019 12:33 AM, Takshak Chahande wrote:
+> > With different bpf attach_flags available to attach bpf programs specially
+> > with BPF_F_ALLOW_OVERRIDE and BPF_F_ALLOW_MULTI, the list of effective
+> > bpf-programs available to any sub-cgroups really needs to be available for
+> > easy debugging.
+> > 
+> > Using BPF_F_QUERY_EFFECTIVE flag, one can get the list of not only attached
+> > bpf-programs to a cgroup but also the inherited ones from parent cgroup.
+> > 
+> > So "-e" option is introduced to use BPF_F_QUERY_EFFECTIVE query flag here to
+> > list all the effective bpf-programs available for execution at a specified
+> > cgroup.
+> > 
+> > Reused modified test program test_cgroup_attach from tools/testing/selftests/bpf:
+> >   # ./test_cgroup_attach
+> > 
+> > With old bpftool (without -e option):
+> > 
+> >   # bpftool cgroup show /sys/fs/cgroup/cgroup-test-work-dir/cg1/
+> >   ID       AttachType      AttachFlags     Name
+> >   271      egress          multi           pkt_cntr_1
+> >   272      egress          multi           pkt_cntr_2
+> > 
+> >   Attached new program pkt_cntr_4 in cg2 gives following:
+> > 
+> >   # bpftool cgroup show /sys/fs/cgroup/cgroup-test-work-dir/cg1/cg2
+> >   ID       AttachType      AttachFlags     Name
+> >   273      egress          override        pkt_cntr_4
+> > 
+> > And with new "-e" option it shows all effective programs for cg2:
+> > 
+> >   # bpftool -e cgroup show /sys/fs/cgroup/cgroup-test-work-dir/cg1/cg2
+> >   ID       AttachType      AttachFlags     Name
+> >   273      egress          override        pkt_cntr_4
+> >   271      egress          override        pkt_cntr_1
+> >   272      egress          override        pkt_cntr_2
+> > 
+> > Signed-off-by: Takshak Chahande <ctakshak@fb.com>
+> > Acked-by: Andrey Ignatov <rdna@fb.com>  
 > 
-> If you prefer, I can send a v2 with warnings instead of errors, just
-> let me know.
+> Applied, thanks!
 
-Recent changes for strict mode have shown people do interesting things
-with scripts and like the silent "ignores". :-(
+This is a cgroup-specific flag, right?  It should be a parameter 
+to cgroup show, not a global flag.  Can we please drop this patch 
+from the tree?
