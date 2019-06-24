@@ -2,142 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9569F50A7C
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 14:13:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 073BF50A99
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 14:22:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730094AbfFXMNL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 08:13:11 -0400
-Received: from mx0b-0014ca01.pphosted.com ([208.86.201.193]:30700 "EHLO
-        mx0a-0014ca01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726351AbfFXMNL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 08:13:11 -0400
-Received: from pps.filterd (m0042333.ppops.net [127.0.0.1])
-        by mx0b-0014ca01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5OC8lZr004723;
-        Mon, 24 Jun 2019 05:13:03 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=proofpoint;
- bh=bTZct3WyNTs8t7ljibZ5PG06Ui+Yj9uekmABLoOpIrI=;
- b=QoceIQ2JNSom9nlWIuhpe2lyQkwtVkTAmcdrLYsxfeTMoqm9Qlul0HxJUlrssS6NPiBx
- 0oIeiKaIW9rIUk1wrZevnfZEf9fZZfnocFiVRbQwKpklfJs/WgTydBRceyf6X0wMZ9/j
- J9PkHoQu84qm42oA9wTZfZF5SVzVsEdr55g2oZh0DVVYYGWnTfAbnnjlfgBqiuGzeeMO
- gel3y3a+/OwUYEYQJCxIhQVOInkYBK1HGrkXpsPhAf8FKWJSqcHq+I19uY1V3F6jq55q
- vs01Olxjfp8QDJAo6sE8a/X5mwweSGjXUEk3NmoEZoFhBIwd+NNiixPdFGAEiiaVGrja yw== 
-Authentication-Results: cadence.com;
-        spf=pass smtp.mailfrom=pthombar@cadence.com
-Received: from nam04-bn3-obe.outbound.protection.outlook.com (mail-bn3nam04lp2058.outbound.protection.outlook.com [104.47.46.58])
-        by mx0b-0014ca01.pphosted.com with ESMTP id 2t9fwtqu9m-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 24 Jun 2019 05:13:02 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bTZct3WyNTs8t7ljibZ5PG06Ui+Yj9uekmABLoOpIrI=;
- b=XsqN+dwFfWID4zrsWfp0GuCJXGAASTE58sj4kXVpI83KYIYbCbh+wMcRXovEsD2ZSrxd5wz3dXCYK6somuD95JejIsI4LD5ko69W9JzoX3+EJAVS1h3FE2LA8UXe29axz2cW/HTD25RbNKF4uhIxwQQ/uk0s0PaoMLeT28v6qgU=
-Received: from BYAPR07CA0015.namprd07.prod.outlook.com (2603:10b6:a02:bc::28)
- by BYAPR07MB6823.namprd07.prod.outlook.com (2603:10b6:a03:128::28) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2008.16; Mon, 24 Jun
- 2019 12:13:00 +0000
-Received: from BY2NAM05FT014.eop-nam05.prod.protection.outlook.com
- (2a01:111:f400:7e52::204) by BYAPR07CA0015.outlook.office365.com
- (2603:10b6:a02:bc::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.2008.16 via Frontend
- Transport; Mon, 24 Jun 2019 12:13:00 +0000
-Received-SPF: SoftFail (protection.outlook.com: domain of transitioning
- cadence.com discourages use of 158.140.1.28 as permitted sender)
-Received: from sjmaillnx1.cadence.com (158.140.1.28) by
- BY2NAM05FT014.mail.protection.outlook.com (10.152.100.151) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.2032.6 via Frontend Transport; Mon, 24 Jun 2019 12:13:00 +0000
-Received: from maileu3.global.cadence.com (maileu3.cadence.com [10.160.88.99])
-        by sjmaillnx1.cadence.com (8.14.4/8.14.4) with ESMTP id x5OCCwX0031308
-        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
-        Mon, 24 Jun 2019 05:12:59 -0700
-X-CrossPremisesHeadersFilteredBySendConnector: maileu3.global.cadence.com
-Received: from maileu3.global.cadence.com (10.160.88.99) by
- maileu3.global.cadence.com (10.160.88.99) with Microsoft SMTP Server (TLS) id
- 15.0.1367.3; Mon, 24 Jun 2019 14:12:57 +0200
-Received: from lvlogina.cadence.com (10.165.176.102) by
- maileu3.global.cadence.com (10.160.88.99) with Microsoft SMTP Server (TLS) id
- 15.0.1367.3 via Frontend Transport; Mon, 24 Jun 2019 14:12:57 +0200
-Received: from lvlogina.cadence.com (localhost.localdomain [127.0.0.1])
-        by lvlogina.cadence.com (8.14.4/8.14.4) with ESMTP id x5OCCvrc014795;
-        Mon, 24 Jun 2019 13:12:57 +0100
-From:   Parshuram Thombare <pthombar@cadence.com>
-To:     <andrew@lunn.ch>, <nicolas.ferre@microchip.com>,
-        <davem@davemloft.net>, <f.fainelli@gmail.com>
-CC:     <linux@armlinux.org.uk>, <netdev@vger.kernel.org>,
-        <hkallweit1@gmail.com>, <linux-kernel@vger.kernel.org>,
-        <rafalc@cadence.com>, <aniljoy@cadence.com>, <piotrs@cadence.com>,
-        <pthombar@cadence.com>
-Subject: [PATCH v5 5/5] net: macb: parameter added to cadence ethernet controller DT binding
-Date:   Mon, 24 Jun 2019 13:12:55 +0100
-Message-ID: <1561378375-14674-1-git-send-email-pthombar@cadence.com>
-X-Mailer: git-send-email 2.2.2
-In-Reply-To: <1561378210-11033-1-git-send-email-pthombar@cadence.com>
-References: <1561378210-11033-1-git-send-email-pthombar@cadence.com>
+        id S1729964AbfFXMWN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 08:22:13 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:45481 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726984AbfFXMWN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 08:22:13 -0400
+Received: by mail-io1-f68.google.com with SMTP id e3so1064699ioc.12
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 05:22:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vr9+zBFJhANC96gECBOzHRo21YufsdtA1x+CuBd2xUI=;
+        b=e6iLsIKq0kv4g1TfnQzLjijGX/HstIF513bDLSLdKvpHJa5t+8dbGNSnwYLFvb7bDs
+         0PfyXtxYlPID4s2bL9i+uDqIck43CKVU6NOU2XrDF0FP0pxF2D8fv0c7iW5FtXiwiPrQ
+         qBzhhlLCiLrEVDN+rPoS8bg1hnp8YeaUTNCc6HxHn8MXA8lfk2UONd60S5QPkfCRBhtJ
+         GI8L+OQvy41nXdIcdJ1xEw6bPrrjhkno2jwrZyl4XeJ8ZnI+4gI11YvdrIHMqXDN6T12
+         UJULZCL0PN2lvt/On2YZ42UDtw2U5kEnQPsGm2RJ97seAwxYhMiqqL/Nr5xQeZLGywy3
+         1CXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vr9+zBFJhANC96gECBOzHRo21YufsdtA1x+CuBd2xUI=;
+        b=fUrVeqv6IlP2Dc5+NJUaCXUC82Dhr10zJJjrtC/GtpzGJJwnKlFCFkB7mg0417K2AU
+         jvA3U+562wf5P/D+ZN9Nzeq17R5qrvvF2AaldZ1DYOtS68IJAPnnRw8RQvV4hWZsQwCh
+         5VNucr/ri44v5n/aB+kOwdYww2gJ0cMQtxUEQmHM5sd80AlXPDhu5XESpX9cHB6bUYIX
+         gbDMrxDVZ37Isu2om6APas96CsxoXbgCA1d56OWLQJKF+ri1XeKZKoNjW1Cr40Y0azOL
+         35h72vLE16H7XVzWd3y8FHCgQxU1OqaNRKk5r20unAdHTCz8cvZrJdVQQ5PxtssoSxo1
+         zoCw==
+X-Gm-Message-State: APjAAAV8BnwYSC6A6viRMzNNnh/+vWCvWt+XFtWdYiaQP6HR2bNdfzCd
+        ffBCl7SagU2gYubgWrWz6SmWbSei7D+f1Ll1sJKaTg==
+X-Google-Smtp-Source: APXvYqwu8tLfKRuo+e/fMDdCCwORFzVr8xWtQkFhdlSfUXuBhjGaNA2gKeHAvtc1b9Js8KzD3i+zLOW5Sp9cfy1iTxY=
+X-Received: by 2002:a02:a07:: with SMTP id 7mr31931243jaw.65.1561378932524;
+ Mon, 24 Jun 2019 05:22:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-OrganizationHeadersPreserved: maileu3.global.cadence.com
-X-EOPAttributedMessage: 0
-X-Forefront-Antispam-Report: CIP:158.140.1.28;IPV:CAL;SCL:-1;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(39860400002)(346002)(376002)(396003)(136003)(2980300002)(199004)(189003)(36092001)(54906003)(7696005)(51416003)(16586007)(316002)(110136005)(76176011)(478600001)(107886003)(305945005)(2906002)(7636002)(2201001)(246002)(8936002)(4326008)(486006)(446003)(86362001)(8676002)(426003)(11346002)(126002)(476003)(2616005)(7126003)(50466002)(336012)(48376002)(50226002)(76130400001)(70206006)(70586007)(356004)(53416004)(47776003)(186003)(36756003)(26005)(5660300002)(77096007)(4744005)(26826003);DIR:OUT;SFP:1101;SCL:1;SRVR:BYAPR07MB6823;H:sjmaillnx1.cadence.com;FPR:;SPF:SoftFail;LANG:en;PTR:corp.Cadence.COM;A:1;MX:1;
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d3a09d24-3a46-4f65-8e9c-08d6f89d4d12
-X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328);SRVR:BYAPR07MB6823;
-X-MS-TrafficTypeDiagnostic: BYAPR07MB6823:
-X-Microsoft-Antispam-PRVS: <BYAPR07MB68230C589CCFC434B088936BC1E00@BYAPR07MB6823.namprd07.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
-X-Forefront-PRVS: 007814487B
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Message-Info: VKkZHbspmV7E32SPuQsSyPrkX1CpLs+SFb/Y/sVimzc1TW/IrnHmlkh14506K3G86cluoHYgrJwmJSPNY0uI+wpgjKTGZJOqS6mS2Z+j8ezvJUwPSKksMP5nhxv+cb4OXotJBKrLBfh9acRkaasObmXvyOwmMp00kXs0SRAIgt+zJ2DwOwqt+22qbXsafYqd/mbQzOEUG+Rhnpn8FCZNBgLhiEKCpuVqxV/DMVhH5lpSoj88FvCbRXI2u2laPAcvXYKYQc0QfB/b38iqUhDIvDQ4KVH02ovQAoppqApRs8JRquqUmIyqbUYxqHjIepVdSId3bcPPqYuoTQxeqBEL7vfYMZKleQJIqmONrWugKbfNw5gxQlz2hqRs49IwGF9o9rAp6WNOn8FSUg3uhdk+TGBjnf4XbdIrKTDyFf/vLL4=
-X-OriginatorOrg: cadence.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2019 12:13:00.5499
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d3a09d24-3a46-4f65-8e9c-08d6f89d4d12
-X-MS-Exchange-CrossTenant-Id: d36035c5-6ce6-4662-a3dc-e762e61ae4c9
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=d36035c5-6ce6-4662-a3dc-e762e61ae4c9;Ip=[158.140.1.28];Helo=[sjmaillnx1.cadence.com]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR07MB6823
-X-Proofpoint-SPF-Result: pass
-X-Proofpoint-SPF-Record: v=spf1 include:spf.smktg.jp include:_spf.salesforce.com
- include:mktomail.com include:spf-0014ca01.pphosted.com
- include:spf.protection.outlook.com include:auth.msgapp.com
- include:spf.mandrillapp.com ~all
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-24_09:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_check_notspam policy=outbound_check score=0
- priorityscore=1501 malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0
- spamscore=0 clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906240101
+References: <000000000000d6a8ba058c0df076@google.com> <alpine.DEB.2.21.1906241130100.32342@nanos.tec.linutronix.de>
+ <CACT4Y+Y_TadXGE_CVFa4fKqrbpAD4i5WGem9StgoyP_YAVraXw@mail.gmail.com> <da83da44-0088-3056-6bba-d028b6cbb218@gmail.com>
+In-Reply-To: <da83da44-0088-3056-6bba-d028b6cbb218@gmail.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Mon, 24 Jun 2019 14:22:01 +0200
+Message-ID: <CACT4Y+bk1h+CFVdbbKau490Wjis8zt_ia8gVctGZ+bs=7qPk=Q@mail.gmail.com>
+Subject: Re: WARNING: ODEBUG bug in netdev_freemem (2)
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        syzbot <syzbot+c4521ac872a4ccc3afec@syzkaller.appspotmail.com>,
+        Alexander Duyck <alexander.h.duyck@intel.com>,
+        amritha.nambiar@intel.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        David Miller <davem@davemloft.net>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ido Schimmel <idosch@mellanox.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        tyhicks@canonical.com, wanghai26@huawei.com, yuehaibing@huawei.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-New parameters added to Cadence ethernet controller DT binding
-for USXGMII interface.
+On Mon, Jun 24, 2019 at 2:08 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> On 6/24/19 3:54 AM, Dmitry Vyukov wrote:
+> > On Mon, Jun 24, 2019 at 11:34 AM Thomas Gleixner <tglx@linutronix.de> wrote:
+> >>
+> >> On Mon, 24 Jun 2019, syzbot wrote:
+> >>
+> >>> Hello,
+> >>>
+> >>> syzbot found the following crash on:
+> >>>
+> >>> HEAD commit:    fd6b99fa Merge branch 'akpm' (patches from Andrew)
+> >>> git tree:       upstream
+> >>> console output: https://syzkaller.appspot.com/x/log.txt?x=144de256a00000
+> >>> kernel config:  https://syzkaller.appspot.com/x/.config?x=fa9f7e1b6a8bb586
+> >>> dashboard link: https://syzkaller.appspot.com/bug?extid=c4521ac872a4ccc3afec
+> >>> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> >>>
+> >>> Unfortunately, I don't have any reproducer for this crash yet.
+> >>>
+> >>> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> >>> Reported-by: syzbot+c4521ac872a4ccc3afec@syzkaller.appspotmail.com
+> >>>
+> >>> device hsr_slave_0 left promiscuous mode
+> >>> team0 (unregistering): Port device team_slave_1 removed
+> >>> team0 (unregistering): Port device team_slave_0 removed
+> >>> bond0 (unregistering): Releasing backup interface bond_slave_1
+> >>> bond0 (unregistering): Releasing backup interface bond_slave_0
+> >>> bond0 (unregistering): Released>
+>
+> all slaves
+> >>> ------------[ cut here ]------------
+> >>> ODEBUG: free active (active state 0) object type: timer_list hint:
+> >>> delayed_work_timer_fn+0x0/0x90 arch/x86/include/asm/paravirt.h:767
+> >>
+> >> One of the cleaned up devices has left an active timer which belongs to a
+> >> delayed work. That's all I can decode out of that splat. :(
+> >
+> > Hi Thomas,
+> >
+> > If ODEBUG would memorize full stack traces for object allocation
+> > (using lib/stackdepot.c), it would make this splat actionable, right?
+> > I've fixed https://bugzilla.kernel.org/show_bug.cgi?id=203969 for this.
+> >
+>
+> Not sure this would help in this case as some netdev are allocated through a generic helper.
+>
+> The driver specific portion might not show up in the stack trace.
+>
+> It would be nice here to get the work queue function pointer,
+> so that it gives us a clue which driver needs a fix.
 
-Signed-off-by: Parshuram Thombare <pthombar@cadence.com>
----
- Documentation/devicetree/bindings/net/macb.txt | 3 +++
- 1 file changed, 3 insertions(+)
+I see. But isn't the workqueue callback is cleanup_net in this case
+and is in the stack?
 
-diff --git a/Documentation/devicetree/bindings/net/macb.txt b/Documentation/devicetree/bindings/net/macb.txt
-index 63c73fafe26d..dabdf9d3b574 100644
---- a/Documentation/devicetree/bindings/net/macb.txt
-+++ b/Documentation/devicetree/bindings/net/macb.txt
-@@ -28,6 +28,9 @@ Required properties:
- 	Optional elements: 'rx_clk' applies to cdns,zynqmp-gem
- 	Optional elements: 'tsu_clk'
- - clocks: Phandles to input clocks.
-+- serdes-rate-gbps External serdes rate.Mandatory for USXGMII mode.
-+	5 - 5G
-+	10 - 10G
- 
- The MAC address will be determined using the optional properties
- defined in ethernet.txt.
--- 
-2.17.1
-
+  cleanup_net+0x3fb/0x960 net/core/net_namespace.c:553
+  process_one_work+0x989/0x1790 kernel/workqueue.c:2269
