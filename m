@@ -2,58 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A630450DBA
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 16:21:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59F0E50DBF
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 16:22:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727406AbfFXOVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 10:21:36 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:54634 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726376AbfFXOVf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 10:21:35 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 377421504100C;
-        Mon, 24 Jun 2019 07:21:35 -0700 (PDT)
-Date:   Mon, 24 Jun 2019 07:21:34 -0700 (PDT)
-Message-Id: <20190624.072134.1587556039627335168.davem@davemloft.net>
-To:     jakub.kicinski@netronome.com
-Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
-        john.fastabend@gmail.com, vakul.garg@nxp.com, borisp@mellanox.com,
-        alexei.starovoitov@gmail.com, dirk.vandermerwe@netronome.com
-Subject: Re: [PATCH net] net/tls: fix page double free on TX cleanup
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190624042658.19198-1-jakub.kicinski@netronome.com>
-References: <20190624042658.19198-1-jakub.kicinski@netronome.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1727851AbfFXOW3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 10:22:29 -0400
+Received: from www62.your-server.de ([213.133.104.62]:51574 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726376AbfFXOW3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 10:22:29 -0400
+Received: from [78.46.172.3] (helo=sslproxy06.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hfPrW-0002Yq-4f; Mon, 24 Jun 2019 16:22:27 +0200
+Received: from [178.199.41.31] (helo=linux.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hfPrV-000FLD-VJ; Mon, 24 Jun 2019 16:22:25 +0200
+Subject: Re: [PATCH bpf-next] bpftool: Add BPF_F_QUERY_EFFECTIVE support in
+ bpftool cgroup [show|tree]
+To:     Takshak Chahande <ctakshak@fb.com>, netdev@vger.kernel.org
+Cc:     ast@kernel.org, rdna@fb.com, kernel-team@fb.com
+References: <20190621223311.1380295-1-ctakshak@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <6fe292ee-fff0-119c-8524-e25783901167@iogearbox.net>
+Date:   Mon, 24 Jun 2019 16:22:25 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
+MIME-Version: 1.0
+In-Reply-To: <20190621223311.1380295-1-ctakshak@fb.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 24 Jun 2019 07:21:35 -0700 (PDT)
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25490/Mon Jun 24 10:02:14 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <jakub.kicinski@netronome.com>
-Date: Sun, 23 Jun 2019 21:26:58 -0700
+On 06/22/2019 12:33 AM, Takshak Chahande wrote:
+> With different bpf attach_flags available to attach bpf programs specially
+> with BPF_F_ALLOW_OVERRIDE and BPF_F_ALLOW_MULTI, the list of effective
+> bpf-programs available to any sub-cgroups really needs to be available for
+> easy debugging.
+> 
+> Using BPF_F_QUERY_EFFECTIVE flag, one can get the list of not only attached
+> bpf-programs to a cgroup but also the inherited ones from parent cgroup.
+> 
+> So "-e" option is introduced to use BPF_F_QUERY_EFFECTIVE query flag here to
+> list all the effective bpf-programs available for execution at a specified
+> cgroup.
+> 
+> Reused modified test program test_cgroup_attach from tools/testing/selftests/bpf:
+>   # ./test_cgroup_attach
+> 
+> With old bpftool (without -e option):
+> 
+>   # bpftool cgroup show /sys/fs/cgroup/cgroup-test-work-dir/cg1/
+>   ID       AttachType      AttachFlags     Name
+>   271      egress          multi           pkt_cntr_1
+>   272      egress          multi           pkt_cntr_2
+> 
+>   Attached new program pkt_cntr_4 in cg2 gives following:
+> 
+>   # bpftool cgroup show /sys/fs/cgroup/cgroup-test-work-dir/cg1/cg2
+>   ID       AttachType      AttachFlags     Name
+>   273      egress          override        pkt_cntr_4
+> 
+> And with new "-e" option it shows all effective programs for cg2:
+> 
+>   # bpftool -e cgroup show /sys/fs/cgroup/cgroup-test-work-dir/cg1/cg2
+>   ID       AttachType      AttachFlags     Name
+>   273      egress          override        pkt_cntr_4
+>   271      egress          override        pkt_cntr_1
+>   272      egress          override        pkt_cntr_2
+> 
+> Signed-off-by: Takshak Chahande <ctakshak@fb.com>
+> Acked-by: Andrey Ignatov <rdna@fb.com>
 
-> From: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
-> 
-> With commit 94850257cf0f ("tls: Fix tls_device handling of partial records")
-> a new path was introduced to cleanup partial records during sk_proto_close.
-> This path does not handle the SW KTLS tx_list cleanup.
-> 
-> This is unnecessary though since the free_resources calls for both
-> SW and offload paths will cleanup a partial record.
-> 
-> The visible effect is the following warning, but this bug also causes
-> a page double free.
- ...
-> Fixes: 94850257cf0f ("tls: Fix tls_device handling of partial records")
-> Signed-off-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
-> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-
-Applied and queued up for -stable, thanks.
+Applied, thanks!
