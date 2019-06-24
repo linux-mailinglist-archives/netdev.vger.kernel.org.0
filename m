@@ -2,135 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EE0D51B82
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 21:38:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CE5A51B85
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 21:40:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729432AbfFXTi2 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 24 Jun 2019 15:38:28 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:43305 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728892AbfFXTi2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 15:38:28 -0400
-Received: by mail-ed1-f66.google.com with SMTP id e3so23337064edr.10
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 12:38:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=J5Zvm1J+TAome2gTzkUPcjNi7iMvDGaTQp5+BFcjc9M=;
-        b=LMrFtgEV8JxuZHWaYsakoy1kUtkn42wfKb6/9m00NcLkF5P9+3ZQO7w3LmATF5HZz+
-         MsVNADfX57zwQ8zMoDulRQMVTvQD4Xigzm4VD6yo4ZgQqlae07OBFcHQ03OWSHN8ZSVx
-         PGigwMwC5KJxAO0cS0s4JPl7N76RcRCZoaxLTw2sYBVlrIXCyPkxUaYaKh1TEylwkkl6
-         A1YCgzQl9zp3ZWbNoVg/GIHE3o2TPdTtD9UDXhEXjVhZ+dCQgyfjeKwgU4E8vs1XiKvL
-         SmoNC72yQqQ55OVL7eJMrMw+QrdBH9W2Li451H9ua09No/WBLYTc7bqo5Pt6b7QQDw6m
-         Yzsw==
-X-Gm-Message-State: APjAAAXA+xfchGvWzzdMQwYz0fW0t6yQLJf3moGaVCzbDPEcOSn4oWrn
-        rNcz0g7yD1NUsn2iL8sZrVgGhw==
-X-Google-Smtp-Source: APXvYqzLbgrOkwphdGBpYVCxffmmcoqmcEy3Z+V3tC9c5MwO08E9lGkUJAuzhH9spXi3XYQka8wq2A==
-X-Received: by 2002:a50:aeee:: with SMTP id f43mr94107359edd.221.1561405106586;
-        Mon, 24 Jun 2019 12:38:26 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id l38sm4055404eda.1.2019.06.24.12.38.25
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 24 Jun 2019 12:38:25 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 3BE19181CA7; Mon, 24 Jun 2019 21:38:25 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Networking <netdev@vger.kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-Subject: Re: [PATCH bpf-next v5 0/3] xdp: Allow lookup into devmaps before redirect
-In-Reply-To: <CAEf4BzYFCAp7yUU80ia=C5ywDBgepeaMmVPJW8VG4gLUT=ht=A@mail.gmail.com>
-References: <156125626076.5209.13424524054109901554.stgit@alrua-x1> <CAEf4BzYFCAp7yUU80ia=C5ywDBgepeaMmVPJW8VG4gLUT=ht=A@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 24 Jun 2019 21:38:25 +0200
-Message-ID: <87y31qepu6.fsf@toke.dk>
+        id S1729740AbfFXTkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 15:40:22 -0400
+Received: from mga18.intel.com ([134.134.136.126]:32540 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726414AbfFXTkW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Jun 2019 15:40:22 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 24 Jun 2019 12:40:21 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.63,413,1557212400"; 
+   d="scan'208";a="161696199"
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 24 Jun 2019 12:40:19 -0700
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1hfUp9-000Brn-3P; Tue, 25 Jun 2019 03:40:19 +0800
+Date:   Tue, 25 Jun 2019 03:39:47 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     Marek Vasut <marex@denx.de>
+Cc:     kbuild-all@01.org, netdev@vger.kernel.org,
+        Marek Vasut <marex@denx.de>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Tristram Ha <Tristram.Ha@microchip.com>,
+        Woojung Huh <Woojung.Huh@microchip.com>
+Subject: Re: [PATCH V3 07/10] net: dsa: microchip: Initial SPI regmap support
+Message-ID: <201906250307.M3Y3iuDk%lkp@intel.com>
+References: <20190623223508.2713-8-marex@denx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190623223508.2713-8-marex@denx.de>
+X-Patchwork-Hint: ignore
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+Hi Marek,
 
-> On Sat, Jun 22, 2019 at 7:19 PM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->>
->> When using the bpf_redirect_map() helper to redirect packets from XDP, the eBPF
->> program cannot currently know whether the redirect will succeed, which makes it
->> impossible to gracefully handle errors. To properly fix this will probably
->> require deeper changes to the way TX resources are allocated, but one thing that
->> is fairly straight forward to fix is to allow lookups into devmaps, so programs
->> can at least know when a redirect is *guaranteed* to fail because there is no
->> entry in the map. Currently, programs work around this by keeping a shadow map
->> of another type which indicates whether a map index is valid.
->>
->> This series contains two changes that are complementary ways to fix this issue:
->>
->> - Moving the map lookup into the bpf_redirect_map() helper (and caching the
->>   result), so the helper can return an error if no value is found in the map.
->>   This includes a refactoring of the devmap and cpumap code to not care about
->>   the index on enqueue.
->>
->> - Allowing regular lookups into devmaps from eBPF programs, using the read-only
->>   flag to make sure they don't change the values.
->>
->> The performance impact of the series is negligible, in the sense that I cannot
->> measure it because the variance between test runs is higher than the difference
->> pre/post series.
->>
->> Changelog:
->>
->> v5:
->>   - Rebase on latest bpf-next.
->>   - Update documentation for bpf_redirect_map() with the new meaning of flags.
->>
->> v4:
->>   - Fix a few nits from Andrii
->>   - Lose the #defines in bpf.h and just compare the flags argument directly to
->>     XDP_TX in bpf_xdp_redirect_map().
->>
->> v3:
->>   - Adopt Jonathan's idea of using the lower two bits of the flag value as the
->>     return code.
->>   - Always do the lookup, and cache the result for use in xdp_do_redirect(); to
->>     achieve this, refactor the devmap and cpumap code to get rid the bitmap for
->>     selecting which devices to flush.
->>
->> v2:
->>   - For patch 1, make it clear that the change works for any map type.
->>   - For patch 2, just use the new BPF_F_RDONLY_PROG flag to make the return
->>     value read-only.
->>
->> ---
->>
->> Toke Høiland-Jørgensen (3):
->>       devmap/cpumap: Use flush list instead of bitmap
->>       bpf_xdp_redirect_map: Perform map lookup in eBPF helper
->>       devmap: Allow map lookups from eBPF
->>
->>
->>  include/linux/filter.h   |    1
->>  include/uapi/linux/bpf.h |    7 ++-
->>  kernel/bpf/cpumap.c      |  106 ++++++++++++++++++++-----------------------
->>  kernel/bpf/devmap.c      |  113 ++++++++++++++++++++++------------------------
->>  kernel/bpf/verifier.c    |    7 +--
->>  net/core/filter.c        |   29 +++++-------
->>  6 files changed, 123 insertions(+), 140 deletions(-)
->>
->
->
-> Looks like you forgot to add my Acked-by's for your patches?
+I love your patch! Perhaps something to improve:
 
-Ah yes, did not carry those forward for the individual patches, my
-apologies. Could you perhaps be persuaded to send a new one (I believe a
-response to the cover letter acking the whole series would suffice)?
-I'll make sure to add the carrying forward of acks into my workflow in
-the future :)
+[auto build test WARNING on net/master]
+[also build test WARNING on v5.2-rc6 next-20190621]
+[if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
 
--Toke
+url:    https://github.com/0day-ci/linux/commits/Marek-Vasut/net-dsa-microchip-Convert-to-regmap/20190625-021215
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.1-rc1-7-g2b96cd8-dirty
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
+
+If you fix the issue, kindly add following tag
+Reported-by: kbuild test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+
+>> drivers/net/dsa/microchip/ksz9477_spi.c:44:9: sparse: sparse: incorrect type in initializer (different base types) @@    expected unsigned long read_flag_mask @@    got restricted __beunsigned long read_flag_mask @@
+>> drivers/net/dsa/microchip/ksz9477_spi.c:44:9: sparse:    expected unsigned long read_flag_mask
+   drivers/net/dsa/microchip/ksz9477_spi.c:44:9: sparse:    got restricted __be32 [usertype]
+>> drivers/net/dsa/microchip/ksz9477_spi.c:44:9: sparse: sparse: incorrect type in initializer (different base types) @@    expected unsigned long write_flag_mask @@    got restricted __beunsigned long write_flag_mask @@
+>> drivers/net/dsa/microchip/ksz9477_spi.c:44:9: sparse:    expected unsigned long write_flag_mask
+   drivers/net/dsa/microchip/ksz9477_spi.c:44:9: sparse:    got restricted __be32 [usertype]
+   drivers/net/dsa/microchip/ksz9477_spi.c:45:9: sparse: sparse: incorrect type in initializer (different base types) @@    expected unsigned long read_flag_mask @@    got restricted __beunsigned long read_flag_mask @@
+   drivers/net/dsa/microchip/ksz9477_spi.c:45:9: sparse:    expected unsigned long read_flag_mask
+   drivers/net/dsa/microchip/ksz9477_spi.c:45:9: sparse:    got restricted __be32 [usertype]
+   drivers/net/dsa/microchip/ksz9477_spi.c:45:9: sparse: sparse: incorrect type in initializer (different base types) @@    expected unsigned long write_flag_mask @@    got restricted __beunsigned long write_flag_mask @@
+   drivers/net/dsa/microchip/ksz9477_spi.c:45:9: sparse:    expected unsigned long write_flag_mask
+   drivers/net/dsa/microchip/ksz9477_spi.c:45:9: sparse:    got restricted __be32 [usertype]
+   drivers/net/dsa/microchip/ksz9477_spi.c:46:9: sparse: sparse: incorrect type in initializer (different base types) @@    expected unsigned long read_flag_mask @@    got restricted __beunsigned long read_flag_mask @@
+   drivers/net/dsa/microchip/ksz9477_spi.c:46:9: sparse:    expected unsigned long read_flag_mask
+   drivers/net/dsa/microchip/ksz9477_spi.c:46:9: sparse:    got restricted __be32 [usertype]
+   drivers/net/dsa/microchip/ksz9477_spi.c:46:9: sparse: sparse: incorrect type in initializer (different base types) @@    expected unsigned long write_flag_mask @@    got restricted __beunsigned long write_flag_mask @@
+   drivers/net/dsa/microchip/ksz9477_spi.c:46:9: sparse:    expected unsigned long write_flag_mask
+   drivers/net/dsa/microchip/ksz9477_spi.c:46:9: sparse:    got restricted __be32 [usertype]
+   drivers/net/dsa/microchip/ksz9477_spi.c:52:31: sparse: sparse: incorrect type in argument 1 (different base types) @@    expected struct regmap *map @@    got sstruct regmap *map @@
+   drivers/net/dsa/microchip/ksz9477_spi.c:52:31: sparse:    expected struct regmap *map
+   drivers/net/dsa/microchip/ksz9477_spi.c:52:31: sparse:    got struct regmap **
+   drivers/net/dsa/microchip/ksz9477_spi.c:60:36: sparse: sparse: incorrect type in argument 1 (different base types) @@    expected struct regmap *map @@    got sstruct regmap *map @@
+   drivers/net/dsa/microchip/ksz9477_spi.c:60:36: sparse:    expected struct regmap *map
+   drivers/net/dsa/microchip/ksz9477_spi.c:60:36: sparse:    got struct regmap **
+   drivers/net/dsa/microchip/ksz9477_spi.c:63:24: sparse: sparse: cast to restricted __be16
+   drivers/net/dsa/microchip/ksz9477_spi.c:63:24: sparse: sparse: cast to restricted __be16
+   drivers/net/dsa/microchip/ksz9477_spi.c:63:24: sparse: sparse: cast to restricted __be16
+   drivers/net/dsa/microchip/ksz9477_spi.c:63:24: sparse: sparse: cast to restricted __be16
+   drivers/net/dsa/microchip/ksz9477_spi.c:70:36: sparse: sparse: incorrect type in argument 1 (different base types) @@    expected struct regmap *map @@    got sstruct regmap *map @@
+   drivers/net/dsa/microchip/ksz9477_spi.c:70:36: sparse:    expected struct regmap *map
+   drivers/net/dsa/microchip/ksz9477_spi.c:70:36: sparse:    got struct regmap **
+   drivers/net/dsa/microchip/ksz9477_spi.c:73:24: sparse: sparse: cast to restricted __be32
+   drivers/net/dsa/microchip/ksz9477_spi.c:73:24: sparse: sparse: cast to restricted __be32
+   drivers/net/dsa/microchip/ksz9477_spi.c:73:24: sparse: sparse: cast to restricted __be32
+   drivers/net/dsa/microchip/ksz9477_spi.c:73:24: sparse: sparse: cast to restricted __be32
+   drivers/net/dsa/microchip/ksz9477_spi.c:73:24: sparse: sparse: cast to restricted __be32
+   drivers/net/dsa/microchip/ksz9477_spi.c:73:24: sparse: sparse: cast to restricted __be32
+   drivers/net/dsa/microchip/ksz9477_spi.c:80:29: sparse: sparse: incorrect type in argument 1 (different base types) @@    expected struct regmap *map @@    got sstruct regmap *map @@
+   drivers/net/dsa/microchip/ksz9477_spi.c:80:29: sparse:    expected struct regmap *map
+   drivers/net/dsa/microchip/ksz9477_spi.c:80:29: sparse:    got struct regmap **
+   drivers/net/dsa/microchip/ksz9477_spi.c:85:15: sparse: sparse: incorrect type in assignment (different base types) @@    expected unsigned short [usertype] value @@    got resunsigned short [usertype] value @@
+   drivers/net/dsa/microchip/ksz9477_spi.c:85:15: sparse:    expected unsigned short [usertype] value
+   drivers/net/dsa/microchip/ksz9477_spi.c:85:15: sparse:    got restricted __be16 [usertype]
+   drivers/net/dsa/microchip/ksz9477_spi.c:86:34: sparse: sparse: incorrect type in argument 1 (different base types) @@    expected struct regmap *map @@    got sstruct regmap *map @@
+   drivers/net/dsa/microchip/ksz9477_spi.c:86:34: sparse:    expected struct regmap *map
+   drivers/net/dsa/microchip/ksz9477_spi.c:86:34: sparse:    got struct regmap **
+   drivers/net/dsa/microchip/ksz9477_spi.c:91:15: sparse: sparse: incorrect type in assignment (different base types) @@    expected unsigned int [usertype] value @@    got restrunsigned int [usertype] value @@
+   drivers/net/dsa/microchip/ksz9477_spi.c:91:15: sparse:    expected unsigned int [usertype] value
+   drivers/net/dsa/microchip/ksz9477_spi.c:91:15: sparse:    got restricted __be32 [usertype]
+   drivers/net/dsa/microchip/ksz9477_spi.c:92:34: sparse: sparse: incorrect type in argument 1 (different base types) @@    expected struct regmap *map @@    got sstruct regmap *map @@
+   drivers/net/dsa/microchip/ksz9477_spi.c:92:34: sparse:    expected struct regmap *map
+   drivers/net/dsa/microchip/ksz9477_spi.c:92:34: sparse:    got struct regmap **
+
+vim +44 drivers/net/dsa/microchip/ksz9477_spi.c
+
+    25	
+    26	#define KS_SPIOP_FLAG_MASK(opcode)		\
+    27		cpu_to_be32((opcode) << (SPI_ADDR_SHIFT + SPI_TURNAROUND_SHIFT))
+    28	
+    29	#define KSZ_REGMAP_COMMON(width)					\
+    30		{								\
+    31			.val_bits = (width),					\
+    32			.reg_stride = (width) / 8,				\
+    33			.reg_bits = SPI_ADDR_SHIFT + SPI_ADDR_ALIGN,		\
+    34			.pad_bits = SPI_TURNAROUND_SHIFT,			\
+    35			.max_register = BIT(SPI_ADDR_SHIFT) - 1,		\
+    36			.cache_type = REGCACHE_NONE,				\
+    37			.read_flag_mask = KS_SPIOP_FLAG_MASK(KS_SPIOP_RD),	\
+    38			.write_flag_mask = KS_SPIOP_FLAG_MASK(KS_SPIOP_WR),	\
+    39			.reg_format_endian = REGMAP_ENDIAN_BIG,			\
+    40			.val_format_endian = REGMAP_ENDIAN_BIG			\
+    41		}
+    42	
+    43	static const struct regmap_config ksz9477_regmap_config[] = {
+  > 44		KSZ_REGMAP_COMMON(8),
+    45		KSZ_REGMAP_COMMON(16),
+    46		KSZ_REGMAP_COMMON(32),
+    47	};
+    48	
+
+---
+0-DAY kernel test infrastructure                Open Source Technology Center
+https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
