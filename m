@@ -2,176 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BE8751D02
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 23:21:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B08751D23
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 23:31:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727900AbfFXVVs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 17:21:48 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:52360 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726331AbfFXVVs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 17:21:48 -0400
-Received: by mail-wm1-f67.google.com with SMTP id s3so713210wms.2
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 14:21:46 -0700 (PDT)
+        id S1731613AbfFXVa7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 17:30:59 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:40316 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728395AbfFXVa6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 17:30:58 -0400
+Received: by mail-io1-f68.google.com with SMTP id n5so154517ioc.7
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 14:30:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=iwtvItmMkFs25cjMLuwyr8zqKx9AmYokRwhDp53U1+0=;
-        b=P5ylBfQDUAvHvIlGvR5DYrajnHjfNdj8j3JL/aINoAhI386XAbanj08DPErt95wl7w
-         dz1RhabuCxMQvUfG8maS1ouT2G2f8BxUBunXAhe/52WnF1JKDTiuBPq7FaKufW6oOnbf
-         3bZ5hm/mXouDAMx1axKgp9Es/vIQNB1UaYNd95r3ZSFc1YkOOZt0jbXazkGBwRaAMWfN
-         2rIiOD4mfOs2XjxFa87ed9eufTICKz/xAZwTj7NQG7udw94j2Gju6NQjqd0YWqMIIxf9
-         8rszJI1E4JpCxsS0YA766eJtxOfKUIV19+5QhDHKyb7LYKaxmoqI87hRSajX+jzBY4HO
-         gqtg==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=X1crQPJTAtGM5uUHM8HI5Md6CDkFNGlZyxi3sPcH+qY=;
+        b=GV/T5Ga4ZWk+3W3tqaFce2Ne2RQBxrSLyrhdSzfTB7LlQz8v8cPfHUnL0gw97i2ytW
+         U4a+Nfv1evzoydxm7+aE0QEItVbBUUIJG/3U7ZVO97sH5R/GBfQ/sK+TpOvu118vpAVE
+         5Ebmq730K8DfY367AGv9eK+RcSiWu/TKO7xNIlIMr46k+uacGMr0RWHh9AkvQlBwPQz/
+         3dK8NiOrmCOZBOFRnBLzpc7otO4y3P98/1Bzu4aZ7JDhtZf7jNuJnBC8VOF1BZHvZufo
+         L+R4LgK/I5cGCdrR41cI4yo5nDHrqGqdldJiFjF0OI44NEPptk1A10JIl1ioUUvMRyJx
+         zBBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=iwtvItmMkFs25cjMLuwyr8zqKx9AmYokRwhDp53U1+0=;
-        b=XfTPmU/gqBKIn0/WEt0bYGyZngDItVT5FaMPxaLnk6olMGTJ9pGlLgD8uJMZ9kj0FG
-         jylYpA0T2/4WzknWfOVGq+KAjsFTQS4f//1SFZgXoAoASOAHRkyDB//fPS6F1K0i2bhO
-         SuwecLHswiRLC9SuBtYCNcC8HajBm/bBPRaSHZdnGPcYXshjELLiAUzCT5RNAkfedmWQ
-         OBJugrcafNBWJfFcmvXzHKciWcvsKM2ZUSgB5DuzHbD2OtSHAA1/CWw9WT9cnpOcNLX8
-         e4swiB3sIsQ+yRNBPN7gxBN227kZuxG+rJf/yfyrf5JvbiVFlJi9RYdjuTh8tLsnaokk
-         RheQ==
-X-Gm-Message-State: APjAAAUEmPuyYefipzWC7GsP+i3z+UmEhB75mScDRBHc5xh7yWYdV1j0
-        LLzFWkNCKzG8AP1gKe8=
-X-Google-Smtp-Source: APXvYqxZgOChFZvD/8m1zu4jwZr/RrVyECqddpD/vZDEnyXEqYX3770IrmRJkIeUzpFKhQCm7CXjRg==
-X-Received: by 2002:a1c:e709:: with SMTP id e9mr16633797wmh.144.1561411305473;
-        Mon, 24 Jun 2019 14:21:45 -0700 (PDT)
-Received: from x-Inspiron-15-5568.fritz.box (ip-95-223-112-76.hsi16.unitymediagroup.de. [95.223.112.76])
-        by smtp.gmail.com with ESMTPSA id y44sm11295770wrd.13.2019.06.24.14.21.44
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 24 Jun 2019 14:21:44 -0700 (PDT)
-From:   Sergej Benilov <sergej.benilov@googlemail.com>
-To:     venza@brownhat.org, netdev@vger.kernel.org
-Cc:     Sergej Benilov <sergej.benilov@googlemail.com>
-Subject: [PATCH] sis900: remove TxIDLE
-Date:   Mon, 24 Jun 2019 23:21:02 +0200
-Message-Id: <20190624212102.15844-1-sergej.benilov@googlemail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=X1crQPJTAtGM5uUHM8HI5Md6CDkFNGlZyxi3sPcH+qY=;
+        b=PyeR1eXv5ZW1AwiK9YpA6PH0MqYNhvKIdbnu9zpEV4lz0z58GO2eeqkH6xawhcUQq4
+         bBcZZwfrPuqsWbGVkINNtbjJ237twVOkeWs3fUwxEBwGOctI9P19vX5TxzBIslxNrPCK
+         wBWYswHdzmSQTJsDrHG0VT49wO4EyU/+jLoi4mliW9Tqi3GK9QCliCao7MYZE9KN8Eon
+         iRjNlQTe99IG0BFWC0abtE87AJfQZjLk8z67sLYv9St2bT3arbs8m6zLF1HbOBtBP1C3
+         CIX1eLeprVsOKrTOXIL09kwX8ZBdfE307zlywQXZmmXv9hbOTDBie0LElGv4VION74Ey
+         26VA==
+X-Gm-Message-State: APjAAAWgErRaR2r+EogihihTgwUtRWKMhfMnWcHYmxCxVDDCiWALTcox
+        rDGJdVxKsYrbR2ZGFx2uVu73KtorxFSZ3u80g6CN/A==
+X-Google-Smtp-Source: APXvYqwbJ6/OJ4cAqwtkSkNEdex1XxYWjuM6oISUMTZ0zxZxc1DgCYwtvFO6zbVNKmMolpTJMIfjoUOPVX3NdCWBiKk=
+X-Received: by 2002:a6b:f114:: with SMTP id e20mr39401495iog.169.1561411857221;
+ Mon, 24 Jun 2019 14:30:57 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190622000358.19895-1-matthewgarrett@google.com>
+ <20190622000358.19895-24-matthewgarrett@google.com> <739e21b5-9559-d588-3542-bf0bc81de1b2@iogearbox.net>
+ <CACdnJuvR2bn3y3fYzg06GWXXgAGjgED2Dfa5g0oAwJ28qCCqBg@mail.gmail.com>
+ <CALCETrWmZX3R1L88Gz9vLY68gcK8zSXL4cA4GqAzQoyqSR7rRQ@mail.gmail.com> <7f36edf7-3120-975e-b643-3c0fa470bafd@iogearbox.net>
+In-Reply-To: <7f36edf7-3120-975e-b643-3c0fa470bafd@iogearbox.net>
+From:   Matthew Garrett <mjg59@google.com>
+Date:   Mon, 24 Jun 2019 14:30:46 -0700
+Message-ID: <CACdnJuuHdX-y5VpqVFVDM3ORUXLNh+-XKxykxypvYKotHuk1mA@mail.gmail.com>
+Subject: Re: [PATCH V34 23/29] bpf: Restrict bpf when kernel lockdown is in
+ confidentiality mode
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Andy Lutomirski <luto@kernel.org>,
+        James Morris <jmorris@namei.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        David Howells <dhowells@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Chun-Yi Lee <jlee@suse.com>, Jann Horn <jannh@google.com>,
+        bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Before "sis900: fix TX completion" patch, TX completion was done on TxIDLE interrupt.
-TX completion also was the only thing done on TxIDLE interrupt.
-Since "sis900: fix TX completion", TX completion is done on TxDESC interrupt.
-So it is not necessary any more to set and to check for TxIDLE.
+On Mon, Jun 24, 2019 at 2:22 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> Agree, for example, bpf_probe_write_user() can never write into
+> kernel memory (only user one). Just thinking out loud, wouldn't it
+> be cleaner and more generic to perform this check at the actual function
+> which performs the kernel memory without faulting? All three of these
+> are in mm/maccess.c, and the very few occasions that override the
+> probe_kernel_read symbol are calling eventually into __probe_kernel_read(),
+> so this would catch all of them wrt lockdown restrictions. Otherwise
+> you'd need to keep tracking every bit of new code being merged that
+> calls into one of these, no? That way you only need to do it once like
+> below and are guaranteed that the check catches these in future as well.
 
-Eliminate TxIDLE from sis900.
-Correct some typos, too.
-
-Signed-off-by: Sergej Benilov <sergej.benilov@googlemail.com>
----
- drivers/net/ethernet/sis/sis900.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/net/ethernet/sis/sis900.c b/drivers/net/ethernet/sis/sis900.c
-index 9b036c857..aba6eea72 100644
---- a/drivers/net/ethernet/sis/sis900.c
-+++ b/drivers/net/ethernet/sis/sis900.c
-@@ -360,7 +360,7 @@ static int sis635_get_mac_addr(struct pci_dev *pci_dev,
-  *	SiS962 or SiS963 model, use EEPROM to store MAC address. And EEPROM
-  *	is shared by
-  *	LAN and 1394. When access EEPROM, send EEREQ signal to hardware first
-- *	and wait for EEGNT. If EEGNT is ON, EEPROM is permitted to be access
-+ *	and wait for EEGNT. If EEGNT is ON, EEPROM is permitted to be accessed
-  *	by LAN, otherwise is not. After MAC address is read from EEPROM, send
-  *	EEDONE signal to refuse EEPROM access by LAN.
-  *	The EEPROM map of SiS962 or SiS963 is different to SiS900.
-@@ -882,7 +882,7 @@ static void mdio_reset(struct sis900_private *sp)
-  *	mdio_read - read MII PHY register
-  *	@net_dev: the net device to read
-  *	@phy_id: the phy address to read
-- *	@location: the phy regiester id to read
-+ *	@location: the phy register id to read
-  *
-  *	Read MII registers through MDIO and MDC
-  *	using MDIO management frame structure and protocol(defined by ISO/IEC).
-@@ -926,7 +926,7 @@ static int mdio_read(struct net_device *net_dev, int phy_id, int location)
-  *	mdio_write - write MII PHY register
-  *	@net_dev: the net device to write
-  *	@phy_id: the phy address to write
-- *	@location: the phy regiester id to write
-+ *	@location: the phy register id to write
-  *	@value: the register value to write with
-  *
-  *	Write MII registers with @value through MDIO and MDC
-@@ -1057,7 +1057,7 @@ sis900_open(struct net_device *net_dev)
- 	sis900_set_mode(sis_priv, HW_SPEED_10_MBPS, FDX_CAPABLE_HALF_SELECTED);
- 
- 	/* Enable all known interrupts by setting the interrupt mask. */
--	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxIDLE | TxDESC);
-+	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxDESC);
- 	sw32(cr, RxENA | sr32(cr));
- 	sw32(ier, IE);
- 
-@@ -1101,7 +1101,7 @@ sis900_init_rxfilter (struct net_device * net_dev)
- 		sw32(rfdr, w);
- 
- 		if (netif_msg_hw(sis_priv)) {
--			printk(KERN_DEBUG "%s: Receive Filter Addrss[%d]=%x\n",
-+			printk(KERN_DEBUG "%s: Receive Filter Address[%d]=%x\n",
- 			       net_dev->name, i, sr32(rfdr));
- 		}
- 	}
-@@ -1148,7 +1148,7 @@ sis900_init_tx_ring(struct net_device *net_dev)
-  *	@net_dev: the net device to initialize for
-  *
-  *	Initialize the Rx descriptor ring,
-- *	and pre-allocate recevie buffers (socket buffer)
-+ *	and pre-allocate receive buffers (socket buffer)
-  */
- 
- static void
-@@ -1578,7 +1578,7 @@ static void sis900_tx_timeout(struct net_device *net_dev)
- 	sw32(txdp, sis_priv->tx_ring_dma);
- 
- 	/* Enable all known interrupts by setting the interrupt mask. */
--	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxIDLE | TxDESC);
-+	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxDESC);
- }
- 
- /**
-@@ -1674,8 +1674,8 @@ static irqreturn_t sis900_interrupt(int irq, void *dev_instance)
- 	do {
- 		status = sr32(isr);
- 
--		if ((status & (HIBERR|TxURN|TxERR|TxIDLE|TxDESC|RxORN|RxERR|RxOK)) == 0)
--			/* nothing intresting happened */
-+		if ((status & (HIBERR|TxURN|TxERR|TxDESC|RxORN|RxERR|RxOK)) == 0)
-+			/* nothing interesting happened */
- 			break;
- 		handled = 1;
- 
-@@ -1684,7 +1684,7 @@ static irqreturn_t sis900_interrupt(int irq, void *dev_instance)
- 			/* Rx interrupt */
- 			sis900_rx(net_dev);
- 
--		if (status & (TxURN | TxERR | TxIDLE | TxDESC))
-+		if (status & (TxURN | TxERR | TxDESC))
- 			/* Tx interrupt */
- 			sis900_finish_xmit(net_dev);
- 
-@@ -1897,7 +1897,7 @@ static void sis900_finish_xmit (struct net_device *net_dev)
- 		if (tx_status & OWN) {
- 			/* The packet is not transmitted yet (owned by hardware) !
- 			 * Note: this is an almost impossible condition
--			 * in case of TxDESC ('descriptor interrupt') */
-+			 * on TxDESC interrupt ('descriptor interrupt') */
- 			break;
- 		}
- 
-@@ -2473,7 +2473,7 @@ static int sis900_resume(struct pci_dev *pci_dev)
- 	sis900_set_mode(sis_priv, HW_SPEED_10_MBPS, FDX_CAPABLE_HALF_SELECTED);
- 
- 	/* Enable all known interrupts by setting the interrupt mask. */
--	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxIDLE | TxDESC);
-+	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxDESC);
- 	sw32(cr, RxENA | sr32(cr));
- 	sw32(ier, IE);
- 
--- 
-2.17.1
-
+Not all paths into probe_kernel_read/write are from entry points that
+need to be locked down (eg, as far as I can tell ftrace can't leak
+anything interesting here).
