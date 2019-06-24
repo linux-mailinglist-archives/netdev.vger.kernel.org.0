@@ -2,92 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C33B50595
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 11:24:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4058A505D0
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 11:34:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727474AbfFXJYY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 05:24:24 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:44180 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726438AbfFXJYX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 05:24:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Type:MIME-Version:References:
-        Subject:Cc:To:From:Date:Message-Id:Sender:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=rFd8r1wQO1GEPiOhTD6rTHNxkslgTiRvrEXbg6A1zF8=; b=MCAr/cudrqs43V08kOT0hnmnBv
-        Hax38nB3bVDoJUFgwkvQJIu84B5aeDWzwGT3lHdQNtn7ePUM/CzJCN7E/P3tPcVgtQb/CqRsovdHn
-        rOuKzXDpIrr+WO75c8f89XqwQzHWZPtzDiYXDKkYdZ+KbF/r4pywiq+EI3kfSt2THzy+6ZrPxj//O
-        aEssWWgV6SXDk8XmxxANeHk5oZFgKKuPqfHSPCPwIz0pAtTJKlkk7qHqj+45gwqP2EArP6s1TOIho
-        4wp9RyjoItGFGfm7oXeeNhvhvyQcHJfQmsgy6xUONBtp6GDIEjwCfiAsfa97iJi3zLCVxImTfiSjh
-        n5Ox5GRA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=hirez.programming.kicks-ass.net)
-        by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
-        id 1hfLCm-0006mR-6O; Mon, 24 Jun 2019 09:24:04 +0000
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 5CF5720A0EF31; Mon, 24 Jun 2019 11:24:02 +0200 (CEST)
-Message-Id: <20190624092109.863781858@infradead.org>
-User-Agent: quilt/0.65
-Date:   Mon, 24 Jun 2019 11:18:46 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Jessica Yu <jeyu@kernel.org>, linux-kernel@vger.kernel.org,
-        jpoimboe@redhat.com, jikos@kernel.org, mbenes@suse.cz,
-        pmladek@suse.com, ast@kernel.org, daniel@iogearbox.net,
-        akpm@linux-foundation.org, peterz@infradead.org
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH 3/3] module: Properly propagate MODULE_STATE_COMING failure
-References: <20190624091843.859714294@infradead.org>
+        id S1728157AbfFXJeW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 05:34:22 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:35443 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726331AbfFXJeW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 05:34:22 -0400
+Received: from p5b06daab.dip0.t-ipconnect.de ([91.6.218.171] helo=nanos)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
+        (Exim 4.80)
+        (envelope-from <tglx@linutronix.de>)
+        id 1hfLML-0003qz-Q7; Mon, 24 Jun 2019 11:33:57 +0200
+Date:   Mon, 24 Jun 2019 11:33:56 +0200 (CEST)
+From:   Thomas Gleixner <tglx@linutronix.de>
+To:     syzbot <syzbot+c4521ac872a4ccc3afec@syzkaller.appspotmail.com>
+cc:     alexander.h.duyck@intel.com, amritha.nambiar@intel.com,
+        andriy.shevchenko@linux.intel.com, davem@davemloft.net,
+        dmitry.torokhov@gmail.com, f.fainelli@gmail.com,
+        gregkh@linuxfoundation.org, idosch@mellanox.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, tyhicks@canonical.com,
+        wanghai26@huawei.com, yuehaibing@huawei.com
+Subject: Re: WARNING: ODEBUG bug in netdev_freemem (2)
+In-Reply-To: <000000000000d6a8ba058c0df076@google.com>
+Message-ID: <alpine.DEB.2.21.1906241130100.32342@nanos.tec.linutronix.de>
+References: <000000000000d6a8ba058c0df076@google.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that notifiers got unbroken; use the proper interface to handle
-notifier errors and propagate them.
+On Mon, 24 Jun 2019, syzbot wrote:
 
-There were already MODULE_STATE_COMING notifiers that failed; notably:
+> Hello,
+> 
+> syzbot found the following crash on:
+> 
+> HEAD commit:    fd6b99fa Merge branch 'akpm' (patches from Andrew)
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=144de256a00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=fa9f7e1b6a8bb586
+> dashboard link: https://syzkaller.appspot.com/bug?extid=c4521ac872a4ccc3afec
+> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> 
+> Unfortunately, I don't have any reproducer for this crash yet.
+> 
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+c4521ac872a4ccc3afec@syzkaller.appspotmail.com
+> 
+> device hsr_slave_0 left promiscuous mode
+> team0 (unregistering): Port device team_slave_1 removed
+> team0 (unregistering): Port device team_slave_0 removed
+> bond0 (unregistering): Releasing backup interface bond_slave_1
+> bond0 (unregistering): Releasing backup interface bond_slave_0
+> bond0 (unregistering): Released all slaves
+> ------------[ cut here ]------------
+> ODEBUG: free active (active state 0) object type: timer_list hint:
+> delayed_work_timer_fn+0x0/0x90 arch/x86/include/asm/paravirt.h:767
 
- - jump_label_module_notifier()
- - tracepoint_module_notify()
- - bpf_event_notify()
+One of the cleaned up devices has left an active timer which belongs to a
+delayed work. That's all I can decode out of that splat. :(
 
-By propagating this error, we fix those users.
+Thanks,
 
-Cc: Jessica Yu <jeyu@kernel.org>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: linux-kernel@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Cc: bpf@vger.kernel.org
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
----
- kernel/module.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
---- a/kernel/module.c
-+++ b/kernel/module.c
-@@ -3643,9 +3643,10 @@ static int prepare_coming_module(struct
- 	if (err)
- 		return err;
- 
--	blocking_notifier_call_chain(&module_notify_list,
--				     MODULE_STATE_COMING, mod);
--	return 0;
-+	err = blocking_notifier_call_chain_error(&module_notify_list,
-+			MODULE_STATE_COMING, MODULE_STATE_GOING, mod);
-+
-+	return notifier_to_errno(err);
- }
- 
- static int unknown_module_param_cb(char *param, char *val, const char *modname,
+	tglx
 
 
