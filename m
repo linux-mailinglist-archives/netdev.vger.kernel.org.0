@@ -2,116 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D726650A2B
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 13:52:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21BC550A38
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 13:56:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729866AbfFXLwN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 07:52:13 -0400
-Received: from mail-eopbgr80084.outbound.protection.outlook.com ([40.107.8.84]:33255
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727979AbfFXLwN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Jun 2019 07:52:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zNoFTa8xExQf7G/x59hhHhHHRXbVW5oqRFz6KoiZjPA=;
- b=BJZ4xzPdldSEQEs8hqM/eWu1nnaxnPm1ieBbSmjuDyXP0o6C9cGgrmS8En5AQJReJUQUBjQbB0/Ul+gtYKbjR1KHAuXDieeyJotVbObRTXX+rihqY1FXpxB4Vo/YqUt/n8Sew3wEiUANbrhypUQ+NPHXC5Ou6jiuF67SNYlppHk=
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (10.171.182.144) by
- VI1PR05MB5485.eurprd05.prod.outlook.com (20.177.63.215) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2008.16; Mon, 24 Jun 2019 11:52:09 +0000
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::f5d8:df9:731:682e]) by VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::f5d8:df9:731:682e%5]) with mapi id 15.20.2008.014; Mon, 24 Jun 2019
- 11:52:09 +0000
-From:   Jason Gunthorpe <jgg@mellanox.com>
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     Doug Ledford <dledford@redhat.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Yishai Hadas <yishaih@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH rdma-next v1 09/12] IB/mlx5: Register DEVX with mlx5_core
- to get async events
-Thread-Topic: [PATCH rdma-next v1 09/12] IB/mlx5: Register DEVX with mlx5_core
- to get async events
-Thread-Index: AQHVJfmSu0XgQnFVQEaPQvnXI+7VUqaquooA
-Date:   Mon, 24 Jun 2019 11:52:09 +0000
-Message-ID: <20190624115206.GB5479@mellanox.com>
-References: <20190618171540.11729-1-leon@kernel.org>
- <20190618171540.11729-10-leon@kernel.org>
-In-Reply-To: <20190618171540.11729-10-leon@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: BL0PR03CA0009.namprd03.prod.outlook.com
- (2603:10b6:208:2d::22) To VI1PR05MB4141.eurprd05.prod.outlook.com
- (2603:10a6:803:4d::16)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=jgg@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [209.213.91.242]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e29ac30a-9254-46d3-a01b-08d6f89a6324
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR05MB5485;
-x-ms-traffictypediagnostic: VI1PR05MB5485:
-x-microsoft-antispam-prvs: <VI1PR05MB5485C235F05417B8E5535829CFE00@VI1PR05MB5485.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5797;
-x-forefront-prvs: 007814487B
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(39860400002)(376002)(346002)(136003)(396003)(199004)(189003)(5660300002)(478600001)(6506007)(53936002)(33656002)(2616005)(6486002)(81156014)(86362001)(14444005)(3846002)(256004)(8676002)(81166006)(7736002)(229853002)(2906002)(446003)(66446008)(11346002)(68736007)(66476007)(6916009)(486006)(66556008)(36756003)(71190400001)(71200400001)(476003)(73956011)(99286004)(64756008)(66946007)(54906003)(76176011)(102836004)(6512007)(1076003)(4744005)(52116002)(386003)(25786009)(6116002)(6246003)(6436002)(316002)(66066001)(14454004)(4326008)(8936002)(186003)(26005)(305945005);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5485;H:VI1PR05MB4141.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: PKEXMpCZjCkzPpqWIMrXwq8FqFBGuDtPLAnaXc0EEJHVWZ+bWQRSGWoEUOPE4QJZmHStReQ3Txg+WmrEEj6+ctB6Wa5jNEfjGbF/ikKpqlhFXDYZh0LaYU/VbiYErUqozXSp7QhnDoad3vXs7mkkBc9j0U4CNDLRtmhuaeqXJgB/7Avp5XVALjsIrnoCFWhjDXYzdy1zWWO0lJR2LyveCmErr0M3Oz3IlY+bkITkghqpzgCPzPklpPJ+Y6NVLeSnLH5OGNqB2IrLunT75w3mnhn1i4KWPTajMHgPpifAnKWuIH8wZPyILegs7gO92V7YmKqQQqRy/aEkKQfmZ9AW/GbO4rT5UydTWmWs87k2xpxFglnEAuGICU9wfVEFOfK/RcgiQQjzW6B/qRtbWhdGlNldxnyd9DQIfKYx79wJwAU=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1F657B3CC5700043B1A9E3388CC60FC5@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1729878AbfFXL4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 07:56:06 -0400
+Received: from relay8-d.mail.gandi.net ([217.70.183.201]:57855 "EHLO
+        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726679AbfFXL4F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 07:56:05 -0400
+X-Originating-IP: 92.137.69.152
+Received: from localhost (alyon-656-1-672-152.w92-137.abo.wanadoo.fr [92.137.69.152])
+        (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id DF4521BF213;
+        Mon, 24 Jun 2019 11:55:58 +0000 (UTC)
+Date:   Mon, 24 Jun 2019 13:55:58 +0200
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Claudiu Manoil <claudiu.manoil@nxp.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Allan Nielsen <Allan.Nielsen@microsemi.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH net-next 4/6] arm64: dts: fsl: ls1028a: Add Felix switch
+ port DT node
+Message-ID: <20190624115558.GA5690@piout.net>
+References: <1561131532-14860-1-git-send-email-claudiu.manoil@nxp.com>
+ <1561131532-14860-5-git-send-email-claudiu.manoil@nxp.com>
+ <20190621164940.GL31306@lunn.ch>
+ <VI1PR04MB4880D8F90BBCD30BF8A69C9696E00@VI1PR04MB4880.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e29ac30a-9254-46d3-a01b-08d6f89a6324
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jun 2019 11:52:09.4029
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: jgg@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5485
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <VI1PR04MB4880D8F90BBCD30BF8A69C9696E00@VI1PR04MB4880.eurprd04.prod.outlook.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 18, 2019 at 08:15:37PM +0300, Leon Romanovsky wrote:
->  void __mlx5_ib_remove(struct mlx5_ib_dev *dev,
-> diff --git a/drivers/infiniband/hw/mlx5/mlx5_ib.h b/drivers/infiniband/hw=
-/mlx5/mlx5_ib.h
-> index 9cf23ae6324e..556af34b788b 100644
-> +++ b/drivers/infiniband/hw/mlx5/mlx5_ib.h
-> @@ -944,6 +944,13 @@ struct mlx5_ib_pf_eq {
->  	mempool_t *pool;
->  };
-> =20
-> +struct mlx5_devx_event_table {
-> +	struct mlx5_nb devx_nb;
-> +	/* serialize updating the event_xa */
-> +	struct mutex event_xa_lock;
-> +	struct xarray event_xa;
-> +};
-> +
->  struct mlx5_ib_dev {
->  	struct ib_device		ib_dev;
->  	struct mlx5_core_dev		*mdev;
-> @@ -994,6 +1001,7 @@ struct mlx5_ib_dev {
->  	struct mlx5_srq_table   srq_table;
->  	struct mlx5_async_ctx   async_ctx;
->  	int			free_port;
-> +	struct mlx5_devx_event_table devx_event_table;
+On 24/06/2019 11:45:37+0000, Claudiu Manoil wrote:
+> Hi Andrew,
+> 
+> >-----Original Message-----
+> >From: Andrew Lunn <andrew@lunn.ch>
+> >Sent: Friday, June 21, 2019 7:50 PM
+> >To: Claudiu Manoil <claudiu.manoil@nxp.com>
+> >Cc: David S . Miller <davem@davemloft.net>; devicetree@vger.kernel.org;
+> >Alexandre Belloni <alexandre.belloni@bootlin.com>; netdev@vger.kernel.org;
+> >Alexandru Marginean <alexandru.marginean@nxp.com>; linux-
+> >kernel@vger.kernel.org; UNGLinuxDriver@microchip.com; Allan Nielsen
+> ><Allan.Nielsen@microsemi.com>; Rob Herring <robh+dt@kernel.org>; linux-
+> >arm-kernel@lists.infradead.org
+> >Subject: Re: [PATCH net-next 4/6] arm64: dts: fsl: ls1028a: Add Felix switch port
+> >DT node
+> >
+> >On Fri, Jun 21, 2019 at 06:38:50PM +0300, Claudiu Manoil wrote:
+> >> The switch device features 6 ports, 4 with external links
+> >> and 2 internally facing to the ls1028a SoC and connected via
+> >> fixed links to 2 internal enetc ethernet controller ports.
+> >
+> >Hi Claudiu
+> >
+> >> +			switch@0,5 {
+> >> +				compatible = "mscc,felix-switch";
+> >> +				reg = <0x000500 0 0 0 0>;
+> >> +
+> >> +				ethernet-ports {
+> >> +					#address-cells = <1>;
+> >> +					#size-cells = <0>;
+> >> +
+> >> +					/* external ports */
+> >> +					switch_port0: port@0 {
+> >> +						reg = <0>;
+> >> +					};
+> >> +					switch_port1: port@1 {
+> >> +						reg = <1>;
+> >> +					};
+> >> +					switch_port2: port@2 {
+> >> +						reg = <2>;
+> >> +					};
+> >> +					switch_port3: port@3 {
+> >> +						reg = <3>;
+> >> +					};
+> >> +					/* internal to-cpu ports */
+> >> +					port@4 {
+> >> +						reg = <4>;
+> >> +						fixed-link {
+> >> +							speed = <1000>;
+> >> +							full-duplex;
+> >> +						};
+> >> +					};
+> >> +					port@5 {
+> >> +						reg = <5>;
+> >> +						fixed-link {
+> >> +							speed = <1000>;
+> >> +							full-duplex;
+> >> +						};
+> >> +					};
+> >> +				};
+> >> +			};
+> >
+> >This sounds like a DSA setup, where you have SoC ports connected to
+> >the switch. With DSA, the CPU ports of the switch are special. We
+> >don't create netdev's for them, the binding explicitly list which SoC
+> >interface they are bound to, etc.
+> >
+> >What model are you using here? I'm just trying to understand the setup
+> >to ensure it is consistent with the swichdev model.
+> >
+> 
+> Yeah, there are 2 ethernet controller ports (managed by the enetc driver) 
+> connected inside the SoC via SGMII links to 2 of the switch ports, one of
+> these switch ports can be configured as CPU port (with follow-up patches).
+> 
+> This configuration may look prettier on DSA, but the main restriction here
+> is that the entire functionality is provided by the ocelot driver which is a
+> switchdev driver.  I don't think it would be a good idea to copy-paste code
+> from ocelot to a separate dsa driver.
+> 
 
-I really question if adding all these structs really does anything for
-readability..
+We should probably make the ocelot driver a DSA driver then...
 
-Jason
+
+-- 
+Alexandre Belloni, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
