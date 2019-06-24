@@ -2,142 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E17E551D78
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 23:57:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F96551D7B
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 23:57:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729529AbfFXV5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1730013AbfFXV5M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 17:57:12 -0400
+Received: from mail-eopbgr60055.outbound.protection.outlook.com ([40.107.6.55]:3918
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726372AbfFXV5J (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 24 Jun 2019 17:57:09 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:46528 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725881AbfFXV5J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 17:57:09 -0400
-Received: by mail-wr1-f65.google.com with SMTP id n4so15442878wrw.13;
-        Mon, 24 Jun 2019 14:57:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=W/CPu8mDpgbQ6+y/jh0cCg4lc5zwQwBy1UD2gqxetv8=;
-        b=i/cOB+zx0cF5OYFsz1XUZip3Ly2U+E3QwzjSRkP/Xptxqasl5ATpHZAiNzO1v3j58R
-         PkQniqjvtuojreUlFJlg2YkaZDYqKyWqCmqNHLCZphIoIw8QG/NM9Ah3PmkolBd81uoV
-         wqChzCJAoA7v4y3bgCDGzbC68HIfzwBwJiVwWb6zPMHUNHVDmB7Kf63JtkJ1avurZEZf
-         kmsH2D8ABAVWBFgM3mcF3fKWoz/yy+bxzx/kRgWaeQrB91QR0ZPWB1Ayjuo9gGlJ9moE
-         eM2GTbv+Kw29yUU53/iUuqDIBZhHgFv//5UyNw2/mTuU8Rz7HDqfRn1ofFuiW5oNpt9v
-         xxOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=W/CPu8mDpgbQ6+y/jh0cCg4lc5zwQwBy1UD2gqxetv8=;
-        b=UeqICBKr4yTV/cUCQvRYo9ed/6e0InGAN7Erja1Qsp7/S/DMahG6QaeXILXZaiowAk
-         taqDfYHhIG98cngaWjduOmatRv1NtJipL32zSKTmhGIARW1lpb7HpVO0o7g65R84QQkG
-         xEygNg/LPJ0fAC9r+LbFIn0FbF0HvaPzsU+MQvXew65nwLnszghOxWjMmG3F0PxGMy9x
-         7Mgsiju9no/zMdU4/k0pLkCeGPHNNn+HcPzL4lOuNKlEti3SEHiDpxQo8o2xIYMOfvFZ
-         /KYiIr3/P8tocNYQTpn90es3iSYIsBLNaEk6F/nGUgwnMXrLqqImqVfWr6c2FHj4jwQ/
-         P7Xw==
-X-Gm-Message-State: APjAAAXAfLhSC4/Y26lhXLfHd4THDs19hIzIY2h/VMjqJqyj7W7dxY4A
-        03kv69UQyGc+nbV/6gtPk78rHxGl
-X-Google-Smtp-Source: APXvYqx8wABeL1QbgO9QDBu08D0WEnt0Psf0WToa6e9AqudPDmXHQMkt22uXLoH/iRdhqPb/8IYlOQ==
-X-Received: by 2002:adf:dbd2:: with SMTP id e18mr574121wrj.110.1561413426110;
-        Mon, 24 Jun 2019 14:57:06 -0700 (PDT)
-Received: from [10.67.49.31] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id x8sm523904wmc.5.2019.06.24.14.57.03
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 24 Jun 2019 14:57:05 -0700 (PDT)
-Subject: Re: [PATCH RFC net-next 4/5] dt-bindings: net: dsa: mt7530: Add
- mediatek,ephy-handle to isolate ext. phy
-To:     =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
-        sean.wang@mediatek.com, linux@armlinux.org.uk, davem@davemloft.net,
-        matthias.bgg@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com
-Cc:     frank-w@public-files.de, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org
-References: <20190624145251.4849-1-opensource@vdorst.com>
- <20190624145251.4849-5-opensource@vdorst.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <e6175753-eb99-63e5-767e-f82becbf8d1a@gmail.com>
-Date:   Mon, 24 Jun 2019 14:56:50 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.1
-MIME-Version: 1.0
-In-Reply-To: <20190624145251.4849-5-opensource@vdorst.com>
-Content-Type: text/plain; charset=utf-8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mVWeJvChTqJLvA5vhobksnWOT81SDJLcmFb0mIKOQoA=;
+ b=GF5AdSxJqNhuSlzcC5oiI5eI+nE3eWxm7Pli8sSzdKoi3FulSvGjwcmx0g5iM9ow8polgsNg/5eCwY+sLdcTVepJwYoeD/2GmhHJEBKRWlYcA1YfI7qGGtmsKu/KCCF0pqhJbgTpZJ0swp+FjbTmYrsUYrJGeGBK1j2XOuBekjo=
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
+ DB6PR0501MB2392.eurprd05.prod.outlook.com (10.168.73.10) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2008.16; Mon, 24 Jun 2019 21:57:05 +0000
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::a901:6951:59de:3278]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::a901:6951:59de:3278%2]) with mapi id 15.20.2008.014; Mon, 24 Jun 2019
+ 21:57:05 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "leon@kernel.org" <leon@kernel.org>
+CC:     Jason Gunthorpe <jgg@mellanox.com>,
+        Yishai Hadas <yishaih@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "dledford@redhat.com" <dledford@redhat.com>
+Subject: Re: [PATCH rdma-next v1 00/12] DEVX asynchronous events
+Thread-Topic: [PATCH rdma-next v1 00/12] DEVX asynchronous events
+Thread-Index: AQHVJfl5PSbKJXA400e2KA/0k+cTY6ahwcuAgACmBoCACPu5AA==
+Date:   Mon, 24 Jun 2019 21:57:05 +0000
+Message-ID: <a8de53f1acb069057dedc94fb8bd29ea3e658716.camel@mellanox.com>
+References: <20190618171540.11729-1-leon@kernel.org>
+         <19107c92279cf4ad4d870fa54514423c5e46b748.camel@mellanox.com>
+         <20190619044557.GA11611@mtr-leonro.mtl.com>
+In-Reply-To: <20190619044557.GA11611@mtr-leonro.mtl.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.32.3 (3.32.3-1.fc30) 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-originating-ip: [209.116.155.178]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 731e5227-23ef-4a14-0f3f-08d6f8eee59d
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2392;
+x-ms-traffictypediagnostic: DB6PR0501MB2392:
+x-ms-exchange-purlcount: 1
+x-microsoft-antispam-prvs: <DB6PR0501MB239274F3D46912ECD0876CD0BEE00@DB6PR0501MB2392.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3044;
+x-forefront-prvs: 007814487B
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(376002)(346002)(39860400002)(396003)(366004)(136003)(54534003)(189003)(199004)(2616005)(486006)(86362001)(476003)(54906003)(256004)(8936002)(81156014)(81166006)(1730700003)(73956011)(26005)(3846002)(6116002)(6512007)(25786009)(66066001)(68736007)(966005)(91956017)(66446008)(76116006)(64756008)(66556008)(71190400001)(8676002)(4326008)(102836004)(6916009)(4744005)(6506007)(229853002)(5660300002)(186003)(71200400001)(66476007)(7736002)(66946007)(6486002)(305945005)(2501003)(76176011)(118296001)(58126008)(2906002)(2351001)(36756003)(316002)(6306002)(6436002)(5640700003)(6246003)(14454004)(99286004)(446003)(11346002)(53936002)(478600001);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2392;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 254LJye8qPuerQ4ZWfhuhnSawcke/ErjtQpC1ivAXwrccWbKtw8mqeIJtPjonr2Mndxk4LRwQx8ECqs70xj+Oc14f2GsCaGWBX9AuBXOdUDLHP43Euc8VODsSOiTMNGfLB+p1j/EyCvXhMPJ0nkC3foK05KMKMiq1lWeU2fSrXNSAcB6/qoGNDaYPQnkvsAv/vWH2LxmBspx2/QZ64vo8HLLx2WYpxKwOjxtk611k+ISMVOxzWvSLE7Qipigz1yCCx3UW9aNj7g3+UpyoOjE2SAOX6ejvbMJyBB3DYCcTgXv//EXdQ5DD10hfVqYJG47XFT8JMw0rRFyMlaCqh4NHNr5vhepzCCPdjkuTrGPPvyqTa/oirw/eu9IukzOE6NvkunYehPlBhNUKEkMP2k+rh3s8nU7GFAkYQpRZBSSdm8=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <D58CD9665377FF479CD3B806169914B6@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 731e5227-23ef-4a14-0f3f-08d6f8eee59d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jun 2019 21:57:05.7033
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2392
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/24/19 7:52 AM, René van Dorst wrote:
-> On some platforum the external phy can only interface to the port 5 of the
-> switch because the RGMII TX and RX lines are swapped. But it still can be
-> useful to use the internal phy of the switch to act as a WAN port which
-> connectes to the 2nd GMAC. This gives WAN port dedicated bandwidth to
-> the SOC. This increases the LAN and WAN routing.
-> 
-> By adding the optional property mediatek,ephy-handle, the external phy
-> is put in isolation mode when internal phy is connected to 2nd GMAC via
-> phy-handle property.
-
-Most platforms we have seen so far implement this logic with a mdio-mux,
-can you see if that is possible here? stmmac has plenty of examples like
-those.
--- 
-Florian
+T24gV2VkLCAyMDE5LTA2LTE5IGF0IDA3OjQ1ICswMzAwLCBMZW9uIFJvbWFub3Zza3kgd3JvdGU6
+DQo+IE9uIFR1ZSwgSnVuIDE4LCAyMDE5IGF0IDA2OjUxOjQ1UE0gKzAwMDAsIFNhZWVkIE1haGFt
+ZWVkIHdyb3RlOg0KPiA+IE9uIFR1ZSwgMjAxOS0wNi0xOCBhdCAyMDoxNSArMDMwMCwgTGVvbiBS
+b21hbm92c2t5IHdyb3RlOg0KPiA+ID4gRnJvbTogTGVvbiBSb21hbm92c2t5IDxsZW9ucm9AbWVs
+bGFub3guY29tPg0KPiA+ID4gDQo+ID4gPiBDaGFuZ2Vsb2c6DQo+ID4gPiAgdjAgLT4gdjE6DQo+
+ID4gDQo+ID4gTm9ybWFsbHkgMXN0IHN1Ym1pc3Npb24gaXMgVjEgYW5kIDJuZCBpcyBWMi4NCj4g
+PiBzbyB0aGlzIHNob3VsZCBoYXZlIGJlZW4gdjEtPnYyLg0KPiANCj4gIk5vcm1hbGx5IiBkZXBl
+bmRzIG9uIHRoZSBsYW5ndWFnZSB5b3UgYXJlIHVzaW5nLiBJbiBDLCBldmVyeXRoaW5nDQo+IHN0
+YXJ0cyBmcm9tIDAsIGluY2x1ZGluZyB2ZXJzaW9uIG9mIHBhdGNoZXMgOikuDQo+IA0KDQpZb3Ug
+YXJlIHdyb25nOg0KcXVvdGluZzogaHR0cHM6Ly9rZXJuZWxuZXdiaWVzLm9yZy9QYXRjaFRpcHNB
+bmRUcmlja3MNCg0KIkZvciBleGFtcGxlLCBpZiB5b3UncmUgc2VuZGluZyB0aGUgc2Vjb25kIHJl
+dmlzaW9uIG9mIGEgcGF0Y2gsIHlvdQ0Kc2hvdWxkIHVzZSBbUEFUQ0ggdjJdLiINCg0Kbm93IGRv
+bid0IHRlbGwgbWUgdGhhdCBzZWNvbmQgcmV2aXNpb24gaXMgYWN0dWFsbHkgM3JkIHJldmlzaW9u
+IG9yIDFzdA0KaXMgMm5kIDopLi4gDQoNCj4gPiBGb3IgbWx4NS1uZXh0IHBhdGNoZXM6DQo+ID4g
+DQo+ID4gQWNrZWQtYnk6IFNhZWVkIE1haGFtZWVkIDxzYWVlZG1AbWVsbGFub3guY29tPg0KPiAN
+Cj4gVGhhbmtzDQo=
