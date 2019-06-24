@@ -2,100 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F49451A7F
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 20:26:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF4A551A94
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 20:32:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732850AbfFXS0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 14:26:20 -0400
-Received: from relay4-d.mail.gandi.net ([217.70.183.196]:39951 "EHLO
-        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726375AbfFXS0U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 14:26:20 -0400
-X-Originating-IP: 90.65.161.137
-Received: from localhost (lfbn-1-1545-137.w90-65.abo.wanadoo.fr [90.65.161.137])
-        (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id 4A0E5E0008;
-        Mon, 24 Jun 2019 18:26:15 +0000 (UTC)
-Date:   Mon, 24 Jun 2019 20:26:14 +0200
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Allan Nielsen <Allan.Nielsen@microsemi.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH net-next 4/6] arm64: dts: fsl: ls1028a: Add Felix switch
- port DT node
-Message-ID: <20190624182614.GC5690@piout.net>
-References: <1561131532-14860-1-git-send-email-claudiu.manoil@nxp.com>
- <1561131532-14860-5-git-send-email-claudiu.manoil@nxp.com>
- <20190621164940.GL31306@lunn.ch>
- <VI1PR04MB4880D8F90BBCD30BF8A69C9696E00@VI1PR04MB4880.eurprd04.prod.outlook.com>
- <20190624115558.GA5690@piout.net>
- <20190624142625.GR31306@lunn.ch>
- <20190624152344.3bv46jjhhygo6zwl@lx-anielsen.microsemi.net>
- <20190624162431.GX31306@lunn.ch>
+        id S1727613AbfFXSci (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 14:32:38 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:45608 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726381AbfFXSch (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 14:32:37 -0400
+Received: by mail-qt1-f195.google.com with SMTP id j19so15531946qtr.12;
+        Mon, 24 Jun 2019 11:32:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=J3jnGKxooPL3xDQZEUnhmGipQscWMmnQn6jkJBtpMqE=;
+        b=O9IwJyrfa9XVmop+4ZXUoyUKP/+LLFb2lX4NEpd0UW0+WZ59F9idc2Maywb8qEDhKr
+         8DlXiGcJ9nJtBlg30JV0dngS2CtvkKknvlLq1/OEMKbfcgxIgsKze5LZ1uXlgXrtt2dW
+         BfgphpRBzaNKHlcqCRYyrtDmTaKhdE+ozVhFow/CGn81+DH+zGOR/aZyRoAwjmTYSGyX
+         cCJO/bUkx61l0m00xbX5W2OvCh27klIV5dabCR0/nekB1hKK49emK9g/qy39yihT6mmL
+         R69tVdxxIOc4EG6YEWmX8n/Uaq/n3UJ7NByaqn4rLYpf+bkU+fSM8ZxTDJLaN4U/HoGC
+         OHJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=J3jnGKxooPL3xDQZEUnhmGipQscWMmnQn6jkJBtpMqE=;
+        b=t/ojTEByeraMzqVinQiUm+E28X9Di6I0v45iUNcDdSzoKZDuBk36i3myopq9s05ACg
+         qjADypxUjgzI5XJiyYHR7cD5l4hjjI6NtuRXvNw3+KRdgn7nph/MzZUohdQHjrkZ+Lme
+         K7FUmIXVM4hT8pKE9helczBP+3PWemycI+eEFsTUKmWoIOoUwC0ocn/QyLnZHC6lZ1gB
+         HJdm4TlWBUfmKvTL3UELabJIfDjWYH3c6qq9x7DCTKcT3wq+V4nOmzsHkxM9+vNE5ECx
+         +gzWjQuQR5sc5wh22BpaYDUjXHN+O/tP1DbIyI9Yu/eQJ+v4Cdoo1L4xqcQblvTAoNaY
+         Qmuw==
+X-Gm-Message-State: APjAAAUcc8jJpdHCu9PLtxPifcfjHrzpzKSXXor2pQAVfMDOBbIpESDS
+        zpC3DXdueQuUmpNJ4Zm9Jav9LWjrKa5KkFk893btQAVnfkE=
+X-Google-Smtp-Source: APXvYqzu5wK0bFdVRmdS56gP0qOLmqSq0Ud6J6e0GpGfoPvJ1kW2Jlx7M9lC2spMz01sRl+RSWSecJ3WgVPxAQtbFug=
+X-Received: by 2002:ac8:2d56:: with SMTP id o22mr79429363qta.171.1561401156508;
+ Mon, 24 Jun 2019 11:32:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190624162431.GX31306@lunn.ch>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+References: <CA+G9fYsMcdHmKY66CNhsrizO-gErkOQCkTcBSyOHLpOs+8g5=g@mail.gmail.com>
+ <CAEf4BzbTD8G_zKkj-S3MOeG5Hq3_2zz3bGoXhQtpt0beG8nWJA@mail.gmail.com> <20190621161752.d7d7n4m5q67uivys@xps.therub.org>
+In-Reply-To: <20190621161752.d7d7n4m5q67uivys@xps.therub.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 24 Jun 2019 11:32:25 -0700
+Message-ID: <CAEf4BzaSoKA5H5rN=w+OAtUz4bD30-VOjjjY+Qv9tTAnhMweiA@mail.gmail.com>
+Subject: Re: selftests: bpf: test_libbpf.sh failed at file test_l4lb.o
+To:     Dan Rue <dan.rue@linaro.org>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        xdp-newbies@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>, hawk@kernel.org,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Shuah Khan <shuah@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24/06/2019 18:24:31+0200, Andrew Lunn wrote:
-> On Mon, Jun 24, 2019 at 05:23:45PM +0200, Allan W. Nielsen wrote:
-> > Hi Andrew,
-> > 
-> > The 06/24/2019 16:26, Andrew Lunn wrote:
-> > > > > Yeah, there are 2 ethernet controller ports (managed by the enetc driver) 
-> > > > > connected inside the SoC via SGMII links to 2 of the switch ports, one of
-> > > > > these switch ports can be configured as CPU port (with follow-up patches).
-> > > > > 
-> > > > > This configuration may look prettier on DSA, but the main restriction here
-> > > > > is that the entire functionality is provided by the ocelot driver which is a
-> > > > > switchdev driver.  I don't think it would be a good idea to copy-paste code
-> > > > > from ocelot to a separate dsa driver.
-> > > > > 
-> > > > 
-> > > > We should probably make the ocelot driver a DSA driver then...
-> > > An important part of DSA is being able to direct frames out specific
-> > > ports when they ingress via the CPU port. Does the silicon support
-> > > this? At the moment, i think it is using polled IO.
-> > 
-> > That is supported, it requires a bit of initial configuration of the Chip, but
-> > nothing big (I believe this configuration is part of Claudiu's change-set).
-> > 
-> > But how do you envision this done?
-> > 
-> > - Let the existing SwitchDev driver and the DSA driver use a set of common
-> >   functions.
-> > - Convert the existing Ocelot driver from SwitchDev to DSA
-> > - Fork (copy) the existing driver of Ocelot, and modify it as needed for the
-> >   Felix driver
-> > 
-> > My guess is the first one, but I would like to understand what you have in mind.
-> 
-> I don't know the various architectures the switch is used in. But it
-> does seem like a core library, and then a switchdev wrapper for Ocelot
-> and a DSA wrapper for Felix would make sense.
+On Fri, Jun 21, 2019 at 9:17 AM Dan Rue <dan.rue@linaro.org> wrote:
+>
+> On Thu, Jun 20, 2019 at 10:17:04PM -0700, Andrii Nakryiko wrote:
+> > On Thu, Jun 20, 2019 at 1:08 AM Naresh Kamboju
+> > <naresh.kamboju@linaro.org> wrote:
+> > >
+> > > selftests: bpf test_libbpf.sh failed running Linux -next kernel
+> > > 20190618 and 20190619.
+> > >
+> > > Here is the log from x86_64,
+> > > # selftests bpf test_libbpf.sh
+> > > bpf: test_libbpf.sh_ #
+> > > # [0] libbpf BTF is required, but is missing or corrupted.
+> >
+> > You need at least clang-9.0.0 (not yet released) to run some of these
+> > tests successfully, as they rely on Clang's support for
+> > BTF_KIND_VAR/BTF_KIND_DATASEC.
+>
+> Can there be a runtime check for BTF that emits a skip instead of a fail
+> in such a case?
 
-Ocelot could also be used in a DSA setting where one port can be
-connected to an external MAC and be used to inject/extract frames
-to/from any other ports. In that case, the IFH would serve as the DSA
-tag.
+I'm not sure how to do this simply and minimally intrusively. The best
+I can come up with is setting some envvar from Makefile and checking
+for that in each inidividual test, which honestly sounds a bit gross.
 
+How hard is it for you guys to upgrade compiler used to run these test?
 
--- 
-Alexandre Belloni, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+>
+> Thanks,
+> Dan
+>
+> >
+> > > libbpf: BTF_is #
+> > > # test_libbpf failed at file test_l4lb.o
+> > > failed: at_file #
+> > > # selftests test_libbpf [FAILED]
+> > > test_libbpf: [FAILED]_ #
+> > > [FAIL] 29 selftests bpf test_libbpf.sh
+> > > selftests: bpf_test_libbpf.sh [FAIL]
+> > >
+> > > Full test log,
+> > > https://qa-reports.linaro.org/lkft/linux-next-oe/build/next-20190619/testrun/781777/log
+> > >
+> > > Test results comparison,
+> > > https://qa-reports.linaro.org/lkft/linux-next-oe/tests/kselftest/bpf_test_libbpf.sh
+> > >
+> > > Good linux -next tag: next-20190617
+> > > Bad linux -next tag: next-20190618
+> > > git branch     master
+> > > git commit    1c6b40509daf5190b1fd2c758649f7df1da4827b
+> > > git repo
+> > > https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
+> > >
+> > > Best regards
+> > > Naresh Kamboju
+>
+> --
+> Linaro - Kernel Validation
