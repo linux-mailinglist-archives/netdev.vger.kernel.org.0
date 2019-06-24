@@ -2,62 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F1BC50295
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 08:55:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBB285027D
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 08:45:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727182AbfFXGzp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 02:55:45 -0400
-Received: from f0-dek.dektech.com.au ([210.10.221.142]:36909 "EHLO
-        mail.dektech.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726944AbfFXGzp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 02:55:45 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by mail.dektech.com.au (Postfix) with ESMTP id 269E845889;
-        Mon, 24 Jun 2019 16:45:19 +1000 (AEST)
-X-Virus-Scanned: amavisd-new at dektech.com.au
-Received: from mail.dektech.com.au ([127.0.0.1])
-        by localhost (mail2.dektech.com.au [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id vWTTly0BtgEQ; Mon, 24 Jun 2019 16:45:19 +1000 (AEST)
-Received: from cba01.dek-tpc.internal (cba01.dek-tpc.internal [172.16.83.49])
-        by mail.dektech.com.au (Postfix) with ESMTP id 1024A45888;
-        Mon, 24 Jun 2019 16:45:19 +1000 (AEST)
-Received: by cba01.dek-tpc.internal (Postfix, from userid 1014)
-        id 0E9AE1812EC; Mon, 24 Jun 2019 16:45:19 +1000 (AEST)
-From:   john.rutherford@dektech.com.au
-To:     netdev@vger.kernel.org
-Cc:     John Rutherford <john.rutherford@dektech.com.au>
-Subject: [net-next] tipc: fix missing indentation in source code
-Date:   Mon, 24 Jun 2019 16:45:16 +1000
-Message-Id: <20190624064516.22652-1-john.rutherford@dektech.com.au>
-X-Mailer: git-send-email 2.13.7
+        id S1726623AbfFXGpr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 02:45:47 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:45500 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725267AbfFXGpr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 02:45:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=AJNWEGJIKDd3zy48iUOMkrDN5zu/iHSPzKernfVg8M8=; b=Mh/q5FnmR+faF/a1V6A+X8EvQ
+        9PpQ4CXlMiYqtpivjYKYu5VGfA+EPMiFUA+9ct8EZggQVj3Gx+gvadUnoPHu+C7Yd+UVO204L51bu
+        xx/9SKwJ1iDnT2CkEBsIM1nUj5kJX7nctb5hDvh3VUZ9RT60LS5HBf+RN62YUapKbMZPiJiI3GSP4
+        eAgJ5t5b2aBV6zaJtcDm5IN6N0nSKvlil5mMq0/adXULOD9ooY9SjukG+p73pMj/qbkMqz+XRPRwD
+        H2NA5jbZmfso9Tt/SmXJHXYsxNI6AwejnN2q8wRST0C6dtzXrssDtD+/OsNmvsrl+9BwBObQ4BUEe
+        wOlPUMTqQ==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
+        id 1hfIjZ-0002lV-8p; Mon, 24 Jun 2019 06:45:45 +0000
+Date:   Sun, 23 Jun 2019 23:45:45 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Puranjay Mohan <puranjay12@gmail.com>
+Cc:     Shuah Khan <skhan@linuxfoundation.org>,
+        Bjorn Helgaas <bjorn@helgaas.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-pci@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] net: fddi: skfp: Rename PCI_REV_ID to
+ PCI_REVISION_ID
+Message-ID: <20190624064545.GA23977@infradead.org>
+References: <20190620180754.15413-1-puranjay12@gmail.com>
+ <20190620180754.15413-2-puranjay12@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190620180754.15413-2-puranjay12@gmail.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix misalignment of policy statement in netlink.c due to automatic
-spatch code transformation.
+On Thu, Jun 20, 2019 at 11:37:52PM +0530, Puranjay Mohan wrote:
+> Rename the PCI_REV_ID define to PCI_REVISION_ID in skfbi.h
+> and drvfbi.c to make it compatible with the pci_regs.h
+> which defines it as PCI_REVISION_ID.
 
-Fixes: 3b0f31f2b8c9 ("genetlink: make policy common to family")
-Acked-by: Jon Maloy <jon.maloy@ericsson.com>
-Signed-off-by: John Rutherford <john.rutherford@dektech.com.au>
----
- net/tipc/netlink.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/tipc/netlink.c b/net/tipc/netlink.c
-index 99bd166..d6165ad 100644
---- a/net/tipc/netlink.c
-+++ b/net/tipc/netlink.c
-@@ -261,7 +261,7 @@ struct genl_family tipc_genl_family __ro_after_init = {
- 	.version	= TIPC_GENL_V2_VERSION,
- 	.hdrsize	= 0,
- 	.maxattr	= TIPC_NLA_MAX,
--	.policy = tipc_nl_policy,
-+	.policy		= tipc_nl_policy,
- 	.netnsok	= true,
- 	.module		= THIS_MODULE,
- 	.ops		= tipc_genl_v2_ops,
--- 
-2.11.0
-
+We already cache the revision in struct pci_dev.  In doubt you should
+use that one.
