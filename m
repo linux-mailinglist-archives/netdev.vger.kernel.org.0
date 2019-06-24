@@ -2,100 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A0A7C5034D
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 09:27:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0891D50373
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 09:32:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727419AbfFXH1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 03:27:09 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:48154 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726993AbfFXH1J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 03:27:09 -0400
-Received: by mail-io1-f70.google.com with SMTP id z19so3345947ioi.15
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 00:27:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=DEVVWbQIpcKiGaEL1OeL/uHZLC+7iHXkjElkvv6yNDs=;
-        b=LXNzNeBbpYyM7ehQ9zU09EJhYBIqhEXLmTPYCRiBTtbC6WOBesvxLiVF5kAmDXzGHm
-         P7+4hCfzxIAUmJHtjPVWFNKrLqbRTt+e58zneBaiVsrwZtQHB7oonsuM/NGosguJM84g
-         eUjKSi4ZrLzewPWrTlYWL4CZjSt9G4xVUVafELrUK4DQ7yKvKP7WPvI754sPZW8Zt4ak
-         M6k30ON9Bkb1xuQw0var1de+EzVnsj9sVnmWPgRGzHniemo4svISJTgFt+al6asPX0b+
-         6TM32FnMXVZ0veRt3Ov4nRu3DWQ2A9NQKgrL6xdBCyuwSVfhTLHS3lknXaKE52zVRZFQ
-         xXIw==
-X-Gm-Message-State: APjAAAXCHk5bTP5FiIsBTuG9DWFp9zuM3M86Maahe8rmHxCiioNSUY0e
-        lCBzauBDmEa/Rb6NqmD/H95YmycfX40U+KVlWj3biaK22lfl
-X-Google-Smtp-Source: APXvYqxk/7wWV7qeNRICEoEKQ5nLZqTZ2KrzWfgQqu8WmCNIav+2pgUhXSO8eHF8oD5GO+nZPJUoawqg2tUUMMQvI/+i26en7GQg
+        id S1727966AbfFXHbz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 03:31:55 -0400
+Received: from relay11.mail.gandi.net ([217.70.178.231]:36373 "EHLO
+        relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727954AbfFXHbz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 03:31:55 -0400
+Received: from localhost (alyon-656-1-672-152.w92-137.abo.wanadoo.fr [92.137.69.152])
+        (Authenticated sender: gregory.clement@bootlin.com)
+        by relay11.mail.gandi.net (Postfix) with ESMTPSA id 846E8100010;
+        Mon, 24 Jun 2019 07:31:36 +0000 (UTC)
+From:   Gregory CLEMENT <gregory.clement@bootlin.com>
+To:     Phong Tran <tranmanphong@gmail.com>, mark.rutland@arm.com,
+        kstewart@linuxfoundation.org, songliubraving@fb.com,
+        andrew@lunn.ch, peterz@infradead.org, nsekhar@ti.com,
+        ast@kernel.org, jolsa@redhat.com, netdev@vger.kernel.org,
+        gerg@uclinux.org, lorenzo.pieralisi@arm.com, will@kernel.org,
+        linux-samsung-soc@vger.kernel.org, daniel@iogearbox.net,
+        tranmanphong@gmail.com, festevam@gmail.com, allison@lohutok.net,
+        linux@armlinux.org.uk, krzk@kernel.org, haojian.zhuang@gmail.com,
+        bgolaszewski@baylibre.com, tony@atomide.com, mingo@redhat.com,
+        linux-imx@nxp.com, yhs@fb.com, sebastian.hesselbarth@gmail.com,
+        illusionist.neo@gmail.com, jason@lakedaemon.net,
+        liviu.dudau@arm.com, s.hauer@pengutronix.de, acme@kernel.org,
+        lkundrak@v3.sk, robert.jarzmik@free.fr, dmg@turingmachine.org,
+        swinslow@gmail.com, namhyung@kernel.org, tglx@linutronix.de,
+        linux-omap@vger.kernel.org, alexander.sverdlin@gmail.com,
+        linux-arm-kernel@lists.infradead.org, info@metux.net,
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        alexander.shishkin@linux.intel.com, hsweeten@visionengravers.com,
+        kgene@kernel.org, kernel@pengutronix.de, sudeep.holla@arm.com,
+        bpf@vger.kernel.org, shawnguo@kernel.org, kafai@fb.com,
+        daniel@zonque.org
+Subject: Re: [PATCH 10/15] ARM: orion5x: cleanup cppcheck shifting errors
+In-Reply-To: <20190623151313.970-11-tranmanphong@gmail.com>
+References: <20190623151313.970-1-tranmanphong@gmail.com> <20190623151313.970-11-tranmanphong@gmail.com>
+Date:   Mon, 24 Jun 2019 09:31:37 +0200
+Message-ID: <871rzjmobq.fsf@FE-laptop>
 MIME-Version: 1.0
-X-Received: by 2002:a02:b395:: with SMTP id p21mr39171996jan.31.1561361228546;
- Mon, 24 Jun 2019 00:27:08 -0700 (PDT)
-Date:   Mon, 24 Jun 2019 00:27:08 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000064c849058c0cbdc9@google.com>
-Subject: memory leak in sctp_v4_create_accept_sk
-From:   syzbot <syzbot+afabda3890cc2f765041@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        linux-sctp@vger.kernel.org, marcelo.leitner@gmail.com,
-        netdev@vger.kernel.org, nhorman@tuxdriver.com,
-        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi Phong,
 
-syzbot found the following crash on:
+> [arch/arm/mach-orion5x/pci.c:281]: (error) Shifting signed 32-bit value
+> by 31 bits is undefined behaviour
+> [arch/arm/mach-orion5x/pci.c:305]: (error) Shifting signed 32-bit value
+> by 31 bits is undefined behaviour
+>
 
-HEAD commit:    abf02e29 Merge tag 'pm-5.2-rc6' of git://git.kernel.org/pu..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=13470eb2a00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=56f1da14935c3cce
-dashboard link: https://syzkaller.appspot.com/bug?extid=afabda3890cc2f765041
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15100a91a00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10c46026a00000
+While Andrew was Ok with this version, I will wait for your v2 using
+BIT() marcro.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+afabda3890cc2f765041@syzkaller.appspotmail.com
+Thanks,
 
-ffffffffda RBX: 00000000006fbc38 RCX: 0000000000446a79
-BUG: memory leak
-unreferenced object 0xffff888118137680 (size 1352):
-   comm "syz-executor360", pid 7164, jiffies 4294941839 (age 13.960s)
-   hex dump (first 32 bytes):
-     ac 14 ff aa 0a 80 01 1a 00 00 00 00 00 00 00 00  ................
-     02 00 07 40 00 00 00 00 00 00 00 00 00 00 00 00  ...@............
-   backtrace:
-     [<000000006c358063>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<000000006c358063>] slab_post_alloc_hook mm/slab.h:439 [inline]
-     [<000000006c358063>] slab_alloc mm/slab.c:3326 [inline]
-     [<000000006c358063>] kmem_cache_alloc+0x134/0x270 mm/slab.c:3488
-     [<00000000f2fb26e7>] sk_prot_alloc+0x41/0x170 net/core/sock.c:1596
-     [<000000003c036edc>] sk_alloc+0x35/0x2f0 net/core/sock.c:1656
-     [<00000000c25725a4>] sctp_v4_create_accept_sk+0x32/0xb0  
-net/sctp/protocol.c:556
-     [<0000000049bd7e55>] sctp_accept+0x1df/0x290 net/sctp/socket.c:4913
-     [<00000000d287a63e>] inet_accept+0x4e/0x1d0 net/ipv4/af_inet.c:734
-     [<00000000acb0fc20>] __sys_accept4+0x12a/0x280 net/socket.c:1760
-     [<00000000bbdaf60b>] __do_sys_accept4 net/socket.c:1795 [inline]
-     [<00000000bbdaf60b>] __se_sys_accept4 net/socket.c:1792 [inline]
-     [<00000000bbdaf60b>] __x64_sys_accept4+0x22/0x30 net/socket.c:1792
-     [<000000006da547ee>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:301
-     [<00000000025f5c93>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+Gregory
 
 
+> Signed-off-by: Phong Tran <tranmanphong@gmail.com>
+> ---
+>  arch/arm/mach-orion5x/pci.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/arch/arm/mach-orion5x/pci.c b/arch/arm/mach-orion5x/pci.c
+> index 76951bfbacf5..1b2c077ee7b8 100644
+> --- a/arch/arm/mach-orion5x/pci.c
+> +++ b/arch/arm/mach-orion5x/pci.c
+> @@ -200,13 +200,13 @@ static int __init pcie_setup(struct pci_sys_data *sys)
+>  /*
+>   * PCI_MODE bits
+>   */
+> -#define PCI_MODE_64BIT			(1 << 2)
+> -#define PCI_MODE_PCIX			((1 << 4) | (1 << 5))
+> +#define PCI_MODE_64BIT			(1U << 2)
+> +#define PCI_MODE_PCIX			((1U << 4) | (1U << 5))
+>  
+>  /*
+>   * PCI_CMD bits
+>   */
+> -#define PCI_CMD_HOST_REORDER		(1 << 29)
+> +#define PCI_CMD_HOST_REORDER		(1U << 29)
+>  
+>  /*
+>   * PCI_P2P_CONF bits
+> @@ -223,7 +223,7 @@ static int __init pcie_setup(struct pci_sys_data *sys)
+>  #define PCI_CONF_FUNC(func)		(((func) & 0x3) << 8)
+>  #define PCI_CONF_DEV(dev)		(((dev) & 0x1f) << 11)
+>  #define PCI_CONF_BUS(bus)		(((bus) & 0xff) << 16)
+> -#define PCI_CONF_ADDR_EN		(1 << 31)
+> +#define PCI_CONF_ADDR_EN		(1U << 31)
+>  
+>  /*
+>   * Internal configuration space
+> -- 
+> 2.11.0
+>
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+-- 
+Gregory Clement, Bootlin
+Embedded Linux and Kernel engineering
+http://bootlin.com
