@@ -2,126 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 073BF50A99
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 14:22:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5930350B4C
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 14:59:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729964AbfFXMWN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 08:22:13 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:45481 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726984AbfFXMWN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 08:22:13 -0400
-Received: by mail-io1-f68.google.com with SMTP id e3so1064699ioc.12
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 05:22:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vr9+zBFJhANC96gECBOzHRo21YufsdtA1x+CuBd2xUI=;
-        b=e6iLsIKq0kv4g1TfnQzLjijGX/HstIF513bDLSLdKvpHJa5t+8dbGNSnwYLFvb7bDs
-         0PfyXtxYlPID4s2bL9i+uDqIck43CKVU6NOU2XrDF0FP0pxF2D8fv0c7iW5FtXiwiPrQ
-         qBzhhlLCiLrEVDN+rPoS8bg1hnp8YeaUTNCc6HxHn8MXA8lfk2UONd60S5QPkfCRBhtJ
-         GI8L+OQvy41nXdIcdJ1xEw6bPrrjhkno2jwrZyl4XeJ8ZnI+4gI11YvdrIHMqXDN6T12
-         UJULZCL0PN2lvt/On2YZ42UDtw2U5kEnQPsGm2RJ97seAwxYhMiqqL/Nr5xQeZLGywy3
-         1CXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vr9+zBFJhANC96gECBOzHRo21YufsdtA1x+CuBd2xUI=;
-        b=fUrVeqv6IlP2Dc5+NJUaCXUC82Dhr10zJJjrtC/GtpzGJJwnKlFCFkB7mg0417K2AU
-         jvA3U+562wf5P/D+ZN9Nzeq17R5qrvvF2AaldZ1DYOtS68IJAPnnRw8RQvV4hWZsQwCh
-         5VNucr/ri44v5n/aB+kOwdYww2gJ0cMQtxUEQmHM5sd80AlXPDhu5XESpX9cHB6bUYIX
-         gbDMrxDVZ37Isu2om6APas96CsxoXbgCA1d56OWLQJKF+ri1XeKZKoNjW1Cr40Y0azOL
-         35h72vLE16H7XVzWd3y8FHCgQxU1OqaNRKk5r20unAdHTCz8cvZrJdVQQ5PxtssoSxo1
-         zoCw==
-X-Gm-Message-State: APjAAAV8BnwYSC6A6viRMzNNnh/+vWCvWt+XFtWdYiaQP6HR2bNdfzCd
-        ffBCl7SagU2gYubgWrWz6SmWbSei7D+f1Ll1sJKaTg==
-X-Google-Smtp-Source: APXvYqwu8tLfKRuo+e/fMDdCCwORFzVr8xWtQkFhdlSfUXuBhjGaNA2gKeHAvtc1b9Js8KzD3i+zLOW5Sp9cfy1iTxY=
-X-Received: by 2002:a02:a07:: with SMTP id 7mr31931243jaw.65.1561378932524;
- Mon, 24 Jun 2019 05:22:12 -0700 (PDT)
+        id S1730487AbfFXM7f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 08:59:35 -0400
+Received: from canardo.mork.no ([148.122.252.1]:34121 "EHLO canardo.mork.no"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728070AbfFXM7f (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Jun 2019 08:59:35 -0400
+Received: from miraculix.mork.no ([IPv6:2a02:2121:282:c0c6:2870:15ff:fe87:c238])
+        (authenticated bits=0)
+        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id x5OCxGG2006893
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Mon, 24 Jun 2019 14:59:17 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1561381158; bh=XQsUYIbtGV5iLBtEMGinbcXCCB2jfmy7MxU1fU6ua0E=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=NFec1O8OFGN9c5A8nkGrqjIpmLTHJO9Q0DGVTC2jYIVhCNIkS8MJGaVONb6L+caha
+         EYyp1Vo1/sf6IDv2WP4xQVnRDiQOJVr0k/hVFTjmyuGOGq/BOHdD/krguQzXjzQHVU
+         JNt8Z/ZueCsQzPQ/dyQncu9JhJ/fPL3kSF26llJA=
+Received: from bjorn by miraculix.mork.no with local (Exim 4.89)
+        (envelope-from <bjorn@mork.no>)
+        id 1hfOYx-0007Ao-Fm; Mon, 24 Jun 2019 14:59:11 +0200
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     Kristian Evensen <kristian.evensen@gmail.com>
+Cc:     syzbot <syzbot+b68605d7fadd21510de1@syzkaller.appspotmail.com>,
+        andreyknvl@google.com, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Subject: Re: KASAN: global-out-of-bounds Read in qmi_wwan_probe
+Organization: m
+References: <0000000000008f19f7058c10a633@google.com>
+Date:   Mon, 24 Jun 2019 14:59:11 +0200
+In-Reply-To: <0000000000008f19f7058c10a633@google.com> (syzbot's message of
+        "Mon, 24 Jun 2019 05:07:05 -0700")
+Message-ID: <871rzj6sww.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-References: <000000000000d6a8ba058c0df076@google.com> <alpine.DEB.2.21.1906241130100.32342@nanos.tec.linutronix.de>
- <CACT4Y+Y_TadXGE_CVFa4fKqrbpAD4i5WGem9StgoyP_YAVraXw@mail.gmail.com> <da83da44-0088-3056-6bba-d028b6cbb218@gmail.com>
-In-Reply-To: <da83da44-0088-3056-6bba-d028b6cbb218@gmail.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Mon, 24 Jun 2019 14:22:01 +0200
-Message-ID: <CACT4Y+bk1h+CFVdbbKau490Wjis8zt_ia8gVctGZ+bs=7qPk=Q@mail.gmail.com>
-Subject: Re: WARNING: ODEBUG bug in netdev_freemem (2)
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        syzbot <syzbot+c4521ac872a4ccc3afec@syzkaller.appspotmail.com>,
-        Alexander Duyck <alexander.h.duyck@intel.com>,
-        amritha.nambiar@intel.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        David Miller <davem@davemloft.net>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ido Schimmel <idosch@mellanox.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        tyhicks@canonical.com, wanghai26@huawei.com, yuehaibing@huawei.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.100.3 at canardo
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 24, 2019 at 2:08 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> On 6/24/19 3:54 AM, Dmitry Vyukov wrote:
-> > On Mon, Jun 24, 2019 at 11:34 AM Thomas Gleixner <tglx@linutronix.de> wrote:
-> >>
-> >> On Mon, 24 Jun 2019, syzbot wrote:
-> >>
-> >>> Hello,
-> >>>
-> >>> syzbot found the following crash on:
-> >>>
-> >>> HEAD commit:    fd6b99fa Merge branch 'akpm' (patches from Andrew)
-> >>> git tree:       upstream
-> >>> console output: https://syzkaller.appspot.com/x/log.txt?x=144de256a00000
-> >>> kernel config:  https://syzkaller.appspot.com/x/.config?x=fa9f7e1b6a8bb586
-> >>> dashboard link: https://syzkaller.appspot.com/bug?extid=c4521ac872a4ccc3afec
-> >>> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> >>>
-> >>> Unfortunately, I don't have any reproducer for this crash yet.
-> >>>
-> >>> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> >>> Reported-by: syzbot+c4521ac872a4ccc3afec@syzkaller.appspotmail.com
-> >>>
-> >>> device hsr_slave_0 left promiscuous mode
-> >>> team0 (unregistering): Port device team_slave_1 removed
-> >>> team0 (unregistering): Port device team_slave_0 removed
-> >>> bond0 (unregistering): Releasing backup interface bond_slave_1
-> >>> bond0 (unregistering): Releasing backup interface bond_slave_0
-> >>> bond0 (unregistering): Released>
->
-> all slaves
-> >>> ------------[ cut here ]------------
-> >>> ODEBUG: free active (active state 0) object type: timer_list hint:
-> >>> delayed_work_timer_fn+0x0/0x90 arch/x86/include/asm/paravirt.h:767
-> >>
-> >> One of the cleaned up devices has left an active timer which belongs to a
-> >> delayed work. That's all I can decode out of that splat. :(
-> >
-> > Hi Thomas,
-> >
-> > If ODEBUG would memorize full stack traces for object allocation
-> > (using lib/stackdepot.c), it would make this splat actionable, right?
-> > I've fixed https://bugzilla.kernel.org/show_bug.cgi?id=203969 for this.
-> >
->
-> Not sure this would help in this case as some netdev are allocated through a generic helper.
->
-> The driver specific portion might not show up in the stack trace.
->
-> It would be nice here to get the work queue function pointer,
-> so that it gives us a clue which driver needs a fix.
+syzbot <syzbot+b68605d7fadd21510de1@syzkaller.appspotmail.com> writes:
 
-I see. But isn't the workqueue callback is cleanup_net in this case
-and is in the stack?
+> Hello,
+>
+> syzbot found the following crash on:
+>
+> HEAD commit:    9939f56e usb-fuzzer: main usb gadget fuzzer driver
+> git tree:       https://github.com/google/kasan.git usb-fuzzer
+> console output: https://syzkaller.appspot.com/x/log.txt?x=3D1615a669a00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=3Ddf134eda130bb=
+43a
+> dashboard link: https://syzkaller.appspot.com/bug?extid=3Db68605d7fadd215=
+10de1
+> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=3D10630af6a00=
+000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=3D1127da69a00000
+>
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+b68605d7fadd21510de1@syzkaller.appspotmail.com
+>
+> usb 1-1: new high-speed USB device number 2 using dummy_hcd
+> usb 1-1: Using ep0 maxpacket: 8
+> usb 1-1: New USB device found, idVendor=3D12d1, idProduct=3D14f1,
+> bcdDevice=3Dd4.d9
+> usb 1-1: New USB device strings: Mfr=3D0, Product=3D0, SerialNumber=3D0
+> usb 1-1: config 0 descriptor??
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> BUG: KASAN: global-out-of-bounds in qmi_wwan_probe+0x342/0x360
+> drivers/net/usb/qmi_wwan.c:1417
+> Read of size 8 at addr ffffffff8618c140 by task kworker/1:1/22
+>
+> CPU: 1 PID: 22 Comm: kworker/1:1 Not tainted 5.2.0-rc5+ #11
+> Hardware name: Google Google Compute Engine/Google Compute Engine,
+> BIOS Google 01/01/2011
+> Workqueue: usb_hub_wq hub_event
+> Call Trace:
+>  __dump_stack lib/dump_stack.c:77 [inline]
+>  dump_stack+0xca/0x13e lib/dump_stack.c:113
+>  print_address_description+0x67/0x231 mm/kasan/report.c:188
+>  __kasan_report.cold+0x1a/0x32 mm/kasan/report.c:317
+>  kasan_report+0xe/0x20 mm/kasan/common.c:614
+>  qmi_wwan_probe+0x342/0x360 drivers/net/usb/qmi_wwan.c:1417
+>  usb_probe_interface+0x305/0x7a0 drivers/usb/core/driver.c:361
+>  really_probe+0x281/0x660 drivers/base/dd.c:509
+>  driver_probe_device+0x104/0x210 drivers/base/dd.c:670
+>  __device_attach_driver+0x1c2/0x220 drivers/base/dd.c:777
+>  bus_for_each_drv+0x15c/0x1e0 drivers/base/bus.c:454
+>
 
-  cleanup_net+0x3fb/0x960 net/core/net_namespace.c:553
-  process_one_work+0x989/0x1790 kernel/workqueue.c:2269
+Hello Kristian!
+
+I need some help understanding this...  IIUC syzbot is claiming an
+out-of-bounds access at line 1417 in v5.2-rc5.  Or whatever - I'm having
+a hard time deciphering what kernel version the bot is actually
+testing. The claimed HEAD is not a kernel commit.  At least not in my
+kernel...
+
+
+But if this is correct, then it points to the info->data access you
+recently added:
+
+822e44b45eb99 (Kristian Evensen        2019-03-02 13:32:26 +0100 1409)  /* =
+Several Quectel modems supports dynamic interface configuration, so
+7c5cca3588545 (Kristian Evensen        2018-09-08 13:50:48 +0200 1410)   * =
+we need to match on class/subclass/protocol. These values are
+7c5cca3588545 (Kristian Evensen        2018-09-08 13:50:48 +0200 1411)   * =
+identical for the diagnostic- and QMI-interface, but bNumEndpoints is
+7c5cca3588545 (Kristian Evensen        2018-09-08 13:50:48 +0200 1412)   * =
+different. Ignore the current interface if the number of endpoints
+e4bf63482c309 (Kristian Evensen        2019-04-07 15:39:09 +0200 1413)   * =
+equals the number for the diag interface (two).
+7c5cca3588545 (Kristian Evensen        2018-09-08 13:50:48 +0200 1414)   */
+e4bf63482c309 (Kristian Evensen        2019-04-07 15:39:09 +0200 1415)  inf=
+o =3D (void *)&id->driver_info;
+e4bf63482c309 (Kristian Evensen        2019-04-07 15:39:09 +0200 1416)=20
+e4bf63482c309 (Kristian Evensen        2019-04-07 15:39:09 +0200 1417)  if =
+(info->data & QMI_WWAN_QUIRK_QUECTEL_DYNCFG) {
+e4bf63482c309 (Kristian Evensen        2019-04-07 15:39:09 +0200 1418)     =
+     if (desc->bNumEndpoints =3D=3D 2)
+e4bf63482c309 (Kristian Evensen        2019-04-07 15:39:09 +0200 1419)     =
+             return -ENODEV;
+e4bf63482c309 (Kristian Evensen        2019-04-07 15:39:09 +0200 1420)  }
+
+
+I must be blind. I cannot see how this could end up failing.
+id->driver_info is always set to one of qmi_wwan_info,
+qmi_wwan_info_quirk_dtr or qmi_wwan_info_quirk_quectel_dyncfg at this
+point.  How does that end up out-of-bounds?
+
+
+
+Bj=C3=B8rn
