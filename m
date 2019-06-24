@@ -2,98 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B16251C01
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 22:08:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DE0C51BFF
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 22:08:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731451AbfFXUIH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 16:08:07 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:36633 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726909AbfFXUIH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 16:08:07 -0400
-Received: by mail-qt1-f194.google.com with SMTP id p15so15914115qtl.3;
-        Mon, 24 Jun 2019 13:08:06 -0700 (PDT)
+        id S1731483AbfFXUIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 16:08:10 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:45564 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726909AbfFXUII (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 16:08:08 -0400
+Received: by mail-qt1-f196.google.com with SMTP id j19so15870476qtr.12
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 13:08:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=jn/w53YJ4Q/KOGOCBKw6wUZlBtvSFROxiUctr/L28Ro=;
-        b=Uo42VIhnTbzCA4Ozzfe6YQOxoA3CFwPgWBgS2/smjKrbL8V70yQZaVcV7Dhz55IyFi
-         MDHwAuo0fbuNYqvyHZPKxi5HFAZ9eMZu40E05KpoxaEhoW2ym2bsGdI2AMmPsH2GbwaI
-         A8D5rxBt5QtnMGec03ZSf43TMVeCzjP1k4riaJXqCdwx9tSA29Zk5y4PfSEgb+C/tOn4
-         8/XxPI8IvH5Sz96v28xdsJS4r2jKwN3kB2hgGFL/oiYGW2LVy4lAiWashl/ra3omK0lo
-         q2AU+hNgmHQDS3dH6VdXdgcwxLFmKd25hnSmFvc5C7sve1yQV3fxNcHVf/397C5E82S0
-         3VHw==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=0iQ70DPQB0xAarJPI9ByeiNId5fZerRJ13Slws+p5JM=;
+        b=NQexTrSzg+w3rbkiLnyem+5GSuGPmnN3YkU8s5MWyuPBQIlVesl41mwo1eyAb79KBG
+         nvnBQ9Mac777JzV8y/PqUgJsSXWETDIwaVoHDkwsA/j0HRd2QSBgjb4UPG9vO5GqdjUo
+         D48ZHDlF9rTX5scU9mTBhd9DK8CfIZbAGsXYGcWpI0QsaJszvMx2zcdX8MD3E0bz0tj4
+         s/VI2ZC7q1OwqyW1lueHF/R2cglVkKFpOmZj3b7hgca1M3BRJwQDEGuMQpMfsAeC4pbT
+         8LTtDPt6bbcRjirJ/DKCm0+ud8v/sI9z5eP8jcA5PgXblZ50bC4Gn2FWR64Kjrtj2j9w
+         eH9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=jn/w53YJ4Q/KOGOCBKw6wUZlBtvSFROxiUctr/L28Ro=;
-        b=Dt3YeNUSeCdQd3t07QpFpT1ihgDtToB+++edSNBLDagaYu7LQVY0FG5R5VxdQtP2Yr
-         K9bZajZlsnVQwctXXol5d7lvxbGvNONDr6x0tT9f59Dz7DIxfHrn6ieMqjkZf419Otdw
-         Odp6DhyJdP5N+ptDv0UAw0Wz+gRGn27ch6J7KpSqFuN/lNaWAXKjg/abi5g1UHdF5hKz
-         D2//sZJUhbnHvWL2ZhPES+TkKp5+8XBeefktYegMDbUJ1yhVtMVKVTJeYDKf0UBw43oc
-         Erah5SrlE4b39QlKTcXE69JL4LKlif+sGya5TX1rp0Omyaehuu2qi3L72ok+AzRZ0mRv
-         us/w==
-X-Gm-Message-State: APjAAAVBWIJNGL7Tm1vC79lTmC2NPyrEqZVU8VnZou8dUHpw4G5+oX95
-        VIz4YdTv9yNrrc3jakCGqzki7HpVs2HjgWR96C4=
-X-Google-Smtp-Source: APXvYqzL9Aq6zBn7pr7JmJnrrDNTZgpzKLz/k4Ru5O5kpuz00LKqwQXw9OuJb4OT2je3tIIoAtXBTp6qQ7PnsEltOTg=
-X-Received: by 2002:ac8:25e7:: with SMTP id f36mr119795809qtf.139.1561406885830;
- Mon, 24 Jun 2019 13:08:05 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=0iQ70DPQB0xAarJPI9ByeiNId5fZerRJ13Slws+p5JM=;
+        b=HLDoTck+jaD0IhTO/CIyptMWsVu/8s/j8eGQBuliVyOoQovnyPAweoKYvVtY/TTzeY
+         KvDfSRvu3V9Rv954eliXZ/MKLC0NgZ/bdjNRAoyHt6aA6vCQsBruv5wJM5Indbj6pl6N
+         0eYH8xMToYgu49YpIIMTzAJMjR4G7NtdPc7DI3X0ToQOx6SHTJWCoRCD2+tOmhPDcS1B
+         M+Zcgc9jFWcAELmTbIIVUz3JAzsBSMAzIIoWLHwYA05J6CxI0HE5yUuxoO+J2vVUFXtH
+         /Fv+uTdGLtniNUUrVTJ0khfZYpmfHl68aYh0JXViBKEXUaTePvub+S5JnQWHRylFgxP7
+         rVbg==
+X-Gm-Message-State: APjAAAW5zNuKbPg4vevcuVnlDUiTgwoOO/QjkP6j57TCSfgjKFbUlf2H
+        RbYALs/jvHW4K+/O4aauTJrlOA==
+X-Google-Smtp-Source: APXvYqx0ow7UKwfRtA0gBo2VQ54FGXkoa9fVTPXBgAbCCBYeEC2YdQceL7MdUv2H8PQkhZk/5Beiag==
+X-Received: by 2002:a0c:b0e4:: with SMTP id p33mr49931228qvc.208.1561406887433;
+        Mon, 24 Jun 2019 13:08:07 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id s8sm5976950qkg.64.2019.06.24.13.08.06
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 24 Jun 2019 13:08:07 -0700 (PDT)
+Date:   Mon, 24 Jun 2019 13:07:59 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Shannon Nelson <snelson@pensando.io>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 01/18] ionic: Add basic framework for IONIC
+ Network device driver
+Message-ID: <20190624130759.3d413c26@cakuba.netronome.com>
+In-Reply-To: <7f1fcda2-dce4-feb6-ec3a-c54bfb691e5d@pensando.io>
+References: <20190620202424.23215-1-snelson@pensando.io>
+        <20190620202424.23215-2-snelson@pensando.io>
+        <20190620212447.GJ31306@lunn.ch>
+        <7f1fcda2-dce4-feb6-ec3a-c54bfb691e5d@pensando.io>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <20190624052455.10659-1-bjorn.topel@gmail.com>
-In-Reply-To: <20190624052455.10659-1-bjorn.topel@gmail.com>
-From:   Song Liu <liu.song.a23@gmail.com>
-Date:   Mon, 24 Jun 2019 13:07:54 -0700
-Message-ID: <CAPhsuW4yRnimgpqZxEU0t33epXnOVjKXsAU-bks=c21i7OdDsg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] MAINTAINERS: add reviewer to maintainers entry
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        jonathan.lemon@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 23, 2019 at 10:45 PM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.c=
-om> wrote:
->
-> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
->
-> Jonathan Lemon has volunteered as an official AF_XDP reviewer. Thank
-> you, Jonathan!
+On Fri, 21 Jun 2019 15:13:31 -0700, Shannon Nelson wrote:
+> >> +#define DRV_VERSION		"0.11.0-k" =20
+> > DRV_VERSION is pretty useless. What you really want to know is the
+> > kernel git tree and commit. The big distributions might backport this
+> > version of the driver back to the old kernel with a million
+> > patches. At which point 0.11.0-k tells you nothing much. =20
+> Yes, any version numbering thing from the big distros is put into=20
+> question, but I find this number useful to me for tracking what has been=
+=20
+> put into the upstream kernel.=C2=A0 This plus the full kernel version giv=
+es=20
+> me a pretty good idea of what I'm looking at.
 
-Thanks Jonathan! Please reply with your Acked-by.
-
-Thanks,
-Song
-
->
-> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> ---
->  MAINTAINERS | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 0cfe98a6761a..dd875578d53c 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -17284,6 +17284,7 @@ N:      xdp
->  XDP SOCKETS (AF_XDP)
->  M:     Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
->  M:     Magnus Karlsson <magnus.karlsson@intel.com>
-> +R:     Jonathan Lemon <jonathan.lemon@gmail.com>
->  L:     netdev@vger.kernel.org
->  L:     bpf@vger.kernel.org
->  S:     Maintained
-> --
-> 2.20.1
->
+Still, we strongly encourage ditching the driver version. =20
+It encourages upstream first development model among other benefits.
