@@ -2,53 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AD6851C47
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 22:27:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C49B451C4B
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 22:29:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728674AbfFXU15 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 24 Jun 2019 16:27:57 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:60506 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726393AbfFXU15 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 16:27:57 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 6E21C128FECAD;
-        Mon, 24 Jun 2019 13:27:56 -0700 (PDT)
-Date:   Mon, 24 Jun 2019 13:27:55 -0700 (PDT)
-Message-Id: <20190624.132755.801319459234383843.davem@davemloft.net>
-To:     nicolas.dichtel@6wind.com
-Cc:     ndesaulniers@google.com, netdev@vger.kernel.org, lkp@intel.com
-Subject: Re: [PATCH net v2 1/2] ipv6: constify rt6_nexthop()
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <3d7c16c4-9c3e-d18c-aad4-6583216ea457@6wind.com>
-References: <20190624.102212.4398258272798722.davem@davemloft.net>
-        <CAKwvOdkqE_RVosXAe9ULePR8A37CHh6+JtDMaRAghUA41Y_+yg@mail.gmail.com>
-        <3d7c16c4-9c3e-d18c-aad4-6583216ea457@6wind.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 24 Jun 2019 13:27:56 -0700 (PDT)
+        id S1731688AbfFXU27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 16:28:59 -0400
+Received: from vps.xff.cz ([195.181.215.36]:55264 "EHLO vps.xff.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726393AbfFXU26 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Jun 2019 16:28:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=megous.com; s=mail;
+        t=1561408136; bh=ebij2iMd2+jfNT2RnrG0rfsvu6bgvrUaIhcBD+2uT8k=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ez2ClL820tax9ruDyvFd7tjrHWXeaFMT3WQ70YRkAuZXuooYJaI0bHitWPVD4PtYk
+         crqCMMgvP5GhR51NkheM4lNM8F0KrnDcTmtkA5LgSRKjeMhAxcb0fGDyr5mOsWO3XB
+         s/6tcRDgFEoJpxyemaGnaucncUPtp060iDqxi4N0=
+Date:   Mon, 24 Jun 2019 22:28:56 +0200
+From:   =?utf-8?Q?Ond=C5=99ej?= Jirman <megous@megous.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     linux-sunxi@googlegroups.com, maxime.ripard@bootlin.com,
+        wens@csie.org, robh+dt@kernel.org, jernej.skrabec@gmail.com,
+        airlied@linux.ie, daniel@ffwll.ch, mark.rutland@arm.com,
+        peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com
+Subject: Re: [PATCH v7 0/6] Add support for Orange Pi 3
+Message-ID: <20190624202856.ij4ujey2z6j5doxj@core.my.home>
+Mail-Followup-To: David Miller <davem@davemloft.net>,
+        linux-sunxi@googlegroups.com, maxime.ripard@bootlin.com,
+        wens@csie.org, robh+dt@kernel.org, jernej.skrabec@gmail.com,
+        airlied@linux.ie, daniel@ffwll.ch, mark.rutland@arm.com,
+        peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com
+References: <20190620134748.17866-1-megous@megous.com>
+ <20190624.102927.1268781741493594465.davem@davemloft.net>
+ <20190624174637.6sznc5ifiuh4c3sm@core.my.home>
+ <20190624.132456.2013417744691373807.davem@davemloft.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190624.132456.2013417744691373807.davem@davemloft.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Date: Mon, 24 Jun 2019 20:18:37 +0200
+On Mon, Jun 24, 2019 at 01:24:56PM -0700, David Miller wrote:
+> From: Ond≈ôej Jirman <megous@megous.com>
+> Date: Mon, 24 Jun 2019 19:46:37 +0200
+> 
+> > This series was even longer before, with patches all around for various
+> > maintainers. I'd expect that relevant maintainers pick the range of patches
+> > meant for them. I don't know who's exactly responsible for what, but I think,
+> > this should work:
+> > 
+> > - 2 stmmac patches should go together via some networking tree (is there
+> >   something specific for stmmac?)
+> > - all DTS patches should go via sunxi
+> > - hdmi patches via some drm tree
+> 
+> Thank you.  So I'll merge the first two patches that touch the stmmac
+> driver via my net-next tree.
 
-> Le 24/06/2019 ‡ 19:37, Nick Desaulniers a Ècrit†:
-> [snip]
->> 
->> The author stated that this patch was no functional change.  Nicolas,
->> it can be helpful to include compiler warnings in the commit message
->> when sending warning fixes, but it's not a big deal.  Thanks for
->> sending the patches.
->> 
-> Yep, but I was not aware of this compilation warning. As explained in the commit
-> log, the goal of this patch was to prepare the next one.
+Thank you.
 
-Yeah, don't worry about it.
+regards,
+	Ondrej
