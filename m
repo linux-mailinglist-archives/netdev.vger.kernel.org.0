@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FE3C51895
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 18:25:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BFE451886
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 18:25:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732097AbfFXQZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 12:25:05 -0400
-Received: from mail-pg1-f201.google.com ([209.85.215.201]:42320 "EHLO
-        mail-pg1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729211AbfFXQYl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 12:24:41 -0400
-Received: by mail-pg1-f201.google.com with SMTP id d3so9686716pgc.9
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 09:24:41 -0700 (PDT)
+        id S1730076AbfFXQYp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 12:24:45 -0400
+Received: from mail-pl1-f201.google.com ([209.85.214.201]:52559 "EHLO
+        mail-pl1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730031AbfFXQYn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 12:24:43 -0400
+Received: by mail-pl1-f201.google.com with SMTP id q2so7586637plr.19
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 09:24:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=+NwZcf9Qug4AB3CHeUOviaC9ooYDCiQf1ZUN7j+uuFw=;
-        b=lUQO0KmK9Ovm7MnPN8zdQohipaxoM0Sr8fVIUHaXhEpU4q/a/Oq/wPxme3rJCvqLZt
-         8n7GRLmEjYbYVqzB+1InIosSM1XnEhEpRRGv3ZJ5swT7k5eZv38oPSzrpBErliRJNTJP
-         H4kdLrYV5ZfZQ4Z+cUnXDKrOqzRDZDkpeO1JJwb2IC+V2hKhZqo8idR94JuQfyhyaaHv
-         jP7QhDm2PspioAPf/KnOtKggG8ElQLBSApiujqgZfjJQKPh5LT9RU2x9N4mMctRcAdmS
-         P7i7d+RrLlMmTYo9tMVQNeKBFx//H2OH2Xo4TA1C8ptj86dOdHc9xS84A5+91FaKE/Ox
-         TpzQ==
+        bh=2L5BO3TFAcuTUXuUy+gszkDxGDsun5OV31BgOFWHrj4=;
+        b=UCuqefck5fwKfeSsXDKvVGT8+ZWbljGseRIo+hA37zKLozaDfG6fZATXAM00NHzcl+
+         Dpmv35pUGNfo5VZA4mTwONVcJF2at2WqFWUnQFzt7iA4tGa5HXIDRf9KN17C9UPQPNHn
+         hBBTbcqcndHBAWx0UOI47k9uuXZN6FfEZHn3SnRoZRyMKhRhKDTi6UG6+YrRWqFs5rkF
+         BGaCBYpeQGeUfPar8ouPXf4Qz307Ic1FBe7QAaaCD+Cwta9tTgiS7Z3O/+NkV1HSbLjg
+         4d1jO088WfWAa9wn4AV3cE7NjOx8mTDvT23YFXzQqyS/p+rMwqoo8RM2Yf8Cfc0i9UQJ
+         qdZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=+NwZcf9Qug4AB3CHeUOviaC9ooYDCiQf1ZUN7j+uuFw=;
-        b=TfyKAKGXPAXwtsArme7IaX7J7uxPb6OXmceBVTgfA+juDn3OUyPmPPG6rsja8ePpQ5
-         5pOuD9l9FbsQ6Cl4B9UnFfe6jNxA5gDuE33PNu3JiXvs+EOKlAyjHueZtYYWACRsYXj3
-         REYL618PgX1p9ojP95UdauVglahDCvxFK7blFm9v2w374rGU0IUrrmND8eZZhF46Fmai
-         5Mljqht1bVevjLo9cwJlzV/ulJLrmeKECiK5ha1i2D/sZgtFt3llxBIruQF2E6Au35TB
-         d3lHTUG3/xnxaUzduooJxc1G9bQE6XB2Fb8R0FOr6dtZXVQydVWuPh6b8bkBgrSpDEjE
-         LNWw==
-X-Gm-Message-State: APjAAAXGZ7s8SLOVX+k+mcNzTiB0rgj0xdPFABGjpDdy7vZ86hD+yPTy
-        jzD/mttS2Ir1rPUCeG/zF5T5RGID7ozPjZI5hIqkJNWsLT+KAET7aHStPCwaw8jXFEdEuMex+22
-        5Eg2mHUQFEDol3dbHowpybRl5o41x8AldZw3gaXUOHFTDEzme/6lPEQ==
-X-Google-Smtp-Source: APXvYqwBaiy3L6Cfpe5S2uX9ddAgQ+wJk2LcXjvUPUb5lQ0hfkLFxR7h0HZcsKxrkiaNZbYdRbCJk4M=
-X-Received: by 2002:a63:360d:: with SMTP id d13mr33778747pga.80.1561393480302;
- Mon, 24 Jun 2019 09:24:40 -0700 (PDT)
-Date:   Mon, 24 Jun 2019 09:24:23 -0700
+        bh=2L5BO3TFAcuTUXuUy+gszkDxGDsun5OV31BgOFWHrj4=;
+        b=A/1tYvTL60JieRyNyadOIuaX/vjNslIyFLcXCKoJ6vQagi1lk4ngicuYpXXZI0P/VO
+         HuYCa0EQVQsDIQ17rtok86FK0l9mwfNZiBsLpD9jK+YsXz6OQ3RI/gii1HRbuzJYT8jH
+         WcCE5xVe3GoNinYj7Ve0qzh4PthQ9rmujmRmNevScTgq9V3hLKDZjnaimUo37x74bYUP
+         iZ4PYiH955RKpu+TlWpqBS2MZkwZ03AkQvqueSQoBnW39Kem7/EgdoE6Y17w0jP2VqA/
+         XhxJ7PKs3mq5/IF7xPGpaxkiA4b9Diduqds4kcEVYkvoI8tgIoYyFpLhVhs5kFz9qfaz
+         wU3g==
+X-Gm-Message-State: APjAAAU2fcpS7md71ZN3IErN3ObFwm/yY1KVvjRmvHZ6m+2z5SdA3wnf
+        WRQmFSopYq5lxfWguVWcfUo9zLZ4A1WndczFtOFH01G+g0fiNk0pPzmxiM/tFFfyidchx3j5P7Q
+        X0Mc8DznXbNHwdoxrKBqpUYNaIAUNYBjpdx8VF8gmdXxpqCc93LLqIw==
+X-Google-Smtp-Source: APXvYqyqVC0q1+YWgzdB5oDO3h7jmL8WpYtJdIhhW3YFTtJ/r9brcI2jgWkDOqgrpQrZvrsNRcUq7z0=
+X-Received: by 2002:a63:3683:: with SMTP id d125mr11329611pga.252.1561393482878;
+ Mon, 24 Jun 2019 09:24:42 -0700 (PDT)
+Date:   Mon, 24 Jun 2019 09:24:24 -0700
 In-Reply-To: <20190624162429.16367-1-sdf@google.com>
-Message-Id: <20190624162429.16367-4-sdf@google.com>
+Message-Id: <20190624162429.16367-5-sdf@google.com>
 Mime-Version: 1.0
 References: <20190624162429.16367-1-sdf@google.com>
 X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
-Subject: [PATCH bpf-next v8 3/9] libbpf: support sockopt hooks
+Subject: [PATCH bpf-next v8 4/9] selftests/bpf: test sockopt section name
 From:   Stanislav Fomichev <sdf@google.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
@@ -58,51 +58,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make libbpf aware of new sockopt hooks so it can derive prog type
-and hook point from the section names.
+Add tests that make sure libbpf section detection works.
 
 Cc: Martin Lau <kafai@fb.com>
 Signed-off-by: Stanislav Fomichev <sdf@google.com>
 ---
- tools/lib/bpf/libbpf.c        | 5 +++++
- tools/lib/bpf/libbpf_probes.c | 1 +
- 2 files changed, 6 insertions(+)
+ tools/testing/selftests/bpf/test_section_names.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 68f45a96769f..cacbd038ac79 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -2646,6 +2646,7 @@ static bool bpf_prog_type__needs_kver(enum bpf_prog_type type)
- 	case BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE:
- 	case BPF_PROG_TYPE_PERF_EVENT:
- 	case BPF_PROG_TYPE_CGROUP_SYSCTL:
-+	case BPF_PROG_TYPE_CGROUP_SOCKOPT:
- 		return false;
- 	case BPF_PROG_TYPE_KPROBE:
- 	default:
-@@ -3604,6 +3605,10 @@ static const struct {
- 						BPF_CGROUP_UDP6_RECVMSG),
- 	BPF_EAPROG_SEC("cgroup/sysctl",		BPF_PROG_TYPE_CGROUP_SYSCTL,
- 						BPF_CGROUP_SYSCTL),
-+	BPF_EAPROG_SEC("cgroup/getsockopt",	BPF_PROG_TYPE_CGROUP_SOCKOPT,
-+						BPF_CGROUP_GETSOCKOPT),
-+	BPF_EAPROG_SEC("cgroup/setsockopt",	BPF_PROG_TYPE_CGROUP_SOCKOPT,
-+						BPF_CGROUP_SETSOCKOPT),
+diff --git a/tools/testing/selftests/bpf/test_section_names.c b/tools/testing/selftests/bpf/test_section_names.c
+index dee2f2eceb0f..29833aeaf0de 100644
+--- a/tools/testing/selftests/bpf/test_section_names.c
++++ b/tools/testing/selftests/bpf/test_section_names.c
+@@ -134,6 +134,16 @@ static struct sec_name_test tests[] = {
+ 		{0, BPF_PROG_TYPE_CGROUP_SYSCTL, BPF_CGROUP_SYSCTL},
+ 		{0, BPF_CGROUP_SYSCTL},
+ 	},
++	{
++		"cgroup/getsockopt",
++		{0, BPF_PROG_TYPE_CGROUP_SOCKOPT, BPF_CGROUP_GETSOCKOPT},
++		{0, BPF_CGROUP_GETSOCKOPT},
++	},
++	{
++		"cgroup/setsockopt",
++		{0, BPF_PROG_TYPE_CGROUP_SOCKOPT, BPF_CGROUP_SETSOCKOPT},
++		{0, BPF_CGROUP_SETSOCKOPT},
++	},
  };
  
- #undef BPF_PROG_SEC_IMPL
-diff --git a/tools/lib/bpf/libbpf_probes.c b/tools/lib/bpf/libbpf_probes.c
-index 6635a31a7a16..ace1a0708d99 100644
---- a/tools/lib/bpf/libbpf_probes.c
-+++ b/tools/lib/bpf/libbpf_probes.c
-@@ -101,6 +101,7 @@ probe_load(enum bpf_prog_type prog_type, const struct bpf_insn *insns,
- 	case BPF_PROG_TYPE_SK_REUSEPORT:
- 	case BPF_PROG_TYPE_FLOW_DISSECTOR:
- 	case BPF_PROG_TYPE_CGROUP_SYSCTL:
-+	case BPF_PROG_TYPE_CGROUP_SOCKOPT:
- 	default:
- 		break;
- 	}
+ static int test_prog_type_by_name(const struct sec_name_test *test)
 -- 
 2.22.0.410.gd8fdbe21b5-goog
 
