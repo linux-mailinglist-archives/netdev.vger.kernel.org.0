@@ -2,92 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B035518E5
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 18:45:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 804CF518E9
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 18:45:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729143AbfFXQpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 12:45:24 -0400
-Received: from canardo.mork.no ([148.122.252.1]:52427 "EHLO canardo.mork.no"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727128AbfFXQpY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Jun 2019 12:45:24 -0400
-Received: from miraculix.mork.no (miraculix.mork.no [IPv6:2001:4641:0:2:7627:374e:db74:e353])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id x5OGjEfI019192
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Mon, 24 Jun 2019 18:45:15 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1561394715; bh=IDXZJ///XxwnyiOJpz8yicO6tLhZ1eLIrJXMy8Pzy9o=;
-        h=From:To:Cc:Subject:Date:Message-Id:From;
-        b=QFWbzXDxWkjF2XMtNgEdoVUqLgV/UXaa0PRsXeItEYc/ICr8TDmi1b8jFXa8Auyg9
-         ypb6K3Vw8Ayu5autyWr6/m6kj0fyzU4sFG/pMB35ZL/Q97jGckW+PqFWrn236W7DA9
-         H/KoD2DPEGwf/Fjul8pzyadVoNnkw7HDcx3JHvos=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.89)
-        (envelope-from <bjorn@miraculix.mork.no>)
-        id 1hfS5i-0000E4-E7; Mon, 24 Jun 2019 18:45:14 +0200
-From:   =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
-To:     netdev@vger.kernel.org
-Cc:     linux-usb@vger.kernel.org, Hillf Danton <hdanton@sina.com>,
-        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
-        Kristian Evensen <kristian.evensen@gmail.com>
-Subject: [PATCH net,stable] qmi_wwan: Fix out-of-bounds read
-Date:   Mon, 24 Jun 2019 18:45:11 +0200
-Message-Id: <20190624164511.831-1-bjorn@mork.no>
-X-Mailer: git-send-email 2.11.0
+        id S1729883AbfFXQp1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 12:45:27 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:34308 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729602AbfFXQp1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 12:45:27 -0400
+Received: by mail-pf1-f193.google.com with SMTP id c85so7851504pfc.1
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 09:45:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NVRIPZBx+6fXy5Np5gmQljVUPQ1UM5jRovrKQDH0h+Y=;
+        b=bIn416Rg3dnAnva0k8zrp3hTgc9yvcXWDVAx4rM42QEuD7xSHMrnp5Tw3koYG3beK2
+         uq80NsUdcN7avJJs5Y307jflgSl39qh1Un/pMU8rHRpKfcNoXnJQYsis1Ap44rEDUcZN
+         lyf/ZxkwD/Uvnaq4ruMOeRTuE87KkrdNk3wdOB7F6IqlNUtaPG6r4A6t3eHwLuNIo5Lj
+         9FxZbVec3h2zGhUIRiCB3LqfmdEViSiYLYdPhiImLxuUaKmoGqRiYOd0lPVNcqz87IN/
+         nxD5v8KOIUQyxlt/3RXh8ewZq69Cw5gYCsfQcZXGPJgG/u6Y5nRTWMi829yM0SAVkdO8
+         iyzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NVRIPZBx+6fXy5Np5gmQljVUPQ1UM5jRovrKQDH0h+Y=;
+        b=p/AkiRvnq4W887D53yQ7L+vvzZ1ubAppCwRkEGA2KJs0oNBtp7oqW/riyHS5cuwrP4
+         pfwnFh6zrjcuH7X7N9Cp49Pjyrgztu426CeSg8poL9sdPMXuVHbdkemSp2kMaLDhmO9H
+         60S1L7w2RBcqzcKyUbiG5chssJi3RPpF0UVbvTUlmn6IQNQta2CVJY31zsZVDWpzTFj+
+         rWfw3yb3Rc9SVarQv9+q50CWW6f1/wXo4rUbOYwLUuMFcpCYMt6SGXXMV1zd9aVuBNMC
+         o6bdMryATqCbtCTEeA/Qy/XJWz6d1TDVdt3Q/yXK5pBbrByMEdZojER9LB54X9NtUym7
+         Owvg==
+X-Gm-Message-State: APjAAAXQIvN1QhuQ/KyQCzanTL9KUxrIAnIuyTjBCsABeDxxqYRcxWxR
+        NOQs4wIgHclJC7bsnxf11/Tf0FxQLYxr6bvk7124Ug==
+X-Google-Smtp-Source: APXvYqzUhVOfhmj28MZwsZJnNvngZmvxpzfsGWxJ+Kc0/IG6NUaJfR5TkaQDn9Fzmn1ql6tts9ZXwxr/ajlH2CFW8zU=
+X-Received: by 2002:a63:78ca:: with SMTP id t193mr2771485pgc.10.1561394725982;
+ Mon, 24 Jun 2019 09:45:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.100.3 at canardo
-X-Virus-Status: Clean
+References: <20190622.170816.1879839685931480272.davem@davemloft.net>
+ <20190624140109.14775-1-nicolas.dichtel@6wind.com> <20190624140109.14775-2-nicolas.dichtel@6wind.com>
+In-Reply-To: <20190624140109.14775-2-nicolas.dichtel@6wind.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Mon, 24 Jun 2019 09:45:14 -0700
+Message-ID: <CAKwvOdk9yxnO_2yDwuG8ECw2o8kP=w8pvdbCqDuwO4_03rj5gw@mail.gmail.com>
+Subject: Re: [PATCH net v2 1/2] ipv6: constify rt6_nexthop()
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        kbuild test robot <lkp@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The syzbot reported
+On Mon, Jun 24, 2019 at 7:01 AM Nicolas Dichtel
+<nicolas.dichtel@6wind.com> wrote:
+>
+> There is no functional change in this patch, it only prepares the next one.
+>
+> rt6_nexthop() will be used by ip6_dst_lookup_neigh(), which uses const
+> variables.
+>
+> Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 
- Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0xca/0x13e lib/dump_stack.c:113
-  print_address_description+0x67/0x231 mm/kasan/report.c:188
-  __kasan_report.cold+0x1a/0x32 mm/kasan/report.c:317
-  kasan_report+0xe/0x20 mm/kasan/common.c:614
-  qmi_wwan_probe+0x342/0x360 drivers/net/usb/qmi_wwan.c:1417
-  usb_probe_interface+0x305/0x7a0 drivers/usb/core/driver.c:361
-  really_probe+0x281/0x660 drivers/base/dd.c:509
-  driver_probe_device+0x104/0x210 drivers/base/dd.c:670
-  __device_attach_driver+0x1c2/0x220 drivers/base/dd.c:777
-  bus_for_each_drv+0x15c/0x1e0 drivers/base/bus.c:454
+Also, I think this fixes an issues reported by 0day:
+https://groups.google.com/forum/#!searchin/clang-built-linux/const%7Csort:date/clang-built-linux/umkS84jS9m8/GAVVEgNYBgAJ
 
-Caused by too many confusing indirections and casts.
-id->driver_info is a pointer stored in a long.  We want the
-pointer here, not the address of it.
+Reported-by: kbuild test robot <lkp@intel.com>
+Acked-by: Nick Desaulniers <ndesaulniers@google.com>
 
-Thanks-to: Hillf Danton <hdanton@sina.com>
-Reported-by: syzbot+b68605d7fadd21510de1@syzkaller.appspotmail.com
-Cc: Kristian Evensen <kristian.evensen@gmail.com>
-Fixes: e4bf63482c30 ("qmi_wwan: Add quirk for Quectel dynamic config")
-Signed-off-by: Bjørn Mork <bjorn@mork.no>
----
-The bug was introduced in v5.2-rc1 but has been backported to stable kernels.
-So this fix also needs to go into stable.
+> ---
+>  drivers/net/vrf.c                | 2 +-
+>  include/net/ip6_route.h          | 4 ++--
+>  net/bluetooth/6lowpan.c          | 4 ++--
+>  net/ipv6/ip6_output.c            | 2 +-
+>  net/netfilter/nf_flow_table_ip.c | 2 +-
+>  5 files changed, 7 insertions(+), 7 deletions(-)
+>
+> diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
+> index 11b9525dff27..311b0cc6eb98 100644
+> --- a/drivers/net/vrf.c
+> +++ b/drivers/net/vrf.c
+> @@ -350,8 +350,8 @@ static int vrf_finish_output6(struct net *net, struct sock *sk,
+>  {
+>         struct dst_entry *dst = skb_dst(skb);
+>         struct net_device *dev = dst->dev;
+> +       const struct in6_addr *nexthop;
+>         struct neighbour *neigh;
+> -       struct in6_addr *nexthop;
+>         int ret;
+>
+>         nf_reset(skb);
+> diff --git a/include/net/ip6_route.h b/include/net/ip6_route.h
+> index 4790beaa86e0..ee7405e759ba 100644
+> --- a/include/net/ip6_route.h
+> +++ b/include/net/ip6_route.h
+> @@ -262,8 +262,8 @@ static inline bool ip6_sk_ignore_df(const struct sock *sk)
+>                inet6_sk(sk)->pmtudisc == IPV6_PMTUDISC_OMIT;
+>  }
+>
+> -static inline struct in6_addr *rt6_nexthop(struct rt6_info *rt,
+> -                                          struct in6_addr *daddr)
+> +static inline const struct in6_addr *rt6_nexthop(const struct rt6_info *rt,
+> +                                                const struct in6_addr *daddr)
+>  {
+>         if (rt->rt6i_flags & RTF_GATEWAY)
+>                 return &rt->rt6i_gateway;
+> diff --git a/net/bluetooth/6lowpan.c b/net/bluetooth/6lowpan.c
+> index 19d27bee285e..1555b0c6f7ec 100644
+> --- a/net/bluetooth/6lowpan.c
+> +++ b/net/bluetooth/6lowpan.c
+> @@ -160,10 +160,10 @@ static inline struct lowpan_peer *peer_lookup_dst(struct lowpan_btle_dev *dev,
+>                                                   struct in6_addr *daddr,
+>                                                   struct sk_buff *skb)
+>  {
+> -       struct lowpan_peer *peer;
+> -       struct in6_addr *nexthop;
+>         struct rt6_info *rt = (struct rt6_info *)skb_dst(skb);
+>         int count = atomic_read(&dev->peer_count);
+> +       const struct in6_addr *nexthop;
+> +       struct lowpan_peer *peer;
 
- drivers/net/usb/qmi_wwan.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I see the added const, but I'm not sure why the declarations were
+reordered?  Here and below. Doesn't matter for code review (doesn't
+necessitate a v2).
 
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index d080f8048e52..8b4ad10cf940 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -1482,7 +1482,7 @@ static int qmi_wwan_probe(struct usb_interface *intf,
- 	 * different. Ignore the current interface if the number of endpoints
- 	 * equals the number for the diag interface (two).
- 	 */
--	info = (void *)&id->driver_info;
-+	info = (void *)id->driver_info;
- 
- 	if (info->data & QMI_WWAN_QUIRK_QUECTEL_DYNCFG) {
- 		if (desc->bNumEndpoints == 2)
+>
+>         BT_DBG("peers %d addr %pI6c rt %p", count, daddr, rt);
+>
+> diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+> index 834475717110..21efcd02f337 100644
+> --- a/net/ipv6/ip6_output.c
+> +++ b/net/ipv6/ip6_output.c
+> @@ -59,8 +59,8 @@ static int ip6_finish_output2(struct net *net, struct sock *sk, struct sk_buff *
+>  {
+>         struct dst_entry *dst = skb_dst(skb);
+>         struct net_device *dev = dst->dev;
+> +       const struct in6_addr *nexthop;
+>         struct neighbour *neigh;
+> -       struct in6_addr *nexthop;
+>         int ret;
+>
+>         if (ipv6_addr_is_multicast(&ipv6_hdr(skb)->daddr)) {
+> diff --git a/net/netfilter/nf_flow_table_ip.c b/net/netfilter/nf_flow_table_ip.c
+> index 241317473114..cdfc33517e85 100644
+> --- a/net/netfilter/nf_flow_table_ip.c
+> +++ b/net/netfilter/nf_flow_table_ip.c
+> @@ -439,9 +439,9 @@ nf_flow_offload_ipv6_hook(void *priv, struct sk_buff *skb,
+>         struct nf_flowtable *flow_table = priv;
+>         struct flow_offload_tuple tuple = {};
+>         enum flow_offload_tuple_dir dir;
+> +       const struct in6_addr *nexthop;
+>         struct flow_offload *flow;
+>         struct net_device *outdev;
+> -       struct in6_addr *nexthop;
+>         struct ipv6hdr *ip6h;
+>         struct rt6_info *rt;
+>
+> --
+> 2.21.0
+>
+
+
 -- 
-2.11.0
-
+Thanks,
+~Nick Desaulniers
