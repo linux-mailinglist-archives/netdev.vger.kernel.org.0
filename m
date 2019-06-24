@@ -2,139 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F2865061D
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 11:49:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F0B85064B
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 11:58:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728575AbfFXJtV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 05:49:21 -0400
-Received: from esa3.microchip.iphmx.com ([68.232.153.233]:40080 "EHLO
-        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726481AbfFXJtV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 05:49:21 -0400
-Received-SPF: Pass (esa3.microchip.iphmx.com: domain of
-  Nicolas.Ferre@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa3.microchip.iphmx.com;
-  envelope-from="Nicolas.Ferre@microchip.com";
-  x-sender="Nicolas.Ferre@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
-  a:mx2.microchip.iphmx.com include:servers.mcsv.net
-  include:mktomail.com include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa3.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa3.microchip.iphmx.com;
-  envelope-from="Nicolas.Ferre@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa3.microchip.iphmx.com; spf=Pass smtp.mailfrom=Nicolas.Ferre@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dkim=pass (signature verified) header.i=@microchiptechnology.onmicrosoft.com; dmarc=pass (p=none dis=none) d=microchip.com
-X-IronPort-AV: E=Sophos;i="5.63,411,1557212400"; 
-   d="scan'208";a="38732937"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Jun 2019 02:49:19 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex04.mchp-main.com (10.10.87.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 24 Jun 2019 02:48:20 -0700
-Received: from NAM02-CY1-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.72) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5 via Frontend
- Transport; Mon, 24 Jun 2019 02:49:17 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector1-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=C8HHa/2TRhb8sNnLAXClmCsglpdLm2WMqRTras05AIM=;
- b=Sx1zahOiEa0mZZTkbCgOZxsq8WkISVhET0R4crIqA65eW+nYPBHYfQoSUr/oqsXvvae7PfnDvESvlSm5+8U+qkiv/JdMkG6ZR1bGr7RnTKxBhRN8pY8X9Oqi7nVCXphd3v5sCGNlo7fZGZZm411+uZ5kEfk3F1ShPTGh2C519v4=
-Received: from MWHPR11MB1662.namprd11.prod.outlook.com (10.172.55.15) by
- MWHPR11MB0030.namprd11.prod.outlook.com (10.164.204.26) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2008.16; Mon, 24 Jun 2019 09:49:17 +0000
-Received: from MWHPR11MB1662.namprd11.prod.outlook.com
- ([fe80::7534:63dc:8504:c2b3]) by MWHPR11MB1662.namprd11.prod.outlook.com
- ([fe80::7534:63dc:8504:c2b3%6]) with mapi id 15.20.2008.014; Mon, 24 Jun 2019
- 09:49:17 +0000
-From:   <Nicolas.Ferre@microchip.com>
-To:     <palmer@sifive.com>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/2] net: macb: Kconfig: Rename Atmel to Cadence
-Thread-Topic: [PATCH 2/2] net: macb: Kconfig: Rename Atmel to Cadence
-Thread-Index: AQHVKnIWNTWzxb1PyUmXl3jea+egkA==
-Date:   Mon, 24 Jun 2019 09:49:16 +0000
-Message-ID: <0c714db9-a3c1-e89b-8889-e9cdb2ac6c52@microchip.com>
-References: <20190624061603.1704-1-palmer@sifive.com>
- <20190624061603.1704-3-palmer@sifive.com>
-In-Reply-To: <20190624061603.1704-3-palmer@sifive.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: PR0P264CA0149.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:100:1b::17) To MWHPR11MB1662.namprd11.prod.outlook.com
- (2603:10b6:301:e::15)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [213.41.198.74]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: bfb11cb9-dbaf-48f6-f4f5-08d6f88938af
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR11MB0030;
-x-ms-traffictypediagnostic: MWHPR11MB0030:
-x-microsoft-antispam-prvs: <MWHPR11MB0030AFCFBC17EE00BE070234E0E00@MWHPR11MB0030.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 007814487B
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(346002)(396003)(136003)(39860400002)(376002)(366004)(189003)(199004)(31696002)(6246003)(31686004)(71200400001)(71190400001)(386003)(53546011)(229853002)(6436002)(6486002)(6512007)(8936002)(2501003)(52116002)(66066001)(5660300002)(4326008)(99286004)(86362001)(76176011)(68736007)(25786009)(316002)(186003)(7736002)(476003)(26005)(6506007)(102836004)(110136005)(36756003)(2906002)(14454004)(8676002)(54906003)(305945005)(256004)(81166006)(66946007)(6116002)(14444005)(446003)(66446008)(64756008)(66556008)(81156014)(72206003)(66476007)(3846002)(73956011)(53936002)(11346002)(2616005)(478600001)(486006);DIR:OUT;SFP:1101;SCL:1;SRVR:MWHPR11MB0030;H:MWHPR11MB1662.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: microchip.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: sGge7R8gxYf452FtFmh4YZnOTz17xr0p0m1c1AcV4AKlUOlZfjm5GuATAEsvFvbQW9BmzQc3Yc9MwEp/kwQDgq/MlVrfvcpBY0WYNNaJkFXr+/wre3cpJacJ+0LcO/ogfR2iNiBQp/BbOga8BF3flnyTZwJX//BHkq5J+OsWDuVRbLXXEh4GQlJ3tPAY87XPA/DPhg+mJhf3B8NC0Kxw+dDR/2flslu+9AybdEPKJsyBY/urShPmdIdbCCe+Yjgf/Qx9VVCfEoSMu2HQbb50I8z+k4bC0/vGlAs8O86M0T2vSHQKZbm+PkEi5DkhNxp/2TcM2dLXp+QVpirOhJu4uMrgeBHzgbgFwJpFw/tj1KzsOhb2P3g0wZQJukP9fvUjyIl5d9u4eOqoY/Ss2smYM+hpiiqJENhYVohcFemFv3g=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <4D8181CA2F84B6408EDD924C3BA214C4@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: bfb11cb9-dbaf-48f6-f4f5-08d6f88938af
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jun 2019 09:49:16.8610
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: nicolas.ferre@microchip.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB0030
+        id S1728416AbfFXJ5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 05:57:38 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:41629 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726716AbfFXJ5V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 05:57:21 -0400
+Received: by mail-pl1-f196.google.com with SMTP id m7so6569267pls.8
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 02:57:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=9ZA8Iexrs/y5c8FvffbT362N37zmnH9csKA2fCgK9OY=;
+        b=sQe6giogzLBa/dH0iomMIKj24Xxae1o5CXcwlNLEr4aCXz5rtRlZs9aupKzaMIdkvY
+         7sMAZwHC38n46ukrNZ/XO3/D0dkLBiJW38d8X8U3igxeAG8URsKx1CisrZW56mNwu7LO
+         zf7NJddQOoCZl3whdsxAXSlr0TuvUAc4ORL5gAxdiBgkl4U8P5jlG7SC+XN0UCeoWq9h
+         +Dsd5emWeEgNgdvkj3mNMXnwkCDNSsZhgyuj1PWU3//y23rIFsU9sO4llC/5wq5VnyIC
+         xpUxRNlbu2ly45niU7hA7YcxMIVxHVQXrlPlFdpFEmLw4xwugIx9jahnkV4MlHZ66MAT
+         hq0w==
+X-Gm-Message-State: APjAAAVD7ZuLXb1Kzs62jJG3DEs87X3EPKGfeBUYwfPnnW5ftjSNbzAa
+        G4mEFSl3IGM8kQQT+ehwwzLnRA==
+X-Google-Smtp-Source: APXvYqyhlEtx+PTabYdQPoUQm4v4dfwVYWiWo57Km7Qjwr2ZeSFUr7wTRl5jDUCxv/va9KjpKl64iQ==
+X-Received: by 2002:a17:902:8509:: with SMTP id bj9mr32285512plb.79.1561370240329;
+        Mon, 24 Jun 2019 02:57:20 -0700 (PDT)
+Received: from localhost (220-132-236-182.HINET-IP.hinet.net. [220.132.236.182])
+        by smtp.gmail.com with ESMTPSA id x7sm10010802pfm.82.2019.06.24.02.57.19
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 24 Jun 2019 02:57:19 -0700 (PDT)
+Date:   Mon, 24 Jun 2019 02:57:19 -0700 (PDT)
+X-Google-Original-Date: Mon, 24 Jun 2019 02:50:25 PDT (-0700)
+Subject:     Re: [PATCH 1/2] net: macb: Fix compilation on systems without COMMON_CLK
+In-Reply-To: <c440e194-dc93-5a3e-7608-710afade9774@microchip.com>
+CC:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+From:   Palmer Dabbelt <palmer@sifive.com>
+To:     Nicolas.Ferre@microchip.com
+Message-ID: <mhng-ac6d3a1f-07a8-40b5-a4ad-93e529ecc206@palmer-si-x1e>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMjQvMDYvMjAxOSBhdCAwODoxNiwgUGFsbWVyIERhYmJlbHQgd3JvdGU6DQo+IEV4dGVybmFs
-IEUtTWFpbA0KPiANCj4gDQo+IFdoZW4gdG91Y2hpbmcgdGhlIEtjb25maWcgZm9yIHRoaXMgZHJp
-dmVyIEkgbm90aWNlZCB0aGF0IGJvdGggdGhlDQo+IEtjb25maWcgaGVscCB0ZXh0IGFuZCBhIGNv
-bW1lbnQgcmVmZXJyZWQgdG8gdGhpcyBiZWluZyBhbiBBdG1lbCBkcml2ZXIuDQo+IEFzIGZhciBh
-cyBJIGtub3csIHRoaXMgaXMgYSBDYWRlbmNlIGRyaXZlci4gIFRoZSBmaXggaXMganVzdA0KDQpJ
-bmRlZWQ6IHdhcyB3cml0dGVuIGFuZCB0aGVuIG1haW50YWluZWQgYnkgQXRtZWwgKG5vdyBNaWNy
-b2NoaXApIGZvciANCnllYXJzLi4uIFNvIEkgd291bGQgc2F5IHRoYXQgbW9yZSB0aGFuIGEgIkNh
-ZGVuY2UgZHJpdmVyIiBpdCdzIGEgZHJpdmVyIA0KdGhhdCBhcHBsaWVzIHRvIGEgQ2FkZW5jZSBw
-ZXJpcGhlcmFsLg0KDQpJIHdvbid0IGhvbGQgdGhlIHBhdGNoIGp1c3QgZm9yIHRoaXMgYXMgdGhl
-IHBhdGNoIG1ha2VzIHBlcmZlY3Qgc2Vuc2UsIA0KYnV0IHdvdWxkIGxvdmUgdGhhdCBpdCdzIGJl
-ZW4gaGlnaGxpZ2h0ZWQuLi4NCg0KPiBzL0F0bWVsL0NhZGVuY2UvLCBidXQgSSBkaWQgZ28gYW5k
-IHJlLXdyYXAgdGhlIEtjb25maWcgaGVscCB0ZXh0IGFzIHRoYXQNCj4gY2hhbmdlIGNhdXNlZCBp
-dCB0byBnbyBvdmVyIDgwIGNoYXJhY3RlcnMuDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBQYWxtZXIg
-RGFiYmVsdCA8cGFsbWVyQHNpZml2ZS5jb20+DQo+IC0tLQ0KPiAgIGRyaXZlcnMvbmV0L2V0aGVy
-bmV0L2NhZGVuY2UvS2NvbmZpZyB8IDYgKysrLS0tDQo+ICAgMSBmaWxlIGNoYW5nZWQsIDMgaW5z
-ZXJ0aW9ucygrKSwgMyBkZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25l
-dC9ldGhlcm5ldC9jYWRlbmNlL0tjb25maWcgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9jYWRlbmNl
-L0tjb25maWcNCj4gaW5kZXggNzRlZTJiZmQyMzY5Li4yOWI2MTMyYjQxOGUgMTAwNjQ0DQo+IC0t
-LSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2NhZGVuY2UvS2NvbmZpZw0KPiArKysgYi9kcml2ZXJz
-L25ldC9ldGhlcm5ldC9jYWRlbmNlL0tjb25maWcNCj4gQEAgLTEsNiArMSw2IEBADQo+ICAgIyBT
-UERYLUxpY2Vuc2UtSWRlbnRpZmllcjogR1BMLTIuMC1vbmx5DQo+ICAgIw0KPiAtIyBBdG1lbCBk
-ZXZpY2UgY29uZmlndXJhdGlvbg0KPiArIyBDYWRlbmNlIGRldmljZSBjb25maWd1cmF0aW9uDQo+
-ICAgIw0KPiAgIA0KPiAgIGNvbmZpZyBORVRfVkVORE9SX0NBREVOQ0UNCj4gQEAgLTEzLDggKzEz
-LDggQEAgY29uZmlnIE5FVF9WRU5ET1JfQ0FERU5DRQ0KPiAgIAkgIElmIHVuc3VyZSwgc2F5IFku
-DQo+ICAgDQo+ICAgCSAgTm90ZSB0aGF0IHRoZSBhbnN3ZXIgdG8gdGhpcyBxdWVzdGlvbiBkb2Vz
-bid0IGRpcmVjdGx5IGFmZmVjdCB0aGUNCj4gLQkgIGtlcm5lbDogc2F5aW5nIE4gd2lsbCBqdXN0
-IGNhdXNlIHRoZSBjb25maWd1cmF0b3IgdG8gc2tpcCBhbGwNCj4gLQkgIHRoZSByZW1haW5pbmcg
-QXRtZWwgbmV0d29yayBjYXJkIHF1ZXN0aW9ucy4gSWYgeW91IHNheSBZLCB5b3Ugd2lsbCBiZQ0K
-PiArCSAga2VybmVsOiBzYXlpbmcgTiB3aWxsIGp1c3QgY2F1c2UgdGhlIGNvbmZpZ3VyYXRvciB0
-byBza2lwIGFsbCB0aGUNCj4gKwkgIHJlbWFpbmluZyBDYWRlbmNlIG5ldHdvcmsgY2FyZCBxdWVz
-dGlvbnMuIElmIHlvdSBzYXkgWSwgeW91IHdpbGwgYmUNCj4gICAJICBhc2tlZCBmb3IgeW91ciBz
-cGVjaWZpYyBjYXJkIGluIHRoZSBmb2xsb3dpbmcgcXVlc3Rpb25zLg0KPiAgIA0KPiAgIGlmIE5F
-VF9WRU5ET1JfQ0FERU5DRQ0KPiANCg0KDQotLSANCk5pY29sYXMgRmVycmUNCg==
+On Mon, 24 Jun 2019 02:40:21 PDT (-0700), Nicolas.Ferre@microchip.com wrote:
+> On 24/06/2019 at 08:16, Palmer Dabbelt wrote:
+>> External E-Mail
+>> 
+>> 
+>> The patch to add support for the FU540-C000 added a dependency on
+>> COMMON_CLK, but didn't express that via Kconfig.  This fixes the build
+>> failure by adding CONFIG_MACB_FU540, which depends on COMMON_CLK and
+>> conditionally enables the FU540-C000 support.
+> 
+> Let's try to limit the use of  #ifdef's throughout the code. We are 
+> using them in this driver but only for the hot paths and things that 
+> have an impact on performance. I don't think it's the case here: so 
+> please find another option => NACK.
+
+OK.  Would you accept adding a Kconfig dependency of the generic MACB driver on
+COMMON_CLK, as suggested in the cover letter?
+
+> 
+>> I've built this with a powerpc allyesconfig (which pointed out the bug)
+>> and on RISC-V, manually checking to ensure the code was built.  I
+>> haven't even booted the resulting kernels.
+>> 
+>> Fixes: c218ad559020 ("macb: Add support for SiFive FU540-C000")
+>> Signed-off-by: Palmer Dabbelt <palmer@sifive.com>
+>> ---
+>>   drivers/net/ethernet/cadence/Kconfig     | 11 +++++++++++
+>>   drivers/net/ethernet/cadence/macb_main.c | 12 ++++++++++++
+>>   2 files changed, 23 insertions(+)
+>> 
+>> diff --git a/drivers/net/ethernet/cadence/Kconfig b/drivers/net/ethernet/cadence/Kconfig
+>> index 1766697c9c5a..74ee2bfd2369 100644
+>> --- a/drivers/net/ethernet/cadence/Kconfig
+>> +++ b/drivers/net/ethernet/cadence/Kconfig
+>> @@ -40,6 +40,17 @@ config MACB_USE_HWSTAMP
+>>   	---help---
+>>   	  Enable IEEE 1588 Precision Time Protocol (PTP) support for MACB.
+>>   
+>> +config MACB_FU540
+>> +	bool "Enable support for the SiFive FU540 clock controller"
+>> +	depends on MACB && COMMON_CLK
+>> +	default y
+>> +	---help---
+>> +	  Enable support for the MACB/GEM clock controller on the SiFive
+>> +	  FU540-C000.  This device is necessary for switching between 10/100
+>> +	  and gigabit modes on the FU540-C000 SoC, without which it is only
+>> +	  possible to bring up the Ethernet link in whatever mode the
+>> +	  bootloader probed.
+>> +
+>>   config MACB_PCI
+>>   	tristate "Cadence PCI MACB/GEM support"
+>>   	depends on MACB && PCI && COMMON_CLK
+>> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+>> index c545c5b435d8..a903dfdd4183 100644
+>> --- a/drivers/net/ethernet/cadence/macb_main.c
+>> +++ b/drivers/net/ethernet/cadence/macb_main.c
+>> @@ -41,6 +41,7 @@
+>>   #include <linux/pm_runtime.h>
+>>   #include "macb.h"
+>>   
+>> +#ifdef CONFIG_MACB_FU540
+>>   /* This structure is only used for MACB on SiFive FU540 devices */
+>>   struct sifive_fu540_macb_mgmt {
+>>   	void __iomem *reg;
+>> @@ -49,6 +50,7 @@ struct sifive_fu540_macb_mgmt {
+>>   };
+>>   
+>>   static struct sifive_fu540_macb_mgmt *mgmt;
+>> +#endif
+>>   
+>>   #define MACB_RX_BUFFER_SIZE	128
+>>   #define RX_BUFFER_MULTIPLE	64  /* bytes */
+>> @@ -3956,6 +3958,7 @@ static int at91ether_init(struct platform_device *pdev)
+>>   	return 0;
+>>   }
+>>   
+>> +#ifdef CONFIG_MACB_FU540
+>>   static unsigned long fu540_macb_tx_recalc_rate(struct clk_hw *hw,
+>>   					       unsigned long parent_rate)
+>>   {
+>> @@ -4056,7 +4059,9 @@ static int fu540_c000_init(struct platform_device *pdev)
+>>   
+>>   	return macb_init(pdev);
+>>   }
+>> +#endif
+>>   
+>> +#ifdef CONFIG_MACB_FU540
+>>   static const struct macb_config fu540_c000_config = {
+>>   	.caps = MACB_CAPS_GIGABIT_MODE_AVAILABLE | MACB_CAPS_JUMBO |
+>>   		MACB_CAPS_GEM_HAS_PTP,
+>> @@ -4065,6 +4070,7 @@ static const struct macb_config fu540_c000_config = {
+>>   	.init = fu540_c000_init,
+>>   	.jumbo_max_len = 10240,
+>>   };
+>> +#endif
+>>   
+>>   static const struct macb_config at91sam9260_config = {
+>>   	.caps = MACB_CAPS_USRIO_HAS_CLKEN | MACB_CAPS_USRIO_DEFAULT_IS_MII_GMII,
+>> @@ -4155,7 +4161,9 @@ static const struct of_device_id macb_dt_ids[] = {
+>>   	{ .compatible = "cdns,emac", .data = &emac_config },
+>>   	{ .compatible = "cdns,zynqmp-gem", .data = &zynqmp_config},
+>>   	{ .compatible = "cdns,zynq-gem", .data = &zynq_config },
+>> +#ifdef CONFIG_MACB_FU540
+>>   	{ .compatible = "sifive,fu540-macb", .data = &fu540_c000_config },
+>> +#endif
+>>   	{ /* sentinel */ }
+>>   };
+>>   MODULE_DEVICE_TABLE(of, macb_dt_ids);
+>> @@ -4363,7 +4371,9 @@ static int macb_probe(struct platform_device *pdev)
+>>   
+>>   err_disable_clocks:
+>>   	clk_disable_unprepare(tx_clk);
+>> +#ifdef CONFIG_MACB_FU540
+>>   	clk_unregister(tx_clk);
+>> +#endif
+>>   	clk_disable_unprepare(hclk);
+>>   	clk_disable_unprepare(pclk);
+>>   	clk_disable_unprepare(rx_clk);
+>> @@ -4398,7 +4408,9 @@ static int macb_remove(struct platform_device *pdev)
+>>   		pm_runtime_dont_use_autosuspend(&pdev->dev);
+>>   		if (!pm_runtime_suspended(&pdev->dev)) {
+>>   			clk_disable_unprepare(bp->tx_clk);
+>> +#ifdef CONFIG_MACB_FU540
+>>   			clk_unregister(bp->tx_clk);
+>> +#endif
+>>   			clk_disable_unprepare(bp->hclk);
+>>   			clk_disable_unprepare(bp->pclk);
+>>   			clk_disable_unprepare(bp->rx_clk);
+>> 
+> 
+> 
+> -- 
+> Nicolas Ferre
