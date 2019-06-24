@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 501185188A
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 18:25:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C4D151892
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 18:25:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731988AbfFXQYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 12:24:51 -0400
-Received: from mail-pg1-f202.google.com ([209.85.215.202]:51013 "EHLO
-        mail-pg1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731838AbfFXQYt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 12:24:49 -0400
-Received: by mail-pg1-f202.google.com with SMTP id z35so6169282pgl.17
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 09:24:49 -0700 (PDT)
+        id S1732094AbfFXQZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 12:25:01 -0400
+Received: from mail-pg1-f201.google.com ([209.85.215.201]:45283 "EHLO
+        mail-pg1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732009AbfFXQYw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 12:24:52 -0400
+Received: by mail-pg1-f201.google.com with SMTP id n7so4646769pgr.12
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 09:24:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=7rzKhN92sRL4pCiMOcgJ+oVcqEO/hspYwJXUq7M/U/s=;
-        b=oXWtiyNYExFz2bt+xZ3g2MT/csK/eR39Qy69PieQuJkedRJzeg5CpW7Gqb7tbzoeBZ
-         uKgXuL8cE8gI1s82M23qrcCRw2HraT1tCqpCpulB6OSREwA15YZJJP71PSWRRr6QROz5
-         fVsAiyUk8c8mFWAYQCWqv//pptb6HTX4xLhvs2Y9zILELnaMf7MrHZGPb5roP31z3UMH
-         gcRBZU9ROaEzMbUzjhIYeeI+ZRPbkbpr6djqo58m/HIR6mqHroaq8Q0Ho6yyd7HOKWWA
-         vdBE8r4Jjm/C0aLo2SaTBXB6gBVo8zhkvcEs4RYlljJS0Xoo+aCSKhVEWniFu2wdstPW
-         iVkA==
+        bh=E3/NjGxZJZpjVUvabQp7xEgi3RwHvVFfByy3GxO1FAE=;
+        b=bvEA6RmxQCXJpGl6qQR2ZI1toOtawNiwlIVBlJT3aIXAUAwAF9zVWh5hPBTRlP/S+t
+         x/unxfVDszvFocLCqBPeHj2iBobxlYFJ/5SYct/AQvp2IYF3D9e1G7cdN3yZ1c/wsoI0
+         13Gy5/j85eDflK+YjrJRfRQugCxRo0FNP7m+gwqTvkoR4xsxkjgYST8Af/6+E1VODWGJ
+         +UlzU6XLsBA8QeeWy2i54X0A6IAKdQelyW/PC7CQIfGt1VHmM8yKW1PkDEuUeKxqG9R9
+         GLLIWDEMHdZ7hWvy/bdkd4hJZ/gafnKC5XLylkg1rvEWmE3AAplFdBLpPX88NBqNfuw4
+         Fovw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=7rzKhN92sRL4pCiMOcgJ+oVcqEO/hspYwJXUq7M/U/s=;
-        b=KELS38qtRtHz0Nd0v25d2gXuDePy+r9vKqFOJQaXcOIDv8GZCNy8EGXLBIIf8bNOZz
-         Bt/bKFm+73F9qmFYqqLA6mfOi0g+WTgMTbJ4jQ004oBjZ0kGqsJQbwuVyDv3YlkkZ27z
-         vhA9Rl7hSp1A0C0x9wCo7g6M35HSD3ITFJ+pcnTINJjyySPyz6+bdFi1M4sipMAgf1qo
-         dyAeCXXMRoc87qhbtzB32mF7JQMlrI7+tUinLHSN/utknoTnXS/8ixIEB4RALYUR9p8Z
-         hN1MBjlHdItSqtcMKx2QnMdRBy2q2muuH+vk4fBi5Jq9mhOF/d+EE1sJSEVGa48bC4nL
-         ugjA==
-X-Gm-Message-State: APjAAAVKbClKWpvjevzHdfkWbuWmVO1hoqnyii2pdB3Y/5Qd81fnqa0f
-        d6PnUpGLDgXeirszKmnYee1bUoQ+jLeXDvaDVlV0HCax5llm6vMBxx+3WmZgaNvUuxBKvFkSG2M
-        D2kgebKvOmro/9XBSzZySGxFPL5vyDB3xEz57Xu4Z1lR3w8tixJV5vQ==
-X-Google-Smtp-Source: APXvYqyz7XtemhF9nJd7djzz0mpQZGc6rtJnMlyP4eK6Yu3B0z4lvpG0y48wHMoZrNBNGXjhzrxtpXE=
-X-Received: by 2002:a63:2985:: with SMTP id p127mr31802709pgp.400.1561393488148;
- Mon, 24 Jun 2019 09:24:48 -0700 (PDT)
-Date:   Mon, 24 Jun 2019 09:24:26 -0700
+        bh=E3/NjGxZJZpjVUvabQp7xEgi3RwHvVFfByy3GxO1FAE=;
+        b=oo8hJdGfvsz7DsV9ar2zKECM853TkKWBK1BqGciEppB5VTuHh8kdDLawxTEOZToXMS
+         HR8OZxGee4WkbQakAc6FePpaqhWv/xqaYGE6M3P/oey/VaFossQmrV6CA3VWLrpMQIPJ
+         DSiXsvNr2VWnbFespHMJzUmQEf+KNhll50eR3/1CIzbPspbcCXtkKg8OzbUhb+DhEySi
+         pEx1a84/5rMtPh93BAcqoTOVeI2K4gTv4Sa3HOESOOgox/bdevEiAQFrO8lWKKb6166F
+         ZIZM61NVjBJ1bidzPSfhfzJkc5rIpYQvMoGnNrTRN2XRA+fZeH3ZtF5OyDhs8Gx0dheW
+         2CXg==
+X-Gm-Message-State: APjAAAUbLN6O2t2ksu80eJcOzXI/svuMX0TBKJ0kZwmrElAMXM0BUQkp
+        Ow98+sxYpGYd03JvU20VX8CpIzxt+2CoPSapy9cnsdaH3+behz2/cGnduXU1LLRyl6NlQCqPV7i
+        ifiulcrH/1eG85zVP/mxtSRKxzHisBkINLlA5ZHE7dwgRi0ErOHArRQ==
+X-Google-Smtp-Source: APXvYqwVDwN93gfHbyzeT85nhhBw+5FCM/CEFExHEF8pqsum1gRmDKsIT6a986N4VSbhwPMRV3Oimac=
+X-Received: by 2002:a63:5508:: with SMTP id j8mr3385626pgb.278.1561393490721;
+ Mon, 24 Jun 2019 09:24:50 -0700 (PDT)
+Date:   Mon, 24 Jun 2019 09:24:27 -0700
 In-Reply-To: <20190624162429.16367-1-sdf@google.com>
-Message-Id: <20190624162429.16367-7-sdf@google.com>
+Message-Id: <20190624162429.16367-8-sdf@google.com>
 Mime-Version: 1.0
 References: <20190624162429.16367-1-sdf@google.com>
 X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
-Subject: [PATCH bpf-next v8 6/9] selftests/bpf: add sockopt test that
- exercises sk helpers
+Subject: [PATCH bpf-next v8 7/9] selftests/bpf: add sockopt test that
+ exercises BPF_F_ALLOW_MULTI
 From:   Stanislav Fomichev <sdf@google.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
@@ -59,72 +59,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-socktop test that introduces new SOL_CUSTOM sockopt level and
-stores whatever users sets in sk storage. Whenever getsockopt
-is called, the original value is retrieved.
+sockopt test that verifies chaining behavior.
 
 v7:
-* use retval=0 and optlen-1
-
-v6:
-* test 'ret=1' use-case as well (Alexei Starovoitov)
-
-v4:
-* don't call bpf_sk_fullsock helper
-
-v3:
-* drop (__u8 *)(long) casts for optval{,_end}
-
-v2:
-* new test
+* rework the test to verify cgroup getsockopt chaining
 
 Cc: Martin Lau <kafai@fb.com>
 Signed-off-by: Stanislav Fomichev <sdf@google.com>
 ---
  tools/testing/selftests/bpf/.gitignore        |   1 +
- tools/testing/selftests/bpf/Makefile          |   3 +-
- .../testing/selftests/bpf/progs/sockopt_sk.c  |  91 +++++++++
- tools/testing/selftests/bpf/test_sockopt_sk.c | 185 ++++++++++++++++++
- 4 files changed, 279 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/bpf/progs/sockopt_sk.c
- create mode 100644 tools/testing/selftests/bpf/test_sockopt_sk.c
+ tools/testing/selftests/bpf/Makefile          |   4 +-
+ .../selftests/bpf/progs/sockopt_multi.c       |  53 ++++
+ .../selftests/bpf/test_sockopt_multi.c        | 276 ++++++++++++++++++
+ 4 files changed, 333 insertions(+), 1 deletion(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/sockopt_multi.c
+ create mode 100644 tools/testing/selftests/bpf/test_sockopt_multi.c
 
 diff --git a/tools/testing/selftests/bpf/.gitignore b/tools/testing/selftests/bpf/.gitignore
-index 3fe92601223d..8ac076c311d4 100644
+index 8ac076c311d4..a2f7f79c7908 100644
 --- a/tools/testing/selftests/bpf/.gitignore
 +++ b/tools/testing/selftests/bpf/.gitignore
-@@ -40,3 +40,4 @@ test_hashmap
- test_btf_dump
+@@ -41,3 +41,4 @@ test_btf_dump
  xdping
  test_sockopt
-+test_sockopt_sk
+ test_sockopt_sk
++test_sockopt_multi
 diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index afd7b3d298d8..1210b4e98d27 100644
+index 1210b4e98d27..5615a5f13ce4 100644
 --- a/tools/testing/selftests/bpf/Makefile
 +++ b/tools/testing/selftests/bpf/Makefile
-@@ -26,7 +26,7 @@ TEST_GEN_PROGS = test_verifier test_tag test_maps test_lru_map test_lpm_map test
+@@ -26,7 +26,8 @@ TEST_GEN_PROGS = test_verifier test_tag test_maps test_lru_map test_lpm_map test
  	test_sock test_btf test_sockmap get_cgroup_id_user test_socket_cookie \
  	test_cgroup_storage test_select_reuseport test_section_names \
  	test_netcnt test_tcpnotify_user test_sock_fields test_sysctl test_hashmap \
--	test_btf_dump test_cgroup_attach xdping test_sockopt
-+	test_btf_dump test_cgroup_attach xdping test_sockopt test_sockopt_sk
+-	test_btf_dump test_cgroup_attach xdping test_sockopt test_sockopt_sk
++	test_btf_dump test_cgroup_attach xdping test_sockopt test_sockopt_sk \
++	test_sockopt_multi
  
  BPF_OBJ_FILES = $(patsubst %.c,%.o, $(notdir $(wildcard progs/*.c)))
  TEST_GEN_FILES = $(BPF_OBJ_FILES)
-@@ -104,6 +104,7 @@ $(OUTPUT)/test_sock_fields: cgroup_helpers.c
- $(OUTPUT)/test_sysctl: cgroup_helpers.c
+@@ -105,6 +106,7 @@ $(OUTPUT)/test_sysctl: cgroup_helpers.c
  $(OUTPUT)/test_cgroup_attach: cgroup_helpers.c
  $(OUTPUT)/test_sockopt: cgroup_helpers.c
-+$(OUTPUT)/test_sockopt_sk: cgroup_helpers.c
+ $(OUTPUT)/test_sockopt_sk: cgroup_helpers.c
++$(OUTPUT)/test_sockopt_multi: cgroup_helpers.c
  
  .PHONY: force
  
-diff --git a/tools/testing/selftests/bpf/progs/sockopt_sk.c b/tools/testing/selftests/bpf/progs/sockopt_sk.c
+diff --git a/tools/testing/selftests/bpf/progs/sockopt_multi.c b/tools/testing/selftests/bpf/progs/sockopt_multi.c
 new file mode 100644
-index 000000000000..ad4c5db2bc29
+index 000000000000..1529fe3afe9f
 --- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/sockopt_sk.c
-@@ -0,0 +1,91 @@
++++ b/tools/testing/selftests/bpf/progs/sockopt_multi.c
+@@ -0,0 +1,53 @@
 +// SPDX-License-Identifier: GPL-2.0
 +#include <netinet/in.h>
 +#include <linux/bpf.h>
@@ -133,97 +120,60 @@ index 000000000000..ad4c5db2bc29
 +char _license[] SEC("license") = "GPL";
 +__u32 _version SEC("version") = 1;
 +
-+#define SOL_CUSTOM			0xdeadbeef
-+
-+struct sockopt_sk {
-+	__u8 val;
-+};
-+
-+struct bpf_map_def SEC("maps") socket_storage_map = {
-+	.type = BPF_MAP_TYPE_SK_STORAGE,
-+	.key_size = sizeof(int),
-+	.value_size = sizeof(struct sockopt_sk),
-+	.map_flags = BPF_F_NO_PREALLOC,
-+};
-+BPF_ANNOTATE_KV_PAIR(socket_storage_map, int, struct sockopt_sk);
-+
-+SEC("cgroup/getsockopt")
-+int _getsockopt(struct bpf_sockopt *ctx)
++SEC("cgroup/getsockopt/child")
++int _getsockopt_child(struct bpf_sockopt *ctx)
 +{
 +	__u8 *optval_end = ctx->optval_end;
 +	__u8 *optval = ctx->optval;
-+	struct sockopt_sk *storage;
 +
-+	if (ctx->level == SOL_IP && ctx->optname == IP_TOS)
-+		/* Not interested in SOL_IP:IP_TOS;
-+		 * let next BPF program in the cgroup chain or kernel
-+		 * handle it.
-+		 */
++	if (ctx->level != SOL_IP || ctx->optname != IP_TOS)
 +		return 1;
-+
-+	if (ctx->level != SOL_CUSTOM)
-+		return 0; /* EPERM, deny everything except custom level */
 +
 +	if (optval + 1 > optval_end)
 +		return 0; /* EPERM, bounds check */
 +
-+	storage = bpf_sk_storage_get(&socket_storage_map, ctx->sk, 0,
-+				     BPF_SK_STORAGE_GET_F_CREATE);
-+	if (!storage)
-+		return 0; /* EPERM, couldn't get sk storage */
++	if (optval[0] != 0x80)
++		return 0; /* EPERM, unexpected optval from the kernel */
 +
-+	if (!ctx->retval)
-+		return 0; /* EPERM, kernel should not have handled
-+			   * SOL_CUSTOM, something is wrong!
-+			   */
 +	ctx->retval = 0; /* Reset system call return value to zero */
 +
-+	optval[0] = storage->val;
++	optval[0] = 0x90;
 +	ctx->optlen = 1;
 +
 +	return 1;
 +}
 +
-+SEC("cgroup/setsockopt")
-+int _setsockopt(struct bpf_sockopt *ctx)
++SEC("cgroup/getsockopt/parent")
++int _getsockopt_parent(struct bpf_sockopt *ctx)
 +{
 +	__u8 *optval_end = ctx->optval_end;
 +	__u8 *optval = ctx->optval;
-+	struct sockopt_sk *storage;
 +
-+	if (ctx->level == SOL_IP && ctx->optname == IP_TOS)
-+		/* Not interested in SOL_IP:IP_TOS;
-+		 * let next BPF program in the cgroup chain or kernel
-+		 * handle it.
-+		 */
++	if (ctx->level != SOL_IP || ctx->optname != IP_TOS)
 +		return 1;
-+
-+	if (ctx->level != SOL_CUSTOM)
-+		return 0; /* EPERM, deny everything except custom level */
 +
 +	if (optval + 1 > optval_end)
 +		return 0; /* EPERM, bounds check */
 +
-+	storage = bpf_sk_storage_get(&socket_storage_map, ctx->sk, 0,
-+				     BPF_SK_STORAGE_GET_F_CREATE);
-+	if (!storage)
-+		return 0; /* EPERM, couldn't get sk storage */
++	if (optval[0] != 0x90)
++		return 0; /* EPERM, unexpected optval from the kernel */
 +
-+	storage->val = optval[0];
-+	ctx->optlen = -1; /* BPF has consumed this option, don't call kernel
-+			   * setsockopt handler.
-+			   */
++	ctx->retval = 0; /* Reset system call return value to zero */
++
++	optval[0] = 0xA0;
++	ctx->optlen = 1;
 +
 +	return 1;
 +}
-diff --git a/tools/testing/selftests/bpf/test_sockopt_sk.c b/tools/testing/selftests/bpf/test_sockopt_sk.c
+diff --git a/tools/testing/selftests/bpf/test_sockopt_multi.c b/tools/testing/selftests/bpf/test_sockopt_multi.c
 new file mode 100644
-index 000000000000..67558e2c5427
+index 000000000000..71acdc861a55
 --- /dev/null
-+++ b/tools/testing/selftests/bpf/test_sockopt_sk.c
-@@ -0,0 +1,185 @@
++++ b/tools/testing/selftests/bpf/test_sockopt_multi.c
+@@ -0,0 +1,276 @@
 +// SPDX-License-Identifier: GPL-2.0
 +
++#include <error.h>
 +#include <errno.h>
 +#include <stdio.h>
 +#include <unistd.h>
@@ -238,87 +188,6 @@ index 000000000000..67558e2c5427
 +#include "bpf_rlimit.h"
 +#include "bpf_util.h"
 +#include "cgroup_helpers.h"
-+
-+#define CG_PATH				"/sockopt"
-+
-+#define SOL_CUSTOM			0xdeadbeef
-+
-+static int getsetsockopt(void)
-+{
-+	int fd, err;
-+	char buf[4] = {};
-+	socklen_t optlen;
-+
-+	fd = socket(AF_INET, SOCK_STREAM, 0);
-+	if (fd < 0) {
-+		log_err("Failed to create socket");
-+		return -1;
-+	}
-+
-+	/* IP_TOS - BPF bypass */
-+
-+	buf[0] = 0x08;
-+	err = setsockopt(fd, SOL_IP, IP_TOS, buf, 1);
-+	if (err) {
-+		log_err("Failed to call setsockopt(IP_TOS)");
-+		goto err;
-+	}
-+
-+	buf[0] = 0x00;
-+	optlen = 1;
-+	err = getsockopt(fd, SOL_IP, IP_TOS, buf, &optlen);
-+	if (err) {
-+		log_err("Failed to call getsockopt(IP_TOS)");
-+		goto err;
-+	}
-+
-+	if (buf[0] != 0x08) {
-+		log_err("Unexpected getsockopt(IP_TOS) buf[0] 0x%02x != 0x08",
-+			buf[0]);
-+		goto err;
-+	}
-+
-+	/* IP_TTL - EPERM */
-+
-+	buf[0] = 1;
-+	err = setsockopt(fd, SOL_IP, IP_TTL, buf, 1);
-+	if (!err || errno != EPERM) {
-+		log_err("Unexpected success from setsockopt(IP_TTL)");
-+		goto err;
-+	}
-+
-+	/* SOL_CUSTOM - handled by BPF */
-+
-+	buf[0] = 0x01;
-+	err = setsockopt(fd, SOL_CUSTOM, 0, buf, 1);
-+	if (err) {
-+		log_err("Failed to call setsockopt");
-+		goto err;
-+	}
-+
-+	buf[0] = 0x00;
-+	optlen = 4;
-+	err = getsockopt(fd, SOL_CUSTOM, 0, buf, &optlen);
-+	if (err) {
-+		log_err("Failed to call getsockopt");
-+		goto err;
-+	}
-+
-+	if (optlen != 1) {
-+		log_err("Unexpected optlen %d != 1", optlen);
-+		goto err;
-+	}
-+	if (buf[0] != 0x01) {
-+		log_err("Unexpected buf[0] 0x%02x != 0x01", buf[0]);
-+		goto err;
-+	}
-+
-+	close(fd);
-+	return 0;
-+err:
-+	close(fd);
-+	return -1;
-+}
 +
 +static int prog_attach(struct bpf_object *obj, int cgroup_fd, const char *title)
 +{
@@ -340,7 +209,7 @@ index 000000000000..67558e2c5427
 +	}
 +
 +	err = bpf_prog_attach(bpf_program__fd(prog), cgroup_fd,
-+			      attach_type, 0);
++			      attach_type, BPF_F_ALLOW_MULTI);
 +	if (err) {
 +		log_err("Failed to attach %s BPF program", title);
 +		return -1;
@@ -349,63 +218,234 @@ index 000000000000..67558e2c5427
 +	return 0;
 +}
 +
-+static int run_test(int cgroup_fd)
++static int prog_detach(struct bpf_object *obj, int cgroup_fd, const char *title)
++{
++	enum bpf_attach_type attach_type;
++	enum bpf_prog_type prog_type;
++	struct bpf_program *prog;
++	int err;
++
++	err = libbpf_prog_type_by_name(title, &prog_type, &attach_type);
++	if (err)
++		return -1;
++
++	prog = bpf_object__find_program_by_title(obj, title);
++	if (!prog)
++		return -1;
++
++	err = bpf_prog_detach2(bpf_program__fd(prog), cgroup_fd,
++			       attach_type);
++	if (err)
++		return -1;
++
++	return 0;
++}
++
++static int run_test(struct bpf_object *obj, int cg_parent, int cg_child,
++		    int sock_fd)
++{
++	socklen_t optlen;
++	__u8 buf;
++	int err;
++
++	/* Set IP_TOS to the expected value (0x80). */
++
++	buf = 0x80;
++	err = setsockopt(sock_fd, SOL_IP, IP_TOS, &buf, 1);
++	if (err < 0) {
++		log_err("Failed to call setsockopt(IP_TOS)");
++		goto detach;
++	}
++
++	buf = 0x00;
++	optlen = 1;
++	err = getsockopt(sock_fd, SOL_IP, IP_TOS, &buf, &optlen);
++	if (err) {
++		log_err("Failed to call getsockopt(IP_TOS)");
++		goto detach;
++	}
++
++	if (buf != 0x80) {
++		log_err("Unexpected getsockopt 0x%x != 0x80 without BPF", buf);
++		err = -1;
++		goto detach;
++	}
++
++	/* Attach child program and make sure it returns new value:
++	 * - kernel:      -> 0x80
++	 * - child:  0x80 -> 0x90
++	 */
++
++	err = prog_attach(obj, cg_child, "cgroup/getsockopt/child");
++	if (err)
++		goto detach;
++
++	buf = 0x00;
++	optlen = 1;
++	err = getsockopt(sock_fd, SOL_IP, IP_TOS, &buf, &optlen);
++	if (err) {
++		log_err("Failed to call getsockopt(IP_TOS)");
++		goto detach;
++	}
++
++	if (buf != 0x90) {
++		log_err("Unexpected getsockopt 0x%x != 0x90", buf);
++		err = -1;
++		goto detach;
++	}
++
++	/* Attach parent program and make sure it returns new value:
++	 * - kernel:      -> 0x80
++	 * - child:  0x80 -> 0x90
++	 * - parent: 0x90 -> 0xA0
++	 */
++
++	err = prog_attach(obj, cg_parent, "cgroup/getsockopt/parent");
++	if (err)
++		goto detach;
++
++	buf = 0x00;
++	optlen = 1;
++	err = getsockopt(sock_fd, SOL_IP, IP_TOS, &buf, &optlen);
++	if (err) {
++		log_err("Failed to call getsockopt(IP_TOS)");
++		goto detach;
++	}
++
++	if (buf != 0xA0) {
++		log_err("Unexpected getsockopt 0x%x != 0xA0", buf);
++		err = -1;
++		goto detach;
++	}
++
++	/* Setting unexpected initial sockopt should return EPERM:
++	 * - kernel: -> 0x40
++	 * - child:  unexpected 0x40, EPERM
++	 * - parent: unexpected 0x40, EPERM
++	 */
++
++	buf = 0x40;
++	if (setsockopt(sock_fd, SOL_IP, IP_TOS, &buf, 1) < 0) {
++		log_err("Failed to call setsockopt(IP_TOS)");
++		goto detach;
++	}
++
++	buf = 0x00;
++	optlen = 1;
++	err = getsockopt(sock_fd, SOL_IP, IP_TOS, &buf, &optlen);
++	if (!err) {
++		log_err("Unexpected success from getsockopt(IP_TOS)");
++		goto detach;
++	}
++
++	/* Detach child program and make sure we still get EPERM:
++	 * - kernel: -> 0x40
++	 * - parent: unexpected 0x40, EPERM
++	 */
++
++	err = prog_detach(obj, cg_child, "cgroup/getsockopt/child");
++	if (err) {
++		log_err("Failed to detach child program");
++		goto detach;
++	}
++
++	buf = 0x00;
++	optlen = 1;
++	err = getsockopt(sock_fd, SOL_IP, IP_TOS, &buf, &optlen);
++	if (!err) {
++		log_err("Unexpected success from getsockopt(IP_TOS)");
++		goto detach;
++	}
++
++	/* Set initial value to the one the parent program expects:
++	 * - kernel:      -> 0x90
++	 * - parent: 0x90 -> 0xA0
++	 */
++
++	buf = 0x90;
++	err = setsockopt(sock_fd, SOL_IP, IP_TOS, &buf, 1);
++	if (err < 0) {
++		log_err("Failed to call setsockopt(IP_TOS)");
++		goto detach;
++	}
++
++	buf = 0x00;
++	optlen = 1;
++	err = getsockopt(sock_fd, SOL_IP, IP_TOS, &buf, &optlen);
++	if (err) {
++		log_err("Failed to call getsockopt(IP_TOS)");
++		goto detach;
++	}
++
++	if (buf != 0xA0) {
++		log_err("Unexpected getsockopt 0x%x != 0xA0", buf);
++		err = -1;
++		goto detach;
++	}
++
++detach:
++	prog_detach(obj, cg_child, "cgroup/getsockopt/child");
++	prog_detach(obj, cg_parent, "cgroup/getsockopt/parent");
++
++	return err;
++}
++
++int main(int argc, char **argv)
 +{
 +	struct bpf_prog_load_attr attr = {
-+		.file = "./sockopt_sk.o",
++		.file = "./sockopt_multi.o",
 +	};
-+	struct bpf_object *obj;
++	int cg_parent = -1, cg_child = -1;
++	struct bpf_object *obj = NULL;
++	int sock_fd = -1;
++	int err = -1;
 +	int ignored;
-+	int err;
++
++	if (setup_cgroup_environment()) {
++		log_err("Failed to setup cgroup environment\n");
++		goto out;
++	}
++
++	cg_parent = create_and_get_cgroup("/parent");
++	if (cg_parent < 0) {
++		log_err("Failed to create cgroup /parent\n");
++		goto out;
++	}
++
++	cg_child = create_and_get_cgroup("/parent/child");
++	if (cg_child < 0) {
++		log_err("Failed to create cgroup /parent/child\n");
++		goto out;
++	}
++
++	if (join_cgroup("/parent/child")) {
++		log_err("Failed to join cgroup /parent/child\n");
++		goto out;
++	}
 +
 +	err = bpf_prog_load_xattr(&attr, &obj, &ignored);
 +	if (err) {
 +		log_err("Failed to load BPF object");
-+		return -1;
++		goto out;
 +	}
 +
-+	err = prog_attach(obj, cgroup_fd, "cgroup/getsockopt");
-+	if (err)
-+		goto close_bpf_object;
++	sock_fd = socket(AF_INET, SOCK_STREAM, 0);
++	if (sock_fd < 0) {
++		log_err("Failed to create socket");
++		goto out;
++	}
 +
-+	err = prog_attach(obj, cgroup_fd, "cgroup/setsockopt");
-+	if (err)
-+		goto close_bpf_object;
++	if (run_test(obj, cg_parent, cg_child, sock_fd))
++		err = -1;
 +
-+	err = getsetsockopt();
-+
-+close_bpf_object:
++out:
++	close(sock_fd);
 +	bpf_object__close(obj);
-+	return err;
-+}
++	close(cg_child);
++	close(cg_parent);
 +
-+int main(int args, char **argv)
-+{
-+	int cgroup_fd;
-+	int err = EXIT_SUCCESS;
-+
-+	if (setup_cgroup_environment())
-+		goto cleanup_obj;
-+
-+	cgroup_fd = create_and_get_cgroup(CG_PATH);
-+	if (cgroup_fd < 0)
-+		goto cleanup_cgroup_env;
-+
-+	if (join_cgroup(CG_PATH))
-+		goto cleanup_cgroup;
-+
-+	if (run_test(cgroup_fd))
-+		err = EXIT_FAILURE;
-+
-+	printf("test_sockopt_sk: %s\n",
-+	       err == EXIT_SUCCESS ? "PASSED" : "FAILED");
-+
-+cleanup_cgroup:
-+	close(cgroup_fd);
-+cleanup_cgroup_env:
-+	cleanup_cgroup_environment();
-+cleanup_obj:
-+	return err;
++	printf("test_sockopt_multi: %s\n", err ? "FAILED" : "PASSED");
++	return err ? EXIT_FAILURE : EXIT_SUCCESS;
 +}
 -- 
 2.22.0.410.gd8fdbe21b5-goog
