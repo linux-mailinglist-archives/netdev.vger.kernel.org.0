@@ -2,106 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F84A50949
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 12:54:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 290F650962
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 13:03:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729351AbfFXKyj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 06:54:39 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:45603 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728616AbfFXKyj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 06:54:39 -0400
-Received: by mail-io1-f65.google.com with SMTP id e3so510410ioc.12
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 03:54:38 -0700 (PDT)
+        id S1729633AbfFXLC6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 07:02:58 -0400
+Received: from mail-eopbgr760043.outbound.protection.outlook.com ([40.107.76.43]:55493
+        "EHLO NAM02-CY1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727732AbfFXLC6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Jun 2019 07:02:58 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yvdMwkq9kuI2sDIx3QKOUTZy+R8mh2VJCHVGv1QYqB4=;
-        b=hcnlKm6i5GqDrXUr6P2g5Fk27msTNikgjZMhHjv4nax2XzMdhJ+2m2RwInyveVXB7o
-         m06xwgRax1aNAm/VgGWdi9muU7UvC9pf7K6/vYoergAkIiQvb8jWMfWMnCFzQ6WdH8c6
-         OCQFOh9HDAx5q6DWfsn8ACfDBiWaS2Grw/M6SfwixpO/zAlqZGC39j6kxGlet3QRQmFn
-         bMXSdhfQuyXKQNGkLmo764b449ZHYQtS+kJ4m21o8NGTp0FbQhae6tT4Wjv4lJKYKarJ
-         2y5TItNNQWww9/A3TqHJLT3cnwbv2ljPq7P+L5iH4j/9Ys0MGR71iMAcX/eGTFotIBpC
-         PuaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yvdMwkq9kuI2sDIx3QKOUTZy+R8mh2VJCHVGv1QYqB4=;
-        b=kyYc+44uSe2GQxnq+IQ1mJzOy5kgedgHyjPu0g2W5Iw9Zh5/TFo4pqohk3Wb1uRcUj
-         uqZxL3kjPXjmN8txtiEQu4zY8+R4GchY6yYpIc2tc/dk8Gqjnw5KQp73VY/Pxi58bCnO
-         bMdtfvpe2N636M4ItxkZfjKwj1T0runbCqkHdTKwx3bTAgu5tZ8pMWSwtWQtODFDIrCl
-         k3R1MsTl2n1OMN02GRRIHqpPqIui9G/ue1OM/qdXCiYQYcD7pVhl5lh6jYJgEbH1q6WS
-         abiFbPLkqHKIZnycts0ZQ91RcUOHNGk+sWoSoJgsygSJHByeFkMFUPRyY32IScIzoNst
-         VBSg==
-X-Gm-Message-State: APjAAAUMT4kZGcpH2sCs3H2O/deJhWUEnhtslSdbUMAGyHxpo1H6Wpqb
-        GwHRqxNNrjozPgNXSlKNXxLA18cYdCu3aVVif2mdIQ==
-X-Google-Smtp-Source: APXvYqz/4lEop8zPzP0IRk55Anzi8uao/p42JXWpmclmQcnINvPJlyxlWzgtssZzhHnZAGF5a+qPi2FpQh5G5Cn7kwE=
-X-Received: by 2002:a6b:fb0f:: with SMTP id h15mr37035083iog.266.1561373678104;
- Mon, 24 Jun 2019 03:54:38 -0700 (PDT)
+ d=AQUANTIA1COM.onmicrosoft.com; s=selector1-AQUANTIA1COM-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=E8yQnCoEphAhsY7tnHn14ZcOVYYFG9VbAbhX0zsn8B8=;
+ b=lB/WxBQ+ncbF5h3yfWvY1MN6InmdobcGuxjyDW+oFLCZzRIDVKP7L+BSPVNtQ/JG9juNkM5ONapZgZfyszNu6jNk8Djs6Ki+Y70FyQ+w6Po9XjGQW67vtsGWQhPLRdt9BWztKN2GQhXURimbNU+slzccAOZj20t0B9lFz8R8iV8=
+Received: from MWHPR11MB1968.namprd11.prod.outlook.com (10.175.55.144) by
+ MWHPR11MB1872.namprd11.prod.outlook.com (10.175.54.7) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2008.16; Mon, 24 Jun 2019 11:02:55 +0000
+Received: from MWHPR11MB1968.namprd11.prod.outlook.com
+ ([fe80::eda4:c685:f6f8:8a1b]) by MWHPR11MB1968.namprd11.prod.outlook.com
+ ([fe80::eda4:c685:f6f8:8a1b%7]) with mapi id 15.20.2008.017; Mon, 24 Jun 2019
+ 11:02:54 +0000
+From:   Igor Russkikh <Igor.Russkikh@aquantia.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Andrew Lunn <andrew@lunn.ch>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>
+Subject: Re: [PATCH net-next 1/7] net: aquantia: replace internal driver
+ version code with uts
+Thread-Topic: [PATCH net-next 1/7] net: aquantia: replace internal driver
+ version code with uts
+Thread-Index: AQHVKQC320Yt1wWfIE+V6I6UeKytHw==
+Date:   Mon, 24 Jun 2019 11:02:54 +0000
+Message-ID: <120088f1-c860-a643-c675-fdeed4faf1ef@aquantia.com>
+References: <cover.1561210852.git.igor.russkikh@aquantia.com>
+ <f5f346ff5f727f1ccf0f889e358261a792397210.1561210852.git.igor.russkikh@aquantia.com>
+ <20190622150514.GB8497@lunn.ch> <20190623204954.3aa09ded@cakuba>
+In-Reply-To: <20190623204954.3aa09ded@cakuba>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: HE1P192CA0008.EURP192.PROD.OUTLOOK.COM (2603:10a6:3:fe::18)
+ To MWHPR11MB1968.namprd11.prod.outlook.com (2603:10b6:300:113::16)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=Igor.Russkikh@aquantia.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [95.79.108.179]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 23e16df6-d2d4-4c00-d890-08d6f89381f3
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR11MB1872;
+x-ms-traffictypediagnostic: MWHPR11MB1872:
+x-microsoft-antispam-prvs: <MWHPR11MB1872A6B5CD2435015424274498E00@MWHPR11MB1872.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-forefront-prvs: 007814487B
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(376002)(346002)(136003)(39840400004)(366004)(396003)(199004)(189003)(110136005)(66476007)(53936002)(66446008)(64756008)(66556008)(2906002)(6116002)(3846002)(305945005)(6486002)(7736002)(186003)(6436002)(54906003)(316002)(6512007)(102836004)(71190400001)(86362001)(31696002)(229853002)(66066001)(8676002)(446003)(71200400001)(68736007)(4744005)(76176011)(73956011)(476003)(8936002)(6246003)(26005)(81166006)(36756003)(2616005)(66946007)(11346002)(5660300002)(52116002)(72206003)(31686004)(478600001)(44832011)(4326008)(256004)(14454004)(99286004)(486006)(25786009)(81156014)(6506007)(386003);DIR:OUT;SFP:1101;SCL:1;SRVR:MWHPR11MB1872;H:MWHPR11MB1968.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: aquantia.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: PIycvIhIHmsE/fQl1+df1hXNSGuex4lDiLItKvPd9iA4AXZPtQyEEslQIYUosLNhMtIipzXBbDKYpD7Lb28TppfNkWXktHGaVRn9VU/fmvKsE+zZm0EEvlXNnVsC0YbEsG3T12qGRq3gMUt1ssFHqpH59zcADuc3NHDuwqcCQ04OkH1kH/zZ6DwmonaxanecnbHYWIL3zu7KFFKXXRFtwhty2jOr03PRrOOO2YAVk6NYulG/w73vKvuSUQxATguEAnw472Qw22sY1AwaU6nlBaD9O/v/O10tYqIB3TdzDIqUNd6xqvYZZWyM5F+lqjY2S/3cpzztCRoIe3fy/pS8fzn0mXto/9RVUzRIMW7S2YQXWeL1s7uYeiG16SGk8l2Qxdtg1YojEEh0vF8u1c4TrIG2kbZ7zx2ecw/lRyYY0CI=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <85D59E22E18CC94F8313713C3F414664@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <000000000000d6a8ba058c0df076@google.com> <alpine.DEB.2.21.1906241130100.32342@nanos.tec.linutronix.de>
-In-Reply-To: <alpine.DEB.2.21.1906241130100.32342@nanos.tec.linutronix.de>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Mon, 24 Jun 2019 12:54:25 +0200
-Message-ID: <CACT4Y+Y_TadXGE_CVFa4fKqrbpAD4i5WGem9StgoyP_YAVraXw@mail.gmail.com>
-Subject: Re: WARNING: ODEBUG bug in netdev_freemem (2)
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     syzbot <syzbot+c4521ac872a4ccc3afec@syzkaller.appspotmail.com>,
-        Alexander Duyck <alexander.h.duyck@intel.com>,
-        amritha.nambiar@intel.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        David Miller <davem@davemloft.net>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ido Schimmel <idosch@mellanox.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        tyhicks@canonical.com, wanghai26@huawei.com, yuehaibing@huawei.com
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: aquantia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 23e16df6-d2d4-4c00-d890-08d6f89381f3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jun 2019 11:02:54.6588
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 83e2e134-991c-4ede-8ced-34d47e38e6b1
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: irusski@aquantia.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1872
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 24, 2019 at 11:34 AM Thomas Gleixner <tglx@linutronix.de> wrote:
->
-> On Mon, 24 Jun 2019, syzbot wrote:
->
-> > Hello,
-> >
-> > syzbot found the following crash on:
-> >
-> > HEAD commit:    fd6b99fa Merge branch 'akpm' (patches from Andrew)
-> > git tree:       upstream
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=144de256a00000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=fa9f7e1b6a8bb586
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=c4521ac872a4ccc3afec
-> > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> >
-> > Unfortunately, I don't have any reproducer for this crash yet.
-> >
-> > IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> > Reported-by: syzbot+c4521ac872a4ccc3afec@syzkaller.appspotmail.com
-> >
-> > device hsr_slave_0 left promiscuous mode
-> > team0 (unregistering): Port device team_slave_1 removed
-> > team0 (unregistering): Port device team_slave_0 removed
-> > bond0 (unregistering): Releasing backup interface bond_slave_1
-> > bond0 (unregistering): Releasing backup interface bond_slave_0
-> > bond0 (unregistering): Released all slaves
-> > ------------[ cut here ]------------
-> > ODEBUG: free active (active state 0) object type: timer_list hint:
-> > delayed_work_timer_fn+0x0/0x90 arch/x86/include/asm/paravirt.h:767
->
-> One of the cleaned up devices has left an active timer which belongs to a
-> delayed work. That's all I can decode out of that splat. :(
-
-Hi Thomas,
-
-If ODEBUG would memorize full stack traces for object allocation
-(using lib/stackdepot.c), it would make this splat actionable, right?
-I've fixed https://bugzilla.kernel.org/show_bug.cgi?id=203969 for this.
+DQo+IA0KPj4gRGV2bGluayBoYXMganVzdCBnYWluZWQgc29tZXRoaW5nIHNpbWlsYXIgdG8gZXRo
+dG9vbCAtaS4gTWF5YmUgd2UNCj4+IHNob3VsZCBnZXQgdGhlIGRldmxpbmsgY29yZSB0byBhbHNv
+IHJlcG9ydCB0aGUga2VybmVsIHZlcnNpb24/DQo+IA0KPiBJIGRvbid0IHRoaW5rIHdlIGhhdmUg
+dGhlIGRyaXZlciB2ZXJzaW9uIGF0IGFsbCB0aGVyZSwgbXkgdXN1YWwNCj4gaW5jbGluYXRpb24g
+YmVpbmcgdG8gbm90IGR1cGxpY2F0ZSBpbmZvcm1hdGlvbiBhY3Jvc3MgQVBJcy4gIERvIHdlIA0K
+PiBoYXZlIG5vbi1oeXBvdGhldGljYWwgaW5zdGFuY2VzIG9mIHVzZXJzIHJlcG9ydGluZyBldGh0
+b29sIC1pIHdpdGhvdXQNCj4gdW5hbWUgb3V0cHV0PyAgQWRtaXR0ZWRseSBJIG1heSB3b3JrIHdp
+dGggYWJvdmUtYXZlcmFnZSBMaW51eC10cmFpbmVkDQo+IGVuZ2luZWVycyA6UyAgV291bGQgaXQg
+YmUgb2theSB0byBqdXN0IGdldCBkZXZsaW5rIHVzZXIgc3BhY2UgdG8gdXNlDQo+IHVuYW1lKCkg
+dG8gZ2V0IHRoZSBpbmZvPw0KDQpJIHdvcmsgYWxvdCB3aXRoIGZpZWxkIHN1cHBvcnQgZW5naW5l
+ZXJpbmcgcGVvcGxlLCB0aGV5IGhhdmUgYSAnTklDLWNlbnRyaWMnDQp2aWV3IG9uIGEgc3lzdGVt
+IGFuZCBvZnRlbiBhc3N1bWUgTklDIGRyaXZlciB2ZXJzaW9uIGlzIGFsbCB0aGF0IG1hdHRlcnMu
+DQoNClRoZXJlZm9yZSBgZXRodG9vbCAtaWAgaXMgb2Z0ZW4gdGhlIG9ubHkgdGhpbmcgd2UgZ2V0
+IHdoZW4gZGVidWdnaW5nIHVzZXIgaXNzdWVzLg0KDQpSZWdhcmRzLA0KICBJZ29yDQo=
