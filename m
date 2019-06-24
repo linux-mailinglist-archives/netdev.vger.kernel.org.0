@@ -2,130 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E78B51D00
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 23:20:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BE8751D02
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 23:21:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728636AbfFXVUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 17:20:03 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:34628 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726331AbfFXVUD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 17:20:03 -0400
-Received: by mail-qt1-f196.google.com with SMTP id m29so16182141qtu.1;
-        Mon, 24 Jun 2019 14:20:02 -0700 (PDT)
+        id S1727900AbfFXVVs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 17:21:48 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:52360 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726331AbfFXVVs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 17:21:48 -0400
+Received: by mail-wm1-f67.google.com with SMTP id s3so713210wms.2
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 14:21:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=z1XEkKQQ4kQOXdYffh4+MsjiKPUgBbSin4ZmXxLUT3s=;
-        b=lHtoNFJVgt6ohOEc9mZ37e0yWZ6q+aG1oso8PxEP4JHGPNLt9OxXI5oSkuuw1NaAod
-         ZiraYdV9k7FN+/cDBRA3xUteWQF3m7osu6EYoeOIEb38sIHaGAvZZnHzGiOy2rczC9VR
-         hAkgIqQD3zEhQAJAIbbYKrCA9V0sZ257VYTfVbFzg361IyTXU8DriTfELg18DRexNrEh
-         Zi1M5q5pxqWR4thvfyeFFS3cObURgYyz9B6B7bSFujOB+JQyQFTAXpbPrxpmo/CDl5iY
-         IbvYzmAaYXRxF0w2FFxRXFAkhSyZM7Bi6U2bDAPvCnhZZv7XoasOK/UrQN/daTF+CJWZ
-         ZSew==
+        d=googlemail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=iwtvItmMkFs25cjMLuwyr8zqKx9AmYokRwhDp53U1+0=;
+        b=P5ylBfQDUAvHvIlGvR5DYrajnHjfNdj8j3JL/aINoAhI386XAbanj08DPErt95wl7w
+         dz1RhabuCxMQvUfG8maS1ouT2G2f8BxUBunXAhe/52WnF1JKDTiuBPq7FaKufW6oOnbf
+         3bZ5hm/mXouDAMx1axKgp9Es/vIQNB1UaYNd95r3ZSFc1YkOOZt0jbXazkGBwRaAMWfN
+         2rIiOD4mfOs2XjxFa87ed9eufTICKz/xAZwTj7NQG7udw94j2Gju6NQjqd0YWqMIIxf9
+         8rszJI1E4JpCxsS0YA766eJtxOfKUIV19+5QhDHKyb7LYKaxmoqI87hRSajX+jzBY4HO
+         gqtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=z1XEkKQQ4kQOXdYffh4+MsjiKPUgBbSin4ZmXxLUT3s=;
-        b=lgwn+z+VdLhIV/MVgL6G/IQHYCH0DZQvSASBahxOQFej8QX/YTNkP15Ybx6yOVgm7a
-         qM7zg3wrgim0+4RMpKQl/fRCzLj0fiplalnJ4nSRSUO9QsdVH+O+IwqAL7akTqTBXLaP
-         tRcwBGvrRO0eNq9docIYJQZeDLy+ADFUeDLMxzp27xLOQNAwHNcvw5MkND9lOVRhWzMs
-         uewwD2gfFFYsXKPB/iWSij29+6g+kJyxG/TO3n7paRENFRx4TLqxS4dQUhhbXHHEtCNp
-         jqT3Suibx0IV2u9EMDdR6TY8tENGi6ZwqUeUfX2u6hIp1m6Sqc00MPDXvWU6WXi5uLqQ
-         r6og==
-X-Gm-Message-State: APjAAAVsLvaTrTsHK0sE7fIz1MRES3GVIVhsD36gw9YY+NQSaWqbfwA6
-        fvgMK9O2l57yqE9RCbznHsndDxvxjxUFJCZlQVg=
-X-Google-Smtp-Source: APXvYqzh3izkXzhVwgv9YrlZAOs9DZCL9u0QPdeVhlfI2ASrToj3o5v0LVe3JXHLBkKqo0G9cE2w09NJZ9duhvBZ7ZY=
-X-Received: by 2002:a0c:9e02:: with SMTP id p2mr58572748qve.150.1561411201895;
- Mon, 24 Jun 2019 14:20:01 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190624162429.16367-1-sdf@google.com> <20190624162429.16367-2-sdf@google.com>
-In-Reply-To: <20190624162429.16367-2-sdf@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 24 Jun 2019 14:19:50 -0700
-Message-ID: <CAEf4BzbRi9AGt5gcnFCgJPPp-64TsB37bncBXXg7B_bzGYSVAQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v8 1/9] bpf: implement getsockopt and setsockopt hooks
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=iwtvItmMkFs25cjMLuwyr8zqKx9AmYokRwhDp53U1+0=;
+        b=XfTPmU/gqBKIn0/WEt0bYGyZngDItVT5FaMPxaLnk6olMGTJ9pGlLgD8uJMZ9kj0FG
+         jylYpA0T2/4WzknWfOVGq+KAjsFTQS4f//1SFZgXoAoASOAHRkyDB//fPS6F1K0i2bhO
+         SuwecLHswiRLC9SuBtYCNcC8HajBm/bBPRaSHZdnGPcYXshjELLiAUzCT5RNAkfedmWQ
+         OBJugrcafNBWJfFcmvXzHKciWcvsKM2ZUSgB5DuzHbD2OtSHAA1/CWw9WT9cnpOcNLX8
+         e4swiB3sIsQ+yRNBPN7gxBN227kZuxG+rJf/yfyrf5JvbiVFlJi9RYdjuTh8tLsnaokk
+         RheQ==
+X-Gm-Message-State: APjAAAUEmPuyYefipzWC7GsP+i3z+UmEhB75mScDRBHc5xh7yWYdV1j0
+        LLzFWkNCKzG8AP1gKe8=
+X-Google-Smtp-Source: APXvYqxZgOChFZvD/8m1zu4jwZr/RrVyECqddpD/vZDEnyXEqYX3770IrmRJkIeUzpFKhQCm7CXjRg==
+X-Received: by 2002:a1c:e709:: with SMTP id e9mr16633797wmh.144.1561411305473;
+        Mon, 24 Jun 2019 14:21:45 -0700 (PDT)
+Received: from x-Inspiron-15-5568.fritz.box (ip-95-223-112-76.hsi16.unitymediagroup.de. [95.223.112.76])
+        by smtp.gmail.com with ESMTPSA id y44sm11295770wrd.13.2019.06.24.14.21.44
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 24 Jun 2019 14:21:44 -0700 (PDT)
+From:   Sergej Benilov <sergej.benilov@googlemail.com>
+To:     venza@brownhat.org, netdev@vger.kernel.org
+Cc:     Sergej Benilov <sergej.benilov@googlemail.com>
+Subject: [PATCH] sis900: remove TxIDLE
+Date:   Mon, 24 Jun 2019 23:21:02 +0200
+Message-Id: <20190624212102.15844-1-sergej.benilov@googlemail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 24, 2019 at 1:11 PM Stanislav Fomichev <sdf@google.com> wrote:
->
-> Implement new BPF_PROG_TYPE_CGROUP_SOCKOPT program type and
-> BPF_CGROUP_{G,S}ETSOCKOPT cgroup hooks.
->
-> BPF_CGROUP_SETSOCKOPT get a read-only view of the setsockopt arguments.
-> BPF_CGROUP_GETSOCKOPT can modify the supplied buffer.
-> Both of them reuse existing PTR_TO_PACKET{,_END} infrastructure.
->
-> The buffer memory is pre-allocated (because I don't think there is
-> a precedent for working with __user memory from bpf). This might be
-> slow to do for each {s,g}etsockopt call, that's why I've added
-> __cgroup_bpf_prog_array_is_empty that exits early if there is nothing
-> attached to a cgroup. Note, however, that there is a race between
-> __cgroup_bpf_prog_array_is_empty and BPF_PROG_RUN_ARRAY where cgroup
-> program layout might have changed; this should not be a problem
-> because in general there is a race between multiple calls to
-> {s,g}etsocktop and user adding/removing bpf progs from a cgroup.
->
-> The return code of the BPF program is handled as follows:
-> * 0: EPERM
-> * 1: success, continue with next BPF program in the cgroup chain
->
-> v8:
-> * use s32 for optlen (Andrii Nakryiko)
->
-> v7:
-> * return only 0 or 1 (Alexei Starovoitov)
-> * always run all progs (Alexei Starovoitov)
-> * use optval=0 as kernel bypass in setsockopt (Alexei Starovoitov)
->   (decided to use optval=-1 instead, optval=0 might be a valid input)
-> * call getsockopt hook after kernel handlers (Alexei Starovoitov)
->
-> v6:
-> * rework cgroup chaining; stop as soon as bpf program returns
->   0 or 2; see patch with the documentation for the details
-> * drop Andrii's and Martin's Acked-by (not sure they are comfortable
->   with the new state of things)
->
-> v5:
-> * skip copy_to_user() and put_user() when ret == 0 (Martin Lau)
->
-> v4:
-> * don't export bpf_sk_fullsock helper (Martin Lau)
-> * size != sizeof(__u64) for uapi pointers (Martin Lau)
-> * offsetof instead of bpf_ctx_range when checking ctx access (Martin Lau)
->
-> v3:
-> * typos in BPF_PROG_CGROUP_SOCKOPT_RUN_ARRAY comments (Andrii Nakryiko)
-> * reverse christmas tree in BPF_PROG_CGROUP_SOCKOPT_RUN_ARRAY (Andrii
->   Nakryiko)
-> * use __bpf_md_ptr instead of __u32 for optval{,_end} (Martin Lau)
-> * use BPF_FIELD_SIZEOF() for consistency (Martin Lau)
-> * new CG_SOCKOPT_ACCESS macro to wrap repeated parts
->
-> v2:
-> * moved bpf_sockopt_kern fields around to remove a hole (Martin Lau)
-> * aligned bpf_sockopt_kern->buf to 8 bytes (Martin Lau)
-> * bpf_prog_array_is_empty instead of bpf_prog_array_length (Martin Lau)
-> * added [0,2] return code check to verifier (Martin Lau)
-> * dropped unused buf[64] from the stack (Martin Lau)
-> * use PTR_TO_SOCKET for bpf_sockopt->sk (Martin Lau)
-> * dropped bpf_target_off from ctx rewrites (Martin Lau)
-> * use return code for kernel bypass (Martin Lau & Andrii Nakryiko)
->
-> Cc: Martin Lau <kafai@fb.com>
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> ---
+Before "sis900: fix TX completion" patch, TX completion was done on TxIDLE interrupt.
+TX completion also was the only thing done on TxIDLE interrupt.
+Since "sis900: fix TX completion", TX completion is done on TxDESC interrupt.
+So it is not necessary any more to set and to check for TxIDLE.
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+Eliminate TxIDLE from sis900.
+Correct some typos, too.
+
+Signed-off-by: Sergej Benilov <sergej.benilov@googlemail.com>
+---
+ drivers/net/ethernet/sis/sis900.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/net/ethernet/sis/sis900.c b/drivers/net/ethernet/sis/sis900.c
+index 9b036c857..aba6eea72 100644
+--- a/drivers/net/ethernet/sis/sis900.c
++++ b/drivers/net/ethernet/sis/sis900.c
+@@ -360,7 +360,7 @@ static int sis635_get_mac_addr(struct pci_dev *pci_dev,
+  *	SiS962 or SiS963 model, use EEPROM to store MAC address. And EEPROM
+  *	is shared by
+  *	LAN and 1394. When access EEPROM, send EEREQ signal to hardware first
+- *	and wait for EEGNT. If EEGNT is ON, EEPROM is permitted to be access
++ *	and wait for EEGNT. If EEGNT is ON, EEPROM is permitted to be accessed
+  *	by LAN, otherwise is not. After MAC address is read from EEPROM, send
+  *	EEDONE signal to refuse EEPROM access by LAN.
+  *	The EEPROM map of SiS962 or SiS963 is different to SiS900.
+@@ -882,7 +882,7 @@ static void mdio_reset(struct sis900_private *sp)
+  *	mdio_read - read MII PHY register
+  *	@net_dev: the net device to read
+  *	@phy_id: the phy address to read
+- *	@location: the phy regiester id to read
++ *	@location: the phy register id to read
+  *
+  *	Read MII registers through MDIO and MDC
+  *	using MDIO management frame structure and protocol(defined by ISO/IEC).
+@@ -926,7 +926,7 @@ static int mdio_read(struct net_device *net_dev, int phy_id, int location)
+  *	mdio_write - write MII PHY register
+  *	@net_dev: the net device to write
+  *	@phy_id: the phy address to write
+- *	@location: the phy regiester id to write
++ *	@location: the phy register id to write
+  *	@value: the register value to write with
+  *
+  *	Write MII registers with @value through MDIO and MDC
+@@ -1057,7 +1057,7 @@ sis900_open(struct net_device *net_dev)
+ 	sis900_set_mode(sis_priv, HW_SPEED_10_MBPS, FDX_CAPABLE_HALF_SELECTED);
+ 
+ 	/* Enable all known interrupts by setting the interrupt mask. */
+-	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxIDLE | TxDESC);
++	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxDESC);
+ 	sw32(cr, RxENA | sr32(cr));
+ 	sw32(ier, IE);
+ 
+@@ -1101,7 +1101,7 @@ sis900_init_rxfilter (struct net_device * net_dev)
+ 		sw32(rfdr, w);
+ 
+ 		if (netif_msg_hw(sis_priv)) {
+-			printk(KERN_DEBUG "%s: Receive Filter Addrss[%d]=%x\n",
++			printk(KERN_DEBUG "%s: Receive Filter Address[%d]=%x\n",
+ 			       net_dev->name, i, sr32(rfdr));
+ 		}
+ 	}
+@@ -1148,7 +1148,7 @@ sis900_init_tx_ring(struct net_device *net_dev)
+  *	@net_dev: the net device to initialize for
+  *
+  *	Initialize the Rx descriptor ring,
+- *	and pre-allocate recevie buffers (socket buffer)
++ *	and pre-allocate receive buffers (socket buffer)
+  */
+ 
+ static void
+@@ -1578,7 +1578,7 @@ static void sis900_tx_timeout(struct net_device *net_dev)
+ 	sw32(txdp, sis_priv->tx_ring_dma);
+ 
+ 	/* Enable all known interrupts by setting the interrupt mask. */
+-	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxIDLE | TxDESC);
++	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxDESC);
+ }
+ 
+ /**
+@@ -1674,8 +1674,8 @@ static irqreturn_t sis900_interrupt(int irq, void *dev_instance)
+ 	do {
+ 		status = sr32(isr);
+ 
+-		if ((status & (HIBERR|TxURN|TxERR|TxIDLE|TxDESC|RxORN|RxERR|RxOK)) == 0)
+-			/* nothing intresting happened */
++		if ((status & (HIBERR|TxURN|TxERR|TxDESC|RxORN|RxERR|RxOK)) == 0)
++			/* nothing interesting happened */
+ 			break;
+ 		handled = 1;
+ 
+@@ -1684,7 +1684,7 @@ static irqreturn_t sis900_interrupt(int irq, void *dev_instance)
+ 			/* Rx interrupt */
+ 			sis900_rx(net_dev);
+ 
+-		if (status & (TxURN | TxERR | TxIDLE | TxDESC))
++		if (status & (TxURN | TxERR | TxDESC))
+ 			/* Tx interrupt */
+ 			sis900_finish_xmit(net_dev);
+ 
+@@ -1897,7 +1897,7 @@ static void sis900_finish_xmit (struct net_device *net_dev)
+ 		if (tx_status & OWN) {
+ 			/* The packet is not transmitted yet (owned by hardware) !
+ 			 * Note: this is an almost impossible condition
+-			 * in case of TxDESC ('descriptor interrupt') */
++			 * on TxDESC interrupt ('descriptor interrupt') */
+ 			break;
+ 		}
+ 
+@@ -2473,7 +2473,7 @@ static int sis900_resume(struct pci_dev *pci_dev)
+ 	sis900_set_mode(sis_priv, HW_SPEED_10_MBPS, FDX_CAPABLE_HALF_SELECTED);
+ 
+ 	/* Enable all known interrupts by setting the interrupt mask. */
+-	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxIDLE | TxDESC);
++	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxDESC);
+ 	sw32(cr, RxENA | sr32(cr));
+ 	sw32(ier, IE);
+ 
+-- 
+2.17.1
+
