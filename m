@@ -2,99 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19B73505E7
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 11:37:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A566505E9
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 11:38:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727849AbfFXJhp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 05:37:45 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:37966 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725881AbfFXJho (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Jun 2019 05:37:44 -0400
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 72E863082B5A;
-        Mon, 24 Jun 2019 09:37:44 +0000 (UTC)
-Received: from [10.36.116.60] (ovpn-116-60.ams2.redhat.com [10.36.116.60])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id DB0765D739;
-        Mon, 24 Jun 2019 09:37:42 +0000 (UTC)
-From:   "Eelco Chaudron" <echaudro@redhat.com>
-To:     "Andrii Nakryiko" <andrii.nakryiko@gmail.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>
-Cc:     Networking <netdev@vger.kernel.org>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        "Martin Lau" <kafai@fb.com>, "Song Liu" <songliubraving@fb.com>,
-        "Yonghong Song" <yhs@fb.com>
-Subject: Re: [PATCH bpf-next] libbpf: add xsk_ring_prod__free() function
-Date:   Mon, 24 Jun 2019 11:37:40 +0200
-Message-ID: <1C59E98E-7F4B-4FCA-AB95-68D3819C489C@redhat.com>
-In-Reply-To: <CAEf4BzZsmH+4A0dADeXYUDqeEK9N_-PVqzHW_=vPytjEX1hqTA@mail.gmail.com>
-References: <49d3ddb42f531618584f60c740d9469e5406e114.1561130674.git.echaudro@redhat.com>
- <CAEf4BzZsmH+4A0dADeXYUDqeEK9N_-PVqzHW_=vPytjEX1hqTA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Mon, 24 Jun 2019 09:37:44 +0000 (UTC)
+        id S1728122AbfFXJiY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 05:38:24 -0400
+Received: from mail-pl1-f201.google.com ([209.85.214.201]:40697 "EHLO
+        mail-pl1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725881AbfFXJiY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 05:38:24 -0400
+Received: by mail-pl1-f201.google.com with SMTP id 91so7058755pla.7
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 02:38:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=2ryvTXJUr6E1POqVcJ5n+r4c9ZhGMz73tT6VUcTuFrQ=;
+        b=CdMURYMdeWxpusj13Xt9S24MaVgKY7cgMgjt3xO3eaKRu2SIi4CP3g1qStg6B9WF4w
+         T4INniFURIFUxtsLzlbPkCrXXr3IhIpvDUhXMo+Cn3v5yxfUzoil/6UGRsXEfefaU/Qo
+         SHYxH53fO9uz6LaKqNe9bIiVYDV7094ZMsIBjtEGeJF8jGKGB/yl7OqcX3MP4gjXyQtf
+         uaE2qfzxKeYCWq+YyeCY8qrRLfqwT3jB0ukT5c0tJ7bqn2r7zfCWgNz9XGRpg1LhSZDC
+         wnqRWXnWkB8w0ylcEEL/VKOMIHBIHVH7WsZhXMVxwxm73nqhfcBfOC1NsEjXjT9nR5Ld
+         KFeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=2ryvTXJUr6E1POqVcJ5n+r4c9ZhGMz73tT6VUcTuFrQ=;
+        b=cBUFQ9ub7dnq+qQOz3g/We1ZCo/VHcupwBGmLJS9MDjKyabRkDNBWL1f86uCv9Maet
+         PYlTSVP07ArfDPrkDEsdO/byax39fSSk044PsYf2E0FGFo5hNgwFU5d8KVrnpZeWvhtZ
+         1u90rb1lwinRsItkV5OdKDklNO2PUOSdOMdkib8pH3DpzRO36+aeomxgumAZ9ri3cVtD
+         A2ovcFfwwoI+/wnPBmiWQsBP6b3euGzBemBA3Hi4CrDoNlPaHnxZFsrzxoMcemohlr+O
+         eaWLlhY110FXhuQa/H92WtFZdtHHoLmrgZniZAvjp5FMAWio5pmjLSKTt96iDQ7aEDvP
+         /fZQ==
+X-Gm-Message-State: APjAAAUOMddOvoN3FjHVbROeTgslseqXd76npPwS4ARLLR3U4/rmBOly
+        uv6tcQJqEQnw7LpYw7114kbVNTk4u5YPjA==
+X-Google-Smtp-Source: APXvYqwVZ2Xs94VeFGjX0hPvrOe12vMf3iFziNHz2RyK5SbA0kqSPO8RvsNMvUYejS7diBIlK515oSgziq6/XA==
+X-Received: by 2002:a63:6dc5:: with SMTP id i188mr18529204pgc.188.1561369103299;
+ Mon, 24 Jun 2019 02:38:23 -0700 (PDT)
+Date:   Mon, 24 Jun 2019 02:38:20 -0700
+Message-Id: <20190624093820.48023-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
+Subject: [PATCH net] net/packet: fix memory leak in packet_set_ring()
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Sowmini Varadhan <sowmini.varadhan@oracle.com>,
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+syzbot found we can leak memory in packet_set_ring(), if user application
+provides buggy parameters.
 
+Fixes: 7f953ab2ba46 ("af_packet: TX_RING support for TPACKET_V3")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Sowmini Varadhan <sowmini.varadhan@oracle.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+---
+ net/packet/af_packet.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-On 21 Jun 2019, at 21:13, Andrii Nakryiko wrote:
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index a29d66da7394bb48c4012b29ff2ad3d256cf7bff..0b4cf94f0233f86c196e767dc0179c38330ecca7 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -4314,7 +4314,7 @@ static int packet_set_ring(struct sock *sk, union tpacket_req_u *req_u,
+ 				    req3->tp_sizeof_priv ||
+ 				    req3->tp_feature_req_word) {
+ 					err = -EINVAL;
+-					goto out;
++					goto out_free_pg_vec;
+ 				}
+ 			}
+ 			break;
+@@ -4378,6 +4378,7 @@ static int packet_set_ring(struct sock *sk, union tpacket_req_u *req_u,
+ 			prb_shutdown_retire_blk_timer(po, rb_queue);
+ 	}
+ 
++out_free_pg_vec:
+ 	if (pg_vec)
+ 		free_pg_vec(pg_vec, order, req->tp_block_nr);
+ out:
+-- 
+2.22.0.410.gd8fdbe21b5-goog
 
-> On Fri, Jun 21, 2019 at 8:26 AM Eelco Chaudron <echaudro@redhat.com> 
-> wrote:
->>
->> When an AF_XDP application received X packets, it does not mean X
->> frames can be stuffed into the producer ring. To make it easier for
->> AF_XDP applications this API allows them to check how many frames can
->> be added into the ring.
->>
->> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
->> ---
->>  tools/lib/bpf/xsk.h | 6 ++++++
->>  1 file changed, 6 insertions(+)
->>
->> diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
->> index 82ea71a0f3ec..86f3d485e957 100644
->> --- a/tools/lib/bpf/xsk.h
->> +++ b/tools/lib/bpf/xsk.h
->> @@ -95,6 +95,12 @@ static inline __u32 xsk_prod_nb_free(struct 
->> xsk_ring_prod *r, __u32 nb)
->>         return r->cached_cons - r->cached_prod;
->>  }
->>
->> +static inline __u32 xsk_ring_prod__free(struct xsk_ring_prod *r)
->
-> This is a very bad name choice. __free is used for functions that free
-> memory and resources. One function below I see avail is used in the
-> name, why not xsk_ring_prog__avail?
-
-Must agree that free sound like you are freeing entries… However, I 
-just kept the naming already in the API/file (see above, 
-xsk_prod_nb_free()).
-Reading the code there is a difference as xx_avail() means available 
-filled entries, where xx_free() means available free entries.
-
-So I could rename it to xsk_ring_prod__nb_free() maybe?
-
-Forgot to include Magnus in the email, so copied him in, for some 
-comments.
-
->> +{
->> +       r->cached_cons = *r->consumer + r->size;
->> +       return r->cached_cons - r->cached_prod;
->> +}
->> +
->>  static inline __u32 xsk_cons_nb_avail(struct xsk_ring_cons *r, __u32 
->> nb)
->>  {
->>         __u32 entries = r->cached_prod - r->cached_cons;
->> --
->> 2.20.1
->>
