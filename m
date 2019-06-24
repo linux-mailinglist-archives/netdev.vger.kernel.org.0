@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 62E1D51854
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 18:21:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4907D51858
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 18:21:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732009AbfFXQVb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 12:21:31 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:35506 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732001AbfFXQVb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 12:21:31 -0400
-Received: by mail-io1-f66.google.com with SMTP id m24so855103ioo.2
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 09:21:30 -0700 (PDT)
+        id S1732018AbfFXQVk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 12:21:40 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:41976 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729692AbfFXQVk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 12:21:40 -0400
+Received: by mail-io1-f68.google.com with SMTP id w25so2864238ioc.8
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 09:21:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=DTdhMvHGSpRSYv+O4zZF8FaJwPrfZLTTyd9vaWKATdY=;
-        b=tPmfrySUrHFTfHEWGy9TrC/IHOCSSqqAIwzEUzU+Rz7NrirPaY1DvhgyqBPm2cwW+9
-         UszyhOghqLy1knpjHUDSI3bgA4cBbr3rqbwCk2lUXIvEE35Gic/adiiZp/uTcMZG8Wwn
-         EXVZO6hFXRSiquGOh2WfyVBqY5Ios8VVce31ZgSOipQYGpxtdq6do7A/39NgNSX9Ec2E
-         FzfUUsilUBEWcu6Ez6QsIHjePKYvueexIbvhtkxV/6i+g+vEGGvpYyx3iTTKxiC5SveA
-         54bZHa7LZzYAWRacyaU/IG+gZo2uuB5bNf6q/f3jOf74y0xIWPb2aV0oAO2DXHk2WKcB
-         4YWg==
+        bh=xBoAtxtjQiOSLd1WpAbjDP8j6XulfDrLmE862OfreeA=;
+        b=fYYcVU3Y8B8N6WXkcacNkyYkt7leH5k7EMS3TQEAguupNHpoSAXW8cR4JoS5rXAVOZ
+         daQIFAS9sj7BRg7+I3p0mNhO2ntN/ltIdIDMpSE8gjMw/9zJC2hqefo50TTKdQakcx3w
+         iX7btK+oJjzhx1Fobjh/tt2szvDxnOocdGFcXS1ZdxReOQZxKy1/wWcU1O+oT9sd6rH/
+         4UwP1knRJXnqXCF0HTgh2jUCcRt7UyK4kp4wvDo9zRZhgn1VBHT74mskDslvHCDrDfp6
+         S+uP2hLcyFaVg0QW3iu4gjQhYl/5RmO3IBnjM6nS9KhsGvAxh5f5qG3D45pxvLI/9DO8
+         MJhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=DTdhMvHGSpRSYv+O4zZF8FaJwPrfZLTTyd9vaWKATdY=;
-        b=HnYTTLsr4Ym5kTR5aX5JBETqm4GtxIjv3fHm5dAxX4QknvHT2tG62HOUirSp1OgFsd
-         7CwakQvP5WduadTrFErbQgp8l+NyBR0Ca3CSq/cxDS7wo9Se0LHe4T/VibNn37AArPI+
-         wJXCt6oGCKkgQ/Pm4yIDib3Go3EJLUZe80EG5OhL2IoC7vO5S96kddy7f2s3Zo9gnqa+
-         xmYA2ffrufdTalwp0QwIRDEnneQKG1DP+9/WPx4ByPsbG/ovT8t+uPEPrareyZ6lh2JY
-         K2MT5oE5r10GJkIceopkPtZQ8L/nWzp2kpkYhjAx3STZ6Q3pyadGBz6DdBwGQ19lmfdF
-         ycSw==
-X-Gm-Message-State: APjAAAUpMqkm3Bn7HmQEC3C58FgpWcqUGJ7vmWq+iT293JjfdxPFRTVO
-        Lxw8FyEltlR2XUZWE3/6XmzYZg==
-X-Google-Smtp-Source: APXvYqwdIdy6gdFnh0AoofirCVmNPT2cDDVwmDZlJD8dTb+hXiv59U6tCJDzC8nEAkMRQg/1EV+S1A==
-X-Received: by 2002:a6b:b7d5:: with SMTP id h204mr6073067iof.188.1561393290206;
-        Mon, 24 Jun 2019 09:21:30 -0700 (PDT)
+        bh=xBoAtxtjQiOSLd1WpAbjDP8j6XulfDrLmE862OfreeA=;
+        b=DDO6LrBpepbfRmyKKN8pY1gw2gQ11vmztTD4cA9Ezc0SP9KymB3aBKl+66+deSS4uq
+         E5lO0QU4/KWTP8DO5FdCbFcYbxY+YS3CfmMQZp6ZEdMwXOapKGZM8dnkJ/wmZcmLAKqM
+         mZP6dJ6Pimhs1jurjtsAR5c+gJm+0QOwu1psDfkoi8qrEcqqv8YbALTBNYm3vuW3H+Ap
+         4ze0cnk57yii38VaNdIav1Qxb1aoqoxd4KI1LkjOEtJrDvf4fyXqKQcLkLnick+X8cXe
+         9rkgCeJoJm1+3q0zYmjT3/6jR+Nf0frObTxytrIAxPsp/cNagEvtXLBQl5WUOVtMWgdv
+         +E6A==
+X-Gm-Message-State: APjAAAWd0Ih1L9XPUzfDqLHiO19+r8HxGvQ5Ft+TeoZMlmqlGboH6y7V
+        zv6YmzueUq8fg7wvRKNZUl8vTw==
+X-Google-Smtp-Source: APXvYqy4syV3bwek+B+4YOIkjUI6yYRfYCHiZAyNz0icCWo8ncEG810INtf7h15+9jeaQd+N4s95Nw==
+X-Received: by 2002:a6b:7d49:: with SMTP id d9mr93389ioq.50.1561393299179;
+        Mon, 24 Jun 2019 09:21:39 -0700 (PDT)
 Received: from [172.22.22.26] (c-71-195-29-92.hsd1.mn.comcast.net. [71.195.29.92])
-        by smtp.googlemail.com with ESMTPSA id v13sm14220933ioq.13.2019.06.24.09.21.28
+        by smtp.googlemail.com with ESMTPSA id b8sm15046010ioj.16.2019.06.24.09.21.37
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 24 Jun 2019 09:21:29 -0700 (PDT)
+        Mon, 24 Jun 2019 09:21:38 -0700 (PDT)
 Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
 To:     Johannes Berg <johannes@sipsolutions.net>,
         Arnd Bergmann <arnd@arndb.de>, Dan Williams <dcbw@redhat.com>
@@ -70,16 +70,15 @@ References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
  <f4249aa5f5acdd90275eda35aa16f3cfb29d29be.camel@redhat.com>
  <CAK8P3a2nzZKtshYfomOOSYkqx5HdU15Wr9b+3va0B1euNhFOAg@mail.gmail.com>
  <dbb32f185d2c3a654083ee0a7188379e1f88d899.camel@sipsolutions.net>
- <e6ba8a9063e63506c0b88a70418d74ca4efe85cd.camel@sipsolutions.net>
- <850eed1d-0fec-c396-6e91-b5f1f8440ded@linaro.org>
- <967604dd8d466a99b865649174f8b9cd34b2560e.camel@sipsolutions.net>
+ <d533b708-c97a-710d-1138-3ae79107f209@linaro.org>
+ <abdfc6b3a9981bcdef40f85f5442a425ce109010.camel@sipsolutions.net>
 From:   Alex Elder <elder@linaro.org>
-Message-ID: <cf4e990c-1a59-802b-7565-4d7c876416b9@linaro.org>
-Date:   Mon, 24 Jun 2019 11:21:28 -0500
+Message-ID: <db34aa39-6cf1-4844-1bfe-528e391c3729@linaro.org>
+Date:   Mon, 24 Jun 2019 11:21:37 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.1
 MIME-Version: 1.0
-In-Reply-To: <967604dd8d466a99b865649174f8b9cd34b2560e.camel@sipsolutions.net>
+In-Reply-To: <abdfc6b3a9981bcdef40f85f5442a425ce109010.camel@sipsolutions.net>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -88,81 +87,105 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/18/19 1:48 PM, Johannes Berg wrote:
-> Just to add to Dan's response, I think he's captured our discussions and
-> thoughts well.
+On 6/18/19 2:03 PM, Johannes Berg wrote:
+> On Tue, 2019-06-18 at 08:45 -0500, Alex Elder wrote:
 > 
->> First, a few terms (correct or improve as you like):
+>> If it had a well-defined way of creating new channels to be
+>> multiplexed over the connection to the modem, the IPA driver
+>> (rather than the rmnet driver) could present network interfaces
+>> for each and perform the multiplexing.  
 > 
-> Thanks for defining, we don't do that nearly often enough.
-> 
->> - WWAN device is a hardware device (like IPA) that presents a
->>   connection between AP and modem, and presents an interface
->>   that allows the use of that connection to be managed.
-> 
-> Yes. But I was actually thinking of a "wwan_dev" to be a separate
-> structure, not *directly* owned by a single driver and used to represent
-> the hardware like a (hypothetical) "struct ipa_dev".
-
-I think you're talking about creating a coordination interface
-that allows multiple drivers to interact with a WWAN device,
-which might implement several independent features.
-
->> - WWAN netdevice represents a Linux network interface, with its
->>   operations and queues, etc., but implements a standardized
->>   set of WWAN-specific operations.  It represents a logical
->> ' channel whose data is multiplexed over the WWAN device.
-> 
-> I'm not sure I'd asy it has much WWAN-specific operations? But yeah, I
-> guess it might.
-
-I want to withdraw this notion of a "WWAN netdevice"...
-
->> - WWAN channel is a user space abstraction that corresponds
->>   with a WWAN netdevice (but I'm not clear on all the ways
->>   they differ or interact).
-> 
-> As Dan said, this could be a different abstraction than a netdevice,
-> like a TTY, etc.
-
-Right, I get that now.
+> Right. That's what I was thinking of.
 
 . . .
 
->> - Which WWAN channel attributes must be set *before* the
->>   channel is activated, and can't be changed?  Are there any
->>   that can be changed dynamically?
+>> But I think the IPA driver would register with the WWAN core as
+>> a "provider," and then the WWAN core would subsequently request
+>> that it instantiate netdevices to represent channels on demand
+>> (rather than registering them).
 > 
-> It's a good question. I threw a "u32 pdn" in there, but I'm not actually
-> sure that's what you *really* need?
+> Yeah, I guess you could call it that way.
 > 
-> Maybe the modem and userspace just agree on some arbitrary "session
-> identifier"? Dan mentions "MUX ID" or "MBIM Session ID", maybe there
-> really is no good general term for this and we should just call it a
-> "session identifier" and agree that it depends on the control protocol
-> (MBIM vs. QMI vs. ...)?
+> Really there are two possible ways (and they intersect to some extent).
 > 
->> And while the whole point of this is to make things generic,
->> it might be nice to have a way to implement a new feature
->> before it can be "standardized".
-> 
-> Not sure I understand this?
+> One is the whole multi-function device, where a single WWAN device is
+> composed of channels offered by actually different drivers, e.g. for a
+> typical USB device you might have something like cdc_ether and the
+> usb_wwan TTY driver. In this way, we need to "compose" the WWAN device
+> similarly, e.g. by using the underlying USB device "struct device"
+> pointer to tie it together.
 
-I'm talking about a way to experiment with new functionality in a
-way that's explicitly not part of the interface.  But doing that
-isn't necessary and it's probably not a good idea anyway.
+I *think* this model makes the most sense.  But at this point
+it would take very little to convince me otherwise...  (And then
+I saw Arnd's message advocating the other one, unfortunately...)
 
-> FWIW, I actually came to this because we want to upstream a driver for
-> an Intel modem, but ... can't really make up our mind on whether or not
-> to use VLAN tags, something like rmnet (but we obviously cannot use
-> rmnet, so that'd be another vendor specific interface like rmnet), or
-> sysfs, or any of the other methods we have today ... :-)
+> The other is something like IPA or the Intel modem driver, where the
+> device is actually a single (e.g. PCIe) device and just has a single
+> driver, but that single driver offers different channels.
 
-OK cool then we have some common needs.   Let's get this defined so
-we can use it for both!
+What I don't like about this is that it's more monolithic.  It
+seems better to have the low-level IPA or Intel modem driver (or
+any other driver that can support communication between the AP
+and WWAN device) present communication paths that other function-
+specific drivers can attach to and use.
+
+> Now, it's not clear to me where IPA actually falls, because so far we've
+> been talking about the IPA driver only as providing *netdevs*, not any
+> control channels, so I'm not actually sure where the control channel is.
+
+There is user space code that handles all of this, and as far as I
+can tell, parts of it will always remain proprietary.
+
+> For the Intel device, however, the control channel is definitely
+> provided by exactly the same driver as the data channels (netdevs).
+
+I do see the need for a control interface.  But I suspect it
+would *overlap* with what you describe and might need to be more
+general and/or extensible.  Are there control channels specific to
+use for a modem--like a "modem control interface" or something?
+Is there something broader, like "this WWAN device supports
+functions A, and B with protocols X, Y; please open a connection
+to A with protocol X."  Do both exist?  I'm just trying to contain
+whatever a "control channel" really represents, and what it would
+be associated with.
+
+> "provider" is a good word, and in fact the Intel driver would also be a
+> provider for a GNSS channel (TBD how to represent, a tty?), one or
+> multiple debug/tracing channels, data channels (netdevs), AT command
+> channels (mbim, ...?) (again tbd how to represent, ttys?), etc.
+
+Yes, this is much clearer to me now.
+
+> What I showed in the header files I posted so far was the provider only
+> having "data channel" ops (create/remove a netdev) but for each channel
+> type we either want a new method there, or we just change the method to
+> be something like
+> 
+> 	int (*create_channel)(..., enum wwan_chan_type chan_type, ...);
+> 
+> and simply require that the channel is attached to the wwan device with
+> the representation-specific call (wwan_attach_netdev, wwan_attach_tty,
+> ...).
+
+Or maybe have the WWAN device present interfaces with attributes,
+and have drivers that are appropriate for each interface attach
+to only the ones they recognize they support.
 
 					-Alex
 
+> This is a bit less comfortable because then it's difficult to know what
+> was actually created upon the request, so it's probably better to have
+> different methods for the different types of representations (like I had
+> - add_netdev, add_tty, ...).
+> 
+> Note also that I said "representation-specific", while passing a
+> "channel type", so for this we'd actually need a convention on what
+> channel type has what kind of representation, which again gets awkward.
+> Better to make it explicit.
+> 
+> (And even then, we might be able to let userspace have some control,
+> e.g. the driver might be able to create a debug channel as both a TTY or
+> something else)
 > 
 > johannes
 > 
