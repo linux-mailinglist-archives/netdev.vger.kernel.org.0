@@ -2,64 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DA4E51A72
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 20:24:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F49451A7F
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 20:26:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731931AbfFXSYJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 14:24:09 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:39980 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727174AbfFXSYJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 14:24:09 -0400
-Received: by mail-ed1-f65.google.com with SMTP id k8so23102631eds.7
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 11:24:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=L6TFZDLgiQ+GTxHGzKJSP/a/EPP8OeYxDWXJtC90/vk=;
-        b=QOYP0dEYJNuJVjmOO5FOwhk/bvrDd/eDWemmP8BQVhVw2qfeZDi7dGb/iwjxmoGK88
-         eyd44onNdJGmoMUHCQlT420IRo/+Lp2W8IvMWXSLI5bkLbbwp4eHpdVr0adWksL9dJC2
-         wJZj0dPuPJNa8nx02cSPdE8WgqhUFKnIeSS6ZEnmIh8MsEhJU7U07ttZmd9lOBpf0vD0
-         aSp9enDkOFVpEBzR9w6LKIu7ggmd+vDb2ISUULAOJfCc47h0SXLSWfV2bzntrYn0hmtg
-         ec+de8Mk6aPceNfC/SXNQMic0LJUUtPwXTDzb1ZCZTHno+hlYQ6lk1Xv+jjDZVE47HCB
-         lUTA==
-X-Gm-Message-State: APjAAAU9HQ+8acwQ16Xiqul3e6sYP2QbmAdB41wBrr57E7VvNUaYAHuJ
-        fDzgYc5cQLReJcuVlzRSpsqeJQ==
-X-Google-Smtp-Source: APXvYqw0/qptTDpR+PkXz+OAgEtaICXNWggRvXA1K541s83SDiI6gaZfx/i7cLDdyRobH/HX+pwT5Q==
-X-Received: by 2002:a17:906:304d:: with SMTP id d13mr4843137ejd.99.1561400647790;
-        Mon, 24 Jun 2019 11:24:07 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id f10sm4191856eda.41.2019.06.24.11.24.07
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 24 Jun 2019 11:24:07 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id B1DE41804B5; Mon, 24 Jun 2019 20:24:06 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH] samples: bpf: make the use of xdp samples consistent
-In-Reply-To: <20190624112009.20048-1-danieltimlee@gmail.com>
-References: <20190624112009.20048-1-danieltimlee@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 24 Jun 2019 14:24:06 -0400
-Message-ID: <871rzi4zax.fsf@toke.dk>
+        id S1732850AbfFXS0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 14:26:20 -0400
+Received: from relay4-d.mail.gandi.net ([217.70.183.196]:39951 "EHLO
+        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726375AbfFXS0U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 14:26:20 -0400
+X-Originating-IP: 90.65.161.137
+Received: from localhost (lfbn-1-1545-137.w90-65.abo.wanadoo.fr [90.65.161.137])
+        (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id 4A0E5E0008;
+        Mon, 24 Jun 2019 18:26:15 +0000 (UTC)
+Date:   Mon, 24 Jun 2019 20:26:14 +0200
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "Allan W. Nielsen" <allan.nielsen@microchip.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Allan Nielsen <Allan.Nielsen@microsemi.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH net-next 4/6] arm64: dts: fsl: ls1028a: Add Felix switch
+ port DT node
+Message-ID: <20190624182614.GC5690@piout.net>
+References: <1561131532-14860-1-git-send-email-claudiu.manoil@nxp.com>
+ <1561131532-14860-5-git-send-email-claudiu.manoil@nxp.com>
+ <20190621164940.GL31306@lunn.ch>
+ <VI1PR04MB4880D8F90BBCD30BF8A69C9696E00@VI1PR04MB4880.eurprd04.prod.outlook.com>
+ <20190624115558.GA5690@piout.net>
+ <20190624142625.GR31306@lunn.ch>
+ <20190624152344.3bv46jjhhygo6zwl@lx-anielsen.microsemi.net>
+ <20190624162431.GX31306@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190624162431.GX31306@lunn.ch>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Daniel T. Lee" <danieltimlee@gmail.com> writes:
+On 24/06/2019 18:24:31+0200, Andrew Lunn wrote:
+> On Mon, Jun 24, 2019 at 05:23:45PM +0200, Allan W. Nielsen wrote:
+> > Hi Andrew,
+> > 
+> > The 06/24/2019 16:26, Andrew Lunn wrote:
+> > > > > Yeah, there are 2 ethernet controller ports (managed by the enetc driver) 
+> > > > > connected inside the SoC via SGMII links to 2 of the switch ports, one of
+> > > > > these switch ports can be configured as CPU port (with follow-up patches).
+> > > > > 
+> > > > > This configuration may look prettier on DSA, but the main restriction here
+> > > > > is that the entire functionality is provided by the ocelot driver which is a
+> > > > > switchdev driver.  I don't think it would be a good idea to copy-paste code
+> > > > > from ocelot to a separate dsa driver.
+> > > > > 
+> > > > 
+> > > > We should probably make the ocelot driver a DSA driver then...
+> > > An important part of DSA is being able to direct frames out specific
+> > > ports when they ingress via the CPU port. Does the silicon support
+> > > this? At the moment, i think it is using polled IO.
+> > 
+> > That is supported, it requires a bit of initial configuration of the Chip, but
+> > nothing big (I believe this configuration is part of Claudiu's change-set).
+> > 
+> > But how do you envision this done?
+> > 
+> > - Let the existing SwitchDev driver and the DSA driver use a set of common
+> >   functions.
+> > - Convert the existing Ocelot driver from SwitchDev to DSA
+> > - Fork (copy) the existing driver of Ocelot, and modify it as needed for the
+> >   Felix driver
+> > 
+> > My guess is the first one, but I would like to understand what you have in mind.
+> 
+> I don't know the various architectures the switch is used in. But it
+> does seem like a core library, and then a switchdev wrapper for Ocelot
+> and a DSA wrapper for Felix would make sense.
 
-> Currently, each xdp samples are inconsistent in the use.
-> Most of the samples fetch the interface with it's name.
-> (ex. xdp1, xdp2skb, xdp_redirect, xdp_sample_pkts, etc.)
+Ocelot could also be used in a DSA setting where one port can be
+connected to an external MAC and be used to inject/extract frames
+to/from any other ports. In that case, the IFH would serve as the DSA
+tag.
 
-The xdp_redirect and xdp_redirect_map also only accept ifindexes, not
-interface names. Care to fix those while you're at it? :)
 
--Toke
+-- 
+Alexandre Belloni, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
