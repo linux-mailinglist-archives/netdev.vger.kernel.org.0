@@ -2,88 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E4D5951C11
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 22:13:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBE5751C1D
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 22:16:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728492AbfFXUNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 16:13:09 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:36541 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727829AbfFXUNI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 16:13:08 -0400
-Received: by mail-qt1-f194.google.com with SMTP id p15so15931660qtl.3
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 13:13:08 -0700 (PDT)
+        id S1731591AbfFXUP6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 16:15:58 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:43928 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725916AbfFXUP5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 16:15:57 -0400
+Received: by mail-io1-f67.google.com with SMTP id k20so1514719ios.10
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 13:15:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=zyRSJOm/djzljajnRCj44ez4ZIyWMQL79GBrVfOHNTc=;
-        b=Q8VADBu1Wgc4aXktuyM3RdTWbXEXGRF2EAnfGn07ScnjtXeT0UUWHH2QLyAYgoZ/EN
-         GXeGd1PB0mX4OxlRs0p02XewKztoDAlltYGVm/XZIvMNHLyvwcHtbeROUjWOhGfbUPWz
-         w7e8HZclfk8eQHWL/SIob4Zf4t82xmENUJxtAaL6RI1uXU2Rjjv9wSlvNvwwQWRtH6Ka
-         mILflyZmMMIT71NDEQBYU+jESWDBqHAbYb/CBlw78XTjSOGSfPaboZ2nXbl6lEvRryo2
-         uFA1JcHSyFlGrdAq5gGsBqeZ8F0rXu133d3lUdAiqjM5LNiSGlmpTTyfGZ6UqJwM9LIk
-         U4gw==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NlNgzMMFJ+7QwGx9xG98XqTbQWSzsaaFAnhIGC2h2XQ=;
+        b=NJGAPTmUam9+dMN0mbGC1vA6isBRugH0cJzAQU6FeessvYEf6yigBykoLNvckboO3/
+         RxDkBfqV+yw42M+bQIm97RifrnkhMUPvAAhuDM72zLT4jB3DygRAWDY59fcJKHsJPX2+
+         3+d2DIKgFvXJaFL9EUuz/R7kelADr+QazYAQ02FtZ4tYF2V/ieg29/jq+Lvo9zI/MXda
+         IdSWU6kcTBgiUoXi9HmdgUEQdKeV09YSt0GzBD61kq1idQba5fMW/q+ThWkqOYpA32AK
+         92iFCn9RLi7EPpKuHTMTDKtB7kwTJcG4gFeNJwNP/zH/FEuLdiZkDxl404taFXuSNC2Q
+         E50Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=zyRSJOm/djzljajnRCj44ez4ZIyWMQL79GBrVfOHNTc=;
-        b=oMPRqLEbpO8WSsJPNzX4eKJLSh4zko2XfXy+pOaWCSAaxxodauaCFSrSUSY9oXAK2v
-         cXVel5DwZHybX8wpTWCQQSFs1uKQOASybg5SnjJIy9/5kFOe735R0XogVAULcIrMCSO4
-         EZVY5viuMSpQD6fm1iHOxWc6pe1kLMjkTBySJcpfKX7qXfy16/x09GinThgjaIj2Wizu
-         cf8tlsF1GWYD9sKVYxw1i51Vm4sPGR0H4VCiP7irolDQmmxFCFvzTbiHrKw59t3tTlP6
-         F52UkBkP5VR4qkk2kQRL6teNv/d8PuDUTKXUJcA3jdtJryghmF2gEcLUymswd4p8NGNC
-         VaWw==
-X-Gm-Message-State: APjAAAVah9aNdKihrTt+vk0AP9bEDFfIYxuYWgnydPFpV4vz9YEmCcLJ
-        yLLHSDq+krPOcFQpsHAiyXhTtOkGwUk=
-X-Google-Smtp-Source: APXvYqzqK6cQlMJq8oZtQqVGVO4aTVc2Ivob3Mt3aQkhOlQr/GHaZ0FEuOnEZZ48/ru4bigLXggHtw==
-X-Received: by 2002:ac8:319d:: with SMTP id h29mr50015283qte.6.1561407187755;
-        Mon, 24 Jun 2019 13:13:07 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id f6sm5764787qkk.79.2019.06.24.13.13.07
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 24 Jun 2019 13:13:07 -0700 (PDT)
-Date:   Mon, 24 Jun 2019 13:13:04 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 02/18] ionic: Add hardware init and device
- commands
-Message-ID: <20190624131304.78c1a4a9@cakuba.netronome.com>
-In-Reply-To: <65461426-92d8-cd87-942d-1fd82bd64fe4@pensando.io>
-References: <20190620202424.23215-1-snelson@pensando.io>
-        <20190620202424.23215-3-snelson@pensando.io>
-        <20190620215430.GK31306@lunn.ch>
-        <65461426-92d8-cd87-942d-1fd82bd64fe4@pensando.io>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NlNgzMMFJ+7QwGx9xG98XqTbQWSzsaaFAnhIGC2h2XQ=;
+        b=t05uuX7HS113cXEBTWWxNGnC5wdNKvyncGa7BeEpVRCl55sWpBKDmmkGvWQXjkIiQI
+         novq11FJLDDjCsTKqfLZBNe2sxgf2S7YBRIG050nnjcJZ6ug/rPqFa0C1ILEfUwvfAgg
+         7tvVMg7EHxkaMopKgLJVO3Ze60IhqzwdjwTMU2eXN073H4ZLV+fKmSJxdKb6qjzNvk3w
+         fSP8BeYBVhvKvIyQ7G/btBcEoc0SI1wg2Gav+fahxsEgpo3cJodfx24ytTMe+MRqpn8Q
+         +2/RqPzt+gPLCtpn80W48oxFa+SIxyxI5T7o1V8ryVu2m/8YPLDD2dW1cVeCz1fEG4bJ
+         XCBQ==
+X-Gm-Message-State: APjAAAVb0KAx1sOib5H5r/bvAax4K/9H62nJVIArGbj0zbYttlQWvEh7
+        V7pT0XHXbQLTRDaYhTCiGUdpHFzChdZCLOj5vIKOiw==
+X-Google-Smtp-Source: APXvYqyqE/v1ofHO2nNCjIkljvgKCheFXksKQ8Ljlo0aFkiv1nRWwX6SmmK6XsZCfnY2ySNNRxkFfbK1mnYl9RNm7VA=
+X-Received: by 2002:a5d:9d97:: with SMTP id 23mr2139870ion.204.1561407356312;
+ Mon, 24 Jun 2019 13:15:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20190622000358.19895-1-matthewgarrett@google.com>
+ <20190622000358.19895-24-matthewgarrett@google.com> <739e21b5-9559-d588-3542-bf0bc81de1b2@iogearbox.net>
+ <CACdnJuvR2bn3y3fYzg06GWXXgAGjgED2Dfa5g0oAwJ28qCCqBg@mail.gmail.com> <CALCETrWmZX3R1L88Gz9vLY68gcK8zSXL4cA4GqAzQoyqSR7rRQ@mail.gmail.com>
+In-Reply-To: <CALCETrWmZX3R1L88Gz9vLY68gcK8zSXL4cA4GqAzQoyqSR7rRQ@mail.gmail.com>
+From:   Matthew Garrett <mjg59@google.com>
+Date:   Mon, 24 Jun 2019 13:15:44 -0700
+Message-ID: <CACdnJuu20Rsb-9XAcTR5Q9RJ5wY7ATazS7dLgDODH+YSZU50Tg@mail.gmail.com>
+Subject: Re: [PATCH V34 23/29] bpf: Restrict bpf when kernel lockdown is in
+ confidentiality mode
+To:     Andy Lutomirski <luto@kernel.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        James Morris <jmorris@namei.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        David Howells <dhowells@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Chun-Yi Lee <jlee@suse.com>, Jann Horn <jannh@google.com>,
+        bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 21 Jun 2019 15:22:22 -0700, Shannon Nelson wrote:
-> >> +static int identity_show(struct seq_file *seq, void *v)
-> >> +{
-> >> +	struct ionic *ionic = seq->private;
-> >> +	struct identity *ident = &ionic->ident;
-> >> +	struct ionic_dev *idev = &ionic->idev;
-> >> +
-> >> +	seq_printf(seq, "asic_type:        0x%x\n", idev->dev_info.asic_type);
-> >> +	seq_printf(seq, "asic_rev:         0x%x\n", idev->dev_info.asic_rev);
-> >> +	seq_printf(seq, "serial_num:       %s\n", idev->dev_info.serial_num);
-> >> +	seq_printf(seq, "fw_version:       %s\n", idev->dev_info.fw_version);
-> >> +	seq_printf(seq, "fw_status:        0x%x\n",
-> >> +		   ioread8(&idev->dev_info_regs->fw_status));
-> >> +	seq_printf(seq, "fw_heartbeat:     0x%x\n",
-> >> +		   ioread32(&idev->dev_info_regs->fw_heartbeat));  
-> > devlink just gained a much more flexible version of ethtool -i. Please
-> > remove all this and use that.  
-> Yes, we intend to add a devlink interface, it just isn't in this first 
-> patchset, which is already plenty big.
+On Mon, Jun 24, 2019 at 1:09 PM Andy Lutomirski <luto@kernel.org> wrote:
 
-Please take this out of your patch set, we can't be expected to merge
-debugfs implementation of what has proper APIs :/
+> I'm confused.  I understand why we're restricting bpf_probe_read().
+> Why are we restricting bpf_probe_write_user() and bpf_trace_printk(),
+> though?
+
+Hmm. I think the thinking here was around exfiltration mechanisms, but
+if the read is blocked then that seems less likely. This seems to
+trace back to http://kernsec.org/pipermail/linux-security-module-archive/2017-October/003545.html
+- Joey, do you know the reasoning here?
