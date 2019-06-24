@@ -2,99 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D7BF50A5A
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 14:07:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F40C50A6B
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 14:09:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729702AbfFXMHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 08:07:06 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:40971 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728147AbfFXMHG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 08:07:06 -0400
-Received: by mail-io1-f71.google.com with SMTP id x17so21573531iog.8
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 05:07:05 -0700 (PDT)
+        id S1728943AbfFXMIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 08:08:55 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:40138 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726351AbfFXMIy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 08:08:54 -0400
+Received: by mail-wr1-f67.google.com with SMTP id p11so13618551wre.7;
+        Mon, 24 Jun 2019 05:08:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=5+aG5bq4j8Ni9WJIPjG3wZ6NCgkPpGLe+UT0IyDMSL8=;
+        b=M6E+fHAO/OiuGltg7eEHZPSq39J8E/PaoVFAlIKxs45osAuntq/gRSm5kymGZNCKjf
+         0npcBSzhSmXFn/pm+aJh/8Mrl2PNCi+O0nighTE3R6Jx5pmGgpZe/xlQdHegfeVJwU9f
+         LxnvuVaac71JQ1h5S8dkbrgOcbzPQeRKz+62HGoegBsEL/DoxuGWZUCpAWrPvCLgpCms
+         ExRvVMb/flNXOYKHN0t5U5VSezYhkQ/NdwO4j8R5HOgBG+ZWzF56I/ZQy+v4FPM5YB3L
+         8pWT9W11xmozp9lijIY8nP0i28GmsLp5lnjGCgBifpTdNE/a8ytcy9Boa4xgaWmk9Gb3
+         g8SA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=UGhJIyNooByBIQwghNYXd2AUJKMl6V+JYhFL1m8VV5g=;
-        b=sPBynxJIDGhmXGtRRQnIcxQp5WJDMJ2EAjSXOylV80GZiWdzGuYA2/87yyV/Sg95HA
-         7YaSAxmRss5LcZ+3mWMhXate+SNdHz0ScLnwFwqE1SvaKepE1JpMdSi1QssCLYkTdW7T
-         6Vd1zQQr3WCq0c4rApvjtZ41Yzj0JgXlST3bZQIXv146EqhzKNWGtsw+r9d8ye2C+Pzr
-         Du1LlrHU7I9aYgRNhNP+FYLLJfk5CVTGx54e2U6y/eHZ3i5zjhYAweWUCPqQyTOeKwkJ
-         h1JeOQcogb8HghGBFYW4nwUX6NW0hzhoS/0VA824JqlCkRZ+eE/F2x3bx8pVmKQNwk5x
-         PldQ==
-X-Gm-Message-State: APjAAAXhNInMb4hpyLDzdth4WbBl3doIc2ndmLT2NMVsHFUAc5ZJKFX4
-        N5GZ6JwWJova1rD92ldHbSWL7k3GtK7o5WLwYTV3vlhX0G6y
-X-Google-Smtp-Source: APXvYqxR/tYsvKiMqAC13+NvLqrNK+/RBaFWoLBWzH6xb58aCGAjHzGagS7p4kIYGN9dkrABIdKIHu9D/9WuZjUzVuwPN7Fxlm1g
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=5+aG5bq4j8Ni9WJIPjG3wZ6NCgkPpGLe+UT0IyDMSL8=;
+        b=KomqYkiWU97akYgnqx1XK5H36E9u2uBkLLNLaWG5AEI/qO0WH2hkYp2/eEP4+2vopo
+         PjROTWF2lfbVV6PexU722SMA6SpSH2ZPsleDh5bAEZAFZQlGgnqwnQ+3foZbdqwrnbvd
+         9c453lCtUbGFLDIdy2tVN1fbeIik2DFb8ZomEEdLMKN35QAHuf/9Dyqxw6GUjWBChL4C
+         rbEoFUr2ENInORiFMsEu3QuI6juGwisr9Pncs9rolPeQqZuR/hjejuzCI+F6eBUIb3t1
+         H9k7X7P3ZKWi7JdRtOxa//ATeMnFPpDDUcL+IjBzgtprqL8/pODkaBuvGK/LSDO3C4ax
+         JR8w==
+X-Gm-Message-State: APjAAAVpWOjvCNUGk2k1CjChcW7UO7qsamcfe7iKtke3lBDJWu54o3Rb
+        fh4A9Cb+yT03wLj6sCk52nE=
+X-Google-Smtp-Source: APXvYqzPp23jbUf1aCFuoTjxkcr/57v3+kKSkmgp0cCJV8ep/XXuci3uBEj4W49UP8ozk7T/YuSUGg==
+X-Received: by 2002:a5d:554b:: with SMTP id g11mr631289wrw.10.1561378132293;
+        Mon, 24 Jun 2019 05:08:52 -0700 (PDT)
+Received: from [192.168.8.147] (59.249.23.93.rev.sfr.net. [93.23.249.59])
+        by smtp.gmail.com with ESMTPSA id z76sm14489260wmc.16.2019.06.24.05.08.49
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Mon, 24 Jun 2019 05:08:51 -0700 (PDT)
+Subject: Re: WARNING: ODEBUG bug in netdev_freemem (2)
+To:     Dmitry Vyukov <dvyukov@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     syzbot <syzbot+c4521ac872a4ccc3afec@syzkaller.appspotmail.com>,
+        Alexander Duyck <alexander.h.duyck@intel.com>,
+        amritha.nambiar@intel.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        David Miller <davem@davemloft.net>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ido Schimmel <idosch@mellanox.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        tyhicks@canonical.com, wanghai26@huawei.com, yuehaibing@huawei.com
+References: <000000000000d6a8ba058c0df076@google.com>
+ <alpine.DEB.2.21.1906241130100.32342@nanos.tec.linutronix.de>
+ <CACT4Y+Y_TadXGE_CVFa4fKqrbpAD4i5WGem9StgoyP_YAVraXw@mail.gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <da83da44-0088-3056-6bba-d028b6cbb218@gmail.com>
+Date:   Mon, 24 Jun 2019 14:08:49 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:63a:: with SMTP id h26mr1330802jar.92.1561378025312;
- Mon, 24 Jun 2019 05:07:05 -0700 (PDT)
-Date:   Mon, 24 Jun 2019 05:07:05 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000008f19f7058c10a633@google.com>
-Subject: KASAN: global-out-of-bounds Read in qmi_wwan_probe
-From:   syzbot <syzbot+b68605d7fadd21510de1@syzkaller.appspotmail.com>
-To:     andreyknvl@google.com, bjorn@mork.no, davem@davemloft.net,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+In-Reply-To: <CACT4Y+Y_TadXGE_CVFa4fKqrbpAD4i5WGem9StgoyP_YAVraXw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following crash on:
-
-HEAD commit:    9939f56e usb-fuzzer: main usb gadget fuzzer driver
-git tree:       https://github.com/google/kasan.git usb-fuzzer
-console output: https://syzkaller.appspot.com/x/log.txt?x=1615a669a00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=df134eda130bb43a
-dashboard link: https://syzkaller.appspot.com/bug?extid=b68605d7fadd21510de1
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10630af6a00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1127da69a00000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+b68605d7fadd21510de1@syzkaller.appspotmail.com
-
-usb 1-1: new high-speed USB device number 2 using dummy_hcd
-usb 1-1: Using ep0 maxpacket: 8
-usb 1-1: New USB device found, idVendor=12d1, idProduct=14f1,  
-bcdDevice=d4.d9
-usb 1-1: New USB device strings: Mfr=0, Product=0, SerialNumber=0
-usb 1-1: config 0 descriptor??
-==================================================================
-BUG: KASAN: global-out-of-bounds in qmi_wwan_probe+0x342/0x360  
-drivers/net/usb/qmi_wwan.c:1417
-Read of size 8 at addr ffffffff8618c140 by task kworker/1:1/22
-
-CPU: 1 PID: 22 Comm: kworker/1:1 Not tainted 5.2.0-rc5+ #11
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Workqueue: usb_hub_wq hub_event
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0xca/0x13e lib/dump_stack.c:113
-  print_address_description+0x67/0x231 mm/kasan/report.c:188
-  __kasan_report.cold+0x1a/0x32 mm/kasan/report.c:317
-  kasan_report+0xe/0x20 mm/kasan/common.c:614
-  qmi_wwan_probe+0x342/0x360 drivers/net/usb/qmi_wwan.c:1417
-  usb_probe_interface+0x305/0x7a0 drivers/usb/core/driver.c:361
-  really_probe+0x281/0x660 drivers/base/dd.c:509
-  driver_probe_device+0x104/0x210 drivers/base/dd.c:670
-  __device_attach_driver+0x1c2/0x220 drivers/base/dd.c:777
-  bus_for_each_drv+0x15c/0x1e0 drivers/base/bus.c:454
 
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+On 6/24/19 3:54 AM, Dmitry Vyukov wrote:
+> On Mon, Jun 24, 2019 at 11:34 AM Thomas Gleixner <tglx@linutronix.de> wrote:
+>>
+>> On Mon, 24 Jun 2019, syzbot wrote:
+>>
+>>> Hello,
+>>>
+>>> syzbot found the following crash on:
+>>>
+>>> HEAD commit:    fd6b99fa Merge branch 'akpm' (patches from Andrew)
+>>> git tree:       upstream
+>>> console output: https://syzkaller.appspot.com/x/log.txt?x=144de256a00000
+>>> kernel config:  https://syzkaller.appspot.com/x/.config?x=fa9f7e1b6a8bb586
+>>> dashboard link: https://syzkaller.appspot.com/bug?extid=c4521ac872a4ccc3afec
+>>> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+>>>
+>>> Unfortunately, I don't have any reproducer for this crash yet.
+>>>
+>>> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+>>> Reported-by: syzbot+c4521ac872a4ccc3afec@syzkaller.appspotmail.com
+>>>
+>>> device hsr_slave_0 left promiscuous mode
+>>> team0 (unregistering): Port device team_slave_1 removed
+>>> team0 (unregistering): Port device team_slave_0 removed
+>>> bond0 (unregistering): Releasing backup interface bond_slave_1
+>>> bond0 (unregistering): Releasing backup interface bond_slave_0
+>>> bond0 (unregistering): Released all slaves
+>>> ------------[ cut here ]------------
+>>> ODEBUG: free active (active state 0) object type: timer_list hint:
+>>> delayed_work_timer_fn+0x0/0x90 arch/x86/include/asm/paravirt.h:767
+>>
+>> One of the cleaned up devices has left an active timer which belongs to a
+>> delayed work. That's all I can decode out of that splat. :(
+> 
+> Hi Thomas,
+> 
+> If ODEBUG would memorize full stack traces for object allocation
+> (using lib/stackdepot.c), it would make this splat actionable, right?
+> I've fixed https://bugzilla.kernel.org/show_bug.cgi?id=203969 for this.
+> 
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Not sure this would help in this case as some netdev are allocated through a generic helper.
+
+The driver specific portion might not show up in the stack trace.
+
+It would be nice here to get the work queue function pointer,
+so that it gives us a clue which driver needs a fix.
+
+
+
