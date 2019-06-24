@@ -2,121 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 70F0B51862
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 18:22:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73B875187E
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 18:24:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732074AbfFXQVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 12:21:54 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:41024 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732054AbfFXQVx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 12:21:53 -0400
-Received: by mail-io1-f66.google.com with SMTP id w25so2865814ioc.8
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 09:21:52 -0700 (PDT)
+        id S1728216AbfFXQYd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 12:24:33 -0400
+Received: from mail-pl1-f202.google.com ([209.85.214.202]:54849 "EHLO
+        mail-pl1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726524AbfFXQYd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 12:24:33 -0400
+Received: by mail-pl1-f202.google.com with SMTP id u10so7576643plq.21
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 09:24:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=EO8eeZ48f6EoVfLk0+Ia7DkcWqdLXYNwWud7QgwjUxA=;
-        b=j/ELAhg2UmVVT/WszfKjP0eVP6XomPXTVwyKZdSvtL+ZfxzgYeaOtX9ahKvHpdamwH
-         yVYSC/sOcvC8M2NmLy8DvQG5D7Z/9PyPVOM9lRo7OPF78WmueHL0Jgp1zGC2hWPlPP4l
-         hTKVN++WoXD0aVpQikgglS80GZqpeLwsNlRnC3v8TH9LiWO6KIVVwG513TZgIvq6yUod
-         bz50kbawIi6oofsSlwp9FymUCenj4mpFg7X7Uv9wYKx04iWTbcLMvqdhMU/A6/BaGxR+
-         Uv4bT5iOViDyTKoOUWZaxUnDw0W0DlptJe0+0yKvAjAmhuuHpCDLUYaCza9GBCGYL7XJ
-         R2aQ==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=gJjoc/vA2MwOJQXfSjPAcEIAUZ/pXhZszpshpqeoUyA=;
+        b=Mvlzw0tXcjSCRt10cAQKg9EoR075HjNNgCpN3L6sFOvYVYY5u8dUyZdKmkTOJneNLc
+         oa4GPIe02DO+GaBB2ah084nojog4vvGO8nkIsff6EA38E4dSZRsLmdVGBCRUnnU3I4kc
+         FfmqjH6TXi0YfosUSvvVe8MwuOR1GSWYGgQwjnUQPsLXWbLC7QQ2xGiD+y4BfcU0Ocvc
+         geTjx0eIHXZ9J52rVBTx3yOE6QAB1kAdUXt2JCn2XKKA35d/0dw3re/58Fj/Fkkx/8hO
+         /i6OgxUhe02ZTBQoTvh7xcdFsjkVqprZaWRE5UUrZMu6xy+vIU14bKPq7gnRv/1JUQ+2
+         e+ZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=EO8eeZ48f6EoVfLk0+Ia7DkcWqdLXYNwWud7QgwjUxA=;
-        b=E8dO7EQ/nxUjnb7wjzyi6G3KC2xdQQM1oIC/ixzRn0pu3AZKArt4Vp98vMoN8Fgmy9
-         CYX3Y+woejcCjq4gnl1rXYHEwozZw+Y600fWafxDga4kMsduchpioZYyjGDYZ57B3/G2
-         5ULmygkO8QnkWa8sFVMYKTrMKMH+0kjYZyMvvPVKCJsROIr0H+w5Cd6LYxJ+D5hbKDn2
-         krrGbfXZ+v2aLQPh9hSTvVBd4l3w2XlRC1ToUls68kMc5Ove1S/uuKKoL80eSH0oPDBj
-         ZGlr5y43xhOwr79mxv6e5VjMoRGl5Gl91qwBTG8tDGZfUrCYKVxc/PqaXZQRtlN2Qcvh
-         MqEg==
-X-Gm-Message-State: APjAAAWxlAmYQjqRtxNe5xDfV5gN3j7hgys5Ofw0W3n0rztMig7JxK/o
-        4F8lpSvViXFRu9x1O/QMN5FsNw==
-X-Google-Smtp-Source: APXvYqxz3FaFhWw2FnWfg4aUKQQZ6vaEckamt/BYnOdzvhusMwszWyk5+OepCRBdKbupvmmVwjgR3w==
-X-Received: by 2002:a5e:9308:: with SMTP id k8mr266555iom.143.1561393312086;
-        Mon, 24 Jun 2019 09:21:52 -0700 (PDT)
-Received: from [172.22.22.26] (c-71-195-29-92.hsd1.mn.comcast.net. [71.195.29.92])
-        by smtp.googlemail.com with ESMTPSA id l11sm14545587ioj.32.2019.06.24.09.21.50
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 24 Jun 2019 09:21:51 -0700 (PDT)
-Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        Arnd Bergmann <arnd@arndb.de>
-Cc:     abhishek.esse@gmail.com, Ben Chan <benchan@google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        cpratapa@codeaurora.org, David Miller <davem@davemloft.net>,
-        Dan Williams <dcbw@redhat.com>,
-        DTML <devicetree@vger.kernel.org>,
-        Eric Caruso <ejcaruso@google.com>, evgreen@chromium.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-arm-msm@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-soc@vger.kernel.org, Networking <netdev@vger.kernel.org>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        syadagir@codeaurora.org
-References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
- <a94676381a5ca662c848f7a725562f721c43ce76.camel@sipsolutions.net>
- <CAK8P3a0kV-i7BJJ2X6C=5n65rSGfo8fUiC4J_G-+M8EctYKbkg@mail.gmail.com>
- <583907409fad854bd3c18be688ec2724ad7a60e9.camel@sipsolutions.net>
- <31c2c94c-c6d3-595b-c138-faa54d0bfc00@linaro.org>
- <b90977f94df020986c6bb490e7fd0262603726b0.camel@sipsolutions.net>
-From:   Alex Elder <elder@linaro.org>
-Message-ID: <5ffbcce1-f93d-5746-5037-9dcc03cd73f0@linaro.org>
-Date:   Mon, 24 Jun 2019 11:21:50 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.1
-MIME-Version: 1.0
-In-Reply-To: <b90977f94df020986c6bb490e7fd0262603726b0.camel@sipsolutions.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=gJjoc/vA2MwOJQXfSjPAcEIAUZ/pXhZszpshpqeoUyA=;
+        b=cOINKwN9R/R80k6n8Vn4c+8nlUJiWalUDoDWcu7NrhAFldD8OBBi2rXPRKC3XgPcC2
+         EpKkwzXjjwr2FKbwzxWPElElTLilylbJxfQgv3ajLjC80aIErOUj/1JnkePjuZnU3Ns+
+         DwMUuaQHhRgKxxXP4pVxrsexMcAlcJjc5+uzGyckapZNvsOT7Ma21pgXdXWyzKSXvPu7
+         4Q9MfcDmPm/ddrWU9hcUupVeNWFFeP+cvbhn4ke0YczMsmKxodcdioqW84dIodQiPyos
+         o8M0w9a1nQaRqAmAWiljph4N42M1gu5orgCtL5eUUalrCGrjeai4M2Q86uSgunz4cIVV
+         LP+A==
+X-Gm-Message-State: APjAAAUBJW690l0JCgKFuxsfdV9pk7wleMrwLv/YFl0WulJmpncE2aUy
+        eTxfLVSymBcnefxM858xqinS6oF7PdihgvWhR4KX43mpH3/gV6jEpoFDHYbmQxkWd7OePXBLn3C
+        zU/o8TgQSvgcj7W2pQX5boe2PbAPx2enSmF65id+mKIb9EU7sVBJwzw==
+X-Google-Smtp-Source: APXvYqxFjeI+OpY3olG9wgcR20HJBbFH39lZVOpBz6lgShOUJmHzLNE+XqeLbAOO4QseMqmtsJSsAqE=
+X-Received: by 2002:a65:42c3:: with SMTP id l3mr33742791pgp.372.1561393472209;
+ Mon, 24 Jun 2019 09:24:32 -0700 (PDT)
+Date:   Mon, 24 Jun 2019 09:24:20 -0700
+Message-Id: <20190624162429.16367-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
+Subject: [PATCH bpf-next v8 0/9] bpf: getsockopt and setsockopt hooks
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/18/19 2:22 PM, Johannes Berg wrote:
-> On Tue, 2019-06-18 at 09:00 -0500, Alex Elder wrote:
+This series implements two new per-cgroup hooks: getsockopt and
+setsockopt along with a new sockopt program type. The idea is pretty
+similar to recently introduced cgroup sysctl hooks, but
+implementation is simpler (no need to convert to/from strings).
 
-. . .
+What this can be applied to:
+* move business logic of what tos/priority/etc can be set by
+  containers (either pass or reject)
+* handle existing options (or introduce new ones) differently by
+  propagating some information in cgroup/socket local storage
 
-> Anyway, I think for now we could probably live with not having this
-> configurable for the IPA driver, and if it *does* need to be
-> configurable, it seems like it should be a driver configuration, not a
-> channel configuration - so something like a debugfs hook if you really
-> just need to play with it for performance testing, or a module
-> parameter, or something else?
-> 
-> Or even, in the WWAN framework, a knob that we provide there for the
-> WWAN device, rather than for the (newly created) channel.
+Compared to a simple syscall/{g,s}etsockopt tracepoint, those
+hooks are context aware. Meaning, they can access underlying socket
+and use cgroup and socket local storage.
 
-Agreed.  I think a knob is appropriate, it's just a question of how
-that control exposed.  Same answer to your question below.
+Stanislav Fomichev (9):
+  bpf: implement getsockopt and setsockopt hooks
+  bpf: sync bpf.h to tools/
+  libbpf: support sockopt hooks
+  selftests/bpf: test sockopt section name
+  selftests/bpf: add sockopt test
+  selftests/bpf: add sockopt test that exercises sk helpers
+  selftests/bpf: add sockopt test that exercises BPF_F_ALLOW_MULTI
+  bpf: add sockopt documentation
+  bpftool: support cgroup sockopt
 
-					-Alex
+ Documentation/bpf/index.rst                   |   1 +
+ Documentation/bpf/prog_cgroup_sockopt.rst     |  82 ++
+ include/linux/bpf-cgroup.h                    |  43 +
+ include/linux/bpf.h                           |   2 +
+ include/linux/bpf_types.h                     |   1 +
+ include/linux/filter.h                        |  14 +
+ include/uapi/linux/bpf.h                      |  14 +
+ kernel/bpf/cgroup.c                           | 317 +++++++
+ kernel/bpf/core.c                             |   9 +
+ kernel/bpf/syscall.c                          |  19 +
+ kernel/bpf/verifier.c                         |  13 +
+ net/core/filter.c                             |   2 +-
+ net/socket.c                                  |  16 +
+ .../bpftool/Documentation/bpftool-cgroup.rst  |   7 +-
+ .../bpftool/Documentation/bpftool-prog.rst    |   3 +-
+ tools/bpf/bpftool/bash-completion/bpftool     |   9 +-
+ tools/bpf/bpftool/cgroup.c                    |   5 +-
+ tools/bpf/bpftool/main.h                      |   1 +
+ tools/bpf/bpftool/prog.c                      |   3 +-
+ tools/include/uapi/linux/bpf.h                |  14 +
+ tools/lib/bpf/libbpf.c                        |   5 +
+ tools/lib/bpf/libbpf_probes.c                 |   1 +
+ tools/testing/selftests/bpf/.gitignore        |   3 +
+ tools/testing/selftests/bpf/Makefile          |   6 +-
+ .../selftests/bpf/progs/sockopt_multi.c       |  53 ++
+ .../testing/selftests/bpf/progs/sockopt_sk.c  |  91 ++
+ .../selftests/bpf/test_section_names.c        |  10 +
+ tools/testing/selftests/bpf/test_sockopt.c    | 892 ++++++++++++++++++
+ .../selftests/bpf/test_sockopt_multi.c        | 276 ++++++
+ tools/testing/selftests/bpf/test_sockopt_sk.c | 185 ++++
+ 30 files changed, 2087 insertions(+), 10 deletions(-)
+ create mode 100644 Documentation/bpf/prog_cgroup_sockopt.rst
+ create mode 100644 tools/testing/selftests/bpf/progs/sockopt_multi.c
+ create mode 100644 tools/testing/selftests/bpf/progs/sockopt_sk.c
+ create mode 100644 tools/testing/selftests/bpf/test_sockopt.c
+ create mode 100644 tools/testing/selftests/bpf/test_sockopt_multi.c
+ create mode 100644 tools/testing/selftests/bpf/test_sockopt_sk.c
 
->> The hardware is capable of aggregating QMAP packets
->> arriving on a connection into a single buffer, so this provides
->> a way of requesting it do that.
->>
->>>> #define RMNET_FLAGS_INGRESS_MAP_COMMANDS          (1U << 1)
->>>
->>> Similar here? If you have flow control you probably want to use it?
->>
->> I agree with that, though perhaps there are cases where it
->> is pointless, or can't be supported, so one might want to
->> simply *not* implement/advertise the feature.  I don't know.
-> 
-> Sure, but then that's likely something the driver would need to know,
-> not necessarily userspace?
-> 
-> johannes
-> 
-
+-- 
+2.22.0.410.gd8fdbe21b5-goog
