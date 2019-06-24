@@ -2,86 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 002B351BB2
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 21:49:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD56351BBC
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 21:53:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731137AbfFXTtk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 15:49:40 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:40722 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728549AbfFXTtj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 15:49:39 -0400
-Received: by mail-io1-f66.google.com with SMTP id n5so4834940ioc.7;
-        Mon, 24 Jun 2019 12:49:39 -0700 (PDT)
+        id S1728801AbfFXTxj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 15:53:39 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:39663 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728680AbfFXTxi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 15:53:38 -0400
+Received: by mail-io1-f67.google.com with SMTP id r185so32648iod.6
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 12:53:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=NZu4O00NPZleuCWXITSxnWW1rGLa66653MvVC+wHLmw=;
-        b=jVeSXiVsHVu2ouD9U37An682AZzAmmkFDiJ+LkM6/EftdC972P9MeMDquhfc5L4lZL
-         j18MoUvN4XjKZXE8rOAlSmSh2ypQaGsQoNcsFVIgUXlQDhNWGg0oUi9l+paz44faPa3+
-         7pEB3QBX417I/pQ+SqxPYr+HKmEHMeM8Jy5nKjXEC88TEMrlxO01uMszzLY9Li5eIOBt
-         q+Kju30heEn6reuItzwtS+hr+qVrMPOrn7MbwoleSpbDniuYdJtHhFZjPnTmf+jmD8MS
-         lf4UlMnZew435rZg9jB3TiwL33OJLG1VQlSaLpWEO+3P/OpW1E6aF9XKP52g89geYsfX
-         dVqg==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=YMFwihNHo7OoU9fBUp8dkQR9OeI1KVlYg3r8RMHNouU=;
+        b=YUEe1lTwVtb+DOhJURMX1uoBgDWN+caVMgYM0mRQSEPvY9MDm6EyX6nUOmffcdiwB8
+         l3gKaBDqLU5TrgeTvUaDhfMrLqsyGJXvfVurbP0SapG9Rg0Op9HS5JESWo7CdVAvOXsN
+         M4HeFRxWi677IebPmuvTslkAfO79BPpjPKmn1sh9iKt8ljj9DUUa1GLSVVHkaNYvkOBS
+         7Uqfgp4Lp2x0c7IrCgzKtm8HCKmSP4ftt01+1INbqdAxhri/F37Em/AL8PRCoIRnXCdJ
+         Hs+jJdUIfSKc1RSsCOintUFbBjnllYYJO1kIG352wbEcbyDEUk/m6ihhGnLOikYt5YzZ
+         D4Hw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=NZu4O00NPZleuCWXITSxnWW1rGLa66653MvVC+wHLmw=;
-        b=lVkKH6ziGeWS1YGXBuqHOtlS9aX0D0bfhylGJLDaCRUHKPVZHgJc35bRMzFVU9I9Iy
-         d9wMRe/sl203f7mIHlWTJ8jF+Yxacew2uvGMrF2KCAmngs2LgzhHZy218MYnpdmveql1
-         aIygR8Zt+e32kG13S0ABGNHuAPq5PPiKJOOCKnooD+vvjMXAlBEJ4/kGptRGQfeAOy65
-         Md7Z6TvAwneX1otjyc8wqJ/LOsqNPZedrZo6QLsCSVOXf99yIZbYCqghmnAScR0MeLuE
-         nImUctd4ODJCNivC35jtxJA0qjtCEoutL0EktM7fOCOhBcTxRw+IqJL+3+eKpCYiSjPW
-         bwVw==
-X-Gm-Message-State: APjAAAU6FcO0+uY658J2mBXMPS1vyjIaKdxq37+Xx0QBjzo8oUzBepBE
-        IDBS7bPx2mJ96jGHJB69j/BQp5Mi
-X-Google-Smtp-Source: APXvYqwxzKpMjHARD9RmDR1Id9qihaizxqLIei0rShn3JXXydBhIZ5G7UVmfyA/1PL1Yfe9SW0G+Cg==
-X-Received: by 2002:a5e:8508:: with SMTP id i8mr17447890ioj.108.1561405778305;
-        Mon, 24 Jun 2019 12:49:38 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:f558:9f3d:eff4:2876? ([2601:282:800:fd80:f558:9f3d:eff4:2876])
-        by smtp.googlemail.com with ESMTPSA id e188sm18389354ioa.3.2019.06.24.12.49.37
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 24 Jun 2019 12:49:37 -0700 (PDT)
-Subject: Re: [PATCH net-next] ipv4: enable route flushing in network
- namespaces
-To:     Christian Brauner <christian@brauner.io>, davem@davemloft.net,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org
-References: <20190624132923.16792-1-christian@brauner.io>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <56ed92eb-14db-789a-c226-cdf8a5862e61@gmail.com>
-Date:   Mon, 24 Jun 2019 13:49:33 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=YMFwihNHo7OoU9fBUp8dkQR9OeI1KVlYg3r8RMHNouU=;
+        b=Pp2MXR0i2cxZAU8KnKL8zoxKCLeDNQBQjQpkw+goyCaW7vyc3OrZqR7HteFbwhKu00
+         BR4utIPwjLZeQuZMZkrMieiyzYFNFouOdPnibEV+j8PUf+mImIrEeeLFJe4kmCYN9BtE
+         gZwr5Hs5J16mqVUptYVcAcoHjvMXS5vHprSXDIbLvRaW+ZU6s1XgyETYGswDzmc/Q0ci
+         cHT/eyAW8fE8k46yspb89qFupckZYYBS1WIBXjUkP82C3zd8GVLJc3Rstsyw+EywQP1/
+         RoG943QSJjy2Geg+4bHfUPOhrpigUAW5pwDWptsoRf5FppbBp+PiHLgyhSBhKCLgpi5k
+         nX3Q==
+X-Gm-Message-State: APjAAAXq0ACE/F/9Jx+VFcZf5w7Taysa0SfxKks7uSzmKLACEA8oqAVh
+        zNQ9LkXPAG2RPF+YZ6rqirysfw==
+X-Google-Smtp-Source: APXvYqyaV2Nl5FL9efERwaceXsxTHmeWZ9SGuXFiUT4e1Be7LEfhcPu4zsy8u8caL7PoN2Xs2SNyOg==
+X-Received: by 2002:a05:6638:6a3:: with SMTP id d3mr67515888jad.33.1561406017903;
+        Mon, 24 Jun 2019 12:53:37 -0700 (PDT)
+Received: from localhost (c-75-72-120-115.hsd1.mn.comcast.net. [75.72.120.115])
+        by smtp.gmail.com with ESMTPSA id x22sm13711381iob.84.2019.06.24.12.53.36
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 24 Jun 2019 12:53:36 -0700 (PDT)
+Date:   Mon, 24 Jun 2019 14:53:36 -0500
+From:   Dan Rue <dan.rue@linaro.org>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        xdp-newbies@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>, hawk@kernel.org,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Shuah Khan <shuah@kernel.org>
+Subject: Re: selftests: bpf: test_libbpf.sh failed at file test_l4lb.o
+Message-ID: <20190624195336.nubi7n2np5vfjutr@xps.therub.org>
+References: <CA+G9fYsMcdHmKY66CNhsrizO-gErkOQCkTcBSyOHLpOs+8g5=g@mail.gmail.com>
+ <CAEf4BzbTD8G_zKkj-S3MOeG5Hq3_2zz3bGoXhQtpt0beG8nWJA@mail.gmail.com>
+ <20190621161752.d7d7n4m5q67uivys@xps.therub.org>
+ <CAEf4BzaSoKA5H5rN=w+OAtUz4bD30-VOjjjY+Qv9tTAnhMweiA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190624132923.16792-1-christian@brauner.io>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzaSoKA5H5rN=w+OAtUz4bD30-VOjjjY+Qv9tTAnhMweiA@mail.gmail.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/24/19 7:29 AM, Christian Brauner wrote:
-> Tools such as vpnc try to flush routes when run inside network
-> namespaces by writing 1 into /proc/sys/net/ipv4/route/flush. This
-> currently does not work because flush is not enabled in non-initial
-> network namespaces.
-> Since routes are per network namespace it is safe to enable
-> /proc/sys/net/ipv4/route/flush in there.
+On Mon, Jun 24, 2019 at 11:32:25AM -0700, Andrii Nakryiko wrote:
+> On Fri, Jun 21, 2019 at 9:17 AM Dan Rue <dan.rue@linaro.org> wrote:
+> >
+> > On Thu, Jun 20, 2019 at 10:17:04PM -0700, Andrii Nakryiko wrote:
+> > > On Thu, Jun 20, 2019 at 1:08 AM Naresh Kamboju
+> > > <naresh.kamboju@linaro.org> wrote:
+> > > >
+> > > > selftests: bpf test_libbpf.sh failed running Linux -next kernel
+> > > > 20190618 and 20190619.
+> > > >
+> > > > Here is the log from x86_64,
+> > > > # selftests bpf test_libbpf.sh
+> > > > bpf: test_libbpf.sh_ #
+> > > > # [0] libbpf BTF is required, but is missing or corrupted.
+> > >
+> > > You need at least clang-9.0.0 (not yet released) to run some of these
+> > > tests successfully, as they rely on Clang's support for
+> > > BTF_KIND_VAR/BTF_KIND_DATASEC.
+> >
+> > Can there be a runtime check for BTF that emits a skip instead of a fail
+> > in such a case?
 > 
-> Link: https://github.com/lxc/lxd/issues/4257
-> Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
-> ---
->  net/ipv4/route.c | 12 ++++++++----
->  1 file changed, 8 insertions(+), 4 deletions(-)
+> I'm not sure how to do this simply and minimally intrusively. The best
+> I can come up with is setting some envvar from Makefile and checking
+> for that in each inidividual test, which honestly sounds a bit gross.
 > 
+> How hard is it for you guys to upgrade compiler used to run these test?
 
-why not teach vpnc to use rtnetlink and then add a flush option to
-RTM_DELROUTE?
+We should be able to run kselftest with any compiler that Linux
+supports, so that we can test with the toolchain that users actually run
+with.
 
+I would say if it's not possible to check at runtime, and it requires
+clang 9.0, that this test should not be enabled by default.
+
+Maybe something could be done in Makefile for that? Only add it to
+TEST_GEN_PROGS if the toolchain feature exists, otherwise add it to
+TEST_GEN_PROGS_EXTENDED. I don't know if this is a good idea.. but from
+kselftest.rst:
+
+   TEST_PROGS, TEST_GEN_PROGS mean it is the executable tested by
+   default.
+   ...
+   TEST_PROGS_EXTENDED, TEST_GEN_PROGS_EXTENDED mean it is the
+   executable which is not tested by default.
+
+Dan
+
+> 
+> >
+> > Thanks,
+> > Dan
+> >
+> > >
+> > > > libbpf: BTF_is #
+> > > > # test_libbpf failed at file test_l4lb.o
+> > > > failed: at_file #
+> > > > # selftests test_libbpf [FAILED]
+> > > > test_libbpf: [FAILED]_ #
+> > > > [FAIL] 29 selftests bpf test_libbpf.sh
+> > > > selftests: bpf_test_libbpf.sh [FAIL]
+> > > >
+> > > > Full test log,
+> > > > https://qa-reports.linaro.org/lkft/linux-next-oe/build/next-20190619/testrun/781777/log
+> > > >
+> > > > Test results comparison,
+> > > > https://qa-reports.linaro.org/lkft/linux-next-oe/tests/kselftest/bpf_test_libbpf.sh
+> > > >
+> > > > Good linux -next tag: next-20190617
+> > > > Bad linux -next tag: next-20190618
+> > > > git branch     master
+> > > > git commit    1c6b40509daf5190b1fd2c758649f7df1da4827b
+> > > > git repo
+> > > > https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
+> > > >
+> > > > Best regards
+> > > > Naresh Kamboju
+> >
+> > --
+> > Linaro - Kernel Validation
+
+-- 
+Linaro - Kernel Validation
