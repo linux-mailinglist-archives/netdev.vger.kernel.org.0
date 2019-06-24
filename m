@@ -2,141 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BC4AD51DFC
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 00:12:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D6F751DE6
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 00:05:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726885AbfFXWMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 18:12:23 -0400
-Received: from mail-out.m-online.net ([212.18.0.9]:51630 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725881AbfFXWMW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 18:12:22 -0400
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 45Xk6s0hh8z1rFrN;
-        Tue, 25 Jun 2019 00:12:21 +0200 (CEST)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 45Xk6r73qMz1qqkG;
-        Tue, 25 Jun 2019 00:12:20 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id PjCrWGpmIAqe; Tue, 25 Jun 2019 00:12:19 +0200 (CEST)
-X-Auth-Info: enlxjLj37L3Dkrre7QTy2vbY5/hPc8LMWJd1rAGZsiE=
-Received: from [IPv6:::1] (unknown [195.140.253.167])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Tue, 25 Jun 2019 00:12:19 +0200 (CEST)
-Subject: Re: [PATCH V3 07/10] net: dsa: microchip: Initial SPI regmap support
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        Woojung Huh <Woojung.Huh@microchip.com>
-References: <20190623223508.2713-1-marex@denx.de>
- <20190623223508.2713-8-marex@denx.de>
-From:   Marek Vasut <marex@denx.de>
-Openpgp: preference=signencrypt
-Autocrypt: addr=marex@denx.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <2bbd5346-5fe1-16d7-327e-5d94950496f2@denx.de>
-Date:   Tue, 25 Jun 2019 00:03:39 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <20190623223508.2713-8-marex@denx.de>
-Content-Type: text/plain; charset=utf-8
+        id S1726415AbfFXWFi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 18:05:38 -0400
+Received: from mail-eopbgr50049.outbound.protection.outlook.com ([40.107.5.49]:32558
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725268AbfFXWFh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Jun 2019 18:05:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LTf/8UwMCfjjlyUS+WYjF3OItICmBmQevAUqotBasc0=;
+ b=USwXynNS4cZnyDZG61HzQFVANoNFMIi20CNWm4SIXqi1ToP1Foec8r7xdhE0EK8PRI61OYbXK1rmJp7b4M6dplP9aOGtltdtDq4AiWhe94DEqGPUsU8qDns88HkIXMMt9hJYxiGipIpHdFSQ4jencsgme+L6UM7ilP4/FXghVLU=
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
+ DB6PR0501MB2389.eurprd05.prod.outlook.com (10.168.71.139) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2008.16; Mon, 24 Jun 2019 22:05:34 +0000
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::a901:6951:59de:3278]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::a901:6951:59de:3278%2]) with mapi id 15.20.2008.014; Mon, 24 Jun 2019
+ 22:05:34 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     Leon Romanovsky <leonro@mellanox.com>
+CC:     Jason Gunthorpe <jgg@mellanox.com>,
+        "willy@infradead.org" <willy@infradead.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
+Subject: Re: [PATCH mlx5-next] net/mlx5: Convert mkey_table to XArray
+Thread-Topic: [PATCH mlx5-next] net/mlx5: Convert mkey_table to XArray
+Thread-Index: AQHVJzZOrdAeQY5FHUKmEjqAi8wYYaarY3OA
+Date:   Mon, 24 Jun 2019 22:05:33 +0000
+Message-ID: <18138852207dfcd26ed512482af2c5ea9de93277.camel@mellanox.com>
+References: <20190620070305.31632-1-saeedm@mellanox.com>
+In-Reply-To: <20190620070305.31632-1-saeedm@mellanox.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.32.3 (3.32.3-1.fc30) 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-originating-ip: [209.116.155.178]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e8a4d932-119c-4377-58e7-08d6f8f014a8
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2389;
+x-ms-traffictypediagnostic: DB6PR0501MB2389:
+x-microsoft-antispam-prvs: <DB6PR0501MB2389B21885ABAF716786CBF7BEE00@DB6PR0501MB2389.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 007814487B
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(39860400002)(376002)(366004)(396003)(346002)(199004)(189003)(71190400001)(6862004)(14444005)(66476007)(256004)(91956017)(81156014)(66556008)(73956011)(6506007)(6486002)(4326008)(81166006)(76116006)(446003)(66946007)(11346002)(71200400001)(64756008)(14454004)(66446008)(25786009)(5660300002)(478600001)(6436002)(8936002)(58126008)(37006003)(54906003)(6246003)(486006)(8676002)(66066001)(2616005)(36756003)(476003)(316002)(229853002)(7736002)(68736007)(102836004)(186003)(3846002)(305945005)(86362001)(26005)(6116002)(6512007)(76176011)(6636002)(53936002)(4744005)(2906002)(118296001)(99286004);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2389;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: ba+vQaUTkTZztNhP84GEgqHg2bPPGG7AEHg0YqQyAKmJnO5gyXdmm+VkVKZOtQ1XR+AYGMMVsh/nhe5PTTocH+oOYn9uiZ3avtd5rgAcZIidn7Mn40ubgUMoEm3xCJUjdlMlvQFyPposT2DgrYbMTwquflVh4GKD1y4YYOV64yAPc8aOPIX0UBjzpj94BJR7+PLXZqzl4VofrEo68GXnzEZ0wxTKHPUCE8kW6Df/Y5Ak5ZwcXqjU3d6q5qdHct4hhDFeS/tWTKNlBUlUds+MAXDjv6+2ew9sycVUTxuxIEmuvMm9E1JYr5YEzYWoVGnCht45Rg7bQJmoCtsVYHz15hkokzAEFu6v5yQaUxJyT5DAjrMPRwoRzV06YTiWEfuZslbiKIA1AQLGTRH49LrTEOPO0n/e1up576NuXqgrO9I=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <0FCFA3E0244E5A4E9DA00271DA13B946@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e8a4d932-119c-4377-58e7-08d6f8f014a8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jun 2019 22:05:34.0939
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2389
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/24/19 12:35 AM, Marek Vasut wrote:
-> Add basic SPI regmap support into the driver.
-> 
-> Previous patches unconver that ksz_spi_write() is always ever called
-> with len = 1, 2 or 4. We can thus drop the if (len > SPI_TX_BUF_LEN)
-> check and we can also drop the allocation of the txbuf which is part
-> of the driver data and wastes 256 bytes for no reason. Regmap covers
-> the whole thing now.
-> 
-> Signed-off-by: Marek Vasut <marex@denx.de>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: Tristram Ha <Tristram.Ha@microchip.com>
-> Cc: Woojung Huh <Woojung.Huh@microchip.com>
-
-[...]
-
-> +#define KS_SPIOP_FLAG_MASK(opcode)		\
-> +	cpu_to_be32((opcode) << (SPI_ADDR_SHIFT + SPI_TURNAROUND_SHIFT))
-
-So the robot is complaining about this. I believe this is correct, as
-the mask should be in native endianness on the register and NOT the
-native endianness of the CPU.
-
-I think a cast would help here, e.g.:
--	cpu_to_be32((opcode) << (SPI_ADDR_SHIFT + SPI_TURNAROUND_SHIFT))
--	(__force unsigned long)cpu_to_be32((opcode) << (SPI_ADDR_SHIFT +
-SPI_TURNAROUND_SHIFT))
-
-Does this make sense ?
-
-> +#define KSZ_REGMAP_COMMON(width)					\
-> +	{								\
-> +		.val_bits = (width),					\
-> +		.reg_stride = (width) / 8,				\
-> +		.reg_bits = SPI_ADDR_SHIFT + SPI_ADDR_ALIGN,		\
-> +		.pad_bits = SPI_TURNAROUND_SHIFT,			\
-> +		.max_register = BIT(SPI_ADDR_SHIFT) - 1,		\
-> +		.cache_type = REGCACHE_NONE,				\
-> +		.read_flag_mask = KS_SPIOP_FLAG_MASK(KS_SPIOP_RD),	\
-> +		.write_flag_mask = KS_SPIOP_FLAG_MASK(KS_SPIOP_WR),	\
-
-[...]
-
--- 
-Best regards,
-Marek Vasut
+T24gVGh1LCAyMDE5LTA2LTIwIGF0IDA3OjAzICswMDAwLCBTYWVlZCBNYWhhbWVlZCB3cm90ZToN
+Cj4gRnJvbTogTWF0dGhldyBXaWxjb3ggPHdpbGx5QGluZnJhZGVhZC5vcmc+DQo+IA0KPiBUaGUg
+bG9jayBwcm90ZWN0aW5nIHRoZSBkYXRhIHN0cnVjdHVyZSBkb2VzIG5vdCBuZWVkIHRvIGJlIGFu
+DQo+IHJ3bG9jay4gIFRoZQ0KPiBvbmx5IHJlYWQgYWNjZXNzIHRvIHRoZSBsb2NrIGlzIGluIGFu
+IGVycm9yIHBhdGgsIGFuZCBpZiB0aGF0J3MNCj4gbGltaXRpbmcNCj4geW91ciBzY2FsYWJpbGl0
+eSwgeW91IGhhdmUgYmlnZ2VyIHBlcmZvcm1hbmNlIHByb2JsZW1zLg0KPiANCj4gRWxpbWluYXRl
+IG1seDVfbWtleV90YWJsZSBpbiBmYXZvdXIgb2YgdXNpbmcgdGhlIHhhcnJheSBkaXJlY3RseS4N
+Cj4gcmVnX21yX2NhbGxiYWNrIG11c3QgdXNlIEdGUF9BVE9NSUMgZm9yIGFsbG9jYXRpbmcgWEFy
+cmF5IG5vZGVzIGFzIGl0DQo+IG1heQ0KPiBiZSBjYWxsZWQgaW4gaW50ZXJydXB0IGNvbnRleHQu
+DQo+IA0KPiBUaGlzIGFsc28gZml4ZXMgYSBtaW5vciBidWcgd2hlcmUgU1JDVSBsb2NraW5nIHdh
+cyBiZWluZyB1c2VkIG9uIHRoZQ0KPiByYWRpeA0KPiB0cmVlIHJlYWQgc2lkZSwgd2hlbiBSQ1Ug
+d2FzIG5lZWRlZCB0b28uDQo+IA0KPiBDaGFuZ2UtSWQ6IElmZWVkYmJjOGYyYzg1NmNjMDQ0MDk0
+ZDAzMTY3YWFlOWY5MTYyNDAwDQo+IFNpZ25lZC1vZmYtYnk6IE1hdHRoZXcgV2lsY294IDx3aWxs
+eUBpbmZyYWRlYWQub3JnPg0KPiBTaWduZWQtb2ZmLWJ5OiBKYXNvbiBHdW50aG9ycGUgPGpnZ0Bt
+ZWxsYW5veC5jb20+DQo+IFNpZ25lZC1vZmYtYnk6IFNhZWVkIE1haGFtZWVkIDxzYWVlZG1AbWVs
+bGFub3guY29tPg0KPiAgDQoNCkFwcGxpZWQgdG8gbWx4NS1uZXh0Lg0KDQpUaGFua3MsDQpTYWVl
+ZC4NCg==
