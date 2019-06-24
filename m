@@ -2,107 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 050A851BC0
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 21:54:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB00151BC5
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 21:54:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728702AbfFXTyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 15:54:13 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:33066 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729054AbfFXTyM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 15:54:12 -0400
-Received: by mail-io1-f68.google.com with SMTP id u13so341343iop.0
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 12:54:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YCg/MjFmfZjibFv1+zfjJ/08w0AqICIa/H9ziec7kII=;
-        b=T5bgSuFF2J0SClg2TX96KcIkt8PMoAR1G3u6wAV9ZlHT11IjSJBWqyLCR87fxH+c29
-         LTufoMIaOaS5RzlQZdhwIhVGqFpXAIChtxNsI8BWjtM0tF2pFRYeHCKuLi5czhKl6iw/
-         Kh4t45FA7uaBdu+cxYKWG6S4qqD66Wb7/01m2fvDCCMbfZCFA4qJWtcmCxfFo0R0UJYn
-         9RwhYjanjDxnX37mmFLMatT8eDcY+4IhBRCV/7mN+h5oZP/SOk7UlIo3kxh2grH6N1Aq
-         nB2By88uwy0THJJ3z/Iol2KMXK0mq8grrgUkxODb07Yba6xPmycLbGleHl0GH6KQvt/o
-         4a/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YCg/MjFmfZjibFv1+zfjJ/08w0AqICIa/H9ziec7kII=;
-        b=AkxJfWzEv2RzkQi95TZrPakbrg7kMsOny8SFbz4zKUH3zApY72W/bP5pMoND+Mqc45
-         ayEBv6IYEvv8FX7hQ46UtUDcF4ZuGViAFl/nw9kkFVRfcdpsbcbDc4XNqfqcND9Fr3V2
-         OHRikB3GkrXlrJzc9RQuOglModZydkhIdB5tazMx2OVcTppEIYHO7bkQ9FE2ybptum8z
-         M6tlMvia6+fnUTv05AoM2KtlObiuO8NSoyjgHYf3lnni0VnOj65UJtn0SXE3/HHAlwoO
-         pPc43a1VNTBeBHnKfQUEgxmpJPypjf6NTMy7jxiUDJppsCpcldNZjZha1nsw+QZc+UZA
-         AWsQ==
-X-Gm-Message-State: APjAAAWRApsPDhbyYIEy2TAxAy/aLLXLoTmzVg9MY8509vEQcsGw4Eyn
-        DNbgyp4odK33E5u2aehx6QuP0lZKDsU3mO9bAoiykg==
-X-Google-Smtp-Source: APXvYqyFU7p5SRJ6nKCqIZqMdeK3zYkp5IdfxuzZhylp6PCqxOOHmnAokMWRrX7K9YZRQdLi+tIxlDW1HYKDsttAmXA=
-X-Received: by 2002:a05:6638:3d3:: with SMTP id r19mr30442055jaq.53.1561406051539;
- Mon, 24 Jun 2019 12:54:11 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190622000358.19895-1-matthewgarrett@google.com>
- <20190622000358.19895-24-matthewgarrett@google.com> <739e21b5-9559-d588-3542-bf0bc81de1b2@iogearbox.net>
-In-Reply-To: <739e21b5-9559-d588-3542-bf0bc81de1b2@iogearbox.net>
-From:   Matthew Garrett <mjg59@google.com>
-Date:   Mon, 24 Jun 2019 12:54:00 -0700
-Message-ID: <CACdnJuvR2bn3y3fYzg06GWXXgAGjgED2Dfa5g0oAwJ28qCCqBg@mail.gmail.com>
-Subject: Re: [PATCH V34 23/29] bpf: Restrict bpf when kernel lockdown is in
- confidentiality mode
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     James Morris <jmorris@namei.org>,
-        LSM List <linux-security-module@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        David Howells <dhowells@redhat.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Chun-Yi Lee <jlee@suse.com>, Jann Horn <jannh@google.com>,
-        bpf@vger.kernel.org
+        id S1731187AbfFXTyv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 15:54:51 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:59406 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726774AbfFXTyv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Jun 2019 15:54:51 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id A453D3078AB7;
+        Mon, 24 Jun 2019 19:54:38 +0000 (UTC)
+Received: from ovpn-112-53.rdu2.redhat.com (ovpn-112-53.rdu2.redhat.com [10.10.112.53])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BFA0D5D70D;
+        Mon, 24 Jun 2019 19:54:31 +0000 (UTC)
+Message-ID: <f0fcee096d779837abc46e7badae9105ee8aaecf.camel@redhat.com>
+Subject: Re: WWAN Controller Framework (was IPA [PATCH v2 00/17])
+From:   Dan Williams <dcbw@redhat.com>
+To:     Alex Elder <elder@linaro.org>, davem@davemloft.net, arnd@arndb.de,
+        bjorn.andersson@linaro.org, ilias.apalodimas@linaro.org
+Cc:     evgreen@chromium.org, benchan@google.com, ejcaruso@google.com,
+        cpratapa@codeaurora.org, syadagir@codeaurora.org,
+        subashab@codeaurora.org, abhishek.esse@gmail.com,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org
+Date:   Mon, 24 Jun 2019 14:54:30 -0500
+In-Reply-To: <23ff4cce-1fee-98ab-3608-1fd09c2d97f1@linaro.org>
+References: <20190531035348.7194-1-elder@linaro.org>
+         <23ff4cce-1fee-98ab-3608-1fd09c2d97f1@linaro.org>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Mon, 24 Jun 2019 19:54:51 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 24, 2019 at 8:37 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 06/22/2019 02:03 AM, Matthew Garrett wrote:
-> > From: David Howells <dhowells@redhat.com>
-> >
-> > There are some bpf functions can be used to read kernel memory:
->
-> Nit: that
+On Mon, 2019-06-24 at 11:30 -0500, Alex Elder wrote:
+> OK I want to try to organize a little more concisely some of the
+> discussion on this, because there is a very large amount of volume
+> to date and I think we need to try to narrow the focus back down
+> again.
+> 
+> I'm going to use a few terms here.  Some of these I really don't
+> like, but I want to be unambiguous *and* (at least for now) I want
+> to avoid the very overloaded term "device".
+> 
+> I have lots more to say, but let's start with a top-level picture,
+> to make sure we're all on the same page.
+> 
+>          WWAN Communication
+>          Channel (Physical)
+>                  |     ------------------------
+> ------------     v     |           :+ Control |  \
+> >          |-----------|           :+ Data    |  |
+> >    AP    |           | WWAN unit :+ Voice   |   > Functions
+> >          |===========|           :+ GPS     |  |
+> ------------     ^     |           :+ ...     |  /
+>                  |     -------------------------
+>           Multiplexed WWAN
+>            Communication
+>          Channel (Physical)
+> 
+> - The *AP* is the main CPU complex that's running Linux on one or
+>   more CPU cores.
+> - A *WWAN unit* is an entity that shares one or more physical
+>   *WWAN communication channels* with the AP.
 
-Fixed.
+You could just say "WWAN modem" here.
 
-> > bpf_probe_read, bpf_probe_write_user and bpf_trace_printk.  These allow
->
-> Please explain how bpf_probe_write_user reads kernel memory ... ?!
+> - A *WWAN communication channel* is a bidirectional means of
+>   carrying data between the AP and WWAN unit.
+> - A WWAN communication channel carries data using a *WWAN protocol*.
+> - A WWAN unit implements one or more *WWAN functions*, such as
+>   5G data, LTE voice, GPS, and so on.
 
-Ha.
+Go more generic here. Not just 5G data but any WWAN IP-based data
+(GPRS, EDGE, CDMA, UMTS, EVDO, LTE, 5G, etc). And not just LTE voice
+but any voice data; plenty of devices don't support LTE but still have
+"WWAN logical communication channels"
 
-> > private keys in kernel memory (e.g. the hibernation image signing key) to
-> > be read by an eBPF program and kernel memory to be altered without
->
-> ... and while we're at it, also how they allow "kernel memory to be
-> altered without restriction". I've been pointing this false statement
-> out long ago.
+> - A WWAN unit shall implement a *WWAN control function*, used to
+>   manage the use of other WWAN functions, as well as the WWAN unit
+>   itself.
+> - The AP communicates with a WWAN function using a WWAN protocol.
+> - A WWAN physical channel can be *multiplexed*, in which case it
+>   carries the data for one or more *WWAN logical channels*.
 
-Yup. How's the following description:
+It's unclear to me what "physical" means here. USB Interface or
+Endpoint or PCI Function or SMD channel? Or kernel TTY device?
 
-    bpf: Restrict bpf when kernel lockdown is in confidentiality mode
+For example on Qualcomm-based USB dongles a given USB Interface's
+Endpoint represents a QMAP "IP data" channel which itself could be
+multiplexed into separate "IP data" channels.  Or that USB Endpoint(s)
+could be exposed as a TTY which itself can be MUX-ed dynamically using
+GSM 07.10.
 
-    There are some bpf functions that can be used to read kernel memory and
-    exfiltrate it to userland: bpf_probe_read, bpf_probe_write_user and
-    bpf_trace_printk.  These could be abused to (eg) allow private
-keys in kernel
-    memory to be leaked. Disable them if the kernel has been locked
-down in confidentiality
-    mode.
+To me "physical" usually means the bus type (PCI, USB, SMD, whatever).
+A Linux hardware driver (IPA, qmi_wwan, option, sierra, etc) binds to
+that physical entity using hardware IDs (USB or PCI VID/PID, devicetree
+properties) and exposes some "WWAN logical communication channels".
+Those logical channels might be multiplexed and another driver (rmnet)
+could handle exposing the de-muxed logical channels that the muxed
+logical channel carries.
 
-> This whole thing is still buggy as has been pointed out before by
-> Jann. For helpers like above and few others below, error conditions
-> must clear the buffer ...
+> - A multiplexed WWAN communication channel uses a *WWAN wultiplexing
+>   protocol*, which is used to separate independent data streams
+>   carrying other WWAN protocols.
+> - A WWAN logical channel carries a bidirectional stream of WWAN
+>   protocol data between an entity on the AP and a WWAN function.
 
-Sorry, yes. My fault.
+It *usually* is bidirectional. For example some GPS logical
+communication channels just start spitting out NMEA when you give the
+control function a command. The NMEA ports themselves don't accept any
+input.
+
+> Does that adequately represent a very high-level picture of what
+> we're trying to manage?
+
+Yes, pretty well. Thanks for trying to specify it all.
+
+> And if I understand it right, the purpose of the generic framework
+> being discussed is to define a common mechanism for managing (i.e.,
+> discovering, creating, destroying, querying, configuring, enabling,
+> disabling, etc.) WWAN units and the functions they implement, along
+> with the communication and logical channels used to communicate with
+> them.
+
+Yes.
+
+Dan
+
+> Comments?
+> 
+> 					-Alex
+
