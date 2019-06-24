@@ -2,84 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4314350058
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 05:47:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD73E5006D
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 06:01:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727662AbfFXDry (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Jun 2019 23:47:54 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:42443 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727010AbfFXDry (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jun 2019 23:47:54 -0400
-Received: by mail-io1-f67.google.com with SMTP id u19so4616ior.9
-        for <netdev@vger.kernel.org>; Sun, 23 Jun 2019 20:47:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=rFXnCsIYHh0xCcgX+Ak9Gg+Q4t3lxhKDfK2s/UDFSZI=;
-        b=NLPXDboY/TzJH7eMTy292vUjsYxhR/Y/lK0l3sIsDnwTmYlZ59EEwAnzMIbx9we3qj
-         0fkr3ynQB9ENDvX3fgjzYjyhLu3mxwNuhayNKjZBAAgotniVEECjmquID7zuT+SGwI5w
-         DJ045RBmIRelEXsPCvHR99HS5RBfp67VVswDh+6esIFb1b5NBTLnEczo3M9yJpvfBH4N
-         978V/MxA0iq9UQaBe8K2RJ3xhV0J7MICw+IElFP5at6r5vHZ2unoGZcrh+kZTvysXSot
-         rKXmCfR0nVUpZkpHcfKSud1h56CWkrdmN67HM5Z/E61HEhy8j6n3rwSqbFS5A/X/2FTZ
-         K/qg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=rFXnCsIYHh0xCcgX+Ak9Gg+Q4t3lxhKDfK2s/UDFSZI=;
-        b=jBfoBM90pLWM46RpSr9+aNKh0kixBJmAprvaIec45pE2yZVVCqJf1eEAx2KnATNzr0
-         wuKtFtaYuLASMuG/I4x9GUMUn901DPxrxMQ7rv+zTKGmH11FCvQ9VivN+SBLUeAwpRdy
-         sBdHF+LHb2tSojxnSmQNNDQK4z4ybYtBFBhl/v1hRPnOxFHW3qbGTZJwha2B0bGhbaNA
-         tPtVNeF+xf76lpE+G3BDX+zf/K9bRMJiBma9LASK9vkyOnH9EJeqAfiroMbBMGaAw61g
-         oFSjG0b08+thDERJNEsj8eYsyD9cWeHSCpaDfyxJ/ShMKb0gBLG2krJSPX6QBNcSN91v
-         UMcg==
-X-Gm-Message-State: APjAAAUszas6Ez60m5w26TtBdWNUoP0V3MtoX1f0JyDn+fCe4AcrErOt
-        e5q36M3mYiMD0OOcbEaLofQ=
-X-Google-Smtp-Source: APXvYqyJv3eVDM2GyyUT9dIu6Zz+yzIF+ahVs0c1FFAqvlbvDfbli3wLamUkP9uBtu/XvHLwtoj+TQ==
-X-Received: by 2002:a5e:8a05:: with SMTP id d5mr14388805iok.147.1561348073450;
-        Sun, 23 Jun 2019 20:47:53 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:6d83:2625:ad6c:635d? ([2601:282:800:fd80:6d83:2625:ad6c:635d])
-        by smtp.googlemail.com with ESMTPSA id f20sm11344795ioh.17.2019.06.23.20.47.51
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 23 Jun 2019 20:47:52 -0700 (PDT)
-Subject: Re: [PATCH v2 0/3] fix bugs when enable route_localnet
-To:     David Miller <davem@davemloft.net>, liuzhiqiang26@huawei.com
-Cc:     luoshijie1@huawei.com, tgraf@suug.ch, netdev@vger.kernel.org,
-        wangxiaogang3@huawei.com, mingfangsen@huawei.com,
-        zhoukang7@huawei.com
-References: <1560870845-172395-1-git-send-email-luoshijie1@huawei.com>
- <e52787a0-86fe-bf5f-28f4-3a29dd8ced7b@huawei.com>
- <20190622.084611.1808368522428755652.davem@davemloft.net>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <bd5bda6c-8bb2-98ae-e020-f31eeeec9134@gmail.com>
-Date:   Sun, 23 Jun 2019 21:47:46 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        id S1726216AbfFXEB0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 00:01:26 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:59142 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725267AbfFXEB0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Jun 2019 00:01:26 -0400
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 5AA599E7CDD25E43015C;
+        Mon, 24 Jun 2019 12:01:23 +0800 (CST)
+Received: from localhost (10.133.213.239) by DGGEMS406-HUB.china.huawei.com
+ (10.3.19.206) with Microsoft SMTP Server id 14.3.439.0; Mon, 24 Jun 2019
+ 12:01:12 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <davem@davemloft.net>, <sdf@google.com>, <jianbol@mellanox.com>,
+        <jiri@mellanox.com>, <mirq-linux@rere.qmqm.pl>,
+        <willemb@google.com>, <sdf@fomichev.me>, <jiri@resnulli.us>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH v2] flow_dissector: Fix vlan header offset in __skb_flow_dissect
+Date:   Mon, 24 Jun 2019 11:49:13 +0800
+Message-ID: <20190624034913.40328-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
+In-Reply-To: <20190622.161955.2030310177158651781.davem@davemloft.net>
+References: <20190622.161955.2030310177158651781.davem@davemloft.net>
 MIME-Version: 1.0
-In-Reply-To: <20190622.084611.1808368522428755652.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.133.213.239]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/22/19 6:46 AM, David Miller wrote:
-> From: Zhiqiang Liu <liuzhiqiang26@huawei.com>
-> Date: Sat, 22 Jun 2019 16:41:49 +0800
-> 
->> Friendly ping ...
-> 
-> I'm not applying this patch series without someone reviewing it.
-> 
+We build vlan on top of bonding interface, which vlan offload
+is off, bond mode is 802.3ad (LACP) and xmit_hash_policy is
+BOND_XMIT_POLICY_ENCAP34.
 
-I have stared at it a few times since the patches were sent and can not
-find anything obviously wrong about it. The fallout seems limited to
-users of route_localnet which I have to believe is small (I only know of
-2 other users of 127/8 for non-loopback and those were almost 10 years ago).
+__skb_flow_dissect() fails to get information from protocol headers
+encapsulated within vlan, because 'nhoff' is points to IP header,
+so bond hashing is based on layer 2 info, which fails to distribute
+packets across slaves.
 
-Putting in net-next is the safest.
+Fixes: d5709f7ab776 ("flow_dissector: For stripped vlan, get vlan info from skb->vlan_tci")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+v2: remove redundant spaces
+---
+ net/core/flow_dissector.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
+index 01ad60b..ff85934 100644
+--- a/net/core/flow_dissector.c
++++ b/net/core/flow_dissector.c
+@@ -998,6 +998,9 @@ bool __skb_flow_dissect(const struct net *net,
+ 		    skb && skb_vlan_tag_present(skb)) {
+ 			proto = skb->protocol;
+ 		} else {
++			if (dissector_vlan == FLOW_DISSECTOR_KEY_MAX)
++				nhoff -= sizeof(*vlan);
++
+ 			vlan = __skb_header_pointer(skb, nhoff, sizeof(_vlan),
+ 						    data, hlen, &_vlan);
+ 			if (!vlan) {
+-- 
+2.7.4
+
+
