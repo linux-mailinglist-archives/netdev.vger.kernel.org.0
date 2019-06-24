@@ -2,63 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A640D5193F
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 19:04:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF19351941
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 19:05:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730648AbfFXREj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 13:04:39 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:57584 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726920AbfFXREi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 13:04:38 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id DB7DC15061484;
-        Mon, 24 Jun 2019 10:04:37 -0700 (PDT)
-Date:   Mon, 24 Jun 2019 10:04:35 -0700 (PDT)
-Message-Id: <20190624.100435.1535171955176516330.davem@davemloft.net>
-To:     lucien.xin@gmail.com
-Cc:     netdev@vger.kernel.org, edumazet@google.com,
-        jon.maloy@ericsson.com, ying.xue@windriver.com,
-        tipc-discussion@lists.sourceforge.net,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: [PATCHv2 net] tipc: check msg->req data len in
- tipc_nl_compat_bearer_disable
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <58c46f0c73a4c1aea970e52de69188e2dd20d3b4.1561393699.git.lucien.xin@gmail.com>
-References: <58c46f0c73a4c1aea970e52de69188e2dd20d3b4.1561393699.git.lucien.xin@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 24 Jun 2019 10:04:38 -0700 (PDT)
+        id S1731249AbfFXRFa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 13:05:30 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:36576 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726920AbfFXRFa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Jun 2019 13:05:30 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 5D7653007149;
+        Mon, 24 Jun 2019 17:05:30 +0000 (UTC)
+Received: from renaissance-vector.mxp.redhat.com (unknown [10.32.181.34])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8E7B1600C0;
+        Mon, 24 Jun 2019 17:05:29 +0000 (UTC)
+From:   Andrea Claudi <aclaudi@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, dsahern@kernel.org
+Subject: [PATCH iproute2 0/3] do not set IPv6-only options on IPv4 addresses
+Date:   Mon, 24 Jun 2019 19:05:52 +0200
+Message-Id: <cover.1561394228.git.aclaudi@redhat.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Mon, 24 Jun 2019 17:05:30 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
-Date: Tue, 25 Jun 2019 00:28:19 +0800
+'home', 'nodad' and 'mngtmpaddr' options are IPv6-only, but
+it is possible to set them on IPv4 addresses, too. This should
+not be possible.
 
-> This patch is to fix an uninit-value issue, reported by syzbot:
- ...
-> TLV_GET_DATA_LEN() may return a negtive int value, which will be
-> used as size_t (becoming a big unsigned long) passed into memchr,
-> cause this issue.
-> 
-> Similar to what it does in tipc_nl_compat_bearer_enable(), this
-> fix is to return -EINVAL when TLV_GET_DATA_LEN() is negtive in
-> tipc_nl_compat_bearer_disable(), as well as in
-> tipc_nl_compat_link_stat_dump() and tipc_nl_compat_link_reset_stats().
-> 
-> v1->v2:
->   - add the missing Fixes tags per Eric's request.
-> 
-> Fixes: 0762216c0ad2 ("tipc: fix uninit-value in tipc_nl_compat_bearer_enable")
-> Fixes: 8b66fee7f8ee ("tipc: fix uninit-value in tipc_nl_compat_link_reset_stats")
-> Reported-by: syzbot+30eaa8bf392f7fafffaf@syzkaller.appspotmail.com
-> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Fix this adding a check on the protocol family before setting
+the flags, and exiting with invarg() on error.
 
-Applied and queued up for -stable, thanks.
+Andrea Claudi (3):
+  ip address: do not set nodad option for IPv4 addresses
+  ip address: do not set home option for IPv4 addresses
+  ip address: do not set mngtmpaddr option for IPv4 addresses
+
+ ip/ipaddress.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
+
+-- 
+2.20.1
+
