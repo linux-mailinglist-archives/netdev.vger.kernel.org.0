@@ -2,90 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A8CA51967
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 19:17:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FCE451969
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 19:20:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732369AbfFXRRQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 13:17:16 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:40500 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726628AbfFXRRQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 13:17:16 -0400
-Received: by mail-pl1-f194.google.com with SMTP id a93so7282404pla.7
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 10:17:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=W5Gq+2eu7C9ykEOTkG4/e0ZCq1GlpToVxjnuUB6QS0E=;
-        b=e+m3F1Wl/WpzEh7TSomGYCUUyLBG5VXN4NoOP2r5YXQqyGWXol9jVSa5pmO2T/cZSU
-         paEaof8Tqq0P8ZksnX34rcXxeVOCqBJr9h8i8m8tXh9uwuAgeFIFwOOoGeidObCh761K
-         zx3aXOAtCHkPBAsa/rQI3E3phwlZ8uNVZ/1Wm/kTjV4PeLPkT1waFQvNgfp38x06ovPU
-         7ZtMLJBk9h/e2FO7F1xluvYWirqjH8hLVHh0uElRf9mmTxSPl8VjGsGPdDlyBl5ryA06
-         7YnsNl2ZXQGZu6SZAIZB1xHaKmaHsGrdGCibxVrrhAYAZfJD3TizhI8tqczemyuMUGjw
-         1m1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=W5Gq+2eu7C9ykEOTkG4/e0ZCq1GlpToVxjnuUB6QS0E=;
-        b=ntNBuslJ3kR1bDrBLUHCr/FRv3QvQZQZG2TTvSc6BKr4NPDimDz2fpY5V/lto3+OS3
-         8GE4LrB+NhbDhJCm1wubjiqRWRJ03Gmiz/wTvONSOI3PvZoxL/wfGCHyaQ0m+L3zU9Pe
-         QhcFbPt+RLW8M5tUja18wrENrEic9jOBZEeanSUYG9O7/B9zuiolmkXV2xT1S+8qZGdy
-         axEg8tMbjtKAOE0CPnFvdzdXdBLQn1Z9jmmL5qqrilzKoRnFbyJz4hWONRK9vCwBu0KP
-         bNFfAOyIsbLCvjrsHDZ4VUUDtSVE/CLtVdqd3FPMy9HQ0z8jHEyp+UKzf9SRicjdp3Mp
-         bAYw==
-X-Gm-Message-State: APjAAAVLxH1bhgltqtScBvOotu6eG/SPVmoGrbww3Ry8SGGWibyKwo+h
-        o3ORBQnoCgJaliEzewP7yHF/c9kKm5XtR1iybGGSKQ==
-X-Google-Smtp-Source: APXvYqzk3XgqisxGz6B4+5GibM3s9dZptD4wbuZSbb0l20gFK+wQJwpa1ekUEfro5xfkEGkWM6T1z3F6D+5Z2g9zMsM=
-X-Received: by 2002:a17:902:4aa3:: with SMTP id x32mr26626062pld.119.1561396634970;
- Mon, 24 Jun 2019 10:17:14 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190624140109.14775-1-nicolas.dichtel@6wind.com>
- <20190624140109.14775-2-nicolas.dichtel@6wind.com> <CAKwvOdk9yxnO_2yDwuG8ECw2o8kP=w8pvdbCqDuwO4_03rj5gw@mail.gmail.com>
- <20190624.100609.1416082266723674267.davem@davemloft.net>
-In-Reply-To: <20190624.100609.1416082266723674267.davem@davemloft.net>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Mon, 24 Jun 2019 10:17:03 -0700
-Message-ID: <CAKwvOdmd2AooQrpPhBVhcRHGNsMoGFiXSyBA4_aBf7=oVeOx1g@mail.gmail.com>
-Subject: Re: [PATCH net v2 1/2] ipv6: constify rt6_nexthop()
-To:     David Miller <davem@davemloft.net>
-Cc:     Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        netdev@vger.kernel.org, kbuild test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1731243AbfFXRUa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 13:20:30 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:57870 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726533AbfFXRUa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 13:20:30 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id D65E615063AD3;
+        Mon, 24 Jun 2019 10:20:29 -0700 (PDT)
+Date:   Mon, 24 Jun 2019 10:20:29 -0700 (PDT)
+Message-Id: <20190624.102029.1787909800092048267.davem@davemloft.net>
+To:     sbrivio@redhat.com
+Cc:     dsahern@gmail.com, jishi@redhat.com, weiwan@google.com,
+        kafai@fb.com, edumazet@google.com,
+        matti.vaittinen@fi.rohmeurope.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v7 00/11] Fix listing (IPv4, IPv6) and
+ flushing (IPv6) of cached route exceptions
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <cover.1561131177.git.sbrivio@redhat.com>
+References: <cover.1561131177.git.sbrivio@redhat.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 24 Jun 2019 10:20:30 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 24, 2019 at 10:06 AM David Miller <davem@davemloft.net> wrote:
->
-> From: Nick Desaulniers <ndesaulniers@google.com>
-> Date: Mon, 24 Jun 2019 09:45:14 -0700
->
-> > https://groups.google.com/forum/#!searchin/clang-built-linux/const%7Csort:date/clang-built-linux/umkS84jS9m8/GAVVEgNYBgAJ
->
-> Inaccessible...
->
->         This group either doesn't exist, or you don't have permission
->         to access it. If you're sure this group exists, contact the
->         Owner of the group and ask them to give you access.
+From: Stefano Brivio <sbrivio@redhat.com>
+Date: Fri, 21 Jun 2019 17:45:19 +0200
 
-Sorry, I set up the mailing list not too long ago, seem to have a long
-tail of permissions related issues.  I confirmed that the link was
-borked in an incognito window.  Via
-https://support.google.com/a/answer/9325317#Visibility I was able to
-change the obscure setting.  I now confirmed the above link works in
-an incognito window.  Thanks for reporting; can you please triple
-check?
+> For IPv6 cached routes, the commands 'ip -6 route list cache' and
+> 'ip -6 route flush cache' don't work at all after route exceptions have
+> been moved to a separate hash table in commit 2b760fcf5cfb ("ipv6: hook
+> up exception table to store dst cache").
+> 
+> For IPv4 cached routes, the command 'ip route list cache' has also
+> stopped working in kernel 3.5 after commit 4895c771c7f0 ("ipv4: Add FIB
+> nexthop exceptions.") introduced storage for route exceptions as a
+> separate entity.
+> 
+> Fix this by allowing userspace to clearly request cached routes with
+> the RTM_F_CLONED flag used as a filter (in conjuction with strict
+> checking) and by retrieving and dumping cached routes if requested.
+> 
+> If strict checking is not requested (iproute2 < 5.0.0), we don't have a
+> way to consistently filter results on other selectors (e.g. on tables),
+> so skip filtering entirely and dump both regular routes and exceptions.
+> 
+> For IPv4, cache flushing uses a completely different mechanism, so it
+> wasn't affected. Listing of exception routes (modified routes pre-3.5) was
+> tested against these versions of kernel and iproute2:
+ ...
 
->
-> And you mean just changing to 'const' fixes something, how?
-
-See the warning in the above link (assuming now you have access).
-Assigning a non-const variable the result of a function call that
-returns const discards the const qualifier.
-
--- 
-Thanks,
-~Nick Desaulniers
+Series applied, thanks.
