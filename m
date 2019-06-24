@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0315C519AB
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 19:36:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4199F519AC
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 19:36:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732524AbfFXRgS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 13:36:18 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:20082 "EHLO
+        id S1732529AbfFXRgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 13:36:21 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:7422 "EHLO
         stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732521AbfFXRgS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 13:36:18 -0400
-Received: from localhost (junagarh.blr.asicdesigners.com [10.193.185.238])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id x5OHaEOR014333;
-        Mon, 24 Jun 2019 10:36:15 -0700
+        with ESMTP id S1732521AbfFXRgU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 13:36:20 -0400
+Received: from localhost ([10.193.185.238])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id x5OHaGRt014336;
+        Mon, 24 Jun 2019 10:36:17 -0700
 From:   Raju Rangoju <rajur@chelsio.com>
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     nirranjan@chelsio.com, dt@chelsio.com, rajur@chelsio.com
-Subject: [PATCH v3 net-next 2/4] cxgb4: Add MPS TCAM refcounting for raw mac filters
-Date:   Mon, 24 Jun 2019 23:05:33 +0530
-Message-Id: <20190624173535.12572-3-rajur@chelsio.com>
+Subject: [PATCH v3 net-next 3/4] cxgb4: Add MPS TCAM refcounting for cxgb4 change mac
+Date:   Mon, 24 Jun 2019 23:05:34 +0530
+Message-Id: <20190624173535.12572-4-rajur@chelsio.com>
 X-Mailer: git-send-email 2.12.0
 In-Reply-To: <20190624173535.12572-1-rajur@chelsio.com>
 References: <20190624173535.12572-1-rajur@chelsio.com>
@@ -29,97 +29,104 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This patch adds TCAM reference counting
-support for raw mac filters.
+support for cxgb4 change mac path
 
 Signed-off-by: Raju Rangoju <rajur@chelsio.com>
 ---
- drivers/net/ethernet/chelsio/cxgb4/cxgb4.h     | 16 +++++++++
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_mps.c | 46 ++++++++++++++++++++++++++
- 2 files changed, 62 insertions(+)
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4.h      |  7 +++++++
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c | 14 +++++++-------
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_mps.c  | 15 +++++++++++++++
+ 3 files changed, 29 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-index 39ccd4c64d48..c7ab57fd03be 100644
+index c7ab57fd03be..6260240743d5 100644
 --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
 +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-@@ -1919,5 +1919,21 @@ int cxgb4_alloc_encap_mac_filt(struct adapter *adap, unsigned int viid,
- 			       u8 dip_hit, u8 lookup_type, bool sleep_ok);
- int cxgb4_free_encap_mac_filt(struct adapter *adap, unsigned int viid,
- 			      int idx, bool sleep_ok);
-+int cxgb4_free_raw_mac_filt(struct adapter *adap,
-+			    unsigned int viid,
-+			    const u8 *addr,
-+			    const u8 *mask,
-+			    unsigned int idx,
-+			    u8 lookup_type,
-+			    u8 port_id,
-+			    bool sleep_ok);
-+int cxgb4_alloc_raw_mac_filt(struct adapter *adap,
-+			     unsigned int viid,
-+			     const u8 *addr,
-+			     const u8 *mask,
-+			     unsigned int idx,
-+			     u8 lookup_type,
-+			     u8 port_id,
-+			     bool sleep_ok);
+@@ -1911,6 +1911,10 @@ int cxgb4_set_msix_aff(struct adapter *adap, unsigned short vec,
+ 		       cpumask_var_t *aff_mask, int idx);
+ void cxgb4_clear_msix_aff(unsigned short vec, cpumask_var_t aff_mask);
+ 
++int cxgb4_change_mac(struct port_info *pi, unsigned int viid,
++		     int *tcam_idx, const u8 *addr,
++		     bool persistent, u8 *smt_idx);
++
+ int cxgb4_init_mps_ref_entries(struct adapter *adap);
+ void cxgb4_free_mps_ref_entries(struct adapter *adap);
+ int cxgb4_alloc_encap_mac_filt(struct adapter *adap, unsigned int viid,
+@@ -1935,5 +1939,8 @@ int cxgb4_alloc_raw_mac_filt(struct adapter *adap,
+ 			     u8 lookup_type,
+ 			     u8 port_id,
+ 			     bool sleep_ok);
++int cxgb4_update_mac_filt(struct port_info *pi, unsigned int viid,
++			  int *tcam_idx, const u8 *addr,
++			  bool persistent, u8 *smt_idx);
  
  #endif /* __CXGB4_H__ */
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+index 4632827f05ba..1520e5294289 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+@@ -449,9 +449,9 @@ static int set_rxmode(struct net_device *dev, int mtu, bool sleep_ok)
+  *	Addresses are programmed to hash region, if tcam runs out of entries.
+  *
+  */
+-static int cxgb4_change_mac(struct port_info *pi, unsigned int viid,
+-			    int *tcam_idx, const u8 *addr, bool persist,
+-			    u8 *smt_idx)
++int cxgb4_change_mac(struct port_info *pi, unsigned int viid,
++		     int *tcam_idx, const u8 *addr, bool persist,
++		     u8 *smt_idx)
+ {
+ 	struct adapter *adapter = pi->adapter;
+ 	struct hash_mac_addr *entry, *new_entry;
+@@ -505,8 +505,8 @@ static int link_start(struct net_device *dev)
+ 	ret = t4_set_rxmode(pi->adapter, mb, pi->viid, dev->mtu, -1, -1, -1,
+ 			    !!(dev->features & NETIF_F_HW_VLAN_CTAG_RX), true);
+ 	if (ret == 0)
+-		ret = cxgb4_change_mac(pi, pi->viid, &pi->xact_addr_filt,
+-				       dev->dev_addr, true, &pi->smt_idx);
++		ret = cxgb4_update_mac_filt(pi, pi->viid, &pi->xact_addr_filt,
++					    dev->dev_addr, true, &pi->smt_idx);
+ 	if (ret == 0)
+ 		ret = t4_link_l1cfg(pi->adapter, mb, pi->tx_chan,
+ 				    &pi->link_cfg);
+@@ -3020,8 +3020,8 @@ static int cxgb_set_mac_addr(struct net_device *dev, void *p)
+ 	if (!is_valid_ether_addr(addr->sa_data))
+ 		return -EADDRNOTAVAIL;
+ 
+-	ret = cxgb4_change_mac(pi, pi->viid, &pi->xact_addr_filt,
+-			       addr->sa_data, true, &pi->smt_idx);
++	ret = cxgb4_update_mac_filt(pi, pi->viid, &pi->xact_addr_filt,
++				    addr->sa_data, true, &pi->smt_idx);
+ 	if (ret < 0)
+ 		return ret;
+ 
 diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_mps.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_mps.c
-index b8a5375bf64d..b942748c7dfa 100644
+index b942748c7dfa..067217c6ca05 100644
 --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_mps.c
 +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_mps.c
-@@ -54,6 +54,52 @@ static int cxgb4_mps_ref_inc(struct adapter *adap, const u8 *mac_addr,
+@@ -54,6 +54,21 @@ static int cxgb4_mps_ref_inc(struct adapter *adap, const u8 *mac_addr,
  	return ret;
  }
  
-+int cxgb4_free_raw_mac_filt(struct adapter *adap,
-+			    unsigned int viid,
-+			    const u8 *addr,
-+			    const u8 *mask,
-+			    unsigned int idx,
-+			    u8 lookup_type,
-+			    u8 port_id,
-+			    bool sleep_ok)
-+{
-+	int ret = 0;
-+
-+	if (!cxgb4_mps_ref_dec(adap, idx))
-+		ret = t4_free_raw_mac_filt(adap, viid, addr,
-+					   mask, idx, lookup_type,
-+					   port_id, sleep_ok);
-+
-+	return ret;
-+}
-+
-+int cxgb4_alloc_raw_mac_filt(struct adapter *adap,
-+			     unsigned int viid,
-+			     const u8 *addr,
-+			     const u8 *mask,
-+			     unsigned int idx,
-+			     u8 lookup_type,
-+			     u8 port_id,
-+			     bool sleep_ok)
++int cxgb4_update_mac_filt(struct port_info *pi, unsigned int viid,
++			  int *tcam_idx, const u8 *addr,
++			  bool persistent, u8 *smt_idx)
 +{
 +	int ret;
 +
-+	ret = t4_alloc_raw_mac_filt(adap, viid, addr,
-+				    mask, idx, lookup_type,
-+				    port_id, sleep_ok);
++	ret = cxgb4_change_mac(pi, viid, tcam_idx,
++			       addr, persistent, smt_idx);
 +	if (ret < 0)
 +		return ret;
 +
-+	if (cxgb4_mps_ref_inc(adap, addr, ret, mask)) {
-+		ret = -ENOMEM;
-+		t4_free_raw_mac_filt(adap, viid, addr,
-+				     mask, idx, lookup_type,
-+				     port_id, sleep_ok);
-+	}
-+
++	cxgb4_mps_ref_inc(pi->adapter, addr, *tcam_idx, NULL);
 +	return ret;
 +}
 +
- int cxgb4_free_encap_mac_filt(struct adapter *adap, unsigned int viid,
- 			      int idx, bool sleep_ok)
- {
+ int cxgb4_free_raw_mac_filt(struct adapter *adap,
+ 			    unsigned int viid,
+ 			    const u8 *addr,
 -- 
 2.12.0
 
