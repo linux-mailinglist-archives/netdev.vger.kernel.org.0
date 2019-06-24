@@ -2,73 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F14E5194B
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 19:06:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64C0A5194E
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 19:09:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732304AbfFXRGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 13:06:42 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:26311 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729008AbfFXRGm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 13:06:42 -0400
-Received: from localhost (kumbhalgarh.blr.asicdesigners.com [10.193.185.255])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id x5OH6bYZ014171;
-        Mon, 24 Jun 2019 10:06:38 -0700
-Date:   Mon, 24 Jun 2019 22:36:37 +0530
-From:   Raju Rangoju <rajur@chelsio.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, nirranjan@chelsio.com, dt@chelsio.com
-Subject: Re: [PATCH v2 net-next 0/4] cxgb4: Reference count MPS TCAM entries
- within a PF
-Message-ID: <20190624170635.GA6413@chelsio.com>
-References: <20190624085037.2358-1-rajur@chelsio.com>
- <20190624.075132.2137301224911651949.davem@davemloft.net>
- <20190624.075323.2257534731180163594.davem@davemloft.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190624.075323.2257534731180163594.davem@davemloft.net>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+        id S1732307AbfFXRJ0 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 24 Jun 2019 13:09:26 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:57674 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729008AbfFXRJZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 13:09:25 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1C200150614A5;
+        Mon, 24 Jun 2019 10:09:25 -0700 (PDT)
+Date:   Mon, 24 Jun 2019 10:09:24 -0700 (PDT)
+Message-Id: <20190624.100924.819846587872121764.davem@davemloft.net>
+To:     bjorn@mork.no
+Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        hdanton@sina.com, kristian.evensen@gmail.com
+Subject: Re: [PATCH net,stable] qmi_wwan: Fix out-of-bounds read
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190624164511.831-1-bjorn@mork.no>
+References: <20190624164511.831-1-bjorn@mork.no>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 24 Jun 2019 10:09:25 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Monday, June 06/24/19, 2019 at 07:53:23 -0700, David Miller wrote:
-> From: David Miller <davem@davemloft.net>
-> Date: Mon, 24 Jun 2019 07:51:32 -0700 (PDT)
-> 
-> > From: Raju Rangoju <rajur@chelsio.com>
-> > Date: Mon, 24 Jun 2019 14:20:33 +0530
-> > 
-> >> Firmware reference counts the MPS TCAM entries by PF and VF,
-> >> but it does not do it for usage within a PF or VF. This patch
-> >> adds the support to track MPS TCAM entries within a PF.
-> >> 
-> >> v1->v2:
-> >>  Use refcount_t type instead of atomic_t for mps reference count
-> > 
-> > Series applied, thanks.
-> 
-> Umm, REALLY?!?!?!
-> 
-> drivers/net/ethernet/chelsio/cxgb4/cxgb4_mps.c: In function ‘cxgb4_mps_ref_dec_by_mac’:
-> drivers/net/ethernet/chelsio/cxgb4/cxgb4_mps.c:17:29: error: passing argument 1 of ‘atomic_dec_and_test’ from incompatible pointer type [-Werror=incompatible-pointer-types]
->     if (!atomic_dec_and_test(&mps_entry->refcnt)) {
->                              ^~~~~~~~~~~~~~~~~~
-> 
-> You just changed it to a refcount_t and didn't try compiling the
-> result?
-> 
+From: Bj�rn Mork <bjorn@mork.no>
+Date: Mon, 24 Jun 2019 18:45:11 +0200
 
-No. I'm pretty sure that I have compiled and tested the changes. But, my bad
-I had missed to '--amend' the last patch after 'git add'.
-
-I'll send out next version.
-
-> The whole point of refcount_t is that it uses a different set of
-> interfaces to manipulate the object and you have to therefore
-> update all the call sites properly.
+> The syzbot reported
 > 
-> Reverted...
+>  Call Trace:
+>   __dump_stack lib/dump_stack.c:77 [inline]
+>   dump_stack+0xca/0x13e lib/dump_stack.c:113
+>   print_address_description+0x67/0x231 mm/kasan/report.c:188
+>   __kasan_report.cold+0x1a/0x32 mm/kasan/report.c:317
+>   kasan_report+0xe/0x20 mm/kasan/common.c:614
+>   qmi_wwan_probe+0x342/0x360 drivers/net/usb/qmi_wwan.c:1417
+>   usb_probe_interface+0x305/0x7a0 drivers/usb/core/driver.c:361
+>   really_probe+0x281/0x660 drivers/base/dd.c:509
+>   driver_probe_device+0x104/0x210 drivers/base/dd.c:670
+>   __device_attach_driver+0x1c2/0x220 drivers/base/dd.c:777
+>   bus_for_each_drv+0x15c/0x1e0 drivers/base/bus.c:454
+> 
+> Caused by too many confusing indirections and casts.
+> id->driver_info is a pointer stored in a long.  We want the
+> pointer here, not the address of it.
+> 
+> Thanks-to: Hillf Danton <hdanton@sina.com>
+> Reported-by: syzbot+b68605d7fadd21510de1@syzkaller.appspotmail.com
+> Cc: Kristian Evensen <kristian.evensen@gmail.com>
+> Fixes: e4bf63482c30 ("qmi_wwan: Add quirk for Quectel dynamic config")
+> Signed-off-by: Bj�rn Mork <bjorn@mork.no>
+
+Applied, thanks.
