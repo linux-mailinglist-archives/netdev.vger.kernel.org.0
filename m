@@ -2,180 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA4B750A27
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 13:51:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D726650A2B
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 13:52:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729851AbfFXLvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 07:51:42 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:41139 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729550AbfFXLvl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 07:51:41 -0400
-Received: by mail-pg1-f196.google.com with SMTP id y72so6980752pgd.8
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 04:51:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MktjD5JI8plrPxYgdY28dSdky16sGE3yFJlzutMBX0Y=;
-        b=E42AtJYYKS3gX+CavKLFlDYVVNCoSjuykLZUIN+uEWysOmPvEjowAsUCoL+p4bxDLD
-         CHrahBaSZ/AaA1XqTklaYxmNdWwMTuqFhUEj3ACVySVr6cSwog2yQK7SJYe9SJf+1fsu
-         Jxg5XidlAQWXCtiklfCS+OOJ1RsXwjtQbu8IAX5dtex3bFVNMHklYhUWj3x0K3TIwpv7
-         HKzvKlb0UyYUk6dO+GP0wKxTbQ6mWivHViXlIhnXA1+Bye+t0Pe7wiPpiviOP4TFKtF+
-         5ep5I5d21sivYG84h7gout7eJagMVCFuQ5RU2JOUJgT/iicMTHgAKyAYWUnWJcbS4xSb
-         SGOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MktjD5JI8plrPxYgdY28dSdky16sGE3yFJlzutMBX0Y=;
-        b=XBeJK+kKygOEbcWCfntIczLGvvcVGQPD8/Myy/yLarFbgyqMRUr2YzkMwZdgZxnJvw
-         8JwWPyGfiVD5r/CKpVufHETKe/Ag5NQTlMLNhQtDhs+ybUiB1WBZFUD/+mpGzcM0FONW
-         dpaGv89/B/TR1S8n4hDlQSUKOBKfxsf/g1eCYOy2p83VBlSpRCxZlEZ4RnNZkpt8gFgo
-         LXLukP8epLnrcexfGhSG5KSE0UuC8eZRscHkmu3fOPS4a9Gh0Xyg6Pf/8G90+wE11bzD
-         tE7wvpNZEd7Fqqm5ZG9imMVZ+Bk1hICRWwGbjQ9P+SVpdOSspKpVu9ay9qJDag3zC62m
-         loEQ==
-X-Gm-Message-State: APjAAAWCAEK/+vF3W7ejVM64fA41IMgP/aGq2hhI1EvnnEfRHO8WIA0o
-        U/3vVfL5ak1X/Od+k3LiknOlmljSmNT8r6f1iuGbLQ==
-X-Google-Smtp-Source: APXvYqz5xbtBgSv9XKplkSawe6nghKkaroCsUJSXThEB/hnFaWvNPzkCZMYZkuMEAbHjzcChr/ODQWoaTLNZKz32Dw4=
-X-Received: by 2002:a17:90a:a116:: with SMTP id s22mr24124967pjp.47.1561377100565;
- Mon, 24 Jun 2019 04:51:40 -0700 (PDT)
+        id S1729866AbfFXLwN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 07:52:13 -0400
+Received: from mail-eopbgr80084.outbound.protection.outlook.com ([40.107.8.84]:33255
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727979AbfFXLwN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Jun 2019 07:52:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zNoFTa8xExQf7G/x59hhHhHHRXbVW5oqRFz6KoiZjPA=;
+ b=BJZ4xzPdldSEQEs8hqM/eWu1nnaxnPm1ieBbSmjuDyXP0o6C9cGgrmS8En5AQJReJUQUBjQbB0/Ul+gtYKbjR1KHAuXDieeyJotVbObRTXX+rihqY1FXpxB4Vo/YqUt/n8Sew3wEiUANbrhypUQ+NPHXC5Ou6jiuF67SNYlppHk=
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (10.171.182.144) by
+ VI1PR05MB5485.eurprd05.prod.outlook.com (20.177.63.215) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2008.16; Mon, 24 Jun 2019 11:52:09 +0000
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
+ ([fe80::f5d8:df9:731:682e]) by VI1PR05MB4141.eurprd05.prod.outlook.com
+ ([fe80::f5d8:df9:731:682e%5]) with mapi id 15.20.2008.014; Mon, 24 Jun 2019
+ 11:52:09 +0000
+From:   Jason Gunthorpe <jgg@mellanox.com>
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     Doug Ledford <dledford@redhat.com>,
+        Leon Romanovsky <leonro@mellanox.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Yishai Hadas <yishaih@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH rdma-next v1 09/12] IB/mlx5: Register DEVX with mlx5_core
+ to get async events
+Thread-Topic: [PATCH rdma-next v1 09/12] IB/mlx5: Register DEVX with mlx5_core
+ to get async events
+Thread-Index: AQHVJfmSu0XgQnFVQEaPQvnXI+7VUqaquooA
+Date:   Mon, 24 Jun 2019 11:52:09 +0000
+Message-ID: <20190624115206.GB5479@mellanox.com>
+References: <20190618171540.11729-1-leon@kernel.org>
+ <20190618171540.11729-10-leon@kernel.org>
+In-Reply-To: <20190618171540.11729-10-leon@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: BL0PR03CA0009.namprd03.prod.outlook.com
+ (2603:10b6:208:2d::22) To VI1PR05MB4141.eurprd05.prod.outlook.com
+ (2603:10a6:803:4d::16)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=jgg@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [209.213.91.242]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e29ac30a-9254-46d3-a01b-08d6f89a6324
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR05MB5485;
+x-ms-traffictypediagnostic: VI1PR05MB5485:
+x-microsoft-antispam-prvs: <VI1PR05MB5485C235F05417B8E5535829CFE00@VI1PR05MB5485.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5797;
+x-forefront-prvs: 007814487B
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(39860400002)(376002)(346002)(136003)(396003)(199004)(189003)(5660300002)(478600001)(6506007)(53936002)(33656002)(2616005)(6486002)(81156014)(86362001)(14444005)(3846002)(256004)(8676002)(81166006)(7736002)(229853002)(2906002)(446003)(66446008)(11346002)(68736007)(66476007)(6916009)(486006)(66556008)(36756003)(71190400001)(71200400001)(476003)(73956011)(99286004)(64756008)(66946007)(54906003)(76176011)(102836004)(6512007)(1076003)(4744005)(52116002)(386003)(25786009)(6116002)(6246003)(6436002)(316002)(66066001)(14454004)(4326008)(8936002)(186003)(26005)(305945005);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5485;H:VI1PR05MB4141.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: PKEXMpCZjCkzPpqWIMrXwq8FqFBGuDtPLAnaXc0EEJHVWZ+bWQRSGWoEUOPE4QJZmHStReQ3Txg+WmrEEj6+ctB6Wa5jNEfjGbF/ikKpqlhFXDYZh0LaYU/VbiYErUqozXSp7QhnDoad3vXs7mkkBc9j0U4CNDLRtmhuaeqXJgB/7Avp5XVALjsIrnoCFWhjDXYzdy1zWWO0lJR2LyveCmErr0M3Oz3IlY+bkITkghqpzgCPzPklpPJ+Y6NVLeSnLH5OGNqB2IrLunT75w3mnhn1i4KWPTajMHgPpifAnKWuIH8wZPyILegs7gO92V7YmKqQQqRy/aEkKQfmZ9AW/GbO4rT5UydTWmWs87k2xpxFglnEAuGICU9wfVEFOfK/RcgiQQjzW6B/qRtbWhdGlNldxnyd9DQIfKYx79wJwAU=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1F657B3CC5700043B1A9E3388CC60FC5@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <Pine.LNX.4.44L0.1906201544001.1346-100000@iolanthe.rowland.org> <3232861.cjm3rXpEJU@debian64>
-In-Reply-To: <3232861.cjm3rXpEJU@debian64>
-From:   Andrey Konovalov <andreyknvl@google.com>
-Date:   Mon, 24 Jun 2019 13:51:29 +0200
-Message-ID: <CAAeHK+zhcgmBQT=rdHaCMu7XWPz4o1gwzCJQEXiTEW9_iUUauA@mail.gmail.com>
-Subject: Re: KASAN: slab-out-of-bounds Read in p54u_load_firmware_cb
-To:     Christian Lamparter <chunkeey@gmail.com>
-Cc:     Alan Stern <stern@rowland.harvard.edu>,
-        syzbot <syzbot+6d237e74cdc13f036473@syzkaller.appspotmail.com>,
-        Christian Lamparter <chunkeey@googlemail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Kernel development list <linux-kernel@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        linux-wireless@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e29ac30a-9254-46d3-a01b-08d6f89a6324
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jun 2019 11:52:09.4029
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: jgg@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5485
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 20, 2019 at 9:56 PM Christian Lamparter <chunkeey@gmail.com> wrote:
->
-> On Thursday, June 20, 2019 9:46:32 PM CEST Alan Stern wrote:
-> > On Wed, 19 Jun 2019, syzbot wrote:
-> >
-> > > syzbot has found a reproducer for the following crash on:
-> > >
-> > > HEAD commit:    9939f56e usb-fuzzer: main usb gadget fuzzer driver
-> > > git tree:       https://github.com/google/kasan.git usb-fuzzer
-> > > console output: https://syzkaller.appspot.com/x/log.txt?x=135e29faa00000
-> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=df134eda130bb43a
-> > > dashboard link: https://syzkaller.appspot.com/bug?extid=6d237e74cdc13f036473
-> > > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=175d946ea00000
-> > >
-> > > IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> > > Reported-by: syzbot+6d237e74cdc13f036473@syzkaller.appspotmail.com
-> > >
-> > > usb 3-1: Direct firmware load for isl3887usb failed with error -2
-> > > usb 3-1: Firmware not found.
-> > > ==================================================================
-> > > BUG: KASAN: slab-out-of-bounds in p54u_load_firmware_cb.cold+0x97/0x13d
-> > > drivers/net/wireless/intersil/p54/p54usb.c:936
-> > > Read of size 8 at addr ffff8881c9cf7588 by task kworker/1:5/2759
-> > >
-> > > CPU: 1 PID: 2759 Comm: kworker/1:5 Not tainted 5.2.0-rc5+ #11
-> > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-> > > Google 01/01/2011
-> > > Workqueue: events request_firmware_work_func
-> > > Call Trace:
-> > >   __dump_stack lib/dump_stack.c:77 [inline]
-> > >   dump_stack+0xca/0x13e lib/dump_stack.c:113
-> > >   print_address_description+0x67/0x231 mm/kasan/report.c:188
-> > >   __kasan_report.cold+0x1a/0x32 mm/kasan/report.c:317
-> > >   kasan_report+0xe/0x20 mm/kasan/common.c:614
-> > >   p54u_load_firmware_cb.cold+0x97/0x13d
-> > > drivers/net/wireless/intersil/p54/p54usb.c:936
-> > >   request_firmware_work_func+0x126/0x242
-> > > drivers/base/firmware_loader/main.c:785
-> > >   process_one_work+0x905/0x1570 kernel/workqueue.c:2269
-> > >   worker_thread+0x96/0xe20 kernel/workqueue.c:2415
-> > >   kthread+0x30b/0x410 kernel/kthread.c:255
-> > >   ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-> > >
-> > > Allocated by task 1612:
-> > >   save_stack+0x1b/0x80 mm/kasan/common.c:71
-> > >   set_track mm/kasan/common.c:79 [inline]
-> > >   __kasan_kmalloc mm/kasan/common.c:489 [inline]
-> > >   __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:462
-> > >   kmalloc include/linux/slab.h:547 [inline]
-> > >   syslog_print kernel/printk/printk.c:1346 [inline]
-> > >   do_syslog kernel/printk/printk.c:1519 [inline]
-> > >   do_syslog+0x4f4/0x12e0 kernel/printk/printk.c:1493
-> > >   kmsg_read+0x8a/0xb0 fs/proc/kmsg.c:40
-> > >   proc_reg_read+0x1c1/0x280 fs/proc/inode.c:221
-> > >   __vfs_read+0x76/0x100 fs/read_write.c:425
-> > >   vfs_read+0x18e/0x3d0 fs/read_write.c:461
-> > >   ksys_read+0x127/0x250 fs/read_write.c:587
-> > >   do_syscall_64+0xb7/0x560 arch/x86/entry/common.c:301
-> > >   entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> > >
-> > > Freed by task 1612:
-> > >   save_stack+0x1b/0x80 mm/kasan/common.c:71
-> > >   set_track mm/kasan/common.c:79 [inline]
-> > >   __kasan_slab_free+0x130/0x180 mm/kasan/common.c:451
-> > >   slab_free_hook mm/slub.c:1421 [inline]
-> > >   slab_free_freelist_hook mm/slub.c:1448 [inline]
-> > >   slab_free mm/slub.c:2994 [inline]
-> > >   kfree+0xd7/0x280 mm/slub.c:3949
-> > >   syslog_print kernel/printk/printk.c:1405 [inline]
-> > >   do_syslog kernel/printk/printk.c:1519 [inline]
-> > >   do_syslog+0xff3/0x12e0 kernel/printk/printk.c:1493
-> > >   kmsg_read+0x8a/0xb0 fs/proc/kmsg.c:40
-> > >   proc_reg_read+0x1c1/0x280 fs/proc/inode.c:221
-> > >   __vfs_read+0x76/0x100 fs/read_write.c:425
-> > >   vfs_read+0x18e/0x3d0 fs/read_write.c:461
-> > >   ksys_read+0x127/0x250 fs/read_write.c:587
-> > >   do_syscall_64+0xb7/0x560 arch/x86/entry/common.c:301
-> > >   entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> > >
-> > > The buggy address belongs to the object at ffff8881c9cf7180
-> > >   which belongs to the cache kmalloc-1k of size 1024
-> > > The buggy address is located 8 bytes to the right of
-> > >   1024-byte region [ffff8881c9cf7180, ffff8881c9cf7580)
-> > > The buggy address belongs to the page:
-> > > page:ffffea0007273d00 refcount:1 mapcount:0 mapping:ffff8881dac02a00
-> > > index:0x0 compound_mapcount: 0
-> > > flags: 0x200000000010200(slab|head)
-> > > raw: 0200000000010200 dead000000000100 dead000000000200 ffff8881dac02a00
-> > > raw: 0000000000000000 00000000000e000e 00000001ffffffff 0000000000000000
-> > > page dumped because: kasan: bad access detected
-> > >
-> > > Memory state around the buggy address:
-> > >   ffff8881c9cf7480: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> > >   ffff8881c9cf7500: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> > > > ffff8881c9cf7580: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-> > >                        ^
-> > >   ffff8881c9cf7600: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> > >   ffff8881c9cf7680: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> > > ==================================================================
-> >
-> > Isn't this the same as syzkaller bug 200d4bb11b23d929335f ?  Doesn't
-> > the same patch fix it?
-> >
-> I think Kalle hasn't applied it yet? It's still sitting on the patchwork queue:
-> <https://patchwork.kernel.org/patch/10951527/>
+On Tue, Jun 18, 2019 at 08:15:37PM +0300, Leon Romanovsky wrote:
+>  void __mlx5_ib_remove(struct mlx5_ib_dev *dev,
+> diff --git a/drivers/infiniband/hw/mlx5/mlx5_ib.h b/drivers/infiniband/hw=
+/mlx5/mlx5_ib.h
+> index 9cf23ae6324e..556af34b788b 100644
+> +++ b/drivers/infiniband/hw/mlx5/mlx5_ib.h
+> @@ -944,6 +944,13 @@ struct mlx5_ib_pf_eq {
+>  	mempool_t *pool;
+>  };
+> =20
+> +struct mlx5_devx_event_table {
+> +	struct mlx5_nb devx_nb;
+> +	/* serialize updating the event_xa */
+> +	struct mutex event_xa_lock;
+> +	struct xarray event_xa;
+> +};
+> +
+>  struct mlx5_ib_dev {
+>  	struct ib_device		ib_dev;
+>  	struct mlx5_core_dev		*mdev;
+> @@ -994,6 +1001,7 @@ struct mlx5_ib_dev {
+>  	struct mlx5_srq_table   srq_table;
+>  	struct mlx5_async_ctx   async_ctx;
+>  	int			free_port;
+> +	struct mlx5_devx_event_table devx_event_table;
 
-Yes, until this patch is in the tree that is being tested (which is
-based on the usb-linus branch; I update it every few weeks), syzbot
-considers this bug as open.
+I really question if adding all these structs really does anything for
+readability..
 
->
-> Regards,
-> Christian
->
->
+Jason
