@@ -2,65 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0B0251E7C
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 00:43:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB4A751E88
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 00:46:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726495AbfFXWnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 18:43:15 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:35414 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726413AbfFXWnP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 18:43:15 -0400
-Received: by mail-qk1-f194.google.com with SMTP id l128so11088349qke.2
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 15:43:14 -0700 (PDT)
+        id S1727017AbfFXWqD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 18:46:03 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:43782 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726931AbfFXWqD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 18:46:03 -0400
+Received: by mail-qk1-f196.google.com with SMTP id m14so11072653qka.10
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 15:46:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=t0/6oE5A7EF6IPPUS2ghoyC9F+vNCsC4i4eofaA0u7M=;
-        b=jH/iWQ25KNu/8Mda0omnjCCuVgVpwpmDD0swbDnwlkCPcrrYJ3oFqG9B8hwW1D9Wiu
-         LiPJ7dRWe+3B0iS+6BmpSHMSEmK2DGGYexrIYprBGbq0vatPTOZ7qSmwg75rL+M7qKWl
-         EgFyQgeh/34h8hR1e3sObr6WSnZUwB6eUpNwSckxDqBWSpfZCH3czACzih0cPS0vbN4h
-         w7+4mXUEXOSYh3Hve0SZQRBf0Ys1NY7Ee2FoUYMw37Aw8zGNZkQe42gpTM5T1P/YkSOo
-         d/H7HPY+0zex9yHJMkEelssRzmxTOzahSQLOvZyW/FhSyCUlCQzE97XIaqvbSUrub+rY
-         sKJw==
+        bh=l+t11w+lYzgMdf9afpAfNi/wBZxJpJdB0Y+rhM6lHks=;
+        b=1JNiS8o8LLcLGJ7yDeuoGqe7R53WxwUnBJ473OA/Sj94hjFkUtbMZgxLmpjtFcBKa6
+         N8tfCq4i4n89X7x24u4RaZsPtxHqdSZxpQvXnuae5hnCD5wud1xsEgxlwfhTEoVI9cPt
+         g3jQIXuW7CiLlgUVdgWO8zSkn1nQjlMb25O4W634mUf1mJezM/d1gtgwSbKc319j57bs
+         dLGovYfEKNj36SFTmOEAS+n8b5B1My2OgGKfdHQcGOBv6EgC/AuW1Oqplc0bR0zzeUgo
+         jYXXxiIhD1iH9bA0rFt9Qmmx+ThDGH8ng7MqzQSE2+OlYR7eeju/cBxmDLZn9ZaILbBX
+         PPLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=t0/6oE5A7EF6IPPUS2ghoyC9F+vNCsC4i4eofaA0u7M=;
-        b=gNkLz1m3lzHDQdO69Lu2/A3O3l6X+3DZ3OVsGSY5XwC8JBIFgonzw8gTbZ195qUuGY
-         Y3RNVl0fmdT1woahY39Mi04mBEoDAKoxsBxBs7Upz3Pqgg6Z13WfEwMp0B2+pNl52HWr
-         Zv/mjss8oLNwgUdbsfJ61vnJCPDMh0YotoIxt1jtU7VYjL2A/kPj0syIAPe0MtYQEhBY
-         74IazWKxHhM6Uab0BpFg0M5P1QKWvN9WTI6pgNrj5paf+hCAlg26/y1hqw99kAa1UH4f
-         nBcEI2RChqjEoBOryc8nTnVQDPKNjZQtoptfb81H/KJTxDVE0HQ+VB8wWU2wEXxoP9nw
-         fMWQ==
-X-Gm-Message-State: APjAAAXJU0WvaIFGTFWuJ4ikcZVWApp4AEbmqKIEuqOkV7iHDUrEFMR9
-        rebzwM+0VrWVSEXH1295ntFBmw==
-X-Google-Smtp-Source: APXvYqzRusbXNL3h1Vqw8qXYz1QsbWX3h69iMUiJ0+8xgHWj0pCICgidYl6A0Jbs0d+YNcERVFw8xw==
-X-Received: by 2002:a37:a7d2:: with SMTP id q201mr18993979qke.403.1561416194452;
-        Mon, 24 Jun 2019 15:43:14 -0700 (PDT)
+        bh=l+t11w+lYzgMdf9afpAfNi/wBZxJpJdB0Y+rhM6lHks=;
+        b=ZF/pifEyrgA44Kn6mIfOU5T9F7t4SGJI5DHpWWTTjH3dxHGK42LRCD/S+7DzreEBV9
+         ILQCIK5r4tbSU2Xh4cJocSVuOs92cz4Pc+27HNupVKiSk/nQykrpse/vQ/mHiXJKZG6g
+         4k5jHA3feG0MTxu3LzV7dTwOurIXpU4MP/jsKRIET5Y1tNIZ0fUVzBlx94JR8NnmQHtI
+         hOcLzdpASD7Uo2YjXxxcLE7IBTa7L2RIRPrEGe7xiQft5sYL7gmFKEW/I7LrrXV2PoM2
+         +RO34M8p0sx9REJkJiNKhkJ4i/IYS7a0nmw4Guca+jCF5P0rRU59W4kP8JZHPgY64J5l
+         +5Qw==
+X-Gm-Message-State: APjAAAXXN2HD2UX2bQ9TY9JH/llBWFh4wKU+9Ot6fqEL1zGjf3fUHlAV
+        TR2NAHot/KKB/TjHsSXrkIP3Kw==
+X-Google-Smtp-Source: APXvYqx2gLjuzKn7dYRM+5cj5gK6T/0dtP3tloIyQ3TQPgnYyzTA7/groXjMvqklxlRwTCwpzetNWQ==
+X-Received: by 2002:ae9:e608:: with SMTP id z8mr114743476qkf.182.1561416362271;
+        Mon, 24 Jun 2019 15:46:02 -0700 (PDT)
 Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id b203sm6264622qkg.29.2019.06.24.15.43.13
+        by smtp.gmail.com with ESMTPSA id k40sm7384209qta.50.2019.06.24.15.46.00
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 24 Jun 2019 15:43:14 -0700 (PDT)
-Date:   Mon, 24 Jun 2019 15:43:09 -0700
+        Mon, 24 Jun 2019 15:46:02 -0700 (PDT)
+Date:   Mon, 24 Jun 2019 15:45:58 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Andrey Ignatov <rdna@fb.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Takshak Chahande <ctakshak@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        Stanislav Fomichev <sdf@google.com>
-Subject: Re: [PATCH bpf-next] bpftool: Add BPF_F_QUERY_EFFECTIVE support in
- bpftool cgroup [show|tree]
-Message-ID: <20190624154309.5ef3357b@cakuba.netronome.com>
-In-Reply-To: <20190624221558.GA41600@rdna-mbp.dhcp.thefacebook.com>
-References: <20190621223311.1380295-1-ctakshak@fb.com>
-        <6fe292ee-fff0-119c-8524-e25783901167@iogearbox.net>
-        <20190624145111.49176d8e@cakuba.netronome.com>
-        <20190624221558.GA41600@rdna-mbp.dhcp.thefacebook.com>
+To:     Brian Vazquez <brianvv@google.com>
+Cc:     Brian Vazquez <brianvv.kernel@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Stanislav Fomichev <sdf@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Petar Penkov <ppenkov@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [RFC PATCH 2/6] bpf: add BPF_MAP_DUMP command to access more
+ than one entry per call
+Message-ID: <20190624154558.65c31561@cakuba.netronome.com>
+In-Reply-To: <20190621231650.32073-3-brianvv@google.com>
+References: <20190621231650.32073-1-brianvv@google.com>
+        <20190621231650.32073-3-brianvv@google.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -70,32 +71,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 24 Jun 2019 22:16:02 +0000, Andrey Ignatov wrote:
-> Jakub Kicinski <jakub.kicinski@netronome.com> [Mon, 2019-06-24 14:51 -0700]:
-> > This is a cgroup-specific flag, right?  It should be a parameter 
-> > to cgroup show, not a global flag.  Can we please drop this patch 
-> > from the tree?  
-> 
-> Hey Jakub,
-> 
-> I had same thought about cgroup-specific flag while reviewing the patch,
-> but then found out that all flags in bpftool are now global, no mater if
-> they're sub-command-specific or not.
-> 
-> For example, --mapcompat is used only in prog-subcommand, but the option
-> is global; --bpffs is used in prog- and map-subcommands, but the option
-> is global as well, etc (there are more examples).
+On Fri, 21 Jun 2019 16:16:46 -0700, Brian Vazquez wrote:
+> @@ -385,6 +386,14 @@ union bpf_attr {
+>  		__u64		flags;
+>  	};
+>  
+> +	struct { /* struct used by BPF_MAP_DUMP command */
+> +		__u32		map_fd;
 
-I don't think these are equivalent.  BPF_F_QUERY_EFFECTIVE is a flag
-for a syscall corresponding to a subcommand quite clearly.
+There is a hole here, perhaps flags don't have to be 64 bit?
 
-> I agree that limiting the scope of an option is a good idea in the long
-> term and it'd be great to rework all existing options to be available
-> only for corresponding sub-commands, but I don't see how the new `-e`
-> options is different from existing options and why it should be dropped.
-
-Agreed, TBH, but we can't change existing options, people may be using
-them.  Let's drop the patch and make sure we're not making this mistake
-again :)
-
-Thanks!
+> +		__aligned_u64	prev_key;
+> +		__aligned_u64	buf;
+> +		__aligned_u64	buf_len; /* input/output: len of buf */
+> +		__u64		flags;
+> +	} dump;
+> +
+>  	struct { /* anonymous struct used by BPF_PROG_LOAD command */
+>  		__u32		prog_type;	/* one of enum bpf_prog_type */
+>  		__u32		insn_cnt;
