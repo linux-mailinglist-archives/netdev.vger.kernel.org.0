@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F0B85064B
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 11:58:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3A6A50648
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 11:58:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728416AbfFXJ5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 05:57:38 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:41629 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726716AbfFXJ5V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 05:57:21 -0400
-Received: by mail-pl1-f196.google.com with SMTP id m7so6569267pls.8
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 02:57:21 -0700 (PDT)
+        id S1728841AbfFXJ5Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 05:57:24 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:42065 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728835AbfFXJ5X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 05:57:23 -0400
+Received: by mail-pf1-f195.google.com with SMTP id q10so7205992pff.9
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 02:57:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
          :mime-version:content-transfer-encoding;
-        bh=9ZA8Iexrs/y5c8FvffbT362N37zmnH9csKA2fCgK9OY=;
-        b=sQe6giogzLBa/dH0iomMIKj24Xxae1o5CXcwlNLEr4aCXz5rtRlZs9aupKzaMIdkvY
-         7sMAZwHC38n46ukrNZ/XO3/D0dkLBiJW38d8X8U3igxeAG8URsKx1CisrZW56mNwu7LO
-         zf7NJddQOoCZl3whdsxAXSlr0TuvUAc4ORL5gAxdiBgkl4U8P5jlG7SC+XN0UCeoWq9h
-         +Dsd5emWeEgNgdvkj3mNMXnwkCDNSsZhgyuj1PWU3//y23rIFsU9sO4llC/5wq5VnyIC
-         xpUxRNlbu2ly45niU7hA7YcxMIVxHVQXrlPlFdpFEmLw4xwugIx9jahnkV4MlHZ66MAT
-         hq0w==
-X-Gm-Message-State: APjAAAVD7ZuLXb1Kzs62jJG3DEs87X3EPKGfeBUYwfPnnW5ftjSNbzAa
-        G4mEFSl3IGM8kQQT+ehwwzLnRA==
-X-Google-Smtp-Source: APXvYqyhlEtx+PTabYdQPoUQm4v4dfwVYWiWo57Km7Qjwr2ZeSFUr7wTRl5jDUCxv/va9KjpKl64iQ==
-X-Received: by 2002:a17:902:8509:: with SMTP id bj9mr32285512plb.79.1561370240329;
-        Mon, 24 Jun 2019 02:57:20 -0700 (PDT)
+        bh=8liBhKcb39ebbAYg76+t+P2qlg08D2vSZfhU2rq0AYs=;
+        b=LkLTDv3uaAkoCVr872YwP+8UNlihoSW90VbTeydPCwOQHWMgpTgWXrGdqV3lsq/TFg
+         nS6V+hlFfG2D8DSKUt1Albpz8ZH656WGUQ/uZMIwR8w+BjOWEOTdcqamcbaWd8GhM8AG
+         vp/OCZFzVtzcOOAuuxCJZyLjLtU/oxkdf4N3+rRUjAOOlhS0EFMDbCBBEMYtZUCfVbWx
+         W/y6bVhOivJXdJxvyfXM3kS2tcC7M+80jfss3Fl17exlykySgIyraQB7E2brhY7p7HwG
+         n+5axUA4y1pEwPBX5JXOpBmoFVJE/TiS4JyPMO7pJbttSFEwW9UuKypY8aOhRIATAF1b
+         DI5A==
+X-Gm-Message-State: APjAAAVqTWD6PQ1GJIXf20HwnTbXlIaZAtmUsMGYgfbRQqvVK2hUufK3
+        1wrjlTcnxlK+cyOn0ZxNChE5Nu0tSYkiRg==
+X-Google-Smtp-Source: APXvYqyFQrSA1wMPdPgsWifOWQDxpwRq5Ylg5kqketQSIRe779u7+RaIij7d5ol+NsCyDV7NpzMzhw==
+X-Received: by 2002:a17:90a:8a17:: with SMTP id w23mr2129572pjn.139.1561370242621;
+        Mon, 24 Jun 2019 02:57:22 -0700 (PDT)
 Received: from localhost (220-132-236-182.HINET-IP.hinet.net. [220.132.236.182])
-        by smtp.gmail.com with ESMTPSA id x7sm10010802pfm.82.2019.06.24.02.57.19
+        by smtp.gmail.com with ESMTPSA id x128sm18862198pfd.17.2019.06.24.02.57.21
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 24 Jun 2019 02:57:19 -0700 (PDT)
-Date:   Mon, 24 Jun 2019 02:57:19 -0700 (PDT)
-X-Google-Original-Date: Mon, 24 Jun 2019 02:50:25 PDT (-0700)
-Subject:     Re: [PATCH 1/2] net: macb: Fix compilation on systems without COMMON_CLK
-In-Reply-To: <c440e194-dc93-5a3e-7608-710afade9774@microchip.com>
+        Mon, 24 Jun 2019 02:57:22 -0700 (PDT)
+Date:   Mon, 24 Jun 2019 02:57:22 -0700 (PDT)
+X-Google-Original-Date: Mon, 24 Jun 2019 02:57:17 PDT (-0700)
+Subject:     Re: [PATCH 2/2] net: macb: Kconfig: Rename Atmel to Cadence
+In-Reply-To: <0c714db9-a3c1-e89b-8889-e9cdb2ac6c52@microchip.com>
 CC:     davem@davemloft.net, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 From:   Palmer Dabbelt <palmer@sifive.com>
 To:     Nicolas.Ferre@microchip.com
-Message-ID: <mhng-ac6d3a1f-07a8-40b5-a4ad-93e529ecc206@palmer-si-x1e>
+Message-ID: <mhng-87f5f418-acd4-4a29-b82e-6dc574a4828a@palmer-si-x1e>
 Mime-Version: 1.0 (MHng)
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
@@ -50,134 +50,96 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 24 Jun 2019 02:40:21 PDT (-0700), Nicolas.Ferre@microchip.com wrote:
+On Mon, 24 Jun 2019 02:49:16 PDT (-0700), Nicolas.Ferre@microchip.com wrote:
 > On 24/06/2019 at 08:16, Palmer Dabbelt wrote:
 >> External E-Mail
 >> 
 >> 
->> The patch to add support for the FU540-C000 added a dependency on
->> COMMON_CLK, but didn't express that via Kconfig.  This fixes the build
->> failure by adding CONFIG_MACB_FU540, which depends on COMMON_CLK and
->> conditionally enables the FU540-C000 support.
+>> When touching the Kconfig for this driver I noticed that both the
+>> Kconfig help text and a comment referred to this being an Atmel driver.
+>> As far as I know, this is a Cadence driver.  The fix is just
 > 
-> Let's try to limit the use of  #ifdef's throughout the code. We are 
-> using them in this driver but only for the hot paths and things that 
-> have an impact on performance. I don't think it's the case here: so 
-> please find another option => NACK.
+> Indeed: was written and then maintained by Atmel (now Microchip) for 
+> years... So I would say that more than a "Cadence driver" it's a driver 
+> that applies to a Cadence peripheral.
+> 
+> I won't hold the patch just for this as the patch makes perfect sense, 
+> but would love that it's been highlighted...
 
-OK.  Would you accept adding a Kconfig dependency of the generic MACB driver on
-COMMON_CLK, as suggested in the cover letter?
+OK, I don't mind changing it.  Does this look OK?  I have to submit a v2 anyway
+for the first patch.
+
+Author: Palmer Dabbelt <palmer@sifive.com>
+Date:   Sun Jun 23 23:04:14 2019 -0700
+
+    net: macb: Kconfig: Rename Atmel to Cadence
+
+    The help text makes it look like NET_VENDOR_CADENCE enables support for
+    Atmel devices, when in reality it's a driver written by Atmel that
+    supports Cadence devices.  This may confuse users that have this device
+    on a non-Atmel SoC.
+
+    The fix is just s/Atmel/Cadence/, but I did go and re-wrap the Kconfig
+    help text as that change caused it to go over 80 characters.
+
+    Signed-off-by: Palmer Dabbelt <palmer@sifive.com>
+
+diff --git a/drivers/net/ethernet/cadence/Kconfig b/drivers/net/ethernet/cadence/Kconfig
+index 74ee2bfd2369..29b6132b418e 100644
+--- a/drivers/net/ethernet/cadence/Kconfig
++++ b/drivers/net/ethernet/cadence/Kconfig
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ #
+-# Atmel device configuration
++# Cadence device configuration
+ #
+
+ config NET_VENDOR_CADENCE
+@@ -13,8 +13,8 @@ config NET_VENDOR_CADENCE
+          If unsure, say Y.
+
+          Note that the answer to this question doesn't directly affect the
+-         kernel: saying N will just cause the configurator to skip all
+-         the remaining Atmel network card questions. If you say Y, you will be
++         kernel: saying N will just cause the configurator to skip all the
++         remaining Cadence network card questions. If you say Y, you will be
+          asked for your specific card in the following questions.
+
+ if NET_VENDOR_CADENCE
 
 > 
->> I've built this with a powerpc allyesconfig (which pointed out the bug)
->> and on RISC-V, manually checking to ensure the code was built.  I
->> haven't even booted the resulting kernels.
+>> s/Atmel/Cadence/, but I did go and re-wrap the Kconfig help text as that
+>> change caused it to go over 80 characters.
 >> 
->> Fixes: c218ad559020 ("macb: Add support for SiFive FU540-C000")
 >> Signed-off-by: Palmer Dabbelt <palmer@sifive.com>
 >> ---
->>   drivers/net/ethernet/cadence/Kconfig     | 11 +++++++++++
->>   drivers/net/ethernet/cadence/macb_main.c | 12 ++++++++++++
->>   2 files changed, 23 insertions(+)
+>>   drivers/net/ethernet/cadence/Kconfig | 6 +++---
+>>   1 file changed, 3 insertions(+), 3 deletions(-)
 >> 
 >> diff --git a/drivers/net/ethernet/cadence/Kconfig b/drivers/net/ethernet/cadence/Kconfig
->> index 1766697c9c5a..74ee2bfd2369 100644
+>> index 74ee2bfd2369..29b6132b418e 100644
 >> --- a/drivers/net/ethernet/cadence/Kconfig
 >> +++ b/drivers/net/ethernet/cadence/Kconfig
->> @@ -40,6 +40,17 @@ config MACB_USE_HWSTAMP
->>   	---help---
->>   	  Enable IEEE 1588 Precision Time Protocol (PTP) support for MACB.
+>> @@ -1,6 +1,6 @@
+>>   # SPDX-License-Identifier: GPL-2.0-only
+>>   #
+>> -# Atmel device configuration
+>> +# Cadence device configuration
+>>   #
 >>   
->> +config MACB_FU540
->> +	bool "Enable support for the SiFive FU540 clock controller"
->> +	depends on MACB && COMMON_CLK
->> +	default y
->> +	---help---
->> +	  Enable support for the MACB/GEM clock controller on the SiFive
->> +	  FU540-C000.  This device is necessary for switching between 10/100
->> +	  and gigabit modes on the FU540-C000 SoC, without which it is only
->> +	  possible to bring up the Ethernet link in whatever mode the
->> +	  bootloader probed.
->> +
->>   config MACB_PCI
->>   	tristate "Cadence PCI MACB/GEM support"
->>   	depends on MACB && PCI && COMMON_CLK
->> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
->> index c545c5b435d8..a903dfdd4183 100644
->> --- a/drivers/net/ethernet/cadence/macb_main.c
->> +++ b/drivers/net/ethernet/cadence/macb_main.c
->> @@ -41,6 +41,7 @@
->>   #include <linux/pm_runtime.h>
->>   #include "macb.h"
+>>   config NET_VENDOR_CADENCE
+>> @@ -13,8 +13,8 @@ config NET_VENDOR_CADENCE
+>>   	  If unsure, say Y.
 >>   
->> +#ifdef CONFIG_MACB_FU540
->>   /* This structure is only used for MACB on SiFive FU540 devices */
->>   struct sifive_fu540_macb_mgmt {
->>   	void __iomem *reg;
->> @@ -49,6 +50,7 @@ struct sifive_fu540_macb_mgmt {
->>   };
+>>   	  Note that the answer to this question doesn't directly affect the
+>> -	  kernel: saying N will just cause the configurator to skip all
+>> -	  the remaining Atmel network card questions. If you say Y, you will be
+>> +	  kernel: saying N will just cause the configurator to skip all the
+>> +	  remaining Cadence network card questions. If you say Y, you will be
+>>   	  asked for your specific card in the following questions.
 >>   
->>   static struct sifive_fu540_macb_mgmt *mgmt;
->> +#endif
->>   
->>   #define MACB_RX_BUFFER_SIZE	128
->>   #define RX_BUFFER_MULTIPLE	64  /* bytes */
->> @@ -3956,6 +3958,7 @@ static int at91ether_init(struct platform_device *pdev)
->>   	return 0;
->>   }
->>   
->> +#ifdef CONFIG_MACB_FU540
->>   static unsigned long fu540_macb_tx_recalc_rate(struct clk_hw *hw,
->>   					       unsigned long parent_rate)
->>   {
->> @@ -4056,7 +4059,9 @@ static int fu540_c000_init(struct platform_device *pdev)
->>   
->>   	return macb_init(pdev);
->>   }
->> +#endif
->>   
->> +#ifdef CONFIG_MACB_FU540
->>   static const struct macb_config fu540_c000_config = {
->>   	.caps = MACB_CAPS_GIGABIT_MODE_AVAILABLE | MACB_CAPS_JUMBO |
->>   		MACB_CAPS_GEM_HAS_PTP,
->> @@ -4065,6 +4070,7 @@ static const struct macb_config fu540_c000_config = {
->>   	.init = fu540_c000_init,
->>   	.jumbo_max_len = 10240,
->>   };
->> +#endif
->>   
->>   static const struct macb_config at91sam9260_config = {
->>   	.caps = MACB_CAPS_USRIO_HAS_CLKEN | MACB_CAPS_USRIO_DEFAULT_IS_MII_GMII,
->> @@ -4155,7 +4161,9 @@ static const struct of_device_id macb_dt_ids[] = {
->>   	{ .compatible = "cdns,emac", .data = &emac_config },
->>   	{ .compatible = "cdns,zynqmp-gem", .data = &zynqmp_config},
->>   	{ .compatible = "cdns,zynq-gem", .data = &zynq_config },
->> +#ifdef CONFIG_MACB_FU540
->>   	{ .compatible = "sifive,fu540-macb", .data = &fu540_c000_config },
->> +#endif
->>   	{ /* sentinel */ }
->>   };
->>   MODULE_DEVICE_TABLE(of, macb_dt_ids);
->> @@ -4363,7 +4371,9 @@ static int macb_probe(struct platform_device *pdev)
->>   
->>   err_disable_clocks:
->>   	clk_disable_unprepare(tx_clk);
->> +#ifdef CONFIG_MACB_FU540
->>   	clk_unregister(tx_clk);
->> +#endif
->>   	clk_disable_unprepare(hclk);
->>   	clk_disable_unprepare(pclk);
->>   	clk_disable_unprepare(rx_clk);
->> @@ -4398,7 +4408,9 @@ static int macb_remove(struct platform_device *pdev)
->>   		pm_runtime_dont_use_autosuspend(&pdev->dev);
->>   		if (!pm_runtime_suspended(&pdev->dev)) {
->>   			clk_disable_unprepare(bp->tx_clk);
->> +#ifdef CONFIG_MACB_FU540
->>   			clk_unregister(bp->tx_clk);
->> +#endif
->>   			clk_disable_unprepare(bp->hclk);
->>   			clk_disable_unprepare(bp->pclk);
->>   			clk_disable_unprepare(bp->rx_clk);
+>>   if NET_VENDOR_CADENCE
 >> 
 > 
 > 
