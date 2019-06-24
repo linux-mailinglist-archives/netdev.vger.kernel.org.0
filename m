@@ -2,184 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A0E31519AD
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 19:36:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48259519B0
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 19:37:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732534AbfFXRgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 13:36:23 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:64354 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732521AbfFXRgW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 13:36:22 -0400
-Received: from localhost (junagarh.blr.asicdesigners.com [10.193.185.238])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id x5OHaIn9014339;
-        Mon, 24 Jun 2019 10:36:19 -0700
-From:   Raju Rangoju <rajur@chelsio.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     nirranjan@chelsio.com, dt@chelsio.com, rajur@chelsio.com
-Subject: [PATCH v3 net-next 4/4] cxgb4: Add MPS refcounting for alloc/free mac filters
-Date:   Mon, 24 Jun 2019 23:05:35 +0530
-Message-Id: <20190624173535.12572-5-rajur@chelsio.com>
-X-Mailer: git-send-email 2.12.0
-In-Reply-To: <20190624173535.12572-1-rajur@chelsio.com>
-References: <20190624173535.12572-1-rajur@chelsio.com>
+        id S1732521AbfFXRh2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 13:37:28 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:42253 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729502AbfFXRh2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 13:37:28 -0400
+Received: by mail-pl1-f193.google.com with SMTP id ay6so7270573plb.9
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 10:37:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RwuuIvtxcBljmc7PFWojSi2N+7tyjtOMabnfff7jpmo=;
+        b=wNEKXNOWP5PlYCgptKgZXfJolBfYoJLb1MoczYQas9THpCa1SKApTdEiaM93xCZOaI
+         6fR/W3O+LArPZ8Z/WwDDGsIFgOmNiwN8s+DW6eHNwCdT8Y5YQDImB3U9OUT/hYJ8w4xx
+         +4/t3TQu0kbcQ9kz4GbtAMc+CYKvmKJXZB62kYI2uaZhkS5rgnufTkHAxbap3eKbLjNe
+         N66ugUnMkY9ARFqXkAxle6zQpnfLDNtGq88tkYBSrUG/4eRV7ypx1n6l03bkeZlWRgi5
+         rOaJy5hrS4jRer/8YsmvumqcpqB/gcnilGjvkNB75QlxxCrK30CewEFybxMRFmLycIrO
+         hhBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RwuuIvtxcBljmc7PFWojSi2N+7tyjtOMabnfff7jpmo=;
+        b=LSRotEu5mKe2zKReqhyt/EuDd3LY61A2elg9YRiPqQe3j593BOghDjfPCtpYrHqUgk
+         iyqKvYonz5aqCOBMtgfSgUxrwWw00E7aFsgS0/Lxqprtf1OJgatCRUcOWpiNim+/bnp7
+         4ZVV+2TiTN6vz3hQe4c+O/pA2T8scbtaARDTbNC2tjmeU6IQyapxAjwK8fDXL6YpA8gO
+         kuw0mtAOIUbdEHfcaFhTKIXMk5/7RjmTAPb5fESgJeDK1jVFvtHLFeQKOpks0vEBn1b9
+         xJGXQ9q4tmpCtTM0sYKVznkVzye7WRtPnOBm2YdoOYAvslnzMndDdOIzlt37eFqWSUid
+         wFPQ==
+X-Gm-Message-State: APjAAAU+XpyRXTmiUWaJfkebI4cSYDkeoJaBtNQb9UDP8QJaLPmzWQKe
+        YJ4cff+xBVkwAGj0cHx5EBSM919YNB+wP0b3/p+ODRrgwvg=
+X-Google-Smtp-Source: APXvYqywWCSSedYTgwqIkJyMW8oZCbox9RzzBLyFvc25sU21urptslg5Ui+b5r9UxivbJusrk7t8rPQnHZSGo8fpQg4=
+X-Received: by 2002:a17:902:b944:: with SMTP id h4mr24520563pls.179.1561397846032;
+ Mon, 24 Jun 2019 10:37:26 -0700 (PDT)
+MIME-Version: 1.0
+References: <CAKwvOdk9yxnO_2yDwuG8ECw2o8kP=w8pvdbCqDuwO4_03rj5gw@mail.gmail.com>
+ <20190624.100609.1416082266723674267.davem@davemloft.net> <CAKwvOdmd2AooQrpPhBVhcRHGNsMoGFiXSyBA4_aBf7=oVeOx1g@mail.gmail.com>
+ <20190624.102212.4398258272798722.davem@davemloft.net>
+In-Reply-To: <20190624.102212.4398258272798722.davem@davemloft.net>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Mon, 24 Jun 2019 10:37:14 -0700
+Message-ID: <CAKwvOdkqE_RVosXAe9ULePR8A37CHh6+JtDMaRAghUA41Y_+yg@mail.gmail.com>
+Subject: Re: [PATCH net v2 1/2] ipv6: constify rt6_nexthop()
+To:     David Miller <davem@davemloft.net>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc:     netdev@vger.kernel.org, kbuild test robot <lkp@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds reference counting support for
-alloc/free mac filters
+On Mon, Jun 24, 2019 at 10:22 AM David Miller <davem@davemloft.net> wrote:
+>
+> From: Nick Desaulniers <ndesaulniers@google.com>
+> Date: Mon, 24 Jun 2019 10:17:03 -0700
+>
+> > On Mon, Jun 24, 2019 at 10:06 AM David Miller <davem@davemloft.net> wrote:
+> >> And you mean just changing to 'const' fixes something, how?
+> >
+> > See the warning in the above link (assuming now you have access).
+> > Assigning a non-const variable the result of a function call that
+> > returns const discards the const qualifier.
+>
+> Ok thanks for clarifying.
+>
+> However I was speaking in terms of this fixing a functional bug rather
+> than a loss of const warning.
 
-Signed-off-by: Raju Rangoju <rajur@chelsio.com>
----
- drivers/net/ethernet/chelsio/cxgb4/cxgb4.h      |  6 +++
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c | 12 +++--
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_mps.c  | 72 +++++++++++++++++++++++++
- 3 files changed, 87 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-index 6260240743d5..1fbb640e896a 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-@@ -1915,6 +1915,12 @@ int cxgb4_change_mac(struct port_info *pi, unsigned int viid,
- 		     int *tcam_idx, const u8 *addr,
- 		     bool persistent, u8 *smt_idx);
- 
-+int cxgb4_alloc_mac_filt(struct adapter *adap, unsigned int viid,
-+			 bool free, unsigned int naddr,
-+			 const u8 **addr, u16 *idx,
-+			 u64 *hash, bool sleep_ok);
-+int cxgb4_free_mac_filt(struct adapter *adap, unsigned int viid,
-+			unsigned int naddr, const u8 **addr, bool sleep_ok);
- int cxgb4_init_mps_ref_entries(struct adapter *adap);
- void cxgb4_free_mps_ref_entries(struct adapter *adap);
- int cxgb4_alloc_encap_mac_filt(struct adapter *adap, unsigned int viid,
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-index 1520e5294289..b08efc48d42f 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-@@ -366,13 +366,19 @@ static int cxgb4_mac_sync(struct net_device *netdev, const u8 *mac_addr)
- 	int ret;
- 	u64 mhash = 0;
- 	u64 uhash = 0;
-+	/* idx stores the index of allocated filters,
-+	 * its size should be modified based on the number of
-+	 * MAC addresses that we allocate filters for
-+	 */
-+
-+	u16 idx[1] = {};
- 	bool free = false;
- 	bool ucast = is_unicast_ether_addr(mac_addr);
- 	const u8 *maclist[1] = {mac_addr};
- 	struct hash_mac_addr *new_entry;
- 
--	ret = t4_alloc_mac_filt(adap, adap->mbox, pi->viid, free, 1, maclist,
--				NULL, ucast ? &uhash : &mhash, false);
-+	ret = cxgb4_alloc_mac_filt(adap, pi->viid, free, 1, maclist,
-+				   idx, ucast ? &uhash : &mhash, false);
- 	if (ret < 0)
- 		goto out;
- 	/* if hash != 0, then add the addr to hash addr list
-@@ -410,7 +416,7 @@ static int cxgb4_mac_unsync(struct net_device *netdev, const u8 *mac_addr)
- 		}
- 	}
- 
--	ret = t4_free_mac_filt(adap, adap->mbox, pi->viid, 1, maclist, false);
-+	ret = cxgb4_free_mac_filt(adap, pi->viid, 1, maclist, false);
- 	return ret < 0 ? -EINVAL : 0;
- }
- 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_mps.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_mps.c
-index 067217c6ca05..b1a073eea60b 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_mps.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_mps.c
-@@ -3,6 +3,31 @@
- 
- #include "cxgb4.h"
- 
-+static int cxgb4_mps_ref_dec_by_mac(struct adapter *adap,
-+				    const u8 *addr, const u8 *mask)
-+{
-+	u8 bitmask[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
-+	struct mps_entries_ref *mps_entry, *tmp;
-+	int ret = -EINVAL;
-+
-+	spin_lock_bh(&adap->mps_ref_lock);
-+	list_for_each_entry_safe(mps_entry, tmp, &adap->mps_ref, list) {
-+		if (ether_addr_equal(mps_entry->addr, addr) &&
-+		    ether_addr_equal(mps_entry->mask, mask ? mask : bitmask)) {
-+			if (!refcount_dec_and_test(&mps_entry->refcnt)) {
-+				spin_unlock_bh(&adap->mps_ref_lock);
-+				return -EBUSY;
-+			}
-+			list_del(&mps_entry->list);
-+			kfree(mps_entry);
-+			ret = 0;
-+			break;
-+		}
-+	}
-+	spin_unlock_bh(&adap->mps_ref_lock);
-+	return ret;
-+}
-+
- static int cxgb4_mps_ref_dec(struct adapter *adap, u16 idx)
- {
- 	struct mps_entries_ref *mps_entry, *tmp;
-@@ -54,6 +79,53 @@ static int cxgb4_mps_ref_inc(struct adapter *adap, const u8 *mac_addr,
- 	return ret;
- }
- 
-+int cxgb4_free_mac_filt(struct adapter *adap, unsigned int viid,
-+			unsigned int naddr, const u8 **addr, bool sleep_ok)
-+{
-+	int ret, i;
-+
-+	for (i = 0; i < naddr; i++) {
-+		if (!cxgb4_mps_ref_dec_by_mac(adap, addr[i], NULL)) {
-+			ret = t4_free_mac_filt(adap, adap->mbox, viid,
-+					       1, &addr[i], sleep_ok);
-+			if (ret < 0)
-+				return ret;
-+		}
-+	}
-+
-+	/* return number of filters freed */
-+	return naddr;
-+}
-+
-+int cxgb4_alloc_mac_filt(struct adapter *adap, unsigned int viid,
-+			 bool free, unsigned int naddr, const u8 **addr,
-+			 u16 *idx, u64 *hash, bool sleep_ok)
-+{
-+	int ret, i;
-+
-+	ret = t4_alloc_mac_filt(adap, adap->mbox, viid, free,
-+				naddr, addr, idx, hash, sleep_ok);
-+	if (ret < 0)
-+		return ret;
-+
-+	for (i = 0; i < naddr; i++) {
-+		if (idx[i] != 0xffff) {
-+			if (cxgb4_mps_ref_inc(adap, addr[i], idx[i], NULL)) {
-+				ret = -ENOMEM;
-+				goto error;
-+			}
-+		}
-+	}
-+
-+	goto out;
-+error:
-+	cxgb4_free_mac_filt(adap, viid, naddr, addr, sleep_ok);
-+
-+out:
-+	/* Returns a negative error number or the number of filters allocated */
-+	return ret;
-+}
-+
- int cxgb4_update_mac_filt(struct port_info *pi, unsigned int viid,
- 			  int *tcam_idx, const u8 *addr,
- 			  bool persistent, u8 *smt_idx)
+The author stated that this patch was no functional change.  Nicolas,
+it can be helpful to include compiler warnings in the commit message
+when sending warning fixes, but it's not a big deal.  Thanks for
+sending the patches.
 -- 
-2.12.0
-
+Thanks,
+~Nick Desaulniers
