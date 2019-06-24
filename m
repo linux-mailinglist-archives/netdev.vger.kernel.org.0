@@ -2,152 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A00EC518CB
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 18:38:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D93CF518DE
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 18:41:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729143AbfFXQir (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 12:38:47 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:42653 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727165AbfFXQir (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 12:38:47 -0400
-Received: by mail-qt1-f195.google.com with SMTP id s15so15119505qtk.9
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 09:38:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=x5ur6j0Wd7tvFapbU5tFsrS0NC4M1KOOu737VXA4wPQ=;
-        b=bA6QoiKike1D8v2DlowevmdxheD1x613pQCdLLhTdn3uoAI7jR+F8tMl5yhUDDplaZ
-         lBF8do8d6BG6f1jnfKt2Ujwgd8peEklH0fghfld8ZyN+osvoL3iyAetE9wtaBjmSgGB9
-         IduRvM8SLDEkthrSRFg9f6COgKYZeNXGAxEi5gRy9Mqt0FsNtpHN+pe5b9/QkFnMsuXG
-         BE14rYN3ZbnZ2WF7DWxwDa+pSRmiN+vnnwNDX2+spcCAIsr69klwBNukTJ1K4c4pS6Pj
-         gt1WG6buqvdsSklUNEoYTLD5f7ziPfoNYYdK0xSZorsEKWz5W7ZjhKwF4Q+zxhC1YZmW
-         rX1w==
+        id S1731403AbfFXQlT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 12:41:19 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:37530 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726700AbfFXQlT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 12:41:19 -0400
+Received: by mail-qk1-f193.google.com with SMTP id d15so10238206qkl.4;
+        Mon, 24 Jun 2019 09:41:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=x5ur6j0Wd7tvFapbU5tFsrS0NC4M1KOOu737VXA4wPQ=;
-        b=JBiU5uDD9tP9GoB9Fi5IU6sbNwjfb/wSylXPm04DAfqSKDTBO8O9UDNo3js/YqPTGB
-         fhHmTx7FBIFtkOgWVLfnIMy+iCiAM87TgTlxg8Bkt65IlMgyMIXRwNVY/4IW3bjiB0L7
-         A6m/p8psrBQmizKZ3M3e3KCL2QMhOhRhnw2hGjSdR1m+moLTiAJoV2NWHqO8Ucb8B7G/
-         MGZnIQJupmLoD8BlPR8+akrRkQYer6aG3AmyMf0Iw02sz7hGbFZr1QVmFyyrxFwccP1L
-         wS/GdD4m1Z9edKru/Cky2Q4kDhSoYbDYFBjQQgcmnKVlWs6p1mbefD2hgQ5+dyY6DkPA
-         G2Cw==
-X-Gm-Message-State: APjAAAVdip9BDCe3bvTXf7kas0ENFnt7O8EgeAhEXhgfzIXEUnG8Vpwk
-        UIlsAyTLZdxW4cWRyFDJn2MqoxfwlGYAQeW15Zo=
-X-Google-Smtp-Source: APXvYqwUeLpEt7jSZ0F/sP8YATIou4qYZjl1x3PExYAROBUJb3x/kvfovm68e61e+2l+IlTNTZj8twoUg1mv1GpQR3Q=
-X-Received: by 2002:a0c:9e02:: with SMTP id p2mr57495037qve.150.1561394326065;
- Mon, 24 Jun 2019 09:38:46 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=UdA6Y6qkEPNcox/R4AD5p5PdgoW5IX8dJGvSgmjWmkg=;
+        b=JhxxntTYearder/a/p+OquDHNuX8jeZ9N2/zYjAaTHici1QdHNF3fXDeq+Qdy/ZELO
+         L28sxhlC4z73NiXjlOsmiGjIcgJxbK/4MBgu38/p6eIT5eTdF9nzIA6jlWhEF3TifzWE
+         LK70Fmoxgz0yWkXHzS4INQEof6R+A2BE9JX8Y2uvjVqkexfMaMendyllHIMS7k6eYaPp
+         QEp1Qa1KoKtTbyeCKaGp5HLl1TP2iS+haRKQkqIsq453Arb2D/ifMTObojJlN5VzUNSi
+         GJQzL2MnimDz+k/Wkv9t6LoyanZlY3neCtq5cmbLIOUFpPUiiIXyQK0hxYBDw/0YTI43
+         XuQw==
+X-Gm-Message-State: APjAAAWs0IPTFOKO2up/cHi5MamuliTC1GqqtjYWAFnZBg3hOJKTuiKm
+        F2r/jeRQD2cVK3ykHHr8HKL3ZQgvbjepAP95O54=
+X-Google-Smtp-Source: APXvYqx9IXxZ67+F4onDygsWo++RwTBrZyAF3TvR7CC3NoZfdYBTRnVe65OvdwgLfjKt586ottXwhlgpI1RplTtFttg=
+X-Received: by 2002:a05:620a:12db:: with SMTP id e27mr111628534qkl.352.1561394477622;
+ Mon, 24 Jun 2019 09:41:17 -0700 (PDT)
 MIME-Version: 1.0
-References: <156125626076.5209.13424524054109901554.stgit@alrua-x1>
-In-Reply-To: <156125626076.5209.13424524054109901554.stgit@alrua-x1>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 24 Jun 2019 09:38:35 -0700
-Message-ID: <CAEf4BzYFCAp7yUU80ia=C5ywDBgepeaMmVPJW8VG4gLUT=ht=A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 0/3] xdp: Allow lookup into devmaps before redirect
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Networking <netdev@vger.kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
+References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
+ <a94676381a5ca662c848f7a725562f721c43ce76.camel@sipsolutions.net>
+ <CAK8P3a0kV-i7BJJ2X6C=5n65rSGfo8fUiC4J_G-+M8EctYKbkg@mail.gmail.com>
+ <fc0d08912bc10ad089eb74034726308375279130.camel@redhat.com>
+ <36bca57c999f611353fd9741c55bb2a7@codeaurora.org> <153fafb91267147cf22e2bf102dd822933ec823a.camel@redhat.com>
+ <CAK8P3a2Y+tcL1-V57dtypWHndNT3eDJdcKj29c_v+k8o1HHQig@mail.gmail.com>
+ <f4249aa5f5acdd90275eda35aa16f3cfb29d29be.camel@redhat.com>
+ <CAK8P3a2nzZKtshYfomOOSYkqx5HdU15Wr9b+3va0B1euNhFOAg@mail.gmail.com>
+ <dbb32f185d2c3a654083ee0a7188379e1f88d899.camel@sipsolutions.net>
+ <d533b708-c97a-710d-1138-3ae79107f209@linaro.org> <abdfc6b3a9981bcdef40f85f5442a425ce109010.camel@sipsolutions.net>
+ <db34aa39-6cf1-4844-1bfe-528e391c3729@linaro.org>
+In-Reply-To: <db34aa39-6cf1-4844-1bfe-528e391c3729@linaro.org>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 24 Jun 2019 18:40:57 +0200
+Message-ID: <CAK8P3a1ixL9ZjYz=pWTxvMfeD89S6QxSeHt9ZCL9dkCNV5pMHQ@mail.gmail.com>
+Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
+To:     Alex Elder <elder@linaro.org>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        Dan Williams <dcbw@redhat.com>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        abhishek.esse@gmail.com, Ben Chan <benchan@google.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        cpratapa@codeaurora.org, David Miller <davem@davemloft.net>,
+        DTML <devicetree@vger.kernel.org>,
+        Eric Caruso <ejcaruso@google.com>, evgreen@chromium.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-soc@vger.kernel.org, Networking <netdev@vger.kernel.org>,
+        syadagir@codeaurora.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jun 22, 2019 at 7:19 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
+On Mon, Jun 24, 2019 at 6:21 PM Alex Elder <elder@linaro.org> wrote:
+> On 6/18/19 2:03 PM, Johannes Berg wrote:
 >
-> When using the bpf_redirect_map() helper to redirect packets from XDP, th=
-e eBPF
-> program cannot currently know whether the redirect will succeed, which ma=
-kes it
-> impossible to gracefully handle errors. To properly fix this will probabl=
-y
-> require deeper changes to the way TX resources are allocated, but one thi=
-ng that
-> is fairly straight forward to fix is to allow lookups into devmaps, so pr=
-ograms
-> can at least know when a redirect is *guaranteed* to fail because there i=
-s no
-> entry in the map. Currently, programs work around this by keeping a shado=
-w map
-> of another type which indicates whether a map index is valid.
+> > Really there are two possible ways (and they intersect to some extent).
+> >
+> > One is the whole multi-function device, where a single WWAN device is
+> > composed of channels offered by actually different drivers, e.g. for a
+> > typical USB device you might have something like cdc_ether and the
+> > usb_wwan TTY driver. In this way, we need to "compose" the WWAN device
+> > similarly, e.g. by using the underlying USB device "struct device"
+> > pointer to tie it together.
 >
-> This series contains two changes that are complementary ways to fix this =
-issue:
+> I *think* this model makes the most sense.  But at this point
+> it would take very little to convince me otherwise...  (And then
+> I saw Arnd's message advocating the other one, unfortunately...)
 >
-> - Moving the map lookup into the bpf_redirect_map() helper (and caching t=
-he
->   result), so the helper can return an error if no value is found in the =
-map.
->   This includes a refactoring of the devmap and cpumap code to not care a=
-bout
->   the index on enqueue.
+> > The other is something like IPA or the Intel modem driver, where the
+> > device is actually a single (e.g. PCIe) device and just has a single
+> > driver, but that single driver offers different channels.
 >
-> - Allowing regular lookups into devmaps from eBPF programs, using the rea=
-d-only
->   flag to make sure they don't change the values.
->
-> The performance impact of the series is negligible, in the sense that I c=
-annot
-> measure it because the variance between test runs is higher than the diff=
-erence
-> pre/post series.
->
-> Changelog:
->
-> v5:
->   - Rebase on latest bpf-next.
->   - Update documentation for bpf_redirect_map() with the new meaning of f=
-lags.
->
-> v4:
->   - Fix a few nits from Andrii
->   - Lose the #defines in bpf.h and just compare the flags argument direct=
-ly to
->     XDP_TX in bpf_xdp_redirect_map().
->
-> v3:
->   - Adopt Jonathan's idea of using the lower two bits of the flag value a=
-s the
->     return code.
->   - Always do the lookup, and cache the result for use in xdp_do_redirect=
-(); to
->     achieve this, refactor the devmap and cpumap code to get rid the bitm=
-ap for
->     selecting which devices to flush.
->
-> v2:
->   - For patch 1, make it clear that the change works for any map type.
->   - For patch 2, just use the new BPF_F_RDONLY_PROG flag to make the retu=
-rn
->     value read-only.
->
-> ---
->
-> Toke H=C3=B8iland-J=C3=B8rgensen (3):
->       devmap/cpumap: Use flush list instead of bitmap
->       bpf_xdp_redirect_map: Perform map lookup in eBPF helper
->       devmap: Allow map lookups from eBPF
->
->
->  include/linux/filter.h   |    1
->  include/uapi/linux/bpf.h |    7 ++-
->  kernel/bpf/cpumap.c      |  106 ++++++++++++++++++++--------------------=
----
->  kernel/bpf/devmap.c      |  113 ++++++++++++++++++++++------------------=
-------
->  kernel/bpf/verifier.c    |    7 +--
->  net/core/filter.c        |   29 +++++-------
->  6 files changed, 123 insertions(+), 140 deletions(-)
->
+> What I don't like about this is that it's more monolithic.  It
+> seems better to have the low-level IPA or Intel modem driver (or
+> any other driver that can support communication between the AP
+> and WWAN device) present communication paths that other function-
+> specific drivers can attach to and use.
 
+I did not understand Johannes description as two competing models
+for the same code, but rather two kinds of existing hardware that
+a new driver system would have to deal with.
 
-Looks like you forgot to add my Acked-by's for your patches?
+I was trying to simplify it to just having the second model, by adding
+a hack to support the first, but my view was rather unpopular so
+far, so if everyone agrees on one way to do it, don't worry about me ;-)
+
+> > Now, it's not clear to me where IPA actually falls, because so far we've
+> > been talking about the IPA driver only as providing *netdevs*, not any
+> > control channels, so I'm not actually sure where the control channel is.
+>
+> There is user space code that handles all of this, and as far as I
+> can tell, parts of it will always remain proprietary.
+
+Two replies on this:
+
+- to answer Johannes question, my understanding is that the interface
+  between kernel and firmware/hardware for IPA has a single 'struct
+  device' that is used for both the data and the control channels,
+  rather than having a data channel and an independent control device,
+  so this falls into the same category as the Intel one (please correct
+  me on that)
+
+- The user space being proprietary is exactly what we need to avoid
+  with the wwan subsystem. We need to be able to use the same
+  method for setting up Intel, Qualcomm, Samsung, Unisoc or
+  Hisilicon modems or anything else that hooks into the subsystem,
+  and support that in network manager as well as the Android
+  equivalent.
+  If Qualcomm wants to provide their own proprietary user space
+  solution, we can't stop them, but then that should also work on
+  all the others unless they intentionally break it. ;-)
+
+> > and simply require that the channel is attached to the wwan device with
+> > the representation-specific call (wwan_attach_netdev, wwan_attach_tty,
+> > ...).
+>
+> Or maybe have the WWAN device present interfaces with attributes,
+> and have drivers that are appropriate for each interface attach
+> to only the ones they recognize they support.
+
+I think you both mean the same thing here, a structure with callback
+pointers that may or may not be filled by the driver depending on its
+capabilities.
+
+What we should try to avoid though is a way to add driver private
+interfaces that risk having multiple drivers create similar functionality
+in incompatible ways.
+
+        Arnd
