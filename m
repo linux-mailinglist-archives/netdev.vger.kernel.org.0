@@ -2,141 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B78DD518AA
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 18:28:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D26A3518B2
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 18:30:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730038AbfFXQ22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 12:28:28 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:36805 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728884AbfFXQ22 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 12:28:28 -0400
-Received: by mail-pg1-f195.google.com with SMTP id f21so7406046pgi.3
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 09:28:28 -0700 (PDT)
+        id S1732102AbfFXQai (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 12:30:38 -0400
+Received: from mail-io1-f51.google.com ([209.85.166.51]:43428 "EHLO
+        mail-io1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730076AbfFXQai (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 12:30:38 -0400
+Received: by mail-io1-f51.google.com with SMTP id k20so2147235ios.10
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 09:30:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=83z9MONIXRv9fBBn1KzHdssv0tegBm2CExMBDwk9bQw=;
-        b=EIFFnYWlXLF0BEqdMqYG20aPVNojU1l7RF30JxVkmbB98K7FF6gOhgtIeSk7aI1hzQ
-         yO2+oD+R9EqcauIPf16qiSzW7QFVoqIZzJk5/iWQuQYM6afOCpFcsB7/Zg1lNdrCPvHt
-         kax8lbUsIZa3dbzxpvr4rITPSzPA4XWg/Flp68+TWSqhnqOlyoL95hBrm/cLo0hb0Gyp
-         f7/dITp8FKGl2XXr6X90p4PbWL6QQ75uoCEkKVnGXs5XUliv8FTRaTX2JQw6zGGmzJAp
-         1VycskLh1sRbc7wCYtgDmuQLV2WpkL6+agA+R26CIefVH3fOTKVzxKOLYfYdetHNdWRt
-         oNiA==
+        d=linaro.org; s=google;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Wulrto/HXlEP0Cxmn+aSmPqpiH4PSf21/9EuSwKYHd4=;
+        b=Mn0cXMbFYMBl0SszZa7WI2WTD5T6951RjYiCrZy61CKf7Cm2DTD9UiLUXwJ0nx0zBY
+         1ujuIMMLx77NflyHWBE1yHJcYVq4eHb2AFI56KEKa6Ixd5wfgzHDtkT0WQXMURcOSVAl
+         O7Vkq2+51rP5ijLHFX1ZeCKQOT/dDYZntnHe5jyJwkHd7wAslrFu8N5j0IFVI/bIEuwq
+         GEjmX3B6uGzH6yZ+b7nKqHGaETy/LXWhmuYf6hpvua3ECqdLlCvvyEH0+IU7TOktpF4M
+         zyORQJmP8JKT7T81fNiN8Gbe0OZtEXP/NYrDuoZf7q8Lzo97joLIHKPPtTkz0yI5kWnm
+         20kA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=83z9MONIXRv9fBBn1KzHdssv0tegBm2CExMBDwk9bQw=;
-        b=kMJQP7SGpbPP0rsfXRK14x4dXQ2bJ/9G6cZ/FxPqZS8/R/7qwmimt+rES1VSKysyoP
-         tRNm2pdcjXydmGRrPwTf/AG+65A1smad0h+dwvlGATYbMlb/KNo8DJLpH8/XLqzPU5RY
-         fZKNgRrbpY1BK9B616Hr/CJjb1625mGjZvkPM+2WnaQnYlHQ/c1rUaf/OkSrhcbl9Ix9
-         ZuAjZVlAYg8kavKLz8dwmDQtX4HApzDiUco1fafS9nQCyPtDlPJnepk/C5dpsUvslGf/
-         FrGS8MNnbbHaB9xZno9Un9/hO24T3QgAI3HXl90HzbxozgvjeGemr9zGeWJASsrldgBc
-         +MlQ==
-X-Gm-Message-State: APjAAAWb97jbw/sKqNsrO4VB+fvKoAXVWK6D4XWspl7H0sMB9zcPUgIQ
-        kdMeqhCWjLWzQKFFQbtwjNvTjBr0
-X-Google-Smtp-Source: APXvYqylrliEPCXf6k1P5k4XUbLBqv6VeEpmWsZNxNJn1fxjtuiyi3iWX5xqAlgkA+Mq3LVRGGFkcQ==
-X-Received: by 2002:a63:c508:: with SMTP id f8mr34435737pgd.48.1561393707527;
-        Mon, 24 Jun 2019 09:28:27 -0700 (PDT)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id q3sm10884826pgv.21.2019.06.24.09.28.26
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Wulrto/HXlEP0Cxmn+aSmPqpiH4PSf21/9EuSwKYHd4=;
+        b=JhCTAA7QtjST11UPPYYarZD5zimn6PShlXJ5/s7e7e3ZfNoHJdANusF23LF9Tq7Hgi
+         QwbXzTaz6cTmKvXT1ejLiO1eiwJdOj6RZ23svVv+sUklwbZ8QCCgJEFc4zgrPvVakMdH
+         iBmB/l4FeA6BSl/+YUnfA/GUjt5MFZAmEkMHgxRiyqoGSPJfxeAe9TcsOwLkV6tOYB+J
+         /7tLmHg+X9/LD3VqaYm5hhc1hd3al/7WpU7wBuuJWWhdZHqbkA5V/yqLjjNEyLCKYqz/
+         qPeVMb/06+S7/8EWwV3VuKpZxaclxeEoX4XEdX9bW6rad1wEKEFjwQD3K48yLnAHYX7s
+         vpeA==
+X-Gm-Message-State: APjAAAW9fSF87VmVvQ26aMbfgtYx4Zs3/ah1TRFwsiGRF4Q3pAFOYppk
+        NR2kDkB0T11Yc0VLRNNa7KeaXw==
+X-Google-Smtp-Source: APXvYqxdhhVgzPshhJyQgs10Hk+zfOquGsuDDw6awgazoiRekD4XFtjDBCvTdDE3FewywU+/yE2bnw==
+X-Received: by 2002:a02:5185:: with SMTP id s127mr26639219jaa.44.1561393837131;
+        Mon, 24 Jun 2019 09:30:37 -0700 (PDT)
+Received: from [172.22.22.26] (c-71-195-29-92.hsd1.mn.comcast.net. [71.195.29.92])
+        by smtp.googlemail.com with ESMTPSA id p25sm13692350iol.48.2019.06.24.09.30.35
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 24 Jun 2019 09:28:26 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>
-Cc:     davem@davemloft.net, Eric Dumazet <edumazet@google.com>,
-        Jon Maloy <jon.maloy@ericsson.com>,
-        Ying Xue <ying.xue@windriver.com>,
-        tipc-discussion@lists.sourceforge.net,
-        syzkaller-bugs@googlegroups.com
-Subject: [PATCHv2 net] tipc: check msg->req data len in tipc_nl_compat_bearer_disable
-Date:   Tue, 25 Jun 2019 00:28:19 +0800
-Message-Id: <58c46f0c73a4c1aea970e52de69188e2dd20d3b4.1561393699.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
+        Mon, 24 Jun 2019 09:30:36 -0700 (PDT)
+Subject: WWAN Controller Framework (was IPA [PATCH v2 00/17])
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, arnd@arndb.de, bjorn.andersson@linaro.org,
+        ilias.apalodimas@linaro.org
+Cc:     evgreen@chromium.org, benchan@google.com, ejcaruso@google.com,
+        cpratapa@codeaurora.org, syadagir@codeaurora.org,
+        subashab@codeaurora.org, abhishek.esse@gmail.com,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org
+References: <20190531035348.7194-1-elder@linaro.org>
+Message-ID: <23ff4cce-1fee-98ab-3608-1fd09c2d97f1@linaro.org>
+Date:   Mon, 24 Jun 2019 11:30:35 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.1
+MIME-Version: 1.0
+In-Reply-To: <20190531035348.7194-1-elder@linaro.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is to fix an uninit-value issue, reported by syzbot:
+OK I want to try to organize a little more concisely some of the
+discussion on this, because there is a very large amount of volume
+to date and I think we need to try to narrow the focus back down
+again.
 
-  BUG: KMSAN: uninit-value in memchr+0xce/0x110 lib/string.c:981
-  Call Trace:
-    __dump_stack lib/dump_stack.c:77 [inline]
-    dump_stack+0x191/0x1f0 lib/dump_stack.c:113
-    kmsan_report+0x130/0x2a0 mm/kmsan/kmsan.c:622
-    __msan_warning+0x75/0xe0 mm/kmsan/kmsan_instr.c:310
-    memchr+0xce/0x110 lib/string.c:981
-    string_is_valid net/tipc/netlink_compat.c:176 [inline]
-    tipc_nl_compat_bearer_disable+0x2a1/0x480 net/tipc/netlink_compat.c:449
-    __tipc_nl_compat_doit net/tipc/netlink_compat.c:327 [inline]
-    tipc_nl_compat_doit+0x3ac/0xb00 net/tipc/netlink_compat.c:360
-    tipc_nl_compat_handle net/tipc/netlink_compat.c:1178 [inline]
-    tipc_nl_compat_recv+0x1b1b/0x27b0 net/tipc/netlink_compat.c:1281
+I'm going to use a few terms here.  Some of these I really don't
+like, but I want to be unambiguous *and* (at least for now) I want
+to avoid the very overloaded term "device".
 
-TLV_GET_DATA_LEN() may return a negtive int value, which will be
-used as size_t (becoming a big unsigned long) passed into memchr,
-cause this issue.
+I have lots more to say, but let's start with a top-level picture,
+to make sure we're all on the same page.
 
-Similar to what it does in tipc_nl_compat_bearer_enable(), this
-fix is to return -EINVAL when TLV_GET_DATA_LEN() is negtive in
-tipc_nl_compat_bearer_disable(), as well as in
-tipc_nl_compat_link_stat_dump() and tipc_nl_compat_link_reset_stats().
+         WWAN Communication
+         Channel (Physical)
+                 |     ------------------------
+------------     v     |           :+ Control |  \
+|          |-----------|           :+ Data    |  |
+|    AP    |           | WWAN unit :+ Voice   |   > Functions
+|          |===========|           :+ GPS     |  |
+------------     ^     |           :+ ...     |  /
+                 |     -------------------------
+          Multiplexed WWAN
+           Communication
+         Channel (Physical)
 
-v1->v2:
-  - add the missing Fixes tags per Eric's request.
+- The *AP* is the main CPU complex that's running Linux on one or
+  more CPU cores.
+- A *WWAN unit* is an entity that shares one or more physical
+  *WWAN communication channels* with the AP.
+- A *WWAN communication channel* is a bidirectional means of
+  carrying data between the AP and WWAN unit.
+- A WWAN communication channel carries data using a *WWAN protocol*.
+- A WWAN unit implements one or more *WWAN functions*, such as
+  5G data, LTE voice, GPS, and so on.
+- A WWAN unit shall implement a *WWAN control function*, used to
+  manage the use of other WWAN functions, as well as the WWAN unit
+  itself.
+- The AP communicates with a WWAN function using a WWAN protocol.
+- A WWAN physical channel can be *multiplexed*, in which case it
+  carries the data for one or more *WWAN logical channels*.
+- A multiplexed WWAN communication channel uses a *WWAN wultiplexing
+  protocol*, which is used to separate independent data streams
+  carrying other WWAN protocols.
+- A WWAN logical channel carries a bidirectional stream of WWAN
+  protocol data between an entity on the AP and a WWAN function.
 
-Fixes: 0762216c0ad2 ("tipc: fix uninit-value in tipc_nl_compat_bearer_enable")
-Fixes: 8b66fee7f8ee ("tipc: fix uninit-value in tipc_nl_compat_link_reset_stats")
-Reported-by: syzbot+30eaa8bf392f7fafffaf@syzkaller.appspotmail.com
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- net/tipc/netlink_compat.c | 18 +++++++++++++++---
- 1 file changed, 15 insertions(+), 3 deletions(-)
+Does that adequately represent a very high-level picture of what
+we're trying to manage?
 
-diff --git a/net/tipc/netlink_compat.c b/net/tipc/netlink_compat.c
-index c6a04c0..cf15506 100644
---- a/net/tipc/netlink_compat.c
-+++ b/net/tipc/netlink_compat.c
-@@ -445,7 +445,11 @@ static int tipc_nl_compat_bearer_disable(struct tipc_nl_compat_cmd_doit *cmd,
- 	if (!bearer)
- 		return -EMSGSIZE;
- 
--	len = min_t(int, TLV_GET_DATA_LEN(msg->req), TIPC_MAX_BEARER_NAME);
-+	len = TLV_GET_DATA_LEN(msg->req);
-+	if (len <= 0)
-+		return -EINVAL;
-+
-+	len = min_t(int, len, TIPC_MAX_BEARER_NAME);
- 	if (!string_is_valid(name, len))
- 		return -EINVAL;
- 
-@@ -539,7 +543,11 @@ static int tipc_nl_compat_link_stat_dump(struct tipc_nl_compat_msg *msg,
- 
- 	name = (char *)TLV_DATA(msg->req);
- 
--	len = min_t(int, TLV_GET_DATA_LEN(msg->req), TIPC_MAX_LINK_NAME);
-+	len = TLV_GET_DATA_LEN(msg->req);
-+	if (len <= 0)
-+		return -EINVAL;
-+
-+	len = min_t(int, len, TIPC_MAX_BEARER_NAME);
- 	if (!string_is_valid(name, len))
- 		return -EINVAL;
- 
-@@ -817,7 +825,11 @@ static int tipc_nl_compat_link_reset_stats(struct tipc_nl_compat_cmd_doit *cmd,
- 	if (!link)
- 		return -EMSGSIZE;
- 
--	len = min_t(int, TLV_GET_DATA_LEN(msg->req), TIPC_MAX_LINK_NAME);
-+	len = TLV_GET_DATA_LEN(msg->req);
-+	if (len <= 0)
-+		return -EINVAL;
-+
-+	len = min_t(int, len, TIPC_MAX_BEARER_NAME);
- 	if (!string_is_valid(name, len))
- 		return -EINVAL;
- 
--- 
-2.1.0
+And if I understand it right, the purpose of the generic framework
+being discussed is to define a common mechanism for managing (i.e.,
+discovering, creating, destroying, querying, configuring, enabling,
+disabling, etc.) WWAN units and the functions they implement, along
+with the communication and logical channels used to communicate with
+them.
 
+Comments?
+
+					-Alex
