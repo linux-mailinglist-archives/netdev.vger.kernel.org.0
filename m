@@ -2,109 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6670B50C03
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 15:29:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7667950C1E
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 15:36:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731050AbfFXN3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 09:29:31 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:36152 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728158AbfFXN3a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 09:29:30 -0400
-Received: by mail-wr1-f66.google.com with SMTP id n4so12734104wrs.3
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 06:29:29 -0700 (PDT)
+        id S1730038AbfFXNgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 09:36:50 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:44781 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729423AbfFXNgu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 09:36:50 -0400
+Received: by mail-wr1-f68.google.com with SMTP id r16so13921881wrl.11
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 06:36:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brauner.io; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=11Pv9Z5s19Zp78uuJj22ZvE45uxJPM0y1Jwb+Rtnf2Q=;
-        b=ausNJ9qPVHfSlWc7AO4tZT1/2mqSZc363wbHLhcQa6Es6sK4HPxresxuh408Hmpwws
-         g4vz6DueaV+gB6ChXtQVP1MhOXU0Gdev5xoAnv/WX9D9OaRPrqUJwNFu6GP+56ED8pDQ
-         loqJo9A+XXlslbd0e55r6dDkR+4ELqDBmNU7sZgTdxzyV+FvQZ4K/xJJKOWNbm/x7FRb
-         m73JbfKtM2JYF3VnU2UPdiQ3ao+AgGURf1knJiY64ooM99lDq5EMKZLKWDt8sW9KduEv
-         /X/siXujC2KFB5yoEBwkcMTvJjHDrWMkrwPfGQC4Elmnv+7ZQZ1stwmYsvdh1qpypipy
-         c5ug==
+        d=dev-mellanox-co-il.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=aIXChZl47hIpdRUJyVwNJXqgSFVkN9Mais0wimBMIoI=;
+        b=IDWKSiJLVD6dW2x4RgLHeadU+nbRMawKI2GudFSngdVGqx07XZHvN9L78QgkmxAHZP
+         y78b3cyljB+zQ9g4Esgmg/kOn2V2bwVd9SjY8EVXE4shrZ4DAHSXZLsG4PIHIIjuwC3P
+         WRiCp4PgFlwBGlsEoq4tjwUrELgRALGFW/MMWDvz1ft/YttIQELjEEJjl9eDVr7zH8pr
+         hx9PPlkDexXeXlQ2e7RJKOyvXbBuXslNVIFgQ7AczLTEgJqs9DvNBuYw/b24xSxiG1XW
+         qU05x2UofrmUjborAGI60MqPRN9MJ8tBmNo89YiPDp5VTrZtL68lIkggbVq7yvkja6sa
+         X58Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=11Pv9Z5s19Zp78uuJj22ZvE45uxJPM0y1Jwb+Rtnf2Q=;
-        b=MTLH3DjiRR7Ust6b/YRR156dyRuNgV1iopwPvNqH0ztMdiayzq1Hks3hsBaE/ix/R5
-         ijDAU5kmbeFVtOmJOUKdH+l3o6hvP0cHjGEA/E259G7uZlyC4m3hYvXV8aL8eD33Thm9
-         c+m2xIPEJQm/DhguC1qACcnZKD37MEKcsGom0KGZ5QRzvA+mP+ztE88CRTtqGpdWdukR
-         fbfe105ngFkB3F2Z+TdWiSbsHJRb2s02neez0k/6VL1R0xVcvwKOJcVsj0W3FhDiaGzU
-         JdvONfqYPl/dBv46+tVt7R6fNwxaEFQ+jxl3PLIZ34JvJsV8XF9jUApak3Z6oSePqLfd
-         mtdw==
-X-Gm-Message-State: APjAAAUujEZMzaW5szSfeyZ9QTDHhL2HMr8qe6pRE2bNrw8FEWzU/bdF
-        b/kr6wW2FUoRkFJCSJLRITZ2MraD5+65sw==
-X-Google-Smtp-Source: APXvYqzfbC+Y53cjWnbaVA0/kzG+I9yhSNyZvY7bcKLozH3pD5SObocC0xd9C0soFuVVaehhsBksEg==
-X-Received: by 2002:a5d:5448:: with SMTP id w8mr77224907wrv.180.1561382968454;
-        Mon, 24 Jun 2019 06:29:28 -0700 (PDT)
-Received: from localhost.localdomain ([212.91.227.56])
-        by smtp.gmail.com with ESMTPSA id s63sm7842418wme.17.2019.06.24.06.29.27
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 24 Jun 2019 06:29:27 -0700 (PDT)
-From:   Christian Brauner <christian@brauner.io>
-To:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Christian Brauner <christian@brauner.io>
-Subject: [PATCH net-next] ipv4: enable route flushing in network namespaces
-Date:   Mon, 24 Jun 2019 15:29:23 +0200
-Message-Id: <20190624132923.16792-1-christian@brauner.io>
-X-Mailer: git-send-email 2.22.0
+        bh=aIXChZl47hIpdRUJyVwNJXqgSFVkN9Mais0wimBMIoI=;
+        b=NIqVTp5wOHLU/Rhbk1vSkrGr8Fpe06jI57YAW7ZcKFIem9rDvqHXBHtUKNkpSEyW5v
+         5UCMY6kM5W7C3/ub1rPWM7ZtmcQEIwvjqEuslmV/5Y1z/LcgKxb35xExsLdWSmjtUrr4
+         XYxwsWgSkSeL7qVMhPGVJFBhE4rHWjfdx3ZjgmJu7jI7WJxgBqOEjP3lJCeJNusqxx+9
+         j8cbzFLDYvwQvGdeZGOnJemJ6EsrMfYNcmMXuq2w9Ypc4aILW4kzH1YFnx6LKXFxF+Q3
+         z3zhUi/4kO7FYEw6UGPmjBVqvEU/Brcw/1tMWZfjMUhMhRV87YkOsmMjz80he5bKPKmu
+         tb6g==
+X-Gm-Message-State: APjAAAXRojaSxKToIBl1W/RdckQImrY3xDIdmC/kaqv62ffKmRW8qdrl
+        NlT/Y8BCW1/JYBDGs309F/cjHUuiMj4=
+X-Google-Smtp-Source: APXvYqxAnLgc/d+Kt5NAB/DrgT3GdBAXLIDHhlNbkbQ1fgSYLLjKO/IDkT0T9HipgAN+M0ssmD2wrw==
+X-Received: by 2002:adf:fbc7:: with SMTP id d7mr3420978wrs.224.1561383408142;
+        Mon, 24 Jun 2019 06:36:48 -0700 (PDT)
+Received: from [10.8.2.125] ([193.47.165.251])
+        by smtp.googlemail.com with ESMTPSA id x3sm11121008wrp.78.2019.06.24.06.36.45
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 24 Jun 2019 06:36:47 -0700 (PDT)
+Subject: Re: [PATCH rdma-next v1 09/12] IB/mlx5: Register DEVX with mlx5_core
+ to get async events
+To:     Jason Gunthorpe <jgg@mellanox.com>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Doug Ledford <dledford@redhat.com>,
+        Leon Romanovsky <leonro@mellanox.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Yishai Hadas <yishaih@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>
+References: <20190618171540.11729-1-leon@kernel.org>
+ <20190618171540.11729-10-leon@kernel.org>
+ <20190624115206.GB5479@mellanox.com>
+From:   Yishai Hadas <yishaih@dev.mellanox.co.il>
+Message-ID: <3bc6780f-5c3e-b121-e4ea-f7b8f00cbd13@dev.mellanox.co.il>
+Date:   Mon, 24 Jun 2019 16:36:44 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190624115206.GB5479@mellanox.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tools such as vpnc try to flush routes when run inside network
-namespaces by writing 1 into /proc/sys/net/ipv4/route/flush. This
-currently does not work because flush is not enabled in non-initial
-network namespaces.
-Since routes are per network namespace it is safe to enable
-/proc/sys/net/ipv4/route/flush in there.
+On 6/24/2019 2:52 PM, Jason Gunthorpe wrote:
+> On Tue, Jun 18, 2019 at 08:15:37PM +0300, Leon Romanovsky wrote:
+>>   void __mlx5_ib_remove(struct mlx5_ib_dev *dev,
+>> diff --git a/drivers/infiniband/hw/mlx5/mlx5_ib.h b/drivers/infiniband/hw/mlx5/mlx5_ib.h
+>> index 9cf23ae6324e..556af34b788b 100644
+>> +++ b/drivers/infiniband/hw/mlx5/mlx5_ib.h
+>> @@ -944,6 +944,13 @@ struct mlx5_ib_pf_eq {
+>>   	mempool_t *pool;
+>>   };
+>>   
+>> +struct mlx5_devx_event_table {
+>> +	struct mlx5_nb devx_nb;
+>> +	/* serialize updating the event_xa */
+>> +	struct mutex event_xa_lock;
+>> +	struct xarray event_xa;
+>> +};
+>> +
+>>   struct mlx5_ib_dev {
+>>   	struct ib_device		ib_dev;
+>>   	struct mlx5_core_dev		*mdev;
+>> @@ -994,6 +1001,7 @@ struct mlx5_ib_dev {
+>>   	struct mlx5_srq_table   srq_table;
+>>   	struct mlx5_async_ctx   async_ctx;
+>>   	int			free_port;
+>> +	struct mlx5_devx_event_table devx_event_table;
+> 
+> I really question if adding all these structs really does anything for
+> readability..
+> 
 
-Link: https://github.com/lxc/lxd/issues/4257
-Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
----
- net/ipv4/route.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
-
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index 6cb7cff22db9..41726e26cd5f 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -3197,9 +3197,11 @@ static struct ctl_table ipv4_route_table[] = {
- 	{ }
- };
- 
-+static const char ipv4_route_flush_procname[] = "flush";
-+
- static struct ctl_table ipv4_route_flush_table[] = {
- 	{
--		.procname	= "flush",
-+		.procname	= ipv4_route_flush_procname,
- 		.maxlen		= sizeof(int),
- 		.mode		= 0200,
- 		.proc_handler	= ipv4_sysctl_rtcache_flush,
-@@ -3217,9 +3219,11 @@ static __net_init int sysctl_route_net_init(struct net *net)
- 		if (!tbl)
- 			goto err_dup;
- 
--		/* Don't export sysctls to unprivileged users */
--		if (net->user_ns != &init_user_ns)
--			tbl[0].procname = NULL;
-+		/* Don't export non-whitelisted sysctls to unprivileged users */
-+		if (net->user_ns != &init_user_ns) {
-+			if (tbl[0].procname != ipv4_route_flush_procname)
-+				tbl[0].procname = NULL;
-+		}
- 	}
- 	tbl[0].extra1 = net;
- 
--- 
-2.22.0
-
+I would prefer this option to add only one structure (i.e. 
+mlx5_devx_event_table) on ib_dev, it will hold internally the other 
+related stuff.
