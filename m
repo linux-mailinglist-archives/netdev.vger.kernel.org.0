@@ -2,133 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF8CF504EC
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 10:53:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4023350599
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 11:25:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727945AbfFXIxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 04:53:07 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:52525 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726546AbfFXIxH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 04:53:07 -0400
-Received: by mail-io1-f72.google.com with SMTP id p12so21091112iog.19
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 01:53:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=iP3hTe7vnfn2Gylds0a6rlCAQXQ2A+s7h1i13nkWL9o=;
-        b=sfGxSKBaNN++/t1CVwflBaki9LWxS+7aZb+Rum18r99cfq04FG1mTzOW0ZdiHIStAw
-         aX1Zg1VTxTwQqGyfu6ImZCN0OpHNyLRZFyooaIQfzn34AFIu9Dh+aDHSDm/AL80j/Y3Q
-         Dh7CNtcOChFVOEXP2KSN/GaM3FDL6TYDl2U4lfBSXKWR34O0l+k9KPXOjy/woLzOQwOO
-         kWLabK0VM6MMwHn8hucafGxFcD9CiiJLCRefe6tVeRZeBhBye5SxgjfdosVmJU6h2CHs
-         owrIaF+OAG7JsWUL/6CBd7uyPQ9UIk49hqAq8qJGYl8yvoJTMGEo7Xnbf4em/J5RavJd
-         Om1Q==
-X-Gm-Message-State: APjAAAWfD0FNJGZWhYKrAcufBZ0ZRt31QxuE2cDY8LzsGiaThEdmJpkc
-        /6sH7uO1i+VNHzZV5l5Ap07IeXkwDosJamVc8UR33JXG4NKx
-X-Google-Smtp-Source: APXvYqxqXMeIv47nNBDaztvsAk5OfwMLLeRFun3SGhftxIo68QWU/XVlYqSvKa/bkKGz2VP5TQNyOmOP3NRQ8+nYwE3GW8s41Xrz
+        id S1727608AbfFXJYy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 05:24:54 -0400
+Received: from merlin.infradead.org ([205.233.59.134]:42238 "EHLO
+        merlin.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727537AbfFXJYx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 05:24:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=Content-Type:MIME-Version:References:
+        Subject:Cc:To:From:Date:Message-Id:Sender:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=t52uwsZ5CS16wjZkH/9lP0ZEe/KSj6WTDcY9RTylZiU=; b=pPZckTeXk7GUNaGNfbBK8q0PET
+        Psm8el7YAywshXMcwevA7aur0wDPpnp4QcJ+KqJ1uwvD5z0H8AUlfcQVnD1GHLXxRvLJDT1LJpdF+
+        ArrXtpfxk76E2n8Y9P8oh/5r2UERyrrXl/s571fHUrdkz7DdsEVFgEQDYPshcUhoeRMWokvmtEIUi
+        rV1OSQHDdsa9DeouIVSVaYHFlZRr+BHJiwf37wWPkUxGop+I4Gl+MVMNIGjW1SN4ZBSP9mBD+Jziz
+        YZdsR77vZh1Wq7Q673JGai165+G3fDHIn4+Xk1z2UVtgN5RlURm45MF+2cWBzMWqVE6sTF8AKNA2u
+        fK5uCIxA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=hirez.programming.kicks-ass.net)
+        by merlin.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
+        id 1hfLCm-0006v0-M0; Mon, 24 Jun 2019 09:24:04 +0000
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
+        id 5518620A0EF24; Mon, 24 Jun 2019 11:24:02 +0200 (CEST)
+Message-Id: <20190624092109.805742823@infradead.org>
+User-Agent: quilt/0.65
+Date:   Mon, 24 Jun 2019 11:18:45 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Jessica Yu <jeyu@kernel.org>, linux-kernel@vger.kernel.org,
+        jpoimboe@redhat.com, jikos@kernel.org, mbenes@suse.cz,
+        pmladek@suse.com, ast@kernel.org, daniel@iogearbox.net,
+        akpm@linux-foundation.org, peterz@infradead.org
+Cc:     Robert Richter <rric@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        "Joel Fernandes (Google)" <joel@joelfernandes.org>,
+        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        oprofile-list@lists.sf.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH 2/3] module: Fix up module_notifier return values.
+References: <20190624091843.859714294@infradead.org>
 MIME-Version: 1.0
-X-Received: by 2002:a5d:915a:: with SMTP id y26mr22521898ioq.207.1561366386614;
- Mon, 24 Jun 2019 01:53:06 -0700 (PDT)
-Date:   Mon, 24 Jun 2019 01:53:06 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000d6a8ba058c0df076@google.com>
-Subject: WARNING: ODEBUG bug in netdev_freemem (2)
-From:   syzbot <syzbot+c4521ac872a4ccc3afec@syzkaller.appspotmail.com>
-To:     alexander.h.duyck@intel.com, amritha.nambiar@intel.com,
-        andriy.shevchenko@linux.intel.com, davem@davemloft.net,
-        dmitry.torokhov@gmail.com, f.fainelli@gmail.com,
-        gregkh@linuxfoundation.org, idosch@mellanox.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        tyhicks@canonical.com, wanghai26@huawei.com, yuehaibing@huawei.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=UTF-8
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+While auditing all module notifiers I noticed a whole bunch of fail
+wrt the return value. Notifiers have a 'special' return semantics.
 
-syzbot found the following crash on:
-
-HEAD commit:    fd6b99fa Merge branch 'akpm' (patches from Andrew)
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=144de256a00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=fa9f7e1b6a8bb586
-dashboard link: https://syzkaller.appspot.com/bug?extid=c4521ac872a4ccc3afec
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-
-Unfortunately, I don't have any reproducer for this crash yet.
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+c4521ac872a4ccc3afec@syzkaller.appspotmail.com
-
-device hsr_slave_0 left promiscuous mode
-team0 (unregistering): Port device team_slave_1 removed
-team0 (unregistering): Port device team_slave_0 removed
-bond0 (unregistering): Releasing backup interface bond_slave_1
-bond0 (unregistering): Releasing backup interface bond_slave_0
-bond0 (unregistering): Released all slaves
-------------[ cut here ]------------
-ODEBUG: free active (active state 0) object type: timer_list hint:  
-delayed_work_timer_fn+0x0/0x90 arch/x86/include/asm/paravirt.h:767
-WARNING: CPU: 1 PID: 25149 at lib/debugobjects.c:325  
-debug_print_object+0x168/0x250 lib/debugobjects.c:325
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 1 PID: 25149 Comm: kworker/u4:1 Not tainted 5.2.0-rc4+ #31
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Workqueue: netns cleanup_net
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
-  panic+0x2cb/0x744 kernel/panic.c:219
-  __warn.cold+0x20/0x4d kernel/panic.c:576
-  report_bug+0x263/0x2b0 lib/bug.c:186
-  fixup_bug arch/x86/kernel/traps.c:179 [inline]
-  fixup_bug arch/x86/kernel/traps.c:174 [inline]
-  do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:272
-  do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:291
-  invalid_op+0x14/0x20 arch/x86/entry/entry_64.S:986
-RIP: 0010:debug_print_object+0x168/0x250 lib/debugobjects.c:325
-Code: dd e0 c9 a4 87 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 b5 00 00 00 48  
-8b 14 dd e0 c9 a4 87 48 c7 c7 80 bf a4 87 e8 16 75 0d fe <0f> 0b 83 05 4b  
-46 4b 06 01 48 83 c4 20 5b 41 5c 41 5d 41 5e 5d c3
-RSP: 0018:ffff888058c07838 EFLAGS: 00010086
-RAX: 0000000000000000 RBX: 0000000000000003 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff815ac956 RDI: ffffed100b180ef9
-RBP: ffff888058c07878 R08: ffff88805692a340 R09: ffffed1015d240f1
-R10: ffffed1015d240f0 R11: ffff8880ae920787 R12: 0000000000000001
-R13: ffffffff88bad1a0 R14: ffffffff816039d0 R15: ffff88805f992e60
-  __debug_check_no_obj_freed lib/debugobjects.c:785 [inline]
-  debug_check_no_obj_freed+0x29f/0x464 lib/debugobjects.c:817
-  kfree+0xbd/0x220 mm/slab.c:3754
-  kvfree+0x61/0x70 mm/util.c:460
-  netdev_freemem+0x4c/0x60 net/core/dev.c:9070
-  netdev_release+0x86/0xb0 net/core/net-sysfs.c:1635
-  device_release+0x7a/0x210 drivers/base/core.c:1064
-  kobject_cleanup lib/kobject.c:691 [inline]
-  kobject_release lib/kobject.c:720 [inline]
-  kref_put include/linux/kref.h:65 [inline]
-  kobject_put.cold+0x289/0x2e6 lib/kobject.c:737
-  netdev_run_todo+0x53b/0x7c0 net/core/dev.c:8975
-  rtnl_unlock+0xe/0x10 net/core/rtnetlink.c:112
-  default_device_exit_batch+0x358/0x410 net/core/dev.c:9756
-  ops_exit_list.isra.0+0xfc/0x150 net/core/net_namespace.c:157
-  cleanup_net+0x3fb/0x960 net/core/net_namespace.c:553
-  process_one_work+0x989/0x1790 kernel/workqueue.c:2269
-  worker_thread+0x98/0xe40 kernel/workqueue.c:2415
-  kthread+0x354/0x420 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-
-======================================================
-
-
+Cc: Robert Richter <rric@kernel.org>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Martin KaFai Lau <kafai@fb.com>
+Cc: Song Liu <songliubraving@fb.com>
+Cc: Yonghong Song <yhs@fb.com>
+Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc: "Paul E. McKenney" <paulmck@linux.ibm.com>
+Cc: "Joel Fernandes (Google)" <joel@joelfernandes.org>
+Cc: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: oprofile-list@lists.sf.net
+Cc: linux-kernel@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Cc: bpf@vger.kernel.org
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ drivers/oprofile/buffer_sync.c |    4 ++--
+ kernel/module.c                |    9 +++++----
+ kernel/trace/bpf_trace.c       |    8 ++++++--
+ kernel/trace/trace.c           |    2 +-
+ kernel/trace/trace_events.c    |    2 +-
+ kernel/trace/trace_printk.c    |    4 ++--
+ kernel/tracepoint.c            |    2 +-
+ 7 files changed, 18 insertions(+), 13 deletions(-)
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+--- a/drivers/oprofile/buffer_sync.c
++++ b/drivers/oprofile/buffer_sync.c
+@@ -116,7 +116,7 @@ module_load_notify(struct notifier_block
+ {
+ #ifdef CONFIG_MODULES
+ 	if (val != MODULE_STATE_COMING)
+-		return 0;
++		return NOTIFY_DONE;
+ 
+ 	/* FIXME: should we process all CPU buffers ? */
+ 	mutex_lock(&buffer_mutex);
+@@ -124,7 +124,7 @@ module_load_notify(struct notifier_block
+ 	add_event_entry(MODULE_LOADED_CODE);
+ 	mutex_unlock(&buffer_mutex);
+ #endif
+-	return 0;
++	return NOTIFY_OK;
+ }
+ 
+ 
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -1302,10 +1302,11 @@ static int bpf_event_notify(struct notif
+ {
+ 	struct bpf_trace_module *btm, *tmp;
+ 	struct module *mod = module;
++	int ret = 0;
+ 
+ 	if (mod->num_bpf_raw_events == 0 ||
+ 	    (op != MODULE_STATE_COMING && op != MODULE_STATE_GOING))
+-		return 0;
++		goto out;
+ 
+ 	mutex_lock(&bpf_module_mutex);
+ 
+@@ -1315,6 +1316,8 @@ static int bpf_event_notify(struct notif
+ 		if (btm) {
+ 			btm->module = module;
+ 			list_add(&btm->list, &bpf_trace_modules);
++		} else {
++			ret = -ENOMEM;
+ 		}
+ 		break;
+ 	case MODULE_STATE_GOING:
+@@ -1330,7 +1333,8 @@ static int bpf_event_notify(struct notif
+ 
+ 	mutex_unlock(&bpf_module_mutex);
+ 
+-	return 0;
++out:
++	return notifier_from_errno(ret);
+ }
+ 
+ static struct notifier_block bpf_module_nb = {
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -8685,7 +8685,7 @@ static int trace_module_notify(struct no
+ 		break;
+ 	}
+ 
+-	return 0;
++	return NOTIFY_OK;
+ }
+ 
+ static struct notifier_block trace_module_nb = {
+--- a/kernel/trace/trace_events.c
++++ b/kernel/trace/trace_events.c
+@@ -2450,7 +2450,7 @@ static int trace_module_notify(struct no
+ 	mutex_unlock(&trace_types_lock);
+ 	mutex_unlock(&event_mutex);
+ 
+-	return 0;
++	return NOTIFY_OK;
+ }
+ 
+ static struct notifier_block trace_module_nb = {
+--- a/kernel/trace/trace_printk.c
++++ b/kernel/trace/trace_printk.c
+@@ -95,7 +95,7 @@ static int module_trace_bprintk_format_n
+ 		if (val == MODULE_STATE_COMING)
+ 			hold_module_trace_bprintk_format(start, end);
+ 	}
+-	return 0;
++	return NOTIFY_OK;
+ }
+ 
+ /*
+@@ -173,7 +173,7 @@ __init static int
+ module_trace_bprintk_format_notify(struct notifier_block *self,
+ 		unsigned long val, void *data)
+ {
+-	return 0;
++	return NOTIFY_OK;
+ }
+ static inline const char **
+ find_next_mod_format(int start_index, void *v, const char **fmt, loff_t *pos)
+--- a/kernel/tracepoint.c
++++ b/kernel/tracepoint.c
+@@ -538,7 +538,7 @@ static int tracepoint_module_notify(stru
+ 	case MODULE_STATE_UNFORMED:
+ 		break;
+ 	}
+-	return ret;
++	return notifier_from_errno(ret);
+ }
+ 
+ static struct notifier_block tracepoint_module_nb = {
+
+
