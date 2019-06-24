@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C5B6A50E1D
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 16:32:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C96F50E24
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 16:33:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727868AbfFXOcf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 10:32:35 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:38739 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726381AbfFXOcf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 10:32:35 -0400
-Received: by mail-qt1-f196.google.com with SMTP id n11so3432615qtl.5;
-        Mon, 24 Jun 2019 07:32:35 -0700 (PDT)
+        id S1728974AbfFXOdL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 10:33:11 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:36381 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728770AbfFXOdL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 10:33:11 -0400
+Received: by mail-qk1-f195.google.com with SMTP id g18so9916307qkl.3;
+        Mon, 24 Jun 2019 07:33:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=ctFjDCzhggvVXefGJm4hCGvB8upg6mpaGEDe91Sd9LA=;
-        b=kYJvjoQR7lhZe1qJG+X81nw9eg9atRS+11KNat1Arg+wqTqhqZlp1CRvz4RXseIRCa
-         ZE3ZnwOdwsnWlc6n8qwdekXlvWzlm56cKNoQrVKbBrx1fbrDHjuy5YakndF46g+P8t3i
-         4GYHiGsL4f8iUPT3PzkyN/L+QC6kE+umsIMYRG9nZa9EKL9I/nGARi8W1te4N3S3JmC/
-         sTK0RjEUsXmRPLArIyIyQj7K066C6FYwh7bMzrBXn3exkt3HMh5h6Bmm/0/xUfc3oCya
-         LFTZZhkn4FDcZufCQxyJ2qDs8nmNNMjng9zoDy21WdCa1eBj40Xh7saGtrvu2HhAiHWx
-         zFZA==
+        bh=Y9Y2C5sAs+7ESo3yvMuycRT88EAj9a/XPg+oK6UXn8E=;
+        b=AAvZB0tJ+TlcBgquT4PTY6Is1MdjKBOhaoYpASqP8SVqMf0w1oof4avV7z7JovvO1S
+         LgWVyNQyWo3jd39ADq+ZiJIfcIdlrFI5pd+oR0608yOLcJs5CGNOd/D/7dIec0bNFR5U
+         t1Yh0nYR5EP+PAsFn6QmCWfQKdlPl1Zn9s9NPr7dRYBkFX2OyfGGpkpNN8OhTa9xpFa2
+         fn/+QDqLuv6Ytj7Mfi0eV0q0NQyKLcovkKIdP53Suoh7nwPaP0xCAfOJJvYyw3EcUJxT
+         WYBgeEZL6xOjVKiddZo0NV6tYn43Z2wvIs0SGsGo9mVmHuTVQWS3jYI8judBfBQcJ8Q0
+         jQ1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ctFjDCzhggvVXefGJm4hCGvB8upg6mpaGEDe91Sd9LA=;
-        b=T43Euev24cul83aPLEs0/5fc6BrigPVf/fOw0hiqoNxXjH7UzGyLqAF5SyfYqoHRoM
-         BVjkobBABTM2hLZ3fJNlGAIPtrVt68mUi6rNA2YuB76zu+WVt5bcwyXIdxadj7/NIa3/
-         FRt0DBCUOrk0x2pLOwKBYVIDG8vEh3BA46eYtXuoo8XOLAFsh98KiVC+d/t+gMQJ6Z24
-         v1R4vHJkUD/PNu+e6UOztteUEctKCouRLlLzftCnWj7YCcHS605WxGiBPB/tAMakZaLw
-         bCLfZSG07aOKzlYb9916OaCybWlEKkHE6Dm1O2ocIN8Vt8h00hkgPIeIQipUMuHI35Je
-         8tog==
-X-Gm-Message-State: APjAAAUx8TC72DTbtY5OX3c50hECdiItyqfDZqiycEuqSFqoOnWX/TEl
-        aUJ43ew4bjrIARMRPe82pWk/0hh4oRPnCXhhIFM=
-X-Google-Smtp-Source: APXvYqz2ivGbven9zWTQ+Nqz8yp8WiF8tnns7upW8xDvZ3E0XTfPTmThwDw8gMBMvxG6UuEnNmFDPUjLb8X3lND95yE=
-X-Received: by 2002:ac8:2f07:: with SMTP id j7mr118604479qta.359.1561386754593;
- Mon, 24 Jun 2019 07:32:34 -0700 (PDT)
+        bh=Y9Y2C5sAs+7ESo3yvMuycRT88EAj9a/XPg+oK6UXn8E=;
+        b=WHbGyxKxC3vpXynVGwbRxtiC0zRKbc3cRBzXTEUwt1nhPjiIMnBdF+R5CSZBWXNRG0
+         +KmvWv/bfJ37Iji15YwLL3Vskh+goRUkcxwMC3oByloD9mGVsX3/UQaFTEHcdwaAAntR
+         PIT4Lq4C9hKJykpxGsNsCiW2qCNBcEv/HP7ri/uLmEMNx4gCgM8HQ0AEhZGhlvshZtQu
+         6F0Q+LENyQiAr4b1KnYD409QPU1hObuQz4M4xyeSm2OCIJRM9TB6YU2ud4j5vTBnz2R/
+         6Fz6kxGRX2hlvg5DZGOruvC6mW4TwJWU3qIUBnbbcdJogcswrfphxnHqwg12ncJ+dmQN
+         4IYQ==
+X-Gm-Message-State: APjAAAXBee/q8K4+11uXRlE6WwwCZy3AWXU5tQphi/R+qeJ2BJNFaiMI
+        A+eihTn1OUunutPtJ5w9fgFKAczGkC8IjrpKNEQ=
+X-Google-Smtp-Source: APXvYqzpeMWaYgUjFY2oiWqgasi4EBY4BCU1lPGhcVFWMmJwsJoFyDMJa4XvPuFDReBSdr0tWjVYftj+nP6p62mqFn4=
+X-Received: by 2002:a05:620a:1270:: with SMTP id b16mr100549560qkl.333.1561386790244;
+ Mon, 24 Jun 2019 07:33:10 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190620090958.2135-1-kevin.laatz@intel.com> <20190620090958.2135-5-kevin.laatz@intel.com>
-In-Reply-To: <20190620090958.2135-5-kevin.laatz@intel.com>
+References: <20190620090958.2135-1-kevin.laatz@intel.com> <20190620090958.2135-6-kevin.laatz@intel.com>
+In-Reply-To: <20190620090958.2135-6-kevin.laatz@intel.com>
 From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Mon, 24 Jun 2019 16:32:23 +0200
-Message-ID: <CAJ+HfNibp3x7dYav4Ps8USEDhWgxnm8o=DXVBz8qZTn3NDc_=Q@mail.gmail.com>
-Subject: Re: [PATCH 04/11] i40e: add offset to zca_free
+Date:   Mon, 24 Jun 2019 16:32:59 +0200
+Message-ID: <CAJ+HfNg9chx674Sc=Ht-UJ_iYoau=X6LJYn5w05rUQ85b9oyDg@mail.gmail.com>
+Subject: Re: [PATCH 05/11] ixgbe: add offset to zca_free
 To:     Kevin Laatz <kevin.laatz@intel.com>
 Cc:     Netdev <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -67,8 +67,8 @@ X-Mailing-List: netdev@vger.kernel.org
 On Thu, 20 Jun 2019 at 19:25, Kevin Laatz <kevin.laatz@intel.com> wrote:
 >
 > This patch adds the offset param to for zero_copy_allocator to
-> i40e_zca_free. This change is required to calculate the handle, otherwise=
-,
+> ixgbe_zca_free. This change is required to calculate the handle, otherwis=
+e,
 > this function will not work in unaligned chunk mode since we can't easily=
  mask
 > back to the original handle in unaligned chunk mode.
@@ -79,40 +79,60 @@ Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
 
 
 > ---
->  drivers/net/ethernet/intel/i40e/i40e_xsk.c | 8 ++++----
->  drivers/net/ethernet/intel/i40e/i40e_xsk.h | 3 ++-
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h | 3 ++-
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c         | 8 ++++----
 >  2 files changed, 6 insertions(+), 5 deletions(-)
 >
-> diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/eth=
-ernet/intel/i40e/i40e_xsk.c
-> index c89e692e8663..8c281f356293 100644
-> --- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-> +++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-> @@ -438,16 +438,16 @@ static void i40e_reuse_rx_buffer_zc(struct i40e_rin=
-g *rx_ring,
->   * @alloc: Zero-copy allocator
->   * @handle: Buffer handle
->   **/
-> -void i40e_zca_free(struct zero_copy_allocator *alloc, unsigned long hand=
-le)
-> +void i40e_zca_free(struct zero_copy_allocator *alloc, unsigned long hand=
-le,
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h b/drive=
+rs/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h
+> index d93a690aff74..49702e2a4360 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h
+> @@ -33,7 +33,8 @@ struct xdp_umem *ixgbe_xsk_umem(struct ixgbe_adapter *a=
+dapter,
+>  int ixgbe_xsk_umem_setup(struct ixgbe_adapter *adapter, struct xdp_umem =
+*umem,
+>                          u16 qid);
+>
+> -void ixgbe_zca_free(struct zero_copy_allocator *alloc, unsigned long han=
+dle);
+> +void ixgbe_zca_free(struct zero_copy_allocator *alloc, unsigned long han=
+dle,
+> +               off_t off);
+>
+>  void ixgbe_alloc_rx_buffers_zc(struct ixgbe_ring *rx_ring, u16 cleaned_c=
+ount);
+>  int ixgbe_clean_rx_irq_zc(struct ixgbe_q_vector *q_vector,
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/e=
+thernet/intel/ixgbe/ixgbe_xsk.c
+> index 49536adafe8e..1ec02077ccb2 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+> @@ -268,16 +268,16 @@ static void ixgbe_reuse_rx_buffer_zc(struct ixgbe_r=
+ing *rx_ring,
+>         obi->skb =3D NULL;
+>  }
+>
+> -void ixgbe_zca_free(struct zero_copy_allocator *alloc, unsigned long han=
+dle)
+> +void ixgbe_zca_free(struct zero_copy_allocator *alloc, unsigned long han=
+dle,
 > +               off_t off)
 >  {
->         struct i40e_rx_buffer *bi;
->         struct i40e_ring *rx_ring;
+>         struct ixgbe_rx_buffer *bi;
+>         struct ixgbe_ring *rx_ring;
 > -       u64 hr, mask;
 > +       u64 hr;
 >         u16 nta;
 >
->         rx_ring =3D container_of(alloc, struct i40e_ring, zca);
+>         rx_ring =3D container_of(alloc, struct ixgbe_ring, zca);
 >         hr =3D rx_ring->xsk_umem->headroom + XDP_PACKET_HEADROOM;
 > -       mask =3D rx_ring->xsk_umem->chunk_mask;
 >
 >         nta =3D rx_ring->next_to_alloc;
->         bi =3D &rx_ring->rx_bi[nta];
-> @@ -455,7 +455,7 @@ void i40e_zca_free(struct zero_copy_allocator *alloc,=
- unsigned long handle)
+>         bi =3D rx_ring->rx_buffer_info;
+> @@ -285,7 +285,7 @@ void ixgbe_zca_free(struct zero_copy_allocator *alloc=
+, unsigned long handle)
 >         nta++;
 >         rx_ring->next_to_alloc =3D (nta < rx_ring->count) ? nta : 0;
 >
@@ -121,25 +141,6 @@ le,
 >
 >         bi->dma =3D xdp_umem_get_dma(rx_ring->xsk_umem, handle);
 >         bi->dma +=3D hr;
-> diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.h b/drivers/net/eth=
-ernet/intel/i40e/i40e_xsk.h
-> index 8cc0a2e7d9a2..85691dc9ac42 100644
-> --- a/drivers/net/ethernet/intel/i40e/i40e_xsk.h
-> +++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.h
-> @@ -12,7 +12,8 @@ int i40e_queue_pair_disable(struct i40e_vsi *vsi, int q=
-ueue_pair);
->  int i40e_queue_pair_enable(struct i40e_vsi *vsi, int queue_pair);
->  int i40e_xsk_umem_setup(struct i40e_vsi *vsi, struct xdp_umem *umem,
->                         u16 qid);
-> -void i40e_zca_free(struct zero_copy_allocator *alloc, unsigned long hand=
-le);
-> +void i40e_zca_free(struct zero_copy_allocator *alloc, unsigned long hand=
-le,
-> +               off_t off);
->  bool i40e_alloc_rx_buffers_zc(struct i40e_ring *rx_ring, u16 cleaned_cou=
-nt);
->  int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget);
->
 > --
 > 2.17.1
 >
