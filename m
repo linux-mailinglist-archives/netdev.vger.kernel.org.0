@@ -2,49 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 49C7150F67
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 17:00:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DDAF50F91
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 17:04:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728981AbfFXPAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 11:00:14 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:55312 "EHLO
+        id S1729371AbfFXPEC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 11:04:02 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:55374 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728365AbfFXPAO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 11:00:14 -0400
+        with ESMTP id S1726749AbfFXPEC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 11:04:02 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1E41D100047BF;
-        Mon, 24 Jun 2019 08:00:14 -0700 (PDT)
-Date:   Mon, 24 Jun 2019 08:00:13 -0700 (PDT)
-Message-Id: <20190624.080013.1939618402337247105.davem@davemloft.net>
-To:     edumazet@google.com
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        sowmini.varadhan@oracle.com, syzkaller@googlegroups.com
-Subject: Re: [PATCH net] net/packet: fix memory leak in packet_set_ring()
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id B58C31504341B;
+        Mon, 24 Jun 2019 08:04:01 -0700 (PDT)
+Date:   Mon, 24 Jun 2019 08:04:01 -0700 (PDT)
+Message-Id: <20190624.080401.605091064881218530.davem@davemloft.net>
+To:     Igor.Russkikh@aquantia.com
+Cc:     jakub.kicinski@netronome.com, andrew@lunn.ch,
+        netdev@vger.kernel.org, jiri@resnulli.us
+Subject: Re: [PATCH net-next 1/7] net: aquantia: replace internal driver
+ version code with uts
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190624093820.48023-1-edumazet@google.com>
-References: <20190624093820.48023-1-edumazet@google.com>
+In-Reply-To: <120088f1-c860-a643-c675-fdeed4faf1ef@aquantia.com>
+References: <20190622150514.GB8497@lunn.ch>
+        <20190623204954.3aa09ded@cakuba>
+        <120088f1-c860-a643-c675-fdeed4faf1ef@aquantia.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 24 Jun 2019 08:00:14 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 24 Jun 2019 08:04:01 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
-Date: Mon, 24 Jun 2019 02:38:20 -0700
+From: Igor Russkikh <Igor.Russkikh@aquantia.com>
+Date: Mon, 24 Jun 2019 11:02:54 +0000
 
-> syzbot found we can leak memory in packet_set_ring(), if user application
-> provides buggy parameters.
 > 
-> Fixes: 7f953ab2ba46 ("af_packet: TX_RING support for TPACKET_V3")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Sowmini Varadhan <sowmini.varadhan@oracle.com>
-> Reported-by: syzbot <syzkaller@googlegroups.com>
+>> 
+>>> Devlink has just gained something similar to ethtool -i. Maybe we
+>>> should get the devlink core to also report the kernel version?
+>> 
+>> I don't think we have the driver version at all there, my usual
+>> inclination being to not duplicate information across APIs.  Do we 
+>> have non-hypothetical instances of users reporting ethtool -i without
+>> uname output?  Admittedly I may work with above-average Linux-trained
+>> engineers :S  Would it be okay to just get devlink user space to use
+>> uname() to get the info?
+> 
+> I work alot with field support engineering people, they have a 'NIC-centric'
+> view on a system and often assume NIC driver version is all that matters.
+> 
+> Therefore `ethtool -i` is often the only thing we get when debugging user issues.
 
-Applied and queued up for -stable, thanks Eric.
+This is an education issue, not one of what we should be doing in the
+kernel.
