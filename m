@@ -2,68 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 219D15189E
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 18:27:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B78DD518AA
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 18:28:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731968AbfFXQ1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 12:27:07 -0400
-Received: from canardo.mork.no ([148.122.252.1]:56291 "EHLO canardo.mork.no"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726393AbfFXQ1H (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Jun 2019 12:27:07 -0400
-Received: from miraculix.mork.no (miraculix.mork.no [IPv6:2001:4641:0:2:7627:374e:db74:e353])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id x5OGQpI1008347
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Mon, 24 Jun 2019 18:26:52 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1561393612; bh=fLGEnw2Njzn9xoqzS5V4EDKFzf98/cQHM5dM1LpBLzA=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=dKDvQAwpJjFXmlAogZehs5GN9Y0cWRugc8cEv6J7slbl2Gp91bIw92D6f8xqQPH1C
-         2D1A6sM+SFV7PUESbRMLRQ8XCn1KbzQrGpeCn7dKGZ1MWCkmcPx5tg1DETysp/3GEE
-         pWXw8Nq+31CbbTfMV6RbuTVO7HvammQT1NNOkUL0=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.89)
-        (envelope-from <bjorn@mork.no>)
-        id 1hfRnv-0008IY-E4; Mon, 24 Jun 2019 18:26:51 +0200
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     Kristian Evensen <kristian.evensen@gmail.com>,
-        syzbot <syzbot+b68605d7fadd21510de1@syzkaller.appspotmail.com>,
-        andreyknvl@google.com, davem@davemloft.net,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Re: KASAN: global-out-of-bounds Read in qmi_wwan_probe
-Organization: m
-References: <0000000000008f19f7058c10a633@google.com>
-        <871rzj6sww.fsf@miraculix.mork.no>
-Date:   Mon, 24 Jun 2019 18:26:51 +0200
-In-Reply-To: <871rzj6sww.fsf@miraculix.mork.no> (Hillf Danton's message of
-        "Mon, 24 Jun 2019 23:38:36 +0800")
-Message-ID: <87tvcf54qc.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.100.3 at canardo
-X-Virus-Status: Clean
+        id S1730038AbfFXQ22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 12:28:28 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:36805 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728884AbfFXQ22 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 12:28:28 -0400
+Received: by mail-pg1-f195.google.com with SMTP id f21so7406046pgi.3
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 09:28:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=83z9MONIXRv9fBBn1KzHdssv0tegBm2CExMBDwk9bQw=;
+        b=EIFFnYWlXLF0BEqdMqYG20aPVNojU1l7RF30JxVkmbB98K7FF6gOhgtIeSk7aI1hzQ
+         yO2+oD+R9EqcauIPf16qiSzW7QFVoqIZzJk5/iWQuQYM6afOCpFcsB7/Zg1lNdrCPvHt
+         kax8lbUsIZa3dbzxpvr4rITPSzPA4XWg/Flp68+TWSqhnqOlyoL95hBrm/cLo0hb0Gyp
+         f7/dITp8FKGl2XXr6X90p4PbWL6QQ75uoCEkKVnGXs5XUliv8FTRaTX2JQw6zGGmzJAp
+         1VycskLh1sRbc7wCYtgDmuQLV2WpkL6+agA+R26CIefVH3fOTKVzxKOLYfYdetHNdWRt
+         oNiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=83z9MONIXRv9fBBn1KzHdssv0tegBm2CExMBDwk9bQw=;
+        b=kMJQP7SGpbPP0rsfXRK14x4dXQ2bJ/9G6cZ/FxPqZS8/R/7qwmimt+rES1VSKysyoP
+         tRNm2pdcjXydmGRrPwTf/AG+65A1smad0h+dwvlGATYbMlb/KNo8DJLpH8/XLqzPU5RY
+         fZKNgRrbpY1BK9B616Hr/CJjb1625mGjZvkPM+2WnaQnYlHQ/c1rUaf/OkSrhcbl9Ix9
+         ZuAjZVlAYg8kavKLz8dwmDQtX4HApzDiUco1fafS9nQCyPtDlPJnepk/C5dpsUvslGf/
+         FrGS8MNnbbHaB9xZno9Un9/hO24T3QgAI3HXl90HzbxozgvjeGemr9zGeWJASsrldgBc
+         +MlQ==
+X-Gm-Message-State: APjAAAWb97jbw/sKqNsrO4VB+fvKoAXVWK6D4XWspl7H0sMB9zcPUgIQ
+        kdMeqhCWjLWzQKFFQbtwjNvTjBr0
+X-Google-Smtp-Source: APXvYqylrliEPCXf6k1P5k4XUbLBqv6VeEpmWsZNxNJn1fxjtuiyi3iWX5xqAlgkA+Mq3LVRGGFkcQ==
+X-Received: by 2002:a63:c508:: with SMTP id f8mr34435737pgd.48.1561393707527;
+        Mon, 24 Jun 2019 09:28:27 -0700 (PDT)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id q3sm10884826pgv.21.2019.06.24.09.28.26
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 24 Jun 2019 09:28:26 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>
+Cc:     davem@davemloft.net, Eric Dumazet <edumazet@google.com>,
+        Jon Maloy <jon.maloy@ericsson.com>,
+        Ying Xue <ying.xue@windriver.com>,
+        tipc-discussion@lists.sourceforge.net,
+        syzkaller-bugs@googlegroups.com
+Subject: [PATCHv2 net] tipc: check msg->req data len in tipc_nl_compat_bearer_disable
+Date:   Tue, 25 Jun 2019 00:28:19 +0800
+Message-Id: <58c46f0c73a4c1aea970e52de69188e2dd20d3b4.1561393699.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hillf Danton <hdanton@sina.com> writes:
+This patch is to fix an uninit-value issue, reported by syzbot:
 
-> and wonder if the following works.
->
-> -	info =3D (void *)&id->driver_info;
-> +	info =3D (void *)id->driver_info;
+  BUG: KMSAN: uninit-value in memchr+0xce/0x110 lib/string.c:981
+  Call Trace:
+    __dump_stack lib/dump_stack.c:77 [inline]
+    dump_stack+0x191/0x1f0 lib/dump_stack.c:113
+    kmsan_report+0x130/0x2a0 mm/kmsan/kmsan.c:622
+    __msan_warning+0x75/0xe0 mm/kmsan/kmsan_instr.c:310
+    memchr+0xce/0x110 lib/string.c:981
+    string_is_valid net/tipc/netlink_compat.c:176 [inline]
+    tipc_nl_compat_bearer_disable+0x2a1/0x480 net/tipc/netlink_compat.c:449
+    __tipc_nl_compat_doit net/tipc/netlink_compat.c:327 [inline]
+    tipc_nl_compat_doit+0x3ac/0xb00 net/tipc/netlink_compat.c:360
+    tipc_nl_compat_handle net/tipc/netlink_compat.c:1178 [inline]
+    tipc_nl_compat_recv+0x1b1b/0x27b0 net/tipc/netlink_compat.c:1281
 
+TLV_GET_DATA_LEN() may return a negtive int value, which will be
+used as size_t (becoming a big unsigned long) passed into memchr,
+cause this issue.
 
-Doh! Right you are.  Thanks to both you and Andrey for quick and good
-help.
+Similar to what it does in tipc_nl_compat_bearer_enable(), this
+fix is to return -EINVAL when TLV_GET_DATA_LEN() is negtive in
+tipc_nl_compat_bearer_disable(), as well as in
+tipc_nl_compat_link_stat_dump() and tipc_nl_compat_link_reset_stats().
 
-We obviously have some bad code patterns here, since this apparently
-worked for Kristian by pure luck.
+v1->v2:
+  - add the missing Fixes tags per Eric's request.
 
+Fixes: 0762216c0ad2 ("tipc: fix uninit-value in tipc_nl_compat_bearer_enable")
+Fixes: 8b66fee7f8ee ("tipc: fix uninit-value in tipc_nl_compat_link_reset_stats")
+Reported-by: syzbot+30eaa8bf392f7fafffaf@syzkaller.appspotmail.com
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ net/tipc/netlink_compat.c | 18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
 
-Bj=C3=B8rn
+diff --git a/net/tipc/netlink_compat.c b/net/tipc/netlink_compat.c
+index c6a04c0..cf15506 100644
+--- a/net/tipc/netlink_compat.c
++++ b/net/tipc/netlink_compat.c
+@@ -445,7 +445,11 @@ static int tipc_nl_compat_bearer_disable(struct tipc_nl_compat_cmd_doit *cmd,
+ 	if (!bearer)
+ 		return -EMSGSIZE;
+ 
+-	len = min_t(int, TLV_GET_DATA_LEN(msg->req), TIPC_MAX_BEARER_NAME);
++	len = TLV_GET_DATA_LEN(msg->req);
++	if (len <= 0)
++		return -EINVAL;
++
++	len = min_t(int, len, TIPC_MAX_BEARER_NAME);
+ 	if (!string_is_valid(name, len))
+ 		return -EINVAL;
+ 
+@@ -539,7 +543,11 @@ static int tipc_nl_compat_link_stat_dump(struct tipc_nl_compat_msg *msg,
+ 
+ 	name = (char *)TLV_DATA(msg->req);
+ 
+-	len = min_t(int, TLV_GET_DATA_LEN(msg->req), TIPC_MAX_LINK_NAME);
++	len = TLV_GET_DATA_LEN(msg->req);
++	if (len <= 0)
++		return -EINVAL;
++
++	len = min_t(int, len, TIPC_MAX_BEARER_NAME);
+ 	if (!string_is_valid(name, len))
+ 		return -EINVAL;
+ 
+@@ -817,7 +825,11 @@ static int tipc_nl_compat_link_reset_stats(struct tipc_nl_compat_cmd_doit *cmd,
+ 	if (!link)
+ 		return -EMSGSIZE;
+ 
+-	len = min_t(int, TLV_GET_DATA_LEN(msg->req), TIPC_MAX_LINK_NAME);
++	len = TLV_GET_DATA_LEN(msg->req);
++	if (len <= 0)
++		return -EINVAL;
++
++	len = min_t(int, len, TIPC_MAX_BEARER_NAME);
+ 	if (!string_is_valid(name, len))
+ 		return -EINVAL;
+ 
+-- 
+2.1.0
+
