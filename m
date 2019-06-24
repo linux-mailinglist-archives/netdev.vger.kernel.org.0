@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A117B508F8
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 12:33:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AF62508F9
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 12:33:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728879AbfFXKc5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 06:32:57 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:59567 "EHLO
+        id S1729031AbfFXKc6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 06:32:58 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:52131 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728965AbfFXKcy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 06:32:54 -0400
+        by vger.kernel.org with ESMTP id S1729002AbfFXKc5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 06:32:57 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id C577C2241B;
-        Mon, 24 Jun 2019 06:32:53 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 0A1BB22400;
+        Mon, 24 Jun 2019 06:32:56 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 24 Jun 2019 06:32:53 -0400
+  by compute3.internal (MEProxy); Mon, 24 Jun 2019 06:32:56 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=F9Me4m4BkC3e43D3jcjbJQwiv7V+63AD8YG4Don/GuI=; b=l9/oXBz0
-        7u1g6gDHnoG98viiyN9Xx9EjuGJGOqNAUCkYX278AGxqfFRcqgn8KFHV1UjJoNf5
-        5JOElr4ScIaWcMeguVv8rUELOu0PyUgD9Nb6iUNvadaZW4GC5DJA43kkzgWBwubG
-        d0Qp9C4Guk1qF9S/gWvSKhxSHa7Ds1vwPGczPUH4S3Sua9pryG7/JTgfIBoTAJYx
-        eNpuK72g1I0ZHszOCp7d7UaGcEh/97Gpl8tgNhwTxwDuvzoX4PnLqsOEvHVctv+E
-        IOzbjtxcGDTwYsmu4vnYfta3gszexTmvRWTXci/Rr+b2Hc5GLFxYF9ETuCdZph+V
-        qM+Czo1GWGBavA==
-X-ME-Sender: <xms:1aYQXYMGYuxHHc6f6diifvVk_LezrldBoq6YTV5F9r7z-XNxuUFxdA>
+        fm3; bh=EhOlbg8nyhuXJV9RoOf5vXprz9B+wScFrLi2lz0FfB4=; b=UlacDNl3
+        y4doPoYAuFJsVmiVmxY0fCiPpDpduoZqK4EBmVMrfzcWIHr0Jg4wPp0CGSGbwTeU
+        6C2ggIG7R3ql0SDdNdCRVnkcDiWK1zLUjZRpqegXT0HDufGGgs5+pXmJgUDCZXOz
+        7jG2MHiNUMsNtqbgWuQ38UnsTHlHpxOb50o5l8nBpRdZeqa503BRDObFAR8eWlKL
+        2W36JusqmMSdazgr4QA2bUOVSy2zOMMrpyjJwsZquRTmRivMLGePv9JYNNjq/Ny5
+        PSF5VCpV0oE9p4NZNZxkta0/hJ6P4pAbtAeKgTriSNL+M62yWlZ5fuZrYB6Rq7k7
+        GAaiGTmAsjOxvQ==
+X-ME-Sender: <xms:16YQXRxbfN3uAQrGFzolNYy7v0ER1Rczj06N4zL4uqRk9oBykAL4cQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddruddvgdeftdcutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
@@ -35,21 +35,21 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddruddvgdeftdcutefuodetggdote
     tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmh
     grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
     ihiivgeptd
-X-ME-Proxy: <xmx:1aYQXavh3Gx63JdK0Tu2sd5FnqDRoqg_Ets50Zj_BsfnUc5qjpWWEQ>
-    <xmx:1aYQXX03niAIfAmY-0mWhLmyBumTyFMph8786TVKUDTIM9zgMYewnA>
-    <xmx:1aYQXR0kApP92xK4IJrkZD19HtPeGE9WM08p06eFFDSvRpEzvWgqLw>
-    <xmx:1aYQXeCu-jG94fS-oEN5aoyR6Dkq0fKVnPzuCRC-0ZYXAllVaXKdQA>
+X-ME-Proxy: <xmx:16YQXao-BB8WLZ8XN-Fq3_3_QptNpX-ejpyu_FTPJHNVVTjQ2DA-cw>
+    <xmx:16YQXT2o0gWVlR4Xp31MM297IFNtgydZHxsvQgW13EPHEqVJpIhAww>
+    <xmx:16YQXTDuTPi4F5V-g1yQ9faAFVBkgMCgEIQpXhQ4OMn7kqEZqhw34A>
+    <xmx:16YQXagMzci-DyDqTozxYYFBlpLGOfz4tVhs_URLvc1Ql0zJj7QGtA>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 058798005B;
-        Mon, 24 Jun 2019 06:32:51 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id E1A3D80065;
+        Mon, 24 Jun 2019 06:32:53 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, vadimp@mellanox.com,
         andrew@lunn.ch, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next v2 2/3] mlxsw: core: Add the hottest thermal zone detection
-Date:   Mon, 24 Jun 2019 13:32:02 +0300
-Message-Id: <20190624103203.22090-3-idosch@idosch.org>
+Subject: [PATCH net-next v2 3/3] mlxsw: core: Add support for negative temperature readout
+Date:   Mon, 24 Jun 2019 13:32:03 +0300
+Message-Id: <20190624103203.22090-4-idosch@idosch.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190624103203.22090-1-idosch@idosch.org>
 References: <20190624103203.22090-1-idosch@idosch.org>
@@ -62,221 +62,189 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vadim Pasternak <vadimp@mellanox.com>
 
-When multiple sensors are mapped to the same cooling device, the
-cooling device should be set according the worst sensor from the
-sensors associated with this cooling device.
+Extend macros MLXSW_REG_MTMP_TEMP_TO_MC() to allow support of negative
+temperature readout, since chip and others thermal components are
+capable of operating within the negative temperature.
+With no such support negative temperature will be consider as very high
+temperature and it will cause wrong readout and thermal shutdown.
+For negative values 2`s complement is used.
+Tested in chamber.
+Example of chip ambient temperature readout with chamber temperature:
+-10 Celsius:
+temp1:             -6.0C  (highest =  -5.0C)
+-5 Celsius:
+temp1:             -1.0C  (highest =  -1.0C)
 
-Provide the hottest thermal zone detection and enforce cooling device
-to follow the temperature trends of the hottest zone only.
-Prevent competition for the cooling device control from others zones,
-by "stable trend" indication. A cooling device will not perform any
-actions associated with a zone with a "stable trend".
-
-When other thermal zone is detected as a hottest, a cooling device is
-to be switched to following temperature trends of new hottest zone.
-
-Thermal zone score is represented by 32 bits unsigned integer and
-calculated according to the next formula:
-For T < TZ<t><i>, where t from {normal trip = 0, high trip = 1, hot
-trip = 2, critical = 3}:
-TZ<i> score = (T + (TZ<t><i> - T) / 2) / (TZ<t><i> - T) * 256 ** j;
-Highest thermal zone score s is set as MAX(TZ<i>score);
-Following this formula, if TZ<i> is in trip point higher than TZ<k>,
-the higher score is to be always assigned to TZ<i>.
-
-For two thermal zones located at the same kind of trip point, the higher
-score will be assigned to the zone which is closer to the next trip
-point. Thus, the highest score will always be assigned objectively to
-the hottest thermal zone.
-
-All the thermal zones initially are to be configured with mode
-"enabled" with the "step_wise" governor.
+v2 (Andrew Lunn):
+* Replace '%u' with '%d' in mlxsw_hwmon_module_temp_show()
 
 Signed-off-by: Vadim Pasternak <vadimp@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- .../ethernet/mellanox/mlxsw/core_thermal.c    | 75 +++++++++++++++----
- 1 file changed, 62 insertions(+), 13 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c   | 14 ++++++--------
+ drivers/net/ethernet/mellanox/mlxsw/core_thermal.c | 14 +++++++-------
+ drivers/net/ethernet/mellanox/mlxsw/reg.h          | 12 +++++++-----
+ 3 files changed, 20 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-index 88f43ad2cc4f..504a34d240f7 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-@@ -23,6 +23,7 @@
- #define MLXSW_THERMAL_HYSTERESIS_TEMP	5000	/* 5C */
- #define MLXSW_THERMAL_MODULE_TEMP_SHIFT	(MLXSW_THERMAL_HYSTERESIS_TEMP * 2)
- #define MLXSW_THERMAL_ZONE_MAX_NAME	16
-+#define MLXSW_THERMAL_TEMP_SCORE_MAX	GENMASK(31, 0)
- #define MLXSW_THERMAL_MAX_STATE	10
- #define MLXSW_THERMAL_MAX_DUTY	255
- /* Minimum and maximum fan allowed speed in percent: from 20% to 100%. Values
-@@ -113,6 +114,8 @@ struct mlxsw_thermal {
- 	struct mlxsw_thermal_module *tz_module_arr;
- 	struct mlxsw_thermal_module *tz_gearbox_arr;
- 	u8 tz_gearbox_num;
-+	unsigned int tz_highest_score;
-+	struct thermal_zone_device *tz_highest_dev;
- };
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c b/drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c
+index 056e3f55ae6c..5b00726c4346 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c
+@@ -52,8 +52,7 @@ static ssize_t mlxsw_hwmon_temp_show(struct device *dev,
+ 			container_of(attr, struct mlxsw_hwmon_attr, dev_attr);
+ 	struct mlxsw_hwmon *mlxsw_hwmon = mlwsw_hwmon_attr->hwmon;
+ 	char mtmp_pl[MLXSW_REG_MTMP_LEN];
+-	unsigned int temp;
+-	int index;
++	int temp, index;
+ 	int err;
  
- static inline u8 mlxsw_state_to_duty(int state)
-@@ -197,6 +200,34 @@ mlxsw_thermal_module_trips_update(struct device *dev, struct mlxsw_core *core,
- 	return 0;
- }
- 
-+static void mlxsw_thermal_tz_score_update(struct mlxsw_thermal *thermal,
-+					  struct thermal_zone_device *tzdev,
-+					  struct mlxsw_thermal_trip *trips,
-+					  int temp)
-+{
-+	struct mlxsw_thermal_trip *trip = trips;
-+	unsigned int score, delta, i, shift = 1;
-+
-+	/* Calculate thermal zone score, if temperature is above the critical
-+	 * threshold score is set to MLXSW_THERMAL_TEMP_SCORE_MAX.
-+	 */
-+	score = MLXSW_THERMAL_TEMP_SCORE_MAX;
-+	for (i = MLXSW_THERMAL_TEMP_TRIP_NORM; i < MLXSW_THERMAL_NUM_TRIPS;
-+	     i++, trip++) {
-+		if (temp < trip->temp) {
-+			delta = DIV_ROUND_CLOSEST(temp, trip->temp - temp);
-+			score = delta * shift;
-+			break;
-+		}
-+		shift *= 256;
-+	}
-+
-+	if (score > thermal->tz_highest_score) {
-+		thermal->tz_highest_score = score;
-+		thermal->tz_highest_dev = tzdev;
-+	}
-+}
-+
- static int mlxsw_thermal_bind(struct thermal_zone_device *tzdev,
- 			      struct thermal_cooling_device *cdev)
- {
-@@ -292,6 +323,9 @@ static int mlxsw_thermal_get_temp(struct thermal_zone_device *tzdev,
+ 	index = mlxsw_hwmon_get_attr_index(mlwsw_hwmon_attr->type_index,
+@@ -65,7 +64,7 @@ static ssize_t mlxsw_hwmon_temp_show(struct device *dev,
  		return err;
  	}
  	mlxsw_reg_mtmp_unpack(mtmp_pl, &temp, NULL, NULL);
-+	if (temp > 0)
-+		mlxsw_thermal_tz_score_update(thermal, tzdev, thermal->trips,
-+					      temp);
+-	return sprintf(buf, "%u\n", temp);
++	return sprintf(buf, "%d\n", temp);
+ }
  
- 	*p_temp = (int) temp;
- 	return 0;
-@@ -353,6 +387,22 @@ static int mlxsw_thermal_set_trip_hyst(struct thermal_zone_device *tzdev,
+ static ssize_t mlxsw_hwmon_temp_max_show(struct device *dev,
+@@ -76,8 +75,7 @@ static ssize_t mlxsw_hwmon_temp_max_show(struct device *dev,
+ 			container_of(attr, struct mlxsw_hwmon_attr, dev_attr);
+ 	struct mlxsw_hwmon *mlxsw_hwmon = mlwsw_hwmon_attr->hwmon;
+ 	char mtmp_pl[MLXSW_REG_MTMP_LEN];
+-	unsigned int temp_max;
+-	int index;
++	int temp_max, index;
+ 	int err;
+ 
+ 	index = mlxsw_hwmon_get_attr_index(mlwsw_hwmon_attr->type_index,
+@@ -89,7 +87,7 @@ static ssize_t mlxsw_hwmon_temp_max_show(struct device *dev,
+ 		return err;
+ 	}
+ 	mlxsw_reg_mtmp_unpack(mtmp_pl, NULL, &temp_max, NULL);
+-	return sprintf(buf, "%u\n", temp_max);
++	return sprintf(buf, "%d\n", temp_max);
+ }
+ 
+ static ssize_t mlxsw_hwmon_temp_rst_store(struct device *dev,
+@@ -215,8 +213,8 @@ static ssize_t mlxsw_hwmon_module_temp_show(struct device *dev,
+ 			container_of(attr, struct mlxsw_hwmon_attr, dev_attr);
+ 	struct mlxsw_hwmon *mlxsw_hwmon = mlwsw_hwmon_attr->hwmon;
+ 	char mtmp_pl[MLXSW_REG_MTMP_LEN];
+-	unsigned int temp;
+ 	u8 module;
++	int temp;
+ 	int err;
+ 
+ 	module = mlwsw_hwmon_attr->type_index - mlxsw_hwmon->sensor_count;
+@@ -227,7 +225,7 @@ static ssize_t mlxsw_hwmon_module_temp_show(struct device *dev,
+ 		return err;
+ 	mlxsw_reg_mtmp_unpack(mtmp_pl, &temp, NULL, NULL);
+ 
+-	return sprintf(buf, "%u\n", temp);
++	return sprintf(buf, "%d\n", temp);
+ }
+ 
+ static ssize_t mlxsw_hwmon_module_temp_fault_show(struct device *dev,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+index 504a34d240f7..35a1dc89c28a 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+@@ -312,7 +312,7 @@ static int mlxsw_thermal_get_temp(struct thermal_zone_device *tzdev,
+ 	struct mlxsw_thermal *thermal = tzdev->devdata;
+ 	struct device *dev = thermal->bus_info->dev;
+ 	char mtmp_pl[MLXSW_REG_MTMP_LEN];
+-	unsigned int temp;
++	int temp;
+ 	int err;
+ 
+ 	mlxsw_reg_mtmp_pack(mtmp_pl, 0, false, false);
+@@ -327,7 +327,7 @@ static int mlxsw_thermal_get_temp(struct thermal_zone_device *tzdev,
+ 		mlxsw_thermal_tz_score_update(thermal, tzdev, thermal->trips,
+ 					      temp);
+ 
+-	*p_temp = (int) temp;
++	*p_temp = temp;
  	return 0;
  }
  
-+static int mlxsw_thermal_trend_get(struct thermal_zone_device *tzdev,
-+				   int trip, enum thermal_trend *trend)
-+{
-+	struct mlxsw_thermal_module *tz = tzdev->devdata;
-+	struct mlxsw_thermal *thermal = tz->parent;
-+
-+	if (trip < 0 || trip >= MLXSW_THERMAL_NUM_TRIPS)
-+		return -EINVAL;
-+
-+	if (tzdev == thermal->tz_highest_dev)
-+		return 1;
-+
-+	*trend = THERMAL_TREND_STABLE;
-+	return 0;
-+}
-+
- static struct thermal_zone_device_ops mlxsw_thermal_ops = {
- 	.bind = mlxsw_thermal_bind,
- 	.unbind = mlxsw_thermal_unbind,
-@@ -364,6 +414,7 @@ static struct thermal_zone_device_ops mlxsw_thermal_ops = {
- 	.set_trip_temp	= mlxsw_thermal_set_trip_temp,
- 	.get_trip_hyst	= mlxsw_thermal_get_trip_hyst,
- 	.set_trip_hyst	= mlxsw_thermal_set_trip_hyst,
-+	.get_trend	= mlxsw_thermal_trend_get,
- };
+@@ -503,7 +503,7 @@ static int mlxsw_thermal_module_temp_get(struct thermal_zone_device *tzdev,
+ 	struct mlxsw_thermal *thermal = tz->parent;
+ 	struct device *dev = thermal->bus_info->dev;
+ 	char mtmp_pl[MLXSW_REG_MTMP_LEN];
+-	unsigned int temp;
++	int temp;
+ 	int err;
  
- static int mlxsw_thermal_module_bind(struct thermal_zone_device *tzdev,
-@@ -474,7 +525,9 @@ static int mlxsw_thermal_module_temp_get(struct thermal_zone_device *tzdev,
+ 	/* Read module temperature. */
+@@ -519,14 +519,14 @@ static int mlxsw_thermal_module_temp_get(struct thermal_zone_device *tzdev,
+ 		return 0;
+ 	}
+ 	mlxsw_reg_mtmp_unpack(mtmp_pl, &temp, NULL, NULL);
+-	*p_temp = (int) temp;
++	*p_temp = temp;
+ 
+ 	if (!temp)
  		return 0;
  
  	/* Update trip points. */
--	mlxsw_thermal_module_trips_update(dev, thermal->core, tz);
-+	err = mlxsw_thermal_module_trips_update(dev, thermal->core, tz);
-+	if (!err)
-+		mlxsw_thermal_tz_score_update(thermal, tzdev, tz->trips, temp);
+ 	err = mlxsw_thermal_module_trips_update(dev, thermal->core, tz);
+-	if (!err)
++	if (!err && temp > 0)
+ 		mlxsw_thermal_tz_score_update(thermal, tzdev, tz->trips, temp);
  
  	return 0;
- }
-@@ -539,10 +592,6 @@ mlxsw_thermal_module_trip_hyst_set(struct thermal_zone_device *tzdev, int trip,
- 	return 0;
- }
+@@ -612,8 +612,8 @@ static int mlxsw_thermal_gearbox_temp_get(struct thermal_zone_device *tzdev,
+ 	struct mlxsw_thermal_module *tz = tzdev->devdata;
+ 	struct mlxsw_thermal *thermal = tz->parent;
+ 	char mtmp_pl[MLXSW_REG_MTMP_LEN];
+-	unsigned int temp;
+ 	u16 index;
++	int temp;
+ 	int err;
  
--static struct thermal_zone_params mlxsw_thermal_module_params = {
--	.governor_name = "user_space",
--};
--
- static struct thermal_zone_device_ops mlxsw_thermal_module_ops = {
- 	.bind		= mlxsw_thermal_module_bind,
- 	.unbind		= mlxsw_thermal_module_unbind,
-@@ -554,6 +603,7 @@ static struct thermal_zone_device_ops mlxsw_thermal_module_ops = {
- 	.set_trip_temp	= mlxsw_thermal_module_trip_temp_set,
- 	.get_trip_hyst	= mlxsw_thermal_module_trip_hyst_get,
- 	.set_trip_hyst	= mlxsw_thermal_module_trip_hyst_set,
-+	.get_trend	= mlxsw_thermal_trend_get,
- };
+ 	index = MLXSW_REG_MTMP_GBOX_INDEX_MIN + tz->module;
+@@ -627,7 +627,7 @@ static int mlxsw_thermal_gearbox_temp_get(struct thermal_zone_device *tzdev,
+ 	if (temp > 0)
+ 		mlxsw_thermal_tz_score_update(thermal, tzdev, tz->trips, temp);
  
- static int mlxsw_thermal_gearbox_temp_get(struct thermal_zone_device *tzdev,
-@@ -574,6 +624,8 @@ static int mlxsw_thermal_gearbox_temp_get(struct thermal_zone_device *tzdev,
- 		return err;
- 
- 	mlxsw_reg_mtmp_unpack(mtmp_pl, &temp, NULL, NULL);
-+	if (temp > 0)
-+		mlxsw_thermal_tz_score_update(thermal, tzdev, tz->trips, temp);
- 
- 	*p_temp = (int) temp;
- 	return 0;
-@@ -590,10 +642,7 @@ static struct thermal_zone_device_ops mlxsw_thermal_gearbox_ops = {
- 	.set_trip_temp	= mlxsw_thermal_module_trip_temp_set,
- 	.get_trip_hyst	= mlxsw_thermal_module_trip_hyst_get,
- 	.set_trip_hyst	= mlxsw_thermal_module_trip_hyst_set,
--};
--
--static struct thermal_zone_params mlxsw_thermal_gearbox_params = {
--	.governor_name = "user_space",
-+	.get_trend	= mlxsw_thermal_trend_get,
- };
- 
- static int mlxsw_thermal_get_max_state(struct thermal_cooling_device *cdev,
-@@ -709,13 +758,13 @@ mlxsw_thermal_module_tz_init(struct mlxsw_thermal_module *module_tz)
- 							MLXSW_THERMAL_TRIP_MASK,
- 							module_tz,
- 							&mlxsw_thermal_module_ops,
--							&mlxsw_thermal_module_params,
--							0, 0);
-+							NULL, 0, 0);
- 	if (IS_ERR(module_tz->tzdev)) {
- 		err = PTR_ERR(module_tz->tzdev);
- 		return err;
- 	}
- 
-+	module_tz->mode = THERMAL_DEVICE_ENABLED;
+-	*p_temp = (int) temp;
++	*p_temp = temp;
  	return 0;
  }
  
-@@ -833,11 +882,11 @@ mlxsw_thermal_gearbox_tz_init(struct mlxsw_thermal_module *gearbox_tz)
- 						MLXSW_THERMAL_TRIP_MASK,
- 						gearbox_tz,
- 						&mlxsw_thermal_gearbox_ops,
--						&mlxsw_thermal_gearbox_params,
--						0, 0);
-+						NULL, 0, 0);
- 	if (IS_ERR(gearbox_tz->tzdev))
- 		return PTR_ERR(gearbox_tz->tzdev);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+index 452f645fa040..e5f6bfd8a35a 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+@@ -8050,7 +8050,10 @@ MLXSW_REG_DEFINE(mtmp, MLXSW_REG_MTMP_ID, MLXSW_REG_MTMP_LEN);
+ MLXSW_ITEM32(reg, mtmp, sensor_index, 0x00, 0, 12);
  
-+	gearbox_tz->mode = THERMAL_DEVICE_ENABLED;
- 	return 0;
+ /* Convert to milli degrees Celsius */
+-#define MLXSW_REG_MTMP_TEMP_TO_MC(val) (val * 125)
++#define MLXSW_REG_MTMP_TEMP_TO_MC(val) ({ typeof(val) v_ = (val); \
++					  ((v_) >= 0) ? ((v_) * 125) : \
++					  ((s16)((GENMASK(15, 0) + (v_) + 1) \
++					   * 125)); })
+ 
+ /* reg_mtmp_temperature
+  * Temperature reading from the sensor. Reading is in 0.125 Celsius
+@@ -8121,11 +8124,10 @@ static inline void mlxsw_reg_mtmp_pack(char *payload, u16 sensor_index,
+ 						    MLXSW_REG_MTMP_THRESH_HI);
  }
  
+-static inline void mlxsw_reg_mtmp_unpack(char *payload, unsigned int *p_temp,
+-					 unsigned int *p_max_temp,
+-					 char *sensor_name)
++static inline void mlxsw_reg_mtmp_unpack(char *payload, int *p_temp,
++					 int *p_max_temp, char *sensor_name)
+ {
+-	u16 temp;
++	s16 temp;
+ 
+ 	if (p_temp) {
+ 		temp = mlxsw_reg_mtmp_temperature_get(payload);
 -- 
 2.20.1
 
