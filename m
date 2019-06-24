@@ -2,96 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CA2A51883
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 18:24:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 219D15189E
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 18:27:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729695AbfFXQYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 12:24:41 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:54368 "EHLO vps0.lunn.ch"
+        id S1731968AbfFXQ1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 12:27:07 -0400
+Received: from canardo.mork.no ([148.122.252.1]:56291 "EHLO canardo.mork.no"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728531AbfFXQYl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Jun 2019 12:24:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=fbuOEGD6/p3KGLV+SsGx2RFhZqUs0c/4MZswvhidVf4=; b=D2uGrxuEdFzruVC29WTvIkFpCi
-        bN7wchEmq/rvf1zT2YMyFEcF27QgmyFgbSsivPFALpo53XmgCKP0xOg5aL79oIMMZZJW+bXPWIN2q
-        Z4a5M+Mh2wBSH/YuO3dWLF0f0wHNGqfTwjrejeyYIudJJWMuetxRZA9BNAr3M/brhG30=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hfRlf-0006oM-P5; Mon, 24 Jun 2019 18:24:31 +0200
-Date:   Mon, 24 Jun 2019 18:24:31 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Allan W. Nielsen" <allan.nielsen@microchip.com>
-Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Allan Nielsen <Allan.Nielsen@microsemi.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH net-next 4/6] arm64: dts: fsl: ls1028a: Add Felix switch
- port DT node
-Message-ID: <20190624162431.GX31306@lunn.ch>
-References: <1561131532-14860-1-git-send-email-claudiu.manoil@nxp.com>
- <1561131532-14860-5-git-send-email-claudiu.manoil@nxp.com>
- <20190621164940.GL31306@lunn.ch>
- <VI1PR04MB4880D8F90BBCD30BF8A69C9696E00@VI1PR04MB4880.eurprd04.prod.outlook.com>
- <20190624115558.GA5690@piout.net>
- <20190624142625.GR31306@lunn.ch>
- <20190624152344.3bv46jjhhygo6zwl@lx-anielsen.microsemi.net>
+        id S1726393AbfFXQ1H (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Jun 2019 12:27:07 -0400
+Received: from miraculix.mork.no (miraculix.mork.no [IPv6:2001:4641:0:2:7627:374e:db74:e353])
+        (authenticated bits=0)
+        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id x5OGQpI1008347
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Mon, 24 Jun 2019 18:26:52 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1561393612; bh=fLGEnw2Njzn9xoqzS5V4EDKFzf98/cQHM5dM1LpBLzA=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=dKDvQAwpJjFXmlAogZehs5GN9Y0cWRugc8cEv6J7slbl2Gp91bIw92D6f8xqQPH1C
+         2D1A6sM+SFV7PUESbRMLRQ8XCn1KbzQrGpeCn7dKGZ1MWCkmcPx5tg1DETysp/3GEE
+         pWXw8Nq+31CbbTfMV6RbuTVO7HvammQT1NNOkUL0=
+Received: from bjorn by miraculix.mork.no with local (Exim 4.89)
+        (envelope-from <bjorn@mork.no>)
+        id 1hfRnv-0008IY-E4; Mon, 24 Jun 2019 18:26:51 +0200
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     Kristian Evensen <kristian.evensen@gmail.com>,
+        syzbot <syzbot+b68605d7fadd21510de1@syzkaller.appspotmail.com>,
+        andreyknvl@google.com, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Subject: Re: KASAN: global-out-of-bounds Read in qmi_wwan_probe
+Organization: m
+References: <0000000000008f19f7058c10a633@google.com>
+        <871rzj6sww.fsf@miraculix.mork.no>
+Date:   Mon, 24 Jun 2019 18:26:51 +0200
+In-Reply-To: <871rzj6sww.fsf@miraculix.mork.no> (Hillf Danton's message of
+        "Mon, 24 Jun 2019 23:38:36 +0800")
+Message-ID: <87tvcf54qc.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190624152344.3bv46jjhhygo6zwl@lx-anielsen.microsemi.net>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.100.3 at canardo
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 24, 2019 at 05:23:45PM +0200, Allan W. Nielsen wrote:
-> Hi Andrew,
-> 
-> The 06/24/2019 16:26, Andrew Lunn wrote:
-> > > > Yeah, there are 2 ethernet controller ports (managed by the enetc driver) 
-> > > > connected inside the SoC via SGMII links to 2 of the switch ports, one of
-> > > > these switch ports can be configured as CPU port (with follow-up patches).
-> > > > 
-> > > > This configuration may look prettier on DSA, but the main restriction here
-> > > > is that the entire functionality is provided by the ocelot driver which is a
-> > > > switchdev driver.  I don't think it would be a good idea to copy-paste code
-> > > > from ocelot to a separate dsa driver.
-> > > > 
-> > > 
-> > > We should probably make the ocelot driver a DSA driver then...
-> > An important part of DSA is being able to direct frames out specific
-> > ports when they ingress via the CPU port. Does the silicon support
-> > this? At the moment, i think it is using polled IO.
-> 
-> That is supported, it requires a bit of initial configuration of the Chip, but
-> nothing big (I believe this configuration is part of Claudiu's change-set).
-> 
-> But how do you envision this done?
-> 
-> - Let the existing SwitchDev driver and the DSA driver use a set of common
->   functions.
-> - Convert the existing Ocelot driver from SwitchDev to DSA
-> - Fork (copy) the existing driver of Ocelot, and modify it as needed for the
->   Felix driver
-> 
-> My guess is the first one, but I would like to understand what you have in mind.
+Hillf Danton <hdanton@sina.com> writes:
 
-I don't know the various architectures the switch is used in. But it
-does seem like a core library, and then a switchdev wrapper for Ocelot
-and a DSA wrapper for Felix would make sense.
- 
-  Andrew
+> and wonder if the following works.
+>
+> -	info =3D (void *)&id->driver_info;
+> +	info =3D (void *)id->driver_info;
+
+
+Doh! Right you are.  Thanks to both you and Andrey for quick and good
+help.
+
+We obviously have some bad code patterns here, since this apparently
+worked for Kristian by pure luck.
+
+
+Bj=C3=B8rn
