@@ -2,197 +2,409 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 617C3510C8
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 17:38:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0A11510D1
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 17:40:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731212AbfFXPip (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 11:38:45 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:41309 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726551AbfFXPip (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 11:38:45 -0400
-Received: by mail-qk1-f194.google.com with SMTP id c11so10074216qkk.8
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 08:38:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=M/8vPF9WvOW147aOpJHmn3aeyjOXXRZcWaf81TVyXi0=;
-        b=WoswxBpLcd/C9MwdGLWFy1YPNHLW7qRx+kZkD1aRtd5wn0QJbUZ+K8F3bZZHjGXoRC
-         bpk4h7DJQa+m8qkVMW49Y60UQ3unWWO83RfuBnvVpwekv/RBOylqe1HUbaQuS9zXIk/e
-         hiaMmjRO/c5pGO5MLwaXJ1ki41ne5wAbglEGwok73Ygwy7DnYH/VdbZczMIuc5vRC3Iv
-         THga4HF12bhhqArE8LWeqiy0YHrcXDMVnfba7crDvELbb+pjRe2dkaAlzSCt/X5r8dtK
-         PTRnafDtyLVR3WW+48N51Nz5sqVd92vvmHYY2OPhmECOrrCfO8LwbO3n+IPi7hAMgfSI
-         O7Yg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=M/8vPF9WvOW147aOpJHmn3aeyjOXXRZcWaf81TVyXi0=;
-        b=sXOnF/j2qYVoPcKD2/FSYeNMTbQruglvY4iCcP+V7igcQjsQ1GTrHgFlO704Hh4oBZ
-         e8rU8plBAbq+RWseq2CCRYW54Egm2R3RLR6e6QK5Aur55lvIIkb6hZx4de8DyEpH03TC
-         TIza/fxUTgp4T9R/CZBDK2ol8hc4ijIbJGO0GdAO6T1jfZ7nXCDSdmrwABg7AeRJ+WGG
-         sU43M/AuldWIQpv3EPanHaDpikFu7wA/4JSH5v7ayGkQMDQkNBzHd8y2EaXSZvOtpxJ0
-         uOvmvSNDfvSd+FhgQLH50xQbsaXAX+V2OlyrQASBjgsDt+4m+HorpAg3GtSDHF/joMCU
-         IvCg==
-X-Gm-Message-State: APjAAAW/Lq46T7ffTbOCY8OJzZ12/a7d+jnk3nWna8jlBh4B++rw7LcR
-        nx4Gy9jnw0KkYtmpZxR+eNbmt4YPSOYkS5L/ZEE=
-X-Google-Smtp-Source: APXvYqypNSE0wid4ZRNAQx1WFMWmhV2s+cygHRPjP32E/x3JYdvEts3wgP/EIfvHUtj3oM9HhYCOPWxfCxMm9CNT+ds=
-X-Received: by 2002:a05:620a:48d:: with SMTP id 13mr17490028qkr.493.1561390723974;
- Mon, 24 Jun 2019 08:38:43 -0700 (PDT)
+        id S1731248AbfFXPkI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 11:40:08 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:36768 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726551AbfFXPkH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 11:40:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=BtLJYS2pbo8gfBfK3+LW+FXb5v0L7I5asBNqbGWt/ss=; b=NbqKe19XKOrUqUMQYY6OHxVFI
+        lXReB/NBf2iwMArBO9z8xRF1R2HLsIobpo6zlyBoSKDRtM2XXbHE+gFHJs1pLPOq+m4/LCgxqaU/e
+        W+1HjvaPJbkedxXAI+plW4Hu63Lg1XC5iGrn40pT+ZeHbxTrPghVWs+2KYVmYu8mMVA5Ygq1cFepQ
+        zYO+6FqXUCQ70SvCjKZ0Cd4HUDZcHBMHMqfeU94kNK8AoIyntrF8Lche09yfw0lJwM+OkDjGfm+q1
+        nQma/qQ4AQArsvTowQXWbbB5VoRrl/FFj2fqiXZv3d+1aQ34h9MuVrNWDyaoeTUXxfTMn2nMNaXaK
+        vynDdG3VA==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:59046)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1hfR4U-0000b6-Lo; Mon, 24 Jun 2019 16:39:55 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1hfR4Q-0006Qa-Nx; Mon, 24 Jun 2019 16:39:50 +0100
+Date:   Mon, 24 Jun 2019 16:39:50 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>
+Cc:     sean.wang@mediatek.com, f.fainelli@gmail.com, davem@davemloft.net,
+        matthias.bgg@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        frank-w@public-files.de, netdev@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org
+Subject: Re: [PATCH RFC net-next 1/5] net: dsa: mt7530: Convert to PHYLINK API
+Message-ID: <20190624153950.hdsuhrvfd77heyor@shell.armlinux.org.uk>
+References: <20190624145251.4849-1-opensource@vdorst.com>
+ <20190624145251.4849-2-opensource@vdorst.com>
 MIME-Version: 1.0
-References: <20190620083924.1996-1-kevin.laatz@intel.com>
-In-Reply-To: <20190620083924.1996-1-kevin.laatz@intel.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Mon, 24 Jun 2019 17:38:33 +0200
-Message-ID: <CAJ+HfNijp8BgMgiOuohiuqDPz+spAutdG34gUqKzepYo2noE-w@mail.gmail.com>
-Subject: Re: [PATCH 00/11] XDP unaligned chunk placement support
-To:     Kevin Laatz <kevin.laatz@intel.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        bpf@vger.kernel.com,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        Bruce Richardson <bruce.richardson@intel.com>,
-        ciara.loftus@intel.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190624145251.4849-2-opensource@vdorst.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 20 Jun 2019 at 18:55, Kevin Laatz <kevin.laatz@intel.com> wrote:
->
-> This patchset adds the ability to use unaligned chunks in the XDP umem.
->
-> Currently, all chunk addresses passed to the umem are masked to be chunk
-> size aligned (default is 2k, max is PAGE_SIZE). This limits where we can
-> place chunks within the umem as well as limiting the packet sizes that ar=
-e
-> supported.
->
-> The changes in this patchset removes these restrictions, allowing XDP to =
-be
-> more flexible in where it can place a chunk within a umem. By relaxing wh=
-ere
-> the chunks can be placed, it allows us to use an arbitrary buffer size an=
-d
-> place that wherever we have a free address in the umem. These changes add=
- the
-> ability to support jumboframes and make it easy to integrate with other
-> existing frameworks that have their own memory management systems, such a=
-s
-> DPDK.
->
+Hi,
 
-Thanks for working on this, Kevin and Ciara!
+On Mon, Jun 24, 2019 at 04:52:47PM +0200, René van Dorst wrote:
+> Convert mt7530 to PHYLINK API
+> 
+> Signed-off-by: René van Dorst <opensource@vdorst.com>
+> ---
+>  drivers/net/dsa/mt7530.c | 237 +++++++++++++++++++++++++++++----------
+>  drivers/net/dsa/mt7530.h |   9 ++
+>  2 files changed, 187 insertions(+), 59 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+> index 3181e95586d6..9c5e4dd00826 100644
+> --- a/drivers/net/dsa/mt7530.c
+> +++ b/drivers/net/dsa/mt7530.c
+> @@ -13,7 +13,7 @@
+>  #include <linux/of_mdio.h>
+>  #include <linux/of_net.h>
+>  #include <linux/of_platform.h>
+> -#include <linux/phy.h>
+> +#include <linux/phylink.h>
+>  #include <linux/regmap.h>
+>  #include <linux/regulator/consumer.h>
+>  #include <linux/reset.h>
+> @@ -633,63 +633,6 @@ mt7530_get_sset_count(struct dsa_switch *ds, int port, int sset)
+>  	return ARRAY_SIZE(mt7530_mib);
+>  }
+>  
+> -static void mt7530_adjust_link(struct dsa_switch *ds, int port,
+> -			       struct phy_device *phydev)
+> -{
+> -	struct mt7530_priv *priv = ds->priv;
+> -
+> -	if (phy_is_pseudo_fixed_link(phydev)) {
+> -		dev_dbg(priv->dev, "phy-mode for master device = %x\n",
+> -			phydev->interface);
+> -
+> -		/* Setup TX circuit incluing relevant PAD and driving */
+> -		mt7530_pad_clk_setup(ds, phydev->interface);
+> -
+> -		if (priv->id == ID_MT7530) {
+> -			/* Setup RX circuit, relevant PAD and driving on the
+> -			 * host which must be placed after the setup on the
+> -			 * device side is all finished.
+> -			 */
+> -			mt7623_pad_clk_setup(ds);
+> -		}
+> -	} else {
+> -		u16 lcl_adv = 0, rmt_adv = 0;
+> -		u8 flowctrl;
+> -		u32 mcr = PMCR_USERP_LINK | PMCR_FORCE_MODE;
+> -
+> -		switch (phydev->speed) {
+> -		case SPEED_1000:
+> -			mcr |= PMCR_FORCE_SPEED_1000;
+> -			break;
+> -		case SPEED_100:
+> -			mcr |= PMCR_FORCE_SPEED_100;
+> -			break;
+> -		}
+> -
+> -		if (phydev->link)
+> -			mcr |= PMCR_FORCE_LNK;
+> -
+> -		if (phydev->duplex) {
+> -			mcr |= PMCR_FORCE_FDX;
+> -
+> -			if (phydev->pause)
+> -				rmt_adv = LPA_PAUSE_CAP;
+> -			if (phydev->asym_pause)
+> -				rmt_adv |= LPA_PAUSE_ASYM;
+> -
+> -			lcl_adv = linkmode_adv_to_lcl_adv_t(
+> -				phydev->advertising);
+> -			flowctrl = mii_resolve_flowctrl_fdx(lcl_adv, rmt_adv);
+> -
+> -			if (flowctrl & FLOW_CTRL_TX)
+> -				mcr |= PMCR_TX_FC_EN;
+> -			if (flowctrl & FLOW_CTRL_RX)
+> -				mcr |= PMCR_RX_FC_EN;
+> -		}
+> -		mt7530_write(priv, MT7530_PMCR_P(port), mcr);
+> -	}
+> -}
+> -
+>  static int
+>  mt7530_cpu_port_enable(struct mt7530_priv *priv,
+>  		       int port)
+> @@ -1323,6 +1266,178 @@ mt7530_setup(struct dsa_switch *ds)
+>  	return 0;
+>  }
+>  
+> +static void mt7530_phylink_mac_config(struct dsa_switch *ds, int port,
+> +				      unsigned int mode,
+> +				      const struct phylink_link_state *state)
+> +{
+> +	struct mt7530_priv *priv = ds->priv;
+> +	u32 mcr = PMCR_IFG_XMIT(1) | PMCR_MAC_MODE | PMCR_BACKOFF_EN |
+> +		  PMCR_BACKPR_EN | PMCR_TX_EN | PMCR_RX_EN;
+> +
+> +	switch (port) {
+> +	case 0: /* Internal phy */
+> +	case 1:
+> +	case 2:
+> +	case 3:
+> +	case 4:
+> +		if (state->interface != PHY_INTERFACE_MODE_GMII)
+> +			goto unsupported;
+> +		break;
+> +	/* case 5: Port 5 is not supported! */
+> +	case 6: /* 1st cpu port */
+> +		if (state->interface != PHY_INTERFACE_MODE_RGMII &&
+> +		    state->interface != PHY_INTERFACE_MODE_TRGMII)
+> +			goto unsupported;
+> +
+> +		/* Setup TX circuit incluing relevant PAD and driving */
+> +		mt7530_pad_clk_setup(ds, state->interface);
+> +
+> +		if (priv->id == ID_MT7530) {
+> +			/* Setup RX circuit, relevant PAD and driving on the
+> +			 * host which must be placed after the setup on the
+> +			 * device side is all finished.
+> +			 */
+> +			mt7623_pad_clk_setup(ds);
+> +		}
+> +		break;
+> +	default:
+> +		dev_err(ds->dev, "%s: unsupported port: %i\n", __func__, port);
+> +		return;
+> +	}
+> +
+> +	if (!state->an_enabled || mode == MLO_AN_FIXED) {
+> +		mcr |= PMCR_FORCE_MODE;
+> +
+> +		if (state->speed == SPEED_1000)
+> +			mcr |= PMCR_FORCE_SPEED_1000;
+> +		if (state->speed == SPEED_100)
+> +			mcr |= PMCR_FORCE_SPEED_100;
+> +		if (state->duplex == DUPLEX_FULL)
+> +			mcr |= PMCR_FORCE_FDX;
+> +		if (state->link || mode == MLO_AN_FIXED)
+> +			mcr |= PMCR_FORCE_LNK;
 
-I have some minor comments on the series, but in general I think it's
-in good shape!
+This should be removed - state->link is not for use in mac_config.
+Even in fixed mode, the link can be brought up/down by means of a
+gpio, and this should be dealt with via the mac_link_* functions.
 
-For some reason the series was submitted twice (at least on my side)?
+> +		if (state->pause || phylink_test(state->advertising, Pause))
+> +			mcr |= PMCR_TX_FC_EN | PMCR_RX_FC_EN;
+> +		if (state->pause & MLO_PAUSE_TX)
+> +			mcr |= PMCR_TX_FC_EN;
+> +		if (state->pause & MLO_PAUSE_RX)
+> +			mcr |= PMCR_RX_FC_EN;
 
+This is clearly wrong - if any bit in state->pause is set, then we
+end up with both PMCR_TX_FC_EN | PMCR_RX_FC_EN set.  If we have Pause
+Pause set in the advertising mask, then both are set.  This doesn't
+seem right - are these bits setting the advertisement, or are they
+telling the MAC to use flow control?
 
-Thanks,
-Bj=C3=B6rn
+> +	}
+> +
+> +	mt7530_write(priv, MT7530_PMCR_P(port), mcr);
+> +
+> +	return;
+> +
+> +unsupported:
+> +	dev_err(ds->dev, "%s: P%d: Unsupported phy_interface mode: %d (%s)\n",
+> +		__func__, port, state->interface, phy_modes(state->interface));
+> +}
+> +
+> +static void mt7530_phylink_mac_link_down(struct dsa_switch *ds, int port,
+> +					 unsigned int mode,
+> +					 phy_interface_t interface)
+> +{
+> +	/* Do nothing */
+> +}
+> +
+> +static void mt7530_phylink_mac_link_up(struct dsa_switch *ds, int port,
+> +				       unsigned int mode,
+> +				       phy_interface_t interface,
+> +				       struct phy_device *phydev)
+> +{
+> +	/* Do nothing */
+> +}
 
-> Structure of the patchset:
-> Patch 1:
->   - Remove unnecessary masking and headroom addition during zero-copy Rx
->     buffer recycling in i40e. This change is required in order for the
->     buffer recycling to work in the unaligned chunk mode.
->
-> Patch 2:
->   - Remove unnecessary masking and headroom addition during
->     zero-copy Rx buffer recycling in ixgbe. This change is required in
->     order for the  buffer recycling to work in the unaligned chunk mode.
->
-> Patch 3:
->   - Adds an offset parameter to zero_copy_allocator. This change will
->     enable us to calculate the original handle in zca_free. This will be
->     required for unaligned chunk mode since we can't easily mask back to
->     the original handle.
->
-> Patch 4:
->   - Adds the offset parameter to i40e_zca_free. This change is needed for
->     calculating the handle since we can't easily mask back to the origina=
-l
->     handle like we can in the aligned case.
->
-> Patch 5:
->   - Adds the offset parameter to ixgbe_zca_free. This change is needed fo=
-r
->     calculating the handle since we can't easily mask back to the origina=
-l
->     handle like we can in the aligned case.
->
->
-> Patch 6:
->   - Add infrastructure for unaligned chunks. Since we are dealing
->     with unaligned chunks that could potentially cross a physical page
->     boundary, we add checks to keep track of that information. We can
->     later use this information to correctly handle buffers that are
->     placed at an address where they cross a page boundary.
->
-> Patch 7:
->   - Add flags for umem configuration to libbpf
->
-> Patch 8:
->   - Modify xdpsock application to add a command line option for
->     unaligned chunks
->
-> Patch 9:
->   - Addition of command line argument to pass in a desired buffer size
->     and buffer recycling for unaligned mode. Passing in a buffer size wil=
-l
->     allow the application to use unaligned chunks with the unaligned chun=
-k
->     mode. Since we are now using unaligned chunks, we need to recycle our
->     buffers in a slightly different way.
->
-> Patch 10:
->   - Adds hugepage support to the xdpsock application
->
-> Patch 11:
->   - Documentation update to include the unaligned chunk scenario. We need
->     to explicitly state that the incoming addresses are only masked in th=
-e
->     aligned chunk mode and not the unaligned chunk mode.
->
-> Kevin Laatz (11):
->   i40e: simplify Rx buffer recycle
->   ixgbe: simplify Rx buffer recycle
->   xdp: add offset param to zero_copy_allocator
->   i40e: add offset to zca_free
->   ixgbe: add offset to zca_free
->   xsk: add support to allow unaligned chunk placement
->   libbpf: add flags to umem config
->   samples/bpf: add unaligned chunks mode support to xdpsock
->   samples/bpf: add buffer recycling for unaligned chunks to xdpsock
->   samples/bpf: use hugepages in xdpsock app
->   doc/af_xdp: include unaligned chunk case
->
->  Documentation/networking/af_xdp.rst           | 10 +-
->  drivers/net/ethernet/intel/i40e/i40e_xsk.c    | 21 ++--
->  drivers/net/ethernet/intel/i40e/i40e_xsk.h    |  3 +-
->  .../ethernet/intel/ixgbe/ixgbe_txrx_common.h  |  3 +-
->  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  | 21 ++--
->  include/net/xdp.h                             |  3 +-
->  include/net/xdp_sock.h                        |  2 +
->  include/uapi/linux/if_xdp.h                   |  4 +
->  net/core/xdp.c                                | 11 ++-
->  net/xdp/xdp_umem.c                            | 17 ++--
->  net/xdp/xsk.c                                 | 60 +++++++++--
->  net/xdp/xsk_queue.h                           | 60 +++++++++--
->  samples/bpf/xdpsock_user.c                    | 99 ++++++++++++++-----
->  tools/include/uapi/linux/if_xdp.h             |  4 +
->  tools/lib/bpf/xsk.c                           |  7 ++
->  tools/lib/bpf/xsk.h                           |  2 +
->  16 files changed, 241 insertions(+), 86 deletions(-)
->
-> --
-> 2.17.1
->
+These two are where you should be forcing the link up or down if
+required (basically, inband modes should let the link come up/down
+irrespective of these functions, otherwise it should be forced.)
+
+> +
+> +static void mt7530_phylink_validate(struct dsa_switch *ds, int port,
+> +				    unsigned long *supported,
+> +				    struct phylink_link_state *state)
+> +{
+> +	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
+> +
+> +	switch (port) {
+> +	case 0: /* Internal phy */
+> +	case 1:
+> +	case 2:
+> +	case 3:
+> +	case 4:
+> +		if (state->interface != PHY_INTERFACE_MODE_NA &&
+> +		    state->interface != PHY_INTERFACE_MODE_GMII)
+> +			goto unsupported;
+> +		break;
+> +	/* case 5: Port 5 not supported! */
+> +	case 6: /* 1st cpu port */
+> +		if (state->interface != PHY_INTERFACE_MODE_RGMII &&
+> +		    state->interface != PHY_INTERFACE_MODE_TRGMII)
+
+PHY_INTERFACE_MODE_NA ?
+
+> +			goto unsupported;
+> +		break;
+> +	default:
+> +		linkmode_zero(supported);
+> +		dev_err(ds->dev, "%s: unsupported port: %i\n", __func__, port);
+> +		return;
+> +	}
+> +
+> +	phylink_set(mask, Autoneg);
+> +	phylink_set(mask, Pause);
+> +	phylink_set(mask, Asym_Pause);
+> +	phylink_set(mask, MII);
+> +
+> +	phylink_set(mask, 10baseT_Half);
+> +	phylink_set(mask, 10baseT_Full);
+> +	phylink_set(mask, 100baseT_Half);
+> +	phylink_set(mask, 100baseT_Full);
+> +	phylink_set(mask, 1000baseT_Full);
+> +	phylink_set(mask, 1000baseT_Half);
+
+You seem to be missing phylink_set_port_modes() here.
+
+> +
+> +	linkmode_and(supported, supported, mask);
+> +	linkmode_and(state->advertising, state->advertising, mask);
+> +	return;
+> +
+> +unsupported:
+> +	linkmode_zero(supported);
+> +	dev_err(ds->dev, "%s: unsupported interface mode: [0x%x] %s\n",
+> +		__func__, state->interface, phy_modes(state->interface));
+
+Not a good idea to print this at error level; sometimes we just probe
+for support.
+
+Eg, think about a SFP cage, and a SFP is plugged in that uses a PHY
+interface mode that the MAC can't support - we detect that by the
+validation failing, and printing a more meaningful message in phylink
+itself.
+
+> +}
+> +
+> +static int
+> +mt7530_phylink_mac_link_state(struct dsa_switch *ds, int port,
+> +			      struct phylink_link_state *state)
+> +{
+> +	struct mt7530_priv *priv = ds->priv;
+> +	u32 pmsr;
+> +
+> +	if (port < 0 || port >= MT7530_NUM_PORTS)
+> +		return -EINVAL;
+> +
+> +	pmsr = mt7530_read(priv, MT7530_PMSR_P(port));
+> +
+> +	state->link = (pmsr & PMSR_LINK);
+> +	state->an_complete = state->link;
+> +	state->duplex = (pmsr & PMSR_DPX) >> 1;
+> +
+> +	switch (pmsr & (PMSR_SPEED_1000 | PMSR_SPEED_100)) {
+> +	case 0:
+> +		state->speed = SPEED_10;
+> +		break;
+> +	case PMSR_SPEED_100:
+> +		state->speed = SPEED_100;
+> +		break;
+> +	case PMSR_SPEED_1000:
+> +		state->speed = SPEED_1000;
+> +		break;
+> +	default:
+> +		state->speed = SPEED_UNKNOWN;
+> +		break;
+> +	}
+> +
+> +	state->pause = 0;
+> +	if (pmsr & PMSR_RX_FC)
+> +		state->pause |= MLO_PAUSE_RX;
+> +	if (pmsr & PMSR_TX_FC)
+> +		state->pause |= MLO_PAUSE_TX;
+> +
+> +	return 1;
+> +}
+> +
+>  static const struct dsa_switch_ops mt7530_switch_ops = {
+>  	.get_tag_protocol	= mtk_get_tag_protocol,
+>  	.setup			= mt7530_setup,
+> @@ -1331,7 +1446,6 @@ static const struct dsa_switch_ops mt7530_switch_ops = {
+>  	.phy_write		= mt7530_phy_write,
+>  	.get_ethtool_stats	= mt7530_get_ethtool_stats,
+>  	.get_sset_count		= mt7530_get_sset_count,
+> -	.adjust_link		= mt7530_adjust_link,
+>  	.port_enable		= mt7530_port_enable,
+>  	.port_disable		= mt7530_port_disable,
+>  	.port_stp_state_set	= mt7530_stp_state_set,
+> @@ -1344,6 +1458,11 @@ static const struct dsa_switch_ops mt7530_switch_ops = {
+>  	.port_vlan_prepare	= mt7530_port_vlan_prepare,
+>  	.port_vlan_add		= mt7530_port_vlan_add,
+>  	.port_vlan_del		= mt7530_port_vlan_del,
+> +	.phylink_validate	= mt7530_phylink_validate,
+> +	.phylink_mac_link_state = mt7530_phylink_mac_link_state,
+> +	.phylink_mac_config	= mt7530_phylink_mac_config,
+> +	.phylink_mac_link_down	= mt7530_phylink_mac_link_down,
+> +	.phylink_mac_link_up	= mt7530_phylink_mac_link_up,
+>  };
+>  
+>  static const struct of_device_id mt7530_of_match[] = {
+> diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+> index bfac90f48102..41d9a132ac70 100644
+> --- a/drivers/net/dsa/mt7530.h
+> +++ b/drivers/net/dsa/mt7530.h
+> @@ -198,6 +198,7 @@ enum mt7530_vlan_port_attr {
+>  #define  PMCR_FORCE_SPEED_100		BIT(2)
+>  #define  PMCR_FORCE_FDX			BIT(1)
+>  #define  PMCR_FORCE_LNK			BIT(0)
+> +#define  PMCR_FORCE_LNK_DOWN		PMCR_FORCE_MODE
+>  #define  PMCR_COMMON_LINK		(PMCR_IFG_XMIT(1) | PMCR_MAC_MODE | \
+>  					 PMCR_BACKOFF_EN | PMCR_BACKPR_EN | \
+>  					 PMCR_TX_EN | PMCR_RX_EN | \
+> @@ -218,6 +219,14 @@ enum mt7530_vlan_port_attr {
+>  					 PMCR_TX_FC_EN | PMCR_RX_FC_EN)
+>  
+>  #define MT7530_PMSR_P(x)		(0x3008 + (x) * 0x100)
+> +#define  PMSR_EEE1G			BIT(7)
+> +#define  PMSR_EEE100M			BIT(6)
+> +#define  PMSR_RX_FC			BIT(5)
+> +#define  PMSR_TX_FC			BIT(4)
+> +#define  PMSR_SPEED_1000		BIT(3)
+> +#define  PMSR_SPEED_100			BIT(2)
+> +#define  PMSR_DPX			BIT(1)
+> +#define  PMSR_LINK			BIT(0)
+>  
+>  /* Register for MIB */
+>  #define MT7530_PORT_MIB_COUNTER(x)	(0x4000 + (x) * 0x100)
+> -- 
+> 2.20.1
+> 
+> 
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
