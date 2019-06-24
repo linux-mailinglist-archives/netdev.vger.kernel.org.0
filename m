@@ -2,164 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E41254FF2A
-	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 04:15:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDF164FF35
+	for <lists+netdev@lfdr.de>; Mon, 24 Jun 2019 04:18:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726934AbfFXCPx convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 23 Jun 2019 22:15:53 -0400
-Received: from f0-dek.dektech.com.au ([210.10.221.142]:48373 "EHLO
-        mail.dektech.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726334AbfFXCPx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jun 2019 22:15:53 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by mail.dektech.com.au (Postfix) with ESMTP id 3E6CA45871;
-        Mon, 24 Jun 2019 12:15:46 +1000 (AEST)
-X-Virus-Scanned: amavisd-new at dektech.com.au
-Received: from mail.dektech.com.au ([127.0.0.1])
-        by localhost (mail2.dektech.com.au [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id nOF48eCrZNho; Mon, 24 Jun 2019 12:15:46 +1000 (AEST)
-Received: from mail.dektech.com.au (localhost [127.0.0.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPS id 0761F45873;
-        Mon, 24 Jun 2019 12:15:45 +1000 (AEST)
-Received: from VNLAP298VNPC (unknown [14.161.14.188])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPSA id 3738645871;
-        Mon, 24 Jun 2019 12:15:44 +1000 (AEST)
-From:   "Hoang Le" <hoang.h.le@dektech.com.au>
-To:     "'David Ahern'" <dsahern@gmail.com>, <jon.maloy@ericsson.com>,
-        <maloy@donjonn.com>, <ying.xue@windriver.com>,
-        <netdev@vger.kernel.org>, <tipc-discussion@lists.sourceforge.net>
-References: <20190613080719.22081-1-hoang.h.le@dektech.com.au> <d4bef444-f009-5415-f27d-8cfde945ddab@gmail.com>
-In-Reply-To: <d4bef444-f009-5415-f27d-8cfde945ddab@gmail.com>
-Subject: RE: [iproute2-next v5] tipc: support interface name when activating UDP bearer
-Date:   Mon, 24 Jun 2019 09:15:48 +0700
-Message-ID: <00d101d52a32$bf483710$3dd8a530$@dektech.com.au>
+        id S1726700AbfFXCSU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Jun 2019 22:18:20 -0400
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:42288 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726307AbfFXCSU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Jun 2019 22:18:20 -0400
+Received: by mail-oi1-f196.google.com with SMTP id s184so8591540oie.9
+        for <netdev@vger.kernel.org>; Sun, 23 Jun 2019 19:18:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0b1vq1pumP9pUJ4RUDDgQ3X9m3+/fvdzdiDL4I2kAH4=;
+        b=Ip38n5URWujbgpJRwy0vq8CJa70vU7fuwsYoBhWmBl3VvncQUXz/QCVDQMlMYdRBR5
+         9ddYmowbYskINg3/NUhqM0D0hNQyUprTSw8eodjls02KCYlXzz/Pl9+StoX8QAdHTQkn
+         buuCsGQvwshjvCGPrjlFdbCZWF/tjoaKry55fYea3LogWk2SZM/YcLbJC0WqFVDiKYFd
+         1tPzzXuMZ8H+JE7R9ZwcDjKpMHngqISJITh7PjlUwzFeD+5RQkEk9diYY9gmZThcLBS2
+         7lPAM1qtGDrtVYSFrh4uDsR5rXApLWXz+KrPxUFsWh867LooQpnP/Aj8INDqHqGj9XyI
+         /7Qw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0b1vq1pumP9pUJ4RUDDgQ3X9m3+/fvdzdiDL4I2kAH4=;
+        b=YAZ34fly3BEiSQJjrwACH7GRRqK4ixkWk3TSbT1B2Sxo9mpM5WaOcsQC3JidFUw3Df
+         0Tx3cpH2N3n8bsnYOzab6mUeBamFhPqLxzm8U0zNvmF9wnUGD4orS6dfjn5QD+FHeHAG
+         Oycx3c2CTEr5qVeqd/1/mBrqzvAXrng78s3WPOzgFkb4gdjDb/w2AW7H1dn5kS9OnMYK
+         4V3mUetnbSKl/SygSqXMg66KAXaf0Apo4F4KsguMBUEgHXJ/E6AoS0TQWLFyVaBYpP3P
+         Hvo/O46x+7yVmf5e0liqYWMLLb7a+SYbnVu1Wh7j+/kP9phYRZqu2fOrRgBoXy9LccKH
+         ovMg==
+X-Gm-Message-State: APjAAAU5DsSdruOg3YBnK8CnBop0GhvthPg/jhF3ZeYDMrGVNfyy57I9
+        B9SdQ483yLaDOifexnbhWZOJOP55k48f2k3rRiuohpiC
+X-Google-Smtp-Source: APXvYqyby3zHHYA+GWYBxQUUyxg4KVxZD0tehGYRnsr9JPmGsEsKc60X0ZDUF+dk9P1lcTMpdOkFjrgIFdc283RDxxo=
+X-Received: by 2002:a05:6808:6c5:: with SMTP id m5mr7759289oih.89.1561342699678;
+ Sun, 23 Jun 2019 19:18:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: 8BIT
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQNM7RQ84gezk4aPz9SQzQv6igwFoQICW/2Zo6p2INA=
-Content-Language: en-us
+References: <20190620115108.5701-1-ap420073@gmail.com> <20190623.110737.1466794521532071350.davem@davemloft.net>
+In-Reply-To: <20190623.110737.1466794521532071350.davem@davemloft.net>
+From:   Taehee Yoo <ap420073@gmail.com>
+Date:   Mon, 24 Jun 2019 11:18:08 +0900
+Message-ID: <CAMArcTXWNY6WTjuBuUVxeb3c6dTqf8wf6sHFmNL5SvsGBbPqdQ@mail.gmail.com>
+Subject: Re: [PATCH net] vxlan: do not destroy fdb if register_netdevice() is failed
+To:     David Miller <davem@davemloft.net>
+Cc:     Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks David. I will update code change as your comments.
+On Mon, 24 Jun 2019 at 03:07, David Miller <davem@davemloft.net> wrote:
+>
 
-For the item:
-> +	/* remove from cache */
-> +	ll_drop_by_index(ifr.ifr_ifindex);
+Hi David,
 
-why the call to ll_drop_by_index? doing so means that ifindex is looked
-up again.
+Thank you for the review!
 
-[Hoang]
-> +	ifr.ifr_ifindex = ll_name_to_index(ifr.ifr_name);
-This function stored an entry ll_cache in hash map table. We have to call this function to prevent memory leaked. 
+> From: Taehee Yoo <ap420073@gmail.com>
+> Date: Thu, 20 Jun 2019 20:51:08 +0900
+>
+> > __vxlan_dev_create() destroys FDB using specific pointer which indicates
+> > a fdb when error occurs.
+> > But that pointer should not be used when register_netdevice() fails because
+> > register_netdevice() internally destroys fdb when error occurs.
+> >
+> > In order to avoid un-registered dev's notification, fdb destroying routine
+> > checks dev's register status before notification.
+>
+> Simply pass do_notify as false in this failure code path of __vxlan_dev_create(),
+> thank you.
 
-Regards,
-Hoang
------Original Message-----
-From: David Ahern <dsahern@gmail.com> 
-Sent: Saturday, June 22, 2019 5:50 AM
-To: Hoang Le <hoang.h.le@dektech.com.au>; dsahern@gmail.com; jon.maloy@ericsson.com; maloy@donjonn.com; ying.xue@windriver.com; netdev@vger.kernel.org; tipc-discussion@lists.sourceforge.net
-Subject: Re: [iproute2-next v5] tipc: support interface name when activating UDP bearer
+Failure path of __vxlan_dev_create() can't handle do_notify in that case
+because if register_netdevice() fails it internally calls
+->ndo_uninit() which is
+vxlan_uninit().
+vxlan_uninit() internally calls vxlan_fdb_delete_default() and it callls
+vxlan_fdb_destroy().
+do_notify of vxlan_fdb_destroy() in vxlan_fdb_delete_default() is always true.
+So, failure path of __vxlan_dev_create() doesn't have any opportunity to
+handle do_notify.
 
-On 6/13/19 2:07 AM, Hoang Le wrote:
-> @@ -119,6 +121,74 @@ static int generate_multicast(short af, char *buf, int bufsize)
->  	return 0;
->  }
->  
-> +static struct ifreq ifr = {};
-
-you don't need to initialize globals, but you could pass a a struct as
-the arg to the filter here which is both the addr buffer and the ifindex
-of interest.
-
-> +static int nl_dump_addr_filter(struct nlmsghdr *nlh, void *arg)
-> +{
-> +	struct ifaddrmsg *ifa = NLMSG_DATA(nlh);
-> +	char *r_addr = (char *)arg;
-> +	int len = nlh->nlmsg_len;
-> +	struct rtattr *addr_attr;
-> +
-> +	if (ifr.ifr_ifindex != ifa->ifa_index)
-> +		return 0;
-> +
-> +	if (strlen(r_addr) > 0)
-> +		return 1;
-> +
-> +	addr_attr = parse_rtattr_one(IFA_ADDRESS, IFA_RTA(ifa),
-> +				     len - NLMSG_LENGTH(sizeof(*ifa)));
-> +	if (!addr_attr)
-> +		return 0;
-> +
-> +	if (ifa->ifa_family == AF_INET) {
-> +		struct sockaddr_in ip4addr;
-> +		memcpy(&ip4addr.sin_addr, RTA_DATA(addr_attr),
-> +		       sizeof(struct in_addr));
-> +		if (inet_ntop(AF_INET, &ip4addr.sin_addr, r_addr,
-> +			      INET_ADDRSTRLEN) == NULL)
-> +			return 0;
-> +	} else if (ifa->ifa_family == AF_INET6) {
-> +		struct sockaddr_in6 ip6addr;
-> +		memcpy(&ip6addr.sin6_addr, RTA_DATA(addr_attr),
-> +		       sizeof(struct in6_addr));
-> +		if (inet_ntop(AF_INET6, &ip6addr.sin6_addr, r_addr,
-> +			      INET6_ADDRSTRLEN) == NULL)
-> +			return 0;
-> +	}
-> +	return 1;
-> +}
-> +
-> +static int cmd_bearer_validate_and_get_addr(const char *name, char *r_addr)
-> +{
-> +	struct rtnl_handle rth ={ .fd = -1 };
-
-space between '={'
-
-> +
-> +	memset(&ifr, 0, sizeof(ifr));
-> +	if (!name || !r_addr || get_ifname(ifr.ifr_name, name))
-> +		return 0;
-> +
-> +	ifr.ifr_ifindex = ll_name_to_index(ifr.ifr_name);
-> +	if (!ifr.ifr_ifindex)
-> +		return 0;
-> +
-> +	/* remove from cache */
-> +	ll_drop_by_index(ifr.ifr_ifindex);
-
-why the call to ll_drop_by_index? doing so means that ifindex is looked
-up again.
-
-> +
-> +	if (rtnl_open(&rth, 0) < 0)
-> +		return 0;
-> +
-> +	if (rtnl_addrdump_req(&rth, AF_UNSPEC, 0) < 0) {
-
-If you pass a filter here to set ifa_index, this command on newer
-kernels will be much more efficient. See ipaddr_dump_filter.
-
-
-> +		rtnl_close(&rth);
-> +		return 0;
-> +	}
-> +
-> +	if (rtnl_dump_filter(&rth, nl_dump_addr_filter, r_addr) < 0) {
-> +		rtnl_close(&rth);
-> +		return 0;
-> +	}
-> +	rtnl_close(&rth);
-> +	return 1;
-> +}
-
-it would better to have 1 exit with the rtnl_close and return rc based
-on above.
-
+Thank you!
