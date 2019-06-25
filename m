@@ -2,109 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C2369521CA
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 06:07:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB14E521D0
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 06:12:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728691AbfFYEHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 00:07:00 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:42967 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726631AbfFYEG7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 00:06:59 -0400
-Received: by mail-pg1-f196.google.com with SMTP id k13so2061214pgq.9;
-        Mon, 24 Jun 2019 21:06:59 -0700 (PDT)
+        id S1726878AbfFYEMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 00:12:14 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:33918 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726564AbfFYEMN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 00:12:13 -0400
+Received: by mail-ed1-f67.google.com with SMTP id s49so25004796edb.1
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 21:12:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=AkRO8e5ycrnKuMZ4NjLtJGYkQOt0yCD26N+5kX9ibhg=;
-        b=t2YZaCuhvjFlf7YncEX3gIhPMcL7Iu0FY+acuNPHA6QV81xTms2oc7LIg2W9Bax5+H
-         T5+ekJ51erToESTcK4rhSaiuPsRlYc7av1WygdOg8RB8WAqvsmluOIkrkqRUrDTMlbDr
-         1zBS12N5VDuDkhmYfGHnDSoc0dAHhIBC8uRDdHN+gluFmuzeoE/Gb2GrC+lJxhMXCTO7
-         tXjnOr36Ra0/76T3Mp8QEN9oxn1vnlMsRqxu9aOHc1i/HO3f7pG99tfg4o56/r+bj0Sp
-         Gm7qJMC7B9qToK5MSc4MClny4ZBzDcV/c3GxiqOF8WMZsq+VLM2beXAJe1Cxav6uZMFd
-         Q7cw==
+        d=cumulusnetworks.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=elAhTItOVPrcxV7GXK2cFhASX/WJaPAKyeNXD7OSPDI=;
+        b=LJl6pF3WjLKIXPXbqFsl2Z5P//eRpeYWyFCSFpR6FzkcbIaXqhkv6yNsxoQZ68lbEO
+         eTwx8DcsFalQS77Uk74Mi70xmNBDm2yUiBN947MlCvvhKMlkSo/afy0rEQaBTr2qmKsm
+         AofSZUFgN/4uifgyj+PmDD7LDNu+/3Ag3p5b4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=AkRO8e5ycrnKuMZ4NjLtJGYkQOt0yCD26N+5kX9ibhg=;
-        b=qBkbFqcCLm8CM36rWJ4oRi2u8VnCTKQedQbzbR8aHlboCyriAMmyGTyPnSzeUVqQPG
-         Fwk1MSF6RzUzLrQ7Sv1wG3KLTHvnxGPsGRRF3iBO9W1JEmA31XoPSTRGepjxz2vnAYFt
-         s8KyNkG2gS+TAnjkWNIpraDWesqr8MELOvwGGBpiKtrgaMO1qJ0a4ezTS0P33lIeTA9b
-         N7AmNmWRdY15m2/3TvwBQ9/yFJpTCBt55QSxkja42dhrHuQFXAzGN87PawnBwr2jMTVs
-         /VhG0gziyI0d5K23MoebG+sXqLGNWEjC9CMn3niu/Z5aUAHJlwgubpwT58zXniKfP313
-         oUFw==
-X-Gm-Message-State: APjAAAXgFeb1fErp7t9RdEbVuTTyInPDSjP5H1LSefSNnQ3SauYBEhfr
-        OLbLf1ZZEUbShEwxPm+MeoU=
-X-Google-Smtp-Source: APXvYqxGPcvS+CgSVL0iAo8yD0dXMNypsdhxM+aU3y+08qc2XIBNbVS4ubqgvBDyXo5VTAuPulM0Og==
-X-Received: by 2002:a17:90a:601:: with SMTP id j1mr28615892pjj.96.1561435618978;
-        Mon, 24 Jun 2019 21:06:58 -0700 (PDT)
-Received: from debian.net.fpt ([58.187.168.105])
-        by smtp.gmail.com with ESMTPSA id b24sm12408944pfd.98.2019.06.24.21.06.47
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 24 Jun 2019 21:06:58 -0700 (PDT)
-From:   Phong Tran <tranmanphong@gmail.com>
-To:     tranmanphong@gmail.com
-Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com,
-        alexander.sverdlin@gmail.com, allison@lohutok.net, andrew@lunn.ch,
-        ast@kernel.org, bgolaszewski@baylibre.com, bpf@vger.kernel.org,
-        daniel@iogearbox.net, daniel@zonque.org, dmg@turingmachine.org,
-        festevam@gmail.com, gerg@uclinux.org, gregkh@linuxfoundation.org,
-        gregory.clement@bootlin.com, haojian.zhuang@gmail.com,
-        hsweeten@visionengravers.com, illusionist.neo@gmail.com,
-        info@metux.net, jason@lakedaemon.net, jolsa@redhat.com,
-        kafai@fb.com, kernel@pengutronix.de, kgene@kernel.org,
-        krzk@kernel.org, kstewart@linuxfoundation.org,
-        linux-arm-kernel@lists.infradead.org, linux-imx@nxp.com,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org, linux@armlinux.org.uk,
-        liviu.dudau@arm.com, lkundrak@v3.sk, lorenzo.pieralisi@arm.com,
-        mark.rutland@arm.com, mingo@redhat.com, namhyung@kernel.org,
-        netdev@vger.kernel.org, nsekhar@ti.com, peterz@infradead.org,
-        robert.jarzmik@free.fr, s.hauer@pengutronix.de,
-        sebastian.hesselbarth@gmail.com, shawnguo@kernel.org,
-        songliubraving@fb.com, sudeep.holla@arm.com, swinslow@gmail.com,
-        tglx@linutronix.de, tony@atomide.com, will@kernel.org, yhs@fb.com
-Subject: [PATCH V3 15/15] ARM: vfp: cleanup cppcheck shifting errors
-Date:   Tue, 25 Jun 2019 11:03:56 +0700
-Message-Id: <20190625040356.27473-16-tranmanphong@gmail.com>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20190625040356.27473-1-tranmanphong@gmail.com>
-References: <20190624135105.15579-1-tranmanphong@gmail.com>
- <20190625040356.27473-1-tranmanphong@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=elAhTItOVPrcxV7GXK2cFhASX/WJaPAKyeNXD7OSPDI=;
+        b=HmoAeScvVye6OwyvR8Lsaj/gf5iuDV7o33vmV5UUQ99F798GUMRegOueq+oaLm2I1k
+         IYzCWw40aFeYB0SMsPR49cP1qGhr6JaSnGQ4VPMMjlBaiXd2W51J+FxLuomnVwk/dqLk
+         fq9+8tTFQEYn6K1h07qEAMH46nti6VZTPAvrCcOAecGfRpJ/6yNwghFLlfmojtbowDJ4
+         hmhrHTCvjSKq8eEzd3TS9ZeGVDx/axuEsUgF/5DlcSaU1hg4m1w2Edf8qE0aIjnQpc7G
+         R12xs19UUkUUd+z6kl5f7QF+Qh/rr0WXucQtOGwSZu79jmJDtQnKs4BaVNu4lyEYKAqz
+         JqSw==
+X-Gm-Message-State: APjAAAWOxzkSUNLWNZAx0OpJHr+BZMZigiD3PpCVmvR2ATJsmcIYvK0Y
+        nqw/4UtHZHBCjz6M6HsH7l6VH3otEkDkFCgJwXm1VA==
+X-Google-Smtp-Source: APXvYqywkrTmvjqLATJ3LFbvIxksFbhSVCnDVC9/bhSjiyh8qOdbCxA2pa05oU5G2VJdSwwN1LJ52DKeOEILvdT693Y=
+X-Received: by 2002:a17:906:5813:: with SMTP id m19mr13035681ejq.6.1561435931927;
+ Mon, 24 Jun 2019 21:12:11 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190620115108.5701-1-ap420073@gmail.com> <20190623.110737.1466794521532071350.davem@davemloft.net>
+ <CAMArcTXWNY6WTjuBuUVxeb3c6dTqf8wf6sHFmNL5SvsGBbPqdQ@mail.gmail.com>
+In-Reply-To: <CAMArcTXWNY6WTjuBuUVxeb3c6dTqf8wf6sHFmNL5SvsGBbPqdQ@mail.gmail.com>
+From:   Roopa Prabhu <roopa@cumulusnetworks.com>
+Date:   Mon, 24 Jun 2019 21:12:01 -0700
+Message-ID: <CAJieiUjri=-w2PqB9q5fEa=4jqkTWSfK0dUwnT7Cvxdo2sRRzg@mail.gmail.com>
+Subject: Re: [PATCH net] vxlan: do not destroy fdb if register_netdevice() is failed
+To:     Taehee Yoo <ap420073@gmail.com>
+Cc:     David Miller <davem@davemloft.net>, Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is error from cppcheck tool
-"Shifting signed 32-bit value by 31 bits is undefined behaviour errors"
-change to use BIT() marco for improvement.
+On Sun, Jun 23, 2019 at 7:18 PM Taehee Yoo <ap420073@gmail.com> wrote:
+>
+> On Mon, 24 Jun 2019 at 03:07, David Miller <davem@davemloft.net> wrote:
+> >
+>
+> Hi David,
+>
+> Thank you for the review!
+>
+> > From: Taehee Yoo <ap420073@gmail.com>
+> > Date: Thu, 20 Jun 2019 20:51:08 +0900
+> >
+> > > __vxlan_dev_create() destroys FDB using specific pointer which indicates
+> > > a fdb when error occurs.
+> > > But that pointer should not be used when register_netdevice() fails because
+> > > register_netdevice() internally destroys fdb when error occurs.
+> > >
+> > > In order to avoid un-registered dev's notification, fdb destroying routine
+> > > checks dev's register status before notification.
+> >
+> > Simply pass do_notify as false in this failure code path of __vxlan_dev_create(),
+> > thank you.
+>
+> Failure path of __vxlan_dev_create() can't handle do_notify in that case
+> because if register_netdevice() fails it internally calls
+> ->ndo_uninit() which is
+> vxlan_uninit().
+> vxlan_uninit() internally calls vxlan_fdb_delete_default() and it callls
+> vxlan_fdb_destroy().
+> do_notify of vxlan_fdb_destroy() in vxlan_fdb_delete_default() is always true.
+> So, failure path of __vxlan_dev_create() doesn't have any opportunity to
+> handle do_notify.
 
-Signed-off-by: Phong Tran <tranmanphong@gmail.com>
----
- arch/arm/vfp/vfpinstr.h | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/vfp/vfpinstr.h b/arch/arm/vfp/vfpinstr.h
-index 38dc154e39ff..8951637c58ff 100644
---- a/arch/arm/vfp/vfpinstr.h
-+++ b/arch/arm/vfp/vfpinstr.h
-@@ -57,10 +57,10 @@
- 
- #define vfp_single(inst)	(((inst) & 0x0000f00) == 0xa00)
- 
--#define FPSCR_N	(1 << 31)
--#define FPSCR_Z	(1 << 30)
--#define FPSCR_C (1 << 29)
--#define FPSCR_V	(1 << 28)
-+#define FPSCR_N	BIT(31)
-+#define FPSCR_Z	BIT(30)
-+#define FPSCR_C BIT(29)
-+#define FPSCR_V	BIT(28)
- 
- /*
-  * Since we aren't building with -mfpu=vfp, we need to code
--- 
-2.11.0
+I don't see register_netdevice calling ndo_uninit in case of all
+errors. In the case where it does not,
+does your patch leak the fdb entry ?.
 
+Wondering if we should just use vxlan_fdb_delete_default with a notify
+flag to delete the entry if exists.
+Will that help ?
+
+There is another commit that touched this code path:
+commit 6db9246871394b3a136cd52001a0763676563840
+
+Author: Petr Machata <petrm@mellanox.com>
+Date:   Tue Dec 18 13:16:00 2018 +0000
+    vxlan: Fix error path in __vxlan_dev_create()
