@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FA945270A
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 10:49:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A3F45270C
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 10:49:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730940AbfFYItB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 04:49:01 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:38780 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730925AbfFYIs7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 04:48:59 -0400
-Received: by mail-pg1-f195.google.com with SMTP id z75so6003984pgz.5
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 01:48:59 -0700 (PDT)
+        id S1730967AbfFYItD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 04:49:03 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:43288 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730957AbfFYItC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 04:49:02 -0400
+Received: by mail-pg1-f196.google.com with SMTP id f25so8603872pgv.10
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 01:49:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding:cc:from:to;
-        bh=f1EqKr7GJC/8CxAccGmLUlVnbKRyObp1Mx1bLRI3a2c=;
-        b=uLf4A7r4o4X1AaeqNyyiaiwTvT3cbwjX14g9SO3eyVlM9nqcPYvcD64hwwDhiBvEwF
-         sWnC8y14B58TkpSguJcXeDeX/2fFsHZKU3ejMPymGOQScVb10rWYg985M7iSIBU3I4FX
-         PSDchpLHdxmHNtSf+f+HlqPEMGO19vJMd9ZwEE9NoU5O1z4Dizej97zUbBYig9wWKb8v
-         y7NUlcSgVDNAZRVpeZTi1vFhRMOtU3Kh8MbGjx66SH5z5oUgRWSQRJQ1Es/7Y/dw8PbH
-         uX91wrNsAEnCvo0L6OEGnGb6HYisFTy7IKBXYBmlINKwgP3A/LJuduAJXwdfIEmN+3Zb
-         33Uw==
-X-Gm-Message-State: APjAAAWyABz9YKQ9RZuKRqriTY58kjlQjM9EfXdeZgDNaCPlwRCt874j
-        JfsbhCYPOYBAaEWvvCWlyTF2HQ==
-X-Google-Smtp-Source: APXvYqxi11fDTnliRbD2FFe1yfBEWRAkKNciTSRn86oA7mCGILT1K0pRVbT5ADMTCuMKh8BJFb7/Xg==
-X-Received: by 2002:a63:d4c:: with SMTP id 12mr9800277pgn.30.1561452538882;
-        Tue, 25 Jun 2019 01:48:58 -0700 (PDT)
+        bh=XYfawICoHdlPGy5ZH9tUEdA5L/x6tBrf6K4qM9kf5sg=;
+        b=hU2uQWhJfkX3wUtPfEPFTKmqRfPr1cr7XKr4FTxotxWLslw2JCMHgwFJRG4hOQK1nD
+         /MZVTzUJ+h8kYUF4cKvAVJNhSZMpp5xSQTAVmyOBeTV5lQIjA+QaiGx98i+9Gnni7B9M
+         Z5n8LulPMjBKAti3DdMrNeXctNTY4CDTk/RawjBIjbCg7cNSdW0mBnir7T7zHLb7FqZp
+         mFFVS5kaKOT70swQ1izdP6yZLqAzCfxSOPdQGx6wk/yhpCtWE1lQARHQGLcUqap8S65i
+         4Q4PBsC2p5Bg5yVDfgdslyPzIW8Ha0gZX0YouQXsh4lrpti0PxC1wludKHG0nLe4zovJ
+         iUqg==
+X-Gm-Message-State: APjAAAW8aI14k9J7jfnqeaNpEmsJQRAyXTdq5+Wlp8ZscRWCU1x2HmHh
+        V5OAT100/n/g9Av8QgUIXGxYyw==
+X-Google-Smtp-Source: APXvYqwCNa0WsbZn8ggYUDLUE5+wy/qL+5LrgWFpRBkC745SFq+uYDzFVAJBlrt9/380thYgGcwsdA==
+X-Received: by 2002:a17:90a:360c:: with SMTP id s12mr31015596pjb.30.1561452541650;
+        Tue, 25 Jun 2019 01:49:01 -0700 (PDT)
 Received: from localhost (220-132-236-182.HINET-IP.hinet.net. [220.132.236.182])
-        by smtp.gmail.com with ESMTPSA id f15sm1829014pje.17.2019.06.25.01.48.57
+        by smtp.gmail.com with ESMTPSA id p27sm19264906pfq.136.2019.06.25.01.49.00
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 25 Jun 2019 01:48:58 -0700 (PDT)
-Subject: [PATCH v2 1/2] net: macb: Kconfig: Make MACB depend on COMMON_CLK
-Date:   Tue, 25 Jun 2019 01:48:27 -0700
-Message-Id: <20190625084828.540-2-palmer@sifive.com>
+        Tue, 25 Jun 2019 01:49:01 -0700 (PDT)
+Subject: [PATCH v2 2/2] net: macb: Kconfig: Rename Atmel to Cadence
+Date:   Tue, 25 Jun 2019 01:48:28 -0700
+Message-Id: <20190625084828.540-3-palmer@sifive.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190625084828.540-1-palmer@sifive.com>
 References: <20190625084828.540-1-palmer@sifive.com>
@@ -50,49 +50,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-commit c218ad559020 ("macb: Add support for SiFive FU540-C000") added a
-dependency on the common clock framework to the macb driver, but didn't
-express that dependency in Kconfig.  As a result macb now fails to
-compile on systems without COMMON_CLK, which specifically causes a build
-failure on powerpc allyesconfig.
+The help text makes it look like NET_VENDOR_CADENCE enables support for
+Atmel devices, when in reality it's a driver written by Atmel that
+supports Cadence devices.  This may confuse users that have this device
+on a non-Atmel SoC.
 
-This patch adds the dependency, which results in the macb driver no
-longer being selectable on systems without the common clock framework.
-All known systems that have this device already support the common clock
-framework, so this should not cause trouble for any uses.  Supporting
-both the FU540-C000 and systems without COMMON_CLK is quite ugly.
+The fix is just s/Atmel/Cadence/, but I did go and re-wrap the Kconfig
+help text as that change caused it to go over 80 characters.
 
-I've build tested this on powerpc allyesconfig and RISC-V defconfig
-(which selects MACB), but I have not even booted the resulting kernels.
-
-Fixes: c218ad559020 ("macb: Add support for SiFive FU540-C000")
 Signed-off-by: Palmer Dabbelt <palmer@sifive.com>
 ---
- drivers/net/ethernet/cadence/Kconfig | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/cadence/Kconfig | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/cadence/Kconfig b/drivers/net/ethernet/cadence/Kconfig
-index 1766697c9c5a..64d8d6ee7739 100644
+index 64d8d6ee7739..f4b3bd85dfe3 100644
 --- a/drivers/net/ethernet/cadence/Kconfig
 +++ b/drivers/net/ethernet/cadence/Kconfig
-@@ -21,7 +21,7 @@ if NET_VENDOR_CADENCE
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ #
+-# Atmel device configuration
++# Cadence device configuration
+ #
  
- config MACB
- 	tristate "Cadence MACB/GEM support"
--	depends on HAS_DMA
-+	depends on HAS_DMA && COMMON_CLK
- 	select PHYLIB
- 	---help---
- 	  The Cadence MACB ethernet interface is found on many Atmel AT32 and
-@@ -42,7 +42,7 @@ config MACB_USE_HWSTAMP
+ config NET_VENDOR_CADENCE
+@@ -13,8 +13,8 @@ config NET_VENDOR_CADENCE
+ 	  If unsure, say Y.
  
- config MACB_PCI
- 	tristate "Cadence PCI MACB/GEM support"
--	depends on MACB && PCI && COMMON_CLK
-+	depends on MACB && PCI
- 	---help---
- 	  This is PCI wrapper for MACB driver.
+ 	  Note that the answer to this question doesn't directly affect the
+-	  kernel: saying N will just cause the configurator to skip all
+-	  the remaining Atmel network card questions. If you say Y, you will be
++	  kernel: saying N will just cause the configurator to skip all the
++	  remaining Cadence network card questions. If you say Y, you will be
+ 	  asked for your specific card in the following questions.
  
+ if NET_VENDOR_CADENCE
 -- 
 2.21.0
 
