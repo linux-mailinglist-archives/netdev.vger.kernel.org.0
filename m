@@ -2,101 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A7FC0520F8
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 05:19:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF4F75213F
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 05:26:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727770AbfFYDT0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 23:19:26 -0400
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:30004 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726836AbfFYDTZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 23:19:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1561432765; x=1592968765;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=Tm85/P6EdnHUS9/ZgUYKUpI215+EhEkrIW3ZTHLkxks=;
-  b=Jo8yVy2IeWvSivAmbaQ5LYHj3XmuPj7WV1Bq9Rhx7Fye5JYjIrOavLHl
-   mXLx+rV/6OC+DmmWCtt3OXEqbQ50l0ffjI9AKujUfkpEaiK8v0tRkEXfE
-   lQkLiHofrcMy0Q7c4OrTISjFJi6wGTyQp7B7cNb6ag4FKo2H6epuNLcyD
-   A=;
-X-IronPort-AV: E=Sophos;i="5.62,413,1554768000"; 
-   d="scan'208";a="807462291"
-Received: from sea3-co-svc-lb6-vlan3.sea.amazon.com (HELO email-inbound-relay-2b-a7fdc47a.us-west-2.amazon.com) ([10.47.22.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 25 Jun 2019 03:19:24 +0000
-Received: from EX13MTAUEA001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-2b-a7fdc47a.us-west-2.amazon.com (Postfix) with ESMTPS id 7279FC2661;
-        Tue, 25 Jun 2019 03:19:24 +0000 (UTC)
-Received: from EX13D04EUB004.ant.amazon.com (10.43.166.59) by
- EX13MTAUEA001.ant.amazon.com (10.43.61.243) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Tue, 25 Jun 2019 03:19:23 +0000
-Received: from EX13D10EUB001.ant.amazon.com (10.43.166.211) by
- EX13D04EUB004.ant.amazon.com (10.43.166.59) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Tue, 25 Jun 2019 03:19:22 +0000
-Received: from EX13D10EUB001.ant.amazon.com ([10.43.166.211]) by
- EX13D10EUB001.ant.amazon.com ([10.43.166.211]) with mapi id 15.00.1367.000;
- Tue, 25 Jun 2019 03:19:22 +0000
-From:   "Machulsky, Zorik" <zorik@amazon.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        "Jubran, Samih" <sameehj@amazon.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Woodhouse, David" <dwmw@amazon.co.uk>,
-        "Matushevsky, Alexander" <matua@amazon.com>,
-        "Bshara, Saeed" <saeedb@amazon.com>,
-        "Wilson, Matt" <msw@amazon.com>,
-        "Liguori, Anthony" <aliguori@amazon.com>,
-        "Bshara, Nafea" <nafea@amazon.com>,
-        "Tzalik, Guy" <gtzalik@amazon.com>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Saidi, Ali" <alisaidi@amazon.com>,
-        "Herrenschmidt, Benjamin" <benh@amazon.com>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>
-Subject: Re: [RFC V1 net-next 1/1] net: ena: implement XDP drop support
-Thread-Topic: [RFC V1 net-next 1/1] net: ena: implement XDP drop support
-Thread-Index: AQHVKZJBCsQnHt2DH0+685GXOvKMPqapSsWAgAH2TYA=
-Date:   Tue, 25 Jun 2019 03:19:22 +0000
-Message-ID: <A658E65E-93D2-4F10-823D-CC25B081C1B7@amazon.com>
-References: <20190623070649.18447-1-sameehj@amazon.com>
- <20190623070649.18447-2-sameehj@amazon.com> <20190623162133.6b7f24e1@carbon>
-In-Reply-To: <20190623162133.6b7f24e1@carbon>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.43.166.187]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <CF7F838899875B4CACCF1E56D0E95FD7@amazon.com>
-Content-Transfer-Encoding: base64
+        id S1726421AbfFYD0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 23:26:48 -0400
+Received: from mail-wm1-f51.google.com ([209.85.128.51]:37641 "EHLO
+        mail-wm1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726393AbfFYD0s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 23:26:48 -0400
+Received: by mail-wm1-f51.google.com with SMTP id f17so1294551wme.2
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 20:26:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IXOHYZNLSJ4fFdgXsJtdI+sZzVfkIBxQhmyiN32ERes=;
+        b=h78RoUNShCJm1d3kClIFH8eD1dm5k3dDXb3qwj8a61jhKIHL9VcMZHXf35iSh6OreT
+         pILSkk7pV8gvv8EyS8MhNa5uSbtu02fQ+AscZ6KDL3tNBsuUlrF0cRzqjEIU4jdASurh
+         iWicFqJCcwx+lLtVDAKIghJqu6Je79qCb3Fvgug3Ar+DZ6tfBQIAvwKA+0kyv55jj79x
+         ASgsJSUlNfB2DOIDDlAAS5uLTUHQ5kaXpB2DmXuAgez7dnNYfyyXpkR391usa+iCXN29
+         uIDxlQk7hTyxvn/whKk/mlSrfS/Q9wvtEZEvaW1+GbFMcBBxGBj+Kzm3k0OdNSHcH6Zs
+         WNkA==
+X-Gm-Message-State: APjAAAUPl/d2QoGNagy9t84jUapbczkUEwE/gJif55Jh1/fQhqN7T1FD
+        cwW8HenkeFUOyaapQzfcv11sVu9Ya1Jo0AoEmwE=
+X-Google-Smtp-Source: APXvYqyXWowJ2zGVRBzdPA8MJt2N8etF8Ze8LwItfxk3YFB5LIY7Qyr83M4Nu4vHLR7Frymq9t/zpKSoH6tzq8CQJ9k=
+X-Received: by 2002:a1c:3b02:: with SMTP id i2mr17052825wma.23.1561433205905;
+ Mon, 24 Jun 2019 20:26:45 -0700 (PDT)
 MIME-Version: 1.0
+References: <CAOftzPisP-3jN8drC6RXcTigXJjdwEnvTRvTHR-Kv4LKn4rhQQ@mail.gmail.com>
+ <ab745372-35eb-8bb8-30a4-0e861af27ac2@mojatatu.com>
+In-Reply-To: <ab745372-35eb-8bb8-30a4-0e861af27ac2@mojatatu.com>
+From:   Joe Stringer <joe@wand.net.nz>
+Date:   Mon, 24 Jun 2019 20:26:34 -0700
+Message-ID: <CAOftzPj_+6hfrb-FwU+E2P83RLLp6dtv0nJizSG1Fw7+vCgYwA@mail.gmail.com>
+Subject: Re: Removing skb_orphan() from ip_rcv_core()
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     Joe Stringer <joe@wand.net.nz>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Florian Westphal <fw@strlen.de>,
+        netdev <netdev@vger.kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCu+7v09uIDYvMjMvMTksIDc6MjEgQU0sICJKZXNwZXIgRGFuZ2FhcmQgQnJvdWVyIiA8YnJv
-dWVyQHJlZGhhdC5jb20+IHdyb3RlOg0KDQogICAgT24gU3VuLCAyMyBKdW4gMjAxOSAxMDowNjo0
-OSArMDMwMCA8c2FtZWVoakBhbWF6b24uY29tPiB3cm90ZToNCiAgICANCiAgICA+IFRoaXMgY29t
-bWl0IGltcGxlbWVudHMgdGhlIGJhc2ljIGZ1bmN0aW9uYWxpdHkgb2YgZHJvcC9wYXNzIGxvZ2lj
-IGluIHRoZQ0KICAgID4gZW5hIGRyaXZlci4NCiAgICANCiAgICBVc3VhbGx5IHdlIHJlcXVpcmUg
-YSBkcml2ZXIgdG8gaW1wbGVtZW50IGFsbCB0aGUgWERQIHJldHVybiBjb2RlcywNCiAgICBiZWZv
-cmUgd2UgYWNjZXB0IGl0LiAgQnV0IGFzIERhbmllbCBhbmQgSSBkaXNjdXNzZWQgd2l0aCBab3Jp
-ayBkdXJpbmcNCiAgICBOZXRDb25mWzFdLCB3ZSBhcmUgZ29pbmcgdG8gbWFrZSBhbiBleGNlcHRp
-b24gYW5kIGFjY2VwdCB0aGUgZHJpdmVyDQogICAgaWYgeW91IGFsc28gaW1wbGVtZW50IFhEUF9U
-WC4NCiAgICANCiAgICBBcyB3ZSB0cnVzdCB0aGF0IFpvcmlrL0FtYXpvbiB3aWxsIGZvbGxvdyBh
-bmQgaW1wbGVtZW50IFhEUF9SRURJUkVDVA0KICAgIGxhdGVyLCBnaXZlbiBoZS95b3Ugd2FudHMg
-QUZfWERQIHN1cHBvcnQgd2hpY2ggcmVxdWlyZXMgWERQX1JFRElSRUNULg0KDQpKZXNwZXIsIHRo
-YW5rcyBmb3IgeW91ciBjb21tZW50cyBhbmQgdmVyeSBoZWxwZnVsIGRpc2N1c3Npb24gZHVyaW5n
-IE5ldENvbmYhIA0KVGhhdCdzIHRoZSBwbGFuLCBhcyB3ZSBhZ3JlZWQuIEZyb20gb3VyIHNpZGUg
-SSB3b3VsZCBsaWtlIHRvIHJlaXRlcmF0ZSBhZ2FpbiB0aGUgDQppbXBvcnRhbmNlIG9mIG11bHRp
-LWJ1ZmZlciBzdXBwb3J0IGJ5IHhkcCBmcmFtZS4gV2Ugd291bGQgcmVhbGx5IHByZWZlciBub3Qg
-DQp0byBzZWUgb3VyIE1UVSBzaHJpbmtpbmcgYmVjYXVzZSBvZiB4ZHAgc3VwcG9ydC4gICANCg0K
-ICAgIA0KICAgIFsxXSBodHRwOi8vdmdlci5rZXJuZWwub3JnL25ldGNvbmYyMDE5Lmh0bWwNCiAg
-ICAtLSANCiAgICBCZXN0IHJlZ2FyZHMsDQogICAgICBKZXNwZXIgRGFuZ2FhcmQgQnJvdWVyDQog
-ICAgICBNU2MuQ1MsIFByaW5jaXBhbCBLZXJuZWwgRW5naW5lZXIgYXQgUmVkIEhhdA0KICAgICAg
-TGlua2VkSW46IGh0dHA6Ly93d3cubGlua2VkaW4uY29tL2luL2Jyb3Vlcg0KICAgIA0KDQo=
+On Mon, Jun 24, 2019 at 7:47 AM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+>
+> On 2019-06-21 1:58 p.m., Joe Stringer wrote:
+> > Hi folks, picking this up again..
+> [..]
+> > During LSFMM, it seemed like no-one knew quite why the skb_orphan() is
+> > necessary in that path in the current version of the code, and that we
+> > may be able to remove it. Florian, I know you weren't in the room for
+> > that discussion, so raising it again now with a stack trace, Do you
+> > have some sense what's going on here and whether there's a path
+> > towards removing it from this path or allowing the skb->sk to be
+> > retained during ip_rcv() in some conditions?
+>
+>
+> Sorry - I havent followed the discussion but saw your email over
+> the weekend and wanted to be at work to refresh my memory on some
+> code. For maybe 2-3 years we have deployed the tproxy
+> equivalent as a tc action on ingress (with no netfilter dependency).
+>
+> And, of course, we had to work around that specific code you are
+> referring to - we didnt remove it. The tc action code increments
+> the sk refcount and sets the tc index. The net core doesnt orphan
+> the skb if a speacial tc index value is set (see attached patch)
+>
+> I never bothered up streaming the patch because the hack is a bit
+> embarrassing (but worked ;->); and never posted the action code
+> either because i thought this was just us that had this requirement.
+> I am glad other people see the need for this feature. Is there effort
+> to make this _not_ depend on iptables/netfilter? I am guessing if you
+> want to do this from ebpf (tc or xdp) that is a requirement.
+> Our need was with tcp at the time; so left udp dependency on netfilter
+> alone.
+
+I haven't got as far as UDP yet, but I didn't see any need for a
+dependency on netfilter.
