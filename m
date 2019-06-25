@@ -2,89 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 529EB55760
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 20:49:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C83455778
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 20:58:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732995AbfFYSt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 14:49:58 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:52930 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731728AbfFYSt6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 14:49:58 -0400
-Received: by mail-wm1-f65.google.com with SMTP id s3so3884366wms.2;
-        Tue, 25 Jun 2019 11:49:56 -0700 (PDT)
+        id S1733041AbfFYS6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 14:58:14 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:42714 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730991AbfFYS6N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 14:58:13 -0400
+Received: by mail-pl1-f193.google.com with SMTP id ay6so9283251plb.9
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 11:58:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=OTxHp8ZwwpRePYsOtjKpbEv8oKNUHQRiwNgYrFyeH3I=;
+        b=diBr0wG89fVhmYbe3iCcPoJCwXD6br4ztWDNO6IomXW89ngyfVsDezKXE8S91J2OIb
+         3Cr7Cv/BRsJOnZKK9F79V3vFp4+SIGpfMuG0O05J1EyqQzVLrZYVHkk926zpICR0+1AP
+         MfWcPy8XoKNEnM+A7nRZv0fYsPBfiyjAly3xAMGjFAyBhHVoY99CRK7E4LNGilkjo9OJ
+         M2rUWER/Rk26LZvn4up3seRBEMVToXuYDQ4eeKGmA+YgjR0E+x929Ov3+6AEXamhZ4Es
+         I5F8KfqfIKgZ3fB1+IWvTBg4TovcrjWEibkZuoUlDmiE99nQUbHXRcPvzwqMfj2BOg52
+         kYQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=NnYdk1L9tNxJOrD8BD7rIwHwgh6hKQRIs6DjAkp3gAE=;
-        b=Dp/hi+AnZRvnxV252Y1zilwrKb8DnTlvzlzlZ7571aQHlUTEFf+blfsC/9YM10g2y8
-         4Z/jbIJxtlAsHvLlbOabt2tQ71m7RCujDYIkCwG47Wpx+Z2tw7NYUqc1qr4bNvyknw87
-         D2NHpGF/XVK09k4FuV5z13cayPp6FhgLBgvEUD91ytD4v2F96agf27+jiJ4/YfG8SDMf
-         r1B2Ow67nBRyMgeGmvDR3wgdDdK8IwD8eGX9okmSiXeJyB91SP1VCMaTM00/FufBRZdw
-         NFHsJeLz5Ofm5Gwjfj+RmYQgAZ0SeB81RwbVkQvaODXOCnQkT8KwPQhw7SxHRFg827ak
-         eR4A==
-X-Gm-Message-State: APjAAAX4u0J4O/wCdUqmYHiSLIOhbBn3kC8FkCRF03a2IMQCdgXoIVt5
-        8VypmjweWZTHv36c3Hvmva8=
-X-Google-Smtp-Source: APXvYqzegnboHeF+ubq+Re36XcyZoE34C8XzPBywiqM+pa+uCqEiiTKajy0OCgcU1IWo0AD7Iuihsw==
-X-Received: by 2002:a1c:ef0c:: with SMTP id n12mr19655866wmh.132.1561488595719;
-        Tue, 25 Jun 2019 11:49:55 -0700 (PDT)
-Received: from kozik-lap ([194.230.155.151])
-        by smtp.googlemail.com with ESMTPSA id o14sm12298185wrp.77.2019.06.25.11.49.52
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 25 Jun 2019 11:49:54 -0700 (PDT)
-Date:   Tue, 25 Jun 2019 20:49:51 +0200
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Phong Tran <tranmanphong@gmail.com>
-Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com,
-        alexander.sverdlin@gmail.com, allison@lohutok.net, andrew@lunn.ch,
-        ast@kernel.org, bgolaszewski@baylibre.com, bpf@vger.kernel.org,
-        daniel@iogearbox.net, daniel@zonque.org, dmg@turingmachine.org,
-        festevam@gmail.com, gerg@uclinux.org, gregkh@linuxfoundation.org,
-        gregory.clement@bootlin.com, haojian.zhuang@gmail.com,
-        hsweeten@visionengravers.com, illusionist.neo@gmail.com,
-        info@metux.net, jason@lakedaemon.net, jolsa@redhat.com,
-        kafai@fb.com, kernel@pengutronix.de, kgene@kernel.org,
-        kstewart@linuxfoundation.org, linux-arm-kernel@lists.infradead.org,
-        linux-imx@nxp.com, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        linux@armlinux.org.uk, liviu.dudau@arm.com, lkundrak@v3.sk,
-        lorenzo.pieralisi@arm.com, mark.rutland@arm.com, mingo@redhat.com,
-        namhyung@kernel.org, netdev@vger.kernel.org, nsekhar@ti.com,
-        peterz@infradead.org, robert.jarzmik@free.fr,
-        s.hauer@pengutronix.de, sebastian.hesselbarth@gmail.com,
-        shawnguo@kernel.org, songliubraving@fb.com, sudeep.holla@arm.com,
-        swinslow@gmail.com, tglx@linutronix.de, tony@atomide.com,
-        will@kernel.org, yhs@fb.com
-Subject: Re: [PATCH V3 04/15] ARM: exynos: cleanup cppcheck shifting error
-Message-ID: <20190625184951.GA10025@kozik-lap>
-References: <20190624135105.15579-1-tranmanphong@gmail.com>
- <20190625040356.27473-1-tranmanphong@gmail.com>
- <20190625040356.27473-5-tranmanphong@gmail.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=OTxHp8ZwwpRePYsOtjKpbEv8oKNUHQRiwNgYrFyeH3I=;
+        b=g58z/y58+QJD/l9DSKqOHbUBCRFXNbA/dVbuI4/O6DVHcl7ivSWgXd4hqheP4qucuo
+         i66vKKKVk3Stw7cuVE0AWqZgB9+K2MfzdxpkQKWPxM3pCVyfK0sTABfcyDIPaXnxQhWd
+         yveD1fhI4QtdkH0dBV4UdsYTotiA9w6fJ+5fNSlAIEs35uHbnuNJF2xZz3+QoEx8eLil
+         Nr2qpYc2ISygJle9u+41DdOuo5+NX45aNAeWw3vDTtZg1z2BNFicIYIrYDAQ6s9aKb5W
+         yJoZjkxnsssxG3mkDSqpXgAozoR5TUJlojXU2Q4nfbB3n213iNr2Gr+TIDv/SePaA7Gd
+         GZ5Q==
+X-Gm-Message-State: APjAAAWcEJKJiGw0WRLdX3fwzwUdjSDRnExYDYrYURbpEC6Rxj94OxwC
+        JqAbfUBoTHGXU/54OnGRPRwolA==
+X-Google-Smtp-Source: APXvYqxYIb9VZQAzbs2w03Mjx0vu00KN3Euvbq829k0IXWzqtdS+9A+4VVDx5e0WJ7nh1aEUQiNkQw==
+X-Received: by 2002:a17:902:2aa8:: with SMTP id j37mr215553plb.316.1561489092997;
+        Tue, 25 Jun 2019 11:58:12 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id e20sm16109147pfi.35.2019.06.25.11.58.12
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 25 Jun 2019 11:58:12 -0700 (PDT)
+Date:   Tue, 25 Jun 2019 11:58:06 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Baruch Siach <baruch@tkos.co.il>
+Cc:     Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
+        Aya Levin <ayal@mellanox.com>,
+        Moshe Shemesh <moshe@mellanox.com>
+Subject: Re: [PATCH iproute2 1/2] devlink: fix format string warning for
+ 32bit targets
+Message-ID: <20190625115806.01e29659@hermes.lan>
+In-Reply-To: <016aabe2639668b4710b73157ea39e8f97f7d726.1561463345.git.baruch@tkos.co.il>
+References: <016aabe2639668b4710b73157ea39e8f97f7d726.1561463345.git.baruch@tkos.co.il>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20190625040356.27473-5-tranmanphong@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 25, 2019 at 11:03:45AM +0700, Phong Tran wrote:
-> There is error from cppcheck tool
-> "Shifting signed 32-bit value by 31 bits is undefined behaviour errors"
-> change to use BIT() marco for improvement.
-> 
-> Signed-off-by: Phong Tran <tranmanphong@gmail.com>
-> ---
->  arch/arm/mach-exynos/suspend.c | 2 +-
+On Tue, 25 Jun 2019 14:49:04 +0300
+Baruch Siach <baruch@tkos.co.il> wrote:
 
-Thanks, applied with slightly different commit message. As Peter
-pointed, there is no error because of GCC.  Usually we expect a reply to
-comments on LKML...  and also you could take his hints and use them to
-improve the commit msg to properly describe what is the problem.
+> diff --git a/devlink/devlink.c b/devlink/devlink.c
+> index 436935f88bda..b400fab17578 100644
+> --- a/devlink/devlink.c
+> +++ b/devlink/devlink.c
+> @@ -1726,9 +1726,9 @@ static void pr_out_u64(struct dl *dl, const char *name, uint64_t val)
+>  		jsonw_u64_field(dl->jw, name, val);
+>  	} else {
+>  		if (g_indent_newline)
+> -			pr_out("%s %lu", name, val);
+> +			pr_out("%s %llu", name, val);
+>  		else
+> -			pr_out(" %s %lu", name, val);
+> +			pr_out(" %s %llu", name, val);
 
-Best regards,
-Krzysztof
+But on 64 bit target %llu expects unsigned long long which is 128bit.
+
+The better way to fix this is to use:
+#include <inttypes.h>
+
+And the use the macro PRIu64
+			pr_out(" %s %"PRIu64, name, val);
 
