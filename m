@@ -2,80 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 52B2854F69
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 14:56:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1EEE54F9B
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 15:03:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729550AbfFYM4K convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 25 Jun 2019 08:56:10 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:44036 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726504AbfFYM4J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 08:56:09 -0400
-Received: from mail-wr1-f71.google.com ([209.85.221.71])
-        by youngberry.canonical.com with esmtps (TLS1.0:RSA_AES_128_CBC_SHA1:16)
-        (Exim 4.76)
-        (envelope-from <guilherme.piccoli@canonical.com>)
-        id 1hfkzX-0006SU-4y
-        for netdev@vger.kernel.org; Tue, 25 Jun 2019 12:56:07 +0000
-Received: by mail-wr1-f71.google.com with SMTP id r4so7940863wrt.13
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 05:56:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=VJ8VdYo0DnObA64K1FvYQSMew8tJyJOTy4Xp3oei9UY=;
-        b=DX8rAoWNG/e6RezUIqaLbnbHNYRlE0AY0CZIeVJGih4SSW0WAEkmmxkXEOoIU7a7C3
-         QW+jsKIv6YOIas98ZVBYOgqTU7wZZuzCXg8ysXScX2gkNj2Y1+3PL3jD8au60nqmHG9m
-         gTcB5x2Y6nlrsLGxBh7xpMzkhEdbRau2+UyUyktVgecTsoAy4OjR82FLe3hAtJoVYT47
-         mI957PRAtrHLSUSC7NG8ZEAMbnOf2bbSwfKvOWghUaVRWhYYwWAXzS5s8wKAttBYz7T7
-         iapepYvf0PoIWbxeqrn5c6pJQHLmKTnveLTW5il0xKiTNMfPsF5yEwyXxhz2dPmZbRib
-         06Ng==
-X-Gm-Message-State: APjAAAXZnA+zCMvxzDorGO0bacVnnSAEP4WrZhhPySmRn5YvsbpxPndK
-        yRzSy9GWgbDx0HSRu7JBbhQR/CYvDzJKgTYS0aSKH9wBgiuTqqBHReHluPgZCtJpMg2ZS9YCTS1
-        Fsw/tV6KHNQRxOFZRTDTworIgauOm2jYo4Rybar+xORkAVl7jvw==
-X-Received: by 2002:a5d:61cd:: with SMTP id q13mr42183586wrv.114.1561467366947;
-        Tue, 25 Jun 2019 05:56:06 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqxyjHvrr3PM8rAn+CmesEnH4DjuM76PrrYfAJcE3RrDcoOf1ry44A1sxMnQftTGE7gshglpBIt0MUzNkOdJPRk=
-X-Received: by 2002:a5d:61cd:: with SMTP id q13mr42183574wrv.114.1561467366795;
- Tue, 25 Jun 2019 05:56:06 -0700 (PDT)
+        id S1730305AbfFYNDT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 09:03:19 -0400
+Received: from torres.zugschlus.de ([85.214.131.164]:47376 "EHLO
+        torres.zugschlus.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728449AbfFYNDT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 09:03:19 -0400
+Received: from mh by torres.zugschlus.de with local (Exim 4.92)
+        (envelope-from <mh+netdev@zugschlus.de>)
+        id 1hfl6T-0004kv-Mp; Tue, 25 Jun 2019 15:03:17 +0200
+Date:   Tue, 25 Jun 2019 15:03:17 +0200
+From:   Marc Haber <mh+netdev@zugschlus.de>
+To:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: iwl_mvm_add_new_dqa_stream_wk BUG in lib/list_debug.c:56
+Message-ID: <20190625130317.GB31363@torres.zugschlus.de>
+References: <20190530081257.GA26133@torres.zugschlus.de>
+ <20190602134842.GC3249@torres.zugschlus.de>
 MIME-Version: 1.0
-References: <20190624222356.17037-1-gpiccoli@canonical.com> <MN2PR18MB2528BCB89AC93EB791446BABD3E30@MN2PR18MB2528.namprd18.prod.outlook.com>
-In-Reply-To: <MN2PR18MB2528BCB89AC93EB791446BABD3E30@MN2PR18MB2528.namprd18.prod.outlook.com>
-From:   Guilherme Piccoli <gpiccoli@canonical.com>
-Date:   Tue, 25 Jun 2019 09:55:30 -0300
-Message-ID: <CAHD1Q_y7v5fVeDRT+KDimQ-RBJMujMCL2DPvdBh==YEJ3+2ZaQ@mail.gmail.com>
-Subject: Re: [EXT] [PATCH V2] bnx2x: Prevent ptp_task to be rescheduled indefinitely
-To:     Sudarsana Reddy Kalluru <skalluru@marvell.com>
-Cc:     GR-everest-linux-l2 <GR-everest-linux-l2@marvell.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Ariel Elior <aelior@marvell.com>,
-        "jay.vosburgh@canonical.com" <jay.vosburgh@canonical.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20190602134842.GC3249@torres.zugschlus.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 25, 2019 at 1:02 AM Sudarsana Reddy Kalluru
-<skalluru@marvell.com> wrote:
->
-> Thanks for your changes and time on this. In general time-latching happens in couple or more milliseconds (even in some 100s of usec) under the normal traffic conditions. With this approach, there's a possibility that every packet has to wait for atleast 50ms for the timestamping. This in turn affects the wait-queue (of packets to be timestamped) at hardware as next TS recording happens only after the register is freed/read. And also, it incurs some latency for the ptp applications.
->
-> PTP thread is consuming time may be due to the debug messages in this error path, which you are planning address already (thanks!!).
->    "Also, I've dropped the PTP "outstanding, etc" messages to debug-level, they're quite flooding my log.
-> Do you see cpu hog even after removing this message? In such case we may need to think of other alternatives such as sleep for 1 ms.
-> Just for the info, the approach continuous-poll-for-timestamp() is used ixgbe driver (ixgbe_ptp_tx_hwtstamp_work()) as well.
->
+On Sun, Jun 02, 2019 at 03:48:42PM +0200, Marc Haber wrote:
+> On Thu, May 30, 2019 at 10:12:57AM +0200, Marc Haber wrote:
+> > on my primary notebook, a Lenovo X260, with an Intel Wireless 8260
+> > (8086:24f3), running Debian unstable, I have started to see network
+> > hangs since upgrading to kernel 5.1. In this situation, I cannot
+> > restart Network-Manager (the call just hangs), I can log out of X, but
+> > the system does not cleanly shut down and I need to Magic SysRq myself
+> > out of the running system. This happens about once every two days.
+> 
+> The issue is also present in 5.1.5 and 5.1.6.
 
-Thanks again for the good insights Sudarsana! I'll do some experiments
-dropping all messages and checking
-if the ptp thread is still consuming a lot of CPU (I believe so). In
-this case, I'll rework the approach by starting
-the delays in 1ms to avoid impacting the HW wait-queue and causing
-delays in ptp applications.
+Almost a month later, 5.1.15 still crashes about twice a day on my
+Notebook. The error message seems pretty clear to me, how can I go on
+from there and may be identify a line number outside of a library?
 
-Cheers,
+Greetings
+Marc
 
-
-Guilherme
+-- 
+-----------------------------------------------------------------------------
+Marc Haber         | "I don't trust Computers. They | Mailadresse im Header
+Leimen, Germany    |  lose things."    Winona Ryder | Fon: *49 6224 1600402
+Nordisch by Nature |  How to make an American Quilt | Fax: *49 6224 1600421
