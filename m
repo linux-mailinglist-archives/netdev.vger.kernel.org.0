@@ -2,263 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C5585587C
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 22:12:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3C6655891
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 22:15:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727213AbfFYUMW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 16:12:22 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:38792 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726397AbfFYUMW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 16:12:22 -0400
-Received: by mail-pl1-f193.google.com with SMTP id g4so46072plb.5
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 13:12:21 -0700 (PDT)
+        id S1727071AbfFYUPo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 16:15:44 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:39670 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726414AbfFYUPo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 16:15:44 -0400
+Received: by mail-qt1-f193.google.com with SMTP id i34so19892256qta.6;
+        Tue, 25 Jun 2019 13:15:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=frdlJFxp0g7/JgxVC9Knu0EZuFk8912u7Wo1FVzUmns=;
-        b=Nyb+zlMnDiYMzmLqnBAwdmngB+mYJdvquxfMDwCy5zvB7uhuZYJ965t0yuyadQ5fC5
-         WAwMBqEhRzvXZJlWTFHp1eGTYXntKDuyWJIXRygR4w4aLx90JBuzG1YT5TqDklyjyWDe
-         YbTaC2rHWCEpTr7osJsgtI2DVbvgnyErrAnRKB5vxim3CQ8qV6vzbBI0GRTZeExvFESj
-         D7UvI9PzC50CDNlYR5vwX+gjDokE4WkOCypTdCQ0xFT4R+EYDTLtEFhmQ12/3aRbVPiL
-         q55toOzREutJvOUWTydV4sxijBek67/XvKyV7usdzK/go45JI2h3Ted+6+e+4vyurgnt
-         a5Tw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jL2T3LnKwFn7OXbtIUsI0f+FbKUo5CwlSQp7ffYY78Q=;
+        b=ZNtuV2szwLI+JISEUwJjK2MLkjaOk2fe+1L/GrDH3UJhLl3Y5cN/8PvLgkAlLm5A5K
+         XrqTyKfRNOLl5bBzCjBW3k3b5eL3eRlfLLq5G/PHY6LhHEbi9BYHqmo2gA17gdUwirNI
+         RsiH/pljuE+aW9HfEBT4vm8UYHPxM3Us2xLZQo3b1NOtIbk5a/B5/JkmJJaFfEKZ7rWe
+         m1I0IrdBhrsOYfK4oEg5wnYIQC624Y6n50cwBSaP3TCgccw9sY/TkAzC/QOqQxYcW/VM
+         6O6T9s+XGcsiWwE74raQSDIto/4XFra42zNjiF2Z0scmPTNgY1hRie3GqkLAeaCbQat+
+         4TsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=frdlJFxp0g7/JgxVC9Knu0EZuFk8912u7Wo1FVzUmns=;
-        b=HPARuEuBek4o4ybf+c/lmT4w8obsBCC+1mjFCHoQj2IcJTqiZBi0VqgF+mtqqGWR3m
-         wAFaXf4BHwZJhIhCyDdOD680NV2nHeZztuyAlwyS+zBfnBcrUKFYzUOZNJQ0WZ0uYFAC
-         mb/4cUV+NZfXy8LaSj3Bov8tzu36gcsi9SJjD1p0PdcSO4YcwD2sMryJ4sudTunGOS2f
-         7p8z+GwthaYPw9eSVaAptlqDJD39mNpkjAQ/nKDDnIMIFIwPxXDJU7tAPcmL0VZdddYY
-         fFxkZDT/bZAeMPd1IRb2elinaZCZNyyDEgygf2Cx304Lxvv9S4+ZZOFQrXTEM505ZrFJ
-         +6HA==
-X-Gm-Message-State: APjAAAUney3s54RR5X1T7aHRJLHrewKhzk2u1KACgqV3V+i2U3TTjJOj
-        NGJppYVmI1+H0VwkTQm+TRO8Sg==
-X-Google-Smtp-Source: APXvYqz5A8wkwC4bDX9Grozu3DdnvL4TZkl+WU84TSLtrBEe3ie0duREqD7ndDM6yIZbjMI4EQ0Hpw==
-X-Received: by 2002:a17:902:8207:: with SMTP id x7mr544236pln.63.1561493541558;
-        Tue, 25 Jun 2019 13:12:21 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id j21sm16301529pfh.86.2019.06.25.13.12.20
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 25 Jun 2019 13:12:21 -0700 (PDT)
-Date:   Tue, 25 Jun 2019 13:12:20 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Krzesimir Nowak <krzesimir@kinvolk.io>
-Cc:     netdev@vger.kernel.org, Alban Crequy <alban@kinvolk.io>,
-        Iago =?iso-8859-1?Q?L=F3pez?= Galeiras <iago@kinvolk.io>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [bpf-next v2 08/10] bpf: Implement bpf_prog_test_run for perf
- event programs
-Message-ID: <20190625201220.GC10487@mini-arch>
-References: <20190625194215.14927-1-krzesimir@kinvolk.io>
- <20190625194215.14927-9-krzesimir@kinvolk.io>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jL2T3LnKwFn7OXbtIUsI0f+FbKUo5CwlSQp7ffYY78Q=;
+        b=VfjeFYyGztXB9MgoqQEWL6NT4idotxRpZ7rq1tElAJvqNfzx9WjlJ6JZIa92DdUjCA
+         KhA7yHvWRITNJFX6yK+yAp7UPAxTbDLfyY6XVRqNdVh2AH2y6Oe6ymfkDdivOMWuxTUD
+         u9xFvosh2GPE7ta0/i3nBGzco6RRcZHc5eolBPPK4nQborlRIfvJQHKBgxIW/sHqSQIz
+         d7SW/qs2Y6ZL9L0gnXqg6o59jSkgiK8i75Dy7I8G9QeA1XyU6n/2OZh1ejDk8uagEVxI
+         FdqqWSU6lndbX7r55xM1UA7nePkba4wUaomPDlGUW0Q3APuTLVnd/E+zhHaVAZmaohuP
+         0ypg==
+X-Gm-Message-State: APjAAAViGkRN2t+xF+sdQwhf2Wav3Lk8cIVMYC0uB3shBZEe6FyQ4eHL
+        Qgc/jhDaFtnzYre/rDjmgsQJSvWfSr6YIBB1HvA=
+X-Google-Smtp-Source: APXvYqyogBmAFSPhvheG+29OBJGifz/bN1gBWk/8cS+qZO3IUzwYA/ovUEes0db4m2Ay44lFl/vnRjLQZprheIrkTkY=
+X-Received: by 2002:ac8:1af4:: with SMTP id h49mr198257qtk.183.1561493743541;
+ Tue, 25 Jun 2019 13:15:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190625194215.14927-9-krzesimir@kinvolk.io>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <1561480910-23543-1-git-send-email-jiong.wang@netronome.com>
+In-Reply-To: <1561480910-23543-1-git-send-email-jiong.wang@netronome.com>
+From:   Song Liu <liu.song.a23@gmail.com>
+Date:   Tue, 25 Jun 2019 13:15:32 -0700
+Message-ID: <CAPhsuW5KrJ20NAk+bdfTk_rT-G6QfanDDT9djynAVdXWO1Qc9A@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf: fix BPF_ALU32 | BPF_ARSH on BE arches
+To:     Jiong Wang <jiong.wang@netronome.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        yauheni.kaliuta@redhat.com, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, oss-drivers@netronome.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/25, Krzesimir Nowak wrote:
-> As an input, test run for perf event program takes struct
-> bpf_perf_event_data as ctx_in and struct bpf_perf_event_value as
-> data_in. For an output, it basically ignores ctx_out and data_out.
-> 
-> The implementation sets an instance of struct bpf_perf_event_data_kern
-> in such a way that the BPF program reading data from context will
-> receive what we passed to the bpf prog test run in ctx_in. Also BPF
-> program can call bpf_perf_prog_read_value to receive what was passed
-> in data_in.
-> 
-> Signed-off-by: Krzesimir Nowak <krzesimir@kinvolk.io>
+On Tue, Jun 25, 2019 at 12:31 PM Jiong Wang <jiong.wang@netronome.com> wrote:
+>
+> Yauheni reported the following code do not work correctly on BE arches:
+>
+>        ALU_ARSH_X:
+>                DST = (u64) (u32) ((*(s32 *) &DST) >> SRC);
+>                CONT;
+>        ALU_ARSH_K:
+>                DST = (u64) (u32) ((*(s32 *) &DST) >> IMM);
+>                CONT;
+>
+> and are causing failure of test_verifier test 'arsh32 on imm 2' on BE
+> arches.
+>
+> The code is taking address and interpreting memory directly, so is not
+> endianness neutral. We should instead perform standard C type casting on
+> the variable. A u64 to s32 conversion will drop the high 32-bit and reserve
+> the low 32-bit as signed integer, this is all we want.
+>
+> Fixes: 2dc6b100f928 ("bpf: interpreter support BPF_ALU | BPF_ARSH")
+> Reported-by: Yauheni Kaliuta <yauheni.kaliuta@redhat.com>
+> Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
+> Signed-off-by: Jiong Wang <jiong.wang@netronome.com>
+
+Acked-by: Song Liu <songliubraving@fb.com>
+
+I guess we need:
+
+Cc: <stable@vger.kernel.org> #v5.0+
+
+
 > ---
->  kernel/trace/bpf_trace.c                      | 107 ++++++++++++++++++
->  .../bpf/verifier/perf_event_sample_period.c   |   8 ++
->  2 files changed, 115 insertions(+)
-> 
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index c102c240bb0b..2fa49ea8a475 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -16,6 +16,8 @@
->  
->  #include <asm/tlb.h>
->  
-> +#include <trace/events/bpf_test_run.h>
-> +
->  #include "trace_probe.h"
->  #include "trace.h"
->  
-> @@ -1160,7 +1162,112 @@ const struct bpf_verifier_ops perf_event_verifier_ops = {
->  	.convert_ctx_access	= pe_prog_convert_ctx_access,
->  };
->  
-> +static int pe_prog_test_run(struct bpf_prog *prog,
-> +			    const union bpf_attr *kattr,
-> +			    union bpf_attr __user *uattr)
-> +{
-> +	void __user *ctx_in = u64_to_user_ptr(kattr->test.ctx_in);
-> +	void __user *data_in = u64_to_user_ptr(kattr->test.data_in);
-> +	u32 data_size_in = kattr->test.data_size_in;
-> +	u32 ctx_size_in = kattr->test.ctx_size_in;
-> +	u32 repeat = kattr->test.repeat;
-> +	u32 retval = 0, duration = 0;
-> +	int err = -EINVAL;
-> +	u64 time_start, time_spent = 0;
-> +	int i;
-> +	struct perf_sample_data sample_data = {0, };
-> +	struct perf_event event = {0, };
-> +	struct bpf_perf_event_data_kern real_ctx = {0, };
-> +	struct bpf_perf_event_data fake_ctx = {0, };
-> +	struct bpf_perf_event_value value = {0, };
-> +
-> +	if (ctx_size_in != sizeof(fake_ctx))
-> +		goto out;
-> +	if (data_size_in != sizeof(value))
-> +		goto out;
-> +
-> +	if (copy_from_user(&fake_ctx, ctx_in, ctx_size_in)) {
-> +		err = -EFAULT;
-> +		goto out;
-> +	}
-Move this to net/bpf/test_run.c? I have a bpf_ctx_init helper to deal
-with ctx input, might save you some code above wrt ctx size/etc.
-
-> +	if (copy_from_user(&value, data_in, data_size_in)) {
-> +		err = -EFAULT;
-> +		goto out;
-> +	}
-> +
-> +	real_ctx.regs = &fake_ctx.regs;
-> +	real_ctx.data = &sample_data;
-> +	real_ctx.event = &event;
-> +	perf_sample_data_init(&sample_data, fake_ctx.addr,
-> +			      fake_ctx.sample_period);
-> +	event.cpu = smp_processor_id();
-> +	event.oncpu = -1;
-> +	event.state = PERF_EVENT_STATE_OFF;
-> +	local64_set(&event.count, value.counter);
-> +	event.total_time_enabled = value.enabled;
-> +	event.total_time_running = value.running;
-> +	/* make self as a leader - it is used only for checking the
-> +	 * state field
-> +	 */
-> +	event.group_leader = &event;
-> +
-> +	/* slightly changed copy pasta from bpf_test_run() in
-> +	 * net/bpf/test_run.c
-> +	 */
-> +	if (!repeat)
-> +		repeat = 1;
-> +
-> +	rcu_read_lock();
-> +	preempt_disable();
-> +	time_start = ktime_get_ns();
-> +	for (i = 0; i < repeat; i++) {
-Any reason for not using bpf_test_run?
-
-> +		retval = BPF_PROG_RUN(prog, &real_ctx);
-> +
-> +		if (signal_pending(current)) {
-> +			err = -EINTR;
-> +			preempt_enable();
-> +			rcu_read_unlock();
-> +			goto out;
-> +		}
-> +
-> +		if (need_resched()) {
-> +			time_spent += ktime_get_ns() - time_start;
-> +			preempt_enable();
-> +			rcu_read_unlock();
-> +
-> +			cond_resched();
-> +
-> +			rcu_read_lock();
-> +			preempt_disable();
-> +			time_start = ktime_get_ns();
-> +		}
-> +	}
-> +	time_spent += ktime_get_ns() - time_start;
-> +	preempt_enable();
-> +	rcu_read_unlock();
-> +
-> +	do_div(time_spent, repeat);
-> +	duration = time_spent > U32_MAX ? U32_MAX : (u32)time_spent;
-> +	/* end of slightly changed copy pasta from bpf_test_run() in
-> +	 * net/bpf/test_run.c
-> +	 */
-> +
-> +	if (copy_to_user(&uattr->test.retval, &retval, sizeof(retval))) {
-> +		err = -EFAULT;
-> +		goto out;
-> +	}
-> +	if (copy_to_user(&uattr->test.duration, &duration, sizeof(duration))) {
-> +		err = -EFAULT;
-> +		goto out;
-> +	}
-Can BPF program modify fake_ctx? Do we need/want to copy it back?
-
-> +	err = 0;
-> +out:
-> +	trace_bpf_test_finish(&err);
-> +	return err;
-> +}
-> +
->  const struct bpf_prog_ops perf_event_prog_ops = {
-> +	.test_run	= pe_prog_test_run,
->  };
->  
->  static DEFINE_MUTEX(bpf_event_mutex);
-> diff --git a/tools/testing/selftests/bpf/verifier/perf_event_sample_period.c b/tools/testing/selftests/bpf/verifier/perf_event_sample_period.c
-> index 471c1a5950d8..16e9e5824d14 100644
-> --- a/tools/testing/selftests/bpf/verifier/perf_event_sample_period.c
-> +++ b/tools/testing/selftests/bpf/verifier/perf_event_sample_period.c
-This should probably go in another patch.
-
-> @@ -13,6 +13,8 @@
->  	},
->  	.result = ACCEPT,
->  	.prog_type = BPF_PROG_TYPE_PERF_EVENT,
-> +	.ctx_len = sizeof(struct bpf_perf_event_data),
-> +	.data_len = sizeof(struct bpf_perf_event_value),
->  },
->  {
->  	"check bpf_perf_event_data->sample_period half load permitted",
-> @@ -29,6 +31,8 @@
->  	},
->  	.result = ACCEPT,
->  	.prog_type = BPF_PROG_TYPE_PERF_EVENT,
-> +	.ctx_len = sizeof(struct bpf_perf_event_data),
-> +	.data_len = sizeof(struct bpf_perf_event_value),
->  },
->  {
->  	"check bpf_perf_event_data->sample_period word load permitted",
-> @@ -45,6 +49,8 @@
->  	},
->  	.result = ACCEPT,
->  	.prog_type = BPF_PROG_TYPE_PERF_EVENT,
-> +	.ctx_len = sizeof(struct bpf_perf_event_data),
-> +	.data_len = sizeof(struct bpf_perf_event_value),
->  },
->  {
->  	"check bpf_perf_event_data->sample_period dword load permitted",
-> @@ -56,4 +62,6 @@
->  	},
->  	.result = ACCEPT,
->  	.prog_type = BPF_PROG_TYPE_PERF_EVENT,
-> +	.ctx_len = sizeof(struct bpf_perf_event_data),
-> +	.data_len = sizeof(struct bpf_perf_event_value),
->  },
-> -- 
-> 2.20.1
-> 
+>  kernel/bpf/core.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> index 080e2bb..f2148db 100644
+> --- a/kernel/bpf/core.c
+> +++ b/kernel/bpf/core.c
+> @@ -1364,10 +1364,10 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn, u64 *stack)
+>                 insn++;
+>                 CONT;
+>         ALU_ARSH_X:
+> -               DST = (u64) (u32) ((*(s32 *) &DST) >> SRC);
+> +               DST = (u64) (u32) (((s32) DST) >> SRC);
+>                 CONT;
+>         ALU_ARSH_K:
+> -               DST = (u64) (u32) ((*(s32 *) &DST) >> IMM);
+> +               DST = (u64) (u32) (((s32) DST) >> IMM);
+>                 CONT;
+>         ALU64_ARSH_X:
+>                 (*(s64 *) &DST) >>= SRC;
+> --
+> 2.7.4
+>
