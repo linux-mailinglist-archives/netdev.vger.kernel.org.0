@@ -2,133 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92A7F55403
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 18:09:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AE0B55455
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 18:20:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728243AbfFYQI7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 12:08:59 -0400
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:32931 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726431AbfFYQI6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 12:08:58 -0400
-Received: by mail-oi1-f195.google.com with SMTP id f80so12963527oib.0
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 09:08:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jA95Qh1yntfG34AOSZY5UOtyMZURQYp8MONEUbEV66A=;
-        b=HgDIOt6qQTgaSmreTjm51zaSSvenITCVEMB/GtgVt7OXuWIUPL2yH/HA0gpDKCjq9V
-         1vdIIAOblK6RW0V48U+lVE+u/KyUCd3RC0YGvJJx+oDV13I+xUq1YJLyPTeiVPk9r2nr
-         5aCiaH/ijhirc0/AdePKS5Uc0IQJLMjYAlkjrrviXn+DV9SwmUNIfpa7wEvTxp3Uysay
-         G6jbpa2iJsIr+cBBzyAPEqHp8ublctBKTGVWIMJWR5fulf+RY/Tdf3/0hfh49pIL9p72
-         w4nUwSmh+F5h85tVTgKeXGRHyoRyAQaCT/5VxDobuZfVWxJ7IHqGYoWPyPfEvH+bOUNN
-         5hZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jA95Qh1yntfG34AOSZY5UOtyMZURQYp8MONEUbEV66A=;
-        b=WI/rp9M4vILTzkP7dhisbJWARrKs5ZUNsHDlv7iSenj8gvtQ4xOMlMSruXaGdZn+rS
-         KjA2C0OeEs9p0qlmOUjMkinMZUUk5yN2PVrmkr+dK62jLPojybMYcyFlszNCWg69/uu1
-         +2hurvNFC9eTsERQhEENKDiTt9GzEArlPrX4UIiNiVvOplWMHkNv4wnVbisS8G962Tkv
-         rgJITVBnHSjfE5dH8jATwms4f4Jh/bYuAIi5T7dowcr3eDI3j5Wfk5NICjB7Q+af1JgV
-         a+DdGDJz8rTs9zM2enS3tjnjnNOIXQAXVfA0/K/sEnwJoqtYH5SCfQk1VIS4d6kgECYw
-         23EQ==
-X-Gm-Message-State: APjAAAWFq99nKjroRf2KMY4QxJrgBzKfBJXLVZJt5DbtvlF0do2ol2jw
-        NFS5bdrTLxV4ySZ7zcyfqiCReqO6tEOYfdGosIU=
-X-Google-Smtp-Source: APXvYqzFgbsPn+MwxiBY7K1wsjZI0pkm9+pIkIGS6pCZth84Yy+3LGlgq89mEvw1Esmbjz5dMFb4j5MpaIRBcRHFvpY=
-X-Received: by 2002:a05:6808:8f0:: with SMTP id d16mr14600104oic.173.1561478938094;
- Tue, 25 Jun 2019 09:08:58 -0700 (PDT)
+        id S1727521AbfFYQUo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 12:20:44 -0400
+Received: from charlotte.tuxdriver.com ([70.61.120.58]:52707 "EHLO
+        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726420AbfFYQUo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 12:20:44 -0400
+Received: from [107.15.85.130] (helo=localhost)
+        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
+        (Exim 4.63)
+        (envelope-from <nhorman@tuxdriver.com>)
+        id 1hfoBN-0002OH-Qj; Tue, 25 Jun 2019 12:20:42 -0400
+Date:   Tue, 25 Jun 2019 12:20:28 -0400
+From:   Neil Horman <nhorman@tuxdriver.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Matteo Croce <mcroce@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v3 net] af_packet: Block execution of tasks waiting for
+ transmit to complete in AF_PACKET
+Message-ID: <20190625162028.GC29902@hmswarspite.think-freely.org>
+References: <20190619202533.4856-1-nhorman@tuxdriver.com>
+ <20190624004604.25607-1-nhorman@tuxdriver.com>
+ <CAF=yD-JE9DEbmh6hJEN=DEdc+SCz_5Lv74mngPBuv=4nNH=zxQ@mail.gmail.com>
+ <20190624215142.GA8181@hmswarspite.think-freely.org>
+ <CAF=yD-L2dgypSCTDwdEXa7EUYyWTcD_hLwW_kuUkk0tA_iggDw@mail.gmail.com>
+ <20190625110247.GA29902@hmswarspite.think-freely.org>
+ <CAF=yD-KEZBds_SRDFnOjqvidW30E=NG-2X=hBdcGx_--PAmjew@mail.gmail.com>
 MIME-Version: 1.0
-References: <20190620115108.5701-1-ap420073@gmail.com> <20190623.110737.1466794521532071350.davem@davemloft.net>
- <CAMArcTXWNY6WTjuBuUVxeb3c6dTqf8wf6sHFmNL5SvsGBbPqdQ@mail.gmail.com> <CAJieiUjri=-w2PqB9q5fEa=4jqkTWSfK0dUwnT7Cvxdo2sRRzg@mail.gmail.com>
-In-Reply-To: <CAJieiUjri=-w2PqB9q5fEa=4jqkTWSfK0dUwnT7Cvxdo2sRRzg@mail.gmail.com>
-From:   Taehee Yoo <ap420073@gmail.com>
-Date:   Wed, 26 Jun 2019 01:08:47 +0900
-Message-ID: <CAMArcTWG-KLsmzrtQRGGmnUN31yz4UMqJ9FLyv3xNNPoXY_6=Q@mail.gmail.com>
-Subject: Re: [PATCH net] vxlan: do not destroy fdb if register_netdevice() is failed
-To:     Roopa Prabhu <roopa@cumulusnetworks.com>
-Cc:     David Miller <davem@davemloft.net>, Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAF=yD-KEZBds_SRDFnOjqvidW30E=NG-2X=hBdcGx_--PAmjew@mail.gmail.com>
+User-Agent: Mutt/1.11.3 (2019-02-01)
+X-Spam-Score: -2.9 (--)
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 25 Jun 2019 at 13:12, Roopa Prabhu <roopa@cumulusnetworks.com> wrote:
->
-
-Hi Roopa,
-
-Thank you for the review!
-
-> On Sun, Jun 23, 2019 at 7:18 PM Taehee Yoo <ap420073@gmail.com> wrote:
+On Tue, Jun 25, 2019 at 09:37:17AM -0400, Willem de Bruijn wrote:
+> On Tue, Jun 25, 2019 at 7:03 AM Neil Horman <nhorman@tuxdriver.com> wrote:
 > >
-> > On Mon, 24 Jun 2019 at 03:07, David Miller <davem@davemloft.net> wrote:
+> > On Mon, Jun 24, 2019 at 06:15:29PM -0400, Willem de Bruijn wrote:
+> > > > > > +               if (need_wait && !packet_next_frame(po, &po->tx_ring, TP_STATUS_SEND_REQUEST)) {
+> > > > > > +                       po->wait_on_complete = 1;
+> > > > > > +                       timeo = sock_sndtimeo(&po->sk, msg->msg_flags & MSG_DONTWAIT);
+> > > > >
+> > > > > This resets timeout on every loop. should only set above the loop once.
+> > > > >
+> > > > I explained exactly why I did that in the change log.  Its because I reuse the
+> > > > timeout variable to get the return value of the wait_for_complete call.
+> > > > Otherwise I need to add additional data to the stack, which I don't want to do.
+> > > > Sock_sndtimeo is an inline function and really doesn't add any overhead to this
+> > > > path, so I see no reason not to reuse the variable.
 > > >
-> >
-> > Hi David,
-> >
-> > Thank you for the review!
-> >
-> > > From: Taehee Yoo <ap420073@gmail.com>
-> > > Date: Thu, 20 Jun 2019 20:51:08 +0900
+> > > The issue isn't the reuse. It is that timeo is reset to sk_sndtimeo
+> > > each time. Whereas wait_for_common and its variants return the
+> > > number of jiffies left in case the loop needs to sleep again later.
 > > >
-> > > > __vxlan_dev_create() destroys FDB using specific pointer which indicates
-> > > > a fdb when error occurs.
-> > > > But that pointer should not be used when register_netdevice() fails because
-> > > > register_netdevice() internally destroys fdb when error occurs.
-> > > >
-> > > > In order to avoid un-registered dev's notification, fdb destroying routine
-> > > > checks dev's register status before notification.
+> > > Reading sock_sndtimeo once and passing it to wait_.. repeatedly is a
+> > > common pattern across the stack.
 > > >
-> > > Simply pass do_notify as false in this failure code path of __vxlan_dev_create(),
-> > > thank you.
+> > But those patterns are unique to those situations.  For instance, in
+> > tcp_sendmsg_locked, we aquire the value of the socket timeout, and use that to
+> > wait for the entire message send operation to complete, which consists of
+> > potentially several blocking operations (waiting for the tcp connection to be
+> > established, waiting for socket memory, etc).  In that situation we want to wait
+> > for all of those operations to complete to send a single message, and fail if
+> > they exceed the timeout in aggregate.  The semantics are different with
+> > AF_PACKET.  In this use case, the message is in effect empty, and just used to
+> > pass some control information.  tpacket_snd, sends as many frames from the
+> > memory mapped buffer as possible, and on each iteration we want to wait for the
+> > specified timeout for those frames to complete sending.  I think resetting the
+> > timeout on each wait instance is the right way to go here.
+> 
+> I disagree. If a SO_SNDTIMEO of a given time is set, the thread should
+> not wait beyond that. Else what is the point of passing a specific
+> duration in the syscall?
+> 
+I can appreciate that, but you said yourself that you wanted to minimize this
+change.  The current behavior of AF_PACKET is to:
+a) check for their being no more packets ready to send
+b) if (a) is false we schedule() (nominally allowing other tasks to run)
+c) when (b) is complete, check for additional frames to send, and exit if there
+are not, otherwise, continue sending and waiting
+
+In that model, a single task calling sendmsg can run in the kernel indefinately,
+if userspace continues to fill the memory mapped buffer
+
+Given that model, resetting the timeout on each call to wait_for_completion
+keeps that behavior.  In fact, if we allow the timeout value to get continuously
+decremented, it will be possible for a call to sendmsg in this protocol to
+_always_ return -ETIMEDOUT (if we keep the buffer full in userspace long enough,
+then the sending task will eventually decrement timeo to zero, and force an
+-ETIMEDOUT call).
+
+I'm convinced that resetting the timeout here is the right way to go.
+
+> Btw, we can always drop the timeo and go back to unconditional (bar
+> signals) waiting.
+> 
+We could, but it would be nice to implement the timeout feature here if
+possible.
+
 > >
-> > Failure path of __vxlan_dev_create() can't handle do_notify in that case
-> > because if register_netdevice() fails it internally calls
-> > ->ndo_uninit() which is
-> > vxlan_uninit().
-> > vxlan_uninit() internally calls vxlan_fdb_delete_default() and it callls
-> > vxlan_fdb_destroy().
-> > do_notify of vxlan_fdb_destroy() in vxlan_fdb_delete_default() is always true.
-> > So, failure path of __vxlan_dev_create() doesn't have any opportunity to
-> > handle do_notify.
->
->
-> I don't see register_netdevice calling ndo_uninit in case of all
-> errors. In the case where it does not,
-> does your patch leak the fdb entry ?.
->
-> Wondering if we should just use vxlan_fdb_delete_default with a notify
-> flag to delete the entry if exists.
-> Will that help ?
->
-> There is another commit that touched this code path:
-> commit 6db9246871394b3a136cd52001a0763676563840
->
-> Author: Petr Machata <petrm@mellanox.com>
-> Date:   Tue Dec 18 13:16:00 2018 +0000
->     vxlan: Fix error path in __vxlan_dev_create()
+> > > > > > @@ -2728,6 +2755,11 @@ static int tpacket_snd(struct packet_sock *po, struct msghdr *msg)
+> > > > > >                         err = net_xmit_errno(err);
+> > > > > >                         if (err && __packet_get_status(po, ph) ==
+> > > > > >                                    TP_STATUS_AVAILABLE) {
+> > > > > > +                               /* re-init completion queue to avoid subsequent fallthrough
+> > > > > > +                                * on a future thread calling wait_on_complete_interruptible_timeout
+> > > > > > +                                */
+> > > > > > +                               po->wait_on_complete = 0;
+> > > > >
+> > > > > If setting where sleeping, no need for resetting if a failure happens
+> > > > > between those blocks.
+> > > > >
+> > > > > > +                               init_completion(&po->skb_completion);
+> > > > >
+> > > > > no need to reinit between each use?
+> > > > >
+> > > > I explained exactly why I did this in the comment above.  We have to set
+> > > > wait_for_complete prior to calling transmit, so as to ensure that we call
+> > > > wait_for_completion before we exit the loop. However, in this error case, we
+> > > > exit the loop prior to calling wait_for_complete, so we need to reset the
+> > > > completion variable and the wait_for_complete flag.  Otherwise we will be in a
+> > > > case where, on the next entrace to this loop we will have a completion variable
+> > > > with completion->done > 0, meaning the next wait will be a fall through case,
+> > > > which we don't want.
+> > >
+> > > By moving back to the point where schedule() is called, hopefully this
+> > > complexity automatically goes away. Same as my comment to the line
+> > > immediately above.
+> > >
+> > Its going to change what the complexity is, actually.  I was looking at this
+> > last night, and I realized that your assertion that we could remove
+> > packet_next_frame came at a cost.  This is because we need to determine if we
+> > have to wait before we call po->xmit, but we need to actually do the wait after
+> > po->xmit
+> 
+> Why? The existing method using schedule() doesn't.
+> 
+Because the existing method using schedule doesn't have to rely on an
+asynchronous event to wake the sending task back up.  Specifically, we need to
+set some state that indicates tpacket_destruct_skb should call complete, and
+since tpacket_destruct_skb is called asynchronously in a separate execution
+context, we need to ensure there is no race condition whereby we execute
+tpacket_destruct_skb before we set the state that we also use to determine if we
+should call wait_for_complete.  ie:
+1) tpacket_send_skb calls po->xmit
+2) tpacket_send_skb loops around and checks to see if there are more packets to
+send.  If not and if need_wait is set we call wait_for_complete
 
-I have checked up failure path of register_netdevice().
-Yes, this patch leaks fdb entry.
-There are 3 failure cases in the register_netdevice().
-A. error occurs before calling ->ndo_init().
-it doesn't call ->ndo_uninit().
-B. error occurs after calling ->ndo_init().
-it calls ->ndo_uninit() and dev->reg_state is NETREG_UNINITIALIZED.
-C. error occurs after registering netdev. it calls rollback_registered().
-rollback_registered() internally calls ->ndo_uninit()
-and dev->reg_state is NETREG_UNREGISTERING.
+If tpacket_destruct_skb is called after (2), we're fine.  But if its called
+between (1) and (2), then tpacket_destruct_skb won't call complete (because
+wait_on_complete isn't set yet), causing a hang.
 
-A panic due to these problem could be fixed by using
-vxlan_fdb_delete_default() with notify flag.
-But notification problem could not be fixed clearly
-because of the case C.
+Because you wanted to remove packet_next_frame, we have no way to determine if
+we're done sending frames prior to calling po->xmit, which is the point past
+which tpacket_destruct_skb might be called, so now I have to find an alternate
+state condition to key off of.
+ 
 
-I don't have clear solution for the case C.
-Please let me know, if you have any good idea for fixing the case C.
+> Can we not just loop while sending and sleep immediately when
+> __packet_get_status returns !TP_STATUS_AVAILABLE?
+> 
+> I don't understand the need to probe the next packet to send instead
+> of the current.
+> 
+See above, we can definately check the return of ph at the top of the loop, and
+sleep if its NULL, but in so doing we cant use po->wait_on_complete as a gating
+variable because we've already called po->xmit.  Once we call that function, if
+we haven't already set po->wait_on_complete to true, its possible
+tpacket_destruct_skb will already have been called before we get to the point
+where we check wait_for_completion.  That means we will wait on a completion
+variable that never gets completed, so I need to find a new way to track weather
+or not we are waiting.  Its entirely doable, I'm sure, its just not as straight
+forward as your making it out to be.
 
-Thank you!
+> This seems to be the crux of the disagreement. My guess is that it has
+> to do with setting wait_on_complete, but I don't see the problem. It
+> can be set immediately before going to sleep.
+> 
+The reason has to do with the fact that
+tpacket_destruct_skb can be called from ksoftirq context (i.e. it will be called
+asynchrnously, not from the thread running in tpacket_snd).  Condsider this
+flow, assuming we do as you suggest, and just set po->wait_on_complete=1
+immediately prior to calling wait_for_complete_interruptible_timeout: 
+
+1) tpacket_snd gets a frame, builds the skb for transmission
+2) tpakcket_snd calls po->xmit(skb), sending the frame to the driver
+3) tpacket_snd, iterates through back to the top of the loop, and determines
+that we need to wait for the previous packet to complete
+4) The driver gets a tx completion interrupt, interrupting the cpu on which we
+are executing, and calls kfree_skb_irq on the skb we just transmitted
+5) the ksoftirq runs on the cpu, calling kfree_skb on our skb
+6) (5) calls skb->destruct (which is tpakcet_skb_destruct)
+7) tpacket_skb_destruct executes, sees that po->wait_on_completion is zero, and
+skips calling complete()
+8) the thread running tpacket_snd gets scheduled back on the cpu and now sets
+po->wait_on_complete, then calls wait_for_completion_interruptible_timeout, but
+since the skb we are waiting to complete has already been freed, we will never
+get the completion notification, and so we will wait for the maximal timeout,
+which is absolutely not what we want.
+
+Interestingly (Ironically), that control flow will never happen in the use case
+I'm trying to fix here, because its SCHED_FIFO, and will run until such time as
+we call wait_for_completion_interuptible_timeout, so in this case we're safe.
+But in the nominal case, where the sending task is acturally SCHED_OTHER, the
+above can aboslutely happen, and thats very broken.
+
+> I don't meant to draw this out, btw, or add to your workload. If you
+> prefer, I can take a stab at my (admittedly hand-wavy) suggestion.
+> 
+No, I have another method in flight that I'm testing now, it removes the
+po->wait_on_complete variable entirely, checking instead to make sure that
+we've:
+a) sent at least one frame
+and
+b) that we have a positive pending count
+and
+c) that we need to wait
+and
+d) that we have no more frames to send
+
+This is why I was saying that your idea can be done, but it trades one form of
+complexity for another.
+
+Neil
+
+> > (to ensure that wait_on_complete is set properly when the desructor is
+> > called).  By moving the wait to the top of the loop and getting rid of
+> > packet_next_frame we now have a race condition in which we might call
+> > tpacket_destruct_skb with wait_on_complete set to false, causing us to wait for
+> > the maximum timeout erroneously.  So I'm going to have to find a new way to
+> > signal the need to call complete, which I think will introduce a different level
+> > of complexity.
+> 
