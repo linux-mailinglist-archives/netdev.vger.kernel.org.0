@@ -2,174 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A857D54E8B
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 14:14:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6372152FF0
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 12:34:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727872AbfFYMOG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 08:14:06 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:36153 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726390AbfFYMOF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 08:14:05 -0400
-Received: by mail-qt1-f194.google.com with SMTP id p15so18081606qtl.3
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 05:14:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=gutEN+vHqy+rMWjZUryJaXfGglCBqxamRcnHWBPb1Rk=;
-        b=ccveiNlJDvn64iSw6p9pdUhge1jzWKOOcCR2FonooZUVKvoAHdU3bFrCQI5q2PHbkr
-         imHg3JYOph3AFq464dUUbMYmHeXARIGcwAwzzU1oDvGg2lEUqpv0vM/eUqJMLDiiec5W
-         NbbY2YfLEuGo6X1bC98VVA4/+4oOQ08mDPVuU+peZSpnewqfySjRmXuZ9N7LirFKt37F
-         z5hCTLEqrNUkkL+SEkZwmuf3hA9M79OgAv4T6Iyj+gMwdBg/yOZ/oiHJFQ6T1WT8khgq
-         lNN0zfE/ZwEbhLdSRrHw+/ykfLrn4ut9x+r9NHOpZxTFKb8qpuDJjTm3dQNAKCa2lXCq
-         puvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=gutEN+vHqy+rMWjZUryJaXfGglCBqxamRcnHWBPb1Rk=;
-        b=JNKJbF8H0cCaHPBuJF2OxzsWJgeqUWAwDjO3bMpJMKHvX4H6LIWHkn9eATgKIbMiI1
-         cqHRRqOhKgzW/6yJnvZIGuPccTpwIUsGUEs6pjYFSIF1v0dH0QG3ejRCXpsaWPLBdxQA
-         9srT0uACVrmfPuoTw2sos3ploXPlxvnhW1j5vhC7gepn3O5huQa947crZtfhFRIDX6Ch
-         guFNy36J7ZwGJhMLq6U8xW3WWqpjv9fPEzKhriaAeGG8bqZ/2JdTTgQcHfRtDQi3vn3Z
-         4MD8xivHY6iTFhEM0EitioZ5wY/TOdD6bjetK3vJQB7qjGaxKFNfMKUheO6+hJFQUqtZ
-         br7A==
-X-Gm-Message-State: APjAAAVSPF1rZ+dUV6F8WkY1/APvl0LOEBcrVYlEwT7Et+zzW08CnZFI
-        z6SCXeNMs/7yGb6GMKPHc7eyYYU=
-X-Google-Smtp-Source: APXvYqyzGKrtUyNW2S0xnH2M7tYxBUtrBcD3b80rMV4fgRlqPzsNRM6qZ3EXJk0aTyZpqdYUUkZ59g==
-X-Received: by 2002:a0c:bd1f:: with SMTP id m31mr62606266qvg.54.1561464844415;
-        Tue, 25 Jun 2019 05:14:04 -0700 (PDT)
-Received: from localhost.localdomain ([104.238.32.30])
-        by smtp.gmail.com with ESMTPSA id u19sm7655308qka.35.2019.06.25.05.14.03
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 25 Jun 2019 05:14:03 -0700 (PDT)
-From:   Stephen Suryaputra <ssuryaextr@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, Stephen Suryaputra <ssuryaextr@gmail.com>
-Subject: [PATCH net] vrf: reset rt_iif for recirculated mcast out pkts
-Date:   Tue, 25 Jun 2019 06:33:59 -0400
-Message-Id: <20190625103359.31102-1-ssuryaextr@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1729185AbfFYKeW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 06:34:22 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:50294 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728911AbfFYKeW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 06:34:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=9JfX7iQmjBDo3pDtoFcbOTAp5d7caPSzcHl2kcohZp4=; b=00ewTRfjhB5xcHkCaHSWrzlCs
+        UmJq6O4dLdpKSXHs6+W+cNlWJuRUZ12vZ96fvGFdSpBcp34N5bj2xPlgqP/Lwd6C7aNb6JATsxAMJ
+        v2JKKzd9SgPjiB8tylyltZS9ONzOV7mA5ZuqPcTP6DF1VUbKK6JSZqTXXp/i5EXcpKbnmfVeDGP58
+        x5rQ7NT2Ax+fWzWWrfjznzz9XWOnTcBq6eAF1Gvvo7cRhO85j3RTp2joBahATc2faZP2D6a/yMm7u
+        AwF+z0rE5xT2ridICk/hVCJESkHYwc8lQkHzGKliFhfDwMm29THuhbp0HJ847L18Htxz2SbrZFUFd
+        YCCP+RwjQ==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:58982)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1hfimC-0005pp-Ny; Tue, 25 Jun 2019 11:34:12 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1hfim8-00078r-VN; Tue, 25 Jun 2019 11:34:08 +0100
+Date:   Tue, 25 Jun 2019 11:34:08 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Parshuram Raju Thombare <pthombar@cadence.com>
+Cc:     "andrew@lunn.ch" <andrew@lunn.ch>,
+        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Rafal Ciepiela <rafalc@cadence.com>,
+        Anil Joy Varughese <aniljoy@cadence.com>,
+        Piotr Sroka <piotrs@cadence.com>
+Subject: Re: [PATCH v5 2/5] net: macb: add support for sgmii MAC-PHY interface
+Message-ID: <20190625103408.5rh2slqobruavyju@shell.armlinux.org.uk>
+References: <1561378210-11033-1-git-send-email-pthombar@cadence.com>
+ <1561378274-12357-1-git-send-email-pthombar@cadence.com>
+ <20190624134233.suowuortj5dcbxdg@shell.armlinux.org.uk>
+ <SN2PR07MB2480B53AFE512F46986A1CAFC1E30@SN2PR07MB2480.namprd07.prod.outlook.com>
+ <20190625092930.ootk5nvbkqqvfbtd@shell.armlinux.org.uk>
+ <SN2PR07MB24800C63DCBC143B3A802A6EC1E30@SN2PR07MB2480.namprd07.prod.outlook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <SN2PR07MB24800C63DCBC143B3A802A6EC1E30@SN2PR07MB2480.namprd07.prod.outlook.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Multicast egress packets has skb_rtable(skb)->rt_iif set to the oif.
-Depending on the socket, these packets might be recirculated back as
-input and raw sockets that are opened for them are bound to the VRF. But
-since skb_rtable(skb) is set and its rt_iif is non-zero, inet_iif()
-function returns rt_iif instead of skb_iif (the VRF netdev). Hence, the
-socket lookup fails.
+On Tue, Jun 25, 2019 at 09:38:37AM +0000, Parshuram Raju Thombare wrote:
+> 
+> >> >In which case, gem_phylink_validate() must clear the support mask when
+> >> >SGMII mode is requested to indicate that the interface mode is not
+> >> >supported.
+> >> >The same goes for _all_ other PHY link modes that the hardware does not
+> >> >actually support, such as PHY_INTERFACE_MODE_10GKR...
+> >> If interface is not supported by hardware probe returns with error, so we don't
+> >> net interface is not registered at all.
+> >That does not negate my comment above.
+> Sorry if I misunderstood your question, but hardware supports interfaces and based
+> on that link modes are supported. So if interface is not supported by hardware,
+> net device is not registered and there will be no phylink_validate call.
+> If hardware support particular interface, link modes supported by interface
+> are added to (not cleared from) supported mask, provided configs is not trying to limit 
+> data rate using GIGABIT_ENABLE* macro.
 
-Signed-off-by: Stephen Suryaputra <ssuryaextr@gmail.com>
----
- include/net/route.h  |  1 +
- net/ipv4/ip_output.c | 25 ++++++++++++++++++++++++-
- net/ipv4/route.c     | 33 +++++++++++++++++++++++++++++++++
- 3 files changed, 58 insertions(+), 1 deletion(-)
+Why do you want to use phylink?
 
-diff --git a/include/net/route.h b/include/net/route.h
-index 065b47754f05..55ff71ffb796 100644
---- a/include/net/route.h
-+++ b/include/net/route.h
-@@ -221,6 +221,7 @@ void ip_rt_get_source(u8 *src, struct sk_buff *skb, struct rtable *rt);
- struct rtable *rt_dst_alloc(struct net_device *dev,
- 			     unsigned int flags, u16 type,
- 			     bool nopolicy, bool noxfrm, bool will_cache);
-+struct rtable *rt_dst_clone(struct net_device *dev, struct rtable *rt);
- 
- struct in_ifaddr;
- void fib_add_ifaddr(struct in_ifaddr *);
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index 16f9159234a2..a5e240bad3ce 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -329,6 +329,19 @@ static int ip_mc_finish_output(struct net *net, struct sock *sk,
- 	return dev_loopback_xmit(net, sk, skb);
- }
- 
-+static void ip_mc_reset_rt_iif(struct net *net, struct rtable *rt,
-+			       struct sk_buff *newskb)
-+{
-+	struct rtable *new_rt;
-+
-+	new_rt = rt_dst_clone(net->loopback_dev, rt);
-+	if (new_rt) {
-+		new_rt->rt_iif = 0;
-+		skb_dst_drop(newskb);
-+		skb_dst_set(newskb, &new_rt->dst);
-+	}
-+}
-+
- int ip_mc_output(struct net *net, struct sock *sk, struct sk_buff *skb)
- {
- 	struct rtable *rt = skb_rtable(skb);
-@@ -363,10 +376,20 @@ int ip_mc_output(struct net *net, struct sock *sk, struct sk_buff *skb)
- #endif
- 		   ) {
- 			struct sk_buff *newskb = skb_clone(skb, GFP_ATOMIC);
--			if (newskb)
-+			if (newskb) {
-+				/* Reset rt_iif so that inet_iif() will return
-+				 * skb->dev->ifIndex which is the VRF device for
-+				 * socket lookup. Setting this to VRF ifindex
-+				 * causes ipi_ifindex in in_pktinfo to be
-+				 * overwritten, see ipv4_pktinfo_prepare().
-+				 */
-+				if (netif_is_l3_slave(dev))
-+					ip_mc_reset_rt_iif(net, rt, newskb);
-+
- 				NF_HOOK(NFPROTO_IPV4, NF_INET_POST_ROUTING,
- 					net, sk, newskb, NULL, newskb->dev,
- 					ip_mc_finish_output);
-+			}
- 		}
- 
- 		/* Multicasts with ttl 0 must not go beyond the host */
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index 6cb7cff22db9..8ea0735a6754 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -1647,6 +1647,39 @@ struct rtable *rt_dst_alloc(struct net_device *dev,
- }
- EXPORT_SYMBOL(rt_dst_alloc);
- 
-+struct rtable *rt_dst_clone(struct net_device *dev, struct rtable *rt)
-+{
-+	struct rtable *new_rt;
-+
-+	new_rt = dst_alloc(&ipv4_dst_ops, dev, 1, DST_OBSOLETE_FORCE_CHK,
-+			   rt->dst.flags);
-+
-+	if (new_rt) {
-+		new_rt->rt_genid = rt_genid_ipv4(dev_net(dev));
-+		new_rt->rt_flags = rt->rt_flags;
-+		new_rt->rt_type = rt->rt_type;
-+		new_rt->rt_is_input = rt->rt_is_input;
-+		new_rt->rt_iif = rt->rt_iif;
-+		new_rt->rt_pmtu = rt->rt_pmtu;
-+		new_rt->rt_mtu_locked = rt->rt_mtu_locked;
-+		new_rt->rt_gw_family = rt->rt_gw_family;
-+		if (rt->rt_gw_family == AF_INET)
-+			new_rt->rt_gw4 = rt->rt_gw4;
-+		else if (rt->rt_gw_family == AF_INET6)
-+			new_rt->rt_gw6 = rt->rt_gw6;
-+		INIT_LIST_HEAD(&new_rt->rt_uncached);
-+
-+		new_rt->dst.flags |= DST_HOST;
-+		new_rt->dst.input = rt->dst.input;
-+		new_rt->dst.output = rt->dst.output;
-+		new_rt->dst.error = rt->dst.error;
-+		new_rt->dst.lastuse = jiffies;
-+		new_rt->dst.lwtstate = lwtstate_get(rt->dst.lwtstate);
-+	}
-+	return new_rt;
-+}
-+EXPORT_SYMBOL(rt_dst_clone);
-+
- /* called in rcu_read_lock() section */
- int ip_mc_validate_source(struct sk_buff *skb, __be32 daddr, __be32 saddr,
- 			  u8 tos, struct net_device *dev,
+If you are only interested in supporting 10G PHYs, you don't need
+phylink for that.
+
+If you are interested in supporting SFPs as well, then using phylink
+makes sense, but you need to implement your phylink conversion properly,
+and that means supporting dynamic switching of the PHY interface mode,
+and allowing phylink to determine whether a PHY interface mode is
+supported or not.
+
+However, with what you've indicated through our discussion, your MAC
+does not support BASE-X modes, nor does it support 10GBASE-R, both of
+which are required for direct connection of SFP or SFP+ modules.
+
+The only phy link mode that you support which SFPs can make use of is
+SGMII, and that will only be useful for copper SFPs configured for
+SGMII mode.  It basically means you can not use any fiber SFPs.
+
+The only other way SFPs can be supported is via an intermediary PHY to
+convert the MAC interface to BASE-X, SGMII or 10GBASE-R, and we don't
+yet have support for that in mainline.
+
+So, given that you seem unwilling to take on board my comments, and
+your hardware does not appear support SFPs, I'm wondering what the
+point of this conversion actually is.
+
+As a result of our reviews, I've been improving the documentation for
+phylink, so there has been some positives coming out of this - which
+will hopefully help others to avoid the same mistakes.
+
 -- 
-2.17.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
