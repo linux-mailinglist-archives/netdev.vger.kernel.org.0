@@ -2,73 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB9BF54E39
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 14:04:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E76F654E4F
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 14:06:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731376AbfFYMEN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 08:04:13 -0400
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:58629 "EHLO
-        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726557AbfFYMEN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 08:04:13 -0400
-X-Originating-IP: 90.88.16.156
-Received: from bootlin.com (aaubervilliers-681-1-41-156.w90-88.abo.wanadoo.fr [90.88.16.156])
-        (Authenticated sender: maxime.chevallier@bootlin.com)
-        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id 107BA60011;
-        Tue, 25 Jun 2019 12:04:02 +0000 (UTC)
-Date:   Tue, 25 Jun 2019 14:04:12 +0200
-From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        thomas.petazzoni@bootlin.com, gregory.clement@bootlin.com,
-        nadavh@marvell.com, stefanc@marvell.com, mw@semihalf.com,
-        Alan Winkowski <walan@marvell.com>
-Subject: Re: [PATCH net v2] net: mvpp2: prs: Don't override the sign bit in
- SRAM parser shift
-Message-ID: <20190625140412.7e8c84c4@bootlin.com>
-In-Reply-To: <20190620094245.10501-1-maxime.chevallier@bootlin.com>
-References: <20190620094245.10501-1-maxime.chevallier@bootlin.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1727027AbfFYMGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 08:06:14 -0400
+Received: from mail-out.m-online.net ([212.18.0.10]:37262 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726551AbfFYMGN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 08:06:13 -0400
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 45Y4cx6RD5z1rYXB;
+        Tue, 25 Jun 2019 14:06:09 +0200 (CEST)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 45Y4cx5fNTz1tsSB;
+        Tue, 25 Jun 2019 14:06:09 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id aQ5dOqbpUAgb; Tue, 25 Jun 2019 14:06:05 +0200 (CEST)
+X-Auth-Info: 3GRnbj+di/uB8553of2SXoe1XoAL389W9seZt7C6W0w=
+Received: from [IPv6:::1] (unknown [195.140.253.167])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Tue, 25 Jun 2019 14:06:05 +0200 (CEST)
+Subject: Re: [PATCH V3 07/10] net: dsa: microchip: Initial SPI regmap support
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Tristram Ha <Tristram.Ha@microchip.com>,
+        Woojung Huh <Woojung.Huh@microchip.com>
+References: <20190623223508.2713-1-marex@denx.de>
+ <20190623223508.2713-8-marex@denx.de>
+ <2bbd5346-5fe1-16d7-327e-5d94950496f2@denx.de>
+ <CA+h21hpgXxnnRS7Upc1R82ajLum4k-3O9EQDROonO6jtAD+NZw@mail.gmail.com>
+From:   Marek Vasut <marex@denx.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=marex@denx.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <f1dfe749-4bfa-17f7-ede7-f9bc38afa0d4@denx.de>
+Date:   Tue, 25 Jun 2019 14:06:04 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <CA+h21hpgXxnnRS7Upc1R82ajLum4k-3O9EQDROonO6jtAD+NZw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello David,
+On 6/25/19 1:59 AM, Vladimir Oltean wrote:
+> On Tue, 25 Jun 2019 at 01:17, Marek Vasut <marex@denx.de> wrote:
+>>
+>> On 6/24/19 12:35 AM, Marek Vasut wrote:
+>>> Add basic SPI regmap support into the driver.
+>>>
+>>> Previous patches unconver that ksz_spi_write() is always ever called
+>>> with len = 1, 2 or 4. We can thus drop the if (len > SPI_TX_BUF_LEN)
+>>> check and we can also drop the allocation of the txbuf which is part
+>>> of the driver data and wastes 256 bytes for no reason. Regmap covers
+>>> the whole thing now.
+>>>
+>>> Signed-off-by: Marek Vasut <marex@denx.de>
+>>> Cc: Andrew Lunn <andrew@lunn.ch>
+>>> Cc: Florian Fainelli <f.fainelli@gmail.com>
+>>> Cc: Tristram Ha <Tristram.Ha@microchip.com>
+>>> Cc: Woojung Huh <Woojung.Huh@microchip.com>
+>>
+>> [...]
+>>
+>>> +#define KS_SPIOP_FLAG_MASK(opcode)           \
+>>> +     cpu_to_be32((opcode) << (SPI_ADDR_SHIFT + SPI_TURNAROUND_SHIFT))
+>>
+>> So the robot is complaining about this. I believe this is correct, as
+>> the mask should be in native endianness on the register and NOT the
+>> native endianness of the CPU.
+>>
+>> I think a cast would help here, e.g.:
+>> -       cpu_to_be32((opcode) << (SPI_ADDR_SHIFT + SPI_TURNAROUND_SHIFT))
+>> -       (__force unsigned long)cpu_to_be32((opcode) << (SPI_ADDR_SHIFT +
+>> SPI_TURNAROUND_SHIFT))
+>>
+>> Does this make sense ?
+>>
+>>> +#define KSZ_REGMAP_COMMON(width)                                     \
+>>> +     {                                                               \
+>>> +             .val_bits = (width),                                    \
+>>> +             .reg_stride = (width) / 8,                              \
+>>> +             .reg_bits = SPI_ADDR_SHIFT + SPI_ADDR_ALIGN,            \
+>>> +             .pad_bits = SPI_TURNAROUND_SHIFT,                       \
+>>> +             .max_register = BIT(SPI_ADDR_SHIFT) - 1,                \
+>>> +             .cache_type = REGCACHE_NONE,                            \
+>>> +             .read_flag_mask = KS_SPIOP_FLAG_MASK(KS_SPIOP_RD),      \
+>>> +             .write_flag_mask = KS_SPIOP_FLAG_MASK(KS_SPIOP_WR),     \
+>>
+>> [...]
+>>
+>> --
+>> Best regards,
+>> Marek Vasut
+> 
+> Hi Marek,
+> 
+> I saw SPI buffers and endianness and got triggered :)
+> Would it make sense to take a look at CONFIG_PACKING for the KSZ9477 driver?
+> I don't know how bad the field alignment issue is on that hardware,
+> but on SJA1105 it was such a disaster that I couldn't have managed it
+> any other way.
 
-On Thu, 20 Jun 2019 11:42:45 +0200
-Maxime Chevallier <maxime.chevallier@bootlin.com> wrote:
+How does that help me here ? All I really need is a static constant mask
+for the register/flags , 32bit for KSZ9xxx and 16bit for KSZ87xx. I
+don't need any dynamic stuff, luckily.
 
->The Header Parser allows identifying various fields in the packet
->headers, used for various kind of filtering and classification
->steps.
->
->This is a re-entrant process, where the offset in the packet header
->depends on the previous lookup results. This offset is represented in
->the SRAM results of the TCAM, as a shift to be operated.
->
->This shift can be negative in some cases, such as in IPv6 parsing.
->
->This commit prevents overriding the sign bit when setting the shift
->value, which could cause instabilities when parsing IPv6 flows.
->
->Fixes: 3f518509dedc ("ethernet: Add new driver for Marvell Armada 375 network unit")
->Suggested-by: Alan Winkowski <walan@marvell.com>
->Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
->---
->V2 : Fix a typo in the commit log, reported by Sergei.
+But I'm glad to see TJA1105 driver mainline :)
 
-I see that this patch was set as "Accepted" on patchwork, but hasn't
-made it to -net, I was wondering if this patch slipped through the
-cracks :)
-
-https://patchwork.ozlabs.org/patch/1119311/
-
-Thanks,
-
-Maxime
-
+-- 
+Best regards,
+Marek Vasut
