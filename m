@@ -2,147 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9273254DDA
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 13:41:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 459BD54DDC
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 13:42:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730373AbfFYLld (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 07:41:33 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:42962 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728703AbfFYLld (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Jun 2019 07:41:33 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id B77A43082E46;
-        Tue, 25 Jun 2019 11:41:32 +0000 (UTC)
-Received: from epycfail.redhat.com (unknown [10.36.112.13])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 12785600CD;
-        Tue, 25 Jun 2019 11:41:28 +0000 (UTC)
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     David Miller <davem@davemloft.net>, Jianlin Shi <jishi@redhat.com>,
-        Wei Wang <weiwan@google.com>, David Ahern <dsahern@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        netdev@vger.kernel.org
-Subject: [PATCH iproute2 v2] iproute: Set flags and attributes on dump to get IPv6 cached routes to be flushed
-Date:   Tue, 25 Jun 2019 13:41:24 +0200
-Message-Id: <9c24a93aa56b843273aa985cc33d962dec7e9d17.1561462692.git.sbrivio@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Tue, 25 Jun 2019 11:41:32 +0000 (UTC)
+        id S1730373AbfFYLmx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 07:42:53 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:44126 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729213AbfFYLmx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 07:42:53 -0400
+Received: by mail-lf1-f67.google.com with SMTP id r15so12352253lfm.11
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 04:42:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=KC6UqMNqqkqf945o5TbzjnUd7iFuYFfkkwWAw6cVa+A=;
+        b=dRpoMSrornZ5+U7nptq/uktaa04UFIo/QAPLaDjRnueu6KFQvvbSC6ea/xIkrZ1H+I
+         Je7LPWkHilJBcantQI2hVUlxVqRs1rx96wT1pMz6dMOJHhnnGQlCkxVOepvxEeCOShTL
+         Yk4beULHTY/vTur12Zdo9Cktt4Ag8Xlo1DSjye7uzhgOi6xbe0mMRHDoIUsYjhCT9JDP
+         B6XZNeVqaYT95yRVDq8vrsv4Oi62dfsZacGbbZRDRztCjG8Ep7/SB33ub9e+WQ0Ep7vt
+         6UyJgyu/fZjIQRTiLMN6bJdHGOJtcz9XOJutcYpEA+DsJl38eDuJcLtKImIBfeVyUsIX
+         89pw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=KC6UqMNqqkqf945o5TbzjnUd7iFuYFfkkwWAw6cVa+A=;
+        b=hJp5mbl8ZhYFbNEtigsTNgI0gYgdk2W/LZF++d3cnsit2lLuALOCxlk0Cmh0t7LmyD
+         wr3bwsEIhBV7HEu9luwHpiFnvSFqOdZmcnUsaEld9Wfh/XaR4il5e8acNyRs9KkvnjYh
+         yM0j8QZxUUaUjhwnhjzcLvoGw8cGJrO+WcCL2YnIsJmM8D+i0OATIxPzui3Rspmxyl+Z
+         wSohmVGaA7CHKrdLpAxPeBN1nzyfHU4p8hTgOD9YarTWpBaEuCGW8A7XL9M78FZ9oMy4
+         g+2lhF4v8JLXZ7YTd68+CmdrD/VimQVD/MzErQ6fO1C3SfzaHj9aP6i1kS53uZxVITHZ
+         eOqg==
+X-Gm-Message-State: APjAAAXp+ckg07V+JzgHJ+Ub8dnCy7IjP7iUx8fAbqcCTr03P2xVh17/
+        pQfeoZK9HoqaKaK2ILbNVmJgbp0AjQk=
+X-Google-Smtp-Source: APXvYqxt2HqTpJfaSIXqLD+CeTVC95mRSNEVCNRSHi4rSCLqw8RN7sSne6onoOM39tgDEByte/9mFg==
+X-Received: by 2002:a19:3804:: with SMTP id f4mr6841525lfa.69.1561462970776;
+        Tue, 25 Jun 2019 04:42:50 -0700 (PDT)
+Received: from localhost.localdomain (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
+        by smtp.gmail.com with ESMTPSA id r2sm1913675lfi.51.2019.06.25.04.42.49
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 25 Jun 2019 04:42:50 -0700 (PDT)
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     xdp-newbies@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ast@kernel.org, hawk@kernel.org,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Subject: [[PATCH net-next]] net: core: xdp: make __mem_id_disconnect to be static
+Date:   Tue, 25 Jun 2019 14:42:46 +0300
+Message-Id: <20190625114246.14726-1-ivan.khoronzhuk@linaro.org>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With a current (5.1) kernel version, IPv6 exception routes can't be listed
-(ip -6 route list cache) or flushed (ip -6 route flush cache). Kernel
-support for this is being added back. Relevant net-next commits:
+Add missed static for local __mem_id_disconnect().
 
-  564c91f7e563 fib_frontend, ip6_fib: Select routes or exceptions dump from RTM_F_CLONED
-  ef11209d4219 Revert "net/ipv6: Bail early if user only wants cloned entries"
-  3401bfb1638e ipv6/route: Don't match on fc_nh_id if not set in ip6_route_del()
-  bf9a8a061ddc ipv6/route: Change return code of rt6_dump_route() for partial node dumps
-  1e47b4837f3b ipv6: Dump route exceptions if requested
-  40cb35d5dc04 ip6_fib: Don't discard nodes with valid routing information in fib6_locate_1()
-
-However, to allow the kernel to filter routes based on the RTM_F_CLONED
-flag, we need to make sure this flag is always passed when we want cached
-routes to be dumped, and we can also pass table and output interface
-attributes to have the kernel filtering on them, if requested by the user.
-
-Use the existing iproute_dump_filter() as a filter for the dump request in
-iproute_flush(). This way, 'ip -6 route flush cache' works again.
-
-v2: Instead of creating a separate 'filter' function dealing with
-    RTM_F_CACHED only, use the existing iproute_dump_filter() and get
-    table and oif kernel filtering for free. Suggested by David Ahern.
-
-Fixes: aba5acdfdb34 ("(Logical change 1.3)")
-Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
+Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
 ---
- ip/iproute.c | 50 +++++++++++++++++++++++++-------------------------
- 1 file changed, 25 insertions(+), 25 deletions(-)
+ net/core/xdp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/ip/iproute.c b/ip/iproute.c
-index 2b3dcc5dbd53..1669e0138259 100644
---- a/ip/iproute.c
-+++ b/ip/iproute.c
-@@ -1602,6 +1602,30 @@ static int save_route_prep(void)
- 	return 0;
+diff --git a/net/core/xdp.c b/net/core/xdp.c
+index b29d7b513a18..829377cc83db 100644
+--- a/net/core/xdp.c
++++ b/net/core/xdp.c
+@@ -85,7 +85,7 @@ static void __xdp_mem_allocator_rcu_free(struct rcu_head *rcu)
+ 	kfree(xa);
  }
  
-+static int iproute_dump_filter(struct nlmsghdr *nlh, int reqlen)
-+{
-+	struct rtmsg *rtm = NLMSG_DATA(nlh);
-+	int err;
-+
-+	rtm->rtm_protocol = filter.protocol;
-+	if (filter.cloned)
-+		rtm->rtm_flags |= RTM_F_CLONED;
-+
-+	if (filter.tb) {
-+		err = addattr32(nlh, reqlen, RTA_TABLE, filter.tb);
-+		if (err)
-+			return err;
-+	}
-+
-+	if (filter.oif) {
-+		err = addattr32(nlh, reqlen, RTA_OIF, filter.oif);
-+		if (err)
-+			return err;
-+	}
-+
-+	return 0;
-+}
-+
- static int iproute_flush(int family, rtnl_filter_t filter_fn)
+-bool __mem_id_disconnect(int id, bool force)
++static bool __mem_id_disconnect(int id, bool force)
  {
- 	time_t start = time(0);
-@@ -1624,7 +1648,7 @@ static int iproute_flush(int family, rtnl_filter_t filter_fn)
- 	filter.flushe = sizeof(flushb);
- 
- 	for (;;) {
--		if (rtnl_routedump_req(&rth, family, NULL) < 0) {
-+		if (rtnl_routedump_req(&rth, family, iproute_dump_filter) < 0) {
- 			perror("Cannot send dump request");
- 			return -2;
- 		}
-@@ -1664,30 +1688,6 @@ static int iproute_flush(int family, rtnl_filter_t filter_fn)
- 	}
- }
- 
--static int iproute_dump_filter(struct nlmsghdr *nlh, int reqlen)
--{
--	struct rtmsg *rtm = NLMSG_DATA(nlh);
--	int err;
--
--	rtm->rtm_protocol = filter.protocol;
--	if (filter.cloned)
--		rtm->rtm_flags |= RTM_F_CLONED;
--
--	if (filter.tb) {
--		err = addattr32(nlh, reqlen, RTA_TABLE, filter.tb);
--		if (err)
--			return err;
--	}
--
--	if (filter.oif) {
--		err = addattr32(nlh, reqlen, RTA_OIF, filter.oif);
--		if (err)
--			return err;
--	}
--
--	return 0;
--}
--
- static int iproute_list_flush_or_save(int argc, char **argv, int action)
- {
- 	int dump_family = preferred_family;
+ 	struct xdp_mem_allocator *xa;
+ 	bool safe_to_remove = true;
 -- 
-2.20.1
+2.17.1
 
