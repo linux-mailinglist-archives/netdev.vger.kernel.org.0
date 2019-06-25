@@ -2,129 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 90F265223B
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 06:43:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EEEE52240
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 06:45:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726968AbfFYEnW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 00:43:22 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:48118 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726421AbfFYEnV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 00:43:21 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 6BB25608CE; Tue, 25 Jun 2019 04:43:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1561437800;
-        bh=PzVp8KkogA+HpuLr/YP8oqFfRobqR8lFNoY9waydybM=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=gdxfop57atEjvmRF8gPOTqZFUYIpLMuvk3v7sa0hocaPU7Kiz1gYQuaZrWgvdX+Dj
-         Z82ssd8e6DCvYle2B+GdHKCaTPcvcHO57m9WyJsdZBA6btr/pRDPQYBQI9hi+D06mu
-         P3tgaB/Bs8jFMztruF+3HFd82d2D7PPmbLPutqHs=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 2E23260709;
-        Tue, 25 Jun 2019 04:43:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1561437799;
-        bh=PzVp8KkogA+HpuLr/YP8oqFfRobqR8lFNoY9waydybM=;
-        h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=PBPwg7IrJqMMukLWvzfIZX+whOYm0ZznKI/3wi9SCk5H3k6H/D+0I4GAZgV2o/bps
-         SfaDPbUvmqd720DbwWT8+WtOldqLomy5tytCONSAs4sGw5dQ79adiUIPunmzEQt2IX
-         elxmnUfr7YzxgldSiUhoq7DCqzjOoQLhaLjBuQSs=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 2E23260709
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1726962AbfFYEo6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 00:44:58 -0400
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:35306 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726421AbfFYEo5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 00:44:57 -0400
+Received: by mail-ot1-f68.google.com with SMTP id j19so15933516otq.2;
+        Mon, 24 Jun 2019 21:44:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2Wp4HQypqw0rNbItr1Xs0WBR6fHG0G9gjAl5KxurVdE=;
+        b=ICNF3PTZ1ZfG+bAeY8F8Pp7sQzesnEsLfQyVK4xXEW0fE9JbdoeEwICCri9MhuwgDe
+         bm/0ejdD98vhkuaDReGiErs7EaKJphiOdNIOX5OTwKFKRbuUyOxVIAk4bHBff8k+v4sW
+         T7OmIR81tdf3Fy8cR5DX0+mQ0tZ/Wu4tdvEcn1ySqLThg5Z+Cqiyv07RISHe3YwpWKkU
+         mNX0GQfIvmuXGqm24S4OcATnGcJC5dp2nIjKXJ/eVlclscTS4ifWJKJt3gXQIn8V6JDV
+         mBBDQVVDx+ijpZkFkPqRJLSkoToQRF0nF2/Dh+zYJ2NvIUQ+MXj1dcWGXJ7WX+IKrAi0
+         Ackw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2Wp4HQypqw0rNbItr1Xs0WBR6fHG0G9gjAl5KxurVdE=;
+        b=Xv186QGPgZP13JAw3vR3DBIJoOTcqbIY4jRNPEBRir2O3epY3OQvJUiFqxRaKKV1xj
+         C38jEqXAfy6wujtyZdBzMqnixEtVMbIYJO5s2tHDWqIQ/EV+CmWWc8GAFEAjBJ6opjNH
+         UvrLyl0s7mGX6iLpd7Fxr/AJXhnfRMNGdF2F3R/+AdcGmgeO3PBW/lQiRKnVIoWB82Ig
+         b4/ysTvtNUVi+9F9m0X5g7QJsXyFYT7pq61L4Vj4AzDrDWQxgP+Fmu2ZqJxpVr8MhZXs
+         Nu4SJvPnHS9pWn2tyTl20upmR02WPy5dsAvYA4C9wsKYBVWoWQXkAIa5eYeS7eySVmEv
+         /Agw==
+X-Gm-Message-State: APjAAAVo9zEl5O5telJB5IZaLgCAmVsHKOstqNaqZLUDiGZa1bcOK49O
+        C48aMcu5GvZG/ie3bbY4W3yuArIcuUI9W+KaaMzC0Y8C
+X-Google-Smtp-Source: APXvYqxsOdEMaHKmim8mpE6aFtY/5w9wT+CBAa2iQ2fftmNQo7l1oux8418VMI5kU7usdjz86T8c871EA6XxIf+xwSc=
+X-Received: by 2002:a9d:14a:: with SMTP id 68mr70034647otu.96.1561437896776;
+ Mon, 24 Jun 2019 21:44:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] p54usb: Fix race between disconnect and firmware loading
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <Pine.LNX.4.44L0.1905201042110.1498-100000@iolanthe.rowland.org>
-References: <Pine.LNX.4.44L0.1905201042110.1498-100000@iolanthe.rowland.org>
-To:     Alan Stern <stern@rowland.harvard.edu>
-Cc:     Christian Lamparter <chunkeey@gmail.com>,
-        syzbot <syzbot+200d4bb11b23d929335f@syzkaller.appspotmail.com>,
-        <davem@davemloft.net>, <andreyknvl@google.com>,
-        <syzkaller-bugs@googlegroups.com>,
-        Kernel development list <linux-kernel@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20190625044320.6BB25608CE@smtp.codeaurora.org>
-Date:   Tue, 25 Jun 2019 04:43:20 +0000 (UTC)
+References: <20190617165836.4673-1-colin.king@canonical.com>
+ <20190619051308.23582-1-martin.blumenstingl@googlemail.com>
+ <92f9e5a6-d2a2-6bf2-ff8a-2430fe977f93@canonical.com> <CAFBinCDmYVPDMcwAAYhMfxxuTsG=xunduN58_8e20zE_Mhmb7Q@mail.gmail.com>
+In-Reply-To: <CAFBinCDmYVPDMcwAAYhMfxxuTsG=xunduN58_8e20zE_Mhmb7Q@mail.gmail.com>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Tue, 25 Jun 2019 06:44:45 +0200
+Message-ID: <CAFBinCC-LLpfXQRFcKBbUpCfKc0S9Xtt60QrhEThsOFV-T7vFw@mail.gmail.com>
+Subject: Re: [PATCH] net: stmmac: add sanity check to device_property_read_u32_array
+ call
+To:     Colin Ian King <colin.king@canonical.com>
+Cc:     alexandre.torgue@st.com, davem@davemloft.net, joabreu@synopsys.com,
+        kernel-janitors@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
+        peppe.cavallaro@st.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alan Stern <stern@rowland.harvard.edu> wrote:
+Hi Colin,
 
-> The syzbot fuzzer found a bug in the p54 USB wireless driver.  The
-> issue involves a race between disconnect and the firmware-loader
-> callback routine, and it has several aspects.
-> 
-> One big problem is that when the firmware can't be loaded, the
-> callback routine tries to unbind the driver from the USB _device_ (by
-> calling device_release_driver) instead of from the USB _interface_ to
-> which it is actually bound (by calling usb_driver_release_interface).
-> 
-> The race involves access to the private data structure.  The driver's
-> disconnect handler waits for a completion that is signalled by the
-> firmware-loader callback routine.  As soon as the completion is
-> signalled, you have to assume that the private data structure may have
-> been deallocated by the disconnect handler -- even if the firmware was
-> loaded without errors.  However, the callback routine does access the
-> private data several times after that point.
-> 
-> Another problem is that, in order to ensure that the USB device
-> structure hasn't been freed when the callback routine runs, the driver
-> takes a reference to it.  This isn't good enough any more, because now
-> that the callback routine calls usb_driver_release_interface, it has
-> to ensure that the interface structure hasn't been freed.
-> 
-> Finally, the driver takes an unnecessary reference to the USB device
-> structure in the probe function and drops the reference in the
-> disconnect handler.  This extra reference doesn't accomplish anything,
-> because the USB core already guarantees that a device structure won't
-> be deallocated while a driver is still bound to any of its interfaces.
-> 
-> To fix these problems, this patch makes the following changes:
-> 
-> 	Call usb_driver_release_interface() rather than
-> 	device_release_driver().
-> 
-> 	Don't signal the completion until after the important
-> 	information has been copied out of the private data structure,
-> 	and don't refer to the private data at all thereafter.
-> 
-> 	Lock udev (the interface's parent) before unbinding the driver
-> 	instead of locking udev->parent.
-> 
-> 	During the firmware loading process, take a reference to the
-> 	USB interface instead of the USB device.
-> 
-> 	Don't take an unnecessary reference to the device during probe
-> 	(and then don't drop it during disconnect).
-> 
-> Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
-> Reported-and-tested-by: syzbot+200d4bb11b23d929335f@syzkaller.appspotmail.com
-> CC: <stable@vger.kernel.org>
-> Acked-by: Christian Lamparter <chunkeey@gmail.com>
+On Thu, Jun 20, 2019 at 3:34 AM Martin Blumenstingl
+<martin.blumenstingl@googlemail.com> wrote:
+>
+> Hi Colin,
+>
+> On Wed, Jun 19, 2019 at 8:55 AM Colin Ian King <colin.king@canonical.com> wrote:
+> >
+> > On 19/06/2019 06:13, Martin Blumenstingl wrote:
+> > > Hi Colin,
+> > >
+> > >> Currently the call to device_property_read_u32_array is not error checked
+> > >> leading to potential garbage values in the delays array that are then used
+> > >> in msleep delays.  Add a sanity check to the property fetching.
+> > >>
+> > >> Addresses-Coverity: ("Uninitialized scalar variable")
+> > >> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> > > I have also sent a patch [0] to fix initialize the array.
+> > > can you please look at my patch so we can work out which one to use?
+> > >
+> > > my concern is that the "snps,reset-delays-us" property is optional,
+> > > the current dt-bindings documentation states that it's a required
+> > > property. in reality it isn't, there are boards (two examples are
+> > > mentioned in my patch: [0]) without it.
+> > >
+> > > so I believe that the resulting behavior has to be:
+> > > 1. don't delay if this property is missing (instead of delaying for
+> > >    <garbage value> ms)
+> > > 2. don't error out if this property is missing
+> > >
+> > > your patch covers #1, can you please check whether #2 is also covered?
+> > > I tested case #2 when submitting my patch and it worked fine (even
+> > > though I could not reproduce the garbage values which are being read
+> > > on some boards)
+in the meantime I have tested your patch.
+when I don't set the "snps,reset-delays-us" property then I get the
+following error:
+  invalid property snps,reset-delays-us
 
-Patch applied to wireless-drivers-next.git, thanks.
+my patch has landed in the meantime: [0]
+how should we proceed with your patch?
 
-6e41e2257f10 p54usb: Fix race between disconnect and firmware loading
 
--- 
-https://patchwork.kernel.org/patch/10951527/
+Martin
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
+[0] https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/commit/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c?id=84ce4d0f9f55b4f4ca4d4edcbb54a23d9dad1aae
