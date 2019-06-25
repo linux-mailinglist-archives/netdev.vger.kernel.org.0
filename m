@@ -2,81 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1303B52645
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 10:16:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D36A45264F
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 10:18:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728926AbfFYIQb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 04:16:31 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:44664 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727984AbfFYIQa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 04:16:30 -0400
-Received: by mail-wr1-f65.google.com with SMTP id r16so16714217wrl.11
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 01:16:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=XP+LR0Z1yUaHNGg2vz822EXoiiGKhM28w8FvAln5Lh8=;
-        b=zFhYw/JNYr/XKsr9ac9Kp4yyTxpYlzuCQl+RrxkXkNKrQzQvnSgB3KwxnfNuTbhKIh
-         q3hcAOtfJyMG8W0kJz/EyMq2ipdZxWzrXPzWjOUYQwDKWAyvLyM3l5MPO/0bQ0VxCccd
-         E2SD3IMXSXvJ0Vc86hMiSPWWS2N8NTRZ+xAHIYsWABHhS81L6J6dRB2j/zcH6L8O3zAp
-         t56SGh2u3exjC+M+NEuwFz7hLRkQ5zxRHje1TsnfxILTuU+Wp4Jojtcpk0ZEhv6Bn4WU
-         TeoyzHWXy7DViyhOc4bstHT5TKwAOwV5ZsEziuS0MzytAgY6RLk7RhslxhMz0XW4BgNc
-         5Hmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=XP+LR0Z1yUaHNGg2vz822EXoiiGKhM28w8FvAln5Lh8=;
-        b=LqItH/MetH1LQTffdL2DEO2M3gbOw4cY0LNLNsJhoFfsKH1umvu6AFTtF9N0Z2xffa
-         ba8dQBeWj5J4GqdHAeg3n58BFlse3ckUFiW7BO/CS1zWgkJ8xR9zTgnjX6P8u9X8uWX2
-         /g0PjalBdCcsVYzbH6Y2NW1vpN8dKyglGz6Ko38Trmm0FDIumMT+Qi4fVCjDuyNP/x2J
-         NvNYSU29MOFqBsy3buazM99gqXBzypSo9q9q8FfW7OYc/qvhMqVghzUEQ/0hDA8oysY5
-         PM7v69/K9MIWplh56PUW/ZxOydtosk/HvvuNrAKd1LKTwaP+oBlMJXUXO2WQkUUZHsRM
-         +xDA==
-X-Gm-Message-State: APjAAAW7fFUAIL+RY/i0uwQ4l5tpdY05Oe0B4JXMDRvXtcX27ZVoznnu
-        CE+46sN//zllrBvNUV9UAEPdHQ==
-X-Google-Smtp-Source: APXvYqxETSqbBbYaMMsbOxCTG/Tu/fZTu6vX3H5zDTynqWK/N7lHRwkxMMRNm7WeXeNDRFv3LZ9n7g==
-X-Received: by 2002:adf:ee03:: with SMTP id y3mr36580164wrn.128.1561450588386;
-        Tue, 25 Jun 2019 01:16:28 -0700 (PDT)
-Received: from localhost (static-84-42-225-170.net.upcbroadband.cz. [84.42.225.170])
-        by smtp.gmail.com with ESMTPSA id x17sm11819379wrq.64.2019.06.25.01.16.27
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 25 Jun 2019 01:16:28 -0700 (PDT)
-Date:   Tue, 25 Jun 2019 10:16:27 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        davem@davemloft.net, thomas.lendacky@amd.com, f.fainelli@gmail.com,
-        ariel.elior@cavium.com, michael.chan@broadcom.com,
-        santosh@chelsio.com, madalin.bucur@nxp.com,
-        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        jeffrey.t.kirsher@intel.com, tariqt@mellanox.com,
-        saeedm@mellanox.com, jiri@mellanox.com, idosch@mellanox.com,
-        jakub.kicinski@netronome.com, peppe.cavallaro@st.com,
-        grygorii.strashko@ti.com, andrew@lunn.ch,
-        vivien.didelot@savoirfairelinux.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, linux-net-drivers@solarflare.com,
-        ganeshgr@chelsio.com, ogerlitz@mellanox.com,
-        Manish.Chopra@cavium.com, marcelo.leitner@gmail.com,
-        mkubecek@suse.cz, venkatkumar.duvvuru@broadcom.com,
-        cphealy@gmail.com
-Subject: Re: [PATCH net-next 11/12] net: flow_offload: don't allow block
- sharing until drivers support this
-Message-ID: <20190625081627.GA2630@nanopsycho>
-References: <20190620194917.2298-1-pablo@netfilter.org>
- <20190620194917.2298-12-pablo@netfilter.org>
+        id S1729029AbfFYISE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 04:18:04 -0400
+Received: from mail.us.es ([193.147.175.20]:49910 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727896AbfFYISD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Jun 2019 04:18:03 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id D2588C1A76
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 10:18:01 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id BC880202D1
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 10:18:01 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id AC127114D9A; Tue, 25 Jun 2019 10:18:01 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 6CE66DA4D0;
+        Tue, 25 Jun 2019 10:17:59 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 25 Jun 2019 10:17:59 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 42A5F4265A32;
+        Tue, 25 Jun 2019 10:17:59 +0200 (CEST)
+Date:   Tue, 25 Jun 2019 10:17:58 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     linmiaohe <linmiaohe@huawei.com>
+Cc:     "kadlec@blackhole.kfki.hu" <kadlec@blackhole.kfki.hu>,
+        "fw@strlen.de" <fw@strlen.de>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
+        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
+        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
+        "coreteam@netfilter.org" <coreteam@netfilter.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "dsahern@gmail.com" <dsahern@gmail.com>,
+        Mingfangsen <mingfangsen@huawei.com>
+Subject: Re: [PATCH v3] net: netfilter: Fix rpfilter dropping vrf packets by
+ mistake
+Message-ID: <20190625081758.rgcyo2reabuxxd6e@salvia>
+References: <30442ee669c44d9db01fb374b73fd2dd@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190620194917.2298-12-pablo@netfilter.org>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <30442ee669c44d9db01fb374b73fd2dd@huawei.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I don't understand the purpose of this patch. Could you please provide
-some description about what this is about. mlxsw supports block sharing
-between ports. Or what kind of "sharing" do you have in mind?
+On Wed, Jun 19, 2019 at 09:49:04AM +0000, linmiaohe wrote:
+> 
+> On 2019/6/18 23:58, Pablo Neira Ayuso wrote:
+> > On Thu, Apr 25, 2019 at 09:43:53PM +0800, linmiaohe wrote:
+> >> From: Miaohe Lin <linmiaohe@huawei.com>
+> >>
+> >> When firewalld is enabled with ipv4/ipv6 rpfilter, vrf
+> >> ipv4/ipv6 packets will be dropped because in device is vrf but out 
+> >> device is an enslaved device. So failed with the check of the 
+> >> rpfilter.
+> >>
+> >> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> >> ---
+> >> --- a/net/ipv4/netfilter/ipt_rpfilter.c
+> >> +++ b/net/ipv4/netfilter/ipt_rpfilter.c
+> >> @@ -81,6 +81,7 @@ static bool rpfilter_mt(const struct sk_buff *skb, struct xt_action_param *par)
+> >>  	flow.flowi4_mark = info->flags & XT_RPFILTER_VALID_MARK ? skb->mark : 0;
+> >>  	flow.flowi4_tos = RT_TOS(iph->tos);
+> >>  	flow.flowi4_scope = RT_SCOPE_UNIVERSE;
+> >> +	flow.flowi4_oif = l3mdev_master_ifindex_rcu(xt_in(par));
+> >>
+> >>  	return rpfilter_lookup_reverse(xt_net(par), &flow, xt_in(par),
+> >> --- a/net/ipv6/netfilter/ip6t_rpfilter.c
+> >> +++ b/net/ipv6/netfilter/ip6t_rpfilter.c
+> >> @@ -58,7 +58,9 @@ static bool rpfilter_lookup_reverse6(struct net *net, const struct sk_buff *skb,
+> >>  	if (rpfilter_addr_linklocal(&iph->saddr)) {
+> >>  		lookup_flags |= RT6_LOOKUP_F_IFACE;
+> >>  		fl6.flowi6_oif = dev->ifindex;
+> >> -	} else if ((flags & XT_RPFILTER_LOOSE) == 0)
+> >> +	} else if (((flags & XT_RPFILTER_LOOSE) == 0) ||
+> >> +		   (netif_is_l3_master(dev)) ||
+> >> +		   (netif_is_l3_slave(dev)))
+> >>  		fl6.flowi6_oif = dev->ifindex;
+> >>
+> >>  	rt = (void *)ip6_route_lookup(net, &fl6, skb, lookup_flags); @@
+> >> -73,6 +75,12 @@ static bool rpfilter_lookup_reverse6(struct net *net, const struct sk_buff *skb,
+> >>  		goto out;
+> >>  	}
+> >>
+> >> +	if (netif_is_l3_master(dev)) {
+> >> +		dev = dev_get_by_index_rcu(dev_net(dev), IP6CB(skb)->iif);
+> >> +		if (!dev)
+> >> +			goto out;
+> >> +	}
+> > 
+> > So, for the l3 device cases this makes:
+> > 
+> > #1 ip6_route_lookup() to fetch the route, using the device in xt_in()
+> >    (the _LOOSE flag is ignored for the l3 device case).
+> > 
+> > #2 If this is a l3dev master, then you make a global lookup for the
+> >    device using IP6CB(skb)->iif.
+> > 
+> > #3 You check if route matches with the device, using the new device
+> >    from the lookup:
+> > 
+> >    if (rt->rt6i_idev->dev == dev ...
+> > 
+> > If there is no other way to fix this, OK, that's fair enough.
+> > 
+> > Still this fix looks a bit tricky to me.
+> > 
+> > And this assymmetric between the IPv4 and IPv6 codebase looks rare.
+> > 
+> > Probably someone can explain me this in more detail? I'd appreciate.
+> > 
+> > Thanks!
+> > 
+>     Thanks for your reply. I will try to explain this in more detail.
+>     Vrf device will pass through netfilter hook twice. One with skb->dev=l3mdev
+> Slave device and another one with skb->dev=l3mdev master deivce.
+>     If a device is an l3mdev,  l3mdev_master_ifindex_rcu will return l3mdev
+> master device ifindex otherwise 0 . So for non l3mdev cases,  v4 version is
+> as same as the previous one. And for l3mdev cases,  flow.flowi4_oif
+> will be l3mdev master device ifindex, so we can do a fib lookup in l3mdev
+> domain as expected. Since fib_info_nh_uses_dev help us handle the case with
+> dev=l3mdev slave or master and  XT_RPFILTER_LOOSE do not lookup route
+> table, we finish v4.
+>     For v6 version we need to set fl6.flowi6_oif as we are supposed to lookup 
+> fib in l3mdev domain even in XT_RPFILTER_LOOSE mode.
+>     And fib result rt->rt6i_idev->dev is l3mdev slave device, we need change
+> dev to enslaved l3mdev device when dev passed in is l3mdev master device.
+>     The key is l3mdev will pass through netfilter hook twice with skb dev is l3mdev slave
+> and master . And we need to set flowi6_oif as fib lookup should in the l3mdev
+> domain.
+
+Thanks for explaining.
+
+Something must be wrong in all these helper function logic because
+this new code logic is hard to follow for the IPv6 chunk...
+
+Can you explore a more readable fix?
+
+So I'm not inclined to quickly take this patch.
+
+Thanks.
