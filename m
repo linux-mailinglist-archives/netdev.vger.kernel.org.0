@@ -2,56 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2414D5575C
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 20:46:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 529EB55760
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 20:49:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731977AbfFYSqD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 14:46:03 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:42197 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731361AbfFYSqD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 14:46:03 -0400
-Received: by mail-io1-f65.google.com with SMTP id u19so1501660ior.9
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 11:46:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=2QcF7QIxDjsG5tDrN9/wtSZ9PbstAP0AzjcBka48Dyw=;
-        b=PTE2pHT3XHTF1AQI0R/68DUpdZYjgxAMSfvKP6QKCejqXyEerpXKYFiUa/XDNqCZdR
-         /8n1JCTWeTL7th30TrYSc8jwd6AV56tpi/UBRTzlouY9ueErYYAzW9wRTX0O8pdNRVHE
-         rzNNzFBQLg+aZCWrESqPX1qsjnKPYYhXHmg+CDjmxUvMmHpa+dxUGCtvOJag5FNQzbXu
-         nTIybbWyxX9nXYoV03D4/7OgEC3qJyk1MrzAiswuvo3hQD3bEcfpHW8wR4TMKJiCoe6p
-         anXuUq61wVQU45GMPRGCB0bNmRiQdM5qqWq3e6/+2WdabgNshIG94BRu+j8UFq/XDjAq
-         FVqw==
+        id S1732995AbfFYSt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 14:49:58 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:52930 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731728AbfFYSt6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 14:49:58 -0400
+Received: by mail-wm1-f65.google.com with SMTP id s3so3884366wms.2;
+        Tue, 25 Jun 2019 11:49:56 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=2QcF7QIxDjsG5tDrN9/wtSZ9PbstAP0AzjcBka48Dyw=;
-        b=Yqg3h5a242EodKRozQEWYJMGUM8MnFsdFBrcFSexIxNGe2mzqdeeNCooJgkZxvHP5E
-         Ie6xM6dXh+pw4ztxsp4zCjr09o/pfv2OtBG9n/TtJAoBDGeDDxG3RSkstDRgt91kvz22
-         /0puhsLPSq5SSnu5cDfgySRhE7+HL37cRV0r4oaB8GhHg+4641VtmYxjebdtO7PvvPL/
-         u0gT5vAjv5WDC+UdRy17psV9a7BDT+S0a+CxoFLJjqI6R2+xuUr1TSlP/A24hS73Liy3
-         jzb9gLjK/QwRam3D2dL2gBaY1gUps8aQLSqkaGPk33QVa0vQZ+Lqxq81w7kafY8i30SF
-         blGg==
-X-Gm-Message-State: APjAAAWeRJ0xFdJurNLGLYkz7HE38lSyvvF5ZLSAkxb7/oVu9na5/yqC
-        kWCZcGP6extROCoUpMJSd1u4Zb8vL/3ZJui0SJ0=
-X-Google-Smtp-Source: APXvYqyxaCe6z/eLcWd9tHbeG1MURQnuc3zu1LVeuwfpVg0tVwVt3Z/LSntK6gAySOTaniMWJ4ljXZVJYX4hVbPoeNQ=
-X-Received: by 2002:a02:ccdc:: with SMTP id k28mr26254525jaq.41.1561488362552;
- Tue, 25 Jun 2019 11:46:02 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=NnYdk1L9tNxJOrD8BD7rIwHwgh6hKQRIs6DjAkp3gAE=;
+        b=Dp/hi+AnZRvnxV252Y1zilwrKb8DnTlvzlzlZ7571aQHlUTEFf+blfsC/9YM10g2y8
+         4Z/jbIJxtlAsHvLlbOabt2tQ71m7RCujDYIkCwG47Wpx+Z2tw7NYUqc1qr4bNvyknw87
+         D2NHpGF/XVK09k4FuV5z13cayPp6FhgLBgvEUD91ytD4v2F96agf27+jiJ4/YfG8SDMf
+         r1B2Ow67nBRyMgeGmvDR3wgdDdK8IwD8eGX9okmSiXeJyB91SP1VCMaTM00/FufBRZdw
+         NFHsJeLz5Ofm5Gwjfj+RmYQgAZ0SeB81RwbVkQvaODXOCnQkT8KwPQhw7SxHRFg827ak
+         eR4A==
+X-Gm-Message-State: APjAAAX4u0J4O/wCdUqmYHiSLIOhbBn3kC8FkCRF03a2IMQCdgXoIVt5
+        8VypmjweWZTHv36c3Hvmva8=
+X-Google-Smtp-Source: APXvYqzegnboHeF+ubq+Re36XcyZoE34C8XzPBywiqM+pa+uCqEiiTKajy0OCgcU1IWo0AD7Iuihsw==
+X-Received: by 2002:a1c:ef0c:: with SMTP id n12mr19655866wmh.132.1561488595719;
+        Tue, 25 Jun 2019 11:49:55 -0700 (PDT)
+Received: from kozik-lap ([194.230.155.151])
+        by smtp.googlemail.com with ESMTPSA id o14sm12298185wrp.77.2019.06.25.11.49.52
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 25 Jun 2019 11:49:54 -0700 (PDT)
+Date:   Tue, 25 Jun 2019 20:49:51 +0200
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     Phong Tran <tranmanphong@gmail.com>
+Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com,
+        alexander.sverdlin@gmail.com, allison@lohutok.net, andrew@lunn.ch,
+        ast@kernel.org, bgolaszewski@baylibre.com, bpf@vger.kernel.org,
+        daniel@iogearbox.net, daniel@zonque.org, dmg@turingmachine.org,
+        festevam@gmail.com, gerg@uclinux.org, gregkh@linuxfoundation.org,
+        gregory.clement@bootlin.com, haojian.zhuang@gmail.com,
+        hsweeten@visionengravers.com, illusionist.neo@gmail.com,
+        info@metux.net, jason@lakedaemon.net, jolsa@redhat.com,
+        kafai@fb.com, kernel@pengutronix.de, kgene@kernel.org,
+        kstewart@linuxfoundation.org, linux-arm-kernel@lists.infradead.org,
+        linux-imx@nxp.com, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        linux@armlinux.org.uk, liviu.dudau@arm.com, lkundrak@v3.sk,
+        lorenzo.pieralisi@arm.com, mark.rutland@arm.com, mingo@redhat.com,
+        namhyung@kernel.org, netdev@vger.kernel.org, nsekhar@ti.com,
+        peterz@infradead.org, robert.jarzmik@free.fr,
+        s.hauer@pengutronix.de, sebastian.hesselbarth@gmail.com,
+        shawnguo@kernel.org, songliubraving@fb.com, sudeep.holla@arm.com,
+        swinslow@gmail.com, tglx@linutronix.de, tony@atomide.com,
+        will@kernel.org, yhs@fb.com
+Subject: Re: [PATCH V3 04/15] ARM: exynos: cleanup cppcheck shifting error
+Message-ID: <20190625184951.GA10025@kozik-lap>
+References: <20190624135105.15579-1-tranmanphong@gmail.com>
+ <20190625040356.27473-1-tranmanphong@gmail.com>
+ <20190625040356.27473-5-tranmanphong@gmail.com>
 MIME-Version: 1.0
-Received: by 2002:a92:afd2:0:0:0:0:0 with HTTP; Tue, 25 Jun 2019 11:46:01
- -0700 (PDT)
-Reply-To: faridaluv2014@gmail.com
-From:   Farida Hamed <labosozarrina@gmail.com>
-Date:   Tue, 25 Jun 2019 11:46:01 -0700
-Message-ID: <CACArmSrdfhSuBMX3QGdZxbd4bwOC7fPR+Jkb2Qqtidw8FkfoHA@mail.gmail.com>
-Subject: Hola
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20190625040356.27473-5-tranmanphong@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hola como estas
+On Tue, Jun 25, 2019 at 11:03:45AM +0700, Phong Tran wrote:
+> There is error from cppcheck tool
+> "Shifting signed 32-bit value by 31 bits is undefined behaviour errors"
+> change to use BIT() marco for improvement.
+> 
+> Signed-off-by: Phong Tran <tranmanphong@gmail.com>
+> ---
+>  arch/arm/mach-exynos/suspend.c | 2 +-
+
+Thanks, applied with slightly different commit message. As Peter
+pointed, there is no error because of GCC.  Usually we expect a reply to
+comments on LKML...  and also you could take his hints and use them to
+improve the commit msg to properly describe what is the problem.
+
+Best regards,
+Krzysztof
+
