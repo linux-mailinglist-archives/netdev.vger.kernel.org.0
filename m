@@ -2,81 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F6F655109
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 16:04:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80E2F5513D
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 16:11:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728252AbfFYOEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 10:04:39 -0400
-Received: from mail-yb1-f196.google.com ([209.85.219.196]:37781 "EHLO
-        mail-yb1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728147AbfFYOEh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 10:04:37 -0400
-Received: by mail-yb1-f196.google.com with SMTP id 189so7498860ybh.4
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 07:04:37 -0700 (PDT)
+        id S1729727AbfFYOLt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 10:11:49 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:35359 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728130AbfFYOLt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 10:11:49 -0400
+Received: by mail-lf1-f68.google.com with SMTP id a25so12761653lfg.2
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 07:11:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6pIIC3jytWsmntojJM5beMPwkkISJ/lE+BJnG08AcnU=;
-        b=mRU4gBCrfg1gioLKe8ve3oGpbXdbfnB/ITSmqUQ9RcKXPtDFqmjktz9gM9ltsUh+wg
-         yUOjr6uBYr3ljB+H8Qpntj89LzaLJ8o3QlvN9SRou/ztu9mINIl4ZYYaTN4BJuuYlANb
-         Ut0kJmWvQM9BgB5orcacPdtvxfMMYeSgbJvugc/6SVKkKeNPc9WXLZlNEwSzV7Jyz7dw
-         D2YbmYBouyrHwbDsgfzL+et32rsvUyNbdFc2SUx5jusN9rhLxCH4jZgtjKHlro+olg7q
-         B0MwiYxTbk+3sGmNj0ndHj6Tn9PKidy1jzuvBQtDn3VADbLLRGWJqFTBKEe1779CkJhT
-         49Ww==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=gYuJuPOZBk4Y/I55Xfw4nMllA34HbJMTlhwO9fs6sKE=;
+        b=RrGdRYr/3/VMp2ftn6ZpAtSc6E+i+LepBHyiDnqE/7RSQxXYyCk/+3N4RfHuaFPwBu
+         tIT+EtcczTiCbyoETK9FM7l3NGlIumcG6DYtRf3yuUjQSV7eqRrigrh+UhqQXjwI/r3U
+         bjZLIwU1ZHKJRXRetaNlUJOVk7rWnS43NZ62J+z3IbLnaZBQBMXcMAJ4C+ju6cBs/aTM
+         I9q/W4hvLc3xIQrLRpTUM7BNPSTU6K6BwCmHP3JfUAuE48Etj+TfO8o6DoYAAdGyw3v9
+         ZsUT2Xxnmc7jwRXmX6+6VY8PJcUE9q5Qg696QWBZkYlRbffGARZ+SgiXI8ceAwTc78bc
+         Ouzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6pIIC3jytWsmntojJM5beMPwkkISJ/lE+BJnG08AcnU=;
-        b=B3UUFylUJOhBRYnrYzcKKUIxJ0pt5J7C7m0wT2z1cvnm5YixZ1uRnfHVRPOrrZMK1i
-         Pw2bV8a+MEe2v2l06uG6texi1i9tu2LsvVA8Tr5EHDsufwtsP5kSqUlGfKRHAtP92Xib
-         mhEsaYRdYp9OAVG3XS+AOtwP7bGZrTDZri31k2ZWcqOsPgkDN0CGXccMoHBHHLTjwbDl
-         uoR3nXDQ40sifIQOBFMkuUAAVG7dOdJn+/iu5AC8NuQzqjz9T2twcAuL/lW3mEiyoXUU
-         20FM0kp/cfCuC4kb3Xl6Ul+0KLI4qNaYCpV4BhKHn2aFyXLl3WBmz5W+jRhkqHC+fvAy
-         PP0Q==
-X-Gm-Message-State: APjAAAXZcIAk6UZsk66112joGkOqg+abFm2iAPgaaSyUqNr//DcoohQC
-        Pp3jhRKVj4ettdVguwub3H+QM+se
-X-Google-Smtp-Source: APXvYqxvcEl/S+9nkGOkXBoeUCuLpK1mIlr85FUyNH1Lv7LSi8n9+OttgdMamnafdu/xjfez5LxR6A==
-X-Received: by 2002:a25:8489:: with SMTP id v9mr7225920ybk.144.1561471475656;
-        Tue, 25 Jun 2019 07:04:35 -0700 (PDT)
-Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com. [209.85.219.175])
-        by smtp.gmail.com with ESMTPSA id g64sm1815646ywg.11.2019.06.25.07.04.33
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Tue, 25 Jun 2019 07:04:34 -0700 (PDT)
-Received: by mail-yb1-f175.google.com with SMTP id p8so7469301ybo.13
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 07:04:33 -0700 (PDT)
-X-Received: by 2002:a25:99c4:: with SMTP id q4mr11512887ybo.390.1561471473136;
- Tue, 25 Jun 2019 07:04:33 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190625125048.28849-1-houweitaoo@gmail.com>
-In-Reply-To: <20190625125048.28849-1-houweitaoo@gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 25 Jun 2019 10:03:56 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSegsUvPSWX+CZuafSD32Sx+xJmYPiQ92geDNqAe8_JGrQ@mail.gmail.com>
-Message-ID: <CA+FuTSegsUvPSWX+CZuafSD32Sx+xJmYPiQ92geDNqAe8_JGrQ@mail.gmail.com>
-Subject: Re: [PATCH] can: mcp251x: add error check when wq alloc failed
-To:     Weitao Hou <houweitaoo@gmail.com>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        David Miller <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        allison@lohutok.net, tglx@linutronix.de, sean@geanix.com,
-        linux-can@vger.kernel.org,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=gYuJuPOZBk4Y/I55Xfw4nMllA34HbJMTlhwO9fs6sKE=;
+        b=th1D+2h9uBhRSn+Pq/huJtr+ysdkAZ6S657sAne+tpIXlnV1RU3ksv15kMFXmJ91G+
+         N8ugnYIFfcjjfJhjWxjDGhMtANDHD0PAYsFCaux+02xQd6b18zvTzz0+csVF4GNxTvyf
+         6KOkmS4oFpd21QThR0hB6m0SlqJ/0PBOiIFQSsJzuUrluE5squVF/E8OXHx2Kz828j2m
+         0ZKeJWcgplYM2hesuTyJdHas53q0yCaLyA9o7Ffl2GxoLpzEUJxr6yFWbPto7kicvpVp
+         i/zSEgEZy2RUChWHbmYjdc2Rz+LkT1P7igtMzFmrd3BUY3mkT3WomoWjHwy/HXrCzIlX
+         uWaw==
+X-Gm-Message-State: APjAAAXLSQJwljh4hxa3MP2nJku3kvYHnFVyUTperemCbq6BHndOt/mn
+        S2UBh5RWJg8rkoZ+jIibxUdnOD0NB3w=
+X-Google-Smtp-Source: APXvYqymCGzBxYFBh6NDuxj2Z0bP9KTLDNIFnB0YdKzFofu+smjIUtjZXqAQj1DCj8d9p2R1wtj91w==
+X-Received: by 2002:ac2:4901:: with SMTP id n1mr2442751lfi.153.1561471906859;
+        Tue, 25 Jun 2019 07:11:46 -0700 (PDT)
+Received: from localhost.localdomain (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
+        by smtp.gmail.com with ESMTPSA id z12sm1971522lfg.67.2019.06.25.07.11.45
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 25 Jun 2019 07:11:46 -0700 (PDT)
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     ast@kernel.org, netdev@vger.kernel.org
+Cc:     daniel@iogearbox.net, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Subject: [PATCH net-next] tools: lib: bpf: libbpf: fix max() type mistmatch for 32bit
+Date:   Tue, 25 Jun 2019 17:11:42 +0300
+Message-Id: <20190625141142.2378-1-ivan.khoronzhuk@linaro.org>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 25, 2019 at 8:51 AM Weitao Hou <houweitaoo@gmail.com> wrote:
->
-> add error check when workqueue alloc failed, and remove
-> redundant code to make it clear
->
-> Signed-off-by: Weitao Hou <houweitaoo@gmail.com>
+It fixes build error for 32bit coused by type mistmatch
+size_t/unsigned long.
 
-Acked-by: Willem de Bruijn <willemb@google.com>
+Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+---
+
+Based on net-next/master
+
+ tools/lib/bpf/libbpf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 4259c9f0cfe7..d03016a559e2 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -778,7 +778,7 @@ static struct bpf_map *bpf_object__add_map(struct bpf_object *obj)
+ 	if (obj->nr_maps < obj->maps_cap)
+ 		return &obj->maps[obj->nr_maps++];
+ 
+-	new_cap = max(4ul, obj->maps_cap * 3 / 2);
++	new_cap = max((size_t)4, obj->maps_cap * 3 / 2);
+ 	new_maps = realloc(obj->maps, new_cap * sizeof(*obj->maps));
+ 	if (!new_maps) {
+ 		pr_warning("alloc maps for object failed\n");
+-- 
+2.17.1
+
