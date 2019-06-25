@@ -2,123 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 85AEF527F3
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 11:23:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79DC1527F8
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 11:23:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731453AbfFYJXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 05:23:19 -0400
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:58178 "EHLO
-        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726423AbfFYJXT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 05:23:19 -0400
-Received: from [192.168.188.14] (unknown [120.132.1.226])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 2C44A41B62;
-        Tue, 25 Jun 2019 17:23:07 +0800 (CST)
-Subject: Re: [PATCH nf-next v2 1/2] netfilter: nft_meta: add NFT_META_BRI_PVID
- support
-From:   wenxu <wenxu@ucloud.cn>
-To:     pablo@netfilter.org, fw@strlen.de
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-References: <1560993460-25569-1-git-send-email-wenxu@ucloud.cn>
-Message-ID: <5d8a5ac6-88d4-3a32-ca9b-7fb21077be57@ucloud.cn>
-Date:   Tue, 25 Jun 2019 17:23:02 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+        id S1727829AbfFYJXs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 05:23:48 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:39402 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726423AbfFYJXs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 05:23:48 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id x5P9Ngis127249;
+        Tue, 25 Jun 2019 04:23:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1561454622;
+        bh=CYAkaJKHP3gcd7IjXGCKkql/c+Gj6Kmc00gAPP+4+Aw=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=Ut96TZQP6QMyDeZpIv9Bx0iIoY422Uk6pcLRwMRqr1rlPUtObSjrRNuG5K5e8ssn+
+         zVcwWtj3LQh4kH1FhSiar8d+ZTNAvxj42LHdZkHAcZrhAbXIziwP8HKWIPDOvbfpMb
+         Drad7srDQlnpE+YxvBynx9QkYxQzbsPIZJfOUTwI=
+Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x5P9NgC5120111
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 25 Jun 2019 04:23:42 -0500
+Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE112.ent.ti.com
+ (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Tue, 25
+ Jun 2019 04:23:42 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
+ Frontend Transport; Tue, 25 Jun 2019 04:23:42 -0500
+Received: from [172.24.190.215] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id x5P9Ndis104580;
+        Tue, 25 Jun 2019 04:23:40 -0500
+Subject: Re: [PATCH v12 2/5] can: m_can: Rename m_can_priv to m_can_classdev
+To:     Dan Murphy <dmurphy@ti.com>, <wg@grandegger.com>,
+        <mkl@pengutronix.de>, <davem@davemloft.net>
+CC:     <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20190509161109.10499-1-dmurphy@ti.com>
+ <20190509161109.10499-2-dmurphy@ti.com>
+From:   Faiz Abbas <faiz_abbas@ti.com>
+Message-ID: <820987ea-e43e-4702-e0df-8369914a3c93@ti.com>
+Date:   Tue, 25 Jun 2019 14:53:59 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <1560993460-25569-1-git-send-email-wenxu@ucloud.cn>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20190509161109.10499-2-dmurphy@ti.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-X-HM-Spam-Status: e1kfGhgUHx5ZQUhXWQgYFAkeWUFZVkpVSExDS0tLSk9LSkJLSklZV1koWU
-        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Ngw6Eyo5Pzg3FBROFRkvIxoo
-        F0wKCTVVSlVKTk1KT05PTkNMTEhMVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJS1VK
-        SElVSlVJSU1ZV1kIAVlBSEJLSzcG
-X-HM-Tid: 0a6b8df22def2086kuqy2c44a41b62
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi pablo,
+Hi,
 
+On 09/05/19 9:41 PM, Dan Murphy wrote:
+> Rename the common m_can_priv class structure to
+> m_can_classdev as this is more descriptive.
+> 
+> Acked-by: Wolfgang Grandegger <wg@grandegger.com>
+> Signed-off-by: Dan Murphy <dmurphy@ti.com>
 
-Any idea about these two patches?
+Acked-by: Faiz Abbas <faiz_abbas@ti.com>
 
-
-BR
-
-wenxu
-
-On 6/20/2019 9:17 AM, wenxu@ucloud.cn wrote:
-> From: wenxu <wenxu@ucloud.cn>
->
-> nft add table bridge firewall
-> nft add chain bridge firewall zones { type filter hook prerouting priority - 300 \; }
-> nft add rule bridge firewall zones counter ct zone set vlan id map { 100 : 1, 200 : 2 }
->
-> As above set the bridge port with pvid, the received packet don't contain
-> the vlan tag which means the packet should belong to vlan 200 through pvid.
-> With this pacth user can get the pvid of bridge ports.
->
-> So add the following rule for as the first rule in the chain of zones.
->
-> nft add rule bridge firewall zones counter meta brvlan set meta brpvid
->
-> Signed-off-by: wenxu <wenxu@ucloud.cn>
-> ---
->  include/uapi/linux/netfilter/nf_tables.h |  2 ++
->  net/netfilter/nft_meta.c                 | 13 +++++++++++++
->  2 files changed, 15 insertions(+)
->
-> diff --git a/include/uapi/linux/netfilter/nf_tables.h b/include/uapi/linux/netfilter/nf_tables.h
-> index 31a6b8f..4a16124 100644
-> --- a/include/uapi/linux/netfilter/nf_tables.h
-> +++ b/include/uapi/linux/netfilter/nf_tables.h
-> @@ -793,6 +793,7 @@ enum nft_exthdr_attributes {
->   * @NFT_META_SECPATH: boolean, secpath_exists (!!skb->sp)
->   * @NFT_META_IIFKIND: packet input interface kind name (dev->rtnl_link_ops->kind)
->   * @NFT_META_OIFKIND: packet output interface kind name (dev->rtnl_link_ops->kind)
-> + * @NFT_META_BRI_PVID: packet input bridge port pvid
->   */
->  enum nft_meta_keys {
->  	NFT_META_LEN,
-> @@ -823,6 +824,7 @@ enum nft_meta_keys {
->  	NFT_META_SECPATH,
->  	NFT_META_IIFKIND,
->  	NFT_META_OIFKIND,
-> +	NFT_META_BRI_PVID,
->  };
->  
->  /**
-> diff --git a/net/netfilter/nft_meta.c b/net/netfilter/nft_meta.c
-> index 987d2d6..cb877e01 100644
-> --- a/net/netfilter/nft_meta.c
-> +++ b/net/netfilter/nft_meta.c
-> @@ -243,6 +243,14 @@ void nft_meta_get_eval(const struct nft_expr *expr,
->  			goto err;
->  		strncpy((char *)dest, p->br->dev->name, IFNAMSIZ);
->  		return;
-> +	case NFT_META_BRI_PVID:
-> +		if (in == NULL || (p = br_port_get_rtnl_rcu(in)) == NULL)
-> +			goto err;
-> +		if (br_opt_get(p->br, BROPT_VLAN_ENABLED)) {
-> +			nft_reg_store16(dest, br_get_pvid(nbp_vlan_group_rcu(p)));
-> +			return;
-> +		}
-> +		goto err;
->  #endif
->  	case NFT_META_IIFKIND:
->  		if (in == NULL || in->rtnl_link_ops == NULL)
-> @@ -370,6 +378,11 @@ static int nft_meta_get_init(const struct nft_ctx *ctx,
->  			return -EOPNOTSUPP;
->  		len = IFNAMSIZ;
->  		break;
-> +	case NFT_META_BRI_PVID:
-> +		if (ctx->family != NFPROTO_BRIDGE)
-> +			return -EOPNOTSUPP;
-> +		len = sizeof(u16);
-> +		break;
->  #endif
->  	default:
->  		return -EOPNOTSUPP;
+Thanks,
+Faiz
