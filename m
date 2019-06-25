@@ -2,983 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF9635291E
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 12:11:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAAD152972
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 12:29:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731117AbfFYKLo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 06:11:44 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:40334 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728766AbfFYKLn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Jun 2019 06:11:43 -0400
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 6A69A309B16F;
-        Tue, 25 Jun 2019 10:11:42 +0000 (UTC)
-Received: from hog.localdomain, (ovpn-204-41.brq.redhat.com [10.40.204.41])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2B72560BE5;
-        Tue, 25 Jun 2019 10:11:41 +0000 (UTC)
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     netdev@vger.kernel.org
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sabrina Dubroca <sd@queasysnail.net>
-Subject: [PATCH RFC ipsec-next 7/7] xfrm: add espintcp (RFC 8229)
-Date:   Tue, 25 Jun 2019 12:11:40 +0200
-Message-Id: <c008fca331ce25a15c6233a7fa58d579167033cd.1561457281.git.sd@queasysnail.net>
-In-Reply-To: <cover.1561457281.git.sd@queasysnail.net>
-References: <cover.1561457281.git.sd@queasysnail.net>
+        id S1728101AbfFYK3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 06:29:31 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:43788 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727769AbfFYK3b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 06:29:31 -0400
+Received: by mail-lj1-f194.google.com with SMTP id 16so15676723ljv.10
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 03:29:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=BJvNPnbZj9zGBKXuVgxHHmB6XgCNQ719LVT/L+1Rnxk=;
+        b=XuTR6bBeaKUEPh5UseQhYYmWqWAjNUjpRgAX7AjxbeZvduUacWiwx++x4y492nNlyJ
+         EIQHpYkQUIM7XnxbkRk6C+yta1outhXZQMjawylDaxz7QXJfTykh9CiuLL5vgC/4Va2G
+         a7cUrKWfE8IG5ZULQFCEoWbVnO/1l8O45A6uLrA5eZ6v4IQZyuGS7FckdCqLtDPlipsu
+         ATOBHN8iT4W6Obl4voBrkbuXM+O2TR+2Fbf8P4qF69veEXHMpcTVbWNKQ0IZY3L4Cd2U
+         OjUZ7CkDc/ZF8AIeBz4xW1OSQrX6fy/1KD+YiSSiq1Ji+UsKERGqccwZVKT+lLqVgPzf
+         9m0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=BJvNPnbZj9zGBKXuVgxHHmB6XgCNQ719LVT/L+1Rnxk=;
+        b=IZE6kHEeCoiCrsCB4ZxLju/vhR/coNSgs1BC1BnXeYltTAxQ84gkz7n04ULJeQq0jB
+         zNQ2Lnz9XeUyU/al0iI/VMyBikGya4AR5ybxSCLkWgsMEYPmrvtshlp5dDeD65LoOXJE
+         DRvikETrz4+XK63FN92QnFQIUYOC6VM+oy18lxvM6cG/CgbOgJXvxByPuPwCpxGLLxZ7
+         AH8mstPTm+kFQQll/myrkA6+RXYUzHSv6Q5EFOpSwedqNU6OyU4f7wTYJDzmSElnb2ZI
+         znNrpOQ1QZDTBs+GWGSj5ZD1Uo+aegp648ee0qdzzTVE/K3PkQafyjyWa+pQe0ByNjd5
+         DUhg==
+X-Gm-Message-State: APjAAAWU83X2yBWh5ixYX4IbVJ25d18sAXYtEdLmySJf0wyYfz3iqaEI
+        9L9D3o+XGw8IsDJU42MjbOrBVg==
+X-Google-Smtp-Source: APXvYqzZrJaehMzYIKdHcvNvYc3CnjfleAEBrYTTtIQcy5nKdqK/0MyQ6sURR/CIPhIrmkkSaB30rA==
+X-Received: by 2002:a2e:2993:: with SMTP id p19mr55277216ljp.202.1561458568940;
+        Tue, 25 Jun 2019 03:29:28 -0700 (PDT)
+Received: from [192.168.1.100] ([213.87.147.32])
+        by smtp.gmail.com with ESMTPSA id j7sm2539448lji.27.2019.06.25.03.29.27
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 25 Jun 2019 03:29:28 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: stmmac: Fix the case when PHY handle is not
+ present
+To:     Jose Abreu <Jose.Abreu@synopsys.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>
+References: <351cce38d1c572d8b171044f2856c7fae9f89cbc.1561450696.git.joabreu@synopsys.com>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Message-ID: <895a67c1-3b83-d7be-b64e-61cff86d057d@cogentembedded.com>
+Date:   Tue, 25 Jun 2019 13:29:20 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Tue, 25 Jun 2019 10:11:42 +0000 (UTC)
+In-Reply-To: <351cce38d1c572d8b171044f2856c7fae9f89cbc.1561450696.git.joabreu@synopsys.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TCP encapsulation of IKE and IPsec messages (RFC 8229) is implemented
-as a TCP ULP, overriding in particular the sendmsg and recvmsg
-operations. A Stream Parser is used to extract messages out of the TCP
-stream using the first 2 bytes as length marker. Received IKE messages
-are put on "ike_queue", waiting to be dequeued by the custom recvmsg
-implementation. Received ESP messages are sent to XFRM, like with UDP
-encapsulation.
+Hello!
 
-Some of this code is taken from the original submission by Herbert
-Xu. Currently, only IPv4 is supported, like for UDP encapsulation.
+On 25.06.2019 11:19, Jose Abreu wrote:
 
-Co-developed-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
----
- include/net/espintcp.h   |  38 +++
- include/net/xfrm.h       |   1 +
- include/uapi/linux/udp.h |   1 +
- net/ipv4/esp4.c          | 189 ++++++++++++++-
- net/xfrm/Kconfig         |   9 +
- net/xfrm/Makefile        |   1 +
- net/xfrm/espintcp.c      | 505 +++++++++++++++++++++++++++++++++++++++
- net/xfrm/xfrm_policy.c   |   7 +
- net/xfrm/xfrm_state.c    |   3 +
- 9 files changed, 751 insertions(+), 3 deletions(-)
- create mode 100644 include/net/espintcp.h
- create mode 100644 net/xfrm/espintcp.c
+> Some DT bindings do not have the PHY handle. Let's fallback to manually
+> discovery in case phylink_of_phy_connect() fails.
+> 
+> Reported-by: Katsuhiro Suzuki <katsuhiro@katsuster.net>
+> Fixes: 74371272f97f ("net: stmmac: Convert to phylink and remove phylib logic")
+> Signed-off-by: Jose Abreu <joabreu@synopsys.com>
+> Cc: Joao Pinto <jpinto@synopsys.com>
+> Cc: David S. Miller <davem@davemloft.net>
+> Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+> Cc: Alexandre Torgue <alexandre.torgue@st.com>
+> ---
+> Hello Katsuhiro,
+> 
+> Can you please test this patch ?
+> ---
+>   drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 7 +++++--
+>   1 file changed, 5 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> index a48751989fa6..f4593d2d9d20 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> @@ -950,9 +950,12 @@ static int stmmac_init_phy(struct net_device *dev)
+>   
+>   	node = priv->plat->phylink_node;
+>   
+> -	if (node) {
+> +	if (node)
+>   		ret = phylink_of_phy_connect(priv->phylink, node, 0);
+> -	} else {
+> +
+> +	/* Some DT bindings do not set-up the PHY handle. Let's try to
+> +	 * manually parse it */
 
-diff --git a/include/net/espintcp.h b/include/net/espintcp.h
-new file mode 100644
-index 000000000000..02fc28c82d30
---- /dev/null
-+++ b/include/net/espintcp.h
-@@ -0,0 +1,38 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _NET_ESPINTCP_H
-+#define _NET_ESPINTCP_H
-+
-+#include <net/strparser.h>
-+#include <linux/skmsg.h>
-+
-+void __init espintcp_init(void);
-+
-+int espintcp_push_skb(struct sock *sk, struct sk_buff *skb);
-+int espintcp_queue_out(struct sock *sk, struct sk_buff *skb);
-+bool tcp_is_ulp_esp(struct sock *sk);
-+
-+struct espintcp_msg {
-+	struct sk_buff *skb;
-+	struct sk_msg skmsg;
-+	int offset;
-+	int len;
-+};
-+
-+struct espintcp_ctx {
-+	struct strparser strp;
-+	struct sk_buff_head ike_queue;
-+	struct sk_buff_head out_queue;
-+	struct espintcp_msg partial;
-+	void (*saved_data_ready)(struct sock *sk);
-+	void (*saved_write_space)(struct sock *sk);
-+	struct work_struct work;
-+	bool tx_running;
-+};
-+
-+static inline struct espintcp_ctx *espintcp_getctx(const struct sock *sk)
-+{
-+	struct inet_connection_sock *icsk = inet_csk(sk);
-+
-+	return icsk->icsk_ulp_data;
-+}
-+#endif
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index eec06cd33b26..e71ca4b3615e 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -193,6 +193,7 @@ struct xfrm_state {
- 
- 	/* Data for encapsulator */
- 	struct xfrm_encap_tmpl	*encap;
-+	struct sock __rcu	*encap_sk;
- 
- 	/* Data for care-of address */
- 	xfrm_address_t	*coaddr;
-diff --git a/include/uapi/linux/udp.h b/include/uapi/linux/udp.h
-index 30baccb6c9c4..4828794efcf8 100644
---- a/include/uapi/linux/udp.h
-+++ b/include/uapi/linux/udp.h
-@@ -42,5 +42,6 @@ struct udphdr {
- #define UDP_ENCAP_GTP0		4 /* GSM TS 09.60 */
- #define UDP_ENCAP_GTP1U		5 /* 3GPP TS 29.060 */
- #define UDP_ENCAP_RXRPC		6
-+#define TCP_ENCAP_ESPINTCP	7 /* Yikes, this is really xfrm encap types. */
- 
- #endif /* _UAPI_LINUX_UDP_H */
-diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
-index 344660e2a17b..5a53fb67c886 100644
---- a/net/ipv4/esp4.c
-+++ b/net/ipv4/esp4.c
-@@ -18,6 +18,8 @@
- #include <net/icmp.h>
- #include <net/protocol.h>
- #include <net/udp.h>
-+#include <net/tcp.h>
-+#include <net/espintcp.h>
- 
- #include <linux/highmem.h>
- 
-@@ -119,6 +121,129 @@ static void esp_ssg_unref(struct xfrm_state *x, void *tmp)
- 			put_page(sg_page(sg));
- }
- 
-+#ifdef CONFIG_XFRM_ESPINTCP
-+struct esp_tcp_sk {
-+	struct sock *sk;
-+	struct rcu_head rcu;
-+};
-+
-+static void esp_free_tcp_sk(struct rcu_head *head)
-+{
-+	struct esp_tcp_sk *esk = container_of(head, struct esp_tcp_sk, rcu);
-+
-+	sock_put(esk->sk);
-+	kfree(esk);
-+}
-+
-+static struct sock *esp_find_tcp_sk(struct xfrm_state *x)
-+{
-+	struct xfrm_encap_tmpl *encap = x->encap;
-+	struct esp_tcp_sk *esk;
-+	__be16 sport, dport;
-+	struct sock *nsk;
-+	struct sock *sk;
-+
-+	sk = rcu_dereference(x->encap_sk);
-+	if (sk && sk->sk_state == TCP_ESTABLISHED)
-+		return sk;
-+
-+	spin_lock_bh(&x->lock);
-+	sport = encap->encap_sport;
-+	dport = encap->encap_dport;
-+	nsk = rcu_dereference_protected(x->encap_sk,
-+					lockdep_is_held(&x->lock));
-+	if (sk && sk == nsk) {
-+		esk = kmalloc(sizeof(*esk), GFP_ATOMIC);
-+		if (!esk) {
-+			spin_unlock_bh(&x->lock);
-+			return ERR_PTR(-ENOMEM);
-+		}
-+		RCU_INIT_POINTER(x->encap_sk, NULL);
-+		esk->sk = sk;
-+		call_rcu(&esk->rcu, esp_free_tcp_sk);
-+	}
-+	spin_unlock_bh(&x->lock);
-+
-+	sk = inet_lookup_established(xs_net(x), &tcp_hashinfo, x->id.daddr.a4,
-+				     dport, x->props.saddr.a4, sport, 0);
-+	if (!sk)
-+		return ERR_PTR(-ENOENT);
-+
-+	if (!tcp_is_ulp_esp(sk)) {
-+		sock_put(sk);
-+		return ERR_PTR(-EINVAL);
-+	}
-+
-+	spin_lock_bh(&x->lock);
-+	nsk = rcu_dereference_protected(x->encap_sk,
-+					lockdep_is_held(&x->lock));
-+	if (encap->encap_sport != sport ||
-+	    encap->encap_dport != dport) {
-+		sock_put(sk);
-+		sk = nsk ?: ERR_PTR(-EREMCHG);
-+	} else if (sk == nsk) {
-+		sock_put(sk);
-+	} else {
-+		rcu_assign_pointer(x->encap_sk, sk);
-+	}
-+	spin_unlock_bh(&x->lock);
-+
-+	return sk;
-+}
-+
-+static int esp_output_tcp_finish(struct xfrm_state *x, struct sk_buff *skb)
-+{
-+	struct sock *sk;
-+	int err;
-+
-+	rcu_read_lock();
-+
-+	sk = esp_find_tcp_sk(x);
-+	err = PTR_ERR(sk);
-+	if (IS_ERR(sk))
-+		goto out;
-+
-+	bh_lock_sock(sk);
-+	if (sock_owned_by_user(sk)) {
-+		err = espintcp_queue_out(sk, skb);
-+		if (err < 0)
-+			goto unlock_sock;
-+	} else {
-+		err = espintcp_push_skb(sk, skb);
-+	}
-+
-+unlock_sock:
-+	bh_unlock_sock(sk);
-+out:
-+	rcu_read_unlock();
-+	return err;
-+}
-+
-+static int esp_output_tcp_encap_cb(struct net *net, struct sock *sk,
-+				   struct sk_buff *skb)
-+{
-+	struct dst_entry *dst = skb_dst(skb);
-+	struct xfrm_state *x = dst->xfrm;
-+
-+	return esp_output_tcp_finish(x, skb);
-+}
-+
-+static int esp_output_tail_tcp(struct xfrm_state *x, struct sk_buff *skb)
-+{
-+	int err;
-+
-+	local_bh_disable();
-+	err = xfrm_trans_queue_net(xs_net(x), skb, esp_output_tcp_encap_cb);
-+	local_bh_enable();
-+
-+	/* EINPROGRESS just happens to do the right thing.  It
-+	 * actually means that the skb has been consumed and
-+	 * isn't coming back.
-+	 */
-+	return err ?: -EINPROGRESS;
-+}
-+#endif
-+
- static void esp_output_done(struct crypto_async_request *base, int err)
- {
- 	struct sk_buff *skb = base->data;
-@@ -149,7 +274,13 @@ static void esp_output_done(struct crypto_async_request *base, int err)
- 		secpath_reset(skb);
- 		xfrm_dev_resume(skb);
- 	} else {
--		xfrm_output_resume(skb, err);
-+#ifdef CONFIG_XFRM_ESPINTCP
-+		if (!err &&
-+		    x->encap && x->encap->encap_type == TCP_ENCAP_ESPINTCP)
-+			esp_output_tail_tcp(x, skb);
-+		else
-+#endif
-+			xfrm_output_resume(skb, err);
- 	}
- }
- 
-@@ -238,7 +369,7 @@ static struct ip_esp_hdr *esp_output_udp_encap(struct sk_buff *skb,
- 	unsigned int len;
- 
- 	len = skb->len + esp->tailen - skb_transport_offset(skb);
--	if (len + sizeof(struct iphdr) >= IP_MAX_MTU)
-+	if (len + sizeof(struct iphdr) > IP_MAX_MTU)
- 		return ERR_PTR(-EMSGSIZE);
- 
- 	uh = (struct udphdr *)esp->esph;
-@@ -258,6 +389,23 @@ static struct ip_esp_hdr *esp_output_udp_encap(struct sk_buff *skb,
- 	return (struct ip_esp_hdr *)(uh + 1);
- }
- 
-+#ifdef CONFIG_XFRM_ESPINTCP
-+static struct ip_esp_hdr *esp_output_tcp_encap(struct sk_buff *skb,
-+					       struct esp_info *esp)
-+{
-+	__be16 *lenp = (void *)esp->esph;
-+	unsigned int len;
-+
-+	len = skb->len + esp->tailen - skb_transport_offset(skb);
-+	if (len > IP_MAX_MTU)
-+		return ERR_PTR(-EMSGSIZE);
-+
-+	*lenp = htons(len);
-+
-+	return (struct ip_esp_hdr *)(lenp + 1);
-+}
-+#endif
-+
- static int esp_output_encap(struct xfrm_state *x, struct sk_buff *skb,
- 			    struct esp_info *esp)
- {
-@@ -278,6 +426,22 @@ static int esp_output_encap(struct xfrm_state *x, struct sk_buff *skb,
- 	case UDP_ENCAP_ESPINUDP_NON_IKE:
- 		esph = esp_output_udp_encap(skb, encap_type, esp, sport, dport);
- 		break;
-+#ifdef CONFIG_XFRM_ESPINTCP
-+	case TCP_ENCAP_ESPINTCP: {
-+		struct sock *sk;
-+
-+		rcu_read_lock();
-+		sk = esp_find_tcp_sk(x);
-+		if (IS_ERR(sk)) {
-+			rcu_read_unlock();
-+			return PTR_ERR(sk);
-+		}
-+
-+		esph = esp_output_tcp_encap(skb, esp);
-+		rcu_read_unlock();
-+		break;
-+	}
-+#endif
- 	}
- 
- 	if (IS_ERR(esph))
-@@ -298,7 +462,7 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
- 	struct sk_buff *trailer;
- 	int tailen = esp->tailen;
- 
--	/* this is non-NULL only with UDP Encapsulation */
-+	/* this is non-NULL only with TCP/UDP Encapsulation */
- 	if (x->encap) {
- 		int err = esp_output_encap(x, skb, esp);
- 
-@@ -493,6 +657,11 @@ int esp_output_tail(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
- 	if (sg != dsg)
- 		esp_ssg_unref(x, tmp);
- 
-+#ifdef CONFIG_XFRM_ESPINTCP
-+	if (!err && x->encap && x->encap->encap_type == TCP_ENCAP_ESPINTCP)
-+		err = esp_output_tail_tcp(x, skb);
-+#endif
-+
- error_free:
- 	kfree(tmp);
- error:
-@@ -619,10 +788,16 @@ int esp_input_done2(struct sk_buff *skb, int err)
- 
- 	if (x->encap) {
- 		struct xfrm_encap_tmpl *encap = x->encap;
-+		struct tcphdr *th = (void *)(skb_network_header(skb) + ihl);
- 		struct udphdr *uh = (void *)(skb_network_header(skb) + ihl);
- 		__be16 source;
- 
- 		switch (x->encap->encap_type) {
-+#ifdef CONFIG_XFRM_ESPINTCP
-+		case TCP_ENCAP_ESPINTCP:
-+			source = th->source;
-+			break;
-+#endif
- 		case UDP_ENCAP_ESPINUDP:
- 		case UDP_ENCAP_ESPINUDP_NON_IKE:
- 			source = uh->source;
-@@ -1041,6 +1216,14 @@ static int esp_init_state(struct xfrm_state *x)
- 		case UDP_ENCAP_ESPINUDP_NON_IKE:
- 			x->props.header_len += sizeof(struct udphdr) + 2 * sizeof(u32);
- 			break;
-+#ifdef CONFIG_XFRM_ESPINTCP
-+		case TCP_ENCAP_ESPINTCP:
-+			/* only the length field, TCP encap is done by
-+			 * the socket
-+			 */
-+			x->props.header_len += 2;
-+			break;
-+#endif
- 		}
- 	}
- 
-diff --git a/net/xfrm/Kconfig b/net/xfrm/Kconfig
-index c967fc3c38c8..ccc012b3ea10 100644
---- a/net/xfrm/Kconfig
-+++ b/net/xfrm/Kconfig
-@@ -71,6 +71,15 @@ config XFRM_IPCOMP
- 	select CRYPTO
- 	select CRYPTO_DEFLATE
- 
-+config XFRM_ESPINTCP
-+	bool "ESP in TCP encapsulation (RFC 8229)"
-+	depends on XFRM && INET_ESP
-+	select STREAM_PARSER
-+	help
-+	  Support for RFC 8229 encapsulation of ESP and IKE over TCP sockets.
-+
-+	  If unsure, say N.
-+
- config NET_KEY
- 	tristate "PF_KEY sockets"
- 	select XFRM_ALGO
-diff --git a/net/xfrm/Makefile b/net/xfrm/Makefile
-index fbc4552d17b8..2d4bb4b9f75e 100644
---- a/net/xfrm/Makefile
-+++ b/net/xfrm/Makefile
-@@ -11,3 +11,4 @@ obj-$(CONFIG_XFRM_ALGO) += xfrm_algo.o
- obj-$(CONFIG_XFRM_USER) += xfrm_user.o
- obj-$(CONFIG_XFRM_IPCOMP) += xfrm_ipcomp.o
- obj-$(CONFIG_XFRM_INTERFACE) += xfrm_interface.o
-+obj-$(CONFIG_XFRM_ESPINTCP) += espintcp.o
-diff --git a/net/xfrm/espintcp.c b/net/xfrm/espintcp.c
-new file mode 100644
-index 000000000000..1d561a00c4b0
---- /dev/null
-+++ b/net/xfrm/espintcp.c
-@@ -0,0 +1,505 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <net/tcp.h>
-+#include <net/strparser.h>
-+#include <net/xfrm.h>
-+#include <net/esp.h>
-+#include <net/espintcp.h>
-+#include <linux/skmsg.h>
-+#include <net/inet_common.h>
-+
-+static void handle_nonesp(struct espintcp_ctx *ctx, struct sk_buff *skb,
-+			  struct sock *sk)
-+{
-+	if (atomic_read(&sk->sk_rmem_alloc) >= sk->sk_rcvbuf ||
-+	    !sk_rmem_schedule(sk, skb, skb->truesize)) {
-+		kfree_skb(skb);
-+		return;
-+	}
-+
-+	skb_set_owner_r(skb, sk);
-+
-+	memset(skb->cb, 0, sizeof(skb->cb));
-+	skb_queue_tail(&ctx->ike_queue, skb);
-+	ctx->saved_data_ready(sk);
-+}
-+
-+static void handle_esp(struct sk_buff *skb, struct sock *sk)
-+{
-+	skb_reset_transport_header(skb);
-+	memset(skb->cb, 0, sizeof(skb->cb));
-+
-+	rcu_read_lock();
-+	skb->dev = dev_get_by_index_rcu(sock_net(sk), skb->skb_iif);
-+	local_bh_disable();
-+	xfrm4_rcv_encap(skb, IPPROTO_ESP, 0, TCP_ENCAP_ESPINTCP);
-+	local_bh_enable();
-+	rcu_read_unlock();
-+}
-+
-+static void espintcp_rcv(struct strparser *strp, struct sk_buff *skb)
-+{
-+	struct espintcp_ctx *ctx = container_of(strp, struct espintcp_ctx,
-+						strp);
-+	struct strp_msg *rxm = strp_msg(skb);
-+	u32 nonesp_marker;
-+	int err;
-+
-+	err = skb_copy_bits(skb, rxm->offset + 2, &nonesp_marker,
-+			    sizeof(nonesp_marker));
-+	if (err < 0) {
-+		kfree_skb(skb);
-+		return;
-+	}
-+
-+	/* remove header, leave non-ESP marker/SPI */
-+	if (!__pskb_pull(skb, rxm->offset + 2)) {
-+		kfree_skb(skb);
-+		return;
-+	}
-+
-+	if (pskb_trim(skb, rxm->full_len - 2) != 0) {
-+		kfree_skb(skb);
-+		return;
-+	}
-+
-+	if (nonesp_marker == 0)
-+		handle_nonesp(ctx, skb, strp->sk);
-+	else
-+		handle_esp(skb, strp->sk);
-+}
-+
-+static int espintcp_parse(struct strparser *strp, struct sk_buff *skb)
-+{
-+	struct strp_msg *rxm = strp_msg(skb);
-+	__be16 blen;
-+	u16 len;
-+	int err;
-+
-+	if (skb->len < rxm->offset + 2)
-+		return 0;
-+
-+	err = skb_copy_bits(skb, rxm->offset, &blen, sizeof(blen));
-+	if (err < 0)
-+		return err;
-+
-+	len = be16_to_cpu(blen);
-+	if (len < 6)
-+		return -EINVAL;
-+
-+	return len;
-+}
-+
-+static int espintcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
-+			    int nonblock, int flags, int *addr_len)
-+{
-+	struct espintcp_ctx *ctx = espintcp_getctx(sk);
-+	struct sk_buff *skb;
-+	int err = 0;
-+	int copied;
-+	int off = 0;
-+
-+	flags |= nonblock ? MSG_DONTWAIT : 0;
-+
-+	skb = __skb_recv_datagram(sk, &ctx->ike_queue, flags, NULL, &off, &err);
-+	if (!skb)
-+		return err;
-+
-+	copied = len;
-+	if (copied > skb->len)
-+		copied = skb->len;
-+	else if (copied < skb->len)
-+		msg->msg_flags |= MSG_TRUNC;
-+
-+	err = skb_copy_datagram_msg(skb, 0, msg, copied);
-+	if (unlikely(err)) {
-+		kfree_skb(skb);
-+		return err;
-+	}
-+
-+	if (flags & MSG_TRUNC)
-+		copied = skb->len;
-+	kfree_skb(skb);
-+	return copied;
-+}
-+
-+int espintcp_queue_out(struct sock *sk, struct sk_buff *skb)
-+{
-+	struct espintcp_ctx *ctx = espintcp_getctx(sk);
-+
-+	if (skb_queue_len(&ctx->out_queue) >= netdev_max_backlog)
-+		return -ENOBUFS;
-+
-+	__skb_queue_tail(&ctx->out_queue, skb);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(espintcp_queue_out);
-+
-+/* espintcp length field is 2B and length includes the length field's size */
-+#define MAX_ESPINTCP_MSG (((1 << 16) - 1) - 2)
-+
-+static int espintcp_sendskb_locked(struct sock *sk, struct espintcp_msg *emsg,
-+				   int flags)
-+{
-+	do {
-+		int ret;
-+
-+		ret = skb_send_sock_locked(sk, emsg->skb,
-+					   emsg->offset, emsg->len);
-+		if (ret < 0)
-+			return ret;
-+
-+		emsg->len -= ret;
-+		emsg->offset += ret;
-+	} while (emsg->len > 0);
-+
-+	kfree_skb(emsg->skb);
-+	memset(emsg, 0, sizeof(*emsg));
-+
-+	return 0;
-+}
-+
-+static int espintcp_sendskmsg_locked(struct sock *sk,
-+				     struct espintcp_msg *emsg, int flags)
-+{
-+	struct sk_msg *skmsg = &emsg->skmsg;
-+	struct scatterlist *sg;
-+	int done = 0;
-+	int ret;
-+
-+	flags |= MSG_SENDPAGE_NOTLAST;
-+	sg = &skmsg->sg.data[skmsg->sg.start];
-+	do {
-+		size_t size = sg->length - emsg->offset;
-+		int offset = sg->offset + emsg->offset;
-+		struct page *p;
-+
-+		emsg->offset = 0;
-+
-+		if (sg_is_last(sg))
-+			flags &= ~MSG_SENDPAGE_NOTLAST;
-+
-+		p = sg_page(sg);
-+retry:
-+		ret = do_tcp_sendpages(sk, p, offset, size, flags);
-+		if (ret < 0) {
-+			emsg->offset = offset - sg->offset;
-+			skmsg->sg.start += done;
-+			return ret;
-+		}
-+
-+		if (ret != size) {
-+			offset += ret;
-+			size -= ret;
-+			goto retry;
-+		}
-+
-+		done++;
-+		put_page(p);
-+		sk_mem_uncharge(sk, sg->length);
-+		sg = sg_next(sg);
-+	} while (sg);
-+
-+	memset(emsg, 0, sizeof(*emsg));
-+
-+	return 0;
-+}
-+
-+static int espintcp_push_msgs(struct sock *sk)
-+{
-+	struct espintcp_ctx *ctx = espintcp_getctx(sk);
-+	struct espintcp_msg *emsg = &ctx->partial;
-+	int err;
-+
-+	if (!emsg->len)
-+		return 0;
-+
-+	if (ctx->tx_running)
-+		return -EAGAIN;
-+	ctx->tx_running = 1;
-+
-+	if (emsg->skb)
-+		err = espintcp_sendskb_locked(sk, emsg, 0);
-+	else
-+		err = espintcp_sendskmsg_locked(sk, emsg, 0);
-+	if (err == -EAGAIN) {
-+		ctx->tx_running = 0;
-+		return 0;
-+	}
-+	if (!err)
-+		memset(emsg, 0, sizeof(*emsg));
-+
-+	ctx->tx_running = 0;
-+
-+	return err;
-+}
-+
-+int espintcp_push_skb(struct sock *sk, struct sk_buff *skb)
-+{
-+	struct espintcp_ctx *ctx = espintcp_getctx(sk);
-+	struct espintcp_msg *emsg = &ctx->partial;
-+	unsigned int len;
-+	int offset;
-+
-+	if (sk->sk_state != TCP_ESTABLISHED) {
-+		kfree_skb(skb);
-+		return -ECONNRESET;
-+	}
-+
-+	offset = skb_transport_offset(skb);
-+	len = skb->len - offset;
-+
-+	espintcp_push_msgs(sk);
-+
-+	if (emsg->len) {
-+		kfree_skb(skb);
-+		return -ENOBUFS;
-+	}
-+
-+	skb_set_owner_w(skb, sk);
-+
-+	emsg->offset = offset;
-+	emsg->len = len;
-+	emsg->skb = skb;
-+
-+	espintcp_push_msgs(sk);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(espintcp_push_skb);
-+
-+static int espintcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
-+{
-+	long timeo = sock_sndtimeo(sk, msg->msg_flags & MSG_DONTWAIT);
-+	struct espintcp_ctx *ctx = espintcp_getctx(sk);
-+	struct espintcp_msg *emsg = &ctx->partial;
-+	struct iov_iter pfx_iter;
-+	struct kvec pfx_iov = {};
-+	size_t msglen = size + 2;
-+	char buf[2] = {0};
-+	int err, end;
-+
-+	if (msg->msg_flags)
-+		return -EOPNOTSUPP;
-+
-+	if (size > MAX_ESPINTCP_MSG)
-+		return -EMSGSIZE;
-+
-+	if (msg->msg_controllen)
-+		return -EOPNOTSUPP;
-+
-+	lock_sock(sk);
-+
-+	err = espintcp_push_msgs(sk);
-+	if (err < 0) {
-+		err = -ENOBUFS;
-+		goto unlock;
-+	}
-+
-+	sk_msg_init(&emsg->skmsg);
-+	while (1) {
-+		/* only -ENOMEM is possible since we don't coalesce */
-+		err = sk_msg_alloc(sk, &emsg->skmsg, msglen, 0);
-+		if (!err)
-+			break;
-+
-+		err = sk_stream_wait_memory(sk, &timeo);
-+		if (err)
-+			goto fail;
-+	}
-+
-+	*((__be16 *)buf) = cpu_to_be16(msglen);
-+	pfx_iov.iov_base = buf;
-+	pfx_iov.iov_len = sizeof(buf);
-+	iov_iter_kvec(&pfx_iter, WRITE, &pfx_iov, 1, pfx_iov.iov_len);
-+
-+	err = sk_msg_memcopy_from_iter(sk, &pfx_iter, &emsg->skmsg,
-+				       pfx_iov.iov_len);
-+	if (err < 0)
-+		goto fail;
-+
-+	err = sk_msg_memcopy_from_iter(sk, &msg->msg_iter, &emsg->skmsg, size);
-+	if (err < 0)
-+		goto fail;
-+
-+	end = emsg->skmsg.sg.end;
-+	emsg->len = size;
-+	sk_msg_iter_var_prev(end);
-+	sg_mark_end(sk_msg_elem(&emsg->skmsg, end));
-+
-+	tcp_rate_check_app_limited(sk);
-+
-+	err = espintcp_push_msgs(sk);
-+	/* this message could be partially sent, keep it */
-+	if (err < 0)
-+		goto unlock;
-+	release_sock(sk);
-+
-+	return size;
-+
-+fail:
-+	sk_msg_free(sk, &emsg->skmsg);
-+	memset(emsg, 0, sizeof(*emsg));
-+unlock:
-+	release_sock(sk);
-+	return err;
-+}
-+
-+static struct proto espintcp_prot __ro_after_init;
-+static struct proto_ops espintcp_ops __ro_after_init;
-+
-+static void espintcp_data_ready(struct sock *sk)
-+{
-+	struct espintcp_ctx *ctx = espintcp_getctx(sk);
-+
-+	strp_data_ready(&ctx->strp);
-+}
-+
-+static void espintcp_tx_work(struct work_struct *work)
-+{
-+	struct espintcp_ctx *ctx = container_of(work,
-+						struct espintcp_ctx, work);
-+	struct sock *sk = ctx->strp.sk;
-+
-+	lock_sock(sk);
-+	if (!ctx->tx_running)
-+		espintcp_push_msgs(sk);
-+	release_sock(sk);
-+}
-+
-+static void espintcp_write_space(struct sock *sk)
-+{
-+	struct espintcp_ctx *ctx = espintcp_getctx(sk);
-+
-+	schedule_work(&ctx->work);
-+	ctx->saved_write_space(sk);
-+}
-+
-+static void espintcp_destruct(struct sock *sk)
-+{
-+	struct espintcp_ctx *ctx = espintcp_getctx(sk);
-+
-+	kfree(ctx);
-+}
-+
-+bool tcp_is_ulp_esp(struct sock *sk)
-+{
-+	return sk->sk_prot == &espintcp_prot;
-+}
-+EXPORT_SYMBOL_GPL(tcp_is_ulp_esp);
-+
-+static int espintcp_init_sk(struct sock *sk)
-+{
-+	struct inet_connection_sock *icsk = inet_csk(sk);
-+	struct strp_callbacks cb = {
-+		.rcv_msg = espintcp_rcv,
-+		.parse_msg = espintcp_parse,
-+	};
-+	struct espintcp_ctx *ctx;
-+	int err;
-+
-+	ctx = kzalloc(sizeof(*ctx), GFP_KERNEL);
-+	if (!ctx)
-+		return -ENOMEM;
-+
-+	err = strp_init(&ctx->strp, sk, &cb);
-+	if (err)
-+		goto free;
-+
-+	__sk_dst_reset(sk);
-+
-+	strp_check_rcv(&ctx->strp);
-+	skb_queue_head_init(&ctx->ike_queue);
-+	skb_queue_head_init(&ctx->out_queue);
-+	sk->sk_prot = &espintcp_prot;
-+	sk->sk_socket->ops = &espintcp_ops;
-+	ctx->saved_data_ready = sk->sk_data_ready;
-+	ctx->saved_write_space = sk->sk_write_space;
-+	sk->sk_data_ready = espintcp_data_ready;
-+	sk->sk_write_space = espintcp_write_space;
-+	sk->sk_destruct = espintcp_destruct;
-+	icsk->icsk_ulp_data = ctx;
-+	INIT_WORK(&ctx->work, espintcp_tx_work);
-+
-+	/* avoid using task_frag */
-+	sk->sk_allocation = GFP_ATOMIC;
-+
-+	return 0;
-+
-+free:
-+	kfree(ctx);
-+	return err;
-+}
-+
-+static void espintcp_release(struct sock *sk)
-+{
-+	struct espintcp_ctx *ctx = espintcp_getctx(sk);
-+	struct sk_buff_head queue;
-+	struct sk_buff *skb;
-+
-+	__skb_queue_head_init(&queue);
-+	skb_queue_splice_init(&ctx->out_queue, &queue);
-+
-+	while ((skb = __skb_dequeue(&queue)))
-+		espintcp_push_skb(sk, skb);
-+
-+	tcp_release_cb(sk);
-+}
-+
-+static void espintcp_close(struct sock *sk, long timeout)
-+{
-+	struct espintcp_ctx *ctx = espintcp_getctx(sk);
-+	struct espintcp_msg *emsg = &ctx->partial;
-+
-+	strp_stop(&ctx->strp);
-+
-+	sk->sk_prot = &tcp_prot;
-+	barrier();
-+
-+	cancel_work_sync(&ctx->work);
-+	strp_done(&ctx->strp);
-+
-+	skb_queue_purge(&ctx->out_queue);
-+	skb_queue_purge(&ctx->ike_queue);
-+
-+	if (emsg->len) {
-+		if (emsg->skb)
-+			kfree_skb(emsg->skb);
-+		else
-+			sk_msg_free(sk, &emsg->skmsg);
-+	}
-+
-+	tcp_close(sk, timeout);
-+}
-+
-+static __poll_t espintcp_poll(struct file *file, struct socket *sock,
-+			      poll_table *wait)
-+{
-+	__poll_t mask = datagram_poll(file, sock, wait);
-+	struct sock *sk = sock->sk;
-+	struct espintcp_ctx *ctx = espintcp_getctx(sk);
-+
-+	if (!skb_queue_empty(&ctx->ike_queue))
-+		mask |= EPOLLIN | EPOLLRDNORM;
-+
-+	return mask;
-+}
-+
-+static struct tcp_ulp_ops espintcp_ulp __read_mostly = {
-+	.name = "espintcp",
-+	.owner = THIS_MODULE,
-+	.init = espintcp_init_sk,
-+};
-+
-+void __init espintcp_init(void)
-+{
-+	memcpy(&espintcp_prot, &tcp_prot, sizeof(tcp_prot));
-+	memcpy(&espintcp_ops, &inet_stream_ops, sizeof(inet_stream_ops));
-+	espintcp_prot.sendmsg = espintcp_sendmsg;
-+	espintcp_prot.recvmsg = espintcp_recvmsg;
-+	espintcp_prot.close = espintcp_close;
-+	espintcp_prot.release_cb = espintcp_release;
-+	espintcp_ops.poll = espintcp_poll;
-+
-+	tcp_register_ulp(&espintcp_ulp);
-+}
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 1070dfece76b..893072f2e651 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -39,6 +39,9 @@
- #ifdef CONFIG_XFRM_STATISTICS
- #include <net/snmp.h>
- #endif
-+#ifdef CONFIG_XFRM_ESPINTCP
-+#include <net/espintcp.h>
-+#endif
- 
- #include "xfrm_hash.h"
- 
-@@ -4156,6 +4159,10 @@ void __init xfrm_init(void)
- 	seqcount_init(&xfrm_policy_hash_generation);
- 	xfrm_input_init();
- 
-+#ifdef CONFIG_XFRM_ESPINTCP
-+	espintcp_init();
-+#endif
-+
- 	RCU_INIT_POINTER(xfrm_if_cb, NULL);
- 	synchronize_rcu();
- }
-diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index fd51737f9f17..07233a707b5b 100644
---- a/net/xfrm/xfrm_state.c
-+++ b/net/xfrm/xfrm_state.c
-@@ -666,6 +666,9 @@ int __xfrm_state_delete(struct xfrm_state *x)
- 		net->xfrm.state_num--;
- 		spin_unlock(&net->xfrm.xfrm_state_lock);
- 
-+		if (x->encap_sk)
-+			sock_put(rcu_dereference_raw(x->encap_sk));
-+
- 		xfrm_dev_state_delete(x);
- 
- 		/* All xfrm_state objects are created by xfrm_state_alloc.
--- 
-2.22.0
+    The multi-line comments inb the networking code should be formatted like 
+below:
 
+	/*
+	 * bla
+	 * bla
+	 */
+
+> +	if (!node || ret) {
+>   		int addr = priv->plat->phy_addr;
+>   		struct phy_device *phydev;
+>   
+
+MBR, Sergei
