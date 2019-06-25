@@ -2,125 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AD5C95574E
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 20:39:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BA0C55757
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 20:44:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730902AbfFYSjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 14:39:10 -0400
-Received: from pb-smtp2.pobox.com ([64.147.108.71]:65208 "EHLO
-        pb-smtp2.pobox.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729912AbfFYSjK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 14:39:10 -0400
-Received: from pb-smtp2.pobox.com (unknown [127.0.0.1])
-        by pb-smtp2.pobox.com (Postfix) with ESMTP id 6BC52164DDB;
-        Tue, 25 Jun 2019 14:39:05 -0400 (EDT)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=pobox.com; h=subject:to:cc
-        :references:from:message-id:date:mime-version:in-reply-to
-        :content-type:content-transfer-encoding; s=sasl; bh=omq51xRrnfan
-        iedV32HSyjTCy18=; b=EZksBo/Eej8QoKcgshBdiD7LYecHUJ60sex+tuf1Jmy3
-        viEd+v+hFFq8U3pT7n+xLbbORIHzrQOCQd1LgidVxcHsSgHvgERxGlUfHf9OJFB+
-        WH37f4KpE1WOvFrRSeSlSjyEqzkz3udaphDj/JeEsD5OB0v0iclJmvnGoZYe/Sk=
-DomainKey-Signature: a=rsa-sha1; c=nofws; d=pobox.com; h=subject:to:cc
-        :references:from:message-id:date:mime-version:in-reply-to
-        :content-type:content-transfer-encoding; q=dns; s=sasl; b=QL1BYc
-        6HR0WUHE68tEIwsYQk903c0dGGvSSnfkUF+rn14whbLLF7PfANsaLW0K5RjS1wn4
-        nIP0Y19Max3J03fCAv16tkOvavO3Q1/3I021Zky+ZrabY/tAQCYgfo1seaQyIO68
-        xaUiOU5Szc3zfXVHPnLwUGtxDdQ+bbxgZCBgM=
-Received: from pb-smtp2.nyi.icgroup.com (unknown [127.0.0.1])
-        by pb-smtp2.pobox.com (Postfix) with ESMTP id 61B27164DDA;
-        Tue, 25 Jun 2019 14:39:05 -0400 (EDT)
-Received: from [192.168.1.134] (unknown [70.142.57.80])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by pb-smtp2.pobox.com (Postfix) with ESMTPSA id 51C72164DD9;
-        Tue, 25 Jun 2019 14:39:04 -0400 (EDT)
-Subject: Re: [PATCH RFC net-next 1/5] net: dsa: mt7530: Convert to PHYLINK API
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>
-Cc:     sean.wang@mediatek.com, f.fainelli@gmail.com, davem@davemloft.net,
-        matthias.bgg@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
-        frank-w@public-files.de, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org
-References: <20190624145251.4849-1-opensource@vdorst.com>
- <20190624145251.4849-2-opensource@vdorst.com>
- <20190624153950.hdsuhrvfd77heyor@shell.armlinux.org.uk>
- <20190625113158.Horde.pCaJOVUsgyhYLd5Diz5EZKI@www.vdorst.com>
- <20190625121030.m5w7wi3rpezhfgyo@shell.armlinux.org.uk>
-From:   Daniel Santos <daniel.santos@pobox.com>
-Message-ID: <1ad9f9a5-8f39-40bd-94bb-6b700f30c4ba@pobox.com>
-Date:   Tue, 25 Jun 2019 13:37:30 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1732936AbfFYSoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 14:44:06 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:44723 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731361AbfFYSoF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 14:44:05 -0400
+Received: by mail-pf1-f194.google.com with SMTP id t16so9917955pfe.11
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 11:44:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version;
+        bh=Fbh/+qgP4LBddXodFMfI0tKPb3y0XNzyf5BEgokE7RU=;
+        b=dF6QkZWbwmtpecHu27CQ+3q4CePL38FBsSXQAPj8r2Er3XKRMYUrIEcAgQIQiOdrzy
+         QvSl+YTgA8JULoxkIQAWD4mbNCeT3252Mml6EM7/fljlUExDsRlglCJ5klEEOva02b2T
+         FVKKKznJ2Uri6Yd5VQ4/PVYYOa/HwsZWvfBisnzLOtAwkoYDV0cnywiF4LmFHjz8TIKR
+         6uFlzRT1yndPfXITPCGzREVtj/1FYB35QU3XDCGfavja3vlLdBXwzEzGGt0YKRzlRav4
+         G0FoT2gUqd38wBpMuL1BaDHsc1Vnq8A/G9f75ds6AAQTiUi/SibqElx3bqjbazBCnf2q
+         VAsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version;
+        bh=Fbh/+qgP4LBddXodFMfI0tKPb3y0XNzyf5BEgokE7RU=;
+        b=Zn5Kv10RMiEWFoh3CurFLFmbaYBSMaHiSNFoTfl1rsFkrcMVx/7MlFHGs21yJBCI+B
+         jdp2PW01/WKlXj3wv/xynIgwYYMkccFuDroeU8iN5MnXGlotGsr6ZayPahIN59sl63xF
+         HzpshQeXrcjiu2yEGVZS/ej43D1MZLdamzTGjgpDmuZMZ00r3hClJMgFaCGPGv3+ipCy
+         EpqkP5CX0111apRsKPvjamQfMCzYJIsfs0nPEogaz1BaBAztzKx7ihD3DTDJ8mGNYIje
+         hpj/LQqsP48Qclu5LgfTSSCxR97KJd9W5B2Go5hHMWb+aEj98FKSXSyNqR+RscMnsFvK
+         7NwA==
+X-Gm-Message-State: APjAAAX5ore8ipGwPo1hbmSo41o6qhjA3nyCV89d3N0UlnXRoBXopdzW
+        i7K3dH535VbFC2XNMZIIou4=
+X-Google-Smtp-Source: APXvYqxxisUGgmYPspgwA5mwlBmuVZwDePacu53JwzADQRBuh9kk4QYe+miKZcFkM8nnNmo1Ei7V3w==
+X-Received: by 2002:a17:90a:33c4:: with SMTP id n62mr359185pjb.28.1561488244928;
+        Tue, 25 Jun 2019 11:44:04 -0700 (PDT)
+Received: from [172.20.52.61] ([2620:10d:c090:200::3:e848])
+        by smtp.gmail.com with ESMTPSA id b36sm3563049pjc.16.2019.06.25.11.44.02
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 25 Jun 2019 11:44:03 -0700 (PDT)
+From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
+To:     "Kevin Laatz" <kevin.laatz@intel.com>
+Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        bjorn.topel@intel.com, magnus.karlsson@intel.com,
+        bpf@vger.kernel.com, intel-wired-lan@lists.osuosl.org,
+        bruce.richardson@intel.com, ciara.loftus@intel.com
+Subject: Re: [PATCH 00/11] XDP unaligned chunk placement support
+Date:   Tue, 25 Jun 2019 11:44:01 -0700
+X-Mailer: MailMate (1.12.5r5635)
+Message-ID: <FA8389B9-F89C-4BFF-95EE-56F702BBCC6D@gmail.com>
+In-Reply-To: <20190620083924.1996-1-kevin.laatz@intel.com>
+References: <20190620083924.1996-1-kevin.laatz@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20190625121030.m5w7wi3rpezhfgyo@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-X-Pobox-Relay-ID: 8248C57E-9778-11E9-9FC4-72EEE64BB12D-06139138!pb-smtp2.pobox.com
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; format=flowed
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 20 Jun 2019, at 1:39, Kevin Laatz wrote:
 
-Although I'm new to the entire Ethernet / *MII subsystem and I haven't
-touched DSA yet, I've recently had to add some of this functionality to
-the older OpenWRT drivers for swconfig control over the ports.=C2=A0 Ren=C3=
-=A9, do
-you have an actual datasheet or programming guide for the mt7530?=C2=A0 I
-only have one for the mt7620.
-
-
-On 6/25/19 7:10 AM, Russell King - ARM Linux admin wrote:
-> mac_link_*().
+> This patchset adds the ability to use unaligned chunks in the XDP 
+> umem.
 >
->>>> +            if (state->pause || phylink_test(state->advertising, Pa=
-use))
->>>> +                    mcr |=3D PMCR_TX_FC_EN | PMCR_RX_FC_EN;
->>>> +            if (state->pause & MLO_PAUSE_TX)
->>>> +                    mcr |=3D PMCR_TX_FC_EN;
->>>> +            if (state->pause & MLO_PAUSE_RX)
->>>> +                    mcr |=3D PMCR_RX_FC_EN;
->>> This is clearly wrong - if any bit in state->pause is set, then we
->>> end up with both PMCR_TX_FC_EN | PMCR_RX_FC_EN set.  If we have Pause
->>> Pause set in the advertising mask, then both are set.  This doesn't
->>> seem right - are these bits setting the advertisement, or are they
->>> telling the MAC to use flow control?
->> Last one, tell the MAC to use flow control.
-> So the first if() statement is incorrect, and should be removed
-> entirely.  You only want to enable the MAC to use flow control as a
-> result of the negotiation results.
-
-Ren=C3=A9,
-iiuc, this is what's documented in table 28B-3 of the 802.3 spec on page
-598.=C2=A0 pdf of section 2 here:
-http://www.ismlab.usf.edu/dcom/Ch3_802.3-2005_section2.pdf
-
->> On the current driver both bits are set in a forced-link situation.
->>
->> If we always forces the MAC mode I think I always set these bits and d=
-on't
->> anything with the Pause modes? Is that the right way to do it?
-> So what happens if your link partner (e.g. switch) does not support
-> flow control?  What if your link partner floods such frames to all
-> ports?  You end up transmitting flow control frames, which could be
-> sent to all stations on the network... seems not a good idea.
+> Currently, all chunk addresses passed to the umem are masked to be 
+> chunk
+> size aligned (default is 2k, max is PAGE_SIZE). This limits where we 
+> can
+> place chunks within the umem as well as limiting the packet sizes that 
+> are
+> supported.
 >
-> Implementing stuff properly and not taking short-cuts is always a
-> good idea for inter-operability.
+> The changes in this patchset removes these restrictions, allowing XDP 
+> to be
+> more flexible in where it can place a chunk within a umem. By relaxing 
+> where
+> the chunks can be placed, it allows us to use an arbitrary buffer size 
+> and
+> place that wherever we have a free address in the umem. These changes 
+> add the
+> ability to support jumboframes and make it easy to integrate with 
+> other
+> existing frameworks that have their own memory management systems, 
+> such as
+> DPDK.
 
-But will there still be a mechanism to ignore link partner's advertising
-and force these parameters?=C2=A0 I've run into what appears to be quirks=
- on
-two separate NICs or their drivers, a tp-link tg-3468 (r8169) and an
-Aquantia AQC107 802.3bz (atlantic) where these link partners aren't
-auto-negotiating correctly after I switch the mt7530 out of
-auto-negotiation mode.=C2=A0 Of course, it could be a mistake I've made (=
-and
-should thus be discussed elsewhere), but iirc, I had to force enable
-flow control and then also disable auto-negotiation on the link partner
-and force the mode I wanted.
+I'm a little unclear on how this should work, and have a few issues 
+here:
 
-Cheers,
-Daniel
+  1) There isn't any support for the user defined umem->headroom
+
+  2) When queuing RX buffers, the handle (aka umem offset) is used, 
+which
+     points to the start of the buffer area.  When the buffer appears in
+     the completion queue, handle points to the start of the received 
+data,
+     which might be different from the buffer start address.
+
+     Normally, this RX address is just put back in the fill queue, and 
+the
+     mask is used to find the buffer start address again.  This no 
+longer
+     works, so my question is, how is the buffer start address 
+recomputed
+     from the actual data payload address?
+
+     Same with TX - if the TX payload isn't aligned in with the start of
+     the buffer, what happens?
+
+  3) This appears limited to crossing a single page boundary, but there
+     is no constraint check on chunk_size.
+-- 
+Jonathan
+
+>
+> Structure of the patchset:
+> Patch 1:
+>   - Remove unnecessary masking and headroom addition during zero-copy 
+> Rx
+>     buffer recycling in i40e. This change is required in order for the
+>     buffer recycling to work in the unaligned chunk mode.
+>
+> Patch 2:
+>   - Remove unnecessary masking and headroom addition during
+>     zero-copy Rx buffer recycling in ixgbe. This change is required in
+>     order for the  buffer recycling to work in the unaligned chunk 
+> mode.
+>
+> Patch 3:
+>   - Adds an offset parameter to zero_copy_allocator. This change will
+>     enable us to calculate the original handle in zca_free. This will 
+> be
+>     required for unaligned chunk mode since we can't easily mask back 
+> to
+>     the original handle.
+>
+> Patch 4:
+>   - Adds the offset parameter to i40e_zca_free. This change is needed 
+> for
+>     calculating the handle since we can't easily mask back to the 
+> original
+>     handle like we can in the aligned case.
+>
+> Patch 5:
+>   - Adds the offset parameter to ixgbe_zca_free. This change is needed 
+> for
+>     calculating the handle since we can't easily mask back to the 
+> original
+>     handle like we can in the aligned case.
+>
+>
+> Patch 6:
+>   - Add infrastructure for unaligned chunks. Since we are dealing
+>     with unaligned chunks that could potentially cross a physical page
+>     boundary, we add checks to keep track of that information. We can
+>     later use this information to correctly handle buffers that are
+>     placed at an address where they cross a page boundary.
+>
+> Patch 7:
+>   - Add flags for umem configuration to libbpf
+>
+> Patch 8:
+>   - Modify xdpsock application to add a command line option for
+>     unaligned chunks
+>
+> Patch 9:
+>   - Addition of command line argument to pass in a desired buffer size
+>     and buffer recycling for unaligned mode. Passing in a buffer size 
+> will
+>     allow the application to use unaligned chunks with the unaligned 
+> chunk
+>     mode. Since we are now using unaligned chunks, we need to recycle 
+> our
+>     buffers in a slightly different way.
+>
+> Patch 10:
+>   - Adds hugepage support to the xdpsock application
+>
+> Patch 11:
+>   - Documentation update to include the unaligned chunk scenario. We 
+> need
+>     to explicitly state that the incoming addresses are only masked in 
+> the
+>     aligned chunk mode and not the unaligned chunk mode.
+>
+> Kevin Laatz (11):
+>   i40e: simplify Rx buffer recycle
+>   ixgbe: simplify Rx buffer recycle
+>   xdp: add offset param to zero_copy_allocator
+>   i40e: add offset to zca_free
+>   ixgbe: add offset to zca_free
+>   xsk: add support to allow unaligned chunk placement
+>   libbpf: add flags to umem config
+>   samples/bpf: add unaligned chunks mode support to xdpsock
+>   samples/bpf: add buffer recycling for unaligned chunks to xdpsock
+>   samples/bpf: use hugepages in xdpsock app
+>   doc/af_xdp: include unaligned chunk case
+>
+>  Documentation/networking/af_xdp.rst           | 10 +-
+>  drivers/net/ethernet/intel/i40e/i40e_xsk.c    | 21 ++--
+>  drivers/net/ethernet/intel/i40e/i40e_xsk.h    |  3 +-
+>  .../ethernet/intel/ixgbe/ixgbe_txrx_common.h  |  3 +-
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  | 21 ++--
+>  include/net/xdp.h                             |  3 +-
+>  include/net/xdp_sock.h                        |  2 +
+>  include/uapi/linux/if_xdp.h                   |  4 +
+>  net/core/xdp.c                                | 11 ++-
+>  net/xdp/xdp_umem.c                            | 17 ++--
+>  net/xdp/xsk.c                                 | 60 +++++++++--
+>  net/xdp/xsk_queue.h                           | 60 +++++++++--
+>  samples/bpf/xdpsock_user.c                    | 99 
+> ++++++++++++++-----
+>  tools/include/uapi/linux/if_xdp.h             |  4 +
+>  tools/lib/bpf/xsk.c                           |  7 ++
+>  tools/lib/bpf/xsk.h                           |  2 +
+>  16 files changed, 241 insertions(+), 86 deletions(-)
+>
+> -- 
+> 2.17.1
