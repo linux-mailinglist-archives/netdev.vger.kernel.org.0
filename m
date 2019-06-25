@@ -2,71 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E877C555D0
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 19:25:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99D7A555D9
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 19:27:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730204AbfFYRY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 13:24:56 -0400
-Received: from foss.arm.com ([217.140.110.172]:46070 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726455AbfFYRY4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Jun 2019 13:24:56 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5CEC6C0A;
-        Tue, 25 Jun 2019 10:24:55 -0700 (PDT)
-Received: from e107155-lin (e107155-lin.cambridge.arm.com [10.1.196.42])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3AC343F718;
-        Tue, 25 Jun 2019 10:24:49 -0700 (PDT)
-Date:   Tue, 25 Jun 2019 18:24:42 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Phong Tran <tranmanphong@gmail.com>
-Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com,
-        alexander.sverdlin@gmail.com, allison@lohutok.net, andrew@lunn.ch,
-        ast@kernel.org, bgolaszewski@baylibre.com, bpf@vger.kernel.org,
-        daniel@iogearbox.net, daniel@zonque.org, dmg@turingmachine.org,
-        festevam@gmail.com, gerg@uclinux.org, gregkh@linuxfoundation.org,
-        gregory.clement@bootlin.com, haojian.zhuang@gmail.com,
-        hsweeten@visionengravers.com, illusionist.neo@gmail.com,
-        info@metux.net, jason@lakedaemon.net, jolsa@redhat.com,
-        kafai@fb.com, kernel@pengutronix.de, kgene@kernel.org,
-        krzk@kernel.org, kstewart@linuxfoundation.org,
-        linux-arm-kernel@lists.infradead.org, linux-imx@nxp.com,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org, linux@armlinux.org.uk,
-        liviu.dudau@arm.com, lkundrak@v3.sk, lorenzo.pieralisi@arm.com,
-        mark.rutland@arm.com, mingo@redhat.com, namhyung@kernel.org,
-        netdev@vger.kernel.org, nsekhar@ti.com, peterz@infradead.org,
-        robert.jarzmik@free.fr, s.hauer@pengutronix.de,
-        sebastian.hesselbarth@gmail.com, shawnguo@kernel.org,
-        songliubraving@fb.com, swinslow@gmail.com, tglx@linutronix.de,
-        tony@atomide.com, will@kernel.org, yhs@fb.com,
-        Sudeep Holla <sudeep.holla@arm.com>
-Subject: Re: [PATCH V3 12/15] ARM: vexpress: cleanup cppcheck shifting error
-Message-ID: <20190625172442.GA19852@e107155-lin>
-References: <20190624135105.15579-1-tranmanphong@gmail.com>
- <20190625040356.27473-1-tranmanphong@gmail.com>
- <20190625040356.27473-13-tranmanphong@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190625040356.27473-13-tranmanphong@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        id S1731449AbfFYR1Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 13:27:25 -0400
+Received: from mail-pl1-f201.google.com ([209.85.214.201]:54899 "EHLO
+        mail-pl1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731307AbfFYR1Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 13:27:24 -0400
+Received: by mail-pl1-f201.google.com with SMTP id u10so9559609plq.21
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 10:27:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=hTJIxoyoSbZZ+l0CCDRQzN4eQIToWW0/kgz0Q6JFjf4=;
+        b=MhcjcAs3LEBD+vkQbdD9TWhi3dSZjKM7pPmbUKoDowcFMsmHVmyLRh1fNOIBfflDAX
+         CIzNUb96xZm7BILKsyS4feJ9qPRHLbikO0Aazvo95ekSx51HHld4RtuyCrpAz9bNYP34
+         lt/arVszR6L3Q8Zk+95EG2nmSRBxuNEgVIEjAxlFZxN7Oryd3qA0FMcZzqCqBIDcEudw
+         KKk/0nw1x+fXv9Qx4pf39ELAnC8KYlh04TAPCMnHOH8Q278mHQ6fXkUT/IPicg+8rTWR
+         in+g31w2EvhnAz/+/cOb5J6464aCVd75M3KBw80dmqjy8GQmmPGjmgHQA7xcycbcqPcA
+         C21Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=hTJIxoyoSbZZ+l0CCDRQzN4eQIToWW0/kgz0Q6JFjf4=;
+        b=DgDaHgkM+FMMTdjlvU3afUrZx92vESsus6HPzJT0L4bNdRd+qmofxtKDhnasW997q/
+         7Pcf3/qXiNk7U8arEoucVW8xmV2yqy803eQEBVqs2bmyQztaTgJxfC8koXHk/eejmI1f
+         WGEJIoqJD1TSudSLI4zm4UG4af7TMqnGzIV6ry4nKR2WtSMQ7h8WLlZ+xBOkRUNIVUbl
+         6zeziq758rtuqJdgsZy3gQudw3gSEeTGQfOljdAp/gFkVjp2QFFLQt4BPuocLxWPR+gV
+         yeKT+aeAxVDiF6NhRRz7cfJ30Xf6m0QPlZ1cqXb2MtahOCpaAetJ2hJHF2AIDPI934pR
+         ytVw==
+X-Gm-Message-State: APjAAAUddAEv6imK9oJDCXC5O15wmq7v34P1TpFYSC3EJXaDOfSiowHf
+        e8vX0oT7cba/AxrFvMJEMlgOUZ+tOML6GcW5
+X-Google-Smtp-Source: APXvYqzS171nDYh6J6BwTctWj9MK+TT5o8Ua6zQVGFYAkmN/ikFB54mK/+hw9BGKX8GAIwsEV9thskkpDDY4C5XG
+X-Received: by 2002:a63:1462:: with SMTP id 34mr40179941pgu.417.1561483643508;
+ Tue, 25 Jun 2019 10:27:23 -0700 (PDT)
+Date:   Tue, 25 Jun 2019 10:27:15 -0700
+Message-Id: <20190625172717.158613-1-allanzhang@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
+Subject: [PATCH bpf-next v4 0/2] bpf: Allow bpf_skb_event_output for more prog types
+From:   allanzhang <allanzhang@google.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     allanzhang <allanzhang@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 25, 2019 at 11:03:53AM +0700, Phong Tran wrote:
-> There is error from cppcheck tool
-> "Shifting signed 32-bit value by 31 bits is undefined behaviour errors"
-> change to use BIT() marco for improvement.
->
+Software event output is only enabled by a few prog types right now (TC,
+LWT out, XDP, sockops). Many other skb based prog types need
+bpf_skb_event_output to produce software event.
 
-What's your plan for merging this series ? I can take this for v5.4
-If not,
+Added socket_filter, cg_skb, sk_skb prog types to generate sw event.
 
-Acked-by: Sudeep Holla <sudeep.holla@arm.com>
+allanzhang (2):
+  bpf: Allow bpf_skb_event_output for a few prog types
+  bpf: Add selftests for bpf_perf_event_output
 
---
-Regards,
-Sudeep
+ net/core/filter.c                             |  6 ++
+ tools/testing/selftests/bpf/test_verifier.c   | 33 ++++++-
+ .../selftests/bpf/verifier/event_output.c     | 94 +++++++++++++++++++
+ 3 files changed, 132 insertions(+), 1 deletion(-)
+ create mode 100644 tools/testing/selftests/bpf/verifier/event_output.c
+
+-- 
+2.22.0.410.gd8fdbe21b5-goog
+
