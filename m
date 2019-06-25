@@ -2,134 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 66AF2553B5
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 17:47:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF9EF553E1
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 18:00:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731296AbfFYPrq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 11:47:46 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:56198 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726443AbfFYPrq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Jun 2019 11:47:46 -0400
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        id S1731610AbfFYQAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 12:00:42 -0400
+Received: from rs07.intra2net.com ([85.214.138.66]:35294 "EHLO
+        rs07.intra2net.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728422AbfFYQAm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 12:00:42 -0400
+X-Greylist: delayed 327 seconds by postgrey-1.27 at vger.kernel.org; Tue, 25 Jun 2019 12:00:39 EDT
+Received: from mail.m.i2n (unknown [172.17.128.1])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 5B3F6882FD;
-        Tue, 25 Jun 2019 15:47:40 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.32.181.77])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4CE2060BE2;
-        Tue, 25 Jun 2019 15:47:37 +0000 (UTC)
-Message-ID: <6650f0da68982ffa5bb71a773c5a3d588bd972c4.camel@redhat.com>
-Subject: Re: [PATCH net] net/sched: flower: fix infinite loop in fl_walk()
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Vlad Buslov <vladbu@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Lucas Bates <lucasb@mojatatu.com>
-In-Reply-To: <CAM_iQpVVMBUdhv3o=doLhpWxee91zUPKjAOtUwryUEj0pfowdg@mail.gmail.com>
-References: <9068475730862e1d9014c16cee0ad2734a4dd1f9.1560978242.git.dcaratti@redhat.com>
-         <CAM_iQpUVJ9sG9ETE0zZ_azbDgWp_oi320nWy_g-uh2YJWYDOXw@mail.gmail.com>
-         <53b8c3118900b31536594e98952640c03a4456e0.camel@redhat.com>
-         <CAM_iQpVVMBUdhv3o=doLhpWxee91zUPKjAOtUwryUEj0pfowdg@mail.gmail.com>
-Organization: red hat
-Content-Type: text/plain; charset="UTF-8"
-Date:   Tue, 25 Jun 2019 17:47:36 +0200
-Mime-Version: 1.0
-User-Agent: Evolution 3.30.3 (3.30.3-1.fc29) 
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.28]); Tue, 25 Jun 2019 15:47:45 +0000 (UTC)
+        by rs07.intra2net.com (Postfix) with ESMTPS id 956861500322;
+        Tue, 25 Jun 2019 17:55:11 +0200 (CEST)
+Received: from localhost (mail.m.i2n [127.0.0.1])
+        by localhost (Postfix) with ESMTP id 6061A88D;
+        Tue, 25 Jun 2019 17:55:11 +0200 (CEST)
+X-Virus-Scanned: by Intra2net Mail Security (AVE=8.3.54.50,VDF=8.16.17.142)
+X-Spam-Status: 
+X-Spam-Level: 0
+Received: from localhost (storm.m.i2n [172.16.1.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.m.i2n (Postfix) with ESMTPS id 829515EF;
+        Tue, 25 Jun 2019 17:55:09 +0200 (CEST)
+Date:   Tue, 25 Jun 2019 17:55:09 +0200
+From:   Thomas Jarosch <thomas.jarosch@intra2net.com>
+To:     netdev@vger.kernel.org
+Cc:     netfilter-devel@vger.kernel.org,
+        Juliana Rodrigueiro <juliana.rodrigueiro@intra2net.com>
+Subject: 4.19: Traced deadlock during xfrm_user module load
+Message-ID: <20190625155509.pgcxwgclqx3lfxxr@intra2net.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2019-06-20 at 10:33 -0700, Cong Wang wrote:
-> On Thu, Jun 20, 2019 at 5:52 AM Davide Caratti <dcaratti@redhat.com> wrote:
-> > hello Cong, thanks for reading.
-> > 
-> > On Wed, 2019-06-19 at 15:04 -0700, Cong Wang wrote:
-> > > On Wed, Jun 19, 2019 at 2:10 PM Davide Caratti <dcaratti@redhat.com> wrote:
-> > > > on some CPUs (e.g. i686), tcf_walker.cookie has the same size as the IDR.
-> > > > In this situation, the following script:
-> > > > 
-> > > >  # tc filter add dev eth0 ingress handle 0xffffffff flower action ok
-> > > >  # tc filter show dev eth0 ingress
-> > > > 
-> > > > results in an infinite loop.
+Hi all,
 
-[...]
+we're in the process of upgrading to kernel 4.19 and hit
+a very rare lockup on boot during "xfrm_user" module load.
+The tested kernel was 4.19.55.
 
-> I am not sure it is better to handle this overflow inside idr_get_next_ul()
-> or just let its callers to handle it. According to the comments above
-> idr_get_next_ul() it sounds like it is not expected to overflow, so...
-> 
-> diff --git a/lib/idr.c b/lib/idr.c
-> index c34e256d2f01..a38f5e391cec 100644
-> --- a/lib/idr.c
-> +++ b/lib/idr.c
-> @@ -267,6 +267,9 @@ void *idr_get_next_ul(struct idr *idr, unsigned
-> long *nextid)
->         if (!slot)
->                 return NULL;
-> 
-> +       /* overflow */
-> +       if (iter.index < id)
-> +               return NULL;
->         *nextid = iter.index + base;
->         return rcu_dereference_raw(*slot);
->  }
+When the strongswan IPsec service starts, it loads the xfrm_user module.
+-> modprobe hangs forever. 
 
-hello Cong,
+Also network services like ssh or apache stop responding,
+ICMP ping still works.
 
-I tested the above patch, but I still see the infinite loop on kernel
-5.2.0-0.rc5.git0.1.fc31.i686 . 
+By chance we had magic sysRq enabled and were able to get some meaningful stack 
+traces. We've rebuilt the kernel with LOCKDEP + DEBUG_INFO + DEBUG_INFO_REDUCED, 
+but so far failed to reproduce the issue even when hammering the suspected 
+deadlock case. Though it's just hammering it for a few hours yet.
 
-idr_get_next_ul() returns the entry in the radix tree which is greater or 
-equal to '*nextid' (which has the same value as 'id' in the above hunk). 
-So, when the radix tree contains one slot with index equal to ULONG_MAX,
-whatever can be the value of 'id', the condition in that if() will always 
-be false (and the function will keep  returning non-NULL, hence the 
-infinite loop).
+Preliminary analysis:
 
-I also tried this:
-
-if (iter.index == id && id == ULONG_MAX) {
-	return NULL;
-}
-
-it fixes the infinite loop, but it clearly breaks the function semantic
-(and anyway, it's not sufficient to fix my test, at least with cls_flower
-it still dumps the entry with id 0xffffffff several times).  I'm for
-fixing the callers of idr_get_next_ul(), and in details:
-
-- apply this patch for cls_flower
-- change tcf_dump_walker() in act_api.c as follows, and add a TDC testcase
-for 'gact'.
-
-index 4e5d2e9ace5d..f34888c8a952 100644
---- a/net/sched/act_api.c
-+++ b/net/sched/act_api.c
-@@ -228,8 +228,11 @@ static int tcf_dump_walker(struct tcf_idrinfo
-*idrinfo, struct sk_buff *skb,
- 
-        idr_for_each_entry_ul(idr, p, id) {
-                index++;
--               if (index < s_i)
-+               if (index < s_i) {
-+                       if (id == ULONG_MAX)
-+                               break;
-                        continue;
-+               }
- 
-                if (jiffy_since &&
-                    time_after(jiffy_since,
+"modprobe xfrm_user":
+    xfrm_user_init()
+        register_pernet_subsys()
+            -> grab pernet_ops_rwsem
+                ..
+                netlink_table_grab()
+                    calls schedule() as "nl_table_users" is non-zero
 
 
-WDYT?
+conntrack netlink related program "info_iponline" does this in parallel:
+    netlink_bind()
+        netlink_lock_table() -> increases "nl_table_users"
+            nfnetlink_bind()
+            # does not unlock the table as it's locked by netlink_bind()
+                __request_module()
+                    call_usermodehelper_exec()
+            
 
-thanks a lot,
--- 
-davide
+"modprobe nf_conntrack_netlink" runs and inits nf_conntrack_netlink:
+    ctnetlink_init()
+        register_pernet_subsys()
+            -> blocks on "pernet_ops_rwsem" thanks to xfrm_user module
+                -> schedule()
+                    -> deadlock forever
 
+
+Full stack traces:
+
+strongswan starts on boot and loads "xfrm_user":
+
+kernel: modprobe        D    0  3825   3762 0x80000080
+kernel: Call Trace:
+kernel: __schedule+0x188/0x4d0
+kernel: ? add_wait_queue_exclusive+0x4d/0x60
+kernel: schedule+0x21/0x70
+kernel: netlink_table_grab+0x9a/0xf0
+kernel: ? wake_up_q+0x60/0x60
+kernel: __netlink_kernel_create+0x15f/0x1e0
+kernel: xfrm_user_net_init+0x45/0x80 [xfrm_user]
+kernel: ? xfrm_user_net_exit+0x60/0x60 [xfrm_user]
+kernel: ops_init+0x68/0x100
+kernel: ? vprintk_emit+0x9e/0x1a0
+kernel: ? 0xf826c000
+kernel: ? xfrm_dump_sa+0x120/0x120 [xfrm_user]
+kernel: register_pernet_operations+0xef/0x1d0
+kernel: ? 0xf826c000
+kernel: register_pernet_subsys+0x1c/0x30
+kernel: xfrm_user_init+0x18/0x1000 [xfrm_user]
+kernel: do_one_initcall+0x44/0x190
+kernel: ? free_unref_page_commit+0x6a/0xd0
+kernel: do_init_module+0x46/0x1c0
+kernel: load_module+0x1dc1/0x2400
+kernel: sys_init_module+0xed/0x120
+kernel: do_fast_syscall_32+0x7a/0x200
+kernel: entry_SYSENTER_32+0x6b/0xbe
+
+
+Another program triggers a conntrack netlink operation in parallel:
+
+kernel: info_iponline   D    0  3787   3684 0x00000084
+kernel: Call Trace:
+kernel: __schedule+0x188/0x4d0
+kernel: schedule+0x21/0x70
+kernel: schedule_timeout+0x195/0x260
+kernel: ? wake_up_process+0xf/0x20
+kernel: ? insert_work+0x86/0xa0
+kernel: wait_for_common+0xe2/0x190
+kernel: ? wake_up_q+0x60/0x60
+kernel: wait_for_completion_killable+0x12/0x30
+kernel: call_usermodehelper_exec+0xda/0x170
+kernel: __request_module+0x115/0x2e0
+kernel: ? __wake_up_common_lock+0x7a/0xa0
+kernel: ? __wake_up+0xd/0x20
+kernel: nfnetlink_bind+0x28/0x53 [nfnetlink]
+kernel: netlink_bind+0x138/0x300
+kernel: ? netlink_setsockopt+0x320/0x320
+kernel: __sys_bind+0x65/0xb0
+kernel: ? __audit_syscall_exit+0x1fb/0x270
+kernel: ? __audit_syscall_entry+0xad/0xf0
+kernel: sys_socketcall+0x2f0/0x350
+kernel: ? _cond_resched+0x12/0x40
+kernel: do_fast_syscall_32+0x7a/0x200
+kernel: entry_SYSENTER_32+0x6b/0xbe
+
+
+This triggers a module load by the kernel:
+
+kernel: modprobe        D    0  3827   1578 0x80000080
+kernel: Call Trace:
+kernel: __schedule+0x188/0x4d0
+kernel: schedule+0x21/0x70
+kernel: rwsem_down_write_failed+0xf5/0x210
+kernel: ? 0xf8283000
+kernel: call_rwsem_down_write_failed+0x9/0xc
+kernel: down_write+0x18/0x30
+kernel: register_pernet_subsys+0x10/0x30
+kernel: ctnetlink_init+0x48/0x1000 [nf_conntrack_netlink]
+kernel: do_one_initcall+0x44/0x190
+kernel: ? free_unref_page_commit+0x6a/0xd0
+kernel: do_init_module+0x46/0x1c0
+kernel: load_module+0x1dc1/0x2400
+kernel: sys_init_module+0xed/0x120
+kernel: do_fast_syscall_32+0x7a/0x200
+kernel: entry_SYSENTER_32+0x6b/0xbe
+
+
+Other network related operations are deadlocked in netlink_table_grab():
+
+kernel: ntpd            D    0  3831   3830 0x00000080
+kernel: Call Trace:
+kernel: __schedule+0x188/0x4d0
+kernel: ? add_wait_queue_exclusive+0x4d/0x60
+kernel: schedule+0x21/0x70
+kernel: netlink_table_grab+0x9a/0xf0
+kernel: ? wake_up_q+0x60/0x60
+kernel: netlink_release+0x14e/0x460
+kernel: __sock_release+0x2d/0xb0
+kernel: sock_close+0xd/0x20
+kernel: __fput+0x93/0x1c0
+kernel: ____fput+0x8/0x10
+kernel: task_work_run+0x82/0xa0
+kernel: exit_to_usermode_loop+0x8d/0x90
+kernel: do_fast_syscall_32+0x1a7/0x200
+kernel: entry_SYSENTER_32+0x6b/0xbe
+
+
+The easy workaround for us is to load the conntrack netlink
+modules before starting strongswan. Since we use classic init,
+this works. In parallel booting systemd world, people might
+still hit the issue, so it's worth fixing.
+
+The related function netlink_create() unlocks the table
+before requesting modules and locks it afterwards again.
+
+We guess it's racy to call netlink_unlock_table()
+before doing the 
+    
+    err = nlk->netlink_bind(net, group + 1);
+    
+call in netlink_bind() ?
+
+
+What would be the best fix here?
+
+Best regards,
+Thomas Jarosch and Juliana Rodrigueiro
