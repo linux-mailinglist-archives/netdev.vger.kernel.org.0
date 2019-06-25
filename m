@@ -2,53 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A0EAC55941
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 22:43:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21BF555943
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 22:43:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726653AbfFYUnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 16:43:17 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:50816 "EHLO
+        id S1726907AbfFYUno (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 16:43:44 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:50828 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726053AbfFYUnQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 16:43:16 -0400
+        with ESMTP id S1726053AbfFYUno (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 16:43:44 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 25DD512D6BE0D;
-        Tue, 25 Jun 2019 13:43:16 -0700 (PDT)
-Date:   Tue, 25 Jun 2019 13:43:15 -0700 (PDT)
-Message-Id: <20190625.134315.561835619337464509.davem@davemloft.net>
-To:     jakub.kicinski@netronome.com
-Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
-        nafea@amazon.com, dwmw2@infradead.org, sameehj@amazon.com,
-        zorik@amazon.com, saeedb@amazon.com, netanel@amazon.com
-Subject: Re: [PATCH net-next] Revert "net: ena: ethtool: add extra
- properties retrieval via get_priv_flags"
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3AB7C12D6C857;
+        Tue, 25 Jun 2019 13:43:44 -0700 (PDT)
+Date:   Tue, 25 Jun 2019 13:43:43 -0700 (PDT)
+Message-Id: <20190625.134343.2260074699747151110.davem@davemloft.net>
+To:     jon.maloy@ericsson.com
+Cc:     netdev@vger.kernel.org, gordan.mihaljevic@dektech.com.au,
+        tung.q.nguyen@dektech.com.au, hoang.h.le@dektech.com.au,
+        canh.d.luu@dektech.com.au, ying.xue@windriver.com,
+        tipc-discussion@lists.sourceforge.net
+Subject: Re: [net-next 1/1] tipc: rename function msg_get_wrapped() to
+ msg_inner_hdr()
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190625165956.19278-1-jakub.kicinski@netronome.com>
-References: <20190625165956.19278-1-jakub.kicinski@netronome.com>
+In-Reply-To: <1561484220-22814-1-git-send-email-jon.maloy@ericsson.com>
+References: <1561484220-22814-1-git-send-email-jon.maloy@ericsson.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 25 Jun 2019 13:43:16 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 25 Jun 2019 13:43:44 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <jakub.kicinski@netronome.com>
-Date: Tue, 25 Jun 2019 09:59:56 -0700
+From: Jon Maloy <jon.maloy@ericsson.com>
+Date: Tue, 25 Jun 2019 19:37:00 +0200
 
-> This reverts commit 315c28d2b714 ("net: ena: ethtool: add extra properties retrieval via get_priv_flags").
+> We rename the inline function msg_get_wrapped() to the more
+> comprehensible msg_inner_hdr().
 > 
-> As discussed at netconf and on the mailing list we can't allow
-> for the the abuse of private flags for exposing arbitrary device
-> labels.
-> 
-> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Signed-off-by: Jon Maloy <jon.maloy@ericsson.com>
 
-Amazon folks I think this is entirely reasonable, please ACK.
-
-Thanks.
+Applied, thanks Jon.
