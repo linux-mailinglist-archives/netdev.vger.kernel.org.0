@@ -2,143 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A2BA355387
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 17:36:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AFA5553BD
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 17:51:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732338AbfFYPgc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 11:36:32 -0400
-Received: from vmicros1.altlinux.org ([194.107.17.57]:46954 "EHLO
-        vmicros1.altlinux.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730385AbfFYPgc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 11:36:32 -0400
-Received: from mua.local.altlinux.org (mua.local.altlinux.org [192.168.1.14])
-        by vmicros1.altlinux.org (Postfix) with ESMTP id E9C3972CC6C;
-        Tue, 25 Jun 2019 18:36:29 +0300 (MSK)
-Received: by mua.local.altlinux.org (Postfix, from userid 508)
-        id C5DAF7CCE32; Tue, 25 Jun 2019 18:36:29 +0300 (MSK)
-Date:   Tue, 25 Jun 2019 18:36:29 +0300
-From:   "Dmitry V. Levin" <ldv@altlinux.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Baruch Siach <baruch@tkos.co.il>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [PATCH v2] bpf: fix uapi bpf_prog_info fields alignment
-Message-ID: <20190625153629.GB24947@altlinux.org>
-References: <a5fb2545a0cf151bc443efa10c16c5a4de6f2670.1561460681.git.baruch@tkos.co.il>
- <CAADnVQJ3MPVCL-0x2gDYbUQsrmu8WipnisqXoU8ja4vZ-5nTmA@mail.gmail.com>
- <20190625150835.GA24947@altlinux.org>
- <CAADnVQJNLk7tAHRHr7V7ugvCX9iCjaH4_vS9YuNWcMpwnA6ZyA@mail.gmail.com>
+        id S1730886AbfFYPvs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 11:51:48 -0400
+Received: from sessmg22.ericsson.net ([193.180.251.58]:59526 "EHLO
+        sessmg22.ericsson.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726053AbfFYPvr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 11:51:47 -0400
+X-Greylist: delayed 901 seconds by postgrey-1.27 at vger.kernel.org; Tue, 25 Jun 2019 11:51:46 EDT
+DKIM-Signature: v=1; a=rsa-sha256; d=ericsson.com; s=mailgw201801; c=relaxed/relaxed;
+        q=dns/txt; i=@ericsson.com; t=1561477004; x=1564069004;
+        h=From:Sender:Reply-To:Subject:Date:Message-ID:To:CC:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=58bOMnhE/wDvdWpdEUYrVf5VUvpFoYPxq/5U05f3Y7k=;
+        b=YWtsqRu5DvsMBfVb7mnRxaKKHejvIB+4SwIHuURfrhLBkGyti9Jlc9zyoDgHwP2w
+        ZE37n9XUrgPojbXCWWHqFHEZIbgvKjBG6ae2tID+wunasKhiJCCZ1Hs3P3Z6mu9c
+        rK4qAC1T+B+u3zxEqu9ndJ3MgUHQGUXNIoXaziTAI9w=;
+X-AuditID: c1b4fb3a-709ff7000000189f-12-5d123f8c5d6d
+Received: from ESESBMB504.ericsson.se (Unknown_Domain [153.88.183.117])
+        by sessmg22.ericsson.net (Symantec Mail Security) with SMTP id E3.C7.06303.C8F321D5; Tue, 25 Jun 2019 17:36:44 +0200 (CEST)
+Received: from ESESSMR506.ericsson.se (153.88.183.128) by
+ ESESBMB504.ericsson.se (153.88.183.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1713.5; Tue, 25 Jun 2019 17:36:43 +0200
+Received: from ESESBMB504.ericsson.se (153.88.183.171) by
+ ESESSMR506.ericsson.se (153.88.183.128) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1713.5; Tue, 25 Jun 2019 17:36:43 +0200
+Received: from tipsy.lab.linux.ericsson.se (153.88.183.153) by
+ smtp.internal.ericsson.com (153.88.183.187) with Microsoft SMTP Server id
+ 15.1.1713.5 via Frontend Transport; Tue, 25 Jun 2019 17:36:43 +0200
+From:   Jon Maloy <jon.maloy@ericsson.com>
+To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
+CC:     <gordan.mihaljevic@dektech.com.au>, <tung.q.nguyen@dektech.com.au>,
+        <hoang.h.le@dektech.com.au>, <jon.maloy@ericsson.com>,
+        <canh.d.luu@dektech.com.au>, <ying.xue@windriver.com>,
+        <tipc-discussion@lists.sourceforge.net>
+Subject: [net-next  1/1] tipc: simplify stale link failure criteria
+Date:   Tue, 25 Jun 2019 17:36:43 +0200
+Message-ID: <1561477003-25362-1-git-send-email-jon.maloy@ericsson.com>
+X-Mailer: git-send-email 2.1.4
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="RASg3xLB4tUQ4RcS"
-Content-Disposition: inline
-In-Reply-To: <CAADnVQJNLk7tAHRHr7V7ugvCX9iCjaH4_vS9YuNWcMpwnA6ZyA@mail.gmail.com>
+Content-Type: text/plain
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrGLMWRmVeSWpSXmKPExsUyM2J7qW6PvVCsQecWfosbDT3MFnPOt7BY
+        rNg9idXi7atZ7BbHFohZbDmfZXGl/Sy7xePr15kdODy2rLzJ5PHuCpvH7gWfmTw+b5LzWL9l
+        K1MAaxSXTUpqTmZZapG+XQJXxrGzp5gKjkpUTDzSztzA+Fy4i5GTQ0LAROLWvK+sXYxcHEIC
+        Rxkl3t7/ygLhfGOU6NvRywZSBeZ8/JoLkbjAKHFr6zEmkASbgIbEy2kdjCC2iICxxKuVnUwg
+        RcwCjxklvtxfBdTNziEs4CyxnRmkhEVAVeLi5+Ng5bwCbhIN154zQVwhJ3H++E9miF3KEnM/
+        TGOCqBGUODnzCQuIzSwgIXHwxQvmCYz8s5CkZiFJLWBkWsUoWpxaXJybbmSkl1qUmVxcnJ+n
+        l5dasokRGLoHt/y22sF48LnjIUYBDkYlHt42W6FYIdbEsuLK3EOMEhzMSiK8SxMFYoV4UxIr
+        q1KL8uOLSnNSiw8xSnOwKInzrvf+FyMkkJ5YkpqdmlqQWgSTZeLglGpgTHl7+c7PeZpu144s
+        y/6SYNf6csW+Q669i0++2fj4yYmiNSvmhf8NZjCIC7IQMGdkM2afFV/5ui7q67OCGy6fNRMK
+        5n6quJW7cs/W4FlxZV835HopreNeOdPKpKdG8+SeGj8Le501vzxm/zDzKzMTa0rwO6D713Zu
+        +aNG1tnn6+fHRGir/ePuVGIpzkg01GIuKk4EAGvDUDxZAgAA
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+In commit a4dc70d46cf1 ("tipc: extend link reset criteria for stale
+packet retransmission") we made link retransmission failure events
+dependent on the link tolerance, and not only of the number of failed
+retransmission attempts, as we did earlier. This works well. However,
+keeping the original, additional criteria of 99 failed retransmissions
+is now redundant, and may in some cases lead to failure detection
+times in the order of minutes instead of the expected 1.5 sec link
+tolerance value.
 
---RASg3xLB4tUQ4RcS
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+We now remove this criteria altogether.
 
-On Tue, Jun 25, 2019 at 08:19:35AM -0700, Alexei Starovoitov wrote:
-> On Tue, Jun 25, 2019 at 8:08 AM Dmitry V. Levin <ldv@altlinux.org> wrote:
-> > On Tue, Jun 25, 2019 at 07:16:55AM -0700, Alexei Starovoitov wrote:
-> > > On Tue, Jun 25, 2019 at 4:07 AM Baruch Siach <baruch@tkos.co.il> wrot=
-e:
-> > > >
-> > > > Merge commit 1c8c5a9d38f60 ("Merge
-> > > > git://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next") undi=
-d the
-> > > > fix from commit 36f9814a494 ("bpf: fix uapi hole for 32 bit compat
-> > > > applications") by taking the gpl_compatible 1-bit field definition =
-=66rom
-> > > > commit b85fab0e67b162 ("bpf: Add gpl_compatible flag to struct
-> > > > bpf_prog_info") as is. That breaks architectures with 16-bit alignm=
-ent
-> > > > like m68k. Embed gpl_compatible into an anonymous union with 32-bit=
- pad
-> > > > member to restore alignment of following fields.
-> > > >
-> > > > Thanks to Dmitry V. Levin his analysis of this bug history.
-> > > >
-> > > > Cc: Jiri Olsa <jolsa@kernel.org>
-> > > > Cc: Daniel Borkmann <daniel@iogearbox.net>
-> > > > Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-> > > > Cc: Linus Torvalds <torvalds@linux-foundation.org>
-> > > > Signed-off-by: Baruch Siach <baruch@tkos.co.il>
-> > > > ---
-> > > > v2:
-> > > > Use anonymous union with pad to make it less likely to break again =
-in
-> > > > the future.
-> > > > ---
-> > > >  include/uapi/linux/bpf.h       | 5 ++++-
-> > > >  tools/include/uapi/linux/bpf.h | 5 ++++-
-> > > >  2 files changed, 8 insertions(+), 2 deletions(-)
-> > > >
-> > > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > > > index a8b823c30b43..766eae02d7ae 100644
-> > > > --- a/include/uapi/linux/bpf.h
-> > > > +++ b/include/uapi/linux/bpf.h
-> > > > @@ -3142,7 +3142,10 @@ struct bpf_prog_info {
-> > > >         __aligned_u64 map_ids;
-> > > >         char name[BPF_OBJ_NAME_LEN];
-> > > >         __u32 ifindex;
-> > > > -       __u32 gpl_compatible:1;
-> > > > +       union {
-> > > > +               __u32 gpl_compatible:1;
-> > > > +               __u32 pad;
-> > > > +       };
-> > >
-> > > Nack for the reasons explained in the previous thread
-> > > on the same subject.
-> > > Why cannot you go with earlier suggestion of _u32 :31; ?
-> >
-> > By the way, why not use aligned types as suggested by Geert?
-> > They are already used for other members of struct bpf_prog_info anyway.
-> >
-> > FWIW, we use aligned types for bpf in strace and that approach
-> > proved to be more robust than manual padding.
->=20
-> because __aligned_u64 is used for pointers.
+Acked-by: Ying Xue <ying.xue@windriver.com>
+Signed-off-by: Jon Maloy <jon.maloy@ericsson.com>
+---
+ net/tipc/link.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
-Does the fact that __aligned_u64 is used for pointers mean that
-__aligned_u64 should not be used for anything but pointers?
+diff --git a/net/tipc/link.c b/net/tipc/link.c
+index bcfb0a4..af50b53 100644
+--- a/net/tipc/link.c
++++ b/net/tipc/link.c
+@@ -107,7 +107,6 @@ struct tipc_stats {
+  * @backlogq: queue for messages waiting to be sent
+  * @snt_nxt: next sequence number to use for outbound messages
+  * @prev_from: sequence number of most previous retransmission request
+- * @stale_cnt: counter for number of identical retransmit attempts
+  * @stale_limit: time when repeated identical retransmits must force link reset
+  * @ackers: # of peers that needs to ack each packet before it can be released
+  * @acked: # last packet acked by a certain peer. Used for broadcast.
+@@ -167,7 +166,6 @@ struct tipc_link {
+ 	u16 snd_nxt;
+ 	u16 prev_from;
+ 	u16 window;
+-	u16 stale_cnt;
+ 	unsigned long stale_limit;
+ 
+ 	/* Reception */
+@@ -910,7 +908,6 @@ void tipc_link_reset(struct tipc_link *l)
+ 	l->acked = 0;
+ 	l->silent_intv_cnt = 0;
+ 	l->rst_cnt = 0;
+-	l->stale_cnt = 0;
+ 	l->bc_peer_is_up = false;
+ 	memset(&l->mon_state, 0, sizeof(l->mon_state));
+ 	tipc_link_reset_stats(l);
+@@ -1068,8 +1065,7 @@ static bool link_retransmit_failure(struct tipc_link *l, struct tipc_link *r,
+ 	if (r->prev_from != from) {
+ 		r->prev_from = from;
+ 		r->stale_limit = jiffies + msecs_to_jiffies(r->tolerance);
+-		r->stale_cnt = 0;
+-	} else if (++r->stale_cnt > 99 && time_after(jiffies, r->stale_limit)) {
++	} else if (time_after(jiffies, r->stale_limit)) {
+ 		pr_warn("Retransmission failure on link <%s>\n", l->name);
+ 		link_print(l, "State of link ");
+ 		pr_info("Failed msg: usr %u, typ %u, len %u, err %u\n",
+@@ -1515,7 +1511,6 @@ int tipc_link_rcv(struct tipc_link *l, struct sk_buff *skb,
+ 
+ 		/* Forward queues and wake up waiting users */
+ 		if (likely(tipc_link_release_pkts(l, msg_ack(hdr)))) {
+-			l->stale_cnt = 0;
+ 			tipc_link_advance_backlog(l, xmitq);
+ 			if (unlikely(!skb_queue_empty(&l->wakeupq)))
+ 				link_prepare_wakeup(l);
+@@ -2584,7 +2579,7 @@ int tipc_link_dump(struct tipc_link *l, u16 dqueues, char *buf)
+ 	i += scnprintf(buf + i, sz - i, " %u", l->silent_intv_cnt);
+ 	i += scnprintf(buf + i, sz - i, " %u", l->rst_cnt);
+ 	i += scnprintf(buf + i, sz - i, " %u", l->prev_from);
+-	i += scnprintf(buf + i, sz - i, " %u", l->stale_cnt);
++	i += scnprintf(buf + i, sz - i, " %u", 0);
+ 	i += scnprintf(buf + i, sz - i, " %u", l->acked);
+ 
+ 	list = &l->transmq;
+-- 
+2.1.4
 
-
---=20
-ldv
-
---RASg3xLB4tUQ4RcS
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIcBAEBCAAGBQJdEj99AAoJEAVFT+BVnCUIWaMQAMugE0lSCzosjpHwkfbr+FpO
-ugG0z+9qdFGMvSWEQp6J7GI+1T/9053u/LoXnmZa3Ax9dOuoiPL/LUnfdlkaZUTb
-CRiMMZrxS815klWYdjCsoUxI4uIkMGIeAV55zmL38GnNkQkqUBWNZ2DreXMKqJbL
-R6thXTIX0NWZX8gTp9u3Cl7kGzn/rbyM8h3QhfHplIIyZtN0H+Xxrf45GtRWYIiJ
-EA13Cha2jnzv+U0ibPp73x424JPSgXwDEXs9TCSzmBN3F/Wa8HB2ZkG5mZeXKTpO
-qdCSlmDQeAh/X9swdoXnMdi955V004q7i9p662G1hyOdYCA+uVXbvm5UpqVB9gTG
-aO0K7fXyKgXAvebHTbacvVVyw9QyY0uQ/LFUGmJHOtp9z9qGrRy22kG99sWxbno3
-L6HzmIS8Uj47yUqGp4Lnad8djAr7K0hQB0dONaBoSY15DwL+iyXvs+BCATajcwz8
-yVMEk/MnoBpC5d06AH0AOlxNimCcxxKJC3c/70xQo/XzlddHlzcZunlOHMoMeRZc
-U3PkP04kXzsL3sVlWW6uGz21PtEe1BRI26Q118VMf6UMRH0x7Hiq5FQLqpueVJ4Y
-JxFtJu1gEzbeL0I4+2LAJ/Cobgx/C369Haq9ey3/xtVpEMAv4GUomL94v7W06F4h
-7d5nX5YZ/O5OpF8f+nz7
-=nTPx
------END PGP SIGNATURE-----
-
---RASg3xLB4tUQ4RcS--
