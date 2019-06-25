@@ -2,112 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EEEE52240
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 06:45:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA6F152251
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 06:52:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726962AbfFYEo6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 00:44:58 -0400
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:35306 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726421AbfFYEo5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 00:44:57 -0400
-Received: by mail-ot1-f68.google.com with SMTP id j19so15933516otq.2;
-        Mon, 24 Jun 2019 21:44:57 -0700 (PDT)
+        id S1727295AbfFYEwB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 00:52:01 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:36564 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727109AbfFYEwB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 00:52:01 -0400
+Received: by mail-pf1-f196.google.com with SMTP id r7so8792860pfl.3
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 21:52:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2Wp4HQypqw0rNbItr1Xs0WBR6fHG0G9gjAl5KxurVdE=;
-        b=ICNF3PTZ1ZfG+bAeY8F8Pp7sQzesnEsLfQyVK4xXEW0fE9JbdoeEwICCri9MhuwgDe
-         bm/0ejdD98vhkuaDReGiErs7EaKJphiOdNIOX5OTwKFKRbuUyOxVIAk4bHBff8k+v4sW
-         T7OmIR81tdf3Fy8cR5DX0+mQ0tZ/Wu4tdvEcn1ySqLThg5Z+Cqiyv07RISHe3YwpWKkU
-         mNX0GQfIvmuXGqm24S4OcATnGcJC5dp2nIjKXJ/eVlclscTS4ifWJKJt3gXQIn8V6JDV
-         mBBDQVVDx+ijpZkFkPqRJLSkoToQRF0nF2/Dh+zYJ2NvIUQ+MXj1dcWGXJ7WX+IKrAi0
-         Ackw==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=x++iS19w63sxgFVfWWLm5YJQFUHEat//0dXequQHgss=;
+        b=oPMATDOVDtVdhlOcqT7LD8rym0j7XNpvTqF81EmRDXevW5UrlQq+FYBUI8F5pOH+FV
+         vOoyEXA3YXGXBeBlycdLp9fk9MazJEIc9K+NxmzsuRCpDdG9h7TuhXujrTj6DMCN8h7T
+         Y6i84uBKUBG5O4vYCrqQ7eXupJwjwqHWx/1kMbOsHbWMGfZ3csvfmUoLMbgSOqMptbGf
+         KoVs3A8EU6eR5YM3Pxu8PVnJ2VOU/KlDIxEk6zJdxdxyl6DY0AMbUkIrpnJ78EvrnBFB
+         TlCzMdE1KIJzqUwkvzH5kvGPEsftIY/nqvyBzHUlz1SabNYgQiXNDdXCyqcmY9m38/Ky
+         tNlg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2Wp4HQypqw0rNbItr1Xs0WBR6fHG0G9gjAl5KxurVdE=;
-        b=Xv186QGPgZP13JAw3vR3DBIJoOTcqbIY4jRNPEBRir2O3epY3OQvJUiFqxRaKKV1xj
-         C38jEqXAfy6wujtyZdBzMqnixEtVMbIYJO5s2tHDWqIQ/EV+CmWWc8GAFEAjBJ6opjNH
-         UvrLyl0s7mGX6iLpd7Fxr/AJXhnfRMNGdF2F3R/+AdcGmgeO3PBW/lQiRKnVIoWB82Ig
-         b4/ysTvtNUVi+9F9m0X5g7QJsXyFYT7pq61L4Vj4AzDrDWQxgP+Fmu2ZqJxpVr8MhZXs
-         Nu4SJvPnHS9pWn2tyTl20upmR02WPy5dsAvYA4C9wsKYBVWoWQXkAIa5eYeS7eySVmEv
-         /Agw==
-X-Gm-Message-State: APjAAAVo9zEl5O5telJB5IZaLgCAmVsHKOstqNaqZLUDiGZa1bcOK49O
-        C48aMcu5GvZG/ie3bbY4W3yuArIcuUI9W+KaaMzC0Y8C
-X-Google-Smtp-Source: APXvYqxsOdEMaHKmim8mpE6aFtY/5w9wT+CBAa2iQ2fftmNQo7l1oux8418VMI5kU7usdjz86T8c871EA6XxIf+xwSc=
-X-Received: by 2002:a9d:14a:: with SMTP id 68mr70034647otu.96.1561437896776;
- Mon, 24 Jun 2019 21:44:56 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=x++iS19w63sxgFVfWWLm5YJQFUHEat//0dXequQHgss=;
+        b=iJanAkco57+NUOpgHwE2+04SigvOXmUjkZnSU9INFbQkpd/ZvBr7lOMUbvwWlwRkRV
+         /veYfpj4V1RjlY4Ybi3W5sePjtCZ2ldjlXZPhpmWROhI0wijHyI7WJFb4T7iin8QmI0s
+         8EYix2uI5kHDzptZT1uRSLVyk8oVaEeAmKQ1fuh5BKRLUNvnChuEZEz7Eg4CM3Z8NseA
+         ayPIskEAegycXRYZ+mz0zccfOyBS5Mb+0WgfmY9556y1OhSLE4+Jx7dprU1FXfmp2gTE
+         kQebubMhO5mmA15O/LdoNRjs+Lm3Ds8wgDNlq/s1gSrf2qqoX1PcODMdAJ9x2bDhhtI6
+         kC9g==
+X-Gm-Message-State: APjAAAXfwQRHEwwDaG5kbCyYtVHlaLv0MU+eWbF1DOR+5JSuQhH9Fwlg
+        QNCUOthMV+VmtPdv8mQEkq1GrQ==
+X-Google-Smtp-Source: APXvYqwq+x8bjy217eJe6SW1wvSRPjFujvsZCYifDyTnFtr9gkiZuKb/hbegQMTzT8JlFrq6Jsu5Gg==
+X-Received: by 2002:a63:a046:: with SMTP id u6mr20953163pgn.122.1561438320211;
+        Mon, 24 Jun 2019 21:52:00 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s ([240e:e0:f087:f467:b43a:6fd7:87a2:c789])
+        by smtp.gmail.com with ESMTPSA id 22sm18808541pfu.179.2019.06.24.21.51.47
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 24 Jun 2019 21:51:59 -0700 (PDT)
+Date:   Tue, 25 Jun 2019 12:51:40 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+Cc:     Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Suzuki Poulouse <suzuki.poulose@arm.com>,
+        Coresight ML <coresight@lists.linaro.org>
+Subject: Re: [PATCH] perf cs-etm: Improve completeness for kernel address
+ space
+Message-ID: <20190625045140.GA7637@leoy-ThinkPad-X240s>
+References: <20190617150024.11787-1-leo.yan@linaro.org>
+ <CANLsYkyMW=WG+=yWTLSyMT3JXqd_2kvsrx9c-EwCoKEnRZvErA@mail.gmail.com>
+ <20190620005829.GH24549@leoy-ThinkPad-X240s>
+ <20190624190009.GE4181@kernel.org>
 MIME-Version: 1.0
-References: <20190617165836.4673-1-colin.king@canonical.com>
- <20190619051308.23582-1-martin.blumenstingl@googlemail.com>
- <92f9e5a6-d2a2-6bf2-ff8a-2430fe977f93@canonical.com> <CAFBinCDmYVPDMcwAAYhMfxxuTsG=xunduN58_8e20zE_Mhmb7Q@mail.gmail.com>
-In-Reply-To: <CAFBinCDmYVPDMcwAAYhMfxxuTsG=xunduN58_8e20zE_Mhmb7Q@mail.gmail.com>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Tue, 25 Jun 2019 06:44:45 +0200
-Message-ID: <CAFBinCC-LLpfXQRFcKBbUpCfKc0S9Xtt60QrhEThsOFV-T7vFw@mail.gmail.com>
-Subject: Re: [PATCH] net: stmmac: add sanity check to device_property_read_u32_array
- call
-To:     Colin Ian King <colin.king@canonical.com>
-Cc:     alexandre.torgue@st.com, davem@davemloft.net, joabreu@synopsys.com,
-        kernel-janitors@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
-        peppe.cavallaro@st.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190624190009.GE4181@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Colin,
+Hi Arnaldo,
 
-On Thu, Jun 20, 2019 at 3:34 AM Martin Blumenstingl
-<martin.blumenstingl@googlemail.com> wrote:
->
-> Hi Colin,
->
-> On Wed, Jun 19, 2019 at 8:55 AM Colin Ian King <colin.king@canonical.com> wrote:
-> >
-> > On 19/06/2019 06:13, Martin Blumenstingl wrote:
-> > > Hi Colin,
-> > >
-> > >> Currently the call to device_property_read_u32_array is not error checked
-> > >> leading to potential garbage values in the delays array that are then used
-> > >> in msleep delays.  Add a sanity check to the property fetching.
-> > >>
-> > >> Addresses-Coverity: ("Uninitialized scalar variable")
-> > >> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> > > I have also sent a patch [0] to fix initialize the array.
-> > > can you please look at my patch so we can work out which one to use?
-> > >
-> > > my concern is that the "snps,reset-delays-us" property is optional,
-> > > the current dt-bindings documentation states that it's a required
-> > > property. in reality it isn't, there are boards (two examples are
-> > > mentioned in my patch: [0]) without it.
-> > >
-> > > so I believe that the resulting behavior has to be:
-> > > 1. don't delay if this property is missing (instead of delaying for
-> > >    <garbage value> ms)
-> > > 2. don't error out if this property is missing
-> > >
-> > > your patch covers #1, can you please check whether #2 is also covered?
-> > > I tested case #2 when submitting my patch and it worked fine (even
-> > > though I could not reproduce the garbage values which are being read
-> > > on some boards)
-in the meantime I have tested your patch.
-when I don't set the "snps,reset-delays-us" property then I get the
-following error:
-  invalid property snps,reset-delays-us
+On Mon, Jun 24, 2019 at 04:00:09PM -0300, Arnaldo Carvalho de Melo wrote:
 
-my patch has landed in the meantime: [0]
-how should we proceed with your patch?
+[...]
 
+> > > > diff --git a/tools/perf/util/cs-etm.c b/tools/perf/util/cs-etm.c
+> > > > index 0c7776b51045..ae831f836c70 100644
+> > > > --- a/tools/perf/util/cs-etm.c
+> > > > +++ b/tools/perf/util/cs-etm.c
+> > > > @@ -613,10 +613,34 @@ static void cs_etm__free(struct perf_session *session)
+> > > >  static u8 cs_etm__cpu_mode(struct cs_etm_queue *etmq, u64 address)
+> > > >  {
+> > > >         struct machine *machine;
+> > > > +       u64 fixup_kernel_start = 0;
+> > > > +       const char *arch;
+> > > >
+> > > >         machine = etmq->etm->machine;
+> > > > +       arch = perf_env__arch(machine->env);
+> > > >
+> > > > -       if (address >= etmq->etm->kernel_start) {
+> > > > +       /*
+> > > > +        * Since arm and arm64 specify some memory regions prior to
+> > > > +        * 'kernel_start', kernel addresses can be less than 'kernel_start'.
+> > > > +        *
+> > > > +        * For arm architecture, the 16MB virtual memory space prior to
+> > > > +        * 'kernel_start' is allocated to device modules, a PMD table if
+> > > > +        * CONFIG_HIGHMEM is enabled and a PGD table.
+> > > > +        *
+> > > > +        * For arm64 architecture, the root PGD table, device module memory
+> > > > +        * region and BPF jit region are prior to 'kernel_start'.
+> > > > +        *
+> > > > +        * To reflect the complete kernel address space, compensate these
+> > > > +        * pre-defined regions for kernel start address.
+> > > > +        */
+> > > > +       if (!strcmp(arch, "arm64"))
+> > > > +               fixup_kernel_start = etmq->etm->kernel_start -
+> > > > +                                    ARM64_PRE_START_SIZE;
+> > > > +       else if (!strcmp(arch, "arm"))
+> > > > +               fixup_kernel_start = etmq->etm->kernel_start -
+> > > > +                                    ARM_PRE_START_SIZE;
+> > > 
+> > > I will test your work but from a quick look wouldn't it be better to
+> > > have a single define name here?  From looking at the modifications you
+> > > did to Makefile.config there doesn't seem to be a reason to have two.
+> > 
+> > Thanks for suggestion.  I changed to use single define
+> > ARM_PRE_START_SIZE and sent patch v2 [1].
+> > 
+> > If possible, please test patch v2.
+> > 
+> > Thanks,
+> > Leo Yan
+> 
+> So just for the record, I'm waiting for Mathieu on this one, i.e. for
+> him to test/ack v3.
 
-Martin
+Yes, this makes sense.  I'd like to get Mathieu's green light as well,
+it needs to take much time to build llvm/clang on SBC, so it's no rush.
 
-
-[0] https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/commit/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c?id=84ce4d0f9f55b4f4ca4d4edcbb54a23d9dad1aae
+Thanks,
+Leo Yan
