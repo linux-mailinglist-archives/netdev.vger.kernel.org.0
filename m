@@ -2,92 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BC62D5276F
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 11:03:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E434E52774
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 11:05:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731147AbfFYJDi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 05:03:38 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:48862 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730986AbfFYJDi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 05:03:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=ePK/es7C9pQl0On21DFk5DyYv3Tc0aYNKzqwAwwTRqY=; b=OXSNzGJlNZz7zi2MsqJzCp2AX
-        +FjJH97SPooV/2cSGIjFIjfWtMQRJW1wdhfIheOEnl9jc4RHPnxtbcwpLPLlWtNnuv8AuCkJFAO0E
-        OItcc6VyP/ew6/OTLQXic3iP+50calRXZcLZ5LZA1G+VFKDWt9AtnrPwKsZD/9dise9lPFkbfwnWu
-        qclJm5T7ScGnAd0BnmZqMrys4Ko73zY/yYIJxlrEstE0DMS0zxdBIDT7sF7DsKlBxBYOfocDsDjnl
-        qookUjFBmnWf2OD7HJ32Cwivso7Y/Up5KvB0day0ukhjEuV6ke+uC2vdRgLrrXkYvifK+GprA/3Pr
-        4lr72uJ6Q==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:58974)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hfhMP-0005Ke-Om; Tue, 25 Jun 2019 10:03:29 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hfhMK-00075B-AS; Tue, 25 Jun 2019 10:03:24 +0100
-Date:   Tue, 25 Jun 2019 10:03:24 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Parshuram Raju Thombare <pthombar@cadence.com>
-Cc:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Rafal Ciepiela <rafalc@cadence.com>,
-        Anil Joy Varughese <aniljoy@cadence.com>,
-        Piotr Sroka <piotrs@cadence.com>
-Subject: Re: [PATCH v5 4/5] net: macb: add support for high speed interface
-Message-ID: <20190625090324.c6tq2neksatfwljw@shell.armlinux.org.uk>
-References: <1561378210-11033-1-git-send-email-pthombar@cadence.com>
- <1561378355-14048-1-git-send-email-pthombar@cadence.com>
- <20190624134755.u3oq3xr6uergnfs5@shell.armlinux.org.uk>
- <SN2PR07MB2480CF15E11D54DA8C3B7319C1E30@SN2PR07MB2480.namprd07.prod.outlook.com>
+        id S1731120AbfFYJFA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 05:05:00 -0400
+Received: from mail-eopbgr20073.outbound.protection.outlook.com ([40.107.2.73]:33606
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1731095AbfFYJFA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Jun 2019 05:05:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=My6rndEdNDkpizeY2vrIZlfkcd/pG2VSh1IxMnxQobo=;
+ b=WcpUGpnrzncWOttlQDn+5FBpprMhSKG7bWXEXxLkYt2kJGP7RlBw5Q64JpMhFXDLr2Ct3FksbD8WGoET7uaQ6e6aL0J8kDgla7MvNDKPWpHi92HjwyF2kj9+0f592sH1Nuprmp0GRv2ZwwJ/DygrFiebtbbZ9mGzFXfckC1uvHM=
+Received: from AM4PR0501MB2769.eurprd05.prod.outlook.com (10.172.222.15) by
+ AM4PR0501MB2675.eurprd05.prod.outlook.com (10.172.221.148) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2008.13; Tue, 25 Jun 2019 09:04:55 +0000
+Received: from AM4PR0501MB2769.eurprd05.prod.outlook.com
+ ([fe80::d9da:d3c2:1bc0:6a8b]) by AM4PR0501MB2769.eurprd05.prod.outlook.com
+ ([fe80::d9da:d3c2:1bc0:6a8b%3]) with mapi id 15.20.2008.014; Tue, 25 Jun 2019
+ 09:04:55 +0000
+From:   Ran Rozenstein <ranro@mellanox.com>
+To:     Tariq Toukan <tariqt@mellanox.com>,
+        Florian Westphal <fw@strlen.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Maor Gottlieb <maorg@mellanox.com>,
+        "edumazet@google.com" <edumazet@google.com>
+Subject: RE: [PATCH net-next 0/2] net: ipv4: remove erroneous advancement of
+ list pointer
+Thread-Topic: [PATCH net-next 0/2] net: ipv4: remove erroneous advancement of
+ list pointer
+Thread-Index: AQHVJRbrLKNg9SQxm0O9HRFaFY7gmqagBcGAgAwZnFA=
+Date:   Tue, 25 Jun 2019 09:04:55 +0000
+Message-ID: <AM4PR0501MB276924D7AD83B349AA2A6A0BC5E30@AM4PR0501MB2769.eurprd05.prod.outlook.com>
+References: <20190617140228.12523-1-fw@strlen.de>
+ <08e102a0-8051-e582-56c8-d721bfc9e8b9@mellanox.com>
+In-Reply-To: <08e102a0-8051-e582-56c8-d721bfc9e8b9@mellanox.com>
+Accept-Language: he-IL, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=ranro@mellanox.com; 
+x-originating-ip: [193.47.165.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a5bd6999-72e0-4965-40ea-08d6f94c311a
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR0501MB2675;
+x-ms-traffictypediagnostic: AM4PR0501MB2675:
+x-microsoft-antispam-prvs: <AM4PR0501MB26751F42EC9F26D58044FA42C5E30@AM4PR0501MB2675.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 0079056367
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(366004)(396003)(376002)(39860400002)(346002)(13464003)(199004)(189003)(54906003)(53936002)(6116002)(53546011)(110136005)(186003)(76116006)(73956011)(256004)(76176011)(71190400001)(486006)(71200400001)(446003)(25786009)(33656002)(476003)(316002)(2501003)(7696005)(26005)(478600001)(102836004)(66066001)(4744005)(11346002)(8936002)(86362001)(52536014)(9686003)(229853002)(99286004)(66946007)(66446008)(8676002)(66476007)(6246003)(68736007)(66556008)(2906002)(3846002)(81156014)(6506007)(14454004)(7736002)(305945005)(4326008)(5660300002)(74316002)(81166006)(6436002)(64756008)(55016002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR0501MB2675;H:AM4PR0501MB2769.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: IMahAlTZN5BKo2Z3xck0NF50J+rRfVJqddMNQ4+YrCJJI/GdcgIg+dNmtDI8ejnFnoHhx0NC1IMTxjjJkx650+vhckrjWSc7+UbOBZxkacUXBWk+17O0LQQk/ClMeK8K1Y4TDPvEDGluPwq99RlagA5vvHLi23FTVRW5g2601UAoywVxw5u3DCf1hQQrqscsQnlSJ6d6GZEWwh3XxIPEQBrv3cwajID/CCfksJByi2tB+//ByH40sjAqNFXTnLuQZ9bXdUJS26MWs7e+trFIa7Wjb2crVOWnps3FOsh+Ej7iM8mNRtLPO9y+fo+qELJuMfG8noPEL8oMSDQbg/eFSAM7oECSZynyQzw49hV0GTpxBXTIs634iQAWTuhlRVv91w3l5BXkC8mTmb2NCsnnG6eOnweKoHHbk5YN1xWBemQ=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <SN2PR07MB2480CF15E11D54DA8C3B7319C1E30@SN2PR07MB2480.namprd07.prod.outlook.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a5bd6999-72e0-4965-40ea-08d6f94c311a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jun 2019 09:04:55.4997
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ranro@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0501MB2675
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 25, 2019 at 08:49:33AM +0000, Parshuram Raju Thombare wrote:
-> >>  	switch (state->interface) {
-> >>  	case PHY_INTERFACE_MODE_NA:
-> >> +	case PHY_INTERFACE_MODE_USXGMII:
-> >> +	case PHY_INTERFACE_MODE_10GKR:
-> >> +		if (bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE) {
-> >> +			phylink_set(mask, 10000baseCR_Full);
-> >> +			phylink_set(mask, 10000baseER_Full);
-> >> +			phylink_set(mask, 10000baseKR_Full);
-> >> +			phylink_set(mask, 10000baseLR_Full);
-> >> +			phylink_set(mask, 10000baseLRM_Full);
-> >> +			phylink_set(mask, 10000baseSR_Full);
-> >> +			phylink_set(mask, 10000baseT_Full);
-> >> +			phylink_set(mask, 5000baseT_Full);
-> >> +			phylink_set(mask, 2500baseX_Full);
-> >> +			phylink_set(mask, 1000baseX_Full);
-> >> +		}
-> >If MACB_CAPS_GIGABIT_MODE_AVAILABLE is not set, are these interface
-> >modes supported by the hardware?  If the PHY interface mode is not
-> >supported, then the returned support mask must be cleared.[] 
-> There are some configs which uses this macro to limit data rate to 100M 
-> even if hardware support higher rates.
-
-I'm sorry, this response does not address my statement, maybe I wasn't
-clear enough.  I am asking about the *PHY* interface modes, in
-other words (e.g.) PHY_INTERFACE_MODE_USXGMII.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogVGFyaXEgVG91a2FuDQo+
+IFNlbnQ6IE1vbmRheSwgSnVuZSAxNywgMjAxOSAxOToxNg0KPiBUbzogRmxvcmlhbiBXZXN0cGhh
+bCA8ZndAc3RybGVuLmRlPjsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZw0KPiBDYzogUmFuIFJvemVu
+c3RlaW4gPHJhbnJvQG1lbGxhbm94LmNvbT47IE1hb3IgR290dGxpZWINCj4gPG1hb3JnQG1lbGxh
+bm94LmNvbT47IGVkdW1hemV0QGdvb2dsZS5jb20NCj4gU3ViamVjdDogUmU6IFtQQVRDSCBuZXQt
+bmV4dCAwLzJdIG5ldDogaXB2NDogcmVtb3ZlIGVycm9uZW91cw0KPiBhZHZhbmNlbWVudCBvZiBs
+aXN0IHBvaW50ZXINCj4gDQo+IA0KPiANCj4gT24gNi8xNy8yMDE5IDU6MDIgUE0sIEZsb3JpYW4g
+V2VzdHBoYWwgd3JvdGU6DQo+ID4gVGFyaXEgcmVwb3J0ZWQgYSBzb2Z0IGxvY2t1cCBvbiBuZXQt
+bmV4dCB0aGF0IE1lbGxhbm94IHdhcyBhYmxlIHRvDQo+ID4gYmlzZWN0IHRvIDI2MzhlYjhiNTBj
+ZiAoIm5ldDogaXB2NDogcHJvdmlkZSBfX3JjdSBhbm5vdGF0aW9uIGZvciBpZmFfbGlzdCIpLg0K
+PiA+DQo+ID4gV2hpbGUgcmV2aWV3aW5nIGFib3ZlIHBhdGNoIEkgZm91bmQgYSByZWdyZXNzaW9u
+IHdoZW4gYWRkcmVzc2VzIGhhdmUgYQ0KPiA+IGxpZmV0aW1lIHNwZWNpZmllZC4NCj4gPg0KPiA+
+IFNlY29uZCBwYXRjaCBleHRlbmRzIHJ0bmV0bGluay5zaCB0byB0cmlnZ2VyIGNyYXNoICh3aXRo
+b3V0IGZpcnN0DQo+ID4gcGF0Y2ggYXBwbGllZCkuDQo+ID4NCj4gDQo+IFRoYW5rcyBGbG9yaWFu
+Lg0KPiANCj4gUmFuLCBjYW4geW91IHBsZWFzZSB0ZXN0Pw0KDQpUZXN0ZWQsIHN0aWxsIHJlcHJv
+ZHVjZS4NCg==
