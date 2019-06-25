@@ -2,83 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51AF452667
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 10:22:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 173CE52671
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 10:24:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726951AbfFYIWH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 04:22:07 -0400
-Received: from mail.us.es ([193.147.175.20]:52952 "EHLO mail.us.es"
+        id S1730134AbfFYIYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 04:24:08 -0400
+Received: from mx.0dd.nl ([5.2.79.48]:36406 "EHLO mx.0dd.nl"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729771AbfFYIWH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Jun 2019 04:22:07 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 90430C1A82
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 10:22:05 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 77E2D115104
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 10:22:05 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 725BF1150DF; Tue, 25 Jun 2019 10:22:05 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 0B8E7DA3F4;
-        Tue, 25 Jun 2019 10:22:03 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 25 Jun 2019 10:22:03 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
+        id S1726702AbfFYIYH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Jun 2019 04:24:07 -0400
+Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 9FC644265A32;
-        Tue, 25 Jun 2019 10:22:02 +0200 (CEST)
-Date:   Tue, 25 Jun 2019 10:22:02 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        davem@davemloft.net, thomas.lendacky@amd.com, f.fainelli@gmail.com,
-        ariel.elior@cavium.com, michael.chan@broadcom.com,
-        santosh@chelsio.com, madalin.bucur@nxp.com,
-        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        jeffrey.t.kirsher@intel.com, tariqt@mellanox.com,
-        saeedm@mellanox.com, jiri@mellanox.com, idosch@mellanox.com,
-        jakub.kicinski@netronome.com, peppe.cavallaro@st.com,
-        grygorii.strashko@ti.com, andrew@lunn.ch,
-        vivien.didelot@savoirfairelinux.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, linux-net-drivers@solarflare.com,
-        ganeshgr@chelsio.com, ogerlitz@mellanox.com,
-        Manish.Chopra@cavium.com, marcelo.leitner@gmail.com,
-        mkubecek@suse.cz, venkatkumar.duvvuru@broadcom.com,
-        cphealy@gmail.com
-Subject: Re: [PATCH net-next 11/12] net: flow_offload: don't allow block
- sharing until drivers support this
-Message-ID: <20190625082202.arwgwye5teecrp7r@salvia>
-References: <20190620194917.2298-1-pablo@netfilter.org>
- <20190620194917.2298-12-pablo@netfilter.org>
- <20190625081627.GA2630@nanopsycho>
+        by mx.0dd.nl (Postfix) with ESMTPS id 1B11C5FE8C;
+        Tue, 25 Jun 2019 10:24:06 +0200 (CEST)
+Authentication-Results: mx.0dd.nl;
+        dkim=pass (2048-bit key; secure) header.d=vdorst.com header.i=@vdorst.com header.b="RJLDHEVW";
+        dkim-atps=neutral
+Received: from www (www.vdorst.com [192.168.2.222])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.vdorst.com (Postfix) with ESMTPSA id D17F31CC905E;
+        Tue, 25 Jun 2019 10:24:05 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com D17F31CC905E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
+        s=default; t=1561451045;
+        bh=81baUAKeAgxKW4Xwojp9lsyrtNx0oeNqTdLY8KnvPZ8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RJLDHEVW85CJKT+06SIAKyo0lnnjBcBY9gIzK7SYT1jcppOpNQxcLKnahAl4jHx8T
+         odFOUcX3cTKBjsI7fSSgpejHZgU0p64HyWb+B5s/XrYxYOw7wJm8Rp6kMPqvnK+AHX
+         UdzCcYeilIK2j1vzp/DYGJCkjgedD8tx0JVSsGFNTQIYTOKeEyuWx1nH4Gk49lkMGH
+         fxFnn2z8IvHo8zoGo/QAAm7k1b8t3zZJoAHe5jqmMnkfCeOq5HXylzkdvs5mBzC23N
+         RfPWfgH2wb9Y6VWycWM8jxIeK5BOgu/xuqJFxY19vuxy/1PgKbiEe9PrAOmoTHrnLV
+         gVuWWnAi9BHCg==
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1]) by
+ www.vdorst.com (Horde Framework) with HTTPS; Tue, 25 Jun 2019 08:24:05 +0000
+Date:   Tue, 25 Jun 2019 08:24:05 +0000
+Message-ID: <20190625082405.Horde.AOfGPj5A9INWyS39F-pCQ27@www.vdorst.com>
+From:   =?utf-8?b?UmVuw6k=?= van Dorst <opensource@vdorst.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     sean.wang@mediatek.com, f.fainelli@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, matthias.bgg@gmail.com,
+        vivien.didelot@gmail.com, frank-w@public-files.de,
+        netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-mips@vger.kernel.org
+Subject: Re: [PATCH RFC net-next 5/5] net: dsa: mt7530: Add
+ mediatek,ephy-handle to isolate external phy
+References: <20190624145251.4849-1-opensource@vdorst.com>
+ <20190624145251.4849-6-opensource@vdorst.com>
+ <20190624215248.GC31306@lunn.ch>
+In-Reply-To: <20190624215248.GC31306@lunn.ch>
+User-Agent: Horde Application Framework 5
+Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190625081627.GA2630@nanopsycho>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 25, 2019 at 10:16:27AM +0200, Jiri Pirko wrote:
-> I don't understand the purpose of this patch. Could you please provide
-> some description about what this is about. mlxsw supports block sharing
-> between ports. Or what kind of "sharing" do you have in mind?
+Quoting Andrew Lunn <andrew@lunn.ch>:
 
-I'm refering to ethtool, tc and netfilter potentially using the same
-tc setup infrastructure infrastructure.
+Hi Andrew,
 
-At this stage, if one of them sets up the flow block, then, other
-subsystems will hit busy.
+>> +static int mt7530_isolate_ephy(struct dsa_switch *ds,
+>> +			       struct device_node *ephy_node)
+>> +{
+>> +	struct phy_device *phydev = of_phy_find_device(ephy_node);
+>> +	int ret;
+>> +
+>> +	if (!phydev)
+>> +		return 0;
+>> +
+>> +	ret = phy_modify(phydev, MII_BMCR, 0, (BMCR_ISOLATE | BMCR_PDOWN));
+>
+> genphy_suspend() does what you want.
+
+In case my device has AT8033 PHY which act as a RGMII-to-SGMII  
+converter for the
+SFP cage.
+
+Qoute of the AR8031/33 datasheet:
+
+The AR8033 device supports the low power mode with software power-down.
+To enter the standard IEEE power-down mode, set the bit[11] POWER_DOWN of
+Control register - copper page or Control register — fiber page to 1.
+In this mode, AR8033 ignores all MAC interface signals except the MDC/MDIO and
+does not respond to any activity on the media side. AR8033 cannot wake  
+up on its
+own and is only waken up by setting the POWER_DOWN bit to 0.
+
+
+Does "standard IEEE power-down mode" describ this behavior that in power-down
+mode the RGMII are also put in tri-state?
+
+Reading the datasheet does not give me any clues.
+Putting RGMII signals in tri-state is important in this case.
+
+>
+>> +	if (ret)
+>> +		dev_err(ds->dev, "Failed to put phy %s in isolation mode!\n",
+>> +			ephy_node->full_name);
+>> +	else
+>> +		dev_info(ds->dev, "Phy %s in isolation mode!\n",
+>> +			 ephy_node->full_name);
+>
+> No need to clog up the system with yet more kernel messages.
+
+OK, I remove it.
+
+>
+>    Andrew
+
+Greats,
+
+René
+
+
+
