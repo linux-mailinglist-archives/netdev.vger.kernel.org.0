@@ -2,95 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 624CC51FE3
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 02:24:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDF9E51FED
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 02:30:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728758AbfFYAYV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 20:24:21 -0400
-Received: from pb-smtp1.pobox.com ([64.147.108.70]:60933 "EHLO
-        pb-smtp1.pobox.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728707AbfFYAYV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 20:24:21 -0400
-Received: from pb-smtp1.pobox.com (unknown [127.0.0.1])
-        by pb-smtp1.pobox.com (Postfix) with ESMTP id B144B166BE8;
-        Mon, 24 Jun 2019 20:24:20 -0400 (EDT)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=pobox.com; h=subject:to:cc
-        :references:from:message-id:date:mime-version:in-reply-to
-        :content-type:content-transfer-encoding; s=sasl; bh=r+2vjC+8qYvx
-        HZ84MVBNXT/hDG4=; b=O0VuT9wZ72iFZZ/b9C//DMGpe6ZZgdGq4fv62raKskLq
-        Oo61S+/rij+Ewbuwf71XAsqYx5aB1czewvr9dmc5IUOmC5G2ryumNn8fhXtG9U26
-        YNnuZfaBA9NF0FGPqyuF6B65+UaBXqYqQA5x4crYkh87iIzIbJuhFCFgw6yTuzM=
-DomainKey-Signature: a=rsa-sha1; c=nofws; d=pobox.com; h=subject:to:cc
-        :references:from:message-id:date:mime-version:in-reply-to
-        :content-type:content-transfer-encoding; q=dns; s=sasl; b=UpzZkQ
-        LII21HIs/ulvwXSG/G8X3Wt1TzO5MVKalnQk9wRKUWHPnISAh9wZTzRileMlo3k/
-        msaqxR663keGrMwmpMGUTMzHIBNk5H9tmWHT0BhHG6EYiuAPV8DxfXOVLFRk3Yut
-        aZlnmBGw3ggPHfpwloB7jYHUc9HcxT20cCF+c=
-Received: from pb-smtp1.nyi.icgroup.com (unknown [127.0.0.1])
-        by pb-smtp1.pobox.com (Postfix) with ESMTP id A7848166BE7;
-        Mon, 24 Jun 2019 20:24:20 -0400 (EDT)
-Received: from [192.168.1.134] (unknown [70.142.57.80])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by pb-smtp1.pobox.com (Postfix) with ESMTPSA id 88C3B166BE6;
-        Mon, 24 Jun 2019 20:24:16 -0400 (EDT)
-Subject: Re: [PATCH RFC net-next 5/5] net: dsa: mt7530: Add
- mediatek,ephy-handle to isolate external phy
-To:     Andrew Lunn <andrew@lunn.ch>,
-        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>
-Cc:     sean.wang@mediatek.com, f.fainelli@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net, matthias.bgg@gmail.com,
-        vivien.didelot@gmail.com, frank-w@public-files.de,
-        netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-mips@vger.kernel.org
-References: <20190624145251.4849-1-opensource@vdorst.com>
- <20190624145251.4849-6-opensource@vdorst.com>
- <20190624215248.GC31306@lunn.ch>
-From:   Daniel Santos <daniel.santos@pobox.com>
-Message-ID: <2a421ed9-94ed-a454-29c2-f52f6a070a70@pobox.com>
-Date:   Mon, 24 Jun 2019 19:22:41 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1729173AbfFYAaK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 20:30:10 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:37639 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726395AbfFYAaK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 20:30:10 -0400
+Received: by mail-qt1-f195.google.com with SMTP id y57so16583286qtk.4
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 17:30:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=x+tlmGCTQffoJAJ59dIRg7yQSWCd5WUCFuykrjOLls4=;
+        b=LixfWFBfIpXX6WRX8fGmphWFTzmhKxse7rDVJyd9cH2FFJ35SPMgJc01BHOcH7M76/
+         sxLA+wZeZLDp66UZX2jD++0M7k/vOQCEUYifKnwn/FmyyqIJLMCqtWT7HN+YFrpN1+rf
+         a/3HmImpWhcppH95iEkABrYNaR/LQy4GZWfUlTjtiBTqcTtezx1sULD5qCfq9u/Ln1xD
+         IKeglLtVxGOCwThBYbZg9JHayUPW//KO9aiiaS6yyXD3yx27fydCpSd1vtesSCNBLEPM
+         BGbSH5mcI4KTfdTWBbncbexCsBxfXjcHGgmrDr91NYjvzfKaF5f+v/CuiP/SFyeaXoOz
+         8I/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=x+tlmGCTQffoJAJ59dIRg7yQSWCd5WUCFuykrjOLls4=;
+        b=dICR/E8GYn1xmh3Up4TVOsbulw7ABAyanO+/z5OZFvFdaoZ7ICWhDu8amBlSD1Xq/1
+         QltaHHjmTheUpugIAVEM2oWBk5pYVPfwdS28VTJlre8lTiAsdS5O7F7LmymLXiotkzK+
+         lY+IlmrndYML1+03AKJFGNuv3743nS392/vJeOpH2wR4gdnV9w0N+VhX8Z0/tB44Cgmi
+         0eLE9aEYddUfw7yaPFUSZNSzuseNv8pVTNN2TutuI8vfVYjtANyQ3uSgBvQyXeZpMDsv
+         yGKIjRFvCxEaw1aSlNAZrcHJxUZb2LEY78QcqkFKqseyy6hJYFmdA2wFaDFXY7D3a5TI
+         GfNQ==
+X-Gm-Message-State: APjAAAUNblTMuPgK+0dpEGGBDYiRTrz2zdsPTOOJMHwi1eVKtdQaPUaW
+        2pIaN3T+pamSnEHEPT01NEuBGw==
+X-Google-Smtp-Source: APXvYqy7tQUyJzt9ION7dasYlQo8JtEgA5jKviVfaqh8+aAA+D2N5abe2O+rgBXn4BsnUsv3xH442w==
+X-Received: by 2002:ac8:3014:: with SMTP id f20mr132378514qte.69.1561422609413;
+        Mon, 24 Jun 2019 17:30:09 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id i17sm7995149qta.6.2019.06.24.17.30.08
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 24 Jun 2019 17:30:09 -0700 (PDT)
+Date:   Mon, 24 Jun 2019 17:30:05 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Alexei Starovoitov <ast@fb.com>
+Cc:     Andrey Ignatov <rdna@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Takshak Chahande <ctakshak@fb.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        Stanislav Fomichev <sdf@google.com>
+Subject: Re: [PATCH bpf-next] bpftool: Add BPF_F_QUERY_EFFECTIVE support in
+ bpftool cgroup [show|tree]
+Message-ID: <20190624173005.06430163@cakuba.netronome.com>
+In-Reply-To: <6d44d265-7133-d191-beeb-c22dde73993f@fb.com>
+References: <20190621223311.1380295-1-ctakshak@fb.com>
+        <6fe292ee-fff0-119c-8524-e25783901167@iogearbox.net>
+        <20190624145111.49176d8e@cakuba.netronome.com>
+        <20190624221558.GA41600@rdna-mbp.dhcp.thefacebook.com>
+        <20190624154309.5ef3357b@cakuba.netronome.com>
+        <97b13eb6-43fb-8ee9-117d-a68f9825b866@fb.com>
+        <20190624171641.73cd197d@cakuba.netronome.com>
+        <6d44d265-7133-d191-beeb-c22dde73993f@fb.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <20190624215248.GC31306@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-X-Pobox-Relay-ID: 914C6F74-96DF-11E9-9D5E-46F8B7964D18-06139138!pb-smtp1.pobox.com
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/24/19 4:52 PM, Andrew Lunn wrote:
->> +static int mt7530_isolate_ephy(struct dsa_switch *ds,
->> +			       struct device_node *ephy_node)
->> +{
->> +	struct phy_device *phydev =3D of_phy_find_device(ephy_node);
->> +	int ret;
->> +
->> +	if (!phydev)
->> +		return 0;
->> +
->> +	ret =3D phy_modify(phydev, MII_BMCR, 0, (BMCR_ISOLATE | BMCR_PDOWN))=
-;
-> genphy_suspend() does what you want.
->
->> +	if (ret)
->> +		dev_err(ds->dev, "Failed to put phy %s in isolation mode!\n",
->> +			ephy_node->full_name);
->> +	else
->> +		dev_info(ds->dev, "Phy %s in isolation mode!\n",
->> +			 ephy_node->full_name);
-> No need to clog up the system with yet more kernel messages.
->
->    Andrew
->
-Yes, keep in mind that many mt7530-based devices have a 56k serial
-console that gets ring buffer spew.=C2=A0 This created a real problem on =
-the
-mt7620 wifi drivers when they spewed every time a packet needed to be
-dropped.=C2=A0 So at the very least, for any message that can be spammed,
-rate limit it please.
+On Tue, 25 Jun 2019 00:21:57 +0000, Alexei Starovoitov wrote:
+> On 6/24/19 5:16 PM, Jakub Kicinski wrote:
+> > On Mon, 24 Jun 2019 23:38:11 +0000, Alexei Starovoitov wrote:  
+> >> I don't think this patch should be penalized.
+> >> I'd rather see we fix them all.  
+> > 
+> > So we are going to add this broken option just to remove it?
+> > I don't understand.
+> > I'm happy to spend the 15 minutes rewriting this if you don't
+> > want to penalize Takshak.  
+> 
+> hmm. I don't understand the 'broken' part.
+> The only issue I see that it could have been local vs global,
+> but they all should have been local.
 
-Daniel
+I don't think all of them.  Only --mapcompat and --bpffs.  bpffs could
+be argued.  On mapcompat I must have not read the patch fully, I was
+under the impression its a global libbpf flag :(
+
+--json, --pretty, --nomount, --debug are global because they affect
+global behaviour of bpftool.  The difference here is that we basically
+add a syscall parameter as a global option.
