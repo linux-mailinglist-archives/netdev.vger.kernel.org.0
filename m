@@ -2,79 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AC645545E
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 18:23:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23C6A554C0
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 18:42:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727877AbfFYQXn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 12:23:43 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:11247 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726740AbfFYQXn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Jun 2019 12:23:43 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id ECFF1316291C;
-        Tue, 25 Jun 2019 16:23:42 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.32.181.77])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AFF781001281;
-        Tue, 25 Jun 2019 16:23:39 +0000 (UTC)
-Message-ID: <0e1075c74d5c71acd9fbbc5ad76c07cc158324f2.camel@redhat.com>
-Subject: Re: [PATCH net] net/sched: flower: fix infinite loop in fl_walk()
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Vlad Buslov <vladbu@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Lucas Bates <lucasb@mojatatu.com>
-In-Reply-To: <6650f0da68982ffa5bb71a773c5a3d588bd972c4.camel@redhat.com>
-References: <9068475730862e1d9014c16cee0ad2734a4dd1f9.1560978242.git.dcaratti@redhat.com>
-         <CAM_iQpUVJ9sG9ETE0zZ_azbDgWp_oi320nWy_g-uh2YJWYDOXw@mail.gmail.com>
-         <53b8c3118900b31536594e98952640c03a4456e0.camel@redhat.com>
-         <CAM_iQpVVMBUdhv3o=doLhpWxee91zUPKjAOtUwryUEj0pfowdg@mail.gmail.com>
-         <6650f0da68982ffa5bb71a773c5a3d588bd972c4.camel@redhat.com>
-Organization: red hat
-Content-Type: text/plain; charset="UTF-8"
-Date:   Tue, 25 Jun 2019 18:23:38 +0200
-Mime-Version: 1.0
-User-Agent: Evolution 3.30.3 (3.30.3-1.fc29) 
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Tue, 25 Jun 2019 16:23:43 +0000 (UTC)
+        id S1730108AbfFYQmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 12:42:09 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:35702 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726397AbfFYQmJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 12:42:09 -0400
+Received: by mail-wr1-f68.google.com with SMTP id f15so8768399wrp.2
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 09:42:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=y5blvdusstoEBszUgmJKT0Yl0yITIrtN07M1rej+1qA=;
+        b=pm5KKB2gxMITkFXmlF3pLA1hYYCw77ymmU7KI3JbTUquFS3ZdPgLivhXfe3HXP5aof
+         M8EHBsOz1Gx9a10KEnptTht49VDbWaP4xccZ22zMiTpIBEpQ3Uv5Qf2+OO3DBrtKaocb
+         8OPq1t6KVVC2NHX2iMjYASPuO9MPKe8/OK6KUNIsU6Il8cj0zJZM1pBnKI04DgcxJ5eu
+         MP0FB5evyIYe9THR6oIdw9eE8c1IDuDFnTHRsKpx0ERwWeZYZxePKUhs1RPdNSmS4Xjt
+         ei2nubD9mS+mDEZXvLIZ16WUNHMGqlhIl2Wc8gzFuf320mlUk1xVrX+cAH7Rg7yaI1dR
+         6/UQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=y5blvdusstoEBszUgmJKT0Yl0yITIrtN07M1rej+1qA=;
+        b=uAIuSUcO5Lz8TsFWjuC+c/LHAlvS+bC5r4i8gv3ByBY7duWRfgXt3/qWXu+nlrnFAr
+         kWX8vmn73Z4bZNI4yGpB8LXrWj19UEsr0FYWbASlj+6E7MCm+T5sJwmd//V9ZkYEaj7l
+         P2lnJdApXme30s2jQz+pax9a0kweKLR70Ox2CQK8BqlJ6T5spDdsvMgzEtg5Zlib6qFi
+         836z0oTO8TvhLTY8pceXowSOJPMxKs+MKBrvh2UPqKCnpG22+yyL1iT7wSq/Uty+nZn/
+         HraflCj5FBcP6rOMpmDs2aCnpZ/J5pKtRPM5TWMd2uEKb+BSnJImVgHSc49PiS31T7fR
+         ITow==
+X-Gm-Message-State: APjAAAUwVH/sfIECHKyEzS7o9heo/fj/4gq0ZKuH/GpEUqjawRLv9swB
+        g6O56L5LAUIOj0Z9BVMOCVzXvw==
+X-Google-Smtp-Source: APXvYqz+TSK98tpYD63Jka2jQt+u1T0oI8V2xuLaa1GFP/8l+dgv0ouJwsKc6Drc4nVJ1rAxH4KkkA==
+X-Received: by 2002:adf:fec9:: with SMTP id q9mr39325719wrs.241.1561480926959;
+        Tue, 25 Jun 2019 09:42:06 -0700 (PDT)
+Received: from cbtest28.netronome.com ([217.38.71.146])
+        by smtp.gmail.com with ESMTPSA id r4sm22919836wra.96.2019.06.25.09.42.05
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Tue, 25 Jun 2019 09:42:06 -0700 (PDT)
+From:   Jiong Wang <jiong.wang@netronome.com>
+To:     alexei.starovoitov@gmail.com, daniel@iogearbox.net
+Cc:     yauheni.kaliuta@redhat.com, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, oss-drivers@netronome.com,
+        Jiong Wang <jiong.wang@netronome.com>
+Subject: [PATCH bpf] bpf: fix BPF_ALU32 | BPF_ARSH on BE arches
+Date:   Tue, 25 Jun 2019 17:41:50 +0100
+Message-Id: <1561480910-23543-1-git-send-email-jiong.wang@netronome.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2019-06-25 at 17:47 +0200, Davide Caratti wrote:
-> On Thu, 2019-06-20 at 10:33 -0700, Cong Wang wrote:
-> > On Thu, Jun 20, 2019 at 5:52 AM Davide Caratti <dcaratti@redhat.com> wrote:
-> > > hello Cong, thanks for reading.
-> > > 
-> > > On Wed, 2019-06-19 at 15:04 -0700, Cong Wang wrote:
-> > > > On Wed, Jun 19, 2019 at 2:10 PM Davide Caratti <dcaratti@redhat.com> wrote:
-> > > > > on some CPUs (e.g. i686), tcf_walker.cookie has the same size as the IDR.
-> > > > > In this situation, the following script:
-> > > > > 
-> > > > >  # tc filter add dev eth0 ingress handle 0xffffffff flower action ok
-> > > > >  # tc filter show dev eth0 ingress
-> > > > > 
-> > > > > results in an infinite loop.
-> 
-> So, when the radix tree contains one slot with index equal to ULONG_MAX,
-> whatever can be the value of 'id',
+Yauheni reported the following code do not work correctly on BE arches:
 
-oops, this phrase is of course wrong. the value of 'id' matters to
-determine the condition of the if().
+       ALU_ARSH_X:
+               DST = (u64) (u32) ((*(s32 *) &DST) >> SRC);
+               CONT;
+       ALU_ARSH_K:
+               DST = (u64) (u32) ((*(s32 *) &DST) >> IMM);
+               CONT;
 
->  the condition in that if() will always 
-> be false (and the function will keep  returning non-NULL, hence the 
-> infinite loop).
+and are causing failure of test_verifier test 'arsh32 on imm 2' on BE
+arches.
 
-what I wanted to say is, when the radix tree contains a single slot with
-index equal to ULONG_MAX, whatever value I put in 'id' the function will
-always return a pointer to that slot.
+The code is taking address and interpreting memory directly, so is not
+endianness neutral. We should instead perform standard C type casting on
+the variable. A u64 to s32 conversion will drop the high 32-bit and reserve
+the low 32-bit as signed integer, this is all we want.
 
+Fixes: 2dc6b100f928 ("bpf: interpreter support BPF_ALU | BPF_ARSH")
+Reported-by: Yauheni Kaliuta <yauheni.kaliuta@redhat.com>
+Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
+Signed-off-by: Jiong Wang <jiong.wang@netronome.com>
+---
+ kernel/bpf/core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 080e2bb..f2148db 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -1364,10 +1364,10 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn, u64 *stack)
+ 		insn++;
+ 		CONT;
+ 	ALU_ARSH_X:
+-		DST = (u64) (u32) ((*(s32 *) &DST) >> SRC);
++		DST = (u64) (u32) (((s32) DST) >> SRC);
+ 		CONT;
+ 	ALU_ARSH_K:
+-		DST = (u64) (u32) ((*(s32 *) &DST) >> IMM);
++		DST = (u64) (u32) (((s32) DST) >> IMM);
+ 		CONT;
+ 	ALU64_ARSH_X:
+ 		(*(s64 *) &DST) >>= SRC;
 -- 
-davide
+2.7.4
 
