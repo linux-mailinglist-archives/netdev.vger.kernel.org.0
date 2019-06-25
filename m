@@ -2,115 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BBB1523AE
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 08:42:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE888523DB
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 09:02:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729527AbfFYGmM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 02:42:12 -0400
-Received: from out30-133.freemail.mail.aliyun.com ([115.124.30.133]:41853 "EHLO
-        out30-133.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727141AbfFYGmM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 02:42:12 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01f04391;MF=zhiyuan2048@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0TV90xp4_1561444928;
-Received: from localhost(mailfrom:zhiyuan2048@linux.alibaba.com fp:SMTPD_---0TV90xp4_1561444928)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 25 Jun 2019 14:42:08 +0800
-From:   Zhiyuan Hou <zhiyuan2048@linux.alibaba.com>
-To:     zhiyuan2048@linux.alibaba.com, davem@davemloft.net,
-        idosch@mellanox.com, daniel@iogearbox.net, petrm@mellanox.com,
-        jiri@mellanox.com, tglx@linutronix.de, linmiaohe@huawei.com
-Cc:     zhabin@linux.alibaba.com, caspar@linux.alibaba.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] net: ipvlan: forward ingress packet to slave's l2 in l3s mode
-Date:   Tue, 25 Jun 2019 14:42:08 +0800
-Message-Id: <20190625064208.2256-1-zhiyuan2048@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1729675AbfFYHCW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 03:02:22 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:49260 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727112AbfFYHCV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Jun 2019 03:02:21 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 77F883086218;
+        Tue, 25 Jun 2019 07:02:11 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.32.181.77])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 284425D70D;
+        Tue, 25 Jun 2019 07:02:05 +0000 (UTC)
+Message-ID: <3ffd1c736a322ac36e0a5a88a1203e762529e7a3.camel@redhat.com>
+Subject: Re: [PATCH net-next 1/1] tc-testing:  Restore original behaviour
+ for namespaces in tdc
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Lucas Bates <lucasb@mojatatu.com>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, nicolas.dichtel@6wind.com,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        mleitner@redhat.com, vladbu@mellanox.com, kernel@mojatatu.com
+In-Reply-To: <1561424427-9949-1-git-send-email-lucasb@mojatatu.com>
+References: <1561424427-9949-1-git-send-email-lucasb@mojatatu.com>
+Organization: red hat
+Content-Type: text/plain; charset="UTF-8"
+Date:   Tue, 25 Jun 2019 09:02:05 +0200
+Mime-Version: 1.0
+User-Agent: Evolution 3.30.3 (3.30.3-1.fc29) 
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.42]); Tue, 25 Jun 2019 07:02:21 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In ipvlan l3s mode,  ingress packet is switched to slave interface and
-delivers to l4 stack. This may cause two problems:
+On Mon, 2019-06-24 at 21:00 -0400, Lucas Bates wrote:
+> This patch restores the original behaviour for tdc prior to the
+> introduction of the plugin system, where the network namespace
+> functionality was split from the main script.
+> 
+> It introduces the concept of required plugins for testcases,
+> and will automatically load any plugin that isn't already
+> enabled when said plugin is required by even one testcase.
+> 
+> Additionally, the -n option for the nsPlugin is deprecated
+> so the default action is to make use of the namespaces.
+> Instead, we introduce -N to not use them, but still create
+> the veth pair.
+> 
+> buildebpfPlugin's -B option is also deprecated.
+> 
+> If a test cases requires the features of a specific plugin
+> in order to pass, it should instead include a new key/value
+> pair describing plugin interactions:
+> 
+>         "plugins": {
+>                 "requires": "buildebpfPlugin"
+>         },
+> 
+> A test case can have more than one required plugin: a list
+> can be inserted as the value for 'requires'.
+> 
+> Signed-off-by: Lucas Bates <lucasb@mojatatu.com>
+> ---
 
-  1. When slave is in an ns different from master, the behavior of stack
-  in slave ns may cause confusion for users. For example, iptables, tc,
-  and other l2/l3 functions are not available for ingress packet.
+hi Lucas,
 
-  2. l3s mode is not used for tap device, and cannot support ipvtap. But
-  in VM or container based VM cases, tap device is a very common device.
+thanks a lot for including a fix for buildebpfPlugin!
 
-In l3s mode's input nf_hook, this patch calles the skb_forward_dev() to
-forward ingress packet to slave and uses nf_conntrack_confirm() to make
-conntrack work with new mode.
-
-Signed-off-by: Zha Bin <zhabin@linux.alibaba.com>
-Signed-off-by: Zhiyuan Hou <zhiyuan2048@linux.alibaba.com>
----
- drivers/net/ipvlan/ipvlan.h     |  9 ++++++++-
- drivers/net/ipvlan/ipvlan_l3s.c | 16 ++++++++++++++--
- 2 files changed, 22 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ipvlan/ipvlan.h b/drivers/net/ipvlan/ipvlan.h
-index 3837c897832e..48c814e24c3f 100644
---- a/drivers/net/ipvlan/ipvlan.h
-+++ b/drivers/net/ipvlan/ipvlan.h
-@@ -172,6 +172,14 @@ void ipvlan_link_delete(struct net_device *dev, struct list_head *head);
- void ipvlan_link_setup(struct net_device *dev);
- int ipvlan_link_register(struct rtnl_link_ops *ops);
- #ifdef CONFIG_IPVLAN_L3S
-+
-+#include <net/netfilter/nf_conntrack_core.h>
-+
-+static inline int ipvlan_confirm_conntrack(struct sk_buff *skb)
-+{
-+	return nf_conntrack_confirm(skb);
-+}
-+
- int ipvlan_l3s_register(struct ipvl_port *port);
- void ipvlan_l3s_unregister(struct ipvl_port *port);
- void ipvlan_migrate_l3s_hook(struct net *oldnet, struct net *newnet);
-@@ -206,5 +214,4 @@ static inline bool netif_is_ipvlan_port(const struct net_device *dev)
- {
- 	return rcu_access_pointer(dev->rx_handler) == ipvlan_handle_frame;
- }
--
- #endif /* __IPVLAN_H */
-diff --git a/drivers/net/ipvlan/ipvlan_l3s.c b/drivers/net/ipvlan/ipvlan_l3s.c
-index 943d26cbf39f..ed210002f593 100644
---- a/drivers/net/ipvlan/ipvlan_l3s.c
-+++ b/drivers/net/ipvlan/ipvlan_l3s.c
-@@ -95,14 +95,26 @@ static unsigned int ipvlan_nf_input(void *priv, struct sk_buff *skb,
- {
- 	struct ipvl_addr *addr;
- 	unsigned int len;
-+	int ret = NF_ACCEPT;
-+	bool success;
- 
- 	addr = ipvlan_skb_to_addr(skb, skb->dev);
- 	if (!addr)
- 		goto out;
- 
--	skb->dev = addr->master->dev;
- 	len = skb->len + ETH_HLEN;
--	ipvlan_count_rx(addr->master, len, true, false);
-+
-+	ret = ipvlan_confirm_conntrack(skb);
-+	if (ret != NF_ACCEPT) {
-+		ipvlan_count_rx(addr->master, len, false, false);
-+		goto out;
-+	}
-+
-+	skb_push_rcsum(skb, ETH_HLEN);
-+	success = dev_forward_skb(addr->master->dev, skb) == NET_RX_SUCCESS;
-+	ipvlan_count_rx(addr->master, len, success, false);
-+	return NF_STOLEN;
-+
- out:
- 	return NF_ACCEPT;
- }
--- 
-2.18.0
+Acked-by: Davide Caratti <dcaratti@redhat.com>
 
