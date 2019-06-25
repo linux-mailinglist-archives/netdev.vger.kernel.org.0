@@ -2,87 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A4C152869
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 11:44:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA824528AC
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 11:54:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727307AbfFYJom (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 05:44:42 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:49520 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726551AbfFYJol (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 05:44:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=jYV8Tj072ux9N6x6/rtvJHg3Xz7m+M7r2Q6yD4J1RGQ=; b=uoim6PPLOkExDpZcuSbCSxPqc3
-        FwOBMp7VL0BHWOfCVRKRwjaIi3/ztEcA3QKLgHlk84/kKaKjZxY4Le7BTgHdg9kIEul7y5mFcmXuS
-        +E0h+o+JthMAcCnB/qBN06PkVzAhGI8tJPmw3qofqrR+0pjxu7XD6DN5Tfc5vXHcMnsJKZgG8RH+X
-        4YFFjXGHJaDSYQvUdL/lCI3JZfRMV56xmln5ubmHXtG7l2F+DU7IPcaNDB3SMWlUgh6rYOJkRwYNN
-        X3IBsqKzAUc7mXp/Svd7mzOhKPHQ9P5QKkVnNus1zyAgb7wEJqUHf9s6xqV99h6mkknel26wLd4il
-        1bFABzFQ==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([2001:4d48:ad52:3201:222:68ff:fe15:37dd]:37352 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1hfi0A-0005ZY-MK; Tue, 25 Jun 2019 10:44:34 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.82_1-5b7a7c0-XX)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1hfi09-0007Zs-Vb; Tue, 25 Jun 2019 10:44:34 +0100
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH] net: phylink: further documentation clarifications
+        id S1731792AbfFYJye (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 05:54:34 -0400
+Received: from mail.us.es ([193.147.175.20]:37640 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729450AbfFYJye (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Jun 2019 05:54:34 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 6B0A76964D
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 11:54:30 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 54C451150DF
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 11:54:30 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 4A7361150CB; Tue, 25 Jun 2019 11:54:30 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 3877FDA801;
+        Tue, 25 Jun 2019 11:54:28 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 25 Jun 2019 11:54:28 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 0756F4265A31;
+        Tue, 25 Jun 2019 11:54:27 +0200 (CEST)
+Date:   Tue, 25 Jun 2019 11:54:27 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     wenxu <wenxu@ucloud.cn>
+Cc:     fw@strlen.de, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH nf-next v2 1/2] netfilter: nft_meta: add
+ NFT_META_BRI_PVID support
+Message-ID: <20190625095427.rjarc6fourai47wn@salvia>
+References: <1560993460-25569-1-git-send-email-wenxu@ucloud.cn>
+ <5d8a5ac6-88d4-3a32-ca9b-7fb21077be57@ucloud.cn>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1hfi09-0007Zs-Vb@rmk-PC.armlinux.org.uk>
-Date:   Tue, 25 Jun 2019 10:44:33 +0100
+In-Reply-To: <5d8a5ac6-88d4-3a32-ca9b-7fb21077be57@ucloud.cn>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clarify the validate() behaviour in a few cases which weren't mentioned
-in the documentation, but which are necessary for users to get the
-correct behaviour.
+On Tue, Jun 25, 2019 at 05:23:02PM +0800, wenxu wrote:
+> Hi pablo,
+> 
+> Any idea about these two patches?
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- include/linux/phylink.h | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+Plan is to include them in the next batch.
 
-diff --git a/include/linux/phylink.h b/include/linux/phylink.h
-index c5f3349e6824..6450bbf36e71 100644
---- a/include/linux/phylink.h
-+++ b/include/linux/phylink.h
-@@ -94,12 +94,19 @@ struct phylink_mac_ops {
-  * Note that the PHY may be able to transform from one connection
-  * technology to another, so, eg, don't clear 1000BaseX just
-  * because the MAC is unable to BaseX mode. This is more about
-- * clearing unsupported speeds and duplex settings.
-+ * clearing unsupported speeds and duplex settings. The port modes
-+ * should not be cleared; phylink_set_port_modes() will help with this.
-  *
-  * If the @state->interface mode is %PHY_INTERFACE_MODE_1000BASEX
-  * or %PHY_INTERFACE_MODE_2500BASEX, select the appropriate mode
-  * based on @state->advertising and/or @state->speed and update
-- * @state->interface accordingly.
-+ * @state->interface accordingly. See phylink_helper_basex_speed().
-+ *
-+ * When @state->interface is %PHY_INTERFACE_MODE_NA, phylink expects the
-+ * MAC driver to return all supported link modes.
-+ *
-+ * If the @state->interface mode is not supported, then the @supported
-+ * mask must be cleared.
-  */
- void validate(struct net_device *ndev, unsigned long *supported,
- 	      struct phylink_link_state *state);
--- 
-2.7.4
-
+> On 6/20/2019 9:17 AM, wenxu@ucloud.cn wrote:
+> > From: wenxu <wenxu@ucloud.cn>
+> >
+> > nft add table bridge firewall
+> > nft add chain bridge firewall zones { type filter hook prerouting priority - 300 \; }
+> > nft add rule bridge firewall zones counter ct zone set vlan id map { 100 : 1, 200 : 2 }
+> >
+> > As above set the bridge port with pvid, the received packet don't contain
+> > the vlan tag which means the packet should belong to vlan 200 through pvid.
+> > With this pacth user can get the pvid of bridge ports.
+> >
+> > So add the following rule for as the first rule in the chain of zones.
+> >
+> > nft add rule bridge firewall zones counter meta brvlan set meta brpvid
+> >
+> > Signed-off-by: wenxu <wenxu@ucloud.cn>
+> > ---
+> >  include/uapi/linux/netfilter/nf_tables.h |  2 ++
+> >  net/netfilter/nft_meta.c                 | 13 +++++++++++++
+> >  2 files changed, 15 insertions(+)
+> >
+> > diff --git a/include/uapi/linux/netfilter/nf_tables.h b/include/uapi/linux/netfilter/nf_tables.h
+> > index 31a6b8f..4a16124 100644
+> > --- a/include/uapi/linux/netfilter/nf_tables.h
+> > +++ b/include/uapi/linux/netfilter/nf_tables.h
+> > @@ -793,6 +793,7 @@ enum nft_exthdr_attributes {
+> >   * @NFT_META_SECPATH: boolean, secpath_exists (!!skb->sp)
+> >   * @NFT_META_IIFKIND: packet input interface kind name (dev->rtnl_link_ops->kind)
+> >   * @NFT_META_OIFKIND: packet output interface kind name (dev->rtnl_link_ops->kind)
+> > + * @NFT_META_BRI_PVID: packet input bridge port pvid
+> >   */
+> >  enum nft_meta_keys {
+> >  	NFT_META_LEN,
+> > @@ -823,6 +824,7 @@ enum nft_meta_keys {
+> >  	NFT_META_SECPATH,
+> >  	NFT_META_IIFKIND,
+> >  	NFT_META_OIFKIND,
+> > +	NFT_META_BRI_PVID,
+> >  };
+> >  
+> >  /**
+> > diff --git a/net/netfilter/nft_meta.c b/net/netfilter/nft_meta.c
+> > index 987d2d6..cb877e01 100644
+> > --- a/net/netfilter/nft_meta.c
+> > +++ b/net/netfilter/nft_meta.c
+> > @@ -243,6 +243,14 @@ void nft_meta_get_eval(const struct nft_expr *expr,
+> >  			goto err;
+> >  		strncpy((char *)dest, p->br->dev->name, IFNAMSIZ);
+> >  		return;
+> > +	case NFT_META_BRI_PVID:
+> > +		if (in == NULL || (p = br_port_get_rtnl_rcu(in)) == NULL)
+> > +			goto err;
+> > +		if (br_opt_get(p->br, BROPT_VLAN_ENABLED)) {
+> > +			nft_reg_store16(dest, br_get_pvid(nbp_vlan_group_rcu(p)));
+> > +			return;
+> > +		}
+> > +		goto err;
+> >  #endif
+> >  	case NFT_META_IIFKIND:
+> >  		if (in == NULL || in->rtnl_link_ops == NULL)
+> > @@ -370,6 +378,11 @@ static int nft_meta_get_init(const struct nft_ctx *ctx,
+> >  			return -EOPNOTSUPP;
+> >  		len = IFNAMSIZ;
+> >  		break;
+> > +	case NFT_META_BRI_PVID:
+> > +		if (ctx->family != NFPROTO_BRIDGE)
+> > +			return -EOPNOTSUPP;
+> > +		len = sizeof(u16);
+> > +		break;
+> >  #endif
+> >  	default:
+> >  		return -EOPNOTSUPP;
