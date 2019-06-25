@@ -2,771 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C698452033
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 03:01:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09F0152054
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 03:22:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729942AbfFYBA5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 21:00:57 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:37021 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729889AbfFYBAw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 21:00:52 -0400
-Received: by mail-io1-f67.google.com with SMTP id e5so176752iok.4
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 18:00:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=Z8PQ3wKhmVVLjHpnU4vD8v0+qT3YiJv/XVj0L8daRDo=;
-        b=2FUf5u4UxYaX3BpMBN8IK4BAzMKIXw+RVU0WWk540uIJhsTL8VN1RHJImxtm9F89oQ
-         jwd2E+0nmyeOe6RxKwMxpBITl+Ieoaz+MGfR2TaVby5haGCk7XlBzoE3UFV1fFHEOti7
-         W+bcnk2keoDqFOsmqEE46V5bqCxsZVMJay/yT+tI+8lZGjYq6WjPFu2V7OMmtI9T6sBr
-         a3N3lznzdE12DfIPajhGBtYUh16pyNTALvY/5EsG4GCX08clce+wmqenVcEe/f6UN/i5
-         tG97qbo1GqwBZtfObEF8lZOwOpNnV2Ghet5tVMfLE+e4xeDCGDfeK6Wi+4a+GWmD60xv
-         2cIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Z8PQ3wKhmVVLjHpnU4vD8v0+qT3YiJv/XVj0L8daRDo=;
-        b=aeiLnvQuNRwk+NSRrZZj+kxBSRl2XHVvCJ/6sBcm2qKyxAoH5g9Br683PPB2rdcUf9
-         mHdSt+6+M1ab3kxMzYM8k9XNHu8uayHM4luD6UFRi8CFVfxaf3/tYo/oEULpuBqxEahA
-         Aqgg/PoKfvIBukL4t3wos6LFuCqlx+lUwwiKEWHW3YYMOmxQ2CXqrZYil8+QUsho0yC7
-         eCUPelWtbIa/upCddgp9J5hq17z/X9WHW++CEmOfF3VHusd1QTHfJlrivLVmCiCbzCuU
-         VTqSsVUbWLzPhFrQ3B5eqUTVdbTvf/clIsOt5fhxxF4qag+6V+4p57k0+oHcgCrLrRX9
-         fG2Q==
-X-Gm-Message-State: APjAAAVmLXXo3gqMI2T+xXmMSgfdKEYwWKMg13L4Iuq7rg9UonMgBy+8
-        eE8MPi29DWbEbTSZ/V+CKFTvZw==
-X-Google-Smtp-Source: APXvYqyeohHKUAxNsDywxARPS6nJ4mVFvQvC0Y2uvQ2q3U+RHYl/OEVPZ4UdG4TiAdAftcAHsfMitg==
-X-Received: by 2002:a05:6638:29a:: with SMTP id c26mr24371429jaq.98.1561424451187;
-        Mon, 24 Jun 2019 18:00:51 -0700 (PDT)
-Received: from mojatatu.com ([2607:f2c0:e4b2:adf:b44f:20aa:14dc:ee27])
-        by smtp.gmail.com with ESMTPSA id m7sm10592874iob.69.2019.06.24.18.00.49
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Mon, 24 Jun 2019 18:00:50 -0700 (PDT)
-From:   Lucas Bates <lucasb@mojatatu.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, nicolas.dichtel@6wind.com,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        mleitner@redhat.com, vladbu@mellanox.com, dcaratti@redhat.com,
-        kernel@mojatatu.com, Lucas Bates <lucasb@mojatatu.com>
-Subject: [PATCH net-next 1/1] tc-testing:  Restore original behaviour for namespaces in tdc
-Date:   Mon, 24 Jun 2019 21:00:27 -0400
-Message-Id: <1561424427-9949-1-git-send-email-lucasb@mojatatu.com>
-X-Mailer: git-send-email 2.7.4
+        id S1729611AbfFYBWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 21:22:38 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:4160 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725784AbfFYBWi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 21:22:38 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5P1DNAo030401;
+        Mon, 24 Jun 2019 18:22:16 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=grzfR8S8bvhn+VfZNx/MYt1nBa1Zzw4eNAvzdKsbVIU=;
+ b=crhS8yhPF11Oht0SGBM2FYutdcBGX8L3w/1B7DBHa3EJLple07YzY8l9mDCBp+CwEWH1
+ /mYI9SPFhaRoWv5cMUanaUSMyyYBM1PQaAAAy5dDZoDigmpy/Fq7gI9ZhlbpXQwUJTHC
+ ILvRHLdOuZ5zRud7et85YCTNxzR9de2qukw= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2taxvpjn6t-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 24 Jun 2019 18:22:16 -0700
+Received: from prn-mbx02.TheFacebook.com (2620:10d:c081:6::16) by
+ prn-hub06.TheFacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Mon, 24 Jun 2019 18:22:13 -0700
+Received: from prn-hub06.TheFacebook.com (2620:10d:c081:35::130) by
+ prn-mbx02.TheFacebook.com (2620:10d:c081:6::16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Mon, 24 Jun 2019 18:22:13 -0700
+Received: from NAM03-DM3-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.30) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
+ via Frontend Transport; Mon, 24 Jun 2019 18:22:13 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector1-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=grzfR8S8bvhn+VfZNx/MYt1nBa1Zzw4eNAvzdKsbVIU=;
+ b=UD1vryvfVEVtUvw7J4WpPpcR9RnPNbVBwVr2i4tGm+zA7MPXhVwTPPUIJGS3Pm2oPD7Z0Wul1kdOfUeOjBe7laGyirWlwlQvSr9Sy56IeZCCzcKMA8IIMPIxGEyU0eoLY3uYQx5W/Qu85HLam2y5xWbrHq8m2hda4AoBWUjq3HA=
+Received: from BYAPR15MB2501.namprd15.prod.outlook.com (52.135.196.11) by
+ BYAPR15MB2391.namprd15.prod.outlook.com (52.135.198.31) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2008.16; Tue, 25 Jun 2019 01:22:12 +0000
+Received: from BYAPR15MB2501.namprd15.prod.outlook.com
+ ([fe80::60a3:8bdd:1ea2:3702]) by BYAPR15MB2501.namprd15.prod.outlook.com
+ ([fe80::60a3:8bdd:1ea2:3702%7]) with mapi id 15.20.2008.014; Tue, 25 Jun 2019
+ 01:22:12 +0000
+From:   Alexei Starovoitov <ast@fb.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+CC:     Andrey Ignatov <rdna@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Takshak Chahande <ctakshak@fb.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        Stanislav Fomichev <sdf@google.com>
+Subject: Re: [PATCH bpf-next] bpftool: Add BPF_F_QUERY_EFFECTIVE support in
+ bpftool cgroup [show|tree]
+Thread-Topic: [PATCH bpf-next] bpftool: Add BPF_F_QUERY_EFFECTIVE support in
+ bpftool cgroup [show|tree]
+Thread-Index: AQHVKIFy6hPwND0Mwky2apMHopnX+aaq33qAgAB9YoCAAAbxAIAAB5SAgAAPW4CAAArHgIAAAXUAgAACSYD//410AIAAd2UAgAAJsYA=
+Date:   Tue, 25 Jun 2019 01:22:12 +0000
+Message-ID: <c0dbf0d4-900f-6372-f0e4-1ed8cc7b374b@fb.com>
+References: <20190621223311.1380295-1-ctakshak@fb.com>
+ <6fe292ee-fff0-119c-8524-e25783901167@iogearbox.net>
+ <20190624145111.49176d8e@cakuba.netronome.com>
+ <20190624221558.GA41600@rdna-mbp.dhcp.thefacebook.com>
+ <20190624154309.5ef3357b@cakuba.netronome.com>
+ <97b13eb6-43fb-8ee9-117d-a68f9825b866@fb.com>
+ <20190624171641.73cd197d@cakuba.netronome.com>
+ <6d44d265-7133-d191-beeb-c22dde73993f@fb.com>
+ <20190624173005.06430163@cakuba.netronome.com>
+ <01c2c76b-5a45-aab0-e698-b5a66ab6c2e7@fb.com>
+ <20190624174726.2dda122b@cakuba.netronome.com>
+In-Reply-To: <20190624174726.2dda122b@cakuba.netronome.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR14CA0006.namprd14.prod.outlook.com
+ (2603:10b6:300:ae::16) To BYAPR15MB2501.namprd15.prod.outlook.com
+ (2603:10b6:a02:88::11)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:180::1:d5ea]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 718ed8e4-2f3d-45e3-1ca4-08d6f90b8c83
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BYAPR15MB2391;
+x-ms-traffictypediagnostic: BYAPR15MB2391:
+x-microsoft-antispam-prvs: <BYAPR15MB23913643198BE6C55950C60AD7E30@BYAPR15MB2391.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 0079056367
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(39860400002)(366004)(396003)(376002)(136003)(199004)(189003)(86362001)(76176011)(256004)(14444005)(6916009)(6436002)(6512007)(486006)(2616005)(476003)(6486002)(186003)(229853002)(99286004)(54906003)(6506007)(52116002)(386003)(53546011)(53936002)(102836004)(316002)(11346002)(14454004)(6116002)(66476007)(64756008)(66446008)(66556008)(73956011)(66946007)(68736007)(446003)(2906002)(478600001)(7736002)(4326008)(31686004)(25786009)(36756003)(5660300002)(305945005)(8936002)(71190400001)(71200400001)(6246003)(31696002)(81156014)(8676002)(81166006)(46003);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2391;H:BYAPR15MB2501.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: Scrr/im9MDs1vbr163QRMg1Lv9weDbx2FGdYODAaEZaaMLDRZS1SuEB9C79QGtm8cs130YxYwsFY8fr10CP65auXZqnZ6ndQ3PyzJRP99SCSis08WyIsbQWw1k2BBDdEUo7K0kJgKsCszzYFpgRxaCWBH4ZxG0g+ThImfgAPunokfOGYNCe8J20PwLH+AyRUnNE8q1TD4U9H7vvM3O396TLurju9NlRXKk5fWh1McfDfq6XZM6Kq+ULEaa/qph7JedoXKs1bjroIghJSLyG7wogqDXnKwvuqXKCYPZls2vzB++2UnY5SLtbgLVr+wSgWyMjFck/ZfH3WLHQV34lSZgFbiTyQDEDMugKaAAq4RAFZtM2vwbUjt/9XW9jiDp5YZZ8aII0jFMaZRkRpOwcvTyf5eRxz8TibHLa5W9tjSY4=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <10CCC12E8A12CB4D92B495FA71691C54@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 718ed8e4-2f3d-45e3-1ca4-08d6f90b8c83
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jun 2019 01:22:12.0311
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ast@fb.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2391
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-25_01:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=865 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906250007
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch restores the original behaviour for tdc prior to the
-introduction of the plugin system, where the network namespace
-functionality was split from the main script.
-
-It introduces the concept of required plugins for testcases,
-and will automatically load any plugin that isn't already
-enabled when said plugin is required by even one testcase.
-
-Additionally, the -n option for the nsPlugin is deprecated
-so the default action is to make use of the namespaces.
-Instead, we introduce -N to not use them, but still create
-the veth pair.
-
-buildebpfPlugin's -B option is also deprecated.
-
-If a test cases requires the features of a specific plugin
-in order to pass, it should instead include a new key/value
-pair describing plugin interactions:
-
-        "plugins": {
-                "requires": "buildebpfPlugin"
-        },
-
-A test case can have more than one required plugin: a list
-can be inserted as the value for 'requires'.
-
-Signed-off-by: Lucas Bates <lucasb@mojatatu.com>
----
- tools/testing/selftests/tc-testing/README          |  22 ++-
- .../tc-testing/plugin-lib/buildebpfPlugin.py       |   5 +-
- .../selftests/tc-testing/plugin-lib/nsPlugin.py    |  26 +++-
- .../selftests/tc-testing/tc-tests/actions/bpf.json |   6 +
- .../selftests/tc-testing/tc-tests/filters/fw.json  | 162 +++++++++++++++++++++
- .../tc-testing/tc-tests/filters/tests.json         |  12 ++
- tools/testing/selftests/tc-testing/tdc.py          |  78 +++++++++-
- tools/testing/selftests/tc-testing/tdc_helper.py   |   5 +-
- 8 files changed, 296 insertions(+), 20 deletions(-)
-
-diff --git a/tools/testing/selftests/tc-testing/README b/tools/testing/selftests/tc-testing/README
-index f9281e8..22e5da9 100644
---- a/tools/testing/selftests/tc-testing/README
-+++ b/tools/testing/selftests/tc-testing/README
-@@ -12,10 +12,10 @@ REQUIREMENTS
- *  Minimum Python version of 3.4. Earlier 3.X versions may work but are not
-    guaranteed.
- 
--*  The kernel must have network namespace support
-+*  The kernel must have network namespace support if using nsPlugin
- 
- *  The kernel must have veth support available, as a veth pair is created
--   prior to running the tests.
-+   prior to running the tests when using nsPlugin.
- 
- *  The kernel must have the appropriate infrastructure enabled to run all tdc
-    unit tests. See the config file in this directory for minimum required
-@@ -53,8 +53,12 @@ commands being tested must be run as root.  The code that enforces
- execution by root uid has been moved into a plugin (see PLUGIN
- ARCHITECTURE, below).
- 
--If nsPlugin is linked, all tests are executed inside a network
--namespace to prevent conflicts within the host.
-+Tests that use a network device should have nsPlugin.py listed as a
-+requirement for that test. nsPlugin executes all commands within a
-+network namespace and creates a veth pair which may be used in those test
-+cases. To disable execution within the namespace, pass the -N option
-+to tdc when starting a test run; the veth pair will still be created
-+by the plugin.
- 
- Running tdc without any arguments will run all tests. Refer to the section
- on command line arguments for more information, or run:
-@@ -154,8 +158,8 @@ action:
- netns:
-   options for nsPlugin (run commands in net namespace)
- 
--  -n, --namespace
--                        Run commands in namespace as specified in tdc_config.py
-+  -N, --no-namespace
-+                        Do not run commands in a network namespace.
- 
- valgrind:
-   options for valgrindPlugin (run command under test under Valgrind)
-@@ -171,7 +175,8 @@ was in the tdc.py script has been moved into the plugins.
- 
- The plugins are in the directory plugin-lib.  The are executed from
- directory plugins.  Put symbolic links from plugins to plugin-lib,
--and name them according to the order you want them to run.
-+and name them according to the order you want them to run. This is not
-+necessary if a test case being run requires a specific plugin to work.
- 
- Example:
- 
-@@ -223,7 +228,8 @@ directory:
-   - rootPlugin.py:
-       implements the enforcement of running as root
-   - nsPlugin.py:
--      sets up a network namespace and runs all commands in that namespace
-+      sets up a network namespace and runs all commands in that namespace,
-+      while also setting up dummy devices to be used in testing.
-   - valgrindPlugin.py
-       runs each command in the execute stage under valgrind,
-       and checks for leaks.
-diff --git a/tools/testing/selftests/tc-testing/plugin-lib/buildebpfPlugin.py b/tools/testing/selftests/tc-testing/plugin-lib/buildebpfPlugin.py
-index 9f0ba10..e98c367 100644
---- a/tools/testing/selftests/tc-testing/plugin-lib/buildebpfPlugin.py
-+++ b/tools/testing/selftests/tc-testing/plugin-lib/buildebpfPlugin.py
-@@ -34,8 +34,9 @@ class SubPlugin(TdcPlugin):
-             'buildebpf',
-             'options for buildebpfPlugin')
-         self.argparser_group.add_argument(
--            '-B', '--buildebpf', action='store_true',
--            help='build eBPF programs')
-+            '--nobuildebpf', action='store_false', default=True,
-+            dest='buildebpf',
-+            help='Don\'t build eBPF programs')
- 
-         return self.argparser
- 
-diff --git a/tools/testing/selftests/tc-testing/plugin-lib/nsPlugin.py b/tools/testing/selftests/tc-testing/plugin-lib/nsPlugin.py
-index a194b1a..affa7f2 100644
---- a/tools/testing/selftests/tc-testing/plugin-lib/nsPlugin.py
-+++ b/tools/testing/selftests/tc-testing/plugin-lib/nsPlugin.py
-@@ -18,6 +18,8 @@ class SubPlugin(TdcPlugin):
- 
-         if self.args.namespace:
-             self._ns_create()
-+        else:
-+            self._ports_create()
- 
-     def post_suite(self, index):
-         '''run commands after test_runner goes into a test loop'''
-@@ -27,6 +29,8 @@ class SubPlugin(TdcPlugin):
- 
-         if self.args.namespace:
-             self._ns_destroy()
-+        else:
-+            self._ports_destroy()
- 
-     def add_args(self, parser):
-         super().add_args(parser)
-@@ -34,8 +38,8 @@ class SubPlugin(TdcPlugin):
-             'netns',
-             'options for nsPlugin(run commands in net namespace)')
-         self.argparser_group.add_argument(
--            '-n', '--namespace', action='store_true',
--            help='Run commands in namespace')
-+            '-N', '--no-namespace', action='store_false', default=True,
-+            dest='namespace', help='Don\'t run commands in namespace')
-         return self.argparser
- 
-     def adjust_command(self, stage, command):
-@@ -73,20 +77,30 @@ class SubPlugin(TdcPlugin):
-             print('adjust_command:  return command [{}]'.format(command))
-         return command
- 
-+    def _ports_create(self):
-+        cmd = 'ip link add $DEV0 type veth peer name $DEV1'
-+        self._exec_cmd('pre', cmd)
-+        cmd = 'ip link set $DEV0 up'
-+        self._exec_cmd('pre', cmd)
-+        if not self.args.namespace:
-+            cmd = 'ip link set $DEV1 up'
-+            self._exec_cmd('pre', cmd)
-+
-+    def _ports_destroy(self):
-+        cmd = 'ip link del $DEV0'
-+        self._exec_cmd('post', cmd)
-+
-     def _ns_create(self):
-         '''
-         Create the network namespace in which the tests will be run and set up
-         the required network devices for it.
-         '''
-+        self._ports_create()
-         if self.args.namespace:
-             cmd = 'ip netns add {}'.format(self.args.NAMES['NS'])
-             self._exec_cmd('pre', cmd)
--            cmd = 'ip link add $DEV0 type veth peer name $DEV1'
--            self._exec_cmd('pre', cmd)
-             cmd = 'ip link set $DEV1 netns {}'.format(self.args.NAMES['NS'])
-             self._exec_cmd('pre', cmd)
--            cmd = 'ip link set $DEV0 up'
--            self._exec_cmd('pre', cmd)
-             cmd = 'ip -n {} link set $DEV1 up'.format(self.args.NAMES['NS'])
-             self._exec_cmd('pre', cmd)
-             if self.args.device:
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/bpf.json b/tools/testing/selftests/tc-testing/tc-tests/actions/bpf.json
-index b074ea9..47a3082 100644
---- a/tools/testing/selftests/tc-testing/tc-tests/actions/bpf.json
-+++ b/tools/testing/selftests/tc-testing/tc-tests/actions/bpf.json
-@@ -54,6 +54,9 @@
-             "actions",
-             "bpf"
-         ],
-+        "plugins": {
-+                "requires": "buildebpfPlugin"
-+        },
-         "setup": [
-             [
-                 "$TC action flush action bpf",
-@@ -78,6 +81,9 @@
-             "actions",
-             "bpf"
-         ],
-+        "plugins": {
-+                "requires": "buildebpfPlugin"
-+        },
-         "setup": [
-             [
-                 "$TC action flush action bpf",
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/filters/fw.json b/tools/testing/selftests/tc-testing/tc-tests/filters/fw.json
-index 6944b90..5272049 100644
---- a/tools/testing/selftests/tc-testing/tc-tests/filters/fw.json
-+++ b/tools/testing/selftests/tc-testing/tc-tests/filters/fw.json
-@@ -6,6 +6,9 @@
-             "filter",
-             "fw"
-         ],
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-         "setup": [
-             "$TC qdisc add dev $DEV1 ingress"
-         ],
-@@ -25,6 +28,9 @@
-             "filter",
-             "fw"
-         ],
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-         "setup": [
-             "$TC qdisc add dev $DEV1 ingress"
-         ],
-@@ -44,6 +50,114 @@
-             "filter",
-             "fw"
-         ],
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-         "setup": [
-             "$TC qdisc add dev $DEV1 ingress"
-         ],
-@@ -872,6 +986,9 @@
-             "filter",
-             "fw"
-         ],
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-         "setup": [
-             "$TC qdisc add dev $DEV1 ingress",
-             "$TC filter add dev $DEV1 parent ffff: protocol 802_3 prio 3 handle 7 fw action ok"
-@@ -892,6 +1009,9 @@
-             "filter",
-             "fw"
-         ],
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-         "setup": [
-             "$TC qdisc add dev $DEV1 ingress",
-             "$TC filter add dev $DEV1 parent ffff: prio 6 handle 2 fw action continue index 5"
-@@ -912,6 +1032,9 @@
-             "filter",
-             "fw"
-         ],
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-         "setup": [
-             "$TC qdisc add dev $DEV1 ingress"
-         ],
-@@ -931,6 +1054,9 @@
-             "filter",
-             "fw"
-         ],
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-         "setup": [
-             "$TC qdisc add dev $DEV1 ingress"
-         ],
-@@ -950,6 +1076,9 @@
-             "filter",
-             "fw"
-         ],
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-         "setup": [
-             "$TC qdisc add dev $DEV1 ingress",
-             "$TC filter add dev $DEV1 parent ffff: handle 5 prio 7 fw action pass",
-@@ -972,6 +1101,9 @@
-             "filter",
-             "fw"
-         ],
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-         "setup": [
-             "$TC qdisc add dev $DEV1 ingress",
-             "$TC filter add dev $DEV1 parent ffff: handle 5 prio 7 fw action pass",
-@@ -994,6 +1126,9 @@
-             "filter",
-             "fw"
-         ],
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-         "setup": [
-             "$TC qdisc add dev $DEV1 ingress",
-             "$TC filter add dev $DEV1 parent ffff: handle 5 prio 7 fw action pass",
-@@ -1015,6 +1150,9 @@
-             "filter",
-             "fw"
-         ],
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-         "setup": [
-             "$TC qdisc add dev $DEV1 ingress",
-             "$TC filter add dev $DEV1 parent ffff: handle 1 prio 4 fw action ok",
-@@ -1036,6 +1174,9 @@
-             "filter",
-             "fw"
-         ],
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-         "setup": [
-             "$TC qdisc add dev $DEV1 ingress",
-             "$TC filter add dev $DEV1 parent ffff: handle 4 prio 2 chain 13 fw action pipe",
-@@ -1057,6 +1198,9 @@
-             "filter",
-             "fw"
-         ],
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-         "setup": [
-             "$TC qdisc add dev $DEV1 ingress",
-             "$TC filter add dev $DEV1 parent ffff: handle 2 prio 4 fw action drop"
-@@ -1077,6 +1221,9 @@
-             "filter",
-             "fw"
-         ],
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-         "setup": [
-             "$TC qdisc add dev $DEV1 ingress",
-             "$TC filter add dev $DEV1 parent ffff: handle 3 prio 4 fw action continue"
-@@ -1097,6 +1244,9 @@
-             "filter",
-             "fw"
-         ],
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-         "setup": [
-             "$TC qdisc add dev $DEV1 ingress",
-             "$TC filter add dev $DEV1 parent ffff: handle 4 prio 2 protocol arp fw action pipe"
-@@ -1117,6 +1267,9 @@
-             "filter",
-             "fw"
-         ],
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-         "setup": [
-             "$TC qdisc add dev $DEV1 ingress",
-             "$TC filter add dev $DEV1 parent ffff: handle 4 prio 2 fw action pipe flowid 45"
-@@ -1137,6 +1290,9 @@
-             "filter",
-             "fw"
-         ],
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-         "setup": [
-             "$TC qdisc add dev $DEV1 ingress",
-             "$TC filter add dev $DEV1 parent ffff: handle 1 prio 2 fw action ok"
-@@ -1157,6 +1313,9 @@
-             "filter",
-             "fw"
-         ],
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-         "setup": [
-             "$TC qdisc add dev $DEV1 ingress",
-             "$TC filter add dev $DEV1 parent ffff: handle 1 prio 2 fw action ok"
-@@ -1177,6 +1336,9 @@
-             "filter",
-             "fw"
-         ],
-+	"plugins": {
-+		"requires": "nsPlugin"
-+	},
-         "setup": [
-             "$TC qdisc add dev $DEV1 ingress",
-             "$TC filter add dev $DEV1 parent ffff: handle 1 prio 2 fw action ok index 3"
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json b/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
-index e2f92ce..8135778 100644
---- a/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
-+++ b/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
-@@ -6,6 +6,9 @@
-             "filter",
-             "u32"
-         ],
-+        "plugins": {
-+                "requires": "nsPlugin"
-+        },
-         "setup": [
-             "$TC qdisc add dev $DEV1 ingress"
-         ],
-@@ -25,6 +28,9 @@
-             "filter",
-             "matchall"
-         ],
-+        "plugins": {
-+                "requires": "nsPlugin"
-+        },
-         "setup": [
-             "$TC qdisc add dev $DEV1 clsact",
-             "$TC filter add dev $DEV1 protocol all pref 1 ingress handle 0x1234 matchall action ok"
-@@ -45,6 +51,9 @@
-             "filter",
-             "flower"
-         ],
-+        "plugins": {
-+                "requires": "nsPlugin"
-+        },
-         "setup": [
-             "$TC qdisc add dev $DEV2 ingress",
-             "./tdc_batch.py $DEV2 $BATCH_FILE --share_action -n 1000000"
-@@ -66,6 +75,9 @@
-             "filter",
-             "flower"
-         ],
-+        "plugins": {
-+                "requires": "nsPlugin"
-+        },
-         "setup": [
-             "$TC qdisc add dev $DEV2 ingress",
-             "$TC filter add dev $DEV2 protocol ip prio 1 parent ffff: flower dst_mac e4:11:22:11:4a:51 src_mac e4:11:22:11:4a:50 ip_proto tcp src_ip 1.1.1.1 dst_ip 2.2.2.2 action drop"
-diff --git a/tools/testing/selftests/tc-testing/tdc.py b/tools/testing/selftests/tc-testing/tdc.py
-index 5cee156..678182a 100755
---- a/tools/testing/selftests/tc-testing/tdc.py
-+++ b/tools/testing/selftests/tc-testing/tdc.py
-@@ -25,6 +25,9 @@ from tdc_helper import *
- import TdcPlugin
- from TdcResults import *
- 
-+class PluginDependencyException(Exception):
-+    def __init__(self, missing_pg):
-+        self.missing_pg = missing_pg
- 
- class PluginMgrTestFail(Exception):
-     def __init__(self, stage, output, message):
-@@ -37,7 +40,7 @@ class PluginMgr:
-         super().__init__()
-         self.plugins = {}
-         self.plugin_instances = []
--        self.args = []
-+        self.failed_plugins = {}
-         self.argparser = argparser
- 
-         # TODO, put plugins in order
-@@ -53,6 +56,64 @@ class PluginMgr:
-                     self.plugins[mn] = foo
-                     self.plugin_instances.append(foo.SubPlugin())
- 
-+    def load_plugin(self, pgdir, pgname):
-+        pgname = pgname[0:-3]
-+        foo = importlib.import_module('{}.{}'.format(pgdir, pgname))
-+        self.plugins[pgname] = foo
-+        self.plugin_instances.append(foo.SubPlugin())
-+        self.plugin_instances[-1].check_args(self.args, None)
-+
-+    def get_required_plugins(self, testlist):
-+        '''
-+        Get all required plugins from the list of test cases and return
-+        all unique items.
-+        '''
-+        reqs = []
-+        for t in testlist:
-+            try:
-+                if 'requires' in t['plugins']:
-+                    if isinstance(t['plugins']['requires'], list):
-+                        reqs.extend(t['plugins']['requires'])
-+                    else:
-+                        reqs.append(t['plugins']['requires'])
-+            except KeyError:
-+                continue
-+        reqs = get_unique_item(reqs)
-+        return reqs
-+
-+    def load_required_plugins(self, reqs, parser, args, remaining):
-+        '''
-+        Get all required plugins from the list of test cases and load any plugin
-+        that is not already enabled.
-+        '''
-+        pgd = ['plugin-lib', 'plugin-lib-custom']
-+        pnf = []
-+
-+        for r in reqs:
-+            if r not in self.plugins:
-+                fname = '{}.py'.format(r)
-+                source_path = []
-+                for d in pgd:
-+                    pgpath = '{}/{}'.format(d, fname)
-+                    if os.path.isfile(pgpath):
-+                        source_path.append(pgpath)
-+                if len(source_path) == 0:
-+                    print('ERROR: unable to find required plugin {}'.format(r))
-+                    pnf.append(fname)
-+                    continue
-+                elif len(source_path) > 1:
-+                    print('WARNING: multiple copies of plugin {} found, using version found')
-+                    print('at {}'.format(source_path[0]))
-+                pgdir = source_path[0]
-+                pgdir = pgdir.split('/')[0]
-+                self.load_plugin(pgdir, fname)
-+        if len(pnf) > 0:
-+            raise PluginDependencyException(pnf)
-+
-+        parser = self.call_add_args(parser)
-+        (args, remaining) = parser.parse_known_args(args=remaining, namespace=args)
-+        return args
-+
-     def call_pre_suite(self, testcount, testidlist):
-         for pgn_inst in self.plugin_instances:
-             pgn_inst.pre_suite(testcount, testidlist)
-@@ -98,6 +159,9 @@ class PluginMgr:
-             command = pgn_inst.adjust_command(stage, command)
-         return command
- 
-+    def set_args(self, args):
-+        self.args = args
-+
-     @staticmethod
-     def _make_argparser(args):
-         self.argparser = argparse.ArgumentParser(
-@@ -550,6 +614,7 @@ def filter_tests_by_category(args, testlist):
- 
-     return answer
- 
-+
- def get_test_cases(args):
-     """
-     If a test case file is specified, retrieve tests from that file.
-@@ -611,7 +676,7 @@ def get_test_cases(args):
-     return allcatlist, allidlist, testcases_by_cats, alltestcases
- 
- 
--def set_operation_mode(pm, args):
-+def set_operation_mode(pm, parser, args, remaining):
-     """
-     Load the test case data and process remaining arguments to determine
-     what the script should do for this run, and call the appropriate
-@@ -649,6 +714,12 @@ def set_operation_mode(pm, args):
-             exit(0)
- 
-     if len(alltests):
-+        req_plugins = pm.get_required_plugins(alltests)
-+        try:
-+            args = pm.load_required_plugins(req_plugins, parser, args, remaining)
-+        except PluginDependencyException as pde:
-+            print('The following plugins were not found:')
-+            print('{}'.format(pde.missing_pg))
-         catresults = test_runner(pm, args, alltests)
-         if args.format == 'none':
-             print('Test results output suppression requested\n')
-@@ -686,11 +757,12 @@ def main():
-     parser = pm.call_add_args(parser)
-     (args, remaining) = parser.parse_known_args()
-     args.NAMES = NAMES
-+    pm.set_args(args)
-     check_default_settings(args, remaining, pm)
-     if args.verbose > 2:
-         print('args is {}'.format(args))
- 
--    set_operation_mode(pm, args)
-+    set_operation_mode(pm, parser, args, remaining)
- 
-     exit(0)
- 
-diff --git a/tools/testing/selftests/tc-testing/tdc_helper.py b/tools/testing/selftests/tc-testing/tdc_helper.py
-index 9f35c96..0440d25 100644
---- a/tools/testing/selftests/tc-testing/tdc_helper.py
-+++ b/tools/testing/selftests/tc-testing/tdc_helper.py
-@@ -17,7 +17,10 @@ def get_categorized_testlist(alltests, ucat):
- 
- def get_unique_item(lst):
-     """ For a list, return a list of the unique items in the list. """
--    return list(set(lst))
-+    if len(lst) > 1:
-+        return list(set(lst))
-+    else:
-+        return lst
- 
- 
- def get_test_categories(alltests):
--- 
-2.7.4
-
+T24gNi8yNC8xOSA1OjQ3IFBNLCBKYWt1YiBLaWNpbnNraSB3cm90ZToNCj4gT24gVHVlLCAyNSBK
+dW4gMjAxOSAwMDo0MDowOSArMDAwMCwgQWxleGVpIFN0YXJvdm9pdG92IHdyb3RlOg0KPj4gT24g
+Ni8yNC8xOSA1OjMwIFBNLCBKYWt1YiBLaWNpbnNraSB3cm90ZToNCj4+PiBPbiBUdWUsIDI1IEp1
+biAyMDE5IDAwOjIxOjU3ICswMDAwLCBBbGV4ZWkgU3Rhcm92b2l0b3Ygd3JvdGU6DQo+Pj4+IE9u
+IDYvMjQvMTkgNToxNiBQTSwgSmFrdWIgS2ljaW5za2kgd3JvdGU6DQo+Pj4+PiBPbiBNb24sIDI0
+IEp1biAyMDE5IDIzOjM4OjExICswMDAwLCBBbGV4ZWkgU3Rhcm92b2l0b3Ygd3JvdGU6DQo+Pj4+
+Pj4gSSBkb24ndCB0aGluayB0aGlzIHBhdGNoIHNob3VsZCBiZSBwZW5hbGl6ZWQuDQo+Pj4+Pj4g
+SSdkIHJhdGhlciBzZWUgd2UgZml4IHRoZW0gYWxsLg0KPj4+Pj4NCj4+Pj4+IFNvIHdlIGFyZSBn
+b2luZyB0byBhZGQgdGhpcyBicm9rZW4gb3B0aW9uIGp1c3QgdG8gcmVtb3ZlIGl0Pw0KPj4+Pj4g
+SSBkb24ndCB1bmRlcnN0YW5kLg0KPj4+Pj4gSSdtIGhhcHB5IHRvIHNwZW5kIHRoZSAxNSBtaW51
+dGVzIHJld3JpdGluZyB0aGlzIGlmIHlvdSBkb24ndA0KPj4+Pj4gd2FudCB0byBwZW5hbGl6ZSBU
+YWtzaGFrLg0KPj4+Pg0KPj4+PiBobW0uIEkgZG9uJ3QgdW5kZXJzdGFuZCB0aGUgJ2Jyb2tlbicg
+cGFydC4NCj4+Pj4gVGhlIG9ubHkgaXNzdWUgSSBzZWUgdGhhdCBpdCBjb3VsZCBoYXZlIGJlZW4g
+bG9jYWwgdnMgZ2xvYmFsLA0KPj4+PiBidXQgdGhleSBhbGwgc2hvdWxkIGhhdmUgYmVlbiBsb2Nh
+bC4NCj4+Pg0KPj4+IEkgZG9uJ3QgdGhpbmsgYWxsIG9mIHRoZW0uICBPbmx5IC0tbWFwY29tcGF0
+IGFuZCAtLWJwZmZzLiAgYnBmZnMgY291bGQNCj4+PiBiZSBhcmd1ZWQuICBPbiBtYXBjb21wYXQg
+SSBtdXN0IGhhdmUgbm90IHJlYWQgdGhlIHBhdGNoIGZ1bGx5LCBJIHdhcw0KPj4+IHVuZGVyIHRo
+ZSBpbXByZXNzaW9uIGl0cyBhIGdsb2JhbCBsaWJicGYgZmxhZyA6KA0KPj4+DQo+Pj4gLS1qc29u
+LCAtLXByZXR0eSwgLS1ub21vdW50LCAtLWRlYnVnIGFyZSBnbG9iYWwgYmVjYXVzZSB0aGV5IGFm
+ZmVjdA0KPj4+IGdsb2JhbCBiZWhhdmlvdXIgb2YgYnBmdG9vbC4gIFRoZSBkaWZmZXJlbmNlIGhl
+cmUgaXMgdGhhdCB3ZSBiYXNpY2FsbHkNCj4+PiBhZGQgYSBzeXNjYWxsIHBhcmFtZXRlciBhcyBh
+IGdsb2JhbCBvcHRpb24uDQo+Pg0KPj4gc3VyZS4gSSBvbmx5IGRpc2FncmVlZCBhYm91dCBub3Qg
+dG91Y2hpbmcgb2xkZXIgZmxhZ3MuDQo+PiAtLWVmZmVjdGl2ZSBzaG91bGQgYmUgbG9jYWwuDQo+
+PiBJZiBmb2xsb3cgdXAgcGF0Y2ggbWVhbnMgOTAlIHJld3JpdGUgdGhlbiByZXZlcnQgaXMgYmV0
+dGVyLg0KPj4gSWYgaXQncyAxMCUgZml4dXAgdGhlbiBpdCdzIGRpZmZlcmVudCBzdG9yeS4NCj4g
+DQo+IEkgc2VlLiAgVGhlIGxvY2FsIGZsYWcgd291bGQgbm90IGFuIG9wdGlvbiBpbiBnZXRvcHRf
+bG9uZygpIHNlbnNlLCB3aGF0DQo+IEkgd2FzIHRoaW5raW5nIHdhcyBhYm91dCBhZGRpbmcgYW4g
+ImVmZmVjdGl2ZSIga2V5d29yZDoNCj4gDQo+ICMgYnBmdG9vbCAtZSBjZ3JvdXAgc2hvdyAvc3lz
+L2ZzL2Nncm91cC9jZ3JvdXAtdGVzdC13b3JrLWRpci9jZzEvDQo+IA0KPiBiZWNvbWVzOg0KPiAN
+Cj4gIyBicGZ0b29sIGNncm91cCBzaG93IC9zeXMvZnMvY2dyb3VwL2Nncm91cC10ZXN0LXdvcmst
+ZGlyL2NnMS8gZWZmZWN0aXZlDQo+IA0KPiBUaGF0J3MgaG93IHdlIGhhbmRsZSBmbGFncyBmb3Ig
+dXBkYXRlIGNhbGxzIGZvciBpbnN0YW5jZS4uDQo+IA0KPiBTbyBJIHRoaW5rIGEgcmV2ZXJ0IDoo
+DQoNCmZhaXIgZW5vdWdoLg0KcmVtb3ZlZCBpdCBhbmQgZm9yY2UgcHVzaGVkIGJwZi1uZXh0Lg0K
+DQo=
