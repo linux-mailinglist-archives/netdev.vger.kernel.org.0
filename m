@@ -2,84 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5442F5227E
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 07:02:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CF7352288
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 07:06:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727244AbfFYFCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 01:02:30 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:34190 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726009AbfFYFCa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 01:02:30 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 244DE606DC; Tue, 25 Jun 2019 05:02:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1561438949;
-        bh=fPT0gT7LS22qEGFkJrHhbQkhxQmWqS5gE1kUD0/5/H8=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=g8q3VGp1tr0QDZF9rNCKoWqG7xbbAF4pZuqVe8tXdme3jXVPGQ4owqQDWd2njWDcS
-         DVDgqoucYmhbC/+Lzjj1eWRpnt6JevRwTJY0EJ0zC0RplnwmEAqLqEo6D3PCKHv4NZ
-         SKAL55wTdePh1GbQh/RAQUDY5Uy9VtCzqmD/pQyk=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id A14096025A;
-        Tue, 25 Jun 2019 05:02:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1561438948;
-        bh=fPT0gT7LS22qEGFkJrHhbQkhxQmWqS5gE1kUD0/5/H8=;
-        h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=V5p1ezBB0o9dKOdCKPQYJz3VLZPGKjVuETJPXKr5Ude6LO3dQGTGHKcHmfcuqpWip
-         R7iFQRaiH6NQuHi1tW3+LiiiXsE0KDUWG/PTz5T1g0o2e35D+nhgGEbRUvW/y/l9CR
-         chh2N3H10elK86aErU1jvw42RUvVuh8Pp2+cDflE=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A14096025A
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1727039AbfFYFGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 01:06:43 -0400
+Received: from ushosting.nmnhosting.com ([66.55.73.32]:34398 "EHLO
+        ushosting.nmnhosting.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725916AbfFYFGm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 01:06:42 -0400
+Received: from mail2.nmnhosting.com (unknown [202.169.106.97])
+        by ushosting.nmnhosting.com (Postfix) with ESMTPS id A2C4A2DC005B;
+        Tue, 25 Jun 2019 01:06:41 -0400 (EDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=d-silva.org;
+        s=201810a; t=1561439202;
+        bh=ciUqZASdiG9qaTP/PKSFriQCA2JczzepFyCfhQPhnVk=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=K4gLgQWu25eleaN8DIeSz5E82cI8K0smK5D3ZMpLjBFJrknUqV9V+eylalpbQXRAM
+         nmEfhzWvgda7JuxTqo/SzkupuQp4odwSE5eKSMo5RCVBzSG9hQgA/2yqBEFIexBxOT
+         i9vCKnVN9a9mDTxg3U1oNbYXq0GD4w40bt+gnrvVfRfHlUt7CzmQxv2ITaF01BU5v0
+         qZonJ/jE4kiTWy7bQrfjqbazrpEygb0DU6gCobQX5qblC7fRwhvF4Sq1I5FxM2qyhg
+         8GI0GBlW0Lvvwa7ilfXZ4x3AaZQNQL9XQbQNvJOLXG+h38c4UU6rLCHqjUeiUTV7I9
+         9YOGia5GJedY1w/4Tr8d8CBihfAg/swFyuKTugjzhJ3nduRG/LNj+cPcUZRU9QpFNl
+         2JMD91ZFIq08WBl0d90UMFWl7mSZfbGc4bFGkopV/6ReOk/vUtz69zueTfYfrFWzSU
+         s+Er1jtAFNs/BmK+rQ0XkTqVSRlwAjaqyFZOLj6kw381sp7VTpaEupsP/8y3Je8A6v
+         4UugchG2zDEWWEYN/tFyApbfSvLIe6pKK/LvgAQvjqkwlyRa0sBz8pzBqHKDxO1zyV
+         JYMRMzTpGfe9MrWWhqER/P+y3YGfeX1gbEPw1Scpeut1XCY2CNUcsoDJlTQlBXKJk2
+         DpMk176r7iASSHUrxiLPF0zo=
+Received: from adsilva.ozlabs.ibm.com (static-82-10.transact.net.au [122.99.82.10] (may be forged))
+        (authenticated bits=0)
+        by mail2.nmnhosting.com (8.15.2/8.15.2) with ESMTPSA id x5P56DR4022607
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Tue, 25 Jun 2019 15:06:29 +1000 (AEST)
+        (envelope-from alastair@d-silva.org)
+Message-ID: <746098160c4ff6527d573d2af23c403b6d4e5b80.camel@d-silva.org>
+Subject: Re: [PATCH v4 4/7] lib/hexdump.c: Replace ascii bool in
+ hex_dump_to_buffer with flags
+From:   "Alastair D'Silva" <alastair@d-silva.org>
+To:     Joe Perches <joe@perches.com>
+Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Karsten Keil <isdn@linux-pingi.de>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Stanislaw Gruszka <sgruszka@redhat.com>,
+        Benson Leung <bleung@chromium.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        David Laight <David.Laight@ACULAB.COM>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-fsdevel@vger.kernel.org
+Date:   Tue, 25 Jun 2019 15:06:13 +1000
+In-Reply-To: <3340b520a57e00a483eae170be97316c8d18c22c.camel@perches.com>
+References: <20190625031726.12173-1-alastair@au1.ibm.com>
+         <20190625031726.12173-5-alastair@au1.ibm.com>
+         <3340b520a57e00a483eae170be97316c8d18c22c.camel@perches.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.32.2 (3.32.2-1.fc30) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] rtlwifi: rtl8188ee: remove redundant assignment to
- rtstatus
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20190608105800.26571-1-colin.king@canonical.com>
-References: <20190608105800.26571-1-colin.king@canonical.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     Ping-Ke Shih <pkshih@realtek.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20190625050229.244DE606DC@smtp.codeaurora.org>
-Date:   Tue, 25 Jun 2019 05:02:29 +0000 (UTC)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail2.nmnhosting.com [10.0.1.20]); Tue, 25 Jun 2019 15:06:37 +1000 (AEST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Colin King <colin.king@canonical.com> wrote:
-
-> From: Colin Ian King <colin.king@canonical.com>
+On Mon, 2019-06-24 at 22:01 -0700, Joe Perches wrote:
+> On Tue, 2019-06-25 at 13:17 +1000, Alastair D'Silva wrote:
+> > From: Alastair D'Silva <alastair@d-silva.org>
+> > 
+> > In order to support additional features, rename hex_dump_to_buffer
+> > to
+> > hex_dump_to_buffer_ext, and replace the ascii bool parameter with
+> > flags.
+> []
+> > diff --git a/drivers/gpu/drm/i915/intel_engine_cs.c
+> > b/drivers/gpu/drm/i915/intel_engine_cs.c
+> []
+> > @@ -1338,9 +1338,8 @@ static void hexdump(struct drm_printer *m,
+> > const void *buf, size_t len)
+> >  		}
+> >  
+> >  		WARN_ON_ONCE(hex_dump_to_buffer(buf + pos, len - pos,
+> > -						rowsize, sizeof(u32),
+> > -						line, sizeof(line),
+> > -						false) >=
+> > sizeof(line));
+> > +						rowsize, sizeof(u32),
+> > line,
+> > +						sizeof(line)) >=
+> > sizeof(line));
 > 
-> Variable rtstatus is being initialized with a value that is never read
-> as rtstatus is being re-assigned a little later on. The assignment is
-> redundant and hence can be removed.
+> Huh?  Why do this?
 > 
-> Addresses-Coverity: ("Unused value")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> > diff --git a/drivers/isdn/hardware/mISDN/mISDNisar.c
+> > b/drivers/isdn/hardware/mISDN/mISDNisar.c
+> []
+> > @@ -70,8 +70,9 @@ send_mbox(struct isar_hw *isar, u8 his, u8 creg,
+> > u8 len, u8 *msg)
+> >  			int l = 0;
+> >  
+> >  			while (l < (int)len) {
+> > -				hex_dump_to_buffer(msg + l, len - l,
+> > 32, 1,
+> > -						   isar->log, 256, 1);
+> > +				hex_dump_to_buffer_ext(msg + l, len -
+> > l, 32, 1,
+> > +						       isar->log, 256,
+> > +						       HEXDUMP_ASCII);
+> 
+> Again, why do any of these?
+> 
+> The point of the wrapper is to avoid changing these.
+> 
+> 
 
-Patch applied to wireless-drivers-next.git, thanks.
+The change actions Jani's suggestion:
+https://lkml.org/lkml/2019/6/20/343
 
-25a986e426b0 rtlwifi: rtl8188ee: remove redundant assignment to rtstatus
 
 -- 
-https://patchwork.kernel.org/patch/10983111/
+Alastair D'Silva           mob: 0423 762 819
+skype: alastair_dsilva    
+Twitter: @EvilDeece
+blog: http://alastair.d-silva.org
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
