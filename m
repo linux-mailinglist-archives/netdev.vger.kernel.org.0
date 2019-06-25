@@ -2,144 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 282CA55609
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 19:37:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D8CA55626
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 19:46:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732105AbfFYRhD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 13:37:03 -0400
-Received: from sessmg22.ericsson.net ([193.180.251.58]:42008 "EHLO
-        sessmg22.ericsson.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728825AbfFYRhC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 13:37:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; d=ericsson.com; s=mailgw201801; c=relaxed/relaxed;
-        q=dns/txt; i=@ericsson.com; t=1561484221; x=1564076221;
-        h=From:Sender:Reply-To:Subject:Date:Message-ID:To:CC:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=lEM7Je4rhOETOUZPdxrlLfv5tFvnnk7w3trQ71WsSmQ=;
-        b=UD35IGKt2uyIPoE08gI4n0hmVSgqLJA24Bshmvh40BZ/hE0tOh48szA8hXDWPkg0
-        8UIIMYRIxpHVWEQ3ZtGyKnN1bzXpnBoDVpqF+4ufzhl8RW2vCIorxQgc3jVQmN/l
-        ftzMjIoFHgSIkEiX/IxIFXfVC7PVvXPLiFYZDB1fQ+g=;
-X-AuditID: c1b4fb3a-6f1ff7000000189f-1b-5d125bbd5f31
-Received: from ESESSMB502.ericsson.se (Unknown_Domain [153.88.183.120])
-        by sessmg22.ericsson.net (Symantec Mail Security) with SMTP id 7C.87.06303.DBB521D5; Tue, 25 Jun 2019 19:37:01 +0200 (CEST)
-Received: from ESESBMB503.ericsson.se (153.88.183.170) by
- ESESSMB502.ericsson.se (153.88.183.163) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1713.5; Tue, 25 Jun 2019 19:37:00 +0200
-Received: from tipsy.lab.linux.ericsson.se (153.88.183.153) by
- smtp.internal.ericsson.com (153.88.183.186) with Microsoft SMTP Server id
- 15.1.1713.5 via Frontend Transport; Tue, 25 Jun 2019 19:37:00 +0200
-From:   Jon Maloy <jon.maloy@ericsson.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     <gordan.mihaljevic@dektech.com.au>, <tung.q.nguyen@dektech.com.au>,
-        <hoang.h.le@dektech.com.au>, <jon.maloy@ericsson.com>,
-        <canh.d.luu@dektech.com.au>, <ying.xue@windriver.com>,
-        <tipc-discussion@lists.sourceforge.net>
-Subject: [net-next  1/1] tipc: rename function msg_get_wrapped() to msg_inner_hdr()
-Date:   Tue, 25 Jun 2019 19:37:00 +0200
-Message-ID: <1561484220-22814-1-git-send-email-jon.maloy@ericsson.com>
-X-Mailer: git-send-email 2.1.4
+        id S1730716AbfFYRqC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 13:46:02 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:34218 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729521AbfFYRqB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 13:46:01 -0400
+Received: by mail-qk1-f195.google.com with SMTP id t8so13341611qkt.1;
+        Tue, 25 Jun 2019 10:46:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1vix286Y/fbmyQgkdzbS1ZRKTLuRz2xBroRyOC9U4nk=;
+        b=Gusl3Shlfh6fUy4u3/UQhaQiTcta5CF9mKk1rHiIAEYDRvWyeoVn2s7qk/Sj7Z22yg
+         xKlYrqtrNXwLEik+TD5jEFlYI/fbGx9yccMOflL0o/sejWw8pN9g5pO6+MT5epWYTOoL
+         q6WDGxtz/tVbYwb1CFMBxpc6tbYX8kmsJeFaqdEpbqS2MQtNr7Hr3JLH0mVeqSwPKleU
+         TSbN33DcSOPG/7BPQLKyI74W0qKOwXjcb8a6NbvzNu+abDAsq1bhEOKceS3aIQzHjCji
+         aHho4Zf1hn7vr/Rn30AKw+RXiAtJJHkP1nK9z1MAh/PErPqNJ2cA2uRzbrCMo51DXZ1/
+         EXtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1vix286Y/fbmyQgkdzbS1ZRKTLuRz2xBroRyOC9U4nk=;
+        b=DOEuttDv/BkExhFVkyPJ/c7odx8PWysaxNp5uIgts2M+t0OO76MyuD+6eHkp6vQTjZ
+         oBd6j/kUxn/eY/xHjVawyb1/Cg0J33AaqpAM08LZku0athzcZCcSdw9GlWoQmrTOi3Hk
+         YUei/vxdk94DkLUVW5diuCZ3Q4OCw+d0LhDBtYhf4q0EVpk+OnVEaSEAdX16hvmryvZe
+         z5P0hzodv6mUr0SOUptlEUZN943nXkQSRkl3fJsYOQC+Z3lT+MKDK8bNaQ13/dDq9TdX
+         79mhTZTDmHI0U9cBg1QQkD5NnzxMIxh3UHWQ71bZnjU/OAuV699Sq0YbAVfRWBECBvj9
+         nR0w==
+X-Gm-Message-State: APjAAAWpWHUCn+VIFKdY1tt38mV7ehoK9Mlq/hx7g6ZiRViagdkL4jjp
+        ief3U2QEJbESb8QxOX/kj10dOlD2sgmKBJaGqKg=
+X-Google-Smtp-Source: APXvYqyQ2XggdBL8o8om2OczPjzRsLoVDlu5QWSpKbDYcRWr1lfOkN2wiawE9FwCf07FmF4ukRojruWUgMye6+m2tIU=
+X-Received: by 2002:ae9:d803:: with SMTP id u3mr23500045qkf.437.1561484760462;
+ Tue, 25 Jun 2019 10:46:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrFLMWRmVeSWpSXmKPExsUyM2J7he7eaKFYg2kvRSxuNPQwW8w538Ji
-        sWL3JFaLt69msVscWyBmseV8lsWV9rPsFo+vX2d24PDYsvImk8e7K2weuxd8ZvL4vEnOY/2W
-        rUwBrFFcNimpOZllqUX6dglcGVOW/GArmC5a0dDznLmBcaNgFyMnh4SAicSNg1PYQWwhgaOM
-        Eive+XUxcgHZ3xglXuzohkpcYJTYPy8DxGYT0JB4Oa2DEcQWETCWeLWykwmkgVngMaPEl/ur
-        2EASwgLBEt8n7WYFsVkEVCWmrDgOFucVcJM4dOs2M8RmOYnzx38yQyxQlpj7YRoTRI2gxMmZ
-        T1hAbGYBCYmDL14wT2Dkm4UkNQtJagEj0ypG0eLU4uLcdCMjvdSizOTi4vw8vbzUkk2MwBA9
-        uOW31Q7Gg88dDzEKcDAq8fCujRSKFWJNLCuuzD3EKMHBrCTCuzRRIFaINyWxsiq1KD++qDQn
-        tfgQozQHi5I473rvfzFCAumJJanZqakFqUUwWSYOTqkGxk7zPE9pszk65bUSpd17H1TMuRDM
-        HbPP0qA+dGGq8pK/XY9FtUsq/U5M/R+7lOnLLcNjWp4fbOJ0rfnnx874ViQgcy3FMS/1x8kH
-        T+yXcX7vVVEqi+bOebA/5obXZM11S/U6l/73mtJmuI17g6rQrPUf5TIvai+sf//Hem31fVb+
-        y2t7z2x8o8RSnJFoqMVcVJwIADYYNLBNAgAA
+References: <20190625141142.2378-1-ivan.khoronzhuk@linaro.org>
+In-Reply-To: <20190625141142.2378-1-ivan.khoronzhuk@linaro.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 25 Jun 2019 10:45:49 -0700
+Message-ID: <CAEf4BzbOHXEfV9FSNsovWfRvke6imzJoh_=2F3o=No+TX3TAww@mail.gmail.com>
+Subject: Re: [PATCH net-next] tools: lib: bpf: libbpf: fix max() type
+ mistmatch for 32bit
+To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We rename the inline function msg_get_wrapped() to the more
-comprehensible msg_inner_hdr().
+On Tue, Jun 25, 2019 at 7:12 AM Ivan Khoronzhuk
+<ivan.khoronzhuk@linaro.org> wrote:
+>
+> It fixes build error for 32bit coused by type mistmatch
 
-Signed-off-by: Jon Maloy <jon.maloy@ericsson.com>
----
- net/tipc/bcast.c | 4 ++--
- net/tipc/link.c  | 2 +-
- net/tipc/msg.h   | 4 ++--
- net/tipc/node.c  | 2 +-
- 4 files changed, 6 insertions(+), 6 deletions(-)
+typo: coused -> caused, mistmatch -> mismatch
 
-diff --git a/net/tipc/bcast.c b/net/tipc/bcast.c
-index 6c997d4..1336f3c 100644
---- a/net/tipc/bcast.c
-+++ b/net/tipc/bcast.c
-@@ -323,7 +323,7 @@ static int tipc_mcast_send_sync(struct net *net, struct sk_buff *skb,
- 
- 	hdr = buf_msg(skb);
- 	if (msg_user(hdr) == MSG_FRAGMENTER)
--		hdr = msg_get_wrapped(hdr);
-+		hdr = msg_inner_hdr(hdr);
- 	if (msg_type(hdr) != TIPC_MCAST_MSG)
- 		return 0;
- 
-@@ -392,7 +392,7 @@ int tipc_mcast_xmit(struct net *net, struct sk_buff_head *pkts,
- 		skb = skb_peek(pkts);
- 		hdr = buf_msg(skb);
- 		if (msg_user(hdr) == MSG_FRAGMENTER)
--			hdr = msg_get_wrapped(hdr);
-+			hdr = msg_inner_hdr(hdr);
- 		msg_set_is_rcast(hdr, method->rcast);
- 
- 		/* Switch method ? */
-diff --git a/net/tipc/link.c b/net/tipc/link.c
-index aa79bf8..f8bf63b 100644
---- a/net/tipc/link.c
-+++ b/net/tipc/link.c
-@@ -732,7 +732,7 @@ static void link_profile_stats(struct tipc_link *l)
- 	if (msg_user(msg) == MSG_FRAGMENTER) {
- 		if (msg_type(msg) != FIRST_FRAGMENT)
- 			return;
--		length = msg_size(msg_get_wrapped(msg));
-+		length = msg_size(msg_inner_hdr(msg));
- 	}
- 	l->stats.msg_lengths_total += length;
- 	l->stats.msg_length_counts++;
-diff --git a/net/tipc/msg.h b/net/tipc/msg.h
-index 8de02ad..da509f0 100644
---- a/net/tipc/msg.h
-+++ b/net/tipc/msg.h
-@@ -308,7 +308,7 @@ static inline unchar *msg_data(struct tipc_msg *m)
- 	return ((unchar *)m) + msg_hdr_sz(m);
- }
- 
--static inline struct tipc_msg *msg_get_wrapped(struct tipc_msg *m)
-+static inline struct tipc_msg *msg_inner_hdr(struct tipc_msg *m)
- {
- 	return (struct tipc_msg *)msg_data(m);
- }
-@@ -486,7 +486,7 @@ static inline void msg_set_prevnode(struct tipc_msg *m, u32 a)
- static inline u32 msg_origport(struct tipc_msg *m)
- {
- 	if (msg_user(m) == MSG_FRAGMENTER)
--		m = msg_get_wrapped(m);
-+		m = msg_inner_hdr(m);
- 	return msg_word(m, 4);
- }
- 
-diff --git a/net/tipc/node.c b/net/tipc/node.c
-index 550581d..324a1f9 100644
---- a/net/tipc/node.c
-+++ b/net/tipc/node.c
-@@ -1649,7 +1649,7 @@ static bool tipc_node_check_state(struct tipc_node *n, struct sk_buff *skb,
- 	int usr = msg_user(hdr);
- 	int mtyp = msg_type(hdr);
- 	u16 oseqno = msg_seqno(hdr);
--	u16 iseqno = msg_seqno(msg_get_wrapped(hdr));
-+	u16 iseqno = msg_seqno(msg_inner_hdr(hdr));
- 	u16 exp_pkts = msg_msgcnt(hdr);
- 	u16 rcv_nxt, syncpt, dlv_nxt, inputq_len;
- 	int state = n->state;
--- 
-2.1.4
+> size_t/unsigned long.
+>
+> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+> ---
+>
+> Based on net-next/master
 
+libbpf changes should be based against bpf-next. Indicate that also
+with [PATCH bpf-next] subject prefix.
+
+Also, there is no need to have this long "tools: lib: bpf: libbpf:"
+prefix, it's not supposed to be a repeat of file path. Use just
+"libbpf: " to indicate it's libbpf-related changes.
+
+
+>
+>  tools/lib/bpf/libbpf.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index 4259c9f0cfe7..d03016a559e2 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -778,7 +778,7 @@ static struct bpf_map *bpf_object__add_map(struct bpf_object *obj)
+>         if (obj->nr_maps < obj->maps_cap)
+>                 return &obj->maps[obj->nr_maps++];
+>
+> -       new_cap = max(4ul, obj->maps_cap * 3 / 2);
+> +       new_cap = max((size_t)4, obj->maps_cap * 3 / 2);
+
+The fix itself works, thanks!
+
+>         new_maps = realloc(obj->maps, new_cap * sizeof(*obj->maps));
+>         if (!new_maps) {
+>                 pr_warning("alloc maps for object failed\n");
+> --
+> 2.17.1
+>
