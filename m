@@ -2,107 +2,263 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E39555873
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 22:11:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C5585587C
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 22:12:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726996AbfFYULb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 16:11:31 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:45224 "EHLO
+        id S1727213AbfFYUMW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 16:12:22 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:38792 "EHLO
         mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726053AbfFYULa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 16:11:30 -0400
-Received: by mail-pl1-f193.google.com with SMTP id bi6so27627plb.12
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 13:11:30 -0700 (PDT)
+        with ESMTP id S1726397AbfFYUMW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 16:12:22 -0400
+Received: by mail-pl1-f193.google.com with SMTP id g4so46072plb.5
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 13:12:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=RVMTwPnPyoI1x5PBBVvlZKHhj4J2rdMINoyfeiNoRY4=;
-        b=FRyHpRmkxt71INP82A8ah4MgAo7Th9CdpqzkqW2xdbJbIPXQF68XgUIyzGOKwu18kx
-         yc2g+7oRI4BePn8XfMtvVIXy0pHrz79lKjk9eihEU8wUpu1TY5b6NNjC8e21uJ2gYtFi
-         wZwx36f/ZSayt9JlOD5d3m+5mS+eAbIV5OxDA/cY7mYRcFbch5Px7QvYIp2bFB6fWqQB
-         oc+aALQ+69JY/UVMmezRJXWLh6po64mKIPjsIDExstXtPAwGeIax6GvIN58HjFHqSC7L
-         I1iMZ4g19zmP7/3RaY2AoeUmAqD30BKWaAZXi4wvNoOA21qoI/yl3qOT0IiH9Psta84J
-         TA9g==
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=frdlJFxp0g7/JgxVC9Knu0EZuFk8912u7Wo1FVzUmns=;
+        b=Nyb+zlMnDiYMzmLqnBAwdmngB+mYJdvquxfMDwCy5zvB7uhuZYJ965t0yuyadQ5fC5
+         WAwMBqEhRzvXZJlWTFHp1eGTYXntKDuyWJIXRygR4w4aLx90JBuzG1YT5TqDklyjyWDe
+         YbTaC2rHWCEpTr7osJsgtI2DVbvgnyErrAnRKB5vxim3CQ8qV6vzbBI0GRTZeExvFESj
+         D7UvI9PzC50CDNlYR5vwX+gjDokE4WkOCypTdCQ0xFT4R+EYDTLtEFhmQ12/3aRbVPiL
+         q55toOzREutJvOUWTydV4sxijBek67/XvKyV7usdzK/go45JI2h3Ted+6+e+4vyurgnt
+         a5Tw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=RVMTwPnPyoI1x5PBBVvlZKHhj4J2rdMINoyfeiNoRY4=;
-        b=PI7QwzefYWhqfYCl3cQjmNe8hNNC2ucbOUSZX4LrTJVczeQhusiu2b+QHNj8iVtIwq
-         C/DhChRD9QbnBHd/Iz1QAp4xn4bmAYxveF+rrO/8A5U3WA5P3Lhj8LwbvYgTgjDhCYpy
-         kBLsgTNPSVq9K7yrUCVbJoWbrc7lACjnu+J4p+2kXiYXiYZnoFCxMuQsfa+//jU/xaJZ
-         O+ac2UrDgJ0LpLNN7EjaeE97M/2vmexuolT2y9VBfEeG0X+IRBNgvrx5VVdrCo+fP8JL
-         0QITasM/fBSRZOBwL0Ea6mcY95GVl4z1/aEWtWPby2/zgr5pNOF+KZk+FJYn02hAgMEf
-         I0KA==
-X-Gm-Message-State: APjAAAVDh7uEcRDUbnPYS+ImcdXdp2sBuPd5c24DHsFhZDAlmUCaamUT
-        rTpvb7e3OowNuSQJT82G4kRcgA==
-X-Google-Smtp-Source: APXvYqzP91UuoJ1RRHZvpsFCC/BkmvOplcm/iCR+4qrcFFDEU4x1/YF+WhtlAuCVyRzydSPK20b+Xw==
-X-Received: by 2002:a17:902:1003:: with SMTP id b3mr581592pla.172.1561493489997;
-        Tue, 25 Jun 2019 13:11:29 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id bo20sm67487pjb.23.2019.06.25.13.11.29
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=frdlJFxp0g7/JgxVC9Knu0EZuFk8912u7Wo1FVzUmns=;
+        b=HPARuEuBek4o4ybf+c/lmT4w8obsBCC+1mjFCHoQj2IcJTqiZBi0VqgF+mtqqGWR3m
+         wAFaXf4BHwZJhIhCyDdOD680NV2nHeZztuyAlwyS+zBfnBcrUKFYzUOZNJQ0WZ0uYFAC
+         mb/4cUV+NZfXy8LaSj3Bov8tzu36gcsi9SJjD1p0PdcSO4YcwD2sMryJ4sudTunGOS2f
+         7p8z+GwthaYPw9eSVaAptlqDJD39mNpkjAQ/nKDDnIMIFIwPxXDJU7tAPcmL0VZdddYY
+         fFxkZDT/bZAeMPd1IRb2elinaZCZNyyDEgygf2Cx304Lxvv9S4+ZZOFQrXTEM505ZrFJ
+         +6HA==
+X-Gm-Message-State: APjAAAUney3s54RR5X1T7aHRJLHrewKhzk2u1KACgqV3V+i2U3TTjJOj
+        NGJppYVmI1+H0VwkTQm+TRO8Sg==
+X-Google-Smtp-Source: APXvYqz5A8wkwC4bDX9Grozu3DdnvL4TZkl+WU84TSLtrBEe3ie0duREqD7ndDM6yIZbjMI4EQ0Hpw==
+X-Received: by 2002:a17:902:8207:: with SMTP id x7mr544236pln.63.1561493541558;
+        Tue, 25 Jun 2019 13:12:21 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id j21sm16301529pfh.86.2019.06.25.13.12.20
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 25 Jun 2019 13:11:29 -0700 (PDT)
-Date:   Tue, 25 Jun 2019 13:11:26 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
-        Phil Sutter <phil@nwl.cc>, David Ahern <dsahern@gmail.com>,
-        Andrea Claudi <aclaudi@redhat.com>
-Subject: Re: [PATCH iproute2] ip/iptoken: fix dump error when ipv6 disabled
-Message-ID: <20190625131126.6a7121b4@hermes.lan>
-In-Reply-To: <20190625093550.7804-1-liuhangbin@gmail.com>
-References: <20190625093550.7804-1-liuhangbin@gmail.com>
+        Tue, 25 Jun 2019 13:12:21 -0700 (PDT)
+Date:   Tue, 25 Jun 2019 13:12:20 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Krzesimir Nowak <krzesimir@kinvolk.io>
+Cc:     netdev@vger.kernel.org, Alban Crequy <alban@kinvolk.io>,
+        Iago =?iso-8859-1?Q?L=F3pez?= Galeiras <iago@kinvolk.io>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [bpf-next v2 08/10] bpf: Implement bpf_prog_test_run for perf
+ event programs
+Message-ID: <20190625201220.GC10487@mini-arch>
+References: <20190625194215.14927-1-krzesimir@kinvolk.io>
+ <20190625194215.14927-9-krzesimir@kinvolk.io>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190625194215.14927-9-krzesimir@kinvolk.io>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 25 Jun 2019 17:35:50 +0800
-Hangbin Liu <liuhangbin@gmail.com> wrote:
-
-> When we disable IPv6 from the start up (ipv6.disable=1), there will be
-> no IPv6 route info in the dump message. If we return -1 when
-> ifi->ifi_family != AF_INET6, we will get error like
+On 06/25, Krzesimir Nowak wrote:
+> As an input, test run for perf event program takes struct
+> bpf_perf_event_data as ctx_in and struct bpf_perf_event_value as
+> data_in. For an output, it basically ignores ctx_out and data_out.
 > 
-> $ ip token list
-> Dump terminated
+> The implementation sets an instance of struct bpf_perf_event_data_kern
+> in such a way that the BPF program reading data from context will
+> receive what we passed to the bpf prog test run in ctx_in. Also BPF
+> program can call bpf_perf_prog_read_value to receive what was passed
+> in data_in.
 > 
-> which will make user feel confused. There is no need to return -1 if the
-> dump message not match. Return 0 is enough.
-> 
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> Signed-off-by: Krzesimir Nowak <krzesimir@kinvolk.io>
 > ---
->  ip/iptoken.c | 10 +++-------
->  1 file changed, 3 insertions(+), 7 deletions(-)
+>  kernel/trace/bpf_trace.c                      | 107 ++++++++++++++++++
+>  .../bpf/verifier/perf_event_sample_period.c   |   8 ++
+>  2 files changed, 115 insertions(+)
 > 
-> diff --git a/ip/iptoken.c b/ip/iptoken.c
-> index f1194c3e..dfd22734 100644
-> --- a/ip/iptoken.c
-> +++ b/ip/iptoken.c
-> @@ -59,13 +59,9 @@ static int print_token(struct nlmsghdr *n, void *arg)
->  	if (len < 0)
->  		return -1;
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index c102c240bb0b..2fa49ea8a475 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -16,6 +16,8 @@
 >  
-> -	if (ifi->ifi_family != AF_INET6)
-> -		return -1;
-> -	if (ifi->ifi_index == 0)
-> -		return -1;
-> -	if (ifindex > 0 && ifi->ifi_index != ifindex)
-> -		return 0;
-> -	if (ifi->ifi_flags & (IFF_LOOPBACK | IFF_NOARP))
-> +	if (ifi->ifi_family != AF_INET6 || ifi->ifi_index == 0 ||
-> +	    (ifindex > 0 && ifi->ifi_index != ifindex) ||
-> +	    (ifi->ifi_flags & (IFF_LOOPBACK | IFF_NOARP)))
->  		return 0;
+>  #include <asm/tlb.h>
+>  
+> +#include <trace/events/bpf_test_run.h>
+> +
+>  #include "trace_probe.h"
+>  #include "trace.h"
+>  
+> @@ -1160,7 +1162,112 @@ const struct bpf_verifier_ops perf_event_verifier_ops = {
+>  	.convert_ctx_access	= pe_prog_convert_ctx_access,
+>  };
+>  
+> +static int pe_prog_test_run(struct bpf_prog *prog,
+> +			    const union bpf_attr *kattr,
+> +			    union bpf_attr __user *uattr)
+> +{
+> +	void __user *ctx_in = u64_to_user_ptr(kattr->test.ctx_in);
+> +	void __user *data_in = u64_to_user_ptr(kattr->test.data_in);
+> +	u32 data_size_in = kattr->test.data_size_in;
+> +	u32 ctx_size_in = kattr->test.ctx_size_in;
+> +	u32 repeat = kattr->test.repeat;
+> +	u32 retval = 0, duration = 0;
+> +	int err = -EINVAL;
+> +	u64 time_start, time_spent = 0;
+> +	int i;
+> +	struct perf_sample_data sample_data = {0, };
+> +	struct perf_event event = {0, };
+> +	struct bpf_perf_event_data_kern real_ctx = {0, };
+> +	struct bpf_perf_event_data fake_ctx = {0, };
+> +	struct bpf_perf_event_value value = {0, };
+> +
+> +	if (ctx_size_in != sizeof(fake_ctx))
+> +		goto out;
+> +	if (data_size_in != sizeof(value))
+> +		goto out;
+> +
+> +	if (copy_from_user(&fake_ctx, ctx_in, ctx_size_in)) {
+> +		err = -EFAULT;
+> +		goto out;
+> +	}
+Move this to net/bpf/test_run.c? I have a bpf_ctx_init helper to deal
+with ctx input, might save you some code above wrt ctx size/etc.
 
-Please don't combine all the conditions, it is simpler as:
+> +	if (copy_from_user(&value, data_in, data_size_in)) {
+> +		err = -EFAULT;
+> +		goto out;
+> +	}
+> +
+> +	real_ctx.regs = &fake_ctx.regs;
+> +	real_ctx.data = &sample_data;
+> +	real_ctx.event = &event;
+> +	perf_sample_data_init(&sample_data, fake_ctx.addr,
+> +			      fake_ctx.sample_period);
+> +	event.cpu = smp_processor_id();
+> +	event.oncpu = -1;
+> +	event.state = PERF_EVENT_STATE_OFF;
+> +	local64_set(&event.count, value.counter);
+> +	event.total_time_enabled = value.enabled;
+> +	event.total_time_running = value.running;
+> +	/* make self as a leader - it is used only for checking the
+> +	 * state field
+> +	 */
+> +	event.group_leader = &event;
+> +
+> +	/* slightly changed copy pasta from bpf_test_run() in
+> +	 * net/bpf/test_run.c
+> +	 */
+> +	if (!repeat)
+> +		repeat = 1;
+> +
+> +	rcu_read_lock();
+> +	preempt_disable();
+> +	time_start = ktime_get_ns();
+> +	for (i = 0; i < repeat; i++) {
+Any reason for not using bpf_test_run?
 
-	if (ifi->ifi_family != AF_INET6)
-		return 0;
+> +		retval = BPF_PROG_RUN(prog, &real_ctx);
+> +
+> +		if (signal_pending(current)) {
+> +			err = -EINTR;
+> +			preempt_enable();
+> +			rcu_read_unlock();
+> +			goto out;
+> +		}
+> +
+> +		if (need_resched()) {
+> +			time_spent += ktime_get_ns() - time_start;
+> +			preempt_enable();
+> +			rcu_read_unlock();
+> +
+> +			cond_resched();
+> +
+> +			rcu_read_lock();
+> +			preempt_disable();
+> +			time_start = ktime_get_ns();
+> +		}
+> +	}
+> +	time_spent += ktime_get_ns() - time_start;
+> +	preempt_enable();
+> +	rcu_read_unlock();
+> +
+> +	do_div(time_spent, repeat);
+> +	duration = time_spent > U32_MAX ? U32_MAX : (u32)time_spent;
+> +	/* end of slightly changed copy pasta from bpf_test_run() in
+> +	 * net/bpf/test_run.c
+> +	 */
+> +
+> +	if (copy_to_user(&uattr->test.retval, &retval, sizeof(retval))) {
+> +		err = -EFAULT;
+> +		goto out;
+> +	}
+> +	if (copy_to_user(&uattr->test.duration, &duration, sizeof(duration))) {
+> +		err = -EFAULT;
+> +		goto out;
+> +	}
+Can BPF program modify fake_ctx? Do we need/want to copy it back?
 
-	
+> +	err = 0;
+> +out:
+> +	trace_bpf_test_finish(&err);
+> +	return err;
+> +}
+> +
+>  const struct bpf_prog_ops perf_event_prog_ops = {
+> +	.test_run	= pe_prog_test_run,
+>  };
+>  
+>  static DEFINE_MUTEX(bpf_event_mutex);
+> diff --git a/tools/testing/selftests/bpf/verifier/perf_event_sample_period.c b/tools/testing/selftests/bpf/verifier/perf_event_sample_period.c
+> index 471c1a5950d8..16e9e5824d14 100644
+> --- a/tools/testing/selftests/bpf/verifier/perf_event_sample_period.c
+> +++ b/tools/testing/selftests/bpf/verifier/perf_event_sample_period.c
+This should probably go in another patch.
+
+> @@ -13,6 +13,8 @@
+>  	},
+>  	.result = ACCEPT,
+>  	.prog_type = BPF_PROG_TYPE_PERF_EVENT,
+> +	.ctx_len = sizeof(struct bpf_perf_event_data),
+> +	.data_len = sizeof(struct bpf_perf_event_value),
+>  },
+>  {
+>  	"check bpf_perf_event_data->sample_period half load permitted",
+> @@ -29,6 +31,8 @@
+>  	},
+>  	.result = ACCEPT,
+>  	.prog_type = BPF_PROG_TYPE_PERF_EVENT,
+> +	.ctx_len = sizeof(struct bpf_perf_event_data),
+> +	.data_len = sizeof(struct bpf_perf_event_value),
+>  },
+>  {
+>  	"check bpf_perf_event_data->sample_period word load permitted",
+> @@ -45,6 +49,8 @@
+>  	},
+>  	.result = ACCEPT,
+>  	.prog_type = BPF_PROG_TYPE_PERF_EVENT,
+> +	.ctx_len = sizeof(struct bpf_perf_event_data),
+> +	.data_len = sizeof(struct bpf_perf_event_value),
+>  },
+>  {
+>  	"check bpf_perf_event_data->sample_period dword load permitted",
+> @@ -56,4 +62,6 @@
+>  	},
+>  	.result = ACCEPT,
+>  	.prog_type = BPF_PROG_TYPE_PERF_EVENT,
+> +	.ctx_len = sizeof(struct bpf_perf_event_data),
+> +	.data_len = sizeof(struct bpf_perf_event_value),
+>  },
+> -- 
+> 2.20.1
+> 
