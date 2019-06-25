@@ -2,174 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C4C8556CE
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 20:09:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 873E1556D7
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 20:14:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727972AbfFYSJV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 14:09:21 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:39213 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725921AbfFYSJU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 14:09:20 -0400
-Received: by mail-wr1-f66.google.com with SMTP id x4so18927195wrt.6;
-        Tue, 25 Jun 2019 11:09:18 -0700 (PDT)
+        id S1731600AbfFYSOr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 14:14:47 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:37393 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725921AbfFYSOr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 14:14:47 -0400
+Received: by mail-qt1-f196.google.com with SMTP id y57so19501394qtk.4;
+        Tue, 25 Jun 2019 11:14:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ZecqvOpYjVE4Qmy3iXx46r1+0juBwCPcIwmCKG2SPQo=;
-        b=ec+kKmKZbzDX7Zfqdhmxrx2YsnL4UQMEAcBHEVXnDm9Oyg9TktxFuNuPzyhJoO/5AR
-         vtCvPowZ3sDh/R6kWqh72byj6M2c/oA7Nx+PHxC6gh04tc29HswFHyEo2h/qyv7rzsah
-         sFrTVdMifkYhbqGTcAaCT2yCKf4PIDA5ujIqxtsePpkCJrFBSH2AhVdmt2y6YDVpTSKk
-         31RezxlmomvcVpvRvpHBPJFeqij0pMlJ+lAxSwg2E5s/mv6jeK6NWQZvByqCeku/NO7Z
-         0UUQcmk+zGSaR6FSFYsnOTiJW6E3GFNye7NaylMoYs074POeeq66EWNxpatFiiF85l8V
-         YMPQ==
+        bh=ttqneRism6nSsj2/bmPKPIiR+rUmQ1IgFbVIvgbIjkE=;
+        b=Y7YwhJquOx1jxlvYay0BOG2vPRlySN5jssi1lSp4v/xc3m8bz1SU4RFNkLsBTAXACu
+         r1RH1u7otoUdXiTP9ixPfWZv0KodZ6NFC52hHR9Hy85uqF19wzSwbk1gQTHQg+il5FW9
+         SlgWpuWXM0k4KASUTNtRW7YNX2Tdi7SRyB0DlyiMcg8TyOUeIKWurxDTyLg7i15b9pWL
+         8CiVSyMpnSXarlO3jrUCZvoWYNyJY9M8XvXVysQshNh1yESkM1MSW7kWvh+A55AQJRK4
+         LYD8L54qd20NE/oJo6Wc88cfoohrdiN/7aRO8v0oga0eQPbbb3z0uw7sfckNemuomMQw
+         jH3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ZecqvOpYjVE4Qmy3iXx46r1+0juBwCPcIwmCKG2SPQo=;
-        b=EO6xEW9G3WlKp81iL4jI0EhgFqYSyVzppemhGbR6bf+yR88H5BeE4JHesFiK50HaSx
-         zZOHzwP/AiH8rUljiYzMvFVoVuGtdLetpXdY9ksBjLgUZ6GihpWqKq5xB03tRaepeYKW
-         qkbPWLPSHahWsTntKwweLUCyRKC8S7sV38kpiZlz3mXiyZBZ2g06akdzpAvqHj5kHca6
-         TMNx2b+FA9sw6W8/OQWeN2kvuiIaLAxMzi3fUVQ/jURFWXmeHEF7U1V/mTHBqFv2ZML3
-         QEyU17F25kzuhjUgJEda2UxvzCWdRQ0pQdl0sHy9tzbfExOyI+qDS6yvnHbPUtg7gnQj
-         Uyeg==
-X-Gm-Message-State: APjAAAUKX3ZMIpTx72gtRm09FczbzNXyuOaDi0WA4WEdcxRwZtTPFNgY
-        UM9XkoJBLJTGoOvrQIXCEVQ1EjmogyWIKZLCnvY=
-X-Google-Smtp-Source: APXvYqzhw69SkgOFk6LlkFmcnGAmxWjlPvy8XxMX2I7wJr8oGq7fwAAROAwIP+2Osw/KavN2yFmN1KPRvYp3fRiLe00=
-X-Received: by 2002:a5d:5386:: with SMTP id d6mr19819643wrv.207.1561486158264;
- Tue, 25 Jun 2019 11:09:18 -0700 (PDT)
+        bh=ttqneRism6nSsj2/bmPKPIiR+rUmQ1IgFbVIvgbIjkE=;
+        b=qWPW1oNqX9IrxGTPk7XtDZCg+PGm0Y5C1YtRwuYof88Rav8kCdiitr0quU/SsJJkLt
+         48DabwwJQODaueuTJ05IcOSMe+2tJcOYOQlYU6QIBIfL2RDmSGVwMLQvgiDMWS+2qcGW
+         +LhVo1Gs0fKtMsdVS+j0juiOBlJHT+hSrzP5LYlSEu+5IooQW43srsRjazSM073TN25r
+         g2FD7GcxF96FN9ayWrfBydDH4TfAYnPcHq5NMhjWiyMqbL35Aavg7cd1cNEIOZFKY7NR
+         9ohQDbJLQtQbqUc/XAzbBiv3oTJ7e4xMQabDwDuQDH5m8//pXe4v7AL7bCgIQ95/G1Pt
+         6/qg==
+X-Gm-Message-State: APjAAAUwDNdkU1AB/UTdtcGpziYU6TWOxfg44H5Nmmho/UidFnVlkoRB
+        1Psf2fTPk412Iqylh+hnocZa+pk4qb7kDGTDfJk=
+X-Google-Smtp-Source: APXvYqxqKYEDr8WS6l2pxezv/R4XnvZeLJB15s+rEt33TNsKEFtXrRVIX13+mtrzr2hco/lUTgsEp4I2R8bVPjETYVo=
+X-Received: by 2002:ac8:2fb7:: with SMTP id l52mr108862324qta.93.1561486485632;
+ Tue, 25 Jun 2019 11:14:45 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190616153804.3604-1-hdanton@sina.com> <20190617134913.GL3436@localhost.localdomain>
- <20190617144331.GE3500@localhost.localdomain>
-In-Reply-To: <20190617144331.GE3500@localhost.localdomain>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Wed, 26 Jun 2019 02:09:06 +0800
-Message-ID: <CADvbK_fWmRFs_wfcttH+1y6D_0zzZzKgpEOb64wYSGBA+1j86g@mail.gmail.com>
-Subject: Re: general protection fault in sctp_sched_prio_sched
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     Hillf Danton <hdanton@sina.com>,
-        syzbot <syzbot+c1a380d42b190ad1e559@syzkaller.appspotmail.com>,
-        davem <davem@davemloft.net>, LKML <linux-kernel@vger.kernel.org>,
-        linux-sctp@vger.kernel.org, network dev <netdev@vger.kernel.org>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Vlad Yasevich <vyasevich@gmail.com>
+References: <20190617192700.2313445-1-andriin@fb.com> <30a2c470-5057-bd96-1889-e77fd5536960@iogearbox.net>
+ <CAEf4Bzae1CPDkhPrESa2ZmiOH8Mqf0KA_4ty9z=xnYn=q7Frhw@mail.gmail.com>
+ <CACAyw9-L0qx8d9O66SaYhJGjsyKo_6iozqLAQHEVa1AW-U=2Tg@mail.gmail.com>
+ <CAEf4BzYaHG9Z_eFQCtwxA7t5GwQq2wr=AEeFWZpqx9vdQqKv1g@mail.gmail.com>
+ <CACAyw98JqwZbcTdpRNcG_fT6A-ekEqn9D5Zx4myB8oiX73uZkw@mail.gmail.com> <CAEf4BzYtM-41Y5w0-6kWhaeQUh7it5Zd_OZBj4kvMYou3TwQ+A@mail.gmail.com>
+In-Reply-To: <CAEf4BzYtM-41Y5w0-6kWhaeQUh7it5Zd_OZBj4kvMYou3TwQ+A@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 25 Jun 2019 11:14:34 -0700
+Message-ID: <CAEf4BzZVZTCA9TRTf0soLWZp8ZmOaUEHK9Ue6WtE43PbkdriWw@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 00/11] BTF-defined BPF map definitions
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Alexei Starovoitov <ast@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Joe Stringer <joe@wand.net.nz>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 17, 2019 at 10:43 PM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
+On Fri, Jun 21, 2019 at 10:56 AM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
 >
-> On Mon, Jun 17, 2019 at 10:49:13AM -0300, Marcelo Ricardo Leitner wrote:
-> > Hi,
+> On Fri, Jun 21, 2019 at 3:29 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
 > >
-> > On Sun, Jun 16, 2019 at 11:38:03PM +0800, Hillf Danton wrote:
+> > On Fri, 21 Jun 2019 at 05:20, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
 > > >
-> > > Hello Syzbot
-> > >
-> > > On Sat, 15 Jun 2019 16:36:06 -0700 (PDT) syzbot wrote:
-> > > > Hello,
+> > > On Thu, Jun 20, 2019 at 7:49 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
 > > > >
-> > > > syzbot found the following crash on:
+> > > > On Tue, 18 Jun 2019 at 22:37, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
 > > > >
-> > ...
-> > > Check prio_head and bail out if it is not valid.
+> > > > > > I would just drop the object-scope pinning. We avoided using it and I'm not
+> > > > > > aware if anyone else make use. It also has the ugly side-effect that this
+> > > > > > relies on AF_ALG which e.g. on some cloud provider shipped kernels is disabled.
+> > > > > > The pinning attribute should be part of the standard set of map attributes for
+> > > > > > libbpf though as it's generally useful for networking applications.
+> > > > >
+> > > > > Sounds good. I'll do some more surveying of use cases inside FB to see
+> > > > > if anyone needs object-scope pinning, just to be sure we are not
+> > > > > short-cutting anyone.
+> > > >
+> > > > I'm also curious what the use cases for declarative pinning are. From my
+> > > > limited POV it doesn't seem that useful? There are a couple of factors:
 > > >
-> > > Thanks
-> > > Hillf
-> > > ----->8---
-> > > ---
-> > > net/sctp/stream_sched_prio.c | 2 ++
-> > > 1 file changed, 2 insertions(+)
+> > > Cilium is using it pretty extensively, so there are clearly use cases.
+> > > The most straigtforward use case is using a map created and shared by
+> > > another BPF program (to communicate, read stats, what have you).
+> >
+> > I think Cilium is in the quirky position that it has a persistent daemon, but
+> > shells out to tc for loading programs. They are probably also the most
+> > advanced (open-source) users of BPF out there. If I understood their comments
+> > correctly they want to move to using a library for loading their ELF. At that
+> > point whether something is possible in a declarative way is less important,
+> > because you have the much more powerful APIs at your disposal.
+> >
+> > Maybe Daniel or someone else from the Cilium team can chime in here?
+>
+> Yep, curious about their perspective on that.
+>
+> >
+> > > > * Systemd mounts the default location only accessible to root, so I have to
+> > > >   used my own bpffs mount.
+> > > > * Since I don't want to hard code that, I put it in a config file.
+> > > > * After loading the ELF we pin maps from the daemon managing the XDP.
 > > >
-> > > diff --git a/net/sctp/stream_sched_prio.c b/net/sctp/stream_sched_prio.c
-> > > index 2245083..db25a43 100644
-> > > --- a/net/sctp/stream_sched_prio.c
-> > > +++ b/net/sctp/stream_sched_prio.c
-> > > @@ -135,6 +135,8 @@ static void sctp_sched_prio_sched(struct sctp_stream *stream,
-> > >     struct sctp_stream_priorities *prio, *prio_head;
+> > > So mounting root would be specified per bpf_object, before maps are
+> > > created, so user-land driving application will have an opportunity to
+> > > tune everything. Declarative is only the per-map decision of whether
+> > > that map should be exposed to outer world (for sharing) or not.
+> >
+> > So `tc filter add bpf obj foo.elf pin-root /gobbledygook`?
+>
+> I meant something like:
+>
+> bpf_object_open_attr attr;
+> attr.file = "path/to/my/object.o";
+> attr.pin_root_path = "/my/fancy/bpffs/root";
+> bpf_object__open_xattr(&attr);
+>
+> Then tools can adopt they when necessary.
+>
+> >
+> > > Then check tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
+> > > for more crazy syntax ;)
 > > >
-> > >     prio_head = soute->prio_head;
-> > > +   if (!prio_head)
-> > > +           return;
+> > > typedef char * (* const (* const fn_ptr_arr2_t[5])())(char * (*)(int));
+> >
+> > Not on a Friday ;P
+> >
+> > > > What if this did
+> > > >
+> > > >   __type(value, struct my_value)[1000];
+> > > >   struct my_value __member(value)[1000]; // alternative
+> > > >
+> > > > instead, and skipped max_entries?
 > > >
-> > >     /* Nothing to do if already scheduled */
-> > >     if (!list_empty(&soute->prio_list))
-> > > --
+> > > I considered that, but decided for now to keep all those attributes
+> > > orthogonal for more flexibility and uniformity. This syntax might be
+> > > considered a nice "syntax sugar" and can be added in the future, if
+> > > necessary.
 > >
-> > Thanks but this is not a good fix for this. It will cause the stream
-> > to never be scheduled.
+> > Ack.
 > >
-> > The problem happens because of the fault injection that happened a bit
-> > before the crash, in here:
+> > > > At that point you have to understand that value is a pointer so all of
+> > > > our efforts
+> > > > are for naught. I suspect there is other weirdness like this, but I need to play
+> > > > with it a little bit more.
+> > >
+> > > Yes, C can let you do crazy stuff, if you wish, but I think that
+> > > shouldn't be a blocker for this proposal. I haven't seen any BPF
+> > > program doing that, usually you duplicate the type of inner value
+> > > inside your function anyway, so there is no point in taking
+> > > sizeof(map.value) from BPF program side. From outside, though, all the
+> > > types will make sense, as expected.
 > >
-> > int sctp_stream_init_ext(struct sctp_stream *stream, __u16 sid)
-> > {
-> >         struct sctp_stream_out_ext *soute;
+> > Right, but in my mind that is a bit of a cop out. I like BTF map definitions,
+> > and I want them to be as unsurprising as possible, so that they are
+> > easy to use and adopt.
+>
+>
+> Right, but there are limit on what you can do with C syntax and it's
+> type system. Having fancy extra features like you described (e.g,
+> sizeof(map.value), etc) is pretty low on a priority list.
+>
 > >
-> >         soute = kzalloc(sizeof(*soute), GFP_KERNEL);
-> >         if (!soute)
-> >                 return -ENOMEM;
-> >         SCTP_SO(stream, sid)->ext = soute;  <---- [A]
+> > If a type encodes all the information we need via the array dimension hack,
+> > couldn't we make the map variable itself a pointer, and drop the inner pointers?
 > >
-> >         return sctp_sched_init_sid(stream, sid, GFP_KERNEL);
-> >                       ^^^^^^^^^^^^---- [B] failed
+> > struct my_map_def {
+> >   int type[BPF_MAP_TYPE_HASH];
+> >   int value;
+> >   struct foo key;
+>
+> This is bad because it potentially uses lots of space. If `struct foo`
+> is big, if max_entries is big, even for type, it's still a bunch of
+> extra space wasted. That's why we have pointers everywhere, as they
+> allow to encode everything with fixed space overhead of 8 bytes for a
+> pointer.
+>
+>
+> >   ...
 > > }
 > >
-> > This causes the 1st sendmsg to bail out with the error. When the 2nd
-> > one gets in, it will:
-> >
-> > sctp_sendmsg_to_asoc()
-> > {
-> > ...
-> >         if (unlikely(!SCTP_SO(&asoc->stream, sinfo->sinfo_stream)->ext)) {
-> >                                                                  ^^^^^--- [C]
-> >                 err = sctp_stream_init_ext(&asoc->stream, sinfo->sinfo_stream);
-> >                 if (err)
-> >                         goto err;
-> >         }
-> >
-> > [A] leaves ext initialized, despite the failed in [B]. Then in [C], it
-> > will not try to initialize again.
-> >
-> > We need to either uninitialize ->ext as error handling for [B], or
-> > improve the check on [C].
->
-> The former one, please. This should be enough (untested):
->
-> diff --git a/net/sctp/stream.c b/net/sctp/stream.c
-> index 93ed07877337..25946604af85 100644
-> --- a/net/sctp/stream.c
-> +++ b/net/sctp/stream.c
-> @@ -153,13 +153,20 @@ int sctp_stream_init(struct sctp_stream *stream, __u16 outcnt, __u16 incnt,
->  int sctp_stream_init_ext(struct sctp_stream *stream, __u16 sid)
->  {
->         struct sctp_stream_out_ext *soute;
-> +       int ret;
->
->         soute = kzalloc(sizeof(*soute), GFP_KERNEL);
->         if (!soute)
->                 return -ENOMEM;
->         SCTP_SO(stream, sid)->ext = soute;
->
-> -       return sctp_sched_init_sid(stream, sid, GFP_KERNEL);
-> +       ret = sctp_sched_init_sid(stream, sid, GFP_KERNEL);
-> +       if (ret) {
-> +               kfree(SCTP_SO(stream, sid)->ext);
-> +               SCTP_SO(stream, sid)->ext = NULL;
-> +       }
-> +
-> +       return ret;
->  }
->
->  void sctp_stream_free(struct sctp_stream *stream)
->
+> > struct my_map_def *my_map;
 
-Tested-by: Xin Long <lucien.xin@gmail.com>
+Oh, I missed this point completely, sorry about that.
 
-Hi, Marcelo, please feel free to move forward with this patch, :-)
+This has very little advantage over my proposal, in that number
+encoding is still cumbersome with array dimensions, so you'd want to
+hide it anyway behind macro, probably.
+
+But the main problem with that is when we are going to do prog_array
+or map-in-map initialization. This will create potentially huge
+anonymous variable to initialize this pointer. See example below:
+
+$ cat test.c
+typedef int(*func)(void);
+
+int f1(void) {
+        return 0;
+}
+
+int f2(void) {
+        return 1;
+}
+
+struct my_map_def {
+        int size[1000];
+        func arr[1000];
+} *map = &(struct my_map_def){
+        .arr = {
+                [500] = &f1,
+                [999] = &f2,
+        },
+};
+$ ~/local/llvm/build/bin/clang -g -target bpf -c test.c -o test.o
+$ bpftool btf dump file test.o
+
+<snip>
+
+[6] VAR '.compoundliteral' type_id=0, linkage=static
+
+<snip>
+
+[15] DATASEC '.data' size=0 vlen=1
+        type_id=6 offset=0 size=12000
+
+Note how variable ".compoundliteral" of size 12000 bytes is added
+here. Plus the syntax of initialization is cumbersome, and it requires
+naming map definition struct just for that &(struct my_map_def) cast.
+
+So I think this doesn't get as much, but makes more advanced use cases
+much more cumbersome and prohibitively expensive in terms of storage
+size.
+
+> >
+> > --
+> > Lorenz Bauer  |  Systems Engineer
+> > 6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+> >
+> > www.cloudflare.com
