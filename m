@@ -2,95 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E434E52774
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 11:05:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25A6052779
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 11:06:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731120AbfFYJFA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 05:05:00 -0400
-Received: from mail-eopbgr20073.outbound.protection.outlook.com ([40.107.2.73]:33606
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731095AbfFYJFA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Jun 2019 05:05:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=My6rndEdNDkpizeY2vrIZlfkcd/pG2VSh1IxMnxQobo=;
- b=WcpUGpnrzncWOttlQDn+5FBpprMhSKG7bWXEXxLkYt2kJGP7RlBw5Q64JpMhFXDLr2Ct3FksbD8WGoET7uaQ6e6aL0J8kDgla7MvNDKPWpHi92HjwyF2kj9+0f592sH1Nuprmp0GRv2ZwwJ/DygrFiebtbbZ9mGzFXfckC1uvHM=
-Received: from AM4PR0501MB2769.eurprd05.prod.outlook.com (10.172.222.15) by
- AM4PR0501MB2675.eurprd05.prod.outlook.com (10.172.221.148) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2008.13; Tue, 25 Jun 2019 09:04:55 +0000
-Received: from AM4PR0501MB2769.eurprd05.prod.outlook.com
- ([fe80::d9da:d3c2:1bc0:6a8b]) by AM4PR0501MB2769.eurprd05.prod.outlook.com
- ([fe80::d9da:d3c2:1bc0:6a8b%3]) with mapi id 15.20.2008.014; Tue, 25 Jun 2019
- 09:04:55 +0000
-From:   Ran Rozenstein <ranro@mellanox.com>
-To:     Tariq Toukan <tariqt@mellanox.com>,
-        Florian Westphal <fw@strlen.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Maor Gottlieb <maorg@mellanox.com>,
-        "edumazet@google.com" <edumazet@google.com>
-Subject: RE: [PATCH net-next 0/2] net: ipv4: remove erroneous advancement of
- list pointer
-Thread-Topic: [PATCH net-next 0/2] net: ipv4: remove erroneous advancement of
- list pointer
-Thread-Index: AQHVJRbrLKNg9SQxm0O9HRFaFY7gmqagBcGAgAwZnFA=
-Date:   Tue, 25 Jun 2019 09:04:55 +0000
-Message-ID: <AM4PR0501MB276924D7AD83B349AA2A6A0BC5E30@AM4PR0501MB2769.eurprd05.prod.outlook.com>
-References: <20190617140228.12523-1-fw@strlen.de>
- <08e102a0-8051-e582-56c8-d721bfc9e8b9@mellanox.com>
-In-Reply-To: <08e102a0-8051-e582-56c8-d721bfc9e8b9@mellanox.com>
-Accept-Language: he-IL, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=ranro@mellanox.com; 
-x-originating-ip: [193.47.165.251]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a5bd6999-72e0-4965-40ea-08d6f94c311a
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR0501MB2675;
-x-ms-traffictypediagnostic: AM4PR0501MB2675:
-x-microsoft-antispam-prvs: <AM4PR0501MB26751F42EC9F26D58044FA42C5E30@AM4PR0501MB2675.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 0079056367
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(366004)(396003)(376002)(39860400002)(346002)(13464003)(199004)(189003)(54906003)(53936002)(6116002)(53546011)(110136005)(186003)(76116006)(73956011)(256004)(76176011)(71190400001)(486006)(71200400001)(446003)(25786009)(33656002)(476003)(316002)(2501003)(7696005)(26005)(478600001)(102836004)(66066001)(4744005)(11346002)(8936002)(86362001)(52536014)(9686003)(229853002)(99286004)(66946007)(66446008)(8676002)(66476007)(6246003)(68736007)(66556008)(2906002)(3846002)(81156014)(6506007)(14454004)(7736002)(305945005)(4326008)(5660300002)(74316002)(81166006)(6436002)(64756008)(55016002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR0501MB2675;H:AM4PR0501MB2769.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: IMahAlTZN5BKo2Z3xck0NF50J+rRfVJqddMNQ4+YrCJJI/GdcgIg+dNmtDI8ejnFnoHhx0NC1IMTxjjJkx650+vhckrjWSc7+UbOBZxkacUXBWk+17O0LQQk/ClMeK8K1Y4TDPvEDGluPwq99RlagA5vvHLi23FTVRW5g2601UAoywVxw5u3DCf1hQQrqscsQnlSJ6d6GZEWwh3XxIPEQBrv3cwajID/CCfksJByi2tB+//ByH40sjAqNFXTnLuQZ9bXdUJS26MWs7e+trFIa7Wjb2crVOWnps3FOsh+Ej7iM8mNRtLPO9y+fo+qELJuMfG8noPEL8oMSDQbg/eFSAM7oECSZynyQzw49hV0GTpxBXTIs634iQAWTuhlRVv91w3l5BXkC8mTmb2NCsnnG6eOnweKoHHbk5YN1xWBemQ=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1729360AbfFYJGM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 05:06:12 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:37867 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728365AbfFYJGM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 05:06:12 -0400
+Received: by mail-io1-f68.google.com with SMTP id e5so2084912iok.4
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 02:06:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kLNKHOQWayNee0D8EWo9aodhV2Hm05DpYScTX3J1tGg=;
+        b=nsqbBv4TSH0RD10ekIfTQsy+w2wPjf6tf9Gn5/Ihr8PE+WroAy7UdOKDbEGNIzLlP8
+         BRY5MkqWvBgl7CPbKNOYrJVpqnn8lL/waVK6/Ay1embPYpbKcu9PCxUWCYCjXinwPMWQ
+         DrrpuSgsKCk4c5fUmXfgGmceetftfb/On2Mbcw8/BGsdlj8TkyDAAVxzDCbxKqRTUmnN
+         2fFWIXeNBil7YbHGtjHT0IT8CdaYREUywDkBCym3NxIjThhq9SRrxiHxmcQYpT4ZnGJ1
+         XTasRGr1bhtto4XMJRxbrH7tGyA/mgxUmHnF84+GLf/6v0wJR30R0hKI8a+J9/OfW9VI
+         rVTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kLNKHOQWayNee0D8EWo9aodhV2Hm05DpYScTX3J1tGg=;
+        b=F2j77TxiQPo3WzSI+CFM9e8cxD0LOR40fIhIl68VmcRAxjkshQmcfzZrulaXv4t+S/
+         n628SYSftsa1/U2HNTSGsm7sxu4i5QpAMXOUyfHZwQQVmBIG4m9Z+oVouQN1DcZXO4Fi
+         SFXuzj3oJD878NsLjuda1S1ft5/cDnIuZ9zRcIQGjDxClNppb4Mz3AQ/BRFVSnb/umYh
+         xfaAnTbj8yhRZwgyTc8RQSPF2VgYzYjqyutVIzi74b5JqpmNkfK58QkIWJX1iGdrif2+
+         IFQ4zsRZMohOsaxJz3r+d4tM36d0etypFgsH4tzHhbO7WFwomvM3F3mOP4rv2Rr3CZQK
+         gC2Q==
+X-Gm-Message-State: APjAAAWj1UEWHzMeDfkye+/4/JUHWHEB0AovSDvuGhB/0MKWsw7nHh+m
+        wKa2ihUypEmNK7ft9x1O23Aergp9/PKbSkJdwfhicA==
+X-Google-Smtp-Source: APXvYqxs/cmbqWqSL1RCHIYLt8rNVmtSrcp8f08zDFAoB756TWqTwz0wAI4BFDITjY/t9glwVg6ypxgKm5nGq0gs1ro=
+X-Received: by 2002:a02:b10b:: with SMTP id r11mr21573872jah.140.1561453571484;
+ Tue, 25 Jun 2019 02:06:11 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a5bd6999-72e0-4965-40ea-08d6f94c311a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jun 2019 09:04:55.4997
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ranro@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0501MB2675
+References: <1561414416-29732-1-git-send-email-john.hurley@netronome.com>
+ <1561414416-29732-3-git-send-email-john.hurley@netronome.com> <20190625113010.7da5dbcb@jimi>
+In-Reply-To: <20190625113010.7da5dbcb@jimi>
+From:   John Hurley <john.hurley@netronome.com>
+Date:   Tue, 25 Jun 2019 10:06:00 +0100
+Message-ID: <CAK+XE=mOjtp16tdz83RZ-x_jEp3nPRY3smxbG=OfCmGi9_DnXg@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/2] net: sched: protect against stack overflow
+ in TC act_mirred
+To:     Eyal Birger <eyal.birger@gmail.com>
+Cc:     Linux Netdev List <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Florian Westphal <fw@strlen.de>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        oss-drivers@netronome.com, shmulik@metanetworks.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogVGFyaXEgVG91a2FuDQo+
-IFNlbnQ6IE1vbmRheSwgSnVuZSAxNywgMjAxOSAxOToxNg0KPiBUbzogRmxvcmlhbiBXZXN0cGhh
-bCA8ZndAc3RybGVuLmRlPjsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZw0KPiBDYzogUmFuIFJvemVu
-c3RlaW4gPHJhbnJvQG1lbGxhbm94LmNvbT47IE1hb3IgR290dGxpZWINCj4gPG1hb3JnQG1lbGxh
-bm94LmNvbT47IGVkdW1hemV0QGdvb2dsZS5jb20NCj4gU3ViamVjdDogUmU6IFtQQVRDSCBuZXQt
-bmV4dCAwLzJdIG5ldDogaXB2NDogcmVtb3ZlIGVycm9uZW91cw0KPiBhZHZhbmNlbWVudCBvZiBs
-aXN0IHBvaW50ZXINCj4gDQo+IA0KPiANCj4gT24gNi8xNy8yMDE5IDU6MDIgUE0sIEZsb3JpYW4g
-V2VzdHBoYWwgd3JvdGU6DQo+ID4gVGFyaXEgcmVwb3J0ZWQgYSBzb2Z0IGxvY2t1cCBvbiBuZXQt
-bmV4dCB0aGF0IE1lbGxhbm94IHdhcyBhYmxlIHRvDQo+ID4gYmlzZWN0IHRvIDI2MzhlYjhiNTBj
-ZiAoIm5ldDogaXB2NDogcHJvdmlkZSBfX3JjdSBhbm5vdGF0aW9uIGZvciBpZmFfbGlzdCIpLg0K
-PiA+DQo+ID4gV2hpbGUgcmV2aWV3aW5nIGFib3ZlIHBhdGNoIEkgZm91bmQgYSByZWdyZXNzaW9u
-IHdoZW4gYWRkcmVzc2VzIGhhdmUgYQ0KPiA+IGxpZmV0aW1lIHNwZWNpZmllZC4NCj4gPg0KPiA+
-IFNlY29uZCBwYXRjaCBleHRlbmRzIHJ0bmV0bGluay5zaCB0byB0cmlnZ2VyIGNyYXNoICh3aXRo
-b3V0IGZpcnN0DQo+ID4gcGF0Y2ggYXBwbGllZCkuDQo+ID4NCj4gDQo+IFRoYW5rcyBGbG9yaWFu
-Lg0KPiANCj4gUmFuLCBjYW4geW91IHBsZWFzZSB0ZXN0Pw0KDQpUZXN0ZWQsIHN0aWxsIHJlcHJv
-ZHVjZS4NCg==
+On Tue, Jun 25, 2019 at 9:30 AM Eyal Birger <eyal.birger@gmail.com> wrote:
+>
+> Hi John,
+>
+> On Mon, 24 Jun 2019 23:13:36 +0100
+> John Hurley <john.hurley@netronome.com> wrote:
+>
+> > TC hooks allow the application of filters and actions to packets at
+> > both ingress and egress of the network stack. It is possible, with
+> > poor configuration, that this can produce loops whereby an ingress
+> > hook calls a mirred egress action that has an egress hook that
+> > redirects back to the first ingress etc. The TC core classifier
+> > protects against loops when doing reclassifies but there is no
+> > protection against a packet looping between multiple hooks and
+> > recursively calling act_mirred. This can lead to stack overflow
+> > panics.
+> >
+> > Add a per CPU counter to act_mirred that is incremented for each
+> > recursive call of the action function when processing a packet. If a
+> > limit is passed then the packet is dropped and CPU counter reset.
+> >
+> > Note that this patch does not protect against loops in TC datapaths.
+> > Its aim is to prevent stack overflow kernel panics that can be a
+> > consequence of such loops.
+> >
+> > Signed-off-by: John Hurley <john.hurley@netronome.com>
+> > Reviewed-by: Simon Horman <simon.horman@netronome.com>
+> > ---
+> >  net/sched/act_mirred.c | 14 ++++++++++++++
+> >  1 file changed, 14 insertions(+)
+> >
+> > diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
+> > index 8c1d736..c3fce36 100644
+> > --- a/net/sched/act_mirred.c
+> > +++ b/net/sched/act_mirred.c
+> > @@ -27,6 +27,9 @@
+> >  static LIST_HEAD(mirred_list);
+> >  static DEFINE_SPINLOCK(mirred_list_lock);
+> >
+> > +#define MIRRED_RECURSION_LIMIT    4
+>
+> Could you increase the limit to maybe 6 or 8? I am aware of cases where
+> mirred ingress is used for cascading several layers of logical network
+> interfaces and 4 seems a little limiting.
+>
+> Thanks,
+> Eyal.
+
+Hi Eyal,
+The value of 4 is basically a revert to what it was on older kernels
+when TC had a TTL value in the skb:
+https://elixir.bootlin.com/linux/v3.19.8/source/include/uapi/linux/pkt_cls.h#L97
+
+I also found with my testing that a value greater than 4 was sailing
+close to the edge.
+With a larger value (on my system anyway), I could still trigger a
+stack overflow here.
+I'm not sure on the history of why a value of 4 was selected here but
+it seems to fall into line with my findings.
+Is there a hard requirement for >4 recursive calls here?
+
+John
