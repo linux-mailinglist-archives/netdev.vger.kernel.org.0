@@ -2,134 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AC81559A6
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 23:06:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 427FA559A9
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 23:07:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726328AbfFYVGF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 17:06:05 -0400
-Received: from mail-ed1-f51.google.com ([209.85.208.51]:35308 "EHLO
-        mail-ed1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726040AbfFYVGF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 17:06:05 -0400
-Received: by mail-ed1-f51.google.com with SMTP id w20so21601030edd.2
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 14:06:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=P9d9BlcZhISyrqbkQk6b2UJfzj1gIdmTrAr7ReqLMZI=;
-        b=kmt5uciw+MgUdkbhdXbg5M+8PtaU70FqUXKbaVB8L6umbvKpQwcDMCXXdsW89b/5cm
-         s4fAGzhjAWyssfGwxWV5dEhIJD6d21Ud1iAjhVkp45khTrzALHzONvPHb/VpmfQGLMqe
-         oosWgohdDm4lfpki7HHhpvPMgVyZGP+Gov36sf5QbPcyb5m4CmagZWSFV76YoAUDURot
-         Ci/yawDYQrC6s8/1GaAf3V1O5hgx7aav1WWxSwLtjqOjCFQ9S67MRdpDgS0/lAye5P7i
-         mHKfVp3XU8xYeJNWmcSP2LTtZU2oHhgcoQXEqkVsKIOp7hUnxoFOdZw2qFi5G8J6+cGC
-         TT/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=P9d9BlcZhISyrqbkQk6b2UJfzj1gIdmTrAr7ReqLMZI=;
-        b=Bixhf5e016VK+cCbx6h3VQ+y1klPbGMTzhN/cH3riWGbnudN6MpBpCdYZ/wM8j+WTi
-         0Jj5ns7M78ml7JQ/6vVJ1t4cy7kZPYp1pdKHNvc0wIPRqjbG4R1M1WEK84Jy0AVDvu6t
-         a0ehAMmwvfGpXgue1Z7Tv87pOHpYO8vERPjTqHtgP1wtKUeTmCoKTicHGJxxsLWVlO4k
-         fq/4AFWMn5oYQFf+KcuYGEnE0mtsDORNnQB503may/CUuKaNQbWqCXGTLdjppy6v8C3U
-         vhuL6Z8glTgGhnZZWce+X2XLttFijBmfR/hgxzIKc2iGmm5Y/omlSH9wPPvz+cU95iwO
-         xQCA==
-X-Gm-Message-State: APjAAAXaA0kyIhV5txezIhaMQSm4qDWcpgeL8q1M4gE3ugl4wcCdBA5u
-        WxMehDEUUeTivtMs6aEL9bs9ctr7Fh2DG3lkbbQnBNgPs00=
-X-Google-Smtp-Source: APXvYqzNkFvYIf17DTCOy7wPCmBphru2C4rKMnuxCsc83WqOOATpT0CU3TCDYDqbJRFhfrGjtJqimB05bJrh4C0foCI=
-X-Received: by 2002:a50:aa14:: with SMTP id o20mr610495edc.165.1561496763360;
- Tue, 25 Jun 2019 14:06:03 -0700 (PDT)
+        id S1726334AbfFYVHO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 17:07:14 -0400
+Received: from mail-eopbgr40041.outbound.protection.outlook.com ([40.107.4.41]:60801
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726040AbfFYVHO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Jun 2019 17:07:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UMHVliVV0OqYudeXhO8ghayH1JMuTIfCkZ3myOHWR6Q=;
+ b=dDb9fO4vN4GLmk83cwNGppNrQdRCHCWfdjmkQhhaju6VwEYfpD7CgEx4ln7BBZKC43DpS8L9IQB7MOiI9eweu5PjTQXrhiKRLo9LbN4sfqTiCv0OJKQXUc97RA9qndTRkKKsBxAt1TDgJzT5U6DoUXkBfH3hR3P9QN2bShpN0k0=
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
+ DB6PR0501MB2760.eurprd05.prod.outlook.com (10.172.226.150) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2008.16; Tue, 25 Jun 2019 21:07:10 +0000
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::a901:6951:59de:3278]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::a901:6951:59de:3278%2]) with mapi id 15.20.2008.014; Tue, 25 Jun 2019
+ 21:07:10 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     Jason Gunthorpe <jgg@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "dledford@redhat.com" <dledford@redhat.com>
+CC:     "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        Or Gerlitz <ogerlitz@mellanox.com>,
+        "sagi@grimberg.me" <sagi@grimberg.me>,
+        Leon Romanovsky <leonro@mellanox.com>,
+        Tal Gilboa <talgi@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [pull request][for-next V2 0/7] Generic DIM lib for netdev and
+ RDMA
+Thread-Topic: [pull request][for-next V2 0/7] Generic DIM lib for netdev and
+ RDMA
+Thread-Index: AQHVK5iYkivo34mkiUCAxIaWOP9/Xqas3LQA
+Date:   Tue, 25 Jun 2019 21:07:10 +0000
+Message-ID: <1303f91de924ebfc980a7e0464a84aa5373dd32a.camel@mellanox.com>
+References: <20190625205701.17849-1-saeedm@mellanox.com>
+In-Reply-To: <20190625205701.17849-1-saeedm@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.32.3 (3.32.3-1.fc30) 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-originating-ip: [209.116.155.178]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0aca057a-88fe-4721-8511-08d6f9b116a5
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2760;
+x-ms-traffictypediagnostic: DB6PR0501MB2760:
+x-microsoft-antispam-prvs: <DB6PR0501MB2760239EF52EE2A7CF19CE0BBEE30@DB6PR0501MB2760.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 0079056367
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39860400002)(396003)(136003)(376002)(346002)(366004)(199004)(189003)(71200400001)(53936002)(73956011)(66946007)(2906002)(71190400001)(76116006)(26005)(305945005)(76176011)(6246003)(8936002)(186003)(316002)(110136005)(81156014)(81166006)(14454004)(6506007)(8676002)(7736002)(99286004)(68736007)(54906003)(58126008)(6436002)(6512007)(2616005)(11346002)(446003)(486006)(64756008)(476003)(6486002)(66066001)(102836004)(36756003)(5660300002)(118296001)(229853002)(6116002)(66556008)(66476007)(86362001)(2201001)(3846002)(478600001)(91956017)(25786009)(256004)(2501003)(66446008)(14444005)(4744005)(4326008)(41533002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2760;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: +eedZ6RhFf/+JyW2412l4kYU7/ChtQcB+9lNXE2AT1NroZPqaRJbPD9EmqQYTG7FD3RZNitsNG703WxzYbUtrPKsKP8hj/aC0s0+4YuKRgISlDBYMKC8IKRhO2uPfTdNs4B8mJvdFg6fs36uo2oxmG4+d+7fWInHTHMleepEZ5S8kUoKzk18zL26xkJOmHnwqSptkT9oX58gHcbC8Zyex8vKvAkyKBG9wRZLL5M1RoRUVd+oYoKxVIUAgQjcWmLAyOXYOKeKTVEkerTS245Vf0XoqR8QO31chlHVXy0T+mImP7MWjKPmOWbGYaq5thtl5c1+TQ4z+Wu5AXCCv9KINZ6A1LgfCMkflfPsZUk7KnHyj+ibrIKlPCEYJmKus52KgR28g5+oBR8+IxdtCbwBWNL92SfOsd/iHn8bIz12oPc=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <5D78C728FD1B144ABF3D4D549F96E64A@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <CA+h21hrRMrLH-RjBGhEJSTZd6_QPRSd3RkVRQF-wNKkrgKcRSA@mail.gmail.com>
-In-Reply-To: <CA+h21hrRMrLH-RjBGhEJSTZd6_QPRSd3RkVRQF-wNKkrgKcRSA@mail.gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Wed, 26 Jun 2019 00:05:52 +0300
-Message-ID: <CA+h21hrpXbzAhT26JJt56MtxT4XfwWxWFs8KTw4kmM=OB+11uA@mail.gmail.com>
-Subject: Re: What to do when a bridge port gets its pvid deleted?
-To:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        stephen@networkplumber.org
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0aca057a-88fe-4721-8511-08d6f9b116a5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jun 2019 21:07:10.2866
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2760
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 25 Jun 2019 at 23:49, Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> Hi,
->
-> A number of DSA drivers (BCM53XX, Microchip KSZ94XX, Mediatek MT7530
-> at the very least), as well as Mellanox Spectrum (I didn't look at all
-> the pure switchdev drivers) try to restore the pvid to a default value
-> on .port_vlan_del.
-> Sure, the port stops receiving traffic when its pvid is a VLAN ID that
-> is not installed in its hw filter, but as far as the bridge core is
-> concerned, this is to be expected:
->
-> # bridge vlan add dev swp2 vid 100 pvid untagged
-> # bridge vlan
-> port    vlan ids
-> swp5     1 PVID Egress Untagged
->
-> swp2     1 Egress Untagged
->          100 PVID Egress Untagged
->
-> swp3     1 PVID Egress Untagged
->
-> swp4     1 PVID Egress Untagged
->
-> br0      1 PVID Egress Untagged
-> # ping 10.0.0.1
-> PING 10.0.0.1 (10.0.0.1) 56(84) bytes of data.
-> 64 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.682 ms
-> 64 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.299 ms
-> 64 bytes from 10.0.0.1: icmp_seq=3 ttl=64 time=0.251 ms
-> 64 bytes from 10.0.0.1: icmp_seq=4 ttl=64 time=0.324 ms
-> 64 bytes from 10.0.0.1: icmp_seq=5 ttl=64 time=0.257 ms
-> ^C
-> --- 10.0.0.1 ping statistics ---
-> 5 packets transmitted, 5 received, 0% packet loss, time 4188ms
-> rtt min/avg/max/mdev = 0.251/0.362/0.682/0.163 ms
-> # bridge vlan del dev swp2 vid 100
-> # bridge vlan
-> port    vlan ids
-> swp5     1 PVID Egress Untagged
->
-> swp2     1 Egress Untagged
->
-> swp3     1 PVID Egress Untagged
->
-> swp4     1 PVID Egress Untagged
->
-> br0      1 PVID Egress Untagged
->
-> # ping 10.0.0.1
-> PING 10.0.0.1 (10.0.0.1) 56(84) bytes of data.
-> ^C
-> --- 10.0.0.1 ping statistics ---
-> 8 packets transmitted, 0 received, 100% packet loss, time 7267ms
->
-> What is the consensus here? Is there a reason why the bridge driver
-> doesn't take care of this? Do switchdev drivers have to restore the
-> pvid to always be operational, even if their state becomes
-> inconsistent with the upper dev? Is it just 'nice to have'? What if
-> VID 1 isn't in the hw filter either (perfectly legal)?
->
-> Thanks!
-> -Vladimir
-
-Or rather, let me put it differently.
-I am not only asking to figure out whether I should put this extra
-logic or not in a switchdev driver - I can understand the "you don't
-want it, don't put it" concept.
-But let's say that for various reasons, MSTP is not supported in the
-Linux kernel and I'm trying to create an ad-hoc MSTP setup where I
-break the loop manually in the pvid. Is there any good reason why a
-switchdev driver would oppose fierce resistance to me trying to do
-that? Again, this is perfectly valid - the switch will no longer
-receive untagged traffic but it will continue to forward frames in
-other VLANs.
-
--Vladimir
+T24gVHVlLCAyMDE5LTA2LTI1IGF0IDIwOjU3ICswMDAwLCBTYWVlZCBNYWhhbWVlZCB3cm90ZToN
+Cj4gSGkgRGF2ZSwgRG91ZyAmIEphc29uDQo+IA0KPiBUaGlzIHNlcmllcyBpbXByb3ZlcyBESU0g
+LSBEeW5hbWljYWxseS10dW5lZCBJbnRlcnJ1cHQNCj4gTW9kZXJhdGlvbi0gdG8gYmUgZ2VuZXJp
+YyBmb3IgbmV0ZGV2IGFuZCBSRE1BIHVzZS1jYXNlcy4NCj4gDQo+IEZyb20gVGFsIGFuZCBZYW1p
+bjoNCj4gDQo+IEZpcnN0IDcgcGF0Y2hlcyBwcm92aWRlIHRoZSBuZWNlc3NhcnkgcmVmYWN0b3Jp
+bmcgdG8gY3VycmVudCBuZXRfZGltDQo+IGxpYnJhcnkgd2hpY2ggYWZmZWN0IHNvbWUgbmV0IGRy
+aXZlcnMgd2hvIGFyZSB1c2luZyB0aGUgQVBJLg0KPiANCj4gVGhlIGxhc3QgMyBwYXRjaGVzIHBy
+b3ZpZGUgdGhlIFJETUEgaW1wbGVtZW50YXRpb24gZm9yIERJTS4NCj4gVGhlc2UgcGF0Y2hlcyBh
+cmUgaW5jbHVkZWQgaW4gdGhpcyBwdWxsIHJlcXVlc3QgYW5kIHRoZXkgYXJlIHBvc3RlZA0KDQpj
+b3JyZWN0aW9uOiBUaGUgbGFzdCAzIHBhdGNoZXMgYXJlICpOT1QqIGluY2x1ZGVkIGluIHRoaXMg
+cHVsbCByZXF1ZXN0Lg0KDQpUaGUgaWRlYSBoZXJlIGlzIHRvIHB1bGwgdGhlIHJlLWZhY3Rvcmlu
+ZyBBUEkgcGF0Y2hlcyB0aGF0IGVmZmVjdCBhbmQNCnRvdWNoICBuZXQgZHJpdmVycyBbMC03XSB0
+byBib3RoIHRyZWVzIGFuZCBbOC0xMF0gd2lsbCBiZSBzZW50IGxhdGVyIHRvDQpyZG1hIHRyZWUg
+b25seS4NCg0KDQpUaGFua3MsDQpTYWVlZC4NCg==
