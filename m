@@ -2,210 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF9EF553E1
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 18:00:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CEFA553D0
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 17:57:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731610AbfFYQAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 12:00:42 -0400
-Received: from rs07.intra2net.com ([85.214.138.66]:35294 "EHLO
-        rs07.intra2net.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728422AbfFYQAm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 12:00:42 -0400
-X-Greylist: delayed 327 seconds by postgrey-1.27 at vger.kernel.org; Tue, 25 Jun 2019 12:00:39 EDT
-Received: from mail.m.i2n (unknown [172.17.128.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1731839AbfFYP5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 11:57:54 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:40570 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731329AbfFYP5x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 11:57:53 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 8099B607DE; Tue, 25 Jun 2019 15:57:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1561478272;
+        bh=XqgNOLlTUfn4LH2MAryEaw/gXzDyn3gYQlANzZbh2ms=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=G0Eyj/ti9sagWAhSCxoF72RKgGu7rJhdgnXEXSq7ZNQBnIFiWUQFSZY8D/cMbLJjT
+         dRwpc6yAyhpPi/SgwlYIzDRM6tNQbXYlAsr1Afwzj0yUD1nJvPWEghIXgLaThuDQqw
+         05v3iNc6CntJYy5Ul+uSX8kxFnPfIxoJJ+ni5Bpo=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from chinagar-linux.qualcomm.com (blr-c-bdr-fw-01_globalnat_allzones-outside.qualcomm.com [103.229.19.19])
+        (using TLSv1.2 with cipher DHE-RSA-AES128-SHA (128/128 bits))
         (No client certificate requested)
-        by rs07.intra2net.com (Postfix) with ESMTPS id 956861500322;
-        Tue, 25 Jun 2019 17:55:11 +0200 (CEST)
-Received: from localhost (mail.m.i2n [127.0.0.1])
-        by localhost (Postfix) with ESMTP id 6061A88D;
-        Tue, 25 Jun 2019 17:55:11 +0200 (CEST)
-X-Virus-Scanned: by Intra2net Mail Security (AVE=8.3.54.50,VDF=8.16.17.142)
-X-Spam-Status: 
-X-Spam-Level: 0
-Received: from localhost (storm.m.i2n [172.16.1.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.m.i2n (Postfix) with ESMTPS id 829515EF;
-        Tue, 25 Jun 2019 17:55:09 +0200 (CEST)
-Date:   Tue, 25 Jun 2019 17:55:09 +0200
-From:   Thomas Jarosch <thomas.jarosch@intra2net.com>
-To:     netdev@vger.kernel.org
-Cc:     netfilter-devel@vger.kernel.org,
-        Juliana Rodrigueiro <juliana.rodrigueiro@intra2net.com>
-Subject: 4.19: Traced deadlock during xfrm_user module load
-Message-ID: <20190625155509.pgcxwgclqx3lfxxr@intra2net.com>
+        (Authenticated sender: chinagar@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 6FFFC6016D;
+        Tue, 25 Jun 2019 15:57:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1561478271;
+        bh=XqgNOLlTUfn4LH2MAryEaw/gXzDyn3gYQlANzZbh2ms=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=oG/gj0I8zsbWli2gmZkSGi/vItUD6Owya/TkG+UronQyXn7sTRjXX/Fac3I8sVqE8
+         jMftLlBpCcqc4zVe0pvPqX1gZF7wuD3xt/Sk8zHWr6PNGsAgsETpY3JhkdVnlfLXrO
+         4BXYgi8b52GCussbW84A6u85+bApQqyVN6NIysxk=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 6FFFC6016D
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=chinagar@codeaurora.org
+Date:   Tue, 25 Jun 2019 21:27:35 +0530
+From:   Chinmay Agarwal <chinagar@codeaurora.org>
+To:     Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org
+Cc:     sharathv@codeaurora.org, kapandey@codeaurora.org
+Subject: Re: Warnings generated from tcp_sacktag_write_queue.
+Message-ID: <20190625155734.GA31551@chinagar-linux.qualcomm.com>
+References: <20190625130706.GA6891@chinagar-linux.qualcomm.com>
+ <ab6bb900-e9b7-f2b2-0a56-d1c9e14d2db6@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-User-Agent: NeoMutt/20180716
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ab6bb900-e9b7-f2b2-0a56-d1c9e14d2db6@gmail.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+On Tue, Jun 25, 2019 at 04:24:14PM +0200, Eric Dumazet wrote:
+> 
+> 
+> On 6/25/19 6:07 AM, Chinmay Agarwal wrote:
+> > Dear All,
+> > 
+> > We are hitting the following WARN_ON condition:
+> > 
+> > 	WARN_ON((int)tcp_packets_in_flight(tp) < 0);
+> > 
+> > 	tcp_packets_in_flight =  packets_out –( lost_out +
+> > 	sacked_out ) + retrans_out  (This value is coming -ve)
+> > 
+> > The tcp socket being used is in fin_wait_1 state.
+> > The values for variables just before the crash:
+> > packets_out = 0,
+> > retrans_out = 28,
+> > lost_out = 38,
+> > sacked_out = 8
+> > 
+> > 
+> > The only place I can find the packets_out value being set as 0 is:
+> > 
+> > void tcp_write_queue_purge(struct sock *sk)
+> > {
+> > ...
+> > 
+> > 	tcp_sk(sk)->packets_out = 0;
+> >         inet_csk(sk)->icsk_backoff = 0;
+> > }
+> > 
+> > Is there some code flow where packets_out can be set to 0 and other
+> > values can remain unchanged?
+> > If not, is there some scenario which may lead to "tcp_write_queue_purge"
+> > called and not followed up by "tcp_clear_retrans"?
+> > 
+> > According to my understanding we should call "tcp_clear_retrans" after
+> > setting packets_out to 0.
+> > 
+> > [ 1950.556150] Call trace:
+> > [ 1950.558689] tcp_sacktag_write_queue+0x704/0x72c
+> > [ 1950.561313] init: Untracked pid 10745 exited with status 0
+> > [ 1950.563441] tcp_ack+0x3a4/0xd40
+> > [ 1950.563447] tcp_rcv_state_process+0x1e8/0xbbc
+> > [ 1950.563457] tcp_v4_do_rcv+0x18c/0x1cc
+> > [ 1950.563461] tcp_v4_rcv+0x84c/0x8a8
+> > [ 1950.563471] ip_protocol_deliver_rcu+0xdc/0x190
+> > [ 1950.563474] ip_local_deliver_finish+0x64/0x80
+> > [ 1950.563479] ip_local_deliver+0xc4/0xf8
+> > [ 1950.563482] ip_rcv_finish+0x214/0x2e0
+> > [ 1950.563486] ip_rcv+0x2fc/0x39c
+> > [ 1950.563496] __netif_receive_skb_core+0x698/0x84c
+> > [ 1950.563499] __netif_receive_skb+0x3c/0x7c
+> > [ 1950.563503] process_backlog+0x98/0x148
+> > [ 1950.563506] net_rx_action+0x128/0x388
+> > [ 1950.563519] __do_softirq+0x20c/0x3f0
+> > [ 1950.563528] irq_exit+0x9c/0xa8
+> > [ 1950.563536] handle_IPI+0x174/0x278
+> > [ 1950.563540] gic_handle_irq+0x124/0x1c0
+> > [ 1950.563544] el1_irq+0xb4/0x12c
+> > [ 1950.563556] lpm_cpuidle_enter+0x3f4/0x430
+> > [ 1950.563561] cpuidle_enter_state+0x124/0x25c
+> > [ 1950.563565] cpuidle_enter+0x30/0x40
+> > [ 1950.563575] call_cpuidle+0x3c/0x60
+> > [ 1950.563579] do_idle+0x190/0x228
+> > [ 1950.563583] cpu_startup_entry+0x24/0x28
+> > [ 1950.563588] secondary_start_kernel+0x12c/0x138
+> > 
+> 
+> 
+> You do not provide what exact kernel version you are using,
+> this is probably the most important information we need.
+> 
 
-we're in the process of upgrading to kernel 4.19 and hit
-a very rare lockup on boot during "xfrm_user" module load.
-The tested kernel was 4.19.55.
-
-When the strongswan IPsec service starts, it loads the xfrm_user module.
--> modprobe hangs forever. 
-
-Also network services like ssh or apache stop responding,
-ICMP ping still works.
-
-By chance we had magic sysRq enabled and were able to get some meaningful stack 
-traces. We've rebuilt the kernel with LOCKDEP + DEBUG_INFO + DEBUG_INFO_REDUCED, 
-but so far failed to reproduce the issue even when hammering the suspected 
-deadlock case. Though it's just hammering it for a few hours yet.
-
-Preliminary analysis:
-
-"modprobe xfrm_user":
-    xfrm_user_init()
-        register_pernet_subsys()
-            -> grab pernet_ops_rwsem
-                ..
-                netlink_table_grab()
-                    calls schedule() as "nl_table_users" is non-zero
-
-
-conntrack netlink related program "info_iponline" does this in parallel:
-    netlink_bind()
-        netlink_lock_table() -> increases "nl_table_users"
-            nfnetlink_bind()
-            # does not unlock the table as it's locked by netlink_bind()
-                __request_module()
-                    call_usermodehelper_exec()
-            
-
-"modprobe nf_conntrack_netlink" runs and inits nf_conntrack_netlink:
-    ctnetlink_init()
-        register_pernet_subsys()
-            -> blocks on "pernet_ops_rwsem" thanks to xfrm_user module
-                -> schedule()
-                    -> deadlock forever
-
-
-Full stack traces:
-
-strongswan starts on boot and loads "xfrm_user":
-
-kernel: modprobe        D    0  3825   3762 0x80000080
-kernel: Call Trace:
-kernel: __schedule+0x188/0x4d0
-kernel: ? add_wait_queue_exclusive+0x4d/0x60
-kernel: schedule+0x21/0x70
-kernel: netlink_table_grab+0x9a/0xf0
-kernel: ? wake_up_q+0x60/0x60
-kernel: __netlink_kernel_create+0x15f/0x1e0
-kernel: xfrm_user_net_init+0x45/0x80 [xfrm_user]
-kernel: ? xfrm_user_net_exit+0x60/0x60 [xfrm_user]
-kernel: ops_init+0x68/0x100
-kernel: ? vprintk_emit+0x9e/0x1a0
-kernel: ? 0xf826c000
-kernel: ? xfrm_dump_sa+0x120/0x120 [xfrm_user]
-kernel: register_pernet_operations+0xef/0x1d0
-kernel: ? 0xf826c000
-kernel: register_pernet_subsys+0x1c/0x30
-kernel: xfrm_user_init+0x18/0x1000 [xfrm_user]
-kernel: do_one_initcall+0x44/0x190
-kernel: ? free_unref_page_commit+0x6a/0xd0
-kernel: do_init_module+0x46/0x1c0
-kernel: load_module+0x1dc1/0x2400
-kernel: sys_init_module+0xed/0x120
-kernel: do_fast_syscall_32+0x7a/0x200
-kernel: entry_SYSENTER_32+0x6b/0xbe
-
-
-Another program triggers a conntrack netlink operation in parallel:
-
-kernel: info_iponline   D    0  3787   3684 0x00000084
-kernel: Call Trace:
-kernel: __schedule+0x188/0x4d0
-kernel: schedule+0x21/0x70
-kernel: schedule_timeout+0x195/0x260
-kernel: ? wake_up_process+0xf/0x20
-kernel: ? insert_work+0x86/0xa0
-kernel: wait_for_common+0xe2/0x190
-kernel: ? wake_up_q+0x60/0x60
-kernel: wait_for_completion_killable+0x12/0x30
-kernel: call_usermodehelper_exec+0xda/0x170
-kernel: __request_module+0x115/0x2e0
-kernel: ? __wake_up_common_lock+0x7a/0xa0
-kernel: ? __wake_up+0xd/0x20
-kernel: nfnetlink_bind+0x28/0x53 [nfnetlink]
-kernel: netlink_bind+0x138/0x300
-kernel: ? netlink_setsockopt+0x320/0x320
-kernel: __sys_bind+0x65/0xb0
-kernel: ? __audit_syscall_exit+0x1fb/0x270
-kernel: ? __audit_syscall_entry+0xad/0xf0
-kernel: sys_socketcall+0x2f0/0x350
-kernel: ? _cond_resched+0x12/0x40
-kernel: do_fast_syscall_32+0x7a/0x200
-kernel: entry_SYSENTER_32+0x6b/0xbe
-
-
-This triggers a module load by the kernel:
-
-kernel: modprobe        D    0  3827   1578 0x80000080
-kernel: Call Trace:
-kernel: __schedule+0x188/0x4d0
-kernel: schedule+0x21/0x70
-kernel: rwsem_down_write_failed+0xf5/0x210
-kernel: ? 0xf8283000
-kernel: call_rwsem_down_write_failed+0x9/0xc
-kernel: down_write+0x18/0x30
-kernel: register_pernet_subsys+0x10/0x30
-kernel: ctnetlink_init+0x48/0x1000 [nf_conntrack_netlink]
-kernel: do_one_initcall+0x44/0x190
-kernel: ? free_unref_page_commit+0x6a/0xd0
-kernel: do_init_module+0x46/0x1c0
-kernel: load_module+0x1dc1/0x2400
-kernel: sys_init_module+0xed/0x120
-kernel: do_fast_syscall_32+0x7a/0x200
-kernel: entry_SYSENTER_32+0x6b/0xbe
-
-
-Other network related operations are deadlocked in netlink_table_grab():
-
-kernel: ntpd            D    0  3831   3830 0x00000080
-kernel: Call Trace:
-kernel: __schedule+0x188/0x4d0
-kernel: ? add_wait_queue_exclusive+0x4d/0x60
-kernel: schedule+0x21/0x70
-kernel: netlink_table_grab+0x9a/0xf0
-kernel: ? wake_up_q+0x60/0x60
-kernel: netlink_release+0x14e/0x460
-kernel: __sock_release+0x2d/0xb0
-kernel: sock_close+0xd/0x20
-kernel: __fput+0x93/0x1c0
-kernel: ____fput+0x8/0x10
-kernel: task_work_run+0x82/0xa0
-kernel: exit_to_usermode_loop+0x8d/0x90
-kernel: do_fast_syscall_32+0x1a7/0x200
-kernel: entry_SYSENTER_32+0x6b/0xbe
-
-
-The easy workaround for us is to load the conntrack netlink
-modules before starting strongswan. Since we use classic init,
-this works. In parallel booting systemd world, people might
-still hit the issue, so it's worth fixing.
-
-The related function netlink_create() unlocks the table
-before requesting modules and locks it afterwards again.
-
-We guess it's racy to call netlink_unlock_table()
-before doing the 
-    
-    err = nlk->netlink_bind(net, group + 1);
-    
-call in netlink_bind() ?
-
-
-What would be the best fix here?
-
-Best regards,
-Thomas Jarosch and Juliana Rodrigueiro
+The kernel version used is 4.14.
