@@ -2,410 +2,418 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9FB55202C
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 02:57:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 645A05202E
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 03:00:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729869AbfFYA5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 20:57:47 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:40541 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728340AbfFYA5r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 20:57:47 -0400
-Received: by mail-qt1-f194.google.com with SMTP id a15so16603072qtn.7
-        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 17:57:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=NCDQ2ItaLdjU1MysfV10yrLcotvguvpykGzXVNrZ+to=;
-        b=B1Vbr3/phWu/Ec3l9M/Q0IdLqbdjOGoibpd3/uSfnb5jGBQJvunkOZKN7+LG/1SQu2
-         4wz/xCBJcMffQw+4Ifpw2xwCTpFMX1qBLtVG7QyoXlx7jKrg7qPAvQFFP2ZTmg2ZrxM7
-         fWYgkGJ/4KGAFYetoBxAUhc8KvHBbO7iNeq9Jyfqth7wd85W4GsZUMvSTTQEa9I4sDCt
-         mssOJ9+l9FQkG2xeAxLYuhtb2jw580aMOamOLVoe7aUTHVr+D4zht/GLOTqyhJlg+arR
-         kfzkEc0R/DUOTT9hwx1q7IjMMIlkT8/aRrfFiGK5E+VkFH0oT0JXd+wgw/DELyTbq2NE
-         IY1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=NCDQ2ItaLdjU1MysfV10yrLcotvguvpykGzXVNrZ+to=;
-        b=Ok3fQXvg1vjQLVFWMyopC+OXsHiZzOBuLxjXmdWTjjVoWGf89gcOZOR36ryn8byVDT
-         hqgpPTFjWfyahZ8o2sEvB08TCEW1zjCKbz4C86BTXRHoTQELrIFfNSz72UT8VpYASHXS
-         LQVQ1m1gD22qkpDz0fyWyf+UMSDeyCH2yNbgvR/lILCSgeUK/OUw/z5+7E8dERez+wp5
-         m0V38g1WpSoXdQ1W0Y6y/icdWO3avmH5fMMEaR0WlF5+svxf1ksoXASi9IJZw2649JYg
-         h3S0v5UwM7VhaTVftJ8vUtv02U1YRl4dymsjDihjekAQyf8qZg1TNyoJ6RQ7qlUuefwm
-         QMlg==
-X-Gm-Message-State: APjAAAU/sGxpwjVxI61YJ+1TBNi7xXoziCyLA5lOwmU0gfp6I2CylnOc
-        2LVn23p0iyFEnQrhrL8sATVuCXHZpZk=
-X-Google-Smtp-Source: APXvYqw76C9GfnG/7PhLaO5xi9gti8Dvbr08xvUR+JyD8QU8A959H5bxMVQyHCf43ANO+zmFOw/upg==
-X-Received: by 2002:aed:3e7c:: with SMTP id m57mr127243032qtf.204.1561424265676;
-        Mon, 24 Jun 2019 17:57:45 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id a21sm6793552qkg.47.2019.06.24.17.57.44
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 24 Jun 2019 17:57:45 -0700 (PDT)
-Date:   Mon, 24 Jun 2019 17:57:40 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Alexei Starovoitov <ast@fb.com>
-Cc:     Andrey Ignatov <rdna@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Takshak Chahande <ctakshak@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        Stanislav Fomichev <sdf@google.com>
-Subject: Re: [PATCH bpf-next] bpftool: Add BPF_F_QUERY_EFFECTIVE support in
- bpftool cgroup [show|tree]
-Message-ID: <20190624175740.5cccea9b@cakuba.netronome.com>
-In-Reply-To: <20190624174726.2dda122b@cakuba.netronome.com>
-References: <20190621223311.1380295-1-ctakshak@fb.com>
-        <6fe292ee-fff0-119c-8524-e25783901167@iogearbox.net>
-        <20190624145111.49176d8e@cakuba.netronome.com>
-        <20190624221558.GA41600@rdna-mbp.dhcp.thefacebook.com>
-        <20190624154309.5ef3357b@cakuba.netronome.com>
-        <97b13eb6-43fb-8ee9-117d-a68f9825b866@fb.com>
-        <20190624171641.73cd197d@cakuba.netronome.com>
-        <6d44d265-7133-d191-beeb-c22dde73993f@fb.com>
-        <20190624173005.06430163@cakuba.netronome.com>
-        <01c2c76b-5a45-aab0-e698-b5a66ab6c2e7@fb.com>
-        <20190624174726.2dda122b@cakuba.netronome.com>
-Organization: Netronome Systems, Ltd.
+        id S1729880AbfFYBAk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 21:00:40 -0400
+Received: from pb-smtp1.pobox.com ([64.147.108.70]:53555 "EHLO
+        pb-smtp1.pobox.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729336AbfFYBAk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 21:00:40 -0400
+Received: from pb-smtp1.pobox.com (unknown [127.0.0.1])
+        by pb-smtp1.pobox.com (Postfix) with ESMTP id E370B166E86;
+        Mon, 24 Jun 2019 21:00:30 -0400 (EDT)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=pobox.com; h=subject:to:cc
+        :references:from:message-id:date:mime-version:in-reply-to
+        :content-type:content-transfer-encoding; s=sasl; bh=Nf98VEpzf7Ot
+        iCL+6e9xy3Hq6AA=; b=b8bzrrPZd4hxAZIVhklHshtzsOaZkb+uJbfXwXM8UGRL
+        EBQbuYfMmWrJLYlnLF78218t1OhM6T0RFeqih+GsXV2UDnVWrxcDTd7LWdeeF5vH
+        rv/BdK4t2pJFvWiog+Nkw3SmHqphgL/sunsrVHuuXlz9hWOVIDPAPrjCbzagYG0=
+DomainKey-Signature: a=rsa-sha1; c=nofws; d=pobox.com; h=subject:to:cc
+        :references:from:message-id:date:mime-version:in-reply-to
+        :content-type:content-transfer-encoding; q=dns; s=sasl; b=CNX69V
+        3a4HcFXzpGmJDgSjZVmj1pjtwb368c7do0jqRCgBdsUsPKNWS0ATRT3deninkTvr
+        8eWOJv+A/7tR8lXHi8iUaqRHAc19TdC1U5f6MVHL78pGic/H+bEUAYEmBWNgjRcn
+        YZQOOHDKQeRvbQXGdS91yk2FNCU29OXX3Aghg=
+Received: from pb-smtp1.nyi.icgroup.com (unknown [127.0.0.1])
+        by pb-smtp1.pobox.com (Postfix) with ESMTP id D7BD3166E85;
+        Mon, 24 Jun 2019 21:00:30 -0400 (EDT)
+Received: from [192.168.1.134] (unknown [70.142.57.80])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by pb-smtp1.pobox.com (Postfix) with ESMTPSA id EAEE5166E83;
+        Mon, 24 Jun 2019 21:00:27 -0400 (EDT)
+Subject: Re: [PATCH RFC net-next 1/5] net: dsa: mt7530: Convert to PHYLINK API
+To:     =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
+        sean.wang@mediatek.com, f.fainelli@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, matthias.bgg@gmail.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com
+Cc:     frank-w@public-files.de, netdev@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org
+References: <20190624145251.4849-1-opensource@vdorst.com>
+ <20190624145251.4849-2-opensource@vdorst.com>
+From:   Daniel Santos <daniel.santos@pobox.com>
+Message-ID: <13c67cb7-b33e-f2b1-9d1e-d2882e0ff076@pobox.com>
+Date:   Mon, 24 Jun 2019 19:58:57 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20190624145251.4849-2-opensource@vdorst.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+X-Pobox-Relay-ID: 9F971F98-96E4-11E9-81CE-46F8B7964D18-06139138!pb-smtp1.pobox.com
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 24 Jun 2019 17:47:26 -0700, Jakub Kicinski wrote:
-> I see.  The local flag would not an option in getopt_long() sense, what
-> I was thinking was about adding an "effective" keyword:
 
-Something like this, untested:
 
---->8------------
+On 6/24/19 9:52 AM, Ren=C3=A9 van Dorst wrote:
+> Convert mt7530 to PHYLINK API
+>
+> Signed-off-by: Ren=C3=A9 van Dorst <opensource@vdorst.com>
+> ---
+>  drivers/net/dsa/mt7530.c | 237 +++++++++++++++++++++++++++++----------
+>  drivers/net/dsa/mt7530.h |   9 ++
+>  2 files changed, 187 insertions(+), 59 deletions(-)
+>
+> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+> index 3181e95586d6..9c5e4dd00826 100644
+> --- a/drivers/net/dsa/mt7530.c
+> +++ b/drivers/net/dsa/mt7530.c
+> @@ -13,7 +13,7 @@
+>  #include <linux/of_mdio.h>
+>  #include <linux/of_net.h>
+>  #include <linux/of_platform.h>
+> -#include <linux/phy.h>
+> +#include <linux/phylink.h>
+>  #include <linux/regmap.h>
+>  #include <linux/regulator/consumer.h>
+>  #include <linux/reset.h>
+> @@ -633,63 +633,6 @@ mt7530_get_sset_count(struct dsa_switch *ds, int p=
+ort, int sset)
+>  	return ARRAY_SIZE(mt7530_mib);
+>  }
+> =20
+> -static void mt7530_adjust_link(struct dsa_switch *ds, int port,
+> -			       struct phy_device *phydev)
+> -{
+> -	struct mt7530_priv *priv =3D ds->priv;
+> -
+> -	if (phy_is_pseudo_fixed_link(phydev)) {
+> -		dev_dbg(priv->dev, "phy-mode for master device =3D %x\n",
+> -			phydev->interface);
+> -
+> -		/* Setup TX circuit incluing relevant PAD and driving */
+> -		mt7530_pad_clk_setup(ds, phydev->interface);
+> -
+> -		if (priv->id =3D=3D ID_MT7530) {
+> -			/* Setup RX circuit, relevant PAD and driving on the
+> -			 * host which must be placed after the setup on the
+> -			 * device side is all finished.
+> -			 */
+> -			mt7623_pad_clk_setup(ds);
+> -		}
+> -	} else {
+> -		u16 lcl_adv =3D 0, rmt_adv =3D 0;
+> -		u8 flowctrl;
+> -		u32 mcr =3D PMCR_USERP_LINK | PMCR_FORCE_MODE;
+> -
+> -		switch (phydev->speed) {
+> -		case SPEED_1000:
+> -			mcr |=3D PMCR_FORCE_SPEED_1000;
+> -			break;
+> -		case SPEED_100:
+> -			mcr |=3D PMCR_FORCE_SPEED_100;
+> -			break;
+> -		}
+> -
+> -		if (phydev->link)
+> -			mcr |=3D PMCR_FORCE_LNK;
+> -
+> -		if (phydev->duplex) {
+> -			mcr |=3D PMCR_FORCE_FDX;
+> -
+> -			if (phydev->pause)
+> -				rmt_adv =3D LPA_PAUSE_CAP;
+> -			if (phydev->asym_pause)
+> -				rmt_adv |=3D LPA_PAUSE_ASYM;
+> -
+> -			lcl_adv =3D linkmode_adv_to_lcl_adv_t(
+> -				phydev->advertising);
+> -			flowctrl =3D mii_resolve_flowctrl_fdx(lcl_adv, rmt_adv);
+> -
+> -			if (flowctrl & FLOW_CTRL_TX)
+> -				mcr |=3D PMCR_TX_FC_EN;
+> -			if (flowctrl & FLOW_CTRL_RX)
+> -				mcr |=3D PMCR_RX_FC_EN;
+> -		}
+> -		mt7530_write(priv, MT7530_PMCR_P(port), mcr);
+> -	}
+> -}
+> -
+>  static int
+>  mt7530_cpu_port_enable(struct mt7530_priv *priv,
+>  		       int port)
+> @@ -1323,6 +1266,178 @@ mt7530_setup(struct dsa_switch *ds)
+>  	return 0;
+>  }
+> =20
+> +static void mt7530_phylink_mac_config(struct dsa_switch *ds, int port,
+> +				      unsigned int mode,
+> +				      const struct phylink_link_state *state)
+> +{
+> +	struct mt7530_priv *priv =3D ds->priv;
+> +	u32 mcr =3D PMCR_IFG_XMIT(1) | PMCR_MAC_MODE | PMCR_BACKOFF_EN |
+> +		  PMCR_BACKPR_EN | PMCR_TX_EN | PMCR_RX_EN;
+> +
+> +	switch (port) {
+> +	case 0: /* Internal phy */
+> +	case 1:
+> +	case 2:
+> +	case 3:
+> +	case 4:
+> +		if (state->interface !=3D PHY_INTERFACE_MODE_GMII)
+> +			goto unsupported;
+> +		break;
+> +	/* case 5: Port 5 is not supported! */
+> +	case 6: /* 1st cpu port */
+> +		if (state->interface !=3D PHY_INTERFACE_MODE_RGMII &&
+> +		    state->interface !=3D PHY_INTERFACE_MODE_TRGMII)
+> +			goto unsupported;
+> +
+> +		/* Setup TX circuit incluing relevant PAD and driving */
+> +		mt7530_pad_clk_setup(ds, state->interface);
+> +
+> +		if (priv->id =3D=3D ID_MT7530) {
+> +			/* Setup RX circuit, relevant PAD and driving on the
+> +			 * host which must be placed after the setup on the
+> +			 * device side is all finished.
+> +			 */
+> +			mt7623_pad_clk_setup(ds);
+> +		}
+> +		break;
+> +	default:
+> +		dev_err(ds->dev, "%s: unsupported port: %i\n", __func__, port);
+> +		return;
+> +	}
+> +
+> +	if (!state->an_enabled || mode =3D=3D MLO_AN_FIXED) {
+> +		mcr |=3D PMCR_FORCE_MODE;
+> +
+> +		if (state->speed =3D=3D SPEED_1000)
+> +			mcr |=3D PMCR_FORCE_SPEED_1000;
+> +		if (state->speed =3D=3D SPEED_100)
+> +			mcr |=3D PMCR_FORCE_SPEED_100;
 
-The BPF_F_QUERY_EFFECTIVE is a syscall flag, and fits nicely
-as a subcommand option.  We want to move away from global
-options, anyway.
+I would suggest using the defines
 
-We need a global variable because of nftw limitations.
-Clean this flag on every invocations in case we run in
-batch mode.
+#define PMCR_FORCE_SPEED	0x0000000c /* or PMCR_FORCE_SPEED_MASK */
+#define PMCR_FORCE_SPEED_10	0x00000000
+#define PMCR_FORCE_SPEED_100	0x00000004
+#define PMCR_FORCE_SPEED_1000	0x00000008
 
-NOTE the argv[1] use on the error path in do_show() looks
-like a bug on it's own.
----
- .../bpftool/Documentation/bpftool-cgroup.rst  | 24 +++----
- tools/bpf/bpftool/Documentation/bpftool.rst   |  6 +-
- tools/bpf/bpftool/bash-completion/bpftool     | 17 ++---
- tools/bpf/bpftool/cgroup.c                    | 62 ++++++++++++-------
- tools/bpf/bpftool/main.c                      |  7 +--
- tools/bpf/bpftool/main.h                      |  3 +-
- 6 files changed, 66 insertions(+), 53 deletions(-)
+and a switch statement such as
 
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst b/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst
-index 324df15bf4cc..4fde3dfad395 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst
-@@ -12,8 +12,7 @@ SYNOPSIS
- 
- 	**bpftool** [*OPTIONS*] **cgroup** *COMMAND*
- 
--	*OPTIONS* := { { **-j** | **--json** } [{ **-p** | **--pretty** }] | { **-f** | **--bpffs** }
--	| { **-e** | **--effective** } }
-+	*OPTIONS* := { { **-j** | **--json** } [{ **-p** | **--pretty** }] | { **-f** | **--bpffs** } }
- 
- 	*COMMANDS* :=
- 	{ **show** | **list** | **tree** | **attach** | **detach** | **help** }
-@@ -21,8 +20,8 @@ SYNOPSIS
- CGROUP COMMANDS
- ===============
- 
--|	**bpftool** **cgroup { show | list }** *CGROUP*
--|	**bpftool** **cgroup tree** [*CGROUP_ROOT*]
-+|	**bpftool** **cgroup { show | list }** *CGROUP* [**effective**]
-+|	**bpftool** **cgroup tree** [*CGROUP_ROOT*] [**effective**]
- |	**bpftool** **cgroup attach** *CGROUP* *ATTACH_TYPE* *PROG* [*ATTACH_FLAGS*]
- |	**bpftool** **cgroup detach** *CGROUP* *ATTACH_TYPE* *PROG*
- |	**bpftool** **cgroup help**
-@@ -35,13 +34,17 @@ CGROUP COMMANDS
- 
- DESCRIPTION
- ===========
--	**bpftool cgroup { show | list }** *CGROUP*
-+	**bpftool cgroup { show | list }** *CGROUP* [**effective**]
- 		  List all programs attached to the cgroup *CGROUP*.
- 
- 		  Output will start with program ID followed by attach type,
- 		  attach flags and program name.
- 
--	**bpftool cgroup tree** [*CGROUP_ROOT*]
-+		  If **effective** is specified retrieve effective programs that
-+		  will execute for events within a cgroup. This includes
-+		  inherited along with attached ones.
-+
-+	**bpftool cgroup tree** [*CGROUP_ROOT*] [**effective**]
- 		  Iterate over all cgroups in *CGROUP_ROOT* and list all
- 		  attached programs. If *CGROUP_ROOT* is not specified,
- 		  bpftool uses cgroup v2 mountpoint.
-@@ -50,6 +53,10 @@ DESCRIPTION
- 		  commands: it starts with absolute cgroup path, followed by
- 		  program ID, attach type, attach flags and program name.
- 
-+		  If **effective** is specified retrieve effective programs that
-+		  will execute for events within a cgroup. This includes
-+		  inherited along with attached ones.
-+
- 	**bpftool cgroup attach** *CGROUP* *ATTACH_TYPE* *PROG* [*ATTACH_FLAGS*]
- 		  Attach program *PROG* to the cgroup *CGROUP* with attach type
- 		  *ATTACH_TYPE* and optional *ATTACH_FLAGS*.
-@@ -122,11 +129,6 @@ OPTIONS
- 		  Print all logs available from libbpf, including debug-level
- 		  information.
- 
--	-e, --effective
--		  Retrieve effective programs that will execute for events
--		  within a cgroup. This includes inherited along with attached
--		  ones.
--
- EXAMPLES
- ========
- |
-diff --git a/tools/bpf/bpftool/Documentation/bpftool.rst b/tools/bpf/bpftool/Documentation/bpftool.rst
-index d2f76b55988d..6a9c52ef84a9 100644
---- a/tools/bpf/bpftool/Documentation/bpftool.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool.rst
-@@ -19,7 +19,7 @@ SYNOPSIS
- 	*OBJECT* := { **map** | **program** | **cgroup** | **perf** | **net** | **feature** }
- 
- 	*OPTIONS* := { { **-V** | **--version** } | { **-h** | **--help** }
--	| { **-j** | **--json** } [{ **-p** | **--pretty** }] | { **-e** | **--effective** } }
-+	| { **-j** | **--json** } [{ **-p** | **--pretty** }] }
- 
- 	*MAP-COMMANDS* :=
- 	{ **show** | **list** | **create** | **dump** | **update** | **lookup** | **getnext**
-@@ -71,10 +71,6 @@ OPTIONS
- 		  includes logs from libbpf as well as from the verifier, when
- 		  attempting to load programs.
- 
--	-e, --effective
--		  Retrieve effective programs that will execute for events
--		  within a cgroup. This includes inherited along with attached ones.
--
- SEE ALSO
- ========
- 	**bpf**\ (2),
-diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
-index c98cb99867f6..de84ae06ae4e 100644
---- a/tools/bpf/bpftool/bash-completion/bpftool
-+++ b/tools/bpf/bpftool/bash-completion/bpftool
-@@ -187,7 +187,7 @@ _bpftool()
- 
-     # Deal with options
-     if [[ ${words[cword]} == -* ]]; then
--        local c='--version --json --pretty --bpffs --mapcompat --debug --effective'
-+        local c='--version --json --pretty --bpffs --mapcompat --debug'
-         COMPREPLY=( $( compgen -W "$c" -- "$cur" ) )
-         return 0
-     fi
-@@ -678,12 +678,15 @@ _bpftool()
-             ;;
-         cgroup)
-             case $command in
--                show|list)
--                    _filedir
--                    return 0
--                    ;;
--                tree)
--                    _filedir
-+                show|list|tree)
-+                    case $cword in
-+                        3)
-+                            _filedir
-+                            ;;
-+                        4)
-+                            COMPREPLY=( $( compgen -W 'effective' -- "$cur" ) )
-+                            ;;
-+                    esac
-                     return 0
-                     ;;
-                 attach|detach)
-diff --git a/tools/bpf/bpftool/cgroup.c b/tools/bpf/bpftool/cgroup.c
-index 1bb2a751107a..88b80616d47b 100644
---- a/tools/bpf/bpftool/cgroup.c
-+++ b/tools/bpf/bpftool/cgroup.c
-@@ -28,6 +28,8 @@
- 	"                        connect6 | sendmsg4 | sendmsg6 |\n"           \
- 	"                        recvmsg4 | recvmsg6 | sysctl }"
- 
-+static unsigned int query_flags;
-+
- static const char * const attach_type_strings[] = {
- 	[BPF_CGROUP_INET_INGRESS] = "ingress",
- 	[BPF_CGROUP_INET_EGRESS] = "egress",
-@@ -104,8 +106,8 @@ static int count_attached_bpf_progs(int cgroup_fd, enum bpf_attach_type type)
- 	__u32 prog_cnt = 0;
- 	int ret;
- 
--	ret = bpf_prog_query(cgroup_fd, type, query_flags, NULL, NULL,
--			     &prog_cnt);
-+	ret = bpf_prog_query(cgroup_fd, type, query_flags, NULL,
-+			     NULL, &prog_cnt);
- 	if (ret)
- 		return -1;
- 
-@@ -156,20 +158,30 @@ static int show_attached_bpf_progs(int cgroup_fd, enum bpf_attach_type type,
- static int do_show(int argc, char **argv)
- {
- 	enum bpf_attach_type type;
-+	const char *path;
- 	int cgroup_fd;
- 	int ret = -1;
- 
--	if (argc < 1) {
--		p_err("too few parameters for cgroup show");
--		goto exit;
--	} else if (argc > 1) {
--		p_err("too many parameters for cgroup show");
--		goto exit;
-+	query_flags = 0;
-+
-+	if (!REQ_ARGS(1))
-+		return -1;
-+	path = GET_ARG();
-+
-+	while (argc) {
-+		if (is_prefix(*argv, "effective")) {
-+			query_flags |= BPF_F_QUERY_EFFECTIVE;
-+			NEXT_ARG();
-+		} else {
-+			p_err("expected no more arguments, 'effective', got: '%s'?",
-+			      *argv);
-+			return -1;
-+		}
- 	}
- 
--	cgroup_fd = open(argv[0], O_RDONLY);
-+	cgroup_fd = open(path, O_RDONLY);
- 	if (cgroup_fd < 0) {
--		p_err("can't open cgroup %s", argv[1]);
-+		p_err("can't open cgroup %s", path);
- 		goto exit;
- 	}
- 
-@@ -295,23 +307,29 @@ static int do_show_tree(int argc, char **argv)
- 	char *cgroup_root;
- 	int ret;
- 
--	switch (argc) {
--	case 0:
-+	query_flags = 0;
-+
-+	if (!argc) {
- 		cgroup_root = find_cgroup_root();
- 		if (!cgroup_root) {
- 			p_err("cgroup v2 isn't mounted");
- 			return -1;
- 		}
--		break;
--	case 1:
--		cgroup_root = argv[0];
--		break;
--	default:
--		p_err("too many parameters for cgroup tree");
--		return -1;
-+	} else {
-+		cgroup_root = GET_ARG();
-+
-+		while (argc) {
-+			if (is_prefix(*argv, "effective")) {
-+				query_flags |= BPF_F_QUERY_EFFECTIVE;
-+				NEXT_ARG();
-+			} else {
-+				p_err("expected no more arguments, 'effective', got: '%s'?",
-+				      *argv);
-+				return -1;
-+			}
-+		}
- 	}
- 
--
- 	if (json_output)
- 		jsonw_start_array(json_wtr);
- 	else
-@@ -457,8 +475,8 @@ static int do_help(int argc, char **argv)
- 	}
- 
- 	fprintf(stderr,
--		"Usage: %s %s { show | list } CGROUP\n"
--		"       %s %s tree [CGROUP_ROOT]\n"
-+		"Usage: %s %s { show | list } CGROUP [**effective**]\n"
-+		"       %s %s tree [CGROUP_ROOT] [**effective**]\n"
- 		"       %s %s attach CGROUP ATTACH_TYPE PROG [ATTACH_FLAGS]\n"
- 		"       %s %s detach CGROUP ATTACH_TYPE PROG\n"
- 		"       %s %s help\n"
-diff --git a/tools/bpf/bpftool/main.c b/tools/bpf/bpftool/main.c
-index 42e9ddfbbbe0..4879f6395c7e 100644
---- a/tools/bpf/bpftool/main.c
-+++ b/tools/bpf/bpftool/main.c
-@@ -27,7 +27,6 @@ bool json_output;
- bool show_pinned;
- bool block_mount;
- bool verifier_logs;
--unsigned int query_flags;
- int bpf_flags;
- struct pinned_obj_table prog_table;
- struct pinned_obj_table map_table;
-@@ -328,7 +327,6 @@ int main(int argc, char **argv)
- 		{ "mapcompat",	no_argument,	NULL,	'm' },
- 		{ "nomount",	no_argument,	NULL,	'n' },
- 		{ "debug",	no_argument,	NULL,	'd' },
--		{ "effective",	no_argument,	NULL,	'e' },
- 		{ 0 }
- 	};
- 	int opt, ret;
-@@ -344,7 +342,7 @@ int main(int argc, char **argv)
- 	hash_init(map_table.table);
- 
- 	opterr = 0;
--	while ((opt = getopt_long(argc, argv, "Vhpjfmnde",
-+	while ((opt = getopt_long(argc, argv, "Vhpjfmnd",
- 				  options, NULL)) >= 0) {
- 		switch (opt) {
- 		case 'V':
-@@ -378,9 +376,6 @@ int main(int argc, char **argv)
- 			libbpf_set_print(print_all_levels);
- 			verifier_logs = true;
- 			break;
--		case 'e':
--			query_flags = BPF_F_QUERY_EFFECTIVE;
--			break;
- 		default:
- 			p_err("unrecognized option '%s'", argv[optind - 1]);
- 			if (json_output)
-diff --git a/tools/bpf/bpftool/main.h b/tools/bpf/bpftool/main.h
-index fddec15c454a..28a2a5857e14 100644
---- a/tools/bpf/bpftool/main.h
-+++ b/tools/bpf/bpftool/main.h
-@@ -45,7 +45,7 @@
- 	"PROG := { id PROG_ID | pinned FILE | tag PROG_TAG }"
- #define HELP_SPEC_OPTIONS						\
- 	"OPTIONS := { {-j|--json} [{-p|--pretty}] | {-f|--bpffs} |\n"	\
--	"\t            {-m|--mapcompat} | {-n|--nomount} | {-e|--effective} }"
-+	"\t            {-m|--mapcompat} | {-n|--nomount} }"
- #define HELP_SPEC_MAP							\
- 	"MAP := { id MAP_ID | pinned FILE }"
- 
-@@ -92,7 +92,6 @@ extern bool json_output;
- extern bool show_pinned;
- extern bool block_mount;
- extern bool verifier_logs;
--extern unsigned int query_flags;
- extern int bpf_flags;
- extern struct pinned_obj_table prog_table;
- extern struct pinned_obj_table map_table;
--- 
-2.21.0
+	switch (state->speed) {
+	case SPEED_10:
+		mcr |=3D PMCR_FORCE_SPEED_10;
+		break;
+	case SPEED_100:
+		mcr |=3D PMCR_FORCE_SPEED_100;
+		break;
+	case SPEED_1000:
+		mcr |=3D PMCR_FORCE_SPEED_1000;
+		break;
+	}
 
+This will compile the same (i.e, the mcr |=3D 0 will optimize away, etc.)=
+,
+while alleviating the need to intimately know the hardware in order to
+easily understand what the code is doing at a glance.=C2=A0 It's also bet=
+ter
+form as we're treating the two bits as a composite value, rather than
+two separate bits.
+
+
+> +		if (state->duplex =3D=3D DUPLEX_FULL)
+> +			mcr |=3D PMCR_FORCE_FDX;
+> +		if (state->link || mode =3D=3D MLO_AN_FIXED)
+> +			mcr |=3D PMCR_FORCE_LNK;
+> +		if (state->pause || phylink_test(state->advertising, Pause))
+> +			mcr |=3D PMCR_TX_FC_EN | PMCR_RX_FC_EN;
+> +		if (state->pause & MLO_PAUSE_TX)
+> +			mcr |=3D PMCR_TX_FC_EN;
+> +		if (state->pause & MLO_PAUSE_RX)
+> +			mcr |=3D PMCR_RX_FC_EN;
+> +	}
+> +
+> +	mt7530_write(priv, MT7530_PMCR_P(port), mcr);
+> +
+> +	return;
+> +
+> +unsupported:
+> +	dev_err(ds->dev, "%s: P%d: Unsupported phy_interface mode: %d (%s)\n"=
+,
+> +		__func__, port, state->interface, phy_modes(state->interface));
+> +}
+> +
+> +static void mt7530_phylink_mac_link_down(struct dsa_switch *ds, int po=
+rt,
+> +					 unsigned int mode,
+> +					 phy_interface_t interface)
+> +{
+> +	/* Do nothing */
+> +}
+> +
+> +static void mt7530_phylink_mac_link_up(struct dsa_switch *ds, int port=
+,
+> +				       unsigned int mode,
+> +				       phy_interface_t interface,
+> +				       struct phy_device *phydev)
+> +{
+> +	/* Do nothing */
+> +}
+> +
+> +static void mt7530_phylink_validate(struct dsa_switch *ds, int port,
+> +				    unsigned long *supported,
+> +				    struct phylink_link_state *state)
+> +{
+> +	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) =3D { 0, };
+> +
+> +	switch (port) {
+> +	case 0: /* Internal phy */
+> +	case 1:
+> +	case 2:
+> +	case 3:
+> +	case 4:
+> +		if (state->interface !=3D PHY_INTERFACE_MODE_NA &&
+> +		    state->interface !=3D PHY_INTERFACE_MODE_GMII)
+> +			goto unsupported;
+> +		break;
+> +	/* case 5: Port 5 not supported! */
+> +	case 6: /* 1st cpu port */
+> +		if (state->interface !=3D PHY_INTERFACE_MODE_RGMII &&
+> +		    state->interface !=3D PHY_INTERFACE_MODE_TRGMII)
+> +			goto unsupported;
+> +		break;
+> +	default:
+> +		linkmode_zero(supported);
+> +		dev_err(ds->dev, "%s: unsupported port: %i\n", __func__, port);
+> +		return;
+> +	}
+> +
+> +	phylink_set(mask, Autoneg);
+> +	phylink_set(mask, Pause);
+> +	phylink_set(mask, Asym_Pause);
+> +	phylink_set(mask, MII);
+> +
+> +	phylink_set(mask, 10baseT_Half);
+> +	phylink_set(mask, 10baseT_Full);
+> +	phylink_set(mask, 100baseT_Half);
+> +	phylink_set(mask, 100baseT_Full);
+> +	phylink_set(mask, 1000baseT_Full);
+> +	phylink_set(mask, 1000baseT_Half);
+> +
+> +	linkmode_and(supported, supported, mask);
+> +	linkmode_and(state->advertising, state->advertising, mask);
+> +	return;
+> +
+> +unsupported:
+> +	linkmode_zero(supported);
+> +	dev_err(ds->dev, "%s: unsupported interface mode: [0x%x] %s\n",
+> +		__func__, state->interface, phy_modes(state->interface));
+> +}
+> +
+> +static int
+> +mt7530_phylink_mac_link_state(struct dsa_switch *ds, int port,
+> +			      struct phylink_link_state *state)
+> +{
+> +	struct mt7530_priv *priv =3D ds->priv;
+> +	u32 pmsr;
+> +
+> +	if (port < 0 || port >=3D MT7530_NUM_PORTS)
+> +		return -EINVAL;
+> +
+> +	pmsr =3D mt7530_read(priv, MT7530_PMSR_P(port));
+> +
+> +	state->link =3D (pmsr & PMSR_LINK);
+> +	state->an_complete =3D state->link;
+> +	state->duplex =3D (pmsr & PMSR_DPX) >> 1;
+> +
+> +	switch (pmsr & (PMSR_SPEED_1000 | PMSR_SPEED_100)) {
+> +	case 0:
+> +		state->speed =3D SPEED_10;
+> +		break;
+> +	case PMSR_SPEED_100:
+> +		state->speed =3D SPEED_100;
+> +		break;
+> +	case PMSR_SPEED_1000:
+> +		state->speed =3D SPEED_1000;
+> +		break;
+> +	default:
+> +		state->speed =3D SPEED_UNKNOWN;
+> +		break;
+> +	}
+> +
+
+Same as above: add PMSR_SPEED_10, and and with PMSR_SPEED (or
+PMSR_SPEED_MASK if you prefer).
+
+> +	state->pause =3D 0;
+> +	if (pmsr & PMSR_RX_FC)
+> +		state->pause |=3D MLO_PAUSE_RX;
+> +	if (pmsr & PMSR_TX_FC)
+> +		state->pause |=3D MLO_PAUSE_TX;
+> +
+> +	return 1;
+> +}
+> +
+>  static const struct dsa_switch_ops mt7530_switch_ops =3D {
+>  	.get_tag_protocol	=3D mtk_get_tag_protocol,
+>  	.setup			=3D mt7530_setup,
+> @@ -1331,7 +1446,6 @@ static const struct dsa_switch_ops mt7530_switch_=
+ops =3D {
+>  	.phy_write		=3D mt7530_phy_write,
+>  	.get_ethtool_stats	=3D mt7530_get_ethtool_stats,
+>  	.get_sset_count		=3D mt7530_get_sset_count,
+> -	.adjust_link		=3D mt7530_adjust_link,
+>  	.port_enable		=3D mt7530_port_enable,
+>  	.port_disable		=3D mt7530_port_disable,
+>  	.port_stp_state_set	=3D mt7530_stp_state_set,
+> @@ -1344,6 +1458,11 @@ static const struct dsa_switch_ops mt7530_switch=
+_ops =3D {
+>  	.port_vlan_prepare	=3D mt7530_port_vlan_prepare,
+>  	.port_vlan_add		=3D mt7530_port_vlan_add,
+>  	.port_vlan_del		=3D mt7530_port_vlan_del,
+> +	.phylink_validate	=3D mt7530_phylink_validate,
+> +	.phylink_mac_link_state =3D mt7530_phylink_mac_link_state,
+> +	.phylink_mac_config	=3D mt7530_phylink_mac_config,
+> +	.phylink_mac_link_down	=3D mt7530_phylink_mac_link_down,
+> +	.phylink_mac_link_up	=3D mt7530_phylink_mac_link_up,
+>  };
+> =20
+>  static const struct of_device_id mt7530_of_match[] =3D {
+> diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+> index bfac90f48102..41d9a132ac70 100644
+> --- a/drivers/net/dsa/mt7530.h
+> +++ b/drivers/net/dsa/mt7530.h
+> @@ -198,6 +198,7 @@ enum mt7530_vlan_port_attr {
+>  #define  PMCR_FORCE_SPEED_100		BIT(2)
+>  #define  PMCR_FORCE_FDX			BIT(1)
+>  #define  PMCR_FORCE_LNK			BIT(0)
+> +#define  PMCR_FORCE_LNK_DOWN		PMCR_FORCE_MODE
+>  #define  PMCR_COMMON_LINK		(PMCR_IFG_XMIT(1) | PMCR_MAC_MODE | \
+>  					 PMCR_BACKOFF_EN | PMCR_BACKPR_EN | \
+>  					 PMCR_TX_EN | PMCR_RX_EN | \
+> @@ -218,6 +219,14 @@ enum mt7530_vlan_port_attr {
+>  					 PMCR_TX_FC_EN | PMCR_RX_FC_EN)
+> =20
+>  #define MT7530_PMSR_P(x)		(0x3008 + (x) * 0x100)
+> +#define  PMSR_EEE1G			BIT(7)
+> +#define  PMSR_EEE100M			BIT(6)
+> +#define  PMSR_RX_FC			BIT(5)
+> +#define  PMSR_TX_FC			BIT(4)
+> +#define  PMSR_SPEED_1000		BIT(3)
+> +#define  PMSR_SPEED_100			BIT(2)
+> +#define  PMSR_DPX			BIT(1)
+> +#define  PMSR_LINK			BIT(0)
+> =20
+>  /* Register for MIB */
+>  #define MT7530_PORT_MIB_COUNTER(x)	(0x4000 + (x) * 0x100)
+
+Cheers,
+Daniel
