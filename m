@@ -2,148 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B50E5522C
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 16:40:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADE5355227
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 16:40:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731607AbfFYOk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 10:40:27 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:40502 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730689AbfFYOk0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 10:40:26 -0400
-Received: by mail-lj1-f195.google.com with SMTP id a21so16518477ljh.7
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 07:40:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jWAFzwh+wNJa1wJRi7wSsROtByf0uePbqEGkNz/VV+c=;
-        b=q7rJ4scTf8X0oq+zvh1dCgDHKeAyUjDzKQq7WoOf6YLrsxjFzn4bATEWwaFw844l7m
-         sqFcSlYkMld7SZ/y2v0ICSct8PfO0twxUVguU662swDtlr2tU/X4ekfkR7On0oF7Q/ls
-         P8Bn2DpDM1f1A+/mbRi46Z4ZI+8mlF6zjdwhRs3wBGfl30MybyY5GjCiz6IB24oABppH
-         sDHVFCCefcnmD6sWcaMUgdu71a+YlEgFNoGQypmWsF7rCe+GRvUAYOigBX7lgxB0UKY2
-         dOBilDMwzjlKkIleO7qwzvBlLLhl4LrMlBsLLmrfgmWzvapBVtNnXRUMo+y+kp0OfkDE
-         fNAg==
-X-Gm-Message-State: APjAAAUcDXZYDAguXZLuHFKbEhLZogyGjWRHYPnzrzEKnCr2c+UIn3Km
-        gfKpF6k1mBymDFOCuoLJ/78osz0eaf/CqLuE9vY5+A==
-X-Google-Smtp-Source: APXvYqy/woPSYHeAf0XhlKXzq70slZ/lsMXudtd7E81/YZ8UwfdzrRVuF3xTHi6vuDWorsFOBMiUcLSs0gF/cRL+pYA=
-X-Received: by 2002:a2e:3e01:: with SMTP id l1mr4454775lja.208.1561473625168;
- Tue, 25 Jun 2019 07:40:25 -0700 (PDT)
+        id S1731016AbfFYOkE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 10:40:04 -0400
+Received: from www1102.sakura.ne.jp ([219.94.129.142]:39257 "EHLO
+        www1102.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730689AbfFYOkC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 10:40:02 -0400
+Received: from fsav101.sakura.ne.jp (fsav101.sakura.ne.jp [27.133.134.228])
+        by www1102.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id x5PEe0Jv044514;
+        Tue, 25 Jun 2019 23:40:00 +0900 (JST)
+        (envelope-from katsuhiro@katsuster.net)
+Received: from www1102.sakura.ne.jp (219.94.129.142)
+ by fsav101.sakura.ne.jp (F-Secure/fsigk_smtp/530/fsav101.sakura.ne.jp);
+ Tue, 25 Jun 2019 23:40:00 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/530/fsav101.sakura.ne.jp)
+Received: from [192.168.1.2] (118.153.231.153.ap.dti.ne.jp [153.231.153.118])
+        (authenticated bits=0)
+        by www1102.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id x5PEe0HW044501
+        (version=TLSv1.2 cipher=AES256-SHA bits=256 verify=NO);
+        Tue, 25 Jun 2019 23:40:00 +0900 (JST)
+        (envelope-from katsuhiro@katsuster.net)
+Subject: Re: [PATCH net-next] net: stmmac: Fix the case when PHY handle is not
+ present
+To:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>
+References: <351cce38d1c572d8b171044f2856c7fae9f89cbc.1561450696.git.joabreu@synopsys.com>
+ <78EB27739596EE489E55E81C33FEC33A0B9D78A2@DE02WEMBXB.internal.synopsys.com>
+From:   Katsuhiro Suzuki <katsuhiro@katsuster.net>
+Message-ID: <5859e2c5-112f-597c-3bd5-e30e96b86152@katsuster.net>
+Date:   Tue, 25 Jun 2019 23:40:00 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <20190611180326.30597-1-mcroce@redhat.com> <20190612085307.35e42bf4@hermes.lan>
- <CAGnkfhyT0W=CYU8FJYrDtzqxtcHakO5CWx2qzLuWOXVj6dyKMA@mail.gmail.com>
- <CAGnkfhz-W64f-j+Sgbi47BO6VKfyaYQ1W865sihXhCjChh_kFQ@mail.gmail.com>
- <20190612111938.1c9da723@hermes.lan> <CAGnkfhyS64WA+947iQFwA9+=yS6Zk856SWBR9Zy7w90xhBmC=Q@mail.gmail.com>
-In-Reply-To: <CAGnkfhyS64WA+947iQFwA9+=yS6Zk856SWBR9Zy7w90xhBmC=Q@mail.gmail.com>
-From:   Matteo Croce <mcroce@redhat.com>
-Date:   Tue, 25 Jun 2019 16:39:49 +0200
-Message-ID: <CAGnkfhzjT1he+77vRC7p_Y7U5L7AksDpkss2TwZcR_xxxGhgSA@mail.gmail.com>
-Subject: Re: [PATCH iproute2] testsuite: don't clobber /tmp
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev <netdev@vger.kernel.org>, David Ahern <dsahern@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <78EB27739596EE489E55E81C33FEC33A0B9D78A2@DE02WEMBXB.internal.synopsys.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 13, 2019 at 7:15 PM Matteo Croce <mcroce@redhat.com> wrote:
->
-> On Wed, Jun 12, 2019 at 8:20 PM Stephen Hemminger
-> <stephen@networkplumber.org> wrote:
-> >
-> > On Wed, 12 Jun 2019 19:32:29 +0200
-> > Matteo Croce <mcroce@redhat.com> wrote:
-> >
-> > > On Wed, Jun 12, 2019 at 6:04 PM Matteo Croce <mcroce@redhat.com> wrote:
-> > > >
-> > > > On Wed, Jun 12, 2019 at 5:55 PM Stephen Hemminger
-> > > > <stephen@networkplumber.org> wrote:
-> > > > >
-> > > > > On Tue, 11 Jun 2019 20:03:26 +0200
-> > > > > Matteo Croce <mcroce@redhat.com> wrote:
-> > > > >
-> > > > > > Even if not running the testsuite, every build will leave
-> > > > > > a stale tc_testkenv.* file in the system temp directory.
-> > > > > > Conditionally create the temp file only if we're running the testsuite.
-> > > > > >
-> > > > > > Signed-off-by: Matteo Croce <mcroce@redhat.com>
-> > > > > > ---
-> > > > > >  testsuite/Makefile | 5 ++++-
-> > > > > >  1 file changed, 4 insertions(+), 1 deletion(-)
-> > > > > >
-> > > > > > diff --git a/testsuite/Makefile b/testsuite/Makefile
-> > > > > > index 7f247bbc..5353244b 100644
-> > > > > > --- a/testsuite/Makefile
-> > > > > > +++ b/testsuite/Makefile
-> > > > > > @@ -14,7 +14,9 @@ TESTS_DIR := $(dir $(TESTS))
-> > > > > >
-> > > > > >  IPVERS := $(filter-out iproute2/Makefile,$(wildcard iproute2/*))
-> > > > > >
-> > > > > > -KENVFN := $(shell mktemp /tmp/tc_testkenv.XXXXXX)
-> > > > > > +ifeq ($(MAKECMDGOALS),alltests)
-> > > > > > +     KENVFN := $(shell mktemp /tmp/tc_testkenv.XXXXXX)
-> > > > > > +endif
-> > > > > >  ifneq (,$(wildcard /proc/config.gz))
-> > > > > >       KCPATH := /proc/config.gz
-> > > > > >  else
-> > > > > > @@ -94,3 +96,4 @@ endif
-> > > > > >               rm "$$TMP_ERR" "$$TMP_OUT"; \
-> > > > > >               sudo dmesg > $(RESULTS_DIR)/$@.$$o.dmesg; \
-> > > > > >       done
-> > > > > > +     @$(RM) $(KENVFN)
-> > > > >
-> > > > > My concern is that there are several targets in this one Makefile.
-> > > > >
-> > > > > Why not use -u which gives name but does not create the file?
-> > > >
-> > > > As the manpage says, this is unsafe, as a file with the same name can
-> > > > be created in the meantime.
-> > > > Another option is to run the mktemp in the target shell, but this will
-> > > > require to escape every single end of line to make it a single shell
-> > > > command, e.g.:
-> > > >
-> > > >         KENVFN=$$(mktemp /tmp/tc_testkenv.XXXXXX); \
-> > > >         if [ "$(KCPATH)" = "/proc/config.gz" ]; then \
-> > > >                 gunzip -c $(KCPATH) >$$KENVFN; \
-> > > >         ...
-> > > >         done ; \
-> > > >         $(RM) $$KENVFN
-> > > >
-> > > > --
-> > > > Matteo Croce
-> > > > per aspera ad upstream
-> > >
-> > > Anyway, looking for "tc" instead of "alltests" is probably better, as
-> > > it only runs mktemp when at least the tc test is selected, both
-> > > manually or via make check from topdir, eg.g
-> > >
-> > > ifeq ($(MAKECMDGOALS),tc)
-> > >
-> > > Do you agree?
-> >
-> > Why use /tmp at all for this config file?
->
-> To me any path could work, both /tmp or in the current dir, I have no
-> preference.
-> The important thing is to remove them wherever they are, as clobbering
-> the build dir is bad as messing /tmp.
->
-> Anyway, I double checked, and the only target which uses that
-> temporary file is 'alltests' so, if the path is ok, I think that the
-> condition "ifeq ($(MAKECMDGOALS),alltests)" is the only one which
-> fixes the issue and keeps the behaviour unaltered.
-> I did some quick tests and it works for me.
->
-> Bye,
-> --
-> Matteo Croce
-> per aspera ad upstream
+Hello Jose,
 
-Hi,
+This patch works fine with my Tinker Board. Thanks a lot!
 
-any more thoughts about this patch?
+Tested-by: Katsuhiro Suzuki <katsuhiro@katsuster.net>
 
--- 
-Matteo Croce
-per aspera ad upstream
+
+BTW, from network guys point of view, is it better to add a phy node
+into device trees that have no phy node such as the Tinker Board?
+
+
+Best Regards,
+Katsuhiro Suzuki
+
+
+On 2019/06/25 22:11, Jose Abreu wrote:
+> ++ Katsuhiro
+> 
+> From: Jose Abreu <joabreu@synopsys.com>
+> 
+>> Some DT bindings do not have the PHY handle. Let's fallback to manually
+>> discovery in case phylink_of_phy_connect() fails.
+>>
+>> Reported-by: Katsuhiro Suzuki <katsuhiro@katsuster.net>
+>> Fixes: 74371272f97f ("net: stmmac: Convert to phylink and remove phylib logic")
+>> Signed-off-by: Jose Abreu <joabreu@synopsys.com>
+>> Cc: Joao Pinto <jpinto@synopsys.com>
+>> Cc: David S. Miller <davem@davemloft.net>
+>> Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+>> Cc: Alexandre Torgue <alexandre.torgue@st.com>
+>> ---
+>> Hello Katsuhiro,
+>>
+>> Can you please test this patch ?
+>> ---
+>>   drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 7 +++++--
+>>   1 file changed, 5 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+>> index a48751989fa6..f4593d2d9d20 100644
+>> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+>> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+>> @@ -950,9 +950,12 @@ static int stmmac_init_phy(struct net_device *dev)
+>>   
+>>   	node = priv->plat->phylink_node;
+>>   
+>> -	if (node) {
+>> +	if (node)
+>>   		ret = phylink_of_phy_connect(priv->phylink, node, 0);
+>> -	} else {
+>> +
+>> +	/* Some DT bindings do not set-up the PHY handle. Let's try to
+>> +	 * manually parse it */
+>> +	if (!node || ret) {
+>>   		int addr = priv->plat->phy_addr;
+>>   		struct phy_device *phydev;
+>>   
+>> -- 
+>> 2.7.4
+> 
+> 
+> 
+> 
+
