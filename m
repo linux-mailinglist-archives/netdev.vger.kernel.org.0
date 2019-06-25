@@ -2,145 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0928C559D1
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 23:21:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6524055A29
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 23:45:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726289AbfFYVVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 17:21:24 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:58878 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725290AbfFYVVX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 17:21:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=m6VFMJ052W6TcAKd0grvEKpmjJmNbi6JBUZsRjhZHGc=; b=YFBzGRIYpLWKw5tT+88LlwBlZ
-        rHjBOrY51GBZScvAuV8ZDXriGPIvaik5pQr6aOpl4oDzd75qV0NjAPfshbUtFcZC37IGlpTOxSGjS
-        mcdaOhiphcNBTbJHj9A+r+Z9XZGV7R/0D8VPB54XXHJ9lNfKZRzvZJhh2OC7C8f5rU5QP0xQSNuUo
-        9BIqAYrKWzrS3Qv+9MH6hQ+I+LUYhzjzqpL8CsXFhXiEh/xhdLNoK/JAwpysz+tzBdgyfgsfQEcdv
-        /JmbatZJ5+PSHgrfGpnWx2Pk/2idgPIdAPHfRSW9BmOQAUPOHOd620sgxvDDiPxu6WAwDQrTQVyR6
-        sqMJUSnRg==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:59100)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hfssK-0000a8-K6; Tue, 25 Jun 2019 22:21:12 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hfssG-0007YL-Hp; Tue, 25 Jun 2019 22:21:08 +0100
-Date:   Tue, 25 Jun 2019 22:21:08 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Daniel Santos <daniel.santos@pobox.com>,
-        =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
-        sean.wang@mediatek.com, f.fainelli@gmail.com, davem@davemloft.net,
-        matthias.bgg@gmail.com, vivien.didelot@gmail.com,
-        frank-w@public-files.de, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org
-Subject: Re: [PATCH RFC net-next 1/5] net: dsa: mt7530: Convert to PHYLINK API
-Message-ID: <20190625212108.hh4g32co6s4drniw@shell.armlinux.org.uk>
-References: <20190624145251.4849-1-opensource@vdorst.com>
- <20190624145251.4849-2-opensource@vdorst.com>
- <20190624153950.hdsuhrvfd77heyor@shell.armlinux.org.uk>
- <20190625113158.Horde.pCaJOVUsgyhYLd5Diz5EZKI@www.vdorst.com>
- <20190625121030.m5w7wi3rpezhfgyo@shell.armlinux.org.uk>
- <1ad9f9a5-8f39-40bd-94bb-6b700f30c4ba@pobox.com>
- <20190625190246.GA27733@lunn.ch>
- <4fc51dc4-0eec-30d7-86d1-3404819cf6fe@pobox.com>
- <20190625204148.GB27733@lunn.ch>
+        id S1726396AbfFYVpy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 17:45:54 -0400
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:36651 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725782AbfFYVpx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 17:45:53 -0400
+Received: by mail-oi1-f193.google.com with SMTP id w7so326904oic.3;
+        Tue, 25 Jun 2019 14:45:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=JjiTBZ0hm0NbqUS5/4bd1p2NmNnTTnu1Dvo2Kh058WY=;
+        b=Fygl8X6neXLKligulReeilyoG0dSjibvXxzB5K3QiSEGWUHn53omMxJXVy6dtXuree
+         kapPpf24Ab1SCrm8PcyefWC/Whia9xV1+TwqVpAQZ7sZAUkrSZNwMphtaXACYNcTJHJi
+         rSbPkODKXdqJ9kDKvCdN+77fOhnStuSZ0bF2Xqy2yzt3JWH+DpJoMrRKy2Uq4anb3f6Q
+         uGwTxo4t3VZXMKgs26OTPKLVpHtn2kXEeFXsnjj/byWFUM0K29RXkjfBg2MCKGWF5yM3
+         NTS0mPV+wehGpSuUUPtDptFBNn49ZtpRemI0eP+XnGCfBt18sdjjIrYnBETTN3fEfdUQ
+         gs3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=JjiTBZ0hm0NbqUS5/4bd1p2NmNnTTnu1Dvo2Kh058WY=;
+        b=iqWVFCd940IYIdJ/FYj4W3p7VXX5racRZQILLgG6J95qrBbPSqzABgMTzhYaD9+S2y
+         cuhpe5pccyjgtJxTDBW83Emj9noJ1Lx3xSosdBc/VeM9jhzzdMgnYnAQBtG9cViqADLz
+         lRUDw4L3s9VLQ7rGUw+RfaNL+CLqHsP15TSozjR83mHApAd3xBZ7CfFk8dqKdI6HR1SR
+         EGczUDhqemqtXMZ+TPF4IsTszubi2l5JO5UoaOEP35fV9BFS0ymJOOsDO7GXgs8fLQNs
+         mUCDcoIWSI0/Qz6sO5elLbEsjaWvjNNDaLyr/nFl/Nw+4bLGEtilTLE+AS+9BBZDfOcz
+         pnaA==
+X-Gm-Message-State: APjAAAWmdtK3BIUS674PmQHqIgHMBaPSjlBREByKIXj1mcL5ZfC2UQ05
+        SMdquZpCoo2x2LAxM84dfhDBPgTA
+X-Google-Smtp-Source: APXvYqyvvvk+AYvxBruu9uR3BNyKTd9Flkw47/n6y+yQBiIPTNOFBXO56QK9Z9AECIulsn+YmQwmlA==
+X-Received: by 2002:aca:3a55:: with SMTP id h82mr2257138oia.49.1561499152775;
+        Tue, 25 Jun 2019 14:45:52 -0700 (PDT)
+Received: from [192.168.1.112] (cpe-24-31-245-230.kc.res.rr.com. [24.31.245.230])
+        by smtp.gmail.com with ESMTPSA id l145sm5772594oib.6.2019.06.25.14.45.51
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Tue, 25 Jun 2019 14:45:52 -0700 (PDT)
+Subject: Re: [PATCH 1/4] b43legacy: remove b43legacy_dma_set_mask
+To:     Christoph Hellwig <hch@lst.de>, Kalle Valo <kvalo@codeaurora.org>
+Cc:     b43-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20190625102932.32257-1-hch@lst.de>
+ <20190625102932.32257-2-hch@lst.de>
+From:   Larry Finger <Larry.Finger@lwfinger.net>
+Message-ID: <55cf8864-3fa8-a0ed-0887-39ea21085492@lwfinger.net>
+Date:   Tue, 25 Jun 2019 16:45:51 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190625204148.GB27733@lunn.ch>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <20190625102932.32257-2-hch@lst.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 25, 2019 at 10:41:48PM +0200, Andrew Lunn wrote:
-> On Tue, Jun 25, 2019 at 02:27:55PM -0500, Daniel Santos wrote:
-> > On 6/25/19 2:02 PM, Andrew Lunn wrote:
-> > >> But will there still be a mechanism to ignore link partner's advertising
-> > >> and force these parameters?
-> > > >From man 1 ethtool:
-> > >
-> > >        -a --show-pause
-> > >               Queries the specified Ethernet device for pause parameter information.
-> > >
-> > >        -A --pause
-> > >               Changes the pause parameters of the specified Ethernet device.
-> > >
-> > >            autoneg on|off
-> > >                   Specifies whether pause autonegotiation should be enabled.
-> > >
-> > >            rx on|off
-> > >                   Specifies whether RX pause should be enabled.
-> > >
-> > >            tx on|off
-> > >                   Specifies whether TX pause should be enabled.
-> > >
-> > > You need to check the driver to see if it actually implements this
-> > > ethtool call, but that is how it should be configured.
-> > >
-> > > 	Andrew
-> > >
-> > Thank you Andrew,
-> > 
-> > So in this context, my question is the difference between "enabling" and
-> > "forcing".  Here's that register for the mt7620 (which has an mt7530 on
-> > its die): https://imgur.com/a/pTk0668  I believe this is also what René
-> > is seeking clarity on?
+On 6/25/19 5:29 AM, Christoph Hellwig wrote:
+> These days drivers are not required to fallback to smaller DMA masks,
+> but can just set the largest mask they support, removing the need for
+> this trial and error logic.
 > 
-> Lets start with normal operation. If the MAC supports pause or asym
-> pause, it calls phy_support_sym_pause() or phy_support_asym_pause().
-> phylib will then configure the PHY to advertise pause as appropriate.
-> Once auto-neg has completed, the results of the negotiation are set in
-> phydev. So phdev->pause and phydev->asym_pause. The MAC callback is
-> then used to tell the MAC about the autoneg results. The MAC should be
-> programmed using the values in phdev->pause and phydev->asym_pause.
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>   drivers/net/wireless/broadcom/b43legacy/dma.c | 39 +------------------
+>   1 file changed, 1 insertion(+), 38 deletions(-)
+
+The patches work for PPC32 for both b43legacy and b43.
+
+Tested-by: Larry Finger <Larry.Finger@lwfinger.net>
+
+Thanks,
+
+Larry
+
 > 
-> For ethtool, the MAC driver needs to implement .get_pauseparam and
-> .set_pauseparam. The set_pauseparam needs to validate the settings,
-> using phy_validate_pause(). If valid, phy_set_asym_pause() is used to
-> tell the PHY about the new configuration. This will trigger a new
-> auto-neg if auto-neg is enabled, and the results will be passed back
-> in the usual way. If auto-neg is disabled, or pause auto-neg is
-> disabled, the MAC should configure pause directly based on the
-> settings passed.
+> diff --git a/drivers/net/wireless/broadcom/b43legacy/dma.c b/drivers/net/wireless/broadcom/b43legacy/dma.c
+> index 2ce1537d983c..0c2de20622e3 100644
+> --- a/drivers/net/wireless/broadcom/b43legacy/dma.c
+> +++ b/drivers/net/wireless/broadcom/b43legacy/dma.c
+> @@ -797,43 +797,6 @@ void b43legacy_dma_free(struct b43legacy_wldev *dev)
+>   	dma->tx_ring0 = NULL;
+>   }
+>   
+> -static int b43legacy_dma_set_mask(struct b43legacy_wldev *dev, u64 mask)
+> -{
+> -	u64 orig_mask = mask;
+> -	bool fallback = false;
+> -	int err;
+> -
+> -	/* Try to set the DMA mask. If it fails, try falling back to a
+> -	 * lower mask, as we can always also support a lower one. */
+> -	while (1) {
+> -		err = dma_set_mask_and_coherent(dev->dev->dma_dev, mask);
+> -		if (!err)
+> -			break;
+> -		if (mask == DMA_BIT_MASK(64)) {
+> -			mask = DMA_BIT_MASK(32);
+> -			fallback = true;
+> -			continue;
+> -		}
+> -		if (mask == DMA_BIT_MASK(32)) {
+> -			mask = DMA_BIT_MASK(30);
+> -			fallback = true;
+> -			continue;
+> -		}
+> -		b43legacyerr(dev->wl, "The machine/kernel does not support "
+> -		       "the required %u-bit DMA mask\n",
+> -		       (unsigned int)dma_mask_to_engine_type(orig_mask));
+> -		return -EOPNOTSUPP;
+> -	}
+> -	if (fallback) {
+> -		b43legacyinfo(dev->wl, "DMA mask fallback from %u-bit to %u-"
+> -			"bit\n",
+> -			(unsigned int)dma_mask_to_engine_type(orig_mask),
+> -			(unsigned int)dma_mask_to_engine_type(mask));
+> -	}
+> -
+> -	return 0;
+> -}
+> -
+>   int b43legacy_dma_init(struct b43legacy_wldev *dev)
+>   {
+>   	struct b43legacy_dma *dma = &dev->dma;
+> @@ -844,7 +807,7 @@ int b43legacy_dma_init(struct b43legacy_wldev *dev)
+>   
+>   	dmamask = supported_dma_mask(dev);
+>   	type = dma_mask_to_engine_type(dmamask);
+> -	err = b43legacy_dma_set_mask(dev, dmamask);
+> +	err = dma_set_mask_and_coherent(dev->dev->dma_dev, dmamask);
+>   	if (err) {
+>   #ifdef CONFIG_B43LEGACY_PIO
+>   		b43legacywarn(dev->wl, "DMA for this device not supported. "
 > 
-> Looking at the data sheet page, you want FORCE_MODE_Pn set. You never
-> want the MAC directly talking to the PHY. Bad things will happen.
-> Then use FORCE_RX_FC_Pn and FORCE_TX_Pn to reflect phydev->pause and
-> phydev->asym_pause.
-> 
-> The same idea applies when using phylink.
 
-Except when using phylink, use pause & MLO_PAUSE_RX to determine whether
-FORCE_RX_FC_Pn should be set, and use pause & MLO_PAUSE_TX to determine
-whether FORCE_TX_Pn should be set.
-
-phylink will take care of the results of negotiation with the link
-partner and tell you what should be set if pause autoneg is enabled.
-If the user has decided to force it via ethtool, and the MAC driver
-passes the calls on to phylink, phylink will instead set MLO_PAUSE_RX
-and MLO_PAUSE_TX according to the users settings.
-
-So, with phylink, it's quite literally "if MLO_PAUSE_RX is set in
-mac_config, enable receiption of pause frames.  if MLO_PAUSE_TX is set,
-enable transmission of pause frames."
-
-The above applies for phylink's PHY, FIXED, and SGMII in-band modes.
-For 802.3z in-band modes, pause is negotiated between the two link
-parters (which could be the PCS built into the MACs at either end)
-and in some cases its possible to set the MAC to automatically adjust
-to the results of the built-in PCS negotiation.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
