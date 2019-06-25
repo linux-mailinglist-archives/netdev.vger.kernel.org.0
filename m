@@ -2,94 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 46A3055862
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 22:06:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4203A5586B
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 22:08:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727119AbfFYUGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 16:06:20 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:34449 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726053AbfFYUGT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 16:06:19 -0400
-Received: by mail-qk1-f195.google.com with SMTP id t8so13716887qkt.1;
-        Tue, 25 Jun 2019 13:06:18 -0700 (PDT)
+        id S1726969AbfFYUI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 16:08:26 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:45996 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726447AbfFYUIZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 16:08:25 -0400
+Received: by mail-pl1-f196.google.com with SMTP id bi6so23902plb.12
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 13:08:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RTShSTj5/FpTVgIWgu2/oFhLVrp3kVnO6Lz9E5kxwQM=;
-        b=ha1vFqbT0ywZB5TXVQmocuAfoQKB6bgbEwlb/9v31UC05KTLDW/64Vt6sDEuDGQJD6
-         JHYd3VesOiyHR54nqqx5gwy+zAKHLKPQT7Qw5ph/9dRiTaHImUYTSxKvT1I+faRUfNyt
-         MlchwGAfPA3LXqNu1Cj/NPtjZh+IicgsxRPIiBj1w63qJb4DL4CA4reCdoStk6lCbjFc
-         OtYm/Fa33A4RQq9tcAHUvKhiZwGxejaTTRcctLUaNbINFVbrtRCLRcgZ6uRQZ8YweRCn
-         vCPiMl7CCTNZA99tGiSvr7566ekdX3Jn1kr0JtfXsvSwlNeO80BRu/UIYQCnscwoSKk0
-         Mf5Q==
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=ZmfgUvSKsxGJWxDPJZxJdLCc4A053/l+NMKJ98odJj0=;
+        b=FKNudjZnwyh6DfF+62stYSAzQF+mywGHpH8+TPPM4J2Cm7My+57LlQIULAK+LJMmh+
+         hzA7KJVqKeUNy+hggsgi+CzqXp1rtLNT2IMfKa1MCz/KBU0hlMSBGlqXdIPVg2Rghe4V
+         Nfc08Uh1YLQzxXTeGCTq69cbNy8BpNZy04XgpssT7EWkoK50h8jHBT2n5cly9cMFYnaq
+         WB0P0OsNarW/rVixB5+oVE/LK4JKmjpQwAzHyMMH/YYefwPQwUmvoaxqtzJpezjYlXG3
+         cPkXQccDCDOIcE3K5qBdOU9LKydjmxrwBirEpIJaKFfsy8P7qbVHLavbcMDK2JEM3elB
+         VY0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RTShSTj5/FpTVgIWgu2/oFhLVrp3kVnO6Lz9E5kxwQM=;
-        b=tcZNGfr/xYR1GfieuZ9+eiZ4H8Hv2XMmIqFhx7vhW41ysEVbU/wHjuDkox54GtE0al
-         hcTsjN/bIxwoLvbcR91IgOz2mA9KogVUbfj3uNJcFcQhv51iUnoUtOWdzyqyeRHYvDmf
-         ofHmnknnDQXhKSon5r5jg+6fbJij3f+96re+jK+98ZNV77QdcUXGKlOypvlxE3DVEVoO
-         mzpuhXJ/Lu0xq2ywu1AyCLytxWAWKpXopZ78klGUarP5I1dbWBy/B2GaW9aCjeTz3vQA
-         4JWy59gXdrIBSv2w1TNeN/WvVINMl6C4dXrCzpWUIX+GLrDSy1ij64PNP0kVT+OBfBya
-         q5Wg==
-X-Gm-Message-State: APjAAAVjMSxQ2dPuoglRHCTA2YI69mYNu3yU9o68QJfNjmlthu6CG5JE
-        niv4KTTn3kCeJtgTQ0C+6Kv1y/1rr2SocYWinUY=
-X-Google-Smtp-Source: APXvYqxeWqVcCu8K5tarpfqQUORIjT33whWFNGtEqVcnhnhnv5X5NRpa/EFyRR8lM9xD1bTiKdMoqUmA+n9yDx3QVSE=
-X-Received: by 2002:a37:5cc3:: with SMTP id q186mr506709qkb.74.1561493178572;
- Tue, 25 Jun 2019 13:06:18 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190625172717.158613-1-allanzhang@google.com>
-In-Reply-To: <20190625172717.158613-1-allanzhang@google.com>
-From:   Song Liu <liu.song.a23@gmail.com>
-Date:   Tue, 25 Jun 2019 13:06:07 -0700
-Message-ID: <CAPhsuW6+T4pgOhVFprqcfH5DqUmrq+d2sGX995MpvEVSVd-2rQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 0/2] bpf: Allow bpf_skb_event_output for more
- prog types
-To:     allanzhang <allanzhang@google.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=ZmfgUvSKsxGJWxDPJZxJdLCc4A053/l+NMKJ98odJj0=;
+        b=MsnqYHeC4wIs19YQyE+YZvPwFkzfxRpif95Jrv92pe6EnOetPqqry8rR8zRcWx38Pv
+         cE8SCkY/bQWxXb1Tq2YrvBfC0MsSU6MWojsJ+nvIOKPD6otxrLq2yTTZSjBS1vUql9J8
+         ErufzJ+LpbDEFNUAwhrJXTEQYwODOdn15QS8MTn19jImjtsrcuW+MNFwhg701dXQTdzK
+         QtUiP9SP6fvC456TYzgrRXccUGr4I8D0nSRV+JPiNn7rcVh3fZqZxAFyKlgrmT5Ij1+r
+         UaTd7bCvU6J2+62ZlLyqMFAB8dkvoS1mCd89FDs991Y//sjNckROETjAdR9zm+j1Ngk5
+         WXMw==
+X-Gm-Message-State: APjAAAXoikCbFS20ddxq0MBDCi6axomOawKoLYlMVXSqkx4zP8ZYczQx
+        SsN2npiq7BLjelu5zHNUT4AtAA==
+X-Google-Smtp-Source: APXvYqyXOJPUPyiAxrZ2cCKgETQPQglhAhcHovAirkKtw+UhwLSk1/666t/ofU//Ncco8GGkJkSuPQ==
+X-Received: by 2002:a17:902:7894:: with SMTP id q20mr471120pll.339.1561493305108;
+        Tue, 25 Jun 2019 13:08:25 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id f88sm81478pjg.5.2019.06.25.13.08.24
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 25 Jun 2019 13:08:24 -0700 (PDT)
+Date:   Tue, 25 Jun 2019 13:08:23 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Krzesimir Nowak <krzesimir@kinvolk.io>
+Cc:     netdev@vger.kernel.org, Alban Crequy <alban@kinvolk.io>,
+        Iago =?iso-8859-1?Q?L=F3pez?= Galeiras <iago@kinvolk.io>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        Stanislav Fomichev <sdf@google.com>
+Subject: Re: [bpf-next v2 03/10] selftests/bpf: Avoid another case of errno
+ clobbering
+Message-ID: <20190625200823.GB10487@mini-arch>
+References: <20190625194215.14927-1-krzesimir@kinvolk.io>
+ <20190625194215.14927-4-krzesimir@kinvolk.io>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190625194215.14927-4-krzesimir@kinvolk.io>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 25, 2019 at 12:45 PM allanzhang <allanzhang@google.com> wrote:
->
-> Software event output is only enabled by a few prog types right now (TC,
-> LWT out, XDP, sockops). Many other skb based prog types need
-> bpf_skb_event_output to produce software event.
->
-> Added socket_filter, cg_skb, sk_skb prog types to generate sw event.
->
-> allanzhang (2):
->   bpf: Allow bpf_skb_event_output for a few prog types
->   bpf: Add selftests for bpf_perf_event_output
+On 06/25, Krzesimir Nowak wrote:
+> Commit 8184d44c9a57 ("selftests/bpf: skip verifier tests for
+> unsupported program types") added a check for an unsupported program
+> type. The function doing it changes errno, so test_verifier should
+> save it before calling it if test_verifier wants to print a reason why
+> verifying a BPF program of a supported type failed.
+> 
+> Fixes: 8184d44c9a57 ("selftests/bpf: skip verifier tests for unsupported program types")
+> Cc: Stanislav Fomichev <sdf@google.com>
+> Signed-off-by: Krzesimir Nowak <krzesimir@kinvolk.io>
+> ---
+>  tools/testing/selftests/bpf/test_verifier.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
+> index 12589da13487..779e30b96ded 100644
+> --- a/tools/testing/selftests/bpf/test_verifier.c
+> +++ b/tools/testing/selftests/bpf/test_verifier.c
+> @@ -867,6 +867,7 @@ static void do_test_single(struct bpf_test *test, bool unpriv,
+>  	int fixup_skips;
+>  	__u32 pflags;
+>  	int i, err;
+> +	int saved_errno;
+Reverse Christmas tree. Otherwise LGTM.
 
-I am not sure whether this is caused by delay in the mailing list or something
-else. But it appears to me that you are ignoring some of the feedback. Please
-pay more attention to these feedback.
-
-Please include changes "v1, xxx, v2, xxx, .." in the cover letter, but not the
-commit log itself. In other words, include that in 0/2, but not in 1/2 or 2/2.
-
-Thanks,
-Song
->
->  net/core/filter.c                             |  6 ++
->  tools/testing/selftests/bpf/test_verifier.c   | 33 ++++++-
->  .../selftests/bpf/verifier/event_output.c     | 94 +++++++++++++++++++
->  3 files changed, 132 insertions(+), 1 deletion(-)
->  create mode 100644 tools/testing/selftests/bpf/verifier/event_output.c
->
-> --
-> 2.22.0.410.gd8fdbe21b5-goog
->
+>  
+>  	for (i = 0; i < MAX_NR_MAPS; i++)
+>  		map_fds[i] = -1;
+> @@ -894,6 +895,7 @@ static void do_test_single(struct bpf_test *test, bool unpriv,
+>  		pflags |= BPF_F_ANY_ALIGNMENT;
+>  	fd_prog = bpf_verify_program(prog_type, prog, prog_len, pflags,
+>  				     "GPL", 0, bpf_vlog, sizeof(bpf_vlog), 4);
+> +	saved_errno = errno;
+>  	if (fd_prog < 0 && !bpf_probe_prog_type(prog_type, 0)) {
+>  		printf("SKIP (unsupported program type %d)\n", prog_type);
+>  		skips++;
+> @@ -910,7 +912,7 @@ static void do_test_single(struct bpf_test *test, bool unpriv,
+>  	if (expected_ret == ACCEPT) {
+>  		if (fd_prog < 0) {
+>  			printf("FAIL\nFailed to load prog '%s'!\n",
+> -			       strerror(errno));
+> +			       strerror(saved_errno));
+>  			goto fail_log;
+>  		}
+>  #ifndef CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS
+> -- 
+> 2.20.1
+> 
