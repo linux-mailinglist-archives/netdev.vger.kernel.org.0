@@ -2,103 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 73AE6556A1
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 20:02:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79749556CB
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 20:07:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730367AbfFYSCA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 14:02:00 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:37786 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727233AbfFYSCA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 14:02:00 -0400
-Received: by mail-pf1-f193.google.com with SMTP id 19so9875798pfa.4
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 11:02:00 -0700 (PDT)
+        id S1731984AbfFYSHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 14:07:41 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:39507 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726761AbfFYSHl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 14:07:41 -0400
+Received: by mail-pf1-f194.google.com with SMTP id j2so9881125pfe.6
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 11:07:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:subject:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=0zWzsB9zWBO/0T+5Mjtm94xzsXQ8yDzdQ/Xnq994hZ4=;
-        b=D+lld1sYDB02k/yRtyQZXTsvxaaQmGdsOA8LGjxDLTwWNH89o4Rs7a9PVdAWBiq2ld
-         XlphJwD9WJ1iMpHIbfpAfk3ql3aV4qMHxhrefUPYpXPd7Ou/G2na6p0pVgj7pipBI98B
-         49XQzdg4csBrAADcUQNmHFZYv/49lCtm2hAk4ayWhuDHRX1GgPSP2IkSrM5ETrGYtwlQ
-         +S4qb0O6h4DnvzqSS1IzcaUQ7HnewC3tT6j8DnsSCS8bWGP1HP1maAgASZId/f1akWFJ
-         AItFy0cWZ6i3UmHZ2ANDyQjNsybUZPsMGWFKIiI7v/MwCp75Q+dQu7SivHVJabO2xKR1
-         1YFw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2SCahMmUfmE322selZyfgRFKgsG0o0VArNmdDLXtukE=;
+        b=BiUmPIdUbd9kXQ5uaP10wlsF762W42O+KjhHcv5qynskXCZZfgxikqfgZ87Fs+bD/z
+         DUAmXOKgsiwkVfTNwoPNlTMMWHdLsf0FrYf+bblELobkJkJS61xub/bPAIUuqL0LLNjm
+         ZCxiuk4U/+nwuvqrKSMuJAkDMzs0XI0bXHfdB+0EqfCNccyPydGJcOR2m7ECkyg3/jFF
+         UjvUVtGsQnKW3PHUtXHP+eaFZa9NXSHERQqobAhi9qpjRrz/s1Ns4np7yJaMW9Ebm3F8
+         tHjigC8Mmdsd3y6NJklvgk/fl7o88lWfpbqL6mfLbnH5kbw1G8tuxgtY+F4CHkfCxuO+
+         23Ew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=0zWzsB9zWBO/0T+5Mjtm94xzsXQ8yDzdQ/Xnq994hZ4=;
-        b=V8VgjjyrNkzX2sFqlFeDtC7tfygaRbcVL27RyRbYweYqcJRA4CGfecNy6HqGRBN2rD
-         Yt9K1+CDSWlosqKnqFWOb9HY5/zjhxDNz9ea/rvpJmKw/Kdpo349sUMstMcvxMWg+kk/
-         GfP/55M3EZVWDLOrc5aXZDv+Oqaqzg9lwkWZGPFiY+KYmffH/9nyb9wxXdKBfsVZ4HNr
-         UBaOcl7HUgov0DFLwxMeW685U30P77J9P3PhLF9jLoHR+6FrQXx4oSonrkYJbXzjVaC1
-         iu8+6yHfnos/dcRRyFGjx9gczfYWbnkuAPz0m5NtWqzP4DRCV3E700GI5q1n25q3D0R4
-         YZKg==
-X-Gm-Message-State: APjAAAXMsKMD1SKljg2iqB7F1mj4gCEYVeEwEiJwGqCHpVINhL1m80PO
-        ynlGpzXOkKGnbf5FG8/Ex1BAiJA7ZZ0=
-X-Google-Smtp-Source: APXvYqztLpO9dUAOYuF+kEekJyHJSyw+qgyrSC34iyIzdJNce+pdk3T6Q7YGDeZqv+8QmQqJ3r4wNw==
-X-Received: by 2002:a17:90a:9f0b:: with SMTP id n11mr107356pjp.98.1561485719391;
-        Tue, 25 Jun 2019 11:01:59 -0700 (PDT)
-Received: from ?IPv6:2620:10d:c0a3:10e0::2ed7? ([2620:10d:c091:500::2:c089])
-        by smtp.gmail.com with ESMTPSA id a64sm13592819pgc.53.2019.06.25.11.01.58
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Tue, 25 Jun 2019 11:01:58 -0700 (PDT)
-From:   Jes Sorensen <jes.sorensen@gmail.com>
-X-Google-Original-From: Jes Sorensen <Jes.Sorensen@gmail.com>
-Subject: Re: [PATCH 0/1] Fix broken build of mlx5
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "kernel-team@fb.com" <kernel-team@fb.com>,
-        "jsorensen@fb.com" <jsorensen@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20190625152708.23729-1-Jes.Sorensen@gmail.com>
- <134e3a684c27fddeeeac111e5b4fac4093473731.camel@mellanox.com>
-Message-ID: <74cb713f-ad8c-7f86-c611-9dd4265f1c9b@gmail.com>
-Date:   Tue, 25 Jun 2019 14:01:56 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2SCahMmUfmE322selZyfgRFKgsG0o0VArNmdDLXtukE=;
+        b=aAJOlMqPMGdKDZ8rToVXGPqxRU3JRZkFq1nUGSMUh3ICicPITdQ4maZxmYs3ieuQ3l
+         BAmoPWRBKSu6mA6bT+K4Edtog32ABZmwQtOM6TWvBwU+7mFn+XZqiEnjryGE34i6/M8p
+         wYu2EIzFxd6TCxv7CokcVnzFpV+RLKpVcOYZivuQbaEm8MG7S23AlKNxNmojwcfBHUMZ
+         Qmw2RHFauRLcgxh5LHM8D0DGs/qFxCKBpSi86UsCzIcztvyBbfhprSTAf2+bmQ5UzLK/
+         dHWYWZ5luhAQfz+4k4MHnNV6abzrd6yhXIt4Kq1azCDoUOvBLXIarf57PRpgo5M9AwFu
+         LzLw==
+X-Gm-Message-State: APjAAAUMB3mY8fwNcaqL/S11swGAN0uZwqRjaFMfPr7PhlZIZu5fu3u2
+        hplzQIFS3EQ+ORzH2GB3JyvKFIvH7FxLz3IvZck=
+X-Google-Smtp-Source: APXvYqwumNRdio6g/Pjozm1Ndjs1gGBkke8JFqsYB789jYAt6z9lOs4yJCtnJXtjedCMpa1/E6XBK3DLoyUv4q7zb60=
+X-Received: by 2002:a63:fa4e:: with SMTP id g14mr40096265pgk.237.1561486060511;
+ Tue, 25 Jun 2019 11:07:40 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <134e3a684c27fddeeeac111e5b4fac4093473731.camel@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <9068475730862e1d9014c16cee0ad2734a4dd1f9.1560978242.git.dcaratti@redhat.com>
+ <CAM_iQpUVJ9sG9ETE0zZ_azbDgWp_oi320nWy_g-uh2YJWYDOXw@mail.gmail.com>
+ <53b8c3118900b31536594e98952640c03a4456e0.camel@redhat.com>
+ <CAM_iQpVVMBUdhv3o=doLhpWxee91zUPKjAOtUwryUEj0pfowdg@mail.gmail.com> <6650f0da68982ffa5bb71a773c5a3d588bd972c4.camel@redhat.com>
+In-Reply-To: <6650f0da68982ffa5bb71a773c5a3d588bd972c4.camel@redhat.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Tue, 25 Jun 2019 11:07:28 -0700
+Message-ID: <CAM_iQpW_-e+duPqKVXSDn7fp3WOKfs+RgVkFkfeQJQUTP_0x1Q@mail.gmail.com>
+Subject: Re: [PATCH net] net/sched: flower: fix infinite loop in fl_walk()
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     Vlad Buslov <vladbu@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Lucas Bates <lucasb@mojatatu.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/25/19 1:54 PM, Saeed Mahameed wrote:
-> On Tue, 2019-06-25 at 11:27 -0400, Jes Sorensen wrote:
->> From: Jes Sorensen <jsorensen@fb.com>
->>
->> This fixes an obvious build error that could have been caught by
->> simply building the code before pushing out the patch.
->>
-> 
-> Hi Jes,
-> 
-> Just tested again, as I have tested before submitting the blamed patch,
-> and as we test on every single new patch in our build automation.
-> 
-> both combinations CONFIG_MLX5_EN_RXNFC=y/n work on latest net-next,
-> what am i missing ?
+Hello,
 
-Linus' tree:
+On Tue, Jun 25, 2019 at 8:47 AM Davide Caratti <dcaratti@redhat.com> wrote:
+> hello Cong,
+>
+> I tested the above patch, but I still see the infinite loop on kernel
+> 5.2.0-0.rc5.git0.1.fc31.i686 .
+>
+> idr_get_next_ul() returns the entry in the radix tree which is greater or
+> equal to '*nextid' (which has the same value as 'id' in the above hunk).
+> So, when the radix tree contains one slot with index equal to ULONG_MAX,
+> whatever can be the value of 'id', the condition in that if() will always
+> be false (and the function will keep  returning non-NULL, hence the
+> infinite loop).
+>
+> I also tried this:
+>
+> if (iter.index == id && id == ULONG_MAX) {
+>         return NULL;
+> }
+>
+> it fixes the infinite loop, but it clearly breaks the function semantic
+> (and anyway, it's not sufficient to fix my test, at least with cls_flower
+> it still dumps the entry with id 0xffffffff several times).  I'm for
+> fixing the callers of idr_get_next_ul(), and in details:
 
-[jes@xpeas linux.git]$ grep mlx5e_get_rxnfc
-drivers/net/ethernet/mellanox/mlx5/core/*.c
-drivers/net/ethernet/mellanox/mlx5/core/en/*.h
-drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c:static int
-mlx5e_get_rxnfc(struct net_device *dev, struct ethtool_rxnfc *info, u32
-*rule_locs)
-drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c:	.get_rxnfc
-= mlx5e_get_rxnfc,
-drivers/net/ethernet/mellanox/mlx5/core/en_fs_ethtool.c:int
-mlx5e_get_rxnfc(struct net_device *dev,
-drivers/net/ethernet/mellanox/mlx5/core/en/fs.h:int
-mlx5e_get_rxnfc(struct net_device *dev,
+It now becomes more interesting.
 
-static vs non static functions, with a prototype that is non static.
+On one hand, its callers should not need to worry about details
+like overflow. On the other hand, in fact it does exactly what its
+callers tell it to do, the problematic part is actually the
+incremented id. On 64bit, it is fairly easy, we can just simply
+know 'long' is longer than 32bit and leverage this to detect overflow,
+but on 32bit this clearly doesn't work.
 
-Jes
+Let me think about it.
+
+Thanks.
