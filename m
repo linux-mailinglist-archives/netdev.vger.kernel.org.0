@@ -2,418 +2,771 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 645A05202E
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 03:00:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C698452033
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 03:01:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729880AbfFYBAk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 21:00:40 -0400
-Received: from pb-smtp1.pobox.com ([64.147.108.70]:53555 "EHLO
-        pb-smtp1.pobox.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729336AbfFYBAk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 21:00:40 -0400
-Received: from pb-smtp1.pobox.com (unknown [127.0.0.1])
-        by pb-smtp1.pobox.com (Postfix) with ESMTP id E370B166E86;
-        Mon, 24 Jun 2019 21:00:30 -0400 (EDT)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=pobox.com; h=subject:to:cc
-        :references:from:message-id:date:mime-version:in-reply-to
-        :content-type:content-transfer-encoding; s=sasl; bh=Nf98VEpzf7Ot
-        iCL+6e9xy3Hq6AA=; b=b8bzrrPZd4hxAZIVhklHshtzsOaZkb+uJbfXwXM8UGRL
-        EBQbuYfMmWrJLYlnLF78218t1OhM6T0RFeqih+GsXV2UDnVWrxcDTd7LWdeeF5vH
-        rv/BdK4t2pJFvWiog+Nkw3SmHqphgL/sunsrVHuuXlz9hWOVIDPAPrjCbzagYG0=
-DomainKey-Signature: a=rsa-sha1; c=nofws; d=pobox.com; h=subject:to:cc
-        :references:from:message-id:date:mime-version:in-reply-to
-        :content-type:content-transfer-encoding; q=dns; s=sasl; b=CNX69V
-        3a4HcFXzpGmJDgSjZVmj1pjtwb368c7do0jqRCgBdsUsPKNWS0ATRT3deninkTvr
-        8eWOJv+A/7tR8lXHi8iUaqRHAc19TdC1U5f6MVHL78pGic/H+bEUAYEmBWNgjRcn
-        YZQOOHDKQeRvbQXGdS91yk2FNCU29OXX3Aghg=
-Received: from pb-smtp1.nyi.icgroup.com (unknown [127.0.0.1])
-        by pb-smtp1.pobox.com (Postfix) with ESMTP id D7BD3166E85;
-        Mon, 24 Jun 2019 21:00:30 -0400 (EDT)
-Received: from [192.168.1.134] (unknown [70.142.57.80])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by pb-smtp1.pobox.com (Postfix) with ESMTPSA id EAEE5166E83;
-        Mon, 24 Jun 2019 21:00:27 -0400 (EDT)
-Subject: Re: [PATCH RFC net-next 1/5] net: dsa: mt7530: Convert to PHYLINK API
-To:     =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
-        sean.wang@mediatek.com, f.fainelli@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net, matthias.bgg@gmail.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com
-Cc:     frank-w@public-files.de, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org
-References: <20190624145251.4849-1-opensource@vdorst.com>
- <20190624145251.4849-2-opensource@vdorst.com>
-From:   Daniel Santos <daniel.santos@pobox.com>
-Message-ID: <13c67cb7-b33e-f2b1-9d1e-d2882e0ff076@pobox.com>
-Date:   Mon, 24 Jun 2019 19:58:57 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <20190624145251.4849-2-opensource@vdorst.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-X-Pobox-Relay-ID: 9F971F98-96E4-11E9-81CE-46F8B7964D18-06139138!pb-smtp1.pobox.com
-Content-Transfer-Encoding: quoted-printable
+        id S1729942AbfFYBA5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 21:00:57 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:37021 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729889AbfFYBAw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 21:00:52 -0400
+Received: by mail-io1-f67.google.com with SMTP id e5so176752iok.4
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 18:00:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=Z8PQ3wKhmVVLjHpnU4vD8v0+qT3YiJv/XVj0L8daRDo=;
+        b=2FUf5u4UxYaX3BpMBN8IK4BAzMKIXw+RVU0WWk540uIJhsTL8VN1RHJImxtm9F89oQ
+         jwd2E+0nmyeOe6RxKwMxpBITl+Ieoaz+MGfR2TaVby5haGCk7XlBzoE3UFV1fFHEOti7
+         W+bcnk2keoDqFOsmqEE46V5bqCxsZVMJay/yT+tI+8lZGjYq6WjPFu2V7OMmtI9T6sBr
+         a3N3lznzdE12DfIPajhGBtYUh16pyNTALvY/5EsG4GCX08clce+wmqenVcEe/f6UN/i5
+         tG97qbo1GqwBZtfObEF8lZOwOpNnV2Ghet5tVMfLE+e4xeDCGDfeK6Wi+4a+GWmD60xv
+         2cIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Z8PQ3wKhmVVLjHpnU4vD8v0+qT3YiJv/XVj0L8daRDo=;
+        b=aeiLnvQuNRwk+NSRrZZj+kxBSRl2XHVvCJ/6sBcm2qKyxAoH5g9Br683PPB2rdcUf9
+         mHdSt+6+M1ab3kxMzYM8k9XNHu8uayHM4luD6UFRi8CFVfxaf3/tYo/oEULpuBqxEahA
+         Aqgg/PoKfvIBukL4t3wos6LFuCqlx+lUwwiKEWHW3YYMOmxQ2CXqrZYil8+QUsho0yC7
+         eCUPelWtbIa/upCddgp9J5hq17z/X9WHW++CEmOfF3VHusd1QTHfJlrivLVmCiCbzCuU
+         VTqSsVUbWLzPhFrQ3B5eqUTVdbTvf/clIsOt5fhxxF4qag+6V+4p57k0+oHcgCrLrRX9
+         fG2Q==
+X-Gm-Message-State: APjAAAVmLXXo3gqMI2T+xXmMSgfdKEYwWKMg13L4Iuq7rg9UonMgBy+8
+        eE8MPi29DWbEbTSZ/V+CKFTvZw==
+X-Google-Smtp-Source: APXvYqyeohHKUAxNsDywxARPS6nJ4mVFvQvC0Y2uvQ2q3U+RHYl/OEVPZ4UdG4TiAdAftcAHsfMitg==
+X-Received: by 2002:a05:6638:29a:: with SMTP id c26mr24371429jaq.98.1561424451187;
+        Mon, 24 Jun 2019 18:00:51 -0700 (PDT)
+Received: from mojatatu.com ([2607:f2c0:e4b2:adf:b44f:20aa:14dc:ee27])
+        by smtp.gmail.com with ESMTPSA id m7sm10592874iob.69.2019.06.24.18.00.49
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Mon, 24 Jun 2019 18:00:50 -0700 (PDT)
+From:   Lucas Bates <lucasb@mojatatu.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, nicolas.dichtel@6wind.com,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        mleitner@redhat.com, vladbu@mellanox.com, dcaratti@redhat.com,
+        kernel@mojatatu.com, Lucas Bates <lucasb@mojatatu.com>
+Subject: [PATCH net-next 1/1] tc-testing:  Restore original behaviour for namespaces in tdc
+Date:   Mon, 24 Jun 2019 21:00:27 -0400
+Message-Id: <1561424427-9949-1-git-send-email-lucasb@mojatatu.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch restores the original behaviour for tdc prior to the
+introduction of the plugin system, where the network namespace
+functionality was split from the main script.
 
+It introduces the concept of required plugins for testcases,
+and will automatically load any plugin that isn't already
+enabled when said plugin is required by even one testcase.
 
-On 6/24/19 9:52 AM, Ren=C3=A9 van Dorst wrote:
-> Convert mt7530 to PHYLINK API
->
-> Signed-off-by: Ren=C3=A9 van Dorst <opensource@vdorst.com>
-> ---
->  drivers/net/dsa/mt7530.c | 237 +++++++++++++++++++++++++++++----------
->  drivers/net/dsa/mt7530.h |   9 ++
->  2 files changed, 187 insertions(+), 59 deletions(-)
->
-> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-> index 3181e95586d6..9c5e4dd00826 100644
-> --- a/drivers/net/dsa/mt7530.c
-> +++ b/drivers/net/dsa/mt7530.c
-> @@ -13,7 +13,7 @@
->  #include <linux/of_mdio.h>
->  #include <linux/of_net.h>
->  #include <linux/of_platform.h>
-> -#include <linux/phy.h>
-> +#include <linux/phylink.h>
->  #include <linux/regmap.h>
->  #include <linux/regulator/consumer.h>
->  #include <linux/reset.h>
-> @@ -633,63 +633,6 @@ mt7530_get_sset_count(struct dsa_switch *ds, int p=
-ort, int sset)
->  	return ARRAY_SIZE(mt7530_mib);
->  }
-> =20
-> -static void mt7530_adjust_link(struct dsa_switch *ds, int port,
-> -			       struct phy_device *phydev)
-> -{
-> -	struct mt7530_priv *priv =3D ds->priv;
-> -
-> -	if (phy_is_pseudo_fixed_link(phydev)) {
-> -		dev_dbg(priv->dev, "phy-mode for master device =3D %x\n",
-> -			phydev->interface);
-> -
-> -		/* Setup TX circuit incluing relevant PAD and driving */
-> -		mt7530_pad_clk_setup(ds, phydev->interface);
-> -
-> -		if (priv->id =3D=3D ID_MT7530) {
-> -			/* Setup RX circuit, relevant PAD and driving on the
-> -			 * host which must be placed after the setup on the
-> -			 * device side is all finished.
-> -			 */
-> -			mt7623_pad_clk_setup(ds);
-> -		}
-> -	} else {
-> -		u16 lcl_adv =3D 0, rmt_adv =3D 0;
-> -		u8 flowctrl;
-> -		u32 mcr =3D PMCR_USERP_LINK | PMCR_FORCE_MODE;
-> -
-> -		switch (phydev->speed) {
-> -		case SPEED_1000:
-> -			mcr |=3D PMCR_FORCE_SPEED_1000;
-> -			break;
-> -		case SPEED_100:
-> -			mcr |=3D PMCR_FORCE_SPEED_100;
-> -			break;
-> -		}
-> -
-> -		if (phydev->link)
-> -			mcr |=3D PMCR_FORCE_LNK;
-> -
-> -		if (phydev->duplex) {
-> -			mcr |=3D PMCR_FORCE_FDX;
-> -
-> -			if (phydev->pause)
-> -				rmt_adv =3D LPA_PAUSE_CAP;
-> -			if (phydev->asym_pause)
-> -				rmt_adv |=3D LPA_PAUSE_ASYM;
-> -
-> -			lcl_adv =3D linkmode_adv_to_lcl_adv_t(
-> -				phydev->advertising);
-> -			flowctrl =3D mii_resolve_flowctrl_fdx(lcl_adv, rmt_adv);
-> -
-> -			if (flowctrl & FLOW_CTRL_TX)
-> -				mcr |=3D PMCR_TX_FC_EN;
-> -			if (flowctrl & FLOW_CTRL_RX)
-> -				mcr |=3D PMCR_RX_FC_EN;
-> -		}
-> -		mt7530_write(priv, MT7530_PMCR_P(port), mcr);
-> -	}
-> -}
-> -
->  static int
->  mt7530_cpu_port_enable(struct mt7530_priv *priv,
->  		       int port)
-> @@ -1323,6 +1266,178 @@ mt7530_setup(struct dsa_switch *ds)
->  	return 0;
->  }
-> =20
-> +static void mt7530_phylink_mac_config(struct dsa_switch *ds, int port,
-> +				      unsigned int mode,
-> +				      const struct phylink_link_state *state)
-> +{
-> +	struct mt7530_priv *priv =3D ds->priv;
-> +	u32 mcr =3D PMCR_IFG_XMIT(1) | PMCR_MAC_MODE | PMCR_BACKOFF_EN |
-> +		  PMCR_BACKPR_EN | PMCR_TX_EN | PMCR_RX_EN;
-> +
-> +	switch (port) {
-> +	case 0: /* Internal phy */
-> +	case 1:
-> +	case 2:
-> +	case 3:
-> +	case 4:
-> +		if (state->interface !=3D PHY_INTERFACE_MODE_GMII)
-> +			goto unsupported;
-> +		break;
-> +	/* case 5: Port 5 is not supported! */
-> +	case 6: /* 1st cpu port */
-> +		if (state->interface !=3D PHY_INTERFACE_MODE_RGMII &&
-> +		    state->interface !=3D PHY_INTERFACE_MODE_TRGMII)
-> +			goto unsupported;
-> +
-> +		/* Setup TX circuit incluing relevant PAD and driving */
-> +		mt7530_pad_clk_setup(ds, state->interface);
-> +
-> +		if (priv->id =3D=3D ID_MT7530) {
-> +			/* Setup RX circuit, relevant PAD and driving on the
-> +			 * host which must be placed after the setup on the
-> +			 * device side is all finished.
-> +			 */
-> +			mt7623_pad_clk_setup(ds);
-> +		}
-> +		break;
-> +	default:
-> +		dev_err(ds->dev, "%s: unsupported port: %i\n", __func__, port);
-> +		return;
-> +	}
-> +
-> +	if (!state->an_enabled || mode =3D=3D MLO_AN_FIXED) {
-> +		mcr |=3D PMCR_FORCE_MODE;
-> +
-> +		if (state->speed =3D=3D SPEED_1000)
-> +			mcr |=3D PMCR_FORCE_SPEED_1000;
-> +		if (state->speed =3D=3D SPEED_100)
-> +			mcr |=3D PMCR_FORCE_SPEED_100;
+Additionally, the -n option for the nsPlugin is deprecated
+so the default action is to make use of the namespaces.
+Instead, we introduce -N to not use them, but still create
+the veth pair.
 
-I would suggest using the defines
+buildebpfPlugin's -B option is also deprecated.
 
-#define PMCR_FORCE_SPEED	0x0000000c /* or PMCR_FORCE_SPEED_MASK */
-#define PMCR_FORCE_SPEED_10	0x00000000
-#define PMCR_FORCE_SPEED_100	0x00000004
-#define PMCR_FORCE_SPEED_1000	0x00000008
+If a test cases requires the features of a specific plugin
+in order to pass, it should instead include a new key/value
+pair describing plugin interactions:
 
-and a switch statement such as
+        "plugins": {
+                "requires": "buildebpfPlugin"
+        },
 
-	switch (state->speed) {
-	case SPEED_10:
-		mcr |=3D PMCR_FORCE_SPEED_10;
-		break;
-	case SPEED_100:
-		mcr |=3D PMCR_FORCE_SPEED_100;
-		break;
-	case SPEED_1000:
-		mcr |=3D PMCR_FORCE_SPEED_1000;
-		break;
-	}
+A test case can have more than one required plugin: a list
+can be inserted as the value for 'requires'.
 
-This will compile the same (i.e, the mcr |=3D 0 will optimize away, etc.)=
-,
-while alleviating the need to intimately know the hardware in order to
-easily understand what the code is doing at a glance.=C2=A0 It's also bet=
-ter
-form as we're treating the two bits as a composite value, rather than
-two separate bits.
+Signed-off-by: Lucas Bates <lucasb@mojatatu.com>
+---
+ tools/testing/selftests/tc-testing/README          |  22 ++-
+ .../tc-testing/plugin-lib/buildebpfPlugin.py       |   5 +-
+ .../selftests/tc-testing/plugin-lib/nsPlugin.py    |  26 +++-
+ .../selftests/tc-testing/tc-tests/actions/bpf.json |   6 +
+ .../selftests/tc-testing/tc-tests/filters/fw.json  | 162 +++++++++++++++++++++
+ .../tc-testing/tc-tests/filters/tests.json         |  12 ++
+ tools/testing/selftests/tc-testing/tdc.py          |  78 +++++++++-
+ tools/testing/selftests/tc-testing/tdc_helper.py   |   5 +-
+ 8 files changed, 296 insertions(+), 20 deletions(-)
 
+diff --git a/tools/testing/selftests/tc-testing/README b/tools/testing/selftests/tc-testing/README
+index f9281e8..22e5da9 100644
+--- a/tools/testing/selftests/tc-testing/README
++++ b/tools/testing/selftests/tc-testing/README
+@@ -12,10 +12,10 @@ REQUIREMENTS
+ *  Minimum Python version of 3.4. Earlier 3.X versions may work but are not
+    guaranteed.
+ 
+-*  The kernel must have network namespace support
++*  The kernel must have network namespace support if using nsPlugin
+ 
+ *  The kernel must have veth support available, as a veth pair is created
+-   prior to running the tests.
++   prior to running the tests when using nsPlugin.
+ 
+ *  The kernel must have the appropriate infrastructure enabled to run all tdc
+    unit tests. See the config file in this directory for minimum required
+@@ -53,8 +53,12 @@ commands being tested must be run as root.  The code that enforces
+ execution by root uid has been moved into a plugin (see PLUGIN
+ ARCHITECTURE, below).
+ 
+-If nsPlugin is linked, all tests are executed inside a network
+-namespace to prevent conflicts within the host.
++Tests that use a network device should have nsPlugin.py listed as a
++requirement for that test. nsPlugin executes all commands within a
++network namespace and creates a veth pair which may be used in those test
++cases. To disable execution within the namespace, pass the -N option
++to tdc when starting a test run; the veth pair will still be created
++by the plugin.
+ 
+ Running tdc without any arguments will run all tests. Refer to the section
+ on command line arguments for more information, or run:
+@@ -154,8 +158,8 @@ action:
+ netns:
+   options for nsPlugin (run commands in net namespace)
+ 
+-  -n, --namespace
+-                        Run commands in namespace as specified in tdc_config.py
++  -N, --no-namespace
++                        Do not run commands in a network namespace.
+ 
+ valgrind:
+   options for valgrindPlugin (run command under test under Valgrind)
+@@ -171,7 +175,8 @@ was in the tdc.py script has been moved into the plugins.
+ 
+ The plugins are in the directory plugin-lib.  The are executed from
+ directory plugins.  Put symbolic links from plugins to plugin-lib,
+-and name them according to the order you want them to run.
++and name them according to the order you want them to run. This is not
++necessary if a test case being run requires a specific plugin to work.
+ 
+ Example:
+ 
+@@ -223,7 +228,8 @@ directory:
+   - rootPlugin.py:
+       implements the enforcement of running as root
+   - nsPlugin.py:
+-      sets up a network namespace and runs all commands in that namespace
++      sets up a network namespace and runs all commands in that namespace,
++      while also setting up dummy devices to be used in testing.
+   - valgrindPlugin.py
+       runs each command in the execute stage under valgrind,
+       and checks for leaks.
+diff --git a/tools/testing/selftests/tc-testing/plugin-lib/buildebpfPlugin.py b/tools/testing/selftests/tc-testing/plugin-lib/buildebpfPlugin.py
+index 9f0ba10..e98c367 100644
+--- a/tools/testing/selftests/tc-testing/plugin-lib/buildebpfPlugin.py
++++ b/tools/testing/selftests/tc-testing/plugin-lib/buildebpfPlugin.py
+@@ -34,8 +34,9 @@ class SubPlugin(TdcPlugin):
+             'buildebpf',
+             'options for buildebpfPlugin')
+         self.argparser_group.add_argument(
+-            '-B', '--buildebpf', action='store_true',
+-            help='build eBPF programs')
++            '--nobuildebpf', action='store_false', default=True,
++            dest='buildebpf',
++            help='Don\'t build eBPF programs')
+ 
+         return self.argparser
+ 
+diff --git a/tools/testing/selftests/tc-testing/plugin-lib/nsPlugin.py b/tools/testing/selftests/tc-testing/plugin-lib/nsPlugin.py
+index a194b1a..affa7f2 100644
+--- a/tools/testing/selftests/tc-testing/plugin-lib/nsPlugin.py
++++ b/tools/testing/selftests/tc-testing/plugin-lib/nsPlugin.py
+@@ -18,6 +18,8 @@ class SubPlugin(TdcPlugin):
+ 
+         if self.args.namespace:
+             self._ns_create()
++        else:
++            self._ports_create()
+ 
+     def post_suite(self, index):
+         '''run commands after test_runner goes into a test loop'''
+@@ -27,6 +29,8 @@ class SubPlugin(TdcPlugin):
+ 
+         if self.args.namespace:
+             self._ns_destroy()
++        else:
++            self._ports_destroy()
+ 
+     def add_args(self, parser):
+         super().add_args(parser)
+@@ -34,8 +38,8 @@ class SubPlugin(TdcPlugin):
+             'netns',
+             'options for nsPlugin(run commands in net namespace)')
+         self.argparser_group.add_argument(
+-            '-n', '--namespace', action='store_true',
+-            help='Run commands in namespace')
++            '-N', '--no-namespace', action='store_false', default=True,
++            dest='namespace', help='Don\'t run commands in namespace')
+         return self.argparser
+ 
+     def adjust_command(self, stage, command):
+@@ -73,20 +77,30 @@ class SubPlugin(TdcPlugin):
+             print('adjust_command:  return command [{}]'.format(command))
+         return command
+ 
++    def _ports_create(self):
++        cmd = 'ip link add $DEV0 type veth peer name $DEV1'
++        self._exec_cmd('pre', cmd)
++        cmd = 'ip link set $DEV0 up'
++        self._exec_cmd('pre', cmd)
++        if not self.args.namespace:
++            cmd = 'ip link set $DEV1 up'
++            self._exec_cmd('pre', cmd)
++
++    def _ports_destroy(self):
++        cmd = 'ip link del $DEV0'
++        self._exec_cmd('post', cmd)
++
+     def _ns_create(self):
+         '''
+         Create the network namespace in which the tests will be run and set up
+         the required network devices for it.
+         '''
++        self._ports_create()
+         if self.args.namespace:
+             cmd = 'ip netns add {}'.format(self.args.NAMES['NS'])
+             self._exec_cmd('pre', cmd)
+-            cmd = 'ip link add $DEV0 type veth peer name $DEV1'
+-            self._exec_cmd('pre', cmd)
+             cmd = 'ip link set $DEV1 netns {}'.format(self.args.NAMES['NS'])
+             self._exec_cmd('pre', cmd)
+-            cmd = 'ip link set $DEV0 up'
+-            self._exec_cmd('pre', cmd)
+             cmd = 'ip -n {} link set $DEV1 up'.format(self.args.NAMES['NS'])
+             self._exec_cmd('pre', cmd)
+             if self.args.device:
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/bpf.json b/tools/testing/selftests/tc-testing/tc-tests/actions/bpf.json
+index b074ea9..47a3082 100644
+--- a/tools/testing/selftests/tc-testing/tc-tests/actions/bpf.json
++++ b/tools/testing/selftests/tc-testing/tc-tests/actions/bpf.json
+@@ -54,6 +54,9 @@
+             "actions",
+             "bpf"
+         ],
++        "plugins": {
++                "requires": "buildebpfPlugin"
++        },
+         "setup": [
+             [
+                 "$TC action flush action bpf",
+@@ -78,6 +81,9 @@
+             "actions",
+             "bpf"
+         ],
++        "plugins": {
++                "requires": "buildebpfPlugin"
++        },
+         "setup": [
+             [
+                 "$TC action flush action bpf",
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/filters/fw.json b/tools/testing/selftests/tc-testing/tc-tests/filters/fw.json
+index 6944b90..5272049 100644
+--- a/tools/testing/selftests/tc-testing/tc-tests/filters/fw.json
++++ b/tools/testing/selftests/tc-testing/tc-tests/filters/fw.json
+@@ -6,6 +6,9 @@
+             "filter",
+             "fw"
+         ],
++	"plugins": {
++		"requires": "nsPlugin"
++	},
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress"
+         ],
+@@ -25,6 +28,9 @@
+             "filter",
+             "fw"
+         ],
++	"plugins": {
++		"requires": "nsPlugin"
++	},
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress"
+         ],
+@@ -44,6 +50,114 @@
+             "filter",
+             "fw"
+         ],
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
++	"plugins": {
++		"requires": "nsPlugin"
++	},
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress"
+         ],
+@@ -872,6 +986,9 @@
+             "filter",
+             "fw"
+         ],
++	"plugins": {
++		"requires": "nsPlugin"
++	},
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress",
+             "$TC filter add dev $DEV1 parent ffff: protocol 802_3 prio 3 handle 7 fw action ok"
+@@ -892,6 +1009,9 @@
+             "filter",
+             "fw"
+         ],
++	"plugins": {
++		"requires": "nsPlugin"
++	},
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress",
+             "$TC filter add dev $DEV1 parent ffff: prio 6 handle 2 fw action continue index 5"
+@@ -912,6 +1032,9 @@
+             "filter",
+             "fw"
+         ],
++	"plugins": {
++		"requires": "nsPlugin"
++	},
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress"
+         ],
+@@ -931,6 +1054,9 @@
+             "filter",
+             "fw"
+         ],
++	"plugins": {
++		"requires": "nsPlugin"
++	},
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress"
+         ],
+@@ -950,6 +1076,9 @@
+             "filter",
+             "fw"
+         ],
++	"plugins": {
++		"requires": "nsPlugin"
++	},
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress",
+             "$TC filter add dev $DEV1 parent ffff: handle 5 prio 7 fw action pass",
+@@ -972,6 +1101,9 @@
+             "filter",
+             "fw"
+         ],
++	"plugins": {
++		"requires": "nsPlugin"
++	},
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress",
+             "$TC filter add dev $DEV1 parent ffff: handle 5 prio 7 fw action pass",
+@@ -994,6 +1126,9 @@
+             "filter",
+             "fw"
+         ],
++	"plugins": {
++		"requires": "nsPlugin"
++	},
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress",
+             "$TC filter add dev $DEV1 parent ffff: handle 5 prio 7 fw action pass",
+@@ -1015,6 +1150,9 @@
+             "filter",
+             "fw"
+         ],
++	"plugins": {
++		"requires": "nsPlugin"
++	},
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress",
+             "$TC filter add dev $DEV1 parent ffff: handle 1 prio 4 fw action ok",
+@@ -1036,6 +1174,9 @@
+             "filter",
+             "fw"
+         ],
++	"plugins": {
++		"requires": "nsPlugin"
++	},
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress",
+             "$TC filter add dev $DEV1 parent ffff: handle 4 prio 2 chain 13 fw action pipe",
+@@ -1057,6 +1198,9 @@
+             "filter",
+             "fw"
+         ],
++	"plugins": {
++		"requires": "nsPlugin"
++	},
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress",
+             "$TC filter add dev $DEV1 parent ffff: handle 2 prio 4 fw action drop"
+@@ -1077,6 +1221,9 @@
+             "filter",
+             "fw"
+         ],
++	"plugins": {
++		"requires": "nsPlugin"
++	},
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress",
+             "$TC filter add dev $DEV1 parent ffff: handle 3 prio 4 fw action continue"
+@@ -1097,6 +1244,9 @@
+             "filter",
+             "fw"
+         ],
++	"plugins": {
++		"requires": "nsPlugin"
++	},
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress",
+             "$TC filter add dev $DEV1 parent ffff: handle 4 prio 2 protocol arp fw action pipe"
+@@ -1117,6 +1267,9 @@
+             "filter",
+             "fw"
+         ],
++	"plugins": {
++		"requires": "nsPlugin"
++	},
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress",
+             "$TC filter add dev $DEV1 parent ffff: handle 4 prio 2 fw action pipe flowid 45"
+@@ -1137,6 +1290,9 @@
+             "filter",
+             "fw"
+         ],
++	"plugins": {
++		"requires": "nsPlugin"
++	},
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress",
+             "$TC filter add dev $DEV1 parent ffff: handle 1 prio 2 fw action ok"
+@@ -1157,6 +1313,9 @@
+             "filter",
+             "fw"
+         ],
++	"plugins": {
++		"requires": "nsPlugin"
++	},
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress",
+             "$TC filter add dev $DEV1 parent ffff: handle 1 prio 2 fw action ok"
+@@ -1177,6 +1336,9 @@
+             "filter",
+             "fw"
+         ],
++	"plugins": {
++		"requires": "nsPlugin"
++	},
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress",
+             "$TC filter add dev $DEV1 parent ffff: handle 1 prio 2 fw action ok index 3"
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json b/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
+index e2f92ce..8135778 100644
+--- a/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
++++ b/tools/testing/selftests/tc-testing/tc-tests/filters/tests.json
+@@ -6,6 +6,9 @@
+             "filter",
+             "u32"
+         ],
++        "plugins": {
++                "requires": "nsPlugin"
++        },
+         "setup": [
+             "$TC qdisc add dev $DEV1 ingress"
+         ],
+@@ -25,6 +28,9 @@
+             "filter",
+             "matchall"
+         ],
++        "plugins": {
++                "requires": "nsPlugin"
++        },
+         "setup": [
+             "$TC qdisc add dev $DEV1 clsact",
+             "$TC filter add dev $DEV1 protocol all pref 1 ingress handle 0x1234 matchall action ok"
+@@ -45,6 +51,9 @@
+             "filter",
+             "flower"
+         ],
++        "plugins": {
++                "requires": "nsPlugin"
++        },
+         "setup": [
+             "$TC qdisc add dev $DEV2 ingress",
+             "./tdc_batch.py $DEV2 $BATCH_FILE --share_action -n 1000000"
+@@ -66,6 +75,9 @@
+             "filter",
+             "flower"
+         ],
++        "plugins": {
++                "requires": "nsPlugin"
++        },
+         "setup": [
+             "$TC qdisc add dev $DEV2 ingress",
+             "$TC filter add dev $DEV2 protocol ip prio 1 parent ffff: flower dst_mac e4:11:22:11:4a:51 src_mac e4:11:22:11:4a:50 ip_proto tcp src_ip 1.1.1.1 dst_ip 2.2.2.2 action drop"
+diff --git a/tools/testing/selftests/tc-testing/tdc.py b/tools/testing/selftests/tc-testing/tdc.py
+index 5cee156..678182a 100755
+--- a/tools/testing/selftests/tc-testing/tdc.py
++++ b/tools/testing/selftests/tc-testing/tdc.py
+@@ -25,6 +25,9 @@ from tdc_helper import *
+ import TdcPlugin
+ from TdcResults import *
+ 
++class PluginDependencyException(Exception):
++    def __init__(self, missing_pg):
++        self.missing_pg = missing_pg
+ 
+ class PluginMgrTestFail(Exception):
+     def __init__(self, stage, output, message):
+@@ -37,7 +40,7 @@ class PluginMgr:
+         super().__init__()
+         self.plugins = {}
+         self.plugin_instances = []
+-        self.args = []
++        self.failed_plugins = {}
+         self.argparser = argparser
+ 
+         # TODO, put plugins in order
+@@ -53,6 +56,64 @@ class PluginMgr:
+                     self.plugins[mn] = foo
+                     self.plugin_instances.append(foo.SubPlugin())
+ 
++    def load_plugin(self, pgdir, pgname):
++        pgname = pgname[0:-3]
++        foo = importlib.import_module('{}.{}'.format(pgdir, pgname))
++        self.plugins[pgname] = foo
++        self.plugin_instances.append(foo.SubPlugin())
++        self.plugin_instances[-1].check_args(self.args, None)
++
++    def get_required_plugins(self, testlist):
++        '''
++        Get all required plugins from the list of test cases and return
++        all unique items.
++        '''
++        reqs = []
++        for t in testlist:
++            try:
++                if 'requires' in t['plugins']:
++                    if isinstance(t['plugins']['requires'], list):
++                        reqs.extend(t['plugins']['requires'])
++                    else:
++                        reqs.append(t['plugins']['requires'])
++            except KeyError:
++                continue
++        reqs = get_unique_item(reqs)
++        return reqs
++
++    def load_required_plugins(self, reqs, parser, args, remaining):
++        '''
++        Get all required plugins from the list of test cases and load any plugin
++        that is not already enabled.
++        '''
++        pgd = ['plugin-lib', 'plugin-lib-custom']
++        pnf = []
++
++        for r in reqs:
++            if r not in self.plugins:
++                fname = '{}.py'.format(r)
++                source_path = []
++                for d in pgd:
++                    pgpath = '{}/{}'.format(d, fname)
++                    if os.path.isfile(pgpath):
++                        source_path.append(pgpath)
++                if len(source_path) == 0:
++                    print('ERROR: unable to find required plugin {}'.format(r))
++                    pnf.append(fname)
++                    continue
++                elif len(source_path) > 1:
++                    print('WARNING: multiple copies of plugin {} found, using version found')
++                    print('at {}'.format(source_path[0]))
++                pgdir = source_path[0]
++                pgdir = pgdir.split('/')[0]
++                self.load_plugin(pgdir, fname)
++        if len(pnf) > 0:
++            raise PluginDependencyException(pnf)
++
++        parser = self.call_add_args(parser)
++        (args, remaining) = parser.parse_known_args(args=remaining, namespace=args)
++        return args
++
+     def call_pre_suite(self, testcount, testidlist):
+         for pgn_inst in self.plugin_instances:
+             pgn_inst.pre_suite(testcount, testidlist)
+@@ -98,6 +159,9 @@ class PluginMgr:
+             command = pgn_inst.adjust_command(stage, command)
+         return command
+ 
++    def set_args(self, args):
++        self.args = args
++
+     @staticmethod
+     def _make_argparser(args):
+         self.argparser = argparse.ArgumentParser(
+@@ -550,6 +614,7 @@ def filter_tests_by_category(args, testlist):
+ 
+     return answer
+ 
++
+ def get_test_cases(args):
+     """
+     If a test case file is specified, retrieve tests from that file.
+@@ -611,7 +676,7 @@ def get_test_cases(args):
+     return allcatlist, allidlist, testcases_by_cats, alltestcases
+ 
+ 
+-def set_operation_mode(pm, args):
++def set_operation_mode(pm, parser, args, remaining):
+     """
+     Load the test case data and process remaining arguments to determine
+     what the script should do for this run, and call the appropriate
+@@ -649,6 +714,12 @@ def set_operation_mode(pm, args):
+             exit(0)
+ 
+     if len(alltests):
++        req_plugins = pm.get_required_plugins(alltests)
++        try:
++            args = pm.load_required_plugins(req_plugins, parser, args, remaining)
++        except PluginDependencyException as pde:
++            print('The following plugins were not found:')
++            print('{}'.format(pde.missing_pg))
+         catresults = test_runner(pm, args, alltests)
+         if args.format == 'none':
+             print('Test results output suppression requested\n')
+@@ -686,11 +757,12 @@ def main():
+     parser = pm.call_add_args(parser)
+     (args, remaining) = parser.parse_known_args()
+     args.NAMES = NAMES
++    pm.set_args(args)
+     check_default_settings(args, remaining, pm)
+     if args.verbose > 2:
+         print('args is {}'.format(args))
+ 
+-    set_operation_mode(pm, args)
++    set_operation_mode(pm, parser, args, remaining)
+ 
+     exit(0)
+ 
+diff --git a/tools/testing/selftests/tc-testing/tdc_helper.py b/tools/testing/selftests/tc-testing/tdc_helper.py
+index 9f35c96..0440d25 100644
+--- a/tools/testing/selftests/tc-testing/tdc_helper.py
++++ b/tools/testing/selftests/tc-testing/tdc_helper.py
+@@ -17,7 +17,10 @@ def get_categorized_testlist(alltests, ucat):
+ 
+ def get_unique_item(lst):
+     """ For a list, return a list of the unique items in the list. """
+-    return list(set(lst))
++    if len(lst) > 1:
++        return list(set(lst))
++    else:
++        return lst
+ 
+ 
+ def get_test_categories(alltests):
+-- 
+2.7.4
 
-> +		if (state->duplex =3D=3D DUPLEX_FULL)
-> +			mcr |=3D PMCR_FORCE_FDX;
-> +		if (state->link || mode =3D=3D MLO_AN_FIXED)
-> +			mcr |=3D PMCR_FORCE_LNK;
-> +		if (state->pause || phylink_test(state->advertising, Pause))
-> +			mcr |=3D PMCR_TX_FC_EN | PMCR_RX_FC_EN;
-> +		if (state->pause & MLO_PAUSE_TX)
-> +			mcr |=3D PMCR_TX_FC_EN;
-> +		if (state->pause & MLO_PAUSE_RX)
-> +			mcr |=3D PMCR_RX_FC_EN;
-> +	}
-> +
-> +	mt7530_write(priv, MT7530_PMCR_P(port), mcr);
-> +
-> +	return;
-> +
-> +unsupported:
-> +	dev_err(ds->dev, "%s: P%d: Unsupported phy_interface mode: %d (%s)\n"=
-,
-> +		__func__, port, state->interface, phy_modes(state->interface));
-> +}
-> +
-> +static void mt7530_phylink_mac_link_down(struct dsa_switch *ds, int po=
-rt,
-> +					 unsigned int mode,
-> +					 phy_interface_t interface)
-> +{
-> +	/* Do nothing */
-> +}
-> +
-> +static void mt7530_phylink_mac_link_up(struct dsa_switch *ds, int port=
-,
-> +				       unsigned int mode,
-> +				       phy_interface_t interface,
-> +				       struct phy_device *phydev)
-> +{
-> +	/* Do nothing */
-> +}
-> +
-> +static void mt7530_phylink_validate(struct dsa_switch *ds, int port,
-> +				    unsigned long *supported,
-> +				    struct phylink_link_state *state)
-> +{
-> +	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) =3D { 0, };
-> +
-> +	switch (port) {
-> +	case 0: /* Internal phy */
-> +	case 1:
-> +	case 2:
-> +	case 3:
-> +	case 4:
-> +		if (state->interface !=3D PHY_INTERFACE_MODE_NA &&
-> +		    state->interface !=3D PHY_INTERFACE_MODE_GMII)
-> +			goto unsupported;
-> +		break;
-> +	/* case 5: Port 5 not supported! */
-> +	case 6: /* 1st cpu port */
-> +		if (state->interface !=3D PHY_INTERFACE_MODE_RGMII &&
-> +		    state->interface !=3D PHY_INTERFACE_MODE_TRGMII)
-> +			goto unsupported;
-> +		break;
-> +	default:
-> +		linkmode_zero(supported);
-> +		dev_err(ds->dev, "%s: unsupported port: %i\n", __func__, port);
-> +		return;
-> +	}
-> +
-> +	phylink_set(mask, Autoneg);
-> +	phylink_set(mask, Pause);
-> +	phylink_set(mask, Asym_Pause);
-> +	phylink_set(mask, MII);
-> +
-> +	phylink_set(mask, 10baseT_Half);
-> +	phylink_set(mask, 10baseT_Full);
-> +	phylink_set(mask, 100baseT_Half);
-> +	phylink_set(mask, 100baseT_Full);
-> +	phylink_set(mask, 1000baseT_Full);
-> +	phylink_set(mask, 1000baseT_Half);
-> +
-> +	linkmode_and(supported, supported, mask);
-> +	linkmode_and(state->advertising, state->advertising, mask);
-> +	return;
-> +
-> +unsupported:
-> +	linkmode_zero(supported);
-> +	dev_err(ds->dev, "%s: unsupported interface mode: [0x%x] %s\n",
-> +		__func__, state->interface, phy_modes(state->interface));
-> +}
-> +
-> +static int
-> +mt7530_phylink_mac_link_state(struct dsa_switch *ds, int port,
-> +			      struct phylink_link_state *state)
-> +{
-> +	struct mt7530_priv *priv =3D ds->priv;
-> +	u32 pmsr;
-> +
-> +	if (port < 0 || port >=3D MT7530_NUM_PORTS)
-> +		return -EINVAL;
-> +
-> +	pmsr =3D mt7530_read(priv, MT7530_PMSR_P(port));
-> +
-> +	state->link =3D (pmsr & PMSR_LINK);
-> +	state->an_complete =3D state->link;
-> +	state->duplex =3D (pmsr & PMSR_DPX) >> 1;
-> +
-> +	switch (pmsr & (PMSR_SPEED_1000 | PMSR_SPEED_100)) {
-> +	case 0:
-> +		state->speed =3D SPEED_10;
-> +		break;
-> +	case PMSR_SPEED_100:
-> +		state->speed =3D SPEED_100;
-> +		break;
-> +	case PMSR_SPEED_1000:
-> +		state->speed =3D SPEED_1000;
-> +		break;
-> +	default:
-> +		state->speed =3D SPEED_UNKNOWN;
-> +		break;
-> +	}
-> +
-
-Same as above: add PMSR_SPEED_10, and and with PMSR_SPEED (or
-PMSR_SPEED_MASK if you prefer).
-
-> +	state->pause =3D 0;
-> +	if (pmsr & PMSR_RX_FC)
-> +		state->pause |=3D MLO_PAUSE_RX;
-> +	if (pmsr & PMSR_TX_FC)
-> +		state->pause |=3D MLO_PAUSE_TX;
-> +
-> +	return 1;
-> +}
-> +
->  static const struct dsa_switch_ops mt7530_switch_ops =3D {
->  	.get_tag_protocol	=3D mtk_get_tag_protocol,
->  	.setup			=3D mt7530_setup,
-> @@ -1331,7 +1446,6 @@ static const struct dsa_switch_ops mt7530_switch_=
-ops =3D {
->  	.phy_write		=3D mt7530_phy_write,
->  	.get_ethtool_stats	=3D mt7530_get_ethtool_stats,
->  	.get_sset_count		=3D mt7530_get_sset_count,
-> -	.adjust_link		=3D mt7530_adjust_link,
->  	.port_enable		=3D mt7530_port_enable,
->  	.port_disable		=3D mt7530_port_disable,
->  	.port_stp_state_set	=3D mt7530_stp_state_set,
-> @@ -1344,6 +1458,11 @@ static const struct dsa_switch_ops mt7530_switch=
-_ops =3D {
->  	.port_vlan_prepare	=3D mt7530_port_vlan_prepare,
->  	.port_vlan_add		=3D mt7530_port_vlan_add,
->  	.port_vlan_del		=3D mt7530_port_vlan_del,
-> +	.phylink_validate	=3D mt7530_phylink_validate,
-> +	.phylink_mac_link_state =3D mt7530_phylink_mac_link_state,
-> +	.phylink_mac_config	=3D mt7530_phylink_mac_config,
-> +	.phylink_mac_link_down	=3D mt7530_phylink_mac_link_down,
-> +	.phylink_mac_link_up	=3D mt7530_phylink_mac_link_up,
->  };
-> =20
->  static const struct of_device_id mt7530_of_match[] =3D {
-> diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-> index bfac90f48102..41d9a132ac70 100644
-> --- a/drivers/net/dsa/mt7530.h
-> +++ b/drivers/net/dsa/mt7530.h
-> @@ -198,6 +198,7 @@ enum mt7530_vlan_port_attr {
->  #define  PMCR_FORCE_SPEED_100		BIT(2)
->  #define  PMCR_FORCE_FDX			BIT(1)
->  #define  PMCR_FORCE_LNK			BIT(0)
-> +#define  PMCR_FORCE_LNK_DOWN		PMCR_FORCE_MODE
->  #define  PMCR_COMMON_LINK		(PMCR_IFG_XMIT(1) | PMCR_MAC_MODE | \
->  					 PMCR_BACKOFF_EN | PMCR_BACKPR_EN | \
->  					 PMCR_TX_EN | PMCR_RX_EN | \
-> @@ -218,6 +219,14 @@ enum mt7530_vlan_port_attr {
->  					 PMCR_TX_FC_EN | PMCR_RX_FC_EN)
-> =20
->  #define MT7530_PMSR_P(x)		(0x3008 + (x) * 0x100)
-> +#define  PMSR_EEE1G			BIT(7)
-> +#define  PMSR_EEE100M			BIT(6)
-> +#define  PMSR_RX_FC			BIT(5)
-> +#define  PMSR_TX_FC			BIT(4)
-> +#define  PMSR_SPEED_1000		BIT(3)
-> +#define  PMSR_SPEED_100			BIT(2)
-> +#define  PMSR_DPX			BIT(1)
-> +#define  PMSR_LINK			BIT(0)
-> =20
->  /* Register for MIB */
->  #define MT7530_PORT_MIB_COUNTER(x)	(0x4000 + (x) * 0x100)
-
-Cheers,
-Daniel
