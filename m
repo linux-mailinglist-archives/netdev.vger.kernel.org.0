@@ -2,100 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 79749556CB
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 20:07:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C4C8556CE
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 20:09:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731984AbfFYSHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 14:07:41 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:39507 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726761AbfFYSHl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 14:07:41 -0400
-Received: by mail-pf1-f194.google.com with SMTP id j2so9881125pfe.6
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 11:07:41 -0700 (PDT)
+        id S1727972AbfFYSJV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 14:09:21 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:39213 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725921AbfFYSJU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 14:09:20 -0400
+Received: by mail-wr1-f66.google.com with SMTP id x4so18927195wrt.6;
+        Tue, 25 Jun 2019 11:09:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=2SCahMmUfmE322selZyfgRFKgsG0o0VArNmdDLXtukE=;
-        b=BiUmPIdUbd9kXQ5uaP10wlsF762W42O+KjhHcv5qynskXCZZfgxikqfgZ87Fs+bD/z
-         DUAmXOKgsiwkVfTNwoPNlTMMWHdLsf0FrYf+bblELobkJkJS61xub/bPAIUuqL0LLNjm
-         ZCxiuk4U/+nwuvqrKSMuJAkDMzs0XI0bXHfdB+0EqfCNccyPydGJcOR2m7ECkyg3/jFF
-         UjvUVtGsQnKW3PHUtXHP+eaFZa9NXSHERQqobAhi9qpjRrz/s1Ns4np7yJaMW9Ebm3F8
-         tHjigC8Mmdsd3y6NJklvgk/fl7o88lWfpbqL6mfLbnH5kbw1G8tuxgtY+F4CHkfCxuO+
-         23Ew==
+        bh=ZecqvOpYjVE4Qmy3iXx46r1+0juBwCPcIwmCKG2SPQo=;
+        b=ec+kKmKZbzDX7Zfqdhmxrx2YsnL4UQMEAcBHEVXnDm9Oyg9TktxFuNuPzyhJoO/5AR
+         vtCvPowZ3sDh/R6kWqh72byj6M2c/oA7Nx+PHxC6gh04tc29HswFHyEo2h/qyv7rzsah
+         sFrTVdMifkYhbqGTcAaCT2yCKf4PIDA5ujIqxtsePpkCJrFBSH2AhVdmt2y6YDVpTSKk
+         31RezxlmomvcVpvRvpHBPJFeqij0pMlJ+lAxSwg2E5s/mv6jeK6NWQZvByqCeku/NO7Z
+         0UUQcmk+zGSaR6FSFYsnOTiJW6E3GFNye7NaylMoYs074POeeq66EWNxpatFiiF85l8V
+         YMPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=2SCahMmUfmE322selZyfgRFKgsG0o0VArNmdDLXtukE=;
-        b=aAJOlMqPMGdKDZ8rToVXGPqxRU3JRZkFq1nUGSMUh3ICicPITdQ4maZxmYs3ieuQ3l
-         BAmoPWRBKSu6mA6bT+K4Edtog32ABZmwQtOM6TWvBwU+7mFn+XZqiEnjryGE34i6/M8p
-         wYu2EIzFxd6TCxv7CokcVnzFpV+RLKpVcOYZivuQbaEm8MG7S23AlKNxNmojwcfBHUMZ
-         Qmw2RHFauRLcgxh5LHM8D0DGs/qFxCKBpSi86UsCzIcztvyBbfhprSTAf2+bmQ5UzLK/
-         dHWYWZ5luhAQfz+4k4MHnNV6abzrd6yhXIt4Kq1azCDoUOvBLXIarf57PRpgo5M9AwFu
-         LzLw==
-X-Gm-Message-State: APjAAAUMB3mY8fwNcaqL/S11swGAN0uZwqRjaFMfPr7PhlZIZu5fu3u2
-        hplzQIFS3EQ+ORzH2GB3JyvKFIvH7FxLz3IvZck=
-X-Google-Smtp-Source: APXvYqwumNRdio6g/Pjozm1Ndjs1gGBkke8JFqsYB789jYAt6z9lOs4yJCtnJXtjedCMpa1/E6XBK3DLoyUv4q7zb60=
-X-Received: by 2002:a63:fa4e:: with SMTP id g14mr40096265pgk.237.1561486060511;
- Tue, 25 Jun 2019 11:07:40 -0700 (PDT)
+        bh=ZecqvOpYjVE4Qmy3iXx46r1+0juBwCPcIwmCKG2SPQo=;
+        b=EO6xEW9G3WlKp81iL4jI0EhgFqYSyVzppemhGbR6bf+yR88H5BeE4JHesFiK50HaSx
+         zZOHzwP/AiH8rUljiYzMvFVoVuGtdLetpXdY9ksBjLgUZ6GihpWqKq5xB03tRaepeYKW
+         qkbPWLPSHahWsTntKwweLUCyRKC8S7sV38kpiZlz3mXiyZBZ2g06akdzpAvqHj5kHca6
+         TMNx2b+FA9sw6W8/OQWeN2kvuiIaLAxMzi3fUVQ/jURFWXmeHEF7U1V/mTHBqFv2ZML3
+         QEyU17F25kzuhjUgJEda2UxvzCWdRQ0pQdl0sHy9tzbfExOyI+qDS6yvnHbPUtg7gnQj
+         Uyeg==
+X-Gm-Message-State: APjAAAUKX3ZMIpTx72gtRm09FczbzNXyuOaDi0WA4WEdcxRwZtTPFNgY
+        UM9XkoJBLJTGoOvrQIXCEVQ1EjmogyWIKZLCnvY=
+X-Google-Smtp-Source: APXvYqzhw69SkgOFk6LlkFmcnGAmxWjlPvy8XxMX2I7wJr8oGq7fwAAROAwIP+2Osw/KavN2yFmN1KPRvYp3fRiLe00=
+X-Received: by 2002:a5d:5386:: with SMTP id d6mr19819643wrv.207.1561486158264;
+ Tue, 25 Jun 2019 11:09:18 -0700 (PDT)
 MIME-Version: 1.0
-References: <9068475730862e1d9014c16cee0ad2734a4dd1f9.1560978242.git.dcaratti@redhat.com>
- <CAM_iQpUVJ9sG9ETE0zZ_azbDgWp_oi320nWy_g-uh2YJWYDOXw@mail.gmail.com>
- <53b8c3118900b31536594e98952640c03a4456e0.camel@redhat.com>
- <CAM_iQpVVMBUdhv3o=doLhpWxee91zUPKjAOtUwryUEj0pfowdg@mail.gmail.com> <6650f0da68982ffa5bb71a773c5a3d588bd972c4.camel@redhat.com>
-In-Reply-To: <6650f0da68982ffa5bb71a773c5a3d588bd972c4.camel@redhat.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Tue, 25 Jun 2019 11:07:28 -0700
-Message-ID: <CAM_iQpW_-e+duPqKVXSDn7fp3WOKfs+RgVkFkfeQJQUTP_0x1Q@mail.gmail.com>
-Subject: Re: [PATCH net] net/sched: flower: fix infinite loop in fl_walk()
-To:     Davide Caratti <dcaratti@redhat.com>
-Cc:     Vlad Buslov <vladbu@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Lucas Bates <lucasb@mojatatu.com>
+References: <20190616153804.3604-1-hdanton@sina.com> <20190617134913.GL3436@localhost.localdomain>
+ <20190617144331.GE3500@localhost.localdomain>
+In-Reply-To: <20190617144331.GE3500@localhost.localdomain>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Wed, 26 Jun 2019 02:09:06 +0800
+Message-ID: <CADvbK_fWmRFs_wfcttH+1y6D_0zzZzKgpEOb64wYSGBA+1j86g@mail.gmail.com>
+Subject: Re: general protection fault in sctp_sched_prio_sched
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     Hillf Danton <hdanton@sina.com>,
+        syzbot <syzbot+c1a380d42b190ad1e559@syzkaller.appspotmail.com>,
+        davem <davem@davemloft.net>, LKML <linux-kernel@vger.kernel.org>,
+        linux-sctp@vger.kernel.org, network dev <netdev@vger.kernel.org>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Vlad Yasevich <vyasevich@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-On Tue, Jun 25, 2019 at 8:47 AM Davide Caratti <dcaratti@redhat.com> wrote:
-> hello Cong,
+On Mon, Jun 17, 2019 at 10:43 PM Marcelo Ricardo Leitner
+<marcelo.leitner@gmail.com> wrote:
 >
-> I tested the above patch, but I still see the infinite loop on kernel
-> 5.2.0-0.rc5.git0.1.fc31.i686 .
+> On Mon, Jun 17, 2019 at 10:49:13AM -0300, Marcelo Ricardo Leitner wrote:
+> > Hi,
+> >
+> > On Sun, Jun 16, 2019 at 11:38:03PM +0800, Hillf Danton wrote:
+> > >
+> > > Hello Syzbot
+> > >
+> > > On Sat, 15 Jun 2019 16:36:06 -0700 (PDT) syzbot wrote:
+> > > > Hello,
+> > > >
+> > > > syzbot found the following crash on:
+> > > >
+> > ...
+> > > Check prio_head and bail out if it is not valid.
+> > >
+> > > Thanks
+> > > Hillf
+> > > ----->8---
+> > > ---
+> > > net/sctp/stream_sched_prio.c | 2 ++
+> > > 1 file changed, 2 insertions(+)
+> > >
+> > > diff --git a/net/sctp/stream_sched_prio.c b/net/sctp/stream_sched_prio.c
+> > > index 2245083..db25a43 100644
+> > > --- a/net/sctp/stream_sched_prio.c
+> > > +++ b/net/sctp/stream_sched_prio.c
+> > > @@ -135,6 +135,8 @@ static void sctp_sched_prio_sched(struct sctp_stream *stream,
+> > >     struct sctp_stream_priorities *prio, *prio_head;
+> > >
+> > >     prio_head = soute->prio_head;
+> > > +   if (!prio_head)
+> > > +           return;
+> > >
+> > >     /* Nothing to do if already scheduled */
+> > >     if (!list_empty(&soute->prio_list))
+> > > --
+> >
+> > Thanks but this is not a good fix for this. It will cause the stream
+> > to never be scheduled.
+> >
+> > The problem happens because of the fault injection that happened a bit
+> > before the crash, in here:
+> >
+> > int sctp_stream_init_ext(struct sctp_stream *stream, __u16 sid)
+> > {
+> >         struct sctp_stream_out_ext *soute;
+> >
+> >         soute = kzalloc(sizeof(*soute), GFP_KERNEL);
+> >         if (!soute)
+> >                 return -ENOMEM;
+> >         SCTP_SO(stream, sid)->ext = soute;  <---- [A]
+> >
+> >         return sctp_sched_init_sid(stream, sid, GFP_KERNEL);
+> >                       ^^^^^^^^^^^^---- [B] failed
+> > }
+> >
+> > This causes the 1st sendmsg to bail out with the error. When the 2nd
+> > one gets in, it will:
+> >
+> > sctp_sendmsg_to_asoc()
+> > {
+> > ...
+> >         if (unlikely(!SCTP_SO(&asoc->stream, sinfo->sinfo_stream)->ext)) {
+> >                                                                  ^^^^^--- [C]
+> >                 err = sctp_stream_init_ext(&asoc->stream, sinfo->sinfo_stream);
+> >                 if (err)
+> >                         goto err;
+> >         }
+> >
+> > [A] leaves ext initialized, despite the failed in [B]. Then in [C], it
+> > will not try to initialize again.
+> >
+> > We need to either uninitialize ->ext as error handling for [B], or
+> > improve the check on [C].
 >
-> idr_get_next_ul() returns the entry in the radix tree which is greater or
-> equal to '*nextid' (which has the same value as 'id' in the above hunk).
-> So, when the radix tree contains one slot with index equal to ULONG_MAX,
-> whatever can be the value of 'id', the condition in that if() will always
-> be false (and the function will keep  returning non-NULL, hence the
-> infinite loop).
+> The former one, please. This should be enough (untested):
 >
-> I also tried this:
+> diff --git a/net/sctp/stream.c b/net/sctp/stream.c
+> index 93ed07877337..25946604af85 100644
+> --- a/net/sctp/stream.c
+> +++ b/net/sctp/stream.c
+> @@ -153,13 +153,20 @@ int sctp_stream_init(struct sctp_stream *stream, __u16 outcnt, __u16 incnt,
+>  int sctp_stream_init_ext(struct sctp_stream *stream, __u16 sid)
+>  {
+>         struct sctp_stream_out_ext *soute;
+> +       int ret;
 >
-> if (iter.index == id && id == ULONG_MAX) {
->         return NULL;
-> }
+>         soute = kzalloc(sizeof(*soute), GFP_KERNEL);
+>         if (!soute)
+>                 return -ENOMEM;
+>         SCTP_SO(stream, sid)->ext = soute;
 >
-> it fixes the infinite loop, but it clearly breaks the function semantic
-> (and anyway, it's not sufficient to fix my test, at least with cls_flower
-> it still dumps the entry with id 0xffffffff several times).  I'm for
-> fixing the callers of idr_get_next_ul(), and in details:
+> -       return sctp_sched_init_sid(stream, sid, GFP_KERNEL);
+> +       ret = sctp_sched_init_sid(stream, sid, GFP_KERNEL);
+> +       if (ret) {
+> +               kfree(SCTP_SO(stream, sid)->ext);
+> +               SCTP_SO(stream, sid)->ext = NULL;
+> +       }
+> +
+> +       return ret;
+>  }
+>
+>  void sctp_stream_free(struct sctp_stream *stream)
+>
 
-It now becomes more interesting.
+Tested-by: Xin Long <lucien.xin@gmail.com>
 
-On one hand, its callers should not need to worry about details
-like overflow. On the other hand, in fact it does exactly what its
-callers tell it to do, the problematic part is actually the
-incremented id. On 64bit, it is fairly easy, we can just simply
-know 'long' is longer than 32bit and leverage this to detect overflow,
-but on 32bit this clearly doesn't work.
-
-Let me think about it.
-
-Thanks.
+Hi, Marcelo, please feel free to move forward with this patch, :-)
