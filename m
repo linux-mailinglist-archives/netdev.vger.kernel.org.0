@@ -2,122 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5217F54D94
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 13:26:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23BD454D9A
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 13:28:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729962AbfFYL0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 07:26:33 -0400
-Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:53144 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729595AbfFYL0c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 07:26:32 -0400
-Received: from mailhost.synopsys.com (dc8-mailhost2.synopsys.com [10.13.135.210])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        id S1730367AbfFYL16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 07:27:58 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:5675 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729579AbfFYL16 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Jun 2019 07:27:58 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 342E9C012A;
-        Tue, 25 Jun 2019 11:26:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1561461991; bh=vVKDdL95YK7O617w/US4DS9xOUVhdNnWIgicamkGlvc=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=cBUI74WG7KWVYQcH/H+W4D+8juUUQQnw2XABxipk1GJy/8RSoM8chZxwSzQKMGwbY
-         pq/RVHl5xA55IaEJ/3WSvIArG2kH2tSoUCSUDl/+OoZQMpv/vTWwkJFvuwvHngqrNe
-         IJuwBFrbxBDvrLBIksrtcwe2aX0yNBFqEM4IKfiSPoC+YgGN5DC0nThB57tJJ366uG
-         dmfYfqZ4pgHEBe1Pga4nnzryv0oZ2tQWJl0ZL38mNhghC24ttnG+hXSCvzTqaEZlOf
-         5Nw7emvKHJHORsJlg/dw6eX6yg8ZmEO5jYefHxtc8YauvxezNt5UC68Wru/SClbom7
-         J0FDSEXkMi4gw==
-Received: from us01wehtc1.internal.synopsys.com (us01wehtc1-vip.internal.synopsys.com [10.12.239.236])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id C6786A0065;
-        Tue, 25 Jun 2019 11:26:27 +0000 (UTC)
-Received: from DE02WEHTCA.internal.synopsys.com (10.225.19.92) by
- us01wehtc1.internal.synopsys.com (10.12.239.235) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Tue, 25 Jun 2019 04:25:43 -0700
-Received: from DE02WEMBXB.internal.synopsys.com ([fe80::95ce:118a:8321:a099])
- by DE02WEHTCA.internal.synopsys.com ([::1]) with mapi id 14.03.0415.000; Tue,
- 25 Jun 2019 13:25:40 +0200
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     Jon Hunter <jonathanh@nvidia.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Joao Pinto <Joao.Pinto@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        "Alexandre Torgue" <alexandre.torgue@st.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "Heiner Kallweit" <hkallweit1@gmail.com>,
-        linux-tegra <linux-tegra@vger.kernel.org>
-Subject: RE: [PATCH net-next 3/3] net: stmmac: Convert to phylink and remove
- phylib logic
-Thread-Topic: [PATCH net-next 3/3] net: stmmac: Convert to phylink and
- remove phylib logic
-Thread-Index: AQHVIGkArVRmnWNiHUiOZ+Vq9aFNYKahDpUAgAAiuoD//+CkgIAAIfYQ///oM4CAAFRJgIAASacAgALGAQCAB4+TsIAAGyiAgAAlVRA=
-Date:   Tue, 25 Jun 2019 11:25:40 +0000
-Message-ID: <78EB27739596EE489E55E81C33FEC33A0B9D76C2@DE02WEMBXB.internal.synopsys.com>
-References: <cover.1560266175.git.joabreu@synopsys.com>
- <6226d6a0de5929ed07d64b20472c52a86e71383d.1560266175.git.joabreu@synopsys.com>
- <d9ffce3d-4827-fa4a-89e8-0492c4bc1848@nvidia.com>
- <78EB27739596EE489E55E81C33FEC33A0B9C8D6E@DE02WEMBXB.internal.synopsys.com>
- <26cfaeff-a310-3b79-5b57-fd9c93bd8929@nvidia.com>
- <78EB27739596EE489E55E81C33FEC33A0B9C8DD9@DE02WEMBXB.internal.synopsys.com>
- <b66c7578-172f-4443-f4c3-411525e28738@nvidia.com>
- <d96f8bea-f7ef-82ae-01ba-9c97aec0ee38@nvidia.com>
- <6f36b6b6-8209-ed98-e7e1-3dac0a92f6cd@nvidia.com>
- <7f0f2ed0-f47c-4670-d169-25f0413c1fd3@nvidia.com>
- <78EB27739596EE489E55E81C33FEC33A0B9D7024@DE02WEMBXB.internal.synopsys.com>
- <113f37a2-c37f-cdb5-5194-4361d949258a@nvidia.com>
-In-Reply-To: <113f37a2-c37f-cdb5-5194-4361d949258a@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.107.19.16]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        by mx1.redhat.com (Postfix) with ESMTPS id BF1AF85550;
+        Tue, 25 Jun 2019 11:27:57 +0000 (UTC)
+Received: from carbon (ovpn-200-34.brq.redhat.com [10.40.200.34])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8E3135C234;
+        Tue, 25 Jun 2019 11:27:52 +0000 (UTC)
+Date:   Tue, 25 Jun 2019 13:27:50 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Cc:     netdev@vger.kernel.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@toke.dk>,
+        Tariq Toukan <tariqt@mellanox.com>, toshiaki.makita1@gmail.com,
+        grygorii.strashko@ti.com, mcroce@redhat.com, brouer@redhat.com
+Subject: Re: [PATCH net-next v2 08/12] xdp: tracking page_pool resources and
+ safe removal
+Message-ID: <20190625132750.06939133@carbon>
+In-Reply-To: <20190625105013.GA6485@khorivan>
+References: <156086304827.27760.11339786046465638081.stgit@firesoul>
+        <156086314789.27760.6549333469314693352.stgit@firesoul>
+        <20190625105013.GA6485@khorivan>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.28]); Tue, 25 Jun 2019 11:27:57 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogSm9uIEh1bnRlciA8am9uYXRoYW5oQG52aWRpYS5jb20+DQoNCj4gSSBoYXZlIGJlZW4g
-bG9va2luZyBhdCB0aGlzIGEgYml0IGNsb3NlciBhbmQgSSBjYW4gc2VlIHRoZSBwcm9ibGVtLiBX
-aGF0DQo+IGhhcHBlbnMgaXMgdGhhdCAuLi4NCj4gDQo+IDEuIHN0bW1hY19tYWNfbGlua191cCgp
-IGlzIGNhbGxlZCBhbmQgcHJpdi0+ZWVlX2FjdGl2ZSBpcyBzZXQgdG8gZmFsc2UNCj4gMi4gc3Rt
-bWFjX2VlZV9pbml0KCkgaXMgY2FsbGVkIGJ1dCBiZWNhdXNlIHByaXYtPmVlZV9hY3RpdmUgaXMg
-ZmFsc2UsDQo+ICAgIHRpbWVyX3NldHVwKCkgZm9yIGVlZV9jdHJsX3RpbWVyIGlzIG5ldmVyIGNh
-bGxlZC4NCj4gMy4gc3RtbWFjX2VlZV9pbml0KCkgcmV0dXJucyB0cnVlIGFuZCBzbyB0aGVuIHBy
-aXYtPmVlZV9lbmFibGVkIGlzIHNldCANCj4gICAgdG8gdHJ1ZS4NCj4gNC4gV2hlbiBzdG1tYWNf
-dHhfY2xlYW4oKSBpcyBjYWxsZWQgYmVjYXVzZSBwcml2LT5lZWVfZW5hYmxlZCBpcyBzZXQgdG8g
-ICAgDQo+ICAgIHRydWUsIG1vZF90aW1lcigpIGlzIGNhbGxlZCBmb3IgdGhlIGVlZV9jdHJsX3Rp
-bWVyLCBidXQgYmVjYXVzZSANCj4gICAgdGltZXJfc2V0dXAoKSB3YXMgbmV2ZXIgY2FsbGVkLCB3
-ZSBoaXQgdGhlIEJVRyBkZWZpbmVkIGF0DQo+ICAgIGtlcm5lbC90aW1lL3RpbWVyLmM6OTUyLCBi
-ZWNhdXNlIG5vIGZ1bmN0aW9uIGlzIGRlZmluZWQgZm9yIHRoZSANCj4gICAgdGltZXIuDQo+IA0K
-PiBUaGUgZm9sbG93aW5nIGZpeGVzIGl0IGZvciBtZSAuLi4NCj4gDQo+IC0tLSBhL2RyaXZlcnMv
-bmV0L2V0aGVybmV0L3N0bWljcm8vc3RtbWFjL3N0bW1hY19tYWluLmMNCj4gKysrIGIvZHJpdmVy
-cy9uZXQvZXRoZXJuZXQvc3RtaWNyby9zdG1tYWMvc3RtbWFjX21haW4uYw0KPiBAQCAtMzk5LDEw
-ICszOTksMTMgQEAgYm9vbCBzdG1tYWNfZWVlX2luaXQoc3RydWN0IHN0bW1hY19wcml2ICpwcml2
-KQ0KPiAgICAgICAgIG11dGV4X2xvY2soJnByaXYtPmxvY2spOw0KPiAgDQo+ICAgICAgICAgLyog
-Q2hlY2sgaWYgaXQgbmVlZHMgdG8gYmUgZGVhY3RpdmF0ZWQgKi8NCj4gLSAgICAgICBpZiAoIXBy
-aXYtPmVlZV9hY3RpdmUgJiYgcHJpdi0+ZWVlX2VuYWJsZWQpIHsNCj4gLSAgICAgICAgICAgICAg
-IG5ldGRldl9kYmcocHJpdi0+ZGV2LCAiZGlzYWJsZSBFRUVcbiIpOw0KPiAtICAgICAgICAgICAg
-ICAgZGVsX3RpbWVyX3N5bmMoJnByaXYtPmVlZV9jdHJsX3RpbWVyKTsNCj4gLSAgICAgICAgICAg
-ICAgIHN0bW1hY19zZXRfZWVlX3RpbWVyKHByaXYsIHByaXYtPmh3LCAwLCB0eF9scGlfdGltZXIp
-Ow0KPiArICAgICAgIGlmICghcHJpdi0+ZWVlX2FjdGl2ZSkgew0KPiArICAgICAgICAgICAgICAg
-aWYgKHByaXYtPmVlZV9lbmFibGVkKSB7DQo+ICsgICAgICAgICAgICAgICAgICAgICAgIG5ldGRl
-dl9kYmcocHJpdi0+ZGV2LCAiZGlzYWJsZSBFRUVcbiIpOw0KPiArICAgICAgICAgICAgICAgICAg
-ICAgICBkZWxfdGltZXJfc3luYygmcHJpdi0+ZWVlX2N0cmxfdGltZXIpOw0KPiArICAgICAgICAg
-ICAgICAgICAgICAgICBzdG1tYWNfc2V0X2VlZV90aW1lcihwcml2LCBwcml2LT5odywgMCwgdHhf
-bHBpX3RpbWVyKTsNCj4gKyAgICAgICAgICAgICAgIH0NCj4gKyAgICAgICAgICAgICAgIG11dGV4
-X3VubG9jaygmcHJpdi0+bG9jayk7DQo+ICAgICAgICAgICAgICAgICByZXR1cm4gZmFsc2U7DQo+
-ICAgICAgICAgfQ0KPiANCj4gSXQgYWxzbyBsb29rcyBsaWtlIHlvdSBoYXZlIGEgcG90ZW50aW9u
-IGRlYWRsb2NrIGluIHRoZSBjdXJyZW50IGNvZGUNCj4gYmVjYXVzZSBpbiB0aGUgY2FzZSBvZiBp
-ZiAoIXByaXYtPmVlZV9hY3RpdmUgJiYgcHJpdi0+ZWVlX2VuYWJsZWQpDQo+IHlvdSBkb24ndCB1
-bmxvY2sgdGhlIG11dGV4LiBUaGUgYWJvdmUgZml4ZXMgdGhpcyBhcyB3ZWxsLiBJIGNhbiBzZW5k
-IGENCj4gZm9ybWFsIHBhdGNoIGlmIHRoaXMgbG9va3MgY29ycmVjdC4gDQoNClRoYW5rcyBmb3Ig
-bG9va2luZyBpbnRvIHRoaXMhIFRoZSBmaXggbG9va3MgY29ycmVjdCBzbyBpZiB5b3UgY291bGQg
-DQpzdWJtaXQgYSBwYXRjaCBpdCB3b3VsZCBiZSBncmVhdCENCg0KVGhhbmtzLA0KSm9zZSBNaWd1
-ZWwgQWJyZXUNCg==
+On Tue, 25 Jun 2019 13:50:14 +0300
+Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
+
+> Hi Jesper,
+> 
+> Could you please clarify one question.
+> 
+> On Tue, Jun 18, 2019 at 03:05:47PM +0200, Jesper Dangaard Brouer wrote:
+> >This patch is needed before we can allow drivers to use page_pool for
+> >DMA-mappings. Today with page_pool and XDP return API, it is possible to
+> >remove the page_pool object (from rhashtable), while there are still
+> >in-flight packet-pages. This is safely handled via RCU and failed lookups in
+> >__xdp_return() fallback to call put_page(), when page_pool object is gone.
+> >In-case page is still DMA mapped, this will result in page note getting
+> >correctly DMA unmapped.
+> >
+> >To solve this, the page_pool is extended with tracking in-flight pages. And
+> >XDP disconnect system queries page_pool and waits, via workqueue, for all
+> >in-flight pages to be returned.
+> >
+> >To avoid killing performance when tracking in-flight pages, the implement
+> >use two (unsigned) counters, that in placed on different cache-lines, and
+> >can be used to deduct in-flight packets. This is done by mapping the
+> >unsigned "sequence" counters onto signed Two's complement arithmetic
+> >operations. This is e.g. used by kernel's time_after macros, described in
+> >kernel commit 1ba3aab3033b and 5a581b367b5, and also explained in RFC1982.
+> >
+> >The trick is these two incrementing counters only need to be read and
+> >compared, when checking if it's safe to free the page_pool structure. Which
+> >will only happen when driver have disconnected RX/alloc side. Thus, on a
+> >non-fast-path.
+> >
+> >It is chosen that page_pool tracking is also enabled for the non-DMA
+> >use-case, as this can be used for statistics later.
+> >
+> >After this patch, using page_pool requires more strict resource "release",
+> >e.g. via page_pool_release_page() that was introduced in this patchset, and
+> >previous patches implement/fix this more strict requirement.
+> >
+> >Drivers no-longer call page_pool_destroy(). Drivers already call
+> >xdp_rxq_info_unreg() which call xdp_rxq_info_unreg_mem_model(), which will
+> >attempt to disconnect the mem id, and if attempt fails schedule the
+> >disconnect for later via delayed workqueue.
+> >
+> >Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> >Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+> >---
+> > drivers/net/ethernet/mellanox/mlx5/core/en_main.c |    3 -
+> > include/net/page_pool.h                           |   41 ++++++++++---
+> > net/core/page_pool.c                              |   62 +++++++++++++++-----
+> > net/core/xdp.c                                    |   65 +++++++++++++++++++--
+> > 4 files changed, 136 insertions(+), 35 deletions(-)
+> >
+> >diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> >index 2f647be292b6..6c9d4d7defbc 100644
+> >--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> >+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> >@@ -643,9 +643,6 @@ static void mlx5e_free_rq(struct mlx5e_rq *rq)
+> > 	}
+> >
+> > 	xdp_rxq_info_unreg(&rq->xdp_rxq);
+> >-	if (rq->page_pool)
+> >-		page_pool_destroy(rq->page_pool);
+> >-
+> > 	mlx5_wq_destroy(&rq->wq_ctrl);
+> > }
+> >
+> >diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+> >index 754d980700df..f09b3f1994e6 100644
+> >--- a/include/net/page_pool.h
+> >+++ b/include/net/page_pool.h
+> >@@ -16,14 +16,16 @@
+> >  * page_pool_alloc_pages() call.  Drivers should likely use
+> >  * page_pool_dev_alloc_pages() replacing dev_alloc_pages().
+> >  *
+> >- * If page_pool handles DMA mapping (use page->private), then API user
+> >- * is responsible for invoking page_pool_put_page() once.  In-case of
+> >- * elevated refcnt, the DMA state is released, assuming other users of
+> >- * the page will eventually call put_page().
+> >+ * API keeps track of in-flight pages, in-order to let API user know
+> >+ * when it is safe to dealloactor page_pool object.  Thus, API users
+> >+ * must make sure to call page_pool_release_page() when a page is
+> >+ * "leaving" the page_pool.  Or call page_pool_put_page() where
+> >+ * appropiate.  For maintaining correct accounting.
+> >  *
+> >- * If no DMA mapping is done, then it can act as shim-layer that
+> >- * fall-through to alloc_page.  As no state is kept on the page, the
+> >- * regular put_page() call is sufficient.
+> >+ * API user must only call page_pool_put_page() once on a page, as it
+> >+ * will either recycle the page, or in case of elevated refcnt, it
+> >+ * will release the DMA mapping and in-flight state accounting.  We
+> >+ * hope to lift this requirement in the future.
+> >  */
+> > #ifndef _NET_PAGE_POOL_H
+> > #define _NET_PAGE_POOL_H
+> >@@ -66,9 +68,10 @@ struct page_pool_params {
+> > };
+> >
+> > struct page_pool {
+> >-	struct rcu_head rcu;
+> > 	struct page_pool_params p;
+> >
+> >+        u32 pages_state_hold_cnt;
+> >+
+> > 	/*
+> > 	 * Data structure for allocation side
+> > 	 *
+> >@@ -96,6 +99,8 @@ struct page_pool {
+> > 	 * TODO: Implement bulk return pages into this structure.
+> > 	 */
+> > 	struct ptr_ring ring;
+> >+
+> >+	atomic_t pages_state_release_cnt;
+> > };
+> >
+> > struct page *page_pool_alloc_pages(struct page_pool *pool, gfp_t gfp);
+> >@@ -109,8 +114,6 @@ static inline struct page *page_pool_dev_alloc_pages(struct page_pool *pool)
+> >
+> > struct page_pool *page_pool_create(const struct page_pool_params *params);
+> >
+> >-void page_pool_destroy(struct page_pool *pool);
+> >-
+> > void __page_pool_free(struct page_pool *pool);
+> > static inline void page_pool_free(struct page_pool *pool)
+> > {
+> >@@ -143,6 +146,24 @@ static inline void page_pool_recycle_direct(struct page_pool *pool,
+> > 	__page_pool_put_page(pool, page, true);
+> > }
+> >
+> >+/* API user MUST have disconnected alloc-side (not allowed to call
+> >+ * page_pool_alloc_pages()) before calling this.  The free-side can
+> >+ * still run concurrently, to handle in-flight packet-pages.
+> >+ *
+> >+ * A request to shutdown can fail (with false) if there are still
+> >+ * in-flight packet-pages.
+> >+ */
+> >+bool __page_pool_request_shutdown(struct page_pool *pool);
+> >+static inline bool page_pool_request_shutdown(struct page_pool *pool)
+> >+{
+> >+	/* When page_pool isn't compiled-in, net/core/xdp.c doesn't
+> >+	 * allow registering MEM_TYPE_PAGE_POOL, but shield linker.
+> >+	 */
+> >+#ifdef CONFIG_PAGE_POOL
+> >+	return __page_pool_request_shutdown(pool);
+> >+#endif
+> >+}  
+> 
+> The free side can ran in softirq, that means fast cache recycle is accessed.
+> And it increments not atomic pool->alloc.count.
+> 
+> For instance While redirect, for remote interface, while .ndo_xdp_xmit the
+> xdp_return_frame_rx_napi(xdpf) is called everywhere in error path ....
+> 
+> In the same time, simultaneously, the work queue can try one more
+> time to clear cash, calling __page_pool_request_shutdown()....
+>
+> Question, what prevents pool->alloc.count to be corrupted by race,
+> causing to wrong array num and as result wrong page to be unmapped/put ....or
+> even page leak. alloc.count usage is not protected,
+> __page_pool_request_shutdown() is called not from same rx NAPI, even not from
+> NAPI.
+> 
+> Here, while alloc cache empty procedure in __page_pool_request_shutdown():
+
+You forgot to copy this comment, which explains:
+
+	/* Empty alloc cache, assume caller made sure this is
+	 * no-longer in use, and page_pool_alloc_pages() cannot be
+	 * call concurrently.
+	 */
+
+> while (pool->alloc.count) {
+> 	page = pool->alloc.cache[--pool->alloc.count];
+> 	__page_pool_return_page(pool, page);
+> }
+> 
+> For me seems all works fine, but I can't find what have I missed?
+
+You have missed that, it is the drivers responsibility to "disconnect"
+the xdp_rxq_info before calling shutdown.  Which means that it is not
+allowed to be used for RX, while the driver is shutting down a
+RX-queue.  For drivers this is very natural, else other things will
+break.
+
+ 
+> ...
+> 
+> Same question about how xdp frame should be returned for drivers running
+> tx napi exclusively, it can be still softirq but another CPU? What API
+> should be used to return xdp frame.
+
+You have to use the normal xdp_return_frame() which doesn't do "direct"
+return.
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
