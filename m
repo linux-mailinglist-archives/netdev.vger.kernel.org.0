@@ -2,170 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 99F655516A
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 16:20:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A38A155190
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 16:24:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729531AbfFYOUI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 10:20:08 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:36574 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727070AbfFYOUI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 10:20:08 -0400
-Received: by sipsolutions.net with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1hfmId-0005Mb-Le; Tue, 25 Jun 2019 16:19:55 +0200
-Message-ID: <efbcb3b84ff0a7d7eab875c37f3a5fa77e21d324.camel@sipsolutions.net>
-Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Arnd Bergmann <arnd@arndb.de>, Alex Elder <elder@linaro.org>
-Cc:     Dan Williams <dcbw@redhat.com>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        abhishek.esse@gmail.com, Ben Chan <benchan@google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        cpratapa@codeaurora.org, David Miller <davem@davemloft.net>,
-        DTML <devicetree@vger.kernel.org>,
-        Eric Caruso <ejcaruso@google.com>, evgreen@chromium.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-arm-msm@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-soc@vger.kernel.org, Networking <netdev@vger.kernel.org>,
-        syadagir@codeaurora.org
-Date:   Tue, 25 Jun 2019 16:19:54 +0200
-In-Reply-To: <CAK8P3a1ixL9ZjYz=pWTxvMfeD89S6QxSeHt9ZCL9dkCNV5pMHQ@mail.gmail.com> (sfid-20190624_184119_378618_FFFDB00F)
-References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
-         <a94676381a5ca662c848f7a725562f721c43ce76.camel@sipsolutions.net>
-         <CAK8P3a0kV-i7BJJ2X6C=5n65rSGfo8fUiC4J_G-+M8EctYKbkg@mail.gmail.com>
-         <fc0d08912bc10ad089eb74034726308375279130.camel@redhat.com>
-         <36bca57c999f611353fd9741c55bb2a7@codeaurora.org>
-         <153fafb91267147cf22e2bf102dd822933ec823a.camel@redhat.com>
-         <CAK8P3a2Y+tcL1-V57dtypWHndNT3eDJdcKj29c_v+k8o1HHQig@mail.gmail.com>
-         <f4249aa5f5acdd90275eda35aa16f3cfb29d29be.camel@redhat.com>
-         <CAK8P3a2nzZKtshYfomOOSYkqx5HdU15Wr9b+3va0B1euNhFOAg@mail.gmail.com>
-         <dbb32f185d2c3a654083ee0a7188379e1f88d899.camel@sipsolutions.net>
-         <d533b708-c97a-710d-1138-3ae79107f209@linaro.org>
-         <abdfc6b3a9981bcdef40f85f5442a425ce109010.camel@sipsolutions.net>
-         <db34aa39-6cf1-4844-1bfe-528e391c3729@linaro.org>
-         <CAK8P3a1ixL9ZjYz=pWTxvMfeD89S6QxSeHt9ZCL9dkCNV5pMHQ@mail.gmail.com>
-         (sfid-20190624_184119_378618_FFFDB00F)
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-3.fc28) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S1730246AbfFYOYS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 10:24:18 -0400
+Received: from mail-wm1-f50.google.com ([209.85.128.50]:51462 "EHLO
+        mail-wm1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730019AbfFYOYR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 10:24:17 -0400
+Received: by mail-wm1-f50.google.com with SMTP id 207so3064141wma.1
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 07:24:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=TeUjgBwgJ9iMSzTQ1lt+AyZnR9g9BOEHzmsZ4nUkRag=;
+        b=sXWoKy77Nw74hxskTUMHtjTiMginSrzo5gGVT83a4c+2LuDIfVx4VZ8uoAMLE/DwIw
+         Jh3zjTM4nop4eulay0xUXM8SWrHVVqMu55VmRlFGFIN+2AkTqWMKUiVdkdzwl9pPxUuo
+         N0bs393lcWlCVebT5Alts4X4yW4aUzVPwZS+wa22OCVJeTRBIFzkJO+kY+IArBR5e0Lc
+         qSByXwqQf1uoeca2le5m6OTPiYHTScujcqL++BZik/e4aCNdlxHgvm6UqqS2l5iwqM5O
+         lAe9hfAX7mBFBltqll1/BBXnKtK0O8ikuo7kCgzMaLqaLFxCBovU+iiYx/9xehv/zq46
+         QGnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=TeUjgBwgJ9iMSzTQ1lt+AyZnR9g9BOEHzmsZ4nUkRag=;
+        b=XdrrTtu4+XvudYu7Rd8ZnpgGT108rLkt4EfdtJ5K9jgWRT/G9zzfSBp5rriupB+vN6
+         ygQGNJgtSFspc5IBD7mvCIG+SBB8PsFvwuZf30PeaPipqU+8JLUQvcj8RudiesaEndGH
+         tCQTKPFeO7Psc2yfnUDtiZpVUfraDksIXIiV8noSLBe/axVeo83ADJ+dWMwXg3QE+Iki
+         zTYyRcXOfOq5ZEfEaNhapiDU4ype71vQ1bsHp46xmeT/VAcViuZVcr7Ku/nJhE5ZuGLc
+         j2v02L4bmLU+rgjOTSEwnYguCTr3mnvK7DVlrjAS3+7ByBoqxWTT/EDiBbu21L3uocnq
+         Khfg==
+X-Gm-Message-State: APjAAAWCF6v/FFdOBTievSH1YcVlqGJv1HFFHpYA1JyDEdNkK9xe9yhe
+        qjHeGGRUZSdad1nJyziyvi1u+UbQ
+X-Google-Smtp-Source: APXvYqzCPXjGdZa6/Wjo/rhQbJ6JvLmRdqoNCBJsAIAKNpaT0lEegusXrZ7hBTIRQnlF/i/utEtkiA==
+X-Received: by 2002:a1c:f009:: with SMTP id a9mr19152897wmb.32.1561472656454;
+        Tue, 25 Jun 2019 07:24:16 -0700 (PDT)
+Received: from [192.168.8.147] (104.84.136.77.rev.sfr.net. [77.136.84.104])
+        by smtp.gmail.com with ESMTPSA id n1sm11238247wrx.39.2019.06.25.07.24.15
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Tue, 25 Jun 2019 07:24:15 -0700 (PDT)
+Subject: Re: Warnings generated from tcp_sacktag_write_queue.
+To:     Chinmay Agarwal <chinagar@codeaurora.org>, netdev@vger.kernel.org
+Cc:     sharathv@codeaurora.org, kapandey@codeaurora.org
+References: <20190625130706.GA6891@chinagar-linux.qualcomm.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <ab6bb900-e9b7-f2b2-0a56-d1c9e14d2db6@gmail.com>
+Date:   Tue, 25 Jun 2019 16:24:14 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
+MIME-Version: 1.0
+In-Reply-To: <20190625130706.GA6891@chinagar-linux.qualcomm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2019-06-24 at 18:40 +0200, Arnd Bergmann wrote:
-> On Mon, Jun 24, 2019 at 6:21 PM Alex Elder <elder@linaro.org> wrote:
-> > On 6/18/19 2:03 PM, Johannes Berg wrote:
-> > 
-> > > Really there are two possible ways (and they intersect to some extent).
-> > > 
-> > > One is the whole multi-function device, where a single WWAN device is
-> > > composed of channels offered by actually different drivers, e.g. for a
-> > > typical USB device you might have something like cdc_ether and the
-> > > usb_wwan TTY driver. In this way, we need to "compose" the WWAN device
-> > > similarly, e.g. by using the underlying USB device "struct device"
-> > > pointer to tie it together.
-> > 
-> > I *think* this model makes the most sense.  But at this point
-> > it would take very little to convince me otherwise...  (And then
-> > I saw Arnd's message advocating the other one, unfortunately...)
-> > 
-> > > The other is something like IPA or the Intel modem driver, where the
-> > > device is actually a single (e.g. PCIe) device and just has a single
-> > > driver, but that single driver offers different channels.
-> > 
-> > What I don't like about this is that it's more monolithic.  It
-> > seems better to have the low-level IPA or Intel modem driver (or
-> > any other driver that can support communication between the AP
-> > and WWAN device) present communication paths that other function-
-> > specific drivers can attach to and use.
+
+
+On 6/25/19 6:07 AM, Chinmay Agarwal wrote:
+> Dear All,
 > 
-> I did not understand Johannes description as two competing models
-> for the same code, but rather two kinds of existing hardware that
-> a new driver system would have to deal with.
-
-Right.
-
-> I was trying to simplify it to just having the second model, by adding
-> a hack to support the first, but my view was rather unpopular so
-> far, so if everyone agrees on one way to do it, don't worry about me ;-)
-
-:-)
-
-However, to also reply to Alex: I don't know exactly how IPA works, but
-for the Intel modem at least you can't fundamentally have two drivers
-for different parts of the functionality, since it's just a single piece
-of hardware and you need to allocate hardware resources from a common
-pool etc. So you cannot split the driver into "Intel modem control
-channel driver" and "Intel modem data channel driver". In fact, it's
-just a single "struct device" on the PCIe bus that you can bind to, and
-only one driver can bind at a time.
-
-So, IOW, I'm not sure I see how you'd split that up. I guess you could
-if you actually do something like the "rmnet" model, and I suppose
-you're free to do that for IPA if you like, but I tend to think that's
-actually a burden, not a win since you just get more complex code that
-needs to interact with more pieces. A single driver for a single
-hardware that knows about the few types of channels seems simpler to me.
-
-> - to answer Johannes question, my understanding is that the interface
->   between kernel and firmware/hardware for IPA has a single 'struct
->   device' that is used for both the data and the control channels,
->   rather than having a data channel and an independent control device,
->   so this falls into the same category as the Intel one (please correct
->   me on that)
-
-That sounds about the same then, right.
-
-Are the control channels to IPA are actually also tunnelled over the
-rmnet protocol? And even if they are, perhaps they have a different
-hardware queue or so? That'd be the case for Intel - different hardware
-queue, same (or at least similar) protocol spoken for the DMA hardware
-itself, but different contents of the messages obviously.
-
-> - The user space being proprietary is exactly what we need to avoid
->   with the wwan subsystem. We need to be able to use the same
->   method for setting up Intel, Qualcomm, Samsung, Unisoc or
->   Hisilicon modems or anything else that hooks into the subsystem,
->   and support that in network manager as well as the Android
->   equivalent.
->   If Qualcomm wants to provide their own proprietary user space
->   solution, we can't stop them, but then that should also work on
->   all the others unless they intentionally break it. ;-)
-
-:-)
-
-I tend to think there's always going to be some level of specific
-handling here, because e.g. the Intel modem can expose MBIM or AT
-command control channels, but not much else (that'd be useful for us
-anyway, since we don't know how to speak debug protocol etc.). Other
-modems will expose *only* AT commands, or *only* MBIM, and yet others
-may also offer QMI and then that might be preferable.
-
-> > > and simply require that the channel is attached to the wwan device with
-> > > the representation-specific call (wwan_attach_netdev, wwan_attach_tty,
-> > > ...).
-> > 
-> > Or maybe have the WWAN device present interfaces with attributes,
-> > and have drivers that are appropriate for each interface attach
-> > to only the ones they recognize they support.
+> We are hitting the following WARN_ON condition:
 > 
-> I think you both mean the same thing here, a structure with callback
-> pointers that may or may not be filled by the driver depending on its
-> capabilities.
+> 	WARN_ON((int)tcp_packets_in_flight(tp) < 0);
+> 
+> 	tcp_packets_in_flight =  packets_out –( lost_out +
+> 	sacked_out ) + retrans_out  (This value is coming -ve)
+> 
+> The tcp socket being used is in fin_wait_1 state.
+> The values for variables just before the crash:
+> packets_out = 0,
+> retrans_out = 28,
+> lost_out = 38,
+> sacked_out = 8
+> 
+> 
+> The only place I can find the packets_out value being set as 0 is:
+> 
+> void tcp_write_queue_purge(struct sock *sk)
+> {
+> ...
+> 
+> 	tcp_sk(sk)->packets_out = 0;
+>         inet_csk(sk)->icsk_backoff = 0;
+> }
+> 
+> Is there some code flow where packets_out can be set to 0 and other
+> values can remain unchanged?
+> If not, is there some scenario which may lead to "tcp_write_queue_purge"
+> called and not followed up by "tcp_clear_retrans"?
+> 
+> According to my understanding we should call "tcp_clear_retrans" after
+> setting packets_out to 0.
+> 
+> [ 1950.556150] Call trace:
+> [ 1950.558689] tcp_sacktag_write_queue+0x704/0x72c
+> [ 1950.561313] init: Untracked pid 10745 exited with status 0
+> [ 1950.563441] tcp_ack+0x3a4/0xd40
+> [ 1950.563447] tcp_rcv_state_process+0x1e8/0xbbc
+> [ 1950.563457] tcp_v4_do_rcv+0x18c/0x1cc
+> [ 1950.563461] tcp_v4_rcv+0x84c/0x8a8
+> [ 1950.563471] ip_protocol_deliver_rcu+0xdc/0x190
+> [ 1950.563474] ip_local_deliver_finish+0x64/0x80
+> [ 1950.563479] ip_local_deliver+0xc4/0xf8
+> [ 1950.563482] ip_rcv_finish+0x214/0x2e0
+> [ 1950.563486] ip_rcv+0x2fc/0x39c
+> [ 1950.563496] __netif_receive_skb_core+0x698/0x84c
+> [ 1950.563499] __netif_receive_skb+0x3c/0x7c
+> [ 1950.563503] process_backlog+0x98/0x148
+> [ 1950.563506] net_rx_action+0x128/0x388
+> [ 1950.563519] __do_softirq+0x20c/0x3f0
+> [ 1950.563528] irq_exit+0x9c/0xa8
+> [ 1950.563536] handle_IPI+0x174/0x278
+> [ 1950.563540] gic_handle_irq+0x124/0x1c0
+> [ 1950.563544] el1_irq+0xb4/0x12c
+> [ 1950.563556] lpm_cpuidle_enter+0x3f4/0x430
+> [ 1950.563561] cpuidle_enter_state+0x124/0x25c
+> [ 1950.563565] cpuidle_enter+0x30/0x40
+> [ 1950.563575] call_cpuidle+0x3c/0x60
+> [ 1950.563579] do_idle+0x190/0x228
+> [ 1950.563583] cpu_startup_entry+0x24/0x28
+> [ 1950.563588] secondary_start_kernel+0x12c/0x138
+> 
 
-:-)
 
-> What we should try to avoid though is a way to add driver private
-> interfaces that risk having multiple drivers create similar functionality
-> in incompatible ways.
+You do not provide what exact kernel version you are using,
+this is probably the most important information we need.
 
-Right.
-
-johannes
 
