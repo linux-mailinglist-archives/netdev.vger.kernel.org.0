@@ -2,202 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 133E855963
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 22:50:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E8CD5596B
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 22:52:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726783AbfFYUuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 16:50:05 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:45701 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726053AbfFYUuF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 16:50:05 -0400
-Received: by mail-qt1-f196.google.com with SMTP id j19so19987426qtr.12;
-        Tue, 25 Jun 2019 13:50:04 -0700 (PDT)
+        id S1726772AbfFYUv6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 16:51:58 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:44470 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726420AbfFYUv5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 16:51:57 -0400
+Received: by mail-pl1-f195.google.com with SMTP id t7so81474plr.11
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 13:51:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=S3ThzB0FxOM43lC1HEahXxVTCZ708F6Vcodz7HniaZE=;
-        b=KJ0ZXzXcIbKjkt0vtSCVpLnvHNFsgh09BQvaDlX2cIajjSEJRD3sQEZ06utl5qCFUa
-         1O3bXsnM1MmOH5DsjYr3tA08qMxDgZJsNe+cb52zQSHF0rjf+cvuLXPCrhIZfkM7nF4f
-         6rvydx382/mUSU5iX6UNgFbo22l1CRLfyZ9Yp9uvNtAgrke+9OQuHf+KElua5K2uLyq/
-         FUTKJxtGWE5DOxcrsjldXQLSlb0ALM+/26F9pS61Qhjg64TSRYSlMVWITMhfRar6Uapg
-         WJrFBijBdSDWfi+3lQXyEVKv3Yzt9wMeOWozckx11Yqr583pB/vGIFNJ7Vc9JXMhIkec
-         vOuQ==
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=wCQSXu82F8swe3D8zKchpQAEcIuhNWcT3wFgqF0lcmg=;
+        b=vvVvvYS1D6bTfm3V0SkI9Iu9XBsPCKVuGVYF9EfBh1rQy9pyK4a1HJ4ysUUvLfSNBw
+         zKwKahmHkHm35dGwS+QgphBZ/2KH3/BNlw68snLuSNdacu7xoVstFldlfLTk6ZHguud7
+         J3yXQs7Pev2UPaJuRlIDuXAF/ip3EuXT5ki9D7eg/tjoe3IVGO5+8I5W+jYGMi/I94lR
+         1onEJgmyMkyn46GCKqGbAuSVxudNnTxrpDnmfatxojUQ5cOHR6uVw3UF+H6pGuXSoHAD
+         Aqhgj1cD07x/mVk7q8ptYaLHqs+GvyEi/JeSXV/JAJTB3g2WBvVe/COeFTAVX6Dkb83G
+         X26A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=S3ThzB0FxOM43lC1HEahXxVTCZ708F6Vcodz7HniaZE=;
-        b=YxkfLVKSrxGvn4RS8BKMVONl4U9/3Ikm5LrALIUHzm2lI41OTUneJqfwSXF1S5+MUk
-         10lAwlO1qgB+y9tPnjKWTJo5aCW0ec+um6q7tcNyuwICzdEX/+quszi8zpM4WG/cENGQ
-         0CD+qt8+C2ZN75DjnQvcDudwcujafIH+aj2afraAeUqrjCwnKU37G6TGjBAjHtu448U0
-         ufXCj0+XjmGdSzNHzj1hd8uszAIHwbTt6HA0gyhF5T5nXy/AlGUyiXdST23gZ1oPrkey
-         P3Ya9hV5hhACCXx1HNCPu+fiT+iLsRaxjMR23hjiSoH1IqqbmWuEUU4o/GQIKmsSj+uW
-         2Yqg==
-X-Gm-Message-State: APjAAAWRiadi1LqocMcctTGsbOrLUzm7PBFHsTo7M0u3tWBkQAvlQZgi
-        Og1YvyM2r6u0sHIUQk9gKlZf7LpveCBIlUmn4sM=
-X-Google-Smtp-Source: APXvYqx5XvW72PBr4mzP6TPvyWK17Tww9Cw49TQ5skdGckn/X36eEwJeLI791JpLuYoOddkGNNaPUHlzdAHDYMIYamQ=
-X-Received: by 2002:a0c:d0b6:: with SMTP id z51mr256561qvg.3.1561495803720;
- Tue, 25 Jun 2019 13:50:03 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=wCQSXu82F8swe3D8zKchpQAEcIuhNWcT3wFgqF0lcmg=;
+        b=fKPeCUaxwsiYNkFud7PtTCedWNgjr17YZs/os103NhUTiIOQ0YahrrV5/7wAdVjSZQ
+         xDNG51n9eMFZ+RSeUYRSD0UldqMMYF98TIUrIJQkRT6pADWlyGsznXp5nMzUofTENUKP
+         NQoHKlWLogvFzYR5tuiMmFbQCt/GS2XZR55O3PwZHJm1Fa+fitX1VgXvLTi6HBJL0L8K
+         tjmyFmlOo7DExWanbfn64Th5bUGHpxKSHOPhEdZfXpeThttAW/iMohJWzsSTRTZXzgHO
+         IHE4aBgMc5kXho1U2XB+ApZH91HuHMH8hwIzRGwAP3cYTEp6kk0d8BdKMwQ6N24XnrLy
+         6Hjw==
+X-Gm-Message-State: APjAAAVGNy4huSojrgEHM00zJhYFisRHzxl24r137Vq4Refrg4yGGHVU
+        PE4l2GylO6THvorHYMEn35xgSA==
+X-Google-Smtp-Source: APXvYqxC/xbDefs4n8RaoUgrO9qzmlqNXunS97/ifDGMxA4uSeWxHh05FoEgboOrPn0EbHaW04nX5A==
+X-Received: by 2002:a17:902:d695:: with SMTP id v21mr670784ply.342.1561495917181;
+        Tue, 25 Jun 2019 13:51:57 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id b11sm12981846pfd.18.2019.06.25.13.51.56
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 25 Jun 2019 13:51:56 -0700 (PDT)
+Date:   Tue, 25 Jun 2019 13:51:55 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Song Liu <songliubraving@fb.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, kernel-team@fb.com
+Subject: Re: [PATCH bpf-next 0/4] sys_bpf() access control via /dev/bpf
+Message-ID: <20190625205155.GD10487@mini-arch>
+References: <20190625182303.874270-1-songliubraving@fb.com>
 MIME-Version: 1.0
-References: <20190625182352.13918-1-natechancellor@gmail.com> <34F07894-FDE7-44F8-B7F2-E2003D550AD2@gmail.com>
-In-Reply-To: <34F07894-FDE7-44F8-B7F2-E2003D550AD2@gmail.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Tue, 25 Jun 2019 22:49:52 +0200
-Message-ID: <CAJ+HfNjKHG2dmu_juCJE5Xjo4HR4wqfk=yNPSAz8i7YbEWq6uw@mail.gmail.com>
-Subject: Re: [PATCH] xsk: Properly terminate assignment in xskq_produce_flush_desc
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     Nathan Chancellor <natechancellor@gmail.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Xdp <xdp-newbies@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        clang-built-linux@googlegroups.com,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Huckleberry <nhuck@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190625182303.874270-1-songliubraving@fb.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 25 Jun 2019 at 22:04, Jonathan Lemon <jonathan.lemon@gmail.com> wro=
-te:
->
->
->
-> On 25 Jun 2019, at 11:23, Nathan Chancellor wrote:
->
-> > Clang warns:
-> >
-> > In file included from net/xdp/xsk_queue.c:10:
-> > net/xdp/xsk_queue.h:292:2: warning: expression result unused
-> > [-Wunused-value]
-> >         WRITE_ONCE(q->ring->producer, q->prod_tail);
-> >         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> > include/linux/compiler.h:284:6: note: expanded from macro 'WRITE_ONCE'
-> >         __u.__val;                                      \
-> >         ~~~ ^~~~~
-> > 1 warning generated.
-> >
-> > The q->prod_tail assignment has a comma at the end, not a semi-colon.
-> > Fix that so clang no longer warns and everything works as expected.
-> >
-> > Fixes: c497176cb2e4 ("xsk: add Rx receive functions and poll support")
-> > Link: https://github.com/ClangBuiltLinux/linux/issues/544
-> > Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
->
-> Nice find.
->
-> Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
->
+On 06/25, Song Liu wrote:
+> Currently, most access to sys_bpf() is limited to root. However, there are
+> use cases that would benefit from non-privileged use of sys_bpf(), e.g.
+> systemd.
+> 
+> This set introduces a new model to control the access to sys_bpf(). A
+> special device, /dev/bpf, is introduced to manage access to sys_bpf().
+> Users with access to open /dev/bpf will be able to access most of
+> sys_bpf() features. The use can get access to sys_bpf() by opening /dev/bpf
+> and use ioctl to get/put permission.
+> 
+> The permission to access sys_bpf() is marked by bit TASK_BPF_FLAG_PERMITTED
+> in task_struct. During fork(), child will not inherit this bit.
+2c: if we are going to have an fd, I'd vote for a proper fd based access
+checks instead of a per-task flag, so we can do:
+	ioctl(fd, BPF_MAP_CREATE, uattr, sizeof(uattr))
 
-Yikes. Yes, nice find, indeed.
+(and pass this fd around)
 
-Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+I do understand that it breaks current assumptions that libbpf has,
+but maybe we can extend _xattr variants to accept optinal fd (and try
+to fallback to sysctl if it's absent/not working)?
 
-The broader question is "Why does it work at all?", which is an "oh no" mom=
-ent.
-
-The problematic functions are xsk_flush() and xsk_generic_rcv, where
-xskq_produce_flush_desc() is inlined. On the test machine, the GCC
-version is:
-
-$ gcc --version
-gcc (Ubuntu 7.4.0-1ubuntu1~18.04) 7.4.0
-Copyright (C) 2017 Free Software Foundation, Inc.
-This is free software; see the source for copying conditions.  There is NO
-warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-I when I diff the output, both .lst and .o:
-
-$ diff -u old.lst new.lst
---- old.lst     2019-06-25 22:10:57.709591605 +0200
-+++ new.lst     2019-06-25 22:10:35.301359865 +0200
-@@ -2480,7 +2480,7 @@
-     1566:      48 8b 87 e0 02 00 00    mov    0x2e0(%rdi),%rax
- {
-     156d:      48 89 e5                mov    %rsp,%rbp
--       q->prod_tail =3D q->prod_head,
-+       q->prod_tail =3D q->prod_head;
-     1570:      8b 50 18                mov    0x18(%rax),%edx
-     1573:      89 50 1c                mov    %edx,0x1c(%rax)
-        WRITE_ONCE(q->ring->producer, q->prod_tail);
-@@ -2649,7 +2649,7 @@
-     16fb:      83 40 24 01             addl   $0x1,0x24(%rax)
-        xskq_produce_flush_desc(xs->rx);
-     16ff:      49 8b 86 e0 02 00 00    mov    0x2e0(%r14),%rax
--       q->prod_tail =3D q->prod_head,
-+       q->prod_tail =3D q->prod_head;
-     1706:      8b 50 18                mov    0x18(%rax),%edx
-        xs->sk.sk_data_ready(&xs->sk);
-     1709:      4c 89 f7                mov    %r14,%rdi
-
-$ diff -u <(gdb -batch -ex 'file old.o' -ex 'disassemble xsk_flush')
-<(gdb -batch -ex 'file new.o' -ex 'disassemble xsk_flush') && echo
-"Whew"
-Whew
-
-$ diff -u <(gdb -batch -ex 'file old.o' -ex 'disassemble
-xsk_generic_rcv') <(gdb -batch -ex 'file new.o' -ex 'disassemble
-xsk_generic_rcv') && echo "Whew"
-Whew
-
-struct xsk_queue {
-        u64                        chunk_mask;           /*     0   0x8 */
-        u64                        size;                 /*   0x8   0x8 */
-        u32                        ring_mask;            /*  0x10   0x4 */
-        u32                        nentries;             /*  0x14   0x4 */
-        u32                        prod_head;            /*  0x18   0x4 */
-        u32                        prod_tail;            /*  0x1c   0x4 */
-        u32                        cons_head;            /*  0x20   0x4 */
-        u32                        cons_tail;            /*  0x24   0x4 */
-        struct xdp_ring *          ring;                 /*  0x28   0x8 */
-        u64                        invalid_descs;        /*  0x30   0x8 */
-
-        /* size: 56, cachelines: 1, members: 10 */
-        /* last cacheline: 56 bytes */
-};
-
-So, it appears that the generated code is equal, both in xsk_flush()
-and xsk_generic_rcv() where flush was inlined. I'll be digging into
-more GCC versions, and observe the generated code.
-
-Regardless, this was a really good find. Thank you very much! Clang is
-added to my kernel build workflow from now on...
-
-
-Bj=C3=B6rn
-
-
-
->
-> > ---
-> >  net/xdp/xsk_queue.h | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
-> > index 88b9ae24658d..cba4a640d5e8 100644
-> > --- a/net/xdp/xsk_queue.h
-> > +++ b/net/xdp/xsk_queue.h
-> > @@ -288,7 +288,7 @@ static inline void xskq_produce_flush_desc(struct
-> > xsk_queue *q)
-> >       /* Order producer and data */
-> >       smp_wmb(); /* B, matches C */
-> >
-> > -     q->prod_tail =3D q->prod_head,
-> > +     q->prod_tail =3D q->prod_head;
-> >       WRITE_ONCE(q->ring->producer, q->prod_tail);
-> >  }
-> >
-> > --
-> > 2.22.0
+> libbpf APIs libbpf_[get|put]_bpf_permission() are added to help get and
+> put the permission. bpftool is updated to use these APIs.
+> 
+> Song Liu (4):
+>   bpf: unprivileged BPF access via /dev/bpf
+>   bpf: sync tools/include/uapi/linux/bpf.h
+>   libbpf: add libbpf_[get|put]_bpf_permission()
+>   bpftool: use libbpf_[get|put]_bpf_permission()
+> 
+>  Documentation/ioctl/ioctl-number.txt |  1 +
+>  include/linux/bpf.h                  | 12 +++++
+>  include/linux/sched.h                |  8 ++++
+>  include/uapi/linux/bpf.h             |  5 ++
+>  kernel/bpf/arraymap.c                |  2 +-
+>  kernel/bpf/cgroup.c                  |  2 +-
+>  kernel/bpf/core.c                    |  4 +-
+>  kernel/bpf/cpumap.c                  |  2 +-
+>  kernel/bpf/devmap.c                  |  2 +-
+>  kernel/bpf/hashtab.c                 |  4 +-
+>  kernel/bpf/lpm_trie.c                |  2 +-
+>  kernel/bpf/offload.c                 |  2 +-
+>  kernel/bpf/queue_stack_maps.c        |  2 +-
+>  kernel/bpf/reuseport_array.c         |  2 +-
+>  kernel/bpf/stackmap.c                |  2 +-
+>  kernel/bpf/syscall.c                 | 72 +++++++++++++++++++++-------
+>  kernel/bpf/verifier.c                |  2 +-
+>  kernel/bpf/xskmap.c                  |  2 +-
+>  kernel/fork.c                        |  4 ++
+>  net/core/filter.c                    |  6 +--
+>  tools/bpf/bpftool/feature.c          |  2 +-
+>  tools/bpf/bpftool/main.c             |  5 ++
+>  tools/include/uapi/linux/bpf.h       |  5 ++
+>  tools/lib/bpf/libbpf.c               | 54 +++++++++++++++++++++
+>  tools/lib/bpf/libbpf.h               |  7 +++
+>  tools/lib/bpf/libbpf.map             |  2 +
+>  26 files changed, 178 insertions(+), 35 deletions(-)
+> 
+> --
+> 2.17.1
