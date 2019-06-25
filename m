@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1285055A9D
+	by mail.lfdr.de (Postfix) with ESMTP id EECF455A9E
 	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 00:07:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726505AbfFYWHi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726489AbfFYWHi (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 25 Jun 2019 18:07:38 -0400
-Received: from mga12.intel.com ([192.55.52.136]:34253 "EHLO mga12.intel.com"
+Received: from mga12.intel.com ([192.55.52.136]:34262 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725782AbfFYWHc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726445AbfFYWHc (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 25 Jun 2019 18:07:32 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 25 Jun 2019 15:07:31 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 25 Jun 2019 15:07:32 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.63,417,1557212400"; 
-   d="scan'208";a="172511977"
+   d="scan'208";a="172511983"
 Received: from vpatel-desk.jf.intel.com (HELO localhost.localdomain) ([10.7.159.52])
-  by orsmga002.jf.intel.com with ESMTP; 25 Jun 2019 15:07:31 -0700
+  by orsmga002.jf.intel.com with ESMTP; 25 Jun 2019 15:07:32 -0700
 From:   Vedang Patel <vedang.patel@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     jeffrey.t.kirsher@intel.com, davem@davemloft.net, jhs@mojatatu.com,
@@ -28,9 +28,9 @@ Cc:     jeffrey.t.kirsher@intel.com, davem@davemloft.net, jhs@mojatatu.com,
         l@dorileo.org, jakub.kicinski@netronome.com, m-karicheri2@ti.com,
         sergei.shtylyov@cogentembedded.com, eric.dumazet@gmail.com,
         aaron.f.brown@intel.com, Vedang Patel <vedang.patel@intel.com>
-Subject: [PATCH net-next v6 7/8] taprio: make clock reference conversions easier
-Date:   Tue, 25 Jun 2019 15:07:18 -0700
-Message-Id: <1561500439-30276-8-git-send-email-vedang.patel@intel.com>
+Subject: [PATCH net-next v6 8/8] taprio: Adjust timestamps for TCP packets
+Date:   Tue, 25 Jun 2019 15:07:19 -0700
+Message-Id: <1561500439-30276-9-git-send-email-vedang.patel@intel.com>
 X-Mailer: git-send-email 2.7.3
 In-Reply-To: <1561500439-30276-1-git-send-email-vedang.patel@intel.com>
 References: <1561500439-30276-1-git-send-email-vedang.patel@intel.com>
@@ -39,104 +39,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Later in this series we will need to transform from
-CLOCK_MONOTONIC (used in TCP) to the clock reference used in TAPRIO.
+When the taprio qdisc is running in "txtime offload" mode, it will
+set the launchtime value (in skb->tstamp) for all the packets which do
+not have the SO_TXTIME socket option. But, the TCP packets already have
+this value set and it indicates the earliest departure time represented
+in CLOCK_MONOTONIC clock.
 
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+We need to respect the timestamp set by the TCP subsystem. So, convert
+this time to the clock which taprio is using and ensure that the packet
+is not transmitted before the deadline set by TCP.
+
 Signed-off-by: Vedang Patel <vedang.patel@intel.com>
 ---
- net/sched/sch_taprio.c | 30 ++++++++++++++++++++++--------
- 1 file changed, 22 insertions(+), 8 deletions(-)
+ net/sched/sch_taprio.c | 41 ++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 40 insertions(+), 1 deletion(-)
 
 diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 078230e44471..5c5e7db520dc 100644
+index 5c5e7db520dc..388750ddc57a 100644
 --- a/net/sched/sch_taprio.c
 +++ b/net/sched/sch_taprio.c
-@@ -61,6 +61,7 @@ struct taprio_sched {
- 	struct Qdisc **qdiscs;
- 	struct Qdisc *root;
- 	u32 flags;
-+	enum tk_offsets tk_offset;
- 	int clockid;
- 	atomic64_t picos_per_byte; /* Using picoseconds because for 10Gbps+
- 				    * speeds it's sub-nanoseconds per byte
-@@ -71,7 +72,6 @@ struct taprio_sched {
- 	struct sched_entry __rcu *current_entry;
- 	struct sched_gate_list __rcu *oper_sched;
- 	struct sched_gate_list __rcu *admin_sched;
--	ktime_t (*get_time)(void);
- 	struct hrtimer advance_timer;
- 	struct list_head taprio_list;
- 	int txtime_delay;
-@@ -85,6 +85,20 @@ static ktime_t sched_base_time(const struct sched_gate_list *sched)
- 	return ns_to_ktime(sched->base_time);
+@@ -22,6 +22,7 @@
+ #include <net/pkt_cls.h>
+ #include <net/sch_generic.h>
+ #include <net/sock.h>
++#include <net/tcp.h>
+ 
+ static LIST_HEAD(taprio_list);
+ static DEFINE_SPINLOCK(taprio_list_lock);
+@@ -267,6 +268,41 @@ static bool is_valid_interval(struct sk_buff *skb, struct Qdisc *sch)
+ 	return entry;
  }
  
-+static ktime_t taprio_get_time(struct taprio_sched *q)
++/* This returns the tstamp value set by TCP in terms of the set clock. */
++static ktime_t get_tcp_tstamp(struct taprio_sched *q, struct sk_buff *skb)
 +{
-+	ktime_t mono = ktime_get();
++	unsigned int offset = skb_network_offset(skb);
++	const struct ipv6hdr *ipv6h;
++	const struct iphdr *iph;
++	struct ipv6hdr _ipv6h;
 +
-+	switch (q->tk_offset) {
-+	case TK_OFFS_MAX:
-+		return mono;
-+	default:
-+		return ktime_mono_to_any(mono, q->tk_offset);
++	ipv6h = skb_header_pointer(skb, offset, sizeof(_ipv6h), &_ipv6h);
++	if (!ipv6h)
++		return 0;
++
++	if (ipv6h->version == 4) {
++		iph = (struct iphdr *)ipv6h;
++		offset += iph->ihl * 4;
++
++		/* special-case 6in4 tunnelling, as that is a common way to get
++		 * v6 connectivity in the home
++		 */
++		if (iph->protocol == IPPROTO_IPV6) {
++			ipv6h = skb_header_pointer(skb, offset,
++						   sizeof(_ipv6h), &_ipv6h);
++
++			if (!ipv6h || ipv6h->nexthdr != IPPROTO_TCP)
++				return 0;
++		} else if (iph->protocol != IPPROTO_TCP) {
++			return 0;
++		}
++	} else if (ipv6h->version == 6 && ipv6h->nexthdr != IPPROTO_TCP) {
++		return 0;
 +	}
 +
-+	return KTIME_MAX;
++	return ktime_mono_to_any(skb->skb_mstamp_ns, q->tk_offset);
 +}
 +
- static void taprio_free_sched_cb(struct rcu_head *head)
+ /* There are a few scenarios where we will have to modify the txtime from
+  * what is read from next_txtime in sched_entry. They are:
+  * 1. If txtime is in the past,
+@@ -284,7 +320,7 @@ static bool is_valid_interval(struct sk_buff *skb, struct Qdisc *sch)
+  */
+ static long get_packet_txtime(struct sk_buff *skb, struct Qdisc *sch)
  {
- 	struct sched_gate_list *sched = container_of(head, struct sched_gate_list, rcu);
-@@ -278,7 +292,7 @@ static long get_packet_txtime(struct sk_buff *skb, struct Qdisc *sch)
- 	struct sched_entry *entry;
- 	bool sched_changed;
- 
--	now = q->get_time();
-+	now = taprio_get_time(q);
+-	ktime_t transmit_end_time, interval_end, interval_start;
++	ktime_t transmit_end_time, interval_end, interval_start, tcp_tstamp;
+ 	struct taprio_sched *q = qdisc_priv(sch);
+ 	struct sched_gate_list *sched, *admin;
+ 	ktime_t minimum_time, now, txtime;
+@@ -295,6 +331,9 @@ static long get_packet_txtime(struct sk_buff *skb, struct Qdisc *sch)
+ 	now = taprio_get_time(q);
  	minimum_time = ktime_add_ns(now, q->txtime_delay);
  
++	tcp_tstamp = get_tcp_tstamp(q, skb);
++	minimum_time = max_t(ktime_t, minimum_time, tcp_tstamp);
++
  	rcu_read_lock();
-@@ -469,7 +483,7 @@ static struct sk_buff *taprio_dequeue(struct Qdisc *sch)
- 			continue;
- 
- 		len = qdisc_pkt_len(skb);
--		guard = ktime_add_ns(q->get_time(),
-+		guard = ktime_add_ns(taprio_get_time(q),
- 				     length_to_duration(q, len));
- 
- 		/* In the case that there's no gate entry, there's no
-@@ -838,7 +852,7 @@ static int taprio_get_start_time(struct Qdisc *sch,
- 	s64 n;
- 
- 	base = sched_base_time(sched);
--	now = q->get_time();
-+	now = taprio_get_time(q);
- 
- 	if (ktime_after(base, now)) {
- 		*start = base;
-@@ -1084,16 +1098,16 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
- 
- 	switch (q->clockid) {
- 	case CLOCK_REALTIME:
--		q->get_time = ktime_get_real;
-+		q->tk_offset = TK_OFFS_REAL;
- 		break;
- 	case CLOCK_MONOTONIC:
--		q->get_time = ktime_get;
-+		q->tk_offset = TK_OFFS_MAX;
- 		break;
- 	case CLOCK_BOOTTIME:
--		q->get_time = ktime_get_boottime;
-+		q->tk_offset = TK_OFFS_BOOT;
- 		break;
- 	case CLOCK_TAI:
--		q->get_time = ktime_get_clocktai;
-+		q->tk_offset = TK_OFFS_TAI;
- 		break;
- 	default:
- 		NL_SET_ERR_MSG(extack, "Invalid 'clockid'");
+ 	admin = rcu_dereference(q->admin_sched);
+ 	sched = rcu_dereference(q->oper_sched);
 -- 
 2.7.3
 
