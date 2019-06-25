@@ -2,105 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F294A54D3C
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 13:07:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3368154D4A
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 13:10:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730333AbfFYLHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 07:07:09 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:44774 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730028AbfFYLHI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 07:07:08 -0400
-Received: by mail-io1-f69.google.com with SMTP id i133so25840817ioa.11
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 04:07:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=qzgsIU1dRxRmXgOlEkre4AMGP4RvzeRe5DGSMkE/ppw=;
-        b=IaW3PjCbv07LVZrqE6J9DIvllwmKDRR2Z/xdrRgi4K1oYOe7lBQInTk+7Cn2LSKuNn
-         NPFKOmxQCpsRoZLBFciLidTk+NPh+qEKucNohSOLXqTZmjoqkCP7/2IfrdNhwiPj8gRB
-         WvZa5JCGNYvj8KNH5KF0jVtcgw+a2qGCSXBcgU3GCdXehIsLorKozIhIQismliYmp450
-         wEFjKlnfq4fm+5k3RHsB5vW417vgBqTpS4bywS8S2wYIEBNa0rzrG3Vzu5yORVvQUODg
-         oOwPxLqaTncpXNhrfHfNyvvtGNUCUahqDZucWPyL9V51nRZLUgFrzIxDEhd8R4JhygTu
-         8wGQ==
-X-Gm-Message-State: APjAAAWw+/HpGlMcojdxR2k9C9aez9l4fpmb+pT39+/erjc4Au6lEUni
-        XvPHJT8X0LkdgZU1SCsG9jCpvaiVP4cdzxGJznYY5d6t4+LB
-X-Google-Smtp-Source: APXvYqx5xkRPTcPbrwX3dp6qoJ7Ik+fjSNqoEAi4q4LrTMrWd+mlMliOkXtkb0uRGSylTGfbpKB0hStImkiG+yiGncsw+j8B/92+
+        id S1730374AbfFYLKV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 07:10:21 -0400
+Received: from hqemgate15.nvidia.com ([216.228.121.64]:19234 "EHLO
+        hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727746AbfFYLKV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 07:10:21 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate15.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5d12011d0001>; Tue, 25 Jun 2019 04:10:21 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Tue, 25 Jun 2019 04:10:19 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Tue, 25 Jun 2019 04:10:19 -0700
+Received: from [10.21.132.148] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 25 Jun
+ 2019 11:10:17 +0000
+Subject: Re: [PATCH net-next 3/3] net: stmmac: Convert to phylink and remove
+ phylib logic
+To:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Joao Pinto <Joao.Pinto@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        linux-tegra <linux-tegra@vger.kernel.org>
+References: <cover.1560266175.git.joabreu@synopsys.com>
+ <6226d6a0de5929ed07d64b20472c52a86e71383d.1560266175.git.joabreu@synopsys.com>
+ <d9ffce3d-4827-fa4a-89e8-0492c4bc1848@nvidia.com>
+ <78EB27739596EE489E55E81C33FEC33A0B9C8D6E@DE02WEMBXB.internal.synopsys.com>
+ <26cfaeff-a310-3b79-5b57-fd9c93bd8929@nvidia.com>
+ <78EB27739596EE489E55E81C33FEC33A0B9C8DD9@DE02WEMBXB.internal.synopsys.com>
+ <b66c7578-172f-4443-f4c3-411525e28738@nvidia.com>
+ <d96f8bea-f7ef-82ae-01ba-9c97aec0ee38@nvidia.com>
+ <6f36b6b6-8209-ed98-e7e1-3dac0a92f6cd@nvidia.com>
+ <7f0f2ed0-f47c-4670-d169-25f0413c1fd3@nvidia.com>
+ <78EB27739596EE489E55E81C33FEC33A0B9D7024@DE02WEMBXB.internal.synopsys.com>
+From:   Jon Hunter <jonathanh@nvidia.com>
+Message-ID: <113f37a2-c37f-cdb5-5194-4361d949258a@nvidia.com>
+Date:   Tue, 25 Jun 2019 12:10:15 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.1
 MIME-Version: 1.0
-X-Received: by 2002:a5e:d615:: with SMTP id w21mr6768839iom.0.1561460827606;
- Tue, 25 Jun 2019 04:07:07 -0700 (PDT)
-Date:   Tue, 25 Jun 2019 04:07:07 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f5d536058c23ed60@google.com>
-Subject: memory leak in genl_register_family
-From:   syzbot <syzbot+fc577f12f25f2ac3b211@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, dsahern@gmail.com, johannes.berg@intel.com,
-        linux-kernel@vger.kernel.org, marcel@holtmann.org,
-        mkubecek@suse.cz, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, yuehaibing@huawei.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+In-Reply-To: <78EB27739596EE489E55E81C33FEC33A0B9D7024@DE02WEMBXB.internal.synopsys.com>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1561461021; bh=ywXSgknL1Gy2ftDz0c9HRG7PbJQeUv91vnO+i6OhLZ4=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
+         User-Agent:MIME-Version:In-Reply-To:X-Originating-IP:
+         X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=J9xgagejO3vqCTRQb9mVBdvVaM+6AcQW66kLwwnvuI2Q2QFjL5mB27Vl6Cz/BnpGA
+         8q1wiF5aqsIAzrthX2fNUiwCuBAJ/8+UhijqgZTWdXuM5pBF1SBa2ZLuMB6kVmKArz
+         HKJyyAYvRK/4ZUajLTTLuRy5/mnhvxA2520aSqW4NAcx60w0gmLKL7ymNIYmjgyac3
+         YmK+jNHAADo2ONnQiaH9YKKlMoxqcUfxknGI4sX1N7mhctJx3X6DK2ws3zWwEfExd3
+         54fxDhZUGekKioLX2NBMATjSTb+SyVJSYOjE1Po1om4APyvq6p5eXt8To1IXtAad4T
+         HLVyGrWnpl/Hg==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-syzbot found the following crash on:
+On 25/06/2019 08:37, Jose Abreu wrote:
+> From: Jon Hunter <jonathanh@nvidia.com>
+> 
+>> Any further feedback? I am still seeing this issue on today's -next.
+> 
+> Apologies but I was in FTO.
+> 
+> Is there any possibility you can just disable the ethX configuration in 
+> the rootfs mount and manually configure it after rootfs is done ?
+> 
+> I just want to make sure in which conditions this is happening (if in 
+> ifdown or ifup).
 
-HEAD commit:    4b972a01 Linux 5.2-rc6
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1305b385a00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=1db8bd6825f9661c
-dashboard link: https://syzkaller.appspot.com/bug?extid=fc577f12f25f2ac3b211
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15bd1385a00000
+I have been looking at this a bit closer and I can see the problem. What
+happens is that ...
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+fc577f12f25f2ac3b211@syzkaller.appspotmail.com
+1. stmmac_mac_link_up() is called and priv->eee_active is set to false
+2. stmmac_eee_init() is called but because priv->eee_active is false,
+   timer_setup() for eee_ctrl_timer is never called.
+3. stmmac_eee_init() returns true and so then priv->eee_enabled is set 
+   to true.
+4. When stmmac_tx_clean() is called because priv->eee_enabled is set to    
+   true, mod_timer() is called for the eee_ctrl_timer, but because 
+   timer_setup() was never called, we hit the BUG defined at
+   kernel/time/timer.c:952, because no function is defined for the 
+   timer.
 
-BUG: memory leak
-unreferenced object 0xffff88812a7f0c80 (size 64):
-   comm "swapper/0", pid 1, jiffies 4294937561 (age 881.930s)
-   hex dump (first 32 bytes):
-     2f 64 65 76 69 63 65 73 2f 76 69 72 74 75 61 6c  /devices/virtual
-     2f 6e 65 74 2f 6c 6f 2f 71 75 65 75 65 73 2f 74  /net/lo/queues/t
-   backtrace:
-     [<00000000d629f5fa>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<00000000d629f5fa>] slab_post_alloc_hook mm/slab.h:439 [inline]
-     [<00000000d629f5fa>] slab_alloc mm/slab.c:3326 [inline]
-     [<00000000d629f5fa>] __do_kmalloc mm/slab.c:3658 [inline]
-     [<00000000d629f5fa>] __kmalloc+0x161/0x2c0 mm/slab.c:3669
-     [<000000003291d450>] kmalloc_array include/linux/slab.h:670 [inline]
-     [<000000003291d450>] genl_register_family net/netlink/genetlink.c:355  
-[inline]
-     [<000000003291d450>] genl_register_family+0x5e1/0x7e0  
-net/netlink/genetlink.c:322
-     [<00000000f8e2dd0d>] netlbl_unlabel_genl_init+0x15/0x17  
-net/netlabel/netlabel_unlabeled.c:1387
-     [<00000000189b4a0c>] netlbl_netlink_init+0x39/0x46  
-net/netlabel/netlabel_user.c:65
-     [<0000000083adc8f0>] netlbl_init+0x65/0xa8  
-net/netlabel/netlabel_kapi.c:1502
-     [<000000003a053024>] do_one_initcall+0x5c/0x2ca init/main.c:915
-     [<00000000d70991fc>] do_initcall_level init/main.c:983 [inline]
-     [<00000000d70991fc>] do_initcalls init/main.c:991 [inline]
-     [<00000000d70991fc>] do_basic_setup init/main.c:1009 [inline]
-     [<00000000d70991fc>] kernel_init_freeable+0x1af/0x26c init/main.c:1169
-     [<00000000232b80c4>] kernel_init+0x10/0x155 init/main.c:1087
-     [<000000006b3bb174>] ret_from_fork+0x1f/0x30  
-arch/x86/entry/entry_64.S:352
+The following fixes it for me ...
 
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -399,10 +399,13 @@ bool stmmac_eee_init(struct stmmac_priv *priv)
+        mutex_lock(&priv->lock);
+ 
+        /* Check if it needs to be deactivated */
+-       if (!priv->eee_active && priv->eee_enabled) {
+-               netdev_dbg(priv->dev, "disable EEE\n");
+-               del_timer_sync(&priv->eee_ctrl_timer);
+-               stmmac_set_eee_timer(priv, priv->hw, 0, tx_lpi_timer);
++       if (!priv->eee_active) {
++               if (priv->eee_enabled) {
++                       netdev_dbg(priv->dev, "disable EEE\n");
++                       del_timer_sync(&priv->eee_ctrl_timer);
++                       stmmac_set_eee_timer(priv, priv->hw, 0, tx_lpi_timer);
++               }
++               mutex_unlock(&priv->lock);
+                return false;
+        }
 
+It also looks like you have a potention deadlock in the current code
+because in the case of if (!priv->eee_active && priv->eee_enabled)
+you don't unlock the mutex. The above fixes this as well. I can send a
+formal patch if this looks correct. 
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Cheers
+Jon
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+-- 
+nvpublic
