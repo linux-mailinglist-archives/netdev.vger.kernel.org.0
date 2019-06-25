@@ -2,133 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67FE555BE7
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 01:03:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9485F55C08
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 01:07:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726511AbfFYXDL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 19:03:11 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:35283 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725782AbfFYXDL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 19:03:11 -0400
-Received: by mail-lf1-f66.google.com with SMTP id a25so195830lfg.2;
-        Tue, 25 Jun 2019 16:03:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=vCqj6Gl5Q+n6lzWdb5L2oHqmQfEmkpa5M5PzJg/vAX0=;
-        b=Xb+hHpzdadY3+SZLz7lziYzk74KcI7TJz4DoosGtrKHDRZWbmvbRnU0CnFGMpbcfuF
-         Pk8kgfMcbnxZL00uBqYQOwGOH9t5TcnZt6TJlMwfK2h4iErKeRRXNLG8Z4F7C8ydio1j
-         1HlMw7Gv2XjLypWKJS+g0r87+zG+TkbGD5M+MCKwEw9yRo0GLdGXm6Lfzpcu+k9UE9d0
-         F/M1TF1+T/R8J7RiHvYkadgyTfoCuki9o2u4q3pGOwFIW5+XofAOHXF5gW7KhBQtx+kT
-         A/0C/2uSQzf7ymawbvg8ME7Vop7uFjg1N3hzdSaT8Xbqmd1KmjrxGBiqWXqzyhqm7B5L
-         Mkkg==
+        id S1726331AbfFYXHB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 19:07:01 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:54302 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726037AbfFYXHB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 19:07:01 -0400
+Received: by mail-io1-f70.google.com with SMTP id n8so214215ioo.21
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 16:07:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=vCqj6Gl5Q+n6lzWdb5L2oHqmQfEmkpa5M5PzJg/vAX0=;
-        b=oixzy6Ral1Z03dPceB/nY3lc1BvoSFuRtvjGR3+ygYxUff+vL4ahPdcp7R8KnPN2Kf
-         1a/T2v6rdICze3xr4sAEoJFjcpPE77hmjNRDt9AAFpGWGYtWmAQxHYIZWdPWoQ5Nbex9
-         8PUWOExp3W8Hm9vlhZFtGLXJzqmyn0mxmSWIEdDTRXOU/0yi5UH6NMurViH7vg8qAzZd
-         +klxUh306G/KWp4BcMhWABBVudCa94Ec5dBGxFYAgyPO0h47YmRxmvsz9ozRQl6aZh8D
-         C9LsDJT/wpkOQEPyLgukY/FBP/8xoMLFjv6MIxjymwzepQ6XfeccGWgh1qD4JIAe+hoS
-         fXYA==
-X-Gm-Message-State: APjAAAVaOR+xyEVQcRzFLolSJUtI7VJUk9Rp8VhSal4roQaumPDeDxEE
-        qnO1Oac2UomjtymjRhMMhiyJRU5WMl/wMu3pctiSvVpx
-X-Google-Smtp-Source: APXvYqwMki2vRi0D6xb9XX2ObQWdMs2vNpF7/ZvfvRpFFo74l4CVr0RYcBMIdgXXJPnYTSSDRLHNjCE2a1Zni1qeP0M=
-X-Received: by 2002:a19:6e4d:: with SMTP id q13mr691917lfk.6.1561503788417;
- Tue, 25 Jun 2019 16:03:08 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=5XO6NDSi7o9UCx31IdKa++vNGr4w4sFZNOdIzxhXeB0=;
+        b=I8aiGUmKsEDJTO46gMEnlja+c49C7+Q2TLcCoXfE4SAUANXviIILFkIM3t140tmfnj
+         cjnk5M9ZwAf+0WLFMsg0/IEEH/noQ4qoEOIeitK0NgQLmlf+rAL+v31a1tZqoX/36Ign
+         o+BDE/77/S2/KTCE/yDsC7VL66mZzD/7suM0S4l30NYA9M/Lk9fx2eLY9cpAF1pM188O
+         kunPVxaoEQmoa7YFJAt+rScPGrXhUG0CuGR6hGfKfJLS9stW9jeQuvF4PNPavd4Twu5L
+         yPzoDaox/BdFgq89Gn0Ggob9h3XxDTyliXbTa4S4AD2Ylo1HcRaEUK6VxUYColqacMiN
+         qHVw==
+X-Gm-Message-State: APjAAAUWHTTbFOf4yITXwo4e8c05pCDMVRodul0E5KhLRWmlKbnoYW/I
+        yQogCvQ5YyDBYibvKA+sbppVxLAKYCc63qJUp7H2KlUv4/GK
+X-Google-Smtp-Source: APXvYqxg7Q43zU7eDdjWCJJjMc20VKLoF6D1yLiqI3SKjTQAMQ214QUyVPvfOOK+luu/cmFimcz2QkEtvpAEzFW2H5AaIqwEW1Z8
 MIME-Version: 1.0
-References: <20190625215239.11136-1-mic@digikod.net> <20190625215239.11136-3-mic@digikod.net>
-In-Reply-To: <20190625215239.11136-3-mic@digikod.net>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 25 Jun 2019 16:02:57 -0700
-Message-ID: <CAADnVQ+Twio22VSi21RR5TY1Zm-1xRTGmREcXLSs5Jv-KWGTiw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v9 02/10] bpf: Add eBPF program subtype and
- is_valid_subtype() verifier
-To:     =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mic@digikod.net>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Aleksa Sarai <cyphar@cyphar.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Casey Schaufler <casey@schaufler-ca.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Drysdale <drysdale@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        James Morris <jmorris@namei.org>, Jann Horn <jann@thejh.net>,
-        John Johansen <john.johansen@canonical.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Kees Cook <keescook@chromium.org>,
-        Michael Kerrisk <mtk.manpages@gmail.com>,
-        =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mickael.salaun@ssi.gouv.fr>,
-        Paul Moore <paul@paul-moore.com>,
-        Sargun Dhillon <sargun@sargun.me>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Stephen Smalley <sds@tycho.nsa.gov>, Tejun Heo <tj@kernel.org>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Thomas Graf <tgraf@suug.ch>, Tycho Andersen <tycho@tycho.ws>,
-        Will Drewry <wad@chromium.org>,
-        Kernel Hardening <kernel-hardening@lists.openwall.com>,
-        Linux API <linux-api@vger.kernel.org>,
-        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-Received: by 2002:a5e:c00a:: with SMTP id u10mr1423993iol.24.1561504020634;
+ Tue, 25 Jun 2019 16:07:00 -0700 (PDT)
+Date:   Tue, 25 Jun 2019 16:07:00 -0700
+In-Reply-To: <000000000000e672c6058bd7ee45@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000007724d6058c2dfc24@google.com>
+Subject: Re: KASAN: slab-out-of-bounds Write in validate_chain
+From:   syzbot <syzbot+8893700724999566d6a9@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, ast@kernel.org, cai@lca.pw,
+        crecklin@redhat.com, daniel@iogearbox.net,
+        john.fastabend@gmail.com, keescook@chromium.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 25, 2019 at 3:04 PM Micka=C3=ABl Sala=C3=BCn <mic@digikod.net> =
-wrote:
->
-> The goal of the program subtype is to be able to have different static
-> fine-grained verifications for a unique program type.
->
-> The struct bpf_verifier_ops gets a new optional function:
-> is_valid_subtype(). This new verifier is called at the beginning of the
-> eBPF program verification to check if the (optional) program subtype is
-> valid.
->
-> The new helper bpf_load_program_xattr() enables to verify a program with
-> subtypes.
->
-> For now, only Landlock eBPF programs are using a program subtype (see
-> next commits) but this could be used by other program types in the
-> future.
->
-> Signed-off-by: Micka=C3=ABl Sala=C3=BCn <mic@digikod.net>
-> Cc: Alexei Starovoitov <ast@kernel.org>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: David S. Miller <davem@davemloft.net>
-> Link: https://lkml.kernel.org/r/20160827205559.GA43880@ast-mbp.thefaceboo=
-k.com
-> ---
->
-> Changes since v8:
-> * use bpf_load_program_xattr() instead of bpf_load_program() and add
->   bpf_verify_program_xattr() to deal with subtypes
-> * remove put_extra() since there is no more "previous" field (for now)
->
-> Changes since v7:
-> * rename LANDLOCK_SUBTYPE_* to LANDLOCK_*
-> * move subtype in bpf_prog_aux and use only one bit for has_subtype
->   (suggested by Alexei Starovoitov)
+syzbot has bisected this bug to:
 
-sorry to say, but I don't think the landlock will ever land,
-since posting huge patches once a year is missing a lot of development
-that is happening during that time.
-This 2/10 patch is an example.
-subtype concept was useful 2 years ago when v6 was posted.
-Since then bpf developers faced very similar problem in other parts
-and it was solved with 'expected_attach_type' field.
-See commit 5e43f899b03a ("bpf: Check attach type at prog load time")
-dated March 2018.
+commit e9db4ef6bf4ca9894bb324c76e01b8f1a16b2650
+Author: John Fastabend <john.fastabend@gmail.com>
+Date:   Sat Jun 30 13:17:47 2018 +0000
+
+     bpf: sockhash fix omitted bucket lock in sock_close
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14a4e9b5a00000
+start commit:   abf02e29 Merge tag 'pm-5.2-rc6' of git://git.kernel.org/pu..
+git tree:       upstream
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=16a4e9b5a00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=12a4e9b5a00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=28ec3437a5394ee0
+dashboard link: https://syzkaller.appspot.com/bug?extid=8893700724999566d6a9
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=167098b2a00000
+
+Reported-by: syzbot+8893700724999566d6a9@syzkaller.appspotmail.com
+Fixes: e9db4ef6bf4c ("bpf: sockhash fix omitted bucket lock in sock_close")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
