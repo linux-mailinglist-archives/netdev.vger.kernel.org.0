@@ -2,90 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6541A5565C
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 19:54:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DE3C55693
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 20:00:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729945AbfFYRyU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 13:54:20 -0400
-Received: from mail-eopbgr30057.outbound.protection.outlook.com ([40.107.3.57]:34784
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726562AbfFYRyU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Jun 2019 13:54:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fhiohodLnhn4I72LpLaF+m7yl9oxKCAhTj1yE8L27Z8=;
- b=i/wBX+jrMAOZRvdXrPz1WaENkZQ5ciYnVTKxcBy5q4o+RAn9cwxkXhWUfdxwUs+PxauMcdWwo82NdxD6ucwUpxGCucg5MNu0X9RFhsuQ7wCfo5zI3V6o/9d3T2R6itq3RnZXhxi8rybaPVrKob8u4vu3k+vude8jTRi4XqIk4mk=
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
- DB6PR0501MB2680.eurprd05.prod.outlook.com (10.172.226.21) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2008.16; Tue, 25 Jun 2019 17:54:16 +0000
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::a901:6951:59de:3278]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::a901:6951:59de:3278%2]) with mapi id 15.20.2008.014; Tue, 25 Jun 2019
- 17:54:16 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "jes.sorensen@gmail.com" <jes.sorensen@gmail.com>
-CC:     "kernel-team@fb.com" <kernel-team@fb.com>,
-        "jsorensen@fb.com" <jsorensen@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH 0/1] Fix broken build of mlx5
-Thread-Topic: [PATCH 0/1] Fix broken build of mlx5
-Thread-Index: AQHVK2p5cHu0NxJ3VEyhqsMR/NsxyqaspysA
-Date:   Tue, 25 Jun 2019 17:54:16 +0000
-Message-ID: <134e3a684c27fddeeeac111e5b4fac4093473731.camel@mellanox.com>
-References: <20190625152708.23729-1-Jes.Sorensen@gmail.com>
-In-Reply-To: <20190625152708.23729-1-Jes.Sorensen@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.3 (3.32.3-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f71b392c-fe99-4460-5f32-08d6f9962434
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2680;
-x-ms-traffictypediagnostic: DB6PR0501MB2680:
-x-microsoft-antispam-prvs: <DB6PR0501MB26801E3AE6D924AE8673B0E0BEE30@DB6PR0501MB2680.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 0079056367
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(376002)(366004)(346002)(39860400002)(136003)(199004)(189003)(6116002)(5640700003)(4744005)(14444005)(6512007)(58126008)(2501003)(5660300002)(8936002)(3846002)(54906003)(316002)(25786009)(66446008)(64756008)(446003)(36756003)(4326008)(66946007)(2906002)(256004)(2616005)(66476007)(118296001)(486006)(73956011)(76116006)(66556008)(91956017)(478600001)(11346002)(1361003)(476003)(8676002)(99286004)(26005)(6436002)(2351001)(66066001)(81156014)(6486002)(229853002)(81166006)(6246003)(14454004)(71200400001)(71190400001)(186003)(102836004)(6916009)(305945005)(7736002)(76176011)(68736007)(6506007)(53936002)(86362001);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2680;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: sMiAXLajAl09gtH6EyX/N/e5cC+X76PBJz9cGz0cgV8A/7pTQuAfSNV5+04wzHojfvg+WOixLVfOADsdO238Fy0W5zERW4yfbMSud1c81l5a+q/K/RT6S/3POQfgVfBjHIloTIsTElh0cfO5DWlE7wy8DhnaDkq7moaW5DdIOnTaUQvCSZXxcUi65FlFGdx6mk1CrKeVbsgb7XIMrBZmXC5lr6+KKeMnt+ZXPKSUkXm5FDhg0kMkI6gwTk+LFFB3KhBN4fW+iFfHIPwm4qgChJPaCGuM1WMESP/2uUGls3etYyCsC54EZDXHpSyygwTchdG0r4JApRVA0PAPMDRtPus7keBDr8epLbvOC/hWE+LX7IXS6VZhcDXmerSU5/YLOsMfzy39ClV9TsYfyK7igp71kKpVDATSfbpWYleqMdA=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <04D60889E10A1545A2FE09FF0409E90C@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f71b392c-fe99-4460-5f32-08d6f9962434
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jun 2019 17:54:16.6045
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2680
+        id S1732125AbfFYR7y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 13:59:54 -0400
+Received: from mail-lj1-f177.google.com ([209.85.208.177]:44823 "EHLO
+        mail-lj1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730748AbfFYR7y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 13:59:54 -0400
+Received: by mail-lj1-f177.google.com with SMTP id k18so17159544ljc.11
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 10:59:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=I7X4utygXdOG9w4oLjZZ8/mhD8999uyd81mBBAgzC04=;
+        b=yd0uX1TQsAWm4JKPpCXjtciIuy/iaEG2YZ4ZPYUvtv4LQddYOWX7paK5dAhexUplkr
+         cs4pm7l0GxvE7eIDFX2BoITaWLvV7rjLmVgEIEYOpDiW82TJMiRoBMO6FfJ/JgF4gAeI
+         BCBw/k6ZK50foR2nKfWsyeZfIJYOeAMpIYIl7K7qpCawuhYc0yrSM9aIdZSYhivz9hrk
+         j2C5q383rKCw64XlP1/E6MQ7Kk78OP2VVJJfFim1/1RNq+LjjktQXney5kdreY7+gSos
+         KRFZqa/O9BvBoRk8iXrB64nzQ2yIMY3jw+shgG3Oibs8BNFEU1nne6e7OfA6x86kYm2g
+         IvoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=I7X4utygXdOG9w4oLjZZ8/mhD8999uyd81mBBAgzC04=;
+        b=Gq7tJDhf8n2fWWdmCjl0ii3l46Be8r4dUCziIh2eABdC0qDJpjAlN8auw6krkxC0LB
+         Lt/f1Qcg1NAIpu/R3Qt4jS2tt1v6yWRCvK4ZXT70TetaMS2apLkgZUpCXCJs+MJSY73/
+         FgUoYZuA8g36pmbSatNV964tOTaior8iRVaY1VScEQ0cOSrIZ65hHIZnK7P4rkMCvOxt
+         iFiDocmG4E1rKx/E81Lc5+huJY7GZcG9+6/lqKgrdnsstllUdrDs/YfRUMv33NK9+EoQ
+         uVEud9AGBzEGkd7Pab3SzNRBDLCVvQIaZHoBISw1no2qD+sKdFeqaWj4aMPsBUURUDXr
+         X0LA==
+X-Gm-Message-State: APjAAAXeDkwnj2n6Sm7RmsU1dFzVc6KqCZdz56nwTa0Li3TnCC5POtwX
+        fgwhVxLqJD9EiTMdtHw8qnMAvA==
+X-Google-Smtp-Source: APXvYqyfCIyQyeeBYb250pntUMLm6VEcI/1tMPrFswVnazXzb3yJ6Pq6tHJ0NZPPiLAPLBENWDPLQQ==
+X-Received: by 2002:a2e:9643:: with SMTP id z3mr6291791ljh.43.1561485592212;
+        Tue, 25 Jun 2019 10:59:52 -0700 (PDT)
+Received: from localhost.localdomain (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
+        by smtp.gmail.com with ESMTPSA id g76sm2367597lje.43.2019.06.25.10.59.50
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 25 Jun 2019 10:59:51 -0700 (PDT)
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     davem@davemloft.net, grygorii.strashko@ti.com, hawk@kernel.org,
+        brouer@redhat.com, saeedm@mellanox.com, leon@kernel.org
+Cc:     ast@kernel.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
+        daniel@iogearbox.net, jakub.kicinski@netronome.com,
+        john.fastabend@gmail.com,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Subject: [PATCH v4 net-next 0/4]  net: ethernet: ti: cpsw: Add XDP support
+Date:   Tue, 25 Jun 2019 20:59:44 +0300
+Message-Id: <20190625175948.24771-1-ivan.khoronzhuk@linaro.org>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVHVlLCAyMDE5LTA2LTI1IGF0IDExOjI3IC0wNDAwLCBKZXMgU29yZW5zZW4gd3JvdGU6DQo+
-IEZyb206IEplcyBTb3JlbnNlbiA8anNvcmVuc2VuQGZiLmNvbT4NCj4gDQo+IFRoaXMgZml4ZXMg
-YW4gb2J2aW91cyBidWlsZCBlcnJvciB0aGF0IGNvdWxkIGhhdmUgYmVlbiBjYXVnaHQgYnkNCj4g
-c2ltcGx5IGJ1aWxkaW5nIHRoZSBjb2RlIGJlZm9yZSBwdXNoaW5nIG91dCB0aGUgcGF0Y2guDQo+
-IA0KDQpIaSBKZXMsDQoNCkp1c3QgdGVzdGVkIGFnYWluLCBhcyBJIGhhdmUgdGVzdGVkIGJlZm9y
-ZSBzdWJtaXR0aW5nIHRoZSBibGFtZWQgcGF0Y2gsDQphbmQgYXMgd2UgdGVzdCBvbiBldmVyeSBz
-aW5nbGUgbmV3IHBhdGNoIGluIG91ciBidWlsZCBhdXRvbWF0aW9uLg0KDQpib3RoIGNvbWJpbmF0
-aW9ucyBDT05GSUdfTUxYNV9FTl9SWE5GQz15L24gd29yayBvbiBsYXRlc3QgbmV0LW5leHQsDQp3
-aGF0IGFtIGkgbWlzc2luZyA/DQoNCj4gQ2hlZXJzLA0KPiBKZXMNCj4gDQo+IA0KPiBKZXMgU29y
-ZW5zZW4gKDEpOg0KPiAgIG1seDU6IEZpeCBidWlsZCB3aGVuIENPTkZJR19NTFg1X0VOX1JYTkZD
-IGlzIGRpc2FibGVkDQo+IA0KPiAgZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9j
-b3JlL2VuX2V0aHRvb2wuYyB8IDMgKystDQo+ICAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRpb25z
-KCspLCAxIGRlbGV0aW9uKC0pDQo+IA0K
+This patchset adds XDP support for TI cpsw driver and base it on
+page_pool allocator. It was verified on af_xdp socket drop,
+af_xdp l2f, ebpf XDP_DROP, XDP_REDIRECT, XDP_PASS, XDP_TX.
+
+It was verified with following configs enabled:
+CONFIG_JIT=y
+CONFIG_BPFILTER=y
+CONFIG_BPF_SYSCALL=y
+CONFIG_XDP_SOCKETS=y
+CONFIG_BPF_EVENTS=y
+CONFIG_HAVE_EBPF_JIT=y
+CONFIG_BPF_JIT=y
+CONFIG_CGROUP_BPF=y
+
+Link on previous v3:
+https://lkml.org/lkml/2019/6/5/446
+
+Also regular tests with iperf2 were done in order to verify impact on
+regular netstack performance, compared with base commit:
+https://pastebin.com/JSMT0iZ4
+
+v3..v4:
+- added page pool user counter
+- use same pool for ndevs in dual mac
+- restructured page pool create/destroy according to the last changes in API
+
+v2..v3:
+- each rxq and ndev has its own page pool
+
+v1..v2:
+- combined xdp_xmit functions
+- used page allocation w/o refcnt juggle
+- unmapped page for skb netstack
+- moved rxq/page pool allocation to open/close pair
+- added several preliminary patches:
+  net: page_pool: add helper function to retrieve dma addresses
+  net: page_pool: add helper function to unmap dma addresses
+  net: ethernet: ti: cpsw: use cpsw as drv data
+  net: ethernet: ti: cpsw_ethtool: simplify slave loops
+
+
+Based on net-next/master
+
+Ivan Khoronzhuk (4):
+  net: core: page_pool: add user cnt preventing pool deletion
+  net: ethernet: ti: davinci_cpdma: add dma mapped submit
+  net: ethernet: ti: davinci_cpdma: return handler status
+  net: ethernet: ti: cpsw: add XDP support
+
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |   8 +-
+ drivers/net/ethernet/ti/Kconfig               |   1 +
+ drivers/net/ethernet/ti/cpsw.c                | 536 ++++++++++++++++--
+ drivers/net/ethernet/ti/cpsw_ethtool.c        |  25 +-
+ drivers/net/ethernet/ti/cpsw_priv.h           |   9 +-
+ drivers/net/ethernet/ti/davinci_cpdma.c       | 123 +++-
+ drivers/net/ethernet/ti/davinci_cpdma.h       |   8 +-
+ drivers/net/ethernet/ti/davinci_emac.c        |  18 +-
+ include/net/page_pool.h                       |   7 +
+ net/core/page_pool.c                          |   7 +
+ net/core/xdp.c                                |   3 +
+ 11 files changed, 640 insertions(+), 105 deletions(-)
+
+-- 
+2.17.1
+
