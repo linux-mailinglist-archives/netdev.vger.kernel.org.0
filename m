@@ -2,85 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF314527DD
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 11:21:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3C84527E9
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 11:22:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731422AbfFYJVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 05:21:18 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:44184 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731407AbfFYJVR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Jun 2019 05:21:17 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 898793082E64;
-        Tue, 25 Jun 2019 09:21:17 +0000 (UTC)
-Received: from carbon (ovpn-200-34.brq.redhat.com [10.40.200.34])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3CCDE10021B4;
-        Tue, 25 Jun 2019 09:21:07 +0000 (UTC)
-Date:   Tue, 25 Jun 2019 11:21:04 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     <davem@davemloft.net>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <jakub.kicinski@netronome.com>, <john.fastabend@gmail.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <xdp-newbies@vger.kernel.org>, <bpf@vger.kernel.org>,
-        brouer@redhat.com
-Subject: Re: [PATCH net-next] xdp: Make __mem_id_disconnect static
-Message-ID: <20190625112104.6654a048@carbon>
-In-Reply-To: <20190625023137.29272-1-yuehaibing@huawei.com>
-References: <20190625023137.29272-1-yuehaibing@huawei.com>
+        id S1727635AbfFYJWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 05:22:49 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:55356 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726559AbfFYJWs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 05:22:48 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id x5P9MbUI047070;
+        Tue, 25 Jun 2019 04:22:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1561454557;
+        bh=1/mUZIcmKcMKUlhDZhJFJhADMMx3PuNvQ2/i81d3u4k=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=DUGkfD5pqiH2zkntwcPNqlvxUu56xDGOZHBFszfJIUBs5DHXhzClP8iFotAy5fu5Z
+         KqnMiMacjFCQ+S1mbY6NNzF1t4wzMwJe4/apfj3ZPrkkzHV8faUl5kYipghfjPG/X/
+         ENPNJ5B/oenPrkeLxKV9AkpAVAdUN22Xwm5bk2P4=
+Received: from DLEE110.ent.ti.com (dlee110.ent.ti.com [157.170.170.21])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x5P9MbHZ072424
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 25 Jun 2019 04:22:37 -0500
+Received: from DLEE114.ent.ti.com (157.170.170.25) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Tue, 25
+ Jun 2019 04:22:37 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
+ Frontend Transport; Tue, 25 Jun 2019 04:22:37 -0500
+Received: from [172.24.190.215] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id x5P9MYqE076504;
+        Tue, 25 Jun 2019 04:22:35 -0500
+Subject: Re: [PATCH v12 1/5] can: m_can: Create a m_can platform framework
+To:     Dan Murphy <dmurphy@ti.com>, <wg@grandegger.com>,
+        <mkl@pengutronix.de>, <davem@davemloft.net>
+CC:     <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20190509161109.10499-1-dmurphy@ti.com>
+From:   Faiz Abbas <faiz_abbas@ti.com>
+Message-ID: <e00499ba-3f26-d680-02c1-3ae2f433e2fe@ti.com>
+Date:   Tue, 25 Jun 2019 14:52:55 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20190509161109.10499-1-dmurphy@ti.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Tue, 25 Jun 2019 09:21:17 +0000 (UTC)
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 25 Jun 2019 10:31:37 +0800
-YueHaibing <yuehaibing@huawei.com> wrote:
+Hi,
 
-> Fix sparse warning:
+On 09/05/19 9:41 PM, Dan Murphy wrote:
+> Create a m_can platform framework that peripheral
+> devices can register to and use common code and register sets.
+> The peripheral devices may provide read/write and configuration
+> support of the IP.
 > 
-> net/core/xdp.c:88:6: warning:
->  symbol '__mem_id_disconnect' was not declared. Should it be static?
+> Acked-by: Wolfgang Grandegger <wg@grandegger.com>
+> Signed-off-by: Dan Murphy <dmurphy@ti.com>
 
-I didn't declare it static as I didn't want it to get inlined.  As
-during development I was using kprobes to inspect this function.  In
-the end I added a tracepoint in this function as kprobes was not enough
-to capture the state needed.
+Acked-by: Faiz Abbas <faiz_abbas@ti.com>
 
-So, I guess we can declare it static.
-
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
->  net/core/xdp.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/core/xdp.c b/net/core/xdp.c
-> index b29d7b5..829377c 100644
-> --- a/net/core/xdp.c
-> +++ b/net/core/xdp.c
-> @@ -85,7 +85,7 @@ static void __xdp_mem_allocator_rcu_free(struct rcu_head *rcu)
->  	kfree(xa);
->  }
->  
-> -bool __mem_id_disconnect(int id, bool force)
-> +static bool __mem_id_disconnect(int id, bool force)
->  {
->  	struct xdp_mem_allocator *xa;
->  	bool safe_to_remove = true;
-
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+Thanks,
+Faiz
