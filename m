@@ -2,107 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4862E5504F
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 15:27:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D234155065
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 15:31:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729403AbfFYN1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 09:27:07 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:41316 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726506AbfFYN1H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 09:27:07 -0400
-Received: by mail-io1-f68.google.com with SMTP id w25so2317290ioc.8
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 06:27:06 -0700 (PDT)
+        id S1730497AbfFYNbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 09:31:36 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:43296 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726506AbfFYNbg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 09:31:36 -0400
+Received: by mail-qt1-f194.google.com with SMTP id w17so18326938qto.10;
+        Tue, 25 Jun 2019 06:31:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1Zv7Xrp3RDQyK8vV4GaEsgDM8ZAX0HpEWqpywwsMBro=;
-        b=XDErJH2rO4D6OZe8UgTZIJCLTi/cTyIzhYvzLT8/2FAvZqf1MaKC3tvKOuDnWza49G
-         g6gbFDzyqol/K8M/IJK5emSlGGjMhlVSnHtRRqmiVNQ3m69pcyV/QNs+JQLzJt0lo+Kk
-         Nu7nkYGvJm40IUwB1bwdSLs7mqjZQnS8tVoQeDwXpQjVeb7lGzYxFB4UDHYo77ZWws2k
-         dfWCmIk8Ve5qqO0E36YUlG6th+jy8+SwzxrtqDzhevc3f3msf51G5N8oxWCjuBzeRs3A
-         9Dk/Yrk1ExKZxO3mrfgzmWCtKZ2rHjqiaHt4c7PrZO11dh+onr99KpdvPOPUZnAEbwL5
-         q3eA==
+         :cc:content-transfer-encoding;
+        bh=mTryXtUWZqdyVYM1MueH/eKMt0k4lXrA890nDMjDJvw=;
+        b=gvDSZnncVmD2ytXixlXbMbg5H6QJllwyMAlYP37Q2Rh7uOK9Vik0GdWSC9NYc0glNG
+         ksFkbXFn5y8meUo/3FTCikNiJ2ctFCJ21jS3tddKbf2EbcRdLSjdbvkM7dHOEIszk6GX
+         nXaGWsIisFaSrjBFClP833Abn8KE+ZZi31CdEpju6znv5Wt29o3ZMufQD5lbRsG7jzfv
+         70TJ7MZvQrFYaAdRcyb4TQ3EGGqq/g3MjcSXnw/1aY5hf7wUQpR3wG3mG7lOtNcZAID/
+         z6JGINdlFulUlsRPvdAEPu5+/O9hyGqQi0K8Eo2b/BEsNeUL95uMFkW7FYUFw7QcQWg/
+         8EFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1Zv7Xrp3RDQyK8vV4GaEsgDM8ZAX0HpEWqpywwsMBro=;
-        b=UCYr4xbFWzJNA8ezzoxM7eahisPi16woIXeNSFn8YBGmKW3Ed9Wgg5WjRLoeWUZ8xJ
-         RZW2TMiZ4Wddlvg7JrP9kYtfGi7A15kDS4my2kqr9TkMcNSm7HZaIVbwW2B4ml+R/3qQ
-         KWCtUBerJ8qxlY2jYhOJICFo6WX7Sc66iXZXbH+TJcnXmmkNFQ6nnAhxB2WMhpV3rTK/
-         qa2Ktq7L7jIqkzECNyMEbv+v250LQD0n3ihicDLFKaJ8w9x6V4BePMf0GJqYdsUxQyGn
-         9kkuS6gIfUIkLrTPhkm0zd6Yv4xl9Y3wRHjhMEm5ile78rGbmHZV94Zt+yNoeB6zULjg
-         C8vQ==
-X-Gm-Message-State: APjAAAXQa8Psy6EOwR6iyMU5FdBLJhzLGNBk0qUb534NJtah+8ODqEh0
-        hBNM/ypJqDbxcJSe1ZjwEWJsQsY2E39PNu0Xrx7N9Q==
-X-Google-Smtp-Source: APXvYqy3uDjYmwbQNqTwfjUW0k0ZnzJNoVhVNlmgUNuBLMZM2NEwUmegXIyzuQBxfjuB97Hgw8wrIwM3QlKCJuBJznM=
-X-Received: by 2002:a02:600c:: with SMTP id i12mr18512771jac.108.1561469226441;
- Tue, 25 Jun 2019 06:27:06 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=mTryXtUWZqdyVYM1MueH/eKMt0k4lXrA890nDMjDJvw=;
+        b=C91MB5R9m/dNUYhpZrl1/7OrH7VeJWw9qlGcWVIdJXt4sEmlMZ9CIjk6sItIySLwTb
+         83qoGDVLrEVURgGRhg9+JJhbWw3AZ7WXA0cJHralpC2l3IsayR8sfJ88GsuGrFIQeWzk
+         a0oeAYglEblLcyL4gHYrmXcATrtIPr5C2Z4rad0+HNBFJq1QnwzwP4ERP0pHVEY56nh/
+         54QrZd5PRQ9uHxnLwfCpgLnaeTCdHvBe9iCTtNVF0j2DcOHKy6Iv7opmBwQhwEs0HxMH
+         BUN0lte5mIeuwpTEA1/Qfi/IWXlCzU0QztVMq0jdhMrCtDb9dxfInE8qEy+uHsvSFSWf
+         HHLw==
+X-Gm-Message-State: APjAAAV8/xwlPhHp6B+mE5Oud3cyUIVS2VEtjP6ccfBS+Y7/HvmDfk9U
+        Puil8H+D1LFGct8lY+88qMQ9E6xW224B8THJYCU=
+X-Google-Smtp-Source: APXvYqw93V5DoDhXhejhj7LdjZ9geUpk1V22E1asOy5waiHJJSohXy4kgAUk0THZBvXINDQz5eWHHsdu72HjzoJXjVc=
+X-Received: by 2002:aed:38c2:: with SMTP id k60mr59654852qte.83.1561469495259;
+ Tue, 25 Jun 2019 06:31:35 -0700 (PDT)
 MIME-Version: 1.0
-References: <1561414416-29732-1-git-send-email-john.hurley@netronome.com> <108a6e4b-379c-ba43-5de0-27e31ade3470@mojatatu.com>
-In-Reply-To: <108a6e4b-379c-ba43-5de0-27e31ade3470@mojatatu.com>
-From:   John Hurley <john.hurley@netronome.com>
-Date:   Tue, 25 Jun 2019 14:26:55 +0100
-Message-ID: <CAK+XE=mtkJV2vYT0kH2Rp1x0EObSSbJD2gAppW=dTxi82WLC+Q@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/2] Track recursive calls in TC act_mirred
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-Cc:     Linux Netdev List <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Florian Westphal <fw@strlen.de>,
-        Simon Horman <simon.horman@netronome.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        oss-drivers@netronome.com
+References: <20190625005536.2516-1-danieltimlee@gmail.com> <878stqdoc9.fsf@toke.dk>
+ <20190625120543.12b25184@carbon>
+In-Reply-To: <20190625120543.12b25184@carbon>
+From:   Song Liu <liu.song.a23@gmail.com>
+Date:   Tue, 25 Jun 2019 06:31:24 -0700
+Message-ID: <CAPhsuW4RaLzpfOtw4E3cah2PF5jiAmUnWRq1HQoEiKhVitBs5w@mail.gmail.com>
+Subject: Re: [PATCH v2] samples: bpf: make the use of xdp samples consistent
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        "Daniel T. Lee" <danieltimlee@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 25, 2019 at 12:18 PM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+On Tue, Jun 25, 2019 at 5:09 AM Jesper Dangaard Brouer
+<brouer@redhat.com> wrote:
 >
-> On 2019-06-24 6:13 p.m., John Hurley wrote:
-> > These patches aim to prevent act_mirred causing stack overflow events from
-> > recursively calling packet xmit or receive functions. Such events can
-> > occur with poor TC configuration that causes packets to travel in loops
-> > within the system.
+> On Tue, 25 Jun 2019 11:08:22 +0200
+> Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
+>
+> > "Daniel T. Lee" <danieltimlee@gmail.com> writes:
 > >
-> > Florian Westphal advises that a recursion crash and packets looping are
-> > separate issues and should be treated as such. David Miller futher points
-> > out that pcpu counters cannot track the precise skb context required to
-> > detect loops. Hence these patches are not aimed at detecting packet loops,
-> > rather, preventing stack flows arising from such loops.
->
-> Sigh. So we are still trying to save 2 bits?
-> John, you said ovs has introduced a similar loop handling code;
-> Is their approach similar to this? Bigger question: Is this approach
-> "good enough"?
->
+> > > Currently, each xdp samples are inconsistent in the use.
+> > > Most of the samples fetch the interface with it's name.
+> > > (ex. xdp1, xdp2skb, xdp_redirect_cpu, xdp_sample_pkts, etc.)
+> > >
+> > > But some of the xdp samples are fetching the interface with
+> > > ifindex by command argument.
+> > >
+> > > This commit enables xdp samples to fetch interface with it's name
+> > > without changing the original index interface fetching.
+> > > (<ifname|ifindex> fetching in the same way as xdp_sample_pkts_user.c =
+does.)
+> > >
+> > > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
 
-Hi Jamal.
-Yes, OvS implements a similar approach to prevent recursion:
-https://elixir.bootlin.com/linux/v5.2-rc6/source/net/openvswitch/actions.c#L1530
+Acked-by: Song Liu <songliubraving@fb.com>
 
-It was discussed on a previous thread that there are really 2 issues
-here (even if it is the same thing that triggers them).
-Firstly, the infinite looping of packets caused by poor config and,
-secondly, the kernel panic caused by a stack overflow due to the
-recursion in use.
-These patches target the latter.
-I think this approach is good enough to deal with the crashes as it
-tracks a packets recursive calls (through act_mirred) on the network
-stack.
-If the packet is scheduled and releases the CPU then the counter is reset.
-The packet may still loop but it will not cause stack overflows.
-
-
-> Not to put more work for you, but one suggestion is to use skb metadata
-> approach which is performance unfriendly (could be argued to more
-> correct).
+> > > ---
+> > > Changes in v2:
+> > >   - added xdp_redirect_user.c, xdp_redirect_map_user.c
+> >
+> > Great, thanks!
+> >
+> > Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 >
-> Also: Please consider submitting a test case or two for tdc.
+> Great you basically solved one of our TODOs:
+> - TODO Change sample programs to accept ifnames as well as indexes
 >
-> cheers,
-> jamal
+> https://github.com/xdp-project/xdp-project/blob/master/xdp-project.org#ne=
+xt-change-sample-programs-to-accept-ifnames-as-well-as-indexes
 >
+> Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+>
+> --
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
