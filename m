@@ -2,122 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AAAD152972
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 12:29:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D08352992
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 12:30:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728101AbfFYK3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 06:29:31 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:43788 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727769AbfFYK3b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 06:29:31 -0400
-Received: by mail-lj1-f194.google.com with SMTP id 16so15676723ljv.10
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 03:29:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=BJvNPnbZj9zGBKXuVgxHHmB6XgCNQ719LVT/L+1Rnxk=;
-        b=XuTR6bBeaKUEPh5UseQhYYmWqWAjNUjpRgAX7AjxbeZvduUacWiwx++x4y492nNlyJ
-         EIQHpYkQUIM7XnxbkRk6C+yta1outhXZQMjawylDaxz7QXJfTykh9CiuLL5vgC/4Va2G
-         a7cUrKWfE8IG5ZULQFCEoWbVnO/1l8O45A6uLrA5eZ6v4IQZyuGS7FckdCqLtDPlipsu
-         ATOBHN8iT4W6Obl4voBrkbuXM+O2TR+2Fbf8P4qF69veEXHMpcTVbWNKQ0IZY3L4Cd2U
-         OjUZ7CkDc/ZF8AIeBz4xW1OSQrX6fy/1KD+YiSSiq1Ji+UsKERGqccwZVKT+lLqVgPzf
-         9m0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=BJvNPnbZj9zGBKXuVgxHHmB6XgCNQ719LVT/L+1Rnxk=;
-        b=IZE6kHEeCoiCrsCB4ZxLju/vhR/coNSgs1BC1BnXeYltTAxQ84gkz7n04ULJeQq0jB
-         zNQ2Lnz9XeUyU/al0iI/VMyBikGya4AR5ybxSCLkWgsMEYPmrvtshlp5dDeD65LoOXJE
-         DRvikETrz4+XK63FN92QnFQIUYOC6VM+oy18lxvM6cG/CgbOgJXvxByPuPwCpxGLLxZ7
-         AH8mstPTm+kFQQll/myrkA6+RXYUzHSv6Q5EFOpSwedqNU6OyU4f7wTYJDzmSElnb2ZI
-         znNrpOQ1QZDTBs+GWGSj5ZD1Uo+aegp648ee0qdzzTVE/K3PkQafyjyWa+pQe0ByNjd5
-         DUhg==
-X-Gm-Message-State: APjAAAWU83X2yBWh5ixYX4IbVJ25d18sAXYtEdLmySJf0wyYfz3iqaEI
-        9L9D3o+XGw8IsDJU42MjbOrBVg==
-X-Google-Smtp-Source: APXvYqzZrJaehMzYIKdHcvNvYc3CnjfleAEBrYTTtIQcy5nKdqK/0MyQ6sURR/CIPhIrmkkSaB30rA==
-X-Received: by 2002:a2e:2993:: with SMTP id p19mr55277216ljp.202.1561458568940;
-        Tue, 25 Jun 2019 03:29:28 -0700 (PDT)
-Received: from [192.168.1.100] ([213.87.147.32])
-        by smtp.gmail.com with ESMTPSA id j7sm2539448lji.27.2019.06.25.03.29.27
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 25 Jun 2019 03:29:28 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: stmmac: Fix the case when PHY handle is not
- present
-To:     Jose Abreu <Jose.Abreu@synopsys.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>
-References: <351cce38d1c572d8b171044f2856c7fae9f89cbc.1561450696.git.joabreu@synopsys.com>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Message-ID: <895a67c1-3b83-d7be-b64e-61cff86d057d@cogentembedded.com>
-Date:   Tue, 25 Jun 2019 13:29:20 +0300
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1731927AbfFYK3i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 06:29:38 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:48588 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731567AbfFYK3h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 06:29:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=03ojHgXKpRrzEADBxRtQ8YC8RIb84J9PztiNz1KmLWs=; b=r/XR7/xP6nyXRTnUY3y2v+YEK
+        65bqRI45tLGykqbtovBBlOEpa/POnCsGZXJ9VKlizAcjRVNVxhXn9Clu423Ly+x/1uSblIAP6baao
+        2dr6hPTSGnD7Rj75C8kTEJuUAZh2TvAzxTxe636gI5fza1jbBCK1QgWZ6xLlcOB+2cbruei5dJO96
+        ushlCvQNRvUkIeffIaYJz6HG3AlHB10GCW9U7WbV+S0TLMDX6HZP9slfAYRtYyEWFErI6ZHUN7Cf/
+        mrzyO9Uenwf/gDyMHOb9Ywz1SVjx0bt2N1pJbNBtusXJYzDF153QoDHfKmACDYb3D6+5dBjiD8Yz1
+        GKadHXIaA==;
+Received: from clnet-p19-102.ikbnet.co.at ([83.175.77.102] helo=localhost)
+        by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
+        id 1hfihj-0005S9-O8; Tue, 25 Jun 2019 10:29:36 +0000
+From:   Christoph Hellwig <hch@lst.de>
+To:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Kalle Valo <kvalo@codeaurora.org>
+Cc:     b43-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: b43 / b43 legacy dma mask cleanups
+Date:   Tue, 25 Jun 2019 12:29:28 +0200
+Message-Id: <20190625102932.32257-1-hch@lst.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <351cce38d1c572d8b171044f2856c7fae9f89cbc.1561450696.git.joabreu@synopsys.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+Hi all,
 
-On 25.06.2019 11:19, Jose Abreu wrote:
-
-> Some DT bindings do not have the PHY handle. Let's fallback to manually
-> discovery in case phylink_of_phy_connect() fails.
-> 
-> Reported-by: Katsuhiro Suzuki <katsuhiro@katsuster.net>
-> Fixes: 74371272f97f ("net: stmmac: Convert to phylink and remove phylib logic")
-> Signed-off-by: Jose Abreu <joabreu@synopsys.com>
-> Cc: Joao Pinto <jpinto@synopsys.com>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-> Cc: Alexandre Torgue <alexandre.torgue@st.com>
-> ---
-> Hello Katsuhiro,
-> 
-> Can you please test this patch ?
-> ---
->   drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 7 +++++--
->   1 file changed, 5 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> index a48751989fa6..f4593d2d9d20 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@ -950,9 +950,12 @@ static int stmmac_init_phy(struct net_device *dev)
->   
->   	node = priv->plat->phylink_node;
->   
-> -	if (node) {
-> +	if (node)
->   		ret = phylink_of_phy_connect(priv->phylink, node, 0);
-> -	} else {
-> +
-> +	/* Some DT bindings do not set-up the PHY handle. Let's try to
-> +	 * manually parse it */
-
-    The multi-line comments inb the networking code should be formatted like 
-below:
-
-	/*
-	 * bla
-	 * bla
-	 */
-
-> +	if (!node || ret) {
->   		int addr = priv->plat->phy_addr;
->   		struct phy_device *phydev;
->   
-
-MBR, Sergei
+below are a few cleanups for the DMA mask handling.  I came up with these
+untested patches after looking through the code to debug the 32-bit pmac
+30-bit dma issue involving b43legacy.
