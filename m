@@ -2,128 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F4D9552F1
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 17:08:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E98A55324
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 17:18:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731615AbfFYPIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 11:08:40 -0400
-Received: from vmicros1.altlinux.org ([194.107.17.57]:47238 "EHLO
-        vmicros1.altlinux.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730607AbfFYPIj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 11:08:39 -0400
-Received: from mua.local.altlinux.org (mua.local.altlinux.org [192.168.1.14])
-        by vmicros1.altlinux.org (Postfix) with ESMTP id D192272CC58;
-        Tue, 25 Jun 2019 18:08:35 +0300 (MSK)
-Received: by mua.local.altlinux.org (Postfix, from userid 508)
-        id B92A17CCE32; Tue, 25 Jun 2019 18:08:35 +0300 (MSK)
-Date:   Tue, 25 Jun 2019 18:08:35 +0300
-From:   "Dmitry V. Levin" <ldv@altlinux.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Baruch Siach <baruch@tkos.co.il>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [PATCH v2] bpf: fix uapi bpf_prog_info fields alignment
-Message-ID: <20190625150835.GA24947@altlinux.org>
-References: <a5fb2545a0cf151bc443efa10c16c5a4de6f2670.1561460681.git.baruch@tkos.co.il>
- <CAADnVQJ3MPVCL-0x2gDYbUQsrmu8WipnisqXoU8ja4vZ-5nTmA@mail.gmail.com>
+        id S1731989AbfFYPS0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 11:18:26 -0400
+Received: from mail-out.m-online.net ([212.18.0.9]:40202 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728199AbfFYPS0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 11:18:26 -0400
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 45Y8tk0rrQz1rD9F;
+        Tue, 25 Jun 2019 17:18:22 +0200 (CEST)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 45Y8tj75ZQz1vwj4;
+        Tue, 25 Jun 2019 17:18:21 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id a8dzfdcGUScA; Tue, 25 Jun 2019 17:18:20 +0200 (CEST)
+X-Auth-Info: jXhPesX8X4KD278/3j/JZ6zqEJYPZm6uL+ZH8KGhZh4=
+Received: from [IPv6:::1] (unknown [195.140.253.167])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Tue, 25 Jun 2019 17:18:20 +0200 (CEST)
+Subject: Re: [PATCH V3 07/10] net: dsa: microchip: Initial SPI regmap support
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Tristram Ha <Tristram.Ha@microchip.com>,
+        Woojung Huh <Woojung.Huh@microchip.com>
+References: <20190623223508.2713-1-marex@denx.de>
+ <20190623223508.2713-8-marex@denx.de>
+ <2bbd5346-5fe1-16d7-327e-5d94950496f2@denx.de>
+ <CA+h21hpgXxnnRS7Upc1R82ajLum4k-3O9EQDROonO6jtAD+NZw@mail.gmail.com>
+ <f1dfe749-4bfa-17f7-ede7-f9bc38afa0d4@denx.de>
+ <CA+h21hot0TMh7G_BZ15DNXKTaxVv88B-8O7XpXPuqpNiQD5bxA@mail.gmail.com>
+From:   Marek Vasut <marex@denx.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=marex@denx.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <797506e0-dfa5-af23-2b68-61da1bc2b3e1@denx.de>
+Date:   Tue, 25 Jun 2019 17:18:20 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="bg08WKrSYDhXBjb5"
-Content-Disposition: inline
-In-Reply-To: <CAADnVQJ3MPVCL-0x2gDYbUQsrmu8WipnisqXoU8ja4vZ-5nTmA@mail.gmail.com>
+In-Reply-To: <CA+h21hot0TMh7G_BZ15DNXKTaxVv88B-8O7XpXPuqpNiQD5bxA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 6/25/19 2:40 PM, Vladimir Oltean wrote:
+> On Tue, 25 Jun 2019 at 15:06, Marek Vasut <marex@denx.de> wrote:
+>>
+>> On 6/25/19 1:59 AM, Vladimir Oltean wrote:
+>>> On Tue, 25 Jun 2019 at 01:17, Marek Vasut <marex@denx.de> wrote:
+>>>>
+>>>> On 6/24/19 12:35 AM, Marek Vasut wrote:
+>>>>> Add basic SPI regmap support into the driver.
+>>>>>
+>>>>> Previous patches unconver that ksz_spi_write() is always ever called
+>>>>> with len = 1, 2 or 4. We can thus drop the if (len > SPI_TX_BUF_LEN)
+>>>>> check and we can also drop the allocation of the txbuf which is part
+>>>>> of the driver data and wastes 256 bytes for no reason. Regmap covers
+>>>>> the whole thing now.
+>>>>>
+>>>>> Signed-off-by: Marek Vasut <marex@denx.de>
+>>>>> Cc: Andrew Lunn <andrew@lunn.ch>
+>>>>> Cc: Florian Fainelli <f.fainelli@gmail.com>
+>>>>> Cc: Tristram Ha <Tristram.Ha@microchip.com>
+>>>>> Cc: Woojung Huh <Woojung.Huh@microchip.com>
+>>>>
+>>>> [...]
+>>>>
+>>>>> +#define KS_SPIOP_FLAG_MASK(opcode)           \
+>>>>> +     cpu_to_be32((opcode) << (SPI_ADDR_SHIFT + SPI_TURNAROUND_SHIFT))
+>>>>
+>>>> So the robot is complaining about this. I believe this is correct, as
+>>>> the mask should be in native endianness on the register and NOT the
+>>>> native endianness of the CPU.
+>>>>
+>>>> I think a cast would help here, e.g.:
+>>>> -       cpu_to_be32((opcode) << (SPI_ADDR_SHIFT + SPI_TURNAROUND_SHIFT))
+>>>> -       (__force unsigned long)cpu_to_be32((opcode) << (SPI_ADDR_SHIFT +
+>>>> SPI_TURNAROUND_SHIFT))
+>>>>
+>>>> Does this make sense ?
+>>>>
+>>>>> +#define KSZ_REGMAP_COMMON(width)                                     \
+>>>>> +     {                                                               \
+>>>>> +             .val_bits = (width),                                    \
+>>>>> +             .reg_stride = (width) / 8,                              \
+>>>>> +             .reg_bits = SPI_ADDR_SHIFT + SPI_ADDR_ALIGN,            \
+>>>>> +             .pad_bits = SPI_TURNAROUND_SHIFT,                       \
+>>>>> +             .max_register = BIT(SPI_ADDR_SHIFT) - 1,                \
+>>>>> +             .cache_type = REGCACHE_NONE,                            \
+>>>>> +             .read_flag_mask = KS_SPIOP_FLAG_MASK(KS_SPIOP_RD),      \
+>>>>> +             .write_flag_mask = KS_SPIOP_FLAG_MASK(KS_SPIOP_WR),     \
+>>>>
+>>>> [...]
+>>>>
+>>>> --
+>>>> Best regards,
+>>>> Marek Vasut
+>>>
+>>> Hi Marek,
+>>>
+>>> I saw SPI buffers and endianness and got triggered :)
+>>> Would it make sense to take a look at CONFIG_PACKING for the KSZ9477 driver?
+>>> I don't know how bad the field alignment issue is on that hardware,
+>>> but on SJA1105 it was such a disaster that I couldn't have managed it
+>>> any other way.
+>>
+>> How does that help me here ? All I really need is a static constant mask
+>> for the register/flags , 32bit for KSZ9xxx and 16bit for KSZ87xx. I
+>> don't need any dynamic stuff, luckily.
+>>
+> 
+> Ok. I was thinking *instead of* regmap.
+> On the SJA1105 I couldn't use a spi regmap because:
+> * the enum regmap_endian wasn't enough to describe the hardware's bit
+> layout (it is big endian, but high-order and low-order 32 bit words
+> are swapped)
 
---bg08WKrSYDhXBjb5
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Oooooof. Is the switch development some competition in register layout
+braindeath ? What's it gonna be next ... I was gonna suggest something,
+but then reconsidered, better not give them any wild ideas :-)
 
-On Tue, Jun 25, 2019 at 07:16:55AM -0700, Alexei Starovoitov wrote:
-> On Tue, Jun 25, 2019 at 4:07 AM Baruch Siach <baruch@tkos.co.il> wrote:
-> >
-> > Merge commit 1c8c5a9d38f60 ("Merge
-> > git://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next") undid the
-> > fix from commit 36f9814a494 ("bpf: fix uapi hole for 32 bit compat
-> > applications") by taking the gpl_compatible 1-bit field definition from
-> > commit b85fab0e67b162 ("bpf: Add gpl_compatible flag to struct
-> > bpf_prog_info") as is. That breaks architectures with 16-bit alignment
-> > like m68k. Embed gpl_compatible into an anonymous union with 32-bit pad
-> > member to restore alignment of following fields.
-> >
-> > Thanks to Dmitry V. Levin his analysis of this bug history.
-> >
-> > Cc: Jiri Olsa <jolsa@kernel.org>
-> > Cc: Daniel Borkmann <daniel@iogearbox.net>
-> > Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-> > Cc: Linus Torvalds <torvalds@linux-foundation.org>
-> > Signed-off-by: Baruch Siach <baruch@tkos.co.il>
-> > ---
-> > v2:
-> > Use anonymous union with pad to make it less likely to break again in
-> > the future.
-> > ---
-> >  include/uapi/linux/bpf.h       | 5 ++++-
-> >  tools/include/uapi/linux/bpf.h | 5 ++++-
-> >  2 files changed, 8 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index a8b823c30b43..766eae02d7ae 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -3142,7 +3142,10 @@ struct bpf_prog_info {
-> >         __aligned_u64 map_ids;
-> >         char name[BPF_OBJ_NAME_LEN];
-> >         __u32 ifindex;
-> > -       __u32 gpl_compatible:1;
-> > +       union {
-> > +               __u32 gpl_compatible:1;
-> > +               __u32 pad;
-> > +       };
->=20
-> Nack for the reasons explained in the previous thread
-> on the same subject.
-> Why cannot you go with earlier suggestion of _u32 :31; ?
+> * it doesn't really expose a well-defined register map, but rather,
+> you're supposed to dynamically construct a TLV-type buffer and write
+> it starting with a fixed address.
+> I just thought you were facing some of these problems as well with
+> regmap. If not, that's perfectly fine!
 
-By the way, why not use aligned types as suggested by Geert?
-They are already used for other members of struct bpf_prog_info anyway.
+All right, that's not the case here, whew.
 
-FWIW, we use aligned types for bpf in strace and that approach
-proved to be more robust than manual padding.
-
-
---=20
-ldv
-
---bg08WKrSYDhXBjb5
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIcBAEBCAAGBQJdEjjzAAoJEAVFT+BVnCUIuHUQAJ9poEDISeOsjNm0n+eD6K1e
-5I13q9FzXE4iUdjLPEWb3O5dzkyM9YE135XEnlFPtUglph8Wx+JH50ojDwan1XpV
-EyyQXsD9xjS2ObrdTatz+vgib70F3kiM6Jzu2PQUt19O3UeVcrHCL2tpyvMLrTKA
-upgleX5wCUHSDKUfyHjs1vpHyGI8OWwck6l+77HTq+Yemle/fS9VRFy3gGy9Lnub
-V9Jo3u8Tc2oPphM05a0jtzLbQ4KEQEMJLbCVudgf/SlQmQvxnC+XLeyzfnVufy/T
-jUIWzT4rmBAG1zuvD3nvtDK+jrBMo2yk5113gt/+zT1k0LbuFSNaohZ+QjYLelBQ
-qXAuQD8KdpkjGw8Vdm9M3Scj/9m6KGsYsgbaymyaiBiZeWUaME/Z2ll85VnbByXP
-jrJ/KBI1XQ/ithVXUf+Xy2nKExM0r5f+XxMF637bTCQroqe1V79olG5A3YTg1Mnh
-CLWMIAZU3JxDLiYQZKuGvVcZS3S1Fxb7HHsTskOdHnxGXkoIyXgi/n3SQiKiNcaf
-GvEVZLUvIpx+gwsbficp79fXEflv+xfsPj7kys7EJN/qm69Z2wy8VuitIbxIGgDw
-dt8A6SUbV0pOPZsQWdrSbsVK0saanvqygeDOjaQhFylpahHwUMEVMZuwjtUVsHx3
-9IYQwUmNwDM8PTTeZwUF
-=QbMx
------END PGP SIGNATURE-----
-
---bg08WKrSYDhXBjb5--
+-- 
+Best regards,
+Marek Vasut
