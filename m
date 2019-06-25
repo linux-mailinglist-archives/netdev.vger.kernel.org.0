@@ -2,149 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ACF8F51F6D
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 02:01:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E63451FC8
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 02:14:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729086AbfFYABD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 20:01:03 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:48140 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726631AbfFYABD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 20:01:03 -0400
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x5ONrZGf019635;
-        Mon, 24 Jun 2019 17:00:37 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=1KUYvvy7TYx7gYz9XSqgufG67pt/omR2tMk9xUNO+dQ=;
- b=QeLvPWFoo2jhj1J45Hr+XHbzxHRpQkyBfioCzhyEvcA0pqutkDs60qn/3SmxPD8ztWMJ
- Djo8O/z7wUE3U+O6eKqPGd1VeXFbMUJYQR0sTUPZmF4ni7a2oxInZ+PJq1fIf6XC5xoi
- iqNiKM5DxglYnIrdVVc9pCDJsMSnCkGWzU0= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0089730.ppops.net with ESMTP id 2tb3gw97kv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 24 Jun 2019 17:00:37 -0700
-Received: from ash-exhub103.TheFacebook.com (2620:10d:c0a8:82::c) by
- ash-exhub101.TheFacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 24 Jun 2019 17:00:36 -0700
-Received: from NAM04-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.174) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
- via Frontend Transport; Mon, 24 Jun 2019 17:00:36 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector1-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1KUYvvy7TYx7gYz9XSqgufG67pt/omR2tMk9xUNO+dQ=;
- b=NP0D9O5SaHgT0NkB4pZ2FXKw9GIw04qLr1pv+QRkJpydj/P4ZrML7QAtXdLnQcfDwzw607VLIdVrgiRMlz5/RHb4LDb5JRlAVuUJ+LzZdw44MhUsaQ3c0t8LHl41vfR6bzBTHDc5ZlmSdeYKO+P32+GXeuX9skEDzHP5qiYeZNY=
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com (10.175.3.22) by
- MWHPR15MB1773.namprd15.prod.outlook.com (10.174.97.145) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2008.13; Tue, 25 Jun 2019 00:00:35 +0000
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::400e:e329:ea98:aa0d]) by MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::400e:e329:ea98:aa0d%6]) with mapi id 15.20.2008.014; Tue, 25 Jun 2019
- 00:00:35 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     allanzhang <allanzhang@google.com>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 0/2] bpf: Allow bpf_skb_event_output for more prog
- types
-Thread-Topic: [PATCH v3 0/2] bpf: Allow bpf_skb_event_output for more prog
- types
-Thread-Index: AQHVKuikUE/omfxviUSX95ATQSfH9KarfDQA
-Date:   Tue, 25 Jun 2019 00:00:35 +0000
-Message-ID: <C74526B1-7426-4F84-A5D3-DA444A17CFCD@fb.com>
-References: <20190624235720.167067-1-allanzhang@google.com>
-In-Reply-To: <20190624235720.167067-1-allanzhang@google.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3445.104.11)
-x-originating-ip: [2620:10d:c090:200::2:78ae]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d7412e4b-6c41-4849-0858-08d6f9002636
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR15MB1773;
-x-ms-traffictypediagnostic: MWHPR15MB1773:
-x-microsoft-antispam-prvs: <MWHPR15MB17733ECDECA64BEC28DB4E8FB3E30@MWHPR15MB1773.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0079056367
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(346002)(376002)(396003)(136003)(39860400002)(199004)(189003)(256004)(76176011)(14444005)(446003)(478600001)(50226002)(186003)(14454004)(8936002)(25786009)(2906002)(486006)(66946007)(66476007)(476003)(7736002)(73956011)(76116006)(66446008)(64756008)(66556008)(2616005)(305945005)(11346002)(102836004)(6506007)(81156014)(53546011)(81166006)(4326008)(54906003)(33656002)(8676002)(316002)(6512007)(68736007)(5660300002)(4744005)(6486002)(229853002)(6246003)(6916009)(6436002)(6116002)(99286004)(46003)(86362001)(36756003)(71190400001)(57306001)(71200400001)(53936002);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1773;H:MWHPR15MB1165.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 9yJpQMC7NQ9qjEpdR1cGyZqAwL0DA+lnCbwdr+1PRkgO1CnQCulYR/tBvJi0wJlqjrMV5W6jPghs7rNPPGtVoQZTubGb465l//4RaDT5UfgBAqbuTNNKAmsE2wk1l/xVW+0uYh5lLSdl5SzvVHWolXgKchWN3TaGEGTbA7cq9wi0ZLNNqTXKFUOrm1JDW9Ri2uX7ZAKvF7oW0VvOdqP5dLt4Iw+CO7CM2aBN20P+EjsPLBoztIUyPd5NaGJ2DSZJPNZsfkFEd51P2kG/AlWst43S0MEG/DdVqOvmiGCfW/+T0FvOe2388sbuG94o9nHruADlVwRxCz+rXQ+qfzni3T986fYgxkM/LzIFOli+lwdf178/aNFuCDZl/yi0QKVXBLF03XlvFF7vTPGSiNKYaNWfUMiCmKj8den+cr+4TYg=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3A32A135E791AF4CB3FE11154083D599@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1729230AbfFYAMp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 20:12:45 -0400
+Received: from mail.us.es ([193.147.175.20]:37984 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726631AbfFYAMp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Jun 2019 20:12:45 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id E674AC04AA
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 02:12:41 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id D48ADDA707
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 02:12:41 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id C9F9CDA705; Tue, 25 Jun 2019 02:12:41 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id AA62BDA701;
+        Tue, 25 Jun 2019 02:12:39 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 25 Jun 2019 02:12:39 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from salvia.here (sys.soleta.eu [212.170.55.40])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id 7E7804265A2F;
+        Tue, 25 Jun 2019 02:12:39 +0200 (CEST)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH 00/26] Netfilter updates for net-next
+Date:   Tue, 25 Jun 2019 02:12:07 +0200
+Message-Id: <20190625001233.22057-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.11.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: d7412e4b-6c41-4849-0858-08d6f9002636
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jun 2019 00:00:35.3543
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: songliubraving@fb.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1773
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-24_16:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=994 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906240189
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
+The following patches contains Netfilter updates for net-next:
 
-> On Jun 24, 2019, at 4:57 PM, allanzhang <allanzhang@google.com> wrote:
->=20
-> Software event output is only enabled by a few prog types right now (TC,
-> LWT out, XDP, sockops). Many other skb based prog types need
-> bpf_skb_event_output to produce software event.
->=20
-> Added socket_filter, cg_skb, sk_skb prog types to generate sw event.
->=20
-> *** BLURB HERE ***
-    ^^^^^^ this should be removed.=20
+1) .br_defrag indirection depends on CONFIG_NF_DEFRAG_IPV6, from wenxu.
 
-Please include bpf-next in the subject prefix.=20
-Please also include changes from v1 to v2 and v2 to v3 in the cover=20
-letter, like:
+2) Remove unnecessary memset() in ipset, from Florent Fourcot.
 
-changes v1 =3D> v2:
-1. ...
-2. ...
+3) Merge control plane addition and deletion in ipset, also from Florent.
 
-Thanks,
-Song
+4) A few missing check for nla_parse() in ipset, from Aditya Pakki
+   and Jozsef Kadlecsik.
 
+5) Incorrect cleanup in error path of xt_set version 3, from Jozsef.
 
->=20
-> allanzhang (2):
->  bpf: Allow bpf_skb_event_output for a few prog types
->  bpf: Add selftests for bpf_perf_event_output
->=20
-> net/core/filter.c                             |  6 ++
-> tools/testing/selftests/bpf/test_verifier.c   | 33 ++++++-
-> .../selftests/bpf/verifier/event_output.c     | 94 +++++++++++++++++++
-> 3 files changed, 132 insertions(+), 1 deletion(-)
-> create mode 100644 tools/testing/selftests/bpf/verifier/event_output.c
->=20
-> --=20
-> 2.22.0.410.gd8fdbe21b5-goog
->=20
+6) Memory accounting problems when resizing in ipset, from Stefano Brivio.
 
+7) Jozsef updates his email to @netfilter.org, this batch comes with a
+   conflict resolution with recent SPDX header updates.
+
+8) Add to create custom conntrack expectations via nftables, from
+   Stephane Veyret.
+
+9) A lookup optimization for conntrack, from Florian Westphal.
+
+10) Check for supported flags in xt_owner.
+
+11) Support for pernet sysctl in br_netfilter, patches
+    from Christian Brauner.
+
+12) Patches to move common synproxy infrastructure to nf_synproxy.c,
+    to prepare the synproxy support for nf_tables, patches from
+    Fernando Fernandez Mancera.
+
+13) Support to restore expiration time in set element, from Laura Garcia.
+
+14) Fix recent rewrite of netfilter IPv6 to avoid indirections
+    when CONFIG_IPV6 is unset, from Arnd Bergmann.
+
+15) Always reset vlan tag on skbuff fraglist when refragmenting in
+    bridge conntrack, from wenxu.
+
+16) Support to match IPv4 options in nf_tables, from Stephen Suryaputra.
+
+You can pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git
+
+This batch comes with a conflict resolution between a patch to remove
+the GPL disclaimer by SPDX tags and Jozsef Kladecsik's email update.
+
+Thanks.
+
+----------------------------------------------------------------
+
+The following changes since commit 045df37e743c7448931131988e99e8fe0cc92a54:
+
+  Merge branch 'cxgb4-Reference-count-MPS-TCAM-entries-within-a-PF' (2019-06-24 14:54:06 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git HEAD
+
+for you to fetch changes up to 1c5ba67d2277ac2faf37c61076e8b5fa312be492:
+
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next (2019-06-25 01:32:59 +0200)
+
+----------------------------------------------------------------
+Aditya Pakki (1):
+      netfilter: ipset: fix a missing check of nla_parse
+
+Arnd Bergmann (2):
+      netfilter: synproxy: fix building syncookie calls
+      netfilter: fix nf_conntrack_bridge/ipv6 link error
+
+Christian Brauner (3):
+      netfilter: bridge: port sysctls to use brnf_net
+      netfilter: bridge: namespace bridge netfilter sysctls
+      netfilter: bridge: prevent UAF in brnf_exit_net()
+
+Colin Ian King (1):
+      netfilter: synproxy: ensure zero is returned on non-error return path
+
+Fernando Fernandez Mancera (4):
+      netfilter: synproxy: add common uapi for SYNPROXY infrastructure
+      netfilter: synproxy: remove module dependency on IPv6 SYNPROXY
+      netfilter: synproxy: extract SYNPROXY infrastructure from {ipt, ip6t}_SYNPROXY
+      netfilter: synproxy: fix manual bump of the reference counter
+
+Florent Fourcot (2):
+      netfilter: ipset: remove useless memset() calls
+      netfilter: ipset: merge uadd and udel functions
+
+Florian Westphal (1):
+      netfilter: conntrack: small conntrack lookup optimization
+
+Jozsef Kadlecsik (3):
+      netfilter: ipset: Fix the last missing check of nla_parse_deprecated()
+      netfilter: ipset: Fix error path in set_target_v3_checkentry()
+      Update my email address
+
+Laura Garcia Liebana (1):
+      netfilter: nf_tables: enable set expiration time for set elements
+
+Pablo Neira Ayuso (4):
+      netfilter: xt_owner: bail out with EINVAL in case of unsupported flags
+      Merge branch 'master' of git://blackhole.kfki.hu/nf-next
+      netfilter: synproxy: use nf_cookie_v6_check() from core
+      Merge git://git.kernel.org/.../davem/net-next
+
+Stefano Brivio (1):
+      ipset: Fix memory accounting for hash types on resize
+
+Stephen Suryaputra (1):
+      netfilter: nf_tables: add support for matching IPv4 options
+
+Stéphane Veyret (2):
+      netfilter: nft_ct: add ct expectations support
+      netfilter: nft_ct: fix null pointer in ct expectations support
+
+wenxu (2):
+      netfilter: ipv6: Fix undefined symbol nf_ct_frag6_gather
+      netfilter: bridge: Fix non-untagged fragment packet
+
+ CREDITS                                        |   2 +-
+ MAINTAINERS                                    |   2 +-
+ include/linux/jhash.h                          |   2 +-
+ include/linux/netfilter/ipset/ip_set.h         |   2 +-
+ include/linux/netfilter/ipset/ip_set_counter.h |   3 +-
+ include/linux/netfilter/ipset/ip_set_skbinfo.h |   3 +-
+ include/linux/netfilter/ipset/ip_set_timeout.h |   3 +-
+ include/linux/netfilter_ipv6.h                 |  54 +-
+ include/net/netfilter/br_netfilter.h           |   3 +-
+ include/net/netfilter/nf_conntrack.h           |   7 +-
+ include/net/netfilter/nf_conntrack_synproxy.h  |  13 +-
+ include/net/netfilter/nf_synproxy.h            |  44 ++
+ include/net/netfilter/nf_tables.h              |   2 +-
+ include/uapi/linux/netfilter/ipset/ip_set.h    |   2 +-
+ include/uapi/linux/netfilter/nf_SYNPROXY.h     |  19 +
+ include/uapi/linux/netfilter/nf_tables.h       |  16 +-
+ include/uapi/linux/netfilter/xt_SYNPROXY.h     |  18 +-
+ include/uapi/linux/netfilter/xt_owner.h        |   5 +
+ net/bridge/br_netfilter_hooks.c                | 247 ++++---
+ net/bridge/br_netfilter_ipv6.c                 |   2 +-
+ net/bridge/netfilter/nf_conntrack_bridge.c     |   2 +
+ net/ipv4/ip_options.c                          |   1 +
+ net/ipv4/netfilter/ipt_SYNPROXY.c              | 395 +----------
+ net/ipv4/netfilter/iptable_raw.c               |   2 +-
+ net/ipv4/netfilter/nf_nat_h323.c               |   2 +-
+ net/ipv6/netfilter.c                           |   8 +-
+ net/ipv6/netfilter/ip6t_SYNPROXY.c             | 420 +-----------
+ net/ipv6/netfilter/ip6table_raw.c              |   2 +-
+ net/netfilter/ipset/ip_set_bitmap_gen.h        |   3 +-
+ net/netfilter/ipset/ip_set_bitmap_ip.c         |   4 +-
+ net/netfilter/ipset/ip_set_bitmap_ipmac.c      |   3 +-
+ net/netfilter/ipset/ip_set_bitmap_port.c       |   5 +-
+ net/netfilter/ipset/ip_set_core.c              |  97 +--
+ net/netfilter/ipset/ip_set_getport.c           |   6 +-
+ net/netfilter/ipset/ip_set_hash_gen.h          |   5 +-
+ net/netfilter/ipset/ip_set_hash_ip.c           |   5 +-
+ net/netfilter/ipset/ip_set_hash_ipmark.c       |   4 +-
+ net/netfilter/ipset/ip_set_hash_ipport.c       |   5 +-
+ net/netfilter/ipset/ip_set_hash_ipportip.c     |   5 +-
+ net/netfilter/ipset/ip_set_hash_ipportnet.c    |   5 +-
+ net/netfilter/ipset/ip_set_hash_mac.c          |   5 +-
+ net/netfilter/ipset/ip_set_hash_net.c          |   5 +-
+ net/netfilter/ipset/ip_set_hash_netiface.c     |   5 +-
+ net/netfilter/ipset/ip_set_hash_netnet.c       |   2 +-
+ net/netfilter/ipset/ip_set_hash_netport.c      |   5 +-
+ net/netfilter/ipset/ip_set_hash_netportnet.c   |   3 +-
+ net/netfilter/ipset/ip_set_list_set.c          |   5 +-
+ net/netfilter/nf_conntrack_core.c              |  25 +-
+ net/netfilter/nf_conntrack_h323_main.c         |   2 +-
+ net/netfilter/nf_conntrack_proto_tcp.c         |   2 +-
+ net/netfilter/nf_synproxy_core.c               | 896 ++++++++++++++++++++++++-
+ net/netfilter/nf_tables_api.c                  |  26 +-
+ net/netfilter/nft_ct.c                         | 142 +++-
+ net/netfilter/nft_dynset.c                     |   2 +-
+ net/netfilter/nft_exthdr.c                     | 133 ++++
+ net/netfilter/xt_iprange.c                     |   4 +-
+ net/netfilter/xt_owner.c                       |   3 +
+ net/netfilter/xt_set.c                         |  45 +-
+ 58 files changed, 1611 insertions(+), 1127 deletions(-)
+ create mode 100644 include/net/netfilter/nf_synproxy.h
+ create mode 100644 include/uapi/linux/netfilter/nf_SYNPROXY.h
