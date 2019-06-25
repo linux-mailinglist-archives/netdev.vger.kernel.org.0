@@ -2,80 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13F94522AF
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 07:16:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50FCB522B7
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 07:17:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726791AbfFYFQ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 01:16:27 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:35040 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726422AbfFYFQ1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 01:16:27 -0400
-Received: by mail-qk1-f193.google.com with SMTP id l128so11606519qke.2;
-        Mon, 24 Jun 2019 22:16:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HKmnr8tbebS+Y2cbIt4jQ7wpNYHliuH9KnODpvuyZwQ=;
-        b=uMg8F8MXN5O8msr106FWfABJSM+tiVnpydaOtgIm37fXTNdJQ4KGwxUIu7VSgi4G28
-         9brvvkF9O/TbH2aXXYZ+kK4rKXpDRWjz5Tnwyu4fHPgFyCmE8n9fz8xgZBXgZ30Gr/PC
-         jhjh1E1ta4t+FkxTr1kwxjaoFNx4AH7geIkvzmS17C7To8dBdfgVdDLojHvpDVeqTyna
-         wVuAceLmSNDZopyH4YvOpR02/wOvyKzWO3BAGZbSIPHG3eAy0ExHSQGJAq8nwHmkDGQt
-         tcWIEbNRJPVhMMj2L6Wp65IwbLLUClC4zHDvsnlnrxco7GiEO+r7Q82Yt+bpJ8r9TPTB
-         tZuQ==
-X-Gm-Message-State: APjAAAUwBg44jmJTdxABibrcLAO285+OVj08epzC9iduEgLAgSGs0jhx
-        h5RY/kIh+o4gddj1x/LSF5dcCsM32W4GAMQy4Rc=
-X-Google-Smtp-Source: APXvYqzTYYA75n0YLwuienF50B40Wr3591YiFWOieUjPgQwttLArWUJpXTHtOuxNs4UiLccljUnyFleu9HNZwtW0op4=
-X-Received: by 2002:a05:620a:1256:: with SMTP id a22mr58234084qkl.96.1561439786450;
- Mon, 24 Jun 2019 22:16:26 -0700 (PDT)
+        id S1728082AbfFYFRv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 01:17:51 -0400
+Received: from smtprelay0192.hostedemail.com ([216.40.44.192]:53847 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726422AbfFYFRu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 01:17:50 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay03.hostedemail.com (Postfix) with ESMTP id 9E83B837F24C;
+        Tue, 25 Jun 2019 05:17:48 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 
+X-HE-Tag: spade50_7d8321185044f
+X-Filterd-Recvd-Size: 3418
+Received: from XPS-9350 (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
+        (Authenticated sender: joe@perches.com)
+        by omf16.hostedemail.com (Postfix) with ESMTPA;
+        Tue, 25 Jun 2019 05:17:42 +0000 (UTC)
+Message-ID: <45177fdaff2bf2a2538e34dab175488d2ba9a46c.camel@perches.com>
+Subject: Re: [PATCH v4 4/7] lib/hexdump.c: Replace ascii bool in
+ hex_dump_to_buffer with flags
+From:   Joe Perches <joe@perches.com>
+To:     Alastair D'Silva <alastair@d-silva.org>
+Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Karsten Keil <isdn@linux-pingi.de>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Stanislaw Gruszka <sgruszka@redhat.com>,
+        Benson Leung <bleung@chromium.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        David Laight <David.Laight@ACULAB.COM>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-fsdevel@vger.kernel.org
+Date:   Mon, 24 Jun 2019 22:17:40 -0700
+In-Reply-To: <746098160c4ff6527d573d2af23c403b6d4e5b80.camel@d-silva.org>
+References: <20190625031726.12173-1-alastair@au1.ibm.com>
+         <20190625031726.12173-5-alastair@au1.ibm.com>
+         <3340b520a57e00a483eae170be97316c8d18c22c.camel@perches.com>
+         <746098160c4ff6527d573d2af23c403b6d4e5b80.camel@d-silva.org>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
 MIME-Version: 1.0
-References: <mhng-ac6d3a1f-07a8-40b5-a4ad-93e529ecc206@palmer-si-x1e> <8bf8f052-cb9e-a4a6-4a7f-584cbd20582d@microchip.com>
-In-Reply-To: <8bf8f052-cb9e-a4a6-4a7f-584cbd20582d@microchip.com>
-From:   Harini Katakam <harinik@xilinx.com>
-Date:   Tue, 25 Jun 2019 10:46:14 +0530
-Message-ID: <CAFcVECLGSkjw-E-nF3z4gfxHYMUQgeVh=Y8t-DOpiLnL_UwDSw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] net: macb: Fix compilation on systems without COMMON_CLK
-To:     Nicolas Ferre <Nicolas.Ferre@microchip.com>
-Cc:     palmer@sifive.com, Harini Katakam <harini.katakam@xilinx.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Michal Simek <michal.simek@xilinx.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 25, 2019 at 4:17 AM <Nicolas.Ferre@microchip.com> wrote:
->
-> On 24/06/2019 at 11:57, Palmer Dabbelt wrote:
-> > External E-Mail
-> >
-> >
-> > On Mon, 24 Jun 2019 02:40:21 PDT (-0700), Nicolas.Ferre@microchip.com wrote:
-> >> On 24/06/2019 at 08:16, Palmer Dabbelt wrote:
-> >>> External E-Mail
-> >>>
-> >>>
-> >>> The patch to add support for the FU540-C000 added a dependency on
-> >>> COMMON_CLK, but didn't express that via Kconfig.  This fixes the build
-> >>> failure by adding CONFIG_MACB_FU540, which depends on COMMON_CLK and
-> >>> conditionally enables the FU540-C000 support.
-> >>
-> >> Let's try to limit the use of  #ifdef's throughout the code. We are
-> >> using them in this driver but only for the hot paths and things that
-> >> have an impact on performance. I don't think it's the case here: so
-> >> please find another option => NACK.
-> >
-> > OK.  Would you accept adding a Kconfig dependency of the generic MACB driver on
-> > COMMON_CLK, as suggested in the cover letter?
->
-> Yes: all users of this peripheral have COMMON_CLK set.
-> You can remove it from the PCI wrapper then.
->
+On Tue, 2019-06-25 at 15:06 +1000, Alastair D'Silva wrote:
+> On Mon, 2019-06-24 at 22:01 -0700, Joe Perches wrote:
+> > On Tue, 2019-06-25 at 13:17 +1000, Alastair D'Silva wrote:
+> > > From: Alastair D'Silva <alastair@d-silva.org>
+> > > 
+> > > In order to support additional features, rename hex_dump_to_buffer
+> > > to
+> > > hex_dump_to_buffer_ext, and replace the ascii bool parameter with
+> > > flags.
+> > []
+> > > diff --git a/drivers/gpu/drm/i915/intel_engine_cs.c
+> > > b/drivers/gpu/drm/i915/intel_engine_cs.c
+> > []
+> > > @@ -1338,9 +1338,8 @@ static void hexdump(struct drm_printer *m,
+> > > const void *buf, size_t len)
+> > >  		}
+> > >  
+> > >  		WARN_ON_ONCE(hex_dump_to_buffer(buf + pos, len - pos,
+> > > -						rowsize, sizeof(u32),
+> > > -						line, sizeof(line),
+> > > -						false) >=
+> > > sizeof(line));
+> > > +						rowsize, sizeof(u32),
+> > > line,
+> > > +						sizeof(line)) >=
+> > > sizeof(line));
+> > 
+> > Huh?  Why do this?
+[]
+> The change actions Jani's suggestion:
+> https://lkml.org/lkml/2019/6/20/343
 
-Yes, +1, both Zynq and ZynqMP have COMMON_CLK set, thanks.
+I think you need to read this change again.
 
-Regards,
-Harini
+
