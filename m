@@ -2,177 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BEBC551C5
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 16:35:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B50E5522C
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 16:40:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730689AbfFYOez (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 10:34:55 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:36726 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728710AbfFYOez (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 10:34:55 -0400
-Received: by sipsolutions.net with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1hfmWu-0005ft-Of; Tue, 25 Jun 2019 16:34:40 +0200
-Message-ID: <f1243295f088b70d48e4b832a28f79c0cd84ca1c.camel@sipsolutions.net>
-Subject: Re: WWAN Controller Framework (was IPA [PATCH v2 00/17])
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Alex Elder <elder@linaro.org>, davem@davemloft.net, arnd@arndb.de,
-        bjorn.andersson@linaro.org, ilias.apalodimas@linaro.org,
-        Dan Williams <dcbw@redhat.com>
-Cc:     evgreen@chromium.org, benchan@google.com, ejcaruso@google.com,
-        cpratapa@codeaurora.org, syadagir@codeaurora.org,
-        subashab@codeaurora.org, abhishek.esse@gmail.com,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org
-Date:   Tue, 25 Jun 2019 16:34:38 +0200
-In-Reply-To: <6dae9d1c-ceae-7e88-fe61-f4cda82820ea@linaro.org> (sfid-20190624_190620_354118_89F0D47F)
-References: <20190531035348.7194-1-elder@linaro.org>
-         <23ff4cce-1fee-98ab-3608-1fd09c2d97f1@linaro.org>
-         <6dae9d1c-ceae-7e88-fe61-f4cda82820ea@linaro.org>
-         (sfid-20190624_190620_354118_89F0D47F)
+        id S1731607AbfFYOk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 10:40:27 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:40502 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730689AbfFYOk0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 10:40:26 -0400
+Received: by mail-lj1-f195.google.com with SMTP id a21so16518477ljh.7
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 07:40:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jWAFzwh+wNJa1wJRi7wSsROtByf0uePbqEGkNz/VV+c=;
+        b=q7rJ4scTf8X0oq+zvh1dCgDHKeAyUjDzKQq7WoOf6YLrsxjFzn4bATEWwaFw844l7m
+         sqFcSlYkMld7SZ/y2v0ICSct8PfO0twxUVguU662swDtlr2tU/X4ekfkR7On0oF7Q/ls
+         P8Bn2DpDM1f1A+/mbRi46Z4ZI+8mlF6zjdwhRs3wBGfl30MybyY5GjCiz6IB24oABppH
+         sDHVFCCefcnmD6sWcaMUgdu71a+YlEgFNoGQypmWsF7rCe+GRvUAYOigBX7lgxB0UKY2
+         dOBilDMwzjlKkIleO7qwzvBlLLhl4LrMlBsLLmrfgmWzvapBVtNnXRUMo+y+kp0OfkDE
+         fNAg==
+X-Gm-Message-State: APjAAAUcDXZYDAguXZLuHFKbEhLZogyGjWRHYPnzrzEKnCr2c+UIn3Km
+        gfKpF6k1mBymDFOCuoLJ/78osz0eaf/CqLuE9vY5+A==
+X-Google-Smtp-Source: APXvYqy/woPSYHeAf0XhlKXzq70slZ/lsMXudtd7E81/YZ8UwfdzrRVuF3xTHi6vuDWorsFOBMiUcLSs0gF/cRL+pYA=
+X-Received: by 2002:a2e:3e01:: with SMTP id l1mr4454775lja.208.1561473625168;
+ Tue, 25 Jun 2019 07:40:25 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190611180326.30597-1-mcroce@redhat.com> <20190612085307.35e42bf4@hermes.lan>
+ <CAGnkfhyT0W=CYU8FJYrDtzqxtcHakO5CWx2qzLuWOXVj6dyKMA@mail.gmail.com>
+ <CAGnkfhz-W64f-j+Sgbi47BO6VKfyaYQ1W865sihXhCjChh_kFQ@mail.gmail.com>
+ <20190612111938.1c9da723@hermes.lan> <CAGnkfhyS64WA+947iQFwA9+=yS6Zk856SWBR9Zy7w90xhBmC=Q@mail.gmail.com>
+In-Reply-To: <CAGnkfhyS64WA+947iQFwA9+=yS6Zk856SWBR9Zy7w90xhBmC=Q@mail.gmail.com>
+From:   Matteo Croce <mcroce@redhat.com>
+Date:   Tue, 25 Jun 2019 16:39:49 +0200
+Message-ID: <CAGnkfhzjT1he+77vRC7p_Y7U5L7AksDpkss2TwZcR_xxxGhgSA@mail.gmail.com>
+Subject: Re: [PATCH iproute2] testsuite: don't clobber /tmp
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev <netdev@vger.kernel.org>, David Ahern <dsahern@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-3.fc28) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2019-06-24 at 12:06 -0500, Alex Elder wrote:
+On Thu, Jun 13, 2019 at 7:15 PM Matteo Croce <mcroce@redhat.com> wrote:
+>
+> On Wed, Jun 12, 2019 at 8:20 PM Stephen Hemminger
+> <stephen@networkplumber.org> wrote:
+> >
+> > On Wed, 12 Jun 2019 19:32:29 +0200
+> > Matteo Croce <mcroce@redhat.com> wrote:
+> >
+> > > On Wed, Jun 12, 2019 at 6:04 PM Matteo Croce <mcroce@redhat.com> wrote:
+> > > >
+> > > > On Wed, Jun 12, 2019 at 5:55 PM Stephen Hemminger
+> > > > <stephen@networkplumber.org> wrote:
+> > > > >
+> > > > > On Tue, 11 Jun 2019 20:03:26 +0200
+> > > > > Matteo Croce <mcroce@redhat.com> wrote:
+> > > > >
+> > > > > > Even if not running the testsuite, every build will leave
+> > > > > > a stale tc_testkenv.* file in the system temp directory.
+> > > > > > Conditionally create the temp file only if we're running the testsuite.
+> > > > > >
+> > > > > > Signed-off-by: Matteo Croce <mcroce@redhat.com>
+> > > > > > ---
+> > > > > >  testsuite/Makefile | 5 ++++-
+> > > > > >  1 file changed, 4 insertions(+), 1 deletion(-)
+> > > > > >
+> > > > > > diff --git a/testsuite/Makefile b/testsuite/Makefile
+> > > > > > index 7f247bbc..5353244b 100644
+> > > > > > --- a/testsuite/Makefile
+> > > > > > +++ b/testsuite/Makefile
+> > > > > > @@ -14,7 +14,9 @@ TESTS_DIR := $(dir $(TESTS))
+> > > > > >
+> > > > > >  IPVERS := $(filter-out iproute2/Makefile,$(wildcard iproute2/*))
+> > > > > >
+> > > > > > -KENVFN := $(shell mktemp /tmp/tc_testkenv.XXXXXX)
+> > > > > > +ifeq ($(MAKECMDGOALS),alltests)
+> > > > > > +     KENVFN := $(shell mktemp /tmp/tc_testkenv.XXXXXX)
+> > > > > > +endif
+> > > > > >  ifneq (,$(wildcard /proc/config.gz))
+> > > > > >       KCPATH := /proc/config.gz
+> > > > > >  else
+> > > > > > @@ -94,3 +96,4 @@ endif
+> > > > > >               rm "$$TMP_ERR" "$$TMP_OUT"; \
+> > > > > >               sudo dmesg > $(RESULTS_DIR)/$@.$$o.dmesg; \
+> > > > > >       done
+> > > > > > +     @$(RM) $(KENVFN)
+> > > > >
+> > > > > My concern is that there are several targets in this one Makefile.
+> > > > >
+> > > > > Why not use -u which gives name but does not create the file?
+> > > >
+> > > > As the manpage says, this is unsafe, as a file with the same name can
+> > > > be created in the meantime.
+> > > > Another option is to run the mktemp in the target shell, but this will
+> > > > require to escape every single end of line to make it a single shell
+> > > > command, e.g.:
+> > > >
+> > > >         KENVFN=$$(mktemp /tmp/tc_testkenv.XXXXXX); \
+> > > >         if [ "$(KCPATH)" = "/proc/config.gz" ]; then \
+> > > >                 gunzip -c $(KCPATH) >$$KENVFN; \
+> > > >         ...
+> > > >         done ; \
+> > > >         $(RM) $$KENVFN
+> > > >
+> > > > --
+> > > > Matteo Croce
+> > > > per aspera ad upstream
+> > >
+> > > Anyway, looking for "tc" instead of "alltests" is probably better, as
+> > > it only runs mktemp when at least the tc test is selected, both
+> > > manually or via make check from topdir, eg.g
+> > >
+> > > ifeq ($(MAKECMDGOALS),tc)
+> > >
+> > > Do you agree?
+> >
+> > Why use /tmp at all for this config file?
+>
+> To me any path could work, both /tmp or in the current dir, I have no
+> preference.
+> The important thing is to remove them wherever they are, as clobbering
+> the build dir is bad as messing /tmp.
+>
+> Anyway, I double checked, and the only target which uses that
+> temporary file is 'alltests' so, if the path is ok, I think that the
+> condition "ifeq ($(MAKECMDGOALS),alltests)" is the only one which
+> fixes the issue and keeps the behaviour unaltered.
+> I did some quick tests and it works for me.
+>
+> Bye,
+> --
+> Matteo Croce
+> per aspera ad upstream
 
-> > OK I want to try to organize a little more concisely some of the
-> > discussion on this, because there is a very large amount of volume
-> > to date and I think we need to try to narrow the focus back down
-> > again.
+Hi,
 
-Sounds good to me!
+any more thoughts about this patch?
 
-> > I'm going to use a few terms here.  Some of these I really don't
-> > like, but I want to be unambiguous *and* (at least for now) I want
-> > to avoid the very overloaded term "device".
-> > 
-> > I have lots more to say, but let's start with a top-level picture,
-> > to make sure we're all on the same page.
-> > 
-> >          WWAN Communication
-> >          Channel (Physical)
-> >                  |     ------------------------
-> > ------------     v     |           :+ Control |  \
-> > >          |-----------|           :+ Data    |  |
-> > >    AP    |           | WWAN unit :+ Voice   |   > Functions
-> > >          |===========|           :+ GPS     |  |
-> > 
-> > ------------     ^     |           :+ ...     |  /
-> >                  |     -------------------------
-> >           Multiplexed WWAN
-> >            Communication
-> >          Channel (Physical)
-
-Sounds right to me. I'm not sure if you're distinguishing here between
-the "Data function" and multiple data channels to the data function, but
-at this point I guess it doesn't matter.
-
-> > - The *AP* is the main CPU complex that's running Linux on one or
-> >   more CPU cores.
-> > - A *WWAN unit* is an entity that shares one or more physical
-> >   *WWAN communication channels* with the AP.
-> > - A *WWAN communication channel* is a bidirectional means of
-> >   carrying data between the AP and WWAN unit.
-> > - A WWAN communication channel carries data using a *WWAN protocol*.
-> > - A WWAN unit implements one or more *WWAN functions*, such as
-> >   5G data, LTE voice, GPS, and so on.
-> > - A WWAN unit shall implement a *WWAN control function*, used to
-> >   manage the use of other WWAN functions, as well as the WWAN unit
-> >   itself.
-
-I think here we need to be more careful. I don't know how you want to
-call it, but we actually have multiple levels of control here.
-
-You have
- * hardware control, to control how you actually use the (multiple or
-   not) physical communication channel(s) to the WWAN unit
- * this is partially exposed to userspace via the WWAN netlink family or
-   something like that, so userspace can create new netdevs to tx/rx
-   with the "data function" and to the network; note that it could be
-   one or multiple
- * WWAN control, which is typically userspace communicating with the
-   WWAN control function in the WWAN unit, but this can take different
-   forms (as I mentioned earlier, e.g. AT commands, MBIM, QMI)
-
-> > - The AP communicates with a WWAN function using a WWAN protocol.
-
-Right, that's just device specific (IPA vs. Intel vs. ...)
-
-> > - A WWAN physical channel can be *multiplexed*, in which case it
-> >   carries the data for one or more *WWAN logical channels*.
-
-This ... depends a bit on how you exactly define a physical channel
-here. Is that, to you, the PCIe/USB link? In that case, yes, obviously
-you have only one physical channel for each WWAN unit.
-
-However, I'd probably see this slightly differently, because e.g. the
-Intel modem has multiple DMA engines, and so you actually have multiple
-DMA rings to talk to the WWAN unit, and I'd have called each DMA ring a
-physical channel. And then, you just have a 1:1 from physical to logical
-channel since it doesn't actually carry a multiplexing protocol.
-
-> > - A multiplexed WWAN communication channel uses a *WWAN wultiplexing
-> >   protocol*, which is used to separate independent data streams
-> >   carrying other WWAN protocols.
-
-Like just described, this isn't really needed and is a device-specific
-property.
-
-> > - A WWAN logical channel carries a bidirectional stream of WWAN
-> >   protocol data between an entity on the AP and a WWAN function.
-> > 
-> > Does that adequately represent a very high-level picture of what
-> > we're trying to manage?
-
-Pretty much.
-
-I only disagree slightly on the control planes (there are multiple, and
-multiple options for the "Control function" one), and on the whole
-notion of physical link/logical link/multiplexing which is device
-specific.
-
-> > And if I understand it right, the purpose of the generic framework
-> > being discussed is to define a common mechanism for managing (i.e.,
-> > discovering, creating, destroying, querying, configuring, enabling,
-> > disabling, etc.) WWAN units and the functions they implement, along
-> > with the communication and logical channels used to communicate with
-> > them.
-
-Well, some subset of that matrix, the framework won't actually destroy
-WWAN units I hope ;-)
-
-But yes. I'd probably captured it in layers, and say that we have a
-
-WWAN framework layer
- - discover, query, configure WWAN units
- - enable, disable channels to the functions inside the WWAN units
-
-WWAN device driver
- - implement (partial) API offered by WWAN framework layer to allow
-   these things
-   (sometimes may not allow creating more control or data channels for
-   example, and fixed function channels are precreated, but then can
-   still discover data about the device and configure the channels
- - implement the device-specific protocols etc. necessary to achieve
-   this
-
-Userspace
- - uses control function channel (e.g. TTY) to talk directly to the WWAN
-   unit's control function
- - uses WWAN framework APIs to create/configure/... (other) function
-   channels
-   (it may be necessary to create a control channel even, before being
-   able to use it, since different options (AT/MBIM/QMI) may be there
- - configures netdevs (data function channels) after their creation
-
-johannes
-
+-- 
+Matteo Croce
+per aspera ad upstream
