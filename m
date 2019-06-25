@@ -2,88 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F1AB252654
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 10:19:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51AF452667
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 10:22:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728901AbfFYITU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 04:19:20 -0400
-Received: from dc2-smtprelay2.synopsys.com ([198.182.61.142]:52974 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727887AbfFYITT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 04:19:19 -0400
-Received: from mailhost.synopsys.com (unknown [10.225.0.210])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        id S1726951AbfFYIWH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 04:22:07 -0400
+Received: from mail.us.es ([193.147.175.20]:52952 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729771AbfFYIWH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Jun 2019 04:22:07 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 90430C1A82
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 10:22:05 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 77E2D115104
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 10:22:05 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 725BF1150DF; Tue, 25 Jun 2019 10:22:05 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 0B8E7DA3F4;
+        Tue, 25 Jun 2019 10:22:03 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 25 Jun 2019 10:22:03 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id F3B2EC0A95;
-        Tue, 25 Jun 2019 08:19:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1561450759; bh=aiaPDl4vQuKro8j2vf1Kqy0H4j+cOhqNeVOWB+OGgCU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=dL1lfL4rXACyWZtSu5IC6WSXdFjDZwXWGfnyOWzuuwJ8I+kZco6gwg4a7n7SW/XG4
-         NUiUBbW7l0l9COAzeakcDwEshZvyO9fsxjuMtyaG8T9S+GRiYxIZzr32OXaZPsXjiW
-         cWZ3YZ3d9Oe7F4FhOrVtFJ1Yb51f+n+QMoYI1INZyKQGw4JAx9yUaj8j/EqRySkj/x
-         4PDhzyd+xwjBlY/iFOdBc+Qm0lhkc7YaoEFi8qL/39m6KVnvuk7vkw0zmpkXkOAfs9
-         Oh1N4TJepLH17X0TU02mnSkai55czIglBRXR716OjXzSTnjjh1hOolKKgpymR7r26t
-         0rUX4PUgoRjKQ==
-Received: from de02.synopsys.com (germany.internal.synopsys.com [10.225.17.21])
-        by mailhost.synopsys.com (Postfix) with ESMTP id 0BA10A022F;
-        Tue, 25 Jun 2019 08:19:16 +0000 (UTC)
-Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by de02.synopsys.com (Postfix) with ESMTP id AC8CC3DD5A;
-        Tue, 25 Jun 2019 10:19:16 +0200 (CEST)
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>
-Subject: [PATCH net-next] net: stmmac: Fix the case when PHY handle is not present
-Date:   Tue, 25 Jun 2019 10:19:08 +0200
-Message-Id: <351cce38d1c572d8b171044f2856c7fae9f89cbc.1561450696.git.joabreu@synopsys.com>
-X-Mailer: git-send-email 2.7.4
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 9FC644265A32;
+        Tue, 25 Jun 2019 10:22:02 +0200 (CEST)
+Date:   Tue, 25 Jun 2019 10:22:02 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        davem@davemloft.net, thomas.lendacky@amd.com, f.fainelli@gmail.com,
+        ariel.elior@cavium.com, michael.chan@broadcom.com,
+        santosh@chelsio.com, madalin.bucur@nxp.com,
+        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        jeffrey.t.kirsher@intel.com, tariqt@mellanox.com,
+        saeedm@mellanox.com, jiri@mellanox.com, idosch@mellanox.com,
+        jakub.kicinski@netronome.com, peppe.cavallaro@st.com,
+        grygorii.strashko@ti.com, andrew@lunn.ch,
+        vivien.didelot@savoirfairelinux.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, linux-net-drivers@solarflare.com,
+        ganeshgr@chelsio.com, ogerlitz@mellanox.com,
+        Manish.Chopra@cavium.com, marcelo.leitner@gmail.com,
+        mkubecek@suse.cz, venkatkumar.duvvuru@broadcom.com,
+        cphealy@gmail.com
+Subject: Re: [PATCH net-next 11/12] net: flow_offload: don't allow block
+ sharing until drivers support this
+Message-ID: <20190625082202.arwgwye5teecrp7r@salvia>
+References: <20190620194917.2298-1-pablo@netfilter.org>
+ <20190620194917.2298-12-pablo@netfilter.org>
+ <20190625081627.GA2630@nanopsycho>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190625081627.GA2630@nanopsycho>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some DT bindings do not have the PHY handle. Let's fallback to manually
-discovery in case phylink_of_phy_connect() fails.
+On Tue, Jun 25, 2019 at 10:16:27AM +0200, Jiri Pirko wrote:
+> I don't understand the purpose of this patch. Could you please provide
+> some description about what this is about. mlxsw supports block sharing
+> between ports. Or what kind of "sharing" do you have in mind?
 
-Reported-by: Katsuhiro Suzuki <katsuhiro@katsuster.net>
-Fixes: 74371272f97f ("net: stmmac: Convert to phylink and remove phylib logic")
-Signed-off-by: Jose Abreu <joabreu@synopsys.com>
-Cc: Joao Pinto <jpinto@synopsys.com>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Cc: Alexandre Torgue <alexandre.torgue@st.com>
----
-Hello Katsuhiro,
+I'm refering to ethtool, tc and netfilter potentially using the same
+tc setup infrastructure infrastructure.
 
-Can you please test this patch ?
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index a48751989fa6..f4593d2d9d20 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -950,9 +950,12 @@ static int stmmac_init_phy(struct net_device *dev)
- 
- 	node = priv->plat->phylink_node;
- 
--	if (node) {
-+	if (node)
- 		ret = phylink_of_phy_connect(priv->phylink, node, 0);
--	} else {
-+
-+	/* Some DT bindings do not set-up the PHY handle. Let's try to
-+	 * manually parse it */
-+	if (!node || ret) {
- 		int addr = priv->plat->phy_addr;
- 		struct phy_device *phydev;
- 
--- 
-2.7.4
-
+At this stage, if one of them sets up the flow block, then, other
+subsystems will hit busy.
