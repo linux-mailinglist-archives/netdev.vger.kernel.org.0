@@ -2,88 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18CF4526B2
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 10:32:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8658526F0
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 10:42:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730353AbfFYIb7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 04:31:59 -0400
-Received: from mail.us.es ([193.147.175.20]:59830 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729172AbfFYIb7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Jun 2019 04:31:59 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id D1914C1A84
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 10:31:57 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id B118CDA4D0
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 10:31:57 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id AFBA029BB5; Tue, 25 Jun 2019 10:31:57 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 658AD1021A4;
-        Tue, 25 Jun 2019 10:31:55 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 25 Jun 2019 10:31:55 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id F20AF4265A2F;
-        Tue, 25 Jun 2019 10:31:54 +0200 (CEST)
-Date:   Tue, 25 Jun 2019 10:31:54 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        davem@davemloft.net, thomas.lendacky@amd.com, f.fainelli@gmail.com,
-        ariel.elior@cavium.com, michael.chan@broadcom.com,
-        santosh@chelsio.com, madalin.bucur@nxp.com,
-        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        jeffrey.t.kirsher@intel.com, tariqt@mellanox.com,
-        saeedm@mellanox.com, jiri@mellanox.com, idosch@mellanox.com,
-        jakub.kicinski@netronome.com, peppe.cavallaro@st.com,
-        grygorii.strashko@ti.com, andrew@lunn.ch,
-        vivien.didelot@savoirfairelinux.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, linux-net-drivers@solarflare.com,
-        ganeshgr@chelsio.com, ogerlitz@mellanox.com,
-        Manish.Chopra@cavium.com, marcelo.leitner@gmail.com,
-        mkubecek@suse.cz, venkatkumar.duvvuru@broadcom.com,
-        cphealy@gmail.com
-Subject: Re: [PATCH net-next 04/12] net: sched: add tcf_block_setup()
-Message-ID: <20190625083154.jfzhh22zsl3fu2ik@salvia>
-References: <20190620194917.2298-1-pablo@netfilter.org>
- <20190620194917.2298-5-pablo@netfilter.org>
- <20190621171603.GF2414@nanopsycho.orion>
+        id S1730911AbfFYIlz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 04:41:55 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:37563 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730782AbfFYIly (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 04:41:54 -0400
+Received: by mail-wm1-f67.google.com with SMTP id f17so2015113wme.2
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 01:41:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wP2rw4kyNxDZjxGdrCho3L1eyWBbf8hCIeEzpMvXyTM=;
+        b=Y1eWyt2tOpBNsP6voFncIvF/b72/LZm+Fmmf+eWLPvhpeA65Nlfm9rATHRJhw5mIU9
+         bxOFzAwpRnAWWgXlE1kdrUo6cgNpG5DdL2YerjUyRlqqPGuaUeHWupQIKF64G1/pACd8
+         5sI0YsMaqMkzor+dx8kNWbxfP2ou88a05pIUNa6bYPKovVSr/KSXJhh3vj92Ao1opZwk
+         PoT/zlGWrCVLuXUiDWLgAArKwK1HPBVYYtA0VQI1zvmADt+bUxLX8kLlz/Hb7K2qqFOM
+         uNJUNqlzkOsLdUtfFTK4OByga01XWKdm94sRKwDP6CAveTSLaVy7alaae6TJ697wlonP
+         /2mw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wP2rw4kyNxDZjxGdrCho3L1eyWBbf8hCIeEzpMvXyTM=;
+        b=TaAt7t11o1T6hJZd/3GnJm3F8Fh/KegIDXz0YCd4RsTD2/r24hIKTewUoQUXfUzjs5
+         FVxTGza0yApcyEYpuoRBhYR0MjldxtbumlDo+LKa2/CQgxOd4V3nKUMv45h2TnNpHmmC
+         HGW2+uNT8smJkrMic32Vq5qn1O5tnHcOS3THuHpFcKpGGOP/y+NWCxj/w/Aw50XCmo7O
+         kJH5SVfGMckDcsCzADpnqgLnZGoF34c8zCn7RV7HyjMIhXu2PWAkubA9H4bgjhcFM1UQ
+         /xFN1WpynKoPPL74KF1NRgy23k1soM0TKdh7OL5AkDrRipwi4ViN19K+aP2rqMhW+D5t
+         6SOw==
+X-Gm-Message-State: APjAAAXSr4DMc02+AuTL/FMkZnh1UZCpxzlpmduIkQRbAnz8ifTC1gZ/
+        XXxX3jY1B1B6lTc+I2R9PcNEvGue
+X-Google-Smtp-Source: APXvYqyZ+T8YTqLOvrTWird+BxdppUT3IBTAKSzcNIGdX+7tRr75c27UpHjeTgn7ZOzCuim9RrJXUg==
+X-Received: by 2002:a1c:b6d4:: with SMTP id g203mr18802784wmf.19.1561452112334;
+        Tue, 25 Jun 2019 01:41:52 -0700 (PDT)
+Received: from debian64.daheim (pD9E29981.dip0.t-ipconnect.de. [217.226.153.129])
+        by smtp.gmail.com with ESMTPSA id 72sm17384374wrk.22.2019.06.25.01.41.51
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 25 Jun 2019 01:41:51 -0700 (PDT)
+Received: from chuck by debian64.daheim with local (Exim 4.92)
+        (envelope-from <chunkeey@gmail.com>)
+        id 1hfh1T-0002ST-8X; Tue, 25 Jun 2019 10:41:51 +0200
+From:   Christian Lamparter <chunkeey@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH v1 1/2] dt-bindings: net: dsa: qca8k: document reset-gpios property
+Date:   Tue, 25 Jun 2019 10:41:50 +0200
+Message-Id: <08e0fd513620f03a2207b9f32637cdb434ed8def.1561452044.git.chunkeey@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190621171603.GF2414@nanopsycho.orion>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 21, 2019 at 07:16:03PM +0200, Jiri Pirko wrote:
-> Thu, Jun 20, 2019 at 09:49:09PM CEST, pablo@netfilter.org wrote:
-> 
-> [...]
-> 
-> > 
-> >+static LIST_HEAD(tcf_block_cb_list);
-> 
-> I still don't like the global list. Have to go throught the code more
-> carefully, but why you can't pass the priv/ctx from tc/netfilter. From
-> tc it would be tcf_block as it is now, from netfilter something else.
+This patch documents the qca8k's reset-gpios property that
+can be used if the QCA8337N ends up in a bad state during
+reset.
 
-This tcf_block_cb_list should go away at some point, once drivers know
-how to deal with multiple subsystems using the setup block
-infrastructure. As I said in my previous email, only one can set up
-the block at this stage, the ones coming later will hit busy.
+Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
+---
+ Documentation/devicetree/bindings/net/dsa/qca8k.txt | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.txt b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+index 93a7469e70d4..ccbc6d89325d 100644
+--- a/Documentation/devicetree/bindings/net/dsa/qca8k.txt
++++ b/Documentation/devicetree/bindings/net/dsa/qca8k.txt
+@@ -9,6 +9,10 @@ Required properties:
+ - #size-cells: must be 0
+ - #address-cells: must be 1
+ 
++Optional properties:
++
++- reset-gpios: GPIO to be used to reset the whole device
++
+ Subnodes:
+ 
+ The integrated switch subnode should be specified according to the binding
+@@ -66,6 +70,7 @@ for the external mdio-bus configuration:
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 
++			reset-gpios = <&gpio 42 GPIO_ACTIVE_LOW>;
+ 			reg = <0x10>;
+ 
+ 			ports {
+@@ -123,6 +128,7 @@ for the internal master mdio-bus configuration:
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 
++			reset-gpios = <&gpio 42 GPIO_ACTIVE_LOW>;
+ 			reg = <0x10>;
+ 
+ 			ports {
+-- 
+2.20.1
+
