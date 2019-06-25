@@ -2,73 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B85452169
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 05:54:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FCD052172
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 06:00:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727404AbfFYDxw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 23:53:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36014 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726833AbfFYDxv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Jun 2019 23:53:51 -0400
-Received: from localhost (unknown [116.226.249.212])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8450520665;
-        Tue, 25 Jun 2019 03:53:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1561434830;
-        bh=E4nE1EjWI33jbz4SGyWmu9sYfD082jUQXQQfrNoLQXU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qZ7XYeo+I3dPO32jVSB6vo+lkkvvs2U54y9HoEjCetrb+kFfpvNKInrA0qvFV3IPw
-         IOt7m52Bjp6jnuCYyATUxw1wgbaU9HAoFSXZHVEZj9cGM5NZa0d1grdnDe4CJ8ddBC
-         PFaIesiJ+pkH4VGEoyAaQYY1YbdOoOKJEJ6ubYLk=
-Date:   Tue, 25 Jun 2019 11:32:16 +0800
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Eiichi Tsukata <devel@etsukata.com>
-Cc:     jslaby@suse.com, davem@davemloft.net, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 1/2] tty: ldisc: Fix misuse of proc_dointvec
- "ldisc_autoload"
-Message-ID: <20190625033216.GA11902@kroah.com>
-References: <20190625030801.24538-1-devel@etsukata.com>
+        id S1726805AbfFYEAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 00:00:23 -0400
+Received: from mail-yw1-f65.google.com ([209.85.161.65]:33689 "EHLO
+        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726053AbfFYEAX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 00:00:23 -0400
+Received: by mail-yw1-f65.google.com with SMTP id v15so6247502ywv.0
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 21:00:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zi9UCFv4AjLIxSB/WwtCALU5aD6YqXofaXUJviL555U=;
+        b=gTRtSXBCU6WqriiUl5PuBpNPQAAWSMlAQPc+FWKvSL/W5q0Zwqv91lrIG1Lst9AH+L
+         8vYGZ0xjTZugb2HYSffe42wlWT1MFL5Fpmxz7VbdRCxgi1LqKItxgcJ0wg0607FA5PSw
+         Ko0Fvxr91Fgsy39/DtTrf3XTNLkBcDrkCa1Ak=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zi9UCFv4AjLIxSB/WwtCALU5aD6YqXofaXUJviL555U=;
+        b=de2qC+6erL0sUjryv/siRRoCNLjIXHSXN9eHNr3d1NwRgPzddkWzSrQH0Fv+6geA+g
+         lY5cYiN5XdJY6iyurdwmFXcKidR0/23emx9MeKnkKqwrxO/mReuXHx3WJjvEx52IAnsK
+         hdqeE5J5nYJU9C0l3y62EPQy+KLG9rOfYpxYq4f9YT+Y/hHHIvCG2X38U1nLIlXYl26/
+         E7OD7OLnXhHAuh7cDRISwg3/r5vxx+o0MaHM+M3y+t1ndNlzJsDN5zGv9sKSx7KGe40i
+         67ezFdaRIqQf27haalqtEKYxEY4GHgtFuOrGIWwpnQHnVVxIFFjPpPKwbgBCYNTNr+NT
+         ZRHA==
+X-Gm-Message-State: APjAAAVlsUJo92b7X4ioGYdjDhNUt6m8dyTyYkA9A4akKbfJRFJyKPQm
+        Lk6ECzPqHI12hUTj2gASyu1UY3bAzieeowgkafkE/A==
+X-Google-Smtp-Source: APXvYqw+U9W1CUKepgKmOwfli6NXkGMUcOP+H3PURD4Km6HFOPbnArancXMovku/gWc3X282Trn/Ai9N4yS27xnrZ5k=
+X-Received: by 2002:a0d:ef41:: with SMTP id y62mr91503111ywe.204.1561435221979;
+ Mon, 24 Jun 2019 21:00:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190625030801.24538-1-devel@etsukata.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <20190622004519.89335-1-maheshb@google.com>
+In-Reply-To: <20190622004519.89335-1-maheshb@google.com>
+From:   Michael Chan <michael.chan@broadcom.com>
+Date:   Mon, 24 Jun 2019 21:00:11 -0700
+Message-ID: <CACKFLinDN+cOEBfm9wnoXU-iDDtZZpCu+NPMHs9aCQ1RjJcNBw@mail.gmail.com>
+Subject: Re: [PATCH next 0/3] blackhole device to invalidate dst
+To:     Mahesh Bandewar <maheshb@google.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>,
+        Daniel Axtens <dja@axtens.net>,
+        Mahesh Bandewar <mahesh@bandewar.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 25, 2019 at 12:08:00PM +0900, Eiichi Tsukata wrote:
-> /proc/sys/dev/tty/ldisc_autoload assumes given value to be 0 or 1. Use
-> proc_dointvec_minmax instead of proc_dointvec.
-> 
-> Fixes: 7c0cca7c847e "(tty: ldisc: add sysctl to prevent autoloading of ldiscs)"
-> Signed-off-by: Eiichi Tsukata <devel@etsukata.com>
-> ---
->  drivers/tty/tty_ldisc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
-> index e38f104db174..a8ea7a35c94e 100644
-> --- a/drivers/tty/tty_ldisc.c
-> +++ b/drivers/tty/tty_ldisc.c
-> @@ -863,7 +863,7 @@ static struct ctl_table tty_table[] = {
->  		.data		= &tty_ldisc_autoload,
->  		.maxlen		= sizeof(tty_ldisc_autoload),
->  		.mode		= 0644,
-> -		.proc_handler	= proc_dointvec,
-> +		.proc_handler	= proc_dointvec_minmax,
->  		.extra1		= &zero,
->  		.extra2		= &one,
+On Fri, Jun 21, 2019 at 5:45 PM Mahesh Bandewar <maheshb@google.com> wrote:
 
-Ah, nice catch.  But this really isn't an issue as if you use a bigger
-value, things will not "break", right?
+> Well, I'm not a TCP expert and though we have experienced
+> these corner cases in our environment, I could not reproduce
+> this case reliably in my test setup to try this fix myself.
+> However, Michael Chan <michael.chan@broadcom.com> had a setup
+> where these fixes helped him mitigate the issue and not cause
+> the crash.
+>
 
-thanks,
-
-greg k-h
+I will ask the lab to test these patches tomorrow.  Thanks.
