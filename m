@@ -2,115 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C05352714
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 10:49:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE35A5271C
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 10:51:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731018AbfFYItp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 04:49:45 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:54090 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730827AbfFYItp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 04:49:45 -0400
-Received: by mail-wm1-f68.google.com with SMTP id x15so1919810wmj.3
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 01:49:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=KOwvda9mCySGzxeHFCEgnBrcwzzjWE8WcN0MIHLSctw=;
-        b=hizWZE0J7L3fS4pqVZBI50tHlG9IJ20tDww6p0ZRz/uteEDyQn5/ane+nybHMabTDu
-         ilVUqfny7saGNr5XIFBOO9vZ/bJozjkLE3cxJteLZl4eNrIeAsNHmPCTCEAaDA5AxFjW
-         2TB+lomNU4Z54Yz+vTAYM+mMTgSwNU9RWbwiCrKerkDDDiuK7qWQvw/AsW/2wM/WItJr
-         PL/Rw4m7qo4BBBY28DRSsLsMWUDgL9iTsv3sN7WNpBSSwwWpLFKqTKNWEf2uTKEw2NG+
-         zRIkvnUqLQbSLYTOk7g+BQsPcn44N39MUn1STLlDz5J49ESFP4Bl/jSEaqwlVaXQoyK7
-         8L7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=KOwvda9mCySGzxeHFCEgnBrcwzzjWE8WcN0MIHLSctw=;
-        b=C4D2cmTelZ0bSJdjjEI4VcktMrf1m9RYYT06Xi2HeMfGnJU68GrlpPBtLX6cz9spjZ
-         7iK8rU0qK2KirxXPQIOp8iXc3fw/pIkOE9DTls3096+gfXzVole69jyyHhjvqgBmyEsN
-         +U19bL7gixSPAOWZq6zHBwKPtLkSGUrHPF6xuKbuBQcbEd2jsfF+wkAR8MmfLsnoA/Tm
-         Q2puhvlDrzA08mX8JWDWPsMJ1sz6Q4NPVLMgsQev3JmfrAXK2BmyCQq7NKjIo0x+IJmp
-         TTED4lrhH6bCV0FS3rL2x4dQ+Oghy5ClvjdOIVpeVaFqpcah2YIXTwgK2G2KneIoal6C
-         B0XQ==
-X-Gm-Message-State: APjAAAXXDkg9elVAJ/Bn2k1FEm3hNtwiDlmUNChfuqAadglct8A0ln0V
-        rQDLeDfiLNEYrwz0QZat/JWk+g==
-X-Google-Smtp-Source: APXvYqyn4NmQbXvreMW+8yAcL54D3dNlbO1iU1PHEr+cgsd1ShI2EkvAcuEapZFsWjVDejQEWAVs5w==
-X-Received: by 2002:a7b:ce88:: with SMTP id q8mr19345705wmj.89.1561452582834;
-        Tue, 25 Jun 2019 01:49:42 -0700 (PDT)
-Received: from ?IPv6:2a01:e35:8b63:dc30:4dd1:811d:80c5:4a03? ([2a01:e35:8b63:dc30:4dd1:811d:80c5:4a03])
-        by smtp.gmail.com with ESMTPSA id f12sm29452526wrg.5.2019.06.25.01.49.41
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 25 Jun 2019 01:49:41 -0700 (PDT)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH net-next 1/1] tc-testing: Restore original behaviour for
- namespaces in tdc
-To:     Lucas Bates <lucasb@mojatatu.com>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, mleitner@redhat.com, vladbu@mellanox.com,
-        dcaratti@redhat.com, kernel@mojatatu.com
-References: <1561424427-9949-1-git-send-email-lucasb@mojatatu.com>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <2d79f013-903b-3305-0379-a272060168ba@6wind.com>
-Date:   Tue, 25 Jun 2019 10:49:40 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.1
+        id S1730923AbfFYIvQ convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 25 Jun 2019 04:51:16 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:6540 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727770AbfFYIvP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Jun 2019 04:51:15 -0400
+Received: from DGGEMM406-HUB.china.huawei.com (unknown [172.30.72.53])
+        by Forcepoint Email with ESMTP id 300846512F1C986639E3;
+        Tue, 25 Jun 2019 16:51:13 +0800 (CST)
+Received: from dggeme715-chm.china.huawei.com (10.1.199.111) by
+ DGGEMM406-HUB.china.huawei.com (10.3.20.214) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Tue, 25 Jun 2019 16:51:12 +0800
+Received: from dggeme763-chm.china.huawei.com (10.3.19.109) by
+ dggeme715-chm.china.huawei.com (10.1.199.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1591.10; Tue, 25 Jun 2019 16:51:12 +0800
+Received: from dggeme763-chm.china.huawei.com ([10.6.66.36]) by
+ dggeme763-chm.china.huawei.com ([10.6.66.36]) with mapi id 15.01.1591.008;
+ Tue, 25 Jun 2019 16:51:12 +0800
+From:   linmiaohe <linmiaohe@huawei.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+CC:     "kadlec@blackhole.kfki.hu" <kadlec@blackhole.kfki.hu>,
+        "fw@strlen.de" <fw@strlen.de>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
+        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
+        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
+        "coreteam@netfilter.org" <coreteam@netfilter.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "dsahern@gmail.com" <dsahern@gmail.com>,
+        Mingfangsen <mingfangsen@huawei.com>
+Subject: Re: [PATCH v3] net: netfilter: Fix rpfilter dropping vrf packets by
+ mistake
+Thread-Topic: [PATCH v3] net: netfilter: Fix rpfilter dropping vrf packets by
+ mistake
+Thread-Index: AdUrMtZeJBRdmfpcd0eT0vsD259sjw==
+Date:   Tue, 25 Jun 2019 08:51:12 +0000
+Message-ID: <badbfdd3c6474994a481375dad2a51f3@huawei.com>
+Accept-Language: en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.184.189.20]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-In-Reply-To: <1561424427-9949-1-git-send-email-lucasb@mojatatu.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 25/06/2019 à 03:00, Lucas Bates a écrit :
-> This patch restores the original behaviour for tdc prior to the
-> introduction of the plugin system, where the network namespace
-> functionality was split from the main script.
-> 
-> It introduces the concept of required plugins for testcases,
-> and will automatically load any plugin that isn't already
-> enabled when said plugin is required by even one testcase.
-> 
-> Additionally, the -n option for the nsPlugin is deprecated
-> so the default action is to make use of the namespaces.
-> Instead, we introduce -N to not use them, but still create
-> the veth pair.
-> 
-> buildebpfPlugin's -B option is also deprecated.
-> 
-> If a test cases requires the features of a specific plugin
-> in order to pass, it should instead include a new key/value
-> pair describing plugin interactions:
-> 
->         "plugins": {
->                 "requires": "buildebpfPlugin"
->         },
-> 
-> A test case can have more than one required plugin: a list
-> can be inserted as the value for 'requires'.
-> 
-> Signed-off-by: Lucas Bates <lucasb@mojatatu.com>
 
-Thank you for the follow up!
+On Wed, Jun 19, 2019 at 09:49:04AM +0000, linmiaohe wrote:
+> 
+> On 2019/6/18 23:58, Pablo Neira Ayuso wrote:
+> > On Thu, Apr 25, 2019 at 09:43:53PM +0800, linmiaohe wrote:
+> >> From: Miaohe Lin <linmiaohe@huawei.com>
+> >>
+> >> When firewalld is enabled with ipv4/ipv6 rpfilter, vrf
+> >> ipv4/ipv6 packets will be dropped because in device is vrf but out 
+> >> device is an enslaved device. So failed with the check of the 
+> >> rpfilter.
+> >>
+> >> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> >> ---
+> >> --- a/net/ipv4/netfilter/ipt_rpfilter.c
+> >> +++ b/net/ipv4/netfilter/ipt_rpfilter.c
+> >> @@ -81,6 +81,7 @@ static bool rpfilter_mt(const struct sk_buff *skb, struct xt_action_param *par)
+> >>  	flow.flowi4_mark = info->flags & XT_RPFILTER_VALID_MARK ? skb->mark : 0;
+> >>  	flow.flowi4_tos = RT_TOS(iph->tos);
+> >>  	flow.flowi4_scope = RT_SCOPE_UNIVERSE;
+> >> +	flow.flowi4_oif = l3mdev_master_ifindex_rcu(xt_in(par));
+> >>
+> >>  	return rpfilter_lookup_reverse(xt_net(par), &flow, xt_in(par),
+> >> --- a/net/ipv6/netfilter/ip6t_rpfilter.c
+> >> +++ b/net/ipv6/netfilter/ip6t_rpfilter.c
+> >> @@ -58,7 +58,9 @@ static bool rpfilter_lookup_reverse6(struct net *net, const struct sk_buff *skb,
+> >>  	if (rpfilter_addr_linklocal(&iph->saddr)) {
+> >>  		lookup_flags |= RT6_LOOKUP_F_IFACE;
+> >>  		fl6.flowi6_oif = dev->ifindex;
+> >> -	} else if ((flags & XT_RPFILTER_LOOSE) == 0)
+> >> +	} else if (((flags & XT_RPFILTER_LOOSE) == 0) ||
+> >> +		   (netif_is_l3_master(dev)) ||
+> >> +		   (netif_is_l3_slave(dev)))
+> >>  		fl6.flowi6_oif = dev->ifindex;
+> >>
+> >>  	rt = (void *)ip6_route_lookup(net, &fl6, skb, lookup_flags); @@
+> >> -73,6 +75,12 @@ static bool rpfilter_lookup_reverse6(struct net *net, const struct sk_buff *skb,
+> >>  		goto out;
+> >>  	}
+> >>
+> >> +	if (netif_is_l3_master(dev)) {
+> >> +		dev = dev_get_by_index_rcu(dev_net(dev), IP6CB(skb)->iif);
+> >> +		if (!dev)
+> >> +			goto out;
+> >> +	}
+> > 
+> > So, for the l3 device cases this makes:
+> > 
+> > #1 ip6_route_lookup() to fetch the route, using the device in xt_in()
+> >    (the _LOOSE flag is ignored for the l3 device case).
+> > 
+> > #2 If this is a l3dev master, then you make a global lookup for the
+> >    device using IP6CB(skb)->iif.
+> > 
+> > #3 You check if route matches with the device, using the new device
+> >    from the lookup:
+> > 
+> >    if (rt->rt6i_idev->dev == dev ...
+> > 
+> > If there is no other way to fix this, OK, that's fair enough.
+> > 
+> > Still this fix looks a bit tricky to me.
+> > 
+> > And this assymmetric between the IPv4 and IPv6 codebase looks rare.
+> > 
+> > Probably someone can explain me this in more detail? I'd appreciate.
+> > 
+> > Thanks!
+> > 
+> Thanks for explaining.
+>
+> Something must be wrong in all these helper function logic because this new code logic is hard to follow for the IPv6 chunk...
+>
+> Can you explore a more readable fix?
+>
+> So I'm not inclined to quickly take this patch.
+>
+> Thanks.
 
-Tested-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-
-[snip]
-
-> @@ -550,6 +614,7 @@ def filter_tests_by_category(args, testlist):
->  
->      return answer
->  
-> +
->  def get_test_cases(args):
->      """
->      If a test case file is specified, retrieve tests from that file.
-nit: this new line is probably a leftover of a previous version ;-)
+Thanks, I will try a more readable fix.
