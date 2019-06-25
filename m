@@ -2,73 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E6BB55285
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 16:51:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C06E552D8
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 17:06:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731155AbfFYOvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 10:51:10 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:58142 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730777AbfFYOvK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Jun 2019 10:51:10 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=ZgkOw5D3P/fjtwFB3Tcj7uXmbq5UBoyXYtEvi0Cd5KQ=; b=H31eTT/zqFXIrWiHqPMM5QkYYw
-        WYq1+nRYh3eLMpTzHQG7qEy5Ae75pW2TtG9fvMLqz9NRepPGejbzjVEun4doa8/2kLWioOy9Y1+of
-        K6kD32lrJfTt4gjLMqNUeOymXU2cJiC1NAO1NH6KvOvx3nayhOaziJTYa9M8Y6+BDXBc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hfmmn-000747-F7; Tue, 25 Jun 2019 16:51:05 +0200
-Date:   Tue, 25 Jun 2019 16:51:05 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Katsuhiro Suzuki <katsuhiro@katsuster.net>
-Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>
-Subject: Re: [PATCH net-next] net: stmmac: Fix the case when PHY handle is
- not present
-Message-ID: <20190625145105.GA4722@lunn.ch>
-References: <351cce38d1c572d8b171044f2856c7fae9f89cbc.1561450696.git.joabreu@synopsys.com>
- <78EB27739596EE489E55E81C33FEC33A0B9D78A2@DE02WEMBXB.internal.synopsys.com>
- <5859e2c5-112f-597c-3bd5-e30e96b86152@katsuster.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5859e2c5-112f-597c-3bd5-e30e96b86152@katsuster.net>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+        id S1731607AbfFYPGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 11:06:25 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:33113 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730957AbfFYPGZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 11:06:25 -0400
+Received: by mail-wr1-f65.google.com with SMTP id n9so18352948wru.0
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 08:06:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=KKPHmmBOwXnHcguGeSbnRS60AUrWXa+mblZReIDBxc8=;
+        b=jANMeXDEm+IQkcxcExpgTOW2IDCUcWHiRVWR+pZixb3GZi7Tmlx19p3Wb4JGFE5t7s
+         T7bXMp+o2vO/sAixg3pTWaFdxro6WfZ4fVH0z3HXW/55rG/1L79KV7yMuvjiA9axbQ1k
+         JRSCTq3TJER8fvV8GLJUz22THSkkecRgWyrKTQesPzBnVteozQjA/FQlhIjKVUw7t2FR
+         1w+8rYKR6Cvj23fBoaatHaw3Sv3QfxeufCNt7A8x1wLRfxTTTQ1VR878wvrpI5MhFgND
+         xxgcjJhicaTmSg8sqUpfZlsBsAYfJISgilNIrejqBOu9K3vHvJvNN1JiP6LmUi3Bnkyw
+         Am7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=KKPHmmBOwXnHcguGeSbnRS60AUrWXa+mblZReIDBxc8=;
+        b=X6rn/ksvOOykLvGd6Pm3cMO75P8/Y4lqy/Gs6rlz9d4Pzw9OsaJCCJgajuuwTbILAQ
+         iwxQTcA9zRnFXUzqi+IUlUZMp0KJpgi16Oy3dR2sbSkqKc75KUaL97YCDkxkPFw2r4zS
+         o67hOcd1VQPXGkXlqIJxxYsVaaZ8Uu8VBEKBK1N5a84KPvHtciinwXXQTjgt18cwAFVM
+         2HRmIuhdbJMjDkWoQcIY2Bowbng/OV4DOhfv3lvoQb2nvXNsXMsiWdN/qPR2wHVKwTgH
+         kv5RsYieRbQQfVVUGR0HRNC8u0hV+nLr6Gf5OZp7i2ViNZ2goo7FupllvXyKGehe2ZJ4
+         lisg==
+X-Gm-Message-State: APjAAAW4h8vT+1P6pldNgB6AxjG09zgeGBLIviOZ7E+DbQqg9vSZRwHH
+        +wRLmBWDfIiWbuYrPkPxhV4ykIyek8c=
+X-Google-Smtp-Source: APXvYqwXnoK9CGunXEK6VpkcRvlmaN8Ij7kO+tylGljQ+B0QoODFMNpRWZwkxiZI45HiOUbuV1i4LA==
+X-Received: by 2002:a5d:5303:: with SMTP id e3mr23598982wrv.239.1561475183133;
+        Tue, 25 Jun 2019 08:06:23 -0700 (PDT)
+Received: from apalos.lan (athedsl-4461147.home.otenet.gr. [94.71.2.75])
+        by smtp.gmail.com with ESMTPSA id r131sm1982108wmf.4.2019.06.25.08.06.21
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Tue, 25 Jun 2019 08:06:22 -0700 (PDT)
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     netdev@vger.kernel.org, jaswinder.singh@linaro.org
+Cc:     ard.biesheuvel@linaro.org, bjorn.topel@intel.com,
+        magnus.karlsson@intel.com, brouer@redhat.com, daniel@iogearbox.net,
+        ast@kernel.org, makita.toshiaki@lab.ntt.co.jp,
+        jakub.kicinski@netronome.com, john.fastabend@gmail.com,
+        davem@davemloft.net, Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Subject: [RFC, PATCH 0/2, net-next] net: netsec: Add XDP Support
+Date:   Tue, 25 Jun 2019 18:06:17 +0300
+Message-Id: <1561475179-7686-1-git-send-email-ilias.apalodimas@linaro.org>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 25, 2019 at 11:40:00PM +0900, Katsuhiro Suzuki wrote:
-> Hello Jose,
-> 
-> This patch works fine with my Tinker Board. Thanks a lot!
-> 
-> Tested-by: Katsuhiro Suzuki <katsuhiro@katsuster.net>
-> 
-> 
-> BTW, from network guys point of view, is it better to add a phy node
-> into device trees that have no phy node such as the Tinker Board?
+This is a respin of https://www.spinics.net/lists/netdev/msg526066.html
+Since page_pool API fixes are merged into net-next we can now safely use 
+it's DMA mapping capabilities. 
 
-Hi Katsuhiro
+The first patch changes the buffer allocation from netdev_alloc_frag() 
+to page_pool API. Although this will lead to slightly reduced performance 
+(on raw packet drops only) we can use the API for XDP buffer recycling. 
+Another side effect is a slight increase in memory usage, due to using a 
+single page per packet.
 
-It makes it less ambiguous if there is a phy-handle. It is then very
-clear which PHY should be used. For a development board, which people
-can be tinkering around with, there is a chance they add a second PHY
-to the MDIO bus, or an Ethernet switch, etc. Without explicitly
-listing the PHY, it might get the wrong one. However this is generally
-a problem if phy_find_first() is used. I think in this case, something
-is setting priv->plat->phy_addr, so it is also clearly defined which
-PHY to use.
+The second patch adds XDP support on the driver. 
+There's a bunch of interesting options that come up due to the single 
+Tx queue.
+Use of locking (to avoid messing up the Tx queue since ndo_xdp_xmit
+and the normal stack can co-exist) is one thing. 
+We also need to track down the 'buffer type' for TX and properly free or 
+recycle the packet depending on it's nature. Since we use page_pool API in 
+the XDP_TX case the buffers are already mapped for us and we only need to 
+sync them, while on the ndo_xdp_xmit we need to map and send them
 
-	  Andrew
+Ilias Apalodimas (2):
+  net: netsec: Use page_pool API
+  net: netsec: add XDP support
+
+ drivers/net/ethernet/socionext/Kconfig  |   1 +
+ drivers/net/ethernet/socionext/netsec.c | 459 ++++++++++++++++++++----
+ 2 files changed, 394 insertions(+), 66 deletions(-)
+
+-- 
+2.20.1
+
