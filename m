@@ -2,110 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 663E055162
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 16:17:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99F655516A
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 16:20:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730177AbfFYORK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 10:17:10 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:43821 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727070AbfFYORJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 10:17:09 -0400
-Received: by mail-lf1-f67.google.com with SMTP id j29so12744024lfk.10;
-        Tue, 25 Jun 2019 07:17:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vhEAym9Oy+LRbEZieoHaOWLWzaxNExkJNjRTWjG03Yo=;
-        b=KACe7FWGrMuXyXZaC07DAuFUUe/fbR8fY1bc6OdzWDrEUn5JG4dPCqG2pKiH8CGY4o
-         uirvdoOh+p/M2qSmlA9jKKtfFE1qzEUI/V+QNc7umwimg7JS0AgIEOxV2N564q7lG5Yo
-         PefDWeCaHF0rBDU2TLbKRNocgOFBkxuWjFCSABOVgB81LIayo71lediW83jF9hRQz2Kj
-         jlxac/fTaPnuRuNM31NvIrhY7uq2mHSqPhgBlkMqPTDcYr0lOUbqf6twDuqK4V1RA/ji
-         IKLaqU27X18QcfRKFJwoMqRv+7eGHVPlIm63qbRUuLzOIncbqMdz4a7UIOkC8L08Pvw+
-         yslg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vhEAym9Oy+LRbEZieoHaOWLWzaxNExkJNjRTWjG03Yo=;
-        b=nEeLI+LKS4rW5zaI7RA5QmaZXwpPv9yhFHLObnJNLncXishUX/yeW1P9nJGBQNzyGV
-         dznf8f2HY8kppiRWevqq53mbxSb+YzA/i6oF2f0S2+JAbLY+EVfXysEr8ZYfhDJaMrYv
-         v96D3b3A432uqcjBEr9WkfrqkJ66dZbOJT6SFD8Kez7frzSKDAL/Cn4shQpbKeB1r7iG
-         BlXzUb3zKwOrS0oId+e8jZxDyJDOGsgfbZ/M9EDXeDtYymH2ION80JXIPr+olqiIdLgM
-         M9zkWvH6oQUgsRWwCJ8wFzOwrYTfOrbFIkkhUSKxA++lss/bs4zgkznZl0GKEy2Qh3RE
-         AyyA==
-X-Gm-Message-State: APjAAAV4ShnSJg+0tOvFcpPe6Zk42jfkxXCuJfYxaAtx6DSFF8oCCsSt
-        41mWLRsHAD014FyuX3jUodpbJQ2xCvyZAuaC48s=
-X-Google-Smtp-Source: APXvYqz/0dW/30cDGsTotvBcFbFN7ErRxCI6FCdqHGGnMLfp8diiPkxAeJeqgMHUZuTICttdWy12glQJpNIBdQZoQ3E=
-X-Received: by 2002:ac2:4c29:: with SMTP id u9mr4062682lfq.100.1561472227090;
- Tue, 25 Jun 2019 07:17:07 -0700 (PDT)
-MIME-Version: 1.0
-References: <a5fb2545a0cf151bc443efa10c16c5a4de6f2670.1561460681.git.baruch@tkos.co.il>
-In-Reply-To: <a5fb2545a0cf151bc443efa10c16c5a4de6f2670.1561460681.git.baruch@tkos.co.il>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 25 Jun 2019 07:16:55 -0700
-Message-ID: <CAADnVQJ3MPVCL-0x2gDYbUQsrmu8WipnisqXoU8ja4vZ-5nTmA@mail.gmail.com>
-Subject: Re: [PATCH v2] bpf: fix uapi bpf_prog_info fields alignment
-To:     Baruch Siach <baruch@tkos.co.il>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, "Dmitry V . Levin" <ldv@altlinux.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
+        id S1729531AbfFYOUI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 10:20:08 -0400
+Received: from s3.sipsolutions.net ([144.76.43.62]:36574 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727070AbfFYOUI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 10:20:08 -0400
+Received: by sipsolutions.net with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1hfmId-0005Mb-Le; Tue, 25 Jun 2019 16:19:55 +0200
+Message-ID: <efbcb3b84ff0a7d7eab875c37f3a5fa77e21d324.camel@sipsolutions.net>
+Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Arnd Bergmann <arnd@arndb.de>, Alex Elder <elder@linaro.org>
+Cc:     Dan Williams <dcbw@redhat.com>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        abhishek.esse@gmail.com, Ben Chan <benchan@google.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        cpratapa@codeaurora.org, David Miller <davem@davemloft.net>,
+        DTML <devicetree@vger.kernel.org>,
+        Eric Caruso <ejcaruso@google.com>, evgreen@chromium.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-soc@vger.kernel.org, Networking <netdev@vger.kernel.org>,
+        syadagir@codeaurora.org
+Date:   Tue, 25 Jun 2019 16:19:54 +0200
+In-Reply-To: <CAK8P3a1ixL9ZjYz=pWTxvMfeD89S6QxSeHt9ZCL9dkCNV5pMHQ@mail.gmail.com> (sfid-20190624_184119_378618_FFFDB00F)
+References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
+         <a94676381a5ca662c848f7a725562f721c43ce76.camel@sipsolutions.net>
+         <CAK8P3a0kV-i7BJJ2X6C=5n65rSGfo8fUiC4J_G-+M8EctYKbkg@mail.gmail.com>
+         <fc0d08912bc10ad089eb74034726308375279130.camel@redhat.com>
+         <36bca57c999f611353fd9741c55bb2a7@codeaurora.org>
+         <153fafb91267147cf22e2bf102dd822933ec823a.camel@redhat.com>
+         <CAK8P3a2Y+tcL1-V57dtypWHndNT3eDJdcKj29c_v+k8o1HHQig@mail.gmail.com>
+         <f4249aa5f5acdd90275eda35aa16f3cfb29d29be.camel@redhat.com>
+         <CAK8P3a2nzZKtshYfomOOSYkqx5HdU15Wr9b+3va0B1euNhFOAg@mail.gmail.com>
+         <dbb32f185d2c3a654083ee0a7188379e1f88d899.camel@sipsolutions.net>
+         <d533b708-c97a-710d-1138-3ae79107f209@linaro.org>
+         <abdfc6b3a9981bcdef40f85f5442a425ce109010.camel@sipsolutions.net>
+         <db34aa39-6cf1-4844-1bfe-528e391c3729@linaro.org>
+         <CAK8P3a1ixL9ZjYz=pWTxvMfeD89S6QxSeHt9ZCL9dkCNV5pMHQ@mail.gmail.com>
+         (sfid-20190624_184119_378618_FFFDB00F)
 Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5 (3.28.5-3.fc28) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 25, 2019 at 4:07 AM Baruch Siach <baruch@tkos.co.il> wrote:
->
-> Merge commit 1c8c5a9d38f60 ("Merge
-> git://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next") undid the
-> fix from commit 36f9814a494 ("bpf: fix uapi hole for 32 bit compat
-> applications") by taking the gpl_compatible 1-bit field definition from
-> commit b85fab0e67b162 ("bpf: Add gpl_compatible flag to struct
-> bpf_prog_info") as is. That breaks architectures with 16-bit alignment
-> like m68k. Embed gpl_compatible into an anonymous union with 32-bit pad
-> member to restore alignment of following fields.
->
-> Thanks to Dmitry V. Levin his analysis of this bug history.
->
-> Cc: Jiri Olsa <jolsa@kernel.org>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-> Cc: Linus Torvalds <torvalds@linux-foundation.org>
-> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
-> ---
-> v2:
-> Use anonymous union with pad to make it less likely to break again in
-> the future.
-> ---
->  include/uapi/linux/bpf.h       | 5 ++++-
->  tools/include/uapi/linux/bpf.h | 5 ++++-
->  2 files changed, 8 insertions(+), 2 deletions(-)
->
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index a8b823c30b43..766eae02d7ae 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -3142,7 +3142,10 @@ struct bpf_prog_info {
->         __aligned_u64 map_ids;
->         char name[BPF_OBJ_NAME_LEN];
->         __u32 ifindex;
-> -       __u32 gpl_compatible:1;
-> +       union {
-> +               __u32 gpl_compatible:1;
-> +               __u32 pad;
-> +       };
+On Mon, 2019-06-24 at 18:40 +0200, Arnd Bergmann wrote:
+> On Mon, Jun 24, 2019 at 6:21 PM Alex Elder <elder@linaro.org> wrote:
+> > On 6/18/19 2:03 PM, Johannes Berg wrote:
+> > 
+> > > Really there are two possible ways (and they intersect to some extent).
+> > > 
+> > > One is the whole multi-function device, where a single WWAN device is
+> > > composed of channels offered by actually different drivers, e.g. for a
+> > > typical USB device you might have something like cdc_ether and the
+> > > usb_wwan TTY driver. In this way, we need to "compose" the WWAN device
+> > > similarly, e.g. by using the underlying USB device "struct device"
+> > > pointer to tie it together.
+> > 
+> > I *think* this model makes the most sense.  But at this point
+> > it would take very little to convince me otherwise...  (And then
+> > I saw Arnd's message advocating the other one, unfortunately...)
+> > 
+> > > The other is something like IPA or the Intel modem driver, where the
+> > > device is actually a single (e.g. PCIe) device and just has a single
+> > > driver, but that single driver offers different channels.
+> > 
+> > What I don't like about this is that it's more monolithic.  It
+> > seems better to have the low-level IPA or Intel modem driver (or
+> > any other driver that can support communication between the AP
+> > and WWAN device) present communication paths that other function-
+> > specific drivers can attach to and use.
+> 
+> I did not understand Johannes description as two competing models
+> for the same code, but rather two kinds of existing hardware that
+> a new driver system would have to deal with.
 
-Nack for the reasons explained in the previous thread
-on the same subject.
-Why cannot you go with earlier suggestion of _u32 :31; ?
+Right.
+
+> I was trying to simplify it to just having the second model, by adding
+> a hack to support the first, but my view was rather unpopular so
+> far, so if everyone agrees on one way to do it, don't worry about me ;-)
+
+:-)
+
+However, to also reply to Alex: I don't know exactly how IPA works, but
+for the Intel modem at least you can't fundamentally have two drivers
+for different parts of the functionality, since it's just a single piece
+of hardware and you need to allocate hardware resources from a common
+pool etc. So you cannot split the driver into "Intel modem control
+channel driver" and "Intel modem data channel driver". In fact, it's
+just a single "struct device" on the PCIe bus that you can bind to, and
+only one driver can bind at a time.
+
+So, IOW, I'm not sure I see how you'd split that up. I guess you could
+if you actually do something like the "rmnet" model, and I suppose
+you're free to do that for IPA if you like, but I tend to think that's
+actually a burden, not a win since you just get more complex code that
+needs to interact with more pieces. A single driver for a single
+hardware that knows about the few types of channels seems simpler to me.
+
+> - to answer Johannes question, my understanding is that the interface
+>   between kernel and firmware/hardware for IPA has a single 'struct
+>   device' that is used for both the data and the control channels,
+>   rather than having a data channel and an independent control device,
+>   so this falls into the same category as the Intel one (please correct
+>   me on that)
+
+That sounds about the same then, right.
+
+Are the control channels to IPA are actually also tunnelled over the
+rmnet protocol? And even if they are, perhaps they have a different
+hardware queue or so? That'd be the case for Intel - different hardware
+queue, same (or at least similar) protocol spoken for the DMA hardware
+itself, but different contents of the messages obviously.
+
+> - The user space being proprietary is exactly what we need to avoid
+>   with the wwan subsystem. We need to be able to use the same
+>   method for setting up Intel, Qualcomm, Samsung, Unisoc or
+>   Hisilicon modems or anything else that hooks into the subsystem,
+>   and support that in network manager as well as the Android
+>   equivalent.
+>   If Qualcomm wants to provide their own proprietary user space
+>   solution, we can't stop them, but then that should also work on
+>   all the others unless they intentionally break it. ;-)
+
+:-)
+
+I tend to think there's always going to be some level of specific
+handling here, because e.g. the Intel modem can expose MBIM or AT
+command control channels, but not much else (that'd be useful for us
+anyway, since we don't know how to speak debug protocol etc.). Other
+modems will expose *only* AT commands, or *only* MBIM, and yet others
+may also offer QMI and then that might be preferable.
+
+> > > and simply require that the channel is attached to the wwan device with
+> > > the representation-specific call (wwan_attach_netdev, wwan_attach_tty,
+> > > ...).
+> > 
+> > Or maybe have the WWAN device present interfaces with attributes,
+> > and have drivers that are appropriate for each interface attach
+> > to only the ones they recognize they support.
+> 
+> I think you both mean the same thing here, a structure with callback
+> pointers that may or may not be filled by the driver depending on its
+> capabilities.
+
+:-)
+
+> What we should try to avoid though is a way to add driver private
+> interfaces that risk having multiple drivers create similar functionality
+> in incompatible ways.
+
+Right.
+
+johannes
+
