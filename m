@@ -2,185 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D667C55BC4
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 00:58:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67FE555BE7
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 01:03:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726331AbfFYW6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 18:58:14 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:60044 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725914AbfFYW6O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 18:58:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=pg9IVgNwLl4tz4wfLPgScqnihh+uJOVWrJ8P3K+8lzE=; b=xFWVrJakND6h6O1JmHts5CoZJ
-        5syu+rWsq3AlEY5AuAvQ0XfkAqorgw5yCHq5edf0gHYHhFgSQnT79Chlq7i91bS+f7QIWKmleBP1q
-        47Sx6HxM61TBk7wezfmruYlmKYrGT5oTDYZEuDmCpcoBLP63jTKrWdtkbmTzCglvKyRmJevjYAjhz
-        cD4kWmmwGoM9yzKG4SSygorIdtCaxr4P4ZZXP7mypOL5AdoX9wcoNeO93KoaLvvFs3qiFP8m31cVQ
-        y4dslSdymncnZ/9ZaKZQFhteDeJL5NTiPVMHDnwvglKBMguJ+PqLDVWBvG2d37Fqz6bbUnfx84/Xq
-        wOXxWVbjQ==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:59020)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hfuO3-00011Y-Ps; Tue, 25 Jun 2019 23:58:04 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hfuNz-0007bd-GK; Tue, 25 Jun 2019 23:57:59 +0100
-Date:   Tue, 25 Jun 2019 23:57:59 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
-        sean.wang@mediatek.com, Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, matthias.bgg@gmail.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        frank-w@public-files.de, netdev <netdev@vger.kernel.org>,
-        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org
-Subject: Re: [PATCH RFC net-next 1/5] net: dsa: mt7530: Convert to PHYLINK API
-Message-ID: <20190625225759.zztqgnwtk4v7milp@shell.armlinux.org.uk>
-References: <20190624145251.4849-1-opensource@vdorst.com>
- <20190624145251.4849-2-opensource@vdorst.com>
- <20190624153950.hdsuhrvfd77heyor@shell.armlinux.org.uk>
- <6f80325d-4b42-6174-e050-48626f7a3662@gmail.com>
- <20190625215329.5ubixxiwprnubwmv@shell.armlinux.org.uk>
- <CA+h21hqK0VMtHpZ6eka9ESuMhsFTw2mx+c0GYmxq4_G_YmiVpg@mail.gmail.com>
+        id S1726511AbfFYXDL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 19:03:11 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:35283 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725782AbfFYXDL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 19:03:11 -0400
+Received: by mail-lf1-f66.google.com with SMTP id a25so195830lfg.2;
+        Tue, 25 Jun 2019 16:03:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=vCqj6Gl5Q+n6lzWdb5L2oHqmQfEmkpa5M5PzJg/vAX0=;
+        b=Xb+hHpzdadY3+SZLz7lziYzk74KcI7TJz4DoosGtrKHDRZWbmvbRnU0CnFGMpbcfuF
+         Pk8kgfMcbnxZL00uBqYQOwGOH9t5TcnZt6TJlMwfK2h4iErKeRRXNLG8Z4F7C8ydio1j
+         1HlMw7Gv2XjLypWKJS+g0r87+zG+TkbGD5M+MCKwEw9yRo0GLdGXm6Lfzpcu+k9UE9d0
+         F/M1TF1+T/R8J7RiHvYkadgyTfoCuki9o2u4q3pGOwFIW5+XofAOHXF5gW7KhBQtx+kT
+         A/0C/2uSQzf7ymawbvg8ME7Vop7uFjg1N3hzdSaT8Xbqmd1KmjrxGBiqWXqzyhqm7B5L
+         Mkkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=vCqj6Gl5Q+n6lzWdb5L2oHqmQfEmkpa5M5PzJg/vAX0=;
+        b=oixzy6Ral1Z03dPceB/nY3lc1BvoSFuRtvjGR3+ygYxUff+vL4ahPdcp7R8KnPN2Kf
+         1a/T2v6rdICze3xr4sAEoJFjcpPE77hmjNRDt9AAFpGWGYtWmAQxHYIZWdPWoQ5Nbex9
+         8PUWOExp3W8Hm9vlhZFtGLXJzqmyn0mxmSWIEdDTRXOU/0yi5UH6NMurViH7vg8qAzZd
+         +klxUh306G/KWp4BcMhWABBVudCa94Ec5dBGxFYAgyPO0h47YmRxmvsz9ozRQl6aZh8D
+         C9LsDJT/wpkOQEPyLgukY/FBP/8xoMLFjv6MIxjymwzepQ6XfeccGWgh1qD4JIAe+hoS
+         fXYA==
+X-Gm-Message-State: APjAAAVaOR+xyEVQcRzFLolSJUtI7VJUk9Rp8VhSal4roQaumPDeDxEE
+        qnO1Oac2UomjtymjRhMMhiyJRU5WMl/wMu3pctiSvVpx
+X-Google-Smtp-Source: APXvYqwMki2vRi0D6xb9XX2ObQWdMs2vNpF7/ZvfvRpFFo74l4CVr0RYcBMIdgXXJPnYTSSDRLHNjCE2a1Zni1qeP0M=
+X-Received: by 2002:a19:6e4d:: with SMTP id q13mr691917lfk.6.1561503788417;
+ Tue, 25 Jun 2019 16:03:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hqK0VMtHpZ6eka9ESuMhsFTw2mx+c0GYmxq4_G_YmiVpg@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+References: <20190625215239.11136-1-mic@digikod.net> <20190625215239.11136-3-mic@digikod.net>
+In-Reply-To: <20190625215239.11136-3-mic@digikod.net>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 25 Jun 2019 16:02:57 -0700
+Message-ID: <CAADnVQ+Twio22VSi21RR5TY1Zm-1xRTGmREcXLSs5Jv-KWGTiw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v9 02/10] bpf: Add eBPF program subtype and
+ is_valid_subtype() verifier
+To:     =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mic@digikod.net>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Aleksa Sarai <cyphar@cyphar.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Casey Schaufler <casey@schaufler-ca.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Drysdale <drysdale@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        James Morris <jmorris@namei.org>, Jann Horn <jann@thejh.net>,
+        John Johansen <john.johansen@canonical.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Kees Cook <keescook@chromium.org>,
+        Michael Kerrisk <mtk.manpages@gmail.com>,
+        =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mickael.salaun@ssi.gouv.fr>,
+        Paul Moore <paul@paul-moore.com>,
+        Sargun Dhillon <sargun@sargun.me>,
+        "Serge E . Hallyn" <serge@hallyn.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Stephen Smalley <sds@tycho.nsa.gov>, Tejun Heo <tj@kernel.org>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Thomas Graf <tgraf@suug.ch>, Tycho Andersen <tycho@tycho.ws>,
+        Will Drewry <wad@chromium.org>,
+        Kernel Hardening <kernel-hardening@lists.openwall.com>,
+        Linux API <linux-api@vger.kernel.org>,
+        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 26, 2019 at 01:14:59AM +0300, Vladimir Oltean wrote:
-> On Wed, 26 Jun 2019 at 00:53, Russell King - ARM Linux admin
-> <linux@armlinux.org.uk> wrote:
-> >
-> > On Tue, Jun 25, 2019 at 11:24:01PM +0300, Vladimir Oltean wrote:
-> > > Hi Russell,
-> > >
-> > > On 6/24/19 6:39 PM, Russell King - ARM Linux admin wrote:
-> > > > This should be removed - state->link is not for use in mac_config.
-> > > > Even in fixed mode, the link can be brought up/down by means of a
-> > > > gpio, and this should be dealt with via the mac_link_* functions.
-> > > >
-> > >
-> > > What do you mean exactly that state->link is not for use, is that true in
-> > > general?
-> >
-> > Yes.  mac_config() should not touch it; it is not always in a defined
-> > state.  For example, if you set modes via ethtool (the
-> > ethtool_ksettings_set API) then state->link will probably contain
-> > zero irrespective of the true link state.
-> >
-> 
-> Experimentally, state->link is zero at the same time as state->speed
-> is -1, so just ignoring !state->link made sense. This is not in-band
-> AN. What is your suggestion? Should I proceed to try and configure the
-> MAC for SPEED_UNKNOWN?
+On Tue, Jun 25, 2019 at 3:04 PM Micka=C3=ABl Sala=C3=BCn <mic@digikod.net> =
+wrote:
+>
+> The goal of the program subtype is to be able to have different static
+> fine-grained verifications for a unique program type.
+>
+> The struct bpf_verifier_ops gets a new optional function:
+> is_valid_subtype(). This new verifier is called at the beginning of the
+> eBPF program verification to check if the (optional) program subtype is
+> valid.
+>
+> The new helper bpf_load_program_xattr() enables to verify a program with
+> subtypes.
+>
+> For now, only Landlock eBPF programs are using a program subtype (see
+> next commits) but this could be used by other program types in the
+> future.
+>
+> Signed-off-by: Micka=C3=ABl Sala=C3=BCn <mic@digikod.net>
+> Cc: Alexei Starovoitov <ast@kernel.org>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: David S. Miller <davem@davemloft.net>
+> Link: https://lkml.kernel.org/r/20160827205559.GA43880@ast-mbp.thefaceboo=
+k.com
+> ---
+>
+> Changes since v8:
+> * use bpf_load_program_xattr() instead of bpf_load_program() and add
+>   bpf_verify_program_xattr() to deal with subtypes
+> * remove put_extra() since there is no more "previous" field (for now)
+>
+> Changes since v7:
+> * rename LANDLOCK_SUBTYPE_* to LANDLOCK_*
+> * move subtype in bpf_prog_aux and use only one bit for has_subtype
+>   (suggested by Alexei Starovoitov)
 
-What would you have done with a PHY when the link is down, what speed
-would you have configured in the phylib adjust_link callback?  phylib
-also sets SPEED_UNKNOWN/DUPLEX_UNKNOWN when the link is down.
-
-What we do in Marvell drivers is set to the lowest speed (10M) in such
-cases, which is fine as the MAC supports 10M.
-
-It wouldn't be appropriate for phylink to force something on MAC
-drivers, it's easier if the MAC just defaults SPEED_UNKNOWN to something
-itself.
-
-> 
-> > It exists in this structure because it was convenient to just use one
-> > structure to store all the link information in various parts of the
-> > code, and when requesting the negotiated in-band MAC configuration.
-> >
-> > I've come to the conclusion that that decision was a mistake, based
-> > on patches such as the above mistakenly thinking that everything in
-> > the state structure is fair game.  I've since updated the docs to
-> > explicitly spell it out, but I'm also looking at the feasibility of
-> > changing the mac_config() interface entirely - splitting it into two
-> > (mac_config_fixed() and mac_config_inband()) and passing only the
-> > appropriate parameters to each.
-> >
-> > However, having looked at that, I think such a change will make some
-> > MAC drivers quite a bit more complicated - having all the config
-> > steps in one method appears to make the configuration of MAC drivers
-> > easier (eg, mvneta, mvpp2.)
-> >
-> > > In drivers/net/dsa/sja1105/sja1105_main.c, if I remove the "if
-> > > (!state->link)" guard, I see PHYLINK calls with a SPEED_UNKNOWN argument for
-> > > ports that are BR_STATE_DISABLED. Is that normal?
-> >
-> > This looks like another driver which has been converted to phylink
-> > without my review; I certainly wasn't aware of it.  It gets a few
-> > things wrong, such as:
-> >
-> > 1) not checking state->interface in the validate callback - so it
-> >    is basically saying that it can support any PHY interface mode
-> >    that the kernel happens to support.
-> >
-> 
-> Partially true. It does check the DT bindings for supported MII modes
-> in sja1105_init_mii_settings (for fundamental reasons... the switch
-> expects an 'all-in-one' configuration buffer with the operating modes
-> of all MACs - don't ask me to delay the uploading of this static
-> config until all ports collected their interface_mode from phylink via
-> the mac_config callback - it's a deadlock).
-
-Ok, so you need to reject interface modes that are not compatible
-with the currently configured mode in the validate() callback, but
-please keep PHY_INTERFACE_MODE_NA reporting back the capabilities.
-(this is now documented.)
-
-> It is a gigabit switch with MII/RMII/RGMII MACs - I have never seen
-> any PHY wired for these modes that can change system interface type.
-
-It is unlikely that MII/RMII/RGMII will switch modes, but in terms of
-correct implementation, sticking to the way the function is expected
-to behave means that I don't get surprises when changing phylink layer
-in the future.
-
-> 
-> > 2) if phylink is configured to use in-band, then state->speed is
-> >    undefined; this driver will fail.  (If folk don't want to support
-> >    that, we ought to have a way to tell phylink to reject anything
-> >    that attempts to set it to in-band mode!)
-> >
-> 
-> Ok.
-> 
-> > 3) it doesn't implement phylink_mac_link_state DSA ops, so it doesn't
-> >    support SGMII or 802.3z phy interface modes (see 1).
-> >
-> 
-> No, it doesn't.
-> Some odd switch in this device family supports SGMII on 1 of its
-> ports, however I haven't put my hands on it.
-> When I do I'll add checks for strange scenarios, like connecting it to
-> an Aquantia PHY that can switch between SGMII and USXGMII (although
-> why would anyone pair a 10G capable PHY to a 1G capable MAC...)
-
-It's unlikely that it would switch between SGMII and USXGMII
-dynamically, as USXGMII supports speeds from 10G down to 10M.
-
-Where interface mode switching tends to be used is with modes such
-as 10GBASE-R, which doesn't support anything except 10G.  In order
-for the PHY to operate at slower speeds, it has a few options:
-
-1) perform rate adaption.
-2) dynamically switch interface type to an interface type that
-   supports the desired speed.
-3) just not support slower speeds.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+sorry to say, but I don't think the landlock will ever land,
+since posting huge patches once a year is missing a lot of development
+that is happening during that time.
+This 2/10 patch is an example.
+subtype concept was useful 2 years ago when v6 was posted.
+Since then bpf developers faced very similar problem in other parts
+and it was solved with 'expected_attach_type' field.
+See commit 5e43f899b03a ("bpf: Check attach type at prog load time")
+dated March 2018.
