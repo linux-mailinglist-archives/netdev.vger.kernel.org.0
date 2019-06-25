@@ -2,126 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E150354FCE
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 15:07:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EB1E54FE6
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 15:11:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729605AbfFYNHX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 09:07:23 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:54078 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726702AbfFYNHW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 09:07:22 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 7D51560300; Tue, 25 Jun 2019 13:07:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1561468041;
-        bh=CcFZpoPGTc3R9QzFAqU/CmzyZo4NI5N6xiJoDmFW92s=;
-        h=Date:From:To:Cc:Subject:From;
-        b=SCtf8mJn9SJH5NIBvEoEed+Kc1ZluLVAl/hga81vb2FYx/8XYjU6B7g0loHHuJunb
-         Qtm9/GQuV+vlvz3kx/NtXp+Fs3EEyaCM5Rdt0oqGY3GfUVYHP8Wenb37JF48ihabkx
-         BFjiUPzoaZVPDkmiG5sY/CNEzvgs3odouQU5K068=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from chinagar-linux.qualcomm.com (blr-c-bdr-fw-01_globalnat_allzones-outside.qualcomm.com [103.229.19.19])
-        (using TLSv1.2 with cipher DHE-RSA-AES128-SHA (128/128 bits))
+        id S1729605AbfFYNLX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 09:11:23 -0400
+Received: from smtprelay-out1.synopsys.com ([198.182.47.102]:56450 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726702AbfFYNLX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 09:11:23 -0400
+Received: from mailhost.synopsys.com (dc8-mailhost2.synopsys.com [10.13.135.210])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: chinagar@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 30DAC6028D;
-        Tue, 25 Jun 2019 13:07:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1561468040;
-        bh=CcFZpoPGTc3R9QzFAqU/CmzyZo4NI5N6xiJoDmFW92s=;
-        h=Date:From:To:Cc:Subject:From;
-        b=W59WBdEyNhwFkgPqz/yYiuflg/5vdeBwx4l0JE+hdM3P0uzy5rhhJTItVH1lMAyin
-         egWCB715qOHCnImSI4JMD2nCmtkGtJ0C09YPOIfDiSraWKZuQkmQawHI6REzgrp7Ec
-         tjv4Ph8gRF268xSi/EFieysFe9f3aMCneC7wCr+Y=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 30DAC6028D
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=chinagar@codeaurora.org
-Date:   Tue, 25 Jun 2019 18:37:07 +0530
-From:   Chinmay Agarwal <chinagar@codeaurora.org>
-To:     netdev@vger.kernel.org
-Cc:     sharathv@codeaurora.org, kapandey@codeaurora.org
-Subject: Warnings generated from tcp_sacktag_write_queue.
-Message-ID: <20190625130706.GA6891@chinagar-linux.qualcomm.com>
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id A3497C0BDF;
+        Tue, 25 Jun 2019 13:11:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1561468282; bh=pVOI7vtpkaOEo69Q/qZzk7oLFXaKmC7L4sMOnj6pYa8=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=CKkjHwmPT3HKFCIiQWDzBwir8qzzY1cPH8KDT90y1wI5BBNrQB4NXjJ1MPAtC8Oeg
+         q+mZaKxqadKqX7eBu+SSmvFeGKLFZj9jFP9DlI/Lgz2/KiLxk9dQEvNX+MG9BG9QjF
+         8MIi98Db6S0lO3U70W1ur5E8TKl6M2lKVPuEcYL96ebDIkQwwoWS87C2AsVZWjvfTY
+         6hzSSucJ54+tPHWCUg+iEbu6iavhRC1noUPoMzwfUXm/N4XH+/krYfMiJZIQdcbJUL
+         viArzcf35U1VFoG7rKCNoEpTSLMav5BcuxNAc0EicNyGR3DlqP551r2Ac9zxBIL2SC
+         92wsvtaqppgJw==
+Received: from us01wehtc1.internal.synopsys.com (us01wehtc1-vip.internal.synopsys.com [10.12.239.236])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mailhost.synopsys.com (Postfix) with ESMTPS id 1B768A0068;
+        Tue, 25 Jun 2019 13:11:22 +0000 (UTC)
+Received: from DE02WEHTCA.internal.synopsys.com (10.225.19.92) by
+ us01wehtc1.internal.synopsys.com (10.12.239.235) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Tue, 25 Jun 2019 06:11:21 -0700
+Received: from DE02WEMBXB.internal.synopsys.com ([fe80::95ce:118a:8321:a099])
+ by DE02WEHTCA.internal.synopsys.com ([::1]) with mapi id 14.03.0415.000; Tue,
+ 25 Jun 2019 15:11:18 +0200
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Katsuhiro Suzuki <katsuhiro@katsuster.net>
+CC:     Joao Pinto <Joao.Pinto@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>
+Subject: RE: [PATCH net-next] net: stmmac: Fix the case when PHY handle is
+ not present
+Thread-Topic: [PATCH net-next] net: stmmac: Fix the case when PHY handle is
+ not present
+Thread-Index: AQHVKy6wyQrkI1N/ykesAgacT59cX6asWGJA
+Date:   Tue, 25 Jun 2019 13:11:17 +0000
+Message-ID: <78EB27739596EE489E55E81C33FEC33A0B9D78A2@DE02WEMBXB.internal.synopsys.com>
+References: <351cce38d1c572d8b171044f2856c7fae9f89cbc.1561450696.git.joabreu@synopsys.com>
+In-Reply-To: <351cce38d1c572d8b171044f2856c7fae9f89cbc.1561450696.git.joabreu@synopsys.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.107.19.16]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear All,
+++ Katsuhiro
 
-We are hitting the following WARN_ON condition:
+From: Jose Abreu <joabreu@synopsys.com>
 
-	WARN_ON((int)tcp_packets_in_flight(tp) < 0);
+> Some DT bindings do not have the PHY handle. Let's fallback to manually
+> discovery in case phylink_of_phy_connect() fails.
+>=20
+> Reported-by: Katsuhiro Suzuki <katsuhiro@katsuster.net>
+> Fixes: 74371272f97f ("net: stmmac: Convert to phylink and remove phylib l=
+ogic")
+> Signed-off-by: Jose Abreu <joabreu@synopsys.com>
+> Cc: Joao Pinto <jpinto@synopsys.com>
+> Cc: David S. Miller <davem@davemloft.net>
+> Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+> Cc: Alexandre Torgue <alexandre.torgue@st.com>
+> ---
+> Hello Katsuhiro,
+>=20
+> Can you please test this patch ?
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/=
+net/ethernet/stmicro/stmmac/stmmac_main.c
+> index a48751989fa6..f4593d2d9d20 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> @@ -950,9 +950,12 @@ static int stmmac_init_phy(struct net_device *dev)
+> =20
+>  	node =3D priv->plat->phylink_node;
+> =20
+> -	if (node) {
+> +	if (node)
+>  		ret =3D phylink_of_phy_connect(priv->phylink, node, 0);
+> -	} else {
+> +
+> +	/* Some DT bindings do not set-up the PHY handle. Let's try to
+> +	 * manually parse it */
+> +	if (!node || ret) {
+>  		int addr =3D priv->plat->phy_addr;
+>  		struct phy_device *phydev;
+> =20
+> --=20
+> 2.7.4
 
-	tcp_packets_in_flight =  packets_out –( lost_out +
-	sacked_out ) + retrans_out  (This value is coming -ve)
-
-The tcp socket being used is in fin_wait_1 state.
-The values for variables just before the crash:
-packets_out = 0,
-retrans_out = 28,
-lost_out = 38,
-sacked_out = 8
-
-
-The only place I can find the packets_out value being set as 0 is:
-
-void tcp_write_queue_purge(struct sock *sk)
-{
-...
-
-	tcp_sk(sk)->packets_out = 0;
-        inet_csk(sk)->icsk_backoff = 0;
-}
-
-Is there some code flow where packets_out can be set to 0 and other
-values can remain unchanged?
-If not, is there some scenario which may lead to "tcp_write_queue_purge"
-called and not followed up by "tcp_clear_retrans"?
-
-According to my understanding we should call "tcp_clear_retrans" after
-setting packets_out to 0.
-
-[ 1950.556150] Call trace:
-[ 1950.558689] tcp_sacktag_write_queue+0x704/0x72c
-[ 1950.561313] init: Untracked pid 10745 exited with status 0
-[ 1950.563441] tcp_ack+0x3a4/0xd40
-[ 1950.563447] tcp_rcv_state_process+0x1e8/0xbbc
-[ 1950.563457] tcp_v4_do_rcv+0x18c/0x1cc
-[ 1950.563461] tcp_v4_rcv+0x84c/0x8a8
-[ 1950.563471] ip_protocol_deliver_rcu+0xdc/0x190
-[ 1950.563474] ip_local_deliver_finish+0x64/0x80
-[ 1950.563479] ip_local_deliver+0xc4/0xf8
-[ 1950.563482] ip_rcv_finish+0x214/0x2e0
-[ 1950.563486] ip_rcv+0x2fc/0x39c
-[ 1950.563496] __netif_receive_skb_core+0x698/0x84c
-[ 1950.563499] __netif_receive_skb+0x3c/0x7c
-[ 1950.563503] process_backlog+0x98/0x148
-[ 1950.563506] net_rx_action+0x128/0x388
-[ 1950.563519] __do_softirq+0x20c/0x3f0
-[ 1950.563528] irq_exit+0x9c/0xa8
-[ 1950.563536] handle_IPI+0x174/0x278
-[ 1950.563540] gic_handle_irq+0x124/0x1c0
-[ 1950.563544] el1_irq+0xb4/0x12c
-[ 1950.563556] lpm_cpuidle_enter+0x3f4/0x430
-[ 1950.563561] cpuidle_enter_state+0x124/0x25c
-[ 1950.563565] cpuidle_enter+0x30/0x40
-[ 1950.563575] call_cpuidle+0x3c/0x60
-[ 1950.563579] do_idle+0x190/0x228
-[ 1950.563583] cpu_startup_entry+0x24/0x28
-[ 1950.563588] secondary_start_kernel+0x12c/0x138
-
-Thanks and Regards
-Chinmay Agarwal
 
