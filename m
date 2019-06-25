@@ -2,189 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 90E845570E
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 20:21:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79DB755718
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 20:23:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732903AbfFYSVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 14:21:02 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:38048 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727138AbfFYSVB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 14:21:01 -0400
-Received: by mail-wr1-f66.google.com with SMTP id d18so18998814wrs.5
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 11:20:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pHXn/oXijnPhxKbzH9Dce5cPW6eiiOtMpHg7PFsf77s=;
-        b=foEMgRF4AIkaUvGA6MeaS6F8yypcXeQs4MS+YlFPnEJo4cO1AZMySPlM9/cpZ66edj
-         bohYrhy2XgqU3Bus/sBZLDS6sWTeEiC6iVfVvGRH50dsubMGAWAxx5QBoNe20tGm1BrA
-         2ubXJKUTUATZP2pi1rgpPAa0czb7ZGA21ox9v0ea1kNcirjl+uB+a0Phmt+a4O3g4mRY
-         c8cE5qhPbdAuFt9XQIhCd+B1G9qyankcgeb9KH2PfcpRfPEqBTZN+4ftF8f3/Vklab+T
-         de5keOWBb9IUY7ZFCvfTISRVmjyLjn1rdH8CKKRhhwwHOB4aCaSLVNe+N+H168qZIxaU
-         VCiA==
-X-Gm-Message-State: APjAAAW3Lbah1QAuofInOlMGcGwqyC+UUg5NY2PfFth5MHXG7AvBvKn+
-        VMdXbLrhN+rq0m9ydeEFCRPBOWLGnfKTWoXx/zY=
-X-Google-Smtp-Source: APXvYqzbUptIs53qBbkJj0Vfqj3HxvNzdNa3aFm5X7mZQi80n7wbC0/Dzr4T4Ra+T97CyHqWIyi30gcaatCSHGQ1/8w=
-X-Received: by 2002:adf:dbd2:: with SMTP id e18mr1947505wrj.110.1561486858993;
- Tue, 25 Jun 2019 11:20:58 -0700 (PDT)
+        id S1732921AbfFYSXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 14:23:12 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:9796 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1732917AbfFYSXL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 14:23:11 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x5PIM0BY016007
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 11:23:10 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=d1ExIXP69uhF7f8Fjq0YWM/zSbL5re4X0urT4JJCyrc=;
+ b=Ffb3VSoEg6SA5JwABhpZdMkC5/JFIpBWx7tpNce+uR+kGKl7f8l+2i8OHH8IaI4ALG0F
+ e1Aa1SmogyjScUigBjsk7rhJs4TzZxcPB/QzlKCwqtA0RKSSSlsQt3A9rTA/FSMesn4f
+ mJN6rztrJ7UwrwEBRR5YzriYGVNHbaP/OeE= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0001303.ppops.net with ESMTP id 2tbpv80h83-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 11:23:09 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 25 Jun 2019 11:23:08 -0700
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id C983B62E1DB8; Tue, 25 Jun 2019 11:23:06 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Song Liu <songliubraving@fb.com>
+Smtp-Origin-Hostname: devbig006.ftw2.facebook.com
+To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <kernel-team@fb.com>,
+        Song Liu <songliubraving@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next 0/4] sys_bpf() access control via /dev/bpf
+Date:   Tue, 25 Jun 2019 11:22:59 -0700
+Message-ID: <20190625182303.874270-1-songliubraving@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-References: <CAOftzPisP-3jN8drC6RXcTigXJjdwEnvTRvTHR-Kv4LKn4rhQQ@mail.gmail.com>
- <20190621205935.og7ajx57j7usgycq@breakpoint.cc> <CAOftzPi5SO_tZeoEs1Apd5np=Sd2fFUPm1oome_31=rMqSD-=g@mail.gmail.com>
- <b6baadcb-29af-82f1-bebe-56d5f45b12e6@gmail.com>
-In-Reply-To: <b6baadcb-29af-82f1-bebe-56d5f45b12e6@gmail.com>
-From:   Joe Stringer <joe@wand.net.nz>
-Date:   Tue, 25 Jun 2019 11:20:46 -0700
-Message-ID: <CAOftzPgOOy_jDXgBO2dJFGUU9cnAVCaXtD66R8VH3yXe7NpM7g@mail.gmail.com>
-Subject: Re: Removing skb_orphan() from ip_rcv_core()
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Joe Stringer <joe@wand.net.nz>, Florian Westphal <fw@strlen.de>,
-        netdev <netdev@vger.kernel.org>,
-        john fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-25_12:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=795 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906250138
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 24, 2019 at 11:37 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> On 6/24/19 8:17 PM, Joe Stringer wrote:
-> > On Fri, Jun 21, 2019 at 1:59 PM Florian Westphal <fw@strlen.de> wrote:
-> >> Joe Stringer <joe@wand.net.nz> wrote:
-> >>> However, if I drop these lines then I end up causing sockets to
-> >>> release references too many times. Seems like if we don't orphan the
-> >>> skb here, then later logic assumes that we have one more reference
-> >>> than we actually have, and decrements the count when it shouldn't
-> >>> (perhaps the skb_steal_sock() call in __inet_lookup_skb() which seems
-> >>> to assume we always have a reference to the socket?)
-> >>
-> >> We might be calling the wrong destructor (i.e., the one set by tcp
-> >> receive instead of the one set at tx time)?
-> >
-> > Hmm, interesting thought. Sure enough, with a bit of bpftrace
-> > debugging we find it's tcp_wfree():
-> >
-> > $ cat ip_rcv.bt
-> > #include <linux/skbuff.h>
-> >
-> > kprobe:ip_rcv {
-> >        $sk = ((struct sk_buff *)arg0)->sk;
-> >        $des = ((struct sk_buff *)arg0)->destructor;
-> >        if ($sk) {
-> >                if ($des) {
-> >                        printf("received %s on %s with sk destructor %s
-> > set\n", str(arg0), str(arg1), ksym($des));
-> >                        @ip4_stacks[kstack] = count();
-> >                }
-> >        }
-> > }
-> > $ sudo bpftrace ip_rcv.bt
-> > Attaching 1 probe...
-> > received  on eth0 with sk destructor tcp_wfree set
-> > ^C
-> >
-> > @ip4_stacks[
-> >    ip_rcv+1
-> >    __netif_receive_skb+24
-> >    process_backlog+179
-> >    net_rx_action+304
-> >    __do_softirq+220
-> >    do_softirq_own_stack+42
-> >    do_softirq.part.17+70
-> >    __local_bh_enable_ip+101
-> >    ip_finish_output2+421
-> >    __ip_finish_output+187
-> >    ip_finish_output+44
-> >    ip_output+109
-> >    ip_local_out+59
-> >    __ip_queue_xmit+368
-> >    ip_queue_xmit+16
-> >    __tcp_transmit_skb+1303
-> >    tcp_connect+2758
-> >    tcp_v4_connect+1135
-> >    __inet_stream_connect+214
-> >    inet_stream_connect+59
-> >    __sys_connect+237
-> >    __x64_sys_connect+26
-> >    do_syscall_64+90
-> >    entry_SYSCALL_64_after_hwframe+68
-> > ]: 1
-> >
-> > Is there a solution here where we call the destructor if it's not
-> > sock_efree()? When the socket is later stolen, it will only return the
-> > reference via a call to sock_put(), so presumably at that point in the
-> > stack we already assume that the skb->destructor is not one of these
-> > other destructors (otherwise we wouldn't release the resources
-> > correctly).
-> >
->
-> What was the driver here ? In any case, the following patch should help.
->
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index eeacebd7debbe6a55daedb92f00afd48051ebaf8..5075b4b267af7057f69fcb935226fce097a920e2 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -3699,6 +3699,7 @@ static __always_inline int ____dev_forward_skb(struct net_device *dev,
->                 return NET_RX_DROP;
->         }
->
-> +       skb_orphan(skb);
->         skb_scrub_packet(skb, true);
->         skb->priority = 0;
->         return 0;
+Currently, most access to sys_bpf() is limited to root. However, there are
+use cases that would benefit from non-privileged use of sys_bpf(), e.g.
+systemd.
 
-Looks like it was bridge in the end, found by attaching a similar
-bpftrace program to __dev_forward_sk(). Interestingly enough, the
-device attached to the skb reported its name as "eth0" despite not
-having such a named link or named bridge that I could find anywhere
-via "ip link" / "brctl show"..
+This set introduces a new model to control the access to sys_bpf(). A
+special device, /dev/bpf, is introduced to manage access to sys_bpf().
+Users with access to open /dev/bpf will be able to access most of
+sys_bpf() features. The use can get access to sys_bpf() by opening /dev/bpf
+and use ioctl to get/put permission.
 
-    __dev_forward_skb+1
-   dev_hard_start_xmit+151
-   __dev_queue_xmit+1928
-   dev_queue_xmit+16
-   br_dev_queue_push_xmit+123
-   br_forward_finish+69
-   __br_forward+327
-   br_forward+204
-   br_dev_xmit+598
-   dev_hard_start_xmit+151
-   __dev_queue_xmit+1928
-   dev_queue_xmit+16
-   neigh_resolve_output+339
-   ip_finish_output2+402
-   __ip_finish_output+187
-   ip_finish_output+44
-   ip_output+109
-   ip_local_out+59
-   __ip_queue_xmit+368
-   ip_queue_xmit+16
-   __tcp_transmit_skb+1303
-   tcp_connect+2758
-   tcp_v4_connect+1135
-   __inet_stream_connect+214
-   inet_stream_connect+59
-   __sys_connect+237
-   __x64_sys_connect+26
-   do_syscall_64+90
-   entry_SYSCALL_64_after_hwframe+68
+The permission to access sys_bpf() is marked by bit TASK_BPF_FLAG_PERMITTED
+in task_struct. During fork(), child will not inherit this bit.
 
-So I guess something like this could be another alternative:
+libbpf APIs libbpf_[get|put]_bpf_permission() are added to help get and
+put the permission. bpftool is updated to use these APIs.
 
-diff --git a/net/bridge/br_forward.c b/net/bridge/br_forward.c
-index 82225b8b54f5..c2de2bb35080 100644
---- a/net/bridge/br_forward.c
-+++ b/net/bridge/br_forward.c
-@@ -65,6 +65,7 @@ EXPORT_SYMBOL_GPL(br_dev_queue_push_xmit);
+Song Liu (4):
+  bpf: unprivileged BPF access via /dev/bpf
+  bpf: sync tools/include/uapi/linux/bpf.h
+  libbpf: add libbpf_[get|put]_bpf_permission()
+  bpftool: use libbpf_[get|put]_bpf_permission()
 
-int br_forward_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
-{
-+       skb_orphan(skb);
-       skb->tstamp = 0;
-       return NF_HOOK(NFPROTO_BRIDGE, NF_BR_POST_ROUTING,
-                      net, sk, skb, NULL, skb->dev,
+ Documentation/ioctl/ioctl-number.txt |  1 +
+ include/linux/bpf.h                  | 12 +++++
+ include/linux/sched.h                |  8 ++++
+ include/uapi/linux/bpf.h             |  5 ++
+ kernel/bpf/arraymap.c                |  2 +-
+ kernel/bpf/cgroup.c                  |  2 +-
+ kernel/bpf/core.c                    |  4 +-
+ kernel/bpf/cpumap.c                  |  2 +-
+ kernel/bpf/devmap.c                  |  2 +-
+ kernel/bpf/hashtab.c                 |  4 +-
+ kernel/bpf/lpm_trie.c                |  2 +-
+ kernel/bpf/offload.c                 |  2 +-
+ kernel/bpf/queue_stack_maps.c        |  2 +-
+ kernel/bpf/reuseport_array.c         |  2 +-
+ kernel/bpf/stackmap.c                |  2 +-
+ kernel/bpf/syscall.c                 | 72 +++++++++++++++++++++-------
+ kernel/bpf/verifier.c                |  2 +-
+ kernel/bpf/xskmap.c                  |  2 +-
+ kernel/fork.c                        |  4 ++
+ net/core/filter.c                    |  6 +--
+ tools/bpf/bpftool/feature.c          |  2 +-
+ tools/bpf/bpftool/main.c             |  5 ++
+ tools/include/uapi/linux/bpf.h       |  5 ++
+ tools/lib/bpf/libbpf.c               | 54 +++++++++++++++++++++
+ tools/lib/bpf/libbpf.h               |  7 +++
+ tools/lib/bpf/libbpf.map             |  2 +
+ 26 files changed, 178 insertions(+), 35 deletions(-)
+
+--
+2.17.1
