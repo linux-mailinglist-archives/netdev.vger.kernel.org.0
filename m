@@ -2,96 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C2B2754D37
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 13:06:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F294A54D3C
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 13:07:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730277AbfFYLG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 07:06:58 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:37280 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730028AbfFYLG6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 07:06:58 -0400
-Received: by mail-qk1-f195.google.com with SMTP id d15so12184626qkl.4
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 04:06:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=v9S+EOmNcUXRrGjNn2Sv/m2GVrjpg3onsj1s7RcBoZM=;
-        b=iuftpYJEjZ064//Z4zse81SRmw3hm7aWTINc/EhYV9rWzjSYnODWTrpsGPZZNeK8su
-         rMR8k4TxBsr+aBTFJFUvMQ4GZSxrJ6Z7dL37Qi1wnhaazm6D6nEeAbTu3qEkjwjkbkqY
-         TGnjx6t+Ev6o6qSs9JmNJ/DNaja2wSJIqWZ8PdqXF3Zl8Qe7uWVAddbgYn+v0WCL+7Oc
-         3xNYcoDIzjrRDeEx8GnCeHaMkwohLw7fC80pQSXeWUbskSXjxGehb0E2O4nCTqjFTTMK
-         ckVTetnkXfKFMYaXE7Xcc7N/VmT7SRt1UfM+Ss42f4ipgKpbU7igM25IStgjw0PNEEjl
-         wJ1A==
+        id S1730333AbfFYLHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 07:07:09 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:44774 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730028AbfFYLHI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 07:07:08 -0400
+Received: by mail-io1-f69.google.com with SMTP id i133so25840817ioa.11
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 04:07:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=v9S+EOmNcUXRrGjNn2Sv/m2GVrjpg3onsj1s7RcBoZM=;
-        b=KMzrvkbGlOye2Viw90/e+D1/wAjfLz+1gdlbZr4Meq6uWMRTRVEDrCkZyhKtrYWZLH
-         QXQOmkPXTumaTjAe368PmTUcUTNODZpXzdOuM0xCJ9Eo5GFn3/jH/d3BxaSdkdn2d9B7
-         3MtY7n+LHNW3o3Gwfvrm/7ukMyk2+perFduxtgoyPWlxdJ0Ciw/8lubFlMFEhCh1LQcq
-         YFUUst5E8RbR5rKwWfCg3BlA5/o7O/yz3E9N9WIv2pXrgH5uzejj605Mrb8iByDa7Tmx
-         Rf+T/Wo+FXcWVA2Z5RCflIjT2r+fywm7KNQmwmWChjCzOBBHLsi8wc3d+98D27iHo56h
-         dDng==
-X-Gm-Message-State: APjAAAWWURmErniMlJecg0w6qBG4bGmP6IuMKIv6hkM4btYXw/A31BDX
-        WXKlZWnVm1ENtdsrwL/fMo851g==
-X-Google-Smtp-Source: APXvYqy3WybT+tAqFcJG2018tFrdeQb0V26aGZ6e3FIxNG/SRgsIEhIRaeIKyspum/lDK3RULVqepg==
-X-Received: by 2002:ae9:ef47:: with SMTP id d68mr22536437qkg.225.1561460817421;
-        Tue, 25 Jun 2019 04:06:57 -0700 (PDT)
-Received: from [192.168.0.124] (24-212-162-241.cable.teksavvy.com. [24.212.162.241])
-        by smtp.googlemail.com with ESMTPSA id z18sm7499626qka.12.2019.06.25.04.06.56
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 25 Jun 2019 04:06:56 -0700 (PDT)
-Subject: Re: Removing skb_orphan() from ip_rcv_core()
-To:     Joe Stringer <joe@wand.net.nz>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Florian Westphal <fw@strlen.de>,
-        netdev <netdev@vger.kernel.org>,
-        john fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Paolo Abeni <pabeni@redhat.com>
-References: <CAOftzPisP-3jN8drC6RXcTigXJjdwEnvTRvTHR-Kv4LKn4rhQQ@mail.gmail.com>
- <ab745372-35eb-8bb8-30a4-0e861af27ac2@mojatatu.com>
- <CAOftzPj_+6hfrb-FwU+E2P83RLLp6dtv0nJizSG1Fw7+vCgYwA@mail.gmail.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <f69a7930-6e8a-d717-0aa4-a63ea6e7b5e0@mojatatu.com>
-Date:   Tue, 25 Jun 2019 07:06:55 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=qzgsIU1dRxRmXgOlEkre4AMGP4RvzeRe5DGSMkE/ppw=;
+        b=IaW3PjCbv07LVZrqE6J9DIvllwmKDRR2Z/xdrRgi4K1oYOe7lBQInTk+7Cn2LSKuNn
+         NPFKOmxQCpsRoZLBFciLidTk+NPh+qEKucNohSOLXqTZmjoqkCP7/2IfrdNhwiPj8gRB
+         WvZa5JCGNYvj8KNH5KF0jVtcgw+a2qGCSXBcgU3GCdXehIsLorKozIhIQismliYmp450
+         wEFjKlnfq4fm+5k3RHsB5vW417vgBqTpS4bywS8S2wYIEBNa0rzrG3Vzu5yORVvQUODg
+         oOwPxLqaTncpXNhrfHfNyvvtGNUCUahqDZucWPyL9V51nRZLUgFrzIxDEhd8R4JhygTu
+         8wGQ==
+X-Gm-Message-State: APjAAAWw+/HpGlMcojdxR2k9C9aez9l4fpmb+pT39+/erjc4Au6lEUni
+        XvPHJT8X0LkdgZU1SCsG9jCpvaiVP4cdzxGJznYY5d6t4+LB
+X-Google-Smtp-Source: APXvYqx5xkRPTcPbrwX3dp6qoJ7Ik+fjSNqoEAi4q4LrTMrWd+mlMliOkXtkb0uRGSylTGfbpKB0hStImkiG+yiGncsw+j8B/92+
 MIME-Version: 1.0
-In-Reply-To: <CAOftzPj_+6hfrb-FwU+E2P83RLLp6dtv0nJizSG1Fw7+vCgYwA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a5e:d615:: with SMTP id w21mr6768839iom.0.1561460827606;
+ Tue, 25 Jun 2019 04:07:07 -0700 (PDT)
+Date:   Tue, 25 Jun 2019 04:07:07 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f5d536058c23ed60@google.com>
+Subject: memory leak in genl_register_family
+From:   syzbot <syzbot+fc577f12f25f2ac3b211@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dsahern@gmail.com, johannes.berg@intel.com,
+        linux-kernel@vger.kernel.org, marcel@holtmann.org,
+        mkubecek@suse.cz, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, yuehaibing@huawei.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-06-24 11:26 p.m., Joe Stringer wrote:
-[..]
-> 
-> I haven't got as far as UDP yet, but I didn't see any need for a
-> dependency on netfilter.
+Hello,
 
-I'd be curious to see what you did. My experience, even for TCP is
-the socket(transparent/tproxy) lookup code (to set skb->sk either
-listening or established) is entangled in
-CONFIG_NETFILTER_SOMETHING_OR_OTHER. You have to rip it out of
-there (in the tproxy tc action into that  code). Only then can you
-compile out netfilter.
-I didnt bother to rip out code for udp case.
-i.e if you needed udp to work with the tc action,
-youd have to turn on NF. But that was because we had
-no need for udp transparent proxying.
-IOW:
-There is really no reason, afaik, for tproxy code to only be
-accessed if netfilter is compiled in. Not sure i made sense.
+syzbot found the following crash on:
 
-cheers,
-jamal
+HEAD commit:    4b972a01 Linux 5.2-rc6
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1305b385a00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=1db8bd6825f9661c
+dashboard link: https://syzkaller.appspot.com/bug?extid=fc577f12f25f2ac3b211
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15bd1385a00000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+fc577f12f25f2ac3b211@syzkaller.appspotmail.com
+
+BUG: memory leak
+unreferenced object 0xffff88812a7f0c80 (size 64):
+   comm "swapper/0", pid 1, jiffies 4294937561 (age 881.930s)
+   hex dump (first 32 bytes):
+     2f 64 65 76 69 63 65 73 2f 76 69 72 74 75 61 6c  /devices/virtual
+     2f 6e 65 74 2f 6c 6f 2f 71 75 65 75 65 73 2f 74  /net/lo/queues/t
+   backtrace:
+     [<00000000d629f5fa>] kmemleak_alloc_recursive  
+include/linux/kmemleak.h:43 [inline]
+     [<00000000d629f5fa>] slab_post_alloc_hook mm/slab.h:439 [inline]
+     [<00000000d629f5fa>] slab_alloc mm/slab.c:3326 [inline]
+     [<00000000d629f5fa>] __do_kmalloc mm/slab.c:3658 [inline]
+     [<00000000d629f5fa>] __kmalloc+0x161/0x2c0 mm/slab.c:3669
+     [<000000003291d450>] kmalloc_array include/linux/slab.h:670 [inline]
+     [<000000003291d450>] genl_register_family net/netlink/genetlink.c:355  
+[inline]
+     [<000000003291d450>] genl_register_family+0x5e1/0x7e0  
+net/netlink/genetlink.c:322
+     [<00000000f8e2dd0d>] netlbl_unlabel_genl_init+0x15/0x17  
+net/netlabel/netlabel_unlabeled.c:1387
+     [<00000000189b4a0c>] netlbl_netlink_init+0x39/0x46  
+net/netlabel/netlabel_user.c:65
+     [<0000000083adc8f0>] netlbl_init+0x65/0xa8  
+net/netlabel/netlabel_kapi.c:1502
+     [<000000003a053024>] do_one_initcall+0x5c/0x2ca init/main.c:915
+     [<00000000d70991fc>] do_initcall_level init/main.c:983 [inline]
+     [<00000000d70991fc>] do_initcalls init/main.c:991 [inline]
+     [<00000000d70991fc>] do_basic_setup init/main.c:1009 [inline]
+     [<00000000d70991fc>] kernel_init_freeable+0x1af/0x26c init/main.c:1169
+     [<00000000232b80c4>] kernel_init+0x10/0x155 init/main.c:1087
+     [<000000006b3bb174>] ret_from_fork+0x1f/0x30  
+arch/x86/entry/entry_64.S:352
+
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
