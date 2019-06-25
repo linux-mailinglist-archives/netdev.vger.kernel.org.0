@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 373C8521C0
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 06:06:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9B60521C4
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 06:06:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728553AbfFYEGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 00:06:38 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:38050 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726631AbfFYEGh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 00:06:37 -0400
-Received: by mail-pf1-f195.google.com with SMTP id y15so4086873pfn.5;
-        Mon, 24 Jun 2019 21:06:37 -0700 (PDT)
+        id S1728620AbfFYEGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 00:06:49 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:40170 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726631AbfFYEGs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 00:06:48 -0400
+Received: by mail-pl1-f196.google.com with SMTP id a93so8093806pla.7;
+        Mon, 24 Jun 2019 21:06:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=7yVxj7qKDtvL1bbpI3Z9+uvLXYYsfj4EfWE4pae8tOM=;
-        b=TgO1bd2E3txQAnLRmmK7nedFUr0FJpwuh/ubKaSgG7b8MsG7RFDKCXwsST+HwENLIl
-         u6kdJClv3IX6Fn3/ErXTChm+Jy9KfhiPBxx4dA2hLtd6zdCJtWSCqrYXfGkKbu2SOUXB
-         rupZZ3OgxlRZtooEg5sWSoFTfsOZXjbkpKk9wEjD9tZ9HPSi4C8Pivuipn0npv5AM9pN
-         OiYAkoGb9v2izLjeXnMmTShUre3BdVyjU0WNXgxDIn6DKeF1oPT7yZ9UM8NjQ6mp4Fy6
-         Tqm+LdQoYbCaCKCKN97LieN+C7FIsw6OLZ7DfaVpD5xWBoXLKKwGShfjLiohv+vbJlbg
-         4deQ==
+        bh=5JwRNim3rOSWEmaOkWCuYyX/NF5I/OM/lvjIjZv9TgA=;
+        b=gt4q1QhMb1DH/lpvQ7aBuGothKXXSjA1h2R+DXuEwbbwhT+4GGxBNuQiJrNG3g6wlc
+         2sOM2sn6kNuDk65YciXdt6FXp9a8zFL91wUsRfPuALOsMq5ulGBgpq5zZ9rYyKFro2ti
+         rkTC2gbwRznm72eBguYZkoLCBhvA7e6ovlEl+KbusRkQdgP8TESDeUnTi1AG9FtaMqhc
+         vpqCQTGnQzukvTtXyn+hJmc6vqUMhESkcLhktKd6SkjsGlKG7T0inoRkqtUyi/xb6dKR
+         lroymLNRVneRrp1OsqI/ooFoV9QAlBsqdsVLMEHsO9Ks9gYXFYWNK8hRHmc9QWbFSosv
+         b4gg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=7yVxj7qKDtvL1bbpI3Z9+uvLXYYsfj4EfWE4pae8tOM=;
-        b=TJfuQZrnAkvGYfk5TsGXkt/KTK43Ia9Kb/oTQJlAbxHc8S37Bm567RNa2rG+aY3Hbk
-         RmdMS7jiFEmxlR3M67C+/mvRrTHsu3q2bgKeEeyXmgUiJVGsL6m1DrMRunF+TY31aA92
-         yn4um1TGP2lWUDHrB75vQ2CnAsBBsHx5KEoe9ttCu2TQ6XRGeKmdN4LLUTvfeOh5rN1j
-         5Q79/yb+idIbWrpKf8rdOvRXU2ctXAdUSMF+voEJvWbgVc6LhH1X3N+7IJB2F6sx0d2D
-         zm+dPeWVt87wcOtxW+YZcJFydjo0svzU2vq16EVagppIV+xiZDftXq6Hu+4rcsOm0kRS
-         4twQ==
-X-Gm-Message-State: APjAAAUnPRF3al9h4Udgum7zY7X3klus1WLmAKgCstSiOLYJSCuLagkJ
-        o4PFTzuC9GcUGbrsbojF9lI=
-X-Google-Smtp-Source: APXvYqyxnGl4XLuhQlGi7nSJsX/EE/BeJaywRYOKuiI0RY7sOOkzi2bS3YItHdEFZiG0l4utiPR3dw==
-X-Received: by 2002:a63:d53:: with SMTP id 19mr1890365pgn.453.1561435596806;
-        Mon, 24 Jun 2019 21:06:36 -0700 (PDT)
+        bh=5JwRNim3rOSWEmaOkWCuYyX/NF5I/OM/lvjIjZv9TgA=;
+        b=q8Fzg05AWD+2uxbovrEoIkbiocs+elKHz5+KzarfQz+qWkSijuambbdkGewgAtl79N
+         lEWO79yC/TCV99FPN9T9Aoaw5zes4oKVMvhCJndiiausbd3kf2r6HZWFCHwCzQ+fgcmJ
+         wDyxBG2bATyOu0lIViHHPNNkBzk3tHtAdvkh/JbjsOGmSoKnv14rGTIy1i/CxX9Bn+2J
+         VmWpjj2xICkWEE6yYC8ZMqILkxf5oAtBtEGRBeQQIBXIULSHyTPTmie/T7R4U2HC6pr0
+         xe7KT9zdab/hXsO9xsnpyP5sVli56pYmS+prol8d0NOyn0UrPfyc0vxzqcOhd5awolnT
+         8jeg==
+X-Gm-Message-State: APjAAAXqCLMoJTdgltQVUct0LSFM1HYGTN+UFrme4yZllgmPfn5Ceaxk
+        26RCvalYSrhGMhdKHvZudoI=
+X-Google-Smtp-Source: APXvYqxe+YkEEX8coxMf/ZLBIurRDaBiUt3OmZVW/IvWX4kLCOfOcSFunco4dZa4p7+f354X1KstdQ==
+X-Received: by 2002:a17:902:1e6:: with SMTP id b93mr108038324plb.295.1561435607482;
+        Mon, 24 Jun 2019 21:06:47 -0700 (PDT)
 Received: from debian.net.fpt ([58.187.168.105])
-        by smtp.gmail.com with ESMTPSA id b24sm12408944pfd.98.2019.06.24.21.06.26
+        by smtp.gmail.com with ESMTPSA id b24sm12408944pfd.98.2019.06.24.21.06.37
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 24 Jun 2019 21:06:36 -0700 (PDT)
+        Mon, 24 Jun 2019 21:06:46 -0700 (PDT)
 From:   Phong Tran <tranmanphong@gmail.com>
 To:     tranmanphong@gmail.com
 Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com,
@@ -65,9 +65,9 @@ Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com,
         sebastian.hesselbarth@gmail.com, shawnguo@kernel.org,
         songliubraving@fb.com, sudeep.holla@arm.com, swinslow@gmail.com,
         tglx@linutronix.de, tony@atomide.com, will@kernel.org, yhs@fb.com
-Subject: [PATCH V3 13/15] ARM: mm: cleanup cppcheck shifting errors
-Date:   Tue, 25 Jun 2019 11:03:54 +0700
-Message-Id: <20190625040356.27473-14-tranmanphong@gmail.com>
+Subject: [PATCH V3 14/15] ARM: bpf: cleanup cppcheck shifting error
+Date:   Tue, 25 Jun 2019 11:03:55 +0700
+Message-Id: <20190625040356.27473-15-tranmanphong@gmail.com>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190625040356.27473-1-tranmanphong@gmail.com>
 References: <20190624135105.15579-1-tranmanphong@gmail.com>
@@ -83,26 +83,22 @@ change to use BIT() marco for improvement.
 
 Signed-off-by: Phong Tran <tranmanphong@gmail.com>
 ---
- arch/arm/mm/fault.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/arm/net/bpf_jit_32.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/mm/fault.h b/arch/arm/mm/fault.h
-index c063708fa503..8a706cb7f21d 100644
---- a/arch/arm/mm/fault.h
-+++ b/arch/arm/mm/fault.h
-@@ -5,9 +5,9 @@
- /*
-  * Fault status register encodings.  We steal bit 31 for our own purposes.
-  */
--#define FSR_LNX_PF		(1 << 31)
--#define FSR_WRITE		(1 << 11)
--#define FSR_FS4			(1 << 10)
-+#define FSR_LNX_PF		BIT(31)
-+#define FSR_WRITE		BIT(11)
-+#define FSR_FS4			BIT(10)
- #define FSR_FS3_0		(15)
- #define FSR_FS5_0		(0x3f)
+diff --git a/arch/arm/net/bpf_jit_32.c b/arch/arm/net/bpf_jit_32.c
+index adff54c312bf..8904d16a8754 100644
+--- a/arch/arm/net/bpf_jit_32.c
++++ b/arch/arm/net/bpf_jit_32.c
+@@ -612,7 +612,7 @@ static inline void emit_a32_mov_se_i64(const bool is64, const s8 dst[],
+ 				       const u32 val, struct jit_ctx *ctx) {
+ 	u64 val64 = val;
  
+-	if (is64 && (val & (1<<31)))
++	if (is64 && (val & BIT(31)))
+ 		val64 |= 0xffffffff00000000ULL;
+ 	emit_a32_mov_i64(dst, val64, ctx);
+ }
 -- 
 2.11.0
 
