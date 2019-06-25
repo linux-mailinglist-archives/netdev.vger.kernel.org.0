@@ -2,74 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EECC55C9B
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 01:47:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E47955C9F
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 01:48:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726287AbfFYXrW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 19:47:22 -0400
-Received: from mail-qk1-f177.google.com ([209.85.222.177]:42016 "EHLO
-        mail-qk1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726077AbfFYXrW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 19:47:22 -0400
-Received: by mail-qk1-f177.google.com with SMTP id b18so168812qkc.9
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 16:47:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=HXIN3AK6tVdQORJggp2c7cMamk7lRUuRm0beM4tlZbE=;
-        b=ArzGp6HZc2aR2YxslCfWgTfi/ppOKx2pkPg9mQhnhH411HMGpzID0/UergeOajGKNp
-         PUqa96bFmTRPisJn66sDf1Pk0AajeMZGaFTYrM0bB2A0yD6KInVK/4BS0VMNNuKaAoSP
-         +PJ4sSzxdMpmuPvt+YbgPsC1UxyXrGraae6VU33uQlzV8XmJLrcUgf7jEqfASlKRxCoI
-         yqf2HMlYseyEdI5f1lAdGzHFBnTgTTbzKdzPzpUsvEUzpAE1SRf5Z6ggDFMKpN0d0Mqp
-         ve0nw5K3zq0raf9Jw9Th5mgT4wPjyT/LSl6lIaE06hLhSMls1QGdftTLsRaZu/LZRuBU
-         ZP5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=HXIN3AK6tVdQORJggp2c7cMamk7lRUuRm0beM4tlZbE=;
-        b=DK+bkkJ1u6pgrGcMPeNFOp8QrPQLneKNf6suI9hf+hcSKbvNsiXKWfBUx/kqh0HKc1
-         2ZIMTLQwQc1fsy6DwB4H5nMBnHVWJOG8+msYy9cx8+dMejJsRxbGmIB+bfrYcuRapBom
-         NoWQ1Yml2nL70oiJDYOXDvrIXUuC5BIqnROmZBt+zShMmvv+XVWE68GI9VphL6Yv/b2F
-         s6I7FDhgHZyXRf6iVWbrWo7xvuxD2j5K1SWRjx3Dj7JZZPP3mkSHOZbqkv+LQuveopJc
-         XsvICAGZsCNZdL3j51PkRcO7AKcgKwH4MzA+nNJQnzKmO+LFFxX2B7nY2GOZFdABCvP/
-         asMA==
-X-Gm-Message-State: APjAAAWuNXDpW0xnlk2U4CPhVCLNNPAPYmqD9chK9Cc2WFgy5dD3F31R
-        tD0j4CoqkiWykPmxqsbcrdVShLP2C0E=
-X-Google-Smtp-Source: APXvYqxNl+t/obEZeu00T/1wE6f6v9uG2577r+hqx/C5hrka32EQRtceKYyi+ZKW6Kls7pm3bpkYKA==
-X-Received: by 2002:a37:6652:: with SMTP id a79mr1328334qkc.60.1561506441428;
-        Tue, 25 Jun 2019 16:47:21 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id n93sm8434490qte.1.2019.06.25.16.47.20
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 25 Jun 2019 16:47:21 -0700 (PDT)
-Date:   Tue, 25 Jun 2019 16:47:13 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 12/18] ionic: Add async link status check and
- basic stats
-Message-ID: <20190625164713.00ecc9aa@cakuba.netronome.com>
-In-Reply-To: <20190620202424.23215-13-snelson@pensando.io>
-References: <20190620202424.23215-1-snelson@pensando.io>
-        <20190620202424.23215-13-snelson@pensando.io>
-Organization: Netronome Systems, Ltd.
+        id S1726373AbfFYXsM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 19:48:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39846 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726037AbfFYXsM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Jun 2019 19:48:12 -0400
+Received: from gmail.com (unknown [104.132.1.77])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 905A92086D;
+        Tue, 25 Jun 2019 23:48:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1561506491;
+        bh=IIPnw17DMud2IaI5vgEyfR+P3UuBx+ITkJ6rG4E0/Zw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YdV2OgLAzb3QWIbIVBE+1Nl4jWGTlSEpUeKyjuhshQ5iyMDWHYzMnPwdXtw4XiTNM
+         Qlxvmu3vya3XBKrFZhs2Es4bATlzE9X90mNaVtgT3Pb2Mf6AIFRrheD9lOiitAgGAM
+         aOWIXSJfI4ZF3nZLsa28aqfknN+f2T7fsNojlPCM=
+Date:   Tue, 25 Jun 2019 16:48:09 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     syzbot <syzbot+8893700724999566d6a9@syzkaller.appspotmail.com>,
+        akpm@linux-foundation.org, ast@kernel.org, cai@lca.pw,
+        crecklin@redhat.com, daniel@iogearbox.net, keescook@chromium.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: KASAN: slab-out-of-bounds Write in validate_chain
+Message-ID: <20190625234808.GB116876@gmail.com>
+References: <000000000000e672c6058bd7ee45@google.com>
+ <0000000000007724d6058c2dfc24@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0000000000007724d6058c2dfc24@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 20 Jun 2019 13:24:18 -0700, Shannon Nelson wrote:
-> +	/* filter out the no-change cases */
-> +	if ((link_up && netif_carrier_ok(netdev)) ||
-> +	    (!link_up && !netif_carrier_ok(netdev)))
+Hi John,
 
-nit: these are both bools, you can compare them:
+On Tue, Jun 25, 2019 at 04:07:00PM -0700, syzbot wrote:
+> syzbot has bisected this bug to:
+> 
+> commit e9db4ef6bf4ca9894bb324c76e01b8f1a16b2650
+> Author: John Fastabend <john.fastabend@gmail.com>
+> Date:   Sat Jun 30 13:17:47 2018 +0000
+> 
+>     bpf: sockhash fix omitted bucket lock in sock_close
+> 
 
-	if (link_up == netif_carrier_ok(netdev))
+Are you working on this?  This is the 6th open syzbot report that has been
+bisected to this commit, and I suspect it's the cause of many of the other
+30 open syzbot reports I assigned to the bpf subsystem too
+(https://lore.kernel.org/bpf/20190624050114.GA30702@sol.localdomain/).
 
-> +		return;
+Also, this is happening in mainline (v5.2-rc6).
+
+- Eric
