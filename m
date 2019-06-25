@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 428D755A98
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 00:07:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6015D55A9C
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 00:07:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726373AbfFYWH1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 18:07:27 -0400
+        id S1726396AbfFYWH3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 18:07:29 -0400
 Received: from mga12.intel.com ([192.55.52.136]:34253 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726287AbfFYWH1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Jun 2019 18:07:27 -0400
+        id S1725782AbfFYWH2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Jun 2019 18:07:28 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 25 Jun 2019 15:07:27 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 25 Jun 2019 15:07:28 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.63,417,1557212400"; 
-   d="scan'208";a="172511934"
+   d="scan'208";a="172511944"
 Received: from vpatel-desk.jf.intel.com (HELO localhost.localdomain) ([10.7.159.52])
-  by orsmga002.jf.intel.com with ESMTP; 25 Jun 2019 15:07:26 -0700
+  by orsmga002.jf.intel.com with ESMTP; 25 Jun 2019 15:07:27 -0700
 From:   Vedang Patel <vedang.patel@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     jeffrey.t.kirsher@intel.com, davem@davemloft.net, jhs@mojatatu.com,
@@ -28,9 +28,9 @@ Cc:     jeffrey.t.kirsher@intel.com, davem@davemloft.net, jhs@mojatatu.com,
         l@dorileo.org, jakub.kicinski@netronome.com, m-karicheri2@ti.com,
         sergei.shtylyov@cogentembedded.com, eric.dumazet@gmail.com,
         aaron.f.brown@intel.com, Vedang Patel <vedang.patel@intel.com>
-Subject: [PATCH net-next v6 1/8] igb: clear out skb->tstamp after reading the txtime
-Date:   Tue, 25 Jun 2019 15:07:12 -0700
-Message-Id: <1561500439-30276-2-git-send-email-vedang.patel@intel.com>
+Subject: [PATCH net-next v6 2/8] etf: Don't use BIT() in UAPI headers.
+Date:   Tue, 25 Jun 2019 15:07:13 -0700
+Message-Id: <1561500439-30276-3-git-send-email-vedang.patel@intel.com>
 X-Mailer: git-send-email 2.7.3
 In-Reply-To: <1561500439-30276-1-git-send-email-vedang.patel@intel.com>
 References: <1561500439-30276-1-git-send-email-vedang.patel@intel.com>
@@ -39,39 +39,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If a packet which is utilizing the launchtime feature (via SO_TXTIME socket
-option) also requests the hardware transmit timestamp, the hardware
-timestamp is not delivered to the userspace. This is because the value in
-skb->tstamp is mistaken as the software timestamp.
-
-Applications, like ptp4l, request a hardware timestamp by setting the
-SOF_TIMESTAMPING_TX_HARDWARE socket option. Whenever a new timestamp is
-detected by the driver (this work is done in igb_ptp_tx_work() which calls
-igb_ptp_tx_hwtstamps() in igb_ptp.c[1]), it will queue the timestamp in the
-ERR_QUEUE for the userspace to read. When the userspace is ready, it will
-issue a recvmsg() call to collect this timestamp.  The problem is in this
-recvmsg() call. If the skb->tstamp is not cleared out, it will be
-interpreted as a software timestamp and the hardware tx timestamp will not
-be successfully sent to the userspace. Look at skb_is_swtx_tstamp() and the
-callee function __sock_recv_timestamp() in net/socket.c for more details.
+The BIT() macro isn't exported as part of the UAPI interface. So, the
+compile-test to ensure they are self contained fails. So, use _BITUL()
+instead.
 
 Signed-off-by: Vedang Patel <vedang.patel@intel.com>
 ---
- drivers/net/ethernet/intel/igb/igb_main.c | 1 +
- 1 file changed, 1 insertion(+)
+ include/uapi/linux/pkt_sched.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index fc925adbd9fa..f66dae72fe37 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -5688,6 +5688,7 @@ static void igb_tx_ctxtdesc(struct igb_ring *tx_ring,
- 	 */
- 	if (tx_ring->launchtime_enable) {
- 		ts = ns_to_timespec64(first->skb->tstamp);
-+		first->skb->tstamp = 0;
- 		context_desc->seqnum_seed = cpu_to_le32(ts.tv_nsec / 32);
- 	} else {
- 		context_desc->seqnum_seed = 0;
+diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
+index 8b2f993cbb77..f88c4e0bd9e5 100644
+--- a/include/uapi/linux/pkt_sched.h
++++ b/include/uapi/linux/pkt_sched.h
+@@ -988,8 +988,8 @@ struct tc_etf_qopt {
+ 	__s32 delta;
+ 	__s32 clockid;
+ 	__u32 flags;
+-#define TC_ETF_DEADLINE_MODE_ON	BIT(0)
+-#define TC_ETF_OFFLOAD_ON	BIT(1)
++#define TC_ETF_DEADLINE_MODE_ON	_BITUL(0)
++#define TC_ETF_OFFLOAD_ON	_BITUL(1)
+ };
+ 
+ enum {
 -- 
 2.7.3
 
