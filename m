@@ -2,92 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3508C55356
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 17:27:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE78055357
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 17:27:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732162AbfFYP1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 11:27:01 -0400
-Received: from www1102.sakura.ne.jp ([219.94.129.142]:31030 "EHLO
-        www1102.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728559AbfFYP1B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 11:27:01 -0400
-Received: from fsav108.sakura.ne.jp (fsav108.sakura.ne.jp [27.133.134.235])
-        by www1102.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id x5PFQxge061457;
-        Wed, 26 Jun 2019 00:26:59 +0900 (JST)
-        (envelope-from katsuhiro@katsuster.net)
-Received: from www1102.sakura.ne.jp (219.94.129.142)
- by fsav108.sakura.ne.jp (F-Secure/fsigk_smtp/530/fsav108.sakura.ne.jp);
- Wed, 26 Jun 2019 00:26:59 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/530/fsav108.sakura.ne.jp)
-Received: from [192.168.1.2] (118.153.231.153.ap.dti.ne.jp [153.231.153.118])
-        (authenticated bits=0)
-        by www1102.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id x5PFQwPa061452
-        (version=TLSv1.2 cipher=AES256-SHA bits=256 verify=NO);
-        Wed, 26 Jun 2019 00:26:59 +0900 (JST)
-        (envelope-from katsuhiro@katsuster.net)
-Subject: Re: [PATCH net-next] net: stmmac: Fix the case when PHY handle is not
- present
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>
-References: <351cce38d1c572d8b171044f2856c7fae9f89cbc.1561450696.git.joabreu@synopsys.com>
- <78EB27739596EE489E55E81C33FEC33A0B9D78A2@DE02WEMBXB.internal.synopsys.com>
- <5859e2c5-112f-597c-3bd5-e30e96b86152@katsuster.net>
- <20190625145105.GA4722@lunn.ch>
-From:   Katsuhiro Suzuki <katsuhiro@katsuster.net>
-Message-ID: <7a9ce546-7c13-a7ea-ff58-c3befe2fcf6a@katsuster.net>
-Date:   Wed, 26 Jun 2019 00:26:58 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1732237AbfFYP1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 11:27:16 -0400
+Received: from mail-pf1-f169.google.com ([209.85.210.169]:47016 "EHLO
+        mail-pf1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728559AbfFYP1Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 11:27:16 -0400
+Received: by mail-pf1-f169.google.com with SMTP id 81so9642005pfy.13
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 08:27:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MuYqTRaqjc9uhuqdQWmY4GeLMus99M2VOVLjnJLIAE8=;
+        b=ScvoKquBlpW5REp+b2xRdndihKjbeMrGqZzE9Ia20qtKfAvTXKLvGcbGrCyO6b3yHA
+         NWlYrTmruCyy5PSuoZhyZgmBgFkTjh6mm7wyBhmFZb2Pi+wUZfLbFFarP3PMcG+qWsia
+         F5o/2JsYdRzB13p8uFQHVf29sZJvUbfPHHD9Iby640DOALGnqxKbM+cHOwKOgUxOnA09
+         vDz/hXizmsywQT9GaFhCC6ia7RsO6o04PJVVhIMkTylXNHJWSBJvTOWwR+s+mc1aWRZr
+         9I8Db6jYukulKsw0EReymKsWqW58KfkeWsfJSBy9YyCipsDsJvwiRhd8Jueq0GPFZAVS
+         HPlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MuYqTRaqjc9uhuqdQWmY4GeLMus99M2VOVLjnJLIAE8=;
+        b=IdGxwpMaKLJx5kM7qdhnV+niSm4AtMieBCLj2qgyD4mPVMEStkZa+3buP+IVgCeGI5
+         qbC6WK6QN1j16skjktJHeneo5onyeXhN5u3yXeXyr75kfm/7e4UX+uazGUK/PAv9U/1z
+         dWGOiVepVEjRkcHacCnCqLktJ56q8BJsZ0rCjhR5BfoH4C/JEyxf/+ydA8aG62YX2Ku3
+         38thRwHAQ6AIxJnBfLlTxgyYA7eciF0ai+nO6lgitHNxdghJgY7cKkWY/XR5kjiBn8HH
+         DndcyT1gLKdYx0ZqMKZg/AmUZmhCsSRS2CiNuGJXuQWP6ah1hOuHlp/zc0brQ1hOjzTL
+         DQFw==
+X-Gm-Message-State: APjAAAXfBsw4iTR5t8I2OWwr754jUILlSuhhohiqic0z1eLXgIWqkWJb
+        2Q93R92Nz4nAZz20r3nU65Y=
+X-Google-Smtp-Source: APXvYqzKzSY1zFJFZ+aL3rRZiSivSTO6seMey3mjLxH6qBQ2cZb/pGk9Q9Oe62om5gTsKrkv4YzUCA==
+X-Received: by 2002:a65:645a:: with SMTP id s26mr13400495pgv.70.1561476434970;
+        Tue, 25 Jun 2019 08:27:14 -0700 (PDT)
+Received: from localhost ([2620:10d:c091:500::3:20fe])
+        by smtp.gmail.com with ESMTPSA id f10sm15627930pfd.151.2019.06.25.08.27.13
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 25 Jun 2019 08:27:13 -0700 (PDT)
+From:   Jes Sorensen <jes.sorensen@gmail.com>
+X-Google-Original-From: Jes Sorensen <Jes.Sorensen@gmail.com>
+To:     saeedm@mellanox.com
+Cc:     netdev@vger.kernel.org, kernel-team@fb.com,
+        Jes Sorensen <jsorensen@fb.com>
+Subject: [PATCH 0/1] Fix broken build of mlx5
+Date:   Tue, 25 Jun 2019 11:27:07 -0400
+Message-Id: <20190625152708.23729-1-Jes.Sorensen@gmail.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <20190625145105.GA4722@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Andrew,
+From: Jes Sorensen <jsorensen@fb.com>
 
-On 2019/06/25 23:51, Andrew Lunn wrote:
-> On Tue, Jun 25, 2019 at 11:40:00PM +0900, Katsuhiro Suzuki wrote:
->> Hello Jose,
->>
->> This patch works fine with my Tinker Board. Thanks a lot!
->>
->> Tested-by: Katsuhiro Suzuki <katsuhiro@katsuster.net>
->>
->>
->> BTW, from network guys point of view, is it better to add a phy node
->> into device trees that have no phy node such as the Tinker Board?
-> 
-> Hi Katsuhiro
-> 
-> It makes it less ambiguous if there is a phy-handle. It is then very
-> clear which PHY should be used. For a development board, which people
-> can be tinkering around with, there is a chance they add a second PHY
-> to the MDIO bus, or an Ethernet switch, etc. Without explicitly
-> listing the PHY, it might get the wrong one. However this is generally
-> a problem if phy_find_first() is used. I think in this case, something
-> is setting priv->plat->phy_addr, so it is also clearly defined which
-> PHY to use.
-> 
-> 	  Andrew
-> 
+This fixes an obvious build error that could have been caught by
+simply building the code before pushing out the patch.
 
-Hmm, I see. This stmmac driver can choose PHY by the kernel module
-parameter 'phyaddr' (if no one set this parameter, priv->plat->phy_addr
-goes to 0). So there is no ambiguous in this case and need no changes
-for device tree.
+Cheers,
+Jes
 
-Thank you for your comment.
 
-Best Regards,
-Katsuhiro Suzuki
+Jes Sorensen (1):
+  mlx5: Fix build when CONFIG_MLX5_EN_RXNFC is disabled
+
+ drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+-- 
+2.21.0
+
