@@ -2,95 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8141155AF9
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 00:22:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5B3355AFF
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 00:23:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726373AbfFYWWT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 18:22:19 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:37779 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725782AbfFYWWS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 18:22:18 -0400
-Received: by mail-qt1-f196.google.com with SMTP id y57so256625qtk.4;
-        Tue, 25 Jun 2019 15:22:18 -0700 (PDT)
+        id S1726484AbfFYWXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 18:23:38 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:36286 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726455AbfFYWXg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 18:23:36 -0400
+Received: by mail-qk1-f194.google.com with SMTP id g18so56408qkl.3;
+        Tue, 25 Jun 2019 15:23:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=UIScmuqzmHtP5cs3qdtyOOMP1G/re5ti0q7i+OMbwpQ=;
-        b=Jpjchimp2JDOYaaFB0LuvnV5+WYA0YOWS+6RM926A16OcqOWJ1qTpjdt8mP8+3tUND
-         YWmXJ+XcDKv/ivg2fgFp039T0Lu18eMwEx2Pjj1oQ5RseN3ZbHlYSEYMrzP/VRTJ0NBO
-         jiqYYN5JwqCrTh6KIbc28MT7BjCIzJj3gdc9BbBdrtwMLKavPTYQT7xlPP4a0z0uu/w/
-         BHMldNz9CFIjGvCTTM49Z4ZBjtqQnvMlfMVPp33ia56peWs47hqDi0/+dRvP0DJKn57E
-         d85KfK1aIa8FuPiKFoj6ZEkly4g6ZewoDZi8OzRrmJy1bj96TpHcl3ICR/zDzkX0uT1R
-         Golg==
+        bh=sIswbHwSgwSuwLr12QK1wbcjOcRm9pBAZPfq0tTPI80=;
+        b=Kd+OIZ4ILZQeUT4uqYRzZCi57MzQutS8qVccTvXg3Y881AcKiY/VGcvk5Tnq7TJxsi
+         aTeNWHp/cE+chparMWuUSn9pfGUxuZL34U89IAbnDl+20fpCbMBC3A6YV5r+Tzb8Mp2r
+         Xz31U3gYgxprK+5DRzhxx9nv3bGmHzztjawhgFg2/6Sf42ISGyMlbSNf1ZC1UgZbaXA6
+         yfUHQDMWB5SE/j2FAFIqwdC2x6sPwXw+QLmlZqXeA7cvL4Bk/5x+XZQr3cieIjaVQ8SL
+         rbPa7m6v/XvLiMYwJ8UvpwE0RPuifekrcaaoh3wxXOroz7eYKe2L4QsFXE9x7+NI8edP
+         hRuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=UIScmuqzmHtP5cs3qdtyOOMP1G/re5ti0q7i+OMbwpQ=;
-        b=VMjAIY0JubILrQCgCNhLLycKu5J5dUkcxrOGM2EKK3XeZmmXG5vAa3/YHwOY63uJ4j
-         Sfb1Rn71r+EgVqK2nIAzPRuRDw9cNlsfxLKjVD7XgAR7xreBhK+F2QX+yDqxS6ySYm2N
-         FcJqhbnKBOHcswCFGwinzOj6XMR5unX8vF1bfPJ1SVO7sbk7x3kswU743T1V0aYxy+3B
-         pgcwjRS/AejFStdKyGSpI4HyG/8O+QwNR4pUMZg4g32HbHvLHEE/06P3s3Fd7n6TGkxM
-         ZCB7Ms7tryPG2h5Rzx9uE5NvE0Jgyk1a3JVL1+vqivkDjjLh/EWlKin0DWoj8qWx2Ywy
-         BWpw==
-X-Gm-Message-State: APjAAAWRZqThP05Ft8jUMaUBQhWanFqrBOz81zpLIxnJVXnkj5P0h5Sx
-        rv25jxM1nH3MaS0oMoA/sEer2pUEjS3eL4FJ++VeB91J
-X-Google-Smtp-Source: APXvYqzP0Yga5zA3Nr8BCDYvonMXshDXZa/5tCad07XahrQVxkAFLOh/iJuYlAkPMsQxiXOrIKH61OQYX8r/fV8pcpk=
-X-Received: by 2002:a0c:9807:: with SMTP id c7mr629522qvd.26.1561501337824;
- Tue, 25 Jun 2019 15:22:17 -0700 (PDT)
+        bh=sIswbHwSgwSuwLr12QK1wbcjOcRm9pBAZPfq0tTPI80=;
+        b=nR9qRqxc+CmtthuxtB7Y0JBgiOIEKmQDG4BjgqeIrQtIsYNYXrsvttucspnoPtlRuZ
+         4xoejsXqmKF40VXMT1AT4Dae9ZmP2AuieYp8/DcAm8gfMsV0GsVLN3yScPb8tVx+8qjK
+         MCO4LiVYTH0UmntHsDpWvJ1AMRP97t7EY3je+xUNz/uqbtef/p/1P7FgVJAtjMvBrO1S
+         kizQtpoA8r8aqLZBnou5eqGUuLUYCCUdKGg6vqtpPxgmJl6RWL/KdVlnzeiMDl16JUfa
+         +K+eU2PC6hHWBGzZwhwG0JOBIfzeXhy2Zn7CibM2Z4NcUwPeQnhrWk30SIcwVcENe9Fo
+         qeNA==
+X-Gm-Message-State: APjAAAWQc6xbpqy41/w8tsigUrgiwDJMv6NxP1IjHJXKPhPx5X2g+UCD
+        lPrpwiPtTOCXUhPJ7YCXt5rp9KmpER7Jyw7Pwlk=
+X-Google-Smtp-Source: APXvYqyNaJzdwtghH1BJIpZux6J6aG6NzXOARLRHwdRwvCxVslZjvITlICUOdMwqZAi1K5yeWj6dSC47b+65ljYb6TY=
+X-Received: by 2002:a37:4d82:: with SMTP id a124mr995904qkb.72.1561501415343;
+ Tue, 25 Jun 2019 15:23:35 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190625114246.14726-1-ivan.khoronzhuk@linaro.org>
-In-Reply-To: <20190625114246.14726-1-ivan.khoronzhuk@linaro.org>
+References: <20190625023137.29272-1-yuehaibing@huawei.com> <20190625112104.6654a048@carbon>
+In-Reply-To: <20190625112104.6654a048@carbon>
 From:   Song Liu <liu.song.a23@gmail.com>
-Date:   Tue, 25 Jun 2019 15:22:06 -0700
-Message-ID: <CAPhsuW4oB55TNJx9stfOq68d1O8quxuhonLv0466pdAo0cR=bg@mail.gmail.com>
-Subject: Re: [[PATCH net-next]] net: core: xdp: make __mem_id_disconnect to be static
-To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Cc:     Networking <netdev@vger.kernel.org>,
+Date:   Tue, 25 Jun 2019 15:23:24 -0700
+Message-ID: <CAPhsuW7e8KLooD_ASwWE_dbJwNTcs5sqR66LTWxR-cH3SBzSJw@mail.gmail.com>
+Subject: Re: [PATCH net-next] xdp: Make __mem_id_disconnect static
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     YueHaibing <yuehaibing@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
-        xdp-newbies@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        John Fastabend <john.fastabend@gmail.com>,
         open list <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>, hawk@kernel.org
+        Networking <netdev@vger.kernel.org>, xdp-newbies@vger.kernel.org,
+        bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 25, 2019 at 6:11 AM Ivan Khoronzhuk
-<ivan.khoronzhuk@linaro.org> wrote:
+On Tue, Jun 25, 2019 at 4:52 AM Jesper Dangaard Brouer
+<brouer@redhat.com> wrote:
 >
-> Add missed static for local __mem_id_disconnect().
+> On Tue, 25 Jun 2019 10:31:37 +0800
+> YueHaibing <yuehaibing@huawei.com> wrote:
 >
-> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-
-https://patchwork.ozlabs.org/patch/1121730/
-
-I guess you are a little late. :)
-
-Please ack the other patch.
-
-Song
-
-> ---
->  net/core/xdp.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> > Fix sparse warning:
+> >
+> > net/core/xdp.c:88:6: warning:
+> >  symbol '__mem_id_disconnect' was not declared. Should it be static?
 >
-> diff --git a/net/core/xdp.c b/net/core/xdp.c
-> index b29d7b513a18..829377cc83db 100644
-> --- a/net/core/xdp.c
-> +++ b/net/core/xdp.c
-> @@ -85,7 +85,7 @@ static void __xdp_mem_allocator_rcu_free(struct rcu_head *rcu)
->         kfree(xa);
->  }
+> I didn't declare it static as I didn't want it to get inlined.  As
+> during development I was using kprobes to inspect this function.  In
+> the end I added a tracepoint in this function as kprobes was not enough
+> to capture the state needed.
 >
-> -bool __mem_id_disconnect(int id, bool force)
-> +static bool __mem_id_disconnect(int id, bool force)
->  {
->         struct xdp_mem_allocator *xa;
->         bool safe_to_remove = true;
+> So, I guess we can declare it static.
+>
+> Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+
+I think the rule is, non-static function must be declared in a header.
+
+Acked-by: Song Liu <songliubraving@fb.com>
+
+>
+> > Reported-by: Hulk Robot <hulkci@huawei.com>
+> > Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> > ---
+> >  net/core/xdp.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/net/core/xdp.c b/net/core/xdp.c
+> > index b29d7b5..829377c 100644
+> > --- a/net/core/xdp.c
+> > +++ b/net/core/xdp.c
+> > @@ -85,7 +85,7 @@ static void __xdp_mem_allocator_rcu_free(struct rcu_head *rcu)
+> >       kfree(xa);
+> >  }
+> >
+> > -bool __mem_id_disconnect(int id, bool force)
+> > +static bool __mem_id_disconnect(int id, bool force)
+> >  {
+> >       struct xdp_mem_allocator *xa;
+> >       bool safe_to_remove = true;
+>
+>
 > --
-> 2.17.1
->
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
