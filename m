@@ -2,151 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5990354F57
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 14:51:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52B2854F69
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 14:56:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731983AbfFYMva (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 08:51:30 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:33299 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731674AbfFYMv3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 08:51:29 -0400
-Received: by mail-pf1-f193.google.com with SMTP id x15so9459953pfq.0;
-        Tue, 25 Jun 2019 05:51:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=ChUqfbkNJtY1QVoFfhG4SYZiQSZDx5qq4T80tyOZU8Y=;
-        b=dJkcRi0eQAGd7DCe1OFlYbJ7wXvOC3ososcoWh2IsgW8/jf+yfbEC1EKf4RWEMwquI
-         l1aOrWH5IFWsTvFQJ8GKrPFOX9bJd8t5ZmFx9tZzYZxED4qkgIy7bP6h/hbNkFz8Pqlt
-         z6rQO0qvTKL/7nGXhxjG17ysKU6AEPqQ939gGKqf+4BNeuFHt40q/VvTjYpoDy8gpIMX
-         JOo9mv/GHk0F/bQAoMmKbTb520KsXEZT1FiuWm8LcfbQ70y4z+PQ6SSE9s8H2RtTVTwn
-         zFlvr83zzkuR9+ERoROBz3smDpIqUzqViELQxEjzq5GRTq8bxDlkGnJ5YYidJSPCUNIk
-         GdJg==
+        id S1729550AbfFYM4K convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 25 Jun 2019 08:56:10 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:44036 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726504AbfFYM4J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 08:56:09 -0400
+Received: from mail-wr1-f71.google.com ([209.85.221.71])
+        by youngberry.canonical.com with esmtps (TLS1.0:RSA_AES_128_CBC_SHA1:16)
+        (Exim 4.76)
+        (envelope-from <guilherme.piccoli@canonical.com>)
+        id 1hfkzX-0006SU-4y
+        for netdev@vger.kernel.org; Tue, 25 Jun 2019 12:56:07 +0000
+Received: by mail-wr1-f71.google.com with SMTP id r4so7940863wrt.13
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 05:56:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=ChUqfbkNJtY1QVoFfhG4SYZiQSZDx5qq4T80tyOZU8Y=;
-        b=RrJVhMF6Geix7S8mfLV3vjrpV/aqfJoTTqWbucV1tzf7MLDxaBWzE/rIlyLF5vn0yB
-         whSGN4m3wFQipwSEqH3qzVZTeXESUMTeUGaFV48xnEBD3eli/7T3p9GaV2Zi/luX71Um
-         1Swr2wvpaR2Ip+Wy+x+u9n2AkPLLDrm+LPinf1q2u7UxgC+4BHiQBiVsoj/dVdpnuMGO
-         6Id1h1QjP1Ydzj28pr9P2+Vrw0YY0lbHXZnFMGlpAEaTc7y5PNJXzxns3/z5IxfWPvV+
-         dfe7tzqJGqRJl8KUo3Y0VSzEUMpcaYVUqOdl7j7p0dkqYfAtfQO+q3R0UmXueLM6CABs
-         y/lQ==
-X-Gm-Message-State: APjAAAXrYvS9S3ctkJTlUPX8slXERwWOwkuW3bW3fjpAA8GsFjtDIQtf
-        mTjsxFo4FjBUKY3ZJa105uo=
-X-Google-Smtp-Source: APXvYqzgqqbLbw1cC+98rhu4N+kdSFSfWgUwa1Qwo8yyNnBtVvr4/1BqqAP7009ikXjidkA77WW6EA==
-X-Received: by 2002:a63:dc50:: with SMTP id f16mr39307235pgj.447.1561467088625;
-        Tue, 25 Jun 2019 05:51:28 -0700 (PDT)
-Received: from localhost ([43.224.245.181])
-        by smtp.gmail.com with ESMTPSA id u10sm12405396pfh.54.2019.06.25.05.51.27
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 25 Jun 2019 05:51:28 -0700 (PDT)
-From:   Weitao Hou <houweitaoo@gmail.com>
-To:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
-        gregkh@linuxfoundation.org, allison@lohutok.net,
-        houweitaoo@gmail.com, tglx@linutronix.de, sean@geanix.com
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] can: mcp251x: add error check when wq alloc failed
-Date:   Tue, 25 Jun 2019 20:50:48 +0800
-Message-Id: <20190625125048.28849-1-houweitaoo@gmail.com>
-X-Mailer: git-send-email 2.18.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=VJ8VdYo0DnObA64K1FvYQSMew8tJyJOTy4Xp3oei9UY=;
+        b=DX8rAoWNG/e6RezUIqaLbnbHNYRlE0AY0CZIeVJGih4SSW0WAEkmmxkXEOoIU7a7C3
+         QW+jsKIv6YOIas98ZVBYOgqTU7wZZuzCXg8ysXScX2gkNj2Y1+3PL3jD8au60nqmHG9m
+         gTcB5x2Y6nlrsLGxBh7xpMzkhEdbRau2+UyUyktVgecTsoAy4OjR82FLe3hAtJoVYT47
+         mI957PRAtrHLSUSC7NG8ZEAMbnOf2bbSwfKvOWghUaVRWhYYwWAXzS5s8wKAttBYz7T7
+         iapepYvf0PoIWbxeqrn5c6pJQHLmKTnveLTW5il0xKiTNMfPsF5yEwyXxhz2dPmZbRib
+         06Ng==
+X-Gm-Message-State: APjAAAXZnA+zCMvxzDorGO0bacVnnSAEP4WrZhhPySmRn5YvsbpxPndK
+        yRzSy9GWgbDx0HSRu7JBbhQR/CYvDzJKgTYS0aSKH9wBgiuTqqBHReHluPgZCtJpMg2ZS9YCTS1
+        Fsw/tV6KHNQRxOFZRTDTworIgauOm2jYo4Rybar+xORkAVl7jvw==
+X-Received: by 2002:a5d:61cd:: with SMTP id q13mr42183586wrv.114.1561467366947;
+        Tue, 25 Jun 2019 05:56:06 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqxyjHvrr3PM8rAn+CmesEnH4DjuM76PrrYfAJcE3RrDcoOf1ry44A1sxMnQftTGE7gshglpBIt0MUzNkOdJPRk=
+X-Received: by 2002:a5d:61cd:: with SMTP id q13mr42183574wrv.114.1561467366795;
+ Tue, 25 Jun 2019 05:56:06 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190624222356.17037-1-gpiccoli@canonical.com> <MN2PR18MB2528BCB89AC93EB791446BABD3E30@MN2PR18MB2528.namprd18.prod.outlook.com>
+In-Reply-To: <MN2PR18MB2528BCB89AC93EB791446BABD3E30@MN2PR18MB2528.namprd18.prod.outlook.com>
+From:   Guilherme Piccoli <gpiccoli@canonical.com>
+Date:   Tue, 25 Jun 2019 09:55:30 -0300
+Message-ID: <CAHD1Q_y7v5fVeDRT+KDimQ-RBJMujMCL2DPvdBh==YEJ3+2ZaQ@mail.gmail.com>
+Subject: Re: [EXT] [PATCH V2] bnx2x: Prevent ptp_task to be rescheduled indefinitely
+To:     Sudarsana Reddy Kalluru <skalluru@marvell.com>
+Cc:     GR-everest-linux-l2 <GR-everest-linux-l2@marvell.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Ariel Elior <aelior@marvell.com>,
+        "jay.vosburgh@canonical.com" <jay.vosburgh@canonical.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-add error check when workqueue alloc failed, and remove
-redundant code to make it clear
+On Tue, Jun 25, 2019 at 1:02 AM Sudarsana Reddy Kalluru
+<skalluru@marvell.com> wrote:
+>
+> Thanks for your changes and time on this. In general time-latching happens in couple or more milliseconds (even in some 100s of usec) under the normal traffic conditions. With this approach, there's a possibility that every packet has to wait for atleast 50ms for the timestamping. This in turn affects the wait-queue (of packets to be timestamped) at hardware as next TS recording happens only after the register is freed/read. And also, it incurs some latency for the ptp applications.
+>
+> PTP thread is consuming time may be due to the debug messages in this error path, which you are planning address already (thanks!!).
+>    "Also, I've dropped the PTP "outstanding, etc" messages to debug-level, they're quite flooding my log.
+> Do you see cpu hog even after removing this message? In such case we may need to think of other alternatives such as sleep for 1 ms.
+> Just for the info, the approach continuous-poll-for-timestamp() is used ixgbe driver (ixgbe_ptp_tx_hwtstamp_work()) as well.
+>
 
-Signed-off-by: Weitao Hou <houweitaoo@gmail.com>
----
- drivers/net/can/spi/mcp251x.c | 49 ++++++++++++++++-------------------
- 1 file changed, 22 insertions(+), 27 deletions(-)
+Thanks again for the good insights Sudarsana! I'll do some experiments
+dropping all messages and checking
+if the ptp thread is still consuming a lot of CPU (I believe so). In
+this case, I'll rework the approach by starting
+the delays in 1ms to avoid impacting the HW wait-queue and causing
+delays in ptp applications.
 
-diff --git a/drivers/net/can/spi/mcp251x.c b/drivers/net/can/spi/mcp251x.c
-index 44e99e3d7134..2aec934fab0c 100644
---- a/drivers/net/can/spi/mcp251x.c
-+++ b/drivers/net/can/spi/mcp251x.c
-@@ -664,17 +664,6 @@ static int mcp251x_power_enable(struct regulator *reg, int enable)
- 		return regulator_disable(reg);
- }
- 
--static void mcp251x_open_clean(struct net_device *net)
--{
--	struct mcp251x_priv *priv = netdev_priv(net);
--	struct spi_device *spi = priv->spi;
--
--	free_irq(spi->irq, priv);
--	mcp251x_hw_sleep(spi);
--	mcp251x_power_enable(priv->transceiver, 0);
--	close_candev(net);
--}
--
- static int mcp251x_stop(struct net_device *net)
- {
- 	struct mcp251x_priv *priv = netdev_priv(net);
-@@ -940,37 +929,43 @@ static int mcp251x_open(struct net_device *net)
- 				   flags | IRQF_ONESHOT, DEVICE_NAME, priv);
- 	if (ret) {
- 		dev_err(&spi->dev, "failed to acquire irq %d\n", spi->irq);
--		mcp251x_power_enable(priv->transceiver, 0);
--		close_candev(net);
--		goto open_unlock;
-+		goto out_close;
- 	}
- 
- 	priv->wq = alloc_workqueue("mcp251x_wq", WQ_FREEZABLE | WQ_MEM_RECLAIM,
- 				   0);
-+	if (!priv->wq) {
-+		ret = -ENOMEM;
-+		goto out_clean;
-+	}
- 	INIT_WORK(&priv->tx_work, mcp251x_tx_work_handler);
- 	INIT_WORK(&priv->restart_work, mcp251x_restart_work_handler);
- 
- 	ret = mcp251x_hw_reset(spi);
--	if (ret) {
--		mcp251x_open_clean(net);
--		goto open_unlock;
--	}
-+	if (ret)
-+		goto out_free_wq;
- 	ret = mcp251x_setup(net, spi);
--	if (ret) {
--		mcp251x_open_clean(net);
--		goto open_unlock;
--	}
-+	if (ret)
-+		goto out_free_wq;
- 	ret = mcp251x_set_normal_mode(spi);
--	if (ret) {
--		mcp251x_open_clean(net);
--		goto open_unlock;
--	}
-+	if (ret)
-+		goto out_free_wq;
- 
- 	can_led_event(net, CAN_LED_EVENT_OPEN);
- 
- 	netif_wake_queue(net);
-+	mutex_unlock(&priv->mcp_lock);
- 
--open_unlock:
-+	return 0;
-+
-+out_free_wq:
-+	destroy_workqueue(priv->wq);
-+out_clean:
-+	free_irq(spi->irq, priv);
-+	mcp251x_hw_sleep(spi);
-+out_close:
-+	mcp251x_power_enable(priv->transceiver, 0);
-+	close_candev(net);
- 	mutex_unlock(&priv->mcp_lock);
- 	return ret;
- }
--- 
-2.18.0
+Cheers,
 
+
+Guilherme
