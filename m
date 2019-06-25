@@ -2,66 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13C3E520A8
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 04:32:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1580A520E7
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 05:08:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730476AbfFYCcv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Jun 2019 22:32:51 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:19103 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726774AbfFYCcv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Jun 2019 22:32:51 -0400
-Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 2EBA02D62198397EADAF;
-        Tue, 25 Jun 2019 10:32:48 +0800 (CST)
-Received: from localhost (10.133.213.239) by DGGEMS410-HUB.china.huawei.com
- (10.3.19.210) with Microsoft SMTP Server id 14.3.439.0; Tue, 25 Jun 2019
- 10:32:37 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <davem@davemloft.net>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <jakub.kicinski@netronome.com>, <hawk@kernel.org>,
-        <john.fastabend@gmail.com>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <xdp-newbies@vger.kernel.org>, <bpf@vger.kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH net-next] xdp: Make __mem_id_disconnect static
-Date:   Tue, 25 Jun 2019 10:31:37 +0800
-Message-ID: <20190625023137.29272-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        id S1726783AbfFYDIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Jun 2019 23:08:18 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:46912 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726488AbfFYDIS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Jun 2019 23:08:18 -0400
+Received: by mail-pf1-f196.google.com with SMTP id 81so8636819pfy.13
+        for <netdev@vger.kernel.org>; Mon, 24 Jun 2019 20:08:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=etsukata-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8wFOOZobSMXR2Ozogj+mX21ZRt7xd/su4rY5KVbYVt0=;
+        b=eXdptYKGAEBv3lL90mdyAN1/TVQWLm4tzP3pIFwisfgHE5/8hiwyRsCBLSJ78quKNc
+         ZvHyktUyXm7C0E9PoU0VIfWZ9Lzi5Ho1Vi5WZ5c+1u6FzW7XNoiyJqG5Dk0DuOPuTzN1
+         lF9iGNdzUl87aKQDM5a6389pW9QrWLqTBaTL/opdsWi6NA4HwAm0lJ1sMdAx+F2vDAsY
+         AYa/XbJHW+CM3IX0XevYqPodbU79AWIy9snbiQD22DFZOjrxbThIKLHU5SdNJlq1Aksa
+         zuTgP0rly01lf0C3vv8xMQkd9LN1Ei1YiSWUGxcBp8aET2VErzFZiNN3XaMKQokjpY74
+         lwng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8wFOOZobSMXR2Ozogj+mX21ZRt7xd/su4rY5KVbYVt0=;
+        b=IOezaCqcxW+pySm+soAOQisXZS10zp79s5y85DylEa8zkulKFaJNO2e5/YjqGl6QpN
+         OEEYAD9WO3UHYkMl9jCXOssjwbER3qO5DuToqC98JK9+4mtSP10Ky2ExJahFEf6dKpZS
+         sFRz2JSlbnBdKlzY2eOkC8Jh9EUPZVYywWRL8lBA/oembUuDVds94YQSJYrsJyqiXby8
+         b5/UX2zTXCH7fHS0CUzthwqlJa7xEle9N8isvlz5CfEpwzrkXjWnVRHPqb20gB0lCS7V
+         bIZ2LbB9c7rXmpFn/H7g7tN2gNcQKPZ8dOldqhy2orATzxSx4e0MtQ/ImJ1MXfLzcPCl
+         jkyg==
+X-Gm-Message-State: APjAAAUKTuh2tQWjVn/tq3hVVWV004O5p/0Cxh0ovxWF00qrLDCKNiRb
+        rB3L3/6QgNpGi9o+8EmGEjzEB6LwaDE=
+X-Google-Smtp-Source: APXvYqx9kDVf4UgM+Z/4m4KWUvV7KMBMR+JS4IZs0RnR4mbeWf2PKFlyeKEw83OidETVozhLpKCCiQ==
+X-Received: by 2002:a17:90a:cf8f:: with SMTP id i15mr27707097pju.110.1561432097511;
+        Mon, 24 Jun 2019 20:08:17 -0700 (PDT)
+Received: from localhost.localdomain (p2517222-ipngn21701marunouchi.tokyo.ocn.ne.jp. [118.7.246.222])
+        by smtp.gmail.com with ESMTPSA id d4sm708016pju.31.2019.06.24.20.08.15
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 24 Jun 2019 20:08:16 -0700 (PDT)
+From:   Eiichi Tsukata <devel@etsukata.com>
+To:     gregkh@linuxfoundation.org, jslaby@suse.com, davem@davemloft.net,
+        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Eiichi Tsukata <devel@etsukata.com>
+Subject: [PATCH 1/2] tty: ldisc: Fix misuse of proc_dointvec "ldisc_autoload"
+Date:   Tue, 25 Jun 2019 12:08:00 +0900
+Message-Id: <20190625030801.24538-1-devel@etsukata.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.133.213.239]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix sparse warning:
+/proc/sys/dev/tty/ldisc_autoload assumes given value to be 0 or 1. Use
+proc_dointvec_minmax instead of proc_dointvec.
 
-net/core/xdp.c:88:6: warning:
- symbol '__mem_id_disconnect' was not declared. Should it be static?
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Fixes: 7c0cca7c847e "(tty: ldisc: add sysctl to prevent autoloading of ldiscs)"
+Signed-off-by: Eiichi Tsukata <devel@etsukata.com>
 ---
- net/core/xdp.c | 2 +-
+ drivers/tty/tty_ldisc.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/core/xdp.c b/net/core/xdp.c
-index b29d7b5..829377c 100644
---- a/net/core/xdp.c
-+++ b/net/core/xdp.c
-@@ -85,7 +85,7 @@ static void __xdp_mem_allocator_rcu_free(struct rcu_head *rcu)
- 	kfree(xa);
- }
- 
--bool __mem_id_disconnect(int id, bool force)
-+static bool __mem_id_disconnect(int id, bool force)
- {
- 	struct xdp_mem_allocator *xa;
- 	bool safe_to_remove = true;
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index e38f104db174..a8ea7a35c94e 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -863,7 +863,7 @@ static struct ctl_table tty_table[] = {
+ 		.data		= &tty_ldisc_autoload,
+ 		.maxlen		= sizeof(tty_ldisc_autoload),
+ 		.mode		= 0644,
+-		.proc_handler	= proc_dointvec,
++		.proc_handler	= proc_dointvec_minmax,
+ 		.extra1		= &zero,
+ 		.extra2		= &one,
+ 	},
 -- 
-2.7.4
-
+2.21.0
 
