@@ -2,89 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2500B553FF
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 18:08:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92A7F55403
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 18:09:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732571AbfFYQIQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 12:08:16 -0400
-Received: from sesbmg22.ericsson.net ([193.180.251.48]:63344 "EHLO
-        sesbmg22.ericsson.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726968AbfFYQIQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 12:08:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; d=ericsson.com; s=mailgw201801; c=relaxed/relaxed;
-        q=dns/txt; i=@ericsson.com; t=1561478893; x=1564070893;
-        h=From:Sender:Reply-To:Subject:Date:Message-ID:To:CC:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=MunnddkiuxDa44z5VFhlH4foZ3OIsxxjgBGKwWbDa0k=;
-        b=eP1DcMR3LnYTLouRcoE/2cNOC6sGG4DrBbdU9fyqc1OAR1VmXUTB+IH4wXaGYH2q
-        BzXqUM0QAnsDpEzP3O3sKbi8Tr2y76ngcGqL44WxJrX8ciLSj6VNYvNiJDvVPzKs
-        SdT8VjuJwG8cOk/AkxINBGMkTuZeO7m+0SlbHzEbHxE=;
-X-AuditID: c1b4fb30-6ddff70000001814-5d-5d1246ed8529
-Received: from ESESBMB503.ericsson.se (Unknown_Domain [153.88.183.116])
-        by sesbmg22.ericsson.net (Symantec Mail Security) with SMTP id 90.9A.06164.DE6421D5; Tue, 25 Jun 2019 18:08:13 +0200 (CEST)
-Received: from ESESBMR506.ericsson.se (153.88.183.202) by
- ESESBMB503.ericsson.se (153.88.183.186) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1713.5; Tue, 25 Jun 2019 18:08:13 +0200
-Received: from ESESBMB505.ericsson.se (153.88.183.172) by
- ESESBMR506.ericsson.se (153.88.183.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1713.5; Tue, 25 Jun 2019 18:08:13 +0200
-Received: from tipsy.lab.linux.ericsson.se (153.88.183.153) by
- smtp.internal.ericsson.com (153.88.183.188) with Microsoft SMTP Server id
- 15.1.1713.5 via Frontend Transport; Tue, 25 Jun 2019 18:08:12 +0200
-From:   Jon Maloy <jon.maloy@ericsson.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     <gordan.mihaljevic@dektech.com.au>, <tung.q.nguyen@dektech.com.au>,
-        <hoang.h.le@dektech.com.au>, <jon.maloy@ericsson.com>,
-        <canh.d.luu@dektech.com.au>, <ying.xue@windriver.com>,
-        <tipc-discussion@lists.sourceforge.net>
-Subject: [net-next  1/1] tipc: eliminate unnecessary skb expansion during retransmission
-Date:   Tue, 25 Jun 2019 18:08:13 +0200
-Message-ID: <1561478893-31371-1-git-send-email-jon.maloy@ericsson.com>
-X-Mailer: git-send-email 2.1.4
+        id S1728243AbfFYQI7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 12:08:59 -0400
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:32931 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726431AbfFYQI6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 12:08:58 -0400
+Received: by mail-oi1-f195.google.com with SMTP id f80so12963527oib.0
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 09:08:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jA95Qh1yntfG34AOSZY5UOtyMZURQYp8MONEUbEV66A=;
+        b=HgDIOt6qQTgaSmreTjm51zaSSvenITCVEMB/GtgVt7OXuWIUPL2yH/HA0gpDKCjq9V
+         1vdIIAOblK6RW0V48U+lVE+u/KyUCd3RC0YGvJJx+oDV13I+xUq1YJLyPTeiVPk9r2nr
+         5aCiaH/ijhirc0/AdePKS5Uc0IQJLMjYAlkjrrviXn+DV9SwmUNIfpa7wEvTxp3Uysay
+         G6jbpa2iJsIr+cBBzyAPEqHp8ublctBKTGVWIMJWR5fulf+RY/Tdf3/0hfh49pIL9p72
+         w4nUwSmh+F5h85tVTgKeXGRHyoRyAQaCT/5VxDobuZfVWxJ7IHqGYoWPyPfEvH+bOUNN
+         5hZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jA95Qh1yntfG34AOSZY5UOtyMZURQYp8MONEUbEV66A=;
+        b=WI/rp9M4vILTzkP7dhisbJWARrKs5ZUNsHDlv7iSenj8gvtQ4xOMlMSruXaGdZn+rS
+         KjA2C0OeEs9p0qlmOUjMkinMZUUk5yN2PVrmkr+dK62jLPojybMYcyFlszNCWg69/uu1
+         +2hurvNFC9eTsERQhEENKDiTt9GzEArlPrX4UIiNiVvOplWMHkNv4wnVbisS8G962Tkv
+         rgJITVBnHSjfE5dH8jATwms4f4Jh/bYuAIi5T7dowcr3eDI3j5Wfk5NICjB7Q+af1JgV
+         a+DdGDJz8rTs9zM2enS3tjnjnNOIXQAXVfA0/K/sEnwJoqtYH5SCfQk1VIS4d6kgECYw
+         23EQ==
+X-Gm-Message-State: APjAAAWFq99nKjroRf2KMY4QxJrgBzKfBJXLVZJt5DbtvlF0do2ol2jw
+        NFS5bdrTLxV4ySZ7zcyfqiCReqO6tEOYfdGosIU=
+X-Google-Smtp-Source: APXvYqzFgbsPn+MwxiBY7K1wsjZI0pkm9+pIkIGS6pCZth84Yy+3LGlgq89mEvw1Esmbjz5dMFb4j5MpaIRBcRHFvpY=
+X-Received: by 2002:a05:6808:8f0:: with SMTP id d16mr14600104oic.173.1561478938094;
+ Tue, 25 Jun 2019 09:08:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrBLMWRmVeSWpSXmKPExsUyM2J7ie5bN6FYg8tv5CxuNPQwW8w538Ji
-        sWL3JFaLt69msVscWyBmseV8lsWV9rPsFo+vX2d24PDYsvImk8e7K2weuxd8ZvL4vEnOY/2W
-        rUwBrFFcNimpOZllqUX6dglcGUfWrWIuOMhWsfrrWdYGxiWsXYycHBICJhJ7lt1j72Lk4hAS
-        OMoo8eVrI5TzjVHiVscPNjjn2Y53zBDOBUaJrus9jCD9bAIaEi+ndYDZIgLGEq9WdjKBFDEL
-        PAaadX8VG0hCWCBC4s+mXywgNouAqsSbntNAcQ4OXgE3iee/wiDukJM4f/wnM4gtJKAsMffD
-        NCYQm1dAUOLkzCdgrcwCEhIHX7xgnsDIPwtJahaS1AJGplWMosWpxUm56UZGeqlFmcnFxfl5
-        enmpJZsYgeF7cMtvgx2ML587HmIU4GBU4uG9bicUK8SaWFZcmXuIUYKDWUmEd2miQKwQb0pi
-        ZVVqUX58UWlOavEhRmkOFiVx3vXe/2KEBNITS1KzU1MLUotgskwcnFINjFUrmba0h0e5hm6O
-        7VzxLXKq2fsTS0SMS2dva7ScmxbRUav9esLcuVeT9ikEKyxaP7U3Spd91xf2l2elJl0+71OQ
-        NEfITfy9YdUdC8ZQX44bUovezl3mmZhywsZ/zpeDJ27NO7zEfIbtzYk1LmzKWQblf9borlGU
-        D46pc5vomXVzsu3MJfVnfymxFGckGmoxFxUnAgCkl9x1WwIAAA==
+References: <20190620115108.5701-1-ap420073@gmail.com> <20190623.110737.1466794521532071350.davem@davemloft.net>
+ <CAMArcTXWNY6WTjuBuUVxeb3c6dTqf8wf6sHFmNL5SvsGBbPqdQ@mail.gmail.com> <CAJieiUjri=-w2PqB9q5fEa=4jqkTWSfK0dUwnT7Cvxdo2sRRzg@mail.gmail.com>
+In-Reply-To: <CAJieiUjri=-w2PqB9q5fEa=4jqkTWSfK0dUwnT7Cvxdo2sRRzg@mail.gmail.com>
+From:   Taehee Yoo <ap420073@gmail.com>
+Date:   Wed, 26 Jun 2019 01:08:47 +0900
+Message-ID: <CAMArcTWG-KLsmzrtQRGGmnUN31yz4UMqJ9FLyv3xNNPoXY_6=Q@mail.gmail.com>
+Subject: Re: [PATCH net] vxlan: do not destroy fdb if register_netdevice() is failed
+To:     Roopa Prabhu <roopa@cumulusnetworks.com>
+Cc:     David Miller <davem@davemloft.net>, Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We increase the allocated headroom for the buffer copies to be
-retransmitted. This eliminates the need for the lower stack levels
-(UDP/IP/L2) to expand the headroom in order to add their own headers.
+On Tue, 25 Jun 2019 at 13:12, Roopa Prabhu <roopa@cumulusnetworks.com> wrote:
+>
 
-Signed-off-by: Jon Maloy <jon.maloy@ericsson.com>
----
- net/tipc/link.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi Roopa,
 
-diff --git a/net/tipc/link.c b/net/tipc/link.c
-index af50b53..aa79bf8 100644
---- a/net/tipc/link.c
-+++ b/net/tipc/link.c
-@@ -1125,7 +1125,7 @@ static int tipc_link_bc_retrans(struct tipc_link *l, struct tipc_link *r,
- 				continue;
- 			TIPC_SKB_CB(skb)->nxt_retr = jiffies + TIPC_BC_RETR_LIM;
- 		}
--		_skb = __pskb_copy(skb, MIN_H_SIZE, GFP_ATOMIC);
-+		_skb = __pskb_copy(skb, LL_MAX_HEADER + MIN_H_SIZE, GFP_ATOMIC);
- 		if (!_skb)
- 			return 0;
- 		hdr = buf_msg(_skb);
--- 
-2.1.4
+Thank you for the review!
 
+> On Sun, Jun 23, 2019 at 7:18 PM Taehee Yoo <ap420073@gmail.com> wrote:
+> >
+> > On Mon, 24 Jun 2019 at 03:07, David Miller <davem@davemloft.net> wrote:
+> > >
+> >
+> > Hi David,
+> >
+> > Thank you for the review!
+> >
+> > > From: Taehee Yoo <ap420073@gmail.com>
+> > > Date: Thu, 20 Jun 2019 20:51:08 +0900
+> > >
+> > > > __vxlan_dev_create() destroys FDB using specific pointer which indicates
+> > > > a fdb when error occurs.
+> > > > But that pointer should not be used when register_netdevice() fails because
+> > > > register_netdevice() internally destroys fdb when error occurs.
+> > > >
+> > > > In order to avoid un-registered dev's notification, fdb destroying routine
+> > > > checks dev's register status before notification.
+> > >
+> > > Simply pass do_notify as false in this failure code path of __vxlan_dev_create(),
+> > > thank you.
+> >
+> > Failure path of __vxlan_dev_create() can't handle do_notify in that case
+> > because if register_netdevice() fails it internally calls
+> > ->ndo_uninit() which is
+> > vxlan_uninit().
+> > vxlan_uninit() internally calls vxlan_fdb_delete_default() and it callls
+> > vxlan_fdb_destroy().
+> > do_notify of vxlan_fdb_destroy() in vxlan_fdb_delete_default() is always true.
+> > So, failure path of __vxlan_dev_create() doesn't have any opportunity to
+> > handle do_notify.
+>
+>
+> I don't see register_netdevice calling ndo_uninit in case of all
+> errors. In the case where it does not,
+> does your patch leak the fdb entry ?.
+>
+> Wondering if we should just use vxlan_fdb_delete_default with a notify
+> flag to delete the entry if exists.
+> Will that help ?
+>
+> There is another commit that touched this code path:
+> commit 6db9246871394b3a136cd52001a0763676563840
+>
+> Author: Petr Machata <petrm@mellanox.com>
+> Date:   Tue Dec 18 13:16:00 2018 +0000
+>     vxlan: Fix error path in __vxlan_dev_create()
+
+I have checked up failure path of register_netdevice().
+Yes, this patch leaks fdb entry.
+There are 3 failure cases in the register_netdevice().
+A. error occurs before calling ->ndo_init().
+it doesn't call ->ndo_uninit().
+B. error occurs after calling ->ndo_init().
+it calls ->ndo_uninit() and dev->reg_state is NETREG_UNINITIALIZED.
+C. error occurs after registering netdev. it calls rollback_registered().
+rollback_registered() internally calls ->ndo_uninit()
+and dev->reg_state is NETREG_UNREGISTERING.
+
+A panic due to these problem could be fixed by using
+vxlan_fdb_delete_default() with notify flag.
+But notification problem could not be fixed clearly
+because of the case C.
+
+I don't have clear solution for the case C.
+Please let me know, if you have any good idea for fixing the case C.
+
+Thank you!
