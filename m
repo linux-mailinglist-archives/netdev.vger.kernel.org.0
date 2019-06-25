@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8041655AB1
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 00:13:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 866F655AC4
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 00:13:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726467AbfFYWMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 18:12:55 -0400
-Received: from smtp-sh.infomaniak.ch ([128.65.195.4]:34555 "EHLO
+        id S1726631AbfFYWN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 18:13:27 -0400
+Received: from smtp-sh.infomaniak.ch ([128.65.195.4]:52165 "EHLO
         smtp-sh.infomaniak.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725782AbfFYWMz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 18:12:55 -0400
+        with ESMTP id S1726304AbfFYWN0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 18:13:26 -0400
 Received: from smtp5.infomaniak.ch (smtp5.infomaniak.ch [83.166.132.18])
-        by smtp-sh.infomaniak.ch (8.14.5/8.14.5) with ESMTP id x5PLrJZ1019802
+        by smtp-sh.infomaniak.ch (8.14.5/8.14.5) with ESMTP id x5PLrK1v019814
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 25 Jun 2019 23:53:19 +0200
+        Tue, 25 Jun 2019 23:53:20 +0200
 Received: from localhost (ns3096276.ip-94-23-54.eu [94.23.54.103])
         (authenticated bits=0)
-        by smtp5.infomaniak.ch (8.14.5/8.14.5) with ESMTP id x5PLrIHg038697;
-        Tue, 25 Jun 2019 23:53:19 +0200
+        by smtp5.infomaniak.ch (8.14.5/8.14.5) with ESMTP id x5PLrKcg038719;
+        Tue, 25 Jun 2019 23:53:20 +0200
 From:   =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
 To:     linux-kernel@vger.kernel.org
 Cc:     =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>,
@@ -50,9 +50,9 @@ Cc:     =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>,
         kernel-hardening@lists.openwall.com, linux-api@vger.kernel.org,
         linux-fsdevel@vger.kernel.org,
         linux-security-module@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH bpf-next v9 03/10] bpf,landlock: Define an eBPF program type for Landlock hooks
-Date:   Tue, 25 Jun 2019 23:52:32 +0200
-Message-Id: <20190625215239.11136-4-mic@digikod.net>
+Subject: [PATCH bpf-next v9 04/10] seccomp,landlock: Enforce Landlock programs per process hierarchy
+Date:   Tue, 25 Jun 2019 23:52:33 +0200
+Message-Id: <20190625215239.11136-5-mic@digikod.net>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190625215239.11136-1-mic@digikod.net>
 References: <20190625215239.11136-1-mic@digikod.net>
@@ -66,629 +66,718 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a new type of eBPF program used by Landlock hooks. This type of
-program can be chained with the same eBPF program type (according to
-subtype rules). A state can be kept with a value available in the
-program's context (e.g. named "cookie" for Landlock programs).
+The seccomp(2) syscall can be used by a task to apply a Landlock program
+to itself. As a seccomp filter, a Landlock program is enforced for the
+current task and all its future children. A program is immutable and a
+task can only add new restricting programs to itself, forming a list of
+programss.
 
-This new BPF program type will be registered with the Landlock LSM
-initialization.
-
-Add an initial Landlock Kconfig and update the MAINTAINERS file.
+A Landlock program is tied to a Landlock hook. If the action on a kernel
+object is allowed by the other Linux security mechanisms (e.g. DAC,
+capabilities, other LSM), then a Landlock hook related to this kind of
+object is triggered. The list of programs for this hook is then
+evaluated. Each program return a 32-bit value which can deny the action
+on a kernel object with a non-zero value. If every programs of the list
+return zero, then the action on the object is allowed.
 
 Signed-off-by: Mickaël Salaün <mic@digikod.net>
 Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
 Cc: Andy Lutomirski <luto@amacapital.net>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: David S. Miller <davem@davemloft.net>
 Cc: James Morris <jmorris@namei.org>
 Cc: Kees Cook <keescook@chromium.org>
 Cc: Serge E. Hallyn <serge@hallyn.com>
+Cc: Will Drewry <wad@chromium.org>
+Link: https://lkml.kernel.org/r/c10a503d-5e35-7785-2f3d-25ed8dd63fab@digikod.net
 ---
 
 Changes since v8:
 * Remove the chaining concept from the eBPF program contexts (chain and
   cookie). We need to keep these subtypes this way to be able to make
   them evolve, though.
-* remove bpf_landlock_put_extra() because there is no more a "previous"
-  field to free (for now)
 
 Changes since v7:
-* cosmetic fixes
+* handle and verify program chains
+* split and rename providers.c to enforce.c and enforce_seccomp.c
 * rename LANDLOCK_SUBTYPE_* to LANDLOCK_*
-* cleanup UAPI definitions and move them from bpf.h to landlock.h
-  (suggested by Alexei Starovoitov)
-* disable Landlock by default (suggested by Alexei Starovoitov)
-* rename BPF_PROG_TYPE_LANDLOCK_{RULE,HOOK}
-* update the Kconfig
-* update the MAINTAINERS file
-* replace the IOCTL, LOCK and FCNTL events with FS_PICK, FS_WALK and
-  FS_GET hook types
-* add the ability to chain programs with an eBPF program file descriptor
-  (i.e. the "previous" field in a Landlock subtype) and keep a state
-  with a "cookie" value available from the context
-* add a "triggers" subtype bitfield to match specific actions (e.g.
-  append, chdir, read...)
 
 Changes since v6:
-* add 3 more sub-events: IOCTL, LOCK, FCNTL
-  https://lkml.kernel.org/r/2fbc99a6-f190-f335-bd14-04bdeed35571@digikod.net
-* rename LANDLOCK_VERSION to LANDLOCK_ABI to better reflect its purpose,
-  and move it from landlock.h to common.h
-* rename BPF_PROG_TYPE_LANDLOCK to BPF_PROG_TYPE_LANDLOCK_RULE: an eBPF
-  program could be used for something else than a rule
-* simplify struct landlock_context by removing the arch and syscall_nr fields
-* remove all eBPF map functions call, remove ABILITY_WRITE
-* refactor bpf_landlock_func_proto() (suggested by Kees Cook)
-* constify pointers
-* fix doc inclusion
+* rename some functions with more accurate names to reflect that an eBPF
+  program for Landlock could be used for something else than a rule
+* reword rule "appending" to "prepending" and explain it
+* remove the superfluous no_new_privs check, only check global
+  CAP_SYS_ADMIN when prepending a Landlock rule (needed for containers)
+* create and use {get,put}_seccomp_landlock() (suggested by Kees Cook)
+* replace ifdef with static inlined function (suggested by Kees Cook)
+* use get_user() (suggested by Kees Cook)
+* replace atomic_t with refcount_t (requested by Kees Cook)
+* move struct landlock_{rule,events} from landlock.h to common.h
+* cleanup headers
 
 Changes since v5:
-* rename file hooks.c to init.c
-* fix spelling
+* remove struct landlock_node and use a similar inheritance mechanisme
+  as seccomp-bpf (requested by Andy Lutomirski)
+* rename SECCOMP_ADD_LANDLOCK_RULE to SECCOMP_APPEND_LANDLOCK_RULE
+* rename file manager.c to providers.c
+* add comments
+* typo and cosmetic fixes
 
 Changes since v4:
-* merge a minimal (not enabled) LSM code and Kconfig in this commit
+* merge manager and seccomp patches
+* return -EFAULT in seccomp(2) when user_bpf_fd is null to easely check
+  if Landlock is supported
+* only allow a process with the global CAP_SYS_ADMIN to use Landlock
+  (will be lifted in the future)
+* add an early check to exit as soon as possible if the current process
+  does not have Landlock rules
 
 Changes since v3:
+* remove the hard link with seccomp (suggested by Andy Lutomirski and
+  Kees Cook):
+  * remove the cookie which could imply multiple evaluation of Landlock
+    rules
+  * remove the origin field in struct landlock_data
+* remove documentation fix (merged upstream)
+* rename the new seccomp command to SECCOMP_ADD_LANDLOCK_RULE
+* internal renaming
 * split commit
-* revamp the landlock_context:
-  * add arch, syscall_nr and syscall_cmd (ioctl, fcntl…) to be able to
-    cross-check action with the event type
-  * replace args array with dedicated fields to ease the addition of new
-    fields
----
- MAINTAINERS                         |  13 ++++
- include/linux/bpf_types.h           |   3 +
- include/uapi/linux/bpf.h            |   1 +
- include/uapi/linux/landlock.h       | 109 +++++++++++++++++++++++++++
- security/Kconfig                    |   1 +
- security/Makefile                   |   2 +
- security/landlock/Kconfig           |  18 +++++
- security/landlock/Makefile          |   3 +
- security/landlock/common.h          |  26 +++++++
- security/landlock/init.c            | 110 ++++++++++++++++++++++++++++
- tools/include/uapi/linux/bpf.h      |   1 +
- tools/include/uapi/linux/landlock.h | 109 +++++++++++++++++++++++++++
- tools/lib/bpf/libbpf.c              |   1 +
- tools/lib/bpf/libbpf_probes.c       |   1 +
- 14 files changed, 398 insertions(+)
- create mode 100644 include/uapi/linux/landlock.h
- create mode 100644 security/landlock/Kconfig
- create mode 100644 security/landlock/Makefile
- create mode 100644 security/landlock/common.h
- create mode 100644 security/landlock/init.c
- create mode 100644 tools/include/uapi/linux/landlock.h
+* new design to be able to inherit on the fly the parent rules
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 606d1f80bc49..4a5edc14ee84 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8807,6 +8807,19 @@ F:	net/core/skmsg.c
- F:	net/core/sock_map.c
- F:	net/ipv4/tcp_bpf.c
- 
-+LANDLOCK SECURITY MODULE
-+M:	Mickaël Salaün <mic@digikod.net>
-+S:	Supported
-+F:	Documentation/security/landlock/
-+F:	include/linux/landlock.h
-+F:	include/uapi/linux/landlock.h
-+F:	samples/bpf/landlock*
-+F:	security/landlock/
-+F:	tools/include/uapi/linux/landlock.h
-+F:	tools/testing/selftests/landlock/
-+K:	landlock
-+K:	LANDLOCK
-+
- LANTIQ / INTEL Ethernet drivers
- M:	Hauke Mehrtens <hauke@hauke-m.de>
- L:	netdev@vger.kernel.org
-diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
-index 5a9975678d6f..dee8b82e31b1 100644
---- a/include/linux/bpf_types.h
-+++ b/include/linux/bpf_types.h
-@@ -37,6 +37,9 @@ BPF_PROG_TYPE(BPF_PROG_TYPE_LIRC_MODE2, lirc_mode2)
- #ifdef CONFIG_INET
- BPF_PROG_TYPE(BPF_PROG_TYPE_SK_REUSEPORT, sk_reuseport)
- #endif
-+#ifdef CONFIG_SECURITY_LANDLOCK
-+BPF_PROG_TYPE(BPF_PROG_TYPE_LANDLOCK_HOOK, landlock)
-+#endif
- 
- BPF_MAP_TYPE(BPF_MAP_TYPE_ARRAY, array_map_ops)
- BPF_MAP_TYPE(BPF_MAP_TYPE_PERCPU_ARRAY, percpu_array_map_ops)
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index ddae50373d58..50145d448bc3 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -170,6 +170,7 @@ enum bpf_prog_type {
- 	BPF_PROG_TYPE_FLOW_DISSECTOR,
- 	BPF_PROG_TYPE_CGROUP_SYSCTL,
- 	BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE,
-+	BPF_PROG_TYPE_LANDLOCK_HOOK,
- };
- 
- enum bpf_attach_type {
-diff --git a/include/uapi/linux/landlock.h b/include/uapi/linux/landlock.h
+Changes since v2:
+* Landlock programs can now be run without seccomp filter but for any
+  syscall (from the process) or interruption
+* move Landlock related functions and structs into security/landlock/*
+  (to manage cgroups as well)
+* fix seccomp filter handling: run Landlock programs for each of their
+  legitimate seccomp filter
+* properly clean up all seccomp results
+* cosmetic changes to ease the understanding
+* fix some ifdef
+---
+ include/linux/landlock.h            |  34 ++++
+ include/linux/seccomp.h             |   5 +
+ include/uapi/linux/seccomp.h        |   1 +
+ kernel/fork.c                       |   8 +-
+ kernel/seccomp.c                    |   4 +
+ security/landlock/Makefile          |   3 +-
+ security/landlock/common.h          |  45 +++++
+ security/landlock/enforce.c         | 272 ++++++++++++++++++++++++++++
+ security/landlock/enforce.h         |  18 ++
+ security/landlock/enforce_seccomp.c |  92 ++++++++++
+ 10 files changed, 480 insertions(+), 2 deletions(-)
+ create mode 100644 include/linux/landlock.h
+ create mode 100644 security/landlock/enforce.c
+ create mode 100644 security/landlock/enforce.h
+ create mode 100644 security/landlock/enforce_seccomp.c
+
+diff --git a/include/linux/landlock.h b/include/linux/landlock.h
 new file mode 100644
-index 000000000000..9e6d8e10ec2c
+index 000000000000..8ac7942f50fc
 --- /dev/null
-+++ b/include/uapi/linux/landlock.h
-@@ -0,0 +1,109 @@
-+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++++ b/include/linux/landlock.h
+@@ -0,0 +1,34 @@
++/* SPDX-License-Identifier: GPL-2.0 */
 +/*
-+ * Landlock - UAPI headers
-+ *
-+ * Copyright © 2017-2019 Mickaël Salaün <mic@digikod.net>
-+ * Copyright © 2018-2019 ANSSI
-+ */
-+
-+#ifndef _UAPI__LINUX_LANDLOCK_H__
-+#define _UAPI__LINUX_LANDLOCK_H__
-+
-+#include <linux/types.h>
-+
-+#define LANDLOCK_RET_ALLOW	0
-+#define LANDLOCK_RET_DENY	1
-+
-+/**
-+ * enum landlock_hook_type - hook type for which a Landlock program is called
-+ *
-+ * A hook is a policy decision point which exposes the same context type for
-+ * each program evaluation.
-+ *
-+ * @LANDLOCK_HOOK_FS_PICK: called for the last element of a file path
-+ * @LANDLOCK_HOOK_FS_WALK: called for each directory of a file path (excluding
-+ *			   the directory passed to fs_pick, if any)
-+ */
-+enum landlock_hook_type {
-+	LANDLOCK_HOOK_FS_PICK = 1,
-+	LANDLOCK_HOOK_FS_WALK,
-+};
-+
-+/**
-+ * DOC: landlock_triggers
-+ *
-+ * A landlock trigger is used as a bitmask in subtype.landlock_hook.triggers
-+ * for a fs_pick program.  It defines a set of actions for which the program
-+ * should verify an access request.
-+ *
-+ * - %LANDLOCK_TRIGGER_FS_PICK_APPEND
-+ * - %LANDLOCK_TRIGGER_FS_PICK_CHDIR
-+ * - %LANDLOCK_TRIGGER_FS_PICK_CHROOT
-+ * - %LANDLOCK_TRIGGER_FS_PICK_CREATE
-+ * - %LANDLOCK_TRIGGER_FS_PICK_EXECUTE
-+ * - %LANDLOCK_TRIGGER_FS_PICK_FCNTL
-+ * - %LANDLOCK_TRIGGER_FS_PICK_GETATTR
-+ * - %LANDLOCK_TRIGGER_FS_PICK_IOCTL
-+ * - %LANDLOCK_TRIGGER_FS_PICK_LINK
-+ * - %LANDLOCK_TRIGGER_FS_PICK_LINKTO
-+ * - %LANDLOCK_TRIGGER_FS_PICK_LOCK
-+ * - %LANDLOCK_TRIGGER_FS_PICK_MAP
-+ * - %LANDLOCK_TRIGGER_FS_PICK_MOUNTON
-+ * - %LANDLOCK_TRIGGER_FS_PICK_OPEN
-+ * - %LANDLOCK_TRIGGER_FS_PICK_READ
-+ * - %LANDLOCK_TRIGGER_FS_PICK_READDIR
-+ * - %LANDLOCK_TRIGGER_FS_PICK_RECEIVE
-+ * - %LANDLOCK_TRIGGER_FS_PICK_RENAME
-+ * - %LANDLOCK_TRIGGER_FS_PICK_RENAMETO
-+ * - %LANDLOCK_TRIGGER_FS_PICK_RMDIR
-+ * - %LANDLOCK_TRIGGER_FS_PICK_SETATTR
-+ * - %LANDLOCK_TRIGGER_FS_PICK_TRANSFER
-+ * - %LANDLOCK_TRIGGER_FS_PICK_UNLINK
-+ * - %LANDLOCK_TRIGGER_FS_PICK_WRITE
-+ */
-+#define LANDLOCK_TRIGGER_FS_PICK_APPEND			(1ULL << 0)
-+#define LANDLOCK_TRIGGER_FS_PICK_CHDIR			(1ULL << 1)
-+#define LANDLOCK_TRIGGER_FS_PICK_CHROOT			(1ULL << 2)
-+#define LANDLOCK_TRIGGER_FS_PICK_CREATE			(1ULL << 3)
-+#define LANDLOCK_TRIGGER_FS_PICK_EXECUTE		(1ULL << 4)
-+#define LANDLOCK_TRIGGER_FS_PICK_FCNTL			(1ULL << 5)
-+#define LANDLOCK_TRIGGER_FS_PICK_GETATTR		(1ULL << 6)
-+#define LANDLOCK_TRIGGER_FS_PICK_IOCTL			(1ULL << 7)
-+#define LANDLOCK_TRIGGER_FS_PICK_LINK			(1ULL << 8)
-+#define LANDLOCK_TRIGGER_FS_PICK_LINKTO			(1ULL << 9)
-+#define LANDLOCK_TRIGGER_FS_PICK_LOCK			(1ULL << 10)
-+#define LANDLOCK_TRIGGER_FS_PICK_MAP			(1ULL << 11)
-+#define LANDLOCK_TRIGGER_FS_PICK_MOUNTON		(1ULL << 12)
-+#define LANDLOCK_TRIGGER_FS_PICK_OPEN			(1ULL << 13)
-+#define LANDLOCK_TRIGGER_FS_PICK_READ			(1ULL << 14)
-+#define LANDLOCK_TRIGGER_FS_PICK_READDIR		(1ULL << 15)
-+#define LANDLOCK_TRIGGER_FS_PICK_RECEIVE		(1ULL << 16)
-+#define LANDLOCK_TRIGGER_FS_PICK_RENAME			(1ULL << 17)
-+#define LANDLOCK_TRIGGER_FS_PICK_RENAMETO		(1ULL << 18)
-+#define LANDLOCK_TRIGGER_FS_PICK_RMDIR			(1ULL << 19)
-+#define LANDLOCK_TRIGGER_FS_PICK_SETATTR		(1ULL << 20)
-+#define LANDLOCK_TRIGGER_FS_PICK_TRANSFER		(1ULL << 21)
-+#define LANDLOCK_TRIGGER_FS_PICK_UNLINK			(1ULL << 22)
-+#define LANDLOCK_TRIGGER_FS_PICK_WRITE			(1ULL << 23)
-+
-+/**
-+ * struct landlock_ctx_fs_pick - context accessible to a fs_pick program
-+ *
-+ * @inode: pointer to the current kernel object that can be used to compare
-+ *         inodes from an inode map.
-+ */
-+struct landlock_ctx_fs_pick {
-+	__u64 inode;
-+};
-+
-+/**
-+ * struct landlock_ctx_fs_walk - context accessible to a fs_walk program
-+ *
-+ * @inode: pointer to the current kernel object that can be used to compare
-+ *         inodes from an inode map.
-+ */
-+struct landlock_ctx_fs_walk {
-+	__u64 inode;
-+};
-+
-+#endif /* _UAPI__LINUX_LANDLOCK_H__ */
-diff --git a/security/Kconfig b/security/Kconfig
-index 466cc1f8ffed..d3c070a01470 100644
---- a/security/Kconfig
-+++ b/security/Kconfig
-@@ -237,6 +237,7 @@ source "security/apparmor/Kconfig"
- source "security/loadpin/Kconfig"
- source "security/yama/Kconfig"
- source "security/safesetid/Kconfig"
-+source "security/landlock/Kconfig"
- 
- source "security/integrity/Kconfig"
- 
-diff --git a/security/Makefile b/security/Makefile
-index c598b904938f..396ff107f70d 100644
---- a/security/Makefile
-+++ b/security/Makefile
-@@ -11,6 +11,7 @@ subdir-$(CONFIG_SECURITY_APPARMOR)	+= apparmor
- subdir-$(CONFIG_SECURITY_YAMA)		+= yama
- subdir-$(CONFIG_SECURITY_LOADPIN)	+= loadpin
- subdir-$(CONFIG_SECURITY_SAFESETID)    += safesetid
-+subdir-$(CONFIG_SECURITY_LANDLOCK)		+= landlock
- 
- # always enable default capabilities
- obj-y					+= commoncap.o
-@@ -27,6 +28,7 @@ obj-$(CONFIG_SECURITY_APPARMOR)		+= apparmor/
- obj-$(CONFIG_SECURITY_YAMA)		+= yama/
- obj-$(CONFIG_SECURITY_LOADPIN)		+= loadpin/
- obj-$(CONFIG_SECURITY_SAFESETID)       += safesetid/
-+obj-$(CONFIG_SECURITY_LANDLOCK)	+= landlock/
- obj-$(CONFIG_CGROUP_DEVICE)		+= device_cgroup.o
- 
- # Object integrity file lists
-diff --git a/security/landlock/Kconfig b/security/landlock/Kconfig
-new file mode 100644
-index 000000000000..8bd103102008
---- /dev/null
-+++ b/security/landlock/Kconfig
-@@ -0,0 +1,18 @@
-+config SECURITY_LANDLOCK
-+	bool "Landlock support"
-+	depends on SECURITY
-+	depends on BPF_SYSCALL
-+	depends on SECCOMP_FILTER
-+	default n
-+	help
-+	  This selects Landlock, a programmatic access control.  It enables to
-+	  restrict processes on the fly (i.e. create a sandbox).  The security
-+	  policy is a set of eBPF programs, dedicated to deny a list of actions
-+	  on specific kernel objects (e.g. file).
-+
-+	  You need to enable seccomp filter to apply a security policy to a
-+	  process hierarchy (e.g. application with built-in sandboxing).
-+
-+	  See Documentation/security/landlock/ for further information.
-+
-+	  If you are unsure how to answer this question, answer N.
-diff --git a/security/landlock/Makefile b/security/landlock/Makefile
-new file mode 100644
-index 000000000000..7205f9a7a2ee
---- /dev/null
-+++ b/security/landlock/Makefile
-@@ -0,0 +1,3 @@
-+obj-$(CONFIG_SECURITY_LANDLOCK) := landlock.o
-+
-+landlock-y := init.o
-diff --git a/security/landlock/common.h b/security/landlock/common.h
-new file mode 100644
-index 000000000000..fd63ed1592a7
---- /dev/null
-+++ b/security/landlock/common.h
-@@ -0,0 +1,26 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Landlock LSM - private headers
++ * Landlock LSM - public kernel headers
 + *
 + * Copyright © 2016-2019 Mickaël Salaün <mic@digikod.net>
 + * Copyright © 2018-2019 ANSSI
 + */
 +
-+#ifndef _SECURITY_LANDLOCK_COMMON_H
-+#define _SECURITY_LANDLOCK_COMMON_H
++#ifndef _LINUX_LANDLOCK_H
++#define _LINUX_LANDLOCK_H
 +
-+#include <linux/bpf.h> /* enum bpf_prog_aux */
-+#include <linux/filter.h> /* bpf_prog */
-+#include <linux/refcount.h> /* refcount_t */
-+#include <uapi/linux/landlock.h> /* enum landlock_hook_type */
++#include <linux/errno.h>
++#include <linux/sched.h> /* task_struct */
 +
-+#define LANDLOCK_NAME "landlock"
++#if defined(CONFIG_SECCOMP_FILTER) && defined(CONFIG_SECURITY_LANDLOCK)
++extern int landlock_seccomp_prepend_prog(unsigned int flags,
++		const int __user *user_bpf_fd);
++extern void put_seccomp_landlock(struct task_struct *tsk);
++extern void get_seccomp_landlock(struct task_struct *tsk);
++#else /* CONFIG_SECCOMP_FILTER && CONFIG_SECURITY_LANDLOCK */
++static inline int landlock_seccomp_prepend_prog(unsigned int flags,
++		const int __user *user_bpf_fd)
++{
++		return -EINVAL;
++}
++static inline void put_seccomp_landlock(struct task_struct *tsk)
++{
++}
++static inline void get_seccomp_landlock(struct task_struct *tsk)
++{
++}
++#endif /* CONFIG_SECCOMP_FILTER && CONFIG_SECURITY_LANDLOCK */
 +
-+/* UAPI bounds and bitmasks */
++#endif /* _LINUX_LANDLOCK_H */
+diff --git a/include/linux/seccomp.h b/include/linux/seccomp.h
+index 84868d37b35d..106a0ceff3d7 100644
+--- a/include/linux/seccomp.h
++++ b/include/linux/seccomp.h
+@@ -11,6 +11,7 @@
+ 
+ #ifdef CONFIG_SECCOMP
+ 
++#include <linux/landlock.h>
+ #include <linux/thread_info.h>
+ #include <asm/seccomp.h>
+ 
+@@ -22,6 +23,7 @@ struct seccomp_filter;
+  *         system calls available to a process.
+  * @filter: must always point to a valid seccomp-filter or NULL as it is
+  *          accessed without locking during system call entry.
++ * @landlock_prog_set: contains a set of Landlock programs.
+  *
+  *          @filter must only be accessed from the context of current as there
+  *          is no read locking.
+@@ -29,6 +31,9 @@ struct seccomp_filter;
+ struct seccomp {
+ 	int mode;
+ 	struct seccomp_filter *filter;
++#if defined(CONFIG_SECCOMP_FILTER) && defined(CONFIG_SECURITY_LANDLOCK)
++	struct landlock_prog_set *landlock_prog_set;
++#endif /* CONFIG_SECCOMP_FILTER && CONFIG_SECURITY_LANDLOCK */
+ };
+ 
+ #ifdef CONFIG_HAVE_ARCH_SECCOMP_FILTER
+diff --git a/include/uapi/linux/seccomp.h b/include/uapi/linux/seccomp.h
+index 90734aa5aa36..bce6534e7feb 100644
+--- a/include/uapi/linux/seccomp.h
++++ b/include/uapi/linux/seccomp.h
+@@ -16,6 +16,7 @@
+ #define SECCOMP_SET_MODE_FILTER		1
+ #define SECCOMP_GET_ACTION_AVAIL	2
+ #define SECCOMP_GET_NOTIF_SIZES		3
++#define SECCOMP_PREPEND_LANDLOCK_PROG	4
+ 
+ /* Valid flags for SECCOMP_SET_MODE_FILTER */
+ #define SECCOMP_FILTER_FLAG_TSYNC		(1UL << 0)
+diff --git a/kernel/fork.c b/kernel/fork.c
+index 75675b9bf6df..a1ad5e80611b 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -51,6 +51,7 @@
+ #include <linux/security.h>
+ #include <linux/hugetlb.h>
+ #include <linux/seccomp.h>
++#include <linux/landlock.h>
+ #include <linux/swap.h>
+ #include <linux/syscalls.h>
+ #include <linux/jiffies.h>
+@@ -454,6 +455,7 @@ void free_task(struct task_struct *tsk)
+ 	rt_mutex_debug_task_free(tsk);
+ 	ftrace_graph_exit_task(tsk);
+ 	put_seccomp_filter(tsk);
++	put_seccomp_landlock(tsk);
+ 	arch_release_task_struct(tsk);
+ 	if (tsk->flags & PF_KTHREAD)
+ 		free_kthread_struct(tsk);
+@@ -884,7 +886,10 @@ static struct task_struct *dup_task_struct(struct task_struct *orig, int node)
+ 	 * the usage counts on the error path calling free_task.
+ 	 */
+ 	tsk->seccomp.filter = NULL;
+-#endif
++#ifdef CONFIG_SECURITY_LANDLOCK
++	tsk->seccomp.landlock_prog_set = NULL;
++#endif /* CONFIG_SECURITY_LANDLOCK */
++#endif /* CONFIG_SECCOMP */
+ 
+ 	setup_thread_stack(tsk, orig);
+ 	clear_user_return_notifier(tsk);
+@@ -1598,6 +1603,7 @@ static void copy_seccomp(struct task_struct *p)
+ 
+ 	/* Ref-count the new filter user, and assign it. */
+ 	get_seccomp_filter(current);
++	get_seccomp_landlock(current);
+ 	p->seccomp = current->seccomp;
+ 
+ 	/*
+diff --git a/kernel/seccomp.c b/kernel/seccomp.c
+index 811b4a86cdf6..e5005a644b23 100644
+--- a/kernel/seccomp.c
++++ b/kernel/seccomp.c
+@@ -41,6 +41,7 @@
+ #include <linux/tracehook.h>
+ #include <linux/uaccess.h>
+ #include <linux/anon_inodes.h>
++#include <linux/landlock.h>
+ 
+ enum notify_state {
+ 	SECCOMP_NOTIFY_INIT,
+@@ -1397,6 +1398,9 @@ static long do_seccomp(unsigned int op, unsigned int flags,
+ 			return -EINVAL;
+ 
+ 		return seccomp_get_notif_sizes(uargs);
++	case SECCOMP_PREPEND_LANDLOCK_PROG:
++		return landlock_seccomp_prepend_prog(flags,
++				(const int __user *)uargs);
+ 	default:
+ 		return -EINVAL;
+ 	}
+diff --git a/security/landlock/Makefile b/security/landlock/Makefile
+index 7205f9a7a2ee..2a1a7082a365 100644
+--- a/security/landlock/Makefile
++++ b/security/landlock/Makefile
+@@ -1,3 +1,4 @@
+ obj-$(CONFIG_SECURITY_LANDLOCK) := landlock.o
+ 
+-landlock-y := init.o
++landlock-y := init.o \
++	enforce.o enforce_seccomp.o
+diff --git a/security/landlock/common.h b/security/landlock/common.h
+index fd63ed1592a7..0c9b5904e7f5 100644
+--- a/security/landlock/common.h
++++ b/security/landlock/common.h
+@@ -23,4 +23,49 @@
+ #define _LANDLOCK_TRIGGER_FS_PICK_LAST	LANDLOCK_TRIGGER_FS_PICK_WRITE
+ #define _LANDLOCK_TRIGGER_FS_PICK_MASK	((_LANDLOCK_TRIGGER_FS_PICK_LAST << 1ULL) - 1)
+ 
++extern struct lsm_blob_sizes landlock_blob_sizes;
 +
-+#define _LANDLOCK_HOOK_LAST LANDLOCK_HOOK_FS_WALK
++struct landlock_prog_list {
++	struct landlock_prog_list *prev;
++	struct bpf_prog *prog;
++	refcount_t usage;
++};
 +
-+#define _LANDLOCK_TRIGGER_FS_PICK_LAST	LANDLOCK_TRIGGER_FS_PICK_WRITE
-+#define _LANDLOCK_TRIGGER_FS_PICK_MASK	((_LANDLOCK_TRIGGER_FS_PICK_LAST << 1ULL) - 1)
++/**
++ * struct landlock_prog_set - Landlock programs enforced on a thread
++ *
++ * This is used for low performance impact when forking a process. Instead of
++ * copying the full array and incrementing the usage of each entries, only
++ * create a pointer to &struct landlock_prog_set and increments its usage. When
++ * prepending a new program, if &struct landlock_prog_set is shared with other
++ * tasks, then duplicate it and prepend the program to this new &struct
++ * landlock_prog_set.
++ *
++ * @usage: reference count to manage the object lifetime. When a thread need to
++ *	   add Landlock programs and if @usage is greater than 1, then the
++ *	   thread must duplicate &struct landlock_prog_set to not change the
++ *	   children's programs as well.
++ * @programs: array of non-NULL &struct landlock_prog_list pointers
++ */
++struct landlock_prog_set {
++	struct landlock_prog_list *programs[_LANDLOCK_HOOK_LAST];
++	refcount_t usage;
++};
 +
-+#endif /* _SECURITY_LANDLOCK_COMMON_H */
-diff --git a/security/landlock/init.c b/security/landlock/init.c
++/**
++ * get_index - get an index for the programs of struct landlock_prog_set
++ *
++ * @type: a Landlock hook type
++ */
++static inline int get_index(enum landlock_hook_type type)
++{
++	/* type ID > 0 for loaded programs */
++	return type - 1;
++}
++
++static inline enum landlock_hook_type get_type(struct bpf_prog *prog)
++{
++	return prog->aux->extra->subtype.landlock_hook.type;
++}
++
+ #endif /* _SECURITY_LANDLOCK_COMMON_H */
+diff --git a/security/landlock/enforce.c b/security/landlock/enforce.c
 new file mode 100644
-index 000000000000..03073cd0fc4e
+index 000000000000..c06063d9d43d
 --- /dev/null
-+++ b/security/landlock/init.c
-@@ -0,0 +1,110 @@
++++ b/security/landlock/enforce.c
+@@ -0,0 +1,272 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
-+ * Landlock LSM - init
++ * Landlock LSM - enforcing helpers
 + *
 + * Copyright © 2016-2019 Mickaël Salaün <mic@digikod.net>
 + * Copyright © 2018-2019 ANSSI
 + */
 +
-+#include <linux/bpf.h> /* enum bpf_access_type */
-+#include <linux/capability.h> /* capable */
++#include <asm/barrier.h> /* smp_store_release() */
++#include <asm/page.h> /* PAGE_SIZE */
++#include <linux/bpf.h> /* bpf_prog_put() */
++#include <linux/compiler.h> /* READ_ONCE() */
++#include <linux/err.h> /* PTR_ERR() */
++#include <linux/errno.h>
 +#include <linux/filter.h> /* struct bpf_prog */
++#include <linux/refcount.h>
++#include <linux/slab.h> /* alloc(), kfree() */
 +
-+#include "common.h" /* LANDLOCK_* */
++#include "common.h" /* struct landlock_prog_list */
 +
-+static bool bpf_landlock_is_valid_access(int off, int size,
-+		enum bpf_access_type type, const struct bpf_prog *prog,
-+		struct bpf_insn_access_aux *info)
++/* TODO: use a dedicated kmem_cache_alloc() instead of k*alloc() */
++
++static void put_landlock_prog_list(struct landlock_prog_list *prog_list)
 +{
-+	const union bpf_prog_subtype *prog_subtype;
-+	enum bpf_reg_type reg_type = NOT_INIT;
-+	int max_size = 0;
++	struct landlock_prog_list *orig = prog_list;
 +
-+	if (WARN_ON(!prog->aux->extra))
-+		return false;
-+	prog_subtype = &prog->aux->extra->subtype;
++	/* clean up single-reference branches iteratively */
++	while (orig && refcount_dec_and_test(&orig->usage)) {
++		struct landlock_prog_list *freeme = orig;
 +
-+	if (off < 0)
-+		return false;
-+	if (size <= 0 || size > sizeof(__u64))
-+		return false;
-+
-+	/* check memory range access */
-+	switch (reg_type) {
-+	case NOT_INIT:
-+		return false;
-+	case SCALAR_VALUE:
-+		/* allow partial raw value */
-+		if (size > max_size)
-+			return false;
-+		info->ctx_field_size = max_size;
-+		break;
-+	default:
-+		/* deny partial pointer */
-+		if (size != max_size)
-+			return false;
++		if (orig->prog)
++			bpf_prog_put(orig->prog);
++		orig = orig->prev;
++		kfree(freeme);
 +	}
-+
-+	info->reg_type = reg_type;
-+	return true;
 +}
 +
-+static bool bpf_landlock_is_valid_subtype(struct bpf_prog_extra *prog_extra)
++void landlock_put_prog_set(struct landlock_prog_set *prog_set)
 +{
-+	const union bpf_prog_subtype *subtype;
++	if (prog_set && refcount_dec_and_test(&prog_set->usage)) {
++		size_t i;
 +
-+	if (!prog_extra)
-+		return false;
-+	subtype = &prog_extra->subtype;
-+
-+	switch (subtype->landlock_hook.type) {
-+	case LANDLOCK_HOOK_FS_PICK:
-+		if (!subtype->landlock_hook.triggers ||
-+				subtype->landlock_hook.triggers &
-+				~_LANDLOCK_TRIGGER_FS_PICK_MASK)
-+			return false;
-+		break;
-+	case LANDLOCK_HOOK_FS_WALK:
-+		if (subtype->landlock_hook.triggers)
-+			return false;
-+		break;
-+	default:
-+		return false;
++		for (i = 0; i < ARRAY_SIZE(prog_set->programs); i++)
++			put_landlock_prog_list(prog_set->programs[i]);
++		kfree(prog_set);
 +	}
-+
-+	return true;
 +}
 +
-+static const struct bpf_func_proto *bpf_landlock_func_proto(
-+		enum bpf_func_id func_id,
-+		const struct bpf_prog *prog)
++void landlock_get_prog_set(struct landlock_prog_set *prog_set)
 +{
-+	u64 hook_type;
-+
-+	if (WARN_ON(!prog->aux->extra))
-+		return NULL;
-+	hook_type = prog->aux->extra->subtype.landlock_hook.type;
-+
-+	/* generic functions */
-+	/* TODO: do we need/want update/delete functions for every LL prog?
-+	 * => impurity vs. audit */
-+	switch (func_id) {
-+	case BPF_FUNC_map_lookup_elem:
-+		return &bpf_map_lookup_elem_proto;
-+	case BPF_FUNC_map_update_elem:
-+		return &bpf_map_update_elem_proto;
-+	case BPF_FUNC_map_delete_elem:
-+		return &bpf_map_delete_elem_proto;
-+	default:
-+		break;
-+	}
-+	return NULL;
++	if (!prog_set)
++		return;
++	refcount_inc(&prog_set->usage);
 +}
 +
-+const struct bpf_verifier_ops landlock_verifier_ops = {
-+	.get_func_proto	= bpf_landlock_func_proto,
-+	.is_valid_access = bpf_landlock_is_valid_access,
-+	.is_valid_subtype = bpf_landlock_is_valid_subtype,
-+};
++static struct landlock_prog_set *new_landlock_prog_set(void)
++{
++	struct landlock_prog_set *ret;
 +
-+const struct bpf_prog_ops landlock_prog_ops = {};
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index ddae50373d58..50145d448bc3 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -170,6 +170,7 @@ enum bpf_prog_type {
- 	BPF_PROG_TYPE_FLOW_DISSECTOR,
- 	BPF_PROG_TYPE_CGROUP_SYSCTL,
- 	BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE,
-+	BPF_PROG_TYPE_LANDLOCK_HOOK,
- };
- 
- enum bpf_attach_type {
-diff --git a/tools/include/uapi/linux/landlock.h b/tools/include/uapi/linux/landlock.h
-new file mode 100644
-index 000000000000..9e6d8e10ec2c
---- /dev/null
-+++ b/tools/include/uapi/linux/landlock.h
-@@ -0,0 +1,109 @@
-+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+/*
-+ * Landlock - UAPI headers
++	/* array filled with NULL values */
++	ret = kzalloc(sizeof(*ret), GFP_KERNEL);
++	if (!ret)
++		return ERR_PTR(-ENOMEM);
++	refcount_set(&ret->usage, 1);
++	return ret;
++}
++
++/**
++ * store_landlock_prog - prepend and deduplicate a Landlock prog_list
 + *
-+ * Copyright © 2017-2019 Mickaël Salaün <mic@digikod.net>
++ * Prepend @prog to @init_prog_set while ignoring @prog
++ * if they are already in @ref_prog_set.  Whatever is the result of this
++ * function call, you can call bpf_prog_put(@prog) after.
++ *
++ * @init_prog_set: empty prog_set to prepend to
++ * @ref_prog_set: prog_set to check for duplicate programs
++ * @prog: program to prepend
++ *
++ * Return -errno on error or 0 if @prog was successfully stored.
++ */
++static int store_landlock_prog(struct landlock_prog_set *init_prog_set,
++		const struct landlock_prog_set *ref_prog_set,
++		struct bpf_prog *prog)
++{
++	struct landlock_prog_list *tmp_list = NULL;
++	int err;
++	u32 hook_idx;
++	enum landlock_hook_type last_type;
++	struct bpf_prog *new = prog;
++
++	/* allocate all the memory we need */
++	struct landlock_prog_list *new_list;
++
++	last_type = get_type(new);
++
++	/* ignore duplicate programs */
++	if (ref_prog_set) {
++		struct landlock_prog_list *ref;
++
++		hook_idx = get_index(get_type(new));
++		for (ref = ref_prog_set->programs[hook_idx];
++				ref; ref = ref->prev) {
++			if (ref->prog == new)
++				return -EINVAL;
++		}
++	}
++
++	new = bpf_prog_inc(new);
++	if (IS_ERR(new)) {
++		err = PTR_ERR(new);
++		goto put_tmp_list;
++	}
++	new_list = kzalloc(sizeof(*new_list), GFP_KERNEL);
++	if (!new_list) {
++		bpf_prog_put(new);
++		err = -ENOMEM;
++		goto put_tmp_list;
++	}
++	/* ignore Landlock types in this tmp_list */
++	new_list->prog = new;
++	new_list->prev = tmp_list;
++	refcount_set(&new_list->usage, 1);
++	tmp_list = new_list;
++
++	if (!tmp_list)
++		/* inform user space that this program was already added */
++		return -EEXIST;
++
++	/* properly store the list (without error cases) */
++	while (tmp_list) {
++		struct landlock_prog_list *new_list;
++
++		new_list = tmp_list;
++		tmp_list = tmp_list->prev;
++		/* do not increment the previous prog list usage */
++		hook_idx = get_index(get_type(new_list->prog));
++		new_list->prev = init_prog_set->programs[hook_idx];
++		/* no need to add from the last program to the first because
++		 * each of them are a different Landlock type */
++		smp_store_release(&init_prog_set->programs[hook_idx], new_list);
++	}
++	return 0;
++
++put_tmp_list:
++	put_landlock_prog_list(tmp_list);
++	return err;
++}
++
++/* limit Landlock programs set to 256KB */
++#define LANDLOCK_PROGRAMS_MAX_PAGES (1 << 6)
++
++/**
++ * landlock_prepend_prog - attach a Landlock prog_list to @current_prog_set
++ *
++ * Whatever is the result of this function call, you can call
++ * bpf_prog_put(@prog) after.
++ *
++ * @current_prog_set: landlock_prog_set pointer, must be locked (if needed) to
++ *                    prevent a concurrent put/free. This pointer must not be
++ *                    freed after the call.
++ * @prog: non-NULL Landlock prog_list to prepend to @current_prog_set. @prog
++ *	  will be owned by landlock_prepend_prog() and freed if an error
++ *	  happened.
++ *
++ * Return @current_prog_set or a new pointer when OK. Return a pointer error
++ * otherwise.
++ */
++struct landlock_prog_set *landlock_prepend_prog(
++		struct landlock_prog_set *current_prog_set,
++		struct bpf_prog *prog)
++{
++	struct landlock_prog_set *new_prog_set = current_prog_set;
++	unsigned long pages;
++	int err;
++	size_t i;
++	struct landlock_prog_set tmp_prog_set = {};
++
++	if (prog->type != BPF_PROG_TYPE_LANDLOCK_HOOK)
++		return ERR_PTR(-EINVAL);
++
++	/* validate memory size allocation */
++	pages = prog->pages;
++	if (current_prog_set) {
++		size_t i;
++
++		for (i = 0; i < ARRAY_SIZE(current_prog_set->programs); i++) {
++			struct landlock_prog_list *walker_p;
++
++			for (walker_p = current_prog_set->programs[i];
++					walker_p; walker_p = walker_p->prev)
++				pages += walker_p->prog->pages;
++		}
++		/* count a struct landlock_prog_set if we need to allocate one */
++		if (refcount_read(&current_prog_set->usage) != 1)
++			pages += round_up(sizeof(*current_prog_set), PAGE_SIZE)
++				/ PAGE_SIZE;
++	}
++	if (pages > LANDLOCK_PROGRAMS_MAX_PAGES)
++		return ERR_PTR(-E2BIG);
++
++	/* ensure early that we can allocate enough memory for the new
++	 * prog_lists */
++	err = store_landlock_prog(&tmp_prog_set, current_prog_set, prog);
++	if (err)
++		return ERR_PTR(err);
++
++	/*
++	 * Each task_struct points to an array of prog list pointers.  These
++	 * tables are duplicated when additions are made (which means each
++	 * table needs to be refcounted for the processes using it). When a new
++	 * table is created, all the refcounters on the prog_list are bumped (to
++	 * track each table that references the prog). When a new prog is
++	 * added, it's just prepended to the list for the new table to point
++	 * at.
++	 *
++	 * Manage all the possible errors before this step to not uselessly
++	 * duplicate current_prog_set and avoid a rollback.
++	 */
++	if (!new_prog_set) {
++		/*
++		 * If there is no Landlock program set used by the current task,
++		 * then create a new one.
++		 */
++		new_prog_set = new_landlock_prog_set();
++		if (IS_ERR(new_prog_set))
++			goto put_tmp_lists;
++	} else if (refcount_read(&current_prog_set->usage) > 1) {
++		/*
++		 * If the current task is not the sole user of its Landlock
++		 * program set, then duplicate them.
++		 */
++		new_prog_set = new_landlock_prog_set();
++		if (IS_ERR(new_prog_set))
++			goto put_tmp_lists;
++		for (i = 0; i < ARRAY_SIZE(new_prog_set->programs); i++) {
++			new_prog_set->programs[i] =
++				READ_ONCE(current_prog_set->programs[i]);
++			if (new_prog_set->programs[i])
++				refcount_inc(&new_prog_set->programs[i]->usage);
++		}
++
++		/*
++		 * Landlock program set from the current task will not be freed
++		 * here because the usage is strictly greater than 1. It is
++		 * only prevented to be freed by another task thanks to the
++		 * caller of landlock_prepend_prog() which should be locked if
++		 * needed.
++		 */
++		landlock_put_prog_set(current_prog_set);
++	}
++
++	/* prepend tmp_prog_set to new_prog_set */
++	for (i = 0; i < ARRAY_SIZE(tmp_prog_set.programs); i++) {
++		/* get the last new list */
++		struct landlock_prog_list *last_list =
++			tmp_prog_set.programs[i];
++
++		if (last_list) {
++			while (last_list->prev)
++				last_list = last_list->prev;
++			/* no need to increment usage (pointer replacement) */
++			last_list->prev = new_prog_set->programs[i];
++			new_prog_set->programs[i] = tmp_prog_set.programs[i];
++		}
++	}
++	return new_prog_set;
++
++put_tmp_lists:
++	for (i = 0; i < ARRAY_SIZE(tmp_prog_set.programs); i++)
++		put_landlock_prog_list(tmp_prog_set.programs[i]);
++	return new_prog_set;
++}
+diff --git a/security/landlock/enforce.h b/security/landlock/enforce.h
+new file mode 100644
+index 000000000000..39b800d9999f
+--- /dev/null
++++ b/security/landlock/enforce.h
+@@ -0,0 +1,18 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Landlock LSM - enforcing helpers headers
++ *
++ * Copyright © 2016-2019 Mickaël Salaün <mic@digikod.net>
 + * Copyright © 2018-2019 ANSSI
 + */
 +
-+#ifndef _UAPI__LINUX_LANDLOCK_H__
-+#define _UAPI__LINUX_LANDLOCK_H__
++#ifndef _SECURITY_LANDLOCK_ENFORCE_H
++#define _SECURITY_LANDLOCK_ENFORCE_H
 +
-+#include <linux/types.h>
++struct landlock_prog_set *landlock_prepend_prog(
++		struct landlock_prog_set *current_prog_set,
++		struct bpf_prog *prog);
++void landlock_put_prog_set(struct landlock_prog_set *prog_set);
++void landlock_get_prog_set(struct landlock_prog_set *prog_set);
 +
-+#define LANDLOCK_RET_ALLOW	0
-+#define LANDLOCK_RET_DENY	1
++#endif /* _SECURITY_LANDLOCK_ENFORCE_H */
+diff --git a/security/landlock/enforce_seccomp.c b/security/landlock/enforce_seccomp.c
+new file mode 100644
+index 000000000000..c38c81e6b01a
+--- /dev/null
++++ b/security/landlock/enforce_seccomp.c
+@@ -0,0 +1,92 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Landlock LSM - enforcing with seccomp
++ *
++ * Copyright © 2016-2018 Mickaël Salaün <mic@digikod.net>
++ * Copyright © 2018-2019 ANSSI
++ */
++
++#ifdef CONFIG_SECCOMP_FILTER
++
++#include <linux/bpf.h> /* bpf_prog_put() */
++#include <linux/capability.h>
++#include <linux/err.h> /* PTR_ERR() */
++#include <linux/errno.h>
++#include <linux/filter.h> /* struct bpf_prog */
++#include <linux/landlock.h>
++#include <linux/refcount.h>
++#include <linux/sched.h> /* current */
++#include <linux/uaccess.h> /* get_user() */
++
++#include "enforce.h"
++
++/* headers in include/linux/landlock.h */
 +
 +/**
-+ * enum landlock_hook_type - hook type for which a Landlock program is called
++ * landlock_seccomp_prepend_prog - attach a Landlock program to the current
++ *                                 process
 + *
-+ * A hook is a policy decision point which exposes the same context type for
-+ * each program evaluation.
++ * current->seccomp.landlock_state->prog_set is lazily allocated. When a
++ * process fork, only a pointer is copied.  When a new program is added by a
++ * process, if there is other references to this process' prog_set, then a new
++ * allocation is made to contain an array pointing to Landlock program lists.
++ * This design enable low-performance impact and is memory efficient while
++ * keeping the property of prepend-only programs.
 + *
-+ * @LANDLOCK_HOOK_FS_PICK: called for the last element of a file path
-+ * @LANDLOCK_HOOK_FS_WALK: called for each directory of a file path (excluding
-+ *			   the directory passed to fs_pick, if any)
++ * For now, installing a Landlock prog requires that the requesting task has
++ * the global CAP_SYS_ADMIN. We cannot force the use of no_new_privs to not
++ * exclude containers where a process may legitimately acquire more privileges
++ * thanks to an SUID binary.
++ *
++ * @flags: not used for now, but could be used for TSYNC
++ * @user_bpf_fd: file descriptor pointing to a loaded Landlock prog
 + */
-+enum landlock_hook_type {
-+	LANDLOCK_HOOK_FS_PICK = 1,
-+	LANDLOCK_HOOK_FS_WALK,
-+};
++int landlock_seccomp_prepend_prog(unsigned int flags,
++		const int __user *user_bpf_fd)
++{
++	struct landlock_prog_set *new_prog_set;
++	struct bpf_prog *prog;
++	int bpf_fd, err;
 +
-+/**
-+ * DOC: landlock_triggers
-+ *
-+ * A landlock trigger is used as a bitmask in subtype.landlock_hook.triggers
-+ * for a fs_pick program.  It defines a set of actions for which the program
-+ * should verify an access request.
-+ *
-+ * - %LANDLOCK_TRIGGER_FS_PICK_APPEND
-+ * - %LANDLOCK_TRIGGER_FS_PICK_CHDIR
-+ * - %LANDLOCK_TRIGGER_FS_PICK_CHROOT
-+ * - %LANDLOCK_TRIGGER_FS_PICK_CREATE
-+ * - %LANDLOCK_TRIGGER_FS_PICK_EXECUTE
-+ * - %LANDLOCK_TRIGGER_FS_PICK_FCNTL
-+ * - %LANDLOCK_TRIGGER_FS_PICK_GETATTR
-+ * - %LANDLOCK_TRIGGER_FS_PICK_IOCTL
-+ * - %LANDLOCK_TRIGGER_FS_PICK_LINK
-+ * - %LANDLOCK_TRIGGER_FS_PICK_LINKTO
-+ * - %LANDLOCK_TRIGGER_FS_PICK_LOCK
-+ * - %LANDLOCK_TRIGGER_FS_PICK_MAP
-+ * - %LANDLOCK_TRIGGER_FS_PICK_MOUNTON
-+ * - %LANDLOCK_TRIGGER_FS_PICK_OPEN
-+ * - %LANDLOCK_TRIGGER_FS_PICK_READ
-+ * - %LANDLOCK_TRIGGER_FS_PICK_READDIR
-+ * - %LANDLOCK_TRIGGER_FS_PICK_RECEIVE
-+ * - %LANDLOCK_TRIGGER_FS_PICK_RENAME
-+ * - %LANDLOCK_TRIGGER_FS_PICK_RENAMETO
-+ * - %LANDLOCK_TRIGGER_FS_PICK_RMDIR
-+ * - %LANDLOCK_TRIGGER_FS_PICK_SETATTR
-+ * - %LANDLOCK_TRIGGER_FS_PICK_TRANSFER
-+ * - %LANDLOCK_TRIGGER_FS_PICK_UNLINK
-+ * - %LANDLOCK_TRIGGER_FS_PICK_WRITE
-+ */
-+#define LANDLOCK_TRIGGER_FS_PICK_APPEND			(1ULL << 0)
-+#define LANDLOCK_TRIGGER_FS_PICK_CHDIR			(1ULL << 1)
-+#define LANDLOCK_TRIGGER_FS_PICK_CHROOT			(1ULL << 2)
-+#define LANDLOCK_TRIGGER_FS_PICK_CREATE			(1ULL << 3)
-+#define LANDLOCK_TRIGGER_FS_PICK_EXECUTE		(1ULL << 4)
-+#define LANDLOCK_TRIGGER_FS_PICK_FCNTL			(1ULL << 5)
-+#define LANDLOCK_TRIGGER_FS_PICK_GETATTR		(1ULL << 6)
-+#define LANDLOCK_TRIGGER_FS_PICK_IOCTL			(1ULL << 7)
-+#define LANDLOCK_TRIGGER_FS_PICK_LINK			(1ULL << 8)
-+#define LANDLOCK_TRIGGER_FS_PICK_LINKTO			(1ULL << 9)
-+#define LANDLOCK_TRIGGER_FS_PICK_LOCK			(1ULL << 10)
-+#define LANDLOCK_TRIGGER_FS_PICK_MAP			(1ULL << 11)
-+#define LANDLOCK_TRIGGER_FS_PICK_MOUNTON		(1ULL << 12)
-+#define LANDLOCK_TRIGGER_FS_PICK_OPEN			(1ULL << 13)
-+#define LANDLOCK_TRIGGER_FS_PICK_READ			(1ULL << 14)
-+#define LANDLOCK_TRIGGER_FS_PICK_READDIR		(1ULL << 15)
-+#define LANDLOCK_TRIGGER_FS_PICK_RECEIVE		(1ULL << 16)
-+#define LANDLOCK_TRIGGER_FS_PICK_RENAME			(1ULL << 17)
-+#define LANDLOCK_TRIGGER_FS_PICK_RENAMETO		(1ULL << 18)
-+#define LANDLOCK_TRIGGER_FS_PICK_RMDIR			(1ULL << 19)
-+#define LANDLOCK_TRIGGER_FS_PICK_SETATTR		(1ULL << 20)
-+#define LANDLOCK_TRIGGER_FS_PICK_TRANSFER		(1ULL << 21)
-+#define LANDLOCK_TRIGGER_FS_PICK_UNLINK			(1ULL << 22)
-+#define LANDLOCK_TRIGGER_FS_PICK_WRITE			(1ULL << 23)
++	/* planned to be replaced with a no_new_privs check to allow
++	 * unprivileged tasks */
++	if (!capable(CAP_SYS_ADMIN))
++		return -EPERM;
++	/* enable to check if Landlock is supported with early EFAULT */
++	if (!user_bpf_fd)
++		return -EFAULT;
++	if (flags)
++		return -EINVAL;
++	err = get_user(bpf_fd, user_bpf_fd);
++	if (err)
++		return err;
 +
-+/**
-+ * struct landlock_ctx_fs_pick - context accessible to a fs_pick program
-+ *
-+ * @inode: pointer to the current kernel object that can be used to compare
-+ *         inodes from an inode map.
-+ */
-+struct landlock_ctx_fs_pick {
-+	__u64 inode;
-+};
++	prog = bpf_prog_get(bpf_fd);
++	if (IS_ERR(prog))
++		return PTR_ERR(prog);
 +
-+/**
-+ * struct landlock_ctx_fs_walk - context accessible to a fs_walk program
-+ *
-+ * @inode: pointer to the current kernel object that can be used to compare
-+ *         inodes from an inode map.
-+ */
-+struct landlock_ctx_fs_walk {
-+	__u64 inode;
-+};
++	/*
++	 * We don't need to lock anything for the current process hierarchy,
++	 * everything is guarded by the atomic counters.
++	 */
++	new_prog_set = landlock_prepend_prog(
++			current->seccomp.landlock_prog_set, prog);
++	bpf_prog_put(prog);
++	/* @prog is managed/freed by landlock_prepend_prog() */
++	if (IS_ERR(new_prog_set))
++		return PTR_ERR(new_prog_set);
++	current->seccomp.landlock_prog_set = new_prog_set;
++	return 0;
++}
 +
-+#endif /* _UAPI__LINUX_LANDLOCK_H__ */
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 68f45a96769f..1b99c8da7a67 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -2646,6 +2646,7 @@ static bool bpf_prog_type__needs_kver(enum bpf_prog_type type)
- 	case BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE:
- 	case BPF_PROG_TYPE_PERF_EVENT:
- 	case BPF_PROG_TYPE_CGROUP_SYSCTL:
-+	case BPF_PROG_TYPE_LANDLOCK_HOOK:
- 		return false;
- 	case BPF_PROG_TYPE_KPROBE:
- 	default:
-diff --git a/tools/lib/bpf/libbpf_probes.c b/tools/lib/bpf/libbpf_probes.c
-index 6635a31a7a16..f4f34cb8869a 100644
---- a/tools/lib/bpf/libbpf_probes.c
-+++ b/tools/lib/bpf/libbpf_probes.c
-@@ -101,6 +101,7 @@ probe_load(enum bpf_prog_type prog_type, const struct bpf_insn *insns,
- 	case BPF_PROG_TYPE_SK_REUSEPORT:
- 	case BPF_PROG_TYPE_FLOW_DISSECTOR:
- 	case BPF_PROG_TYPE_CGROUP_SYSCTL:
-+	case BPF_PROG_TYPE_LANDLOCK_HOOK:
- 	default:
- 		break;
- 	}
++void put_seccomp_landlock(struct task_struct *tsk)
++{
++	landlock_put_prog_set(tsk->seccomp.landlock_prog_set);
++}
++
++void get_seccomp_landlock(struct task_struct *tsk)
++{
++	landlock_get_prog_set(tsk->seccomp.landlock_prog_set);
++}
++
++#endif /* CONFIG_SECCOMP_FILTER */
 -- 
 2.20.1
 
