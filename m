@@ -2,112 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4328855931
-	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 22:42:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18C1555940
+	for <lists+netdev@lfdr.de>; Tue, 25 Jun 2019 22:43:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727213AbfFYUmC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 16:42:02 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:59456 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726053AbfFYUmC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Jun 2019 16:42:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=Yqc4vT4415VkqyQ2Zqhlm7NzOXhoJ6B6XpmxOaJIoGI=; b=xMpeGzpmHMbEU3WkmL7jnCkNTm
-        f7+XoXiiO2CO+5ZdfZlDfKBytPSYATwmYXMuT7MP/rJDEplXLxEnMQ+M6L/HH0QW1gBF6BAg9U96/
-        IFCcsT4dpEJHmqoeFKHF5/CUURXjSb7jQA/mR4SJndTI3tJqBNbacBssWdzNwxvr/0jY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hfsGC-0000mO-Nt; Tue, 25 Jun 2019 22:41:48 +0200
-Date:   Tue, 25 Jun 2019 22:41:48 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Daniel Santos <daniel.santos@pobox.com>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
-        sean.wang@mediatek.com, f.fainelli@gmail.com, davem@davemloft.net,
-        matthias.bgg@gmail.com, vivien.didelot@gmail.com,
-        frank-w@public-files.de, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org
-Subject: Re: [PATCH RFC net-next 1/5] net: dsa: mt7530: Convert to PHYLINK API
-Message-ID: <20190625204148.GB27733@lunn.ch>
-References: <20190624145251.4849-1-opensource@vdorst.com>
- <20190624145251.4849-2-opensource@vdorst.com>
- <20190624153950.hdsuhrvfd77heyor@shell.armlinux.org.uk>
- <20190625113158.Horde.pCaJOVUsgyhYLd5Diz5EZKI@www.vdorst.com>
- <20190625121030.m5w7wi3rpezhfgyo@shell.armlinux.org.uk>
- <1ad9f9a5-8f39-40bd-94bb-6b700f30c4ba@pobox.com>
- <20190625190246.GA27733@lunn.ch>
- <4fc51dc4-0eec-30d7-86d1-3404819cf6fe@pobox.com>
+        id S1726447AbfFYUnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 16:43:07 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:43889 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726053AbfFYUnG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 16:43:06 -0400
+Received: by mail-ed1-f65.google.com with SMTP id e3so29056256edr.10
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 13:43:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ivjo75kEqcIjJ2bVFpjy/lnplvVSJv+34RbXeslOhCw=;
+        b=dkwcb03o+MEAoNXYR0sy430qfVDFlkvSP8qEWdopJG9PUzzCD3vuzu7VP8W5rxrie5
+         aQybQgV+LugvoK2zah/TSrQOrF+TW5U76V08ZTRUou981KeLuk8NUbfP37qAA3ea1Y55
+         2nOUYpQLVlZ2U/J6qwd5ZcXqIw4vvPV9iZJx1D/FJ8X9oDdQ1/jZgdtHwVlLyy0W+yda
+         F/Gbv68RqtbiFrmsz7oXP2d9CAf27o5l011M0EIaMpwQFLwAKeZVgxUNJXHD2CMI13W0
+         0Q82bi0/yo2kkqqnZm3dErx5frAWZNieXDXkTB4Rj/IT2upP0JTVXt94e/z03BfA8v6i
+         96rw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ivjo75kEqcIjJ2bVFpjy/lnplvVSJv+34RbXeslOhCw=;
+        b=eVlcYzsopv4e4AnEAKXy9AZvdAetZhKnQdN83uIB6MLXvVcy26n3Tt5duxnaNSWnkl
+         MAE+5byz1mUBbXlzUfBVkLE7Cp8CZhedRXFh4/i66JdgnXl27mq31zR3nwUaSN+UBjsO
+         SM0y1atBb+x14PWlDBY88NtBMhjFOw2wwXRWk3gSnhotFTGbgR8pM9NDwly85vF1NgUI
+         l6PgMfG9gPsyP8uOTuXRNdhf9htTTiHKHtYDgULvo8FOKUulr/f/Uje0VQtNDs+2Bj5X
+         puIZMDOwxAl+UWw/BKpN3KAxkxVgYAARV2YMrtVJIs/Y3n30khiP8mvcl274nt8AgkIV
+         0lGQ==
+X-Gm-Message-State: APjAAAXe1NpWYaMx23UcewRtx5rii46fKqZxacyl8GN2O3xQTR0yBG7n
+        93CitoPMXtP0JpJN8OFHf3kekyLUBa1sqT7j3A==
+X-Google-Smtp-Source: APXvYqzhf8C7rBTmTKhFprwsVhu4LOSE5wrhi+nZ8QY/zxBJCQLTdwiUrmm6hObNvc9wS+/EcFQWOFWms0y14I2swyo=
+X-Received: by 2002:a17:906:948c:: with SMTP id t12mr499605ejx.222.1561495385137;
+ Tue, 25 Jun 2019 13:43:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <4fc51dc4-0eec-30d7-86d1-3404819cf6fe@pobox.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+References: <20190625103359.31102-1-ssuryaextr@gmail.com> <f0a47b5d-6477-9a6a-cf5d-6e13f0b4acdc@gmail.com>
+In-Reply-To: <f0a47b5d-6477-9a6a-cf5d-6e13f0b4acdc@gmail.com>
+From:   Stephen Suryaputra <ssuryaextr@gmail.com>
+Date:   Tue, 25 Jun 2019 16:42:53 -0400
+Message-ID: <CAHapkUghFv-DyjY=KtKrJYicJpvRrL1cRa50Gr7tG-H4-10Lzg@mail.gmail.com>
+Subject: Re: [PATCH net] vrf: reset rt_iif for recirculated mcast out pkts
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 25, 2019 at 02:27:55PM -0500, Daniel Santos wrote:
-> On 6/25/19 2:02 PM, Andrew Lunn wrote:
-> >> But will there still be a mechanism to ignore link partner's advertising
-> >> and force these parameters?
-> > >From man 1 ethtool:
-> >
-> >        -a --show-pause
-> >               Queries the specified Ethernet device for pause parameter information.
-> >
-> >        -A --pause
-> >               Changes the pause parameters of the specified Ethernet device.
-> >
-> >            autoneg on|off
-> >                   Specifies whether pause autonegotiation should be enabled.
-> >
-> >            rx on|off
-> >                   Specifies whether RX pause should be enabled.
-> >
-> >            tx on|off
-> >                   Specifies whether TX pause should be enabled.
-> >
-> > You need to check the driver to see if it actually implements this
-> > ethtool call, but that is how it should be configured.
-> >
-> > 	Andrew
-> >
-> Thank you Andrew,
-> 
-> So in this context, my question is the difference between "enabling" and
-> "forcing".  Here's that register for the mt7620 (which has an mt7530 on
-> its die): https://imgur.com/a/pTk0668  I believe this is also what René
-> is seeking clarity on?
+On Tue, Jun 25, 2019 at 4:22 PM David Ahern <dsahern@gmail.com> wrote:
+>
+> On 6/25/19 4:33 AM, Stephen Suryaputra wrote:
+> > @@ -363,10 +376,20 @@ int ip_mc_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+> >  #endif
+> >                  ) {
+> >                       struct sk_buff *newskb = skb_clone(skb, GFP_ATOMIC);
+> > -                     if (newskb)
+> > +                     if (newskb) {
+> > +                             /* Reset rt_iif so that inet_iif() will return
+> > +                              * skb->dev->ifIndex which is the VRF device for
+> > +                              * socket lookup. Setting this to VRF ifindex
+> > +                              * causes ipi_ifindex in in_pktinfo to be
+> > +                              * overwritten, see ipv4_pktinfo_prepare().
+> > +                              */
+> > +                             if (netif_is_l3_slave(dev))
+>
+> seems like the rt_iif is a problem for recirculated mcast packets in
+> general, not just ones tied to a VRF.
 
-Lets start with normal operation. If the MAC supports pause or asym
-pause, it calls phy_support_sym_pause() or phy_support_asym_pause().
-phylib will then configure the PHY to advertise pause as appropriate.
-Once auto-neg has completed, the results of the negotiation are set in
-phydev. So phdev->pause and phydev->asym_pause. The MAC callback is
-then used to tell the MAC about the autoneg results. The MAC should be
-programmed using the values in phdev->pause and phydev->asym_pause.
+It seems so to me too but I wonder why this hasn't been seen...
+Can I get more feedbacks on this? If there is an agreement to fix this
+generally, I will remove the if clause and respin the patch with more
+accurate changelog.
 
-For ethtool, the MAC driver needs to implement .get_pauseparam and
-.set_pauseparam. The set_pauseparam needs to validate the settings,
-using phy_validate_pause(). If valid, phy_set_asym_pause() is used to
-tell the PHY about the new configuration. This will trigger a new
-auto-neg if auto-neg is enabled, and the results will be passed back
-in the usual way. If auto-neg is disabled, or pause auto-neg is
-disabled, the MAC should configure pause directly based on the
-settings passed.
+>
+> > +                                     ip_mc_reset_rt_iif(net, rt, newskb);
+> > +
+> >                               NF_HOOK(NFPROTO_IPV4, NF_INET_POST_ROUTING,
+> >                                       net, sk, newskb, NULL, newskb->dev,
+> >                                       ip_mc_finish_output);
+> > +                     }
+> >               }
+> >
+> >               /* Multicasts with ttl 0 must not go beyond the host */
 
-Looking at the data sheet page, you want FORCE_MODE_Pn set. You never
-want the MAC directly talking to the PHY. Bad things will happen.
-Then use FORCE_RX_FC_Pn and FORCE_TX_Pn to reflect phydev->pause and
-phydev->asym_pause.
-
-The same idea applies when using phylink.
-
-    Andrew
+Thanks.
