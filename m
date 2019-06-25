@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 866F655AC4
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 00:13:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83CCC55ACC
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 00:14:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726631AbfFYWN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 18:13:27 -0400
-Received: from smtp-sh.infomaniak.ch ([128.65.195.4]:52165 "EHLO
+        id S1726401AbfFYWN6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 18:13:58 -0400
+Received: from smtp-sh.infomaniak.ch ([128.65.195.4]:53472 "EHLO
         smtp-sh.infomaniak.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726304AbfFYWN0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 18:13:26 -0400
+        with ESMTP id S1725782AbfFYWN5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 18:13:57 -0400
 Received: from smtp5.infomaniak.ch (smtp5.infomaniak.ch [83.166.132.18])
-        by smtp-sh.infomaniak.ch (8.14.5/8.14.5) with ESMTP id x5PLrK1v019814
+        by smtp-sh.infomaniak.ch (8.14.5/8.14.5) with ESMTP id x5PLrLve019831
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 25 Jun 2019 23:53:20 +0200
+        Tue, 25 Jun 2019 23:53:21 +0200
 Received: from localhost (ns3096276.ip-94-23-54.eu [94.23.54.103])
         (authenticated bits=0)
-        by smtp5.infomaniak.ch (8.14.5/8.14.5) with ESMTP id x5PLrKcg038719;
-        Tue, 25 Jun 2019 23:53:20 +0200
+        by smtp5.infomaniak.ch (8.14.5/8.14.5) with ESMTP id x5PLrLhB038785;
+        Tue, 25 Jun 2019 23:53:21 +0200
 From:   =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>
 To:     linux-kernel@vger.kernel.org
 Cc:     =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>,
@@ -50,9 +50,9 @@ Cc:     =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>,
         kernel-hardening@lists.openwall.com, linux-api@vger.kernel.org,
         linux-fsdevel@vger.kernel.org,
         linux-security-module@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH bpf-next v9 04/10] seccomp,landlock: Enforce Landlock programs per process hierarchy
-Date:   Tue, 25 Jun 2019 23:52:33 +0200
-Message-Id: <20190625215239.11136-5-mic@digikod.net>
+Subject: [PATCH bpf-next v9 05/10] bpf,landlock: Add a new map type: inode
+Date:   Tue, 25 Jun 2019 23:52:34 +0200
+Message-Id: <20190625215239.11136-6-mic@digikod.net>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190625215239.11136-1-mic@digikod.net>
 References: <20190625215239.11136-1-mic@digikod.net>
@@ -66,718 +66,689 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The seccomp(2) syscall can be used by a task to apply a Landlock program
-to itself. As a seccomp filter, a Landlock program is enforced for the
-current task and all its future children. A program is immutable and a
-task can only add new restricting programs to itself, forming a list of
-programss.
+This new map store arbitrary 64-bits values referenced by inode keys.
+The map can be updated from user space with file descriptor pointing to
+inodes tied to a file system.  From an eBPF (Landlock) program point of
+view, such a map is read-only and can only be used to retrieved a
+64-bits value tied to a given inode.  This is useful to recognize an
+inode tagged by user space, without access right to this inode (i.e. no
+need to have a write access to this inode).
 
-A Landlock program is tied to a Landlock hook. If the action on a kernel
-object is allowed by the other Linux security mechanisms (e.g. DAC,
-capabilities, other LSM), then a Landlock hook related to this kind of
-object is triggered. The list of programs for this hook is then
-evaluated. Each program return a 32-bit value which can deny the action
-on a kernel object with a non-zero value. If every programs of the list
-return zero, then the action on the object is allowed.
+Add dedicated BPF functions to handle this type of map:
+* bpf_inode_map_update_elem()
+* bpf_inode_map_lookup_elem()
+* bpf_inode_map_delete_elem()
 
 Signed-off-by: Mickaël Salaün <mic@digikod.net>
 Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
 Cc: Andy Lutomirski <luto@amacapital.net>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: David S. Miller <davem@davemloft.net>
 Cc: James Morris <jmorris@namei.org>
 Cc: Kees Cook <keescook@chromium.org>
 Cc: Serge E. Hallyn <serge@hallyn.com>
-Cc: Will Drewry <wad@chromium.org>
-Link: https://lkml.kernel.org/r/c10a503d-5e35-7785-2f3d-25ed8dd63fab@digikod.net
+Cc: Jann Horn <jann@thejh.net>
 ---
 
 Changes since v8:
-* Remove the chaining concept from the eBPF program contexts (chain and
-  cookie). We need to keep these subtypes this way to be able to make
-  them evolve, though.
+* remove prog chaining and object tagging to ease review
+* use bpf_map_init_from_attr()
 
 Changes since v7:
-* handle and verify program chains
-* split and rename providers.c to enforce.c and enforce_seccomp.c
-* rename LANDLOCK_SUBTYPE_* to LANDLOCK_*
+* new design with a dedicated map and a BPF function to tie a value to
+  an inode
+* add the ability to set or get a tag on an inode from a Landlock
+  program
 
 Changes since v6:
-* rename some functions with more accurate names to reflect that an eBPF
-  program for Landlock could be used for something else than a rule
-* reword rule "appending" to "prepending" and explain it
-* remove the superfluous no_new_privs check, only check global
-  CAP_SYS_ADMIN when prepending a Landlock rule (needed for containers)
-* create and use {get,put}_seccomp_landlock() (suggested by Kees Cook)
-* replace ifdef with static inlined function (suggested by Kees Cook)
-* use get_user() (suggested by Kees Cook)
-* replace atomic_t with refcount_t (requested by Kees Cook)
-* move struct landlock_{rule,events} from landlock.h to common.h
-* cleanup headers
+* remove WARN_ON() for missing dentry->d_inode
+* refactor bpf_landlock_func_proto() (suggested by Kees Cook)
 
 Changes since v5:
-* remove struct landlock_node and use a similar inheritance mechanisme
-  as seccomp-bpf (requested by Andy Lutomirski)
-* rename SECCOMP_ADD_LANDLOCK_RULE to SECCOMP_APPEND_LANDLOCK_RULE
-* rename file manager.c to providers.c
-* add comments
-* typo and cosmetic fixes
+* cosmetic fixes and rebase
 
 Changes since v4:
-* merge manager and seccomp patches
-* return -EFAULT in seccomp(2) when user_bpf_fd is null to easely check
-  if Landlock is supported
-* only allow a process with the global CAP_SYS_ADMIN to use Landlock
-  (will be lifted in the future)
-* add an early check to exit as soon as possible if the current process
-  does not have Landlock rules
+* use a file abstraction (handle) to wrap inode, dentry, path and file
+  structs
+* remove bpf_landlock_cmp_fs_beneath()
+* rename the BPF helper and move it to kernel/bpf/
+* tighten helpers accessible by a Landlock rule
 
 Changes since v3:
-* remove the hard link with seccomp (suggested by Andy Lutomirski and
-  Kees Cook):
-  * remove the cookie which could imply multiple evaluation of Landlock
-    rules
-  * remove the origin field in struct landlock_data
-* remove documentation fix (merged upstream)
-* rename the new seccomp command to SECCOMP_ADD_LANDLOCK_RULE
-* internal renaming
-* split commit
-* new design to be able to inherit on the fly the parent rules
+* remove bpf_landlock_cmp_fs_prop() (suggested by Alexei Starovoitov)
+* add hooks dealing with struct inode and struct path pointers:
+  inode_permission and inode_getattr
+* add abstraction over eBPF helper arguments thanks to wrapping structs
+* add bpf_landlock_get_fs_mode() helper to check file type and mode
+* merge WARN_ON() (suggested by Kees Cook)
+* fix and update bpf_helpers.h
+* use BPF_CALL_* for eBPF helpers (suggested by Alexei Starovoitov)
+* make handle arraymap safe (RCU) and remove buggy synchronize_rcu()
+* factor out the arraymay walk
+* use size_t to index array (suggested by Jann Horn)
 
 Changes since v2:
-* Landlock programs can now be run without seccomp filter but for any
-  syscall (from the process) or interruption
-* move Landlock related functions and structs into security/landlock/*
-  (to manage cgroups as well)
-* fix seccomp filter handling: run Landlock programs for each of their
-  legitimate seccomp filter
-* properly clean up all seccomp results
-* cosmetic changes to ease the understanding
-* fix some ifdef
+* add MNT_INTERNAL check to only add file handle from user-visible FS
+  (e.g. no anonymous inode)
+* replace struct file* with struct path* in map_landlock_handle
+* add BPF protos
+* fix bpf_landlock_cmp_fs_prop_with_struct_file()
 ---
- include/linux/landlock.h            |  34 ++++
- include/linux/seccomp.h             |   5 +
- include/uapi/linux/seccomp.h        |   1 +
- kernel/fork.c                       |   8 +-
- kernel/seccomp.c                    |   4 +
- security/landlock/Makefile          |   3 +-
- security/landlock/common.h          |  45 +++++
- security/landlock/enforce.c         | 272 ++++++++++++++++++++++++++++
- security/landlock/enforce.h         |  18 ++
- security/landlock/enforce_seccomp.c |  92 ++++++++++
- 10 files changed, 480 insertions(+), 2 deletions(-)
- create mode 100644 include/linux/landlock.h
- create mode 100644 security/landlock/enforce.c
- create mode 100644 security/landlock/enforce.h
- create mode 100644 security/landlock/enforce_seccomp.c
+ include/linux/bpf.h            |   9 +
+ include/linux/bpf_types.h      |   3 +
+ include/uapi/linux/bpf.h       |  12 +-
+ kernel/bpf/Makefile            |   3 +
+ kernel/bpf/core.c              |   2 +
+ kernel/bpf/inodemap.c          | 315 +++++++++++++++++++++++++++++++++
+ kernel/bpf/syscall.c           |  27 ++-
+ kernel/bpf/verifier.c          |  14 ++
+ tools/include/uapi/linux/bpf.h |  12 +-
+ tools/lib/bpf/libbpf_probes.c  |   1 +
+ 10 files changed, 395 insertions(+), 3 deletions(-)
+ create mode 100644 kernel/bpf/inodemap.c
 
-diff --git a/include/linux/landlock.h b/include/linux/landlock.h
-new file mode 100644
-index 000000000000..8ac7942f50fc
---- /dev/null
-+++ b/include/linux/landlock.h
-@@ -0,0 +1,34 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Landlock LSM - public kernel headers
-+ *
-+ * Copyright © 2016-2019 Mickaël Salaün <mic@digikod.net>
-+ * Copyright © 2018-2019 ANSSI
-+ */
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index da167d3afecc..cc72ec18f0f6 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -208,6 +208,8 @@ enum bpf_arg_type {
+ 	ARG_PTR_TO_INT,		/* pointer to int */
+ 	ARG_PTR_TO_LONG,	/* pointer to long */
+ 	ARG_PTR_TO_SOCKET,	/* pointer to bpf_sock (fullsock) */
 +
-+#ifndef _LINUX_LANDLOCK_H
-+#define _LINUX_LANDLOCK_H
-+
-+#include <linux/errno.h>
-+#include <linux/sched.h> /* task_struct */
-+
-+#if defined(CONFIG_SECCOMP_FILTER) && defined(CONFIG_SECURITY_LANDLOCK)
-+extern int landlock_seccomp_prepend_prog(unsigned int flags,
-+		const int __user *user_bpf_fd);
-+extern void put_seccomp_landlock(struct task_struct *tsk);
-+extern void get_seccomp_landlock(struct task_struct *tsk);
-+#else /* CONFIG_SECCOMP_FILTER && CONFIG_SECURITY_LANDLOCK */
-+static inline int landlock_seccomp_prepend_prog(unsigned int flags,
-+		const int __user *user_bpf_fd)
-+{
-+		return -EINVAL;
-+}
-+static inline void put_seccomp_landlock(struct task_struct *tsk)
-+{
-+}
-+static inline void get_seccomp_landlock(struct task_struct *tsk)
-+{
-+}
-+#endif /* CONFIG_SECCOMP_FILTER && CONFIG_SECURITY_LANDLOCK */
-+
-+#endif /* _LINUX_LANDLOCK_H */
-diff --git a/include/linux/seccomp.h b/include/linux/seccomp.h
-index 84868d37b35d..106a0ceff3d7 100644
---- a/include/linux/seccomp.h
-+++ b/include/linux/seccomp.h
-@@ -11,6 +11,7 @@
- 
- #ifdef CONFIG_SECCOMP
- 
-+#include <linux/landlock.h>
- #include <linux/thread_info.h>
- #include <asm/seccomp.h>
- 
-@@ -22,6 +23,7 @@ struct seccomp_filter;
-  *         system calls available to a process.
-  * @filter: must always point to a valid seccomp-filter or NULL as it is
-  *          accessed without locking during system call entry.
-+ * @landlock_prog_set: contains a set of Landlock programs.
-  *
-  *          @filter must only be accessed from the context of current as there
-  *          is no read locking.
-@@ -29,6 +31,9 @@ struct seccomp_filter;
- struct seccomp {
- 	int mode;
- 	struct seccomp_filter *filter;
-+#if defined(CONFIG_SECCOMP_FILTER) && defined(CONFIG_SECURITY_LANDLOCK)
-+	struct landlock_prog_set *landlock_prog_set;
-+#endif /* CONFIG_SECCOMP_FILTER && CONFIG_SECURITY_LANDLOCK */
++	ARG_PTR_TO_INODE,	/* pointer to a struct inode */
  };
  
- #ifdef CONFIG_HAVE_ARCH_SECCOMP_FILTER
-diff --git a/include/uapi/linux/seccomp.h b/include/uapi/linux/seccomp.h
-index 90734aa5aa36..bce6534e7feb 100644
---- a/include/uapi/linux/seccomp.h
-+++ b/include/uapi/linux/seccomp.h
-@@ -16,6 +16,7 @@
- #define SECCOMP_SET_MODE_FILTER		1
- #define SECCOMP_GET_ACTION_AVAIL	2
- #define SECCOMP_GET_NOTIF_SIZES		3
-+#define SECCOMP_PREPEND_LANDLOCK_PROG	4
+ /* type of values returned from helper functions */
+@@ -278,6 +280,7 @@ enum bpf_reg_type {
+ 	PTR_TO_TCP_SOCK_OR_NULL, /* reg points to struct tcp_sock or NULL */
+ 	PTR_TO_TP_BUFFER,	 /* reg points to a writable raw tp's buffer */
+ 	PTR_TO_XDP_SOCK,	 /* reg points to struct xdp_sock */
++	PTR_TO_INODE,		 /* reg points to struct inode */
+ };
  
- /* Valid flags for SECCOMP_SET_MODE_FILTER */
- #define SECCOMP_FILTER_FLAG_TSYNC		(1UL << 0)
-diff --git a/kernel/fork.c b/kernel/fork.c
-index 75675b9bf6df..a1ad5e80611b 100644
---- a/kernel/fork.c
-+++ b/kernel/fork.c
-@@ -51,6 +51,7 @@
- #include <linux/security.h>
- #include <linux/hugetlb.h>
- #include <linux/seccomp.h>
-+#include <linux/landlock.h>
- #include <linux/swap.h>
- #include <linux/syscalls.h>
- #include <linux/jiffies.h>
-@@ -454,6 +455,7 @@ void free_task(struct task_struct *tsk)
- 	rt_mutex_debug_task_free(tsk);
- 	ftrace_graph_exit_task(tsk);
- 	put_seccomp_filter(tsk);
-+	put_seccomp_landlock(tsk);
- 	arch_release_task_struct(tsk);
- 	if (tsk->flags & PF_KTHREAD)
- 		free_kthread_struct(tsk);
-@@ -884,7 +886,10 @@ static struct task_struct *dup_task_struct(struct task_struct *orig, int node)
- 	 * the usage counts on the error path calling free_task.
- 	 */
- 	tsk->seccomp.filter = NULL;
--#endif
+ /* The information passed from prog-specific *_is_valid_access
+@@ -485,6 +488,7 @@ struct bpf_event_entry {
+ 	struct rcu_head rcu;
+ };
+ 
++
+ bool bpf_prog_array_compatible(struct bpf_array *array, const struct bpf_prog *fp);
+ int bpf_prog_calc_tag(struct bpf_prog *fp);
+ 
+@@ -689,6 +693,10 @@ int bpf_fd_array_map_lookup_elem(struct bpf_map *map, void *key, u32 *value);
+ int bpf_fd_htab_map_update_elem(struct bpf_map *map, struct file *map_file,
+ 				void *key, void *value, u64 map_flags);
+ int bpf_fd_htab_map_lookup_elem(struct bpf_map *map, void *key, u32 *value);
++int bpf_inode_map_update_elem(struct bpf_map *map, int *key, u64 *value,
++			      u64 flags);
++int bpf_inode_map_lookup_elem(struct bpf_map *map, int *key, u64 *value);
++int bpf_inode_map_delete_elem(struct bpf_map *map, int *key);
+ 
+ int bpf_get_file_flag(int flags);
+ int bpf_check_uarg_tail_zero(void __user *uaddr, size_t expected_size,
+@@ -1059,6 +1067,7 @@ extern const struct bpf_func_proto bpf_spin_unlock_proto;
+ extern const struct bpf_func_proto bpf_get_local_storage_proto;
+ extern const struct bpf_func_proto bpf_strtol_proto;
+ extern const struct bpf_func_proto bpf_strtoul_proto;
++extern const struct bpf_func_proto bpf_inode_map_lookup_proto;
+ 
+ /* Shared helpers among cBPF and eBPF. */
+ void bpf_user_rnd_init_once(void);
+diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
+index dee8b82e31b1..9e385473b57a 100644
+--- a/include/linux/bpf_types.h
++++ b/include/linux/bpf_types.h
+@@ -79,3 +79,6 @@ BPF_MAP_TYPE(BPF_MAP_TYPE_REUSEPORT_SOCKARRAY, reuseport_array_ops)
+ #endif
+ BPF_MAP_TYPE(BPF_MAP_TYPE_QUEUE, queue_map_ops)
+ BPF_MAP_TYPE(BPF_MAP_TYPE_STACK, stack_map_ops)
 +#ifdef CONFIG_SECURITY_LANDLOCK
-+	tsk->seccomp.landlock_prog_set = NULL;
-+#endif /* CONFIG_SECURITY_LANDLOCK */
-+#endif /* CONFIG_SECCOMP */
++BPF_MAP_TYPE(BPF_MAP_TYPE_INODE, inode_ops)
++#endif
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 50145d448bc3..08ff720835ba 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -134,6 +134,7 @@ enum bpf_map_type {
+ 	BPF_MAP_TYPE_QUEUE,
+ 	BPF_MAP_TYPE_STACK,
+ 	BPF_MAP_TYPE_SK_STORAGE,
++	BPF_MAP_TYPE_INODE,
+ };
  
- 	setup_thread_stack(tsk, orig);
- 	clear_user_return_notifier(tsk);
-@@ -1598,6 +1603,7 @@ static void copy_seccomp(struct task_struct *p)
- 
- 	/* Ref-count the new filter user, and assign it. */
- 	get_seccomp_filter(current);
-+	get_seccomp_landlock(current);
- 	p->seccomp = current->seccomp;
- 
- 	/*
-diff --git a/kernel/seccomp.c b/kernel/seccomp.c
-index 811b4a86cdf6..e5005a644b23 100644
---- a/kernel/seccomp.c
-+++ b/kernel/seccomp.c
-@@ -41,6 +41,7 @@
- #include <linux/tracehook.h>
- #include <linux/uaccess.h>
- #include <linux/anon_inodes.h>
-+#include <linux/landlock.h>
- 
- enum notify_state {
- 	SECCOMP_NOTIFY_INIT,
-@@ -1397,6 +1398,9 @@ static long do_seccomp(unsigned int op, unsigned int flags,
- 			return -EINVAL;
- 
- 		return seccomp_get_notif_sizes(uargs);
-+	case SECCOMP_PREPEND_LANDLOCK_PROG:
-+		return landlock_seccomp_prepend_prog(flags,
-+				(const int __user *)uargs);
- 	default:
- 		return -EINVAL;
- 	}
-diff --git a/security/landlock/Makefile b/security/landlock/Makefile
-index 7205f9a7a2ee..2a1a7082a365 100644
---- a/security/landlock/Makefile
-+++ b/security/landlock/Makefile
-@@ -1,3 +1,4 @@
- obj-$(CONFIG_SECURITY_LANDLOCK) := landlock.o
- 
--landlock-y := init.o
-+landlock-y := init.o \
-+	enforce.o enforce_seccomp.o
-diff --git a/security/landlock/common.h b/security/landlock/common.h
-index fd63ed1592a7..0c9b5904e7f5 100644
---- a/security/landlock/common.h
-+++ b/security/landlock/common.h
-@@ -23,4 +23,49 @@
- #define _LANDLOCK_TRIGGER_FS_PICK_LAST	LANDLOCK_TRIGGER_FS_PICK_WRITE
- #define _LANDLOCK_TRIGGER_FS_PICK_MASK	((_LANDLOCK_TRIGGER_FS_PICK_LAST << 1ULL) - 1)
- 
-+extern struct lsm_blob_sizes landlock_blob_sizes;
-+
-+struct landlock_prog_list {
-+	struct landlock_prog_list *prev;
-+	struct bpf_prog *prog;
-+	refcount_t usage;
-+};
-+
-+/**
-+ * struct landlock_prog_set - Landlock programs enforced on a thread
+ /* Note that tracing related programs such as
+@@ -2716,6 +2717,14 @@ union bpf_attr {
+  *		**-EPERM** if no permission to send the *sig*.
+  *
+  *		**-EAGAIN** if bpf program can try again.
 + *
-+ * This is used for low performance impact when forking a process. Instead of
-+ * copying the full array and incrementing the usage of each entries, only
-+ * create a pointer to &struct landlock_prog_set and increments its usage. When
-+ * prepending a new program, if &struct landlock_prog_set is shared with other
-+ * tasks, then duplicate it and prepend the program to this new &struct
-+ * landlock_prog_set.
-+ *
-+ * @usage: reference count to manage the object lifetime. When a thread need to
-+ *	   add Landlock programs and if @usage is greater than 1, then the
-+ *	   thread must duplicate &struct landlock_prog_set to not change the
-+ *	   children's programs as well.
-+ * @programs: array of non-NULL &struct landlock_prog_list pointers
-+ */
-+struct landlock_prog_set {
-+	struct landlock_prog_list *programs[_LANDLOCK_HOOK_LAST];
-+	refcount_t usage;
-+};
++ * u64 bpf_inode_map_lookup(map, key)
++ * 	Description
++ * 		Perform a lookup in *map* for an entry associated to an inode
++ * 		*key*.
++ * 	Return
++ * 		Map value associated to *key*, or **NULL** if no entry was
++ * 		found.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -2827,7 +2836,8 @@ union bpf_attr {
+ 	FN(strtoul),			\
+ 	FN(sk_storage_get),		\
+ 	FN(sk_storage_delete),		\
+-	FN(send_signal),
++	FN(send_signal),		\
++	FN(inode_map_lookup),
+ 
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+  * function eBPF program intends to call
+diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
+index 29d781061cd5..e6fe613b3105 100644
+--- a/kernel/bpf/Makefile
++++ b/kernel/bpf/Makefile
+@@ -22,3 +22,6 @@ obj-$(CONFIG_CGROUP_BPF) += cgroup.o
+ ifeq ($(CONFIG_INET),y)
+ obj-$(CONFIG_BPF_SYSCALL) += reuseport_array.o
+ endif
++ifeq ($(CONFIG_SECURITY_LANDLOCK),y)
++obj-$(CONFIG_BPF_SYSCALL) += inodemap.o
++endif
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 8ad392e52328..3cf5d16a8496 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -2032,6 +2032,8 @@ const struct bpf_func_proto bpf_get_current_comm_proto __weak;
+ const struct bpf_func_proto bpf_get_current_cgroup_id_proto __weak;
+ const struct bpf_func_proto bpf_get_local_storage_proto __weak;
+ 
++const struct bpf_func_proto bpf_inode_map_update_proto __weak;
 +
-+/**
-+ * get_index - get an index for the programs of struct landlock_prog_set
-+ *
-+ * @type: a Landlock hook type
-+ */
-+static inline int get_index(enum landlock_hook_type type)
-+{
-+	/* type ID > 0 for loaded programs */
-+	return type - 1;
-+}
-+
-+static inline enum landlock_hook_type get_type(struct bpf_prog *prog)
-+{
-+	return prog->aux->extra->subtype.landlock_hook.type;
-+}
-+
- #endif /* _SECURITY_LANDLOCK_COMMON_H */
-diff --git a/security/landlock/enforce.c b/security/landlock/enforce.c
+ const struct bpf_func_proto * __weak bpf_get_trace_printk_proto(void)
+ {
+ 	return NULL;
+diff --git a/kernel/bpf/inodemap.c b/kernel/bpf/inodemap.c
 new file mode 100644
-index 000000000000..c06063d9d43d
+index 000000000000..fcad0de51557
 --- /dev/null
-+++ b/security/landlock/enforce.c
-@@ -0,0 +1,272 @@
++++ b/kernel/bpf/inodemap.c
+@@ -0,0 +1,315 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
-+ * Landlock LSM - enforcing helpers
++ * inode map for Landlock
 + *
-+ * Copyright © 2016-2019 Mickaël Salaün <mic@digikod.net>
-+ * Copyright © 2018-2019 ANSSI
++ * Copyright © 2017-2019 Mickaël Salaün <mic@digikod.net>
++ * Copyright © 2019 ANSSI
 + */
 +
-+#include <asm/barrier.h> /* smp_store_release() */
-+#include <asm/page.h> /* PAGE_SIZE */
-+#include <linux/bpf.h> /* bpf_prog_put() */
-+#include <linux/compiler.h> /* READ_ONCE() */
-+#include <linux/err.h> /* PTR_ERR() */
-+#include <linux/errno.h>
-+#include <linux/filter.h> /* struct bpf_prog */
-+#include <linux/refcount.h>
-+#include <linux/slab.h> /* alloc(), kfree() */
++#include <asm/resource.h> /* RLIMIT_NOFILE */
++#include <linux/bpf.h>
++#include <linux/err.h>
++#include <linux/file.h> /* fput() */
++#include <linux/filter.h> /* BPF_CALL_2() */
++#include <linux/fs.h> /* struct file */
++#include <linux/mm.h>
++#include <linux/mount.h> /* MNT_INTERNAL */
++#include <linux/path.h> /* struct path */
++#include <linux/sched/signal.h> /* rlimit() */
++#include <linux/security.h>
++#include <linux/slab.h>
 +
-+#include "common.h" /* struct landlock_prog_list */
++struct inode_elem {
++	struct inode *inode;
++	u64 value;
++};
 +
-+/* TODO: use a dedicated kmem_cache_alloc() instead of k*alloc() */
++struct inode_array {
++	struct bpf_map map;
++	size_t nb_entries;
++	struct inode_elem elems[0];
++};
 +
-+static void put_landlock_prog_list(struct landlock_prog_list *prog_list)
++/* must call iput(inode) after this call */
++static struct inode *inode_from_fd(int ufd, bool check_access)
 +{
-+	struct landlock_prog_list *orig = prog_list;
++	struct inode *ret;
++	struct fd f;
++	int deny;
 +
-+	/* clean up single-reference branches iteratively */
-+	while (orig && refcount_dec_and_test(&orig->usage)) {
-+		struct landlock_prog_list *freeme = orig;
-+
-+		if (orig->prog)
-+			bpf_prog_put(orig->prog);
-+		orig = orig->prev;
-+		kfree(freeme);
++	f = fdget(ufd);
++	if (unlikely(!f.file || !file_inode(f.file))) {
++		ret = ERR_PTR(-EBADF);
++		goto put_fd;
 +	}
-+}
-+
-+void landlock_put_prog_set(struct landlock_prog_set *prog_set)
-+{
-+	if (prog_set && refcount_dec_and_test(&prog_set->usage)) {
-+		size_t i;
-+
-+		for (i = 0; i < ARRAY_SIZE(prog_set->programs); i++)
-+			put_landlock_prog_list(prog_set->programs[i]);
-+		kfree(prog_set);
++	/* TODO: add this check when called from an eBPF program too (already
++	 * checked by the LSM parent hooks anyway) */
++	if (unlikely(IS_PRIVATE(file_inode(f.file)))) {
++		ret = ERR_PTR(-EINVAL);
++		goto put_fd;
 +	}
-+}
++	/* check if the FD is tied to a mount point */
++	/* TODO: add this check when called from an eBPF program too */
++	if (unlikely(!f.file->f_path.mnt || f.file->f_path.mnt->mnt_flags &
++				MNT_INTERNAL)) {
++		ret = ERR_PTR(-EINVAL);
++		goto put_fd;
++	}
++	if (check_access) {
++		/*
++		 * need to be allowed to access attributes from this file to
++		 * then be able to compare an inode to this entry
++		 */
++		deny = security_inode_getattr(&f.file->f_path);
++		if (deny) {
++			ret = ERR_PTR(deny);
++			goto put_fd;
++		}
++	}
++	ret = file_inode(f.file);
++	ihold(ret);
 +
-+void landlock_get_prog_set(struct landlock_prog_set *prog_set)
-+{
-+	if (!prog_set)
-+		return;
-+	refcount_inc(&prog_set->usage);
-+}
-+
-+static struct landlock_prog_set *new_landlock_prog_set(void)
-+{
-+	struct landlock_prog_set *ret;
-+
-+	/* array filled with NULL values */
-+	ret = kzalloc(sizeof(*ret), GFP_KERNEL);
-+	if (!ret)
-+		return ERR_PTR(-ENOMEM);
-+	refcount_set(&ret->usage, 1);
++put_fd:
++	fdput(f);
 +	return ret;
 +}
 +
-+/**
-+ * store_landlock_prog - prepend and deduplicate a Landlock prog_list
-+ *
-+ * Prepend @prog to @init_prog_set while ignoring @prog
-+ * if they are already in @ref_prog_set.  Whatever is the result of this
-+ * function call, you can call bpf_prog_put(@prog) after.
-+ *
-+ * @init_prog_set: empty prog_set to prepend to
-+ * @ref_prog_set: prog_set to check for duplicate programs
-+ * @prog: program to prepend
-+ *
-+ * Return -errno on error or 0 if @prog was successfully stored.
-+ */
-+static int store_landlock_prog(struct landlock_prog_set *init_prog_set,
-+		const struct landlock_prog_set *ref_prog_set,
-+		struct bpf_prog *prog)
++/* (never) called from eBPF program */
++static int fake_map_delete_elem(struct bpf_map *map, void *key)
 +{
-+	struct landlock_prog_list *tmp_list = NULL;
-+	int err;
-+	u32 hook_idx;
-+	enum landlock_hook_type last_type;
-+	struct bpf_prog *new = prog;
++	WARN_ON(1);
++	return -EINVAL;
++}
 +
-+	/* allocate all the memory we need */
-+	struct landlock_prog_list *new_list;
++/* called from syscall */
++static int sys_inode_map_delete_elem(struct bpf_map *map, struct inode *key)
++{
++	struct inode_array *array = container_of(map, struct inode_array, map);
++	struct inode *inode;
++	int i;
 +
-+	last_type = get_type(new);
-+
-+	/* ignore duplicate programs */
-+	if (ref_prog_set) {
-+		struct landlock_prog_list *ref;
-+
-+		hook_idx = get_index(get_type(new));
-+		for (ref = ref_prog_set->programs[hook_idx];
-+				ref; ref = ref->prev) {
-+			if (ref->prog == new)
-+				return -EINVAL;
++	WARN_ON_ONCE(!rcu_read_lock_held());
++	for (i = 0; i < array->map.max_entries; i++) {
++		if (array->elems[i].inode == key) {
++			inode = xchg(&array->elems[i].inode, NULL);
++			array->nb_entries--;
++			iput(inode);
++			return 0;
 +		}
 +	}
++	return -ENOENT;
++}
 +
-+	new = bpf_prog_inc(new);
-+	if (IS_ERR(new)) {
-+		err = PTR_ERR(new);
-+		goto put_tmp_list;
-+	}
-+	new_list = kzalloc(sizeof(*new_list), GFP_KERNEL);
-+	if (!new_list) {
-+		bpf_prog_put(new);
-+		err = -ENOMEM;
-+		goto put_tmp_list;
-+	}
-+	/* ignore Landlock types in this tmp_list */
-+	new_list->prog = new;
-+	new_list->prev = tmp_list;
-+	refcount_set(&new_list->usage, 1);
-+	tmp_list = new_list;
++/* called from syscall */
++int bpf_inode_map_delete_elem(struct bpf_map *map, int *key)
++{
++	struct inode *inode;
++	int err;
 +
-+	if (!tmp_list)
-+		/* inform user space that this program was already added */
-+		return -EEXIST;
-+
-+	/* properly store the list (without error cases) */
-+	while (tmp_list) {
-+		struct landlock_prog_list *new_list;
-+
-+		new_list = tmp_list;
-+		tmp_list = tmp_list->prev;
-+		/* do not increment the previous prog list usage */
-+		hook_idx = get_index(get_type(new_list->prog));
-+		new_list->prev = init_prog_set->programs[hook_idx];
-+		/* no need to add from the last program to the first because
-+		 * each of them are a different Landlock type */
-+		smp_store_release(&init_prog_set->programs[hook_idx], new_list);
-+	}
-+	return 0;
-+
-+put_tmp_list:
-+	put_landlock_prog_list(tmp_list);
++	inode = inode_from_fd(*key, false);
++	if (IS_ERR(inode))
++		return PTR_ERR(inode);
++	err = sys_inode_map_delete_elem(map, inode);
++	iput(inode);
 +	return err;
 +}
 +
-+/* limit Landlock programs set to 256KB */
-+#define LANDLOCK_PROGRAMS_MAX_PAGES (1 << 6)
-+
-+/**
-+ * landlock_prepend_prog - attach a Landlock prog_list to @current_prog_set
-+ *
-+ * Whatever is the result of this function call, you can call
-+ * bpf_prog_put(@prog) after.
-+ *
-+ * @current_prog_set: landlock_prog_set pointer, must be locked (if needed) to
-+ *                    prevent a concurrent put/free. This pointer must not be
-+ *                    freed after the call.
-+ * @prog: non-NULL Landlock prog_list to prepend to @current_prog_set. @prog
-+ *	  will be owned by landlock_prepend_prog() and freed if an error
-+ *	  happened.
-+ *
-+ * Return @current_prog_set or a new pointer when OK. Return a pointer error
-+ * otherwise.
-+ */
-+struct landlock_prog_set *landlock_prepend_prog(
-+		struct landlock_prog_set *current_prog_set,
-+		struct bpf_prog *prog)
++static void inode_map_free(struct bpf_map *map)
 +{
-+	struct landlock_prog_set *new_prog_set = current_prog_set;
-+	unsigned long pages;
-+	int err;
-+	size_t i;
-+	struct landlock_prog_set tmp_prog_set = {};
++	struct inode_array *array = container_of(map, struct inode_array, map);
++	int i;
 +
-+	if (prog->type != BPF_PROG_TYPE_LANDLOCK_HOOK)
++	synchronize_rcu();
++	for (i = 0; i < array->map.max_entries; i++)
++		iput(array->elems[i].inode);
++	bpf_map_area_free(array);
++}
++
++static struct bpf_map *inode_map_alloc(union bpf_attr *attr)
++{
++	int numa_node = bpf_map_attr_numa_node(attr);
++	struct inode_array *array;
++	u64 array_size;
++
++	/* only allow root to create this type of map (for now), should be
++	 * removed when Landlock will be usable by unprivileged users */
++	if (!capable(CAP_SYS_ADMIN))
++		return ERR_PTR(-EPERM);
++
++	/* the key is a file descriptor and the value must be 64-bits (for
++	 * now) */
++	if (attr->max_entries == 0 || attr->key_size != sizeof(u32) ||
++	    attr->value_size != FIELD_SIZEOF(struct inode_elem, value) ||
++	    attr->map_flags & ~(BPF_F_RDONLY | BPF_F_WRONLY) ||
++	    numa_node != NUMA_NO_NODE)
 +		return ERR_PTR(-EINVAL);
 +
-+	/* validate memory size allocation */
-+	pages = prog->pages;
-+	if (current_prog_set) {
-+		size_t i;
-+
-+		for (i = 0; i < ARRAY_SIZE(current_prog_set->programs); i++) {
-+			struct landlock_prog_list *walker_p;
-+
-+			for (walker_p = current_prog_set->programs[i];
-+					walker_p; walker_p = walker_p->prev)
-+				pages += walker_p->prog->pages;
-+		}
-+		/* count a struct landlock_prog_set if we need to allocate one */
-+		if (refcount_read(&current_prog_set->usage) != 1)
-+			pages += round_up(sizeof(*current_prog_set), PAGE_SIZE)
-+				/ PAGE_SIZE;
-+	}
-+	if (pages > LANDLOCK_PROGRAMS_MAX_PAGES)
++	if (attr->value_size > KMALLOC_MAX_SIZE)
++		/* if value_size is bigger, the user space won't be able to
++		 * access the elements.
++		 */
 +		return ERR_PTR(-E2BIG);
 +
-+	/* ensure early that we can allocate enough memory for the new
-+	 * prog_lists */
-+	err = store_landlock_prog(&tmp_prog_set, current_prog_set, prog);
-+	if (err)
-+		return ERR_PTR(err);
-+
 +	/*
-+	 * Each task_struct points to an array of prog list pointers.  These
-+	 * tables are duplicated when additions are made (which means each
-+	 * table needs to be refcounted for the processes using it). When a new
-+	 * table is created, all the refcounters on the prog_list are bumped (to
-+	 * track each table that references the prog). When a new prog is
-+	 * added, it's just prepended to the list for the new table to point
-+	 * at.
++	 * Limit number of entries in an inode map to the maximum number of
++	 * open files for the current process. The maximum number of file
++	 * references (including all inode maps) for a process is then
++	 * (RLIMIT_NOFILE - 1) * RLIMIT_NOFILE. If the process' RLIMIT_NOFILE
++	 * is 0, then any entry update is forbidden.
 +	 *
-+	 * Manage all the possible errors before this step to not uselessly
-+	 * duplicate current_prog_set and avoid a rollback.
++	 * An eBPF program can inherit all the inode map FD. The worse case is
++	 * to fill a bunch of arraymaps, create an eBPF program, close the
++	 * inode map FDs, and start again. The maximum number of inode map
++	 * entries can then be close to RLIMIT_NOFILE^3.
 +	 */
-+	if (!new_prog_set) {
-+		/*
-+		 * If there is no Landlock program set used by the current task,
-+		 * then create a new one.
-+		 */
-+		new_prog_set = new_landlock_prog_set();
-+		if (IS_ERR(new_prog_set))
-+			goto put_tmp_lists;
-+	} else if (refcount_read(&current_prog_set->usage) > 1) {
-+		/*
-+		 * If the current task is not the sole user of its Landlock
-+		 * program set, then duplicate them.
-+		 */
-+		new_prog_set = new_landlock_prog_set();
-+		if (IS_ERR(new_prog_set))
-+			goto put_tmp_lists;
-+		for (i = 0; i < ARRAY_SIZE(new_prog_set->programs); i++) {
-+			new_prog_set->programs[i] =
-+				READ_ONCE(current_prog_set->programs[i]);
-+			if (new_prog_set->programs[i])
-+				refcount_inc(&new_prog_set->programs[i]->usage);
-+		}
++	if (attr->max_entries > rlimit(RLIMIT_NOFILE))
++		return ERR_PTR(-EMFILE);
 +
-+		/*
-+		 * Landlock program set from the current task will not be freed
-+		 * here because the usage is strictly greater than 1. It is
-+		 * only prevented to be freed by another task thanks to the
-+		 * caller of landlock_prepend_prog() which should be locked if
-+		 * needed.
-+		 */
-+		landlock_put_prog_set(current_prog_set);
-+	}
++	array_size = sizeof(*array);
++	array_size += (u64) attr->max_entries * sizeof(struct inode_elem);
 +
-+	/* prepend tmp_prog_set to new_prog_set */
-+	for (i = 0; i < ARRAY_SIZE(tmp_prog_set.programs); i++) {
-+		/* get the last new list */
-+		struct landlock_prog_list *last_list =
-+			tmp_prog_set.programs[i];
++	/* make sure there is no u32 overflow later in round_up() */
++	if (array_size >= U32_MAX - PAGE_SIZE)
++		return ERR_PTR(-ENOMEM);
 +
-+		if (last_list) {
-+			while (last_list->prev)
-+				last_list = last_list->prev;
-+			/* no need to increment usage (pointer replacement) */
-+			last_list->prev = new_prog_set->programs[i];
-+			new_prog_set->programs[i] = tmp_prog_set.programs[i];
-+		}
-+	}
-+	return new_prog_set;
++	/* allocate all map elements and zero-initialize them */
++	array = bpf_map_area_alloc(array_size, numa_node);
++	if (!array)
++		return ERR_PTR(-ENOMEM);
 +
-+put_tmp_lists:
-+	for (i = 0; i < ARRAY_SIZE(tmp_prog_set.programs); i++)
-+		put_landlock_prog_list(tmp_prog_set.programs[i]);
-+	return new_prog_set;
++	/* copy mandatory map attributes */
++	bpf_map_init_from_attr(&array->map, attr);
++	array->map.memory.pages = round_up(array_size, PAGE_SIZE) >> PAGE_SHIFT;
++
++	return &array->map;
 +}
-diff --git a/security/landlock/enforce.h b/security/landlock/enforce.h
-new file mode 100644
-index 000000000000..39b800d9999f
---- /dev/null
-+++ b/security/landlock/enforce.h
-@@ -0,0 +1,18 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Landlock LSM - enforcing helpers headers
-+ *
-+ * Copyright © 2016-2019 Mickaël Salaün <mic@digikod.net>
-+ * Copyright © 2018-2019 ANSSI
-+ */
 +
-+#ifndef _SECURITY_LANDLOCK_ENFORCE_H
-+#define _SECURITY_LANDLOCK_ENFORCE_H
-+
-+struct landlock_prog_set *landlock_prepend_prog(
-+		struct landlock_prog_set *current_prog_set,
-+		struct bpf_prog *prog);
-+void landlock_put_prog_set(struct landlock_prog_set *prog_set);
-+void landlock_get_prog_set(struct landlock_prog_set *prog_set);
-+
-+#endif /* _SECURITY_LANDLOCK_ENFORCE_H */
-diff --git a/security/landlock/enforce_seccomp.c b/security/landlock/enforce_seccomp.c
-new file mode 100644
-index 000000000000..c38c81e6b01a
---- /dev/null
-+++ b/security/landlock/enforce_seccomp.c
-@@ -0,0 +1,92 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Landlock LSM - enforcing with seccomp
-+ *
-+ * Copyright © 2016-2018 Mickaël Salaün <mic@digikod.net>
-+ * Copyright © 2018-2019 ANSSI
-+ */
-+
-+#ifdef CONFIG_SECCOMP_FILTER
-+
-+#include <linux/bpf.h> /* bpf_prog_put() */
-+#include <linux/capability.h>
-+#include <linux/err.h> /* PTR_ERR() */
-+#include <linux/errno.h>
-+#include <linux/filter.h> /* struct bpf_prog */
-+#include <linux/landlock.h>
-+#include <linux/refcount.h>
-+#include <linux/sched.h> /* current */
-+#include <linux/uaccess.h> /* get_user() */
-+
-+#include "enforce.h"
-+
-+/* headers in include/linux/landlock.h */
-+
-+/**
-+ * landlock_seccomp_prepend_prog - attach a Landlock program to the current
-+ *                                 process
-+ *
-+ * current->seccomp.landlock_state->prog_set is lazily allocated. When a
-+ * process fork, only a pointer is copied.  When a new program is added by a
-+ * process, if there is other references to this process' prog_set, then a new
-+ * allocation is made to contain an array pointing to Landlock program lists.
-+ * This design enable low-performance impact and is memory efficient while
-+ * keeping the property of prepend-only programs.
-+ *
-+ * For now, installing a Landlock prog requires that the requesting task has
-+ * the global CAP_SYS_ADMIN. We cannot force the use of no_new_privs to not
-+ * exclude containers where a process may legitimately acquire more privileges
-+ * thanks to an SUID binary.
-+ *
-+ * @flags: not used for now, but could be used for TSYNC
-+ * @user_bpf_fd: file descriptor pointing to a loaded Landlock prog
-+ */
-+int landlock_seccomp_prepend_prog(unsigned int flags,
-+		const int __user *user_bpf_fd)
++/* (never) called from eBPF program */
++static void *fake_map_lookup_elem(struct bpf_map *map, void *key)
 +{
-+	struct landlock_prog_set *new_prog_set;
-+	struct bpf_prog *prog;
-+	int bpf_fd, err;
++	WARN_ON(1);
++	return ERR_PTR(-EINVAL);
++}
 +
-+	/* planned to be replaced with a no_new_privs check to allow
-+	 * unprivileged tasks */
-+	if (!capable(CAP_SYS_ADMIN))
-+		return -EPERM;
-+	/* enable to check if Landlock is supported with early EFAULT */
-+	if (!user_bpf_fd)
-+		return -EFAULT;
-+	if (flags)
-+		return -EINVAL;
-+	err = get_user(bpf_fd, user_bpf_fd);
-+	if (err)
-+		return err;
++/* called from syscall (wrapped) and eBPF program */
++static u64 inode_map_lookup_elem(struct bpf_map *map, struct inode *key)
++{
++	struct inode_array *array = container_of(map, struct inode_array, map);
++	size_t i;
++	u64 ret = 0;
 +
-+	prog = bpf_prog_get(bpf_fd);
-+	if (IS_ERR(prog))
-+		return PTR_ERR(prog);
++	WARN_ON_ONCE(!rcu_read_lock_held());
++	/* TODO: use rbtree to switch to O(log n) */
++	for (i = 0; i < array->map.max_entries; i++) {
++		if (array->elems[i].inode == key) {
++			ret = array->elems[i].value;
++			break;
++		}
++	}
++	return ret;
++}
 +
-+	/*
-+	 * We don't need to lock anything for the current process hierarchy,
-+	 * everything is guarded by the atomic counters.
-+	 */
-+	new_prog_set = landlock_prepend_prog(
-+			current->seccomp.landlock_prog_set, prog);
-+	bpf_prog_put(prog);
-+	/* @prog is managed/freed by landlock_prepend_prog() */
-+	if (IS_ERR(new_prog_set))
-+		return PTR_ERR(new_prog_set);
-+	current->seccomp.landlock_prog_set = new_prog_set;
++/*
++ * The key is a FD when called from a syscall, but an inode pointer when called
++ * from an eBPF program.
++ */
++
++/* called from syscall */
++int bpf_inode_map_lookup_elem(struct bpf_map *map, int *key, u64 *value)
++{
++	struct inode *inode;
++
++	inode = inode_from_fd(*key, false);
++	if (IS_ERR(inode))
++		return PTR_ERR(inode);
++	*value = inode_map_lookup_elem(map, inode);
++	iput(inode);
++	if (!value)
++		return -ENOENT;
 +	return 0;
 +}
 +
-+void put_seccomp_landlock(struct task_struct *tsk)
++/* (never) called from eBPF program */
++static int fake_map_update_elem(struct bpf_map *map, void *key, void *value,
++				u64 flags)
 +{
-+	landlock_put_prog_set(tsk->seccomp.landlock_prog_set);
++	WARN_ON(1);
++	/* do not leak an inode accessed by a Landlock program */
++	return -EINVAL;
 +}
 +
-+void get_seccomp_landlock(struct task_struct *tsk)
++/* called from syscall */
++static int sys_inode_map_update_elem(struct bpf_map *map, struct inode *key,
++		u64 *value, u64 flags)
 +{
-+	landlock_get_prog_set(tsk->seccomp.landlock_prog_set);
++	struct inode_array *array = container_of(map, struct inode_array, map);
++	size_t i;
++
++	if (unlikely(flags != BPF_ANY))
++		return -EINVAL;
++
++	if (unlikely(array->nb_entries >= array->map.max_entries))
++		/* all elements were pre-allocated, cannot insert a new one */
++		return -E2BIG;
++
++	for (i = 0; i < array->map.max_entries; i++) {
++		if (!array->elems[i].inode) {
++			/* the inode (key) is already grabbed by the caller */
++			ihold(key);
++			array->elems[i].inode = key;
++			array->elems[i].value = *value;
++			array->nb_entries++;
++			return 0;
++		}
++	}
++	WARN_ON(1);
++	return -ENOENT;
 +}
 +
-+#endif /* CONFIG_SECCOMP_FILTER */
++/* called from syscall */
++int bpf_inode_map_update_elem(struct bpf_map *map, int *key, u64 *value,
++			      u64 flags)
++{
++	struct inode *inode;
++	int err;
++
++	WARN_ON_ONCE(!rcu_read_lock_held());
++	inode = inode_from_fd(*key, true);
++	if (IS_ERR(inode))
++		return PTR_ERR(inode);
++	err = sys_inode_map_update_elem(map, inode, value, flags);
++	iput(inode);
++	return err;
++}
++
++/* called from syscall or (never) from eBPF program */
++static int fake_map_get_next_key(struct bpf_map *map, void *key,
++				 void *next_key)
++{
++	/* do not leak a file descriptor */
++	return -EINVAL;
++}
++
++/* void map for eBPF program */
++const struct bpf_map_ops inode_ops = {
++	.map_alloc = inode_map_alloc,
++	.map_free = inode_map_free,
++	.map_get_next_key = fake_map_get_next_key,
++	.map_lookup_elem = fake_map_lookup_elem,
++	.map_delete_elem = fake_map_delete_elem,
++	.map_update_elem = fake_map_update_elem,
++};
++
++BPF_CALL_2(bpf_inode_map_lookup, struct bpf_map *, map, void *, key)
++{
++	WARN_ON_ONCE(!rcu_read_lock_held());
++	return inode_map_lookup_elem(map, key);
++}
++
++const struct bpf_func_proto bpf_inode_map_lookup_proto = {
++	.func		= bpf_inode_map_lookup,
++	.gpl_only	= false,
++	.ret_type	= RET_INTEGER,
++	.arg1_type	= ARG_CONST_MAP_PTR,
++	.arg2_type	= ARG_PTR_TO_INODE,
++};
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 7dd3376904d4..ba2a09a7f813 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -720,6 +720,22 @@ static void *__bpf_copy_key(void __user *ukey, u64 key_size)
+ 	return NULL;
+ }
+ 
++int __weak bpf_inode_map_update_elem(struct bpf_map *map, int *key,
++				     u64 *value, u64 flags)
++{
++	return -ENOTSUPP;
++}
++
++int __weak bpf_inode_map_lookup_elem(struct bpf_map *map, int *key, u64 *value)
++{
++	return -ENOTSUPP;
++}
++
++int __weak bpf_inode_map_delete_elem(struct bpf_map *map, int *key)
++{
++	return -ENOTSUPP;
++}
++
+ /* last field in 'union bpf_attr' used by this command */
+ #define BPF_MAP_LOOKUP_ELEM_LAST_FIELD flags
+ 
+@@ -801,6 +817,8 @@ static int map_lookup_elem(union bpf_attr *attr)
+ 	} else if (map->map_type == BPF_MAP_TYPE_QUEUE ||
+ 		   map->map_type == BPF_MAP_TYPE_STACK) {
+ 		err = map->ops->map_peek_elem(map, value);
++	} else if (map->map_type == BPF_MAP_TYPE_INODE) {
++		err = bpf_inode_map_lookup_elem(map, key, value);
+ 	} else {
+ 		rcu_read_lock();
+ 		if (map->ops->map_lookup_elem_sys_only)
+@@ -951,6 +969,10 @@ static int map_update_elem(union bpf_attr *attr)
+ 	} else if (map->map_type == BPF_MAP_TYPE_QUEUE ||
+ 		   map->map_type == BPF_MAP_TYPE_STACK) {
+ 		err = map->ops->map_push_elem(map, value, attr->flags);
++	} else if (map->map_type == BPF_MAP_TYPE_INODE) {
++		rcu_read_lock();
++		err = bpf_inode_map_update_elem(map, key, value, attr->flags);
++		rcu_read_unlock();
+ 	} else {
+ 		rcu_read_lock();
+ 		err = map->ops->map_update_elem(map, key, value, attr->flags);
+@@ -1006,7 +1028,10 @@ static int map_delete_elem(union bpf_attr *attr)
+ 	preempt_disable();
+ 	__this_cpu_inc(bpf_prog_active);
+ 	rcu_read_lock();
+-	err = map->ops->map_delete_elem(map, key);
++	if (map->map_type == BPF_MAP_TYPE_INODE)
++		err = bpf_inode_map_delete_elem(map, key);
++	else
++		err = map->ops->map_delete_elem(map, key);
+ 	rcu_read_unlock();
+ 	__this_cpu_dec(bpf_prog_active);
+ 	preempt_enable();
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 930260683d0a..ce3cd7fd8882 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -400,6 +400,7 @@ static const char * const reg_type_str[] = {
+ 	[PTR_TO_TCP_SOCK_OR_NULL] = "tcp_sock_or_null",
+ 	[PTR_TO_TP_BUFFER]	= "tp_buffer",
+ 	[PTR_TO_XDP_SOCK]	= "xdp_sock",
++	[PTR_TO_INODE]		= "inode",
+ };
+ 
+ static char slot_type_char[] = {
+@@ -1801,6 +1802,7 @@ static bool is_spillable_regtype(enum bpf_reg_type type)
+ 	case PTR_TO_TCP_SOCK:
+ 	case PTR_TO_TCP_SOCK_OR_NULL:
+ 	case PTR_TO_XDP_SOCK:
++	case PTR_TO_INODE:
+ 		return true;
+ 	default:
+ 		return false;
+@@ -3254,6 +3256,10 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 regno,
+ 			verbose(env, "verifier internal error\n");
+ 			return -EFAULT;
+ 		}
++	} else if (arg_type == ARG_PTR_TO_INODE) {
++		expected_type = PTR_TO_INODE;
++		if (type != expected_type)
++			goto err_type;
+ 	} else if (arg_type_is_mem_ptr(arg_type)) {
+ 		expected_type = PTR_TO_STACK;
+ 		/* One exception here. In case function allows for NULL to be
+@@ -3462,6 +3468,10 @@ static int check_map_func_compatibility(struct bpf_verifier_env *env,
+ 		    func_id != BPF_FUNC_sk_storage_delete)
+ 			goto error;
+ 		break;
++	case BPF_MAP_TYPE_INODE:
++		if (func_id != BPF_FUNC_inode_map_lookup)
++			goto error;
++		break;
+ 	default:
+ 		break;
+ 	}
+@@ -3530,6 +3540,10 @@ static int check_map_func_compatibility(struct bpf_verifier_env *env,
+ 		if (map->map_type != BPF_MAP_TYPE_SK_STORAGE)
+ 			goto error;
+ 		break;
++	case BPF_FUNC_inode_map_lookup:
++		if (map->map_type != BPF_MAP_TYPE_INODE)
++			goto error;
++		break;
+ 	default:
+ 		break;
+ 	}
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index 50145d448bc3..08ff720835ba 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -134,6 +134,7 @@ enum bpf_map_type {
+ 	BPF_MAP_TYPE_QUEUE,
+ 	BPF_MAP_TYPE_STACK,
+ 	BPF_MAP_TYPE_SK_STORAGE,
++	BPF_MAP_TYPE_INODE,
+ };
+ 
+ /* Note that tracing related programs such as
+@@ -2716,6 +2717,14 @@ union bpf_attr {
+  *		**-EPERM** if no permission to send the *sig*.
+  *
+  *		**-EAGAIN** if bpf program can try again.
++ *
++ * u64 bpf_inode_map_lookup(map, key)
++ * 	Description
++ * 		Perform a lookup in *map* for an entry associated to an inode
++ * 		*key*.
++ * 	Return
++ * 		Map value associated to *key*, or **NULL** if no entry was
++ * 		found.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -2827,7 +2836,8 @@ union bpf_attr {
+ 	FN(strtoul),			\
+ 	FN(sk_storage_get),		\
+ 	FN(sk_storage_delete),		\
+-	FN(send_signal),
++	FN(send_signal),		\
++	FN(inode_map_lookup),
+ 
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+  * function eBPF program intends to call
+diff --git a/tools/lib/bpf/libbpf_probes.c b/tools/lib/bpf/libbpf_probes.c
+index f4f34cb8869a..000319a95bfb 100644
+--- a/tools/lib/bpf/libbpf_probes.c
++++ b/tools/lib/bpf/libbpf_probes.c
+@@ -249,6 +249,7 @@ bool bpf_probe_map_type(enum bpf_map_type map_type, __u32 ifindex)
+ 	case BPF_MAP_TYPE_XSKMAP:
+ 	case BPF_MAP_TYPE_SOCKHASH:
+ 	case BPF_MAP_TYPE_REUSEPORT_SOCKARRAY:
++	case BPF_MAP_TYPE_INODE:
+ 	default:
+ 		break;
+ 	}
 -- 
 2.20.1
 
