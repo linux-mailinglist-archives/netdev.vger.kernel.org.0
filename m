@@ -2,135 +2,296 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A4B1A56EF2
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 18:38:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4463256EFA
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 18:42:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726612AbfFZQis (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 12:38:48 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:43924 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726042AbfFZQir (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 12:38:47 -0400
-Received: by mail-wr1-f65.google.com with SMTP id p13so3478880wru.10
-        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 09:38:45 -0700 (PDT)
+        id S1726407AbfFZQmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 12:42:11 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:33483 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726006AbfFZQmK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 12:42:10 -0400
+Received: by mail-pg1-f195.google.com with SMTP id m4so1487932pgk.0;
+        Wed, 26 Jun 2019 09:42:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=date:in-reply-to:references:mime-version:content-transfer-encoding
-         :subject:to:cc:from:message-id;
-        bh=k39fs1C43DT8/yjca+Mc4pg8x/tOvrIPADLDG2JNYOo=;
-        b=D7OPtAJBXWEFGoQNNaq1LPJ7a3IPY2SvtHHQGYrnrEhvwbWrkHz8nCVx2g3psJtfbf
-         xOnX9cc8HHcgbbMYzJvwC1OjKbHolJLA9KiBoc+wAI69JUMLIj9HVlnhBSDK66f+SEUL
-         eKidVb0w0Anl5mdcOl3TCORpjA/C09l0w79Rw=
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=fF9czJULMxLTbfxNvlrqNjkKfIUZaiTFHPKKs5V16I8=;
+        b=ej1uX36ej8YPX/dGcgpVF/4FCixCrzN6x7heZ46MiCM3O/eggAdTPqNQRJ7p8BfdDH
+         VFUkRrC7nclH1wOsU/BBN66RM2yAROimByBG07t7wr7IjmfMs66+pOPDNo68cS3d7FUA
+         /SdsZGtPPxIy+b/A2rseZ+3WQ960wrgO6K2zcA74RwEBQ2gJUALNEZlw6NAjA1WDYLU7
+         TxV9mxm26CFtiSWVxLki+0SeYKPuXqnFANGPy1msWDtNqoHmGr3Chfey8ID2FGl+f1wn
+         o4I2Ly/efEbCBJOAY1i5EapkBLLybjaRI5DubuiS1aw1tm1WBNX3IzmamhiUYRGEKUZi
+         gwtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:references:mime-version
-         :content-transfer-encoding:subject:to:cc:from:message-id;
-        bh=k39fs1C43DT8/yjca+Mc4pg8x/tOvrIPADLDG2JNYOo=;
-        b=RI1r7rcZTyut+TgQp3KhlpAY04X2Rb96QmI0WoWMWXqjOYzPROc2SyldvDO19e200I
-         MUKOl88Ie4/OZG3GHdKbi5OThpTlJQAm71JCwVRHQ8aLHZ8lAHKBSVL0cJfeIT1G6Y9o
-         0h8IIYgOF+xAajAaZ2YIqlirLNyoo9EK2iTZUhjmndBmiY/TzWBXfqxpYSYmQTXPHKh6
-         hHCdGiflEK/IQr/xYlSDdQPMknGRTSXZbfDtV29/5y7KPB7sC4qnD1WdYHKUd7PdEfAc
-         7DwhQIucLpFyFhsJe/lWXXL5iom1CRpEDwBARdoiX3xAVo10mHv53Zlf/0Hu12/vVJPx
-         33Ow==
-X-Gm-Message-State: APjAAAXJfcq4l7E0GliOdHhUyDDEUbsTjsNYq08Lbdx+mhwSmTvZh4Ys
-        PVLT9rEkFnSC+XU/Is+YDSVFhA==
-X-Google-Smtp-Source: APXvYqwsAtUxAaHjAtYZMoBiVApRYRQ2crqmEEtw1QLeZhNeyTsAClfRDvlyvl4aHjq6jhkQvhRhgw==
-X-Received: by 2002:adf:f050:: with SMTP id t16mr4081942wro.99.1561567125151;
-        Wed, 26 Jun 2019 09:38:45 -0700 (PDT)
-Received: from localhost ([149.62.204.238])
-        by smtp.gmail.com with ESMTPSA id y184sm2678653wmg.14.2019.06.26.09.38.44
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=fF9czJULMxLTbfxNvlrqNjkKfIUZaiTFHPKKs5V16I8=;
+        b=flYDVKlO0OMPbYlDSVZ6Gv52S49IXhEXHuisK/69jvzUOBZdu27Hslr62DXWYYbPKM
+         AQne9CxVDQ4b/R9QZz06BGpHgwyk61yfozXveO36Fa6objwBcBdOJOJImmwXSQnJ9qh4
+         92LkJNurSbWGfa7r3aAqb54J0xFH0TF6VsjVqshxroqCz4g6vnFr6t5rktQGbPMtu/3+
+         whbRXLfJb6GAKhOcIt56ogndcwxgxpAI17SpUcpHjD4x42ofSKvrEdpPmbl2ug84P1be
+         c1/PVD+Ints3QgU8RI3LFSGVdZrEZra9UyJZ9J9SgVQCtMU1u9wkfZ6yppZ6XhVAqJSc
+         E+jg==
+X-Gm-Message-State: APjAAAUyBhKS26gK61SFBIug5qKWTY8bN6qTElHFq9axgK20LqV4q2rq
+        +Nvi50ffKJlIbnpUTK5FETc=
+X-Google-Smtp-Source: APXvYqz3iNGpcp441LrG9Az8HN+tFFM03b6vgbvp0lg8PhQytUym/yufh8rr6hJfFdRz256XLvq0Qw==
+X-Received: by 2002:a65:5a4a:: with SMTP id z10mr3841763pgs.250.1561567329748;
+        Wed, 26 Jun 2019 09:42:09 -0700 (PDT)
+Received: from [172.26.110.73] ([2620:10d:c090:180::1:e729])
+        by smtp.gmail.com with ESMTPSA id j23sm19824443pff.90.2019.06.26.09.42.07
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 26 Jun 2019 09:38:44 -0700 (PDT)
-Date:   Wed, 26 Jun 2019 19:38:41 +0300
-In-Reply-To: <20190626192254.2bd41a40@eyal-ubuntu>
-References: <20190626115855.13241-1-nikolay@cumulusnetworks.com> <20190626115855.13241-3-nikolay@cumulusnetworks.com> <20190626163353.6d5535cb@jimi> <9a3be271-af15-3fef-9612-7a3232d09b32@cumulusnetworks.com> <20190626192254.2bd41a40@eyal-ubuntu>
+        Wed, 26 Jun 2019 09:42:08 -0700 (PDT)
+From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
+To:     "Willem de Bruijn" <willemdebruijn.kernel@gmail.com>
+Cc:     "Toke =?utf-8?b?SMO4aWxhbmQtSsO4cmdlbnNlbg==?=" <toke@redhat.com>,
+        "Jesper Dangaard Brouer" <brouer@redhat.com>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Jubran, Samih" <sameehj@amazon.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Daniel Borkmann" <borkmann@iogearbox.net>,
+        "Ilias Apalodimas" <ilias.apalodimas@linaro.org>,
+        "Alexei Starovoitov" <alexei.starovoitov@gmail.com>,
+        "Jakub Kicinski" <jakub.kicinski@netronome.com>,
+        xdp-newbies@vger.kernel.org
+Subject: Re: XDP multi-buffer incl. jumbo-frames (Was: [RFC V1 net-next 1/1]
+ net: ena: implement XDP drop support)
+Date:   Wed, 26 Jun 2019 09:42:07 -0700
+X-Mailer: MailMate (1.12.5r5635)
+Message-ID: <99AFC1EE-E27E-4D4D-B9B8-CA2215E68E1B@gmail.com>
+In-Reply-To: <CA+FuTSfKnhv9rr=cDa_4m7Dd9qkEm_oabDfyvH0T0sM+fQTU=w@mail.gmail.com>
+References: <20190623070649.18447-1-sameehj@amazon.com>
+ <20190623070649.18447-2-sameehj@amazon.com> <20190623162133.6b7f24e1@carbon>
+ <A658E65E-93D2-4F10-823D-CC25B081C1B7@amazon.com>
+ <20190626103829.5360ef2d@carbon> <87a7e4d0nj.fsf@toke.dk>
+ <20190626164059.4a9511cf@carbon> <87h88cbdbe.fsf@toke.dk>
+ <CA+FuTSfKnhv9rr=cDa_4m7Dd9qkEm_oabDfyvH0T0sM+fQTU=w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH net-next 2/5] net: sched: em_ipt: set the family based on the protocol when matching
-To:     Eyal Birger <eyal.birger@gmail.com>
-CC:     netdev@vger.kernel.org, roopa@cumulusnetworks.com,
-        pablo@netfilter.org, xiyou.wangcong@gmail.com, davem@davemloft.net,
-        jiri@resnulli.us, jhs@mojatatu.com
-From:   nikolay@cumulusnetworks.com
-Message-ID: <55E75AF3-EEFA-4AD3-B34D-470E16071DAC@cumulusnetworks.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26 June 2019 19:22:54 EEST, Eyal Birger <eyal=2Ebirger@gmail=2Ecom> wrot=
-e:
->On Wed, 26 Jun 2019 16:45:28 +0300
->Nikolay Aleksandrov <nikolay@cumulusnetworks=2Ecom> wrote:
->
->> On 26/06/2019 16:33, Eyal Birger wrote:
->> > Hi Nikolay,
->> >   =20
->> > On Wed, 26 Jun 2019 14:58:52 +0300
->> > Nikolay Aleksandrov <nikolay@cumulusnetworks=2Ecom> wrote:
->> >  =20
->> >> Set the family based on the protocol otherwise protocol-neutral
->> >> matches will have wrong information (e=2Eg=2E NFPROTO_UNSPEC)=2E In
->> >> preparation for using NFPROTO_UNSPEC xt matches=2E
->> >>
->> >> Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks=2Ecom>
->> >> ---
->> >>  net/sched/em_ipt=2Ec | 4 +++-
->> >>  1 file changed, 3 insertions(+), 1 deletion(-)
->> >>
->=2E=2E=2E
->> >> -	nf_hook_state_init(&state, im->hook, im->match->family,
->> >> +	nf_hook_state_init(&state, im->hook, state=2Epf,
->> >>  			   indev ?: skb->dev, skb->dev, NULL,
->> >> em->net, NULL);=20
->> >>  	acpar=2Ematch =3D im->match; =20
->> >=20
->> > I think this change is incompatible with current behavior=2E
->> >=20
->> > Consider the 'policy' match which matches the packet's xfrm state
->> > (sec_path) with the provided user space parameters=2E The sec_path
->> > includes information about the encapsulating packet's parameters
->> > whereas the current skb points to the encapsulated packet, and the
->> > match is done on the encapsulating packet's info=2E
->> >=20
->> > So if you have an IPv6 packet encapsulated within an IPv4 packet,
->> > the match parameters should be done using IPv4 parameters, not
->IPv6=2E
->> >=20
->> > Maybe use the packet's family only if the match family is UNSPEC?
->> >=20
->> > Eyal=2E
->> >  =20
->>=20
->> Hi Eyal,
->> I see your point, I was wondering about the xfrm cases=2E :)
->> In such case I think we can simplify the set and do it only on UNSPEC
->> matches as you suggest=2E
->>=20
->> Maybe we should enforce the tc protocol based on the user-specified
->> nfproto at least from iproute2 otherwise people can add mismatching
->> rules (e=2Eg=2E nfproto =3D=3D v6, tc proto =3D=3D v4)=2E
->>=20
->Hi Nik,
->
->I think for iproute2 the issue is the same=2E For encapsulated IPv6 in
->IPv4 for example, tc proto will be IPv6 (tc sees the encapsulated
->packet after decryption) whereas nfproto will be IPv4 (policy match is
->done on the encapsulating state metadata which is IPv4)=2E
->
->I think the part missing in iproute2 is the ability to specify
->NFPROTO_UNSPEC=2E
->
->Thanks,
->Eyal
 
-Right, I answered too quickly, it makes sense to mix them for xt policy=2E
-I also plan to add support for clsact, it should be trivial and iproute2-o=
-nly
-change=2E
- =20
-Thanks,=20
-  Nik
+
+On 26 Jun 2019, at 8:20, Willem de Bruijn wrote:
+
+> On Wed, Jun 26, 2019 at 11:01 AM Toke H=C3=B8iland-J=C3=B8rgensen =
+
+> <toke@redhat.com> wrote:
+>>
+>> Jesper Dangaard Brouer <brouer@redhat.com> writes:
+>>
+>>> On Wed, 26 Jun 2019 13:52:16 +0200
+>>> Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
+>>>
+>>>> Jesper Dangaard Brouer <brouer@redhat.com> writes:
+>>>>
+>>>>> On Tue, 25 Jun 2019 03:19:22 +0000
+>>>>> "Machulsky, Zorik" <zorik@amazon.com> wrote:
+>>>>>
+>>>>>> =EF=BB=BFOn 6/23/19, 7:21 AM, "Jesper Dangaard Brouer" =
+
+>>>>>> <brouer@redhat.com> wrote:
+>>>>>>
+>>>>>>     On Sun, 23 Jun 2019 10:06:49 +0300 <sameehj@amazon.com> =
+
+>>>>>> wrote:
+>>>>>>
+>>>>>>     > This commit implements the basic functionality of drop/pass =
+
+>>>>>> logic in the
+>>>>>>     > ena driver.
+>>>>>>
+>>>>>>     Usually we require a driver to implement all the XDP return =
+
+>>>>>> codes,
+>>>>>>     before we accept it.  But as Daniel and I discussed with =
+
+>>>>>> Zorik during
+>>>>>>     NetConf[1], we are going to make an exception and accept the =
+
+>>>>>> driver
+>>>>>>     if you also implement XDP_TX.
+>>>>>>
+>>>>>>     As we trust that Zorik/Amazon will follow and implement =
+
+>>>>>> XDP_REDIRECT
+>>>>>>     later, given he/you wants AF_XDP support which requires =
+
+>>>>>> XDP_REDIRECT.
+>>>>>>
+>>>>>> Jesper, thanks for your comments and very helpful discussion =
+
+>>>>>> during
+>>>>>> NetConf! That's the plan, as we agreed. From our side I would =
+
+>>>>>> like to
+>>>>>> reiterate again the importance of multi-buffer support by xdp =
+
+>>>>>> frame.
+>>>>>> We would really prefer not to see our MTU shrinking because of =
+
+>>>>>> xdp
+>>>>>> support.
+>>>>>
+>>>>> Okay we really need to make a serious attempt to find a way to =
+
+>>>>> support
+>>>>> multi-buffer packets with XDP. With the important criteria of not
+>>>>> hurting performance of the single-buffer per packet design.
+>>>>>
+>>>>> I've created a design document[2], that I will update based on our
+>>>>> discussions: [2] =
+
+>>>>> https://github.com/xdp-project/xdp-project/blob/master/areas/core/x=
+dp-multi-buffer01-design.org
+>>>>>
+>>>>> The use-case that really convinced me was Eric's packet =
+
+>>>>> header-split.
+>
+> Thanks for starting this discussion Jesper!
+>
+>>>>>
+>>>>>
+>>>>> Lets refresh: Why XDP don't have multi-buffer support:
+>>>>>
+>>>>> XDP is designed for maximum performance, which is why certain =
+
+>>>>> driver-level
+>>>>> use-cases were not supported, like multi-buffer packets (like =
+
+>>>>> jumbo-frames).
+>>>>> As it e.g. complicated the driver RX-loop and memory model =
+
+>>>>> handling.
+>>>>>
+>>>>> The single buffer per packet design, is also tied into eBPF =
+
+>>>>> Direct-Access
+>>>>> (DA) to packet data, which can only be allowed if the packet =
+
+>>>>> memory is in
+>>>>> contiguous memory.  This DA feature is essential for XDP =
+
+>>>>> performance.
+>>>>>
+>>>>>
+>>>>> One way forward is to define that XDP only get access to the first
+>>>>> packet buffer, and it cannot see subsequent buffers. For XDP_TX =
+
+>>>>> and
+>>>>> XDP_REDIRECT to work then XDP still need to carry pointers (plus
+>>>>> len+offset) to the other buffers, which is 16 bytes per extra =
+
+>>>>> buffer.
+>>>>
+>>>> Yeah, I think this would be reasonable. As long as we can have a
+>>>> metadata field with the full length + still give XDP programs the
+>>>> ability to truncate the packet (i.e., discard the subsequent pages)
+>>>
+>>> You touch upon some interesting complications already:
+>>>
+>>> 1. It is valuable for XDP bpf_prog to know "full" length?
+>>>    (if so, then we need to extend xdp ctx with info)
+>>
+>> Valuable, quite likely. A hard requirement, probably not (for all use
+>> cases).
+>
+> Agreed.
+>
+> One common validation use would be to drop any packets whose header
+> length disagrees with the actual packet length.
+>
+>>>  But if we need to know the full length, when the first-buffer is
+>>>  processed. Then realize that this affect the drivers RX-loop, =
+
+>>> because
+>>>  then we need to "collect" all the buffers before we can know the
+>>>  length (although some HW provide this in first descriptor).
+>>>
+>>>  We likely have to change drivers RX-loop anyhow, as XDP_TX and
+>>>  XDP_REDIRECT will also need to "collect" all buffers before the =
+
+>>> packet
+>>>  can be forwarded. (Although this could potentially happen later in
+>>>  driver loop when it meet/find the End-Of-Packet descriptor bit).
+>
+> Yes, this might be quite a bit of refactoring of device driver code.
+>
+> Should we move forward with some initial constraints, e.g., no
+> XDP_REDIRECT, no "full" length and no bpf_xdp_adjust_tail?
+>
+> That already allows many useful programs.
+>
+> As long as we don't arrive at a design that cannot be extended with
+> those features later.
+
+I think collecting all frames until EOP and then processing them
+at once sounds reasonable.
+
+
+
+>>> 2. Can we even allow helper bpf_xdp_adjust_tail() ?
+>>>
+>>>  Wouldn't it be easier to disallow a BPF-prog with this helper, when
+>>>  driver have configured multi-buffer?
+>>
+>> Easier, certainly. But then it's even easier to not implement this at
+>> all ;)
+>>
+>>>  Or will it be too restrictive, if jumbo-frame is very uncommon and
+>>>  only enabled because switch infra could not be changed (like Amazon
+>>>  case).
+>
+> Header-split, LRO and jumbo frame are certainly not limited to the =
+
+> Amazon case.
+>
+>> I think it would be preferable to support it; but maybe we can let =
+
+>> that
+>> depend on how difficult it actually turns out to be to allow it?
+>>
+>>>  Perhaps it is better to let bpf_xdp_adjust_tail() fail runtime?
+>>
+>> If we do disallow it, I think I'd lean towards failing the call at
+>> runtime...
+>
+> Disagree. I'd rather have a program fail at load if it depends on
+> multi-frag support while the (driver) implementation does not yet
+> support it.
+
+If all packets are collected together (like the bulk queue does), and =
+
+then
+passed to XDP, this could easily be made backwards compatible.  If the =
+
+XDP
+program isn't 'multi-frag' aware, then each packet is just passed in =
+
+individually.
+
+Of course, passing in the equivalent of a iovec requires some form of =
+
+loop
+support on the BPF side, doesn't it?
+-- =
+
+Jonathan
 
