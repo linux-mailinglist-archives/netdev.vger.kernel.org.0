@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 62F2E571CC
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 21:31:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E08E571C2
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 21:30:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726654AbfFZTay (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 15:30:54 -0400
+        id S1726558AbfFZTaf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 15:30:35 -0400
 Received: from mga14.intel.com ([192.55.52.115]:41403 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726500AbfFZTae (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 15:30:34 -0400
+        id S1726341AbfFZTaf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 15:30:35 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
   by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 26 Jun 2019 12:30:34 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.63,420,1557212400"; 
-   d="scan'208";a="188762460"
+   d="scan'208";a="188762463"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by fmsmga002.fm.intel.com with ESMTP; 26 Jun 2019 12:30:34 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Young Xiao <92siuyang@gmail.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
+Cc:     Aleksandr Loktionov <aleksandr.loktionov@intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 02/10] ixgbevf: fix possible divide by zero in ixgbevf_update_itr
-Date:   Wed, 26 Jun 2019 12:30:55 -0700
-Message-Id: <20190626193103.2169-3-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 03/10] i40e: fix 'Unknown bps' in dmesg for 2.5Gb/5Gb speeds
+Date:   Wed, 26 Jun 2019 12:30:56 -0700
+Message-Id: <20190626193103.2169-4-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190626193103.2169-1-jeffrey.t.kirsher@intel.com>
 References: <20190626193103.2169-1-jeffrey.t.kirsher@intel.com>
@@ -39,35 +39,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Young Xiao <92siuyang@gmail.com>
+From: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
 
-The next call to ixgbevf_update_itr will continue to dynamically
-update ITR.
+This patch fixes 'NIC Link is Up, Unknown bps' message in dmesg
+for 2.5Gb/5Gb speeds. This problem is fixed by adding constants
+for VIRTCHNL_LINK_SPEED_2_5GB and VIRTCHNL_LINK_SPEED_5GB cases
+in the i40e_virtchnl_link_speed() function.
 
-Copy from commit bdbeefe8ea8c ("ixgbe: fix possible divide by zero in
-ixgbe_update_itr")
-
-Signed-off-by: Young Xiao <92siuyang@gmail.com>
+Signed-off-by: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/intel/i40e/i40e_prototype.h | 4 ++++
+ include/linux/avf/virtchnl.h                     | 4 ++++
+ 2 files changed, 8 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-index d189ed247665..d2b41f9f87f8 100644
---- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-+++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-@@ -1423,6 +1423,9 @@ static void ixgbevf_update_itr(struct ixgbevf_q_vector *q_vector,
- 	 */
- 	/* what was last interrupt timeslice? */
- 	timepassed_us = q_vector->itr >> 2;
-+	if (timepassed_us == 0)
-+		return;
-+
- 	bytes_perint = bytes / timepassed_us; /* bytes/usec */
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_prototype.h b/drivers/net/ethernet/intel/i40e/i40e_prototype.h
+index 882627073dce..eac88bcc6c06 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_prototype.h
++++ b/drivers/net/ethernet/intel/i40e/i40e_prototype.h
+@@ -350,6 +350,10 @@ i40e_virtchnl_link_speed(enum i40e_aq_link_speed link_speed)
+ 		return VIRTCHNL_LINK_SPEED_100MB;
+ 	case I40E_LINK_SPEED_1GB:
+ 		return VIRTCHNL_LINK_SPEED_1GB;
++	case I40E_LINK_SPEED_2_5GB:
++		return VIRTCHNL_LINK_SPEED_2_5GB;
++	case I40E_LINK_SPEED_5GB:
++		return VIRTCHNL_LINK_SPEED_5GB;
+ 	case I40E_LINK_SPEED_10GB:
+ 		return VIRTCHNL_LINK_SPEED_10GB;
+ 	case I40E_LINK_SPEED_40GB:
+diff --git a/include/linux/avf/virtchnl.h b/include/linux/avf/virtchnl.h
+index 191621ff7594..ca956b672ac0 100644
+--- a/include/linux/avf/virtchnl.h
++++ b/include/linux/avf/virtchnl.h
+@@ -61,12 +61,14 @@ enum virtchnl_status_code {
+ #define VIRTCHNL_ERR_PARAM VIRTCHNL_STATUS_ERR_PARAM
+ #define VIRTCHNL_STATUS_NOT_SUPPORTED VIRTCHNL_STATUS_ERR_NOT_SUPPORTED
  
- 	switch (itr_setting) {
++#define VIRTCHNL_LINK_SPEED_2_5GB_SHIFT		0x0
+ #define VIRTCHNL_LINK_SPEED_100MB_SHIFT		0x1
+ #define VIRTCHNL_LINK_SPEED_1000MB_SHIFT	0x2
+ #define VIRTCHNL_LINK_SPEED_10GB_SHIFT		0x3
+ #define VIRTCHNL_LINK_SPEED_40GB_SHIFT		0x4
+ #define VIRTCHNL_LINK_SPEED_20GB_SHIFT		0x5
+ #define VIRTCHNL_LINK_SPEED_25GB_SHIFT		0x6
++#define VIRTCHNL_LINK_SPEED_5GB_SHIFT		0x7
+ 
+ enum virtchnl_link_speed {
+ 	VIRTCHNL_LINK_SPEED_UNKNOWN	= 0,
+@@ -76,6 +78,8 @@ enum virtchnl_link_speed {
+ 	VIRTCHNL_LINK_SPEED_40GB	= BIT(VIRTCHNL_LINK_SPEED_40GB_SHIFT),
+ 	VIRTCHNL_LINK_SPEED_20GB	= BIT(VIRTCHNL_LINK_SPEED_20GB_SHIFT),
+ 	VIRTCHNL_LINK_SPEED_25GB	= BIT(VIRTCHNL_LINK_SPEED_25GB_SHIFT),
++	VIRTCHNL_LINK_SPEED_2_5GB	= BIT(VIRTCHNL_LINK_SPEED_2_5GB_SHIFT),
++	VIRTCHNL_LINK_SPEED_5GB		= BIT(VIRTCHNL_LINK_SPEED_5GB_SHIFT),
+ };
+ 
+ /* for hsplit_0 field of Rx HMC context */
 -- 
 2.21.0
 
