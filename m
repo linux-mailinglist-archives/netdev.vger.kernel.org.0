@@ -2,97 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DD2C574F4
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 01:37:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46078574F8
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 01:42:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726647AbfFZXhE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 19:37:04 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:37378 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726462AbfFZXhE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 19:37:04 -0400
-Received: by mail-lf1-f66.google.com with SMTP id d11so275193lfb.4;
-        Wed, 26 Jun 2019 16:37:02 -0700 (PDT)
+        id S1726455AbfFZXmM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 19:42:12 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:41715 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726385AbfFZXmL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 19:42:11 -0400
+Received: by mail-ed1-f68.google.com with SMTP id p15so5260238eds.8
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 16:42:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=UWeMijdRoJnwgbuUK5eFM3uClFjid/XTZeuE26M5QLw=;
-        b=lvu5sM2J7hZtAUwoJbPjFQ1EZb33EYm3kYdwOb7SuPJeX8950m7fk+ZgphMJux6LAG
-         PUCO/pJ9kLZ7/WShSqhyeq61lNRru/YTUSeoWAZYNpkOoyjmZBJ9EXC6HhbznUvH4nzA
-         yHGfjfZmOAo8ywA5721GLCPMEg/+BzosndbmXsX44LS2gtCcZ+LyJShLp8orxadQlWFM
-         Ny/Eu8VGWihQs8RdfCSNuk5fzt96diFcGvr0VTMg5L7yqdz+sWxTL1Yb9ySWCMhuNBgC
-         nyMnj6y29/nHcu13VEHvW54QMysqgtaa7LyIv23vES4oDL/87GsnbyDMAuWSSveijfNJ
-         nLtw==
+        bh=p57FvlhbWeopHvbdNS15PY7SxJnN9e7RshD1N+sr8No=;
+        b=E2NeY7xnCWuyuK4dh2f9x/Slu6V1kjeR4k9qZO8tjd9w8Vkua3YEhkZ0f57tZwuasb
+         hLAo1JG6iWiDI+LwvvfZ3kY3FadfJDz06EMDSYastNxvr9cpjwWQb7B8+ogD4aZRP3LM
+         UOE3hV+D40sg+UNOJQUwWs0LFGZgkyfMfnFwMPtEJ/Hp24I4ovzFzCGQgOjFWfp9SFp/
+         4qqHXD9eZ5BJps+QCMbIf31oPAZ5OVA07xacPQPwRW9TnUHGUQ92Zd81D4FQWs6mNYXH
+         YPAmD2RJ6HrT0cCJA835AvxyIle6WpkWZEUtMepF+BfaNGu2YfFaoLKEILx4gvMDb2wQ
+         rGYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=UWeMijdRoJnwgbuUK5eFM3uClFjid/XTZeuE26M5QLw=;
-        b=C29unMA9WjrvnhLVgY9V+XiNCQJg0gdX5Zvg7UBld6LFJRZd4wl92GTOi8FPaMQG81
-         fShWZuoE3TQnXT9vP391kZiploHMbq6M+zmqjDboaexcSKaZsAcT8wi3snD93eu9i8RB
-         QzOZyMsGUIKLAxCmykwfpPtZS4nYST9q+8ecHREmlnTDWdPK1QCtnEhaD3JW/h7bhlnZ
-         2EycrePON2TkydVZyYh7VD0m146xoK5vCDAvJPSswVzb2kCUKNFclf4PNHP6MdlEWFlt
-         vAgSM6XRa1K4bPtxOkt8kpGK9A9fjLwJVpLNkt7ZQemUnk3N3ewKhFMVgQTGUrhJcRs3
-         rXpw==
-X-Gm-Message-State: APjAAAWnjhDO5zuf17bIYJuVBs+r6fuQf0De1HqbVgeuvznrPyjRBRX4
-        c4rAuQYfnoXBLkt8vaus6WHyQKog535I6509ReZ/MxZF
-X-Google-Smtp-Source: APXvYqyhrx+8+yHjkKDDMrfR6FJ/06ktGd/bOANIs8DsrCWxHaUboMHRhf7BkLfcmvmWTl6eUhoXtHiNBREmgVxKWyU=
-X-Received: by 2002:ac2:46f9:: with SMTP id q25mr362437lfo.181.1561592221728;
- Wed, 26 Jun 2019 16:37:01 -0700 (PDT)
+        bh=p57FvlhbWeopHvbdNS15PY7SxJnN9e7RshD1N+sr8No=;
+        b=QPpH26okwLwrnDTUu0yZnLFRH1eXnBDdWpIs7yUMrrNsboFUslHjxO9KBgBmm6YgNe
+         0hG6GN33rPp1GJ+1SDWnsHmAh0XhZ882RKKUw/bkTvOgjW22F8QO/jXCkBvWb3LtQuHB
+         qT2DV57iCEBJ+tnrequ6GMV3brfXyiZiM3mQaDoM/CA25fdjllvb98iDHFslg2DfwMkJ
+         Nbqo3SJm+56fdc/3gunsGAcvzKon1ByaGYIV7JCQ+6DfmkDWPt+rnWy93gD7AlvfTbd3
+         bca+vrX8yP+nqOEzSgxeqxB4auF3R44mOPO2AcwGP3sw9gv90UhcpHjiSKdzqCD3NrKq
+         4GgQ==
+X-Gm-Message-State: APjAAAVQGHh5XPRC3+LZ9CcQFUUGAabfFH1oiOC1US9VSyOqRkBFrfPA
+        +5qnJ9+TMJgR7ALKhS+R8aZ82/7ORrViXnlS1Q0=
+X-Google-Smtp-Source: APXvYqxTJG2qEtd8bHThnaE+8MHWXifSvAOqSE8AY6xzi3GKlH3miRx40MyD4ZG85vetLEDin/fc7aQdKxUWlrpIam8=
+X-Received: by 2002:a17:906:3482:: with SMTP id g2mr376585ejb.186.1561592530124;
+ Wed, 26 Jun 2019 16:42:10 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190627080521.5df8ccfc@canb.auug.org.au> <20190626221347.GA17762@tower.DHCP.thefacebook.com>
-In-Reply-To: <20190626221347.GA17762@tower.DHCP.thefacebook.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 26 Jun 2019 16:36:50 -0700
-Message-ID: <CAADnVQJiMH=jfuD0FGpr2JmzyQsMKHJ4pM1kfQ8jhSxrAe0XWg@mail.gmail.com>
-Subject: Re: linux-next: Fixes tag needs some work in the bpf tree
-To:     Roman Gushchin <guro@fb.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <1560381160-19584-1-git-send-email-jbaron@akamai.com>
+ <CAKgT0Uej5CkBJpqsBnB61ozo2kAFKyAH8WY9KVbFQ67ZxPiDag@mail.gmail.com>
+ <3af1e0da-8eb4-8462-3107-27917fec9286@akamai.com> <CAF=yD-+BMvToWvRwayTrxQBQ-Lgq7QVA6E+rGe3e5ic7rQ_gSg@mail.gmail.com>
+ <f91fb37a-379a-4a59-7e04-cf8a6d161efa@akamai.com> <d5dea281-67c0-1385-95c1-b476825e6afa@akamai.com>
+In-Reply-To: <d5dea281-67c0-1385-95c1-b476825e6afa@akamai.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 26 Jun 2019 19:41:34 -0400
+Message-ID: <CAF=yD-+zYGzTTYC-oYr392qugWiYpbgykMh1p8UrrgZ2ciR=aw@mail.gmail.com>
+Subject: Re: [PATCH net-next] gso: enable udp gso for virtual devices
+To:     Jason Baron <jbaron@akamai.com>
+Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>, Joshua Hunt <johunt@akamai.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Paolo Abeni <pabeni@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 26, 2019 at 3:14 PM Roman Gushchin <guro@fb.com> wrote:
+On Wed, Jun 26, 2019 at 3:17 PM Jason Baron <jbaron@akamai.com> wrote:
 >
-> On Thu, Jun 27, 2019 at 08:05:21AM +1000, Stephen Rothwell wrote:
-> > Hi all,
-> >
-> > In commit
-> >
-> >   12771345a467 ("bpf: fix cgroup bpf release synchronization")
-> >
-> > Fixes tag
-> >
-> >   Fixes: 4bfc0bb2c60e ("bpf: decouple the lifetime of cgroup_bpf from
-> >
-> > has these problem(s):
-> >
-> >   - Subject has leading but no trailing parentheses
-> >   - Subject has leading but no trailing quotes
-> >
-> > Please don't split Fixes tags across more than one line.
 >
-> Oops, sorry.
 >
-> Alexei, can you fix this in place?
-> Or should I send an updated version?
+> On 6/14/19 4:53 PM, Jason Baron wrote:
+> >
+> >
+> > On 6/13/19 5:20 PM, Willem de Bruijn wrote:
+> >>>>> @@ -237,6 +237,7 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
+> >>>>>                                  NETIF_F_GSO_GRE_CSUM |                 \
+> >>>>>                                  NETIF_F_GSO_IPXIP4 |                   \
+> >>>>>                                  NETIF_F_GSO_IPXIP6 |                   \
+> >>>>> +                                NETIF_F_GSO_UDP_L4 |                   \
+> >>>>>                                  NETIF_F_GSO_UDP_TUNNEL |               \
+> >>>>>                                  NETIF_F_GSO_UDP_TUNNEL_CSUM)
+> >>>>
+> >>>> Are you adding this to NETIF_F_GSO_ENCAP_ALL? Wouldn't it make more
+> >>>> sense to add it to NETIF_F_GSO_SOFTWARE?
+> >>>>
+> >>>
+> >>> Yes, I'm adding to NETIF_F_GSO_ENCAP_ALL (not very clear from the
+> >>> context). I will fix the commit log.
+> >>>
+> >>> In: 83aa025 udp: add gso support to virtual devices, the support was
+> >>> also added to NETIF_F_GSO_ENCAP_ALL (although subsequently reverted due
+> >>> to UDP GRO not being in place), so I wonder what the reason was for that?
+> >>
+> >> That was probably just a bad choice on my part.
+> >>
+> >> It worked in practice, but if NETIF_F_GSO_SOFTWARE works the same
+> >> without unexpected side effects, then I agree that it is the better choice.
+> >>
+> >> That choice does appear to change behavior when sending over tunnel
+> >> devices. Might it send tunneled GSO packets over loopback?
+> >>
+> >>
+> >
+> > I set up a test case using fou tunneling through a bridge device using
+> > the udpgso_bench_tx test where packets are not received correctly if
+> > NETIF_F_GSO_UDP_L4 is added to NETIF_F_GSO_SOFTWARE. If I have it added
+> > to NETIF_F_GSO_ENCAP_ALL, it does work correctly. So there are more
+> > fixes required to include it in NETIF_F_GSO_SOFTWARE.
+> >
+> > The use-case I have only requires it to be in NETIF_F_GSO_ENCAP_ALL, but
+> > if it needs to go in NETIF_F_GSO_SOFTWARE, I can look at what's required
+> > more next week.
+> >
+>
+> Hi,
+>
+> I haven't had a chance to investigate what goes wrong with including
+> NETIF_F_GSO_UDP_L4 in NETIF_F_GSO_SOFTWARE - but I was just wondering if
+> people are ok with NETIF_F_GSO_UDP_L4 being added to
+> NETIF_F_GSO_ENCAP_ALL and not NETIF_F_GSO_SOFTWARE (ie the original
+> patch as posted)?
+>
+> As I mentioned that is sufficient for my use-case, and its how Willem
+> originally proposed this.
 
-I cannot easily do it since -p and --signoff are incompatible flags.
-I need to use -p to preserve merge commits,
-but I also need to use --signoff to add my sob to all
-other commits that were committed by Daniel
-after your commit.
-
-Daniel, can you fix Roman's patch instead?
-you can do:
-git rebase -i -p  12771345a467^
-fix Roman's, add you sob only to that one
-and re-push the whole thing.
+Indeed, based on the previous discussion this sounds fine to me.
