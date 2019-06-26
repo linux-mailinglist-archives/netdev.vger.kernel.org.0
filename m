@@ -2,72 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C378357172
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 21:19:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D6D65717B
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 21:21:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726432AbfFZTTt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 15:19:49 -0400
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:43100 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726104AbfFZTTt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 15:19:49 -0400
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.89)
-        (envelope-from <fw@strlen.de>)
-        id 1hgDSL-0005Y4-8x; Wed, 26 Jun 2019 21:19:45 +0200
-Date:   Wed, 26 Jun 2019 21:19:45 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     wenxu@ucloud.cn, pablo@netfilter.org,
-        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 2/3 nf-next] netfilter:nf_flow_table: Support bridge type
- flow offload
-Message-ID: <20190626191945.2mktaqrcrfcrfc66@breakpoint.cc>
-References: <1561545148-11978-1-git-send-email-wenxu@ucloud.cn>
- <1561545148-11978-2-git-send-email-wenxu@ucloud.cn>
- <20190626183816.3ux3iifxaal4ffil@breakpoint.cc>
+        id S1726514AbfFZTVc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 15:21:32 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:40189 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726227AbfFZTVb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 15:21:31 -0400
+Received: by mail-pl1-f194.google.com with SMTP id a93so1960917pla.7;
+        Wed, 26 Jun 2019 12:21:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=NjiOBAgZ5o5AckUXhxHXSV2oj9IdH5jk7jVzEy13FIQ=;
+        b=eJ6h59ONAyItQUaibTIyV11/OFIMtmV/Sahp4ibvM/sFwtFgVUqZfptHelZ8hOgqEX
+         CnmvnbzoESMQxiphKzFJtHOnLJJnOt1C6eDRWz+PVJlQrs43G09/NMHOmwJs/wOfc4qG
+         tx5VDHnTSnmt+Co3Datw4i/HXxdGlqU0FJ0IhngZPV4yqOs37QweSvZYGFTyDzRSXnU9
+         O3wsDAZ8RWdvMmR5OKDbO3acC0B+EcGGugy4diPILuE6jI2uemfZIdKVBsynubZBtr6H
+         wCq8k6dXNM3FFho2SGYx0VSxGtb0Nwp81MyGtKIjO4281LIHhFqYfuHhaB1aqcLRFxtJ
+         N6xw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=NjiOBAgZ5o5AckUXhxHXSV2oj9IdH5jk7jVzEy13FIQ=;
+        b=RATRRzpqg0rveTeqXOd6Jir4mwzyAm7rNm+PwjeiuwLWKeJ9YMn51r0x0k12MdDhif
+         Gmt/kXYBEI7UUpCQrYfqIGcLRWjYYztmWM9jwqdo+dwzEUI17eS7kZy4C4PxkqiZavRT
+         dZDHwASG/94BNBNFcL7azPtHhimmOK6RdA9UFNYHX1t+YZ0gM12IIZwjcTR1x65IMJJi
+         xKOVo3qmcCz+nFrE+gmERQ2kXEYZ8A9KFFbgB2n8JgS/lke1NbVsfLqeAJywB+J/1KdX
+         OecpnPBzlrNhbV6Pb3fLcKb0JorGHybBLpT6S8raky6xut1Tb8Wz8eBGvbArk5MnLZOW
+         41NA==
+X-Gm-Message-State: APjAAAWgUDLL1yflFmQmb3JO5LTePXw48UVJqYiiRy5qKw1pkRimgeBF
+        damUR6dGGKaH94DBkUMLzK0=
+X-Google-Smtp-Source: APXvYqwa4kTGhHhHRJKP1vX78Iu2hF92lsVIKkc/OiXzrn5NkFxQX0WOMWwT64bsljopE0M6VCKdhQ==
+X-Received: by 2002:a17:902:2926:: with SMTP id g35mr7292780plb.269.1561576890866;
+        Wed, 26 Jun 2019 12:21:30 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::1:6c67])
+        by smtp.gmail.com with ESMTPSA id d4sm2517689pju.19.2019.06.26.12.21.29
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 26 Jun 2019 12:21:30 -0700 (PDT)
+Date:   Wed, 26 Jun 2019 12:21:28 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Stanislav Fomichev <sdf@fomichev.me>
+Cc:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, davem@davemloft.net, ast@kernel.org,
+        daniel@iogearbox.net, Martin Lau <kafai@fb.com>
+Subject: Re: [PATCH bpf-next v8 1/9] bpf: implement getsockopt and setsockopt
+ hooks
+Message-ID: <20190626192126.qkwr7hv2leich5tk@ast-mbp.dhcp.thefacebook.com>
+References: <20190624162429.16367-1-sdf@google.com>
+ <20190624162429.16367-2-sdf@google.com>
+ <20190626185420.wzsb7v6rawn4wtzd@ast-mbp.dhcp.thefacebook.com>
+ <20190626191021.GB4866@mini-arch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190626183816.3ux3iifxaal4ffil@breakpoint.cc>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <20190626191021.GB4866@mini-arch>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Florian Westphal <fw@strlen.de> wrote:
-> wenxu@ucloud.cn <wenxu@ucloud.cn> wrote:
-> > diff --git a/net/netfilter/nf_flow_table_ip.c b/net/netfilter/nf_flow_table_ip.c
-> > index 0016bb8..9af01ef 100644
-> > --- a/net/netfilter/nf_flow_table_ip.c
-> > +++ b/net/netfilter/nf_flow_table_ip.c
-> > -	neigh_xmit(NEIGH_ARP_TABLE, outdev, &nexthop, skb);
-> > +	if (family == NFPROTO_IPV4) {
-> > +		iph = ip_hdr(skb);
-> > +		ip_decrease_ttl(iph);
-> > +
-> > +		nexthop = rt_nexthop(rt, flow->tuplehash[!dir].tuple.src_v4.s_addr);
-> > +		skb_dst_set_noref(skb, &rt->dst);
-> > +		neigh_xmit(NEIGH_ARP_TABLE, outdev, &nexthop, skb);
-> > +	} else {
-> > +		const struct net_bridge_port *p;
-> > +
-> > +		if (vlan_tag && (p = br_port_get_rtnl_rcu(state->in)))
-> > +			__vlan_hwaccel_put_tag(skb, p->br->vlan_proto, vlan_tag);
-> > +		else
-> > +			__vlan_hwaccel_clear_tag(skb);
-> > +
-> > +		br_dev_queue_push_xmit(state->net, state->sk, skb);
-> 
-> Won't that result in a module dep on bridge?
-> 
-> Whats the idea with this patch?
-> 
-> Do you see a performance improvement when bypassing bridge layer? If so,
-> how much?
-> 
-> I just wonder if its really cheaper than not using bridge conntrack in
-> the first place :-)
+On Wed, Jun 26, 2019 at 12:10:21PM -0700, Stanislav Fomichev wrote:
+> On 06/26, Alexei Starovoitov wrote:
+> > On Mon, Jun 24, 2019 at 09:24:21AM -0700, Stanislav Fomichev wrote:
+> > > Implement new BPF_PROG_TYPE_CGROUP_SOCKOPT program type and
+> > > BPF_CGROUP_{G,S}ETSOCKOPT cgroup hooks.
+> > > 
+> > > BPF_CGROUP_SETSOCKOPT get a read-only view of the setsockopt arguments.
+> > > BPF_CGROUP_GETSOCKOPT can modify the supplied buffer.
+> > > Both of them reuse existing PTR_TO_PACKET{,_END} infrastructure.
+> > 
+> > getsockopt side looks good to me.
+> > I tried to convince myself that readonly setsockopt is fine for now,
+> > but it feels we need to make it writeable from the start.
+> > I agree with your reasoning that doing copy_to_user is no good,
+> > but we can do certainly do set_fs(KERNEL_DS) game.
+> > The same way as kernel_setsockopt() is doing.
+> > It seems quite useful to modify 'optval' before passing it to kernel.
+> > Then bpf prog would be able to specify sane values for SO_SNDBUF
+> > instead of rejecting them.
+> > The alternative would be to allow bpf prog to call setsockopt
+> > from inside, but sock is locked when prog is running,
+> > so unlocking within helper is not going to be clean.
+> > wdyt?
+> Sure, I can take a look if you think that it would be useful in general.
+> Looks like set_fs should do the trick.
 
-Addendum: Did you look at the nftables fwd expression?  Maybe you can use
-it as a simpler way to speed things up?
+Thanks. I think it's useful.
+For example see the recent sack steam issue and Eric's workaround
+for older kernel to add 128k to sk_sndbuf.
+If we had an ability to do adjust SO_SNDBUF from cgroup-bpf prog
+when user space is doing setsockopt we could have mitigated it by
+rolling bpf prog instead of patching and rebooting the kernels.
+That's a bit of a stretch use case, of course.
+My feeling that if not today, but really soon people will find
+solid use cases for adjusting sockopt values via cgroup-bpf.
+
