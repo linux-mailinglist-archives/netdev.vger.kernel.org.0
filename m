@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 682F456C25
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 16:36:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC59156C37
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 16:36:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728176AbfFZOgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 10:36:22 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:59872 "EHLO
+        id S1728036AbfFZOgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 10:36:19 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:59884 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727830AbfFZOgT (ORCPT
+        with ESMTP id S1727957AbfFZOgT (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 10:36:19 -0400
 Received: from Internal Mail-Server by MTLPINE2 (envelope-from tariqt@mellanox.com)
         with ESMTPS (AES256-SHA encrypted); 26 Jun 2019 17:36:16 +0300
 Received: from dev-l-vrt-206-006.mtl.labs.mlnx (dev-l-vrt-206-006.mtl.labs.mlnx [10.134.206.6])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x5QEaGY6027430;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x5QEaGY7027430;
         Wed, 26 Jun 2019 17:36:16 +0300
 From:   Tariq Toukan <tariqt@mellanox.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
@@ -26,9 +26,9 @@ Cc:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Maxim Mikityanskiy <maximmi@mellanox.com>,
         Tariq Toukan <tariqt@mellanox.com>
-Subject: [PATCH bpf-next V6 08/16] net/mlx5e: Calculate linear RX frag size considering XSK
-Date:   Wed, 26 Jun 2019 17:35:30 +0300
-Message-Id: <1561559738-4213-9-git-send-email-tariqt@mellanox.com>
+Subject: [PATCH bpf-next V6 09/16] net/mlx5e: Allow ICO SQ to be used by multiple RQs
+Date:   Wed, 26 Jun 2019 17:35:31 +0300
+Message-Id: <1561559738-4213-10-git-send-email-tariqt@mellanox.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1561559738-4213-1-git-send-email-tariqt@mellanox.com>
 References: <1561559738-4213-1-git-send-email-tariqt@mellanox.com>
@@ -39,173 +39,175 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maxim Mikityanskiy <maximmi@mellanox.com>
 
-Additional conditions introduced:
-
-- XSK implies XDP.
-- Headroom includes the XSK headroom if it exists.
-- No space is reserved for struct shared_skb_info in XSK mode.
-- Fragment size smaller than the XSK chunk size is not allowed.
-
-A new auxiliary function mlx5e_get_linear_rq_headroom with the support
-for XSK is introduced. Use this function in the implementation of
-mlx5e_get_rq_headroom. Change headroom to u32 to match the headroom
-field in struct xdp_umem.
+Prepare to creation of the XSK RQ, which will require posting UMRs, too.
+The same ICO SQ will be used for both RQs and also to trigger interrupts
+by posting NOPs. UMR WQEs can't be reused any more. Optimization
+introduced in commit ab966d7e4ff98 ("net/mlx5e: RX, Recycle buffer of
+UMR WQEs") is reverted.
 
 Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
 Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
 Acked-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en/params.c    | 65 +++++++++++++++-------
- .../net/ethernet/mellanox/mlx5/core/en/params.h    |  8 ++-
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  2 +-
- 3 files changed, 52 insertions(+), 23 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en.h      |  9 ++++++++
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c   | 27 +++++++++--------------
+ drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c |  4 +++-
+ drivers/net/ethernet/mellanox/mlx5/core/wq.h      |  5 -----
+ 4 files changed, 22 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-index d3744bffbae3..50a458dc3836 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-@@ -3,33 +3,62 @@
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+index 992d5cb646b2..c7676635bc8e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+@@ -348,6 +348,13 @@ enum {
  
- #include "en/params.h"
+ struct mlx5e_sq_wqe_info {
+ 	u8  opcode;
++
++	/* Auxiliary data for different opcodes. */
++	union {
++		struct {
++			struct mlx5e_rq *rq;
++		} umr;
++	};
+ };
  
--u32 mlx5e_rx_get_linear_frag_sz(struct mlx5e_params *params)
-+static inline bool mlx5e_rx_is_xdp(struct mlx5e_params *params,
-+				   struct mlx5e_xsk_param *xsk)
+ struct mlx5e_txqsq {
+@@ -571,6 +578,7 @@ struct mlx5e_rq {
+ 			u8                     log_stride_sz;
+ 			u8                     umr_in_progress;
+ 			u8                     umr_last_bulk;
++			u8                     umr_completed;
+ 		} mpwqe;
+ 	};
+ 	struct {
+@@ -798,6 +806,7 @@ void mlx5e_page_release(struct mlx5e_rq *rq, struct mlx5e_dma_info *dma_info,
+ void mlx5e_handle_rx_cqe(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe);
+ void mlx5e_handle_rx_cqe_mpwrq(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe);
+ bool mlx5e_post_rx_wqes(struct mlx5e_rq *rq);
++void mlx5e_poll_ico_cq(struct mlx5e_cq *cq);
+ bool mlx5e_post_rx_mpwqes(struct mlx5e_rq *rq);
+ void mlx5e_dealloc_rx_wqe(struct mlx5e_rq *rq, u16 ix);
+ void mlx5e_dealloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+index 234a3fd39901..ec34df777c96 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+@@ -427,11 +427,6 @@ static void mlx5e_post_rx_mpwqe(struct mlx5e_rq *rq, u8 n)
+ 	mlx5_wq_ll_update_db_record(wq);
+ }
+ 
+-static inline u16 mlx5e_icosq_wrap_cnt(struct mlx5e_icosq *sq)
+-{
+-	return mlx5_wq_cyc_get_ctr_wrap_cnt(&sq->wq, sq->pc);
+-}
+-
+ static inline void mlx5e_fill_icosq_frag_edge(struct mlx5e_icosq *sq,
+ 					      struct mlx5_wq_cyc *wq,
+ 					      u16 pi, u16 nnops)
+@@ -467,9 +462,7 @@ static int mlx5e_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
+ 	}
+ 
+ 	umr_wqe = mlx5_wq_cyc_get_wqe(wq, pi);
+-	if (unlikely(mlx5e_icosq_wrap_cnt(sq) < 2))
+-		memcpy(umr_wqe, &rq->mpwqe.umr_wqe,
+-		       offsetof(struct mlx5e_umr_wqe, inline_mtts));
++	memcpy(umr_wqe, &rq->mpwqe.umr_wqe, offsetof(struct mlx5e_umr_wqe, inline_mtts));
+ 
+ 	for (i = 0; i < MLX5_MPWRQ_PAGES_PER_WQE; i++, dma_info++) {
+ 		err = mlx5e_page_alloc_mapped(rq, dma_info);
+@@ -487,6 +480,7 @@ static int mlx5e_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix)
+ 	umr_wqe->uctrl.xlt_offset = cpu_to_be16(xlt_offset);
+ 
+ 	sq->db.ico_wqe[pi].opcode = MLX5_OPCODE_UMR;
++	sq->db.ico_wqe[pi].umr.rq = rq;
+ 	sq->pc += MLX5E_UMR_WQEBBS;
+ 
+ 	sq->doorbell_cseg = &umr_wqe->ctrl;
+@@ -544,11 +538,10 @@ bool mlx5e_post_rx_wqes(struct mlx5e_rq *rq)
+ 	return !!err;
+ }
+ 
+-static void mlx5e_poll_ico_cq(struct mlx5e_cq *cq, struct mlx5e_rq *rq)
++void mlx5e_poll_ico_cq(struct mlx5e_cq *cq)
  {
--	u16 hw_mtu = MLX5E_SW2HW_MTU(params, params->sw_mtu);
--	u16 linear_rq_headroom = params->xdp_prog ?
--		XDP_PACKET_HEADROOM : MLX5_RX_HEADROOM;
--	u32 frag_sz;
-+	return params->xdp_prog || xsk;
-+}
-+
-+static inline u16 mlx5e_get_linear_rq_headroom(struct mlx5e_params *params,
-+					       struct mlx5e_xsk_param *xsk)
-+{
-+	u16 headroom = NET_IP_ALIGN;
-+
-+	if (mlx5e_rx_is_xdp(params, xsk)) {
-+		headroom += XDP_PACKET_HEADROOM;
-+		if (xsk)
-+			headroom += xsk->headroom;
-+	} else {
-+		headroom += MLX5_RX_HEADROOM;
+ 	struct mlx5e_icosq *sq = container_of(cq, struct mlx5e_icosq, cq);
+ 	struct mlx5_cqe64 *cqe;
+-	u8  completed_umr = 0;
+ 	u16 sqcc;
+ 	int i;
+ 
+@@ -589,7 +582,7 @@ static void mlx5e_poll_ico_cq(struct mlx5e_cq *cq, struct mlx5e_rq *rq)
+ 
+ 			if (likely(wi->opcode == MLX5_OPCODE_UMR)) {
+ 				sqcc += MLX5E_UMR_WQEBBS;
+-				completed_umr++;
++				wi->umr.rq->mpwqe.umr_completed++;
+ 			} else if (likely(wi->opcode == MLX5_OPCODE_NOP)) {
+ 				sqcc++;
+ 			} else {
+@@ -605,24 +598,24 @@ static void mlx5e_poll_ico_cq(struct mlx5e_cq *cq, struct mlx5e_rq *rq)
+ 	sq->cc = sqcc;
+ 
+ 	mlx5_cqwq_update_db_record(&cq->wq);
+-
+-	if (likely(completed_umr)) {
+-		mlx5e_post_rx_mpwqe(rq, completed_umr);
+-		rq->mpwqe.umr_in_progress -= completed_umr;
+-	}
+ }
+ 
+ bool mlx5e_post_rx_mpwqes(struct mlx5e_rq *rq)
+ {
+ 	struct mlx5e_icosq *sq = &rq->channel->icosq;
+ 	struct mlx5_wq_ll *wq = &rq->mpwqe.wq;
++	u8  umr_completed = rq->mpwqe.umr_completed;
+ 	u8  missing, i;
+ 	u16 head;
+ 
+ 	if (unlikely(!test_bit(MLX5E_RQ_STATE_ENABLED, &rq->state)))
+ 		return false;
+ 
+-	mlx5e_poll_ico_cq(&sq->cq, rq);
++	if (umr_completed) {
++		mlx5e_post_rx_mpwqe(rq, umr_completed);
++		rq->mpwqe.umr_in_progress -= umr_completed;
++		rq->mpwqe.umr_completed = 0;
 +	}
+ 
+ 	missing = mlx5_wq_ll_missing(wq) - rq->mpwqe.umr_in_progress;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
+index f9862bf75491..de4d5ae431af 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
+@@ -107,7 +107,9 @@ int mlx5e_napi_poll(struct napi_struct *napi, int budget)
+ 		busy |= work_done == budget;
+ 	}
+ 
+-	busy |= c->rq.post_wqes(rq);
++	mlx5e_poll_ico_cq(&c->icosq.cq);
 +
-+	return headroom;
-+}
-+
-+u32 mlx5e_rx_get_linear_frag_sz(struct mlx5e_params *params,
-+				struct mlx5e_xsk_param *xsk)
-+{
-+	u32 hw_mtu = MLX5E_SW2HW_MTU(params, params->sw_mtu);
-+	u16 linear_rq_headroom = mlx5e_get_linear_rq_headroom(params, xsk);
-+	u32 frag_sz = linear_rq_headroom + hw_mtu;
++	busy |= rq->post_wqes(rq);
  
--	linear_rq_headroom += NET_IP_ALIGN;
-+	/* AF_XDP doesn't build SKBs in place. */
-+	if (!xsk)
-+		frag_sz = MLX5_SKB_FRAG_SZ(frag_sz);
- 
--	frag_sz = MLX5_SKB_FRAG_SZ(linear_rq_headroom + hw_mtu);
-+	/* XDP in mlx5e doesn't support multiple packets per page. */
-+	if (mlx5e_rx_is_xdp(params, xsk))
-+		frag_sz = max_t(u32, frag_sz, PAGE_SIZE);
- 
--	if (params->xdp_prog && frag_sz < PAGE_SIZE)
--		frag_sz = PAGE_SIZE;
-+	/* Even if we can go with a smaller fragment size, we must not put
-+	 * multiple packets into a single frame.
-+	 */
-+	if (xsk)
-+		frag_sz = max_t(u32, frag_sz, xsk->chunk_size);
- 
- 	return frag_sz;
+ 	if (busy) {
+ 		if (likely(mlx5e_channel_no_affinity_change(c)))
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/wq.h b/drivers/net/ethernet/mellanox/mlx5/core/wq.h
+index 1f87cce421e0..f1ec58c9e9e3 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/wq.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/wq.h
+@@ -134,11 +134,6 @@ static inline void mlx5_wq_cyc_update_db_record(struct mlx5_wq_cyc *wq)
+ 	*wq->db = cpu_to_be32(wq->wqe_ctr);
  }
  
- u8 mlx5e_mpwqe_log_pkts_per_wqe(struct mlx5e_params *params)
- {
--	u32 linear_frag_sz = mlx5e_rx_get_linear_frag_sz(params);
-+	u32 linear_frag_sz = mlx5e_rx_get_linear_frag_sz(params, NULL);
- 
- 	return MLX5_MPWRQ_LOG_WQE_SZ - order_base_2(linear_frag_sz);
- }
- 
- bool mlx5e_rx_is_linear_skb(struct mlx5e_params *params)
- {
--	u32 frag_sz = mlx5e_rx_get_linear_frag_sz(params);
-+	u32 frag_sz = mlx5e_rx_get_linear_frag_sz(params, NULL);
- 
- 	return !params->lro_en && frag_sz <= PAGE_SIZE;
- }
-@@ -39,7 +68,7 @@ bool mlx5e_rx_is_linear_skb(struct mlx5e_params *params)
- bool mlx5e_rx_mpwqe_is_linear_skb(struct mlx5_core_dev *mdev,
- 				  struct mlx5e_params *params)
- {
--	u32 frag_sz = mlx5e_rx_get_linear_frag_sz(params);
-+	u32 frag_sz = mlx5e_rx_get_linear_frag_sz(params, NULL);
- 	s8 signed_log_num_strides_param;
- 	u8 log_num_strides;
- 
-@@ -75,7 +104,7 @@ u8 mlx5e_mpwqe_get_log_stride_size(struct mlx5_core_dev *mdev,
- 				   struct mlx5e_params *params)
- {
- 	if (mlx5e_rx_mpwqe_is_linear_skb(mdev, params))
--		return order_base_2(mlx5e_rx_get_linear_frag_sz(params));
-+		return order_base_2(mlx5e_rx_get_linear_frag_sz(params, NULL));
- 
- 	return MLX5_MPWRQ_DEF_LOG_STRIDE_SZ(mdev);
- }
-@@ -90,15 +119,9 @@ u8 mlx5e_mpwqe_get_log_num_strides(struct mlx5_core_dev *mdev,
- u16 mlx5e_get_rq_headroom(struct mlx5_core_dev *mdev,
- 			  struct mlx5e_params *params)
- {
--	u16 linear_rq_headroom = params->xdp_prog ?
--		XDP_PACKET_HEADROOM : MLX5_RX_HEADROOM;
--	bool is_linear_skb;
+-static inline u16 mlx5_wq_cyc_get_ctr_wrap_cnt(struct mlx5_wq_cyc *wq, u16 ctr)
+-{
+-	return ctr >> wq->fbc.log_sz;
+-}
 -
--	linear_rq_headroom += NET_IP_ALIGN;
--
--	is_linear_skb = (params->rq_wq_type == MLX5_WQ_TYPE_CYCLIC) ?
-+	bool is_linear_skb = (params->rq_wq_type == MLX5_WQ_TYPE_CYCLIC) ?
- 		mlx5e_rx_is_linear_skb(params) :
- 		mlx5e_rx_mpwqe_is_linear_skb(mdev, params);
- 
--	return is_linear_skb ? linear_rq_headroom : 0;
-+	return is_linear_skb ? mlx5e_get_linear_rq_headroom(params, NULL) : 0;
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-index b106a0236f36..ed420f3efe52 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-@@ -6,7 +6,13 @@
- 
- #include "en.h"
- 
--u32 mlx5e_rx_get_linear_frag_sz(struct mlx5e_params *params);
-+struct mlx5e_xsk_param {
-+	u16 headroom;
-+	u16 chunk_size;
-+};
-+
-+u32 mlx5e_rx_get_linear_frag_sz(struct mlx5e_params *params,
-+				struct mlx5e_xsk_param *xsk);
- u8 mlx5e_mpwqe_log_pkts_per_wqe(struct mlx5e_params *params);
- bool mlx5e_rx_is_linear_skb(struct mlx5e_params *params);
- bool mlx5e_rx_mpwqe_is_linear_skb(struct mlx5_core_dev *mdev,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 1b427d7fab42..837a973b3507 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -1954,7 +1954,7 @@ static void mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
- 	if (mlx5e_rx_is_linear_skb(params)) {
- 		int frag_stride;
- 
--		frag_stride = mlx5e_rx_get_linear_frag_sz(params);
-+		frag_stride = mlx5e_rx_get_linear_frag_sz(params, NULL);
- 		frag_stride = roundup_pow_of_two(frag_stride);
- 
- 		info->arr[0].frag_size = byte_count;
+ static inline u16 mlx5_wq_cyc_ctr2ix(struct mlx5_wq_cyc *wq, u16 ctr)
+ {
+ 	return ctr & wq->fbc.sz_m1;
 -- 
 1.8.3.1
 
