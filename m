@@ -2,86 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B6388566C1
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 12:29:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B32D566C5
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 12:29:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726965AbfFZK2z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 06:28:55 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:40512 "EHLO mx1.redhat.com"
+        id S1726604AbfFZK3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 06:29:41 -0400
+Received: from mail.us.es ([193.147.175.20]:51190 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726339AbfFZK2z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 06:28:55 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1726339AbfFZK3l (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 06:29:41 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 8771F11EF4F
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 12:29:38 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 724EF114D9A
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 12:29:38 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 6137E1021B2; Wed, 26 Jun 2019 12:29:38 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id D4AC6DA4D1;
+        Wed, 26 Jun 2019 12:29:35 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Wed, 26 Jun 2019 12:29:35 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 390D930024B1;
-        Wed, 26 Jun 2019 10:28:42 +0000 (UTC)
-Received: from localhost (unknown [10.36.112.13])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3BE015C1A1;
-        Wed, 26 Jun 2019 10:28:39 +0000 (UTC)
-Date:   Wed, 26 Jun 2019 12:28:36 +0200
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        David Ahern <dsahern@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: Re: [PATCH net] ipv4: fix suspicious RCU usage in
- fib_dump_info_fnhe()
-Message-ID: <20190626122836.508db0ad@redhat.com>
-In-Reply-To: <20190626100450.217106-1-edumazet@google.com>
-References: <20190626100450.217106-1-edumazet@google.com>
-Organization: Red Hat
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id B299C4265A2F;
+        Wed, 26 Jun 2019 12:29:35 +0200 (CEST)
+Date:   Wed, 26 Jun 2019 12:29:35 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     wenxu@ucloud.cn
+Cc:     fw@strlen.de, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH nf-next v2 2/2] netfilter: nft_meta: Add
+ NFT_META_BRI_VLAN support
+Message-ID: <20190626102935.ztxcfb3kysvohzi3@salvia>
+References: <1560993460-25569-1-git-send-email-wenxu@ucloud.cn>
+ <1560993460-25569-2-git-send-email-wenxu@ucloud.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Wed, 26 Jun 2019 10:28:55 +0000 (UTC)
+Content-Type: multipart/mixed; boundary="4v7mmcfs7bzhusmw"
+Content-Disposition: inline
+In-Reply-To: <1560993460-25569-2-git-send-email-wenxu@ucloud.cn>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 26 Jun 2019 03:04:50 -0700
-Eric Dumazet <edumazet@google.com> wrote:
 
-> sysbot reported that we lack appropriate rcu_read_lock()
-> protection in fib_dump_info_fnhe()
+--4v7mmcfs7bzhusmw
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Thanks for fixing this.
+Could you add a NFT_META_BRI_VLAN_PROTO? Similar to patch 1/2, to
+retrieve p->br->vlan_proto.
 
-> diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-> index 6aee412a68bdd3c24a6a0eb9883e04b7a83998e0..59670fafcd2612b94c237cbe30109adb196cf3f0 100644
-> --- a/net/ipv4/route.c
-> +++ b/net/ipv4/route.c
-> @@ -2872,12 +2872,13 @@ int fib_dump_info_fnhe(struct sk_buff *skb, struct netlink_callback *cb,
->  		if (nhc->nhc_flags & RTNH_F_DEAD)
->  			continue;
->  
-> +		rcu_read_lock();
->  		bucket = rcu_dereference(nhc->nhc_exceptions);
-> -		if (!bucket)
-> -			continue;
-> -
-> -		err = fnhe_dump_bucket(net, skb, cb, table_id, bucket, genid,
-> -				       fa_index, fa_start);
-> +		err = 0;
+Then, add a generic way to set the vlan metadata. I'm attaching an
+incomplete patch, so there is something like:
 
-Could you perhaps move declaration and initialisation of 'err' outside
-the block while at it? It looks a bit more readable at this point.
+        meta vlan set 0x88a8:20
 
-> +		if (bucket)
-> +			err = fnhe_dump_bucket(net, skb, cb, table_id, bucket,
-> +					       genid, fa_index, fa_start);
-> +		rcu_read_unlock();
->  		if (err)
->  			return err;
->  	}
+to set q-in-q.
 
-Either way,
+we could also add a shortcut for simple vlan case (no q-in-q), ie.
+assuming protocol is 0x8100:
 
-Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
+        meta vlan set 20
 
--- 
-Stefano
+Does this make sense to you?
+
+And we have a way to set the meta vlan information from ingress to
+then, which is something I also need here.
+
+Thanks.
+
+--4v7mmcfs7bzhusmw
+Content-Type: text/x-diff; charset=us-ascii
+Content-Disposition: attachment; filename="x.patch"
+
+diff --git a/include/uapi/linux/netfilter/nf_tables.h b/include/uapi/linux/netfilter/nf_tables.h
+index 8859535031e2..6ef2cc42924c 100644
+--- a/include/uapi/linux/netfilter/nf_tables.h
++++ b/include/uapi/linux/netfilter/nf_tables.h
+@@ -796,6 +796,7 @@ enum nft_exthdr_attributes {
+  * @NFT_META_IIFKIND: packet input interface kind name (dev->rtnl_link_ops->kind)
+  * @NFT_META_OIFKIND: packet output interface kind name (dev->rtnl_link_ops->kind)
+  * @NFT_META_BRI_PVID: packet input bridge port pvid
++ * @NFT_META_VLAN: packet vlan metadata
+  */
+ enum nft_meta_keys {
+ 	NFT_META_LEN,
+@@ -827,6 +828,7 @@ enum nft_meta_keys {
+ 	NFT_META_IIFKIND,
+ 	NFT_META_OIFKIND,
+ 	NFT_META_BRI_PVID,
++	NFT_META_VLAN,
+ };
+ 
+ /**
+@@ -893,12 +895,14 @@ enum nft_hash_attributes {
+  * @NFTA_META_DREG: destination register (NLA_U32)
+  * @NFTA_META_KEY: meta data item to load (NLA_U32: nft_meta_keys)
+  * @NFTA_META_SREG: source register (NLA_U32)
++ * @NFTA_META_SREG2: source register (NLA_U32)
+  */
+ enum nft_meta_attributes {
+ 	NFTA_META_UNSPEC,
+ 	NFTA_META_DREG,
+ 	NFTA_META_KEY,
+ 	NFTA_META_SREG,
++	NFTA_META_SREG2,
+ 	__NFTA_META_MAX
+ };
+ #define NFTA_META_MAX		(__NFTA_META_MAX - 1)
+diff --git a/net/netfilter/nft_meta.c b/net/netfilter/nft_meta.c
+index 4f8116de70f8..dbbad7319183 100644
+--- a/net/netfilter/nft_meta.c
++++ b/net/netfilter/nft_meta.c
+@@ -28,7 +28,10 @@ struct nft_meta {
+ 	enum nft_meta_keys	key:8;
+ 	union {
+ 		enum nft_registers	dreg:8;
+-		enum nft_registers	sreg:8;
++		struct {
++			enum nft_registers	sreg:8;
++			enum nft_registers	sreg2:8;
++		};
+ 	};
+ };
+ 
+@@ -304,6 +307,17 @@ static void nft_meta_set_eval(const struct nft_expr *expr,
+ 		skb->secmark = value;
+ 		break;
+ #endif
++	case NFT_META_VLAN: {
++		u32 *sreg2 = &regs->data[meta->sreg2];
++		__be16 vlan_proto;
++		u16 vlan_tci;
++
++		vlan_tci = nft_reg_load16(sreg);
++		vlan_proto = nft_reg_load16(sreg2);
++
++		__vlan_hwaccel_put_tag(skb, vlan_proto, vlan_tci);
++		break;
++	}
+ 	default:
+ 		WARN_ON(1);
+ 	}
+@@ -474,6 +488,13 @@ static int nft_meta_set_init(const struct nft_ctx *ctx,
+ 	case NFT_META_PKTTYPE:
+ 		len = sizeof(u8);
+ 		break;
++	case NFT_META_VLAN:
++		len = sizeof(u16);
++		priv->sreg2 = nft_parse_register(tb[NFTA_META_SREG2]);
++		err = nft_validate_register_load(priv->sreg2, len);
++		if (err < 0)
++			return err;
++		break;
+ 	default:
+ 		return -EOPNOTSUPP;
+ 	}
+
+--4v7mmcfs7bzhusmw--
