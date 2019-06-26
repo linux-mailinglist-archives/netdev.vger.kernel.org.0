@@ -2,125 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C254A5731A
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 22:50:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6A405731D
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 22:50:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726381AbfFZUuf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 16:50:35 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:36817 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726223AbfFZUuf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 16:50:35 -0400
-Received: by mail-qt1-f196.google.com with SMTP id p15so113763qtl.3;
-        Wed, 26 Jun 2019 13:50:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=0JIsc6upKI8LAsXQYXKRr6HIlOo8/DmHKKpGfMNZUew=;
-        b=SjGNdwfNg/zcvVGN+PGBlPzER4WoOK2W/rlWgMe5EDeYvGrDCPHKp2nfZun+PStLEZ
-         M7Y0HiMd2AQdt5pmBv/b4PN5sx5gtsvu1p7c/sl2xkPKEGIjX+vpoQ/fpefRgoTBNZJU
-         b/q6V1NctY9VKorBH1nPg651d1aq35B9SGL5WtaK5QTjApgRRx3OuuDBICmTd1yjMxuh
-         wLI5bsBAkfAoJmz0p4tjXdusElbj3ntkL7P4SH/CXsWVvLFq/7Wje6I1ANM4/x/WlW6O
-         tU78+s/ses5VMjryhek9d7DiMvz8SE6oGnFGjZPZLhKYumKEXZ9qR0nnWgIpICMo8k04
-         0kdg==
+        id S1726429AbfFZUuy convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 26 Jun 2019 16:50:54 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:38166 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726223AbfFZUuy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 16:50:54 -0400
+Received: by mail-ed1-f65.google.com with SMTP id r12so4973093edo.5
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 13:50:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=0JIsc6upKI8LAsXQYXKRr6HIlOo8/DmHKKpGfMNZUew=;
-        b=Fg5BeBGj/ZmlJbzsaiMBlRk8WsBNyw5At4hDUBunHrTvroHs1XBHVarPHOqXsUv/xo
-         B3f0eMml1WKg4axGjQxWWN3O/zKyw8bY8PeRJkpJ8NdmUt+FEpdWeaZ5MM4OFP5yBJl3
-         obs2DMhdJNFPnUuR1tQuNwr8XO4oHkK18eQ2UOm0UjoYnNcV3GQtn+DcC85yiAyQv1oI
-         A83l25fPoq0uF93G4kfzjPX2aQFTuAke/apZoH7vYGybX0N09/TD1QD7drsN4azCUqKw
-         EbxuxZTSyUz5Rp6x4n0bN4lNCEn/clmTQf5dwWAAcelY0UYhImF8bC7iqx8FJc3fYNMh
-         zwFA==
-X-Gm-Message-State: APjAAAUq7Vxyibj0mJkoBwDjfmQp1oU0kGlK49vPtU8XXxl0g4cavLlD
-        wJ14glOd2VC67LenLDbFgclMY7W39wtPuDH90Z0=
-X-Google-Smtp-Source: APXvYqzg4kpaOhgH6DRsJAUX1HodpBqgBiRivJiHRugOt304HkbVCpfYd6BJiuQm5gWEfmapy8VnKuRQpNwdYxYSOeg=
-X-Received: by 2002:a0c:c146:: with SMTP id i6mr5401108qvh.79.1561582233943;
- Wed, 26 Jun 2019 13:50:33 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190626155911.13574-1-ivan.khoronzhuk@linaro.org>
-In-Reply-To: <20190626155911.13574-1-ivan.khoronzhuk@linaro.org>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Wed, 26 Jun 2019 22:50:23 +0200
-Message-ID: <CAJ+HfNid3PntipAJHuPR-tQudf+E6UQK6mPDHdc0O=wCUSjEEA@mail.gmail.com>
-Subject: Re: [PATCH net-next] xdp: xdp_umem: fix umem pages mapping for 32bits systems
-To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        David Miller <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=vCtVnSV5pbkc8wL7gAqXKnkYIeFXOX3zA79zM4jv0jg=;
+        b=HauTYZ6WAtKYoZ0uZns2bbEjch9CQK+Y/eB93YQScQB0sDse4JvAFbn9oKcADRrbGL
+         ayIfU8ktKOeqXXIepsU5ZwfnUHmFkdY9KvN0GNi2oLlBDJNTimxpc49JH/fMU8gNqLEm
+         ohutZMEYbJQq+m8ybwBCEUqrTuZeWemj/mNOEItjcei9a6mTn7wxR7nlhMDr1Nb486C9
+         nd6mfqds4i75ssDdx69Wgxq7u5NKz3mEJOX4p5JPun19J3dc1c9FIzj8tmHWH8N+I6M5
+         aGfuLTGdy9T4k5/rWRSUCK4u8cppG9PSbiL7bqMDn7oSotZs+A3ZsPGVfEJeQlb1VI4Q
+         Iv4A==
+X-Gm-Message-State: APjAAAWxPLpds3dXKa1udcygz++4BxwgQHAHFNoHO7Evphmypizo0zGd
+        tz0bLsYwo8X+95kw+0GdDn5UHQ==
+X-Google-Smtp-Source: APXvYqyyKqdtin+Nln4gPV8lLezS5X6dqf5KO0n4x66+oWHoQbw9BSqU2Nb8lE4XYRyHnO0LkdF/DQ==
+X-Received: by 2002:aa7:cdc6:: with SMTP id h6mr7869713edw.5.1561582252311;
+        Wed, 26 Jun 2019 13:50:52 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
+        by smtp.gmail.com with ESMTPSA id s27sm9223eda.36.2019.06.26.13.50.51
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 26 Jun 2019 13:50:51 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id CA272181CA7; Wed, 26 Jun 2019 22:50:50 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Xdp <xdp-newbies@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH v2 bpf-next 0/3] libbpf: add perf buffer abstraction and API
+In-Reply-To: <CAEf4BzZozWBanXnjJguYT46v8huAS7Wz44MHFHJkAPBZbT-i6A@mail.gmail.com>
+References: <20190626061235.602633-1-andriin@fb.com> <877e98d0hp.fsf@toke.dk> <CAEf4BzZozWBanXnjJguYT46v8huAS7Wz44MHFHJkAPBZbT-i6A@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 26 Jun 2019 22:50:50 +0200
+Message-ID: <878stoax5h.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 26 Jun 2019 at 17:59, Ivan Khoronzhuk
-<ivan.khoronzhuk@linaro.org> wrote:
->
-> Use kmap instead of page_address as it's not always in low memory.
->
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
-Ah, some 32-bit love. :-) Thanks for working on this!
+> On Wed, Jun 26, 2019 at 4:55 AM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+>>
+>> Andrii Nakryiko <andriin@fb.com> writes:
+>>
+>> > This patchset adds a high-level API for setting up and polling perf buffers
+>> > associated with BPF_MAP_TYPE_PERF_EVENT_ARRAY map. Details of APIs are
+>> > described in corresponding commit.
+>> >
+>> > Patch #1 adds a set of APIs to set up and work with perf buffer.
+>> > Patch #2 enhances libbpf to supprot auto-setting PERF_EVENT_ARRAY map size.
+>> > Patch #3 adds test.
+>>
+>> Having this in libbpf is great! Do you have a usage example of how a
+>> program is supposed to read events from the buffer? This is something we
+>> would probably want to add to the XDP tutorial
+>
+> Did you check patch #3 with selftest? It's essentially an end-to-end
+> example of how to set everything up and process data (in my case it's
+> just simple int being sent as a sample, but it's exactly the same with
+> more complicated structs). I didn't bother to handle lost samples
+> notification, but it's just another optional callback with a single
+> counter denoting how many samples were dropped.
+>
+> Let me know if it's still unclear.
 
-For future patches, please base AF_XDP patches on the bpf/bpf-next
-tree instead of net/net-next.
+I did read the example, but I obviously did not grok how it was supposed
+to work; re-reading it now it's quite clear, thanks! :)
 
-Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-
-> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-> ---
->  net/xdp/xdp_umem.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
->
-> diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
-> index 9c6de4f114f8..d3c1411420fd 100644
-> --- a/net/xdp/xdp_umem.c
-> +++ b/net/xdp/xdp_umem.c
-> @@ -169,6 +169,14 @@ static void xdp_umem_clear_dev(struct xdp_umem *umem=
-)
->         }
->  }
->
-> +static void xdp_umem_unmap_pages(struct xdp_umem *umem)
-> +{
-> +       unsigned int i;
-> +
-> +       for (i =3D 0; i < umem->npgs; i++)
-> +               kunmap(umem->pgs[i]);
-> +}
-> +
->  static void xdp_umem_unpin_pages(struct xdp_umem *umem)
->  {
->         unsigned int i;
-> @@ -210,6 +218,7 @@ static void xdp_umem_release(struct xdp_umem *umem)
->
->         xsk_reuseq_destroy(umem);
->
-> +       xdp_umem_unmap_pages(umem);
->         xdp_umem_unpin_pages(umem);
->
->         kfree(umem->pages);
-> @@ -372,7 +381,7 @@ static int xdp_umem_reg(struct xdp_umem *umem, struct=
- xdp_umem_reg *mr)
->         }
->
->         for (i =3D 0; i < umem->npgs; i++)
-> -               umem->pages[i].addr =3D page_address(umem->pgs[i]);
-> +               umem->pages[i].addr =3D kmap(umem->pgs[i]);
->
->         return 0;
->
-> --
-> 2.17.1
->
+-Toke
