@@ -2,53 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2958356AC0
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 15:37:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8680D56AD6
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 15:39:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727858AbfFZNg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 09:36:58 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:33466 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727757AbfFZNg5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 09:36:57 -0400
-Received: by mail-io1-f66.google.com with SMTP id u13so4668166iop.0
-        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 06:36:57 -0700 (PDT)
+        id S1727820AbfFZNjk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 09:39:40 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:37658 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727776AbfFZNjj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 09:39:39 -0400
+Received: by mail-io1-f67.google.com with SMTP id e5so1972810iok.4
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 06:39:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ENXGaIGRT1B00/CXHLaCHuqYUO45S2El+5e8iF1gDj8=;
-        b=SeqWi607qF5e+FkdwUpfQcC/7QmOJ5s24nuXUNnvHpwi0h4L+RtrFlE5rEkApvgBHz
-         GDrElVUIpoFHsuK8pcPj8vR86x82glVHL64SRytOVMkS9FAk+UvjboZR2V4kCa+H6t/+
-         dcRWLwAhkAxIRInKIjGHEKZDyXnGUIyMqzfT7n/+qEdclfO/OWhJARRXe5KCdblVK606
-         inK+GP3tUAd7nE/rRGizyjoSnOSqLHiKvlhOsh3qkipCsaDokiWvNP57E1bQF7bl526r
-         eLXHlUt/RKzAxhgTR8H7S9CJC79Ey9g6AscwcxBdYH3ATaw38nynLDlkRqtD5KE1XYVp
-         gCSg==
+        bh=/cAvS1LUQ3PFFzfZHN6ExYDpya5Lbz77W0Hh810QZAQ=;
+        b=QlQIqfZLsUncOjgR6J7XBXNsxBPkMKttINCGUr3JOiLZYBrrefkQppK6vPhxJJo39Q
+         IEDpxy4Qi92mWuz9kjly7KDrYtJINta6PjyiKuTkkkEe4/rufeXZ+LZI7hjo9aZUHIgG
+         qMcQglFBSZbtAjBVrO66pg/0IbKW5bsHB0cO3xmA6cxQ4i8uhL6g2k9jeC7DYAAZZPJH
+         CNK9YDPBqWIGIzD6Wk04HVmp7Z/edVNMRKt1NUD3DWXTIV2mvCR/fncT+MrlHnOzbzCB
+         u4Dk4EBVknXwKSR9YQFuHv1O023cnwoMbKz0U+OPXO2Drv5U28+JInmdMTwjsLyTWMYu
+         R+ig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=ENXGaIGRT1B00/CXHLaCHuqYUO45S2El+5e8iF1gDj8=;
-        b=XtC9Ai9dX78oa2GEI1WAwyip4XuryM+5ZlxlDaPLwnU6zKpAz7tD33kU4LVY7JWPRW
-         EKJ4IpXQ1Bs5wTe3yyVW5XdqTG6SWlEPS3kyogC8sdw9dWhbh4m8rzSnrCyVwbhTqVbT
-         p3h2hxcv7LOHK2Kg/pf0Vz+QfabbwiYRtir7jZOb6JM3ffbQ53aCOMmRpLT4ljArW42R
-         nm4U9zGUffTNSHYMpxEG7WV8ALNmzk49Z/elIHL+noqUeyuMNSUzZUr9v9Y+Scb0DsGI
-         iRrPAWf8L3ouygoK1Asquw7jxk1Z259d+stZx2lyIf5ouJD+pDrsi77Wp5C12t5Cjq7m
-         o4xA==
-X-Gm-Message-State: APjAAAUJwsqcsF1G/caDfrzKDkw1GXvyz3WaLIEtoU3iQRiFRd+yBAlL
-        YlwBySn5yliqH++Z3i3r80CQlA==
-X-Google-Smtp-Source: APXvYqyQBoux0KuEkaaWXNLkz2zfITjJ9SPM1X71L3pCiTDjFxyyBoi8+PhKT4ho+S/U4RXMgvZJCQ==
-X-Received: by 2002:a5d:948a:: with SMTP id v10mr5072911ioj.103.1561556216461;
-        Wed, 26 Jun 2019 06:36:56 -0700 (PDT)
+        bh=/cAvS1LUQ3PFFzfZHN6ExYDpya5Lbz77W0Hh810QZAQ=;
+        b=h/e8jMiC+sG01hhaWrWQZsa3XOrlBxZNx2y1b3RHp2r7kQ7WB5tCdI6VTNvBPFDuq0
+         +W5bW6Jr5170wv3/KJmcEtCs2YnKBB1RCdrMss1AM5LuOoUBLW1xkBnnWkhuEkm6R1Uk
+         WLpkj4mOqRUa1JKi6j+MuaSUM43kXTuwJo5k89vcpwJZXtU6Ee7tMHuy8se+z0JQpH33
+         2t6HU916A+Mwo6g1iwnKF8UpUbb5nQVhPT8Rvlk+zt5j1eMROxtw7f37MpJfWQglpRBC
+         z7HgfQ9FuAKL99bz6ceb0z94U4lZO6ZglbPKiUOnz0cbcW8ew/cH0C8Xsu9gyYuOdCfh
+         K7CA==
+X-Gm-Message-State: APjAAAVHtliVtMSIHqcUQgq+X/cQSlj7k0rNRx8tmHDFjviy2h91jtjI
+        ndlWg2+luvSFkAXDQdlsl+mXLQ==
+X-Google-Smtp-Source: APXvYqybuaxPW1RbfXyc363mFXjcU/txJRVh87bfpFvZeGdyNrgVd0DcyKpVr1MWTzRGhMlj+Re4iw==
+X-Received: by 2002:a02:6516:: with SMTP id u22mr5072865jab.49.1561556378050;
+        Wed, 26 Jun 2019 06:39:38 -0700 (PDT)
 Received: from [172.22.22.26] (c-71-195-29-92.hsd1.mn.comcast.net. [71.195.29.92])
-        by smtp.googlemail.com with ESMTPSA id t4sm15432505ioj.26.2019.06.26.06.36.54
+        by smtp.googlemail.com with ESMTPSA id h19sm22843396iol.65.2019.06.26.06.39.36
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 26 Jun 2019 06:36:55 -0700 (PDT)
+        Wed, 26 Jun 2019 06:39:37 -0700 (PDT)
 Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
 To:     Johannes Berg <johannes@sipsolutions.net>,
-        Dan Williams <dcbw@redhat.com>, Arnd Bergmann <arnd@arndb.de>
-Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Cc:     Dan Williams <dcbw@redhat.com>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
         abhishek.esse@gmail.com, Ben Chan <benchan@google.com>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         cpratapa@codeaurora.org, David Miller <davem@davemloft.net>,
@@ -70,18 +71,18 @@ References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
  <f4249aa5f5acdd90275eda35aa16f3cfb29d29be.camel@redhat.com>
  <CAK8P3a2nzZKtshYfomOOSYkqx5HdU15Wr9b+3va0B1euNhFOAg@mail.gmail.com>
  <dbb32f185d2c3a654083ee0a7188379e1f88d899.camel@sipsolutions.net>
- <e6ba8a9063e63506c0b88a70418d74ca4efe85cd.camel@sipsolutions.net>
- <850eed1d-0fec-c396-6e91-b5f1f8440ded@linaro.org>
- <84153d9e7c903084b492ceccc0dd98cbb32c12ac.camel@redhat.com>
- <7de004be-27b6-ac63-389d-8ea9d23d0361@linaro.org>
- <868e949b1fc8cf22307f579ab1f14543064bec20.camel@sipsolutions.net>
+ <d533b708-c97a-710d-1138-3ae79107f209@linaro.org>
+ <abdfc6b3a9981bcdef40f85f5442a425ce109010.camel@sipsolutions.net>
+ <db34aa39-6cf1-4844-1bfe-528e391c3729@linaro.org>
+ <CAK8P3a1ixL9ZjYz=pWTxvMfeD89S6QxSeHt9ZCL9dkCNV5pMHQ@mail.gmail.com>
+ <efbcb3b84ff0a7d7eab875c37f3a5fa77e21d324.camel@sipsolutions.net>
 From:   Alex Elder <elder@linaro.org>
-Message-ID: <0f5c0332-6894-2fdd-fd25-7af9a21b445b@linaro.org>
-Date:   Wed, 26 Jun 2019 08:36:53 -0500
+Message-ID: <edea19ef-f225-bdcd-f394-77e326d1d3ad@linaro.org>
+Date:   Wed, 26 Jun 2019 08:39:36 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.1
 MIME-Version: 1.0
-In-Reply-To: <868e949b1fc8cf22307f579ab1f14543064bec20.camel@sipsolutions.net>
+In-Reply-To: <efbcb3b84ff0a7d7eab875c37f3a5fa77e21d324.camel@sipsolutions.net>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -90,138 +91,131 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/25/19 9:14 AM, Johannes Berg wrote:
-> Hi Alex,
-> 
-> I'll just pick a few or your messages and reply there - some other
-> subthreads seem to have pretty much completed.
-> 
-
-. . .
-
->>> Linux usually tries to keep drivers generic and focused; each driver is
->>> written for a specific function. For example, a USB device usually
->>> provides multiple USB interfaces which will be bound to different Linux
->>> drivers like a TTY, cdc-ether, QMI (via qmi_wwan), cdc-acm, etc.
->>
->> So USB has some attributes similar to what we're talking about
->> here.  But if I'm not mistaken we want some sort of an overall
->> management scheme as well.
-> 
-> Yes. For the record, I think the part about "keep drivers generic and
-> focused" really only works for USB devices that expose different pieces
-> that look like any other network device or a TTY device on the USB
-> level, just the combination of these things (and knowing about that)
-> really makes them a modem.
-> 
-> For things like IPA or the (hypothetical) Intel driver we're talking
-> about, it's still all managed by a single (PCIe) driver. For the Intel
-> device in particular, even all the control channels are over exactly the
-> same transport mechanism as the data channels.
-
-Actually the setup for IPA requires certain things to be done via
-QMI by something outside the IPA driver, and it uses a separate
-communication path.  But I understand what you're saying.
-
-. . .
-
->> I don't like the "maybe" API unless there's no other way to do it.
->>
->> Instead I think it would be better for the probing driver to register
->> with a whatever the WWAN core is, and then have the WWAN core be
->> responsible for pulling things all together when it receives a
->> request to do so.  I.e., something in user space should request
->> that a registered data interface be brought up, and at that
->> time everything "knows" it's implemented as part of a WWAN
->> device.
-> 
-> Right, but then we just punt to userspace. Mostly we *do* (eventually!)
-> know that it's a WWAN device, just not every component can detect it.
-> Some components typically can.
-
-We need to identify the existence of a WWAN device (which is I
-guess--typically? always?--a modem).  Perhaps that can be
-discovered in some cases but I think it means a node described
-by Device Tree.
-
-> So for example, you might have a USB multi-function device with a
-> network function (looks just like ethernet pretty much) but another TTY
-> control channel that actually has some specific WWAN IDs, so that part
-> can know it's a WWAN.
-> 
-> Here, the ethernet function would need "maybe" attach, and the control
-> channel would "definitively" attach, pulling it together as a WWAN
-> device without requiring any more action or information.
-
-So you're saying you have a single Ethernet driver, and it can
-drive an Ethernet device connected to a WWAN, or not connected
-to a WWAN, without any changes.  The only distinction is that
-if the device is part of a WWAN it needs to register with the
-WWAN framework.  Is that right?
-
->> So maybe:
->> - Hardware probe detects a WWAN device
->> - The drivers that detect the WWAN device register it with the
->>   WWAN core code.
->> - A control channel is instantiated at/before the time the WWAN
->>   device is registered
->> - Something in user space should manage the bring-up of any
->>   other things on the WWAN device thereafter
-> 
-> But those things need to actually get connected first :-)
-
-What I meant is that the registering with the "WWAN core code"
-is what does that "connecting."  The WWAN code has the information
-about what got registered.  But as I said above, this WWAN device
-needs to be identified, and I think (at least for IPA) that will
-require something in Device Tree.  That will "connect" them.
-
-Or I might be misunderstanding your point.
-
-> In IPA/Intel case this is easy since it's a single driver. But if
-> there's multi-function device with ethernet being a completely separate
-> driver, the control channel cannot even reach that to tell it to create
-> a new data channel.
-
-There's a lot more to talk about with control.  I think
-you discuss this in another message, and I'll get to that
-shortly.  But I think understand your point, and again
-I think it comes back to having an abstraction that
-represents the modem, distinct from (but "connected" to)
-the functions it implements/includes.
-
->>> userspace should probably always create the netdevices (since they are
->>> always useless until userspace coordinates with the firmware about
->>> them) but that's not how things are yet.
->>
->> That's too bad.  How hard would that be to change?
-> 
-> Depends, but as I said above it's probably orthogonal to the question.
-> The data channel driver would still need to attach to the WWAN device
-> somehow so it becomes reachable by the control plane (note this isn't
-> the same as "control channel" since the latter talks to the modem, the
-> control plane talks to the kernel drivers).
-> 
->>>> - What causes a created channel to be removed?
+On 6/25/19 9:19 AM, Johannes Berg wrote:
+> On Mon, 2019-06-24 at 18:40 +0200, Arnd Bergmann wrote:
+>> On Mon, Jun 24, 2019 at 6:21 PM Alex Elder <elder@linaro.org> wrote:
+>>> On 6/18/19 2:03 PM, Johannes Berg wrote:
 >>>
->>> Driver removal, userspace WWAN daemon terminating the packet data
->>> connection which the channel represents, the modem terminating the
->>> packet data connection (eg network initiated disconnect), etc.
+>>>> Really there are two possible ways (and they intersect to some extent).
+>>>>
+>>>> One is the whole multi-function device, where a single WWAN device is
+>>>> composed of channels offered by actually different drivers, e.g. for a
+>>>> typical USB device you might have something like cdc_ether and the
+>>>> usb_wwan TTY driver. In this way, we need to "compose" the WWAN device
+>>>> similarly, e.g. by using the underlying USB device "struct device"
+>>>> pointer to tie it together.
+>>>
+>>> I *think* this model makes the most sense.  But at this point
+>>> it would take very little to convince me otherwise...  (And then
+>>> I saw Arnd's message advocating the other one, unfortunately...)
+>>>
+>>>> The other is something like IPA or the Intel modem driver, where the
+>>>> device is actually a single (e.g. PCIe) device and just has a single
+>>>> driver, but that single driver offers different channels.
+>>>
+>>> What I don't like about this is that it's more monolithic.  It
+>>> seems better to have the low-level IPA or Intel modem driver (or
+>>> any other driver that can support communication between the AP
+>>> and WWAN device) present communication paths that other function-
+>>> specific drivers can attach to and use.
 >>
->> OK this is as I expected.  Driver (or device) removal is somewhat
->> obvious, but you're confirming user space might request it as well.
+>> I did not understand Johannes description as two competing models
+>> for the same code, but rather two kinds of existing hardware that
+>> a new driver system would have to deal with.
 > 
-> If userspace actually had the ability to create (data) channels, then it
-> would have the ability to also remove them. Right now, this may or may
-> not be supported by the drivers that act together to form the interfaces
-> to a WWAN device.
+> Right.
+> 
+>> I was trying to simplify it to just having the second model, by adding
+>> a hack to support the first, but my view was rather unpopular so
+>> far, so if everyone agrees on one way to do it, don't worry about me ;-)
+> 
+> :-)
+> 
+> However, to also reply to Alex: I don't know exactly how IPA works, but
+> for the Intel modem at least you can't fundamentally have two drivers
+> for different parts of the functionality, since it's just a single piece
+> of hardware and you need to allocate hardware resources from a common
+> pool etc. So you cannot split the driver into "Intel modem control
+> channel driver" and "Intel modem data channel driver". In fact, it's
+> just a single "struct device" on the PCIe bus that you can bind to, and
+> only one driver can bind at a time.
 
-I think this (user space control) needs to be an option, but
-it doesn't have to be the only way.
+Interesting.  So a single modem driver needs to implement
+*all* of the features/functions?  Like GPS or data log or
+whatever, all needs to share the same struct device?
+Or does what you're describing apply to a subset of the
+modem's functionality?  Or something else?
+
+> So, IOW, I'm not sure I see how you'd split that up. I guess you could
+> if you actually do something like the "rmnet" model, and I suppose
+> you're free to do that for IPA if you like, but I tend to think that's
+> actually a burden, not a win since you just get more complex code that
+> needs to interact with more pieces. A single driver for a single
+> hardware that knows about the few types of channels seems simpler to me.
+> 
+>> - to answer Johannes question, my understanding is that the interface
+>>   between kernel and firmware/hardware for IPA has a single 'struct
+>>   device' that is used for both the data and the control channels,
+>>   rather than having a data channel and an independent control device,
+>>   so this falls into the same category as the Intel one (please correct
+>>   me on that)
+
+I don't think that's quite right, but it might be partially
+right.  There is a single device representing IPA, but the
+picture is a little more complicated.
+
+The IPA hardware is actually something that sits *between* the
+AP and the modem.  It implements one form of communication
+pathway (IP data), but there are others (including QMI, which
+presents a network-like interface but it's actually implemented
+via clever use of shared memory and interrupts).
+
+What we're talking about here is WWAN/modem management more
+generally though.  It *sounds* like the Intel modem is
+more like a single device, which requires a single driver,
+that seems to implement a bunch of distinct functions.
+
+On this I'm not very knowledgeable but for Qualcomm there is
+user space code that is in charge of overall management of
+the modem.  It implements what I think you're calling control
+functions, negotiating with the modem to allow new data channels
+to be created.  Normally the IPA driver would provide information
+to user space about available resources, but would only make a
+communication pathway available when requested.
+
+I'm going to leave it at that for now.
+
+> That sounds about the same then, right.
+> 
+> Are the control channels to IPA are actually also tunnelled over the
+> rmnet protocol? And even if they are, perhaps they have a different
+> hardware queue or so? That'd be the case for Intel - different hardware
+> queue, same (or at least similar) protocol spoken for the DMA hardware
+> itself, but different contents of the messages obviously.
+
+I want to be careful talking about "control" but for IPA it comes
+from user space.  For the purpose of getting initial code upstream,
+all of that control functionality (which was IOCTL based) has been
+removed, and a fixed configuration is assumed.
+
+>> - The user space being proprietary is exactly what we need to avoid
+>>   with the wwan subsystem. We need to be able to use the same
+>>   method for setting up Intel, Qualcomm, Samsung, Unisoc or
+>>   Hisilicon modems or anything else that hooks into the subsystem,
+>>   and support that in network manager as well as the Android
+>>   equivalent.
+>>   If Qualcomm wants to provide their own proprietary user space
+>>   solution, we can't stop them, but then that should also work on
+>>   all the others unless they intentionally break it. ;-)
+
+I won't comment on this, in part because I really don't know
+right now what is proprietary or why.  I think that having
+user space (proprietary or not) be able to provide management
+capability is a good thing.  If a unified kernel interface
+provides a common/generic way to manage the modem, I don't
+know why Qualcomm wouldn't adapt their code to use it.
+But I can't really speak for Qualcomm.
 
 . . .
-
-You made some other good clarifications in this message but I'm
-going to try to capture them elsewhere rather than respond here.
 
 					-Alex
