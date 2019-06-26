@@ -2,120 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B7B756F16
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 18:48:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 099CC56F1C
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 18:50:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726387AbfFZQs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 12:48:57 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:46603 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726006AbfFZQs5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 12:48:57 -0400
-Received: by mail-wr1-f66.google.com with SMTP id n4so3501740wrw.13
-        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 09:48:55 -0700 (PDT)
+        id S1726381AbfFZQuB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 12:50:01 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:45471 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726042AbfFZQuB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 12:50:01 -0400
+Received: by mail-pg1-f196.google.com with SMTP id z19so1468849pgl.12
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 09:50:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=OoEaJv7aaqTqsijzQaaYdkI+HMpgRA4Nz4+oOvolsqU=;
-        b=dG0Kh3Lo3L+KjkpWUyRqJHULACKCqOiHDzKZMCIhv80+LK5mAayW0rFQ63wrU0q4x8
-         Q0BbXgQ+irrQMzb0OW7JXp4ad13a6m5qbyVXQ36STSmCHIgq2/8MQxuvbbzRr3KBNB/8
-         coofV77Wy2DHdKB1ChjxSpCnSZ9ezyt96+67mw0HNqsIL3v63NlBlFa8Tc2umtPTTlGc
-         +qbIV6RR5O0yywpBNjAde9z2OKnn8g7D/GjAhjOTVZfTrALXfSirrDPQYW6rNzqPJQRD
-         E2RuWftv70iIKw7ABFMOJjbC42BbNpBdXr/AbKi3IyRTJYFyLOui4uRpsPlQd+I2W2T7
-         HktA==
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=uyTTe4dxNJUccBF9YKWKnp8Ah+nxCnoO0Hr24p7j9fU=;
+        b=RTAYC0Qfh/c7B2BJ8WSv4udzta8KttmL1I2niImh4jQsaoY4poTDccRBmm/ig6Xnd+
+         iLWYwLWV+FNAyYyMFeYehq9Bp4lHYkBKgvKwXzs4IvzCNT9yQSM8WIsPwJVLzvx5d5WL
+         lUnOL8aRkGcCYjN4p6T7l55rE/1yFDv0Cx9Qu3RBAA28eWwaIN12fgVkzhwrTDd/MQd/
+         jo4RCjkAFmw6GorYRWLKECIA9V3TB0rn/zwedFri50X+txpvDW8fWvMQswQlxIVYDhBs
+         1lZQg5IvwhfDIiYU7lGbrRJpIOWT86/PNUb5M7+hfMk8Ezhplc89OYHBxj3IZEevNzlh
+         Y7fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=OoEaJv7aaqTqsijzQaaYdkI+HMpgRA4Nz4+oOvolsqU=;
-        b=tyoOY4jZRMIkHF8UJvLI4cvJrsPV8V8xlhLMzWAUQ1FJ4+zSMHmH2F6ca7Yz++TRiy
-         pQC+AyBVEaua/gNizDNiyLQ/Cz1b7OMgF1AZn+qraS27x1Thmik1IP+3P/Vw8x+CV2cC
-         hTBalqgYkLaq+BYt6AVbjw6CKIPkzCnFapx2FWp5cPjvAsFTNwUbDc3QjdJ0Zei+JpKK
-         IhJhVpibc4QKG1AvOUBqUAKb/IyUFXB2cELdynFd/DSa0dlrYEr62pcQSAuybzYxgcd6
-         Z/oeCGzPb2aiZNz1GP6x3AOxswUTYB+DgP+4yN+MXqISdhNrrDGKxe2Tnm5s9WximBJP
-         zt5A==
-X-Gm-Message-State: APjAAAUEgnoblJCR+hQRM/psG4b2zQPyCjIUUdkyetHqcAYrgfpqocmi
-        05BEqKRkkSVA0B3DZDkgv4xEQuBWOWM=
-X-Google-Smtp-Source: APXvYqzljHLjpMMOMI1Yqco6tVQVtYxV8w+lvdpSFV8LZdGnL4jU6y/yU8JphcP1IsxPsHN/z/ex1A==
-X-Received: by 2002:a5d:5702:: with SMTP id a2mr4649769wrv.89.1561567735012;
-        Wed, 26 Jun 2019 09:48:55 -0700 (PDT)
-Received: from localhost (ip-89-176-222-26.net.upcbroadband.cz. [89.176.222.26])
-        by smtp.gmail.com with ESMTPSA id o6sm3792212wmc.15.2019.06.26.09.48.54
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 26 Jun 2019 09:48:54 -0700 (PDT)
-Date:   Wed, 26 Jun 2019 18:48:53 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     mirq-linux@rere.qmqm.pl
-Cc:     YueHaibing <yuehaibing@huawei.com>, davem@davemloft.net,
-        sdf@google.com, jianbol@mellanox.com, jiri@mellanox.com,
-        willemb@google.com, sdf@fomichev.me, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] bonding: Always enable vlan tx offload
-Message-ID: <20190626164853.GC2424@nanopsycho>
-References: <20190624135007.GA17673@nanopsycho>
- <20190626080844.20796-1-yuehaibing@huawei.com>
- <20190626161337.GA18953@qmqm.qmqm.pl>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=uyTTe4dxNJUccBF9YKWKnp8Ah+nxCnoO0Hr24p7j9fU=;
+        b=jFyuSH21BUnedhjEXTE4HBIvBVDmIuRYNNi5hOlGky21QoyPDlbkH3oweb+5T38yXr
+         vnHmw75M2akqAxY7Vq2Fjg+REAIr0Uj/r+opQ3d6dLq320cY/CzcqM+Ai8qLk2yvCkAL
+         KBE6HfcnNH8UcIcZDhW9rim4FNnI6g6+gTWApho6sR2selfRO3hjcJyjcA9LKGjJ3I7X
+         Xdrq74gPmhUB5GsqMZqib4Q6m/iUvsrLqbGHIqWfFTsWjQwRk+kjX5WZJzJ9hIKIXkDn
+         pplEqoUS+gO8f8QlCuJXN/8eKVEG7zo+eKewqKPgkg7fzz5HaH/51Zp6e22yQNpWHjO+
+         CJOg==
+X-Gm-Message-State: APjAAAX6lA6rehrDPBgt507Q1GlgCpULjUyEdD+OGizx0wkoOzX+37KX
+        RnqoKgm6pantOAGMi8c/JzWQv9rSqF4=
+X-Google-Smtp-Source: APXvYqzEcOB8RcekWU1tE8hPi9heElcsRYvmvS4k2suL4Qp7N7hRsk8njFVPxAeEbqhgmoxZ5itigQ==
+X-Received: by 2002:a17:90a:a397:: with SMTP id x23mr29196pjp.118.1561567799980;
+        Wed, 26 Jun 2019 09:49:59 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
+        by smtp.gmail.com with ESMTPSA id j13sm16971486pfi.42.2019.06.26.09.49.58
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 26 Jun 2019 09:49:59 -0700 (PDT)
+Subject: Re: [PATCH net-next 14/18] ionic: Add Tx and Rx handling
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org
+References: <20190620202424.23215-1-snelson@pensando.io>
+ <20190620202424.23215-15-snelson@pensando.io>
+ <20190625170803.2a23650b@cakuba.netronome.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <c5953da7-2388-810e-ff11-c254d4217821@pensando.io>
+Date:   Wed, 26 Jun 2019 09:49:57 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+In-Reply-To: <20190625170803.2a23650b@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190626161337.GA18953@qmqm.qmqm.pl>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Jun 26, 2019 at 06:13:38PM CEST, mirq-linux@rere.qmqm.pl wrote:
->On Wed, Jun 26, 2019 at 04:08:44PM +0800, YueHaibing wrote:
->> We build vlan on top of bonding interface, which vlan offload
->> is off, bond mode is 802.3ad (LACP) and xmit_hash_policy is
->> BOND_XMIT_POLICY_ENCAP34.
->> 
->> Because vlan tx offload is off, vlan tci is cleared and skb push
->> the vlan header in validate_xmit_vlan() while sending from vlan
->> devices. Then in bond_xmit_hash, __skb_flow_dissect() fails to
->> get information from protocol headers encapsulated within vlan,
->> because 'nhoff' is points to IP header, so bond hashing is based
->> on layer 2 info, which fails to distribute packets across slaves.
->> 
->> This patch always enable bonding's vlan tx offload, pass the vlan
->> packets to the slave devices with vlan tci, let them to handle
->> vlan implementation.
->[...]
->> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
->> index 407f4095a37a..799fc38c5c34 100644
->> --- a/drivers/net/bonding/bond_main.c
->> +++ b/drivers/net/bonding/bond_main.c
->> @@ -4320,12 +4320,12 @@ void bond_setup(struct net_device *bond_dev)
->>  	bond_dev->features |= NETIF_F_NETNS_LOCAL;
->>  
->>  	bond_dev->hw_features = BOND_VLAN_FEATURES |
->> -				NETIF_F_HW_VLAN_CTAG_TX |
->>  				NETIF_F_HW_VLAN_CTAG_RX |
->>  				NETIF_F_HW_VLAN_CTAG_FILTER;
->>  
->>  	bond_dev->hw_features |= NETIF_F_GSO_ENCAP_ALL | NETIF_F_GSO_UDP_L4;
->>  	bond_dev->features |= bond_dev->hw_features;
->> +	bond_dev->features |= NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_STAG_TX;
->>  }
->>  
->>  /* Destroy a bonding device.
->> 
+On 6/25/19 5:08 PM, Jakub Kicinski wrote:
+> On Thu, 20 Jun 2019 13:24:20 -0700, Shannon Nelson wrote:
+>> Add both the Tx and Rx queue setup and handling.  The related
+>> stats display come later.  Instead of using the generic napi
+>> routines used by the slow-path command, the Tx and Rx paths
+>> are simplified and inlined in one file in order to get better
+>> compiler optimizations.
+>>
+>> Signed-off-by: Shannon Nelson <snelson@pensando.io>
+>> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c b/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
+>> index 5ebfaa320edf..6dfcada9e822 100644
+>> --- a/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
+>> +++ b/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
+>> @@ -351,6 +351,54 @@ int ionic_debugfs_add_qcq(struct lif *lif, struct qcq *qcq)
+>>   				    desc_blob);
+>>   	}
+>>   
+>> +	if (qcq->flags & QCQ_F_TX_STATS) {
+>> +		stats_dentry = debugfs_create_dir("tx_stats", q_dentry);
+>> +		if (IS_ERR_OR_NULL(stats_dentry))
+>> +			return PTR_ERR(stats_dentry);
+>> +
+>> +		debugfs_create_u64("dma_map_err", 0400, stats_dentry,
+>> +				   &qcq->stats->tx.dma_map_err);
+>> +		debugfs_create_u64("pkts", 0400, stats_dentry,
+>> +				   &qcq->stats->tx.pkts);
+>> +		debugfs_create_u64("bytes", 0400, stats_dentry,
+>> +				   &qcq->stats->tx.bytes);
+>> +		debugfs_create_u64("clean", 0400, stats_dentry,
+>> +				   &qcq->stats->tx.clean);
+>> +		debugfs_create_u64("linearize", 0400, stats_dentry,
+>> +				   &qcq->stats->tx.linearize);
+>> +		debugfs_create_u64("no_csum", 0400, stats_dentry,
+>> +				   &qcq->stats->tx.no_csum);
+>> +		debugfs_create_u64("csum", 0400, stats_dentry,
+>> +				   &qcq->stats->tx.csum);
+>> +		debugfs_create_u64("crc32_csum", 0400, stats_dentry,
+>> +				   &qcq->stats->tx.crc32_csum);
+>> +		debugfs_create_u64("tso", 0400, stats_dentry,
+>> +				   &qcq->stats->tx.tso);
+>> +		debugfs_create_u64("frags", 0400, stats_dentry,
+>> +				   &qcq->stats->tx.frags);
+> I wonder why debugfs over ethtool -S?
+
+I believe this was from early engineering, before ethtool -S had been 
+filled out.  I'll clean that up.
+
 >
->I can see that bonding driver uses dev_queue_xmit() to pass packets to
->slave links, but I can't see where in the path it does software fallback
->for devices without HW VLAN tagging. Generally drivers that don't ever
->do VLAN offload also ignore vlan_tci presence. Am I missing something
->here?
+>> +static int ionic_tx(struct queue *q, struct sk_buff *skb)
+>> +{
+>> +	struct tx_stats *stats = q_to_tx_stats(q);
+>> +	int err;
+>> +
+>> +	if (skb->ip_summed == CHECKSUM_PARTIAL)
+>> +		err = ionic_tx_calc_csum(q, skb);
+>> +	else
+>> +		err = ionic_tx_calc_no_csum(q, skb);
+>> +	if (err)
+>> +		return err;
+>> +
+>> +	err = ionic_tx_skb_frags(q, skb);
+>> +	if (err)
+>> +		return err;
+>> +
+>> +	skb_tx_timestamp(skb);
+>> +	stats->pkts++;
+>> +	stats->bytes += skb->len;
+> nit: I think counting stats on completion may be a better idea,
+>       otherwise when you can a full ring on stop your HW counters are
+>       guaranteed to be different than SW counters.  Am I wrong?
 
-validate_xmit_skb->validate_xmit_vlan
+You are not wrong, that is how many drivers handle it.  I like seeing 
+how much the driver was given (ethtool -S) versus how much the HW 
+actually pushed out (netstat -i or ip -s link show).  These numbers 
+shouldn't be very often be very different, but it is interesting when 
+they are.
+
+>
+>> +	ionic_txq_post(q, !netdev_xmit_more(), ionic_tx_clean, skb);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int ionic_tx_descs_needed(struct queue *q, struct sk_buff *skb)
+>> +{
+>> +	struct tx_stats *stats = q_to_tx_stats(q);
+>> +	int err;
+>> +
+>> +	/* If TSO, need roundup(skb->len/mss) descs */
+>> +	if (skb_is_gso(skb))
+>> +		return (skb->len / skb_shinfo(skb)->gso_size) + 1;
+> This doesn't look correct, are you sure you don't want
+> skb_shinfo(skb)->gso_segs ?
+
+That would probably work as well.
+
+>
+>> +
+>> +	/* If non-TSO, just need 1 desc and nr_frags sg elems */
+>> +	if (skb_shinfo(skb)->nr_frags <= IONIC_TX_MAX_SG_ELEMS)
+>> +		return 1;
+>> +
+>> +	/* Too many frags, so linearize */
+>> +	err = skb_linearize(skb);
+>> +	if (err)
+>> +		return err;
+>> +
+>> +	stats->linearize++;
+>> +
+>> +	/* Need 1 desc and zero sg elems */
+>> +	return 1;
+>> +}
+>> +
+>> +netdev_tx_t ionic_start_xmit(struct sk_buff *skb, struct net_device *netdev)
+>> +{
+>> +	u16 queue_index = skb_get_queue_mapping(skb);
+>> +	struct lif *lif = netdev_priv(netdev);
+>> +	struct queue *q;
+>> +	int ndescs;
+>> +	int err;
+>> +
+>> +	if (unlikely(!test_bit(LIF_UP, lif->state))) {
+>> +		dev_kfree_skb(skb);
+>> +		return NETDEV_TX_OK;
+>> +	}
+> Surely you stop TX before taking the queues down?
+
+Yes, in ionic_lif_stop()
 
 
 >
->Best Regards,
->Michał Mirosław
+>> +	if (likely(lif_to_txqcq(lif, queue_index)))
+>> +		q = lif_to_txq(lif, queue_index);
+>> +	else
+>> +		q = lif_to_txq(lif, 0);
+>> +
+>> +	ndescs = ionic_tx_descs_needed(q, skb);
+>> +	if (ndescs < 0)
+>> +		goto err_out_drop;
+>> +
+>> +	if (!ionic_q_has_space(q, ndescs)) {
+>> +		netif_stop_subqueue(netdev, queue_index);
+>> +		q->stop++;
+>> +
+>> +		/* Might race with ionic_tx_clean, check again */
+>> +		smp_rmb();
+>> +		if (ionic_q_has_space(q, ndescs)) {
+>> +			netif_wake_subqueue(netdev, queue_index);
+>> +			q->wake++;
+>> +		} else {
+>> +			return NETDEV_TX_BUSY;
+>> +		}
+>> +	}
+>> +
+>> +	if (skb_is_gso(skb))
+>> +		err = ionic_tx_tso(q, skb);
+>> +	else
+>> +		err = ionic_tx(q, skb);
+>> +
+>> +	if (err)
+>> +		goto err_out_drop;
+>> +
+>> +	return NETDEV_TX_OK;
+>> +
+>> +err_out_drop:
+>> +	q->drop++;
+>> +	dev_kfree_skb(skb);
+>> +	return NETDEV_TX_OK;
+>> +}
+
