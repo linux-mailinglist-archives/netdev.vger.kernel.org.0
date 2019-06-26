@@ -2,58 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A58D357225
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 22:01:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAB8B5722B
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 22:04:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726431AbfFZUBd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 16:01:33 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:34616 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726104AbfFZUBd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 16:01:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=JJMeWxm/xaxRc9qFKp93QUqmWLZydNIdKPO3b1FAYzM=; b=T2gPMGqLp35DP4lEy2PDrJEzR8
-        1qbec2hAd2TOCocm1oXGxvhgkRDIoXzwMRWZoza7BE+df0ekDE4J4AOH1JOoMussGcSf5pog4bTO+
-        GA1HoZZiTDDL7a5SnpXnqwmhjw0CURoLMHEGTOdj4hQcpiHmfR6l2nKu1uRpzq6bPopc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hgE6i-0003sn-Co; Wed, 26 Jun 2019 22:01:28 +0200
-Date:   Wed, 26 Jun 2019 22:01:28 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jose Abreu <Jose.Abreu@synopsys.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>
-Subject: Re: [PATCH net-next 10/10] net: stmmac: Try to get C45 PHY if
- everything else fails
-Message-ID: <20190626200128.GH27733@lunn.ch>
-References: <cover.1561556555.git.joabreu@synopsys.com>
- <c7d1dbac1940853c22db8215ed60181b2abe3050.1561556556.git.joabreu@synopsys.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c7d1dbac1940853c22db8215ed60181b2abe3050.1561556556.git.joabreu@synopsys.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+        id S1726418AbfFZUDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 16:03:50 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:40778 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726289AbfFZUDt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 16:03:49 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id DA22C14DB71D4;
+        Wed, 26 Jun 2019 13:03:48 -0700 (PDT)
+Date:   Wed, 26 Jun 2019 13:03:48 -0700 (PDT)
+Message-Id: <20190626.130348.743645536748522991.davem@davemloft.net>
+To:     skhan@linuxfoundation.org
+Cc:     gnomes@lxorguk.ukuu.org.uk, puranjay12@gmail.com,
+        bjorn@helgaas.com, stephen@networkplumber.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-pci@vger.kernel.org
+Subject: Re: [PATCH v3 0/3] net: fddi: skfp: Use PCI generic definitions
+ instead of private duplicates
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <5f04f52d-8911-4db9-4321-00334d357d54@linuxfoundation.org>
+References: <20190621094607.15011-1-puranjay12@gmail.com>
+        <20190621162024.53620dd9@alans-desktop>
+        <5f04f52d-8911-4db9-4321-00334d357d54@linuxfoundation.org>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 26 Jun 2019 13:03:49 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 26, 2019 at 03:47:44PM +0200, Jose Abreu wrote:
-> On PCI based setups that are connected to C45 PHY we won't have DT
-> bindings specifying what's the correct PHY type.
+From: Shuah Khan <skhan@linuxfoundation.org>
+Date: Fri, 21 Jun 2019 10:36:02 -0600
 
-You can associate a DT node to a PCI device. The driver does not have
-to do anything special, the PCI core code does all the work.
+> Stephen Hemminger is suggesting removal as well. Makes sense to me.
+ ...
+> What would you recommend the next steps are? Would like driver
+> removed?
 
-As an example look at imx6q-zii-rdu2.dts, node &pcie, which has an
-intel i210 on the pcie bus, and we need a handle to it.
+If you hadn't proposed the cleanups nobody would have said to remove
+this driver.  Really if someone wants to go through the tree and
+send removal patches for seemingly really unused drivers, that is
+a separate piece of work unrelated to your cleanup.
 
-   Andrew
+While something still is in the tree we should clean it up from
+stuff like this.
+
+Therefore, I'll be applying v5 of your changes, thanks.
