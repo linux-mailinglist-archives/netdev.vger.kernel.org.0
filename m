@@ -2,220 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C176A55CF9
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 02:39:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D628455D27
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 03:03:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726484AbfFZAjE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 20:39:04 -0400
-Received: from mail-qk1-f201.google.com ([209.85.222.201]:53736 "EHLO
-        mail-qk1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726464AbfFZAjC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 20:39:02 -0400
-Received: by mail-qk1-f201.google.com with SMTP id i196so589641qke.20
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 17:39:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=8CHLKwEbd3YBZKYd+DyQzqHqrINl27JKaSJDDjaFygI=;
-        b=fifiLQ15f5NYld74zr46d8R3gd3WIcaz2i7g8Z2FdgJKIO13TYgmAcE1+S4L/EMr2K
-         Gi87yY+Yklbl5QJDVrw2aNckiqAzu0t01YpQ/lFq8xz4JyqQSDvLxiWc4F1HivMW1jDC
-         alSwkd80gx9GTmIJxIabe6fSUPuBvDXXCPaSbEmTQ7YH5sT4C1wUGoAi0c0uq1ztuONw
-         3X5YmDynYSKMdPpcpryNsnj+RKM6SynyBjyUMSYgvTfrAC+azipmxbHFHOvj3RfeMvfo
-         arKA0EuM6MnI+ONMZZ4yeJ9lQLwOt0tFHRPd9wx1n/CH0D6QA9QCYLF/3smqN4lf789J
-         vxlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=8CHLKwEbd3YBZKYd+DyQzqHqrINl27JKaSJDDjaFygI=;
-        b=ofXtzPFfsz87Reh/5+h+gwyPXB6KMrESzh2JQSNnYSXjhKtukIJrtMAQUd4uzEPYCk
-         jqfNvq3HlF/+M/MAcERp7wglaY/x/mcMENXuvRTAhcULZH1ERVeceroNc8yGoW0g2W8W
-         sHWXlAz9+6E4OXfRwnt1oEzPdm0t5Vdc5ghy8ZnlIEMX82ffqycxqyxoOMSA7+SL1HhO
-         3A4rEYzLdBqujc0pZdDfleV6TkNKPhHEARJX+MVNZk3ZJI39aet6fPD8w2DWhf3w0nx2
-         pZjlUszHw6mjnnulaxeg7P2dzQM1iadkwLogU6QiSjvkeJvvmDPJavhgL5aHX/NsTYy2
-         MjMg==
-X-Gm-Message-State: APjAAAWGB3+q1WlUtbennHP5miRqHuzKURp34wmzIYSuut7L2PLrMoj3
-        8M59yr09s6nqbI4lGnJpHAtvZcwjAKJkxvpL
-X-Google-Smtp-Source: APXvYqygietrlEzFx4gHfLBj888fa6Bm0lY9iT+OK6Ph8qWVJdnYo+FKL5TEH6D+Z0X1Cnw0Z3HO5XrcKpspjdky
-X-Received: by 2002:a0c:93cb:: with SMTP id g11mr1037451qvg.133.1561509541413;
- Tue, 25 Jun 2019 17:39:01 -0700 (PDT)
-Date:   Tue, 25 Jun 2019 17:38:52 -0700
-In-Reply-To: <20190626003852.163986-1-allanzhang@google.com>
-Message-Id: <20190626003852.163986-3-allanzhang@google.com>
-Mime-Version: 1.0
-References: <20190626003852.163986-1-allanzhang@google.com>
-X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
-Subject: [PATCH bpf-next v5 2/2] bpf: Add selftests for bpf_perf_event_output
-From:   allanzhang <allanzhang@google.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     allanzhang <allanzhang@google.com>
+        id S1726467AbfFZBC7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 21:02:59 -0400
+Received: from ushosting.nmnhosting.com ([66.55.73.32]:56172 "EHLO
+        ushosting.nmnhosting.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726274AbfFZBC7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 21:02:59 -0400
+Received: from mail2.nmnhosting.com (unknown [202.169.106.97])
+        by ushosting.nmnhosting.com (Postfix) with ESMTPS id E27A72DC0076;
+        Tue, 25 Jun 2019 21:02:57 -0400 (EDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=d-silva.org;
+        s=201810a; t=1561510978;
+        bh=alTGTolfSOaJib81/HV1xk13UMDoyRYklK/SpUrmd7w=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=NoxHUcByzLTCusX5pVe1lsXlBMGElTVDnI/XfJAy1Nl2CPCT+1tOht6i2EK/ciNkm
+         K9KG5Y432fz/6LApPs3O84qtWA9SlyMmA/wuAdUcSD4rSsw1vczNmq2IadH3d8Yjjj
+         5s/aRpOn+J8LZ+0EdQegjtRsGUm+NIxhK/RJ9SV1bF1UePOw1rCMB/TgxdowIewNFZ
+         Ra5cgiPNVLsA+gWt+IwCMHonGdcRTTyshPS7dwjlm4RdNgxtOKDy+eQbfRQfotbzjs
+         B5QQnvu0X2cSsH+yxVwnjSR18+Dt0Tt9kbJq7vhB7kczzOGw3vGeE9Nsk1oow8i/1I
+         3EN2KiSeiTlphcIF4jujWhyKJYRq8hKZqgXXkbYQ8cniR0sy1e4f3msouuG7u7FAGN
+         4N62OPQDxWHpA6QCR2bkcmJBVH1Jb6OE2kFfBG7EgyAY7YE5RDCG3qHf3x06F/DOxs
+         QIPziAUS4TwpT/g1pYu4AH2VTerslwlrRiUj0wkS6makKQ6LJI017iD3ClsF1dCjvw
+         9OKcxJoGQDOPUyeiE1V2QvnozdCZZJ0tZIwv2ngVO0Y5g38kYMSlrgiQm08cGPPyV1
+         1vTrS9K7ZJD22fxteol1WonkF1zHEWTT8Eu6rNYpH6cAVTxvZ5Uw16GXOQ+goHTzVz
+         m6Ftvv6Q+FYsWPnR2eqrJFq0=
+Received: from adsilva.ozlabs.ibm.com (static-82-10.transact.net.au [122.99.82.10] (may be forged))
+        (authenticated bits=0)
+        by mail2.nmnhosting.com (8.15.2/8.15.2) with ESMTPSA id x5Q12T29029544
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Wed, 26 Jun 2019 11:02:45 +1000 (AEST)
+        (envelope-from alastair@d-silva.org)
+Message-ID: <e16caf5b98aafea4033bfc0e49845ef987c02678.camel@d-silva.org>
+Subject: Re: [PATCH v4 0/7] Hexdump Enhancements
+From:   "Alastair D'Silva" <alastair@d-silva.org>
+To:     Joe Perches <joe@perches.com>
+Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Karsten Keil <isdn@linux-pingi.de>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Stanislaw Gruszka <sgruszka@redhat.com>,
+        Benson Leung <bleung@chromium.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        David Laight <David.Laight@ACULAB.COM>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-fsdevel@vger.kernel.org
+Date:   Wed, 26 Jun 2019 11:02:29 +1000
+In-Reply-To: <3ae4c1a4a72f8ee6b75c45adfbe543fc0a7b5da1.camel@perches.com>
+References: <20190625031726.12173-1-alastair@au1.ibm.com>
+         <3ae4c1a4a72f8ee6b75c45adfbe543fc0a7b5da1.camel@perches.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.32.2 (3.32.2-1.fc30) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail2.nmnhosting.com [10.0.1.20]); Wed, 26 Jun 2019 11:02:53 +1000 (AEST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Software event output is only enabled by a few prog types.
-This test is to ensure that all supported types are enabled for
-bpf_perf_event_output successfully.
+On Mon, 2019-06-24 at 22:01 -0700, Joe Perches wrote:
+> On Tue, 2019-06-25 at 13:17 +1000, Alastair D'Silva wrote:
+> > From: Alastair D'Silva <alastair@d-silva.org>
+> > 
+> > Apologies for the large CC list, it's a heads up for those
+> > responsible
+> > for subsystems where a prototype change in generic code causes a
+> > change
+> > in those subsystems.
+> []
+> > The default behaviour of hexdump is unchanged, however, the
+> > prototype
+> > for hex_dump_to_buffer() has changed, and print_hex_dump() has been
+> > renamed to print_hex_dump_ext(), with a wrapper replacing it for
+> > compatibility with existing code, which would have been too
+> > invasive to
+> > change.
+> 
+> I believe this cover letter is misleading.
+> 
+> The point of the wrapper is to avoid unnecessary changes
+> in existing
+> code.
+> 
+> 
 
-Signed-off-by: allan zhang <allanzhang@google.com>
----
- tools/testing/selftests/bpf/test_verifier.c   | 12 ++-
- .../selftests/bpf/verifier/event_output.c     | 94 +++++++++++++++++++
- 2 files changed, 105 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/bpf/verifier/event_output.c
+The wrapper is for print_hex_dump(), which has many callers.
 
-diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
-index c5514daf8865..5e98d7c37eb7 100644
---- a/tools/testing/selftests/bpf/test_verifier.c
-+++ b/tools/testing/selftests/bpf/test_verifier.c
-@@ -50,7 +50,7 @@
- #define MAX_INSNS	BPF_MAXINSNS
- #define MAX_TEST_INSNS	1000000
- #define MAX_FIXUPS	8
--#define MAX_NR_MAPS	18
-+#define MAX_NR_MAPS	19
- #define MAX_TEST_RUNS	8
- #define POINTER_VALUE	0xcafe4all
- #define TEST_DATA_LEN	64
-@@ -84,6 +84,7 @@ struct bpf_test {
- 	int fixup_map_array_wo[MAX_FIXUPS];
- 	int fixup_map_array_small[MAX_FIXUPS];
- 	int fixup_sk_storage_map[MAX_FIXUPS];
-+	int fixup_map_event_output[MAX_FIXUPS];
- 	const char *errstr;
- 	const char *errstr_unpriv;
- 	uint32_t retval, retval_unpriv, insn_processed;
-@@ -627,6 +628,7 @@ static void do_test_fixup(struct bpf_test *test, enum bpf_prog_type prog_type,
- 	int *fixup_map_array_wo = test->fixup_map_array_wo;
- 	int *fixup_map_array_small = test->fixup_map_array_small;
- 	int *fixup_sk_storage_map = test->fixup_sk_storage_map;
-+	int *fixup_map_event_output = test->fixup_map_event_output;
- 
- 	if (test->fill_helper) {
- 		test->fill_insns = calloc(MAX_TEST_INSNS, sizeof(struct bpf_insn));
-@@ -788,6 +790,14 @@ static void do_test_fixup(struct bpf_test *test, enum bpf_prog_type prog_type,
- 			fixup_sk_storage_map++;
- 		} while (*fixup_sk_storage_map);
- 	}
-+	if (*fixup_map_event_output) {
-+		map_fds[18] = __create_map(BPF_MAP_TYPE_PERF_EVENT_ARRAY,
-+					   sizeof(int), sizeof(int), 1, 0);
-+		do {
-+			prog[*fixup_map_event_output].imm = map_fds[18];
-+			fixup_map_event_output++;
-+		} while (*fixup_map_event_output);
-+	}
- }
- 
- static int set_admin(bool admin)
-diff --git a/tools/testing/selftests/bpf/verifier/event_output.c b/tools/testing/selftests/bpf/verifier/event_output.c
-new file mode 100644
-index 000000000000..059cc70addf9
---- /dev/null
-+++ b/tools/testing/selftests/bpf/verifier/event_output.c
-@@ -0,0 +1,94 @@
-+/* instructions used to output a skb based software event, produced
-+ * from code snippet:
-+ * struct TMP {
-+ *  uint64_t tmp;
-+ * } tt;
-+ * tt.tmp = 5;
-+ * bpf_perf_event_output(skb, &connection_tracking_event_map, 0,
-+ * 			 &tt, sizeof(tt));
-+ * return 1;
-+ *
-+ * the bpf assembly from llvm is:
-+ *        0:       b7 02 00 00 05 00 00 00         r2 = 5
-+ *        1:       7b 2a f8 ff 00 00 00 00         *(u64 *)(r10 - 8) = r2
-+ *        2:       bf a4 00 00 00 00 00 00         r4 = r10
-+ *        3:       07 04 00 00 f8 ff ff ff         r4 += -8
-+ *        4:       18 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00    r2 = 0ll
-+ *        6:       b7 03 00 00 00 00 00 00         r3 = 0
-+ *        7:       b7 05 00 00 08 00 00 00         r5 = 8
-+ *        8:       85 00 00 00 19 00 00 00         call 25
-+ *        9:       b7 00 00 00 01 00 00 00         r0 = 1
-+ *       10:       95 00 00 00 00 00 00 00         exit
-+ *
-+ *     The reason I put the code here instead of fill_helpers is that map fixup
-+ *     is against the insns, instead of filled prog.
-+*/
-+
-+#define __PERF_EVENT_INSNS__					\
-+	BPF_MOV64_IMM(BPF_REG_2, 5),				\
-+	BPF_STX_MEM(BPF_DW, BPF_REG_10, BPF_REG_2, -8),		\
-+	BPF_MOV64_REG(BPF_REG_4, BPF_REG_10),			\
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_4, -8),			\
-+	BPF_LD_MAP_FD(BPF_REG_2, 0),				\
-+	BPF_MOV64_IMM(BPF_REG_3, 0),				\
-+	BPF_MOV64_IMM(BPF_REG_5, 8),				\
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0,		\
-+		     BPF_FUNC_perf_event_output),		\
-+	BPF_MOV64_IMM(BPF_REG_0, 1),				\
-+	BPF_EXIT_INSN(),
-+{
-+	"perfevent for sockops",
-+	.insns = { __PERF_EVENT_INSNS__ },
-+	.prog_type = BPF_PROG_TYPE_SOCK_OPS,
-+	.fixup_map_event_output = { 4 },
-+	.result = ACCEPT,
-+	.retval = 1,
-+},
-+{
-+	"perfevent for tc",
-+	.insns =  { __PERF_EVENT_INSNS__ },
-+	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
-+	.fixup_map_event_output = { 4 },
-+	.result = ACCEPT,
-+	.retval = 1,
-+},
-+{
-+	"perfevent for lwt out",
-+	.insns =  { __PERF_EVENT_INSNS__ },
-+	.prog_type = BPF_PROG_TYPE_LWT_OUT,
-+	.fixup_map_event_output = { 4 },
-+	.result = ACCEPT,
-+	.retval = 1,
-+},
-+{
-+	"perfevent for xdp",
-+	.insns =  { __PERF_EVENT_INSNS__ },
-+	.prog_type = BPF_PROG_TYPE_XDP,
-+	.fixup_map_event_output = { 4 },
-+	.result = ACCEPT,
-+	.retval = 1,
-+},
-+{
-+	"perfevent for socket filter",
-+	.insns =  { __PERF_EVENT_INSNS__ },
-+	.prog_type = BPF_PROG_TYPE_SOCKET_FILTER,
-+	.fixup_map_event_output = { 4 },
-+	.result = ACCEPT,
-+	.retval = 1,
-+},
-+{
-+	"perfevent for sk_skb",
-+	.insns =  { __PERF_EVENT_INSNS__ },
-+	.prog_type = BPF_PROG_TYPE_SK_SKB,
-+	.fixup_map_event_output = { 4 },
-+	.result = ACCEPT,
-+	.retval = 1,
-+},
-+{
-+	"perfevent for cgroup skb",
-+	.insns =  { __PERF_EVENT_INSNS__ },
-+	.prog_type = BPF_PROG_TYPE_CGROUP_SKB,
-+	.fixup_map_event_output = { 4 },
-+	.result = ACCEPT,
-+	.retval = 1,
-+},
+The changes to existing code are for hex_dump_to_buffer(), which is
+called in relatively few places.
+
 -- 
-2.22.0.410.gd8fdbe21b5-goog
+Alastair D'Silva           mob: 0423 762 819
+skype: alastair_dsilva    
+Twitter: @EvilDeece
+blog: http://alastair.d-silva.org
+
 
