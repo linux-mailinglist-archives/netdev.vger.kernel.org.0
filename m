@@ -2,55 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C5327569CC
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 14:55:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97AEC569DB
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 14:57:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727417AbfFZMzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 08:55:18 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:33406 "EHLO vps0.lunn.ch"
+        id S1727420AbfFZM5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 08:57:09 -0400
+Received: from mail.us.es ([193.147.175.20]:34380 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727221AbfFZMzS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 08:55:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=yT0rn71eJrhNpfTMWEQZBj+UoXHe3mCcO0rpDnUXHfI=; b=wM7IIzVfkAcMWl/r01gnBjtAtd
-        u4DFFqSkq89KtiYEKu6z8o3MreVw37EceFAzNVljrcdcTWs70kKWfr/xJisQ1M9L5NFsUv6T+IvkP
-        uDxoV/XGWrcvzNJDA+oz2EKzxSrgdqtfen22jIqDuWLdRCm+9rIleddlfCrTWXAPj14s=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hg7SH-0001GD-2A; Wed, 26 Jun 2019 14:55:17 +0200
-Date:   Wed, 26 Jun 2019 14:55:17 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Alexander Dahl <ada@thorsis.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Thomas Pfahl <tpf@thorsis.com>
-Subject: Re: net: never suspend the ethernet PHY on certain boards?
-Message-ID: <20190626125517.GA3115@lunn.ch>
-References: <4693980.Yko7hG0E1C@ada>
+        id S1726157AbfFZM5I (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 08:57:08 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id D0CDDB570A
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 14:57:06 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id BFE48DA4D1
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 14:57:06 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id B580BDA732; Wed, 26 Jun 2019 14:57:06 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id C6BDEDA4D1;
+        Wed, 26 Jun 2019 14:57:04 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Wed, 26 Jun 2019 14:57:04 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [31.4.197.76])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 97FE14265A32;
+        Wed, 26 Jun 2019 14:57:04 +0200 (CEST)
+Date:   Wed, 26 Jun 2019 14:57:03 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     wenxu <wenxu@ucloud.cn>
+Cc:     fw@strlen.de, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH nf-next v2 2/2] netfilter: nft_meta: Add
+ NFT_META_BRI_VLAN support
+Message-ID: <20190626125703.5vg2z6xa4ciji6j6@salvia>
+References: <1560993460-25569-1-git-send-email-wenxu@ucloud.cn>
+ <1560993460-25569-2-git-send-email-wenxu@ucloud.cn>
+ <20190626102935.ztxcfb3kysvohzi3@salvia>
+ <b037a0a9-4729-41ff-81bb-ca76c0e3fba9@ucloud.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <4693980.Yko7hG0E1C@ada>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <b037a0a9-4729-41ff-81bb-ca76c0e3fba9@ucloud.cn>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> What I could do:
+On Wed, Jun 26, 2019 at 08:42:27PM +0800, wenxu wrote:
+> I agree with you, It's a more generic way to set the vlan tag not base on
 > 
-> 1) Revert that change on my tree, which would mean reverting a generic bugfix
-> 2) Patch smsc phy driver to not suspend anymore
-> 3) Invent some new way to prevent suspend on a configuration basis (dt?)
-> 4) Anything I did not think of yet
+> any bridge. I will resubmit NFT_META_BRI_VLAN_PROTO and
+> 
+> NFT_META_VLAN patches
 
-5) Enable WoL?
-
-There are other boards which have PHY clock issues. Let me check how
-they work around this.
-
-     Andrew
+Thank you very much.
