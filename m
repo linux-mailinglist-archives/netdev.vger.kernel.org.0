@@ -2,106 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC94955DFB
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 03:53:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEFAE55E24
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 04:16:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726320AbfFZBxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 21:53:12 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:60352 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726037AbfFZBxM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Jun 2019 21:53:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=kMI+jbwLjwcHDwbzOcT0DV6XCOAjiyVP6LoQDg6R71A=; b=1XdnwPWnx3QNsuu/0jY9gzb+eY
-        soZ3A8P7JyBW8LNe9dfvK/Qxp0MMJjbFBKf1RKfib4Xl08piQUH9rwz1HhqALqsEyejPRA5u7PUNt
-        jW6aLRAjU3cF10YUZl2FoDXAaeZ+hO8A6CR8mRj3ObZOZW3//AvVDnif0t99vfsfAlRk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hfx7C-0006TO-DH; Wed, 26 Jun 2019 03:52:50 +0200
-Date:   Wed, 26 Jun 2019 03:52:50 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
-        sean.wang@mediatek.com, Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, matthias.bgg@gmail.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        frank-w@public-files.de, netdev <netdev@vger.kernel.org>,
-        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org
-Subject: Re: [PATCH RFC net-next 1/5] net: dsa: mt7530: Convert to PHYLINK API
-Message-ID: <20190626015250.GH17872@lunn.ch>
-References: <20190624145251.4849-1-opensource@vdorst.com>
- <20190624145251.4849-2-opensource@vdorst.com>
- <20190624153950.hdsuhrvfd77heyor@shell.armlinux.org.uk>
- <6f80325d-4b42-6174-e050-48626f7a3662@gmail.com>
- <20190625215329.5ubixxiwprnubwmv@shell.armlinux.org.uk>
- <CA+h21hqK0VMtHpZ6eka9ESuMhsFTw2mx+c0GYmxq4_G_YmiVpg@mail.gmail.com>
- <20190625225759.zztqgnwtk4v7milp@shell.armlinux.org.uk>
- <CA+h21hq_w8-96ehKYxcziSq1TjOjoKduZ+pB3umBfjODaKWd+A@mail.gmail.com>
- <CA+h21hrsosGVQczMWy1+WfyNGZCpeMFerUwvWb-z+TTjrSOP1Q@mail.gmail.com>
+        id S1726304AbfFZCQU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 22:16:20 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:45143 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726077AbfFZCQU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 22:16:20 -0400
+Received: by mail-io1-f67.google.com with SMTP id e3so1501695ioc.12
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 19:16:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=M+P3QL9dr5sDDWm8Xit2HhAkTYxAdcAwoXbzH8Z7Tsw=;
+        b=a6oOogl1/taJJhrkDcTermHO7plHHJLxAXAdZBxCvNKJ2jPFWJZMhZQZ6IJhQ5SNJy
+         vVKuOZHhbJNWMoumOl/05mzoTw8neHlFB/cwk6vTJ7imLBurSFbd91muxLS+BAxdqzGs
+         WaVsoNKj5tyA986c8zdQb20dKbUCS9tSk4kgBO33EGrl/yrYT3VyISVpDqQ/t6iydRTT
+         wsTT5OMixbtlBPjKM9JTGr1cRXPApEAz1/3kZY8J0q0pYvVAQ4v6i8zo3YagpQS1zdky
+         3m2IFiSwTcRrr7k5FerhCyMANwlZdNQrfp4gKD0tOEu+ZzmUvfV5sPrrNHms75mrAatR
+         UVqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=M+P3QL9dr5sDDWm8Xit2HhAkTYxAdcAwoXbzH8Z7Tsw=;
+        b=X7V+y8DsFRN3HXShe8RFQji/W/qgLOb14MZOYID9yGyEq3PJ6TCt+44NCQth+gKu3t
+         gj2bwzS3IJfQrSk794FUpOG1+mt/gneEqITJtrG506fUZxz/DEa9GUiANBV44kSnEfwf
+         MKEkqvq6/iBBaprcwqGd554ET9D/R/rUl8voqLTypTHYfTNf1aEYc4oHYncTpX7YyD6O
+         3KxTED9/gwT9GLwoheFWkyDQNEITTEr9YpzjuqroPRN+tBAtYTfbqNzzfTFotSHrsV4o
+         ZvjroDv7eTGW2X1AFI+Mk+Hfa9KbBEBdM8CMdF4pTwRkBnEjlbDf45mUQyVEkmU7yF/e
+         0VRg==
+X-Gm-Message-State: APjAAAU5coQ4FTZUDfsFy0N7lc/1LEodBJ+1SPXR0wasPQ8hsPSLg+bu
+        9NCB18FIrLFU0gypoTRI+d7Ekrmk
+X-Google-Smtp-Source: APXvYqw5nDBKDZ/pNG8sn0lc8bpjVxEnhvybvlKDb2LxsENNp3YHT15URPwPLOg+cTDeknTPD4hMEA==
+X-Received: by 2002:a5e:db02:: with SMTP id q2mr2030403iop.306.1561515379087;
+        Tue, 25 Jun 2019 19:16:19 -0700 (PDT)
+Received: from [10.230.27.93] ([192.19.224.250])
+        by smtp.gmail.com with ESMTPSA id q15sm13892618ioi.15.2019.06.25.19.16.17
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 25 Jun 2019 19:16:18 -0700 (PDT)
+Subject: Re: [PATCH] net: phylink: further documentation clarifications
+To:     Russell King <rmk+kernel@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+References: <E1hfi09-0007Zs-Vb@rmk-PC.armlinux.org.uk>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Message-ID: <fbe9d348-76c6-6cde-457c-1e90080d9774@gmail.com>
+Date:   Tue, 25 Jun 2019 19:16:16 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hrsosGVQczMWy1+WfyNGZCpeMFerUwvWb-z+TTjrSOP1Q@mail.gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <E1hfi09-0007Zs-Vb@rmk-PC.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 26, 2019 at 02:13:25AM +0300, Vladimir Oltean wrote:
-> On Wed, 26 Jun 2019 at 02:10, Vladimir Oltean <olteanv@gmail.com> wrote:
-> >
-> > On Wed, 26 Jun 2019 at 01:58, Russell King - ARM Linux admin
-> > <linux@armlinux.org.uk> wrote:
-> > >
-> > > On Wed, Jun 26, 2019 at 01:14:59AM +0300, Vladimir Oltean wrote:
-> > > > On Wed, 26 Jun 2019 at 00:53, Russell King - ARM Linux admin
-> > > > <linux@armlinux.org.uk> wrote:
-> > > > >
-> > > > > On Tue, Jun 25, 2019 at 11:24:01PM +0300, Vladimir Oltean wrote:
-> > > > > > Hi Russell,
-> > > > > >
-> > > > > > On 6/24/19 6:39 PM, Russell King - ARM Linux admin wrote:
-> > > > > > > This should be removed - state->link is not for use in mac_config.
-> > > > > > > Even in fixed mode, the link can be brought up/down by means of a
-> > > > > > > gpio, and this should be dealt with via the mac_link_* functions.
-> > > > > > >
-> > > > > >
-> > > > > > What do you mean exactly that state->link is not for use, is that true in
-> > > > > > general?
-> > > > >
-> > > > > Yes.  mac_config() should not touch it; it is not always in a defined
-> > > > > state.  For example, if you set modes via ethtool (the
-> > > > > ethtool_ksettings_set API) then state->link will probably contain
-> > > > > zero irrespective of the true link state.
-> > > > >
-> > > >
-> > > > Experimentally, state->link is zero at the same time as state->speed
-> > > > is -1, so just ignoring !state->link made sense. This is not in-band
-> > > > AN. What is your suggestion? Should I proceed to try and configure the
-> > > > MAC for SPEED_UNKNOWN?
-> > >
-> > > What would you have done with a PHY when the link is down, what speed
-> > > would you have configured in the phylib adjust_link callback?  phylib
-> > > also sets SPEED_UNKNOWN/DUPLEX_UNKNOWN when the link is down.
-> > >
-> >
-> > With phylib, I'd make the driver ignore the speed and do nothing.
-> > With phylink, I'd make the core not call mac_config.
-> > But what happened is I saw phylink call mac_config anyway, said
-> > 'weird' and proceeded to ignore it as I would have for phylib.
-> > I'm just not understanding your position - it seems like you're
-> > implying there's a bug in phylink and the function call with
-> > MLO_AN_FIXED, state->link=0 and state->speed=-1 should not have taken
+
+
+On 6/25/2019 2:44 AM, Russell King wrote:
+> Clarify the validate() behaviour in a few cases which weren't mentioned
+> in the documentation, but which are necessary for users to get the
+> correct behaviour.
 > 
-> I meant MLO_AN_PHY, sorry.
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
-The MAC could go into a low power mode.
-
-    Andrew
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
