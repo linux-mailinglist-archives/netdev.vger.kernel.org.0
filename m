@@ -2,65 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D73657353
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 23:10:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A32185736C
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 23:15:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726347AbfFZVJ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 17:09:59 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:41734 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726227AbfFZVJ7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 17:09:59 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id D77DA14DD9E46;
-        Wed, 26 Jun 2019 14:09:58 -0700 (PDT)
-Date:   Wed, 26 Jun 2019 14:09:56 -0700 (PDT)
-Message-Id: <20190626.140956.1543752418469724857.davem@davemloft.net>
-To:     palmer@sifive.com
-Cc:     nicolas.ferre@microchip.com, harinik@xilinx.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: net: macb: Fix compilation on systems without COMMON_CLK, v2
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190625084828.540-1-palmer@sifive.com>
-References: <20190625084828.540-1-palmer@sifive.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 26 Jun 2019 14:09:59 -0700 (PDT)
+        id S1726362AbfFZVPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 17:15:18 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:33286 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726293AbfFZVPS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 17:15:18 -0400
+Received: by mail-pg1-f193.google.com with SMTP id m4so1814390pgk.0
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 14:15:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=p42ohOHyOcz3Vc5JsuPDpklQguSQUusmZHkrinNxRv0=;
+        b=rfQRVUrP1BEByCeLllxPVwX1vfy7sSMEqjbgavYbOb2zPFeaUHB/QIilmr1a8b5Ih4
+         +BBhngRKgxXKo5OxRO1dMhZoM/gs2y/9LGuuaP/dK2O8tZfcbjFoHkQGEc9KOjl1Yknt
+         K8Aoav02ChVtVPKEt5AOqtolBo6wFAJLz6wbDfjxDAT+IKvgidkWDUqaCWiYvJnWaa/U
+         ygPMoJVpHtHRvcJcsqE/kpFLbc+q+UDJ+uIydAWzOGA0INpA//uhyZV8ZWsFFAu7pMj2
+         7hQXuKTs8dMxGnZGupNLfzMGyuTs6XinPc+4L/d3V9C6OGx8qggwzIELHi1N3j1n3np6
+         WnLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=p42ohOHyOcz3Vc5JsuPDpklQguSQUusmZHkrinNxRv0=;
+        b=lnhS/n7Mv4yi0TlWgQrNSySDm4DxxSZ5ICYhxn94gAjTX9yEHYZAWN6G9JlSyGsLrH
+         GkQ+cFGblnkLZ3ZTdTkCdhhPmxtpmFGbZOSPN8YrDsAwgycJU1QBd9nkh+pcWRFIt5/t
+         AUXpa/v1D5+Ab5vBHb9rjLyYHXdvvgD+tgQafN7PvfgOvj7yTBvKeJj99dEv7n/A3Nzx
+         9mnL2+EfeIh0AHY8TV0vB0p7B6E9wV1AI7E6xRjKxyjdgFiXoie6VC6bz2dDlC5MXjdn
+         Yv4MHfIAds2TYLrtB0dROddDyMGpUmYDytAeQwFtAtA2JSbdYy234MoRjkgMT2PQ2suy
+         uq+w==
+X-Gm-Message-State: APjAAAXCFwDEgEOaZNTEXWYwbdmVKhRWvKthpJsAmvzn/DZCUbaOEfBB
+        LMYWEKtl0zKiu/drvKTviHFN57yDfKRRf4jGe/A=
+X-Google-Smtp-Source: APXvYqyu7a2meovlUPY3zJVM4laZva+4MoR2gf37rnvEeMTraSJ69BLQUARbnSgw5UwMwJAxVhRHt08ticwyYZR2JKo=
+X-Received: by 2002:a65:6204:: with SMTP id d4mr68654pgv.104.1561583717483;
+ Wed, 26 Jun 2019 14:15:17 -0700 (PDT)
+MIME-Version: 1.0
+References: <9068475730862e1d9014c16cee0ad2734a4dd1f9.1560978242.git.dcaratti@redhat.com>
+ <CAM_iQpUVJ9sG9ETE0zZ_azbDgWp_oi320nWy_g-uh2YJWYDOXw@mail.gmail.com>
+ <53b8c3118900b31536594e98952640c03a4456e0.camel@redhat.com>
+ <CAM_iQpVVMBUdhv3o=doLhpWxee91zUPKjAOtUwryUEj0pfowdg@mail.gmail.com>
+ <6650f0da68982ffa5bb71a773c5a3d588bd972c4.camel@redhat.com>
+ <CAM_iQpW_-e+duPqKVXSDn7fp3WOKfs+RgVkFkfeQJQUTP_0x1Q@mail.gmail.com> <CAM_iQpXj1A05FdbD93iWQp9Tcd6aW0BQ3_xFx8bNEbqA00RGAg@mail.gmail.com>
+In-Reply-To: <CAM_iQpXj1A05FdbD93iWQp9Tcd6aW0BQ3_xFx8bNEbqA00RGAg@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 26 Jun 2019 14:15:05 -0700
+Message-ID: <CAM_iQpV8Euk=NT4M7R5mAoS6_zU7aWBLRtkKEMatCxLAyaxSjQ@mail.gmail.com>
+Subject: Re: [PATCH net] net/sched: flower: fix infinite loop in fl_walk()
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     Vlad Buslov <vladbu@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Lucas Bates <lucasb@mojatatu.com>
+Content-Type: multipart/mixed; boundary="000000000000c4c364058c408a0d"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Palmer Dabbelt <palmer@sifive.com>
-Date: Tue, 25 Jun 2019 01:48:26 -0700
+--000000000000c4c364058c408a0d
+Content-Type: text/plain; charset="UTF-8"
 
-> Our patch to add support for the FU540-C000 broke compilation on at
-> least powerpc allyesconfig, which was found as part of the linux-next
-> build regression tests.  This must have somehow slipped through the
-> cracks, as the patch has been reverted in linux-next for a while now.
-> This patch applies on top of the offending commit, which is the only one
-> I've even tried it on as I'm not sure how this subsystem makes it to
-> Linus.
-> 
-> This patch set fixes the issue by adding a dependency of COMMON_CLK to
-> the MACB Kconfig entry, which avoids the build failure by disabling MACB
-> on systems where it wouldn't compile.  All known users of MACB have
-> COMMON_CLK, so this shouldn't cause any issues.  This is a significantly
-> simpler approach than disabling just the FU540-C000 support.
-> 
-> I've also included a second patch to indicate this is a driver for a
-> Cadence device that was originally written by an engineer at Atmel.  The
-> only relation is that I stumbled across it when writing the first patch.
-> 
-> Changes since v1 <20190624061603.1704-1-palmer@sifive.com>:
-> 
-> * Disable MACB on systems without COMMON_CLK, instead of just disabling
->   the FU540-C000 support on these systems.
-> * Update the commit message to reflect the driver was written by Atmel.
+Hi, Davide
 
-Series applied, thanks.
+On Tue, Jun 25, 2019 at 12:29 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> It should handle this overflow case more gracefully, I hope.
+>
+
+Please try this attached one and let me know if it works.
+Hope I get it right this time.
+
+Thanks!
+
+--000000000000c4c364058c408a0d
+Content-Type: application/octet-stream; name="idr_get_next_ul.patch"
+Content-Disposition: attachment; filename="idr_get_next_ul.patch"
+Content-Transfer-Encoding: base64
+Content-ID: <f_jxdqls090>
+X-Attachment-Id: f_jxdqls090
+
+ZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9mc19j
+b3VudGVycy5jIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2ZzX2Nv
+dW50ZXJzLmMKaW5kZXggYzZjMjhmNTZhYTI5Li5iMDgwZTZmMzQ4OGQgMTAwNjQ0Ci0tLSBhL2Ry
+aXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9mc19jb3VudGVycy5jCisrKyBi
+L2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9mc19jb3VudGVycy5jCkBA
+IC0xMDIsMTMgKzEwMiwxNSBAQCBzdGF0aWMgc3RydWN0IGxpc3RfaGVhZCAqbWx4NV9mY19jb3Vu
+dGVyc19sb29rdXBfbmV4dChzdHJ1Y3QgbWx4NV9jb3JlX2RldiAqZGV2LAogCXN0cnVjdCBtbHg1
+X2ZjX3N0YXRzICpmY19zdGF0cyA9ICZkZXYtPnByaXYuZmNfc3RhdHM7CiAJdW5zaWduZWQgbG9u
+ZyBuZXh0X2lkID0gKHVuc2lnbmVkIGxvbmcpaWQgKyAxOwogCXN0cnVjdCBtbHg1X2ZjICpjb3Vu
+dGVyOworCXVuc2lnbmVkIGxvbmcgdG1wOwogCiAJcmN1X3JlYWRfbG9jaygpOwogCS8qIHNraXAg
+Y291bnRlcnMgdGhhdCBhcmUgaW4gaWRyLCBidXQgbm90IHlldCBpbiBjb3VudGVycyBsaXN0ICov
+Ci0Jd2hpbGUgKChjb3VudGVyID0gaWRyX2dldF9uZXh0X3VsKCZmY19zdGF0cy0+Y291bnRlcnNf
+aWRyLAotCQkJCQkgICZuZXh0X2lkKSkgIT0gTlVMTCAmJgotCSAgICAgICBsaXN0X2VtcHR5KCZj
+b3VudGVyLT5saXN0KSkKLQkJbmV4dF9pZCsrOworCWlkcl9mb3JfZWFjaF9lbnRyeV9jb250aW51
+ZV91bCgmZmNfc3RhdHMtPmNvdW50ZXJzX2lkciwKKwkJCQkgICAgICAgY291bnRlciwgdG1wLCBu
+ZXh0X2lkKSB7CisJCWlmIChsaXN0X2VtcHR5KCZjb3VudGVyLT5saXN0KSkKKwkJCWNvbnRpbnVl
+OworCX0KIAlyY3VfcmVhZF91bmxvY2soKTsKIAogCXJldHVybiBjb3VudGVyID8gJmNvdW50ZXIt
+Pmxpc3QgOiAmZmNfc3RhdHMtPmNvdW50ZXJzOwpkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9p
+ZHIuaCBiL2luY2x1ZGUvbGludXgvaWRyLmgKaW5kZXggZWU3YWJhZTE0M2QzLi40ZWM4OTg2ZTVk
+ZmIgMTAwNjQ0Ci0tLSBhL2luY2x1ZGUvbGludXgvaWRyLmgKKysrIGIvaW5jbHVkZS9saW51eC9p
+ZHIuaApAQCAtMTkxLDE0ICsxOTEsMTcgQEAgc3RhdGljIGlubGluZSB2b2lkIGlkcl9wcmVsb2Fk
+X2VuZCh2b2lkKQogICogaWRyX2Zvcl9lYWNoX2VudHJ5X3VsKCkgLSBJdGVyYXRlIG92ZXIgYW4g
+SURSJ3MgZWxlbWVudHMgb2YgYSBnaXZlbiB0eXBlLgogICogQGlkcjogSURSIGhhbmRsZS4KICAq
+IEBlbnRyeTogVGhlIHR5cGUgKiB0byB1c2UgYXMgY3Vyc29yLgorICogQHRtcDogQSB0ZW1wb3Jh
+cnkgcGxhY2Vob2xkZXIgZm9yIElELgogICogQGlkOiBFbnRyeSBJRC4KICAqCiAgKiBAZW50cnkg
+YW5kIEBpZCBkbyBub3QgbmVlZCB0byBiZSBpbml0aWFsaXplZCBiZWZvcmUgdGhlIGxvb3AsIGFu
+ZAogICogYWZ0ZXIgbm9ybWFsIHRlcm1pbmF0aW9uIEBlbnRyeSBpcyBsZWZ0IHdpdGggdGhlIHZh
+bHVlIE5VTEwuICBUaGlzCiAgKiBpcyBjb252ZW5pZW50IGZvciBhICJub3QgZm91bmQiIHZhbHVl
+LgogICovCi0jZGVmaW5lIGlkcl9mb3JfZWFjaF9lbnRyeV91bChpZHIsIGVudHJ5LCBpZCkJCQlc
+Ci0JZm9yIChpZCA9IDA7ICgoZW50cnkpID0gaWRyX2dldF9uZXh0X3VsKGlkciwgJihpZCkpKSAh
+PSBOVUxMOyArK2lkKQorI2RlZmluZSBpZHJfZm9yX2VhY2hfZW50cnlfdWwoaWRyLCBlbnRyeSwg
+dG1wLCBpZCkJCQlcCisJZm9yICh0bXAgPSAwLCBpZCA9IDA7CQkJCQkJXAorCSAgICAgdG1wIDw9
+IGlkICYmICgoZW50cnkpID0gaWRyX2dldF9uZXh0X3VsKGlkciwgJihpZCkpKSAhPSBOVUxMOyBc
+CisJICAgICB0bXAgPSBpZCwgKytpZCkKIAogLyoqCiAgKiBpZHJfZm9yX2VhY2hfZW50cnlfY29u
+dGludWUoKSAtIENvbnRpbnVlIGl0ZXJhdGlvbiBvdmVyIGFuIElEUidzIGVsZW1lbnRzIG9mIGEg
+Z2l2ZW4gdHlwZQpAQCAtMjEzLDYgKzIxNiwyMCBAQCBzdGF0aWMgaW5saW5lIHZvaWQgaWRyX3By
+ZWxvYWRfZW5kKHZvaWQpCiAJICAgICBlbnRyeTsJCQkJCQkJXAogCSAgICAgKytpZCwgKGVudHJ5
+KSA9IGlkcl9nZXRfbmV4dCgoaWRyKSwgJihpZCkpKQogCisvKioKKyAqIGlkcl9mb3JfZWFjaF9l
+bnRyeV9jb250aW51ZV91bCgpIC0gQ29udGludWUgaXRlcmF0aW9uIG92ZXIgYW4gSURSJ3MgZWxl
+bWVudHMgb2YgYSBnaXZlbiB0eXBlCisgKiBAaWRyOiBJRFIgaGFuZGxlLgorICogQGVudHJ5OiBU
+aGUgdHlwZSAqIHRvIHVzZSBhcyBhIGN1cnNvci4KKyAqIEB0bXA6IEEgdGVtcG9yYXJ5IHBsYWNl
+aG9sZGVyIGZvciBJRC4KKyAqIEBpZDogRW50cnkgSUQuCisgKgorICogQ29udGludWUgdG8gaXRl
+cmF0ZSBvdmVyIGVudHJpZXMsIGNvbnRpbnVpbmcgYWZ0ZXIgdGhlIGN1cnJlbnQgcG9zaXRpb24u
+CisgKi8KKyNkZWZpbmUgaWRyX2Zvcl9lYWNoX2VudHJ5X2NvbnRpbnVlX3VsKGlkciwgZW50cnks
+IHRtcCwgaWQpCQlcCisJZm9yICh0bXAgPSBpZDsJCQkJCQkJXAorCSAgICAgdG1wIDw9IGlkICYm
+ICgoZW50cnkpID0gaWRyX2dldF9uZXh0X3VsKGlkciwgJihpZCkpKSAhPSBOVUxMOyBcCisJICAg
+ICB0bXAgPSBpZCwgKytpZCkKKwogLyoKICAqIElEQSAtIElEIEFsbG9jYXRvciwgdXNlIHdoZW4g
+dHJhbnNsYXRpb24gZnJvbSBpZCB0byBwb2ludGVyIGlzbid0IG5lY2Vzc2FyeS4KICAqLwpkaWZm
+IC0tZ2l0IGEvbmV0L3NjaGVkL2FjdF9hcGkuYyBiL25ldC9zY2hlZC9hY3RfYXBpLmMKaW5kZXgg
+NTU2N2FmNWQ3Y2I1Li44MzVhZGRlMjhhN2UgMTAwNjQ0Ci0tLSBhL25ldC9zY2hlZC9hY3RfYXBp
+LmMKKysrIGIvbmV0L3NjaGVkL2FjdF9hcGkuYwpAQCAtMjIxLDEyICsyMjEsMTMgQEAgc3RhdGlj
+IGludCB0Y2ZfZHVtcF93YWxrZXIoc3RydWN0IHRjZl9pZHJpbmZvICppZHJpbmZvLCBzdHJ1Y3Qg
+c2tfYnVmZiAqc2tiLAogCXN0cnVjdCBpZHIgKmlkciA9ICZpZHJpbmZvLT5hY3Rpb25faWRyOwog
+CXN0cnVjdCB0Y19hY3Rpb24gKnA7CiAJdW5zaWduZWQgbG9uZyBpZCA9IDE7CisJdW5zaWduZWQg
+bG9uZyB0bXA7CiAKIAltdXRleF9sb2NrKCZpZHJpbmZvLT5sb2NrKTsKIAogCXNfaSA9IGNiLT5h
+cmdzWzBdOwogCi0JaWRyX2Zvcl9lYWNoX2VudHJ5X3VsKGlkciwgcCwgaWQpIHsKKwlpZHJfZm9y
+X2VhY2hfZW50cnlfdWwoaWRyLCBwLCB0bXAsIGlkKSB7CiAJCWluZGV4Kys7CiAJCWlmIChpbmRl
+eCA8IHNfaSkKIAkJCWNvbnRpbnVlOwpAQCAtMjkyLDYgKzI5Myw3IEBAIHN0YXRpYyBpbnQgdGNm
+X2RlbF93YWxrZXIoc3RydWN0IHRjZl9pZHJpbmZvICppZHJpbmZvLCBzdHJ1Y3Qgc2tfYnVmZiAq
+c2tiLAogCXN0cnVjdCBpZHIgKmlkciA9ICZpZHJpbmZvLT5hY3Rpb25faWRyOwogCXN0cnVjdCB0
+Y19hY3Rpb24gKnA7CiAJdW5zaWduZWQgbG9uZyBpZCA9IDE7CisJdW5zaWduZWQgbG9uZyB0bXA7
+CiAKIAluZXN0ID0gbmxhX25lc3Rfc3RhcnRfbm9mbGFnKHNrYiwgMCk7CiAJaWYgKG5lc3QgPT0g
+TlVMTCkKQEAgLTMwMCw3ICszMDIsNyBAQCBzdGF0aWMgaW50IHRjZl9kZWxfd2Fsa2VyKHN0cnVj
+dCB0Y2ZfaWRyaW5mbyAqaWRyaW5mbywgc3RydWN0IHNrX2J1ZmYgKnNrYiwKIAkJZ290byBubGFf
+cHV0X2ZhaWx1cmU7CiAKIAltdXRleF9sb2NrKCZpZHJpbmZvLT5sb2NrKTsKLQlpZHJfZm9yX2Vh
+Y2hfZW50cnlfdWwoaWRyLCBwLCBpZCkgeworCWlkcl9mb3JfZWFjaF9lbnRyeV91bChpZHIsIHAs
+IHRtcCwgaWQpIHsKIAkJcmV0ID0gdGNmX2lkcl9yZWxlYXNlX3Vuc2FmZShwKTsKIAkJaWYgKHJl
+dCA9PSBBQ1RfUF9ERUxFVEVEKSB7CiAJCQltb2R1bGVfcHV0KG9wcy0+b3duZXIpOwpAQCAtNTMz
+LDggKzUzNSw5IEBAIHZvaWQgdGNmX2lkcmluZm9fZGVzdHJveShjb25zdCBzdHJ1Y3QgdGNfYWN0
+aW9uX29wcyAqb3BzLAogCXN0cnVjdCB0Y19hY3Rpb24gKnA7CiAJaW50IHJldDsKIAl1bnNpZ25l
+ZCBsb25nIGlkID0gMTsKKwl1bnNpZ25lZCBsb25nIHRtcDsKIAotCWlkcl9mb3JfZWFjaF9lbnRy
+eV91bChpZHIsIHAsIGlkKSB7CisJaWRyX2Zvcl9lYWNoX2VudHJ5X3VsKGlkciwgcCwgdG1wLCBp
+ZCkgewogCQlyZXQgPSBfX3RjZl9pZHJfcmVsZWFzZShwLCBmYWxzZSwgdHJ1ZSk7CiAJCWlmIChy
+ZXQgPT0gQUNUX1BfREVMRVRFRCkKIAkJCW1vZHVsZV9wdXQob3BzLT5vd25lcik7CmRpZmYgLS1n
+aXQgYS9uZXQvc2NoZWQvY2xzX2Zsb3dlci5jIGIvbmV0L3NjaGVkL2Nsc19mbG93ZXIuYwppbmRl
+eCBlZWRkNTc4NmMwODQuLjAxYzM2MWViMTZhMiAxMDA2NDQKLS0tIGEvbmV0L3NjaGVkL2Nsc19m
+bG93ZXIuYworKysgYi9uZXQvc2NoZWQvY2xzX2Zsb3dlci5jCkBAIC01MjgsMTcgKzUyOCwxOSBA
+QCBzdGF0aWMgc3RydWN0IGNsc19mbF9maWx0ZXIgKmZsX2dldF9uZXh0X2ZpbHRlcihzdHJ1Y3Qg
+dGNmX3Byb3RvICp0cCwKIAkJCQkJCXVuc2lnbmVkIGxvbmcgKmhhbmRsZSkKIHsKIAlzdHJ1Y3Qg
+Y2xzX2ZsX2hlYWQgKmhlYWQgPSBmbF9oZWFkX2RlcmVmZXJlbmNlKHRwKTsKKwl1bnNpZ25lZCBs
+b25nIGlkID0gKmhhbmRsZTsKIAlzdHJ1Y3QgY2xzX2ZsX2ZpbHRlciAqZjsKKwl1bnNpZ25lZCBs
+b25nIHRtcDsKIAogCXJjdV9yZWFkX2xvY2soKTsKLQl3aGlsZSAoKGYgPSBpZHJfZ2V0X25leHRf
+dWwoJmhlYWQtPmhhbmRsZV9pZHIsIGhhbmRsZSkpKSB7CisJaWRyX2Zvcl9lYWNoX2VudHJ5X2Nv
+bnRpbnVlX3VsKCZoZWFkLT5oYW5kbGVfaWRyLCBmLCB0bXAsIGlkKSB7CiAJCS8qIGRvbid0IHJl
+dHVybiBmaWx0ZXJzIHRoYXQgYXJlIGJlaW5nIGRlbGV0ZWQgKi8KIAkJaWYgKHJlZmNvdW50X2lu
+Y19ub3RfemVybygmZi0+cmVmY250KSkKIAkJCWJyZWFrOwotCQkrKygqaGFuZGxlKTsKIAl9CiAJ
+cmN1X3JlYWRfdW5sb2NrKCk7CiAKKwkqaGFuZGxlID0gaWQ7CiAJcmV0dXJuIGY7CiB9CiAK
+--000000000000c4c364058c408a0d--
