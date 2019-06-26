@@ -2,129 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08FDE56B67
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 15:59:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BD8B56B75
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 16:01:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727830AbfFZN7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 09:59:08 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:39362 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726131AbfFZN7H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 09:59:07 -0400
-Received: by mail-qk1-f196.google.com with SMTP id i125so1695128qkd.6;
-        Wed, 26 Jun 2019 06:59:07 -0700 (PDT)
+        id S1727516AbfFZOB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 10:01:29 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:40712 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726131AbfFZOB3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 10:01:29 -0400
+Received: by mail-lf1-f65.google.com with SMTP id a9so1655655lff.7
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 07:01:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=x1UZPvC6jySD6bcWuGMOeB5kHfs+J7Qdhm276494Xu0=;
+        b=Wu+94JchBAyS84B61JphaZAKx7TNoDFXvxUTCXPJpwQe9Tcze9sbfjU6U1XAb79Gsq
+         x1jZEemqGhxFXCaIA5p08huPs0KgbiLJ7r37JohACYv/3netAPMhzi0hy9cTZ6YbIi4Q
+         /56YQrdnFV1MrHINy6BEHfe7mnRTwgw9646HnDJA+6qL58YoXyagJf+2Jpm4F8LIi0gH
+         zXg3LSnq1bk21qSkDoXkd4KpUwUSzedYRqbol+GPVvMBKu5Ycw4rtuXakA2deyMoJDyb
+         uZXQt0oQaBZVKWg1OOKn/R/vVDC14I3Qxfy9ohKR7oWhMUzQT9YukX9gHDmS2NnJtb3K
+         o2eA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pXxa75AgHN+kU67J58uXazk7bwNbQuP7iiHjqwf4SQ4=;
-        b=gWVaiNG0AiSBIu6RNEZ0S4AHFqEJe2bvqxr04kC5HxBjVUnql1ZJyobnXjQMbPOFd8
-         WYg9lwyQPObS8rNb0s2h6h/m1TducNij9eOejFBq/n0/3QLqw5JvF6pn38PHBw1aRc3W
-         xOJParZGaq5mFy8SggNuC+9HGtLMKPVWBrr+j+sHc3X89MD8Z0y6xm6lCPKQ3pe7Qc0/
-         RLvycB36FIJ+kzCNVWi1UfNeLosSNxBlRqnsAmratmfst533DatZ0Y47k7Af8nOBNzXX
-         WirHVGfoG1m6N0/J7gaQqRIVbpD8+Li+TMiPw+fjS3g7KUfr0akSzzLqWMACpGP505eo
-         PpFA==
-X-Gm-Message-State: APjAAAWnb8iQ/mmxvFyaFGUGjBRL4eKeqPJBaLAH1qYjSgPSHYGW8PGv
-        xVK5yw7wxCjTYEbWNfjXi4fTbDPOjCE0g5+Z0U8=
-X-Google-Smtp-Source: APXvYqzCvw9vZuTjsXYQyBmuA+cZgPu3mswH6EYEmNOv8664CbCqBtT59doitfBhiAj6kcOMBfEiw3S5FFDSDbmyUmo=
-X-Received: by 2002:a37:76c5:: with SMTP id r188mr3978511qkc.394.1561557546341;
- Wed, 26 Jun 2019 06:59:06 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to:user-agent;
+        bh=x1UZPvC6jySD6bcWuGMOeB5kHfs+J7Qdhm276494Xu0=;
+        b=hRT7QjmR37br9Oqul3jBMpBWI2Lr5QoAr2y3g7OcamrIt4LUlmvaWqdCEmaOFCVlLV
+         DqL7IllHLTHpc8gsrupNIQcAGpi8wgpUnJmzFh0OU2FZCAJeHastp1xc/L4pxRBxpdn9
+         42FlY9iEuan/xSTFvNYSrxepm9b+PF1bvSFRd46TYrhDPQU45AV64fb1ji05CGvjWTNj
+         GSZFe7GLstNhQG/8/01vSt08KYjwFE3oFj0EEzr79WhuBAE/acGmzFm3n+hVBt9rod0i
+         jU9XsP8bDAS/r/19otsdQEcF8oxkdjP540VebJFxjio4LGXgjrW8fsUI2iRGFk/kIzaq
+         PQgA==
+X-Gm-Message-State: APjAAAWXSP8RtX6xKGkMe1vpkmon5YjLfYrGD98vn7pfIVqGucvAVFXg
+        YMTVoyZXM0U2HGlRJcWhDrZI/g==
+X-Google-Smtp-Source: APXvYqwMUIcvk0OhonGIojoReS6XyCXzw+WPITleyk890WHpWACo13bwV2OljeaobA3sXmDFnWyzyg==
+X-Received: by 2002:a19:9152:: with SMTP id y18mr2804059lfj.128.1561557686492;
+        Wed, 26 Jun 2019 07:01:26 -0700 (PDT)
+Received: from khorivan (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
+        by smtp.gmail.com with ESMTPSA id v14sm2834356ljh.51.2019.06.26.07.01.25
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 26 Jun 2019 07:01:25 -0700 (PDT)
+Date:   Wed, 26 Jun 2019 17:01:23 +0300
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     David Miller <davem@davemloft.net>, grygorii.strashko@ti.com,
+        hawk@kernel.org, brouer@redhat.com, saeedm@mellanox.com,
+        leon@kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        ilias.apalodimas@linaro.org,
+        Network Development <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        jakub.kicinski@netronome.com,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: Re: [PATCH v4 net-next 1/4] net: core: page_pool: add user cnt
+ preventing pool deletion
+Message-ID: <20190626140122.GH6485@khorivan>
+Mail-Followup-To: Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        David Miller <davem@davemloft.net>, grygorii.strashko@ti.com,
+        hawk@kernel.org, brouer@redhat.com, saeedm@mellanox.com,
+        leon@kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        ilias.apalodimas@linaro.org,
+        Network Development <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        jakub.kicinski@netronome.com,
+        John Fastabend <john.fastabend@gmail.com>
+References: <20190625175948.24771-1-ivan.khoronzhuk@linaro.org>
+ <20190625175948.24771-2-ivan.khoronzhuk@linaro.org>
+ <CA+FuTSff=+zqxxmCv3+bNxraigNgx_1Wm5Kn2FM7TTSZV4dnOg@mail.gmail.com>
 MIME-Version: 1.0
-References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
- <a94676381a5ca662c848f7a725562f721c43ce76.camel@sipsolutions.net>
- <CAK8P3a0kV-i7BJJ2X6C=5n65rSGfo8fUiC4J_G-+M8EctYKbkg@mail.gmail.com>
- <fc0d08912bc10ad089eb74034726308375279130.camel@redhat.com>
- <36bca57c999f611353fd9741c55bb2a7@codeaurora.org> <153fafb91267147cf22e2bf102dd822933ec823a.camel@redhat.com>
- <CAK8P3a2Y+tcL1-V57dtypWHndNT3eDJdcKj29c_v+k8o1HHQig@mail.gmail.com>
- <f4249aa5f5acdd90275eda35aa16f3cfb29d29be.camel@redhat.com>
- <CAK8P3a2nzZKtshYfomOOSYkqx5HdU15Wr9b+3va0B1euNhFOAg@mail.gmail.com>
- <dbb32f185d2c3a654083ee0a7188379e1f88d899.camel@sipsolutions.net>
- <d533b708-c97a-710d-1138-3ae79107f209@linaro.org> <abdfc6b3a9981bcdef40f85f5442a425ce109010.camel@sipsolutions.net>
- <db34aa39-6cf1-4844-1bfe-528e391c3729@linaro.org> <CAK8P3a1ixL9ZjYz=pWTxvMfeD89S6QxSeHt9ZCL9dkCNV5pMHQ@mail.gmail.com>
- <efbcb3b84ff0a7d7eab875c37f3a5fa77e21d324.camel@sipsolutions.net> <edea19ef-f225-bdcd-f394-77e326d1d3ad@linaro.org>
-In-Reply-To: <edea19ef-f225-bdcd-f394-77e326d1d3ad@linaro.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 26 Jun 2019 15:58:48 +0200
-Message-ID: <CAK8P3a3wHe_6ay8P+F9Vo=k19P5fifs6RWozxFF5nGYYjO_=Xw@mail.gmail.com>
-Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
-To:     Alex Elder <elder@linaro.org>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        Dan Williams <dcbw@redhat.com>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        abhishek.esse@gmail.com, Ben Chan <benchan@google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        cpratapa@codeaurora.org, David Miller <davem@davemloft.net>,
-        DTML <devicetree@vger.kernel.org>,
-        Eric Caruso <ejcaruso@google.com>, evgreen@chromium.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-arm-msm@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-soc@vger.kernel.org, Networking <netdev@vger.kernel.org>,
-        syadagir@codeaurora.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <CA+FuTSff=+zqxxmCv3+bNxraigNgx_1Wm5Kn2FM7TTSZV4dnOg@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 26, 2019 at 3:39 PM Alex Elder <elder@linaro.org> wrote:
-> On 6/25/19 9:19 AM, Johannes Berg wrote:
-> > On Mon, 2019-06-24 at 18:40 +0200, Arnd Bergmann wrote:
+On Tue, Jun 25, 2019 at 09:36:15PM -0400, Willem de Bruijn wrote:
+>On Tue, Jun 25, 2019 at 2:00 PM Ivan Khoronzhuk
+><ivan.khoronzhuk@linaro.org> wrote:
+>>
+>> Add user counter allowing to delete pool only when no users.
+>> It doesn't prevent pool from flush, only prevents freeing the
+>> pool instance. Helps when no need to delete the pool and now
+>> it's user responsibility to free it by calling page_pool_free()
+>> while destroying procedure. It also makes to use page_pool_free()
+>> explicitly, not fully hidden in xdp unreg, which looks more
+>> correct after page pool "create" routine.
+>>
+>> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+>> ---
 >
-> > So, IOW, I'm not sure I see how you'd split that up. I guess you could
-> > if you actually do something like the "rmnet" model, and I suppose
-> > you're free to do that for IPA if you like, but I tend to think that's
-> > actually a burden, not a win since you just get more complex code that
-> > needs to interact with more pieces. A single driver for a single
-> > hardware that knows about the few types of channels seems simpler to me.
-> >
-> >> - to answer Johannes question, my understanding is that the interface
-> >>   between kernel and firmware/hardware for IPA has a single 'struct
-> >>   device' that is used for both the data and the control channels,
-> >>   rather than having a data channel and an independent control device,
-> >>   so this falls into the same category as the Intel one (please correct
-> >>   me on that)
+>> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+>> index f07c518ef8a5..1ec838e9927e 100644
+>> --- a/include/net/page_pool.h
+>> +++ b/include/net/page_pool.h
+>> @@ -101,6 +101,7 @@ struct page_pool {
+>>         struct ptr_ring ring;
+>>
+>>         atomic_t pages_state_release_cnt;
+>> +       atomic_t user_cnt;
 >
-> I don't think that's quite right, but it might be partially
-> right.  There is a single device representing IPA, but the
-> picture is a little more complicated.
+>refcount_t?
+yes, thanks.
+
 >
-> The IPA hardware is actually something that sits *between* the
-> AP and the modem.  It implements one form of communication
-> pathway (IP data), but there are others (including QMI, which
-> presents a network-like interface but it's actually implemented
-> via clever use of shared memory and interrupts).
-
-Can you clarify how QMI fits in here? Do you mean one has to
-talk to both IPA and QMI to use the modem, or are these two
-alternative implementations for the same basic purpose?
-
-> > That sounds about the same then, right.
-> >
-> > Are the control channels to IPA are actually also tunnelled over the
-> > rmnet protocol? And even if they are, perhaps they have a different
-> > hardware queue or so? That'd be the case for Intel - different hardware
-> > queue, same (or at least similar) protocol spoken for the DMA hardware
-> > itself, but different contents of the messages obviously.
+>>  };
+>>
+>>  struct page *page_pool_alloc_pages(struct page_pool *pool, gfp_t gfp);
+>> @@ -183,6 +184,12 @@ static inline dma_addr_t page_pool_get_dma_addr(struct page *page)
+>>         return page->dma_addr;
+>>  }
+>>
+>> +/* used to prevent pool from deallocation */
+>> +static inline void page_pool_get(struct page_pool *pool)
+>> +{
+>> +       atomic_inc(&pool->user_cnt);
+>> +}
+>> +
+>>  static inline bool is_page_pool_compiled_in(void)
+>>  {
+>>  #ifdef CONFIG_PAGE_POOL
+>> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+>> index b366f59885c1..169b0e3c870e 100644
+>> --- a/net/core/page_pool.c
+>> +++ b/net/core/page_pool.c
+>> @@ -48,6 +48,7 @@ static int page_pool_init(struct page_pool *pool,
+>>                 return -ENOMEM;
+>>
+>>         atomic_set(&pool->pages_state_release_cnt, 0);
+>> +       atomic_set(&pool->user_cnt, 0);
+>>
+>>         if (pool->p.flags & PP_FLAG_DMA_MAP)
+>>                 get_device(pool->p.dev);
+>> @@ -70,6 +71,8 @@ struct page_pool *page_pool_create(const struct page_pool_params *params)
+>>                 kfree(pool);
+>>                 return ERR_PTR(err);
+>>         }
+>> +
+>> +       page_pool_get(pool);
+>>         return pool;
+>>  }
+>>  EXPORT_SYMBOL(page_pool_create);
+>> @@ -356,6 +359,10 @@ static void __warn_in_flight(struct page_pool *pool)
+>>
+>>  void __page_pool_free(struct page_pool *pool)
+>>  {
+>> +       /* free only if no users */
+>> +       if (!atomic_dec_and_test(&pool->user_cnt))
+>> +               return;
+>> +
+>>         WARN(pool->alloc.count, "API usage violation");
+>>         WARN(!ptr_ring_empty(&pool->ring), "ptr_ring is not empty");
+>>
+>> diff --git a/net/core/xdp.c b/net/core/xdp.c
+>> index 829377cc83db..04bdcd784d2e 100644
+>> --- a/net/core/xdp.c
+>> +++ b/net/core/xdp.c
+>> @@ -372,6 +372,9 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
+>>
+>>         mutex_unlock(&mem_id_lock);
+>>
+>> +       if (type == MEM_TYPE_PAGE_POOL)
+>> +               page_pool_get(xdp_alloc->page_pool);
+>> +
 >
-> I want to be careful talking about "control" but for IPA it comes
-> from user space.  For the purpose of getting initial code upstream,
-> all of that control functionality (which was IOCTL based) has been
-> removed, and a fixed configuration is assumed.
+>need an analogous page_pool_put in xdp_rxq_info_unreg_mem_model? mlx5
+>does not use that inverse function, but intel drivers do.
+no need, it's put after call to page_pool_free() in unreg workqueue.
 
-My previous understanding was that from the hardware perspective
-there is only one control interface, which is for IPA. Part of this
-is abstracted to user space with ioctl commands to the IPA driver,
-and then one must set up rmnet to match these by configuring
-an rmnet device over netlink messages from user space, but
-rmnet does not have a control protocol with the hardware.
+>
+>>         trace_mem_connect(xdp_alloc, xdp_rxq);
+>>         return 0;
+>>  err:
+>> --
+>> 2.17.1
+>>
 
-The exception here is the flow control, which is handled using
-in-band XON/OFF messages from the modem to rmnet (and
-corresponding Acks the other way) that IPA just passes through.
-
-If we also need to talk to QMI, that would be something completely
-different though.
-
-       Arnd
+-- 
+Regards,
+Ivan Khoronzhuk
