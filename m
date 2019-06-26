@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 29D6E5677B
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 13:21:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0AA35677A
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 13:21:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727273AbfFZLVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727278AbfFZLVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 26 Jun 2019 07:21:16 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:46482 "EHLO
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:40361 "EHLO
         mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726484AbfFZLVO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 07:21:14 -0400
-Received: by mail-wr1-f66.google.com with SMTP id n4so2240693wrw.13
-        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 04:21:13 -0700 (PDT)
+        with ESMTP id S1727084AbfFZLVP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 07:21:15 -0400
+Received: by mail-wr1-f66.google.com with SMTP id p11so2277632wre.7
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 04:21:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=+tplfgKyukxLNF7ayWw2aUDxGP6sAVd9YOzb54Ag8Vg=;
-        b=Rybc+lIn3kb/YgJfhhmX57/T30oGnrSGlYgn3LiBiRiRl5NTbx9gSAt9zf7cnfKuHw
-         wdWp3y3Fpo9wz3NObB/kqV7MkQkj/07E3t5UQH8wBn0dh6bC6Ye8P+sF97tFkVnL5zHe
-         J8oYmpXE0FCIBY1Dmlxiqa09VKw57h0r2KXQsEelTrX9R0h9KtF7vExkV7Us7AA2M4O8
-         gdd7CKugN7ixbceTTbSNZUGKj7OIdg04E6jbkFNz+tljpz0q5ud7OnS5dIJKvR9Rlo6D
-         DTaw8X//cqJ+XT999w3/+wqdKyFY04ATbCs57lS7DSczXM2FX38Zo7sZKAw/WxynJEbN
-         IuqQ==
+        bh=KEBkrYbSpnqh89/UMI9D7zZ+6imd3dfq5vlm/rSJyDY=;
+        b=P7wA9loMVfKOeUy55BbAeW/+JmbC5jxKTN1kwxyoa+8+jXQA3TnvLYXE/vhXGTzdlI
+         RYX8FvgSB0hvowBU61jNpXuAnHwqnKocs5KikfE0Dn9nDGwhHGLKRVjyUHT/2FCMREFH
+         M3jremRfsSFk4EmuteaUGunBFj2fpsyl8I8+fll8cSgBXhO5HfIZ7MYbSrFA1oGI06i1
+         Bj3xh70KKFF7psQfKlnAhrGashgFwY2A7u4KmlnM1NKVEQpw2/DQBHs1jXMh2Ah0s3yA
+         08Z9hUNhr8VNBF2eStbeF2+SdGCS6kez0UwBU/M8yiV9qwx7zN8iZ0t/ByfK997RgNBp
+         mh1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=+tplfgKyukxLNF7ayWw2aUDxGP6sAVd9YOzb54Ag8Vg=;
-        b=Nf/kK/kNa6HRSfRzXIJ8kBYAV1vkdnjrJsIDgFADd1/cHNaZnYQT53JZmQS02yvj7e
-         Hm4+gPYEl/6AzSBVFuafPbdAaQtSz7ZlmzxXUNOqRslRJnZBe1fFGTxLl1BKGH1bLocE
-         bX9LjJI7HLzdHX6qWxmLUQUhpm6g47h3W/gfe5qJjkyKm1Lsouj9JFM1YZBuEnLn88mc
-         AODPNs+vRFp3oPu7POK79SYBfamYlA5vbc4txu8SSSE3Ud8dCMzsnM0ArK3jQzxzCOa2
-         Unv2MEXyDK7RLUdFnrxHKSUmJUjfYuYunCs3fuLF3ERirACUu9H59lolTisrkcbRXdrE
-         nEfw==
-X-Gm-Message-State: APjAAAWsCjb16E0U+fS/5KgIUXQHkvrceQ/RHMNTDhc+Qe1inSH1dJ6Q
-        KKJzkQgWkldR8jZdXlyI0fw=
-X-Google-Smtp-Source: APXvYqyops9SNNqS70655O67XR4dc8aWupXCDGyUM9Egz8xfNY3LPLmCG/N4Apt4WO80SIRM7D0OzQ==
-X-Received: by 2002:adf:f812:: with SMTP id s18mr3553190wrp.32.1561548072760;
-        Wed, 26 Jun 2019 04:21:12 -0700 (PDT)
+        bh=KEBkrYbSpnqh89/UMI9D7zZ+6imd3dfq5vlm/rSJyDY=;
+        b=f8K/gd6B2ys/gxuAXnpw3+t+vOqlVFoNXMsN2fdNE9Qx7zwqxjG9E5N+VcAlQo02Wo
+         GtBPqOsyf+Q+coLDSOBTJHj8QwXlJfWc+pdPrJj9BQSRtzlIdMhRIb/aA1Z8FO/Cu6TO
+         wEXt2PpCMb3xVUrhy6ZUPKHrB3HAXxYUIG+zRxHs8VwNYa/+w4xgRpZXd2+wW33/wk+c
+         wVZw2eXWUaArUi+6UcTbSv+xt73CzLF1WuSe6kCHUynoj+vU6MI2C8baeDH1RsmHZTde
+         bG8TjDpvKU1GWFiEaW3dxwntgXljha+gSUfn30hM9OuBpLiXUymxh62aZ2gVFqKAaEZD
+         DT+A==
+X-Gm-Message-State: APjAAAXl8DuBB031Leh3Y9rPO2xdMlkXPy+mqG5cRVP7o7wc+jmL2i/1
+        vYiFz9WfW4A0GDgnd5E8IKg=
+X-Google-Smtp-Source: APXvYqzK8fdK9vx39CzI+t0iSU24ag3zEqTIAwcc7Hxco835D/kgYyOQJ+AjHush2KpbCeq7mGoEGA==
+X-Received: by 2002:a5d:528b:: with SMTP id c11mr2239241wrv.25.1561548073665;
+        Wed, 26 Jun 2019 04:21:13 -0700 (PDT)
 Received: from localhost.localdomain ([188.26.252.192])
-        by smtp.gmail.com with ESMTPSA id h14sm6233701wro.30.2019.06.26.04.21.11
+        by smtp.gmail.com with ESMTPSA id h14sm6233701wro.30.2019.06.26.04.21.12
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 26 Jun 2019 04:21:12 -0700 (PDT)
+        Wed, 26 Jun 2019 04:21:13 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     rmk+kernel@armlinux.org.uk, f.fainelli@gmail.com,
         vivien.didelot@gmail.com, andrew@lunn.ch, davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net-next 2/3] net: dsa: sja1105: Check for PHY mode mismatches with what PHYLINK reports
-Date:   Wed, 26 Jun 2019 14:20:13 +0300
-Message-Id: <20190626112014.7625-3-olteanv@gmail.com>
+Subject: [PATCH net-next 3/3] net: dsa: sja1105: Mark in-band AN modes not supported for PHYLINK
+Date:   Wed, 26 Jun 2019 14:20:14 +0300
+Message-Id: <20190626112014.7625-4-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190626112014.7625-1-olteanv@gmail.com>
 References: <20190626112014.7625-1-olteanv@gmail.com>
@@ -58,93 +58,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PHYLINK being designed with PHYs in mind that can change MII protocol,
-for correct operation it is necessary to ensure that the PHY interface
-mode stays the same (otherwise clear the supported bit mask, as
-required).
-
-Because this is just a hypothetical situation for now, we don't bother
-to check whether we could actually support the new PHY interface mode.
-Actually we could modify the xMII table, reset the switch and send an
-updated static configuration, but adding that would just be dead code.
+We need a better way to signal this, perhaps in phylink_validate, but
+for now just print this error message as guidance for other people
+looking at this driver's code while trying to rework PHYLINK.
 
 Cc: Russell King <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- drivers/net/dsa/sja1105/sja1105_main.c | 47 ++++++++++++++++++++++++++
- 1 file changed, 47 insertions(+)
+ drivers/net/dsa/sja1105/sja1105_main.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
 diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index da1736093b06..ad4f604590c0 100644
+index ad4f604590c0..d82afb835fb7 100644
 --- a/drivers/net/dsa/sja1105/sja1105_main.c
 +++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -766,12 +766,46 @@ static int sja1105_adjust_port_config(struct sja1105_private *priv, int port,
- 	return sja1105_clocking_setup_port(priv, port);
- }
+@@ -806,6 +806,11 @@ static void sja1105_mac_config(struct dsa_switch *ds, int port,
+ 	if (sja1105_phy_mode_mismatch(priv, port, state->interface))
+ 		return;
  
-+/* The SJA1105 MAC programming model is through the static config (the xMII
-+ * Mode table cannot be dynamically reconfigured), and we have to program
-+ * that early (earlier than PHYLINK calls us, anyway).
-+ * So just error out in case the connected PHY attempts to change the initial
-+ * system interface MII protocol from what is defined in the DT, at least for
-+ * now.
-+ */
-+static bool sja1105_phy_mode_mismatch(struct sja1105_private *priv, int port,
-+				      phy_interface_t interface)
-+{
-+	struct sja1105_xmii_params_entry *mii;
-+	sja1105_phy_interface_t phy_mode;
-+
-+	mii = priv->static_config.tables[BLK_IDX_XMII_PARAMS].entries;
-+	phy_mode = mii->xmii_mode[port];
-+
-+	switch (interface) {
-+	case PHY_INTERFACE_MODE_MII:
-+		return (phy_mode != XMII_MODE_MII);
-+	case PHY_INTERFACE_MODE_RMII:
-+		return (phy_mode != XMII_MODE_RMII);
-+	case PHY_INTERFACE_MODE_RGMII:
-+	case PHY_INTERFACE_MODE_RGMII_ID:
-+	case PHY_INTERFACE_MODE_RGMII_RXID:
-+	case PHY_INTERFACE_MODE_RGMII_TXID:
-+		return (phy_mode != XMII_MODE_RGMII);
-+	default:
-+		return true;
-+	}
-+}
-+
- static void sja1105_mac_config(struct dsa_switch *ds, int port,
- 			       unsigned int link_an_mode,
- 			       const struct phylink_link_state *state)
- {
- 	struct sja1105_private *priv = ds->priv;
- 
-+	if (sja1105_phy_mode_mismatch(priv, port, state->interface))
++	if (link_an_mode == MLO_AN_INBAND) {
++		dev_err(ds->dev, "In-band AN not supported!\n");
 +		return;
++	}
 +
  	sja1105_adjust_port_config(priv, port, state->speed);
  }
  
-@@ -804,6 +838,19 @@ static void sja1105_phylink_validate(struct dsa_switch *ds, int port,
- 
- 	mii = priv->static_config.tables[BLK_IDX_XMII_PARAMS].entries;
- 
-+	/* include/linux/phylink.h says:
-+	 *     When @state->interface is %PHY_INTERFACE_MODE_NA, phylink
-+	 *     expects the MAC driver to return all supported link modes.
-+	 */
-+	if (state->interface != PHY_INTERFACE_MODE_NA &&
-+	    sja1105_phy_mode_mismatch(priv, port, state->interface)) {
-+		dev_warn(ds->dev, "PHY mode mismatch on port %d: "
-+			 "PHYLINK tried to change to %s\n",
-+			 port, phy_modes(state->interface));
-+		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
-+		return;
-+	}
-+
- 	/* The MAC does not support pause frames, and also doesn't
- 	 * support half-duplex traffic modes.
- 	 */
 -- 
 2.17.1
 
