@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 512B756C24
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 16:36:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACDC156C2B
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 16:36:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728184AbfFZOgY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 10:36:24 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:59965 "EHLO
+        id S1728206AbfFZOgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 10:36:33 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:59975 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728041AbfFZOgW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 10:36:22 -0400
+        with ESMTP id S1728172AbfFZOgX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 10:36:23 -0400
 Received: from Internal Mail-Server by MTLPINE2 (envelope-from tariqt@mellanox.com)
         with ESMTPS (AES256-SHA encrypted); 26 Jun 2019 17:36:17 +0300
 Received: from dev-l-vrt-206-006.mtl.labs.mlnx (dev-l-vrt-206-006.mtl.labs.mlnx [10.134.206.6])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x5QEaGYB027430;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x5QEaGYC027430;
         Wed, 26 Jun 2019 17:36:16 +0300
 From:   Tariq Toukan <tariqt@mellanox.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
@@ -26,9 +26,9 @@ Cc:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Maxim Mikityanskiy <maximmi@mellanox.com>,
         Tariq Toukan <tariqt@mellanox.com>
-Subject: [PATCH bpf-next V6 13/16] net/mlx5e: Consider XSK in XDP MTU limit calculation
-Date:   Wed, 26 Jun 2019 17:35:35 +0300
-Message-Id: <1561559738-4213-14-git-send-email-tariqt@mellanox.com>
+Subject: [PATCH bpf-next V6 14/16] net/mlx5e: Encapsulate open/close queues into a function
+Date:   Wed, 26 Jun 2019 17:35:36 +0300
+Message-Id: <1561559738-4213-15-git-send-email-tariqt@mellanox.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1561559738-4213-1-git-send-email-tariqt@mellanox.com>
 References: <1561559738-4213-1-git-send-email-tariqt@mellanox.com>
@@ -39,102 +39,187 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maxim Mikityanskiy <maximmi@mellanox.com>
 
-Use the existing mlx5e_get_linear_rq_headroom function to calculate the
-headroom for mlx5e_xdp_max_mtu. This function takes the XSK headroom
-into consideration, which will be used in the following patches.
+Create new functions mlx5e_{open,close}_queues to encapsulate opening
+and closing RQs and SQs, and call the new functions from
+mlx5e_{open,close}_channel. It simplifies the existing functions a bit
+and prepares them for the upcoming AF_XDP changes.
 
 Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
 Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
 Acked-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/params.c | 4 ++--
- drivers/net/ethernet/mellanox/mlx5/core/en/params.h | 2 ++
- drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c    | 5 +++--
- drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h    | 3 ++-
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c   | 4 ++--
- 5 files changed, 11 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 125 +++++++++++++---------
+ 1 file changed, 73 insertions(+), 52 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-index 50a458dc3836..0de908b12fcc 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-@@ -9,8 +9,8 @@ static inline bool mlx5e_rx_is_xdp(struct mlx5e_params *params,
- 	return params->xdp_prog || xsk;
- }
- 
--static inline u16 mlx5e_get_linear_rq_headroom(struct mlx5e_params *params,
--					       struct mlx5e_xsk_param *xsk)
-+u16 mlx5e_get_linear_rq_headroom(struct mlx5e_params *params,
-+				 struct mlx5e_xsk_param *xsk)
- {
- 	u16 headroom = NET_IP_ALIGN;
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-index ed420f3efe52..7f29b82dd8c2 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-@@ -11,6 +11,8 @@ struct mlx5e_xsk_param {
- 	u16 chunk_size;
- };
- 
-+u16 mlx5e_get_linear_rq_headroom(struct mlx5e_params *params,
-+				 struct mlx5e_xsk_param *xsk);
- u32 mlx5e_rx_get_linear_frag_sz(struct mlx5e_params *params,
- 				struct mlx5e_xsk_param *xsk);
- u8 mlx5e_mpwqe_log_pkts_per_wqe(struct mlx5e_params *params);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-index 1364bdff702c..ee99efde9143 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-@@ -32,10 +32,11 @@
- 
- #include <linux/bpf_trace.h>
- #include "en/xdp.h"
-+#include "en/params.h"
- 
--int mlx5e_xdp_max_mtu(struct mlx5e_params *params)
-+int mlx5e_xdp_max_mtu(struct mlx5e_params *params, struct mlx5e_xsk_param *xsk)
- {
--	int hr = NET_IP_ALIGN + XDP_PACKET_HEADROOM;
-+	int hr = mlx5e_get_linear_rq_headroom(params, xsk);
- 
- 	/* Let S := SKB_DATA_ALIGN(sizeof(struct skb_shared_info)).
- 	 * The condition checked in mlx5e_rx_is_linear_skb is:
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
-index 86db5ad49a42..9200cb9f499b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
-@@ -39,7 +39,8 @@
- 	(sizeof(struct mlx5e_tx_wqe) / MLX5_SEND_WQE_DS)
- #define MLX5E_XDP_TX_DS_COUNT (MLX5E_XDP_TX_EMPTY_DS_COUNT + 1 /* SG DS */)
- 
--int mlx5e_xdp_max_mtu(struct mlx5e_params *params);
-+struct mlx5e_xsk_param;
-+int mlx5e_xdp_max_mtu(struct mlx5e_params *params, struct mlx5e_xsk_param *xsk);
- bool mlx5e_xdp_handle(struct mlx5e_rq *rq, struct mlx5e_dma_info *di,
- 		      void *va, u16 *rx_headroom, u32 *len);
- bool mlx5e_poll_xdpsq_cq(struct mlx5e_cq *cq);
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index abc1d0f6cf53..96fb3fa32d63 100644
+index 96fb3fa32d63..c099f5a6124e 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -3722,7 +3722,7 @@ int mlx5e_change_mtu(struct net_device *netdev, int new_mtu,
- 	if (params->xdp_prog &&
- 	    !mlx5e_rx_is_linear_skb(&new_channels.params)) {
- 		netdev_err(netdev, "MTU(%d) > %d is not allowed while XDP enabled\n",
--			   new_mtu, mlx5e_xdp_max_mtu(params));
-+			   new_mtu, mlx5e_xdp_max_mtu(params, NULL));
- 		err = -EINVAL;
- 		goto out;
- 	}
-@@ -4167,7 +4167,7 @@ static int mlx5e_xdp_allowed(struct mlx5e_priv *priv, struct bpf_prog *prog)
- 	if (!mlx5e_rx_is_linear_skb(&new_channels.params)) {
- 		netdev_warn(netdev, "XDP is not allowed with MTU(%d) > %d\n",
- 			    new_channels.params.sw_mtu,
--			    mlx5e_xdp_max_mtu(&new_channels.params));
-+			    mlx5e_xdp_max_mtu(&new_channels.params, NULL));
- 		return -EINVAL;
- 	}
+@@ -1768,49 +1768,16 @@ static void mlx5e_free_xps_cpumask(struct mlx5e_channel *c)
+ 	free_cpumask_var(c->xps_cpumask);
+ }
+ 
+-static int mlx5e_open_channel(struct mlx5e_priv *priv, int ix,
+-			      struct mlx5e_params *params,
+-			      struct mlx5e_channel_param *cparam,
+-			      struct mlx5e_channel **cp)
++static int mlx5e_open_queues(struct mlx5e_channel *c,
++			     struct mlx5e_params *params,
++			     struct mlx5e_channel_param *cparam)
+ {
+-	int cpu = cpumask_first(mlx5_comp_irq_get_affinity_mask(priv->mdev, ix));
+ 	struct net_dim_cq_moder icocq_moder = {0, 0};
+-	struct net_device *netdev = priv->netdev;
+-	struct mlx5e_channel *c;
+-	unsigned int irq;
+ 	int err;
+-	int eqn;
+-
+-	err = mlx5_vector2eqn(priv->mdev, ix, &eqn, &irq);
+-	if (err)
+-		return err;
+-
+-	c = kvzalloc_node(sizeof(*c), GFP_KERNEL, cpu_to_node(cpu));
+-	if (!c)
+-		return -ENOMEM;
+-
+-	c->priv     = priv;
+-	c->mdev     = priv->mdev;
+-	c->tstamp   = &priv->tstamp;
+-	c->ix       = ix;
+-	c->cpu      = cpu;
+-	c->pdev     = priv->mdev->device;
+-	c->netdev   = priv->netdev;
+-	c->mkey_be  = cpu_to_be32(priv->mdev->mlx5e_res.mkey.key);
+-	c->num_tc   = params->num_tc;
+-	c->xdp      = !!params->xdp_prog;
+-	c->stats    = &priv->channel_stats[ix].ch;
+-	c->irq_desc = irq_to_desc(irq);
+-
+-	err = mlx5e_alloc_xps_cpumask(c, params);
+-	if (err)
+-		goto err_free_channel;
+-
+-	netif_napi_add(netdev, &c->napi, mlx5e_napi_poll, 64);
+ 
+ 	err = mlx5e_open_cq(c, icocq_moder, &cparam->icosq_cq, &c->icosq.cq);
+ 	if (err)
+-		goto err_napi_del;
++		return err;
+ 
+ 	err = mlx5e_open_tx_cqs(c, params, cparam);
+ 	if (err)
+@@ -1855,8 +1822,6 @@ static int mlx5e_open_channel(struct mlx5e_priv *priv, int ix,
+ 	if (err)
+ 		goto err_close_rq;
+ 
+-	*cp = c;
+-
+ 	return 0;
+ 
+ err_close_rq:
+@@ -1874,6 +1839,7 @@ static int mlx5e_open_channel(struct mlx5e_priv *priv, int ix,
+ 
+ err_disable_napi:
+ 	napi_disable(&c->napi);
++
+ 	if (c->xdp)
+ 		mlx5e_close_cq(&c->rq_xdpsq.cq);
+ 
+@@ -1889,6 +1855,73 @@ static int mlx5e_open_channel(struct mlx5e_priv *priv, int ix,
+ err_close_icosq_cq:
+ 	mlx5e_close_cq(&c->icosq.cq);
+ 
++	return err;
++}
++
++static void mlx5e_close_queues(struct mlx5e_channel *c)
++{
++	mlx5e_close_xdpsq(&c->xdpsq);
++	mlx5e_close_rq(&c->rq);
++	if (c->xdp)
++		mlx5e_close_xdpsq(&c->rq_xdpsq);
++	mlx5e_close_sqs(c);
++	mlx5e_close_icosq(&c->icosq);
++	napi_disable(&c->napi);
++	if (c->xdp)
++		mlx5e_close_cq(&c->rq_xdpsq.cq);
++	mlx5e_close_cq(&c->rq.cq);
++	mlx5e_close_cq(&c->xdpsq.cq);
++	mlx5e_close_tx_cqs(c);
++	mlx5e_close_cq(&c->icosq.cq);
++}
++
++static int mlx5e_open_channel(struct mlx5e_priv *priv, int ix,
++			      struct mlx5e_params *params,
++			      struct mlx5e_channel_param *cparam,
++			      struct mlx5e_channel **cp)
++{
++	int cpu = cpumask_first(mlx5_comp_irq_get_affinity_mask(priv->mdev, ix));
++	struct net_device *netdev = priv->netdev;
++	struct mlx5e_channel *c;
++	unsigned int irq;
++	int err;
++	int eqn;
++
++	err = mlx5_vector2eqn(priv->mdev, ix, &eqn, &irq);
++	if (err)
++		return err;
++
++	c = kvzalloc_node(sizeof(*c), GFP_KERNEL, cpu_to_node(cpu));
++	if (!c)
++		return -ENOMEM;
++
++	c->priv     = priv;
++	c->mdev     = priv->mdev;
++	c->tstamp   = &priv->tstamp;
++	c->ix       = ix;
++	c->cpu      = cpu;
++	c->pdev     = priv->mdev->device;
++	c->netdev   = priv->netdev;
++	c->mkey_be  = cpu_to_be32(priv->mdev->mlx5e_res.mkey.key);
++	c->num_tc   = params->num_tc;
++	c->xdp      = !!params->xdp_prog;
++	c->stats    = &priv->channel_stats[ix].ch;
++	c->irq_desc = irq_to_desc(irq);
++
++	err = mlx5e_alloc_xps_cpumask(c, params);
++	if (err)
++		goto err_free_channel;
++
++	netif_napi_add(netdev, &c->napi, mlx5e_napi_poll, 64);
++
++	err = mlx5e_open_queues(c, params, cparam);
++	if (unlikely(err))
++		goto err_napi_del;
++
++	*cp = c;
++
++	return 0;
++
+ err_napi_del:
+ 	netif_napi_del(&c->napi);
+ 	mlx5e_free_xps_cpumask(c);
+@@ -1920,19 +1953,7 @@ static void mlx5e_deactivate_channel(struct mlx5e_channel *c)
+ 
+ static void mlx5e_close_channel(struct mlx5e_channel *c)
+ {
+-	mlx5e_close_xdpsq(&c->xdpsq);
+-	mlx5e_close_rq(&c->rq);
+-	if (c->xdp)
+-		mlx5e_close_xdpsq(&c->rq_xdpsq);
+-	mlx5e_close_sqs(c);
+-	mlx5e_close_icosq(&c->icosq);
+-	napi_disable(&c->napi);
+-	if (c->xdp)
+-		mlx5e_close_cq(&c->rq_xdpsq.cq);
+-	mlx5e_close_cq(&c->rq.cq);
+-	mlx5e_close_cq(&c->xdpsq.cq);
+-	mlx5e_close_tx_cqs(c);
+-	mlx5e_close_cq(&c->icosq.cq);
++	mlx5e_close_queues(c);
+ 	netif_napi_del(&c->napi);
+ 	mlx5e_free_xps_cpumask(c);
  
 -- 
 1.8.3.1
