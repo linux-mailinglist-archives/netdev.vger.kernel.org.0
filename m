@@ -2,95 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3DE955CDE
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 02:21:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADC4F55CE4
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 02:26:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726223AbfFZAU7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 20:20:59 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:42135 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725782AbfFZAU7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 20:20:59 -0400
-Received: by mail-qt1-f193.google.com with SMTP id s15so486111qtk.9
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 17:20:58 -0700 (PDT)
+        id S1726320AbfFZA0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 20:26:09 -0400
+Received: from mail-yw1-f68.google.com ([209.85.161.68]:46818 "EHLO
+        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726037AbfFZA0I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 20:26:08 -0400
+Received: by mail-yw1-f68.google.com with SMTP id z197so156241ywd.13
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 17:26:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=T7PhJFhETrL5enCRjIgkk5L+XgVX997LdFhJ+SAwQeQ=;
-        b=pmIldHIRKjfJ9AI+fWNfU0jV+4IIlU0iCSA9RtVlgfUxEQoNRyaXUDCR5hk9cxACaj
-         MfmA8p5GUO0Y4C3iPnJjAChlCzOsrxqfacuCgQk8bD8xIm+42viaIcLircALFz5RDnXr
-         x2s3qxVkQh6hQ6JqWrdZIGB2SqukrN8u9TZdDVXqaz6qEI4ZtklihrSeZ6FhHQdpj5nl
-         +u2SkquVDgYbfERS4A3rsmHY1wyyV28vvL6g2TJZ12k69cpOZbOP9qnjA5NN/SEqXH+M
-         cp+CZ4uREQY3PUThN+x3yrGZC0wx4sGFw74KUrIDwDTxQkyi/JOg1YgzKUIEUOxu1MxK
-         Jf7Q==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pwaZmBd+sFVaaav+KezPIoqde4SQqPP1nxo6nfT5luA=;
+        b=M8cKeEqSmZVnqds41OS8zNw5jFTB5Bdgnzjp03TuaYdw6rlAEKqhaNXJHYVwEofFt/
+         11ltuIp7OXyraI/pZDWO4l44zXFY64DR2UV4qfabHY0yclsefU7Q2B2kIcUAlgXKcg1o
+         PBWJXL2Hk/eco0lgtoD/V93XmlwLxgNPKV+cfnqNwmRHOuKhMwKuV3Xj2njp+iz8tQ+3
+         9+d+9RFZHpoAMWmoQWArqkKhKXilEqbdxcT41+JtzUKe+Y5ixf32FvN7OeUaooNFjLON
+         S7nQTkY40m6TOY5/+n/jNbURAG2IchasLBcZB0H8x2+Kva0gL5gSHOS2OE+CAtWWTyMV
+         t1qQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=T7PhJFhETrL5enCRjIgkk5L+XgVX997LdFhJ+SAwQeQ=;
-        b=JlRjCYmEHb1JLPdE7eN/Qu4RPkQ9FP8MgOVSWXWJ9fe03fjYd8WtXeF2k836i1nTNK
-         WpqANvkK2riupFObz6X8sXLKOHXrxJ4qqN7gaMhgvLDg7PCn7ESi32sHIZj69CuHzX/B
-         d3p1NmoUnspPlxaX2KJeyhoeaH4Ypq6fhPkE769nGbM7+R2p58xdpQHroDxN4Wg3Lb/s
-         E7jN0EPdtXyQCqoCwkkMPQGadrXrWDZm+OF2SRaooQEbwVk+4AtayrSItBOM1B9SWCrR
-         2IRAQGXLOi8JES/VvNdpPiYjlZTjX35+2KYzN5lv8k4Qqbb/kBBeN0h2xCw2GS2YyeeA
-         DCdw==
-X-Gm-Message-State: APjAAAWA33AiJhG7FSu7mLFLTvwwcc/2JmjfCM4MByklsxTgUCBwiBoz
-        ES9qLhfqJlLZY+wIujDh6+IdKA==
-X-Google-Smtp-Source: APXvYqysC4jmXEmd8oXM8+ehdXgIDGx49yZSA1ko14Mf1B+6/DpbNgeUxpaYHCAHrT4ssD61Z+yQJw==
-X-Received: by 2002:aed:2241:: with SMTP id o1mr1083972qtc.233.1561508458076;
-        Tue, 25 Jun 2019 17:20:58 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id q9sm7100362qtn.86.2019.06.25.17.20.57
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 25 Jun 2019 17:20:57 -0700 (PDT)
-Date:   Tue, 25 Jun 2019 17:20:54 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 17/18] ionic: Add RSS support
-Message-ID: <20190625172054.6a9d22dc@cakuba.netronome.com>
-In-Reply-To: <20190620202424.23215-18-snelson@pensando.io>
-References: <20190620202424.23215-1-snelson@pensando.io>
-        <20190620202424.23215-18-snelson@pensando.io>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pwaZmBd+sFVaaav+KezPIoqde4SQqPP1nxo6nfT5luA=;
+        b=P7UBSc6+LS1BnHZcKALBqQabOPvrGlEmWwv+GQBaSru1FUe0b7NIIPq9HwqQPdR9NL
+         Qzw/CQDbQTq1cX6JNfqDNXpKvVPLm7gopgatTxoJD99obY8CFLKy9xFcIjB/tm6bHkr1
+         a866gPRO87vXDDAdpZMxuwHf3bZKqopxKr6SaqHJLSc7lCpvJuih/Bh3jyrNVqbXgh42
+         jf9pcujDrZpNh19eA2sWjbd+ljuk63lm/3o7WyblhKmvmaFcrHTQRi4550PLasAH6R2F
+         CAEM3v+5qVRWddh6l2l50RUoE+3WpiAJyZRskCl8ROlNnm/nhTzlj28/EWr5c8uYa+oV
+         6FMg==
+X-Gm-Message-State: APjAAAUCXyeJryDqRST5u11yS8YrTdunrhSc3a0izWdZpkBrrQhn8yT2
+        tzjcuspK5S4wpYg8vnPP208C8Vys
+X-Google-Smtp-Source: APXvYqyos7YtY9QVwcHnQcFwTi3We6EwkoNdaU9UafRnvhBjLfmOIETwrZbeTZ/wah+CwMbHmlWvtw==
+X-Received: by 2002:a81:48c:: with SMTP id 134mr915119ywe.387.1561508767646;
+        Tue, 25 Jun 2019 17:26:07 -0700 (PDT)
+Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com. [209.85.219.180])
+        by smtp.gmail.com with ESMTPSA id l143sm4090017ywl.107.2019.06.25.17.26.06
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Tue, 25 Jun 2019 17:26:06 -0700 (PDT)
+Received: by mail-yb1-f180.google.com with SMTP id 189so299364ybh.4
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 17:26:06 -0700 (PDT)
+X-Received: by 2002:a25:908b:: with SMTP id t11mr878862ybl.473.1561508766319;
+ Tue, 25 Jun 2019 17:26:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20190625233942.1946-1-olteanv@gmail.com> <20190625233942.1946-2-olteanv@gmail.com>
+In-Reply-To: <20190625233942.1946-2-olteanv@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 25 Jun 2019 20:25:30 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSeB60wUxGBCCMXLgWp5uWKc0Z244dL51B=9gz_FU6f8qA@mail.gmail.com>
+Message-ID: <CA+FuTSeB60wUxGBCCMXLgWp5uWKc0Z244dL51B=9gz_FU6f8qA@mail.gmail.com>
+Subject: Re: [PATCH net-next 01/10] net: dsa: sja1105: Build PTP support in
+ main DSA driver
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
+        David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 20 Jun 2019 13:24:23 -0700, Shannon Nelson wrote:
-> +static int ionic_lif_rss_init(struct lif *lif)
-> +{
-> +	static const u8 toeplitz_symmetric_key[] = {
-> +		0x6D, 0x5A, 0x6D, 0x5A, 0x6D, 0x5A, 0x6D, 0x5A,
-> +		0x6D, 0x5A, 0x6D, 0x5A, 0x6D, 0x5A, 0x6D, 0x5A,
-> +		0x6D, 0x5A, 0x6D, 0x5A, 0x6D, 0x5A, 0x6D, 0x5A,
-> +		0x6D, 0x5A, 0x6D, 0x5A, 0x6D, 0x5A, 0x6D, 0x5A,
-> +		0x6D, 0x5A, 0x6D, 0x5A, 0x6D, 0x5A, 0x6D, 0x5A,
-> +	};
+On Tue, Jun 25, 2019 at 7:40 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> As Arnd Bergmann pointed out in commit 78fe8a28fb96 ("net: dsa: sja1105:
+> fix ptp link error"), there is no point in having PTP support as a
+> separate loadable kernel module.
+>
+> So remove the exported symbols and make sja1105.ko contain PTP support
+> or not based on CONFIG_NET_DSA_SJA1105_PTP.
+>
+> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 
-netdev_rss_key_fill()
-
-> +	unsigned int i, tbl_sz;
-> +
-> +	lif->rss_types = IONIC_RSS_TYPE_IPV4     |
-> +			 IONIC_RSS_TYPE_IPV4_TCP |
-> +			 IONIC_RSS_TYPE_IPV4_UDP |
-> +			 IONIC_RSS_TYPE_IPV6     |
-> +			 IONIC_RSS_TYPE_IPV6_TCP |
-> +			 IONIC_RSS_TYPE_IPV6_UDP;
-> +
-> +	/* Fill indirection table with 'default' values */
-> +	tbl_sz = le16_to_cpu(lif->ionic->ident.lif.eth.rss_ind_tbl_sz);
-> +	for (i = 0; i < tbl_sz; i++)
-> +		lif->rss_ind_tbl[i] = i % lif->nxqs;
-
-ethtool_rxfh_indir_default()
-
-> +	return ionic_lif_rss_config(lif, lif->rss_types,
-> +				    toeplitz_symmetric_key, NULL);
-> +}
+Acked-by: Willem de Bruijn <willemb@google.com>
