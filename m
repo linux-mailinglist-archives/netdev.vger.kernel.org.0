@@ -2,81 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1561C56E1A
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 17:54:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F086456E23
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 17:56:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726381AbfFZPyO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 11:54:14 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:46149 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725958AbfFZPyO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 11:54:14 -0400
-Received: by mail-pf1-f193.google.com with SMTP id 81so1566120pfy.13
-        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 08:54:14 -0700 (PDT)
+        id S1726439AbfFZP4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 11:56:30 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:41535 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725958AbfFZP4a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 11:56:30 -0400
+Received: by mail-wr1-f65.google.com with SMTP id c2so3335732wrm.8
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 08:56:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=eZpWHGmWn5r17X7XPRThpw5E0O+MqhXek9Hw0KLquWw=;
-        b=AaTSX/q/XrzowjvP4ac8e7PJ2D0zRYxGoywGMegdADSRqxzZGs9Y9FICzl2z1h5MBK
-         7IcjVtcqB3MDZEnfj8J7DD+CjP7AezhypzCH85bH6Y8cF0ysFJMANyPkWMiIl5GuJARx
-         Q6RnNUaL9MtOEVR/4+SijYoNL/x00Q4gyOG6c4MX7ZrVyobsQUeAznv1bFh34LofIaYP
-         T3ZCdEZlLehnGSejhORBLd/7lH2tlXbhPZYm5t13oLOJQ3alcOmELqWwpstCg2srC9Mk
-         8ocmbTe28PG7BITBgKMwveMKm39PaHij8Bum7fCpDeiUu8ItJYq+FGaWyz1x5ce89TNm
-         rQ7w==
+        d=cumulusnetworks.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YFN1V81z/US3l+OrAj1q6RyEj/K+BvKjZL8+vYegMlY=;
+        b=Uc5e8uVqA4Zk5KGVrOD+I19Ejmn6vx5W8Bt6Eom4Ep968OBfbI+kqbQXj/Nln4N18w
+         sTi73U4TT7Nbwg/h3IKSh4nurofKXx7T8GXjnLneQozv8lXorrLvD0Yhw9mxJtrYm28n
+         llTSHsJurhCrZbs3IJWWETXgW+rSWYtTkfaH0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=eZpWHGmWn5r17X7XPRThpw5E0O+MqhXek9Hw0KLquWw=;
-        b=qhYoysTOHc7uZ6Vo67BD/bcNdpy6wL62GidcxSqKX1/lACNEl+4R8h2cD6u4ZUPVkD
-         TdbnV/32TnS+YZlJ4gLd0/QXyXqNk4NSpJwPVMIGgKAX2nKLZEZOPM8Hl050QNgYtu33
-         nsbDVRH4mDR0ccVcJ00voVheg3hkS8jViYagRotcZRcm37+rGg8pMXmedcYhbYcqUMMX
-         4ST88GKtHLn4+ZwicE3GOtMqrRqiaPEgB3Mgs1IqYjLkmSIT9u89GkYBi5SY9xcP0RLM
-         EEloVh8C7ZO5dGZJLFzqAvTnNSw8WKBmlXJoptfEV9Q0DfZpJuOIROXmk4cCcBpBxNk3
-         y7Qw==
-X-Gm-Message-State: APjAAAU3xgDOzPsdY7wAbma8Q3YpqTDOiL9elWo3uEK8BwZp4503QZJO
-        5hXsfacjGSqrfEFz1vLYh9Bqf468fYA=
-X-Google-Smtp-Source: APXvYqzQjMtg/cPQu8MMKc86UdwXV8u4sLhMWhaNZNVFOIB3VqM/QIrbDxwSy9xJNK84xcqdtmbvYA==
-X-Received: by 2002:a17:90a:fa12:: with SMTP id cm18mr5525738pjb.137.1561564453674;
-        Wed, 26 Jun 2019 08:54:13 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id t7sm1032262pjq.15.2019.06.26.08.54.12
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 26 Jun 2019 08:54:13 -0700 (PDT)
-Subject: Re: [PATCH net-next 12/18] ionic: Add async link status check and
- basic stats
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org
-References: <20190620202424.23215-1-snelson@pensando.io>
- <20190620202424.23215-13-snelson@pensando.io>
- <20190625164713.00ecc9aa@cakuba.netronome.com>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <4804434c-166e-8829-972b-a245da3d987f@pensando.io>
-Date:   Wed, 26 Jun 2019 08:54:11 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.7.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YFN1V81z/US3l+OrAj1q6RyEj/K+BvKjZL8+vYegMlY=;
+        b=QLUIsq4KFGTKEK8vNzt2OtmEVxqAy0YBEU0r9R0cvH+rxs/TmQll23/Va+Kdo/8dEV
+         7PkQ+qkvtRDXFTOgLTFxyqgPT8XGTyGBkxOtJEQJT8lWoTl7TVrWlUpAunVYvo89IT11
+         hi5p5VMCDa+NyMYZ6Dum0iDLyEnL1Iudg5JTvKAXa02y1yqJXBQ8xOKhkyt4VxM9j9uU
+         DO92SOCRZt0bmzk0twqu9sG7kmdMCWo0Cfx45Js1TLXRBxQmWFjfKUMCHLOPhLp7zqol
+         fR6eIwCGlAcXWGYS8a+QTz06wH8JG8rWgCu1W7cvPiXTaq+ay+v0wLiAq6YvCkL14au4
+         nRLw==
+X-Gm-Message-State: APjAAAWN7JtUlzxMnUiyyJHOUAz6vpymsv+Gb5pyxwSssx1wpki8OMfG
+        LXQoKbvrUX6LMC1i6hNiXPs/2Q+kpF4=
+X-Google-Smtp-Source: APXvYqzh9VlkknJikp8S5YTR0Juhj0aS7LpA9f2XdOYu/uhmB2K1zoYcLjPfek5My52KtYh1kXOqTw==
+X-Received: by 2002:a5d:4a43:: with SMTP id v3mr4366989wrs.151.1561564588036;
+        Wed, 26 Jun 2019 08:56:28 -0700 (PDT)
+Received: from localhost.localdomain ([78.128.78.220])
+        by smtp.gmail.com with ESMTPSA id h8sm1832556wmf.12.2019.06.26.08.56.26
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 26 Jun 2019 08:56:27 -0700 (PDT)
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+To:     netdev@vger.kernel.org
+Cc:     roopa@cumulusnetworks.com, pablo@netfilter.org,
+        xiyou.wangcong@gmail.com, davem@davemloft.net, jiri@resnulli.us,
+        jhs@mojatatu.com, eyal.birger@gmail.com,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Subject: [PATCH net-next v2 0/4] em_ipt: add support for addrtype
+Date:   Wed, 26 Jun 2019 18:56:11 +0300
+Message-Id: <20190626155615.16639-1-nikolay@cumulusnetworks.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20190625164713.00ecc9aa@cakuba.netronome.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/25/19 4:47 PM, Jakub Kicinski wrote:
-> On Thu, 20 Jun 2019 13:24:18 -0700, Shannon Nelson wrote:
->> +	/* filter out the no-change cases */
->> +	if ((link_up && netif_carrier_ok(netdev)) ||
->> +	    (!link_up && !netif_carrier_ok(netdev)))
-> nit: these are both bools, you can compare them:
->
-> 	if (link_up == netif_carrier_ok(netdev))
->
->> +		return;
+Hi,
+We would like to be able to use the addrtype from tc for ACL rules and
+em_ipt seems the best place to add support for the already existing xt
+match. The biggest issue is that addrtype revision 1 (with ipv6 support)
+is NFPROTO_UNSPEC and currently em_ipt can't differentiate between v4/v6
+if such xt match is used because it passes the match's family instead of
+the user-specified one. The first 3 patches make em_ipt match only on IP
+traffic (currently both policy and addrtype recognize such traffic
+only) and make it pass the actual packet's protocol instead of the xt
+match family when it's unspecified. They also add support for NFPROTO_UNSPEC
+xt matches. The last patch allows to add addrtype rules via em_ipt.
 
-Yep - thanks.
-sln
+v2: change patch 02 to set the nfproto only when unspecified and drop
+    patch 04 from v1 (Eyal Birger)
+
+Thank you,
+  Nikolay Aleksandrov
+
+
+Nikolay Aleksandrov (4):
+  net: sched: em_ipt: match only on ip/ipv6 traffic
+  net: sched: em_ipt: set the family based on the packet if it's
+    unspecified
+  net: sched: em_ipt: keep the user-specified nfproto and use it
+  net: sched: em_ipt: add support for addrtype matching
+
+ net/sched/em_ipt.c | 49 ++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 47 insertions(+), 2 deletions(-)
+
+-- 
+2.20.1
+
