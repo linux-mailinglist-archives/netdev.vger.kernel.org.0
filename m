@@ -2,154 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AE43561CC
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 07:41:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC7CA56223
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 08:12:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726307AbfFZFln (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 01:41:43 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:58740 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725379AbfFZFln (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 01:41:43 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 8B0EA60A44; Wed, 26 Jun 2019 05:41:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1561527702;
-        bh=rOANm5p9pKCQ2t+c5PR83Bj3wh6eUweI1Pjq/QmmtpA=;
-        h=Subject:From:To:References:Date:In-Reply-To:From;
-        b=BMrDpYAppRirCBGRyLDQrz4jAvRFoTIy8mNSyfwQzl1E8tDTIatvg/B9ide5DYbBQ
-         7WfCmdWP1Ks6ZfDOxHyTT+1U6IJ1jdqf2BzD6FIjey1YybzaHPe/mBfs2IcMHqQeAM
-         Nta7NuYUdenpCz3mwmFjZIGbxEVr0c5rpZmbUv4c=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from [10.204.79.132] (blr-c-bdr-fw-01_globalnat_allzones-outside.qualcomm.com [103.229.19.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: sramana@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 9FC586085C;
-        Wed, 26 Jun 2019 05:41:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1561527701;
-        bh=rOANm5p9pKCQ2t+c5PR83Bj3wh6eUweI1Pjq/QmmtpA=;
-        h=Subject:From:To:References:Date:In-Reply-To:From;
-        b=mjrFU13eOcPHmFNZKRUWY/THAftJo//TyUSDdUM9V4cDJWT3geaiUoCHzzTvxflDt
-         pck+eIJjFaaSryy0rjdRUpAk1Pt3Vn9Kfk0GRy7S+SEmDtcWyjCyiFJotob1axLITX
-         UlPx7MZc1hC80dHdWyS+klVDmkKSACsxj9AhDUXU=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 9FC586085C
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=sramana@codeaurora.org
-Subject: Re: samples/bpf compilation failures - 5.2.0
-From:   Srinivas Ramana <sramana@codeaurora.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Joel Fernandes <joelaf@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-References: <faaf8b1c-9552-a0ae-3088-2f4255dff857@codeaurora.org>
-Message-ID: <0bcdd38c-5cdb-0510-573a-9a6098ab2105@codeaurora.org>
-Date:   Wed, 26 Jun 2019 11:11:37 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.1
+        id S1726756AbfFZGMo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 02:12:44 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:42320 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725790AbfFZGMo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 02:12:44 -0400
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5Q68kqu011020
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 23:12:42 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=PwSn+7J7E3QErHZMey9N2j0zc6bGmvSLJbzoIpJ9ZPs=;
+ b=aF9F2snry+kI6kFuHyc1gi25+3LvTw1lGDJWhuN0z9Q1nZtSOOtjD3oX7llO/urmZ4y3
+ Chgdrt44zecxXrME1N/gJfan4CPbvuH15Ss3UgD5YGXmkZ8RxlxL8CFYcsxnZeLt1zkw
+ 4HGD+TTBWViPOVsW08Ym4BfirZSecl3pddA= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2tc1mrg89k-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 23:12:42 -0700
+Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Tue, 25 Jun 2019 23:12:41 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id DE0EF861896; Tue, 25 Jun 2019 23:12:40 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <andrii.nakryiko@gmail.com>, <ast@fb.com>, <daniel@iogearbox.net>,
+        <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <kernel-team@fb.com>
+CC:     Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH v2 bpf-next 0/3] libbpf: add perf buffer abstraction and API
+Date:   Tue, 25 Jun 2019 23:12:32 -0700
+Message-ID: <20190626061235.602633-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-In-Reply-To: <faaf8b1c-9552-a0ae-3088-2f4255dff857@codeaurora.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-26_02:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906260074
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-+ Joel if he has seen this issue.
+This patchset adds a high-level API for setting up and polling perf buffers
+associated with BPF_MAP_TYPE_PERF_EVENT_ARRAY map. Details of APIs are
+described in corresponding commit.
 
-On 5/28/2019 2:27 PM, Srinivas Ramana wrote:
-> Hello,
-> 
-> I am trying to build samples/bpf in kernel(5.2.0-rc1) but unsuccessful 
-> with below errors. Can you help to point what i am missing or if there 
-> is some known issue?
-> 
-> ==============================8<===================================
-> $ make samples/bpf/ 
-> LLC=/local/mnt/workspace/tools/clang_ubuntu/clang/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04/bin/llc 
-> CLANG=/local/mnt/workspace/tools/clang_ubuntu/clang/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04/bin/clang 
-> V=1
-> make -C /local/mnt/workspace/sramana/kdev_torvalds/kdev/kernel -f 
-> /local/mnt/workspace/sramana/kdev_torvalds/kdev/kernel/Makefile 
-> samples/bpf/
-> ................
-> ................
-> ................
-> make KBUILD_MODULES=1 -f ./scripts/Makefile.build obj=samples/bpf
-> (cat /dev/null; ) > samples/bpf/modules.order
-> make -C 
-> /local/mnt/workspace/sramana/kdev_torvalds/kdev/kernel/samples/bpf/../../tools/lib/bpf/ 
-> RM='rm -rf' LDFLAGS= 
-> srctree=/local/mnt/workspace/sramana/kdev_torvalds/kdev/kernel/samples/bpf/../../ 
-> O=
-> 
-> Auto-detecting system features:
-> ...                        libelf: [ on  ]
-> ...                           bpf: [ on  ]
-> 
-> make -C 
-> /local/mnt/workspace/sramana/kdev_torvalds/kdev/kernel/samples/bpf/../..//tools/build 
-> CFLAGS= LDFLAGS= fixdep
-> make -f 
-> /local/mnt/workspace/sramana/kdev_torvalds/kdev/kernel/samples/bpf/../..//tools/build/Makefile.build 
-> dir=. obj=fixdep
->     ld -r -o fixdep-in.o  fixdep.o
-> ld: fixdep.o: Relocations in generic ELF (EM: 183)
-> ld: fixdep.o: Relocations in generic ELF (EM: 183)
-> fixdep.o: error adding symbols: File in wrong format
-> make[5]: *** [fixdep-in.o] Error 1
-> make[4]: *** [fixdep-in.o] Error 2
-> make[3]: *** [fixdep] Error 2
-> make[2]: *** 
-> [/local/mnt/workspace/sramana/kdev_torvalds/kdev/kernel/samples/bpf/../../tools/lib/bpf/libbpf.a] 
-> Error 2
-> make[1]: *** [samples/bpf/] Error 2
-> make: *** [sub-make] Error 2
-> ==============================>8=======================================
-> 
-> 
-> I am using the below commands to build:
-> ========================================================
-> export ARCH=arm64
-> export CROSS_COMPILE=<path>linaro-toolchain/5.1/bin/aarch64-linux-gnu-
-> export CLANG_TRIPLE=arm64-linux-gnu-
-> 
-> make 
-> CC=<path>/clang_ubuntu/clang/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04/bin/clang 
-> defconfig
-> 
-> make 
-> CC=<path>/clang_ubuntu/clang/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04/bin/clang 
-> -j8
-> 
-> make 
-> CC=<path>/clang_ubuntu/clang/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04/bin/clang 
-> headers_install INSTALL_HDR_PATH=./usr
-> 
-> make samples/bpf/ 
-> LLC=<path>/clang_ubuntu/clang/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04/bin/llc 
-> CLANG=<path>/clang_ubuntu/clang/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04/bin/clang 
-> V=1 
-> CC=<path>/clang_ubuntu/clang/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04/bin/clang 
-> 
-> ========================================================
-> 
-> Thanks,
-> -- Srinivas R
-> 
+Patch #1 adds a set of APIs to set up and work with perf buffer.
+Patch #2 enhances libbpf to supprot auto-setting PERF_EVENT_ARRAY map size.
+Patch #3 adds test.
 
+Andrii Nakryiko (3):
+  libbpf: add perf buffer API
+  libbpf: auto-set PERF_EVENT_ARRAY size to number of CPUs
+  selftests/bpf: test perf buffer API
+
+ tools/lib/bpf/libbpf.c                        | 299 +++++++++++++++++-
+ tools/lib/bpf/libbpf.h                        |  12 +
+ tools/lib/bpf/libbpf.map                      |   5 +-
+ .../selftests/bpf/prog_tests/perf_buffer.c    |  86 +++++
+ .../selftests/bpf/progs/test_perf_buffer.c    |  29 ++
+ 5 files changed, 429 insertions(+), 2 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/perf_buffer.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_perf_buffer.c
 
 -- 
-Qualcomm India Private Limited, on behalf of Qualcomm Innovation
-Center, Inc., is a member of Code Aurora Forum, a Linux Foundation
-Collaborative Project
+2.17.1
+
