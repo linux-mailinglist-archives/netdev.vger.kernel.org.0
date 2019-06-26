@@ -2,130 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D3A5A56DE6
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 17:41:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7B5B56DEA
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 17:42:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727139AbfFZPlW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 11:41:22 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:36158 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726948AbfFZPlV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 11:41:21 -0400
-Received: by mail-pf1-f193.google.com with SMTP id r7so1569866pfl.3
-        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 08:41:21 -0700 (PDT)
+        id S1727791AbfFZPmp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 11:42:45 -0400
+Received: from mail-yb1-f194.google.com ([209.85.219.194]:34920 "EHLO
+        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726029AbfFZPmo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 11:42:44 -0400
+Received: by mail-yb1-f194.google.com with SMTP id i203so1598762ybg.2
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 08:42:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=s6H+VZIH/8+SpPDS4HKLkLbhIbCgFU2Lx0ZhiuvLd+4=;
-        b=oC1zhlpqGlEqeHayr8LquWx2FE2w+bw3+jEPmcq8U1AGO1m99K/8S5ZQ24b+gOy1ov
-         1Pja1omxE8YCR/AeqUOJJrjq7usDaRrI9mxPgUN3eXq2e+LvvmhfkLdkRQAcBnyXdpIj
-         8Ny4iSwKWVtdurBzuFvVGhPP3jBvs/b0M8/NFbCnlqCb3aihO6u469b/+XX1Mel7Ovd7
-         dlRQLR6iHa/yytjTMByzXNL/dCZLsqFf/yZEyzYMEmVGMKDvEOk83jo+di6qJ8RG3pBE
-         fZpp92D+l+UvfDyOjQf3CTvqTF4iZKL41QXBK5jEvAuI16th+cMR7044AGKgUaXFL4Hk
-         Y4oQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hUS9iOJO46+OjuXG4glfIrpLoJYM6+HsSFmIZvk7Cak=;
+        b=nDcgkW4+Ew3J1MJ8qjP7nEF1t4Y5OxKPqc9M8MYsbYrjR339iXJyaC5E4gOXk3e1xK
+         cF2YMlbDgZ1QIqhYX996ZbpU1VhOa23C5R74TMODX5lL5Z2m6y6Gn5H8F+EPdPiuMB3S
+         HFzDug6G6OGlXG4dKNIrQa1AdMiM7r6XDCpGsNDDLjG1riBS/IR73VqAzMe+FmGJRS+i
+         +rMsvVBL0Z1S1CoCgGwuDHGNIZ82GjdYM3GErlWfuLKz91wbBY36BjtbKYT4IBToK87s
+         1ThDWUODbbXztcudNFMVDpFOs1OCG6rgDryQNaHLbSu6x11lIVRXM7+ixoaMAVITKb2s
+         8ioA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=s6H+VZIH/8+SpPDS4HKLkLbhIbCgFU2Lx0ZhiuvLd+4=;
-        b=J8nhdhYdwSFfVqHBtM539Fx8prmv2NdXfnhXVcC3CSlYjrAwotwixLp4hcOs6Tf4gu
-         AORr+l1wLjbD8ilqTH010YZc/0C1jisitpg4D+g8tp5xaM4ZTnfNZSCbUY/6UCQAGcwf
-         oBgsIybuYoYiImmnUorE3VqLC6uc16jabYezJh0HBOXwZzQ0xjvY2kSWNzZAoJ3X13Fl
-         T+z5nxe8PmFBmN6J6VC3qoMb+PcWoHtAvAhEQaUBl7+0d2BqeYImCyB3+8iH1FgR15wE
-         EcK2aPTwClMukxxB+9aVda5cAXNSF6jXosBbafzEh9xLI37l4yHXEZvpB3jlcauTk1NF
-         Njrw==
-X-Gm-Message-State: APjAAAWA3htZ6fD78oJ7qqw7qkyYH/cLZdXCwixSu2rTlAm/K9pZ4Uzg
-        F8xgqI2N2DycwVnwdnsq3y37HeO5CRI=
-X-Google-Smtp-Source: APXvYqwDXZVaOlJA3M2MmqLB1YVoRxES+hEi0kWMDjh+TZapEVqaJuIqrYHiALDW5kKfpy/6EeMXuA==
-X-Received: by 2002:a17:90a:de02:: with SMTP id m2mr5525727pjv.18.1561563680790;
-        Wed, 26 Jun 2019 08:41:20 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id a3sm21728489pfo.49.2019.06.26.08.41.19
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 26 Jun 2019 08:41:20 -0700 (PDT)
-Subject: Re: [PATCH net-next 09/18] ionic: Add the basic NDO callbacks for
- netdev support
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org
-References: <20190620202424.23215-1-snelson@pensando.io>
- <20190620202424.23215-10-snelson@pensando.io>
- <20190625162738.15049dc7@cakuba.netronome.com>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <b402326b-d2e7-fc4e-9fdc-b6adcd8dd54c@pensando.io>
-Date:   Wed, 26 Jun 2019 08:41:18 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.7.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hUS9iOJO46+OjuXG4glfIrpLoJYM6+HsSFmIZvk7Cak=;
+        b=GD6qGe0KI9fcpDMGVfQxYq0KWm9MZu8o7xJ48ZT61BjcyGBmq1tFdgw3j4/kcTK0Cx
+         Qb0U1IcGcl3bLD7adyLIeJ46tAyuJ04PJoOcm0TFIlkQexKAnOo1KsMBGn0k3pvmWLiB
+         rdfIyvJpxPaZffGq0eMfq54LNXt3EsBpmAt5PGNzyEeYe5kA+bynavxXuy7T/6/YxUNQ
+         EOJsyIbinqs+LL0JgYo2w1vfMJkbYmrBwOLAdEMjj0QfVDqoqyDBsfmzCJImDx42nkQr
+         ECWv0lJQzTmua6ScQTShT1wbN4sMlVRk9EFNeLLY1vTHgeLehdAevCixnCZ4aHlbHB0H
+         svCA==
+X-Gm-Message-State: APjAAAWE28lMGCMHopRFWvI1O3A5SbLwXSf6yymmzfcS78tB82WkXVsK
+        ihKHFykknNuERCwKZmqht3k4o8bh
+X-Google-Smtp-Source: APXvYqxqDGT5pig7g8zXkfjxrW/HpJa6td/Jcp2H+W+hMGde0GyhxA001IKnrZuqSdeqH2O85TCimw==
+X-Received: by 2002:a25:cfd1:: with SMTP id f200mr3141288ybg.295.1561563763523;
+        Wed, 26 Jun 2019 08:42:43 -0700 (PDT)
+Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
+        by smtp.gmail.com with ESMTPSA id x85sm4695027ywx.63.2019.06.26.08.42.42
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Wed, 26 Jun 2019 08:42:42 -0700 (PDT)
+Received: by mail-yb1-f174.google.com with SMTP id p201so1293503ybg.4
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 08:42:42 -0700 (PDT)
+X-Received: by 2002:a25:aa48:: with SMTP id s66mr2857109ybi.46.1561563762319;
+ Wed, 26 Jun 2019 08:42:42 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190625162738.15049dc7@cakuba.netronome.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+References: <20190617074858.32467-1-bpoirier@suse.com> <20190617074858.32467-3-bpoirier@suse.com>
+ <DM6PR18MB2697BAC4CA9B876306BEDBEBABE20@DM6PR18MB2697.namprd18.prod.outlook.com>
+ <20190626113726.GB27420@f1>
+In-Reply-To: <20190626113726.GB27420@f1>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 26 Jun 2019 11:42:06 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSfKw6aaXk0hA0p_AUp9Oa_D+5Bwst8HUz7mJM-wO5Obow@mail.gmail.com>
+Message-ID: <CA+FuTSfKw6aaXk0hA0p_AUp9Oa_D+5Bwst8HUz7mJM-wO5Obow@mail.gmail.com>
+Subject: Re: [EXT] [PATCH net-next 03/16] qlge: Deduplicate lbq_buf_size
+To:     Benjamin Poirier <bpoirier@suse.com>
+Cc:     Manish Chopra <manishc@marvell.com>,
+        GR-Linux-NIC-Dev <GR-Linux-NIC-Dev@marvell.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/25/19 4:27 PM, Jakub Kicinski wrote:
-> On Thu, 20 Jun 2019 13:24:15 -0700, Shannon Nelson wrote:
->> +static int ionic_set_features(struct net_device *netdev,
->> +			      netdev_features_t features)
->> +{
->> +	struct lif *lif = netdev_priv(netdev);
->> +	int err;
->> +
->> +	netdev_dbg(netdev, "%s: lif->features=0x%08llx new_features=0x%08llx\n",
->> +		   __func__, (u64)lif->netdev->features, (u64)features);
->> +
->> +	err = ionic_set_nic_features(lif, features);
-> Presumably something gets added here in later patch?
-
-This is a pass-through to the lif-specific function which does most of 
-the work.
-
+On Wed, Jun 26, 2019 at 7:37 AM Benjamin Poirier <bpoirier@suse.com> wrote:
 >
->> +	return err;
->> +}
->> +
->> +static int ionic_set_mac_address(struct net_device *netdev, void *sa)
->> +{
->> +	netdev_info(netdev, "%s: stubbed\n", __func__);
->> +	return 0;
->> +}
->> +
->> +static int ionic_change_mtu(struct net_device *netdev, int new_mtu)
->> +{
->> +	struct lif *lif = netdev_priv(netdev);
->> +	struct ionic_admin_ctx ctx = {
->> +		.work = COMPLETION_INITIALIZER_ONSTACK(ctx.work),
->> +		.cmd.lif_setattr = {
->> +			.opcode = CMD_OPCODE_LIF_SETATTR,
->> +			.index = cpu_to_le16(lif->index),
->> +			.attr = IONIC_LIF_ATTR_MTU,
->> +			.mtu = cpu_to_le32(new_mtu),
->> +		},
->> +	};
->> +	int err;
->> +
->> +	if (new_mtu < IONIC_MIN_MTU || new_mtu > IONIC_MAX_MTU) {
->> +		netdev_err(netdev, "Invalid MTU %d\n", new_mtu);
->> +		return -EINVAL;
->> +	}
-> We do the min/max checks in the core now (netdev->min_mtu,
-> netdev->max_mtu).  You'll have to keep this if out of tree,
-> unfortunately.
+> On 2019/06/26 09:24, Manish Chopra wrote:
+> > > -----Original Message-----
+> > > From: Benjamin Poirier <bpoirier@suse.com>
+> > > Sent: Monday, June 17, 2019 1:19 PM
+> > > To: Manish Chopra <manishc@marvell.com>; GR-Linux-NIC-Dev <GR-Linux-
+> > > NIC-Dev@marvell.com>; netdev@vger.kernel.org
+> > > Subject: [EXT] [PATCH net-next 03/16] qlge: Deduplicate lbq_buf_size
+> > >
+> > > External Email
+> > >
+> > > ----------------------------------------------------------------------
+> > > lbq_buf_size is duplicated to every rx_ring structure whereas lbq_buf_order is
+> > > present once in the ql_adapter structure. All rings use the same buf size, keep
+> > > only one copy of it. Also factor out the calculation of lbq_buf_size instead of
+> > > having two copies.
+> > >
+> > > Signed-off-by: Benjamin Poirier <bpoirier@suse.com>
+> > > ---
+> [...]
+> >
+> > Not sure if this change is really required, I think fields relevant to rx_ring should be present in the rx_ring structure.
+> > There are various other fields like "lbq_len" and "lbq_size" which would be same for all rx rings but still under the relevant rx_ring structure.
 
-Got it.
-
->
->> +	err = ionic_adminq_post_wait(lif, &ctx);
->> +	if (err)
->> +		return err;
->> +
->> +	netdev->mtu = new_mtu;
->> +	err = ionic_reset_queues(lif);
->> +
->> +	return err;
->> +}
-
+The one argument against deduplicating might be if the original fields
+are in a hot cacheline and the new location adds a cacheline access to
+a hot path. Not sure if that is relevant here. But maybe something to
+double check.
