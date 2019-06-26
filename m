@@ -2,189 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F157756297
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 08:49:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6BA156367
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 09:35:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726823AbfFZGtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 02:49:15 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:18500 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725954AbfFZGtO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 02:49:14 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5Q6j4pb003422;
-        Tue, 25 Jun 2019 23:49:10 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pfpt0818;
- bh=lEK8EdxNLNBWcqOcU6QPJaG4OnMNrRxUYVp5a04oG2w=;
- b=W1UvrAaEka9W+6+1fJLSWAtThBKXfN/iX53/l1voisCnPxzIbX/N9QJ3P0Uh52+pRiDa
- rp+UZv6HtNnh2CdI61czjukEfOO/HMLSgUwVZZtQp36kiyz9V6r6zNhCVuY3koX/V8ko
- 3CcsbPBqIimzUtDo4umbzRc8OxgmE/TT9JNJ9p4ht8MMWphcxjMSMbcUSK8i9iSpPpUe
- Aj7YZCHbG6+87neohEWose3OfPlFMsv9GAUrbtHaNHwjOxKGDVPVGYsXpvvHcjAyhZNo
- NfuDCsXRA1MGooUvdmYL5NulTckHaojScMK9VSkv6U4R6uCL5sg5dstrMd4HY9wZaCtX Wg== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0a-0016f401.pphosted.com with ESMTP id 2tbrte2pg9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 25 Jun 2019 23:49:09 -0700
-Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Tue, 25 Jun
- 2019 23:47:00 -0700
-Received: from NAM01-BY2-obe.outbound.protection.outlook.com (104.47.34.54) by
- SC-EXCH03.marvell.com (10.93.176.83) with Microsoft SMTP Server (TLS) id
- 15.0.1367.3 via Frontend Transport; Tue, 25 Jun 2019 23:47:00 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=testarcselector01; d=microsoft.com; cv=none;
- b=BEp7MT6cnXEhKyM9wk1CJLXE4+hYuwCrOSESGZc0U6m5wij0JXlDtfQ9kBACUAOIz1AjJd+6lUuIkYUXilo+vn3E6Wx8aCMSsfTAhapUGRTHCVPD/YVdPtEpG/5swDPMfqqDEwFehljAMhcSqnbeI6xQtiFZqfJEzYh5Nf3cT4Q=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=testarcselector01;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lEK8EdxNLNBWcqOcU6QPJaG4OnMNrRxUYVp5a04oG2w=;
- b=FUkRepDXXbFLp7QqKPWwFw5px8hkjVtwnhRSehWNtgP++OJ0MClEAbsYT0n+wniBs6qXEC0QMW+t+afMueapzHTWyRnaimTNJI2DaSkWfhYWeVtUai4bvEsPwUQ68Rp5oA6Hp++Nv3dfyhC74IDXnw9epq3GIdDkSRpKJZYdajU=
-ARC-Authentication-Results: i=1; test.office365.com
- 1;spf=none;dmarc=none;dkim=none;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector2-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lEK8EdxNLNBWcqOcU6QPJaG4OnMNrRxUYVp5a04oG2w=;
- b=XAKyVFvC9IYFpN+KnrrpDDiv20BEAPBaRuTbb18HIgji7Pq7B95skYuKkmzv3suJfSLNj2L2mYBtHifv8AC7niHsARkeFHM1FU7cQlgEbsHf+hSFHXK1zK865GLxWKvmvalQOINv8MwvsuPDzf6o6WC4WU6n+xnWct8/0JYRBP0=
-Received: from MN2PR18MB2528.namprd18.prod.outlook.com (20.179.80.86) by
- MN2PR18MB2814.namprd18.prod.outlook.com (20.179.23.20) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2008.16; Wed, 26 Jun 2019 06:46:56 +0000
-Received: from MN2PR18MB2528.namprd18.prod.outlook.com
- ([fe80::a8ef:cea:5dba:ddb1]) by MN2PR18MB2528.namprd18.prod.outlook.com
- ([fe80::a8ef:cea:5dba:ddb1%4]) with mapi id 15.20.2008.017; Wed, 26 Jun 2019
- 06:46:56 +0000
-From:   Sudarsana Reddy Kalluru <skalluru@marvell.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-CC:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        Ariel Elior <aelior@marvell.com>
-Subject: RE: [EXT] Re: [PATCH net-next 4/4] qed: Add devlink support for
- configuration attributes.
-Thread-Topic: [EXT] Re: [PATCH net-next 4/4] qed: Add devlink support for
- configuration attributes.
-Thread-Index: AQHVJQJMBFYAJht0E0S8f7iw9+GZZqagdSOAgAPWPzCAAEVLAIAI9vJg
-Date:   Wed, 26 Jun 2019 06:46:56 +0000
-Message-ID: <MN2PR18MB25289C051D88D59DF844E667D3E20@MN2PR18MB2528.namprd18.prod.outlook.com>
-References: <20190617114528.17086-1-skalluru@marvell.com>
- <20190617114528.17086-5-skalluru@marvell.com>
- <20190617155411.53cf07cf@cakuba.netronome.com>
- <MN2PR18MB25289FE6D99432939990C979D3E40@MN2PR18MB2528.namprd18.prod.outlook.com>
- <20190620133748.GD2504@nanopsycho>
-In-Reply-To: <20190620133748.GD2504@nanopsycho>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [14.140.231.66]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 8377841c-8b9e-493c-2251-08d6fa0214ba
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MN2PR18MB2814;
-x-ms-traffictypediagnostic: MN2PR18MB2814:
-x-microsoft-antispam-prvs: <MN2PR18MB28146974B359E74DA66C1FDED3E20@MN2PR18MB2814.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-forefront-prvs: 00808B16F3
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(396003)(39860400002)(346002)(136003)(376002)(13464003)(189003)(199004)(7696005)(25786009)(102836004)(6436002)(6916009)(3846002)(6116002)(6506007)(68736007)(76176011)(5660300002)(53546011)(14454004)(33656002)(55236004)(186003)(53936002)(256004)(476003)(107886003)(486006)(2906002)(6246003)(446003)(11346002)(4326008)(9686003)(66066001)(86362001)(99286004)(55016002)(229853002)(26005)(316002)(76116006)(478600001)(66446008)(7736002)(64756008)(81156014)(54906003)(8676002)(305945005)(74316002)(71190400001)(71200400001)(8936002)(52536014)(81166006)(73956011)(66476007)(66946007)(66556008);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR18MB2814;H:MN2PR18MB2528.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: marvell.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: I3rnKUBLRTJRQJmWC6aX8J9fT9LlfyVFa+KHpvXt4yL0wsVd7EaEb75k+CWgYIWMrVSo3WuH00v/zrIW4EEfiV+86kJHgcwLkM/RUtEXbpXUAtXTny9ZDb+Ri2dBd2VGqodvCD6w4DUuu8lu/n0Lk9SUCmZOL1QrAQ7TRpUDAF/jAjOf9A+eVDcdEpQdzqk5H5s4tZtEgrgA/PoZK1vmZH+h2G91KBN0d2CmG25HcGY34O6XPE4DjV/Ge/32OzOao6XnQo3rSjy69rDs1d8lZ40K/SN35IpQ5vl41Nl52RFvDcSbh0Yc5ImVmtypbRiCZfUs6zeysARxpXjMshIYH4lPo+N3UbctBqsKwG6X0LmmYMKL/4m3xREZuyWRkeszu1Zm0lWBJYzVFEfqlBQMxunXcnyotUYCYpQkdywgnyE=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726969AbfFZHfS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 03:35:18 -0400
+Received: from smtp-sh.infomaniak.ch ([128.65.195.4]:48195 "EHLO
+        smtp-sh.infomaniak.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725876AbfFZHfQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 03:35:16 -0400
+Received: from smtp7.infomaniak.ch (smtp7.infomaniak.ch [83.166.132.30])
+        by smtp-sh.infomaniak.ch (8.14.5/8.14.5) with ESMTP id x5Q7XpeS029374
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 26 Jun 2019 09:33:51 +0200
+Received: from ns3096276.ip-94-23-54.eu (ns3096276.ip-94-23-54.eu [94.23.54.103])
+        (authenticated bits=0)
+        by smtp7.infomaniak.ch (8.14.5/8.14.5) with ESMTP id x5Q7XZKl136464
+        (version=TLSv1/SSLv3 cipher=AES128-SHA bits=128 verify=NO);
+        Wed, 26 Jun 2019 09:33:46 +0200
+Subject: Re: [PATCH bpf-next v9 02/10] bpf: Add eBPF program subtype and
+ is_valid_subtype() verifier
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Aleksa Sarai <cyphar@cyphar.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Casey Schaufler <casey@schaufler-ca.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Drysdale <drysdale@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        James Morris <jmorris@namei.org>, Jann Horn <jann@thejh.net>,
+        John Johansen <john.johansen@canonical.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Kees Cook <keescook@chromium.org>,
+        Michael Kerrisk <mtk.manpages@gmail.com>,
+        =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mickael.salaun@ssi.gouv.fr>,
+        Paul Moore <paul@paul-moore.com>,
+        Sargun Dhillon <sargun@sargun.me>,
+        "Serge E . Hallyn" <serge@hallyn.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Stephen Smalley <sds@tycho.nsa.gov>, Tejun Heo <tj@kernel.org>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        Thomas Graf <tgraf@suug.ch>, Tycho Andersen <tycho@tycho.ws>,
+        Will Drewry <wad@chromium.org>,
+        Kernel Hardening <kernel-hardening@lists.openwall.com>,
+        Linux API <linux-api@vger.kernel.org>,
+        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>
+References: <20190625215239.11136-1-mic@digikod.net>
+ <20190625215239.11136-3-mic@digikod.net>
+ <CAADnVQ+Twio22VSi21RR5TY1Zm-1xRTGmREcXLSs5Jv-KWGTiw@mail.gmail.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Openpgp: preference=signencrypt
+Message-ID: <1b87e170-0779-fad0-f623-8cf677843338@digikod.net>
+Date:   Wed, 26 Jun 2019 09:33:35 +0200
+User-Agent: 
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8377841c-8b9e-493c-2251-08d6fa0214ba
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Jun 2019 06:46:56.2406
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: skalluru@marvell.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR18MB2814
-X-OriginatorOrg: marvell.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-26_03:,,
- signatures=0
+In-Reply-To: <CAADnVQ+Twio22VSi21RR5TY1Zm-1xRTGmREcXLSs5Jv-KWGTiw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Antivirus: Dr.Web (R) for Unix mail servers drweb plugin ver.6.0.2.8
+X-Antivirus-Code: 0x100000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-> -----Original Message-----
-> From: Jiri Pirko <jiri@resnulli.us>
-> Sent: Thursday, June 20, 2019 7:08 PM
-> To: Sudarsana Reddy Kalluru <skalluru@marvell.com>
-> Cc: Jakub Kicinski <jakub.kicinski@netronome.com>; davem@davemloft.net;
-> netdev@vger.kernel.org; Michal Kalderon <mkalderon@marvell.com>; Ariel
-> Elior <aelior@marvell.com>
-> Subject: Re: [EXT] Re: [PATCH net-next 4/4] qed: Add devlink support for
-> configuration attributes.
->=20
-> Thu, Jun 20, 2019 at 02:09:29PM CEST, skalluru@marvell.com wrote:
-> >> -----Original Message-----
-> >> From: Jakub Kicinski <jakub.kicinski@netronome.com>
-> >> Sent: Tuesday, June 18, 2019 4:24 AM
-> >> To: Sudarsana Reddy Kalluru <skalluru@marvell.com>
-> >> Cc: davem@davemloft.net; netdev@vger.kernel.org; Michal Kalderon
-> >> <mkalderon@marvell.com>; Ariel Elior <aelior@marvell.com>; Jiri Pirko
-> >> <jiri@resnulli.us>
-> >> Subject: [EXT] Re: [PATCH net-next 4/4] qed: Add devlink support for
-> >> configuration attributes.
-> >>
-> >> External Email
-> >>
-> >> ---------------------------------------------------------------------
-> >> - On Mon, 17 Jun 2019 04:45:28 -0700, Sudarsana Reddy Kalluru wrote:
-> >> > This patch adds implementation for devlink callbacks for reading/
-> >> > configuring the device attributes.
-> >> >
-> >> > Signed-off-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
-> >> > Signed-off-by: Ariel Elior <aelior@marvell.com>
-> >>
-> >> You need to provide documentation for your parameters, plus some of
-> >> them look like they should potentially be port params, not device para=
-ms.
-> >
-> >Thanks a lot for your review. Will add the required documentation. In ca=
-se
-> of Marvell adapter, any of the device/adapter/port parameters can be
-> read/configurable via any PF (ethdev) on the port. Hence adding the
-> commands at device level. Hope this is fine.
->=20
-> No it is not. Port param should be port param.
->=20
-> Also please be careful not to add any generic param as driver specific.
->=20
-> Thanks!
-Hi,
-   Could you please with my query on the devlink-port-params implementation=
-. [had sent the same query earlier to jiri@mellanox.com (based on the copyr=
-ight info)].
 
-Kernel seem to be invoking the driver devlink callbacks (registered via DEV=
-LINK_PARAM_DRIVER) only when the associated parameter is published via devl=
-ink_params_publish(). callnback invocation path,
-   devlink_nl_param_fill()
-   {
-                if (!param_item->published)
-                         continue;
-                 ctx.cmode =3D i;
-                  err =3D devlink_param_get(devlink, param, &ctx);
-   }
-The API devlink_params_publish() publishes only the devlink-dev parameters =
-(i.e., registered via devlink_params_register()), not the devlink-port para=
-ms which are registered via devlink_port_params_register(). I couldn't find=
- any other interface for publishing the devlink-port-params.
-I have manually verified setting the published flag for port-params (as in =
-below) and, observed that kernel correctly invokes the callbacks of devlink=
--port-params.
-       list_for_each_entry(param_item, &dl_port.param_list, list) {
-                param_item->published =3D true;
-      }
-Please let me know if I'm missing something here or, it's a missing functio=
-nality in the kernel.
+On 26/06/2019 01:02, Alexei Starovoitov wrote:
+> On Tue, Jun 25, 2019 at 3:04 PM Mickaël Salaün <mic@digikod.net> wrote:
+>>
+>> The goal of the program subtype is to be able to have different static
+>> fine-grained verifications for a unique program type.
+>>
+>> The struct bpf_verifier_ops gets a new optional function:
+>> is_valid_subtype(). This new verifier is called at the beginning of the
+>> eBPF program verification to check if the (optional) program subtype is
+>> valid.
+>>
+>> The new helper bpf_load_program_xattr() enables to verify a program with
+>> subtypes.
+>>
+>> For now, only Landlock eBPF programs are using a program subtype (see
+>> next commits) but this could be used by other program types in the
+>> future.
+>>
+>> Signed-off-by: Mickaël Salaün <mic@digikod.net>
+>> Cc: Alexei Starovoitov <ast@kernel.org>
+>> Cc: Daniel Borkmann <daniel@iogearbox.net>
+>> Cc: David S. Miller <davem@davemloft.net>
+>> Link: https://lkml.kernel.org/r/20160827205559.GA43880@ast-mbp.thefacebook.com
+>> ---
+>>
+>> Changes since v8:
+>> * use bpf_load_program_xattr() instead of bpf_load_program() and add
+>>   bpf_verify_program_xattr() to deal with subtypes
+>> * remove put_extra() since there is no more "previous" field (for now)
+>>
+>> Changes since v7:
+>> * rename LANDLOCK_SUBTYPE_* to LANDLOCK_*
+>> * move subtype in bpf_prog_aux and use only one bit for has_subtype
+>>   (suggested by Alexei Starovoitov)
+> 
+> sorry to say, but I don't think the landlock will ever land,
+> since posting huge patches once a year is missing a lot of development
+> that is happening during that time.
 
-Thanks,
-Sudarsana
+You're right that it's been a while since the last patch set, but the
+main reasons behind this was a lack of feedback (probably because of the
+size of the patch set, which is now reduce to a consistent minimum), the
+rework needed to address everyone's concern (Landlock modify kernel
+components from different maintainers), and above all, the LSM stacking
+infrastructure which was quite beefy and then took some time to land:
+https://lore.kernel.org/lkml/50db058a-7dde-441b-a7f9-f6837fe8b69f@schaufler-ca.com/
+This stacking infrastructure was required to have a useful version of
+Landlock (which is used as a use case example), and it was released with
+Linux v5.1 (last month). Now, I think everything is finally ready to
+move forward.
+
+> This 2/10 patch is an example.
+> subtype concept was useful 2 years ago when v6 was posted.
+> Since then bpf developers faced very similar problem in other parts
+> and it was solved with 'expected_attach_type' field.
+> See commit 5e43f899b03a ("bpf: Check attach type at prog load time")
+> dated March 2018.
+
+I saw this nice feature but I wasn't sure if it was the right field to
+use. Indeed, I need more than a "type", but also some values (triggers)
+as shown by this patch. What do you suggest?
