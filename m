@@ -2,237 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C6ABD56D9B
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 17:26:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDC3356D97
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 17:25:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727977AbfFZP0i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 11:26:38 -0400
-Received: from mail-yb1-f194.google.com ([209.85.219.194]:40663 "EHLO
-        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726157AbfFZP0i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 11:26:38 -0400
-Received: by mail-yb1-f194.google.com with SMTP id i14so1553777ybp.7
-        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 08:26:37 -0700 (PDT)
+        id S1728076AbfFZPZJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 11:25:09 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:52861 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725958AbfFZPZI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 11:25:08 -0400
+Received: by mail-wm1-f68.google.com with SMTP id s3so2542303wms.2
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 08:25:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=XfjlVMwF0WQKYDv1T73goQqIukRnDM3pfKw0I5l2Sf8=;
-        b=KGPe6vjc99roGrkdfgmJKJrV17zQh+uRLHoX5TTVMoNWRIYNzYac68YHh8o1d+Jhok
-         PB6OUG2062TOJZrvUARkMM0YAZOqfNxpVawOK5jClqnsJVSlYVctx41GLo6Rx1NzZTdl
-         L29gdaHOz8IVhdspVG/AcVOhrmOLtUXR8SFE3YSQrucAXK7pAr/dx1IVD2b84XE0Wilu
-         63m9g9sqEnh6yLdRWov2gWCuUKBHcw8kPb3BG62rxooPCKhUAd2+HuW7MRMJHvrR7pV1
-         6SQEETofhBb95DtUwxC5lJYfmDb8PTgKMV0h4q2bwy6S5L7x+Q1GF9iIbEnJ2wCLKVkA
-         8AiA==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=hUrLpFjxYsSye8DlerGP/4UbAK7TW/gORsGDWMbyLBs=;
+        b=SCJ0fZCdTOxengu7vee9R/jq+qhvNjkLrpRKrIFPxtjSq//2fsA9WoC53/m2omdync
+         qZ8e7G2iYtnE3PiL89QSKu8vGnfY8hGhmA7i5KRvb6yLrK4VYoaZwgKN8qHzSEy49AoE
+         QzVs7xgqDLfQLFx1yYsI3bkOsTvnBoZTXczK++HcnvUpDkTFlXtp4Z2kiHQU84Meck37
+         Ha5oKwI6xJlgrZHxzsKoc64UPFmh13K4vh2kK3JChy+tBBGvipgWAK/yixp+LVo7ErHw
+         BqsmU8xr7Nb12Tqj+VzGIGsweNLTanK0F8yiiIy5hVSgGvBlJ9BJtf/6CaoYeXxCuZNY
+         u9lg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=XfjlVMwF0WQKYDv1T73goQqIukRnDM3pfKw0I5l2Sf8=;
-        b=Vwz3qJZpOa4MwgqUfIH9wohitcb6rhw02cRGE1WNOPijxd58Dm5iCJF/AgEEqF4njX
-         IvKgHrF7FSPa6eOVzN3Gw44nnCuhQltyYuBiDz2lDuh+riHPEYDWicB5b0zDx9YRx/fy
-         ZtbaYSGBBu6lVGz8CahZHr3CPdvc3N0g9fGozMS1j7DmCXY591ZQkw4dDnDpLqi3a5Sq
-         aD/xwxk2DKEx9HjeK5aGHNruDpEitMkF6An+kw7tkPuvldOUV9BQ3Kj25JNlWDnL931I
-         P2obUQqTlkKawDyzC25d6MiOWp2ik6WlL4NIMrNKmc064oDnOv3EaCx7Ljreu/dqRLps
-         WATA==
-X-Gm-Message-State: APjAAAVcusSvxZ9PFnchsZbJRn2L9vGhGxwiU6TLVrFtlAZmPV6Ipp0u
-        q9TXK5hO025N+IAho90ZoJNXcgdn
-X-Google-Smtp-Source: APXvYqxP2mupeSrxInq0nuzSxT3VFGB89GGffvSzgSmfHnfP0QdiaG2saFdAcGpmPAZzJ5uTfk5RCA==
-X-Received: by 2002:a25:bb42:: with SMTP id b2mr2837119ybk.199.1561562796542;
-        Wed, 26 Jun 2019 08:26:36 -0700 (PDT)
-Received: from mail-yw1-f49.google.com (mail-yw1-f49.google.com. [209.85.161.49])
-        by smtp.gmail.com with ESMTPSA id p17sm4637828ywp.96.2019.06.26.08.26.36
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Wed, 26 Jun 2019 08:26:36 -0700 (PDT)
-Received: by mail-yw1-f49.google.com with SMTP id t2so1354574ywe.10
-        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 08:26:36 -0700 (PDT)
-X-Received: by 2002:a0d:c0c4:: with SMTP id b187mr2917900ywd.389.1561562482454;
- Wed, 26 Jun 2019 08:21:22 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=hUrLpFjxYsSye8DlerGP/4UbAK7TW/gORsGDWMbyLBs=;
+        b=tDkOG7WDokSQgMKxOyyWlUwHrkbbtFBoOilnbp0RwRjLTyekf7qqTrw81DHZfR7uZ5
+         jtSq4IdfTwlL6GSIco4JVbLEiKayc/OoZtGRF4I7xIKU20lWqEtAAW/aU3cfzD1ZSPiA
+         z/ZhPKx7Hq9zQ3Ct1Ythu/hqUBMCXDTy9nvco1FNThyojEntS8EC7u/HJnrmsUqeGA82
+         1l3Xo4fpnO2HrMvapsamFHeBUB01RsDsZR9M++4FysBjDmHw0FDFZJn60+HaBKTJZQox
+         sgXgmpA90DzbDXgIIVzM6WewKo8iCHiUZMK/oepMeCA/jIyqJ75xRgkUT61XOUhYlsDt
+         ssvA==
+X-Gm-Message-State: APjAAAXjq2VJzvoPwvgBs2feE8dUFpmeGNgKqhrtYkJZ8s39U0HXc8to
+        HUAjGEfqWW+f714EDQ0A198Thg==
+X-Google-Smtp-Source: APXvYqzD3QddXeSn6DuAIyxnlAIDaLA7cl2h50Pmecv/u+lA3k1zUFNV80Hb1q4R9BHR1FehrrZ2XA==
+X-Received: by 2002:a05:600c:da:: with SMTP id u26mr3046184wmm.108.1561562706872;
+        Wed, 26 Jun 2019 08:25:06 -0700 (PDT)
+Received: from localhost (ip-89-176-222-26.net.upcbroadband.cz. [89.176.222.26])
+        by smtp.gmail.com with ESMTPSA id v27sm41854276wrv.45.2019.06.26.08.25.06
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 26 Jun 2019 08:25:06 -0700 (PDT)
+Date:   Wed, 26 Jun 2019 17:25:05 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     YueHaibing <yuehaibing@huawei.com>
+Cc:     davem@davemloft.net, sdf@google.com, jianbol@mellanox.com,
+        jiri@mellanox.com, mirq-linux@rere.qmqm.pl, willemb@google.com,
+        sdf@fomichev.me, j.vosburgh@gmail.com, vfalico@gmail.com,
+        andy@greyhouse.net, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] bonding: Always enable vlan tx offload
+Message-ID: <20190626152505.GB2424@nanopsycho>
+References: <20190624135007.GA17673@nanopsycho>
+ <20190626080844.20796-1-yuehaibing@huawei.com>
 MIME-Version: 1.0
-References: <20190623070649.18447-1-sameehj@amazon.com> <20190623070649.18447-2-sameehj@amazon.com>
- <20190623162133.6b7f24e1@carbon> <A658E65E-93D2-4F10-823D-CC25B081C1B7@amazon.com>
- <20190626103829.5360ef2d@carbon> <87a7e4d0nj.fsf@toke.dk> <20190626164059.4a9511cf@carbon>
- <87h88cbdbe.fsf@toke.dk>
-In-Reply-To: <87h88cbdbe.fsf@toke.dk>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 26 Jun 2019 11:20:45 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSfKnhv9rr=cDa_4m7Dd9qkEm_oabDfyvH0T0sM+fQTU=w@mail.gmail.com>
-Message-ID: <CA+FuTSfKnhv9rr=cDa_4m7Dd9qkEm_oabDfyvH0T0sM+fQTU=w@mail.gmail.com>
-Subject: Re: XDP multi-buffer incl. jumbo-frames (Was: [RFC V1 net-next 1/1]
- net: ena: implement XDP drop support)
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        "Machulsky, Zorik" <zorik@amazon.com>,
-        "Jubran, Samih" <sameehj@amazon.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Woodhouse, David" <dwmw@amazon.co.uk>,
-        "Matushevsky, Alexander" <matua@amazon.com>,
-        "Bshara, Saeed" <saeedb@amazon.com>,
-        "Wilson, Matt" <msw@amazon.com>,
-        "Liguori, Anthony" <aliguori@amazon.com>,
-        "Bshara, Nafea" <nafea@amazon.com>,
-        "Tzalik, Guy" <gtzalik@amazon.com>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Saidi, Ali" <alisaidi@amazon.com>,
-        "Herrenschmidt, Benjamin" <benh@amazon.com>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "xdp-newbies@vger.kernel.org" <xdp-newbies@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190626080844.20796-1-yuehaibing@huawei.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 26, 2019 at 11:01 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
-hat.com> wrote:
+Wed, Jun 26, 2019 at 10:08:44AM CEST, yuehaibing@huawei.com wrote:
+>We build vlan on top of bonding interface, which vlan offload
+>is off, bond mode is 802.3ad (LACP) and xmit_hash_policy is
+>BOND_XMIT_POLICY_ENCAP34.
 >
-> Jesper Dangaard Brouer <brouer@redhat.com> writes:
+>Because vlan tx offload is off, vlan tci is cleared and skb push
+>the vlan header in validate_xmit_vlan() while sending from vlan
+>devices. Then in bond_xmit_hash, __skb_flow_dissect() fails to
+>get information from protocol headers encapsulated within vlan,
+>because 'nhoff' is points to IP header, so bond hashing is based
+>on layer 2 info, which fails to distribute packets across slaves.
 >
-> > On Wed, 26 Jun 2019 13:52:16 +0200
-> > Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
-> >
-> >> Jesper Dangaard Brouer <brouer@redhat.com> writes:
-> >>
-> >> > On Tue, 25 Jun 2019 03:19:22 +0000
-> >> > "Machulsky, Zorik" <zorik@amazon.com> wrote:
-> >> >
-> >> >> =EF=BB=BFOn 6/23/19, 7:21 AM, "Jesper Dangaard Brouer" <brouer@redh=
-at.com> wrote:
-> >> >>
-> >> >>     On Sun, 23 Jun 2019 10:06:49 +0300 <sameehj@amazon.com> wrote:
-> >> >>
-> >> >>     > This commit implements the basic functionality of drop/pass l=
-ogic in the
-> >> >>     > ena driver.
-> >> >>
-> >> >>     Usually we require a driver to implement all the XDP return cod=
-es,
-> >> >>     before we accept it.  But as Daniel and I discussed with Zorik =
-during
-> >> >>     NetConf[1], we are going to make an exception and accept the dr=
-iver
-> >> >>     if you also implement XDP_TX.
-> >> >>
-> >> >>     As we trust that Zorik/Amazon will follow and implement XDP_RED=
-IRECT
-> >> >>     later, given he/you wants AF_XDP support which requires XDP_RED=
-IRECT.
-> >> >>
-> >> >> Jesper, thanks for your comments and very helpful discussion during
-> >> >> NetConf! That's the plan, as we agreed. From our side I would like =
-to
-> >> >> reiterate again the importance of multi-buffer support by xdp frame=
-.
-> >> >> We would really prefer not to see our MTU shrinking because of xdp
-> >> >> support.
-> >> >
-> >> > Okay we really need to make a serious attempt to find a way to suppo=
-rt
-> >> > multi-buffer packets with XDP. With the important criteria of not
-> >> > hurting performance of the single-buffer per packet design.
-> >> >
-> >> > I've created a design document[2], that I will update based on our
-> >> > discussions: [2] https://github.com/xdp-project/xdp-project/blob/mas=
-ter/areas/core/xdp-multi-buffer01-design.org
-> >> >
-> >> > The use-case that really convinced me was Eric's packet header-split=
-.
-
-Thanks for starting this discussion Jesper!
-
-> >> >
-> >> >
-> >> > Lets refresh: Why XDP don't have multi-buffer support:
-> >> >
-> >> > XDP is designed for maximum performance, which is why certain driver=
--level
-> >> > use-cases were not supported, like multi-buffer packets (like jumbo-=
-frames).
-> >> > As it e.g. complicated the driver RX-loop and memory model handling.
-> >> >
-> >> > The single buffer per packet design, is also tied into eBPF Direct-A=
-ccess
-> >> > (DA) to packet data, which can only be allowed if the packet memory =
-is in
-> >> > contiguous memory.  This DA feature is essential for XDP performance=
-.
-> >> >
-> >> >
-> >> > One way forward is to define that XDP only get access to the first
-> >> > packet buffer, and it cannot see subsequent buffers. For XDP_TX and
-> >> > XDP_REDIRECT to work then XDP still need to carry pointers (plus
-> >> > len+offset) to the other buffers, which is 16 bytes per extra buffer=
-.
-> >>
-> >> Yeah, I think this would be reasonable. As long as we can have a
-> >> metadata field with the full length + still give XDP programs the
-> >> ability to truncate the packet (i.e., discard the subsequent pages)
-> >
-> > You touch upon some interesting complications already:
-> >
-> > 1. It is valuable for XDP bpf_prog to know "full" length?
-> >    (if so, then we need to extend xdp ctx with info)
+>This patch always enable bonding's vlan tx offload, pass the vlan
+>packets to the slave devices with vlan tci, let them to handle
+>vlan implementation.
 >
-> Valuable, quite likely. A hard requirement, probably not (for all use
-> cases).
+>Fixes: 278339a42a1b ("bonding: propogate vlan_features to bonding master")
+>Suggested-by: Jiri Pirko <jiri@resnulli.us>
+>Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 
-Agreed.
+Acked-by: Jiri Pirko <jiri@mellanox.com>
 
-One common validation use would be to drop any packets whose header
-length disagrees with the actual packet length.
-
-> >  But if we need to know the full length, when the first-buffer is
-> >  processed. Then realize that this affect the drivers RX-loop, because
-> >  then we need to "collect" all the buffers before we can know the
-> >  length (although some HW provide this in first descriptor).
-> >
-> >  We likely have to change drivers RX-loop anyhow, as XDP_TX and
-> >  XDP_REDIRECT will also need to "collect" all buffers before the packet
-> >  can be forwarded. (Although this could potentially happen later in
-> >  driver loop when it meet/find the End-Of-Packet descriptor bit).
-
-Yes, this might be quite a bit of refactoring of device driver code.
-
-Should we move forward with some initial constraints, e.g., no
-XDP_REDIRECT, no "full" length and no bpf_xdp_adjust_tail?
-
-That already allows many useful programs.
-
-As long as we don't arrive at a design that cannot be extended with
-those features later.
-
-> >
-> >
-> > 2. Can we even allow helper bpf_xdp_adjust_tail() ?
-> >
-> >  Wouldn't it be easier to disallow a BPF-prog with this helper, when
-> >  driver have configured multi-buffer?
->
-> Easier, certainly. But then it's even easier to not implement this at
-> all ;)
->
-> >  Or will it be too restrictive, if jumbo-frame is very uncommon and
-> >  only enabled because switch infra could not be changed (like Amazon
-> >  case).
-
-Header-split, LRO and jumbo frame are certainly not limited to the Amazon c=
-ase.
-
-> I think it would be preferable to support it; but maybe we can let that
-> depend on how difficult it actually turns out to be to allow it?
->
-> >  Perhaps it is better to let bpf_xdp_adjust_tail() fail runtime?
->
-> If we do disallow it, I think I'd lean towards failing the call at
-> runtime...
-
-Disagree. I'd rather have a program fail at load if it depends on
-multi-frag support while the (driver) implementation does not yet
-support it.
+Could you please do the same for team? Thanks!
