@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 79BB6571CA
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 21:31:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2F95571C1
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 21:30:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726513AbfFZTae (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726542AbfFZTae (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 26 Jun 2019 15:30:34 -0400
 Received: from mga14.intel.com ([192.55.52.115]:41403 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726239AbfFZTae (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726341AbfFZTae (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 26 Jun 2019 15:30:34 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -17,17 +17,22 @@ Received: from fmsmga002.fm.intel.com ([10.253.24.26])
   by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 26 Jun 2019 12:30:34 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.63,420,1557212400"; 
-   d="scan'208";a="188762452"
+   d="scan'208";a="188762456"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
-  by fmsmga002.fm.intel.com with ESMTP; 26 Jun 2019 12:30:33 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 26 Jun 2019 12:30:34 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com
-Subject: [net-next 00/10][pull request] Intel Wired LAN Driver Updates 2019-06-26
-Date:   Wed, 26 Jun 2019 12:30:53 -0700
-Message-Id: <20190626193103.2169-1-jeffrey.t.kirsher@intel.com>
+Cc:     "Mauro S. M. Rodrigues" <maurosr@linux.vnet.ibm.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Subject: [net-next 01/10] ixgbe: Check DDM existence in transceiver before access
+Date:   Wed, 26 Jun 2019 12:30:54 -0700
+Message-Id: <20190626193103.2169-2-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190626193103.2169-1-jeffrey.t.kirsher@intel.com>
+References: <20190626193103.2169-1-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -35,85 +40,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series contains updates to ixgbe and i40e only.
+From: "Mauro S. M. Rodrigues" <maurosr@linux.vnet.ibm.com>
 
-Mauro S. M. Rodrigues update the ixgbe driver to handle transceivers who
-comply with SFF-8472 but do not implement the Digital Diagnostic
-Monitoring (DOM) interface.  Update the driver to check the necessary
-bits to see if DOM is implemented before trying to read the additional
-256 bytes in the EEPROM for DOM data.
+Some transceivers may comply with SFF-8472 but not implement the Digital
+Diagnostic Monitoring (DDM) interface described in it. The existence of
+such area is specified by bit 6 of byte 92, set to 1 if implemented.
 
-Young Xiao fixes a potential divide by zero issue in ixgbe driver.
+Currently, due to not checking this bit ixgbe fails trying to read SFP
+module's eeprom with the follow message:
 
-Aleksandr fixes i40e to recognize 2.5 and 5.0 GbE link speeds so that it
-is not reported as "Unknown bps".  Fixes the driver to read the firmware
-LLDP agent status during DCB initialization, and to properly log the
-LLDP agent status to help with debugging when DCB fails to initialize.
+ethtool -m enP51p1s0f0
+Cannot get Module EEPROM data: Input/output error
 
-Martyna fixes i40e for the missing supported and advertised link modes
-information in ethtool.
+Because it fails to read the additional 256 bytes in which it was assumed
+to exist the DDM data.
 
-Jake fixes a function header comment that was incorrect for a PTP
-function in i40e.
+This issue was noticed using a Mellanox Passive DAC PN 01FT738. The eeprom
+data was confirmed by Mellanox as correct and present in other Passive
+DACs in from other manufacturers.
 
-Maciej fixes an issue for i40e when a XDP program is loaded the
-descriptor count gets reset to the default value, resolve the issue by
-making the current descriptor count persistent across resets.
+Signed-off-by: "Mauro S. M. Rodrigues" <maurosr@linux.vnet.ibm.com>
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+---
+ drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c | 3 ++-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_phy.h     | 1 +
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-Alice corrects a copyright date which she found to be incorrect.
-
-Piotr adds a log entry when the traffic class 0 is added or deleted, which
-was not being logged previously.
-
-Gustavo A. R. Silva updates i40e to use struct_size() where possible.
-
-The following are changes since commit 3b525691529b01cbea03ce07e5df487da5e44a31:
-  ipv6: fix suspicious RCU usage in rt6_dump_route()
-and are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 40GbE
-
-Aleksandr Loktionov (2):
-  i40e: fix 'Unknown bps' in dmesg for 2.5Gb/5Gb speeds
-  i40e: missing priorities for any QoS traffic
-
-Alice Michael (1):
-  i40e: update copyright string
-
-Gustavo A. R. Silva (1):
-  i40e/i40e_virtchnl_pf: Use struct_size() in kzalloc()
-
-Jacob Keller (1):
-  i40e: fix incorrect function documentation comment
-
-Maciej Fijalkowski (1):
-  i40e: Fix descriptor count manipulation
-
-Martyna Szapar (1):
-  i40e: Fix for missing "link modes" info in ethtool
-
-Mauro S. M. Rodrigues (1):
-  ixgbe: Check DDM existence in transceiver before access
-
-Piotr Kwapulinski (1):
-  i40e: Add log entry while creating or deleting TC0
-
-Young Xiao (1):
-  ixgbevf: fix possible divide by zero in ixgbevf_update_itr
-
- drivers/net/ethernet/intel/i40e/i40e.h        |  3 +-
- drivers/net/ethernet/intel/i40e/i40e_common.c |  3 +-
- .../net/ethernet/intel/i40e/i40e_debugfs.c    |  5 +-
- .../net/ethernet/intel/i40e/i40e_ethtool.c    |  4 +
- drivers/net/ethernet/intel/i40e/i40e_main.c   | 99 ++++++++++++++++---
- .../net/ethernet/intel/i40e/i40e_prototype.h  |  4 +
- drivers/net/ethernet/intel/i40e/i40e_ptp.c    |  3 +-
- .../ethernet/intel/i40e/i40e_virtchnl_pf.c    | 15 ++-
- .../net/ethernet/intel/ixgbe/ixgbe_ethtool.c  |  3 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_phy.h  |  1 +
- .../net/ethernet/intel/ixgbevf/ixgbevf_main.c |  3 +
- include/linux/avf/virtchnl.h                  |  4 +
- 12 files changed, 115 insertions(+), 32 deletions(-)
-
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
+index acba067cc15a..7c52ae8ac005 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ethtool.c
+@@ -3226,7 +3226,8 @@ static int ixgbe_get_module_info(struct net_device *dev,
+ 		page_swap = true;
+ 	}
+ 
+-	if (sff8472_rev == IXGBE_SFF_SFF_8472_UNSUP || page_swap) {
++	if (sff8472_rev == IXGBE_SFF_SFF_8472_UNSUP || page_swap ||
++	    !(addr_mode & IXGBE_SFF_DDM_IMPLEMENTED)) {
+ 		/* We have a SFP, but it does not support SFF-8472 */
+ 		modinfo->type = ETH_MODULE_SFF_8079;
+ 		modinfo->eeprom_len = ETH_MODULE_SFF_8079_LEN;
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_phy.h b/drivers/net/ethernet/intel/ixgbe/ixgbe_phy.h
+index 214b01085718..6544c4539c0d 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_phy.h
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_phy.h
+@@ -45,6 +45,7 @@
+ #define IXGBE_SFF_SOFT_RS_SELECT_10G		0x8
+ #define IXGBE_SFF_SOFT_RS_SELECT_1G		0x0
+ #define IXGBE_SFF_ADDRESSING_MODE		0x4
++#define IXGBE_SFF_DDM_IMPLEMENTED		0x40
+ #define IXGBE_SFF_QSFP_DA_ACTIVE_CABLE		0x1
+ #define IXGBE_SFF_QSFP_DA_PASSIVE_CABLE		0x8
+ #define IXGBE_SFF_QSFP_CONNECTOR_NOT_SEPARABLE	0x23
 -- 
 2.21.0
 
