@@ -2,77 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF4D556D9D
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 17:26:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29D2156DA6
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 17:29:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728204AbfFZP0o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 11:26:44 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:43963 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726157AbfFZP0o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 11:26:44 -0400
-Received: by mail-ot1-f66.google.com with SMTP id i8so2903248oth.10
-        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 08:26:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=s0x4A/TQS1LfVdi1Xg+m1+bnLyVXHGVn2+UTeK68wvs=;
-        b=Aqb5HWvLki1YGJ1YsVi+ATLV33Z+GW6mwwdsTYF7eeNXs2dwFXyeVQ93NgwafFAMGR
-         4kLBOn3AaVd7oUDccklFTvlW1k1AeeEKK1B2KKSp2b/fyLp3WXB0q+nMCD7/zVkNMY3u
-         hFPSaSyadSEATbu4Aq0P+DANb2Wb34lwF5Cig=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=s0x4A/TQS1LfVdi1Xg+m1+bnLyVXHGVn2+UTeK68wvs=;
-        b=cvm2WNHDDfxtxbZLpAjT29JbDtCV7kZQ2qP7UCmuFRYthwfr8Za5RSDCQgikzZfFcv
-         ENcBGDqzVHi5WkllcmQH5/1nGN4qolqJKWdGwPB4SjgSEyCXPcN8i1PR2UEwiENJBqgD
-         sN+uMUso8D/L3otsD/4m1tbXSoUfF1fedX62TLcp68zwSuTZRl5N9OpOhVk/aBc9YzJL
-         lqRD02IbhLfZABdatJ2zbhcVZ2tz1in+bGyZTPw190XmLMEkuJeWAtuAqsDp2SKTON3Y
-         c7j5Yt2RN2DbH9nltHSVFHzSii7sVzoJ1FDnFxXHHFemtB5M5QjoZzm7ZQZ0rZU6CrlG
-         9lsQ==
-X-Gm-Message-State: APjAAAXdvLgjibOUWBHLR2DQYP4DREIcC/2JBBLoLVAGO/s2aWF9idqO
-        Mr7vuayVU70qdiGxw6MbUT5Hy+yiu4tKCwqhxM3v0w==
-X-Google-Smtp-Source: APXvYqxgQL7aUuJp4ttGkstXm39VselsmJzbDYiNcY0AmiHXTy2/MYeK51fkoZtnMqFYOeBfxVTubhmfVtoXtpM6Ez8=
-X-Received: by 2002:a05:6830:1485:: with SMTP id s5mr3682097otq.132.1561562803605;
- Wed, 26 Jun 2019 08:26:43 -0700 (PDT)
+        id S1727660AbfFZP3o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 11:29:44 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:19116 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725958AbfFZP3o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 11:29:44 -0400
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 4A8C8D118A354417CDE0;
+        Wed, 26 Jun 2019 23:29:37 +0800 (CST)
+Received: from [127.0.0.1] (10.133.213.239) by DGGEMS402-HUB.china.huawei.com
+ (10.3.19.202) with Microsoft SMTP Server id 14.3.439.0; Wed, 26 Jun 2019
+ 23:29:31 +0800
+Subject: Re: [PATCH] bonding: Always enable vlan tx offload
+To:     Jiri Pirko <jiri@resnulli.us>
+References: <20190624135007.GA17673@nanopsycho>
+ <20190626080844.20796-1-yuehaibing@huawei.com>
+ <20190626152505.GB2424@nanopsycho>
+CC:     <davem@davemloft.net>, <sdf@google.com>, <jianbol@mellanox.com>,
+        <jiri@mellanox.com>, <mirq-linux@rere.qmqm.pl>,
+        <willemb@google.com>, <sdf@fomichev.me>, <j.vosburgh@gmail.com>,
+        <vfalico@gmail.com>, <andy@greyhouse.net>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+From:   Yuehaibing <yuehaibing@huawei.com>
+Message-ID: <498bf1cb-1fb8-05a8-482a-79f37bf812dc@huawei.com>
+Date:   Wed, 26 Jun 2019 23:29:30 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
 MIME-Version: 1.0
-References: <20190625182303.874270-1-songliubraving@fb.com>
- <20190625182303.874270-2-songliubraving@fb.com> <CACAyw99isFcFhnrmagmzPPR1vNGqcmDU+Pq7SWeeZV8RSpeBug@mail.gmail.com>
- <3AE4213C-9DFA-407F-B8D4-DB00950E577D@fb.com>
-In-Reply-To: <3AE4213C-9DFA-407F-B8D4-DB00950E577D@fb.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Wed, 26 Jun 2019 16:26:32 +0100
-Message-ID: <CACAyw9-MAXOsAz7DnCBq+32yc575TEiwm_6P-3KWKmZWmAqUfg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190626152505.GB2424@nanopsycho>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.133.213.239]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 26 Jun 2019 at 16:19, Song Liu <songliubraving@fb.com> wrote:
-> > I know nothing about the scheduler, so pardon my ignorance. Does
-> > TASK_BPF_FLAG_PERMITTED apply per user-space process, or per thread?
->
-> It is per thread. clone() also clears the bit. I will make it more
-> clear int the commit log.
+On 2019/6/26 23:25, Jiri Pirko wrote:
+> Wed, Jun 26, 2019 at 10:08:44AM CEST, yuehaibing@huawei.com wrote:
+>> We build vlan on top of bonding interface, which vlan offload
+>> is off, bond mode is 802.3ad (LACP) and xmit_hash_policy is
+>> BOND_XMIT_POLICY_ENCAP34.
+>>
+>> Because vlan tx offload is off, vlan tci is cleared and skb push
+>> the vlan header in validate_xmit_vlan() while sending from vlan
+>> devices. Then in bond_xmit_hash, __skb_flow_dissect() fails to
+>> get information from protocol headers encapsulated within vlan,
+>> because 'nhoff' is points to IP header, so bond hashing is based
+>> on layer 2 info, which fails to distribute packets across slaves.
+>>
+>> This patch always enable bonding's vlan tx offload, pass the vlan
+>> packets to the slave devices with vlan tci, let them to handle
+>> vlan implementation.
+>>
+>> Fixes: 278339a42a1b ("bonding: propogate vlan_features to bonding master")
+>> Suggested-by: Jiri Pirko <jiri@resnulli.us>
+>> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> 
+> Acked-by: Jiri Pirko <jiri@mellanox.com>
+> 
+> Could you please do the same for team? Thanks!
 
-In that case this is going to be very hard if not impossible to use
-from languages that
-don't allow controlling threads, aka Go. I'm sure there are other
-examples as well.
+Sure, will send it, thank you!
 
-Is it possible to make this per-process instead?
+> 
+> .
+> 
 
--- 
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
-
-www.cloudflare.com
