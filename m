@@ -2,134 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A9EE56B04
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 15:45:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61A9F56B21
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 15:48:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727736AbfFZNph (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 09:45:37 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:40447 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727218AbfFZNph (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 09:45:37 -0400
-Received: by mail-wr1-f65.google.com with SMTP id p11so2814795wre.7
-        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 06:45:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=7tUcjEIGOUMyTZAWVC2wECe2ALULgiMshtEgtZfDDDE=;
-        b=JlslCBrgTZOOYBjJKLiFH+mTafl8KV9F7LEfiLvWf6CdNbdO2HasX9wFN0PpFQ/W7B
-         sw7kBSfemQ/xS+GID6435mlAlTYpHhjbD1ogGjb927tfuB9WGr3laAKlgkj9/F97/EE1
-         l/PCwCCSrbPcjx25jgyMCr4c024NYLt1Wp6pk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=7tUcjEIGOUMyTZAWVC2wECe2ALULgiMshtEgtZfDDDE=;
-        b=g5NKp3OaWqNm31PkiuVlo0HN6XEe3y7k40y3QR6T05V6GZEl7hm32lsXLTXYWNkqNQ
-         V5uUtOtCKmLQ66yOzbzcK26uZjShj+RukhqOyIblUN5wUlVEmiNxagum/1dwa5r+eM4I
-         InOS+Wd5u06wfVWo5j513vBFNr89LbokYTi3pYgkSKgOthY1muxrSmvI9EKLJGNjtJST
-         qloLaH5PAgwOJJJUUcrqF/4JsTiUcDhjK0s9pK8MECX/bTTvv3kfoHobwN+mwRw//3gZ
-         YiKPZYbi/6ctrZxEZUtsqkuDi+Qvn4q2iil4kP7KcZ/2JugavvZNTEO4QmKjMCF+BbKM
-         SDVA==
-X-Gm-Message-State: APjAAAVZBQAGfnkjCqzpfefTK51iQ2VELjG9FLUXcjH5BlHdIxfWOJfi
-        MkSQ6nQ2u2YJQM2kHMaJfOFwjg==
-X-Google-Smtp-Source: APXvYqyglw1PiKhu7aR0GO24vzL+VapzchL3TP1fNxVlf0JCVS5YfLSQHrvNjtqHyr588vcNHMFs7g==
-X-Received: by 2002:adf:f544:: with SMTP id j4mr3848052wrp.150.1561556734657;
-        Wed, 26 Jun 2019 06:45:34 -0700 (PDT)
-Received: from [192.168.51.243] ([78.128.78.220])
-        by smtp.gmail.com with ESMTPSA id h21sm2970236wmb.47.2019.06.26.06.45.29
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Wed, 26 Jun 2019 06:45:34 -0700 (PDT)
-Subject: Re: [PATCH net-next 2/5] net: sched: em_ipt: set the family based on
- the protocol when matching
-To:     Eyal Birger <eyal.birger@gmail.com>
-Cc:     netdev@vger.kernel.org, roopa@cumulusnetworks.com,
-        pablo@netfilter.org, xiyou.wangcong@gmail.com, davem@davemloft.net,
-        jiri@resnulli.us, jhs@mojatatu.com
-References: <20190626115855.13241-1-nikolay@cumulusnetworks.com>
- <20190626115855.13241-3-nikolay@cumulusnetworks.com>
- <20190626163353.6d5535cb@jimi>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <9a3be271-af15-3fef-9612-7a3232d09b32@cumulusnetworks.com>
-Date:   Wed, 26 Jun 2019 16:45:28 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <20190626163353.6d5535cb@jimi>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1728094AbfFZNs3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 09:48:29 -0400
+Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:51124 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727868AbfFZNry (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 09:47:54 -0400
+Received: from mailhost.synopsys.com (mdc-mailhost1.synopsys.com [10.225.0.209])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id CF748C0C4F;
+        Wed, 26 Jun 2019 13:47:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1561556874; bh=LSk/dW4zyxmZMD77PMR2MqUNJZFP8fAWo5ecqoxYj2k=;
+        h=From:To:Cc:Subject:Date:From;
+        b=dxu385K0Z1Us4dLKCUXhHFLQ9a1FnF8qgDXpXo9nNWtPFFE195Sqp6mQ9CtnxsM9c
+         GR+h7CTknyvKHhoKStRtCUszTp1v6BJU989CZ/X2rGrSMJExaZrsAM6pTZSAVN2F+T
+         hnr7sPtE6BVKF/UTywPvmdkxo64EzrMohYIhJsme8P5vn3MDPlKL6kFD94nlTuuJss
+         YVaE8VRUzps8mDRa8+DKPfiCKeZWD09r8aWYCPv+sj7U+egiPpiUzseBDtF0PKtTVn
+         DzlfXIoazo12zr1FmDQA/9AvuTwdW4iMtmzysSOsg5mlw8PPJ1/tZvfgiTIlM0cYJF
+         QN/UCGDzSe0Ig==
+Received: from de02.synopsys.com (germany.internal.synopsys.com [10.225.17.21])
+        by mailhost.synopsys.com (Postfix) with ESMTP id E4E90A0063;
+        Wed, 26 Jun 2019 13:47:51 +0000 (UTC)
+Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
+        by de02.synopsys.com (Postfix) with ESMTP id A22F93B557;
+        Wed, 26 Jun 2019 15:47:51 +0200 (CEST)
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        Joao Pinto <Joao.Pinto@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>
+Subject: [PATCH net-next 00/10] net: stmmac: 10GbE using XGMAC
+Date:   Wed, 26 Jun 2019 15:47:34 +0200
+Message-Id: <cover.1561556555.git.joabreu@synopsys.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26/06/2019 16:33, Eyal Birger wrote:
-> Hi Nikolay,
->    
-> On Wed, 26 Jun 2019 14:58:52 +0300
-> Nikolay Aleksandrov <nikolay@cumulusnetworks.com> wrote:
-> 
->> Set the family based on the protocol otherwise protocol-neutral
->> matches will have wrong information (e.g. NFPROTO_UNSPEC). In
->> preparation for using NFPROTO_UNSPEC xt matches.
->>
->> Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
->> ---
->>  net/sched/em_ipt.c | 4 +++-
->>  1 file changed, 3 insertions(+), 1 deletion(-)
->>
->> diff --git a/net/sched/em_ipt.c b/net/sched/em_ipt.c
->> index 64dbafe4e94c..23965a071177 100644
->> --- a/net/sched/em_ipt.c
->> +++ b/net/sched/em_ipt.c
->> @@ -189,10 +189,12 @@ static int em_ipt_match(struct sk_buff *skb,
->> struct tcf_ematch *em, case htons(ETH_P_IP):
->>  		if (!pskb_network_may_pull(skb, sizeof(struct
->> iphdr))) return 0;
->> +		state.pf = NFPROTO_IPV4;
->>  		break;
->>  	case htons(ETH_P_IPV6):
->>  		if (!pskb_network_may_pull(skb, sizeof(struct
->> ipv6hdr))) return 0;
->> +		state.pf = NFPROTO_IPV6;
->>  		break;
->>  	default:
->>  		return 0;
->> @@ -203,7 +205,7 @@ static int em_ipt_match(struct sk_buff *skb,
->> struct tcf_ematch *em, if (skb->skb_iif)
->>  		indev = dev_get_by_index_rcu(em->net, skb->skb_iif);
->>  
->> -	nf_hook_state_init(&state, im->hook, im->match->family,
->> +	nf_hook_state_init(&state, im->hook, state.pf,
->>  			   indev ?: skb->dev, skb->dev, NULL,
->> em->net, NULL); 
->>  	acpar.match = im->match;
-> 
-> I think this change is incompatible with current behavior.
-> 
-> Consider the 'policy' match which matches the packet's xfrm state (sec_path)
-> with the provided user space parameters. The sec_path includes information
-> about the encapsulating packet's parameters whereas the current skb points to
-> the encapsulated packet, and the match is done on the encapsulating
-> packet's info.
-> 
-> So if you have an IPv6 packet encapsulated within an IPv4 packet, the match
-> parameters should be done using IPv4 parameters, not IPv6.
-> 
-> Maybe use the packet's family only if the match family is UNSPEC?
-> 
-> Eyal.
-> 
+Support for 10Gb Link using XGMAC core plus some performance tweaks.
 
-Hi Eyal,
-I see your point, I was wondering about the xfrm cases. :)
-In such case I think we can simplify the set and do it only on UNSPEC matches as you suggest.
+Tested in a PCI based setup.
 
-Maybe we should enforce the tc protocol based on the user-specified nfproto at least from
-iproute2 otherwise people can add mismatching rules (e.g. nfproto == v6, tc proto == v4).
+iperf3 TCP results:
+	TSO ON, MTU=1500, TX Queues = 1, RX Queues = 1, Flow Control ON
+	Pinned CPU (-A), Zero-Copy (-Z)
 
-Thanks,
- Nik
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-600.00 sec   643 GBytes  9.21 Gbits/sec    1             sender
+[  5]   0.00-600.00 sec   643 GBytes  9.21 Gbits/sec                  receiver
+
+Cc: Joao Pinto <jpinto@synopsys.com>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+Cc: Alexandre Torgue <alexandre.torgue@st.com>
+
+Jose Abreu (10):
+  net: stmmac: dwxgmac: Enable EDMA by default
+  net: stmmac: Do not try to enable PHY EEE if MAC does not support it
+  net: stmmac: Decrease default RX Watchdog value
+  net: stmmac: dwxgmac: Fix the undefined burst setting
+  net: stmmac: Add the missing speeds that XGMAC supports
+  net: stmmac: Do not disable interrupts when cleaning TX
+  net: stmmac: Enable support for > 32 Bits addressing in XGMAC
+  net: stmmac: Update RX Tail Pointer to last free entry
+  net: stmmac: Only disable interrupts if NAPI is scheduled
+  net: stmmac: Try to get C45 PHY if everything else fails
+
+ drivers/net/ethernet/stmicro/stmmac/common.h       |   9 +-
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h     |  14 +-
+ .../net/ethernet/stmicro/stmmac/dwxgmac2_core.c    |  14 +-
+ .../net/ethernet/stmicro/stmmac/dwxgmac2_descs.c   |   4 +-
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c |  27 +++-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  | 165 ++++++++++++++++-----
+ 6 files changed, 178 insertions(+), 55 deletions(-)
+
+-- 
+2.7.4
+
