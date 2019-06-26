@@ -2,233 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AFCCE56F0F
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 18:46:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B7B756F16
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 18:48:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726341AbfFZQqM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 12:46:12 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:37096 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726227AbfFZQqM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 12:46:12 -0400
-Received: by mail-pl1-f195.google.com with SMTP id bh12so1757701plb.4;
-        Wed, 26 Jun 2019 09:46:11 -0700 (PDT)
+        id S1726387AbfFZQs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 12:48:57 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:46603 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726006AbfFZQs5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 12:48:57 -0400
+Received: by mail-wr1-f66.google.com with SMTP id n4so3501740wrw.13
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 09:48:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=HZWgIioCqoR3+EXg/6PBiByFdV7tx27KPQAGYWlWonc=;
-        b=T0BVFMdDbc8R7blh1iIOJV40p/ZB3Noy5RKBNmCtxQIqYtAokoHoQGVAKcHKH93Ld0
-         TtZOJ7tVGJ/Q7gWkNPcNHECU3J940fReBUaAwnml7LyjjM91XvXAPHKaV48TGybGKDTy
-         7Jt6UEvJgLb6dqB8CaZkgV/z7LVN1St8o8aQGJj+uACG/4KcBNW62n8zPV7eBPpLzoIq
-         iGzslun7e2MVZboD50S6vpCS/c+evQivaXCsYOB0O0xJB5W2K5RSoiqKsYJmw7QuK5ie
-         8/sG9w/ofO2plxaymxmm5PdR1F1zdIu1BQ4NrJj698em+Kpw0ErKoZ5zOeWpg7kpVEAV
-         emSw==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=OoEaJv7aaqTqsijzQaaYdkI+HMpgRA4Nz4+oOvolsqU=;
+        b=dG0Kh3Lo3L+KjkpWUyRqJHULACKCqOiHDzKZMCIhv80+LK5mAayW0rFQ63wrU0q4x8
+         Q0BbXgQ+irrQMzb0OW7JXp4ad13a6m5qbyVXQ36STSmCHIgq2/8MQxuvbbzRr3KBNB/8
+         coofV77Wy2DHdKB1ChjxSpCnSZ9ezyt96+67mw0HNqsIL3v63NlBlFa8Tc2umtPTTlGc
+         +qbIV6RR5O0yywpBNjAde9z2OKnn8g7D/GjAhjOTVZfTrALXfSirrDPQYW6rNzqPJQRD
+         E2RuWftv70iIKw7ABFMOJjbC42BbNpBdXr/AbKi3IyRTJYFyLOui4uRpsPlQd+I2W2T7
+         HktA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=HZWgIioCqoR3+EXg/6PBiByFdV7tx27KPQAGYWlWonc=;
-        b=QuEIdFWWGr4PZVFae66zyRwFzvnyUvwT7RgrpUCEgTdlyso88pnjG8Y9g+7wxoXtQd
-         e2cHXFN2eDbNuPGsIlpbOYaJdSHaqVia0Cw0KlY1Ni8ELScv5MRv1kPgCn9fCtb5ZxQU
-         zwHIio3Gfc6EvLJPr9I94yTlwIHZIzALuMjzOH/tOM38BDrxhBqhRIQXkIRKRQmejzeX
-         vLAkKIZ6ZseIOSMS5y39Bxr2ZU7GSC6wj1BerePuPmYj+RqowXHwgNFvQS7DW6eAmHsJ
-         ZZ0s7UR6FveEHyGFdFy++nie3lWimVa2akR8auh1LsLzYb+TYrziu4wNZXA+f0BVwq9r
-         IObQ==
-X-Gm-Message-State: APjAAAWF6FIGGvzUuJFLsBbsCh1rC7R0WOnupFs3tJY5skaTjTtccdC9
-        LIzHLQRfaLaUTZpxnOeV8Zk=
-X-Google-Smtp-Source: APXvYqzTYPUHPJ/HN4F8dqhfUuDuUNKBbFu4r0rAOkWzN46UrB0QNU4Bv9lF1H5/hGOXwZNJ6gwptA==
-X-Received: by 2002:a17:902:b487:: with SMTP id y7mr6358734plr.219.1561567571614;
-        Wed, 26 Jun 2019 09:46:11 -0700 (PDT)
-Received: from [172.26.110.73] ([2620:10d:c090:180::1:e729])
-        by smtp.gmail.com with ESMTPSA id j15sm21219436pfr.146.2019.06.26.09.46.10
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 26 Jun 2019 09:46:11 -0700 (PDT)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Tariq Toukan" <tariqt@mellanox.com>
-Cc:     "Alexei Starovoitov" <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>, bjorn.topel@intel.com,
-        "Magnus Karlsson" <magnus.karlsson@intel.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        "Maxim Mikityanskiy" <maximmi@mellanox.com>
-Subject: Re: [PATCH bpf-next V6 00/16] AF_XDP infrastructure improvements and
- mlx5e support
-Date:   Wed, 26 Jun 2019 09:46:09 -0700
-X-Mailer: MailMate (1.12.5r5635)
-Message-ID: <25F8D83F-4287-4D87-B79D-33BEED35956B@gmail.com>
-In-Reply-To: <1561559738-4213-1-git-send-email-tariqt@mellanox.com>
-References: <1561559738-4213-1-git-send-email-tariqt@mellanox.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=OoEaJv7aaqTqsijzQaaYdkI+HMpgRA4Nz4+oOvolsqU=;
+        b=tyoOY4jZRMIkHF8UJvLI4cvJrsPV8V8xlhLMzWAUQ1FJ4+zSMHmH2F6ca7Yz++TRiy
+         pQC+AyBVEaua/gNizDNiyLQ/Cz1b7OMgF1AZn+qraS27x1Thmik1IP+3P/Vw8x+CV2cC
+         hTBalqgYkLaq+BYt6AVbjw6CKIPkzCnFapx2FWp5cPjvAsFTNwUbDc3QjdJ0Zei+JpKK
+         IhJhVpibc4QKG1AvOUBqUAKb/IyUFXB2cELdynFd/DSa0dlrYEr62pcQSAuybzYxgcd6
+         Z/oeCGzPb2aiZNz1GP6x3AOxswUTYB+DgP+4yN+MXqISdhNrrDGKxe2Tnm5s9WximBJP
+         zt5A==
+X-Gm-Message-State: APjAAAUEgnoblJCR+hQRM/psG4b2zQPyCjIUUdkyetHqcAYrgfpqocmi
+        05BEqKRkkSVA0B3DZDkgv4xEQuBWOWM=
+X-Google-Smtp-Source: APXvYqzljHLjpMMOMI1Yqco6tVQVtYxV8w+lvdpSFV8LZdGnL4jU6y/yU8JphcP1IsxPsHN/z/ex1A==
+X-Received: by 2002:a5d:5702:: with SMTP id a2mr4649769wrv.89.1561567735012;
+        Wed, 26 Jun 2019 09:48:55 -0700 (PDT)
+Received: from localhost (ip-89-176-222-26.net.upcbroadband.cz. [89.176.222.26])
+        by smtp.gmail.com with ESMTPSA id o6sm3792212wmc.15.2019.06.26.09.48.54
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 26 Jun 2019 09:48:54 -0700 (PDT)
+Date:   Wed, 26 Jun 2019 18:48:53 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     mirq-linux@rere.qmqm.pl
+Cc:     YueHaibing <yuehaibing@huawei.com>, davem@davemloft.net,
+        sdf@google.com, jianbol@mellanox.com, jiri@mellanox.com,
+        willemb@google.com, sdf@fomichev.me, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] bonding: Always enable vlan tx offload
+Message-ID: <20190626164853.GC2424@nanopsycho>
+References: <20190624135007.GA17673@nanopsycho>
+ <20190626080844.20796-1-yuehaibing@huawei.com>
+ <20190626161337.GA18953@qmqm.qmqm.pl>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190626161337.GA18953@qmqm.qmqm.pl>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Wed, Jun 26, 2019 at 06:13:38PM CEST, mirq-linux@rere.qmqm.pl wrote:
+>On Wed, Jun 26, 2019 at 04:08:44PM +0800, YueHaibing wrote:
+>> We build vlan on top of bonding interface, which vlan offload
+>> is off, bond mode is 802.3ad (LACP) and xmit_hash_policy is
+>> BOND_XMIT_POLICY_ENCAP34.
+>> 
+>> Because vlan tx offload is off, vlan tci is cleared and skb push
+>> the vlan header in validate_xmit_vlan() while sending from vlan
+>> devices. Then in bond_xmit_hash, __skb_flow_dissect() fails to
+>> get information from protocol headers encapsulated within vlan,
+>> because 'nhoff' is points to IP header, so bond hashing is based
+>> on layer 2 info, which fails to distribute packets across slaves.
+>> 
+>> This patch always enable bonding's vlan tx offload, pass the vlan
+>> packets to the slave devices with vlan tci, let them to handle
+>> vlan implementation.
+>[...]
+>> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+>> index 407f4095a37a..799fc38c5c34 100644
+>> --- a/drivers/net/bonding/bond_main.c
+>> +++ b/drivers/net/bonding/bond_main.c
+>> @@ -4320,12 +4320,12 @@ void bond_setup(struct net_device *bond_dev)
+>>  	bond_dev->features |= NETIF_F_NETNS_LOCAL;
+>>  
+>>  	bond_dev->hw_features = BOND_VLAN_FEATURES |
+>> -				NETIF_F_HW_VLAN_CTAG_TX |
+>>  				NETIF_F_HW_VLAN_CTAG_RX |
+>>  				NETIF_F_HW_VLAN_CTAG_FILTER;
+>>  
+>>  	bond_dev->hw_features |= NETIF_F_GSO_ENCAP_ALL | NETIF_F_GSO_UDP_L4;
+>>  	bond_dev->features |= bond_dev->hw_features;
+>> +	bond_dev->features |= NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_STAG_TX;
+>>  }
+>>  
+>>  /* Destroy a bonding device.
+>> 
+>
+>I can see that bonding driver uses dev_queue_xmit() to pass packets to
+>slave links, but I can't see where in the path it does software fallback
+>for devices without HW VLAN tagging. Generally drivers that don't ever
+>do VLAN offload also ignore vlan_tci presence. Am I missing something
+>here?
 
-
-On 26 Jun 2019, at 7:35, Tariq Toukan wrote:
-
-> This series contains improvements to the AF_XDP kernel infrastructure
-> and AF_XDP support in mlx5e. The infrastructure improvements are
-> required for mlx5e, but also some of them benefit to all drivers, and
-> some can be useful for other drivers that want to implement AF_XDP.
->
-> The performance testing was performed on a machine with the following
-> configuration:
->
-> - 24 cores of Intel Xeon E5-2620 v3 @ 2.40 GHz
-> - Mellanox ConnectX-5 Ex with 100 Gbit/s link
->
-> The results with retpoline disabled, single stream:
->
-> txonly: 33.3 Mpps (21.5 Mpps with queue and app pinned to the same 
-> CPU)
-> rxdrop: 12.2 Mpps
-> l2fwd: 9.4 Mpps
->
-> The results with retpoline enabled, single stream:
->
-> txonly: 21.3 Mpps (14.1 Mpps with queue and app pinned to the same 
-> CPU)
-> rxdrop: 9.9 Mpps
-> l2fwd: 6.8 Mpps
->
-> v2 changes:
->
-> Added patches for mlx5e and addressed the comments for v1. Rebased for
-> bpf-next.
->
-> v3 changes:
->
-> Rebased for the newer bpf-next, resolved conflicts in libbpf. 
-> Addressed
-> Björn's comments for coding style. Fixed a bug in error handling flow 
-> in
-> mlx5e_open_xsk.
->
-> v4 changes:
->
-> UAPI is not changed, XSK RX queues are exposed to the kernel. The 
-> lower
-> half of the available amount of RX queues are regular queues, and the
-> upper half are XSK RX queues. The patch "xsk: Extend channels to 
-> support
-> combined XSK/non-XSK traffic" was dropped. The final patch was 
-> reworked
-> accordingly.
->
-> Added "net/mlx5e: Attach/detach XDP program safely", as the changes
-> introduced in the XSK patch base on the stuff from this one.
->
-> Added "libbpf: Support drivers with non-combined channels", which 
-> aligns
-> the condition in libbpf with the condition in the kernel.
->
-> Rebased over the newer bpf-next.
->
-> v5 changes:
->
-> In v4, ethtool reports the number of channels as 'combined' and the
-> number of XSK RX queues as 'rx' for mlx5e. It was changed, so that 
-> 'rx'
-> is 0, and 'combined' reports the double amount of channels if there is
-> an active UMEM - to make libbpf happy.
->
-> The patch for libbpf was dropped. Although it's still useful and fixes
-> things, it raises some disagreement, so I'm dropping it - it's no 
-> longer
-> useful for mlx5e anymore after the change above.
->
-> v6 changes:
->
-> As Maxim is out of office, I rebased the series on behalf of him,
-> solved some conflicts, and re-spinned.
-
-If this is just a re-spin, you can add back:
-
-Tested-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+validate_xmit_skb->validate_xmit_vlan
 
 
 >
-> Series generated against bpf-next commit:
-> 572a6928f9e3 xdp: Make __mem_id_disconnect static
->
->
-> Maxim Mikityanskiy (16):
->   net/mlx5e: Attach/detach XDP program safely
->   xsk: Add API to check for available entries in FQ
->   xsk: Add getsockopt XDP_OPTIONS
->   libbpf: Support getsockopt XDP_OPTIONS
->   xsk: Change the default frame size to 4096 and allow controlling it
->   xsk: Return the whole xdp_desc from xsk_umem_consume_tx
->   net/mlx5e: Replace deprecated PCI_DMA_TODEVICE
->   net/mlx5e: Calculate linear RX frag size considering XSK
->   net/mlx5e: Allow ICO SQ to be used by multiple RQs
->   net/mlx5e: Refactor struct mlx5e_xdp_info
->   net/mlx5e: Share the XDP SQ for XDP_TX between RQs
->   net/mlx5e: XDP_TX from UMEM support
->   net/mlx5e: Consider XSK in XDP MTU limit calculation
->   net/mlx5e: Encapsulate open/close queues into a function
->   net/mlx5e: Move queue param structs to en/params.h
->   net/mlx5e: Add XSK zero-copy support
->
->  drivers/net/ethernet/intel/i40e/i40e_xsk.c         |  12 +-
->  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c       |  15 +-
->  drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   2 +-
->  drivers/net/ethernet/mellanox/mlx5/core/en.h       | 155 ++++-
->  .../net/ethernet/mellanox/mlx5/core/en/params.c    | 108 +--
->  .../net/ethernet/mellanox/mlx5/core/en/params.h    | 118 +++-
->  drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c   | 231 +++++--
->  drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h   |  36 +-
->  .../ethernet/mellanox/mlx5/core/en/xsk/Makefile    |   1 +
->  .../net/ethernet/mellanox/mlx5/core/en/xsk/rx.c    | 192 ++++++
->  .../net/ethernet/mellanox/mlx5/core/en/xsk/rx.h    |  27 +
->  .../net/ethernet/mellanox/mlx5/core/en/xsk/setup.c | 223 +++++++
->  .../net/ethernet/mellanox/mlx5/core/en/xsk/setup.h |  25 +
->  .../net/ethernet/mellanox/mlx5/core/en/xsk/tx.c    | 111 ++++
->  .../net/ethernet/mellanox/mlx5/core/en/xsk/tx.h    |  15 +
->  .../net/ethernet/mellanox/mlx5/core/en/xsk/umem.c  | 267 ++++++++
->  .../net/ethernet/mellanox/mlx5/core/en/xsk/umem.h  |  31 +
->  .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |  25 +-
->  .../ethernet/mellanox/mlx5/core/en_fs_ethtool.c    |  18 +-
->  drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 730 
-> +++++++++++++--------
->  drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |  12 +-
->  drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    | 104 ++-
->  drivers/net/ethernet/mellanox/mlx5/core/en_stats.c | 115 +++-
->  drivers/net/ethernet/mellanox/mlx5/core/en_stats.h |  30 +
->  drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c  |  42 +-
->  .../net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c  |  14 +-
->  drivers/net/ethernet/mellanox/mlx5/core/wq.h       |   5 -
->  include/net/xdp_sock.h                             |  27 +-
->  include/uapi/linux/if_xdp.h                        |   8 +
->  net/xdp/xsk.c                                      |  36 +-
->  net/xdp/xsk_queue.h                                |  14 +
->  samples/bpf/xdpsock_user.c                         |  44 +-
->  tools/include/uapi/linux/if_xdp.h                  |   8 +
->  tools/lib/bpf/xsk.c                                |  12 +
->  tools/lib/bpf/xsk.h                                |   2 +-
->  35 files changed, 2331 insertions(+), 484 deletions(-)
->  create mode 100644 
-> drivers/net/ethernet/mellanox/mlx5/core/en/xsk/Makefile
->  create mode 100644 
-> drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
->  create mode 100644 
-> drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
->  create mode 100644 
-> drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
->  create mode 100644 
-> drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.h
->  create mode 100644 
-> drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c
->  create mode 100644 
-> drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.h
->  create mode 100644 
-> drivers/net/ethernet/mellanox/mlx5/core/en/xsk/umem.c
->  create mode 100644 
-> drivers/net/ethernet/mellanox/mlx5/core/en/xsk/umem.h
->
-> -- 
-> 1.8.3.1
+>Best Regards,
+>Michał Mirosław
