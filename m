@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BB8E56C20
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 16:36:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1DDE56C31
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 16:36:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728159AbfFZOgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1728081AbfFZOgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 26 Jun 2019 10:36:20 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:59828 "EHLO
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:59845 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727660AbfFZOgS (ORCPT
+        with ESMTP id S1727437AbfFZOgS (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 10:36:18 -0400
 Received: from Internal Mail-Server by MTLPINE2 (envelope-from tariqt@mellanox.com)
         with ESMTPS (AES256-SHA encrypted); 26 Jun 2019 17:36:16 +0300
 Received: from dev-l-vrt-206-006.mtl.labs.mlnx (dev-l-vrt-206-006.mtl.labs.mlnx [10.134.206.6])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x5QEaGY0027430;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x5QEaGY1027430;
         Wed, 26 Jun 2019 17:36:16 +0300
 From:   Tariq Toukan <tariqt@mellanox.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
@@ -26,9 +26,9 @@ Cc:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Maxim Mikityanskiy <maximmi@mellanox.com>,
         Tariq Toukan <tariqt@mellanox.com>
-Subject: [PATCH bpf-next V6 02/16] xsk: Add API to check for available entries in FQ
-Date:   Wed, 26 Jun 2019 17:35:24 +0300
-Message-Id: <1561559738-4213-3-git-send-email-tariqt@mellanox.com>
+Subject: [PATCH bpf-next V6 03/16] xsk: Add getsockopt XDP_OPTIONS
+Date:   Wed, 26 Jun 2019 17:35:25 +0300
+Message-Id: <1561559738-4213-4-git-send-email-tariqt@mellanox.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1561559738-4213-1-git-send-email-tariqt@mellanox.com>
 References: <1561559738-4213-1-git-send-email-tariqt@mellanox.com>
@@ -42,116 +42,104 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maxim Mikityanskiy <maximmi@mellanox.com>
 
-Add a function that checks whether the Fill Ring has the specified
-amount of descriptors available. It will be useful for mlx5e that wants
-to check in advance, whether it can allocate a bulk of RX descriptors,
-to get the best performance.
+Make it possible for the application to determine whether the AF_XDP
+socket is running in zero-copy mode. To achieve this, add a new
+getsockopt option XDP_OPTIONS that returns flags. The only flag
+supported for now is the zero-copy mode indicator.
 
 Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
 Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
 Acked-by: Saeed Mahameed <saeedm@mellanox.com>
 Acked-by: Björn Töpel <bjorn.topel@intel.com>
 ---
- include/net/xdp_sock.h | 21 +++++++++++++++++++++
- net/xdp/xsk.c          |  6 ++++++
- net/xdp/xsk_queue.h    | 14 ++++++++++++++
- 3 files changed, 41 insertions(+)
+ include/uapi/linux/if_xdp.h       |  8 ++++++++
+ net/xdp/xsk.c                     | 20 ++++++++++++++++++++
+ tools/include/uapi/linux/if_xdp.h |  8 ++++++++
+ 3 files changed, 36 insertions(+)
 
-diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
-index ae0f368a62bb..b6f5ebae43a1 100644
---- a/include/net/xdp_sock.h
-+++ b/include/net/xdp_sock.h
-@@ -77,6 +77,7 @@ struct xdp_sock {
- void xsk_flush(struct xdp_sock *xs);
- bool xsk_is_setup_for_bpf_map(struct xdp_sock *xs);
- /* Used from netdev driver */
-+bool xsk_umem_has_addrs(struct xdp_umem *umem, u32 cnt);
- u64 *xsk_umem_peek_addr(struct xdp_umem *umem, u64 *addr);
- void xsk_umem_discard_addr(struct xdp_umem *umem);
- void xsk_umem_complete_tx(struct xdp_umem *umem, u32 nb_entries);
-@@ -99,6 +100,16 @@ static inline dma_addr_t xdp_umem_get_dma(struct xdp_umem *umem, u64 addr)
- }
+diff --git a/include/uapi/linux/if_xdp.h b/include/uapi/linux/if_xdp.h
+index caed8b1614ff..faaa5ca2a117 100644
+--- a/include/uapi/linux/if_xdp.h
++++ b/include/uapi/linux/if_xdp.h
+@@ -46,6 +46,7 @@ struct xdp_mmap_offsets {
+ #define XDP_UMEM_FILL_RING		5
+ #define XDP_UMEM_COMPLETION_RING	6
+ #define XDP_STATISTICS			7
++#define XDP_OPTIONS			8
  
- /* Reuse-queue aware version of FILL queue helpers */
-+static inline bool xsk_umem_has_addrs_rq(struct xdp_umem *umem, u32 cnt)
-+{
-+	struct xdp_umem_fq_reuse *rq = umem->fq_reuse;
-+
-+	if (rq->length >= cnt)
-+		return true;
-+
-+	return xsk_umem_has_addrs(umem, cnt - rq->length);
-+}
-+
- static inline u64 *xsk_umem_peek_addr_rq(struct xdp_umem *umem, u64 *addr)
- {
- 	struct xdp_umem_fq_reuse *rq = umem->fq_reuse;
-@@ -146,6 +157,11 @@ static inline bool xsk_is_setup_for_bpf_map(struct xdp_sock *xs)
- 	return false;
- }
+ struct xdp_umem_reg {
+ 	__u64 addr; /* Start of packet data area */
+@@ -60,6 +61,13 @@ struct xdp_statistics {
+ 	__u64 tx_invalid_descs; /* Dropped due to invalid descriptor */
+ };
  
-+static inline bool xsk_umem_has_addrs(struct xdp_umem *umem, u32 cnt)
-+{
-+	return false;
-+}
++struct xdp_options {
++	__u32 flags;
++};
 +
- static inline u64 *xsk_umem_peek_addr(struct xdp_umem *umem, u64 *addr)
- {
- 	return NULL;
-@@ -200,6 +216,11 @@ static inline dma_addr_t xdp_umem_get_dma(struct xdp_umem *umem, u64 addr)
- 	return 0;
- }
- 
-+static inline bool xsk_umem_has_addrs_rq(struct xdp_umem *umem, u32 cnt)
-+{
-+	return false;
-+}
++/* Flags for the flags field of struct xdp_options */
++#define XDP_OPTIONS_ZEROCOPY (1 << 0)
 +
- static inline u64 *xsk_umem_peek_addr_rq(struct xdp_umem *umem, u64 *addr)
- {
- 	return NULL;
+ /* Pgoff for mmaping the rings */
+ #define XDP_PGOFF_RX_RING			  0
+ #define XDP_PGOFF_TX_RING		 0x80000000
 diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index a14e8864e4fa..b68a380f50b3 100644
+index b68a380f50b3..35ca531ac74e 100644
 --- a/net/xdp/xsk.c
 +++ b/net/xdp/xsk.c
-@@ -37,6 +37,12 @@ bool xsk_is_setup_for_bpf_map(struct xdp_sock *xs)
- 		READ_ONCE(xs->umem->fq);
- }
+@@ -650,6 +650,26 @@ static int xsk_getsockopt(struct socket *sock, int level, int optname,
  
-+bool xsk_umem_has_addrs(struct xdp_umem *umem, u32 cnt)
-+{
-+	return xskq_has_addrs(umem->fq, cnt);
-+}
-+EXPORT_SYMBOL(xsk_umem_has_addrs);
+ 		return 0;
+ 	}
++	case XDP_OPTIONS:
++	{
++		struct xdp_options opts = {};
 +
- u64 *xsk_umem_peek_addr(struct xdp_umem *umem, u64 *addr)
- {
- 	return xskq_peek_addr(umem->fq, addr);
-diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
-index 88b9ae24658d..12b49784a6d5 100644
---- a/net/xdp/xsk_queue.h
-+++ b/net/xdp/xsk_queue.h
-@@ -117,6 +117,20 @@ static inline u32 xskq_nb_free(struct xsk_queue *q, u32 producer, u32 dcnt)
- 	return q->nentries - (producer - q->cons_tail);
- }
++		if (len < sizeof(opts))
++			return -EINVAL;
++
++		mutex_lock(&xs->mutex);
++		if (xs->zc)
++			opts.flags |= XDP_OPTIONS_ZEROCOPY;
++		mutex_unlock(&xs->mutex);
++
++		len = sizeof(opts);
++		if (copy_to_user(optval, &opts, len))
++			return -EFAULT;
++		if (put_user(len, optlen))
++			return -EFAULT;
++
++		return 0;
++	}
+ 	default:
+ 		break;
+ 	}
+diff --git a/tools/include/uapi/linux/if_xdp.h b/tools/include/uapi/linux/if_xdp.h
+index caed8b1614ff..faaa5ca2a117 100644
+--- a/tools/include/uapi/linux/if_xdp.h
++++ b/tools/include/uapi/linux/if_xdp.h
+@@ -46,6 +46,7 @@ struct xdp_mmap_offsets {
+ #define XDP_UMEM_FILL_RING		5
+ #define XDP_UMEM_COMPLETION_RING	6
+ #define XDP_STATISTICS			7
++#define XDP_OPTIONS			8
  
-+static inline bool xskq_has_addrs(struct xsk_queue *q, u32 cnt)
-+{
-+	u32 entries = q->prod_tail - q->cons_tail;
-+
-+	if (entries >= cnt)
-+		return true;
-+
-+	/* Refresh the local pointer. */
-+	q->prod_tail = READ_ONCE(q->ring->producer);
-+	entries = q->prod_tail - q->cons_tail;
-+
-+	return entries >= cnt;
-+}
-+
- /* UMEM queue */
+ struct xdp_umem_reg {
+ 	__u64 addr; /* Start of packet data area */
+@@ -60,6 +61,13 @@ struct xdp_statistics {
+ 	__u64 tx_invalid_descs; /* Dropped due to invalid descriptor */
+ };
  
- static inline bool xskq_is_valid_addr(struct xsk_queue *q, u64 addr)
++struct xdp_options {
++	__u32 flags;
++};
++
++/* Flags for the flags field of struct xdp_options */
++#define XDP_OPTIONS_ZEROCOPY (1 << 0)
++
+ /* Pgoff for mmaping the rings */
+ #define XDP_PGOFF_RX_RING			  0
+ #define XDP_PGOFF_TX_RING		 0x80000000
 -- 
 1.8.3.1
 
