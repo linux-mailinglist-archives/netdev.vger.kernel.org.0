@@ -2,307 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F96656560
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 11:10:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A52245656E
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 11:12:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726673AbfFZJKe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 05:10:34 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:35259 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726329AbfFZJKe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 05:10:34 -0400
-Received: by mail-lf1-f68.google.com with SMTP id a25so1059588lfg.2
-        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 02:10:32 -0700 (PDT)
+        id S1726339AbfFZJMM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 05:12:12 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:41018 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725379AbfFZJMM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 05:12:12 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5Q99qth024365;
+        Wed, 26 Jun 2019 02:12:10 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : subject
+ : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pfpt0818;
+ bh=DX0j4kivLkXx6uJoGZB3R3U9gOpPsnS6l+9pZvUo4Og=;
+ b=UeofCBnTqVGYclhdImsT2t8fNZP2pwUImjmpIRw+hTRBHpx/QBeOCN2vzHwibDJJK4FH
+ O0NNUvK3pKiE0UnV0bvyIXmcB1Xuv75gChkwON21+9yYwxV1vIL09b/9KlD/8fLEY8WM
+ GCfr8g3+J9KM8e4k7m1RzT8GYdQ6pR944glx99ZPq/I+w/nIPRCNIN3qFtLilmZ+vFbu
+ +EuJElqWqXbOJ+Eah2eB2vVaxtbJVP9PKmrObzSgmjx/P/8lgqU0I5p2ggpO4sPuyN9V
+ BaHbEcJ0lQ1lmy+3T001CaLeD10Ysi+RB2DQGu+FPvKPAj5jmMMSXV13gCGtXdlrm7o7 Nw== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0a-0016f401.pphosted.com with ESMTP id 2tc5ht02cm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 26 Jun 2019 02:12:10 -0700
+Received: from SC-EXCH02.marvell.com (10.93.176.82) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Wed, 26 Jun
+ 2019 02:12:09 -0700
+Received: from NAM02-CY1-obe.outbound.protection.outlook.com (104.47.37.50) by
+ SC-EXCH02.marvell.com (10.93.176.82) with Microsoft SMTP Server (TLS) id
+ 15.0.1367.3 via Frontend Transport; Wed, 26 Jun 2019 02:12:08 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kinvolk.io; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=YoeqkPyuuUAa89a437Y8XeIR94IijuVYW37iJHKjXro=;
-        b=QCubpUKtrVll90cGRqb8Cq97Ey09kXjAZfiiKTih+3YGW80RSglFZRnsPIjISll9ZD
-         qF2C2a7hL5SsTky9phPAVleo1aFYfPBRMpZjhlyXV4cytIZSXYVB2b5k8w4tppDHsymp
-         9B02eWOVWuM8UbYMO7eHrhMCLl3+KLJbZJRak=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=YoeqkPyuuUAa89a437Y8XeIR94IijuVYW37iJHKjXro=;
-        b=VTo9YqtsTqTSBKqe4mhf0vqEUICBI88yL84mnZ/hiKtFO/LfPGWnq7K3GiswLH274B
-         y8OVj5enXbwr83bLbMYAebz+5/wUFeVXYKIQ36vVgNuCvtRhz3JkWlFRsrWNWspHQDQ4
-         eSKI+4Uk+9VFmWgSzC9OJOP3KhKNieIwSoX6u64mzA+SnTiLt5CjCYFZcyQ8qOCEFs+z
-         hghpM+19uyDmkZX4dGplb5vq/n39kVKtDm+yPksEVk3DX1mXLkWTb0lwUZF+/qiQU70E
-         Iklk1NpQXPgZ/gcssw9UmqoVJat0vqvZgJ1iO2t8sOQrvdI0zpKmIOdBU1ZhiU3R+Pio
-         Ck0A==
-X-Gm-Message-State: APjAAAVnJmqCHwuOn388FXuuTLyKPyOtsYNgxqjI41/cj/Bm/C6exz9H
-        JfoAyYIOFH5/Y56xc/JdPHjuimywAyfEgVmPtBVAjw==
-X-Google-Smtp-Source: APXvYqymZ7lUVgJdBpBi6jtOw+JA7FkCqSjQ7i/H6+FJ0lYr8Np2FRYIbmUefQFTW6IHKYweDRBGVB5Ju2417aCZP40=
-X-Received: by 2002:ac2:418f:: with SMTP id z15mr1951625lfh.177.1561540231825;
- Wed, 26 Jun 2019 02:10:31 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190625194215.14927-1-krzesimir@kinvolk.io> <20190625194215.14927-9-krzesimir@kinvolk.io>
- <20190625201220.GC10487@mini-arch>
-In-Reply-To: <20190625201220.GC10487@mini-arch>
-From:   Krzesimir Nowak <krzesimir@kinvolk.io>
-Date:   Wed, 26 Jun 2019 11:10:20 +0200
-Message-ID: <CAGGp+cE3m1+ZWFBmjTgKFEHYVJ-L1dE=+iVUXvXCxWAxRG9YTA@mail.gmail.com>
-Subject: Re: [bpf-next v2 08/10] bpf: Implement bpf_prog_test_run for perf
- event programs
-To:     Stanislav Fomichev <sdf@fomichev.me>
-Cc:     netdev@vger.kernel.org, Alban Crequy <alban@kinvolk.io>,
-        =?UTF-8?Q?Iago_L=C3=B3pez_Galeiras?= <iago@kinvolk.io>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+ d=marvell.onmicrosoft.com; s=selector2-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DX0j4kivLkXx6uJoGZB3R3U9gOpPsnS6l+9pZvUo4Og=;
+ b=X5SRD0XoluX+zLEx6+m05bqyCwZx+HeCghio2TKz2F3YsTgFvxenPVffCJX6kGjGSWkcaOgG1EjHLEx+EpRpbchJxJRPGJ+FcpTEGfqVZP8PEeSJIHaomcbowTlDNtQDe8yGArYOwsEO4KONu6HCYyCL2FUo6urru6mbRS03ZrE=
+Received: from DM6PR18MB2697.namprd18.prod.outlook.com (20.179.49.204) by
+ DM6PR18MB2634.namprd18.prod.outlook.com (20.179.106.217) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2008.16; Wed, 26 Jun 2019 09:12:04 +0000
+Received: from DM6PR18MB2697.namprd18.prod.outlook.com
+ ([fe80::4121:8e6e:23b8:b631]) by DM6PR18MB2697.namprd18.prod.outlook.com
+ ([fe80::4121:8e6e:23b8:b631%6]) with mapi id 15.20.2008.018; Wed, 26 Jun 2019
+ 09:12:04 +0000
+From:   Manish Chopra <manishc@marvell.com>
+To:     Benjamin Poirier <bpoirier@suse.com>,
+        GR-Linux-NIC-Dev <GR-Linux-NIC-Dev@marvell.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH net-next 02/16] qlge: Remove page_chunk.last_flag
+Thread-Topic: [PATCH net-next 02/16] qlge: Remove page_chunk.last_flag
+Thread-Index: AQHVJOFETd6q1ujOhECG/ajaT47DXaattHuw
+Date:   Wed, 26 Jun 2019 09:12:04 +0000
+Message-ID: <DM6PR18MB2697AB743E5965B602229348ABE20@DM6PR18MB2697.namprd18.prod.outlook.com>
+References: <20190617074858.32467-1-bpoirier@suse.com>
+ <20190617074858.32467-2-bpoirier@suse.com>
+In-Reply-To: <20190617074858.32467-2-bpoirier@suse.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [114.143.185.87]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 3440f6b7-a8be-45d5-4a81-08d6fa165b35
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:DM6PR18MB2634;
+x-ms-traffictypediagnostic: DM6PR18MB2634:
+x-microsoft-antispam-prvs: <DM6PR18MB26341F8FC0823A2089A88928ABE20@DM6PR18MB2634.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2089;
+x-forefront-prvs: 00808B16F3
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(346002)(136003)(366004)(39860400002)(376002)(189003)(199004)(13464003)(9686003)(81156014)(5660300002)(55016002)(66556008)(64756008)(66446008)(66066001)(52536014)(76176011)(8936002)(478600001)(25786009)(53936002)(7696005)(66476007)(186003)(6246003)(26005)(71190400001)(53546011)(81166006)(102836004)(86362001)(2906002)(6506007)(71200400001)(6116002)(8676002)(3846002)(256004)(14454004)(6436002)(99286004)(33656002)(110136005)(74316002)(446003)(316002)(76116006)(11346002)(229853002)(486006)(73956011)(2501003)(476003)(305945005)(66946007)(68736007)(7736002);DIR:OUT;SFP:1101;SCL:1;SRVR:DM6PR18MB2634;H:DM6PR18MB2697.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: marvell.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: j6wTBkM39xArejc8kEzNzi8/xRB2FW6yAhrZ4lfz0cMnpe4ljqqAHK5epVaicgkQDTcT8S6vSng2Qov/X8EGrmY8XVOjxCXsfri70iSwwacf9RMDS6aRK5PppLkoj35wNwk4RRzD8FLTz1ux4mxXeE88XjoVmTs3FEwfm0K4eT8SbFMMgS3Z4tRlMKVs0o+lwC5dvXpfbdnIJ3HzDcEhSCH/ENO4LODXVJfa48MNMDAhkSVZweNt9xx34HqyoHNuVOytq7ZHGgqUy37FcoTpTOvIM7lQBRCnjTsbn3fafTO/NLlyP/qNu4YZ/Twv5WTioa2D+Exj2pK9E9lmfAsos/JcYvg92i8hnFQx8PeRBALENenLSPydSIPZtyh3MHFRud4Bf1A2hW8tMgXwM+juBtO3/FHuBVqmijPW4TQCpuc=
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3440f6b7-a8be-45d5-4a81-08d6fa165b35
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Jun 2019 09:12:04.4688
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: manishc@marvell.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR18MB2634
+X-OriginatorOrg: marvell.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-26_05:,,
+ signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 25, 2019 at 10:12 PM Stanislav Fomichev <sdf@fomichev.me> wrote=
-:
->
-> On 06/25, Krzesimir Nowak wrote:
-> > As an input, test run for perf event program takes struct
-> > bpf_perf_event_data as ctx_in and struct bpf_perf_event_value as
-> > data_in. For an output, it basically ignores ctx_out and data_out.
-> >
-> > The implementation sets an instance of struct bpf_perf_event_data_kern
-> > in such a way that the BPF program reading data from context will
-> > receive what we passed to the bpf prog test run in ctx_in. Also BPF
-> > program can call bpf_perf_prog_read_value to receive what was passed
-> > in data_in.
-> >
-> > Signed-off-by: Krzesimir Nowak <krzesimir@kinvolk.io>
-> > ---
-> >  kernel/trace/bpf_trace.c                      | 107 ++++++++++++++++++
-> >  .../bpf/verifier/perf_event_sample_period.c   |   8 ++
-> >  2 files changed, 115 insertions(+)
-> >
-> > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> > index c102c240bb0b..2fa49ea8a475 100644
-> > --- a/kernel/trace/bpf_trace.c
-> > +++ b/kernel/trace/bpf_trace.c
-> > @@ -16,6 +16,8 @@
-> >
-> >  #include <asm/tlb.h>
-> >
-> > +#include <trace/events/bpf_test_run.h>
-> > +
-> >  #include "trace_probe.h"
-> >  #include "trace.h"
-> >
-> > @@ -1160,7 +1162,112 @@ const struct bpf_verifier_ops perf_event_verifi=
-er_ops =3D {
-> >       .convert_ctx_access     =3D pe_prog_convert_ctx_access,
-> >  };
-> >
-> > +static int pe_prog_test_run(struct bpf_prog *prog,
-> > +                         const union bpf_attr *kattr,
-> > +                         union bpf_attr __user *uattr)
-> > +{
-> > +     void __user *ctx_in =3D u64_to_user_ptr(kattr->test.ctx_in);
-> > +     void __user *data_in =3D u64_to_user_ptr(kattr->test.data_in);
-> > +     u32 data_size_in =3D kattr->test.data_size_in;
-> > +     u32 ctx_size_in =3D kattr->test.ctx_size_in;
-> > +     u32 repeat =3D kattr->test.repeat;
-> > +     u32 retval =3D 0, duration =3D 0;
-> > +     int err =3D -EINVAL;
-> > +     u64 time_start, time_spent =3D 0;
-> > +     int i;
-> > +     struct perf_sample_data sample_data =3D {0, };
-> > +     struct perf_event event =3D {0, };
-> > +     struct bpf_perf_event_data_kern real_ctx =3D {0, };
-> > +     struct bpf_perf_event_data fake_ctx =3D {0, };
-> > +     struct bpf_perf_event_value value =3D {0, };
-> > +
-> > +     if (ctx_size_in !=3D sizeof(fake_ctx))
-> > +             goto out;
-> > +     if (data_size_in !=3D sizeof(value))
-> > +             goto out;
-> > +
-> > +     if (copy_from_user(&fake_ctx, ctx_in, ctx_size_in)) {
-> > +             err =3D -EFAULT;
-> > +             goto out;
-> > +     }
-> Move this to net/bpf/test_run.c? I have a bpf_ctx_init helper to deal
-> with ctx input, might save you some code above wrt ctx size/etc.
+> -----Original Message-----
+> From: Benjamin Poirier <bpoirier@suse.com>
+> Sent: Monday, June 17, 2019 1:19 PM
+> To: Manish Chopra <manishc@marvell.com>; GR-Linux-NIC-Dev <GR-Linux-
+> NIC-Dev@marvell.com>; netdev@vger.kernel.org
+> Subject: [PATCH net-next 02/16] qlge: Remove page_chunk.last_flag
+>=20
+> As already done in ql_get_curr_lchunk(), this member can be replaced by a
+> simple test.
+>=20
+> Signed-off-by: Benjamin Poirier <bpoirier@suse.com>
+> ---
+>  drivers/net/ethernet/qlogic/qlge/qlge.h      |  1 -
+>  drivers/net/ethernet/qlogic/qlge/qlge_main.c | 13 +++++--------
+>  2 files changed, 5 insertions(+), 9 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/qlogic/qlge/qlge.h
+> b/drivers/net/ethernet/qlogic/qlge/qlge.h
+> index 5d9a36deda08..0a156a95e981 100644
+> --- a/drivers/net/ethernet/qlogic/qlge/qlge.h
+> +++ b/drivers/net/ethernet/qlogic/qlge/qlge.h
+> @@ -1363,7 +1363,6 @@ struct page_chunk {
+>  	char *va;		/* virt addr for this chunk */
+>  	u64 map;		/* mapping for master */
+>  	unsigned int offset;	/* offset for this chunk */
+> -	unsigned int last_flag; /* flag set for last chunk in page */
+>  };
+>=20
+>  struct bq_desc {
+> diff --git a/drivers/net/ethernet/qlogic/qlge/qlge_main.c
+> b/drivers/net/ethernet/qlogic/qlge/qlge_main.c
+> index 0bfbe11db795..038a6bfc79c7 100644
+> --- a/drivers/net/ethernet/qlogic/qlge/qlge_main.c
+> +++ b/drivers/net/ethernet/qlogic/qlge/qlge_main.c
+> @@ -1077,11 +1077,9 @@ static int ql_get_next_chunk(struct ql_adapter
+> *qdev, struct rx_ring *rx_ring,
+>  	rx_ring->pg_chunk.offset +=3D rx_ring->lbq_buf_size;
+>  	if (rx_ring->pg_chunk.offset =3D=3D ql_lbq_block_size(qdev)) {
+>  		rx_ring->pg_chunk.page =3D NULL;
+> -		lbq_desc->p.pg_chunk.last_flag =3D 1;
+>  	} else {
+>  		rx_ring->pg_chunk.va +=3D rx_ring->lbq_buf_size;
+>  		get_page(rx_ring->pg_chunk.page);
+> -		lbq_desc->p.pg_chunk.last_flag =3D 0;
+>  	}
+>  	return 0;
+>  }
+> @@ -2778,6 +2776,8 @@ static int ql_alloc_tx_resources(struct ql_adapter
+> *qdev,
+>=20
+>  static void ql_free_lbq_buffers(struct ql_adapter *qdev, struct rx_ring
+> *rx_ring)  {
+> +	unsigned int last_offset =3D ql_lbq_block_size(qdev) -
+> +		rx_ring->lbq_buf_size;
+>  	struct bq_desc *lbq_desc;
+>=20
+>  	uint32_t  curr_idx, clean_idx;
+> @@ -2787,13 +2787,10 @@ static void ql_free_lbq_buffers(struct ql_adapter
+> *qdev, struct rx_ring *rx_ring
+>  	while (curr_idx !=3D clean_idx) {
+>  		lbq_desc =3D &rx_ring->lbq[curr_idx];
+>=20
+> -		if (lbq_desc->p.pg_chunk.last_flag) {
+> -			pci_unmap_page(qdev->pdev,
+> -				lbq_desc->p.pg_chunk.map,
+> -				ql_lbq_block_size(qdev),
+> +		if (lbq_desc->p.pg_chunk.offset =3D=3D last_offset)
+> +			pci_unmap_page(qdev->pdev, lbq_desc-
+> >p.pg_chunk.map,
+> +				       ql_lbq_block_size(qdev),
+>  				       PCI_DMA_FROMDEVICE);
+> -			lbq_desc->p.pg_chunk.last_flag =3D 0;
+> -		}
+>=20
+>  		put_page(lbq_desc->p.pg_chunk.page);
+>  		lbq_desc->p.pg_chunk.page =3D NULL;
+> --
+> 2.21.0
 
-My impression about net/bpf/test_run.c was that it was a collection of
-helpers for test runs of the network-related BPF programs, because
-they are so similar to each other. So kernel/trace/bpf_trace.c looked
-like an obvious place for the test_run implementation since other perf
-trace BPF stuff was already there.
+Acked-by: Manish Chopra <manishc@marvell.com>
 
-And about bpf_ctx_init - looks useful as it seems to me that it
-handles the scenario where the size of the ctx struct grows, but still
-allows passing older version of the struct (thus smaller) from
-userspace for compatibility. Maybe that checking and copying part of
-the function could be moved into some non-static helper function, so I
-could use it and still skip the need for allocating memory for the
-context?
-
->
-> > +     if (copy_from_user(&value, data_in, data_size_in)) {
-> > +             err =3D -EFAULT;
-> > +             goto out;
-> > +     }
-> > +
-> > +     real_ctx.regs =3D &fake_ctx.regs;
-> > +     real_ctx.data =3D &sample_data;
-> > +     real_ctx.event =3D &event;
-> > +     perf_sample_data_init(&sample_data, fake_ctx.addr,
-> > +                           fake_ctx.sample_period);
-> > +     event.cpu =3D smp_processor_id();
-> > +     event.oncpu =3D -1;
-> > +     event.state =3D PERF_EVENT_STATE_OFF;
-> > +     local64_set(&event.count, value.counter);
-> > +     event.total_time_enabled =3D value.enabled;
-> > +     event.total_time_running =3D value.running;
-> > +     /* make self as a leader - it is used only for checking the
-> > +      * state field
-> > +      */
-> > +     event.group_leader =3D &event;
-> > +
-> > +     /* slightly changed copy pasta from bpf_test_run() in
-> > +      * net/bpf/test_run.c
-> > +      */
-> > +     if (!repeat)
-> > +             repeat =3D 1;
-> > +
-> > +     rcu_read_lock();
-> > +     preempt_disable();
-> > +     time_start =3D ktime_get_ns();
-> > +     for (i =3D 0; i < repeat; i++) {
-> Any reason for not using bpf_test_run?
-
-Two, mostly. One was that it is a static function and my code was
-elsewhere. Second was that it does some cgroup storage setup and I'm
-not sure if the perf event BPF program needs that.
-
->
-> > +             retval =3D BPF_PROG_RUN(prog, &real_ctx);
-> > +
-> > +             if (signal_pending(current)) {
-> > +                     err =3D -EINTR;
-> > +                     preempt_enable();
-> > +                     rcu_read_unlock();
-> > +                     goto out;
-> > +             }
-> > +
-> > +             if (need_resched()) {
-> > +                     time_spent +=3D ktime_get_ns() - time_start;
-> > +                     preempt_enable();
-> > +                     rcu_read_unlock();
-> > +
-> > +                     cond_resched();
-> > +
-> > +                     rcu_read_lock();
-> > +                     preempt_disable();
-> > +                     time_start =3D ktime_get_ns();
-> > +             }
-> > +     }
-> > +     time_spent +=3D ktime_get_ns() - time_start;
-> > +     preempt_enable();
-> > +     rcu_read_unlock();
-> > +
-> > +     do_div(time_spent, repeat);
-> > +     duration =3D time_spent > U32_MAX ? U32_MAX : (u32)time_spent;
-> > +     /* end of slightly changed copy pasta from bpf_test_run() in
-> > +      * net/bpf/test_run.c
-> > +      */
-> > +
-> > +     if (copy_to_user(&uattr->test.retval, &retval, sizeof(retval))) {
-> > +             err =3D -EFAULT;
-> > +             goto out;
-> > +     }
-> > +     if (copy_to_user(&uattr->test.duration, &duration, sizeof(duratio=
-n))) {
-> > +             err =3D -EFAULT;
-> > +             goto out;
-> > +     }
-> Can BPF program modify fake_ctx? Do we need/want to copy it back?
-
-Reading the pe_prog_is_valid_access function tells me that it's not
-possible - the only type of valid access is read. So maybe I should be
-stricter about the requirements for the data_out and ctx_out sizes
-(should be zero or return -EINVAL).
-
->
-> > +     err =3D 0;
-> > +out:
-> > +     trace_bpf_test_finish(&err);
-> > +     return err;
-> > +}
-> > +
-> >  const struct bpf_prog_ops perf_event_prog_ops =3D {
-> > +     .test_run       =3D pe_prog_test_run,
-> >  };
-> >
-> >  static DEFINE_MUTEX(bpf_event_mutex);
-> > diff --git a/tools/testing/selftests/bpf/verifier/perf_event_sample_per=
-iod.c b/tools/testing/selftests/bpf/verifier/perf_event_sample_period.c
-> > index 471c1a5950d8..16e9e5824d14 100644
-> > --- a/tools/testing/selftests/bpf/verifier/perf_event_sample_period.c
-> > +++ b/tools/testing/selftests/bpf/verifier/perf_event_sample_period.c
-> This should probably go in another patch.
-
-Yeah, I was wondering about it. These changes are here to avoid
-breaking the tests, since perf event program can actually be run now
-and the test_run for perf event required certain sizes for ctx and
-data.
-
-So, I will either move them to a separate patch or rework the test_run
-for perf event to accept the size between 0 and sizeof(struct
-something), so the changes in tests maybe will not be necessary.
-
->
-> > @@ -13,6 +13,8 @@
-> >       },
-> >       .result =3D ACCEPT,
-> >       .prog_type =3D BPF_PROG_TYPE_PERF_EVENT,
-> > +     .ctx_len =3D sizeof(struct bpf_perf_event_data),
-> > +     .data_len =3D sizeof(struct bpf_perf_event_value),
-> >  },
-> >  {
-> >       "check bpf_perf_event_data->sample_period half load permitted",
-> > @@ -29,6 +31,8 @@
-> >       },
-> >       .result =3D ACCEPT,
-> >       .prog_type =3D BPF_PROG_TYPE_PERF_EVENT,
-> > +     .ctx_len =3D sizeof(struct bpf_perf_event_data),
-> > +     .data_len =3D sizeof(struct bpf_perf_event_value),
-> >  },
-> >  {
-> >       "check bpf_perf_event_data->sample_period word load permitted",
-> > @@ -45,6 +49,8 @@
-> >       },
-> >       .result =3D ACCEPT,
-> >       .prog_type =3D BPF_PROG_TYPE_PERF_EVENT,
-> > +     .ctx_len =3D sizeof(struct bpf_perf_event_data),
-> > +     .data_len =3D sizeof(struct bpf_perf_event_value),
-> >  },
-> >  {
-> >       "check bpf_perf_event_data->sample_period dword load permitted",
-> > @@ -56,4 +62,6 @@
-> >       },
-> >       .result =3D ACCEPT,
-> >       .prog_type =3D BPF_PROG_TYPE_PERF_EVENT,
-> > +     .ctx_len =3D sizeof(struct bpf_perf_event_data),
-> > +     .data_len =3D sizeof(struct bpf_perf_event_value),
-> >  },
-> > --
-> > 2.20.1
-> >
-
-
-
---=20
-Kinvolk GmbH | Adalbertstr.6a, 10999 Berlin | tel: +491755589364
-Gesch=C3=A4ftsf=C3=BChrer/Directors: Alban Crequy, Chris K=C3=BChl, Iago L=
-=C3=B3pez Galeiras
-Registergericht/Court of registration: Amtsgericht Charlottenburg
-Registernummer/Registration number: HRB 171414 B
-Ust-ID-Nummer/VAT ID number: DE302207000
