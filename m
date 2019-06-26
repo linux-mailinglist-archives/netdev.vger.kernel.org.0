@@ -2,161 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C98B257223
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 22:01:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A58D357225
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 22:01:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726369AbfFZUA7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 16:00:59 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:43230 "EHLO mx1.redhat.com"
+        id S1726431AbfFZUBd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 16:01:33 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:34616 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726104AbfFZUA6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 16:00:58 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id F23EDC07F9A6;
-        Wed, 26 Jun 2019 20:00:47 +0000 (UTC)
-Received: from carbon (ovpn-200-45.brq.redhat.com [10.40.200.45])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5D18A1001DEF;
-        Wed, 26 Jun 2019 20:00:30 +0000 (UTC)
-Date:   Wed, 26 Jun 2019 22:00:28 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     "Jonathan Lemon" <jonathan.lemon@gmail.com>
-Cc:     "Willem de Bruijn" <willemdebruijn.kernel@gmail.com>,
-        "Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?=" <toke@redhat.com>,
-        "Machulsky, Zorik" <zorik@amazon.com>,
-        "Jubran, Samih" <sameehj@amazon.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, "Woodhouse, David" <dwmw@amazon.co.uk>,
-        "Matushevsky, Alexander" <matua@amazon.com>,
-        "Bshara, Saeed" <saeedb@amazon.com>,
-        "Wilson, Matt" <msw@amazon.com>,
-        "Liguori, Anthony" <aliguori@amazon.com>,
-        "Bshara, Nafea" <nafea@amazon.com>,
-        "Tzalik, Guy" <gtzalik@amazon.com>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Saidi, Ali" <alisaidi@amazon.com>,
-        "Herrenschmidt, Benjamin" <benh@amazon.com>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>,
-        "Daniel Borkmann" <borkmann@iogearbox.net>,
-        "Ilias Apalodimas" <ilias.apalodimas@linaro.org>,
-        "Alexei Starovoitov" <alexei.starovoitov@gmail.com>,
-        "Jakub Kicinski" <jakub.kicinski@netronome.com>,
-        xdp-newbies@vger.kernel.org, brouer@redhat.com
-Subject: Re: XDP multi-buffer incl. jumbo-frames (Was: [RFC V1 net-next 1/1]
- net: ena: implement XDP drop support)
-Message-ID: <20190626220028.2bb12196@carbon>
-In-Reply-To: <99AFC1EE-E27E-4D4D-B9B8-CA2215E68E1B@gmail.com>
-References: <20190623070649.18447-1-sameehj@amazon.com>
-        <20190623070649.18447-2-sameehj@amazon.com>
-        <20190623162133.6b7f24e1@carbon>
-        <A658E65E-93D2-4F10-823D-CC25B081C1B7@amazon.com>
-        <20190626103829.5360ef2d@carbon>
-        <87a7e4d0nj.fsf@toke.dk>
-        <20190626164059.4a9511cf@carbon>
-        <87h88cbdbe.fsf@toke.dk>
-        <CA+FuTSfKnhv9rr=cDa_4m7Dd9qkEm_oabDfyvH0T0sM+fQTU=w@mail.gmail.com>
-        <99AFC1EE-E27E-4D4D-B9B8-CA2215E68E1B@gmail.com>
+        id S1726104AbfFZUBd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 16:01:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=JJMeWxm/xaxRc9qFKp93QUqmWLZydNIdKPO3b1FAYzM=; b=T2gPMGqLp35DP4lEy2PDrJEzR8
+        1qbec2hAd2TOCocm1oXGxvhgkRDIoXzwMRWZoza7BE+df0ekDE4J4AOH1JOoMussGcSf5pog4bTO+
+        GA1HoZZiTDDL7a5SnpXnqwmhjw0CURoLMHEGTOdj4hQcpiHmfR6l2nKu1uRpzq6bPopc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hgE6i-0003sn-Co; Wed, 26 Jun 2019 22:01:28 +0200
+Date:   Wed, 26 Jun 2019 22:01:28 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jose Abreu <Jose.Abreu@synopsys.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Joao Pinto <Joao.Pinto@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>
+Subject: Re: [PATCH net-next 10/10] net: stmmac: Try to get C45 PHY if
+ everything else fails
+Message-ID: <20190626200128.GH27733@lunn.ch>
+References: <cover.1561556555.git.joabreu@synopsys.com>
+ <c7d1dbac1940853c22db8215ed60181b2abe3050.1561556556.git.joabreu@synopsys.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.31]); Wed, 26 Jun 2019 20:00:58 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c7d1dbac1940853c22db8215ed60181b2abe3050.1561556556.git.joabreu@synopsys.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jun 26, 2019 at 03:47:44PM +0200, Jose Abreu wrote:
+> On PCI based setups that are connected to C45 PHY we won't have DT
+> bindings specifying what's the correct PHY type.
 
-On Wed, 26 Jun 2019 09:42:07 -0700 "Jonathan Lemon" <jonathan.lemon@gmail.com> wrote:
+You can associate a DT node to a PCI device. The driver does not have
+to do anything special, the PCI core code does all the work.
 
-> If all packets are collected together (like the bulk queue does), and 
-> then passed to XDP, this could easily be made backwards compatible.
-> If the XDP program isn't 'multi-frag' aware, then each packet is just
-> passed in individually.
+As an example look at imx6q-zii-rdu2.dts, node &pcie, which has an
+intel i210 on the pcie bus, and we need a handle to it.
 
-My proposal#1 is XDP only access first-buffer[1], as this simplifies things.
-
-(AFAIK) What you are proposing is that all the buffers are passed to
-the XDP prog (in form of a iovec).  I need some more details about your
-suggestion.
-
-Specifically:
-
-- What is the semantic when a 3 buffer packet is input and XDP prog
-choose to return XDP_DROP for packet #2 ?
-
-- Same situation of packet #2 wants a XDP_TX or redirect?
-
-
-> Of course, passing in the equivalent of a iovec requires some form of 
-> loop support on the BPF side, doesn't it?
-
-The data structure used for holding these packet buffers/segments also
-needs to be discussed.  I would either use an array of bio_vec[2] or
-skb_frag_t (aka skb_frag_struct).  The skb_frag_t would be most
-obvious, as we already have to write this when creating an SKB, in
-skb_shared_info area. (Structs listed below signature).
-
-The problem is also that size of these structs (16 bytes) per
-buffer/segment, and we likely need to support 17 segments, as this need
-to be compatible with SKBs (size 272 bytes).
-
-My idea here is that we simply use the same memory area, that we have to
-store skb_shared_info into.  As this allow us to get the SKB setup for
-free, when doing XDP_PASS or when doing SKB alloc after XDP_REDIRECT.
-
-
-[1] https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp-multi-buffer01-design.org#proposal1-xdp-only-access-first-buffer
-
-[2] https://lore.kernel.org/netdev/20190501041757.8647-1-willy@infradead.org/
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
-
-$ pahole -C skb_frag_struct vmlinux
-struct skb_frag_struct {
-	struct {
-		struct page * p;                         /*     0     8 */
-	} page;                                          /*     0     8 */
-	__u32                      page_offset;          /*     8     4 */
-	__u32                      size;                 /*    12     4 */
-
-	/* size: 16, cachelines: 1, members: 3 */
-	/* last cacheline: 16 bytes */
-};
-
-$ pahole -C bio_vec vmlinux
-struct bio_vec {
-	struct page        * bv_page;                    /*     0     8 */
-	unsigned int               bv_len;               /*     8     4 */
-	unsigned int               bv_offset;            /*    12     4 */
-
-	/* size: 16, cachelines: 1, members: 3 */
-	/* last cacheline: 16 bytes */
-};
-
-$ pahole -C skb_shared_info vmlinux
-struct skb_shared_info {
-	__u8                       __unused;             /*     0     1 */
-	__u8                       meta_len;             /*     1     1 */
-	__u8                       nr_frags;             /*     2     1 */
-	__u8                       tx_flags;             /*     3     1 */
-	short unsigned int         gso_size;             /*     4     2 */
-	short unsigned int         gso_segs;             /*     6     2 */
-	struct sk_buff     * frag_list;                  /*     8     8 */
-	struct skb_shared_hwtstamps hwtstamps;           /*    16     8 */
-	unsigned int               gso_type;             /*    24     4 */
-	u32                        tskey;                /*    28     4 */
-	atomic_t                   dataref;              /*    32     0 */
-
-	/* XXX 8 bytes hole, try to pack */
-
-	void *                     destructor_arg;       /*    40     8 */
-	skb_frag_t                 frags[17];            /*    48   272 */
-
-	/* size: 320, cachelines: 5, members: 13 */
-	/* sum members: 312, holes: 1, sum holes: 8 */
-};
+   Andrew
