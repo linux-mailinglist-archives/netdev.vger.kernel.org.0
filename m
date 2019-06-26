@@ -2,166 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D9669564DF
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 10:46:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FAF6564FC
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 10:59:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727131AbfFZIq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 04:46:29 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:36216 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726468AbfFZIq3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 04:46:29 -0400
-Received: by mail-ed1-f67.google.com with SMTP id k21so2120182edq.3;
-        Wed, 26 Jun 2019 01:46:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Fjn2sDLr8BaQ4nlJ6Hyg2HDDv8IG3PYh78Ty/uhvVI8=;
-        b=TxhVURRE2rYNtb5fcwF8krv3gy3AQKBMhIJHdf+I8lbjNQOgbRrnxQK8yGZN4qQ0fh
-         k0U6nP1AAtQQVQMr8UGJw3MzOZ1gt5Yan3yO533X6ixp4lgXvWS8F3AoLBUxc4GtXnuy
-         01UGpkc8qLP1duJAzBCwQVMxqm9QWucrCBg6550GwS6a7Sbc6TRGwI3MdqF7jP2izLtS
-         Uw3B2j+lRQX75CLBBIGGYFFsur69Xh7Y1u6IKJKF4JfLe2CRLlI7mX3yC5Fhb0uXSydD
-         cux5I8e0yURsDtXBIA0XHqy05BEaZS3wS1AB8oLxV3y2T/7/ce+3xmXfts6sb7HwPDWV
-         Obdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Fjn2sDLr8BaQ4nlJ6Hyg2HDDv8IG3PYh78Ty/uhvVI8=;
-        b=DrBguax/syQwwrCGB605EwCt2fTcJI61I2OBn38AkC/0ZwguOtbiFa4nZBd2MFz5Qi
-         Kv45n+Jam+G7NBeicdstoBwuFNTTRf0OOaPtA7BLSenXpM/Y/na07Su5BGM1L+wCMxct
-         GkrCB7QbDom8QDsJoBwN4f1INZy7d54G+oO6TuUdjhQvhXLj8dO2VK58vE2MdEvhzWl1
-         FiRGAdFeND+7yzBf+jGJJNYHqBF494R21Ljq6aSK3YUDDJ111VJHz5qQ1BEHY66tOCOk
-         4npshUfwBl0nLcmv4zosPwHpl2B4aN75VKA9OeIgFGKxlz7+xtHdJaljDOMfkq/1Av1l
-         nFqg==
-X-Gm-Message-State: APjAAAWZncnfYrBLGJ0cDQq3lDL6WHQXoWcrVFsGmPK3iJO75omFVOfQ
-        Rg1DGoezxl0X8gteURaDBOzt6hcHU1dHXfygwYM=
-X-Google-Smtp-Source: APXvYqwf/K/knu0+iM5ES1LSY1PHHZBXEARQ9LCTaNB7G/VOVZVTEpQT69QXOkO4laDn74nJUyTT2IhwG2Hk+djRisA=
-X-Received: by 2002:a17:906:19d3:: with SMTP id h19mr2938281ejd.300.1561538786751;
- Wed, 26 Jun 2019 01:46:26 -0700 (PDT)
+        id S1727023AbfFZI6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 04:58:54 -0400
+Received: from mail.us.es ([193.147.175.20]:45618 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726961AbfFZI6x (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 04:58:53 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 59CAFBAEEF
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 10:58:49 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 4A6391150B5
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 10:58:49 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 3F1E1114D70; Wed, 26 Jun 2019 10:58:49 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id CBA72DA4D0;
+        Wed, 26 Jun 2019 10:58:46 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Wed, 26 Jun 2019 10:58:46 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 9C4F24265A32;
+        Wed, 26 Jun 2019 10:58:46 +0200 (CEST)
+Date:   Wed, 26 Jun 2019 10:58:46 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc:     davem@davemloft.net, Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        thomas.petazzoni@bootlin.com
+Subject: Re: [PATCH net-next] net: ethtool: Allow parsing ETHER_FLOW types
+ when using flow_rule
+Message-ID: <20190626085846.ax277ojvyp5k3abt@salvia>
+References: <20190626084403.17749-1-maxime.chevallier@bootlin.com>
 MIME-Version: 1.0
-References: <20190624145251.4849-1-opensource@vdorst.com> <20190624145251.4849-2-opensource@vdorst.com>
- <20190624153950.hdsuhrvfd77heyor@shell.armlinux.org.uk> <6f80325d-4b42-6174-e050-48626f7a3662@gmail.com>
- <20190625215329.5ubixxiwprnubwmv@shell.armlinux.org.uk> <CA+h21hqK0VMtHpZ6eka9ESuMhsFTw2mx+c0GYmxq4_G_YmiVpg@mail.gmail.com>
- <20190625225759.zztqgnwtk4v7milp@shell.armlinux.org.uk> <CA+h21hq_w8-96ehKYxcziSq1TjOjoKduZ+pB3umBfjODaKWd+A@mail.gmail.com>
- <20190626074158.odyrgzie7sv4ovtn@shell.armlinux.org.uk>
-In-Reply-To: <20190626074158.odyrgzie7sv4ovtn@shell.armlinux.org.uk>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Wed, 26 Jun 2019 11:46:15 +0300
-Message-ID: <CA+h21hpkjHD07-o7W-5sUf+FqEeks17_W6VUROSDzdGokFvNWQ@mail.gmail.com>
-Subject: Re: [PATCH RFC net-next 1/5] net: dsa: mt7530: Convert to PHYLINK API
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
-        sean.wang@mediatek.com, Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, matthias.bgg@gmail.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        frank-w@public-files.de, netdev <netdev@vger.kernel.org>,
-        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190626084403.17749-1-maxime.chevallier@bootlin.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 26 Jun 2019 at 10:42, Russell King - ARM Linux admin
-<linux@armlinux.org.uk> wrote:
->
-> On Wed, Jun 26, 2019 at 02:10:27AM +0300, Vladimir Oltean wrote:
-> > On Wed, 26 Jun 2019 at 01:58, Russell King - ARM Linux admin
-> > <linux@armlinux.org.uk> wrote:
-> > >
-> > > On Wed, Jun 26, 2019 at 01:14:59AM +0300, Vladimir Oltean wrote:
-> > > > On Wed, 26 Jun 2019 at 00:53, Russell King - ARM Linux admin
-> > > > <linux@armlinux.org.uk> wrote:
-> > > > >
-> > > > > On Tue, Jun 25, 2019 at 11:24:01PM +0300, Vladimir Oltean wrote:
-> > > > > > Hi Russell,
-> > > > > >
-> > > > > > On 6/24/19 6:39 PM, Russell King - ARM Linux admin wrote:
-> > > > > > > This should be removed - state->link is not for use in mac_config.
-> > > > > > > Even in fixed mode, the link can be brought up/down by means of a
-> > > > > > > gpio, and this should be dealt with via the mac_link_* functions.
-> > > > > > >
-> > > > > >
-> > > > > > What do you mean exactly that state->link is not for use, is that true in
-> > > > > > general?
-> > > > >
-> > > > > Yes.  mac_config() should not touch it; it is not always in a defined
-> > > > > state.  For example, if you set modes via ethtool (the
-> > > > > ethtool_ksettings_set API) then state->link will probably contain
-> > > > > zero irrespective of the true link state.
-> > > > >
-> > > >
-> > > > Experimentally, state->link is zero at the same time as state->speed
-> > > > is -1, so just ignoring !state->link made sense. This is not in-band
-> > > > AN. What is your suggestion? Should I proceed to try and configure the
-> > > > MAC for SPEED_UNKNOWN?
-> > >
-> > > What would you have done with a PHY when the link is down, what speed
-> > > would you have configured in the phylib adjust_link callback?  phylib
-> > > also sets SPEED_UNKNOWN/DUPLEX_UNKNOWN when the link is down.
-> > >
-> >
-> > With phylib, I'd make the driver ignore the speed and do nothing.
-> > With phylink, I'd make the core not call mac_config.
-> > But what happened is I saw phylink call mac_config anyway, said
-> > 'weird' and proceeded to ignore it as I would have for phylib.
-> > I'm just not understanding your position - it seems like you're
-> > implying there's a bug in phylink and the function call with
-> > MLO_AN_FIXED, state->link=0 and state->speed=-1 should not have taken
-> > place, which is what I wanted to confirm.
->
-> It is not a bug.  It is a request to configure the MAC, and what it's
-> saying is "we don't know what speed and/or duplex".
->
-> Take for instance when the network adapter is brought up initially.
-> The link is most likely down, but we should configure the initial MAC
-> operating parameters (such as the PHY interface).  Phylink makes a
-> mac_config() call with the speed and duplex set to UNKNOWN.
->
-> Using your theory, we shouldn't be making that call.  In which case,
-> MAC drivers aren't going to initially configure their interface
-> settings.
->
-> _That_ would be a bug.
->
+On Wed, Jun 26, 2019 at 10:44:03AM +0200, Maxime Chevallier wrote:
+> When parsing an ethtool_rx_flow_spec, users can specify an ethernet flow
+> which could contain matches based on the ethernet header, such as the
+> MAC address, the VLAN tag or the ethertype.
+> 
+> Only the ethtype field is specific to the ether flow, the MAC and vlan
+> fields are processed using the special FLOW_EXT and FLOW_MAC_EXT flags.
+> 
+> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+> ---
+>  net/core/ethtool.c | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+> 
+> diff --git a/net/core/ethtool.c b/net/core/ethtool.c
+> index 4d1011b2e24f..01ceba556341 100644
+> --- a/net/core/ethtool.c
+> +++ b/net/core/ethtool.c
+> @@ -2883,6 +2883,18 @@ ethtool_rx_flow_rule_create(const struct ethtool_rx_flow_spec_input *input)
+>  	match->mask.basic.n_proto = htons(0xffff);
+>  
+>  	switch (fs->flow_type & ~(FLOW_EXT | FLOW_MAC_EXT | FLOW_RSS)) {
+> +	case ETHER_FLOW: {
+> +		const struct ethhdr *ether_spec, *ether_m_spec;
+> +
+> +		ether_spec = &fs->h_u.ether_spec;
+> +		ether_m_spec = &fs->m_u.ether_spec;
+> +
+> +		if (ether_m_spec->h_proto) {
+> +			match->key.basic.n_proto = ether_spec->h_proto;
+> +			match->mask.basic.n_proto = ether_m_spec->h_proto;
+> +		}
 
-So you're saying that:
-- state->link should not be checked, because it is not guaranteed to be valid
-- state->speed, state->duplex, state->pause *should* be checked,
-because it is not guaranteed to be valid
-Is state->interface always valid?
-I don't think I follow the pattern here. Or shouldn't I check speed,
-duplex and pause either, and try to pass the MAC UNKNOWN values,
-inevitably failing at some point? Do Marvell MACs have an UNKNOWN
-setting?
+I see some drivers in the tree also interpret the h_source and h_dest
+fields?
 
+https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/sfc/falcon/ethtool.c#L1182
 
-> > It's unlikely that it would switch between SGMII and USXGMII
-> > > dynamically, as USXGMII supports speeds from 10G down to 10M.
-> > >
-> > > Where interface mode switching tends to be used is with modes such
-> > > as 10GBASE-R, which doesn't support anything except 10G.  In order
-> > > for the PHY to operate at slower speeds, it has a few options:
-> > >
-> > > 1) perform rate adaption.
-> > > 2) dynamically switch interface type to an interface type that
-> > >    supports the desired speed.
-> > > 3) just not support slower speeds.
-> > >
-> >
-> > So am I reading this correctly - it kind of makes sense for gigabit
-> > MAC drivers to not check for the MII interface changing protocol?
->
-> Again, that's incorrect in the general case.  Gigabit includes SGMII
-> and 802.3z PHY protocols which need to be switched between for SFPs.
->
-> --
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-> According to speedtest.net: 11.9Mbps down 500kbps up
+Probably good to address this in this patch too?
 
-Thanks,
--Vladimir
+Thanks.
