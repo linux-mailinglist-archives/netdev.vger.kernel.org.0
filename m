@@ -2,160 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7BCF56C61
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 16:41:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C11AE56C6A
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 16:43:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728045AbfFZOlS convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 26 Jun 2019 10:41:18 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:56326 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726484AbfFZOlS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 10:41:18 -0400
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 7344D308425B;
-        Wed, 26 Jun 2019 14:41:14 +0000 (UTC)
-Received: from carbon (ovpn-200-45.brq.redhat.com [10.40.200.45])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 497BE60C43;
-        Wed, 26 Jun 2019 14:41:00 +0000 (UTC)
-Date:   Wed, 26 Jun 2019 16:40:59 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Cc:     "Machulsky\, Zorik" <zorik@amazon.com>,
-        "Jubran\, Samih" <sameehj@amazon.com>,
-        "davem\@davemloft.net" <davem@davemloft.net>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Woodhouse\, David" <dwmw@amazon.co.uk>,
-        "Matushevsky\, Alexander" <matua@amazon.com>,
-        "Bshara\, Saeed" <saeedb@amazon.com>,
-        "Wilson\, Matt" <msw@amazon.com>,
-        "Liguori\, Anthony" <aliguori@amazon.com>,
-        "Bshara\, Nafea" <nafea@amazon.com>,
-        "Tzalik\, Guy" <gtzalik@amazon.com>,
-        "Belgazal\, Netanel" <netanel@amazon.com>,
-        "Saidi\, Ali" <alisaidi@amazon.com>,
-        "Herrenschmidt\, Benjamin" <benh@amazon.com>,
-        "Kiyanovski\, Arthur" <akiyano@amazon.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
+        id S1727859AbfFZOnE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 10:43:04 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:34672 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726029AbfFZOnE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 10:43:04 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id x5QEgYSO026643;
+        Wed, 26 Jun 2019 09:42:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1561560154;
+        bh=JQTsc372ZbtieW6Fo3QsbkjZrLLE5ueFi63b7dRTl4c=;
+        h=Subject:To:References:From:Date:In-Reply-To;
+        b=kOdAPlvju6ImTTkUKJpjLOaQbVwlSty9CUpFjGolXUM/l/Y1TvDpAlIcJj8kqo/P9
+         OXZRDV+CAYR1DjQAP/57Z5/0okfurKo9+2WzM2kblpSl2aVMXbd/Iv1J1sWUkX7K5g
+         TnxoIRX+kXX7gyrpx4ZPallDebew116A7zzBBn10=
+Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x5QEgYjd113018
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 26 Jun 2019 09:42:34 -0500
+Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE109.ent.ti.com
+ (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Wed, 26
+ Jun 2019 09:42:34 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE111.ent.ti.com
+ (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
+ Frontend Transport; Wed, 26 Jun 2019 09:42:34 -0500
+Received: from [10.250.96.121] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id x5QEgTNu089437;
+        Wed, 26 Jun 2019 09:42:30 -0500
+Subject: Re: [RFC PATCH v4 net-next 10/11] ARM: dts: am57xx-idk: add dt nodes
+ for new cpsw switch dev driver
+To:     <netdev@vger.kernel.org>,
         Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "xdp-newbies\@vger.kernel.org" <xdp-newbies@vger.kernel.org>,
-        brouer@redhat.com
-Subject: Re: XDP multi-buffer incl. jumbo-frames (Was: [RFC V1 net-next 1/1]
- net: ena: implement XDP drop support)
-Message-ID: <20190626164059.4a9511cf@carbon>
-In-Reply-To: <87a7e4d0nj.fsf@toke.dk>
-References: <20190623070649.18447-1-sameehj@amazon.com>
-        <20190623070649.18447-2-sameehj@amazon.com>
-        <20190623162133.6b7f24e1@carbon>
-        <A658E65E-93D2-4F10-823D-CC25B081C1B7@amazon.com>
-        <20190626103829.5360ef2d@carbon>
-        <87a7e4d0nj.fsf@toke.dk>
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
+        <linux-omap@vger.kernel.org>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>, <devicetree@vger.kernel.org>
+References: <20190621181314.20778-1-grygorii.strashko@ti.com>
+ <20190621181314.20778-11-grygorii.strashko@ti.com>
+ <20190625224953.GD6485@khorivan>
+From:   grygorii <grygorii.strashko@ti.com>
+Message-ID: <311aa679-2656-ad1c-d2fb-b16efa1c33c4@ti.com>
+Date:   Wed, 26 Jun 2019 17:42:20 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Wed, 26 Jun 2019 14:41:17 +0000 (UTC)
+In-Reply-To: <20190625224953.GD6485@khorivan>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 26 Jun 2019 13:52:16 +0200
-Toke Høiland-Jørgensen <toke@redhat.com> wrote:
 
-> Jesper Dangaard Brouer <brouer@redhat.com> writes:
+
+On 26/06/2019 01:49, Ivan Khoronzhuk wrote:
+> On Fri, Jun 21, 2019 at 09:13:13PM +0300, Grygorii Strashko wrote:
+>> Add DT nodes for new cpsw switch dev driver.
+>>
+>> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+>> ---
+>> arch/arm/boot/dts/am571x-idk.dts         | 28 +++++++++++++
+>> arch/arm/boot/dts/am572x-idk.dts         |  5 +++
+>> arch/arm/boot/dts/am574x-idk.dts         |  5 +++
+>> arch/arm/boot/dts/am57xx-idk-common.dtsi |  2 +-
+>> arch/arm/boot/dts/dra7-l4.dtsi           | 53 ++++++++++++++++++++++++
+>> 5 files changed, 92 insertions(+), 1 deletion(-)
+>>
 > 
-> > On Tue, 25 Jun 2019 03:19:22 +0000
-> > "Machulsky, Zorik" <zorik@amazon.com> wrote:
-> >  
-> >> ﻿On 6/23/19, 7:21 AM, "Jesper Dangaard Brouer" <brouer@redhat.com> wrote:
-> >> 
-> >>     On Sun, 23 Jun 2019 10:06:49 +0300 <sameehj@amazon.com> wrote:
-> >>       
-> >>     > This commit implements the basic functionality of drop/pass logic in the
-> >>     > ena driver.    
-> >>     
-> >>     Usually we require a driver to implement all the XDP return codes,
-> >>     before we accept it.  But as Daniel and I discussed with Zorik during
-> >>     NetConf[1], we are going to make an exception and accept the driver
-> >>     if you also implement XDP_TX.
-> >>     
-> >>     As we trust that Zorik/Amazon will follow and implement XDP_REDIRECT
-> >>     later, given he/you wants AF_XDP support which requires XDP_REDIRECT.
-> >> 
-> >> Jesper, thanks for your comments and very helpful discussion during
-> >> NetConf! That's the plan, as we agreed. From our side I would like to
-> >> reiterate again the importance of multi-buffer support by xdp frame.
-> >> We would really prefer not to see our MTU shrinking because of xdp
-> >> support.     
-> >
-> > Okay we really need to make a serious attempt to find a way to support
-> > multi-buffer packets with XDP. With the important criteria of not
-> > hurting performance of the single-buffer per packet design.
-> >
-> > I've created a design document[2], that I will update based on our
-> > discussions: [2] https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp-multi-buffer01-design.org
-> >
-> > The use-case that really convinced me was Eric's packet header-split.
-> >
-> >
-> > Lets refresh: Why XDP don't have multi-buffer support:
-> >
-> > XDP is designed for maximum performance, which is why certain driver-level
-> > use-cases were not supported, like multi-buffer packets (like jumbo-frames).
-> > As it e.g. complicated the driver RX-loop and memory model handling.
-> >
-> > The single buffer per packet design, is also tied into eBPF Direct-Access
-> > (DA) to packet data, which can only be allowed if the packet memory is in
-> > contiguous memory.  This DA feature is essential for XDP performance.
-> >
-> >
-> > One way forward is to define that XDP only get access to the first
-> > packet buffer, and it cannot see subsequent buffers. For XDP_TX and
-> > XDP_REDIRECT to work then XDP still need to carry pointers (plus
-> > len+offset) to the other buffers, which is 16 bytes per extra buffer.  
+> [...]
 > 
-> Yeah, I think this would be reasonable. As long as we can have a
-> metadata field with the full length + still give XDP programs the
-> ability to truncate the packet (i.e., discard the subsequent pages)
+>> diff --git a/arch/arm/boot/dts/am57xx-idk-common.dtsi b/arch/arm/boot/dts/am57xx-idk-common.dtsi
+>> index f7bd26458915..5c7663699efa 100644
+>> --- a/arch/arm/boot/dts/am57xx-idk-common.dtsi
+>> +++ b/arch/arm/boot/dts/am57xx-idk-common.dtsi
+>> @@ -367,7 +367,7 @@
+>> };
+>>
+>> &mac {
+>> -    status = "okay";
+>> +//    status = "okay";
+> ?
 
-You touch upon some interesting complications already:
-
-1. It is valuable for XDP bpf_prog to know "full" length?
-   (if so, then we need to extend xdp ctx with info)
-
- But if we need to know the full length, when the first-buffer is
- processed. Then realize that this affect the drivers RX-loop, because
- then we need to "collect" all the buffers before we can know the
- length (although some HW provide this in first descriptor).
-
- We likely have to change drivers RX-loop anyhow, as XDP_TX and
- XDP_REDIRECT will also need to "collect" all buffers before the packet
- can be forwarded. (Although this could potentially happen later in
- driver loop when it meet/find the End-Of-Packet descriptor bit).
- 
-
-2. Can we even allow helper bpf_xdp_adjust_tail() ?
-
- Wouldn't it be easier to disallow a BPF-prog with this helper, when
- driver have configured multi-buffer?  Or will it be too restrictive,
- if jumbo-frame is very uncommon and only enabled because switch infra
- could not be changed (like Amazon case).
-
- Perhaps it is better to let bpf_xdp_adjust_tail() fail runtime?
-
-
-> I  think many (most?) use cases will work fine without having access
-> to the full packet data...
-
-I agree.  Other people should voice their concerns if they don't
-agree...
+This i'm going to clean up as part of next submission.
 
 -- 
 Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+grygorii
