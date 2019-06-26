@@ -2,118 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 973F0564BD
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 10:39:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 130F8564C8
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 10:44:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726760AbfFZIjV convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 26 Jun 2019 04:39:21 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:21720 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725379AbfFZIjV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 04:39:21 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id EB7C559464;
-        Wed, 26 Jun 2019 08:38:45 +0000 (UTC)
-Received: from carbon (ovpn-200-49.brq.redhat.com [10.40.200.49])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B2CF46013D;
-        Wed, 26 Jun 2019 08:38:31 +0000 (UTC)
-Date:   Wed, 26 Jun 2019 10:38:29 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     "Machulsky, Zorik" <zorik@amazon.com>
-Cc:     "Jubran, Samih" <sameehj@amazon.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Woodhouse, David" <dwmw@amazon.co.uk>,
-        "Matushevsky, Alexander" <matua@amazon.com>,
-        "Bshara, Saeed" <saeedb@amazon.com>,
-        "Wilson, Matt" <msw@amazon.com>,
-        "Liguori, Anthony" <aliguori@amazon.com>,
-        "Bshara, Nafea" <nafea@amazon.com>,
-        "Tzalik, Guy" <gtzalik@amazon.com>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Saidi, Ali" <alisaidi@amazon.com>,
-        "Herrenschmidt, Benjamin" <benh@amazon.com>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>, brouer@redhat.com,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "xdp-newbies@vger.kernel.org" <xdp-newbies@vger.kernel.org>
-Subject: XDP multi-buffer incl. jumbo-frames (Was: [RFC V1 net-next 1/1]
- net: ena: implement XDP drop support)
-Message-ID: <20190626103829.5360ef2d@carbon>
-In-Reply-To: <A658E65E-93D2-4F10-823D-CC25B081C1B7@amazon.com>
-References: <20190623070649.18447-1-sameehj@amazon.com>
-        <20190623070649.18447-2-sameehj@amazon.com>
-        <20190623162133.6b7f24e1@carbon>
-        <A658E65E-93D2-4F10-823D-CC25B081C1B7@amazon.com>
+        id S1726347AbfFZIoQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 04:44:16 -0400
+Received: from relay6-d.mail.gandi.net ([217.70.183.198]:56683 "EHLO
+        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726006AbfFZIoP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 04:44:15 -0400
+X-Originating-IP: 86.250.200.211
+Received: from mc-bl-xps13.lan (lfbn-1-17395-211.w86-250.abo.wanadoo.fr [86.250.200.211])
+        (Authenticated sender: maxime.chevallier@bootlin.com)
+        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id 973EFC000C;
+        Wed, 26 Jun 2019 08:44:07 +0000 (UTC)
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     davem@davemloft.net, Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        thomas.petazzoni@bootlin.com
+Subject: [PATCH net-next] net: ethtool: Allow parsing ETHER_FLOW types when using flow_rule
+Date:   Wed, 26 Jun 2019 10:44:03 +0200
+Message-Id: <20190626084403.17749-1-maxime.chevallier@bootlin.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.39]); Wed, 26 Jun 2019 08:39:20 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 25 Jun 2019 03:19:22 +0000
-"Machulsky, Zorik" <zorik@amazon.com> wrote:
+When parsing an ethtool_rx_flow_spec, users can specify an ethernet flow
+which could contain matches based on the ethernet header, such as the
+MAC address, the VLAN tag or the ethertype.
 
-> ﻿On 6/23/19, 7:21 AM, "Jesper Dangaard Brouer" <brouer@redhat.com> wrote:
-> 
->     On Sun, 23 Jun 2019 10:06:49 +0300 <sameehj@amazon.com> wrote:
->     
->     > This commit implements the basic functionality of drop/pass logic in the
->     > ena driver.  
->     
->     Usually we require a driver to implement all the XDP return codes,
->     before we accept it.  But as Daniel and I discussed with Zorik during
->     NetConf[1], we are going to make an exception and accept the driver
->     if you also implement XDP_TX.
->     
->     As we trust that Zorik/Amazon will follow and implement XDP_REDIRECT
->     later, given he/you wants AF_XDP support which requires XDP_REDIRECT.
-> 
-> Jesper, thanks for your comments and very helpful discussion during
-> NetConf! That's the plan, as we agreed. From our side I would like to
-> reiterate again the importance of multi-buffer support by xdp frame.
-> We would really prefer not to see our MTU shrinking because of xdp
-> support.   
+Only the ethtype field is specific to the ether flow, the MAC and vlan
+fields are processed using the special FLOW_EXT and FLOW_MAC_EXT flags.
 
-Okay we really need to make a serious attempt to find a way to support
-multi-buffer packets with XDP. With the important criteria of not
-hurting performance of the single-buffer per packet design.
+Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+---
+ net/core/ethtool.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-I've created a design document[2], that I will update based on our
-discussions: [2] https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp-multi-buffer01-design.org
-
-The use-case that really convinced me was Eric's packet header-split.
-
-
-Lets refresh: Why XDP don't have multi-buffer support:
-
-XDP is designed for maximum performance, which is why certain driver-level
-use-cases were not supported, like multi-buffer packets (like jumbo-frames).
-As it e.g. complicated the driver RX-loop and memory model handling.
-
-The single buffer per packet design, is also tied into eBPF Direct-Access
-(DA) to packet data, which can only be allowed if the packet memory is in
-contiguous memory.  This DA feature is essential for XDP performance.
-
-
-One way forward is to define that XDP only get access to the first
-packet buffer, and it cannot see subsequent buffers.  For XDP_TX and
-XDP_REDIRECT to work then XDP still need to carry pointers (plus
-len+offset) to the other buffers, which is 16 bytes per extra buffer.
-
+diff --git a/net/core/ethtool.c b/net/core/ethtool.c
+index 4d1011b2e24f..01ceba556341 100644
+--- a/net/core/ethtool.c
++++ b/net/core/ethtool.c
+@@ -2883,6 +2883,18 @@ ethtool_rx_flow_rule_create(const struct ethtool_rx_flow_spec_input *input)
+ 	match->mask.basic.n_proto = htons(0xffff);
  
->     [1] http://vger.kernel.org/netconf2019.html
+ 	switch (fs->flow_type & ~(FLOW_EXT | FLOW_MAC_EXT | FLOW_RSS)) {
++	case ETHER_FLOW: {
++		const struct ethhdr *ether_spec, *ether_m_spec;
++
++		ether_spec = &fs->h_u.ether_spec;
++		ether_m_spec = &fs->m_u.ether_spec;
++
++		if (ether_m_spec->h_proto) {
++			match->key.basic.n_proto = ether_spec->h_proto;
++			match->mask.basic.n_proto = ether_m_spec->h_proto;
++		}
++		}
++		break;
+ 	case TCP_V4_FLOW:
+ 	case UDP_V4_FLOW: {
+ 		const struct ethtool_tcpip4_spec *v4_spec, *v4_m_spec;
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+2.20.1
+
