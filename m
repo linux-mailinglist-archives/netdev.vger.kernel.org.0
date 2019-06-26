@@ -2,393 +2,516 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C4B457061
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 20:15:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C5F257090
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 20:29:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726542AbfFZSPc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 14:15:32 -0400
-Received: from mailout2.w1.samsung.com ([210.118.77.12]:40500 "EHLO
-        mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726536AbfFZSPb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 14:15:31 -0400
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20190626181530euoutp02c45007c85ce989d5da5c1c7e1832835d~r0k6GrSiR0824508245euoutp02I
-        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 18:15:30 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20190626181530euoutp02c45007c85ce989d5da5c1c7e1832835d~r0k6GrSiR0824508245euoutp02I
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1561572930;
-        bh=WkLhGIJlQzAKt0bE59R1xSvsdzmc16YuEOu86ZIEiTI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LeyyD96tuiTiBL22erhiED1zNE/XPL2npAB2XaHMAesl84EUB9HRM4VC+4U4qdf+A
-         bzM1nSQJWtFD+IdX23NCZtBQj3x8rt7yvwqdGO4H1jPFTGsIrf8jSPHxPmLcERD8qi
-         uKxMj0Xuz51faqNoowmHRxarnRvg9hFfBpuK3CmA=
-Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20190626181529eucas1p16ca5632a26d65dbc6e52e1ecd121c861~r0k5SFnDp1404414044eucas1p1v;
-        Wed, 26 Jun 2019 18:15:29 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges3new.samsung.com (EUCPMTA) with SMTP id 4A.B8.04325.146B31D5; Wed, 26
-        Jun 2019 19:15:29 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20190626181528eucas1p190f20427a1d2a64f2efa6cedcfac0826~r0k4fFl1F2194421944eucas1p1g;
-        Wed, 26 Jun 2019 18:15:28 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20190626181528eusmtrp1cf85ab9d4345fd62a61318fd5ccdef91~r0k4RDPXb0317303173eusmtrp1o;
-        Wed, 26 Jun 2019 18:15:28 +0000 (GMT)
-X-AuditID: cbfec7f5-b8fff700000010e5-b0-5d13b6419f44
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-        eusmgms1.samsung.com (EUCPMTA) with SMTP id 99.2B.04146.046B31D5; Wed, 26
-        Jun 2019 19:15:28 +0100 (BST)
-Received: from imaximets.rnd.samsung.ru (unknown [106.109.129.180]) by
-        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20190626181527eusmtip2dcc42653ee3aab95b66d65cc2a2315c0~r0k3j1Qs30894308943eusmtip2F;
-        Wed, 26 Jun 2019 18:15:27 +0000 (GMT)
-From:   Ilya Maximets <i.maximets@samsung.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        xdp-newbies@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        id S1726425AbfFZS3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 14:29:05 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:34314 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726223AbfFZS3F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 14:29:05 -0400
+Received: by mail-qk1-f194.google.com with SMTP id t8so2531373qkt.1;
+        Wed, 26 Jun 2019 11:29:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=m3i87uDVDUvre0GqWSBf2qcNi5reZWU9U03Iry4uKas=;
+        b=vg8wZNdA7h+tfKGcnwgLVrDoh38PY2JUA4NoQCdaF3WkSsc9ivrdD6CfiRVbBftVCy
+         i6xjf9Ysh61swlPiU94uy7ki3LYBldZjj9R9ZgSjh2c62cQk340HezV4rHSl45/4zJwp
+         wczE8o4LiHSFORRvyvme5X5gAi5mZVa4Js0YjiLiWaI9CG/1JWSak0036MzRJrIqhewc
+         klgfOa7X0ASinCOXFVvkzlLvn9D2Tr1in5Hjq3Zi/wp1he44U/WDyVzpr7CI8T9fTax2
+         QQKVdrHyKZsl9G6zDt7gVS/X6SCLPyaJu11cft2Q2kCyZXWP31qYPta+/YSIyxiVTE6t
+         g1jw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=m3i87uDVDUvre0GqWSBf2qcNi5reZWU9U03Iry4uKas=;
+        b=Bem4rjA+oBDwr5E1XRJE0nCGzUk1ORat+HiG9aEfh91NY4qMu8mMwB69ZvtFuHa5g7
+         EdX2JCW5EpRBJXNstbdwx4aM56JWD2v3uwPtqFJkP3JG/cy3pKHJZGaDb7ijkwuGxZ9d
+         Vkko2phiFVOO4z9s7bi2MTR2yuSqg5qEbCQ217YYbqRJCJ45sZ1acxZWJuJGblxijbBg
+         SgTTqjRlB082Y4NQDVSyg1trx8AbX7LuFRXw6Ry4SVtTi19G3irRlewDrqN6BRP52KaH
+         qIvs88DwEL0k76V7k7KGyZC1BfQ+8EIcdE2xHRqHb7741/HIgPqmv4ay9QsJAA838hHM
+         id6Q==
+X-Gm-Message-State: APjAAAV7YoqJEYdKlUnyCibHISFqnq+p+IJ3dqe3j10aSVdwRXZTH406
+        1pnPhji/4F64EgYq+j1yCv8ktuvjrETgdck/13767GI9nxgEnA==
+X-Google-Smtp-Source: APXvYqyJ9KC7yCjXtc+n+wWBdlFJAgcS52giIaY43QD5gqJAbYfEqU669Pk0KSMVHns6ZZpvNQgD8YQvIgtpfbX/ZS4=
+X-Received: by 2002:ae9:d803:: with SMTP id u3mr5335094qkf.437.1561573743064;
+ Wed, 26 Jun 2019 11:29:03 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190617192700.2313445-1-andriin@fb.com> <20190617192700.2313445-5-andriin@fb.com>
+ <CAH+k93H5ddp7cMBGtyn9DNPvv1MymGCsShJ1-3tezLPUnxt6vw@mail.gmail.com>
+In-Reply-To: <CAH+k93H5ddp7cMBGtyn9DNPvv1MymGCsShJ1-3tezLPUnxt6vw@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 26 Jun 2019 11:28:50 -0700
+Message-ID: <CAEf4BzY8wMtq9EmUcsqeLrNOkduKwzuYrweKhhVWKdAb57ax+Q@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 04/11] libbpf: refactor map initialization
+To:     Matt Hart <matthew.hart@linaro.org>
+Cc:     Andrii Nakryiko <andriin@fb.com>, linux-perf-users@vger.kernel.org,
+        Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Ilya Maximets <i.maximets@samsung.com>
-Subject: [PATCH bpf v4 2/2] xdp: fix hang while unregistering device bound
- to xdp socket
-Date:   Wed, 26 Jun 2019 21:15:15 +0300
-Message-Id: <20190626181515.1640-3-i.maximets@samsung.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190626181515.1640-1-i.maximets@samsung.com>
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprJKsWRmVeSWpSXmKPExsWy7djPc7qO24RjDRq2iFj8advAaPH5yHE2
-        i8ULvzFbzDnfwmJxpf0nu8WxFy1sFrvWzWS2uLxrDpvFikMngGILxCy29+9jdOD22LLyJpPH
-        zll32T0W73nJ5NF14xKzx/Tuh8wefVtWMXp83iQXwB7FZZOSmpNZllqkb5fAlTHj+jf2ghe2
-        Ff+O32FvYOw37GLk5JAQMJHYfWMZK4gtJLCCUeLkAaA4F5D9hVFiTfd2dgjnM6PErSXTmWA6
-        Tq9bxQyRWM4oMW1rPyuE84NR4uflyWwgVWwCOhKnVh9hBLFFBKQkPu6AGMUsMJNZYsvjKSwg
-        CWGBKImF57+ALWcRUJX4f3IFO4jNK2AlcfLzfBaIdfISqzccYAaxOQWsJU5M+MQIMkhCYDq7
-        xMQTF6FucpHYdOM+I4QtLPHq+BZ2CFtG4vTkHqhB9RL3W15CNXcwSkw/9A+q2V5iy+tzQA0c
-        QOdpSqzfpQ8RdpTYduM9E0hYQoBP4sZbQZAwM5A5adt0Zogwr0RHmxBEtYrE74PLmSFsKYmb
-        7z5DXeAh8ffwRUZIAPUxSuzcv595AqP8LIRlCxgZVzGKp5YW56anFhvnpZbrFSfmFpfmpesl
-        5+duYgQmmNP/jn/dwbjvT9IhRgEORiUe3gZ5oVgh1sSy4srcQ4wSHMxKIrxLEwVihXhTEiur
-        Uovy44tKc1KLDzFKc7AoifNWMzyIFhJITyxJzU5NLUgtgskycXBKNTAWrmT5cizY4/nN4ypt
-        6kIlG3TC3Z4ZugUVPZl5uP8M23c7H3fdAs+j7CFrsrL+e0a8evlkX6LH8mcFv31eeftZpos7
-        sj6UkI7kndxg/Oqvs9aF+993Pn5v514k4RN1bZ/ZEc0ThmUZjvKhjuZ7F01od/KNa7dpPn3A
-        XFH1+VuDXazzUr26/iqxFGckGmoxFxUnAgBaldoSLAMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrBLMWRmVeSWpSXmKPExsVy+t/xe7oO24RjDSa1yVr8advAaPH5yHE2
-        i8ULvzFbzDnfwmJxpf0nu8WxFy1sFrvWzWS2uLxrDpvFikMngGILxCy29+9jdOD22LLyJpPH
-        zll32T0W73nJ5NF14xKzx/Tuh8wefVtWMXp83iQXwB6lZ1OUX1qSqpCRX1xiqxRtaGGkZ2hp
-        oWdkYqlnaGwea2VkqqRvZ5OSmpNZllqkb5eglzHj+jf2ghe2Ff+O32FvYOw37GLk5JAQMJE4
-        vW4VcxcjF4eQwFJGiek7VzJDJKQkfvy6wAphC0v8udbFBmILCXxjlLh7mBfEZhPQkTi1+ggj
-        iC0CVP9xx3Z2EJtZYCGzxJdJJiC2sECExO8V68BmsgioSvw/uQKshlfASuLk5/ksEPPlJVZv
-        OABWwylgLXFiwiegmRxAu6wktnVwTmDkW8DIsIpRJLW0ODc9t9hQrzgxt7g0L10vOT93EyMw
-        1Lcd+7l5B+OljcGHGAU4GJV4eBvkhWKFWBPLiitzDzFKcDArifAuTRSIFeJNSaysSi3Kjy8q
-        zUktPsRoCnTTRGYp0eR8YBzmlcQbmhqaW1gamhubG5tZKInzdggcjBESSE8sSc1OTS1ILYLp
-        Y+LglGpgZOO5rb5KtzqRNXCmQ4Tt+hW710cu3ci6rPGU0tl1Gze+jJt+7oDFO8tHjlwTbBak
-        nuFh9jGaHs0n/STc+v8Wg9TmI+5fvm1lfa3/cr77mjWy5eeVF3G1+35Z98hjNYfjfuFtO8UP
-        zY58z2L17kFmRF3wRlHFG4r5e0s/Wx/bamF16WCeaPGnJUosxRmJhlrMRcWJAJXMim6LAgAA
-X-CMS-MailID: 20190626181528eucas1p190f20427a1d2a64f2efa6cedcfac0826
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20190626181528eucas1p190f20427a1d2a64f2efa6cedcfac0826
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20190626181528eucas1p190f20427a1d2a64f2efa6cedcfac0826
-References: <20190626181515.1640-1-i.maximets@samsung.com>
-        <CGME20190626181528eucas1p190f20427a1d2a64f2efa6cedcfac0826@eucas1p1.samsung.com>
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Device that bound to XDP socket will not have zero refcount until the
-userspace application will not close it. This leads to hang inside
-'netdev_wait_allrefs()' if device unregistering requested:
+On Wed, Jun 26, 2019 at 7:48 AM Matt Hart <matthew.hart@linaro.org> wrote:
+>
+> Hi all,
+>
+> I noticed perf fails to build for armv7 on linux next, due to this
+> compile error:
+> $ make -C tools/perf ARCH=3Darm CROSS_COMPILE=3Darm-linux-gnueabihf-
+>
+>   CC       libbpf_probes.o
+> In file included from libbpf.c:27:
+> libbpf.c: In function =E2=80=98bpf_object__add_map=E2=80=99:
+> /home/matt/git/linux-next/tools/include/linux/kernel.h:45:17: error:
+> comparison of distinct pointer types lacks a cast [-Werror]
+>   (void) (&_max1 =3D=3D &_max2);  \
+>                  ^~
+> libbpf.c:776:12: note: in expansion of macro =E2=80=98max=E2=80=99
+>   new_cap =3D max(4ul, obj->maps_cap * 3 / 2);
+>             ^~~
+>
+> So I bisected it and came down to this patch.
+> Commit bf82927125dd25003d76ed5541da704df21de57a
+>
+> Full verbose bisect script https://hastebin.com/odoyujofav.coffeescript
+>
+> Is this a case that perf code needs updating to match the change, or
+> is the change broken?
 
-  # ip link del p1
-  < hang on recvmsg on netlink socket >
+Hi Matt,
 
-  # ps -x | grep ip
-  5126  pts/0    D+   0:00 ip link del p1
-
-  # journalctl -b
-
-  Jun 05 07:19:16 kernel:
-  unregister_netdevice: waiting for p1 to become free. Usage count = 1
-
-  Jun 05 07:19:27 kernel:
-  unregister_netdevice: waiting for p1 to become free. Usage count = 1
-  ...
-
-Fix that by implementing NETDEV_UNREGISTER event notification handler
-to properly clean up all the resources and unref device.
-
-This should also allow socket killing via ss(8) utility.
-
-Fixes: 965a99098443 ("xsk: add support for bind for Rx")
-Signed-off-by: Ilya Maximets <i.maximets@samsung.com>
----
- include/net/xdp_sock.h |  5 +++
- net/xdp/xdp_umem.c     | 16 +++++---
- net/xdp/xdp_umem.h     |  1 +
- net/xdp/xsk.c          | 88 ++++++++++++++++++++++++++++++++++++------
- 4 files changed, 93 insertions(+), 17 deletions(-)
-
-diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
-index d074b6d60f8a..82d153a637c7 100644
---- a/include/net/xdp_sock.h
-+++ b/include/net/xdp_sock.h
-@@ -61,6 +61,11 @@ struct xdp_sock {
- 	struct xsk_queue *tx ____cacheline_aligned_in_smp;
- 	struct list_head list;
- 	bool zc;
-+	enum {
-+		XSK_UNINITIALIZED = 0,
-+		XSK_BINDED,
-+		XSK_UNBINDED,
-+	} state;
- 	/* Protects multiple processes in the control path */
- 	struct mutex mutex;
- 	/* Mutual exclusion of NAPI TX thread and sendmsg error paths
-diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
-index 267b82a4cbcf..56729e74cbea 100644
---- a/net/xdp/xdp_umem.c
-+++ b/net/xdp/xdp_umem.c
-@@ -140,34 +140,38 @@ int xdp_umem_assign_dev(struct xdp_umem *umem, struct net_device *dev,
- 	return err;
- }
- 
--static void xdp_umem_clear_dev(struct xdp_umem *umem)
-+void xdp_umem_clear_dev(struct xdp_umem *umem)
- {
-+	bool lock = rtnl_is_locked();
- 	struct netdev_bpf bpf;
- 	int err;
- 
-+	if (!lock)
-+		rtnl_lock();
-+
- 	if (!umem->dev)
--		return;
-+		goto out_unlock;
- 
- 	if (umem->zc) {
- 		bpf.command = XDP_SETUP_XSK_UMEM;
- 		bpf.xsk.umem = NULL;
- 		bpf.xsk.queue_id = umem->queue_id;
- 
--		rtnl_lock();
- 		err = umem->dev->netdev_ops->ndo_bpf(umem->dev, &bpf);
--		rtnl_unlock();
- 
- 		if (err)
- 			WARN(1, "failed to disable umem!\n");
- 	}
- 
--	rtnl_lock();
- 	xdp_clear_umem_at_qid(umem->dev, umem->queue_id);
--	rtnl_unlock();
- 
- 	dev_put(umem->dev);
- 	umem->dev = NULL;
- 	umem->zc = false;
-+
-+out_unlock:
-+	if (!lock)
-+		rtnl_unlock();
- }
- 
- static void xdp_umem_unpin_pages(struct xdp_umem *umem)
-diff --git a/net/xdp/xdp_umem.h b/net/xdp/xdp_umem.h
-index 27603227601b..a63a9fb251f5 100644
---- a/net/xdp/xdp_umem.h
-+++ b/net/xdp/xdp_umem.h
-@@ -10,6 +10,7 @@
- 
- int xdp_umem_assign_dev(struct xdp_umem *umem, struct net_device *dev,
- 			u16 queue_id, u16 flags);
-+void xdp_umem_clear_dev(struct xdp_umem *umem);
- bool xdp_umem_validate_queues(struct xdp_umem *umem);
- void xdp_get_umem(struct xdp_umem *umem);
- void xdp_put_umem(struct xdp_umem *umem);
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index a14e8864e4fa..883dfd3cdc49 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -335,6 +335,22 @@ static int xsk_init_queue(u32 entries, struct xsk_queue **queue,
- 	return 0;
- }
- 
-+static void xsk_unbind_dev(struct xdp_sock *xs)
-+{
-+	struct net_device *dev = xs->dev;
-+
-+	if (!dev || xs->state != XSK_BINDED)
-+		return;
-+
-+	xs->state = XSK_UNBINDED;
-+
-+	/* Wait for driver to stop using the xdp socket. */
-+	xdp_del_sk_umem(xs->umem, xs);
-+	xs->dev = NULL;
-+	synchronize_net();
-+	dev_put(dev);
-+}
-+
- static int xsk_release(struct socket *sock)
- {
- 	struct sock *sk = sock->sk;
-@@ -354,15 +370,7 @@ static int xsk_release(struct socket *sock)
- 	sock_prot_inuse_add(net, sk->sk_prot, -1);
- 	local_bh_enable();
- 
--	if (xs->dev) {
--		struct net_device *dev = xs->dev;
--
--		/* Wait for driver to stop using the xdp socket. */
--		xdp_del_sk_umem(xs->umem, xs);
--		xs->dev = NULL;
--		synchronize_net();
--		dev_put(dev);
--	}
-+	xsk_unbind_dev(xs);
- 
- 	xskq_destroy(xs->rx);
- 	xskq_destroy(xs->tx);
-@@ -412,7 +420,7 @@ static int xsk_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
- 		return -EINVAL;
- 
- 	mutex_lock(&xs->mutex);
--	if (xs->dev) {
-+	if (xs->state != XSK_UNINITIALIZED) {
- 		err = -EBUSY;
- 		goto out_release;
- 	}
-@@ -492,6 +500,8 @@ static int xsk_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
- out_unlock:
- 	if (err)
- 		dev_put(dev);
-+	else
-+		xs->state = XSK_BINDED;
- out_release:
- 	mutex_unlock(&xs->mutex);
- 	return err;
-@@ -520,6 +530,10 @@ static int xsk_setsockopt(struct socket *sock, int level, int optname,
- 			return -EFAULT;
- 
- 		mutex_lock(&xs->mutex);
-+		if (xs->state != XSK_UNINITIALIZED) {
-+			mutex_unlock(&xs->mutex);
-+			return -EBUSY;
-+		}
- 		q = (optname == XDP_TX_RING) ? &xs->tx : &xs->rx;
- 		err = xsk_init_queue(entries, q, false);
- 		mutex_unlock(&xs->mutex);
-@@ -534,7 +548,7 @@ static int xsk_setsockopt(struct socket *sock, int level, int optname,
- 			return -EFAULT;
- 
- 		mutex_lock(&xs->mutex);
--		if (xs->umem) {
-+		if (xs->state != XSK_UNINITIALIZED || xs->umem) {
- 			mutex_unlock(&xs->mutex);
- 			return -EBUSY;
- 		}
-@@ -561,6 +575,10 @@ static int xsk_setsockopt(struct socket *sock, int level, int optname,
- 			return -EFAULT;
- 
- 		mutex_lock(&xs->mutex);
-+		if (xs->state != XSK_UNINITIALIZED) {
-+			mutex_unlock(&xs->mutex);
-+			return -EBUSY;
-+		}
- 		if (!xs->umem) {
- 			mutex_unlock(&xs->mutex);
- 			return -EINVAL;
-@@ -662,6 +680,9 @@ static int xsk_mmap(struct file *file, struct socket *sock,
- 	unsigned long pfn;
- 	struct page *qpg;
- 
-+	if (xs->state != XSK_UNINITIALIZED)
-+		return -EBUSY;
-+
- 	if (offset == XDP_PGOFF_RX_RING) {
- 		q = READ_ONCE(xs->rx);
- 	} else if (offset == XDP_PGOFF_TX_RING) {
-@@ -693,6 +715,38 @@ static int xsk_mmap(struct file *file, struct socket *sock,
- 			       size, vma->vm_page_prot);
- }
- 
-+static int xsk_notifier(struct notifier_block *this,
-+			unsigned long msg, void *ptr)
-+{
-+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
-+	struct net *net = dev_net(dev);
-+	struct sock *sk;
-+
-+	switch (msg) {
-+	case NETDEV_UNREGISTER:
-+		mutex_lock(&net->xdp.lock);
-+		sk_for_each(sk, &net->xdp.list) {
-+			struct xdp_sock *xs = xdp_sk(sk);
-+
-+			mutex_lock(&xs->mutex);
-+			if (xs->dev == dev) {
-+				sk->sk_err = ENETDOWN;
-+				if (!sock_flag(sk, SOCK_DEAD))
-+					sk->sk_error_report(sk);
-+
-+				xsk_unbind_dev(xs);
-+
-+				/* Clear device references in umem. */
-+				xdp_umem_clear_dev(xs->umem);
-+			}
-+			mutex_unlock(&xs->mutex);
-+		}
-+		mutex_unlock(&net->xdp.lock);
-+		break;
-+	}
-+	return NOTIFY_DONE;
-+}
-+
- static struct proto xsk_proto = {
- 	.name =		"XDP",
- 	.owner =	THIS_MODULE,
-@@ -764,6 +818,7 @@ static int xsk_create(struct net *net, struct socket *sock, int protocol,
- 	sock_set_flag(sk, SOCK_RCU_FREE);
- 
- 	xs = xdp_sk(sk);
-+	xs->state = XSK_UNINITIALIZED;
- 	mutex_init(&xs->mutex);
- 	spin_lock_init(&xs->tx_completion_lock);
- 
-@@ -784,6 +839,10 @@ static const struct net_proto_family xsk_family_ops = {
- 	.owner	= THIS_MODULE,
- };
- 
-+static struct notifier_block xsk_netdev_notifier = {
-+	.notifier_call	= xsk_notifier,
-+};
-+
- static int __net_init xsk_net_init(struct net *net)
- {
- 	mutex_init(&net->xdp.lock);
-@@ -816,8 +875,15 @@ static int __init xsk_init(void)
- 	err = register_pernet_subsys(&xsk_net_ops);
- 	if (err)
- 		goto out_sk;
-+
-+	err = register_netdevice_notifier(&xsk_netdev_notifier);
-+	if (err)
-+		goto out_pernet;
-+
- 	return 0;
- 
-+out_pernet:
-+	unregister_pernet_subsys(&xsk_net_ops);
- out_sk:
- 	sock_unregister(PF_XDP);
- out_proto:
--- 
-2.17.1
-
+Thanks for reporting. This issue was already fixed in
+https://patchwork.ozlabs.org/patch/1122673/, so just pull latest
+bpf-next.
+>
+>
+>
+> On Tue, 25 Jun 2019 at 16:53, Andrii Nakryiko <andriin@fb.com> wrote:
+> >
+> > User and global data maps initialization has gotten pretty complicated
+> > and unnecessarily convoluted. This patch splits out the logic for globa=
+l
+> > data map and user-defined map initialization. It also removes the
+> > restriction of pre-calculating how many maps will be initialized,
+> > instead allowing to keep adding new maps as they are discovered, which
+> > will be used later for BTF-defined map definitions.
+> >
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+> >  tools/lib/bpf/libbpf.c | 247 ++++++++++++++++++++++-------------------
+> >  1 file changed, 133 insertions(+), 114 deletions(-)
+> >
+> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > index 7ee44d8877c5..88609dca4f7d 100644
+> > --- a/tools/lib/bpf/libbpf.c
+> > +++ b/tools/lib/bpf/libbpf.c
+> > @@ -234,6 +234,7 @@ struct bpf_object {
+> >         size_t nr_programs;
+> >         struct bpf_map *maps;
+> >         size_t nr_maps;
+> > +       size_t maps_cap;
+> >         struct bpf_secdata sections;
+> >
+> >         bool loaded;
+> > @@ -763,21 +764,51 @@ int bpf_object__variable_offset(const struct bpf_=
+object *obj, const char *name,
+> >         return -ENOENT;
+> >  }
+> >
+> > -static bool bpf_object__has_maps(const struct bpf_object *obj)
+> > +static struct bpf_map *bpf_object__add_map(struct bpf_object *obj)
+> >  {
+> > -       return obj->efile.maps_shndx >=3D 0 ||
+> > -              obj->efile.data_shndx >=3D 0 ||
+> > -              obj->efile.rodata_shndx >=3D 0 ||
+> > -              obj->efile.bss_shndx >=3D 0;
+> > +       struct bpf_map *new_maps;
+> > +       size_t new_cap;
+> > +       int i;
+> > +
+> > +       if (obj->nr_maps < obj->maps_cap)
+> > +               return &obj->maps[obj->nr_maps++];
+> > +
+> > +       new_cap =3D max(4ul, obj->maps_cap * 3 / 2);
+> > +       new_maps =3D realloc(obj->maps, new_cap * sizeof(*obj->maps));
+> > +       if (!new_maps) {
+> > +               pr_warning("alloc maps for object failed\n");
+> > +               return ERR_PTR(-ENOMEM);
+> > +       }
+> > +
+> > +       obj->maps_cap =3D new_cap;
+> > +       obj->maps =3D new_maps;
+> > +
+> > +       /* zero out new maps */
+> > +       memset(obj->maps + obj->nr_maps, 0,
+> > +              (obj->maps_cap - obj->nr_maps) * sizeof(*obj->maps));
+> > +       /*
+> > +        * fill all fd with -1 so won't close incorrect fd (fd=3D0 is s=
+tdin)
+> > +        * when failure (zclose won't close negative fd)).
+> > +        */
+> > +       for (i =3D obj->nr_maps; i < obj->maps_cap; i++) {
+> > +               obj->maps[i].fd =3D -1;
+> > +               obj->maps[i].inner_map_fd =3D -1;
+> > +       }
+> > +
+> > +       return &obj->maps[obj->nr_maps++];
+> >  }
+> >
+> >  static int
+> > -bpf_object__init_internal_map(struct bpf_object *obj, struct bpf_map *=
+map,
+> > -                             enum libbpf_map_type type, Elf_Data *data=
+,
+> > -                             void **data_buff)
+> > +bpf_object__init_internal_map(struct bpf_object *obj, enum libbpf_map_=
+type type,
+> > +                             Elf_Data *data, void **data_buff)
+> >  {
+> > -       struct bpf_map_def *def =3D &map->def;
+> >         char map_name[BPF_OBJ_NAME_LEN];
+> > +       struct bpf_map_def *def;
+> > +       struct bpf_map *map;
+> > +
+> > +       map =3D bpf_object__add_map(obj);
+> > +       if (IS_ERR(map))
+> > +               return PTR_ERR(map);
+> >
+> >         map->libbpf_type =3D type;
+> >         map->offset =3D ~(typeof(map->offset))0;
+> > @@ -789,6 +820,7 @@ bpf_object__init_internal_map(struct bpf_object *ob=
+j, struct bpf_map *map,
+> >                 return -ENOMEM;
+> >         }
+> >
+> > +       def =3D &map->def;
+> >         def->type =3D BPF_MAP_TYPE_ARRAY;
+> >         def->key_size =3D sizeof(int);
+> >         def->value_size =3D data->d_size;
+> > @@ -808,29 +840,58 @@ bpf_object__init_internal_map(struct bpf_object *=
+obj, struct bpf_map *map,
+> >         return 0;
+> >  }
+> >
+> > -static int bpf_object__init_maps(struct bpf_object *obj, int flags)
+> > +static int bpf_object__init_global_data_maps(struct bpf_object *obj)
+> > +{
+> > +       int err;
+> > +
+> > +       if (!obj->caps.global_data)
+> > +               return 0;
+> > +       /*
+> > +        * Populate obj->maps with libbpf internal maps.
+> > +        */
+> > +       if (obj->efile.data_shndx >=3D 0) {
+> > +               err =3D bpf_object__init_internal_map(obj, LIBBPF_MAP_D=
+ATA,
+> > +                                                   obj->efile.data,
+> > +                                                   &obj->sections.data=
+);
+> > +               if (err)
+> > +                       return err;
+> > +       }
+> > +       if (obj->efile.rodata_shndx >=3D 0) {
+> > +               err =3D bpf_object__init_internal_map(obj, LIBBPF_MAP_R=
+ODATA,
+> > +                                                   obj->efile.rodata,
+> > +                                                   &obj->sections.roda=
+ta);
+> > +               if (err)
+> > +                       return err;
+> > +       }
+> > +       if (obj->efile.bss_shndx >=3D 0) {
+> > +               err =3D bpf_object__init_internal_map(obj, LIBBPF_MAP_B=
+SS,
+> > +                                                   obj->efile.bss, NUL=
+L);
+> > +               if (err)
+> > +                       return err;
+> > +       }
+> > +       return 0;
+> > +}
+> > +
+> > +static int bpf_object__init_user_maps(struct bpf_object *obj, bool str=
+ict)
+> >  {
+> > -       int i, map_idx, map_def_sz =3D 0, nr_syms, nr_maps =3D 0, nr_ma=
+ps_glob =3D 0;
+> > -       bool strict =3D !(flags & MAPS_RELAX_COMPAT);
+> >         Elf_Data *symbols =3D obj->efile.symbols;
+> > +       int i, map_def_sz =3D 0, nr_maps =3D 0, nr_syms;
+> >         Elf_Data *data =3D NULL;
+> > -       int ret =3D 0;
+> > +       Elf_Scn *scn;
+> > +
+> > +       if (obj->efile.maps_shndx < 0)
+> > +               return 0;
+> >
+> >         if (!symbols)
+> >                 return -EINVAL;
+> > -       nr_syms =3D symbols->d_size / sizeof(GElf_Sym);
+> > -
+> > -       if (obj->efile.maps_shndx >=3D 0) {
+> > -               Elf_Scn *scn =3D elf_getscn(obj->efile.elf,
+> > -                                         obj->efile.maps_shndx);
+> >
+> > -               if (scn)
+> > -                       data =3D elf_getdata(scn, NULL);
+> > -               if (!scn || !data) {
+> > -                       pr_warning("failed to get Elf_Data from map sec=
+tion %d\n",
+> > -                                  obj->efile.maps_shndx);
+> > -                       return -EINVAL;
+> > -               }
+> > +       scn =3D elf_getscn(obj->efile.elf, obj->efile.maps_shndx);
+> > +       if (scn)
+> > +               data =3D elf_getdata(scn, NULL);
+> > +       if (!scn || !data) {
+> > +               pr_warning("failed to get Elf_Data from map section %d\=
+n",
+> > +                          obj->efile.maps_shndx);
+> > +               return -EINVAL;
+> >         }
+> >
+> >         /*
+> > @@ -840,16 +901,8 @@ static int bpf_object__init_maps(struct bpf_object=
+ *obj, int flags)
+> >          *
+> >          * TODO: Detect array of map and report error.
+> >          */
+> > -       if (obj->caps.global_data) {
+> > -               if (obj->efile.data_shndx >=3D 0)
+> > -                       nr_maps_glob++;
+> > -               if (obj->efile.rodata_shndx >=3D 0)
+> > -                       nr_maps_glob++;
+> > -               if (obj->efile.bss_shndx >=3D 0)
+> > -                       nr_maps_glob++;
+> > -       }
+> > -
+> > -       for (i =3D 0; data && i < nr_syms; i++) {
+> > +       nr_syms =3D symbols->d_size / sizeof(GElf_Sym);
+> > +       for (i =3D 0; i < nr_syms; i++) {
+> >                 GElf_Sym sym;
+> >
+> >                 if (!gelf_getsym(symbols, i, &sym))
+> > @@ -858,79 +911,56 @@ static int bpf_object__init_maps(struct bpf_objec=
+t *obj, int flags)
+> >                         continue;
+> >                 nr_maps++;
+> >         }
+> > -
+> > -       if (!nr_maps && !nr_maps_glob)
+> > -               return 0;
+> > -
+> >         /* Assume equally sized map definitions */
+> > -       if (data) {
+> > -               pr_debug("maps in %s: %d maps in %zd bytes\n", obj->pat=
+h,
+> > -                        nr_maps, data->d_size);
+> > -
+> > -               map_def_sz =3D data->d_size / nr_maps;
+> > -               if (!data->d_size || (data->d_size % nr_maps) !=3D 0) {
+> > -                       pr_warning("unable to determine map definition =
+size "
+> > -                                  "section %s, %d maps in %zd bytes\n"=
+,
+> > -                                  obj->path, nr_maps, data->d_size);
+> > -                       return -EINVAL;
+> > -               }
+> > -       }
+> > -
+> > -       nr_maps +=3D nr_maps_glob;
+> > -       obj->maps =3D calloc(nr_maps, sizeof(obj->maps[0]));
+> > -       if (!obj->maps) {
+> > -               pr_warning("alloc maps for object failed\n");
+> > -               return -ENOMEM;
+> > -       }
+> > -       obj->nr_maps =3D nr_maps;
+> > -
+> > -       for (i =3D 0; i < nr_maps; i++) {
+> > -               /*
+> > -                * fill all fd with -1 so won't close incorrect
+> > -                * fd (fd=3D0 is stdin) when failure (zclose won't clos=
+e
+> > -                * negative fd)).
+> > -                */
+> > -               obj->maps[i].fd =3D -1;
+> > -               obj->maps[i].inner_map_fd =3D -1;
+> > +       pr_debug("maps in %s: %d maps in %zd bytes\n",
+> > +                obj->path, nr_maps, data->d_size);
+> > +
+> > +       map_def_sz =3D data->d_size / nr_maps;
+> > +       if (!data->d_size || (data->d_size % nr_maps) !=3D 0) {
+> > +               pr_warning("unable to determine map definition size "
+> > +                          "section %s, %d maps in %zd bytes\n",
+> > +                          obj->path, nr_maps, data->d_size);
+> > +               return -EINVAL;
+> >         }
+> >
+> > -       /*
+> > -        * Fill obj->maps using data in "maps" section.
+> > -        */
+> > -       for (i =3D 0, map_idx =3D 0; data && i < nr_syms; i++) {
+> > +       /* Fill obj->maps using data in "maps" section.  */
+> > +       for (i =3D 0; i < nr_syms; i++) {
+> >                 GElf_Sym sym;
+> >                 const char *map_name;
+> >                 struct bpf_map_def *def;
+> > +               struct bpf_map *map;
+> >
+> >                 if (!gelf_getsym(symbols, i, &sym))
+> >                         continue;
+> >                 if (sym.st_shndx !=3D obj->efile.maps_shndx)
+> >                         continue;
+> >
+> > -               map_name =3D elf_strptr(obj->efile.elf,
+> > -                                     obj->efile.strtabidx,
+> > +               map =3D bpf_object__add_map(obj);
+> > +               if (IS_ERR(map))
+> > +                       return PTR_ERR(map);
+> > +
+> > +               map_name =3D elf_strptr(obj->efile.elf, obj->efile.strt=
+abidx,
+> >                                       sym.st_name);
+> >                 if (!map_name) {
+> >                         pr_warning("failed to get map #%d name sym stri=
+ng for obj %s\n",
+> > -                                  map_idx, obj->path);
+> > +                                  i, obj->path);
+> >                         return -LIBBPF_ERRNO__FORMAT;
+> >                 }
+> >
+> > -               obj->maps[map_idx].libbpf_type =3D LIBBPF_MAP_UNSPEC;
+> > -               obj->maps[map_idx].offset =3D sym.st_value;
+> > +               map->libbpf_type =3D LIBBPF_MAP_UNSPEC;
+> > +               map->offset =3D sym.st_value;
+> >                 if (sym.st_value + map_def_sz > data->d_size) {
+> >                         pr_warning("corrupted maps section in %s: last =
+map \"%s\" too small\n",
+> >                                    obj->path, map_name);
+> >                         return -EINVAL;
+> >                 }
+> >
+> > -               obj->maps[map_idx].name =3D strdup(map_name);
+> > -               if (!obj->maps[map_idx].name) {
+> > +               map->name =3D strdup(map_name);
+> > +               if (!map->name) {
+> >                         pr_warning("failed to alloc map name\n");
+> >                         return -ENOMEM;
+> >                 }
+> > -               pr_debug("map %d is \"%s\"\n", map_idx,
+> > -                        obj->maps[map_idx].name);
+> > +               pr_debug("map %d is \"%s\"\n", i, map->name);
+> >                 def =3D (struct bpf_map_def *)(data->d_buf + sym.st_val=
+ue);
+> >                 /*
+> >                  * If the definition of the map in the object file fits=
+ in
+> > @@ -939,7 +969,7 @@ static int bpf_object__init_maps(struct bpf_object =
+*obj, int flags)
+> >                  * calloc above.
+> >                  */
+> >                 if (map_def_sz <=3D sizeof(struct bpf_map_def)) {
+> > -                       memcpy(&obj->maps[map_idx].def, def, map_def_sz=
+);
+> > +                       memcpy(&map->def, def, map_def_sz);
+> >                 } else {
+> >                         /*
+> >                          * Here the map structure being read is bigger =
+than what
+> > @@ -959,37 +989,30 @@ static int bpf_object__init_maps(struct bpf_objec=
+t *obj, int flags)
+> >                                                 return -EINVAL;
+> >                                 }
+> >                         }
+> > -                       memcpy(&obj->maps[map_idx].def, def,
+> > -                              sizeof(struct bpf_map_def));
+> > +                       memcpy(&map->def, def, sizeof(struct bpf_map_de=
+f));
+> >                 }
+> > -               map_idx++;
+> >         }
+> > +       return 0;
+> > +}
+> >
+> > -       if (!obj->caps.global_data)
+> > -               goto finalize;
+> > +static int bpf_object__init_maps(struct bpf_object *obj, int flags)
+> > +{
+> > +       bool strict =3D !(flags & MAPS_RELAX_COMPAT);
+> > +       int err;
+> >
+> > -       /*
+> > -        * Populate rest of obj->maps with libbpf internal maps.
+> > -        */
+> > -       if (obj->efile.data_shndx >=3D 0)
+> > -               ret =3D bpf_object__init_internal_map(obj, &obj->maps[m=
+ap_idx++],
+> > -                                                   LIBBPF_MAP_DATA,
+> > -                                                   obj->efile.data,
+> > -                                                   &obj->sections.data=
+);
+> > -       if (!ret && obj->efile.rodata_shndx >=3D 0)
+> > -               ret =3D bpf_object__init_internal_map(obj, &obj->maps[m=
+ap_idx++],
+> > -                                                   LIBBPF_MAP_RODATA,
+> > -                                                   obj->efile.rodata,
+> > -                                                   &obj->sections.roda=
+ta);
+> > -       if (!ret && obj->efile.bss_shndx >=3D 0)
+> > -               ret =3D bpf_object__init_internal_map(obj, &obj->maps[m=
+ap_idx++],
+> > -                                                   LIBBPF_MAP_BSS,
+> > -                                                   obj->efile.bss, NUL=
+L);
+> > -finalize:
+> > -       if (!ret)
+> > +       err =3D bpf_object__init_user_maps(obj, strict);
+> > +       if (err)
+> > +               return err;
+> > +
+> > +       err =3D bpf_object__init_global_data_maps(obj);
+> > +       if (err)
+> > +               return err;
+> > +
+> > +       if (obj->nr_maps) {
+> >                 qsort(obj->maps, obj->nr_maps, sizeof(obj->maps[0]),
+> >                       compare_bpf_map);
+> > -       return ret;
+> > +       }
+> > +       return 0;
+> >  }
+> >
+> >  static bool section_have_execinstr(struct bpf_object *obj, int idx)
+> > @@ -1262,14 +1285,10 @@ static int bpf_object__elf_collect(struct bpf_o=
+bject *obj, int flags)
+> >                 return -LIBBPF_ERRNO__FORMAT;
+> >         }
+> >         err =3D bpf_object__load_btf(obj, btf_data, btf_ext_data);
+> > -       if (err)
+> > -               return err;
+> > -       if (bpf_object__has_maps(obj)) {
+> > +       if (!err)
+> >                 err =3D bpf_object__init_maps(obj, flags);
+> > -               if (err)
+> > -                       return err;
+> > -       }
+> > -       err =3D bpf_object__init_prog_names(obj);
+> > +       if (!err)
+> > +               err =3D bpf_object__init_prog_names(obj);
+> >         return err;
+> >  }
+> >
+> > --
+> > 2.17.1
+> >
