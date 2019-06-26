@@ -2,87 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6A405731D
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 22:50:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A71AA57344
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 23:04:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726429AbfFZUuy convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 26 Jun 2019 16:50:54 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:38166 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726223AbfFZUuy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 16:50:54 -0400
-Received: by mail-ed1-f65.google.com with SMTP id r12so4973093edo.5
-        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 13:50:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=vCtVnSV5pbkc8wL7gAqXKnkYIeFXOX3zA79zM4jv0jg=;
-        b=HauTYZ6WAtKYoZ0uZns2bbEjch9CQK+Y/eB93YQScQB0sDse4JvAFbn9oKcADRrbGL
-         ayIfU8ktKOeqXXIepsU5ZwfnUHmFkdY9KvN0GNi2oLlBDJNTimxpc49JH/fMU8gNqLEm
-         ohutZMEYbJQq+m8ybwBCEUqrTuZeWemj/mNOEItjcei9a6mTn7wxR7nlhMDr1Nb486C9
-         nd6mfqds4i75ssDdx69Wgxq7u5NKz3mEJOX4p5JPun19J3dc1c9FIzj8tmHWH8N+I6M5
-         aGfuLTGdy9T4k5/rWRSUCK4u8cppG9PSbiL7bqMDn7oSotZs+A3ZsPGVfEJeQlb1VI4Q
-         Iv4A==
-X-Gm-Message-State: APjAAAWxPLpds3dXKa1udcygz++4BxwgQHAHFNoHO7Evphmypizo0zGd
-        tz0bLsYwo8X+95kw+0GdDn5UHQ==
-X-Google-Smtp-Source: APXvYqyyKqdtin+Nln4gPV8lLezS5X6dqf5KO0n4x66+oWHoQbw9BSqU2Nb8lE4XYRyHnO0LkdF/DQ==
-X-Received: by 2002:aa7:cdc6:: with SMTP id h6mr7869713edw.5.1561582252311;
-        Wed, 26 Jun 2019 13:50:52 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id s27sm9223eda.36.2019.06.26.13.50.51
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 26 Jun 2019 13:50:51 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id CA272181CA7; Wed, 26 Jun 2019 22:50:50 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH v2 bpf-next 0/3] libbpf: add perf buffer abstraction and API
-In-Reply-To: <CAEf4BzZozWBanXnjJguYT46v8huAS7Wz44MHFHJkAPBZbT-i6A@mail.gmail.com>
-References: <20190626061235.602633-1-andriin@fb.com> <877e98d0hp.fsf@toke.dk> <CAEf4BzZozWBanXnjJguYT46v8huAS7Wz44MHFHJkAPBZbT-i6A@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 26 Jun 2019 22:50:50 +0200
-Message-ID: <878stoax5h.fsf@toke.dk>
+        id S1726362AbfFZVEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 17:04:14 -0400
+Received: from outgoing-auth-1.mit.edu ([18.9.28.11]:39825 "EHLO
+        outgoing.mit.edu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726289AbfFZVEO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 17:04:14 -0400
+Received: from callcc.thunk.org (guestnat-104-133-0-109.corp.google.com [104.133.0.109] (may be forged))
+        (authenticated bits=0)
+        (User authenticated as tytso@ATHENA.MIT.EDU)
+        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id x5QL3pbG018099
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 26 Jun 2019 17:03:52 -0400
+Received: by callcc.thunk.org (Postfix, from userid 15806)
+        id 0F73942002E; Wed, 26 Jun 2019 17:03:51 -0400 (EDT)
+Date:   Wed, 26 Jun 2019 17:03:51 -0400
+From:   "Theodore Ts'o" <tytso@mit.edu>
+To:     syzbot <syzbot+4bfbbf28a2e50ab07368@syzkaller.appspotmail.com>,
+        adilger.kernel@dilger.ca, davem@davemloft.net, eladr@mellanox.com,
+        idosch@mellanox.com, jiri@mellanox.com, john.stultz@linaro.org,
+        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        tglx@linutronix.de
+Subject: Re: INFO: rcu detected stall in ext4_write_checks
+Message-ID: <20190626210351.GF3116@mit.edu>
+Mail-Followup-To: Theodore Ts'o <tytso@mit.edu>,
+        syzbot <syzbot+4bfbbf28a2e50ab07368@syzkaller.appspotmail.com>,
+        adilger.kernel@dilger.ca, davem@davemloft.net, eladr@mellanox.com,
+        idosch@mellanox.com, jiri@mellanox.com, john.stultz@linaro.org,
+        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        tglx@linutronix.de
+References: <000000000000d3f34b058c3d5a4f@google.com>
+ <20190626184251.GE3116@mit.edu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190626184251.GE3116@mit.edu>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+The reproducer causes similar rcu stalls when using xfs:
 
-> On Wed, Jun 26, 2019 at 4:55 AM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->>
->> Andrii Nakryiko <andriin@fb.com> writes:
->>
->> > This patchset adds a high-level API for setting up and polling perf buffers
->> > associated with BPF_MAP_TYPE_PERF_EVENT_ARRAY map. Details of APIs are
->> > described in corresponding commit.
->> >
->> > Patch #1 adds a set of APIs to set up and work with perf buffer.
->> > Patch #2 enhances libbpf to supprot auto-setting PERF_EVENT_ARRAY map size.
->> > Patch #3 adds test.
->>
->> Having this in libbpf is great! Do you have a usage example of how a
->> program is supposed to read events from the buffer? This is something we
->> would probably want to add to the XDP tutorial
->
-> Did you check patch #3 with selftest? It's essentially an end-to-end
-> example of how to set everything up and process data (in my case it's
-> just simple int being sent as a sample, but it's exactly the same with
-> more complicated structs). I didn't bother to handle lost samples
-> notification, but it's just another optional callback with a single
-> counter denoting how many samples were dropped.
->
-> Let me know if it's still unclear.
+RSP: 0018:ffffaae8c0953c58 EFLAGS: 00000246 ORIG_RAX: ffffffffffffff13
+RAX: 0000000000000288 RBX: 000000000000b05a RCX: ffffaae8c0953d50
+RDX: 000000000000001c RSI: 000000000000001c RDI: ffffdcec41772800
+RBP: ffffdcec41772800 R08: 00000015143ceae3 R09: 0000000000000001
+R10: 0000000000000000 R11: ffffffff96863980 R12: ffff88d179ac7d80
+R13: ffff88d174837ca0 R14: 0000000000000288 R15: 000000000000001c
+ generic_file_buffered_read+0x2c1/0x8b0
+ xfs_file_buffered_aio_read+0x5f/0x140
+ xfs_file_read_iter+0x6e/0xd0
+ generic_file_splice_read+0x110/0x1d0
+ splice_direct_to_actor+0xd5/0x230
+ ? pipe_to_sendpage+0x90/0x90
+ do_splice_direct+0x9f/0xd0
+ do_sendfile+0x1d4/0x3a0
+ __se_sys_sendfile64+0x58/0xc0
+ do_syscall_64+0x50/0x1b0
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x7f8038387469
 
-I did read the example, but I obviously did not grok how it was supposed
-to work; re-reading it now it's quite clear, thanks! :)
+and btrfs
 
--Toke
+[   42.671321] RSP: 0018:ffff960dc0963b90 EFLAGS: 00000246 ORIG_RAX: ffffffffffffff13
+[   42.673592] RAX: 0000000000000001 RBX: ffff89eb3628ab30 RCX: 00000000ffffffff
+[   42.675775] RDX: ffff89eb3628a380 RSI: 00000000ffffffff RDI: ffffffff9ec63980
+[   42.677851] RBP: ffff89eb3628aaf8 R08: 0000000000000001 R09: 0000000000000001
+[   42.680028] R10: 0000000000000000 R11: ffffffff9ec63980 R12: ffff89eb3628a380
+[   42.682213] R13: 0000000000000246 R14: 0000000000000001 R15: ffffffff9ec63980
+[   42.684509]  xas_descend+0xed/0x120
+[   42.685682]  xas_load+0x39/0x50
+[   42.686691]  find_get_entry+0xa0/0x330
+[   42.687885]  pagecache_get_page+0x30/0x2d0
+[   42.689190]  generic_file_buffered_read+0xee/0x8b0
+[   42.690708]  generic_file_splice_read+0x110/0x1d0
+[   42.692374]  splice_direct_to_actor+0xd5/0x230
+[   42.693868]  ? pipe_to_sendpage+0x90/0x90
+[   42.695180]  do_splice_direct+0x9f/0xd0
+[   42.696407]  do_sendfile+0x1d4/0x3a0
+[   42.697551]  __se_sys_sendfile64+0x58/0xc0
+[   42.698854]  do_syscall_64+0x50/0x1b0
+[   42.700021]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[   42.701619] RIP: 0033:0x7f21e8d5f469
+
+So this is probably a generic vfs issue (probably in sendfile).  Next
+steps is probably for someone to do a bisection search covering
+changes to the fs/ and mm/ directories.  This should exclude bogus
+changes in the networking layer, although it does seem that there is
+something very badly wrong which is breaking bisectability, if you
+can't even scp to the system under test for certain commit ranges.  :-( :-( :-(
+
+      	       	      	     	   	    - Ted
