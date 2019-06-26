@@ -2,136 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DCDE557423
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 00:14:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B14257429
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 00:15:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726401AbfFZWOP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 18:14:15 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:29468 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726239AbfFZWOP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 18:14:15 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5QMDqjn022472;
-        Wed, 26 Jun 2019 15:13:54 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=HfFgzxXqVyLtfFZteDNh7PLwoUIO4UJBoqT7rpRp8qE=;
- b=ROItScjC462FhsbaXQY/PPH+8Hk2eap8MHDmHKG8Sz4nEZYLUj0F7EYeQlEgZXCBbRE0
- Y4vuaPIkhLY1nlOeyKnSKrOQbj6FdpdVDhcTblNFzkSI3Tp/2BqYjvNywIEohcX2U9Wq
- j2oAIx7WjZM6hXfr8SkViiWL3+YJ/DAEChE= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2tca1vsu4v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 26 Jun 2019 15:13:54 -0700
-Received: from ash-exopmbx101.TheFacebook.com (2620:10d:c0a8:82::b) by
- ash-exhub201.TheFacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 26 Jun 2019 15:13:53 -0700
-Received: from ash-exhub204.TheFacebook.com (2620:10d:c0a8:83::4) by
- ash-exopmbx101.TheFacebook.com (2620:10d:c0a8:82::b) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 26 Jun 2019 15:13:53 -0700
-Received: from NAM03-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
- via Frontend Transport; Wed, 26 Jun 2019 15:13:53 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector1-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HfFgzxXqVyLtfFZteDNh7PLwoUIO4UJBoqT7rpRp8qE=;
- b=Xs121MI7hED3rcUfcV7PA0kfJxoQTuv+hCR3tco0w/g/9OUPV5K+jMHbwyo6XI2lg/xxD/dcWOAt9CnvX2Ns8c0lrTQ0o/zGD4Y+bs30/K7jjvZSUjJZUgbev78T/7+07L6EgQ2byIfmBSvcK8Z5aLPNxQOZ25GICp3rCm6ND0U=
-Received: from BN8PR15MB2626.namprd15.prod.outlook.com (20.179.137.220) by
- BN8PR15MB3330.namprd15.prod.outlook.com (20.179.74.225) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2008.16; Wed, 26 Jun 2019 22:13:51 +0000
-Received: from BN8PR15MB2626.namprd15.prod.outlook.com
- ([fe80::e594:155f:a43:92ad]) by BN8PR15MB2626.namprd15.prod.outlook.com
- ([fe80::e594:155f:a43:92ad%6]) with mapi id 15.20.2008.018; Wed, 26 Jun 2019
- 22:13:51 +0000
-From:   Roman Gushchin <guro@fb.com>
-To:     Alexei Starovoitov <ast@kernel.org>
-CC:     Daniel Borkmann <daniel@iogearbox.net>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Networking <netdev@vger.kernel.org>,
-        "Linux Next Mailing List" <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: linux-next: Fixes tag needs some work in the bpf tree
-Thread-Topic: linux-next: Fixes tag needs some work in the bpf tree
-Thread-Index: AQHVLGtWobJf9y3bFk6A9OxwhHLb36augAKA
-Date:   Wed, 26 Jun 2019 22:13:51 +0000
-Message-ID: <20190626221347.GA17762@tower.DHCP.thefacebook.com>
-References: <20190627080521.5df8ccfc@canb.auug.org.au>
-In-Reply-To: <20190627080521.5df8ccfc@canb.auug.org.au>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: CO1PR15CA0044.namprd15.prod.outlook.com
- (2603:10b6:101:1f::12) To BN8PR15MB2626.namprd15.prod.outlook.com
- (2603:10b6:408:c7::28)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::3:8b85]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 72111cdd-56f4-47ab-6326-08d6fa8391b7
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BN8PR15MB3330;
-x-ms-traffictypediagnostic: BN8PR15MB3330:
-x-microsoft-antispam-prvs: <BN8PR15MB3330F7124CA0A416279C41C6BEE20@BN8PR15MB3330.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:489;
-x-forefront-prvs: 00808B16F3
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(39860400002)(396003)(376002)(136003)(366004)(189003)(199004)(53754006)(486006)(6506007)(478600001)(66556008)(66476007)(66446008)(476003)(66946007)(73956011)(64756008)(2906002)(6246003)(386003)(81166006)(102836004)(68736007)(446003)(81156014)(11346002)(8936002)(86362001)(256004)(6916009)(7736002)(305945005)(186003)(6116002)(6436002)(54906003)(33656002)(52116002)(8676002)(14454004)(229853002)(4326008)(1076003)(6486002)(316002)(9686003)(4744005)(6512007)(25786009)(53936002)(46003)(99286004)(71190400001)(71200400001)(5660300002)(76176011);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR15MB3330;H:BN8PR15MB2626.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: i2/n4erNij+37YbD9ewcJg7S4Z6e6rpagu2X2LYaysxj/AQ3p7wtmT+Sz1V9r87QULXH7m8riSYcbbkxggNBWR8NqbtD6dpCW55yqGxXbS/3q5oYmuBcCU3kgthxdzajycr/iSytDBaiP9tED7zbs7Wrg3IWkyTTe64V9hZ02VSmuurGa+liO0Lnmzv91IS0b8tAQm6IBupTc9FPLon8w21SanI/1SS2QsltxHhCX4rR3vCI56mBPDZn+8b7phKCMMmxdzopABMZccTOEYhT4bMftrdLOBJ93UH+CTs3eZdOiOImxTCn1fXfOAniirLIjcsPbEoHY/cygTa62U9QfvSs9fc+N8iDQGoLSwDWvt8md9DpZnEAbkTk4Rq7UlUYTDrLd0q0ktq+5UH1ojdx8QWCenSLksAjEhxlV1IQNe4=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <851EF497B88AB4479B0ABD8A4CF51205@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1726467AbfFZWPr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 18:15:47 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:44458 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726289AbfFZWPr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 18:15:47 -0400
+Received: by mail-qt1-f193.google.com with SMTP id x47so293405qtk.11;
+        Wed, 26 Jun 2019 15:15:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YqsrTlo+gcL4B4t7G2VP05OG6ppDqWg6u3t/7Le3dgU=;
+        b=UP/ZCqb5s0tOdnhdvJw7Fe0TSqgphP0+Q+5GdHWqQ/99+fBJEhOSstfgGAxHGWjp2k
+         vrr7ywq4P7HJLC0bWqcB+TzMDsSfA444WZNhMVPW41AvDeter62iDTgZxQ7OJgMAavcs
+         k14M+vlAzLpXcbk+UU8OLBBJD5GGzxmcGT3M33OqypIYozik86ZGwt5zvW6X4XELGBRr
+         0yu1iC2WGSMp7IVrY3vH9jTrelGx2sXJvPXM56b5oYBK2YrBAcsD0ZjUAVubjZqxVtOr
+         9WVn5055124Wy0nT2J26vE2zHNs/CUonP9jqNyeRo3sL98XTU6/sp8cxxY8ITEK2truG
+         U0VQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YqsrTlo+gcL4B4t7G2VP05OG6ppDqWg6u3t/7Le3dgU=;
+        b=rihv9yuus7vS9+rHSZTt/UgR1WJghFpaKOoahMoD9Jb6g0sc9Rv47yz1U21o5LdeI8
+         ctcY0tVW1O3h2jgfSTL0S3h5htPMWtzAyFrNW7kEi8EXpeya9/g3qyppVRq3CCgIbD2M
+         KkHzmEsg7/9gAQxR8FmmfJqtOjFcMtMFDLctV6n9Vnjy5Ip///SqOZKkoDSHRxQ4HNw4
+         bmtO0Z9DNelODTeE8Zl6VQ7G1ZT9rk49Dg8mZ1ssa5sQdXxXID9S+oOD/YYGGsFg/JrY
+         jRsr+mH7TPpxQmQ3Fyg4DnDyBPHmEiXmH3sUCKWfXxDd+xNJrGE8sMJPEiKyW5ViHx0t
+         Y/iQ==
+X-Gm-Message-State: APjAAAXw+/iPJiD3U1WXQMYYQdik7v0feuOpY1NZiVWLTKNvJyAaq7oP
+        0/UfHUty8I2niK/PAzXEimnDoD0qlJQoejsak1U=
+X-Google-Smtp-Source: APXvYqxgK8NBrIMk7RSclF2SVPR3il0nDfSR8eLdLdwFXEQ/rfesYSS9T2i24ZfnoSO1h1jP1jLxHYFqehDu+CUiy7Q=
+X-Received: by 2002:a0c:c107:: with SMTP id f7mr191115qvh.150.1561587346020;
+ Wed, 26 Jun 2019 15:15:46 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 72111cdd-56f4-47ab-6326-08d6fa8391b7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Jun 2019 22:13:51.4217
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: guro@fb.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR15MB3330
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-26_12:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=808 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906260254
-X-FB-Internal: deliver
+References: <20190621045555.4152743-1-andriin@fb.com> <20190621045555.4152743-4-andriin@fb.com>
+ <a7780057-1d70-9ace-960b-ff65867dc277@iogearbox.net>
+In-Reply-To: <a7780057-1d70-9ace-960b-ff65867dc277@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 26 Jun 2019 15:15:34 -0700
+Message-ID: <CAEf4BzYy4Eorj0VxzArZg+V4muJCvDTX_VVfoouzZUcrBwTa1w@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 3/7] libbpf: add kprobe/uprobe attach API
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Andrii Nakryiko <andriin@fb.com>, Alexei Starovoitov <ast@fb.com>,
+        Stanislav Fomichev <sdf@fomichev.me>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 27, 2019 at 08:05:21AM +1000, Stephen Rothwell wrote:
-> Hi all,
->=20
-> In commit
->=20
->   12771345a467 ("bpf: fix cgroup bpf release synchronization")
->=20
-> Fixes tag
->=20
->   Fixes: 4bfc0bb2c60e ("bpf: decouple the lifetime of cgroup_bpf from
->=20
-> has these problem(s):
->=20
->   - Subject has leading but no trailing parentheses
->   - Subject has leading but no trailing quotes
->=20
-> Please don't split Fixes tags across more than one line.
+On Wed, Jun 26, 2019 at 7:25 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 06/21/2019 06:55 AM, Andrii Nakryiko wrote:
+> > Add ability to attach to kernel and user probes and retprobes.
+> > Implementation depends on perf event support for kprobes/uprobes.
+> >
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
 
-Oops, sorry.
+<snip>
 
-Alexei, can you fix this in place?
-Or should I send an updated version?
+> > +}
+>
+> I do like that we facilitate usage by adding these APIs to libbpf, but my $0.02
+> would be that they should be designed slightly different. See it as a nit, but
+> given it's exposed in libbpf.map and therefore immutable in future it's worth
+> considering; right now with this set here you have:
+>
+> int bpf_program__attach_kprobe(struct bpf_program *prog, bool retprobe,
+>                                const char *func_name)
+> int bpf_program__attach_uprobe(struct bpf_program *prog, bool retprobe,
+>                                pid_t pid, const char *binary_path,
+>                                size_t func_offset)
+> int bpf_program__attach_tracepoint(struct bpf_program *prog,
+>                                    const char *tp_category,
+>                                    const char *tp_name)
+> int bpf_program__attach_raw_tracepoint(struct bpf_program *prog,
+>                                        const char *tp_name)
+> int bpf_program__attach_perf_event(struct bpf_program *prog, int pfd)
+> int libbpf_perf_event_disable_and_close(int pfd)
+>
+> So the idea is that all the bpf_program__attach_*() APIs return an fd that you
+> can later on pass into libbpf_perf_event_disable_and_close(). I think there is
+> a bit of a disconnect in that the bpf_program__attach_*() APIs try to do too
+> many things at once. For example, the bpf_program__attach_raw_tracepoint() fd
+> has nothing to do with perf, so passing to libbpf_perf_event_disable_and_close()
+> kind of works, but is hacky since there's no PERF_EVENT_IOC_DISABLE for it so this
+> would always error if a user cares to check the return code. In the kernel, we
 
-Thanks.
+Yeah, you are absolutely right, missed that it's not creating perf
+event under cover, to be honest.
+
+> use anon inode for this kind of object. Also, if a user tries to add more than
+> one program to the same event, we need to recreate a new event fd every time.
+>
+> What this boils down to is that this should get a proper abstraction, e.g. as
+> in struct libbpf_event which holds the event object. There should be helper
+> functions like libbpf_event_create_{kprobe,uprobe,tracepoint,raw_tracepoint} returning
+> such an struct libbpf_event object on success, and a single libbpf_event_destroy()
+> that does the event specific teardown. bpf_program__attach_event() can then take
+> care of only attaching the program to it. Having an object for this is also more
+> extensible than just a fd number. Nice thing is that this can also be completely
+> internal to libbpf.c as with struct bpf_program and other abstractions where we
+> don't expose the internals in the public header.
+
+Yeah, I totally agree, I think this is a great idea! I don't
+particularly like "event" name, that seems very overloaded term. Do
+you mind if I call this "bpf_hook" instead of "libbpf_event"? I've
+always thought about these different points in the system to which one
+can attach BPF program as hooks exposed from kernel :)
+
+Would it also make sense to do attaching to non-tracing hooks using
+the same mechanism (e.g., all the per-cgroup stuff, sysctl, etc)? Not
+sure how people do that today, will check to see how it's done, but I
+think nothing should conceptually prevent doing that using the same
+abstract bpf_hook way, right?
+
+>
+> Thanks,
+> Daniel
