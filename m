@@ -2,104 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45C8C5681F
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 14:01:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1BDE56826
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 14:02:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727255AbfFZMBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 08:01:12 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:38554 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726462AbfFZMBK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 08:01:10 -0400
-Received: by mail-wm1-f65.google.com with SMTP id s15so1818741wmj.3
-        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 05:01:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=cAEDwnEStKSeqdXMmpna4aYmiIA2+ZGDjRpHTpM4HlE=;
-        b=eEMk9hrf6+cZbUebCcsYn86gayG4w5qEUehD5a7q4vdSkctlDOMFMuhqweWPUFBovP
-         9U6m4qFV6BG3erBBZXRVdghwYWie0qILUVVmswGwM7ram87xcSlKFwx1VKOTsA6cXrlY
-         aW90bXJbRbCuMUXg11KEFt4cjdxpsL9JlAWuA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=cAEDwnEStKSeqdXMmpna4aYmiIA2+ZGDjRpHTpM4HlE=;
-        b=K0y6f9c1Lph5VqhPgdxFNyNNjOH5lycYlY4TIyoyT7NBi/TmNucyvlPJzN3or6HTCd
-         thWSWVmspmeHd/TjeF0c6uF5jfrj54YGxxRYk5iTKt6NU2Wty2ics6/aUV63QzYG9csU
-         0frAXLBcbPa71Qlul5v+KUuVQoWnVz+i1lPyBuq40zElE7d7AT8R5AkvCvjKDIhDoO2Q
-         b88b12jqnCE6t2glfNJBs+1nuT5oV7xgV/9H2zQFJsAYiD06pyxtIr2uXAGhVcV3y57R
-         ZIoORjm1B9br9VC0pgyz3o13SkWtRmdAhQjKPr3wAaURUT++R1oYtQnmWNI7TvJ6GMUU
-         L10A==
-X-Gm-Message-State: APjAAAUGc6YyPlBVUlB58vBp4g4BugLeLvP4kv0K3jXPfcAQnBvYITRx
-        2tee0j5nNf/bI+GlX+wLFXKcLlCA5jo=
-X-Google-Smtp-Source: APXvYqxkF4XaKDMwYbbiUnKxyNPPGK6B+IK/ZV9EWa8yJPN9zclkK+VGeCyiELqrUaZRWPDj5eiTMw==
-X-Received: by 2002:a1c:c70f:: with SMTP id x15mr2390966wmf.59.1561550468279;
-        Wed, 26 Jun 2019 05:01:08 -0700 (PDT)
-Received: from localhost.localdomain ([78.128.78.220])
-        by smtp.gmail.com with ESMTPSA id f190sm1676818wmg.13.2019.06.26.05.01.07
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 26 Jun 2019 05:01:07 -0700 (PDT)
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-To:     netdev@vger.kernel.org
-Cc:     roopa@cumulusnetworks.com, pablo@netfilter.org,
-        xiyou.wangcong@gmail.com, davem@davemloft.net, jiri@resnulli.us,
-        jhs@mojatatu.com, eyal.birger@gmail.com,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Subject: [PATCH net-next 5/5] net: sched: em_ipt: add support for addrtype matching
-Date:   Wed, 26 Jun 2019 14:58:55 +0300
-Message-Id: <20190626115855.13241-6-nikolay@cumulusnetworks.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190626115855.13241-1-nikolay@cumulusnetworks.com>
-References: <20190626115855.13241-1-nikolay@cumulusnetworks.com>
+        id S1726673AbfFZMCt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 08:02:49 -0400
+Received: from ozlabs.org ([203.11.71.1]:55759 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726131AbfFZMCs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 08:02:48 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 45YhVX2Y9jz9s3C;
+        Wed, 26 Jun 2019 22:02:44 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1561550565;
+        bh=w+QRbv9L2/ZXmnp052EBNEJxLhRrtzCyrMYK4G+/uqU=;
+        h=Date:From:To:Cc:Subject:From;
+        b=aYeWvHghTT7MDezFGVvdSsdRo3/VfdVPeSzVrHCh8vXL+ncKzR/3DS+uX0/LrIUMK
+         FRigKjrMiVHZZfBx37rexsaz/ouZRUMmLgGJwYUVtw9gKMiTlyQtG07bgXxj4azP/l
+         2RpubkVDYAV4wc7xj/rFMrNm/TiXMs7vX6dwPhV6a9cXFWM5qa+V28A/jxHk0tM+uq
+         W/5R9+K5J7PaSPnkbCwMVuSXGYi1gktv2f5xg8bZLNN1hQO2yYslCXagUDYvtIDrcf
+         ZeUZcyYXxtXiW9mrbB4zDfi/HjB0jsSw9Nbs9J7cckmGxmgzvaftXIgwwZcYfBgMcf
+         lDowXfPhYlnhQ==
+Date:   Wed, 26 Jun 2019 22:02:42 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Eiichi Tsukata <devel@etsukata.com>,
+        Matteo Croce <mcroce@redhat.com>
+Subject: linux-next: manual merge of the akpm tree with the net tree
+Message-ID: <20190626220242.26fc2d3e@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ boundary="Sig_/IAiEFUnBd=9XVVSDEnGhKa6"; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allow em_ipt to use addrtype for matching. Restrict the use only to
-revision 1 which has IPv6 support. Since it's a NFPROTO_UNSPEC xt match
-we use the user-specified nfproto for matching, in case it's unspecified
-both v4/v6 will be matched by the rule.
+--Sig_/IAiEFUnBd=9XVVSDEnGhKa6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
----
- net/sched/em_ipt.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+Hi all,
 
-diff --git a/net/sched/em_ipt.c b/net/sched/em_ipt.c
-index cfb93ce340da..ce0798f6f1f7 100644
---- a/net/sched/em_ipt.c
-+++ b/net/sched/em_ipt.c
-@@ -72,11 +72,25 @@ static int policy_validate_match_data(struct nlattr **tb, u8 mrev)
- 	return 0;
- }
- 
-+static int addrtype_validate_match_data(struct nlattr **tb, u8 mrev)
-+{
-+	if (mrev != 1) {
-+		pr_err("only addrtype match revision 1 supported");
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
- static const struct em_ipt_xt_match em_ipt_xt_matches[] = {
- 	{
- 		.match_name = "policy",
- 		.validate_match_data = policy_validate_match_data
- 	},
-+	{
-+		.match_name = "addrtype",
-+		.validate_match_data = addrtype_validate_match_data
-+	},
- 	{}
- };
- 
--- 
-2.20.1
+Today's linux-next merge of the akpm tree got a conflict in:
 
+  net/ipv6/route.c
+
+between commit:
+
+  b8e8a86337c2 ("net/ipv6: Fix misuse of proc_dointvec "skip_notify_on_dev_=
+down"")
+
+from the net tree and patch:
+
+  "proc/sysctl: add shared variables for range check"
+
+from the akpm tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc net/ipv6/route.c
+index a0994415484e,c5125cdff32c..000000000000
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@@ -6077,9 -6074,9 +6074,9 @@@ static struct ctl_table ipv6_route_tabl
+  		.data		=3D	&init_net.ipv6.sysctl.skip_notify_on_dev_down,
+  		.maxlen		=3D	sizeof(int),
+  		.mode		=3D	0644,
+ -		.proc_handler	=3D	proc_dointvec,
+ +		.proc_handler	=3D	proc_dointvec_minmax,
+- 		.extra1		=3D	&zero,
+- 		.extra2		=3D	&one,
++ 		.extra1		=3D	SYSCTL_ZERO,
++ 		.extra2		=3D	SYSCTL_ONE,
+  	},
+  	{ }
+  };
+
+--Sig_/IAiEFUnBd=9XVVSDEnGhKa6
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl0TXuIACgkQAVBC80lX
+0GzVGQgAi6KpMwwYvxK6TZnE4Xv4rKpUNWLM+tX4+Z02jY4ue7Igt3X2IRURmt7J
+2jJx0UlDRsExYucQdAQQHwnaKzZ9nFQPGezGoc6KsoYrry9adJkZ2FZeoHj/ZPJ8
+VSsG4hf3pdhHcFoV53bnY0V1Ai0/TXgg80LdXOSY+TdQNtDj9hkIznS3vTOaQ4ar
+dqhoLtKPz4lJr+9unfUACWR1r2TGiZ5tywc3j9/XEo0KLx/yPB0nE+zTVCjX0I65
+dSKLZpo+g3sWrEb77E9Alokj2OXx4qBtnpXzkXXlXjgRUOM2shFDCAUUH9gjRqnx
+RUFR153oJ89iXTbWGO9+FCWZExL+8Q==
+=CNIh
+-----END PGP SIGNATURE-----
+
+--Sig_/IAiEFUnBd=9XVVSDEnGhKa6--
