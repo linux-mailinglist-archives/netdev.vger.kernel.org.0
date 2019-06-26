@@ -2,186 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D65856709
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 12:42:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CFC156717
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 12:45:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726618AbfFZKm1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 06:42:27 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:44114 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725930AbfFZKm1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 06:42:27 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 92D51300BEA8;
-        Wed, 26 Jun 2019 10:42:26 +0000 (UTC)
-Received: from carbon (ovpn-200-45.brq.redhat.com [10.40.200.45])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 96B6B1001B13;
-        Wed, 26 Jun 2019 10:42:17 +0000 (UTC)
-Date:   Wed, 26 Jun 2019 12:42:16 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Cc:     davem@davemloft.net, grygorii.strashko@ti.com, hawk@kernel.org,
-        saeedm@mellanox.com, leon@kernel.org, ast@kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        xdp-newbies@vger.kernel.org, ilias.apalodimas@linaro.org,
-        netdev@vger.kernel.org, daniel@iogearbox.net,
-        jakub.kicinski@netronome.com, john.fastabend@gmail.com,
-        brouer@redhat.com
-Subject: Re: [PATCH v4 net-next 1/4] net: core: page_pool: add user cnt
- preventing pool deletion
-Message-ID: <20190626124216.494eee86@carbon>
-In-Reply-To: <20190625175948.24771-2-ivan.khoronzhuk@linaro.org>
-References: <20190625175948.24771-1-ivan.khoronzhuk@linaro.org>
-        <20190625175948.24771-2-ivan.khoronzhuk@linaro.org>
+        id S1726673AbfFZKpa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 06:45:30 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:34435 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726462AbfFZKp3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 06:45:29 -0400
+Received: by mail-wr1-f67.google.com with SMTP id k11so2188852wrl.1;
+        Wed, 26 Jun 2019 03:45:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=VzYlELuHWLmeH4BA1vZ96Wr04Fx9TdVtK5+LAe1TDoo=;
+        b=YxNdJnYg5o45T2xFRTMgh6IVz9JrQ1IqPtnyb+jZI2xV3F6oxyzMqO57ql40LVDFkF
+         mh9z/tE8u6rmRNEkasxKxoc/blmYSh5ws+YmefUYtvMIKUWcLnWOVfcm5tR12QhkhqKC
+         mK6GuXCccLXrDeRP5VAQq1ChuHNSE+g9yAoLmdD4uFTRbDkxDjyY0dDivso3ZufFm+RK
+         fi4XLOzuFl6zRJuwo0On7W9muSxHiZvPk8kAnLkBEkSpaNKk6F9fCVuXJSfG0a9MIRLy
+         P8Js/pYf8yRlSII3Dsa5HVY3yo5fLbRueW5cGVxahtalSjgRRo1VIITniv18UrxW98Eb
+         Yepg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=VzYlELuHWLmeH4BA1vZ96Wr04Fx9TdVtK5+LAe1TDoo=;
+        b=BBnZ+nXAThxwU8IB1jdg3RfV1qQaHTclzXeT0OfglN6jV3vDeQqWsRHlWo6X7lYRPk
+         z0o7oIewcX7sLj5+X4/d8Y+4YvNzVeARxxxZd9ojnVP/ztHTmWD8vYpiGlF41QybzRtQ
+         CbANBkOzotcetj7AiTo05Kr1gBFwZN3954LLMXwJhzPgTZ4u7Ibb24vpjAHye2kP2GV9
+         vPLJvBq+j1PTYQiG+Bc0YJpA+TQFlLer+HZx7A4235ssrCIALdWCWnNYGyesmdaOUHha
+         3eMPsk7asXl/CuStPUPfhviBBi9koBRO9NX8Xthlwnj48tk/kPiQMvnzNus35raVPkQj
+         352Q==
+X-Gm-Message-State: APjAAAWKbGa0BU7C7p+aNYe+/5obfjj9qtbWEeh6MiSmHGLBTVO2Qy/K
+        SwvS2RLGkiGtpZdDnphzcvfDsbYNQR0=
+X-Google-Smtp-Source: APXvYqzqqpLcrchSB3MEKgFES/AtInHoOSvqEjOeF1kQWjyiXW0QTsJ0T+bgy7SBStUaJozeF1ixTg==
+X-Received: by 2002:adf:9003:: with SMTP id h3mr3334720wrh.172.1561545927716;
+        Wed, 26 Jun 2019 03:45:27 -0700 (PDT)
+Received: from localhost (p2E5BEF36.dip0.t-ipconnect.de. [46.91.239.54])
+        by smtp.gmail.com with ESMTPSA id z5sm1646318wma.36.2019.06.26.03.45.26
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 26 Jun 2019 03:45:27 -0700 (PDT)
+Date:   Wed, 26 Jun 2019 12:45:25 +0200
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Jon Hunter <jonathanh@nvidia.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org
+Subject: Re: [PATCH 1/2] net: stmmac: Fix possible deadlock when disabling
+ EEE support
+Message-ID: <20190626104525.GH6362@ulmo>
+References: <20190626102322.18821-1-jonathanh@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Wed, 26 Jun 2019 10:42:27 +0000 (UTC)
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="it/zdz3K1bH9Y8/E"
+Content-Disposition: inline
+In-Reply-To: <20190626102322.18821-1-jonathanh@nvidia.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 25 Jun 2019 20:59:45 +0300
-Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
 
-> Add user counter allowing to delete pool only when no users.
-> It doesn't prevent pool from flush, only prevents freeing the
-> pool instance. Helps when no need to delete the pool and now
-> it's user responsibility to free it by calling page_pool_free()
-> while destroying procedure. It also makes to use page_pool_free()
-> explicitly, not fully hidden in xdp unreg, which looks more
-> correct after page pool "create" routine.
+--it/zdz3K1bH9Y8/E
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-No, this is wrong.
-
-> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+On Wed, Jun 26, 2019 at 11:23:21AM +0100, Jon Hunter wrote:
+> When stmmac_eee_init() is called to disable EEE support, then the timer
+> for EEE support is stopped and we return from the function. Prior to
+> stopping the timer, a mutex was acquired but in this case it is never
+> released and so could cause a deadlock. Fix this by releasing the mutex
+> prior to returning from stmmax_eee_init() when stopping the EEE timer.
+>=20
+> Fixes: 74371272f97f ("net: stmmac: Convert to phylink and remove phylib l=
+ogic")
+> Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
 > ---
->  drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 8 +++++---
->  include/net/page_pool.h                           | 7 +++++++
->  net/core/page_pool.c                              | 7 +++++++
->  net/core/xdp.c                                    | 3 +++
->  4 files changed, 22 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> index 5e40db8f92e6..cb028de64a1d 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> @@ -545,10 +545,8 @@ static int mlx5e_alloc_rq(struct mlx5e_channel *c,
->  	}
->  	err = xdp_rxq_info_reg_mem_model(&rq->xdp_rxq,
->  					 MEM_TYPE_PAGE_POOL, rq->page_pool);
-> -	if (err) {
-> -		page_pool_free(rq->page_pool);
-> +	if (err)
->  		goto err_free;
-> -	}
->  
->  	for (i = 0; i < wq_sz; i++) {
->  		if (rq->wq_type == MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ) {
-> @@ -613,6 +611,8 @@ static int mlx5e_alloc_rq(struct mlx5e_channel *c,
->  	if (rq->xdp_prog)
->  		bpf_prog_put(rq->xdp_prog);
->  	xdp_rxq_info_unreg(&rq->xdp_rxq);
-> +	if (rq->page_pool)
-> +		page_pool_free(rq->page_pool);
->  	mlx5_wq_destroy(&rq->wq_ctrl);
->  
->  	return err;
-> @@ -643,6 +643,8 @@ static void mlx5e_free_rq(struct mlx5e_rq *rq)
->  	}
->  
->  	xdp_rxq_info_unreg(&rq->xdp_rxq);
-> +	if (rq->page_pool)
-> +		page_pool_free(rq->page_pool);
+>  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 1 +
+>  1 file changed, 1 insertion(+)
 
-No, this is wrong.  The hole point with the merged page_pool fixes
-patchset was that page_pool_free() needs to be delayed until no-more
-in-flight packets exist.
+Tested-by: Thierry Reding <treding@nvidia.com>
 
+--it/zdz3K1bH9Y8/E
+Content-Type: application/pgp-signature; name="signature.asc"
 
->  	mlx5_wq_destroy(&rq->wq_ctrl);
->  }
->  
-> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-> index f07c518ef8a5..1ec838e9927e 100644
-> --- a/include/net/page_pool.h
-> +++ b/include/net/page_pool.h
-> @@ -101,6 +101,7 @@ struct page_pool {
->  	struct ptr_ring ring;
->  
->  	atomic_t pages_state_release_cnt;
-> +	atomic_t user_cnt;
->  };
->  
->  struct page *page_pool_alloc_pages(struct page_pool *pool, gfp_t gfp);
-> @@ -183,6 +184,12 @@ static inline dma_addr_t page_pool_get_dma_addr(struct page *page)
->  	return page->dma_addr;
->  }
->  
-> +/* used to prevent pool from deallocation */
-> +static inline void page_pool_get(struct page_pool *pool)
-> +{
-> +	atomic_inc(&pool->user_cnt);
-> +}
-> +
->  static inline bool is_page_pool_compiled_in(void)
->  {
->  #ifdef CONFIG_PAGE_POOL
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index b366f59885c1..169b0e3c870e 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-> @@ -48,6 +48,7 @@ static int page_pool_init(struct page_pool *pool,
->  		return -ENOMEM;
->  
->  	atomic_set(&pool->pages_state_release_cnt, 0);
-> +	atomic_set(&pool->user_cnt, 0);
->  
->  	if (pool->p.flags & PP_FLAG_DMA_MAP)
->  		get_device(pool->p.dev);
-> @@ -70,6 +71,8 @@ struct page_pool *page_pool_create(const struct page_pool_params *params)
->  		kfree(pool);
->  		return ERR_PTR(err);
->  	}
-> +
-> +	page_pool_get(pool);
->  	return pool;
->  }
->  EXPORT_SYMBOL(page_pool_create);
-> @@ -356,6 +359,10 @@ static void __warn_in_flight(struct page_pool *pool)
->  
->  void __page_pool_free(struct page_pool *pool)
->  {
-> +	/* free only if no users */
-> +	if (!atomic_dec_and_test(&pool->user_cnt))
-> +		return;
-> +
->  	WARN(pool->alloc.count, "API usage violation");
->  	WARN(!ptr_ring_empty(&pool->ring), "ptr_ring is not empty");
->  
-> diff --git a/net/core/xdp.c b/net/core/xdp.c
-> index 829377cc83db..04bdcd784d2e 100644
-> --- a/net/core/xdp.c
-> +++ b/net/core/xdp.c
-> @@ -372,6 +372,9 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
->  
->  	mutex_unlock(&mem_id_lock);
->  
-> +	if (type == MEM_TYPE_PAGE_POOL)
-> +		page_pool_get(xdp_alloc->page_pool);
-> +
->  	trace_mem_connect(xdp_alloc, xdp_rxq);
->  	return 0;
->  err:
+-----BEGIN PGP SIGNATURE-----
 
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl0TTMUACgkQ3SOs138+
+s6GggQ//S7aRh+7qKUq7BOqNvXA0odDDLtnvYxmihsOI3CtmAEMzA55QyQT18bCn
+rXIv7tzANYDZDpnXJHT7lksGRDGXWzmXB1ehc0isKGNIirBYmPt58jUdN9gI7dlA
+kf0ivngQUba49jZ45S4zbg+S2bTVe4Xljqx/Z3IUiyHW7vcs5cNTbOozmD1MgY6D
+BrBV+TsgIBgfYOcdP8gFlvYDa9GjQKfTQMNkm+3niSyxZBLbCGm2hyObe2acxOmU
+O/mJ1h+2vailfzxqViZxB3+kqf0EIWt2efwaDr75Bmyc9NXvWVYzKr8c2teyOODa
+9de95vb61PPZrufuoEjpMgEV5aAtDVQVC/zVwcMJF8o4Qc+v5sBR4erhMjsIVctB
+QmgxEVcUdfo6MxOw+sa9qJsCvRsLuAdxflpvro7UBLaOthWSh3SaIf0IgSx+mqpK
+1x3jlY/vQZ3vMw/6BoLb+3sgnZNMjh1sSYFKZCNVdDqd6l+q/E/Jw7p/hx8txRN+
+uiAGlbe6V8Rib9rtvHsE/oIcWR8eMa7s7hRgudRMKHJUVA9Q6B8BX9OA79hR6QXK
+Uw1pLJaSoHlyOxY5uJMGgMRMSsn3LkY+Cgc2COu5ILcNtjtO7HrRpXm/TkFARTow
+klV31kVW6VEkXJVSasGzev4TAKU99GEDPqEyDJYWiyeCbhfJgsM=
+=VDy+
+-----END PGP SIGNATURE-----
 
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+--it/zdz3K1bH9Y8/E--
