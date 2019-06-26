@@ -2,45 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6409956769
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 13:13:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 789145696A
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 14:40:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726673AbfFZLNY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 07:13:24 -0400
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:40158 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725930AbfFZLNY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 07:13:24 -0400
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.89)
-        (envelope-from <fw@strlen.de>)
-        id 1hg5re-0001V2-G3; Wed, 26 Jun 2019 13:13:22 +0200
-Date:   Wed, 26 Jun 2019 13:13:22 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Naruto Nguyen <narutonguyen2018@gmail.com>
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter@vger.kernel.org
-Subject: Re: Question about nf_conntrack_proto for IPsec
-Message-ID: <20190626111322.gks5qptax3iqrjao@breakpoint.cc>
-References: <CANpxKHHXzrEpJPSj3x83+WE23G1W0KPz9XbG=fCVzS21+-BpfQ@mail.gmail.com>
+        id S1727466AbfFZMk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 08:40:56 -0400
+Received: from zyloware.com ([23.95.19.78]:44828 "EHLO chulaseafood.com"
+        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726387AbfFZMkz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 08:40:55 -0400
+X-Greylist: delayed 3603 seconds by postgrey-1.27 at vger.kernel.org; Wed, 26 Jun 2019 08:40:53 EDT
+To:     netdev@vger.kernel.org
+Subject: =?UTF-8?B?wrcgICAgICAgICBjYW4geW91IGFzc2lzdCBtZT8=?=
+Message-ID: <47a10bb93b8a0c4bce0478ddc45c661b@inaflashweb.com>
+Date:   Wed, 26 Jun 2019 13:16:43 +0200
+From:   "Laura" <ansitaasdsaksi@verizon.net>
+Reply-To: ansitaasdsaksi@verizon.net
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANpxKHHXzrEpJPSj3x83+WE23G1W0KPz9XbG=fCVzS21+-BpfQ@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Type: text/plain; format=flowed; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Naruto Nguyen <narutonguyen2018@gmail.com> wrote:
-> In linux/latest/source/net/netfilter/ folder, I only see we have
-> nf_conntrack_proto_tcp.c, nf_conntrack_proto_udp.c and some other
-> conntrack implementations for other protocols but I do not see
-> nf_conntrack_proto for IPsec, so does it mean connection tracking
-> cannot track ESP or AH protocol as a connection. I mean when I use
-> "conntrack -L" command, I will not see ESP or AH  connection is saved
-> in conntrack list. Could you please help me to understand if conntrack
-> supports that and any reasons if it does not support?
+Hi,
 
-ESP/AH etc. use the generic tracker, i.e. only one ESP connection
-is tracked between each endpoint.
+Did you see my email below from last week?
+
+We manufacture ALL custom LOGO and branded products – over 300,000 to
+choose from.
+
+The most asked about product that we make, are the custom printed USB flash
+drives!
+We can print your logo on them and load your digital images, videos and
+files!
+
+http://inaflashweb.com
+
+Here is what we include:
+-Any size memory you need: 64MB up to 128GB
+-We will print your logo on both sides, just ask!
+-Very Low Order Minimums
+-Need them quickly? Not a problem, we offer Rush Service
+http://inaflashweb.com
+
+NEW: We can make a custom shaped USB drive to look like your Logo or
+product!
+
+Email over a copy of your logo and we will create a design mock up for you
+at no cost!
+
+Our higher memory sizes are a really good option right now!
+
+Ask about the “Double Your Memory” upgrade promotion going on right
+now!
+
+Pricing is low right now, so let us know what you need and we will get you
+a quick quote.
+
+We will beat any competitors pricing, send us your last invoice and we will
+beat it!
+
+We always offer great rates for schools and nonprofits as well.
+
+Let us know what you would like quoted?
+http://inaflashweb.com
+
+Regards,
+
+
+
+Sabrina Millons
++1-888-480-8218
+Custom USB Account Manager
+http://inaflashweb.com
+
