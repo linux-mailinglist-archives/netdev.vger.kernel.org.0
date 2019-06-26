@@ -2,167 +2,307 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 58E5256512
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 11:04:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F96656560
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 11:10:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726239AbfFZJEz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 05:04:55 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:38632 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725379AbfFZJEz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 05:04:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=3fcGHGnGX2V74bhIeEY8hWorkhuv6lOMdsSjSB+ZTm4=; b=dfMMZqgQwuvbvu6f/byZxgiSw
-        OKoCErik3sXO4kJTr2a/9z+zfQaBxW3OPsN42gS6UGF79jzrd36IskpLGb6ypD6xzpR1mflY75mhf
-        wG17dXkFMIonU4wzzG9aNfIG8NMj15WHsR4KhiiyX62EB/B60iy/ZgJG24LWE/J0TkapiI2la4V25
-        yCreoShopKkuBJCfPGS8F0IAbZ4LrcFtoKUaDCqJVj264ApGj85mg0VFYOAJI3DReifd6hVlOrbep
-        BndbUOQiJuNLjEMlgBag95OIh07C62/siRFH4WfNn0hi6yZj4m0X8w+mUTANTEVnhIQsPO/+n4b9l
-        73djpMzNQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:60022)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hg3rC-0003t3-MO; Wed, 26 Jun 2019 10:04:46 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hg3r5-00082b-84; Wed, 26 Jun 2019 10:04:39 +0100
-Date:   Wed, 26 Jun 2019 10:04:39 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
-        sean.wang@mediatek.com, Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, matthias.bgg@gmail.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        frank-w@public-files.de, netdev <netdev@vger.kernel.org>,
-        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org
-Subject: Re: [PATCH RFC net-next 1/5] net: dsa: mt7530: Convert to PHYLINK API
-Message-ID: <20190626090439.fwv6fh6thg2j4t74@shell.armlinux.org.uk>
-References: <20190624145251.4849-1-opensource@vdorst.com>
- <20190624145251.4849-2-opensource@vdorst.com>
- <20190624153950.hdsuhrvfd77heyor@shell.armlinux.org.uk>
- <6f80325d-4b42-6174-e050-48626f7a3662@gmail.com>
- <20190625215329.5ubixxiwprnubwmv@shell.armlinux.org.uk>
- <CA+h21hqK0VMtHpZ6eka9ESuMhsFTw2mx+c0GYmxq4_G_YmiVpg@mail.gmail.com>
- <20190625225759.zztqgnwtk4v7milp@shell.armlinux.org.uk>
- <CA+h21hq_w8-96ehKYxcziSq1TjOjoKduZ+pB3umBfjODaKWd+A@mail.gmail.com>
- <20190626074158.odyrgzie7sv4ovtn@shell.armlinux.org.uk>
- <CA+h21hpkjHD07-o7W-5sUf+FqEeks17_W6VUROSDzdGokFvNWQ@mail.gmail.com>
+        id S1726673AbfFZJKe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 05:10:34 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:35259 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726329AbfFZJKe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 05:10:34 -0400
+Received: by mail-lf1-f68.google.com with SMTP id a25so1059588lfg.2
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 02:10:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kinvolk.io; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=YoeqkPyuuUAa89a437Y8XeIR94IijuVYW37iJHKjXro=;
+        b=QCubpUKtrVll90cGRqb8Cq97Ey09kXjAZfiiKTih+3YGW80RSglFZRnsPIjISll9ZD
+         qF2C2a7hL5SsTky9phPAVleo1aFYfPBRMpZjhlyXV4cytIZSXYVB2b5k8w4tppDHsymp
+         9B02eWOVWuM8UbYMO7eHrhMCLl3+KLJbZJRak=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=YoeqkPyuuUAa89a437Y8XeIR94IijuVYW37iJHKjXro=;
+        b=VTo9YqtsTqTSBKqe4mhf0vqEUICBI88yL84mnZ/hiKtFO/LfPGWnq7K3GiswLH274B
+         y8OVj5enXbwr83bLbMYAebz+5/wUFeVXYKIQ36vVgNuCvtRhz3JkWlFRsrWNWspHQDQ4
+         eSKI+4Uk+9VFmWgSzC9OJOP3KhKNieIwSoX6u64mzA+SnTiLt5CjCYFZcyQ8qOCEFs+z
+         hghpM+19uyDmkZX4dGplb5vq/n39kVKtDm+yPksEVk3DX1mXLkWTb0lwUZF+/qiQU70E
+         Iklk1NpQXPgZ/gcssw9UmqoVJat0vqvZgJ1iO2t8sOQrvdI0zpKmIOdBU1ZhiU3R+Pio
+         Ck0A==
+X-Gm-Message-State: APjAAAVnJmqCHwuOn388FXuuTLyKPyOtsYNgxqjI41/cj/Bm/C6exz9H
+        JfoAyYIOFH5/Y56xc/JdPHjuimywAyfEgVmPtBVAjw==
+X-Google-Smtp-Source: APXvYqymZ7lUVgJdBpBi6jtOw+JA7FkCqSjQ7i/H6+FJ0lYr8Np2FRYIbmUefQFTW6IHKYweDRBGVB5Ju2417aCZP40=
+X-Received: by 2002:ac2:418f:: with SMTP id z15mr1951625lfh.177.1561540231825;
+ Wed, 26 Jun 2019 02:10:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hpkjHD07-o7W-5sUf+FqEeks17_W6VUROSDzdGokFvNWQ@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+References: <20190625194215.14927-1-krzesimir@kinvolk.io> <20190625194215.14927-9-krzesimir@kinvolk.io>
+ <20190625201220.GC10487@mini-arch>
+In-Reply-To: <20190625201220.GC10487@mini-arch>
+From:   Krzesimir Nowak <krzesimir@kinvolk.io>
+Date:   Wed, 26 Jun 2019 11:10:20 +0200
+Message-ID: <CAGGp+cE3m1+ZWFBmjTgKFEHYVJ-L1dE=+iVUXvXCxWAxRG9YTA@mail.gmail.com>
+Subject: Re: [bpf-next v2 08/10] bpf: Implement bpf_prog_test_run for perf
+ event programs
+To:     Stanislav Fomichev <sdf@fomichev.me>
+Cc:     netdev@vger.kernel.org, Alban Crequy <alban@kinvolk.io>,
+        =?UTF-8?Q?Iago_L=C3=B3pez_Galeiras?= <iago@kinvolk.io>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 26, 2019 at 11:46:15AM +0300, Vladimir Oltean wrote:
-> On Wed, 26 Jun 2019 at 10:42, Russell King - ARM Linux admin
-> <linux@armlinux.org.uk> wrote:
+On Tue, Jun 25, 2019 at 10:12 PM Stanislav Fomichev <sdf@fomichev.me> wrote=
+:
+>
+> On 06/25, Krzesimir Nowak wrote:
+> > As an input, test run for perf event program takes struct
+> > bpf_perf_event_data as ctx_in and struct bpf_perf_event_value as
+> > data_in. For an output, it basically ignores ctx_out and data_out.
 > >
-> > On Wed, Jun 26, 2019 at 02:10:27AM +0300, Vladimir Oltean wrote:
-> > > On Wed, 26 Jun 2019 at 01:58, Russell King - ARM Linux admin
-> > > <linux@armlinux.org.uk> wrote:
-> > > >
-> > > > On Wed, Jun 26, 2019 at 01:14:59AM +0300, Vladimir Oltean wrote:
-> > > > > On Wed, 26 Jun 2019 at 00:53, Russell King - ARM Linux admin
-> > > > > <linux@armlinux.org.uk> wrote:
-> > > > > >
-> > > > > > On Tue, Jun 25, 2019 at 11:24:01PM +0300, Vladimir Oltean wrote:
-> > > > > > > Hi Russell,
-> > > > > > >
-> > > > > > > On 6/24/19 6:39 PM, Russell King - ARM Linux admin wrote:
-> > > > > > > > This should be removed - state->link is not for use in mac_config.
-> > > > > > > > Even in fixed mode, the link can be brought up/down by means of a
-> > > > > > > > gpio, and this should be dealt with via the mac_link_* functions.
-> > > > > > > >
-> > > > > > >
-> > > > > > > What do you mean exactly that state->link is not for use, is that true in
-> > > > > > > general?
-> > > > > >
-> > > > > > Yes.  mac_config() should not touch it; it is not always in a defined
-> > > > > > state.  For example, if you set modes via ethtool (the
-> > > > > > ethtool_ksettings_set API) then state->link will probably contain
-> > > > > > zero irrespective of the true link state.
-> > > > > >
-> > > > >
-> > > > > Experimentally, state->link is zero at the same time as state->speed
-> > > > > is -1, so just ignoring !state->link made sense. This is not in-band
-> > > > > AN. What is your suggestion? Should I proceed to try and configure the
-> > > > > MAC for SPEED_UNKNOWN?
-> > > >
-> > > > What would you have done with a PHY when the link is down, what speed
-> > > > would you have configured in the phylib adjust_link callback?  phylib
-> > > > also sets SPEED_UNKNOWN/DUPLEX_UNKNOWN when the link is down.
-> > > >
-> > >
-> > > With phylib, I'd make the driver ignore the speed and do nothing.
-> > > With phylink, I'd make the core not call mac_config.
-> > > But what happened is I saw phylink call mac_config anyway, said
-> > > 'weird' and proceeded to ignore it as I would have for phylib.
-> > > I'm just not understanding your position - it seems like you're
-> > > implying there's a bug in phylink and the function call with
-> > > MLO_AN_FIXED, state->link=0 and state->speed=-1 should not have taken
-> > > place, which is what I wanted to confirm.
+> > The implementation sets an instance of struct bpf_perf_event_data_kern
+> > in such a way that the BPF program reading data from context will
+> > receive what we passed to the bpf prog test run in ctx_in. Also BPF
+> > program can call bpf_perf_prog_read_value to receive what was passed
+> > in data_in.
 > >
-> > It is not a bug.  It is a request to configure the MAC, and what it's
-> > saying is "we don't know what speed and/or duplex".
+> > Signed-off-by: Krzesimir Nowak <krzesimir@kinvolk.io>
+> > ---
+> >  kernel/trace/bpf_trace.c                      | 107 ++++++++++++++++++
+> >  .../bpf/verifier/perf_event_sample_period.c   |   8 ++
+> >  2 files changed, 115 insertions(+)
 > >
-> > Take for instance when the network adapter is brought up initially.
-> > The link is most likely down, but we should configure the initial MAC
-> > operating parameters (such as the PHY interface).  Phylink makes a
-> > mac_config() call with the speed and duplex set to UNKNOWN.
+> > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> > index c102c240bb0b..2fa49ea8a475 100644
+> > --- a/kernel/trace/bpf_trace.c
+> > +++ b/kernel/trace/bpf_trace.c
+> > @@ -16,6 +16,8 @@
 > >
-> > Using your theory, we shouldn't be making that call.  In which case,
-> > MAC drivers aren't going to initially configure their interface
-> > settings.
+> >  #include <asm/tlb.h>
 > >
-> > _That_ would be a bug.
+> > +#include <trace/events/bpf_test_run.h>
+> > +
+> >  #include "trace_probe.h"
+> >  #include "trace.h"
 > >
-> 
-> So you're saying that:
-> - state->link should not be checked, because it is not guaranteed to be valid
+> > @@ -1160,7 +1162,112 @@ const struct bpf_verifier_ops perf_event_verifi=
+er_ops =3D {
+> >       .convert_ctx_access     =3D pe_prog_convert_ctx_access,
+> >  };
+> >
+> > +static int pe_prog_test_run(struct bpf_prog *prog,
+> > +                         const union bpf_attr *kattr,
+> > +                         union bpf_attr __user *uattr)
+> > +{
+> > +     void __user *ctx_in =3D u64_to_user_ptr(kattr->test.ctx_in);
+> > +     void __user *data_in =3D u64_to_user_ptr(kattr->test.data_in);
+> > +     u32 data_size_in =3D kattr->test.data_size_in;
+> > +     u32 ctx_size_in =3D kattr->test.ctx_size_in;
+> > +     u32 repeat =3D kattr->test.repeat;
+> > +     u32 retval =3D 0, duration =3D 0;
+> > +     int err =3D -EINVAL;
+> > +     u64 time_start, time_spent =3D 0;
+> > +     int i;
+> > +     struct perf_sample_data sample_data =3D {0, };
+> > +     struct perf_event event =3D {0, };
+> > +     struct bpf_perf_event_data_kern real_ctx =3D {0, };
+> > +     struct bpf_perf_event_data fake_ctx =3D {0, };
+> > +     struct bpf_perf_event_value value =3D {0, };
+> > +
+> > +     if (ctx_size_in !=3D sizeof(fake_ctx))
+> > +             goto out;
+> > +     if (data_size_in !=3D sizeof(value))
+> > +             goto out;
+> > +
+> > +     if (copy_from_user(&fake_ctx, ctx_in, ctx_size_in)) {
+> > +             err =3D -EFAULT;
+> > +             goto out;
+> > +     }
+> Move this to net/bpf/test_run.c? I have a bpf_ctx_init helper to deal
+> with ctx input, might save you some code above wrt ctx size/etc.
 
-state->link is undefined.
+My impression about net/bpf/test_run.c was that it was a collection of
+helpers for test runs of the network-related BPF programs, because
+they are so similar to each other. So kernel/trace/bpf_trace.c looked
+like an obvious place for the test_run implementation since other perf
+trace BPF stuff was already there.
 
-> - state->speed, state->duplex, state->pause *should* be checked,
+And about bpf_ctx_init - looks useful as it seems to me that it
+handles the scenario where the size of the ctx struct grows, but still
+allows passing older version of the struct (thus smaller) from
+userspace for compatibility. Maybe that checking and copying part of
+the function could be moved into some non-static helper function, so I
+could use it and still skip the need for allocating memory for the
+context?
 
-These will always be valid for FIXED and PHY modes, but _may_ be
-UNKNOWN, meaning phylink does not have any information about what
-the speed should be.
+>
+> > +     if (copy_from_user(&value, data_in, data_size_in)) {
+> > +             err =3D -EFAULT;
+> > +             goto out;
+> > +     }
+> > +
+> > +     real_ctx.regs =3D &fake_ctx.regs;
+> > +     real_ctx.data =3D &sample_data;
+> > +     real_ctx.event =3D &event;
+> > +     perf_sample_data_init(&sample_data, fake_ctx.addr,
+> > +                           fake_ctx.sample_period);
+> > +     event.cpu =3D smp_processor_id();
+> > +     event.oncpu =3D -1;
+> > +     event.state =3D PERF_EVENT_STATE_OFF;
+> > +     local64_set(&event.count, value.counter);
+> > +     event.total_time_enabled =3D value.enabled;
+> > +     event.total_time_running =3D value.running;
+> > +     /* make self as a leader - it is used only for checking the
+> > +      * state field
+> > +      */
+> > +     event.group_leader =3D &event;
+> > +
+> > +     /* slightly changed copy pasta from bpf_test_run() in
+> > +      * net/bpf/test_run.c
+> > +      */
+> > +     if (!repeat)
+> > +             repeat =3D 1;
+> > +
+> > +     rcu_read_lock();
+> > +     preempt_disable();
+> > +     time_start =3D ktime_get_ns();
+> > +     for (i =3D 0; i < repeat; i++) {
+> Any reason for not using bpf_test_run?
 
-speed and duplex are not defined for inband modes, since the purpose
-of inband modes is to communicate this information through... inband
-information, which the MAC driver already has access to.  pause is
-a different matter because it is present in some inband modes but
-not others.
+Two, mostly. One was that it is a static function and my code was
+elsewhere. Second was that it does some cgroup storage setup and I'm
+not sure if the perf event BPF program needs that.
 
-Which fields may be examined are now documented in the phylink
-documentation in mainline kernels.
+>
+> > +             retval =3D BPF_PROG_RUN(prog, &real_ctx);
+> > +
+> > +             if (signal_pending(current)) {
+> > +                     err =3D -EINTR;
+> > +                     preempt_enable();
+> > +                     rcu_read_unlock();
+> > +                     goto out;
+> > +             }
+> > +
+> > +             if (need_resched()) {
+> > +                     time_spent +=3D ktime_get_ns() - time_start;
+> > +                     preempt_enable();
+> > +                     rcu_read_unlock();
+> > +
+> > +                     cond_resched();
+> > +
+> > +                     rcu_read_lock();
+> > +                     preempt_disable();
+> > +                     time_start =3D ktime_get_ns();
+> > +             }
+> > +     }
+> > +     time_spent +=3D ktime_get_ns() - time_start;
+> > +     preempt_enable();
+> > +     rcu_read_unlock();
+> > +
+> > +     do_div(time_spent, repeat);
+> > +     duration =3D time_spent > U32_MAX ? U32_MAX : (u32)time_spent;
+> > +     /* end of slightly changed copy pasta from bpf_test_run() in
+> > +      * net/bpf/test_run.c
+> > +      */
+> > +
+> > +     if (copy_to_user(&uattr->test.retval, &retval, sizeof(retval))) {
+> > +             err =3D -EFAULT;
+> > +             goto out;
+> > +     }
+> > +     if (copy_to_user(&uattr->test.duration, &duration, sizeof(duratio=
+n))) {
+> > +             err =3D -EFAULT;
+> > +             goto out;
+> > +     }
+> Can BPF program modify fake_ctx? Do we need/want to copy it back?
 
-> Is state->interface always valid?
+Reading the pe_prog_is_valid_access function tells me that it's not
+possible - the only type of valid access is read. So maybe I should be
+stricter about the requirements for the data_out and ctx_out sizes
+(should be zero or return -EINVAL).
 
-Yes.
+>
+> > +     err =3D 0;
+> > +out:
+> > +     trace_bpf_test_finish(&err);
+> > +     return err;
+> > +}
+> > +
+> >  const struct bpf_prog_ops perf_event_prog_ops =3D {
+> > +     .test_run       =3D pe_prog_test_run,
+> >  };
+> >
+> >  static DEFINE_MUTEX(bpf_event_mutex);
+> > diff --git a/tools/testing/selftests/bpf/verifier/perf_event_sample_per=
+iod.c b/tools/testing/selftests/bpf/verifier/perf_event_sample_period.c
+> > index 471c1a5950d8..16e9e5824d14 100644
+> > --- a/tools/testing/selftests/bpf/verifier/perf_event_sample_period.c
+> > +++ b/tools/testing/selftests/bpf/verifier/perf_event_sample_period.c
+> This should probably go in another patch.
 
-> I don't think I follow the pattern here. Or shouldn't I check speed,
-> duplex and pause either, and try to pass the MAC UNKNOWN values,
-> inevitably failing at some point? Do Marvell MACs have an UNKNOWN
-> setting?
+Yeah, I was wondering about it. These changes are here to avoid
+breaking the tests, since perf event program can actually be run now
+and the test_run for perf event required certain sizes for ctx and
+data.
 
-Why do you think that just because state->speed is SPEED_UNKNOWN you
-have to dream up some weird "unknown" value for the MAC?  Default it
-to something sensible, just like you would do if phylib reports
-SPEED_UNKNOWN during link-down.  I really don't get what the problem
-is here.
+So, I will either move them to a separate patch or rework the test_run
+for perf event to accept the size between 0 and sizeof(struct
+something), so the changes in tests maybe will not be necessary.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+>
+> > @@ -13,6 +13,8 @@
+> >       },
+> >       .result =3D ACCEPT,
+> >       .prog_type =3D BPF_PROG_TYPE_PERF_EVENT,
+> > +     .ctx_len =3D sizeof(struct bpf_perf_event_data),
+> > +     .data_len =3D sizeof(struct bpf_perf_event_value),
+> >  },
+> >  {
+> >       "check bpf_perf_event_data->sample_period half load permitted",
+> > @@ -29,6 +31,8 @@
+> >       },
+> >       .result =3D ACCEPT,
+> >       .prog_type =3D BPF_PROG_TYPE_PERF_EVENT,
+> > +     .ctx_len =3D sizeof(struct bpf_perf_event_data),
+> > +     .data_len =3D sizeof(struct bpf_perf_event_value),
+> >  },
+> >  {
+> >       "check bpf_perf_event_data->sample_period word load permitted",
+> > @@ -45,6 +49,8 @@
+> >       },
+> >       .result =3D ACCEPT,
+> >       .prog_type =3D BPF_PROG_TYPE_PERF_EVENT,
+> > +     .ctx_len =3D sizeof(struct bpf_perf_event_data),
+> > +     .data_len =3D sizeof(struct bpf_perf_event_value),
+> >  },
+> >  {
+> >       "check bpf_perf_event_data->sample_period dword load permitted",
+> > @@ -56,4 +62,6 @@
+> >       },
+> >       .result =3D ACCEPT,
+> >       .prog_type =3D BPF_PROG_TYPE_PERF_EVENT,
+> > +     .ctx_len =3D sizeof(struct bpf_perf_event_data),
+> > +     .data_len =3D sizeof(struct bpf_perf_event_value),
+> >  },
+> > --
+> > 2.20.1
+> >
+
+
+
+--=20
+Kinvolk GmbH | Adalbertstr.6a, 10999 Berlin | tel: +491755589364
+Gesch=C3=A4ftsf=C3=BChrer/Directors: Alban Crequy, Chris K=C3=BChl, Iago L=
+=C3=B3pez Galeiras
+Registergericht/Court of registration: Amtsgericht Charlottenburg
+Registernummer/Registration number: HRB 171414 B
+Ust-ID-Nummer/VAT ID number: DE302207000
