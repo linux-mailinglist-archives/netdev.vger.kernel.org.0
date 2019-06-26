@@ -2,121 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FBF05618E
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 06:50:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C90D456196
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 06:58:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726329AbfFZEug (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 00:50:36 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:51102 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725308AbfFZEug (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 00:50:36 -0400
-Received: by mail-wm1-f66.google.com with SMTP id c66so613722wmf.0
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 21:50:34 -0700 (PDT)
+        id S1726369AbfFZE6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 00:58:41 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:37642 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725308AbfFZE6l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 00:58:41 -0400
+Received: by mail-qk1-f193.google.com with SMTP id d15so611526qkl.4;
+        Tue, 25 Jun 2019 21:58:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=H7D3fHglUmA8ki5pvg2HcYcxawa/YSemVdGiXWn7cu0=;
-        b=n7ziUpo2leTEy3vMZlmmupbstypwUxiopcnGBFPVqBkGxavIqeMOvGWqkq7zKSaq0o
-         Tv9+yWU1KtCt0oztcKLvfBtepgF83xmnYyAIlsUXnz9HNU71LvNUa2n33TSsXpWXywvw
-         x3XN15+jZqvnImDgHwae1s9n8PQLynHT9c+WWS2csp302spYZZheut7lCvBXeG/C8qtu
-         yQNKBErj6UalA9+bnWLNOt6aKLsfKQDh/rNylpsNrjKACRh5Bkt93LwZAeK7cUmIuFOs
-         0RntXneNkbpJmhYTNv2Hb7IHjnSg5GXV+Tnwg43P/AlNzIN1FSpa9cXejmm8W/RTp/OB
-         kz9w==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0OrHEeR3+U66RidUb/bN4V2v2em1a70fnkFr2OCfmNs=;
+        b=PVYfovMcGFWBSBvBMrhWxHdwe4Qig4AEKR14zM8ubMyFtBnooL0+MBcrL/ecX6VzCZ
+         +izYDrgexioUanxGicv3D7w4KPpqkHrFRGxC3DtRjLY2XtiDSK4VrahioH4Ke4iSbdwU
+         kBB/dB1rQ8QTsEWHv40uTjlh7i7TB8hWD3kFYAyru4ALz2oRu5yCq63DaDt8G5cW5PYm
+         PtLGkUkWjZCoNILFabBO91curwKYqOwhCRbMaC2A1klhTkzsLsnAHitmFW+RxsIY9GKT
+         A0unOL46q/MkWNflLLWoQOWreQ4oHPJb8qW0roLUhpyUhEC3IyvPLVLO4OgFd8e7dSx2
+         OE/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=H7D3fHglUmA8ki5pvg2HcYcxawa/YSemVdGiXWn7cu0=;
-        b=ssZu68ltHkgaXswG04ziiHoiVLLV09fnE5m54yALXnNT2Mov5LlrXbIblGc99AYHBh
-         0GCJC/PPx5QSSb5kRheH3dSxIJ/74ZG8oULdD21n5Pu35EKPPbo2nMPhJEVrWKSat6NS
-         mOH3S5506AGz0kKpwdEDfoMihWr/403cS/zG3fNCunWRmBiboYq0pnJVYZqztYlPiVUA
-         9G2ZsbprSEHHKIIhnr2Gd7c6g5As6QKgd2c1pltjeusBxXI1SDyhChWcEqJIBaTegPEK
-         I34mn19wswmAup8EuBPE5NivC+F7weSTNJ++Ifvq7S8L+8OwhiqvUrohMTMudrcLGYla
-         iZAA==
-X-Gm-Message-State: APjAAAXaXW3GYDeVPcQjpzuSPehlkBzhMzDejV82xWPJEQJFrxzjiDpU
-        OKHqNrjF/QBWw/C/wgn3l91M0QLy
-X-Google-Smtp-Source: APXvYqwvadGryNqlcTtqf6A0RQP13xLNO89apRyQXajP5161uPjRJDkqE7bZ3VNsdKJsyPQD8lm7Lw==
-X-Received: by 2002:a7b:cf27:: with SMTP id m7mr994247wmg.7.1561524634025;
-        Tue, 25 Jun 2019 21:50:34 -0700 (PDT)
-Received: from [192.168.8.147] (104.84.136.77.rev.sfr.net. [77.136.84.104])
-        by smtp.gmail.com with ESMTPSA id x129sm751686wmg.44.2019.06.25.21.50.31
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Tue, 25 Jun 2019 21:50:32 -0700 (PDT)
-Subject: Re: [PATCH net] net: make skb_dst_force return false when dst was
- cleared
-To:     Florian Westphal <fw@strlen.de>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     netdev@vger.kernel.org
-References: <20190625192209.6250-1-fw@strlen.de>
- <8483d4dc-1ef6-20b5-735f-8d78da579a28@gmail.com>
- <20190625195943.44jvck5syvnzxb55@breakpoint.cc>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <351c686d-5eda-76aa-b561-48c0e876b317@gmail.com>
-Date:   Wed, 26 Jun 2019 06:50:30 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0OrHEeR3+U66RidUb/bN4V2v2em1a70fnkFr2OCfmNs=;
+        b=oHu78ZC/UGCVtMlcnv2+lLfYRugSgY8Dto3E3KX4tV5Qge8SOKIAP66PK36IKzwkT6
+         /M6i7awW+xi75REBexcRUWF85O8YYkbZngvNm4ozYNjq+p+VD0W1RP/nMnYFDocLmu5M
+         Ve20K3hm0nkk4aPTVIshuu78kzE/3izidl8zK7hVxSh/s+t0Y7TmbC4bCg6lDOV/DYWE
+         LY9SNHPZSi8mzEQDN+Ue0ZyCxBNVj9gMuaycYImnv5aXL1SEDaLRsNEmPuZLq83a9iSO
+         p91TF0dbmLlQPqH0czxfDhwJvPUuGmWYHKGyANXWLALWA5eUOwYSORpMnlzyivicOQPv
+         R5kg==
+X-Gm-Message-State: APjAAAVJwVKgU5P2Ddw77QYVHKCFqlz3s21ctlY119J/2jjO/IwshLKd
+        ZHkmILL/3KBZY++cc0Jd3rc4d5KjhibN6oo2FaU=
+X-Google-Smtp-Source: APXvYqzvzmObldpjM7RwS5EfOCH2J79NYLejhmjGi4PMxV3Vbedmc+upuOn7531If66fNyjv30+OnMag3/PnrqHFzbU=
+X-Received: by 2002:a37:a095:: with SMTP id j143mr2172011qke.449.1561525120240;
+ Tue, 25 Jun 2019 21:58:40 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190625195943.44jvck5syvnzxb55@breakpoint.cc>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20190625202700.28030-1-ivan.khoronzhuk@linaro.org>
+In-Reply-To: <20190625202700.28030-1-ivan.khoronzhuk@linaro.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 25 Jun 2019 21:58:27 -0700
+Message-ID: <CAEf4BzaUNfJOj1B9Zo9Bgr+W9aykH+CyzQiJXTXz1gsnc+-K4A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] libbpf: fix max() type mismatch for 32bit
+To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jun 25, 2019 at 1:28 PM Ivan Khoronzhuk
+<ivan.khoronzhuk@linaro.org> wrote:
+>
+> It fixes build error for 32bit caused by type mismatch
+> size_t/unsigned long.
+>
+> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+> ---
 
+Sorry, forgot to mention, this should probably have
 
-On 6/25/19 12:59 PM, Florian Westphal wrote:
-> Eric Dumazet <eric.dumazet@gmail.com> wrote:
->>> -static inline void skb_dst_force(struct sk_buff *skb)
->>> +static inline bool skb_dst_force(struct sk_buff *skb)
->>>  {
->>>  	if (skb_dst_is_noref(skb)) {
->>>  		struct dst_entry *dst = skb_dst(skb);
->>> @@ -313,7 +314,10 @@ static inline void skb_dst_force(struct sk_buff *skb)
->>>  			dst = NULL;
->>>  
->>>  		skb->_skb_refdst = (unsigned long)dst;
->>> +		return dst != NULL;
->>>  	}
->>> +
->>> +	return true;
->>
->> This will return true, even if skb has a NULL dst.
-> 
-> Yes, that was intentional -- it should return false to
-> let caller know that no reference could be obtained and
-> that the dst was invalidated as a result.
+Fixes: bf82927125dd ("libbpf: refactor map initialization")
 
-Problem is that some callers ignore skb_dst_force() return value.
+With that:
 
-> 
->> Say if we have two skb_dst_force() calls for some reason
->> on the same skb, only the first one will return false.
-> 
-> What would you suggest instead?
-> 
-> Alternative is something like
-> 
-> if (skb_dst(skb)) {
-> 	skb_dst_force(skb);
-> 	if (!skb_dst(skb)) {
-> 		kfree_skb(skb);
-> 		goto err;
-> 	}
-> }
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-
-Simply change 
-
-return true;
-
-by
-
-return skb->_skb_refdst != 0UL;
-
-
+>  tools/lib/bpf/libbpf.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index 68f45a96769f..5186b7710430 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -778,7 +778,7 @@ static struct bpf_map *bpf_object__add_map(struct bpf_object *obj)
+>         if (obj->nr_maps < obj->maps_cap)
+>                 return &obj->maps[obj->nr_maps++];
+>
+> -       new_cap = max(4ul, obj->maps_cap * 3 / 2);
+> +       new_cap = max((size_t)4, obj->maps_cap * 3 / 2);
+>         new_maps = realloc(obj->maps, new_cap * sizeof(*obj->maps));
+>         if (!new_maps) {
+>                 pr_warning("alloc maps for object failed\n");
+> --
+> 2.17.1
+>
