@@ -2,70 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B94F5726F
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 22:20:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7359D57283
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 22:23:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726429AbfFZUUE convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 26 Jun 2019 16:20:04 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:41058 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726227AbfFZUUE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 16:20:04 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id F32D714DB839E;
-        Wed, 26 Jun 2019 13:20:03 -0700 (PDT)
-Date:   Wed, 26 Jun 2019 13:20:03 -0700 (PDT)
-Message-Id: <20190626.132003.50827799670386389.davem@davemloft.net>
-To:     dave.taht@gmail.com
-Cc:     netdev@vger.kernel.org, gnu@toad.com
-Subject: Re: [PATCH net-next 1/1] Allow 0.0.0.0/8 as a valid address range
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1561223254-13589-2-git-send-email-dave.taht@gmail.com>
-References: <1561223254-13589-1-git-send-email-dave.taht@gmail.com>
-        <1561223254-13589-2-git-send-email-dave.taht@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 26 Jun 2019 13:20:04 -0700 (PDT)
+        id S1726443AbfFZUXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 16:23:25 -0400
+Received: from namei.org ([65.99.196.166]:48562 "EHLO namei.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726227AbfFZUXZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 16:23:25 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by namei.org (8.14.4/8.14.4) with ESMTP id x5QKMlwI029314;
+        Wed, 26 Jun 2019 20:22:47 GMT
+Date:   Thu, 27 Jun 2019 06:22:47 +1000 (AEST)
+From:   James Morris <jmorris@namei.org>
+To:     Andy Lutomirski <luto@kernel.org>
+cc:     Matthew Garrett <matthewgarrett@google.com>,
+        linux-security@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        David Howells <dhowells@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Matthew Garrett <mjg59@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Chun-Yi Lee <jlee@suse.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        linux-security-module@vger.kernel.org
+Subject: Re: [PATCH V33 24/30] bpf: Restrict bpf when kernel lockdown is in
+ confidentiality mode
+In-Reply-To: <CALCETrVUwQP7roLnW6kFG80Cc5U6X_T6AW+BTAftLccYGp8+Ow@mail.gmail.com>
+Message-ID: <alpine.LRH.2.21.1906270621080.28132@namei.org>
+References: <20190621011941.186255-1-matthewgarrett@google.com> <20190621011941.186255-25-matthewgarrett@google.com> <CALCETrVUwQP7roLnW6kFG80Cc5U6X_T6AW+BTAftLccYGp8+Ow@mail.gmail.com>
+User-Agent: Alpine 2.21 (LRH 202 2017-01-01)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dave Taht <dave.taht@gmail.com>
-Date: Sat, 22 Jun 2019 10:07:34 -0700
+[Adding the LSM mailing list: missed this patchset initially]
 
-> The longstanding prohibition against using 0.0.0.0/8 dates back
-> to two issues with the early internet.
-> 
-> There was an interoperability problem with BSD 4.2 in 1984, fixed in
-> BSD 4.3 in 1986. BSD 4.2 has long since been retired. 
-> 
-> Secondly, addresses of the form 0.x.y.z were initially defined only as
-> a source address in an ICMP datagram, indicating "node number x.y.z on
-> this IPv4 network", by nodes that know their address on their local
-> network, but do not yet know their network prefix, in RFC0792 (page
-> 19).  This usage of 0.x.y.z was later repealed in RFC1122 (section
-> 3.2.2.7), because the original ICMP-based mechanism for learning the
-> network prefix was unworkable on many networks such as Ethernet (which
-> have longer addresses that would not fit into the 24 "node number"
-> bits).  Modern networks use reverse ARP (RFC0903) or BOOTP (RFC0951)
-> or DHCP (RFC2131) to find their full 32-bit address and CIDR netmask
-> (and other parameters such as default gateways). 0.x.y.z has had
-> 16,777,215 addresses in 0.0.0.0/8 space left unused and reserved for
-> future use, since 1989.
-> 
-> This patch allows for these 16m new IPv4 addresses to appear within
-> a box or on the wire. Layer 2 switches don't care.
-> 
-> 0.0.0.0/32 is still prohibited, of course.
-> 
-> Signed-off-by: Dave Taht <dave.taht@gmail.com>
-> Signed-off-by: John Gilmore <gnu@toad.com>
-> Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
+On Thu, 20 Jun 2019, Andy Lutomirski wrote:
 
-Applied, thanks for following up on this.
+> This patch exemplifies why I don't like this approach:
+> 
+> > @@ -97,6 +97,7 @@ enum lockdown_reason {
+> >         LOCKDOWN_INTEGRITY_MAX,
+> >         LOCKDOWN_KCORE,
+> >         LOCKDOWN_KPROBES,
+> > +       LOCKDOWN_BPF,
+> >         LOCKDOWN_CONFIDENTIALITY_MAX,
+> 
+> > --- a/security/lockdown/lockdown.c
+> > +++ b/security/lockdown/lockdown.c
+> > @@ -33,6 +33,7 @@ static char *lockdown_reasons[LOCKDOWN_CONFIDENTIALITY_MAX+1] = {
+> >         [LOCKDOWN_INTEGRITY_MAX] = "integrity",
+> >         [LOCKDOWN_KCORE] = "/proc/kcore access",
+> >         [LOCKDOWN_KPROBES] = "use of kprobes",
+> > +       [LOCKDOWN_BPF] = "use of bpf",
+> >         [LOCKDOWN_CONFIDENTIALITY_MAX] = "confidentiality",
+> 
+> The text here says "use of bpf", but what this patch is *really* doing
+> is locking down use of BPF to read kernel memory.  If the details
+> change, then every LSM needs to get updated, and we risk breaking user
+> policies that are based on LSMs that offer excessively fine
+> granularity.
+
+Can you give an example of how the details might change?
+
+> I'd be more comfortable if the LSM only got to see "confidentiality"
+> or "integrity".
+
+These are not sufficient for creating a useful policy for the SELinux 
+case.
+
+-- 
+James Morris
+<jmorris@namei.org>
+
