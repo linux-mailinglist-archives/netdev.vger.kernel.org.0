@@ -2,202 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E77F56229
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 08:12:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6A1856243
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 08:21:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726828AbfFZGMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 02:12:55 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:46842 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726822AbfFZGMy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 02:12:54 -0400
-Received: from pps.filterd (m0001255.ppops.net [127.0.0.1])
-        by mx0b-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5Q66oUY018769
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 23:12:53 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=x1RPdhllPL2fjYRdau13LKkJkGkc4FplSJk/ccpbNpc=;
- b=EutB/1CdW3m2x4jTcDosg9Fs17tGms/ieTKzS8kbkZur/PgblWqyoTdTBpHNstoZq7kF
- ZtL78M3jXRbk/U31IXSZgYAOM4H5vcUXNGaGW2m8Ttum1Hz4RHJGMKzu9I75ZE3bTbjy
- PlF6yPhmbWEvoprGhPmF/ia5PdE2mA1jZ9A= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0b-00082601.pphosted.com with ESMTP id 2tbqn22djp-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 23:12:53 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Tue, 25 Jun 2019 23:12:52 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id A4ABB861896; Tue, 25 Jun 2019 23:12:51 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <andrii.nakryiko@gmail.com>, <ast@fb.com>, <daniel@iogearbox.net>,
-        <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <kernel-team@fb.com>
-CC:     Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH v2 bpf-next 3/3] selftests/bpf: test perf buffer API
-Date:   Tue, 25 Jun 2019 23:12:35 -0700
-Message-ID: <20190626061235.602633-4-andriin@fb.com>
+        id S1726648AbfFZGVb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 02:21:31 -0400
+Received: from mail-yb1-f195.google.com ([209.85.219.195]:39244 "EHLO
+        mail-yb1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725379AbfFZGVa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 02:21:30 -0400
+Received: by mail-yb1-f195.google.com with SMTP id k4so732547ybo.6
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 23:21:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=MBAwMNirrDHkfAl3HPnHqf7OZ2vRa+JZotW6QoWQ1KI=;
+        b=TLT4rmc/lFr+5L3BCjxGpBuy7Onj/H2A17dMpnx9sxZpnUvqxfyo0ftfReOXeYBcTK
+         n/97tO0RmRizZOaCTFKM+fyz4PY771yhhYSkVTFOUsV7Oh4vfT6Yp5PDrWPxD9TTnuL1
+         u8GezGkPp+kuo8y+CibeLHdlYO7J2Y3yQ20LzKaxUTezqjihxWv0sa0lhLWDnge2Uto9
+         CmsHfAyog7hJqM0vJLf4sn6jI8VpiWuvhp7zPB65iyglSY9hfOb83XX+frYmpeGiliaA
+         j3blM4vvNJHnjlD+xYO50KpyXrGG2hauRmmUOKofFcoY7fKqu+fDGDb/SCv1zL2imKmI
+         pYKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=MBAwMNirrDHkfAl3HPnHqf7OZ2vRa+JZotW6QoWQ1KI=;
+        b=tTxaTu2id7PQ5477rJ5YVNuLZIYvLG44VEdiNwYMGrXZUM1p2blcD7j7OxLtwcV49R
+         JYTbiKwZhQppmJXV9QcHNopKNtqLldrQ75XlhIypCSC4s4btQ2/oywOnkukcFtshgTXF
+         0C5B0LWzXHpRf0djWvgzLED9G52IPR050XgJrc8AnwFRjp0jtuaCOtybV6JuK/u6WHr5
+         9+m6OCWKbto3kFyRsAAIkgxM60OTC5V0VY5rv5BscV8MV133dfRbM88xiWZ8t4OKryaw
+         vfOmiWd2z+6ACXieWThm2g+cTf/8Fv7U6HtW2RnRvr0eLce00xISZGCtlMfPBjkRMR60
+         44gw==
+X-Gm-Message-State: APjAAAUWz78LfEOGUM8FK7wK/qE5gSKqG/FQhFwZJg3/pXKad4vHbzR0
+        EDXWY4tfyzD34PzAKqwU+qqJdhCcJA==
+X-Google-Smtp-Source: APXvYqx6R5IHel1tkKdDKxsozalCm0eqaps4zhoqltUIcrNWnXeD/f9GvKTzsGvKAqCNJLJu2XaH6w==
+X-Received: by 2002:a25:5f10:: with SMTP id t16mr1511633ybb.5.1561530089718;
+        Tue, 25 Jun 2019 23:21:29 -0700 (PDT)
+Received: from localhost.localdomain (99-149-127-125.lightspeed.rlghnc.sbcglobal.net. [99.149.127.125])
+        by smtp.gmail.com with ESMTPSA id b6sm4905349ywh.36.2019.06.25.23.21.28
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 25 Jun 2019 23:21:29 -0700 (PDT)
+From:   Stephen Suryaputra <ssuryaextr@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     dsahern@gmail.com, Stephen Suryaputra <ssuryaextr@gmail.com>
+Subject: [PATCH net v2] ipv4: reset rt_iif for recirculated mcast/bcast out pkts
+Date:   Wed, 26 Jun 2019 02:21:16 -0400
+Message-Id: <20190626062116.4319-1-ssuryaextr@gmail.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190626061235.602633-1-andriin@fb.com>
-References: <20190626061235.602633-1-andriin@fb.com>
-X-FB-Internal: Safe
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-26_02:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=2 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906260074
-X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add test verifying perf buffer API functionality.
+Multicast or broadcast egress packets have rt_iif set to the oif. These
+packets might be recirculated back as input and lookup to the raw
+sockets may fail because they are bound to the incoming interface
+(skb_iif). If rt_iif is not zero, during the lookup, inet_iif() function
+returns rt_iif instead of skb_iif. Hence, the lookup fails.
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-Acked-by: Song Liu <songliubraving@fb.com>
+v2: Make it non vrf specific (David Ahern). Reword the changelog to
+    reflect it.
+Signed-off-by: Stephen Suryaputra <ssuryaextr@gmail.com>
 ---
- .../selftests/bpf/prog_tests/perf_buffer.c    | 86 +++++++++++++++++++
- .../selftests/bpf/progs/test_perf_buffer.c    | 29 +++++++
- 2 files changed, 115 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/perf_buffer.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_perf_buffer.c
+ include/net/route.h  |  1 +
+ net/ipv4/ip_output.c | 12 ++++++++++++
+ net/ipv4/route.c     | 33 +++++++++++++++++++++++++++++++++
+ 3 files changed, 46 insertions(+)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/perf_buffer.c b/tools/testing/selftests/bpf/prog_tests/perf_buffer.c
-new file mode 100644
-index 000000000000..3ba3e26141ac
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/perf_buffer.c
-@@ -0,0 +1,86 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#define _GNU_SOURCE
-+#include <pthread.h>
-+#include <sched.h>
-+#include <sys/socket.h>
-+#include <test_progs.h>
-+
-+static void on_sample(void *ctx, void *data, __u32 size)
-+{
-+	cpu_set_t *cpu_seen = ctx;
-+	int cpu = *(int *)data;
-+
-+	CPU_SET(cpu, cpu_seen);
-+}
-+
-+void test_perf_buffer(void)
-+{
-+	int err, prog_fd, prog_pfd, nr_cpus, i, duration = 0;
-+	const char *prog_name = "kprobe/sys_nanosleep";
-+	const char *file = "./test_perf_buffer.o";
-+	struct bpf_map *perf_buf_map;
-+	cpu_set_t cpu_set, cpu_seen;
-+	struct bpf_program *prog;
-+	struct bpf_object *obj;
-+	struct perf_buffer *pb;
-+
-+	nr_cpus = libbpf_num_possible_cpus();
-+	if (CHECK(nr_cpus < 0, "nr_cpus", "err %d\n", nr_cpus))
-+		return;
-+
-+	/* load program */
-+	err = bpf_prog_load(file, BPF_PROG_TYPE_KPROBE, &obj, &prog_fd);
-+	if (CHECK(err, "obj_load", "err %d errno %d\n", err, errno))
-+		return;
-+
-+	prog = bpf_object__find_program_by_title(obj, prog_name);
-+	if (CHECK(!prog, "find_probe", "prog '%s' not found\n", prog_name))
-+		goto out_close;
-+
-+	/* load map */
-+	perf_buf_map = bpf_object__find_map_by_name(obj, "perf_buf_map");
-+	if (CHECK(!perf_buf_map, "find_perf_buf_map", "not found\n"))
-+		goto out_close;
-+
-+	/* attach kprobe */
-+	prog_pfd = bpf_program__attach_kprobe(prog, false /* retprobe */,
-+					      "sys_nanosleep");
-+	if (CHECK(prog_pfd < 0, "attach_kprobe", "err %d\n", prog_pfd))
-+		goto out_close;
-+
-+	/* set up perf buffer */
-+	pb = perf_buffer__new(perf_buf_map, 1, on_sample, NULL, &cpu_seen);
-+	if (CHECK(IS_ERR(pb), "perf_buf__new", "err %ld\n", PTR_ERR(pb)))
-+		goto out_detach;
-+
-+	/* trigger kprobe on every CPU */
-+	CPU_ZERO(&cpu_seen);
-+	for (i = 0; i < nr_cpus; i++) {
-+		CPU_ZERO(&cpu_set);
-+		CPU_SET(i, &cpu_set);
-+
-+		err = pthread_setaffinity_np(pthread_self(), sizeof(cpu_set),
-+					     &cpu_set);
-+		if (err && CHECK(err, "set_affinity", "cpu #%d, err %d\n",
-+				 i, err))
-+			goto out_detach;
-+
-+		usleep(1);
+diff --git a/include/net/route.h b/include/net/route.h
+index 065b47754f05..55ff71ffb796 100644
+--- a/include/net/route.h
++++ b/include/net/route.h
+@@ -221,6 +221,7 @@ void ip_rt_get_source(u8 *src, struct sk_buff *skb, struct rtable *rt);
+ struct rtable *rt_dst_alloc(struct net_device *dev,
+ 			     unsigned int flags, u16 type,
+ 			     bool nopolicy, bool noxfrm, bool will_cache);
++struct rtable *rt_dst_clone(struct net_device *dev, struct rtable *rt);
+ 
+ struct in_ifaddr;
+ void fib_add_ifaddr(struct in_ifaddr *);
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index 16f9159234a2..8c2ec35b6512 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -318,6 +318,7 @@ static int ip_finish_output(struct net *net, struct sock *sk, struct sk_buff *sk
+ static int ip_mc_finish_output(struct net *net, struct sock *sk,
+ 			       struct sk_buff *skb)
+ {
++	struct rtable *new_rt;
+ 	int ret;
+ 
+ 	ret = BPF_CGROUP_RUN_PROG_INET_EGRESS(sk, skb);
+@@ -326,6 +327,17 @@ static int ip_mc_finish_output(struct net *net, struct sock *sk,
+ 		return ret;
+ 	}
+ 
++	/* Reset rt_iif so that inet_iif() will return skb->skb_iif. Setting
++	 * this to non-zero causes ipi_ifindex in in_pktinfo to be overwritten,
++	 * see ipv4_pktinfo_prepare().
++	 */
++	new_rt = rt_dst_clone(net->loopback_dev, skb_rtable(skb));
++	if (new_rt) {
++		new_rt->rt_iif = 0;
++		skb_dst_drop(skb);
++		skb_dst_set(skb, &new_rt->dst);
 +	}
 +
-+	/* read perf buffer */
-+	err = perf_buffer__poll(pb, 100);
-+	if (CHECK(err < 0, "perf_buffer__poll", "err %d\n", err))
-+		goto out_free_pb;
-+
-+	if (CHECK(CPU_COUNT(&cpu_seen) != nr_cpus, "seen_cpu_cnt",
-+		  "expect %d, seen %d\n", nr_cpus, CPU_COUNT(&cpu_seen)))
-+		goto out_free_pb;
-+
-+out_free_pb:
-+	perf_buffer__free(pb);
-+out_detach:
-+	libbpf_perf_event_disable_and_close(prog_pfd);
-+out_close:
-+	bpf_object__close(obj);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_perf_buffer.c b/tools/testing/selftests/bpf/progs/test_perf_buffer.c
-new file mode 100644
-index 000000000000..8609f0031bc0
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_perf_buffer.c
-@@ -0,0 +1,29 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2019 Facebook
-+
-+#include <linux/ptrace.h>
-+#include <linux/bpf.h>
-+#include "bpf_helpers.h"
-+
-+struct {
-+	int type;
-+	int key_size;
-+	int value_size;
-+} perf_buf_map SEC(".maps") = {
-+	.type = BPF_MAP_TYPE_PERF_EVENT_ARRAY,
-+	.key_size = sizeof(int),
-+	.value_size = sizeof(int),
-+};
-+
-+SEC("kprobe/sys_nanosleep")
-+int handle_sys_nanosleep_entry(struct pt_regs *ctx)
+ 	return dev_loopback_xmit(net, sk, skb);
+ }
+ 
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index 6cb7cff22db9..8ea0735a6754 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -1647,6 +1647,39 @@ struct rtable *rt_dst_alloc(struct net_device *dev,
+ }
+ EXPORT_SYMBOL(rt_dst_alloc);
+ 
++struct rtable *rt_dst_clone(struct net_device *dev, struct rtable *rt)
 +{
-+	int cpu = bpf_get_smp_processor_id();
++	struct rtable *new_rt;
 +
-+	bpf_perf_event_output(ctx, &perf_buf_map, BPF_F_CURRENT_CPU,
-+			      &cpu, sizeof(cpu));
-+	return 0;
++	new_rt = dst_alloc(&ipv4_dst_ops, dev, 1, DST_OBSOLETE_FORCE_CHK,
++			   rt->dst.flags);
++
++	if (new_rt) {
++		new_rt->rt_genid = rt_genid_ipv4(dev_net(dev));
++		new_rt->rt_flags = rt->rt_flags;
++		new_rt->rt_type = rt->rt_type;
++		new_rt->rt_is_input = rt->rt_is_input;
++		new_rt->rt_iif = rt->rt_iif;
++		new_rt->rt_pmtu = rt->rt_pmtu;
++		new_rt->rt_mtu_locked = rt->rt_mtu_locked;
++		new_rt->rt_gw_family = rt->rt_gw_family;
++		if (rt->rt_gw_family == AF_INET)
++			new_rt->rt_gw4 = rt->rt_gw4;
++		else if (rt->rt_gw_family == AF_INET6)
++			new_rt->rt_gw6 = rt->rt_gw6;
++		INIT_LIST_HEAD(&new_rt->rt_uncached);
++
++		new_rt->dst.flags |= DST_HOST;
++		new_rt->dst.input = rt->dst.input;
++		new_rt->dst.output = rt->dst.output;
++		new_rt->dst.error = rt->dst.error;
++		new_rt->dst.lastuse = jiffies;
++		new_rt->dst.lwtstate = lwtstate_get(rt->dst.lwtstate);
++	}
++	return new_rt;
 +}
++EXPORT_SYMBOL(rt_dst_clone);
 +
-+char _license[] SEC("license") = "GPL";
-+__u32 _version SEC("version") = 1;
+ /* called in rcu_read_lock() section */
+ int ip_mc_validate_source(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+ 			  u8 tos, struct net_device *dev,
 -- 
 2.17.1
 
