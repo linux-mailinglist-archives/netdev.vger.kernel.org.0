@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D71656820
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 14:01:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45C8C5681F
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 14:01:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727263AbfFZMBN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 08:01:13 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:35518 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726484AbfFZMBJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 08:01:09 -0400
-Received: by mail-wm1-f66.google.com with SMTP id c6so1836805wml.0
-        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 05:01:08 -0700 (PDT)
+        id S1727255AbfFZMBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 08:01:12 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:38554 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726462AbfFZMBK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 08:01:10 -0400
+Received: by mail-wm1-f65.google.com with SMTP id s15so1818741wmj.3
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 05:01:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cumulusnetworks.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=7qDwGd3c4sCeMFAHDkfhj5K9wEcGkgb2UjwAg5DULeM=;
-        b=eeTG0w9CT9gOGjHPMGWI+9YQEodVniHH8P0VXgJkiLr4++9XObLSA58+crSD1te9ZT
-         KGoGmj589qHciQmsGacOhJvmk9tGurUjDkKlzFiXbc/jZN6PZ7HsOV0+RxB0qrXpSULB
-         6i7zQn4wfiNgxe7pXcM6uNPvOpX9bfmMJffUw=
+        bh=cAEDwnEStKSeqdXMmpna4aYmiIA2+ZGDjRpHTpM4HlE=;
+        b=eEMk9hrf6+cZbUebCcsYn86gayG4w5qEUehD5a7q4vdSkctlDOMFMuhqweWPUFBovP
+         9U6m4qFV6BG3erBBZXRVdghwYWie0qILUVVmswGwM7ram87xcSlKFwx1VKOTsA6cXrlY
+         aW90bXJbRbCuMUXg11KEFt4cjdxpsL9JlAWuA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=7qDwGd3c4sCeMFAHDkfhj5K9wEcGkgb2UjwAg5DULeM=;
-        b=nDglhimf8bla/I958NqY37ck//NKtdSgur9sMObAAJEeVTJ7Ej4nO97O/bqn75NX86
-         dSFpv63e46UbKZs+orYCpElPoRVUooim63bd3lGDjHt1KwE0PxC1Bv6Tcz+IxuqmhH5S
-         ZhhpEmWCYfmtjq6KslDE+7xcRwWfIb5bfsyrsrMWhZOVXci/pAO0KVywNuxw6FB23wHD
-         fKQkIRCPpWlTZF7HixVdBk8qpiyYW2Dc8aPaESktEbehhPGbaApSlmKdXFIToVrkoBNu
-         Skj6r1zj8C3lujnScAyf3I60/zgx30HXQJT/D6qFZ0NCiLilJhNBys2BLRCddFhUZ2i+
-         922Q==
-X-Gm-Message-State: APjAAAXnVRnrzTY8cnN9cfOFON8s7rkAVYzO9HtXewciCT2r+P4aFnZ3
-        KoSJOZ8YUnGCTim85TfKAJnWaOUuMeU=
-X-Google-Smtp-Source: APXvYqwx+/iGub3M6V6nApiz4nq4pt17vBYkg6boSXqPOsJqjZYXxwE1km0RXVIckI8/2glKAKYxNg==
-X-Received: by 2002:a1c:c145:: with SMTP id r66mr2497082wmf.139.1561550467026;
-        Wed, 26 Jun 2019 05:01:07 -0700 (PDT)
+        bh=cAEDwnEStKSeqdXMmpna4aYmiIA2+ZGDjRpHTpM4HlE=;
+        b=K0y6f9c1Lph5VqhPgdxFNyNNjOH5lycYlY4TIyoyT7NBi/TmNucyvlPJzN3or6HTCd
+         thWSWVmspmeHd/TjeF0c6uF5jfrj54YGxxRYk5iTKt6NU2Wty2ics6/aUV63QzYG9csU
+         0frAXLBcbPa71Qlul5v+KUuVQoWnVz+i1lPyBuq40zElE7d7AT8R5AkvCvjKDIhDoO2Q
+         b88b12jqnCE6t2glfNJBs+1nuT5oV7xgV/9H2zQFJsAYiD06pyxtIr2uXAGhVcV3y57R
+         ZIoORjm1B9br9VC0pgyz3o13SkWtRmdAhQjKPr3wAaURUT++R1oYtQnmWNI7TvJ6GMUU
+         L10A==
+X-Gm-Message-State: APjAAAUGc6YyPlBVUlB58vBp4g4BugLeLvP4kv0K3jXPfcAQnBvYITRx
+        2tee0j5nNf/bI+GlX+wLFXKcLlCA5jo=
+X-Google-Smtp-Source: APXvYqxkF4XaKDMwYbbiUnKxyNPPGK6B+IK/ZV9EWa8yJPN9zclkK+VGeCyiELqrUaZRWPDj5eiTMw==
+X-Received: by 2002:a1c:c70f:: with SMTP id x15mr2390966wmf.59.1561550468279;
+        Wed, 26 Jun 2019 05:01:08 -0700 (PDT)
 Received: from localhost.localdomain ([78.128.78.220])
-        by smtp.gmail.com with ESMTPSA id f190sm1676818wmg.13.2019.06.26.05.01.05
+        by smtp.gmail.com with ESMTPSA id f190sm1676818wmg.13.2019.06.26.05.01.07
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 26 Jun 2019 05:01:06 -0700 (PDT)
+        Wed, 26 Jun 2019 05:01:07 -0700 (PDT)
 From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 To:     netdev@vger.kernel.org
 Cc:     roopa@cumulusnetworks.com, pablo@netfilter.org,
         xiyou.wangcong@gmail.com, davem@davemloft.net, jiri@resnulli.us,
         jhs@mojatatu.com, eyal.birger@gmail.com,
         Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Subject: [PATCH net-next 4/5] net: sched: em_ipt: keep the user-specified nfproto and use it
-Date:   Wed, 26 Jun 2019 14:58:54 +0300
-Message-Id: <20190626115855.13241-5-nikolay@cumulusnetworks.com>
+Subject: [PATCH net-next 5/5] net: sched: em_ipt: add support for addrtype matching
+Date:   Wed, 26 Jun 2019 14:58:55 +0300
+Message-Id: <20190626115855.13241-6-nikolay@cumulusnetworks.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190626115855.13241-1-nikolay@cumulusnetworks.com>
 References: <20190626115855.13241-1-nikolay@cumulusnetworks.com>
@@ -60,90 +60,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For NFPROTO_UNSPEC xt_matches there's no way to restrict the matching to a
-specific family, in order to do so we record the user-specified family
-and later enforce it while doing the match.
+Allow em_ipt to use addrtype for matching. Restrict the use only to
+revision 1 which has IPv6 support. Since it's a NFPROTO_UNSPEC xt match
+we use the user-specified nfproto for matching, in case it's unspecified
+both v4/v6 will be matched by the rule.
 
 Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 ---
- net/sched/em_ipt.c | 23 ++++++++++++++++++-----
- 1 file changed, 18 insertions(+), 5 deletions(-)
+ net/sched/em_ipt.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
 diff --git a/net/sched/em_ipt.c b/net/sched/em_ipt.c
-index d4257f5f1d94..cfb93ce340da 100644
+index cfb93ce340da..ce0798f6f1f7 100644
 --- a/net/sched/em_ipt.c
 +++ b/net/sched/em_ipt.c
-@@ -21,6 +21,7 @@
- struct em_ipt_match {
- 	const struct xt_match *match;
- 	u32 hook;
-+	u8 nfproto;
- 	u8 match_data[0] __aligned(8);
- };
+@@ -72,11 +72,25 @@ static int policy_validate_match_data(struct nlattr **tb, u8 mrev)
+ 	return 0;
+ }
  
-@@ -115,6 +116,7 @@ static int em_ipt_change(struct net *net, void *data, int data_len,
- 	struct em_ipt_match *im = NULL;
- 	struct xt_match *match;
- 	int mdata_len, ret;
-+	u8 nfproto;
- 
- 	ret = nla_parse_deprecated(tb, TCA_EM_IPT_MAX, data, data_len,
- 				   em_ipt_policy, NULL);
-@@ -125,6 +127,16 @@ static int em_ipt_change(struct net *net, void *data, int data_len,
- 	    !tb[TCA_EM_IPT_MATCH_DATA] || !tb[TCA_EM_IPT_NFPROTO])
- 		return -EINVAL;
- 
-+	nfproto = nla_get_u8(tb[TCA_EM_IPT_NFPROTO]);
-+	switch (nfproto) {
-+	case NFPROTO_IPV4:
-+	case NFPROTO_IPV6:
-+	case NFPROTO_UNSPEC:
-+		break;
-+	default:
++static int addrtype_validate_match_data(struct nlattr **tb, u8 mrev)
++{
++	if (mrev != 1) {
++		pr_err("only addrtype match revision 1 supported");
 +		return -EINVAL;
 +	}
 +
- 	match = get_xt_match(tb);
- 	if (IS_ERR(match)) {
- 		pr_err("unable to load match\n");
-@@ -140,6 +152,7 @@ static int em_ipt_change(struct net *net, void *data, int data_len,
++	return 0;
++}
++
+ static const struct em_ipt_xt_match em_ipt_xt_matches[] = {
+ 	{
+ 		.match_name = "policy",
+ 		.validate_match_data = policy_validate_match_data
+ 	},
++	{
++		.match_name = "addrtype",
++		.validate_match_data = addrtype_validate_match_data
++	},
+ 	{}
+ };
  
- 	im->match = match;
- 	im->hook = nla_get_u32(tb[TCA_EM_IPT_HOOK]);
-+	im->nfproto = nfproto;
- 	nla_memcpy(im->match_data, tb[TCA_EM_IPT_MATCH_DATA], mdata_len);
- 
- 	ret = check_match(net, im, mdata_len);
-@@ -187,16 +200,16 @@ static int em_ipt_match(struct sk_buff *skb, struct tcf_ematch *em,
- 
- 	switch (tc_skb_protocol(skb)) {
- 	case htons(ETH_P_IP):
--		if (im->match->family != NFPROTO_UNSPEC &&
--		    im->match->family != NFPROTO_IPV4)
-+		if (im->nfproto != NFPROTO_UNSPEC &&
-+		    im->nfproto != NFPROTO_IPV4)
- 			return 0;
- 		if (!pskb_network_may_pull(skb, sizeof(struct iphdr)))
- 			return 0;
- 		state.pf = NFPROTO_IPV4;
- 		break;
- 	case htons(ETH_P_IPV6):
--		if (im->match->family != NFPROTO_UNSPEC &&
--		    im->match->family != NFPROTO_IPV6)
-+		if (im->nfproto != NFPROTO_UNSPEC &&
-+		    im->nfproto != NFPROTO_IPV6)
- 			return 0;
- 		if (!pskb_network_may_pull(skb, sizeof(struct ipv6hdr)))
- 			return 0;
-@@ -234,7 +247,7 @@ static int em_ipt_dump(struct sk_buff *skb, struct tcf_ematch *em)
- 		return -EMSGSIZE;
- 	if (nla_put_u8(skb, TCA_EM_IPT_MATCH_REVISION, im->match->revision) < 0)
- 		return -EMSGSIZE;
--	if (nla_put_u8(skb, TCA_EM_IPT_NFPROTO, im->match->family) < 0)
-+	if (nla_put_u8(skb, TCA_EM_IPT_NFPROTO, im->nfproto) < 0)
- 		return -EMSGSIZE;
- 	if (nla_put(skb, TCA_EM_IPT_MATCH_DATA,
- 		    im->match->usersize ?: im->match->matchsize,
 -- 
 2.20.1
 
