@@ -2,101 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C81255DE2
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 03:44:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC94955DFB
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 03:53:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726412AbfFZBod (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 21:44:33 -0400
-Received: from mail-pl1-f176.google.com ([209.85.214.176]:38369 "EHLO
-        mail-pl1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726304AbfFZBod (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 21:44:33 -0400
-Received: by mail-pl1-f176.google.com with SMTP id g4so446673plb.5
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 18:44:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=V6OYgzaqYhr9egvv+LCV2yyF08Pv7oqdefJQ+ajQbqE=;
-        b=saP+e6G3P3tQCGJFHxdTGmr4zaoCyVDqAo2xqCuWe7/+uvIjA40ccEyg8zWQL/PtlD
-         2tQUr4LCnUrcy1xpnZcRx4tJ3g4xzlYZrN0/bIluckNHwC6EXJpwegKX3rkMesh/GDcI
-         Od05VC/5g3bOkVUOHU3rdqzeOykc/dDDZnnJWgS4FzEhNEDaB2vLJ8xPT8pU2IrDglxv
-         UWbwunEH8UhOW3YQWqvT0X/A/uiqZvotYtdY/s/xLf5PR8Yggxd6f7PT1JzkGk2LBaAW
-         odqRg3lS6gH0GXXuEwGPY6SKDr3BAVRrmgud6mkGkVE5JtHGHusmvnrn+YYv2JzWzX78
-         DDkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=V6OYgzaqYhr9egvv+LCV2yyF08Pv7oqdefJQ+ajQbqE=;
-        b=KsD/2N14nl4iu24PAVa5Z6MSDeFs5xJZcxiJeRmFyeMrywZjiHqqxSYP4aC1XE0u3N
-         adalzgjRz1SOqrMnaPjk94p1xXjutGRFxN9G6HzEh53AcYk7NDBBswOwHj4ndQbexau8
-         5xgmEZrOzjcOMJB6vz77czH5o1cGvdOp7R2EoUlOAPQ1UFHF0qUV5diXA7BniBDbHFGS
-         uUO89IeEDMcj91EevGZtC0S/sCtcKvEdReR0++7IKiWLDjdG3DTQIEiDBAUclab/jmgN
-         RlIW+7osvZktn6w0A9qX9ZdAl2sOcEx59LuqQrLfMJYo6kcOc33uAEkW8iknzcStYPy+
-         GCEw==
-X-Gm-Message-State: APjAAAUyIawzoZgK14StKX25ukkA3/aSGpqJnJD7b6D+/e2ViYmUjWCs
-        LIIOOvA/yo2WDQXmlRukfBZ3PMttbqlq6Q==
-X-Google-Smtp-Source: APXvYqyxtBb7tPUPAHzVvXYEWCHwOVvnxSup3qB6Gya2bUN1VfXNR828sYxcIBx0laPC+e/rF8hL9g==
-X-Received: by 2002:a17:902:24a2:: with SMTP id w31mr2034084pla.324.1561513472460;
-        Tue, 25 Jun 2019 18:44:32 -0700 (PDT)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id v138sm17590332pfc.15.2019.06.25.18.44.29
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 25 Jun 2019 18:44:31 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, Phil Sutter <phil@nwl.cc>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@gmail.com>,
-        Andrea Claudi <aclaudi@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv2 iproute2] ip/iptoken: fix dump error when ipv6 disabled
-Date:   Wed, 26 Jun 2019 09:44:07 +0800
-Message-Id: <20190626014407.19204-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.19.2
-In-Reply-To: <20190625093550.7804-1-liuhangbin@gmail.com>
-References: <20190625093550.7804-1-liuhangbin@gmail.com>
+        id S1726320AbfFZBxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 21:53:12 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:60352 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726037AbfFZBxM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Jun 2019 21:53:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=kMI+jbwLjwcHDwbzOcT0DV6XCOAjiyVP6LoQDg6R71A=; b=1XdnwPWnx3QNsuu/0jY9gzb+eY
+        soZ3A8P7JyBW8LNe9dfvK/Qxp0MMJjbFBKf1RKfib4Xl08piQUH9rwz1HhqALqsEyejPRA5u7PUNt
+        jW6aLRAjU3cF10YUZl2FoDXAaeZ+hO8A6CR8mRj3ObZOZW3//AvVDnif0t99vfsfAlRk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hfx7C-0006TO-DH; Wed, 26 Jun 2019 03:52:50 +0200
+Date:   Wed, 26 Jun 2019 03:52:50 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
+        sean.wang@mediatek.com, Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, matthias.bgg@gmail.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        frank-w@public-files.de, netdev <netdev@vger.kernel.org>,
+        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org
+Subject: Re: [PATCH RFC net-next 1/5] net: dsa: mt7530: Convert to PHYLINK API
+Message-ID: <20190626015250.GH17872@lunn.ch>
+References: <20190624145251.4849-1-opensource@vdorst.com>
+ <20190624145251.4849-2-opensource@vdorst.com>
+ <20190624153950.hdsuhrvfd77heyor@shell.armlinux.org.uk>
+ <6f80325d-4b42-6174-e050-48626f7a3662@gmail.com>
+ <20190625215329.5ubixxiwprnubwmv@shell.armlinux.org.uk>
+ <CA+h21hqK0VMtHpZ6eka9ESuMhsFTw2mx+c0GYmxq4_G_YmiVpg@mail.gmail.com>
+ <20190625225759.zztqgnwtk4v7milp@shell.armlinux.org.uk>
+ <CA+h21hq_w8-96ehKYxcziSq1TjOjoKduZ+pB3umBfjODaKWd+A@mail.gmail.com>
+ <CA+h21hrsosGVQczMWy1+WfyNGZCpeMFerUwvWb-z+TTjrSOP1Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+h21hrsosGVQczMWy1+WfyNGZCpeMFerUwvWb-z+TTjrSOP1Q@mail.gmail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When we disable IPv6 from the start up (ipv6.disable=1), there will be
-no IPv6 route info in the dump message. If we return -1 when
-ifi->ifi_family != AF_INET6, we will get error like
+On Wed, Jun 26, 2019 at 02:13:25AM +0300, Vladimir Oltean wrote:
+> On Wed, 26 Jun 2019 at 02:10, Vladimir Oltean <olteanv@gmail.com> wrote:
+> >
+> > On Wed, 26 Jun 2019 at 01:58, Russell King - ARM Linux admin
+> > <linux@armlinux.org.uk> wrote:
+> > >
+> > > On Wed, Jun 26, 2019 at 01:14:59AM +0300, Vladimir Oltean wrote:
+> > > > On Wed, 26 Jun 2019 at 00:53, Russell King - ARM Linux admin
+> > > > <linux@armlinux.org.uk> wrote:
+> > > > >
+> > > > > On Tue, Jun 25, 2019 at 11:24:01PM +0300, Vladimir Oltean wrote:
+> > > > > > Hi Russell,
+> > > > > >
+> > > > > > On 6/24/19 6:39 PM, Russell King - ARM Linux admin wrote:
+> > > > > > > This should be removed - state->link is not for use in mac_config.
+> > > > > > > Even in fixed mode, the link can be brought up/down by means of a
+> > > > > > > gpio, and this should be dealt with via the mac_link_* functions.
+> > > > > > >
+> > > > > >
+> > > > > > What do you mean exactly that state->link is not for use, is that true in
+> > > > > > general?
+> > > > >
+> > > > > Yes.  mac_config() should not touch it; it is not always in a defined
+> > > > > state.  For example, if you set modes via ethtool (the
+> > > > > ethtool_ksettings_set API) then state->link will probably contain
+> > > > > zero irrespective of the true link state.
+> > > > >
+> > > >
+> > > > Experimentally, state->link is zero at the same time as state->speed
+> > > > is -1, so just ignoring !state->link made sense. This is not in-band
+> > > > AN. What is your suggestion? Should I proceed to try and configure the
+> > > > MAC for SPEED_UNKNOWN?
+> > >
+> > > What would you have done with a PHY when the link is down, what speed
+> > > would you have configured in the phylib adjust_link callback?  phylib
+> > > also sets SPEED_UNKNOWN/DUPLEX_UNKNOWN when the link is down.
+> > >
+> >
+> > With phylib, I'd make the driver ignore the speed and do nothing.
+> > With phylink, I'd make the core not call mac_config.
+> > But what happened is I saw phylink call mac_config anyway, said
+> > 'weird' and proceeded to ignore it as I would have for phylib.
+> > I'm just not understanding your position - it seems like you're
+> > implying there's a bug in phylink and the function call with
+> > MLO_AN_FIXED, state->link=0 and state->speed=-1 should not have taken
+> 
+> I meant MLO_AN_PHY, sorry.
 
-$ ip token list
-Dump terminated
+The MAC could go into a low power mode.
 
-which will make user feel confused. There is no need to return -1 if the
-dump message not match. Return 0 is enough.
-
-v2: do not combine all the conditions together.
-
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- ip/iptoken.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/ip/iptoken.c b/ip/iptoken.c
-index f1194c3e..9f356890 100644
---- a/ip/iptoken.c
-+++ b/ip/iptoken.c
-@@ -60,9 +60,9 @@ static int print_token(struct nlmsghdr *n, void *arg)
- 		return -1;
- 
- 	if (ifi->ifi_family != AF_INET6)
--		return -1;
-+		return 0;
- 	if (ifi->ifi_index == 0)
--		return -1;
-+		return 0;
- 	if (ifindex > 0 && ifi->ifi_index != ifindex)
- 		return 0;
- 	if (ifi->ifi_flags & (IFF_LOOPBACK | IFF_NOARP))
--- 
-2.19.2
-
+    Andrew
