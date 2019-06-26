@@ -2,160 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E4E5F567EC
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 13:51:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43164567F1
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 13:52:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727243AbfFZLvj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 07:51:39 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:34746 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726104AbfFZLvj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 07:51:39 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id C4963308FE8D;
-        Wed, 26 Jun 2019 11:51:38 +0000 (UTC)
-Received: from carbon (ovpn-200-45.brq.redhat.com [10.40.200.45])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 217C96012E;
-        Wed, 26 Jun 2019 11:51:30 +0000 (UTC)
-Date:   Wed, 26 Jun 2019 13:51:28 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Cc:     davem@davemloft.net, grygorii.strashko@ti.com, saeedm@mellanox.com,
-        leon@kernel.org, ast@kernel.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, ilias.apalodimas@linaro.org,
-        netdev@vger.kernel.org, daniel@iogearbox.net,
-        jakub.kicinski@netronome.com, john.fastabend@gmail.com,
-        brouer@redhat.com
-Subject: Re: [PATCH v4 net-next 1/4] net: core: page_pool: add user cnt
- preventing pool deletion
-Message-ID: <20190626135128.5724f40e@carbon>
-In-Reply-To: <20190626104948.GF6485@khorivan>
-References: <20190625175948.24771-1-ivan.khoronzhuk@linaro.org>
-        <20190625175948.24771-2-ivan.khoronzhuk@linaro.org>
-        <20190626124216.494eee86@carbon>
-        <20190626104948.GF6485@khorivan>
+        id S1727317AbfFZLwU convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 26 Jun 2019 07:52:20 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:35341 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726157AbfFZLwU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 07:52:20 -0400
+Received: by mail-ed1-f68.google.com with SMTP id w20so2963816edd.2
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 04:52:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=8G561BLNQLGaDTYbHCNH2H2OpaNjhGWxCsDpZi5dL3U=;
+        b=XmSYyv8K4NgiZocU+kDktCu8Zew6NGnhpfcFjN53o6L1Rjf3WzVjFbjNsIhn9g2GSN
+         k6QMcekOG40A0b7kH+LT3hV0d9qOz2YnuEjp75F5ZFnneq3YS3Fwu9IazDjeBZLz2ke8
+         1WwcYgjkOOjnsccqDNhLMnY7u1GmAYzrGxlqxDtGioj+yEpPzaQ2mbohW3GnMRRdJ2jJ
+         RA5+3xaxCzA+/v6QNLZ/ciYRMJwgQyg1NIfQBw8fdsAiVxvfzRzgty4NYod4GIzdZFe6
+         D2o+mjNiUZac4zJBtuysht/+w+mEZvcJJGNZ4mQ5QZEWSr5PPtR1lNOCqpKJmZSuP6ES
+         kJ2w==
+X-Gm-Message-State: APjAAAXNMBsw5gEX0pbyAAkTFihcWp0KpvPaSjLE3Zmyif9p1VbHekfh
+        ydOT5hbqnj43YC4huJjixXvOVQ==
+X-Google-Smtp-Source: APXvYqwKIr+l07YlcItaF1u709UX90xK2Tc7WXRIYF/W13Pw1h+FWXdppcXjDpU3LyQa5Pkme2ZV9Q==
+X-Received: by 2002:a17:906:e282:: with SMTP id gg2mr3759266ejb.38.1561549938709;
+        Wed, 26 Jun 2019 04:52:18 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
+        by smtp.gmail.com with ESMTPSA id q56sm5689322eda.28.2019.06.26.04.52.17
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 26 Jun 2019 04:52:18 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id C9CB2181CA7; Wed, 26 Jun 2019 13:52:16 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        "Machulsky\, Zorik" <zorik@amazon.com>
+Cc:     "Jubran\, Samih" <sameehj@amazon.com>,
+        "davem\@davemloft.net" <davem@davemloft.net>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Woodhouse\, David" <dwmw@amazon.co.uk>,
+        "Matushevsky\, Alexander" <matua@amazon.com>,
+        "Bshara\, Saeed" <saeedb@amazon.com>,
+        "Wilson\, Matt" <msw@amazon.com>,
+        "Liguori\, Anthony" <aliguori@amazon.com>,
+        "Bshara\, Nafea" <nafea@amazon.com>,
+        "Tzalik\, Guy" <gtzalik@amazon.com>,
+        "Belgazal\, Netanel" <netanel@amazon.com>,
+        "Saidi\, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt\, Benjamin" <benh@amazon.com>,
+        "Kiyanovski\, Arthur" <akiyano@amazon.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>, brouer@redhat.com,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "xdp-newbies\@vger.kernel.org" <xdp-newbies@vger.kernel.org>
+Subject: Re: XDP multi-buffer incl. jumbo-frames (Was: [RFC V1 net-next 1/1] net: ena: implement XDP drop support)
+In-Reply-To: <20190626103829.5360ef2d@carbon>
+References: <20190623070649.18447-1-sameehj@amazon.com> <20190623070649.18447-2-sameehj@amazon.com> <20190623162133.6b7f24e1@carbon> <A658E65E-93D2-4F10-823D-CC25B081C1B7@amazon.com> <20190626103829.5360ef2d@carbon>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 26 Jun 2019 13:52:16 +0200
+Message-ID: <87a7e4d0nj.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Wed, 26 Jun 2019 11:51:39 +0000 (UTC)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 26 Jun 2019 13:49:49 +0300
-Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
+Jesper Dangaard Brouer <brouer@redhat.com> writes:
 
-> On Wed, Jun 26, 2019 at 12:42:16PM +0200, Jesper Dangaard Brouer wrote:
-> >On Tue, 25 Jun 2019 20:59:45 +0300
-> >Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
-> >  
-> >> Add user counter allowing to delete pool only when no users.
-> >> It doesn't prevent pool from flush, only prevents freeing the
-> >> pool instance. Helps when no need to delete the pool and now
-> >> it's user responsibility to free it by calling page_pool_free()
-> >> while destroying procedure. It also makes to use page_pool_free()
-> >> explicitly, not fully hidden in xdp unreg, which looks more
-> >> correct after page pool "create" routine.  
-> >
-> >No, this is wrong.  
-> below.
-> 
-> >  
-> >> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-> >> ---
-> >>  drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 8 +++++---
-> >>  include/net/page_pool.h                           | 7 +++++++
-> >>  net/core/page_pool.c                              | 7 +++++++
-> >>  net/core/xdp.c                                    | 3 +++
-> >>  4 files changed, 22 insertions(+), 3 deletions(-)
-> >>
-> >> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> >> index 5e40db8f92e6..cb028de64a1d 100644
-> >> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> >> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> >> @@ -545,10 +545,8 @@ static int mlx5e_alloc_rq(struct mlx5e_channel *c,
-> >>  	}
-> >>  	err = xdp_rxq_info_reg_mem_model(&rq->xdp_rxq,
-> >>  					 MEM_TYPE_PAGE_POOL, rq->page_pool);
-> >> -	if (err) {
-> >> -		page_pool_free(rq->page_pool);
-> >> +	if (err)
-> >>  		goto err_free;
-> >> -	}
-> >>
-> >>  	for (i = 0; i < wq_sz; i++) {
-> >>  		if (rq->wq_type == MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ) {
-> >> @@ -613,6 +611,8 @@ static int mlx5e_alloc_rq(struct mlx5e_channel *c,
-> >>  	if (rq->xdp_prog)
-> >>  		bpf_prog_put(rq->xdp_prog);
-> >>  	xdp_rxq_info_unreg(&rq->xdp_rxq);
-> >> +	if (rq->page_pool)
-> >> +		page_pool_free(rq->page_pool);
-> >>  	mlx5_wq_destroy(&rq->wq_ctrl);
-> >>
-> >>  	return err;
-> >> @@ -643,6 +643,8 @@ static void mlx5e_free_rq(struct mlx5e_rq *rq)
-> >>  	}
-> >>
-> >>  	xdp_rxq_info_unreg(&rq->xdp_rxq);
-> >> +	if (rq->page_pool)
-> >> +		page_pool_free(rq->page_pool);  
-> >
-> >No, this is wrong.  The hole point with the merged page_pool fixes
-> >patchset was that page_pool_free() needs to be delayed until no-more
-> >in-flight packets exist.  
-> 
-> Probably it's not so obvious, but it's still delayed and deleted only
-> after no-more in-flight packets exist. Here question is only who is able
-> to do this first based on refcnt.
+> On Tue, 25 Jun 2019 03:19:22 +0000
+> "Machulsky, Zorik" <zorik@amazon.com> wrote:
+>
+>> ﻿On 6/23/19, 7:21 AM, "Jesper Dangaard Brouer" <brouer@redhat.com> wrote:
+>> 
+>>     On Sun, 23 Jun 2019 10:06:49 +0300 <sameehj@amazon.com> wrote:
+>>     
+>>     > This commit implements the basic functionality of drop/pass logic in the
+>>     > ena driver.  
+>>     
+>>     Usually we require a driver to implement all the XDP return codes,
+>>     before we accept it.  But as Daniel and I discussed with Zorik during
+>>     NetConf[1], we are going to make an exception and accept the driver
+>>     if you also implement XDP_TX.
+>>     
+>>     As we trust that Zorik/Amazon will follow and implement XDP_REDIRECT
+>>     later, given he/you wants AF_XDP support which requires XDP_REDIRECT.
+>> 
+>> Jesper, thanks for your comments and very helpful discussion during
+>> NetConf! That's the plan, as we agreed. From our side I would like to
+>> reiterate again the importance of multi-buffer support by xdp frame.
+>> We would really prefer not to see our MTU shrinking because of xdp
+>> support.   
+>
+> Okay we really need to make a serious attempt to find a way to support
+> multi-buffer packets with XDP. With the important criteria of not
+> hurting performance of the single-buffer per packet design.
+>
+> I've created a design document[2], that I will update based on our
+> discussions: [2] https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp-multi-buffer01-design.org
+>
+> The use-case that really convinced me was Eric's packet header-split.
+>
+>
+> Lets refresh: Why XDP don't have multi-buffer support:
+>
+> XDP is designed for maximum performance, which is why certain driver-level
+> use-cases were not supported, like multi-buffer packets (like jumbo-frames).
+> As it e.g. complicated the driver RX-loop and memory model handling.
+>
+> The single buffer per packet design, is also tied into eBPF Direct-Access
+> (DA) to packet data, which can only be allowed if the packet memory is in
+> contiguous memory.  This DA feature is essential for XDP performance.
+>
+>
+> One way forward is to define that XDP only get access to the first
+> packet buffer, and it cannot see subsequent buffers. For XDP_TX and
+> XDP_REDIRECT to work then XDP still need to carry pointers (plus
+> len+offset) to the other buffers, which is 16 bytes per extra buffer.
 
-Hmm... then I find this API is rather misleading, even the function
-name page_pool_free is misleading ("free"). (Now, I do see, below, that
-page_pool_create() take an extra reference).
+Yeah, I think this would be reasonable. As long as we can have a
+metadata field with the full length + still give XDP programs the
+ability to truncate the packet (i.e., discard the subsequent pages) I
+think many (most?) use cases will work fine without having access to the
+full packet data...
 
-But it is still wrong / problematic.  As you allow
-__page_pool_request_shutdown() to be called with elevated refcnt.  Your
-use-case is to have more than 1 xdp_rxq_info struct using the same
-page_pool.  Then you have to call xdp_rxq_info_unreg_mem_model() for
-each, which will call __page_pool_request_shutdown().
-
-For this to be safe, your driver have to stop RX for all the
-xdp_rxq_info structs that share the page_pool.  The page_pool already
-have this requirement, but it comes as natural step when shutting down
-an RXQ.  With your change, you have to take care of stopping the RXQs
-first, and then call xdp_rxq_info_unreg_mem_model() for each
-xdp_rxq_info afterwards.  I assume you do this, but it is just a driver
-bug waiting to happen.
-
-
-> >> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> >> index b366f59885c1..169b0e3c870e 100644
-> >> --- a/net/core/page_pool.c
-> >> +++ b/net/core/page_pool.c
-[...]
-> >> @@ -70,6 +71,8 @@ struct page_pool *page_pool_create(const struct page_pool_params *params)
-> >>  		kfree(pool);
-> >>  		return ERR_PTR(err);
-> >>  	}
-> >> +
-> >> +	page_pool_get(pool);
-> >>  	return pool;
-> >>  }
-> >>  EXPORT_SYMBOL(page_pool_create);
-
-The thing (perhaps) like about your API change, is that you also allow
-the driver to explicitly keep the page_pool object across/after a
-xdp_rxq_info_unreg_mem_model().  And this way possibly reuse it for
-another RXQ.  The problem is of-cause that on driver shutdown, this
-will force drivers to implement the same shutdown logic with
-schedule_delayed_work as the core xdp.c code already does.
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+-Toke
