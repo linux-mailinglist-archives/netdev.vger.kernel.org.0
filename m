@@ -2,136 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 52B1F5617D
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 06:37:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 548A556181
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 06:41:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726441AbfFZEhN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 00:37:13 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:43181 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725954AbfFZEhN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 00:37:13 -0400
-Received: by mail-wr1-f67.google.com with SMTP id p13so968895wru.10
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 21:37:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=I182T36a9AcOI5GNaQFiflRFqr6MYJO2H0ynTDuRZ+I=;
-        b=n/oYELOKudEF1dQ9B3xmm/oxxOtXjH9kwYsmLCfsLc1Anctl5yMSCX0g2VW73ofEUi
-         Z/Sg/nx2aIn2jfnMZasdtxctTIkgx9BmE/OtLjChbPG1uISEqXapAxufUG2GYbQfcXyw
-         ORr+ssdyaF6MGpU6VdbVZIEfTd4oJfjlLTAMyb8snES4wFfXtc7AZIpPGGqHWz4AM33e
-         up5+o1+vjUu64S1MbTGLr2Udb7vsufM1FpaAKPKckeOxJ8mfk86dsU+ShWv6K/YtjqxV
-         x+/ZdsZlPkVLNULdwF2/gs7oe/wXFgrAbIrI9rUbLR4pyifIf3Bs6t+qswpn7iVOwD8E
-         v9mg==
+        id S1726652AbfFZElC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 00:41:02 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:36443 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725954AbfFZElB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 00:41:01 -0400
+Received: by mail-io1-f71.google.com with SMTP id k21so1155514ioj.3
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 21:41:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=I182T36a9AcOI5GNaQFiflRFqr6MYJO2H0ynTDuRZ+I=;
-        b=M9YJ+BCtS8HOtelYkljtkfqGKqQm7Ss6dfon6lyeiX9moWBJfIVOUtXZvLflLLBOFm
-         ElRalEhmExsGgCRsSOvKDjFC9tARYFf7IL7epjmztHF7vikb+P+HARdXnIV8WSGdjOvL
-         HNgNiv8D139NGdCAxL+PEAKea7x54iKyv67Tg8Ddow2g3/d9nXXll72WXmOmtYhawM9r
-         r5vDMTmL4RWlIgqj2HqePzfEwRc5Jf7Kbn0KA4aZ22SJio/BtPnIHawWMENBeztCEi8Z
-         7enAQGGtYrWwCGU/qp/7jt2Ma91iojGjZvvwELCVzoitEWussAv3IKSLfvJa2dbvI10z
-         NYQA==
-X-Gm-Message-State: APjAAAUKum3Gfk/jU/f8B2SFj4Nbr1us3OlfnUSNkUesBzt7azjk7bYk
-        4wYJo1TO/aY9uCdbffx6h0w=
-X-Google-Smtp-Source: APXvYqw4ateMOMxFQs4NQFdrB34pCncnuX0/j+c19pJeLMRai4jF2K6nxLbqTDxuuJ3vpY4eJVLpHQ==
-X-Received: by 2002:adf:81c8:: with SMTP id 66mr1390991wra.261.1561523830800;
-        Tue, 25 Jun 2019 21:37:10 -0700 (PDT)
-Received: from jimi (bzq-82-81-225-244.cablep.bezeqint.net. [82.81.225.244])
-        by smtp.gmail.com with ESMTPSA id v18sm13904119wrs.80.2019.06.25.21.37.08
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 25 Jun 2019 21:37:10 -0700 (PDT)
-Date:   Wed, 26 Jun 2019 07:37:03 +0300
-From:   Eyal Birger <eyal.birger@gmail.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        John Hurley <john.hurley@netronome.com>
-Cc:     Linux Netdev List <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Florian Westphal <fw@strlen.de>,
-        Simon Horman <simon.horman@netronome.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        oss-drivers@netronome.com, shmulik@metanetworks.com
-Subject: Re: [PATCH net-next 2/2] net: sched: protect against stack overflow
- in TC act_mirred
-Message-ID: <20190626073703.5655f7b1@jimi>
-In-Reply-To: <4a4f2f81-d87a-2a45-36b9-ac101d937219@mojatatu.com>
-References: <1561414416-29732-1-git-send-email-john.hurley@netronome.com>
-        <1561414416-29732-3-git-send-email-john.hurley@netronome.com>
-        <20190625113010.7da5dbcb@jimi>
-        <CAK+XE=mOjtp16tdz83RZ-x_jEp3nPRY3smxbG=OfCmGi9_DnXg@mail.gmail.com>
-        <4a4f2f81-d87a-2a45-36b9-ac101d937219@mojatatu.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=jsPciA+puK9ooK4TlyjKh7gObZtMQdfgKm0QqLbpEs8=;
+        b=MF32AjuEpBHRLjAXnWTRXLbHE8BPWs0y27DtdrXxQ4KkzUcmfq6tTGtJ+AZgG3qgUo
+         WCd7kX4tYAyUM3LH54KTNkQkQMzivzkum7c1s0vy3qi0IFTkt3w26+CvCZD8nQRKuOeF
+         i814+ib/FUzltbVnq5Oq4FdGZpeTLe5MlTS/vEx3WUCUKwgS4qZdUATiXGt5KeE618S9
+         4TUR11DIoRHWLbiy/QYrd1WrN8IOrapjJx8QVysCERvuPl1/AXl1VR7P8lC/JHpN7mry
+         MmQedFlBKNjMVX1tKv/jFEL78fi3+UB4TgLLETb0CerLztJQUJJvnHLi7a9lQoaGqU1r
+         o1uw==
+X-Gm-Message-State: APjAAAUYsAu8DdDQxioms2N1tsjP94SZlLIgP66BOLHgXCZquVxUqhTq
+        M+GQZ0qnFJzruq1rAMji8aApp8Mz00ebzNLI9fRRxO83BgGc
+X-Google-Smtp-Source: APXvYqyXfpl4H9vcElTo0RyNBNTKRr1zt/joRVze4f5+kmA0j1HSzuur+KvWjGLp4vBlUOXhsUCfd2sdQ0vWM9rH41vo5ex9cnt8
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a02:54c1:: with SMTP id t184mr2597199jaa.10.1561524061066;
+ Tue, 25 Jun 2019 21:41:01 -0700 (PDT)
+Date:   Tue, 25 Jun 2019 21:41:01 -0700
+In-Reply-To: <000000000000c7a272058c2cde21@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f7df7e058c32a611@google.com>
+Subject: Re: kernel panic: stack is corrupted in validate_chain
+From:   syzbot <syzbot+6ba34346b252f2d497c7@syzkaller.appspotmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, john.fastabend@gmail.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jamal, John,
+syzbot has bisected this bug to:
 
-On Tue, 25 Jun 2019 07:24:37 -0400
-Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+commit e9db4ef6bf4ca9894bb324c76e01b8f1a16b2650
+Author: John Fastabend <john.fastabend@gmail.com>
+Date:   Sat Jun 30 13:17:47 2018 +0000
 
-> On 2019-06-25 5:06 a.m., John Hurley wrote:
-> > On Tue, Jun 25, 2019 at 9:30 AM Eyal Birger <eyal.birger@gmail.com>
-> > wrote:  
-> 
-> > I'm not sure on the history of why a value of 4 was selected here
-> > but it seems to fall into line with my findings.  
-> 
-> Back then we could only loop in one direction (as opposed to two right
-> now) - so seeing something twice would have been suspect enough,
-> so 4 seems to be a good number. I still think 4 is a good number.
+     bpf: sockhash fix omitted bucket lock in sock_close
 
-I think the introduction of mirred ingress affects the 'seeing something
-twice is suspicious' paradigm - see below.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11d4e129a00000
+start commit:   249155c2 Merge branch 'parisc-5.2-4' of git://git.kernel.o..
+git tree:       upstream
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=13d4e129a00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=15d4e129a00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=9a31528e58cc12e2
+dashboard link: https://syzkaller.appspot.com/bug?extid=6ba34346b252f2d497c7
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=135e34eea00000
 
-> > Is there a hard requirement for >4 recursive calls here?  
-> 
-> I think this is where testcases help (which then get permanently
-> added in tdc repository). Eyal - if you have a test scenario where
-> this could be demonstrated it would help.
+Reported-by: syzbot+6ba34346b252f2d497c7@syzkaller.appspotmail.com
+Fixes: e9db4ef6bf4c ("bpf: sockhash fix omitted bucket lock in sock_close")
 
-I don't have a _hard_ requirement for >4 recursive calls.
-
-I did encounter use cases for 2 layers of stacked net devices using TC
-mirred ingress. For example, first layer redirects traffic based on
-incoming protocol - e.g. some tunneling criterion - and the second
-layer redirects traffic based on the IP packet src/dst, something like:
-
-  +-----------+  +-----------+  +-----------+  +-----------+
-  |    ip0    |  |    ip1    |  |    ip2    |  |    ip3    |
-  +-----------+  +-----------+  +-----------+  +-----------+
-          \          /                 \           /
-           \        /                   \         /
-         +-----------+                 +-----------+
-         |   proto0  |                 |   proto1  |
-         +-----------+                 +-----------+
-                    \                   /
-                     \                 /
-                        +-----------+
-                        |    eth0   |
-                        +-----------+
-
-Where packets stem from eth0 and are redirected to the appropriate devices
-using mirred ingress redirect with different criteria.
-This is useful for example when each 'ip' device is part of a different
-routing domain.
-
-There are probably many other ways to do this kind of thing, but using mirred
-ingress to demux the traffic provides freedom in the demux criteria while
-having the benefit of a netdevice at each node allowing to use tcpdump and
-other such facilities.
-
-As such, I was concerned that a hard limit of 4 may be restrictive.
-
-I too think Florian's suggestion of using netif_rx() in order to break
-the recursion when limit is met (or always use it?) is a good approach
-to try in order not to force restrictions while keeping the stack sane.
-
-Eyal.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
