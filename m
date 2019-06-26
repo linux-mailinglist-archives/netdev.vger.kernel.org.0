@@ -2,95 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD18A57442
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 00:25:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3FCD57448
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 00:26:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726470AbfFZWZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 18:25:01 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:37843 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726289AbfFZWZB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 18:25:01 -0400
-Received: by mail-pf1-f194.google.com with SMTP id 19so158877pfa.4;
-        Wed, 26 Jun 2019 15:25:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=5oPhE3qEEt+RsciwWt3P6Fjbl5mc7GWFjnz4iQlRxp4=;
-        b=H4+gaLabIccSX6EPGUvDOCU/qUWZUMhDbwijJ4DRhclRYA8njNCIhVON5hmDAmRjyP
-         us29dx6wXrDFhkSBYtZP+QnMwkUxbt/b/NT9soEdmAxHwSGDaPDlwMwZgzNqXvOH3aso
-         2f9q6yIIHe7gJ8HNtc/aWgiuXhoX0rzuU/K2diGjE5ZK7pdDMd0B1uW+/Dqe1477OhVx
-         IrxhZdW9rbOcpZWyMwh65fNWDmD1Ll6t3XZRsVs/yuRwUQPPont7siNBs5QFWibv8n+w
-         EzcCqvqSOhG2s0daMmj+Bt+KKOTRXLXfDo7Yn5/MIDQw8qOb7G3VrVDpkXXeUeybpeyV
-         P4mA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=5oPhE3qEEt+RsciwWt3P6Fjbl5mc7GWFjnz4iQlRxp4=;
-        b=AQFuIdwD/VB9c0fhOZI4oHs8xSR5A4FvAkOygd5wihGNyPTU5urT8X5jIeCxVHwqeg
-         5oarCHHeDfU7fVvhpRfKU+G4OVEDx/nghtIbXnchRlpQAWKZJdIwEDIPhHmOYxh7k1uQ
-         UjdMBUfwc3OqEppaOa8AAm/Z1fWQQGFb1lji/CziRcdSmVfiFM3GRAiwzN/mqd7IbYWz
-         LBcvvGPVsLXKFPrCZo8cdBzOcCRvlMF5Nf6XOhMqx+/cZ6Z2HYR1dHm5WbLguExoDisD
-         NuF5B6G1kw3FatSyTwlOngxsWbAXYZjbAF5T8uks46H5HRxVCJhEEOfeUSRgmKwMcSZX
-         jJPw==
-X-Gm-Message-State: APjAAAWO2CeTGw8C4BSlRzVjT3DJQtNwExpx0M5Uq1WpOsvCUVTQORv5
-        FOq4QgSe1yVc6t4q8HPfsic=
-X-Google-Smtp-Source: APXvYqxmpsROUGAEqYL8EDVOV7OByHymtS0Mqk4ScvgHjMvlv0A3sn919heSyv/nLXtsc2sr0jMmeg==
-X-Received: by 2002:a63:e40a:: with SMTP id a10mr260601pgi.277.1561587899713;
-        Wed, 26 Jun 2019 15:24:59 -0700 (PDT)
-Received: from localhost ([67.136.128.119])
-        by smtp.gmail.com with ESMTPSA id u128sm297015pfu.26.2019.06.26.15.24.59
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 26 Jun 2019 15:24:59 -0700 (PDT)
-Date:   Wed, 26 Jun 2019 15:24:58 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Eric Biggers <ebiggers@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     syzbot <syzbot+8893700724999566d6a9@syzkaller.appspotmail.com>,
-        akpm@linux-foundation.org, ast@kernel.org, cai@lca.pw,
-        crecklin@redhat.com, daniel@iogearbox.net, keescook@chromium.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Message-ID: <5d13f0ba3d1aa_25912acd0de805bcce@john-XPS-13-9370.notmuch>
-In-Reply-To: <20190625234808.GB116876@gmail.com>
-References: <000000000000e672c6058bd7ee45@google.com>
- <0000000000007724d6058c2dfc24@google.com>
- <20190625234808.GB116876@gmail.com>
-Subject: Re: KASAN: slab-out-of-bounds Write in validate_chain
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S1726601AbfFZW0O convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 26 Jun 2019 18:26:14 -0400
+Received: from mga01.intel.com ([192.55.52.88]:2978 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726481AbfFZW0O (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 18:26:14 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 26 Jun 2019 15:26:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.63,421,1557212400"; 
+   d="scan'208";a="164503997"
+Received: from orsmsx110.amr.corp.intel.com ([10.22.240.8])
+  by orsmga003.jf.intel.com with ESMTP; 26 Jun 2019 15:26:13 -0700
+Received: from orsmsx111.amr.corp.intel.com (10.22.240.12) by
+ ORSMSX110.amr.corp.intel.com (10.22.240.8) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Wed, 26 Jun 2019 15:26:12 -0700
+Received: from orsmsx104.amr.corp.intel.com ([169.254.4.70]) by
+ ORSMSX111.amr.corp.intel.com ([169.254.12.236]) with mapi id 14.03.0439.000;
+ Wed, 26 Jun 2019 15:26:12 -0700
+From:   "Bowers, AndrewX" <andrewx.bowers@intel.com>
+To:     "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [Intel-wired-lan] [PATCH][net-next] iavf: fix dereference of
+ null rx_buffer pointer
+Thread-Topic: [Intel-wired-lan] [PATCH][net-next] iavf: fix dereference of
+ null rx_buffer pointer
+Thread-Index: AQHVJqupVXnzcA+L3kOQDxvwkDnUOqaujuOg
+Date:   Wed, 26 Jun 2019 22:26:11 +0000
+Message-ID: <26D9FDECA4FBDD4AADA65D8E2FC68A4A1D3FB501@ORSMSX104.amr.corp.intel.com>
+References: <20190619143044.10259-1-colin.king@canonical.com>
+In-Reply-To: <20190619143044.10259-1-colin.king@canonical.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiOGIxZTkyNjktNzU5OS00Y2QxLTgzZWMtOTg0ZTczNjMzMzlmIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoicTZrSGFqK1VITGdcL2VaZjhwS2pJaHo1WTF3aFRLQSt6VGVJMTFtMHhaaGpuXC8xQTR6WGk1UXFLeERVV0hrMzBMIn0=
+x-ctpclassification: CTP_NT
+dlp-product: dlpe-windows
+dlp-version: 11.0.400.15
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.139]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Eric Biggers wrote:
-> Hi John,
+> -----Original Message-----
+> From: Intel-wired-lan [mailto:intel-wired-lan-bounces@osuosl.org] On
+> Behalf Of Colin King
+> Sent: Wednesday, June 19, 2019 7:31 AM
+> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; David S . Miller
+> <davem@davemloft.net>; intel-wired-lan@lists.osuosl.org;
+> netdev@vger.kernel.org
+> Cc: kernel-janitors@vger.kernel.org; linux-kernel@vger.kernel.org
+> Subject: [Intel-wired-lan] [PATCH][net-next] iavf: fix dereference of null
+> rx_buffer pointer
 > 
-> On Tue, Jun 25, 2019 at 04:07:00PM -0700, syzbot wrote:
-> > syzbot has bisected this bug to:
-> > 
-> > commit e9db4ef6bf4ca9894bb324c76e01b8f1a16b2650
-> > Author: John Fastabend <john.fastabend@gmail.com>
-> > Date:   Sat Jun 30 13:17:47 2018 +0000
-> > 
-> >     bpf: sockhash fix omitted bucket lock in sock_close
-> > 
+> From: Colin Ian King <colin.king@canonical.com>
 > 
-> Are you working on this?  This is the 6th open syzbot report that has been
-> bisected to this commit, and I suspect it's the cause of many of the other
-> 30 open syzbot reports I assigned to the bpf subsystem too
-> (https://lore.kernel.org/bpf/20190624050114.GA30702@sol.localdomain/).
+> A recent commit efa14c3985828d ("iavf: allow null RX descriptors") added a
+> null pointer sanity check on rx_buffer, however, rx_buffer is being
+> dereferenced before that check, which implies a null pointer dereference
+> bug can potentially occur.  Fix this by only dereferencing rx_buffer until after
+> the null pointer check.
 > 
-> Also, this is happening in mainline (v5.2-rc6).
-> 
-> - Eric
+> Addresses-Coverity: ("Dereference before null check")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> ---
+>  drivers/net/ethernet/intel/iavf/iavf_txrx.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
 
-Should have a fix today. It seems syzbot has found this bug repeatedly.
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 
-.John
+
