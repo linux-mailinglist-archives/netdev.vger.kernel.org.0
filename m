@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 851B956C21
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 16:36:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 721F456C3D
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 16:36:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728166AbfFZOgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 10:36:21 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:59859 "EHLO
+        id S1728023AbfFZOgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 10:36:19 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:59867 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727516AbfFZOgT (ORCPT
+        with ESMTP id S1727791AbfFZOgT (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 10:36:19 -0400
 Received: from Internal Mail-Server by MTLPINE2 (envelope-from tariqt@mellanox.com)
         with ESMTPS (AES256-SHA encrypted); 26 Jun 2019 17:36:16 +0300
 Received: from dev-l-vrt-206-006.mtl.labs.mlnx (dev-l-vrt-206-006.mtl.labs.mlnx [10.134.206.6])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x5QEaGY3027430;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x5QEaGY4027430;
         Wed, 26 Jun 2019 17:36:16 +0300
 From:   Tariq Toukan <tariqt@mellanox.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
@@ -26,12 +26,15 @@ Cc:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Maxim Mikityanskiy <maximmi@mellanox.com>,
         Tariq Toukan <tariqt@mellanox.com>
-Subject: [PATCH bpf-next V6 05/16] xsk: Change the default frame size to 4096 and allow controlling it
-Date:   Wed, 26 Jun 2019 17:35:27 +0300
-Message-Id: <1561559738-4213-6-git-send-email-tariqt@mellanox.com>
+Subject: [PATCH bpf-next V6 06/16] xsk: Return the whole xdp_desc from xsk_umem_consume_tx
+Date:   Wed, 26 Jun 2019 17:35:28 +0300
+Message-Id: <1561559738-4213-7-git-send-email-tariqt@mellanox.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1561559738-4213-1-git-send-email-tariqt@mellanox.com>
 References: <1561559738-4213-1-git-send-email-tariqt@mellanox.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -39,169 +42,170 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maxim Mikityanskiy <maximmi@mellanox.com>
 
-The typical XDP memory scheme is one packet per page. Change the AF_XDP
-frame size in libbpf to 4096, which is the page size on x86, to allow
-libbpf to be used with the drivers with the packet-per-page scheme.
+Some drivers want to access the data transmitted in order to implement
+acceleration features of the NICs. It is also useful in AF_XDP TX flow.
 
-Add a command line option -f to xdpsock to allow to specify a custom
-frame size.
+Change the xsk_umem_consume_tx API to return the whole xdp_desc, that
+contains the data pointer, length and DMA address, instead of only the
+latter two. Adapt the implementation of i40e and ixgbe to this change.
 
 Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
 Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
 Acked-by: Saeed Mahameed <saeedm@mellanox.com>
+Cc: Björn Töpel <bjorn.topel@intel.com>
+Cc: Magnus Karlsson <magnus.karlsson@intel.com>
+Acked-by: Björn Töpel <bjorn.topel@intel.com>
 ---
- samples/bpf/xdpsock_user.c | 44 ++++++++++++++++++++++++++++----------------
- tools/lib/bpf/xsk.h        |  2 +-
- 2 files changed, 29 insertions(+), 17 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c   | 12 +++++++-----
+ drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c | 15 +++++++++------
+ include/net/xdp_sock.h                       |  6 +++---
+ net/xdp/xsk.c                                | 10 +++-------
+ 4 files changed, 22 insertions(+), 21 deletions(-)
 
-diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
-index 0f5eb0d7f2df..93eaaf7239b2 100644
---- a/samples/bpf/xdpsock_user.c
-+++ b/samples/bpf/xdpsock_user.c
-@@ -68,6 +68,7 @@ enum benchmark_type {
- static int opt_poll;
- static int opt_interval = 1;
- static u32 opt_xdp_bind_flags;
-+static int opt_xsk_frame_size = XSK_UMEM__DEFAULT_FRAME_SIZE;
- static __u32 prog_id;
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+index 557c565c26fc..32bad014d76c 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+@@ -641,8 +641,8 @@ static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
+ 	struct i40e_tx_desc *tx_desc = NULL;
+ 	struct i40e_tx_buffer *tx_bi;
+ 	bool work_done = true;
++	struct xdp_desc desc;
+ 	dma_addr_t dma;
+-	u32 len;
  
- struct xsk_umem_info {
-@@ -276,6 +277,12 @@ static size_t gen_eth_frame(struct xsk_umem_info *umem, u64 addr)
- static struct xsk_umem_info *xsk_configure_umem(void *buffer, u64 size)
- {
- 	struct xsk_umem_info *umem;
-+	struct xsk_umem_config cfg = {
-+		.fill_size = XSK_RING_PROD__DEFAULT_NUM_DESCS,
-+		.comp_size = XSK_RING_CONS__DEFAULT_NUM_DESCS,
-+		.frame_size = opt_xsk_frame_size,
-+		.frame_headroom = XSK_UMEM__DEFAULT_FRAME_HEADROOM,
-+	};
- 	int ret;
- 
- 	umem = calloc(1, sizeof(*umem));
-@@ -283,7 +290,7 @@ static struct xsk_umem_info *xsk_configure_umem(void *buffer, u64 size)
- 		exit_with_error(errno);
- 
- 	ret = xsk_umem__create(&umem->umem, buffer, size, &umem->fq, &umem->cq,
--			       NULL);
-+			       &cfg);
- 	if (ret)
- 		exit_with_error(-ret);
- 
-@@ -323,11 +330,9 @@ static struct xsk_socket_info *xsk_configure_socket(struct xsk_umem_info *umem)
- 				     &idx);
- 	if (ret != XSK_RING_PROD__DEFAULT_NUM_DESCS)
- 		exit_with_error(-ret);
--	for (i = 0;
--	     i < XSK_RING_PROD__DEFAULT_NUM_DESCS *
--		     XSK_UMEM__DEFAULT_FRAME_SIZE;
--	     i += XSK_UMEM__DEFAULT_FRAME_SIZE)
--		*xsk_ring_prod__fill_addr(&xsk->umem->fq, idx++) = i;
-+	for (i = 0; i < XSK_RING_PROD__DEFAULT_NUM_DESCS; i++)
-+		*xsk_ring_prod__fill_addr(&xsk->umem->fq, idx++) =
-+			i * opt_xsk_frame_size;
- 	xsk_ring_prod__submit(&xsk->umem->fq,
- 			      XSK_RING_PROD__DEFAULT_NUM_DESCS);
- 
-@@ -346,6 +351,7 @@ static struct xsk_socket_info *xsk_configure_socket(struct xsk_umem_info *umem)
- 	{"interval", required_argument, 0, 'n'},
- 	{"zero-copy", no_argument, 0, 'z'},
- 	{"copy", no_argument, 0, 'c'},
-+	{"frame-size", required_argument, 0, 'f'},
- 	{0, 0, 0, 0}
- };
- 
-@@ -365,8 +371,9 @@ static void usage(const char *prog)
- 		"  -n, --interval=n	Specify statistics update interval (default 1 sec).\n"
- 		"  -z, --zero-copy      Force zero-copy mode.\n"
- 		"  -c, --copy           Force copy mode.\n"
-+		"  -f, --frame-size=n   Set the frame size (must be a power of two, default is %d).\n"
- 		"\n";
--	fprintf(stderr, str, prog);
-+	fprintf(stderr, str, prog, XSK_UMEM__DEFAULT_FRAME_SIZE);
- 	exit(EXIT_FAILURE);
- }
- 
-@@ -377,7 +384,7 @@ static void parse_command_line(int argc, char **argv)
- 	opterr = 0;
- 
- 	for (;;) {
--		c = getopt_long(argc, argv, "Frtli:q:psSNn:cz", long_options,
-+		c = getopt_long(argc, argv, "Frtli:q:psSNn:czf:", long_options,
- 				&option_index);
- 		if (c == -1)
+ 	while (budget-- > 0) {
+ 		if (!unlikely(I40E_DESC_UNUSED(xdp_ring))) {
+@@ -651,21 +651,23 @@ static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
  			break;
-@@ -420,6 +427,9 @@ static void parse_command_line(int argc, char **argv)
- 		case 'F':
- 			opt_xdp_flags &= ~XDP_FLAGS_UPDATE_IF_NOEXIST;
- 			break;
-+		case 'f':
-+			opt_xsk_frame_size = atoi(optarg);
-+			break;
- 		default:
- 			usage(basename(argv[0]));
  		}
-@@ -432,6 +442,11 @@ static void parse_command_line(int argc, char **argv)
- 		usage(basename(argv[0]));
- 	}
  
-+	if (opt_xsk_frame_size & (opt_xsk_frame_size - 1)) {
-+		fprintf(stderr, "--frame-size=%d is not a power of two\n",
-+			opt_xsk_frame_size);
-+		usage(basename(argv[0]));
-+	}
+-		if (!xsk_umem_consume_tx(xdp_ring->xsk_umem, &dma, &len))
++		if (!xsk_umem_consume_tx(xdp_ring->xsk_umem, &desc))
+ 			break;
+ 
+-		dma_sync_single_for_device(xdp_ring->dev, dma, len,
++		dma = xdp_umem_get_dma(xdp_ring->xsk_umem, desc.addr);
++
++		dma_sync_single_for_device(xdp_ring->dev, dma, desc.len,
+ 					   DMA_BIDIRECTIONAL);
+ 
+ 		tx_bi = &xdp_ring->tx_bi[xdp_ring->next_to_use];
+-		tx_bi->bytecount = len;
++		tx_bi->bytecount = desc.len;
+ 
+ 		tx_desc = I40E_TX_DESC(xdp_ring, xdp_ring->next_to_use);
+ 		tx_desc->buffer_addr = cpu_to_le64(dma);
+ 		tx_desc->cmd_type_offset_bsz =
+ 			build_ctob(I40E_TX_DESC_CMD_ICRC
+ 				   | I40E_TX_DESC_CMD_EOP,
+-				   0, len, 0);
++				   0, desc.len, 0);
+ 
+ 		xdp_ring->next_to_use++;
+ 		if (xdp_ring->next_to_use == xdp_ring->count)
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+index 6af55bb3bef3..6b609553329f 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+@@ -571,8 +571,9 @@ static bool ixgbe_xmit_zc(struct ixgbe_ring *xdp_ring, unsigned int budget)
+ 	union ixgbe_adv_tx_desc *tx_desc = NULL;
+ 	struct ixgbe_tx_buffer *tx_bi;
+ 	bool work_done = true;
+-	u32 len, cmd_type;
++	struct xdp_desc desc;
+ 	dma_addr_t dma;
++	u32 cmd_type;
+ 
+ 	while (budget-- > 0) {
+ 		if (unlikely(!ixgbe_desc_unused(xdp_ring)) ||
+@@ -581,14 +582,16 @@ static bool ixgbe_xmit_zc(struct ixgbe_ring *xdp_ring, unsigned int budget)
+ 			break;
+ 		}
+ 
+-		if (!xsk_umem_consume_tx(xdp_ring->xsk_umem, &dma, &len))
++		if (!xsk_umem_consume_tx(xdp_ring->xsk_umem, &desc))
+ 			break;
+ 
+-		dma_sync_single_for_device(xdp_ring->dev, dma, len,
++		dma = xdp_umem_get_dma(xdp_ring->xsk_umem, desc.addr);
++
++		dma_sync_single_for_device(xdp_ring->dev, dma, desc.len,
+ 					   DMA_BIDIRECTIONAL);
+ 
+ 		tx_bi = &xdp_ring->tx_buffer_info[xdp_ring->next_to_use];
+-		tx_bi->bytecount = len;
++		tx_bi->bytecount = desc.len;
+ 		tx_bi->xdpf = NULL;
+ 		tx_bi->gso_segs = 1;
+ 
+@@ -599,10 +602,10 @@ static bool ixgbe_xmit_zc(struct ixgbe_ring *xdp_ring, unsigned int budget)
+ 		cmd_type = IXGBE_ADVTXD_DTYP_DATA |
+ 			   IXGBE_ADVTXD_DCMD_DEXT |
+ 			   IXGBE_ADVTXD_DCMD_IFCS;
+-		cmd_type |= len | IXGBE_TXD_CMD;
++		cmd_type |= desc.len | IXGBE_TXD_CMD;
+ 		tx_desc->read.cmd_type_len = cpu_to_le32(cmd_type);
+ 		tx_desc->read.olinfo_status =
+-			cpu_to_le32(len << IXGBE_ADVTXD_PAYLEN_SHIFT);
++			cpu_to_le32(desc.len << IXGBE_ADVTXD_PAYLEN_SHIFT);
+ 
+ 		xdp_ring->next_to_use++;
+ 		if (xdp_ring->next_to_use == xdp_ring->count)
+diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
+index b6f5ebae43a1..057b159ff8b9 100644
+--- a/include/net/xdp_sock.h
++++ b/include/net/xdp_sock.h
+@@ -81,7 +81,7 @@ struct xdp_sock {
+ u64 *xsk_umem_peek_addr(struct xdp_umem *umem, u64 *addr);
+ void xsk_umem_discard_addr(struct xdp_umem *umem);
+ void xsk_umem_complete_tx(struct xdp_umem *umem, u32 nb_entries);
+-bool xsk_umem_consume_tx(struct xdp_umem *umem, dma_addr_t *dma, u32 *len);
++bool xsk_umem_consume_tx(struct xdp_umem *umem, struct xdp_desc *desc);
+ void xsk_umem_consume_tx_done(struct xdp_umem *umem);
+ struct xdp_umem_fq_reuse *xsk_reuseq_prepare(u32 nentries);
+ struct xdp_umem_fq_reuse *xsk_reuseq_swap(struct xdp_umem *umem,
+@@ -175,8 +175,8 @@ static inline void xsk_umem_complete_tx(struct xdp_umem *umem, u32 nb_entries)
+ {
  }
  
- static void kick_tx(struct xsk_socket_info *xsk)
-@@ -583,8 +598,7 @@ static void tx_only(struct xsk_socket_info *xsk)
+-static inline bool xsk_umem_consume_tx(struct xdp_umem *umem, dma_addr_t *dma,
+-				       u32 *len)
++static inline bool xsk_umem_consume_tx(struct xdp_umem *umem,
++				       struct xdp_desc *desc)
+ {
+ 	return false;
+ }
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index 35ca531ac74e..74417a851ed5 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -172,22 +172,18 @@ void xsk_umem_consume_tx_done(struct xdp_umem *umem)
+ }
+ EXPORT_SYMBOL(xsk_umem_consume_tx_done);
  
- 			for (i = 0; i < BATCH_SIZE; i++) {
- 				xsk_ring_prod__tx_desc(&xsk->tx, idx + i)->addr
--					= (frame_nb + i) <<
--					XSK_UMEM__DEFAULT_FRAME_SHIFT;
-+					= (frame_nb + i) * opt_xsk_frame_size;
- 				xsk_ring_prod__tx_desc(&xsk->tx, idx + i)->len =
- 					sizeof(pkt_data) - 1;
- 			}
-@@ -661,21 +675,19 @@ int main(int argc, char **argv)
- 	}
+-bool xsk_umem_consume_tx(struct xdp_umem *umem, dma_addr_t *dma, u32 *len)
++bool xsk_umem_consume_tx(struct xdp_umem *umem, struct xdp_desc *desc)
+ {
+-	struct xdp_desc desc;
+ 	struct xdp_sock *xs;
  
- 	ret = posix_memalign(&bufs, getpagesize(), /* PAGE_SIZE aligned */
--			     NUM_FRAMES * XSK_UMEM__DEFAULT_FRAME_SIZE);
-+			     NUM_FRAMES * opt_xsk_frame_size);
- 	if (ret)
- 		exit_with_error(ret);
+ 	rcu_read_lock();
+ 	list_for_each_entry_rcu(xs, &umem->xsk_list, list) {
+-		if (!xskq_peek_desc(xs->tx, &desc))
++		if (!xskq_peek_desc(xs->tx, desc))
+ 			continue;
  
-        /* Create sockets... */
--	umem = xsk_configure_umem(bufs,
--				  NUM_FRAMES * XSK_UMEM__DEFAULT_FRAME_SIZE);
-+	umem = xsk_configure_umem(bufs, NUM_FRAMES * opt_xsk_frame_size);
- 	xsks[num_socks++] = xsk_configure_socket(umem);
+-		if (xskq_produce_addr_lazy(umem->cq, desc.addr))
++		if (xskq_produce_addr_lazy(umem->cq, desc->addr))
+ 			goto out;
  
- 	if (opt_bench == BENCH_TXONLY) {
- 		int i;
- 
--		for (i = 0; i < NUM_FRAMES * XSK_UMEM__DEFAULT_FRAME_SIZE;
--		     i += XSK_UMEM__DEFAULT_FRAME_SIZE)
--			(void)gen_eth_frame(umem, i);
-+		for (i = 0; i < NUM_FRAMES; i++)
-+			(void)gen_eth_frame(umem, i * opt_xsk_frame_size);
- 	}
- 
- 	signal(SIGINT, int_exit);
-diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
-index 82ea71a0f3ec..833a6e60d065 100644
---- a/tools/lib/bpf/xsk.h
-+++ b/tools/lib/bpf/xsk.h
-@@ -167,7 +167,7 @@ static inline void *xsk_umem__get_data(void *umem_area, __u64 addr)
- 
- #define XSK_RING_CONS__DEFAULT_NUM_DESCS      2048
- #define XSK_RING_PROD__DEFAULT_NUM_DESCS      2048
--#define XSK_UMEM__DEFAULT_FRAME_SHIFT    11 /* 2048 bytes */
-+#define XSK_UMEM__DEFAULT_FRAME_SHIFT    12 /* 4096 bytes */
- #define XSK_UMEM__DEFAULT_FRAME_SIZE     (1 << XSK_UMEM__DEFAULT_FRAME_SHIFT)
- #define XSK_UMEM__DEFAULT_FRAME_HEADROOM 0
- 
+-		*dma = xdp_umem_get_dma(umem, desc.addr);
+-		*len = desc.len;
+-
+ 		xskq_discard_desc(xs->tx);
+ 		rcu_read_unlock();
+ 		return true;
 -- 
 1.8.3.1
 
