@@ -2,130 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B14257429
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 00:15:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD18A57442
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 00:25:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726467AbfFZWPr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 18:15:47 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:44458 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726289AbfFZWPr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 18:15:47 -0400
-Received: by mail-qt1-f193.google.com with SMTP id x47so293405qtk.11;
-        Wed, 26 Jun 2019 15:15:46 -0700 (PDT)
+        id S1726470AbfFZWZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 18:25:01 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:37843 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726289AbfFZWZB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 18:25:01 -0400
+Received: by mail-pf1-f194.google.com with SMTP id 19so158877pfa.4;
+        Wed, 26 Jun 2019 15:25:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YqsrTlo+gcL4B4t7G2VP05OG6ppDqWg6u3t/7Le3dgU=;
-        b=UP/ZCqb5s0tOdnhdvJw7Fe0TSqgphP0+Q+5GdHWqQ/99+fBJEhOSstfgGAxHGWjp2k
-         vrr7ywq4P7HJLC0bWqcB+TzMDsSfA444WZNhMVPW41AvDeter62iDTgZxQ7OJgMAavcs
-         k14M+vlAzLpXcbk+UU8OLBBJD5GGzxmcGT3M33OqypIYozik86ZGwt5zvW6X4XELGBRr
-         0yu1iC2WGSMp7IVrY3vH9jTrelGx2sXJvPXM56b5oYBK2YrBAcsD0ZjUAVubjZqxVtOr
-         9WVn5055124Wy0nT2J26vE2zHNs/CUonP9jqNyeRo3sL98XTU6/sp8cxxY8ITEK2truG
-         U0VQ==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=5oPhE3qEEt+RsciwWt3P6Fjbl5mc7GWFjnz4iQlRxp4=;
+        b=H4+gaLabIccSX6EPGUvDOCU/qUWZUMhDbwijJ4DRhclRYA8njNCIhVON5hmDAmRjyP
+         us29dx6wXrDFhkSBYtZP+QnMwkUxbt/b/NT9soEdmAxHwSGDaPDlwMwZgzNqXvOH3aso
+         2f9q6yIIHe7gJ8HNtc/aWgiuXhoX0rzuU/K2diGjE5ZK7pdDMd0B1uW+/Dqe1477OhVx
+         IrxhZdW9rbOcpZWyMwh65fNWDmD1Ll6t3XZRsVs/yuRwUQPPont7siNBs5QFWibv8n+w
+         EzcCqvqSOhG2s0daMmj+Bt+KKOTRXLXfDo7Yn5/MIDQw8qOb7G3VrVDpkXXeUeybpeyV
+         P4mA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YqsrTlo+gcL4B4t7G2VP05OG6ppDqWg6u3t/7Le3dgU=;
-        b=rihv9yuus7vS9+rHSZTt/UgR1WJghFpaKOoahMoD9Jb6g0sc9Rv47yz1U21o5LdeI8
-         ctcY0tVW1O3h2jgfSTL0S3h5htPMWtzAyFrNW7kEi8EXpeya9/g3qyppVRq3CCgIbD2M
-         KkHzmEsg7/9gAQxR8FmmfJqtOjFcMtMFDLctV6n9Vnjy5Ip///SqOZKkoDSHRxQ4HNw4
-         bmtO0Z9DNelODTeE8Zl6VQ7G1ZT9rk49Dg8mZ1ssa5sQdXxXID9S+oOD/YYGGsFg/JrY
-         jRsr+mH7TPpxQmQ3Fyg4DnDyBPHmEiXmH3sUCKWfXxDd+xNJrGE8sMJPEiKyW5ViHx0t
-         Y/iQ==
-X-Gm-Message-State: APjAAAXw+/iPJiD3U1WXQMYYQdik7v0feuOpY1NZiVWLTKNvJyAaq7oP
-        0/UfHUty8I2niK/PAzXEimnDoD0qlJQoejsak1U=
-X-Google-Smtp-Source: APXvYqxgK8NBrIMk7RSclF2SVPR3il0nDfSR8eLdLdwFXEQ/rfesYSS9T2i24ZfnoSO1h1jP1jLxHYFqehDu+CUiy7Q=
-X-Received: by 2002:a0c:c107:: with SMTP id f7mr191115qvh.150.1561587346020;
- Wed, 26 Jun 2019 15:15:46 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190621045555.4152743-1-andriin@fb.com> <20190621045555.4152743-4-andriin@fb.com>
- <a7780057-1d70-9ace-960b-ff65867dc277@iogearbox.net>
-In-Reply-To: <a7780057-1d70-9ace-960b-ff65867dc277@iogearbox.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 26 Jun 2019 15:15:34 -0700
-Message-ID: <CAEf4BzYy4Eorj0VxzArZg+V4muJCvDTX_VVfoouzZUcrBwTa1w@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 3/7] libbpf: add kprobe/uprobe attach API
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andriin@fb.com>, Alexei Starovoitov <ast@fb.com>,
-        Stanislav Fomichev <sdf@fomichev.me>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=5oPhE3qEEt+RsciwWt3P6Fjbl5mc7GWFjnz4iQlRxp4=;
+        b=AQFuIdwD/VB9c0fhOZI4oHs8xSR5A4FvAkOygd5wihGNyPTU5urT8X5jIeCxVHwqeg
+         5oarCHHeDfU7fVvhpRfKU+G4OVEDx/nghtIbXnchRlpQAWKZJdIwEDIPhHmOYxh7k1uQ
+         UjdMBUfwc3OqEppaOa8AAm/Z1fWQQGFb1lji/CziRcdSmVfiFM3GRAiwzN/mqd7IbYWz
+         LBcvvGPVsLXKFPrCZo8cdBzOcCRvlMF5Nf6XOhMqx+/cZ6Z2HYR1dHm5WbLguExoDisD
+         NuF5B6G1kw3FatSyTwlOngxsWbAXYZjbAF5T8uks46H5HRxVCJhEEOfeUSRgmKwMcSZX
+         jJPw==
+X-Gm-Message-State: APjAAAWO2CeTGw8C4BSlRzVjT3DJQtNwExpx0M5Uq1WpOsvCUVTQORv5
+        FOq4QgSe1yVc6t4q8HPfsic=
+X-Google-Smtp-Source: APXvYqxmpsROUGAEqYL8EDVOV7OByHymtS0Mqk4ScvgHjMvlv0A3sn919heSyv/nLXtsc2sr0jMmeg==
+X-Received: by 2002:a63:e40a:: with SMTP id a10mr260601pgi.277.1561587899713;
+        Wed, 26 Jun 2019 15:24:59 -0700 (PDT)
+Received: from localhost ([67.136.128.119])
+        by smtp.gmail.com with ESMTPSA id u128sm297015pfu.26.2019.06.26.15.24.59
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 26 Jun 2019 15:24:59 -0700 (PDT)
+Date:   Wed, 26 Jun 2019 15:24:58 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Eric Biggers <ebiggers@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     syzbot <syzbot+8893700724999566d6a9@syzkaller.appspotmail.com>,
+        akpm@linux-foundation.org, ast@kernel.org, cai@lca.pw,
+        crecklin@redhat.com, daniel@iogearbox.net, keescook@chromium.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Message-ID: <5d13f0ba3d1aa_25912acd0de805bcce@john-XPS-13-9370.notmuch>
+In-Reply-To: <20190625234808.GB116876@gmail.com>
+References: <000000000000e672c6058bd7ee45@google.com>
+ <0000000000007724d6058c2dfc24@google.com>
+ <20190625234808.GB116876@gmail.com>
+Subject: Re: KASAN: slab-out-of-bounds Write in validate_chain
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 26, 2019 at 7:25 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 06/21/2019 06:55 AM, Andrii Nakryiko wrote:
-> > Add ability to attach to kernel and user probes and retprobes.
-> > Implementation depends on perf event support for kprobes/uprobes.
-> >
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
+Eric Biggers wrote:
+> Hi John,
+> 
+> On Tue, Jun 25, 2019 at 04:07:00PM -0700, syzbot wrote:
+> > syzbot has bisected this bug to:
+> > 
+> > commit e9db4ef6bf4ca9894bb324c76e01b8f1a16b2650
+> > Author: John Fastabend <john.fastabend@gmail.com>
+> > Date:   Sat Jun 30 13:17:47 2018 +0000
+> > 
+> >     bpf: sockhash fix omitted bucket lock in sock_close
+> > 
+> 
+> Are you working on this?  This is the 6th open syzbot report that has been
+> bisected to this commit, and I suspect it's the cause of many of the other
+> 30 open syzbot reports I assigned to the bpf subsystem too
+> (https://lore.kernel.org/bpf/20190624050114.GA30702@sol.localdomain/).
+> 
+> Also, this is happening in mainline (v5.2-rc6).
+> 
+> - Eric
 
-<snip>
+Should have a fix today. It seems syzbot has found this bug repeatedly.
 
-> > +}
->
-> I do like that we facilitate usage by adding these APIs to libbpf, but my $0.02
-> would be that they should be designed slightly different. See it as a nit, but
-> given it's exposed in libbpf.map and therefore immutable in future it's worth
-> considering; right now with this set here you have:
->
-> int bpf_program__attach_kprobe(struct bpf_program *prog, bool retprobe,
->                                const char *func_name)
-> int bpf_program__attach_uprobe(struct bpf_program *prog, bool retprobe,
->                                pid_t pid, const char *binary_path,
->                                size_t func_offset)
-> int bpf_program__attach_tracepoint(struct bpf_program *prog,
->                                    const char *tp_category,
->                                    const char *tp_name)
-> int bpf_program__attach_raw_tracepoint(struct bpf_program *prog,
->                                        const char *tp_name)
-> int bpf_program__attach_perf_event(struct bpf_program *prog, int pfd)
-> int libbpf_perf_event_disable_and_close(int pfd)
->
-> So the idea is that all the bpf_program__attach_*() APIs return an fd that you
-> can later on pass into libbpf_perf_event_disable_and_close(). I think there is
-> a bit of a disconnect in that the bpf_program__attach_*() APIs try to do too
-> many things at once. For example, the bpf_program__attach_raw_tracepoint() fd
-> has nothing to do with perf, so passing to libbpf_perf_event_disable_and_close()
-> kind of works, but is hacky since there's no PERF_EVENT_IOC_DISABLE for it so this
-> would always error if a user cares to check the return code. In the kernel, we
-
-Yeah, you are absolutely right, missed that it's not creating perf
-event under cover, to be honest.
-
-> use anon inode for this kind of object. Also, if a user tries to add more than
-> one program to the same event, we need to recreate a new event fd every time.
->
-> What this boils down to is that this should get a proper abstraction, e.g. as
-> in struct libbpf_event which holds the event object. There should be helper
-> functions like libbpf_event_create_{kprobe,uprobe,tracepoint,raw_tracepoint} returning
-> such an struct libbpf_event object on success, and a single libbpf_event_destroy()
-> that does the event specific teardown. bpf_program__attach_event() can then take
-> care of only attaching the program to it. Having an object for this is also more
-> extensible than just a fd number. Nice thing is that this can also be completely
-> internal to libbpf.c as with struct bpf_program and other abstractions where we
-> don't expose the internals in the public header.
-
-Yeah, I totally agree, I think this is a great idea! I don't
-particularly like "event" name, that seems very overloaded term. Do
-you mind if I call this "bpf_hook" instead of "libbpf_event"? I've
-always thought about these different points in the system to which one
-can attach BPF program as hooks exposed from kernel :)
-
-Would it also make sense to do attaching to non-tracing hooks using
-the same mechanism (e.g., all the per-cgroup stuff, sysctl, etc)? Not
-sure how people do that today, will check to see how it's done, but I
-think nothing should conceptually prevent doing that using the same
-abstract bpf_hook way, right?
-
->
-> Thanks,
-> Daniel
+.John
