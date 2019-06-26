@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E02856FE1
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 19:48:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC0E357016
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 19:56:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726368AbfFZRsx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 13:48:53 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:46802 "EHLO
+        id S1726470AbfFZR4F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 13:56:05 -0400
+Received: from s3.sipsolutions.net ([144.76.43.62]:46934 "EHLO
         sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726179AbfFZRsx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 13:48:53 -0400
+        with ESMTP id S1726271AbfFZR4F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 13:56:05 -0400
 Received: by sipsolutions.net with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <johannes@sipsolutions.net>)
-        id 1hgC2C-0007vw-Ho; Wed, 26 Jun 2019 19:48:40 +0200
-Message-ID: <9e46f95b8727c8b95aedb144970986a21266983c.camel@sipsolutions.net>
+        id 1hgC99-00081y-NE; Wed, 26 Jun 2019 19:55:51 +0200
+Message-ID: <98101e9d46604927e04735f3bb5c4fc8586e6a92.camel@sipsolutions.net>
 Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver
 From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Arnd Bergmann <arnd@arndb.de>, Alex Elder <elder@linaro.org>
-Cc:     Dan Williams <dcbw@redhat.com>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+To:     Alex Elder <elder@linaro.org>, Dan Williams <dcbw@redhat.com>,
+        Arnd Bergmann <arnd@arndb.de>
+Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
         abhishek.esse@gmail.com, Ben Chan <benchan@google.com>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         cpratapa@codeaurora.org, David Miller <davem@davemloft.net>,
@@ -32,8 +32,8 @@ Cc:     Dan Williams <dcbw@redhat.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         linux-soc@vger.kernel.org, Networking <netdev@vger.kernel.org>,
         syadagir@codeaurora.org
-Date:   Wed, 26 Jun 2019 19:48:38 +0200
-In-Reply-To: <CAK8P3a3wHe_6ay8P+F9Vo=k19P5fifs6RWozxFF5nGYYjO_=Xw@mail.gmail.com> (sfid-20190626_155908_107021_A3066824)
+Date:   Wed, 26 Jun 2019 19:55:48 +0200
+In-Reply-To: <0f5c0332-6894-2fdd-fd25-7af9a21b445b@linaro.org> (sfid-20190626_153658_340951_528F9725)
 References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
          <a94676381a5ca662c848f7a725562f721c43ce76.camel@sipsolutions.net>
          <CAK8P3a0kV-i7BJJ2X6C=5n65rSGfo8fUiC4J_G-+M8EctYKbkg@mail.gmail.com>
@@ -44,14 +44,13 @@ References: <380a6185-7ad1-6be0-060b-e6e5d4126917@linaro.org>
          <f4249aa5f5acdd90275eda35aa16f3cfb29d29be.camel@redhat.com>
          <CAK8P3a2nzZKtshYfomOOSYkqx5HdU15Wr9b+3va0B1euNhFOAg@mail.gmail.com>
          <dbb32f185d2c3a654083ee0a7188379e1f88d899.camel@sipsolutions.net>
-         <d533b708-c97a-710d-1138-3ae79107f209@linaro.org>
-         <abdfc6b3a9981bcdef40f85f5442a425ce109010.camel@sipsolutions.net>
-         <db34aa39-6cf1-4844-1bfe-528e391c3729@linaro.org>
-         <CAK8P3a1ixL9ZjYz=pWTxvMfeD89S6QxSeHt9ZCL9dkCNV5pMHQ@mail.gmail.com>
-         <efbcb3b84ff0a7d7eab875c37f3a5fa77e21d324.camel@sipsolutions.net>
-         <edea19ef-f225-bdcd-f394-77e326d1d3ad@linaro.org>
-         <CAK8P3a3wHe_6ay8P+F9Vo=k19P5fifs6RWozxFF5nGYYjO_=Xw@mail.gmail.com>
-         (sfid-20190626_155908_107021_A3066824)
+         <e6ba8a9063e63506c0b88a70418d74ca4efe85cd.camel@sipsolutions.net>
+         <850eed1d-0fec-c396-6e91-b5f1f8440ded@linaro.org>
+         <84153d9e7c903084b492ceccc0dd98cbb32c12ac.camel@redhat.com>
+         <7de004be-27b6-ac63-389d-8ea9d23d0361@linaro.org>
+         <868e949b1fc8cf22307f579ab1f14543064bec20.camel@sipsolutions.net>
+         <0f5c0332-6894-2fdd-fd25-7af9a21b445b@linaro.org>
+         (sfid-20190626_153658_340951_528F9725)
 Content-Type: text/plain; charset="UTF-8"
 X-Mailer: Evolution 3.28.5 (3.28.5-3.fc28) 
 Mime-Version: 1.0
@@ -61,45 +60,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2019-06-26 at 15:58 +0200, Arnd Bergmann wrote:
+On Wed, 2019-06-26 at 08:36 -0500, Alex Elder wrote:
 > 
-> > The IPA hardware is actually something that sits *between* the
-> > AP and the modem.  It implements one form of communication
-> > pathway (IP data), but there are others (including QMI, which
-> > presents a network-like interface but it's actually implemented
-> > via clever use of shared memory and interrupts).
+> We need to identify the existence of a WWAN device (which is I
+> guess--typically? always?--a modem).  Perhaps that can be
+> discovered in some cases but I think it means a node described
+> by Device Tree.
+
+Yeah, perhaps that's something you could do. I'm not sure though. For
+one, for USB devices, obviously it isn't :-) And even for IPA you might
+want to support existing DTs I guess.
+
+> So you're saying you have a single Ethernet driver, and it can
+> drive an Ethernet device connected to a WWAN, or not connected
+> to a WWAN, without any changes.  The only distinction is that
+> if the device is part of a WWAN it needs to register with the
+> WWAN framework.  Is that right?
+
+That's what I'm thinking, and I believe (mostly from discussions with
+Dan) that this actually exists.
+
+> > > So maybe:
+> > > - Hardware probe detects a WWAN device
+> > > - The drivers that detect the WWAN device register it with the
+> > >   WWAN core code.
+> > > - A control channel is instantiated at/before the time the WWAN
+> > >   device is registered
+> > > - Something in user space should manage the bring-up of any
+> > >   other things on the WWAN device thereafter
+> > 
+> > But those things need to actually get connected first :-)
 > 
-> Can you clarify how QMI fits in here? Do you mean one has to
-> talk to both IPA and QMI to use the modem, or are these two
-> alternative implementations for the same basic purpose?
+> What I meant is that the registering with the "WWAN core code"
+> is what does that "connecting."  The WWAN code has the information
+> about what got registered.  But as I said above, this WWAN device
+> needs to be identified, and I think (at least for IPA) that will
+> require something in Device Tree.  That will "connect" them.
+> 
+> Or I might be misunderstanding your point.
 
-I'm not going to comment on QMI specifically, because my understanding
-might well be wrong, and any response to your question will likely
-correct my understanding :-)
+No, I think we're mostly agreeing, just thinking about different
+scenarios. I think for IPA you don't really *need* anything in the DT
+though - as soon as the IPA driver is loaded you know for sure you
+actually have a modem there, and the IPA driver presumably loads based
+on some existing probing (didn't look at it now).
 
-(Thus, you should probably also ignore everything I ever said about QMI)
+Now, I don't know how the QMI channel to the modem is set up, so of
+course you'd want a way of identifying that the two channels (IPA and
+QMI) go to the same device and link them together in the WWAN framework.
 
-> My previous understanding was that from the hardware perspective
-> there is only one control interface, which is for IPA. Part of this
-> is abstracted to user space with ioctl commands to the IPA driver,
-> and then one must set up rmnet to match these by configuring
-> an rmnet device over netlink messages from user space, but
-> rmnet does not have a control protocol with the hardware.
+> > If userspace actually had the ability to create (data) channels, then it
+> > would have the ability to also remove them. Right now, this may or may
+> > not be supported by the drivers that act together to form the interfaces
+> > to a WWAN device.
+> 
+> I think this (user space control) needs to be an option, but
+> it doesn't have to be the only way.
 
-Right so this is why I say it's confusing when we just talk about
-"control interface" or "path".
-
-I see multiple layers of control
-
- * hardware control, which you mention here. This might be things like
-   "enable/disable aggregation on an rmnet channel" etc. I guess this
-   type of thing would have been implemented with ioctls? Not the
-   aggregation specifically, but things that affect how you set up the
-   hardware.
-
- * modem control, which we conflate, but can be like AT commands or
-   MBIM. From the kernel driver POV, this is actually just another
-   channel it provides for userspace to talk to the modem.
+Agree.
 
 johannes
 
