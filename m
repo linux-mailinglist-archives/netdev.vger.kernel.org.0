@@ -2,79 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 789145696A
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 14:40:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA2A356778
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 13:21:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727466AbfFZMk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 08:40:56 -0400
-Received: from zyloware.com ([23.95.19.78]:44828 "EHLO chulaseafood.com"
-        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726387AbfFZMkz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 08:40:55 -0400
-X-Greylist: delayed 3603 seconds by postgrey-1.27 at vger.kernel.org; Wed, 26 Jun 2019 08:40:53 EDT
-To:     netdev@vger.kernel.org
-Subject: =?UTF-8?B?wrcgICAgICAgICBjYW4geW91IGFzc2lzdCBtZT8=?=
-Message-ID: <47a10bb93b8a0c4bce0478ddc45c661b@inaflashweb.com>
-Date:   Wed, 26 Jun 2019 13:16:43 +0200
-From:   "Laura" <ansitaasdsaksi@verizon.net>
-Reply-To: ansitaasdsaksi@verizon.net
-MIME-Version: 1.0
-Content-Type: text/plain; format=flowed; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
+        id S1727255AbfFZLVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 07:21:13 -0400
+Received: from mail-wr1-f51.google.com ([209.85.221.51]:42930 "EHLO
+        mail-wr1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726484AbfFZLVN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 07:21:13 -0400
+Received: by mail-wr1-f51.google.com with SMTP id x17so2266848wrl.9
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 04:21:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=1gg4VMZTAr4VV2hAuc3LXRvTeD4Jg5fNDTH+1pwJPTg=;
+        b=ezlRIobg2RuqKpKkd08dq2rS0FR6N0NOkpaJnOk4fdzu9flXxFtmbckeClhf+Yi+CA
+         U835/w4SFyTrNT3VqJhOpMRP8Xw6LAqYLD6r29vaPU4PPAFz7M+B/67E6EmqfwIKcUm+
+         oiRqDLsu8X2VoXLoRtXwbP6gsfKsCsQiDB8IPgUBKPCsha+xdK7HkvZZ2eiT9tgNG4qy
+         tZjFAOoDpHpvGO3a/4Lni1MFQSuaH2HKhyAlEGnD9S60GCNuK+6N3aQVA7m6/x0mqETD
+         51c+8pMMj6hFX8BEjHQZzODk+N32aUCzxYJG595wtt3osKBI4J+sWakYaEH0W/1X1yJI
+         J1Fw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=1gg4VMZTAr4VV2hAuc3LXRvTeD4Jg5fNDTH+1pwJPTg=;
+        b=Kcc2DkW+MEguwtNsPRl7m2Gkjy2J/XRTdVTGxEDjpTuRditL5P7PZ3fZCkhUMyjjhM
+         3bgHPasu7HQeQysimCEwu2hbpoZzYqwJ2e6rgoT4LZqSyEaNdj/3FtreIdfQ/gN6gL3q
+         9LfUJc5TzdjjDuCeiTazzW/Zoh28akzXcuXZAJ6F6eoimTIkNUqd9/HqKIV5d/Oe0aF9
+         kPZSiAPAkofdjnk5j4tFgPjUUvg/NyKG8J86A+mvlvQ74YtjEYCTniYK9ljlsLP0+AKT
+         vK3E+HR9xAFHTc8JQGhR3cAoOjtsvOb+/yr/d1EAfJvb0q26iae63QAn+LebhhyKFaPZ
+         tBAg==
+X-Gm-Message-State: APjAAAV/auS0dWAS4t100inPi3HuPauYI2Pi1MYpltbsFifG7WLn9fzO
+        7Iie2CNqf3dIy1f3ibVCZac=
+X-Google-Smtp-Source: APXvYqz39P2013+Yumry/WCEBfCKVjUCxZ2KUbH0niamW2dCnZESJjSlEY+VNE8AFVq/Er+S45NmRQ==
+X-Received: by 2002:adf:deca:: with SMTP id i10mr3267727wrn.313.1561548070878;
+        Wed, 26 Jun 2019 04:21:10 -0700 (PDT)
+Received: from localhost.localdomain ([188.26.252.192])
+        by smtp.gmail.com with ESMTPSA id h14sm6233701wro.30.2019.06.26.04.21.09
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 26 Jun 2019 04:21:10 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     rmk+kernel@armlinux.org.uk, f.fainelli@gmail.com,
+        vivien.didelot@gmail.com, andrew@lunn.ch, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH net-next 0/3] Better PHYLINK compliance for SJA1105 DSA
+Date:   Wed, 26 Jun 2019 14:20:11 +0300
+Message-Id: <20190626112014.7625-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+After discussing with Russell King, it appears this driver is making a
+few confusions and not performing some checks for consistent operation.
 
-Did you see my email below from last week?
+Vladimir Oltean (3):
+  net: dsa: sja1105: Don't check state->link in phylink_mac_config
+  net: dsa: sja1105: Check for PHY mode mismatches with what PHYLINK
+    reports
+  net: dsa: sja1105: Mark in-band AN modes not supported for PHYLINK
 
-We manufacture ALL custom LOGO and branded products – over 300,000 to
-choose from.
+ drivers/net/dsa/sja1105/sja1105_main.c | 59 +++++++++++++++++++++++++-
+ 1 file changed, 57 insertions(+), 2 deletions(-)
 
-The most asked about product that we make, are the custom printed USB flash
-drives!
-We can print your logo on them and load your digital images, videos and
-files!
-
-http://inaflashweb.com
-
-Here is what we include:
--Any size memory you need: 64MB up to 128GB
--We will print your logo on both sides, just ask!
--Very Low Order Minimums
--Need them quickly? Not a problem, we offer Rush Service
-http://inaflashweb.com
-
-NEW: We can make a custom shaped USB drive to look like your Logo or
-product!
-
-Email over a copy of your logo and we will create a design mock up for you
-at no cost!
-
-Our higher memory sizes are a really good option right now!
-
-Ask about the “Double Your Memory” upgrade promotion going on right
-now!
-
-Pricing is low right now, so let us know what you need and we will get you
-a quick quote.
-
-We will beat any competitors pricing, send us your last invoice and we will
-beat it!
-
-We always offer great rates for schools and nonprofits as well.
-
-Let us know what you would like quoted?
-http://inaflashweb.com
-
-Regards,
-
-
-
-Sabrina Millons
-+1-888-480-8218
-Custom USB Account Manager
-http://inaflashweb.com
+-- 
+2.17.1
 
