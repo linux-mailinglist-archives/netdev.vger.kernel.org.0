@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 32EBA56E25
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 17:56:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B85E56E24
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 17:56:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726463AbfFZP4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 11:56:32 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:36936 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726431AbfFZP4b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 11:56:31 -0400
-Received: by mail-wr1-f66.google.com with SMTP id v14so3347805wrr.4
-        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 08:56:30 -0700 (PDT)
+        id S1726470AbfFZP4d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 11:56:33 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:38094 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725958AbfFZP4c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 11:56:32 -0400
+Received: by mail-wr1-f65.google.com with SMTP id d18so3340614wrs.5
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 08:56:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cumulusnetworks.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=gUAsyBC+YyCn6Chz7Qnk989iaecFlEUtVr7lsQ7ziVw=;
-        b=YmES0KER0R2TOKiGGHD2K8qfMbDIiz+ro3gFIrm2UMBKpugezOq9mtOFdTf3+7yrpL
-         80qNtqimm6oambAmMvURmycx3FX1IU9aBdVzcb2CbopcE2eT7+K0rZqPHLC0sPa70HJb
-         UUxBcvYK0+tOpe0XpaH93+eq9Bm44yud2Gpns=
+        bh=BUqnnI07YLWQJFnMFajRfWqiDqFK6SzTTAM6Yhz6Kqo=;
+        b=DTrX6hOX3cH6snLyrDkER0RAutBTY23zkwXAzIMl0cXisi7NnYcDe+8nFtxQIt57LP
+         oZJXE//fEpjJdogL4pcHZy72BZroaJ6LEZaa665IHcDPmfl5B9/i6WcWCU6P53yAyf29
+         Vw8q8et2zsLSypQjQl6t/ubHwGntOts5CfYwI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=gUAsyBC+YyCn6Chz7Qnk989iaecFlEUtVr7lsQ7ziVw=;
-        b=PjthsaCqmMI3OPlWxq9Iz5aU7QI9hzhM8ORCmabaYT17qtT4bqRN1I5ehnxtP72Zio
-         eDSmUdSWk5ud0q9D5VLaC7if1w/dedwRIfO8rzLGHWW0ctPGvBp95ugT3RL4kfUIxb31
-         ZBZAf0CzatGTH1MR9BrFGz9jfQsQdBt75XRmSUHP1tAl9snhFxVH8jzBhf9z/x3Z8Hks
-         3k+B6oAt18G/97vuok+xv9cWFolsREWu+3zRr+UfQfXPWJ0ij9ZLI0SSePEfIbb4oaHQ
-         b8pEQ1bE6MNmiCiDODXogTm6LNA34Xst36Q9KyfUku7CZr9paL9M9lw9KZ40QAFnRak6
-         6ERQ==
-X-Gm-Message-State: APjAAAXDdLff1TF7M7345XE0YNTrMNVj3KBri3etMBnA3oq4CV+4VHUz
-        1FDnoK7/ii/2gBZpPYY016IvNCcOtdY=
-X-Google-Smtp-Source: APXvYqy9z4YNizovKB16aNtR6Iapn8pmzUwPRsmQsvkY2jBvpESH0Fu3fR9m1rXnVepXncuqOfD4Mw==
-X-Received: by 2002:a5d:4642:: with SMTP id j2mr3955297wrs.211.1561564589161;
-        Wed, 26 Jun 2019 08:56:29 -0700 (PDT)
+        bh=BUqnnI07YLWQJFnMFajRfWqiDqFK6SzTTAM6Yhz6Kqo=;
+        b=kBmaQHr7ImE2j9KEWpblNcCSYbX+GuvtA9cR6bECC4RrxpoceHvxCwVWd+wrfMqIDO
+         KB9e0FAhPPjQ4F9euhop63EebXM3uf32dJsV811CA8dEbSMLbI6G1y2PusYGpeTdl1bD
+         iGOOIBo/UxCP6bnM8riS/hOv8x/LR2Lm/kHYu5o6o7nbXca6GMdq6Qtp7MiUld1QwP6j
+         kfqxX9ZpR+rwt1sTZZreodelYPx2PpjywjiQ362hU1t/wVhXou2UrzH6T+uBpHJSRvJx
+         cHyyz+mBDyuMUDkgUPXu+QGGDGDOrl78xjwT3Y1buyA5PGHXiqi133w9sd1Kn5WmmImy
+         LMYQ==
+X-Gm-Message-State: APjAAAW4dGieRvSx5abRviN2cQpUbajdpNuj+1RXRtBFhaVCCxuL87G+
+        R/PrboIEJs4b2zFAVCHAYVxmQEqlYvU=
+X-Google-Smtp-Source: APXvYqzUECjNMozG5ItGIfwBC60KSvQalpvts35QuzJ/hnp0TjY9boWQ8XZALXFKvVQ+1GbN3qcErQ==
+X-Received: by 2002:a5d:5186:: with SMTP id k6mr4551001wrv.30.1561564590240;
+        Wed, 26 Jun 2019 08:56:30 -0700 (PDT)
 Received: from localhost.localdomain ([78.128.78.220])
-        by smtp.gmail.com with ESMTPSA id h8sm1832556wmf.12.2019.06.26.08.56.28
+        by smtp.gmail.com with ESMTPSA id h8sm1832556wmf.12.2019.06.26.08.56.29
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 26 Jun 2019 08:56:28 -0700 (PDT)
+        Wed, 26 Jun 2019 08:56:29 -0700 (PDT)
 From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 To:     netdev@vger.kernel.org
 Cc:     roopa@cumulusnetworks.com, pablo@netfilter.org,
         xiyou.wangcong@gmail.com, davem@davemloft.net, jiri@resnulli.us,
         jhs@mojatatu.com, eyal.birger@gmail.com,
         Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Subject: [PATCH net-next v2 1/4] net: sched: em_ipt: match only on ip/ipv6 traffic
-Date:   Wed, 26 Jun 2019 18:56:12 +0300
-Message-Id: <20190626155615.16639-2-nikolay@cumulusnetworks.com>
+Subject: [PATCH net-next v2 2/4] net: sched: em_ipt: set the family based on the packet if it's unspecified
+Date:   Wed, 26 Jun 2019 18:56:13 +0300
+Message-Id: <20190626155615.16639-3-nikolay@cumulusnetworks.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190626155615.16639-1-nikolay@cumulusnetworks.com>
 References: <20190626155615.16639-1-nikolay@cumulusnetworks.com>
@@ -60,39 +60,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Restrict matching only to ip/ipv6 traffic and make sure we can use the
-headers, otherwise matches will be attempted on any protocol which can
-be unexpected by the xt matches. Currently policy supports only ipv4/6.
+Set the family based on the packet if it's unspecified otherwise
+protocol-neutral matches will have wrong information (e.g. NFPROTO_UNSPEC).
+In preparation for using NFPROTO_UNSPEC xt matches.
 
+v2: set the nfproto only when unspecified
+
+Suggested-by: Eyal Birger <eyal.birger@gmail.com>
 Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 ---
- net/sched/em_ipt.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ net/sched/em_ipt.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/net/sched/em_ipt.c b/net/sched/em_ipt.c
-index 243fd22f2248..64dbafe4e94c 100644
+index 64dbafe4e94c..fd7f5b288c31 100644
 --- a/net/sched/em_ipt.c
 +++ b/net/sched/em_ipt.c
-@@ -185,6 +185,19 @@ static int em_ipt_match(struct sk_buff *skb, struct tcf_ematch *em,
+@@ -182,6 +182,7 @@ static int em_ipt_match(struct sk_buff *skb, struct tcf_ematch *em,
+ 	const struct em_ipt_match *im = (const void *)em->data;
+ 	struct xt_action_param acpar = {};
+ 	struct net_device *indev = NULL;
++	u8 nfproto = im->match->family;
  	struct nf_hook_state state;
  	int ret;
  
-+	switch (tc_skb_protocol(skb)) {
-+	case htons(ETH_P_IP):
-+		if (!pskb_network_may_pull(skb, sizeof(struct iphdr)))
-+			return 0;
-+		break;
-+	case htons(ETH_P_IPV6):
-+		if (!pskb_network_may_pull(skb, sizeof(struct ipv6hdr)))
-+			return 0;
-+		break;
-+	default:
-+		return 0;
-+	}
-+
- 	rcu_read_lock();
- 
+@@ -189,10 +190,14 @@ static int em_ipt_match(struct sk_buff *skb, struct tcf_ematch *em,
+ 	case htons(ETH_P_IP):
+ 		if (!pskb_network_may_pull(skb, sizeof(struct iphdr)))
+ 			return 0;
++		if (nfproto == NFPROTO_UNSPEC)
++			nfproto = NFPROTO_IPV4;
+ 		break;
+ 	case htons(ETH_P_IPV6):
+ 		if (!pskb_network_may_pull(skb, sizeof(struct ipv6hdr)))
+ 			return 0;
++		if (nfproto == NFPROTO_UNSPEC)
++			nfproto = NFPROTO_IPV6;
+ 		break;
+ 	default:
+ 		return 0;
+@@ -203,7 +208,7 @@ static int em_ipt_match(struct sk_buff *skb, struct tcf_ematch *em,
  	if (skb->skb_iif)
+ 		indev = dev_get_by_index_rcu(em->net, skb->skb_iif);
+ 
+-	nf_hook_state_init(&state, im->hook, im->match->family,
++	nf_hook_state_init(&state, im->hook, nfproto,
+ 			   indev ?: skb->dev, skb->dev, NULL, em->net, NULL);
+ 
+ 	acpar.match = im->match;
 -- 
 2.20.1
 
