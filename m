@@ -2,78 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A1CBD55F83
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 05:31:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52B1F5617D
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 06:37:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726443AbfFZDas (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 23:30:48 -0400
-Received: from guitar.tcltek.co.il ([192.115.133.116]:34090 "EHLO
-        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725936AbfFZDas (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Jun 2019 23:30:48 -0400
-Received: from sapphire.tkos.co.il (unknown [192.168.100.188])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx.tkos.co.il (Postfix) with ESMTPS id D298F440038;
-        Wed, 26 Jun 2019 06:30:45 +0300 (IDT)
-Date:   Wed, 26 Jun 2019 06:30:44 +0300
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
-        Aya Levin <ayal@mellanox.com>,
-        Moshe Shemesh <moshe@mellanox.com>
-Subject: Re: [PATCH iproute2 1/2] devlink: fix format string warning for
- 32bit targets
-Message-ID: <20190626033044.jmsejzopzj3wgl5f@sapphire.tkos.co.il>
-References: <016aabe2639668b4710b73157ea39e8f97f7d726.1561463345.git.baruch@tkos.co.il>
- <20190625115806.01e29659@hermes.lan>
+        id S1726441AbfFZEhN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 00:37:13 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:43181 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725954AbfFZEhN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 00:37:13 -0400
+Received: by mail-wr1-f67.google.com with SMTP id p13so968895wru.10
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 21:37:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=I182T36a9AcOI5GNaQFiflRFqr6MYJO2H0ynTDuRZ+I=;
+        b=n/oYELOKudEF1dQ9B3xmm/oxxOtXjH9kwYsmLCfsLc1Anctl5yMSCX0g2VW73ofEUi
+         Z/Sg/nx2aIn2jfnMZasdtxctTIkgx9BmE/OtLjChbPG1uISEqXapAxufUG2GYbQfcXyw
+         ORr+ssdyaF6MGpU6VdbVZIEfTd4oJfjlLTAMyb8snES4wFfXtc7AZIpPGGqHWz4AM33e
+         up5+o1+vjUu64S1MbTGLr2Udb7vsufM1FpaAKPKckeOxJ8mfk86dsU+ShWv6K/YtjqxV
+         x+/ZdsZlPkVLNULdwF2/gs7oe/wXFgrAbIrI9rUbLR4pyifIf3Bs6t+qswpn7iVOwD8E
+         v9mg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=I182T36a9AcOI5GNaQFiflRFqr6MYJO2H0ynTDuRZ+I=;
+        b=M9YJ+BCtS8HOtelYkljtkfqGKqQm7Ss6dfon6lyeiX9moWBJfIVOUtXZvLflLLBOFm
+         ElRalEhmExsGgCRsSOvKDjFC9tARYFf7IL7epjmztHF7vikb+P+HARdXnIV8WSGdjOvL
+         HNgNiv8D139NGdCAxL+PEAKea7x54iKyv67Tg8Ddow2g3/d9nXXll72WXmOmtYhawM9r
+         r5vDMTmL4RWlIgqj2HqePzfEwRc5Jf7Kbn0KA4aZ22SJio/BtPnIHawWMENBeztCEi8Z
+         7enAQGGtYrWwCGU/qp/7jt2Ma91iojGjZvvwELCVzoitEWussAv3IKSLfvJa2dbvI10z
+         NYQA==
+X-Gm-Message-State: APjAAAUKum3Gfk/jU/f8B2SFj4Nbr1us3OlfnUSNkUesBzt7azjk7bYk
+        4wYJo1TO/aY9uCdbffx6h0w=
+X-Google-Smtp-Source: APXvYqw4ateMOMxFQs4NQFdrB34pCncnuX0/j+c19pJeLMRai4jF2K6nxLbqTDxuuJ3vpY4eJVLpHQ==
+X-Received: by 2002:adf:81c8:: with SMTP id 66mr1390991wra.261.1561523830800;
+        Tue, 25 Jun 2019 21:37:10 -0700 (PDT)
+Received: from jimi (bzq-82-81-225-244.cablep.bezeqint.net. [82.81.225.244])
+        by smtp.gmail.com with ESMTPSA id v18sm13904119wrs.80.2019.06.25.21.37.08
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 25 Jun 2019 21:37:10 -0700 (PDT)
+Date:   Wed, 26 Jun 2019 07:37:03 +0300
+From:   Eyal Birger <eyal.birger@gmail.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        John Hurley <john.hurley@netronome.com>
+Cc:     Linux Netdev List <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Florian Westphal <fw@strlen.de>,
+        Simon Horman <simon.horman@netronome.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        oss-drivers@netronome.com, shmulik@metanetworks.com
+Subject: Re: [PATCH net-next 2/2] net: sched: protect against stack overflow
+ in TC act_mirred
+Message-ID: <20190626073703.5655f7b1@jimi>
+In-Reply-To: <4a4f2f81-d87a-2a45-36b9-ac101d937219@mojatatu.com>
+References: <1561414416-29732-1-git-send-email-john.hurley@netronome.com>
+        <1561414416-29732-3-git-send-email-john.hurley@netronome.com>
+        <20190625113010.7da5dbcb@jimi>
+        <CAK+XE=mOjtp16tdz83RZ-x_jEp3nPRY3smxbG=OfCmGi9_DnXg@mail.gmail.com>
+        <4a4f2f81-d87a-2a45-36b9-ac101d937219@mojatatu.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190625115806.01e29659@hermes.lan>
-User-Agent: NeoMutt/20180716
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stephen,
+Hi Jamal, John,
 
-On Tue, Jun 25, 2019 at 11:58:06AM -0700, Stephen Hemminger wrote:
-> On Tue, 25 Jun 2019 14:49:04 +0300
-> Baruch Siach <baruch@tkos.co.il> wrote:
+On Tue, 25 Jun 2019 07:24:37 -0400
+Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+
+> On 2019-06-25 5:06 a.m., John Hurley wrote:
+> > On Tue, Jun 25, 2019 at 9:30 AM Eyal Birger <eyal.birger@gmail.com>
+> > wrote:  
 > 
-> > diff --git a/devlink/devlink.c b/devlink/devlink.c
-> > index 436935f88bda..b400fab17578 100644
-> > --- a/devlink/devlink.c
-> > +++ b/devlink/devlink.c
-> > @@ -1726,9 +1726,9 @@ static void pr_out_u64(struct dl *dl, const char *name, uint64_t val)
-> >  		jsonw_u64_field(dl->jw, name, val);
-> >  	} else {
-> >  		if (g_indent_newline)
-> > -			pr_out("%s %lu", name, val);
-> > +			pr_out("%s %llu", name, val);
-> >  		else
-> > -			pr_out(" %s %lu", name, val);
-> > +			pr_out(" %s %llu", name, val);
+> > I'm not sure on the history of why a value of 4 was selected here
+> > but it seems to fall into line with my findings.  
 > 
-> But on 64 bit target %llu expects unsigned long long which is 128bit.
+> Back then we could only loop in one direction (as opposed to two right
+> now) - so seeing something twice would have been suspect enough,
+> so 4 seems to be a good number. I still think 4 is a good number.
 
-Is that a problem?
+I think the introduction of mirred ingress affects the 'seeing something
+twice is suspicious' paradigm - see below.
 
-> The better way to fix this is to use:
-> #include <inttypes.h>
+> > Is there a hard requirement for >4 recursive calls here?  
 > 
-> And the use the macro PRIu64
-> 			pr_out(" %s %"PRIu64, name, val);
+> I think this is where testcases help (which then get permanently
+> added in tdc repository). Eyal - if you have a test scenario where
+> this could be demonstrated it would help.
 
-I think it makes the code harder to read. But OK, I'll post an update to this 
-patch and the next.
+I don't have a _hard_ requirement for >4 recursive calls.
 
-Thanks,
-baruch
+I did encounter use cases for 2 layers of stacked net devices using TC
+mirred ingress. For example, first layer redirects traffic based on
+incoming protocol - e.g. some tunneling criterion - and the second
+layer redirects traffic based on the IP packet src/dst, something like:
 
--- 
-     http://baruch.siach.name/blog/                  ~. .~   Tk Open Systems
-=}------------------------------------------------ooO--U--Ooo------------{=
-   - baruch@tkos.co.il - tel: +972.2.679.5364, http://www.tkos.co.il -
+  +-----------+  +-----------+  +-----------+  +-----------+
+  |    ip0    |  |    ip1    |  |    ip2    |  |    ip3    |
+  +-----------+  +-----------+  +-----------+  +-----------+
+          \          /                 \           /
+           \        /                   \         /
+         +-----------+                 +-----------+
+         |   proto0  |                 |   proto1  |
+         +-----------+                 +-----------+
+                    \                   /
+                     \                 /
+                        +-----------+
+                        |    eth0   |
+                        +-----------+
+
+Where packets stem from eth0 and are redirected to the appropriate devices
+using mirred ingress redirect with different criteria.
+This is useful for example when each 'ip' device is part of a different
+routing domain.
+
+There are probably many other ways to do this kind of thing, but using mirred
+ingress to demux the traffic provides freedom in the demux criteria while
+having the benefit of a netdevice at each node allowing to use tcpdump and
+other such facilities.
+
+As such, I was concerned that a hard limit of 4 may be restrictive.
+
+I too think Florian's suggestion of using netif_rx() in order to break
+the recursion when limit is met (or always use it?) is a good approach
+to try in order not to force restrictions while keeping the stack sane.
+
+Eyal.
