@@ -2,87 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3FCD57448
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 00:26:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C42C57451
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 00:31:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726601AbfFZW0O convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 26 Jun 2019 18:26:14 -0400
-Received: from mga01.intel.com ([192.55.52.88]:2978 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726481AbfFZW0O (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 18:26:14 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 26 Jun 2019 15:26:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.63,421,1557212400"; 
-   d="scan'208";a="164503997"
-Received: from orsmsx110.amr.corp.intel.com ([10.22.240.8])
-  by orsmga003.jf.intel.com with ESMTP; 26 Jun 2019 15:26:13 -0700
-Received: from orsmsx111.amr.corp.intel.com (10.22.240.12) by
- ORSMSX110.amr.corp.intel.com (10.22.240.8) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Wed, 26 Jun 2019 15:26:12 -0700
-Received: from orsmsx104.amr.corp.intel.com ([169.254.4.70]) by
- ORSMSX111.amr.corp.intel.com ([169.254.12.236]) with mapi id 14.03.0439.000;
- Wed, 26 Jun 2019 15:26:12 -0700
-From:   "Bowers, AndrewX" <andrewx.bowers@intel.com>
-To:     "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [Intel-wired-lan] [PATCH][net-next] iavf: fix dereference of
- null rx_buffer pointer
-Thread-Topic: [Intel-wired-lan] [PATCH][net-next] iavf: fix dereference of
- null rx_buffer pointer
-Thread-Index: AQHVJqupVXnzcA+L3kOQDxvwkDnUOqaujuOg
-Date:   Wed, 26 Jun 2019 22:26:11 +0000
-Message-ID: <26D9FDECA4FBDD4AADA65D8E2FC68A4A1D3FB501@ORSMSX104.amr.corp.intel.com>
-References: <20190619143044.10259-1-colin.king@canonical.com>
-In-Reply-To: <20190619143044.10259-1-colin.king@canonical.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiOGIxZTkyNjktNzU5OS00Y2QxLTgzZWMtOTg0ZTczNjMzMzlmIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoicTZrSGFqK1VITGdcL2VaZjhwS2pJaHo1WTF3aFRLQSt6VGVJMTFtMHhaaGpuXC8xQTR6WGk1UXFLeERVV0hrMzBMIn0=
-x-ctpclassification: CTP_NT
-dlp-product: dlpe-windows
-dlp-version: 11.0.400.15
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.139]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1726441AbfFZWbd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 18:31:33 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:32861 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726289AbfFZWbd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 18:31:33 -0400
+Received: by mail-qt1-f196.google.com with SMTP id w40so402235qtk.0;
+        Wed, 26 Jun 2019 15:31:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1vmyR6e3j7gv9jCv+242q6EyeiqeIh/lmq7cYKwtFbQ=;
+        b=SHM+ELpzjzYllwEprCcVGXHmToZCm72nVeIzttAMWY79wYM8CA2ntgjrRaFhH/DXlx
+         UxqEy+S3JjTbIowrDWFJUKZqlQk3ZbhJl5JBwcC2vcF5zqTJCkTfYp19+B9Bj4h4y0QN
+         2YIHw7IFC04RKpf8hyCeLRSYk6SCNU7Ni86R6b7yMZ7BOYrQxC6ZnhqsL1ijNChuwzH1
+         qK1OE31tHNDyVHRjeHWVZcKG1XdrHd/4Jcn2VRrJRYvoVSRDwaVemcq2LA5IkQ8nsSz2
+         Gr/WTVYp+XQHbSMRl3Ke0+5mPlvc+pNG6Tzhqu/3qfPlB1nyg5aB/t8tS63Na3uWrmin
+         La+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1vmyR6e3j7gv9jCv+242q6EyeiqeIh/lmq7cYKwtFbQ=;
+        b=Bpa7Ug3gBugY185tm7gKnYUv06SNLDBZRRRNBC2JXugr7O1Yyk3GVC4NMV1llbdbJh
+         2DrZqyWHC1LeGs2kggelMwo9/Ft9K8r3cVdbFg7yLfbBeCfOBG0/JF6+uKyBq8cebSYz
+         jydcEr257ovQF3pn9I2mReNYDTpJkJKC99puxafzf9xQKKEual2P8QU8GSNjb0iegALk
+         z7H9D8iKhYLup6kG8F6b0N+e2OtJcJjr/g4KvQazW8fIb1wYNNFddTHrWUFlohN1hLuJ
+         W89mXcAHeRJNs3avjounA5ZkyX70hfwOn+A+joL//D3XmBotFagtNMBsFsp+Z2wPlf3w
+         DOmg==
+X-Gm-Message-State: APjAAAVyV3U4kjM6g43R3aAbZeVdsAoo9FmFLNBk1yG3HdhXU3R/vMMf
+        yE24zzcdVwhAizeoN0j0guIqNC0ItjCPnfwKGx8=
+X-Google-Smtp-Source: APXvYqw5h9UZLxBvanVtR5QRBOdqDGzw8OpXbcBmy969J0MYTZV3wd2tVRzettw7lASytj9rPD0LobTq1lL7khvtoIQ=
+X-Received: by 2002:ac8:290c:: with SMTP id y12mr260429qty.141.1561588292336;
+ Wed, 26 Jun 2019 15:31:32 -0700 (PDT)
 MIME-Version: 1.0
+References: <20190626061235.602633-1-andriin@fb.com> <20190626061235.602633-3-andriin@fb.com>
+ <3E535E64-3FD8-4B3D-BBBB-033057084319@fb.com>
+In-Reply-To: <3E535E64-3FD8-4B3D-BBBB-033057084319@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 26 Jun 2019 15:31:20 -0700
+Message-ID: <CAEf4BzZuQoN5PZv+223OZZORhDNxx_ZK8pCgS2R3p=aTLFRfNw@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 2/3] libbpf: auto-set PERF_EVENT_ARRAY size to
+ number of CPUs
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, Alexei Starovoitov <ast@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Intel-wired-lan [mailto:intel-wired-lan-bounces@osuosl.org] On
-> Behalf Of Colin King
-> Sent: Wednesday, June 19, 2019 7:31 AM
-> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; David S . Miller
-> <davem@davemloft.net>; intel-wired-lan@lists.osuosl.org;
-> netdev@vger.kernel.org
-> Cc: kernel-janitors@vger.kernel.org; linux-kernel@vger.kernel.org
-> Subject: [Intel-wired-lan] [PATCH][net-next] iavf: fix dereference of null
-> rx_buffer pointer
-> 
-> From: Colin Ian King <colin.king@canonical.com>
-> 
-> A recent commit efa14c3985828d ("iavf: allow null RX descriptors") added a
-> null pointer sanity check on rx_buffer, however, rx_buffer is being
-> dereferenced before that check, which implies a null pointer dereference
-> bug can potentially occur.  Fix this by only dereferencing rx_buffer until after
-> the null pointer check.
-> 
-> Addresses-Coverity: ("Dereference before null check")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> ---
->  drivers/net/ethernet/intel/iavf/iavf_txrx.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
+On Wed, Jun 26, 2019 at 11:57 AM Song Liu <songliubraving@fb.com> wrote:
+>
+>
+>
+> > On Jun 25, 2019, at 11:12 PM, Andrii Nakryiko <andriin@fb.com> wrote:
+> >
+> > For BPF_MAP_TYPE_PERF_EVENT_ARRAY typically correct size is number of
+> > possible CPUs. This is impossible to specify at compilation time. This
+> > change adds automatic setting of PERF_EVENT_ARRAY size to number of
+> > system CPUs, unless non-zero size is specified explicitly. This allows
+> > to adjust size for advanced specific cases, while providing convenient
+> > and logical defaults.
+> >
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+> > tools/lib/bpf/libbpf.c | 17 ++++++++++++++++-
+> > 1 file changed, 16 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > index c74cc535902a..8f2b8a081ba7 100644
+> > --- a/tools/lib/bpf/libbpf.c
+> > +++ b/tools/lib/bpf/libbpf.c
+> > @@ -2114,6 +2114,7 @@ static int
+> > bpf_object__create_maps(struct bpf_object *obj)
+> > {
+> >       struct bpf_create_map_attr create_attr = {};
+> > +     int nr_cpus = 0;
+> >       unsigned int i;
+> >       int err;
+> >
+> > @@ -2136,7 +2137,21 @@ bpf_object__create_maps(struct bpf_object *obj)
+> >               create_attr.map_flags = def->map_flags;
+> >               create_attr.key_size = def->key_size;
+> >               create_attr.value_size = def->value_size;
+> > -             create_attr.max_entries = def->max_entries;
+> > +             if (def->type == BPF_MAP_TYPE_PERF_EVENT_ARRAY &&
+> > +                 !def->max_entries) {
+> > +                     if (!nr_cpus)
+> > +                             nr_cpus = libbpf_num_possible_cpus();
+> > +                     if (nr_cpus < 0) {
+> > +                             pr_warning("failed to determine number of system CPUs: %d\n",
+> > +                                        nr_cpus);
+> > +                             return nr_cpus;
+>
+> I think we need to goto err_out here.
 
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Absolutely, good catch, thanks!
 
-
+>
+> Thanks,
+> Song
+>
