@@ -2,88 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0AA35677A
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 13:21:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EAD2567A3
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 13:33:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727278AbfFZLVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 07:21:16 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:40361 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727084AbfFZLVP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 07:21:15 -0400
-Received: by mail-wr1-f66.google.com with SMTP id p11so2277632wre.7
-        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 04:21:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=KEBkrYbSpnqh89/UMI9D7zZ+6imd3dfq5vlm/rSJyDY=;
-        b=P7wA9loMVfKOeUy55BbAeW/+JmbC5jxKTN1kwxyoa+8+jXQA3TnvLYXE/vhXGTzdlI
-         RYX8FvgSB0hvowBU61jNpXuAnHwqnKocs5KikfE0Dn9nDGwhHGLKRVjyUHT/2FCMREFH
-         M3jremRfsSFk4EmuteaUGunBFj2fpsyl8I8+fll8cSgBXhO5HfIZ7MYbSrFA1oGI06i1
-         Bj3xh70KKFF7psQfKlnAhrGashgFwY2A7u4KmlnM1NKVEQpw2/DQBHs1jXMh2Ah0s3yA
-         08Z9hUNhr8VNBF2eStbeF2+SdGCS6kez0UwBU/M8yiV9qwx7zN8iZ0t/ByfK997RgNBp
-         mh1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=KEBkrYbSpnqh89/UMI9D7zZ+6imd3dfq5vlm/rSJyDY=;
-        b=f8K/gd6B2ys/gxuAXnpw3+t+vOqlVFoNXMsN2fdNE9Qx7zwqxjG9E5N+VcAlQo02Wo
-         GtBPqOsyf+Q+coLDSOBTJHj8QwXlJfWc+pdPrJj9BQSRtzlIdMhRIb/aA1Z8FO/Cu6TO
-         wEXt2PpCMb3xVUrhy6ZUPKHrB3HAXxYUIG+zRxHs8VwNYa/+w4xgRpZXd2+wW33/wk+c
-         wVZw2eXWUaArUi+6UcTbSv+xt73CzLF1WuSe6kCHUynoj+vU6MI2C8baeDH1RsmHZTde
-         bG8TjDpvKU1GWFiEaW3dxwntgXljha+gSUfn30hM9OuBpLiXUymxh62aZ2gVFqKAaEZD
-         DT+A==
-X-Gm-Message-State: APjAAAXl8DuBB031Leh3Y9rPO2xdMlkXPy+mqG5cRVP7o7wc+jmL2i/1
-        vYiFz9WfW4A0GDgnd5E8IKg=
-X-Google-Smtp-Source: APXvYqzK8fdK9vx39CzI+t0iSU24ag3zEqTIAwcc7Hxco835D/kgYyOQJ+AjHush2KpbCeq7mGoEGA==
-X-Received: by 2002:a5d:528b:: with SMTP id c11mr2239241wrv.25.1561548073665;
-        Wed, 26 Jun 2019 04:21:13 -0700 (PDT)
-Received: from localhost.localdomain ([188.26.252.192])
-        by smtp.gmail.com with ESMTPSA id h14sm6233701wro.30.2019.06.26.04.21.12
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 26 Jun 2019 04:21:13 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     rmk+kernel@armlinux.org.uk, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, andrew@lunn.ch, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net-next 3/3] net: dsa: sja1105: Mark in-band AN modes not supported for PHYLINK
-Date:   Wed, 26 Jun 2019 14:20:14 +0300
-Message-Id: <20190626112014.7625-4-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190626112014.7625-1-olteanv@gmail.com>
-References: <20190626112014.7625-1-olteanv@gmail.com>
+        id S1727278AbfFZLdJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 07:33:09 -0400
+Received: from mail.thorsis.com ([92.198.35.195]:32945 "EHLO mail.thorsis.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726722AbfFZLdI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 07:33:08 -0400
+X-Greylist: delayed 575 seconds by postgrey-1.27 at vger.kernel.org; Wed, 26 Jun 2019 07:33:07 EDT
+Received: from localhost (localhost [127.0.0.1])
+        by mail.thorsis.com (Postfix) with ESMTP id 6FEDEE59;
+        Wed, 26 Jun 2019 13:23:43 +0200 (CEST)
+X-Virus-Scanned: Debian amavisd-new at mail.thorsis.com
+Received: from mail.thorsis.com ([127.0.0.1])
+        by localhost (mail.thorsis.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id P9tVkmwBsPg7; Wed, 26 Jun 2019 13:23:39 +0200 (CEST)
+Received: by mail.thorsis.com (Postfix, from userid 109)
+        id 7A8291DA3; Wed, 26 Jun 2019 13:23:39 +0200 (CEST)
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NO_RECEIVED,
+        NO_RELAYS autolearn=ham autolearn_force=no version=3.4.2
+From:   Alexander Dahl <ada@thorsis.com>
+To:     netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Thomas Pfahl <tpf@thorsis.com>
+Subject: net: never suspend the ethernet PHY on certain boards?
+Date:   Wed, 26 Jun 2019 13:23:24 +0200
+Message-ID: <4693980.Yko7hG0E1C@ada>
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We need a better way to signal this, perhaps in phylink_validate, but
-for now just print this error message as guidance for other people
-looking at this driver's code while trying to rework PHYLINK.
+Hei hei,
 
-Cc: Russell King <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
----
- drivers/net/dsa/sja1105/sja1105_main.c | 5 +++++
- 1 file changed, 5 insertions(+)
+tl;dr: is there a way to prevent an ethernet PHY to ever power down, preferred 
+with some dt configuration, not with a hack e.g. patching out suspend 
+functions?
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index ad4f604590c0..d82afb835fb7 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -806,6 +806,11 @@ static void sja1105_mac_config(struct dsa_switch *ds, int port,
- 	if (sja1105_phy_mode_mismatch(priv, port, state->interface))
- 		return;
- 
-+	if (link_an_mode == MLO_AN_INBAND) {
-+		dev_err(ds->dev, "In-band AN not supported!\n");
-+		return;
-+	}
-+
- 	sja1105_adjust_port_config(priv, port, state->speed);
- }
- 
--- 
-2.17.1
+With the bugfix 0da70f808029476001109b6cb076737bc04cea2e ("net: macb: do not 
+disable MDIO bus at open/close time", came with kernel v4.19, was backported 
+to v4.18.7) a problem arises for us, which was masked before for ages, with a 
+special combination of SoC, ethernet PHY and other chips on the same board, 
+and the linux drivers for that.
+
+The boards use either a at91sam9g20 or a sama5d27 SoC, both using cadence/macb 
+as ethernet driver. Both boards have a smsc LAN8720A ethernet phy attached. 
+The RMII clock is generated by the PHY, which uses a 25 MHz crystal for that. 
+This clock line is of course fed into the SoC/MAC, but also used (you might 
+say hijacked) by other chips on the board which depend on that clock being 
+_always_ on (at least after initial init on boot). The hardware can not be 
+changed, we speak of several hundred boards already sold in the last years. 
+O:-)
+
+Symptom is: when calling `ip link set down dev eth0` that clock goes off, the 
+other (not soc nor phy) chips depending on that clock, freeze.
+
+I could bisect this behaviour change on a vanilla kernel to the commit 
+mentioned above (actually to the backport commit v4.18.7-4-g716fc5ce90cf, 
+because I bisected from v4.17.19 to v4.18.20).
+
+What I tracked down so far: macb_close() before the bugfix reset the MPE bit 
+in the MAC Network Control Register, which probably prevents the MAC to send 
+MDIO telegrams to the PHY? After the bugfix, that bit is not cleared anymore 
+(to allow still talking to other PHYs on the same MDIO bus, we don't have that 
+case). I assume communicating with the PHY is still possible then.
+
+macb_close() also calls phy_stop() which sets the state of the phy driver 
+state machine to PHY_HALTED, with the next run of that state machine 
+phy_suspend() is called.
+
+The smsc phy driver has no special suspend/resume functions, but uses 
+genphy_suspend(), that one sets BMCR_PDOWN in MII_BMCR register of that 
+(standard compliant) PHY. I suspect after that the PHY powers down and the 
+clock goes off.
+
+I assume before that bugfix, this power down bit could not be set, because the 
+MDIO interface in the MAC had been disabled, so the PHY stayed on. (However 
+there's a possible race because in macb_close() the phy_stop() is called 
+before macb_reset_hw(), right?)
+
+So far, these are mostly assumptions. I did not use gdb on the drivers or a 
+logic analyzer on the MDIO lines. I could do to prove, however.
+
+What I could do:
+
+1) Revert that change on my tree, which would mean reverting a generic bugfix
+2) Patch smsc phy driver to not suspend anymore
+3) Invent some new way to prevent suspend on a configuration basis (dt?)
+4) Anything I did not think of yet
+
+I know 1) or 2) are hacks without a chance to make it to mainline. What would 
+be your suggestions for 3) and 4)?
+
+Greets
+Alex
 
