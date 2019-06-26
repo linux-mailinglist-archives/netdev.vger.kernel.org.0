@@ -2,64 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 22CE4572A7
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 22:38:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C254A5731A
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 22:50:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726328AbfFZUh7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 16:37:59 -0400
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:43400 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726227AbfFZUh7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 16:37:59 -0400
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.89)
-        (envelope-from <fw@strlen.de>)
-        id 1hgEg0-00060x-R6; Wed, 26 Jun 2019 22:37:56 +0200
-Date:   Wed, 26 Jun 2019 22:37:56 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Ran Rozenstein <ranro@mellanox.com>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Maor Gottlieb <maorg@mellanox.com>,
-        "edumazet@google.com" <edumazet@google.com>
-Subject: Re: [PATCH net-next 0/2] net: ipv4: remove erroneous advancement of
- list pointer
-Message-ID: <20190626203756.scm4qwookyz5l3un@breakpoint.cc>
-References: <20190617140228.12523-1-fw@strlen.de>
- <08e102a0-8051-e582-56c8-d721bfc9e8b9@mellanox.com>
- <AM4PR0501MB276924D7AD83B349AA2A6A0BC5E30@AM4PR0501MB2769.eurprd05.prod.outlook.com>
- <20190625091903.gepfjgpiksslnyqy@breakpoint.cc>
- <AM4PR0501MB2769CE8DC11EE4A076B62CCCC5E20@AM4PR0501MB2769.eurprd05.prod.outlook.com>
+        id S1726381AbfFZUuf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 16:50:35 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:36817 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726223AbfFZUuf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 16:50:35 -0400
+Received: by mail-qt1-f196.google.com with SMTP id p15so113763qtl.3;
+        Wed, 26 Jun 2019 13:50:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=0JIsc6upKI8LAsXQYXKRr6HIlOo8/DmHKKpGfMNZUew=;
+        b=SjGNdwfNg/zcvVGN+PGBlPzER4WoOK2W/rlWgMe5EDeYvGrDCPHKp2nfZun+PStLEZ
+         M7Y0HiMd2AQdt5pmBv/b4PN5sx5gtsvu1p7c/sl2xkPKEGIjX+vpoQ/fpefRgoTBNZJU
+         b/q6V1NctY9VKorBH1nPg651d1aq35B9SGL5WtaK5QTjApgRRx3OuuDBICmTd1yjMxuh
+         wLI5bsBAkfAoJmz0p4tjXdusElbj3ntkL7P4SH/CXsWVvLFq/7Wje6I1ANM4/x/WlW6O
+         tU78+s/ses5VMjryhek9d7DiMvz8SE6oGnFGjZPZLhKYumKEXZ9qR0nnWgIpICMo8k04
+         0kdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=0JIsc6upKI8LAsXQYXKRr6HIlOo8/DmHKKpGfMNZUew=;
+        b=Fg5BeBGj/ZmlJbzsaiMBlRk8WsBNyw5At4hDUBunHrTvroHs1XBHVarPHOqXsUv/xo
+         B3f0eMml1WKg4axGjQxWWN3O/zKyw8bY8PeRJkpJ8NdmUt+FEpdWeaZ5MM4OFP5yBJl3
+         obs2DMhdJNFPnUuR1tQuNwr8XO4oHkK18eQ2UOm0UjoYnNcV3GQtn+DcC85yiAyQv1oI
+         A83l25fPoq0uF93G4kfzjPX2aQFTuAke/apZoH7vYGybX0N09/TD1QD7drsN4azCUqKw
+         EbxuxZTSyUz5Rp6x4n0bN4lNCEn/clmTQf5dwWAAcelY0UYhImF8bC7iqx8FJc3fYNMh
+         zwFA==
+X-Gm-Message-State: APjAAAUq7Vxyibj0mJkoBwDjfmQp1oU0kGlK49vPtU8XXxl0g4cavLlD
+        wJ14glOd2VC67LenLDbFgclMY7W39wtPuDH90Z0=
+X-Google-Smtp-Source: APXvYqzg4kpaOhgH6DRsJAUX1HodpBqgBiRivJiHRugOt304HkbVCpfYd6BJiuQm5gWEfmapy8VnKuRQpNwdYxYSOeg=
+X-Received: by 2002:a0c:c146:: with SMTP id i6mr5401108qvh.79.1561582233943;
+ Wed, 26 Jun 2019 13:50:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AM4PR0501MB2769CE8DC11EE4A076B62CCCC5E20@AM4PR0501MB2769.eurprd05.prod.outlook.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+References: <20190626155911.13574-1-ivan.khoronzhuk@linaro.org>
+In-Reply-To: <20190626155911.13574-1-ivan.khoronzhuk@linaro.org>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Wed, 26 Jun 2019 22:50:23 +0200
+Message-ID: <CAJ+HfNid3PntipAJHuPR-tQudf+E6UQK6mPDHdc0O=wCUSjEEA@mail.gmail.com>
+Subject: Re: [PATCH net-next] xdp: xdp_umem: fix umem pages mapping for 32bits systems
+To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        David Miller <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Xdp <xdp-newbies@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ran Rozenstein <ranro@mellanox.com> wrote:
-> The test dose stress on the interface by running this 2 commands in loop:
-> 
-> command is: /sbin/ip -f inet addr add $IP/16 brd + dev ens8f1
-> command is: ifconfig ens8f1 $IP netmask 255.255.0.0
-> 
-> when $IP change every iteration.
-> 
-> It execute every second when we see the reproduce somewhere between 40 to 200 seconds of execution.
+On Wed, 26 Jun 2019 at 17:59, Ivan Khoronzhuk
+<ivan.khoronzhuk@linaro.org> wrote:
+>
+> Use kmap instead of page_address as it's not always in low memory.
+>
 
-I tried this without success:
+Ah, some 32-bit love. :-) Thanks for working on this!
 
-DEV=dummy0
-for j in $(seq 2 254);do
-  for i in $(seq 2 254);do
-    IP="10.$((RANDOM%254)).$((RANDOM%254)).$i"
-    ip -f inet addr add $IP/16 brd + dev $DEV
-    ifconfig $DEV $IP netmask 255.255.0.0
-  done
-done
+For future patches, please base AF_XDP patches on the bpf/bpf-next
+tree instead of net/net-next.
 
-I'll let this loop overnight, but so far nothing turned up in
-dmesg (lockdep/kasan kernel).
+Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+
+> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+> ---
+>  net/xdp/xdp_umem.c | 11 ++++++++++-
+>  1 file changed, 10 insertions(+), 1 deletion(-)
+>
+> diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
+> index 9c6de4f114f8..d3c1411420fd 100644
+> --- a/net/xdp/xdp_umem.c
+> +++ b/net/xdp/xdp_umem.c
+> @@ -169,6 +169,14 @@ static void xdp_umem_clear_dev(struct xdp_umem *umem=
+)
+>         }
+>  }
+>
+> +static void xdp_umem_unmap_pages(struct xdp_umem *umem)
+> +{
+> +       unsigned int i;
+> +
+> +       for (i =3D 0; i < umem->npgs; i++)
+> +               kunmap(umem->pgs[i]);
+> +}
+> +
+>  static void xdp_umem_unpin_pages(struct xdp_umem *umem)
+>  {
+>         unsigned int i;
+> @@ -210,6 +218,7 @@ static void xdp_umem_release(struct xdp_umem *umem)
+>
+>         xsk_reuseq_destroy(umem);
+>
+> +       xdp_umem_unmap_pages(umem);
+>         xdp_umem_unpin_pages(umem);
+>
+>         kfree(umem->pages);
+> @@ -372,7 +381,7 @@ static int xdp_umem_reg(struct xdp_umem *umem, struct=
+ xdp_umem_reg *mr)
+>         }
+>
+>         for (i =3D 0; i < umem->npgs; i++)
+> -               umem->pages[i].addr =3D page_address(umem->pgs[i]);
+> +               umem->pages[i].addr =3D kmap(umem->pgs[i]);
+>
+>         return 0;
+>
+> --
+> 2.17.1
+>
