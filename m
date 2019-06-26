@@ -2,90 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DE6E5570E9
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 20:43:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A42775710B
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 20:53:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726557AbfFZSnS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 14:43:18 -0400
-Received: from outgoing-auth-1.mit.edu ([18.9.28.11]:34866 "EHLO
-        outgoing.mit.edu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726227AbfFZSnR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 14:43:17 -0400
-Received: from callcc.thunk.org (guestnat-104-133-0-109.corp.google.com [104.133.0.109] (may be forged))
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id x5QIgrkG019522
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 26 Jun 2019 14:42:54 -0400
-Received: by callcc.thunk.org (Postfix, from userid 15806)
-        id E3B1A42002B; Wed, 26 Jun 2019 14:42:51 -0400 (EDT)
-Date:   Wed, 26 Jun 2019 14:42:51 -0400
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     syzbot <syzbot+4bfbbf28a2e50ab07368@syzkaller.appspotmail.com>
-Cc:     adilger.kernel@dilger.ca, davem@davemloft.net, eladr@mellanox.com,
-        idosch@mellanox.com, jiri@mellanox.com, john.stultz@linaro.org,
-        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        tglx@linutronix.de
-Subject: Re: INFO: rcu detected stall in ext4_write_checks
-Message-ID: <20190626184251.GE3116@mit.edu>
-Mail-Followup-To: Theodore Ts'o <tytso@mit.edu>,
-        syzbot <syzbot+4bfbbf28a2e50ab07368@syzkaller.appspotmail.com>,
-        adilger.kernel@dilger.ca, davem@davemloft.net, eladr@mellanox.com,
-        idosch@mellanox.com, jiri@mellanox.com, john.stultz@linaro.org,
-        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        tglx@linutronix.de
-References: <000000000000d3f34b058c3d5a4f@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <000000000000d3f34b058c3d5a4f@google.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1726462AbfFZSxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 14:53:16 -0400
+Received: from mail-pf1-f201.google.com ([209.85.210.201]:42577 "EHLO
+        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726104AbfFZSxQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 14:53:16 -0400
+Received: by mail-pf1-f201.google.com with SMTP id y7so2352723pfy.9
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 11:53:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=62U0cC35cAsyCZKdkiaczGeJGITyeHGfSapVw5ghdrI=;
+        b=jW9ougi17E8axSEhD+NKKyC6t30/TTNiJH02NSK/6+jHmUB45Xjxg7vRtjRDlj3gn/
+         7uEik5kEbeNA26pmi+JHsYxt9LzPOzoaLH1/F6jWPp+C/R/89+XLVU8L2sBJEBFj5b8w
+         TQuTXkOvVdPMR9zYfzCfsWWolEPb/zHdISLGkOIaPAzlAhn0uV71tqrNyeHM4tcCZiMw
+         HxNJsTrCahn8419f2j6UL1XyXOySJyrfQevLaviPUTfL+hdxQtx3U6ZYyKpoqrFSroS1
+         tbrWREuGoK9JHX7fxm2m0S/Pe0eWlMatpramiG/nC7JlD/C+g/FdUBBXteU0RRYujBnG
+         Eg/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=62U0cC35cAsyCZKdkiaczGeJGITyeHGfSapVw5ghdrI=;
+        b=bDfvHzsiUVb4u9tikiwqVxu7Gj1T5wUbKJQ6Go8g3BHpi4wyDxTsJmVCacrul1KNf5
+         3XsoQFrWOUdI15Pnd/j+BjFirllQAniSEOCVI6D764DMAj9rNJ+4XOkSRHHNymPw+iVZ
+         xcuytY9EpwGiadeCIwiKd4tzH8VQwH9FN94li9xTdd+ekJUfW02DGCYhbhZCKyvcIiFN
+         XjBAN8CERC4jpCTp1c7Q4XvXhmTVITspgTaRndfQgJ/ADxkPff5j0xOHpeQWCPeuv6XT
+         Lcq21KbF+a9asLzqyitrEg17hqH6G3H3ZB2WcTQcUXPXbmy1ElXMapuEmObsXuS1faCf
+         34Fg==
+X-Gm-Message-State: APjAAAUc9m2TaBNwqYoPf1cCydMquPSPxVxK4vJf+cfX/1FqOZ0puR49
+        sIG0lirXrPSucbciiu6fHjzvAXoZJhIGKPV4EnixDPDMiUgyOXcgTAqaOI0FU3yj4Yjea/Sxw9p
+        HMCdOxnaaqy8RgMPDAfFU/J5vCpMLQm0zNVjZzaWzw/FnF+NIRGZNxgRndOSGbg==
+X-Google-Smtp-Source: APXvYqx6SMxzmmFJgNl8aBt7Jsa+LyW9Sf9xaQiIhDRb3sb4fsVMbz56yr4xPHYw547RNnnErqWiAgE7lHc=
+X-Received: by 2002:a63:b04a:: with SMTP id z10mr4309902pgo.18.1561575195526;
+ Wed, 26 Jun 2019 11:53:15 -0700 (PDT)
+Date:   Wed, 26 Jun 2019 11:52:47 -0700
+Message-Id: <20190626185251.205687-1-csully@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
+Subject: [net-next 0/4] Add gve driver
+From:   Catherine Sullivan <csully@google.com>
+To:     netdev@vger.kernel.org
+Cc:     Catherine Sullivan <csully@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 26, 2019 at 10:27:08AM -0700, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following crash on:
-> 
-> HEAD commit:    abf02e29 Merge tag 'pm-5.2-rc6' of git://git.kernel.org/pu..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=1435aaf6a00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=e5c77f8090a3b96b
-> dashboard link: https://syzkaller.appspot.com/bug?extid=4bfbbf28a2e50ab07368
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11234c41a00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15d7f026a00000
-> 
-> The bug was bisected to:
-> 
-> commit 0c81ea5db25986fb2a704105db454a790c59709c
-> Author: Elad Raz <eladr@mellanox.com>
-> Date:   Fri Oct 28 19:35:58 2016 +0000
-> 
->     mlxsw: core: Add port type (Eth/IB) set API
+This patch series adds the gve driver which will support the
+Compute Engine Virtual NIC that will be available in the future.
 
-Um, so this doesn't pass the laugh test.
+Catherine Sullivan (4):
+  gve: Add basic driver framework for Compute Engine Virtual NIC
+  gve: Add transmit and receive support
+  gve: Add workqueue and reset support
+  gve: Add ethtool support
 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10393a89a00000
+ .../networking/device_drivers/google/gve.rst  |  123 ++
+ .../networking/device_drivers/index.rst       |    1 +
+ MAINTAINERS                                   |    9 +
+ drivers/net/ethernet/Kconfig                  |    1 +
+ drivers/net/ethernet/Makefile                 |    1 +
+ drivers/net/ethernet/google/Kconfig           |   27 +
+ drivers/net/ethernet/google/Makefile          |    5 +
+ drivers/net/ethernet/google/gve/Makefile      |    4 +
+ drivers/net/ethernet/google/gve/gve.h         |  456 ++++++
+ drivers/net/ethernet/google/gve/gve_adminq.c  |  389 ++++++
+ drivers/net/ethernet/google/gve/gve_adminq.h  |  215 +++
+ drivers/net/ethernet/google/gve/gve_desc.h    |  118 ++
+ drivers/net/ethernet/google/gve/gve_ethtool.c |  226 +++
+ drivers/net/ethernet/google/gve/gve_main.c    | 1231 +++++++++++++++++
+ .../net/ethernet/google/gve/gve_register.h    |   27 +
+ drivers/net/ethernet/google/gve/gve_rx.c      |  445 ++++++
+ .../net/ethernet/google/gve/gve_size_assert.h |   15 +
+ drivers/net/ethernet/google/gve/gve_tx.c      |  584 ++++++++
+ 18 files changed, 3877 insertions(+)
+ create mode 100644 Documentation/networking/device_drivers/google/gve.rst
+ create mode 100644 drivers/net/ethernet/google/Kconfig
+ create mode 100644 drivers/net/ethernet/google/Makefile
+ create mode 100644 drivers/net/ethernet/google/gve/Makefile
+ create mode 100644 drivers/net/ethernet/google/gve/gve.h
+ create mode 100644 drivers/net/ethernet/google/gve/gve_adminq.c
+ create mode 100644 drivers/net/ethernet/google/gve/gve_adminq.h
+ create mode 100644 drivers/net/ethernet/google/gve/gve_desc.h
+ create mode 100644 drivers/net/ethernet/google/gve/gve_ethtool.c
+ create mode 100644 drivers/net/ethernet/google/gve/gve_main.c
+ create mode 100644 drivers/net/ethernet/google/gve/gve_register.h
+ create mode 100644 drivers/net/ethernet/google/gve/gve_rx.c
+ create mode 100644 drivers/net/ethernet/google/gve/gve_size_assert.h
+ create mode 100644 drivers/net/ethernet/google/gve/gve_tx.c
 
-It looks like the automated bisection machinery got confused by two
-failures getting triggered by the same repro; the symptoms changed
-over time.  Initially, the failure was:
+-- 
+2.22.0.410.gd8fdbe21b5-goog
 
-crashed: INFO: rcu detected stall in {sys_sendfile64,ext4_file_write_iter}
-
-Later, the failure changed to something completely different, and much
-earlier (before the test was even started):
-
-run #5: basic kernel testing failed: failed to copy test binary to VM: failed to run ["scp" "-P" "22" "-F" "/dev/null" "-o" "UserKnownHostsFile=/dev/null" "-o" "BatchMode=yes" "-o" "IdentitiesOnly=yes" "-o" "StrictHostKeyChecking=no" "-o" "ConnectTimeout=10" "-i" "/syzkaller/jobs/linux/workdir/image/key" "/tmp/syz-executor216456474" "root@10.128.15.205:./syz-executor216456474"]: exit status 1
-Connection timed out during banner exchange
-lost connection
-
-Looks like an opportunity to improve the bisection engine?
-
-							- Ted
