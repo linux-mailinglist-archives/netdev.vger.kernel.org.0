@@ -2,97 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 70DF656DD0
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 17:36:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3A5A56DE6
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 17:41:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728103AbfFZPgj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 11:36:39 -0400
-Received: from mail-yw1-f65.google.com ([209.85.161.65]:35072 "EHLO
-        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727873AbfFZPgi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 11:36:38 -0400
-Received: by mail-yw1-f65.google.com with SMTP id k128so1397740ywf.2
-        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 08:36:37 -0700 (PDT)
+        id S1727139AbfFZPlW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 11:41:22 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:36158 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726948AbfFZPlV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 11:41:21 -0400
+Received: by mail-pf1-f193.google.com with SMTP id r7so1569866pfl.3
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 08:41:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nB2SlIBqZ7G1UjtTzO1Yn/x7hThan4DYNNuCoZrdMGc=;
-        b=IaGM59eH59k6bwEWOreYpMBhZBij5GVXZtYQfz4HtOADv00s2mss3VXMaVkNWAAQ/t
-         mn4vrvrpfDjxewcC1tonypR2ZNcCM7OtveCyjNOR/atT0DkA+vBURZgZU2g+bNlPoDNa
-         sxoI2/1ubQZY8ziyyTwMYejLpSOGvhu4Kw3MFZglfssraqux6YMQHkfj+Bst58dvBNZA
-         u/ztiL+y7xAYFT19tVcwp7GT6Psdjo1IqgvZdlDFrxhnt27DkVeE72d3xc1NI6T9dxyG
-         MpOshn4sTw1PZ82LnEBFhYnK375ukdOVgidZpEOssL7/CQ4C3jEm5yMHtu2sKR3MDUj2
-         9JVg==
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=s6H+VZIH/8+SpPDS4HKLkLbhIbCgFU2Lx0ZhiuvLd+4=;
+        b=oC1zhlpqGlEqeHayr8LquWx2FE2w+bw3+jEPmcq8U1AGO1m99K/8S5ZQ24b+gOy1ov
+         1Pja1omxE8YCR/AeqUOJJrjq7usDaRrI9mxPgUN3eXq2e+LvvmhfkLdkRQAcBnyXdpIj
+         8Ny4iSwKWVtdurBzuFvVGhPP3jBvs/b0M8/NFbCnlqCb3aihO6u469b/+XX1Mel7Ovd7
+         dlRQLR6iHa/yytjTMByzXNL/dCZLsqFf/yZEyzYMEmVGMKDvEOk83jo+di6qJ8RG3pBE
+         fZpp92D+l+UvfDyOjQf3CTvqTF4iZKL41QXBK5jEvAuI16th+cMR7044AGKgUaXFL4Hk
+         Y4oQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nB2SlIBqZ7G1UjtTzO1Yn/x7hThan4DYNNuCoZrdMGc=;
-        b=LC7Fz2HCOMn4bA546nZVyzWO9waBugKRK77GlCoEDrwjt6hDt0fJuj4gZt1+jrcRHd
-         yBdYpD++9xxYIwnlM/EKcnmv72PfwWGuCGa0GAzBqXCuOCq/a4SZpdZWljr+hYQKv0Te
-         LCRDCMGyMHZo9UWD1ZhaxAeHeeHai+lrkIFPL6QVSNLI9+XONqc8F8KZpWPcbgTh3rRV
-         rqM7yFqhv+qVesey28//LGLEIeyxMelrh41HpqdjgAGdbj1eLSpA0ByGd28yc494u+1h
-         sTiC2PVYVKmFA5D6JppnINDsz2drnsB2qbGXnNzph2QZuWxOLBAM+lbSc0fcJvoTSRZe
-         k0Uw==
-X-Gm-Message-State: APjAAAVgIAGRektLHbF3iGUIdTNLfB3pnWkrKoRNQPzLgyJ1/OTAe49T
-        01OYVdYmdp68fGB6zD31l+2It/d3
-X-Google-Smtp-Source: APXvYqwb/GM31RlVsoX57M2XcitbnBIDsaYRDBLzYiDJkK1viz+5nTVu7SbVHOMS8ECASOcyD7vJzw==
-X-Received: by 2002:a81:ee05:: with SMTP id l5mr3302178ywm.245.1561563396689;
-        Wed, 26 Jun 2019 08:36:36 -0700 (PDT)
-Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
-        by smtp.gmail.com with ESMTPSA id i84sm1381937ywi.0.2019.06.26.08.36.35
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Wed, 26 Jun 2019 08:36:35 -0700 (PDT)
-Received: by mail-yb1-f174.google.com with SMTP id w9so1565591ybe.9
-        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 08:36:35 -0700 (PDT)
-X-Received: by 2002:a25:908b:: with SMTP id t11mr3363414ybl.473.1561563395120;
- Wed, 26 Jun 2019 08:36:35 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=s6H+VZIH/8+SpPDS4HKLkLbhIbCgFU2Lx0ZhiuvLd+4=;
+        b=J8nhdhYdwSFfVqHBtM539Fx8prmv2NdXfnhXVcC3CSlYjrAwotwixLp4hcOs6Tf4gu
+         AORr+l1wLjbD8ilqTH010YZc/0C1jisitpg4D+g8tp5xaM4ZTnfNZSCbUY/6UCQAGcwf
+         oBgsIybuYoYiImmnUorE3VqLC6uc16jabYezJh0HBOXwZzQ0xjvY2kSWNzZAoJ3X13Fl
+         T+z5nxe8PmFBmN6J6VC3qoMb+PcWoHtAvAhEQaUBl7+0d2BqeYImCyB3+8iH1FgR15wE
+         EcK2aPTwClMukxxB+9aVda5cAXNSF6jXosBbafzEh9xLI37l4yHXEZvpB3jlcauTk1NF
+         Njrw==
+X-Gm-Message-State: APjAAAWA3htZ6fD78oJ7qqw7qkyYH/cLZdXCwixSu2rTlAm/K9pZ4Uzg
+        F8xgqI2N2DycwVnwdnsq3y37HeO5CRI=
+X-Google-Smtp-Source: APXvYqwDXZVaOlJA3M2MmqLB1YVoRxES+hEi0kWMDjh+TZapEVqaJuIqrYHiALDW5kKfpy/6EeMXuA==
+X-Received: by 2002:a17:90a:de02:: with SMTP id m2mr5525727pjv.18.1561563680790;
+        Wed, 26 Jun 2019 08:41:20 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
+        by smtp.gmail.com with ESMTPSA id a3sm21728489pfo.49.2019.06.26.08.41.19
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 26 Jun 2019 08:41:20 -0700 (PDT)
+Subject: Re: [PATCH net-next 09/18] ionic: Add the basic NDO callbacks for
+ netdev support
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org
+References: <20190620202424.23215-1-snelson@pensando.io>
+ <20190620202424.23215-10-snelson@pensando.io>
+ <20190625162738.15049dc7@cakuba.netronome.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <b402326b-d2e7-fc4e-9fdc-b6adcd8dd54c@pensando.io>
+Date:   Wed, 26 Jun 2019 08:41:18 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.7.0
 MIME-Version: 1.0
-References: <20190617074858.32467-1-bpoirier@suse.com> <20190617074858.32467-5-bpoirier@suse.com>
- <DM6PR18MB269776CBA6B979855AD215A8ABE20@DM6PR18MB2697.namprd18.prod.outlook.com>
- <20190626113959.GC27420@f1>
-In-Reply-To: <20190626113959.GC27420@f1>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 26 Jun 2019 11:35:59 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSc7Gt0v8_KGEibC_8LKAe-yvL10KuJeoiAdYFDiED-5cQ@mail.gmail.com>
-Message-ID: <CA+FuTSc7Gt0v8_KGEibC_8LKAe-yvL10KuJeoiAdYFDiED-5cQ@mail.gmail.com>
-Subject: Re: [EXT] [PATCH net-next 05/16] qlge: Remove rx_ring.sbq_buf_size
-To:     Benjamin Poirier <bpoirier@suse.com>
-Cc:     Manish Chopra <manishc@marvell.com>,
-        GR-Linux-NIC-Dev <GR-Linux-NIC-Dev@marvell.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190625162738.15049dc7@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 26, 2019 at 7:40 AM Benjamin Poirier <bpoirier@suse.com> wrote:
->
-> On 2019/06/26 09:36, Manish Chopra wrote:
-> > > -----Original Message-----
-> > > From: Benjamin Poirier <bpoirier@suse.com>
-> > > Sent: Monday, June 17, 2019 1:19 PM
-> > > To: Manish Chopra <manishc@marvell.com>; GR-Linux-NIC-Dev <GR-Linux-
-> > > NIC-Dev@marvell.com>; netdev@vger.kernel.org
-> > > Subject: [EXT] [PATCH net-next 05/16] qlge: Remove rx_ring.sbq_buf_size
-> > >
-> > > External Email
-> > >
-> > > ----------------------------------------------------------------------
-> > > Tx rings have sbq_buf_size = 0 but there's no case where the code actually
-> > > tests on that value. We can remove sbq_buf_size and use a constant instead.
-> > >
-> >
-> > Seems relevant to RX ring, not the TX ring ?
->
-> qlge uses "struct rx_ring" for rx and for tx completion rings.
->
-> The driver's author is probably laughing now at the success of his plan
-> to confuse those who would follow in his footsteps.
+On 6/25/19 4:27 PM, Jakub Kicinski wrote:
+> On Thu, 20 Jun 2019 13:24:15 -0700, Shannon Nelson wrote:
+>> +static int ionic_set_features(struct net_device *netdev,
+>> +			      netdev_features_t features)
+>> +{
+>> +	struct lif *lif = netdev_priv(netdev);
+>> +	int err;
+>> +
+>> +	netdev_dbg(netdev, "%s: lif->features=0x%08llx new_features=0x%08llx\n",
+>> +		   __func__, (u64)lif->netdev->features, (u64)features);
+>> +
+>> +	err = ionic_set_nic_features(lif, features);
+> Presumably something gets added here in later patch?
 
-:-)
+This is a pass-through to the lif-specific function which does most of 
+the work.
 
-Reviewed-by: Willem de Bruijn <willemb@google.com>
+>
+>> +	return err;
+>> +}
+>> +
+>> +static int ionic_set_mac_address(struct net_device *netdev, void *sa)
+>> +{
+>> +	netdev_info(netdev, "%s: stubbed\n", __func__);
+>> +	return 0;
+>> +}
+>> +
+>> +static int ionic_change_mtu(struct net_device *netdev, int new_mtu)
+>> +{
+>> +	struct lif *lif = netdev_priv(netdev);
+>> +	struct ionic_admin_ctx ctx = {
+>> +		.work = COMPLETION_INITIALIZER_ONSTACK(ctx.work),
+>> +		.cmd.lif_setattr = {
+>> +			.opcode = CMD_OPCODE_LIF_SETATTR,
+>> +			.index = cpu_to_le16(lif->index),
+>> +			.attr = IONIC_LIF_ATTR_MTU,
+>> +			.mtu = cpu_to_le32(new_mtu),
+>> +		},
+>> +	};
+>> +	int err;
+>> +
+>> +	if (new_mtu < IONIC_MIN_MTU || new_mtu > IONIC_MAX_MTU) {
+>> +		netdev_err(netdev, "Invalid MTU %d\n", new_mtu);
+>> +		return -EINVAL;
+>> +	}
+> We do the min/max checks in the core now (netdev->min_mtu,
+> netdev->max_mtu).  You'll have to keep this if out of tree,
+> unfortunately.
+
+Got it.
+
+>
+>> +	err = ionic_adminq_post_wait(lif, &ctx);
+>> +	if (err)
+>> +		return err;
+>> +
+>> +	netdev->mtu = new_mtu;
+>> +	err = ionic_reset_queues(lif);
+>> +
+>> +	return err;
+>> +}
+
