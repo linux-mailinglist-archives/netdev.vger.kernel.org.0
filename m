@@ -2,90 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE7B656DA9
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 17:30:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70DF656DD0
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 17:36:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728209AbfFZPaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 11:30:15 -0400
-Received: from mail-yw1-f67.google.com ([209.85.161.67]:44419 "EHLO
-        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725958AbfFZPaP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 11:30:15 -0400
-Received: by mail-yw1-f67.google.com with SMTP id l79so1362921ywe.11
-        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 08:30:14 -0700 (PDT)
+        id S1728103AbfFZPgj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 11:36:39 -0400
+Received: from mail-yw1-f65.google.com ([209.85.161.65]:35072 "EHLO
+        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727873AbfFZPgi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 11:36:38 -0400
+Received: by mail-yw1-f65.google.com with SMTP id k128so1397740ywf.2
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 08:36:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=OI9aIzSar/H++pHo3ABCXgtera7zbPDWP79XUKeGSqA=;
-        b=A/6m2AfUaM8FQfjzYV679io+ByPmpGSlXSf8l939ZgeZ4V+EEHgPMyR28xn++Wf0dQ
-         hEIpEFtpP014wQNNZeQJeIdLa6yb10Y/uQLedsc/IKSWEjPDt3jquHQg6LkpkhrrxDDi
-         JavlllZi2a6edul2TGTs3BsRDCdack4eMNSn0Mnhy0QqEjeXPYTq2G3ikRs2qa/1dM8E
-         6etoSXroQYjEPAFX6eSgAksfSXOxe6Tq/uTMLLl0cuSg1cMzX71dAdELISV2+t63Whk1
-         5imOJXTWVsH3RNIEIJP73rmithlBhIcbcm2DBfsBm1UIhCRCVgoPQ3YvI6VmowgP6+WS
-         G1XA==
+        bh=nB2SlIBqZ7G1UjtTzO1Yn/x7hThan4DYNNuCoZrdMGc=;
+        b=IaGM59eH59k6bwEWOreYpMBhZBij5GVXZtYQfz4HtOADv00s2mss3VXMaVkNWAAQ/t
+         mn4vrvrpfDjxewcC1tonypR2ZNcCM7OtveCyjNOR/atT0DkA+vBURZgZU2g+bNlPoDNa
+         sxoI2/1ubQZY8ziyyTwMYejLpSOGvhu4Kw3MFZglfssraqux6YMQHkfj+Bst58dvBNZA
+         u/ztiL+y7xAYFT19tVcwp7GT6Psdjo1IqgvZdlDFrxhnt27DkVeE72d3xc1NI6T9dxyG
+         MpOshn4sTw1PZ82LnEBFhYnK375ukdOVgidZpEOssL7/CQ4C3jEm5yMHtu2sKR3MDUj2
+         9JVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=OI9aIzSar/H++pHo3ABCXgtera7zbPDWP79XUKeGSqA=;
-        b=V2XuFuYIdIrdJ4onUhZTwiNfPLr6zv09zUMQNnHBPKRdZ9L4UZpAbfDPY0U2wDhJer
-         SGn5Av/NXw3SPCbT/7eHwhqVdNtrDKysIzyR2LmA7SdV/tda5hAbSBnGT95L305ncYux
-         6zcXJt9m82M8aT5v7gjhkj8LkjJf45hFqA9/ECNBYYhmn8WfXKDLkryfh4F342XJpDST
-         SW7cvMjKExc2ND03RGXhHBusgMvVwq+1K7lk9qqciYU9fvBZ/OEiH7ujFgKvortXfcjG
-         pgEb0sgcWF+eINDZ43OHkFOMDWga2uee0VW5knbMzpn0JIGbCyzZx8QpPVUqyYPoCfmJ
-         3UQw==
-X-Gm-Message-State: APjAAAVLpiE3eBpgh6boxn3tlL7l2N1i8G+il9ZcZfMD1azn3qaOs9SG
-        nkC6PTL7CKpASsGVjePdY0loti+I
-X-Google-Smtp-Source: APXvYqy6JBLHUx9sCYoTzNfH/8wjAzigkB9I4eogcctz+9SMs2PxNQL8MQ7/if1CkXkAJJbUYFtP8w==
-X-Received: by 2002:a0d:db08:: with SMTP id d8mr3040549ywe.242.1561563013859;
-        Wed, 26 Jun 2019 08:30:13 -0700 (PDT)
-Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com. [209.85.219.169])
-        by smtp.gmail.com with ESMTPSA id g64sm3013579ywg.11.2019.06.26.08.30.12
+        bh=nB2SlIBqZ7G1UjtTzO1Yn/x7hThan4DYNNuCoZrdMGc=;
+        b=LC7Fz2HCOMn4bA546nZVyzWO9waBugKRK77GlCoEDrwjt6hDt0fJuj4gZt1+jrcRHd
+         yBdYpD++9xxYIwnlM/EKcnmv72PfwWGuCGa0GAzBqXCuOCq/a4SZpdZWljr+hYQKv0Te
+         LCRDCMGyMHZo9UWD1ZhaxAeHeeHai+lrkIFPL6QVSNLI9+XONqc8F8KZpWPcbgTh3rRV
+         rqM7yFqhv+qVesey28//LGLEIeyxMelrh41HpqdjgAGdbj1eLSpA0ByGd28yc494u+1h
+         sTiC2PVYVKmFA5D6JppnINDsz2drnsB2qbGXnNzph2QZuWxOLBAM+lbSc0fcJvoTSRZe
+         k0Uw==
+X-Gm-Message-State: APjAAAVgIAGRektLHbF3iGUIdTNLfB3pnWkrKoRNQPzLgyJ1/OTAe49T
+        01OYVdYmdp68fGB6zD31l+2It/d3
+X-Google-Smtp-Source: APXvYqwb/GM31RlVsoX57M2XcitbnBIDsaYRDBLzYiDJkK1viz+5nTVu7SbVHOMS8ECASOcyD7vJzw==
+X-Received: by 2002:a81:ee05:: with SMTP id l5mr3302178ywm.245.1561563396689;
+        Wed, 26 Jun 2019 08:36:36 -0700 (PDT)
+Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
+        by smtp.gmail.com with ESMTPSA id i84sm1381937ywi.0.2019.06.26.08.36.35
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Wed, 26 Jun 2019 08:30:12 -0700 (PDT)
-Received: by mail-yb1-f169.google.com with SMTP id p8so1538213ybo.13
-        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 08:30:12 -0700 (PDT)
-X-Received: by 2002:a25:aa48:: with SMTP id s66mr2818152ybi.46.1561563012097;
- Wed, 26 Jun 2019 08:30:12 -0700 (PDT)
+        Wed, 26 Jun 2019 08:36:35 -0700 (PDT)
+Received: by mail-yb1-f174.google.com with SMTP id w9so1565591ybe.9
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 08:36:35 -0700 (PDT)
+X-Received: by 2002:a25:908b:: with SMTP id t11mr3363414ybl.473.1561563395120;
+ Wed, 26 Jun 2019 08:36:35 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190626102322.18821-1-jonathanh@nvidia.com> <20190626104525.GH6362@ulmo>
-In-Reply-To: <20190626104525.GH6362@ulmo>
+References: <20190617074858.32467-1-bpoirier@suse.com> <20190617074858.32467-5-bpoirier@suse.com>
+ <DM6PR18MB269776CBA6B979855AD215A8ABE20@DM6PR18MB2697.namprd18.prod.outlook.com>
+ <20190626113959.GC27420@f1>
+In-Reply-To: <20190626113959.GC27420@f1>
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 26 Jun 2019 11:29:36 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSfWnen_t9r=BghkzzBwy=b_wazvtjPwg0ALtq30Cv-BGw@mail.gmail.com>
-Message-ID: <CA+FuTSfWnen_t9r=BghkzzBwy=b_wazvtjPwg0ALtq30Cv-BGw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] net: stmmac: Fix possible deadlock when disabling EEE support
-To:     Thierry Reding <thierry.reding@gmail.com>
-Cc:     Jon Hunter <jonathanh@nvidia.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-tegra@vger.kernel.org
+Date:   Wed, 26 Jun 2019 11:35:59 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSc7Gt0v8_KGEibC_8LKAe-yvL10KuJeoiAdYFDiED-5cQ@mail.gmail.com>
+Message-ID: <CA+FuTSc7Gt0v8_KGEibC_8LKAe-yvL10KuJeoiAdYFDiED-5cQ@mail.gmail.com>
+Subject: Re: [EXT] [PATCH net-next 05/16] qlge: Remove rx_ring.sbq_buf_size
+To:     Benjamin Poirier <bpoirier@suse.com>
+Cc:     Manish Chopra <manishc@marvell.com>,
+        GR-Linux-NIC-Dev <GR-Linux-NIC-Dev@marvell.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 26, 2019 at 6:45 AM Thierry Reding <thierry.reding@gmail.com> wrote:
+On Wed, Jun 26, 2019 at 7:40 AM Benjamin Poirier <bpoirier@suse.com> wrote:
 >
-> On Wed, Jun 26, 2019 at 11:23:21AM +0100, Jon Hunter wrote:
-> > When stmmac_eee_init() is called to disable EEE support, then the timer
-> > for EEE support is stopped and we return from the function. Prior to
-> > stopping the timer, a mutex was acquired but in this case it is never
-> > released and so could cause a deadlock. Fix this by releasing the mutex
-> > prior to returning from stmmax_eee_init() when stopping the EEE timer.
+> On 2019/06/26 09:36, Manish Chopra wrote:
+> > > -----Original Message-----
+> > > From: Benjamin Poirier <bpoirier@suse.com>
+> > > Sent: Monday, June 17, 2019 1:19 PM
+> > > To: Manish Chopra <manishc@marvell.com>; GR-Linux-NIC-Dev <GR-Linux-
+> > > NIC-Dev@marvell.com>; netdev@vger.kernel.org
+> > > Subject: [EXT] [PATCH net-next 05/16] qlge: Remove rx_ring.sbq_buf_size
+> > >
+> > > External Email
+> > >
+> > > ----------------------------------------------------------------------
+> > > Tx rings have sbq_buf_size = 0 but there's no case where the code actually
+> > > tests on that value. We can remove sbq_buf_size and use a constant instead.
+> > >
 > >
-> > Fixes: 74371272f97f ("net: stmmac: Convert to phylink and remove phylib logic")
-> > Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
-> > ---
-> >  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 1 +
-> >  1 file changed, 1 insertion(+)
+> > Seems relevant to RX ring, not the TX ring ?
 >
-> Tested-by: Thierry Reding <treding@nvidia.com>
+> qlge uses "struct rx_ring" for rx and for tx completion rings.
+>
+> The driver's author is probably laughing now at the success of his plan
+> to confuse those who would follow in his footsteps.
 
-Acked-by: Willem de Bruijn <willemb@google.com>
+:-)
+
+Reviewed-by: Willem de Bruijn <willemb@google.com>
