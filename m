@@ -2,135 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A9D0656A15
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 15:13:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BC5556A28
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 15:16:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727259AbfFZNMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 09:12:55 -0400
-Received: from sauhun.de ([88.99.104.3]:55882 "EHLO pokefinder.org"
+        id S1727259AbfFZNQe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 09:16:34 -0400
+Received: from mail.us.es ([193.147.175.20]:40958 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726157AbfFZNMy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 09:12:54 -0400
-Received: from localhost (p54B330AF.dip0.t-ipconnect.de [84.179.48.175])
-        by pokefinder.org (Postfix) with ESMTPSA id DBD962C0114;
-        Wed, 26 Jun 2019 15:12:51 +0200 (CEST)
-Date:   Wed, 26 Jun 2019 15:12:51 +0200
-From:   Wolfram Sang <wsa@the-dreams.de>
-To:     Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
-        Ramesh Shanmugasundaram <ramesh.shanmugasundaram@bp.renesas.com>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Simon Horman <horms+renesas@verge.net.au>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Artemi Ivanov <artemi.ivanov@cogentembedded.com>,
-        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Subject: Re: [PATCH resend] can: rcar_canfd: fix possible IRQ storm on high
- load
-Message-ID: <20190626131251.GB801@ninjato>
-References: <20190626130848.6671-1-nikita.yoush@cogentembedded.com>
+        id S1727272AbfFZNQd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 09:16:33 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 15EC8B571C
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 15:16:31 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 014FE1021B2
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 15:16:30 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id E49B64EDAF; Wed, 26 Jun 2019 15:16:30 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 8FB7EDA732;
+        Wed, 26 Jun 2019 15:16:28 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Wed, 26 Jun 2019 15:16:28 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [31.4.197.76])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 3601D4265A31;
+        Wed, 26 Jun 2019 15:16:28 +0200 (CEST)
+Date:   Wed, 26 Jun 2019 15:16:26 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        davem@davemloft.net, thomas.lendacky@amd.com, f.fainelli@gmail.com,
+        ariel.elior@cavium.com, michael.chan@broadcom.com,
+        santosh@chelsio.com, madalin.bucur@nxp.com,
+        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        jeffrey.t.kirsher@intel.com, tariqt@mellanox.com,
+        saeedm@mellanox.com, jiri@mellanox.com, idosch@mellanox.com,
+        jakub.kicinski@netronome.com, peppe.cavallaro@st.com,
+        grygorii.strashko@ti.com, andrew@lunn.ch,
+        vivien.didelot@savoirfairelinux.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, linux-net-drivers@solarflare.com,
+        ganeshgr@chelsio.com, ogerlitz@mellanox.com,
+        Manish.Chopra@cavium.com, marcelo.leitner@gmail.com,
+        mkubecek@suse.cz, venkatkumar.duvvuru@broadcom.com,
+        cphealy@gmail.com
+Subject: Re: [PATCH net-next 04/12] net: sched: add tcf_block_setup()
+Message-ID: <20190626131626.ihkjqvs2iciski2o@salvia>
+References: <20190620194917.2298-1-pablo@netfilter.org>
+ <20190620194917.2298-5-pablo@netfilter.org>
+ <20190621171603.GF2414@nanopsycho.orion>
+ <20190625083154.jfzhh22zsl3fu2ik@salvia>
+ <20190626121256.GA2424@nanopsycho>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="IrhDeMKUP4DT/M7F"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190626130848.6671-1-nikita.yoush@cogentembedded.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20190626121256.GA2424@nanopsycho>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jun 26, 2019 at 02:12:56PM +0200, Jiri Pirko wrote:
+> Tue, Jun 25, 2019 at 10:31:54AM CEST, pablo@netfilter.org wrote:
+> >On Fri, Jun 21, 2019 at 07:16:03PM +0200, Jiri Pirko wrote:
+> >> Thu, Jun 20, 2019 at 09:49:09PM CEST, pablo@netfilter.org wrote:
+> >> 
+> >> [...]
+> >> 
+> >> > 
+> >> >+static LIST_HEAD(tcf_block_cb_list);
+> >> 
+> >> I still don't like the global list. Have to go throught the code more
+> >> carefully, but why you can't pass the priv/ctx from tc/netfilter. From
+> >> tc it would be tcf_block as it is now, from netfilter something else.
+> >
+> >This tcf_block_cb_list should go away at some point, once drivers know
+> >how to deal with multiple subsystems using the setup block
+> >infrastructure. As I said in my previous email, only one can set up
+> >the block at this stage, the ones coming later will hit busy.
+> 
+> The driver should know if it can bind or is busy. Also, the bind cmd
+> should contain type of binder (tc/nft/whatever) or perhaps rather binder
+> priority (according to the hook order in rx/tx).
 
---IrhDeMKUP4DT/M7F
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+OK, so I see two possible paths then:
 
-On Wed, Jun 26, 2019 at 04:08:48PM +0300, Nikita Yushchenko wrote:
-> We have observed rcar_canfd driver entering IRQ storm under high load,
-> with following scenario:
-> - rcar_canfd_global_interrupt() in entered due to Rx available,
-> - napi_schedule_prep() is called, and sets NAPIF_STATE_SCHED in state
-> - Rx fifo interrupts are masked,
-> - rcar_canfd_global_interrupt() is entered again, this time due to
->   error interrupt (e.g. due to overflow),
-> - since scheduled napi poller has not yet executed, condition for calling
->   napi_schedule_prep() from rcar_canfd_global_interrupt() remains true,
->   thus napi_schedule_prep() gets called and sets NAPIF_STATE_MISSED flag
->   in state,
-> - later, napi poller function rcar_canfd_rx_poll() gets executed, and
->   calls napi_complete_done(),
-> - due to NAPIF_STATE_MISSED flag in state, this call does not clear
->   NAPIF_STATE_SCHED flag from state,
-> - on return from napi_complete_done(), rcar_canfd_rx_poll() unmasks Rx
->   interrutps,
-> - Rx interrupt happens, rcar_canfd_global_interrupt() gets called
->   and calls napi_schedule_prep(),
-> - since NAPIF_STATE_SCHED is set in state at this time, this call
->   returns false,
-> - due to that false return, rcar_canfd_global_interrupt() returns
->   without masking Rx interrupt
-> - and this results into IRQ storm: unmasked Rx interrupt happens again
->   and again is misprocessed in the same way.
->=20
-> This patch fixes that scenario by unmasking Rx interrupts only when
-> napi_complete_done() returns true, which means it has cleared
-> NAPIF_STATE_SCHED in state.
->=20
-> Signed-off-by: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+#1 Add global list and allow one single subsystem to bind by now. Then
+   later, in a follow up patchset. Add binder type and priority once
+   there is a driver that can handle the three subsystems, remove
+   this global list and each driver deals/knows what to do from the
+   binder path.
 
-CCing the driver author...
+#2 Remove the global list now, each driver maintains a list of flow blocks
+   internally, allow one single flow block by now. This will need a bit more
+   code, since there will be code in the driver to maintain the list of
+   existing flow blocks, per driver, instead of global. So it will be
+   a per-driver global local to check if there is a flow block with
+   this [ cb, cb_ident ] already in place.
 
-> ---
->  drivers/net/can/rcar/rcar_canfd.c | 9 +++++----
->  1 file changed, 5 insertions(+), 4 deletions(-)
->=20
-> diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rca=
-r_canfd.c
-> index 05410008aa6b..de34a4b82d4a 100644
-> --- a/drivers/net/can/rcar/rcar_canfd.c
-> +++ b/drivers/net/can/rcar/rcar_canfd.c
-> @@ -1508,10 +1508,11 @@ static int rcar_canfd_rx_poll(struct napi_struct =
-*napi, int quota)
-> =20
->  	/* All packets processed */
->  	if (num_pkts < quota) {
-> -		napi_complete_done(napi, num_pkts);
-> -		/* Enable Rx FIFO interrupts */
-> -		rcar_canfd_set_bit(priv->base, RCANFD_RFCC(ridx),
-> -				   RCANFD_RFCC_RFIE);
-> +		if (napi_complete_done(napi, num_pkts)) {
-> +			/* Enable Rx FIFO interrupts */
-> +			rcar_canfd_set_bit(priv->base, RCANFD_RFCC(ridx),
-> +					   RCANFD_RFCC_RFIE);
-> +		}
->  	}
->  	return num_pkts;
->  }
-> --=20
-> 2.11.0
->=20
+#1 is almost ready - it's this batch :-) -  then #2 may need more code -
+this batch is slightly large.
 
---IrhDeMKUP4DT/M7F
-Content-Type: application/pgp-signature; name="signature.asc"
+I understand though that path #2 may make it easier for the first
+driver client allowing for the three subsystems to bind.
 
------BEGIN PGP SIGNATURE-----
+Let me know what path your prefer.
 
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAl0Tb1MACgkQFA3kzBSg
-KbaLaA//Wza8AWpDytatCR4+YVO8bhaKfX8Cxpi3bmnFG9stqfjA5qAiC9ADINPw
-mERmNC/IfW5GstYjHrQK7tsgThSoTb1326jm/Gg1KScq5cwos/SIsRV0VE6k006c
-UWHc/HIqSyDN8ILvh/n1tsUMFWz+KEtFCqqrNLsLX3zRnyJj3CIfqdG8Crby2MzQ
-jy1NVgUsWpj7VEZ19BkUTHfR3sMWvQGkqWIm+N0uNz+vcErnrNKon3eVt4UrysiZ
-2+/5qXNjcJS2KtEu4O2StunxA1vftTOX29p7dm2qCXlVN5oAq8HQQ/os/ucMvxWm
-ZSKqXxM7sVl2X1ZY2d8057XAnqTpgoz2cFoI5VznM/3PJ3ykG453K2qX3qon1hBl
-bgLAWRafnusja2eafqwzcjjymDu6aTFUAszodA+CPTMdM+9TjLZaZTKaoMVGbHqY
-rINTTbisLKKRqQ+cPPD9l4M5iQ1QyJr+lQledI4M9XzJn2as2B5OuUw06LgKPpBC
-FKIvuUuCxI6yIB5f1l2MXfRBnmTnNvLpmhi2SiRVMfaL8FXAzdlLMLJ+PD0K3LAj
-c7RLt0+q3TL72pPdXOBUtNB2ukyGRH7Rbmjg3cwIumyIQqC4v32tA0FTYdg+l5gy
-ZxHjMzQczyqroya5caDanJVNPWiDrZh39Y8Gy8ovE+tYOBXMXQ8=
-=ssZ5
------END PGP SIGNATURE-----
-
---IrhDeMKUP4DT/M7F--
+Thanks for reviewing.
