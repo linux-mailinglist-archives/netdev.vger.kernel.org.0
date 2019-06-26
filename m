@@ -2,118 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A9A8656E12
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 17:52:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B587556E16
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 17:53:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726271AbfFZPw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 11:52:27 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:35260 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726029AbfFZPw1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 11:52:27 -0400
-Received: by mail-pg1-f195.google.com with SMTP id s27so1424039pgl.2
-        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 08:52:26 -0700 (PDT)
+        id S1726357AbfFZPxi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 11:53:38 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:40901 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725958AbfFZPxi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 11:53:38 -0400
+Received: by mail-pl1-f195.google.com with SMTP id a93so1673175pla.7
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 08:53:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=36HsqFqfMN5dc7er2VzR9aQOVFMEyTF/EfglEXhfvh8=;
-        b=xrSp2PBdW/GlKn3IK8OWx+YfZcZhDrxBOQrIUmi5pV/lkXu3PMjgpyNK50kSZOCiIT
-         ovZzXfweXwUCYyvjmGKUE5AMS492m3A6MZw6682KMYjV8ruW11ffiaZQ37GUKGwegGTc
-         VEJtxHIT5zHctG9ynbrsjuGB5ISBNJI1iDdnUHoV6S0m8Luz/NXlQGwiD68k778pdzHt
-         wCA3D9/zOQG2J5RhFABdQpKvEda17pduBZj9WyxS2hIC5ip6+weicjHkW1FBgV+64Zt9
-         /46/i13vp5sPnvzgmn/2Y7bzVOe0B8KpVoR3GK3FlgqFpJ7JQKny3XmaRoQGhxvEEEwO
-         g4Yw==
+        bh=BJcLrLEwu351G5IMdizOJKuXz8TgtEBz3UjqOExR7r4=;
+        b=LLqoZ2WggVM4tQ2HxeMOzQW/kJwuB7puFZ1opQCI1T2Yxh8A/H6Wd7GDZxqDBIMGpU
+         DBoqGmJ8eUGCqoOhYX6M+dnMMLi2VIjJUk0NsXlGwTUzqnHgtbQhv1pwemd5CK1cnMIu
+         DbSFk3u6HsyXLYKrv4zTeaA90l+Uzy7jSDNvx0WYo+1pFLDjhucJo4xXDP+s38kikSPu
+         sD29wJDdGzqZRziA+WLdDjUV6MJ2K9KYlOToe2AnCnuYVDCZtSYXDbafqRCg1m67Vnvz
+         YcPp88zaIXDsedt4yW7uF8fOMpXq9VgkB+IRik3TpdHTEhI/e0qjqGe+Q/h4OeoP4HRw
+         NVaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-transfer-encoding
          :content-language;
-        bh=36HsqFqfMN5dc7er2VzR9aQOVFMEyTF/EfglEXhfvh8=;
-        b=AK1wwSFqAE+6ZNp2K1iWKgzTbAja8HfEjjmkM3vknmxkqXH2Y5c2bDjWklCzA/jUqQ
-         G+FmB+WEUqv6blaE76PZJFMrza7UW+lfzHgOnAOicjHH5jfQgyyEpKOaZjkL3TGwrFIX
-         8XAV3/DjTCxatq4jutCxHXqH3w12s0nlQ1nFtwciOoOnDfpWlnynx4Se/i6H5V9Eibya
-         kAUrROcjyQIQAptxCEUAKoDrGE+luM68X/i5K1uaU8dyYi3QE5brCjLPTxFAql7aCAzs
-         uqeTGb25BUSyl/olvjcu51Jmgo5k6oVTV7FpzEJYAFGKo6OM2rqMje0Wuxwtfs+36/wT
-         xiMw==
-X-Gm-Message-State: APjAAAWHmsvfU0NIWUzIieQUU4rGw4FaCFqrTjHGEQZtfp1Vh9OO/Bxc
-        hl5Qik9LjpOHqLR9tf/2BARNThVBiBU=
-X-Google-Smtp-Source: APXvYqwDZMeFElYVuGkvpB0dj/4IFUnaJ0xDgaw1f/7SX2SoYYb5+bqLmMzuUTZUajn0Ix4eC+aEPQ==
-X-Received: by 2002:a17:90a:22aa:: with SMTP id s39mr5546113pjc.39.1561564346251;
-        Wed, 26 Jun 2019 08:52:26 -0700 (PDT)
+        bh=BJcLrLEwu351G5IMdizOJKuXz8TgtEBz3UjqOExR7r4=;
+        b=g8wN8SQs3JuCmi4tiPu9M5MpJ/+Ly4GaZ00xhp+qzyxdzEVW96G9jfgDLHZtOJLrPj
+         8ouY2G8d+CGsMhqa3sLm4zlS5E3AqGVD0xw/PzbobvW1rfxBcbw/eHAjQCoWPWpu43C0
+         E2GLGHWzt0EfVUGDe18oJfeONt22JZHX02OR9efKFcIBDNAy025PYBWumRCnqtfSQn/z
+         fifRHzHCg9uH8BcDeBzvDN5lnrJxuEjwuNM8x1/otvAczVwLc1AZeQle92zuu0LMB04p
+         dXc68vVOAT10g+UYw0vE6FKgHCmelPpap3Z6h6vej7h4mAew5nnfPP5vC+JPMZ4pMAMH
+         AmXQ==
+X-Gm-Message-State: APjAAAXncqciK1Y4M73ek9Bb3LFeq6/o4gLSh8o6JuuHxE+9cC3YQhbi
+        wZ8jvQjzcWvKWW5rIHoNwrHjNlQMJfg=
+X-Google-Smtp-Source: APXvYqys6Es+DfkELMqOfAmboi0ptURSR9aOUdvP0JqIX9YpsDefI1aXjFO9+9igrFWifpehP4DuMw==
+X-Received: by 2002:a17:902:3103:: with SMTP id w3mr6417341plb.84.1561564417354;
+        Wed, 26 Jun 2019 08:53:37 -0700 (PDT)
 Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id l1sm17089135pgi.91.2019.06.26.08.52.25
+        by smtp.gmail.com with ESMTPSA id h62sm23654437pgc.54.2019.06.26.08.53.36
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 26 Jun 2019 08:52:25 -0700 (PDT)
-Subject: Re: [PATCH net-next 10/18] ionic: Add management of rx filters
+        Wed, 26 Jun 2019 08:53:36 -0700 (PDT)
+Subject: Re: [PATCH net-next 11/18] ionic: Add Rx filter and rx_mode nod
+ support
 To:     Jakub Kicinski <jakub.kicinski@netronome.com>
 Cc:     netdev@vger.kernel.org
 References: <20190620202424.23215-1-snelson@pensando.io>
- <20190620202424.23215-11-snelson@pensando.io>
- <20190625163729.617346e0@cakuba.netronome.com>
+ <20190620202424.23215-12-snelson@pensando.io>
+ <20190625164456.606dd40a@cakuba.netronome.com>
 From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <5ea141a1-37e1-a33f-105f-16f5a976bdb8@pensando.io>
-Date:   Wed, 26 Jun 2019 08:52:24 -0700
+Message-ID: <2ded20ac-8643-2043-6154-edc4b7c66814@pensando.io>
+Date:   Wed, 26 Jun 2019 08:53:35 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
  Gecko/20100101 Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <20190625163729.617346e0@cakuba.netronome.com>
+In-Reply-To: <20190625164456.606dd40a@cakuba.netronome.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/25/19 4:37 PM, Jakub Kicinski wrote:
-> On Thu, 20 Jun 2019 13:24:16 -0700, Shannon Nelson wrote:
->> +int ionic_rx_filter_save(struct lif *lif, u32 flow_id, u16 rxq_index,
->> +			 u32 hash, struct ionic_admin_ctx *ctx)
->> +{
->> +	struct device *dev = lif->ionic->dev;
->> +	struct hlist_head *head;
+On 6/25/19 4:44 PM, Jakub Kicinski wrote:
+> On Thu, 20 Jun 2019 13:24:17 -0700, Shannon Nelson wrote:
+>> Add the Rx filtering and rx_mode NDO callbacks.  Also add
+>> the deferred work thread handling needed to manage the filter
+>> requests otuside of the netif_addr_lock spinlock.
+>>
+>> Signed-off-by: Shannon Nelson <snelson@pensando.io>
+>>   static int ionic_vlan_rx_kill_vid(struct net_device *netdev, __be16 proto,
+>>   				  u16 vid)
+>>   {
+>> -	netdev_info(netdev, "%s: stubbed\n", __func__);
+>> +	struct lif *lif = netdev_priv(netdev);
+>> +	struct ionic_admin_ctx ctx = {
+>> +		.work = COMPLETION_INITIALIZER_ONSTACK(ctx.work),
+>> +		.cmd.rx_filter_del = {
+>> +			.opcode = CMD_OPCODE_RX_FILTER_DEL,
+>> +			.lif_index = cpu_to_le16(lif->index),
+>> +		},
+>> +	};
 >> +	struct rx_filter *f;
->> +	unsigned int key;
+>> +	int err;
 >> +
->> +	f = devm_kzalloc(dev, sizeof(*f), GFP_KERNEL);
->> +	if (!f)
->> +		return -ENOMEM;
+>> +	spin_lock_bh(&lif->rx_filters.lock);
 >> +
->> +	f->flow_id = flow_id;
->> +	f->filter_id = le32_to_cpu(ctx->comp.rx_filter_add.filter_id);
->> +	f->rxq_index = rxq_index;
->> +	memcpy(&f->cmd, &ctx->cmd, sizeof(f->cmd));
+>> +	f = ionic_rx_filter_by_vlan(lif, vid);
+>> +	if (!f) {
+>> +		spin_unlock_bh(&lif->rx_filters.lock);
+>> +		return -ENOENT;
+>> +	}
 >> +
->> +	INIT_HLIST_NODE(&f->by_hash);
->> +	INIT_HLIST_NODE(&f->by_id);
+>> +	netdev_dbg(netdev, "rx_filter del VLAN %d (id %d)\n", vid,
+>> +		   le32_to_cpu(ctx.cmd.rx_filter_del.filter_id));
 >> +
->> +	switch (le16_to_cpu(f->cmd.match)) {
->> +	case RX_FILTER_MATCH_VLAN:
->> +		key = le16_to_cpu(f->cmd.vlan.vlan) & RX_FILTER_HLISTS_MASK;
->> +		break;
->> +	case RX_FILTER_MATCH_MAC:
->> +		key = *(u32 *)f->cmd.mac.addr & RX_FILTER_HLISTS_MASK;
->> +		break;
->> +	case RX_FILTER_MATCH_MAC_VLAN:
->> +		key = le16_to_cpu(f->cmd.mac_vlan.vlan) & RX_FILTER_HLISTS_MASK;
->> +		break;
->> +	default:
-> I know you use devm_kzalloc() but can't this potentially keep arbitrary
-> amounts of memory held until the device is removed (and it's the entire
-> device not just a LIF)?
-
-Yes, but we're freeing this memory when objects are deleted.  We're 
-trying to be tidy with our allocations, but used devm_kzalloc to be more 
-sure that things went away when the device did.
-
->
->> +		return -ENOTSUPP;
-> EOPNOTSUPP, please do not use ENOTSUPP in the drivers.  It's a high
-> error code, unknown to libc.  We should use EOPNOTSUPP or EINVAL.
-
+>> +	ctx.cmd.rx_filter_del.filter_id = cpu_to_le32(f->filter_id);
+>> +	ionic_rx_filter_free(lif, f);
+>> +	spin_unlock_bh(&lif->rx_filters.lock);
+>> +
+>> +	err = ionic_adminq_post_wait(lif, &ctx);
+>> +	if (err)
+>> +		return err;
+>>
+>>   	return 0;
+> nit: return directly?
 Sure.
 
 >
->> +	}
+>>   }
+>> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.h b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
+>> index 8129fa20695a..c3ecf1df9c2c 100644
+>> --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.h
+>> +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
+>> @@ -60,6 +60,29 @@ struct qcq {
+>>   #define napi_to_qcq(napi)	container_of(napi, struct qcq, napi)
+>>   #define napi_to_cq(napi)	(&napi_to_qcq(napi)->cq)
+>>   
+>> +enum deferred_work_type {
+>> +	DW_TYPE_RX_MODE,
+>> +	DW_TYPE_RX_ADDR_ADD,
+>> +	DW_TYPE_RX_ADDR_DEL,
+>> +	DW_TYPE_LINK_STATUS,
+>> +	DW_TYPE_LIF_RESET,
+>> +};
+>> +
+>> +struct deferred_work {
+> If you don't mind prefixing these structures with ionic_ that'd be
+> great.  I'm worried deferred_work is too close to delayed_work..
+
+Yes.
+
+>
+>> +	struct list_head list;
+>> +	enum deferred_work_type type;
+>> +	union {
+>> +		unsigned int rx_mode;
+>> +		u8 addr[ETH_ALEN];
+>> +	};
+>> +};
+>> +
+>> +struct deferred {
+>> +	spinlock_t lock;		/* lock for deferred work list */
+>> +	struct list_head list;
+>> +	struct work_struct work;
+>> +};
 
