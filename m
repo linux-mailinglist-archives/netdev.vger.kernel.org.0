@@ -2,115 +2,299 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D492056A47
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 15:22:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AACC156A70
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 15:29:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727409AbfFZNWC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 09:22:02 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:56244 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726628AbfFZNWB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 09:22:01 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5QDKFdD003088;
-        Wed, 26 Jun 2019 06:21:58 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pfpt0818;
- bh=gmL8G14AvvOlExnKUUFioYYfBKE0rm6XdqspmX1ns5o=;
- b=LbhAo8BzDksCGBQL0ZWQWePZ59ZMcQFkPY2OXVOx9puj0typSBFzWnNT+KElh869VGom
- dCKH3XjF9a4al+2bSIxyxcdjmbWPafAdChrCE1HBZZie3w74nkK2MBhStaIIRIYS1HFV
- rtg5UB4dvFij7UtNj4TPn2AgJboLlt9BEeivbRdtFd7VRO1AXt4dpC6TtaZ5hEwYp1of
- OLSJtgZxxrpTar/j16WeRrdJY89b67/PLu0agjVT7Tz+tDSrvxDpZWUZ5VfpyIeTcv9a
- YxEKbmQxgEUfUmalugPI96pJzUpqHGyWlnSO8bGMeLFT3gAkJr4O5WrVy7eZX/ud5f/q RQ== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 2tc5ht103t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 26 Jun 2019 06:21:58 -0700
-Received: from SC-EXCH04.marvell.com (10.93.176.84) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Wed, 26 Jun
- 2019 06:21:57 -0700
-Received: from NAM04-CO1-obe.outbound.protection.outlook.com (104.47.45.58) by
- SC-EXCH04.marvell.com (10.93.176.84) with Microsoft SMTP Server (TLS) id
- 15.0.1367.3 via Frontend Transport; Wed, 26 Jun 2019 06:21:57 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector2-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gmL8G14AvvOlExnKUUFioYYfBKE0rm6XdqspmX1ns5o=;
- b=FJ4GrfFM1lrbkj1A6cYrfu/XOrm0OKLpCg7XarAXXLJdGGgi6O7HNFt4n4fx0Xz0IKwQfdRY8XfthOda5kMvM0lvQo2hkG2MXRRDdSGJVlX1Gf0NNIM9bAEVCussX+2KAamnDfpUn2L9yyeo3ZTtAWAkDIDdOYV/pktq1O8QUT0=
-Received: from DM6PR18MB2697.namprd18.prod.outlook.com (20.179.49.204) by
- DM6PR18MB2892.namprd18.prod.outlook.com (20.179.52.161) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2008.16; Wed, 26 Jun 2019 13:21:53 +0000
-Received: from DM6PR18MB2697.namprd18.prod.outlook.com
- ([fe80::4121:8e6e:23b8:b631]) by DM6PR18MB2697.namprd18.prod.outlook.com
- ([fe80::4121:8e6e:23b8:b631%6]) with mapi id 15.20.2008.018; Wed, 26 Jun 2019
- 13:21:53 +0000
-From:   Manish Chopra <manishc@marvell.com>
-To:     Benjamin Poirier <bpoirier@suse.com>
-CC:     GR-Linux-NIC-Dev <GR-Linux-NIC-Dev@marvell.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH net-next 01/16] qlge: Remove irq_cnt
-Thread-Topic: [PATCH net-next 01/16] qlge: Remove irq_cnt
-Thread-Index: AQHVJOFCi7hq2bA2CEicYO6gagSpYqatq44wgAAxbYCAABeEsA==
-Date:   Wed, 26 Jun 2019 13:21:52 +0000
-Message-ID: <DM6PR18MB2697291D4195683CC42EA194ABE20@DM6PR18MB2697.namprd18.prod.outlook.com>
-References: <20190617074858.32467-1-bpoirier@suse.com>
- <DM6PR18MB2697814343012B4363482290ABE20@DM6PR18MB2697.namprd18.prod.outlook.com>
- <20190626113619.GA27420@f1>
-In-Reply-To: <20190626113619.GA27420@f1>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [114.143.185.87]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 17399525-aee7-44a6-827f-08d6fa39411c
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:DM6PR18MB2892;
-x-ms-traffictypediagnostic: DM6PR18MB2892:
-x-microsoft-antispam-prvs: <DM6PR18MB28927FA36D46DC6B6CBCA8EBABE20@DM6PR18MB2892.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 00808B16F3
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(346002)(39860400002)(376002)(396003)(366004)(189003)(199004)(7736002)(99286004)(9686003)(486006)(55016002)(76116006)(14454004)(66946007)(6436002)(73956011)(66446008)(66556008)(64756008)(66476007)(71190400001)(71200400001)(229853002)(68736007)(305945005)(2906002)(53936002)(33656002)(7696005)(81156014)(81166006)(8936002)(316002)(256004)(478600001)(3846002)(54906003)(66066001)(86362001)(6246003)(6116002)(74316002)(25786009)(8676002)(446003)(6916009)(52536014)(4326008)(11346002)(6506007)(5660300002)(102836004)(76176011)(4744005)(186003)(26005)(476003);DIR:OUT;SFP:1101;SCL:1;SRVR:DM6PR18MB2892;H:DM6PR18MB2697.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: marvell.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 0rsX3uDl07trJoRJOulkt8Y80MKQFgxskqlScAjOpJ1qnOiHtIN37yaQTIhBSJtWbb0Z/8ctD6/uppMyjcyxdv4b2nJB/xS91aczpIODiYoD3MW8pfbD6eiOUqmiSFbh8gEtAShmNoQTALxgr5Upsdds29r1p+mxsn8FlTvnuY8qEZ2nteqzveIKDGuAPYwaJ+Y+UZXiwmtxtIciJXc1j38xtKmkrJ20D3uJL4nn8YEO5LGTU+dd/4ruhjVl76bhNr3eSstnbdiETpfMulpUBkCVDDYAy9jeO4nyBR8AwzB75e0QevYFV0X4Jb2ghGBc1nZWz/LtYoQa/du8mstYxHLcruF7EDsh2xdnNwvMBx50Y/JTYJxqpkk9RZcNUoVCnaZ0a+yKoDHYgPPQs/FX2TOq5rQPq3uqydp+BQqVSOQ=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727676AbfFZN2x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 09:28:53 -0400
+Received: from mout.web.de ([212.227.15.4]:55609 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726104AbfFZN2x (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 09:28:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1561555690;
+        bh=F2mf4IWIAL0/3qhafAlKcvmEvzPzkPnJ2u8U6qSNHPI=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=W2MWf+HElzo8Gw17pB3BBhUrfYI3rKwQlGpqntESlHyRlDM9rDJK2NVRQdNik+Lzu
+         1tAY+YbwP+x3gZdGWPWOv48Nm6TgkgAVeCtmx+f512MUnD8u1McyueTLDrPuUbAuIr
+         MYzuBScq3N/9GxRgsJsJSqIiwGv5ocRKIBXnzVmE=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.43.108] ([89.15.239.56]) by smtp.web.de (mrweb001
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0LgHau-1iKulR3G6O-00nfjy; Wed, 26
+ Jun 2019 15:28:10 +0200
+Subject: Re: [PATCH] rt2x00: fix rx queue hang
+To:     Stanislaw Gruszka <sgruszka@redhat.com>
+Cc:     Helmut Schaa <helmut.schaa@googlemail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+References: <20190617094656.3952-1-smoch@web.de>
+ <20190618093431.GA2577@redhat.com>
+ <b6899d78-447c-3cb3-4bec-e4050660ccaa@web.de>
+ <20190625095734.GA2886@redhat.com>
+From:   Soeren Moch <smoch@web.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=smoch@web.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <8d7da251-8218-ff4b-2cf3-8ed69c97275e@web.de>
+Date:   Wed, 26 Jun 2019 15:28:00 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 17399525-aee7-44a6-827f-08d6fa39411c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Jun 2019 13:21:53.1111
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: manishc@marvell.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR18MB2892
-X-OriginatorOrg: marvell.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-26_07:,,
- signatures=0
+In-Reply-To: <20190625095734.GA2886@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Content-Language: en-GB
+X-Provags-ID: V03:K1:9lq9T0E+qR/a4zTgRmDqRW1EiAV+h/mVCAeqaKHI97g5VloFyFa
+ fgsjxrQMPJXrKsx6Vvsc6roQtn10TqmUNjokV20UyvxM5UB7dpCqHEwSQvYCizkr7BBQleD
+ ZGrAd2JP4FNXyIcpC1e1JKAgkEwP8oM1lou65Aipu0OZYD2K3SVaS198CIodaJaxQsz5x0m
+ Y7jZl1OBbEz72n15Sv1SA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:/lmK+sOy14k=:dN92dasNqwGl5pXQXtUKSn
+ TT0zFyiZj3c94y0Rz3ryB8Y/LanjBt4103/3B6mLBDWXgq6auYseLXlEQpOFsvj7vTZh6qJbo
+ gXhbXi0ykP95kC5OWnN+r5sVRJzVIaAVXW1gLlmdMog6H2V0eb8gugWr7aj/bxRWimlD3gDQ6
+ saw6LLI89Xnl+1aJ6rqLzTM+wXhjbIg02qu3hvpcsNGQg/1XZAw3lHH1jDTSBQ2Jj9tIz95k/
+ zvSdUthRew+drPLJBpRSa68iey8F9oxjv4lLQsrliK0kmPhUv/EjdzMF9kXf5f6z/vVehpaZD
+ bdc7LvAWB97oGORI+d9+RilwMtqfGxf4EZ5IEb61eW0lgDAb3K51Vs+pHFbbLP+3wG5mGj5I1
+ bg1lyYwvD6usrZ42Qddc+oCMKE3MapvDFzdsHEQX+8DqELOq0oAQpR43vgRu36RgP89BljqQj
+ uegyYoO5yTvhLG2JheWuPRPmQTCcQ0r/f1bkhwRDABq8Eqh6c5pFZZH8VlZP+ColDKeogF4UU
+ 8VelBhNcD2YQMFGInaC/puBReUKUqa947yxhveTKxwq1auyy1eZy22wkxK04JwiXb+8D16v37
+ qVwbalDuDF2IoTJ+wUtWaFRP97KLMMPltYNucUXTeY3AdGfCfnHrU904dSQBn/5qnqrvdoejY
+ 1BdMSW72eeVPPUwgU9KsAf5KuW/rum5+CzyM0pSxb4Uaawqu74MY2bNfShKNbwbn6vp1KiYMy
+ DPM8RViWTFp1yGiXlZBcSC9Qi+e1FXfyuuCK8oAWn3oyu1OrGb+rEhRXEXdCbsWFQ7p4paL8i
+ LezV+n6QS0XcUxAE1S0gfCi7zXDLU9KbHNue9dcrOrXfdhwdF3z0otcCAQKTFFPlwRcpdFlWW
+ Tm4desXYAXD+Gi/jk9QnC60JrLvn1EtSNJulfPODWQi7qgd1asIV/Df6TSNY1LE6aRadsrLDa
+ 0L/8M4ST2vI7Iht85L819xMAFhCU9EAE=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> In msix mode there's no need to explicitly disable completion interrupts,=
- they
-> are reliably auto-masked, according to my observations.
-> I tested this on two QLE8142 adapters.
->=20
-> Do you have reason to believe this might not always be the case?
+On 25.06.19 11:57, Stanislaw Gruszka wrote:
+> Hello
+>
+> On Fri, Jun 21, 2019 at 01:30:01PM +0200, Soeren Moch wrote:
+>> On 18.06.19 11:34, Stanislaw Gruszka wrote:
+>>> Hi
+>>>
+>>> On Mon, Jun 17, 2019 at 11:46:56AM +0200, Soeren Moch wrote:
+>>>> Since commit ed194d136769 ("usb: core: remove local_irq_save() aroun=
+d
+>>>>  ->complete() handler") the handlers rt2x00usb_interrupt_rxdone() an=
+d
+>>>> rt2x00usb_interrupt_txdone() are not running with interrupts disable=
+d
+>>>> anymore. So these handlers are not guaranteed to run completely befo=
+re
+>>>> workqueue processing starts. So only mark entries ready for workqueu=
+e
+>>>> processing after proper accounting in the dma done queue.
+>>> It was always the case on SMP machines that rt2x00usb_interrupt_{tx/r=
+x}done
+>>> can run concurrently with rt2x00_work_{rx,tx}done, so I do not
+>>> understand how removing local_irq_save() around complete handler brok=
+e
+>>> things.
+>> I think because completion handlers can be interrupted now and schedul=
+ed
+>> away
+>> in the middle of processing.
+>>> Have you reverted commit ed194d136769 and the revert does solve the p=
+roblem ?
+>> Yes, I already sent a patch for this, see [1]. But this was not consid=
+ered
+>> an acceptablesolution. Especially RT folks do not like code running wi=
+th
+>> interrupts disabled,particularly when trying to acquire spinlocks then=
+=2E
+>>
+>> [1] https://lkml.org/lkml/2019/5/31/863
+>>> Between 4.19 and 4.20 we have some quite big changes in rt2x00 driver=
+:
+>>>
+>>> 0240564430c0 rt2800: flush and txstatus rework for rt2800mmio
+>>> adf26a356f13 rt2x00: use different txstatus timeouts when flushing
+>>> 5022efb50f62 rt2x00: do not check for txstatus timeout every time on =
+tasklet
+>>> 0b0d556e0ebb rt2800mmio: use txdone/txstatus routines from lib
+>>> 5c656c71b1bf rt2800: move usb specific txdone/txstatus routines to rt=
+2800lib
+>>>
+>>> so I'm a bit afraid that one of those changes is real cause of
+>>> the issue not ed194d136769 .
+>> I tested 4.20 and 5.1 and see the exact same behavior. Reverting this
+>> usb core patchsolves the problem.
+>> 4.19.x (before this usb core patch) is running fine.
+>>>> Note that rt2x00usb_work_rxdone() processes all available entries, n=
+ot
+>>>> only such for which queue_work() was called.
+>>>>
+>>>> This fixes a regression on a RT5370 based wifi stick in AP mode, whi=
+ch
+>>>> suddenly stopped data transmission after some period of heavy load. =
+Also
+>>>> stopping the hanging hostapd resulted in the error message "ieee8021=
+1
+>>>> phy0: rt2x00queue_flush_queue: Warning - Queue 14 failed to flush".
+>>>> Other operation modes are probably affected as well, this just was
+>>>> the used testcase.
+>>> Do you know what actually make the traffic stop,
+>>> TX queue hung or RX queue hung?
+>> I think RX queue hang, as stated in the patch title. "Queue 14" means =
+QID_RX
+>> (rt2x00queue.h, enum data_queue_qid).
+>> I also tried to re-add local_irq_save() in only one of the handlers. A=
+dding
+>> this tort2x00usb_interrupt_rxdone() alone solved the issue, while doin=
+g so
+>> for tx alonedid not.
+>>
+>> Note that this doesn't mean there is no problem for tx, that's maybe
+>> just more
+>> difficult to trigger.
+>>>> diff --git a/drivers/net/wireless/ralink/rt2x00/rt2x00dev.c b/driver=
+s/net/wireless/ralink/rt2x00/rt2x00dev.c
+>>>> index 1b08b01db27b..9c102a501ee6 100644
+>>>> --- a/drivers/net/wireless/ralink/rt2x00/rt2x00dev.c
+>>>> +++ b/drivers/net/wireless/ralink/rt2x00/rt2x00dev.c
+>>>> @@ -263,9 +263,9 @@ EXPORT_SYMBOL_GPL(rt2x00lib_dmastart);
+>>>>
+>>>>  void rt2x00lib_dmadone(struct queue_entry *entry)
+>>>>  {
+>>>> -	set_bit(ENTRY_DATA_STATUS_PENDING, &entry->flags);
+>>>>  	clear_bit(ENTRY_OWNER_DEVICE_DATA, &entry->flags);
+>>>>  	rt2x00queue_index_inc(entry, Q_INDEX_DMA_DONE);
+>>>> +	set_bit(ENTRY_DATA_STATUS_PENDING, &entry->flags);
+>>> Unfortunately I do not understand how this suppose to fix the problem=
+,
+>>> could you elaborate more about this change?
+>>>
+>> Re-adding local_irq_save() around thisrt2x00lib_dmadone()solved
+>> the issue. So I also tried to reverse the order of these calls.
+>> It seems totally plausible to me, that the correct sequence is to
+>> first clear the device assignment, then to set the status to dma_done,=
 
-How did you check auto-masking of MSI-X interrupts ?
-I was just wondering about the below comment in ql_disable_completion_inter=
-rupt(), where for MSI-X it does disable completion intr for zeroth intr.
-Seems special case for zeroth intr in MSI-X particular to this device.
+>> then to trigger the workqueue processing for this entry. When the hand=
+ler
+>> is scheduled away in the middle of this sequence, now there is no
+>> strange state where the entry can be processed by the workqueue while
+>> not declared dma_done for it.
+>> With this changed sequence there is no need anymore to disable interru=
+pts
+>> for solving the hang issue.
+> Thanks very much for explanations. However I still do not fully
+> understand the issue. Q_INDEX_DMA_DONE index is only checked on TX
+> processing (on RX we use only Q_INDEX_DONE and Q_INDEX) and
+> ENTRY_OWNER_DEVICE_DATA is already cleared before rt2x00lib_dmadone()
+> in rt2x00usb_interrupt_rxdone() .
+>
+> So I'm not sure how changing the order solve the problem. Looks
+> for me that the issue is triggered by some rt2x00lib_dmadone()
+> call done on error path (not in rt2x00usb_interrupt_rxdone())
+> and it race with this check:
+>
+>         if (test_and_set_bit(ENTRY_OWNER_DEVICE_DATA, &entry->flags) ||=
 
-        /* HW disables for us if we're MSIX multi interrupts and
-         * it's not the default (zeroeth) interrupt.
-         */
-        if (likely(test_bit(QL_MSIX_ENABLED, &qdev->flags) && intr))
-                return 0;
+>             test_bit(ENTRY_DATA_STATUS_PENDING, &entry->flags))
+>                 return false;
+>
+> in rt2x00usb_kick_rx_entry() - we return instead of submit urb.
+Hi Stanislaw,
+
+the good news is: your patch below also solves the issue for me. But
+removing the ENTRY_DATA_STATUS_PENDING check in
+rt2x00usb_kick_rx_entry() alone does not help, while removing this check
+in rt2x00usb_work_rxdone() alone does the trick.
+
+So the real race seems to be that the flags set in the completion
+handler are not yet visible on the cpu core running the workqueue. And
+because the worker is not rescheduled when aborted, the entry can just
+wait forever.
+Do you think this could make sense?
+> I'm somewhat reluctant to change the order, because TX processing
+> might relay on it (we first mark we wait for TX status and
+> then mark entry is no longer owned by hardware).
+OK, maybe it's just good luck that changing the order solves the rx
+problem. Or can memory barriers associated with the spinlock in
+rt2x00lib_dmadone() be responsible for that?
+(I'm testing on a armv7 system, Cortex-A9 quadcore.)
+
+While looking at it, why we double-clear ENTRY_OWNER_DEVICE_DATA in
+rt2x00usb_interrupt_rxdone() directly and in rt2x00lib_dmadone() again,
+while not doing the same for tx? Would it make more sense to possibly
+set ENTRY_DATA_IO_FAILED before clearing ENTRY_OWNER_DEVICE_DATA in
+rt2x00usb_interrupt_rxdone() as for tx?
+>  However on RX
+> side ENTRY_DATA_STATUS_PENDING bit make no sense as we do not
+> wait for status. We should remove ENTRY_DATA_STATUS_PENDING on
+> RX side and perhaps this also will solve issue you observe.
+I agree that removing the unnecessary checks is a good idea in any case.
+> Could you please check below patch, if it fixes the problem as well?
+At least I could not trigger the problem within transferring 10GB of
+data. But maybe the probability for triggering this bug is just lower
+because ENTRY_OWNER_DEVICE_DATA is cleared some time before
+ENTRY_DATA_STATUS_PENDING is set?
+
+Soeren
+>
+> Stanislaw
+>
+> diff --git a/drivers/net/wireless/ralink/rt2x00/rt2x00usb.c b/drivers/n=
+et/wireless/ralink/rt2x00/rt2x00usb.c
+> index b6c1344..731e633 100644
+> --- a/drivers/net/wireless/ralink/rt2x00/rt2x00usb.c
+> +++ b/drivers/net/wireless/ralink/rt2x00/rt2x00usb.c
+> @@ -360,8 +360,7 @@ static void rt2x00usb_work_rxdone(struct work_struc=
+t *work)
+>  	while (!rt2x00queue_empty(rt2x00dev->rx)) {
+>  		entry =3D rt2x00queue_get_entry(rt2x00dev->rx, Q_INDEX_DONE);
+> =20
+> -		if (test_bit(ENTRY_OWNER_DEVICE_DATA, &entry->flags) ||
+> -		    !test_bit(ENTRY_DATA_STATUS_PENDING, &entry->flags))
+> +		if (test_bit(ENTRY_OWNER_DEVICE_DATA, &entry->flags))
+>  			break;
+> =20
+>  		/*
+> @@ -413,8 +412,7 @@ static bool rt2x00usb_kick_rx_entry(struct queue_en=
+try *entry, void *data)
+>  	struct queue_entry_priv_usb *entry_priv =3D entry->priv_data;
+>  	int status;
+> =20
+> -	if (test_and_set_bit(ENTRY_OWNER_DEVICE_DATA, &entry->flags) ||
+> -	    test_bit(ENTRY_DATA_STATUS_PENDING, &entry->flags))
+> +	if (test_and_set_bit(ENTRY_OWNER_DEVICE_DATA, &entry->flags))
+>  		return false;
+> =20
+>  	rt2x00lib_dmastart(entry);
 
 
