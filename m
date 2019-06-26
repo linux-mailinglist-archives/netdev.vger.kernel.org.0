@@ -2,171 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD17F55DC9
-	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 03:37:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C81255DE2
+	for <lists+netdev@lfdr.de>; Wed, 26 Jun 2019 03:44:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726663AbfFZBg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Jun 2019 21:36:58 -0400
-Received: from mail-yb1-f194.google.com ([209.85.219.194]:43123 "EHLO
-        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726647AbfFZBg4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 21:36:56 -0400
-Received: by mail-yb1-f194.google.com with SMTP id 5so370591ybj.10
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 18:36:56 -0700 (PDT)
+        id S1726412AbfFZBod (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Jun 2019 21:44:33 -0400
+Received: from mail-pl1-f176.google.com ([209.85.214.176]:38369 "EHLO
+        mail-pl1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726304AbfFZBod (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Jun 2019 21:44:33 -0400
+Received: by mail-pl1-f176.google.com with SMTP id g4so446673plb.5
+        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 18:44:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HTYwKuXPT5ALk6Fdrn6IzuSHliH6LA0lPjX35sqNWXk=;
-        b=LEllaoY4m3xHWsTf7N+j4EKZmEHnZurpJaQ4DfOFpDq5VCrh/Gz2Ay+qnaw+/VsjPx
-         NdSVVQpJr40BZE6Igeny8QytRZGs2Q/pWaDuYl3MfRlk2BCtw4EoH94czkdBkZEkG2U2
-         pEpjPktRmpofIUWGYnET5+J9dWWu1Nr5Z5HkvrveWaTFPl4wzPfG8fKjVuQDtov0ywD4
-         yJc4bdyE/f1Z5EZXXaOuPkm/TbXG//FaJ9D1n/wYXeX9UeS6Nl8vpsriv+kRzCGIiI80
-         v6GAgaz0IchTKo6kTwjApTZ4Ga/8zRr/MuhlYpouM1wn78rpueWlK4a5wddrIlqHdaUd
-         cyhw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=V6OYgzaqYhr9egvv+LCV2yyF08Pv7oqdefJQ+ajQbqE=;
+        b=saP+e6G3P3tQCGJFHxdTGmr4zaoCyVDqAo2xqCuWe7/+uvIjA40ccEyg8zWQL/PtlD
+         2tQUr4LCnUrcy1xpnZcRx4tJ3g4xzlYZrN0/bIluckNHwC6EXJpwegKX3rkMesh/GDcI
+         Od05VC/5g3bOkVUOHU3rdqzeOykc/dDDZnnJWgS4FzEhNEDaB2vLJ8xPT8pU2IrDglxv
+         UWbwunEH8UhOW3YQWqvT0X/A/uiqZvotYtdY/s/xLf5PR8Yggxd6f7PT1JzkGk2LBaAW
+         odqRg3lS6gH0GXXuEwGPY6SKDr3BAVRrmgud6mkGkVE5JtHGHusmvnrn+YYv2JzWzX78
+         DDkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HTYwKuXPT5ALk6Fdrn6IzuSHliH6LA0lPjX35sqNWXk=;
-        b=bIqF7DKDcMRQmYC0u/qqeIrEATFYFQU/g2o2Y/oeUOXXxLupO+xkfDF5+ZO71rsBSt
-         oXBOgDYATpITmw/v7u3FwkYkWnGisJjlZX4g9yim2yPrJwesUXGSDPJSbr172orA344l
-         bcQ2zSVHjSR6Ts5xk9hyhHq8qPMTB6jfaXEeCW/rzgxaAljDEk76AooGPqzP66x+5B28
-         cdumgBHzDEyoNqcWm9dQEf4VkezyR7hbQFp0irz0M9BvaOA/4hyyYOfeb3ZVr115q1p+
-         /BGFminSQlM753eC0c0v/K9VKY6oolrOuLYdJXZXUZgn3b8qVJKsobS3j0arP2eo3LLx
-         5ulA==
-X-Gm-Message-State: APjAAAVTNhBn96djrtUcQViRf9Zq6+/c3mTZPbSyn2euX0J6aPPnRr4K
-        iA/2WFymWH9AHrul9IlOJd67goDB
-X-Google-Smtp-Source: APXvYqwPIXbfl9c6ilJXZ7bKfPEIfqEnq2u/iR4ITvDGhpiD46M/qh69iWgzBx664YD3WzLqmTCALg==
-X-Received: by 2002:a25:550b:: with SMTP id j11mr940441ybb.223.1561513014109;
-        Tue, 25 Jun 2019 18:36:54 -0700 (PDT)
-Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com. [209.85.219.180])
-        by smtp.gmail.com with ESMTPSA id 15sm4000069ywo.74.2019.06.25.18.36.52
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Tue, 25 Jun 2019 18:36:53 -0700 (PDT)
-Received: by mail-yb1-f180.google.com with SMTP id n3so405354ybn.0
-        for <netdev@vger.kernel.org>; Tue, 25 Jun 2019 18:36:52 -0700 (PDT)
-X-Received: by 2002:a25:21c2:: with SMTP id h185mr1028553ybh.125.1561513012633;
- Tue, 25 Jun 2019 18:36:52 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=V6OYgzaqYhr9egvv+LCV2yyF08Pv7oqdefJQ+ajQbqE=;
+        b=KsD/2N14nl4iu24PAVa5Z6MSDeFs5xJZcxiJeRmFyeMrywZjiHqqxSYP4aC1XE0u3N
+         adalzgjRz1SOqrMnaPjk94p1xXjutGRFxN9G6HzEh53AcYk7NDBBswOwHj4ndQbexau8
+         5xgmEZrOzjcOMJB6vz77czH5o1cGvdOp7R2EoUlOAPQ1UFHF0qUV5diXA7BniBDbHFGS
+         uUO89IeEDMcj91EevGZtC0S/sCtcKvEdReR0++7IKiWLDjdG3DTQIEiDBAUclab/jmgN
+         RlIW+7osvZktn6w0A9qX9ZdAl2sOcEx59LuqQrLfMJYo6kcOc33uAEkW8iknzcStYPy+
+         GCEw==
+X-Gm-Message-State: APjAAAUyIawzoZgK14StKX25ukkA3/aSGpqJnJD7b6D+/e2ViYmUjWCs
+        LIIOOvA/yo2WDQXmlRukfBZ3PMttbqlq6Q==
+X-Google-Smtp-Source: APXvYqyxtBb7tPUPAHzVvXYEWCHwOVvnxSup3qB6Gya2bUN1VfXNR828sYxcIBx0laPC+e/rF8hL9g==
+X-Received: by 2002:a17:902:24a2:: with SMTP id w31mr2034084pla.324.1561513472460;
+        Tue, 25 Jun 2019 18:44:32 -0700 (PDT)
+Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id v138sm17590332pfc.15.2019.06.25.18.44.29
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 25 Jun 2019 18:44:31 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, Phil Sutter <phil@nwl.cc>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@gmail.com>,
+        Andrea Claudi <aclaudi@redhat.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCHv2 iproute2] ip/iptoken: fix dump error when ipv6 disabled
+Date:   Wed, 26 Jun 2019 09:44:07 +0800
+Message-Id: <20190626014407.19204-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.19.2
+In-Reply-To: <20190625093550.7804-1-liuhangbin@gmail.com>
+References: <20190625093550.7804-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
-References: <20190625175948.24771-1-ivan.khoronzhuk@linaro.org> <20190625175948.24771-2-ivan.khoronzhuk@linaro.org>
-In-Reply-To: <20190625175948.24771-2-ivan.khoronzhuk@linaro.org>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 25 Jun 2019 21:36:15 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSff=+zqxxmCv3+bNxraigNgx_1Wm5Kn2FM7TTSZV4dnOg@mail.gmail.com>
-Message-ID: <CA+FuTSff=+zqxxmCv3+bNxraigNgx_1Wm5Kn2FM7TTSZV4dnOg@mail.gmail.com>
-Subject: Re: [PATCH v4 net-next 1/4] net: core: page_pool: add user cnt
- preventing pool deletion
-To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Cc:     David Miller <davem@davemloft.net>, grygorii.strashko@ti.com,
-        hawk@kernel.org, brouer@redhat.com, saeedm@mellanox.com,
-        leon@kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
-        ilias.apalodimas@linaro.org,
-        Network Development <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        jakub.kicinski@netronome.com,
-        John Fastabend <john.fastabend@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 25, 2019 at 2:00 PM Ivan Khoronzhuk
-<ivan.khoronzhuk@linaro.org> wrote:
->
-> Add user counter allowing to delete pool only when no users.
-> It doesn't prevent pool from flush, only prevents freeing the
-> pool instance. Helps when no need to delete the pool and now
-> it's user responsibility to free it by calling page_pool_free()
-> while destroying procedure. It also makes to use page_pool_free()
-> explicitly, not fully hidden in xdp unreg, which looks more
-> correct after page pool "create" routine.
->
-> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-> ---
+When we disable IPv6 from the start up (ipv6.disable=1), there will be
+no IPv6 route info in the dump message. If we return -1 when
+ifi->ifi_family != AF_INET6, we will get error like
 
-> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-> index f07c518ef8a5..1ec838e9927e 100644
-> --- a/include/net/page_pool.h
-> +++ b/include/net/page_pool.h
-> @@ -101,6 +101,7 @@ struct page_pool {
->         struct ptr_ring ring;
->
->         atomic_t pages_state_release_cnt;
-> +       atomic_t user_cnt;
+$ ip token list
+Dump terminated
 
-refcount_t?
+which will make user feel confused. There is no need to return -1 if the
+dump message not match. Return 0 is enough.
 
->  };
->
->  struct page *page_pool_alloc_pages(struct page_pool *pool, gfp_t gfp);
-> @@ -183,6 +184,12 @@ static inline dma_addr_t page_pool_get_dma_addr(struct page *page)
->         return page->dma_addr;
->  }
->
-> +/* used to prevent pool from deallocation */
-> +static inline void page_pool_get(struct page_pool *pool)
-> +{
-> +       atomic_inc(&pool->user_cnt);
-> +}
-> +
->  static inline bool is_page_pool_compiled_in(void)
->  {
->  #ifdef CONFIG_PAGE_POOL
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index b366f59885c1..169b0e3c870e 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-> @@ -48,6 +48,7 @@ static int page_pool_init(struct page_pool *pool,
->                 return -ENOMEM;
->
->         atomic_set(&pool->pages_state_release_cnt, 0);
-> +       atomic_set(&pool->user_cnt, 0);
->
->         if (pool->p.flags & PP_FLAG_DMA_MAP)
->                 get_device(pool->p.dev);
-> @@ -70,6 +71,8 @@ struct page_pool *page_pool_create(const struct page_pool_params *params)
->                 kfree(pool);
->                 return ERR_PTR(err);
->         }
-> +
-> +       page_pool_get(pool);
->         return pool;
->  }
->  EXPORT_SYMBOL(page_pool_create);
-> @@ -356,6 +359,10 @@ static void __warn_in_flight(struct page_pool *pool)
->
->  void __page_pool_free(struct page_pool *pool)
->  {
-> +       /* free only if no users */
-> +       if (!atomic_dec_and_test(&pool->user_cnt))
-> +               return;
-> +
->         WARN(pool->alloc.count, "API usage violation");
->         WARN(!ptr_ring_empty(&pool->ring), "ptr_ring is not empty");
->
-> diff --git a/net/core/xdp.c b/net/core/xdp.c
-> index 829377cc83db..04bdcd784d2e 100644
-> --- a/net/core/xdp.c
-> +++ b/net/core/xdp.c
-> @@ -372,6 +372,9 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
->
->         mutex_unlock(&mem_id_lock);
->
-> +       if (type == MEM_TYPE_PAGE_POOL)
-> +               page_pool_get(xdp_alloc->page_pool);
-> +
+v2: do not combine all the conditions together.
 
-need an analogous page_pool_put in xdp_rxq_info_unreg_mem_model? mlx5
-does not use that inverse function, but intel drivers do.
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+---
+ ip/iptoken.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
->         trace_mem_connect(xdp_alloc, xdp_rxq);
->         return 0;
->  err:
-> --
-> 2.17.1
->
+diff --git a/ip/iptoken.c b/ip/iptoken.c
+index f1194c3e..9f356890 100644
+--- a/ip/iptoken.c
++++ b/ip/iptoken.c
+@@ -60,9 +60,9 @@ static int print_token(struct nlmsghdr *n, void *arg)
+ 		return -1;
+ 
+ 	if (ifi->ifi_family != AF_INET6)
+-		return -1;
++		return 0;
+ 	if (ifi->ifi_index == 0)
+-		return -1;
++		return 0;
+ 	if (ifindex > 0 && ifi->ifi_index != ifindex)
+ 		return 0;
+ 	if (ifi->ifi_flags & (IFF_LOOPBACK | IFF_NOARP))
+-- 
+2.19.2
+
