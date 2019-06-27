@@ -2,84 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 462215864C
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 17:50:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1EB358680
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 17:57:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726596AbfF0Puj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 11:50:39 -0400
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:48648 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726384AbfF0Puj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 11:50:39 -0400
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.89)
-        (envelope-from <fw@strlen.de>)
-        id 1hgWfU-00045i-OE; Thu, 27 Jun 2019 17:50:36 +0200
-Date:   Thu, 27 Jun 2019 17:50:36 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Thomas Jarosch <thomas.jarosch@intra2net.com>
-Cc:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org,
-        Juliana Rodrigueiro <juliana.rodrigueiro@intra2net.com>
-Subject: Re: 4.19: Traced deadlock during xfrm_user module load
-Message-ID: <20190627155036.vzoo2xikdfuyiug3@breakpoint.cc>
-References: <20190625155509.pgcxwgclqx3lfxxr@intra2net.com>
- <20190625165344.ii4zgvxydqj663ny@breakpoint.cc>
- <20190627154629.27g5uwd47esyhz4s@intra2net.com>
+        id S1726470AbfF0P5N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 11:57:13 -0400
+Received: from relay8-d.mail.gandi.net ([217.70.183.201]:43297 "EHLO
+        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726405AbfF0P5N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 11:57:13 -0400
+X-Originating-IP: 86.250.200.211
+Received: from localhost (lfbn-1-17395-211.w86-250.abo.wanadoo.fr [86.250.200.211])
+        (Authenticated sender: maxime.ripard@bootlin.com)
+        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 8270F1BF211;
+        Thu, 27 Jun 2019 15:57:09 +0000 (UTC)
+Date:   Thu, 27 Jun 2019 17:57:08 +0200
+From:   Maxime Ripard <maxime.ripard@bootlin.com>
+To:     Rob Herring <robh+dt@kernel.org>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        netdev <netdev@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Antoine =?utf-8?Q?T=C3=A9nart?= <antoine.tenart@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH v4 03/13] dt-bindings: net: Add a YAML schemas for the
+ generic MDIO options
+Message-ID: <20190627155708.myxychzngc3trxhc@flea>
+References: <cover.e80da8845680a45c2e07d5f17280fdba84555b8a.1561649505.git-series.maxime.ripard@bootlin.com>
+ <e99ff7377a0d3d140cf62200fd9d62c108dac24e.1561649505.git-series.maxime.ripard@bootlin.com>
+ <CAL_JsqKQoj6x-8cMxp2PFQLcu93aitGO2wALDYaH2h72cPSyfg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="fr3al6no3addfpyv"
 Content-Disposition: inline
-In-Reply-To: <20190627154629.27g5uwd47esyhz4s@intra2net.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <CAL_JsqKQoj6x-8cMxp2PFQLcu93aitGO2wALDYaH2h72cPSyfg@mail.gmail.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thomas Jarosch <thomas.jarosch@intra2net.com> wrote:
-> You wrote on Tue, Jun 25, 2019 at 06:53:44PM +0200:
-> > Thanks for this detailed analysis.
-> > In this specific case I think this is enough:
-> > 
-> > diff --git a/net/netfilter/nfnetlink.c b/net/netfilter/nfnetlink.c
-> > index 92077d459109..61ba92415480 100644
-> > --- a/net/netfilter/nfnetlink.c
-> > +++ b/net/netfilter/nfnetlink.c
-> > @@ -578,7 +578,8 @@ static int nfnetlink_bind(struct net *net, int group)
-> >         ss = nfnetlink_get_subsys(type << 8);
-> >         rcu_read_unlock();
-> >         if (!ss)
-> > -               request_module("nfnetlink-subsys-%d", type);
-> > +               request_module_nowait("nfnetlink-subsys-%d", type);
-> >         return 0;
-> >  }
-> >  #endif
-> 
-> thanks for the patch! We finally found an easy way to reproduce the deadlock,
-> the following commands instantly trigger the problem on our machines:
-> 
->     rmmod nf_conntrack_netlink
->     rmmod xfrm_user
->     conntrack -e NEW -E & modprobe -v xfrm_user
-> 
-> Note: the "-e" filter is needed to trigger the problematic
-> code path in the kernel.
-> 
-> We were worried that using "_nowait" would introduce other race conditions,
-> since the requested service might not be available by the time it is required.
 
-Then this code would be buggy too, there is no guarantee that a
-request_module() succeeds.
+--fr3al6no3addfpyv
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> "nfnetlink_bind()", the caller will listen on the socket for messages
-> regardless whether the needed modules are loaded, loading or unloaded.
-> To verify this we added a three second sleep during the initialisation of
-> nf_conntrack_netlink. The events started to appear after
-> the delayed init was completed.
-> 
-> If this is the case, then using "_nowait" should suffice as a fix
-> for the problem. Could you please confirm these assumptions
-> and give us some piece of mind?
+Hi Rob,
 
-Yes, _nowait is safe here (and needed, as you find out).
-I'm away for a few hours but I plan to submit this patch officially
-soon.
+On Thu, Jun 27, 2019 at 09:48:06AM -0600, Rob Herring wrote:
+> On Thu, Jun 27, 2019 at 9:32 AM Maxime Ripard <maxime.ripard@bootlin.com> wrote:
+> >
+> > The MDIO buses have a number of available device tree properties that can
+> > be used in their device tree node. Add a YAML schemas for those.
+> >
+> > Suggested-by: Andrew Lunn <andrew@lunn.ch>
+> > Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
+> > ---
+> >  Documentation/devicetree/bindings/net/mdio.txt  | 38 +-------------
+> >  Documentation/devicetree/bindings/net/mdio.yaml | 51 ++++++++++++++++++-
+> >  2 files changed, 52 insertions(+), 37 deletions(-)
+> >  create mode 100644 Documentation/devicetree/bindings/net/mdio.yaml
+>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+>
+> However, some comments for a follow-up...
+>
+> > diff --git a/Documentation/devicetree/bindings/net/mdio.yaml b/Documentation/devicetree/bindings/net/mdio.yaml
+> > new file mode 100644
+> > index 000000000000..b8fa8251c4bc
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/net/mdio.yaml
+> > @@ -0,0 +1,51 @@
+> > +# SPDX-License-Identifier: GPL-2.0
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/net/mdio.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: MDIO Bus Generic Binding
+> > +
+> > +maintainers:
+> > +  - Andrew Lunn <andrew@lunn.ch>
+> > +  - Florian Fainelli <f.fainelli@gmail.com>
+> > +  - Heiner Kallweit <hkallweit1@gmail.com>
+> > +
+> > +description:
+> > +  These are generic properties that can apply to any MDIO bus. Any
+> > +  MDIO bus must have a list of child nodes, one per device on the
+> > +  bus. These should follow the generic ethernet-phy.yaml document, or
+> > +  a device specific binding document.
+> > +
+> > +properties:
+> > +  reset-gpios:
+> > +    maxItems: 1
+> > +    description:
+> > +      The phandle and specifier for the GPIO that controls the RESET
+> > +      lines of all PHYs on that MDIO bus.
+> > +
+> > +  reset-delay-us:
+> > +    description:
+> > +      RESET pulse width in microseconds. It applies to all PHY devices
+> > +      and must therefore be appropriately determined based on all PHY
+> > +      requirements (maximum value of all per-PHY RESET pulse widths).
+> > +
+> > +examples:
+> > +  - |
+> > +    davinci_mdio: mdio@5c030000 {
+>
+> Can we enforce nodename to be mdio? That may not work for muxes.
+> You'll probably have to implement it and see.
+
+Ok, I'll send a follow-up patch for this.
+
+> > +        compatible = "ti,davinci_mdio";
+> > +        reg = <0x5c030000 0x1000>;
+> > +        #address-cells = <1>;
+> > +        #size-cells = <0>;
+>
+> These 2 should have a schema.
+
+Indeed, I'll do it for that too.
+
+> > +
+> > +        reset-gpios = <&gpio2 5 1>;
+> > +        reset-delay-us = <2>;
+> > +
+> > +        ethphy0: ethernet-phy@1 {
+> > +            reg = <1>;
+>
+> Need a child node schema to validate the unit-address and reg property.
+
+This should be already covered by the ethernet-phy.yaml schemas
+earlier in this series.
+
+Were you expecting something else?
+
+Maxime
+
+--
+Maxime Ripard, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
+
+--fr3al6no3addfpyv
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXRTnVAAKCRDj7w1vZxhR
+xe3EAQCErMl25qlGQzJBVvU6zEMusgjhLvAGFqJVeEB50qFp4gEAiohuJBVAAHsi
+fBpN91UvLx/o1V4K3KlpeQefakcjpAU=
+=hiQD
+-----END PGP SIGNATURE-----
+
+--fr3al6no3addfpyv--
