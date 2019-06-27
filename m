@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 29309576E4
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:45:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 139FB576E6
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:45:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729570AbfF0Alt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 20:41:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45500 "EHLO mail.kernel.org"
+        id S1729589AbfF0Alv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 20:41:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45554 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729562AbfF0Als (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 20:41:48 -0400
+        id S1729577AbfF0Alu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 20:41:50 -0400
 Received: from sasha-vm.mshome.net (unknown [107.242.116.147])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CA86B205ED;
-        Thu, 27 Jun 2019 00:41:44 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9203E21881;
+        Thu, 27 Jun 2019 00:41:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1561596106;
-        bh=PQAzmDD3jp+tmpGIAwp3yNOS9nvdyTz5uCCuk/txyHc=;
+        s=default; t=1561596110;
+        bh=InIDW00RUkirh/J5pgEUul3acAmgbBcoF5Q5xM3H0D4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WJU4av8+P+znam/wZYbxAwDn1iIjcNlTWHfGmS7B9PRxOSmAniuJ9gafmxdx4zB+T
-         ZWR9BswXXxXnBbIAi4HF869z0Ckjq38ZyLZcias+LbnhRT97J+jAENhr2NZdG2W0/j
-         wJ7VfMX1/fk69RbaXEdeF3tJC58mmTOEoPFZCD/8=
+        b=ZxstcwcWXSj8A5EZNZ+KzMNbLXd5uW20RXM8FFB4h6uoMc1fAccKs0BSQCbkt0osj
+         0Dq9iRqVATR4l99XVWGh9CCBXH78eaRzFc9obzQ+AAM50GrNaHjonBRES4F/F5X9pK
+         cm1gCc+dTUQbOYXuFuV/uG+OCgTk3+oBKBZFMuns=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Takashi Iwai <tiwai@suse.de>, Kalle Valo <kvalo@codeaurora.org>,
+Cc:     Guillaume Nault <gnault@redhat.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 07/21] mwifiex: Abort at too short BSS descriptor element
-Date:   Wed, 26 Jun 2019 20:41:07 -0400
-Message-Id: <20190627004122.21671-7-sashal@kernel.org>
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 08/21] netfilter: ipv6: nf_defrag: fix leakage of unqueued fragments
+Date:   Wed, 26 Jun 2019 20:41:08 -0400
+Message-Id: <20190627004122.21671-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190627004122.21671-1-sashal@kernel.org>
 References: <20190627004122.21671-1-sashal@kernel.org>
@@ -43,89 +45,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Guillaume Nault <gnault@redhat.com>
 
-[ Upstream commit 685c9b7750bfacd6fc1db50d86579980593b7869 ]
+[ Upstream commit a0d56cb911ca301de81735f1d73c2aab424654ba ]
 
-Currently mwifiex_update_bss_desc_with_ie() implicitly assumes that
-the source descriptor entries contain the enough size for each type
-and performs copying without checking the source size.  This may lead
-to read over boundary.
+With commit 997dd9647164 ("net: IP6 defrag: use rbtrees in
+nf_conntrack_reasm.c"), nf_ct_frag6_reasm() is now called from
+nf_ct_frag6_queue(). With this change, nf_ct_frag6_queue() can fail
+after the skb has been added to the fragment queue and
+nf_ct_frag6_gather() was adapted to handle this case.
 
-Fix this by putting the source size check in appropriate places.
+But nf_ct_frag6_queue() can still fail before the fragment has been
+queued. nf_ct_frag6_gather() can't handle this case anymore, because it
+has no way to know if nf_ct_frag6_queue() queued the fragment before
+failing. If it didn't, the skb is lost as the error code is overwritten
+with -EINPROGRESS.
 
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Fix this by setting -EINPROGRESS directly in nf_ct_frag6_queue(), so
+that nf_ct_frag6_gather() can propagate the error as is.
+
+Fixes: 997dd9647164 ("net: IP6 defrag: use rbtrees in nf_conntrack_reasm.c")
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/marvell/mwifiex/scan.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ net/ipv6/netfilter/nf_conntrack_reasm.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/scan.c b/drivers/net/wireless/marvell/mwifiex/scan.c
-index 674ad3405646..32b6b9efd6ae 100644
---- a/drivers/net/wireless/marvell/mwifiex/scan.c
-+++ b/drivers/net/wireless/marvell/mwifiex/scan.c
-@@ -1258,6 +1258,8 @@ int mwifiex_update_bss_desc_with_ie(struct mwifiex_adapter *adapter,
- 			break;
- 
- 		case WLAN_EID_FH_PARAMS:
-+			if (element_len + 2 < sizeof(*fh_param_set))
-+				return -EINVAL;
- 			fh_param_set =
- 				(struct ieee_types_fh_param_set *) current_ptr;
- 			memcpy(&bss_entry->phy_param_set.fh_param_set,
-@@ -1266,6 +1268,8 @@ int mwifiex_update_bss_desc_with_ie(struct mwifiex_adapter *adapter,
- 			break;
- 
- 		case WLAN_EID_DS_PARAMS:
-+			if (element_len + 2 < sizeof(*ds_param_set))
-+				return -EINVAL;
- 			ds_param_set =
- 				(struct ieee_types_ds_param_set *) current_ptr;
- 
-@@ -1277,6 +1281,8 @@ int mwifiex_update_bss_desc_with_ie(struct mwifiex_adapter *adapter,
- 			break;
- 
- 		case WLAN_EID_CF_PARAMS:
-+			if (element_len + 2 < sizeof(*cf_param_set))
-+				return -EINVAL;
- 			cf_param_set =
- 				(struct ieee_types_cf_param_set *) current_ptr;
- 			memcpy(&bss_entry->ss_param_set.cf_param_set,
-@@ -1285,6 +1291,8 @@ int mwifiex_update_bss_desc_with_ie(struct mwifiex_adapter *adapter,
- 			break;
- 
- 		case WLAN_EID_IBSS_PARAMS:
-+			if (element_len + 2 < sizeof(*ibss_param_set))
-+				return -EINVAL;
- 			ibss_param_set =
- 				(struct ieee_types_ibss_param_set *)
- 				current_ptr;
-@@ -1294,10 +1302,14 @@ int mwifiex_update_bss_desc_with_ie(struct mwifiex_adapter *adapter,
- 			break;
- 
- 		case WLAN_EID_ERP_INFO:
-+			if (!element_len)
-+				return -EINVAL;
- 			bss_entry->erp_flags = *(current_ptr + 2);
- 			break;
- 
- 		case WLAN_EID_PWR_CONSTRAINT:
-+			if (!element_len)
-+				return -EINVAL;
- 			bss_entry->local_constraint = *(current_ptr + 2);
- 			bss_entry->sensed_11h = true;
- 			break;
-@@ -1337,6 +1349,9 @@ int mwifiex_update_bss_desc_with_ie(struct mwifiex_adapter *adapter,
- 			break;
- 
- 		case WLAN_EID_VENDOR_SPECIFIC:
-+			if (element_len + 2 < sizeof(vendor_ie->vend_hdr))
-+				return -EINVAL;
+diff --git a/net/ipv6/netfilter/nf_conntrack_reasm.c b/net/ipv6/netfilter/nf_conntrack_reasm.c
+index 1e1fa99b3243..e6114a6710e0 100644
+--- a/net/ipv6/netfilter/nf_conntrack_reasm.c
++++ b/net/ipv6/netfilter/nf_conntrack_reasm.c
+@@ -292,7 +292,11 @@ static int nf_ct_frag6_queue(struct frag_queue *fq, struct sk_buff *skb,
+ 		skb->_skb_refdst = 0UL;
+ 		err = nf_ct_frag6_reasm(fq, skb, prev, dev);
+ 		skb->_skb_refdst = orefdst;
+-		return err;
 +
- 			vendor_ie = (struct ieee_types_vendor_specific *)
- 					current_ptr;
++		/* After queue has assumed skb ownership, only 0 or
++		 * -EINPROGRESS must be returned.
++		 */
++		return err ? -EINPROGRESS : 0;
+ 	}
  
+ 	skb_dst_drop(skb);
+@@ -480,12 +484,6 @@ int nf_ct_frag6_gather(struct net *net, struct sk_buff *skb, u32 user)
+ 		ret = 0;
+ 	}
+ 
+-	/* after queue has assumed skb ownership, only 0 or -EINPROGRESS
+-	 * must be returned.
+-	 */
+-	if (ret)
+-		ret = -EINPROGRESS;
+-
+ 	spin_unlock_bh(&fq->q.lock);
+ 	inet_frag_put(&fq->q);
+ 	return ret;
 -- 
 2.20.1
 
