@@ -2,105 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D0BC457732
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:45:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F3FA578CD
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:57:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729902AbfF0Ana (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 20:43:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47470 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729891AbfF0An3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 20:43:29 -0400
-Received: from sasha-vm.mshome.net (unknown [107.242.116.147])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 683232083B;
-        Thu, 27 Jun 2019 00:43:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1561596209;
-        bh=n7IlawOF7FnqLc65d7lATRj0IHio8NNaQ6QLMHTlbJs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GvIn+7ct0ktuKVo3SBNMWK/gztm+YJbLnoTNC66L9tREhFm8TxAkFxv7eLnQN79ZT
-         HK9qNU51kflculkqcy9P4T+u47SksSIJg3aoT+ah7Tz2nVLUy2KQzZj2TTHAYT9Bp9
-         6tcFHpGZ6ECqI5EacLs1lQK+ob6iEG5/297uKBp0=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Mauro S. M. Rodrigues" <maurosr@linux.vnet.ibm.com>,
-        Sudarsana Reddy Kalluru <skalluru@marvell.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 12/12] bnx2x: Check if transceiver implements DDM before access
-Date:   Wed, 26 Jun 2019 20:42:34 -0400
-Message-Id: <20190627004236.21909-12-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190627004236.21909-1-sashal@kernel.org>
-References: <20190627004236.21909-1-sashal@kernel.org>
-MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+        id S1726883AbfF0A5R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 20:57:17 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:40325 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726805AbfF0A5R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 20:57:17 -0400
+Received: by mail-pl1-f193.google.com with SMTP id a93so283759pla.7
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 17:57:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amacapital-net.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=LOqNQI21WoQcwYikAA338UXv4HjPjIDxoN7IITALykc=;
+        b=X0d5GBAK8fK3O1X54m92nl3behZ4WkA/8rV8RX5Ok/bv5+gjj7TMhXgRomRfzmVOXD
+         em7ihIuuOu8zwEQfQr2BPr16kqr9nG867z+NiKngOGpFvNFT/spb6jGVJWyJdJ7rkQ9u
+         TELHm8suVWrXYp0yvohWF90V0gfH4/VNgsZomFmfiVb+mXH+liZvjCk5RIxAZ90Cnldg
+         6StHzBNsrbQcUZLntbfJ6eU3EO8aQp/RAVJiM50g2uCqMcTTCSAVhUMML5PXbnLgAdhD
+         IqT3E5gyZuP7YeWgiEP/tDnYSLKD/01YRoFXju5YR+B0DiF4BaBbK1Fut9PRZDNCuSjj
+         tatg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=LOqNQI21WoQcwYikAA338UXv4HjPjIDxoN7IITALykc=;
+        b=UgUaRQGyYfmnFFihcCh3DeTwR/JLIiykAjdjo9xLavJc8MUUvMTshyHewaIiLCyFR5
+         y5YkAqiL4ZHOxu4VDr4BBHC8DY8TYQDfk9M1bSw2z7xSgwqRsYF6dUvmiIOpnsqisNYl
+         2uNebwk+H+dq0ya+I4N9I1Y8EE4R11vDhwJ6+ctzxYNNZDK9wI3m5NYNen+LITp4ONwo
+         XI31I2rB37z02qWRrIn3v7vF8qggwoQCjc+KoDnhVIz6FKuP8+2+sPdukbAA2Y75VfbM
+         ttWV2JWL9LYqtvyMVLEWbq6JSKTPQwaQZFK4iKpE44leZGN13oasyiyNTCERSeqJIyxf
+         qLMQ==
+X-Gm-Message-State: APjAAAXpH5JPKwZMspMEn2G9m75oJHFVj7eIRbQ2OdUS8YguSr/Sho3i
+        x9be58EECFqYUMvlhfEt+JO7Mg==
+X-Google-Smtp-Source: APXvYqyTSY9gch65Qu9dGOhZGNTvsfd+ZezV4tkSiG14HtuietLqII750U3Ph8OeSOTNoq+MuoK8rA==
+X-Received: by 2002:a17:902:42e2:: with SMTP id h89mr1102632pld.77.1561597036529;
+        Wed, 26 Jun 2019 17:57:16 -0700 (PDT)
+Received: from [100.74.181.2] (35.sub-174-215-8.myvzw.com. [174.215.8.35])
+        by smtp.gmail.com with ESMTPSA id w10sm299843pgs.32.2019.06.26.17.57.14
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 26 Jun 2019 17:57:15 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (1.0)
+Subject: Re: [PATCH V33 24/30] bpf: Restrict bpf when kernel lockdown is in confidentiality mode
+From:   Andy Lutomirski <luto@amacapital.net>
+X-Mailer: iPhone Mail (16F203)
+In-Reply-To: <alpine.LRH.2.21.1906270621080.28132@namei.org>
+Date:   Wed, 26 Jun 2019 17:57:12 -0700
+Cc:     Andy Lutomirski <luto@kernel.org>,
+        Matthew Garrett <matthewgarrett@google.com>,
+        linux-security@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        David Howells <dhowells@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Matthew Garrett <mjg59@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Chun-Yi Lee <jlee@suse.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        linux-security-module@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <6E53376F-01BB-4795-BC02-24F9CAE00001@amacapital.net>
+References: <20190621011941.186255-1-matthewgarrett@google.com> <20190621011941.186255-25-matthewgarrett@google.com> <CALCETrVUwQP7roLnW6kFG80Cc5U6X_T6AW+BTAftLccYGp8+Ow@mail.gmail.com> <alpine.LRH.2.21.1906270621080.28132@namei.org>
+To:     James Morris <jmorris@namei.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Mauro S. M. Rodrigues" <maurosr@linux.vnet.ibm.com>
 
-[ Upstream commit cf18cecca911c0db96b868072665347efe6df46f ]
 
-Some transceivers may comply with SFF-8472 even though they do not
-implement the Digital Diagnostic Monitoring (DDM) interface described in
-the spec. The existence of such area is specified by the 6th bit of byte
-92, set to 1 if implemented.
+> On Jun 26, 2019, at 1:22 PM, James Morris <jmorris@namei.org> wrote:
+>=20
+> [Adding the LSM mailing list: missed this patchset initially]
+>=20
+>> On Thu, 20 Jun 2019, Andy Lutomirski wrote:
+>>=20
+>> This patch exemplifies why I don't like this approach:
+>>=20
+>>> @@ -97,6 +97,7 @@ enum lockdown_reason {
+>>>        LOCKDOWN_INTEGRITY_MAX,
+>>>        LOCKDOWN_KCORE,
+>>>        LOCKDOWN_KPROBES,
+>>> +       LOCKDOWN_BPF,
+>>>        LOCKDOWN_CONFIDENTIALITY_MAX,
+>>=20
+>>> --- a/security/lockdown/lockdown.c
+>>> +++ b/security/lockdown/lockdown.c
+>>> @@ -33,6 +33,7 @@ static char *lockdown_reasons[LOCKDOWN_CONFIDENTIALITY=
+_MAX+1] =3D {
+>>>        [LOCKDOWN_INTEGRITY_MAX] =3D "integrity",
+>>>        [LOCKDOWN_KCORE] =3D "/proc/kcore access",
+>>>        [LOCKDOWN_KPROBES] =3D "use of kprobes",
+>>> +       [LOCKDOWN_BPF] =3D "use of bpf",
+>>>        [LOCKDOWN_CONFIDENTIALITY_MAX] =3D "confidentiality",
+>>=20
+>> The text here says "use of bpf", but what this patch is *really* doing
+>> is locking down use of BPF to read kernel memory.  If the details
+>> change, then every LSM needs to get updated, and we risk breaking user
+>> policies that are based on LSMs that offer excessively fine
+>> granularity.
+>=20
+> Can you give an example of how the details might change?
+>=20
+>> I'd be more comfortable if the LSM only got to see "confidentiality"
+>> or "integrity".
+>=20
+> These are not sufficient for creating a useful policy for the SELinux=20
+> case.
+>=20
+>=20
 
-Currently, without checking this bit, bnx2x fails trying to read sfp
-module's EEPROM with the follow message:
+I may have misunderstood, but I thought that SELinux mainly needed to allow c=
+ertain privileged programs to bypass the policy.  Is there a real example of=
+ what SELinux wants to do that can=E2=80=99t be done in the simplified model=
+?
 
-ethtool -m enP5p1s0f1
-Cannot get Module EEPROM data: Input/output error
-
-Because it fails to read the additional 256 bytes in which it is assumed
-to exist the DDM data.
-
-This issue was noticed using a Mellanox Passive DAC PN 01FT738. The EEPROM
-data was confirmed by Mellanox as correct and similar to other Passive
-DACs from other manufacturers.
-
-Signed-off-by: Mauro S. M. Rodrigues <maurosr@linux.vnet.ibm.com>
-Acked-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_ethtool.c | 3 ++-
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.h    | 1 +
- 2 files changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_ethtool.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_ethtool.c
-index c56b61dce2d1..f4e83c86d643 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_ethtool.c
-@@ -1559,7 +1559,8 @@ static int bnx2x_get_module_info(struct net_device *dev,
- 	}
- 
- 	if (!sff8472_comp ||
--	    (diag_type & SFP_EEPROM_DIAG_ADDR_CHANGE_REQ)) {
-+	    (diag_type & SFP_EEPROM_DIAG_ADDR_CHANGE_REQ) ||
-+	    !(diag_type & SFP_EEPROM_DDM_IMPLEMENTED)) {
- 		modinfo->type = ETH_MODULE_SFF_8079;
- 		modinfo->eeprom_len = ETH_MODULE_SFF_8079_LEN;
- 	} else {
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.h
-index b7d251108c19..7115f5025664 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.h
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.h
-@@ -62,6 +62,7 @@
- #define SFP_EEPROM_DIAG_TYPE_ADDR		0x5c
- #define SFP_EEPROM_DIAG_TYPE_SIZE		1
- #define SFP_EEPROM_DIAG_ADDR_CHANGE_REQ		(1<<2)
-+#define SFP_EEPROM_DDM_IMPLEMENTED		(1<<6)
- #define SFP_EEPROM_SFF_8472_COMP_ADDR		0x5e
- #define SFP_EEPROM_SFF_8472_COMP_SIZE		1
- 
--- 
-2.20.1
-
+The think that specifically makes me uneasy about exposing all of these prec=
+ise actions to LSMs is that they will get exposed to userspace in a way that=
+ forces us to treat them as stable ABIs.=
