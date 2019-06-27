@@ -2,100 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5892C58C9F
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 23:13:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2150658CEB
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 23:17:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726834AbfF0VM5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 17:12:57 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:44992 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726513AbfF0VM4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 17:12:56 -0400
-Received: by mail-wr1-f68.google.com with SMTP id r16so2186971wrl.11
-        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 14:12:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=TAoUX57gTM5CTvJG9+3ULxoQA8JyOoloey9APZWjyns=;
-        b=pswUDGdyBDddEgfyjpuo8JLbJM4q0MN/GMGj4VwgiR8BUoRUoOcZd+r1FGV9q9VhaE
-         Q7OTKNLxfUaQGMEs3vlnpKahz97tMldkvDUcGQQLKR5/8nzPauiJOR0J7d56oHW52jdY
-         LVKASji+9686G4Roy+xUaCQ+VlaO8JnL45LhspuhWMvjNOzvgk4POchxEhB96X/5E5KR
-         Ep41+mPH+09u1xB6taGle2bWxmfdYQj9VAxHUaDL8n5WCCSXJUJ2dXgjvUhF1qKO5DBg
-         hnQr0fxg1Bq+Ewnm6ZG4W27veRt6YAitEsW/6Nyok44BqUDyBmStahvZy5OnIATpRGt+
-         mkmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=TAoUX57gTM5CTvJG9+3ULxoQA8JyOoloey9APZWjyns=;
-        b=Ju4GcDZ1O+2yTCJhqlZKdRXQ/QIN/W3elwRkvEhYabIm3lojdwNqZUefOMUOitxFCo
-         XNMUQY0K0i4nyW/hzyRdh6egm3AOhGK0+6dUbwFdxSYca4wju7ewkI+NGf6wMDrljeHo
-         mcqOXVC+20aEi9EhKZ6nZHtATwMNfOb0lizLrs+S3rqB67gUb5EESkAmkt1UD/30rx6Z
-         NyL6j0U308Jbrq8YGyLynVLp1cpPwIPNf3F5a0sQRPynntzj2FzraiEqtno9qY7IgMy4
-         tuNdKsylgU12Bj8bA1YnBUJLWX9ndN0xO9y7jX52TxTQCCuPzhrxlkQ1qVB2qjez6hhq
-         jk1Q==
-X-Gm-Message-State: APjAAAVycPqivBciZmYs7NGTlVV+WwsN+SVGWbtFeeSpVWx6zPAAg6WQ
-        AM3o7viOQzFkfggKk581yqRfau/Y
-X-Google-Smtp-Source: APXvYqzTKul/zASWSyN6bxF1DKjbSSqehWL73BzP10gfS3+tx/6H7hQ3Q+y4kV5LN5RIcA7GtTaz6g==
-X-Received: by 2002:adf:de8e:: with SMTP id w14mr5084166wrl.130.1561669974176;
-        Thu, 27 Jun 2019 14:12:54 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8bf3:bd00:3d9e:1690:cd42:495c? (p200300EA8BF3BD003D9E1690CD42495C.dip0.t-ipconnect.de. [2003:ea:8bf3:bd00:3d9e:1690:cd42:495c])
-        by smtp.googlemail.com with ESMTPSA id c1sm634932wrh.1.2019.06.27.14.12.53
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 27 Jun 2019 14:12:53 -0700 (PDT)
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] r8169: consider that 32 Bit DMA is the default
-Message-ID: <eabad258-68de-49b9-91d7-7c853ea4f150@gmail.com>
-Date:   Thu, 27 Jun 2019 23:12:39 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726648AbfF0VQ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 17:16:59 -0400
+Received: from www62.your-server.de ([213.133.104.62]:34270 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726384AbfF0VQ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 17:16:59 -0400
+Received: from [78.46.172.3] (helo=sslproxy06.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hgblI-0007MF-8y; Thu, 27 Jun 2019 23:16:56 +0200
+Received: from [178.193.45.231] (helo=linux.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hgblI-0006dg-35; Thu, 27 Jun 2019 23:16:56 +0200
+Subject: Re: [PATCH v2 bpf-next 3/7] libbpf: add kprobe/uprobe attach API
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, Alexei Starovoitov <ast@fb.com>,
+        Stanislav Fomichev <sdf@fomichev.me>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+References: <20190621045555.4152743-1-andriin@fb.com>
+ <20190621045555.4152743-4-andriin@fb.com>
+ <a7780057-1d70-9ace-960b-ff65867dc277@iogearbox.net>
+ <CAEf4BzYy4Eorj0VxzArZg+V4muJCvDTX_VVfoouzZUcrBwTa1w@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <44d3b02d-b0fb-b0cb-a0d3-e7dd4bde0b92@iogearbox.net>
+Date:   Thu, 27 Jun 2019 23:16:55 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
 MIME-Version: 1.0
+In-Reply-To: <CAEf4BzYy4Eorj0VxzArZg+V4muJCvDTX_VVfoouzZUcrBwTa1w@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25493/Thu Jun 27 10:06:16 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Documentation/DMA-API-HOWTO.txt states:
-By default, the kernel assumes that your device can address 32-bits of
-DMA addressing. For a 64-bit capable device, this needs to be increased,
-and for a device with limitations, it needs to be decreased.
+On 06/27/2019 12:15 AM, Andrii Nakryiko wrote:
+> On Wed, Jun 26, 2019 at 7:25 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+[...]
+>> What this boils down to is that this should get a proper abstraction, e.g. as
+>> in struct libbpf_event which holds the event object. There should be helper
+>> functions like libbpf_event_create_{kprobe,uprobe,tracepoint,raw_tracepoint} returning
+>> such an struct libbpf_event object on success, and a single libbpf_event_destroy()
+>> that does the event specific teardown. bpf_program__attach_event() can then take
+>> care of only attaching the program to it. Having an object for this is also more
+>> extensible than just a fd number. Nice thing is that this can also be completely
+>> internal to libbpf.c as with struct bpf_program and other abstractions where we
+>> don't expose the internals in the public header.
+> 
+> Yeah, I totally agree, I think this is a great idea! I don't
+> particularly like "event" name, that seems very overloaded term. Do
+> you mind if I call this "bpf_hook" instead of "libbpf_event"? I've
+> always thought about these different points in the system to which one
+> can attach BPF program as hooks exposed from kernel :)
+> 
+> Would it also make sense to do attaching to non-tracing hooks using
+> the same mechanism (e.g., all the per-cgroup stuff, sysctl, etc)? Not
+> sure how people do that today, will check to see how it's done, but I
+> think nothing should conceptually prevent doing that using the same
+> abstract bpf_hook way, right?
 
-Therefore we don't need the 32 Bit DMA fallback configuration and can
-remove it.
+I think if we abstract it this way, then absolutely. If I grok the naming conventions
+from the README right, then this would be under 'bpf_hook__' prefix. :)
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
-
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index b4df66bef..1b5f125e1 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -6724,15 +6724,8 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	tp->cp_cmd = RTL_R16(tp, CPlusCmd);
- 
- 	if (sizeof(dma_addr_t) > 4 && tp->mac_version >= RTL_GIGA_MAC_VER_18 &&
--	    !dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64))) {
-+	    !dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64)))
- 		dev->features |= NETIF_F_HIGHDMA;
--	} else {
--		rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
--		if (rc < 0) {
--			dev_err(&pdev->dev, "DMA configuration failed\n");
--			return rc;
--		}
--	}
- 
- 	rtl_init_rxcfg(tp);
- 
--- 
-2.22.0
-
+Thanks,
+Daniel
