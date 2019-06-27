@@ -2,116 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CBE8658E28
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 00:49:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFAF758E35
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 01:00:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726651AbfF0WtD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 18:49:03 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:45251 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726553AbfF0WtC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 18:49:02 -0400
-Received: by mail-qt1-f196.google.com with SMTP id j19so4275164qtr.12;
-        Thu, 27 Jun 2019 15:49:02 -0700 (PDT)
+        id S1726595AbfF0XAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 19:00:03 -0400
+Received: from mail-lf1-f54.google.com ([209.85.167.54]:40720 "EHLO
+        mail-lf1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726553AbfF0XAD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 19:00:03 -0400
+Received: by mail-lf1-f54.google.com with SMTP id a9so2680469lff.7
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 16:00:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CBL7Iqg7TmTQjdm5GQzSJKEFJ96A3dOqtVJC/dibvRM=;
-        b=K5VBM5EzhOIIVp3ueIEhyEHlxH9OKb+ejx/+nlmBtk94ne8EVG04h+gPyVIMycDNVI
-         cXN1u2ut4GW9lvrTex8beNfLA6IPT118GBZuGdek5GYnmVuTG8D2hJXkrhsbgOeN7E5M
-         jyrh2Voza7+3KUFUzNTOTqISmZF3ktVHzwhzPYw0PW3J7c00BM2CBVAua5xynmXATN92
-         hMuswLl5koS2uenr07+0tVVbq6n7PKZnR/0c0ooq2+SJwMs2/JPpYgyhzF/Q13+g3Ylx
-         o17NzfNhv/3r/nW4AI2xnCZzwzSHvHeNS5jeTuTcJYElQ1mNOeI+58Iy/JqsAfNxqofD
-         ZQ1Q==
+        d=dev-mellanox-co-il.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hlkWLIAXD/X1/Rol3Kp/jDc7fHX/O8gfTPi+EszwxMk=;
+        b=cywHBuyGo6Bo8Pe0YgCNqDTgGJXYeW2qfryVIdoqHLuFB6yVVqj4P4FcYcesoQD+m5
+         TH+oD3vLkdsTZjS7ipHAHxbrFPfsWa/I0k3IFc0KXP9sFx57JS1JKyJZOhCjqg5cfHiB
+         Q+KdkYr3u9lzZAKNwJ6Yx/l3qrJiwLxSJZJ13O61YI+bR/IzNi1EO1hJd8FI2St30Gju
+         84q4N6104fdJmZ0apSLhS7IkHbW3xo3/iZdts4nWc6wgla3KR7MQBxoDL6I4DP67jooz
+         pzsfcKWnggz7Gx/7O1BGpZPyThLAoMi+Exa2uxy0zBpn18UwNlFwKEQ8PW/AODf4F122
+         af5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CBL7Iqg7TmTQjdm5GQzSJKEFJ96A3dOqtVJC/dibvRM=;
-        b=DzuGxYbNCyBnzuzHP/yI/qbu/Y3EbvxiXdptaEFQQuJ4gi+pQU/uok0n+AWmbl9k+w
-         bSJ/k2wXNqEMejp81LnhmdW0F22QJLy/1YpMPayfLuM670sR82UnkJGUT2VVrJpor09+
-         lAqSz0Aao/d6yPOQkPSqDjiuP/Wz/5IHv84szontvRrRiRJj0yNsiCvxc9TDtgqDnVMW
-         EUiXi8kSxrOOOqs9ZMLVc+qesFBW9TaLNV5e5VnluQF/NQlHfCNQfD4opr5jT4HHxK2m
-         TBUBjX1HR5+l0Jt6s/oBDW/aBElq6sl9iyKWxaft9xvyVoAGueM1bTjgBp1/T1mYDNwg
-         Bbhw==
-X-Gm-Message-State: APjAAAXA+ejYaAwApcMYVF4ZvVAgq0SJI0y2Rpy3Ip5tSXF/Bz4IZxd0
-        bHbefdVmYRQ5sxv16AV2Xyc=
-X-Google-Smtp-Source: APXvYqw7rfpi2+0ancH0LkDPrQowsR9VX1tzNQadBi2CNPlrUB5KOXprL+MtCo7I2qd38XsumwkaTg==
-X-Received: by 2002:a0c:9214:: with SMTP id a20mr5416764qva.195.1561675741780;
-        Thu, 27 Jun 2019 15:49:01 -0700 (PDT)
-Received: from localhost.localdomain ([2001:1284:f013:1699:3b71:f1f7:949e:f780])
-        by smtp.gmail.com with ESMTPSA id m44sm230434qtm.54.2019.06.27.15.49.00
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 27 Jun 2019 15:49:01 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id D0ECFC3B91; Thu, 27 Jun 2019 19:48:58 -0300 (-03)
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Xin Long <lucien.xin@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        linux-sctp@vger.kernel.org, Hillf Danton <hdanton@sina.com>
-Subject: [PATCH net] sctp: fix error handling on stream scheduler initialization
-Date:   Thu, 27 Jun 2019 19:48:10 -0300
-Message-Id: <bcbc85604e53843a731a79df620d5f92b194d085.1561675505.git.marcelo.leitner@gmail.com>
-X-Mailer: git-send-email 2.21.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hlkWLIAXD/X1/Rol3Kp/jDc7fHX/O8gfTPi+EszwxMk=;
+        b=tfc7U8JH78W/Y0n7WQ7Xr+6lvlEfpUPaemupiEYTyJXy8hTjjiqmJBuIaH0KzKIowl
+         gZbNzBr743x5E8DKrMno8+Z4wpMq/UzFIaKg10Y/gdsaj9ZYGJ33CEHA/3WQANN9scpC
+         bg7M7Mte6TZlVa1SFWr/sxKyjUmxIoYK38djj6eYhxw29L01Axx5QTfkI5xFJ4RoBvND
+         bjq7Kjg0BP7XWtsO55GE+ulB1rgacSvS8skDbWF6oJrJCVleztH9saL0pwsiVajwk8Cd
+         2t2WXD76lTaWfsJTZkfG/UQ8ec/ubaoE50cHmba90LRwHQzpRxxoQR68B756nQ+zveR6
+         zeEw==
+X-Gm-Message-State: APjAAAVqwJA2fnJRVmBHvGZqmwJit5ecVl2vwRv1SOuXJd/03EZsaaZZ
+        J5ZSVFcWzfD0k+H/RWhpdCaCYupuF7zWFhTwG5dg8w==
+X-Google-Smtp-Source: APXvYqwDjhyAm/JnXPDZNdNiwHLoYgZLNOeH0iN1jwqCMcd99dUJxH9I59IhGTbrF+XNbuezHXXX+OBkXWphnKAhluQ=
+X-Received: by 2002:ac2:518d:: with SMTP id u13mr3366240lfi.40.1561676401476;
+ Thu, 27 Jun 2019 16:00:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20190627140929.74ae7da6@canb.auug.org.au>
+In-Reply-To: <20190627140929.74ae7da6@canb.auug.org.au>
+From:   Saeed Mahameed <saeedm@dev.mellanox.co.il>
+Date:   Thu, 27 Jun 2019 15:59:50 -0700
+Message-ID: <CALzJLG9pmK-OPK1+iVkKWkKPvPUf0icFKZuUojJej7WR1BtV3w@mail.gmail.com>
+Subject: Re: linux-next: manual merge of the mlx5-next tree with the net-next tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Yevgeny Kliteynik <kliteyn@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Eli Britstein <elibr@mellanox.com>,
+        Jianbo Liu <jianbol@mellanox.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It allocates the extended area for outbound streams only on sendmsg
-calls, if they are not yet allocated.  When using the priority
-stream scheduler, this initialization may imply into a subsequent
-allocation, which may fail.  In this case, it was aborting the stream
-scheduler initialization but leaving the ->ext pointer (allocated) in
-there, thus in a partially initialized state.  On a subsequent call to
-sendmsg, it would notice the ->ext pointer in there, and trip on
-uninitialized stuff when trying to schedule the data chunk.
+On Wed, Jun 26, 2019 at 9:09 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+>
+> Hi all,
+>
+> Today's linux-next merge of the mlx5-next tree got a conflict in:
+>
+>   drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+>
+> between commits:
+>
+>   955858009708 ("net/mlx5e: Fix number of vports for ingress ACL configuration")
+>   d4a18e16c570 ("net/mlx5e: Enable setting multiple match criteria for flow group")
+>
+> from the net-next tree and commits:
+>
+>   7445cfb1169c ("net/mlx5: E-Switch, Tag packet with vport number in VF vports and uplink ingress ACLs")
+>   c01cfd0f1115 ("net/mlx5: E-Switch, Add match on vport metadata for rule in fast path")
+>
+> from the mlx5-next tree.
+>
+> I fixed it up (I basically used the latter versions) and can carry the
+> fix as necessary. This is now fixed as far as linux-next is concerned,
+> but any non trivial conflicts should be mentioned to your upstream
+> maintainer when your tree is submitted for merging.  You may also want
+> to consider cooperating with the maintainer of the conflicting tree to
+> minimise any particularly complex conflicts.
+>
 
-The fix is undo the ->ext initialization if the stream scheduler
-initialization fails and avoid the partially initialized state.
+Thanks Stephen, this will be handled in my next pull request to net-next.
 
-Although syzkaller bisected this to commit 4ff40b86262b ("sctp: set
-chunk transport correctly when it's a new asoc"), this bug was actually
-introduced on the commit I marked below.
 
-Reported-by: syzbot+c1a380d42b190ad1e559@syzkaller.appspotmail.com
-Fixes: 5bbbbe32a431 ("sctp: introduce stream scheduler foundations")
-Tested-by: Xin Long <lucien.xin@gmail.com>
-Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
----
- net/sctp/stream.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
-
-diff --git a/net/sctp/stream.c b/net/sctp/stream.c
-index 93ed07877337eace4ef7f4775dda5868359ada37..25946604af85c09917e63e5c4a8d7d6fa2caebc4 100644
---- a/net/sctp/stream.c
-+++ b/net/sctp/stream.c
-@@ -153,13 +153,20 @@ int sctp_stream_init(struct sctp_stream *stream, __u16 outcnt, __u16 incnt,
- int sctp_stream_init_ext(struct sctp_stream *stream, __u16 sid)
- {
- 	struct sctp_stream_out_ext *soute;
-+	int ret;
- 
- 	soute = kzalloc(sizeof(*soute), GFP_KERNEL);
- 	if (!soute)
- 		return -ENOMEM;
- 	SCTP_SO(stream, sid)->ext = soute;
- 
--	return sctp_sched_init_sid(stream, sid, GFP_KERNEL);
-+	ret = sctp_sched_init_sid(stream, sid, GFP_KERNEL);
-+	if (ret) {
-+		kfree(SCTP_SO(stream, sid)->ext);
-+		SCTP_SO(stream, sid)->ext = NULL;
-+	}
-+
-+	return ret;
- }
- 
- void sctp_stream_free(struct sctp_stream *stream)
--- 
-2.21.0
-
+> --
+> Cheers,
+> Stephen Rothwell
