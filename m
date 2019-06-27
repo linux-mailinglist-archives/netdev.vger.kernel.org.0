@@ -2,166 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E1EB358680
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 17:57:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA3FD58693
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 18:00:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726470AbfF0P5N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 11:57:13 -0400
-Received: from relay8-d.mail.gandi.net ([217.70.183.201]:43297 "EHLO
-        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726405AbfF0P5N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 11:57:13 -0400
-X-Originating-IP: 86.250.200.211
-Received: from localhost (lfbn-1-17395-211.w86-250.abo.wanadoo.fr [86.250.200.211])
-        (Authenticated sender: maxime.ripard@bootlin.com)
-        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 8270F1BF211;
-        Thu, 27 Jun 2019 15:57:09 +0000 (UTC)
-Date:   Thu, 27 Jun 2019 17:57:08 +0200
-From:   Maxime Ripard <maxime.ripard@bootlin.com>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        netdev <netdev@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>, devicetree@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Antoine =?utf-8?Q?T=C3=A9nart?= <antoine.tenart@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH v4 03/13] dt-bindings: net: Add a YAML schemas for the
- generic MDIO options
-Message-ID: <20190627155708.myxychzngc3trxhc@flea>
-References: <cover.e80da8845680a45c2e07d5f17280fdba84555b8a.1561649505.git-series.maxime.ripard@bootlin.com>
- <e99ff7377a0d3d140cf62200fd9d62c108dac24e.1561649505.git-series.maxime.ripard@bootlin.com>
- <CAL_JsqKQoj6x-8cMxp2PFQLcu93aitGO2wALDYaH2h72cPSyfg@mail.gmail.com>
+        id S1726480AbfF0QAC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 12:00:02 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:41071 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726187AbfF0QAC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 12:00:02 -0400
+Received: by mail-pf1-f195.google.com with SMTP id m30so1445417pff.8
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 09:00:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=VgkULGoi1W6FOAp38WloAVy4YIIGLQvkGFlnnxJr3rQ=;
+        b=INLWwhK40o+/OlZOO7w7ew6j5WRkYWTD4GE0XGAu6gHDw/IYd02+9O/zA7fBVkNY7T
+         polEQE6ghTvV2sh8EVbomu2SauaspVXBRsgxq4UmQg6cruAfOq6nWprBVkoluIdRzyiR
+         GPW40D2m/dr1/qdnPyWIYOUHs8N4ygA27L48MhQvV5V0p8lsrdgBE85xVQoM1VtDaj3z
+         vdud/F7rIpnXQAoAjV2LgSOAdNTAoCwyccsgGyBozRWolsYtm1ctwzizrGqsyK0VvAeq
+         LGzl64kozHdIAEGxDNh0ByWAT1ctZ8j3xZG+MLXrmKsGCa6OCCbDbcbH+witxw9bXKkR
+         yvKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=VgkULGoi1W6FOAp38WloAVy4YIIGLQvkGFlnnxJr3rQ=;
+        b=WuuYfYxVXJ1KiIXfoieaYaI+SrMSeJqo6XH6QKGyqr5wR3daKl8j0NMT9kxP5IRzhD
+         K5MIJYM8yGT9mVA09lGMF2Z4Mxd+1OWaK9d0KweiHpgnCp/SfUAdJ2O7zjY7vevzTeQ4
+         65XVN/kvEHrDN5wjXXAj2Pi44aKDkcFM3OEIBrgeh5h6zWWjlzyKCWHOzEJnE0wvAsvm
+         4n9n9A6WXqq2VeE9knEusky3B+4ydsj8TJBxKYevUZuhvWrT/QhgyM5ZLRA1OBMT7oeZ
+         Dmm6uEZTURTKT7Tl7C6qwMpIFyE2SZrobWfK5xjn+FnN/1o2ji1strAj86z/Ra2p+cR0
+         vlIQ==
+X-Gm-Message-State: APjAAAWVPGziaj6M4AfBakOs+b4cK7uvJ3swPn6vUk3GBcKn2UYWcWOB
+        bhtuVUxrzDSEf/iXEYBvQPD4YC3mLGg=
+X-Google-Smtp-Source: APXvYqwiPaBwp/SWvaEs9mVLFY+DYdPE9aIuKdsRr0CFMHXuR/4qYEtiEOANGfzELKEH8MrvRIs54A==
+X-Received: by 2002:a63:50f:: with SMTP id 15mr4517592pgf.148.1561651201311;
+        Thu, 27 Jun 2019 09:00:01 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
+        by smtp.gmail.com with ESMTPSA id b19sm2609773pgh.57.2019.06.27.09.00.00
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 27 Jun 2019 09:00:00 -0700 (PDT)
+Subject: Re: [PATCH net-next 10/18] ionic: Add management of rx filters
+From:   Shannon Nelson <snelson@pensando.io>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org
+References: <20190620202424.23215-1-snelson@pensando.io>
+ <20190620202424.23215-11-snelson@pensando.io>
+ <20190625163729.617346e0@cakuba.netronome.com>
+ <5ea141a1-37e1-a33f-105f-16f5a976bdb8@pensando.io>
+Message-ID: <99eb3d29-b20f-cde3-c810-bf745133c9b4@pensando.io>
+Date:   Thu, 27 Jun 2019 08:59:59 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="fr3al6no3addfpyv"
-Content-Disposition: inline
-In-Reply-To: <CAL_JsqKQoj6x-8cMxp2PFQLcu93aitGO2wALDYaH2h72cPSyfg@mail.gmail.com>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <5ea141a1-37e1-a33f-105f-16f5a976bdb8@pensando.io>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---fr3al6no3addfpyv
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-Hi Rob,
-
-On Thu, Jun 27, 2019 at 09:48:06AM -0600, Rob Herring wrote:
-> On Thu, Jun 27, 2019 at 9:32 AM Maxime Ripard <maxime.ripard@bootlin.com> wrote:
-> >
-> > The MDIO buses have a number of available device tree properties that can
-> > be used in their device tree node. Add a YAML schemas for those.
-> >
-> > Suggested-by: Andrew Lunn <andrew@lunn.ch>
-> > Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
-> > ---
-> >  Documentation/devicetree/bindings/net/mdio.txt  | 38 +-------------
-> >  Documentation/devicetree/bindings/net/mdio.yaml | 51 ++++++++++++++++++-
-> >  2 files changed, 52 insertions(+), 37 deletions(-)
-> >  create mode 100644 Documentation/devicetree/bindings/net/mdio.yaml
+On 6/26/19 8:52 AM, Shannon Nelson wrote:
+> On 6/25/19 4:37 PM, Jakub Kicinski wrote:
+>> On Thu, 20 Jun 2019 13:24:16 -0700, Shannon Nelson wrote:
+>>> +int ionic_rx_filter_save(struct lif *lif, u32 flow_id, u16 rxq_index,
+>>> +             u32 hash, struct ionic_admin_ctx *ctx)
+>>> +{
+>>> +    struct device *dev = lif->ionic->dev;
+>>> +    struct hlist_head *head;
+>>> +    struct rx_filter *f;
+>>> +    unsigned int key;
+>>> +
+>>> +    f = devm_kzalloc(dev, sizeof(*f), GFP_KERNEL);
+>>> +    if (!f)
+>>> +        return -ENOMEM;
+>>> +
+>>> +    f->flow_id = flow_id;
+>>> +    f->filter_id = le32_to_cpu(ctx->comp.rx_filter_add.filter_id);
+>>> +    f->rxq_index = rxq_index;
+>>> +    memcpy(&f->cmd, &ctx->cmd, sizeof(f->cmd));
+>>> +
+>>> +    INIT_HLIST_NODE(&f->by_hash);
+>>> +    INIT_HLIST_NODE(&f->by_id);
+>>> +
+>>> +    switch (le16_to_cpu(f->cmd.match)) {
+>>> +    case RX_FILTER_MATCH_VLAN:
+>>> +        key = le16_to_cpu(f->cmd.vlan.vlan) & RX_FILTER_HLISTS_MASK;
+>>> +        break;
+>>> +    case RX_FILTER_MATCH_MAC:
+>>> +        key = *(u32 *)f->cmd.mac.addr & RX_FILTER_HLISTS_MASK;
+>>> +        break;
+>>> +    case RX_FILTER_MATCH_MAC_VLAN:
+>>> +        key = le16_to_cpu(f->cmd.mac_vlan.vlan) & 
+>>> RX_FILTER_HLISTS_MASK;
+>>> +        break;
+>>> +    default:
+>> I know you use devm_kzalloc() but can't this potentially keep arbitrary
+>> amounts of memory held until the device is removed (and it's the entire
+>> device not just a LIF)?
 >
-> Reviewed-by: Rob Herring <robh@kernel.org>
->
-> However, some comments for a follow-up...
->
-> > diff --git a/Documentation/devicetree/bindings/net/mdio.yaml b/Documentation/devicetree/bindings/net/mdio.yaml
-> > new file mode 100644
-> > index 000000000000..b8fa8251c4bc
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/net/mdio.yaml
-> > @@ -0,0 +1,51 @@
-> > +# SPDX-License-Identifier: GPL-2.0
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/net/mdio.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: MDIO Bus Generic Binding
-> > +
-> > +maintainers:
-> > +  - Andrew Lunn <andrew@lunn.ch>
-> > +  - Florian Fainelli <f.fainelli@gmail.com>
-> > +  - Heiner Kallweit <hkallweit1@gmail.com>
-> > +
-> > +description:
-> > +  These are generic properties that can apply to any MDIO bus. Any
-> > +  MDIO bus must have a list of child nodes, one per device on the
-> > +  bus. These should follow the generic ethernet-phy.yaml document, or
-> > +  a device specific binding document.
-> > +
-> > +properties:
-> > +  reset-gpios:
-> > +    maxItems: 1
-> > +    description:
-> > +      The phandle and specifier for the GPIO that controls the RESET
-> > +      lines of all PHYs on that MDIO bus.
-> > +
-> > +  reset-delay-us:
-> > +    description:
-> > +      RESET pulse width in microseconds. It applies to all PHY devices
-> > +      and must therefore be appropriately determined based on all PHY
-> > +      requirements (maximum value of all per-PHY RESET pulse widths).
-> > +
-> > +examples:
-> > +  - |
-> > +    davinci_mdio: mdio@5c030000 {
->
-> Can we enforce nodename to be mdio? That may not work for muxes.
-> You'll probably have to implement it and see.
+> Yes, but we're freeing this memory when objects are deleted. We're 
+> trying to be tidy with our allocations, but used devm_kzalloc to be 
+> more sure that things went away when the device did.
 
-Ok, I'll send a follow-up patch for this.
+... except, of course, in this error case.  Yes, I'll add a free here.
 
-> > +        compatible = "ti,davinci_mdio";
-> > +        reg = <0x5c030000 0x1000>;
-> > +        #address-cells = <1>;
-> > +        #size-cells = <0>;
->
-> These 2 should have a schema.
+sln
 
-Indeed, I'll do it for that too.
-
-> > +
-> > +        reset-gpios = <&gpio2 5 1>;
-> > +        reset-delay-us = <2>;
-> > +
-> > +        ethphy0: ethernet-phy@1 {
-> > +            reg = <1>;
->
-> Need a child node schema to validate the unit-address and reg property.
-
-This should be already covered by the ethernet-phy.yaml schemas
-earlier in this series.
-
-Were you expecting something else?
-
-Maxime
-
---
-Maxime Ripard, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
-
---fr3al6no3addfpyv
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXRTnVAAKCRDj7w1vZxhR
-xe3EAQCErMl25qlGQzJBVvU6zEMusgjhLvAGFqJVeEB50qFp4gEAiohuJBVAAHsi
-fBpN91UvLx/o1V4K3KlpeQefakcjpAU=
-=hiQD
------END PGP SIGNATURE-----
-
---fr3al6no3addfpyv--
