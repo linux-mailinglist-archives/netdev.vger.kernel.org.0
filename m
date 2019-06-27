@@ -2,163 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C7C3586AB
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 18:07:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F670586C1
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 18:13:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726559AbfF0QHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 12:07:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36734 "EHLO mail.kernel.org"
+        id S1726487AbfF0QNK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 12:13:10 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:26049 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726465AbfF0QHL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Jun 2019 12:07:11 -0400
-Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1726445AbfF0QNK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Jun 2019 12:13:10 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EC1CD2133F;
-        Thu, 27 Jun 2019 16:07:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1561651630;
-        bh=qnjDcvg2vr1/aDZRgXt8AUsw/e1VEUmL66zR+wNUqLQ=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=uStUCHmDp1p57SsCyxgo6iBQf6wFT3Wg8FvrqKIm4sUNjPPsiTnd7s2M1ezSNi2qX
-         B3uScACkb0zwXtXPDWT9DDEphSX1XeoF187U8BaaTH4o6l/QNBRGq5LmC+oSiUxtzY
-         tNfWR3V7PKLR3/v5yYRcxkeOlUudJj+of7MJ5VJo=
-Received: by mail-qt1-f174.google.com with SMTP id a15so3016472qtn.7;
-        Thu, 27 Jun 2019 09:07:09 -0700 (PDT)
-X-Gm-Message-State: APjAAAWwHPv2O7LLgKHShMUlaiZ0zEa3H+T375MH7TmHvKG5E19b4Q/d
-        Q2XULjGvGk6j32d91nCgNHRAdxvVGI8TXQT+MA==
-X-Google-Smtp-Source: APXvYqzeFDJzuV1gZ6S+zyrzfaa49Md1sFroJG0gDvbc/4XW9ZWqmmLiaHGfS1c2APb0JFORnUFqOnpCDDI8rp/vwfM=
-X-Received: by 2002:a0c:b627:: with SMTP id f39mr4191770qve.72.1561651629161;
- Thu, 27 Jun 2019 09:07:09 -0700 (PDT)
-MIME-Version: 1.0
-References: <cover.e80da8845680a45c2e07d5f17280fdba84555b8a.1561649505.git-series.maxime.ripard@bootlin.com>
- <e99ff7377a0d3d140cf62200fd9d62c108dac24e.1561649505.git-series.maxime.ripard@bootlin.com>
- <CAL_JsqKQoj6x-8cMxp2PFQLcu93aitGO2wALDYaH2h72cPSyfg@mail.gmail.com> <20190627155708.myxychzngc3trxhc@flea>
-In-Reply-To: <20190627155708.myxychzngc3trxhc@flea>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Thu, 27 Jun 2019 10:06:57 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqLhUP62vP=RY8Bn_0X92hFphbk_gLqi4K48us56Gxw7tA@mail.gmail.com>
-Message-ID: <CAL_JsqLhUP62vP=RY8Bn_0X92hFphbk_gLqi4K48us56Gxw7tA@mail.gmail.com>
-Subject: Re: [PATCH v4 03/13] dt-bindings: net: Add a YAML schemas for the
- generic MDIO options
-To:     Maxime Ripard <maxime.ripard@bootlin.com>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        netdev <netdev@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>, devicetree@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        =?UTF-8?Q?Antoine_T=C3=A9nart?= <antoine.tenart@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
+        by mx1.redhat.com (Postfix) with ESMTPS id B95863082A9C;
+        Thu, 27 Jun 2019 16:12:59 +0000 (UTC)
+Received: from ovpn-112-41.rdu2.redhat.com (ovpn-112-41.rdu2.redhat.com [10.10.112.41])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E5B675D719;
+        Thu, 27 Jun 2019 16:12:54 +0000 (UTC)
+Message-ID: <e23b40bd692c63ee1e2c944459756dc05e751b0b.camel@redhat.com>
+Subject: Re: [RFC] longer netdev names proposal
+From:   Dan Williams <dcbw@redhat.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        jakub.kicinski@netronome.com, sthemmin@microsoft.com,
+        dsahern@gmail.com, mlxsw@mellanox.com
+Date:   Thu, 27 Jun 2019 11:12:54 -0500
+In-Reply-To: <20190627082922.289225f7@hermes.lan>
+References: <20190627094327.GF2424@nanopsycho>
+         <20190627082922.289225f7@hermes.lan>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Thu, 27 Jun 2019 16:13:10 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 27, 2019 at 9:57 AM Maxime Ripard <maxime.ripard@bootlin.com> wrote:
->
-> Hi Rob,
->
-> On Thu, Jun 27, 2019 at 09:48:06AM -0600, Rob Herring wrote:
-> > On Thu, Jun 27, 2019 at 9:32 AM Maxime Ripard <maxime.ripard@bootlin.com> wrote:
-> > >
-> > > The MDIO buses have a number of available device tree properties that can
-> > > be used in their device tree node. Add a YAML schemas for those.
-> > >
-> > > Suggested-by: Andrew Lunn <andrew@lunn.ch>
-> > > Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
-> > > ---
-> > >  Documentation/devicetree/bindings/net/mdio.txt  | 38 +-------------
-> > >  Documentation/devicetree/bindings/net/mdio.yaml | 51 ++++++++++++++++++-
-> > >  2 files changed, 52 insertions(+), 37 deletions(-)
-> > >  create mode 100644 Documentation/devicetree/bindings/net/mdio.yaml
-> >
-> > Reviewed-by: Rob Herring <robh@kernel.org>
-> >
-> > However, some comments for a follow-up...
-> >
-> > > diff --git a/Documentation/devicetree/bindings/net/mdio.yaml b/Documentation/devicetree/bindings/net/mdio.yaml
-> > > new file mode 100644
-> > > index 000000000000..b8fa8251c4bc
-> > > --- /dev/null
-> > > +++ b/Documentation/devicetree/bindings/net/mdio.yaml
-> > > @@ -0,0 +1,51 @@
-> > > +# SPDX-License-Identifier: GPL-2.0
-> > > +%YAML 1.2
-> > > +---
-> > > +$id: http://devicetree.org/schemas/net/mdio.yaml#
-> > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > > +
-> > > +title: MDIO Bus Generic Binding
-> > > +
-> > > +maintainers:
-> > > +  - Andrew Lunn <andrew@lunn.ch>
-> > > +  - Florian Fainelli <f.fainelli@gmail.com>
-> > > +  - Heiner Kallweit <hkallweit1@gmail.com>
-> > > +
-> > > +description:
-> > > +  These are generic properties that can apply to any MDIO bus. Any
-> > > +  MDIO bus must have a list of child nodes, one per device on the
-> > > +  bus. These should follow the generic ethernet-phy.yaml document, or
-> > > +  a device specific binding document.
-> > > +
-> > > +properties:
-> > > +  reset-gpios:
-> > > +    maxItems: 1
-> > > +    description:
-> > > +      The phandle and specifier for the GPIO that controls the RESET
-> > > +      lines of all PHYs on that MDIO bus.
-> > > +
-> > > +  reset-delay-us:
-> > > +    description:
-> > > +      RESET pulse width in microseconds. It applies to all PHY devices
-> > > +      and must therefore be appropriately determined based on all PHY
-> > > +      requirements (maximum value of all per-PHY RESET pulse widths).
-> > > +
-> > > +examples:
-> > > +  - |
-> > > +    davinci_mdio: mdio@5c030000 {
-> >
-> > Can we enforce nodename to be mdio? That may not work for muxes.
-> > You'll probably have to implement it and see.
->
-> Ok, I'll send a follow-up patch for this.
->
-> > > +        compatible = "ti,davinci_mdio";
-> > > +        reg = <0x5c030000 0x1000>;
-> > > +        #address-cells = <1>;
-> > > +        #size-cells = <0>;
-> >
-> > These 2 should have a schema.
->
-> Indeed, I'll do it for that too.
->
-> > > +
-> > > +        reset-gpios = <&gpio2 5 1>;
-> > > +        reset-delay-us = <2>;
-> > > +
-> > > +        ethphy0: ethernet-phy@1 {
-> > > +            reg = <1>;
-> >
-> > Need a child node schema to validate the unit-address and reg property.
->
-> This should be already covered by the ethernet-phy.yaml schemas
-> earlier in this series.
+On Thu, 2019-06-27 at 08:29 -0700, Stephen Hemminger wrote:
+> On Thu, 27 Jun 2019 11:43:27 +0200
+> Jiri Pirko <jiri@resnulli.us> wrote:
+> 
+> > Hi all.
+> > 
+> > In the past, there was repeatedly discussed the IFNAMSIZ (16) limit
+> > for
+> > netdevice name length. Now when we have PF and VF representors
+> > with port names like "pfXvfY", it became quite common to hit this
+> > limit:
+> > 0123456789012345
+> > enp131s0f1npf0vf6
+> > enp131s0f1npf0vf22
+> > 
+> > Since IFLA_NAME is just a string, I though it might be possible to
+> > use
+> > it to carry longer names as it is. However, the userspace tools,
+> > like
+> > iproute2, are doing checks before print out. So for example in
+> > output of
+> > "ip addr" when IFLA_NAME is longer than IFNAMSIZE, the netdevice is
+> > completely avoided.
+> > 
+> > So here is a proposal that might work:
+> > 1) Add a new attribute IFLA_NAME_EXT that could carry names longer
+> > than
+> >    IFNAMSIZE, say 64 bytes. The max size should be only defined in
+> > kernel,
+> >    user should be prepared for any string size.
+> > 2) Add a file in sysfs that would indicate that NAME_EXT is
+> > supported by
+> >    the kernel.
+> > 3) Udev is going to look for the sysfs indication file. In case
+> > when
+> >    kernel supports long names, it will do rename to longer name,
+> > setting
+> >    IFLA_NAME_EXT. If not, it does what it does now - fail.
+> > 4) There are two cases that can happen during rename:
+> >    A) The name is shorter than IFNAMSIZ
+> >       -> both IFLA_NAME and IFLA_NAME_EXT would contain the same
+> > string:  
+> >          original IFLA_NAME     = eth0
+> >          original IFLA_NAME_EXT = eth0
+> >          renamed  IFLA_NAME     = enp5s0f1npf0vf1
+> >          renamed  IFLA_NAME_EXT = enp5s0f1npf0vf1
+> >    B) The name is longer tha IFNAMSIZ
+> >       -> IFLA_NAME would contain the original one, IFLA_NAME_EXT
+> > would   
+> >          contain the new one:
+> >          original IFLA_NAME     = eth0
+> >          original IFLA_NAME_EXT = eth0
+> >          renamed  IFLA_NAME     = eth0
+> >          renamed  IFLA_NAME_EXT = enp131s0f1npf0vf22
 
-Partially, yes.
+It makes me a bit uncomfortable to allow IFLA_NAME and IFLA_NAME_EXT to
+be completely different. That sounds like a big source of confusion and
+debugging problems in production.
 
-> Were you expecting something else?
+Dan
 
-That would not prevent having a child node such as 'foo {};'  or
-'foo@bad {};'. It would also not check valid nodes named something
-other than 'ethernet-phy'.
+> > This would allow the old tools to work with "eth0" and the new
+> > tools would work with "enp131s0f1npf0vf22". In sysfs, there would
+> > be symlink from one name to another.
+> >       
+> > Also, there might be a warning added to kernel if someone works
+> > with IFLA_NAME that the userspace tool should be upgraded.
+> > 
+> > Eventually, only IFLA_NAME_EXT is going to be used by everyone.
+> > 
+> > I'm aware there are other places where similar new attribute
+> > would have to be introduced too (ip rule for example).
+> > I'm not saying this is a simple work.
+> > 
+> > Question is what to do with the ioctl api (get ifindex etc). I
+> > would
+> > probably leave it as is and push tools to use rtnetlink instead.
+> > 
+> > Any ideas why this would not work? Any ideas how to solve this
+> > differently?
+> > 
+> > Thanks!
+> > 
+> > Jiri
+> >      
+> 
+> I looked into this in the past, but then rejected it because
+> there are so many tools that use names, not just iproute2.
+> Plus long names are very user unfriendly.
 
-Rob
