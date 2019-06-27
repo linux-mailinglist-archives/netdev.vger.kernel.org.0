@@ -2,94 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5272857B17
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 07:04:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0387857B47
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 07:24:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727087AbfF0FE2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 01:04:28 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:45454 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726885AbfF0FE2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 01:04:28 -0400
-Received: by mail-ot1-f65.google.com with SMTP id x21so921499otq.12;
-        Wed, 26 Jun 2019 22:04:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=GlXuhQWQA/lVSG/8HetE1/x5ZAIJM14lwCSaZv97Mbs=;
-        b=GqasVPRyHsVP+n5oyg1FJnExioUyVr7LOvsRmg7nY8YTxCb0/VlZ1jAyRzVNEaWFoC
-         HUFzOJiJwnPcznh/+E3LDwhVR3v5T2YgSmwrHhlAGHICEm5JCGzeVsvbi6BSKj7AOy3Z
-         C5R21bhmDPvyxieLtsTLE3aZdVU2FpcAJ8kCw2PV0s69/zF4hNNQkYdbzJlXhcBDPfbb
-         w9+mOVHOdOm0xStnXh5QWoVvAQRxRFndNXp9e2U+BeE3DLyskkrqOpx95kUBSnNfeg14
-         5e5sC8ZEEa2KdeJ/zeWd+t19imImVvpiSBRMTT/5nw+V2TCQAgJzWRtJfTlTyfn1paYG
-         PvwQ==
+        id S1726418AbfF0FYB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 01:24:01 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:43053 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725787AbfF0FYB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 01:24:01 -0400
+Received: by mail-io1-f69.google.com with SMTP id y5so1276228ioj.10
+        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 22:24:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=GlXuhQWQA/lVSG/8HetE1/x5ZAIJM14lwCSaZv97Mbs=;
-        b=ZF8cfwANkGhImeIlM5P80sDYSzvphOHgo1SXcihzQywG+bdJvKkcrTspmevoq3k4M9
-         mWgpEo41VDcVRJliOtCRheYx+JaZrsO7FvurKcUb2bUqBAdONLXZHYNU0B/ls1hf/dLD
-         MRUFjdM2406jDn/mMCK5/46ocIvQPFlU66zv/03ABhqRfmWP4Hh7ddAayhCZyWA8XAy8
-         9xpt4Mlx79fIfzbcQQdZdbwGVZc5hqxDLgkuwhmoeTaERNCO+gIYHXiFz4Dlm4bjLw9s
-         l5JeIMZ/IwycHJpGc0fDdztKept9eOpk0p/Zvn6LDeWVtkBe0Bo9fvM+3S7+9MSPmSkM
-         GIqg==
-X-Gm-Message-State: APjAAAU8yiYCsXUMAeSig/D3MsAjQc472mYMB6O8KPgvh+p/GkwTTeeX
-        7st6EkxB0QpuGxrJTKYu6V3CXmKfkVI=
-X-Google-Smtp-Source: APXvYqzlBt0nC4Nh0aSm4GdOeVGei8vVZTcgOpYYcXvGT8+r/17syQs5DkT1yXnmlyT0kU/UJ/HmGg==
-X-Received: by 2002:a05:6830:148c:: with SMTP id s12mr1724595otq.274.1561611867630;
-        Wed, 26 Jun 2019 22:04:27 -0700 (PDT)
-Received: from rYz3n.attlocal.net ([2600:1700:210:3790::48])
-        by smtp.googlemail.com with ESMTPSA id v18sm613318otn.17.2019.06.26.22.04.26
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 26 Jun 2019 22:04:27 -0700 (PDT)
-From:   Jiunn Chang <c0d1n61at3@gmail.com>
-To:     skhan@linuxfoundation.org
-Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net
-Subject: [Linux-kernel-mentees][PATCH v3] packet: Fix undefined behavior in bit shift
-Date:   Thu, 27 Jun 2019 00:04:24 -0500
-Message-Id: <20190627050426.17925-1-c0d1n61at3@gmail.com>
-X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20190627032532.18374-2-c0d1n61at3@gmail.com>
-References: <20190627032532.18374-2-c0d1n61at3@gmail.com>
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=KTLmlahqBmrHOIj7RbeMjFFVBD1WODkDi1wf0mxjsj4=;
+        b=gVrja3ZvX2xLkqpNxPruzBdU29QqT4hh8viPNtQKldHEIk1sU1hPB3Mb3ToUlI648p
+         R40YXKFGNsCmD5uzonDCadJ5V8/rwWaEj2Mz55DlIARORX5X6fiE16tny+aXWKaIpwNA
+         BsP6+kD+SLxHPEqT4qi1s0iADFQxGxGeT2VBVabn4jyRYbZaP4Kfw4+OvuKxRu5ZNIiT
+         CRT+iUNEqdRBpUsAEwVUeEmqiQuGMSNXcd/jKb3pdVM1n7XR3pMc3NHzqvEK9vS8wDl0
+         C4q/VmNFsLTfGQbtEgpQwVavu1ZJ334+ucdrzDrFTo69CEu/JrpIa8fdYYNyovRYjovW
+         OfcA==
+X-Gm-Message-State: APjAAAUuaps7+eieTJjSKq/hn2C35XHlIj/14MkMGecDHyEfMxgx6zqG
+        SVyLcLz6mRZPBaJHN7eKD0IvezWi8CpQUCa3t4vXTqRoA9Ac
+X-Google-Smtp-Source: APXvYqwLxdaO1aqZn3NAO+28gDuNAkuDRNZ+nL2ivt8eHB6WZ7wyMTxoDYSySR2w00lCL6SEaEgSn6JyDAFAnddEBIqaHiFZN5Vh
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a02:7121:: with SMTP id n33mr2217019jac.19.1561613040861;
+ Wed, 26 Jun 2019 22:24:00 -0700 (PDT)
+Date:   Wed, 26 Jun 2019 22:24:00 -0700
+In-Reply-To: <000000000000d7bcbb058c3758a1@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000093c88d058c475e46@google.com>
+Subject: Re: BUG: unable to handle kernel paging request in tls_prots
+From:   syzbot <syzbot+4207c7f3a443366d8aa2@syzkaller.appspotmail.com>
+To:     ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
+        davem@davemloft.net, edumazet@google.com, john.fastabend@gmail.com,
+        kafai@fb.com, kuznet@ms2.inr.ac.ru, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com,
+        yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Shifting signed 32-bit value by 31 bits is undefined.  Changing most
-significant bit to unsigned.
+syzbot has bisected this bug to:
 
-Signed-off-by: Jiunn Chang <c0d1n61at3@gmail.com>
----
-Changes included in v3:
-  - remove change log from patch description
+commit e9db4ef6bf4ca9894bb324c76e01b8f1a16b2650
+Author: John Fastabend <john.fastabend@gmail.com>
+Date:   Sat Jun 30 13:17:47 2018 +0000
 
-Changes included in v2:
-  - use subsystem specific subject lines
-  - CC required mailing lists
+     bpf: sockhash fix omitted bucket lock in sock_close
 
- include/uapi/linux/if_packet.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=148e8665a00000
+start commit:   904d88d7 qmi_wwan: Fix out-of-bounds read
+git tree:       net
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=168e8665a00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=128e8665a00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=137ec2016ea3870d
+dashboard link: https://syzkaller.appspot.com/bug?extid=4207c7f3a443366d8aa2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15576c71a00000
 
-diff --git a/include/uapi/linux/if_packet.h b/include/uapi/linux/if_packet.h
-index 467b654bd4c7..3d884d68eb30 100644
---- a/include/uapi/linux/if_packet.h
-+++ b/include/uapi/linux/if_packet.h
-@@ -123,7 +123,7 @@ struct tpacket_auxdata {
- /* Rx and Tx ring - header status */
- #define TP_STATUS_TS_SOFTWARE		(1 << 29)
- #define TP_STATUS_TS_SYS_HARDWARE	(1 << 30) /* deprecated, never set */
--#define TP_STATUS_TS_RAW_HARDWARE	(1 << 31)
-+#define TP_STATUS_TS_RAW_HARDWARE	(1U << 31)
- 
- /* Rx ring - feature request bits */
- #define TP_FT_REQ_FILL_RXHASH	0x1
--- 
-2.22.0
+Reported-by: syzbot+4207c7f3a443366d8aa2@syzkaller.appspotmail.com
+Fixes: e9db4ef6bf4c ("bpf: sockhash fix omitted bucket lock in sock_close")
 
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
