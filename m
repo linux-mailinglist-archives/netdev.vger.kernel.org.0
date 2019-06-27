@@ -2,104 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E5FDA57A79
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 06:09:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65D2057AAC
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 06:34:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726846AbfF0EJe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 00:09:34 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:45277 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725850AbfF0EJe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Jun 2019 00:09:34 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        id S1726718AbfF0EaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 00:30:25 -0400
+Received: from guitar.tcltek.co.il ([192.115.133.116]:34142 "EHLO
+        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725787AbfF0EaZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Jun 2019 00:30:25 -0400
+Received: from tarshish.tkos.co.il (unknown [10.0.8.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 45Z5y20RXPz9s8m;
-        Thu, 27 Jun 2019 14:09:30 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1561608570;
-        bh=LsIp4MOsb8p6EEYoMgfZs22cxz+dk7gDFUx8sf0mkdA=;
-        h=Date:From:To:Cc:Subject:From;
-        b=tvHKF0SWsqwGEv/46sF7wh4vP029CvmQW0vg5RmUfVA4aeL0dkUzGtiN/nm9IV7wu
-         84mqme1tU6L89lGBH+BtsVLkjwuistEMh+PzFOlmAp1DQiPGfYvEmNiBWsjRN/040E
-         0yWeYZYEt/G9EznXy6uv/3SuOimWwiHo04Szbt1hVP3Ol662YPvnUz6kVkK68vbshH
-         jMeYL1h6ehgi+A531naEh2ZzSbiidC+sVvzxrYKbT27Ap1+ElWVPefE5WzPwzUOcYb
-         p6V6crluP5IoMaQqVa4Z2Ase0ieS2GEmlRK4o3+aIov8bv5hj+7ZHMP/9gfycqqhdK
-         WbgnmbpYjXc5Q==
-Date:   Thu, 27 Jun 2019 14:09:29 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Leon Romanovsky <leon@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Yevgeny Kliteynik <kliteyn@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Eli Britstein <elibr@mellanox.com>,
-        Jianbo Liu <jianbol@mellanox.com>
-Subject: linux-next: manual merge of the mlx5-next tree with the net-next
- tree
-Message-ID: <20190627140929.74ae7da6@canb.auug.org.au>
+        by mx.tkos.co.il (Postfix) with ESMTPS id 18A32440209;
+        Thu, 27 Jun 2019 07:30:22 +0300 (IDT)
+From:   Baruch Siach <baruch@tkos.co.il>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     netdev@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>
+Subject: [PATCH] net: dsa: mv88e6xxx: wait after reset deactivation
+Date:   Thu, 27 Jun 2019 07:29:46 +0300
+Message-Id: <92655572ed0c232b490967bed1245d121cc5a299.1561609786.git.baruch@tkos.co.il>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- boundary="Sig_/QoQkQBfE9+wL/NEtPF.A9T8"; protocol="application/pgp-signature"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/QoQkQBfE9+wL/NEtPF.A9T8
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Add a 1ms delay after reset deactivation. Otherwise the chip returns
+bogus ID value. This is observed with 88E6390 (Peridot) chip.
 
-Hi all,
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+---
+ drivers/net/dsa/mv88e6xxx/chip.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Today's linux-next merge of the mlx5-next tree got a conflict in:
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index f4e2db44ad91..549f528f216c 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -4910,6 +4910,7 @@ static int mv88e6xxx_probe(struct mdio_device *mdiodev)
+ 		err = PTR_ERR(chip->reset);
+ 		goto out;
+ 	}
++	mdelay(1);
+ 
+ 	err = mv88e6xxx_detect(chip);
+ 	if (err)
+-- 
+2.20.1
 
-  drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-
-between commits:
-
-  955858009708 ("net/mlx5e: Fix number of vports for ingress ACL configurat=
-ion")
-  d4a18e16c570 ("net/mlx5e: Enable setting multiple match criteria for flow=
- group")
-
-from the net-next tree and commits:
-
-  7445cfb1169c ("net/mlx5: E-Switch, Tag packet with vport number in VF vpo=
-rts and uplink ingress ACLs")
-  c01cfd0f1115 ("net/mlx5: E-Switch, Add match on vport metadata for rule i=
-n fast path")
-
-from the mlx5-next tree.
-
-I fixed it up (I basically used the latter versions) and can carry the
-fix as necessary. This is now fixed as far as linux-next is concerned,
-but any non trivial conflicts should be mentioned to your upstream
-maintainer when your tree is submitted for merging.  You may also want
-to consider cooperating with the maintainer of the conflicting tree to
-minimise any particularly complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/QoQkQBfE9+wL/NEtPF.A9T8
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl0UQXkACgkQAVBC80lX
-0GwLEgf/bVWJXuP70coqS1/vunI8Z7J7mRV2/FWSXyVt6F/eBGOUYxNgZdUmn+Sd
-lHke3vl4fFHUI0JqVNvrnOYbAxTBaPsZFFtdyRAzMrzs8ZCKKzyYRvAzCRyvcvl/
-lURKaUAL1Oj0OvEU1Eyl+lBbArTcpc16WhhPcSys3mMNmgLwhqkGJ68rry/xKOo2
-oTb7smt/wAvmVqxV4RHvLILM+fXFI4q48MZEociyPn5L3wZyouk1mQe8XM20J2Al
-YdJXsaTZXotWVd3I1sa7O2RiK6i4lN1RHoIU8rYmwnwBbE8hYcj7iMTNijlbIliV
-SRPXhdxnmk28cDkEWD3qiMSrq9+Tfg==
-=DxZn
------END PGP SIGNATURE-----
-
---Sig_/QoQkQBfE9+wL/NEtPF.A9T8--
