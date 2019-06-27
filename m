@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 979435779D
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:48:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11A815779E
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:48:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729176AbfF0Ajw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 20:39:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43966 "EHLO mail.kernel.org"
+        id S1729193AbfF0Ajz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 20:39:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44006 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729154AbfF0Ajv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 20:39:51 -0400
+        id S1729164AbfF0Ajy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 20:39:54 -0400
 Received: from sasha-vm.mshome.net (unknown [107.242.116.147])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5F76221871;
-        Thu, 27 Jun 2019 00:39:47 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8AC5021897;
+        Thu, 27 Jun 2019 00:39:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1561595990;
-        bh=ocExHtCWWhoXM4eKdTlrTAcILeSBjOfZJFpcQNKc0ck=;
+        s=default; t=1561595992;
+        bh=sacMJPrwQ1063upYyJR8IQKX2QpboDfXzrrm20Uep34=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IUVDc6zQhob3VNFrfYa5G5wMYt0HR4PUQgEYtn5d43TA+zmIMw7Hqk9vrO1qOqMZs
-         GD6GAksBZzobjypntQsgNlT1NTtLSk11XEI64I9/2mpQlAm0YbR6P440Vu2jUNqZc8
-         qfO72p8TDqVT01F9mQ9iuBkXQPKJ6LI+rskEXUew=
+        b=T9BOs7Hd3Vzk/7ALlPOxVAwGxxTHfDb7HdVy4dOZ2n1V85JrT8agx0/Hu/BCYREt9
+         hE74iWTgeGfuiuAAhVtEPgwdcBjTqIil53IOwyASst4znB6W5aaswlk3qGn9vr5D2C
+         joGjSEOGITarbGZ4lmk1ohMmpz6yfi8RrCG4rZOs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Takashi Iwai <tiwai@suse.de>, huangwen <huangwen@venustech.com.cn>,
-        Kalle Valo <kvalo@codeaurora.org>,
+Cc:     Takashi Iwai <tiwai@suse.de>, Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 07/35] mwifiex: Fix possible buffer overflows at parsing bss descriptor
-Date:   Wed, 26 Jun 2019 20:38:55 -0400
-Message-Id: <20190627003925.21330-7-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 08/35] mwifiex: Abort at too short BSS descriptor element
+Date:   Wed, 26 Jun 2019 20:38:56 -0400
+Message-Id: <20190627003925.21330-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190627003925.21330-1-sashal@kernel.org>
 References: <20190627003925.21330-1-sashal@kernel.org>
@@ -46,47 +45,87 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 13ec7f10b87f5fc04c4ccbd491c94c7980236a74 ]
+[ Upstream commit 685c9b7750bfacd6fc1db50d86579980593b7869 ]
 
-mwifiex_update_bss_desc_with_ie() calls memcpy() unconditionally in
-a couple places without checking the destination size.  Since the
-source is given from user-space, this may trigger a heap buffer
-overflow.
+Currently mwifiex_update_bss_desc_with_ie() implicitly assumes that
+the source descriptor entries contain the enough size for each type
+and performs copying without checking the source size.  This may lead
+to read over boundary.
 
-Fix it by putting the length check before performing memcpy().
+Fix this by putting the source size check in appropriate places.
 
-This fix addresses CVE-2019-3846.
-
-Reported-by: huangwen <huangwen@venustech.com.cn>
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/marvell/mwifiex/scan.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/wireless/marvell/mwifiex/scan.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
 diff --git a/drivers/net/wireless/marvell/mwifiex/scan.c b/drivers/net/wireless/marvell/mwifiex/scan.c
-index c9d41ed77fc7..c08a4574c396 100644
+index c08a4574c396..2f7f4c9e5993 100644
 --- a/drivers/net/wireless/marvell/mwifiex/scan.c
 +++ b/drivers/net/wireless/marvell/mwifiex/scan.c
-@@ -1244,6 +1244,8 @@ int mwifiex_update_bss_desc_with_ie(struct mwifiex_adapter *adapter,
- 		}
- 		switch (element_id) {
- 		case WLAN_EID_SSID:
-+			if (element_len > IEEE80211_MAX_SSID_LEN)
-+				return -EINVAL;
- 			bss_entry->ssid.ssid_len = element_len;
- 			memcpy(bss_entry->ssid.ssid, (current_ptr + 2),
- 			       element_len);
-@@ -1253,6 +1255,8 @@ int mwifiex_update_bss_desc_with_ie(struct mwifiex_adapter *adapter,
+@@ -1266,6 +1266,8 @@ int mwifiex_update_bss_desc_with_ie(struct mwifiex_adapter *adapter,
  			break;
  
- 		case WLAN_EID_SUPP_RATES:
-+			if (element_len > MWIFIEX_SUPPORTED_RATES)
+ 		case WLAN_EID_FH_PARAMS:
++			if (element_len + 2 < sizeof(*fh_param_set))
 +				return -EINVAL;
- 			memcpy(bss_entry->data_rates, current_ptr + 2,
- 			       element_len);
- 			memcpy(bss_entry->supported_rates, current_ptr + 2,
+ 			fh_param_set =
+ 				(struct ieee_types_fh_param_set *) current_ptr;
+ 			memcpy(&bss_entry->phy_param_set.fh_param_set,
+@@ -1274,6 +1276,8 @@ int mwifiex_update_bss_desc_with_ie(struct mwifiex_adapter *adapter,
+ 			break;
+ 
+ 		case WLAN_EID_DS_PARAMS:
++			if (element_len + 2 < sizeof(*ds_param_set))
++				return -EINVAL;
+ 			ds_param_set =
+ 				(struct ieee_types_ds_param_set *) current_ptr;
+ 
+@@ -1285,6 +1289,8 @@ int mwifiex_update_bss_desc_with_ie(struct mwifiex_adapter *adapter,
+ 			break;
+ 
+ 		case WLAN_EID_CF_PARAMS:
++			if (element_len + 2 < sizeof(*cf_param_set))
++				return -EINVAL;
+ 			cf_param_set =
+ 				(struct ieee_types_cf_param_set *) current_ptr;
+ 			memcpy(&bss_entry->ss_param_set.cf_param_set,
+@@ -1293,6 +1299,8 @@ int mwifiex_update_bss_desc_with_ie(struct mwifiex_adapter *adapter,
+ 			break;
+ 
+ 		case WLAN_EID_IBSS_PARAMS:
++			if (element_len + 2 < sizeof(*ibss_param_set))
++				return -EINVAL;
+ 			ibss_param_set =
+ 				(struct ieee_types_ibss_param_set *)
+ 				current_ptr;
+@@ -1302,10 +1310,14 @@ int mwifiex_update_bss_desc_with_ie(struct mwifiex_adapter *adapter,
+ 			break;
+ 
+ 		case WLAN_EID_ERP_INFO:
++			if (!element_len)
++				return -EINVAL;
+ 			bss_entry->erp_flags = *(current_ptr + 2);
+ 			break;
+ 
+ 		case WLAN_EID_PWR_CONSTRAINT:
++			if (!element_len)
++				return -EINVAL;
+ 			bss_entry->local_constraint = *(current_ptr + 2);
+ 			bss_entry->sensed_11h = true;
+ 			break;
+@@ -1345,6 +1357,9 @@ int mwifiex_update_bss_desc_with_ie(struct mwifiex_adapter *adapter,
+ 			break;
+ 
+ 		case WLAN_EID_VENDOR_SPECIFIC:
++			if (element_len + 2 < sizeof(vendor_ie->vend_hdr))
++				return -EINVAL;
++
+ 			vendor_ie = (struct ieee_types_vendor_specific *)
+ 					current_ptr;
+ 
 -- 
 2.20.1
 
