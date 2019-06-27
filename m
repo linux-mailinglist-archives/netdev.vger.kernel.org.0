@@ -2,125 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CE57C57991
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 04:34:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E193357994
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 04:38:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726993AbfF0Cey (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 22:34:54 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:37227 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726762AbfF0Cey (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 22:34:54 -0400
-Received: by mail-pl1-f195.google.com with SMTP id bh12so408040plb.4
-        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 19:34:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CgsMysEIlX/j8P65SV2h8Nto0HfL8PyGOlJeyFecrks=;
-        b=eGBnhJeR52AN1DFbrbrof5+jn6sYUtt19Uq9OGmWzykk8UH36oWtCz3LfVJmrC1KY1
-         ZDsBxd/yQhnOvrtcKoZmXJ58102Y4SH1VfYfPz826eHGrEOk1qJHBoBdrzeiFhW3joOF
-         geXIR4GUn++fx7pA/FhIEUF1mzpa9NOs36qMYFKsvC9qfee0xIYc+nt8XEozCPV35dZt
-         y8r9+TrW/ZozirMDk6cK+Yljo3i90lCpqR/Hp9uQgqt0l3qjLM5VMssfui+0SGJRF4aQ
-         Ua1X0QagSBeNxfoky67payHduzi6TghXgfFwzbo/oxpdy82H6CeSR56Re07mcTOMOKAz
-         r30w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CgsMysEIlX/j8P65SV2h8Nto0HfL8PyGOlJeyFecrks=;
-        b=I3ppYuXvOvS//OxB8dRn/bYiTIwEN20SYhltB01MQmoXQo0JUIg1jr7xiBEoc/nZCN
-         MRjrGWExDyH7orOqqY2gBG+d58gxvnOpftxo8schMgOQAsNr4SrMje1K3dl29E3KTxcH
-         3bK6E51YCMuRxEwGY9f0DqH/xWGExyHDwl+DEPdsDqKPrBmb6RN6je1xUhQ09cMIN1/g
-         /Rs1x+ggNAEGH5ZfuxfSKrseiHbMtuS+eq7HEtTA+HAKOnNhcn4it4OCiCmHVJks0ILj
-         xAByAOARh03y/CfPm2+urTbsHR1mWmSTwOJ9mBa1xWnimYEXQFCtXfSrej+WYLIM8iLh
-         R0Mg==
-X-Gm-Message-State: APjAAAUf5RvNCmM4KxTCdODSX6nmHEy3LER22Cm9s15N75XvJkdpGeg8
-        ncZEd8NuwXKo+CLmTqzhN48=
-X-Google-Smtp-Source: APXvYqyIciS0Y6owFeAXZf5SAiucGz2ONm1szexTvREi6qq87gCHhzEpbJJor07UHFYOGXxIHkGUtQ==
-X-Received: by 2002:a17:902:4183:: with SMTP id f3mr1631926pld.336.1561602893324;
-        Wed, 26 Jun 2019 19:34:53 -0700 (PDT)
-Received: from localhost.localdomain (osnfw.sakura.ad.jp. [210.224.179.167])
-        by smtp.gmail.com with ESMTPSA id x128sm653284pfd.17.2019.06.26.19.34.50
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 26 Jun 2019 19:34:52 -0700 (PDT)
-From:   Yuya Kusakabe <yuya.kusakabe@gmail.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        jakub.kicinski@netronome.com, hawk@kernel.org,
-        john.fastabend@gmail.com, Yuya Kusakabe <yuya.kusakabe@gmail.com>
-Subject: [PATCH bpf-next] virtio_net: add XDP meta data support in receive_small()
-Date:   Thu, 27 Jun 2019 11:33:32 +0900
-Message-Id: <20190627023332.8557-1-yuya.kusakabe@gmail.com>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1726681AbfF0CiX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 22:38:23 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:45770 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726631AbfF0CiX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 22:38:23 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id D20D314DE8713;
+        Wed, 26 Jun 2019 19:38:22 -0700 (PDT)
+Date:   Wed, 26 Jun 2019 19:38:22 -0700 (PDT)
+Message-Id: <20190626.193822.1775075982713010832.davem@davemloft.net>
+To:     nhorman@tuxdriver.com
+Cc:     netdev@vger.kernel.org, mcroce@redhat.com,
+        willemdebruijn.kernel@gmail.com
+Subject: Re: [PATCH v4 net] af_packet: Block execution of tasks waiting for
+ transmit to complete in AF_PACKET
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190625215749.22840-1-nhorman@tuxdriver.com>
+References: <20190619202533.4856-1-nhorman@tuxdriver.com>
+        <20190625215749.22840-1-nhorman@tuxdriver.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 26 Jun 2019 19:38:23 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds XDP meta data support to the code path receive_small().
+From: Neil Horman <nhorman@tuxdriver.com>
+Date: Tue, 25 Jun 2019 17:57:49 -0400
 
-mrg_rxbuf=off is required on qemu, because receive_mergeable() still
-doesn't support XDP meta data.
+> When an application is run that:
+> a) Sets its scheduler to be SCHED_FIFO
+> and
+> b) Opens a memory mapped AF_PACKET socket, and sends frames with the
+> MSG_DONTWAIT flag cleared, its possible for the application to hang
+> forever in the kernel.  This occurs because when waiting, the code in
+> tpacket_snd calls schedule, which under normal circumstances allows
+> other tasks to run, including ksoftirqd, which in some cases is
+> responsible for freeing the transmitted skb (which in AF_PACKET calls a
+> destructor that flips the status bit of the transmitted frame back to
+> available, allowing the transmitting task to complete).
+> 
+> However, when the calling application is SCHED_FIFO, its priority is
+> such that the schedule call immediately places the task back on the cpu,
+> preventing ksoftirqd from freeing the skb, which in turn prevents the
+> transmitting task from detecting that the transmission is complete.
+> 
+> We can fix this by converting the schedule call to a completion
+> mechanism.  By using a completion queue, we force the calling task, when
+> it detects there are no more frames to send, to schedule itself off the
+> cpu until such time as the last transmitted skb is freed, allowing
+> forward progress to be made.
+> 
+> Tested by myself and the reporter, with good results
+> 
+> Appies to the net tree
+> 
+> Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
+> Reported-by: Matteo Croce <mcroce@redhat.com>
+> CC: "David S. Miller" <davem@davemloft.net>
+> CC: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+ ...
 
-Fixes: de8f3a83b0a0 ("bpf: add meta pointer for direct access")
-Signed-off-by: Yuya Kusakabe <yuya.kusakabe@gmail.com>
----
- drivers/net/virtio_net.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 4f3de0ac8b0b..14165c5edb7d 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -644,6 +644,7 @@ static struct sk_buff *receive_small(struct net_device *dev,
- 	unsigned int delta = 0;
- 	struct page *xdp_page;
- 	int err;
-+	unsigned int metasize = 0;
- 
- 	len -= vi->hdr_len;
- 	stats->bytes += len;
-@@ -683,8 +684,8 @@ static struct sk_buff *receive_small(struct net_device *dev,
- 
- 		xdp.data_hard_start = buf + VIRTNET_RX_PAD + vi->hdr_len;
- 		xdp.data = xdp.data_hard_start + xdp_headroom;
--		xdp_set_data_meta_invalid(&xdp);
- 		xdp.data_end = xdp.data + len;
-+		xdp.data_meta = xdp.data;
- 		xdp.rxq = &rq->xdp_rxq;
- 		orig_data = xdp.data;
- 		act = bpf_prog_run_xdp(xdp_prog, &xdp);
-@@ -695,9 +696,11 @@ static struct sk_buff *receive_small(struct net_device *dev,
- 			/* Recalculate length in case bpf program changed it */
- 			delta = orig_data - xdp.data;
- 			len = xdp.data_end - xdp.data;
-+			metasize = xdp.data - xdp.data_meta;
- 			break;
- 		case XDP_TX:
- 			stats->xdp_tx++;
-+			xdp.data_meta = xdp.data;
- 			xdpf = convert_to_xdp_frame(&xdp);
- 			if (unlikely(!xdpf))
- 				goto err_xdp;
-@@ -735,11 +738,14 @@ static struct sk_buff *receive_small(struct net_device *dev,
- 	}
- 	skb_reserve(skb, headroom - delta);
- 	skb_put(skb, len);
--	if (!delta) {
-+	if (!delta && !metasize) {
- 		buf += header_offset;
- 		memcpy(skb_vnet_hdr(skb), buf, vi->hdr_len);
- 	} /* keep zeroed vnet hdr since packet was changed by bpf */
- 
-+	if (metasize)
-+		skb_metadata_set(skb, metasize);
-+
- err:
- 	return skb;
- 
--- 
-2.20.1
-
+Applied and queued up for -stable.
