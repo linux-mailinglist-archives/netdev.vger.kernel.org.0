@@ -2,96 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1D94584B2
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 16:43:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 772E0584D1
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 16:48:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726829AbfF0Ono (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 10:43:44 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:37094 "EHLO vps0.lunn.ch"
+        id S1726631AbfF0Osq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 10:48:46 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:47630 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726425AbfF0Onn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Jun 2019 10:43:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=tx6dF92XYQvz4YacD0VR8WVxRaiNwFBa+2vW1h35TBI=; b=F1tWzUYqbyKtgS6PIeqs3RaAq/
-        Q/TGgUztRsGKuL0McSm5Sa5oRGuSsC4zkZiof69ujvLInt7txfhqHyQMgsCNYEpP2QJ55mxWB00u1
-        Or12BnnWm+Wc1RVkI9tqCCGVTE71TW+kWZqjxrHv1a9z9piOaW82mLB96XZnBk3/+9JM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hgVch-0000Yx-16; Thu, 27 Jun 2019 16:43:39 +0200
-Date:   Thu, 27 Jun 2019 16:43:39 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Corentin Labbe <clabbe.montjoie@gmail.com>
-Cc:     jacmet@sunsite.dk, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [BUG] net: dm9600: false link status
-Message-ID: <20190627144339.GG31189@lunn.ch>
-References: <20190627132137.GB29016@Red>
+        id S1726445AbfF0Osq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Jun 2019 10:48:46 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id E12F43092657;
+        Thu, 27 Jun 2019 14:48:45 +0000 (UTC)
+Received: from renaissance-vector.mxp.redhat.com (unknown [10.32.181.34])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0A3FC1001B19;
+        Thu, 27 Jun 2019 14:48:44 +0000 (UTC)
+From:   Andrea Claudi <aclaudi@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, dsahern@kernel.org
+Subject: [PATCH iproute2] tc: netem: fix r parameter in Bernoulli loss model
+Date:   Thu, 27 Jun 2019 16:47:45 +0200
+Message-Id: <4b95a8c3d9a210c712f4366ea2d2f056cb302005.1561646575.git.aclaudi@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190627132137.GB29016@Red>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.43]); Thu, 27 Jun 2019 14:48:45 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 27, 2019 at 03:21:37PM +0200, Corentin Labbe wrote:
-> Hello
-> 
-> I own an USB dongle which is a "Davicom DM96xx USB 10/100 Ethernet".
-> According to the CHIP_ID, it is a DM9620.
-> 
-> Since I needed for bringing network to uboot for a board, I have started to create its uboot's driver.
-> My uboot driver is based on the dm9600 Linux driver.
-> 
-> The dongle was working but very very slowy (24Kib/s).
-> After some debug i found that the main problem was that it always link to 10Mbit/s Half-duplex. (according to the MAC registers)
-> 
-> For checking the status of the dongle I have plugged it on a Linux box which give me:
-> dm9601 6-2:1.0 enp0s29f0u2: link up, 100Mbps, full-duplex, lpa 0xFFFF
-> 
-> But in fact the Linux driver is tricked.
-> 
-> I have added debug of MDIO write/read and got:
-> [157550.926974] dm9601 6-2:1.0 (unnamed net_device) (uninitialized): dm9601_mdio_write() phy_id=0x00, loc=0x00, val=0x8000
+As the man page for tc netem states:
 
-Writing the reset bit. Ideally you should read back the register and
-wait for this bit to clear. Try adding this, and see if this helps, or
-you get 0xffff.
+    To use the Bernoulli model, the only needed parameter is p while the
+    others will be set to the default values r=1-p, 1-h=1 and 1-k=0.
 
-> [157550.931962] dm9601 6-2:1.0 (unnamed net_device) (uninitialized): dm9601_mdio_write() phy_id=0x00, loc=0x04, val=0x05e1
+However r parameter is erroneusly set to 1, and not to 1-p.
+Fix this using the same approach of the 4-state loss model.
 
-Advertisement control register.  
+Fixes: 3c7950af598be ("netem: add support for 4 state and GE loss model")
+Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+---
+ tc/q_netem.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-> [157550.951967] dm9601 6-2:1.0 (unnamed net_device) (uninitialized): dm9601_mdio_read() phy_id=0x00, loc=0x00, returns=0xffff
+diff --git a/tc/q_netem.c b/tc/q_netem.c
+index 6e0e8a8cbfde5..d1cd17f8a8a7e 100644
+--- a/tc/q_netem.c
++++ b/tc/q_netem.c
+@@ -284,14 +284,17 @@ static int netem_parse_opt(struct qdisc_util *qu, int argc, char **argv,
+ 				}
+ 
+ 			} else if (!strcmp(*argv, "gemodel")) {
++				double p;
++
+ 				NEXT_ARG();
+-				if (get_percent(&gemodel.p, *argv)) {
++				if (parse_percent(&p, *argv)) {
+ 					explain1("loss gemodel p");
+ 					return -1;
+ 				}
++				set_percent(&gemodel.p, p);
+ 
+ 				/* set defaults */
+-				set_percent(&gemodel.r, 1.);
++				set_percent(&gemodel.r, 1. - p);
+ 				set_percent(&gemodel.h, 0);
+ 				set_percent(&gemodel.k1, 0);
+ 				loss_type = NETEM_LOSS_GE;
+-- 
+2.20.1
 
-And now things are bad. In theory, the power down bit is set, and some
-PHYs don't respond properly when powered down. However, it is unclear
-how it got into this state. Did the reset kill it, or setting the
-advertisement? Or is the PHY simply not responding at all. The MDIO
-data lines have a pull up, so if the device does not respond, reads
-give 0xffff.
-
-Maybe also check register 0, bit 7, EXT_PHY. Is it 0, indicating the
-internal PHY should be used?
-
-You could also try reading PHY registers 2 and 3 and see if you can
-get a valid looking PHY ID. Maybe try that before hitting the reset
-bit?
-
-> So it exsists two problem:
-> - Linux saying 100Mbps, full-duplex even if it is false.
-
-The driver is using the old mii code, not a phy driver. So i cannot
-help too much with linux. But if you can get the MDIO bus working
-reliably, it should be possible to move this over to phylib. The
-internal PHY appears to have all the standard registers, so the
-generic PHY driver has a good chance of working.
-
-     Andrew
