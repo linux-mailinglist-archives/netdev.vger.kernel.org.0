@@ -2,77 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C42C589BA
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 20:19:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20988589BD
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 20:19:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726651AbfF0STW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 14:19:22 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:40116 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726514AbfF0STW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 14:19:22 -0400
-Received: by mail-wm1-f65.google.com with SMTP id v19so6576069wmj.5
-        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 11:19:21 -0700 (PDT)
+        id S1726721AbfF0STx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 14:19:53 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:35124 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726508AbfF0STx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 14:19:53 -0400
+Received: by mail-pg1-f194.google.com with SMTP id s27so1392207pgl.2;
+        Thu, 27 Jun 2019 11:19:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5v05SZJJckJSDJXXNu0rjdM9JJNGZobt85eUW28X+6s=;
-        b=Jcjg3n9Q4cwdIRonnFpdmJ1VmGeQsolZVr0iVn2y5qLbph7BHzsJkU6szJNd7tnQBE
-         mSuUCth0lWKXT6T288rRAwfJ0bpbtgl4FApCoRkztyp+D7tQF52q5z1N8Opz7cpScU4Z
-         IZf+H0C/C9VZgJk5gJVpGHZ9erm7Qn535vxoudtWQLRU/2yEC53bLzOR/a58w3bKPPI1
-         I3Qxiro4Jn8rPlHgWEe8vrZTF+VuqUeMn6SMs8fqLFDmTW3dVvMXz2jBW/niT60H3nr5
-         uNBujRQxhOkKItiN1Pgq3hiy9JNrHbSqDMEEfcO/k0eZrkqRC8WQi8Kjk5WDupEmzHpd
-         KG2g==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=YxWB64ryDTAukr5Ntc6C0h8QlbYoWm2vudWLQPZyntg=;
+        b=EXCmGp9PEcUVA3irnDJK4OVTXv2Sl7cZRSj65JU9vsOjqWmuqs6yDubTP2RMCaRb3O
+         dZWfwZjkGqxIMxgfzcl035UUwoyGCHsKBd1VHFoCnMpOToT2/gzA4FzeYgdIPIJY2tZb
+         1Oh6tqb2JlvLHyHpaRoMRvOifmqtBhB5Z2GL77f59yBXVsG45GhQ36yi9Uw/vgEaGtiu
+         GyNDMsbV7CjlTFkXJT+mTAdS+0HLn3bEGURNT6Ss/wiAGmZlQvGPVPscLLdwiWiKFH3M
+         cN/PkxDdNmBto3PnfR96yTh54RoE7sCklobvdymQkw7jxrmW4XhtG5hVLPmspclg0z97
+         8L5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5v05SZJJckJSDJXXNu0rjdM9JJNGZobt85eUW28X+6s=;
-        b=oPdsgG/YaxEJPBuonslu0aI231aGqFI3cIo2ODTPPstCQFDzX+siywFAx4TAMT7rsg
-         A30uc2m0qF2IxDimzAkTdcGDp4FdU3RhhnpAH2XGUuZFU/TXWpyFW7rR04HdZB/vtASq
-         UdHzv8GXB7QgUBX9+cTX045sHhw34F7pKZPiWjbY+gY29z2q5Lv2oeisbyfSNdisksz5
-         rjWxGA7uxqs8sMjwPcaY8jy+uDW7i1nUKci7wQmqJw7tpgxQAA2LYZVFl8vrr+s2l6P8
-         60EiE8dTRCIXM/V0myd4ICbtM9xbdirMFZ7v8ac/cRbODDe4fE2zDnw+vX+JUCd6JOpp
-         nukw==
-X-Gm-Message-State: APjAAAX7TC9gx3R1Pk7hwzbBAKP3hSfgqV0m/a8HxTz4WOfA9TMA8+aY
-        0BHh7qrg4JwuSK11OOv8tJxMqBtwdBPp6aLqDt4X+e/O
-X-Google-Smtp-Source: APXvYqxP6/Wy3ws2EU3h2/taMwXTSN+gOytIBrEa4JJ0aREVvlSczUoEJM7V7oTTNZeMVbbrpYHtz7UF+OxQJmiNSgc=
-X-Received: by 2002:a1c:6a06:: with SMTP id f6mr4059490wmc.159.1561659559837;
- Thu, 27 Jun 2019 11:19:19 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190622004539.92199-1-maheshb@google.com> <20190627.110852.372215308913618999.davem@davemloft.net>
-In-Reply-To: <20190627.110852.372215308913618999.davem@davemloft.net>
-From:   =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ==?= 
-        <maheshb@google.com>
-Date:   Thu, 27 Jun 2019 11:19:02 -0700
-Message-ID: <CAF2d9jj2ijVaqgkzjGFdjtX9fOaiehE=owucwfaqX159v9u8Zw@mail.gmail.com>
-Subject: Re: [PATCH next 3/3] blackhole_dev: add a selftest
-To:     David Miller <davem@davemloft.net>
-Cc:     linux-netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>, michael.chan@broadcom.com,
-        dja@axtens.net, mahesh@bandewar.net
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=YxWB64ryDTAukr5Ntc6C0h8QlbYoWm2vudWLQPZyntg=;
+        b=cwuTXEIDw3bpgFfD4t9aNwlUO8m5Kf/NgWrr+U8PpLfyWSNdcUVtPnT8oLm5KPGnCR
+         jpb0RqKt8H3gxfD5EweswuOViWv5PhSCt2PoeUnF0aGFfU8pR8KilL9pzgaLra5vBa1I
+         fGNnuinMXJr32SjbaNPCc/nA/nLu8+NYaTglU2vw803ZfpEx+g4CENmAkajurZRWdbfY
+         4HpGrXSdE9W49ZeZALnMN6ZXciiU1VrvWxl+IFuzhWxNF3fMkpmJV8E+1bI32tbKBxcm
+         oho41zf/cym7Kp1kn8jor5ra7ZIHN9eGiu/BmrlNHPHI46VhYaRj97CMEzKS8CWyeGmw
+         Qjzg==
+X-Gm-Message-State: APjAAAXQKsGqdXOg7T3x73Clx3M20GE25Fca5JicQfRKKnaQ5tPyNXji
+        ws9BLZXa2JCpxVOPzqvlsX0=
+X-Google-Smtp-Source: APXvYqywhigCjvf0V8jWgrcntEPT022im+5ozHdT/lBYAjP4szKy6nZXorPGKYUK8vvBZC64HEZtNQ==
+X-Received: by 2002:a65:62c4:: with SMTP id m4mr4889096pgv.243.1561659592672;
+        Thu, 27 Jun 2019 11:19:52 -0700 (PDT)
+Received: from localhost ([67.136.128.119])
+        by smtp.gmail.com with ESMTPSA id a6sm6803714pfa.51.2019.06.27.11.19.51
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 27 Jun 2019 11:19:52 -0700 (PDT)
+Date:   Thu, 27 Jun 2019 11:19:51 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Eric Biggers <ebiggers@kernel.org>,
+        Boris Pismenny <borisp@mellanox.com>,
+        Aviad Yehezkel <aviadye@mellanox.com>,
+        Dave Watson <davejwatson@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, glider@google.com,
+        herbert@gondor.apana.org.au, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        syzbot <syzbot+6f50c99e8f6194bf363f@syzkaller.appspotmail.com>
+Message-ID: <5d1508c79587a_e392b1ee39f65b45b@john-XPS-13-9370.notmuch>
+In-Reply-To: <20190627164627.GF686@sol.localdomain>
+References: <000000000000a97a15058c50c52e@google.com>
+ <20190627164627.GF686@sol.localdomain>
+Subject: RE: [net/tls] Re: KMSAN: uninit-value in aesti_encrypt
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 27, 2019 at 11:08 AM David Miller <davem@davemloft.net> wrote:
->
-> From: Mahesh Bandewar <maheshb@google.com>
-> Date: Fri, 21 Jun 2019 17:45:39 -0700
->
-> > --- a/tools/testing/selftests/net/Makefile
-> > +++ b/tools/testing/selftests/net/Makefile
-> > @@ -4,8 +4,9 @@
-> >  CFLAGS =  -Wall -Wl,--no-as-needed -O2 -g
-> >  CFLAGS += -I../../../../usr/include/
-> >
-> > +<<<<<<< HEAD
-> >  TEST_PROGS := run_netsocktests run_afpackettests test_bpf.sh netdevice.sh \
->
-> Ummm... yeah... might want to resolve this conflict...
->
-oops, my bad! Let me send v2
-> :-)
+Eric Biggers wrote:
+> [+TLS maintainers]
+> 
+> Very likely a net/tls bug, not a crypto bug.
+> 
+> Possibly a duplicate of other reports such as "KMSAN: uninit-value in gf128mul_4k_lle (3)"
+> 
+> See https://lore.kernel.org/netdev/20190625055019.GD17703@sol.localdomain/ for
+> the list of 17 other open syzbot bugs I've assigned to the TLS subsystem.  TLS
+> maintainers, when are you planning to look into these?
+> 
+> On Thu, Jun 27, 2019 at 09:37:05AM -0700, syzbot wrote:
+
+I'm looking at this issue now. There is a series on bpf list now to address
+many of those 17 open issues but this is a separate issue. I can reproduce
+it locally so should have a fix soon.
+
+Thanks,
+John
