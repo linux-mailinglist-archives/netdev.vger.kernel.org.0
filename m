@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 32F5A577C8
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:49:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78C61577C2
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:49:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726691AbfF0Ahq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 20:37:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42166 "EHLO mail.kernel.org"
+        id S1728721AbfF0Ah4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 20:37:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42316 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728681AbfF0Aho (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 20:37:44 -0400
+        id S1728712AbfF0Ahx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 20:37:53 -0400
 Received: from sasha-vm.mshome.net (unknown [107.242.116.147])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DFBFB2080C;
-        Thu, 27 Jun 2019 00:37:41 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0C20F217F9;
+        Thu, 27 Jun 2019 00:37:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1561595863;
-        bh=bruDNnvBASLhgwPRnFXyw8SGopZaiKctjrsonHaWs8Y=;
+        s=default; t=1561595872;
+        bh=gyBTngWHtRDO9vpVZZ8b+0cr76f93Uf0igsoq7QNkXo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AykLFvDse7DGMu8m15PW72/WhzWwZY9WbCBlBlqPFW9KvzytOFFqxZSWD32E9oXan
-         Fn5bysiMY2NvT4Ee3d+F93ULyuZKQyV37Sjxnax/jUsauUH3PmpATmpYiAXd/spqKB
-         yRkIlW3d5Tu7N9kkxA6yISvWaS5caLBFuIdXY7B0=
+        b=Dx13BFS9UpOkOdwpKMncIv+BvN79lCH20iR1m/TaFwZy6KW5dGqIcbgMbn+LqWOYK
+         U+aG1fyiMq5Go/6LwZCqwAEApBruVSUKqW57bOzGhImBN6xLV/WvY7p/EgEb373lTA
+         5D/N2Fm8mzv4xHdKd+6vZd192ocVzADL1mSUwoh4=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Thomas Falcon <tlfalcon@linux.ibm.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linuxppc-dev@lists.ozlabs.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 28/60] ibmvnic: Fix unchecked return codes of memory allocations
-Date:   Wed, 26 Jun 2019 20:35:43 -0400
-Message-Id: <20190627003616.20767-28-sashal@kernel.org>
+Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 31/60] bpf: lpm_trie: check left child of last leftmost node for NULL
+Date:   Wed, 26 Jun 2019 20:35:46 -0400
+Message-Id: <20190627003616.20767-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190627003616.20767-1-sashal@kernel.org>
 References: <20190627003616.20767-1-sashal@kernel.org>
@@ -44,52 +45,131 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thomas Falcon <tlfalcon@linux.ibm.com>
+From: Jonathan Lemon <jonathan.lemon@gmail.com>
 
-[ Upstream commit 7c940b1a5291e5069d561f5b8f0e51db6b7a259a ]
+[ Upstream commit da2577fdd0932ea4eefe73903f1130ee366767d2 ]
 
-The return values for these memory allocations are unchecked,
-which may cause an oops if the driver does not handle them after
-a failure. Fix by checking the function's return code.
+If the leftmost parent node of the tree has does not have a child
+on the left side, then trie_get_next_key (and bpftool map dump) will
+not look at the child on the right.  This leads to the traversal
+missing elements.
 
-Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Lookup is not affected.
+
+Update selftest to handle this case.
+
+Reproducer:
+
+ bpftool map create /sys/fs/bpf/lpm type lpm_trie key 6 \
+     value 1 entries 256 name test_lpm flags 1
+ bpftool map update pinned /sys/fs/bpf/lpm key  8 0 0 0  0   0 value 1
+ bpftool map update pinned /sys/fs/bpf/lpm key 16 0 0 0  0 128 value 2
+ bpftool map dump   pinned /sys/fs/bpf/lpm
+
+Returns only 1 element. (2 expected)
+
+Fixes: b471f2f1de8b ("bpf: implement MAP_GET_NEXT_KEY command for LPM_TRIE")
+Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ kernel/bpf/lpm_trie.c                      |  9 +++--
+ tools/testing/selftests/bpf/test_lpm_map.c | 41 ++++++++++++++++++++--
+ 2 files changed, 45 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index b88af81499e8..0ae43d27cdcf 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -438,9 +438,10 @@ static int reset_rx_pools(struct ibmvnic_adapter *adapter)
- 		if (rx_pool->buff_size != be64_to_cpu(size_array[i])) {
- 			free_long_term_buff(adapter, &rx_pool->long_term_buff);
- 			rx_pool->buff_size = be64_to_cpu(size_array[i]);
--			alloc_long_term_buff(adapter, &rx_pool->long_term_buff,
--					     rx_pool->size *
--					     rx_pool->buff_size);
-+			rc = alloc_long_term_buff(adapter,
-+						  &rx_pool->long_term_buff,
-+						  rx_pool->size *
-+						  rx_pool->buff_size);
- 		} else {
- 			rc = reset_long_term_buff(adapter,
- 						  &rx_pool->long_term_buff);
-@@ -706,9 +707,9 @@ static int init_tx_pools(struct net_device *netdev)
- 			return rc;
- 		}
+diff --git a/kernel/bpf/lpm_trie.c b/kernel/bpf/lpm_trie.c
+index 4f3138e6ecb2..1a8b208f6c55 100644
+--- a/kernel/bpf/lpm_trie.c
++++ b/kernel/bpf/lpm_trie.c
+@@ -676,9 +676,14 @@ static int trie_get_next_key(struct bpf_map *map, void *_key, void *_next_key)
+ 	 * have exact two children, so this function will never return NULL.
+ 	 */
+ 	for (node = search_root; node;) {
+-		if (!(node->flags & LPM_TREE_NODE_FLAG_IM))
++		if (node->flags & LPM_TREE_NODE_FLAG_IM) {
++			node = rcu_dereference(node->child[0]);
++		} else {
+ 			next_node = node;
+-		node = rcu_dereference(node->child[0]);
++			node = rcu_dereference(node->child[0]);
++			if (!node)
++				node = rcu_dereference(next_node->child[1]);
++		}
+ 	}
+ do_copy:
+ 	next_key->prefixlen = next_node->prefixlen;
+diff --git a/tools/testing/selftests/bpf/test_lpm_map.c b/tools/testing/selftests/bpf/test_lpm_map.c
+index 02d7c871862a..006be3963977 100644
+--- a/tools/testing/selftests/bpf/test_lpm_map.c
++++ b/tools/testing/selftests/bpf/test_lpm_map.c
+@@ -573,13 +573,13 @@ static void test_lpm_get_next_key(void)
  
--		init_one_tx_pool(netdev, &adapter->tso_pool[i],
--				 IBMVNIC_TSO_BUFS,
--				 IBMVNIC_TSO_BUF_SZ);
-+		rc = init_one_tx_pool(netdev, &adapter->tso_pool[i],
-+				      IBMVNIC_TSO_BUFS,
-+				      IBMVNIC_TSO_BUF_SZ);
- 		if (rc) {
- 			release_tx_pools(adapter);
- 			return rc;
+ 	/* add one more element (total two) */
+ 	key_p->prefixlen = 24;
+-	inet_pton(AF_INET, "192.168.0.0", key_p->data);
++	inet_pton(AF_INET, "192.168.128.0", key_p->data);
+ 	assert(bpf_map_update_elem(map_fd, key_p, &value, 0) == 0);
+ 
+ 	memset(key_p, 0, key_size);
+ 	assert(bpf_map_get_next_key(map_fd, NULL, key_p) == 0);
+ 	assert(key_p->prefixlen == 24 && key_p->data[0] == 192 &&
+-	       key_p->data[1] == 168 && key_p->data[2] == 0);
++	       key_p->data[1] == 168 && key_p->data[2] == 128);
+ 
+ 	memset(next_key_p, 0, key_size);
+ 	assert(bpf_map_get_next_key(map_fd, key_p, next_key_p) == 0);
+@@ -592,7 +592,7 @@ static void test_lpm_get_next_key(void)
+ 
+ 	/* Add one more element (total three) */
+ 	key_p->prefixlen = 24;
+-	inet_pton(AF_INET, "192.168.128.0", key_p->data);
++	inet_pton(AF_INET, "192.168.0.0", key_p->data);
+ 	assert(bpf_map_update_elem(map_fd, key_p, &value, 0) == 0);
+ 
+ 	memset(key_p, 0, key_size);
+@@ -643,6 +643,41 @@ static void test_lpm_get_next_key(void)
+ 	assert(bpf_map_get_next_key(map_fd, key_p, next_key_p) == -1 &&
+ 	       errno == ENOENT);
+ 
++	/* Add one more element (total five) */
++	key_p->prefixlen = 28;
++	inet_pton(AF_INET, "192.168.1.128", key_p->data);
++	assert(bpf_map_update_elem(map_fd, key_p, &value, 0) == 0);
++
++	memset(key_p, 0, key_size);
++	assert(bpf_map_get_next_key(map_fd, NULL, key_p) == 0);
++	assert(key_p->prefixlen == 24 && key_p->data[0] == 192 &&
++	       key_p->data[1] == 168 && key_p->data[2] == 0);
++
++	memset(next_key_p, 0, key_size);
++	assert(bpf_map_get_next_key(map_fd, key_p, next_key_p) == 0);
++	assert(next_key_p->prefixlen == 28 && next_key_p->data[0] == 192 &&
++	       next_key_p->data[1] == 168 && next_key_p->data[2] == 1 &&
++	       next_key_p->data[3] == 128);
++
++	memcpy(key_p, next_key_p, key_size);
++	assert(bpf_map_get_next_key(map_fd, key_p, next_key_p) == 0);
++	assert(next_key_p->prefixlen == 24 && next_key_p->data[0] == 192 &&
++	       next_key_p->data[1] == 168 && next_key_p->data[2] == 1);
++
++	memcpy(key_p, next_key_p, key_size);
++	assert(bpf_map_get_next_key(map_fd, key_p, next_key_p) == 0);
++	assert(next_key_p->prefixlen == 24 && next_key_p->data[0] == 192 &&
++	       next_key_p->data[1] == 168 && next_key_p->data[2] == 128);
++
++	memcpy(key_p, next_key_p, key_size);
++	assert(bpf_map_get_next_key(map_fd, key_p, next_key_p) == 0);
++	assert(next_key_p->prefixlen == 16 && next_key_p->data[0] == 192 &&
++	       next_key_p->data[1] == 168);
++
++	memcpy(key_p, next_key_p, key_size);
++	assert(bpf_map_get_next_key(map_fd, key_p, next_key_p) == -1 &&
++	       errno == ENOENT);
++
+ 	/* no exact matching key should return the first one in post order */
+ 	key_p->prefixlen = 22;
+ 	inet_pton(AF_INET, "192.168.1.0", key_p->data);
 -- 
 2.20.1
 
