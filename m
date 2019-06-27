@@ -2,122 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3F7D58942
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 19:48:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E10C58943
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 19:48:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726721AbfF0RsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 13:48:10 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:41172 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726557AbfF0RsK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 13:48:10 -0400
-Received: by mail-qt1-f196.google.com with SMTP id d17so3381805qtj.8;
-        Thu, 27 Jun 2019 10:48:09 -0700 (PDT)
+        id S1726748AbfF0RsO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 13:48:14 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:43423 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726557AbfF0RsO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 13:48:14 -0400
+Received: by mail-qk1-f194.google.com with SMTP id m14so2464173qka.10
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 10:48:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8KacmKH3cAO5KqfGKUf465nKcuX4PFadp3LJhvSKwIs=;
-        b=LIO1JaSOWhbmy1kvAJwKb4R99OykBWxYGbpMlusudxd3jz9ynRFJi2xKxYX1hbCTjv
-         e3Mk8R8bq/s5ikWyb3YrBBZ5wbNtBbwQQkFZA8NebJP6oGBklu76Y8oh0h720MQV1yxB
-         LNy5bHOaNng0sfiI81c13SOM6lqoJ8VhwDOYNG15+C1CDtF0bPo75rbbta8G/uH9UliB
-         VQJMUZO29r6nykWsXNNqRpn3vHECq3Oqp+ku/KF4TE9ub6xE6C+vk5Nht8uPGREGZI8x
-         HcFsrC2p5Zm4urqi17Ry+Yr6bPbqa8C6A2JaR3M7BvKH3m9pFNM+okdx98ImXAJm3ZO4
-         zIGA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=P2et0OJE+IoV88xr/ln/SEgjBIDStaX2uEFJJ+kOQzY=;
+        b=RZryFpJsuiniMjOJU7bTkSTCdkFW3BxvyAuB5EJcSHZ8HPW3NbGKm26EvdgBjuU+7E
+         ZTuhlncIGZPA1EFjyQ/VG9ALnmpsYOyNlXiusafH94jEi6I/1ls9yWtftAKj7xB2tdEs
+         QUJAb95D2Zv+cl89YpSagFdU5GbkCMl/1HgsRlKdtP70x1gNtNIcTfVqYa+63Smwiy7w
+         gKB6Htwumbo08dafUfCu9xY3e6JXNS30VHJN4FyAUnIFH3e5t2OUSzYVDNcpzO4hrW5O
+         h0Cci831eg+rJtZDw4kl8bTdC89cjC0luR0R8tM6RfzsOQZ7JSVR6yKu+wMs6ETRLtKB
+         2iJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8KacmKH3cAO5KqfGKUf465nKcuX4PFadp3LJhvSKwIs=;
-        b=FX2dVZSOAwNgplMSw/+Idq1yj/A5+6ylslBCsAYX4E6bZwLuGNXZcSxE7ujLTcAGF/
-         SgePFW4NxEb7LzMjcQLAZnS2M3zWPxt2Lc+KEBuAXZnSKuN4xw1cWOhX4qplN2wHIlkD
-         wE3azyu1Inp1cs4Lt0ClF9wsh2Hsnpz6qS2qE5y9jzSiPF5xI+qRF2hAG4gvoGsZFEmz
-         kBvjqJrdyKBTf3jsTWdnWsxrFZ/CDm/JhvxEjgH/A5S1HZ9FL4LuTdivthx7cwwccWOT
-         4YMf4BO9v/ElZijPxGrbk2j+KlrNV+I/g3cb0ED8KP+EIQ/TWLrOFt4tyzFZweTjKakc
-         ELUg==
-X-Gm-Message-State: APjAAAUi8Td5BJDPlpS6SPT9ny2kJ2uMt/Cd6nL/G6c0NU+5/LExO5hI
-        ecLlOwTBpoOk7dFPE2BPSeBMcB9IaXTaslfkhXU=
-X-Google-Smtp-Source: APXvYqw2tJRG6DqVL95VyMi07GDvSgvk/Wbctb69x3VIWEQHo79Ah6mpijT7SNu/YAxiv8yR98Kkuf+KgI75ufYVmvQ=
-X-Received: by 2002:ac8:2d56:: with SMTP id o22mr4245279qta.171.1561657689407;
- Thu, 27 Jun 2019 10:48:09 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=P2et0OJE+IoV88xr/ln/SEgjBIDStaX2uEFJJ+kOQzY=;
+        b=Cnz8CRVSpN9fhRbS/c9Px1Et0RaxIzKOHaK24Goqqd1TgZoRu7iODuk7XRWmRFXUuJ
+         xj3olQVa8XTA/FH+4awBlTAKjZsuwYiuRkpZttq/RkpdL7IYUf16IY6T+iy2yCdS9Gt9
+         QP/uf/2i+ha455xPKdTOv4M7pm5+zV8aKEfHgYi2ugIEQo9b4hRp5C8oF2QxpVqiR8tC
+         D654OZ89ocTJ1wGJ6HWlmSh/rv1/sGCcMAmC2O3vgj91n/8faxMguWth4EZHRyGGobJh
+         cR8UXDOBHJl9RJMzGyP+afvj6e41iNPOh4+1beRalCsCedpSRzYihFm3wgV2qQhNle6r
+         bxBg==
+X-Gm-Message-State: APjAAAXgm2LecPCzYPfqZZYkjpKYDuXmqixzae0+cl7HIBao9mmx3xB7
+        FSAI3VidnC46k8MEnDmExZTXBg==
+X-Google-Smtp-Source: APXvYqxmRxIn7X6/uKZiMScZoXpsjCN7ns3p99ujN4tW/GkOdaIgebSptAuajIG/QI//Q3Vqmz+gBw==
+X-Received: by 2002:a37:9481:: with SMTP id w123mr4435445qkd.319.1561657693405;
+        Thu, 27 Jun 2019 10:48:13 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id v17sm1355957qtc.23.2019.06.27.10.48.12
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 27 Jun 2019 10:48:13 -0700 (PDT)
+Date:   Thu, 27 Jun 2019 10:48:08 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        sthemmin@microsoft.com, dsahern@gmail.com, mlxsw@mellanox.com
+Subject: Re: [RFC] longer netdev names proposal
+Message-ID: <20190627104808.1404049a@cakuba.netronome.com>
+In-Reply-To: <20190627094327.GF2424@nanopsycho>
+References: <20190627094327.GF2424@nanopsycho>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <20190626232133.3800637-1-andriin@fb.com> <20190626232133.3800637-2-andriin@fb.com>
- <E28D922F-9D97-4836-B687-B4CBC3549AE1@fb.com>
-In-Reply-To: <E28D922F-9D97-4836-B687-B4CBC3549AE1@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 27 Jun 2019 10:47:58 -0700
-Message-ID: <CAEf4Bza1p4ozVV-Vn8ibV6JRtGc_voh-Mkx51eWvuVi1P8ogSA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/3] libbpf: capture value in BTF type info for
- BTF-defined map defs
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, Alexei Starovoitov <ast@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 27, 2019 at 10:27 AM Song Liu <songliubraving@fb.com> wrote:
->
->
->
-> > On Jun 26, 2019, at 4:21 PM, Andrii Nakryiko <andriin@fb.com> wrote:
-> >
-> > Change BTF-defined map definitions to capture compile-time integer
-> > values as part of BTF type definition, to avoid split of key/value type
-> > information and actual type/size/flags initialization for maps.
->
-> If I have an old bpf program and compiled it with new llvm, will it
-> work with new libbpf?
+On Thu, 27 Jun 2019 11:43:27 +0200, Jiri Pirko wrote:
+> Hi all.
+> 
+> In the past, there was repeatedly discussed the IFNAMSIZ (16) limit for
+> netdevice name length. Now when we have PF and VF representors
+> with port names like "pfXvfY", it became quite common to hit this limit:
+> 0123456789012345
+> enp131s0f1npf0vf6
+> enp131s0f1npf0vf22
+> 
+> Since IFLA_NAME is just a string, I though it might be possible to use
+> it to carry longer names as it is. However, the userspace tools, like
+> iproute2, are doing checks before print out. So for example in output of
+> "ip addr" when IFLA_NAME is longer than IFNAMSIZE, the netdevice is
+> completely avoided.
+> 
+> So here is a proposal that might work:
+> 1) Add a new attribute IFLA_NAME_EXT that could carry names longer than
+>    IFNAMSIZE, say 64 bytes. The max size should be only defined in kernel,
+>    user should be prepared for any string size.
+> 2) Add a file in sysfs that would indicate that NAME_EXT is supported by
+>    the kernel.
+> 3) Udev is going to look for the sysfs indication file. In case when
+>    kernel supports long names, it will do rename to longer name, setting
+>    IFLA_NAME_EXT. If not, it does what it does now - fail.
+> 4) There are two cases that can happen during rename:
+>    A) The name is shorter than IFNAMSIZ
+>       -> both IFLA_NAME and IFLA_NAME_EXT would contain the same string:  
+>          original IFLA_NAME     = eth0
+>          original IFLA_NAME_EXT = eth0
+>          renamed  IFLA_NAME     = enp5s0f1npf0vf1
+>          renamed  IFLA_NAME_EXT = enp5s0f1npf0vf1
+>    B) The name is longer tha IFNAMSIZ
+>       -> IFLA_NAME would contain the original one, IFLA_NAME_EXT would   
+>          contain the new one:
+>          original IFLA_NAME     = eth0
+>          original IFLA_NAME_EXT = eth0
+>          renamed  IFLA_NAME     = eth0
+>          renamed  IFLA_NAME_EXT = enp131s0f1npf0vf22
 
-You mean BPF programs that used previous incarnation of BTF-defined
-maps? No, they won't work. But we never released them, so I think it's
-ok to change them. Nothing should be using that except for selftests,
-which I fixed.
+I think B is the only way, A risks duplicate IFLA_NAMEs over ioctl,
+right?  And maybe there is some crazy application out there which 
+mixes netlink and ioctl.
 
->
->
-> >
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
+I guess it's not worse than status quo, given that today renames 
+will fail and we will either get truncated names or eth0s..
 
-<snip>
+> This would allow the old tools to work with "eth0" and the new
+> tools would work with "enp131s0f1npf0vf22". In sysfs, there would
+> be symlink from one name to another.
+>       
+> Also, there might be a warning added to kernel if someone works
+> with IFLA_NAME that the userspace tool should be upgraded.
+> 
+> Eventually, only IFLA_NAME_EXT is going to be used by everyone.
+> 
+> I'm aware there are other places where similar new attribute
+> would have to be introduced too (ip rule for example).
+> I'm not saying this is a simple work.
+> 
+> Question is what to do with the ioctl api (get ifindex etc). I would
+> probably leave it as is and push tools to use rtnetlink instead.
+> 
+> Any ideas why this would not work? Any ideas how to solve this
+> differently?
 
-> > diff --git a/tools/testing/selftests/bpf/bpf_helpers.h b/tools/testing/selftests/bpf/bpf_helpers.h
-> > index 1a5b1accf091..aa5ddf58c088 100644
-> > --- a/tools/testing/selftests/bpf/bpf_helpers.h
-> > +++ b/tools/testing/selftests/bpf/bpf_helpers.h
-> > @@ -8,6 +8,9 @@
-> >  */
-> > #define SEC(NAME) __attribute__((section(NAME), used))
-> >
-> > +#define __int(name, val) int (*name)[val]
-> > +#define __type(name, val) val *name
-> > +
->
-> I think we need these two in libbpf.
+Since we'd have to update all user space to make use of the new names
+I'd be tempted to move to a more structured device identification.
 
-Yes, but it's another story for another set of patches. We'll need to
-provide bpf_helpers as part of libbpf for inclusion into BPF programs,
-but there are a bunch of problems right now with existing
-bpf_heplers.h that prevents us from just copying it into libbpf. We'll
-need to resolve those first.
+5: enp131s0f1npf0vf6: <BROADCAST,MULTICAST> ...
 
-But then again, there is no use of __int and __type for user-space
-programs, so for now it's ok.
+vs:
 
->
-> Thanks,
-> Song
->
-> > /* helper macro to print out debug messages */
-> > #define bpf_printk(fmt, ...)                          \
-> > ({                                                    \
-> > --
-> > 2.17.1
-> >
->
+5: eth5 (parent enp131s0f1 pf 0 vf 6 peer X*): <BROADCAST,MULTICAST> ...
+
+* ;)
+
+And allow filtering/selection of device based on more attributes than
+just name and ifindex.  In practice in container workloads, for example,
+the names are already very much insufficient to identify the device.
+Refocusing on attributes is probably a big effort and not that practical
+for traditional CLI users?  IDK
+
+Anyway, IMHO your scheme is strictly better than status quo.
