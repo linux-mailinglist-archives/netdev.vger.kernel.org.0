@@ -2,133 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F670586C1
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 18:13:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB186586C4
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 18:14:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726487AbfF0QNK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 12:13:10 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:26049 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726445AbfF0QNK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Jun 2019 12:13:10 -0400
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id B95863082A9C;
-        Thu, 27 Jun 2019 16:12:59 +0000 (UTC)
-Received: from ovpn-112-41.rdu2.redhat.com (ovpn-112-41.rdu2.redhat.com [10.10.112.41])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E5B675D719;
-        Thu, 27 Jun 2019 16:12:54 +0000 (UTC)
-Message-ID: <e23b40bd692c63ee1e2c944459756dc05e751b0b.camel@redhat.com>
-Subject: Re: [RFC] longer netdev names proposal
-From:   Dan Williams <dcbw@redhat.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>,
-        Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        jakub.kicinski@netronome.com, sthemmin@microsoft.com,
-        dsahern@gmail.com, mlxsw@mellanox.com
-Date:   Thu, 27 Jun 2019 11:12:54 -0500
-In-Reply-To: <20190627082922.289225f7@hermes.lan>
-References: <20190627094327.GF2424@nanopsycho>
-         <20190627082922.289225f7@hermes.lan>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
+        id S1726571AbfF0QOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 12:14:01 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:46814 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726384AbfF0QOA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 12:14:00 -0400
+Received: by mail-wr1-f66.google.com with SMTP id n4so3207386wrw.13
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 09:13:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=date:in-reply-to:references:mime-version:content-transfer-encoding
+         :subject:to:cc:from:message-id;
+        bh=euNd2+3p95Ak48CHAzHYJQ+RLT760N4oNX4lTZJk3Po=;
+        b=Ybpcm+ROhx53wOzc7eNKtLf5yX5rXCj3IatUf+Mb72wTmikB7jfJ0fThUVV7ZNd1+1
+         9qi3gUSz7k4awanKuCOyS5p0EqJOzaUPmn6nbabMe8hagj0fPmHzL+0GbjwuI3fmKPjM
+         7qu6nxYKys5jYDn0aRHS+lsUyrVsINxt3o3Sc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:in-reply-to:references:mime-version
+         :content-transfer-encoding:subject:to:cc:from:message-id;
+        bh=euNd2+3p95Ak48CHAzHYJQ+RLT760N4oNX4lTZJk3Po=;
+        b=NIMRw8INrDFO+AyCMdWs2BTdhSXhT8eMnDvWf0T+7sV10Rci8A20dCxcwjSFqGvsUP
+         aziTJ9CEAv2+c8DP3irkaSX30dC1VivMTBZ3QAO93Vs4RYxdjaerlAAwUyxUzm3zGbsV
+         wA7enYVZjA7vWMtTWlcmOEtTDYerX9gxxzCG/1gxtMJFDNPpNNXRSh3OfNz775ATHM9y
+         v/z99/pAzIzy7WPMXR7Ya4E0JWuBU0OvsT1a61ahDX62EsPiZUPlDnCO9WdfE44VLyxM
+         3zYik3yy/hmOcy3P1/hqH3VLc5FROiDsPPysKSfXddhC14fVxQetqbQLismXN1PMYX6T
+         Byeg==
+X-Gm-Message-State: APjAAAWqf+3gi8pyvyAArx/bpei6cFh5oTWuqL3QhegQWyiHVWxYjlqu
+        MPNjMoUx4PdJhPUhiabjvxSuh5csUwk=
+X-Google-Smtp-Source: APXvYqxG3wDGdGFfLkPJspO55873+pJaY+mou8AA4FfwKFMHsDMphVDJuGEL60a1YXzh9zJW0EpTMw==
+X-Received: by 2002:a5d:618d:: with SMTP id j13mr3917094wru.195.1561652038185;
+        Thu, 27 Jun 2019 09:13:58 -0700 (PDT)
+Received: from localhost ([149.62.205.250])
+        by smtp.gmail.com with ESMTPSA id i11sm6985149wmi.33.2019.06.27.09.13.57
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 27 Jun 2019 09:13:57 -0700 (PDT)
+Date:   Thu, 27 Jun 2019 19:13:49 +0300
+In-Reply-To: <20190627190237.0a08a4a2@jimi>
+References: <20190627081047.24537-1-nikolay@cumulusnetworks.com> <20190627081047.24537-2-nikolay@cumulusnetworks.com> <20190627190237.0a08a4a2@jimi>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Thu, 27 Jun 2019 16:13:10 +0000 (UTC)
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH net-next v3 1/4] net: sched: em_ipt: match only on ip/ipv6 traffic
+To:     Eyal Birger <eyal.birger@gmail.com>
+CC:     netdev@vger.kernel.org, roopa@cumulusnetworks.com,
+        davem@davemloft.net, pablo@netfilter.org, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, jhs@mojatatu.com
+From:   nikolay@cumulusnetworks.com
+Message-ID: <77B4535F-0086-447B-B77A-F8D2348DC1AC@cumulusnetworks.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2019-06-27 at 08:29 -0700, Stephen Hemminger wrote:
-> On Thu, 27 Jun 2019 11:43:27 +0200
-> Jiri Pirko <jiri@resnulli.us> wrote:
-> 
-> > Hi all.
-> > 
-> > In the past, there was repeatedly discussed the IFNAMSIZ (16) limit
-> > for
-> > netdevice name length. Now when we have PF and VF representors
-> > with port names like "pfXvfY", it became quite common to hit this
-> > limit:
-> > 0123456789012345
-> > enp131s0f1npf0vf6
-> > enp131s0f1npf0vf22
-> > 
-> > Since IFLA_NAME is just a string, I though it might be possible to
-> > use
-> > it to carry longer names as it is. However, the userspace tools,
-> > like
-> > iproute2, are doing checks before print out. So for example in
-> > output of
-> > "ip addr" when IFLA_NAME is longer than IFNAMSIZE, the netdevice is
-> > completely avoided.
-> > 
-> > So here is a proposal that might work:
-> > 1) Add a new attribute IFLA_NAME_EXT that could carry names longer
-> > than
-> >    IFNAMSIZE, say 64 bytes. The max size should be only defined in
-> > kernel,
-> >    user should be prepared for any string size.
-> > 2) Add a file in sysfs that would indicate that NAME_EXT is
-> > supported by
-> >    the kernel.
-> > 3) Udev is going to look for the sysfs indication file. In case
-> > when
-> >    kernel supports long names, it will do rename to longer name,
-> > setting
-> >    IFLA_NAME_EXT. If not, it does what it does now - fail.
-> > 4) There are two cases that can happen during rename:
-> >    A) The name is shorter than IFNAMSIZ
-> >       -> both IFLA_NAME and IFLA_NAME_EXT would contain the same
-> > string:  
-> >          original IFLA_NAME     = eth0
-> >          original IFLA_NAME_EXT = eth0
-> >          renamed  IFLA_NAME     = enp5s0f1npf0vf1
-> >          renamed  IFLA_NAME_EXT = enp5s0f1npf0vf1
-> >    B) The name is longer tha IFNAMSIZ
-> >       -> IFLA_NAME would contain the original one, IFLA_NAME_EXT
-> > would   
-> >          contain the new one:
-> >          original IFLA_NAME     = eth0
-> >          original IFLA_NAME_EXT = eth0
-> >          renamed  IFLA_NAME     = eth0
-> >          renamed  IFLA_NAME_EXT = enp131s0f1npf0vf22
+On 27 June 2019 19:02:37 EEST, Eyal Birger <eyal=2Ebirger@gmail=2Ecom> wrot=
+e:
+>Hi Nik,
+>
+>On Thu, 27 Jun 2019 11:10:44 +0300
+>Nikolay Aleksandrov <nikolay@cumulusnetworks=2Ecom> wrote:
+>
+>> Restrict matching only to ip/ipv6 traffic and make sure we can use
+>the
+>> headers, otherwise matches will be attempted on any protocol which
+>can
+>> be unexpected by the xt matches=2E Currently policy supports only
+>> ipv4/6=2E
+>>=20
+>> Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks=2Ecom>
+>> ---
+>> v3: no change
+>> v2: no change
+>>=20
+>>  net/sched/em_ipt=2Ec | 13 +++++++++++++
+>>  1 file changed, 13 insertions(+)
+>>=20
+>> diff --git a/net/sched/em_ipt=2Ec b/net/sched/em_ipt=2Ec
+>> index 243fd22f2248=2E=2E64dbafe4e94c 100644
+>> --- a/net/sched/em_ipt=2Ec
+>> +++ b/net/sched/em_ipt=2Ec
+>> @@ -185,6 +185,19 @@ static int em_ipt_match(struct sk_buff *skb,
+>> struct tcf_ematch *em, struct nf_hook_state state;
+>>  	int ret;
+>> =20
+>> +	switch (tc_skb_protocol(skb)) {
+>> +	case htons(ETH_P_IP):
+>> +		if (!pskb_network_may_pull(skb, sizeof(struct
+>> iphdr)))
+>> +			return 0;
+>> +		break;
+>> +	case htons(ETH_P_IPV6):
+>> +		if (!pskb_network_may_pull(skb, sizeof(struct
+>> ipv6hdr)))
+>> +			return 0;
+>> +		break;
+>> +	default:
+>> +		return 0;
+>> +	}
+>> +
+>
+>I just realized that I didn't consider the egress direction in my
+>review=2E
+>Don't we need an skb_pull() in that direction to make the skb->data
+>point
+>to L3? I see this is done e=2Eg=2E in em_ipset=2E
+>
+>Eyal=2E
 
-It makes me a bit uncomfortable to allow IFLA_NAME and IFLA_NAME_EXT to
-be completely different. That sounds like a big source of confusion and
-debugging problems in production.
+Hi Eyal,
+Not for addrtype, it doesn't have such expectations=2E
+I also tested it, everything matches properly=2E
 
-Dan
-
-> > This would allow the old tools to work with "eth0" and the new
-> > tools would work with "enp131s0f1npf0vf22". In sysfs, there would
-> > be symlink from one name to another.
-> >       
-> > Also, there might be a warning added to kernel if someone works
-> > with IFLA_NAME that the userspace tool should be upgraded.
-> > 
-> > Eventually, only IFLA_NAME_EXT is going to be used by everyone.
-> > 
-> > I'm aware there are other places where similar new attribute
-> > would have to be introduced too (ip rule for example).
-> > I'm not saying this is a simple work.
-> > 
-> > Question is what to do with the ioctl api (get ifindex etc). I
-> > would
-> > probably leave it as is and push tools to use rtnetlink instead.
-> > 
-> > Any ideas why this would not work? Any ideas how to solve this
-> > differently?
-> > 
-> > Thanks!
-> > 
-> > Jiri
-> >      
-> 
-> I looked into this in the past, but then rejected it because
-> there are so many tools that use names, not just iproute2.
-> Plus long names are very user unfriendly.
-
+Cheers,
+  Nik
