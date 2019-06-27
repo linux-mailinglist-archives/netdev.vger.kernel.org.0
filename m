@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A59F4577FB
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:51:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 193FA57641
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:37:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727808AbfF0Agm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 20:36:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41208 "EHLO mail.kernel.org"
+        id S1728422AbfF0Agw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 20:36:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41428 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727223AbfF0Agl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 20:36:41 -0400
+        id S1728409AbfF0Agv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 20:36:51 -0400
 Received: from sasha-vm.mshome.net (unknown [107.242.116.147])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CF64B2184E;
-        Thu, 27 Jun 2019 00:36:37 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8FCCE217F4;
+        Thu, 27 Jun 2019 00:36:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1561595800;
-        bh=XFYiE9MedCa4sXuYZFi1aez0mCZUFAa4CvgZKWaa98k=;
+        s=default; t=1561595810;
+        bh=o3yRKyIj7DONpm0yV/kbfUWn972wwoUJJD+AtxxG5x8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NSXX6fN0iPoGiOIpDetF2gKUz5YB1h9yLXw2ezSOSXkrNw+H1lK3h9MCJQ5ItaNtI
-         qySiyVU1n+ShJOn1JxqB7/8G0nEA7P1GW9U033C1DoRmWF6eZfh+A1uWza4D3yGCjx
-         f5PxaS/BMm5wVooC2HEIXAcDRlTBrdlxJ63/ITJc=
+        b=p2fnrToxTy1wnAIsIL+8ZgvDm+2kL4RA8ttH0rGLLyDGZBMO/tAcspDqI0xrUIePk
+         gRtxk7hNCWC/kmQKt+VMO1f1MlXqiKLxFQC6lR6Hym76K7XeQEzgnPToK/JN4EEwcv
+         nG6G2SorFzvZYX5exkadndHSXn0qLz0WQ8EA9i6k=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 07/60] bpf: sockmap, fix use after free from sleep in psock backlog workqueue
-Date:   Wed, 26 Jun 2019 20:35:22 -0400
-Message-Id: <20190627003616.20767-7-sashal@kernel.org>
+Cc:     Thomas Pedersen <thomas@eero.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 11/60] mac80211: mesh: fix RCU warning
+Date:   Wed, 26 Jun 2019 20:35:26 -0400
+Message-Id: <20190627003616.20767-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190627003616.20767-1-sashal@kernel.org>
 References: <20190627003616.20767-1-sashal@kernel.org>
@@ -45,88 +44,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: John Fastabend <john.fastabend@gmail.com>
+From: Thomas Pedersen <thomas@eero.com>
 
-[ Upstream commit bd95e678e0f6e18351ecdc147ca819145db9ed7b ]
+[ Upstream commit 551842446ed695641a00782cd118cbb064a416a1 ]
 
-Backlog work for psock (sk_psock_backlog) might sleep while waiting
-for memory to free up when sending packets. However, while sleeping
-the socket may be closed and removed from the map by the user space
-side.
+ifmsh->csa is an RCU-protected pointer. The writer context
+in ieee80211_mesh_finish_csa() is already mutually
+exclusive with wdev->sdata.mtx, but the RCU checker did
+not know this. Use rcu_dereference_protected() to avoid a
+warning.
 
-This breaks an assumption in sk_stream_wait_memory, which expects the
-wait queue to be still there when it wakes up resulting in a
-use-after-free shown below. To fix his mark sendmsg as MSG_DONTWAIT
-to avoid the sleep altogether. We already set the flag for the
-sendpage case but we missed the case were sendmsg is used.
-Sockmap is currently the only user of skb_send_sock_locked() so only
-the sockmap paths should be impacted.
+fixes the following warning:
 
-==================================================================
-BUG: KASAN: use-after-free in remove_wait_queue+0x31/0x70
-Write of size 8 at addr ffff888069a0c4e8 by task kworker/0:2/110
+[   12.519089] =============================
+[   12.520042] WARNING: suspicious RCU usage
+[   12.520652] 5.1.0-rc7-wt+ #16 Tainted: G        W
+[   12.521409] -----------------------------
+[   12.521972] net/mac80211/mesh.c:1223 suspicious rcu_dereference_check() usage!
+[   12.522928] other info that might help us debug this:
+[   12.523984] rcu_scheduler_active = 2, debug_locks = 1
+[   12.524855] 5 locks held by kworker/u8:2/152:
+[   12.525438]  #0: 00000000057be08c ((wq_completion)phy0){+.+.}, at: process_one_work+0x1a2/0x620
+[   12.526607]  #1: 0000000059c6b07a ((work_completion)(&sdata->csa_finalize_work)){+.+.}, at: process_one_work+0x1a2/0x620
+[   12.528001]  #2: 00000000f184ba7d (&wdev->mtx){+.+.}, at: ieee80211_csa_finalize_work+0x2f/0x90
+[   12.529116]  #3: 00000000831a1f54 (&local->mtx){+.+.}, at: ieee80211_csa_finalize_work+0x47/0x90
+[   12.530233]  #4: 00000000fd06f988 (&local->chanctx_mtx){+.+.}, at: ieee80211_csa_finalize_work+0x51/0x90
 
-CPU: 0 PID: 110 Comm: kworker/0:2 Not tainted 5.0.0-rc2-00335-g28f9d1a3d4fe-dirty #14
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-2.fc27 04/01/2014
-Workqueue: events sk_psock_backlog
-Call Trace:
- print_address_description+0x6e/0x2b0
- ? remove_wait_queue+0x31/0x70
- kasan_report+0xfd/0x177
- ? remove_wait_queue+0x31/0x70
- ? remove_wait_queue+0x31/0x70
- remove_wait_queue+0x31/0x70
- sk_stream_wait_memory+0x4dd/0x5f0
- ? sk_stream_wait_close+0x1b0/0x1b0
- ? wait_woken+0xc0/0xc0
- ? tcp_current_mss+0xc5/0x110
- tcp_sendmsg_locked+0x634/0x15d0
- ? tcp_set_state+0x2e0/0x2e0
- ? __kasan_slab_free+0x1d1/0x230
- ? kmem_cache_free+0x70/0x140
- ? sk_psock_backlog+0x40c/0x4b0
- ? process_one_work+0x40b/0x660
- ? worker_thread+0x82/0x680
- ? kthread+0x1b9/0x1e0
- ? ret_from_fork+0x1f/0x30
- ? check_preempt_curr+0xaf/0x130
- ? iov_iter_kvec+0x5f/0x70
- ? kernel_sendmsg_locked+0xa0/0xe0
- skb_send_sock_locked+0x273/0x3c0
- ? skb_splice_bits+0x180/0x180
- ? start_thread+0xe0/0xe0
- ? update_min_vruntime.constprop.27+0x88/0xc0
- sk_psock_backlog+0xb3/0x4b0
- ? strscpy+0xbf/0x1e0
- process_one_work+0x40b/0x660
- worker_thread+0x82/0x680
- ? process_one_work+0x660/0x660
- kthread+0x1b9/0x1e0
- ? __kthread_create_on_node+0x250/0x250
- ret_from_fork+0x1f/0x30
-
-Fixes: 20bf50de3028c ("skbuff: Function to send an skbuf on a socket")
-Reported-by: Jakub Sitnicki <jakub@cloudflare.com>
-Tested-by: Jakub Sitnicki <jakub@cloudflare.com>
-Signed-off-by: John Fastabend <john.fastabend@gmail.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Thomas Pedersen <thomas@eero.com>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/skbuff.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/mac80211/mesh.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 8b5768113acd..9b9f696281a9 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -2302,6 +2302,7 @@ int skb_send_sock_locked(struct sock *sk, struct sk_buff *skb, int offset,
- 		kv.iov_base = skb->data + offset;
- 		kv.iov_len = slen;
- 		memset(&msg, 0, sizeof(msg));
-+		msg.msg_flags = MSG_DONTWAIT;
+diff --git a/net/mac80211/mesh.c b/net/mac80211/mesh.c
+index d51da26e9c18..0f9446ab7e4f 100644
+--- a/net/mac80211/mesh.c
++++ b/net/mac80211/mesh.c
+@@ -1212,7 +1212,8 @@ int ieee80211_mesh_finish_csa(struct ieee80211_sub_if_data *sdata)
+ 	ifmsh->chsw_ttl = 0;
  
- 		ret = kernel_sendmsg_locked(sk, &msg, &kv, 1, slen);
- 		if (ret <= 0)
+ 	/* Remove the CSA and MCSP elements from the beacon */
+-	tmp_csa_settings = rcu_dereference(ifmsh->csa);
++	tmp_csa_settings = rcu_dereference_protected(ifmsh->csa,
++					    lockdep_is_held(&sdata->wdev.mtx));
+ 	RCU_INIT_POINTER(ifmsh->csa, NULL);
+ 	if (tmp_csa_settings)
+ 		kfree_rcu(tmp_csa_settings, rcu_head);
+@@ -1234,6 +1235,8 @@ int ieee80211_mesh_csa_beacon(struct ieee80211_sub_if_data *sdata,
+ 	struct mesh_csa_settings *tmp_csa_settings;
+ 	int ret = 0;
+ 
++	lockdep_assert_held(&sdata->wdev.mtx);
++
+ 	tmp_csa_settings = kmalloc(sizeof(*tmp_csa_settings),
+ 				   GFP_ATOMIC);
+ 	if (!tmp_csa_settings)
 -- 
 2.20.1
 
