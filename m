@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C64C0577E2
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:51:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 316605760D
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:36:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728101AbfF0Aef (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 20:34:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38806 "EHLO mail.kernel.org"
+        id S1728189AbfF0AfB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 20:35:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39366 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728093AbfF0Aef (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 20:34:35 -0400
+        id S1728180AbfF0AfA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 20:35:00 -0400
 Received: from sasha-vm.mshome.net (unknown [107.242.116.147])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2E33D21738;
-        Thu, 27 Jun 2019 00:34:31 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DE0872183F;
+        Thu, 27 Jun 2019 00:34:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1561595674;
-        bh=1546WIgNZ+cH/E1p4ccggHs5087X21wnsD5tv3frLFs=;
+        s=default; t=1561595700;
+        bh=ax3EhtTyIa1gkxgJvuKnzayGRP+7X7kLv2hgmp5yodg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aR7K+yBu8bXr22q0NS+RAdk2J2o0MSIoSRT8fDoA0VCARlnqU2Xe1YZqg5bXtQi5d
-         II1xBe0YDV4xPTB7UgIBknPo4WHmL+ZX1/Dq6JvqlzCMsCdgGNsc90O/nfgb31dQ5E
-         O0gZ2pJHI3VzqvVRtHGz0B92k/KapK03MOxIPMhA=
+        b=FULfvBmXOzdo7NXiJ7DDoseVmO6leYHdGL0aTnxFUZ3WmDtFCJm2BhBi826Sd7b77
+         uc42WpwnB8GB76hlsemYxyRe/0pT22OfFcZKhHsHlQbgukRJ8Qcit4fCY7mdMi4rTD
+         GQ36Iap3B0m5omrnbHQW+7KoKMDtFh400ckj6tS8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Matt Mullins <mmullins@fb.com>, Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 75/95] bpf: fix nested bpf tracepoints with per-cpu data
-Date:   Wed, 26 Jun 2019 20:30:00 -0400
-Message-Id: <20190627003021.19867-75-sashal@kernel.org>
+Cc:     "Mauro S. M. Rodrigues" <maurosr@linux.vnet.ibm.com>,
+        Sudarsana Reddy Kalluru <skalluru@marvell.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.1 84/95] bnx2x: Check if transceiver implements DDM before access
+Date:   Wed, 26 Jun 2019 20:30:09 -0400
+Message-Id: <20190627003021.19867-84-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190627003021.19867-1-sashal@kernel.org>
 References: <20190627003021.19867-1-sashal@kernel.org>
@@ -45,193 +44,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matt Mullins <mmullins@fb.com>
+From: "Mauro S. M. Rodrigues" <maurosr@linux.vnet.ibm.com>
 
-[ Upstream commit 9594dc3c7e71b9f52bee1d7852eb3d4e3aea9e99 ]
+[ Upstream commit cf18cecca911c0db96b868072665347efe6df46f ]
 
-BPF_PROG_TYPE_RAW_TRACEPOINTs can be executed nested on the same CPU, as
-they do not increment bpf_prog_active while executing.
+Some transceivers may comply with SFF-8472 even though they do not
+implement the Digital Diagnostic Monitoring (DDM) interface described in
+the spec. The existence of such area is specified by the 6th bit of byte
+92, set to 1 if implemented.
 
-This enables three levels of nesting, to support
-  - a kprobe or raw tp or perf event,
-  - another one of the above that irq context happens to call, and
-  - another one in nmi context
-(at most one of which may be a kprobe or perf event).
+Currently, without checking this bit, bnx2x fails trying to read sfp
+module's EEPROM with the follow message:
 
-Fixes: 20b9d7ac4852 ("bpf: avoid excessive stack usage for perf_sample_data")
-Signed-off-by: Matt Mullins <mmullins@fb.com>
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-Acked-by: Daniel Borkmann <daniel@iogearbox.net>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+ethtool -m enP5p1s0f1
+Cannot get Module EEPROM data: Input/output error
+
+Because it fails to read the additional 256 bytes in which it is assumed
+to exist the DDM data.
+
+This issue was noticed using a Mellanox Passive DAC PN 01FT738. The EEPROM
+data was confirmed by Mellanox as correct and similar to other Passive
+DACs from other manufacturers.
+
+Signed-off-by: Mauro S. M. Rodrigues <maurosr@linux.vnet.ibm.com>
+Acked-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/bpf_trace.c | 100 ++++++++++++++++++++++++++++++++-------
- 1 file changed, 84 insertions(+), 16 deletions(-)
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_ethtool.c | 3 ++-
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.h    | 1 +
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index d64c00afceb5..568a0e839903 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -402,8 +402,6 @@ static const struct bpf_func_proto bpf_perf_event_read_value_proto = {
- 	.arg4_type	= ARG_CONST_SIZE,
- };
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_ethtool.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_ethtool.c
+index 749d0ef44371..59f227fcc68b 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_ethtool.c
+@@ -1609,7 +1609,8 @@ static int bnx2x_get_module_info(struct net_device *dev,
+ 	}
  
--static DEFINE_PER_CPU(struct perf_sample_data, bpf_trace_sd);
--
- static __always_inline u64
- __bpf_perf_event_output(struct pt_regs *regs, struct bpf_map *map,
- 			u64 flags, struct perf_sample_data *sd)
-@@ -434,24 +432,50 @@ __bpf_perf_event_output(struct pt_regs *regs, struct bpf_map *map,
- 	return perf_event_output(event, sd, regs);
- }
+ 	if (!sff8472_comp ||
+-	    (diag_type & SFP_EEPROM_DIAG_ADDR_CHANGE_REQ)) {
++	    (diag_type & SFP_EEPROM_DIAG_ADDR_CHANGE_REQ) ||
++	    !(diag_type & SFP_EEPROM_DDM_IMPLEMENTED)) {
+ 		modinfo->type = ETH_MODULE_SFF_8079;
+ 		modinfo->eeprom_len = ETH_MODULE_SFF_8079_LEN;
+ 	} else {
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.h
+index b7d251108c19..7115f5025664 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.h
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.h
+@@ -62,6 +62,7 @@
+ #define SFP_EEPROM_DIAG_TYPE_ADDR		0x5c
+ #define SFP_EEPROM_DIAG_TYPE_SIZE		1
+ #define SFP_EEPROM_DIAG_ADDR_CHANGE_REQ		(1<<2)
++#define SFP_EEPROM_DDM_IMPLEMENTED		(1<<6)
+ #define SFP_EEPROM_SFF_8472_COMP_ADDR		0x5e
+ #define SFP_EEPROM_SFF_8472_COMP_SIZE		1
  
-+/*
-+ * Support executing tracepoints in normal, irq, and nmi context that each call
-+ * bpf_perf_event_output
-+ */
-+struct bpf_trace_sample_data {
-+	struct perf_sample_data sds[3];
-+};
-+
-+static DEFINE_PER_CPU(struct bpf_trace_sample_data, bpf_trace_sds);
-+static DEFINE_PER_CPU(int, bpf_trace_nest_level);
- BPF_CALL_5(bpf_perf_event_output, struct pt_regs *, regs, struct bpf_map *, map,
- 	   u64, flags, void *, data, u64, size)
- {
--	struct perf_sample_data *sd = this_cpu_ptr(&bpf_trace_sd);
-+	struct bpf_trace_sample_data *sds = this_cpu_ptr(&bpf_trace_sds);
-+	int nest_level = this_cpu_inc_return(bpf_trace_nest_level);
- 	struct perf_raw_record raw = {
- 		.frag = {
- 			.size = size,
- 			.data = data,
- 		},
- 	};
-+	struct perf_sample_data *sd;
-+	int err;
- 
--	if (unlikely(flags & ~(BPF_F_INDEX_MASK)))
--		return -EINVAL;
-+	if (WARN_ON_ONCE(nest_level > ARRAY_SIZE(sds->sds))) {
-+		err = -EBUSY;
-+		goto out;
-+	}
-+
-+	sd = &sds->sds[nest_level - 1];
-+
-+	if (unlikely(flags & ~(BPF_F_INDEX_MASK))) {
-+		err = -EINVAL;
-+		goto out;
-+	}
- 
- 	perf_sample_data_init(sd, 0, 0);
- 	sd->raw = &raw;
- 
--	return __bpf_perf_event_output(regs, map, flags, sd);
-+	err = __bpf_perf_event_output(regs, map, flags, sd);
-+
-+out:
-+	this_cpu_dec(bpf_trace_nest_level);
-+	return err;
- }
- 
- static const struct bpf_func_proto bpf_perf_event_output_proto = {
-@@ -808,16 +832,48 @@ pe_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- /*
-  * bpf_raw_tp_regs are separate from bpf_pt_regs used from skb/xdp
-  * to avoid potential recursive reuse issue when/if tracepoints are added
-- * inside bpf_*_event_output, bpf_get_stackid and/or bpf_get_stack
-+ * inside bpf_*_event_output, bpf_get_stackid and/or bpf_get_stack.
-+ *
-+ * Since raw tracepoints run despite bpf_prog_active, support concurrent usage
-+ * in normal, irq, and nmi context.
-  */
--static DEFINE_PER_CPU(struct pt_regs, bpf_raw_tp_regs);
-+struct bpf_raw_tp_regs {
-+	struct pt_regs regs[3];
-+};
-+static DEFINE_PER_CPU(struct bpf_raw_tp_regs, bpf_raw_tp_regs);
-+static DEFINE_PER_CPU(int, bpf_raw_tp_nest_level);
-+static struct pt_regs *get_bpf_raw_tp_regs(void)
-+{
-+	struct bpf_raw_tp_regs *tp_regs = this_cpu_ptr(&bpf_raw_tp_regs);
-+	int nest_level = this_cpu_inc_return(bpf_raw_tp_nest_level);
-+
-+	if (WARN_ON_ONCE(nest_level > ARRAY_SIZE(tp_regs->regs))) {
-+		this_cpu_dec(bpf_raw_tp_nest_level);
-+		return ERR_PTR(-EBUSY);
-+	}
-+
-+	return &tp_regs->regs[nest_level - 1];
-+}
-+
-+static void put_bpf_raw_tp_regs(void)
-+{
-+	this_cpu_dec(bpf_raw_tp_nest_level);
-+}
-+
- BPF_CALL_5(bpf_perf_event_output_raw_tp, struct bpf_raw_tracepoint_args *, args,
- 	   struct bpf_map *, map, u64, flags, void *, data, u64, size)
- {
--	struct pt_regs *regs = this_cpu_ptr(&bpf_raw_tp_regs);
-+	struct pt_regs *regs = get_bpf_raw_tp_regs();
-+	int ret;
-+
-+	if (IS_ERR(regs))
-+		return PTR_ERR(regs);
- 
- 	perf_fetch_caller_regs(regs);
--	return ____bpf_perf_event_output(regs, map, flags, data, size);
-+	ret = ____bpf_perf_event_output(regs, map, flags, data, size);
-+
-+	put_bpf_raw_tp_regs();
-+	return ret;
- }
- 
- static const struct bpf_func_proto bpf_perf_event_output_proto_raw_tp = {
-@@ -834,12 +890,18 @@ static const struct bpf_func_proto bpf_perf_event_output_proto_raw_tp = {
- BPF_CALL_3(bpf_get_stackid_raw_tp, struct bpf_raw_tracepoint_args *, args,
- 	   struct bpf_map *, map, u64, flags)
- {
--	struct pt_regs *regs = this_cpu_ptr(&bpf_raw_tp_regs);
-+	struct pt_regs *regs = get_bpf_raw_tp_regs();
-+	int ret;
-+
-+	if (IS_ERR(regs))
-+		return PTR_ERR(regs);
- 
- 	perf_fetch_caller_regs(regs);
- 	/* similar to bpf_perf_event_output_tp, but pt_regs fetched differently */
--	return bpf_get_stackid((unsigned long) regs, (unsigned long) map,
--			       flags, 0, 0);
-+	ret = bpf_get_stackid((unsigned long) regs, (unsigned long) map,
-+			      flags, 0, 0);
-+	put_bpf_raw_tp_regs();
-+	return ret;
- }
- 
- static const struct bpf_func_proto bpf_get_stackid_proto_raw_tp = {
-@@ -854,11 +916,17 @@ static const struct bpf_func_proto bpf_get_stackid_proto_raw_tp = {
- BPF_CALL_4(bpf_get_stack_raw_tp, struct bpf_raw_tracepoint_args *, args,
- 	   void *, buf, u32, size, u64, flags)
- {
--	struct pt_regs *regs = this_cpu_ptr(&bpf_raw_tp_regs);
-+	struct pt_regs *regs = get_bpf_raw_tp_regs();
-+	int ret;
-+
-+	if (IS_ERR(regs))
-+		return PTR_ERR(regs);
- 
- 	perf_fetch_caller_regs(regs);
--	return bpf_get_stack((unsigned long) regs, (unsigned long) buf,
--			     (unsigned long) size, flags, 0);
-+	ret = bpf_get_stack((unsigned long) regs, (unsigned long) buf,
-+			    (unsigned long) size, flags, 0);
-+	put_bpf_raw_tp_regs();
-+	return ret;
- }
- 
- static const struct bpf_func_proto bpf_get_stack_proto_raw_tp = {
 -- 
 2.20.1
 
