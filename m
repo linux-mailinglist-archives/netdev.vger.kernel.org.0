@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 83676577F6
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:51:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E66C57639
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:37:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727762AbfF0Agf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 20:36:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41038 "EHLO mail.kernel.org"
+        id S1728359AbfF0Agh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 20:36:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41108 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727221AbfF0Age (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 20:36:34 -0400
+        id S1727223AbfF0Agg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 20:36:36 -0400
 Received: from sasha-vm.mshome.net (unknown [107.242.116.147])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1F7EF217F9;
-        Thu, 27 Jun 2019 00:36:30 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0C3CF21851;
+        Thu, 27 Jun 2019 00:36:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1561595793;
-        bh=EbTIThiEgoOgzcI/ptTmjnV2ipsmlnv0w7dVq0qzRZc=;
+        s=default; t=1561595795;
+        bh=PUOoeL0ycfB19n0toeqNbyznI5I6SOYyob2cp42sH5A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FqF7eYn0lKvNtGBhtEaND/pl/N/Hp6iz7xY/CfW1ltMwvOkpLdfXAYPlsaT5iVElL
-         o2SZQYCgLEbp3o7RD+l+Bqt91yseHM+SQfsB8caX2CcvD479yOWpBGJL0rhiT28aMx
-         iPDNBnSS2Wn2XremmBpV1LXtVwu6GPrzxI5JOsJU=
+        b=wyBR2hU1CoUwBqpp7BbJRIbAALuimOwBvWaE5Cd1bQInHUs3fMo4gvfS5nZzm3Z1K
+         qKztoc6bXdd7c4wYhx+EH3wq4lD/3k769SEapB19J3YvZDXvCoeh2fUOGng+wIZDEz
+         2+X8+O+3xegXXOysexEmFkWpGLu43BGammDI0fZo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Matteo Croce <mcroce@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 05/60] samples, bpf: suppress compiler warning
-Date:   Wed, 26 Jun 2019 20:35:20 -0400
-Message-Id: <20190627003616.20767-5-sashal@kernel.org>
+Cc:     John Crispin <john@phrozen.org>,
+        Shashidhar Lakkavalli <slakkavalli@datto.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 06/60] mac80211: fix rate reporting inside cfg80211_calculate_bitrate_he()
+Date:   Wed, 26 Jun 2019 20:35:21 -0400
+Message-Id: <20190627003616.20767-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190627003616.20767-1-sashal@kernel.org>
 References: <20190627003616.20767-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -45,48 +45,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matteo Croce <mcroce@redhat.com>
+From: John Crispin <john@phrozen.org>
 
-[ Upstream commit a195cefff49f60054998333e81ee95170ce8bf92 ]
+[ Upstream commit 25d16d124a5e249e947c0487678b61dcff25cf8b ]
 
-GCC 9 fails to calculate the size of local constant strings and produces a
-false positive:
+The reported rate is not scaled down correctly. After applying this patch,
+the function will behave just like the v/ht equivalents.
 
-samples/bpf/task_fd_query_user.c: In function ‘test_debug_fs_uprobe’:
-samples/bpf/task_fd_query_user.c:242:67: warning: ‘%s’ directive output may be truncated writing up to 255 bytes into a region of size 215 [-Wformat-truncation=]
-  242 |  snprintf(buf, sizeof(buf), "/sys/kernel/debug/tracing/events/%ss/%s/id",
-      |                                                                   ^~
-  243 |    event_type, event_alias);
-      |                ~~~~~~~~~~~
-samples/bpf/task_fd_query_user.c:242:2: note: ‘snprintf’ output between 45 and 300 bytes into a destination of size 256
-  242 |  snprintf(buf, sizeof(buf), "/sys/kernel/debug/tracing/events/%ss/%s/id",
-      |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  243 |    event_type, event_alias);
-      |    ~~~~~~~~~~~~~~~~~~~~~~~~
-
-Workaround this by lowering the buffer size to a reasonable value.
-Related GCC Bugzilla: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83431
-
-Signed-off-by: Matteo Croce <mcroce@redhat.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Shashidhar Lakkavalli <slakkavalli@datto.com>
+Signed-off-by: John Crispin <john@phrozen.org>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- samples/bpf/task_fd_query_user.c | 2 +-
+ net/wireless/util.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/samples/bpf/task_fd_query_user.c b/samples/bpf/task_fd_query_user.c
-index 8381d792f138..06957f0fbe83 100644
---- a/samples/bpf/task_fd_query_user.c
-+++ b/samples/bpf/task_fd_query_user.c
-@@ -216,7 +216,7 @@ static int test_debug_fs_uprobe(char *binary_path, long offset, bool is_return)
- {
- 	const char *event_type = "uprobe";
- 	struct perf_event_attr attr = {};
--	char buf[256], event_alias[256];
-+	char buf[256], event_alias[sizeof("test_1234567890")];
- 	__u64 probe_offset, probe_addr;
- 	__u32 len, prog_id, fd_type;
- 	int err, res, kfd, efd;
+diff --git a/net/wireless/util.c b/net/wireless/util.c
+index aad1c8e858e5..d57e2f679a3e 100644
+--- a/net/wireless/util.c
++++ b/net/wireless/util.c
+@@ -1219,7 +1219,7 @@ static u32 cfg80211_calculate_bitrate_he(struct rate_info *rate)
+ 	if (rate->he_dcm)
+ 		result /= 2;
+ 
+-	return result;
++	return result / 10000;
+ }
+ 
+ u32 cfg80211_calculate_bitrate(struct rate_info *rate)
 -- 
 2.20.1
 
