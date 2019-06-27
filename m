@@ -2,272 +2,531 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E05958513
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 17:02:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18E7E5854B
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 17:11:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726920AbfF0PCE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 11:02:04 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:8138 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726865AbfF0PCD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 11:02:03 -0400
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5REx4Qk007787
-        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 11:02:02 -0400
-Received: from e06smtp02.uk.ibm.com (e06smtp02.uk.ibm.com [195.75.94.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2tcxcte71j-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 11:02:00 -0400
-Received: from localhost
-        by e06smtp02.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <jwi@linux.ibm.com>;
-        Thu, 27 Jun 2019 16:01:43 +0100
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (9.149.109.197)
-        by e06smtp02.uk.ibm.com (192.168.101.132) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Thu, 27 Jun 2019 16:01:41 +0100
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x5RF1di619922950
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 27 Jun 2019 15:01:39 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4B95FA405F;
-        Thu, 27 Jun 2019 15:01:39 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 08BCCA4054;
-        Thu, 27 Jun 2019 15:01:39 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 27 Jun 2019 15:01:38 +0000 (GMT)
-From:   Julian Wiedmann <jwi@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     <netdev@vger.kernel.org>, <linux-s390@vger.kernel.org>,
-        Heiko Carstens <heiko.carstens@de.ibm.com>,
-        Stefan Raspl <raspl@linux.ibm.com>,
-        Ursula Braun <ubraun@linux.ibm.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>
-Subject: [PATCH net-next 12/12] s390/qeth: move cast type selection into fill_header()
-Date:   Thu, 27 Jun 2019 17:01:33 +0200
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190627150133.58746-1-jwi@linux.ibm.com>
-References: <20190627150133.58746-1-jwi@linux.ibm.com>
-X-TM-AS-GCONF: 00
-x-cbid: 19062715-0008-0000-0000-000002F7B603
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19062715-0009-0000-0000-00002264EFB0
-Message-Id: <20190627150133.58746-13-jwi@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-27_09:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906270175
+        id S1726589AbfF0PLm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 11:11:42 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:34517 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726405AbfF0PLl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 11:11:41 -0400
+Received: by mail-lj1-f194.google.com with SMTP id p17so2762838ljg.1
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 08:11:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=FSOoHYUvxt4I1XslgXKup7VwR4yrIhCg86MG2VkV5gk=;
+        b=ezyFdxUXeuUJn2v+h+QDCWIQWEYbAZj+km2FinCdaBRKo6tfZtCwY4CV2SBKJn7U8K
+         qKFSXnN8teAx+8fNEAaaW2mQ5xqhmogPgwIZ9wLKdqN5SkufaxpKkHuoYdJ7OiFbp26X
+         tFGxwNvg5k3Yj9Nw8ZOuy1gEPF9KymCAyd6WxPyb8e40jKMVNcOzu0Bf169V1omaAUMX
+         H/HN5LvLhET4OzLCkXnxsRF5x6kJJ4RPtMng0ZdBoylX5HjPfP0NWFQP3AOMfR5IDRFZ
+         +HLDKgU0H4yfb9FQSFu20+zc+RITyx1YsHBSTc2KBFm6fdOhtnUNCR73SdYspQ5JkOnz
+         I1/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=FSOoHYUvxt4I1XslgXKup7VwR4yrIhCg86MG2VkV5gk=;
+        b=HdFABV/lTm8pdjyaQZD8HtMmN6ezRfpEqjjcK5DkhhGCfMr0lEQrNTsJEYiLFogK8a
+         MgmlT4D7W1VROlq+ZmyG9FuEaiiRdJ4WpKOXghwqn0jpz2aUIcbmv5eVtVeXpjBg72sb
+         jDY/Tacg1ZDDsDzrIHsp89On48JIwShHCRdS6Woop6JLX5U+kIS9Mcna/mgLS0c9CLzQ
+         S6EscUqmgrsvaBZMp2/c4TCCSRwHjFMuWDR6QL6fsaAkVcxbceKYi30DdseOraD45e+5
+         tKAaNlUM0vNVldB24To9HgFG2bJIi2UyKDyS8wyjXOyOqsPTeipUiuSxfGaarq+hKowG
+         kMgQ==
+X-Gm-Message-State: APjAAAUP+AbBolI+R1kRSktBzgT+umA9YJpWmgXXsu2y2Dp+S98DEWe6
+        YwjGTNYmt3+Qcx1CaTWMfLuU7Y+RtBkFysfxhmRKlw==
+X-Google-Smtp-Source: APXvYqz/QxWSwpvvHWX/i4Xmg5OUyfiT9+Y4z1mXeWJsqHgFhp2lQfIlL3rT/AIW8T6sg1WLAKc0Dz8OaZBT3ffbGGM=
+X-Received: by 2002:a2e:7d03:: with SMTP id y3mr3005061ljc.240.1561648298079;
+ Thu, 27 Jun 2019 08:11:38 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190617192700.2313445-1-andriin@fb.com> <20190617192700.2313445-5-andriin@fb.com>
+ <CAH+k93H5ddp7cMBGtyn9DNPvv1MymGCsShJ1-3tezLPUnxt6vw@mail.gmail.com> <CAEf4BzY8wMtq9EmUcsqeLrNOkduKwzuYrweKhhVWKdAb57ax+Q@mail.gmail.com>
+In-Reply-To: <CAEf4BzY8wMtq9EmUcsqeLrNOkduKwzuYrweKhhVWKdAb57ax+Q@mail.gmail.com>
+From:   Matt Hart <matthew.hart@linaro.org>
+Date:   Thu, 27 Jun 2019 16:11:27 +0100
+Message-ID: <CAH+k93E1rjWKaR8p2LpPjn5VE7E9h7P_CvvA1S-KxT8TK=5FJw@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 04/11] libbpf: refactor map initialization
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, linux-perf-users@vger.kernel.org,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The cast type currently gets selected in .ndo_start_xmit, and is then
-piped through several layers until it's stored into the HW header.
-Push the selection down into qeth_l?_fill_header() to (1) reduce the
-number of xmit-wide parameters, and (2) merge the two route validation
-checks into just one.
+On Wed, 26 Jun 2019 at 19:29, Andrii Nakryiko <andrii.nakryiko@gmail.com> w=
+rote:
+>
+> On Wed, Jun 26, 2019 at 7:48 AM Matt Hart <matthew.hart@linaro.org> wrote=
+:
+> >
+> > Hi all,
+> >
+> > I noticed perf fails to build for armv7 on linux next, due to this
+> > compile error:
+> > $ make -C tools/perf ARCH=3Darm CROSS_COMPILE=3Darm-linux-gnueabihf-
+> >
+> >   CC       libbpf_probes.o
+> > In file included from libbpf.c:27:
+> > libbpf.c: In function =E2=80=98bpf_object__add_map=E2=80=99:
+> > /home/matt/git/linux-next/tools/include/linux/kernel.h:45:17: error:
+> > comparison of distinct pointer types lacks a cast [-Werror]
+> >   (void) (&_max1 =3D=3D &_max2);  \
+> >                  ^~
+> > libbpf.c:776:12: note: in expansion of macro =E2=80=98max=E2=80=99
+> >   new_cap =3D max(4ul, obj->maps_cap * 3 / 2);
+> >             ^~~
+> >
+> > So I bisected it and came down to this patch.
+> > Commit bf82927125dd25003d76ed5541da704df21de57a
+> >
+> > Full verbose bisect script https://hastebin.com/odoyujofav.coffeescript
+> >
+> > Is this a case that perf code needs updating to match the change, or
+> > is the change broken?
+>
+> Hi Matt,
+>
+> Thanks for reporting. This issue was already fixed in
+> https://patchwork.ozlabs.org/patch/1122673/, so just pull latest
+> bpf-next.
 
-Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
----
- drivers/s390/net/qeth_core.h      |  5 ++--
- drivers/s390/net/qeth_core_main.c |  7 +++--
- drivers/s390/net/qeth_l2_main.c   |  4 +--
- drivers/s390/net/qeth_l3_main.c   | 43 ++++++++++++++-----------------
- 4 files changed, 26 insertions(+), 33 deletions(-)
+Thanks, I see that patch has hit linux-next so perf is building again.
 
-diff --git a/drivers/s390/net/qeth_core.h b/drivers/s390/net/qeth_core.h
-index d354b39cdf4b..c7ee07ce3615 100644
---- a/drivers/s390/net/qeth_core.h
-+++ b/drivers/s390/net/qeth_core.h
-@@ -1040,11 +1040,10 @@ int qeth_stop(struct net_device *dev);
- 
- int qeth_vm_request_mac(struct qeth_card *card);
- int qeth_xmit(struct qeth_card *card, struct sk_buff *skb,
--	      struct qeth_qdio_out_q *queue, int ipv, int cast_type,
-+	      struct qeth_qdio_out_q *queue, int ipv,
- 	      void (*fill_header)(struct qeth_qdio_out_q *queue,
- 				  struct qeth_hdr *hdr, struct sk_buff *skb,
--				  int ipv, int cast_type,
--				  unsigned int data_len));
-+				  int ipv, unsigned int data_len));
- 
- /* exports for OSN */
- int qeth_osn_assist(struct net_device *, void *, int);
-diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
-index 3011cae00391..4d0caeebc802 100644
---- a/drivers/s390/net/qeth_core_main.c
-+++ b/drivers/s390/net/qeth_core_main.c
-@@ -3908,11 +3908,10 @@ static void qeth_fill_tso_ext(struct qeth_hdr_tso *hdr,
- }
- 
- int qeth_xmit(struct qeth_card *card, struct sk_buff *skb,
--	      struct qeth_qdio_out_q *queue, int ipv, int cast_type,
-+	      struct qeth_qdio_out_q *queue, int ipv,
- 	      void (*fill_header)(struct qeth_qdio_out_q *queue,
- 				  struct qeth_hdr *hdr, struct sk_buff *skb,
--				  int ipv, int cast_type,
--				  unsigned int data_len))
-+				  int ipv, unsigned int data_len))
+> >
+> >
+> >
+> > On Tue, 25 Jun 2019 at 16:53, Andrii Nakryiko <andriin@fb.com> wrote:
+> > >
+> > > User and global data maps initialization has gotten pretty complicate=
+d
+> > > and unnecessarily convoluted. This patch splits out the logic for glo=
+bal
+> > > data map and user-defined map initialization. It also removes the
+> > > restriction of pre-calculating how many maps will be initialized,
+> > > instead allowing to keep adding new maps as they are discovered, whic=
+h
+> > > will be used later for BTF-defined map definitions.
+> > >
+> > > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > > ---
+> > >  tools/lib/bpf/libbpf.c | 247 ++++++++++++++++++++++-----------------=
+--
+> > >  1 file changed, 133 insertions(+), 114 deletions(-)
+> > >
+> > > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > > index 7ee44d8877c5..88609dca4f7d 100644
+> > > --- a/tools/lib/bpf/libbpf.c
+> > > +++ b/tools/lib/bpf/libbpf.c
+> > > @@ -234,6 +234,7 @@ struct bpf_object {
+> > >         size_t nr_programs;
+> > >         struct bpf_map *maps;
+> > >         size_t nr_maps;
+> > > +       size_t maps_cap;
+> > >         struct bpf_secdata sections;
+> > >
+> > >         bool loaded;
+> > > @@ -763,21 +764,51 @@ int bpf_object__variable_offset(const struct bp=
+f_object *obj, const char *name,
+> > >         return -ENOENT;
+> > >  }
+> > >
+> > > -static bool bpf_object__has_maps(const struct bpf_object *obj)
+> > > +static struct bpf_map *bpf_object__add_map(struct bpf_object *obj)
+> > >  {
+> > > -       return obj->efile.maps_shndx >=3D 0 ||
+> > > -              obj->efile.data_shndx >=3D 0 ||
+> > > -              obj->efile.rodata_shndx >=3D 0 ||
+> > > -              obj->efile.bss_shndx >=3D 0;
+> > > +       struct bpf_map *new_maps;
+> > > +       size_t new_cap;
+> > > +       int i;
+> > > +
+> > > +       if (obj->nr_maps < obj->maps_cap)
+> > > +               return &obj->maps[obj->nr_maps++];
+> > > +
+> > > +       new_cap =3D max(4ul, obj->maps_cap * 3 / 2);
+> > > +       new_maps =3D realloc(obj->maps, new_cap * sizeof(*obj->maps))=
+;
+> > > +       if (!new_maps) {
+> > > +               pr_warning("alloc maps for object failed\n");
+> > > +               return ERR_PTR(-ENOMEM);
+> > > +       }
+> > > +
+> > > +       obj->maps_cap =3D new_cap;
+> > > +       obj->maps =3D new_maps;
+> > > +
+> > > +       /* zero out new maps */
+> > > +       memset(obj->maps + obj->nr_maps, 0,
+> > > +              (obj->maps_cap - obj->nr_maps) * sizeof(*obj->maps));
+> > > +       /*
+> > > +        * fill all fd with -1 so won't close incorrect fd (fd=3D0 is=
+ stdin)
+> > > +        * when failure (zclose won't close negative fd)).
+> > > +        */
+> > > +       for (i =3D obj->nr_maps; i < obj->maps_cap; i++) {
+> > > +               obj->maps[i].fd =3D -1;
+> > > +               obj->maps[i].inner_map_fd =3D -1;
+> > > +       }
+> > > +
+> > > +       return &obj->maps[obj->nr_maps++];
+> > >  }
+> > >
+> > >  static int
+> > > -bpf_object__init_internal_map(struct bpf_object *obj, struct bpf_map=
+ *map,
+> > > -                             enum libbpf_map_type type, Elf_Data *da=
+ta,
+> > > -                             void **data_buff)
+> > > +bpf_object__init_internal_map(struct bpf_object *obj, enum libbpf_ma=
+p_type type,
+> > > +                             Elf_Data *data, void **data_buff)
+> > >  {
+> > > -       struct bpf_map_def *def =3D &map->def;
+> > >         char map_name[BPF_OBJ_NAME_LEN];
+> > > +       struct bpf_map_def *def;
+> > > +       struct bpf_map *map;
+> > > +
+> > > +       map =3D bpf_object__add_map(obj);
+> > > +       if (IS_ERR(map))
+> > > +               return PTR_ERR(map);
+> > >
+> > >         map->libbpf_type =3D type;
+> > >         map->offset =3D ~(typeof(map->offset))0;
+> > > @@ -789,6 +820,7 @@ bpf_object__init_internal_map(struct bpf_object *=
+obj, struct bpf_map *map,
+> > >                 return -ENOMEM;
+> > >         }
+> > >
+> > > +       def =3D &map->def;
+> > >         def->type =3D BPF_MAP_TYPE_ARRAY;
+> > >         def->key_size =3D sizeof(int);
+> > >         def->value_size =3D data->d_size;
+> > > @@ -808,29 +840,58 @@ bpf_object__init_internal_map(struct bpf_object=
+ *obj, struct bpf_map *map,
+> > >         return 0;
+> > >  }
+> > >
+> > > -static int bpf_object__init_maps(struct bpf_object *obj, int flags)
+> > > +static int bpf_object__init_global_data_maps(struct bpf_object *obj)
+> > > +{
+> > > +       int err;
+> > > +
+> > > +       if (!obj->caps.global_data)
+> > > +               return 0;
+> > > +       /*
+> > > +        * Populate obj->maps with libbpf internal maps.
+> > > +        */
+> > > +       if (obj->efile.data_shndx >=3D 0) {
+> > > +               err =3D bpf_object__init_internal_map(obj, LIBBPF_MAP=
+_DATA,
+> > > +                                                   obj->efile.data,
+> > > +                                                   &obj->sections.da=
+ta);
+> > > +               if (err)
+> > > +                       return err;
+> > > +       }
+> > > +       if (obj->efile.rodata_shndx >=3D 0) {
+> > > +               err =3D bpf_object__init_internal_map(obj, LIBBPF_MAP=
+_RODATA,
+> > > +                                                   obj->efile.rodata=
+,
+> > > +                                                   &obj->sections.ro=
+data);
+> > > +               if (err)
+> > > +                       return err;
+> > > +       }
+> > > +       if (obj->efile.bss_shndx >=3D 0) {
+> > > +               err =3D bpf_object__init_internal_map(obj, LIBBPF_MAP=
+_BSS,
+> > > +                                                   obj->efile.bss, N=
+ULL);
+> > > +               if (err)
+> > > +                       return err;
+> > > +       }
+> > > +       return 0;
+> > > +}
+> > > +
+> > > +static int bpf_object__init_user_maps(struct bpf_object *obj, bool s=
+trict)
+> > >  {
+> > > -       int i, map_idx, map_def_sz =3D 0, nr_syms, nr_maps =3D 0, nr_=
+maps_glob =3D 0;
+> > > -       bool strict =3D !(flags & MAPS_RELAX_COMPAT);
+> > >         Elf_Data *symbols =3D obj->efile.symbols;
+> > > +       int i, map_def_sz =3D 0, nr_maps =3D 0, nr_syms;
+> > >         Elf_Data *data =3D NULL;
+> > > -       int ret =3D 0;
+> > > +       Elf_Scn *scn;
+> > > +
+> > > +       if (obj->efile.maps_shndx < 0)
+> > > +               return 0;
+> > >
+> > >         if (!symbols)
+> > >                 return -EINVAL;
+> > > -       nr_syms =3D symbols->d_size / sizeof(GElf_Sym);
+> > > -
+> > > -       if (obj->efile.maps_shndx >=3D 0) {
+> > > -               Elf_Scn *scn =3D elf_getscn(obj->efile.elf,
+> > > -                                         obj->efile.maps_shndx);
+> > >
+> > > -               if (scn)
+> > > -                       data =3D elf_getdata(scn, NULL);
+> > > -               if (!scn || !data) {
+> > > -                       pr_warning("failed to get Elf_Data from map s=
+ection %d\n",
+> > > -                                  obj->efile.maps_shndx);
+> > > -                       return -EINVAL;
+> > > -               }
+> > > +       scn =3D elf_getscn(obj->efile.elf, obj->efile.maps_shndx);
+> > > +       if (scn)
+> > > +               data =3D elf_getdata(scn, NULL);
+> > > +       if (!scn || !data) {
+> > > +               pr_warning("failed to get Elf_Data from map section %=
+d\n",
+> > > +                          obj->efile.maps_shndx);
+> > > +               return -EINVAL;
+> > >         }
+> > >
+> > >         /*
+> > > @@ -840,16 +901,8 @@ static int bpf_object__init_maps(struct bpf_obje=
+ct *obj, int flags)
+> > >          *
+> > >          * TODO: Detect array of map and report error.
+> > >          */
+> > > -       if (obj->caps.global_data) {
+> > > -               if (obj->efile.data_shndx >=3D 0)
+> > > -                       nr_maps_glob++;
+> > > -               if (obj->efile.rodata_shndx >=3D 0)
+> > > -                       nr_maps_glob++;
+> > > -               if (obj->efile.bss_shndx >=3D 0)
+> > > -                       nr_maps_glob++;
+> > > -       }
+> > > -
+> > > -       for (i =3D 0; data && i < nr_syms; i++) {
+> > > +       nr_syms =3D symbols->d_size / sizeof(GElf_Sym);
+> > > +       for (i =3D 0; i < nr_syms; i++) {
+> > >                 GElf_Sym sym;
+> > >
+> > >                 if (!gelf_getsym(symbols, i, &sym))
+> > > @@ -858,79 +911,56 @@ static int bpf_object__init_maps(struct bpf_obj=
+ect *obj, int flags)
+> > >                         continue;
+> > >                 nr_maps++;
+> > >         }
+> > > -
+> > > -       if (!nr_maps && !nr_maps_glob)
+> > > -               return 0;
+> > > -
+> > >         /* Assume equally sized map definitions */
+> > > -       if (data) {
+> > > -               pr_debug("maps in %s: %d maps in %zd bytes\n", obj->p=
+ath,
+> > > -                        nr_maps, data->d_size);
+> > > -
+> > > -               map_def_sz =3D data->d_size / nr_maps;
+> > > -               if (!data->d_size || (data->d_size % nr_maps) !=3D 0)=
  {
- 	unsigned int proto_len, hw_hdr_len;
- 	unsigned int frame_len = skb->len;
-@@ -3946,7 +3945,7 @@ int qeth_xmit(struct qeth_card *card, struct sk_buff *skb,
- 		data_offset = push_len + proto_len;
- 	}
- 	memset(hdr, 0, hw_hdr_len);
--	fill_header(queue, hdr, skb, ipv, cast_type, frame_len);
-+	fill_header(queue, hdr, skb, ipv, frame_len);
- 	if (is_tso)
- 		qeth_fill_tso_ext((struct qeth_hdr_tso *) hdr,
- 				  frame_len - proto_len, skb, proto_len);
-diff --git a/drivers/s390/net/qeth_l2_main.c b/drivers/s390/net/qeth_l2_main.c
-index 4a2ff9d8aa5f..fd64bc3f4062 100644
---- a/drivers/s390/net/qeth_l2_main.c
-+++ b/drivers/s390/net/qeth_l2_main.c
-@@ -164,8 +164,9 @@ static void qeth_l2_drain_rx_mode_cache(struct qeth_card *card)
- 
- static void qeth_l2_fill_header(struct qeth_qdio_out_q *queue,
- 				struct qeth_hdr *hdr, struct sk_buff *skb,
--				int ipv, int cast_type, unsigned int data_len)
-+				int ipv, unsigned int data_len)
- {
-+	int cast_type = qeth_get_ether_cast_type(skb);
- 	struct vlan_ethhdr *veth = vlan_eth_hdr(skb);
- 
- 	hdr->hdr.l2.pkt_length = data_len;
-@@ -598,7 +599,6 @@ static netdev_tx_t qeth_l2_hard_start_xmit(struct sk_buff *skb,
- 		rc = qeth_l2_xmit_osn(card, skb, queue);
- 	else
- 		rc = qeth_xmit(card, skb, queue, qeth_get_ip_version(skb),
--			       qeth_get_ether_cast_type(skb),
- 			       qeth_l2_fill_header);
- 
- 	if (!rc) {
-diff --git a/drivers/s390/net/qeth_l3_main.c b/drivers/s390/net/qeth_l3_main.c
-index 5bf5129ddcd4..2dd99f103671 100644
---- a/drivers/s390/net/qeth_l3_main.c
-+++ b/drivers/s390/net/qeth_l3_main.c
-@@ -1939,12 +1939,13 @@ static u8 qeth_l3_cast_type_to_flag(int cast_type)
- 
- static void qeth_l3_fill_header(struct qeth_qdio_out_q *queue,
- 				struct qeth_hdr *hdr, struct sk_buff *skb,
--				int ipv, int cast_type, unsigned int data_len)
-+				int ipv, unsigned int data_len)
- {
- 	struct qeth_hdr_layer3 *l3_hdr = &hdr->hdr.l3;
- 	struct vlan_ethhdr *veth = vlan_eth_hdr(skb);
- 	struct qeth_card *card = queue->card;
- 	struct dst_entry *dst;
-+	int cast_type;
- 
- 	hdr->hdr.l3.length = data_len;
- 
-@@ -1981,25 +1982,22 @@ static void qeth_l3_fill_header(struct qeth_qdio_out_q *queue,
- 		hdr->hdr.l3.vlan_id = ntohs(veth->h_vlan_TCI);
- 	}
- 
--	l3_hdr->flags = qeth_l3_cast_type_to_flag(cast_type);
--
--	/* OSA only: */
--	if (!ipv) {
--		l3_hdr->flags |= QETH_HDR_PASSTHRU;
--		return;
--	}
--
- 	rcu_read_lock();
- 	dst = qeth_dst_check_rcu(skb, ipv);
- 
-+	if (IS_IQD(card) && skb_get_queue_mapping(skb) != QETH_IQD_MCAST_TXQ)
-+		cast_type = RTN_UNICAST;
-+	else
-+		cast_type = qeth_l3_get_cast_type_rcu(skb, dst, ipv);
-+	l3_hdr->flags |= qeth_l3_cast_type_to_flag(cast_type);
-+
- 	if (ipv == 4) {
- 		struct rtable *rt = (struct rtable *) dst;
- 
- 		*((__be32 *) &hdr->hdr.l3.next_hop.ipv4.addr) = (rt) ?
- 				rt_nexthop(rt, ip_hdr(skb)->daddr) :
- 				ip_hdr(skb)->daddr;
--	} else {
--		/* IPv6 */
-+	} else if (ipv == 6) {
- 		struct rt6_info *rt = (struct rt6_info *) dst;
- 
- 		if (rt && !ipv6_addr_any(&rt->rt6i_gateway))
-@@ -2010,6 +2008,9 @@ static void qeth_l3_fill_header(struct qeth_qdio_out_q *queue,
- 		hdr->hdr.l3.flags |= QETH_HDR_IPV6;
- 		if (!IS_IQD(card))
- 			hdr->hdr.l3.flags |= QETH_HDR_PASSTHRU;
-+	} else {
-+		/* OSA only: */
-+		l3_hdr->flags |= QETH_HDR_PASSTHRU;
- 	}
- 	rcu_read_unlock();
- }
-@@ -2029,7 +2030,7 @@ static void qeth_l3_fixup_headers(struct sk_buff *skb)
- }
- 
- static int qeth_l3_xmit(struct qeth_card *card, struct sk_buff *skb,
--			struct qeth_qdio_out_q *queue, int ipv, int cast_type)
-+			struct qeth_qdio_out_q *queue, int ipv)
- {
- 	unsigned int hw_hdr_len;
- 	int rc;
-@@ -2043,7 +2044,7 @@ static int qeth_l3_xmit(struct qeth_card *card, struct sk_buff *skb,
- 	skb_pull(skb, ETH_HLEN);
- 
- 	qeth_l3_fixup_headers(skb);
--	return qeth_xmit(card, skb, queue, ipv, cast_type, qeth_l3_fill_header);
-+	return qeth_xmit(card, skb, queue, ipv, qeth_l3_fill_header);
- }
- 
- static netdev_tx_t qeth_l3_hard_start_xmit(struct sk_buff *skb,
-@@ -2054,7 +2055,7 @@ static netdev_tx_t qeth_l3_hard_start_xmit(struct sk_buff *skb,
- 	int ipv = qeth_get_ip_version(skb);
- 	struct qeth_qdio_out_q *queue;
- 	int tx_bytes = skb->len;
--	int cast_type, rc;
-+	int rc;
- 
- 	if (IS_IQD(card)) {
- 		queue = card->qdio.out_qs[qeth_iqd_translate_txq(dev, txq)];
-@@ -2065,24 +2066,18 @@ static netdev_tx_t qeth_l3_hard_start_xmit(struct sk_buff *skb,
- 		    (card->options.cq == QETH_CQ_ENABLED &&
- 		     skb->protocol != htons(ETH_P_AF_IUCV)))
- 			goto tx_drop;
--
--		if (txq == QETH_IQD_MCAST_TXQ)
--			cast_type = qeth_l3_get_cast_type(skb);
--		else
--			cast_type = RTN_UNICAST;
- 	} else {
- 		queue = card->qdio.out_qs[txq];
--		cast_type = qeth_l3_get_cast_type(skb);
- 	}
- 
--	if (cast_type == RTN_BROADCAST && !card->info.broadcast_capable)
-+	if (!(dev->flags & IFF_BROADCAST) &&
-+	    qeth_l3_get_cast_type(skb) == RTN_BROADCAST)
- 		goto tx_drop;
- 
- 	if (ipv == 4 || IS_IQD(card))
--		rc = qeth_l3_xmit(card, skb, queue, ipv, cast_type);
-+		rc = qeth_l3_xmit(card, skb, queue, ipv);
- 	else
--		rc = qeth_xmit(card, skb, queue, ipv, cast_type,
--			       qeth_l3_fill_header);
-+		rc = qeth_xmit(card, skb, queue, ipv, qeth_l3_fill_header);
- 
- 	if (!rc) {
- 		QETH_TXQ_STAT_INC(queue, tx_packets);
--- 
-2.17.1
-
+> > > -                       pr_warning("unable to determine map definitio=
+n size "
+> > > -                                  "section %s, %d maps in %zd bytes\=
+n",
+> > > -                                  obj->path, nr_maps, data->d_size);
+> > > -                       return -EINVAL;
+> > > -               }
+> > > -       }
+> > > -
+> > > -       nr_maps +=3D nr_maps_glob;
+> > > -       obj->maps =3D calloc(nr_maps, sizeof(obj->maps[0]));
+> > > -       if (!obj->maps) {
+> > > -               pr_warning("alloc maps for object failed\n");
+> > > -               return -ENOMEM;
+> > > -       }
+> > > -       obj->nr_maps =3D nr_maps;
+> > > -
+> > > -       for (i =3D 0; i < nr_maps; i++) {
+> > > -               /*
+> > > -                * fill all fd with -1 so won't close incorrect
+> > > -                * fd (fd=3D0 is stdin) when failure (zclose won't cl=
+ose
+> > > -                * negative fd)).
+> > > -                */
+> > > -               obj->maps[i].fd =3D -1;
+> > > -               obj->maps[i].inner_map_fd =3D -1;
+> > > +       pr_debug("maps in %s: %d maps in %zd bytes\n",
+> > > +                obj->path, nr_maps, data->d_size);
+> > > +
+> > > +       map_def_sz =3D data->d_size / nr_maps;
+> > > +       if (!data->d_size || (data->d_size % nr_maps) !=3D 0) {
+> > > +               pr_warning("unable to determine map definition size "
+> > > +                          "section %s, %d maps in %zd bytes\n",
+> > > +                          obj->path, nr_maps, data->d_size);
+> > > +               return -EINVAL;
+> > >         }
+> > >
+> > > -       /*
+> > > -        * Fill obj->maps using data in "maps" section.
+> > > -        */
+> > > -       for (i =3D 0, map_idx =3D 0; data && i < nr_syms; i++) {
+> > > +       /* Fill obj->maps using data in "maps" section.  */
+> > > +       for (i =3D 0; i < nr_syms; i++) {
+> > >                 GElf_Sym sym;
+> > >                 const char *map_name;
+> > >                 struct bpf_map_def *def;
+> > > +               struct bpf_map *map;
+> > >
+> > >                 if (!gelf_getsym(symbols, i, &sym))
+> > >                         continue;
+> > >                 if (sym.st_shndx !=3D obj->efile.maps_shndx)
+> > >                         continue;
+> > >
+> > > -               map_name =3D elf_strptr(obj->efile.elf,
+> > > -                                     obj->efile.strtabidx,
+> > > +               map =3D bpf_object__add_map(obj);
+> > > +               if (IS_ERR(map))
+> > > +                       return PTR_ERR(map);
+> > > +
+> > > +               map_name =3D elf_strptr(obj->efile.elf, obj->efile.st=
+rtabidx,
+> > >                                       sym.st_name);
+> > >                 if (!map_name) {
+> > >                         pr_warning("failed to get map #%d name sym st=
+ring for obj %s\n",
+> > > -                                  map_idx, obj->path);
+> > > +                                  i, obj->path);
+> > >                         return -LIBBPF_ERRNO__FORMAT;
+> > >                 }
+> > >
+> > > -               obj->maps[map_idx].libbpf_type =3D LIBBPF_MAP_UNSPEC;
+> > > -               obj->maps[map_idx].offset =3D sym.st_value;
+> > > +               map->libbpf_type =3D LIBBPF_MAP_UNSPEC;
+> > > +               map->offset =3D sym.st_value;
+> > >                 if (sym.st_value + map_def_sz > data->d_size) {
+> > >                         pr_warning("corrupted maps section in %s: las=
+t map \"%s\" too small\n",
+> > >                                    obj->path, map_name);
+> > >                         return -EINVAL;
+> > >                 }
+> > >
+> > > -               obj->maps[map_idx].name =3D strdup(map_name);
+> > > -               if (!obj->maps[map_idx].name) {
+> > > +               map->name =3D strdup(map_name);
+> > > +               if (!map->name) {
+> > >                         pr_warning("failed to alloc map name\n");
+> > >                         return -ENOMEM;
+> > >                 }
+> > > -               pr_debug("map %d is \"%s\"\n", map_idx,
+> > > -                        obj->maps[map_idx].name);
+> > > +               pr_debug("map %d is \"%s\"\n", i, map->name);
+> > >                 def =3D (struct bpf_map_def *)(data->d_buf + sym.st_v=
+alue);
+> > >                 /*
+> > >                  * If the definition of the map in the object file fi=
+ts in
+> > > @@ -939,7 +969,7 @@ static int bpf_object__init_maps(struct bpf_objec=
+t *obj, int flags)
+> > >                  * calloc above.
+> > >                  */
+> > >                 if (map_def_sz <=3D sizeof(struct bpf_map_def)) {
+> > > -                       memcpy(&obj->maps[map_idx].def, def, map_def_=
+sz);
+> > > +                       memcpy(&map->def, def, map_def_sz);
+> > >                 } else {
+> > >                         /*
+> > >                          * Here the map structure being read is bigge=
+r than what
+> > > @@ -959,37 +989,30 @@ static int bpf_object__init_maps(struct bpf_obj=
+ect *obj, int flags)
+> > >                                                 return -EINVAL;
+> > >                                 }
+> > >                         }
+> > > -                       memcpy(&obj->maps[map_idx].def, def,
+> > > -                              sizeof(struct bpf_map_def));
+> > > +                       memcpy(&map->def, def, sizeof(struct bpf_map_=
+def));
+> > >                 }
+> > > -               map_idx++;
+> > >         }
+> > > +       return 0;
+> > > +}
+> > >
+> > > -       if (!obj->caps.global_data)
+> > > -               goto finalize;
+> > > +static int bpf_object__init_maps(struct bpf_object *obj, int flags)
+> > > +{
+> > > +       bool strict =3D !(flags & MAPS_RELAX_COMPAT);
+> > > +       int err;
+> > >
+> > > -       /*
+> > > -        * Populate rest of obj->maps with libbpf internal maps.
+> > > -        */
+> > > -       if (obj->efile.data_shndx >=3D 0)
+> > > -               ret =3D bpf_object__init_internal_map(obj, &obj->maps=
+[map_idx++],
+> > > -                                                   LIBBPF_MAP_DATA,
+> > > -                                                   obj->efile.data,
+> > > -                                                   &obj->sections.da=
+ta);
+> > > -       if (!ret && obj->efile.rodata_shndx >=3D 0)
+> > > -               ret =3D bpf_object__init_internal_map(obj, &obj->maps=
+[map_idx++],
+> > > -                                                   LIBBPF_MAP_RODATA=
+,
+> > > -                                                   obj->efile.rodata=
+,
+> > > -                                                   &obj->sections.ro=
+data);
+> > > -       if (!ret && obj->efile.bss_shndx >=3D 0)
+> > > -               ret =3D bpf_object__init_internal_map(obj, &obj->maps=
+[map_idx++],
+> > > -                                                   LIBBPF_MAP_BSS,
+> > > -                                                   obj->efile.bss, N=
+ULL);
+> > > -finalize:
+> > > -       if (!ret)
+> > > +       err =3D bpf_object__init_user_maps(obj, strict);
+> > > +       if (err)
+> > > +               return err;
+> > > +
+> > > +       err =3D bpf_object__init_global_data_maps(obj);
+> > > +       if (err)
+> > > +               return err;
+> > > +
+> > > +       if (obj->nr_maps) {
+> > >                 qsort(obj->maps, obj->nr_maps, sizeof(obj->maps[0]),
+> > >                       compare_bpf_map);
+> > > -       return ret;
+> > > +       }
+> > > +       return 0;
+> > >  }
+> > >
+> > >  static bool section_have_execinstr(struct bpf_object *obj, int idx)
+> > > @@ -1262,14 +1285,10 @@ static int bpf_object__elf_collect(struct bpf=
+_object *obj, int flags)
+> > >                 return -LIBBPF_ERRNO__FORMAT;
+> > >         }
+> > >         err =3D bpf_object__load_btf(obj, btf_data, btf_ext_data);
+> > > -       if (err)
+> > > -               return err;
+> > > -       if (bpf_object__has_maps(obj)) {
+> > > +       if (!err)
+> > >                 err =3D bpf_object__init_maps(obj, flags);
+> > > -               if (err)
+> > > -                       return err;
+> > > -       }
+> > > -       err =3D bpf_object__init_prog_names(obj);
+> > > +       if (!err)
+> > > +               err =3D bpf_object__init_prog_names(obj);
+> > >         return err;
+> > >  }
+> > >
+> > > --
+> > > 2.17.1
+> > >
