@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8548858001
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 12:15:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FD2058002
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 12:15:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726500AbfF0KPj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 06:15:39 -0400
-Received: from mailout1.w1.samsung.com ([210.118.77.11]:39288 "EHLO
-        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726422AbfF0KPj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 06:15:39 -0400
+        id S1726545AbfF0KPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 06:15:43 -0400
+Received: from mailout2.w1.samsung.com ([210.118.77.12]:32906 "EHLO
+        mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726513AbfF0KPl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 06:15:41 -0400
 Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20190627101536euoutp011d201b760568346b097c5826a53f0d13~sBrML_jnq0554205542euoutp017
-        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 10:15:36 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20190627101536euoutp011d201b760568346b097c5826a53f0d13~sBrML_jnq0554205542euoutp017
+        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20190627101539euoutp026def940e7734db0c026a39120fee485a~sBrPBJIEG2411124111euoutp02f
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 10:15:39 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20190627101539euoutp026def940e7734db0c026a39120fee485a~sBrPBJIEG2411124111euoutp02f
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1561630536;
-        bh=bxFnqa+gaX8KmJ5gHPf/pUQVZxLmoOj5+HSflVCgAGs=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=e9EAO+mreRXgTRtmJmTUZFf6WvCCpBB9XBIQgtI+zSFMhir4Qe9UBmWIJPDvNMmWH
-         5nXKtYlBIO2LUxQQ8CRRyOzLq4/f9jAS3lAPKMQfgcxul0mzSABjsgL/KYZcQXZFIn
-         +E8dYZDqCEm6Mxx6V9K0p8HCTYPkdqC71dRM+qP4=
-Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20190627101535eucas1p1f06095434888e38115ff6854ffe74c70~sBrLRFIBf1062510625eucas1p1w;
-        Thu, 27 Jun 2019 10:15:35 +0000 (GMT)
+        s=mail20170921; t=1561630539;
+        bh=7U/wcOkARKzInXge0mokxOUM4Y+LffGC7GDc3WY2UjQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=WOHonzT472gCi2u0CyzPNiFBtmE4oFiINpkDqyoFfpDZQzoVDKO6vDd19fpi8b+Gj
+         ceYfkFdTluRrsMfMes1pcWH0FYK4fNB2y0lHRhgs/eVF9yp9SO3BeVjn/3RVv/JRGi
+         iW7SBXo1dw3wG8a7Rcin0E943527/nUcEuDmhHLg=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20190627101539eucas1p2cfdaa6e5aaf3c1b8577a1bad1878654d~sBrOPAOoT2154921549eucas1p27;
+        Thu, 27 Jun 2019 10:15:39 +0000 (GMT)
 Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges3new.samsung.com (EUCPMTA) with SMTP id 14.5C.04325.747941D5; Thu, 27
-        Jun 2019 11:15:35 +0100 (BST)
+        eusmges1new.samsung.com (EUCPMTA) with SMTP id 21.FE.04298.A47941D5; Thu, 27
+        Jun 2019 11:15:38 +0100 (BST)
 Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
         eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-        20190627101535eucas1p27da11c25b0e15474e4c957053de139d9~sBrKmEPvo2154921549eucas1p2y;
-        Thu, 27 Jun 2019 10:15:35 +0000 (GMT)
+        20190627101538eucas1p23924bd4173eb4b7b59c624b588ecb787~sBrNkykVW2154921549eucas1p25;
+        Thu, 27 Jun 2019 10:15:38 +0000 (GMT)
 Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
         eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20190627101534eusmtrp21aac3f20f0c9fc6301a40ab5de83a046~sBrKX_EFP2684426844eusmtrp2Z;
-        Thu, 27 Jun 2019 10:15:34 +0000 (GMT)
-X-AuditID: cbfec7f5-b8fff700000010e5-7e-5d1497474dd6
+        20190627101538eusmtrp297a5d4197cfb5bc2c33723292fd45d00~sBrNWv3Lf2684426844eusmtrp2f;
+        Thu, 27 Jun 2019 10:15:38 +0000 (GMT)
+X-AuditID: cbfec7f2-f2dff700000010ca-da-5d14974aacdd
 Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-        eusmgms2.samsung.com (EUCPMTA) with SMTP id 76.3E.04140.647941D5; Thu, 27
-        Jun 2019 11:15:34 +0100 (BST)
+        eusmgms2.samsung.com (EUCPMTA) with SMTP id D8.3E.04140.A47941D5; Thu, 27
+        Jun 2019 11:15:38 +0100 (BST)
 Received: from imaximets.rnd.samsung.ru (unknown [106.109.129.180]) by
         eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20190627101534eusmtip11973e4335bb9d20dd7726864d937381a~sBrJp3Mb-0975409754eusmtip1D;
-        Thu, 27 Jun 2019 10:15:34 +0000 (GMT)
+        20190627101537eusmtip17e324a088cca83c9daa97195d6d47426~sBrMrr6Je0980209802eusmtip1C;
+        Thu, 27 Jun 2019 10:15:37 +0000 (GMT)
 From:   Ilya Maximets <i.maximets@samsung.com>
 To:     netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
@@ -56,80 +56,97 @@ Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Ilya Maximets <i.maximets@samsung.com>
-Subject: [PATCH bpf v5 0/2] xdp: fix hang while unregistering device bound
- to xdp socket
-Date:   Thu, 27 Jun 2019 13:15:27 +0300
-Message-Id: <20190627101529.11234-1-i.maximets@samsung.com>
+Subject: [PATCH bpf v5 1/2] xdp: hold device for umem regardless of
+ zero-copy mode
+Date:   Thu, 27 Jun 2019 13:15:28 +0300
+Message-Id: <20190627101529.11234-2-i.maximets@samsung.com>
 X-Mailer: git-send-email 2.17.1
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFuplleLIzCtJLcpLzFFi42LZduznOV336SKxBu86VSz+tG1gtPh85Dib
-        xeKF35gt5pxvYbG40v6T3eLYixY2i13rZjJbXN41h81ixaETQLEFYhbb+/cxOnB7bFl5k8lj
-        56y77B6L97xk8ui6cYnZY3r3Q2aPvi2rGD0+b5ILYI/isklJzcksSy3St0vgymjYe5ex4A1b
-        xaX2jWwNjBNYuxg5OSQETCQm7Z/H0sXIxSEksIJR4sv+2ewQzhdGibbzz1ghnM+MEqsaX7LA
-        tPSdWM8GkVjOKPHr4B+oqh+MEn86FoANZhPQkTi1+ggjiC0iICXxccd2sLnMAjOZJbY8ngI2
-        SlggSuJ3xwIwm0VAVeL6yy1gNq+AtcSd5iNMEOvkJVZvOMAM0iwh8JtN4vKcrcwQCReJ2e2b
-        oWxhiVfHt7BD2DIS/3fOh2qul7jf8pIRormDUWL6oX9QCXuJLa/PATVwAJ2kKbF+lz5E2FHi
-        /uwfzCBhCQE+iRtvBUHCzEDmpG3TocK8Eh1tQhDVKhK/Dy6HukBK4ua7z1AXeEisa9wFZgsJ
-        xEpsbNrOPoFRbhbCrgWMjKsYxVNLi3PTU4uN81LL9YoTc4tL89L1kvNzNzECE8npf8e/7mDc
-        9yfpEKMAB6MSD++KncKxQqyJZcWVuYcYJTiYlUR488NEYoV4UxIrq1KL8uOLSnNSiw8xSnOw
-        KInzVjM8iBYSSE8sSc1OTS1ILYLJMnFwSjUwbpv0nonxv/CqOW5VR2oDrS8/FatIqd1x/DDX
-        93gBbpeZr7K5LOdP6Tx6sP3jws6ry4sfnJp+0VbjnOOSdamfim5LxZ6vMhQ/sNr3ubSFsNBS
-        eenLfbeDv328/+fltIlJV3Wj3lXt+9b7YNIaw509Yd+rO7q+1K/NnbG33JUjIFos6kH7vKXP
-        JiixFGckGmoxFxUnAgByL5ssIAMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrELMWRmVeSWpSXmKPExsVy+t/xu7pu00ViDZa9M7H407aB0eLzkeNs
+In-Reply-To: <20190627101529.11234-1-i.maximets@samsung.com>
+X-Brightmail-Tracker: H4sIAAAAAAAAA0VSa0hTURz37F63u9nitq08zEoZSQ98psiFJHtBo/ogWEHKyJnXabopu7qy
+        BymJiUKKrDZN05qPpbFE5hPzcZVNshRt1CTClj3U0B6rlVbW5l307fc8//85HAwR6H3FWIYq
+        l1Sr5FkSNg/ttCyPhx7RiWQRKxURxK/iNkA4R6xswnDHhRA1E0UoYbu2zCEsc0VsotdUhRBP
+        e2vYhJEedWv1m4iu8n6wz09qvjfNkvZUv+RIDX3zLGmpfQqR6sociPS6uQVIne1b4zmJvNhU
+        MitDQ6rD9ybz0o0Nt0BOHe98x+1GUAAasFKAYRCPhqtjilLAwwS4EUDb4H3AkK8Azuj1LIY4
+        AWy+4XAT7lqjcGwGYYxmANsnH7IZ8gPAAct3xJNi4yHwUesI8GARLoafu7s4nhCCVyHQPKtF
+        PYYQPw5rHfVrBRQPhqOThrUCH98DK2zL3nGBsLVtEPEsy8Vj4WRhpucciOs4cOiJCzCZQ3C2
+        ccmbF8IFq5nD4M3wT0+dV78CZ4rmAVMuAVBHr3qNOGj+MM7xDEDwnfBBbzgj74eDHU5f5pHW
+        Q/viBo+MuGFlpw5hZD4sKRYw6W3w51AzwmAxnF5yejeQwi6XwfuK5QCu1D5DK0Bg9f9h9QC0
+        AH8yj1IqSCpSRZ4Lo+RKKk+lCDuTrWwH7v8ytmr90g2+TaXQAMeAZB3fp08oE/jKNVS+kgYQ
+        QyQifvZJkUzAT5XnXyDV2afVeVkkRYMADJX48y/6vEoS4Ap5LplJkjmk+p/LwrjiApDerw84
+        GvH4QB2tSbA1DUQtsY2JZc+T42NeXK4c7U5Jm10I0kRGodG/Y8KDTe8/fdTtM24MsOvFikum
+        gw7T4t0cbkrPDjw0VJvbrxzejVbftDe9ETYdG3ZZ0rZMaJMOu9wX0dK4LBhNeJugiXuX8fqq
+        7MSclU+dDfLbfiqElqBUujxyF6Km5H8BJLWOZisDAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrBLMWRmVeSWpSXmKPExsVy+t/xu7pe00ViDb7dZ7H407aB0eLzkeNs
         FosXfmO2mHO+hcXiSvtPdotjL1rYLHatm8lscXnXHDaLFYdOAMUWiFls79/H6MDtsWXlTSaP
         nbPusnss3vOSyaPrxiVmj+ndD5k9+rasYvT4vEkugD1Kz6Yov7QkVSEjv7jEVina0MJIz9DS
-        Qs/IxFLP0Ng81srIVEnfziYlNSezLLVI3y5BL6Nh713GgjdsFZfaN7I1ME5g7WLk5JAQMJHo
-        O7GerYuRi0NIYCmjxIOvNxkhElISP35dgCoSlvhzrQuq6BujxIXpW8CK2AR0JE6tPgJmiwA1
-        fNyxnR3EZhZYyCzxZZIJiC0sECFx98V3JhCbRUBV4vrLLSwgNq+AtcSd5iNMEAvkJVZvOMA8
-        gZFnASPDKkaR1NLi3PTcYiO94sTc4tK8dL3k/NxNjMDw3Xbs55YdjF3vgg8xCnAwKvHwrtgp
-        HCvEmlhWXJl7iFGCg1lJhDc/TCRWiDclsbIqtSg/vqg0J7X4EKMp0PKJzFKiyfnA2MoriTc0
-        NTS3sDQ0NzY3NrNQEuftEDgYIySQnliSmp2aWpBaBNPHxMEp1cAowR744OXCXz/3aHdumLvd
-        1fbnm4/ebyz/fNnAdnH3/PZEZi1GIbfXwrvrs5JMve8LZc+wDr5So1yuu/rszEk1Cxq7Dy/V
-        dSyRsV4Q+cDd/cKCmbsdpJ4fe7A67vGPjDhLzsobZyOmXJRKfbx498RjlwyXzUyQKT+Wae9S
-        ka4bFRnoy22lEeinxFKckWioxVxUnAgAFa49QXUCAAA=
-X-CMS-MailID: 20190627101535eucas1p27da11c25b0e15474e4c957053de139d9
+        Qs/IxFLP0Ng81srIVEnfziYlNSezLLVI3y5BL2PFktmMBfO5KrbOW8rYwLiEo4uRk0NCwESi
+        8fR95i5GLg4hgaWMEot+97BCJKQkfvy6AGULS/y51sUGYgsJfGOUuNyiDGKzCehInFp9hBHE
+        FgGq/7hjOzuIzSywkFniyyQTEFtYIEii8/B8sDksAqoSJy4uBqvnFbCWmHDlJxPEfHmJ1RsO
+        AB3BwcEpYCNxsTEbYpW1xIejP9kmMPItYGRYxSiSWlqcm55bbKRXnJhbXJqXrpecn7uJERjq
+        24793LKDsetd8CFGAQ5GJR7eFTuFY4VYE8uKK3MPMUpwMCuJ8OaHicQK8aYkVlalFuXHF5Xm
+        pBYfYjQFumkis5Rocj4wDvNK4g1NDc0tLA3Njc2NzSyUxHk7BA7GCAmkJ5akZqemFqQWwfQx
+        cXBKNTCqBk9261r1cFmpgmvB9zt+QVKaT4RColUmettXBrvJiYQqCew7++L02kULEh4s/WE/
+        5Z9QmpVYpNe9xK6Xe3MvxF96cjt9ssTMRcEexl9VDNQa5t3YEptfx3XsXLsA/+v3L9w3M3he
+        mMw09d8JlvtLHloJvl9npmvB9+kKe+isI+cUpv+/z6elxFKckWioxVxUnAgAaXb17osCAAA=
+X-CMS-MailID: 20190627101538eucas1p23924bd4173eb4b7b59c624b588ecb787
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20190627101535eucas1p27da11c25b0e15474e4c957053de139d9
+X-RootMTR: 20190627101538eucas1p23924bd4173eb4b7b59c624b588ecb787
 X-EPHeader: CA
 CMS-TYPE: 201P
-X-CMS-RootMailID: 20190627101535eucas1p27da11c25b0e15474e4c957053de139d9
-References: <CGME20190627101535eucas1p27da11c25b0e15474e4c957053de139d9@eucas1p2.samsung.com>
+X-CMS-RootMailID: 20190627101538eucas1p23924bd4173eb4b7b59c624b588ecb787
+References: <20190627101529.11234-1-i.maximets@samsung.com>
+        <CGME20190627101538eucas1p23924bd4173eb4b7b59c624b588ecb787@eucas1p2.samsung.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Version 5:
+Device pointer stored in umem regardless of zero-copy mode,
+so we heed to hold the device in all cases.
 
-    * Fixed incorrect handling of rtnl_lock.
+Fixes: c9b47cc1fabc ("xsk: fix bug when trying to use both copy and zero-copy on one queue id")
+Signed-off-by: Ilya Maximets <i.maximets@samsung.com>
+---
+ net/xdp/xdp_umem.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-Version 4:
-
-    * 'xdp_umem_clear_dev' exposed to be used while unregistering.
-    * Added XDP socket state to track if resources already unbinded.
-    * Splitted in two fixes.
-
-Version 3:
-
-    * Declaration lines ordered from longest to shortest.
-    * Checking of event type moved to the top to avoid unnecessary
-      locking.
-
-Version 2:
-
-    * Completely re-implemented using netdev event handler.
-
-Ilya Maximets (2):
-  xdp: hold device for umem regardless of zero-copy mode
-  xdp: fix hang while unregistering device bound to xdp socket
-
- include/net/xdp_sock.h |  5 +++
- net/xdp/xdp_umem.c     | 21 +++++-----
- net/xdp/xdp_umem.h     |  1 +
- net/xdp/xsk.c          | 87 ++++++++++++++++++++++++++++++++++++------
- 4 files changed, 93 insertions(+), 21 deletions(-)
-
+diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
+index 9c6de4f114f8..267b82a4cbcf 100644
+--- a/net/xdp/xdp_umem.c
++++ b/net/xdp/xdp_umem.c
+@@ -105,6 +105,9 @@ int xdp_umem_assign_dev(struct xdp_umem *umem, struct net_device *dev,
+ 
+ 	umem->dev = dev;
+ 	umem->queue_id = queue_id;
++
++	dev_hold(dev);
++
+ 	if (force_copy)
+ 		/* For copy-mode, we are done. */
+ 		goto out_rtnl_unlock;
+@@ -124,7 +127,6 @@ int xdp_umem_assign_dev(struct xdp_umem *umem, struct net_device *dev,
+ 		goto err_unreg_umem;
+ 	rtnl_unlock();
+ 
+-	dev_hold(dev);
+ 	umem->zc = true;
+ 	return 0;
+ 
+@@ -163,10 +165,9 @@ static void xdp_umem_clear_dev(struct xdp_umem *umem)
+ 	xdp_clear_umem_at_qid(umem->dev, umem->queue_id);
+ 	rtnl_unlock();
+ 
+-	if (umem->zc) {
+-		dev_put(umem->dev);
+-		umem->zc = false;
+-	}
++	dev_put(umem->dev);
++	umem->dev = NULL;
++	umem->zc = false;
+ }
+ 
+ static void xdp_umem_unpin_pages(struct xdp_umem *umem)
 -- 
 2.17.1
 
