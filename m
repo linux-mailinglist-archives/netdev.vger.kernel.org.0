@@ -2,86 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F1FAD57ADB
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 06:55:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5272857B17
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 07:04:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726869AbfF0EzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 00:55:16 -0400
-Received: from mail-wr1-f41.google.com ([209.85.221.41]:37112 "EHLO
-        mail-wr1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725385AbfF0EzP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 00:55:15 -0400
-Received: by mail-wr1-f41.google.com with SMTP id v14so843185wrr.4
-        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 21:55:14 -0700 (PDT)
+        id S1727087AbfF0FE2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 01:04:28 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:45454 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726885AbfF0FE2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 01:04:28 -0400
+Received: by mail-ot1-f65.google.com with SMTP id x21so921499otq.12;
+        Wed, 26 Jun 2019 22:04:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=jVv8AqSegnxp0gWnatsiyEbG1UXPWGptzgD/iRThcH0=;
-        b=Fs9A3i5pf/domm/RKWLDIuzKOPKQYhwF2HNHkysJPOpndYiQUXdP0kJIa8+Aq1pE3V
-         GzZU3weIZXMMROheSqUxkdi3iVsm1JKZ4dY3UMxzjFgbTWeTLNpdvPbEED9bqByqtBYG
-         gixo/k3bWBV6UjzwFoGitxv9zPVlr5ZRG3ay6+h1oSxdBsanglF8mJi9eTgDxvVd3o2X
-         Vagh3fTHE3UZrNqhRyy8tpJT6AI8dPuLRkMdZJgY5lFqvPTaAws02Sqyji1em5AnfdeT
-         mgNd7vZQ48s/h2+u0yWQMF7NXgXgoCh7nTgOpa1D56KKcWONiv108+4daQEA0k361LYn
-         m2Dg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=GlXuhQWQA/lVSG/8HetE1/x5ZAIJM14lwCSaZv97Mbs=;
+        b=GqasVPRyHsVP+n5oyg1FJnExioUyVr7LOvsRmg7nY8YTxCb0/VlZ1jAyRzVNEaWFoC
+         HUFzOJiJwnPcznh/+E3LDwhVR3v5T2YgSmwrHhlAGHICEm5JCGzeVsvbi6BSKj7AOy3Z
+         C5R21bhmDPvyxieLtsTLE3aZdVU2FpcAJ8kCw2PV0s69/zF4hNNQkYdbzJlXhcBDPfbb
+         w9+mOVHOdOm0xStnXh5QWoVvAQRxRFndNXp9e2U+BeE3DLyskkrqOpx95kUBSnNfeg14
+         5e5sC8ZEEa2KdeJ/zeWd+t19imImVvpiSBRMTT/5nw+V2TCQAgJzWRtJfTlTyfn1paYG
+         PvwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=jVv8AqSegnxp0gWnatsiyEbG1UXPWGptzgD/iRThcH0=;
-        b=bzUiZy183IJNS2YunTbDytJuvoKyYQ843aq2qxhHizpdmRfmdIwt+pxPI/Lj8/+My5
-         Z3VHf2IBI61Ob6Va1sUznZoh/GhuFuf2ScTit1EAuxPJ2x9AlYppyrR29bdG8uA9vxL9
-         t48zUTdYTLvx4KVHcJnUvcGuFtKLQthy7F3oMwvCLuGEY9l1UN7qEuB2fjUKElQYVfrU
-         YHvTcz9S9mhibskByEi8sAZl0eMEoYtQiarAULpvXm8so9nCT8vL6p8hbXEZ9WJEH4+E
-         9YueVf1Swu+MW+oGf9SxT3Cwx94iecNK3IgO1UO5+xMChFRMQUr52M5hY2tRaIjQlw7o
-         phfA==
-X-Gm-Message-State: APjAAAWHu2PeqMfKkj+SjKWg0bK7eeYq+Qk5mKqDobWrbINMI2qfCk7w
-        fBI9T1dxAHMpPr9g9JoYKgn1ML72
-X-Google-Smtp-Source: APXvYqztb87AMgfKeuKKKHYfBTlwCvLWQMU/ZgIdjZXnTgIEo5CkZhbmNlHtm/GwVmYizH4niKSOQg==
-X-Received: by 2002:adf:ea88:: with SMTP id s8mr1149170wrm.68.1561611313840;
-        Wed, 26 Jun 2019 21:55:13 -0700 (PDT)
-Received: from Red ([2a01:cb1d:147:7200:2e56:dcff:fed2:c6d6])
-        by smtp.googlemail.com with ESMTPSA id e11sm3264924wrc.9.2019.06.26.21.55.12
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 26 Jun 2019 21:55:13 -0700 (PDT)
-Date:   Thu, 27 Jun 2019 06:55:11 +0200
-From:   Corentin Labbe <clabbe.montjoie@gmail.com>
-To:     Arkadiusz Drabczyk <arkadiusz@drabczyk.org>
-Cc:     netdev@vger.kernel.org, jacmet@sunsite.dk
-Subject: Re: dm9601: incorrect datasheet URL
-Message-ID: <20190627045511.GA29016@Red>
-References: <20190626141248.GA14356@comp.lan>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=GlXuhQWQA/lVSG/8HetE1/x5ZAIJM14lwCSaZv97Mbs=;
+        b=ZF8cfwANkGhImeIlM5P80sDYSzvphOHgo1SXcihzQywG+bdJvKkcrTspmevoq3k4M9
+         mWgpEo41VDcVRJliOtCRheYx+JaZrsO7FvurKcUb2bUqBAdONLXZHYNU0B/ls1hf/dLD
+         MRUFjdM2406jDn/mMCK5/46ocIvQPFlU66zv/03ABhqRfmWP4Hh7ddAayhCZyWA8XAy8
+         9xpt4Mlx79fIfzbcQQdZdbwGVZc5hqxDLgkuwhmoeTaERNCO+gIYHXiFz4Dlm4bjLw9s
+         l5JeIMZ/IwycHJpGc0fDdztKept9eOpk0p/Zvn6LDeWVtkBe0Bo9fvM+3S7+9MSPmSkM
+         GIqg==
+X-Gm-Message-State: APjAAAU8yiYCsXUMAeSig/D3MsAjQc472mYMB6O8KPgvh+p/GkwTTeeX
+        7st6EkxB0QpuGxrJTKYu6V3CXmKfkVI=
+X-Google-Smtp-Source: APXvYqzlBt0nC4Nh0aSm4GdOeVGei8vVZTcgOpYYcXvGT8+r/17syQs5DkT1yXnmlyT0kU/UJ/HmGg==
+X-Received: by 2002:a05:6830:148c:: with SMTP id s12mr1724595otq.274.1561611867630;
+        Wed, 26 Jun 2019 22:04:27 -0700 (PDT)
+Received: from rYz3n.attlocal.net ([2600:1700:210:3790::48])
+        by smtp.googlemail.com with ESMTPSA id v18sm613318otn.17.2019.06.26.22.04.26
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 26 Jun 2019 22:04:27 -0700 (PDT)
+From:   Jiunn Chang <c0d1n61at3@gmail.com>
+To:     skhan@linuxfoundation.org
+Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net
+Subject: [Linux-kernel-mentees][PATCH v3] packet: Fix undefined behavior in bit shift
+Date:   Thu, 27 Jun 2019 00:04:24 -0500
+Message-Id: <20190627050426.17925-1-c0d1n61at3@gmail.com>
+X-Mailer: git-send-email 2.22.0
+In-Reply-To: <20190627032532.18374-2-c0d1n61at3@gmail.com>
+References: <20190627032532.18374-2-c0d1n61at3@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190626141248.GA14356@comp.lan>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 26, 2019 at 04:12:48PM +0200, Arkadiusz Drabczyk wrote:
-> http://ptm2.cc.utu.fi/ftp/network/cards/DM9601/From_NET/DM9601-DS-P01-930914.pdf
-> is gone. In fact, document titled `DM9601-DS-P01-930914.pdf' is
-> nowhere to be found online these days but there is
-> http://pdf.datasheet.live/74029349/davicom.com.tw/DM9601E.pdf. I'm
-> just not sure if this is the same document that the current link was
-> pointing to and what does E suffix mean. There is also
-> https://www.alldatasheet.com/datasheet-pdf/pdf/119750/ETC1/DM9601.html
-> but notice that it says `Version: DM9601-DS-F01' on the bottom of some
-> pages and `Version: DM9601-DS-P01' on others - I don't know what that
-> means.
-> 
-> Should http://pdf.datasheet.live/74029349/davicom.com.tw/DM9601E.pdf
-> be used as a datasheet URL?
-> 
+Shifting signed 32-bit value by 31 bits is undefined.  Changing most
+significant bit to unsigned.
 
-Hello
+Signed-off-by: Jiunn Chang <c0d1n61at3@gmail.com>
+---
+Changes included in v3:
+  - remove change log from patch description
 
-I have noticed the same problem some days ago.
-The original datasheet could be found using archive.org.
+Changes included in v2:
+  - use subsystem specific subject lines
+  - CC required mailing lists
 
-I have downloaded all datasheets and none has the same md5, so it need a more detailled inspection.
+ include/uapi/linux/if_packet.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Regards
+diff --git a/include/uapi/linux/if_packet.h b/include/uapi/linux/if_packet.h
+index 467b654bd4c7..3d884d68eb30 100644
+--- a/include/uapi/linux/if_packet.h
++++ b/include/uapi/linux/if_packet.h
+@@ -123,7 +123,7 @@ struct tpacket_auxdata {
+ /* Rx and Tx ring - header status */
+ #define TP_STATUS_TS_SOFTWARE		(1 << 29)
+ #define TP_STATUS_TS_SYS_HARDWARE	(1 << 30) /* deprecated, never set */
+-#define TP_STATUS_TS_RAW_HARDWARE	(1 << 31)
++#define TP_STATUS_TS_RAW_HARDWARE	(1U << 31)
+ 
+ /* Rx ring - feature request bits */
+ #define TP_FT_REQ_FILL_RXHASH	0x1
+-- 
+2.22.0
+
