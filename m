@@ -2,117 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 27E0D57F86
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 11:45:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5D2857FB3
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 11:53:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726518AbfF0JpJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 05:45:09 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:38147 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726497AbfF0JpH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 05:45:07 -0400
-Received: by mail-pl1-f194.google.com with SMTP id 9so213257ple.5
-        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 02:45:07 -0700 (PDT)
+        id S1726487AbfF0JxA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 05:53:00 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:43252 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726292AbfF0Jw7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 05:52:59 -0400
+Received: by mail-pf1-f193.google.com with SMTP id i189so949861pfg.10
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 02:52:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=o85DtuAz6vSx6yFaE334J1wzUYYj6hZsrPSLAKXtHB8=;
-        b=B3dztp3FcbA+7gNRlLkK7oLFjcDbh9ysjKzlVhmeiWvFSCRRgzOu3jhWlItI82K2on
-         NoC9lJxElbHVs2s4IX94GlGQFoe1E0/xUG3B1tEb26/oerqwu8DlL0WRHuDNY+XVtyjZ
-         ySDfC6lB1mxaE7gUkEMaYm0rh/Uq32hvFs6nMoY+ZKJ8xiY+0oxcxlAi8ilEZJc6mQgg
-         DHYglcFS0zRsnJALqhaPYuy4d0ttc50Jl8Fid2xdJEpCVcZHrvRFBSmPl2+9s2Z2DNIp
-         1kUTYczvCKliX8609aQRmOG8qt9jUfIUmunjcEOkHde/YAWL8CvWvRYaQYgCKKjI+duU
-         CcQQ==
+        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eSti7nNxGlkHMPeNaufOPNsxXSw1/a1T6eOCbwJcR44=;
+        b=G0wG3LIGXYb5Tu8AeTGsf4L7a2ukWIRgwZj5WGdhvin5vS27CtwZi3qWiBt6DAntMZ
+         lRL1+R4wZpmnsf2s0i9xMo6bDECRfX5BrWTKcUQxSZsS/Sx8MTlQ5jKzYKSIL631srt0
+         piCtmwxW1Cajnz/tTWW8MgTwe8yqORSV/3YnC4px811/hmnPbyl4c4WLHYaHQ+SUsz7g
+         nI0ZPd7gaJQnuwxcGieVjUKrGogHyOWu1HDhDI8q8iJ5kSCx36x9GKtubm04qvtkKk0/
+         Wqt80KKS3s4GEdgSsNuYhyzO+pnSjgjiLJrsD34JCUoP+nTpeUCdC9RpVfGboENcS5Ej
+         hCaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=o85DtuAz6vSx6yFaE334J1wzUYYj6hZsrPSLAKXtHB8=;
-        b=qyALshrV6lYwJUd5tfpC5S6G32U0W34ccj8aVC8qg/n/UFEGvA4NDFDVJMZ46yUQTB
-         lbQIhg+in2GpRQtbGdITTGGnuohlW5FD/otk53+pWyHcd8AXI/UkyVAPwHlvHy/4zgkE
-         Al373ICFdqLuygEHRwtd0l9gJ7M5PYwBxobfQQzbE016RHEJI9Ev35vl113TZ6T37n6M
-         ITmbP7ucBHXbUps///N3F34P1o0zmm53r15Y0yvGWTLpEodT9GQj/teTMX3gtDV+n+Rp
-         KOgyZkrmP1IHXLZnuQaHc90lw93Oif35q3NBw/wGlrzs5yQzamMorTul9khzW8CxIDG6
-         seRw==
-X-Gm-Message-State: APjAAAXk185vxUzWMjKCALoNe0HypGkuR5yHfldwXhkM7aNGxyOWrcSa
-        Lr4V7N2QyNJ1q/iOBOEXQBI=
-X-Google-Smtp-Source: APXvYqzVL9c51KzJLbk0NTFGs9xwSuuG5UZU1OMSwSvUjoxGJzxAsHQW0lQbTG3CsLFbLiyWGpXW9Q==
-X-Received: by 2002:a17:902:8546:: with SMTP id d6mr3497964plo.207.1561628707099;
-        Thu, 27 Jun 2019 02:45:07 -0700 (PDT)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id d123sm2323124pfc.144.2019.06.27.02.45.05
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 27 Jun 2019 02:45:06 -0700 (PDT)
-Date:   Thu, 27 Jun 2019 17:44:57 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net] igmp: fix memory leak in igmpv3_del_delrec()
-Message-ID: <20190627094457.GL18865@dhcp-12-139.nay.redhat.com>
-References: <20190627082701.226711-1-edumazet@google.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eSti7nNxGlkHMPeNaufOPNsxXSw1/a1T6eOCbwJcR44=;
+        b=WVdQUejYaDIPRZtUf+Dl+ErNXtDZR2fgkpljgxsmfGdW8WpBJ3UoJeAWoK1uNf7Kh7
+         oT5fbOT1ijASqfpe4QvqC0zK9sHYRgbtKP2HtSbjmA+vCne2QsixurIJXuXJ7tiB/qR+
+         dcQuML4vjr7IXENmdfot33JsaiCtHGPJBgGn7IYnApan8KudntN82KDMM5rgFu8Mm2jl
+         P6XwlcOozdqi046SwtJcg/rzcD6RzJGJYsCYyY9VE+4yOaegpZA51rJK9WwTV7SyCi0Q
+         wlMPttn46fy9NKNZJQMFAWGU0ru89seaGwgNs8VOWxcG7NtbxLUKhdtbWexbVRbqoEbI
+         5BLw==
+X-Gm-Message-State: APjAAAUOSwsUA7UiMg9dsju5ru/ryD0YCcntvdjNkSOJDuJeDQfDixnp
+        5i70OBq9F2ZhxDcbeFlDyVyp9Q==
+X-Google-Smtp-Source: APXvYqwThA5c5tolZNtd9PZAt1ZfD9D1vZXSf7f0FwowKXSR7Ra1Wy8QnbI+BmVviA4UB9KjXHwqtA==
+X-Received: by 2002:a65:4387:: with SMTP id m7mr2883842pgp.287.1561629179022;
+        Thu, 27 Jun 2019 02:52:59 -0700 (PDT)
+Received: from localhost.localdomain (220-133-8-232.HINET-IP.hinet.net. [220.133.8.232])
+        by smtp.gmail.com with ESMTPSA id p15sm15635118pjf.27.2019.06.27.02.52.56
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Thu, 27 Jun 2019 02:52:58 -0700 (PDT)
+From:   Chris Chiu <chiu@endlessm.com>
+To:     jes.sorensen@gmail.com, kvalo@codeaurora.org, davem@davemloft.net
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux@endlessm.com
+Subject: [PATCH] rtl8xxxu: Fix wifi low signal strength issue of RTL8723BU
+Date:   Thu, 27 Jun 2019 17:52:47 +0800
+Message-Id: <20190627095247.8792-1-chiu@endlessm.com>
+X-Mailer: git-send-email 2.20.1 (Apple Git-117)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190627082701.226711-1-edumazet@google.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 27, 2019 at 01:27:01AM -0700, Eric Dumazet wrote:
-> im->tomb and/or im->sources might not be NULL, but we
-> currently overwrite their values blindly.
-> 
-> Using swap() will make sure the following call to kfree_pmc(pmc)
-> will properly free the psf structures.
-> 
-> Tested with the C repro provided by syzbot, which basically does :
-> 
->  socket(PF_INET, SOCK_DGRAM, IPPROTO_IP) = 3
->  setsockopt(3, SOL_IP, IP_ADD_MEMBERSHIP, "\340\0\0\2\177\0\0\1\0\0\0\0", 12) = 0
->  ioctl(3, SIOCSIFFLAGS, {ifr_name="lo", ifr_flags=0}) = 0
->  setsockopt(3, SOL_IP, IP_MSFILTER, "\340\0\0\2\177\0\0\1\1\0\0\0\1\0\0\0\377\377\377\377", 20) = 0
->  ioctl(3, SIOCSIFFLAGS, {ifr_name="lo", ifr_flags=IFF_UP}) = 0
->  exit_group(0)                    = ?
-> 
-> BUG: memory leak
-> unreferenced object 0xffff88811450f140 (size 64):
->   comm "softirq", pid 0, jiffies 4294942448 (age 32.070s)
->   hex dump (first 32 bytes):
->     00 00 00 00 00 00 00 00 ff ff ff ff 00 00 00 00  ................
->     00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00  ................
->   backtrace:
->     [<00000000c7bad083>] kmemleak_alloc_recursive include/linux/kmemleak.h:43 [inline]
->     [<00000000c7bad083>] slab_post_alloc_hook mm/slab.h:439 [inline]
->     [<00000000c7bad083>] slab_alloc mm/slab.c:3326 [inline]
->     [<00000000c7bad083>] kmem_cache_alloc_trace+0x13d/0x280 mm/slab.c:3553
->     [<000000009acc4151>] kmalloc include/linux/slab.h:547 [inline]
->     [<000000009acc4151>] kzalloc include/linux/slab.h:742 [inline]
->     [<000000009acc4151>] ip_mc_add1_src net/ipv4/igmp.c:1976 [inline]
->     [<000000009acc4151>] ip_mc_add_src+0x36b/0x400 net/ipv4/igmp.c:2100
->     [<000000004ac14566>] ip_mc_msfilter+0x22d/0x310 net/ipv4/igmp.c:2484
->     [<0000000052d8f995>] do_ip_setsockopt.isra.0+0x1795/0x1930 net/ipv4/ip_sockglue.c:959
->     [<000000004ee1e21f>] ip_setsockopt+0x3b/0xb0 net/ipv4/ip_sockglue.c:1248
->     [<0000000066cdfe74>] udp_setsockopt+0x4e/0x90 net/ipv4/udp.c:2618
->     [<000000009383a786>] sock_common_setsockopt+0x38/0x50 net/core/sock.c:3126
->     [<00000000d8ac0c94>] __sys_setsockopt+0x98/0x120 net/socket.c:2072
->     [<000000001b1e9666>] __do_sys_setsockopt net/socket.c:2083 [inline]
->     [<000000001b1e9666>] __se_sys_setsockopt net/socket.c:2080 [inline]
->     [<000000001b1e9666>] __x64_sys_setsockopt+0x26/0x30 net/socket.c:2080
->     [<00000000420d395e>] do_syscall_64+0x76/0x1a0 arch/x86/entry/common.c:301
->     [<000000007fd83a4b>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> Fixes: 24803f38a5c0 ("igmp: do not remove igmp souce list info when set link down")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Hangbin Liu <liuhangbin@gmail.com>
-> Reported-by: syzbot+6ca1abd0db68b5173a4f@syzkaller.appspotmail.com
-> ---
+The WiFi tx power of RTL8723BU is extremely low after booting. So
+the WiFi scan gives very limited AP list and it always fails to
+connect to the selected AP. This module only supports 1x1 antenna
+and the antenna is switched to bluetooth due to some incorrect
+register settings.
 
-Hi Eric,
+This commit hand over the antenna control to PTA, the wifi signal
+will be back to normal and the bluetooth scan can also work at the
+same time. However, the btcoexist still needs to be handled under
+different circumstances. If there's a BT connection established,
+the wifi still fails to connect until disconneting the BT.
 
-Thanks for the fixup.
+Signed-off-by: Chris Chiu <chiu@endlessm.com>
+---
+ drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c | 9 ++++++---
+ drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c  | 3 ++-
+ 2 files changed, 8 insertions(+), 4 deletions(-)
 
-Cheers
-Hangbin
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
+index 3adb1d3d47ac..6c3c70d93ac1 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
+@@ -1525,7 +1525,7 @@ static void rtl8723b_enable_rf(struct rtl8xxxu_priv *priv)
+ 	/*
+ 	 * WLAN action by PTA
+ 	 */
+-	rtl8xxxu_write8(priv, REG_WLAN_ACT_CONTROL_8723B, 0x04);
++	rtl8xxxu_write8(priv, REG_WLAN_ACT_CONTROL_8723B, 0x0c);
+ 
+ 	/*
+ 	 * BT select S0/S1 controlled by WiFi
+@@ -1568,9 +1568,12 @@ static void rtl8723b_enable_rf(struct rtl8xxxu_priv *priv)
+ 	rtl8xxxu_gen2_h2c_cmd(priv, &h2c, sizeof(h2c.ant_sel_rsv));
+ 
+ 	/*
+-	 * 0x280, 0x00, 0x200, 0x80 - not clear
++	 * Different settings per different antenna position.
++	 * Antenna switch to BT: 0x280, 0x00 (inverse)
++	 * Antenna switch to WiFi: 0x0, 0x280 (inverse)
++	 * Antenna controlled by PTA: 0x200, 0x80 (inverse)
+ 	 */
+-	rtl8xxxu_write32(priv, REG_S0S1_PATH_SWITCH, 0x00);
++	rtl8xxxu_write32(priv, REG_S0S1_PATH_SWITCH, 0x80);
+ 
+ 	/*
+ 	 * Software control, antenna at WiFi side
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+index 8136e268b4e6..87b2179a769e 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+@@ -3891,12 +3891,13 @@ static int rtl8xxxu_init_device(struct ieee80211_hw *hw)
+ 
+ 	/* Check if MAC is already powered on */
+ 	val8 = rtl8xxxu_read8(priv, REG_CR);
++	val16 = rtl8xxxu_read16(priv, REG_SYS_CLKR);
+ 
+ 	/*
+ 	 * Fix 92DU-VC S3 hang with the reason is that secondary mac is not
+ 	 * initialized. First MAC returns 0xea, second MAC returns 0x00
+ 	 */
+-	if (val8 == 0xea)
++	if (val8 == 0xea || !(val16 & BIT(11)))
+ 		macpower = false;
+ 	else
+ 		macpower = true;
+-- 
+2.11.0
+
