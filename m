@@ -2,165 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E178758817
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 19:14:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3198758818
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 19:14:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726587AbfF0ROH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 13:14:07 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:46393 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726315AbfF0ROG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 13:14:06 -0400
-Received: by mail-io1-f70.google.com with SMTP id s83so3309398iod.13
-        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 10:14:06 -0700 (PDT)
+        id S1726557AbfF0ROh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 13:14:37 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:43375 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726482AbfF0ROh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 13:14:37 -0400
+Received: by mail-io1-f66.google.com with SMTP id k20so6381719ios.10
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 10:14:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=k1fMBc3D09YAn0nDfyEOaIcdkoHUYZy20evbSP5Fs1k=;
+        b=igmanSKiSBBiUPsO5O4TnpytO1uPBBSUhh0BgEGWVLA5kgKl5Ic0G0eceK+ThVTXQA
+         gfoHG+HEX83mtnzhViL/Bz5L9jfUuPUO+nJX25JO/1Wa8W8lc7sOu9UmIzYcv84k2k4L
+         RcMsxDiCrygg8LnemnxrjFiaZAnTS3G1LLcv0nd3DRM+8IJ3lnw2Xgt2s0sQSPMdJXEm
+         jh8PuIiEXX8x91e7A/pXDA0fi0zZncU8hn1v1OTb2pGqCJCdLVuhoKgao+8ec5j9QyiL
+         REEVIXYAlSKPwFhYfy+h6suFw/4nel3yPbcrGAmK3AuowIj3++EPp8k4DMpxPEGnGs70
+         s3BA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=0xoNZyk4kpn5MObgO7gsjfUHk2xSfL/r3fmiyjl8Q2A=;
-        b=ukgTYiQwfnGicngzKjgKtguCMyM3Lcbz9XW40tKNh0cHF7IopFA6vzznyvfAkEZLo5
-         KDCxGvPMLTRKjJacFJZhynwOgmAyCmc90vEeJqxBqKOtd3h4AZWQbmIS0670O0KmUst6
-         kW4s+pQEdxUiVJgWNnxrrXubmq2OIdhZSiYxLvSZwQGzfaArpcVj5WUxZTtgrAdnnZgL
-         L4wpo6+9pQCx9a+g7UBwgnebqnIm7KBiMune9qYE6RTQZ2UcwecREqz06O2cG23//te7
-         7hTQwyKmVjMoUdbBfcA/O4i529vTqIbPhIA9v7VGaKvktckI6nFpPNWXKEglC73WtPgO
-         3uIQ==
-X-Gm-Message-State: APjAAAVplwmZVnTeWkiVyxtyPAoA9LSbylz2WvptcQn+8/VBOWNRkxHl
-        syppf87bDSlaFoB7yYyguBiHmlotbM+UjXoGz9N4Ik9qBusS
-X-Google-Smtp-Source: APXvYqzmmL3QfniIfIyU0hiLnDhXidMckh4y6/hhi2CbXfqeBvWrBqqa9Kt3AZpyt0ev5SrA4msilTduA/N3+m8OtqxuZLHqZkuu
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=k1fMBc3D09YAn0nDfyEOaIcdkoHUYZy20evbSP5Fs1k=;
+        b=jDxcmm8YV75dpRY/lRVhGfiGAq0NV5lySv4QDGP5qQAHzdjiy5waTfUfTW7PmAVje2
+         VTB48qINRkVkVMJ2qcd+YpNSfreqxLoEtGEAZfoEUPdSkJ37nTNkaPUiyILguYHphJ1F
+         3DF3fXBJu0JCL2/olyKe/19RwV4pJF4IwcxzVou93tCE3zK5mX52Q4dNadKhnOCT6dZq
+         SDEUn0jj9GxTOC8LeRzmrkPBDW3bRaExu9WOFiwHzu1/SNbM47+IzrbAQUWUhKHUFQ9/
+         NxalKXly8hBI4rw85gXaVjFEwNvFMiqn+hwvcrFDd2ycgOm4WuO4juPZLmAFnjEnKZS0
+         2ZUA==
+X-Gm-Message-State: APjAAAXVzxc4NK2xfrv/Nj0+Sd1WbLwyjZHSHVCJE8EdJ7jMpvtoc1ro
+        QN/QDDHqBL4q75k0c7pEqwo=
+X-Google-Smtp-Source: APXvYqwv+nSlD55ffXv1jxZ+eD2yfB5OX7oKMgPTSdjSrrAfm6pICqGtEhCvWsMoDuWuaGPlrTA+cQ==
+X-Received: by 2002:a05:6602:22cc:: with SMTP id e12mr6086284ioe.192.1561655676703;
+        Thu, 27 Jun 2019 10:14:36 -0700 (PDT)
+Received: from ?IPv6:2601:282:800:fd80:68e3:3bc1:af81:7b2b? ([2601:282:800:fd80:68e3:3bc1:af81:7b2b])
+        by smtp.googlemail.com with ESMTPSA id u26sm2700447iol.1.2019.06.27.10.14.34
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 27 Jun 2019 10:14:35 -0700 (PDT)
+Subject: Re: [RFC] longer netdev names proposal
+To:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
+        sthemmin@microsoft.com, mlxsw@mellanox.com
+References: <20190627094327.GF2424@nanopsycho>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <26b73332-9ea0-9d2c-9185-9de522c72bb9@gmail.com>
+Date:   Thu, 27 Jun 2019 11:14:31 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-X-Received: by 2002:a6b:f00c:: with SMTP id w12mr5714279ioc.280.1561655645648;
- Thu, 27 Jun 2019 10:14:05 -0700 (PDT)
-Date:   Thu, 27 Jun 2019 10:14:05 -0700
-In-Reply-To: <000000000000a97a15058c50c52e@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000053e16058c514a2d@google.com>
-Subject: Re: KMSAN: uninit-value in aesti_encrypt
-From:   syzbot <syzbot+6f50c99e8f6194bf363f@syzkaller.appspotmail.com>
-To:     aviadye@mellanox.com, borisp@mellanox.com, daniel@iogearbox.net,
-        davejwatson@fb.com, davem@davemloft.net, ebiggers@kernel.org,
-        glider@google.com, herbert@gondor.apana.org.au,
-        john.fastabend@gmail.com, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+In-Reply-To: <20190627094327.GF2424@nanopsycho>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following crash on:
+On 6/27/19 3:43 AM, Jiri Pirko wrote:
+> Hi all.
+> 
+> In the past, there was repeatedly discussed the IFNAMSIZ (16) limit for
+> netdevice name length. Now when we have PF and VF representors
+> with port names like "pfXvfY", it became quite common to hit this limit:
+> 0123456789012345
+> enp131s0f1npf0vf6
+> enp131s0f1npf0vf22
 
-HEAD commit:    41550654 [UPSTREAM] KVM: x86: degrade WARN to pr_warn_rate..
-git tree:       kmsan
-console output: https://syzkaller.appspot.com/x/log.txt?x=11302ccba00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=40511ad0c5945201
-dashboard link: https://syzkaller.appspot.com/bug?extid=6f50c99e8f6194bf363f
-compiler:       clang version 9.0.0 (/home/glider/llvm/clang  
-80fee25776c2fb61e74c1ecb1a523375c2500b69)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12906f79a00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14355961a00000
+QinQ (stacked vlans) is another example.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+6f50c99e8f6194bf363f@syzkaller.appspotmail.com
+> 
+> Since IFLA_NAME is just a string, I though it might be possible to use
+> it to carry longer names as it is. However, the userspace tools, like
+> iproute2, are doing checks before print out. So for example in output of
+> "ip addr" when IFLA_NAME is longer than IFNAMSIZE, the netdevice is
+> completely avoided.
+> 
+> So here is a proposal that might work:
+> 1) Add a new attribute IFLA_NAME_EXT that could carry names longer than
+>    IFNAMSIZE, say 64 bytes. The max size should be only defined in kernel,
+>    user should be prepared for any string size.
+> 2) Add a file in sysfs that would indicate that NAME_EXT is supported by
+>    the kernel.
 
-==================================================================
-BUG: KMSAN: uninit-value in subshift crypto/aes_ti.c:148 [inline]
-BUG: KMSAN: uninit-value in aesti_encrypt+0x1238/0x1bc0 crypto/aes_ti.c:292
-CPU: 0 PID: 11119 Comm: syz-executor333 Not tainted 5.2.0-rc4+ #7
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x191/0x1f0 lib/dump_stack.c:113
-  kmsan_report+0x162/0x2d0 mm/kmsan/kmsan.c:611
-  __msan_warning+0x75/0xe0 mm/kmsan/kmsan_instr.c:304
-  subshift crypto/aes_ti.c:148 [inline]
-  aesti_encrypt+0x1238/0x1bc0 crypto/aes_ti.c:292
-  crypto_cipher_encrypt_one include/linux/crypto.h:1753 [inline]
-  crypto_cbcmac_digest_update+0x3cf/0x550 crypto/ccm.c:871
-  crypto_shash_update crypto/shash.c:107 [inline]
-  shash_ahash_finup+0x659/0xb20 crypto/shash.c:276
-  shash_async_finup+0xbb/0x110 crypto/shash.c:291
-  crypto_ahash_op+0x1cd/0x6e0 crypto/ahash.c:368
-  crypto_ahash_finup+0x8c/0xb0 crypto/ahash.c:393
-  crypto_ccm_auth+0x14b2/0x1570 crypto/ccm.c:230
-  crypto_ccm_encrypt+0x272/0x8d0 crypto/ccm.c:309
-  crypto_aead_encrypt include/crypto/aead.h:331 [inline]
-  tls_do_encryption net/tls/tls_sw.c:521 [inline]
-  tls_push_record+0x341a/0x4f70 net/tls/tls_sw.c:730
-  bpf_exec_tx_verdict+0x1454/0x1c90 net/tls/tls_sw.c:770
-  tls_sw_sendmsg+0x15bd/0x2740 net/tls/tls_sw.c:1033
-  inet_sendmsg+0x48e/0x750 net/ipv4/af_inet.c:798
-  sock_sendmsg_nosec net/socket.c:646 [inline]
-  sock_sendmsg net/socket.c:665 [inline]
-  __sys_sendto+0x905/0xb90 net/socket.c:1958
-  __do_sys_sendto net/socket.c:1970 [inline]
-  __se_sys_sendto+0x107/0x130 net/socket.c:1966
-  __x64_sys_sendto+0x6e/0x90 net/socket.c:1966
-  do_syscall_64+0xbc/0xf0 arch/x86/entry/common.c:302
-  entry_SYSCALL_64_after_hwframe+0x63/0xe7
-RIP: 0033:0x4402d9
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7  
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffcef4112e8 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 00000000004402d9
-RDX: ffffffffffffff7f RSI: 00000000200005c0 RDI: 0000000000000003
-RBP: 00000000006ca018 R08: 0000000000000000 R09: fffffffffffffd56
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401b60
-R13: 0000000000401bf0 R14: 0000000000000000 R15: 0000000000000000
+no sysfs files.
 
-Uninit was stored to memory at:
-  kmsan_save_stack_with_flags mm/kmsan/kmsan.c:201 [inline]
-  kmsan_save_stack mm/kmsan/kmsan.c:213 [inline]
-  kmsan_internal_chain_origin+0xcc/0x150 mm/kmsan/kmsan.c:414
-  __msan_chain_origin+0x6b/0xe0 mm/kmsan/kmsan_instr.c:200
-  __crypto_xor+0x1e8/0x1470 crypto/algapi.c:1019
-  crypto_xor include/crypto/algapi.h:214 [inline]
-  crypto_cbcmac_digest_update+0x2ba/0x550 crypto/ccm.c:865
-  crypto_shash_update crypto/shash.c:107 [inline]
-  shash_ahash_finup+0x659/0xb20 crypto/shash.c:276
-  shash_async_finup+0xbb/0x110 crypto/shash.c:291
-  crypto_ahash_op+0x1cd/0x6e0 crypto/ahash.c:368
-  crypto_ahash_finup+0x8c/0xb0 crypto/ahash.c:393
-  crypto_ccm_auth+0x14b2/0x1570 crypto/ccm.c:230
-  crypto_ccm_encrypt+0x272/0x8d0 crypto/ccm.c:309
-  crypto_aead_encrypt include/crypto/aead.h:331 [inline]
-  tls_do_encryption net/tls/tls_sw.c:521 [inline]
-  tls_push_record+0x341a/0x4f70 net/tls/tls_sw.c:730
-  bpf_exec_tx_verdict+0x1454/0x1c90 net/tls/tls_sw.c:770
-  tls_sw_sendmsg+0x15bd/0x2740 net/tls/tls_sw.c:1033
-  inet_sendmsg+0x48e/0x750 net/ipv4/af_inet.c:798
-  sock_sendmsg_nosec net/socket.c:646 [inline]
-  sock_sendmsg net/socket.c:665 [inline]
-  __sys_sendto+0x905/0xb90 net/socket.c:1958
-  __do_sys_sendto net/socket.c:1970 [inline]
-  __se_sys_sendto+0x107/0x130 net/socket.c:1966
-  __x64_sys_sendto+0x6e/0x90 net/socket.c:1966
-  do_syscall_64+0xbc/0xf0 arch/x86/entry/common.c:302
-  entry_SYSCALL_64_after_hwframe+0x63/0xe7
+Johannes added infrastructure to retrieve the policy. That is a more
+flexible and robust option for determining what the kernel supports.
 
-Uninit was created at:
-  kmsan_save_stack_with_flags+0x37/0x70 mm/kmsan/kmsan.c:201
-  kmsan_internal_alloc_meta_for_pages+0x123/0x510 mm/kmsan/kmsan_hooks.c:103
-  kmsan_alloc_page+0x7a/0xf0 mm/kmsan/kmsan_hooks.c:247
-  __alloc_pages_nodemask+0x144d/0x6020 mm/page_alloc.c:4700
-  alloc_pages_current+0x6a0/0x9b0 mm/mempolicy.c:2132
-  alloc_pages include/linux/gfp.h:511 [inline]
-  skb_page_frag_refill+0x15e/0x560 net/core/sock.c:2349
-  sk_page_frag_refill+0xa4/0x330 net/core/sock.c:2369
-  sk_msg_alloc+0x203/0x1050 net/core/skmsg.c:37
-  tls_alloc_encrypted_msg net/tls/tls_sw.c:284 [inline]
-  tls_sw_sendmsg+0xb6a/0x2740 net/tls/tls_sw.c:953
-  inet_sendmsg+0x48e/0x750 net/ipv4/af_inet.c:798
-  sock_sendmsg_nosec net/socket.c:646 [inline]
-  sock_sendmsg net/socket.c:665 [inline]
-  __sys_sendto+0x905/0xb90 net/socket.c:1958
-  __do_sys_sendto net/socket.c:1970 [inline]
-  __se_sys_sendto+0x107/0x130 net/socket.c:1966
-  __x64_sys_sendto+0x6e/0x90 net/socket.c:1966
-  do_syscall_64+0xbc/0xf0 arch/x86/entry/common.c:302
-  entry_SYSCALL_64_after_hwframe+0x63/0xe7
-==================================================================
 
+> 3) Udev is going to look for the sysfs indication file. In case when
+>    kernel supports long names, it will do rename to longer name, setting
+>    IFLA_NAME_EXT. If not, it does what it does now - fail.
+> 4) There are two cases that can happen during rename:
+>    A) The name is shorter than IFNAMSIZ
+>       -> both IFLA_NAME and IFLA_NAME_EXT would contain the same string:
+>          original IFLA_NAME     = eth0
+>          original IFLA_NAME_EXT = eth0
+>          renamed  IFLA_NAME     = enp5s0f1npf0vf1
+>          renamed  IFLA_NAME_EXT = enp5s0f1npf0vf1
+>    B) The name is longer tha IFNAMSIZ
+>       -> IFLA_NAME would contain the original one, IFLA_NAME_EXT would 
+>          contain the new one:
+>          original IFLA_NAME     = eth0
+>          original IFLA_NAME_EXT = eth0
+>          renamed  IFLA_NAME     = eth0
+>          renamed  IFLA_NAME_EXT = enp131s0f1npf0vf22
+
+so kernel side there will be 2 names for the same net_device?
+
+> 
+> This would allow the old tools to work with "eth0" and the new
+> tools would work with "enp131s0f1npf0vf22". In sysfs, there would
+> be symlink from one name to another.
+
+I would prefer a solution that does not rely on sysfs hooks.
+
+>       
+> Also, there might be a warning added to kernel if someone works
+> with IFLA_NAME that the userspace tool should be upgraded.
+
+that seems like spam and confusion for the first few years of a new api.
+
+> 
+> Eventually, only IFLA_NAME_EXT is going to be used by everyone.
+> 
+> I'm aware there are other places where similar new attribute
+> would have to be introduced too (ip rule for example).
+> I'm not saying this is a simple work.
+> 
+> Question is what to do with the ioctl api (get ifindex etc). I would
+> probably leave it as is and push tools to use rtnetlink instead.
+
+The ioctl API is going to be a limiter here. ifconfig is still quite
+prevalent and net-snmp still uses ioctl (as just 2 common examples).
+snmp showing one set of names and rtnetlink s/w showing another is going
+to be really confusing.
