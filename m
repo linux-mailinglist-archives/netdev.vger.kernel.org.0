@@ -2,169 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C9B758AC8
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 21:11:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47B8B58ACD
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 21:12:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726480AbfF0TK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 15:10:59 -0400
-Received: from pb-smtp1.pobox.com ([64.147.108.70]:64379 "EHLO
-        pb-smtp1.pobox.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726384AbfF0TK7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 15:10:59 -0400
-Received: from pb-smtp1.pobox.com (unknown [127.0.0.1])
-        by pb-smtp1.pobox.com (Postfix) with ESMTP id A2AED157CAE;
-        Thu, 27 Jun 2019 15:10:55 -0400 (EDT)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=pobox.com; h=subject:to:cc
-        :references:from:message-id:date:mime-version:in-reply-to
-        :content-type:content-transfer-encoding; s=sasl; bh=wb9ITU4KH88C
-        r4Wml648++v4DXU=; b=Rot878kMWE5XjbhBSU7QDKCIAgG6d5RBTIH120Iog9Qw
-        W3R3fzUiv4n3/zZ109X4lpqnVdfsaMS/GrtVF0iReaVTkMGAK9o3SRJIadNVJL9S
-        5oylDOK6A19ikEt42myiaeTth2AaddFoTrHy6Hcm3f+SGMyqne4grOqqQ6Mnzsk=
-DomainKey-Signature: a=rsa-sha1; c=nofws; d=pobox.com; h=subject:to:cc
-        :references:from:message-id:date:mime-version:in-reply-to
-        :content-type:content-transfer-encoding; q=dns; s=sasl; b=MiZNDA
-        sR3PuH0LmolzMmwuXjTO7B9N7vuwsFLVSrnQphaPw01ZlzDxOzBqeDXps+Q21ULx
-        n5vMeeRFDHmTPapRI5niUMMdrV/n64vEE0FLpEJg07tyqMsA/bUisWUBxMadVd92
-        VE3cd3TV+GkBoWS/9o4SxmIEQoWnVtARdm4Xo=
-Received: from pb-smtp1.nyi.icgroup.com (unknown [127.0.0.1])
-        by pb-smtp1.pobox.com (Postfix) with ESMTP id 98848157CAD;
-        Thu, 27 Jun 2019 15:10:55 -0400 (EDT)
-Received: from [192.168.1.134] (unknown [70.142.57.80])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1726441AbfF0TM4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 15:12:56 -0400
+Received: from mail.us.es ([193.147.175.20]:53778 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726384AbfF0TM4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Jun 2019 15:12:56 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 9EC73C4146
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 21:12:53 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 8DDD0202D2
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 21:12:53 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 833A2DA4D1; Thu, 27 Jun 2019 21:12:53 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 65A43DA708;
+        Thu, 27 Jun 2019 21:12:51 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Thu, 27 Jun 2019 21:12:51 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by pb-smtp1.pobox.com (Postfix) with ESMTPSA id 6957B157CAC;
-        Thu, 27 Jun 2019 15:10:53 -0400 (EDT)
-Subject: Re: [PATCH RFC net-next 1/5] net: dsa: mt7530: Convert to PHYLINK API
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
-        sean.wang@mediatek.com, f.fainelli@gmail.com, davem@davemloft.net,
-        matthias.bgg@gmail.com, vivien.didelot@gmail.com,
-        frank-w@public-files.de, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org
-References: <20190624145251.4849-1-opensource@vdorst.com>
- <20190624145251.4849-2-opensource@vdorst.com>
- <20190624153950.hdsuhrvfd77heyor@shell.armlinux.org.uk>
- <20190625113158.Horde.pCaJOVUsgyhYLd5Diz5EZKI@www.vdorst.com>
- <20190625121030.m5w7wi3rpezhfgyo@shell.armlinux.org.uk>
- <1ad9f9a5-8f39-40bd-94bb-6b700f30c4ba@pobox.com>
- <20190625190246.GA27733@lunn.ch>
- <4fc51dc4-0eec-30d7-86d1-3404819cf6fe@pobox.com>
- <20190625204148.GB27733@lunn.ch>
-From:   Daniel Santos <daniel.santos@pobox.com>
-Message-ID: <e469daa1-3e28-db9c-e29a-7f68cc676fda@pobox.com>
-Date:   Thu, 27 Jun 2019 14:09:18 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 419904265A32;
+        Thu, 27 Jun 2019 21:12:51 +0200 (CEST)
+Date:   Thu, 27 Jun 2019 21:12:50 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     wenxu@ucloud.cn
+Cc:     fw@strlen.de, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 1/2 nf-next v2] netfilter: nft_meta: add
+ NFT_META_BRI_O/IIFVPROTO support
+Message-ID: <20190627191250.jttcfmt5uv7y536x@salvia>
+References: <1561640835-4507-1-git-send-email-wenxu@ucloud.cn>
 MIME-Version: 1.0
-In-Reply-To: <20190625204148.GB27733@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-X-Pobox-Relay-ID: 49051B76-990F-11E9-8B0D-46F8B7964D18-06139138!pb-smtp1.pobox.com
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1561640835-4507-1-git-send-email-wenxu@ucloud.cn>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Jun 27, 2019 at 09:07:14PM +0800, wenxu@ucloud.cn wrote:
+> From: wenxu <wenxu@ucloud.cn>
+> 
+> This patch provide a meta to get the bridge vlan proto
+> 
+> nft add rule bridge firewall zones counter meta br_iifvproto 0x8100
+> 
+> Signed-off-by: wenxu <wenxu@ucloud.cn>
+> ---
+>  include/uapi/linux/netfilter/nf_tables.h |  4 ++++
+>  net/netfilter/nft_meta.c                 | 18 ++++++++++++++++++
+>  2 files changed, 22 insertions(+)
+> 
+> diff --git a/include/uapi/linux/netfilter/nf_tables.h b/include/uapi/linux/netfilter/nf_tables.h
+> index 8859535..0f75a6d 100644
+> --- a/include/uapi/linux/netfilter/nf_tables.h
+> +++ b/include/uapi/linux/netfilter/nf_tables.h
+> @@ -796,6 +796,8 @@ enum nft_exthdr_attributes {
+>   * @NFT_META_IIFKIND: packet input interface kind name (dev->rtnl_link_ops->kind)
+>   * @NFT_META_OIFKIND: packet output interface kind name (dev->rtnl_link_ops->kind)
+>   * @NFT_META_BRI_PVID: packet input bridge port pvid
 
+An initial patch to re-name NFT_META_BRI_PVID to NFT_META_BRI_IIFVID
+would be good, and to add NFT_META_BRI_OIFVID... if you have a usecase
+for this, of course.
 
-On 6/25/19 3:41 PM, Andrew Lunn wrote:
-> On Tue, Jun 25, 2019 at 02:27:55PM -0500, Daniel Santos wrote:
->> On 6/25/19 2:02 PM, Andrew Lunn wrote:
->>>> But will there still be a mechanism to ignore link partner's adverti=
-sing
->>>> and force these parameters?
->>> >From man 1 ethtool:
->>>
->>>        -a --show-pause
->>>               Queries the specified Ethernet device for pause paramet=
-er information.
->>>
->>>        -A --pause
->>>               Changes the pause parameters of the specified Ethernet =
-device.
->>>
->>>            autoneg on|off
->>>                   Specifies whether pause autonegotiation should be e=
-nabled.
->>>
->>>            rx on|off
->>>                   Specifies whether RX pause should be enabled.
->>>
->>>            tx on|off
->>>                   Specifies whether TX pause should be enabled.
->>>
->>> You need to check the driver to see if it actually implements this
->>> ethtool call, but that is how it should be configured.
->>>
->>> 	Andrew
->>>
->> Thank you Andrew,
->>
->> So in this context, my question is the difference between "enabling" a=
-nd
->> "forcing".=C2=A0 Here's that register for the mt7620 (which has an mt7=
-530 on
->> its die): https://imgur.com/a/pTk0668=C2=A0 I believe this is also wha=
-t Ren=C3=A9
->> is seeking clarity on?
-> Lets start with normal operation. If the MAC supports pause or asym
-> pause, it calls phy_support_sym_pause() or phy_support_asym_pause().
-> phylib will then configure the PHY to advertise pause as appropriate.
-> Once auto-neg has completed, the results of the negotiation are set in
-> phydev. So phdev->pause and phydev->asym_pause. The MAC callback is
-> then used to tell the MAC about the autoneg results. The MAC should be
-> programmed using the values in phdev->pause and phydev->asym_pause.
->
-> For ethtool, the MAC driver needs to implement .get_pauseparam and
-> .set_pauseparam. The set_pauseparam needs to validate the settings,
-> using phy_validate_pause(). If valid, phy_set_asym_pause() is used to
-> tell the PHY about the new configuration. This will trigger a new
-> auto-neg if auto-neg is enabled, and the results will be passed back
-> in the usual way. If auto-neg is disabled, or pause auto-neg is
-> disabled, the MAC should configure pause directly based on the
-> settings passed.
->
-> Looking at the data sheet page, you want FORCE_MODE_Pn set. You never
-> want the MAC directly talking to the PHY. Bad things will happen.
-
-So what exactly do you mean by the MAC directly talking to the PHY?=C2=A0=
- Do
-you mean setting speed, duplex, etc. via the MAC registers instead of
-via MDIO to the MII registers of the PHY?
-
-> Then use FORCE_RX_FC_Pn and FORCE_TX_Pn to reflect phydev->pause and
-> phydev->asym_pause.
->
-> The same idea applies when using phylink.
->
->     Andrew
-
-You're help is greatly appreciated here.=C2=A0 Admittedly, I'm also tryin=
-g to
-get this working in the now deprecated swconfig for a 3.18 kernel that's
-in production.=C2=A0 In my code, I had just set the appropriate bits in b=
-oth
-the MAC and mii registers -- did I just shoot myself in the foot or only
-toe or two? :)=C2=A0 I should probably start a separate thread for this.=C2=
-=A0
-(And probably attempt to wrestle an mt7530 programmer's guide out of
-MediaTek!)
-
-Thanks,
-Daniel
-
-PS: I found a rather humorous quote from the mt7621 datasheet regarding
-the MAC registers (at 0x3000 for port 0, 0x3100 for port 1, etc.):
-
-    2.4 Link Status
-
-    You can find MAC control register put at 0x3500 for MAC 5, and
-    0x3600 for MAC 6. You can change
-    MAC ability at this register. We would suggest don=E2=80=99t use the
-    register 0x3000 to 0x3400. It may not
-    work.
-
-I'm not sure if this only applies to something in between the mt7621 and
-it's internal mt7530 or not.
+Thanks.
