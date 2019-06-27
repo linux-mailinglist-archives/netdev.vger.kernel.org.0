@@ -2,87 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6DB858DBF
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 00:14:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F312E58DC1
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 00:14:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726702AbfF0WOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 18:14:35 -0400
-Received: from www62.your-server.de ([213.133.104.62]:45120 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726445AbfF0WOf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 18:14:35 -0400
-Received: from [78.46.172.3] (helo=sslproxy06.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hgcf2-0004BA-FZ; Fri, 28 Jun 2019 00:14:32 +0200
-Received: from [178.193.45.231] (helo=linux.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hgcf2-000Qzl-AK; Fri, 28 Jun 2019 00:14:32 +0200
-Subject: Re: [PATCH bpf-next v5 1/3] devmap/cpumap: Use flush list instead of
- bitmap
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        netdev@vger.kernel.org
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        id S1726810AbfF0WOj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 18:14:39 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:44839 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726445AbfF0WOi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 18:14:38 -0400
+Received: by mail-pg1-f194.google.com with SMTP id n2so1621641pgp.11;
+        Thu, 27 Jun 2019 15:14:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=NZXRbshkIzDoSjsEe6DOCALRS5cAnDLBAFY0PCjxxcU=;
+        b=cBdX4LpeL+5vcJzIjdWukBMVOC25dcs8gOFk8FaXLeZh4mPQ1IqFwisSjMlNNNaHZZ
+         vyULpV6qOd2TK95gmTBDrlWV40A+36b0wKcUNdXPqrYsHR5eOSVDTXeapan3VLKFTClX
+         OZxaSnKCMbx/0JiYw40Sqp2SFmJjzz+1SJlbWTe3eeVKiOD05lMcOfTRF183iEoeZuaa
+         +JcwA0nz5Vgd/nycUDCVEnFKH27S7GrEP4p9YLv2OF0s6KhhNf7tDC1jhm8ApnuYNIej
+         lo5Lx/SGn7UeDl3q2IOxeyIl4y721mVaKAin81Ne7L2+M4K8z3ex1FcNzNVUCnfS773j
+         33jg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=NZXRbshkIzDoSjsEe6DOCALRS5cAnDLBAFY0PCjxxcU=;
+        b=X3tuDAXatyxYKTO3EGV7+CrqbTViU3siTc0szAs01Sniy4l1mq2UU4CKhmvLqn3zne
+         d/yKci752zX7AbOGXZqasT5QJMI2WslkLzpmW4uraN0IXzyhq2xE0HGDR1hx47Y1d658
+         N38mrTKGOkX/PQ66Kw7qWyYVAQMj/8SD9wToiapDbBKQ//ohYPux0tsHgfpXCy03OJZ9
+         BouHdWer6JN1LRaGZlENT6DDLjVm7xUtsAdEYWkjRcfz9xMruyQKq0MCSlYya13+fKIC
+         q/+XuUPcgXvKNnoaeJW34YMKBHv5V5q1nmMbRd/PVK1GdAgC5ZwrJuPYdq2qThYvkwMo
+         BM/w==
+X-Gm-Message-State: APjAAAXLhE6OUA1MB9B+PNyDYggtJ0B6QVmDclckMv5lEY5qJ5TVrL2q
+        j46r4FDl+NnVljASSCOC0CM=
+X-Google-Smtp-Source: APXvYqzgUPfbteOtdizfNvJDkNBveWB5fGZbGGCcUfGxHAzouvZj2SyT/6FKfztouZ9ftzAfbsE4oQ==
+X-Received: by 2002:a63:e156:: with SMTP id h22mr5909967pgk.370.1561673678002;
+        Thu, 27 Jun 2019 15:14:38 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::1:305a])
+        by smtp.gmail.com with ESMTPSA id j2sm81162pfn.135.2019.06.27.15.14.36
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 27 Jun 2019 15:14:37 -0700 (PDT)
+Date:   Thu, 27 Jun 2019 15:14:36 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Brian Vazquez <brianvv@google.com>
+Cc:     Brian Vazquez <brianvv.kernel@gmail.com>,
         Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-References: <156125626076.5209.13424524054109901554.stgit@alrua-x1>
- <156125626115.5209.3880071777007082264.stgit@alrua-x1>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <ff82dde7-8f31-1ab5-65b8-5e2d5ca5f680@iogearbox.net>
-Date:   Fri, 28 Jun 2019 00:14:31 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Stanislav Fomichev <sdf@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Petar Penkov <ppenkov@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [RFC PATCH bpf-next v2 0/6]  bpf: add BPF_MAP_DUMP command to
+Message-ID: <20190627221434.tz2fscw2cjvrqiop@ast-mbp.dhcp.thefacebook.com>
+References: <20190627202417.33370-1-brianvv@google.com>
 MIME-Version: 1.0
-In-Reply-To: <156125626115.5209.3880071777007082264.stgit@alrua-x1>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25493/Thu Jun 27 10:06:16 2019)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190627202417.33370-1-brianvv@google.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/23/2019 04:17 AM, Toke Høiland-Jørgensen wrote:
-> From: Toke Høiland-Jørgensen <toke@redhat.com>
+On Thu, Jun 27, 2019 at 01:24:11PM -0700, Brian Vazquez wrote:
+> This introduces a new command to retrieve a variable number of entries
+> from a bpf map.
 > 
-> The socket map uses a linked list instead of a bitmap to keep track of
-> which entries to flush. Do the same for devmap and cpumap, as this means we
-> don't have to care about the map index when enqueueing things into the
-> map (and so we can cache the map lookup).
+> This new command can be executed from the existing BPF syscall as
+> follows:
 > 
-> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
-[...]
-> +static int bq_flush_to_queue(struct xdp_bulk_queue *bq, bool in_napi_ctx)
->  {
-> +	struct bpf_cpu_map_entry *rcpu = bq->obj;
->  	unsigned int processed = 0, drops = 0;
->  	const int to_cpu = rcpu->cpu;
->  	struct ptr_ring *q;
-> @@ -621,6 +630,9 @@ static int bq_flush_to_queue(struct bpf_cpu_map_entry *rcpu,
->  	bq->count = 0;
->  	spin_unlock(&q->producer_lock);
->  
-> +	__list_del(bq->flush_node.prev, bq->flush_node.next);
-> +	bq->flush_node.prev = NULL;
+> err =  bpf(BPF_MAP_DUMP, union bpf_attr *attr, u32 size)
+> using attr->dump.map_fd, attr->dump.prev_key, attr->dump.buf,
+> attr->dump.buf_len
+> returns zero or negative error, and populates buf and buf_len on
+> succees
+> 
+> This implementation is wrapping the existing bpf methods:
+> map_get_next_key and map_lookup_elem
+> the results show that even with a 1-elem_size buffer, it runs ~40 faster
+> than the current implementation, improvements of ~85% are reported when
+> the buffer size is increased, although, after the buffer size is around
+> 5% of the total number of entries there's no huge difference in
+> increasing
+> it.
 
-Given this and below is a bit non-standard way of using list API, maybe add
-these as inline helpers to include/linux/list.h to make sure anyone changing
-list API semantics doesn't overlook these in future?
+was it with kpti and retpoline mitigations?
 
->  	/* Feedback loop via tracepoints */
->  	trace_xdp_cpumap_enqueue(rcpu->map_id, processed, drops, to_cpu);
->  	return 0;
-[...]
-> +
-> +	if (!bq->flush_node.prev)
-> +		list_add(&bq->flush_node, flush_list);
-> +
->  	return 0;
->  }
->  
