@@ -2,218 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B5C2B58890
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 19:36:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FAD2588A3
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 19:38:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726913AbfF0Rgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 13:36:50 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:35499 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726901AbfF0Rgu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 13:36:50 -0400
-Received: by mail-pf1-f193.google.com with SMTP id d126so1585390pfd.2;
-        Thu, 27 Jun 2019 10:36:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:date:message-id:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=nAyVVekSlB0wUy48a52kkqnjNBNQOsQG1HeegDUANdU=;
-        b=JDr/jdGwkmAuUA7/2v0we3RWeqpjB1oafF4f2UsEfSfjecutu1X0mFjpgbd5uPtlz7
-         6bEAXUBS1RbK7Zi1nHm/X/unc5KR4+zKKZ/cqSI+z2X1xkU7ow4HFefszbFiYzje0mJZ
-         Cb5fqLH0Ceu8FXRI5dHpRHHn6trHY0ud/PdBsuT3a0zPdqQ6G7g3HV4Emk1XFrDzHR4P
-         aXr+rsFOBXoL7PsJ/u0NAd95CNC6e3sIfOP48KG//wJcsDjwoLVV548++kVRNxu7TFki
-         s5OgS+xa4NtcctaPgG29CRY+C+MxVYyT5hZCG8M2WjTLgjK5M8O5/ay96g7hYC54wu+P
-         IE9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=nAyVVekSlB0wUy48a52kkqnjNBNQOsQG1HeegDUANdU=;
-        b=PuVEcAW4hlonaHTNIAIGolGFXEsifxrDX/kBT3/Tu+03U+J6jJTUjlFJFo9K729XMW
-         aLfEmKgCqUH46DLeuWo7YydqXSHo7JqQxuwtY250Vt0Eft7okEyqc3zKl/J9Qf4NybGW
-         2WzcfYezX+94VQPU/idGBS/ej8tFUJ2RlGM1RNK/+ivQ0FiSwA75vlx5Ei1OWeRLh33f
-         8vz40MWPocG8PYdkbL+vGn/ccSYeU6GHC8z0fMPGnWFgBHJ2AudMcX5L1UskDe64e4Il
-         CngF3tU0xa/rsMV6pP0Urdrf+ZPk+6j1AFL0JhudeXBVdj3afaMjMMSbEIn/Rk8e6onu
-         NHYA==
-X-Gm-Message-State: APjAAAX5qeh+Meqm6kSVtasrxIbDUJhOB9h3xorAoEXPAFjD5qHOzgcF
-        /HST3oidelKkqZlNNrFhfwI=
-X-Google-Smtp-Source: APXvYqxzUoGsrDoGUOaPQ1hecJ00DWkfCUUT3/DDeSfYiUv5EE6JSpvLHXTRXfZV4aJP5HwcWzhYTA==
-X-Received: by 2002:a65:6104:: with SMTP id z4mr4818121pgu.319.1561657009110;
-        Thu, 27 Jun 2019 10:36:49 -0700 (PDT)
-Received: from [127.0.1.1] ([67.136.128.119])
-        by smtp.gmail.com with ESMTPSA id f7sm2968790pgc.82.2019.06.27.10.36.48
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 27 Jun 2019 10:36:48 -0700 (PDT)
-Subject: [PATCH 2/2] bpf: tls,
- implement unhash to avoid transition out of ESTABLISHED
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     daniel@iogearbox.io, jakub.kicinski@netronome.com, ast@kernel.org
-Cc:     netdev@vger.kernel.org, edumazet@google.com,
-        john.fastabend@gmail.com, bpf@vger.kernel.org
-Date:   Thu, 27 Jun 2019 10:36:48 -0700
-Message-ID: <156165700815.32598.16215539389630396969.stgit@john-XPS-13-9370>
-In-Reply-To: <156165697019.32598.7171757081688035707.stgit@john-XPS-13-9370>
-References: <156165697019.32598.7171757081688035707.stgit@john-XPS-13-9370>
-User-Agent: StGit/0.17.1-dirty
+        id S1726958AbfF0RhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 13:37:24 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:33608 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726606AbfF0RhX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 13:37:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=pqekMKm0CtD5SDaoWxQ32eZrwUYNjqy0vb4pdY/YO4E=; b=Ga2DCzvr7RZ9O+oNgFjrnLwQI
+        o1nPS9RUQfua8UGRVMH/o5lQ+0aOK5O26XxYC274IPUt3vYQurqQBBX+mO4ge/1wCZbL2sMZVicZ+
+        5IfPSttke2i7yrLllgIAbHHgJybAjUYAu/turav2Tol4uTy9VoZBRptTE/efZqSVxyd7GraNrvxZQ
+        B+rieB1r8lUKEq+IYu1BLRPINxhMAVp3qkpze+j1vwTEXxb+yL/Px25epS6P1LCODgMe4dOl0leBn
+        dOboH1iRGnqDIp+Gf+dXoajY9pO6yTnqwLQPFK0uCzXXFLEAnhWFMkCr6iMSzC75ZEm7qsGIngi/n
+        7JxiDSGZw==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:59086)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1hgYKj-0004MP-JU; Thu, 27 Jun 2019 18:37:17 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1hgYKg-0000lz-Qb; Thu, 27 Jun 2019 18:37:14 +0100
+Date:   Thu, 27 Jun 2019 18:37:14 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
+        davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 2/3] net: dsa: sja1105: Check for PHY mode
+ mismatches with what PHYLINK reports
+Message-ID: <20190627173714.vchw6emcf5dra6jm@shell.armlinux.org.uk>
+References: <20190626112014.7625-1-olteanv@gmail.com>
+ <20190626112014.7625-3-olteanv@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190626112014.7625-3-olteanv@gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is possible (via shutdown()) for TCP socks to go through TCP_CLOSE
-state via tcp_disconnect() without calling into close callback. This
-would allow a kTLS enabled socket to exist outside of ESTABLISHED
-state which is not supported.
+On Wed, Jun 26, 2019 at 02:20:13PM +0300, Vladimir Oltean wrote:
+> PHYLINK being designed with PHYs in mind that can change MII protocol,
+> for correct operation it is necessary to ensure that the PHY interface
+> mode stays the same (otherwise clear the supported bit mask, as
+> required).
+> 
+> Because this is just a hypothetical situation for now, we don't bother
+> to check whether we could actually support the new PHY interface mode.
+> Actually we could modify the xMII table, reset the switch and send an
+> updated static configuration, but adding that would just be dead code.
+> 
+> Cc: Russell King <rmk+kernel@armlinux.org.uk>
+> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+> ---
+>  drivers/net/dsa/sja1105/sja1105_main.c | 47 ++++++++++++++++++++++++++
+>  1 file changed, 47 insertions(+)
+> 
+> diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+> index da1736093b06..ad4f604590c0 100644
+> --- a/drivers/net/dsa/sja1105/sja1105_main.c
+> +++ b/drivers/net/dsa/sja1105/sja1105_main.c
+> @@ -766,12 +766,46 @@ static int sja1105_adjust_port_config(struct sja1105_private *priv, int port,
+>  	return sja1105_clocking_setup_port(priv, port);
+>  }
+>  
+> +/* The SJA1105 MAC programming model is through the static config (the xMII
+> + * Mode table cannot be dynamically reconfigured), and we have to program
+> + * that early (earlier than PHYLINK calls us, anyway).
+> + * So just error out in case the connected PHY attempts to change the initial
+> + * system interface MII protocol from what is defined in the DT, at least for
+> + * now.
+> + */
+> +static bool sja1105_phy_mode_mismatch(struct sja1105_private *priv, int port,
+> +				      phy_interface_t interface)
+> +{
+> +	struct sja1105_xmii_params_entry *mii;
+> +	sja1105_phy_interface_t phy_mode;
+> +
+> +	mii = priv->static_config.tables[BLK_IDX_XMII_PARAMS].entries;
+> +	phy_mode = mii->xmii_mode[port];
+> +
+> +	switch (interface) {
+> +	case PHY_INTERFACE_MODE_MII:
+> +		return (phy_mode != XMII_MODE_MII);
+> +	case PHY_INTERFACE_MODE_RMII:
+> +		return (phy_mode != XMII_MODE_RMII);
+> +	case PHY_INTERFACE_MODE_RGMII:
+> +	case PHY_INTERFACE_MODE_RGMII_ID:
+> +	case PHY_INTERFACE_MODE_RGMII_RXID:
+> +	case PHY_INTERFACE_MODE_RGMII_TXID:
+> +		return (phy_mode != XMII_MODE_RGMII);
+> +	default:
+> +		return true;
+> +	}
+> +}
+> +
+>  static void sja1105_mac_config(struct dsa_switch *ds, int port,
+>  			       unsigned int link_an_mode,
+>  			       const struct phylink_link_state *state)
+>  {
+>  	struct sja1105_private *priv = ds->priv;
+>  
+> +	if (sja1105_phy_mode_mismatch(priv, port, state->interface))
+> +		return;
+> +
+>  	sja1105_adjust_port_config(priv, port, state->speed);
+>  }
+>  
+> @@ -804,6 +838,19 @@ static void sja1105_phylink_validate(struct dsa_switch *ds, int port,
+>  
+>  	mii = priv->static_config.tables[BLK_IDX_XMII_PARAMS].entries;
+>  
+> +	/* include/linux/phylink.h says:
+> +	 *     When @state->interface is %PHY_INTERFACE_MODE_NA, phylink
+> +	 *     expects the MAC driver to return all supported link modes.
+> +	 */
+> +	if (state->interface != PHY_INTERFACE_MODE_NA &&
+> +	    sja1105_phy_mode_mismatch(priv, port, state->interface)) {
+> +		dev_warn(ds->dev, "PHY mode mismatch on port %d: "
+> +			 "PHYLINK tried to change to %s\n",
+> +			 port, phy_modes(state->interface));
 
-Solve this the same way we solved the sock{map|hash} case by adding
-an unhash hook to remove tear down the TLS state.
+Everything's fine except, please don't print to the kernel log for this.
+You're just duplicating the prints in phylink.
 
-Tested with bpf and net selftests plus ran syzkaller reproducers
-for below listed issues.
+> +		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
+> +		return;
+> +	}
+> +
+>  	/* The MAC does not support pause frames, and also doesn't
+>  	 * support half-duplex traffic modes.
+>  	 */
+> -- 
+> 2.17.1
+> 
+> 
 
-Fixes: d91c3e17f75f2 ("net/tls: Only attach to sockets in ESTABLISHED state")
-Reported-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot+4207c7f3a443366d8aa2@syzkaller.appspotmail.com
-Reported-by: syzbot+06537213db7ba2745c4a@syzkaller.appspotmail.com
-Signed-off-by: John Fastabend <john.fastabend@gmail.com>
----
- include/net/tls.h  |    2 ++
- net/tls/tls_main.c |   50 +++++++++++++++++++++++++++++++++++++++++++-------
- 2 files changed, 45 insertions(+), 7 deletions(-)
-
-diff --git a/include/net/tls.h b/include/net/tls.h
-index 6fe1f5c96f4a..935d65606bb3 100644
---- a/include/net/tls.h
-+++ b/include/net/tls.h
-@@ -264,6 +264,8 @@ struct tls_context {
- 	bool in_tcp_sendpages;
- 	bool pending_open_record_frags;
- 
-+	struct proto *sk_proto;
-+
- 	int (*push_pending_record)(struct sock *sk, int flags);
- 
- 	void (*sk_write_space)(struct sock *sk);
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index 51cb19e24dd9..e1750634a53a 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -251,11 +251,16 @@ static void tls_write_space(struct sock *sk)
- 	ctx->sk_write_space(sk);
- }
- 
--static void tls_ctx_free(struct tls_context *ctx)
-+static void tls_ctx_free(struct sock *sk, struct tls_context *ctx)
- {
-+	struct inet_connection_sock *icsk = inet_csk(sk);
-+
- 	if (!ctx)
- 		return;
- 
-+	sk->sk_prot = ctx->sk_proto;
-+	icsk->icsk_ulp_data = NULL;
-+
- 	memzero_explicit(&ctx->crypto_send, sizeof(ctx->crypto_send));
- 	memzero_explicit(&ctx->crypto_recv, sizeof(ctx->crypto_recv));
- 	kfree(ctx);
-@@ -287,23 +292,49 @@ static void tls_sk_proto_cleanup(struct sock *sk,
- #endif
- }
- 
-+static void tls_sk_proto_unhash(struct sock *sk)
-+{
-+	struct tls_context *ctx = tls_get_ctx(sk);
-+	void (*sk_proto_unhash)(struct sock *sk);
-+	long timeo = sock_sndtimeo(sk, 0);
-+
-+	if (unlikely(!ctx)) {
-+		if (sk->sk_prot->unhash)
-+			sk->sk_prot->unhash(sk);
-+		return;
-+	}
-+
-+	sk->sk_prot = ctx->sk_proto;
-+	sk_proto_unhash = ctx->unhash;
-+	tls_sk_proto_cleanup(sk, ctx, timeo);
-+	if (ctx->rx_conf == TLS_SW)
-+		tls_sw_release_strp_rx(ctx);
-+	tls_ctx_free(sk, ctx);
-+	if (sk_proto_unhash)
-+		sk_proto_unhash(sk);
-+}
-+
- static void tls_sk_proto_close(struct sock *sk, long timeout)
- {
- 	struct tls_context *ctx = tls_get_ctx(sk);
- 	long timeo = sock_sndtimeo(sk, 0);
- 	void (*sk_proto_close)(struct sock *sk, long timeout);
--	bool free_ctx = false;
-+
-+	if (unlikely(!ctx)) {
-+		if (sk->sk_prot->close)
-+			sk->sk_prot->close(sk, timeout);
-+		return;
-+	}
- 
- 	lock_sock(sk);
-+	sk->sk_prot = ctx->sk_proto;
- 	sk_proto_close = ctx->sk_proto_close;
- 
- 	if (ctx->tx_conf == TLS_HW_RECORD && ctx->rx_conf == TLS_HW_RECORD)
- 		goto skip_tx_cleanup;
- 
--	if (ctx->tx_conf == TLS_BASE && ctx->rx_conf == TLS_BASE) {
--		free_ctx = true;
-+	if (ctx->tx_conf == TLS_BASE && ctx->rx_conf == TLS_BASE)
- 		goto skip_tx_cleanup;
--	}
- 
- 	tls_sk_proto_cleanup(sk, ctx, timeo);
- 
-@@ -311,11 +342,12 @@ static void tls_sk_proto_close(struct sock *sk, long timeout)
- 	release_sock(sk);
- 	if (ctx->rx_conf == TLS_SW)
- 		tls_sw_release_strp_rx(ctx);
--	sk_proto_close(sk, timeout);
- 
- 	if (ctx->tx_conf != TLS_HW && ctx->rx_conf != TLS_HW &&
- 	    ctx->tx_conf != TLS_HW_RECORD && ctx->rx_conf != TLS_HW_RECORD)
--		tls_ctx_free(ctx);
-+		tls_ctx_free(sk, ctx);
-+	if (sk_proto_close)
-+		sk_proto_close(sk, timeout);
- }
- 
- static int do_tls_getsockopt_tx(struct sock *sk, char __user *optval,
-@@ -733,16 +765,19 @@ static void build_protos(struct proto prot[TLS_NUM_CONFIG][TLS_NUM_CONFIG],
- 	prot[TLS_SW][TLS_BASE] = prot[TLS_BASE][TLS_BASE];
- 	prot[TLS_SW][TLS_BASE].sendmsg		= tls_sw_sendmsg;
- 	prot[TLS_SW][TLS_BASE].sendpage		= tls_sw_sendpage;
-+	prot[TLS_SW][TLS_BASE].unhash		= tls_sk_proto_unhash;
- 
- 	prot[TLS_BASE][TLS_SW] = prot[TLS_BASE][TLS_BASE];
- 	prot[TLS_BASE][TLS_SW].recvmsg		  = tls_sw_recvmsg;
- 	prot[TLS_BASE][TLS_SW].stream_memory_read = tls_sw_stream_read;
- 	prot[TLS_BASE][TLS_SW].close		  = tls_sk_proto_close;
-+	prot[TLS_BASE][TLS_SW].unhash		= tls_sk_proto_unhash;
- 
- 	prot[TLS_SW][TLS_SW] = prot[TLS_SW][TLS_BASE];
- 	prot[TLS_SW][TLS_SW].recvmsg		= tls_sw_recvmsg;
- 	prot[TLS_SW][TLS_SW].stream_memory_read	= tls_sw_stream_read;
- 	prot[TLS_SW][TLS_SW].close		= tls_sk_proto_close;
-+	prot[TLS_SW][TLS_SW].unhash		= tls_sk_proto_unhash;
- 
- #ifdef CONFIG_TLS_DEVICE
- 	prot[TLS_HW][TLS_BASE] = prot[TLS_BASE][TLS_BASE];
-@@ -793,6 +828,7 @@ static int tls_init(struct sock *sk)
- 	tls_build_proto(sk);
- 	ctx->tx_conf = TLS_BASE;
- 	ctx->rx_conf = TLS_BASE;
-+	ctx->sk_proto = sk->sk_prot;
- 	update_sk_prot(sk, ctx);
- out:
- 	return rc;
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
