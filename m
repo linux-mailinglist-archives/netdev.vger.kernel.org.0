@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 49D5357705
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:45:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63B175770E
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:45:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729752AbfF0Ami (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 20:42:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46428 "EHLO mail.kernel.org"
+        id S1729778AbfF0Amq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 20:42:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46566 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729745AbfF0Amf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 20:42:35 -0400
+        id S1727621AbfF0Amo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 20:42:44 -0400
 Received: from sasha-vm.mshome.net (unknown [107.242.116.147])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3CF92205ED;
-        Thu, 27 Jun 2019 00:42:31 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1124F21871;
+        Thu, 27 Jun 2019 00:42:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1561596154;
-        bh=oW5pAeo++OS2RF8UDf8aG6MvZdYNZ5YXKrBU8Px9OA8=;
+        s=default; t=1561596164;
+        bh=gvVSKaqZrybsWTI5v1Ft2O1Gzqx5r/tj7z0gtcZMpDY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k/hpDhWult9cVPPHTzNkZJRnYmokeQBeP8slJGsUkRIOdIFm7iI++CgYRmKdFj31t
-         5+ToFciD/R+uemA5kcR2XhQcXAR44ggiky2PW0JhQb5+XoSo4WDgNnDR0C+efes4DI
-         N+eBDXTDKv9QXQZko8GSwXAR73Y3J5BDs/idc6O4=
+        b=yiRQ21FHSIdViRnVJPAzmzQXEPNMbO/E2voEQK3fQiUmGPiaGA9Ic+P5JPrQ4MN4N
+         RgBiu+n4i9Wc/1hLyDuICDCw92L6bWgLfAXXvf73zvgUodZv8dp9miVa18XisaEYy7
+         chEenH9tziKJINuZkQy8E0O+bu5OAVaMvTf0JisM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lin Yi <teroincn@163.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
-        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 21/21] net :sunrpc :clnt :Fix xps refcount imbalance on the error path
-Date:   Wed, 26 Jun 2019 20:41:21 -0400
-Message-Id: <20190627004122.21671-21-sashal@kernel.org>
+Cc:     Chang-Hsien Tsai <luke.tw@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 02/12] samples, bpf: fix to change the buffer size for read()
+Date:   Wed, 26 Jun 2019 20:42:24 -0400
+Message-Id: <20190627004236.21909-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190627004122.21671-1-sashal@kernel.org>
-References: <20190627004122.21671-1-sashal@kernel.org>
+In-Reply-To: <20190627004236.21909-1-sashal@kernel.org>
+References: <20190627004236.21909-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -44,32 +44,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lin Yi <teroincn@163.com>
+From: Chang-Hsien Tsai <luke.tw@gmail.com>
 
-[ Upstream commit b96226148491505318228ac52624956bd98f9e0c ]
+[ Upstream commit f7c2d64bac1be2ff32f8e4f500c6e5429c1003e0 ]
 
-rpc_clnt_add_xprt take a reference to struct rpc_xprt_switch, but forget
-to release it before return, may lead to a memory leak.
+If the trace for read is larger than 4096, the return
+value sz will be 4096. This results in off-by-one error
+on buf:
 
-Signed-off-by: Lin Yi <teroincn@163.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+    static char buf[4096];
+    ssize_t sz;
+
+    sz = read(trace_fd, buf, sizeof(buf));
+    if (sz > 0) {
+        buf[sz] = 0;
+        puts(buf);
+    }
+
+Signed-off-by: Chang-Hsien Tsai <luke.tw@gmail.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/clnt.c | 1 +
- 1 file changed, 1 insertion(+)
+ samples/bpf/bpf_load.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
-index 244eac1bd648..de18a463ac96 100644
---- a/net/sunrpc/clnt.c
-+++ b/net/sunrpc/clnt.c
-@@ -2718,6 +2718,7 @@ int rpc_clnt_add_xprt(struct rpc_clnt *clnt,
- 	xprt = xprt_iter_xprt(&clnt->cl_xpi);
- 	if (xps == NULL || xprt == NULL) {
- 		rcu_read_unlock();
-+		xprt_switch_put(xps);
- 		return -EAGAIN;
- 	}
- 	resvport = xprt->resvport;
+diff --git a/samples/bpf/bpf_load.c b/samples/bpf/bpf_load.c
+index da86a8e0a95a..e836b5ff2060 100644
+--- a/samples/bpf/bpf_load.c
++++ b/samples/bpf/bpf_load.c
+@@ -336,7 +336,7 @@ void read_trace_pipe(void)
+ 		static char buf[4096];
+ 		ssize_t sz;
+ 
+-		sz = read(trace_fd, buf, sizeof(buf));
++		sz = read(trace_fd, buf, sizeof(buf) - 1);
+ 		if (sz > 0) {
+ 			buf[sz] = 0;
+ 			puts(buf);
 -- 
 2.20.1
 
