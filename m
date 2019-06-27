@@ -2,167 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6287F579AE
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 04:50:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54E8F579C9
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 04:59:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726857AbfF0CuH convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 26 Jun 2019 22:50:07 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:45858 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726816AbfF0CuH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 22:50:07 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0B20814DE884A;
-        Wed, 26 Jun 2019 19:50:07 -0700 (PDT)
-Date:   Wed, 26 Jun 2019 19:50:06 -0700 (PDT)
-Message-Id: <20190626.195006.2073691861982062351.davem@davemloft.net>
-To:     torvalds@linux-foundation.org
-CC:     akpm@linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [GIT] Networking
-From:   David Miller <davem@davemloft.net>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 26 Jun 2019 19:50:07 -0700 (PDT)
+        id S1727112AbfF0C7U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 22:59:20 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:41770 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727096AbfF0C7T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 22:59:19 -0400
+Received: by mail-qt1-f193.google.com with SMTP id d17so875253qtj.8;
+        Wed, 26 Jun 2019 19:59:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=JgAltzXr9FQ/hdvBeX9kjz80TpVTlYDJkYThTew7RUs=;
+        b=jv8DLAOc+URBh863BaCrNY/BwVcx/aRK5uxRiDpV9mSjiZ/CoD1+Zz+LQMqOAgs1+t
+         Qd9oywGzB+x93QEb5QbVqKKXmMflMOlSyrjkndl83G8MZp0bLL2IyfSAJf+aotRe25Oi
+         mTEJ2hjHrgry9LsAGextYsOGbpBcezscJwQOOxoTdWXZmlpM1cyqoe23Firhc2EKeYEg
+         9/l7q0HcI+Cob7tzteK9LlPYC2lRBWcBIkg0JziSUKqjPNloN4L53ImlNiyIzRPFdtRu
+         MIeJTUfv2wLI4iA4ulnssA8sDwTo0DqkjuIsWH/pf5DioaTIUBGsea/Yjhn2cSx5pPRn
+         hAtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=JgAltzXr9FQ/hdvBeX9kjz80TpVTlYDJkYThTew7RUs=;
+        b=OpN776x1EQXZB7tzVERsmzllHkZAC7Pc+9MpulQFu1mmir9piJ8PcCJ7PxuarA4dQV
+         QdFI4tmhr62sgfci6mBc290QINAnI6kz/ZwLxt7z5YDbAo7UbW+wM/QySFF6SyP4JYE6
+         Xi1yf7VFulWNPWR0uOAR75w518LomDcJDDhPIIOTD4ns0nRUloY1bVDBQFLZSQ2qNSjf
+         UvENuLsJ+CrshAXd3eOCmcAGiRUTDaT5dSGhOLTKrbUvlsg6mMDHta++V5m+eQfV4yC0
+         GOjHXD6nn32yPXyuoUyTt46RdTlN6c5tm9SiHh17UQKaGJUB5o0CQTjt+dkWeAs6ouif
+         HgpQ==
+X-Gm-Message-State: APjAAAWhK1bgCoeBmx2VOGyKcYuGTmX94n/RmXmJeeoJ8E6I4L5y+nVC
+        Arrp5HfKZeUIE0oGdZOnQgk=
+X-Google-Smtp-Source: APXvYqwiXcMFT0KrSZZ0BSmlxUPsk1FFxJKokAuRRyuiHdu/KgUIx2ESPbnaHqKo8Yr5Y1cyGnWU3w==
+X-Received: by 2002:ac8:f8c:: with SMTP id b12mr1060376qtk.381.1561604358470;
+        Wed, 26 Jun 2019 19:59:18 -0700 (PDT)
+Received: from localhost.localdomain ([168.181.49.32])
+        by smtp.gmail.com with ESMTPSA id e63sm334321qkd.57.2019.06.26.19.59.17
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 26 Jun 2019 19:59:17 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 26BC6C1BC8; Wed, 26 Jun 2019 23:59:15 -0300 (-03)
+Date:   Wed, 26 Jun 2019 23:59:15 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        davem@davemloft.net, Neil Horman <nhorman@tuxdriver.com>,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [PATCH net] sctp: not bind the socket in sctp_connect
+Message-ID: <20190627025915.GA2747@localhost.localdomain>
+References: <35a0e4f6ca68185117c6e5517d8ac924cc2f9d05.1561537899.git.lucien.xin@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <35a0e4f6ca68185117c6e5517d8ac924cc2f9d05.1561537899.git.lucien.xin@gmail.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jun 26, 2019 at 04:31:39PM +0800, Xin Long wrote:
+> Now when sctp_connect() is called with a wrong sa_family, it binds
+> to a port but doesn't set bp->port, then sctp_get_af_specific will
+> return NULL and sctp_connect() returns -EINVAL.
+> 
+> Then if sctp_bind() is called to bind to another port, the last
+> port it has bound will leak due to bp->port is NULL by then.
+> 
+> sctp_connect() doesn't need to bind ports, as later __sctp_connect
+> will do it if bp->port is NULL. So remove it from sctp_connect().
+> While at it, remove the unnecessary sockaddr.sa_family len check
+> as it's already done in sctp_inet_connect.
+> 
+> Fixes: 644fbdeacf1d ("sctp: fix the issue that flags are ignored when using kernel_connect")
+> Reported-by: syzbot+079bf326b38072f849d9@syzkaller.appspotmail.com
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
 
-1) Fix ppp_mppe crypto soft dependencies, from Takashi Iawi.
+Please give me another day to review this one. Thanks.
 
-2) Fix TX completion to be finite, from Sergej Benilov.
-
-3) Use register_pernet_device to avoid a dst leak in tipc, from Xin
-   Long.
-
-4) Double free of TX cleanup in Dirk van der Merwe.
-
-5) Memory leak in packet_set_ring(), from Eric Dumazet.
-
-6) Out of bounds read in qmi_wwan, from Bjørn Mork.
-
-7) Fix iif used in mcast/bcast looped back packets, from Stephen
-   Suryaputra.
-
-8) Fix neighbour resolution on raw ipv6 sockets, from Nicolas Dichtel.
-
-Please pull, thanks a lot!
-
-The following changes since commit c356dc4b540edd6c02b409dd8cf3208ba2804c38:
-
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/davem/net (2019-06-21 22:23:35 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/davem/net 
-
-for you to fetch changes up to 89ed5b519004a7706f50b70f611edbd3aaacff2c:
-
-  af_packet: Block execution of tasks waiting for transmit to complete in AF_PACKET (2019-06-26 19:38:29 -0700)
-
-----------------------------------------------------------------
-Antoine Tenart (1):
-      net: macb: do not copy the mac address if NULL
-
-Bjørn Mork (1):
-      qmi_wwan: Fix out-of-bounds read
-
-David S. Miller (2):
-      Merge branch 'smc-fixes'
-      Merge branch 'ipv6-fix-neighbour-resolution-with-raw-socket'
-
-Dirk van der Merwe (1):
-      net/tls: fix page double free on TX cleanup
-
-Dmitry Bogdanov (1):
-      net: aquantia: fix vlans not working over bridged network
-
-Eiichi Tsukata (1):
-      net/ipv6: Fix misuse of proc_dointvec "skip_notify_on_dev_down"
-
-Eric Dumazet (1):
-      net/packet: fix memory leak in packet_set_ring()
-
-Huaping Zhou (1):
-      net/smc: hold conns_lock before calling smc_lgr_register_conn()
-
-Marek Vasut (1):
-      net: dsa: microchip: Use gpiod_set_value_cansleep()
-
-Neil Horman (1):
-      af_packet: Block execution of tasks waiting for transmit to complete in AF_PACKET
-
-Nicolas Dichtel (2):
-      ipv6: constify rt6_nexthop()
-      ipv6: fix neighbour resolution with raw socket
-
-Petr Oros (1):
-      be2net: fix link failure after ethtool offline test
-
-Roland Hii (2):
-      net: stmmac: fixed new system time seconds value calculation
-      net: stmmac: set IC bit when transmitting frames with HW timestamp
-
-Sergej Benilov (1):
-      sis900: fix TX completion
-
-Stephen Suryaputra (2):
-      ipv4: Use return value of inet_iif() for __raw_v4_lookup in the while loop
-      ipv4: reset rt_iif for recirculated mcast/bcast out pkts
-
-Takashi Iwai (1):
-      ppp: mppe: Add softdep to arc4
-
-Xin Long (3):
-      tipc: change to use register_pernet_device
-      tipc: check msg->req data len in tipc_nl_compat_bearer_disable
-      sctp: change to hold sk after auth shkey is created successfully
-
-YueHaibing (4):
-      net/sched: cbs: Fix error path of cbs_module_init
-      bonding: Always enable vlan tx offload
-      net/smc: Fix error path in smc_init
-      team: Always enable vlan tx offload
-
- drivers/net/bonding/bond_main.c                           |  2 +-
- drivers/net/dsa/microchip/ksz_common.c                    |  6 +++---
- drivers/net/ethernet/aquantia/atlantic/aq_filters.c       | 10 ++++++++--
- drivers/net/ethernet/aquantia/atlantic/aq_nic.c           |  1 +
- drivers/net/ethernet/aquantia/atlantic/aq_nic.h           |  1 +
- drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c | 19 +++++++++++++------
- drivers/net/ethernet/cadence/macb_main.c                  |  2 +-
- drivers/net/ethernet/emulex/benet/be_ethtool.c            | 28 ++++++++++++++++++++++------
- drivers/net/ethernet/sis/sis900.c                         | 16 ++++++++--------
- drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c     |  2 +-
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c         | 22 ++++++++++++++--------
- drivers/net/ppp/ppp_mppe.c                                |  1 +
- drivers/net/team/team.c                                   |  2 +-
- drivers/net/usb/qmi_wwan.c                                |  2 +-
- drivers/net/vrf.c                                         |  2 +-
- include/net/ip6_route.h                                   |  4 ++--
- include/net/route.h                                       |  1 +
- include/net/tls.h                                         | 15 ---------------
- net/bluetooth/6lowpan.c                                   |  4 ++--
- net/ipv4/ip_output.c                                      | 12 ++++++++++++
- net/ipv4/raw.c                                            |  2 +-
- net/ipv4/route.c                                          | 33 +++++++++++++++++++++++++++++++++
- net/ipv6/ip6_output.c                                     |  2 +-
- net/ipv6/route.c                                          |  5 +++--
- net/netfilter/nf_flow_table_ip.c                          |  2 +-
- net/packet/af_packet.c                                    | 23 +++++++++++++++++++----
- net/packet/internal.h                                     |  1 +
- net/sched/sch_cbs.c                                       |  9 +++++++--
- net/sctp/endpointola.c                                    |  8 ++++----
- net/smc/af_smc.c                                          |  5 ++++-
- net/smc/smc_core.c                                        |  3 +++
- net/tipc/core.c                                           | 12 ++++++------
- net/tipc/netlink_compat.c                                 | 18 +++++++++++++++---
- net/tls/tls_main.c                                        |  3 ++-
- 34 files changed, 194 insertions(+), 84 deletions(-)
