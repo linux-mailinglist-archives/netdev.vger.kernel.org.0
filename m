@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9472B57690
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:41:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20DDB577A7
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:49:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728390AbfF0AkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 20:40:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44042 "EHLO mail.kernel.org"
+        id S1729250AbfF0AkG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 20:40:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44094 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729201AbfF0Aj4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 20:39:56 -0400
+        id S1729216AbfF0AkA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 20:40:00 -0400
 Received: from sasha-vm.mshome.net (unknown [107.242.116.147])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5008D2187F;
-        Thu, 27 Jun 2019 00:39:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C5A4D21897;
+        Thu, 27 Jun 2019 00:39:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1561595995;
-        bh=wCDTMcjpLKAeu9d2ynfC4ViBsmOHr3U1OD1XmD4afYA=;
+        s=default; t=1561596000;
+        bh=CXvPtPhMJMnEZMnJHiTFIt8lLMf9rloZWRT1DqeQ9Zo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GxfDzGuvEEhiXUJLFb8TXkx1P+ZF1sWpuZJN8uvNfmcGmJMKiH4XWifKbUMzP+gwK
-         s7mIFvWVthqZdEsxt709DKiOt/2odenzLRSHiBOxHVshLlCeigWHlDKkD2LfwR3C97
-         2GQvpcCo4GFTBBx6D1X+lhiBgi+luwjgcZ9IqRhk=
+        b=aaioL5qgNKMFkvHxkAQ1A7X1CWAnOZI17SOsWfcB2DDXhYiglS7DyarEp+X5y/V/N
+         +5fVXMO8/NrivUfwMuetKdKdI3TRJQ7/JoIQ2sMGs8vAV6b7AtBASNqhZ2ggl/OOFM
+         ZG/2ByfVmLSSvaG55udqOZZV7/XBc0ttdawc4S2g=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jia-Ju Bai <baijiaju1990@gmail.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 09/35] iwlwifi: Fix double-free problems in iwl_req_fw_callback()
-Date:   Wed, 26 Jun 2019 20:38:57 -0400
-Message-Id: <20190627003925.21330-9-sashal@kernel.org>
+Cc:     Martin KaFai Lau <kafai@fb.com>, Tom Herbert <tom@herbertland.com>,
+        Song Liu <songliubraving@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 10/35] bpf: udp: Avoid calling reuseport's bpf_prog from udp_gro
+Date:   Wed, 26 Jun 2019 20:38:58 -0400
+Message-Id: <20190627003925.21330-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190627003925.21330-1-sashal@kernel.org>
 References: <20190627003925.21330-1-sashal@kernel.org>
@@ -45,39 +45,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+From: Martin KaFai Lau <kafai@fb.com>
 
-[ Upstream commit a8627176b0de7ba3f4524f641ddff4abf23ae4e4 ]
+[ Upstream commit 257a525fe2e49584842c504a92c27097407f778f ]
 
-In the error handling code of iwl_req_fw_callback(), iwl_dealloc_ucode()
-is called to free data. In iwl_drv_stop(), iwl_dealloc_ucode() is called
-again, which can cause double-free problems.
+When the commit a6024562ffd7 ("udp: Add GRO functions to UDP socket")
+added udp[46]_lib_lookup_skb to the udp_gro code path, it broke
+the reuseport_select_sock() assumption that skb->data is pointing
+to the transport header.
 
-To fix this bug, the call to iwl_dealloc_ucode() in
-iwl_req_fw_callback() is deleted.
+This patch follows an earlier __udp6_lib_err() fix by
+passing a NULL skb to avoid calling the reuseport's bpf_prog.
 
-This bug is found by a runtime fuzzing tool named FIZZER written by us.
-
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Fixes: a6024562ffd7 ("udp: Add GRO functions to UDP socket")
+Cc: Tom Herbert <tom@herbertland.com>
+Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+Acked-by: Song Liu <songliubraving@fb.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/iwl-drv.c | 1 -
- 1 file changed, 1 deletion(-)
+ net/ipv4/udp.c | 6 +++++-
+ net/ipv6/udp.c | 2 +-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-index 99676d6c4713..6c10b8c4ddbe 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-@@ -1509,7 +1509,6 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
- 	goto free;
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index b89920c0f226..54343dc29cb4 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -563,7 +563,11 @@ static inline struct sock *__udp4_lib_lookup_skb(struct sk_buff *skb,
+ struct sock *udp4_lib_lookup_skb(struct sk_buff *skb,
+ 				 __be16 sport, __be16 dport)
+ {
+-	return __udp4_lib_lookup_skb(skb, sport, dport, &udp_table);
++	const struct iphdr *iph = ip_hdr(skb);
++
++	return __udp4_lib_lookup(dev_net(skb->dev), iph->saddr, sport,
++				 iph->daddr, dport, inet_iif(skb),
++				 inet_sdif(skb), &udp_table, NULL);
+ }
+ EXPORT_SYMBOL_GPL(udp4_lib_lookup_skb);
  
-  out_free_fw:
--	iwl_dealloc_ucode(drv);
- 	release_firmware(ucode_raw);
-  out_unbind:
- 	complete(&drv->request_firmware_complete);
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index 8d185a0fc5af..fa743776c459 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -308,7 +308,7 @@ struct sock *udp6_lib_lookup_skb(struct sk_buff *skb,
+ 
+ 	return __udp6_lib_lookup(dev_net(skb->dev), &iph->saddr, sport,
+ 				 &iph->daddr, dport, inet6_iif(skb),
+-				 inet6_sdif(skb), &udp_table, skb);
++				 inet6_sdif(skb), &udp_table, NULL);
+ }
+ EXPORT_SYMBOL_GPL(udp6_lib_lookup_skb);
+ 
 -- 
 2.20.1
 
