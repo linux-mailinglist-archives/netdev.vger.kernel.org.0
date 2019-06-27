@@ -2,108 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8113157E02
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 10:13:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2717D57E0C
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 10:17:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726645AbfF0INM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 04:13:12 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:33231 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726632AbfF0INL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 04:13:11 -0400
-Received: by mail-wr1-f65.google.com with SMTP id n9so1445395wru.0
-        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 01:13:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5sOD6naeLXiSsldLWJyNqacaRGnRa8BAZeXQKuUF/mM=;
-        b=AWtJQbQAfQI7Lq78jAzUe5+OZCvC3/Q5BtMumugtPZdkyXnsS+W95OKxxSZikgZCg9
-         C8bOcaQnG68vXeMVb+y31bKyiPnIkueY5dA8BflqX32obbIMsEu8EUKcHfU3Xue6v2dm
-         3iwQ2tBFplwTV4sHxuUFar9H9UX4zqE1bb1ww=
+        id S1726467AbfF0IRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 04:17:07 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:44564 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726382AbfF0IRG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 04:17:06 -0400
+Received: by mail-io1-f72.google.com with SMTP id i133so1730857ioa.11
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 01:17:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5sOD6naeLXiSsldLWJyNqacaRGnRa8BAZeXQKuUF/mM=;
-        b=PA4GdlIMALSgR1fQoP/fXjUzwSAJ79E3IzkKN+X70IBJe/tryLAL6Ywg22EH/Pq8rq
-         DZaToPK/KMIxxUZQxaccMQY/RxTJgKZjkf+Buw5D5shvKfeOV0D1zVm22vcoDMeQnk1d
-         rBz94SfFCDnxmMwG75RZB0ALTKP4mZXPXfkAQ52VNl6m2BmTH5g4+SYKjZsTW8jRFWtU
-         /dNf7HnxC6NVpOxvL/JT3ijfgnvg5imdDz5cT16rT+xslbvmVazLMn35sJ+LPiTG4yfM
-         zRVPn5PYSEFMPTdY0AHK1I176fy1nJBfV21S3EMJx/21hFF08c8gKg7GTC+O42ixEgqY
-         mDLg==
-X-Gm-Message-State: APjAAAUGAmpQYk4jFo40jK0MgPaYpzyLPWRUOcE1shWdHsf60n+WKeHJ
-        TqiZ8zpLhaxLmghbYwvLmewqS+c1HXY=
-X-Google-Smtp-Source: APXvYqzp1+Ll0H0dEYF1OExtmtwUomSoAybvIk8Vr1eENwslOzpBJ6aTD7r7zAoFItbNM1gTAXtNgQ==
-X-Received: by 2002:a5d:4001:: with SMTP id n1mr2030355wrp.293.1561623189221;
-        Thu, 27 Jun 2019 01:13:09 -0700 (PDT)
-Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id o6sm6969949wmc.15.2019.06.27.01.13.08
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 27 Jun 2019 01:13:08 -0700 (PDT)
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-To:     netdev@vger.kernel.org
-Cc:     roopa@cumulusnetworks.com, davem@davemloft.net,
-        pablo@netfilter.org, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        jhs@mojatatu.com, eyal.birger@gmail.com,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Subject: [PATCH net-next v3 4/4] net: sched: em_ipt: add support for addrtype matching
-Date:   Thu, 27 Jun 2019 11:10:47 +0300
-Message-Id: <20190627081047.24537-5-nikolay@cumulusnetworks.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190627081047.24537-1-nikolay@cumulusnetworks.com>
-References: <20190627081047.24537-1-nikolay@cumulusnetworks.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=VuXIC8tjNDuCVmmGPrtEeKuF98440ya/Wk/74x0ugyM=;
+        b=dbMiIbXi9Czqw2hw6uibXUqXY6TvARfVQkJY5irKRJQ4S5+FUFQkaszjRLG75gnj6g
+         Gmy9/NEqPUus0xk0l8jvC4w6LY9N92xbfQp+/vbhKr4+lnHHvEm3/jAXFmp/W+FSQfMj
+         8iIVZTlh0dKE/S1/jRGobmecznwmgvq1yTXHtoOAGg+8VJAR7BSoy+2lziz64zpVjl3a
+         GesURcbVSdxAu4bE45lqTUSaRvwq+Xjw6sjBqy7xCrUgtuMaRLJS/6l5fsM+WGy3MB8Z
+         PnTa+/U5iRFwD4mPPs0Z1scZ3sULfBq2Ldb8d7pz1BvuXgQ/L+BSqUGt6VAEFWzs+YTT
+         /N/w==
+X-Gm-Message-State: APjAAAXmjN1sIesU+eE3QXWKrcDqpXU+cZ306xSytb9OgThHmLHJlBmm
+        AcqUbuFoBP4GRnoN4vNZ3GeyMDKtzBVVaCXNi0G1rT+J5qqk
+X-Google-Smtp-Source: APXvYqx1Pnmkl1otcLTMDrcx9gDvgdezl75gB6MoowgjWuCpY3TtRKtWiSHU4FhMMavN0tc5QkXsbxyzt6mtm/C9Vs1dphnc0qJR
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a02:16c5:: with SMTP id a188mr3184472jaa.86.1561623425654;
+ Thu, 27 Jun 2019 01:17:05 -0700 (PDT)
+Date:   Thu, 27 Jun 2019 01:17:05 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000008f288c058c49c986@google.com>
+Subject: memory leak in ip_mc_add_src (2)
+From:   syzbot <syzbot+6ca1abd0db68b5173a4f@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kuznet@ms2.inr.ac.ru,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allow em_ipt to use addrtype for matching. Restrict the use only to
-revision 1 which has IPv6 support. Since it's a NFPROTO_UNSPEC xt match
-we use the user-specified nfproto for matching, in case it's unspecified
-both v4/v6 will be matched by the rule.
+Hello,
 
-v2: no changes, was patch 5 in v1
+syzbot found the following crash on:
 
-Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+HEAD commit:    249155c2 Merge branch 'parisc-5.2-4' of git://git.kernel.o..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=122594ada00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=1db8bd6825f9661c
+dashboard link: https://syzkaller.appspot.com/bug?extid=6ca1abd0db68b5173a4f
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15dc46eea00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17ee5aada00000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+6ca1abd0db68b5173a4f@syzkaller.appspotmail.com
+
+executing program
+executing program
+executing program
+executing program
+BUG: memory leak
+unreferenced object 0xffff88811450f140 (size 64):
+   comm "softirq", pid 0, jiffies 4294942448 (age 32.070s)
+   hex dump (first 32 bytes):
+     00 00 00 00 00 00 00 00 ff ff ff ff 00 00 00 00  ................
+     00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00  ................
+   backtrace:
+     [<00000000c7bad083>] kmemleak_alloc_recursive  
+include/linux/kmemleak.h:43 [inline]
+     [<00000000c7bad083>] slab_post_alloc_hook mm/slab.h:439 [inline]
+     [<00000000c7bad083>] slab_alloc mm/slab.c:3326 [inline]
+     [<00000000c7bad083>] kmem_cache_alloc_trace+0x13d/0x280 mm/slab.c:3553
+     [<000000009acc4151>] kmalloc include/linux/slab.h:547 [inline]
+     [<000000009acc4151>] kzalloc include/linux/slab.h:742 [inline]
+     [<000000009acc4151>] ip_mc_add1_src net/ipv4/igmp.c:1976 [inline]
+     [<000000009acc4151>] ip_mc_add_src+0x36b/0x400 net/ipv4/igmp.c:2100
+     [<000000004ac14566>] ip_mc_msfilter+0x22d/0x310 net/ipv4/igmp.c:2484
+     [<0000000052d8f995>] do_ip_setsockopt.isra.0+0x1795/0x1930  
+net/ipv4/ip_sockglue.c:959
+     [<000000004ee1e21f>] ip_setsockopt+0x3b/0xb0 net/ipv4/ip_sockglue.c:1248
+     [<0000000066cdfe74>] udp_setsockopt+0x4e/0x90 net/ipv4/udp.c:2618
+     [<000000009383a786>] sock_common_setsockopt+0x38/0x50  
+net/core/sock.c:3126
+     [<00000000d8ac0c94>] __sys_setsockopt+0x98/0x120 net/socket.c:2072
+     [<000000001b1e9666>] __do_sys_setsockopt net/socket.c:2083 [inline]
+     [<000000001b1e9666>] __se_sys_setsockopt net/socket.c:2080 [inline]
+     [<000000001b1e9666>] __x64_sys_setsockopt+0x26/0x30 net/socket.c:2080
+     [<00000000420d395e>] do_syscall_64+0x76/0x1a0  
+arch/x86/entry/common.c:301
+     [<000000007fd83a4b>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+BUG: memory leak
+unreferenced object 0xffff88810ec5ab40 (size 64):
+   comm "softirq", pid 0, jiffies 4294943651 (age 20.040s)
+   hex dump (first 32 bytes):
+     00 00 00 00 00 00 00 00 ff ff ff ff 00 00 00 00  ................
+     00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00  ................
+   backtrace:
+     [<00000000c7bad083>] kmemleak_alloc_recursive  
+include/linux/kmemleak.h:43 [inline]
+     [<00000000c7bad083>] slab_post_alloc_hook mm/slab.h:439 [inline]
+     [<00000000c7bad083>] slab_alloc mm/slab.c:3326 [inline]
+     [<00000000c7bad083>] kmem_cache_alloc_trace+0x13d/0x280 mm/slab.c:3553
+     [<000000009acc4151>] kmalloc include/linux/slab.h:547 [inline]
+     [<000000009acc4151>] kzalloc include/linux/slab.h:742 [inline]
+     [<000000009acc4151>] ip_mc_add1_src net/ipv4/igmp.c:1976 [inline]
+     [<000000009acc4151>] ip_mc_add_src+0x36b/0x400 net/ipv4/igmp.c:2100
+     [<000000004ac14566>] ip_mc_msfilter+0x22d/0x310 net/ipv4/igmp.c:2484
+     [<0000000052d8f995>] do_ip_setsockopt.isra.0+0x1795/0x1930  
+net/ipv4/ip_sockglue.c:959
+     [<000000004ee1e21f>] ip_setsockopt+0x3b/0xb0 net/ipv4/ip_sockglue.c:1248
+     [<0000000066cdfe74>] udp_setsockopt+0x4e/0x90 net/ipv4/udp.c:2618
+     [<000000009383a786>] sock_common_setsockopt+0x38/0x50  
+net/core/sock.c:3126
+     [<00000000d8ac0c94>] __sys_setsockopt+0x98/0x120 net/socket.c:2072
+     [<000000001b1e9666>] __do_sys_setsockopt net/socket.c:2083 [inline]
+     [<000000001b1e9666>] __se_sys_setsockopt net/socket.c:2080 [inline]
+     [<000000001b1e9666>] __x64_sys_setsockopt+0x26/0x30 net/socket.c:2080
+     [<00000000420d395e>] do_syscall_64+0x76/0x1a0  
+arch/x86/entry/common.c:301
+     [<000000007fd83a4b>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+BUG: memory leak
+unreferenced object 0xffff888112a6e080 (size 64):
+   comm "softirq", pid 0, jiffies 4294944252 (age 14.030s)
+   hex dump (first 32 bytes):
+     00 00 00 00 00 00 00 00 ff ff ff ff 00 00 00 00  ................
+     00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00  ................
+   backtrace:
+     [<00000000c7bad083>] kmemleak_alloc_recursive  
+include/linux/kmemleak.h:43 [inline]
+     [<00000000c7bad083>] slab_post_alloc_hook mm/slab.h:439 [inline]
+     [<00000000c7bad083>] slab_alloc mm/slab.c:3326 [inline]
+     [<00000000c7bad083>] kmem_cache_alloc_trace+0x13d/0x280 mm/slab.c:3553
+     [<000000009acc4151>] kmalloc include/linux/slab.h:547 [inline]
+     [<000000009acc4151>] kzalloc include/linux/slab.h:742 [inline]
+     [<000000009acc4151>] ip_mc_add1_src net/ipv4/igmp.c:1976 [inline]
+     [<000000009acc4151>] ip_mc_add_src+0x36b/0x400 net/ipv4/igmp.c:2100
+     [<000000004ac14566>] ip_mc_msfilter+0x22d/0x310 net/ipv4/igmp.c:2484
+     [<0000000052d8f995>] do_ip_setsockopt.isra.0+0x1795/0x1930  
+net/ipv4/ip_sockglue.c:959
+     [<000000004ee1e21f>] ip_setsockopt+0x3b/0xb0 net/ipv4/ip_sockglue.c:1248
+     [<0000000066cdfe74>] udp_setsockopt+0x4e/0x90 net/ipv4/udp.c:2618
+     [<000000009383a786>] sock_common_setsockopt+0x38/0x50  
+net/core/sock.c:3126
+     [<00000000d8ac0c94>] __sys_setsockopt+0x98/0x120 net/socket.c:2072
+     [<000000001b1e9666>] __do_sys_setsockopt net/socket.c:2083 [inline]
+     [<000000001b1e9666>] __se_sys_setsockopt net/socket.c:2080 [inline]
+     [<000000001b1e9666>] __x64_sys_setsockopt+0x26/0x30 net/socket.c:2080
+     [<00000000420d395e>] do_syscall_64+0x76/0x1a0  
+arch/x86/entry/common.c:301
+     [<000000007fd83a4b>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+
+
 ---
-v3: no changes
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
- net/sched/em_ipt.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
-
-diff --git a/net/sched/em_ipt.c b/net/sched/em_ipt.c
-index 3c356d6f719a..9fff6480acc6 100644
---- a/net/sched/em_ipt.c
-+++ b/net/sched/em_ipt.c
-@@ -72,11 +72,25 @@ static int policy_validate_match_data(struct nlattr **tb, u8 mrev)
- 	return 0;
- }
- 
-+static int addrtype_validate_match_data(struct nlattr **tb, u8 mrev)
-+{
-+	if (mrev != 1) {
-+		pr_err("only addrtype match revision 1 supported");
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
- static const struct em_ipt_xt_match em_ipt_xt_matches[] = {
- 	{
- 		.match_name = "policy",
- 		.validate_match_data = policy_validate_match_data
- 	},
-+	{
-+		.match_name = "addrtype",
-+		.validate_match_data = addrtype_validate_match_data
-+	},
- 	{}
- };
- 
--- 
-2.21.0
-
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
