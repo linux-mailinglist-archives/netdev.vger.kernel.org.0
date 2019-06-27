@@ -2,27 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA4F058087
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 12:39:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4C5B58088
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 12:39:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726445AbfF0Kjo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 06:39:44 -0400
-Received: from packetmixer.de ([79.140.42.25]:48544 "EHLO
+        id S1726540AbfF0Kjp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 06:39:45 -0400
+Received: from packetmixer.de ([79.140.42.25]:48552 "EHLO
         mail.mail.packetmixer.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726425AbfF0Kjn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 06:39:43 -0400
+        with ESMTP id S1726425AbfF0Kjp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 06:39:45 -0400
 Received: from kero.packetmixer.de (ip-109-41-128-179.web.vodafone.de [109.41.128.179])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.mail.packetmixer.de (Postfix) with ESMTPSA id 9B16D62071;
-        Thu, 27 Jun 2019 12:39:42 +0200 (CEST)
+        by mail.mail.packetmixer.de (Postfix) with ESMTPSA id 7EF1D62072;
+        Thu, 27 Jun 2019 12:39:43 +0200 (CEST)
 From:   Simon Wunderlich <sw@simonwunderlich.de>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, b.a.t.m.a.n@lists.open-mesh.org,
+        Sven Eckelmann <sven@narfation.org>,
         Simon Wunderlich <sw@simonwunderlich.de>
-Subject: [PATCH 01/10] batman-adv: Start new development cycle
-Date:   Thu, 27 Jun 2019 12:39:29 +0200
-Message-Id: <20190627103938.7488-2-sw@simonwunderlich.de>
+Subject: [PATCH 02/10] batman-adv: Fix includes for *_MAX constants
+Date:   Thu, 27 Jun 2019 12:39:30 +0200
+Message-Id: <20190627103938.7488-3-sw@simonwunderlich.de>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190627103938.7488-1-sw@simonwunderlich.de>
 References: <20190627103938.7488-1-sw@simonwunderlich.de>
@@ -31,24 +32,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Sven Eckelmann <sven@narfation.org>
+
+The commit 54d50897d544 ("linux/kernel.h: split *_MAX and *_MIN macros into
+<linux/limits.h>") moved the U32_MAX/INT_MAX/ULONG_MAX from linux/kernel.h
+to linux/limits.h. Adjust the includes accordingly.
+
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
 Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
 ---
- net/batman-adv/main.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/batman-adv/gateway_common.c | 1 +
+ net/batman-adv/hard-interface.c | 1 +
+ net/batman-adv/netlink.c        | 1 +
+ net/batman-adv/sysfs.c          | 1 +
+ net/batman-adv/tp_meter.c       | 1 +
+ 5 files changed, 5 insertions(+)
 
-diff --git a/net/batman-adv/main.h b/net/batman-adv/main.h
-index c59afcba31e0..11d051dbbda4 100644
---- a/net/batman-adv/main.h
-+++ b/net/batman-adv/main.h
-@@ -13,7 +13,7 @@
- #define BATADV_DRIVER_DEVICE "batman-adv"
- 
- #ifndef BATADV_SOURCE_VERSION
--#define BATADV_SOURCE_VERSION "2019.2"
-+#define BATADV_SOURCE_VERSION "2019.3"
- #endif
- 
- /* B.A.T.M.A.N. parameters */
+diff --git a/net/batman-adv/gateway_common.c b/net/batman-adv/gateway_common.c
+index dac097f9be03..fc55750542e4 100644
+--- a/net/batman-adv/gateway_common.c
++++ b/net/batman-adv/gateway_common.c
+@@ -11,6 +11,7 @@
+ #include <linux/byteorder/generic.h>
+ #include <linux/errno.h>
+ #include <linux/kernel.h>
++#include <linux/limits.h>
+ #include <linux/math64.h>
+ #include <linux/netdevice.h>
+ #include <linux/stddef.h>
+diff --git a/net/batman-adv/hard-interface.c b/net/batman-adv/hard-interface.c
+index 79d1731b8306..899487641bca 100644
+--- a/net/batman-adv/hard-interface.c
++++ b/net/batman-adv/hard-interface.c
+@@ -16,6 +16,7 @@
+ #include <linux/if_ether.h>
+ #include <linux/kernel.h>
+ #include <linux/kref.h>
++#include <linux/limits.h>
+ #include <linux/list.h>
+ #include <linux/netdevice.h>
+ #include <linux/printk.h>
+diff --git a/net/batman-adv/netlink.c b/net/batman-adv/netlink.c
+index a67720fad46c..7253699c3151 100644
+--- a/net/batman-adv/netlink.c
++++ b/net/batman-adv/netlink.c
+@@ -21,6 +21,7 @@
+ #include <linux/if_vlan.h>
+ #include <linux/init.h>
+ #include <linux/kernel.h>
++#include <linux/limits.h>
+ #include <linux/list.h>
+ #include <linux/netdevice.h>
+ #include <linux/netlink.h>
+diff --git a/net/batman-adv/sysfs.c b/net/batman-adv/sysfs.c
+index 80fc3253c336..1efcb97039cd 100644
+--- a/net/batman-adv/sysfs.c
++++ b/net/batman-adv/sysfs.c
+@@ -18,6 +18,7 @@
+ #include <linux/kernel.h>
+ #include <linux/kobject.h>
+ #include <linux/kref.h>
++#include <linux/limits.h>
+ #include <linux/netdevice.h>
+ #include <linux/printk.h>
+ #include <linux/rculist.h>
+diff --git a/net/batman-adv/tp_meter.c b/net/batman-adv/tp_meter.c
+index 820392146249..dd6a9a40dbb9 100644
+--- a/net/batman-adv/tp_meter.c
++++ b/net/batman-adv/tp_meter.c
+@@ -21,6 +21,7 @@
+ #include <linux/kernel.h>
+ #include <linux/kref.h>
+ #include <linux/kthread.h>
++#include <linux/limits.h>
+ #include <linux/list.h>
+ #include <linux/netdevice.h>
+ #include <linux/param.h>
 -- 
 2.11.0
 
