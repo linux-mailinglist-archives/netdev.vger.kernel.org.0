@@ -2,52 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD77B58970
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 20:04:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D3B55897D
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 20:08:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726712AbfF0SEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 14:04:39 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:57614 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726561AbfF0SEj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 14:04:39 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 22D7B133E97CE;
-        Thu, 27 Jun 2019 11:04:39 -0700 (PDT)
-Date:   Thu, 27 Jun 2019 11:04:38 -0700 (PDT)
-Message-Id: <20190627.110438.506551174335645620.davem@davemloft.net>
-To:     olteanv@gmail.com
-Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 00/10] FDB, VLAN and PTP fixes for SJA1105 DSA
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190625233942.1946-1-olteanv@gmail.com>
-References: <20190625233942.1946-1-olteanv@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 27 Jun 2019 11:04:39 -0700 (PDT)
+        id S1726655AbfF0SII (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 14:08:08 -0400
+Received: from namei.org ([65.99.196.166]:49158 "EHLO namei.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726519AbfF0SII (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Jun 2019 14:08:08 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by namei.org (8.14.4/8.14.4) with ESMTP id x5RI6c5Z018737;
+        Thu, 27 Jun 2019 18:06:38 GMT
+Date:   Fri, 28 Jun 2019 04:06:38 +1000 (AEST)
+From:   James Morris <jmorris@namei.org>
+To:     Stephen Smalley <sds@tycho.nsa.gov>
+cc:     Andy Lutomirski <luto@amacapital.net>,
+        Andy Lutomirski <luto@kernel.org>,
+        Matthew Garrett <matthewgarrett@google.com>,
+        linux-security@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        David Howells <dhowells@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Matthew Garrett <mjg59@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Chun-Yi Lee <jlee@suse.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        linux-security-module@vger.kernel.org
+Subject: Re: [PATCH V33 24/30] bpf: Restrict bpf when kernel lockdown is in
+ confidentiality mode
+In-Reply-To: <bce70c8b-9efd-6362-d536-cfbbcf70b0b7@tycho.nsa.gov>
+Message-ID: <alpine.LRH.2.21.1906280332500.17363@namei.org>
+References: <20190621011941.186255-1-matthewgarrett@google.com> <20190621011941.186255-25-matthewgarrett@google.com> <CALCETrVUwQP7roLnW6kFG80Cc5U6X_T6AW+BTAftLccYGp8+Ow@mail.gmail.com> <alpine.LRH.2.21.1906270621080.28132@namei.org>
+ <6E53376F-01BB-4795-BC02-24F9CAE00001@amacapital.net> <bce70c8b-9efd-6362-d536-cfbbcf70b0b7@tycho.nsa.gov>
+User-Agent: Alpine 2.21 (LRH 202 2017-01-01)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <olteanv@gmail.com>
-Date: Wed, 26 Jun 2019 02:39:32 +0300
+On Thu, 27 Jun 2019, Stephen Smalley wrote:
 
-> This patchset is an assortment of fixes for the net-next version of the
-> sja1105 DSA driver:
-> - Avoid a kernel panic when the driver fails to probe or unregisters
-> - Finish Arnd Bermann's idea of compiling PTP support as part of the
->   main DSA driver and not separately
-> - Better handling of initial port-based VLAN as well as VLANs for
->   dsa_8021q FDB entries
-> - Fix address learning for the SJA1105 P/Q/R/S family
-> - Make static FDB entries persistent across switch resets
-> - Fix reporting of statically-added FDB entries in 'bridge fdb show'
+> There are two scenarios where finer-grained distinctions make sense:
+> 
+> - Users may need to enable specific functionality that falls under the
+> umbrella of "confidentiality" or "integrity" lockdown.  Finer-grained lockdown
+> reasons free them from having to make an all-or-nothing choice between lost
+> functionality or no lockdown at all.
 
-Series applied, thanks.
+Agreed. This will be used for more than just UEFI secure boot on desktops, 
+e.g. embedded systems using verified boot, where finer grained policy will 
+be needed for what are sometimes very specific use-cases (which may be 
+also covered by other mitigations).
+
+> This can be supported directly by the
+> lockdown module without any help from SELinux or other security modules; we
+> just need the ability to specify these finer-grained lockdown levels via the
+> boot parameters and securityfs nodes.
+
+If the lockdown LSM implements fine grained policy (rather than the simple 
+coarse grained policy), I'd suggest adding a new lockdown level of 
+'custom' which by default enables all hooks but allows selective 
+disablement via params/sysfs.
+
+This would be simpler than telling users to use a different lockdown LSM 
+for this.
+
+> - Different processes/programs may need to use different sets of functionality
+> restricted via lockdown confidentiality or integrity categories.  If we have
+> to allow all-or-none for the set of interfaces/functionality covered by the
+> generic confidentiality or integrity categories, then we'll end up having to
+> choose between lost functionality or overprivileged processes, neither of
+> which is optimal.
+> 
+> Is it truly the case that everything under the "confidentiality" category
+> poses the same level of risk to kernel confidentiality, and similarly for
+> everything under the "integrity" category?  If not, then being able to
+> distinguish them definitely has benefit.
+
+Good question. We can't know the answer to this unless we know how an 
+attacker might leverage access.
+
+The value here IMHO is more in allowing tradeoffs to be made by system 
+designers vs. disabling lockdown entirely.
+
+> I'm still not clear though on how/if this will compose with or be overridden
+> by other security modules.  We would need some means for another security
+> module to take over lockdown decisions once it has initialized (including
+> policy load), and to be able to access state that is currently private to the
+> lockdown module, like the level.
+
+Why not utilize stacking (restrictively), similarly to capabilities?
+
+
+-- 
+James Morris
+<jmorris@namei.org>
+
