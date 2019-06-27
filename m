@@ -2,124 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ACC9B57FDA
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 12:02:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9701057FE4
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 12:06:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726487AbfF0KCe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 06:02:34 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:54070 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726292AbfF0KCd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 06:02:33 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5RA0l77003837;
-        Thu, 27 Jun 2019 03:02:30 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : subject
- : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pfpt0818;
- bh=UYPlRV7WcvyHYgd0slzSqPC2V1PFh9WYR3tNLQNX6k8=;
- b=B1Fr/TJra2rblT/I06R00ezV15qgDtLgVzz5uN0k0XM0zgpb305PPPyQnRBt9EqyNMoD
- d7dOliAdOAK3bwksM0IHTJm5b6hEVZusDAVduDjkKSeaBb2Rsm5uqVBEUm1zg8USW9JD
- bSAcMVCWwcqMUAOzdq+8g60yUki82jB87B5+UBKi6Zg/6wHnMS0ecjwXOHPZh6Gi9gMd
- tPAW2zDZJ8rCoWkptXUCi6fcPV2515A7UXU3+p9SY6hbeaJ7xaO7PYkfBsjzTEI+pCJA
- ZpRMJjj2C+ZmezAZ+RhiFpcuBG+gyM6qn9GLPP2L47yTbj/pSWKeziQ5XIz3y5UIkkzQ LQ== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 2tch69aeu3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 27 Jun 2019 03:02:30 -0700
-Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Thu, 27 Jun
- 2019 03:02:29 -0700
-Received: from NAM05-BY2-obe.outbound.protection.outlook.com (104.47.50.53) by
- SC-EXCH03.marvell.com (10.93.176.83) with Microsoft SMTP Server (TLS) id
- 15.0.1367.3 via Frontend Transport; Thu, 27 Jun 2019 03:02:29 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=testarcselector01; d=microsoft.com; cv=none;
- b=uuCoLV6z7uDtvUnC6WfXY4F9AZd+F1DbXG8MHDduhX5G2YdOGa/arQsPPwWzvMZ3ou+uTGHnLyi/qo5WahYPDtUzPuSfs8Eu6/bLjhfsJ3KXuWyUo+aQQfwB15aOKdKHmkSEBGuWiyRHWDESAbGmj/pPjx9sUUdzI2wL0Jrq2Po=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=testarcselector01;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UYPlRV7WcvyHYgd0slzSqPC2V1PFh9WYR3tNLQNX6k8=;
- b=JfuJro7p/D6rb8Fxu4X0XY55UrDKv1aDTEGhNwg1jr4a6CloLfKtoZW2q8r7nyjNnaq7bzz05Bsz//RfoSuY1wbN1+8uMr0gWpAPfjPNGnhELAmpJnlBZNnnxJoEnW62/yo6Gr5ZNiowgT+kf4UdSQrYlTHhyCFxL0H93VxuNZY=
-ARC-Authentication-Results: i=1; test.office365.com
- 1;spf=none;dmarc=none;dkim=none;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector2-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UYPlRV7WcvyHYgd0slzSqPC2V1PFh9WYR3tNLQNX6k8=;
- b=PPVTQFINZ0NkQGsTfph9E3pdt4BT17bAzNcMeDONB3/hgnC/ZWn9CK6vSOZ0XlNns35LEYqyAkNBhUJ27be74rO8BV12++/b4LqydsUBbKEXSem0wHTn/bS4df2gtXE7h4mznt/POtFkboBy1C3sbqTVkEmRyyD8ru73KRU3ack=
-Received: from DM6PR18MB2697.namprd18.prod.outlook.com (20.179.49.204) by
- DM6PR18MB3435.namprd18.prod.outlook.com (10.255.175.76) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2008.16; Thu, 27 Jun 2019 10:02:24 +0000
-Received: from DM6PR18MB2697.namprd18.prod.outlook.com
- ([fe80::4121:8e6e:23b8:b631]) by DM6PR18MB2697.namprd18.prod.outlook.com
- ([fe80::4121:8e6e:23b8:b631%6]) with mapi id 15.20.2008.018; Thu, 27 Jun 2019
- 10:02:24 +0000
-From:   Manish Chopra <manishc@marvell.com>
-To:     Benjamin Poirier <bpoirier@suse.com>,
-        GR-Linux-NIC-Dev <GR-Linux-NIC-Dev@marvell.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [EXT] [PATCH net-next 07/16] qlge: Deduplicate rx buffer queue
- management
-Thread-Topic: [EXT] [PATCH net-next 07/16] qlge: Deduplicate rx buffer queue
- management
-Thread-Index: AQHVJOFJNghbNmq4ckeTCtv5h99OtqavUtiA
-Date:   Thu, 27 Jun 2019 10:02:24 +0000
-Message-ID: <DM6PR18MB2697AC678152A26AC676A1B2ABFD0@DM6PR18MB2697.namprd18.prod.outlook.com>
-References: <20190617074858.32467-1-bpoirier@suse.com>
- <20190617074858.32467-7-bpoirier@suse.com>
-In-Reply-To: <20190617074858.32467-7-bpoirier@suse.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [2409:4042:2192:124f:91a0:c28f:ff45:18bc]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 047e3ea7-0d2c-4271-a7bf-08d6fae68d88
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:DM6PR18MB3435;
-x-ms-traffictypediagnostic: DM6PR18MB3435:
-x-microsoft-antispam-prvs: <DM6PR18MB3435501452BDD1EDC3B8B18BABFD0@DM6PR18MB3435.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-forefront-prvs: 008184426E
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(346002)(396003)(366004)(39860400002)(136003)(376002)(199004)(189003)(2501003)(6506007)(73956011)(66476007)(76176011)(68736007)(99286004)(186003)(74316002)(6116002)(66946007)(305945005)(5660300002)(64756008)(7696005)(25786009)(102836004)(66446008)(8936002)(7736002)(81166006)(81156014)(8676002)(76116006)(66556008)(2906002)(4744005)(6246003)(256004)(71200400001)(71190400001)(14454004)(53936002)(229853002)(478600001)(6436002)(316002)(9686003)(86362001)(110136005)(52536014)(446003)(11346002)(33656002)(55016002)(476003)(486006)(46003);DIR:OUT;SFP:1101;SCL:1;SRVR:DM6PR18MB3435;H:DM6PR18MB2697.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: marvell.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 1XQpFc4lljAc9L9jPhc5l8PCWpVOdwZD5oXxIxOsFlnTVmCbH8aUeeN8NA+Z4GH3viMQVJPbgXtHTeTihHokhlDdIihZXAjE+eCUSqBCctHgdJAZFcGTBLsY8MqNuY9qSslwuEG/5QLGDBJKgKMXdO6TVYMLeXkqibLrvhM+UTxPmZijLjW35xUDjGoHIR8/yHk19a0ZWHZBM0xm1O8cooQ1t8ZJwWS7d5ByMVbfUSSxE+5+vgVI/BonJoqj1QGW7nQBJC1UdJWNNeWnv1qbqHusyV6DP0beLHTjSgxrPCbDUt+VEN5wlXpHWa8Jh/0c5X/uSt6bKWTQxYnrYNahtz+rsloMpMVaNYDt9zyE3nEAUGu2+8chmvXYylAecIq5+sKzKmWEoAYPEUNBaWQV8/FzWd/rhSssy6q9duXBtjE=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726432AbfF0KGB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 06:06:01 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:37391 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726187AbfF0KGB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 06:06:01 -0400
+Received: by mail-wm1-f66.google.com with SMTP id f17so5038216wme.2
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 03:05:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=l1NwZTpnYPouG/Q6w8KVsqVGc7B8RfSH5Nd1fRhhCTg=;
+        b=B2NsLmGz6/y+L4TmAzjbqc/OxKPinNKVM85RvFroGuXN7IyPoJEzLCAAV8OnvQYEtm
+         B1iDDBazVc3zFrA/fwV8KhIUmJtq5QXwDIDwMDfAlV11LXgxaAJGEKxdKG1RteX2C5Sr
+         5e1FII9PhHReEh4ew0Ija0FQk4vX1j7Hp8yiRBmhLNY2fVAd1od1KsLcRy19Md0Sqwfb
+         Jj39vh1/kkRUTMZneoCWe4VVKbgmWe5f+pr7rxTlFsJL1cafJ8HgK0sl+1huTFptpJEB
+         48i885inIr2XzywCbRV4ojqhfbaVhIfaAtmk1IVgOlUjOer9qCo6ux9MQmJguNFLoWix
+         lSbA==
+X-Gm-Message-State: APjAAAVjuOuLvu7FChIFbqEPInUaGXMM9OgJpvuR96wcJfFQlunxkU5i
+        EgqotvOwfd2UJ4qTGazyKBCmEw==
+X-Google-Smtp-Source: APXvYqzQ0sKIY6ZChWYC2WJ9R3q0SreK0ALQXZZlzrAyFs4jZYqRQY8Nns9g7u2vtKtU2ORhMeHCKQ==
+X-Received: by 2002:a1c:4484:: with SMTP id r126mr2685540wma.27.1561629959060;
+        Thu, 27 Jun 2019 03:05:59 -0700 (PDT)
+Received: from steredhat.homenet.telecomitalia.it (host21-207-dynamic.52-79-r.retail.telecomitalia.it. [79.52.207.21])
+        by smtp.gmail.com with ESMTPSA id l12sm3249628wrb.81.2019.06.27.03.05.57
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 27 Jun 2019 03:05:57 -0700 (PDT)
+Date:   Thu, 27 Jun 2019 12:05:55 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Stefan Hajnoczi <stefanha@gmail.com>
+Cc:     netdev@vger.kernel.org, kvm@vger.kernel.org,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 0/4] vsock/virtio: several fixes in the .probe() and
+ .remove()
+Message-ID: <20190627100555.pmnecffewzsopxyw@steredhat.homenet.telecomitalia.it>
+References: <20190528105623.27983-1-sgarzare@redhat.com>
+ <20190610130945.GL14257@stefanha-x1.localdomain>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 047e3ea7-0d2c-4271-a7bf-08d6fae68d88
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jun 2019 10:02:24.2249
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: manishc@marvell.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR18MB3435
-X-OriginatorOrg: marvell.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-27_05:,,
- signatures=0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190610130945.GL14257@stefanha-x1.localdomain>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->  	while (curr_idx !=3D clean_idx) {
-> -		lbq_desc =3D &rx_ring->lbq[curr_idx];
-> +		struct qlge_bq_desc *lbq_desc =3D &rx_ring-
-> >lbq.queue[curr_idx];
->=20
->  		if (lbq_desc->p.pg_chunk.offset =3D=3D last_offset)
-> -			pci_unmap_page(qdev->pdev, lbq_desc-
-> >p.pg_chunk.map,
-> +			pci_unmap_page(qdev->pdev, lbq_desc->dma_addr,
->  				       ql_lbq_block_size(qdev),
->  				       PCI_DMA_FROMDEVICE);
+On Mon, Jun 10, 2019 at 02:09:45PM +0100, Stefan Hajnoczi wrote:
+> On Tue, May 28, 2019 at 12:56:19PM +0200, Stefano Garzarella wrote:
+> > During the review of "[PATCH] vsock/virtio: Initialize core virtio vsock
+> > before registering the driver", Stefan pointed out some possible issues
+> > in the .probe() and .remove() callbacks of the virtio-vsock driver.
+> > 
+> > This series tries to solve these issues:
+> > - Patch 1 postpones the 'the_virtio_vsock' assignment at the end of the
+> >   .probe() to avoid that some sockets queue works when the initialization
+> >   is not finished.
+> > - Patches 2 and 3 stop workers before to call vdev->config->reset(vdev) to
+> >   be sure that no one is accessing the device, and adds another flush at the
+> >   end of the .remove() to avoid use after free.
+> > - Patch 4 free also used buffers in the virtqueues during the .remove().
+> > 
+> > Stefano Garzarella (4):
+> >   vsock/virtio: fix locking around 'the_virtio_vsock'
+> >   vsock/virtio: stop workers during the .remove()
+> >   vsock/virtio: fix flush of works during the .remove()
+> >   vsock/virtio: free used buffers during the .remove()
+> > 
+> >  net/vmw_vsock/virtio_transport.c | 105 ++++++++++++++++++++++++++-----
+> >  1 file changed, 90 insertions(+), 15 deletions(-)
+> 
+> Looking forward to v2.  I took a look at the discussion and I'll review
+> v2 from scratch.  Just keep in mind that the mutex is used more for
+> mutual exclusion of the init/exit code than to protect the_virtio_vsock,
+> so we'll still need protection of init/exit code even with RCU.
 
-In this patch, lbq_desc->dma_addr points to offset in the page. So unmappin=
-g is broken within this patch.
-Would have been nicer to fix this in the same patch although it might have =
-been taken care in next patches probably.
+Thanks for the advice! I'll send the v2 ASAP.
 
-
+Thanks,
+Stefano
