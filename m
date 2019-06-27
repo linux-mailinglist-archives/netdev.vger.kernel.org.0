@@ -2,72 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A54FB57511
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 01:55:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6675257541
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:08:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726550AbfFZXzC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 19:55:02 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:50894 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726385AbfFZXzB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 19:55:01 -0400
-Received: by mail-io1-f69.google.com with SMTP id m26so423902ioh.17
-        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 16:55:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=c5MKxKpL1LGme09OnNwDQjsqqlS3JWAbrh2sxWujAk8=;
-        b=sEKri7Qs8qmtjuHQJwGgnX5iNoWk9oYaxWc7ObwN3gsh0rPEqLERROJUu7UzKNXh9D
-         rqYFwjYpNIGbi5EMFWvkG7hynX5QtxsAe3woMMYD6dW9O6kn7J0jB+xakS3GTEQ2K55V
-         u5DIu4klkCR1A6bHwCus3pp2W+BFurrKi9d6cJENfsC1P99OUTFP/T6eTujIXKHp+HyV
-         /dVYGNCxxVKe4PxSp/Vl7SASlKtd2SD3R7be9OSkYFpDUuXfcCXihCV1vFwnXGngxZHq
-         JfSlj4EI/xRV+K9dYX1pUfQFPd40m9TXsCkal62meTH4FGV5BPh4aZhQkQ7IGBXbxnlW
-         O2pw==
-X-Gm-Message-State: APjAAAWvyIeSyuynw2pgq0jwG6rQxkthUQQZztcedXA2YXU0YgPvi4b7
-        f9v3ElTaS48zD5i7pCRK866B18Lbu/u4r/qUXwnX4LMrdpud
-X-Google-Smtp-Source: APXvYqw0rSeais3gd71d3pKztVwreFghQwPf0ciLriAei8/ydZP7gcjOnDii1dtoOGd1VNJ94dAGeH2zX3nwhBEDVLqHtbiTYrsV
+        id S1726583AbfF0AIe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 20:08:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54952 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726385AbfF0AIe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 20:08:34 -0400
+Received: from localhost (unknown [116.247.127.123])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id DBABB20656;
+        Thu, 27 Jun 2019 00:08:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1561594113;
+        bh=q7v/gBBs8kOpVWgP05UnkOe4D6KtGteYDyNxeIqq3Ek=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=E38cVo0yKftkZyVpH9K5csvOnsYU7jUGK/tPP7/6QkGWTpBt8jH4VDHQouVRa31Vg
+         CgOTGr0r7dqoKPGVpmJnOx0ADMR7gUeO29DB8gYP3ARbACBstQkys074sfgW6jCTCa
+         CL7ZjuXp1NzNFTUwYt/SEjURi4Q2KoMeMRWkrB3Q=
+Date:   Thu, 27 Jun 2019 08:08:30 +0800
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        "jannh@google.com" <jannh@google.com>
+Subject: Re: [PATCH bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
+Message-ID: <20190627000830.GB527@kroah.com>
+References: <20190625182303.874270-1-songliubraving@fb.com>
+ <20190625182303.874270-2-songliubraving@fb.com>
+ <9bc166ca-1ef0-ee1e-6306-6850d4008174@iogearbox.net>
+ <5A472047-F329-43C3-9DBC-9BCFC0A19F1C@fb.com>
 MIME-Version: 1.0
-X-Received: by 2002:a5d:885a:: with SMTP id t26mr1029660ios.218.1561593301141;
- Wed, 26 Jun 2019 16:55:01 -0700 (PDT)
-Date:   Wed, 26 Jun 2019 16:55:01 -0700
-In-Reply-To: <000000000000f4f847058c387616@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ff8f15058c42c5fa@google.com>
-Subject: Re: KASAN: use-after-free Read in corrupted (3)
-From:   syzbot <syzbot+8a821b383523654227bf@syzkaller.appspotmail.com>
-To:     aarcange@redhat.com, akpm@linux-foundation.org, ast@kernel.org,
-        christian@brauner.io, daniel@iogearbox.net, ebiederm@xmission.com,
-        elena.reshetova@intel.com, guro@fb.com, john.fastabend@gmail.com,
-        keescook@chromium.org, linux-kernel@vger.kernel.org,
-        luto@amacapital.net, mhocko@suse.com, mingo@kernel.org,
-        namit@vmware.com, netdev@vger.kernel.org, peterz@infradead.org,
-        riel@surriel.com, syzkaller-bugs@googlegroups.com, wad@chromium.org
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5A472047-F329-43C3-9DBC-9BCFC0A19F1C@fb.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+On Wed, Jun 26, 2019 at 03:17:47PM +0000, Song Liu wrote:
+> >> +static struct miscdevice bpf_dev = {
+> >> +	.minor		= MISC_DYNAMIC_MINOR,
+> >> +	.name		= "bpf",
+> >> +	.fops		= &bpf_chardev_ops,
+> >> +	.mode		= 0440,
+> >> +	.nodename	= "bpf",
+> > 
+> > Here's what kvm does:
+> > 
+> > static struct miscdevice kvm_dev = {
+> >        KVM_MINOR,
+> >        "kvm",
+> >        &kvm_chardev_ops,
+> > };
 
-commit e9db4ef6bf4ca9894bb324c76e01b8f1a16b2650
-Author: John Fastabend <john.fastabend@gmail.com>
-Date:   Sat Jun 30 13:17:47 2018 +0000
+Ick, I thought we converted all of these to named initializers a long
+time ago :)
 
-     bpf: sockhash fix omitted bucket lock in sock_close
+> > Is there an actual reason that mode is not 0 by default in bpf case? Why
+> > we need to define nodename?
+> 
+> Based on my understanding, mode of 0440 is what we want. If we leave it 
+> as 0, it will use default value of 0600. I guess we can just set it to 
+> 0440, as user space can change it later anyway. 
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11bb4e3da00000
-start commit:   045df37e Merge branch 'cxgb4-Reference-count-MPS-TCAM-entr..
-git tree:       net-next
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=13bb4e3da00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=15bb4e3da00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=dd16b8dc9d0d210c
-dashboard link: https://syzkaller.appspot.com/bug?extid=8a821b383523654227bf
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1389f5b5a00000
+Don't rely on userspace changing it, set it to what you want the
+permissions to be in the kernel here, otherwise you have to create a new
+udev rule and get it merged into all of the distros.  Just do it right
+the first time and there is no need for it.
 
-Reported-by: syzbot+8a821b383523654227bf@syzkaller.appspotmail.com
-Fixes: e9db4ef6bf4c ("bpf: sockhash fix omitted bucket lock in sock_close")
+What is wrong with 0600 for this?  Why 0440?
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+thanks,
+
+greg k-h
