@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 52D1F58931
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 19:46:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C053958934
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 19:46:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727283AbfF0Rqk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 13:46:40 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:46552 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726681AbfF0Rqj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 13:46:39 -0400
-Received: by mail-pg1-f196.google.com with SMTP id v9so1329832pgr.13;
-        Thu, 27 Jun 2019 10:46:38 -0700 (PDT)
+        id S1727422AbfF0Rqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 13:46:49 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:38591 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726876AbfF0Rqs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 13:46:48 -0400
+Received: by mail-pf1-f195.google.com with SMTP id y15so1597455pfn.5;
+        Thu, 27 Jun 2019 10:46:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=37BMwxt5kwYAV/kb6ST+XvdcJZjJDKq8zOt7/ThJvGc=;
-        b=jV/4ofJk4IW/IDJ0sBCoiOUI8/i/qpmoVX6XHyawXcQ9vlpMKRT6Cf4n8G9toWXOa/
-         OX59islbrBgpLkHEST8EX59dsSnluFuUMnoc8GpLaIQZtTwlJccjy5uKAu3LFY5dqVNw
-         s4mzVpiQAmq5wJ6BBkLhS1pJ7cf6tl3QHyRcaw2PLDPfcjAj2piizSNXT6U4q+9MsZjW
-         IFsvNxcQ0UWL+A3Qn4meJL5Gj+mvRsoC07c2lgAONaUIOIxIzGQC30bpPpGXXDR6puZC
-         3vNP1xfR0Lvfj1bcV1MvWjPW6nYokJRWCSKAuRpEIrf4UOzjxzBsde+dWZb4s5k1co+h
-         wHdg==
+        bh=VunMILyBRvBUh7WpINrrKE93lqMfcAEq17rKOg7ZmjA=;
+        b=RCynl1w0cRddlViRReBIItmlHmfN5Zx2Yg1tVg6t0t4fRmBlSYXLpEV/+2MQpPwhTj
+         pxBM2H4/9SbxVQh9edPPxiiMicTvEtv5U/66QPO+F//9NoBeW959GlUPLRBZCU9e5BGK
+         cE1lXvYq37hMJ6l7RlDXKkCkAm+KMQe3LzaQK8eCYFlL/bZ2zfBJah70zNMmFor7b9b6
+         i8G7IPZnuQXuFXfO1/8eBgvQfgFZN5dLxOxWWARCs6MDTKWyCr4ncPcZbRWPBNPcgSKH
+         /80psgyyzK4tzbYhPlHhjTpxYPM1HFKbuz8I4MEC1hWdIf9OS6+KeJhHiMDZ4PvUjyyj
+         aHaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=37BMwxt5kwYAV/kb6ST+XvdcJZjJDKq8zOt7/ThJvGc=;
-        b=fbQf4vTJWUw43FjtbURUyMMAFckHMfpbI6Bk/2CmCFUKVG4WJ9Wmy5P/ITUS9/4Gc2
-         CrGRt58t0k/lA4Rjx8Gr5lGCgHwfMOe6pJdn6eP7v85kiTkuEV2Sn3NmCtFKNbo7BuDg
-         lN40joLZgPavOzBoqivaL+ZIk9O89pfCqwLZd8vWIAbZiJNEO7YPEhb7198T0S5wfS46
-         4U5sSVsISZYYW35cwyUjC/ukhZi6w9Wk690qphdjaiRFgetXibjWHyyHCbb8AcWe1OdU
-         n5W1S9MpsAE2w83mIcAgBFg7fhGWHtgqDnGee/II3JwJpuSKqV8/A4Jl8tzrHjWn65Dl
-         r9IQ==
-X-Gm-Message-State: APjAAAWE6KyJ/zggKpSKX+pkGPO5pfM5SlJp2df7HMlmur+9lDy10Ph5
-        ZNnJ/Fr3fRtLMGWn2J+pNEGpa+FihVb3ig==
-X-Google-Smtp-Source: APXvYqy24jJzhy+BDGA8o9l6esxSc38xtCqWTUe7dKy5zeDW+4NIhz9Zx9ODQDScd+E1W7z0rUr1cw==
-X-Received: by 2002:a65:6210:: with SMTP id d16mr4857854pgv.180.1561657598556;
-        Thu, 27 Jun 2019 10:46:38 -0700 (PDT)
+        bh=VunMILyBRvBUh7WpINrrKE93lqMfcAEq17rKOg7ZmjA=;
+        b=Nl57xA3c5YlNA4aPe/f/SiU3SPdulZ8XCB1IVZuVWyEd3BrgvkoNoCQQmyw4XKijXT
+         QCUg7YY/LKVgIYKUV7rVMohyHM95BoLUbEGsG24b48LLx5rJuiTxYgJ4yif4rKCoAFmF
+         aYE/eZVTGlKyo/uosPfUigDbBsnZQVSmLlJKEsl5Yvmw4XDFvAC/SSC2ZTPAMjEp7J8w
+         dxPNYltpzehUkb6N3lvhenQ2WSyoVHufxWFSDBZejHav8xlImOPy1QazHG7dQVwKq5UH
+         9NmMhClp2buNLPBaLzp5D/lmxzYbof4MtWAqIC9Sp/UvESUcPztelmbjH1AmJOJMzC36
+         s3Bw==
+X-Gm-Message-State: APjAAAUBo+22xEa5XInh7Zf/3IgxinxGKJ58W/rPMU62pYxRgUbUKfX3
+        WjszEtK7FmIrNBNfjRXAvd8=
+X-Google-Smtp-Source: APXvYqyut8DtvXqqufCRCzki4fyFf3GbeOUn1gT/1InVNE0zQGziRoZikJLxkWnR0M/QdcSMhV2ocQ==
+X-Received: by 2002:a17:90a:26e4:: with SMTP id m91mr7492906pje.93.1561657607793;
+        Thu, 27 Jun 2019 10:46:47 -0700 (PDT)
 Received: from hfq-skylake.ipads-lab.se.sjtu.edu.cn ([202.120.40.82])
-        by smtp.googlemail.com with ESMTPSA id k6sm3496547pfi.12.2019.06.27.10.46.36
+        by smtp.googlemail.com with ESMTPSA id r2sm5373668pfl.67.2019.06.27.10.46.45
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 27 Jun 2019 10:46:38 -0700 (PDT)
+        Thu, 27 Jun 2019 10:46:47 -0700 (PDT)
 From:   Fuqian Huang <huangfq.daxian@gmail.com>
 Cc:     Fuqian Huang <huangfq.daxian@gmail.com>,
-        Vishal Kulkarni <vishal@chelsio.com>,
+        Fugang Duan <fugang.duan@nxp.com>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 72/87] ethernet: chelsio: remove memset after kvzalloc
-Date:   Fri, 28 Jun 2019 01:46:29 +0800
-Message-Id: <20190627174629.6421-1-huangfq.daxian@gmail.com>
+Subject: [PATCH 73/87] ethernet: freescale: Remove memset after dma_alloc_coherent
+Date:   Fri, 28 Jun 2019 01:46:41 +0800
+Message-Id: <20190627174641.6474-1-huangfq.daxian@gmail.com>
 X-Mailer: git-send-email 2.11.0
 To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
@@ -57,26 +57,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-kvzalloc already zeroes the memory.
-memset is unneeded.
+In commit af7ddd8a627c
+("Merge tag 'dma-mapping-4.21' of git://git.infradead.org/users/hch/dma-mapping"),
+dma_alloc_coherent has already zeroed the memory.
+So memset is not needed.
 
 Signed-off-by: Fuqian Huang <huangfq.daxian@gmail.com>
 ---
- drivers/net/ethernet/chelsio/cxgb4/sched.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/ethernet/freescale/fec_main.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/sched.c b/drivers/net/ethernet/chelsio/cxgb4/sched.c
-index ba6c153ee45c..60218dc676a8 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/sched.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/sched.c
-@@ -207,7 +207,6 @@ static int t4_sched_queue_bind(struct port_info *pi, struct ch_sched_queue *p)
- 		goto out_err;
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index 38f10f7dcbc3..ec87b8b78d21 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -3143,8 +3143,6 @@ static int fec_enet_init(struct net_device *ndev)
+ 		return -ENOMEM;
+ 	}
  
- 	/* Bind queue to specified class */
--	memset(qe, 0, sizeof(*qe));
- 	qe->cntxt_id = qid;
- 	memcpy(&qe->param, p, sizeof(qe->param));
- 
+-	memset(cbd_base, 0, bd_size);
+-
+ 	/* Get the Ethernet address */
+ 	fec_get_mac(ndev);
+ 	/* make sure MAC we just acquired is programmed into the hw */
 -- 
 2.11.0
 
