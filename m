@@ -2,93 +2,248 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F42158AF2
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 21:28:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FD9458AFA
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 21:35:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726476AbfF0T2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 15:28:37 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:38366 "EHLO vps0.lunn.ch"
+        id S1726500AbfF0Tfo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 15:35:44 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:42874 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726384AbfF0T2h (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Jun 2019 15:28:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=pfFOMoKJzOKIQebJNqxQnidmbuTVklA+Iu6cpCenVNE=; b=KXsLMH0hNE8NJ4cEwwQM99d3Me
-        gRSSxDznM4Bg2y37GuZ5KL6eCrBoR2YCPrkvTLWL2r2BtqaeoioZPnXheGxF8DoLf3svxxhEwDuMJ
-        sSCtzMcfYZO3ZVB6LfQlde6hYtvefr76UEEHBaqjXCMjOQOuFyhU5uxartSW9ErTnewE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hga3y-00037F-Tj; Thu, 27 Jun 2019 21:28:06 +0200
-Date:   Thu, 27 Jun 2019 21:28:06 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Daniel Santos <daniel.santos@pobox.com>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
-        sean.wang@mediatek.com, f.fainelli@gmail.com, davem@davemloft.net,
-        matthias.bgg@gmail.com, vivien.didelot@gmail.com,
-        frank-w@public-files.de, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org
-Subject: Re: [PATCH RFC net-next 1/5] net: dsa: mt7530: Convert to PHYLINK API
-Message-ID: <20190627192806.GQ27733@lunn.ch>
-References: <20190624145251.4849-1-opensource@vdorst.com>
- <20190624145251.4849-2-opensource@vdorst.com>
- <20190624153950.hdsuhrvfd77heyor@shell.armlinux.org.uk>
- <20190625113158.Horde.pCaJOVUsgyhYLd5Diz5EZKI@www.vdorst.com>
- <20190625121030.m5w7wi3rpezhfgyo@shell.armlinux.org.uk>
- <1ad9f9a5-8f39-40bd-94bb-6b700f30c4ba@pobox.com>
- <20190625190246.GA27733@lunn.ch>
- <4fc51dc4-0eec-30d7-86d1-3404819cf6fe@pobox.com>
- <20190625204148.GB27733@lunn.ch>
- <e469daa1-3e28-db9c-e29a-7f68cc676fda@pobox.com>
+        id S1726384AbfF0Tfo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Jun 2019 15:35:44 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id E86523082B1E;
+        Thu, 27 Jun 2019 19:35:34 +0000 (UTC)
+Received: from ovpn-112-48.rdu2.redhat.com (ovpn-112-48.rdu2.redhat.com [10.10.112.48])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 440B41001B14;
+        Thu, 27 Jun 2019 19:35:28 +0000 (UTC)
+Message-ID: <e3188fc08a13ddff9ea5a200a69aa6adbd9278ed.camel@redhat.com>
+Subject: Re: [RFC] longer netdev names proposal
+From:   Dan Williams <dcbw@redhat.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        David Ahern <dsahern@gmail.com>, Jiri Pirko <jiri@resnulli.us>,
+        davem@davemloft.net, jakub.kicinski@netronome.com,
+        mlxsw@mellanox.com
+Date:   Thu, 27 Jun 2019 14:35:27 -0500
+In-Reply-To: <20190627122041.18c46daf@hermes.lan>
+References: <20190627094327.GF2424@nanopsycho>
+         <26b73332-9ea0-9d2c-9185-9de522c72bb9@gmail.com>
+         <20190627180803.GJ27240@unicorn.suse.cz>
+         <20190627112305.7e05e210@hermes.lan> <20190627183538.GI31189@lunn.ch>
+         <20190627183948.GK27240@unicorn.suse.cz>
+         <20190627122041.18c46daf@hermes.lan>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <e469daa1-3e28-db9c-e29a-7f68cc676fda@pobox.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Thu, 27 Jun 2019 19:35:43 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Looking at the data sheet page, you want FORCE_MODE_Pn set. You never
-> > want the MAC directly talking to the PHY. Bad things will happen.
+On Thu, 2019-06-27 at 12:20 -0700, Stephen Hemminger wrote:
+> On Thu, 27 Jun 2019 20:39:48 +0200
+> Michal Kubecek <mkubecek@suse.cz> wrote:
 > 
-> So what exactly do you mean by the MAC directly talking to the PHY?  Do
-> you mean setting speed, duplex, etc. via the MAC registers instead of
-> via MDIO to the MII registers of the PHY?
-
-The data sheet implies the MAC hardware performs reads on the PHY to
-get the status, and then uses that to configure the MAC. This is often
-called PHY polling. The MAC hardware however has no idea what the PHY
-driver is doing. The MAC does not take the PHY mutex. So the PHY
-driver might be doing something at the same time the MAC hardware
-polls the PHY, and it gets odd results. Some PHYs have multiple pages,
-and for example reading the temperature sensor means swapping
-pages. If the MAC hardware was to poll while the sensor is being read,
-it would not get the link status, it would read some random
-temperature register.
-
-So you want the PHY driver to read the results of auto-neg and it then
-tell the MAC the results, so the MAC can be configured correctly.
-
-> > Then use FORCE_RX_FC_Pn and FORCE_TX_Pn to reflect phydev->pause and
-> > phydev->asym_pause.
-> >
-> > The same idea applies when using phylink.
-> >
-> >     Andrew
+> > > $ ip li set dev enp3s0 alias "Onboard Ethernet"
+> > > # ip link show "Onboard Ethernet"
+> > > Device "Onboard Ethernet" does not exist.
+> > > 
+> > > So it does not really appear to be an alias, it is a label. To be
+> > > truly useful, it needs to be more than a label, it needs to be a
+> > > real
+> > > alias which you can use.  
+> > 
+> > That's exactly what I meant: to be really useful, one should be
+> > able to
+> > use the alias(es) for setting device options, for adding routes, in
+> > netfilter rules etc.
+> > 
+> > Michal
 > 
-> You're help is greatly appreciated here.  Admittedly, I'm also trying to
-> get this working in the now deprecated swconfig for a 3.18 kernel that's
-> in production.
+> The kernel doesn't enforce uniqueness of alias.
 
-I'm not very familiar with swconfig. Is there software driving the
-PHY? If not, it is then safe for the MAC hardware to poll the PHY.
+Can we even enforce unique aliases/labels? Given that the kernel hasn't
+enforced that in the past there's a good possibility of breaking stuff
+if it started. (unfortunately)
 
-     Andrew
+Dan
+
+> Also current kernel RTM_GETLINK doesn't do filter by alias (easily
+> fixed).
+> 
+> If it did, then handling it in iproute would be something like:
+> 
+> diff --git a/lib/ll_map.c b/lib/ll_map.c
+> index e0ed54bf77c9..c798ba542224 100644
+> --- a/lib/ll_map.c
+> +++ b/lib/ll_map.c
+> @@ -26,15 +26,18 @@
+>  struct ll_cache {
+>  	struct hlist_node idx_hash;
+>  	struct hlist_node name_hash;
+> +	struct hlist_node alias_hash;
+>  	unsigned	flags;
+>  	unsigned 	index;
+>  	unsigned short	type;
+> -	char		name[];
+> +	char		*alias;
+> +	char		name[IFNAMSIZ];
+>  };
+>  
+>  #define IDXMAP_SIZE	1024
+>  static struct hlist_head idx_head[IDXMAP_SIZE];
+>  static struct hlist_head name_head[IDXMAP_SIZE];
+> +static struct hlist_head alias_head[IDXMAP_SIZE];
+>  
+>  static struct ll_cache *ll_get_by_index(unsigned index)
+>  {
+> @@ -77,10 +80,26 @@ static struct ll_cache *ll_get_by_name(const char
+> *name)
+>  	return NULL;
+>  }
+>  
+> +static struct ll_cache *ll_get_by_alias(const char *alias)
+> +{
+> +	struct hlist_node *n;
+> +	unsigned h = namehash(alias) & (IDXMAP_SIZE - 1);
+> +
+> +	hlist_for_each(n, &alias_head[h]) {
+> +		struct ll_cache *im
+> +			= container_of(n, struct ll_cache, alias_hash);
+> +
+> +		if (strcmp(im->alias, alias) == 0)
+> +			return im;
+> +	}
+> +
+> +	return NULL;
+> +}
+> +
+>  int ll_remember_index(struct nlmsghdr *n, void *arg)
+>  {
+>  	unsigned int h;
+> -	const char *ifname;
+> +	const char *ifname, *ifalias;
+>  	struct ifinfomsg *ifi = NLMSG_DATA(n);
+>  	struct ll_cache *im;
+>  	struct rtattr *tb[IFLA_MAX+1];
+> @@ -96,6 +115,10 @@ int ll_remember_index(struct nlmsghdr *n, void
+> *arg)
+>  		if (im) {
+>  			hlist_del(&im->name_hash);
+>  			hlist_del(&im->idx_hash);
+> +			if (im->alias) {
+> +				hlist_del(&im->alias_hash);
+> +				free(im->alias);
+> +			}
+>  			free(im);
+>  		}
+>  		return 0;
+> @@ -106,6 +129,8 @@ int ll_remember_index(struct nlmsghdr *n, void
+> *arg)
+>  	if (ifname == NULL)
+>  		return 0;
+>  
+> +	ifalias = tb[IFLA_IFALIAS] ? rta_getattr_str(tb[IFLA_IFALIAS])
+> : NULL;
+> +
+>  	if (im) {
+>  		/* change to existing entry */
+>  		if (strcmp(im->name, ifname) != 0) {
+> @@ -114,6 +139,14 @@ int ll_remember_index(struct nlmsghdr *n, void
+> *arg)
+>  			hlist_add_head(&im->name_hash, &name_head[h]);
+>  		}
+>  
+> +		if (im->alias) {
+> +			hlist_del(&im->alias_hash);
+> +			if (ifalias) {
+> +				h = namehash(ifalias) & (IDXMAP_SIZE -
+> 1);
+> +				hlist_add_head(&im->alias_hash,
+> &alias_head[h]);
+> +			}
+> +		}
+> +
+>  		im->flags = ifi->ifi_flags;
+>  		return 0;
+>  	}
+> @@ -132,6 +165,12 @@ int ll_remember_index(struct nlmsghdr *n, void
+> *arg)
+>  	h = namehash(ifname) & (IDXMAP_SIZE - 1);
+>  	hlist_add_head(&im->name_hash, &name_head[h]);
+>  
+> +	if (ifalias) {
+> +		im->alias = strdup(ifalias);
+> +		h = namehash(ifalias) & (IDXMAP_SIZE - 1);
+> +		hlist_add_head(&im->alias_hash, &alias_head[h]);
+> +	}		
+> +	
+>  	return 0;
+>  }
+>  
+> @@ -152,7 +191,7 @@ static unsigned int ll_idx_a2n(const char *name)
+>  	return idx;
+>  }
+>  
+> -static int ll_link_get(const char *name, int index)
+> +static int ll_link_get(const char *name, const char *alias, int
+> index)
+>  {
+>  	struct {
+>  		struct nlmsghdr		n;
+> @@ -176,6 +215,9 @@ static int ll_link_get(const char *name, int
+> index)
+>  	if (name)
+>  		addattr_l(&req.n, sizeof(req), IFLA_IFNAME, name,
+>  			  strlen(name) + 1);
+> +	if (alias)
+> +		addattr_l(&req.n, sizeof(req), IFLA_IFALIAS, alias,
+> +			  strlen(alias) + 1);
+>  
+>  	if (rtnl_talk_suppress_rtnl_errmsg(&rth, &req.n, &answer) < 0)
+>  		goto out;
+> @@ -206,7 +248,7 @@ const char *ll_index_to_name(unsigned int idx)
+>  	if (im)
+>  		return im->name;
+>  
+> -	if (ll_link_get(NULL, idx) == idx) {
+> +	if (ll_link_get(NULL, NULL, idx) == idx) {
+>  		im = ll_get_by_index(idx);
+>  		if (im)
+>  			return im->name;
+> @@ -252,7 +294,13 @@ unsigned ll_name_to_index(const char *name)
+>  	if (im)
+>  		return im->index;
+>  
+> -	idx = ll_link_get(name, 0);
+> +	im = ll_get_by_alias(name);
+> +	if (im)
+> +		return im->index;
+> +
+> +	idx = ll_link_get(name, NULL, 0);
+> +	if (idx == 0)
+> +		idx = ll_link_get(NULL, name, 0);
+>  	if (idx == 0)
+>  		idx = if_nametoindex(name);
+>  	if (idx == 0)
+> @@ -270,7 +318,10 @@ void ll_drop_by_index(unsigned index)
+>  
+>  	hlist_del(&im->idx_hash);
+>  	hlist_del(&im->name_hash);
+> -
+> +	if (im->alias) {
+> +		hlist_del(&im->alias_hash);
+> +		free(im->alias);
+> +	}
+>  	free(im);
+>  }
+>  
+> 
 
