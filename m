@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC5A957748
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:46:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13AAC57744
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:46:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729501AbfF0Apa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 20:45:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44940 "EHLO mail.kernel.org"
+        id S1729457AbfF0AlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 20:41:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45024 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728705AbfF0AlF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 20:41:05 -0400
+        id S1727521AbfF0AlK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 20:41:10 -0400
 Received: from sasha-vm.mshome.net (unknown [107.242.116.147])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7C46821852;
-        Thu, 27 Jun 2019 00:41:01 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id F07C021852;
+        Thu, 27 Jun 2019 00:41:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1561596064;
-        bh=z9pdV52WHflzhUlfpqpAVU/dJKl9bkk6wov+ChM5aPg=;
+        s=default; t=1561596069;
+        bh=SJ47HIqX8vXHLwXiUOPdZh63aIIRBbI2v3uAx8PDNj4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zHl+sMV6SMUPGmnXOVQvkpOVP08x0WBRq6wqw6XFGRFR0tayLM5Q5432FnV3UgoMD
-         b5kUN2nIU2ElIPwVAdPzjyey76NxdoZQLd94hfErdtyGFkvjzAvpq+89gOH+SyS5Rh
-         SN4498aOIbJTm+xZeGjGf2uw7/PaRUKBoE8zTAMs=
+        b=YrItidelH3KuVzgTwsX+ylYJIyJbl9GQ6bK90yFnTRd7JzRnwDJyaF7p5m338cTMD
+         MmDBwEUbu4oE3S2JKwywQ99fbohSZY6i9xkSXChIw6OsXLMH3zVln1NiCjcKZKGjcp
+         3JtVstWri3c+BgXsNso6x2jc5YY9jhL/DBce1K94=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Mauro S. M. Rodrigues" <maurosr@linux.vnet.ibm.com>,
-        Sudarsana Reddy Kalluru <skalluru@marvell.com>,
+Cc:     Xin Long <lucien.xin@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 29/35] bnx2x: Check if transceiver implements DDM before access
-Date:   Wed, 26 Jun 2019 20:39:17 -0400
-Message-Id: <20190627003925.21330-29-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 31/35] ip6_tunnel: allow not to count pkts on tstats by passing dev as NULL
+Date:   Wed, 26 Jun 2019 20:39:19 -0400
+Message-Id: <20190627003925.21330-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190627003925.21330-1-sashal@kernel.org>
 References: <20190627003925.21330-1-sashal@kernel.org>
@@ -44,63 +43,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Mauro S. M. Rodrigues" <maurosr@linux.vnet.ibm.com>
+From: Xin Long <lucien.xin@gmail.com>
 
-[ Upstream commit cf18cecca911c0db96b868072665347efe6df46f ]
+[ Upstream commit 6f6a8622057c92408930c31698394fae1557b188 ]
 
-Some transceivers may comply with SFF-8472 even though they do not
-implement the Digital Diagnostic Monitoring (DDM) interface described in
-the spec. The existence of such area is specified by the 6th bit of byte
-92, set to 1 if implemented.
+A similar fix to Patch "ip_tunnel: allow not to count pkts on tstats by
+setting skb's dev to NULL" is also needed by ip6_tunnel.
 
-Currently, without checking this bit, bnx2x fails trying to read sfp
-module's EEPROM with the follow message:
-
-ethtool -m enP5p1s0f1
-Cannot get Module EEPROM data: Input/output error
-
-Because it fails to read the additional 256 bytes in which it is assumed
-to exist the DDM data.
-
-This issue was noticed using a Mellanox Passive DAC PN 01FT738. The EEPROM
-data was confirmed by Mellanox as correct and similar to other Passive
-DACs from other manufacturers.
-
-Signed-off-by: Mauro S. M. Rodrigues <maurosr@linux.vnet.ibm.com>
-Acked-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_ethtool.c | 3 ++-
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.h    | 1 +
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ include/net/ip6_tunnel.h | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_ethtool.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_ethtool.c
-index 3fd1085a093f..65bc1929d1a8 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_ethtool.c
-@@ -1581,7 +1581,8 @@ static int bnx2x_get_module_info(struct net_device *dev,
- 	}
- 
- 	if (!sff8472_comp ||
--	    (diag_type & SFP_EEPROM_DIAG_ADDR_CHANGE_REQ)) {
-+	    (diag_type & SFP_EEPROM_DIAG_ADDR_CHANGE_REQ) ||
-+	    !(diag_type & SFP_EEPROM_DDM_IMPLEMENTED)) {
- 		modinfo->type = ETH_MODULE_SFF_8079;
- 		modinfo->eeprom_len = ETH_MODULE_SFF_8079_LEN;
- 	} else {
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.h
-index b7d251108c19..7115f5025664 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.h
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.h
-@@ -62,6 +62,7 @@
- #define SFP_EEPROM_DIAG_TYPE_ADDR		0x5c
- #define SFP_EEPROM_DIAG_TYPE_SIZE		1
- #define SFP_EEPROM_DIAG_ADDR_CHANGE_REQ		(1<<2)
-+#define SFP_EEPROM_DDM_IMPLEMENTED		(1<<6)
- #define SFP_EEPROM_SFF_8472_COMP_ADDR		0x5e
- #define SFP_EEPROM_SFF_8472_COMP_SIZE		1
- 
+diff --git a/include/net/ip6_tunnel.h b/include/net/ip6_tunnel.h
+index d66f70f63734..3b0e3cdee1c3 100644
+--- a/include/net/ip6_tunnel.h
++++ b/include/net/ip6_tunnel.h
+@@ -152,9 +152,12 @@ static inline void ip6tunnel_xmit(struct sock *sk, struct sk_buff *skb,
+ 	memset(skb->cb, 0, sizeof(struct inet6_skb_parm));
+ 	pkt_len = skb->len - skb_inner_network_offset(skb);
+ 	err = ip6_local_out(dev_net(skb_dst(skb)->dev), sk, skb);
+-	if (unlikely(net_xmit_eval(err)))
+-		pkt_len = -1;
+-	iptunnel_xmit_stats(dev, pkt_len);
++
++	if (dev) {
++		if (unlikely(net_xmit_eval(err)))
++			pkt_len = -1;
++		iptunnel_xmit_stats(dev, pkt_len);
++	}
+ }
+ #endif
+ #endif
 -- 
 2.20.1
 
