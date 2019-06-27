@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C16D576C5
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:42:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5C58576EE
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:45:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729211AbfF0Al4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 20:41:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45608 "EHLO mail.kernel.org"
+        id S1729615AbfF0Al5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 20:41:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45658 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729594AbfF0Alx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 20:41:53 -0400
+        id S1729603AbfF0Al4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 20:41:56 -0400
 Received: from sasha-vm.mshome.net (unknown [107.242.116.147])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BBFD721852;
-        Thu, 27 Jun 2019 00:41:50 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CA7A821881;
+        Thu, 27 Jun 2019 00:41:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1561596113;
-        bh=6Z3cj53GSfYzAfPAXGYhyrX0O/+vCJfobNxE5a6Ybk8=;
+        s=default; t=1561596116;
+        bh=6Sp5x8S886L5spv2yGt0k07vOzOJRvdAmBeiH7wNofc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z7f4WBvEvBSAV/nNdMoQnTbocTBIpNqtMz4cLA/JDoVEqfl1r/cO9Twjdi3bUbugc
-         aDun5ziXmLUYvx+OrIe5wLbfdWkPujyKLPNyjZvEXs4K1Bp/Tg9F8/7JHDHnvFpHIH
-         T2hLMgK4UHSFvjocRanX2R40ZqhM+Uvz0oWm0Vk0=
+        b=sD/IHQBJaRCTj7dOTRvDmznsXSLd1gvgKM2HKD/zUstsunGJupHTMBPJNOLgcU0Yk
+         dAzBmhlLZjXZl2ogI29dnGmGxQ46au0cHerZoDVcbfnL5u4Dmo39XkGcTr5wT5MGaz
+         7+2nic7oLy4TQfKDscI8I/PcEz1p+gc+7f3JRHDg=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Guillaume Nault <gnault@redhat.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 09/21] netfilter: ipv6: nf_defrag: accept duplicate fragments again
-Date:   Wed, 26 Jun 2019 20:41:09 -0400
-Message-Id: <20190627004122.21671-9-sashal@kernel.org>
+Cc:     Sean Nyekjaer <sean@geanix.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 10/21] dt-bindings: can: mcp251x: add mcp25625 support
+Date:   Wed, 26 Jun 2019 20:41:10 -0400
+Message-Id: <20190627004122.21671-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190627004122.21671-1-sashal@kernel.org>
 References: <20190627004122.21671-1-sashal@kernel.org>
@@ -45,59 +44,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Guillaume Nault <gnault@redhat.com>
+From: Sean Nyekjaer <sean@geanix.com>
 
-[ Upstream commit 8a3dca632538c550930ce8bafa8c906b130d35cf ]
+[ Upstream commit 0df82dcd55832a99363ab7f9fab954fcacdac3ae ]
 
-When fixing the skb leak introduced by the conversion to rbtree, I
-forgot about the special case of duplicate fragments. The condition
-under the 'insert_error' label isn't effective anymore as
-nf_ct_frg6_gather() doesn't override the returned value anymore. So
-duplicate fragments now get NF_DROP verdict.
+Fully compatible with mcp2515, the mcp25625 have integrated transceiver.
 
-To accept duplicate fragments again, handle them specially as soon as
-inet_frag_queue_insert() reports them. Return -EINPROGRESS which will
-translate to NF_STOLEN verdict, like any accepted fragment. However,
-such packets don't carry any new information and aren't queued, so we
-just drop them immediately.
+This patch add the mcp25625 to the device tree bindings documentation.
 
-Fixes: a0d56cb911ca ("netfilter: ipv6: nf_defrag: fix leakage of unqueued fragments")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sean Nyekjaer <sean@geanix.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/netfilter/nf_conntrack_reasm.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ Documentation/devicetree/bindings/net/can/microchip,mcp251x.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/ipv6/netfilter/nf_conntrack_reasm.c b/net/ipv6/netfilter/nf_conntrack_reasm.c
-index e6114a6710e0..0b53d1907e4a 100644
---- a/net/ipv6/netfilter/nf_conntrack_reasm.c
-+++ b/net/ipv6/netfilter/nf_conntrack_reasm.c
-@@ -264,8 +264,14 @@ static int nf_ct_frag6_queue(struct frag_queue *fq, struct sk_buff *skb,
- 
- 	prev = fq->q.fragments_tail;
- 	err = inet_frag_queue_insert(&fq->q, skb, offset, end);
--	if (err)
-+	if (err) {
-+		if (err == IPFRAG_DUP) {
-+			/* No error for duplicates, pretend they got queued. */
-+			kfree_skb(skb);
-+			return -EINPROGRESS;
-+		}
- 		goto insert_error;
-+	}
- 
- 	if (dev)
- 		fq->iif = dev->ifindex;
-@@ -303,8 +309,6 @@ static int nf_ct_frag6_queue(struct frag_queue *fq, struct sk_buff *skb,
- 	return -EINPROGRESS;
- 
- insert_error:
--	if (err == IPFRAG_DUP)
--		goto err;
- 	inet_frag_kill(&fq->q);
- err:
- 	skb_dst_drop(skb);
+diff --git a/Documentation/devicetree/bindings/net/can/microchip,mcp251x.txt b/Documentation/devicetree/bindings/net/can/microchip,mcp251x.txt
+index ee3723beb701..33b38716b77f 100644
+--- a/Documentation/devicetree/bindings/net/can/microchip,mcp251x.txt
++++ b/Documentation/devicetree/bindings/net/can/microchip,mcp251x.txt
+@@ -4,6 +4,7 @@ Required properties:
+  - compatible: Should be one of the following:
+    - "microchip,mcp2510" for MCP2510.
+    - "microchip,mcp2515" for MCP2515.
++   - "microchip,mcp25625" for MCP25625.
+  - reg: SPI chip select.
+  - clocks: The clock feeding the CAN controller.
+  - interrupt-parent: The parent interrupt controller.
 -- 
 2.20.1
 
