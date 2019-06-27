@@ -2,177 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 59E9358959
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 19:56:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6771958957
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 19:56:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726687AbfF0R4V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 13:56:21 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:46184 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726405AbfF0R4V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 13:56:21 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5RHka8J003440;
-        Thu, 27 Jun 2019 10:56:00 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=4SZT8wVN4+BSw4lbdFNKUFRopc0Pil8T9DEGkN7YPlM=;
- b=H84VhpVkmEQ4IxJBXBYNKJEEW6Gc40cEBNIXdTW9fuZcB01TrvvQmU/Mu0lrAqd6MiV8
- uKfpJ81cxaVCSHE3Y1+fyRq6uRQMbDg9fYpwCO8bHKi8QlcFychWhTAyFjDvur4W88jn
- hbt6LQf5x9r1mLuftIBzO1zcumGMz06GqbA= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2td0y50fy2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 27 Jun 2019 10:56:00 -0700
-Received: from prn-mbx06.TheFacebook.com (2620:10d:c081:6::20) by
- prn-hub02.TheFacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Thu, 27 Jun 2019 10:55:59 -0700
-Received: from prn-hub01.TheFacebook.com (2620:10d:c081:35::125) by
- prn-mbx06.TheFacebook.com (2620:10d:c081:6::20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Thu, 27 Jun 2019 10:55:59 -0700
-Received: from NAM05-CO1-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Thu, 27 Jun 2019 10:55:59 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector1-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4SZT8wVN4+BSw4lbdFNKUFRopc0Pil8T9DEGkN7YPlM=;
- b=NDOUOeqcbMTXafX8rNZmKZsCEUZXyYPp/sxm/PvpX2h8BmNAOGU2kGWpURn5UN9b5sa+H9PUmR17P3ErQPikRA/ZDBO2y3j6iqxA2Pc7+b65VyHEGZsaQzV87ciLfWMfqZ71ZhYrY8c3BHfCxGJJ+ax9qEPlYCXeT5cHmZ/IlYM=
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com (10.175.3.22) by
- MWHPR15MB1791.namprd15.prod.outlook.com (10.174.255.20) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2008.16; Thu, 27 Jun 2019 17:55:58 +0000
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::400e:e329:ea98:aa0d]) by MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::400e:e329:ea98:aa0d%6]) with mapi id 15.20.2008.018; Thu, 27 Jun 2019
- 17:55:58 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     Andrii Nakryiko <andriin@fb.com>, Alexei Starovoitov <ast@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 1/3] libbpf: capture value in BTF type info for
- BTF-defined map defs
-Thread-Topic: [PATCH bpf-next 1/3] libbpf: capture value in BTF type info for
- BTF-defined map defs
-Thread-Index: AQHVLHX5c/0tlkdQh02ogvUGijo9IKavwlqAgAAFowCAAAI7gA==
-Date:   Thu, 27 Jun 2019 17:55:58 +0000
-Message-ID: <079A7D73-697C-4CFD-97F3-7CFB741BE4C3@fb.com>
-References: <20190626232133.3800637-1-andriin@fb.com>
- <20190626232133.3800637-2-andriin@fb.com>
- <E28D922F-9D97-4836-B687-B4CBC3549AE1@fb.com>
- <CAEf4Bza1p4ozVV-Vn8ibV6JRtGc_voh-Mkx51eWvuVi1P8ogSA@mail.gmail.com>
-In-Reply-To: <CAEf4Bza1p4ozVV-Vn8ibV6JRtGc_voh-Mkx51eWvuVi1P8ogSA@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3445.104.11)
-x-originating-ip: [2620:10d:c090:200::3:a913]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 89ebcb3b-ee81-4689-412d-08d6fb28b5d6
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR15MB1791;
-x-ms-traffictypediagnostic: MWHPR15MB1791:
-x-microsoft-antispam-prvs: <MWHPR15MB1791EB5631E5BEF7D00C0DFEB3FD0@MWHPR15MB1791.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:590;
-x-forefront-prvs: 008184426E
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(376002)(39860400002)(396003)(346002)(366004)(189003)(199004)(53546011)(6486002)(6506007)(76176011)(53936002)(6436002)(46003)(305945005)(50226002)(6116002)(33656002)(102836004)(6512007)(186003)(476003)(2616005)(14454004)(486006)(71190400001)(71200400001)(36756003)(256004)(2906002)(316002)(25786009)(54906003)(68736007)(99286004)(4326008)(11346002)(57306001)(446003)(64756008)(66446008)(66476007)(66556008)(6246003)(81156014)(81166006)(7736002)(6916009)(76116006)(8676002)(73956011)(5660300002)(66946007)(8936002)(478600001)(86362001)(229853002);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1791;H:MWHPR15MB1165.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 8VzrZkoK55QpwuCCP1D3ItEuJhE/6O7p9836LUMDh9/AxPxe9CUtH8tMaJ4A3x8Z+QDFAGTOXPh9xz7fJ/YfDwwf/ue1R9qP3UKRhUSQNmn4E1paHHNIoiYTpiGo+Ez5Db92PPrIARo219qddQlWQrqZbJsmnu4PQDy0GRfGSrzw1FbDCxTWHSRwNLiOI2yvAXeuVPyvO788aLghBvM2MSGYDR6847uneCFr76j8qPO88aQT4SR3qdYlzI3+0S8u+Xfe82iKYIlFbDkz+wxKrxLKfbzLTBql6KLW5UT+k+NPwAffSC/Z11wR5VHTOV5pUqNtKWpiDMHoqr+v45qmFNOmwZec9ambkeaLTK30e9H1FoEqoJftqaSDsNFz89qninxBi/GWipMqzA6GWZ3dbu6eKeP184/YzEaMqXgZ53o=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <94983CB48E5BEF409DB20B7960CF3C83@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1726672AbfF0R4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 13:56:17 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:33786 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726405AbfF0R4R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 13:56:17 -0400
+Received: by mail-pf1-f195.google.com with SMTP id x15so1616475pfq.0
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 10:56:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=LxEztFoHTzDBArSkM2DATNWZeIKb+2HqFQQZReY8AZE=;
+        b=ltFFdm3SsKlHYczuhmU4RxSM7JnOUiQ3I1cSvZUOiPzNdEA8swMQ3O7lAmuLJH+wdx
+         9SwmDnGDN4cP0AHaG7alNCE3NbzJDDWA7aJwk3zSwRih7XW2/9b4w/c2zhEF4tX17OTm
+         PB/mw5hk7Hmv7QbL+PCa6ZUuW5sbatSZ6MBn8Pckc8aVFYAkGTnvDr+NdgZ/i2xSEK+e
+         +IsTCBcY+HweGckh3FzCiuDAMp/QX+ZJ0BJR0z+ivFhtejFEzRPzAB1rmVtb6B9nmmB1
+         ogcVue/B/Cffl24MWJ4gAOlncXT1H21JDT27Q+gwUrrgdanzxfq7SvJ8eJdA3UMsnKYy
+         +ZhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=LxEztFoHTzDBArSkM2DATNWZeIKb+2HqFQQZReY8AZE=;
+        b=mTJFzUYfs6/Rz1Ym/jCC673Ps0ze3tzRkTmN6eEqwExwN+U+Rbt8rv3aOC6ZU6Es6V
+         z11OFWPygglF+/L/5iSoiBHi52fAm2y0fH4cn0oKdzaQXm1rRrkaQQW6jqPqZEaSlCfO
+         crZzflFxqFcHNQk1SJ1cYoXlNnExyBPhkthV6H5fa3iPxLOi+mczpPa/jfvufnvyuDw0
+         xLc//FLnlCsg6zAkioCzE1DOEXY7FZefj0uw3HEWDdwuvpDZ5BRk0g4YcCRyEVNHEByw
+         wuTImsE8dSgQem7u8KNpXnV43xgReSheGKpUAxbBVXKCDlST1LV/NylgHDVlnTHxJ0gw
+         sJtA==
+X-Gm-Message-State: APjAAAVdNuqO7CPsHWRjdDo/0fZsbL08h/XO2m3Z4EIzaIrd76wQulf2
+        C5HZpQTQ5SePEfeSTa+7Rx0oZ2VTlnE=
+X-Google-Smtp-Source: APXvYqyn3b3G8kd3kHLHMkHjDkOOEIQvTmpgdPHVAEIwvAQclCzYGkuZimpjqsMKq192YYMqYF3QDA==
+X-Received: by 2002:a63:221f:: with SMTP id i31mr1554092pgi.251.1561658176071;
+        Thu, 27 Jun 2019 10:56:16 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id m6sm10002375pjl.18.2019.06.27.10.56.15
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 27 Jun 2019 10:56:15 -0700 (PDT)
+Date:   Thu, 27 Jun 2019 10:56:09 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
+        davem@davemloft.net, sthemmin@microsoft.com, dsahern@gmail.com,
+        mlxsw@mellanox.com
+Subject: Re: [RFC] longer netdev names proposal
+Message-ID: <20190627105609.521f632a@hermes.lan>
+In-Reply-To: <20190627104808.1404049a@cakuba.netronome.com>
+References: <20190627094327.GF2424@nanopsycho>
+        <20190627104808.1404049a@cakuba.netronome.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 89ebcb3b-ee81-4689-412d-08d6fb28b5d6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jun 2019 17:55:58.5633
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: songliubraving@fb.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1791
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-27_12:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=607 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906270205
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 27 Jun 2019 10:48:08 -0700
+Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
 
+> On Thu, 27 Jun 2019 11:43:27 +0200, Jiri Pirko wrote:
+> > Hi all.
+> > 
+> > In the past, there was repeatedly discussed the IFNAMSIZ (16) limit for
+> > netdevice name length. Now when we have PF and VF representors
+> > with port names like "pfXvfY", it became quite common to hit this limit:
+> > 0123456789012345
+> > enp131s0f1npf0vf6
+> > enp131s0f1npf0vf22
+> > 
+> > Since IFLA_NAME is just a string, I though it might be possible to use
+> > it to carry longer names as it is. However, the userspace tools, like
+> > iproute2, are doing checks before print out. So for example in output of
+> > "ip addr" when IFLA_NAME is longer than IFNAMSIZE, the netdevice is
+> > completely avoided.
+> > 
+> > So here is a proposal that might work:
+> > 1) Add a new attribute IFLA_NAME_EXT that could carry names longer than
+> >    IFNAMSIZE, say 64 bytes. The max size should be only defined in kernel,
+> >    user should be prepared for any string size.
+> > 2) Add a file in sysfs that would indicate that NAME_EXT is supported by
+> >    the kernel.
+> > 3) Udev is going to look for the sysfs indication file. In case when
+> >    kernel supports long names, it will do rename to longer name, setting
+> >    IFLA_NAME_EXT. If not, it does what it does now - fail.
+> > 4) There are two cases that can happen during rename:
+> >    A) The name is shorter than IFNAMSIZ  
+> >       -> both IFLA_NAME and IFLA_NAME_EXT would contain the same string:    
+> >          original IFLA_NAME     = eth0
+> >          original IFLA_NAME_EXT = eth0
+> >          renamed  IFLA_NAME     = enp5s0f1npf0vf1
+> >          renamed  IFLA_NAME_EXT = enp5s0f1npf0vf1
+> >    B) The name is longer tha IFNAMSIZ  
+> >       -> IFLA_NAME would contain the original one, IFLA_NAME_EXT would     
+> >          contain the new one:
+> >          original IFLA_NAME     = eth0
+> >          original IFLA_NAME_EXT = eth0
+> >          renamed  IFLA_NAME     = eth0
+> >          renamed  IFLA_NAME_EXT = enp131s0f1npf0vf22  
+> 
+> I think B is the only way, A risks duplicate IFLA_NAMEs over ioctl,
+> right?  And maybe there is some crazy application out there which 
+> mixes netlink and ioctl.
+> 
+> I guess it's not worse than status quo, given that today renames 
+> will fail and we will either get truncated names or eth0s..
+> 
+> > This would allow the old tools to work with "eth0" and the new
+> > tools would work with "enp131s0f1npf0vf22". In sysfs, there would
+> > be symlink from one name to another.
+> >       
+> > Also, there might be a warning added to kernel if someone works
+> > with IFLA_NAME that the userspace tool should be upgraded.
+> > 
+> > Eventually, only IFLA_NAME_EXT is going to be used by everyone.
+> > 
+> > I'm aware there are other places where similar new attribute
+> > would have to be introduced too (ip rule for example).
+> > I'm not saying this is a simple work.
+> > 
+> > Question is what to do with the ioctl api (get ifindex etc). I would
+> > probably leave it as is and push tools to use rtnetlink instead.
+> > 
+> > Any ideas why this would not work? Any ideas how to solve this
+> > differently?  
+> 
+> Since we'd have to update all user space to make use of the new names
+> I'd be tempted to move to a more structured device identification.
+> 
+> 5: enp131s0f1npf0vf6: <BROADCAST,MULTICAST> ...
+> 
+> vs:
+> 
+> 5: eth5 (parent enp131s0f1 pf 0 vf 6 peer X*): <BROADCAST,MULTICAST> ...
+> 
+> * ;)
+> 
+> And allow filtering/selection of device based on more attributes than
+> just name and ifindex.  In practice in container workloads, for example,
+> the names are already very much insufficient to identify the device.
+> Refocusing on attributes is probably a big effort and not that practical
+> for traditional CLI users?  IDK
+> 
+> Anyway, IMHO your scheme is strictly better than status quo.
 
-> On Jun 27, 2019, at 10:47 AM, Andrii Nakryiko <andrii.nakryiko@gmail.com>=
- wrote:
->=20
-> On Thu, Jun 27, 2019 at 10:27 AM Song Liu <songliubraving@fb.com> wrote:
->>=20
->>=20
->>=20
->>> On Jun 26, 2019, at 4:21 PM, Andrii Nakryiko <andriin@fb.com> wrote:
->>>=20
->>> Change BTF-defined map definitions to capture compile-time integer
->>> values as part of BTF type definition, to avoid split of key/value type
->>> information and actual type/size/flags initialization for maps.
->>=20
->> If I have an old bpf program and compiled it with new llvm, will it
->> work with new libbpf?
->=20
-> You mean BPF programs that used previous incarnation of BTF-defined
-> maps? No, they won't work. But we never released them, so I think it's
-> ok to change them. Nothing should be using that except for selftests,
-> which I fixed.
+Or Cisco style naming ;-) Ethernet0/0 
 
-I see. This makes sense.=20
+There is a better solution for human use already.
+the field ifalias allows arbitrary values and hooked into SNMP.
 
->=20
->>=20
->>=20
->>>=20
->>> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
->>> ---
->=20
-> <snip>
->=20
->>> diff --git a/tools/testing/selftests/bpf/bpf_helpers.h b/tools/testing/=
-selftests/bpf/bpf_helpers.h
->>> index 1a5b1accf091..aa5ddf58c088 100644
->>> --- a/tools/testing/selftests/bpf/bpf_helpers.h
->>> +++ b/tools/testing/selftests/bpf/bpf_helpers.h
->>> @@ -8,6 +8,9 @@
->>> */
->>> #define SEC(NAME) __attribute__((section(NAME), used))
->>>=20
->>> +#define __int(name, val) int (*name)[val]
->>> +#define __type(name, val) val *name
->>> +
->>=20
->> I think we need these two in libbpf.
->=20
-> Yes, but it's another story for another set of patches. We'll need to
-> provide bpf_helpers as part of libbpf for inclusion into BPF programs,
-> but there are a bunch of problems right now with existing
-> bpf_heplers.h that prevents us from just copying it into libbpf. We'll
-> need to resolve those first.
->=20
-> But then again, there is no use of __int and __type for user-space
-> programs, so for now it's ok.
-
-OK. How about we put these two lines in an separate patch?
-
-Thanks,
-Song
-
+Why not have userspace fill in this field with something by default?
