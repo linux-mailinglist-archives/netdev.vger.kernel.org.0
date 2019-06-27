@@ -2,123 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AFA357F79
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 11:43:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27E0D57F86
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 11:45:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726375AbfF0Jnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 05:43:31 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:40655 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726292AbfF0Jnb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 05:43:31 -0400
-Received: by mail-wr1-f68.google.com with SMTP id p11so1744265wre.7
-        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 02:43:29 -0700 (PDT)
+        id S1726518AbfF0JpJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 05:45:09 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:38147 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726497AbfF0JpH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 05:45:07 -0400
+Received: by mail-pl1-f194.google.com with SMTP id 9so213257ple.5
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 02:45:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=LPhI4FnAB8rYALzYGcAglm2VXpvRQrNy2JZPV5HKb9M=;
-        b=jCaQVdmMAZbe2sPxH8qKssiBdJNbD90EemzVHvlBBVE39NkWxTuu1mzC0w76xuvA/B
-         Ybkwnx+pQctkcI/yF1sJcqynfnXob7EnQRVy1a6A5Dr4y2DLbu7Ae4qk6UEoOVxx4hjG
-         75S4EaK51y/feMRvCK3Y2M0djCzvmZ7IwGru2q+5v1WOZD+unS1I54QnT5m0hGu6dLqu
-         Hws1Ezu6C3mAWqOALyYVKMs12WfteEOa4wZxpbi9nSKy7omjf5hzyANl8xTXU6BddoCc
-         P2zeBO/34Y0DXAr47gSmYyKzairoY0xLy/bWJKtYi5hXity/+8SR01dLfDWYkvL1lN04
-         gvdw==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=o85DtuAz6vSx6yFaE334J1wzUYYj6hZsrPSLAKXtHB8=;
+        b=B3dztp3FcbA+7gNRlLkK7oLFjcDbh9ysjKzlVhmeiWvFSCRRgzOu3jhWlItI82K2on
+         NoC9lJxElbHVs2s4IX94GlGQFoe1E0/xUG3B1tEb26/oerqwu8DlL0WRHuDNY+XVtyjZ
+         ySDfC6lB1mxaE7gUkEMaYm0rh/Uq32hvFs6nMoY+ZKJ8xiY+0oxcxlAi8ilEZJc6mQgg
+         DHYglcFS0zRsnJALqhaPYuy4d0ttc50Jl8Fid2xdJEpCVcZHrvRFBSmPl2+9s2Z2DNIp
+         1kUTYczvCKliX8609aQRmOG8qt9jUfIUmunjcEOkHde/YAWL8CvWvRYaQYgCKKjI+duU
+         CcQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=LPhI4FnAB8rYALzYGcAglm2VXpvRQrNy2JZPV5HKb9M=;
-        b=PHcxPeJ+CKQOT/VT+2G5g+Vs80gJMutbOd/DCtwiBvFxHHHUKlaASrNiX2x6L7+B0y
-         G7D1rZlJtwPrC9molMrcInQUMfgDEyTlCUihTcN464v6S/c0MFp85wgT4D0k/G9P6aW1
-         0XLrCpIIY9tpsTfyguGW6CqV2W+pVClrHWmD0ETmGhzBrRAlSyxkFSsvLShiBBZGCPXb
-         Vt7IMC2ybtAj8Tn29roYL1oABRJmeAGJzB2euiRi4peApnE0THlMC9jAXSAH2Ksdkcqq
-         5+5Qci6AH4JRE9XDvvY6W1j4Sthg7v7tahMWLrHC7JO54ZSkTGpWSMjVNpUagkOGeqFL
-         o61w==
-X-Gm-Message-State: APjAAAUjmuKk6Yek9F8zjeMoT6gRjYgjTQh6vuEu0m/p177HkUDGqHFz
-        ud3iBIeaeZ0dH5MBOQDZxq7ewdGXGN4=
-X-Google-Smtp-Source: APXvYqw9Hk+sQA5fXIlMdEnCT7a4M8flf5jEEjxQiPcaw80Qlnvpd57yYiFYM9sJEZkwusR+mzuvqw==
-X-Received: by 2002:a5d:56c1:: with SMTP id m1mr2624273wrw.26.1561628608936;
-        Thu, 27 Jun 2019 02:43:28 -0700 (PDT)
-Received: from localhost (ip-89-176-222-26.net.upcbroadband.cz. [89.176.222.26])
-        by smtp.gmail.com with ESMTPSA id o185sm3892191wmo.45.2019.06.27.02.43.28
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=o85DtuAz6vSx6yFaE334J1wzUYYj6hZsrPSLAKXtHB8=;
+        b=qyALshrV6lYwJUd5tfpC5S6G32U0W34ccj8aVC8qg/n/UFEGvA4NDFDVJMZ46yUQTB
+         lbQIhg+in2GpRQtbGdITTGGnuohlW5FD/otk53+pWyHcd8AXI/UkyVAPwHlvHy/4zgkE
+         Al373ICFdqLuygEHRwtd0l9gJ7M5PYwBxobfQQzbE016RHEJI9Ev35vl113TZ6T37n6M
+         ITmbP7ucBHXbUps///N3F34P1o0zmm53r15Y0yvGWTLpEodT9GQj/teTMX3gtDV+n+Rp
+         KOgyZkrmP1IHXLZnuQaHc90lw93Oif35q3NBw/wGlrzs5yQzamMorTul9khzW8CxIDG6
+         seRw==
+X-Gm-Message-State: APjAAAXk185vxUzWMjKCALoNe0HypGkuR5yHfldwXhkM7aNGxyOWrcSa
+        Lr4V7N2QyNJ1q/iOBOEXQBI=
+X-Google-Smtp-Source: APXvYqzVL9c51KzJLbk0NTFGs9xwSuuG5UZU1OMSwSvUjoxGJzxAsHQW0lQbTG3CsLFbLiyWGpXW9Q==
+X-Received: by 2002:a17:902:8546:: with SMTP id d6mr3497964plo.207.1561628707099;
+        Thu, 27 Jun 2019 02:45:07 -0700 (PDT)
+Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id d123sm2323124pfc.144.2019.06.27.02.45.05
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 27 Jun 2019 02:43:28 -0700 (PDT)
-Date:   Thu, 27 Jun 2019 11:43:27 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
-        sthemmin@microsoft.com, dsahern@gmail.com, mlxsw@mellanox.com
-Subject: [RFC] longer netdev names proposal
-Message-ID: <20190627094327.GF2424@nanopsycho>
+        Thu, 27 Jun 2019 02:45:06 -0700 (PDT)
+Date:   Thu, 27 Jun 2019 17:44:57 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net] igmp: fix memory leak in igmpv3_del_delrec()
+Message-ID: <20190627094457.GL18865@dhcp-12-139.nay.redhat.com>
+References: <20190627082701.226711-1-edumazet@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <20190627082701.226711-1-edumazet@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all.
+On Thu, Jun 27, 2019 at 01:27:01AM -0700, Eric Dumazet wrote:
+> im->tomb and/or im->sources might not be NULL, but we
+> currently overwrite their values blindly.
+> 
+> Using swap() will make sure the following call to kfree_pmc(pmc)
+> will properly free the psf structures.
+> 
+> Tested with the C repro provided by syzbot, which basically does :
+> 
+>  socket(PF_INET, SOCK_DGRAM, IPPROTO_IP) = 3
+>  setsockopt(3, SOL_IP, IP_ADD_MEMBERSHIP, "\340\0\0\2\177\0\0\1\0\0\0\0", 12) = 0
+>  ioctl(3, SIOCSIFFLAGS, {ifr_name="lo", ifr_flags=0}) = 0
+>  setsockopt(3, SOL_IP, IP_MSFILTER, "\340\0\0\2\177\0\0\1\1\0\0\0\1\0\0\0\377\377\377\377", 20) = 0
+>  ioctl(3, SIOCSIFFLAGS, {ifr_name="lo", ifr_flags=IFF_UP}) = 0
+>  exit_group(0)                    = ?
+> 
+> BUG: memory leak
+> unreferenced object 0xffff88811450f140 (size 64):
+>   comm "softirq", pid 0, jiffies 4294942448 (age 32.070s)
+>   hex dump (first 32 bytes):
+>     00 00 00 00 00 00 00 00 ff ff ff ff 00 00 00 00  ................
+>     00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00  ................
+>   backtrace:
+>     [<00000000c7bad083>] kmemleak_alloc_recursive include/linux/kmemleak.h:43 [inline]
+>     [<00000000c7bad083>] slab_post_alloc_hook mm/slab.h:439 [inline]
+>     [<00000000c7bad083>] slab_alloc mm/slab.c:3326 [inline]
+>     [<00000000c7bad083>] kmem_cache_alloc_trace+0x13d/0x280 mm/slab.c:3553
+>     [<000000009acc4151>] kmalloc include/linux/slab.h:547 [inline]
+>     [<000000009acc4151>] kzalloc include/linux/slab.h:742 [inline]
+>     [<000000009acc4151>] ip_mc_add1_src net/ipv4/igmp.c:1976 [inline]
+>     [<000000009acc4151>] ip_mc_add_src+0x36b/0x400 net/ipv4/igmp.c:2100
+>     [<000000004ac14566>] ip_mc_msfilter+0x22d/0x310 net/ipv4/igmp.c:2484
+>     [<0000000052d8f995>] do_ip_setsockopt.isra.0+0x1795/0x1930 net/ipv4/ip_sockglue.c:959
+>     [<000000004ee1e21f>] ip_setsockopt+0x3b/0xb0 net/ipv4/ip_sockglue.c:1248
+>     [<0000000066cdfe74>] udp_setsockopt+0x4e/0x90 net/ipv4/udp.c:2618
+>     [<000000009383a786>] sock_common_setsockopt+0x38/0x50 net/core/sock.c:3126
+>     [<00000000d8ac0c94>] __sys_setsockopt+0x98/0x120 net/socket.c:2072
+>     [<000000001b1e9666>] __do_sys_setsockopt net/socket.c:2083 [inline]
+>     [<000000001b1e9666>] __se_sys_setsockopt net/socket.c:2080 [inline]
+>     [<000000001b1e9666>] __x64_sys_setsockopt+0x26/0x30 net/socket.c:2080
+>     [<00000000420d395e>] do_syscall_64+0x76/0x1a0 arch/x86/entry/common.c:301
+>     [<000000007fd83a4b>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> 
+> Fixes: 24803f38a5c0 ("igmp: do not remove igmp souce list info when set link down")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Hangbin Liu <liuhangbin@gmail.com>
+> Reported-by: syzbot+6ca1abd0db68b5173a4f@syzkaller.appspotmail.com
+> ---
 
-In the past, there was repeatedly discussed the IFNAMSIZ (16) limit for
-netdevice name length. Now when we have PF and VF representors
-with port names like "pfXvfY", it became quite common to hit this limit:
-0123456789012345
-enp131s0f1npf0vf6
-enp131s0f1npf0vf22
+Hi Eric,
 
-Since IFLA_NAME is just a string, I though it might be possible to use
-it to carry longer names as it is. However, the userspace tools, like
-iproute2, are doing checks before print out. So for example in output of
-"ip addr" when IFLA_NAME is longer than IFNAMSIZE, the netdevice is
-completely avoided.
+Thanks for the fixup.
 
-So here is a proposal that might work:
-1) Add a new attribute IFLA_NAME_EXT that could carry names longer than
-   IFNAMSIZE, say 64 bytes. The max size should be only defined in kernel,
-   user should be prepared for any string size.
-2) Add a file in sysfs that would indicate that NAME_EXT is supported by
-   the kernel.
-3) Udev is going to look for the sysfs indication file. In case when
-   kernel supports long names, it will do rename to longer name, setting
-   IFLA_NAME_EXT. If not, it does what it does now - fail.
-4) There are two cases that can happen during rename:
-   A) The name is shorter than IFNAMSIZ
-      -> both IFLA_NAME and IFLA_NAME_EXT would contain the same string:
-         original IFLA_NAME     = eth0
-         original IFLA_NAME_EXT = eth0
-         renamed  IFLA_NAME     = enp5s0f1npf0vf1
-         renamed  IFLA_NAME_EXT = enp5s0f1npf0vf1
-   B) The name is longer tha IFNAMSIZ
-      -> IFLA_NAME would contain the original one, IFLA_NAME_EXT would 
-         contain the new one:
-         original IFLA_NAME     = eth0
-         original IFLA_NAME_EXT = eth0
-         renamed  IFLA_NAME     = eth0
-         renamed  IFLA_NAME_EXT = enp131s0f1npf0vf22
-
-This would allow the old tools to work with "eth0" and the new
-tools would work with "enp131s0f1npf0vf22". In sysfs, there would
-be symlink from one name to another.
-      
-Also, there might be a warning added to kernel if someone works
-with IFLA_NAME that the userspace tool should be upgraded.
-
-Eventually, only IFLA_NAME_EXT is going to be used by everyone.
-
-I'm aware there are other places where similar new attribute
-would have to be introduced too (ip rule for example).
-I'm not saying this is a simple work.
-
-Question is what to do with the ioctl api (get ifindex etc). I would
-probably leave it as is and push tools to use rtnetlink instead.
-
-Any ideas why this would not work? Any ideas how to solve this
-differently?
-
-Thanks!
-
-Jiri
-     
+Cheers
+Hangbin
