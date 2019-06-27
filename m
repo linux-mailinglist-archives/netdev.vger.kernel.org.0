@@ -2,81 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD09258A1A
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 20:39:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECB9858A2E
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 20:49:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726472AbfF0Sju (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 14:39:50 -0400
-Received: from mx2.suse.de ([195.135.220.15]:49588 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726384AbfF0Sju (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Jun 2019 14:39:50 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 30403AF32;
-        Thu, 27 Jun 2019 18:39:49 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 2CBCFE00E0; Thu, 27 Jun 2019 20:39:48 +0200 (CEST)
-Date:   Thu, 27 Jun 2019 20:39:48 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@gmail.com>, Jiri Pirko <jiri@resnulli.us>,
-        davem@davemloft.net, jakub.kicinski@netronome.com,
-        sthemmin@microsoft.com, mlxsw@mellanox.com
-Subject: Re: [RFC] longer netdev names proposal
-Message-ID: <20190627183948.GK27240@unicorn.suse.cz>
-References: <20190627094327.GF2424@nanopsycho>
- <26b73332-9ea0-9d2c-9185-9de522c72bb9@gmail.com>
- <20190627180803.GJ27240@unicorn.suse.cz>
- <20190627112305.7e05e210@hermes.lan>
- <20190627183538.GI31189@lunn.ch>
+        id S1726553AbfF0StJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 14:49:09 -0400
+Received: from mail.us.es ([193.147.175.20]:46988 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726443AbfF0StJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Jun 2019 14:49:09 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 61F0AEA46E
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 20:49:07 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 50DE3DA732
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 20:49:07 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 2FCC391E1; Thu, 27 Jun 2019 20:49:07 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 12F28DA7B6;
+        Thu, 27 Jun 2019 20:49:04 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Thu, 27 Jun 2019 20:49:04 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id DE7B54265A31;
+        Thu, 27 Jun 2019 20:49:03 +0200 (CEST)
+Date:   Thu, 27 Jun 2019 20:49:03 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     zhe.he@windriver.com
+Cc:     kadlec@blackhole.kfki.hu, fw@strlen.de, davem@davemloft.net,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] netfilter: Fix remainder of pseudo-header protocol 0
+Message-ID: <20190627184903.atdcwk4wnfaayyer@salvia>
+References: <1561346258-272481-1-git-send-email-zhe.he@windriver.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20190627183538.GI31189@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1561346258-272481-1-git-send-email-zhe.he@windriver.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 27, 2019 at 08:35:38PM +0200, Andrew Lunn wrote:
-> On Thu, Jun 27, 2019 at 11:23:05AM -0700, Stephen Hemminger wrote:
-> > On Thu, 27 Jun 2019 20:08:03 +0200 Michal Kubecek <mkubecek@suse.cz> wrote:
-> > 
-> > > It often feels as a deficiency that unlike block devices where we can
-> > > keep one name and create multiple symlinks based on different naming
-> > > schemes, network devices can have only one name. There are aliases but
-> > > AFAIK they are only used (and can be only used) for SNMP. IMHO this
-> > > limitation is part of the mess that left us with so-called "predictable
-> > > names" which are in practice neither persistent nor predictable.
-> > > 
-> > > So perhaps we could introduce actual aliases (or altnames or whatever we
-> > > would call them) for network devices that could be used to identify
-> > > a network device whenever both kernel and userspace tool supports them.
-> > > Old (and ancient) tools would have to use the one canonical name limited
-> > > to current IFNAMSIZ, new tools would allow using any alias which could
-> > > be longer.
-> >  
-> > That is already there in current network model.
-> > # ip li set dev eno1 alias 'Onboard Ethernet'
-> > # ip li show dev eno1
-> > 2: eno1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
-> >     link/ether ac:1f:6b:74:38:c0 brd ff:ff:ff:ff:ff:ff
-> >     alias Onboard Ethernet
+On Mon, Jun 24, 2019 at 11:17:38AM +0800, zhe.he@windriver.com wrote:
+> From: He Zhe <zhe.he@windriver.com>
 > 
-> $ ip li set dev enp3s0 alias "Onboard Ethernet"
-> # ip link show "Onboard Ethernet"
-> Device "Onboard Ethernet" does not exist.
+> Since v5.1-rc1, some types of packets do not get unreachable reply with the
+> following iptables setting. Fox example,
 > 
-> So it does not really appear to be an alias, it is a label. To be
-> truly useful, it needs to be more than a label, it needs to be a real
-> alias which you can use.
+> $ iptables -A INPUT -p icmp --icmp-type 8 -j REJECT
+> $ ping 127.0.0.1 -c 1
+> PING 127.0.0.1 (127.0.0.1) 56(84) bytes of data.
+> — 127.0.0.1 ping statistics —
+> 1 packets transmitted, 0 received, 100% packet loss, time 0ms
+> 
+> We should have got the following reply from command line, but we did not.
+> From 127.0.0.1 icmp_seq=1 Destination Port Unreachable
+> 
+> Yi Zhao reported it and narrowed it down to:
+> 7fc38225363d ("netfilter: reject: skip csum verification for protocols that don't support it"),
+> 
+> This is because nf_ip_checksum still expects pseudo-header protocol type 0 for
+> packets that are of neither TCP or UDP, and thus ICMP packets are mistakenly
+> treated as TCP/UDP.
+> 
+> This patch corrects the conditions in nf_ip_checksum and all other places that
+> still call it with protocol 0.
 
-That's exactly what I meant: to be really useful, one should be able to
-use the alias(es) for setting device options, for adding routes, in
-netfilter rules etc.
+Looking at 7fc38225363dd8f19e667ad7c77b63bc4a5c065d, I wonder this can
+be fixed while simplifying it...
 
-Michal
+I think nf_reject_verify_csum() is useless?
+
+In your patch, now you explicitly check for IPPROTO_TCP and
+IPPROTO_UDP to validate the checksum.
