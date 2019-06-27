@@ -2,79 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF37758E14
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 00:42:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A261C58E18
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 00:43:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726563AbfF0WmM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 18:42:12 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:46828 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726445AbfF0WmM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 18:42:12 -0400
-Received: by mail-qt1-f196.google.com with SMTP id h21so4255853qtn.13
-        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 15:42:11 -0700 (PDT)
+        id S1726590AbfF0Wnn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 18:43:43 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:40142 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726514AbfF0Wnn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 18:43:43 -0400
+Received: by mail-pg1-f195.google.com with SMTP id w10so1660022pgj.7
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 15:43:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=LmZBei85E6CwS8s1gfZS7GlTQ4QQJHQtLnPi5kcgHQg=;
-        b=t8cfLw4XUA2OwKn02Mgo4goCmSc7AkcS3znBp25i8yu9VhaRNaScr45PvzGEzHeVwm
-         HezLnmbKvR13B9o/VsS6nFZgXLuBsbRa7XeYDOZzcqf6sSz3Th1oTaAKvRixb09pl5gM
-         zUj/kt9/SMsMRcEDuWDpJ+1Gn4c9ppT6ogAeaRSmCBlfBclFR/OMoV6LdMC0SuJgtu/z
-         kf4i2HZaR5XJAlOM0Q+qS5XEKfBJEUYvD7SUmXx+RPz99uYhUCZ6thb3liogS01Yt/Jv
-         xJqXZNcyJJS+O4DGw5YboOqbGrb6i9yHGdXY3Y16vT9UHZm+Crdcqms8+PQ5Dix6FrmK
-         oEWg==
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=5O3kSJg9RVJ5T6uGFuCCgrilMbmqviMCndXtUJji4vw=;
+        b=B8mtQdHT3xNN9IgfxdxrtUrOY1XziHn+4pMo1jVxIMWhrTPBtnPdul136qPoyGGaQz
+         vumZ8FqIvIX6GfqvSiVytmon9oN+KFfJFOZgilP3HZPPNzZ2PLQkIyL8CcWlzzrc9MPL
+         8AfxZVkKV3Nk79HIExQjLk4JRQigjUBPmUgHNJV3HBxVdJZoMVPYTNei4sSMRYtDGCgM
+         NS88+J5OrHN1fYj6DT3W9cbJ+z9IGR3yETEI37Q5utlODfWZkRi2bpBxLXBQmylyi5Lg
+         myNav7RdaB4ujVmVPtRtdOasOFMHTpsw3Wg5vTPRBBnhZIm9aw+H1JTMhEvWI9k2lYXT
+         FJkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=LmZBei85E6CwS8s1gfZS7GlTQ4QQJHQtLnPi5kcgHQg=;
-        b=JVqgLQqN+Yn2POkWzqo3eLoaMpcu7gSvMQKVoWSMMgrjBZed4JO03oANOVn4yuOVde
-         XW/gGe0RdZyBCANZ1277Pj/EL8ilAmwvOPJAsy9NnAHlw9DIj2QuMg6Drz2FQ+6uUUnP
-         qjg3CivW0bOzFL7XrgxzJQ9zVQ8zIyEgf5wL8iGGXxJNymAdyJ2IBDRmH6oCEGOKg/By
-         SNUFuGHKru0csZtqHVzWkJUZdGc5a4c+2+vNhUvvViEt3RK5j79AJwwqJIxNJ+xJtgKN
-         X8tju1sDRJ0mPMr//4rwFRN/hKSX6qS8UyweQXJlX8xiii3XuNRFNcCRYEkq/HhdGv+i
-         JPrw==
-X-Gm-Message-State: APjAAAXr+huh44+eRA2Hi2Ck8ora3SHj01RojCe/UvQCicf0gcvytBIa
-        BXOO65rg//WT0O2Mtif2bkPDRw==
-X-Google-Smtp-Source: APXvYqytd/yVlvFlGvghz1+apVKt+Jk63KmG9K2bT43X2V3avUagDbiOyL16iGISUVpAdqUQ8jLaNw==
-X-Received: by 2002:ac8:2a0a:: with SMTP id k10mr5603129qtk.148.1561675330998;
-        Thu, 27 Jun 2019 15:42:10 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id h40sm250410qth.4.2019.06.27.15.42.09
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=5O3kSJg9RVJ5T6uGFuCCgrilMbmqviMCndXtUJji4vw=;
+        b=C032eafLn/DCq8s/qzKnrSkfqVhGDPXqUg1mhODGBPBRbBwlSokoblE094nedjQjhj
+         CyRc51QLUQOkRRCrDxyvOJnLZx7qAYcnzMfyqMP3Rmfh03swYajUrojtOdNzKWcOHlnv
+         THhaKulfQlqo007i1uiWSMbh8YZlQLRTAS6/YkGcNaV5q1H8mjUlFu5+IhwizKycaKej
+         Eg4W/NGvRXqBQsubOWl27ASTHp361MzXsicAUcrHa6RveS33zoKB1mBq1Zn/7x7vVhPq
+         CTfcZZKPP8K1n3SUi75KLpAcG61SpcI2d7aMgWh8k5jW7afhCMxjyb3wuEIqF3a6IXRR
+         uCbw==
+X-Gm-Message-State: APjAAAV9XKhGTHvV+f9bXhp7QgaT+HaJr1c8M81v4HeB8JZzD4VTJ/w4
+        6Pdefb6UjWAio4DfBw32Yr9mJA==
+X-Google-Smtp-Source: APXvYqxgcsd7rTT42Fj/pLmmVylW+Fy/z04PBovQ9xKn9aHTqVP/bfFi+Pp0ulkWB5I0e6sTI3KP/A==
+X-Received: by 2002:a65:6495:: with SMTP id e21mr5912028pgv.383.1561675422744;
+        Thu, 27 Jun 2019 15:43:42 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id l44sm222112pje.29.2019.06.27.15.43.42
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 27 Jun 2019 15:42:10 -0700 (PDT)
-Date:   Thu, 27 Jun 2019 15:42:06 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     <netdev@vger.kernel.org>, <bjorn.topel@intel.com>,
-        <magnus.karlsson@intel.com>, <saeedm@mellanox.com>,
-        <maximmi@mellanox.com>, <brouer@redhat.com>, <kernel-team@fb.com>
-Subject: Re: [PATCH 4/6 bfp-next] Simplify AF_XDP umem allocation path for
- Intel drivers.
-Message-ID: <20190627154206.5d458e94@cakuba.netronome.com>
-In-Reply-To: <20190627220836.2572684-5-jonathan.lemon@gmail.com>
-References: <20190627220836.2572684-1-jonathan.lemon@gmail.com>
-        <20190627220836.2572684-5-jonathan.lemon@gmail.com>
-Organization: Netronome Systems, Ltd.
+        Thu, 27 Jun 2019 15:43:42 -0700 (PDT)
+Date:   Thu, 27 Jun 2019 15:43:41 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, davem@davemloft.net, ast@kernel.org,
+        daniel@iogearbox.net
+Subject: Re: [PATCH bpf-next v9 0/9] bpf: getsockopt and setsockopt hooks
+Message-ID: <20190627224341.GE4866@mini-arch>
+References: <20190627203855.10515-1-sdf@google.com>
+ <20190627223147.vkkmbtdcvjzas2ej@ast-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190627223147.vkkmbtdcvjzas2ej@ast-mbp.dhcp.thefacebook.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 27 Jun 2019 15:08:34 -0700, Jonathan Lemon wrote:
-> Now that the recycle stack is always used for the driver umem path, the
-> driver code path can be simplified.
+On 06/27, Alexei Starovoitov wrote:
+> On Thu, Jun 27, 2019 at 01:38:46PM -0700, Stanislav Fomichev wrote:
+> > This series implements two new per-cgroup hooks: getsockopt and
+> > setsockopt along with a new sockopt program type. The idea is pretty
+> > similar to recently introduced cgroup sysctl hooks, but
+> > implementation is simpler (no need to convert to/from strings).
+> > 
+> > What this can be applied to:
+> > * move business logic of what tos/priority/etc can be set by
+> >   containers (either pass or reject)
+> > * handle existing options (or introduce new ones) differently by
+> >   propagating some information in cgroup/socket local storage
+> > 
+> > Compared to a simple syscall/{g,s}etsockopt tracepoint, those
+> > hooks are context aware. Meaning, they can access underlying socket
+> > and use cgroup and socket local storage.
+> > 
+> > v9:
+> > * allow overwriting setsocktop arguments (Alexei Starovoitov)
+> >   (see individual changes for more changelog details)
 > 
-> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+> Applied. Thanks.
+Great, thanks for all the reviews!
 
-I guess it's a question to Bjorn and Magnus whether they want Intel
-drivers to always go through the reuse queue..
-
-Could you be more explicit on the motivation?  I'd call this patch set
-"make all drivers use reuse queue" rather than "clean up".
-
-Also when you're changing code please make sure you CC the author.
+> There is a build warning though:
+> test_sockopt_sk.c: In function ‘getsetsockopt’:
+> test_sockopt_sk.c:115:2: warning: dereferencing type-punned pointer will break strict-aliasing rules [-Wstrict-aliasing]
+>   if (*(__u32 *)buf != 0x55AA*2) {
+>   ^~
+> test_sockopt_sk.c:116:3: warning: dereferencing type-punned pointer will break strict-aliasing rules [-Wstrict-aliasing]
+>    log_err("Unexpected getsockopt(SO_SNDBUF) 0x%x != 0x55AA*2",
+>    ^~~~~~~
+> 
+> Pls fix it in the follow up.
+Sure, but I can't reproduce it with gcc7 nor with clang9 :-/
+Presumably, a switch to __get_unaligned_cpu32 should help,
+I'll try to play with compilers a bit before sending a fix.
