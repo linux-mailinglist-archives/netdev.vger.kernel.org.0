@@ -2,158 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6771958957
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 19:56:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F02875895A
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 19:57:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726672AbfF0R4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 13:56:17 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:33786 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726405AbfF0R4R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 13:56:17 -0400
-Received: by mail-pf1-f195.google.com with SMTP id x15so1616475pfq.0
-        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 10:56:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=LxEztFoHTzDBArSkM2DATNWZeIKb+2HqFQQZReY8AZE=;
-        b=ltFFdm3SsKlHYczuhmU4RxSM7JnOUiQ3I1cSvZUOiPzNdEA8swMQ3O7lAmuLJH+wdx
-         9SwmDnGDN4cP0AHaG7alNCE3NbzJDDWA7aJwk3zSwRih7XW2/9b4w/c2zhEF4tX17OTm
-         PB/mw5hk7Hmv7QbL+PCa6ZUuW5sbatSZ6MBn8Pckc8aVFYAkGTnvDr+NdgZ/i2xSEK+e
-         +IsTCBcY+HweGckh3FzCiuDAMp/QX+ZJ0BJR0z+ivFhtejFEzRPzAB1rmVtb6B9nmmB1
-         ogcVue/B/Cffl24MWJ4gAOlncXT1H21JDT27Q+gwUrrgdanzxfq7SvJ8eJdA3UMsnKYy
-         +ZhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=LxEztFoHTzDBArSkM2DATNWZeIKb+2HqFQQZReY8AZE=;
-        b=mTJFzUYfs6/Rz1Ym/jCC673Ps0ze3tzRkTmN6eEqwExwN+U+Rbt8rv3aOC6ZU6Es6V
-         z11OFWPygglF+/L/5iSoiBHi52fAm2y0fH4cn0oKdzaQXm1rRrkaQQW6jqPqZEaSlCfO
-         crZzflFxqFcHNQk1SJ1cYoXlNnExyBPhkthV6H5fa3iPxLOi+mczpPa/jfvufnvyuDw0
-         xLc//FLnlCsg6zAkioCzE1DOEXY7FZefj0uw3HEWDdwuvpDZ5BRk0g4YcCRyEVNHEByw
-         wuTImsE8dSgQem7u8KNpXnV43xgReSheGKpUAxbBVXKCDlST1LV/NylgHDVlnTHxJ0gw
-         sJtA==
-X-Gm-Message-State: APjAAAVdNuqO7CPsHWRjdDo/0fZsbL08h/XO2m3Z4EIzaIrd76wQulf2
-        C5HZpQTQ5SePEfeSTa+7Rx0oZ2VTlnE=
-X-Google-Smtp-Source: APXvYqyn3b3G8kd3kHLHMkHjDkOOEIQvTmpgdPHVAEIwvAQclCzYGkuZimpjqsMKq192YYMqYF3QDA==
-X-Received: by 2002:a63:221f:: with SMTP id i31mr1554092pgi.251.1561658176071;
-        Thu, 27 Jun 2019 10:56:16 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id m6sm10002375pjl.18.2019.06.27.10.56.15
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 27 Jun 2019 10:56:15 -0700 (PDT)
-Date:   Thu, 27 Jun 2019 10:56:09 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        davem@davemloft.net, sthemmin@microsoft.com, dsahern@gmail.com,
-        mlxsw@mellanox.com
-Subject: Re: [RFC] longer netdev names proposal
-Message-ID: <20190627105609.521f632a@hermes.lan>
-In-Reply-To: <20190627104808.1404049a@cakuba.netronome.com>
-References: <20190627094327.GF2424@nanopsycho>
-        <20190627104808.1404049a@cakuba.netronome.com>
+        id S1726550AbfF0R5Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 13:57:16 -0400
+Received: from mail-eopbgr40044.outbound.protection.outlook.com ([40.107.4.44]:8054
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726405AbfF0R5P (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Jun 2019 13:57:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=x+4apgaw8Z3FSXymsBM9SiuZfPV4DS0RyfriiDyJPSI=;
+ b=Quv21VI0CnGn1Rla2rh2mWN8opkVr6JG20v2ya5eVbFjWiW9oQfpIwXD0XKM9K6Q4+f4nCBh8he8E6RpWhhJg7x3YdSfPUJXD1Ye/mU5byJHVyoqBP0V8SambgOGHebQTqvdEVHsQNAPWuNhzCuJAKfIfiqgoHubSqxji3tFH2g=
+Received: from AM6PR05MB6535.eurprd05.prod.outlook.com (20.179.18.16) by
+ AM6PR05MB5205.eurprd05.prod.outlook.com (20.177.196.203) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2032.18; Thu, 27 Jun 2019 17:57:12 +0000
+Received: from AM6PR05MB6535.eurprd05.prod.outlook.com
+ ([fe80::2c23:fdba:9ce4:7397]) by AM6PR05MB6535.eurprd05.prod.outlook.com
+ ([fe80::2c23:fdba:9ce4:7397%7]) with mapi id 15.20.2032.016; Thu, 27 Jun 2019
+ 17:57:12 +0000
+From:   Petr Machata <petrm@mellanox.com>
+To:     David Miller <davem@davemloft.net>
+CC:     "idosch@idosch.org" <idosch@idosch.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>, mlxsw <mlxsw@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 12/16] mlxsw: spectrum: PTP: Support timestamping
+ on Spectrum-1
+Thread-Topic: [PATCH net-next 12/16] mlxsw: spectrum: PTP: Support
+ timestamping on Spectrum-1
+Thread-Index: AQHVLO/HEWOost2Rm0Cf5hR3DDr4RqavuuGAgAAOuwA=
+Date:   Thu, 27 Jun 2019 17:57:11 +0000
+Message-ID: <87tvcaud1l.fsf@mellanox.com>
+References: <20190627135259.7292-1-idosch@idosch.org>
+ <20190627135259.7292-13-idosch@idosch.org>
+ <20190627.100427.16208207750306183.davem@davemloft.net>
+In-Reply-To: <20190627.100427.16208207750306183.davem@davemloft.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: VI1P18901CA0010.EURP189.PROD.OUTLOOK.COM
+ (2603:10a6:801::20) To AM6PR05MB6535.eurprd05.prod.outlook.com
+ (2603:10a6:20b:71::16)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=petrm@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [89.176.15.247]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 399f968b-96cd-48a6-7782-08d6fb28e153
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM6PR05MB5205;
+x-ms-traffictypediagnostic: AM6PR05MB5205:
+x-microsoft-antispam-prvs: <AM6PR05MB5205A21BAEBC28BADB3C7DB3DBFD0@AM6PR05MB5205.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4502;
+x-forefront-prvs: 008184426E
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(396003)(376002)(346002)(366004)(39860400002)(189003)(199004)(86362001)(7736002)(305945005)(66066001)(6916009)(316002)(2906002)(81156014)(54906003)(5660300002)(478600001)(25786009)(66556008)(66476007)(64756008)(66446008)(73956011)(66946007)(81166006)(446003)(11346002)(4326008)(68736007)(8936002)(8676002)(256004)(6116002)(486006)(3846002)(2616005)(476003)(52116002)(99286004)(558084003)(36756003)(71200400001)(71190400001)(14454004)(76176011)(102836004)(386003)(6506007)(6436002)(6486002)(26005)(229853002)(186003)(107886003)(53936002)(6246003)(6512007);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB5205;H:AM6PR05MB6535.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 0Cs7Uj9716TtEL6DKyG4TfXPHhn4rK8GB3k9tHH1U6kDv9ve+kbKeTI/bCPrgrfXrRX+h6KiBaBP+nQQRD71I+z0OrZ9teZJ7Ixdo1VuKNvL5waU1gBxG1NNOSCkPgdWUEsAcwnKFoWR+e8z453iQ9/U4cis2ea7QPPpx9kuLYgjlCJcsLThLWtyl1qBSlAQfBa957lWsNSzXsyGr9o3sb2KgTqH5K2VR0hmWBIbG7wrRUP3HBab/YxDJJQxsaRLJi6Gv8SWVSjcZAIWVtOCktlYjKWdKqedWumDAx+sDFZ7V3FCvKGOl/evCOgPQjDizpj6TuTdIa1vQNNVhj285qYMvstOEH0dIrZqXU+y+OWzK3wv++p3CSpfQJwKtFF7wlQ9ljfg/ZfvD+q1xvB606FQ6/b62vFq0ARcTVFaxok=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 399f968b-96cd-48a6-7782-08d6fb28e153
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jun 2019 17:57:11.9919
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: petrm@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB5205
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 27 Jun 2019 10:48:08 -0700
-Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
-
-> On Thu, 27 Jun 2019 11:43:27 +0200, Jiri Pirko wrote:
-> > Hi all.
-> > 
-> > In the past, there was repeatedly discussed the IFNAMSIZ (16) limit for
-> > netdevice name length. Now when we have PF and VF representors
-> > with port names like "pfXvfY", it became quite common to hit this limit:
-> > 0123456789012345
-> > enp131s0f1npf0vf6
-> > enp131s0f1npf0vf22
-> > 
-> > Since IFLA_NAME is just a string, I though it might be possible to use
-> > it to carry longer names as it is. However, the userspace tools, like
-> > iproute2, are doing checks before print out. So for example in output of
-> > "ip addr" when IFLA_NAME is longer than IFNAMSIZE, the netdevice is
-> > completely avoided.
-> > 
-> > So here is a proposal that might work:
-> > 1) Add a new attribute IFLA_NAME_EXT that could carry names longer than
-> >    IFNAMSIZE, say 64 bytes. The max size should be only defined in kernel,
-> >    user should be prepared for any string size.
-> > 2) Add a file in sysfs that would indicate that NAME_EXT is supported by
-> >    the kernel.
-> > 3) Udev is going to look for the sysfs indication file. In case when
-> >    kernel supports long names, it will do rename to longer name, setting
-> >    IFLA_NAME_EXT. If not, it does what it does now - fail.
-> > 4) There are two cases that can happen during rename:
-> >    A) The name is shorter than IFNAMSIZ  
-> >       -> both IFLA_NAME and IFLA_NAME_EXT would contain the same string:    
-> >          original IFLA_NAME     = eth0
-> >          original IFLA_NAME_EXT = eth0
-> >          renamed  IFLA_NAME     = enp5s0f1npf0vf1
-> >          renamed  IFLA_NAME_EXT = enp5s0f1npf0vf1
-> >    B) The name is longer tha IFNAMSIZ  
-> >       -> IFLA_NAME would contain the original one, IFLA_NAME_EXT would     
-> >          contain the new one:
-> >          original IFLA_NAME     = eth0
-> >          original IFLA_NAME_EXT = eth0
-> >          renamed  IFLA_NAME     = eth0
-> >          renamed  IFLA_NAME_EXT = enp131s0f1npf0vf22  
-> 
-> I think B is the only way, A risks duplicate IFLA_NAMEs over ioctl,
-> right?  And maybe there is some crazy application out there which 
-> mixes netlink and ioctl.
-> 
-> I guess it's not worse than status quo, given that today renames 
-> will fail and we will either get truncated names or eth0s..
-> 
-> > This would allow the old tools to work with "eth0" and the new
-> > tools would work with "enp131s0f1npf0vf22". In sysfs, there would
-> > be symlink from one name to another.
-> >       
-> > Also, there might be a warning added to kernel if someone works
-> > with IFLA_NAME that the userspace tool should be upgraded.
-> > 
-> > Eventually, only IFLA_NAME_EXT is going to be used by everyone.
-> > 
-> > I'm aware there are other places where similar new attribute
-> > would have to be introduced too (ip rule for example).
-> > I'm not saying this is a simple work.
-> > 
-> > Question is what to do with the ioctl api (get ifindex etc). I would
-> > probably leave it as is and push tools to use rtnetlink instead.
-> > 
-> > Any ideas why this would not work? Any ideas how to solve this
-> > differently?  
-> 
-> Since we'd have to update all user space to make use of the new names
-> I'd be tempted to move to a more structured device identification.
-> 
-> 5: enp131s0f1npf0vf6: <BROADCAST,MULTICAST> ...
-> 
-> vs:
-> 
-> 5: eth5 (parent enp131s0f1 pf 0 vf 6 peer X*): <BROADCAST,MULTICAST> ...
-> 
-> * ;)
-> 
-> And allow filtering/selection of device based on more attributes than
-> just name and ifindex.  In practice in container workloads, for example,
-> the names are already very much insufficient to identify the device.
-> Refocusing on attributes is probably a big effort and not that practical
-> for traditional CLI users?  IDK
-> 
-> Anyway, IMHO your scheme is strictly better than status quo.
-
-Or Cisco style naming ;-) Ethernet0/0 
-
-There is a better solution for human use already.
-the field ifalias allows arbitrary values and hooked into SNMP.
-
-Why not have userspace fill in this field with something by default?
+DQpEYXZpZCBNaWxsZXIgPGRhdmVtQGRhdmVtbG9mdC5uZXQ+IHdyaXRlczoNCg0KPiBGcm9tOiBJ
+ZG8gU2NoaW1tZWwgPGlkb3NjaEBpZG9zY2gub3JnPg0KPiBEYXRlOiBUaHUsIDI3IEp1biAyMDE5
+IDE2OjUyOjU1ICswMzAwDQo+DQo+PiArCWZvciAoaSA9IDA7IGkgPCBudW1fcmVjOyArK2kpIHsN
+Cj4NCj4gUGxlYXNlIHVzZSB0aGUgbW9yZSBjYW5vbmljYWwgImkrKyIgaGVyZSwgdGhhbmsgeW91
+Lg0KDQpPSy4NCg==
