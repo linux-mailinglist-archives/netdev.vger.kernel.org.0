@@ -2,180 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 49C69584E6
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 16:52:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1D94584B2
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 16:43:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726498AbfF0OwX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 10:52:23 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:56741 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726370AbfF0OwX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 10:52:23 -0400
-Received: from [5.158.153.52] (helo=mitra)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:RSA_AES_256_CBC_SHA1:256)
-        (Exim 4.80)
-        (envelope-from <b.spranger@linutronix.de>)
-        id 1hgVl5-0006zq-Ff; Thu, 27 Jun 2019 16:52:19 +0200
-Date:   Thu, 27 Jun 2019 16:43:07 +0200
-From:   Benedikt Spranger <b.spranger@linutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: Re: [RFC PATCH 1/1] Documentation: net: dsa: b53: Describe b53
- configuration
-Message-ID: <20190627164307.568ae3a3@mitra>
-In-Reply-To: <20190627134929.GE31189@lunn.ch>
-References: <39b134ed-9f3e-418a-bf26-c1e716018e7e@gmail.com>
-        <20190627101506.19727-1-b.spranger@linutronix.de>
-        <20190627101506.19727-2-b.spranger@linutronix.de>
-        <20190627134929.GE31189@lunn.ch>
-Organization: Linutronix GmbH
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1726829AbfF0Ono (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 10:43:44 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:37094 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726425AbfF0Onn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Jun 2019 10:43:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=tx6dF92XYQvz4YacD0VR8WVxRaiNwFBa+2vW1h35TBI=; b=F1tWzUYqbyKtgS6PIeqs3RaAq/
+        Q/TGgUztRsGKuL0McSm5Sa5oRGuSsC4zkZiof69ujvLInt7txfhqHyQMgsCNYEpP2QJ55mxWB00u1
+        Or12BnnWm+Wc1RVkI9tqCCGVTE71TW+kWZqjxrHv1a9z9piOaW82mLB96XZnBk3/+9JM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hgVch-0000Yx-16; Thu, 27 Jun 2019 16:43:39 +0200
+Date:   Thu, 27 Jun 2019 16:43:39 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Corentin Labbe <clabbe.montjoie@gmail.com>
+Cc:     jacmet@sunsite.dk, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [BUG] net: dm9600: false link status
+Message-ID: <20190627144339.GG31189@lunn.ch>
+References: <20190627132137.GB29016@Red>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190627132137.GB29016@Red>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am Thu, 27 Jun 2019 15:49:29 +0200
-schrieb Andrew Lunn <andrew@lunn.ch>:
-
-> On Thu, Jun 27, 2019 at 12:15:06PM +0200, Benedikt Spranger wrote:
+On Thu, Jun 27, 2019 at 03:21:37PM +0200, Corentin Labbe wrote:
+> Hello
 > 
-> Hi Benedikt
+> I own an USB dongle which is a "Davicom DM96xx USB 10/100 Ethernet".
+> According to the CHIP_ID, it is a DM9620.
 > 
-> > +Configuration with tagging support
-> > +----------------------------------
-> > +
-> > +The tagging based configuration is desired.
-> > +
-> > +To use the b53 DSA driver some configuration need to be performed. As
-> > +example configuration the following scenarios are used:
-> > +
-> > +*single port*
-> > +  Every switch port acts as a different configurable ethernet port
-> > +
-> > +*bridge*
-> > +  Every switch port is part of one configurable ethernet bridge
-> > +
-> > +*gateway*
-> > +  Every switch port except one upstream port is part of a configurable
-> > +  ethernet bridge.
-> > +  The upstream port acts as different configurable ethernet port.
-> > +
-> > +All configurations are performed with tools from iproute2, wich is available at
-> > +https://www.kernel.org/pub/linux/utils/net/iproute2/
-> > +
-> > +In this documentation the following ethernet ports are used:
-> > +
-> > +*eth0*
-> > +  CPU port  
+> Since I needed for bringing network to uboot for a board, I have started to create its uboot's driver.
+> My uboot driver is based on the dm9600 Linux driver.
 > 
-> In DSA terminology, this is the master interface. The switch port
-> which the master is connected to is called the CPU port. So you are
-> causing confusion with DSA terms here.
-
-Changed the whole section to:
-
-Through DSA every port of a switch is handled like a normal linux ethernet
-interface. The CPU port is the switch port connected to an ethernet MAC chip.
-The corresponding linux ethernet interface is called the master interface.
-All other corresponding linux interfaces are called slave interfaces.
-
-The slave interfaces depend on the master interface. They can only brought up,
-when the master interface is up.
-
-In this documentation the following ethernet interfaces are used:
-
-*eth0*
-  the master interface
-
-*LAN1*
-  a slave interface
-
-*LAN2*
-  another slave interface
-
-*WAN*
-  A slave interface dedicated for upstream traffic
-
-> > +bridge
-> > +~~~~~~
-> > +
-> > +.. code-block:: sh
-> > +
-> > +  # create bridge
-> > +  ip link add name br0 type bridge
-> > +
-> > +  # add ports to bridge
-> > +  ip link set dev wan master br0
-> > +  ip link set dev lan1 master br0
-> > +  ip link set dev lan2 master br0
-> > +
-> > +  # configure the bridge
-> > +  ip addr add 192.0.2.129/25 dev br0
-> > +
-> > +  # The master interface needs to be brought up before the slave ports.
-> > +  ip link set eth0 up
-> > +
-> > +  # bring up the slave interfaces
-> > +  ip link set wan up
-> > +  ip link set lan1 up
-> > +  ip link set lan2 up  
+> The dongle was working but very very slowy (24Kib/s).
+> After some debug i found that the main problem was that it always link to 10Mbit/s Half-duplex. (according to the MAC registers)
 > 
-> I would probably do this in a different order. Bring the master up
-> first, then the slaves. Then enslave the slaves to bridge, and lastly
-> configure the bridge.
-
-No objection. Will change the order.
-
-> > +
-> > +  # bring up the bridge
-> > +  ip link set dev br0 up
-> > +
-> > +gateway
-> > +~~~~~~~
-> > +
-> > +.. code-block:: sh
-> > +
-> > +  # create bridge
-> > +  ip link add name br0 type bridge
-> > +
-> > +  # add ports to bridge
-> > +  ip link set dev lan1 master br0
-> > +  ip link set dev lan2 master br0
-> > +
-> > +  # configure the bridge
-> > +  ip addr add 192.0.2.129/25 dev br0
-> > +
-> > +  # configure the upstream port
-> > +  ip addr add 192.0.2.1/30 dev wan
-> > +
-> > +  # The master interface needs to be brought up before the slave ports.
-> > +  ip link set eth0 up
-> > +
-> > +  # bring up the slave interfaces
-> > +  ip link set wan up
-> > +  ip link set lan1 up
-> > +  ip link set lan2 up
-> > +
-> > +  # bring up the bridge
-> > +  ip link set dev br0 up  
+> For checking the status of the dongle I have plugged it on a Linux box which give me:
+> dm9601 6-2:1.0 enp0s29f0u2: link up, 100Mbps, full-duplex, lpa 0xFFFF
 > 
-> It would be good to add a note that there is nothing specific to the
-> B53 here. This same process will work for all DSA drivers which
-> support tagging, which is actually the majority.
-Will state that.
+> But in fact the Linux driver is tricked.
+> 
+> I have added debug of MDIO write/read and got:
+> [157550.926974] dm9601 6-2:1.0 (unnamed net_device) (uninitialized): dm9601_mdio_write() phy_id=0x00, loc=0x00, val=0x8000
 
-> I also tell people that once you configure the master interface up,
-> they should just use the slave interfaces a normal linux
-> interfaces. The fact they are on a switch does not matter, and should
-> not matter. Just use them as normal.
-OK.
+Writing the reset bit. Ideally you should read back the register and
+wait for this bit to clear. Try adding this, and see if this helps, or
+you get 0xffff.
 
-Regards
-    Bene Spranger
+> [157550.931962] dm9601 6-2:1.0 (unnamed net_device) (uninitialized): dm9601_mdio_write() phy_id=0x00, loc=0x04, val=0x05e1
+
+Advertisement control register.  
+
+> [157550.951967] dm9601 6-2:1.0 (unnamed net_device) (uninitialized): dm9601_mdio_read() phy_id=0x00, loc=0x00, returns=0xffff
+
+And now things are bad. In theory, the power down bit is set, and some
+PHYs don't respond properly when powered down. However, it is unclear
+how it got into this state. Did the reset kill it, or setting the
+advertisement? Or is the PHY simply not responding at all. The MDIO
+data lines have a pull up, so if the device does not respond, reads
+give 0xffff.
+
+Maybe also check register 0, bit 7, EXT_PHY. Is it 0, indicating the
+internal PHY should be used?
+
+You could also try reading PHY registers 2 and 3 and see if you can
+get a valid looking PHY ID. Maybe try that before hitting the reset
+bit?
+
+> So it exsists two problem:
+> - Linux saying 100Mbps, full-duplex even if it is false.
+
+The driver is using the old mii code, not a phy driver. So i cannot
+help too much with linux. But if you can get the MDIO bus working
+reliably, it should be possible to move this over to phylib. The
+internal PHY appears to have all the standard registers, so the
+generic PHY driver has a good chance of working.
+
+     Andrew
