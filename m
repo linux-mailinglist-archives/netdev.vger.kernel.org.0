@@ -2,139 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C92A579E0
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 05:13:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20A31579EE
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 05:25:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726908AbfF0DNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 23:13:16 -0400
-Received: from conssluserg-04.nifty.com ([210.131.2.83]:45788 "EHLO
-        conssluserg-04.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726658AbfF0DNP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 23:13:15 -0400
-X-Greylist: delayed 5032 seconds by postgrey-1.27 at vger.kernel.org; Wed, 26 Jun 2019 23:13:13 EDT
-Received: from mail-vk1-f176.google.com (mail-vk1-f176.google.com [209.85.221.176]) (authenticated)
-        by conssluserg-04.nifty.com with ESMTP id x5R3D6gv018380;
-        Thu, 27 Jun 2019 12:13:07 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-04.nifty.com x5R3D6gv018380
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1561605187;
-        bh=hUceC5AeeaszlwO9PeBwDuTy7hRVRhzHLJ1xX0slEKk=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=2Cyt6p7moE3aTxtO9LVZTLf8Js+TX6msHAzEQc2U3RWhpCafH3zcwX7L6dncx8NZj
-         ockSog0czJt3lhCqCbLzNffVlAwojPSytljO9BO73VA05KUuFrmauuPIzOxtzCJyCS
-         I5epEv29rqm491WP8MAtiIhEnlmhgxnbyjF+1EaPXAMrOVW0Tp8sy5BrWQ7xi5cIMS
-         +la8c2fFA7Qz6Gsxgjb0dJKJI56ggjDPZDYsmLm17g/FfJteYLT0I79YEcy9pHsNwi
-         0ZC+277O1XILPZP/vHnTygUbl9mom+Th9NKjBPsENXkyrtFEoxj3NwJvDj2HSBB8DY
-         94rFlEoEYBGdQ==
-X-Nifty-SrcIP: [209.85.221.176]
-Received: by mail-vk1-f176.google.com with SMTP id b69so201659vkb.3;
-        Wed, 26 Jun 2019 20:13:07 -0700 (PDT)
-X-Gm-Message-State: APjAAAWehBNpZZcasJLpNHxpeuu1T3jlBEFOJDkkJYnr7g20LQEMniEj
-        sUmMF15RVz2uhGhAm0IpgSInchZE5juKTN3JMY0=
-X-Google-Smtp-Source: APXvYqyrO6AGMiLTE/NsWodSgUDnExRC/7L2ZBLMise97w6CNCIJwXhqUDD88sfQ76DyLQRs9XeF+xyViB4ZUlsc7PQ=
-X-Received: by 2002:a1f:4107:: with SMTP id o7mr526475vka.34.1561605185809;
- Wed, 26 Jun 2019 20:13:05 -0700 (PDT)
+        id S1726817AbfF0DZh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 23:25:37 -0400
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:43722 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726497AbfF0DZf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 23:25:35 -0400
+Received: by mail-oi1-f194.google.com with SMTP id w79so469906oif.10;
+        Wed, 26 Jun 2019 20:25:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=jqnuOLrtXSxBh9hzF7jl+szgxHyLui5g61Cb7nScCKA=;
+        b=khQH0XHCz8+7FsjpBdLjGgP/cd3kzdgonClS6lPvKNmjTBIb/hCrTRB6vqh5zRbbXf
+         l+ed1UvXS1vLNshz4JL78W2G/Bxj8ZAI8JXY3ub9zGYr7We9m2UJvOsKlrLszuMK8i5X
+         GZ5KDu4oeuphPMv/FL/bJfpczk4P1HBBvMHOA6TZIgaWlbhMzuQeYbdSf+FVcmyTPi6W
+         cTpAVx+R+ALQPnTK1CjhHX7YMBhBZVyh7LiKMIJoJyqqNHpm0k3UIq+39c4agNzgr30d
+         e6HiFXxYbWg8+jiwGiU4usAHGyc90/tb1vwLfxgqcCL3dWd7yqOta+BcaZDAqEi6++Tj
+         AMdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=jqnuOLrtXSxBh9hzF7jl+szgxHyLui5g61Cb7nScCKA=;
+        b=b8hUV3x1HFYhUVMzte3sWXsFBSeIRGUDxClRliYs3sLrB8pYJuUD0TLc6VTDdh9Bhm
+         aTbpDe6i0jjzI0mpTfKh/x5GE96561Ay+GEtlHckocWrKKM7Av/iYfRjhlf8dgeJoyHa
+         Y7BSA6brsfU3BNBuR0Bfjfjubl43ZsVbabhBwmVHVo++9BebXp7psY2xB5lzv3PsP/5+
+         gWES26SdyQD7E56pjwJVRSjQiJJuxv+aaHm53/i4uaAUsLuWESSI6Fh8eL+RXlNsjL/H
+         rp3XYbU+D1bnWVN1oEFgi/boSdNfF7AQfGSOGsgsbvbs2/EdyPTB5XJu7xAzz6/NnHCg
+         QG+w==
+X-Gm-Message-State: APjAAAXJzfHIQPeWga5c/2vBI0gagWVsq/DGXoJrT1zMQtf17u/n/U3x
+        8QYwHXIbpWUQooYDMNZYi28EbHwMNDw=
+X-Google-Smtp-Source: APXvYqydDefPUVguW4Pn7BsgoC3UJk4Va2DkEJmeaREdw7qPXqUJD509CAsU7uyuev4RiFYf8mbonw==
+X-Received: by 2002:aca:f003:: with SMTP id o3mr979227oih.59.1561605934928;
+        Wed, 26 Jun 2019 20:25:34 -0700 (PDT)
+Received: from rYz3n.attlocal.net ([2600:1700:210:3790::48])
+        by smtp.googlemail.com with ESMTPSA id y184sm417647oie.33.2019.06.26.20.25.34
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 26 Jun 2019 20:25:34 -0700 (PDT)
+From:   Jiunn Chang <c0d1n61at3@gmail.com>
+To:     skhan@linuxfoundation.org
+Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net
+Subject: [Linux-kernel-mentees][PATCH v2] packet: Fix undefined behavior in bit shift
+Date:   Wed, 26 Jun 2019 22:25:30 -0500
+Message-Id: <20190627032532.18374-2-c0d1n61at3@gmail.com>
+X-Mailer: git-send-email 2.22.0
+In-Reply-To: <20190627010137.5612-1-c0d1n61at3@gmail.com>
+References: <20190627010137.5612-1-c0d1n61at3@gmail.com>
 MIME-Version: 1.0
-References: <20190627014617.600-1-yamada.masahiro@socionext.com>
-In-Reply-To: <20190627014617.600-1-yamada.masahiro@socionext.com>
-From:   Masahiro Yamada <yamada.masahiro@socionext.com>
-Date:   Thu, 27 Jun 2019 12:12:30 +0900
-X-Gmail-Original-Message-ID: <CAK7LNARr7mDaDdh0NxUjYHJCz7Gd9-gFdryWtT224U8KpJ9p3w@mail.gmail.com>
-Message-ID: <CAK7LNARr7mDaDdh0NxUjYHJCz7Gd9-gFdryWtT224U8KpJ9p3w@mail.gmail.com>
-Subject: Re: [PATCH v2 0/4] Compile-test UAPI and kernel headers
-To:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Cc:     Sam Ravnborg <sam@ravnborg.org>, Tony Luck <tony.luck@intel.com>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        linux-riscv@lists.infradead.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        xdp-newbies@vger.kernel.org, Anton Vorontsov <anton@enomsg.org>,
-        Palmer Dabbelt <palmer@sifive.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Colin Cross <ccross@android.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kees Cook <keescook@chromium.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        bpf@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 27, 2019 at 10:49 AM Masahiro Yamada
-<yamada.masahiro@socionext.com> wrote:
->
->
-> 1/4: reworked v2.
->
-> 2/4: fix a flaw I noticed when I was working on this series
->
-> 3/4: maybe useful for 4/4 and in some other places
->
-> 4/4: v2. compile as many headers as possible.
->
+Shifting signed 32-bit value by 31 bits is undefined.  Changing most
+significant bit to unsigned.
 
+Changes included in v2:
+  - use subsystem specific subject lines
+  - CC required mailing lists
 
-If you want to test this series,
-please check:
+Signed-off-by: Jiunn Chang <c0d1n61at3@gmail.com>
+---
+ include/uapi/linux/if_packet.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-git://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git
- header-test-v2
-
-
-> Changes in v2:
->  - Add CONFIG_CPU_{BIG,LITTLE}_ENDIAN guard to avoid build error
->  - Use 'header-test-' instead of 'no-header-test'
->  - Avoid weird 'find' warning when cleaning
->   - New patch
->   - New patch
->   - Add everything to test coverage, and exclude broken ones
->   - Rename 'Makefile' to 'Kbuild'
->   - Add CONFIG_KERNEL_HEADER_TEST option
->
-> Masahiro Yamada (4):
->   kbuild: compile-test UAPI headers to ensure they are self-contained
->   kbuild: do not create wrappers for header-test-y
->   kbuild: support header-test-pattern-y
->   kbuild: compile-test kernel headers to ensure they are self-contained
->
->  .gitignore                         |    1 -
->  Documentation/dontdiff             |    1 -
->  Documentation/kbuild/makefiles.txt |   13 +-
->  Makefile                           |    4 +-
->  include/Kbuild                     | 1134 ++++++++++++++++++++++++++++
->  init/Kconfig                       |   22 +
->  scripts/Makefile.build             |   10 +-
->  scripts/Makefile.lib               |   12 +-
->  scripts/cc-system-headers.sh       |    8 +
->  usr/.gitignore                     |    1 -
->  usr/Makefile                       |    2 +
->  usr/include/.gitignore             |    3 +
->  usr/include/Makefile               |  133 ++++
->  13 files changed, 1331 insertions(+), 13 deletions(-)
->  create mode 100644 include/Kbuild
->  create mode 100755 scripts/cc-system-headers.sh
->  create mode 100644 usr/include/.gitignore
->  create mode 100644 usr/include/Makefile
->
-> --
-> 2.17.1
->
-
-
+diff --git a/include/uapi/linux/if_packet.h b/include/uapi/linux/if_packet.h
+index 467b654bd4c7..3d884d68eb30 100644
+--- a/include/uapi/linux/if_packet.h
++++ b/include/uapi/linux/if_packet.h
+@@ -123,7 +123,7 @@ struct tpacket_auxdata {
+ /* Rx and Tx ring - header status */
+ #define TP_STATUS_TS_SOFTWARE		(1 << 29)
+ #define TP_STATUS_TS_SYS_HARDWARE	(1 << 30) /* deprecated, never set */
+-#define TP_STATUS_TS_RAW_HARDWARE	(1 << 31)
++#define TP_STATUS_TS_RAW_HARDWARE	(1U << 31)
+ 
+ /* Rx ring - feature request bits */
+ #define TP_FT_REQ_FILL_RXHASH	0x1
 -- 
-Best Regards
-Masahiro Yamada
+2.22.0
+
