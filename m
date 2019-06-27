@@ -2,129 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1136F58B88
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 22:20:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82DB158B93
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 22:24:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726648AbfF0UUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 16:20:06 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:39057 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726443AbfF0UUG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 16:20:06 -0400
-Received: by mail-qt1-f196.google.com with SMTP id i34so3917350qta.6;
-        Thu, 27 Jun 2019 13:20:06 -0700 (PDT)
+        id S1726523AbfF0UY3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 16:24:29 -0400
+Received: from mail-vs1-f73.google.com ([209.85.217.73]:38861 "EHLO
+        mail-vs1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726463AbfF0UY3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 16:24:29 -0400
+Received: by mail-vs1-f73.google.com with SMTP id k10so1163436vso.5
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 13:24:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=V6nBBib2uAQ8MeL4AqygiKPfET4jPWJDtqXE3QRJH3c=;
-        b=jElBBPkn5n99AvAkmVP9pFWrhwPnMx0PgW0IPu5BLJP9jKxBo1U28mxZGN4Se8g7Xl
-         6jTh9BwY1s1Z5nIDOsWjB49JnE2QYYatC98D+jNaewyiKsyhJG6BsNh1DwPge4WzrK/M
-         mej5uttO1PJmsMCz9R639PBMhzJPpZOsATYFU90fjTFf1j6JV/0jph4TTNy5M6Z7Y2P/
-         FWhhHsgXFszhkWrNb+a+EXTQOq4WsDhfzx9ZVN4FUbCCfe13HDmo803EzxHr938/W6jh
-         V8QEjehqQ0CY3ADKi+6wfB5UzaCdUEEMV1r+rE313f0Lpf9oilxqj1VgqpfodH3Ux0pD
-         pqxg==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=hnna79W33XQAUXPg9/1+75Om8IQv4yeuG+2GOpSRqBk=;
+        b=nxoAM6/0hGn9NpaSYkYsfcEUMyOmigbO9cRWQGsKt89RvIm2YqeNo//qXLvo8oP3PS
+         044tGgQaJF6TUV2OD1DOGYhpWiVRgmNgcIieqC4IxiN7jF46Q2vEdgWcMNciwawDG/AQ
+         qmU8RI9XseqCOqRMIO4iOtL0dAQYkRx+mkzpto6iDU6t/RtQ5oMsx7h4xDmKBIByaz2u
+         C3lTXK7g9C1k5hrluQjotj5WqqIcZqTDZakn/6bA8HJ+1ccSkOHQBeI2DFslXr/X214I
+         9+Qc6yCYXZjKdDeW5LcFVq/qi3wbLHBba78weED+B0NMjwDU95y86cTEVN9MMrDEllPL
+         oZeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=V6nBBib2uAQ8MeL4AqygiKPfET4jPWJDtqXE3QRJH3c=;
-        b=rUXJsmWbkVH2kimRtNsIUgemrV8q6y4OVbsj6qeJ4X/E12EpDsLV0HKQMi+i01DeUp
-         qAUkaf+8DTYfi8cyO27HonJ/LqPdeD4kgIDOiRaCHyKfRB2wpsc9wM/PaAao/z9GLYTK
-         OG1VcUr0d4HvYnc2P4YSgU9J69sQJ9vfMQdEO+oyL1qEPM5hfIGsrxreFKVRpgcRrt62
-         VXwsJAMLkpVR1UefiX9+qxlcoXjo5WcuXc21LwVRgccCyxGQYV1pJbdtA4N5g61+4t5f
-         C8NmLkh4jyrsb2UDOlilcKyPlsLJtWydTuiyHIJFN/YiDRfODIy8zWBuRYw+oHYNGTqD
-         wLFw==
-X-Gm-Message-State: APjAAAWWVWlZMw+XxDfhukaS/ykb4xxdpBZcEiTWm/0PEbVUTvoY0lDK
-        dIOBjvdEAWxY0F9Qg/zf8kyqSneEwytQoCBNkprdPP1frhE=
-X-Google-Smtp-Source: APXvYqwiw0cIIGZPHp+W8N4Iv5ObPdhk3We6pKDg86ky7OdOAifo5fKFJ6Itw0BBTtp+0rrUXvdppWWSYNCTfz9J1d8=
-X-Received: by 2002:a0c:818f:: with SMTP id 15mr4679279qvd.162.1561666805450;
- Thu, 27 Jun 2019 13:20:05 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190626232133.3800637-1-andriin@fb.com> <20190626232133.3800637-2-andriin@fb.com>
- <E28D922F-9D97-4836-B687-B4CBC3549AE1@fb.com> <CAEf4Bza1p4ozVV-Vn8ibV6JRtGc_voh-Mkx51eWvuVi1P8ogSA@mail.gmail.com>
- <079A7D73-697C-4CFD-97F3-7CFB741BE4C3@fb.com>
-In-Reply-To: <079A7D73-697C-4CFD-97F3-7CFB741BE4C3@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 27 Jun 2019 13:19:53 -0700
-Message-ID: <CAEf4BzYN0uwOd8Kqo+wLQCiiHmHj1ZYS4aVhQDhf1R9Kbhp5pw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/3] libbpf: capture value in BTF type info for
- BTF-defined map defs
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, Alexei Starovoitov <ast@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=hnna79W33XQAUXPg9/1+75Om8IQv4yeuG+2GOpSRqBk=;
+        b=OyY2BxYMOZWuPEzIWZR6O1oBducgRh4HVysvSfyGWv0mkrwl6/s4kShLrJdTi1JkSn
+         gujmKEyVp1Oupes4Z32CtSOk4fZJU0ZsvioWNNxCW58civIzcf+gkCQUMNNCweQNg6m+
+         i8WZTj3nVty0y7mW9ouVD9dgYUe+ibDXZGnF++J6NdkzmRQlL4N8/wOtaEKizo2oJVUp
+         iIFojXow3AjmcMMSf5NLaSpbojPaYm9lAkXmLNX/TjmGsc1RWwUE41AjkVwXV9D6W7jP
+         qIP+suCsXVpG3tqERIk0zvU4LBV56ey3W8+58Pe8JPMxbf09GhgCuNGx2VGsHuND5I3K
+         Wj6Q==
+X-Gm-Message-State: APjAAAXtraJusSbGaw7bs3vsk/n+ujZHOemX9glgPvt3MQ+8tId7m8ts
+        bm2wbHRCEIt+KpfDf6yqlXRMyElVfG2R
+X-Google-Smtp-Source: APXvYqyGMmarmCuZNKwB2NjDgUL40WdgGdUxR1eho0gTMhTpsyVa2Pg7TtSOJs9XeWofmor+SkOYMqXqeQFV
+X-Received: by 2002:a1f:50c1:: with SMTP id e184mr2322952vkb.86.1561667067716;
+ Thu, 27 Jun 2019 13:24:27 -0700 (PDT)
+Date:   Thu, 27 Jun 2019 13:24:11 -0700
+Message-Id: <20190627202417.33370-1-brianvv@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
+Subject: [RFC PATCH bpf-next v2 0/6]  bpf: add BPF_MAP_DUMP command to
+From:   Brian Vazquez <brianvv@google.com>
+To:     Brian Vazquez <brianvv.kernel@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Petar Penkov <ppenkov@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Brian Vazquez <brianvv@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 27, 2019 at 10:56 AM Song Liu <songliubraving@fb.com> wrote:
->
->
->
-> > On Jun 27, 2019, at 10:47 AM, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Thu, Jun 27, 2019 at 10:27 AM Song Liu <songliubraving@fb.com> wrote:
-> >>
-> >>
-> >>
-> >>> On Jun 26, 2019, at 4:21 PM, Andrii Nakryiko <andriin@fb.com> wrote:
-> >>>
-> >>> Change BTF-defined map definitions to capture compile-time integer
-> >>> values as part of BTF type definition, to avoid split of key/value type
-> >>> information and actual type/size/flags initialization for maps.
-> >>
-> >> If I have an old bpf program and compiled it with new llvm, will it
-> >> work with new libbpf?
-> >
-> > You mean BPF programs that used previous incarnation of BTF-defined
-> > maps? No, they won't work. But we never released them, so I think it's
-> > ok to change them. Nothing should be using that except for selftests,
-> > which I fixed.
->
-> I see. This makes sense.
->
-> >
-> >>
-> >>
-> >>>
-> >>> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> >>> ---
-> >
-> > <snip>
-> >
-> >>> diff --git a/tools/testing/selftests/bpf/bpf_helpers.h b/tools/testing/selftests/bpf/bpf_helpers.h
-> >>> index 1a5b1accf091..aa5ddf58c088 100644
-> >>> --- a/tools/testing/selftests/bpf/bpf_helpers.h
-> >>> +++ b/tools/testing/selftests/bpf/bpf_helpers.h
-> >>> @@ -8,6 +8,9 @@
-> >>> */
-> >>> #define SEC(NAME) __attribute__((section(NAME), used))
-> >>>
-> >>> +#define __int(name, val) int (*name)[val]
-> >>> +#define __type(name, val) val *name
-> >>> +
-> >>
-> >> I think we need these two in libbpf.
-> >
-> > Yes, but it's another story for another set of patches. We'll need to
-> > provide bpf_helpers as part of libbpf for inclusion into BPF programs,
-> > but there are a bunch of problems right now with existing
-> > bpf_heplers.h that prevents us from just copying it into libbpf. We'll
-> > need to resolve those first.
-> >
-> > But then again, there is no use of __int and __type for user-space
-> > programs, so for now it's ok.
->
-> OK. How about we put these two lines in an separate patch?
+This introduces a new command to retrieve a variable number of entries
+from a bpf map.
 
-Sure, no problem.
+This new command can be executed from the existing BPF syscall as
+follows:
 
->
-> Thanks,
-> Song
->
+err =  bpf(BPF_MAP_DUMP, union bpf_attr *attr, u32 size)
+using attr->dump.map_fd, attr->dump.prev_key, attr->dump.buf,
+attr->dump.buf_len
+returns zero or negative error, and populates buf and buf_len on
+succees
+
+This implementation is wrapping the existing bpf methods:
+map_get_next_key and map_lookup_elem
+the results show that even with a 1-elem_size buffer, it runs ~40 faster
+than the current implementation, improvements of ~85% are reported when
+the buffer size is increased, although, after the buffer size is around
+5% of the total number of entries there's no huge difference in
+increasing
+it.
+
+Tested:
+Tried different size buffers to handle case where the bulk is bigger, or
+the elements to retrieve are less than the existing ones, all runs read
+a map of 100K entries. Below are the results(in ns) from the different
+runs:
+
+buf_len_1:       55528939 entry-by-entry: 97244981 improvement
+42.897887%
+buf_len_2:       34425779 entry-by-entry: 88863122 improvement
+61.259769%
+buf_len_230:     11700316 entry-by-entry: 88753301 improvement
+86.817036%
+buf_len_5000:    11615290 entry-by-entry: 88362637 improvement
+86.854976%
+buf_len_73000:   12083976 entry-by-entry: 89956483 improvement
+86.566865%
+buf_len_100000:  12638913 entry-by-entry: 89642303 improvement
+85.900727%
+buf_len_234567:  11873964 entry-by-entry: 89080077 improvement
+86.670461%
+
+Changelog:
+
+v2:
+- use proper bpf-next tag
+
+Brian Vazquez (6):
+  bpf: add bpf_map_value_size and bp_map_copy_value helper functions
+  bpf: add BPF_MAP_DUMP command to access more than one entry per call
+  bpf: keep bpf.h in sync with tools/
+  libbpf: support BPF_MAP_DUMP command
+  selftests/bpf: test BPF_MAP_DUMP command on a bpf hashmap
+  selftests/bpf: add test to measure performance of BPF_MAP_DUMP
+
+ include/uapi/linux/bpf.h                |   9 +
+ kernel/bpf/syscall.c                    | 242 ++++++++++++++++++------
+ tools/include/uapi/linux/bpf.h          |   9 +
+ tools/lib/bpf/bpf.c                     |  28 +++
+ tools/lib/bpf/bpf.h                     |   4 +
+ tools/lib/bpf/libbpf.map                |   2 +
+ tools/testing/selftests/bpf/test_maps.c | 141 +++++++++++++-
+ 7 files changed, 372 insertions(+), 63 deletions(-)
+
+-- 
+2.22.0.410.gd8fdbe21b5-goog
+
