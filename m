@@ -2,119 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9032657907
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 03:45:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2365C5791D
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 03:50:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726899AbfF0Bpk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 21:45:40 -0400
-Received: from ozlabs.org ([203.11.71.1]:57969 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726677AbfF0Bpk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 21:45:40 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 45Z2m11dlfz9sCJ;
-        Thu, 27 Jun 2019 11:45:37 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1561599937;
-        bh=81FSZHDgH28AVa4MeUVlcelNCGqVcxfM0/bSKVPs9ec=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=h6+/Ds+TV3xmRNYImuUdT8vJq7WYBxOZVqat7KMasdshUkVhYP6Mapcw1iGwtttl9
-         IEYP6fTawKj6m46pzDEkYqfhRV5hawe8mTorcHW6TMUOQBQvVxgcB4j/wgCtSolYl4
-         //aSKfuFp3IvxovjgNtCskC55wxzqKQ6ssuVJO8Jff6uD6SBTiYg9NhW8N2ad8qdCd
-         rRPFB0C2IHv7EX8W9ftWPYTl8OZK0hKiVTY5Uhn8lzgvwz+S/WA+Dtd/o9IiocToTh
-         7U4rq0276UHtgNQ7ixHzbr3K4hyF6Iqbqn4O/uud0TQIn0hxu3WTBFxDbOK8l92vvb
-         cA2bGr4/wI/8A==
-Date:   Thu, 27 Jun 2019 11:45:36 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Roman Gushchin <guro@fb.com>, Alexei Starovoitov <ast@kernel.org>,
+        id S1727230AbfF0Btq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 21:49:46 -0400
+Received: from conuserg-08.nifty.com ([210.131.2.75]:27093 "EHLO
+        conuserg-08.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726905AbfF0Btq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 21:49:46 -0400
+Received: from grover.flets-west.jp (softbank126125154139.bbtec.net [126.125.154.139]) (authenticated)
+        by conuserg-08.nifty.com with ESMTP id x5R1kN0v032702;
+        Thu, 27 Jun 2019 10:46:23 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-08.nifty.com x5R1kN0v032702
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1561599984;
+        bh=t/tKte8+f+WnIerV46Kqk5V4Cu5goyQEz8X3TPyTH+k=;
+        h=From:To:Cc:Subject:Date:From;
+        b=x56ew+Nf/mRL+Y9auCSqcIA7wXTn2ja3HVYzHe0zb/E43gJ8Lggs/PguNK3OCZjgp
+         uEyvbCO2H1dT/DpTwUE6DbmQRbC6vOSL5OITz+s0Bb0odvn6gylTlEcXpF8asnjeml
+         88aMR4WR5z+A0KqVY3or1TMOqNYfDZk2Ex4sSzWca/5b84o36B0eGUd3VL7kWJzm2Z
+         ht4QKpX3nwgoUQtDo9jLHs9EQ7Dgcaxi1GdZoFz3rV7s0Tp5VvQMZ+OUmUdUW+ge61
+         tE78teOBqyznZ79jc3oTqjv6+zpNpU51id+uwMW/3dc8GBkGo5Jz2XIAR4PoONDPEu
+         JgLgECL33cJbg==
+X-Nifty-SrcIP: [126.125.154.139]
+From:   Masahiro Yamada <yamada.masahiro@socionext.com>
+To:     linux-kbuild@vger.kernel.org
+Cc:     Sam Ravnborg <sam@ravnborg.org>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Tony Luck <tony.luck@intel.com>, linux-doc@vger.kernel.org,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        linux-riscv@lists.infradead.org,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: linux-next: Fixes tag needs some work in the bpf tree
-Message-ID: <20190627114536.09c08f5d@canb.auug.org.au>
-In-Reply-To: <CAADnVQJiMH=jfuD0FGpr2JmzyQsMKHJ4pM1kfQ8jhSxrAe0XWg@mail.gmail.com>
-References: <20190627080521.5df8ccfc@canb.auug.org.au>
-        <20190626221347.GA17762@tower.DHCP.thefacebook.com>
-        <CAADnVQJiMH=jfuD0FGpr2JmzyQsMKHJ4pM1kfQ8jhSxrAe0XWg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- boundary="Sig_/7u90A+dZmO=x5m+8WaV.bo8"; protocol="application/pgp-signature"
+        xdp-newbies@vger.kernel.org, Anton Vorontsov <anton@enomsg.org>,
+        Palmer Dabbelt <palmer@sifive.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Colin Cross <ccross@android.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Kees Cook <keescook@chromium.org>,
+        Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH v2 0/4] Compile-test UAPI and kernel headers
+Date:   Thu, 27 Jun 2019 10:46:13 +0900
+Message-Id: <20190627014617.600-1-yamada.masahiro@socionext.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/7u90A+dZmO=x5m+8WaV.bo8
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
 
-Hi all,
+1/4: reworked v2.
 
-On Wed, 26 Jun 2019 16:36:50 -0700 Alexei Starovoitov <alexei.starovoitov@g=
-mail.com> wrote:
->
-> On Wed, Jun 26, 2019 at 3:14 PM Roman Gushchin <guro@fb.com> wrote:
-> >
-> > On Thu, Jun 27, 2019 at 08:05:21AM +1000, Stephen Rothwell wrote: =20
-> > >
-> > > In commit
-> > >
-> > >   12771345a467 ("bpf: fix cgroup bpf release synchronization")
-> > >
-> > > Fixes tag
-> > >
-> > >   Fixes: 4bfc0bb2c60e ("bpf: decouple the lifetime of cgroup_bpf from
-> > >
-> > > has these problem(s):
-> > >
-> > >   - Subject has leading but no trailing parentheses
-> > >   - Subject has leading but no trailing quotes
-> > >
-> > > Please don't split Fixes tags across more than one line. =20
-> >
-> > Oops, sorry.
-> >
-> > Alexei, can you fix this in place?
-> > Or should I send an updated version? =20
->=20
-> I cannot easily do it since -p and --signoff are incompatible flags.
-> I need to use -p to preserve merge commits,
-> but I also need to use --signoff to add my sob to all
-> other commits that were committed by Daniel
-> after your commit.
->=20
-> Daniel, can you fix Roman's patch instead?
-> you can do:
-> git rebase -i -p  12771345a467^
-> fix Roman's, add you sob only to that one
-> and re-push the whole thing.
+2/4: fix a flaw I noticed when I was working on this series
 
-It's probably not worth fixing, just use this as a learning
-experience ...
+3/4: maybe useful for 4/4 and in some other places
 
---=20
-Cheers,
-Stephen Rothwell
+4/4: v2. compile as many headers as possible.
 
---Sig_/7u90A+dZmO=x5m+8WaV.bo8
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
 
------BEGIN PGP SIGNATURE-----
+Changes in v2:
+ - Add CONFIG_CPU_{BIG,LITTLE}_ENDIAN guard to avoid build error
+ - Use 'header-test-' instead of 'no-header-test'
+ - Avoid weird 'find' warning when cleaning
+  - New patch
+  - New patch
+  - Add everything to test coverage, and exclude broken ones
+  - Rename 'Makefile' to 'Kbuild'
+  - Add CONFIG_KERNEL_HEADER_TEST option
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl0UH8AACgkQAVBC80lX
-0GzJ0Qf/ajJwCOWDbYQEf7IpMsA/fgyGl9ocfvMMJxPvVBl7p1ApAgXv+BVbkewh
-hxEHSEMikoY3UYzkb5B8yz7EtRbh10h8a9trdmlmWW3mKqNSp5H3CjMkJUJDz6Ob
-HQ6h+iiijHozutoa65mVPa5GkKwR00cuY0dvu/trghiSgx2wGWkaq8rhYPezIbTw
-P/zWzYrg2T+Hdll7+KDVEizhb40JhQIM8gycHr+lR7srsKEJ1kj6mSm2rJQbJDVS
-HQDKmbV65WawDlw1jkdfM1OIVB3PcvvfpKjZFHfURQ5sy+zBFSD40sdpMQEkF71O
-wkx/IoqyGQlzuHi9KR8DbbrJPFtbbw==
-=3WPY
------END PGP SIGNATURE-----
+Masahiro Yamada (4):
+  kbuild: compile-test UAPI headers to ensure they are self-contained
+  kbuild: do not create wrappers for header-test-y
+  kbuild: support header-test-pattern-y
+  kbuild: compile-test kernel headers to ensure they are self-contained
 
---Sig_/7u90A+dZmO=x5m+8WaV.bo8--
+ .gitignore                         |    1 -
+ Documentation/dontdiff             |    1 -
+ Documentation/kbuild/makefiles.txt |   13 +-
+ Makefile                           |    4 +-
+ include/Kbuild                     | 1134 ++++++++++++++++++++++++++++
+ init/Kconfig                       |   22 +
+ scripts/Makefile.build             |   10 +-
+ scripts/Makefile.lib               |   12 +-
+ scripts/cc-system-headers.sh       |    8 +
+ usr/.gitignore                     |    1 -
+ usr/Makefile                       |    2 +
+ usr/include/.gitignore             |    3 +
+ usr/include/Makefile               |  133 ++++
+ 13 files changed, 1331 insertions(+), 13 deletions(-)
+ create mode 100644 include/Kbuild
+ create mode 100755 scripts/cc-system-headers.sh
+ create mode 100644 usr/include/.gitignore
+ create mode 100644 usr/include/Makefile
+
+-- 
+2.17.1
+
