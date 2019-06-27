@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 74675583E4
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 15:53:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23BDC583E5
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 15:53:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726841AbfF0Nxt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 09:53:49 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:39855 "EHLO
+        id S1726832AbfF0Nxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 09:53:50 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:50183 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727016AbfF0Nxs (ORCPT
+        by vger.kernel.org with ESMTP id S1726874AbfF0Nxs (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 09:53:48 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id CE94121FE2;
-        Thu, 27 Jun 2019 09:53:46 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 2CA11221AD;
+        Thu, 27 Jun 2019 09:53:48 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Thu, 27 Jun 2019 09:53:46 -0400
+  by compute3.internal (MEProxy); Thu, 27 Jun 2019 09:53:48 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=cndn4wtA9aE004NfbsQAJh06xHA5GqG5nZurZ1S9rhc=; b=GYD+YMMj
-        BO1BaV/lBBH0yZOpzIjgNng+NBpebTPLUwFF8FgJsdTaZSTp+Pj76bwzNRz4hNSu
-        a0ZNJmkKMdLyWEA9ZgqJBUT3CKU+mPG6SWIjmM9smuA9TBH0e1IewlQVMqUeakSD
-        1mMsw5cojjBEnmezDbS34omKLmedp8MCv7dztkDjWrWPDi2KtjDSYoylA1fNCTbU
-        Q5a6+4RGam7DKDfBV8TWNAnlQRU/0rbG0Cb/cUcjL7XXdvqsGgToXjrUcfj5vTNI
-        oaWHWkYc1i3QQ2PI5oYtVkCvxnvWVYYZkF3inZVl/P9VdY5a9huAycO4b96URDMa
-        dfMaEhtg7vKmgQ==
-X-ME-Sender: <xms:asoUXVKdO2idNRyw6G8fsf_hNUmVvMXk5hvLMwi9F8iF29XgDQ-9bQ>
+        fm3; bh=Qp25C1y01PHacXD2awWVzhxKMJP9Klu9hmzfn/H5f8g=; b=uA2673Hd
+        qGJIu6QqqsvSYL7x7D163alVjpEcVXAicU3nCquB7cSgc0HgQvR1q4OVPVlLqgxd
+        V7pMnq63ySftBq59yhrTOW0Zofi6XXeglPxkZV+YCe4VsPWvmCs0A0tDCrd/lHJD
+        reHSTahq9+9S506fOYtFbMT6Bn1xfYY0G0SBhefDzt8XX8Y/ZDKXRWJHBrGmSq1e
+        S/NMw1lV+CPT/gSEiYETvT66bC5o+ZQwufJ1qAVSzyUrH2LC0ZaPstiz14iOi2Cv
+        VMPFwdvxR1mIbTGUIR1OsDEQNooawHZ5CuRKDYdIRlUI2j9ujGSOdVOlrsSjBuQw
+        It3z9ktoOQFb9g==
+X-ME-Sender: <xms:a8oUXdY9avHR9teqU-Eysb7v6QknfPLasJp1LahIV7r2Q2iXtIBijg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrudekgdejudcutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
     ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
     tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmh
     grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
-    ihiivgepud
-X-ME-Proxy: <xmx:asoUXdDnDl1Fz_s00JY4p3MDndadT-6Q3nCN4gWd9IpFXw0oslwhwA>
-    <xmx:asoUXWikOYlKwQlkZpPpvzQkxuN5WVs4lZ8wlYijw0ELD3jiXX_UAg>
-    <xmx:asoUXfPC6MU-D60ZNV9glQHv2tnGnhCteYpxwo-vBzonaJOy9aH8JQ>
-    <xmx:asoUXWfD8k1mN17BVMd9pMuJ78rrJ3WouWta5nGZKoBY7F38_fJJ6g>
+    ihiivgepge
+X-ME-Proxy: <xmx:bMoUXbZYQTY9G9Iug3LnUhIJIT52qUitQx6iO7Hm8DpCKpGCyy4W4Q>
+    <xmx:bMoUXU9XONkBCtgY8mdux2uQdnC4G1QpnQxeH-6CmJaFzo1gk0r5Mg>
+    <xmx:bMoUXag0YvPkuxU8eTg3GIiN5eU0LWzNgpenaDalGdunoKtgDp2jKw>
+    <xmx:bMoUXQ8iq65RNxiM01vZcBShciiLfHXZEL6VirbSWDd5Lk-n6ZxzMg>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id E4AA38005B;
-        Thu, 27 Jun 2019 09:53:44 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id C22E38006A;
+        Thu, 27 Jun 2019 09:53:46 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, petrm@mellanox.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 04/16] mlxsw: reg: Add Monitoring Global Configuration Register
-Date:   Thu, 27 Jun 2019 16:52:47 +0300
-Message-Id: <20190627135259.7292-5-idosch@idosch.org>
+Subject: [PATCH net-next 05/16] mlxsw: spectrum: Extract a helper for trap registration
+Date:   Thu, 27 Jun 2019 16:52:48 +0300
+Message-Id: <20190627135259.7292-6-idosch@idosch.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190627135259.7292-1-idosch@idosch.org>
 References: <20190627135259.7292-1-idosch@idosch.org>
@@ -61,63 +61,107 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Petr Machata <petrm@mellanox.com>
 
-This register serves to configure global parameters of certain
-monitoring operations. The following patches will use it to configure
-that when PTP timestamps are delivered through the PTP FIFO traps, the
-FIFO in question is cleared as well.
+On Spectrum-1, timestamps for PTP packets are delivered through queues
+of ingress and egress timestamps. There are two event traps
+corresponding to activity on each of those queues. This mechanism is
+absent on Spectrum-2, and therefore the traps should only be registered
+on Spectrum-1.
+
+Extract out of mlxsw_sp_traps_init() a generic helper,
+mlxsw_sp_traps_register(), and likewise with _unregister(). The new helpers
+will later be called with Spectrum-1-specific traps.
 
 Signed-off-by: Petr Machata <petrm@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/reg.h | 27 +++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    | 48 +++++++++++++------
+ 1 file changed, 33 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index 197599890bdf..8de9333e6eb1 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -9148,6 +9148,32 @@ static inline void mlxsw_reg_mprs_pack(char *payload, u16 parsing_depth,
- 	mlxsw_reg_mprs_vxlan_udp_dport_set(payload, vxlan_udp_dport);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+index 3e8593824b33..0119efe0ea7a 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+@@ -4251,22 +4251,16 @@ static int mlxsw_sp_trap_groups_set(struct mlxsw_core *mlxsw_core)
+ 	return 0;
  }
  
-+/* MOGCR - Monitoring Global Configuration Register
-+ * ------------------------------------------------
-+ */
-+#define MLXSW_REG_MOGCR_ID 0x9086
-+#define MLXSW_REG_MOGCR_LEN 0x20
+-static int mlxsw_sp_traps_init(struct mlxsw_sp *mlxsw_sp)
++static int mlxsw_sp_traps_register(struct mlxsw_sp *mlxsw_sp,
++				   const struct mlxsw_listener listeners[],
++				   size_t listeners_count)
+ {
+ 	int i;
+ 	int err;
+ 
+-	err = mlxsw_sp_cpu_policers_set(mlxsw_sp->core);
+-	if (err)
+-		return err;
+-
+-	err = mlxsw_sp_trap_groups_set(mlxsw_sp->core);
+-	if (err)
+-		return err;
+-
+-	for (i = 0; i < ARRAY_SIZE(mlxsw_sp_listener); i++) {
++	for (i = 0; i < listeners_count; i++) {
+ 		err = mlxsw_core_trap_register(mlxsw_sp->core,
+-					       &mlxsw_sp_listener[i],
++					       &listeners[i],
+ 					       mlxsw_sp);
+ 		if (err)
+ 			goto err_listener_register;
+@@ -4277,23 +4271,47 @@ static int mlxsw_sp_traps_init(struct mlxsw_sp *mlxsw_sp)
+ err_listener_register:
+ 	for (i--; i >= 0; i--) {
+ 		mlxsw_core_trap_unregister(mlxsw_sp->core,
+-					   &mlxsw_sp_listener[i],
++					   &listeners[i],
+ 					   mlxsw_sp);
+ 	}
+ 	return err;
+ }
+ 
+-static void mlxsw_sp_traps_fini(struct mlxsw_sp *mlxsw_sp)
++static void mlxsw_sp_traps_unregister(struct mlxsw_sp *mlxsw_sp,
++				      const struct mlxsw_listener listeners[],
++				      size_t listeners_count)
+ {
+ 	int i;
+ 
+-	for (i = 0; i < ARRAY_SIZE(mlxsw_sp_listener); i++) {
++	for (i = 0; i < listeners_count; i++) {
+ 		mlxsw_core_trap_unregister(mlxsw_sp->core,
+-					   &mlxsw_sp_listener[i],
++					   &listeners[i],
+ 					   mlxsw_sp);
+ 	}
+ }
+ 
++static int mlxsw_sp_traps_init(struct mlxsw_sp *mlxsw_sp)
++{
++	int err;
 +
-+MLXSW_REG_DEFINE(mogcr, MLXSW_REG_MOGCR_ID, MLXSW_REG_MOGCR_LEN);
++	err = mlxsw_sp_cpu_policers_set(mlxsw_sp->core);
++	if (err)
++		return err;
 +
-+/* reg_mogcr_ptp_iftc
-+ * PTP Ingress FIFO Trap Clear
-+ * The PTP_ING_FIFO trap provides MTPPTR with clr according
-+ * to this value. Default 0.
-+ * Reserved when IB switches and when SwitchX/-2, Spectrum-2
-+ * Access: RW
-+ */
-+MLXSW_ITEM32(reg, mogcr, ptp_iftc, 0x00, 1, 1);
++	err = mlxsw_sp_trap_groups_set(mlxsw_sp->core);
++	if (err)
++		return err;
 +
-+/* reg_mogcr_ptp_eftc
-+ * PTP Egress FIFO Trap Clear
-+ * The PTP_EGR_FIFO trap provides MTPPTR with clr according
-+ * to this value. Default 0.
-+ * Reserved when IB switches and when SwitchX/-2, Spectrum-2
-+ * Access: RW
-+ */
-+MLXSW_ITEM32(reg, mogcr, ptp_eftc, 0x00, 0, 1);
++	return mlxsw_sp_traps_register(mlxsw_sp, mlxsw_sp_listener,
++				       ARRAY_SIZE(mlxsw_sp_listener));
++}
 +
- /* MTPPPC - Time Precision Packet Port Configuration
-  * -------------------------------------------------
-  * This register serves for configuration of which PTP messages should be
-@@ -10400,6 +10426,7 @@ static const struct mlxsw_reg_info *mlxsw_reg_infos[] = {
- 	MLXSW_REG(mcda),
- 	MLXSW_REG(mgpc),
- 	MLXSW_REG(mprs),
-+	MLXSW_REG(mogcr),
- 	MLXSW_REG(mtpppc),
- 	MLXSW_REG(mtpptr),
- 	MLXSW_REG(mtptpt),
++static void mlxsw_sp_traps_fini(struct mlxsw_sp *mlxsw_sp)
++{
++	mlxsw_sp_traps_unregister(mlxsw_sp, mlxsw_sp_listener,
++				  ARRAY_SIZE(mlxsw_sp_listener));
++}
++
+ #define MLXSW_SP_LAG_SEED_INIT 0xcafecafe
+ 
+ static int mlxsw_sp_lag_init(struct mlxsw_sp *mlxsw_sp)
 -- 
 2.20.1
 
