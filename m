@@ -2,103 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E8C3457A03
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 05:32:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D7BA57A37
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 05:47:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726747AbfF0Dcz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 23:32:55 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:38769 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726462AbfF0Dcy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 23:32:54 -0400
-Received: by mail-io1-f68.google.com with SMTP id j6so1569337ioa.5
-        for <netdev@vger.kernel.org>; Wed, 26 Jun 2019 20:32:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Hl42QXY3S0Tzp/1iP5VPtBnoh/J5/Co6mxdvHc83Csg=;
-        b=GbbX9yaDPCx8vkhF+bGE0Od6SliCL/rm+uB32WWHR6IylJo24Rc6p5mu19uHdbrWjr
-         c7dljIdXwKy12zOHYXFNFc7uEjqUKoB4/1xwbcJjr5Yq22sqSuMicIsfbRHSR/zoxvoE
-         6ISVzP0/P9NJ53w19r34RXX4+ew3Z2eM9gdAU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Hl42QXY3S0Tzp/1iP5VPtBnoh/J5/Co6mxdvHc83Csg=;
-        b=F463AoiCByEs8MIT6LK6UkcbFVjMWIf46BfPxjoMURpjhvzXkECldsZoHFXwjTiXIv
-         pf9KhMfIFyTMzGNyz6j9wk+BehEwtYNwbB4QWvEVgPzvXF6Dj8a4TepXly34SUR2hAbX
-         tGQJ6d1lRvST6erPQaXQgg68LuRA1M81QkfdjLXbmBSCfdqQGQWpe1tA9SKWV1UAZ628
-         frJ2GC+5pWZOcuRBVJFZE4Xdz3oZmPXPZgMZOjzUFa8xJ251XyS9PZmBehBWvrxBtaTr
-         qtlriXmy4l20W7wuQrRqL+3ekGK0yzBLlXP1hnLyjH9qoWKQhlvOMgxt4T+56vqkQvZS
-         Naxg==
-X-Gm-Message-State: APjAAAXvq1I5A5VW28pL5MT3EhTRfsapKL7LSfB9EMgtvp3HI/2/vQXx
-        zhfhxG0Jdfncdr8JVonRa7k21q4OXRc=
-X-Google-Smtp-Source: APXvYqyaXloZJxg9kW/xTu+BePSnDl0lA81eos0lva0/Hkey8A4xyXxY4mlCW84rxuvQWzq8ekAfYw==
-X-Received: by 2002:a02:554a:: with SMTP id e71mr1814481jab.144.1561606373805;
-        Wed, 26 Jun 2019 20:32:53 -0700 (PDT)
-Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
-        by smtp.gmail.com with ESMTPSA id p25sm957961iol.48.2019.06.26.20.32.52
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 26 Jun 2019 20:32:53 -0700 (PDT)
-Subject: Re: [Linux-kernel-mentees][PATCH v2] packet: Fix undefined behavior
- in bit shift
-To:     Jiunn Chang <c0d1n61at3@gmail.com>
-Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net,
-        "skh >> Shuah Khan" <skhan@linuxfoundation.org>
-References: <20190627010137.5612-1-c0d1n61at3@gmail.com>
- <20190627032532.18374-2-c0d1n61at3@gmail.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <7f6f44b2-3fe4-85f6-df3c-ad59f2eadba2@linuxfoundation.org>
-Date:   Wed, 26 Jun 2019 21:32:52 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1726866AbfF0DrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 23:47:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36198 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726447AbfF0DrE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 23:47:04 -0400
+Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6CF8D20989;
+        Thu, 27 Jun 2019 03:47:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1561607223;
+        bh=VsxjxmNQqJwqwbXfRiqMNPBfrS+IAXDpBW4jvSjdKVM=;
+        h=Date:From:To:Cc:Subject:From;
+        b=aHrMk5i6A0AwgRXym1UT2lXv1KGGp+4xutCw9x+d7dR0o0llz6gf4CNHmkdW8fJ/d
+         v5T7AUjuM4bd3FQIRq+tjXgGolTqwJttk27I76lyulrb2pseI5izjEsiQX71MIgR1B
+         lxsX94wkw7GYr7mD+Mmz2zrlu6C3knNrm1aWWWkE=
+Date:   Wed, 26 Jun 2019 20:47:01 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
+        Ralf Baechle <ralf@linux-mips.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Subject: Reminder: 4 open syzbot bugs in "net/ax25" subsystem
+Message-ID: <20190627034701.GA721@sol.localdomain>
 MIME-Version: 1.0
-In-Reply-To: <20190627032532.18374-2-c0d1n61at3@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/26/19 9:25 PM, Jiunn Chang wrote:
-> Shifting signed 32-bit value by 31 bits is undefined.  Changing most
-> significant bit to unsigned.
-> 
-> Changes included in v2:
->    - use subsystem specific subject lines
->    - CC required mailing lists
-> 
+[This email was generated by a script.  Let me know if you have any suggestions
+to make it better.]
 
-These version change lines don't belong in the change log.
+Of the currently open syzbot reports against the upstream kernel, I've manually
+marked 4 of them as possibly being bugs in the "net/ax25" subsystem.  I've
+listed these reports below, sorted by an algorithm that tries to list first the
+reports most likely to be still valid, important, and actionable.
 
-> Signed-off-by: Jiunn Chang <c0d1n61at3@gmail.com>
-> ---
+If you believe a bug is no longer valid, please close the syzbot report by
+sending a '#syz fix', '#syz dup', or '#syz invalid' command in reply to the
+original thread, as explained at https://goo.gl/tpsmEJ#status
 
-Move them here.
+If you believe I misattributed a bug to the "net/ax25" subsystem, please let me
+know, and if possible forward the report to the correct people or mailing list.
 
->   include/uapi/linux/if_packet.h | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/include/uapi/linux/if_packet.h b/include/uapi/linux/if_packet.h
-> index 467b654bd4c7..3d884d68eb30 100644
-> --- a/include/uapi/linux/if_packet.h
-> +++ b/include/uapi/linux/if_packet.h
-> @@ -123,7 +123,7 @@ struct tpacket_auxdata {
->   /* Rx and Tx ring - header status */
->   #define TP_STATUS_TS_SOFTWARE		(1 << 29)
->   #define TP_STATUS_TS_SYS_HARDWARE	(1 << 30) /* deprecated, never set */
-> -#define TP_STATUS_TS_RAW_HARDWARE	(1 << 31)
-> +#define TP_STATUS_TS_RAW_HARDWARE	(1U << 31)
->   
->   /* Rx ring - feature request bits */
->   #define TP_FT_REQ_FILL_RXHASH	0x1
-> 
+Here are the bugs:
 
-thanks,
--- Shuah
+--------------------------------------------------------------------------------
+Title:              general protection fault in ax25_send_frame
+Last occurred:      0 days ago
+Reported:           177 days ago
+Branches:           Mainline and others
+Dashboard link:     https://syzkaller.appspot.com/bug?id=1cdd5b120f129364fc8e9b2b027826cf99fa696e
+Original thread:    https://lkml.kernel.org/lkml/0000000000009ea37c057e58d787@google.com/T/#u
+
+Unfortunately, this bug does not have a reproducer.
+
+No one replied to the original thread for this bug.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+e0b81535a27b8be39502@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please consider replying to the
+original thread.  For the git send-email command to use, or tips on how to reply
+if the thread isn't in your mailbox, see the "Reply instructions" at
+https://lkml.kernel.org/r/0000000000009ea37c057e58d787@google.com
+
+--------------------------------------------------------------------------------
+Title:              KASAN: stack-out-of-bounds Write in ax25_getname
+Last occurred:      63 days ago
+Reported:           179 days ago
+Branches:           Mainline and others
+Dashboard link:     https://syzkaller.appspot.com/bug?id=fb195f91dc044978c1b186f1288b1eff61edcc20
+Original thread:    https://lkml.kernel.org/lkml/000000000000ed4120057e2df0c6@google.com/T/#u
+
+This bug has a syzkaller reproducer only.
+
+No one replied to the original thread for this bug.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+6a29097222b4d3b8617c@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please consider replying to the
+original thread.  For the git send-email command to use, or tips on how to reply
+if the thread isn't in your mailbox, see the "Reply instructions" at
+https://lkml.kernel.org/r/000000000000ed4120057e2df0c6@google.com
+
+--------------------------------------------------------------------------------
+Title:              inconsistent lock state in ax25_std_heartbeat_expiry
+Last occurred:      95 days ago
+Reported:           93 days ago
+Branches:           net
+Dashboard link:     https://syzkaller.appspot.com/bug?id=9086a8eac930890b2730d6441093bd478e32913f
+Original thread:    https://lkml.kernel.org/lkml/0000000000001b07250584efbee3@google.com/T/#u
+
+Unfortunately, this bug does not have a reproducer.
+
+The original thread for this bug received 2 replies; the last was 92 days ago.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+e350b81e95a6a214da8a@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please consider replying to the
+original thread.  For the git send-email command to use, or tips on how to reply
+if the thread isn't in your mailbox, see the "Reply instructions" at
+https://lkml.kernel.org/r/0000000000001b07250584efbee3@google.com
+
+--------------------------------------------------------------------------------
+Title:              general protection fault in ax25_send_control
+Last occurred:      170 days ago
+Reported:           169 days ago
+Branches:           net-next
+Dashboard link:     https://syzkaller.appspot.com/bug?id=bacca5f8fe81f2486fb73fd9e130a3035dc46594
+Original thread:    https://lkml.kernel.org/lkml/00000000000077264c057eec9ddd@google.com/T/#u
+
+Unfortunately, this bug does not have a reproducer.
+
+No one replied to the original thread for this bug.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+d0b03d6dbe11a950e0ce@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please consider replying to the
+original thread.  For the git send-email command to use, or tips on how to reply
+if the thread isn't in your mailbox, see the "Reply instructions" at
+https://lkml.kernel.org/r/00000000000077264c057eec9ddd@google.com
+
