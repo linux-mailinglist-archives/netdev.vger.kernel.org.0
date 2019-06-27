@@ -2,111 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3859857F73
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 11:40:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AFA357F79
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 11:43:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726425AbfF0Jkc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 05:40:32 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:38256 "EHLO
+        id S1726375AbfF0Jnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 05:43:31 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:40655 "EHLO
         mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726292AbfF0Jkc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 05:40:32 -0400
-Received: by mail-wr1-f68.google.com with SMTP id d18so1744483wrs.5
-        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 02:40:30 -0700 (PDT)
+        with ESMTP id S1726292AbfF0Jnb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 05:43:31 -0400
+Received: by mail-wr1-f68.google.com with SMTP id p11so1744265wre.7
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 02:43:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=ZaFDKaeKxhVF5DeCL2y8drhtPFAOM9fEMlkrJ0c/5aA=;
-        b=wBa9nV4D3G91vL8B+bLaj0Tn27z1pLDvGU+s4F4wgLtTRg3U0JO4qgonFm6sNVWCgD
-         WE9wlRvA97JYP2qe6yUU2V3hn9ZR4RfTWmQo1ir4Tbhf67lMnl7wshkzxyThjmXs3cjL
-         fgu5LgMKjN5MTTSwthfDbfJ3X4a3Q2DsfzhQc7ukpaQqWGv2IBpSZR8m2UUs46uxAk3H
-         NsHlsdyI1ZK9AHg6Ba37ujMO5nlxMojzcedsicpKyZhvoKZL6Ov9cPCmxrgsThP37eI1
-         1IV8L1fIMyE+eaOe4l4bnX9f6M6GaNwjE07hU99rnOd6PAP72925Ddj10PwUuPScYloP
-         JVFA==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=LPhI4FnAB8rYALzYGcAglm2VXpvRQrNy2JZPV5HKb9M=;
+        b=jCaQVdmMAZbe2sPxH8qKssiBdJNbD90EemzVHvlBBVE39NkWxTuu1mzC0w76xuvA/B
+         Ybkwnx+pQctkcI/yF1sJcqynfnXob7EnQRVy1a6A5Dr4y2DLbu7Ae4qk6UEoOVxx4hjG
+         75S4EaK51y/feMRvCK3Y2M0djCzvmZ7IwGru2q+5v1WOZD+unS1I54QnT5m0hGu6dLqu
+         Hws1Ezu6C3mAWqOALyYVKMs12WfteEOa4wZxpbi9nSKy7omjf5hzyANl8xTXU6BddoCc
+         P2zeBO/34Y0DXAr47gSmYyKzairoY0xLy/bWJKtYi5hXity/+8SR01dLfDWYkvL1lN04
+         gvdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ZaFDKaeKxhVF5DeCL2y8drhtPFAOM9fEMlkrJ0c/5aA=;
-        b=rr5mfTY9wGGdqfv7n/+DUTpdjnHLRdoGbaW/u1S3moQpGEGXyZI95xcVUFPpU/lVvz
-         SSpcmuLHcU6SOnNWNe61wbqZXqjP48zDMBdpapL5TCBx4Nu3WevYq/NUvEqfxGtyYw3L
-         3EV/GT3RyI/NXIDpHLHlyLvEaBQ80mK4RquDQGHvBmu+U7kmbCekpOpliSYl/DcyzyAX
-         IBPSysT4h36YpY9v9XOu64uz/M9w7kLBZJ1uDqUP0jHevCZW4bfb8ZfUad9xUSIL+3fw
-         0wd+fKY7wjt5uB6G6G7HEMamq2U/iwvjdvvdGtitRiEU6EML417IHma2kjGjqJQMqtiG
-         Ftfw==
-X-Gm-Message-State: APjAAAVQIbZpto79N+sQuiyRwXMRKC1esrxaD4cLWvE0h65fLCROifyo
-        11nQXZm/CnlfTgC0T01jGEYeDw==
-X-Google-Smtp-Source: APXvYqz0Fx5frLzAttgh41GIzEPqdqH6gsO/Nq9cDOvJ/EQdifmsYze1I9xfXjKHPNRPhatgNs11tw==
-X-Received: by 2002:adf:e9c6:: with SMTP id l6mr2573807wrn.216.1561628429779;
-        Thu, 27 Jun 2019 02:40:29 -0700 (PDT)
-Received: from apalos (athedsl-4461147.home.otenet.gr. [94.71.2.75])
-        by smtp.gmail.com with ESMTPSA id a64sm4490714wmf.1.2019.06.27.02.40.28
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 27 Jun 2019 02:40:29 -0700 (PDT)
-Date:   Thu, 27 Jun 2019 12:40:26 +0300
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     netdev@vger.kernel.org, jaswinder.singh@linaro.org,
-        ard.biesheuvel@linaro.org, bjorn.topel@intel.com,
-        magnus.karlsson@intel.com, daniel@iogearbox.net, ast@kernel.org,
-        makita.toshiaki@lab.ntt.co.jp, jakub.kicinski@netronome.com,
-        john.fastabend@gmail.com, davem@davemloft.net
-Subject: Re: [RFC, PATCH 1/2, net-next] net: netsec: Use page_pool API
-Message-ID: <20190627094026.GA21962@apalos>
-References: <1561475179-7686-1-git-send-email-ilias.apalodimas@linaro.org>
- <1561475179-7686-2-git-send-email-ilias.apalodimas@linaro.org>
- <20190627113708.67a8575a@carbon>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=LPhI4FnAB8rYALzYGcAglm2VXpvRQrNy2JZPV5HKb9M=;
+        b=PHcxPeJ+CKQOT/VT+2G5g+Vs80gJMutbOd/DCtwiBvFxHHHUKlaASrNiX2x6L7+B0y
+         G7D1rZlJtwPrC9molMrcInQUMfgDEyTlCUihTcN464v6S/c0MFp85wgT4D0k/G9P6aW1
+         0XLrCpIIY9tpsTfyguGW6CqV2W+pVClrHWmD0ETmGhzBrRAlSyxkFSsvLShiBBZGCPXb
+         Vt7IMC2ybtAj8Tn29roYL1oABRJmeAGJzB2euiRi4peApnE0THlMC9jAXSAH2Ksdkcqq
+         5+5Qci6AH4JRE9XDvvY6W1j4Sthg7v7tahMWLrHC7JO54ZSkTGpWSMjVNpUagkOGeqFL
+         o61w==
+X-Gm-Message-State: APjAAAUjmuKk6Yek9F8zjeMoT6gRjYgjTQh6vuEu0m/p177HkUDGqHFz
+        ud3iBIeaeZ0dH5MBOQDZxq7ewdGXGN4=
+X-Google-Smtp-Source: APXvYqw9Hk+sQA5fXIlMdEnCT7a4M8flf5jEEjxQiPcaw80Qlnvpd57yYiFYM9sJEZkwusR+mzuvqw==
+X-Received: by 2002:a5d:56c1:: with SMTP id m1mr2624273wrw.26.1561628608936;
+        Thu, 27 Jun 2019 02:43:28 -0700 (PDT)
+Received: from localhost (ip-89-176-222-26.net.upcbroadband.cz. [89.176.222.26])
+        by smtp.gmail.com with ESMTPSA id o185sm3892191wmo.45.2019.06.27.02.43.28
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 27 Jun 2019 02:43:28 -0700 (PDT)
+Date:   Thu, 27 Jun 2019 11:43:27 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
+        sthemmin@microsoft.com, dsahern@gmail.com, mlxsw@mellanox.com
+Subject: [RFC] longer netdev names proposal
+Message-ID: <20190627094327.GF2424@nanopsycho>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190627113708.67a8575a@carbon>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jepser, 
+Hi all.
 
-> On Tue, 25 Jun 2019 18:06:18 +0300
-> Ilias Apalodimas <ilias.apalodimas@linaro.org> wrote:
-> 
-> > @@ -1059,7 +1059,23 @@ static void netsec_setup_tx_dring(struct netsec_priv *priv)
-> >  static int netsec_setup_rx_dring(struct netsec_priv *priv)
-> >  {
-> >  	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
-> > -	int i;
-> > +	struct page_pool_params pp_params = { 0 };
-> > +	int i, err;
-> > +
-> > +	pp_params.order = 0;
-> > +	/* internal DMA mapping in page_pool */
-> > +	pp_params.flags = PP_FLAG_DMA_MAP;
-> > +	pp_params.pool_size = DESC_NUM;
-> > +	pp_params.nid = cpu_to_node(0);
-> > +	pp_params.dev = priv->dev;
-> > +	pp_params.dma_dir = DMA_FROM_DEVICE;
-> 
-> I was going to complain about this DMA_FROM_DEVICE, until I noticed
-> that in next patch you have:
-> 
->  pp_params.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
-True. Since the first patch only adds page_pool support, i wanted to be clear
-that DMA_BIDIRECTIONAL is only needed for XDP use cases (and especially XDP_TX)
+In the past, there was repeatedly discussed the IFNAMSIZ (16) limit for
+netdevice name length. Now when we have PF and VF representors
+with port names like "pfXvfY", it became quite common to hit this limit:
+0123456789012345
+enp131s0f1npf0vf6
+enp131s0f1npf0vf22
 
-> 
-> Making a note here to help other reviewers.
-Thanks
+Since IFLA_NAME is just a string, I though it might be possible to use
+it to carry longer names as it is. However, the userspace tools, like
+iproute2, are doing checks before print out. So for example in output of
+"ip addr" when IFLA_NAME is longer than IFNAMSIZE, the netdevice is
+completely avoided.
 
-> 
-> > +	dring->page_pool = page_pool_create(&pp_params);
-> > +	if (IS_ERR(dring->page_pool)) {
-> > +		err = PTR_ERR(dring->page_pool);
-> > +		dring->page_pool = NULL;
-> > +		goto err_out;
-> > +	}
-> >  
+So here is a proposal that might work:
+1) Add a new attribute IFLA_NAME_EXT that could carry names longer than
+   IFNAMSIZE, say 64 bytes. The max size should be only defined in kernel,
+   user should be prepared for any string size.
+2) Add a file in sysfs that would indicate that NAME_EXT is supported by
+   the kernel.
+3) Udev is going to look for the sysfs indication file. In case when
+   kernel supports long names, it will do rename to longer name, setting
+   IFLA_NAME_EXT. If not, it does what it does now - fail.
+4) There are two cases that can happen during rename:
+   A) The name is shorter than IFNAMSIZ
+      -> both IFLA_NAME and IFLA_NAME_EXT would contain the same string:
+         original IFLA_NAME     = eth0
+         original IFLA_NAME_EXT = eth0
+         renamed  IFLA_NAME     = enp5s0f1npf0vf1
+         renamed  IFLA_NAME_EXT = enp5s0f1npf0vf1
+   B) The name is longer tha IFNAMSIZ
+      -> IFLA_NAME would contain the original one, IFLA_NAME_EXT would 
+         contain the new one:
+         original IFLA_NAME     = eth0
+         original IFLA_NAME_EXT = eth0
+         renamed  IFLA_NAME     = eth0
+         renamed  IFLA_NAME_EXT = enp131s0f1npf0vf22
 
-Cheers
-/Ilias
+This would allow the old tools to work with "eth0" and the new
+tools would work with "enp131s0f1npf0vf22". In sysfs, there would
+be symlink from one name to another.
+      
+Also, there might be a warning added to kernel if someone works
+with IFLA_NAME that the userspace tool should be upgraded.
+
+Eventually, only IFLA_NAME_EXT is going to be used by everyone.
+
+I'm aware there are other places where similar new attribute
+would have to be introduced too (ip rule for example).
+I'm not saying this is a simple work.
+
+Question is what to do with the ioctl api (get ifindex etc). I would
+probably leave it as is and push tools to use rtnetlink instead.
+
+Any ideas why this would not work? Any ideas how to solve this
+differently?
+
+Thanks!
+
+Jiri
+     
