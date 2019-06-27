@@ -2,272 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C94C58DBA
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 00:13:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6DB858DBF
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 00:14:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726748AbfF0WM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 18:12:58 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:40826 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726445AbfF0WM6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 18:12:58 -0400
-Received: by mail-pf1-f196.google.com with SMTP id p184so1897229pfp.7;
-        Thu, 27 Jun 2019 15:12:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=omKdG1SEf1DlswzrHROnkb/YaLBu8whubVZpGxqr6l8=;
-        b=IfwkWs04CvjvZHz2zqXh1HunR5OwmQp6SP1biIwYAvvU+WinKartoOziqTpmGokGj6
-         28ppdte+/P9oCjEab5YlLHDA073Ghwt/gAT2t7WbhlfLwpcGHU3pIMSuD3UC5mtsA5ee
-         y4G/3ZjGbvlCE6g90CC4JG4WuFgGxZ9XU0ux+XS+L1hn13MeRmq6/S2D9afvxk68tEZM
-         KS6k5IX08ZR/Jd6VeCbspPdxGF6n1I12sIOpU1fnaWhlzTPnFydiZu8ORpz1UrVxotTn
-         dQbw/YrYu1YB2jWB8zrlP+t5l63r4o4lB+EQC0FoZtOnpOg/cPVVhtPFkHWp/bfRvpLz
-         6U/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=omKdG1SEf1DlswzrHROnkb/YaLBu8whubVZpGxqr6l8=;
-        b=iYp5g6CV/Wxk/0LZYHyPf0QffqdpAh1DMGEXkL+kawy7BCriVZoEeuHtOZ0ZNtII1X
-         uh+PSP4zKlX5qmldjytiIz7nGhHGj10aa+RsOZ8l5nRP9VLJd0CL3a4Dh3XXKWvNRfsa
-         seGInBQTXp+LD438J0UkWWcQXJ1yIWTW9D2AInQnmgf4quuehsapk0YZQmbQGmgm5CBc
-         ftFNOnpdrauZMXuhN2RMknm3hkoacSOQJK6TU8Tx0Ws/KYwJkOTsiyKfzRbWu4782kEm
-         twBhvwP14gkjpza0jSwM70yeNzHCjNav0APnaUrSpN6HEul3kTVH7uasnjEs/wRzy6Rn
-         zjbQ==
-X-Gm-Message-State: APjAAAWR1F1YbInTm0HUWAZiNflop7T6pdx12YOLHrM3g4Bd1TZYz+1N
-        NZoiUixMSLDkMlIeDRBiBlQ=
-X-Google-Smtp-Source: APXvYqyGeZbkJiS0Dsn3QGHZ6jseIPkfjoJpd43nvrWs2aQ0x2IU3Bw2MKPpGVg19IoUoJ2+3kiGMA==
-X-Received: by 2002:a63:2020:: with SMTP id g32mr5946476pgg.90.1561673577422;
-        Thu, 27 Jun 2019 15:12:57 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::1:305a])
-        by smtp.gmail.com with ESMTPSA id t4sm127832pgj.20.2019.06.27.15.12.55
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 27 Jun 2019 15:12:56 -0700 (PDT)
-Date:   Thu, 27 Jun 2019 15:12:54 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Brian Vazquez <brianvv@google.com>
-Cc:     Brian Vazquez <brianvv.kernel@gmail.com>,
+        id S1726702AbfF0WOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 18:14:35 -0400
+Received: from www62.your-server.de ([213.133.104.62]:45120 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726445AbfF0WOf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 18:14:35 -0400
+Received: from [78.46.172.3] (helo=sslproxy06.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hgcf2-0004BA-FZ; Fri, 28 Jun 2019 00:14:32 +0200
+Received: from [178.193.45.231] (helo=linux.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hgcf2-000Qzl-AK; Fri, 28 Jun 2019 00:14:32 +0200
+Subject: Re: [PATCH bpf-next v5 1/3] devmap/cpumap: Use flush list instead of
+ bitmap
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
         Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Stanislav Fomichev <sdf@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Petar Penkov <ppenkov@google.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [RFC PATCH bpf-next v2 2/6] bpf: add BPF_MAP_DUMP command to
- access more than one entry per call
-Message-ID: <20190627221253.fjsa2lzog2zs5nyz@ast-mbp.dhcp.thefacebook.com>
-References: <20190627202417.33370-1-brianvv@google.com>
- <20190627202417.33370-3-brianvv@google.com>
+        David Miller <davem@davemloft.net>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+References: <156125626076.5209.13424524054109901554.stgit@alrua-x1>
+ <156125626115.5209.3880071777007082264.stgit@alrua-x1>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <ff82dde7-8f31-1ab5-65b8-5e2d5ca5f680@iogearbox.net>
+Date:   Fri, 28 Jun 2019 00:14:31 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190627202417.33370-3-brianvv@google.com>
-User-Agent: NeoMutt/20180223
+In-Reply-To: <156125626115.5209.3880071777007082264.stgit@alrua-x1>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25493/Thu Jun 27 10:06:16 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 27, 2019 at 01:24:13PM -0700, Brian Vazquez wrote:
-> This introduces a new command to retrieve a variable number of entries
-> from a bpf map wrapping the existing bpf methods:
-> map_get_next_key and map_lookup_elem
+On 06/23/2019 04:17 AM, Toke Høiland-Jørgensen wrote:
+> From: Toke Høiland-Jørgensen <toke@redhat.com>
 > 
-> Note that map_dump doesn't guarantee that reading the entire table is
-> consistent since this function is always racing with kernel and user code
-> but the same behaviour is found when the entire table is walked using
-> the current interfaces: map_get_next_key + map_lookup_elem.
-> It is also important to note that when a locked map is provided it is
-> consistent only for 1 entry at the time, meaning that the buf returned
-> might or might not be consistent.
-
-Please explain the api behavior and corner cases in the commit log
-or in code comments.
-
-Would it make sense to return last key back into prev_key,
-so that next map_dump command doesn't need to copy it from the
-buffer?
-
-> Suggested-by: Stanislav Fomichev <sdf@google.com>
-> Signed-off-by: Brian Vazquez <brianvv@google.com>
-> ---
->  include/uapi/linux/bpf.h |   9 ++++
->  kernel/bpf/syscall.c     | 108 +++++++++++++++++++++++++++++++++++++++
->  2 files changed, 117 insertions(+)
+> The socket map uses a linked list instead of a bitmap to keep track of
+> which entries to flush. Do the same for devmap and cpumap, as this means we
+> don't have to care about the map index when enqueueing things into the
+> map (and so we can cache the map lookup).
 > 
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index b077507efa3f3..1d753958874df 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -106,6 +106,7 @@ enum bpf_cmd {
->  	BPF_TASK_FD_QUERY,
->  	BPF_MAP_LOOKUP_AND_DELETE_ELEM,
->  	BPF_MAP_FREEZE,
-> +	BPF_MAP_DUMP,
->  };
+> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+[...]
+> +static int bq_flush_to_queue(struct xdp_bulk_queue *bq, bool in_napi_ctx)
+>  {
+> +	struct bpf_cpu_map_entry *rcpu = bq->obj;
+>  	unsigned int processed = 0, drops = 0;
+>  	const int to_cpu = rcpu->cpu;
+>  	struct ptr_ring *q;
+> @@ -621,6 +630,9 @@ static int bq_flush_to_queue(struct bpf_cpu_map_entry *rcpu,
+>  	bq->count = 0;
+>  	spin_unlock(&q->producer_lock);
 >  
->  enum bpf_map_type {
-> @@ -385,6 +386,14 @@ union bpf_attr {
->  		__u64		flags;
->  	};
->  
-> +	struct { /* struct used by BPF_MAP_DUMP command */
-> +		__u32		map_fd;
-> +		__aligned_u64	prev_key;
-> +		__aligned_u64	buf;
-> +		__aligned_u64	buf_len; /* input/output: len of buf */
-> +		__u64		flags;
-> +	} dump;
+> +	__list_del(bq->flush_node.prev, bq->flush_node.next);
+> +	bq->flush_node.prev = NULL;
+
+Given this and below is a bit non-standard way of using list API, maybe add
+these as inline helpers to include/linux/list.h to make sure anyone changing
+list API semantics doesn't overlook these in future?
+
+>  	/* Feedback loop via tracepoints */
+>  	trace_xdp_cpumap_enqueue(rcpu->map_id, processed, drops, to_cpu);
+>  	return 0;
+[...]
 > +
->  	struct { /* anonymous struct used by BPF_PROG_LOAD command */
->  		__u32		prog_type;	/* one of enum bpf_prog_type */
->  		__u32		insn_cnt;
-> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> index a1823a50f9be0..7653346b5cfd1 100644
-> --- a/kernel/bpf/syscall.c
-> +++ b/kernel/bpf/syscall.c
-> @@ -1097,6 +1097,111 @@ static int map_get_next_key(union bpf_attr *attr)
->  	return err;
+> +	if (!bq->flush_node.prev)
+> +		list_add(&bq->flush_node, flush_list);
+> +
+>  	return 0;
 >  }
 >  
-> +/* last field in 'union bpf_attr' used by this command */
-> +#define BPF_MAP_DUMP_LAST_FIELD dump.buf_len
-> +
-> +static int map_dump(union bpf_attr *attr)
-> +{
-> +	void __user *ukey = u64_to_user_ptr(attr->dump.prev_key);
-> +	void __user *ubuf = u64_to_user_ptr(attr->dump.buf);
-> +	u32 __user *ubuf_len = u64_to_user_ptr(attr->dump.buf_len);
-> +	int ufd = attr->dump.map_fd;
-> +	struct bpf_map *map;
-> +	void *buf, *prev_key, *key, *value;
-> +	u32 value_size, elem_size, buf_len, cp_len;
-> +	struct fd f;
-> +	int err;
-> +
-> +	if (CHECK_ATTR(BPF_MAP_DUMP))
-> +		return -EINVAL;
-> +
-> +	attr->flags = 0;
-> +	if (attr->dump.flags & ~BPF_F_LOCK)
-> +		return -EINVAL;
-> +
-> +	f = fdget(ufd);
-> +	map = __bpf_map_get(f);
-> +	if (IS_ERR(map))
-> +		return PTR_ERR(map);
-> +	if (!(map_get_sys_perms(map, f) & FMODE_CAN_READ)) {
-> +		err = -EPERM;
-> +		goto err_put;
-> +	}
-> +
-> +	if ((attr->dump.flags & BPF_F_LOCK) &&
-> +	    !map_value_has_spin_lock(map)) {
-> +		err = -EINVAL;
-> +		goto err_put;
-> +	}
-> +
-> +	if (map->map_type == BPF_MAP_TYPE_QUEUE ||
-> +	    map->map_type == BPF_MAP_TYPE_STACK) {
-> +		err = -ENOTSUPP;
-> +		goto err_put;
-> +	}
-> +
-> +	value_size = bpf_map_value_size(map);
-> +
-> +	err = get_user(buf_len, ubuf_len);
-> +	if (err)
-> +		goto err_put;
-> +
-> +	elem_size = map->key_size + value_size;
-> +	if (buf_len < elem_size) {
-> +		err = -EINVAL;
-> +		goto err_put;
-> +	}
-> +
-> +	if (ukey) {
-> +		prev_key = __bpf_copy_key(ukey, map->key_size);
-> +		if (IS_ERR(prev_key)) {
-> +			err = PTR_ERR(prev_key);
-> +			goto err_put;
-> +		}
-> +	} else {
-> +		prev_key = NULL;
-> +	}
-> +
-> +	err = -ENOMEM;
-> +	buf = kmalloc(elem_size, GFP_USER | __GFP_NOWARN);
-> +	if (!buf)
-> +		goto err_put;
-> +
-> +	key = buf;
-> +	value = key + map->key_size;
-> +	for (cp_len = 0;  cp_len + elem_size <= buf_len ; cp_len += elem_size) {
-
-checkpatch.pl please.
-
-> +next:
-> +		if (signal_pending(current)) {
-> +			err = -EINTR;
-> +			break;
-> +		}
-> +
-> +		rcu_read_lock();
-> +		err = map->ops->map_get_next_key(map, prev_key, key);
-> +		rcu_read_unlock();
-> +
-> +		if (err)
-> +			break;
-
-should probably be only for ENOENT case?
-and other errors should be returned to user ?
-
-> +
-> +		if (bpf_map_copy_value(map, key, value, attr->dump.flags))
-> +			goto next;
-
-only for ENOENT as well?
-and instead of goto use continue and move cp_len+= to the end after prev_key=key?
-
-> +
-> +		if (copy_to_user(ubuf + cp_len, buf, elem_size))
-> +			break;
-
-return error to user?
-
-> +
-> +		prev_key = key;
-> +	}
-> +
-> +	if (cp_len)
-> +		err = 0;
-
-this will mask any above errors if there was at least one element copied.
-
-> +	if (copy_to_user(ubuf_len, &cp_len, sizeof(cp_len)))
-> +		err = -EFAULT;
-> +	kfree(buf);
-> +err_put:
-> +	fdput(f);
-> +	return err;
-> +}
-> +
->  #define BPF_MAP_LOOKUP_AND_DELETE_ELEM_LAST_FIELD value
->  
->  static int map_lookup_and_delete_elem(union bpf_attr *attr)
-> @@ -2891,6 +2996,9 @@ SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned int, siz
->  	case BPF_MAP_LOOKUP_AND_DELETE_ELEM:
->  		err = map_lookup_and_delete_elem(&attr);
->  		break;
-> +	case BPF_MAP_DUMP:
-> +		err = map_dump(&attr);
-> +		break;
->  	default:
->  		err = -EINVAL;
->  		break;
-> -- 
-> 2.22.0.410.gd8fdbe21b5-goog
-> 
