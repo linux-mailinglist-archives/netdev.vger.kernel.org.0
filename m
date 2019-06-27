@@ -2,119 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B1A657997
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 04:41:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6287F579AE
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 04:50:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726772AbfF0ClI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 22:41:08 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:53614 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726663AbfF0ClI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 22:41:08 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 651A030811C7;
-        Thu, 27 Jun 2019 02:41:03 +0000 (UTC)
-Received: from [10.72.12.196] (ovpn-12-196.pek2.redhat.com [10.72.12.196])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5AA1960856;
-        Thu, 27 Jun 2019 02:40:56 +0000 (UTC)
-Subject: Re: [PATCH bpf-next] virtio_net: add XDP meta data support in
- receive_small()
-To:     Yuya Kusakabe <yuya.kusakabe@gmail.com>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        jakub.kicinski@netronome.com, hawk@kernel.org,
-        john.fastabend@gmail.com, "Michael S. Tsirkin" <mst@redhat.com>
-References: <20190627023332.8557-1-yuya.kusakabe@gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <74dc4919-cf27-b058-5996-5af4d9acbd77@redhat.com>
-Date:   Thu, 27 Jun 2019 10:40:55 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.1
-MIME-Version: 1.0
-In-Reply-To: <20190627023332.8557-1-yuya.kusakabe@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Thu, 27 Jun 2019 02:41:08 +0000 (UTC)
+        id S1726857AbfF0CuH convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 26 Jun 2019 22:50:07 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:45858 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726816AbfF0CuH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 22:50:07 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0B20814DE884A;
+        Wed, 26 Jun 2019 19:50:07 -0700 (PDT)
+Date:   Wed, 26 Jun 2019 19:50:06 -0700 (PDT)
+Message-Id: <20190626.195006.2073691861982062351.davem@davemloft.net>
+To:     torvalds@linux-foundation.org
+CC:     akpm@linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT] Networking
+From:   David Miller <davem@davemloft.net>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 26 Jun 2019 19:50:07 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2019/6/27 ä¸Šåˆ10:33, Yuya Kusakabe wrote:
-> This adds XDP meta data support to the code path receive_small().
->
-> mrg_rxbuf=off is required on qemu, because receive_mergeable() still
-> doesn't support XDP meta data.
+1) Fix ppp_mppe crypto soft dependencies, from Takashi Iawi.
 
+2) Fix TX completion to be finite, from Sergej Benilov.
 
-What's the reason for this?
+3) Use register_pernet_device to avoid a dst leak in tipc, from Xin
+   Long.
 
+4) Double free of TX cleanup in Dirk van der Merwe.
 
->
-> Fixes: de8f3a83b0a0 ("bpf: add meta pointer for direct access")
-> Signed-off-by: Yuya Kusakabe <yuya.kusakabe@gmail.com>
+5) Memory leak in packet_set_ring(), from Eric Dumazet.
 
+6) Out of bounds read in qmi_wwan, from Bjørn Mork.
 
-Could you please cc virtio maintainer through get_maintainer.pl?
+7) Fix iif used in mcast/bcast looped back packets, from Stephen
+   Suryaputra.
 
-Thanks
+8) Fix neighbour resolution on raw ipv6 sockets, from Nicolas Dichtel.
 
+Please pull, thanks a lot!
 
-> ---
->   drivers/net/virtio_net.c | 10 ++++++++--
->   1 file changed, 8 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 4f3de0ac8b0b..14165c5edb7d 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -644,6 +644,7 @@ static struct sk_buff *receive_small(struct net_device *dev,
->   	unsigned int delta = 0;
->   	struct page *xdp_page;
->   	int err;
-> +	unsigned int metasize = 0;
->   
->   	len -= vi->hdr_len;
->   	stats->bytes += len;
-> @@ -683,8 +684,8 @@ static struct sk_buff *receive_small(struct net_device *dev,
->   
->   		xdp.data_hard_start = buf + VIRTNET_RX_PAD + vi->hdr_len;
->   		xdp.data = xdp.data_hard_start + xdp_headroom;
-> -		xdp_set_data_meta_invalid(&xdp);
->   		xdp.data_end = xdp.data + len;
-> +		xdp.data_meta = xdp.data;
->   		xdp.rxq = &rq->xdp_rxq;
->   		orig_data = xdp.data;
->   		act = bpf_prog_run_xdp(xdp_prog, &xdp);
-> @@ -695,9 +696,11 @@ static struct sk_buff *receive_small(struct net_device *dev,
->   			/* Recalculate length in case bpf program changed it */
->   			delta = orig_data - xdp.data;
->   			len = xdp.data_end - xdp.data;
-> +			metasize = xdp.data - xdp.data_meta;
->   			break;
->   		case XDP_TX:
->   			stats->xdp_tx++;
-> +			xdp.data_meta = xdp.data;
->   			xdpf = convert_to_xdp_frame(&xdp);
->   			if (unlikely(!xdpf))
->   				goto err_xdp;
-> @@ -735,11 +738,14 @@ static struct sk_buff *receive_small(struct net_device *dev,
->   	}
->   	skb_reserve(skb, headroom - delta);
->   	skb_put(skb, len);
-> -	if (!delta) {
-> +	if (!delta && !metasize) {
->   		buf += header_offset;
->   		memcpy(skb_vnet_hdr(skb), buf, vi->hdr_len);
->   	} /* keep zeroed vnet hdr since packet was changed by bpf */
->   
-> +	if (metasize)
-> +		skb_metadata_set(skb, metasize);
-> +
->   err:
->   	return skb;
->   
+The following changes since commit c356dc4b540edd6c02b409dd8cf3208ba2804c38:
+
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/davem/net (2019-06-21 22:23:35 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/davem/net 
+
+for you to fetch changes up to 89ed5b519004a7706f50b70f611edbd3aaacff2c:
+
+  af_packet: Block execution of tasks waiting for transmit to complete in AF_PACKET (2019-06-26 19:38:29 -0700)
+
+----------------------------------------------------------------
+Antoine Tenart (1):
+      net: macb: do not copy the mac address if NULL
+
+Bjørn Mork (1):
+      qmi_wwan: Fix out-of-bounds read
+
+David S. Miller (2):
+      Merge branch 'smc-fixes'
+      Merge branch 'ipv6-fix-neighbour-resolution-with-raw-socket'
+
+Dirk van der Merwe (1):
+      net/tls: fix page double free on TX cleanup
+
+Dmitry Bogdanov (1):
+      net: aquantia: fix vlans not working over bridged network
+
+Eiichi Tsukata (1):
+      net/ipv6: Fix misuse of proc_dointvec "skip_notify_on_dev_down"
+
+Eric Dumazet (1):
+      net/packet: fix memory leak in packet_set_ring()
+
+Huaping Zhou (1):
+      net/smc: hold conns_lock before calling smc_lgr_register_conn()
+
+Marek Vasut (1):
+      net: dsa: microchip: Use gpiod_set_value_cansleep()
+
+Neil Horman (1):
+      af_packet: Block execution of tasks waiting for transmit to complete in AF_PACKET
+
+Nicolas Dichtel (2):
+      ipv6: constify rt6_nexthop()
+      ipv6: fix neighbour resolution with raw socket
+
+Petr Oros (1):
+      be2net: fix link failure after ethtool offline test
+
+Roland Hii (2):
+      net: stmmac: fixed new system time seconds value calculation
+      net: stmmac: set IC bit when transmitting frames with HW timestamp
+
+Sergej Benilov (1):
+      sis900: fix TX completion
+
+Stephen Suryaputra (2):
+      ipv4: Use return value of inet_iif() for __raw_v4_lookup in the while loop
+      ipv4: reset rt_iif for recirculated mcast/bcast out pkts
+
+Takashi Iwai (1):
+      ppp: mppe: Add softdep to arc4
+
+Xin Long (3):
+      tipc: change to use register_pernet_device
+      tipc: check msg->req data len in tipc_nl_compat_bearer_disable
+      sctp: change to hold sk after auth shkey is created successfully
+
+YueHaibing (4):
+      net/sched: cbs: Fix error path of cbs_module_init
+      bonding: Always enable vlan tx offload
+      net/smc: Fix error path in smc_init
+      team: Always enable vlan tx offload
+
+ drivers/net/bonding/bond_main.c                           |  2 +-
+ drivers/net/dsa/microchip/ksz_common.c                    |  6 +++---
+ drivers/net/ethernet/aquantia/atlantic/aq_filters.c       | 10 ++++++++--
+ drivers/net/ethernet/aquantia/atlantic/aq_nic.c           |  1 +
+ drivers/net/ethernet/aquantia/atlantic/aq_nic.h           |  1 +
+ drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c | 19 +++++++++++++------
+ drivers/net/ethernet/cadence/macb_main.c                  |  2 +-
+ drivers/net/ethernet/emulex/benet/be_ethtool.c            | 28 ++++++++++++++++++++++------
+ drivers/net/ethernet/sis/sis900.c                         | 16 ++++++++--------
+ drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c     |  2 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c         | 22 ++++++++++++++--------
+ drivers/net/ppp/ppp_mppe.c                                |  1 +
+ drivers/net/team/team.c                                   |  2 +-
+ drivers/net/usb/qmi_wwan.c                                |  2 +-
+ drivers/net/vrf.c                                         |  2 +-
+ include/net/ip6_route.h                                   |  4 ++--
+ include/net/route.h                                       |  1 +
+ include/net/tls.h                                         | 15 ---------------
+ net/bluetooth/6lowpan.c                                   |  4 ++--
+ net/ipv4/ip_output.c                                      | 12 ++++++++++++
+ net/ipv4/raw.c                                            |  2 +-
+ net/ipv4/route.c                                          | 33 +++++++++++++++++++++++++++++++++
+ net/ipv6/ip6_output.c                                     |  2 +-
+ net/ipv6/route.c                                          |  5 +++--
+ net/netfilter/nf_flow_table_ip.c                          |  2 +-
+ net/packet/af_packet.c                                    | 23 +++++++++++++++++++----
+ net/packet/internal.h                                     |  1 +
+ net/sched/sch_cbs.c                                       |  9 +++++++--
+ net/sctp/endpointola.c                                    |  8 ++++----
+ net/smc/af_smc.c                                          |  5 ++++-
+ net/smc/smc_core.c                                        |  3 +++
+ net/tipc/core.c                                           | 12 ++++++------
+ net/tipc/netlink_compat.c                                 | 18 +++++++++++++++---
+ net/tls/tls_main.c                                        |  3 ++-
+ 34 files changed, 194 insertions(+), 84 deletions(-)
