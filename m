@@ -2,111 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D42958800
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 19:09:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECE6F58802
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 19:09:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726543AbfF0RIy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 13:08:54 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:41794 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726425AbfF0RIx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 13:08:53 -0400
-Received: by mail-io1-f66.google.com with SMTP id w25so6353160ioc.8
-        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 10:08:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=mX6LM/grtaDjR8oNd7oOcF8gzofdiZE44jxdMZ2CBbs=;
-        b=Ql8J5leW16qqBgrUXZTmNa1CBVLrGHTSOOf69XE0ckgmWH4kSLWckOdTmx4f2iHYef
-         qib7v2BQk/9dj1r1vDjpc8Pp+Sa7OL4kOoJoDXL5WadBulDe6EsNa3jorAG9D6iLRZsq
-         Fara1/0ZM6ELDKu03VLURDf4f0341OErRnQHI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=mX6LM/grtaDjR8oNd7oOcF8gzofdiZE44jxdMZ2CBbs=;
-        b=XWSSvl1HFNNEzcbhee0N0BuO9csB4WastHjSrJMQ6iUvmfeuypPHZHIBIXCbLRXNs2
-         iOg9zmifrVhMohQ3aDqYKnHttEagYO6hiFk8YOxwm3WvBgVoZs1f55zDgpOaw1JhEGOX
-         qAF3EA3vFtiP67qoTrSKvoX8iEVi7qN9I1sAtbTvVmQ2Rime56MmI7KdApcHfy2P9yT+
-         /E0PF68odoiPQxuMh3WvSCgvfqX6JHygMETWe5T2KGX+6GSpqQDN650ZArecyh8XGJFu
-         zseAHQOUUu3IVo3CCIP3v8P9z+v3WgK/JAD6QomlLpaJwFejMIv6bO9vZZHjJnAWzdD4
-         30uw==
-X-Gm-Message-State: APjAAAU4tY+UjL12MO+YXl2OvcLgvq4/kN9UOxWjENopv6e7KlBnwn6M
-        g1F56OgOeYGXIOE2JSD5Gfsd8w==
-X-Google-Smtp-Source: APXvYqyXYQHIushrlD9suJUNOnZwY0KZrv3XkCLjKSJhTjyjfpK6MHokSzUy96I9oh2JTKj+Bkr9HA==
-X-Received: by 2002:a5d:9251:: with SMTP id e17mr543228iol.21.1561655332962;
-        Thu, 27 Jun 2019 10:08:52 -0700 (PDT)
-Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
-        by smtp.gmail.com with ESMTPSA id c1sm1957842ioc.43.2019.06.27.10.08.51
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 27 Jun 2019 10:08:52 -0700 (PDT)
-Subject: Re: [Linux-kernel-mentees][PATCH v2] packet: Fix undefined behavior
- in bit shift
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     David Miller <davem@davemloft.net>, c0d1n61at3@gmail.com,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20190627010137.5612-1-c0d1n61at3@gmail.com>
- <20190627032532.18374-2-c0d1n61at3@gmail.com>
- <7f6f44b2-3fe4-85f6-df3c-ad59f2eadba2@linuxfoundation.org>
- <20190627.092253.1878691006683087825.davem@davemloft.net>
- <9687ddc6-3bdb-5b2a-2934-ed9c6921551d@linuxfoundation.org>
- <CAADnVQLxrwkgHY6sg98NVfAsG3EYeJLxAevskOUdB=gNQugfSg@mail.gmail.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <7c3d7390-caff-ca2f-760e-9bb72ada90dd@linuxfoundation.org>
-Date:   Thu, 27 Jun 2019 11:08:51 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
-MIME-Version: 1.0
-In-Reply-To: <CAADnVQLxrwkgHY6sg98NVfAsG3EYeJLxAevskOUdB=gNQugfSg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1726601AbfF0RJ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 13:09:26 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:13000 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726480AbfF0RJ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 13:09:26 -0400
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5RH6Qp9116401;
+        Thu, 27 Jun 2019 13:09:20 -0400
+Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2td0nambgf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 27 Jun 2019 13:09:19 -0400
+Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
+        by ppma01wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x5RH4ss4000379;
+        Thu, 27 Jun 2019 17:09:18 GMT
+Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
+        by ppma01wdc.us.ibm.com with ESMTP id 2t9by77rp0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 27 Jun 2019 17:09:18 +0000
+Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
+        by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x5RH9Guo61669748
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 27 Jun 2019 17:09:16 GMT
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 727797805C;
+        Thu, 27 Jun 2019 17:09:16 +0000 (GMT)
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1E36F78063;
+        Thu, 27 Jun 2019 17:09:16 +0000 (GMT)
+Received: from oc7186267434.ibm.com (unknown [9.41.178.211])
+        by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Thu, 27 Jun 2019 17:09:15 +0000 (GMT)
+From:   Thomas Falcon <tlfalcon@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     linuxppc-dev@lists.ozlabs.org, bjking1@us.ibm.com,
+        pradeep@us.ibm.com, dnbanerg@us.ibm.com,
+        Thomas Falcon <tlfalcon@linux.ibm.com>
+Subject: [PATCH net] net/ibmvnic: Report last valid speed and duplex values to ethtool
+Date:   Thu, 27 Jun 2019 12:09:13 -0500
+Message-Id: <1561655353-17114-1-git-send-email-tlfalcon@linux.ibm.com>
+X-Mailer: git-send-email 1.8.3.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-27_11:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906270197
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/27/19 11:05 AM, Alexei Starovoitov wrote:
-> On Thu, Jun 27, 2019 at 9:54 AM Shuah Khan <skhan@linuxfoundation.org> wrote:
->>
->> On 6/27/19 10:22 AM, David Miller wrote:
->>> From: Shuah Khan <skhan@linuxfoundation.org>
->>> Date: Wed, 26 Jun 2019 21:32:52 -0600
->>>
->>>> On 6/26/19 9:25 PM, Jiunn Chang wrote:
->>>>> Shifting signed 32-bit value by 31 bits is undefined.  Changing most
->>>>> significant bit to unsigned.
->>>>> Changes included in v2:
->>>>>      - use subsystem specific subject lines
->>>>>      - CC required mailing lists
->>>>>
->>>>
->>>> These version change lines don't belong in the change log.
->>>
->>> For networking changes I actually like the change lines to be in the
->>> commit log.  So please don't stray people this way, thanks.
->>>
->>
->> As a general rule, please don't include change lines in the commit log.
->> For networking changes that get sent to David and netdev, as David
->> points out here, he likes them in the commit log, please include them
->> in the commit log.
->>
->> I am working on FAQ (Frequently Answered Questions) section for mentees.
->> I will add this to it.
-> 
-> Same for bpf trees.
-> We prefer developers put as much as info as possible into commit logs
-> and cover letters.
-> Explanation of v1->v2->v3 differences is invaluable not only at
-> the point of code review, but in the future.
-> 
+This patch resolves an issue with sensitive bonding modes
+that require valid speed and duplex settings to function
+properly. Currently, the adapter will report that device
+speed and duplex is unknown if the communication link
+with firmware is unavailable. This decision can break LACP
+configurations if the timing is right.
 
-Thanks Alex. I will add that to the FAQ.
+For example, if invalid speeds are reported, the slave
+device's link state is set to a transitional "fail" state
+and the LACP port is disabled. However, if valid speeds
+are reported later but the link state has not been altered,
+the LACP port will remain disabled. If the link state then
+transitions back to "up" from "fail," it results in a state
+such that the slave reports valid speed/duplex and is up,
+but the LACP port will remain disabled.
 
--- Shuah
+Workaround this by reporting the last recorded speed
+and duplex settings unless the device has never been
+activated. In that case or when the hypervisor gives
+invalid values, continue to report unknown speed or
+duplex to ethtool.
+
+Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
+---
+ drivers/net/ethernet/ibm/ibmvnic.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index 3da6800..7c14e33 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -2276,10 +2276,8 @@ static int ibmvnic_get_link_ksettings(struct net_device *netdev,
+ 	int rc;
+ 
+ 	rc = send_query_phys_parms(adapter);
+-	if (rc) {
+-		adapter->speed = SPEED_UNKNOWN;
+-		adapter->duplex = DUPLEX_UNKNOWN;
+-	}
++	if (rc)
++		netdev_warn(netdev, "Device query of current speed and duplex settings failed; reported values may be stale.\n");
+ 	cmd->base.speed = adapter->speed;
+ 	cmd->base.duplex = adapter->duplex;
+ 	cmd->base.port = PORT_FIBRE;
+@@ -4834,6 +4832,8 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ 	dev_set_drvdata(&dev->dev, netdev);
+ 	adapter->vdev = dev;
+ 	adapter->netdev = netdev;
++	adapter->speed = SPEED_UNKNOWN;
++	adapter->duplex = DUPLEX_UNKNOWN;
+ 
+ 	ether_addr_copy(adapter->mac_addr, mac_addr_p);
+ 	ether_addr_copy(netdev->dev_addr, adapter->mac_addr);
+-- 
+1.8.3.1
+
