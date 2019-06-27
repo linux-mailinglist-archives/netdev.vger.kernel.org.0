@@ -2,64 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 141CF58620
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 17:41:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81EFD58636
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 17:46:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726472AbfF0PlU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 11:41:20 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:37454 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726315AbfF0PlU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Jun 2019 11:41:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=Yw5Vv/sxb5ZlPKqCAUshTNt8nLyXnjgPA8wXAkRykn0=; b=4ytc8ZrRH7jV0/+MGFkMJ0oUaM
-        Bon9d5QG3yxoVObJ2XsIiyOUBpNd/tam+Bep/zaNWbhLX0JiNQVMhmTnnrEO1tG41p/TL/vY+whtf
-        xIiisQ7gvIvkSeqgb9RCR8SvPM/HMvVkxUQ9MQn/8FRtQwzOjD4bHbdck18KXEPTVV3I=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hgWWP-0001DK-NU; Thu, 27 Jun 2019 17:41:13 +0200
-Date:   Thu, 27 Jun 2019 17:41:13 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Maxime Ripard <maxime.ripard@bootlin.com>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Antoine =?iso-8859-1?Q?T=E9nart?= <antoine.tenart@bootlin.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH v4 13/13] ARM: dts: sunxi: Switch from phy to phy-handle
-Message-ID: <20190627154113.GO27733@lunn.ch>
-References: <cover.e80da8845680a45c2e07d5f17280fdba84555b8a.1561649505.git-series.maxime.ripard@bootlin.com>
- <a1a33392c64c71099021fb49cc811a30790d40a8.1561649505.git-series.maxime.ripard@bootlin.com>
+        id S1726476AbfF0Pqe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 11:46:34 -0400
+Received: from rs07.intra2net.com ([85.214.138.66]:56092 "EHLO
+        rs07.intra2net.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726187AbfF0Pqe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 11:46:34 -0400
+Received: from mail.m.i2n (unknown [172.17.128.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by rs07.intra2net.com (Postfix) with ESMTPS id EC88215000C4;
+        Thu, 27 Jun 2019 17:46:31 +0200 (CEST)
+Received: from localhost (mail.m.i2n [127.0.0.1])
+        by localhost (Postfix) with ESMTP id B7C1F830;
+        Thu, 27 Jun 2019 17:46:31 +0200 (CEST)
+X-Virus-Scanned: by Intra2net Mail Security (AVE=8.3.54.52,VDF=8.16.17.176)
+X-Spam-Status: 
+X-Spam-Level: 0
+Received: from localhost (storm.m.i2n [172.16.1.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.m.i2n (Postfix) with ESMTPS id 0DCF7611;
+        Thu, 27 Jun 2019 17:46:30 +0200 (CEST)
+Date:   Thu, 27 Jun 2019 17:46:29 +0200
+From:   Thomas Jarosch <thomas.jarosch@intra2net.com>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        Juliana Rodrigueiro <juliana.rodrigueiro@intra2net.com>
+Subject: Re: 4.19: Traced deadlock during xfrm_user module load
+Message-ID: <20190627154629.27g5uwd47esyhz4s@intra2net.com>
+References: <20190625155509.pgcxwgclqx3lfxxr@intra2net.com>
+ <20190625165344.ii4zgvxydqj663ny@breakpoint.cc>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <a1a33392c64c71099021fb49cc811a30790d40a8.1561649505.git-series.maxime.ripard@bootlin.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <20190625165344.ii4zgvxydqj663ny@breakpoint.cc>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 27, 2019 at 05:31:55PM +0200, Maxime Ripard wrote:
-> The phy device tree property has been deprecated in favor of phy-handle,
-> let's replace it.
+Hi Florian,
+
+You wrote on Tue, Jun 25, 2019 at 06:53:44PM +0200:
+> Thanks for this detailed analysis.
+> In this specific case I think this is enough:
 > 
-> Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
+> diff --git a/net/netfilter/nfnetlink.c b/net/netfilter/nfnetlink.c
+> index 92077d459109..61ba92415480 100644
+> --- a/net/netfilter/nfnetlink.c
+> +++ b/net/netfilter/nfnetlink.c
+> @@ -578,7 +578,8 @@ static int nfnetlink_bind(struct net *net, int group)
+>         ss = nfnetlink_get_subsys(type << 8);
+>         rcu_read_unlock();
+>         if (!ss)
+> -               request_module("nfnetlink-subsys-%d", type);
+> +               request_module_nowait("nfnetlink-subsys-%d", type);
+>         return 0;
+>  }
+>  #endif
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+thanks for the patch! We finally found an easy way to reproduce the deadlock,
+the following commands instantly trigger the problem on our machines:
 
-    Andrew
+    rmmod nf_conntrack_netlink
+    rmmod xfrm_user
+    conntrack -e NEW -E & modprobe -v xfrm_user
+
+Note: the "-e" filter is needed to trigger the problematic
+code path in the kernel.
+
+We were worried that using "_nowait" would introduce other race conditions,
+since the requested service might not be available by the time it is required.
+
+On the other hand, if we understand correctly, it seems that after
+"nfnetlink_bind()", the caller will listen on the socket for messages
+regardless whether the needed modules are loaded, loading or unloaded.
+To verify this we added a three second sleep during the initialisation of
+nf_conntrack_netlink. The events started to appear after
+the delayed init was completed.
+
+If this is the case, then using "_nowait" should suffice as a fix
+for the problem. Could you please confirm these assumptions
+and give us some piece of mind?
+
+Best regards,
+Juliana Rodrigueiro and Thomas Jarosch
