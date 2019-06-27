@@ -2,203 +2,288 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 146F2586F7
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 18:25:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47D0C586E3
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 18:20:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726553AbfF0QZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 12:25:26 -0400
-Received: from smtp-out.ssi.gouv.fr ([86.65.182.90]:63556 "EHLO
-        smtp-out.ssi.gouv.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726315AbfF0QZ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 12:25:26 -0400
-X-Greylist: delayed 435 seconds by postgrey-1.27 at vger.kernel.org; Thu, 27 Jun 2019 12:25:25 EDT
-Received: from smtp-out.ssi.gouv.fr (localhost [127.0.0.1])
-        by smtp-out.ssi.gouv.fr (Postfix) with ESMTP id 12E14D00073;
-        Thu, 27 Jun 2019 18:18:16 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ssi.gouv.fr;
-        s=20160407; t=1561652296;
-        bh=e/9/soaXxtPOLGylT6FEbrJeqf5CH04oQATLaTVtYYU=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To:From:Subject;
-        b=W6wClXcUUlkKnnGLJvw4aTCMWkm09TDrSTk9aM9xnwww4FBi0ejQRAcafStv5/PaJ
-         TqrbxB0HJK5AlaMj+32Fv5C+eIXElxPDgSsWmy8WNE0FLMTpJKJCXCDNGJH1h32ujf
-         j3MYKbBu4YcvZG46mgjJZp8EBFnFZqhYxuyHP8lyHu4ZI8r+dYtyn+iL/vL6YOtxyy
-         QU6Mq5Q0bVZHHLEXz3klncr6GlMrRPDL9Tn4C2pQLuLAfn5TywxxeMwPSIi/Fs+lCq
-         gy/tTNJzdYhegMvZKVrDR2iD1hhhEK7jXeI+DDvom0fHd4UcejWmedP6Ns5bAcnTlx
-         feTNxO0qXLdaw==
-Subject: Re: [PATCH bpf-next v9 05/10] bpf,landlock: Add a new map type: inode
-To:     Al Viro <viro@zeniv.linux.org.uk>,
-        =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-CC:     <linux-kernel@vger.kernel.org>, Aleksa Sarai <cyphar@cyphar.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Casey Schaufler <casey@schaufler-ca.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Drysdale <drysdale@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        James Morris <jmorris@namei.org>, Jann Horn <jann@thejh.net>,
-        John Johansen <john.johansen@canonical.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Kees Cook <keescook@chromium.org>,
-        Michael Kerrisk <mtk.manpages@gmail.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Sargun Dhillon <sargun@sargun.me>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Stephen Smalley <sds@tycho.nsa.gov>, Tejun Heo <tj@kernel.org>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Thomas Graf <tgraf@suug.ch>, Tycho Andersen <tycho@tycho.ws>,
-        Will Drewry <wad@chromium.org>,
-        <kernel-hardening@lists.openwall.com>, <linux-api@vger.kernel.org>,
-        <linux-fsdevel@vger.kernel.org>,
-        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>
-References: <20190625215239.11136-1-mic@digikod.net>
- <20190625215239.11136-6-mic@digikod.net>
- <20190625225201.GJ17978@ZenIV.linux.org.uk>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mickael.salaun@ssi.gouv.fr>
-Message-ID: <79bac827-4092-8a4d-9dc6-6019419b2486@ssi.gouv.fr>
-Date:   Thu, 27 Jun 2019 18:18:12 +0200
-User-Agent: Mozilla/5.0 (X11; Linux i686; rv:52.0) Gecko/20100101
- Thunderbird/52.9.0
+        id S1726476AbfF0QUg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 12:20:36 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:58698 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726425AbfF0QUg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 12:20:36 -0400
+Received: from mail-qt1-f198.google.com ([209.85.160.198])
+        by youngberry.canonical.com with esmtps (TLS1.0:RSA_AES_128_CBC_SHA1:16)
+        (Exim 4.76)
+        (envelope-from <gpiccoli@canonical.com>)
+        id 1hgX8S-00042b-UV
+        for netdev@vger.kernel.org; Thu, 27 Jun 2019 16:20:33 +0000
+Received: by mail-qt1-f198.google.com with SMTP id z6so2916463qtj.7
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 09:20:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=CrGCHfYXg93EdcUNeTyPg36Tk+bmXIjE7JR/IQz0xK8=;
+        b=gkYOkoqJe8krXeBj96NNDhB+Mp0lFP8V0hSun0BANRpyjZKwFLTpt58/oGYLYqMjDA
+         L0uo+3a3CJ2gs7UyEeqXmnbCILcl/2OxCfsh3yVJJLgdNFpLdkP9rXKGrHh37askSxch
+         q85Msug1bGDPFHgUHfqFa5KfNNNNQm1IGc7Ut+6pSSFjZJ9can3mYYY2dAMYJp202izj
+         D9hPxtZO+Vy8CLaNtULrCYHv4FBaHg2xwcDY07wn8TH1R0noOtRgXnAvppbA5s/AeaxA
+         U0v+dxQY/j6GTkAYs3/eGWvB+fw3SfrYftpCW+PH9yrYUX5FWA48Ia8UAGr7ODszFfL6
+         xNwQ==
+X-Gm-Message-State: APjAAAW5KwR6UaMLRRU8/iZFNsG21fhH2otg2UnQKk9ew+bZE42WzOxH
+        P6PLDGbf6FUd3sFAjePmPsC08fjCLmJFFRb/a0voxyE+VXirkM/OmWvz7vHpdSMAQ7t/HPZpUUh
+        rahYRYdP+joo1+hCKjK2gFJH77qb8GthydQ==
+X-Received: by 2002:ae9:eb53:: with SMTP id b80mr4171131qkg.172.1561652432122;
+        Thu, 27 Jun 2019 09:20:32 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqzh2QBZkYqreot6/RL7hK8FZj41j45M1dYCRc99Dt84EnF9qI6onIH97TdLVAxvAPQAl9gKgw==
+X-Received: by 2002:ae9:eb53:: with SMTP id b80mr4171104qkg.172.1561652431851;
+        Thu, 27 Jun 2019 09:20:31 -0700 (PDT)
+Received: from [192.168.1.75] ([179.98.77.238])
+        by smtp.gmail.com with ESMTPSA id o54sm1268756qtb.63.2019.06.27.09.20.27
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 27 Jun 2019 09:20:29 -0700 (PDT)
+Subject: Re: [EXT] [PATCH V3] bnx2x: Prevent ptp_task to be rescheduled
+ indefinitely
+To:     Sudarsana Reddy Kalluru <skalluru@marvell.com>
+Cc:     GR-everest-linux-l2 <GR-everest-linux-l2@marvell.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Ariel Elior <aelior@marvell.com>,
+        "jay.vosburgh@canonical.com" <jay.vosburgh@canonical.com>
+References: <20190626201835.31660-1-gpiccoli@canonical.com>
+ <MN2PR18MB2528E0CB660FC35C475816E1D3FD0@MN2PR18MB2528.namprd18.prod.outlook.com>
+From:   "Guilherme G. Piccoli" <gpiccoli@canonical.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=gpiccoli@canonical.com; prefer-encrypt=mutual; keydata=
+ mQENBFpVBxcBCADPNKmu2iNKLepiv8+Ssx7+fVR8lrL7cvakMNFPXsXk+f0Bgq9NazNKWJIn
+ Qxpa1iEWTZcLS8ikjatHMECJJqWlt2YcjU5MGbH1mZh+bT3RxrJRhxONz5e5YILyNp7jX+Vh
+ 30rhj3J0vdrlIhPS8/bAt5tvTb3ceWEic9mWZMsosPavsKVcLIO6iZFlzXVu2WJ9cov8eQM/
+ irIgzvmFEcRyiQ4K+XUhuA0ccGwgvoJv4/GWVPJFHfMX9+dat0Ev8HQEbN/mko/bUS4Wprdv
+ 7HR5tP9efSLucnsVzay0O6niZ61e5c97oUa9bdqHyApkCnGgKCpg7OZqLMM9Y3EcdMIJABEB
+ AAG0LUd1aWxoZXJtZSBHLiBQaWNjb2xpIDxncGljY29saUBjYW5vbmljYWwuY29tPokBNwQT
+ AQgAIQUCWmClvQIbAwULCQgHAgYVCAkKCwIEFgIDAQIeAQIXgAAKCRDOR5EF9K/7Gza3B/9d
+ 5yczvEwvlh6ksYq+juyuElLvNwMFuyMPsvMfP38UslU8S3lf+ETukN1S8XVdeq9yscwtsRW/
+ 4YoUwHinJGRovqy8gFlm3SAtjfdqysgJqUJwBmOtcsHkmvFXJmPPGVoH9rMCUr9s6VDPox8f
+ q2W5M7XE9YpsfchS/0fMn+DenhQpV3W6pbLtuDvH/81GKrhxO8whSEkByZbbc+mqRhUSTdN3
+ iMpRL0sULKPVYbVMbQEAnfJJ1LDkPqlTikAgt3peP7AaSpGs1e3pFzSEEW1VD2jIUmmDku0D
+ LmTHRl4t9KpbU/H2/OPZkrm7809QovJGRAxjLLPcYOAP7DUeltveuQENBFpVBxcBCADbxD6J
+ aNw/KgiSsbx5Sv8nNqO1ObTjhDR1wJw+02Bar9DGuFvx5/qs3ArSZkl8qX0X9Vhptk8rYnkn
+ pfcrtPBYLoux8zmrGPA5vRgK2ItvSc0WN31YR/6nqnMfeC4CumFa/yLl26uzHJa5RYYQ47jg
+ kZPehpc7IqEQ5IKy6cCKjgAkuvM1rDP1kWQ9noVhTUFr2SYVTT/WBHqUWorjhu57/OREo+Tl
+ nxI1KrnmW0DbF52tYoHLt85dK10HQrV35OEFXuz0QPSNrYJT0CZHpUprkUxrupDgkM+2F5LI
+ bIcaIQ4uDMWRyHpDbczQtmTke0x41AeIND3GUc+PQ4hWGp9XABEBAAGJAR8EGAEIAAkFAlpV
+ BxcCGwwACgkQzkeRBfSv+xv1wwgAj39/45O3eHN5pK0XMyiRF4ihH9p1+8JVfBoSQw7AJ6oU
+ 1Hoa+sZnlag/l2GTjC8dfEGNoZd3aRxqfkTrpu2TcfT6jIAsxGjnu+fUCoRNZzmjvRziw3T8
+ egSPz+GbNXrTXB8g/nc9mqHPPprOiVHDSK8aGoBqkQAPZDjUtRwVx112wtaQwArT2+bDbb/Y
+ Yh6gTrYoRYHo6FuQl5YsHop/fmTahpTx11IMjuh6IJQ+lvdpdfYJ6hmAZ9kiVszDF6pGFVkY
+ kHWtnE2Aa5qkxnA2HoFpqFifNWn5TyvJFpyqwVhVI8XYtXyVHub/WbXLWQwSJA4OHmqU8gDl
+ X18zwLgdiQ==
+Message-ID: <4aaa2e33-5847-88e8-ff73-d30aca8d4872@canonical.com>
+Date:   Thu, 27 Jun 2019 13:20:25 -0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.1
 MIME-Version: 1.0
-In-Reply-To: <20190625225201.GJ17978@ZenIV.linux.org.uk>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <MN2PR18MB2528E0CB660FC35C475816E1D3FD0@MN2PR18MB2528.namprd18.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Thanks again Sudarsana for the good review and advice. I'll send V4 soon.
+Discussions about your points are in-line below:
 
-On 26/06/2019 00:52, Al Viro wrote:
-> On Tue, Jun 25, 2019 at 11:52:34PM +0200, Micka=C3=ABl Sala=C3=BCn wrote:
->> +/* must call iput(inode) after this call */
->> +static struct inode *inode_from_fd(int ufd, bool check_access)
->> +{
->> +    struct inode *ret;
->> +    struct fd f;
->> +    int deny;
+
+On 27/06/2019 07:09, Sudarsana Reddy Kalluru wrote:
+> 
+>> [...]
+>>  	if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)) {
+>>  		if (!(bp->flags & TX_TIMESTAMPING_EN)) {
+>> -			BNX2X_ERR("Tx timestamping was not enabled, this
+>> packet will not be timestamped\n");
+>> +			bp->eth_stats.ptp_skip_tx_ts++;
+>> +			netdev_err_once(bp->dev,
+>> +					"Tx timestamping isn't enabled, this
+>> packet won't be timestamped\n");
+>> +			DP(BNX2X_MSG_PTP,
+>> +			   "Tx timestamping isn't enabled, this packet won't
+>> be
+>> +timestamped\n");
+> 
+> Hitting this path is very unlikely and also PTP packets arrive once in a second in general.
+> Either retain BNX2X_ERR() statement or remove the extra call netdev_err_once().
+
+Agreed, I retained BNX2X_ERR().
+
+
+> 
+>>  		} else if (bp->ptp_tx_skb) {
+>> -			BNX2X_ERR("The device supports only a single
+>> outstanding packet to timestamp, this packet will not be timestamped\n");
+>> +			bp->eth_stats.ptp_skip_tx_ts++;
+>> +			netdev_err_once(bp->dev,
+>> +					"Device supports only a single
+>> outstanding packet to timestamp, this packet won't be timestamped\n");
+>> +			DP(BNX2X_MSG_PTP,
+>> +			   "Device supports only a single outstanding packet to
+>> timestamp,
+>> +this packet won't be timestamped\n");
+> Same as above.
+
+Now this one I disagree - it's easy to have kernel log flooded by these
+messages if, for instance, you reproduce the bug I'm trying to fix.
+Even with my patch, the register value is 0x0 in TX timestamping read,
+so this is likely to keep showing in the kernel, and may cause a
+somewhat quick log rotation depending on user configuration.
+
+For this one, I've removed the debug statement, but kept netdev_err_once
+to warn users that something is wrong without slowly flood their logs.
+If the users want more detail, they just need to enable debug level
+logging in bnx2x. Makes sense to you?
+
+
+>>  		} else {
+>>  			skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
+>>  			/* schedule check for Tx timestamp */ diff --git
+>> a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_ethtool.c
+>> b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_ethtool.c
+>> index 51fc845de31a..4a0ba6801c9e 100644
+>> --- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_ethtool.c
+>> +++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_ethtool.c
+>> @@ -182,7 +182,9 @@ static const struct {
+>>  	{ STATS_OFFSET32(driver_filtered_tx_pkt),
+>>  				4, false, "driver_filtered_tx_pkt" },
+>>  	{ STATS_OFFSET32(eee_tx_lpi),
+>> -				4, true, "Tx LPI entry count"}
+>> +				4, true, "Tx LPI entry count"},
+>> +	{ STATS_OFFSET32(ptp_skip_tx_ts),
+>> +				4, false, "ptp_skipped_tx_tstamp" },
+>>  };
+>>
+>>  #define BNX2X_NUM_STATS		ARRAY_SIZE(bnx2x_stats_arr)
+>> diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+>> b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+>> index 03ac10b1cd1e..af6e7a950a28 100644
+>> --- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+>> +++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+>> @@ -15214,11 +15214,27 @@ static void bnx2x_ptp_task(struct work_struct
+>> *work)
+>>  	u32 val_seq;
+>>  	u64 timestamp, ns;
+>>  	struct skb_shared_hwtstamps shhwtstamps;
+>> +	bool bail = true;
+>> +	int i;
+>>
+>> -	/* Read Tx timestamp registers */
+>> -	val_seq = REG_RD(bp, port ? NIG_REG_P1_TLLH_PTP_BUF_SEQID :
+>> -			 NIG_REG_P0_TLLH_PTP_BUF_SEQID);
+>> -	if (val_seq & 0x10000) {
+>> +	/* FW may take a while to complete timestamping; try a bit and if it's
+>> +	 * still not complete, may indicate an error state - bail out then.
+>> +	 */
+>> +	for (i = 0; i < 10; i++) {
+>> +		/* Read Tx timestamp registers */
+>> +		val_seq = REG_RD(bp, port ?
+>> NIG_REG_P1_TLLH_PTP_BUF_SEQID :
+>> +				 NIG_REG_P0_TLLH_PTP_BUF_SEQID);
+>> +		if (val_seq & 0x10000) {
+>> +			bail = false;
+>> +			break;
+>> +		}
 >> +
->> +    f =3D fdget(ufd);
->> +    if (unlikely(!f.file || !file_inode(f.file))) {
->> +            ret =3D ERR_PTR(-EBADF);
->> +            goto put_fd;
->> +    }
->
-> Just when does one get a NULL file_inode()?  The reason I'm asking is
-> that arseloads of code would break if one managed to create such
-> a beast...
+>> +		if (!(i % 4)) /* Avoid log flood */
+>> +			DP(BNX2X_MSG_PTP, "There's no valid Tx timestamp
+>> yet\n");
+> This debug statement is not required as we anyway capture it in the error path below.
+> 
 
-I didn't find any API documentation about this guarantee, so I followed
-a defensive programming approach. I'll remove the file_inode() check.
+Ack, removed.
 
->
-> Incidentally, that should be return ERR_PTR(-EBADF); fdput() is wrong the=
-re.
 
-Right, I'll fix that.
-
->
->> +    }
->> +    /* check if the FD is tied to a mount point */
->> +    /* TODO: add this check when called from an eBPF program too */
->> +    if (unlikely(!f.file->f_path.mnt
->
-> Again, the same question - when the hell can that happen?
-
-Defensive programming again, I'll remove it.
-
-> If you are
-> sitting on an exploitable roothole, do share it...
->
->  || f.file->f_path.mnt->mnt_flags &
->> +                            MNT_INTERNAL)) {
->> +            ret =3D ERR_PTR(-EINVAL);
->> +            goto put_fd;
->
-> What does it have to do with mountpoints, anyway?
-
-I want to only manage inodes tied to a userspace-visible file system
-(this check may not be enough though). It doesn't make sense to be able
-to add inodes which are not mounted, to this kind of map.
-
->
->> +/* called from syscall */
->> +static int sys_inode_map_delete_elem(struct bpf_map *map, struct inode =
-*key)
->> +{
->> +    struct inode_array *array =3D container_of(map, struct inode_array,=
- map);
->> +    struct inode *inode;
->> +    int i;
+>> +		msleep(1 << i);
+>> +	}
 >> +
->> +    WARN_ON_ONCE(!rcu_read_lock_held());
->> +    for (i =3D 0; i < array->map.max_entries; i++) {
->> +            if (array->elems[i].inode =3D=3D key) {
->> +                    inode =3D xchg(&array->elems[i].inode, NULL);
->> +                    array->nb_entries--;
->
-> Umm...  Is that intended to be atomic in any sense?
-
-nb_entries is not used as a bound check but to avoid walking uselessly
-through the (pre-allocated) array when adding a new element, but I'll
-use an atomic to avoid inconsistencies anyway.
-
->
->> +                    iput(inode);
->> +                    return 0;
->> +            }
->> +    }
->> +    return -ENOENT;
->> +}
+>> +	if (!bail) {
+>>  		/* There is a valid timestamp value */
+>>  		timestamp = REG_RD(bp, port ?
+>> NIG_REG_P1_TLLH_PTP_BUF_TS_MSB :
+>>  				   NIG_REG_P0_TLLH_PTP_BUF_TS_MSB);
+>> @@ -15233,16 +15249,18 @@ static void bnx2x_ptp_task(struct work_struct
+>> *work)
+>>  		memset(&shhwtstamps, 0, sizeof(shhwtstamps));
+>>  		shhwtstamps.hwtstamp = ns_to_ktime(ns);
+>>  		skb_tstamp_tx(bp->ptp_tx_skb, &shhwtstamps);
+>> -		dev_kfree_skb_any(bp->ptp_tx_skb);
+>> -		bp->ptp_tx_skb = NULL;
+>>
+>>  		DP(BNX2X_MSG_PTP, "Tx timestamp, timestamp cycles =
+>> %llu, ns = %llu\n",
+>>  		   timestamp, ns);
+>>  	} else {
+>> -		DP(BNX2X_MSG_PTP, "There is no valid Tx timestamp
+>> yet\n");
+>> -		/* Reschedule to keep checking for a valid timestamp value
+>> */
+>> -		schedule_work(&bp->ptp_task);
+>> +		DP(BNX2X_MSG_PTP,
+>> +		   "Tx timestamp is not recorded (register read=%u)\n",
+>> +		   val_seq);
+>> +		bp->eth_stats.ptp_skip_tx_ts++;
+>>  	}
 >> +
->> +/* called from syscall */
->> +int bpf_inode_map_delete_elem(struct bpf_map *map, int *key)
->> +{
->> +    struct inode *inode;
->> +    int err;
+>> +	dev_kfree_skb_any(bp->ptp_tx_skb);
+>> +	bp->ptp_tx_skb = NULL;
+>>  }
+>>
+>>  void bnx2x_set_rx_ts(struct bnx2x *bp, struct sk_buff *skb) diff --git
+>> a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.h
+>> b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.h
+>> index b2644ed13d06..d55e63692cf3 100644
+>> --- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.h
+>> +++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_stats.h
+>> @@ -207,6 +207,9 @@ struct bnx2x_eth_stats {
+>>  	u32 driver_filtered_tx_pkt;
+>>  	/* src: Clear-on-Read register; Will not survive PMF Migration */
+>>  	u32 eee_tx_lpi;
 >> +
->> +    inode =3D inode_from_fd(*key, false);
->> +    if (IS_ERR(inode))
->> +            return PTR_ERR(inode);
->> +    err =3D sys_inode_map_delete_elem(map, inode);
->> +    iput(inode);
->> +    return err;
->> +}
->
-> Wait a sec...  So we have those beasties that can have long-term
-> references to arbitrary inodes stuck in them?  What will happen
-> if you get umount(2) called while such a thing exists?
+>> +	/* PTP */
+>> +	u32 ptp_skip_tx_ts;
+> The value need to be cleared in the case of internal reload e.g., mtu change, ifconfig-down/up.
+> If this is not happening, please reset it in the nic load path.
 
-I though an umount would be denied but no, we get a self-destructed busy
-inode and a bug!
-What about wrapping the inode's superblock->s_op->destroy_inode() to
-first remove the element from the map and then call the real
-destroy_inode(), if any?
-Or I could update fs/inode.c:destroy_inode() to call inode->free_inode()
-if it is set, and set it when such inode is referenced by a map?
-Or maybe I could hold the referencing file in the map and then wrap its
-f_op?
+I mostly agree with you here. The stat really needs to be zeroed in
+interface reload, and it is, currently.
+The path doing this on driver is:
+
+bnx2x_nic_load()
+  bnx2x_post_irq_nic_init()
+    bnx2x_stats_init()
+
+I've tested that using "ifconfig <iface> down" and then up. The
+"ptp_skip_tx_ts" was zeroed. But for example, in MTU change it kept its
+value, which I consider right. We don't want a MTU change to clear
+stats, in my understanding.
+The driver is behaving right IMO, what governs the reset of statistics
+is "bp->stats_init", which is set in bnx2x_open(), leading to full stats
+reset.
+
+I've checked and the behavior is the same for other statistics like
+rx_bytes (both per-queue and accumulated) and tx_*_packets.
+If you consider this behavior as wrong we can fix that in another patch,
+or if you think for some reason "ptp_skip_tx_ts" should behave
+differently from the other statistics, let me know.
+
+Thanks,
+
+Guilherme
 
 
---
-Micka=C3=ABl Sala=C3=BCn
-ANSSI/SDE/ST/LAM
-
-Les donn=C3=A9es =C3=A0 caract=C3=A8re personnel recueillies et trait=C3=A9=
-es dans le cadre de cet =C3=A9change, le sont =C3=A0 seule fin d=E2=80=99ex=
-=C3=A9cution d=E2=80=99une relation professionnelle et s=E2=80=99op=C3=A8re=
-nt dans cette seule finalit=C3=A9 et pour la dur=C3=A9e n=C3=A9cessaire =C3=
-=A0 cette relation. Si vous souhaitez faire usage de vos droits de consulta=
-tion, de rectification et de suppression de vos donn=C3=A9es, veuillez cont=
-acter contact.rgpd@sgdsn.gouv.fr. Si vous avez re=C3=A7u ce message par err=
-eur, nous vous remercions d=E2=80=99en informer l=E2=80=99exp=C3=A9diteur e=
-t de d=C3=A9truire le message. The personal data collected and processed du=
-ring this exchange aims solely at completing a business relationship and is=
- limited to the necessary duration of that relationship. If you wish to use=
- your rights of consultation, rectification and deletion of your data, plea=
-se contact: contact.rgpd@sgdsn.gouv.fr. If you have received this message i=
-n error, we thank you for informing the sender and destroying the message.
+> 
+>>  };
+>>
+>>  struct bnx2x_eth_q_stats {
+>> --
+>> 2.22.0
+> 
