@@ -2,76 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E193357994
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 04:38:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B1A657997
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 04:41:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726681AbfF0CiX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 22:38:23 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:45770 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726631AbfF0CiX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Jun 2019 22:38:23 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id D20D314DE8713;
-        Wed, 26 Jun 2019 19:38:22 -0700 (PDT)
-Date:   Wed, 26 Jun 2019 19:38:22 -0700 (PDT)
-Message-Id: <20190626.193822.1775075982713010832.davem@davemloft.net>
-To:     nhorman@tuxdriver.com
-Cc:     netdev@vger.kernel.org, mcroce@redhat.com,
-        willemdebruijn.kernel@gmail.com
-Subject: Re: [PATCH v4 net] af_packet: Block execution of tasks waiting for
- transmit to complete in AF_PACKET
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190625215749.22840-1-nhorman@tuxdriver.com>
-References: <20190619202533.4856-1-nhorman@tuxdriver.com>
-        <20190625215749.22840-1-nhorman@tuxdriver.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 26 Jun 2019 19:38:23 -0700 (PDT)
+        id S1726772AbfF0ClI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 22:41:08 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:53614 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726663AbfF0ClI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 22:41:08 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 651A030811C7;
+        Thu, 27 Jun 2019 02:41:03 +0000 (UTC)
+Received: from [10.72.12.196] (ovpn-12-196.pek2.redhat.com [10.72.12.196])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5AA1960856;
+        Thu, 27 Jun 2019 02:40:56 +0000 (UTC)
+Subject: Re: [PATCH bpf-next] virtio_net: add XDP meta data support in
+ receive_small()
+To:     Yuya Kusakabe <yuya.kusakabe@gmail.com>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        jakub.kicinski@netronome.com, hawk@kernel.org,
+        john.fastabend@gmail.com, "Michael S. Tsirkin" <mst@redhat.com>
+References: <20190627023332.8557-1-yuya.kusakabe@gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <74dc4919-cf27-b058-5996-5af4d9acbd77@redhat.com>
+Date:   Thu, 27 Jun 2019 10:40:55 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.1
+MIME-Version: 1.0
+In-Reply-To: <20190627023332.8557-1-yuya.kusakabe@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Thu, 27 Jun 2019 02:41:08 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Neil Horman <nhorman@tuxdriver.com>
-Date: Tue, 25 Jun 2019 17:57:49 -0400
 
-> When an application is run that:
-> a) Sets its scheduler to be SCHED_FIFO
-> and
-> b) Opens a memory mapped AF_PACKET socket, and sends frames with the
-> MSG_DONTWAIT flag cleared, its possible for the application to hang
-> forever in the kernel.  This occurs because when waiting, the code in
-> tpacket_snd calls schedule, which under normal circumstances allows
-> other tasks to run, including ksoftirqd, which in some cases is
-> responsible for freeing the transmitted skb (which in AF_PACKET calls a
-> destructor that flips the status bit of the transmitted frame back to
-> available, allowing the transmitting task to complete).
-> 
-> However, when the calling application is SCHED_FIFO, its priority is
-> such that the schedule call immediately places the task back on the cpu,
-> preventing ksoftirqd from freeing the skb, which in turn prevents the
-> transmitting task from detecting that the transmission is complete.
-> 
-> We can fix this by converting the schedule call to a completion
-> mechanism.  By using a completion queue, we force the calling task, when
-> it detects there are no more frames to send, to schedule itself off the
-> cpu until such time as the last transmitted skb is freed, allowing
-> forward progress to be made.
-> 
-> Tested by myself and the reporter, with good results
-> 
-> Appies to the net tree
-> 
-> Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
-> Reported-by: Matteo Croce <mcroce@redhat.com>
-> CC: "David S. Miller" <davem@davemloft.net>
-> CC: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
- ...
+On 2019/6/27 上午10:33, Yuya Kusakabe wrote:
+> This adds XDP meta data support to the code path receive_small().
+>
+> mrg_rxbuf=off is required on qemu, because receive_mergeable() still
+> doesn't support XDP meta data.
 
-Applied and queued up for -stable.
+
+What's the reason for this?
+
+
+>
+> Fixes: de8f3a83b0a0 ("bpf: add meta pointer for direct access")
+> Signed-off-by: Yuya Kusakabe <yuya.kusakabe@gmail.com>
+
+
+Could you please cc virtio maintainer through get_maintainer.pl?
+
+Thanks
+
+
+> ---
+>   drivers/net/virtio_net.c | 10 ++++++++--
+>   1 file changed, 8 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 4f3de0ac8b0b..14165c5edb7d 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -644,6 +644,7 @@ static struct sk_buff *receive_small(struct net_device *dev,
+>   	unsigned int delta = 0;
+>   	struct page *xdp_page;
+>   	int err;
+> +	unsigned int metasize = 0;
+>   
+>   	len -= vi->hdr_len;
+>   	stats->bytes += len;
+> @@ -683,8 +684,8 @@ static struct sk_buff *receive_small(struct net_device *dev,
+>   
+>   		xdp.data_hard_start = buf + VIRTNET_RX_PAD + vi->hdr_len;
+>   		xdp.data = xdp.data_hard_start + xdp_headroom;
+> -		xdp_set_data_meta_invalid(&xdp);
+>   		xdp.data_end = xdp.data + len;
+> +		xdp.data_meta = xdp.data;
+>   		xdp.rxq = &rq->xdp_rxq;
+>   		orig_data = xdp.data;
+>   		act = bpf_prog_run_xdp(xdp_prog, &xdp);
+> @@ -695,9 +696,11 @@ static struct sk_buff *receive_small(struct net_device *dev,
+>   			/* Recalculate length in case bpf program changed it */
+>   			delta = orig_data - xdp.data;
+>   			len = xdp.data_end - xdp.data;
+> +			metasize = xdp.data - xdp.data_meta;
+>   			break;
+>   		case XDP_TX:
+>   			stats->xdp_tx++;
+> +			xdp.data_meta = xdp.data;
+>   			xdpf = convert_to_xdp_frame(&xdp);
+>   			if (unlikely(!xdpf))
+>   				goto err_xdp;
+> @@ -735,11 +738,14 @@ static struct sk_buff *receive_small(struct net_device *dev,
+>   	}
+>   	skb_reserve(skb, headroom - delta);
+>   	skb_put(skb, len);
+> -	if (!delta) {
+> +	if (!delta && !metasize) {
+>   		buf += header_offset;
+>   		memcpy(skb_vnet_hdr(skb), buf, vi->hdr_len);
+>   	} /* keep zeroed vnet hdr since packet was changed by bpf */
+>   
+> +	if (metasize)
+> +		skb_metadata_set(skb, metasize);
+> +
+>   err:
+>   	return skb;
+>   
