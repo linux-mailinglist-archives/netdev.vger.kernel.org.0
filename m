@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C053958934
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 19:46:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45FB258935
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 19:46:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727422AbfF0Rqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 13:46:49 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:38591 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726876AbfF0Rqs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 13:46:48 -0400
-Received: by mail-pf1-f195.google.com with SMTP id y15so1597455pfn.5;
-        Thu, 27 Jun 2019 10:46:48 -0700 (PDT)
+        id S1727441AbfF0Rqx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 13:46:53 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:42663 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726876AbfF0Rqw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 13:46:52 -0400
+Received: by mail-pl1-f195.google.com with SMTP id ay6so1669525plb.9;
+        Thu, 27 Jun 2019 10:46:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=VunMILyBRvBUh7WpINrrKE93lqMfcAEq17rKOg7ZmjA=;
-        b=RCynl1w0cRddlViRReBIItmlHmfN5Zx2Yg1tVg6t0t4fRmBlSYXLpEV/+2MQpPwhTj
-         pxBM2H4/9SbxVQh9edPPxiiMicTvEtv5U/66QPO+F//9NoBeW959GlUPLRBZCU9e5BGK
-         cE1lXvYq37hMJ6l7RlDXKkCkAm+KMQe3LzaQK8eCYFlL/bZ2zfBJah70zNMmFor7b9b6
-         i8G7IPZnuQXuFXfO1/8eBgvQfgFZN5dLxOxWWARCs6MDTKWyCr4ncPcZbRWPBNPcgSKH
-         /80psgyyzK4tzbYhPlHhjTpxYPM1HFKbuz8I4MEC1hWdIf9OS6+KeJhHiMDZ4PvUjyyj
-         aHaw==
+        bh=jgFxVRkoXuinu080KjskguZb99gQ02Kmo20z6z3TuCs=;
+        b=KWDLboKPVrn2kgTEUwUKGWcYCUHsW8yUQ0c87nYNOsqQZsr65TIsHelKuWJI0dduX4
+         aMR1k/KkvYvbwPTZmjdwy3gsdaifNkpozb7KD2/+aC924uv2aUIPihE9iPhcxBjJMoAw
+         pQDqweShYgLKzh5SgGFYsNHcO3oYjaR5J7c+SRWt1ODP2sNWad53UrwyjrthWV42pEGR
+         D/KQp3v/lE3BvNZ7KzoDQ/MW4jG4v3P1jVDrWYGazkq+Wk2mLullvyv9z9QDx+uy/tMB
+         ZZpT+AOsr8VLcn1REBP2wNgTGc2kdYMb/bfok8tNymV0Yg+Ypg04TiI/xt+XFNYxDdOb
+         Gmog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=VunMILyBRvBUh7WpINrrKE93lqMfcAEq17rKOg7ZmjA=;
-        b=Nl57xA3c5YlNA4aPe/f/SiU3SPdulZ8XCB1IVZuVWyEd3BrgvkoNoCQQmyw4XKijXT
-         QCUg7YY/LKVgIYKUV7rVMohyHM95BoLUbEGsG24b48LLx5rJuiTxYgJ4yif4rKCoAFmF
-         aYE/eZVTGlKyo/uosPfUigDbBsnZQVSmLlJKEsl5Yvmw4XDFvAC/SSC2ZTPAMjEp7J8w
-         dxPNYltpzehUkb6N3lvhenQ2WSyoVHufxWFSDBZejHav8xlImOPy1QazHG7dQVwKq5UH
-         9NmMhClp2buNLPBaLzp5D/lmxzYbof4MtWAqIC9Sp/UvESUcPztelmbjH1AmJOJMzC36
-         s3Bw==
-X-Gm-Message-State: APjAAAUBo+22xEa5XInh7Zf/3IgxinxGKJ58W/rPMU62pYxRgUbUKfX3
-        WjszEtK7FmIrNBNfjRXAvd8=
-X-Google-Smtp-Source: APXvYqyut8DtvXqqufCRCzki4fyFf3GbeOUn1gT/1InVNE0zQGziRoZikJLxkWnR0M/QdcSMhV2ocQ==
-X-Received: by 2002:a17:90a:26e4:: with SMTP id m91mr7492906pje.93.1561657607793;
-        Thu, 27 Jun 2019 10:46:47 -0700 (PDT)
+        bh=jgFxVRkoXuinu080KjskguZb99gQ02Kmo20z6z3TuCs=;
+        b=CLRz8e+dwx2R3f834+ygMnkhcQ54xOBdYoPXOb+aoF2mObGiGhaYSCwh1znlhC6toZ
+         3pkC6EWr3vAs8y2eDIyPr/19GQt76cKgnaMyVeRB8HKVe4BOlR2bj/rz3j7HwDo0/mi5
+         M/1TWEQuv0Kmdr/PHNwkyCABBGSla2NbAWlRhAJVrVU+/YUPYZibH+EbeK77o4ddSues
+         gwLViHDJVQzbT0BHtoUSxGU04cPSMR3bGXJT6O/f7VgLzhsQMPzT4MiOKQRyY3hF+ZYp
+         QKfNz3b+vXWTDlQHimxo5YqUeDvaU4VNVgCDVSnnLv3HVwMLM5DAMYZVugrjpwKWXZXb
+         nTmA==
+X-Gm-Message-State: APjAAAVPQqPsz0tDpre6wV4Lu0wdNlKVEGPwt8afG1tH9wVS1MpU3Tut
+        Jnd8FDjV5/NnkuzYD8mU8cw=
+X-Google-Smtp-Source: APXvYqxozJHdezegoomvgR7KH4bqh89jnehQIHg51OvxeciQqHg+AcSm82tFnJNB7eC7SSaKUS19sw==
+X-Received: by 2002:a17:902:bc83:: with SMTP id bb3mr6252031plb.56.1561657611914;
+        Thu, 27 Jun 2019 10:46:51 -0700 (PDT)
 Received: from hfq-skylake.ipads-lab.se.sjtu.edu.cn ([202.120.40.82])
-        by smtp.googlemail.com with ESMTPSA id r2sm5373668pfl.67.2019.06.27.10.46.45
+        by smtp.googlemail.com with ESMTPSA id f3sm5932117pfg.165.2019.06.27.10.46.49
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 27 Jun 2019 10:46:47 -0700 (PDT)
+        Thu, 27 Jun 2019 10:46:51 -0700 (PDT)
 From:   Fuqian Huang <huangfq.daxian@gmail.com>
 Cc:     Fuqian Huang <huangfq.daxian@gmail.com>,
-        Fugang Duan <fugang.duan@nxp.com>,
+        Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 73/87] ethernet: freescale: Remove memset after dma_alloc_coherent
-Date:   Fri, 28 Jun 2019 01:46:41 +0800
-Message-Id: <20190627174641.6474-1-huangfq.daxian@gmail.com>
+Subject: [PATCH 75/87] ethernet: marvell: remove memset after pci_alloc_consistent
+Date:   Fri, 28 Jun 2019 01:46:45 +0800
+Message-Id: <20190627174645.6521-1-huangfq.daxian@gmail.com>
 X-Mailer: git-send-email 2.11.0
 To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
@@ -57,6 +58,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+pci_alloc_consistent calls dma_alloc_coherent directly.
 In commit af7ddd8a627c
 ("Merge tag 'dma-mapping-4.21' of git://git.infradead.org/users/hch/dma-mapping"),
 dma_alloc_coherent has already zeroed the memory.
@@ -64,22 +66,22 @@ So memset is not needed.
 
 Signed-off-by: Fuqian Huang <huangfq.daxian@gmail.com>
 ---
- drivers/net/ethernet/freescale/fec_main.c | 2 --
+ drivers/net/ethernet/marvell/skge.c | 2 --
  1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index 38f10f7dcbc3..ec87b8b78d21 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -3143,8 +3143,6 @@ static int fec_enet_init(struct net_device *ndev)
- 		return -ENOMEM;
+diff --git a/drivers/net/ethernet/marvell/skge.c b/drivers/net/ethernet/marvell/skge.c
+index 35a92fd2cf39..9ac854c2b371 100644
+--- a/drivers/net/ethernet/marvell/skge.c
++++ b/drivers/net/ethernet/marvell/skge.c
+@@ -2558,8 +2558,6 @@ static int skge_up(struct net_device *dev)
+ 		goto free_pci_mem;
  	}
  
--	memset(cbd_base, 0, bd_size);
+-	memset(skge->mem, 0, skge->mem_size);
 -
- 	/* Get the Ethernet address */
- 	fec_get_mac(ndev);
- 	/* make sure MAC we just acquired is programmed into the hw */
+ 	err = skge_ring_alloc(&skge->rx_ring, skge->mem, skge->dma);
+ 	if (err)
+ 		goto free_pci_mem;
 -- 
 2.11.0
 
