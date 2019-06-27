@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 64CDC588EA
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 19:43:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2A14588EF
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 19:43:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726964AbfF0Rmy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 13:42:54 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:42636 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726561AbfF0Rmx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 13:42:53 -0400
-Received: by mail-pg1-f194.google.com with SMTP id k13so1336730pgq.9;
-        Thu, 27 Jun 2019 10:42:53 -0700 (PDT)
+        id S1726924AbfF0RnM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 13:43:12 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:44635 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726561AbfF0RnL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 13:43:11 -0400
+Received: by mail-pl1-f193.google.com with SMTP id t7so1670046plr.11;
+        Thu, 27 Jun 2019 10:43:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=OWPaAEBhAjk5F4JzNGhatrCNgFqb/Wo92Dms8qeFtZ4=;
-        b=IYMzHCw1NFLgUDiufLBKvDxAuMKCWjFzY1PPyF7YXGfL2wIVK/YF+33yUcpG1u9OSB
-         pXu/MXRjbjlDb2AssyGN37ZUK0PB7+d1SHJxOdiKxDZaAxI/AgYwi565mGSFf2rzZckD
-         nLlQvVwCObFBoX/YaIMBMoXPNAktGrBn4TpXeQQNbQuNCiFM+mD34zhYm6Sm5y2euP9w
-         rZzKkFzDmdX7SR0RC2UeIhu1Zk9iHqcSYAtZX4Cjzlnd9FqrSnJClil8ANWtDv9Pqpxj
-         X9xjbtoAn+uu4T73GZPss/Ko2OELLvI28xtBWUAqi2p9shM2Dn15n6sp3d3mm7LRaqT3
-         UB4g==
+        bh=XMtbDy7ICVx9sNVDO5hcGRd0P6kv9+a3LFvIsYsOFnw=;
+        b=Dm7DjZf+RwRrSgNYf08NJEWY1VKzGCc3XD4H35gEIFM4doU6DVgCiyjsX6z0YPheLa
+         O2vqEOOrlEC/azUiCg9//zCHoxNq83yybTGLCOiA6jEakmBLhPQMtwAVmSL0ON92hTmy
+         64J2MHEy2DRRFI+RN+ANhn5y3JLzI0HPXMozKp4BBki6Ij343zd976mGyINBEmr6VMa/
+         mDryKUpWWVWzY4cUnoO1cMCqLI8E7r1bE5PpKxqtwX5AM9XDBxDkbkvVPijmZ8ljSDx+
+         TKI9joJueSnCnVl6g/rD6wjWJDiU/QXCJRpWwtp8+KdgUiaDhuxgFXE2rWwsmYLJofiz
+         1olQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=OWPaAEBhAjk5F4JzNGhatrCNgFqb/Wo92Dms8qeFtZ4=;
-        b=EBhgqyw+9qp9+gEEsSL7kBt6mYjMIBZA5laNy5bVuXftxmUiIBqSE4Cg3zJRXLJyvs
-         VLa9lPm+4cBB6nsMPO5iKsCPFn45rFq1Z+0iVz9Rz2vB7/p+j6VCMnyG58vtNfMbMart
-         LQnd+5xZv8FLntAsBOnVto0m3WQc/7R21qsbn8eHVhUbVfcD3o29zPSvZ0ITZE0f4aEj
-         3gVtcRmnXLZOZT/Z6gVKxGx7UA02F8m/W7f5R/KXtL9Tw6xC/BoZ/2egd9I+N9Fjdyjs
-         8ieFrDG6acuLEcIaPnf18hFID0zzikDGH8UplHZ4gxaisGPlRM7xuSTOetkBQ4l/BUIl
-         8ENQ==
-X-Gm-Message-State: APjAAAU3wGK11hgiGNoT5fY/JB84AaY7lvjzIU6kRgWJD5j5Bn/0d2nj
-        tasN1l1Hc79MsWQsJn9nmdA=
-X-Google-Smtp-Source: APXvYqzkEKqRPmNBh7vPqKbxvVFrkNE2c+K+ZaH3WGBd9kBOVasa2XMnJuRw+iBmWP74EoLEOYaNsA==
-X-Received: by 2002:a65:5202:: with SMTP id o2mr4524485pgp.199.1561657373085;
-        Thu, 27 Jun 2019 10:42:53 -0700 (PDT)
+        bh=XMtbDy7ICVx9sNVDO5hcGRd0P6kv9+a3LFvIsYsOFnw=;
+        b=nsgkxVfV6z3+BUhBV8TB6TBcWgl86VMu24bKwPuNsEnW8+c8whiPPRKhmY/+uSpju3
+         5lP5H9AHS9VATasyyf0iOrkUaebp+iJQDEdToT4CpTpjDf9uCX3v5veFYqs7TCAVFYou
+         7H71ZDyDJR66bPVxjVetT0CGEKoLHQYVJCkrUrCkqNLBpeLjg4+ogOkbH7+z8vfrImMu
+         i6MWPlDtbt64sXOu3BPwEHuddZN7hMXIu+pEjXowCZPpAuY8p0CWkx3smFT355P+zDQZ
+         lJL0BehCRm+S4+P5s4ZkjUpusTzvszl+2uJ/KSB4X7kdDsd55AKTyDcRyw6/gnb/2lCo
+         lnaw==
+X-Gm-Message-State: APjAAAWQ0D+Rw1PHLzhzObEGjGnTbwQro0/xUFt//SJO04kXjs51CF6N
+        IeBdl+Kctk4wPv0xAddXL7U=
+X-Google-Smtp-Source: APXvYqzy3Ztt7IQZDJ9RrtSVSX7ny+ia2LX8OvP/XAwNpY7O/YPhbm/2B6k0+I+ofyI6EVTYeA9/Kw==
+X-Received: by 2002:a17:902:b187:: with SMTP id s7mr5927238plr.309.1561657391050;
+        Thu, 27 Jun 2019 10:43:11 -0700 (PDT)
 Received: from hfq-skylake.ipads-lab.se.sjtu.edu.cn ([202.120.40.82])
-        by smtp.googlemail.com with ESMTPSA id d4sm5121859pju.19.2019.06.27.10.42.51
+        by smtp.googlemail.com with ESMTPSA id j21sm3240723pfh.86.2019.06.27.10.43.08
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 27 Jun 2019 10:42:52 -0700 (PDT)
+        Thu, 27 Jun 2019 10:43:10 -0700 (PDT)
 From:   Fuqian Huang <huangfq.daxian@gmail.com>
 Cc:     Fuqian Huang <huangfq.daxian@gmail.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 86/87] ethernet: mellanox:mlx4: replace kmalloc and memset with kzalloc
-Date:   Fri, 28 Jun 2019 01:42:45 +0800
-Message-Id: <20190627174245.4877-1-huangfq.daxian@gmail.com>
+Subject: [PATCH 85/87] ethernet: mellanox: mlx5: remove memset after kvzalloc
+Date:   Fri, 28 Jun 2019 01:43:01 +0800
+Message-Id: <20190627174301.4983-1-huangfq.daxian@gmail.com>
 X-Mailer: git-send-email 2.11.0
 To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
@@ -57,34 +58,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-kmalloc + memset(0) -> kzalloc
+kvzalloc already zeroes the memory.
+So memset is unneeded.
 
 Signed-off-by: Fuqian Huang <huangfq.daxian@gmail.com>
 ---
- drivers/net/ethernet/mellanox/mlx4/en_rx.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c          | 1 -
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c | 2 --
+ 2 files changed, 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-index 6c01314e87b0..f1dff5c47676 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-@@ -1062,7 +1062,7 @@ static int mlx4_en_config_rss_qp(struct mlx4_en_priv *priv, int qpn,
- 	struct mlx4_qp_context *context;
- 	int err = 0;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
+index 6a921e24cd5e..587c51fa3985 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
+@@ -2391,7 +2391,6 @@ int mlx5_eswitch_get_vport_stats(struct mlx5_eswitch *esw,
+ 	MLX5_SET(query_vport_counter_in, in, vport_number, vport->vport);
+ 	MLX5_SET(query_vport_counter_in, in, other_vport, 1);
  
--	context = kmalloc(sizeof(*context), GFP_KERNEL);
-+	context = kzalloc(sizeof(*context), GFP_KERNEL);
- 	if (!context)
+-	memset(out, 0, outlen);
+ 	err = mlx5_cmd_exec(esw->dev, in, sizeof(in), out, outlen);
+ 	if (err)
+ 		goto free_out;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index 47b446d30f71..ef5fe3bd95f9 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -993,7 +993,6 @@ static int esw_create_offloads_fdb_tables(struct mlx5_eswitch *esw, int nvports)
+ 	}
+ 
+ 	/* create send-to-vport group */
+-	memset(flow_group_in, 0, inlen);
+ 	MLX5_SET(create_flow_group_in, flow_group_in, match_criteria_enable,
+ 		 MLX5_MATCH_MISC_PARAMETERS);
+ 
+@@ -1151,7 +1150,6 @@ static int esw_create_vport_rx_group(struct mlx5_eswitch *esw, int nvports)
  		return -ENOMEM;
  
-@@ -1073,7 +1073,6 @@ static int mlx4_en_config_rss_qp(struct mlx4_en_priv *priv, int qpn,
- 	}
- 	qp->event = mlx4_en_sqp_event;
+ 	/* create vport rx group */
+-	memset(flow_group_in, 0, inlen);
+ 	MLX5_SET(create_flow_group_in, flow_group_in, match_criteria_enable,
+ 		 MLX5_MATCH_MISC_PARAMETERS);
  
--	memset(context, 0, sizeof(*context));
- 	mlx4_en_fill_qp_context(priv, ring->actual_size, ring->stride, 0, 0,
- 				qpn, ring->cqn, -1, context);
- 	context->db_rec_addr = cpu_to_be64(ring->wqres.db.dma);
 -- 
 2.11.0
 
