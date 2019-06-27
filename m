@@ -2,55 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CB8157DFE
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 10:13:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E535F57DFF
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 10:13:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726385AbfF0INH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 04:13:07 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:33222 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726375AbfF0ING (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 04:13:06 -0400
-Received: by mail-wr1-f66.google.com with SMTP id n9so1445092wru.0
-        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 01:13:05 -0700 (PDT)
+        id S1726628AbfF0INJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 04:13:09 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:44251 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726059AbfF0INH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 04:13:07 -0400
+Received: by mail-wr1-f65.google.com with SMTP id r16so1389737wrl.11
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 01:13:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0rm8BZ15/9VA+TRcRb1HIn70mIfsKA7nZmITW8NJ0ZE=;
-        b=gyYtXj7usmQqmoPo5vP6PrXrJGUHbf8c4FU7Yo2+OOZpl4AJQw07zOVjREHgvkYI3B
-         05OIcYYPfFLchO6I9cYAbEA/sw4jDJpuo+jNegm2Sb6IX7I3FSrRkTeMQAyv1cqwbbUV
-         vBJb/7J20TZ8Mg0SXALjeqN3YdYwSp8lqDxBY=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=B8vQDF13AHMcgupbh/IW1h1GHRnHKLoGdC/kU7rZ9zo=;
+        b=ATg2o/HwspuZohKY8rpe9s3iYYVbgwQpaXIZ0VLiHX8piDOoBeRrZYs+fHsRa0YUN5
+         tmSFS9Xo1/WGqYfVTC3ja1A4noUBeFA5I8loie1fbwm51/OCKU9J+jNV7LNLkmyr8r1R
+         4SZt0hV/BMgu5yHbPotsIuT0EcSaL46UTE+oI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0rm8BZ15/9VA+TRcRb1HIn70mIfsKA7nZmITW8NJ0ZE=;
-        b=b8kDJrl6C3N869vLMZ3j3Go0RJBwq7A2rg/aj/ka+UUzLGcCbnG2dL+0cjxwmgY53x
-         QbH1MwqcUA0Ow9AaMNWSDCpCdgT2u63LtuovzlWzmkZIDkWZYXaRAWPdrbh1WbVuf1Eo
-         lrp0dcH280bWtOTfQap9SteZS6bwG40SLH2YT2ne5sZalUMHOZththuTeC0yQy4daRy9
-         bh7QlYZrDwLlwebnU3K82jZp0QjmbgXLi6beFEkBuW7viz6x6gXx03+W/XgCQVm/Do3w
-         o1qDh8oMt6+q7rFqCxLsmq1y0eS86XqFknhHDOgAqiUnNjXE8psubkpH720fgyA3dEya
-         S2Vw==
-X-Gm-Message-State: APjAAAVtd5eT1gowpH4pqfZZDSYRCmpXq/9Y5qqYPRpTszFRGjUaql3w
-        LYHOplvPJMPm80Gvh7VYDHpkcZII9uk=
-X-Google-Smtp-Source: APXvYqwKD1NkoQ6XG5mDXOf51TPrTFuvluZEV7ogRf1oxNXof2q171zomE6LuShu+4egn5Osy96qTA==
-X-Received: by 2002:a5d:624c:: with SMTP id m12mr1990433wrv.20.1561623184188;
-        Thu, 27 Jun 2019 01:13:04 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=B8vQDF13AHMcgupbh/IW1h1GHRnHKLoGdC/kU7rZ9zo=;
+        b=K/6ecNMKf5NsaL+0rd8qzfbIoVpCPtH2Z0Sudhfm2baxnFIs9j0VDLJPXANVmhZk0E
+         5BhLmBiXGcN3b6+p8ANdDpL4GHEYD3xYsoo1+wc0yYuu8S3w3pfXGsb6QV8TcAUH9qLl
+         M4UpnLo9z2Ae0verHFbJcgpsHWZk6U2aI0KsDFrL70c3nW3LyT4nLDLIoC4lggjKwAuH
+         1F5Vp74DW2xp45hnHQDLsfKWWqlZZCzS6rI8XbjryNpfcuN9GtlrgCOhvBNmlLQ8DKHA
+         QTVBhkcm1Cobo6m/MWdFgJ7TbOvDBTg6ELBLHaMtpFI+GVMUTb5xRspPAvTR8X0jfcMr
+         9BtQ==
+X-Gm-Message-State: APjAAAX35ub7aAVQP/tF6+grqs/e2n63LUu3Seg7EzV8hS+S0YS/3YNb
+        55j07ezl8nt+UX1KO2GBgUEdRloIx60=
+X-Google-Smtp-Source: APXvYqytd1owlVPAfrL5K2jgZlsWXVrJO/K4tvexMdPYvBPkfNXyoKWlXQ88c990obm8mSIM6NazRA==
+X-Received: by 2002:adf:fe4e:: with SMTP id m14mr2184511wrs.21.1561623185469;
+        Thu, 27 Jun 2019 01:13:05 -0700 (PDT)
 Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id o6sm6969949wmc.15.2019.06.27.01.13.02
+        by smtp.gmail.com with ESMTPSA id o6sm6969949wmc.15.2019.06.27.01.13.04
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 27 Jun 2019 01:13:03 -0700 (PDT)
+        Thu, 27 Jun 2019 01:13:04 -0700 (PDT)
 From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 To:     netdev@vger.kernel.org
 Cc:     roopa@cumulusnetworks.com, davem@davemloft.net,
         pablo@netfilter.org, xiyou.wangcong@gmail.com, jiri@resnulli.us,
         jhs@mojatatu.com, eyal.birger@gmail.com,
         Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Subject: [PATCH net-next v3 0/4] em_ipt: add support for addrtype
-Date:   Thu, 27 Jun 2019 11:10:43 +0300
-Message-Id: <20190627081047.24537-1-nikolay@cumulusnetworks.com>
+Subject: [PATCH net-next v3 1/4] net: sched: em_ipt: match only on ip/ipv6 traffic
+Date:   Thu, 27 Jun 2019 11:10:44 +0300
+Message-Id: <20190627081047.24537-2-nikolay@cumulusnetworks.com>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190627081047.24537-1-nikolay@cumulusnetworks.com>
+References: <20190627081047.24537-1-nikolay@cumulusnetworks.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -58,41 +60,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-We would like to be able to use the addrtype from tc for ACL rules and
-em_ipt seems the best place to add support for the already existing xt
-match. The biggest issue is that addrtype revision 1 (with ipv6 support)
-is NFPROTO_UNSPEC and currently em_ipt can't differentiate between v4/v6
-if such xt match is used because it passes the match's family instead of
-the packet one. The first 3 patches make em_ipt match only on IP
-traffic (currently both policy and addrtype recognize such traffic
-only) and make it pass the actual packet's protocol instead of the xt
-match family when it's unspecified. They also add support for NFPROTO_UNSPEC
-xt matches. The last patch allows to add addrtype rules via em_ipt.
-We need to keep the user-specified nfproto for dumping in order to be
-compatible with libxtables, we cannot dump NFPROTO_UNSPEC as the nfproto
-or we'll get an error from libxtables, thus the nfproto is limited to
-ipv4/ipv6 in patch 03 and is recorded.
+Restrict matching only to ip/ipv6 traffic and make sure we can use the
+headers, otherwise matches will be attempted on any protocol which can
+be unexpected by the xt matches. Currently policy supports only ipv4/6.
 
-v3: don't use the user nfproto for matching, only for dumping, more
-    information is available in the commit message in patch 03
-v2: change patch 02 to set the nfproto only when unspecified and drop
-    patch 04 from v1 (Eyal Birger)
+Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+---
+v3: no change
+v2: no change
 
-Thank you,
-  Nikolay Aleksandrov
+ net/sched/em_ipt.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-
-Nikolay Aleksandrov (4):
-  net: sched: em_ipt: match only on ip/ipv6 traffic
-  net: sched: em_ipt: set the family based on the packet if it's
-    unspecified
-  net: sched: em_ipt: keep the user-specified nfproto and dump it
-  net: sched: em_ipt: add support for addrtype matching
-
- net/sched/em_ipt.c | 48 ++++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 46 insertions(+), 2 deletions(-)
-
+diff --git a/net/sched/em_ipt.c b/net/sched/em_ipt.c
+index 243fd22f2248..64dbafe4e94c 100644
+--- a/net/sched/em_ipt.c
++++ b/net/sched/em_ipt.c
+@@ -185,6 +185,19 @@ static int em_ipt_match(struct sk_buff *skb, struct tcf_ematch *em,
+ 	struct nf_hook_state state;
+ 	int ret;
+ 
++	switch (tc_skb_protocol(skb)) {
++	case htons(ETH_P_IP):
++		if (!pskb_network_may_pull(skb, sizeof(struct iphdr)))
++			return 0;
++		break;
++	case htons(ETH_P_IPV6):
++		if (!pskb_network_may_pull(skb, sizeof(struct ipv6hdr)))
++			return 0;
++		break;
++	default:
++		return 0;
++	}
++
+ 	rcu_read_lock();
+ 
+ 	if (skb->skb_iif)
 -- 
 2.21.0
 
