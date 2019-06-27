@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B6085888F
+	by mail.lfdr.de (Postfix) with ESMTP id B5C2B58890
 	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 19:36:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726883AbfF0Rgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 13:36:45 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:40177 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726632AbfF0Rgo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 13:36:44 -0400
-Received: by mail-pl1-f194.google.com with SMTP id a93so1675612pla.7;
-        Thu, 27 Jun 2019 10:36:44 -0700 (PDT)
+        id S1726913AbfF0Rgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 13:36:50 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:35499 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726901AbfF0Rgu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 13:36:50 -0400
+Received: by mail-pf1-f193.google.com with SMTP id d126so1585390pfd.2;
+        Thu, 27 Jun 2019 10:36:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:date:message-id:in-reply-to:references
          :user-agent:mime-version:content-transfer-encoding;
-        bh=qJWEwf8Wkw7xO+8rTeiXMi5DmcC9FWEMuxJb+RRVkDQ=;
-        b=I8gMr9mXskhdcGne6HNgjD62IeEuN5/XdsS2IhoN8f8haJWYSwB2HvAXSwHRt7G7Td
-         SLeW0jN8QfJ9LHA+EbGLk3XRo3Z3z74hGL5+v9JqxfNLzIfwMYX43WNzbyCyMFq8rcVV
-         T07AjHG9isgqb1cq6O6WBq2HjAQqeN/Ptpdy54hjZ+xu5EUcDUZCGQmjMDmL1G9Zk4OM
-         1dRCGipm1Nb0PCP7LIcmnx89L86/QpdeVGlCF0u/G5dV5VGLBtyWe0ICR8lwC6P1lqa4
-         T5RDRMPrpOEGSz0jYVWmaOVwivDOZXX1QEhVEhIcJbNvU5PXCyI/zmgooKo2danC26KA
-         lakg==
+        bh=nAyVVekSlB0wUy48a52kkqnjNBNQOsQG1HeegDUANdU=;
+        b=JDr/jdGwkmAuUA7/2v0we3RWeqpjB1oafF4f2UsEfSfjecutu1X0mFjpgbd5uPtlz7
+         6bEAXUBS1RbK7Zi1nHm/X/unc5KR4+zKKZ/cqSI+z2X1xkU7ow4HFefszbFiYzje0mJZ
+         Cb5fqLH0Ceu8FXRI5dHpRHHn6trHY0ud/PdBsuT3a0zPdqQ6G7g3HV4Emk1XFrDzHR4P
+         aXr+rsFOBXoL7PsJ/u0NAd95CNC6e3sIfOP48KG//wJcsDjwoLVV548++kVRNxu7TFki
+         s5OgS+xa4NtcctaPgG29CRY+C+MxVYyT5hZCG8M2WjTLgjK5M8O5/ay96g7hYC54wu+P
+         IE9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=qJWEwf8Wkw7xO+8rTeiXMi5DmcC9FWEMuxJb+RRVkDQ=;
-        b=NJ951kxbGLODte5IxTwm9eg7p/aHweG7WZnaH3lK5El4bkj83y4XW9t6w4jfQTUWeF
-         UOY9JckoJNz/CoTZy5ISTZbWITbaFGpwTan9uZddsnlDgI/zzSJ3aVD9je350VbBCqbX
-         Xh3/BWw6A7fhM3g4rrk21TvMotQdrEXDAwe3EheMbQsmIYEm2Xu7txNj4tinnUOx4CqG
-         Up1PRr5MMqDKpzI86uaJU+o5sg5rDxmBtXY3g21bz83PpvGGbczlXDiWTycZcZeQWoxg
-         ZYRU/16paDm0pw3pWwyS36AE0qL9L2vqmPVDStptUpm9raTyoZev7cSFHFwtkprhX3Wg
-         toEg==
-X-Gm-Message-State: APjAAAWrZrTgakFblwL/psWqnsZlcMb19E308o7jne0IGrmj6mbdRIpV
-        0aFHP/guszJJRDWDoBtuiZk=
-X-Google-Smtp-Source: APXvYqwOJ7Iwiq9NSlqjbGsoyyxT3ml5ONCbBW6BvaZwnneSwmeETeH0it2arEWg2+EguFkfG9QCUQ==
-X-Received: by 2002:a17:902:788e:: with SMTP id q14mr6034189pll.234.1561657003074;
-        Thu, 27 Jun 2019 10:36:43 -0700 (PDT)
+        bh=nAyVVekSlB0wUy48a52kkqnjNBNQOsQG1HeegDUANdU=;
+        b=PuVEcAW4hlonaHTNIAIGolGFXEsifxrDX/kBT3/Tu+03U+J6jJTUjlFJFo9K729XMW
+         aLfEmKgCqUH46DLeuWo7YydqXSHo7JqQxuwtY250Vt0Eft7okEyqc3zKl/J9Qf4NybGW
+         2WzcfYezX+94VQPU/idGBS/ej8tFUJ2RlGM1RNK/+ivQ0FiSwA75vlx5Ei1OWeRLh33f
+         8vz40MWPocG8PYdkbL+vGn/ccSYeU6GHC8z0fMPGnWFgBHJ2AudMcX5L1UskDe64e4Il
+         CngF3tU0xa/rsMV6pP0Urdrf+ZPk+6j1AFL0JhudeXBVdj3afaMjMMSbEIn/Rk8e6onu
+         NHYA==
+X-Gm-Message-State: APjAAAX5qeh+Meqm6kSVtasrxIbDUJhOB9h3xorAoEXPAFjD5qHOzgcF
+        /HST3oidelKkqZlNNrFhfwI=
+X-Google-Smtp-Source: APXvYqxzUoGsrDoGUOaPQ1hecJ00DWkfCUUT3/DDeSfYiUv5EE6JSpvLHXTRXfZV4aJP5HwcWzhYTA==
+X-Received: by 2002:a65:6104:: with SMTP id z4mr4818121pgu.319.1561657009110;
+        Thu, 27 Jun 2019 10:36:49 -0700 (PDT)
 Received: from [127.0.1.1] ([67.136.128.119])
-        by smtp.gmail.com with ESMTPSA id j23sm3428822pff.90.2019.06.27.10.36.42
+        by smtp.gmail.com with ESMTPSA id f7sm2968790pgc.82.2019.06.27.10.36.48
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 27 Jun 2019 10:36:42 -0700 (PDT)
-Subject: [PATCH 1/2] tls: remove close callback sock unlock/lock and
- flush_sync
+        Thu, 27 Jun 2019 10:36:48 -0700 (PDT)
+Subject: [PATCH 2/2] bpf: tls,
+ implement unhash to avoid transition out of ESTABLISHED
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     daniel@iogearbox.io, jakub.kicinski@netronome.com, ast@kernel.org
 Cc:     netdev@vger.kernel.org, edumazet@google.com,
         john.fastabend@gmail.com, bpf@vger.kernel.org
-Date:   Thu, 27 Jun 2019 10:36:42 -0700
-Message-ID: <156165700197.32598.17496423044615153967.stgit@john-XPS-13-9370>
+Date:   Thu, 27 Jun 2019 10:36:48 -0700
+Message-ID: <156165700815.32598.16215539389630396969.stgit@john-XPS-13-9370>
 In-Reply-To: <156165697019.32598.7171757081688035707.stgit@john-XPS-13-9370>
 References: <156165697019.32598.7171757081688035707.stgit@john-XPS-13-9370>
 User-Agent: StGit/0.17.1-dirty
@@ -63,258 +63,157 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The tls close() callback currently drops the sock lock, makes a
-cancel_delayed_work_sync() call, and then relocks the sock. This
-seems suspect at best. The lock_sock() is applied to stop concurrent
-operations on the socket while tearing the sock down. Further we
-will need to add support for unhash() shortly and this complicates
-matters because the lock may or may not be held then.
+It is possible (via shutdown()) for TCP socks to go through TCP_CLOSE
+state via tcp_disconnect() without calling into close callback. This
+would allow a kTLS enabled socket to exist outside of ESTABLISHED
+state which is not supported.
 
-So to fix the above situation and simplify the next patch to add
-unhash this patch creates a function tls_sk_proto_cleanup() that
-tears down the socket without calling lock_sock/release_sock. In
-order to flush the workqueue then we do the following,
+Solve this the same way we solved the sock{map|hash} case by adding
+an unhash hook to remove tear down the TLS state.
 
-  - Add a new bit to ctx, BIT_TX_CLOSING that is set when the
-    tls resources are being removed.
-  - Check this bit before scheduling any new work. This way we
-    avoid queueing new work after tear down has started.
-  - With the BIT_TX_CLOSING ensuring no new work is being added
-    convert the cancel_delayed_work_sync to flush_delayed_work()
-  - Finally call tlx_tx_records() to complete any available records
-    before,
-  - releasing and removing tls ctx.
+Tested with bpf and net selftests plus ran syzkaller reproducers
+for below listed issues.
 
-The above is implemented for the software case namely any of
-the following configurations from build_protos,
-
-   prot[TLS_SW][TLS_BASE]
-   prot[TLS_BASE][TLS_SW]
-   prot[TLS_SW][TLS_SW]
-
-The implication is a follow up patch is needed to resolve the
-hardware offload case.
-
-Tested with net selftests and bpf selftests.
-
+Fixes: d91c3e17f75f2 ("net/tls: Only attach to sockets in ESTABLISHED state")
+Reported-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot+4207c7f3a443366d8aa2@syzkaller.appspotmail.com
+Reported-by: syzbot+06537213db7ba2745c4a@syzkaller.appspotmail.com
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- include/net/tls.h  |    4 ++--
- net/tls/tls_main.c |   54 ++++++++++++++++++++++++++--------------------------
- net/tls/tls_sw.c   |   50 ++++++++++++++++++++++++++++++++----------------
- 3 files changed, 62 insertions(+), 46 deletions(-)
+ include/net/tls.h  |    2 ++
+ net/tls/tls_main.c |   50 +++++++++++++++++++++++++++++++++++++++++++-------
+ 2 files changed, 45 insertions(+), 7 deletions(-)
 
 diff --git a/include/net/tls.h b/include/net/tls.h
-index 4a55ce6a303f..6fe1f5c96f4a 100644
+index 6fe1f5c96f4a..935d65606bb3 100644
 --- a/include/net/tls.h
 +++ b/include/net/tls.h
-@@ -105,9 +105,7 @@ struct tls_device {
- enum {
- 	TLS_BASE,
- 	TLS_SW,
--#ifdef CONFIG_TLS_DEVICE
- 	TLS_HW,
--#endif
- 	TLS_HW_RECORD,
- 	TLS_NUM_CONFIG,
- };
-@@ -160,6 +158,7 @@ struct tls_sw_context_tx {
- 	int async_capable;
+@@ -264,6 +264,8 @@ struct tls_context {
+ 	bool in_tcp_sendpages;
+ 	bool pending_open_record_frags;
  
- #define BIT_TX_SCHEDULED	0
-+#define BIT_TX_CLOSING		1
- 	unsigned long tx_bitmask;
- };
++	struct proto *sk_proto;
++
+ 	int (*push_pending_record)(struct sock *sk, int flags);
  
-@@ -327,6 +326,7 @@ void tls_sw_close(struct sock *sk, long timeout);
- void tls_sw_free_resources_tx(struct sock *sk);
- void tls_sw_free_resources_rx(struct sock *sk);
- void tls_sw_release_resources_rx(struct sock *sk);
-+void tls_sw_release_strp_rx(struct tls_context *tls_ctx);
- int tls_sw_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 		   int nonblock, int flags, int *addr_len);
- bool tls_sw_stream_read(const struct sock *sk);
+ 	void (*sk_write_space)(struct sock *sk);
 diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index fc81ae18cc44..51cb19e24dd9 100644
+index 51cb19e24dd9..e1750634a53a 100644
 --- a/net/tls/tls_main.c
 +++ b/net/tls/tls_main.c
-@@ -261,24 +261,9 @@ static void tls_ctx_free(struct tls_context *ctx)
- 	kfree(ctx);
+@@ -251,11 +251,16 @@ static void tls_write_space(struct sock *sk)
+ 	ctx->sk_write_space(sk);
  }
  
--static void tls_sk_proto_close(struct sock *sk, long timeout)
-+static void tls_sk_proto_cleanup(struct sock *sk,
-+				 struct tls_context *ctx, long timeo)
+-static void tls_ctx_free(struct tls_context *ctx)
++static void tls_ctx_free(struct sock *sk, struct tls_context *ctx)
  {
--	struct tls_context *ctx = tls_get_ctx(sk);
--	long timeo = sock_sndtimeo(sk, 0);
--	void (*sk_proto_close)(struct sock *sk, long timeout);
--	bool free_ctx = false;
--
--	lock_sock(sk);
--	sk_proto_close = ctx->sk_proto_close;
--
--	if (ctx->tx_conf == TLS_HW_RECORD && ctx->rx_conf == TLS_HW_RECORD)
--		goto skip_tx_cleanup;
--
--	if (ctx->tx_conf == TLS_BASE && ctx->rx_conf == TLS_BASE) {
--		free_ctx = true;
--		goto skip_tx_cleanup;
--	}
--
- 	if (!tls_complete_pending_work(sk, ctx, 0, &timeo))
- 		tls_handle_open_record(sk, 0);
- 
-@@ -299,22 +284,37 @@ static void tls_sk_proto_close(struct sock *sk, long timeout)
- #ifdef CONFIG_TLS_DEVICE
- 	if (ctx->rx_conf == TLS_HW)
- 		tls_device_offload_cleanup_rx(sk);
--
--	if (ctx->tx_conf != TLS_HW && ctx->rx_conf != TLS_HW) {
--#else
--	{
- #endif
--		tls_ctx_free(ctx);
--		ctx = NULL;
-+}
++	struct inet_connection_sock *icsk = inet_csk(sk);
 +
-+static void tls_sk_proto_close(struct sock *sk, long timeout)
+ 	if (!ctx)
+ 		return;
+ 
++	sk->sk_prot = ctx->sk_proto;
++	icsk->icsk_ulp_data = NULL;
++
+ 	memzero_explicit(&ctx->crypto_send, sizeof(ctx->crypto_send));
+ 	memzero_explicit(&ctx->crypto_recv, sizeof(ctx->crypto_recv));
+ 	kfree(ctx);
+@@ -287,23 +292,49 @@ static void tls_sk_proto_cleanup(struct sock *sk,
+ #endif
+ }
+ 
++static void tls_sk_proto_unhash(struct sock *sk)
 +{
 +	struct tls_context *ctx = tls_get_ctx(sk);
++	void (*sk_proto_unhash)(struct sock *sk);
 +	long timeo = sock_sndtimeo(sk, 0);
-+	void (*sk_proto_close)(struct sock *sk, long timeout);
-+	bool free_ctx = false;
 +
-+	lock_sock(sk);
-+	sk_proto_close = ctx->sk_proto_close;
++	if (unlikely(!ctx)) {
++		if (sk->sk_prot->unhash)
++			sk->sk_prot->unhash(sk);
++		return;
++	}
 +
-+	if (ctx->tx_conf == TLS_HW_RECORD && ctx->rx_conf == TLS_HW_RECORD)
-+		goto skip_tx_cleanup;
-+
-+	if (ctx->tx_conf == TLS_BASE && ctx->rx_conf == TLS_BASE) {
-+		free_ctx = true;
-+		goto skip_tx_cleanup;
- 	}
- 
++	sk->sk_prot = ctx->sk_proto;
++	sk_proto_unhash = ctx->unhash;
 +	tls_sk_proto_cleanup(sk, ctx, timeo);
-+
- skip_tx_cleanup:
- 	release_sock(sk);
 +	if (ctx->rx_conf == TLS_SW)
 +		tls_sw_release_strp_rx(ctx);
- 	sk_proto_close(sk, timeout);
--	/* free ctx for TLS_HW_RECORD, used by tcp_set_state
--	 * for sk->sk_prot->unhash [tls_hw_unhash]
--	 */
--	if (free_ctx)
-+
-+	if (ctx->tx_conf != TLS_HW && ctx->rx_conf != TLS_HW &&
-+	    ctx->tx_conf != TLS_HW_RECORD && ctx->rx_conf != TLS_HW_RECORD)
- 		tls_ctx_free(ctx);
- }
- 
-diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index 455a782c7658..d234a6b818e6 100644
---- a/net/tls/tls_sw.c
-+++ b/net/tls/tls_sw.c
-@@ -473,7 +473,8 @@ static void tls_encrypt_done(struct crypto_async_request *req, int err)
- 		return;
- 
- 	/* Schedule the transmission */
--	if (!test_and_set_bit(BIT_TX_SCHEDULED, &ctx->tx_bitmask))
-+	if (!test_and_set_bit(BIT_TX_SCHEDULED, &ctx->tx_bitmask) &&
-+	    !test_bit(BIT_TX_CLOSING, &ctx->tx_bitmask))
- 		schedule_delayed_work(&ctx->tx_work.work, 1);
- }
- 
-@@ -2058,16 +2059,26 @@ void tls_sw_free_resources_tx(struct sock *sk)
- 	struct tls_sw_context_tx *ctx = tls_sw_ctx_tx(tls_ctx);
- 	struct tls_rec *rec, *tmp;
- 
-+	/* Set TX CLOSING bit to stop tx_work from being scheduled
-+	 * while tearing down TX context. We will flush any pending
-+	 * work before free'ing ctx anyways. If already set then
-+	 * another call is already free'ing resources.
-+	 */
-+	if (test_and_set_bit(BIT_TX_CLOSING, &ctx->tx_bitmask))
-+		return;
-+
- 	/* Wait for any pending async encryptions to complete */
- 	smp_store_mb(ctx->async_notify, true);
- 	if (atomic_read(&ctx->encrypt_pending))
- 		crypto_wait_req(-EINPROGRESS, &ctx->async_wait);
- 
--	release_sock(sk);
--	cancel_delayed_work_sync(&ctx->tx_work.work);
--	lock_sock(sk);
--
--	/* Tx whatever records we can transmit and abandon the rest */
-+	/* Flush work queue and then Tx whatever records we can
-+	 * transmit and abandon the rest, lock_sock(sk) must be
-+	 * held here. We ensure no further work is enqueue by
-+	 * checking CLOSING bit before queueing new work and
-+	 * setting it above.
-+	 */
-+	flush_delayed_work(&ctx->tx_work.work);
- 	tls_tx_records(sk, -1);
- 
- 	/* Free up un-sent records in tx_list. First, free
-@@ -2111,22 +2122,22 @@ void tls_sw_release_resources_rx(struct sock *sk)
- 		write_lock_bh(&sk->sk_callback_lock);
- 		sk->sk_data_ready = ctx->saved_data_ready;
- 		write_unlock_bh(&sk->sk_callback_lock);
--		release_sock(sk);
--		strp_done(&ctx->strp);
--		lock_sock(sk);
- 	}
- }
- 
--void tls_sw_free_resources_rx(struct sock *sk)
-+void tls_sw_release_strp_rx(struct tls_context *tls_ctx)
- {
--	struct tls_context *tls_ctx = tls_get_ctx(sk);
- 	struct tls_sw_context_rx *ctx = tls_sw_ctx_rx(tls_ctx);
- 
--	tls_sw_release_resources_rx(sk);
--
-+	strp_done(&ctx->strp);
- 	kfree(ctx);
- }
- 
-+void tls_sw_free_resources_rx(struct sock *sk)
-+{
-+	tls_sw_release_resources_rx(sk);
++	tls_ctx_free(sk, ctx);
++	if (sk_proto_unhash)
++		sk_proto_unhash(sk);
 +}
 +
- /* The work handler to transmitt the encrypted records in tx_list */
- static void tx_work_handler(struct work_struct *work)
+ static void tls_sk_proto_close(struct sock *sk, long timeout)
  {
-@@ -2140,9 +2151,14 @@ static void tx_work_handler(struct work_struct *work)
- 	if (!test_and_clear_bit(BIT_TX_SCHEDULED, &ctx->tx_bitmask))
- 		return;
+ 	struct tls_context *ctx = tls_get_ctx(sk);
+ 	long timeo = sock_sndtimeo(sk, 0);
+ 	void (*sk_proto_close)(struct sock *sk, long timeout);
+-	bool free_ctx = false;
++
++	if (unlikely(!ctx)) {
++		if (sk->sk_prot->close)
++			sk->sk_prot->close(sk, timeout);
++		return;
++	}
  
--	lock_sock(sk);
-+	/* If we are running from a socket close operation then the
-+	 * lock is already held so we do not need to hold it.
-+	 */
-+	if (likely(!test_bit(BIT_TX_CLOSING, &ctx->tx_bitmask)))
-+		lock_sock(sk);
- 	tls_tx_records(sk, -1);
--	release_sock(sk);
-+	if (likely(!test_bit(BIT_TX_CLOSING, &ctx->tx_bitmask)))
-+		release_sock(sk);
+ 	lock_sock(sk);
++	sk->sk_prot = ctx->sk_proto;
+ 	sk_proto_close = ctx->sk_proto_close;
+ 
+ 	if (ctx->tx_conf == TLS_HW_RECORD && ctx->rx_conf == TLS_HW_RECORD)
+ 		goto skip_tx_cleanup;
+ 
+-	if (ctx->tx_conf == TLS_BASE && ctx->rx_conf == TLS_BASE) {
+-		free_ctx = true;
++	if (ctx->tx_conf == TLS_BASE && ctx->rx_conf == TLS_BASE)
+ 		goto skip_tx_cleanup;
+-	}
+ 
+ 	tls_sk_proto_cleanup(sk, ctx, timeo);
+ 
+@@ -311,11 +342,12 @@ static void tls_sk_proto_close(struct sock *sk, long timeout)
+ 	release_sock(sk);
+ 	if (ctx->rx_conf == TLS_SW)
+ 		tls_sw_release_strp_rx(ctx);
+-	sk_proto_close(sk, timeout);
+ 
+ 	if (ctx->tx_conf != TLS_HW && ctx->rx_conf != TLS_HW &&
+ 	    ctx->tx_conf != TLS_HW_RECORD && ctx->rx_conf != TLS_HW_RECORD)
+-		tls_ctx_free(ctx);
++		tls_ctx_free(sk, ctx);
++	if (sk_proto_close)
++		sk_proto_close(sk, timeout);
  }
  
- void tls_sw_write_space(struct sock *sk, struct tls_context *ctx)
-@@ -2152,8 +2168,8 @@ void tls_sw_write_space(struct sock *sk, struct tls_context *ctx)
- 	/* Schedule the transmission if tx list is ready */
- 	if (is_tx_ready(tx_ctx) && !sk->sk_write_pending) {
- 		/* Schedule the transmission */
--		if (!test_and_set_bit(BIT_TX_SCHEDULED,
--				      &tx_ctx->tx_bitmask))
-+		if (!test_and_set_bit(BIT_TX_SCHEDULED, &tx_ctx->tx_bitmask) &&
-+		    !test_bit(BIT_TX_CLOSING, &tx_ctx->tx_bitmask))
- 			schedule_delayed_work(&tx_ctx->tx_work.work, 0);
- 	}
- }
+ static int do_tls_getsockopt_tx(struct sock *sk, char __user *optval,
+@@ -733,16 +765,19 @@ static void build_protos(struct proto prot[TLS_NUM_CONFIG][TLS_NUM_CONFIG],
+ 	prot[TLS_SW][TLS_BASE] = prot[TLS_BASE][TLS_BASE];
+ 	prot[TLS_SW][TLS_BASE].sendmsg		= tls_sw_sendmsg;
+ 	prot[TLS_SW][TLS_BASE].sendpage		= tls_sw_sendpage;
++	prot[TLS_SW][TLS_BASE].unhash		= tls_sk_proto_unhash;
+ 
+ 	prot[TLS_BASE][TLS_SW] = prot[TLS_BASE][TLS_BASE];
+ 	prot[TLS_BASE][TLS_SW].recvmsg		  = tls_sw_recvmsg;
+ 	prot[TLS_BASE][TLS_SW].stream_memory_read = tls_sw_stream_read;
+ 	prot[TLS_BASE][TLS_SW].close		  = tls_sk_proto_close;
++	prot[TLS_BASE][TLS_SW].unhash		= tls_sk_proto_unhash;
+ 
+ 	prot[TLS_SW][TLS_SW] = prot[TLS_SW][TLS_BASE];
+ 	prot[TLS_SW][TLS_SW].recvmsg		= tls_sw_recvmsg;
+ 	prot[TLS_SW][TLS_SW].stream_memory_read	= tls_sw_stream_read;
+ 	prot[TLS_SW][TLS_SW].close		= tls_sk_proto_close;
++	prot[TLS_SW][TLS_SW].unhash		= tls_sk_proto_unhash;
+ 
+ #ifdef CONFIG_TLS_DEVICE
+ 	prot[TLS_HW][TLS_BASE] = prot[TLS_BASE][TLS_BASE];
+@@ -793,6 +828,7 @@ static int tls_init(struct sock *sk)
+ 	tls_build_proto(sk);
+ 	ctx->tx_conf = TLS_BASE;
+ 	ctx->rx_conf = TLS_BASE;
++	ctx->sk_proto = sk->sk_prot;
+ 	update_sk_prot(sk, ctx);
+ out:
+ 	return rc;
 
