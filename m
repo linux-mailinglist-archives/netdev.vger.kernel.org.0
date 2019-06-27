@@ -2,95 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A14C58E45
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 01:08:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50BC458E5C
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 01:13:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726658AbfF0XI0 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 27 Jun 2019 19:08:26 -0400
-Received: from mga18.intel.com ([134.134.136.126]:20610 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726506AbfF0XI0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Jun 2019 19:08:26 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 27 Jun 2019 16:08:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.63,425,1557212400"; 
-   d="scan'208";a="185442799"
-Received: from pgsmsx101.gar.corp.intel.com ([10.221.44.78])
-  by fmsmga004.fm.intel.com with ESMTP; 27 Jun 2019 16:08:23 -0700
-Received: from pgsmsx114.gar.corp.intel.com ([169.254.4.160]) by
- PGSMSX101.gar.corp.intel.com ([169.254.1.223]) with mapi id 14.03.0439.000;
- Fri, 28 Jun 2019 07:08:22 +0800
-From:   "Ong, Boon Leong" <boon.leong.ong@intel.com>
-To:     Jose Abreu <Jose.Abreu@synopsys.com>,
-        "Voon, Weifeng" <weifeng.voon@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Maxime Coquelin" <mcoquelin.stm32@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Giuseppe Cavallaro" <peppe.cavallaro@st.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "Florian Fainelli" <f.fainelli@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "Gomes, Vinicius" <vinicius.gomes@intel.com>
-Subject: RE: [RFC net-next 1/5] net: stmmac: introduce IEEE 802.1Qbv
- configuration functionalities
-Thread-Topic: [RFC net-next 1/5] net: stmmac: introduce IEEE 802.1Qbv
- configuration functionalities
-Thread-Index: AQHVJdrXUsdOVQF/k0iKWNkitFHiIaau88qAgAE4duA=
-Date:   Thu, 27 Jun 2019 23:08:21 +0000
-Message-ID: <AF233D1473C1364ABD51D28909A1B1B75C19070D@pgsmsx114.gar.corp.intel.com>
-References: <1560893778-6838-1-git-send-email-weifeng.voon@intel.com>
- <1560893778-6838-2-git-send-email-weifeng.voon@intel.com>
- <BN8PR12MB32668CB3930DD0D9565D15B0D3FD0@BN8PR12MB3266.namprd12.prod.outlook.com>
-In-Reply-To: <BN8PR12MB32668CB3930DD0D9565D15B0D3FD0@BN8PR12MB3266.namprd12.prod.outlook.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ctpclassification: CTP_NT
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiM2Y5NDUxYzUtYTJhYi00NDRmLTgzZmItODYzMmIzMTgyYjg1IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiaUJFb0JmNGllSThLMnA3MFFCOVBRejdaQ2VhZURBa0NjM2pHQ21JV2NZZHJKKzhoOUtrMUNOQTNYczUwY1E2biJ9
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [172.30.20.205]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1726679AbfF0XNG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 19:13:06 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:35155 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726553AbfF0XNG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 19:13:06 -0400
+Received: by mail-qk1-f193.google.com with SMTP id l128so3283459qke.2
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 16:13:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=S5gB09VLIO/ltunJZwBpp1AcCPOwa+p492WFcMNQMNc=;
+        b=ZN2A3A4HYOybSZJYrfPkUSxcOjEQfUoLm47Vruuvi7YY5d+8L08o2H05N8rgs9znBQ
+         17kesImdlTY0PSw8/jYfvDBAE807j0YDInXtWs5+FOboxNSSatBPE8ja/343DakNABtE
+         X8vRot6KsNK8o6VHPcstoqWmByOPUzIiriy8/e0R3ezPz9UnFi/PLKrYDP3OXHoDXcQ8
+         vTbxYbkjbIp7NFfCl/IfD3/zMwdwqe6ruHbpMIrrTgkHojOxBEvNPgKIfYgm0PKqWc+R
+         8mFSc9vFGEAcJxVTUcrLvbuyaTyzqYuNiYwk80GxAspNj9rQ17YPAY49Loj2gmKRKBrr
+         cwFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=S5gB09VLIO/ltunJZwBpp1AcCPOwa+p492WFcMNQMNc=;
+        b=toGrCx9KYnid8AzsFlsCYLBroetZ5VsixkzdGoxlt4vH2EyIyveD3MOHvMsQkYKcOt
+         zdJJUOqKdfFHDFraUllVm4TBOgPRapGNI99YJuoMAOq6gqN+wCHKLn8MSbyKHhInLj9y
+         yzP8/6blwAA1+dUnVC4An9kGhtTbQMEd47oH5nBEWTu9OwFECa53NxRbpB+ixUr5T9Lv
+         WNQEf6mWABjRj96nFQxxUUOLRZLKUsF7Ft763FO17nLYPG2ERyAwNSO1rtICq4fj2hsS
+         H4L9KuCc+s5O2lQYJaRrpHQFwByLNvwsknLuE6BJjHWcwLQpMC8eWXcV2mPtzMPhp8jC
+         vOSQ==
+X-Gm-Message-State: APjAAAVW4wUBvfzOLgBywj2STgfse/I6sbaz6RGsO43pwUqd87XfrMjZ
+        GW/o+v8bG3U3seu4ieeb3KpL6Q==
+X-Google-Smtp-Source: APXvYqwD8IXFjb/+WU0On7DlII3GSj3WD6sLG+rnDWA5W4lvKMcRsNIMjNLzcOW0iZZ8+BlInFsWTg==
+X-Received: by 2002:ae9:e887:: with SMTP id a129mr5860514qkg.347.1561677185448;
+        Thu, 27 Jun 2019 16:13:05 -0700 (PDT)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id o33sm253518qtk.67.2019.06.27.16.13.04
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 27 Jun 2019 16:13:04 -0700 (PDT)
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: [PATCH net-next 0/5] nfp: extend flower capabilities for GRE tunnel offload
+Date:   Thu, 27 Jun 2019 16:12:38 -0700
+Message-Id: <20190627231243.8323-1-jakub.kicinski@netronome.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->-----Original Message-----
->From: Jose Abreu [mailto:Jose.Abreu@synopsys.com]
->>From: Voon Weifeng <weifeng.voon@intel.com>
->> diff --git a/drivers/net/ethernet/stmicro/stmmac/dw_tsn_lib.c
->b/drivers/net/ethernet/stmicro/stmmac/dw_tsn_lib.c
->> new file mode 100644
->> index 000000000000..cba27c604cb1
->> --- /dev/null
->> +++ b/drivers/net/ethernet/stmicro/stmmac/dw_tsn_lib.c
->
->XGMAC also supports TSN features so I think more abstraction is needed
->on this because the XGMAC implementation is very similar (only reg
->offsets and bitfields changes).
->
->I would rather:
->	- Implement HW specific handling in dwmac4_core.c / dwmac4_dma.c
->and
->add the callbacks in hwif table;
->	- Let TSN logic in this file but call it stmmac_tsn.c.
-OK. Thanks for above feedback.
->
->> @@ -3621,6 +3622,8 @@ static int stmmac_set_features(struct net_device
->*netdev,
->>  	 */
->>  	stmmac_rx_ipc(priv, priv->hw);
->>
->> +	netdev->features = features;
->
->Isn't this a fix ?
-Yup. We will split this out as a patch and send separately.
+Pieter says:
+
+This set extends the flower match and action components to offload
+GRE decapsulation with classification and encapsulation actions. The
+first 3 patches are refactor and cleanup patches for improving
+readability and reusability. Patch 4 and 5 implement GRE decap and
+encap functionality respectively.
+
+Pieter Jansen van Vuuren (5):
+  nfp: flower: refactor tunnel key layer calculation
+  nfp: flower: add helper functions for tunnel classification
+  nfp: flower: rename tunnel related functions in action offload
+  nfp: flower: add GRE decap classification support
+  nfp: flower: add GRE encap action support
+
+ .../ethernet/netronome/nfp/flower/action.c    |  59 +++++---
+ .../net/ethernet/netronome/nfp/flower/cmsg.h  |  57 +++++++-
+ .../net/ethernet/netronome/nfp/flower/match.c | 103 +++++++++++---
+ .../ethernet/netronome/nfp/flower/offload.c   | 133 ++++++++++++------
+ 4 files changed, 263 insertions(+), 89 deletions(-)
+
+-- 
+2.21.0
+
