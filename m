@@ -2,99 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D01258DFC
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 00:31:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44BC558DFF
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 00:32:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726631AbfF0Wbx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 18:31:53 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:39351 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726445AbfF0Wbw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 18:31:52 -0400
-Received: by mail-pg1-f193.google.com with SMTP id 196so1651110pgc.6;
-        Thu, 27 Jun 2019 15:31:52 -0700 (PDT)
+        id S1726590AbfF0Wcl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 18:32:41 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:34634 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726445AbfF0Wcl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 18:32:41 -0400
+Received: by mail-qt1-f196.google.com with SMTP id m29so4309876qtu.1;
+        Thu, 27 Jun 2019 15:32:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=I3QCREfdGAs62Jc95riCjzQjlf1m6o9ZcWuthUo1KoU=;
-        b=Ii2Q7IirLZGkqJT8ryQO1kzZYg1R8wRKuTJKAkMR/6PdmbZNRNOcpksOAGO4sL8RId
-         RHGXttDDhDxMLwR9PrL1INIzYV8E9hugqJ8HzkzCJXBsf1jO9jREcSzpES35QFSytOBD
-         gbD1EbNMVy9k4SQsJC7MLsA/Fbl81sdclRY87+rsykUAixbcy5kxL8q3bKWAliVq13w7
-         LFzURU9RArLnNl8+5aj/ZS2EzVzBvGK3/0Yr+WIAv5ygKJa2QT7/shFCXo87h3bU06id
-         4BHvq6D3fgTxN+9WWa3417bx+zCw629B75tkyj9yw6dNRO+CDxWbNMOLG23qk+dN+ek8
-         JvRA==
+         :content-disposition:in-reply-to:user-agent;
+        bh=SUoGq6G5riyuNtCg/1PVUHtszoC+IVC1IorIgPy3qn0=;
+        b=D3NuZZn6NOfQEQYYO9YWglmDFXBRm4PBQz648NF2PAKqOggIkAjDEIGMl5FU45ou9q
+         UgdIGtde9tCNcMJlXk5l3kqDpp2v1yPRqeL/wZyzcB6UzTf9Qn63BDb5T2jtKObjjwot
+         lJyJondLUbepfltpPVMi1cqKg3VToHsBwjVZ+A/36BA4bKL3xhyrb4hL5xw6/QnsmHZW
+         ga/gHK2KBchJzL526jJaVc2raoAwpe00DAbqjMr4qEmea8pBYCE/qI1aq9LHK3CMUelw
+         Vxw2TPQypkmPleDjvm21hdt9dq4sxp9T522gaHEqi6hKU6EziHX/3jIbC0TxolXn/fZ7
+         iLMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=I3QCREfdGAs62Jc95riCjzQjlf1m6o9ZcWuthUo1KoU=;
-        b=cTrZT9zHh07+ozDXZA8GcZE19qjaZDYerTcUeLHuJrFgrSlLAZI8IZ/rnEuRwWeFko
-         w2dytiEh4+OMGlIWnbFxPGrQhiIoQC9x0NSgsYrZEC7J2HoErfIe3rHNxOVdoYo7Emo5
-         CHByBgDWl0PoEMoGHpgNo1RmVHP4m1NhhVixd7MZ/POggl1itjrA1oqXuzkUIde9zeOi
-         x1+B36mqXqK6+I+CsQz4jXhVoqpEk9ZjOx0rj1kl37aF4LR1RaYBRBQECnWV5i7q6PKs
-         K+dfjAJog5X0as7O81Amv4efCjS0xvg3fHZTqS8rUTJtYGcPbp1anSwry0hgk/Z/Wnui
-         3yRQ==
-X-Gm-Message-State: APjAAAUZQa1qnR8cFn/+gz9CcmB0RM/30ksWtc4mQMunFhr78naVgRea
-        /eGC5wmRF5piGVgJ9dddEqg=
-X-Google-Smtp-Source: APXvYqzm68U65PRMDN0yXeBdlMEfgLs5VZdfRECMHYSn8eHseUIgTw8jjGQBmFN/eDx+v+9qCblZZg==
-X-Received: by 2002:a17:90a:8a15:: with SMTP id w21mr8996902pjn.134.1561674711351;
-        Thu, 27 Jun 2019 15:31:51 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::1:305a])
-        by smtp.gmail.com with ESMTPSA id e20sm35843pfh.50.2019.06.27.15.31.49
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 27 Jun 2019 15:31:50 -0700 (PDT)
-Date:   Thu, 27 Jun 2019 15:31:49 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        ast@kernel.org, daniel@iogearbox.net
-Subject: Re: [PATCH bpf-next v9 0/9] bpf: getsockopt and setsockopt hooks
-Message-ID: <20190627223147.vkkmbtdcvjzas2ej@ast-mbp.dhcp.thefacebook.com>
-References: <20190627203855.10515-1-sdf@google.com>
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=SUoGq6G5riyuNtCg/1PVUHtszoC+IVC1IorIgPy3qn0=;
+        b=XW1g5jMT9hfCeaARhbkPAgwwOSnl1zlyNn/4TYTkFxrENJTUsz6tGxH+UhIoaYnW/t
+         8g3dH/f20CLw5Bkw97LLqMr1OCGoFHUKYZPppZrAPQgvnMJbYDxkhvACRQnX5ZnJxXo4
+         tv+KQ2/lp18/SryRp9nn78Fo9a7fUqB5viEOkugGTanNjbsED1q6Urg7+18LTGOhAd+j
+         BFSXdeqsoZZkGm3AQrdVn9YtWpE9rFZOvblITTWLPmtflcmkHCUbdRw+54qprPlVCUgd
+         zG7j+BsvGDYzvdeolC/2gfkyp4OootkOrPcJ7DR9Q4tzREmMUzkP4f9QH6ES3bReBBGd
+         dilA==
+X-Gm-Message-State: APjAAAU5LqsQ8DV6qjLcOsAVlV52LyPmDvvAtim2NFM8Hd7aCxZ5gnAV
+        Ss3rS7r4WlTK4RQRE+RQdoY=
+X-Google-Smtp-Source: APXvYqzsvErsY4jPiohcWOGdIIily/IXJlA5CNsDhwwQf/5M3KFK4tiS44ZJCk8XepmSH2OLtu/QCw==
+X-Received: by 2002:a0c:8b54:: with SMTP id d20mr5362334qvc.1.1561674760179;
+        Thu, 27 Jun 2019 15:32:40 -0700 (PDT)
+Received: from localhost.localdomain ([2001:1284:f013:1699:3b71:f1f7:949e:f780])
+        by smtp.gmail.com with ESMTPSA id k123sm206991qkf.13.2019.06.27.15.32.39
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 27 Jun 2019 15:32:39 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id CA7BBC3B91; Thu, 27 Jun 2019 19:32:36 -0300 (-03)
+Date:   Thu, 27 Jun 2019 19:32:36 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        davem@davemloft.net, Neil Horman <nhorman@tuxdriver.com>,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [PATCH net] sctp: not bind the socket in sctp_connect
+Message-ID: <20190627223236.GB2747@localhost.localdomain>
+References: <35a0e4f6ca68185117c6e5517d8ac924cc2f9d05.1561537899.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190627203855.10515-1-sdf@google.com>
-User-Agent: NeoMutt/20180223
+In-Reply-To: <35a0e4f6ca68185117c6e5517d8ac924cc2f9d05.1561537899.git.lucien.xin@gmail.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 27, 2019 at 01:38:46PM -0700, Stanislav Fomichev wrote:
-> This series implements two new per-cgroup hooks: getsockopt and
-> setsockopt along with a new sockopt program type. The idea is pretty
-> similar to recently introduced cgroup sysctl hooks, but
-> implementation is simpler (no need to convert to/from strings).
+On Wed, Jun 26, 2019 at 04:31:39PM +0800, Xin Long wrote:
+> Now when sctp_connect() is called with a wrong sa_family, it binds
+> to a port but doesn't set bp->port, then sctp_get_af_specific will
+> return NULL and sctp_connect() returns -EINVAL.
 > 
-> What this can be applied to:
-> * move business logic of what tos/priority/etc can be set by
->   containers (either pass or reject)
-> * handle existing options (or introduce new ones) differently by
->   propagating some information in cgroup/socket local storage
+> Then if sctp_bind() is called to bind to another port, the last
+> port it has bound will leak due to bp->port is NULL by then.
 > 
-> Compared to a simple syscall/{g,s}etsockopt tracepoint, those
-> hooks are context aware. Meaning, they can access underlying socket
-> and use cgroup and socket local storage.
+> sctp_connect() doesn't need to bind ports, as later __sctp_connect
+> will do it if bp->port is NULL. So remove it from sctp_connect().
+> While at it, remove the unnecessary sockaddr.sa_family len check
+> as it's already done in sctp_inet_connect.
 > 
-> v9:
-> * allow overwriting setsocktop arguments (Alexei Starovoitov)
->   (see individual changes for more changelog details)
+> Fixes: 644fbdeacf1d ("sctp: fix the issue that flags are ignored when using kernel_connect")
+> Reported-by: syzbot+079bf326b38072f849d9@syzkaller.appspotmail.com
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
 
-Applied. Thanks.
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 
-There is a build warning though:
-test_sockopt_sk.c: In function ‘getsetsockopt’:
-test_sockopt_sk.c:115:2: warning: dereferencing type-punned pointer will break strict-aliasing rules [-Wstrict-aliasing]
-  if (*(__u32 *)buf != 0x55AA*2) {
-  ^~
-test_sockopt_sk.c:116:3: warning: dereferencing type-punned pointer will break strict-aliasing rules [-Wstrict-aliasing]
-   log_err("Unexpected getsockopt(SO_SNDBUF) 0x%x != 0x55AA*2",
-   ^~~~~~~
-
-Pls fix it in the follow up.
-
+> ---
+>  net/sctp/socket.c | 24 +++---------------------
+>  1 file changed, 3 insertions(+), 21 deletions(-)
+> 
+> diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+> index 39ea0a3..f33aa9e 100644
+> --- a/net/sctp/socket.c
+> +++ b/net/sctp/socket.c
+> @@ -4816,35 +4816,17 @@ static int sctp_setsockopt(struct sock *sk, int level, int optname,
+>  static int sctp_connect(struct sock *sk, struct sockaddr *addr,
+>  			int addr_len, int flags)
+>  {
+> -	struct inet_sock *inet = inet_sk(sk);
+>  	struct sctp_af *af;
+> -	int err = 0;
+> +	int err = -EINVAL;
+>  
+>  	lock_sock(sk);
+> -
+>  	pr_debug("%s: sk:%p, sockaddr:%p, addr_len:%d\n", __func__, sk,
+>  		 addr, addr_len);
+>  
+> -	/* We may need to bind the socket. */
+> -	if (!inet->inet_num) {
+> -		if (sk->sk_prot->get_port(sk, 0)) {
+> -			release_sock(sk);
+> -			return -EAGAIN;
+> -		}
+> -		inet->inet_sport = htons(inet->inet_num);
+> -	}
+> -
+>  	/* Validate addr_len before calling common connect/connectx routine. */
+> -	af = addr_len < offsetofend(struct sockaddr, sa_family) ? NULL :
+> -		sctp_get_af_specific(addr->sa_family);
+> -	if (!af || addr_len < af->sockaddr_len) {
+> -		err = -EINVAL;
+> -	} else {
+> -		/* Pass correct addr len to common routine (so it knows there
+> -		 * is only one address being passed.
+> -		 */
+> +	af = sctp_get_af_specific(addr->sa_family);
+> +	if (af && addr_len >= af->sockaddr_len)
+>  		err = __sctp_connect(sk, addr, af->sockaddr_len, flags, NULL);
+> -	}
+>  
+>  	release_sock(sk);
+>  	return err;
+> -- 
+> 2.1.0
+> 
