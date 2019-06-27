@@ -2,355 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3281D58027
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 12:24:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8548858001
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 12:15:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726578AbfF0KY2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 06:24:28 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:52954 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726187AbfF0KY2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 06:24:28 -0400
-Received: from [5.158.153.52] (helo=mitra.tec.linutronix.de)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA1:256)
-        (Exim 4.80)
-        (envelope-from <b.spranger@linutronix.de>)
-        id 1hgRZm-0007Wg-F5; Thu, 27 Jun 2019 12:24:22 +0200
-From:   Benedikt Spranger <b.spranger@linutronix.de>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: [RFC PATCH 1/1] Documentation: net: dsa: b53: Describe b53 configuration
-Date:   Thu, 27 Jun 2019 12:15:06 +0200
-Message-Id: <20190627101506.19727-2-b.spranger@linutronix.de>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190627101506.19727-1-b.spranger@linutronix.de>
-References: <39b134ed-9f3e-418a-bf26-c1e716018e7e@gmail.com>
- <20190627101506.19727-1-b.spranger@linutronix.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1726500AbfF0KPj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 06:15:39 -0400
+Received: from mailout1.w1.samsung.com ([210.118.77.11]:39288 "EHLO
+        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726422AbfF0KPj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 06:15:39 -0400
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20190627101536euoutp011d201b760568346b097c5826a53f0d13~sBrML_jnq0554205542euoutp017
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 10:15:36 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20190627101536euoutp011d201b760568346b097c5826a53f0d13~sBrML_jnq0554205542euoutp017
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1561630536;
+        bh=bxFnqa+gaX8KmJ5gHPf/pUQVZxLmoOj5+HSflVCgAGs=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=e9EAO+mreRXgTRtmJmTUZFf6WvCCpBB9XBIQgtI+zSFMhir4Qe9UBmWIJPDvNMmWH
+         5nXKtYlBIO2LUxQQ8CRRyOzLq4/f9jAS3lAPKMQfgcxul0mzSABjsgL/KYZcQXZFIn
+         +E8dYZDqCEm6Mxx6V9K0p8HCTYPkdqC71dRM+qP4=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+        20190627101535eucas1p1f06095434888e38115ff6854ffe74c70~sBrLRFIBf1062510625eucas1p1w;
+        Thu, 27 Jun 2019 10:15:35 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+        eusmges3new.samsung.com (EUCPMTA) with SMTP id 14.5C.04325.747941D5; Thu, 27
+        Jun 2019 11:15:35 +0100 (BST)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+        20190627101535eucas1p27da11c25b0e15474e4c957053de139d9~sBrKmEPvo2154921549eucas1p2y;
+        Thu, 27 Jun 2019 10:15:35 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20190627101534eusmtrp21aac3f20f0c9fc6301a40ab5de83a046~sBrKX_EFP2684426844eusmtrp2Z;
+        Thu, 27 Jun 2019 10:15:34 +0000 (GMT)
+X-AuditID: cbfec7f5-b8fff700000010e5-7e-5d1497474dd6
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+        eusmgms2.samsung.com (EUCPMTA) with SMTP id 76.3E.04140.647941D5; Thu, 27
+        Jun 2019 11:15:34 +0100 (BST)
+Received: from imaximets.rnd.samsung.ru (unknown [106.109.129.180]) by
+        eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20190627101534eusmtip11973e4335bb9d20dd7726864d937381a~sBrJp3Mb-0975409754eusmtip1D;
+        Thu, 27 Jun 2019 10:15:34 +0000 (GMT)
+From:   Ilya Maximets <i.maximets@samsung.com>
+To:     netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        xdp-newbies@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ilya Maximets <i.maximets@samsung.com>
+Subject: [PATCH bpf v5 0/2] xdp: fix hang while unregistering device bound
+ to xdp socket
+Date:   Thu, 27 Jun 2019 13:15:27 +0300
+Message-Id: <20190627101529.11234-1-i.maximets@samsung.com>
+X-Mailer: git-send-email 2.17.1
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFuplleLIzCtJLcpLzFFi42LZduznOV336SKxBu86VSz+tG1gtPh85Dib
+        xeKF35gt5pxvYbG40v6T3eLYixY2i13rZjJbXN41h81ixaETQLEFYhbb+/cxOnB7bFl5k8lj
+        56y77B6L97xk8ui6cYnZY3r3Q2aPvi2rGD0+b5ILYI/isklJzcksSy3St0vgymjYe5ex4A1b
+        xaX2jWwNjBNYuxg5OSQETCQm7Z/H0sXIxSEksIJR4sv+2ewQzhdGibbzz1ghnM+MEqsaX7LA
+        tPSdWM8GkVjOKPHr4B+oqh+MEn86FoANZhPQkTi1+ggjiC0iICXxccd2sLnMAjOZJbY8ngI2
+        SlggSuJ3xwIwm0VAVeL6yy1gNq+AtcSd5iNMEOvkJVZvOMAM0iwh8JtN4vKcrcwQCReJ2e2b
+        oWxhiVfHt7BD2DIS/3fOh2qul7jf8pIRormDUWL6oX9QCXuJLa/PATVwAJ2kKbF+lz5E2FHi
+        /uwfzCBhCQE+iRtvBUHCzEDmpG3TocK8Eh1tQhDVKhK/Dy6HukBK4ua7z1AXeEisa9wFZgsJ
+        xEpsbNrOPoFRbhbCrgWMjKsYxVNLi3PTU4uN81LL9YoTc4tL89L1kvNzNzECE8npf8e/7mDc
+        9yfpEKMAB6MSD++KncKxQqyJZcWVuYcYJTiYlUR488NEYoV4UxIrq1KL8uOLSnNSiw8xSnOw
+        KInzVjM8iBYSSE8sSc1OTS1ILYLJMnFwSjUwbpv0nonxv/CqOW5VR2oDrS8/FatIqd1x/DDX
+        93gBbpeZr7K5LOdP6Tx6sP3jws6ry4sfnJp+0VbjnOOSdamfim5LxZ6vMhQ/sNr3ubSFsNBS
+        eenLfbeDv328/+fltIlJV3Wj3lXt+9b7YNIaw509Yd+rO7q+1K/NnbG33JUjIFos6kH7vKXP
+        JiixFGckGmoxFxUnAgByL5ssIAMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrELMWRmVeSWpSXmKPExsVy+t/xu7pu00ViDZa9M7H407aB0eLzkeNs
+        FosXfmO2mHO+hcXiSvtPdotjL1rYLHatm8lscXnXHDaLFYdOAMUWiFls79/H6MDtsWXlTSaP
+        nbPusnss3vOSyaPrxiVmj+ndD5k9+rasYvT4vEkugD1Kz6Yov7QkVSEjv7jEVina0MJIz9DS
+        Qs/IxFLP0Ng81srIVEnfziYlNSezLLVI3y5BL6Nh713GgjdsFZfaN7I1ME5g7WLk5JAQMJHo
+        O7GerYuRi0NIYCmjxIOvNxkhElISP35dgCoSlvhzrQuq6BujxIXpW8CK2AR0JE6tPgJmiwA1
+        fNyxnR3EZhZYyCzxZZIJiC0sECFx98V3JhCbRUBV4vrLLSwgNq+AtcSd5iNMEAvkJVZvOMA8
+        gZFnASPDKkaR1NLi3PTcYiO94sTc4tK8dL3k/NxNjMDw3Xbs55YdjF3vgg8xCnAwKvHwrtgp
+        HCvEmlhWXJl7iFGCg1lJhDc/TCRWiDclsbIqtSg/vqg0J7X4EKMp0PKJzFKiyfnA2MoriTc0
+        NTS3sDQ0NzY3NrNQEuftEDgYIySQnliSmp2aWpBaBNPHxMEp1cAowR744OXCXz/3aHdumLvd
+        1fbnm4/ebyz/fNnAdnH3/PZEZi1GIbfXwrvrs5JMve8LZc+wDr5So1yuu/rszEk1Cxq7Dy/V
+        dSyRsV4Q+cDd/cKCmbsdpJ4fe7A67vGPjDhLzsobZyOmXJRKfbx498RjlwyXzUyQKT+Wae9S
+        ka4bFRnoy22lEeinxFKckWioxVxUnAgAFa49QXUCAAA=
+X-CMS-MailID: 20190627101535eucas1p27da11c25b0e15474e4c957053de139d9
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20190627101535eucas1p27da11c25b0e15474e4c957053de139d9
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20190627101535eucas1p27da11c25b0e15474e4c957053de139d9
+References: <CGME20190627101535eucas1p27da11c25b0e15474e4c957053de139d9@eucas1p2.samsung.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Document the different needs of documentation for the b53 driver.
+Version 5:
 
-Signed-off-by: Benedikt Spranger <b.spranger@linutronix.de>
----
- Documentation/networking/dsa/b53.rst | 300 +++++++++++++++++++++++++++
- 1 file changed, 300 insertions(+)
- create mode 100644 Documentation/networking/dsa/b53.rst
+    * Fixed incorrect handling of rtnl_lock.
 
-diff --git a/Documentation/networking/dsa/b53.rst b/Documentation/networking/dsa/b53.rst
-new file mode 100644
-index 000000000000..5838cf6230da
---- /dev/null
-+++ b/Documentation/networking/dsa/b53.rst
-@@ -0,0 +1,300 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+==========================================
-+Broadcom RoboSwitch Ethernet switch driver
-+==========================================
-+
-+The Broadcom RoboSwitch Ethernet switch family is used in quite a range of
-+xDSL router, cable modems and other multimedia devices.
-+
-+The actual implementation supports the devices BCM5325E, BCM5365, BCM539x,
-+BCM53115 and BCM53125 as well as BCM63XX.
-+
-+Implementation details
-+======================
-+
-+The driver is located in ``drivers/net/dsa/bcm_sf2.c`` and is implemented as a
-+DSA driver; see ``Documentation/networking/dsa/dsa.rst`` for details on the
-+subsystemand what it provides.
-+
-+The switch is, if possible, configured to enable a Broadcom specific 4-bytes
-+switch tag which gets inserted by the switch for every packet forwarded to the
-+CPU interface, conversely, the CPU network interface should insert a similar
-+tag for packets entering the CPU port. The tag format is described in
-+``net/dsa/tag_brcm.c``.
-+
-+The configuration of the device depends on whether or not tagging is
-+supported.
-+
-+Configuration with tagging support
-+----------------------------------
-+
-+The tagging based configuration is desired.
-+
-+To use the b53 DSA driver some configuration need to be performed. As
-+example configuration the following scenarios are used:
-+
-+*single port*
-+  Every switch port acts as a different configurable ethernet port
-+
-+*bridge*
-+  Every switch port is part of one configurable ethernet bridge
-+
-+*gateway*
-+  Every switch port except one upstream port is part of a configurable
-+  ethernet bridge.
-+  The upstream port acts as different configurable ethernet port.
-+
-+All configurations are performed with tools from iproute2, wich is available at
-+https://www.kernel.org/pub/linux/utils/net/iproute2/
-+
-+In this documentation the following ethernet ports are used:
-+
-+*eth0*
-+  CPU port
-+
-+*LAN1*
-+  a switch port
-+
-+*LAN2*
-+  another switch port
-+
-+*WAN*
-+  A switch port dedicated as upstream port
-+
-+Further ethernet ports can be configured similar.
-+The configured IPs and networks are:
-+
-+*single port*
-+  *  wan: 192.0.2.1/30 (192.0.2.0 - 192.0.2.3)
-+  * lan1: 192.0.2.5/30 (192.0.2.4 - 192.0.2.7)
-+  * lan2: 192.0.2.9/30 (192.0.2.8 - 192.0.2.11)
-+
-+*bridge*
-+  * br0: 192.0.2.129/25 (192.0.2.128 - 192.0.2.255)
-+
-+*gateway*
-+  * br0: 192.0.2.129/25 (192.0.2.128 - 192.0.2.255)
-+  * wan: 192.0.2.1/30 (192.0.2.0 - 192.0.2.3)
-+
-+single port
-+~~~~~~~~~~~
-+
-+.. code-block:: sh
-+
-+  # configure each interface
-+  ip addr add 192.0.2.1/30 dev wan
-+  ip addr add 192.0.2.5/30 dev lan1
-+  ip addr add 192.0.2.9/30 dev lan2
-+
-+  # The master interface needs to be brought up before the slave ports.
-+  ip link set eth0 up
-+
-+  # bring up the slave interfaces
-+  ip link set wan up
-+  ip link set lan1 up
-+  ip link set lan2 up
-+
-+bridge
-+~~~~~~
-+
-+.. code-block:: sh
-+
-+  # create bridge
-+  ip link add name br0 type bridge
-+
-+  # add ports to bridge
-+  ip link set dev wan master br0
-+  ip link set dev lan1 master br0
-+  ip link set dev lan2 master br0
-+
-+  # configure the bridge
-+  ip addr add 192.0.2.129/25 dev br0
-+
-+  # The master interface needs to be brought up before the slave ports.
-+  ip link set eth0 up
-+
-+  # bring up the slave interfaces
-+  ip link set wan up
-+  ip link set lan1 up
-+  ip link set lan2 up
-+
-+  # bring up the bridge
-+  ip link set dev br0 up
-+
-+gateway
-+~~~~~~~
-+
-+.. code-block:: sh
-+
-+  # create bridge
-+  ip link add name br0 type bridge
-+
-+  # add ports to bridge
-+  ip link set dev lan1 master br0
-+  ip link set dev lan2 master br0
-+
-+  # configure the bridge
-+  ip addr add 192.0.2.129/25 dev br0
-+
-+  # configure the upstream port
-+  ip addr add 192.0.2.1/30 dev wan
-+
-+  # The master interface needs to be brought up before the slave ports.
-+  ip link set eth0 up
-+
-+  # bring up the slave interfaces
-+  ip link set wan up
-+  ip link set lan1 up
-+  ip link set lan2 up
-+
-+  # bring up the bridge
-+  ip link set dev br0 up
-+
-+Configuration without tagging support
-+-------------------------------------
-+
-+Older models (5325, 5365) support a different tag format that is not supported
-+yet. 539x and 531x5 require managed mode and some special handling, which is
-+also not yet supported. The tagging support is disabled in these cases and the
-+switch need a different configuration.
-+
-+single port
-+~~~~~~~~~~~
-+The configuration can only be set up via VLAN tagging and bridge setup.
-+By default packages are tagged with vid 1:
-+
-+.. code-block:: sh
-+
-+  # tag traffic on CPU port
-+  ip link add link eth0 name eth0.1 type vlan id 1
-+  ip link add link eth0 name eth0.2 type vlan id 2
-+  ip link add link eth0 name eth0.3 type vlan id 3
-+
-+  # create bridges
-+  ip link add name br0 type bridge
-+  ip link add name br1 type bridge
-+  ip link add name br2 type bridge
-+
-+  # activate VLAN filtering
-+  ip link set dev br0 type bridge vlan_filtering 1
-+  ip link set dev br1 type bridge vlan_filtering 1
-+  ip link set dev br2 type bridge vlan_filtering 1
-+
-+  # add ports to bridges
-+  ip link set dev wan master br0
-+  ip link set eth0.1 master br0
-+  ip link set dev lan1 master br1
-+  ip link set eth0.2 master br1
-+  ip link set dev lan2 master br2
-+  ip link set eth0.3 master br2
-+
-+  # tag traffic on ports
-+  bridge vlan add dev lan1 vid 2 pvid untagged
-+  bridge vlan del dev lan1 vid 1
-+  bridge vlan add dev lan2 vid 3 pvid untagged
-+  bridge vlan del dev lan2 vid 1
-+
-+  # configure the bridges
-+  ip addr add 192.0.2.1/30 dev br0
-+  ip addr add 192.0.2.5/30 dev br1
-+  ip addr add 192.0.2.9/30 dev br2
-+
-+  # The master interface needs to be brought up before the slave ports.
-+  ip link set eth0 up
-+  ip link set eth0.1 up
-+  ip link set eth0.2 up
-+  ip link set eth0.3 up
-+
-+  # bring up the slave interfaces
-+  ip link set wan up
-+  ip link set lan1 up
-+  ip link set lan2 up
-+
-+  # bring up the bridge devices
-+  ip link set br0 up
-+  ip link set br1 up
-+  ip link set br2 up
-+
-+bridge
-+~~~~~~
-+
-+.. code-block:: sh
-+
-+  # tag traffic on CPU port
-+  ip link add link eth0 name eth0.1 type vlan id 1
-+
-+  # create bridge
-+  ip link add name br0 type bridge
-+
-+  # activate VLAN filtering
-+  ip link set dev br0 type bridge vlan_filtering 1
-+
-+  # add ports to bridge
-+  ip link set dev wan master br0
-+  ip link set dev lan1 master br0
-+  ip link set dev lan2 master br0
-+  ip link set eth0.1 master br0
-+
-+  # configure the bridge
-+  ip addr add 192.0.2.129/25 dev br0
-+
-+  # The master interface needs to be brought up before the slave ports.
-+  ip link set eth0 up
-+  ip link set eth0.1 up
-+
-+  # bring up the slave interfaces
-+  ip link set wan up
-+  ip link set lan1 up
-+  ip link set lan2 up
-+
-+  # bring up the bridge
-+  ip link set dev br0 up
-+
-+gateway
-+~~~~~~~
-+
-+.. code-block:: sh
-+
-+  # tag traffic on CPU port
-+  ip link add link eth0 name eth0.1 type vlan id 1
-+  ip link add link eth0 name eth0.2 type vlan id 2
-+
-+  # create bridges
-+  ip link add name br0 type bridge
-+  ip link add name br1 type bridge
-+
-+  # activate VLAN filtering
-+  ip link set dev br0 type bridge vlan_filtering 1
-+  ip link set dev br1 type bridge vlan_filtering 1
-+
-+  # add ports to bridges
-+  ip link set dev wan master br0
-+  ip link set eth0.1 master br0
-+  ip link set dev lan1 master br1
-+  ip link set dev lan2 master br1
-+  ip link set eth0.2 master br1
-+
-+  # tag traffic on ports
-+  bridge vlan add dev lan1 vid 2 pvid untagged
-+  bridge vlan add dev lan2 vid 2 pvid untagged
-+  bridge vlan del dev lan1 vid 1
-+  bridge vlan del dev lan2 vid 1
-+
-+  # configure the bridges
-+  ip addr add 192.0.2.1/30 dev br0
-+  ip addr add 192.0.2.129/25 dev br1
-+
-+  # The master interface needs to be brought up before the slave ports.
-+  ip link set eth0 up
-+  ip link set eth0.1 up
-+  ip link set eth0.2 up
-+
-+  # bring up the slave interfaces
-+  ip link set wan up
-+  ip link set lan1 up
-+  ip link set lan2 up
-+
-+  # bring up the bridge devices
-+  ip link set br0 up
-+  ip link set br1 up
+Version 4:
+
+    * 'xdp_umem_clear_dev' exposed to be used while unregistering.
+    * Added XDP socket state to track if resources already unbinded.
+    * Splitted in two fixes.
+
+Version 3:
+
+    * Declaration lines ordered from longest to shortest.
+    * Checking of event type moved to the top to avoid unnecessary
+      locking.
+
+Version 2:
+
+    * Completely re-implemented using netdev event handler.
+
+Ilya Maximets (2):
+  xdp: hold device for umem regardless of zero-copy mode
+  xdp: fix hang while unregistering device bound to xdp socket
+
+ include/net/xdp_sock.h |  5 +++
+ net/xdp/xdp_umem.c     | 21 +++++-----
+ net/xdp/xdp_umem.h     |  1 +
+ net/xdp/xsk.c          | 87 ++++++++++++++++++++++++++++++++++++------
+ 4 files changed, 93 insertions(+), 21 deletions(-)
+
 -- 
-2.20.1
+2.17.1
 
