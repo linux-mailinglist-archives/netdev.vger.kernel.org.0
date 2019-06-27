@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C43B8576DF
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:45:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8BF2576E1
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:45:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729542AbfF0Alk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 20:41:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45370 "EHLO mail.kernel.org"
+        id S1729558AbfF0Aln (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 20:41:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45414 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729527AbfF0Ali (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 20:41:38 -0400
+        id S1729545AbfF0All (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 20:41:41 -0400
 Received: from sasha-vm.mshome.net (unknown [107.242.116.147])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AECDD21855;
-        Thu, 27 Jun 2019 00:41:35 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 85FB1205ED;
+        Thu, 27 Jun 2019 00:41:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1561596098;
-        bh=bL5erqaQ8t9b7l37Uv19P1pA8xryG78BCa1asfocRds=;
+        s=default; t=1561596100;
+        bh=V38AR51WVZUlPALVqnX0BjGkS5IFDKpbFnNYu8LKKAo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ie1j1lxFKi0+/pR8zbJwqXrtVqGfJZ+Hpl2V5wrXRgwilN6M9uatPjntVQ3s440l9
-         AgKOBF0BrCMj/49u+hnw6ZoHqW3UyRxImSEexlwZN7CwfHEgtljgX+o0i1R/eWw3sB
-         dcll84ZEZX3R+FoAS71qoi7eF820aQgNaC2YXCyM=
+        b=SDpQCL79IdbYGLNDQWJ/qSrl5Db8V8AJ7cDgkuKPpbMu+w/Odu0dJKrIbdWvpscvb
+         DANzoeDw84t9tiuKMsX6QAFI8MJXpsOFvE3zANJn1XZgx+WsMtUQfZUDdi1eqVLX3g
+         AW8MNA2PD5wsAdDp/FYVlo0EI7JuwfPz8fiApBq4=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Thomas Pedersen <thomas@eero.com>,
+Cc:     Pradeep Kumar Chitrapu <pradeepc@codeaurora.org>,
         Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 04/21] mac80211: mesh: fix RCU warning
-Date:   Wed, 26 Jun 2019 20:41:04 -0400
-Message-Id: <20190627004122.21671-4-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 05/21] mac80211: free peer keys before vif down in mesh
+Date:   Wed, 26 Jun 2019 20:41:05 -0400
+Message-Id: <20190627004122.21671-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190627004122.21671-1-sashal@kernel.org>
 References: <20190627004122.21671-1-sashal@kernel.org>
@@ -44,62 +44,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thomas Pedersen <thomas@eero.com>
+From: Pradeep Kumar Chitrapu <pradeepc@codeaurora.org>
 
-[ Upstream commit 551842446ed695641a00782cd118cbb064a416a1 ]
+[ Upstream commit 0112fa557c3bb3a002bc85760dc3761d737264d3 ]
 
-ifmsh->csa is an RCU-protected pointer. The writer context
-in ieee80211_mesh_finish_csa() is already mutually
-exclusive with wdev->sdata.mtx, but the RCU checker did
-not know this. Use rcu_dereference_protected() to avoid a
-warning.
+freeing peer keys after vif down is resulting in peer key uninstall
+to fail due to interface lookup failure. so fix that.
 
-fixes the following warning:
-
-[   12.519089] =============================
-[   12.520042] WARNING: suspicious RCU usage
-[   12.520652] 5.1.0-rc7-wt+ #16 Tainted: G        W
-[   12.521409] -----------------------------
-[   12.521972] net/mac80211/mesh.c:1223 suspicious rcu_dereference_check() usage!
-[   12.522928] other info that might help us debug this:
-[   12.523984] rcu_scheduler_active = 2, debug_locks = 1
-[   12.524855] 5 locks held by kworker/u8:2/152:
-[   12.525438]  #0: 00000000057be08c ((wq_completion)phy0){+.+.}, at: process_one_work+0x1a2/0x620
-[   12.526607]  #1: 0000000059c6b07a ((work_completion)(&sdata->csa_finalize_work)){+.+.}, at: process_one_work+0x1a2/0x620
-[   12.528001]  #2: 00000000f184ba7d (&wdev->mtx){+.+.}, at: ieee80211_csa_finalize_work+0x2f/0x90
-[   12.529116]  #3: 00000000831a1f54 (&local->mtx){+.+.}, at: ieee80211_csa_finalize_work+0x47/0x90
-[   12.530233]  #4: 00000000fd06f988 (&local->chanctx_mtx){+.+.}, at: ieee80211_csa_finalize_work+0x51/0x90
-
-Signed-off-by: Thomas Pedersen <thomas@eero.com>
+Signed-off-by: Pradeep Kumar Chitrapu <pradeepc@codeaurora.org>
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/mesh.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ net/mac80211/mesh.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/net/mac80211/mesh.c b/net/mac80211/mesh.c
-index b2a27263d6ff..7f902e69530f 100644
+index 7f902e69530f..5c347d3a92c9 100644
 --- a/net/mac80211/mesh.c
 +++ b/net/mac80211/mesh.c
-@@ -1135,7 +1135,8 @@ int ieee80211_mesh_finish_csa(struct ieee80211_sub_if_data *sdata)
- 	ifmsh->chsw_ttl = 0;
+@@ -885,6 +885,7 @@ void ieee80211_stop_mesh(struct ieee80211_sub_if_data *sdata)
  
- 	/* Remove the CSA and MCSP elements from the beacon */
--	tmp_csa_settings = rcu_dereference(ifmsh->csa);
-+	tmp_csa_settings = rcu_dereference_protected(ifmsh->csa,
-+					    lockdep_is_held(&sdata->wdev.mtx));
- 	RCU_INIT_POINTER(ifmsh->csa, NULL);
- 	if (tmp_csa_settings)
- 		kfree_rcu(tmp_csa_settings, rcu_head);
-@@ -1157,6 +1158,8 @@ int ieee80211_mesh_csa_beacon(struct ieee80211_sub_if_data *sdata,
- 	struct mesh_csa_settings *tmp_csa_settings;
- 	int ret = 0;
+ 	/* flush STAs and mpaths on this iface */
+ 	sta_info_flush(sdata);
++	ieee80211_free_keys(sdata, true);
+ 	mesh_path_flush_by_iface(sdata);
  
-+	lockdep_assert_held(&sdata->wdev.mtx);
-+
- 	tmp_csa_settings = kmalloc(sizeof(*tmp_csa_settings),
- 				   GFP_ATOMIC);
- 	if (!tmp_csa_settings)
+ 	/* stop the beacon */
 -- 
 2.20.1
 
