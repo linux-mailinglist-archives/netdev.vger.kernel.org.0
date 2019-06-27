@@ -2,48 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 99FF858B02
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 21:43:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7CDF58B03
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 21:43:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726506AbfF0TnG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 15:43:06 -0400
-Received: from mail-qk1-f201.google.com ([209.85.222.201]:34121 "EHLO
-        mail-qk1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726441AbfF0TnF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 15:43:05 -0400
-Received: by mail-qk1-f201.google.com with SMTP id h198so3688989qke.1
-        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 12:43:04 -0700 (PDT)
+        id S1726524AbfF0TnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 15:43:09 -0400
+Received: from mail-ua1-f74.google.com ([209.85.222.74]:48825 "EHLO
+        mail-ua1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726441AbfF0TnJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 15:43:09 -0400
+Received: by mail-ua1-f74.google.com with SMTP id s14so446386uap.15
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 12:43:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:message-id:mime-version:subject:from:to:cc;
-        bh=L4qaAnZe4Ztf1cznBBEJGB9/EFFCE71pnMap9910TSE=;
-        b=gkbqhG07O0Q4zmI01GDNaJVJ86oizZwselU1siybeml2dXn9iLkaTBNrD5PYHQuf1n
-         aHk9ZWkNtl9fCI0g5LcDvQ/QqxKK9Zal3BnlYNI7vKiybcr59qyqEPJjyoQFe/EXoqgt
-         +WgXziCKOyTsnisieU8KHUFBB8QWDoix5pUWRtb4NC0Py1tm27nlskI7K9H+SpO6B9Kq
-         NRuCIsy89HFpjiRsR3L0qXfdIH75vK7GTu213XY+W7QRO/M2YMXf2WllM15LegTupiEU
-         8VqmcHNRBrPQzFGD0Q2j89VoFP9oQxuP1K7B9i6AZIL8S83qK31kICAEVrIBj5u0fzPl
-         5I1w==
+        bh=bwxL9AOfJq1TYcqJgvHADeWXFMs7jT1tkEM8zoDSfPs=;
+        b=ODrfRPFdwVk/nOWy3+njM94t2CicsQlKJaUSN4txJSRl0h4zbpq+UFWSw7qNb61tm9
+         c/iz7eyCIFJuFWHsJeZXV0xOxwK5WlRzGeXSVbEGb8PSIYuqyz9fbNZJOJADoVZtU4UH
+         Y8dSYeWzzK7goyeAYESg1Cqq91oIGk1puPI3pkLY4wExbGLhflju+TiiOSdEept6icJk
+         8MqN/LfTwTG6LBWt5xPI88Fb8syWgXUHsddrFPzzIV9kqo9DhTw4ZCIhnhUq8rSjfzK1
+         4DR57j70pflHGIUbclydlSfbwyK+m9xbaznMkslR+2Pn8uZ7umEtazpO4crNLvMs1J/E
+         F8SQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=L4qaAnZe4Ztf1cznBBEJGB9/EFFCE71pnMap9910TSE=;
-        b=WLKtC74OyCQhXr6cToYr9vhnbzQtn4PiqxqBscofun2w0gW2jq9GhETurANRNILf93
-         jCeXx5UqWsequYTvS/Plb1YJnbNYS7lvrVMzbQzLagibOsdtWeqGaENhbPm/k/dFpo2w
-         AapV6Abls2/XZ+tKev/u9zbAaAg/Gp0BfNteXcEfAO5vvvOclPkUKyFxO0E9x+C4xQVG
-         XpJDsLlC306WdK6YticWySKocLizURt+lOKF6c4Bn+K8CjcLsf6ZOncpEbBC3/Ge5Esr
-         7AdK1vw7d4l9qpnopH1UIuofphJEIQabrHDsk0z9HDBDMgg4RyBufaZNgFnmBoJsXQSr
-         BWLQ==
-X-Gm-Message-State: APjAAAVvE0bXa7CV3nqvG0JPqp1fLTIcLoTLrGAT311v3twcP3AinEKZ
-        vkhYigiXcElUKzZ/GT+iHyZnqWUSs1pdGZMHHdTwNjuQXlPBZAJg7pyma+oEMgZWe8FltHXm/DK
-        7ap/UjLLAIV0EuEEqRb27qaEoWwG9GaA1a/6LsSJGQYSqVrmDw9AB8uGstSCE3Zt5
-X-Google-Smtp-Source: APXvYqyJG2c7UcnCyFuwJtGG6DYGIFQxBFh4MHlmXFUVqH+YmqhjdUvhs/ZYgeDcGQi1Grb81M79rC7YyHp6
-X-Received: by 2002:a37:47d6:: with SMTP id u205mr5112007qka.214.1561664584420;
- Thu, 27 Jun 2019 12:43:04 -0700 (PDT)
-Date:   Thu, 27 Jun 2019 12:43:00 -0700
-Message-Id: <20190627194300.92202-1-maheshb@google.com>
+        bh=bwxL9AOfJq1TYcqJgvHADeWXFMs7jT1tkEM8zoDSfPs=;
+        b=Qhj5trJHqx2gu6RRVAwYxuSf6jtMgVLdP/xUEBCUkGh1n5Dx+wNswOxDUtj+qPBH81
+         j0qNX/wsVXCUVnYy7rtnwBzVi5ULy/EFQ6RGGeYg1cjALDXmzVSZTW+CDWyuWo/6w7DD
+         K0nDXMufWfZyilvPKx33GFDwdTn9bwmZU7scQd/ZOp6+zqcKN2LsRgSRIUh6Lmky7fmK
+         wvdH/MV5THaRx6JSbCQMCAjq0z6DQLAdcAQy+ai7z1KOb0t5vu7GSepUKbkeuAHp+sTR
+         OaP2J3GRZEdgLCt2qqmDxykKeg8YcHLWxqjwz8oYaPZy9e4FC1WAAhgct2K2rR7jkwfQ
+         mI9A==
+X-Gm-Message-State: APjAAAVCVGSP0aUxQcMiM166e4uN/ttRI0S1Jg9/QxO/U3jEQ+sK/vwO
+        +vsV3+XoJd85cjfE5ZAU39NqoSj0lOLSF+K5YgJSyGdrln2AinWtSPrZ3RTNBM1EE/onlts4p3w
+        AcgVGP8YAJ+3lKbasDuIj02lnLZrTeOEx/xVBtrAIeV4oQU715ztZPQKsEqRsMeBZ
+X-Google-Smtp-Source: APXvYqzIukIgSgSY6fPid0W2d2msA8EHiwaJZ2+8IlNU4inLRzreROlEwhkLCQUce+zDELq0kZD/IdokMuBD
+X-Received: by 2002:a67:b919:: with SMTP id q25mr3948740vsn.18.1561664588434;
+ Thu, 27 Jun 2019 12:43:08 -0700 (PDT)
+Date:   Thu, 27 Jun 2019 12:43:05 -0700
+Message-Id: <20190627194305.93241-1-maheshb@google.com>
 Mime-Version: 1.0
 X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
-Subject: [PATCHv2 next 1/3] loopback: create blackhole net device similar to loopack.
+Subject: [PATCHv2 next 2/3] blackhole_netdev: use blackhole_netdev to
+ invalidate dst entries
 From:   Mahesh Bandewar <maheshb@google.com>
 To:     Netdev <netdev@vger.kernel.org>
 Cc:     Eric Dumazet <edumazet@google.com>,
@@ -58,142 +59,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Create a blackhole net device that can be used for "dead"
-dst entries instead of loopback device. This blackhole device differs
-from loopback in few aspects: (a) It's not per-ns. (b)  MTU on this
-device is ETH_MIN_MTU (c) The xmit function is essentially kfree_skb().
-and (d) since it's not registered it won't have ifindex.
-
-Lower MTU effectively make the device not pass the MTU check during
-the route check when a dst associated with the skb is dead.
+Use blackhole_netdev instead of 'lo' device with lower MTU when marking
+dst "dead".
 
 Signed-off-by: Mahesh Bandewar <maheshb@google.com>
 ---
-v1->v2
+v1 -> v2
   no change
 
- drivers/net/loopback.c    | 76 ++++++++++++++++++++++++++++++++++-----
- include/linux/netdevice.h |  2 ++
- 2 files changed, 69 insertions(+), 9 deletions(-)
+ net/core/dst.c   | 2 +-
+ net/ipv4/route.c | 3 +--
+ net/ipv6/route.c | 2 +-
+ 3 files changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/loopback.c b/drivers/net/loopback.c
-index 87d361666cdd..3b39def5471e 100644
---- a/drivers/net/loopback.c
-+++ b/drivers/net/loopback.c
-@@ -55,6 +55,13 @@
- #include <net/net_namespace.h>
- #include <linux/u64_stats_sync.h>
- 
-+/* blackhole_netdev - a device used for dsts that are marked expired!
-+ * This is global device (instead of per-net-ns) since it's not needed
-+ * to be per-ns and gets initialized at boot time.
-+ */
-+struct net_device *blackhole_netdev;
-+EXPORT_SYMBOL(blackhole_netdev);
-+
- /* The higher levels take care of making this non-reentrant (it's
-  * called with bh's disabled).
-  */
-@@ -150,12 +157,14 @@ static const struct net_device_ops loopback_ops = {
- 	.ndo_set_mac_address = eth_mac_addr,
- };
- 
--/* The loopback device is special. There is only one instance
-- * per network namespace.
-- */
--static void loopback_setup(struct net_device *dev)
-+static void gen_lo_setup(struct net_device *dev,
-+			 unsigned int mtu,
-+			 const struct ethtool_ops *eth_ops,
-+			 const struct header_ops *hdr_ops,
-+			 const struct net_device_ops *dev_ops,
-+			 void (*dev_destructor)(struct net_device *dev))
- {
--	dev->mtu		= 64 * 1024;
-+	dev->mtu		= mtu;
- 	dev->hard_header_len	= ETH_HLEN;	/* 14	*/
- 	dev->min_header_len	= ETH_HLEN;	/* 14	*/
- 	dev->addr_len		= ETH_ALEN;	/* 6	*/
-@@ -174,11 +183,20 @@ static void loopback_setup(struct net_device *dev)
- 		| NETIF_F_NETNS_LOCAL
- 		| NETIF_F_VLAN_CHALLENGED
- 		| NETIF_F_LOOPBACK;
--	dev->ethtool_ops	= &loopback_ethtool_ops;
--	dev->header_ops		= &eth_header_ops;
--	dev->netdev_ops		= &loopback_ops;
-+	dev->ethtool_ops	= eth_ops;
-+	dev->header_ops		= hdr_ops;
-+	dev->netdev_ops		= dev_ops;
- 	dev->needs_free_netdev	= true;
--	dev->priv_destructor	= loopback_dev_free;
-+	dev->priv_destructor	= dev_destructor;
-+}
-+
-+/* The loopback device is special. There is only one instance
-+ * per network namespace.
-+ */
-+static void loopback_setup(struct net_device *dev)
-+{
-+	gen_lo_setup(dev, (64 * 1024), &loopback_ethtool_ops, &eth_header_ops,
-+		     &loopback_ops, loopback_dev_free);
+diff --git a/net/core/dst.c b/net/core/dst.c
+index e46366228eaf..1325316d9eab 100644
+--- a/net/core/dst.c
++++ b/net/core/dst.c
+@@ -160,7 +160,7 @@ void dst_dev_put(struct dst_entry *dst)
+ 		dst->ops->ifdown(dst, dev, true);
+ 	dst->input = dst_discard;
+ 	dst->output = dst_discard_out;
+-	dst->dev = dev_net(dst->dev)->loopback_dev;
++	dst->dev = blackhole_netdev;
+ 	dev_hold(dst->dev);
+ 	dev_put(dev);
  }
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index 59670fafcd26..d61f43feb7fa 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -1532,7 +1532,6 @@ static void ipv4_dst_destroy(struct dst_entry *dst)
  
- /* Setup and register the loopback device. */
-@@ -213,3 +231,43 @@ static __net_init int loopback_net_init(struct net *net)
- struct pernet_operations __net_initdata loopback_net_ops = {
- 	.init = loopback_net_init,
- };
-+
-+/* blackhole netdevice */
-+static netdev_tx_t blackhole_netdev_xmit(struct sk_buff *skb,
-+					 struct net_device *dev)
-+{
-+	kfree_skb(skb);
-+	net_warn_ratelimited("%s(): Dropping skb.\n", __func__);
-+	return NETDEV_TX_OK;
-+}
-+
-+static const struct net_device_ops blackhole_netdev_ops = {
-+	.ndo_start_xmit = blackhole_netdev_xmit,
-+};
-+
-+/* This is a dst-dummy device used specifically for invalidated
-+ * DSTs and unlike loopback, this is not per-ns.
-+ */
-+static void blackhole_netdev_setup(struct net_device *dev)
-+{
-+	gen_lo_setup(dev, ETH_MIN_MTU, NULL, NULL, &blackhole_netdev_ops, NULL);
-+}
-+
-+/* Setup and register the blackhole_netdev. */
-+static int __init blackhole_netdev_init(void)
-+{
-+	blackhole_netdev = alloc_netdev(0, "blackhole_dev", NET_NAME_UNKNOWN,
-+					blackhole_netdev_setup);
-+	if (!blackhole_netdev)
-+		return -ENOMEM;
-+
-+	dev_init_scheduler(blackhole_netdev);
-+	dev_activate(blackhole_netdev);
-+
-+	blackhole_netdev->flags |= IFF_UP | IFF_RUNNING;
-+	dev_net_set(blackhole_netdev, &init_net);
-+
-+	return 0;
-+}
-+
-+device_initcall(blackhole_netdev_init);
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index eeacebd7debb..88292953aa6f 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -4870,4 +4870,6 @@ do {								\
- #define PTYPE_HASH_SIZE	(16)
- #define PTYPE_HASH_MASK	(PTYPE_HASH_SIZE - 1)
+ void rt_flush_dev(struct net_device *dev)
+ {
+-	struct net *net = dev_net(dev);
+ 	struct rtable *rt;
+ 	int cpu;
  
-+extern struct net_device *blackhole_netdev;
-+
- #endif	/* _LINUX_NETDEVICE_H */
+@@ -1543,7 +1542,7 @@ void rt_flush_dev(struct net_device *dev)
+ 		list_for_each_entry(rt, &ul->head, rt_uncached) {
+ 			if (rt->dst.dev != dev)
+ 				continue;
+-			rt->dst.dev = net->loopback_dev;
++			rt->dst.dev = blackhole_netdev;
+ 			dev_hold(rt->dst.dev);
+ 			dev_put(dev);
+ 		}
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index e7c2824435c6..ff44c6287633 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -176,7 +176,7 @@ static void rt6_uncached_list_flush_dev(struct net *net, struct net_device *dev)
+ 			}
+ 
+ 			if (rt_dev == dev) {
+-				rt->dst.dev = loopback_dev;
++				rt->dst.dev = blackhole_netdev;
+ 				dev_hold(rt->dst.dev);
+ 				dev_put(rt_dev);
+ 			}
 -- 
 2.22.0.410.gd8fdbe21b5-goog
 
