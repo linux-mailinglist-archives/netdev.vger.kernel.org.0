@@ -2,163 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E1D2C581AB
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 13:36:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BCFF581B8
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 13:38:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726702AbfF0Lgr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 07:36:47 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:43068 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726422AbfF0Lgq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 07:36:46 -0400
-Received: by mail-qt1-f196.google.com with SMTP id w17so1983962qto.10
-        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 04:36:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lrbbw427y1OLicF2y8GQv6n0mSuHYHsZTkGTvsVsPRs=;
-        b=ncV8NizeVgSneI0njGBIgnjZ60NOgcjoKWqmSZgOb82tmrYcA/mkJ82Vkq53CDDpDm
-         etdv7xL7pqNnLAH9oSlm3bwun4e059lKHFXIgsT4F8OmN6tvsmNyhtcA/knNb3f3r/cf
-         oKMbZHLUmeMllV0RZbMBEBU4Sns3tTvPNspwZiWcKAmfxH7N1XgBcaPLbIxmBB+umPEL
-         qic/EnNTe8CCziDR5gAKCVzumoSE7l4CJSWElqx7nhvzs18ScvEQnpKOjN/MEEbJBFnK
-         K71Qkn+A0UP2Vo6IP6ZL4dR2i8klXTjs4iNpTvRugLlnoJSzdjvtFfLMTa5hY+4xuWW/
-         nN9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lrbbw427y1OLicF2y8GQv6n0mSuHYHsZTkGTvsVsPRs=;
-        b=QHUPwgTzlZEWdtLhRxERvPzfprEo1WQiqnwzfm2Zi0EfFVRjL30nBa1DwLrPTVnDZX
-         TISBJit5juByxvaCMFdOtHtdQd11Z0jl3f/v1lV1roQFy23sZrgHHdRcMoH+TVTSgTh2
-         6MI3cwsGWrUpE5bqw7QI9HajI6rpNz55vbCP1jjE95MJuXo7HiWD3yVyCGKRt7S3suLe
-         kPjSa/fOR/T2ePgSUm7R4Ff8eDKxXb0iweBZYFm0GW4z+LO/kk5igF88VXjQxLYVnq3d
-         skk/B4lv5vfFCjs/vte3hbhDLrrn6Sff9mQp1KRcimlPVsPUWkFJXN60JJxtVrCR0/t/
-         aarQ==
-X-Gm-Message-State: APjAAAXdQ7TtOwFzR/b5K5q0cW73PTjoExMwy/18US62wr4lGQRfP7th
-        PYmifGgXzP11lT6toSX6fOKOVaFHUYMnrhG6qv60OA==
-X-Google-Smtp-Source: APXvYqxC+OzTvHF4zmnfGQg8wJLudDtNDpGXWQrZsaoLkAoO6mLER+L3idoJdGKuBDbhK3E1ffLTgOF0HgMO8H6+lxA=
-X-Received: by 2002:ac8:1ba9:: with SMTP id z38mr2684417qtj.176.1561635404388;
- Thu, 27 Jun 2019 04:36:44 -0700 (PDT)
+        id S1726603AbfF0LiS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 07:38:18 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:41828 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726375AbfF0LiS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 07:38:18 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 8D32E6085C; Thu, 27 Jun 2019 11:38:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1561635497;
+        bh=4hOE5ZThruSSEEWDMxq0Dt5OhPpzapnURhse53Dk5WQ=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=lwil+HeSAfxdGvKxmoaw6YeXNX2Q6NsLoqoEDS2MzGNzNbTjbxtsj5ZSKe071yz8+
+         hyf1zP2isDURMIa6B6KhpnJdWBdqoJI5vJYGkmrDnNZvBXxn9Xq90CG+oNS+NLgya4
+         IM0mZAdpURaPL2Vh6j2KJaA1mMAVEpRmnxmRFGOY=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 8D560602F8;
+        Thu, 27 Jun 2019 11:38:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1561635496;
+        bh=4hOE5ZThruSSEEWDMxq0Dt5OhPpzapnURhse53Dk5WQ=;
+        h=Subject:From:In-Reply-To:References:To:Cc:From;
+        b=nbJM51t6Tkkmm0S+B5u4FYHEfiaoABBMPuYY4uR2R7uqpVDXOdrr0Tp50RYv1K9Wq
+         W6QKiDH7waGw/3JhH8TaOkNXVPzfTHhAguI8BNznqvS6DAox6ihC4kcqsg0mz2VDfM
+         a2a1iDrEdiP3KKigYv8nZO561Vzt7TWeF0LrkYHE=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 8D560602F8
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <faaf8b1c-9552-a0ae-3088-2f4255dff857@codeaurora.org>
- <0bcdd38c-5cdb-0510-573a-9a6098ab2105@codeaurora.org> <CAJWu+oo5zmdY9ywhbQTWi+YXRDF=XSJrAUEE0uJ9dV_9vZUSBA@mail.gmail.com>
-In-Reply-To: <CAJWu+oo5zmdY9ywhbQTWi+YXRDF=XSJrAUEE0uJ9dV_9vZUSBA@mail.gmail.com>
-From:   Joel Fernandes <joelaf@google.com>
-Date:   Thu, 27 Jun 2019 07:36:32 -0400
-Message-ID: <CAJWu+opEj0=FAHvityWTVxE3BBLHMYiHqu+Bc1+T03DzEsnGbQ@mail.gmail.com>
-Subject: Re: samples/bpf compilation failures - 5.2.0
-To:     Srinivas Ramana <sramana@codeaurora.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>, bpf@vger.kernel.org,
-        "Joel Fernandes (Google)" <joel@joelfernandes.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH 1/4] b43legacy: remove b43legacy_dma_set_mask
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20190625102932.32257-2-hch@lst.de>
+References: <20190625102932.32257-2-hch@lst.de>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        b43-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20190627113817.8D32E6085C@smtp.codeaurora.org>
+Date:   Thu, 27 Jun 2019 11:38:17 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > On 5/28/2019 2:27 PM, Srinivas Ramana wrote:
-> > > Hello,
-> > >
-> > > I am trying to build samples/bpf in kernel(5.2.0-rc1) but unsuccessful
-> > > with below errors. Can you help to point what i am missing or if there
-> > > is some known issue?
+Christoph Hellwig <hch@lst.de> wrote:
 
-By the way have you just tried building it on an ARM debian chroot? It
-is not worth IMO spending time on cross compiler issues if you can
-just native compile it within a chroot (as I do). Cross compilation
-does not get a lot of testing, so even if we fix it its likely to come
-up again as I've experienced. If you want a debian chroot that is
-Android friendly, you can find one here:
-https://github.com/joelagnel/adeb (comes with llvm, gcc etc).  I have
-done lots of native compilation on a Pixel phone.
+> These days drivers are not required to fallback to smaller DMA masks,
+> but can just set the largest mask they support, removing the need for
+> this trial and error logic.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> Tested-by: Larry Finger <Larry.Finger@lwfinger.net>
 
-J.
+4 patches applied to wireless-drivers-next.git, thanks.
 
+258989000849 b43legacy: remove b43legacy_dma_set_mask
+80372782e4cb b43legacy: simplify engine type / DMA mask selection
+c897523febae b43: remove b43_dma_set_mask
+288aa4ee7acf b43: simplify engine type / DMA mask selection
 
+-- 
+https://patchwork.kernel.org/patch/11015245/
 
-> > >
-> > > ==============================8<===================================
-> > > $ make samples/bpf/
-> > > LLC=/local/mnt/workspace/tools/clang_ubuntu/clang/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04/bin/llc
-> > > CLANG=/local/mnt/workspace/tools/clang_ubuntu/clang/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04/bin/clang
-> > > V=1
-> > > make -C /local/mnt/workspace/sramana/kdev_torvalds/kdev/kernel -f
-> > > /local/mnt/workspace/sramana/kdev_torvalds/kdev/kernel/Makefile
-> > > samples/bpf/
-> > > ................
-> > > ................
-> > > ................
-> > > make KBUILD_MODULES=1 -f ./scripts/Makefile.build obj=samples/bpf
-> > > (cat /dev/null; ) > samples/bpf/modules.order
-> > > make -C
-> > > /local/mnt/workspace/sramana/kdev_torvalds/kdev/kernel/samples/bpf/../../tools/lib/bpf/
-> > > RM='rm -rf' LDFLAGS=
-> > > srctree=/local/mnt/workspace/sramana/kdev_torvalds/kdev/kernel/samples/bpf/../../
-> > > O=
-> > >
-> > > Auto-detecting system features:
-> > > ...                        libelf: [ on  ]
-> > > ...                           bpf: [ on  ]
-> > >
-> > > make -C
-> > > /local/mnt/workspace/sramana/kdev_torvalds/kdev/kernel/samples/bpf/../..//tools/build
-> > > CFLAGS= LDFLAGS= fixdep
-> > > make -f
-> > > /local/mnt/workspace/sramana/kdev_torvalds/kdev/kernel/samples/bpf/../..//tools/build/Makefile.build
-> > > dir=. obj=fixdep
-> > >     ld -r -o fixdep-in.o  fixdep.o
-> > > ld: fixdep.o: Relocations in generic ELF (EM: 183)
-> > > ld: fixdep.o: Relocations in generic ELF (EM: 183)
-> > > fixdep.o: error adding symbols: File in wrong format
-> > > make[5]: *** [fixdep-in.o] Error 1
-> > > make[4]: *** [fixdep-in.o] Error 2
-> > > make[3]: *** [fixdep] Error 2
-> > > make[2]: ***
-> > > [/local/mnt/workspace/sramana/kdev_torvalds/kdev/kernel/samples/bpf/../../tools/lib/bpf/libbpf.a]
-> > > Error 2
-> > > make[1]: *** [samples/bpf/] Error 2
-> > > make: *** [sub-make] Error 2
-> > > ==============================>8=======================================
-> > >
-> > >
-> > > I am using the below commands to build:
-> > > ========================================================
-> > > export ARCH=arm64
-> > > export CROSS_COMPILE=<path>linaro-toolchain/5.1/bin/aarch64-linux-gnu-
-> > > export CLANG_TRIPLE=arm64-linux-gnu-
-> > >
-> > > make
-> > > CC=<path>/clang_ubuntu/clang/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04/bin/clang
-> > > defconfig
-> > >
-> > > make
-> > > CC=<path>/clang_ubuntu/clang/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04/bin/clang
-> > > -j8
-> > >
-> > > make
-> > > CC=<path>/clang_ubuntu/clang/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04/bin/clang
-> > > headers_install INSTALL_HDR_PATH=./usr
-> > >
-> > > make samples/bpf/
-> > > LLC=<path>/clang_ubuntu/clang/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04/bin/llc
-> > > CLANG=<path>/clang_ubuntu/clang/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04/bin/clang
-> > > V=1
-> > > CC=<path>/clang_ubuntu/clang/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04/bin/clang
-> > >
-> > > ========================================================
-> > >
-> > > Thanks,
-> > > -- Srinivas R
-> > >
-> >
-> >
-> > --
-> > Qualcomm India Private Limited, on behalf of Qualcomm Innovation
-> > Center, Inc., is a member of Code Aurora Forum, a Linux Foundation
-> > Collaborative Project
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
