@@ -2,289 +2,282 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C92A58455
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 16:18:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4893D58456
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 16:18:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726465AbfF0OSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 10:18:32 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:39602 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726370AbfF0OSb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 10:18:31 -0400
-Received: by mail-pl1-f194.google.com with SMTP id b7so1388062pls.6
-        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 07:18:31 -0700 (PDT)
+        id S1726511AbfF0OSj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 10:18:39 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:47208 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726370AbfF0OSi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 10:18:38 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5RE4Hk4009821;
+        Thu, 27 Jun 2019 07:18:34 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : subject
+ : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pfpt0818;
+ bh=bVmVN4tTyx8vklfZMD8h8XLqH7sDwKvGMH6PeLaWtTo=;
+ b=jj13y++eTGWybRzqZuxHQqQfZpQi3lnOJe7WSTzK936znG64c9lwwMbG3GYanZe58oCK
+ qLwykJ7W3mA8I+daoPfcC7tF0PVZT+Q5g2SiVdKJI83JEy0wYS24Wzah0pRXgJ+kHmlJ
+ AUsTgo9EIO8kOSpQ/Z42ssH+yzPuEkuD1ZVRAUOwGNQFvKKTACS4H9eyUIFgbd3ZwyLM
+ oNZPSAmIdalzkyLYYFxUZm2G7OKpuHU/e/zmyfEbm31B7Hz8oQiD/v4Em1uRZy5/dPNx
+ wLxyIqf0hjc50n9BJqYV1KGRRGMafdbb6ejw2BpIvAPv5oQWn3xd4JjZqJim1FEW050S zQ== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 2tcvnh8p4u-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 27 Jun 2019 07:18:34 -0700
+Received: from SC-EXCH02.marvell.com (10.93.176.82) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Thu, 27 Jun
+ 2019 07:18:32 -0700
+Received: from NAM02-CY1-obe.outbound.protection.outlook.com (104.47.37.53) by
+ SC-EXCH02.marvell.com (10.93.176.82) with Microsoft SMTP Server (TLS) id
+ 15.0.1367.3 via Frontend Transport; Thu, 27 Jun 2019 07:18:32 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=3Sw7zcTVH/uL8w4Y1RmhYHHbDHWtbrkw+kfd4sQFTYg=;
-        b=eqEZKPziswq2QWFFI/+Uac0jmT9dKQUU0ZwxlhMY4G2izK2hFEHTOhsKnSp7lyxsqq
-         NVng1NDxSWYAWKgoSGAYJ/ntOuJMTLkodahG0uXw4+onKsMBL+mvjYtDSgRecvGGliMH
-         ndztI7rCYPx8jCaxfXud3xx8/W3401W/HJZJ5qqvqrRoOR+KHIUKswg90qXQwOcGOehP
-         kA8882BlguNbLtM4VvvixiNEzxuHObsgtilvA7MEWdfFQWTdTuRvN0Ql4+7SO0LsCeQQ
-         CJjHWgJHwUwK4gr/23kUeY0/etVKrw1t2ppoyJQocM4AEeQptq/gz2EhQHhxMDkA7mEs
-         wTNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=3Sw7zcTVH/uL8w4Y1RmhYHHbDHWtbrkw+kfd4sQFTYg=;
-        b=Op71c/CTFp/hlhQ+dMMN3dSQH7zaiMNTt8MrQK8FPG0yCOiBkpLQCXOLmC/VJ+fdeg
-         ucjR7nLBGO6j6H+2IixG7XKJx0XSK1cgfw+gCbxstC5j5LrpwwlvfOwsnrSlRRlUQhLG
-         iW43+I3/1YqNB9PCYxCF2Q/VAaPEFmZkdinGwCwQnG5UcO55mHLJrtcSGlLEue5d8Ily
-         aXQGRTtDbgSR9GFMIrhmwm1fO4hOUHzFik203MptKevDqYtWIDgBZv5d3jYlnp/iOofc
-         9oVfKNTczoPv8+MeNUE99/wTqmlVpT0qaGTwKGz2pCcOVsVr+EeXX6sxv4ALqsV7Yazr
-         MFcw==
-X-Gm-Message-State: APjAAAW7ST6MTmbhNF1lHUkcrTH2ZnhQqhY9Q7T+jnqxcsSsln7Cpz0l
-        jtOXgj71jyfzqQ/upmM0tL0=
-X-Google-Smtp-Source: APXvYqz9YSHv65eE9Q+80EU3nZXp/pA2QieulWEPEMUD76gU+v07fTENtFE/ZJGY+lRO96NJwxfIqQ==
-X-Received: by 2002:a17:902:44f:: with SMTP id 73mr5059434ple.192.1561645110820;
-        Thu, 27 Jun 2019 07:18:30 -0700 (PDT)
-Received: from localhost ([192.55.54.43])
-        by smtp.gmail.com with ESMTPSA id t26sm2161202pgu.43.2019.06.27.07.18.27
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 27 Jun 2019 07:18:30 -0700 (PDT)
-Date:   Thu, 27 Jun 2019 16:18:16 +0200
-From:   Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc:     netdev@vger.kernel.org, jaswinder.singh@linaro.org,
-        ard.biesheuvel@linaro.org, bjorn.topel@intel.com,
-        magnus.karlsson@intel.com, brouer@redhat.com, daniel@iogearbox.net,
-        ast@kernel.org, makita.toshiaki@lab.ntt.co.jp,
-        jakub.kicinski@netronome.com, john.fastabend@gmail.com,
-        davem@davemloft.net
-Subject: Re: [RFC, PATCH 2/2, net-next] net: netsec: add XDP support
-Message-ID: <20190627161816.0000645a@gmail.com>
-In-Reply-To: <1561475179-7686-3-git-send-email-ilias.apalodimas@linaro.org>
-References: <1561475179-7686-1-git-send-email-ilias.apalodimas@linaro.org>
-        <1561475179-7686-3-git-send-email-ilias.apalodimas@linaro.org>
-X-Mailer: Claws Mail 3.17.1 (GTK+ 2.24.32; x86_64-w64-mingw32)
+ d=marvell.onmicrosoft.com; s=selector2-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bVmVN4tTyx8vklfZMD8h8XLqH7sDwKvGMH6PeLaWtTo=;
+ b=mGXF6DoTmeb19utNiUxqk4e4UGrrVbAT4yFyZNACg6XM/bVOYsiElEP/SbqEnH5JELMQkr1WfA9NT0CTJZpi0IJ2revozZZbt+apoS0RqaP3NipSjyMkWOEJGgrYfAXw0+2nuwLf2q+bXHtXni6JvhrA5FXShrQ/r5mx2i9j6K0=
+Received: from DM6PR18MB2697.namprd18.prod.outlook.com (20.179.49.204) by
+ DM6PR18MB2508.namprd18.prod.outlook.com (20.179.105.80) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2032.18; Thu, 27 Jun 2019 14:18:27 +0000
+Received: from DM6PR18MB2697.namprd18.prod.outlook.com
+ ([fe80::4121:8e6e:23b8:b631]) by DM6PR18MB2697.namprd18.prod.outlook.com
+ ([fe80::4121:8e6e:23b8:b631%6]) with mapi id 15.20.2008.018; Thu, 27 Jun 2019
+ 14:18:27 +0000
+From:   Manish Chopra <manishc@marvell.com>
+To:     Benjamin Poirier <bpoirier@suse.com>,
+        GR-Linux-NIC-Dev <GR-Linux-NIC-Dev@marvell.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [EXT] [PATCH net-next 16/16] qlge: Refill empty buffer queues
+ from wq
+Thread-Topic: [EXT] [PATCH net-next 16/16] qlge: Refill empty buffer queues
+ from wq
+Thread-Index: AQHVJOFVVEYc7h8aj0a0GocJ7dF/Jaavma9w
+Date:   Thu, 27 Jun 2019 14:18:27 +0000
+Message-ID: <DM6PR18MB2697EC53399F214EC3DFC4ABABFD0@DM6PR18MB2697.namprd18.prod.outlook.com>
+References: <20190617074858.32467-1-bpoirier@suse.com>
+ <20190617074858.32467-16-bpoirier@suse.com>
+In-Reply-To: <20190617074858.32467-16-bpoirier@suse.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [114.143.185.87]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: ece81cf1-9692-4da1-0aed-08d6fb0a52ce
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:DM6PR18MB2508;
+x-ms-traffictypediagnostic: DM6PR18MB2508:
+x-microsoft-antispam-prvs: <DM6PR18MB25088685134E2C9C2062E626ABFD0@DM6PR18MB2508.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:152;
+x-forefront-prvs: 008184426E
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(346002)(136003)(39860400002)(366004)(396003)(376002)(189003)(199004)(13464003)(74316002)(102836004)(9686003)(446003)(55016002)(6116002)(3846002)(6436002)(73956011)(6246003)(66556008)(64756008)(66446008)(66476007)(66946007)(25786009)(316002)(26005)(110136005)(66066001)(14454004)(71200400001)(71190400001)(86362001)(2501003)(68736007)(256004)(486006)(476003)(11346002)(8676002)(229853002)(33656002)(14444005)(186003)(81156014)(2906002)(81166006)(53546011)(53936002)(478600001)(52536014)(8936002)(76176011)(7696005)(76116006)(5660300002)(305945005)(6506007)(99286004)(7736002)(309714004);DIR:OUT;SFP:1101;SCL:1;SRVR:DM6PR18MB2508;H:DM6PR18MB2697.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: marvell.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: KBdloki+NN22/DFylOPbTjmfMT3i/G4AMxgxGqw+WFD4vrAV/QPF0GWm4PkjjLuq5mevxP3PGS8NqnhJlUrPRxv1Z7SwxV2NEX2if28DtK4sjuYperJkzWzQ2JNEJWelR0GaS1HOyh6tB/N7TpeyvhayhpmNWLdVfPYw9oMIlE5DMHFBr3RYWGwwyNblHgNpoAd4TkoVeE6ATssXgOrLhfwL+Z7TvsTJp5TlC9/JdmotgIolq4nc4VUge+2yvt1/jNDeKRl6Gi0UOzYhQVno8PYs6fp2YUPfbxA1xrwbOyWRHmqTxhybZV4XS37fNjSPDA+TsAgcNPUcfx4b1LbitpI8TAl6Uht/Q4q8gssWURU70O/ZQsqB1SnbrlZHXb/kl0CY3IkyQAjLNbG51KUvVtnE85CK4NnxIhQ3QGYzT8k=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-CrossTenant-Network-Message-Id: ece81cf1-9692-4da1-0aed-08d6fb0a52ce
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jun 2019 14:18:27.4864
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: manishc@marvell.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR18MB2508
+X-OriginatorOrg: marvell.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-27_08:,,
+ signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 25 Jun 2019 18:06:19 +0300
-Ilias Apalodimas <ilias.apalodimas@linaro.org> wrote:
-
-Hi Ilias,
-
-> +/* The current driver only supports 1 Txq, this should run under spin_lock() */
-> +static u32 netsec_xdp_queue_one(struct netsec_priv *priv,
-> +				struct xdp_frame *xdpf, bool is_ndo)
+> -----Original Message-----
+> From: Benjamin Poirier <bpoirier@suse.com>
+> Sent: Monday, June 17, 2019 1:19 PM
+> To: Manish Chopra <manishc@marvell.com>; GR-Linux-NIC-Dev <GR-Linux-
+> NIC-Dev@marvell.com>; netdev@vger.kernel.org
+> Subject: [EXT] [PATCH net-next 16/16] qlge: Refill empty buffer queues fr=
+om
+> wq
+>=20
+> External Email
+>=20
+> ----------------------------------------------------------------------
+> When operating at mtu 9000, qlge does order-1 allocations for rx buffers =
+in
+> atomic context. This is especially unreliable when free memory is low or
+> fragmented. Add an approach similar to commit 3161e453e496 ("virtio: net
+> refill on out-of-memory") to qlge so that the device doesn't lock up if t=
+here
+> are allocation failures.
+>=20
+> Signed-off-by: Benjamin Poirier <bpoirier@suse.com>
+> ---
+>  drivers/net/ethernet/qlogic/qlge/qlge.h      |  8 ++
+>  drivers/net/ethernet/qlogic/qlge/qlge_main.c | 80 ++++++++++++++++----
+>  2 files changed, 72 insertions(+), 16 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/qlogic/qlge/qlge.h
+> b/drivers/net/ethernet/qlogic/qlge/qlge.h
+> index 1d90b32f6285..9c4d933c1ff7 100644
+> --- a/drivers/net/ethernet/qlogic/qlge/qlge.h
+> +++ b/drivers/net/ethernet/qlogic/qlge/qlge.h
+> @@ -1453,6 +1453,13 @@ struct qlge_bq {
+>=20
+>  #define QLGE_BQ_WRAP(index) ((index) & (QLGE_BQ_LEN - 1))
+>=20
+> +#define QLGE_BQ_HW_OWNED(bq) \
+> +({ \
+> +	typeof(bq) _bq =3D bq; \
+> +	QLGE_BQ_WRAP(QLGE_BQ_ALIGN((_bq)->next_to_use) - \
+> +		     (_bq)->next_to_clean); \
+> +})
 > +
-> +{
-> +	struct netsec_desc_ring *tx_ring = &priv->desc_ring[NETSEC_RING_TX];
-> +	struct page *page = virt_to_page(xdpf->data);
-> +	struct netsec_tx_pkt_ctrl tx_ctrl = {};
-> +	struct netsec_desc tx_desc;
-> +	dma_addr_t dma_handle;
-> +	u16 filled;
-> +
-> +	if (tx_ring->head >= tx_ring->tail)
-> +		filled = tx_ring->head - tx_ring->tail;
-> +	else
-> +		filled = tx_ring->head + DESC_NUM - tx_ring->tail;
-> +
-> +	if (DESC_NUM - filled <= 1)
-> +		return NETSEC_XDP_CONSUMED;
-> +
-> +	if (is_ndo) {
-> +		/* this is for ndo_xdp_xmit, the buffer needs mapping before
-> +		 * sending
-> +		 */
-> +		dma_handle = dma_map_single(priv->dev, xdpf->data, xdpf->len,
-> +					    DMA_TO_DEVICE);
-> +		if (dma_mapping_error(priv->dev, dma_handle))
-> +			return NETSEC_XDP_CONSUMED;
-> +		tx_desc.buf_type = TYPE_NETSEC_XDP_NDO;
-> +	} else {
-> +		/* This is the device Rx buffer from page_pool. No need to remap
-> +		 * just sync and send it
-> +		 */
-> +		dma_handle = page_pool_get_dma_addr(page) +
-> +			NETSEC_RXBUF_HEADROOM;
-> +		dma_sync_single_for_device(priv->dev, dma_handle, xdpf->len,
-> +					   DMA_BIDIRECTIONAL);
-> +		tx_desc.buf_type = TYPE_NETSEC_XDP_TX;
-> +	}
-> +	tx_ctrl.cksum_offload_flag = false;
-> +	tx_ctrl.tcp_seg_offload_flag = false;
-> +	tx_ctrl.tcp_seg_len = 0;
-
-Aren't these three lines redundant? tx_ctrl is zero initialized.
-
-> +
-> +	tx_desc.dma_addr = dma_handle;
-> +	tx_desc.addr = xdpf->data;
-> +	tx_desc.len = xdpf->len;
-> +
-> +	netsec_set_tx_de(priv, tx_ring, &tx_ctrl, &tx_desc, xdpf);
-> +
-> +	return NETSEC_XDP_TX;
-> +}
-> +
-> +static u32 netsec_xdp_xmit_back(struct netsec_priv *priv, struct xdp_buff *xdp)
-> +{
-> +	struct netsec_desc_ring *tx_ring = &priv->desc_ring[NETSEC_RING_TX];
-> +	struct xdp_frame *xdpf = convert_to_xdp_frame(xdp);
-> +	u32 ret;
-> +
-> +	if (unlikely(!xdpf))
-> +		return NETSEC_XDP_CONSUMED;
-> +
-> +	spin_lock(&tx_ring->lock);
-> +	ret = netsec_xdp_queue_one(priv, xdpf, false);
-> +	spin_unlock(&tx_ring->lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
-> +			  struct xdp_buff *xdp)
-> +{
-> +	u32 ret = NETSEC_XDP_PASS;
-> +	int err;
-> +	u32 act;
-> +
-> +	rcu_read_lock();
-> +	act = bpf_prog_run_xdp(prog, xdp);
-> +
-> +	switch (act) {
-> +	case XDP_PASS:
-> +		ret = NETSEC_XDP_PASS;
-> +		break;
-> +	case XDP_TX:
-> +		ret = netsec_xdp_xmit_back(priv, xdp);
-> +		if (ret != NETSEC_XDP_TX)
-> +			xdp_return_buff(xdp);
-> +		break;
-> +	case XDP_REDIRECT:
-> +		err = xdp_do_redirect(priv->ndev, xdp, prog);
-> +		if (!err) {
-> +			ret = NETSEC_XDP_REDIR;
-> +		} else {
-> +			ret = NETSEC_XDP_CONSUMED;
-> +			xdp_return_buff(xdp);
-> +		}
-> +		break;
-> +	default:
-> +		bpf_warn_invalid_xdp_action(act);
-> +		/* fall through */
-> +	case XDP_ABORTED:
-> +		trace_xdp_exception(priv->ndev, prog, act);
-> +		/* fall through -- handle aborts by dropping packet */
-> +	case XDP_DROP:
-> +		ret = NETSEC_XDP_CONSUMED;
-> +		xdp_return_buff(xdp);
-> +		break;
-> +	}
-> +
-> +	rcu_read_unlock();
-> +
-> +	return ret;
-> +}
-> +
->  static int netsec_process_rx(struct netsec_priv *priv, int budget)
+>  struct rx_ring {
+>  	struct cqicb cqicb;	/* The chip's completion queue init control
+> block. */
+>=20
+> @@ -1480,6 +1487,7 @@ struct rx_ring {
+>  	/* Misc. handler elements. */
+>  	u32 irq;		/* Which vector this ring is assigned. */
+>  	u32 cpu;		/* Which CPU this should run on. */
+> +	struct delayed_work refill_work;
+>  	char name[IFNAMSIZ + 5];
+>  	struct napi_struct napi;
+>  	u8 reserved;
+> diff --git a/drivers/net/ethernet/qlogic/qlge/qlge_main.c
+> b/drivers/net/ethernet/qlogic/qlge/qlge_main.c
+> index 7db4c31c9cc4..a13bda566187 100644
+> --- a/drivers/net/ethernet/qlogic/qlge/qlge_main.c
+> +++ b/drivers/net/ethernet/qlogic/qlge/qlge_main.c
+> @@ -1029,7 +1029,7 @@ static const char * const bq_type_name[] =3D {
+>=20
+>  /* return 0 or negative error */
+>  static int qlge_refill_sb(struct rx_ring *rx_ring,
+> -			  struct qlge_bq_desc *sbq_desc)
+> +			  struct qlge_bq_desc *sbq_desc, gfp_t gfp)
 >  {
->  	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
-> +	struct bpf_prog *xdp_prog = READ_ONCE(priv->xdp_prog);
-
-Reading BPF prog should be RCU protected. There might be a case where RCU
-callback that destroys BPF prog is executed during the bottom half handling and
-you have the PREEMPT_RCU=y in your kernel config. I've just rephrased Brenden's
-words here, so for further info, see:
-
-https://lore.kernel.org/netdev/20160904042958.8594-1-bblanco@plumgrid.com/
-
-So either expand the RCU section or read prog pointer per each frame, under the
-lock, as it seems that currently we have these two schemes in drivers that
-support XDP.
-
->  	struct net_device *ndev = priv->ndev;
->  	struct netsec_rx_pkt_info rx_info;
-> -	struct sk_buff *skb;
-> +	struct sk_buff *skb = NULL;
-> +	u16 xdp_xmit = 0;
-> +	u32 xdp_act = 0;
->  	int done = 0;
->  
->  	while (done < budget) {
-> @@ -727,8 +903,10 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
->  		struct netsec_de *de = dring->vaddr + (DESC_SZ * idx);
->  		struct netsec_desc *desc = &dring->desc[idx];
->  		struct page *page = virt_to_page(desc->addr);
-> +		u32 xdp_result = XDP_PASS;
->  		u16 pkt_len, desc_len;
->  		dma_addr_t dma_handle;
-> +		struct xdp_buff xdp;
->  		void *buf_addr;
->  
->  		if (de->attr & (1U << NETSEC_RX_PKT_OWN_FIELD)) {
-> @@ -773,7 +951,23 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
->  					DMA_FROM_DEVICE);
->  		prefetch(desc->addr);
->  
-> +		xdp.data_hard_start = desc->addr;
-> +		xdp.data = desc->addr + NETSEC_RXBUF_HEADROOM;
-> +		xdp_set_data_meta_invalid(&xdp);
-> +		xdp.data_end = xdp.data + pkt_len;
-> +		xdp.rxq = &dring->xdp_rxq;
-> +
-> +		if (xdp_prog) {
-> +			xdp_result = netsec_run_xdp(priv, xdp_prog, &xdp);
-> +			if (xdp_result != NETSEC_XDP_PASS) {
-> +				xdp_act |= xdp_result;
-> +				if (xdp_result == NETSEC_XDP_TX)
-> +					xdp_xmit++;
-> +				goto next;
-> +			}
-> +		}
->  		skb = build_skb(desc->addr, desc->len + NETSEC_RX_BUF_NON_DATA);
-> +
->  		if (unlikely(!skb)) {
->  			/* If skb fails recycle_direct will either unmap and
->  			 * free the page or refill the cache depending on the
-> @@ -787,27 +981,30 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
->  		}
->  		page_pool_release_page(dring->page_pool, page);
->  
-> -		/* Update the descriptor with the new buffer we allocated */
-> -		desc->len = desc_len;
-> -		desc->dma_addr = dma_handle;
-> -		desc->addr = buf_addr;
-> -
-> -		skb_reserve(skb, NETSEC_SKB_PAD);
-> -		skb_put(skb, pkt_len);
-> +		skb_reserve(skb, xdp.data - xdp.data_hard_start);
-> +		skb_put(skb, xdp.data_end - xdp.data);
->  		skb->protocol = eth_type_trans(skb, priv->ndev);
->  
->  		if (priv->rx_cksum_offload_flag &&
->  		    rx_info.rx_cksum_result == NETSEC_RX_CKSUM_OK)
->  			skb->ip_summed = CHECKSUM_UNNECESSARY;
->  
-> -		if (napi_gro_receive(&priv->napi, skb) != GRO_DROP) {
-> +next:
-> +		if ((skb && napi_gro_receive(&priv->napi, skb) != GRO_DROP) ||
-> +		    xdp_result & NETSEC_XDP_RX_OK) {
->  			ndev->stats.rx_packets++;
-> -			ndev->stats.rx_bytes += pkt_len;
-> +			ndev->stats.rx_bytes += xdp.data_end - xdp.data;
->  		}
->  
-> +		/* Update the descriptor with fresh buffers */
-> +		desc->len = desc_len;
-> +		desc->dma_addr = dma_handle;
-> +		desc->addr = buf_addr;
-> +
->  		netsec_rx_fill(priv, idx, 1);
->  		dring->tail = (dring->tail + 1) % DESC_NUM;
->  	}
-> +	netsec_finalize_xdp_rx(priv, xdp_act, xdp_xmit);
->  
->  	return done;
+>  	struct ql_adapter *qdev =3D rx_ring->qdev;
+>  	struct sk_buff *skb;
+> @@ -1041,7 +1041,7 @@ static int qlge_refill_sb(struct rx_ring *rx_ring,
+>  		     "ring %u sbq: getting new skb for index %d.\n",
+>  		     rx_ring->cq_id, sbq_desc->index);
+>=20
+> -	skb =3D netdev_alloc_skb(qdev->ndev, SMALL_BUFFER_SIZE);
+> +	skb =3D __netdev_alloc_skb(qdev->ndev, SMALL_BUFFER_SIZE, gfp);
+>  	if (!skb)
+>  		return -ENOMEM;
+>  	skb_reserve(skb, QLGE_SB_PAD);
+> @@ -1062,7 +1062,7 @@ static int qlge_refill_sb(struct rx_ring *rx_ring,
+>=20
+>  /* return 0 or negative error */
+>  static int qlge_refill_lb(struct rx_ring *rx_ring,
+> -			  struct qlge_bq_desc *lbq_desc)
+> +			  struct qlge_bq_desc *lbq_desc, gfp_t gfp)
+>  {
+>  	struct ql_adapter *qdev =3D rx_ring->qdev;
+>  	struct qlge_page_chunk *master_chunk =3D &rx_ring->master_chunk;
+> @@ -1071,8 +1071,7 @@ static int qlge_refill_lb(struct rx_ring *rx_ring,
+>  		struct page *page;
+>  		dma_addr_t dma_addr;
+>=20
+> -		page =3D alloc_pages(__GFP_COMP | GFP_ATOMIC,
+> -				   qdev->lbq_buf_order);
+> +		page =3D alloc_pages(gfp | __GFP_COMP, qdev-
+> >lbq_buf_order);
+>  		if (unlikely(!page))
+>  			return -ENOMEM;
+>  		dma_addr =3D pci_map_page(qdev->pdev, page, 0, @@ -
+> 1109,33 +1108,33 @@ static int qlge_refill_lb(struct rx_ring *rx_ring,
+>  	return 0;
 >  }
+>=20
+> -static void qlge_refill_bq(struct qlge_bq *bq)
+> +/* return 0 or negative error */
+> +static int qlge_refill_bq(struct qlge_bq *bq, gfp_t gfp)
+>  {
+>  	struct rx_ring *rx_ring =3D QLGE_BQ_CONTAINER(bq);
+>  	struct ql_adapter *qdev =3D rx_ring->qdev;
+>  	struct qlge_bq_desc *bq_desc;
+>  	int refill_count;
+> +	int retval;
+>  	int i;
+>=20
+>  	refill_count =3D QLGE_BQ_WRAP(QLGE_BQ_ALIGN(bq->next_to_clean -
+> 1) -
+>  				    bq->next_to_use);
+>  	if (!refill_count)
+> -		return;
+> +		return 0;
+>=20
+>  	i =3D bq->next_to_use;
+>  	bq_desc =3D &bq->queue[i];
+>  	i -=3D QLGE_BQ_LEN;
+>  	do {
+> -		int retval;
+> -
+>  		netif_printk(qdev, rx_status, KERN_DEBUG, qdev->ndev,
+>  			     "ring %u %s: try cleaning idx %d\n",
+>  			     rx_ring->cq_id, bq_type_name[bq->type], i);
+>=20
+>  		if (bq->type =3D=3D QLGE_SB)
+> -			retval =3D qlge_refill_sb(rx_ring, bq_desc);
+> +			retval =3D qlge_refill_sb(rx_ring, bq_desc, gfp);
+>  		else
+> -			retval =3D qlge_refill_lb(rx_ring, bq_desc);
+> +			retval =3D qlge_refill_lb(rx_ring, bq_desc, gfp);
+>  		if (retval < 0) {
+>  			netif_err(qdev, ifup, qdev->ndev,
+>  				  "ring %u %s: Could not get a page chunk, idx
+> %d\n", @@ -1163,12 +1162,52 @@ static void qlge_refill_bq(struct qlge_bq
+> *bq)
+>  		}
+>  		bq->next_to_use =3D i;
+>  	}
+> +
+> +	return retval;
+> +}
+> +
+> +static void ql_update_buffer_queues(struct rx_ring *rx_ring, gfp_t gfp,
+> +				    unsigned long delay)
+> +{
+> +	bool sbq_fail, lbq_fail;
+> +
+> +	sbq_fail =3D !!qlge_refill_bq(&rx_ring->sbq, gfp);
+> +	lbq_fail =3D !!qlge_refill_bq(&rx_ring->lbq, gfp);
+> +
+> +	/* Minimum number of buffers needed to be able to receive at least
+> one
+> +	 * frame of any format:
+> +	 * sbq: 1 for header + 1 for data
+> +	 * lbq: mtu 9000 / lb size
+> +	 * Below this, the queue might stall.
+> +	 */
+> +	if ((sbq_fail && QLGE_BQ_HW_OWNED(&rx_ring->sbq) < 2) ||
+> +	    (lbq_fail && QLGE_BQ_HW_OWNED(&rx_ring->lbq) <
+> +	     DIV_ROUND_UP(9000, LARGE_BUFFER_MAX_SIZE)))
+> +		/* Allocations can take a long time in certain cases (ex.
+> +		 * reclaim). Therefore, use a workqueue for long-running
+> +		 * work items.
+> +		 */
+> +		queue_delayed_work_on(smp_processor_id(),
+> system_long_wq,
+> +				      &rx_ring->refill_work, delay);
+>  }
+>=20
+
+This is probably going to mess up when at the interface load time (qlge_ope=
+n()) allocation failure occurs, in such cases we don't really want to re-tr=
+y allocations
+using refill_work but rather simply fail the interface load. Just to make s=
+ure here in such cases it shouldn't lead to kernel panic etc. while complet=
+ing qlge_open() and
+leaving refill_work executing in background. Or probably handle such alloca=
+tion failures from the napi context and schedule refill_work from there.
+
+
