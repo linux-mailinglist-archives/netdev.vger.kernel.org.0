@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C1D258C73
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 23:06:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5892C58C9F
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 23:13:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726531AbfF0VG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 17:06:56 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:52183 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726384AbfF0VGz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 17:06:55 -0400
-Received: by mail-wm1-f68.google.com with SMTP id 207so7036701wma.1
-        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 14:06:54 -0700 (PDT)
+        id S1726834AbfF0VM5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 17:12:57 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:44992 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726513AbfF0VM4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 17:12:56 -0400
+Received: by mail-wr1-f68.google.com with SMTP id r16so2186971wrl.11
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 14:12:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=to:cc:from:subject:message-id:date:user-agent:mime-version
          :content-language:content-transfer-encoding;
-        bh=zz38ALVL9lz1ilY6dw3RiNCsTbczRg69rQPB0MY45J8=;
-        b=tb3fFy/sKB9JhO7KyEYMcAGoXmARi5xzmkoVc/3XMlZ5O9aYVHm2SE/zjh9dqDzqEW
-         Fkiq4ymCWkKun2bYsTAyVns/SDRtWSdFk06LAeJw3kpTNsNJ+ZQSaAWSYSz+mz+lE+4d
-         hVUkgwJBoc1WUSbB0sLX53Nb+8PqMWzUqnYz9Xd5qyMQPvAqZKciQqqejnK5A4LTTH2J
-         O7rTSAm5pc1y/ODZlSe/IMgnnIitUixU9CTHz3jjzLMR/0IHhBt9TIql+MNY3J53+foH
-         hT8e4Qo2LudV+GNbntCVWQAEX0QWURJwVI3ic4aBcUzwLIcEtyFoBCiNcZYGuvmBGeOS
-         6KGA==
+        bh=TAoUX57gTM5CTvJG9+3ULxoQA8JyOoloey9APZWjyns=;
+        b=pswUDGdyBDddEgfyjpuo8JLbJM4q0MN/GMGj4VwgiR8BUoRUoOcZd+r1FGV9q9VhaE
+         Q7OTKNLxfUaQGMEs3vlnpKahz97tMldkvDUcGQQLKR5/8nzPauiJOR0J7d56oHW52jdY
+         LVKASji+9686G4Roy+xUaCQ+VlaO8JnL45LhspuhWMvjNOzvgk4POchxEhB96X/5E5KR
+         Ep41+mPH+09u1xB6taGle2bWxmfdYQj9VAxHUaDL8n5WCCSXJUJ2dXgjvUhF1qKO5DBg
+         hnQr0fxg1Bq+Ewnm6ZG4W27veRt6YAitEsW/6Nyok44BqUDyBmStahvZy5OnIATpRGt+
+         mkmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
          :mime-version:content-language:content-transfer-encoding;
-        bh=zz38ALVL9lz1ilY6dw3RiNCsTbczRg69rQPB0MY45J8=;
-        b=XruTO2LwJwwaZvPvKQqGjFjIDssAKPLNBf+0xnucGDQuZKY+yTzw4VusKCP6DHXaDU
-         9/flyyGvHlVNLeFCWslbL+zv2eqO4r6QWXR6n/SePJ2/LhWcYll+yhYG1/Yan4nHQbHo
-         W2mzjvEzRoJ1ZLR6aPyAOfcp7E3zrCUutzyHU1zoDNGm/EYcONObrVxSbUYuUhvVEWtp
-         4B5WnKpxCFAWA6UsIZG2JvVGaG3sPQ0l9Q9fcj7gIqJoSGM0ov6VqVuFNKXLkfAkIe5n
-         7A2u1zxCbBUad7518KwsCoTVs6vWG/KCGljw/ml0fv9Xghoixs0uW13PEs9NS49qFWDX
-         TClg==
-X-Gm-Message-State: APjAAAWEtcZJnxW00HAQEkMfX2/20IcFDas8/vodsLbgHgDq6pP86bKg
-        mhfc/siYxVGJjaD/R/KRQ4tmiujf
-X-Google-Smtp-Source: APXvYqy7dq3uf25E8t3eQarQitgVwycvsomjB368qF4drrbgFUkYtQMNOdKlZpuPitOXKKDCwROBhA==
-X-Received: by 2002:a7b:c7c2:: with SMTP id z2mr4147327wmk.147.1561669613136;
-        Thu, 27 Jun 2019 14:06:53 -0700 (PDT)
+        bh=TAoUX57gTM5CTvJG9+3ULxoQA8JyOoloey9APZWjyns=;
+        b=Ju4GcDZ1O+2yTCJhqlZKdRXQ/QIN/W3elwRkvEhYabIm3lojdwNqZUefOMUOitxFCo
+         XNMUQY0K0i4nyW/hzyRdh6egm3AOhGK0+6dUbwFdxSYca4wju7ewkI+NGf6wMDrljeHo
+         mcqOXVC+20aEi9EhKZ6nZHtATwMNfOb0lizLrs+S3rqB67gUb5EESkAmkt1UD/30rx6Z
+         NyL6j0U308Jbrq8YGyLynVLp1cpPwIPNf3F5a0sQRPynntzj2FzraiEqtno9qY7IgMy4
+         tuNdKsylgU12Bj8bA1YnBUJLWX9ndN0xO9y7jX52TxTQCCuPzhrxlkQ1qVB2qjez6hhq
+         jk1Q==
+X-Gm-Message-State: APjAAAVycPqivBciZmYs7NGTlVV+WwsN+SVGWbtFeeSpVWx6zPAAg6WQ
+        AM3o7viOQzFkfggKk581yqRfau/Y
+X-Google-Smtp-Source: APXvYqzTKul/zASWSyN6bxF1DKjbSSqehWL73BzP10gfS3+tx/6H7hQ3Q+y4kV5LN5RIcA7GtTaz6g==
+X-Received: by 2002:adf:de8e:: with SMTP id w14mr5084166wrl.130.1561669974176;
+        Thu, 27 Jun 2019 14:12:54 -0700 (PDT)
 Received: from ?IPv6:2003:ea:8bf3:bd00:3d9e:1690:cd42:495c? (p200300EA8BF3BD003D9E1690CD42495C.dip0.t-ipconnect.de. [2003:ea:8bf3:bd00:3d9e:1690:cd42:495c])
-        by smtp.googlemail.com with ESMTPSA id 35sm306769wrj.87.2019.06.27.14.06.52
+        by smtp.googlemail.com with ESMTPSA id c1sm634932wrh.1.2019.06.27.14.12.53
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 27 Jun 2019 14:06:52 -0700 (PDT)
+        Thu, 27 Jun 2019 14:12:53 -0700 (PDT)
 To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
         David Miller <davem@davemloft.net>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] r8169: improve handling VLAN tag
-Message-ID: <29fd564b-3279-a36d-a082-1c650168567e@gmail.com>
-Date:   Thu, 27 Jun 2019 23:06:33 +0200
+Subject: [PATCH net-next] r8169: consider that 32 Bit DMA is the default
+Message-ID: <eabad258-68de-49b9-91d7-7c853ea4f150@gmail.com>
+Date:   Thu, 27 Jun 2019 23:12:39 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 MIME-Version: 1.0
@@ -62,38 +62,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The VLAN tag is stored in the descriptor in network byte order.
-Using swab16 works on little endian host systems only. Better play safe
-and use ntohs or htons respectively.
+Documentation/DMA-API-HOWTO.txt states:
+By default, the kernel assumes that your device can address 32-bits of
+DMA addressing. For a 64-bit capable device, this needs to be increased,
+and for a device with limitations, it needs to be decreased.
+
+Therefore we don't need the 32 Bit DMA fallback configuration and can
+remove it.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/realtek/r8169_main.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
 diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 48b8a90f7..b4df66bef 100644
+index b4df66bef..1b5f125e1 100644
 --- a/drivers/net/ethernet/realtek/r8169_main.c
 +++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -1528,7 +1528,7 @@ static int rtl8169_set_features(struct net_device *dev,
- static inline u32 rtl8169_tx_vlan_tag(struct sk_buff *skb)
- {
- 	return (skb_vlan_tag_present(skb)) ?
--		TxVlanTag | swab16(skb_vlan_tag_get(skb)) : 0x00;
-+		TxVlanTag | htons(skb_vlan_tag_get(skb)) : 0x00;
- }
+@@ -6724,15 +6724,8 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	tp->cp_cmd = RTL_R16(tp, CPlusCmd);
  
- static void rtl8169_rx_vlan_tag(struct RxDesc *desc, struct sk_buff *skb)
-@@ -1536,7 +1536,8 @@ static void rtl8169_rx_vlan_tag(struct RxDesc *desc, struct sk_buff *skb)
- 	u32 opts2 = le32_to_cpu(desc->opts2);
+ 	if (sizeof(dma_addr_t) > 4 && tp->mac_version >= RTL_GIGA_MAC_VER_18 &&
+-	    !dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64))) {
++	    !dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64)))
+ 		dev->features |= NETIF_F_HIGHDMA;
+-	} else {
+-		rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
+-		if (rc < 0) {
+-			dev_err(&pdev->dev, "DMA configuration failed\n");
+-			return rc;
+-		}
+-	}
  
- 	if (opts2 & RxVlanTag)
--		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), swab16(opts2 & 0xffff));
-+		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
-+				       ntohs(opts2 & 0xffff));
- }
+ 	rtl_init_rxcfg(tp);
  
- static void rtl8169_get_regs(struct net_device *dev, struct ethtool_regs *regs,
 -- 
 2.22.0
 
