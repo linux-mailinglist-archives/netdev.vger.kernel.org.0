@@ -2,71 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 33E735897B
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 20:08:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6DEF58980
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 20:08:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726561AbfF0SIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 14:08:06 -0400
-Received: from mx2.suse.de ([195.135.220.15]:44554 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726519AbfF0SIG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Jun 2019 14:08:06 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 3B6F5AB8C;
-        Thu, 27 Jun 2019 18:08:05 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id E0CC9E00E0; Thu, 27 Jun 2019 20:08:03 +0200 (CEST)
-Date:   Thu, 27 Jun 2019 20:08:03 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     David Ahern <dsahern@gmail.com>, Jiri Pirko <jiri@resnulli.us>,
-        davem@davemloft.net, jakub.kicinski@netronome.com,
-        sthemmin@microsoft.com, mlxsw@mellanox.com
-Subject: Re: [RFC] longer netdev names proposal
-Message-ID: <20190627180803.GJ27240@unicorn.suse.cz>
-References: <20190627094327.GF2424@nanopsycho>
- <26b73332-9ea0-9d2c-9185-9de522c72bb9@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <26b73332-9ea0-9d2c-9185-9de522c72bb9@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1726576AbfF0SIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 14:08:53 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:57676 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726519AbfF0SIx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 14:08:53 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9929F133E98DF;
+        Thu, 27 Jun 2019 11:08:52 -0700 (PDT)
+Date:   Thu, 27 Jun 2019 11:08:52 -0700 (PDT)
+Message-Id: <20190627.110852.372215308913618999.davem@davemloft.net>
+To:     maheshb@google.com
+Cc:     netdev@vger.kernel.org, edumazet@google.com,
+        michael.chan@broadcom.com, dja@axtens.net, mahesh@bandewar.net
+Subject: Re: [PATCH next 3/3] blackhole_dev: add a selftest
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190622004539.92199-1-maheshb@google.com>
+References: <20190622004539.92199-1-maheshb@google.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 27 Jun 2019 11:08:52 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 27, 2019 at 11:14:31AM -0600, David Ahern wrote:
-> > 4) There are two cases that can happen during rename:
-> >    A) The name is shorter than IFNAMSIZ
-> >       -> both IFLA_NAME and IFLA_NAME_EXT would contain the same string:
-> >          original IFLA_NAME     = eth0
-> >          original IFLA_NAME_EXT = eth0
-> >          renamed  IFLA_NAME     = enp5s0f1npf0vf1
-> >          renamed  IFLA_NAME_EXT = enp5s0f1npf0vf1
-> >    B) The name is longer tha IFNAMSIZ
-> >       -> IFLA_NAME would contain the original one, IFLA_NAME_EXT would 
-> >          contain the new one:
-> >          original IFLA_NAME     = eth0
-> >          original IFLA_NAME_EXT = eth0
-> >          renamed  IFLA_NAME     = eth0
-> >          renamed  IFLA_NAME_EXT = enp131s0f1npf0vf22
-> 
-> so kernel side there will be 2 names for the same net_device?
+From: Mahesh Bandewar <maheshb@google.com>
+Date: Fri, 21 Jun 2019 17:45:39 -0700
 
-It often feels as a deficiency that unlike block devices where we can
-keep one name and create multiple symlinks based on different naming
-schemes, network devices can have only one name. There are aliases but
-AFAIK they are only used (and can be only used) for SNMP. IMHO this
-limitation is part of the mess that left us with so-called "predictable
-names" which are in practice neither persistent nor predictable.
+> --- a/tools/testing/selftests/net/Makefile
+> +++ b/tools/testing/selftests/net/Makefile
+> @@ -4,8 +4,9 @@
+>  CFLAGS =  -Wall -Wl,--no-as-needed -O2 -g
+>  CFLAGS += -I../../../../usr/include/
+>  
+> +<<<<<<< HEAD
+>  TEST_PROGS := run_netsocktests run_afpackettests test_bpf.sh netdevice.sh \
 
-So perhaps we could introduce actual aliases (or altnames or whatever we
-would call them) for network devices that could be used to identify
-a network device whenever both kernel and userspace tool supports them.
-Old (and ancient) tools would have to use the one canonical name limited
-to current IFNAMSIZ, new tools would allow using any alias which could
-be longer.
+Ummm... yeah... might want to resolve this conflict...
 
-Michal
+:-)
