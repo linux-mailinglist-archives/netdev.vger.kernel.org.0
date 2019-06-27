@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AED857619
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:36:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2215C5762D
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 02:37:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728238AbfF0AfN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Jun 2019 20:35:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39574 "EHLO mail.kernel.org"
+        id S1727558AbfF0Afn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Jun 2019 20:35:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39832 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728214AbfF0AfI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Jun 2019 20:35:08 -0400
+        id S1728279AbfF0AfX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Jun 2019 20:35:23 -0400
 Received: from sasha-vm.mshome.net (unknown [107.242.116.147])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6AA9221851;
-        Thu, 27 Jun 2019 00:35:05 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 17B2A217F9;
+        Thu, 27 Jun 2019 00:35:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1561595707;
-        bh=7MJO6Excqhusv+9ayIA4sVvGO1xUp3SpW948fpqsnB0=;
+        s=default; t=1561595722;
+        bh=g5ONFjRf9THI8f6AlcdxfoRRB6Ticf5wHSm5ZKcwvuU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QP7QE3j/ShFjJyYMldF/06wVt3jR2zN6/ccPHZD29HCGP3o31ANQaz2UfvVlzzADV
-         ngaV01xfzuaCR/2+PMe+umUnQ0E2uH6NHPkVsiUQaRS1yECzt7oFF2okal7nHqdDDt
-         0gGHZImB6+55rrVbBeUx0OFe2Ufx0TT3awP+XTbI=
+        b=nPUbzcmnmVAAUYKPdWOhFyIrN9d5BXamDyRU7iU4jzId/CgxQxOMpzja2AXeNp0fd
+         84tPbfcb+G0r27T+UIgnIk6L96aJm2jTN7pyp73yuvQJBLpy50ApttSzgZLbZshJz0
+         KKNpVvqJY+1SxWrf67kj7Kiyf8vvZXx2cpbvfZ7g=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Colin Ian King <colin.king@canonical.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
+Cc:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 87/95] net: lio_core: fix potential sign-extension overflow on large shift
-Date:   Wed, 26 Jun 2019 20:30:12 -0400
-Message-Id: <20190627003021.19867-87-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.1 92/95] net: dsa: mv88e6xxx: fix shift of FID bits in mv88e6185_g1_vtu_loadpurge()
+Date:   Wed, 26 Jun 2019 20:30:17 -0400
+Message-Id: <20190627003021.19867-92-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190627003021.19867-1-sashal@kernel.org>
 References: <20190627003021.19867-1-sashal@kernel.org>
@@ -44,37 +43,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+From: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
 
-[ Upstream commit 9476274093a0e79b905f4cd6cf6d149f65e02c17 ]
+[ Upstream commit 48620e341659f6e4b978ec229f6944dabe6df709 ]
 
-Left shifting the signed int value 1 by 31 bits has undefined behaviour
-and the shift amount oq_no can be as much as 63.  Fix this by using
-BIT_ULL(oq_no) instead.
+The comment is correct, but the code ends up moving the bits four
+places too far, into the VTUOp field.
 
-Addresses-Coverity: ("Bad shift operation")
-Fixes: f21fb3ed364b ("Add support of Cavium Liquidio ethernet adapters")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Fixes: 11ea809f1a74 (net: dsa: mv88e6xxx: support 256 databases)
+Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/cavium/liquidio/lio_core.c | 2 +-
+ drivers/net/dsa/mv88e6xxx/global1_vtu.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/cavium/liquidio/lio_core.c b/drivers/net/ethernet/cavium/liquidio/lio_core.c
-index 1c50c10b5a16..d7e805749a5b 100644
---- a/drivers/net/ethernet/cavium/liquidio/lio_core.c
-+++ b/drivers/net/ethernet/cavium/liquidio/lio_core.c
-@@ -964,7 +964,7 @@ static void liquidio_schedule_droq_pkt_handlers(struct octeon_device *oct)
+diff --git a/drivers/net/dsa/mv88e6xxx/global1_vtu.c b/drivers/net/dsa/mv88e6xxx/global1_vtu.c
+index 058326924f3e..7a6667e0b9f9 100644
+--- a/drivers/net/dsa/mv88e6xxx/global1_vtu.c
++++ b/drivers/net/dsa/mv88e6xxx/global1_vtu.c
+@@ -419,7 +419,7 @@ int mv88e6185_g1_vtu_loadpurge(struct mv88e6xxx_chip *chip,
+ 		 * VTU DBNum[7:4] are located in VTU Operation 11:8
+ 		 */
+ 		op |= entry->fid & 0x000f;
+-		op |= (entry->fid & 0x00f0) << 8;
++		op |= (entry->fid & 0x00f0) << 4;
+ 	}
  
- 			if (droq->ops.poll_mode) {
- 				droq->ops.napi_fn(droq);
--				oct_priv->napi_mask |= (1 << oq_no);
-+				oct_priv->napi_mask |= BIT_ULL(oq_no);
- 			} else {
- 				tasklet_schedule(&oct_priv->droq_tasklet);
- 			}
+ 	return mv88e6xxx_g1_vtu_op(chip, op);
 -- 
 2.20.1
 
