@@ -2,64 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C2BCF57DE2
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 10:06:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CB8157DFE
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 10:13:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726462AbfF0IGx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 04:06:53 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:33992 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726101AbfF0IGx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 04:06:53 -0400
-Received: by mail-pf1-f196.google.com with SMTP id c85so830941pfc.1
-        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 01:06:52 -0700 (PDT)
+        id S1726385AbfF0INH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 04:13:07 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:33222 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726375AbfF0ING (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 04:13:06 -0400
+Received: by mail-wr1-f66.google.com with SMTP id n9so1445092wru.0
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 01:13:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=cumulusnetworks.com; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=QEgyxlVekWnYGrB2+rXaZRvF6Od6LAR0sZBzwMqn7zY=;
-        b=YLfiIJOZY/zPSQEffZ4cRGRfVXSqRdXALJLCCaAu7HS8tymq8xngMUaegWTKzPDIE3
-         34jRrKtXBBOiPxW+3/9exRhhXryTVIwUEk3thcQITVdSbwAscq+VNB0noX9Yr1cT6Bo2
-         BXC6MF0S1jJizAtcpwqqsOQ2kPLKqrtLF27JIQgXnxVtNuagPJKm+9EqzdXSn7VPKoQq
-         1YUUNhuYh42n+BFXWpkYzOSHsWqOHnI4hnmAE8LiKgO+gq+hFynKU+NwcLbuyffAyXWt
-         sGS92ql+g5ZdeTPSNzHaeRUiBxBgiUqSGlsopHsq4zb2Jc1jVw+sR2jsQ2G8ibYh91dp
-         UiKg==
+        bh=0rm8BZ15/9VA+TRcRb1HIn70mIfsKA7nZmITW8NJ0ZE=;
+        b=gyYtXj7usmQqmoPo5vP6PrXrJGUHbf8c4FU7Yo2+OOZpl4AJQw07zOVjREHgvkYI3B
+         05OIcYYPfFLchO6I9cYAbEA/sw4jDJpuo+jNegm2Sb6IX7I3FSrRkTeMQAyv1cqwbbUV
+         vBJb/7J20TZ8Mg0SXALjeqN3YdYwSp8lqDxBY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=QEgyxlVekWnYGrB2+rXaZRvF6Od6LAR0sZBzwMqn7zY=;
-        b=r+BDuqBVDSVOU0SxPfG9BEZObHqKMM+SbnWTrCWKYujOZgJFvhzb1BE7/YlwtOpuoG
-         nDrEaw6t7WxA8lMsv/Y5zfwFGmL0mb6RDQ0CmW9LORNktDS2/Gnn0G+JDUW5vKVVd5Gv
-         Ibe/iZppgNlHEMXTy1MUeJNdw41nmFRv0QHLFSExuDMrNTv07FiVBfTWIoE4KblcdvoK
-         epNTeUX5h7EGnB7XeZhQEPYamBxjRU/kHYgw0dZ8qXV0g+Vo9Jy7K7g29lVqjTZQv21a
-         14haR52E/UNJg53AnH/E5InDO6sirWNrbNfRAe/QF2wgMZ8xR9x78zaRO08z5jkM1UM2
-         pqTA==
-X-Gm-Message-State: APjAAAWnFZJCdb5h2wTIYizBe5+Dflc4pm7rjtuo0Kye9OLUu2o5lcnx
-        kK0/TyknMBOwKPxBLBWbkdk=
-X-Google-Smtp-Source: APXvYqwPnyD7Dxm0Np1XmE8ip25TJgfjtzUl6R/cA9kJxVhZQaAdQqFtcQNpH7YWmviTqa0Tcd1VLw==
-X-Received: by 2002:a65:4945:: with SMTP id q5mr2550753pgs.9.1561622811885;
-        Thu, 27 Jun 2019 01:06:51 -0700 (PDT)
-Received: from localhost.localdomain (osnfw.sakura.ad.jp. [210.224.179.167])
-        by smtp.gmail.com with ESMTPSA id n5sm1448107pgd.26.2019.06.27.01.06.47
+        bh=0rm8BZ15/9VA+TRcRb1HIn70mIfsKA7nZmITW8NJ0ZE=;
+        b=b8kDJrl6C3N869vLMZ3j3Go0RJBwq7A2rg/aj/ka+UUzLGcCbnG2dL+0cjxwmgY53x
+         QbH1MwqcUA0Ow9AaMNWSDCpCdgT2u63LtuovzlWzmkZIDkWZYXaRAWPdrbh1WbVuf1Eo
+         lrp0dcH280bWtOTfQap9SteZS6bwG40SLH2YT2ne5sZalUMHOZththuTeC0yQy4daRy9
+         bh7QlYZrDwLlwebnU3K82jZp0QjmbgXLi6beFEkBuW7viz6x6gXx03+W/XgCQVm/Do3w
+         o1qDh8oMt6+q7rFqCxLsmq1y0eS86XqFknhHDOgAqiUnNjXE8psubkpH720fgyA3dEya
+         S2Vw==
+X-Gm-Message-State: APjAAAVtd5eT1gowpH4pqfZZDSYRCmpXq/9Y5qqYPRpTszFRGjUaql3w
+        LYHOplvPJMPm80Gvh7VYDHpkcZII9uk=
+X-Google-Smtp-Source: APXvYqwKD1NkoQ6XG5mDXOf51TPrTFuvluZEV7ogRf1oxNXof2q171zomE6LuShu+4egn5Osy96qTA==
+X-Received: by 2002:a5d:624c:: with SMTP id m12mr1990433wrv.20.1561623184188;
+        Thu, 27 Jun 2019 01:13:04 -0700 (PDT)
+Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id o6sm6969949wmc.15.2019.06.27.01.13.02
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 27 Jun 2019 01:06:50 -0700 (PDT)
-From:   Yuya Kusakabe <yuya.kusakabe@gmail.com>
-To:     davem@davemloft.net
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        netdev@vger.kernel.org, Yuya Kusakabe <yuya.kusakabe@gmail.com>
-Subject: [PATCH bpf-next] virtio_net: add XDP meta data support
-Date:   Thu, 27 Jun 2019 17:06:41 +0900
-Message-Id: <20190627080641.3266-1-yuya.kusakabe@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        Thu, 27 Jun 2019 01:13:03 -0700 (PDT)
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+To:     netdev@vger.kernel.org
+Cc:     roopa@cumulusnetworks.com, davem@davemloft.net,
+        pablo@netfilter.org, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        jhs@mojatatu.com, eyal.birger@gmail.com,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Subject: [PATCH net-next v3 0/4] em_ipt: add support for addrtype
+Date:   Thu, 27 Jun 2019 11:10:43 +0300
+Message-Id: <20190627081047.24537-1-nikolay@cumulusnetworks.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -67,163 +58,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds XDP meta data support to both receive_small() and
-receive_mergeable().
+Hi,
+We would like to be able to use the addrtype from tc for ACL rules and
+em_ipt seems the best place to add support for the already existing xt
+match. The biggest issue is that addrtype revision 1 (with ipv6 support)
+is NFPROTO_UNSPEC and currently em_ipt can't differentiate between v4/v6
+if such xt match is used because it passes the match's family instead of
+the packet one. The first 3 patches make em_ipt match only on IP
+traffic (currently both policy and addrtype recognize such traffic
+only) and make it pass the actual packet's protocol instead of the xt
+match family when it's unspecified. They also add support for NFPROTO_UNSPEC
+xt matches. The last patch allows to add addrtype rules via em_ipt.
+We need to keep the user-specified nfproto for dumping in order to be
+compatible with libxtables, we cannot dump NFPROTO_UNSPEC as the nfproto
+or we'll get an error from libxtables, thus the nfproto is limited to
+ipv4/ipv6 in patch 03 and is recorded.
 
-Fixes: de8f3a83b0a0 ("bpf: add meta pointer for direct access")
-Signed-off-by: Yuya Kusakabe <yuya.kusakabe@gmail.com>
----
- drivers/net/virtio_net.c | 40 +++++++++++++++++++++++++++++-----------
- 1 file changed, 29 insertions(+), 11 deletions(-)
+v3: don't use the user nfproto for matching, only for dumping, more
+    information is available in the commit message in patch 03
+v2: change patch 02 to set the nfproto only when unspecified and drop
+    patch 04 from v1 (Eyal Birger)
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 4f3de0ac8b0b..e787657fc568 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -371,7 +371,7 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
- 				   struct receive_queue *rq,
- 				   struct page *page, unsigned int offset,
- 				   unsigned int len, unsigned int truesize,
--				   bool hdr_valid)
-+				   bool hdr_valid, unsigned int metasize)
- {
- 	struct sk_buff *skb;
- 	struct virtio_net_hdr_mrg_rxbuf *hdr;
-@@ -393,17 +393,25 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
- 	else
- 		hdr_padded_len = sizeof(struct padded_vnet_hdr);
- 
--	if (hdr_valid)
-+	if (hdr_valid && !metasize)
- 		memcpy(hdr, p, hdr_len);
- 
- 	len -= hdr_len;
- 	offset += hdr_padded_len;
- 	p += hdr_padded_len;
- 
--	copy = len;
-+	copy = len + metasize;
- 	if (copy > skb_tailroom(skb))
- 		copy = skb_tailroom(skb);
--	skb_put_data(skb, p, copy);
-+
-+	if (metasize) {
-+		skb_put_data(skb, p - metasize, copy);
-+		__skb_pull(skb, metasize);
-+		skb_metadata_set(skb, metasize);
-+		copy -= metasize;
-+	} else {
-+		skb_put_data(skb, p, copy);
-+	}
- 
- 	len -= copy;
- 	offset += copy;
-@@ -644,6 +652,7 @@ static struct sk_buff *receive_small(struct net_device *dev,
- 	unsigned int delta = 0;
- 	struct page *xdp_page;
- 	int err;
-+	unsigned int metasize = 0;
- 
- 	len -= vi->hdr_len;
- 	stats->bytes += len;
-@@ -683,8 +692,8 @@ static struct sk_buff *receive_small(struct net_device *dev,
- 
- 		xdp.data_hard_start = buf + VIRTNET_RX_PAD + vi->hdr_len;
- 		xdp.data = xdp.data_hard_start + xdp_headroom;
--		xdp_set_data_meta_invalid(&xdp);
- 		xdp.data_end = xdp.data + len;
-+		xdp.data_meta = xdp.data;
- 		xdp.rxq = &rq->xdp_rxq;
- 		orig_data = xdp.data;
- 		act = bpf_prog_run_xdp(xdp_prog, &xdp);
-@@ -695,9 +704,11 @@ static struct sk_buff *receive_small(struct net_device *dev,
- 			/* Recalculate length in case bpf program changed it */
- 			delta = orig_data - xdp.data;
- 			len = xdp.data_end - xdp.data;
-+			metasize = xdp.data - xdp.data_meta;
- 			break;
- 		case XDP_TX:
- 			stats->xdp_tx++;
-+			xdp.data_meta = xdp.data;
- 			xdpf = convert_to_xdp_frame(&xdp);
- 			if (unlikely(!xdpf))
- 				goto err_xdp;
-@@ -735,11 +746,14 @@ static struct sk_buff *receive_small(struct net_device *dev,
- 	}
- 	skb_reserve(skb, headroom - delta);
- 	skb_put(skb, len);
--	if (!delta) {
-+	if (!delta && !metasize) {
- 		buf += header_offset;
- 		memcpy(skb_vnet_hdr(skb), buf, vi->hdr_len);
- 	} /* keep zeroed vnet hdr since packet was changed by bpf */
- 
-+	if (metasize)
-+		skb_metadata_set(skb, metasize);
-+
- err:
- 	return skb;
- 
-@@ -761,7 +775,7 @@ static struct sk_buff *receive_big(struct net_device *dev,
- {
- 	struct page *page = buf;
- 	struct sk_buff *skb = page_to_skb(vi, rq, page, 0, len,
--					  PAGE_SIZE, true);
-+					  PAGE_SIZE, true, 0);
- 
- 	stats->bytes += len - vi->hdr_len;
- 	if (unlikely(!skb))
-@@ -793,6 +807,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 	unsigned int truesize;
- 	unsigned int headroom = mergeable_ctx_to_headroom(ctx);
- 	int err;
-+	unsigned int metasize = 0;
- 
- 	head_skb = NULL;
- 	stats->bytes += len - vi->hdr_len;
-@@ -839,8 +854,8 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 		data = page_address(xdp_page) + offset;
- 		xdp.data_hard_start = data - VIRTIO_XDP_HEADROOM + vi->hdr_len;
- 		xdp.data = data + vi->hdr_len;
--		xdp_set_data_meta_invalid(&xdp);
- 		xdp.data_end = xdp.data + (len - vi->hdr_len);
-+		xdp.data_meta = xdp.data;
- 		xdp.rxq = &rq->xdp_rxq;
- 
- 		act = bpf_prog_run_xdp(xdp_prog, &xdp);
-@@ -859,18 +874,20 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 			 * adjusted
- 			 */
- 			len = xdp.data_end - xdp.data + vi->hdr_len;
-+			metasize = xdp.data - xdp.data_meta;
- 			/* We can only create skb based on xdp_page. */
- 			if (unlikely(xdp_page != page)) {
- 				rcu_read_unlock();
- 				put_page(page);
- 				head_skb = page_to_skb(vi, rq, xdp_page,
--						       offset, len,
--						       PAGE_SIZE, false);
-+					       offset, len,
-+					       PAGE_SIZE, false, metasize);
- 				return head_skb;
- 			}
- 			break;
- 		case XDP_TX:
- 			stats->xdp_tx++;
-+			xdp.data_meta = xdp.data;
- 			xdpf = convert_to_xdp_frame(&xdp);
- 			if (unlikely(!xdpf))
- 				goto err_xdp;
-@@ -921,7 +938,8 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 		goto err_skb;
- 	}
- 
--	head_skb = page_to_skb(vi, rq, page, offset, len, truesize, !xdp_prog);
-+	head_skb = page_to_skb(vi, rq, page, offset, len, truesize, !xdp_prog,
-+			       metasize);
- 	curr_skb = head_skb;
- 
- 	if (unlikely(!curr_skb))
+Thank you,
+  Nikolay Aleksandrov
+
+
+Nikolay Aleksandrov (4):
+  net: sched: em_ipt: match only on ip/ipv6 traffic
+  net: sched: em_ipt: set the family based on the packet if it's
+    unspecified
+  net: sched: em_ipt: keep the user-specified nfproto and dump it
+  net: sched: em_ipt: add support for addrtype matching
+
+ net/sched/em_ipt.c | 48 ++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 46 insertions(+), 2 deletions(-)
+
 -- 
-2.20.1
+2.21.0
 
