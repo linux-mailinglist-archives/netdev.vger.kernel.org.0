@@ -2,113 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E5A7A58699
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 18:02:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C7C3586AB
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 18:07:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726514AbfF0QCr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 12:02:47 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:37756 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726425AbfF0QCq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 12:02:46 -0400
-Received: by mail-wm1-f66.google.com with SMTP id f17so6212577wme.2
-        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 09:02:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=DfCscE/RsaeMxDZW2V3ZOo11aPdtnJ/Mii0SZSVoNxU=;
-        b=qAamPC0hkjoGqT9qD45ZLNkN0kh5ldU8aNspe2f9lNvcfghMUUO9ztw50bcE7FaI1F
-         t+wAe8iutpYq01wjVWJ5Rkc52Z7U+PPICNi0tW5KqpZp4ApTOZsrrtE6kvVMhIREIDeF
-         AEb7FPD0gh2j3lQK9MGGNZ1JrdOcwQQtjHL7AEzc/xAH6DDl6pxZgvjFKJBI1pJg83wj
-         J8WwrGsNV57teDwDN3CkxJVf5/V0NETc112zLJK2OlsUScvLW/xY4vrZ5TtuAXbE3BQq
-         yd918jtPlaEpuNozI4fn+wAcUmolrV1/2EW08kG7nI5SIjpEXHMxwcsI3KWJ7a5pGNNj
-         KrCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=DfCscE/RsaeMxDZW2V3ZOo11aPdtnJ/Mii0SZSVoNxU=;
-        b=jKGEebuZgPNgc+xadcQg3RY020OwQl8gmJC6tPxGeqfsozA0liepBZEkltVmnn+M26
-         65jniPsu9O/JOiID56ODSBVxei0qCAYx4v1xuIiUZtyhUz1OPbXSajd67HyfdH0k6RTS
-         pG6zEAuekFrgINab2zRLFzJRjUJ8Viek97V+NQt/SPgXsmTSBTv6iZ1rL+/+FUl3/8Fj
-         o+hGI1IVCj1yig1q8tPcSaitMLm6elpZwFJalkF6usTq6KWnF6EgvUcNUCqG096g5maj
-         x3h8FIdO4q0iPz1gLJmiYvQQNekUCysz1eD10aa07K+CsNj9TfHwjQfWhvgiEPTbP+X1
-         rDjA==
-X-Gm-Message-State: APjAAAUbU/lzo48yE/Nz7qIHynXL+EXIAmf6qJtryA1vGcIguqoHE+eP
-        GYkGfMz94Ht7KrYU9VcSS/2IZquULOU=
-X-Google-Smtp-Source: APXvYqwWi4MLdJ9So/Eufnurekgk4/g/7jeUc3IdBfXsseqhTMiKj0UbwINOgpmk+iaXz06THqKpdw==
-X-Received: by 2002:a05:600c:23d2:: with SMTP id p18mr1833486wmb.108.1561651364433;
-        Thu, 27 Jun 2019 09:02:44 -0700 (PDT)
-Received: from jimi ([46.19.85.235])
-        by smtp.gmail.com with ESMTPSA id x16sm3946396wmj.4.2019.06.27.09.02.43
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 27 Jun 2019 09:02:44 -0700 (PDT)
-Date:   Thu, 27 Jun 2019 19:02:37 +0300
-From:   Eyal Birger <eyal.birger@gmail.com>
-To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Cc:     netdev@vger.kernel.org, roopa@cumulusnetworks.com,
-        davem@davemloft.net, pablo@netfilter.org, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, jhs@mojatatu.com
-Subject: Re: [PATCH net-next v3 1/4] net: sched: em_ipt: match only on
- ip/ipv6 traffic
-Message-ID: <20190627190237.0a08a4a2@jimi>
-In-Reply-To: <20190627081047.24537-2-nikolay@cumulusnetworks.com>
-References: <20190627081047.24537-1-nikolay@cumulusnetworks.com>
-        <20190627081047.24537-2-nikolay@cumulusnetworks.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1726559AbfF0QHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 12:07:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36734 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726465AbfF0QHL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Jun 2019 12:07:11 -0400
+Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EC1CD2133F;
+        Thu, 27 Jun 2019 16:07:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1561651630;
+        bh=qnjDcvg2vr1/aDZRgXt8AUsw/e1VEUmL66zR+wNUqLQ=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=uStUCHmDp1p57SsCyxgo6iBQf6wFT3Wg8FvrqKIm4sUNjPPsiTnd7s2M1ezSNi2qX
+         B3uScACkb0zwXtXPDWT9DDEphSX1XeoF187U8BaaTH4o6l/QNBRGq5LmC+oSiUxtzY
+         tNfWR3V7PKLR3/v5yYRcxkeOlUudJj+of7MJ5VJo=
+Received: by mail-qt1-f174.google.com with SMTP id a15so3016472qtn.7;
+        Thu, 27 Jun 2019 09:07:09 -0700 (PDT)
+X-Gm-Message-State: APjAAAWwHPv2O7LLgKHShMUlaiZ0zEa3H+T375MH7TmHvKG5E19b4Q/d
+        Q2XULjGvGk6j32d91nCgNHRAdxvVGI8TXQT+MA==
+X-Google-Smtp-Source: APXvYqzeFDJzuV1gZ6S+zyrzfaa49Md1sFroJG0gDvbc/4XW9ZWqmmLiaHGfS1c2APb0JFORnUFqOnpCDDI8rp/vwfM=
+X-Received: by 2002:a0c:b627:: with SMTP id f39mr4191770qve.72.1561651629161;
+ Thu, 27 Jun 2019 09:07:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <cover.e80da8845680a45c2e07d5f17280fdba84555b8a.1561649505.git-series.maxime.ripard@bootlin.com>
+ <e99ff7377a0d3d140cf62200fd9d62c108dac24e.1561649505.git-series.maxime.ripard@bootlin.com>
+ <CAL_JsqKQoj6x-8cMxp2PFQLcu93aitGO2wALDYaH2h72cPSyfg@mail.gmail.com> <20190627155708.myxychzngc3trxhc@flea>
+In-Reply-To: <20190627155708.myxychzngc3trxhc@flea>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Thu, 27 Jun 2019 10:06:57 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqLhUP62vP=RY8Bn_0X92hFphbk_gLqi4K48us56Gxw7tA@mail.gmail.com>
+Message-ID: <CAL_JsqLhUP62vP=RY8Bn_0X92hFphbk_gLqi4K48us56Gxw7tA@mail.gmail.com>
+Subject: Re: [PATCH v4 03/13] dt-bindings: net: Add a YAML schemas for the
+ generic MDIO options
+To:     Maxime Ripard <maxime.ripard@bootlin.com>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        netdev <netdev@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>, devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        =?UTF-8?Q?Antoine_T=C3=A9nart?= <antoine.tenart@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Nik,
+On Thu, Jun 27, 2019 at 9:57 AM Maxime Ripard <maxime.ripard@bootlin.com> wrote:
+>
+> Hi Rob,
+>
+> On Thu, Jun 27, 2019 at 09:48:06AM -0600, Rob Herring wrote:
+> > On Thu, Jun 27, 2019 at 9:32 AM Maxime Ripard <maxime.ripard@bootlin.com> wrote:
+> > >
+> > > The MDIO buses have a number of available device tree properties that can
+> > > be used in their device tree node. Add a YAML schemas for those.
+> > >
+> > > Suggested-by: Andrew Lunn <andrew@lunn.ch>
+> > > Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
+> > > ---
+> > >  Documentation/devicetree/bindings/net/mdio.txt  | 38 +-------------
+> > >  Documentation/devicetree/bindings/net/mdio.yaml | 51 ++++++++++++++++++-
+> > >  2 files changed, 52 insertions(+), 37 deletions(-)
+> > >  create mode 100644 Documentation/devicetree/bindings/net/mdio.yaml
+> >
+> > Reviewed-by: Rob Herring <robh@kernel.org>
+> >
+> > However, some comments for a follow-up...
+> >
+> > > diff --git a/Documentation/devicetree/bindings/net/mdio.yaml b/Documentation/devicetree/bindings/net/mdio.yaml
+> > > new file mode 100644
+> > > index 000000000000..b8fa8251c4bc
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/net/mdio.yaml
+> > > @@ -0,0 +1,51 @@
+> > > +# SPDX-License-Identifier: GPL-2.0
+> > > +%YAML 1.2
+> > > +---
+> > > +$id: http://devicetree.org/schemas/net/mdio.yaml#
+> > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > > +
+> > > +title: MDIO Bus Generic Binding
+> > > +
+> > > +maintainers:
+> > > +  - Andrew Lunn <andrew@lunn.ch>
+> > > +  - Florian Fainelli <f.fainelli@gmail.com>
+> > > +  - Heiner Kallweit <hkallweit1@gmail.com>
+> > > +
+> > > +description:
+> > > +  These are generic properties that can apply to any MDIO bus. Any
+> > > +  MDIO bus must have a list of child nodes, one per device on the
+> > > +  bus. These should follow the generic ethernet-phy.yaml document, or
+> > > +  a device specific binding document.
+> > > +
+> > > +properties:
+> > > +  reset-gpios:
+> > > +    maxItems: 1
+> > > +    description:
+> > > +      The phandle and specifier for the GPIO that controls the RESET
+> > > +      lines of all PHYs on that MDIO bus.
+> > > +
+> > > +  reset-delay-us:
+> > > +    description:
+> > > +      RESET pulse width in microseconds. It applies to all PHY devices
+> > > +      and must therefore be appropriately determined based on all PHY
+> > > +      requirements (maximum value of all per-PHY RESET pulse widths).
+> > > +
+> > > +examples:
+> > > +  - |
+> > > +    davinci_mdio: mdio@5c030000 {
+> >
+> > Can we enforce nodename to be mdio? That may not work for muxes.
+> > You'll probably have to implement it and see.
+>
+> Ok, I'll send a follow-up patch for this.
+>
+> > > +        compatible = "ti,davinci_mdio";
+> > > +        reg = <0x5c030000 0x1000>;
+> > > +        #address-cells = <1>;
+> > > +        #size-cells = <0>;
+> >
+> > These 2 should have a schema.
+>
+> Indeed, I'll do it for that too.
+>
+> > > +
+> > > +        reset-gpios = <&gpio2 5 1>;
+> > > +        reset-delay-us = <2>;
+> > > +
+> > > +        ethphy0: ethernet-phy@1 {
+> > > +            reg = <1>;
+> >
+> > Need a child node schema to validate the unit-address and reg property.
+>
+> This should be already covered by the ethernet-phy.yaml schemas
+> earlier in this series.
 
-On Thu, 27 Jun 2019 11:10:44 +0300
-Nikolay Aleksandrov <nikolay@cumulusnetworks.com> wrote:
+Partially, yes.
 
-> Restrict matching only to ip/ipv6 traffic and make sure we can use the
-> headers, otherwise matches will be attempted on any protocol which can
-> be unexpected by the xt matches. Currently policy supports only
-> ipv4/6.
-> 
-> Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-> ---
-> v3: no change
-> v2: no change
-> 
->  net/sched/em_ipt.c | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
-> 
-> diff --git a/net/sched/em_ipt.c b/net/sched/em_ipt.c
-> index 243fd22f2248..64dbafe4e94c 100644
-> --- a/net/sched/em_ipt.c
-> +++ b/net/sched/em_ipt.c
-> @@ -185,6 +185,19 @@ static int em_ipt_match(struct sk_buff *skb,
-> struct tcf_ematch *em, struct nf_hook_state state;
->  	int ret;
->  
-> +	switch (tc_skb_protocol(skb)) {
-> +	case htons(ETH_P_IP):
-> +		if (!pskb_network_may_pull(skb, sizeof(struct
-> iphdr)))
-> +			return 0;
-> +		break;
-> +	case htons(ETH_P_IPV6):
-> +		if (!pskb_network_may_pull(skb, sizeof(struct
-> ipv6hdr)))
-> +			return 0;
-> +		break;
-> +	default:
-> +		return 0;
-> +	}
-> +
+> Were you expecting something else?
 
-I just realized that I didn't consider the egress direction in my review.
-Don't we need an skb_pull() in that direction to make the skb->data point
-to L3? I see this is done e.g. in em_ipset.
+That would not prevent having a child node such as 'foo {};'  or
+'foo@bad {};'. It would also not check valid nodes named something
+other than 'ethernet-phy'.
 
-Eyal.
+Rob
