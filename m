@@ -2,99 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4419958C6E
-	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 23:04:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C1D258C73
+	for <lists+netdev@lfdr.de>; Thu, 27 Jun 2019 23:06:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726498AbfF0VEg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 17:04:36 -0400
-Received: from www62.your-server.de ([213.133.104.62]:60332 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726384AbfF0VEg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 17:04:36 -0400
-Received: from [78.46.172.3] (helo=sslproxy06.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hgbZI-0006Oq-8C; Thu, 27 Jun 2019 23:04:33 +0200
-Received: from [178.193.45.231] (helo=linux.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hgbZI-000Tfk-2T; Thu, 27 Jun 2019 23:04:32 +0200
-Subject: Re: [PATCH v2 bpf-next 1/3] libbpf: add perf buffer API
-To:     Andrii Nakryiko <andriin@fb.com>, andrii.nakryiko@gmail.com,
-        ast@fb.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-team@fb.com
-References: <20190626061235.602633-1-andriin@fb.com>
- <20190626061235.602633-2-andriin@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <7de14b2b-a663-eed9-8f70-fb6bd5ea84d8@iogearbox.net>
-Date:   Thu, 27 Jun 2019 23:04:31 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
+        id S1726531AbfF0VG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 17:06:56 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:52183 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726384AbfF0VGz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 17:06:55 -0400
+Received: by mail-wm1-f68.google.com with SMTP id 207so7036701wma.1
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 14:06:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=zz38ALVL9lz1ilY6dw3RiNCsTbczRg69rQPB0MY45J8=;
+        b=tb3fFy/sKB9JhO7KyEYMcAGoXmARi5xzmkoVc/3XMlZ5O9aYVHm2SE/zjh9dqDzqEW
+         Fkiq4ymCWkKun2bYsTAyVns/SDRtWSdFk06LAeJw3kpTNsNJ+ZQSaAWSYSz+mz+lE+4d
+         hVUkgwJBoc1WUSbB0sLX53Nb+8PqMWzUqnYz9Xd5qyMQPvAqZKciQqqejnK5A4LTTH2J
+         O7rTSAm5pc1y/ODZlSe/IMgnnIitUixU9CTHz3jjzLMR/0IHhBt9TIql+MNY3J53+foH
+         hT8e4Qo2LudV+GNbntCVWQAEX0QWURJwVI3ic4aBcUzwLIcEtyFoBCiNcZYGuvmBGeOS
+         6KGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=zz38ALVL9lz1ilY6dw3RiNCsTbczRg69rQPB0MY45J8=;
+        b=XruTO2LwJwwaZvPvKQqGjFjIDssAKPLNBf+0xnucGDQuZKY+yTzw4VusKCP6DHXaDU
+         9/flyyGvHlVNLeFCWslbL+zv2eqO4r6QWXR6n/SePJ2/LhWcYll+yhYG1/Yan4nHQbHo
+         W2mzjvEzRoJ1ZLR6aPyAOfcp7E3zrCUutzyHU1zoDNGm/EYcONObrVxSbUYuUhvVEWtp
+         4B5WnKpxCFAWA6UsIZG2JvVGaG3sPQ0l9Q9fcj7gIqJoSGM0ov6VqVuFNKXLkfAkIe5n
+         7A2u1zxCbBUad7518KwsCoTVs6vWG/KCGljw/ml0fv9Xghoixs0uW13PEs9NS49qFWDX
+         TClg==
+X-Gm-Message-State: APjAAAWEtcZJnxW00HAQEkMfX2/20IcFDas8/vodsLbgHgDq6pP86bKg
+        mhfc/siYxVGJjaD/R/KRQ4tmiujf
+X-Google-Smtp-Source: APXvYqy7dq3uf25E8t3eQarQitgVwycvsomjB368qF4drrbgFUkYtQMNOdKlZpuPitOXKKDCwROBhA==
+X-Received: by 2002:a7b:c7c2:: with SMTP id z2mr4147327wmk.147.1561669613136;
+        Thu, 27 Jun 2019 14:06:53 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8bf3:bd00:3d9e:1690:cd42:495c? (p200300EA8BF3BD003D9E1690CD42495C.dip0.t-ipconnect.de. [2003:ea:8bf3:bd00:3d9e:1690:cd42:495c])
+        by smtp.googlemail.com with ESMTPSA id 35sm306769wrj.87.2019.06.27.14.06.52
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 27 Jun 2019 14:06:52 -0700 (PDT)
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next] r8169: improve handling VLAN tag
+Message-ID: <29fd564b-3279-a36d-a082-1c650168567e@gmail.com>
+Date:   Thu, 27 Jun 2019 23:06:33 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20190626061235.602633-2-andriin@fb.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25493/Thu Jun 27 10:06:16 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/26/2019 08:12 AM, Andrii Nakryiko wrote:
-> BPF_MAP_TYPE_PERF_EVENT_ARRAY map is often used to send data from BPF program
-> to user space for additional processing. libbpf already has very low-level API
-> to read single CPU perf buffer, bpf_perf_event_read_simple(), but it's hard to
-> use and requires a lot of code to set everything up. This patch adds
-> perf_buffer abstraction on top of it, abstracting setting up and polling
-> per-CPU logic into simple and convenient API, similar to what BCC provides.
-> 
-> perf_buffer__new() sets up per-CPU ring buffers and updates corresponding BPF
-> map entries. It accepts two user-provided callbacks: one for handling raw
-> samples and one for get notifications of lost samples due to buffer overflow.
-> 
-> perf_buffer__poll() is used to fetch ring buffer data across all CPUs,
-> utilizing epoll instance.
-> 
-> perf_buffer__free() does corresponding clean up and unsets FDs from BPF map.
-> 
-> All APIs are not thread-safe. User should ensure proper locking/coordination if
-> used in multi-threaded set up.
-> 
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+The VLAN tag is stored in the descriptor in network byte order.
+Using swab16 works on little endian host systems only. Better play safe
+and use ntohs or htons respectively.
 
-Aside from current feedback, this series generally looks great! Two small things:
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> index 2382fbda4cbb..10f48103110a 100644
-> --- a/tools/lib/bpf/libbpf.map
-> +++ b/tools/lib/bpf/libbpf.map
-> @@ -170,13 +170,16 @@ LIBBPF_0.0.4 {
->  		btf_dump__dump_type;
->  		btf_dump__free;
->  		btf_dump__new;
-> -		btf__parse_elf;
->  		bpf_object__load_xattr;
->  		bpf_program__attach_kprobe;
->  		bpf_program__attach_perf_event;
->  		bpf_program__attach_raw_tracepoint;
->  		bpf_program__attach_tracepoint;
->  		bpf_program__attach_uprobe;
-> +		btf__parse_elf;
->  		libbpf_num_possible_cpus;
->  		libbpf_perf_event_disable_and_close;
-> +		perf_buffer__free;
-> +		perf_buffer__new;
-> +		perf_buffer__poll;
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 48b8a90f7..b4df66bef 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -1528,7 +1528,7 @@ static int rtl8169_set_features(struct net_device *dev,
+ static inline u32 rtl8169_tx_vlan_tag(struct sk_buff *skb)
+ {
+ 	return (skb_vlan_tag_present(skb)) ?
+-		TxVlanTag | swab16(skb_vlan_tag_get(skb)) : 0x00;
++		TxVlanTag | htons(skb_vlan_tag_get(skb)) : 0x00;
+ }
+ 
+ static void rtl8169_rx_vlan_tag(struct RxDesc *desc, struct sk_buff *skb)
+@@ -1536,7 +1536,8 @@ static void rtl8169_rx_vlan_tag(struct RxDesc *desc, struct sk_buff *skb)
+ 	u32 opts2 = le32_to_cpu(desc->opts2);
+ 
+ 	if (opts2 & RxVlanTag)
+-		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), swab16(opts2 & 0xffff));
++		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
++				       ntohs(opts2 & 0xffff));
+ }
+ 
+ static void rtl8169_get_regs(struct net_device *dev, struct ethtool_regs *regs,
+-- 
+2.22.0
 
-We should prefix with libbpf_* given it's not strictly BPF-only and rather
-helper function.
-
-Also, we should convert bpftool (tools/bpf/bpftool/map_perf_ring.c) to make
-use of these new helpers instead of open-coding there.
-
-Thanks,
-Daniel
