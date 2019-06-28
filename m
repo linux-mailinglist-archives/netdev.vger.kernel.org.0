@@ -2,120 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45DBE595E9
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 10:19:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20C84595FA
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 10:23:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726562AbfF1ITA convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 28 Jun 2019 04:19:00 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:33487 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726502AbfF1ITA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 04:19:00 -0400
-Received: by mail-ed1-f65.google.com with SMTP id i11so9912027edq.0
-        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 01:18:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=U/u5RYq5eCPirSbgbY9HORy03rZZ7Zk/HbJlb1Wg1Q0=;
-        b=SF1MN3iONAufSlj5acu0EYej9IEfqom5XXswa5dXQSBdblw13HVM7kce4qEOy0Xjna
-         4m6S9s/Grnk1euhiELXwmmQug063OTNJHZUtXuLBxEPdXA5wfZq9DcCHMVO12EwxaXyn
-         QccWnpN6xPCaHiLiHurqv62g9lisCyzY7CUnZKBssFOTjbP4bIuioBboIWUkxRDTsvbl
-         QXd0CimHb2zesSy+Tz2aSlQMVFfjMPEj3gYQ8gYEmMlaHZqNUTuFkgrgG7jt/27fQpXQ
-         I8op/6jOOAu7rty+DZuSsdR3GQXx/vrFD1O+u7ndO1bw+wVVYYMyKlYkvk8wPY/Eva9S
-         /9bA==
-X-Gm-Message-State: APjAAAV2yvN1Fxki7SgklC4ylRsPEA5uO4Zw4tt5d+hYD2H6rvoLzib1
-        WkKj0l6xCBwMb0Cb+CjoXL6haQ==
-X-Google-Smtp-Source: APXvYqwlOGiSwiGWCEs8uU3RmkeqQpWJ2nutWQiGqLFnEUXsHozoUaeIWXQ4OfOFy14jXqpoQYlOqA==
-X-Received: by 2002:aa7:ca54:: with SMTP id j20mr9748402edt.50.1561709938908;
-        Fri, 28 Jun 2019 01:18:58 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id p3sm478714eda.43.2019.06.28.01.18.58
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 28 Jun 2019 01:18:58 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 7CE24181CA7; Fri, 28 Jun 2019 10:18:57 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-Subject: Re: [PATCH bpf-next v5 2/3] bpf_xdp_redirect_map: Perform map lookup in eBPF helper
-In-Reply-To: <d3f76a90-5cf4-4437-e3e1-75fda1248e53@iogearbox.net>
-References: <156125626076.5209.13424524054109901554.stgit@alrua-x1> <156125626136.5209.14349225282974871197.stgit@alrua-x1> <04a5da1d-6d0e-5963-4622-20cb54285926@iogearbox.net> <874l4a9o2b.fsf@toke.dk> <d3f76a90-5cf4-4437-e3e1-75fda1248e53@iogearbox.net>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 28 Jun 2019 10:18:57 +0200
-Message-ID: <87pnmy86mm.fsf@toke.dk>
+        id S1726484AbfF1IXS convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 28 Jun 2019 04:23:18 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:1360 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726056AbfF1IXS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 Jun 2019 04:23:18 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 3196D3073AFE;
+        Fri, 28 Jun 2019 08:23:17 +0000 (UTC)
+Received: from carbon (ovpn-200-45.brq.redhat.com [10.40.200.45])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0BEC560C6E;
+        Fri, 28 Jun 2019 08:22:55 +0000 (UTC)
+Date:   Fri, 28 Jun 2019 10:22:54 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     "Eelco Chaudron" <echaudro@redhat.com>
+Cc:     "Machulsky, Zorik" <zorik@amazon.com>,
+        "Jubran, Samih" <sameehj@amazon.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Daniel Borkmann" <borkmann@iogearbox.net>,
+        "Toke =?UTF-8?B?SMO4aWxhbmQt?= =?UTF-8?B?SsO4cmdlbnNlbg==?=" 
+        <toke@redhat.com>,
+        "Ilias Apalodimas" <ilias.apalodimas@linaro.org>,
+        "Alexei Starovoitov" <alexei.starovoitov@gmail.com>,
+        "Jakub Kicinski" <jakub.kicinski@netronome.com>,
+        xdp-newbies@vger.kernel.org, brouer@redhat.com,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Subject: Re: XDP multi-buffer incl. jumbo-frames (Was: [RFC V1 net-next 1/1]
+ net: ena: implement XDP drop support)
+Message-ID: <20190628102254.28191f12@carbon>
+In-Reply-To: <CC99D6DE-5B6B-42F3-8D68-7F9AFF1712FF@redhat.com>
+References: <20190623070649.18447-1-sameehj@amazon.com>
+        <20190623070649.18447-2-sameehj@amazon.com>
+        <20190623162133.6b7f24e1@carbon>
+        <A658E65E-93D2-4F10-823D-CC25B081C1B7@amazon.com>
+        <20190626103829.5360ef2d@carbon>
+        <CC99D6DE-5B6B-42F3-8D68-7F9AFF1712FF@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8BIT
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Fri, 28 Jun 2019 08:23:17 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniel Borkmann <daniel@iogearbox.net> writes:
+On Fri, 28 Jun 2019 09:14:39 +0200
+"Eelco Chaudron" <echaudro@redhat.com> wrote:
 
-> On 06/28/2019 09:17 AM, Toke Høiland-Jørgensen wrote:
->> Daniel Borkmann <daniel@iogearbox.net> writes:
->> 
->>> On 06/23/2019 04:17 AM, Toke Høiland-Jørgensen wrote:
->>>> From: Toke Høiland-Jørgensen <toke@redhat.com>
->>>>
->>>> The bpf_redirect_map() helper used by XDP programs doesn't return any
->>>> indication of whether it can successfully redirect to the map index it was
->>>> given. Instead, BPF programs have to track this themselves, leading to
->>>> programs using duplicate maps to track which entries are populated in the
->>>> devmap.
->>>>
->>>> This patch fixes this by moving the map lookup into the bpf_redirect_map()
->>>> helper, which makes it possible to return failure to the eBPF program. The
->>>> lower bits of the flags argument is used as the return code, which means
->>>> that existing users who pass a '0' flag argument will get XDP_ABORTED.
->>>>
->>>> With this, a BPF program can check the return code from the helper call and
->>>> react by, for instance, substituting a different redirect. This works for
->>>> any type of map used for redirect.
->>>>
->>>> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
->>>
->>> Overall series looks good to me. Just very small things inline here & in the
->>> other two patches:
->>>
->>> [...]
->>>> @@ -3750,9 +3742,16 @@ BPF_CALL_3(bpf_xdp_redirect_map, struct bpf_map *, map, u32, ifindex,
->>>>  {
->>>>  	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
->>>>  
->>>> -	if (unlikely(flags))
->>>> +	/* Lower bits of the flags are used as return code on lookup failure */
->>>> +	if (unlikely(flags > XDP_TX))
->>>>  		return XDP_ABORTED;
->>>>  
->>>> +	ri->item = __xdp_map_lookup_elem(map, ifindex);
->>>> +	if (unlikely(!ri->item)) {
->>>> +		WRITE_ONCE(ri->map, NULL);
->>>
->>> This WRITE_ONCE() is not needed. We never set it before at this point.
->> 
->> You mean the WRITE_ONCE() wrapper is not needed, or the set-to-NULL is
->> not needed? The reason I added it is in case an eBPF program calls the
->> helper twice before returning, where the first lookup succeeds but the
->> second fails; in that case we want to clear the ->map pointer, no?
->
-> Yeah I meant the set-to-NULL. So if first call succeeds, and the second one
-> fails, then the expected semantics wrt the first call are as if the program
-> would have called bpf_xdp_redirect() only?
->
-> Looking at the code again, if we set ri->item to NULL, then we /must/
-> also set ri->map to NULL. I guess there are two options: i) leave as
-> is, ii) keep the __xdp_map_lookup_elem() result in a temp var, if it's
-> NULL return flags, otherwise only /then/ update ri->item, so that
-> semantics are similar to the invalid flags check earlier. I guess fine
-> either way, in case of i) there should probably be a comment since
-> it's less obvious.
+> On 26 Jun 2019, at 10:38, Jesper Dangaard Brouer wrote:
+> 
+> > On Tue, 25 Jun 2019 03:19:22 +0000
+> > "Machulsky, Zorik" <zorik@amazon.com> wrote:
+> >  
+> >> ﻿On 6/23/19, 7:21 AM, "Jesper Dangaard Brouer" <brouer@redhat.com> 
+> >> wrote:
+> >>
+> >>     On Sun, 23 Jun 2019 10:06:49 +0300 <sameehj@amazon.com> wrote:
+> >>  
+> >>     > This commit implements the basic functionality of drop/pass logic in the  
+> >>     > ena driver.  
+> >>
+> >>     Usually we require a driver to implement all the XDP return codes,
+> >>     before we accept it.  But as Daniel and I discussed with Zorik during
+> >>     NetConf[1], we are going to make an exception and accept the driver
+> >>     if you also implement XDP_TX.
+> >>
+> >>     As we trust that Zorik/Amazon will follow and implement XDP_REDIRECT
+> >>     later, given he/you wants AF_XDP support which requires XDP_REDIRECT.
+> >>
+> >> Jesper, thanks for your comments and very helpful discussion during
+> >> NetConf! That's the plan, as we agreed. From our side I would like to
+> >> reiterate again the importance of multi-buffer support by xdp frame.
+> >> We would really prefer not to see our MTU shrinking because of xdp
+> >> support.  
+> >
+> > Okay we really need to make a serious attempt to find a way to support
+> > multi-buffer packets with XDP. With the important criteria of not
+> > hurting performance of the single-buffer per packet design.
+> >
+> > I've created a design document[2], that I will update based on our
+> > discussions: [2] 
+> > https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp-multi-buffer01-design.org
+> >
+> > The use-case that really convinced me was Eric's packet header-split.
+> >
+> >
+> > Lets refresh: Why XDP don't have multi-buffer support:
+> >
+> > XDP is designed for maximum performance, which is why certain 
+> > driver-level
+> > use-cases were not supported, like multi-buffer packets (like 
+> > jumbo-frames).
+> > As it e.g. complicated the driver RX-loop and memory model handling.
+> >
+> > The single buffer per packet design, is also tied into eBPF 
+> > Direct-Access
+> > (DA) to packet data, which can only be allowed if the packet memory is 
+> > in
+> > contiguous memory.  This DA feature is essential for XDP performance.
+> >
+> >
+> > One way forward is to define that XDP only get access to the first
+> > packet buffer, and it cannot see subsequent buffers.  For XDP_TX and
+> > XDP_REDIRECT to work then XDP still need to carry pointers (plus
+> > len+offset) to the other buffers, which is 16 bytes per extra buffer.  
+> 
+> 
+> I’ve seen various network processor HW designs, and they normally get 
+> the first x bytes (128 - 512) which they can manipulate 
+> (append/prepend/insert/modify/delete).
 
-Yeah, I think a temp var is probably clearer, will do that :)
+Good data point, thank you!  It confirms that XDP only getting access to
+the first packet-buffer makes sense, for most use-cases.
 
--Toke
+We also have to remember that XDP it not meant to handle every
+use-case.  XDP is a software fast-path, that can accelerate certain
+use-case.  We have the existing network stack as a fall-back for
+handling the corner-cases, that would otherwise slowdown our XDP
+fast-path.
+
+
+> There are designs where they can “page in” the additional fragments 
+> but it’s expensive as it requires additional memory transfers. But
+> the majority do not care (cannot change) the remaining fragments. Can
+> also not think of a reason why you might want to remove something at
+> the end of the frame (thinking about routing/forwarding needs here).
+
+Use-cases that need to adjust tail of packet:
+
+- ICMP replies directly from XDP[1] need to shorten packet tail, but
+  this use-case doesn't use fragments.
+
+- IPsec need to add/extend packet tail for IPset-trailer[2], again
+  unlikely that this needs fragments(?). (This use-case convinced me
+  that we need to add extend-tail support to bpf_xdp_adjust_tail)
+
+- DNS or memcached replies directly from XDP, need to extend packet
+  tail, to have room for reply. (It would be interesting to allow larger
+  replies, but I'm not sure we should ever support that).
+
+
+> If we do want XDP to access other fragments we could do this through
+> a helper which swaps the packet context?
+
+That might be a way forward.  If the XDP developer have to call a
+helper, then they should realize and "buy into" an additional
+overhead/cost.
+
+
+[1] https://github.com/torvalds/linux/blob/master/samples/bpf/xdp_adjust_tail_kern.c
+[2] http://vger.kernel.org/netconf2019_files/xfrm_xdp.pdf
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
