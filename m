@@ -2,140 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 844E15A02D
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 18:03:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0597F5A035
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 18:04:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726667AbfF1QDj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 12:03:39 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:32826 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726542AbfF1QDj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Jun 2019 12:03:39 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 683DF30593D8;
-        Fri, 28 Jun 2019 16:03:39 +0000 (UTC)
-Received: from renaissance-vector.mxp.redhat.com (unknown [10.32.181.34])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 972836013A;
-        Fri, 28 Jun 2019 16:03:38 +0000 (UTC)
-From:   Andrea Claudi <aclaudi@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@kernel.org
-Subject: [PATCH iproute2-next] utils: move parse_percent() to tc_util
-Date:   Fri, 28 Jun 2019 18:03:45 +0200
-Message-Id: <e9e070178cdd26588800b43938647b7b338c2142.1561737608.git.aclaudi@redhat.com>
+        id S1726702AbfF1QEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 12:04:39 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:38693 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726542AbfF1QEi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 12:04:38 -0400
+Received: by mail-pg1-f194.google.com with SMTP id z75so2784096pgz.5
+        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 09:04:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Ej8QVKf/5ZTp8F2SHWsH8VnKFdML06Uqo03duPLklpc=;
+        b=AUPotkinOm43N5H/gahaeOa/ZfSD/qRznui6WEjHoGdqR1DVX7w1eJ5okgBc67YhJC
+         Rl72gAYHdRGRApSik5Ndjugys8OXk0OmyEdDLM2j7VcqrfcenKXclGkIhHJf1hrJyxGT
+         GrJMfd630CalysOnGL9dY6FD2MNnxQsdXElNqcFQdkz2AmDDfZgrI/RjH2GcEGkgCCbl
+         7a/kooFpC+psmoHRJhnSlZNDkE3D0bSqOZurRXTCbOL94D8bmGBIIDT1yddkCQHrkESN
+         uY4yR1HaIf7Ep9yCEfV1WLX3iYsGKPyCjEXbAmNKQrxF84kEsXwdT8l9UIHl0HyImx7F
+         F8tw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Ej8QVKf/5ZTp8F2SHWsH8VnKFdML06Uqo03duPLklpc=;
+        b=RHfYWkMfGIVjdji1GUkGm2K1PnQP59yurp2siDQpL7/q1Pp4bAoR1VHkD9ECTs/G94
+         Cda2elOXDJ6eiOoDpQHysNfv6+blILT/4110SrU7wHKXRrR9TwLE0eYm/HYUtxcqB6uA
+         wwOqPS0HMyw5ksrj51fvgTjdw2ZUQv8C363DUPFvUw70HlWkAGReGl76xsNktygadAch
+         2dqgTol04mtm+dLRTYp+aYAqoxZpicb/9mrKO1MDZtbNeLTk/qp0aas1SWAlS54ZrTgT
+         bCPMumZxNsmUtdDPmRoHnBtT9IRvZkfLPV58JIpm4r8mw0Nfcg0S141LR9NpgyzTETM4
+         i/rg==
+X-Gm-Message-State: APjAAAVkMGqdgiK1ti4/TTpGTi+jweoPGhcI0eTjTE1jL8C7to4q8z2+
+        NIxN37oAR6wD86CahXPCBwqg3tTH8FM=
+X-Google-Smtp-Source: APXvYqzK9vlhFLJNP1OkFzCru9OvkgzJ1gNv0Lxizz1Nb0+9eYCDr7iROwBIp48kLR08iTPB6Z4p2g==
+X-Received: by 2002:a17:90a:ac11:: with SMTP id o17mr14297916pjq.134.1561737878313;
+        Fri, 28 Jun 2019 09:04:38 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id n2sm2246918pgp.27.2019.06.28.09.04.37
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 28 Jun 2019 09:04:37 -0700 (PDT)
+Date:   Fri, 28 Jun 2019 09:04:36 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     andrii.nakryiko@gmail.com, ast@fb.com, daniel@iogearbox.net,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
+Subject: Re: [PATCH v3 bpf-next 3/9] libbpf: add ability to attach/detach BPF
+ program to perf event
+Message-ID: <20190628160436.GH4866@mini-arch>
+References: <20190628055303.1249758-1-andriin@fb.com>
+ <20190628055303.1249758-4-andriin@fb.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Fri, 28 Jun 2019 16:03:39 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190628055303.1249758-4-andriin@fb.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As parse_percent() is used only in tc.
+On 06/27, Andrii Nakryiko wrote:
+> bpf_program__attach_perf_event allows to attach BPF program to existing
+> perf event hook, providing most generic and most low-level way to attach BPF
+> programs. It returns struct bpf_link, which should be passed to
+> bpf_link__destroy to detach and free resources, associated with a link.
+> 
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> ---
+>  tools/lib/bpf/libbpf.c   | 58 ++++++++++++++++++++++++++++++++++++++++
+>  tools/lib/bpf/libbpf.h   |  3 +++
+>  tools/lib/bpf/libbpf.map |  1 +
+>  3 files changed, 62 insertions(+)
+> 
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index 455795e6f8af..606705f878ba 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -32,6 +32,7 @@
+>  #include <linux/limits.h>
+>  #include <linux/perf_event.h>
+>  #include <linux/ring_buffer.h>
+> +#include <sys/ioctl.h>
+>  #include <sys/stat.h>
+>  #include <sys/types.h>
+>  #include <sys/vfs.h>
+> @@ -3958,6 +3959,63 @@ int bpf_link__destroy(struct bpf_link *link)
+>  	return err;
+>  }
+>  
+> +struct bpf_link_fd {
+> +	struct bpf_link link; /* has to be at the top of struct */
+[..]
+> +	int fd; /* hook FD */
+> +};
+Any cons to storing everything in bpf_link, instead of creating a
+"subclass"? Less things to worry about.
 
-This reduces ip, bridge and genl binaries size:
-
-$ bloat-o-meter -t bridge/bridge bridge/bridge.new
-add/remove: 0/1 grow/shrink: 0/0 up/down: 0/-109 (-109)
-Total: Before=50973, After=50864, chg -0.21%
-
-$ bloat-o-meter -t genl/genl genl/genl.new
-add/remove: 0/1 grow/shrink: 0/0 up/down: 0/-109 (-109)
-Total: Before=30298, After=30189, chg -0.36%
-
-$ bloat-o-meter ip/ip ip/ip.new
-add/remove: 0/1 grow/shrink: 0/0 up/down: 0/-109 (-109)
-Total: Before=674164, After=674055, chg -0.02%
-
-Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
----
- include/utils.h |  1 -
- lib/utils.c     | 16 ----------------
- tc/tc_util.c    | 16 ++++++++++++++++
- tc/tc_util.h    |  1 +
- 4 files changed, 17 insertions(+), 17 deletions(-)
-
-diff --git a/include/utils.h b/include/utils.h
-index ec0231f9772d0..1d9c11276bbe6 100644
---- a/include/utils.h
-+++ b/include/utils.h
-@@ -146,7 +146,6 @@ int get_addr_rta(inet_prefix *dst, const struct rtattr *rta, int family);
- int get_addr_ila(__u64 *val, const char *arg);
- 
- int read_prop(const char *dev, char *prop, long *value);
--int parse_percent(double *val, const char *str);
- int get_hex(char c);
- int get_integer(int *val, const char *arg, int base);
- int get_unsigned(unsigned *val, const char *arg, int base);
-diff --git a/lib/utils.c b/lib/utils.c
-index be0f11b00280d..5da9a47848966 100644
---- a/lib/utils.c
-+++ b/lib/utils.c
-@@ -101,22 +101,6 @@ out:
- 	return -1;
- }
- 
--/* Parse a percent e.g: '30%'
-- * return: 0 = ok, -1 = error, 1 = out of range
-- */
--int parse_percent(double *val, const char *str)
--{
--	char *p;
--
--	*val = strtod(str, &p) / 100.;
--	if (*val == HUGE_VALF || *val == HUGE_VALL)
--		return 1;
--	if (*p && strcmp(p, "%"))
--		return -1;
--
--	return 0;
--}
--
- int get_hex(char c)
- {
- 	if (c >= 'A' && c <= 'F')
-diff --git a/tc/tc_util.c b/tc/tc_util.c
-index e5d15281581df..53d15e08e9734 100644
---- a/tc/tc_util.c
-+++ b/tc/tc_util.c
-@@ -190,6 +190,22 @@ static const struct rate_suffix {
- 	{ NULL }
- };
- 
-+/* Parse a percent e.g: '30%'
-+ * return: 0 = ok, -1 = error, 1 = out of range
-+ */
-+int parse_percent(double *val, const char *str)
-+{
-+	char *p;
-+
-+	*val = strtod(str, &p) / 100.;
-+	if (*val == HUGE_VALF || *val == HUGE_VALL)
-+		return 1;
-+	if (*p && strcmp(p, "%"))
-+		return -1;
-+
-+	return 0;
-+}
-+
- static int parse_percent_rate(char *rate, size_t len,
- 			      const char *str, const char *dev)
- {
-diff --git a/tc/tc_util.h b/tc/tc_util.h
-index 825fea36a0809..eb4b60db3fdd7 100644
---- a/tc/tc_util.h
-+++ b/tc/tc_util.h
-@@ -101,6 +101,7 @@ int print_tc_classid(char *buf, int len, __u32 h);
- char *sprint_tc_classid(__u32 h, char *buf);
- 
- int tc_print_police(FILE *f, struct rtattr *tb);
-+int parse_percent(double *val, const char *str);
- int parse_police(int *argc_p, char ***argv_p, int tca_id, struct nlmsghdr *n);
- 
- int parse_action_control(int *argc_p, char ***argv_p,
--- 
-2.20.1
-
+> +static int bpf_link__destroy_perf_event(struct bpf_link *link)
+> +{
+> +	struct bpf_link_fd *l = (void *)link;
+> +	int err;
+> +
+> +	if (l->fd < 0)
+> +		return 0;
+> +
+> +	err = ioctl(l->fd, PERF_EVENT_IOC_DISABLE, 0);
+> +	close(l->fd);
+> +	return err;
+> +}
+> +
+> +struct bpf_link *bpf_program__attach_perf_event(struct bpf_program *prog,
+> +						int pfd)
+> +{
+> +	char errmsg[STRERR_BUFSIZE];
+> +	struct bpf_link_fd *link;
+> +	int bpf_fd, err;
+> +
+> +	bpf_fd = bpf_program__fd(prog);
+> +	if (bpf_fd < 0) {
+> +		pr_warning("program '%s': can't attach before loaded\n",
+> +			   bpf_program__title(prog, false));
+> +		return ERR_PTR(-EINVAL);
+> +	}
+> +
+> +	link = malloc(sizeof(*link));
+> +	if (!link)
+> +		return ERR_PTR(-ENOMEM);
+> +	link->link.destroy = &bpf_link__destroy_perf_event;
+> +	link->fd = pfd;
+> +
+> +	if (ioctl(pfd, PERF_EVENT_IOC_SET_BPF, bpf_fd) < 0) {
+> +		err = -errno;
+> +		free(link);
+> +		pr_warning("program '%s': failed to attach to pfd %d: %s\n",
+> +			   bpf_program__title(prog, false), pfd,
+> +			   libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
+> +		return ERR_PTR(err);
+> +	}
+> +	if (ioctl(pfd, PERF_EVENT_IOC_ENABLE, 0) < 0) {
+> +		err = -errno;
+> +		free(link);
+> +		pr_warning("program '%s': failed to enable pfd %d: %s\n",
+> +			   bpf_program__title(prog, false), pfd,
+> +			   libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
+> +		return ERR_PTR(err);
+> +	}
+> +	return (struct bpf_link *)link;
+> +}
+> +
+>  enum bpf_perf_event_ret
+>  bpf_perf_event_read_simple(void *mmap_mem, size_t mmap_size, size_t page_size,
+>  			   void **copy_mem, size_t *copy_size,
+> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+> index 5082a5ebb0c2..1bf66c4a9330 100644
+> --- a/tools/lib/bpf/libbpf.h
+> +++ b/tools/lib/bpf/libbpf.h
+> @@ -169,6 +169,9 @@ struct bpf_link;
+>  
+>  LIBBPF_API int bpf_link__destroy(struct bpf_link *link);
+>  
+> +LIBBPF_API struct bpf_link *
+> +bpf_program__attach_perf_event(struct bpf_program *prog, int pfd);
+> +
+>  struct bpf_insn;
+>  
+>  /*
+> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+> index 3cde850fc8da..756f5aa802e9 100644
+> --- a/tools/lib/bpf/libbpf.map
+> +++ b/tools/lib/bpf/libbpf.map
+> @@ -169,6 +169,7 @@ LIBBPF_0.0.4 {
+>  	global:
+>  		bpf_link__destroy;
+>  		bpf_object__load_xattr;
+> +		bpf_program__attach_perf_event;
+>  		btf_dump__dump_type;
+>  		btf_dump__free;
+>  		btf_dump__new;
+> -- 
+> 2.17.1
+> 
