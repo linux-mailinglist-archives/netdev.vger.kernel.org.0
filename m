@@ -2,94 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D872559957
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 13:42:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A8DE5995B
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 13:44:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726749AbfF1LmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 07:42:16 -0400
-Received: from mx2.suse.de ([195.135.220.15]:51260 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726574AbfF1LmP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Jun 2019 07:42:15 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id A62BDAD72;
-        Fri, 28 Jun 2019 11:42:14 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id C0A6EE00E0; Fri, 28 Jun 2019 13:42:12 +0200 (CEST)
-Date:   Fri, 28 Jun 2019 13:42:12 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Jiri Pirko <jiri@resnulli.us>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Andrew Lunn <andrew@lunn.ch>, David Ahern <dsahern@gmail.com>,
-        davem@davemloft.net, jakub.kicinski@netronome.com,
-        mlxsw@mellanox.com
-Subject: Re: [RFC] longer netdev names proposal
-Message-ID: <20190628114212.GE29149@unicorn.suse.cz>
-References: <20190627094327.GF2424@nanopsycho>
- <26b73332-9ea0-9d2c-9185-9de522c72bb9@gmail.com>
- <20190627180803.GJ27240@unicorn.suse.cz>
- <20190627112305.7e05e210@hermes.lan>
- <20190627183538.GI31189@lunn.ch>
- <20190627183948.GK27240@unicorn.suse.cz>
- <20190627122041.18c46daf@hermes.lan>
- <20190628111216.GA2568@nanopsycho>
+        id S1726646AbfF1LoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 07:44:17 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:35393 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726564AbfF1LoR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 07:44:17 -0400
+Received: from [5.158.153.52] (helo=linutronix.de)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:RSA_AES_256_CBC_SHA1:256)
+        (Exim 4.80)
+        (envelope-from <kurt.kanzenbach@linutronix.de>)
+        id 1hgpIb-0002So-1B; Fri, 28 Jun 2019 13:44:13 +0200
+Date:   Fri, 28 Jun 2019 13:44:12 +0200
+From:   Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Benedikt Spranger <b.spranger@linutronix.de>,
+        netdev@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Subject: Re: [RFC PATCH 1/1] Documentation: net: dsa: b53: Describe b53
+ configuration
+Message-ID: <20190628114412.3qqsnneeji5wxzi4@linutronix.de>
+References: <39b134ed-9f3e-418a-bf26-c1e716018e7e@gmail.com>
+ <20190627101506.19727-1-b.spranger@linutronix.de>
+ <20190627101506.19727-2-b.spranger@linutronix.de>
+ <5fe6c1b8-6273-be3d-cf75-6efdd7f9b27d@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="bcamcvmd4uhx7w3s"
 Content-Disposition: inline
-In-Reply-To: <20190628111216.GA2568@nanopsycho>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <5fe6c1b8-6273-be3d-cf75-6efdd7f9b27d@gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 28, 2019 at 01:12:16PM +0200, Jiri Pirko wrote:
-> 
-> I think that it is desired for kernel to work with "real alias" as a
-> handle. Userspace could either pass ifindex, IFLA_NAME or "real alias".
-> Userspace mapping like you did here might be perhaps okay for iproute2,
-> but I think that we need something and easy to use for all.
-> 
-> Let's call it "altname". Get would return:
-> 
-> IFLA_NAME  eth0
-> IFLA_ALT_NAME_LIST
->    IFLA_ALT_NAME  eth0
->    IFLA_ALT_NAME  somethingelse
->    IFLA_ALT_NAME  somenamethatisreallylong
-> 
-> then userspace would pass with a request (get/set/del):
-> IFLA_ALT_NAME eth0/somethingelse/somenamethatisreallylong
-> or
-> IFLA_NAME eth0 if it is talking with older kernel
-> 
-> Then following would do exactly the same:
-> ip link set eth0 addr 11:22:33:44:55:66
-> ip link set somethingelse addr 11:22:33:44:55:66
-> ip link set somenamethatisreallylong addr 11:22:33:44:55:66
 
-Yes, this sounds nice.
+--bcamcvmd4uhx7w3s
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> We would have to figure out the iproute2 iface to add/del altnames:
-> ip link add eth0 altname somethingelse
-> ip link del eth0 altname somethingelse
->   this might be also:
->   ip link del somethingelse altname somethingelse
+Hi,
 
-This would be a bit confusing, IMHO, as so far
+On Thu, Jun 27, 2019 at 09:38:16AM -0700, Florian Fainelli wrote:
+> On 6/27/19 3:15 AM, Benedikt Spranger wrote:
+> > Document the different needs of documentation for the b53 driver.
+> >
+> > Signed-off-by: Benedikt Spranger <b.spranger@linutronix.de>
+> > ---
+> >  Documentation/networking/dsa/b53.rst | 300 +++++++++++++++++++++++++++
+> >  1 file changed, 300 insertions(+)
+> >  create mode 100644 Documentation/networking/dsa/b53.rst
+> >
+> > diff --git a/Documentation/networking/dsa/b53.rst b/Documentation/networking/dsa/b53.rst
+> > new file mode 100644
+> > index 000000000000..5838cf6230da
+> > --- /dev/null
+> > +++ b/Documentation/networking/dsa/b53.rst
+> > @@ -0,0 +1,300 @@
+> > +.. SPDX-License-Identifier: GPL-2.0
+> > +
+> > +==========================================
+> > +Broadcom RoboSwitch Ethernet switch driver
+> > +==========================================
+> > +
+> > +The Broadcom RoboSwitch Ethernet switch family is used in quite a range of
+> > +xDSL router, cable modems and other multimedia devices.
+> > +
+> > +The actual implementation supports the devices BCM5325E, BCM5365, BCM539x,
+> > +BCM53115 and BCM53125 as well as BCM63XX.
+> > +
+> > +Implementation details
+> > +======================
+> > +
+> > +The driver is located in ``drivers/net/dsa/bcm_sf2.c`` and is implemented as a
+> > +DSA driver; see ``Documentation/networking/dsa/dsa.rst`` for details on the
+> > +subsystemand what it provides.
+>
+> The driver is under drivers/net/dsa/b53/
+>
+> s/ethernet/Ethernet/ for your global submission.
+>
+> What you are describing is not entirely specific to the B53 driver
+> (maybe with the exception of having a VLAN tag on the DSA master network
+> device, since B53 puts the CPU port tagged in all VLANs by default), and
+> therefore the entire document should be written with the general DSA
+> devices in mind, and eventually pointing out where B53 differs in a
+> separate document.
 
-  ip link add $name ...
+That's true. It makes sense to split the documentation into a generic
+and the b53 specific part.
 
-always means we want to add or delete new device $name which would not
-be the case here. How about the other way around:
+Thanks a lot, Bene, for doing this. It's really helpful.
 
-  ip link add somethingelse altname_for eth0
+Thanks,
+Kurt
 
-(preferrably with a better keyword than "altname_for" :-) ). Or maybe
+--bcamcvmd4uhx7w3s
+Content-Type: application/pgp-signature; name="signature.asc"
 
-  ip altname add somethingelse dev eth0
-  ip altname del somethingelse dev eth0
+-----BEGIN PGP SIGNATURE-----
 
-Michal
+iQIzBAABCAAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl0V/YwACgkQeSpbgcuY
+8KYxORAAuBTdvWuo1aXxQPR+PX9Pq7GUiuvSKGxMs+lCpD7E0xlKqVzYtOi8H46O
+2KdY3nep733E7W3ATECq6cUtn750w9ArE1Y8OaogAC9bsfY3/nI4FzkbeRfNozpc
+70ONWn81D2C2plr8rLZLGDVyuRJISVZk+y2YBxvXhZ0lWn/MAOA81dqe1cq1rrBc
+Hvf7xO5pHTg7/68u4RK11JoCAcZtw63AvnIE+YCBt3rG12unzc4Gl1e914WnCe7s
+STG7sJ2rPhVECNtRuKjMvfx8R2d5SyzjUAj7Mo32qzf2ZkcxI4JTiNPVzyDysuIS
+4XCbuLxlev2UrOJGMZPMA6X7E2KF2q1buzSCNIlqT/SsOHbtdI/rN2PQl377NvfV
+5KABiMh4+xKlMS9/51l4EhWY3tKJ5ZHA6wjaSj9bhGPJRjUi5dqga6+j0zKeKVWr
+RGqTHnt2bYaKBw2CO94DznwtiDmHmYMUvwgqS1bbvWXj9M1EzlG5GTuXppvwgcCi
+iwxg11LD1ItkIfEPhVcdwO1pQmJLCf3bczAyLkVIJ4RdePFFGrLwetLLUYNmWjLA
+kZyjak7k/r9KGtkYCdHu8HMC6Cks/lJahiM02cllzgFov7IlRYrlVNeBQhf4kgob
+FI/Er+1lOKzsmEbPg5PDyoE45rA6sNcfbk9WsdvQ2d0M7abaFMY=
+=j7bp
+-----END PGP SIGNATURE-----
+
+--bcamcvmd4uhx7w3s--
