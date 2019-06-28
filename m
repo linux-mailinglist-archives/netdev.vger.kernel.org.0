@@ -2,126 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D56A05969D
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 10:57:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C093B596A7
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 11:00:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726543AbfF1I5Q convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 28 Jun 2019 04:57:16 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:42503 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725873AbfF1I5Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 04:57:16 -0400
-Received: by mail-ed1-f65.google.com with SMTP id z25so9970809edq.9
-        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 01:57:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=BfhANZFC/pdpdewgrXRERfqh4Hf74DJq5+zYZ3tzAgw=;
-        b=qRpWX1p1bxRvOYAXANyaqqjPKbX6AKfPw4Sr8oDx+apFpImJyNeMx6ibc5aPQj1m5f
-         2lkxXbnNYJtPUJniNY2hoCHp+k5RXqGPwH1+9iFtH+HSqVPmKFMtHVnOW0uEp9tk+Eos
-         BLINFZWVf2KbTns9F73loBPwc7RBMpq5KmowfHnA7r8lCWzO99LeyIlxOuPdUV+TXK7C
-         ZiEQlVvEjsLiDBgoWA+iv+yJLrJNic2MR0Mg8G1d1lsAm5D4lyiIh5nA9LGVzkxjHwVd
-         ZM4wNh5JsNVvLienMweR/axOV6oJMV9g6TPenuGvM7eHICFK3ud15cKjyW8s6DYjT+dm
-         HIzw==
-X-Gm-Message-State: APjAAAWgGxHEtiHvuyspuD9VLmiGf1Mz2nOZthxfi+S8AX7XcU9VCWmQ
-        HFoFi1Yiss+h3+H/01cocON/Pg==
-X-Google-Smtp-Source: APXvYqxDmsiGLRZIDd27Edo4rWvEoCNHXp2OctY9f57YrPAnkvhisn+72oxipforcZAxGHphYWsokQ==
-X-Received: by 2002:a50:9929:: with SMTP id k38mr9703747edb.4.1561712234416;
-        Fri, 28 Jun 2019 01:57:14 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id w17sm477261edi.15.2019.06.28.01.57.13
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 28 Jun 2019 01:57:13 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 44689181CA7; Fri, 28 Jun 2019 10:57:13 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-Subject: Re: [PATCH bpf-next v5 2/3] bpf_xdp_redirect_map: Perform map lookup in eBPF helper
-In-Reply-To: <87pnmy86mm.fsf@toke.dk>
-References: <156125626076.5209.13424524054109901554.stgit@alrua-x1> <156125626136.5209.14349225282974871197.stgit@alrua-x1> <04a5da1d-6d0e-5963-4622-20cb54285926@iogearbox.net> <874l4a9o2b.fsf@toke.dk> <d3f76a90-5cf4-4437-e3e1-75fda1248e53@iogearbox.net> <87pnmy86mm.fsf@toke.dk>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 28 Jun 2019 10:57:13 +0200
-Message-ID: <87mui284uu.fsf@toke.dk>
+        id S1726567AbfF1I74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 04:59:56 -0400
+Received: from out30-133.freemail.mail.aliyun.com ([115.124.30.133]:47302 "EHLO
+        out30-133.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725873AbfF1I7y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 04:59:54 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R841e4;CH=green;DM=||false|;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=zhiyuan2048@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0TVQ6QnS_1561712375;
+Received: from houzhiyuandeMacBook-Pro.local(mailfrom:zhiyuan2048@linux.alibaba.com fp:SMTPD_---0TVQ6QnS_1561712375)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 28 Jun 2019 16:59:36 +0800
+Subject: Re: [PATCH net-next] net: ipvlan: forward ingress packet to slave's
+ l2 in l3s mode
+To:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
+        idosch@mellanox.com, daniel@iogearbox.net, petrm@mellanox.com,
+        jiri@mellanox.com, tglx@linutronix.de, linmiaohe@huawei.com
+Cc:     zhabin@linux.alibaba.com, caspar@linux.alibaba.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        wei.yang1@linux.alibaba.com
+References: <20190625064208.2256-1-zhiyuan2048@linux.alibaba.com>
+ <24fab1f43190f4994e47da4c2fa3fd622cd4e8ca.camel@redhat.com>
+From:   Zhiyuan Hou <zhiyuan2048@linux.alibaba.com>
+Message-ID: <07b3b417-c951-b9ce-743d-0fbe50e39c39@linux.alibaba.com>
+Date:   Fri, 28 Jun 2019 16:59:35 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+In-Reply-To: <24fab1f43190f4994e47da4c2fa3fd622cd4e8ca.camel@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Toke Høiland-Jørgensen <toke@redhat.com> writes:
 
-> Daniel Borkmann <daniel@iogearbox.net> writes:
+在 2019/6/26 下午4:16, Paolo Abeni 写道:
+> Hi,
 >
->> On 06/28/2019 09:17 AM, Toke Høiland-Jørgensen wrote:
->>> Daniel Borkmann <daniel@iogearbox.net> writes:
->>> 
->>>> On 06/23/2019 04:17 AM, Toke Høiland-Jørgensen wrote:
->>>>> From: Toke Høiland-Jørgensen <toke@redhat.com>
->>>>>
->>>>> The bpf_redirect_map() helper used by XDP programs doesn't return any
->>>>> indication of whether it can successfully redirect to the map index it was
->>>>> given. Instead, BPF programs have to track this themselves, leading to
->>>>> programs using duplicate maps to track which entries are populated in the
->>>>> devmap.
->>>>>
->>>>> This patch fixes this by moving the map lookup into the bpf_redirect_map()
->>>>> helper, which makes it possible to return failure to the eBPF program. The
->>>>> lower bits of the flags argument is used as the return code, which means
->>>>> that existing users who pass a '0' flag argument will get XDP_ABORTED.
->>>>>
->>>>> With this, a BPF program can check the return code from the helper call and
->>>>> react by, for instance, substituting a different redirect. This works for
->>>>> any type of map used for redirect.
->>>>>
->>>>> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
->>>>
->>>> Overall series looks good to me. Just very small things inline here & in the
->>>> other two patches:
->>>>
->>>> [...]
->>>>> @@ -3750,9 +3742,16 @@ BPF_CALL_3(bpf_xdp_redirect_map, struct bpf_map *, map, u32, ifindex,
->>>>>  {
->>>>>  	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
->>>>>  
->>>>> -	if (unlikely(flags))
->>>>> +	/* Lower bits of the flags are used as return code on lookup failure */
->>>>> +	if (unlikely(flags > XDP_TX))
->>>>>  		return XDP_ABORTED;
->>>>>  
->>>>> +	ri->item = __xdp_map_lookup_elem(map, ifindex);
->>>>> +	if (unlikely(!ri->item)) {
->>>>> +		WRITE_ONCE(ri->map, NULL);
->>>>
->>>> This WRITE_ONCE() is not needed. We never set it before at this point.
->>> 
->>> You mean the WRITE_ONCE() wrapper is not needed, or the set-to-NULL is
->>> not needed? The reason I added it is in case an eBPF program calls the
->>> helper twice before returning, where the first lookup succeeds but the
->>> second fails; in that case we want to clear the ->map pointer, no?
+> On Tue, 2019-06-25 at 14:42 +0800, Zhiyuan Hou wrote:
+>> In ipvlan l3s mode,  ingress packet is switched to slave interface and
+>> delivers to l4 stack. This may cause two problems:
 >>
->> Yeah I meant the set-to-NULL. So if first call succeeds, and the second one
->> fails, then the expected semantics wrt the first call are as if the program
->> would have called bpf_xdp_redirect() only?
+>>    1. When slave is in an ns different from master, the behavior of stack
+>>    in slave ns may cause confusion for users. For example, iptables, tc,
+>>    and other l2/l3 functions are not available for ingress packet.
 >>
->> Looking at the code again, if we set ri->item to NULL, then we /must/
->> also set ri->map to NULL. I guess there are two options: i) leave as
->> is, ii) keep the __xdp_map_lookup_elem() result in a temp var, if it's
->> NULL return flags, otherwise only /then/ update ri->item, so that
->> semantics are similar to the invalid flags check earlier. I guess fine
->> either way, in case of i) there should probably be a comment since
->> it's less obvious.
+>>    2. l3s mode is not used for tap device, and cannot support ipvtap. But
+>>    in VM or container based VM cases, tap device is a very common device.
+>>
+>> In l3s mode's input nf_hook, this patch calles the skb_forward_dev() to
+>> forward ingress packet to slave and uses nf_conntrack_confirm() to make
+>> conntrack work with new mode.
+>>
+>> Signed-off-by: Zha Bin <zhabin@linux.alibaba.com>
+>> Signed-off-by: Zhiyuan Hou <zhiyuan2048@linux.alibaba.com>
+>> ---
+>>   drivers/net/ipvlan/ipvlan.h     |  9 ++++++++-
+>>   drivers/net/ipvlan/ipvlan_l3s.c | 16 ++++++++++++++--
+>>   2 files changed, 22 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/net/ipvlan/ipvlan.h b/drivers/net/ipvlan/ipvlan.h
+>> index 3837c897832e..48c814e24c3f 100644
+>> --- a/drivers/net/ipvlan/ipvlan.h
+>> +++ b/drivers/net/ipvlan/ipvlan.h
+>> @@ -172,6 +172,14 @@ void ipvlan_link_delete(struct net_device *dev, struct list_head *head);
+>>   void ipvlan_link_setup(struct net_device *dev);
+>>   int ipvlan_link_register(struct rtnl_link_ops *ops);
+>>   #ifdef CONFIG_IPVLAN_L3S
+>> +
+>> +#include <net/netfilter/nf_conntrack_core.h>
+>> +
+>> +static inline int ipvlan_confirm_conntrack(struct sk_buff *skb)
+>> +{
+>> +	return nf_conntrack_confirm(skb);
+>> +}
+>> +
+>>   int ipvlan_l3s_register(struct ipvl_port *port);
+>>   void ipvlan_l3s_unregister(struct ipvl_port *port);
+>>   void ipvlan_migrate_l3s_hook(struct net *oldnet, struct net *newnet);
+>> @@ -206,5 +214,4 @@ static inline bool netif_is_ipvlan_port(const struct net_device *dev)
+>>   {
+>>   	return rcu_access_pointer(dev->rx_handler) == ipvlan_handle_frame;
+>>   }
+>> -
+>>   #endif /* __IPVLAN_H */
+>> diff --git a/drivers/net/ipvlan/ipvlan_l3s.c b/drivers/net/ipvlan/ipvlan_l3s.c
+>> index 943d26cbf39f..ed210002f593 100644
+>> --- a/drivers/net/ipvlan/ipvlan_l3s.c
+>> +++ b/drivers/net/ipvlan/ipvlan_l3s.c
+>> @@ -95,14 +95,26 @@ static unsigned int ipvlan_nf_input(void *priv, struct sk_buff *skb,
+>>   {
+>>   	struct ipvl_addr *addr;
+>>   	unsigned int len;
+>> +	int ret = NF_ACCEPT;
+>> +	bool success;
+>>   
+>>   	addr = ipvlan_skb_to_addr(skb, skb->dev);
+>>   	if (!addr)
+>>   		goto out;
+>>   
+>> -	skb->dev = addr->master->dev;
+>>   	len = skb->len + ETH_HLEN;
+>> -	ipvlan_count_rx(addr->master, len, true, false);
+>> +
+>> +	ret = ipvlan_confirm_conntrack(skb);
+>> +	if (ret != NF_ACCEPT) {
+>> +		ipvlan_count_rx(addr->master, len, false, false);
+>> +		goto out;
+>> +	}
+>> +
+>> +	skb_push_rcsum(skb, ETH_HLEN);
+>> +	success = dev_forward_skb(addr->master->dev, skb) == NET_RX_SUCCESS;
+> This looks weird to me: if I read the code correctly, the skb will
+> traverse twice NF_INET_LOCAL_IN, once due to the l3s hooking and
+> another one due to dev_forward_skb().
 >
-> Yeah, I think a temp var is probably clearer, will do that :)
+> Also, tc ingreess, etc will run after the first traversing of
+> NF_INET_LOCAL_IN.
 
-Actually, thinking about this some more, I think it's better to
-completely clear out the state the second time around. I'll add a
-comment to explain.
+Yes,  but the skb's device has been modified from the master to slave. 
+In most use cases of
 
--Toke
+ipvlan, the master device and slave device are in different namespace 
+(ns), so the second
+
+triggered LOCAL_IN is completely isolated from the first triggered 
+LOCAL_IN.
+
+
+When the master device and slave device are in the same ns, the behavior 
+of this patch is
+
+similar to that of L2 over L3 tunnel (forwarding from L3 to L2 device).
+
+
+Since the device has been modified, the second triggered tc-ingress is 
+thus different.
+
+>
+> All in all I think that if full l2 processing is required, a different
+> mode or a different virtual device should be used.
+
+We can implement it in a new mode, but such a way is similar to the 
+current ipvlan l3s mode.
+
+Also, ipvlan l3s mode has two problems described in patch's commit log. 
+I think that a more
+
+appropriate solution is to modify ipvlan l3s.
+
+> Cheers,
+>
+> Paolo
