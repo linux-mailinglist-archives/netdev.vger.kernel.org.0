@@ -2,95 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 64365593FC
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 08:03:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93AD459401
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 08:06:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726882AbfF1GDj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 02:03:39 -0400
-Received: from mail1.windriver.com ([147.11.146.13]:53484 "EHLO
-        mail1.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726572AbfF1GDj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 02:03:39 -0400
-Received: from ALA-HCA.corp.ad.wrs.com ([147.11.189.40])
-        by mail1.windriver.com (8.15.2/8.15.1) with ESMTPS id x5S63GbX015888
-        (version=TLSv1 cipher=AES128-SHA bits=128 verify=FAIL);
-        Thu, 27 Jun 2019 23:03:16 -0700 (PDT)
-Received: from [128.224.162.221] (128.224.162.221) by ALA-HCA.corp.ad.wrs.com
- (147.11.189.50) with Microsoft SMTP Server (TLS) id 14.3.439.0; Thu, 27 Jun
- 2019 23:03:16 -0700
-Subject: Re: [PATCH] netfilter: Fix remainder of pseudo-header protocol 0
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-CC:     <kadlec@blackhole.kfki.hu>, <fw@strlen.de>, <davem@davemloft.net>,
-        <netfilter-devel@vger.kernel.org>, <coreteam@netfilter.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <1561346258-272481-1-git-send-email-zhe.he@windriver.com>
- <20190627184903.atdcwk4wnfaayyer@salvia>
-From:   He Zhe <zhe.he@windriver.com>
-Message-ID: <aafd41fb-b58e-a402-c8fe-5eeffc7a7755@windriver.com>
-Date:   Fri, 28 Jun 2019 14:03:12 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1726865AbfF1GGX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 02:06:23 -0400
+Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:52772 "EHLO
+        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726553AbfF1GGW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 02:06:22 -0400
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.89)
+        (envelope-from <fw@strlen.de>)
+        id 1hgk1Z-0000hi-GM; Fri, 28 Jun 2019 08:06:17 +0200
+Date:   Fri, 28 Jun 2019 08:06:17 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     wenxu <wenxu@ucloud.cn>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 2/3 nf-next] netfilter:nf_flow_table: Support bridge type
+ flow offload
+Message-ID: <20190628060617.az2quv4bodrenuli@breakpoint.cc>
+References: <1561545148-11978-1-git-send-email-wenxu@ucloud.cn>
+ <1561545148-11978-2-git-send-email-wenxu@ucloud.cn>
+ <20190626183816.3ux3iifxaal4ffil@breakpoint.cc>
+ <20190626191945.2mktaqrcrfcrfc66@breakpoint.cc>
+ <dce5cba2-766c-063e-745f-23b3dd83494b@ucloud.cn>
+ <20190627125839.t56fnptdeqixt7wd@salvia>
+ <b2a48653-9f30-18a9-d0e1-eaa940a361a9@ucloud.cn>
 MIME-Version: 1.0
-In-Reply-To: <20190627184903.atdcwk4wnfaayyer@salvia>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=iso-8859-15
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Originating-IP: [128.224.162.221]
+In-Reply-To: <b2a48653-9f30-18a9-d0e1-eaa940a361a9@ucloud.cn>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+wenxu <wenxu@ucloud.cn> wrote:
+> ns21 iperf to 10.0.0.8 with dport 22 in ns22
+> first time with OFFLOAD enable
+> 
+> nft add flowtable bridge firewall fb2 { hook ingress priority 0 \; devices = { veth21, veth22 } \; }
+> nft add chain bridge firewall ftb-all {type filter hook forward priority 0 \; policy accept \; }
+> nft add rule bridge firewall ftb-all counter ct zone 2 ip protocol tcp flow offload @fb2
+> 
+> # iperf -c 10.0.0.8 -p 22 -t 60 -i2
+[..]
+> [  3]  0.0-60.0 sec   353 GBytes  50.5 Gbits/sec
+> 
+> The second time on any offload:
+> # iperf -c 10.0.0.8 -p 22 -t 60 -i2
+> [  3]  0.0-60.0 sec   271 GBytes  38.8 Gbits/sec
 
+Wow, this is pretty impressive.  Do you have numbers without
+offload and no connection tracking?
 
-On 6/28/19 2:49 AM, Pablo Neira Ayuso wrote:
-> On Mon, Jun 24, 2019 at 11:17:38AM +0800, zhe.he@windriver.com wrote:
->> From: He Zhe <zhe.he@windriver.com>
->>
->> Since v5.1-rc1, some types of packets do not get unreachable reply with the
->> following iptables setting. Fox example,
->>
->> $ iptables -A INPUT -p icmp --icmp-type 8 -j REJECT
->> $ ping 127.0.0.1 -c 1
->> PING 127.0.0.1 (127.0.0.1) 56(84) bytes of data.
->> â€” 127.0.0.1 ping statistics â€”
->> 1 packets transmitted, 0 received, 100% packet loss, time 0ms
->>
->> We should have got the following reply from command line, but we did not.
->> From 127.0.0.1 icmp_seq=1 Destination Port Unreachable
->>
->> Yi Zhao reported it and narrowed it down to:
->> 7fc38225363d ("netfilter: reject: skip csum verification for protocols that don't support it"),
->>
->> This is because nf_ip_checksum still expects pseudo-header protocol type 0 for
->> packets that are of neither TCP or UDP, and thus ICMP packets are mistakenly
->> treated as TCP/UDP.
->>
->> This patch corrects the conditions in nf_ip_checksum and all other places that
->> still call it with protocol 0.
-> Looking at 7fc38225363dd8f19e667ad7c77b63bc4a5c065d, I wonder this can
-> be fixed while simplifying it...
->
-> I think nf_reject_verify_csum() is useless?
->
-> In your patch, now you explicitly check for IPPROTO_TCP and
-> IPPROTO_UDP to validate the checksum.
-
-Thanks for your review.
-
-I suppose the two main points of 7fc38225363d are valid and I was trying to
-align with them and fix them:
-1) Skip csum verification for protocols that don't support it.
-2) Remove the protocol 0 used to indicate non-TCP/UDP packets, and use actual
-Â Â  types instead to be clear.
-
-1) uses nf_reject_verify_csum to skip those that should be skipped and leaves
-the protocols that support csum to the rest of the logic including
-nf_ip_checksum. But 2) removes the "0" transition from the rest of the
-logic and thus causes this issue. So I add the explicit check against TCP/UDP to
-nf_ip_checksum. And nf_reject_verify_csum is still useful.
-
-Zhe
-
->
-
+Is this with CONFIG_RETPOLINE=y (just curious)?
