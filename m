@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 990AC5A679
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 23:40:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 446B05A674
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 23:40:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726980AbfF1VkH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 17:40:07 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:42388 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726916AbfF1VkA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 17:40:00 -0400
-Received: by mail-pg1-f194.google.com with SMTP id k13so3135639pgq.9
-        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 14:40:00 -0700 (PDT)
+        id S1726942AbfF1VkE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 17:40:04 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:33611 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726927AbfF1VkC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 17:40:02 -0400
+Received: by mail-pg1-f193.google.com with SMTP id m4so3153390pgk.0
+        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 14:40:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:subject:date:message-id:in-reply-to:references;
-        bh=Ieak5TSiLkFk8NdRoWjkC10rsdtoMwlKDgYVq7h6yRA=;
-        b=fwqtk1byzvLj+eRhBVDSWttaO+nMBU3c2+mMFB7oj4T0poN08+Qzid4CHV+t5MYyF+
-         vAADj4506zd5a84wRZQHJyJAYy3CPTFTHBAOf7yBCwB1A34g+GhfVHdy001ZOMbkyc0/
-         Q0Mmfe59NofhBQZ+zkwu4CDNA7S98L8wyN9a9ecE9xLxswhcs0DWCe/io7mxmeDxoWEq
-         /j697kEpfXxqXbw7oW3uyPdFttHTL1goqQIuBE/nK5Q9mrySSD3AtJLEmp04n7ONRbuL
-         FqVGK9py3/7czaduMkke51eZ492AVa4363DEW/bALlgYl+HBM9x3keOwP+9v9c5oZRqC
-         T0JQ==
+        bh=vrA9a3RnZgpKGO9mc0iTgllL3ztjrVoX3ytTOvjagnM=;
+        b=mJOlB7YuzQAU7PyviaC10bVygD6HiPa2TyYJ55jkgUFD2Ib67MvqfLN5IfBYMisAJD
+         Yqm7R4frTPp0mkhNRASNaYHFXnDzMoDKmhtCZs/ybOKuYnn/J7rNM05yIIBS77LLYwbN
+         1IYT4HnVNTOqOUo47BHAVsFEzx0M/Bw7bxtcmiw2i2lub3qk0V+JgOZLxDWFecCYZvtN
+         HewoxbpwNAM544k7j6vZ8iNIqToD9fsbVCxtzsqpD6WVSbUg89yJ32xNupFrO40asZ9c
+         F1nSFkc1fSivpT1utWvlFqPbM4h7euFb4ns/kDwMXyblLeDob9diCbNsszgHnGdVUwvw
+         tsBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references;
-        bh=Ieak5TSiLkFk8NdRoWjkC10rsdtoMwlKDgYVq7h6yRA=;
-        b=WNVvQ4eyWIRWYf+9cpK1wQTsAconScY1lsT2P+KBizyYrcRPy+62bWWi/lE5KgHokZ
-         O7n++GOcdDFrpXmiA5vTJ1HcR1VJvqDoEHWRHa/3zLQ5ndrkLmuzVpx0wLkxaaPyYXt/
-         bUXDAK6Ihs0RGdZ9afijtxOK4S4kIvLt/T6OCvMTkviMtbZKhY/5k7+Hv2A1F3LuGc1R
-         Hk7dI9MU/Aqi9qFtB/HXcNIzMuJx0TWzUZ4whR2nMuQTvh1GI4iqGJ8sVQxim9MJbzI+
-         dI7plq+rREH5FisZSJ81ZDfIDPvBE0kUtCWezsRGaoZS3f8KergwonO7zAI1PnoqTCM4
-         9IEQ==
-X-Gm-Message-State: APjAAAVJDFftGU4GtyVw6vcryyheoSG7HQZMtvQwiSU0EIW58BIKtUUZ
-        LFBIckT149N+YxGTR6IVJBQ/mfW0Pcs=
-X-Google-Smtp-Source: APXvYqwpnI3Paru1H2b3W0hTKdNy8HchDj4tkvf4+78Mzkk5rehGYXgH21R9pXjr6W81Dbtr0f6m5w==
-X-Received: by 2002:a17:90a:8d86:: with SMTP id d6mr15032548pjo.127.1561757999627;
-        Fri, 28 Jun 2019 14:39:59 -0700 (PDT)
+        bh=vrA9a3RnZgpKGO9mc0iTgllL3ztjrVoX3ytTOvjagnM=;
+        b=cZJ0fPcQFeyGZ1MnNgDYmvFG76O6RClEPHVNxN+4yww2reR0WgHTpIqfbMhHO5B8Zb
+         KUYMUOiGGsA9hPmiaf4J9MAwgg1oS3M1o7qb6zTj/w+p7jFaDVNeP9jTDtftxBZh3OMv
+         RHaxq4W0CsULvLAZyCdQaNYvPd5tQ+AHf7PTGwHMl/Jed0p9Qls58GyfZM5lGbIVo59+
+         PCO/V2Wkt2V/L24AVSw2BGE2U5EbIfFbcsIUz9ToHJ053pxD2hGe74uCmgDmbpSqFmKb
+         okmdsDv0SCZL2MF6fy0wC1/uPg/sdN+Zya/bK+ZovFs5cTDoUbxyPXB5ynYNK3UOcODB
+         tY+w==
+X-Gm-Message-State: APjAAAWbWS8K8TWibK4gD7EEoX+/uyLPYDYx5DUIOmyzBgsgoZDMIBVV
+        Msjk6xclhYmdCt9dHytGU5lmJoBC5Bs=
+X-Google-Smtp-Source: APXvYqxD8ZYjTvxx9fGnkf4bs1trw47hMXM25OPfhTuTVP3H2SGZWcf7v9FDhbf3Bs0f1HdjnOaVDA==
+X-Received: by 2002:a17:90a:360b:: with SMTP id s11mr15474504pjb.51.1561758000881;
+        Fri, 28 Jun 2019 14:40:00 -0700 (PDT)
 Received: from driver-dev1.pensando.io ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id 135sm3516920pfb.137.2019.06.28.14.39.58
+        by smtp.gmail.com with ESMTPSA id 135sm3516920pfb.137.2019.06.28.14.39.59
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 28 Jun 2019 14:39:59 -0700 (PDT)
+        Fri, 28 Jun 2019 14:40:00 -0700 (PDT)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     snelson@pensando.io, netdev@vger.kernel.org
-Subject: [PATCH v2 net-next 16/19] ionic: Add driver stats
-Date:   Fri, 28 Jun 2019 14:39:31 -0700
-Message-Id: <20190628213934.8810-17-snelson@pensando.io>
+Subject: [PATCH v2 net-next 17/19] ionic: Add RSS support
+Date:   Fri, 28 Jun 2019 14:39:32 -0700
+Message-Id: <20190628213934.8810-18-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190628213934.8810-1-snelson@pensando.io>
 References: <20190628213934.8810-1-snelson@pensando.io>
@@ -56,592 +56,279 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add in the detailed statistics for ethtool -S that the driver
-keeps as it processes packets.  Display of the additional
-debug statistics can be enabled through the ethtool priv-flags
-feature.
+Add code to manipulate through ethtool the RSS configuration
+used by the NIC.
 
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- drivers/net/ethernet/pensando/ionic/Makefile  |   3 +-
- .../ethernet/pensando/ionic/ionic_ethtool.c   | 109 ++++++
- .../net/ethernet/pensando/ionic/ionic_lif.h   |  14 +
- .../net/ethernet/pensando/ionic/ionic_stats.c | 333 ++++++++++++++++++
- .../net/ethernet/pensando/ionic/ionic_stats.h |  53 +++
- 5 files changed, 511 insertions(+), 1 deletion(-)
- create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_stats.c
- create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_stats.h
+ .../ethernet/pensando/ionic/ionic_ethtool.c   | 73 +++++++++++++++
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 89 +++++++++++++++++++
+ .../net/ethernet/pensando/ionic/ionic_lif.h   |  8 ++
+ 3 files changed, 170 insertions(+)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/Makefile b/drivers/net/ethernet/pensando/ionic/Makefile
-index 0e2dc53f08d4..4f3cfbf36c23 100644
---- a/drivers/net/ethernet/pensando/ionic/Makefile
-+++ b/drivers/net/ethernet/pensando/ionic/Makefile
-@@ -4,4 +4,5 @@
- obj-$(CONFIG_IONIC) := ionic.o
- 
- ionic-y := ionic_main.o ionic_bus_pci.o ionic_dev.o ionic_ethtool.o \
--	   ionic_lif.o ionic_rx_filter.o ionic_txrx.o ionic_debugfs.o
-+	   ionic_lif.o ionic_rx_filter.o ionic_txrx.o ionic_debugfs.o \
-+	   ionic_stats.o
 diff --git a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-index 2bbe5819387b..518e79c90fca 100644
+index 518e79c90fca..cd4c0651096a 100644
 --- a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
 +++ b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-@@ -8,6 +8,84 @@
- #include "ionic_bus.h"
- #include "ionic_lif.h"
- #include "ionic_ethtool.h"
-+#include "ionic_stats.h"
-+
-+static const char ionic_priv_flags_strings[][ETH_GSTRING_LEN] = {
-+#define PRIV_F_SW_DBG_STATS		BIT(0)
-+	"sw-dbg-stats",
-+};
-+#define PRIV_FLAGS_COUNT ARRAY_SIZE(ionic_priv_flags_strings)
-+
-+static void ionic_get_stats_strings(struct lif *lif, u8 *buf)
-+{
-+	u32 i;
-+
-+	for (i = 0; i < ionic_num_stats_grps; i++)
-+		ionic_stats_groups[i].get_strings(lif, &buf);
-+}
-+
-+static void ionic_get_stats(struct net_device *netdev,
-+			    struct ethtool_stats *stats, u64 *buf)
-+{
-+	struct lif *lif;
-+	u32 i;
-+
-+	lif = netdev_priv(netdev);
-+
-+	memset(buf, 0, stats->n_stats * sizeof(*buf));
-+	for (i = 0; i < ionic_num_stats_grps; i++)
-+		ionic_stats_groups[i].get_values(lif, &buf);
-+}
-+
-+static int ionic_get_stats_count(struct lif *lif)
-+{
-+	int i, num_stats = 0;
-+
-+	for (i = 0; i < ionic_num_stats_grps; i++)
-+		num_stats += ionic_stats_groups[i].get_count(lif);
-+
-+	return num_stats;
-+}
-+
-+static int ionic_get_sset_count(struct net_device *netdev, int sset)
-+{
-+	struct lif *lif = netdev_priv(netdev);
-+	int count = 0;
-+
-+	switch (sset) {
-+	case ETH_SS_STATS:
-+		count = ionic_get_stats_count(lif);
-+		break;
-+	case ETH_SS_TEST:
-+		break;
-+	case ETH_SS_PRIV_FLAGS:
-+		count = PRIV_FLAGS_COUNT;
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+	return count;
-+}
-+
-+static void ionic_get_strings(struct net_device *netdev,
-+			      u32 sset, u8 *buf)
-+{
-+	struct lif *lif = netdev_priv(netdev);
-+
-+	switch (sset) {
-+	case ETH_SS_STATS:
-+		ionic_get_stats_strings(lif, buf);
-+		break;
-+	case ETH_SS_PRIV_FLAGS:
-+		memcpy(buf, ionic_priv_flags_strings,
-+		       PRIV_FLAGS_COUNT * ETH_GSTRING_LEN);
-+		break;
-+	case ETH_SS_TEST:
-+		// IONIC_TODO
-+	default:
-+		netdev_err(netdev, "Invalid sset %d\n", sset);
-+	}
-+}
- 
- static void ionic_get_drvinfo(struct net_device *netdev,
- 			      struct ethtool_drvinfo *drvinfo)
-@@ -406,6 +484,32 @@ static int ionic_set_channels(struct net_device *netdev,
+@@ -484,6 +484,74 @@ static int ionic_set_channels(struct net_device *netdev,
  	return 0;
  }
  
-+static u32 ionic_get_priv_flags(struct net_device *netdev)
++static int ionic_get_rxnfc(struct net_device *netdev,
++			   struct ethtool_rxnfc *info, u32 *rules)
 +{
 +	struct lif *lif = netdev_priv(netdev);
-+	u32 priv_flags = 0;
++	int err = 0;
 +
-+	if (test_bit(LIF_SW_DEBUG_STATS, lif->state))
-+		priv_flags |= PRIV_F_SW_DBG_STATS;
++	switch (info->cmd) {
++	case ETHTOOL_GRXRINGS:
++		info->data = lif->nxqs;
++		break;
++	default:
++		netdev_err(netdev, "Command parameter %d is not supported\n",
++			   info->cmd);
++		err = -EOPNOTSUPP;
++	}
 +
-+	return priv_flags;
++	return err;
 +}
 +
-+static int ionic_set_priv_flags(struct net_device *netdev, u32 priv_flags)
++static u32 ionic_get_rxfh_indir_size(struct net_device *netdev)
 +{
 +	struct lif *lif = netdev_priv(netdev);
-+	u32 flags = lif->flags;
 +
-+	clear_bit(LIF_SW_DEBUG_STATS, lif->state);
-+	if (priv_flags & PRIV_F_SW_DBG_STATS)
-+		set_bit(LIF_SW_DEBUG_STATS, lif->state);
++	return le16_to_cpu(lif->ionic->ident.lif.eth.rss_ind_tbl_sz);
++}
 +
-+	if (flags != lif->flags)
-+		lif->flags = flags;
++static u32 ionic_get_rxfh_key_size(struct net_device *netdev)
++{
++	return IONIC_RSS_HASH_KEY_SIZE;
++}
++
++static int ionic_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key,
++			  u8 *hfunc)
++{
++	struct lif *lif = netdev_priv(netdev);
++	unsigned int i, tbl_sz;
++
++	if (indir) {
++		tbl_sz = le16_to_cpu(lif->ionic->ident.lif.eth.rss_ind_tbl_sz);
++		for (i = 0; i < tbl_sz; i++)
++			indir[i] = lif->rss_ind_tbl[i];
++	}
++
++	if (key)
++		memcpy(key, lif->rss_hash_key, IONIC_RSS_HASH_KEY_SIZE);
++
++	if (hfunc)
++		*hfunc = ETH_RSS_HASH_TOP;
 +
 +	return 0;
 +}
 +
- static int ionic_get_module_info(struct net_device *netdev,
- 				 struct ethtool_modinfo *modinfo)
- 
-@@ -495,6 +599,11 @@ static const struct ethtool_ops ionic_ethtool_ops = {
- 	.set_ringparam		= ionic_set_ringparam,
- 	.get_channels		= ionic_get_channels,
- 	.set_channels		= ionic_set_channels,
-+	.get_strings		= ionic_get_strings,
-+	.get_ethtool_stats	= ionic_get_stats,
-+	.get_sset_count		= ionic_get_sset_count,
-+	.get_priv_flags		= ionic_get_priv_flags,
-+	.set_priv_flags		= ionic_set_priv_flags,
++static int ionic_set_rxfh(struct net_device *netdev, const u32 *indir,
++			  const u8 *key, const u8 hfunc)
++{
++	struct lif *lif = netdev_priv(netdev);
++	int err;
++
++	if (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != ETH_RSS_HASH_TOP)
++		return -EOPNOTSUPP;
++
++	err = ionic_lif_rss_config(lif, lif->rss_types, key, indir);
++	if (err)
++		return err;
++
++	return 0;
++}
++
+ static u32 ionic_get_priv_flags(struct net_device *netdev)
+ {
+ 	struct lif *lif = netdev_priv(netdev);
+@@ -602,6 +670,11 @@ static const struct ethtool_ops ionic_ethtool_ops = {
+ 	.get_strings		= ionic_get_strings,
+ 	.get_ethtool_stats	= ionic_get_stats,
+ 	.get_sset_count		= ionic_get_sset_count,
++	.get_rxnfc		= ionic_get_rxnfc,
++	.get_rxfh_indir_size	= ionic_get_rxfh_indir_size,
++	.get_rxfh_key_size	= ionic_get_rxfh_key_size,
++	.get_rxfh		= ionic_get_rxfh,
++	.set_rxfh		= ionic_set_rxfh,
+ 	.get_priv_flags		= ionic_get_priv_flags,
+ 	.set_priv_flags		= ionic_set_priv_flags,
  	.get_module_info	= ionic_get_module_info,
- 	.get_module_eeprom	= ionic_get_module_eeprom,
- 	.get_pauseparam		= ionic_get_pauseparam,
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+index 76974c61c306..42c0827255a5 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+@@ -26,6 +26,8 @@ static void ionic_qcq_free(struct lif *lif, struct qcq *qcq);
+ static int ionic_lif_txqs_init(struct lif *lif);
+ static int ionic_lif_rxqs_init(struct lif *lif);
+ static void ionic_lif_qcq_deinit(struct lif *lif, struct qcq *qcq);
++static int ionic_lif_rss_init(struct lif *lif);
++static int ionic_lif_rss_deinit(struct lif *lif);
+ static int ionic_set_nic_features(struct lif *lif, netdev_features_t features);
+ static int ionic_notifyq_clean(struct lif *lif, int budget);
+ 
+@@ -1082,6 +1084,9 @@ static int ionic_txrx_init(struct lif *lif)
+ 	if (err)
+ 		goto err_out;
+ 
++	if (lif->netdev->features & NETIF_F_RXHASH)
++		ionic_lif_rss_init(lif);
++
+ 	ionic_set_rx_mode(lif->netdev);
+ 
+ 	return 0;
+@@ -1206,6 +1211,7 @@ static struct lif *ionic_lif_alloc(struct ionic *ionic, unsigned int index)
+ 	struct device *dev = ionic->dev;
+ 	struct net_device *netdev;
+ 	struct lif *lif;
++	int tbl_sz;
+ 	int err;
+ 
+ 	netdev = alloc_etherdev_mqs(sizeof(*lif),
+@@ -1260,10 +1266,24 @@ static struct lif *ionic_lif_alloc(struct ionic *ionic, unsigned int index)
+ 	if (err)
+ 		goto err_out_free_lif_info;
+ 
++	/* allocate rss indirection table */
++	tbl_sz = le16_to_cpu(lif->ionic->ident.lif.eth.rss_ind_tbl_sz);
++	lif->rss_ind_tbl_sz = sizeof(*lif->rss_ind_tbl) * tbl_sz;
++	lif->rss_ind_tbl = dma_alloc_coherent(dev, lif->rss_ind_tbl_sz,
++					      &lif->rss_ind_tbl_pa,
++					      GFP_KERNEL);
++
++	if (!lif->rss_ind_tbl) {
++		dev_err(dev, "Failed to allocate rss indirection table, aborting\n");
++		goto err_out_free_qcqs;
++	}
++
+ 	list_add_tail(&lif->list, &ionic->lifs);
+ 
+ 	return lif;
+ 
++err_out_free_qcqs:
++	ionic_qcqs_free(lif);
+ err_out_free_lif_info:
+ 	dma_free_coherent(dev, lif->info_sz, lif->info, lif->info_pa);
+ 	lif->info = NULL;
+@@ -1302,6 +1322,14 @@ static void ionic_lif_free(struct lif *lif)
+ {
+ 	struct device *dev = lif->ionic->dev;
+ 
++	/* free rss indirection table */
++	if (lif->rss_ind_tbl) {
++		dma_free_coherent(dev, lif->rss_ind_tbl_sz, lif->rss_ind_tbl,
++				  lif->rss_ind_tbl_pa);
++		lif->rss_ind_tbl = NULL;
++		lif->rss_ind_tbl_pa = 0;
++	}
++
+ 	/* free queues */
+ 	ionic_qcqs_free(lif);
+ 	ionic_lif_reset(lif);
+@@ -1339,6 +1367,66 @@ void ionic_lifs_free(struct ionic *ionic)
+ 	}
+ }
+ 
++int ionic_lif_rss_config(struct lif *lif, const u16 types,
++			 const u8 *key, const u32 *indir)
++{
++	struct ionic_admin_ctx ctx = {
++		.work = COMPLETION_INITIALIZER_ONSTACK(ctx.work),
++		.cmd.lif_setattr = {
++			.opcode = CMD_OPCODE_LIF_SETATTR,
++			.attr = IONIC_LIF_ATTR_RSS,
++			.rss.types = cpu_to_le16(types),
++			.rss.addr = cpu_to_le64(lif->rss_ind_tbl_pa),
++		},
++	};
++	unsigned int i, tbl_sz;
++
++	lif->rss_types = types;
++
++	if (key)
++		memcpy(lif->rss_hash_key, key, IONIC_RSS_HASH_KEY_SIZE);
++
++	if (indir) {
++		tbl_sz = le16_to_cpu(lif->ionic->ident.lif.eth.rss_ind_tbl_sz);
++		for (i = 0; i < tbl_sz; i++)
++			lif->rss_ind_tbl[i] = indir[i];
++	}
++
++	memcpy(ctx.cmd.lif_setattr.rss.key, lif->rss_hash_key,
++	       IONIC_RSS_HASH_KEY_SIZE);
++
++	return ionic_adminq_post_wait(lif, &ctx);
++}
++
++static int ionic_lif_rss_init(struct lif *lif)
++{
++	u8 rss_key[IONIC_RSS_HASH_KEY_SIZE];
++	unsigned int tbl_sz;
++	unsigned int i;
++
++	netdev_rss_key_fill(rss_key, IONIC_RSS_HASH_KEY_SIZE);
++
++	lif->rss_types = IONIC_RSS_TYPE_IPV4     |
++			 IONIC_RSS_TYPE_IPV4_TCP |
++			 IONIC_RSS_TYPE_IPV4_UDP |
++			 IONIC_RSS_TYPE_IPV6     |
++			 IONIC_RSS_TYPE_IPV6_TCP |
++			 IONIC_RSS_TYPE_IPV6_UDP;
++
++	/* Fill indirection table with 'default' values */
++	tbl_sz = le16_to_cpu(lif->ionic->ident.lif.eth.rss_ind_tbl_sz);
++	for (i = 0; i < tbl_sz; i++)
++		lif->rss_ind_tbl[i] = ethtool_rxfh_indir_default(i, lif->nxqs);
++
++	return ionic_lif_rss_config(lif, lif->rss_types, rss_key, NULL);
++}
++
++static int ionic_lif_rss_deinit(struct lif *lif)
++{
++	/* Disable RSS on the NIC */
++	return ionic_lif_rss_config(lif, 0x0, NULL, NULL);
++}
++
+ static void ionic_lif_qcq_deinit(struct lif *lif, struct qcq *qcq)
+ {
+ 	struct ionic_dev *idev = &lif->ionic->idev;
+@@ -1371,6 +1459,7 @@ static void ionic_lif_deinit(struct lif *lif)
+ 	clear_bit(LIF_INITED, lif->state);
+ 
+ 	ionic_rx_filters_deinit(lif);
++	ionic_lif_rss_deinit(lif);
+ 
+ 	napi_disable(&lif->adminqcq->napi);
+ 	ionic_lif_qcq_deinit(lif, lif->notifyqcq);
 diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.h b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-index 88d5bf8f58a1..f93bfa2b4393 100644
+index f93bfa2b4393..0e6908f959f2 100644
 --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.h
 +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-@@ -108,8 +108,22 @@ struct ionic_deferred {
- 	struct work_struct work;
- };
+@@ -166,6 +166,12 @@ struct lif {
+ 	dma_addr_t info_pa;
+ 	u32 info_sz;
  
-+struct lif_sw_stats {
-+	u64 tx_packets;
-+	u64 tx_bytes;
-+	u64 rx_packets;
-+	u64 rx_bytes;
-+	u64 tx_tso;
-+	u64 tx_no_csum;
-+	u64 tx_csum;
-+	u64 rx_csum_none;
-+	u64 rx_csum_complete;
-+	u64 rx_csum_error;
-+};
++	u16 rss_types;
++	u8 rss_hash_key[IONIC_RSS_HASH_KEY_SIZE];
++	u8 *rss_ind_tbl;
++	dma_addr_t rss_ind_tbl_pa;
++	u32 rss_ind_tbl_sz;
 +
- enum lif_state_flags {
- 	LIF_INITED,
-+	LIF_SW_DEBUG_STATS,
- 	LIF_UP,
- 	LIF_LINK_CHECK_NEEDED,
- 	LIF_QUEUE_RESET,
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_stats.c b/drivers/net/ethernet/pensando/ionic/ionic_stats.c
-new file mode 100644
-index 000000000000..978a9f89804a
---- /dev/null
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_stats.c
-@@ -0,0 +1,333 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
-+
-+#include <linux/kernel.h>
-+#include <linux/mutex.h>
-+#include <linux/netdevice.h>
-+
-+#include "ionic.h"
-+#include "ionic_lif.h"
-+#include "ionic_stats.h"
-+
-+static const struct ionic_stat_desc ionic_lif_stats_desc[] = {
-+	IONIC_LIF_STAT_DESC(tx_packets),
-+	IONIC_LIF_STAT_DESC(tx_bytes),
-+	IONIC_LIF_STAT_DESC(rx_packets),
-+	IONIC_LIF_STAT_DESC(rx_bytes),
-+	IONIC_LIF_STAT_DESC(tx_tso),
-+	IONIC_LIF_STAT_DESC(tx_no_csum),
-+	IONIC_LIF_STAT_DESC(tx_csum),
-+	IONIC_LIF_STAT_DESC(rx_csum_none),
-+	IONIC_LIF_STAT_DESC(rx_csum_complete),
-+	IONIC_LIF_STAT_DESC(rx_csum_error),
-+};
-+
-+static const struct ionic_stat_desc ionic_tx_stats_desc[] = {
-+	IONIC_TX_STAT_DESC(pkts),
-+	IONIC_TX_STAT_DESC(bytes),
-+	IONIC_TX_STAT_DESC(clean),
-+	IONIC_TX_STAT_DESC(dma_map_err),
-+	IONIC_TX_STAT_DESC(linearize),
-+	IONIC_TX_STAT_DESC(frags),
-+};
-+
-+static const struct ionic_stat_desc ionic_rx_stats_desc[] = {
-+	IONIC_RX_STAT_DESC(pkts),
-+	IONIC_RX_STAT_DESC(bytes),
-+	IONIC_RX_STAT_DESC(dma_map_err),
-+	IONIC_RX_STAT_DESC(alloc_err),
-+	IONIC_RX_STAT_DESC(csum_none),
-+	IONIC_RX_STAT_DESC(csum_complete),
-+	IONIC_RX_STAT_DESC(csum_error),
-+};
-+
-+static const struct ionic_stat_desc ionic_txq_stats_desc[] = {
-+	IONIC_TX_Q_STAT_DESC(stop),
-+	IONIC_TX_Q_STAT_DESC(wake),
-+	IONIC_TX_Q_STAT_DESC(drop),
-+	IONIC_TX_Q_STAT_DESC(dbell_count),
-+};
-+
-+static const struct ionic_stat_desc ionic_dbg_cq_stats_desc[] = {
-+	IONIC_CQ_STAT_DESC(compl_count),
-+};
-+
-+static const struct ionic_stat_desc ionic_dbg_intr_stats_desc[] = {
-+	IONIC_INTR_STAT_DESC(rearm_count),
-+};
-+
-+static const struct ionic_stat_desc ionic_dbg_napi_stats_desc[] = {
-+	IONIC_NAPI_STAT_DESC(poll_count),
-+};
-+
-+#define IONIC_NUM_LIF_STATS ARRAY_SIZE(ionic_lif_stats_desc)
-+#define IONIC_NUM_TX_STATS ARRAY_SIZE(ionic_tx_stats_desc)
-+#define IONIC_NUM_RX_STATS ARRAY_SIZE(ionic_rx_stats_desc)
-+#define IONIC_NUM_TX_Q_STATS ARRAY_SIZE(ionic_txq_stats_desc)
-+#define IONIC_NUM_DBG_CQ_STATS ARRAY_SIZE(ionic_dbg_cq_stats_desc)
-+#define IONIC_NUM_DBG_INTR_STATS ARRAY_SIZE(ionic_dbg_intr_stats_desc)
-+#define IONIC_NUM_DBG_NAPI_STATS ARRAY_SIZE(ionic_dbg_napi_stats_desc)
-+
-+#define MAX_Q(lif)   ((lif)->netdev->real_num_tx_queues)
-+
-+static void ionic_get_lif_stats(struct lif *lif, struct lif_sw_stats *stats)
-+{
-+	struct tx_stats *tstats;
-+	struct rx_stats *rstats;
-+	struct qcq *txqcq;
-+	struct qcq *rxqcq;
-+	int q_num;
-+
-+	memset(stats, 0, sizeof(*stats));
-+
-+	for (q_num = 0; q_num < MAX_Q(lif); q_num++) {
-+		txqcq = lif_to_txqcq(lif, q_num);
-+		if (txqcq && txqcq->stats) {
-+			tstats = &txqcq->stats->tx;
-+			stats->tx_packets += tstats->pkts;
-+			stats->tx_bytes += tstats->bytes;
-+			stats->tx_tso += tstats->tso;
-+			stats->tx_no_csum += tstats->no_csum;
-+			stats->tx_csum += tstats->csum;
-+		}
-+
-+		rxqcq = lif_to_rxqcq(lif, q_num);
-+		if (rxqcq && rxqcq->stats) {
-+			rstats = &rxqcq->stats->rx;
-+			stats->rx_packets += rstats->pkts;
-+			stats->rx_bytes += rstats->bytes;
-+			stats->rx_csum_none += rstats->csum_none;
-+			stats->rx_csum_complete += rstats->csum_complete;
-+			stats->rx_csum_error += rstats->csum_error;
-+		}
-+	}
-+}
-+
-+static u64 ionic_sw_stats_get_count(struct lif *lif)
-+{
-+	u64 total = 0;
-+
-+	/* lif stats */
-+	total += IONIC_NUM_LIF_STATS;
-+
-+	/* tx stats */
-+	total += MAX_Q(lif) * IONIC_NUM_TX_STATS;
-+
-+	/* rx stats */
-+	total += MAX_Q(lif) * IONIC_NUM_RX_STATS;
-+
-+	if (test_bit(LIF_SW_DEBUG_STATS, lif->state)) {
-+		/* tx debug stats */
-+		total += MAX_Q(lif) * (IONIC_NUM_DBG_CQ_STATS +
-+				      IONIC_NUM_TX_Q_STATS +
-+				      IONIC_NUM_DBG_INTR_STATS +
-+				      IONIC_NUM_DBG_NAPI_STATS +
-+				      MAX_NUM_NAPI_CNTR +
-+				      MAX_NUM_SG_CNTR);
-+
-+		/* rx debug stats */
-+		total += MAX_Q(lif) * (IONIC_NUM_DBG_CQ_STATS +
-+				      IONIC_NUM_DBG_INTR_STATS +
-+				      IONIC_NUM_DBG_NAPI_STATS +
-+				      MAX_NUM_NAPI_CNTR);
-+	}
-+
-+	return total;
-+}
-+
-+static void ionic_sw_stats_get_strings(struct lif *lif, u8 **buf)
-+{
-+	int i, q_num;
-+
-+	for (i = 0; i < IONIC_NUM_LIF_STATS; i++) {
-+		snprintf(*buf, ETH_GSTRING_LEN, ionic_lif_stats_desc[i].name);
-+		*buf += ETH_GSTRING_LEN;
-+	}
-+	for (q_num = 0; q_num < MAX_Q(lif); q_num++) {
-+		for (i = 0; i < IONIC_NUM_TX_STATS; i++) {
-+			snprintf(*buf, ETH_GSTRING_LEN, "tx_%d_%s",
-+				 q_num, ionic_tx_stats_desc[i].name);
-+			*buf += ETH_GSTRING_LEN;
-+		}
-+
-+		if (test_bit(LIF_SW_DEBUG_STATS, lif->state)) {
-+			for (i = 0; i < IONIC_NUM_TX_Q_STATS; i++) {
-+				snprintf(*buf, ETH_GSTRING_LEN,
-+					 "txq_%d_%s",
-+					 q_num,
-+					 ionic_txq_stats_desc[i].name);
-+				*buf += ETH_GSTRING_LEN;
-+			}
-+			for (i = 0; i < IONIC_NUM_DBG_CQ_STATS; i++) {
-+				snprintf(*buf, ETH_GSTRING_LEN,
-+					 "txq_%d_cq_%s",
-+					 q_num,
-+					 ionic_dbg_cq_stats_desc[i].name);
-+				*buf += ETH_GSTRING_LEN;
-+			}
-+			for (i = 0; i < IONIC_NUM_DBG_INTR_STATS; i++) {
-+				snprintf(*buf, ETH_GSTRING_LEN,
-+					 "txq_%d_intr_%s",
-+					 q_num,
-+					 ionic_dbg_intr_stats_desc[i].name);
-+				*buf += ETH_GSTRING_LEN;
-+			}
-+			for (i = 0; i < IONIC_NUM_DBG_NAPI_STATS; i++) {
-+				snprintf(*buf, ETH_GSTRING_LEN,
-+					 "txq_%d_napi_%s",
-+					 q_num,
-+					 ionic_dbg_napi_stats_desc[i].name);
-+				*buf += ETH_GSTRING_LEN;
-+			}
-+			for (i = 0; i < MAX_NUM_NAPI_CNTR; i++) {
-+				snprintf(*buf, ETH_GSTRING_LEN,
-+					 "txq_%d_napi_work_done_%d",
-+					 q_num, i);
-+				*buf += ETH_GSTRING_LEN;
-+			}
-+			for (i = 0; i < MAX_NUM_SG_CNTR; i++) {
-+				snprintf(*buf, ETH_GSTRING_LEN,
-+					 "txq_%d_sg_cntr_%d",
-+					 q_num, i);
-+				*buf += ETH_GSTRING_LEN;
-+			}
-+		}
-+	}
-+	for (q_num = 0; q_num < MAX_Q(lif); q_num++) {
-+		for (i = 0; i < IONIC_NUM_RX_STATS; i++) {
-+			snprintf(*buf, ETH_GSTRING_LEN,
-+				 "rx_%d_%s",
-+				 q_num, ionic_rx_stats_desc[i].name);
-+			*buf += ETH_GSTRING_LEN;
-+		}
-+
-+		if (test_bit(LIF_SW_DEBUG_STATS, lif->state)) {
-+			for (i = 0; i < IONIC_NUM_DBG_CQ_STATS; i++) {
-+				snprintf(*buf, ETH_GSTRING_LEN,
-+					 "rxq_%d_cq_%s",
-+					 q_num,
-+					 ionic_dbg_cq_stats_desc[i].name);
-+				*buf += ETH_GSTRING_LEN;
-+			}
-+			for (i = 0; i < IONIC_NUM_DBG_INTR_STATS; i++) {
-+				snprintf(*buf, ETH_GSTRING_LEN,
-+					 "rxq_%d_intr_%s",
-+					 q_num,
-+					 ionic_dbg_intr_stats_desc[i].name);
-+				*buf += ETH_GSTRING_LEN;
-+			}
-+			for (i = 0; i < IONIC_NUM_DBG_NAPI_STATS; i++) {
-+				snprintf(*buf, ETH_GSTRING_LEN,
-+					 "rxq_%d_napi_%s",
-+					 q_num,
-+					 ionic_dbg_napi_stats_desc[i].name);
-+				*buf += ETH_GSTRING_LEN;
-+			}
-+			for (i = 0; i < MAX_NUM_NAPI_CNTR; i++) {
-+				snprintf(*buf, ETH_GSTRING_LEN,
-+					 "rxq_%d_napi_work_done_%d",
-+					 q_num, i);
-+				*buf += ETH_GSTRING_LEN;
-+			}
-+		}
-+	}
-+}
-+
-+static void ionic_sw_stats_get_values(struct lif *lif, u64 **buf)
-+{
-+	struct lif_sw_stats lif_stats;
-+	struct qcq *txqcq, *rxqcq;
-+	int i, q_num;
-+
-+	ionic_get_lif_stats(lif, &lif_stats);
-+
-+	for (i = 0; i < IONIC_NUM_LIF_STATS; i++) {
-+		**buf = IONIC_READ_STAT64(&lif_stats, &ionic_lif_stats_desc[i]);
-+		(*buf)++;
-+	}
-+
-+	for (q_num = 0; q_num < MAX_Q(lif); q_num++) {
-+		txqcq = lif_to_txqcq(lif, q_num);
-+
-+		for (i = 0; i < IONIC_NUM_TX_STATS; i++) {
-+			**buf = IONIC_READ_STAT64(&txqcq->stats->tx,
-+						  &ionic_tx_stats_desc[i]);
-+			(*buf)++;
-+		}
-+
-+		if (test_bit(LIF_SW_DEBUG_STATS, lif->state)) {
-+			for (i = 0; i < IONIC_NUM_TX_Q_STATS; i++) {
-+				**buf = IONIC_READ_STAT64(&txqcq->q,
-+						      &ionic_txq_stats_desc[i]);
-+				(*buf)++;
-+			}
-+			for (i = 0; i < IONIC_NUM_DBG_CQ_STATS; i++) {
-+				**buf = IONIC_READ_STAT64(&txqcq->cq,
-+						   &ionic_dbg_cq_stats_desc[i]);
-+				(*buf)++;
-+			}
-+			for (i = 0; i < IONIC_NUM_DBG_INTR_STATS; i++) {
-+				**buf = IONIC_READ_STAT64(&txqcq->intr,
-+						 &ionic_dbg_intr_stats_desc[i]);
-+				(*buf)++;
-+			}
-+			for (i = 0; i < IONIC_NUM_DBG_NAPI_STATS; i++) {
-+				**buf = IONIC_READ_STAT64(&txqcq->napi_stats,
-+						 &ionic_dbg_napi_stats_desc[i]);
-+				(*buf)++;
-+			}
-+			for (i = 0; i < MAX_NUM_NAPI_CNTR; i++) {
-+				**buf = txqcq->napi_stats.work_done_cntr[i];
-+				(*buf)++;
-+			}
-+			for (i = 0; i < MAX_NUM_SG_CNTR; i++) {
-+				**buf = txqcq->stats->tx.sg_cntr[i];
-+				(*buf)++;
-+			}
-+		}
-+	}
-+
-+	for (q_num = 0; q_num < MAX_Q(lif); q_num++) {
-+		rxqcq = lif_to_rxqcq(lif, q_num);
-+
-+		for (i = 0; i < IONIC_NUM_RX_STATS; i++) {
-+			**buf = IONIC_READ_STAT64(&rxqcq->stats->rx,
-+						  &ionic_rx_stats_desc[i]);
-+			(*buf)++;
-+		}
-+
-+		if (test_bit(LIF_SW_DEBUG_STATS, lif->state)) {
-+			for (i = 0; i < IONIC_NUM_DBG_CQ_STATS; i++) {
-+				**buf = IONIC_READ_STAT64(&rxqcq->cq,
-+						   &ionic_dbg_cq_stats_desc[i]);
-+				(*buf)++;
-+			}
-+			for (i = 0; i < IONIC_NUM_DBG_INTR_STATS; i++) {
-+				**buf = IONIC_READ_STAT64(&rxqcq->intr,
-+						 &ionic_dbg_intr_stats_desc[i]);
-+				(*buf)++;
-+			}
-+			for (i = 0; i < IONIC_NUM_DBG_NAPI_STATS; i++) {
-+				**buf = IONIC_READ_STAT64(&rxqcq->napi_stats,
-+						 &ionic_dbg_napi_stats_desc[i]);
-+				(*buf)++;
-+			}
-+			for (i = 0; i < MAX_NUM_NAPI_CNTR; i++) {
-+				**buf = rxqcq->napi_stats.work_done_cntr[i];
-+				(*buf)++;
-+			}
-+		}
-+	}
-+}
-+
-+const struct ionic_stats_group_intf ionic_stats_groups[] = {
-+	/* SW Stats group */
-+	{
-+		.get_strings = ionic_sw_stats_get_strings,
-+		.get_values = ionic_sw_stats_get_values,
-+		.get_count = ionic_sw_stats_get_count,
-+	},
-+	/* Add more stat groups here */
-+};
-+
-+const int ionic_num_stats_grps = ARRAY_SIZE(ionic_stats_groups);
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_stats.h b/drivers/net/ethernet/pensando/ionic/ionic_stats.h
-new file mode 100644
-index 000000000000..b5487e7fd4fb
---- /dev/null
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_stats.h
-@@ -0,0 +1,53 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
-+
-+#ifndef _IONIC_STATS_H_
-+#define _IONIC_STATS_H_
-+
-+#define IONIC_STAT_TO_OFFSET(type, stat_name) (offsetof(type, stat_name))
-+
-+#define IONIC_STAT_DESC(type, stat_name) { \
-+	.name = #stat_name, \
-+	.offset = IONIC_STAT_TO_OFFSET(type, stat_name) \
-+}
-+
-+#define IONIC_LIF_STAT_DESC(stat_name) \
-+	IONIC_STAT_DESC(struct lif_sw_stats, stat_name)
-+
-+#define IONIC_TX_STAT_DESC(stat_name) \
-+	IONIC_STAT_DESC(struct tx_stats, stat_name)
-+
-+#define IONIC_RX_STAT_DESC(stat_name) \
-+	IONIC_STAT_DESC(struct rx_stats, stat_name)
-+
-+#define IONIC_TX_Q_STAT_DESC(stat_name) \
-+	IONIC_STAT_DESC(struct queue, stat_name)
-+
-+#define IONIC_CQ_STAT_DESC(stat_name) \
-+	IONIC_STAT_DESC(struct cq, stat_name)
-+
-+#define IONIC_INTR_STAT_DESC(stat_name) \
-+	IONIC_STAT_DESC(struct intr, stat_name)
-+
-+#define IONIC_NAPI_STAT_DESC(stat_name) \
-+	IONIC_STAT_DESC(struct napi_stats, stat_name)
-+
-+/* Interface structure for a particalar stats group */
-+struct ionic_stats_group_intf {
-+	void (*get_strings)(struct lif *lif, u8 **buf);
-+	void (*get_values)(struct lif *lif, u64 **buf);
-+	u64 (*get_count)(struct lif *lif);
-+};
-+
-+extern const struct ionic_stats_group_intf ionic_stats_groups[];
-+extern const int ionic_num_stats_grps;
-+
-+#define IONIC_READ_STAT64(base_ptr, desc_ptr) \
-+	(*((u64 *)(((u8 *)(base_ptr)) + (desc_ptr)->offset)))
-+
-+struct ionic_stat_desc {
-+	char name[ETH_GSTRING_LEN];
-+	u64 offset;
-+};
-+
-+#endif // _IONIC_STATS_H_
+ 	struct rx_filters rx_filters;
+ 	struct ionic_deferred deferred;
+ 	u32 tx_coalesce_usecs;
+@@ -215,6 +221,8 @@ void ionic_lifs_unregister(struct ionic *ionic);
+ int ionic_lif_identify(struct ionic *ionic, u8 lif_type,
+ 		       union lif_identity *lif_ident);
+ int ionic_lifs_size(struct ionic *ionic);
++int ionic_lif_rss_config(struct lif *lif, u16 types,
++			 const u8 *key, const u32 *indir);
+ 
+ int ionic_open(struct net_device *netdev);
+ int ionic_stop(struct net_device *netdev);
 -- 
 2.17.1
 
