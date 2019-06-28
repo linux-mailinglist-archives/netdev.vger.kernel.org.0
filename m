@@ -2,116 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E98FC5A729
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 00:49:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00C225A73A
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 00:55:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726968AbfF1WtQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 18:49:16 -0400
-Received: from mga12.intel.com ([192.55.52.136]:42186 "EHLO mga12.intel.com"
+        id S1726731AbfF1Wzg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 18:55:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60280 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726942AbfF1WtI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Jun 2019 18:49:08 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 Jun 2019 15:49:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.63,429,1557212400"; 
-   d="scan'208";a="338039164"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
-  by orsmga005.jf.intel.com with ESMTP; 28 Jun 2019 15:49:05 -0700
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     davem@davemloft.net
-Cc:     Vitaly Lifshits <vitaly.lifshits@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        Sasha Neftin <sasha.neftin@intel.com>,
-        Aaron Brown <aaron.f.brown@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 15/15] e1000e: PCIm function state support
-Date:   Fri, 28 Jun 2019 15:49:32 -0700
-Message-Id: <20190628224932.3389-16-jeffrey.t.kirsher@intel.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190628224932.3389-1-jeffrey.t.kirsher@intel.com>
-References: <20190628224932.3389-1-jeffrey.t.kirsher@intel.com>
+        id S1726563AbfF1Wzg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 Jun 2019 18:55:36 -0400
+Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 294082086D;
+        Fri, 28 Jun 2019 22:55:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1561762535;
+        bh=kIUly98/abHLrDwCWp4BUJhyZ2mlDdcyKyA9sUivkSk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=wVvmhKl+g08YzyG46XVfg5LuZNia1qQiQ+ASouU6FvvY4YA5mZQraPNeIczvyi9+8
+         tXz6V0vJZ8hm/8liYtFASLimcSVoXcMDQKB+ZK5WC7OTlilgWg1mSepNTWKqSvoCsi
+         7N9TzfD6p+QFxogm3crRjw7xgSZQgMCdSZJKqy40=
+Date:   Fri, 28 Jun 2019 18:55:33 -0400
+From:   Sasha Levin <sashal@kernel.org>
+To:     Matteo Croce <mcroce@redhat.com>
+Cc:     stable@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Josh Elsasser <jelsasser@appneta.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: net: check before dereferencing netdev_ops during busy poll
+Message-ID: <20190628225533.GJ11506@sasha-vm>
+References: <CAGnkfhxxw9keiNj_Qm=2GBYpY38HAq28cOROMRqXfbqq8wNbWQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <CAGnkfhxxw9keiNj_Qm=2GBYpY38HAq28cOROMRqXfbqq8wNbWQ@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vitaly Lifshits <vitaly.lifshits@intel.com>
+On Fri, Jun 28, 2019 at 06:34:58PM +0200, Matteo Croce wrote:
+>Hi,
+>
+>Is there any reason for this panic fix not being applied in stable?
+>
+>https://lore.kernel.org/netdev/20180313053248.13654-1-jelsasser@appneta.com/T/
 
-Due to commit: 5d8682588605 ("[misc] mei: me: allow runtime
-pm for platform with D0i3")
-When disconnecting the cable and reconnecting it the NIC
-enters DMoff state. This caused wrong link indication
-and duplex mismatch. This bug is described in:
-https://bugzilla.redhat.com/show_bug.cgi?id=1689436
+What's the upstream commit id?
 
-Checking PCIm function state and performing PHY reset after a
-timeout in watchdog task solves this issue.
-
-Signed-off-by: Vitaly Lifshits <vitaly.lifshits@intel.com>
-Acked-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Aaron Brown <aaron.f.brown@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
----
- drivers/net/ethernet/intel/e1000e/defines.h |  3 +++
- drivers/net/ethernet/intel/e1000e/netdev.c  | 18 +++++++++++++++++-
- 2 files changed, 20 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/intel/e1000e/defines.h b/drivers/net/ethernet/intel/e1000e/defines.h
-index fd550dee4982..63c3c79380a1 100644
---- a/drivers/net/ethernet/intel/e1000e/defines.h
-+++ b/drivers/net/ethernet/intel/e1000e/defines.h
-@@ -222,6 +222,9 @@
- #define E1000_STATUS_PHYRA      0x00000400      /* PHY Reset Asserted */
- #define E1000_STATUS_GIO_MASTER_ENABLE	0x00080000	/* Master Req status */
- 
-+/* PCIm function state */
-+#define E1000_STATUS_PCIM_STATE	0x40000000
-+
- #define HALF_DUPLEX 1
- #define FULL_DUPLEX 2
- 
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index b5fed6177ad6..e4baa13b3cda 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -5161,8 +5161,9 @@ static void e1000_watchdog_task(struct work_struct *work)
- 	struct e1000_mac_info *mac = &adapter->hw.mac;
- 	struct e1000_phy_info *phy = &adapter->hw.phy;
- 	struct e1000_ring *tx_ring = adapter->tx_ring;
-+	u32 dmoff_exit_timeout = 100, tries = 0;
- 	struct e1000_hw *hw = &adapter->hw;
--	u32 link, tctl;
-+	u32 link, tctl, pcim_state;
- 
- 	if (test_bit(__E1000_DOWN, &adapter->state))
- 		return;
-@@ -5187,6 +5188,21 @@ static void e1000_watchdog_task(struct work_struct *work)
- 			/* Cancel scheduled suspend requests. */
- 			pm_runtime_resume(netdev->dev.parent);
- 
-+			/* Checking if MAC is in DMoff state*/
-+			pcim_state = er32(STATUS);
-+			while (pcim_state & E1000_STATUS_PCIM_STATE) {
-+				if (tries++ == dmoff_exit_timeout) {
-+					e_dbg("Error in exiting dmoff\n");
-+					break;
-+				}
-+				usleep_range(10000, 20000);
-+				pcim_state = er32(STATUS);
-+
-+				/* Checking if MAC exited DMoff state */
-+				if (!(pcim_state & E1000_STATUS_PCIM_STATE))
-+					e1000_phy_hw_reset(&adapter->hw);
-+			}
-+
- 			/* update snapshot of PHY registers on LSC */
- 			e1000_phy_read_status(adapter);
- 			mac->ops.get_link_up_info(&adapter->hw,
--- 
-2.21.0
-
+--
+Thanks,
+Sasha
