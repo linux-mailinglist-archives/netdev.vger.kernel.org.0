@@ -2,88 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D37915916D
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 04:44:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5791059177
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 04:46:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726819AbfF1Co2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 22:44:28 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:45552 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726476AbfF1Co2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 22:44:28 -0400
-Received: by mail-pl1-f196.google.com with SMTP id bi6so2340429plb.12
-        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 19:44:28 -0700 (PDT)
+        id S1726905AbfF1CqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 22:46:21 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:34081 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726476AbfF1CqU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 22:46:20 -0400
+Received: by mail-pg1-f194.google.com with SMTP id p10so1907107pgn.1;
+        Thu, 27 Jun 2019 19:46:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=oktu9RU2wK5j5qoz0nZNuS7D6az7G/Q6JXEbPBq/FRU=;
-        b=N+fZDiB60/H/Ujp8dXDtDPXOMzTYEK+a/lOwUH4hXSAS1Z/eHcruh+hPYM+NelBqTL
-         96ObnBGLiMdfMTL1IzH57ZCxSj+CFG/cRI47PDFu0rxCMl245TKvagZCk0ZYBLmcn2kG
-         udvu4UZkaPoNOQ72k30C+es1NXEv4a+1hb1iyZ0B6BWYJ701vzZ8DDfVDop3yGtJAYPt
-         qRvctqanecqzgHToJR6SDPNUAXPuX4f3CEhfkxmQ1KYocOdw6Z5Nk1A2GMwkdQ81/nsP
-         3BRo0wikkIO+LMFK412REblK+b0FneSaGM6Lmq+YOMadk8REPpTbwM3HhTTEV8D7m1h3
-         VVmA==
+        h=from:to:cc:subject:date:message-id;
+        bh=5SQb1rM39meuBB6kZ01b1gP2wTIZb8uQPRv3lqA/cvA=;
+        b=Z4dN6KjCURldpDE4kGaLm1ZeeKEVwTFkwRp/H/b3yOb1MBNqibzC9yLToHL0Gr+mEO
+         691TJP9Nfi5q+izFuEWZPCZL5YAc0y4MB4FqCfFBm47+xlv0lxaZc1nHJ1cUw3Y530u0
+         fxUTxn70+WRMv9zMZqymvMq4aBj2MHDyIx3vM1qi5rmEEvqCveGp99n3FFXJSuaeybDU
+         iFWDKqtc0NoPZwOGUO9nLWuhV1xamv8M9rGzQwXPH868ZctdbYybffDk4JIDT7rY6soT
+         8U87lnIbsy4umme0RvX/ngkJBiWq5Zi9NQk5iv6R6pAuhWWFNZzhX7UHZdBmJEcJ/UYT
+         1lNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=oktu9RU2wK5j5qoz0nZNuS7D6az7G/Q6JXEbPBq/FRU=;
-        b=n6m40iTnQvNPqxKKyrG5qYAr5zz8uyH3kBAl4PoS1QYdfNc5i1qKFfqhRIX/kxQPAY
-         nTjoWehdj2qJDWkMvd+pRjMG8QeO/W8KwUL1z8YXWeljbj2LSGaVrwtfWU8P573qlwWg
-         zJFqtdvb8CYYp3dMAYExsRghPVljL6zzzKZ/t38gfO/2rJQlWmyJddQDGOjQOQZ/S9ol
-         TboB5XkhWKeABVmL+cuV870gNCHEnENC24q+or3eZc4ulTZd0E5UZgjmbdgUNlKVt1dS
-         gO+TKqQ+4Iu1+8plGRsLRhDVhST4+WQBjFXld6JE4uY+r6ZpCYIB3jncBIuOTEPtj/Bx
-         p86Q==
-X-Gm-Message-State: APjAAAWwmKxLGIkcYpMVjLBnGcCWMVZvUdYFM/XtXrSytb9ByVaLCLKE
-        TEhPw224iN6/8XHukBHVnIQ=
-X-Google-Smtp-Source: APXvYqzgvi0euM0ScBZElMp2lYeK+O+UGYpcJMjytMNjqfibQ5+xOPceFPAK4PgorJamR0dTkkkjxQ==
-X-Received: by 2002:a17:902:2ae6:: with SMTP id j93mr8846024plb.130.1561689867797;
-        Thu, 27 Jun 2019 19:44:27 -0700 (PDT)
-Received: from [10.230.28.107] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id u20sm375872pgm.56.2019.06.27.19.44.26
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=5SQb1rM39meuBB6kZ01b1gP2wTIZb8uQPRv3lqA/cvA=;
+        b=h8Sj1AjWALgvpA8WqO1BCLwzHPzz6q3e6PlgljtyBcLsnfM8D2CHDiTrkI/PF8Kg7x
+         tXlWgIUoztRVJ6LPXPFI9oWurWUAPzOsvBK3+YRT74fpk4MYWJmUXSxwfDrcvczlyQLo
+         8VWky44ixsgLGuGE0ildq8gSMKMFZYmSpPL3u34VenCm28xEjxCi3+1rBd3H9iJiPKGR
+         8I9IREjX+oh4VGXnogzvmr5I7aV57ry8ojyFuxPQ15vwzFDNO2fIFEOsyVY0oEn6AcTg
+         MiFRpUSGuoBPIbJaQcXt0pVePpEPNMZK4+49Q7k/N6C6XQC56i+ciyqrJf6dMa/rhGvY
+         7/WQ==
+X-Gm-Message-State: APjAAAWkYkhUZCH9HpIe8nHz2hcBZSD5Y3yh2g+dNLZf1cDNSzPI1DEP
+        d4JABE+j2zaPWfuRfHuNm8iBJNUVzscKoA==
+X-Google-Smtp-Source: APXvYqzi6C3bPWcXCtUhhnrB+6T7U5NBy1jrEcuFbM0+E15a3pNnUK8dKeozzqZoA0GJSpDAF4Dp/w==
+X-Received: by 2002:a63:1b66:: with SMTP id b38mr6938032pgm.54.1561689980331;
+        Thu, 27 Jun 2019 19:46:20 -0700 (PDT)
+Received: from hfq-skylake.ipads-lab.se.sjtu.edu.cn ([202.120.40.82])
+        by smtp.googlemail.com with ESMTPSA id h26sm462584pfq.64.2019.06.27.19.46.18
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 27 Jun 2019 19:44:27 -0700 (PDT)
-Subject: Re: [PATCH 2/5] net: dsa: microchip: Replace
- ksz9477_wait_vlan_ctrl_ready polling with regmap
-To:     Marek Vasut <marex@denx.de>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        Woojung Huh <Woojung.Huh@microchip.com>
-References: <20190627215556.23768-1-marex@denx.de>
- <20190627215556.23768-3-marex@denx.de>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Message-ID: <6b0c6d22-42df-fee5-fce6-ad5ccc67c64e@gmail.com>
-Date:   Thu, 27 Jun 2019 19:44:25 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <20190627215556.23768-3-marex@denx.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        Thu, 27 Jun 2019 19:46:19 -0700 (PDT)
+From:   Fuqian Huang <huangfq.daxian@gmail.com>
+Cc:     Fuqian Huang <huangfq.daxian@gmail.com>,
+        Chas Williams <3chas3@gmail.com>,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 03/27] atm: idt77252: remove memset after dma_alloc_coherent
+Date:   Fri, 28 Jun 2019 10:46:13 +0800
+Message-Id: <20190628024613.14929-1-huangfq.daxian@gmail.com>
+X-Mailer: git-send-email 2.11.0
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+In commit af7ddd8a627c
+("Merge tag 'dma-mapping-4.21' of git://git.infradead.org/users/hch/dma-mapping"),
+dma_alloc_coherent has already zeroed the memory.
+So memset is not needed.
 
+Signed-off-by: Fuqian Huang <huangfq.daxian@gmail.com>
+---
+ drivers/atm/idt77252.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-On 6/27/2019 2:55 PM, Marek Vasut wrote:
-> Regmap provides polling function to poll for bits in a register. This
-> function is another reimplementation of polling for bit being clear in
-> a register. Replace this with regmap polling function. Moreover, inline
-> the function parameters, as the function is never called with any other
-> parameter values than this one.
-> 
-> Signed-off-by: Marek Vasut <marex@denx.de>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: Tristram Ha <Tristram.Ha@microchip.com>
-> Cc: Woojung Huh <Woojung.Huh@microchip.com>
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+diff --git a/drivers/atm/idt77252.c b/drivers/atm/idt77252.c
+index 43a14579e80e..df51680e8931 100644
+--- a/drivers/atm/idt77252.c
++++ b/drivers/atm/idt77252.c
+@@ -1379,7 +1379,6 @@ init_tsq(struct idt77252_dev *card)
+ 		printk("%s: can't allocate TSQ.\n", card->name);
+ 		return -1;
+ 	}
+-	memset(card->tsq.base, 0, TSQSIZE);
+ 
+ 	card->tsq.last = card->tsq.base + TSQ_NUM_ENTRIES - 1;
+ 	card->tsq.next = card->tsq.last;
 -- 
-Florian
+2.11.0
+
