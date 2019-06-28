@@ -2,34 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A63E5A728
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 00:49:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21EAC5A72C
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 00:49:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726936AbfF1WtI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 18:49:08 -0400
-Received: from mga05.intel.com ([192.55.52.43]:51494 "EHLO mga05.intel.com"
+        id S1726909AbfF1WtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 18:49:07 -0400
+Received: from mga12.intel.com ([192.55.52.136]:42186 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726849AbfF1WtG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726835AbfF1WtG (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 28 Jun 2019 18:49:06 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 Jun 2019 15:49:06 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 Jun 2019 15:49:06 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.63,429,1557212400"; 
-   d="scan'208";a="338039130"
+   d="scan'208";a="338039134"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by orsmga005.jf.intel.com with ESMTP; 28 Jun 2019 15:49:05 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Colin Ian King <colin.king@canonical.com>, netdev@vger.kernel.org,
+Cc:     Venkatesh Srinivas <venkateshs@google.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>,
+        Aaron Brown <aaron.f.brown@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 04/15] ixgbe: fix potential u32 overflow on shift
-Date:   Fri, 28 Jun 2019 15:49:21 -0700
-Message-Id: <20190628224932.3389-5-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 05/15] e1000: Use dma_wmb() instead of wmb() before doorbell writes
+Date:   Fri, 28 Jun 2019 15:49:22 -0700
+Message-Id: <20190628224932.3389-6-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190628224932.3389-1-jeffrey.t.kirsher@intel.com>
 References: <20190628224932.3389-1-jeffrey.t.kirsher@intel.com>
@@ -40,56 +39,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+From: Venkatesh Srinivas <venkateshs@google.com>
 
-The u32 variable rem is being shifted using u32 arithmetic however
-it is being passed to div_u64 that expects the expression to be a u64.
-The 32 bit shift may potentially overflow, so cast rem to a u64 before
-shifting to avoid this.  Also remove comment about overflow.
+e1000 writes to doorbells to post transmit descriptors and fill the
+receive ring. After writing descriptors to memory but before
+writing to doorbells, use dma_wmb() rather than wmb(). wmb() is more
+heavyweight than necessary for a device to see descriptor writes.
 
-Addresses-Coverity: ("Unintentional integer overflow")
-Fixes: cd4583206990 ("ixgbe: implement support for SDP/PPS output on X550 hardware")
-Fixes: 68d9676fc04e ("ixgbe: fix PTP SDP pin setup on X540 hardware")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
-Acked-by: Jacob Keller <jacob.e.keller@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+On x86, this avoids SFENCEs before doorbell writes in both the
+Tx and Rx paths. On ARM, this converts DSB ST -> DMB OSHST.
+
+Tested: 82576EB / x86; QEMU (qemu emulates an 8257x)
+
+Signed-off-by: Venkatesh Srinivas <venkateshs@google.com>
+Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c | 14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/intel/e1000/e1000_main.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
-index 2c4d327fcc2e..0be13a90ff79 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
-@@ -205,11 +205,8 @@ static void ixgbe_ptp_setup_sdp_X540(struct ixgbe_adapter *adapter)
+diff --git a/drivers/net/ethernet/intel/e1000/e1000_main.c b/drivers/net/ethernet/intel/e1000/e1000_main.c
+index 551de8c2fef2..f703fa58458e 100644
+--- a/drivers/net/ethernet/intel/e1000/e1000_main.c
++++ b/drivers/net/ethernet/intel/e1000/e1000_main.c
+@@ -3019,7 +3019,7 @@ static void e1000_tx_queue(struct e1000_adapter *adapter,
+ 	 * applicable for weak-ordered memory model archs,
+ 	 * such as IA-64).
  	 */
- 	rem = (NS_PER_SEC - rem);
+-	wmb();
++	dma_wmb();
  
--	/* Adjust the clock edge to align with the next full second. This
--	 * assumes that the cycle counter shift is small enough to avoid
--	 * overflowing when shifting the remainder.
--	 */
--	clock_edge += div_u64((rem << cc->shift), cc->mult);
-+	/* Adjust the clock edge to align with the next full second. */
-+	clock_edge += div_u64(((u64)rem << cc->shift), cc->mult);
- 	trgttiml = (u32)clock_edge;
- 	trgttimh = (u32)(clock_edge >> 32);
- 
-@@ -291,11 +288,8 @@ static void ixgbe_ptp_setup_sdp_X550(struct ixgbe_adapter *adapter)
- 	 */
- 	rem = (NS_PER_SEC - rem);
- 
--	/* Adjust the clock edge to align with the next full second. This
--	 * assumes that the cycle counter shift is small enough to avoid
--	 * overflowing when shifting the remainder.
--	 */
--	clock_edge += div_u64((rem << cc->shift), cc->mult);
-+	/* Adjust the clock edge to align with the next full second. */
-+	clock_edge += div_u64(((u64)rem << cc->shift), cc->mult);
- 
- 	/* X550 hardware stores the time in 32bits of 'billions of cycles' and
- 	 * 32bits of 'cycles'. There's no guarantee that cycles represents
+ 	tx_ring->next_to_use = i;
+ }
+@@ -4540,7 +4540,7 @@ e1000_alloc_jumbo_rx_buffers(struct e1000_adapter *adapter,
+ 		 * applicable for weak-ordered memory model archs,
+ 		 * such as IA-64).
+ 		 */
+-		wmb();
++		dma_wmb();
+ 		writel(i, adapter->hw.hw_addr + rx_ring->rdt);
+ 	}
+ }
+@@ -4655,7 +4655,7 @@ static void e1000_alloc_rx_buffers(struct e1000_adapter *adapter,
+ 		 * applicable for weak-ordered memory model archs,
+ 		 * such as IA-64).
+ 		 */
+-		wmb();
++		dma_wmb();
+ 		writel(i, hw->hw_addr + rx_ring->rdt);
+ 	}
+ }
 -- 
 2.21.0
 
