@@ -2,89 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E62959C92
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 15:07:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86B9659CBA
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 15:14:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726672AbfF1NHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 09:07:15 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:54336 "EHLO mx1.redhat.com"
+        id S1726697AbfF1NOL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 09:14:11 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:40746 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726590AbfF1NHP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Jun 2019 09:07:15 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id C4DF530BB37D;
-        Fri, 28 Jun 2019 13:07:09 +0000 (UTC)
-Received: from carbon (ovpn-200-45.brq.redhat.com [10.40.200.45])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 952E86012D;
-        Fri, 28 Jun 2019 13:07:02 +0000 (UTC)
-Date:   Fri, 28 Jun 2019 15:07:01 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc:     netdev@vger.kernel.org, jaswinder.singh@linaro.org,
-        ard.biesheuvel@linaro.org, bjorn.topel@intel.com,
-        magnus.karlsson@intel.com, daniel@iogearbox.net, ast@kernel.org,
-        makita.toshiaki@lab.ntt.co.jp, jakub.kicinski@netronome.com,
-        john.fastabend@gmail.com, davem@davemloft.net,
-        maciejromanfijalkowski@gmail.com, brouer@redhat.com
-Subject: Re: [PATCH 2/3, net-next] net: page_pool: add helper function for
- retrieving dma direction
-Message-ID: <20190628150701.383b17f6@carbon>
-In-Reply-To: <1561718355-13919-3-git-send-email-ilias.apalodimas@linaro.org>
-References: <1561718355-13919-1-git-send-email-ilias.apalodimas@linaro.org>
-        <1561718355-13919-3-git-send-email-ilias.apalodimas@linaro.org>
+        id S1726589AbfF1NOL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 Jun 2019 09:14:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=lwS9Zf2XPQpqm57b4LSqoXQuGRkzIyhDmhyObwfZdkI=; b=GxqjYj4AlmDpLT3vH31HAhZMIM
+        H76Ib9Y0fU3f5tder19+vxWV6bhu1ztC8tkxYNFWxRx/N1kWEDljoSXZGXPlFN+Rcx45z1Y9m0Ta1
+        6hB743BpIy5XC3T/i2JbhAGJ2yTHjiCGr6uu7+g3iTDLaIfQgFVCrPdrD2AIta5dn1LY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hgqhV-0007RK-J6; Fri, 28 Jun 2019 15:14:01 +0200
+Date:   Fri, 28 Jun 2019 15:14:01 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org,
+        David Ahern <dsahern@gmail.com>, davem@davemloft.net,
+        jakub.kicinski@netronome.com, mlxsw@mellanox.com
+Subject: Re: [RFC] longer netdev names proposal
+Message-ID: <20190628131401.GA27820@lunn.ch>
+References: <20190627094327.GF2424@nanopsycho>
+ <26b73332-9ea0-9d2c-9185-9de522c72bb9@gmail.com>
+ <20190627180803.GJ27240@unicorn.suse.cz>
+ <20190627112305.7e05e210@hermes.lan>
+ <20190627183538.GI31189@lunn.ch>
+ <20190627183948.GK27240@unicorn.suse.cz>
+ <20190627122041.18c46daf@hermes.lan>
+ <20190628111216.GA2568@nanopsycho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Fri, 28 Jun 2019 13:07:14 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190628111216.GA2568@nanopsycho>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 28 Jun 2019 13:39:14 +0300
-Ilias Apalodimas <ilias.apalodimas@linaro.org> wrote:
-
-> Since the dma direction is stored in page pool params, offer an API
-> helper for driver that choose not to keep track of it locally
+On Fri, Jun 28, 2019 at 01:12:16PM +0200, Jiri Pirko wrote:
+> Thu, Jun 27, 2019 at 09:20:41PM CEST, stephen@networkplumber.org wrote:
+> >On Thu, 27 Jun 2019 20:39:48 +0200
+> >Michal Kubecek <mkubecek@suse.cz> wrote:
+> >
+> >> > 
+> >> > $ ip li set dev enp3s0 alias "Onboard Ethernet"
+> >> > # ip link show "Onboard Ethernet"
+> >> > Device "Onboard Ethernet" does not exist.
+> >> > 
+> >> > So it does not really appear to be an alias, it is a label. To be
+> >> > truly useful, it needs to be more than a label, it needs to be a real
+> >> > alias which you can use.  
+> >> 
+> >> That's exactly what I meant: to be really useful, one should be able to
+> >> use the alias(es) for setting device options, for adding routes, in
+> >> netfilter rules etc.
+> >> 
+> >> Michal
+> >
+> >The kernel doesn't enforce uniqueness of alias.
+> >Also current kernel RTM_GETLINK doesn't do filter by alias (easily fixed).
+> >
+> >If it did, then handling it in iproute would be something like:
 > 
-> Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-> ---
->  include/net/page_pool.h | 9 +++++++++
->  1 file changed, 9 insertions(+)
+> I think that it is desired for kernel to work with "real alias" as a
+> handle. Userspace could either pass ifindex, IFLA_NAME or "real alias".
+> Userspace mapping like you did here might be perhaps okay for iproute2,
+> but I think that we need something and easy to use for all.
+> 
+> Let's call it "altname". Get would return:
+> 
+> IFLA_NAME  eth0
+> IFLA_ALT_NAME_LIST
+>    IFLA_ALT_NAME  eth0
+>    IFLA_ALT_NAME  somethingelse
+>    IFLA_ALT_NAME  somenamethatisreallylong
 
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Hi Jiri
 
-This is simple enough and you also explained the downside.
-Thanks for adding a helper for this.
+What is your user case for having multiple IFLA_ALT_NAME for the same
+IFLA_NAME?
 
+	Thanks
+		Andrew
  
-> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-> index f07c518ef8a5..ee9c871d2043 100644
-> --- a/include/net/page_pool.h
-> +++ b/include/net/page_pool.h
-> @@ -112,6 +112,15 @@ static inline struct page *page_pool_dev_alloc_pages(struct page_pool *pool)
->  	return page_pool_alloc_pages(pool, gfp);
->  }
->  
-> +/* get the stored dma direction. A driver might decide to treat this locally and
-> + * avoid the extra cache line from page_pool to determine the direction
-> + */
-> +static
-> +inline enum dma_data_direction page_pool_get_dma_dir(struct page_pool *pool)
-> +{
-> +	return pool->p.dma_dir;
-> +}
-> +
->  struct page_pool *page_pool_create(const struct page_pool_params *params);
->  
->  void __page_pool_free(struct page_pool *pool);
-
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
