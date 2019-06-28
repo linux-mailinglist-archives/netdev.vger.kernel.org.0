@@ -2,175 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 20C84595FA
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 10:23:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E12A95962C
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 10:32:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726484AbfF1IXS convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 28 Jun 2019 04:23:18 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:1360 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726056AbfF1IXS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Jun 2019 04:23:18 -0400
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 3196D3073AFE;
-        Fri, 28 Jun 2019 08:23:17 +0000 (UTC)
-Received: from carbon (ovpn-200-45.brq.redhat.com [10.40.200.45])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0BEC560C6E;
-        Fri, 28 Jun 2019 08:22:55 +0000 (UTC)
-Date:   Fri, 28 Jun 2019 10:22:54 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     "Eelco Chaudron" <echaudro@redhat.com>
-Cc:     "Machulsky, Zorik" <zorik@amazon.com>,
-        "Jubran, Samih" <sameehj@amazon.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, "Woodhouse, David" <dwmw@amazon.co.uk>,
-        "Matushevsky, Alexander" <matua@amazon.com>,
-        "Bshara, Saeed" <saeedb@amazon.com>,
-        "Wilson, Matt" <msw@amazon.com>,
-        "Liguori, Anthony" <aliguori@amazon.com>,
-        "Bshara, Nafea" <nafea@amazon.com>,
-        "Tzalik, Guy" <gtzalik@amazon.com>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Saidi, Ali" <alisaidi@amazon.com>,
-        "Herrenschmidt, Benjamin" <benh@amazon.com>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>,
-        "Daniel Borkmann" <borkmann@iogearbox.net>,
-        "Toke =?UTF-8?B?SMO4aWxhbmQt?= =?UTF-8?B?SsO4cmdlbnNlbg==?=" 
-        <toke@redhat.com>,
-        "Ilias Apalodimas" <ilias.apalodimas@linaro.org>,
-        "Alexei Starovoitov" <alexei.starovoitov@gmail.com>,
-        "Jakub Kicinski" <jakub.kicinski@netronome.com>,
-        xdp-newbies@vger.kernel.org, brouer@redhat.com,
-        Steffen Klassert <steffen.klassert@secunet.com>
-Subject: Re: XDP multi-buffer incl. jumbo-frames (Was: [RFC V1 net-next 1/1]
- net: ena: implement XDP drop support)
-Message-ID: <20190628102254.28191f12@carbon>
-In-Reply-To: <CC99D6DE-5B6B-42F3-8D68-7F9AFF1712FF@redhat.com>
-References: <20190623070649.18447-1-sameehj@amazon.com>
-        <20190623070649.18447-2-sameehj@amazon.com>
-        <20190623162133.6b7f24e1@carbon>
-        <A658E65E-93D2-4F10-823D-CC25B081C1B7@amazon.com>
-        <20190626103829.5360ef2d@carbon>
-        <CC99D6DE-5B6B-42F3-8D68-7F9AFF1712FF@redhat.com>
+        id S1726738AbfF1Icl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 04:32:41 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:50696 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726465AbfF1Icl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 04:32:41 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212])
+        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_128_CBC_SHA1:16)
+        (Exim 4.76)
+        (envelope-from <colin.king@canonical.com>)
+        id 1hgmJC-0001IW-1I; Fri, 28 Jun 2019 08:32:38 +0000
+Subject: Re: [PATCH] net: stmmac: add sanity check to
+ device_property_read_u32_array call
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     alexandre.torgue@st.com, davem@davemloft.net, joabreu@synopsys.com,
+        kernel-janitors@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
+        peppe.cavallaro@st.com
+References: <20190617165836.4673-1-colin.king@canonical.com>
+ <20190619051308.23582-1-martin.blumenstingl@googlemail.com>
+ <92f9e5a6-d2a2-6bf2-ff8a-2430fe977f93@canonical.com>
+ <CAFBinCDmYVPDMcwAAYhMfxxuTsG=xunduN58_8e20zE_Mhmb7Q@mail.gmail.com>
+ <CAFBinCC-LLpfXQRFcKBbUpCfKc0S9Xtt60QrhEThsOFV-T7vFw@mail.gmail.com>
+ <c46d2d17-c35b-46f0-0674-0c55bea3a272@canonical.com>
+ <CAFBinCBk5aPVE+vq5px3QKS1T_R=WGXXxEJMC9X676KGvi9jdg@mail.gmail.com>
+From:   Colin Ian King <colin.king@canonical.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <26646ff1-059f-fb2d-e05d-43009aeb2150@canonical.com>
+Date:   Fri, 28 Jun 2019 09:32:37 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Fri, 28 Jun 2019 08:23:17 +0000 (UTC)
+In-Reply-To: <CAFBinCBk5aPVE+vq5px3QKS1T_R=WGXXxEJMC9X676KGvi9jdg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 28 Jun 2019 09:14:39 +0200
-"Eelco Chaudron" <echaudro@redhat.com> wrote:
+On 28/06/2019 05:15, Martin Blumenstingl wrote:
+> On Tue, Jun 25, 2019 at 9:58 AM Colin Ian King <colin.king@canonical.com> wrote:
+>>
+>> On 25/06/2019 05:44, Martin Blumenstingl wrote:
+>>> Hi Colin,
+>>>
+>>> On Thu, Jun 20, 2019 at 3:34 AM Martin Blumenstingl
+>>> <martin.blumenstingl@googlemail.com> wrote:
+>>>>
+>>>> Hi Colin,
+>>>>
+>>>> On Wed, Jun 19, 2019 at 8:55 AM Colin Ian King <colin.king@canonical.com> wrote:
+>>>>>
+>>>>> On 19/06/2019 06:13, Martin Blumenstingl wrote:
+>>>>>> Hi Colin,
+>>>>>>
+>>>>>>> Currently the call to device_property_read_u32_array is not error checked
+>>>>>>> leading to potential garbage values in the delays array that are then used
+>>>>>>> in msleep delays.  Add a sanity check to the property fetching.
+>>>>>>>
+>>>>>>> Addresses-Coverity: ("Uninitialized scalar variable")
+>>>>>>> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+>>>>>> I have also sent a patch [0] to fix initialize the array.
+>>>>>> can you please look at my patch so we can work out which one to use?
+>>>>>>
+>>>>>> my concern is that the "snps,reset-delays-us" property is optional,
+>>>>>> the current dt-bindings documentation states that it's a required
+>>>>>> property. in reality it isn't, there are boards (two examples are
+>>>>>> mentioned in my patch: [0]) without it.
+>>>>>>
+>>>>>> so I believe that the resulting behavior has to be:
+>>>>>> 1. don't delay if this property is missing (instead of delaying for
+>>>>>>    <garbage value> ms)
+>>>>>> 2. don't error out if this property is missing
+>>>>>>
+>>>>>> your patch covers #1, can you please check whether #2 is also covered?
+>>>>>> I tested case #2 when submitting my patch and it worked fine (even
+>>>>>> though I could not reproduce the garbage values which are being read
+>>>>>> on some boards)
+>>> in the meantime I have tested your patch.
+>>> when I don't set the "snps,reset-delays-us" property then I get the
+>>> following error:
+>>>   invalid property snps,reset-delays-us
+>>>
+>>> my patch has landed in the meantime: [0]
+>>> how should we proceed with your patch?
 
-> On 26 Jun 2019, at 10:38, Jesper Dangaard Brouer wrote:
+Your fix is good, so I think we should just drop/forget about my fix.
+
+Colin
+
+>>
+>> I'm out of the office today. I'll get back to you on this tomorrow.
+> gentle ping
+> (I will be away for the weekend but I can reply on Monday)
 > 
-> > On Tue, 25 Jun 2019 03:19:22 +0000
-> > "Machulsky, Zorik" <zorik@amazon.com> wrote:
-> >  
-> >> ﻿On 6/23/19, 7:21 AM, "Jesper Dangaard Brouer" <brouer@redhat.com> 
-> >> wrote:
-> >>
-> >>     On Sun, 23 Jun 2019 10:06:49 +0300 <sameehj@amazon.com> wrote:
-> >>  
-> >>     > This commit implements the basic functionality of drop/pass logic in the  
-> >>     > ena driver.  
-> >>
-> >>     Usually we require a driver to implement all the XDP return codes,
-> >>     before we accept it.  But as Daniel and I discussed with Zorik during
-> >>     NetConf[1], we are going to make an exception and accept the driver
-> >>     if you also implement XDP_TX.
-> >>
-> >>     As we trust that Zorik/Amazon will follow and implement XDP_REDIRECT
-> >>     later, given he/you wants AF_XDP support which requires XDP_REDIRECT.
-> >>
-> >> Jesper, thanks for your comments and very helpful discussion during
-> >> NetConf! That's the plan, as we agreed. From our side I would like to
-> >> reiterate again the importance of multi-buffer support by xdp frame.
-> >> We would really prefer not to see our MTU shrinking because of xdp
-> >> support.  
-> >
-> > Okay we really need to make a serious attempt to find a way to support
-> > multi-buffer packets with XDP. With the important criteria of not
-> > hurting performance of the single-buffer per packet design.
-> >
-> > I've created a design document[2], that I will update based on our
-> > discussions: [2] 
-> > https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp-multi-buffer01-design.org
-> >
-> > The use-case that really convinced me was Eric's packet header-split.
-> >
-> >
-> > Lets refresh: Why XDP don't have multi-buffer support:
-> >
-> > XDP is designed for maximum performance, which is why certain 
-> > driver-level
-> > use-cases were not supported, like multi-buffer packets (like 
-> > jumbo-frames).
-> > As it e.g. complicated the driver RX-loop and memory model handling.
-> >
-> > The single buffer per packet design, is also tied into eBPF 
-> > Direct-Access
-> > (DA) to packet data, which can only be allowed if the packet memory is 
-> > in
-> > contiguous memory.  This DA feature is essential for XDP performance.
-> >
-> >
-> > One way forward is to define that XDP only get access to the first
-> > packet buffer, and it cannot see subsequent buffers.  For XDP_TX and
-> > XDP_REDIRECT to work then XDP still need to carry pointers (plus
-> > len+offset) to the other buffers, which is 16 bytes per extra buffer.  
-> 
-> 
-> I’ve seen various network processor HW designs, and they normally get 
-> the first x bytes (128 - 512) which they can manipulate 
-> (append/prepend/insert/modify/delete).
 
-Good data point, thank you!  It confirms that XDP only getting access to
-the first packet-buffer makes sense, for most use-cases.
-
-We also have to remember that XDP it not meant to handle every
-use-case.  XDP is a software fast-path, that can accelerate certain
-use-case.  We have the existing network stack as a fall-back for
-handling the corner-cases, that would otherwise slowdown our XDP
-fast-path.
-
-
-> There are designs where they can “page in” the additional fragments 
-> but it’s expensive as it requires additional memory transfers. But
-> the majority do not care (cannot change) the remaining fragments. Can
-> also not think of a reason why you might want to remove something at
-> the end of the frame (thinking about routing/forwarding needs here).
-
-Use-cases that need to adjust tail of packet:
-
-- ICMP replies directly from XDP[1] need to shorten packet tail, but
-  this use-case doesn't use fragments.
-
-- IPsec need to add/extend packet tail for IPset-trailer[2], again
-  unlikely that this needs fragments(?). (This use-case convinced me
-  that we need to add extend-tail support to bpf_xdp_adjust_tail)
-
-- DNS or memcached replies directly from XDP, need to extend packet
-  tail, to have room for reply. (It would be interesting to allow larger
-  replies, but I'm not sure we should ever support that).
-
-
-> If we do want XDP to access other fragments we could do this through
-> a helper which swaps the packet context?
-
-That might be a way forward.  If the XDP developer have to call a
-helper, then they should realize and "buy into" an additional
-overhead/cost.
-
-
-[1] https://github.com/torvalds/linux/blob/master/samples/bpf/xdp_adjust_tail_kern.c
-[2] http://vger.kernel.org/netconf2019_files/xfrm_xdp.pdf
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
