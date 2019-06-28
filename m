@@ -2,88 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D19F5A2D9
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 19:56:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A02A5A2DB
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 19:56:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726587AbfF1R4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 13:56:00 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:36406 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726525AbfF1R4A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 13:56:00 -0400
-Received: by mail-pf1-f193.google.com with SMTP id r7so3366414pfl.3
-        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 10:55:59 -0700 (PDT)
+        id S1726549AbfF1R4r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 13:56:47 -0400
+Received: from mail-pg1-f202.google.com ([209.85.215.202]:42685 "EHLO
+        mail-pg1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726408AbfF1R4r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 13:56:47 -0400
+Received: by mail-pg1-f202.google.com with SMTP id d3so3547126pgc.9
+        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 10:56:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=YcKbK3r2Q+497R+LaIiCey5bOby8qZ7z+01VJdR9ML0=;
-        b=aE4DmMUjEz14Rl3dY+YSN0gZiBakAl1s+bDWQgyvyNKJoGVLdb18cTjG/xzjZYadtu
-         Ho9OONfRoFIi6Sa9twDude4gZ7uNn3ZR4JVlq454FdJlFsdRFtsysiNlAqVsUTH2bsak
-         s1LBoz7Foj5VsHoOdpOnTFM33JWRZnxZiGuVOJvGsMD2fAC9pjcV9UJnh0wsq+n87lj0
-         8Ejm02K7dj5OyL9YvqvBCgQJpxS6MAIL4MtZvuTAhYH9Tb6PQZWvZ2J66mEs2buFUf9b
-         5lupSsCZ2kuZHRozsyU19LWAUpdDXaZzSJxnJfDcS44UB3IaSpknhx3EbmIEO/avpJq0
-         hqkw==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=qG+Ud30lkFk67iWuKB1b9KhjwGVEAJBvKA6x7jWFKsg=;
+        b=cmRVI4e85nB2xmQopdu8r2j65C0rTMAU/Z5y1a4wL++pU/Kf2ZKb6ulxHxV2JKDasd
+         EXDxstkyF1NzzSPHpHOhs4RXjqu8fSdeV5L/5lbYDuYRyR6CDDQVxdikON4oM7G1SgWD
+         9dn9810tLO2yWmdWreXeHTrml/dj6kcvPlol8XsQi3sAVCqDalBrRDzOjshoGUcZDxwk
+         +vmgVeKbgZ/npP1qKddY8gLwFDsqYP6xJsgEWbt7ANfPLsZq6NfuzfXdGBUsUwwNV1Ux
+         uqgFynyn4FJQtV3bLVhLjVTctYC83rr8OxQ3k31ww8eyUNEt0S6noaxJr8hO4WyOn31I
+         0rEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=YcKbK3r2Q+497R+LaIiCey5bOby8qZ7z+01VJdR9ML0=;
-        b=t9wU0sD0jWtHOpybf+55Nid8aalX4bGIscJNRIThk/cfJWw3c1f6Z1ubnP8nM2klyl
-         VacA+YKQmC/04BTyKzCK5CGd8JOOyeIJrkSUDImV/JwOV7GC8bgUMhbluiCaVoq/r/ha
-         RxlgwQkZUsR+Aa0yzCpkRYhjrObW3g5mAFHeGRbZd+9BYZ2QWLhpbFplvddnIx2aZWiv
-         ngw0jJKVd7iccmvqf4FdalJ7RBAdo7gO56lNSk6RNVeaUqPud9sZj+AsPv0ruxqq27N/
-         BR042qG91VfxgaWbcI+ZrADXKD4BFNB0UxnfaQZjPtZaD4AJeRQxx+Uyo0fQK/PScXgj
-         ZV0Q==
-X-Gm-Message-State: APjAAAUyzO9GioWkwvm+xO5eiVXZYLBiQXg+1kCyU6bl1tZH6woYuLK5
-        5OkawIrtnee6X0Wa2XH0PHixkA==
-X-Google-Smtp-Source: APXvYqwyulMWXXvHCH2uwx4MmaikslB2L25jM59v2iW0J+N1+xqrL66F4On2xRMig4z3EYRkecpCSw==
-X-Received: by 2002:a63:3ec7:: with SMTP id l190mr10851197pga.334.1561744559353;
-        Fri, 28 Jun 2019 10:55:59 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id u2sm2524001pjv.30.2019.06.28.10.55.58
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 28 Jun 2019 10:55:58 -0700 (PDT)
-Date:   Fri, 28 Jun 2019 10:55:58 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Alexei Starovoitov <ast@fb.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH v3 bpf-next 2/9] libbpf: introduce concept of bpf_link
-Message-ID: <20190628175558.GK4866@mini-arch>
-References: <20190628055303.1249758-1-andriin@fb.com>
- <20190628055303.1249758-3-andriin@fb.com>
- <20190628160230.GG4866@mini-arch>
- <CAEf4BzbB6G5jTvS+K0+0zPXWLFmAePHU2RtALogWrh7h7OV03A@mail.gmail.com>
- <20190628174533.GI4866@mini-arch>
- <2cff901c-3b0b-d99d-3e58-7065d9d82ace@fb.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2cff901c-3b0b-d99d-3e58-7065d9d82ace@fb.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=qG+Ud30lkFk67iWuKB1b9KhjwGVEAJBvKA6x7jWFKsg=;
+        b=FLvacjo6+10+Hnsqlz1bk0FhE+4GdDmoQ9voUky9Ov1991AxGgj7l3Lanx0BTyfrcM
+         SuHtxHbVhmfOL4jTbW5ZnKz7FQxYRXS13l9wiZFszcRg3xfOXvzDfFoK4ouTHPr3MCCe
+         52baKv/IJOZjxkN6D/aIL7KCfSja+2wU+htk2dPQKiRqkXxQSQ7MqmHD2FifdB2UJ1QH
+         vIRBVnbNQKsvCmtHE9cSuvxtaIs6fNPdlTym7Je2ZDtAcwzJWX6YrITG6eyzPtvw+snj
+         Sb1wMEF79PgwOAHAgycGU4sTWJbSM9NA5dAUOEm6DMLhEklGgKsW4trolWgeisugdTg6
+         YT9w==
+X-Gm-Message-State: APjAAAVuhByYfuUWgrw6mjLjCvJO62kjesPaEqO5ZKJdrzLRlHaD4AwZ
+        acCt66cO1hesRCJ8eg4d+lgLP63+LICjrAxENDaGn+e55cN0kWNu0rZAK+HXlQ1y42QFFZNp/f+
+        W7rKnoKX43aMCp6aTQSi7SWXJGtmHARoiHi+q1+sAE8cPeMuQYId8M68J6lCpCQ==
+X-Google-Smtp-Source: APXvYqyrlOu58FS5s19aaomSnRvzWpO/13eOIY2RxpD8km53cUCdEaAEo1LWLFJIrb2P5c3fkisBM/I9FKA=
+X-Received: by 2002:a63:2ad5:: with SMTP id q204mr10596244pgq.140.1561744606594;
+ Fri, 28 Jun 2019 10:56:46 -0700 (PDT)
+Date:   Fri, 28 Jun 2019 10:56:29 -0700
+Message-Id: <20190628175633.143501-1-csully@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
+Subject: [PATCH net-next v2 0/4] Add gve driver
+From:   Catherine Sullivan <csully@google.com>
+To:     netdev@vger.kernel.org
+Cc:     Catherine Sullivan <csully@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/28, Alexei Starovoitov wrote:
-> On 6/28/19 10:45 AM, Stanislav Fomichev wrote:
-> >>>>
-> >>>> +struct bpf_link {
-> >>> Maybe call it bpf_attachment? You call the bpf_program__attach_to_blah
-> >>> and you get an attachment?
-> >>
-> >> I wanted to keep it as short as possible, bpf_attachment is way too
-> >> long (it's also why as an alternative I've proposed bpf_assoc, not
-> >> bpf_association, but bpf_attach isn't great shortening).
-> > Why do you want to keep it short? We have far longer names than
-> > bpf_attachment in libbpf. That shouldn't be a big concern.
-> 
-> Naming is hard. I also prefer short.
-There are only two hard things in Computer Science :-)
+This patch series adds the gve driver which will support the
+Compute Engine Virtual NIC that will be available in the future.
 
-> imo the word 'link' describes the concept better than 'attachment'.
+v2:
+- Patch 1:
+  - Remove gve_size_assert.h and use static_assert instead.
+  - Loop forever instead of bugging if the device won't reset
+  - Use module_pci_driver
+- Patch 2:
+  - Use be16_to_cpu in the RX Seq No define
+  - Remove unneeded ndo_change_mtu
+- Patch 3:
+  - No Changes
+- Patch 4:
+  - Instead of checking netif_carrier_ok in ethtool stats, just make sure
+    the rings have valid pointers.
+
+Catherine Sullivan (4):
+  gve: Add basic driver framework for Compute Engine Virtual NIC
+  gve: Add transmit and receive support
+  gve: Add workqueue and reset support
+  gve: Add ethtool support
+
+ .../networking/device_drivers/google/gve.rst  |  123 ++
+ .../networking/device_drivers/index.rst       |    1 +
+ MAINTAINERS                                   |    9 +
+ drivers/net/ethernet/Kconfig                  |    1 +
+ drivers/net/ethernet/Makefile                 |    1 +
+ drivers/net/ethernet/google/Kconfig           |   27 +
+ drivers/net/ethernet/google/Makefile          |    5 +
+ drivers/net/ethernet/google/gve/Makefile      |    4 +
+ drivers/net/ethernet/google/gve/gve.h         |  456 ++++++
+ drivers/net/ethernet/google/gve/gve_adminq.c  |  388 ++++++
+ drivers/net/ethernet/google/gve/gve_adminq.h  |  215 +++
+ drivers/net/ethernet/google/gve/gve_desc.h    |  113 ++
+ drivers/net/ethernet/google/gve/gve_ethtool.c |  239 ++++
+ drivers/net/ethernet/google/gve/gve_main.c    | 1217 +++++++++++++++++
+ .../net/ethernet/google/gve/gve_register.h    |   27 +
+ drivers/net/ethernet/google/gve/gve_rx.c      |  445 ++++++
+ drivers/net/ethernet/google/gve/gve_tx.c      |  584 ++++++++
+ 17 files changed, 3855 insertions(+)
+ create mode 100644 Documentation/networking/device_drivers/google/gve.rst
+ create mode 100644 drivers/net/ethernet/google/Kconfig
+ create mode 100644 drivers/net/ethernet/google/Makefile
+ create mode 100644 drivers/net/ethernet/google/gve/Makefile
+ create mode 100644 drivers/net/ethernet/google/gve/gve.h
+ create mode 100644 drivers/net/ethernet/google/gve/gve_adminq.c
+ create mode 100644 drivers/net/ethernet/google/gve/gve_adminq.h
+ create mode 100644 drivers/net/ethernet/google/gve/gve_desc.h
+ create mode 100644 drivers/net/ethernet/google/gve/gve_ethtool.c
+ create mode 100644 drivers/net/ethernet/google/gve/gve_main.c
+ create mode 100644 drivers/net/ethernet/google/gve/gve_register.h
+ create mode 100644 drivers/net/ethernet/google/gve/gve_rx.c
+ create mode 100644 drivers/net/ethernet/google/gve/gve_tx.c
+
+-- 
+2.22.0.410.gd8fdbe21b5-goog
+
