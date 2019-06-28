@@ -2,108 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36A0759E4B
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 16:56:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 532F459E69
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 17:06:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726729AbfF1O4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 10:56:41 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:41196 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726616AbfF1O4l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 10:56:41 -0400
-Received: by mail-ed1-f68.google.com with SMTP id p15so11184834eds.8
-        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 07:56:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lTB8itc7Hdv5V/+dut2HB/mQ8drlexx0jfcMZPn/UMg=;
-        b=oXEAK0d9RSmujgN3R7RFbaSXMnq8GelyuogkqcuNOi6TclZmDLp7/Wpb+D5JN5gFGk
-         g/owKu3WwHJgKtJ7942+DWdyAvykLbkn+AeYpnJcx2hBwmRC3uZQxOtT148S2BHO0HaO
-         CDkJBHTap2INlAJW3KBbBnqg1q+gQmeCLfAIjyQ/MTAatHyfXK/CZ105PQsNpeuhxNc7
-         ogxdeb06B7YqnSM9oJhKyzOx68+VurrDkqDun5Vca7ya4GB/ScKEkwLT73g+NbuhxTll
-         Atd9wUwhYQHsIbOWXmgHWt80hrSdlsbJGmGTXEfZaNVYw5dHYhmZBHRIwIrcDyYJTS29
-         lLNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lTB8itc7Hdv5V/+dut2HB/mQ8drlexx0jfcMZPn/UMg=;
-        b=FovN9duVzvOpAHHoRFvARhpRZj7J82mGjyPUH2Jehy1nXNV1glemTfH+S0zvXEQty6
-         zLw9NePYHQW0QxaW8q5EzK5QjkkW201ck5qVaMP/F/ffawOfwJ5BJSa3UMPf2l/AHDuu
-         mDCc7kS/kzjqWC/fi2DtH+lsRlWAT3xdelnIgSEEjXuTByP0LvpezH5cXE3JZdmSou1h
-         MKZy+Vu8myW90XPqjnTG8RMRwNONt9GRpWqQYk0IJDg2JX8mYpIpRcmldQbmjHq6kfPW
-         v/y0SGPE6fmlkoFsJc6Njn+wna5nJlLbVsCa077eJ0TWzYqZddo9/B4WumA3nfArsm5M
-         qL9g==
-X-Gm-Message-State: APjAAAWGv5iVP0PRHuULT+BtxlIFbXeji2xzyTGJE+EPyOgp0PWWu5Ny
-        4c4Spm0n5eNiukQg2gCXGRk5TnfZ0j2XCHf4d0I=
-X-Google-Smtp-Source: APXvYqz/Dm4hrU5Hkx7/DJDCjlbSxpOeJfCwPDq1huUAA45vQLsF87KFYvqqOcHvHKIt3YVJDxKiau2b8QJiX23AYYY=
-X-Received: by 2002:a17:906:7712:: with SMTP id q18mr8963605ejm.133.1561733799242;
- Fri, 28 Jun 2019 07:56:39 -0700 (PDT)
+        id S1726762AbfF1PGY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 11:06:24 -0400
+Received: from sesbmg23.ericsson.net ([193.180.251.37]:43391 "EHLO
+        sesbmg23.ericsson.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726716AbfF1PGY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 11:06:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; d=ericsson.com; s=mailgw201801; c=relaxed/relaxed;
+        q=dns/txt; i=@ericsson.com; t=1561734381; x=1564326381;
+        h=From:Sender:Reply-To:Subject:Date:Message-ID:To:CC:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=RBdhbqwDBi8SHuR63H43n5YYTE3NygS3UXxU+S0KB7s=;
+        b=cO67tS/rfPGznvnVYlbF2AVsqZMw1EXWnbF5zcyIwAfEf1oAZW1ZOdtdQIOJdrrc
+        hRF2yQXlOhMu0hh2FUoCz1fsYtzOP77loW9Dqm1qMxuvNi+bcrdbrc5/NAkZZSlt
+        dnD29LYD+aJ+YXSOAzLn9LPinrLyr6UZdj8LEX6FpRM=;
+X-AuditID: c1b4fb25-3b1ff700000029f0-5c-5d162cedd4f3
+Received: from ESESBMB505.ericsson.se (Unknown_Domain [153.88.183.118])
+        by sesbmg23.ericsson.net (Symantec Mail Security) with SMTP id F8.BD.10736.DEC261D5; Fri, 28 Jun 2019 17:06:21 +0200 (CEST)
+Received: from ESESSMR506.ericsson.se (153.88.183.128) by
+ ESESBMB505.ericsson.se (153.88.183.188) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1713.5; Fri, 28 Jun 2019 17:06:21 +0200
+Received: from ESESBMB503.ericsson.se (153.88.183.170) by
+ ESESSMR506.ericsson.se (153.88.183.128) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1713.5; Fri, 28 Jun 2019 17:06:20 +0200
+Received: from tipsy.lab.linux.ericsson.se (153.88.183.153) by
+ smtp.internal.ericsson.com (153.88.183.186) with Microsoft SMTP Server id
+ 15.1.1713.5 via Frontend Transport; Fri, 28 Jun 2019 17:06:20 +0200
+From:   Jon Maloy <jon.maloy@ericsson.com>
+To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
+CC:     <gordan.mihaljevic@dektech.com.au>, <tung.q.nguyen@dektech.com.au>,
+        <hoang.h.le@dektech.com.au>, <jon.maloy@ericsson.com>,
+        <canh.d.luu@dektech.com.au>, <ying.xue@windriver.com>,
+        <tipc-discussion@lists.sourceforge.net>
+Subject: [net-next  1/1] tipc: embed jiffies in macro TIPC_BC_RETR_LIM
+Date:   Fri, 28 Jun 2019 17:06:20 +0200
+Message-ID: <1561734380-26868-1-git-send-email-jon.maloy@ericsson.com>
+X-Mailer: git-send-email 2.1.4
 MIME-Version: 1.0
-References: <20190617074858.32467-1-bpoirier@suse.com> <20190617074858.32467-3-bpoirier@suse.com>
- <DM6PR18MB2697BAC4CA9B876306BEDBEBABE20@DM6PR18MB2697.namprd18.prod.outlook.com>
- <20190626113726.GB27420@f1> <CA+FuTSfKw6aaXk0hA0p_AUp9Oa_D+5Bwst8HUz7mJM-wO5Obow@mail.gmail.com>
- <20190628085713.GB14978@f1>
-In-Reply-To: <20190628085713.GB14978@f1>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 28 Jun 2019 10:56:02 -0400
-Message-ID: <CAF=yD-+wq4U0bwiSgHhfSiWXgE9JOefqp69Nxcwz5JsQcS7_Uw@mail.gmail.com>
-Subject: Re: [EXT] [PATCH net-next 03/16] qlge: Deduplicate lbq_buf_size
-To:     Benjamin Poirier <bpoirier@suse.com>
-Cc:     Manish Chopra <manishc@marvell.com>,
-        GR-Linux-NIC-Dev <GR-Linux-NIC-Dev@marvell.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrGLMWRmVeSWpSXmKPExsUyM2J7me5bHbFYgz3b5S1uNPQwW8w538Ji
+        sWL3JFaLt69msVscWyBmseV8lsWV9rPsFo+vX2d24PDYsvImk8e7K2weuxd8ZvL4vEnOY/2W
+        rUwBrFFcNimpOZllqUX6dglcGUdWtzAWzOWvmPz9PEsD4x6eLkZODgkBE4m+zZPZQGwhgaOM
+        Egc38HcxcgHZ3xglVnxfygyRAHKOTqmDsC8wSrxfFQ1iswloSLyc1sEIYosIGEu8WtnJBNLM
+        LPCYUeLL/VVgU4UF3CTuf78GZrMIqErceb4RzOYFih949IAV4go5ifPHf0ItU5aY+2EaE0SN
+        oMTJmU9YQGxmAQmJgy9eME9g5J+FJDULSWoBI9MqRtHi1OKk3HQjY73Uoszk4uL8PL281JJN
+        jMDQPbjlt+oOxstvHA8xCnAwKvHwLv4qGivEmlhWXJl7iFGCg1lJhFfynEisEG9KYmVValF+
+        fFFpTmrxIUZpDhYlcd713v9ihATSE0tSs1NTC1KLYLJMHJxSDYz58UHbf+o0Twn/OTHmBFO0
+        VUtk5cffa141Z3+1PHjZfW3QFlFR84IurYkK84T/Hm80WGYpIX5sy2SZ2ZX8nrqps63aN4v1
+        rlsQvLX55IaDs3boeNz+ETrf9+XMDaaeCtG7zv73O3T7RVUT7xrebzUm744otE0uX+mewvfL
+        dP/cSkGH2Z+W6CkpsRRnJBpqMRcVJwIAGB+H0VkCAAA=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 28, 2019 at 4:57 AM Benjamin Poirier <bpoirier@suse.com> wrote:
->
-> On 2019/06/26 11:42, Willem de Bruijn wrote:
-> > On Wed, Jun 26, 2019 at 7:37 AM Benjamin Poirier <bpoirier@suse.com> wrote:
-> > >
-> > > On 2019/06/26 09:24, Manish Chopra wrote:
-> > > > > -----Original Message-----
-> > > > > From: Benjamin Poirier <bpoirier@suse.com>
-> > > > > Sent: Monday, June 17, 2019 1:19 PM
-> > > > > To: Manish Chopra <manishc@marvell.com>; GR-Linux-NIC-Dev <GR-Linux-
-> > > > > NIC-Dev@marvell.com>; netdev@vger.kernel.org
-> > > > > Subject: [EXT] [PATCH net-next 03/16] qlge: Deduplicate lbq_buf_size
-> > > > >
-> > > > > External Email
-> > > > >
-> > > > > ----------------------------------------------------------------------
-> > > > > lbq_buf_size is duplicated to every rx_ring structure whereas lbq_buf_order is
-> > > > > present once in the ql_adapter structure. All rings use the same buf size, keep
-> > > > > only one copy of it. Also factor out the calculation of lbq_buf_size instead of
-> > > > > having two copies.
-> > > > >
-> > > > > Signed-off-by: Benjamin Poirier <bpoirier@suse.com>
-> > > > > ---
-> > > [...]
-> > > >
-> > > > Not sure if this change is really required, I think fields relevant to rx_ring should be present in the rx_ring structure.
-> > > > There are various other fields like "lbq_len" and "lbq_size" which would be same for all rx rings but still under the relevant rx_ring structure.
-> >
-> > The one argument against deduplicating might be if the original fields
-> > are in a hot cacheline and the new location adds a cacheline access to
-> > a hot path. Not sure if that is relevant here. But maybe something to
-> > double check.
-> >
->
-> Thanks for the hint. I didn't check before because my hunch was that
-> this driver is not near that level of optimization but I checked now and
-> got the following results.
+The macro TIPC_BC_RETR_LIM is always used in combination with 'jiffies',
+so we can just as well perform the addition in the macro itself. This
+way, we get a few shorter code lines and one less line break.
 
-Thanks for the data. I didn't mean to ask you to do a lot of extra work.
-Sorry if it resulted in that.
+Signed-off-by: Jon Maloy <jon.maloy@ericsson.com>
+---
+ net/tipc/link.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-Fully agreed on your point about optimization (see also.. that 784B
-struct with holes). I support the patch and meant to argue against the
-previous response: this cleanup makes sense to me, just take a second
-look at struct layout. To be more crystal clear:
+diff --git a/net/tipc/link.c b/net/tipc/link.c
+index f8bf63b..66d3a07 100644
+--- a/net/tipc/link.c
++++ b/net/tipc/link.c
+@@ -207,7 +207,7 @@ enum {
+ 	BC_NACK_SND_SUPPRESS,
+ };
+ 
+-#define TIPC_BC_RETR_LIM msecs_to_jiffies(10)   /* [ms] */
++#define TIPC_BC_RETR_LIM  (jiffies + msecs_to_jiffies(10))
+ #define TIPC_UC_RETR_TIME (jiffies + msecs_to_jiffies(1))
+ 
+ /*
+@@ -976,8 +976,7 @@ int tipc_link_xmit(struct tipc_link *l, struct sk_buff_head *list,
+ 			__skb_queue_tail(transmq, skb);
+ 			/* next retransmit attempt */
+ 			if (link_is_bc_sndlink(l))
+-				TIPC_SKB_CB(skb)->nxt_retr =
+-					jiffies + TIPC_BC_RETR_LIM;
++				TIPC_SKB_CB(skb)->nxt_retr = TIPC_BC_RETR_LIM;
+ 			__skb_queue_tail(xmitq, _skb);
+ 			TIPC_SKB_CB(skb)->ackers = l->ackers;
+ 			l->rcv_unacked = 0;
+@@ -1027,7 +1026,7 @@ static void tipc_link_advance_backlog(struct tipc_link *l,
+ 		__skb_queue_tail(&l->transmq, skb);
+ 		/* next retransmit attempt */
+ 		if (link_is_bc_sndlink(l))
+-			TIPC_SKB_CB(skb)->nxt_retr = jiffies + TIPC_BC_RETR_LIM;
++			TIPC_SKB_CB(skb)->nxt_retr = TIPC_BC_RETR_LIM;
+ 
+ 		__skb_queue_tail(xmitq, _skb);
+ 		TIPC_SKB_CB(skb)->ackers = l->ackers;
+@@ -1123,7 +1122,7 @@ static int tipc_link_bc_retrans(struct tipc_link *l, struct tipc_link *r,
+ 		if (link_is_bc_sndlink(l)) {
+ 			if (time_before(jiffies, TIPC_SKB_CB(skb)->nxt_retr))
+ 				continue;
+-			TIPC_SKB_CB(skb)->nxt_retr = jiffies + TIPC_BC_RETR_LIM;
++			TIPC_SKB_CB(skb)->nxt_retr = TIPC_BC_RETR_LIM;
+ 		}
+ 		_skb = __pskb_copy(skb, LL_MAX_HEADER + MIN_H_SIZE, GFP_ATOMIC);
+ 		if (!_skb)
+-- 
+2.1.4
 
-Acked-by: Willem de Bruijn <willemb@google.com>
