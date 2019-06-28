@@ -2,93 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B34725A741
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 00:59:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABA555A75B
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 01:03:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726851AbfF1W7G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 18:59:06 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:33667 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726731AbfF1W7F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 18:59:05 -0400
-Received: by mail-lj1-f194.google.com with SMTP id h10so7509984ljg.0
-        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 15:59:03 -0700 (PDT)
+        id S1726791AbfF1XDk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 19:03:40 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:46319 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726563AbfF1XDj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 19:03:39 -0400
+Received: by mail-io1-f68.google.com with SMTP id i10so2084345iol.13
+        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 16:03:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5hxr737kZawIDdGnBRfezwRYZfPo+N/0q3w7Fxi9l4A=;
-        b=VF6Qdhuv7A1bSXPlb3IW1+FrjzPu/5kLqJR8Bz3t4QYSsRmFGPpUKtjDK+76denozn
-         16FGNec6EkruICXjbpFZ9+3J36uau6xjWzLCfmQ1pkX2GY6gfKFgHUUoAsIpsrM4gUfb
-         2J1/qNcGNldERB23rgLKXTx1gg+Ws1OyBf04k=
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=bEJtEj7081MHo82AwTAmIk+tEAZMBQNViYUUZdRFqBo=;
+        b=QiRWpY29vpP6HzKs0fPFKylB25xyfqd+/LTcAjVkpyLRRyuTVsMmdboiRvlRMG1d3z
+         BMu51tzsJgm93RiQ3hGTDRby4HZBmfkshqhPsiXOJQpc89R5Doco4MNjUPdtjneX9lPA
+         wOWhu9/mxKVEE0HiclN+z7T/HVrXZpNLsyPvdQu0lb85hsbxi09eR+bxZYNUVrhF1VtL
+         CdNf0+6cZkBYWRXaKrWR0gCjRcWLZHpkk80JlakTRWOA0Y/E2nU+AWdqIESm3tbhJIZX
+         R8D+NaQ99n3hNgTppiGV20gWMs7gdKTRpWjGNnK5Rno5wdzRIMMcybA6o2uOU5HSLQH0
+         CkkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5hxr737kZawIDdGnBRfezwRYZfPo+N/0q3w7Fxi9l4A=;
-        b=LJIO0J4mCMf1KDk1jUedxHQkzhBkeToj6qJJsHv3DaP9bJSYCTCoS/HKDbVksIKAj2
-         aokjoCKVMAoBii7BBsTUQGKuAFB+nt/lHSjCrzqE4EnSRJDCDJC4LcQGi+3F/V7w6ZCC
-         cZXUSTG6/icCD1pdsI/M1WdhcxUjQLnm5FqQUZ0ixBowgIcE9RCnTkdW/oMFhm/VC/T0
-         sszVz9hLyzhq6Iom29bqiGIdgcaolJyQEuAnT0N3pXrxjrVxXku9mK32yJnUYXOeP4dK
-         jyz4SBTMSOgEEMKb3z1wziJGUPOye0/74BDC67dL8qqDxTTzW2qfxaOIEiXvmttJ/pF9
-         60Nw==
-X-Gm-Message-State: APjAAAV9dKTEmGBrZjKXs4Nb9f+Z9DDDV61dGsPn9ZieN9JwgU0HcHVs
-        fW9JP/Ufr3R42thsQuOyJNAx4aBacFc=
-X-Google-Smtp-Source: APXvYqyzr/s+w0D+TGSCR2zSaqewbcVEmZ5Wysw7Xr+N4vIRILRfDjZR4CX4QrcSwxuvE6tfkPHnLA==
-X-Received: by 2002:a2e:298a:: with SMTP id p10mr7422640ljp.74.1561762742224;
-        Fri, 28 Jun 2019 15:59:02 -0700 (PDT)
-Received: from mail-lj1-f170.google.com (mail-lj1-f170.google.com. [209.85.208.170])
-        by smtp.gmail.com with ESMTPSA id u11sm1247877ljd.90.2019.06.28.15.59.01
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Fri, 28 Jun 2019 15:59:02 -0700 (PDT)
-Received: by mail-lj1-f170.google.com with SMTP id v18so7483912ljh.6
-        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 15:59:01 -0700 (PDT)
-X-Received: by 2002:a2e:9758:: with SMTP id f24mr7644626ljj.58.1561762740673;
- Fri, 28 Jun 2019 15:59:00 -0700 (PDT)
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=bEJtEj7081MHo82AwTAmIk+tEAZMBQNViYUUZdRFqBo=;
+        b=R8Sb6lRKM+biv1vD//p68ImJlK8JTKyz2RNcdR5SUY9WWkKjRLPr9TcUw/uFcAinwd
+         sIzLDtE+JRfjssImXmenlYC2aFdtMEVvdH1bYDTs98Qh4/pd+m7X3M9HAU3OEwbLGH5q
+         aLXouSO6RoDVgMvba7vRaEXVG4claexemyw1xxIcxWPx67fLl82ylq3fuhbx7RSqnwE2
+         4T9wuECgPMb1NCpM0Ggn9gJeTLn5idlBQaWmAC8Wic81p9RqDUKdIBexd8/x2pyiNPJG
+         II406h6LxSzocqI6yjqQyf2M6OqHBvZ8KAFXM93uLPlxjk0LneI+X7qf49UWbP/4SzcM
+         5j+g==
+X-Gm-Message-State: APjAAAUf2/TMIzOTR1hBtjHRWwcz4AvBQ/RzXcYDPzBgiVvpZ5P/ZopL
+        yNUKan9GODpsGV4umf2YRRQcflAp
+X-Google-Smtp-Source: APXvYqyOmCffAryr+Zk4P7T6ym84rEjLviMX4jmG2JLRtDF5Fzze8Zy7mVnK0xaGSMmCROo1dGw+eA==
+X-Received: by 2002:a5d:9643:: with SMTP id d3mr14203066ios.227.1561763019156;
+        Fri, 28 Jun 2019 16:03:39 -0700 (PDT)
+Received: from ?IPv6:2601:282:800:fd80:a468:85d6:9e2b:8578? ([2601:282:800:fd80:a468:85d6:9e2b:8578])
+        by smtp.googlemail.com with ESMTPSA id s6sm2719225ioo.31.2019.06.28.16.03.37
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 28 Jun 2019 16:03:37 -0700 (PDT)
+Subject: Re: [iproute2-next v6] tipc: support interface name when activating
+ UDP bearer
+To:     Hoang Le <hoang.h.le@dektech.com.au>, dsahern@gmail.com,
+        jon.maloy@ericsson.com, maloy@donjonn.com, ying.xue@windriver.com,
+        netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net
+References: <20190625043439.6691-1-hoang.h.le@dektech.com.au>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <c9f82d53-9908-088d-7d42-a2acb01655b8@gmail.com>
+Date:   Fri, 28 Jun 2019 17:03:36 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-References: <20190627003616.20767-1-sashal@kernel.org> <20190627003616.20767-14-sashal@kernel.org>
-In-Reply-To: <20190627003616.20767-14-sashal@kernel.org>
-From:   Brian Norris <briannorris@chromium.org>
-Date:   Fri, 28 Jun 2019 15:58:49 -0700
-X-Gmail-Original-Message-ID: <CA+ASDXPyGECiq9gZmFj8TU6Gmt2epQtuBqnGqRWad79DJT589w@mail.gmail.com>
-Message-ID: <CA+ASDXPyGECiq9gZmFj8TU6Gmt2epQtuBqnGqRWad79DJT589w@mail.gmail.com>
-Subject: Re: [PATCH AUTOSEL 4.19 14/60] mwifiex: Abort at too short BSS
- descriptor element
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     Linux Kernel <linux-kernel@vger.kernel.org>,
-        stable <stable@vger.kernel.org>, Takashi Iwai <tiwai@suse.de>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190625043439.6691-1-hoang.h.le@dektech.com.au>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 26, 2019 at 5:49 PM Sasha Levin <sashal@kernel.org> wrote:
->
-> From: Takashi Iwai <tiwai@suse.de>
->
-> [ Upstream commit 685c9b7750bfacd6fc1db50d86579980593b7869 ]
->
-> Currently mwifiex_update_bss_desc_with_ie() implicitly assumes that
-> the source descriptor entries contain the enough size for each type
-> and performs copying without checking the source size.  This may lead
-> to read over boundary.
->
-> Fix this by putting the source size check in appropriate places.
->
-> Signed-off-by: Takashi Iwai <tiwai@suse.de>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
+On 6/24/19 10:34 PM, Hoang Le wrote:
+> Support for indicating interface name has an ip address in parallel
+> with specifying ip address when activating UDP bearer.
+> This liberates the user from keeping track of the current ip address
+> for each device.
+> 
+> Old command syntax:
+> $tipc bearer enable media udp name NAME localip IP
+> 
+> New command syntax:
+> $tipc bearer enable media udp name NAME [localip IP|dev DEVICE]
+> 
+> v2:
+>     - Removed initial value for fd
+>     - Fixed the returning value for cmd_bearer_validate_and_get_addr
+>       to make its consistent with using: zero or non-zero
+> v3: - Switch to use helper 'get_ifname' to retrieve interface name
+> v4: - Replace legacy SIOCGIFADDR by netlink
+> v5: - Fix leaky rtnl_handle
+> 
+> Acked-by: Ying Xue <ying.xue@windriver.com>
+> Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
+> ---
+>  tipc/bearer.c | 94 ++++++++++++++++++++++++++++++++++++++++++++++++---
+>  1 file changed, 89 insertions(+), 5 deletions(-)
+> 
 
-For the record, this fixup is still aiming for 5.2, correcting some
-potential mistakes in this patch:
+applied to iproute2-next. Thanks
 
-63d7ef36103d mwifiex: Don't abort on small, spec-compliant vendor IEs
 
-So you might want to hold off a bit, and grab them both.
-
-Brian
