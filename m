@@ -2,166 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 127EF59969
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 13:50:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94AA359985
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 13:53:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726864AbfF1LuL convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 28 Jun 2019 07:50:11 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:46752 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726558AbfF1LuL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Jun 2019 07:50:11 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id D217688306;
-        Fri, 28 Jun 2019 11:50:03 +0000 (UTC)
-Received: from [10.36.116.200] (ovpn-116-200.ams2.redhat.com [10.36.116.200])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id B3A46608D0;
-        Fri, 28 Jun 2019 11:49:45 +0000 (UTC)
-From:   "Eelco Chaudron" <echaudro@redhat.com>
-To:     "Toke =?utf-8?b?SMO4aWxhbmQtSsO4cmdlbnNlbg==?=" <toke@redhat.com>
-Cc:     "Jesper Dangaard Brouer" <brouer@redhat.com>,
-        "Machulsky, Zorik" <zorik@amazon.com>,
-        "Jubran, Samih" <sameehj@amazon.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, "Woodhouse, David" <dwmw@amazon.co.uk>,
-        "Matushevsky, Alexander" <matua@amazon.com>,
-        "Bshara, Saeed" <saeedb@amazon.com>,
-        "Wilson, Matt" <msw@amazon.com>,
-        "Liguori, Anthony" <aliguori@amazon.com>,
-        "Bshara, Nafea" <nafea@amazon.com>,
-        "Tzalik, Guy" <gtzalik@amazon.com>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Saidi, Ali" <alisaidi@amazon.com>,
-        "Herrenschmidt, Benjamin" <benh@amazon.com>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>,
-        "Daniel Borkmann" <borkmann@iogearbox.net>,
-        "Ilias Apalodimas" <ilias.apalodimas@linaro.org>,
-        "Alexei Starovoitov" <alexei.starovoitov@gmail.com>,
-        "Jakub Kicinski" <jakub.kicinski@netronome.com>,
-        xdp-newbies@vger.kernel.org
-Subject: Re: XDP multi-buffer incl. jumbo-frames (Was: [RFC V1 net-next 1/1]
- net: ena: implement XDP drop support)
-Date:   Fri, 28 Jun 2019 13:49:43 +0200
-Message-ID: <5127F708-7CDD-4471-9767-D8C87DC23888@redhat.com>
-In-Reply-To: <87y31m884a.fsf@toke.dk>
-References: <20190623070649.18447-1-sameehj@amazon.com>
- <20190623070649.18447-2-sameehj@amazon.com> <20190623162133.6b7f24e1@carbon>
- <A658E65E-93D2-4F10-823D-CC25B081C1B7@amazon.com>
- <20190626103829.5360ef2d@carbon>
- <CC99D6DE-5B6B-42F3-8D68-7F9AFF1712FF@redhat.com> <87y31m884a.fsf@toke.dk>
+        id S1726640AbfF1LwI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 07:52:08 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:7673 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726656AbfF1LwI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 Jun 2019 07:52:08 -0400
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 078A6C70308820D69ECF;
+        Fri, 28 Jun 2019 19:52:06 +0800 (CST)
+Received: from localhost.localdomain (10.67.212.132) by
+ DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
+ 14.3.439.0; Fri, 28 Jun 2019 19:51:58 +0800
+From:   Huazhong Tan <tanhuazhong@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <linuxarm@huawei.com>, Huazhong Tan <tanhuazhong@huawei.com>
+Subject: [PATCH net-next 00/12] net: hns3: some code optimizations & cleanups & bugfixes
+Date:   Fri, 28 Jun 2019 19:50:06 +0800
+Message-ID: <1561722618-12168-1-git-send-email-tanhuazhong@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8BIT
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.28]); Fri, 28 Jun 2019 11:50:10 +0000 (UTC)
+Content-Type: text/plain
+X-Originating-IP: [10.67.212.132]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+[patch 01/12] fixes a TX timeout issue.
 
+[patch 02/12 - 04/12] adds some patch related to TM module.
 
-On 28 Jun 2019, at 9:46, Toke Høiland-Jørgensen wrote:
+[patch 05/12] fixes a compile warning.
 
-> "Eelco Chaudron" <echaudro@redhat.com> writes:
->
->> On 26 Jun 2019, at 10:38, Jesper Dangaard Brouer wrote:
->>
->>> On Tue, 25 Jun 2019 03:19:22 +0000
->>> "Machulsky, Zorik" <zorik@amazon.com> wrote:
->>>
->>>> ﻿On 6/23/19, 7:21 AM, "Jesper Dangaard Brouer" 
->>>> <brouer@redhat.com>
->>>> wrote:
->>>>
->>>>     On Sun, 23 Jun 2019 10:06:49 +0300 <sameehj@amazon.com> wrote:
->>>>
->>>>     > This commit implements the basic functionality of drop/pass
->>>> logic in the
->>>>     > ena driver.
->>>>
->>>>     Usually we require a driver to implement all the XDP return
->>>> codes,
->>>>     before we accept it.  But as Daniel and I discussed with Zorik
->>>> during
->>>>     NetConf[1], we are going to make an exception and accept the
->>>> driver
->>>>     if you also implement XDP_TX.
->>>>
->>>>     As we trust that Zorik/Amazon will follow and implement
->>>> XDP_REDIRECT
->>>>     later, given he/you wants AF_XDP support which requires
->>>> XDP_REDIRECT.
->>>>
->>>> Jesper, thanks for your comments and very helpful discussion during
->>>> NetConf! That's the plan, as we agreed. From our side I would like 
->>>> to
->>>> reiterate again the importance of multi-buffer support by xdp 
->>>> frame.
->>>> We would really prefer not to see our MTU shrinking because of xdp
->>>> support.
->>>
->>> Okay we really need to make a serious attempt to find a way to 
->>> support
->>> multi-buffer packets with XDP. With the important criteria of not
->>> hurting performance of the single-buffer per packet design.
->>>
->>> I've created a design document[2], that I will update based on our
->>> discussions: [2]
->>> https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp-multi-buffer01-design.org
->>>
->>> The use-case that really convinced me was Eric's packet 
->>> header-split.
->>>
->>>
->>> Lets refresh: Why XDP don't have multi-buffer support:
->>>
->>> XDP is designed for maximum performance, which is why certain
->>> driver-level
->>> use-cases were not supported, like multi-buffer packets (like
->>> jumbo-frames).
->>> As it e.g. complicated the driver RX-loop and memory model handling.
->>>
->>> The single buffer per packet design, is also tied into eBPF
->>> Direct-Access
->>> (DA) to packet data, which can only be allowed if the packet memory 
->>> is
->>> in
->>> contiguous memory.  This DA feature is essential for XDP 
->>> performance.
->>>
->>>
->>> One way forward is to define that XDP only get access to the first
->>> packet buffer, and it cannot see subsequent buffers.  For XDP_TX and
->>> XDP_REDIRECT to work then XDP still need to carry pointers (plus
->>> len+offset) to the other buffers, which is 16 bytes per extra 
->>> buffer.
->>
->>
->> I’ve seen various network processor HW designs, and they normally 
->> get
->> the first x bytes (128 - 512) which they can manipulate
->> (append/prepend/insert/modify/delete).
->>
->> There are designs where they can “page in” the additional 
->> fragments
->> but it’s expensive as it requires additional memory transfers. But 
->> the
->> majority do not care (cannot change) the remaining fragments. Can 
->> also
->> not think of a reason why you might want to remove something at the 
->> end
->> of the frame (thinking about routing/forwarding needs here).
->>
->> If we do want XDP to access other fragments we could do this through 
->> a
->> helper which swaps the packet context?
->
-> Yeah, I was also going to suggest a helper for that. It doesn't
-> necessarily need to swap the packet context, it could just return a 
-> new
-> pointer?
+[patch 06/12] adds Asym Pause support for autoneg
 
-Yes that will work, my head was still thinking ASICs where there is 
-limited SRAM space…
+[patch 07/12] optimizes the error handler for VF reset.
+
+[patch 08/12] deals with the empty interrupt case.
+
+[patch 09/12 - 12/12] adds some cleanups & optimizations.
+
+Huazhong Tan (3):
+  net: hns3: fix __QUEUE_STATE_STACK_XOFF not cleared issue
+  net: hns3: re-schedule reset task while VF reset fail
+  net: hns3: handle empty unknown interrupt
+
+Jian Shen (1):
+  net: hns3: remove unused linkmode definition
+
+Peng Li (1):
+  net: hns3: optimize the CSQ cmd error handling
+
+Yonglong Liu (2):
+  net: hns3: fix a -Wformat-nonliteral compile warning
+  net: hns3: add Asym Pause support to fix autoneg problem
+
+Yufeng Mo (1):
+  net: hns3: fix a statistics issue about l3l4 checksum error
+
+Yunsheng Lin (4):
+  net: hns3: enable DCB when TC num is one and pfc_en is non-zero
+  net: hns3: change SSU's buffer allocation according to UM
+  net: hns3: add some error checking in hclge_tm module
+  net: hns3: remove RXD_VLD check in hns3_handle_bdinfo
+
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 66 +++++++----------
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    | 20 ------
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |  1 -
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c | 15 +++-
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |  2 +-
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c |  2 +
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 84 +++++++++++++++++++---
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_mdio.c    |  7 ++
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c  | 25 ++++++-
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.h  |  3 +-
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c   | 19 +++--
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  | 30 +++++---
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h  |  1 +
+ 13 files changed, 184 insertions(+), 91 deletions(-)
+
+-- 
+2.7.4
+
