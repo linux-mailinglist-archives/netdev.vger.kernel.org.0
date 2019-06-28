@@ -2,102 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 072345A768
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 01:08:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5809F5A76A
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 01:10:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726936AbfF1XIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 19:08:11 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:39096 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726631AbfF1XIL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 19:08:11 -0400
-Received: by mail-qt1-f193.google.com with SMTP id i34so8178131qta.6
-        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 16:08:10 -0700 (PDT)
+        id S1726752AbfF1XKx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 19:10:53 -0400
+Received: from mail-pg1-f202.google.com ([209.85.215.202]:45195 "EHLO
+        mail-pg1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726631AbfF1XKx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 19:10:53 -0400
+Received: by mail-pg1-f202.google.com with SMTP id n7so3900836pgr.12
+        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 16:10:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3X/04zhwrZPKCoSQmLee5JQ7e8O8NkvcQhEI2nEnj7k=;
-        b=BrX3DWirXEI6sxzpVN6oZxt/L3odOOUQZZjr90odlP58EmYRpbXl4KnOXTeQXrnOiu
-         1CUAN3bFNL9o+livGDtYIsOmlZMtaZDwoTRXOlg0SKezlLBPMFodsAMgPJAjp/ePy5Ev
-         E/P+kqRK6GQshcP6ETPr83WzFxpqWlRnp0XYmQnVo7vW3zDNJxrIYisXX8NKDGqvQ1Vh
-         ZwvD0F/2RiIONVFMAnsui/YG2maJNn3VGyjTbQZRSm5a6t4gn++xHeRTam4ZOVheDb/E
-         l0VJC2oiPCWS++e74HccLo6IxIQpMpgYJHt/K+E9LhXSnXoz0BN4oNPr30BYSvnWQb4q
-         Ww3g==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=H1uw8GNHqdne1YqmW30hQmg7ehvjJ07bgavin0v97FA=;
+        b=G1HGo98N06/C96ASXTRQ8Z8DwfpQ4rC88TZvh6R7AuL8Bb0uMCA64FgFwfWI2OrlW/
+         5ZYxVu3fBdgzsYk082oSaxiDQ7WI6m7GR2IhKVgd296VQNlZa+BcFhDzjqyLQLnd0w+L
+         M57d/1psVlxo/oszPG70J9CMX+jmcJJ2gLUQvTiB6ip2Q+CvmJTQGqXLGB1ixAhRqUKT
+         F3Mr4ZAHddLFcizilTx9AAtfz2fjcweEKNNWvgfpTQFGZe7ni46zS41PKUYchuqyinH6
+         pRRYoYS+1iYxRq1UBr2W3VIwYAixrTKZoj1rPtrdgkeHvlKwALMvpzQHM+axZXLsgE9q
+         U8OQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3X/04zhwrZPKCoSQmLee5JQ7e8O8NkvcQhEI2nEnj7k=;
-        b=NvBawPkJTY0DVLPJ2k8aAYQ8kQGpVsoxL10zKtINykLY+pNbFxgYFN4siOGi5u/gW1
-         GgMf7w5E74aumak0Mchm/mPpmsjTgSbVqhNiCYHEQEQPsiudHGjhgKZ7+AwElSqxrfql
-         kK7imVWQAUH9YPml59esA1PxsmSxCw2aRmLA9mqvwEpCvdbtN2aF4lX628An0BhhxGFG
-         rEOoFGIK7+9wL2fo7gEMuKkRXOEUYorTl5zFI/mQYDfEfQ1dusViYws9vpnaIrTGPBz+
-         56e4UJGDu+0AhEDoMs95mmXFvmeI+Cy1IY/RpUZl92s/1HPT2Do/2hk1DVyP0zz1qOP7
-         45Bw==
-X-Gm-Message-State: APjAAAV7gNNTjfX3D0iZe/UMTcYecI3cZbCbCvVbTHwHbSGffbECDgjB
-        EjA2oKwl9Q++36oqX/3qQOVXU7cfcjY=
-X-Google-Smtp-Source: APXvYqz8y+xkabsY3pmrnnWgo7axr58axkGRGZUWduSX3RMpMRFp23djSVGT6n0Mk3RHZwTlDiXV0w==
-X-Received: by 2002:ac8:17e6:: with SMTP id r35mr10006856qtk.215.1561763290114;
-        Fri, 28 Jun 2019 16:08:10 -0700 (PDT)
-Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id j19sm1391961qtq.94.2019.06.28.16.08.08
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 28 Jun 2019 16:08:09 -0700 (PDT)
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
-        borisp@mellanox.com, alexei.starovoitov@gmail.com,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Dirk van der Merwe <dirk.vandermerwe@netronome.com>
-Subject: [PATCH net] net/tls: reject offload of TLS 1.3
-Date:   Fri, 28 Jun 2019 16:07:59 -0700
-Message-Id: <20190628230759.16360-1-jakub.kicinski@netronome.com>
-X-Mailer: git-send-email 2.21.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=H1uw8GNHqdne1YqmW30hQmg7ehvjJ07bgavin0v97FA=;
+        b=fiepx2xy9OHibjsygJj2kmd3eD9eMjbv9v8hxfCsoBdtfA52iKDDY5IlKELQORkz9u
+         Ex47FBcg1+M8BBBhV2uJa6SBChri2Rg7F3PgrrygQUOXKHIqjwGPxxcgAES+vHUPxFNe
+         wfk1SiF30KEh7JuDlEty4QTERkx/qhe/d/dZPhRfX3Q89hbO6MVlPfGliGUIKha059Np
+         q1UadxxWBmjfp/7Q707pGmyWRFjOSM10eIthasXND6Yh9teYqzO0rwBr+vdoXVfef3EG
+         x3sz8hDkpAZDWGTMSHCqHxLWyKXEu24yUuXD78QRvDddrntmV0WN8h/LxVG3Pcij7nnm
+         dT0g==
+X-Gm-Message-State: APjAAAXSc4uPs5au0QqKC2DsxXAg1KMBv+ZMWCbpk36cwSyOxFGN/WyM
+        mWcJOIQt9di2LKsVJHO9+RiOKYv/WDSBvoR8/IAAcGuOrOSiTE05nLL/YcY/CTj/6oOd1b39flL
+        zyfEPZYAWO0SopxZCv3B28jWYoR9Uk7RMs8ql3ZVdOn3Qfn/4GuImgQ==
+X-Google-Smtp-Source: APXvYqzn1y/EUNmYcU6bEtZmjhaAhzm9/gCbpGaC5ql1JodiKRqRZXv/A3SZQLptiFW84eM3ykNpngA=
+X-Received: by 2002:a63:a61:: with SMTP id z33mr11668815pgk.154.1561763451833;
+ Fri, 28 Jun 2019 16:10:51 -0700 (PDT)
+Date:   Fri, 28 Jun 2019 16:10:48 -0700
+Message-Id: <20190628231049.22149-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
+Subject: [PATCH bpf-next 1/2] bpf: allow wide (u64) aligned stores for some
+ fields of bpf_sock_addr
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>,
+        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
+        kernel test robot <rong.a.chen@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Neither drivers nor the tls offload code currently supports TLS
-version 1.3. Check the TLS version when installing connection
-state. TLS 1.3 will just fallback to the kernel crypto for now.
+Since commit cd17d7770578 ("bpf/tools: sync bpf.h") clang decided
+that it can do a single u64 store into user_ip6[2] instead of two
+separate u32 ones:
 
-Fixes: 130b392c6cd6 ("net: tls: Add tls 1.3 support")
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Reviewed-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
+ #  17: (18) r2 = 0x100000000000000
+ #  ; ctx->user_ip6[2] = bpf_htonl(DST_REWRITE_IP6_2);
+ #  19: (7b) *(u64 *)(r1 +16) = r2
+ #  invalid bpf_context access off=16 size=8
+
+From the compiler point of view it does look like a correct thing
+to do, so let's support it on the kernel side.
+
+Credit to Andrii Nakryiko for a proper implementation of
+bpf_ctx_wide_store_ok.
+
+Cc: Andrii Nakryiko <andriin@fb.com>
+Cc: Yonghong Song <yhs@fb.com>
+Fixes: cd17d7770578 ("bpf/tools: sync bpf.h")
+Reported-by: kernel test robot <rong.a.chen@intel.com>
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
 ---
- net/tls/tls_device.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ include/linux/filter.h |  6 ++++++
+ net/core/filter.c      | 22 ++++++++++++++--------
+ 2 files changed, 20 insertions(+), 8 deletions(-)
 
-diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-index 1f9cf57d9754..397990407ed6 100644
---- a/net/tls/tls_device.c
-+++ b/net/tls/tls_device.c
-@@ -742,6 +742,11 @@ int tls_set_device_offload(struct sock *sk, struct tls_context *ctx)
- 	}
+diff --git a/include/linux/filter.h b/include/linux/filter.h
+index 340f7d648974..3901007e36f1 100644
+--- a/include/linux/filter.h
++++ b/include/linux/filter.h
+@@ -746,6 +746,12 @@ bpf_ctx_narrow_access_ok(u32 off, u32 size, u32 size_default)
+ 	return size <= size_default && (size & (size - 1)) == 0;
+ }
  
- 	crypto_info = &ctx->crypto_send.info;
-+	if (crypto_info->version != TLS_1_2_VERSION) {
-+		rc = -EOPNOTSUPP;
-+		goto free_offload_ctx;
-+	}
++#define bpf_ctx_wide_store_ok(off, size, type, field)			\
++	(size == sizeof(__u64) &&					\
++	off >= offsetof(type, field) &&					\
++	off + sizeof(__u64) <= offsetofend(type, field) &&		\
++	off % sizeof(__u64) == 0)
 +
- 	switch (crypto_info->cipher_type) {
- 	case TLS_CIPHER_AES_GCM_128:
- 		nonce_size = TLS_CIPHER_AES_GCM_128_IV_SIZE;
-@@ -876,6 +881,9 @@ int tls_set_device_offload_rx(struct sock *sk, struct tls_context *ctx)
- 	struct net_device *netdev;
- 	int rc = 0;
+ #define bpf_classic_proglen(fprog) (fprog->len * sizeof(fprog->filter[0]))
  
-+	if (ctx->crypto_recv.info.version != TLS_1_2_VERSION)
-+		return -EOPNOTSUPP;
+ static inline void bpf_prog_lock_ro(struct bpf_prog *fp)
+diff --git a/net/core/filter.c b/net/core/filter.c
+index dc8534be12fc..5d33f2146dab 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -6849,6 +6849,16 @@ static bool sock_addr_is_valid_access(int off, int size,
+ 			if (!bpf_ctx_narrow_access_ok(off, size, size_default))
+ 				return false;
+ 		} else {
++			if (bpf_ctx_wide_store_ok(off, size,
++						  struct bpf_sock_addr,
++						  user_ip6))
++				return true;
 +
- 	/* We support starting offload on multiple sockets
- 	 * concurrently, so we only need a read lock here.
- 	 * This lock must precede get_netdev_for_sock to prevent races between
++			if (bpf_ctx_wide_store_ok(off, size,
++						  struct bpf_sock_addr,
++						  msg_src_ip6))
++				return true;
++
+ 			if (size != size_default)
+ 				return false;
+ 		}
+@@ -7689,9 +7699,6 @@ static u32 xdp_convert_ctx_access(enum bpf_access_type type,
+ /* SOCK_ADDR_STORE_NESTED_FIELD_OFF() has semantic similar to
+  * SOCK_ADDR_LOAD_NESTED_FIELD_SIZE_OFF() but for store operation.
+  *
+- * It doesn't support SIZE argument though since narrow stores are not
+- * supported for now.
+- *
+  * In addition it uses Temporary Field TF (member of struct S) as the 3rd
+  * "register" since two registers available in convert_ctx_access are not
+  * enough: we can't override neither SRC, since it contains value to store, nor
+@@ -7699,7 +7706,7 @@ static u32 xdp_convert_ctx_access(enum bpf_access_type type,
+  * instructions. But we need a temporary place to save pointer to nested
+  * structure whose field we want to store to.
+  */
+-#define SOCK_ADDR_STORE_NESTED_FIELD_OFF(S, NS, F, NF, OFF, TF)		       \
++#define SOCK_ADDR_STORE_NESTED_FIELD_OFF(S, NS, F, NF, SIZE, OFF, TF)	       \
+ 	do {								       \
+ 		int tmp_reg = BPF_REG_9;				       \
+ 		if (si->src_reg == tmp_reg || si->dst_reg == tmp_reg)	       \
+@@ -7710,8 +7717,7 @@ static u32 xdp_convert_ctx_access(enum bpf_access_type type,
+ 				      offsetof(S, TF));			       \
+ 		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(S, F), tmp_reg,	       \
+ 				      si->dst_reg, offsetof(S, F));	       \
+-		*insn++ = BPF_STX_MEM(					       \
+-			BPF_FIELD_SIZEOF(NS, NF), tmp_reg, si->src_reg,	       \
++		*insn++ = BPF_STX_MEM(SIZE, tmp_reg, si->src_reg,	       \
+ 			bpf_target_off(NS, NF, FIELD_SIZEOF(NS, NF),	       \
+ 				       target_size)			       \
+ 				+ OFF);					       \
+@@ -7723,8 +7729,8 @@ static u32 xdp_convert_ctx_access(enum bpf_access_type type,
+ 						      TF)		       \
+ 	do {								       \
+ 		if (type == BPF_WRITE) {				       \
+-			SOCK_ADDR_STORE_NESTED_FIELD_OFF(S, NS, F, NF, OFF,    \
+-							 TF);		       \
++			SOCK_ADDR_STORE_NESTED_FIELD_OFF(S, NS, F, NF, SIZE,   \
++							 OFF, TF);	       \
+ 		} else {						       \
+ 			SOCK_ADDR_LOAD_NESTED_FIELD_SIZE_OFF(		       \
+ 				S, NS, F, NF, SIZE, OFF);  \
 -- 
-2.21.0
+2.22.0.410.gd8fdbe21b5-goog
 
