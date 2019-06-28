@@ -2,115 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C72359701
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 11:12:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9198E597D9
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 11:48:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726675AbfF1JMr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 05:12:47 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:34014 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726697AbfF1JMl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 05:12:41 -0400
-Received: by mail-ed1-f66.google.com with SMTP id s49so10077949edb.1
-        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 02:12:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=xUkl3qHWD8xZmbOfiby5T9gO2zLEB0xX30U5WvG9/RM=;
-        b=O+RfylBIsu1+E4Ni4yqP3dSq8ZAJs12Vgc3ewHBBDeqvPVvyqLPi7pKsoi3lPOx2cL
-         Dp4pt2y8CjAA+z4mlz+eV+VgutTlmrHo72f3uj2KMvcP3mvoiANVYY48Q/nBpYrFiVku
-         2c801lo+V1iytHW/lJpGyLFOtw5/nJuegs2Nou78UbQaN9U49PjNa9YsID1VfC3MF2WJ
-         us/gvZ5UukF/e4NQ2eKd8X0Dq6BF08rO8RjjxOa9XCeyNik3h3FmopsP0UEYwCckt8pO
-         vq7B/aQozHwWkZlRgZCBWB64l5i9edM2MVCxwb5+2oQAO/YlLRCjk/Oqe5DsDRp/MCAQ
-         VnEw==
-X-Gm-Message-State: APjAAAWDK15PUhRHZGOKQDpeKFDUk6KHjTw2q9Yt/d9pkMyqEw292+z+
-        mlE/bWWJtzzQ1u56qrhffedE2Q==
-X-Google-Smtp-Source: APXvYqyHNIZDMclQVQNPtoo01Z8Cta0RUUa/ARGAIVTlKlLwGoL3q+9hgKDtMSs99Phwxo6UaJ3OFw==
-X-Received: by 2002:a17:906:7541:: with SMTP id a1mr7539338ejn.50.1561713159861;
-        Fri, 28 Jun 2019 02:12:39 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id r44sm511414edd.20.2019.06.28.02.12.36
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 28 Jun 2019 02:12:38 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 1225D181CC7; Fri, 28 Jun 2019 11:12:35 +0200 (CEST)
-Subject: [PATCH bpf-next v6 5/5] devmap: Allow map lookups from eBPF
-From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-Date:   Fri, 28 Jun 2019 11:12:35 +0200
-Message-ID: <156171315501.9468.6602722652840352230.stgit@alrua-x1>
-In-Reply-To: <156171315462.9468.3367572649463706996.stgit@alrua-x1>
-References: <156171315462.9468.3367572649463706996.stgit@alrua-x1>
-User-Agent: StGit/0.19-dirty
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+        id S1726574AbfF1Jsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 05:48:54 -0400
+Received: from m9783.mail.qiye.163.com ([220.181.97.83]:37213 "EHLO
+        m9783.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726426AbfF1Jsx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 05:48:53 -0400
+Received: from localhost.localdomain (unknown [123.59.132.129])
+        by m9783.mail.qiye.163.com (Hmail) with ESMTPA id 3D796C17EA;
+        Fri, 28 Jun 2019 17:48:47 +0800 (CST)
+From:   wenxu@ucloud.cn
+To:     pablo@netfilter.org, fw@strlen.de
+Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH 1/4 nf-next v2] netfilter:nf_flow_table: Refactor flow_offload_tuple to destination
+Date:   Fri, 28 Jun 2019 17:48:43 +0800
+Message-Id: <1561715326-3945-1-git-send-email-wenxu@ucloud.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZSVVPSU9LS0tLSU9MQk5OSFlXWShZQU
+        lCN1dZLVlBSVdZCQ4XHghZQVk1NCk2OjckKS43PlkG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6ORg6Nww*EzgzGAszHwwcNhoJ
+        FQ0wCRlVSlVKTk1KTEpOSElMSEhOVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
+        QlVKSElVSklCWVdZCAFZQUxNS0s3Bg++
+X-HM-Tid: 0a6b9d7cc12e2085kuqy3d796c17ea
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Toke Høiland-Jørgensen <toke@redhat.com>
+From: wenxu <wenxu@ucloud.cn>
 
-We don't currently allow lookups into a devmap from eBPF, because the map
-lookup returns a pointer directly to the dev->ifindex, which shouldn't be
-modifiable from eBPF.
+Add struct flow_offload_dst to support more offload method to replace
+dst_cache which only work for route offload.
 
-However, being able to do lookups in devmaps is useful to know (e.g.)
-whether forwarding to a specific interface is enabled. Currently, programs
-work around this by keeping a shadow map of another type which indicates
-whether a map index is valid.
-
-Since we now have a flag to make maps read-only from the eBPF side, we can
-simply lift the lookup restriction if we make sure this flag is always set.
-
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+Signed-off-by: wenxu <wenxu@ucloud.cn>
 ---
- kernel/bpf/devmap.c   |    5 +++++
- kernel/bpf/verifier.c |    7 ++-----
- 2 files changed, 7 insertions(+), 5 deletions(-)
+ include/net/netfilter/nf_flow_table.h | 12 ++++++++++--
+ net/netfilter/nf_flow_table_core.c    | 22 +++++++++++-----------
+ net/netfilter/nf_flow_table_ip.c      |  4 ++--
+ net/netfilter/nft_flow_offload.c      | 12 ++++++------
+ 4 files changed, 29 insertions(+), 21 deletions(-)
 
-diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-index a4dddc867cbf..d83cf8ccc872 100644
---- a/kernel/bpf/devmap.c
-+++ b/kernel/bpf/devmap.c
-@@ -89,6 +89,11 @@ static struct bpf_map *dev_map_alloc(union bpf_attr *attr)
- 	    attr->value_size != 4 || attr->map_flags & ~DEV_CREATE_FLAG_MASK)
- 		return ERR_PTR(-EINVAL);
+diff --git a/include/net/netfilter/nf_flow_table.h b/include/net/netfilter/nf_flow_table.h
+index d8c1879..d40d409 100644
+--- a/include/net/netfilter/nf_flow_table.h
++++ b/include/net/netfilter/nf_flow_table.h
+@@ -33,6 +33,10 @@ enum flow_offload_tuple_dir {
+ 	FLOW_OFFLOAD_DIR_MAX = IP_CT_DIR_MAX
+ };
  
-+	/* Lookup returns a pointer straight to dev->ifindex, so make sure the
-+	 * verifier prevents writes from the BPF side
-+	 */
-+	attr->map_flags |= BPF_F_RDONLY_PROG;
++struct flow_offload_dst {
++	struct dst_entry		*dst_cache;
++};
 +
- 	dtab = kzalloc(sizeof(*dtab), GFP_USER);
- 	if (!dtab)
- 		return ERR_PTR(-ENOMEM);
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 0e079b2298f8..51c327ee7d3f 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -3407,12 +3407,9 @@ static int check_map_func_compatibility(struct bpf_verifier_env *env,
- 		if (func_id != BPF_FUNC_get_local_storage)
- 			goto error;
- 		break;
--	/* devmap returns a pointer to a live net_device ifindex that we cannot
--	 * allow to be modified from bpf side. So do not allow lookup elements
--	 * for now.
--	 */
- 	case BPF_MAP_TYPE_DEVMAP:
--		if (func_id != BPF_FUNC_redirect_map)
-+		if (func_id != BPF_FUNC_redirect_map &&
-+		    func_id != BPF_FUNC_map_lookup_elem)
- 			goto error;
- 		break;
- 	/* Restrict bpf side of cpumap and xskmap, open when use-cases
+ struct flow_offload_tuple {
+ 	union {
+ 		struct in_addr		src_v4;
+@@ -55,7 +59,7 @@ struct flow_offload_tuple {
+ 
+ 	u16				mtu;
+ 
+-	struct dst_entry		*dst_cache;
++	struct flow_offload_dst		dst;
+ };
+ 
+ struct flow_offload_tuple_rhash {
+@@ -85,8 +89,12 @@ struct nf_flow_route {
+ 	} tuple[FLOW_OFFLOAD_DIR_MAX];
+ };
+ 
++struct nf_flow_dst {
++	struct nf_flow_route route;
++};
++
+ struct flow_offload *flow_offload_alloc(struct nf_conn *ct,
+-					struct nf_flow_route *route);
++					struct nf_flow_dst *flow_dst);
+ void flow_offload_free(struct flow_offload *flow);
+ 
+ int flow_offload_add(struct nf_flowtable *flow_table, struct flow_offload *flow);
+diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
+index e3d7972..7e0b5bd 100644
+--- a/net/netfilter/nf_flow_table_core.c
++++ b/net/netfilter/nf_flow_table_core.c
+@@ -24,13 +24,13 @@ struct flow_offload_entry {
+ 
+ static void
+ flow_offload_fill_dir(struct flow_offload *flow, struct nf_conn *ct,
+-		      struct nf_flow_route *route,
++		      struct nf_flow_dst *flow_dst,
+ 		      enum flow_offload_tuple_dir dir)
+ {
+ 	struct flow_offload_tuple *ft = &flow->tuplehash[dir].tuple;
+ 	struct nf_conntrack_tuple *ctt = &ct->tuplehash[dir].tuple;
+-	struct dst_entry *other_dst = route->tuple[!dir].dst;
+-	struct dst_entry *dst = route->tuple[dir].dst;
++	struct dst_entry *other_dst = flow_dst->route.tuple[!dir].dst;
++	struct dst_entry *dst = flow_dst->route.tuple[dir].dst;
+ 
+ 	ft->dir = dir;
+ 
+@@ -57,7 +57,7 @@ struct flow_offload_entry {
+ }
+ 
+ struct flow_offload *
+-flow_offload_alloc(struct nf_conn *ct, struct nf_flow_route *route)
++flow_offload_alloc(struct nf_conn *ct, struct nf_flow_dst *flow_dst)
+ {
+ 	struct flow_offload_entry *entry;
+ 	struct flow_offload *flow;
+@@ -72,16 +72,16 @@ struct flow_offload *
+ 
+ 	flow = &entry->flow;
+ 
+-	if (!dst_hold_safe(route->tuple[FLOW_OFFLOAD_DIR_ORIGINAL].dst))
++	if (!dst_hold_safe(flow_dst->route.tuple[FLOW_OFFLOAD_DIR_ORIGINAL].dst))
+ 		goto err_dst_cache_original;
+ 
+-	if (!dst_hold_safe(route->tuple[FLOW_OFFLOAD_DIR_REPLY].dst))
++	if (!dst_hold_safe(flow_dst->route.tuple[FLOW_OFFLOAD_DIR_REPLY].dst))
+ 		goto err_dst_cache_reply;
+ 
+ 	entry->ct = ct;
+ 
+-	flow_offload_fill_dir(flow, ct, route, FLOW_OFFLOAD_DIR_ORIGINAL);
+-	flow_offload_fill_dir(flow, ct, route, FLOW_OFFLOAD_DIR_REPLY);
++	flow_offload_fill_dir(flow, ct, flow_dst, FLOW_OFFLOAD_DIR_ORIGINAL);
++	flow_offload_fill_dir(flow, ct, flow_dst, FLOW_OFFLOAD_DIR_REPLY);
+ 
+ 	if (ct->status & IPS_SRC_NAT)
+ 		flow->flags |= FLOW_OFFLOAD_SNAT;
+@@ -91,7 +91,7 @@ struct flow_offload *
+ 	return flow;
+ 
+ err_dst_cache_reply:
+-	dst_release(route->tuple[FLOW_OFFLOAD_DIR_ORIGINAL].dst);
++	dst_release(flow_dst->route.tuple[FLOW_OFFLOAD_DIR_ORIGINAL].dst);
+ err_dst_cache_original:
+ 	kfree(entry);
+ err_ct_refcnt:
+@@ -139,8 +139,8 @@ void flow_offload_free(struct flow_offload *flow)
+ {
+ 	struct flow_offload_entry *e;
+ 
+-	dst_release(flow->tuplehash[FLOW_OFFLOAD_DIR_ORIGINAL].tuple.dst_cache);
+-	dst_release(flow->tuplehash[FLOW_OFFLOAD_DIR_REPLY].tuple.dst_cache);
++	dst_release(flow->tuplehash[FLOW_OFFLOAD_DIR_ORIGINAL].tuple.dst.dst_cache);
++	dst_release(flow->tuplehash[FLOW_OFFLOAD_DIR_REPLY].tuple.dst.dst_cache);
+ 	e = container_of(flow, struct flow_offload_entry, flow);
+ 	if (flow->flags & FLOW_OFFLOAD_DYING)
+ 		nf_ct_delete(e->ct, 0, 0);
+diff --git a/net/netfilter/nf_flow_table_ip.c b/net/netfilter/nf_flow_table_ip.c
+index 2413174..0016bb8 100644
+--- a/net/netfilter/nf_flow_table_ip.c
++++ b/net/netfilter/nf_flow_table_ip.c
+@@ -241,7 +241,7 @@ static bool nf_flow_exceeds_mtu(const struct sk_buff *skb, unsigned int mtu)
+ 
+ 	dir = tuplehash->tuple.dir;
+ 	flow = container_of(tuplehash, struct flow_offload, tuplehash[dir]);
+-	rt = (struct rtable *)flow->tuplehash[dir].tuple.dst_cache;
++	rt = (struct rtable *)flow->tuplehash[dir].tuple.dst.dst_cache;
+ 	outdev = rt->dst.dev;
+ 
+ 	if (unlikely(nf_flow_exceeds_mtu(skb, flow->tuplehash[dir].tuple.mtu)))
+@@ -457,7 +457,7 @@ static int nf_flow_tuple_ipv6(struct sk_buff *skb, const struct net_device *dev,
+ 
+ 	dir = tuplehash->tuple.dir;
+ 	flow = container_of(tuplehash, struct flow_offload, tuplehash[dir]);
+-	rt = (struct rt6_info *)flow->tuplehash[dir].tuple.dst_cache;
++	rt = (struct rt6_info *)flow->tuplehash[dir].tuple.dst.dst_cache;
+ 	outdev = rt->dst.dev;
+ 
+ 	if (unlikely(nf_flow_exceeds_mtu(skb, flow->tuplehash[dir].tuple.mtu)))
+diff --git a/net/netfilter/nft_flow_offload.c b/net/netfilter/nft_flow_offload.c
+index aa5f571..261c565 100644
+--- a/net/netfilter/nft_flow_offload.c
++++ b/net/netfilter/nft_flow_offload.c
+@@ -70,10 +70,10 @@ static void nft_flow_offload_eval(const struct nft_expr *expr,
+ 				  struct nft_regs *regs,
+ 				  const struct nft_pktinfo *pkt)
+ {
+-	struct nft_flow_offload *priv = nft_expr_priv(expr);
+ 	struct nf_flowtable *flowtable = &priv->flowtable->data;
++	struct nft_flow_offload *priv = nft_expr_priv(expr);
+ 	enum ip_conntrack_info ctinfo;
+-	struct nf_flow_route route;
++	struct nf_flow_dst flow_dst;
+ 	struct flow_offload *flow;
+ 	enum ip_conntrack_dir dir;
+ 	bool is_tcp = false;
+@@ -108,10 +108,10 @@ static void nft_flow_offload_eval(const struct nft_expr *expr,
+ 		goto out;
+ 
+ 	dir = CTINFO2DIR(ctinfo);
+-	if (nft_flow_route(pkt, ct, &route, dir) < 0)
++	if (nft_flow_route(pkt, ct, &flow_dst.route, dir) < 0)
+ 		goto err_flow_route;
+ 
+-	flow = flow_offload_alloc(ct, &route);
++	flow = flow_offload_alloc(ct, &flow_dst);
+ 	if (!flow)
+ 		goto err_flow_alloc;
+ 
+@@ -124,13 +124,13 @@ static void nft_flow_offload_eval(const struct nft_expr *expr,
+ 	if (ret < 0)
+ 		goto err_flow_add;
+ 
+-	dst_release(route.tuple[!dir].dst);
++	dst_release(flow_dst.route.tuple[!dir].dst);
+ 	return;
+ 
+ err_flow_add:
+ 	flow_offload_free(flow);
+ err_flow_alloc:
+-	dst_release(route.tuple[!dir].dst);
++	dst_release(flow_dst.route.tuple[!dir].dst);
+ err_flow_route:
+ 	clear_bit(IPS_OFFLOAD_BIT, &ct->status);
+ out:
+-- 
+1.8.3.1
 
