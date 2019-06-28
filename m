@@ -2,97 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ABA555A75B
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 01:03:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A3705A75F
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 01:05:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726791AbfF1XDk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 19:03:40 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:46319 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726563AbfF1XDj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 19:03:39 -0400
-Received: by mail-io1-f68.google.com with SMTP id i10so2084345iol.13
-        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 16:03:39 -0700 (PDT)
+        id S1726809AbfF1XFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 19:05:18 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:40771 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726643AbfF1XFS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 19:05:18 -0400
+Received: by mail-lj1-f194.google.com with SMTP id a21so7500601ljh.7
+        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 16:05:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=bEJtEj7081MHo82AwTAmIk+tEAZMBQNViYUUZdRFqBo=;
-        b=QiRWpY29vpP6HzKs0fPFKylB25xyfqd+/LTcAjVkpyLRRyuTVsMmdboiRvlRMG1d3z
-         BMu51tzsJgm93RiQ3hGTDRby4HZBmfkshqhPsiXOJQpc89R5Doco4MNjUPdtjneX9lPA
-         wOWhu9/mxKVEE0HiclN+z7T/HVrXZpNLsyPvdQu0lb85hsbxi09eR+bxZYNUVrhF1VtL
-         CdNf0+6cZkBYWRXaKrWR0gCjRcWLZHpkk80JlakTRWOA0Y/E2nU+AWdqIESm3tbhJIZX
-         R8D+NaQ99n3hNgTppiGV20gWMs7gdKTRpWjGNnK5Rno5wdzRIMMcybA6o2uOU5HSLQH0
-         CkkQ==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GqfzcGTh4R+wjudzcyBPWjah+lJ5/F0fn2v7GiYZZ1A=;
+        b=pzwBCZ+hEhuF0BWeVUfu6SkZIpY1bN87/e7nB8Y+GdcMuWSa97E/Uf5YhCv+jn4ha6
+         e//1PWFAausGWjhzQ1oVU6YvJ8VkrbqAPRNMtkMBAwP6lhw2P2T/SwZt1mZJD/X7n/vQ
+         OuwSNuRcqVhUeBZaud3kV5x1gnG7g2bVZTPUDuXw7B40081EL20cZfe2AChoXMxFRmVM
+         h7xKhLdNj9kWC3CRZLCr0zjiKMBJ0CyBjC5U3cJdTZqvpA0DHcKT22Aen4UtdO8N6cv2
+         EBRfiV6b69wnobETdZwwad4vP31sRQM/TyOHaHWKPAMRYT6rcQM/SZbqHMVknzgebqa8
+         QypA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=bEJtEj7081MHo82AwTAmIk+tEAZMBQNViYUUZdRFqBo=;
-        b=R8Sb6lRKM+biv1vD//p68ImJlK8JTKyz2RNcdR5SUY9WWkKjRLPr9TcUw/uFcAinwd
-         sIzLDtE+JRfjssImXmenlYC2aFdtMEVvdH1bYDTs98Qh4/pd+m7X3M9HAU3OEwbLGH5q
-         aLXouSO6RoDVgMvba7vRaEXVG4claexemyw1xxIcxWPx67fLl82ylq3fuhbx7RSqnwE2
-         4T9wuECgPMb1NCpM0Ggn9gJeTLn5idlBQaWmAC8Wic81p9RqDUKdIBexd8/x2pyiNPJG
-         II406h6LxSzocqI6yjqQyf2M6OqHBvZ8KAFXM93uLPlxjk0LneI+X7qf49UWbP/4SzcM
-         5j+g==
-X-Gm-Message-State: APjAAAUf2/TMIzOTR1hBtjHRWwcz4AvBQ/RzXcYDPzBgiVvpZ5P/ZopL
-        yNUKan9GODpsGV4umf2YRRQcflAp
-X-Google-Smtp-Source: APXvYqyOmCffAryr+Zk4P7T6ym84rEjLviMX4jmG2JLRtDF5Fzze8Zy7mVnK0xaGSMmCROo1dGw+eA==
-X-Received: by 2002:a5d:9643:: with SMTP id d3mr14203066ios.227.1561763019156;
-        Fri, 28 Jun 2019 16:03:39 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:a468:85d6:9e2b:8578? ([2601:282:800:fd80:a468:85d6:9e2b:8578])
-        by smtp.googlemail.com with ESMTPSA id s6sm2719225ioo.31.2019.06.28.16.03.37
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 28 Jun 2019 16:03:37 -0700 (PDT)
-Subject: Re: [iproute2-next v6] tipc: support interface name when activating
- UDP bearer
-To:     Hoang Le <hoang.h.le@dektech.com.au>, dsahern@gmail.com,
-        jon.maloy@ericsson.com, maloy@donjonn.com, ying.xue@windriver.com,
-        netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net
-References: <20190625043439.6691-1-hoang.h.le@dektech.com.au>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <c9f82d53-9908-088d-7d42-a2acb01655b8@gmail.com>
-Date:   Fri, 28 Jun 2019 17:03:36 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GqfzcGTh4R+wjudzcyBPWjah+lJ5/F0fn2v7GiYZZ1A=;
+        b=QyZcQROBD/ExcX3vVttXpO0ffUKNjQI2rytWI4Srli4t4yn7Nu0v8s64+uetzj0i4o
+         0YXlg053XnQ9ntVWT9+cdd+p3yCRogRrpXLRIf9dJF2MFFw1hqwW53cbPWHZmjR2xET4
+         QmFB94/7KSQjEi2Q26bJzhe/it5oLD3OwdmaDzYtq7oyNY2tsX5p0nbib7Bz15lR3XKN
+         h8P3dHI1ooPz58RYHnPgFvSO6HtqutrlhjqyZ4xyWJz4yLNhzcTticjCLm2VfA2B/oJY
+         4lWw2erQi0lYkoCZdIcpCY0cxjaqhZsd9BGtLPqpdXld7ne4ScMSJ4amf2VUPCmwmCIF
+         dd2Q==
+X-Gm-Message-State: APjAAAWLoJZ5ewPqDdzEnSTySLlv+ERNl2+Sb0sl4vVOT58kvXZcgc30
+        6ktwLdHtdIdkwHFK3OoVcFjlxM4YKtQGOhBx4UCVfRtP0DnZAw==
+X-Google-Smtp-Source: APXvYqyb+IODZkDaSzeYM2z+Z6NUQ7nHDLo8t8QrnPDdXxpufnA1F1qjEioD/oQWkrnwtYqxsbD2prYuA8maHYT2544=
+X-Received: by 2002:a2e:5b1b:: with SMTP id p27mr7304303ljb.97.1561763116214;
+ Fri, 28 Jun 2019 16:05:16 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190625043439.6691-1-hoang.h.le@dektech.com.au>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20190626185251.205687-1-csully@google.com> <20190626185251.205687-2-csully@google.com>
+ <20190626160832.3f191a53@cakuba.netronome.com> <CAH_-1qzzWVKxDX3LaorsgYPjT5uhDgqdN3oMZtJ2p6AzDqRyXA@mail.gmail.com>
+ <20190628114615.4fc81791@cakuba.netronome.com> <20190628200628.GS27733@lunn.ch>
+In-Reply-To: <20190628200628.GS27733@lunn.ch>
+From:   Catherine Sullivan <csully@google.com>
+Date:   Fri, 28 Jun 2019 16:05:05 -0700
+Message-ID: <CAH_-1qxdG2nFXTQs30nVanmNuEmENV-bf=60NpAZPy9j3EjyWg@mail.gmail.com>
+Subject: Re: [net-next 1/4] gve: Add basic driver framework for Compute Engine
+ Virtual NIC
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        netdev@vger.kernel.org, Sagi Shahar <sagis@google.com>,
+        Jon Olson <jonolson@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Luigi Rizzo <lrizzo@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/24/19 10:34 PM, Hoang Le wrote:
-> Support for indicating interface name has an ip address in parallel
-> with specifying ip address when activating UDP bearer.
-> This liberates the user from keeping track of the current ip address
-> for each device.
-> 
-> Old command syntax:
-> $tipc bearer enable media udp name NAME localip IP
-> 
-> New command syntax:
-> $tipc bearer enable media udp name NAME [localip IP|dev DEVICE]
-> 
-> v2:
->     - Removed initial value for fd
->     - Fixed the returning value for cmd_bearer_validate_and_get_addr
->       to make its consistent with using: zero or non-zero
-> v3: - Switch to use helper 'get_ifname' to retrieve interface name
-> v4: - Replace legacy SIOCGIFADDR by netlink
-> v5: - Fix leaky rtnl_handle
-> 
-> Acked-by: Ying Xue <ying.xue@windriver.com>
-> Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
-> ---
->  tipc/bearer.c | 94 ++++++++++++++++++++++++++++++++++++++++++++++++---
->  1 file changed, 89 insertions(+), 5 deletions(-)
-> 
+On Fri, Jun 28, 2019 at 1:06 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> On Fri, Jun 28, 2019 at 11:46:15AM -0700, Jakub Kicinski wrote:
+> > On Fri, 28 Jun 2019 10:52:27 -0700, Catherine Sullivan wrote:
+> > > > > +if NET_VENDOR_GOOGLE
+> > > > > +
+> > > > > +config GVE
+> > > > > +     tristate "Google Virtual NIC (gVNIC) support"
+> > > > > +     depends on (PCI_MSI && X86)
+> > > >
+> > > > We usually prefer for drivers not to depend on the platform unless
+> > > > really necessary, but IDK how that applies to the curious new world
+> > > > of NICs nobody can buy :)
+> > >
+> > > This is the only platform it will ever need to run on so we would really
+> > > prefer to not have to support others :)
+> >
+> > I think the motivation is partially to force the uniform use of generic
+> > APIs across the drivers, so that re-factoring of core code is easier.
+> > Do you have any specific pain-points in mind where x86 dependency
+> > simplifies things? If not I think it's a better default to not have it.
+> > Not a big deal, though.
+>
+> And maybe sometime in the future you might want to put this interface
+> in an ARM64 server?
+>
+> One 'pain-paint' is that the driver might assume cache-coherency,
+> which is an x86 thing. If the generic APIs have been used, it should
+> not be an issue, but i've not spent the time to see if the DMA API has
+> been used correctly.
+>
+>      Andrew
 
-applied to iproute2-next. Thanks
-
-
+Mostly it is just hesitation around lack of testing. But I've done a few quick
+compile tests and ARM and ARM64 don't seem to have any problems so
+I've removed the dependency in v3.
