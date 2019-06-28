@@ -2,103 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B991A59134
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 04:36:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55F2259138
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 04:37:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726794AbfF1Cgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 22:36:45 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:44306 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725770AbfF1Cgp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 22:36:45 -0400
-Received: by mail-pg1-f193.google.com with SMTP id n2so1878435pgp.11
-        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 19:36:44 -0700 (PDT)
+        id S1726562AbfF1Chp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 22:37:45 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:33582 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726476AbfF1Chp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 22:37:45 -0400
+Received: by mail-pl1-f196.google.com with SMTP id c14so2359428plo.0
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 19:37:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=lb6M/rv6FXwSZX6Qrby2H3VultnUQP+uPdwQ2YTWync=;
-        b=izvJLtg6DwTZkfloSk2EPhkOsz27hMAIvy3JpDWqdhMSVYGbsnmqysH3OMgSk7Dk0q
-         2DCvcitm5R1Rd9awSsIIhlBjKwp/scRV5DbuDizwFjpuTo5o1aLenNGbTxv/AyTuE4Rh
-         gBK7aIIFGUm8lobH3dJg4u+XhdHxHSy4IHBlcqx3FA09VHPZgrUERATHc98WpJl5IV5h
-         i2u57zPbMF8GA+W/gu4YuOqD+6UsxI/iMgeNWiQ7y8SNwUYBA4ddYgasySrNiMh++2B9
-         HXRUzQx6OabY71uje2Q7otDAvElI4aJxgOdlpB8oYCwGvs9bfwPs2SnwZXKhNurv2aSr
-         n3XA==
+        d=etsukata-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=roaztKtTkRu8pn3yWaNhfvLdHNSmDj0YJDhL6E5EN+0=;
+        b=rukbDA3CpnhMC7Q3iFXSeQ2HtDS7nCRUjmzI73bUUVB22U1aRiyRjlQ9Zh9EDbi/V6
+         U4nUJWUK3Xh6Y54+Rkfas3b5KPNZvIxPiAhdgV2OIj+WJMHyXoPqJSU83OaUclWn90Zi
+         PZjEXxHlwrWFKhfq0Qk49+IaZcw6ssGei44MrIbwlLKRPkOwkzkv0jM9rEnCw+vOeIMs
+         EITDkhfRKI28nKKknobZm+0zSIMv9Y0taN+4zXHhKeq4bxbPJ5A1d+mGh3ZDq75As6oV
+         1TeJtBZJKbzU+16ItZURdexunhMxEY1sMlyuc5o8w5rmUK/A6mh1iNBSsYsz0dh8QW0J
+         TRkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=lb6M/rv6FXwSZX6Qrby2H3VultnUQP+uPdwQ2YTWync=;
-        b=cgzWfHJ3mRI6AleKJM+oY5a5BGiSWmGifAzoVOMpjgrAJHKFOVij1h7eYHl5prXcyl
-         BOwnIX5ffI4RZ+BCZjalQkP7XtWmgpfZ/rwKKeWmkroUa669VeV0L7ooavPGoY8pnaxP
-         nHnivMrYquISAk5IqfvGTVFAFQ0TXyb0DARFKZlSNMNKzvE52oyzUDyMZhiuQho8kU4H
-         Js+sEraI942XyqZV4H+/Wk414juK9gTjxGA98+mEKLfZkePJrIpISrPJFKSXka4YEy5X
-         TGmYEGPJhp2NMFYwQBpIJUwBom2LqA6ssIaYu4HSqT9wE5yNsURzQHKsLA3Jky5hwUKe
-         kc1w==
-X-Gm-Message-State: APjAAAUKncYQhOG2s0vDCsSMxD2hptLHWaWvojUB31dzNuvbZRi5uCtG
-        nbJatQ55yMyXvhZ0M6M6u00=
-X-Google-Smtp-Source: APXvYqw0dTfYpGmqfCIaCeaeXVM0rs+Lg8o/NNv8GFrvTOGgrLq4DJIzdEj4DY3SFkIlxCG18rSA4g==
-X-Received: by 2002:a63:4c14:: with SMTP id z20mr6871145pga.360.1561689404323;
-        Thu, 27 Jun 2019 19:36:44 -0700 (PDT)
-Received: from [172.26.126.192] ([2620:10d:c090:180::1:1d68])
-        by smtp.gmail.com with ESMTPSA id a21sm460820pfi.27.2019.06.27.19.36.43
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 27 Jun 2019 19:36:43 -0700 (PDT)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Jakub Kicinski" <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org, bjorn.topel@intel.com,
-        magnus.karlsson@intel.com, saeedm@mellanox.com,
-        maximmi@mellanox.com, brouer@redhat.com, kernel-team@fb.com
-Subject: Re: [PATCH 4/6 bfp-next] Simplify AF_XDP umem allocation path for
- Intel drivers.
-Date:   Thu, 27 Jun 2019 19:36:42 -0700
-X-Mailer: MailMate (1.12.5r5635)
-Message-ID: <32DD3CE5-327F-4D76-861B-7256F3F10EC9@gmail.com>
-In-Reply-To: <20190627154206.5d458e94@cakuba.netronome.com>
-References: <20190627220836.2572684-1-jonathan.lemon@gmail.com>
- <20190627220836.2572684-5-jonathan.lemon@gmail.com>
- <20190627154206.5d458e94@cakuba.netronome.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=roaztKtTkRu8pn3yWaNhfvLdHNSmDj0YJDhL6E5EN+0=;
+        b=EL10jOgyVKstyEnZGc6T0f3/52NnQILaIOq5Qm2pWBu7tMFO4pYiW4Fs87+ZGGpPZe
+         WsTuzSJ3CanM7orApH2AZHKqydNFnDQu/AtlkahGlh61yOUPJaqBNbiT+ROMlTLuPQkp
+         4G57g8zpitpDSvPRfbS7B445/MEXBPYUVfw/n6RXOYY6+u5AoqvzJCuxupOO6tdkTabB
+         Zwtv/wlu25OoABOCxqV/hpMGwH0wzuX3n2IjsWI0lte3WMts3hQiykaCyxTeMEZr32/4
+         KuV89W0z+04tnwWzRdXcMI1pvj2/Ln6svad8vOUzaGTLoLk32F5LDky1yxmOF3bRsTd6
+         ECSA==
+X-Gm-Message-State: APjAAAXn6yU8A6K+rgItV0HtW1ziAgwibFSZlqsoElxSJHxkWnSDphBB
+        SdfupNSX6ZiA07Pltaks9XqHLA==
+X-Google-Smtp-Source: APXvYqzYqfCBc3iTV+51i6xo/8yVdkZVszMsUp8lcRHzgFH+naQmZdFlCFa4RWgCh79DR5QAEdb9+g==
+X-Received: by 2002:a17:902:8f93:: with SMTP id z19mr8245017plo.97.1561689465143;
+        Thu, 27 Jun 2019 19:37:45 -0700 (PDT)
+Received: from localhost.localdomain (p2517222-ipngn21701marunouchi.tokyo.ocn.ne.jp. [118.7.246.222])
+        by smtp.gmail.com with ESMTPSA id i3sm368206pgq.40.2019.06.27.19.37.42
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 27 Jun 2019 19:37:44 -0700 (PDT)
+From:   Eiichi Tsukata <devel@etsukata.com>
+To:     davem@davemloft.net, edumazet@google.com, kuznet@ms2.inr.ac.ru,
+        yoshfuji@linux-ipv6.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Eiichi Tsukata <devel@etsukata.com>
+Subject: [PATCH net-next] net/ipv6: Fix misuse of proc_dointvec "flowlabel_reflect"
+Date:   Fri, 28 Jun 2019 11:37:14 +0900
+Message-Id: <20190628023714.1923-1-devel@etsukata.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; markup=markdown
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+/proc/sys/net/ipv6/flowlabel_reflect assumes written value to be in the
+range of 0 to 3. Use proc_dointvec_minmax instead of proc_dointvec.
 
+Fixes: 323a53c41292 ("ipv6: tcp: enable flowlabel reflection in some RST packets")
+Signed-off-by: Eiichi Tsukata <devel@etsukata.com>
+---
+ net/ipv6/sysctl_net_ipv6.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On 27 Jun 2019, at 15:42, Jakub Kicinski wrote:
-
-> On Thu, 27 Jun 2019 15:08:34 -0700, Jonathan Lemon wrote:
->> Now that the recycle stack is always used for the driver umem path, the
->> driver code path can be simplified.
->>
->> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
->
-> I guess it's a question to Bjorn and Magnus whether they want Intel
-> drivers to always go through the reuse queue..
-
-I did pass this by them earlier.
-
-
-> Could you be more explicit on the motivation?  I'd call this patch set
-> "make all drivers use reuse queue" rather than "clean up".
-
-The motivation is to have packets which were received on a zero-copy
-AF_XDP socket, and which returned a TX verdict from the bpf program,
-queued directly on the TX ring (if they're in the same napi context).
-
-When these TX packets are completed, they are placed back onto the
-reuse queue, as there isn't really any other place to handle them.
-
-It also addresses Maxim's concern about having buffers end up sitting
-on the rq after a ring resize.
-
-I was going to send the TX change out as part of this patch, but
-figured it would be better split unto its own series.
-
-> Also when you're changing code please make sure you CC the author.
-
-Who did I miss?
+diff --git a/net/ipv6/sysctl_net_ipv6.c b/net/ipv6/sysctl_net_ipv6.c
+index 6d86fac472e7..831573461e19 100644
+--- a/net/ipv6/sysctl_net_ipv6.c
++++ b/net/ipv6/sysctl_net_ipv6.c
+@@ -114,7 +114,7 @@ static struct ctl_table ipv6_table_template[] = {
+ 		.data		= &init_net.ipv6.sysctl.flowlabel_reflect,
+ 		.maxlen		= sizeof(int),
+ 		.mode		= 0644,
+-		.proc_handler	= proc_dointvec,
++		.proc_handler	= proc_dointvec_minmax,
+ 		.extra1		= &zero,
+ 		.extra2		= &three,
+ 	},
 -- 
-Jonathan
+2.21.0
+
