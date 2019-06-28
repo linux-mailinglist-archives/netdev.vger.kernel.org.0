@@ -2,88 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 943925A471
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 20:46:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C75A75A478
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 20:47:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726707AbfF1SqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 14:46:21 -0400
-Received: from mail-qk1-f172.google.com ([209.85.222.172]:42316 "EHLO
-        mail-qk1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726620AbfF1SqU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 14:46:20 -0400
-Received: by mail-qk1-f172.google.com with SMTP id b18so5685249qkc.9
-        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 11:46:20 -0700 (PDT)
+        id S1726875AbfF1SrZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 14:47:25 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:43988 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726586AbfF1SrZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 14:47:25 -0400
+Received: by mail-io1-f66.google.com with SMTP id k20so14581543ios.10
+        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 11:47:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=nz6pAldSAPretIvUM/aJByGgNXEUMa7Xf5lFKwhAYt8=;
-        b=wiIMzPqJ1h2GAAV2zIScQmJLVRjE3APEXJfWupDT/MDakM5z2oINHI/pGEp8Cpjexk
-         /VXd221ZHGcRQCFdKCHWj712MhgAkMjGOfoPsbJ+WKMmy0dFBfABLoS6CVKFqXzofge2
-         NN2D6bthLwZPlsfl4L0JB82DkzNxEDdadpbmDXBJeVtpF/lGQQHkYw3bPfq+TyDjGgE6
-         GM3U99ovYHd3D2FAzh/CdGunOO0czM68E+ZnI+GUY4xvwwkfjcv8qQUwf2s/2sUYGvpD
-         w9gwU193Qy9vAmcdYfK1obFe4viFLJjDvF3U24GIafFLUoLEuyVSo1eSEr5ksGuu7C+B
-         dwsw==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TS6M/Nxme28NPi028YG4VL6UkJsnX87eP23dRyQxlL8=;
+        b=ULWQJchSSBGqlKXWeas4g7WIZ8OlQF02e/2fni6ZOZONXYEs3ZCH+r4cic8fiYxfD0
+         eHnbXowAwuPBZ89DrfUkpwTDs9b+1pqQrg7eDqxc7WPuE1R1HXMpIVW8H3p/u/Nljjwe
+         nGgIWQLRB86Fr5HVwK/7FifYn8quFD54pQ1rcG7vEyBMJiIh++rAIfHCNZoFUDN6/r6F
+         e0JJ7ljcCosjh6XyxVdTwFEg+Ryd3//WBaWWOHqgiiJ8CleZ6HuUNXCtKg9lh4/OuQKJ
+         R8YskmnppDVe4ergbv2NJAVXObMYFdGbjt93mjBFWt/coimuZTorjdy0ZETQWq8/UYw6
+         doXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=nz6pAldSAPretIvUM/aJByGgNXEUMa7Xf5lFKwhAYt8=;
-        b=R8tXzzQygRIV2FJLK8M1WWuXUhgD3oZG1bnSTatwkBE71lcKGWetddgfSb+Lcc/VOw
-         KxIW5Re4L10JQ7f19nDdKTUA04cFmfjw4XtpdYz5YXldUWzhkXpmxn8q4weg9P2GUxaK
-         7kXxwd5wzwEmVbAZyJu/qr1M3oVYyo3dfqp8KotGWhcsGX3lUTgUHRfe6ObP1Qm5tM5K
-         JaAN3u2YrtMlaHMMl2Ih9KX8pWPjPprrns1ijuulFiaLACv+/TiMYcOP1Hvf+QxGwhwz
-         g5aebtxQTqRaNbNLfljwJoaTg4bEMq33g9RNJbd+h9kv/NseUIQimhwCZG0PseGYGGzw
-         4hEw==
-X-Gm-Message-State: APjAAAXfWqVi5ZEot/8uLeRniZ1zyFpKfcAW5+4I4k9Vyj3IqVE5Gv6M
-        Js8xntAGShC2nmeRnbvLwlaJng==
-X-Google-Smtp-Source: APXvYqyIXXIIWd21G9Nspb06PgiRXPD8RIRKKdtk6cxeayZIbJ1kPQEz4Gje8C2fvxr+fHQlJOV1sg==
-X-Received: by 2002:a37:f90f:: with SMTP id l15mr9819614qkj.480.1561747579819;
-        Fri, 28 Jun 2019 11:46:19 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id 42sm1417809qtm.27.2019.06.28.11.46.18
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 28 Jun 2019 11:46:19 -0700 (PDT)
-Date:   Fri, 28 Jun 2019 11:46:15 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Catherine Sullivan <csully@google.com>
-Cc:     netdev@vger.kernel.org, Sagi Shahar <sagis@google.com>,
-        Jon Olson <jonolson@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Luigi Rizzo <lrizzo@google.com>
-Subject: Re: [net-next 1/4] gve: Add basic driver framework for Compute
- Engine Virtual NIC
-Message-ID: <20190628114615.4fc81791@cakuba.netronome.com>
-In-Reply-To: <CAH_-1qzzWVKxDX3LaorsgYPjT5uhDgqdN3oMZtJ2p6AzDqRyXA@mail.gmail.com>
-References: <20190626185251.205687-1-csully@google.com>
-        <20190626185251.205687-2-csully@google.com>
-        <20190626160832.3f191a53@cakuba.netronome.com>
-        <CAH_-1qzzWVKxDX3LaorsgYPjT5uhDgqdN3oMZtJ2p6AzDqRyXA@mail.gmail.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TS6M/Nxme28NPi028YG4VL6UkJsnX87eP23dRyQxlL8=;
+        b=DrUWfrL9E2hKs6keWnT7hPfancI5vG3wdDSoISC92NYAwsIE0OErYVk1nJklZXxL3F
+         urMhzU0KuAUR5+zErwmq/I36Sscd1WgYYWvCqihfEPRq2UHXGbqDYMuze3Wi/qoy1qen
+         s/c+9380e/+xj96nyai8MIhhlAQcU1J/7PIcKr8mnuLEzMldiX+FucJgaEIU6JKgJiYE
+         DM4bwrhL6pvOrvORIcnYUYvJ7X9HLzAc11co8GZeyndsyxoyT4L+/penRZ11DwhEtxRC
+         9Z35XxezmnT/S5yd7geYVeHCLuA5ZTmBEK/NOBG3o/+GuPxTk2r6XTkvEGb+yZKVG8EY
+         /m8w==
+X-Gm-Message-State: APjAAAXhwYzrBfAQ9eN8xXQ/HnIwRxLpAGzH+ITKSvgDNYrnlrwy4QFr
+        EnMU4dO/ErEFWLn4szttR7q1qhensUP98bVL6WKL4Q==
+X-Google-Smtp-Source: APXvYqyRJ1W1SO0XpPNJiChAzXB+Zx58pCxRD8I5LkVFmL9E/Q77a50+QGKt5gr4PNYscmP2X/zdh9LHxXJb3l9RHn8=
+X-Received: by 2002:a6b:8dcf:: with SMTP id p198mr13241371iod.46.1561747644150;
+ Fri, 28 Jun 2019 11:47:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20190621011941.186255-1-matthewgarrett@google.com>
+ <20190621011941.186255-25-matthewgarrett@google.com> <CALCETrVUwQP7roLnW6kFG80Cc5U6X_T6AW+BTAftLccYGp8+Ow@mail.gmail.com>
+ <alpine.LRH.2.21.1906270621080.28132@namei.org> <6E53376F-01BB-4795-BC02-24F9CAE00001@amacapital.net>
+ <bce70c8b-9efd-6362-d536-cfbbcf70b0b7@tycho.nsa.gov> <CALCETrXwt43w6rQY6zt0J_3HOaad=+E5PushJNdSOZDBuaYV+Q@mail.gmail.com>
+In-Reply-To: <CALCETrXwt43w6rQY6zt0J_3HOaad=+E5PushJNdSOZDBuaYV+Q@mail.gmail.com>
+From:   Matthew Garrett <mjg59@google.com>
+Date:   Fri, 28 Jun 2019 11:47:12 -0700
+Message-ID: <CACdnJuuy7-tkj86njAqtdJ3dUMu-2T8a2y8DC3fMKBK0z9J6ag@mail.gmail.com>
+Subject: Re: [PATCH V33 24/30] bpf: Restrict bpf when kernel lockdown is in
+ confidentiality mode
+To:     Andy Lutomirski <luto@kernel.org>
+Cc:     Stephen Smalley <sds@tycho.nsa.gov>,
+        James Morris <jmorris@namei.org>,
+        linux-security@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        David Howells <dhowells@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Chun-Yi Lee <jlee@suse.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        LSM List <linux-security-module@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 28 Jun 2019 10:52:27 -0700, Catherine Sullivan wrote:
-> > > +if NET_VENDOR_GOOGLE
-> > > +
-> > > +config GVE
-> > > +     tristate "Google Virtual NIC (gVNIC) support"
-> > > +     depends on (PCI_MSI && X86)  
-> >
-> > We usually prefer for drivers not to depend on the platform unless
-> > really necessary, but IDK how that applies to the curious new world
-> > of NICs nobody can buy :)  
-> 
-> This is the only platform it will ever need to run on so we would really
-> prefer to not have to support others :)
+On Thu, Jun 27, 2019 at 4:27 PM Andy Lutomirski <luto@kernel.org> wrote:
+> They're really quite similar in my mind.  Certainly some things in the
+> "integrity" category give absolutely trivial control over the kernel
+> (e.g. modules) while others make it quite challenging (ioperm), but
+> the end result is very similar.  And quite a few "confidentiality"
+> things genuinely do allow all kernel memory to be read.
+>
+> I agree that finer-grained distinctions could be useful. My concern is
+> that it's a tradeoff, and the other end of the tradeoff is an ABI
+> stability issue.  If someone decides down the road that some feature
+> that is currently "integrity" can be split into a narrow "integrity"
+> feature and a "confidentiality" feature then, if the user policy knows
+> about the individual features, there's a risk of breaking people's
+> systems.  If we keep the fine-grained control, do we have a clear
+> compatibility story?
 
-I think the motivation is partially to force the uniform use of generic
-APIs across the drivers, so that re-factoring of core code is easier.
-Do you have any specific pain-points in mind where x86 dependency
-simplifies things? If not I think it's a better default to not have it.
-Not a big deal, though.
+My preference right now is to retain the fine-grained aspect of things
+in the internal API, simply because it'll be more annoying to add it
+back later if we want to. I don't want to expose it via the Lockdown
+user facing API for the reasons you've described, but it's not
+impossible that another LSM would find a way to do this reasonably.
+Does it seem reasonable to punt this discussion out to the point where
+another LSM tries to do something with this information, based on the
+implementation they're attempting?
