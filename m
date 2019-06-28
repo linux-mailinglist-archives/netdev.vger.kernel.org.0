@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0342E59974
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 13:52:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 040015997A
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 13:52:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727030AbfF1Lwb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 07:52:31 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:56898 "EHLO huawei.com"
+        id S1727068AbfF1Lwk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 07:52:40 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:56946 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726942AbfF1LwR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Jun 2019 07:52:17 -0400
+        id S1726957AbfF1LwQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 Jun 2019 07:52:16 -0400
 Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 1B975946C79220174B22;
+        by Forcepoint Email with ESMTP id 0EF133EF71519E55BB0D;
         Fri, 28 Jun 2019 19:52:11 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.132) by
  DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
@@ -21,12 +21,11 @@ From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linuxarm@huawei.com>, Yunsheng Lin <linyunsheng@huawei.com>,
-        Peng Li <lipeng321@huawei.com>,
+        <linuxarm@huawei.com>, Peng Li <lipeng321@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 11/12] net: hns3: remove RXD_VLD check in hns3_handle_bdinfo
-Date:   Fri, 28 Jun 2019 19:50:17 +0800
-Message-ID: <1561722618-12168-12-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 12/12] net: hns3: optimize the CSQ cmd error handling
+Date:   Fri, 28 Jun 2019 19:50:18 +0800
+Message-ID: <1561722618-12168-13-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1561722618-12168-1-git-send-email-tanhuazhong@huawei.com>
 References: <1561722618-12168-1-git-send-email-tanhuazhong@huawei.com>
@@ -39,77 +38,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yunsheng Lin <linyunsheng@huawei.com>
+From: Peng Li <lipeng321@huawei.com>
 
-The HNS3_RXD_VLD_B bit has already been checked in hns3_add_frag
-or hns3_handle_rx_bd before calling hns3_handle_bdinfo, so when
-hns3_handle_bdinfo is called, the HNS3_RXD_VLD_B bit is always
-set, which makes the checking in hns3_handle_bdinfo unnecessary.
+If CMDQ ring is full, hclge_cmd_send may return directly, but IMP still
+working and HW pointer changed, SW ring pointer do not match the HW
+pointer. This patch update the SW pointer every time when the space is
+full, so it can work normally next time if IMP and HW still working.
 
-This patch removes the RXD_VLD_B checking in hns3_handle_bdinfo.
-
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 Signed-off-by: Peng Li <lipeng321@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 10 ----------
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |  1 -
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |  1 -
- 3 files changed, 12 deletions(-)
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c    | 15 ++++++++++++---
+ .../net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c  | 19 ++++++++++++++-----
+ 2 files changed, 26 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 37f28bd..ab5a339 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -1490,9 +1490,7 @@ static void hns3_nic_get_stats64(struct net_device *netdev,
- 			start = u64_stats_fetch_begin_irq(&ring->syncp);
- 			rx_bytes += ring->stats.rx_bytes;
- 			rx_pkts += ring->stats.rx_pkts;
--			rx_drop += ring->stats.non_vld_descs;
- 			rx_drop += ring->stats.l2_err;
--			rx_errors += ring->stats.non_vld_descs;
- 			rx_errors += ring->stats.l2_err;
- 			rx_errors += ring->stats.l3l4_csum_err;
- 			rx_crc_errors += ring->stats.l2_err;
-@@ -2769,14 +2767,6 @@ static int hns3_handle_bdinfo(struct hns3_enet_ring *ring, struct sk_buff *skb)
- 					       vlan_tag);
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c
+index 7a3bde7..667c3be 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c
+@@ -232,6 +232,7 @@ static int hclge_cmd_check_retval(struct hclge_hw *hw, struct hclge_desc *desc,
+ int hclge_cmd_send(struct hclge_hw *hw, struct hclge_desc *desc, int num)
+ {
+ 	struct hclge_dev *hdev = container_of(hw, struct hclge_dev, hw);
++	struct hclge_cmq_ring *csq = &hw->cmq.csq;
+ 	struct hclge_desc *desc_to_use;
+ 	bool complete = false;
+ 	u32 timeout = 0;
+@@ -241,8 +242,16 @@ int hclge_cmd_send(struct hclge_hw *hw, struct hclge_desc *desc, int num)
+ 
+ 	spin_lock_bh(&hw->cmq.csq.lock);
+ 
+-	if (num > hclge_ring_space(&hw->cmq.csq) ||
+-	    test_bit(HCLGE_STATE_CMD_DISABLE, &hdev->state)) {
++	if (test_bit(HCLGE_STATE_CMD_DISABLE, &hdev->state)) {
++		spin_unlock_bh(&hw->cmq.csq.lock);
++		return -EBUSY;
++	}
++
++	if (num > hclge_ring_space(&hw->cmq.csq)) {
++		/* If CMDQ ring is full, SW HEAD and HW HEAD may be different,
++		 * need update the SW HEAD pointer csq->next_to_clean
++		 */
++		csq->next_to_clean = hclge_read_dev(hw, HCLGE_NIC_CSQ_HEAD_REG);
+ 		spin_unlock_bh(&hw->cmq.csq.lock);
+ 		return -EBUSY;
+ 	}
+@@ -280,7 +289,7 @@ int hclge_cmd_send(struct hclge_hw *hw, struct hclge_desc *desc, int num)
  	}
  
--	if (unlikely(!(bd_base_info & BIT(HNS3_RXD_VLD_B)))) {
--		u64_stats_update_begin(&ring->syncp);
--		ring->stats.non_vld_descs++;
--		u64_stats_update_end(&ring->syncp);
--
--		return -EINVAL;
+ 	if (!complete) {
+-		retval = -EAGAIN;
++		retval = -EBADE;
+ 	} else {
+ 		retval = hclge_cmd_check_retval(hw, desc, num, ntc);
+ 	}
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c
+index e1588c0..31db6d6 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c
+@@ -188,6 +188,7 @@ void hclgevf_cmd_setup_basic_desc(struct hclgevf_desc *desc,
+ int hclgevf_cmd_send(struct hclgevf_hw *hw, struct hclgevf_desc *desc, int num)
+ {
+ 	struct hclgevf_dev *hdev = (struct hclgevf_dev *)hw->hdev;
++	struct hclgevf_cmq_ring *csq = &hw->cmq.csq;
+ 	struct hclgevf_desc *desc_to_use;
+ 	bool complete = false;
+ 	u32 timeout = 0;
+@@ -199,8 +200,17 @@ int hclgevf_cmd_send(struct hclgevf_hw *hw, struct hclgevf_desc *desc, int num)
+ 
+ 	spin_lock_bh(&hw->cmq.csq.lock);
+ 
+-	if (num > hclgevf_ring_space(&hw->cmq.csq) ||
+-	    test_bit(HCLGEVF_STATE_CMD_DISABLE, &hdev->state)) {
++	if (test_bit(HCLGEVF_STATE_CMD_DISABLE, &hdev->state)) {
++		spin_unlock_bh(&hw->cmq.csq.lock);
++		return -EBUSY;
++	}
++
++	if (num > hclgevf_ring_space(&hw->cmq.csq)) {
++		/* If CMDQ ring is full, SW HEAD and HW HEAD may be different,
++		 * need update the SW HEAD pointer csq->next_to_clean
++		 */
++		csq->next_to_clean = hclgevf_read_dev(hw,
++						      HCLGEVF_NIC_CSQ_HEAD_REG);
+ 		spin_unlock_bh(&hw->cmq.csq.lock);
+ 		return -EBUSY;
+ 	}
+@@ -263,14 +273,13 @@ int hclgevf_cmd_send(struct hclgevf_hw *hw, struct hclgevf_desc *desc, int num)
+ 	}
+ 
+ 	if (!complete)
+-		status = -EAGAIN;
++		status = -EBADE;
+ 
+ 	/* Clean the command send queue */
+ 	handle = hclgevf_cmd_csq_clean(hw);
+-	if (handle != num) {
++	if (handle != num)
+ 		dev_warn(&hdev->pdev->dev,
+ 			 "cleaned %d, need to clean %d\n", handle, num);
 -	}
--
- 	if (unlikely(!desc->rx.pkt_len || (l234info & (BIT(HNS3_RXD_TRUNCAT_B) |
- 				  BIT(HNS3_RXD_L2E_B))))) {
- 		u64_stats_update_begin(&ring->syncp);
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-index dd00640..a2b73d6 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-@@ -384,7 +384,6 @@ struct ring_stats {
- 			u64 rx_err_cnt;
- 			u64 reuse_pg_cnt;
- 			u64 err_pkt_len;
--			u64 non_vld_descs;
- 			u64 err_bd_num;
- 			u64 l2_err;
- 			u64 l3l4_csum_err;
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index 16034af..5bff98a 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -44,7 +44,6 @@ static const struct hns3_stats hns3_rxq_stats[] = {
- 	HNS3_TQP_STAT("errors", rx_err_cnt),
- 	HNS3_TQP_STAT("reuse_pg_cnt", reuse_pg_cnt),
- 	HNS3_TQP_STAT("err_pkt_len", err_pkt_len),
--	HNS3_TQP_STAT("non_vld_descs", non_vld_descs),
- 	HNS3_TQP_STAT("err_bd_num", err_bd_num),
- 	HNS3_TQP_STAT("l2_err", l2_err),
- 	HNS3_TQP_STAT("l3l4_csum_err", l3l4_csum_err),
+ 
+ 	spin_unlock_bh(&hw->cmq.csq.lock);
+ 
 -- 
 2.7.4
 
