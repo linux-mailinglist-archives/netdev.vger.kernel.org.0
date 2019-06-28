@@ -2,85 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EE2365A1BE
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 19:04:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A10175A1DB
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 19:07:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726688AbfF1REZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 13:04:25 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:45122 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726056AbfF1REZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 13:04:25 -0400
-Received: by mail-io1-f65.google.com with SMTP id e3so13938355ioc.12;
-        Fri, 28 Jun 2019 10:04:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=QzmSngCldiet4Ce1UUt+feV2L1nSDfkHJ0UbTbBtSwA=;
-        b=vhETsdkuDe/z0ufBVN7g2tHejedidw9mY1L+Dpur6jpmPLxofvv9DXmhAd95D4AJna
-         +9SoN+e3XnHPOFxt3zeOmVAW/mAIWDiP4gebZBptnoy33f++TvLg5xFvL/XOI26I6J9O
-         Ejse/xmZpsc5w2WSsNB5O10+Q5+E5K5KsTmhyIBqvc0pjF7owwz3eibv03XhI1RwY8dy
-         y+pbKNNJ+z3aXYJ8kbHEQlVA+E1mdFye0cH5rfAcgU92GRm6bGM02yIRpSFQl7HKBzXI
-         bxO4/s2RIcmjrITor6dqg7xdG81sdj/FsnAAetrIeI16BLCU83TxurSJOhsoqwlL83el
-         ZmIA==
+        id S1726664AbfF1RHY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 13:07:24 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:39188 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726408AbfF1RHX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 13:07:23 -0400
+Received: by mail-lf1-f67.google.com with SMTP id p24so4434406lfo.6
+        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 10:07:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=QzmSngCldiet4Ce1UUt+feV2L1nSDfkHJ0UbTbBtSwA=;
-        b=HylfKKGNV6R9KFswr9uC4wBntlSfOIz0hKfgPzTUXYLDJmvezZ2PlrxUWbUkwIglrF
-         a7BpQPeq+iYfbrGxGJTxGs4aSSr1pGo4Ahm6otjwNrU3TM8rJ3+uDFf0ZdBBb+Pn51H8
-         gD8HKkSRBVl7zvctC1o/jcuO0xZxEgU5948FBKf7eSScJjbSqaZKMK6Z5hPuUZkD6e1M
-         atPqZsNUMR5DBwg1ZfAUBVAGYfWD3I4HI1o+U6hTD0NVSu5DJqvgFXHgrIetqCEB7JS2
-         BtijjM318OHgxb4/imZmG3gyF6oLh4ejEQM+apcWcye7+6HRa0QTcFO2c+K2yaDuBO5P
-         9anA==
-X-Gm-Message-State: APjAAAWA3KdUEJR5IDqjqghmmsMtSEC3shFveict4ocAQD53ORyxtRMD
-        6JiTbkqq4RXkPM8M7KnwIRI=
-X-Google-Smtp-Source: APXvYqyCJ2GraWa9zHtNqffQN5Ep3QkJtBmxhF4jLYFjvo11r028ZjaElr2UWdpM0P3kEKnLDXJkuA==
-X-Received: by 2002:a6b:f711:: with SMTP id k17mr2212810iog.273.1561741464749;
-        Fri, 28 Jun 2019 10:04:24 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:a468:85d6:9e2b:8578? ([2601:282:800:fd80:a468:85d6:9e2b:8578])
-        by smtp.googlemail.com with ESMTPSA id p10sm3762067iob.54.2019.06.28.10.04.22
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 28 Jun 2019 10:04:23 -0700 (PDT)
-Subject: Re: [PATCH v4] net: netfilter: Fix rpfilter dropping vrf packets by
- mistake
-To:     Miaohe Lin <linmiaohe@huawei.com>, pablo@netfilter.org,
-        kadlec@blackhole.kfki.hu, fw@strlen.de, davem@davemloft.net,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     mingfangsen@huawei.com
-References: <1561712803-195184-1-git-send-email-linmiaohe@huawei.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <4d8ff353-5bda-35b5-cdc2-ccf3fe8b97fa@gmail.com>
-Date:   Fri, 28 Jun 2019 11:04:22 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vrV0dEwyk2LuSe6MmD0iqFfp+0OybudxsnVPHFscGuk=;
+        b=XgU0I32QwxnqJMQU/Y/zPjlBDzTYke0s1vc6wj+BJA/lLgYABSFyQZASrTVQj/ahd5
+         /XFhuUk0z+AirR8OB6pdC89jppmqEIvULUmSvzthbVf1JIEMZgoiOWxUfFtPTc3cgjQg
+         YYlGPd6W0Z8rtMXWWfvqxq4F71dm+HS6U3Dpeap+koDLcnud2OTLn81c/Xqk6BdslgsU
+         GcV+kHFKLb0Ww34nBMW5zNh2rEZaZaXxbS2qvHvD4X66Ru2vWmEF3+GJXntSzIo6IC6o
+         Kk+9NNuMPNi+ZE1qIjhaVe/EknpUD/lM5sWlzn4oUgjnyB8fIan7xyWA6fjHHdA5BFfH
+         f5Ew==
+X-Gm-Message-State: APjAAAXksCJvVnh9T8EIB1qmp/j+JtT7JwbdNImkCKdX+k0DPvA6z/z+
+        kBvmzfitCQNm3EUk92r/QoUF9hv6AuaHAQPCa3lG4VPD7OhrgA==
+X-Google-Smtp-Source: APXvYqz2nrpriCXm3YK7rxMHPw1vV31LxgysWsxf3EfE1AuAUQWKd9l0BF81SEtXU0eEcRqmYJ3y6XlgymBer4iS+ho=
+X-Received: by 2002:a19:ed07:: with SMTP id y7mr5813677lfy.56.1561741641146;
+ Fri, 28 Jun 2019 10:07:21 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1561712803-195184-1-git-send-email-linmiaohe@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20190626190343.22031-1-aring@mojatatu.com> <20190626190343.22031-2-aring@mojatatu.com>
+ <293c9bd3-f530-d75e-c353-ddeabac27cf6@6wind.com> <18557.1561739215@warthog.procyon.org.uk>
+In-Reply-To: <18557.1561739215@warthog.procyon.org.uk>
+From:   Matteo Croce <mcroce@redhat.com>
+Date:   Fri, 28 Jun 2019 19:06:45 +0200
+Message-ID: <CAGnkfhwe6p412q4sATwX=3ht4+NxKJDOFihRG=iwvXqWUtwgLQ@mail.gmail.com>
+Subject: Re: [RFC iproute2 1/1] ip: netns: add mounted state file for each netns
+To:     David Howells <dhowells@redhat.com>
+Cc:     Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Alexander Aring <aring@mojatatu.com>,
+        netdev <netdev@vger.kernel.org>, linux-fsdevel@vger.kernel.org,
+        kernel@mojatatu.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/28/19 3:06 AM, Miaohe Lin wrote:
-> diff --git a/net/ipv6/netfilter/ip6t_rpfilter.c b/net/ipv6/netfilter/ip6t_rpfilter.c
-> index 6bcaf7357183..3c4a1772c15f 100644
-> --- a/net/ipv6/netfilter/ip6t_rpfilter.c
-> +++ b/net/ipv6/netfilter/ip6t_rpfilter.c
-> @@ -55,6 +55,10 @@ static bool rpfilter_lookup_reverse6(struct net *net, const struct sk_buff *skb,
->  	if (rpfilter_addr_linklocal(&iph->saddr)) {
->  		lookup_flags |= RT6_LOOKUP_F_IFACE;
->  		fl6.flowi6_oif = dev->ifindex;
-> +	/* Set flowi6_oif for vrf devices to lookup route in l3mdev domain. */
-> +	} else if (netif_is_l3_master(dev) || netif_is_l3_slave(dev)) {
-> +		lookup_flags |= FLOWI_FLAG_SKIP_NH_OIF;
+On Fri, Jun 28, 2019 at 6:27 PM David Howells <dhowells@redhat.com> wrote:
+>
+> Nicolas Dichtel <nicolas.dichtel@6wind.com> wrote:
+>
+> > David Howells was working on a mount notification mechanism:
+> > https://lwn.net/Articles/760714/
+> > https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/log/?h=notifications
+> >
+> > I don't know what is the status of this series.
+>
+> It's still alive.  I just posted a new version on it.  I'm hoping, possibly
+> futiley, to get it in in this merge window.
+>
+> David
 
-you don't need to set that flag here. It is done by the fib_rules code
-as needed.
+Hi all,
+
+this could cause a clash if I create a netns with name ending with .mounted.
+
+$ sudo ip/ip netns add ns1.mounted
+$ sudo ip/ip netns add ns1
+Cannot create namespace file "/var/run/netns/ns1.mounted": File exists
+Cannot remove namespace file "/var/run/netns/ns1.mounted": Device or
+resource busy
+
+If you want to go along this road, please either:
+- disallow netns creation with names ending with .mounted
+- or properly document it in the manpage
+
+Regards,
+-- 
+Matteo Croce
+per aspera ad upstream
