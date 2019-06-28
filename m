@@ -2,283 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA67A5967F
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 10:53:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FD7059697
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 10:56:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726709AbfF1Ixd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 04:53:33 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:42511 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726506AbfF1Ixc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 04:53:32 -0400
-Received: by mail-lj1-f195.google.com with SMTP id t28so5173836lje.9
-        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 01:53:30 -0700 (PDT)
+        id S1726426AbfF1I4g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 04:56:36 -0400
+Received: from mail-ua1-f68.google.com ([209.85.222.68]:39995 "EHLO
+        mail-ua1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725873AbfF1I4g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 04:56:36 -0400
+Received: by mail-ua1-f68.google.com with SMTP id s4so1913871uad.7
+        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 01:56:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=9E0E93XxeCSyu3wDmx8dtieb34P1C5zJl3CaudNwVa8=;
-        b=vgJOh/iP+OUr9C1XTwB8TfEvrLboKNWgrNbicYnftcsnYxTa8ODof53WDXBbWfTTaU
-         AQrnJk/9x3YyCsKaPeljUMOAwx5XMgHm9dVDlTkztq0cpbQK39oZTmRmFSL3c1dhWo3v
-         wjICJUbAsHsIoXxHoq1B9ZkLvTTgGzeueniKMOHHP3lWmnXS3w71q6Qmp6ZlSEXcshyq
-         oiIyfETXspLOTf4V1N6DjhzyUefCUoGbRVOoD3xjcc8lqp6lZL7jz9GvP2nl/AqMXhye
-         Hiu/diU807QvsCIxmib9iAviqIgVqYQKXO1W6bcBePnVSHkzQRThCFC0X71oiXWJY2GH
-         qQPg==
+        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc;
+        bh=jFt+h6QhqsysQ+3ej2gYu2ussJB8+V6+0nyzTBAQWVU=;
+        b=sRomXfU1wtxo+CvKVEtL2foLKb+tDncXrAzh9nepTIaNcvxZo3c6IAszYhQs/cS6ss
+         s1n0APzNWbssBIi2T1hz2ALI7FKcaYMK3mQdcg1Fq0oXylWHK7hUlP/HafTBZClnN9Dg
+         mrFNU4FxXKhc/ao82790XuXxFnfRM3922GoWgHvpt1lDxXZqkC254zBvSB5VwI4FRdid
+         MfLaaJ0qOqN9DK+OnAvpnUPlvxypEaTQXkGj/B7TLac8htx1uo2duNrJHmuORzpmZ/Hs
+         Atr2J9r6Os5+fYbasRnslxzWNkNoYwGvfhpap9kAj5jzndw8vpqk1+iGZJLdkPBfeh4h
+         On1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to:user-agent;
-        bh=9E0E93XxeCSyu3wDmx8dtieb34P1C5zJl3CaudNwVa8=;
-        b=ZYdclMqxb+eN39+5+Duw0b/BlnjRnZVI8VLdFi3zJPiW/ITK5iurnu6PwjwMbu0L4b
-         0ONscYvrcicDvfAwOPTKw1Xz5pVKkVRmFjfJpY5nP4DQB8iqLB/g3xUFolrEUvP+zVM8
-         z2S1DF4Q07YWyDBX05gc1eUrq9cRi7ionj26FPEYkZQdY2RbHHGGzP2Zq9AoOkKaMsrD
-         kml7UM5Jw2jvGgmy/T9x+y+FVBoQSGqre9q5PDHbTNWwQ0WG8wuL/MrL3iYbQqWIY7LX
-         MzTwyGh9YDBud8Z9IIpG0FpE15/IUJUu+PhSBb+XCcdfKkkjEDxQke0eggdluxp1Tu2Y
-         UV5Q==
-X-Gm-Message-State: APjAAAXXGAcUmupbhK2s+8Zt4b2XCeKRxZtrDokIynEGD8tmKyDwgu4O
-        YDFmA5vTSEkFOVNNY+PxzsVxSA==
-X-Google-Smtp-Source: APXvYqx+UfOhCshbm6Vgy/3EvXVlzzq5rRsn0Z706cJ2Qa0EUEqVNnfktpteKZenWR2qPmZUbJYI0w==
-X-Received: by 2002:a2e:98d7:: with SMTP id s23mr5393648ljj.179.1561712009652;
-        Fri, 28 Jun 2019 01:53:29 -0700 (PDT)
-Received: from khorivan (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
-        by smtp.gmail.com with ESMTPSA id s24sm507093lje.58.2019.06.28.01.53.28
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 28 Jun 2019 01:53:29 -0700 (PDT)
-Date:   Fri, 28 Jun 2019 11:53:26 +0300
-From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     davem@davemloft.net, grygorii.strashko@ti.com, saeedm@mellanox.com,
-        leon@kernel.org, ast@kernel.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, ilias.apalodimas@linaro.org,
-        netdev@vger.kernel.org, daniel@iogearbox.net,
-        jakub.kicinski@netronome.com, john.fastabend@gmail.com
-Subject: Re: [PATCH v4 net-next 1/4] net: core: page_pool: add user cnt
- preventing pool deletion
-Message-ID: <20190628085325.GA2795@khorivan>
-Mail-Followup-To: Jesper Dangaard Brouer <brouer@redhat.com>,
-        davem@davemloft.net, grygorii.strashko@ti.com, saeedm@mellanox.com,
-        leon@kernel.org, ast@kernel.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, ilias.apalodimas@linaro.org,
-        netdev@vger.kernel.org, daniel@iogearbox.net,
-        jakub.kicinski@netronome.com, john.fastabend@gmail.com
-References: <20190625175948.24771-1-ivan.khoronzhuk@linaro.org>
- <20190625175948.24771-2-ivan.khoronzhuk@linaro.org>
- <20190627214317.237e5926@carbon>
- <20190627220245.GA3269@khorivan>
- <20190628083520.4203cb41@carbon>
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc;
+        bh=jFt+h6QhqsysQ+3ej2gYu2ussJB8+V6+0nyzTBAQWVU=;
+        b=Wa8ja6+rPoF+1m3Ylwu4B92YSIBhTQhKn/uAH77RDBNT1Yova9+w8KY9WmG0MQ3VBQ
+         rK9wRxODU//wCFXYkl2g+mPKbMSr9uq/dljFBlDrrERNIFnoqKqvqBy8MSXsQh5wby7J
+         fez4S86OoeeFHzBstjvNVp4dFd+x/RavAawy06fSBnch3VE6ojr7rdE3ZZmp3TQ/YauA
+         XHi3jfHK8GNi3q4cPPun6GaX56VLcgTB6nacmLSKIVWQ1xJ/Zsv/s3+ACYDkgBbMIwQA
+         979UCnIpUxee54p8xK+V/TZ941VlmLXRzObsVZq0YgZ/x3WAk4eqe5s0wEMxn5vSZD1D
+         5BbA==
+X-Gm-Message-State: APjAAAVkOSBrAukeuWnx7IT6+Bp785BJO6BhbwgkXcXKRQVx5tzwUA9J
+        X8+WH+BvRwZrPfFcUWRAah4QAKG7ZS9m4u4TLSIgwVdI
+X-Google-Smtp-Source: APXvYqytbXxpHEyjgLIst4RZwsT+xFHHbRswbgLcIyoEJD9OhEbOpgjEGJW0gKaPwxZDwrE+Oyte0MpmYkZNLzE7WFQ=
+X-Received: by 2002:ab0:66:: with SMTP id 93mr4959579uai.135.1561712195310;
+ Fri, 28 Jun 2019 01:56:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20190628083520.4203cb41@carbon>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Received: by 2002:ab0:2616:0:0:0:0:0 with HTTP; Fri, 28 Jun 2019 01:56:34
+ -0700 (PDT)
+X-Originating-IP: [5.35.70.113]
+In-Reply-To: <a669939c-d8f3-f3c8-15f4-efa236e00954@gmail.com>
+References: <20190622180035.40245-1-dkirjanov@suse.com> <a669939c-d8f3-f3c8-15f4-efa236e00954@gmail.com>
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+Date:   Fri, 28 Jun 2019 11:56:34 +0300
+Message-ID: <CAOJe8K33TOtnwbsw2vq6gGWOstrW-D-tC+kdHnTygmdCreSX6Q@mail.gmail.com>
+Subject: Re: [PATCH iproute2-next v3 1/2] ipaddress: correctly print a VF hw
+ address in the IPoIB case
+To:     David Ahern <dsahern@gmail.com>
+Cc:     stephen@networkplumber.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, dledford@redhat.com, mkubecek@suse.cz
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 28, 2019 at 08:35:20AM +0200, Jesper Dangaard Brouer wrote:
->On Fri, 28 Jun 2019 01:02:47 +0300
->Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
->
->> Hi Jesper, thanks you remember about it.
+On 6/24/19, David Ahern <dsahern@gmail.com> wrote:
+> On 6/22/19 12:00 PM, Denis Kirjanov wrote:
+>> @@ -365,13 +367,45 @@ static void print_vfinfo(FILE *fp, struct rtattr
+>> *vfinfo)
+>>  	parse_rtattr_nested(vf, IFLA_VF_MAX, vfinfo);
 >>
->> >
->> >I don't think that "create" and "free" routines paring looks "more
->> >correct" together.
->> >
->> >Maybe we can scale back your solution(?), via creating a page_pool_get()
->> >and page_pool_put() API that can be used by your driver, to keep the
->> >page_pool object after a xdp_rxq_info_unreg() call.  Then you can use
->> >it for two xdp_rxq_info structs, and call page_pool_put() after you
->> >have unregistered both.
->> >
->> >The API would basically be:
->> >
->> >diff --git a/net/core/page_pool.c b/net/core/page_pool.c
->> >index b366f59885c1..691ddacfb5a6 100644
->> >--- a/net/core/page_pool.c
->> >+++ b/net/core/page_pool.c
->> >@@ -357,6 +357,10 @@ static void __warn_in_flight(struct page_pool *pool)
->> > void __page_pool_free(struct page_pool *pool)
->> > {
->> >        WARN(pool->alloc.count, "API usage violation");
->> >+
->> >+       if (atomic_read(&pool->user_cnt) != 0)
->> >+               return;
->> >+
->> >        WARN(!ptr_ring_empty(&pool->ring), "ptr_ring is not empty");
->> >
->> >        /* Can happen due to forced shutdown */
->> >@@ -372,6 +376,19 @@ void __page_pool_free(struct page_pool *pool)
->> > }
->> > EXPORT_SYMBOL(__page_pool_free);
->> >
->> >+void page_pool_put(struct page_pool *pool)
->> >+{
->> >+       if (!atomic_dec_and_test(&pool->user_cnt))
->> >+               __page_pool_free(pool);
->> >+}
->> >+EXPORT_SYMBOL(page_pool_put);
->> >+
->> >+void page_pool_get(struct page_pool *pool)
->> >+{
->> >+       atomic_inc(&pool->user_cnt);
->> >+}
->> >+EXPORT_SYMBOL(page_pool_get);
->> >+
+>>  	vf_mac = RTA_DATA(vf[IFLA_VF_MAC]);
+>> +	vf_broadcast = RTA_DATA(vf[IFLA_VF_BROADCAST]);
+>>  	vf_tx_rate = RTA_DATA(vf[IFLA_VF_TX_RATE]);
 >>
->> I have another solution that doesn't touch page pool and adds modifications
->> to xdp allocator. As for me it looks better and work wider, I don't need to
->> think about this in the driver also.
->>
->> It's supposed allocator works as before, no any changes to mlx5 and
->> page_pool API and its usage and seems like fits your requirements.
->> It still supposes that allocator runs under same napi softirq but allows
->> to reuse allocator.
->>
->> I have not verified yet, but looks like:
->>
->> diff --git a/include/net/xdp_priv.h b/include/net/xdp_priv.h
->> index 6a8cba6ea79a..995b21da2f27 100644
->> --- a/include/net/xdp_priv.h
->> +++ b/include/net/xdp_priv.h
->> @@ -18,6 +18,7 @@ struct xdp_mem_allocator {
->>  	struct rcu_head rcu;
->>  	struct delayed_work defer_wq;
->>  	unsigned long defer_warn;
->> +	unsigned long refcnt;
->>  };
->>
->>  #endif /* __LINUX_NET_XDP_PRIV_H__ */
->> diff --git a/net/core/xdp.c b/net/core/xdp.c
->> index f98ab6b98674..6239483e3793 100644
->> --- a/net/core/xdp.c
->> +++ b/net/core/xdp.c
->> @@ -98,6 +98,12 @@ static bool __mem_id_disconnect(int id, bool force)
->>  		WARN(1, "Request remove non-existing id(%d), driver bug?", id);
->>  		return true;
->>  	}
+>>  	print_string(PRINT_FP, NULL, "%s    ", _SL_);
+>>  	print_int(PRINT_ANY, "vf", "vf %d ", vf_mac->vf);
+>> -	print_string(PRINT_ANY, "mac", "MAC %s",
+>> -		     ll_addr_n2a((unsigned char *) &vf_mac->mac,
+>> -				 ETH_ALEN, 0, b1, sizeof(b1)));
 >> +
->> +	if (--xa->refcnt) {
->> +		mutex_unlock(&mem_id_lock);
->> +		return true;
+>> +	print_string(PRINT_ANY,
+>> +			"link_type",
+>> +			"    link/%s ",
+>> +			ll_type_n2a(ifi->ifi_type, b1, sizeof(b1)));
+>> +
+>> +	print_color_string(PRINT_ANY,
+>> +				COLOR_MAC,
+>> +				"address",
+>> +				"%s",
+>> +				ll_addr_n2a((unsigned char *) &vf_mac->mac,
+>> +					ifi->ifi_type == ARPHRD_ETHER ?
+>> +					ETH_ALEN : INFINIBAND_ALEN,
+>> +					ifi->ifi_type,
+>> +					b1, sizeof(b1)));
 >
->This doesn't work.  This function __mem_id_disconnect() can be called
->multiple times. E.g. if there are in-flight packets.
-Yes, it was draft. I still have not completely verify it due
-to several changes in cpsw and holiday in my side, second draft
-looks like:
+> you still have a lot of lines that are not lined up column wise. See how
+> the COLOR_MAC is offset to the right from PRINT_ANY?
+>
+>> +
+>> +	if (vf[IFLA_VF_BROADCAST]) {
+>> +		if (ifi->ifi_flags&IFF_POINTOPOINT) {
+>> +			print_string(PRINT_FP, NULL, " peer ", NULL);
+>> +			print_bool(PRINT_JSON,
+>> +					"link_pointtopoint", NULL, true);
+>> +		} else
+>> +			print_string(PRINT_FP, NULL, " brd ", NULL);
+>> +
+>> +		print_color_string(PRINT_ANY,
+>> +				COLOR_MAC,
+>> +				"broadcast",
+>> +				"%s",
+>> +				ll_addr_n2a((unsigned char *) &vf_broadcast->broadcast,
+>> +					ifi->ifi_type == ARPHRD_ETHER ?
+>> +					ETH_ALEN : INFINIBAND_ALEN,
+>> +					ifi->ifi_type,
+>> +					b1, sizeof(b1)));
+>
+> And then these lines are offset to the left.
 
-Subject: [PATCH] net: core: xdp: allow same allocator for rxq
+Hi David,
 
-XDP rxq can be same for ndevs running under same rx napi softirq.
-But there is no ability to register same allocator for both rxqs,
-by fact it's same rxq but has different ndev as a reference.
+I've just sent a new version and I've formatted strings in the similar
+way as it used through the source.
 
-Due to last changes allocator destroy can be defered till the moment
-all packets are recycled by destination interface, afterwards it's
-freed. In order to schedule allocator destroy only after all users are
-unregistered, add refcnt to allocator object and start to destroy
-only it reaches 0.
+Thank you.
 
-Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
----
- include/net/xdp_priv.h |  1 +
- net/core/xdp.c         | 46 ++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 47 insertions(+)
-
-diff --git a/include/net/xdp_priv.h b/include/net/xdp_priv.h
-index 6a8cba6ea79a..995b21da2f27 100644
---- a/include/net/xdp_priv.h
-+++ b/include/net/xdp_priv.h
-@@ -18,6 +18,7 @@ struct xdp_mem_allocator {
- 	struct rcu_head rcu;
- 	struct delayed_work defer_wq;
- 	unsigned long defer_warn;
-+	unsigned long refcnt;
- };
- 
- #endif /* __LINUX_NET_XDP_PRIV_H__ */
-diff --git a/net/core/xdp.c b/net/core/xdp.c
-index f98ab6b98674..7b0185eec124 100644
---- a/net/core/xdp.c
-+++ b/net/core/xdp.c
-@@ -98,6 +98,18 @@ static bool __mem_id_disconnect(int id, bool force)
- 		WARN(1, "Request remove non-existing id(%d), driver bug?", id);
- 		return true;
- 	}
-+
-+	/* to avoid hash lookup twice do refcnt dec here, but not when
-+	 * it's 0 as it can be called from workqueue aftewards
-+	 */
-+	if (xa->refcnt)
-+		xa->refcnt--;
-+
-+	if (xa->refcnt) {
-+		mutex_unlock(&mem_id_lock);
-+		return true;
-+	}
-+
- 	xa->disconnect_cnt++;
- 
- 	/* Detects in-flight packet-pages for page_pool */
-@@ -312,6 +324,33 @@ static bool __is_supported_mem_type(enum xdp_mem_type type)
- 	return true;
- }
- 
-+static struct xdp_mem_allocator *xdp_allocator_get(void *allocator)
-+{
-+	struct xdp_mem_allocator *xae, *xa = NULL;
-+	struct rhashtable_iter iter;
-+
-+	mutex_lock(&mem_id_lock);
-+	rhashtable_walk_enter(mem_id_ht, &iter);
-+	do {
-+		rhashtable_walk_start(&iter);
-+
-+		while ((xae = rhashtable_walk_next(&iter)) && !IS_ERR(xae)) {
-+			if (xae->allocator == allocator) {
-+				xae->refcnt++;
-+				xa = xae;
-+				break;
-+			}
-+		}
-+
-+		rhashtable_walk_stop(&iter);
-+
-+	} while (xae == ERR_PTR(-EAGAIN));
-+	rhashtable_walk_exit(&iter);
-+	mutex_unlock(&mem_id_lock);
-+
-+	return xa;
-+}
-+
- int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
- 			       enum xdp_mem_type type, void *allocator)
- {
-@@ -347,6 +386,12 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
- 		}
- 	}
- 
-+	xdp_alloc = xdp_allocator_get(allocator);
-+	if (xdp_alloc) {
-+		xdp_rxq->mem.id = xdp_alloc->mem.id;
-+		return 0;
-+	}
-+
- 	xdp_alloc = kzalloc(sizeof(*xdp_alloc), gfp);
- 	if (!xdp_alloc)
- 		return -ENOMEM;
-@@ -360,6 +405,7 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
- 	xdp_rxq->mem.id = id;
- 	xdp_alloc->mem  = xdp_rxq->mem;
- 	xdp_alloc->allocator = allocator;
-+	xdp_alloc->refcnt = 1;
- 
- 	/* Insert allocator into ID lookup table */
- 	ptr = rhashtable_insert_slow(mem_id_ht, &id, &xdp_alloc->node);
-
--- 
-Regards,
-Ivan Khoronzhuk
+>
