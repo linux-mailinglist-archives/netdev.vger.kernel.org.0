@@ -2,206 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A63E559208
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 05:37:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADA3A59235
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 05:52:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727139AbfF1Dhw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 23:37:52 -0400
-Received: from m97188.mail.qiye.163.com ([220.181.97.188]:60052 "EHLO
-        m97188.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726565AbfF1Dhw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 23:37:52 -0400
-Received: from [192.168.188.14] (unknown [120.132.1.226])
-        by m97188.mail.qiye.163.com (Hmail) with ESMTPA id E9E0E964028;
-        Fri, 28 Jun 2019 11:37:47 +0800 (CST)
-Subject: Re: [PATCH 2/3 nf-next] netfilter:nf_flow_table: Support bridge type
- flow offload
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-References: <1561545148-11978-1-git-send-email-wenxu@ucloud.cn>
- <1561545148-11978-2-git-send-email-wenxu@ucloud.cn>
- <20190626183816.3ux3iifxaal4ffil@breakpoint.cc>
- <20190626191945.2mktaqrcrfcrfc66@breakpoint.cc>
- <dce5cba2-766c-063e-745f-23b3dd83494b@ucloud.cn>
- <20190627125839.t56fnptdeqixt7wd@salvia>
-From:   wenxu <wenxu@ucloud.cn>
-Message-ID: <b2a48653-9f30-18a9-d0e1-eaa940a361a9@ucloud.cn>
-Date:   Fri, 28 Jun 2019 11:37:42 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1727142AbfF1DwF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 23:52:05 -0400
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:42002 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726748AbfF1DwF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 23:52:05 -0400
+Received: by mail-oi1-f196.google.com with SMTP id s184so3246677oie.9
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 20:52:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1EjQjSZuuEZ0f8XcO/xYl1TAgimEOtL9pLVLsvjT42s=;
+        b=A08e8zJevMD4w16ltxwpg7jqybmQWWgb6XWRjqV48PMLO2JkkA5Pu0zYdTyDYUqXlN
+         yCfceoVuMkzTcR1zFxEoEOTq7c+/ej8ty7xM4CC9xNjdjLdbTs9CqdGYvrFIzOsY/k66
+         YwseMiAwxaYwKJxRtgjP2tsYBtffuRW2ABvuNetoZL5i9Jq7zEwduVYvEMLJGkBU5H1+
+         VetcOmcTkz1fWexsWinFUX/pnmKXg1SUw9bX7i+C+MGDum66miwNxiOJgIjJ6jEZUJl/
+         FEkbeNTrYhL/UN8oj42Unj1oLVYAsoeMcLhDoCr9bvd5XUoUOXkcloFf5bFdv4fkOgjH
+         Cc0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1EjQjSZuuEZ0f8XcO/xYl1TAgimEOtL9pLVLsvjT42s=;
+        b=Pr64ULSrcnBKyGObUOBF+qwtkvohi/EZimTf8Sr215FxLP1dQNFBnKJKqLOkySGq1X
+         9Fq01k/IZq0zbHXdmZYa5QWEyyvheqKO7sNbIKIzPEbtDK0F4eiqr3/nLp/kRiqprlK7
+         cE/8YopSXT1LhrFGZVpvYVVnzqyp+fH967jZWwYqzyDFMi90poEx19EN8wtU1OkumBww
+         XxyQfcjfbYeYCF4ofkwyg96LnwvZRS/jJlZq2WVMl4jK9uiwUmeGpxxKAfC5d3VGtThg
+         Ub7V6x4RlLaBbvm0iNLh2u+zFBVtD9hsRPt/TxvvFea1uk06MjCBa3dCj0hcM6RWkEpi
+         bbFQ==
+X-Gm-Message-State: APjAAAX40qGrLqovtgoPm6JGDiAzxVXhk/qdQbJTJdgqGlC2dGsaMr3v
+        5dKCEWXt/5epBt9b5vHzqFVGmukfhaMPS9O1xUs=
+X-Google-Smtp-Source: APXvYqzR55/jzgtw2nb42qJAMgBXmmttZzxNp82EwCjtFtBvor7J2V7jl2bVKafjsm5WfgqGPo6eO/8QIAuGzvmfLB0=
+X-Received: by 2002:a05:6808:8f0:: with SMTP id d16mr457997oic.173.1561693924341;
+ Thu, 27 Jun 2019 20:52:04 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190627125839.t56fnptdeqixt7wd@salvia>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-HM-Spam-Status: e1kfGhgUHx5ZQUhXWQgYFAkeWUFZVkpVS0lNS0tLSk9JS0JMT0xZV1koWU
-        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MlE6KTo6ITg5EAsvTxU9CAtR
-        QjoaFBFVSlVKTk1KTUJIS01DSU5LVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJS1VK
-        SElVSlVJSU1ZV1kIAVlBQ0NOQzcG
-X-HM-Tid: 0a6b9c291b4320bckuqye9e0e964028
+References: <20190627145010.21073-1-ap420073@gmail.com> <CAJieiUjuRFgxC+YCNUfQFQa-FXjAmfMnTwLw-SOithEQt5QQyw@mail.gmail.com>
+In-Reply-To: <CAJieiUjuRFgxC+YCNUfQFQa-FXjAmfMnTwLw-SOithEQt5QQyw@mail.gmail.com>
+From:   Taehee Yoo <ap420073@gmail.com>
+Date:   Fri, 28 Jun 2019 12:51:53 +0900
+Message-ID: <CAMArcTUew5EW3cW+=c_HXXr_wDtjFngNHggAQfVpTYZgQRPf4A@mail.gmail.com>
+Subject: Re: [PATCH net v2] vxlan: do not destroy fdb if register_netdevice()
+ is failed
+To:     Roopa Prabhu <roopa@cumulusnetworks.com>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Petr Machata <petrm@mellanox.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 6/27/2019 8:58 PM, Pablo Neira Ayuso wrote:
-> On Thu, Jun 27, 2019 at 02:22:36PM +0800, wenxu wrote:
->> On 6/27/2019 3:19 AM, Florian Westphal wrote:
->>> Florian Westphal <fw@strlen.de> wrote:
-> [...]
->>>> Whats the idea with this patch?
->>>>
->>>> Do you see a performance improvement when bypassing bridge layer? If so,
->>>> how much?
->>>>
->>>> I just wonder if its really cheaper than not using bridge conntrack in
->>>> the first place :-)
->> This patch is based on the conntrack function in bridge.  It will
->> bypass the fdb lookup and conntrack lookup to get the performance 
->> improvement. The more important things for hardware offload in the
->> future with nf_tables add hardware offload support
-> Florian would like to see numbers / benchmark.
-
-
-I just did a simple performace test with following test.
-
-p netns add ns21
-ip netns add ns22
-ip l add dev veth21 type veth peer name eth0 netns ns21
-ip l add dev veth22 type veth peer name eth0 netns ns22
-ifconfig veth21 up
-ifconfig veth22 up
-ip netns exec ns21 ip a a dev eth0 10.0.0.7/24
-ip netns exec ns22 ip a a dev eth0 10.0.0.8/24
-ip netns exec ns21 ifconfig eth0 up
-ip netns exec ns22 ifconfig eth0 up
-
-ip l add dev br0 type bridge vlan_filtering 1
-brctl addif br0 veth21
-brctl addif br0 veth22
-
-ifconfig br0 up
-
-bridge vlan add dev veth21 vid 200 pvid untagged
-bridge vlan add dev veth22 vid 200 pvid untagged
-
-nft add table bridge firewall
-nft add chain bridge firewall zones { type filter hook prerouting priority - 300 \; }
-nft add rule bridge firewall zones counter ct zone set iif map { "veth21" : 2, "veth22" : 2 }
-
-nft add chain bridge firewall rule-200-ingress
-nft add rule bridge firewall rule-200-ingress ct zone 2 ct state established,related counter accept
-nft add rule bridge firewall rule-200-ingress ct zone 2 ct state invalid counter drop
-nft add rule bridge firewall rule-200-ingress ct zone 2 tcp dport 23 ct state new counter accept
-nft add rule bridge firewall rule-200-ingress counter drop
-
-nft add chain bridge firewall rule-200-egress
-nft add rule bridge firewall rule-200-egress ct zone 2 ct state established,related counter accept
-nft add rule bridge firewall rule-200-egress ct zone 2 ct state invalid counter drop
-nft add rule bridge firewall rule-200-egress ct zone 2 tcp dport 23 ct state new counter drop
-nft add rule bridge firewall rule-200-egress counter accept
-
-nft add chain bridge firewall rules-all { type filter hook prerouting priority - 150 \; }
-nft add rule bridge firewall rules-all counter meta protocol ip iif vmap { "veth22" : jump rule-200-ingress, "veth21" : jump rule-200-egress }
-
-
-
-netns21 communication with ns22
-
-
-ns21 iperf to 10.0.0.8 with dport 22 in ns22
-
-
-first time with OFFLOAD enable
-
-nft add flowtable bridge firewall fb2 { hook ingress priority 0 \; devices = { veth21, veth22 } \; }
-nft add chain bridge firewall ftb-all {type filter hook forward priority 0 \; policy accept \; }
-nft add rule bridge firewall ftb-all counter ct zone 2 ip protocol tcp flow offload @fb2
-
-# iperf -c 10.0.0.8 -p 22 -t 60 -i2
-------------------------------------------------------------
-Client connecting to 10.0.0.8, TCP port 22
-TCP window size: 85.0 KByte (default)
-------------------------------------------------------------
-[  3] local 10.0.0.7 port 60014 connected with 10.0.0.8 port 22
-[ ID] Interval       Transfer     Bandwidth
-[  3]  0.0- 2.0 sec  10.8 GBytes  46.5 Gbits/sec
-[  3]  2.0- 4.0 sec  10.9 GBytes  46.7 Gbits/sec
-[  3]  4.0- 6.0 sec  10.9 GBytes  46.8 Gbits/sec
-[  3]  6.0- 8.0 sec  11.0 GBytes  47.2 Gbits/sec
-[  3]  8.0-10.0 sec  11.0 GBytes  47.1 Gbits/sec
-[  3] 10.0-12.0 sec  11.0 GBytes  47.1 Gbits/sec
-[  3] 12.0-14.0 sec  11.7 GBytes  50.4 Gbits/sec
-[  3] 14.0-16.0 sec  12.0 GBytes  51.6 Gbits/sec
-[  3] 16.0-18.0 sec  12.0 GBytes  51.6 Gbits/sec
-[  3] 18.0-20.0 sec  12.0 GBytes  51.6 Gbits/sec
-[  3] 20.0-22.0 sec  12.0 GBytes  51.5 Gbits/sec
-[  3] 22.0-24.0 sec  12.0 GBytes  51.4 Gbits/sec
-[  3] 24.0-26.0 sec  12.0 GBytes  51.3 Gbits/sec
-[  3] 26.0-28.0 sec  12.0 GBytes  51.7 Gbits/sec
-[  3] 28.0-30.0 sec  12.0 GBytes  51.6 Gbits/sec
-[  3] 30.0-32.0 sec  12.0 GBytes  51.6 Gbits/sec
-[  3] 32.0-34.0 sec  12.0 GBytes  51.6 Gbits/sec
-[  3] 34.0-36.0 sec  12.0 GBytes  51.5 Gbits/sec
-[  3] 36.0-38.0 sec  12.0 GBytes  51.5 Gbits/sec
-[  3] 38.0-40.0 sec  12.0 GBytes  51.6 Gbits/sec
-[  3] 40.0-42.0 sec  12.0 GBytes  51.6 Gbits/sec
-[  3] 42.0-44.0 sec  12.0 GBytes  51.5 Gbits/sec
-[  3] 44.0-46.0 sec  12.0 GBytes  51.4 Gbits/sec
-[  3] 46.0-48.0 sec  12.0 GBytes  51.4 Gbits/sec
-[  3] 48.0-50.0 sec  12.0 GBytes  51.5 Gbits/sec
-[  3] 50.0-52.0 sec  12.0 GBytes  51.6 Gbits/sec
-[  3] 52.0-54.0 sec  12.0 GBytes  51.6 Gbits/sec
-[  3] 54.0-56.0 sec  12.0 GBytes  51.5 Gbits/sec
-[  3] 56.0-58.0 sec  11.9 GBytes  51.2 Gbits/sec
-[  3] 58.0-60.0 sec  11.8 GBytes  50.7 Gbits/sec
-[  3]  0.0-60.0 sec   353 GBytes  50.5 Gbits/sec
-
-
-The second time on any offload:
-# iperf -c 10.0.0.8 -p 22 -t 60 -i2
-------------------------------------------------------------
-Client connecting to 10.0.0.8, TCP port 22
-TCP window size: 85.0 KByte (default)
-------------------------------------------------------------
-[  3] local 10.0.0.7 port 60536 connected with 10.0.0.8 port 22
-[ ID] Interval       Transfer     Bandwidth
-[  3]  0.0- 2.0 sec  8.88 GBytes  38.1 Gbits/sec
-[  3]  2.0- 4.0 sec  9.02 GBytes  38.7 Gbits/sec
-[  3]  4.0- 6.0 sec  9.02 GBytes  38.8 Gbits/sec
-[  3]  6.0- 8.0 sec  9.05 GBytes  38.9 Gbits/sec
-[  3]  8.0-10.0 sec  9.05 GBytes  38.9 Gbits/sec
-[  3] 10.0-12.0 sec  9.04 GBytes  38.8 Gbits/sec
-[  3] 12.0-14.0 sec  9.05 GBytes  38.9 Gbits/sec
-[  3] 14.0-16.0 sec  9.05 GBytes  38.9 Gbits/sec
-[  3] 16.0-18.0 sec  9.06 GBytes  38.9 Gbits/sec
-[  3] 18.0-20.0 sec  9.07 GBytes  39.0 Gbits/sec
-[  3] 20.0-22.0 sec  9.07 GBytes  38.9 Gbits/sec
-[  3] 22.0-24.0 sec  9.06 GBytes  38.9 Gbits/sec
-[  3] 24.0-26.0 sec  9.05 GBytes  38.9 Gbits/sec
-[  3] 26.0-28.0 sec  9.05 GBytes  38.9 Gbits/sec
-[  3] 28.0-30.0 sec  9.06 GBytes  38.9 Gbits/sec
-[  3] 30.0-32.0 sec  9.06 GBytes  38.9 Gbits/sec
-[  3] 32.0-34.0 sec  9.07 GBytes  38.9 Gbits/sec
-[  3] 34.0-36.0 sec  9.05 GBytes  38.9 Gbits/sec
-[  3] 36.0-38.0 sec  9.03 GBytes  38.8 Gbits/sec
-[  3] 38.0-40.0 sec  9.03 GBytes  38.8 Gbits/sec
-[  3] 40.0-42.0 sec  9.05 GBytes  38.9 Gbits/sec
-[  3] 42.0-44.0 sec  9.03 GBytes  38.8 Gbits/sec
-[  3] 44.0-46.0 sec  9.04 GBytes  38.8 Gbits/sec
-[  3] 46.0-48.0 sec  9.05 GBytes  38.9 Gbits/sec
-[  3] 48.0-50.0 sec  9.05 GBytes  38.9 Gbits/sec
-[  3] 50.0-52.0 sec  9.05 GBytes  38.9 Gbits/sec
-[  3] 52.0-54.0 sec  9.06 GBytes  38.9 Gbits/sec
-[  3] 54.0-56.0 sec  9.05 GBytes  38.9 Gbits/sec
-[  3] 56.0-58.0 sec  9.05 GBytes  38.9 Gbits/sec
-[  3] 58.0-60.0 sec  9.05 GBytes  38.9 Gbits/sec
-[  3]  0.0-60.0 sec   271 GBytes  38.8 Gbits/sec
-
-
-
-
+On Fri, 28 Jun 2019 at 03:33, Roopa Prabhu <roopa@cumulusnetworks.com> wrote:
 >
+> On Thu, Jun 27, 2019 at 7:50 AM Taehee Yoo <ap420073@gmail.com> wrote:
+> >
+> > __vxlan_dev_create() destroys FDB using specific pointer which indicates
+> > a fdb when error occurs.
+> > But that pointer should not be used when register_netdevice() fails because
+> > register_netdevice() internally destroys fdb when error occurs.
+> >
+> > This patch makes vxlan_fdb_create() to do not link fdb entry to vxlan dev
+> > internally.
+> > Instead, a new function vxlan_fdb_link() is added to link fdb to vxlan dev.
+> >
+> > vxlan_fdb_link() is called after calling register_netdevice().
+> > This routine can avoid situation that ->ndo_uninit() destroys fdb entry
+> > in error path of register_netdevice().
+> > Hence, error path of __vxlan_dev_create() routine can have an opportunity
+> > to destroy default fdb entry by hand.
+> >
+> > Test command
+> >     ip link add bonding_masters type vxlan id 0 group 239.1.1.1 \
+> >             dev enp0s9 dstport 4789
+> >
+> > Splat looks like:
+> > [  213.392816] kasan: GPF could be caused by NULL-ptr deref or user memory access
+> > [  213.401257] general protection fault: 0000 [#1] SMP DEBUG_PAGEALLOC KASAN PTI
+> > [  213.402178] CPU: 0 PID: 1414 Comm: ip Not tainted 5.2.0-rc5+ #256
+> > [  213.402178] RIP: 0010:vxlan_fdb_destroy+0x120/0x220 [vxlan]
+> > [  213.402178] Code: df 48 8b 2b 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 06 01 00 00 4c 8b 63 08 48 b8 00 00 00 00 00 fc d
+> > [  213.402178] RSP: 0018:ffff88810cb9f0a0 EFLAGS: 00010202
+> > [  213.402178] RAX: dffffc0000000000 RBX: ffff888101d4a8c8 RCX: 0000000000000000
+> > [  213.402178] RDX: 1bd5a00000000040 RSI: ffff888101d4a8c8 RDI: ffff888101d4a8d0
+> > [  213.402178] RBP: 0000000000000000 R08: fffffbfff22b72d9 R09: 0000000000000000
+> > [  213.402178] R10: 00000000ffffffef R11: 0000000000000000 R12: dead000000000200
+> > [  213.402178] R13: ffff88810cb9f1f8 R14: ffff88810efccda0 R15: ffff88810efccda0
+> > [  213.402178] FS:  00007f7f6621a0c0(0000) GS:ffff88811b000000(0000) knlGS:0000000000000000
+> > [  213.402178] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > [  213.402178] CR2: 000055746f0807d0 CR3: 00000001123e0000 CR4: 00000000001006f0
+> > [  213.402178] Call Trace:
+> > [  213.402178]  __vxlan_dev_create+0x3a9/0x7d0 [vxlan]
+> > [  213.402178]  ? vxlan_changelink+0x740/0x740 [vxlan]
+> > [  213.402178]  ? rcu_read_unlock+0x60/0x60 [vxlan]
+> > [  213.402178]  ? __kasan_kmalloc.constprop.3+0xa0/0xd0
+> > [  213.402178]  vxlan_newlink+0x8d/0xc0 [vxlan]
+> > [  213.402178]  ? __vxlan_dev_create+0x7d0/0x7d0 [vxlan]
+> > [  213.554119]  ? __netlink_ns_capable+0xc3/0xf0
+> > [  213.554119]  __rtnl_newlink+0xb75/0x1180
+> > [  213.554119]  ? rtnl_link_unregister+0x230/0x230
+> > [ ... ]
+> >
+> > Fixes: 0241b836732f ("vxlan: fix default fdb entry netlink notify ordering during netdev create")
+> > Suggested-by: Roopa Prabhu <roopa@cumulusnetworks.com>
+> > Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+> > ---
+> >
+> > v1 -> v2 :
+> >  - Add a new function vxlan_fdb_link().
+> >  - Fix fdb entry leak.
+> >  - Update description.
+> >
+>
+> thanks for v2!. a few comments inline below ...
+>
+
+Thank you for review!
+
+> >  drivers/net/vxlan.c | 27 +++++++++++++++++++--------
+> >  1 file changed, 19 insertions(+), 8 deletions(-)
+> >
+> > diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
+> > index 083f3f0bf37f..4066346d6f41 100644
+> > --- a/drivers/net/vxlan.c
+> > +++ b/drivers/net/vxlan.c
+> > @@ -804,6 +804,14 @@ static struct vxlan_fdb *vxlan_fdb_alloc(struct vxlan_dev *vxlan,
+> >         return f;
+> >  }
+> >
+> > +static void vxlan_fdb_link(struct vxlan_dev *vxlan, const u8 *mac,
+> > +                          __be32 src_vni, struct vxlan_fdb *f)
+>
+> I would prefer vxlan_fdb_insert or something along those lines.
+>
+> > +{
+> > +       ++vxlan->addrcnt;
+> > +       hlist_add_head_rcu(&f->hlist,
+> > +                          vxlan_fdb_head(vxlan, mac, src_vni));
+> > +}
+> > +
+> >  static int vxlan_fdb_create(struct vxlan_dev *vxlan,
+> >                             const u8 *mac, union vxlan_addr *ip,
+> >                             __u16 state, __be16 port, __be32 src_vni,
+> > @@ -829,10 +837,6 @@ static int vxlan_fdb_create(struct vxlan_dev *vxlan,
+> >                 return rc;
+> >         }
+> >
+> > -       ++vxlan->addrcnt;
+> > -       hlist_add_head_rcu(&f->hlist,
+> > -                          vxlan_fdb_head(vxlan, mac, src_vni));
+> > -
+> >         *fdb = f;
+> >
+> >         return 0;
+> > @@ -977,6 +981,7 @@ static int vxlan_fdb_update_create(struct vxlan_dev *vxlan,
+> >         if (rc < 0)
+> >                 return rc;
+> >
+> > +       vxlan_fdb_link(vxlan, mac, src_vni, f);
+> >         rc = vxlan_fdb_notify(vxlan, f, first_remote_rtnl(f), RTM_NEWNEIGH,
+> >                               swdev_notify, extack);
+> >         if (rc)
+> > @@ -3571,12 +3576,17 @@ static int __vxlan_dev_create(struct net *net, struct net_device *dev,
+> >         if (err)
+> >                 goto errout;
+> >
+> > -       /* notify default fdb entry */
+> >         if (f) {
+> > +               vxlan_fdb_link(vxlan, all_zeros_mac,
+> > +                              vxlan->default_dst.remote_vni, f);
+> > +
+> > +               /* notify default fdb entry */
+> >                 err = vxlan_fdb_notify(vxlan, f, first_remote_rtnl(f),
+> >                                        RTM_NEWNEIGH, true, extack);
+> > -               if (err)
+> > -                       goto errout;
+> > +               if (err) {
+> > +                       vxlan_fdb_destroy(vxlan, f, false, false);
+> > +                       goto unregister;
+> > +               }
+> >         }
+> >
+> >         list_add(&vxlan->next, &vn->vxlan_list);
+> > @@ -3588,7 +3598,8 @@ static int __vxlan_dev_create(struct net *net, struct net_device *dev,
+> >          * destroy the entry by hand here.
+> >          */
+> >         if (f)
+> > -               vxlan_fdb_destroy(vxlan, f, false, false);
+> > +               call_rcu(&f->rcu, vxlan_fdb_free);
+>
+> f is local to this function and not inserted at this point, so maybe
+> we dont need to call_rcu here ?
+>
+
+I totally agree with your comments.
+So, I will send a new patch.
+
+Thank you!
+
+> > +unregister:
+> >         if (unregister)
+> >                 unregister_netdevice(dev);
+> >         return err;
+> > --
+> > 2.17.1
+> >
