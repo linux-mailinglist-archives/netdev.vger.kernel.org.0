@@ -2,83 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5791059177
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 04:46:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4801959188
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 04:47:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726905AbfF1CqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 22:46:21 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:34081 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726476AbfF1CqU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 22:46:20 -0400
-Received: by mail-pg1-f194.google.com with SMTP id p10so1907107pgn.1;
-        Thu, 27 Jun 2019 19:46:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=5SQb1rM39meuBB6kZ01b1gP2wTIZb8uQPRv3lqA/cvA=;
-        b=Z4dN6KjCURldpDE4kGaLm1ZeeKEVwTFkwRp/H/b3yOb1MBNqibzC9yLToHL0Gr+mEO
-         691TJP9Nfi5q+izFuEWZPCZL5YAc0y4MB4FqCfFBm47+xlv0lxaZc1nHJ1cUw3Y530u0
-         fxUTxn70+WRMv9zMZqymvMq4aBj2MHDyIx3vM1qi5rmEEvqCveGp99n3FFXJSuaeybDU
-         iFWDKqtc0NoPZwOGUO9nLWuhV1xamv8M9rGzQwXPH868ZctdbYybffDk4JIDT7rY6soT
-         8U87lnIbsy4umme0RvX/ngkJBiWq5Zi9NQk5iv6R6pAuhWWFNZzhX7UHZdBmJEcJ/UYT
-         1lNQ==
+        id S1727102AbfF1CrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 22:47:07 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:57252 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726817AbfF1CrH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 22:47:07 -0400
+Received: by mail-io1-f71.google.com with SMTP id u25so4847823iol.23
+        for <netdev@vger.kernel.org>; Thu, 27 Jun 2019 19:47:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=5SQb1rM39meuBB6kZ01b1gP2wTIZb8uQPRv3lqA/cvA=;
-        b=h8Sj1AjWALgvpA8WqO1BCLwzHPzz6q3e6PlgljtyBcLsnfM8D2CHDiTrkI/PF8Kg7x
-         tXlWgIUoztRVJ6LPXPFI9oWurWUAPzOsvBK3+YRT74fpk4MYWJmUXSxwfDrcvczlyQLo
-         8VWky44ixsgLGuGE0ildq8gSMKMFZYmSpPL3u34VenCm28xEjxCi3+1rBd3H9iJiPKGR
-         8I9IREjX+oh4VGXnogzvmr5I7aV57ry8ojyFuxPQ15vwzFDNO2fIFEOsyVY0oEn6AcTg
-         MiFRpUSGuoBPIbJaQcXt0pVePpEPNMZK4+49Q7k/N6C6XQC56i+ciyqrJf6dMa/rhGvY
-         7/WQ==
-X-Gm-Message-State: APjAAAWkYkhUZCH9HpIe8nHz2hcBZSD5Y3yh2g+dNLZf1cDNSzPI1DEP
-        d4JABE+j2zaPWfuRfHuNm8iBJNUVzscKoA==
-X-Google-Smtp-Source: APXvYqzi6C3bPWcXCtUhhnrB+6T7U5NBy1jrEcuFbM0+E15a3pNnUK8dKeozzqZoA0GJSpDAF4Dp/w==
-X-Received: by 2002:a63:1b66:: with SMTP id b38mr6938032pgm.54.1561689980331;
-        Thu, 27 Jun 2019 19:46:20 -0700 (PDT)
-Received: from hfq-skylake.ipads-lab.se.sjtu.edu.cn ([202.120.40.82])
-        by smtp.googlemail.com with ESMTPSA id h26sm462584pfq.64.2019.06.27.19.46.18
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 27 Jun 2019 19:46:19 -0700 (PDT)
-From:   Fuqian Huang <huangfq.daxian@gmail.com>
-Cc:     Fuqian Huang <huangfq.daxian@gmail.com>,
-        Chas Williams <3chas3@gmail.com>,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 03/27] atm: idt77252: remove memset after dma_alloc_coherent
-Date:   Fri, 28 Jun 2019 10:46:13 +0800
-Message-Id: <20190628024613.14929-1-huangfq.daxian@gmail.com>
-X-Mailer: git-send-email 2.11.0
-To:     unlisted-recipients:; (no To-header on input)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=S+RgQyNmWrZLMaDBL8aUOTR3qZTZHYaiPNOfI1qTD3M=;
+        b=PcBNh8Sekre0jiYvP89gz6OP3cv5wzGYDyXKngHvtHbx3YD4H/QA7AH/u3hfrpJX/b
+         YEmb90WCG1/mKsf111rB35S87cImqLIEUG8DKqVTW6Yx70asr6MRbLks0P+jDTjlM50W
+         ZP2aXSmCeszxEqkabE53GGIqrjs8LCoxoMhuIelZHyBVRKwP/h/8dDdKbD8IwlaeukD2
+         4JIMtN5m+bGc9o03vb4YM7TsXMlvj2RMps0xjFBmHd2vzVo8tc9gn5iv1ictMmaUP7IC
+         YKQ2QY1UzIDdhDyc2UEbCg6dmfaheQeAAsx31WCU9S59DPbI2iVyN6JmU5euDDkDLCB2
+         r5ZA==
+X-Gm-Message-State: APjAAAUHPh2PiiXZu2kyEHSknPHqRpZG/3VK0Dled22fuLDyVPcsbdd6
+        1icXaNurlmkLzqNCpmyj33P2VHPzsY6SsaSJ2I8KmYmRNw3m
+X-Google-Smtp-Source: APXvYqyIbGRz8tsJuRDqF26dvZc3RnJeg3tG3iMrWpR/fS5xYq/3rI1hP29uV9YVs6LKutQ0BiynVljMsp44MXnPPT07lLlfHHR0
+MIME-Version: 1.0
+X-Received: by 2002:a5d:8497:: with SMTP id t23mr8025000iom.298.1561690026810;
+ Thu, 27 Jun 2019 19:47:06 -0700 (PDT)
+Date:   Thu, 27 Jun 2019 19:47:06 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000004c2416058c594b30@google.com>
+Subject: kernel BUG at net/rxrpc/local_object.c:LINE!
+From:   syzbot <syzbot+1e0edc4b8b7494c28450@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dhowells@redhat.com,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In commit af7ddd8a627c
-("Merge tag 'dma-mapping-4.21' of git://git.infradead.org/users/hch/dma-mapping"),
-dma_alloc_coherent has already zeroed the memory.
-So memset is not needed.
+Hello,
 
-Signed-off-by: Fuqian Huang <huangfq.daxian@gmail.com>
+syzbot found the following crash on:
+
+HEAD commit:    249155c2 Merge branch 'parisc-5.2-4' of git://git.kernel.o..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=14fabe45a00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e7c31a94f66cc0aa
+dashboard link: https://syzkaller.appspot.com/bug?extid=1e0edc4b8b7494c28450
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13e2738da00000
+
+The bug was bisected to:
+
+commit 46894a13599a977ac35411b536fb3e0b2feefa95
+Author: David Howells <dhowells@redhat.com>
+Date:   Thu Oct 4 08:32:28 2018 +0000
+
+     rxrpc: Use IPv4 addresses throught the IPv6
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=152fabe3a00000
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=172fabe3a00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=132fabe3a00000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+1e0edc4b8b7494c28450@syzkaller.appspotmail.com
+Fixes: 46894a13599a ("rxrpc: Use IPv4 addresses throught the IPv6")
+
+rxrpc: Assertion failed
+------------[ cut here ]------------
+kernel BUG at net/rxrpc/local_object.c:468!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 16 Comm: ksoftirqd/1 Not tainted 5.2.0-rc6+ #60
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+RIP: 0010:rxrpc_local_rcu net/rxrpc/local_object.c:468 [inline]
+RIP: 0010:rxrpc_local_rcu.cold+0x11/0x13 net/rxrpc/local_object.c:462
+Code: 83 eb 20 e9 74 ff ff ff e8 58 aa 2d fb eb cc 4c 89 ef e8 6e aa 2d fb  
+eb e2 e8 d7 fd f4 fa 48 c7 c7 20 8c 15 88 e8 6f 03 df fa <0f> 0b e8 c4 fd  
+f4 fa 48 c7 c7 20 8c 15 88 e8 5c 03 df fa 0f 0b e8
+RSP: 0018:ffff8880a9917c98 EFLAGS: 00010286
+RAX: 0000000000000017 RBX: 0000000000000001 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff815ad926 RDI: ffffed1015322f85
+RBP: ffff8880a9917ca8 R08: 0000000000000017 R09: ffffed1015d260a1
+R10: ffffed1015d260a0 R11: ffff8880ae930507 R12: ffff888099033b40
+R13: ffff888099033b40 R14: ffffffff867b8f10 R15: ffff8880a9917d28
+FS:  0000000000000000(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f380ebda000 CR3: 000000007ad50000 CR4: 00000000001406e0
+Call Trace:
+  __rcu_reclaim kernel/rcu/rcu.h:222 [inline]
+  rcu_do_batch kernel/rcu/tree.c:2092 [inline]
+  invoke_rcu_callbacks kernel/rcu/tree.c:2310 [inline]
+  rcu_core+0xba5/0x1500 kernel/rcu/tree.c:2291
+  __do_softirq+0x25c/0x94c kernel/softirq.c:292
+  run_ksoftirqd kernel/softirq.c:603 [inline]
+  run_ksoftirqd+0x8e/0x110 kernel/softirq.c:595
+  smpboot_thread_fn+0x6a3/0xa30 kernel/smpboot.c:165
+  kthread+0x354/0x420 kernel/kthread.c:255
+  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+Modules linked in:
+---[ end trace 0e784d6285151217 ]---
+RIP: 0010:rxrpc_local_rcu net/rxrpc/local_object.c:468 [inline]
+RIP: 0010:rxrpc_local_rcu.cold+0x11/0x13 net/rxrpc/local_object.c:462
+Code: 83 eb 20 e9 74 ff ff ff e8 58 aa 2d fb eb cc 4c 89 ef e8 6e aa 2d fb  
+eb e2 e8 d7 fd f4 fa 48 c7 c7 20 8c 15 88 e8 6f 03 df fa <0f> 0b e8 c4 fd  
+f4 fa 48 c7 c7 20 8c 15 88 e8 5c 03 df fa 0f 0b e8
+RSP: 0018:ffff8880a9917c98 EFLAGS: 00010286
+RAX: 0000000000000017 RBX: 0000000000000001 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff815ad926 RDI: ffffed1015322f85
+RBP: ffff8880a9917ca8 R08: 0000000000000017 R09: ffffed1015d260a1
+R10: ffffed1015d260a0 R11: ffff8880ae930507 R12: ffff888099033b40
+R13: ffff888099033b40 R14: ffffffff867b8f10 R15: ffff8880a9917d28
+FS:  0000000000000000(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f380ebda000 CR3: 000000007ad50000 CR4: 00000000001406e0
+
+
 ---
- drivers/atm/idt77252.c | 1 -
- 1 file changed, 1 deletion(-)
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/atm/idt77252.c b/drivers/atm/idt77252.c
-index 43a14579e80e..df51680e8931 100644
---- a/drivers/atm/idt77252.c
-+++ b/drivers/atm/idt77252.c
-@@ -1379,7 +1379,6 @@ init_tsq(struct idt77252_dev *card)
- 		printk("%s: can't allocate TSQ.\n", card->name);
- 		return -1;
- 	}
--	memset(card->tsq.base, 0, TSQSIZE);
- 
- 	card->tsq.last = card->tsq.base + TSQ_NUM_ENTRIES - 1;
- 	card->tsq.next = card->tsq.last;
--- 
-2.11.0
-
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
