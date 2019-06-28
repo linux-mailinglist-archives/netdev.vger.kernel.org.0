@@ -2,54 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2401A58F16
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 02:42:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B33658F34
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 02:49:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726606AbfF1Amc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Jun 2019 20:42:32 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:39054 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726579AbfF1Amc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Jun 2019 20:42:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=Imi/3npROS15xsmmyJlBvYfDlBYFQai+1HdYBHkkqiA=; b=h8IQxZB/9xsbl+sWNEBk1oWxPV
-        chFXSgUSWpJitFxzLJexTw+pMOty4F6QJ1UGeQBS7a+vbKkFf2uOHZzGWl65E/Wjw8E0RLm8Mzd8y
-        qwctUNgLpwVeddBOTF+T1wwNn4SsMZzmKltdVfCm73I/x2gRn5R+3ESgvOKN9agf4Qhc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hgeyF-0004sn-0y; Fri, 28 Jun 2019 02:42:31 +0200
-Date:   Fri, 28 Jun 2019 02:42:31 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek Vasut <marex@denx.de>
-Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        Woojung Huh <Woojung.Huh@microchip.com>
-Subject: Re: [PATCH 5/5] net: dsa: microchip: Replace bit RMW with regmap
-Message-ID: <20190628004231.GE17615@lunn.ch>
-References: <20190627215556.23768-1-marex@denx.de>
- <20190627215556.23768-6-marex@denx.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190627215556.23768-6-marex@denx.de>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+        id S1726674AbfF1Atl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Jun 2019 20:49:41 -0400
+Received: from m97179.mail.qiye.163.com ([220.181.97.179]:34418 "EHLO
+        m97179.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726601AbfF1Atl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Jun 2019 20:49:41 -0400
+Received: from localhost.localdomain (unknown [123.59.132.129])
+        by m97179.mail.qiye.163.com (Hmail) with ESMTPA id CB503E016FA;
+        Fri, 28 Jun 2019 08:49:36 +0800 (CST)
+From:   wenxu@ucloud.cn
+To:     pablo@netfilter.org, fw@strlen.de
+Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH 1/2 nf-next v3] netfilter: nft_meta: Add NFT_META_BRI_IIFVPROTO support
+Date:   Fri, 28 Jun 2019 08:49:34 +0800
+Message-Id: <1561682975-21790-1-git-send-email-wenxu@ucloud.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZSVVOSkxCQkJDQ0xPTU1PSFlXWShZQU
+        lCN1dZLVlBSVdZCQ4XHghZQVk1NCk2OjckKS43PlkG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NBQ6Cxw4Nzg0HAs0Ik9PKxQX
+        F01PC0lVSlVKTk1KTUNJQkxNQ0NLVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
+        QlVKSElVSklCWVdZCAFZQUlNS0w3Bg++
+X-HM-Tid: 0a6b9b8f205020bdkuqycb503e016fa
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 27, 2019 at 11:55:56PM +0200, Marek Vasut wrote:
-> Regmap provides read-modify-write function to update bitfields in
-> registers. Replace ad-hoc read-modify-write with regmap_update_bits()
-> where applicable.
-> 
-> Signed-off-by: Marek Vasut <marex@denx.de>
+From: wenxu <wenxu@ucloud.cn>
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+This patch provide a meta to get the bridge vlan proto
 
-    Andrew
+nft add rule bridge firewall zones counter meta br_vlan_proto 0x8100
+
+Signed-off-by: wenxu <wenxu@ucloud.cn>
+---
+ include/uapi/linux/netfilter/nf_tables.h | 2 ++
+ net/netfilter/nft_meta.c                 | 9 +++++++++
+ 2 files changed, 11 insertions(+)
+
+diff --git a/include/uapi/linux/netfilter/nf_tables.h b/include/uapi/linux/netfilter/nf_tables.h
+index 8859535..0b18646 100644
+--- a/include/uapi/linux/netfilter/nf_tables.h
++++ b/include/uapi/linux/netfilter/nf_tables.h
+@@ -796,6 +796,7 @@ enum nft_exthdr_attributes {
+  * @NFT_META_IIFKIND: packet input interface kind name (dev->rtnl_link_ops->kind)
+  * @NFT_META_OIFKIND: packet output interface kind name (dev->rtnl_link_ops->kind)
+  * @NFT_META_BRI_PVID: packet input bridge port pvid
++ * @NFT_META_BRI_IIFVPROTO: packet input bridge vlan proto
+  */
+ enum nft_meta_keys {
+ 	NFT_META_LEN,
+@@ -827,6 +828,7 @@ enum nft_meta_keys {
+ 	NFT_META_IIFKIND,
+ 	NFT_META_OIFKIND,
+ 	NFT_META_BRI_PVID,
++	NFT_META_BRI_IIFVPROTO,
+ };
+ 
+ /**
+diff --git a/net/netfilter/nft_meta.c b/net/netfilter/nft_meta.c
+index 4f8116d..e3adf6a 100644
+--- a/net/netfilter/nft_meta.c
++++ b/net/netfilter/nft_meta.c
+@@ -248,6 +248,14 @@ void nft_meta_get_eval(const struct nft_expr *expr,
+ 			return;
+ 		}
+ 		goto err;
++	case NFT_META_BRI_IIFVPROTO:
++		if (in == NULL || (p = br_port_get_rtnl_rcu(in)) == NULL)
++			goto err;
++		if (br_opt_get(p->br, BROPT_VLAN_ENABLED)) {
++			nft_reg_store16(dest, p->br->vlan_proto);
++			return;
++		}
++		goto err;
+ #endif
+ 	case NFT_META_IIFKIND:
+ 		if (in == NULL || in->rtnl_link_ops == NULL)
+@@ -376,6 +384,7 @@ static int nft_meta_get_init(const struct nft_ctx *ctx,
+ 		len = IFNAMSIZ;
+ 		break;
+ 	case NFT_META_BRI_PVID:
++	case NFT_META_BRI_IIFVPROTO:
+ 		if (ctx->family != NFPROTO_BRIDGE)
+ 			return -EOPNOTSUPP;
+ 		len = sizeof(u16);
+-- 
+1.8.3.1
+
