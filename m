@@ -2,124 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 212FB5A722
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 00:48:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 181855A731
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 00:49:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726707AbfF1Wsr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 18:48:47 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:44041 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726563AbfF1Wsq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 18:48:46 -0400
-Received: by mail-qt1-f195.google.com with SMTP id x47so8109437qtk.11
-        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 15:48:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=naoN9xO3VLnK7N3zhVakVrkwI0aVx9LZjd339bZJK3Y=;
-        b=LidnyyQnRNJ6JFsbmuD2KzXLFYOUgkq2l1ZpwEa4/9d/TdoZVEZ1V4oK8h1etVHWRx
-         AhxYE11BIWL5G3ltTqtbcGje62GIGrKDsEV4lQ40L5gQi5xliI/pTYgOEuuIGaEhKs2g
-         eizKN7Bo++MU6DzxdTpniDrYHUcQDolyYR0vnDuhU3k2NeO+qyHTd01SsXt7KmK6zOmQ
-         1b++0q3m9QcZEjrXsaZntDbombdBVTwjjrT9mWJLa9gekTQIBB5WZ4py/T9/1h3n6+oP
-         vkfTPFXNtkhlYE/os2nTjOcPF2qqyGwu2Z1Xmmbtz2wDHtgE2Ea1PAi+XqypkTWscmPl
-         9UGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=naoN9xO3VLnK7N3zhVakVrkwI0aVx9LZjd339bZJK3Y=;
-        b=Up6P2O9NocUiLqN2PuPOd8Vr2/QMOgm+H8YA6mrJQwM1nje3K+GenHU87DPw8RixSw
-         c7PZXnZQlO9IkOS4KR78HaneFYzGG1qoRT6gzQ77jXNkmNtZ9sg5WpRb0oL+I77PM8TT
-         BPw61esgBrkPwK21ZYHZtRTu/+QlrbSEv9hHrPgiA3V/qpNdIIRCZRkaBttFTezUTTvx
-         paOANVQxBhWcTpbsQuv1L13jyzSDssZ80WYUNHNlYzmid8YTscUwHFLfVsmElaO99m0s
-         h9zeIZU7uCCIUPbcxtOABIDMIYyWvhwPBC8hdMcunoIUkZ5dPyrS7uJMvidP65Na7gBY
-         19sQ==
-X-Gm-Message-State: APjAAAVBpomj0oxtbHF8xjK/3alaRdppeMw0LbECJZor/0w3kj2lzoLr
-        2VDjybMdS7AKYut371jwkX7x8Q==
-X-Google-Smtp-Source: APXvYqxQm03vHRDTjjXInJLdprCbt2w9mLeFMxdlR/vcgfzYjvUlzdeWGHlBfh8DBiBmPLW9JxjyvQ==
-X-Received: by 2002:a0c:d604:: with SMTP id c4mr10296987qvj.27.1561762125846;
-        Fri, 28 Jun 2019 15:48:45 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id q9sm1353291qkm.63.2019.06.28.15.48.44
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 28 Jun 2019 15:48:45 -0700 (PDT)
-Date:   Fri, 28 Jun 2019 15:48:41 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     daniel@iogearbox.io, ast@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com, bpf@vger.kernel.org
-Subject: Re: [PATCH 1/2] tls: remove close callback sock unlock/lock and
- flush_sync
-Message-ID: <20190628154841.32b96fb1@cakuba.netronome.com>
-In-Reply-To: <5d166d2deacfe_10452ad82c16e5c0a5@john-XPS-13-9370.notmuch>
-References: <156165697019.32598.7171757081688035707.stgit@john-XPS-13-9370>
-        <156165700197.32598.17496423044615153967.stgit@john-XPS-13-9370>
-        <20190627164402.31cbd466@cakuba.netronome.com>
-        <5d1620374694e_26962b1f6a4fa5c4f2@john-XPS-13-9370.notmuch>
-        <20190628113100.597bfbe6@cakuba.netronome.com>
-        <5d166d2deacfe_10452ad82c16e5c0a5@john-XPS-13-9370.notmuch>
-Organization: Netronome Systems, Ltd.
+        id S1726822AbfF1WtG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 18:49:06 -0400
+Received: from mga05.intel.com ([192.55.52.43]:51493 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726563AbfF1WtG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 Jun 2019 18:49:06 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 Jun 2019 15:49:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.63,429,1557212400"; 
+   d="scan'208";a="338039119"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
+  by orsmga005.jf.intel.com with ESMTP; 28 Jun 2019 15:49:05 -0700
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net-next 00/15][pull request] Intel Wired LAN Driver Updates 2019-06-28
+Date:   Fri, 28 Jun 2019 15:49:17 -0700
+Message-Id: <20190628224932.3389-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 28 Jun 2019 12:40:29 -0700, John Fastabend wrote:
-> The lock() is already held when entering unhash() side so need to
-> handle this case as well,
-> 
-> CPU 0 (free)          CPU 1 (wq)
-> 
-> lock(sk)              ctx = tls_get_ctx(sk) <- need to be check null ptr
-> sk_prot->unhash()
->   set_bit()
->   cancel_work()
->   ...
->   kfree(ctx)
-> unlock(sk)
-> 
-> but using cancel and doing an unlikely(!ctx) check should be
-> sufficient to handle wq. 
+This series contains a smorgasbord of updates to many of the Intel
+drivers.
 
-I'm not sure we can kfree ctx, the work struct itself is in it, no?
+Gustavo A. R. Silva updates the ice and iavf drivers to use the
+strcut_size() helper where possible.
 
-> What I'm not sure how to solve now is
-> in patch 2 of this series unhash is still calling strp_done
-> with the sock lock. Maybe we need to do a deferred release
-> like sockmap side?
+Miguel increases the pause and refresh time for flow control in the
+e1000e driver during reset for certain devices.
 
-Right, we can't do anything that sleeps in unhash, since we're holding
-the spinlock there, not the "owner" lock.
+Dann Frazier fixes a potential NULL pointer dereference in ixgbe driver
+when using non-IPSec enabled devices.
 
-> Trying to drop the lock and then grabbing it again doesn't
-> seem right to me seems based on comment in tcp_abort we
-> could potentially "race with userspace socket closes such
-> as tcp_close". iirc I think one of the tls splats from syzbot
-> looked something like this may have happened.
-> 
-> For now I'm considering adding a strp_cancel() op. Seeing
-> we are closing() the socket and tearkng down we can probably
-> be OK with throwing out strp results.
+Colin Ian King fixes a potential overflow during a shift in the ixgbe
+driver.  Also fixes a potential NULL pointer dereference in the iavf
+driver by adding a check.
 
-But don't we have to flush the work queues before we free ctx?  We'd
-need to alloc a workqueue and schedule a work to flush the other works
-and then free?
+Venkatesh Srinivas converts the e1000 driver to use dma_wmb() instead of
+wmb() for doorbell writes to avoid SFENCEs in the transmit and receive
+paths.
 
-Why can't tls sockets exist outside of established state?  If shutdown
-doesn't call close, perhaps we can add a shutdown callback?  It doesn't
-seem to be called from BH?
+Arjan updates the e1000e driver to improve boot time by over 100 msec by
+reducing the usleep ranges suring system startup.
 
-Sorry for all the questions, I'm not really able to fully wrap my head
-around this. I also feel like I'm missing the sockmap piece that may
-be why you prefer unhash over disconnect.
+Artem updates the igb driver register dump in ethtool, first prepares
+the register dump for future additions of registers in the dump, then
+secondly, adds the RR2DCDELAY register to the dump.  When dealing with
+time-sensitive networks, this register is helpful in determining your
+latency from the device to the ring.
 
-FWIW Davide's ULP diag support patches will require us to most likely
-free ctx with kfree_rcu(). diag only has a ref on struct sock, so if 
-we want to access ctx we need RCU or to lock every socket. It's a
-little bit of an abuse of RCU, because the data under our feet may
-actually change, but the fields we dump will only get inited once
-after ulp is installed.
+Alex fixes the ixgbevf driver to use the current cached link state,
+rather than trying to re-check the value from the PF.
+
+Harshitha adds support for MACVLAN offloads in i40e by using channels as
+MACVLAN interfaces.
+
+Detlev Casanova updates the e1000e driver to use delayed work instead of
+timers to run the watchdog.
+
+Vitaly fixes an issue in e1000e, where when disconnecting and
+reconnecting the physical cable connection, the NIC enters a DMoff
+state.  This state causes a mismatch in link and duplexing, so check the
+PCIm function state and perform a PHY reset when in this state to
+resolve the issue.
+
+The following are changes since commit 5cdda5f1d6adde02da591ca2196f20289977dc56:
+  ipv4: enable route flushing in network namespaces
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 10GbE
+
+Alexander Duyck (1):
+  ixgbevf: Use cached link state instead of re-reading the value for
+    ethtool
+
+Arjan van de Ven (1):
+  e1000e: Reduce boot time by tightening sleep ranges
+
+Artem Bityutskiy (2):
+  igb: minor ethool regdump amendment
+  igb: add RR2DCDELAY to ethtool registers dump
+
+Colin Ian King (2):
+  ixgbe: fix potential u32 overflow on shift
+  iavf: fix dereference of null rx_buffer pointer
+
+Dann Frazier (1):
+  ixgbe: Avoid NULL pointer dereference with VF on non-IPsec hw
+
+Detlev Casanova (1):
+  e1000e: Make watchdog use delayed work
+
+Gustavo A. R. Silva (2):
+  ice: Use struct_size() helper
+  iavf: use struct_size() helper
+
+Harshitha Ramamurthy (1):
+  i40e: Add macvlan support on i40e
+
+Jeff Kirsher (1):
+  iavf: Fix up debug print macro
+
+Miguel Bernal Marin (1):
+  e1000e: Increase pause and refresh time
+
+Venkatesh Srinivas (1):
+  e1000: Use dma_wmb() instead of wmb() before doorbell writes
+
+Vitaly Lifshits (1):
+  e1000e: PCIm function state support
+
+ drivers/net/ethernet/intel/e1000/e1000_main.c |   6 +-
+ .../net/ethernet/intel/e1000e/80003es2lan.c   |   2 +-
+ drivers/net/ethernet/intel/e1000e/82571.c     |   2 +-
+ drivers/net/ethernet/intel/e1000e/defines.h   |   3 +
+ drivers/net/ethernet/intel/e1000e/e1000.h     |   5 +-
+ drivers/net/ethernet/intel/e1000e/ethtool.c   |  14 +-
+ drivers/net/ethernet/intel/e1000e/ich8lan.c   |  20 +-
+ drivers/net/ethernet/intel/e1000e/mac.c       |   2 +-
+ drivers/net/ethernet/intel/e1000e/netdev.c    |  90 ++--
+ drivers/net/ethernet/intel/e1000e/nvm.c       |   2 +-
+ drivers/net/ethernet/intel/i40e/i40e.h        |  27 +
+ drivers/net/ethernet/intel/i40e/i40e_main.c   | 497 +++++++++++++++++-
+ drivers/net/ethernet/intel/iavf/iavf_osdep.h  |  10 +-
+ drivers/net/ethernet/intel/iavf/iavf_txrx.c   |   6 +-
+ .../net/ethernet/intel/iavf/iavf_virtchnl.c   |  37 +-
+ drivers/net/ethernet/intel/ice/ice_sched.c    |   4 +-
+ drivers/net/ethernet/intel/igb/e1000_regs.h   |   2 +
+ drivers/net/ethernet/intel/igb/igb_ethtool.c  |  75 +--
+ .../net/ethernet/intel/ixgbe/ixgbe_ipsec.c    |   3 +
+ drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c  |  14 +-
+ drivers/net/ethernet/intel/ixgbevf/ethtool.c  |  10 +-
+ 21 files changed, 686 insertions(+), 145 deletions(-)
+
+-- 
+2.21.0
+
