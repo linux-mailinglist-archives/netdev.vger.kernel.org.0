@@ -2,148 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E12A95962C
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 10:32:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11D6D59660
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 10:48:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726738AbfF1Icl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 04:32:41 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:50696 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726465AbfF1Icl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 04:32:41 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212])
-        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_128_CBC_SHA1:16)
-        (Exim 4.76)
-        (envelope-from <colin.king@canonical.com>)
-        id 1hgmJC-0001IW-1I; Fri, 28 Jun 2019 08:32:38 +0000
-Subject: Re: [PATCH] net: stmmac: add sanity check to
- device_property_read_u32_array call
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     alexandre.torgue@st.com, davem@davemloft.net, joabreu@synopsys.com,
-        kernel-janitors@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
-        peppe.cavallaro@st.com
-References: <20190617165836.4673-1-colin.king@canonical.com>
- <20190619051308.23582-1-martin.blumenstingl@googlemail.com>
- <92f9e5a6-d2a2-6bf2-ff8a-2430fe977f93@canonical.com>
- <CAFBinCDmYVPDMcwAAYhMfxxuTsG=xunduN58_8e20zE_Mhmb7Q@mail.gmail.com>
- <CAFBinCC-LLpfXQRFcKBbUpCfKc0S9Xtt60QrhEThsOFV-T7vFw@mail.gmail.com>
- <c46d2d17-c35b-46f0-0674-0c55bea3a272@canonical.com>
- <CAFBinCBk5aPVE+vq5px3QKS1T_R=WGXXxEJMC9X676KGvi9jdg@mail.gmail.com>
-From:   Colin Ian King <colin.king@canonical.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <26646ff1-059f-fb2d-e05d-43009aeb2150@canonical.com>
-Date:   Fri, 28 Jun 2019 09:32:37 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726520AbfF1IsL convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 28 Jun 2019 04:48:11 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:42552 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725873AbfF1IsL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 Jun 2019 04:48:11 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 9DADC3082135;
+        Fri, 28 Jun 2019 08:48:05 +0000 (UTC)
+Received: from carbon (ovpn-200-45.brq.redhat.com [10.40.200.45])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AFF9A5D962;
+        Fri, 28 Jun 2019 08:47:52 +0000 (UTC)
+Date:   Fri, 28 Jun 2019 10:46:23 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Jubran, Samih" <sameehj@amazon.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "xdp-newbies@vger.kernel.org" <xdp-newbies@vger.kernel.org>,
+        brouer@redhat.com
+Subject: Re: XDP multi-buffer incl. jumbo-frames (Was: [RFC V1 net-next 1/1]
+ net: ena: implement XDP drop support)
+Message-ID: <20190628104557.1ffef3e5@carbon>
+In-Reply-To: <CA+FuTSfKnhv9rr=cDa_4m7Dd9qkEm_oabDfyvH0T0sM+fQTU=w@mail.gmail.com>
+References: <20190623070649.18447-1-sameehj@amazon.com>
+        <20190623070649.18447-2-sameehj@amazon.com>
+        <20190623162133.6b7f24e1@carbon>
+        <A658E65E-93D2-4F10-823D-CC25B081C1B7@amazon.com>
+        <20190626103829.5360ef2d@carbon>
+        <87a7e4d0nj.fsf@toke.dk>
+        <20190626164059.4a9511cf@carbon>
+        <87h88cbdbe.fsf@toke.dk>
+        <CA+FuTSfKnhv9rr=cDa_4m7Dd9qkEm_oabDfyvH0T0sM+fQTU=w@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CAFBinCBk5aPVE+vq5px3QKS1T_R=WGXXxEJMC9X676KGvi9jdg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.42]); Fri, 28 Jun 2019 08:48:11 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28/06/2019 05:15, Martin Blumenstingl wrote:
-> On Tue, Jun 25, 2019 at 9:58 AM Colin Ian King <colin.king@canonical.com> wrote:
->>
->> On 25/06/2019 05:44, Martin Blumenstingl wrote:
->>> Hi Colin,
->>>
->>> On Thu, Jun 20, 2019 at 3:34 AM Martin Blumenstingl
->>> <martin.blumenstingl@googlemail.com> wrote:
->>>>
->>>> Hi Colin,
->>>>
->>>> On Wed, Jun 19, 2019 at 8:55 AM Colin Ian King <colin.king@canonical.com> wrote:
->>>>>
->>>>> On 19/06/2019 06:13, Martin Blumenstingl wrote:
->>>>>> Hi Colin,
->>>>>>
->>>>>>> Currently the call to device_property_read_u32_array is not error checked
->>>>>>> leading to potential garbage values in the delays array that are then used
->>>>>>> in msleep delays.  Add a sanity check to the property fetching.
->>>>>>>
->>>>>>> Addresses-Coverity: ("Uninitialized scalar variable")
->>>>>>> Signed-off-by: Colin Ian King <colin.king@canonical.com>
->>>>>> I have also sent a patch [0] to fix initialize the array.
->>>>>> can you please look at my patch so we can work out which one to use?
->>>>>>
->>>>>> my concern is that the "snps,reset-delays-us" property is optional,
->>>>>> the current dt-bindings documentation states that it's a required
->>>>>> property. in reality it isn't, there are boards (two examples are
->>>>>> mentioned in my patch: [0]) without it.
->>>>>>
->>>>>> so I believe that the resulting behavior has to be:
->>>>>> 1. don't delay if this property is missing (instead of delaying for
->>>>>>    <garbage value> ms)
->>>>>> 2. don't error out if this property is missing
->>>>>>
->>>>>> your patch covers #1, can you please check whether #2 is also covered?
->>>>>> I tested case #2 when submitting my patch and it worked fine (even
->>>>>> though I could not reproduce the garbage values which are being read
->>>>>> on some boards)
->>> in the meantime I have tested your patch.
->>> when I don't set the "snps,reset-delays-us" property then I get the
->>> following error:
->>>   invalid property snps,reset-delays-us
->>>
->>> my patch has landed in the meantime: [0]
->>> how should we proceed with your patch?
 
-Your fix is good, so I think we should just drop/forget about my fix.
-
-Colin
-
->>
->> I'm out of the office today. I'll get back to you on this tomorrow.
-> gentle ping
-> (I will be away for the weekend but I can reply on Monday)
+On Wed, 26 Jun 2019 11:20:45 -0400 Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
+> On Wed, Jun 26, 2019 at 11:01 AM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+> > Jesper Dangaard Brouer <brouer@redhat.com> writes:
+> > > On Wed, 26 Jun 2019 13:52:16 +0200
+> > > Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+> > >  
+> > >> Jesper Dangaard Brouer <brouer@redhat.com> writes:
+> > >>  
+[...]
+> > >
+> > > You touch upon some interesting complications already:
+> > >
+> > > 1. It is valuable for XDP bpf_prog to know "full" length?
+> > >    (if so, then we need to extend xdp ctx with info)  
+> >
+> > Valuable, quite likely. A hard requirement, probably not (for all use
+> > cases).  
 > 
+> Agreed.
+> 
+> One common validation use would be to drop any packets whose header
+> length disagrees with the actual packet length.
 
+That is a good point.
+
+Added a section "XDP access to full packet length?" to capture this:
+- https://github.com/xdp-project/xdp-project/commit/da5b84264b85b0d
+- https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp-multi-buffer01-design.org#xdp-access-to-full-packet-length
+
+
+> > >  But if we need to know the full length, when the first-buffer is
+> > >  processed. Then realize that this affect the drivers RX-loop, because
+> > >  then we need to "collect" all the buffers before we can know the
+> > >  length (although some HW provide this in first descriptor).
+> > >
+> > >  We likely have to change drivers RX-loop anyhow, as XDP_TX and
+> > >  XDP_REDIRECT will also need to "collect" all buffers before the packet
+> > >  can be forwarded. (Although this could potentially happen later in
+> > >  driver loop when it meet/find the End-Of-Packet descriptor bit).  
+> 
+> Yes, this might be quite a bit of refactoring of device driver code.
+> 
+> Should we move forward with some initial constraints, e.g., no
+> XDP_REDIRECT, no "full" length and no bpf_xdp_adjust_tail?
+
+I generally like this...
+
+If not adding "full" length. Maybe we could add an indication to
+XDP-developer, that his is a multi-buffer/multi-segment packet, such
+that header length validation code against packet length (data_end-data)
+is not possible.  This is user visible, so we would have to keep it
+forever... I'm leaning towards adding "full" length from beginning.
+
+> That already allows many useful programs.
+>
+> As long as we don't arrive at a design that cannot be extended with
+> those features later.
+
+That is the important part...
+
+ 
+> > > 2. Can we even allow helper bpf_xdp_adjust_tail() ?
+[...]
+> >  
+> > >  Perhaps it is better to let bpf_xdp_adjust_tail() fail runtime?  
+> >
+> > If we do disallow it, I think I'd lean towards failing the call at
+> > runtime...  
+> 
+> Disagree. I'd rather have a program fail at load if it depends on
+> multi-frag support while the (driver) implementation does not yet
+> support it.
+
+I usually agree that we should fail the program, early at load time.
+For XDP we are unfortunately missing some knobs to do this, see[1].
+
+Specifically for bpf_xdp_adjust_tail(), it might be better to fail
+runtime.  Because, the driver might have enabled TSO for TCP packets,
+while your XDP use-case is for adjusting UDP-packets (and do XDP level
+replies), which will never see multi-buffer packets.  If we fail use of
+bpf_xdp_adjust_tail(), then you would have to disable TSO to allow
+loading your XDP-prog, hurting the other TSO-TCP use-case.
+
+
+[1] http://vger.kernel.org/netconf2019_files/xdp-feature-detection.pdf
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
