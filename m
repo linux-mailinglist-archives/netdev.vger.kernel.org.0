@@ -2,126 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D2005986F
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 12:32:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2B7D5988B
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 12:39:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726696AbfF1KcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 06:32:22 -0400
-Received: from mout.kundenserver.de ([212.227.17.10]:57693 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726484AbfF1KcV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 06:32:21 -0400
-Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
- (mreue108 [212.227.15.145]) with ESMTPA (Nemesis) id
- 1M6ltQ-1he45c1Zlu-008HB7; Fri, 28 Jun 2019 12:32:02 +0200
-From:   Arnd Bergmann <arnd@arndb.de>
-To:     Aviad Krawczyk <aviad.krawczyk@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Xue Chaojing <xuechaojing@huawei.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Zhao Chen <zhaochen6@huawei.com>,
-        Eric Dumazet <edumazet@google.com>,
-        dann frazier <dann.frazier@canonical.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] hinic: reduce rss_init stack usage
-Date:   Fri, 28 Jun 2019 12:31:44 +0200
-Message-Id: <20190628103158.2446356-1-arnd@arndb.de>
-X-Mailer: git-send-email 2.20.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:QYqTtvUivST2IBpYNwbYUeyahFSQ0lBwtIbf+kVFvKJocTNobD3
- 6oZnmk2BXjTOixp0JMhOYp5ecOqypzq2WAcggP2YyxYJ4gHZ+MT4EQM1++vHGj2/KQ5+oyn
- SI7TwHlzuPyA2DXGEAhyFDj3op66U9AI3PoPKSpxIZQNa5G7pmFPfX/AqplBNEs+94s6dVQ
- 5ZrbusWR4PJB7Msx7reMQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:vAu+k/1Jipc=:/rgUdU+92MUy0Czi/8OOPu
- jzWuggmU0hfDPFjrql2B5uc4F+INBBT8E2TRB1fksflWdlRQyJRl6sitiElZmKCpViSAOXcX3
- URC7WkRgP2PvaN7etopF27r35pyIXb1OVP9AdyrXMHvJRe6OT7dWN1TE5scXiEmWaQNhjEhSz
- awEHcf+UIaeyw9MOz5oC0PGlIXuvO5F3EPj40CNT1A4PdHjx+d20z2JeXSu6r7nSorWpJTtbR
- xqo6h5tiuVeaXX+H99SOgn8UaPfjh4W7QUVY3AbWl/1JhBHA9IqYuMxbUyF/hBPs0WQgR2Yse
- qmQsa/f97SamCv0kQd+bezG/OmavEadLt1Q21hOf52Y+RESnK89MC3pghP7eon+iT4vMnI1c/
- u9tP7chOcrOTG2D0zdMJydgHgoVVDyucPaNu0GmHl0fVQ88HR8K3CpQBAWejAgzyZI/eOAWaZ
- 9DkIBf6akZ8m5fzT7Z4WSYqUdA+wWS0gX71P6RQEiz+vgb5CzEmm7LKlBsENWUAEHVAIaU4no
- 6pIA6NQ3EYT9t77av15TU/ZjiavLwoVDQXPXsP7aIZo4XHR+LYLZ1VvTzKLUt+BlV6j2+OW3u
- PXJ8zfCb09ALH1hQDj2k39PcEKDKaj6EHEMVwrnNHuzmqsI2OfIpIQCRb6ggoIPIf45dEYENj
- IdmytUJN8Du2MtJu9wLjrKsNlzA9+uC1hCRrKuG1jQxGLOK1DhKhKWDWjOEMFW4wluoBCG3zi
- DeEjPwBPphsOLL/EUMMa83I1jO4S4J5JGUI2CA==
+        id S1726801AbfF1Kjm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 06:39:42 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:50436 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726524AbfF1Kjk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 06:39:40 -0400
+Received: by mail-wm1-f66.google.com with SMTP id c66so8619566wmf.0
+        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 03:39:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=fBOK3HjvGoSZm1sZ6qHEOApekzu52PJQmMnzGuJ7j8M=;
+        b=rHKsdHiFkwwxxkcBGeD226Rn1Ktcx7LPLVGD9Kg6u0BkUzPm0bMObcEwS4YCa0Zq7X
+         Mwt7kEdM6ip/AZKZIh9FHTle90NhdKP1KTP5hEHe3AcmpQTP2PoX5WwK8r3GpFxXA0PA
+         +jAULtBaGw9O5lISBpiIMHvKsGSF8boLA3EXO6HDjAUUYenDqQZEWZKi4F2cEtwovTe9
+         gR0n2BTGXsMsQ+aiXFt6DHRh0YOA2NZO4n3OZZ50bMFwRZ8v2nXRN7vmI1+CmaIokkwP
+         8ZnEXiC5QBxB5s+DR7h0zaB8Fmz6ydONzTLvffziZlYScc5ryC0CEO0HejBS7AxBnZgA
+         meHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=fBOK3HjvGoSZm1sZ6qHEOApekzu52PJQmMnzGuJ7j8M=;
+        b=NDQFx9ME2lGXiN2Qn+4O06OqdBr33Y3j/IPPdOjjz+9qgSRpCECg8XhtHk+0tPiz+g
+         ArruSdNvRx3iFUIhc63aTfBXboOayspHAcVOoRSeH4dcHBzHCQeQt8KX+pwZ1LJ/N3BG
+         ARDOaLpeHRJar7TyNvdctFQ0qq3kP0vsLZHPsAi+DiTIBw3XBExA775wpKxPlKuZ4ypq
+         QLiukXy8NpWiEVRkMpKIxgvSjAlrBKNdMIgkeTLLYjFG9koLXRGmVH8GVh/gDpT5RCwY
+         5SYF6JJ82nfbFPXMVE1ZzH6EigCFgXo6WswWYJn8r6/dodmcalK9iuC6l3fCym+21rEr
+         93Sg==
+X-Gm-Message-State: APjAAAW9TBuvLywjQ/tqsmMSmWb6s7JG6+194CN5hbcEXlJ4Meb158fE
+        RxUSMbixoTUbXB4VF1d5GpFUQs69LDg=
+X-Google-Smtp-Source: APXvYqwwvkdg1746s9ivLxCV03ypm18s1ny80iXcKkrhLLgmhvpgImxDhfR3DKU13z9exejz4ftrQw==
+X-Received: by 2002:a1c:be0a:: with SMTP id o10mr6765027wmf.91.1561718377836;
+        Fri, 28 Jun 2019 03:39:37 -0700 (PDT)
+Received: from apalos.lan (athedsl-4461147.home.otenet.gr. [94.71.2.75])
+        by smtp.gmail.com with ESMTPSA id r5sm3397742wrg.10.2019.06.28.03.39.36
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Fri, 28 Jun 2019 03:39:37 -0700 (PDT)
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     netdev@vger.kernel.org, jaswinder.singh@linaro.org
+Cc:     ard.biesheuvel@linaro.org, bjorn.topel@intel.com,
+        magnus.karlsson@intel.com, brouer@redhat.com, daniel@iogearbox.net,
+        ast@kernel.org, makita.toshiaki@lab.ntt.co.jp,
+        jakub.kicinski@netronome.com, john.fastabend@gmail.com,
+        davem@davemloft.net, maciejromanfijalkowski@gmail.com,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Subject: [PATCH 0/3, net-next] net: netsec: Add XDP Support
+Date:   Fri, 28 Jun 2019 13:39:12 +0300
+Message-Id: <1561718355-13919-1-git-send-email-ilias.apalodimas@linaro.org>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 32-bit architectures, putting an array of 256 u32 values on the
-stack uses more space than the warning limit:
+This is a respin of https://www.spinics.net/lists/netdev/msg526066.html
+Since page_pool API fixes are merged into net-next we can now safely use 
+it's DMA mapping capabilities. 
 
-drivers/net/ethernet/huawei/hinic/hinic_main.c: In function 'hinic_rss_init':
-drivers/net/ethernet/huawei/hinic/hinic_main.c:286:1: error: the frame size of 1068 bytes is larger than 1024 bytes [-Werror=frame-larger-than=]
+First patch changes the buffer allocation from napi/netdev_alloc_frag()
+to page_pool API. Although this will lead to slightly reduced performance 
+(on raw packet drops only) we can use the API for XDP buffer recycling. 
+Another side effect is a slight increase in memory usage, due to using a 
+single page per packet.
 
-I considered changing the code to use u8 values here, since that's
-all the hardware supports, but dynamically allocating the array is
-a more isolated fix here.
+The second patch adds XDP support on the driver. 
+There's a bunch of interesting options that come up due to the single 
+Tx queue.
+Locking is needed(to avoid messing up the Tx queues since ndo_xdp_xmit 
+and the normal stack can co-exist). We also need to track down the 
+'buffer type' for TX and properly free or recycle the packet depending 
+on it's nature.
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- .../net/ethernet/huawei/hinic/hinic_main.c    | 20 ++++++++++++-------
- 1 file changed, 13 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-index 1b917543feac..ceb0e247f52d 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-@@ -256,37 +256,43 @@ static int hinic_configure_max_qnum(struct hinic_dev *nic_dev)
- 
- static int hinic_rss_init(struct hinic_dev *nic_dev)
- {
--	u32 indir_tbl[HINIC_RSS_INDIR_SIZE] = { 0 };
- 	u8 default_rss_key[HINIC_RSS_KEY_SIZE];
- 	u8 tmpl_idx = nic_dev->rss_tmpl_idx;
-+	u32 *indir_tbl;
- 	int err, i;
- 
-+	indir_tbl = kcalloc(HINIC_RSS_INDIR_SIZE, sizeof(u32), GFP_KERNEL);
-+	if (!indir_tbl)
-+		return -ENOMEM;
-+
- 	netdev_rss_key_fill(default_rss_key, sizeof(default_rss_key));
- 	for (i = 0; i < HINIC_RSS_INDIR_SIZE; i++)
- 		indir_tbl[i] = ethtool_rxfh_indir_default(i, nic_dev->num_rss);
- 
- 	err = hinic_rss_set_template_tbl(nic_dev, tmpl_idx, default_rss_key);
- 	if (err)
--		return err;
-+		goto out;
- 
- 	err = hinic_rss_set_indir_tbl(nic_dev, tmpl_idx, indir_tbl);
- 	if (err)
--		return err;
-+		goto out;
- 
- 	err = hinic_set_rss_type(nic_dev, tmpl_idx, nic_dev->rss_type);
- 	if (err)
--		return err;
-+		goto out;
- 
- 	err = hinic_rss_set_hash_engine(nic_dev, tmpl_idx,
- 					nic_dev->rss_hash_engine);
- 	if (err)
--		return err;
-+		goto out;
- 
- 	err = hinic_rss_cfg(nic_dev, 1, tmpl_idx);
- 	if (err)
--		return err;
-+		goto out;
- 
--	return 0;
-+out:
-+	kfree(indir_tbl);
-+	return err;
- }
- 
- static void hinic_rss_deinit(struct hinic_dev *nic_dev)
+Changes since RFC:
+- Bug fixes from Jesper and Maciej
+- Added page pool API to retrieve the DMA direction
+
+Ilias Apalodimas (3):
+  net: netsec: Use page_pool API
+  net: page_pool: add helper function for retrieving dma direction
+  net: netsec: add XDP support
+
+ drivers/net/ethernet/socionext/Kconfig  |   1 +
+ drivers/net/ethernet/socionext/netsec.c | 469 ++++++++++++++++++++----
+ include/net/page_pool.h                 |   9 +
+ 3 files changed, 412 insertions(+), 67 deletions(-)
+
 -- 
-2.20.0
+2.20.1
 
