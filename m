@@ -2,198 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0653F5A56D
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 21:50:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C31ED5A58D
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 21:59:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727148AbfF1Tui (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 15:50:38 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:35351 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727112AbfF1Tua (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 15:50:30 -0400
-Received: by mail-qt1-f196.google.com with SMTP id d23so7708150qto.2;
-        Fri, 28 Jun 2019 12:50:29 -0700 (PDT)
+        id S1727128AbfF1T7p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 15:59:45 -0400
+Received: from mail-yb1-f195.google.com ([209.85.219.195]:40970 "EHLO
+        mail-yb1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727095AbfF1T7p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 15:59:45 -0400
+Received: by mail-yb1-f195.google.com with SMTP id y67so4887173yba.8
+        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 12:59:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=3Xn18lnB6NiDq0QlwOmDWR2KRYMzbT2+w3Vk6jrhoPY=;
-        b=rLglfyo3TWdmKFDzOneBzD601R8mOFy+h8nMHi/3SRfwgGjtiL107z2a9rKoBE9Mvu
-         zJObbz5fewG9qgNilgITQpdTAhjTY+uP8gUrIO9K3Bmrq2nX0+frb6FFS09UxFjq+R6q
-         idwK5FNRNyakAj+mSwBaG+tZ0mZgyJoTNq95KPoFmUOKnFMwcf8h197sWfJHpV7qCffG
-         dLSPz73NXm1qJHntrdLNSx1MXVo4qyKP3sAph1Ap3NXw73r8q63jPvYrEp/StKWGAr32
-         8L7Bt0C1X5NKtfDujSPq/OoIw0NAsSrbbPIK7om3mr8WyAVUlsI9qa8xAnOoCrQtVjfG
-         r44Q==
+        bh=JnkachwQP0cyQ9JdMbTUnW5qndJ/fTXRxpRomw9WY6k=;
+        b=vVLyvukrpuQtbZdzKfeFDmHdS8rq0f9WdO6YO1eZI6sLIUF996To1rdL8/7+axITIy
+         85yp8tjhuqeC8aQG5v6WRyAA6OCt/OvXJzXuB3erg1B1/6I/VhC97S1snroCo/cGfDMP
+         uVp7k4O91vtcWDPfd0EgxARsjrcpaEz0vxiRw/U3zJGyqOMaKnEbJrlYwP0YHPX11owd
+         ydc6SDTxO8stFGHPET1XRyuFJtUOZ/g0botEElyakKaPs0TwZwUnhxua9Brg/C7XrXzK
+         Tzz95CL2xg4AohWS6sDOA/H16jSdpmsb38czV9xkwcdD72qnaCznSjjlKboOu3AVh9Qv
+         0LPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=3Xn18lnB6NiDq0QlwOmDWR2KRYMzbT2+w3Vk6jrhoPY=;
-        b=G0vgLIZG3B6gz/vO3clEuzFtNIgeMgf3cctu12NbjTEGcpSXvgErH3B3U1rT9cuq+r
-         JQv8RyXLXxMB/+zsT6tTywyT0hCbgJ1vlc1u9gxGmLYly2Vu+siDmvv79nc3S5ZZH/yL
-         RHCxhpfYrc5UMjbQmdvY3zQVqPhADwPSEA1WkxHaHqHp4/X06aBPzTFXjgZOshCZ2uMh
-         N1ukVXKa8ug/LnlFlGpauZZvG3me8n/sjJJZ3VmrRJ+h/3cXcHJNDrTCKvWsiDHOnnrs
-         GxwO99XKW2A0K5XF5AacZBNs4sP+7kQUwTXE8cPWNvXxZWBhCYLjNpXMeCNmd+Doj4b0
-         PFhg==
-X-Gm-Message-State: APjAAAUPcsDQzik/VeeZmEq8AFLOX37uOccJk32DR1V6sByimJs2M+Rn
-        FbgZA+m92K2s00xboINZHJLjKAV/9bgLgn8Pqqu9dQ==
-X-Google-Smtp-Source: APXvYqzF2nlutE93zKV4dTbzD4T2inmcSAT5gwQWGVzz6bnsANulNKnKb6Ro+AA3wbOkmf3guorG/KMfYgvuU3XcbH8=
-X-Received: by 2002:a0c:9695:: with SMTP id a21mr10080326qvd.24.1561751429069;
- Fri, 28 Jun 2019 12:50:29 -0700 (PDT)
+        bh=JnkachwQP0cyQ9JdMbTUnW5qndJ/fTXRxpRomw9WY6k=;
+        b=Wy8exgPbtyptoS7wqGJ6wlx7W6BWwS3QF3AH8OmXO8v4AHlTTCbVLEneZEq+vyQIUT
+         4pgbKNMCfT2+dlaocdtfHnkKHwznmEAWld3nXr4m0H861WVbapbwBb2R1GzcYSB1TU8E
+         qQDy1Wgsef5VdtFAMAI1tFZFDVdaActI+2SA5f2xT58B2p54pH0mxr7MQDYqubUQlyYB
+         N7l+fLqS8C6GzrbFigNbZXb7jxhc/aRENVptrQxjRGTw83p2ZKtExteVwLKVVn7TjqFD
+         jlzoWRJCDIC/VnZwpVrJtxkie/Ol+e8zX69dT5wt8sAmV6ieaaeAMjSigz/hmO4kK2vI
+         spuA==
+X-Gm-Message-State: APjAAAU9gqvkkayTddJvCjl/lQo49dNcKMnbtvnSEM97nGLc1MJzztjf
+        fY1xRSwTNRs/5xzuSceKu4rQo2FnsqU=
+X-Google-Smtp-Source: APXvYqzDIBxLiUSb1NyHthsRxASathmY63QP+K+JK5rFeUq066nXX+B4Mcxm5Kfloh/5/D+f2n59iQ==
+X-Received: by 2002:a25:3c83:: with SMTP id j125mr7797588yba.352.1561751983507;
+        Fri, 28 Jun 2019 12:59:43 -0700 (PDT)
+Received: from mail-yw1-f48.google.com (mail-yw1-f48.google.com. [209.85.161.48])
+        by smtp.gmail.com with ESMTPSA id a70sm671979ywa.79.2019.06.28.12.59.43
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Fri, 28 Jun 2019 12:59:43 -0700 (PDT)
+Received: by mail-yw1-f48.google.com with SMTP id m16so4640079ywh.12
+        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 12:59:43 -0700 (PDT)
+X-Received: by 2002:a81:4807:: with SMTP id v7mr6063772ywa.494.1561751494211;
+ Fri, 28 Jun 2019 12:51:34 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190628055303.1249758-1-andriin@fb.com> <20190628055303.1249758-6-andriin@fb.com>
-In-Reply-To: <20190628055303.1249758-6-andriin@fb.com>
-From:   Song Liu <liu.song.a23@gmail.com>
-Date:   Fri, 28 Jun 2019 12:50:18 -0700
-Message-ID: <CAPhsuW6zLEY=3tc6Ja5Cnam_RJ=eUFdfmMnN4mfjWn18O5Rbgg@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 5/9] libbpf: add tracepoint attach API
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Stanislav Fomichev <sdf@fomichev.me>,
-        Kernel Team <kernel-team@fb.com>
+References: <20190628123819.2785504-1-arnd@arndb.de> <20190628123819.2785504-4-arnd@arndb.de>
+In-Reply-To: <20190628123819.2785504-4-arnd@arndb.de>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 28 Jun 2019 15:50:57 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSexLuu8e1XHaY0ObGi46CgZnBpELecBr+kMgCU29Fa_gw@mail.gmail.com>
+Message-ID: <CA+FuTSexLuu8e1XHaY0ObGi46CgZnBpELecBr+kMgCU29Fa_gw@mail.gmail.com>
+Subject: Re: [PATCH 4/4] ipvs: reduce kernel stack usage
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Wensong Zhang <wensong@linux-vs.org>,
+        Simon Horman <horms@verge.net.au>,
+        Julian Anastasov <ja@ssi.bg>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        James Smart <james.smart@broadcom.com>,
+        Dick Kennedy <dick.kennedy@broadcom.com>,
+        "James E . J . Bottomley" <jejb@linux.ibm.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Florian Schilhabel <florian.c.schilhabel@googlemail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        James Morris <jmorris@namei.org>, linux-scsi@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        devel@driverdev.osuosl.org,
+        Network Development <netdev@vger.kernel.org>,
+        lvs-devel@vger.kernel.org,
+        netfilter-devel <netfilter-devel@vger.kernel.org>,
+        coreteam@netfilter.org, Ard Biesheuvel <ard.biesheuvel@linaro.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 27, 2019 at 10:53 PM Andrii Nakryiko <andriin@fb.com> wrote:
+On Fri, Jun 28, 2019 at 8:40 AM Arnd Bergmann <arnd@arndb.de> wrote:
 >
-> Allow attaching BPF programs to kernel tracepoint BPF hooks specified by
-> category and name.
+> With the new CONFIG_GCC_PLUGIN_STRUCTLEAK_BYREF_ALL option, the stack
+> usage in the ipvs debug output grows because each instance of
+> IP_VS_DBG_BUF() now has its own buffer of 160 bytes that add up
+> rather than reusing the stack slots:
 >
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> net/netfilter/ipvs/ip_vs_core.c: In function 'ip_vs_sched_persist':
+> net/netfilter/ipvs/ip_vs_core.c:427:1: error: the frame size of 1052 bytes is larger than 1024 bytes [-Werror=frame-larger-than=]
+> net/netfilter/ipvs/ip_vs_core.c: In function 'ip_vs_new_conn_out':
+> net/netfilter/ipvs/ip_vs_core.c:1231:1: error: the frame size of 1048 bytes is larger than 1024 bytes [-Werror=frame-larger-than=]
+> net/netfilter/ipvs/ip_vs_ftp.c: In function 'ip_vs_ftp_out':
+> net/netfilter/ipvs/ip_vs_ftp.c:397:1: error: the frame size of 1104 bytes is larger than 1024 bytes [-Werror=frame-larger-than=]
+> net/netfilter/ipvs/ip_vs_ftp.c: In function 'ip_vs_ftp_in':
+> net/netfilter/ipvs/ip_vs_ftp.c:555:1: error: the frame size of 1200 bytes is larger than 1024 bytes [-Werror=frame-larger-than=]
+>
+> Since printk() already has a way to print IPv4/IPv6 addresses using
+> the %pIS format string, use that instead,
+
+since these are sockaddr_in and sockaddr_in6, should that have the 'n'
+specifier to denote network byteorder?
+
+> combined with a macro that
+> creates a local sockaddr structure on the stack. These will still
+> add up, but the stack frames are now under 200 bytes.
+
+would it make sense to just define a helper function that takes const
+char * level and msg strings and up to three struct nf_inet_addr* and
+do the conversion in there? No need for macros and no state on the
+stack outside error paths at all.
+
+>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 > ---
->  tools/lib/bpf/libbpf.c   | 78 ++++++++++++++++++++++++++++++++++++++++
->  tools/lib/bpf/libbpf.h   |  4 +++
->  tools/lib/bpf/libbpf.map |  1 +
->  3 files changed, 83 insertions(+)
+> I'm not sure this actually does what I think it does. Someone
+> needs to verify that we correctly print the addresses here.
+> I've also only added three files that caused the warning messages
+> to be reported. There are still a lot of other instances of
+> IP_VS_DBG_BUF() that could be converted the same way after the
+> basic idea is confirmed.
+> ---
+>  include/net/ip_vs.h             | 71 +++++++++++++++++++--------------
+>  net/netfilter/ipvs/ip_vs_core.c | 44 ++++++++++----------
+>  net/netfilter/ipvs/ip_vs_ftp.c  | 20 +++++-----
+>  3 files changed, 72 insertions(+), 63 deletions(-)
 >
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 65d2fef41003..76d1599a7d56 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -4229,6 +4229,84 @@ struct bpf_link *bpf_program__attach_uprobe(struct bpf_program *prog,
->         return link;
->  }
+> diff --git a/include/net/ip_vs.h b/include/net/ip_vs.h
+> index 3759167f91f5..3dfbeef67be6 100644
+> --- a/include/net/ip_vs.h
+> +++ b/include/net/ip_vs.h
+> @@ -227,6 +227,16 @@ static inline const char *ip_vs_dbg_addr(int af, char *buf, size_t buf_len,
+>                        sizeof(ip_vs_dbg_buf), addr,                     \
+>                        &ip_vs_dbg_idx)
 >
-> +static int determine_tracepoint_id(const char* tp_category, const char* tp_name)
-> +{
-> +       char file[PATH_MAX];
-> +       int ret;
-> +
-> +       ret = snprintf(file, sizeof(file),
-> +                      "/sys/kernel/debug/tracing/events/%s/%s/id",
-> +                      tp_category, tp_name);
-> +       if (ret < 0)
-> +               return -errno;
-> +       if (ret >= sizeof(file)) {
-> +               pr_debug("tracepoint %s/%s path is too long\n",
-> +                        tp_category, tp_name);
-> +               return -E2BIG;
-> +       }
-> +       return parse_uint_from_file(file);
-> +}
-> +
-> +static int perf_event_open_tracepoint(const char* tp_category,
-> +                                     const char* tp_name)
-> +{
-> +       struct perf_event_attr attr = {};
-> +       char errmsg[STRERR_BUFSIZE];
-> +       int tp_id, pfd, err;
-> +
-> +       tp_id = determine_tracepoint_id(tp_category, tp_name);
-> +       if (tp_id < 0){
-> +               pr_warning("failed to determine tracepoint '%s/%s' perf ID: %s\n",
-> +                          tp_category, tp_name,
-> +                          libbpf_strerror_r(tp_id, errmsg, sizeof(errmsg)));
-> +               return tp_id;
-> +       }
-> +
-> +       attr.type = PERF_TYPE_TRACEPOINT;
-> +       attr.size = sizeof(attr);
-> +       attr.config = tp_id;
-> +
-> +       pfd = syscall( __NR_perf_event_open, &attr, -1 /* pid */, 0 /* cpu */,
-> +                       -1 /* group_fd */, PERF_FLAG_FD_CLOEXEC);
-> +       if (pfd < 0) {
-> +               err = -errno;
-> +               pr_warning("tracepoint '%s/%s' perf_event_open() failed: %s\n",
-> +                          tp_category, tp_name,
-> +                          libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
-> +               return err;
-> +       }
+> +#define IP_VS_DBG_SOCKADDR4(fam, addr, port)                           \
+> +       (struct sockaddr*)&(struct sockaddr_in)                         \
+> +       { .sin_family = (fam), .sin_addr = (addr)->in, .sin_port = (port) }
 
-Similar to the 4/9, I guess we can remove some duplicated pr_warning().
+might as well set .sin_family = AF_INET here and AF_INET6 below?
 
-Thanks,
-Song
-
-> +       return pfd;
-> +}
-> +
-> +struct bpf_link *bpf_program__attach_tracepoint(struct bpf_program *prog,
-> +                                               const char *tp_category,
-> +                                               const char *tp_name)
-> +{
-> +       char errmsg[STRERR_BUFSIZE];
-> +       struct bpf_link *link;
-> +       int pfd, err;
-> +
-> +       pfd = perf_event_open_tracepoint(tp_category, tp_name);
-> +       if (pfd < 0) {
-> +               pr_warning("program '%s': failed to create tracepoint '%s/%s' perf event: %s\n",
-> +                          bpf_program__title(prog, false),
-> +                          tp_category, tp_name,
-> +                          libbpf_strerror_r(pfd, errmsg, sizeof(errmsg)));
-> +               return ERR_PTR(pfd);
-> +       }
-> +       link = bpf_program__attach_perf_event(prog, pfd);
-> +       if (IS_ERR(link)) {
-> +               close(pfd);
-> +               err = PTR_ERR(link);
-> +               pr_warning("program '%s': failed to attach to tracepoint '%s/%s': %s\n",
-> +                          bpf_program__title(prog, false),
-> +                          tp_category, tp_name,
-> +                          libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
-> +               return link;
-> +       }
-> +       return link;
-> +}
-> +
->  enum bpf_perf_event_ret
->  bpf_perf_event_read_simple(void *mmap_mem, size_t mmap_size, size_t page_size,
->                            void **copy_mem, size_t *copy_size,
-> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> index bd767cc11967..60611f4b4e1d 100644
-> --- a/tools/lib/bpf/libbpf.h
-> +++ b/tools/lib/bpf/libbpf.h
-> @@ -178,6 +178,10 @@ LIBBPF_API struct bpf_link *
->  bpf_program__attach_uprobe(struct bpf_program *prog, bool retprobe,
->                            pid_t pid, const char *binary_path,
->                            size_t func_offset);
-> +LIBBPF_API struct bpf_link *
-> +bpf_program__attach_tracepoint(struct bpf_program *prog,
-> +                              const char *tp_category,
-> +                              const char *tp_name);
->
->  struct bpf_insn;
->
-> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> index 57a40fb60718..3c618b75ef65 100644
-> --- a/tools/lib/bpf/libbpf.map
-> +++ b/tools/lib/bpf/libbpf.map
-> @@ -171,6 +171,7 @@ LIBBPF_0.0.4 {
->                 bpf_object__load_xattr;
->                 bpf_program__attach_kprobe;
->                 bpf_program__attach_perf_event;
-> +               bpf_program__attach_tracepoint;
->                 bpf_program__attach_uprobe;
->                 btf_dump__dump_type;
->                 btf_dump__free;
-> --
-> 2.17.1
->
+> +#define IP_VS_DBG_SOCKADDR6(fam, addr, port)                           \
+> +       (struct sockaddr*)&(struct sockaddr_in6) \
+> +       { .sin6_family = (fam), .sin6_addr = (addr)->in6, .sin6_port = (port) }
