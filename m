@@ -2,413 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E90305A2DF
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 19:57:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A5985A2F5
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 19:59:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726761AbfF1R5F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 13:57:05 -0400
-Received: from mail-pg1-f201.google.com ([209.85.215.201]:54841 "EHLO
-        mail-pg1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726416AbfF1R5E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 13:57:04 -0400
-Received: by mail-pg1-f201.google.com with SMTP id t2so3530823pgs.21
-        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 10:57:04 -0700 (PDT)
+        id S1726620AbfF1R71 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 13:59:27 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:47008 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726056AbfF1R71 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 13:59:27 -0400
+Received: by mail-wr1-f65.google.com with SMTP id n4so7139023wrw.13
+        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 10:59:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=Qslm01pa3rRUGHa8MHRvBCIfH+/7hQCieu3DUSmMJuk=;
-        b=lSjfB2TwGn4flQ7rNuX3qliiJIeIM6IrGwSxVy0vdasTLpgqv9+NnhLyd17QAVUKgS
-         Sb+l9ALY58qomhEuWzYEuZUSXFVRHWQxbbvQ/lgeDZNcdXopFkVBNUseHTFh56fzB3Iw
-         zMYlpyDKjefDYlqT79vpeaH4Kv7mQfDnSV3qjjl+IgoDACsfGi3Rtqa/dGLtDColvjfS
-         4Bv8Kq8XsGudKU6ZclBOpC6LleBLn4fOmeaIruQulXgrKsXjtc4tT3OmcFWLf1NfIu1M
-         +fyFBHWQWB/lfABrmQJE9SXJt8K7/ll65/ANY0a39D2c4UtvMNwvV7Lif1z/TPXZ6syr
-         O/Qw==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=bpSDVv1LQKCnJhMg+sb3EeN2ipsKnwmSPWeBBANEZqg=;
+        b=BKWI0YJGFb11iQSo+C68gwVN5hrY8rhWKYffmyIPrVHvd2ogU4Hra8MD5W3hPsKLXI
+         U5CffKoRCDtiB/Ad27iTW8ejAmuuZVvrgSljS3rckCb8jc4282W7yiCRSjbnoMfgtZVv
+         sk4KPfqnlD+whapvh40gF16Kmtxil/GIuZFWM4wt9WYebSoTrYZEwyQ0Nr3Y0lpJUxTf
+         NaA+/hxXyM+AytwN5n24TSZQANO9ECCu4npWcwJs0AKzopsYygCXQNQirIcaj3KgYXoI
+         xvoyh1mDoS637K4EK8K0e6WM8cPizSks7NAE/L9mxIem2xt8dFB2iliA/Kb4JxAtf3Tx
+         21VQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=Qslm01pa3rRUGHa8MHRvBCIfH+/7hQCieu3DUSmMJuk=;
-        b=Iy9+LpQpvxY4Gol12y+QsPgn1uUPNDAcBiq5nx0sxpDYMWOykzXfleXe8yMRUZizYx
-         j/KMOnCTJf6U4GTXtSBt+jz7CKoWlbiLKqKmHejQXYaNlSpF8gIOQtGSBzZqzawYgc7U
-         IfZxVwqNsGz9C7tYgHEarxup9SuNh5ZDqxWaVAUgc9fQZkODJaahGYncJMD45jbORuuU
-         X5h3OZ/WDI51PT4YhCbInAdnBmSS3NeuUnkQOKWkt56ocJoVdKSCFuHunWkoVCSDvYbs
-         1JkuZvWRXuOnKqjxmLno53uy4BxyKPcARdUrUyP/FJ/exsPgSFHHwrMxUJctvELSufht
-         VsFQ==
-X-Gm-Message-State: APjAAAXqrHa4ELITXulFjRVIXsaFKnyDhPRz15aJr2InMuVG1D+kxSQ7
-        j8i7L20LfH677TwXR9E5qYqgJOXqjC8wmxnxqip7b+N+qXk4DuAdBSChPQXUaEMs/0nuSkZ0az2
-        Sj8y5m1d+10D3Qnjbramo6Ok94qC5PzCbGBf+6Bg9LryiT/RPpRD/GhDpw38kng==
-X-Google-Smtp-Source: APXvYqzVd8bALz6OnlMka1CQSB/3pxyoqkps3xVlNywuRq6wChyu6Mpf57AEqXFgsrux9S5kLYr/3vwiCKs=
-X-Received: by 2002:a63:fa0d:: with SMTP id y13mr10425882pgh.258.1561744623218;
- Fri, 28 Jun 2019 10:57:03 -0700 (PDT)
-Date:   Fri, 28 Jun 2019 10:56:33 -0700
-In-Reply-To: <20190628175633.143501-1-csully@google.com>
-Message-Id: <20190628175633.143501-5-csully@google.com>
-Mime-Version: 1.0
-References: <20190628175633.143501-1-csully@google.com>
-X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
-Subject: [PATCH net-next v2 4/4] gve: Add ethtool support
-From:   Catherine Sullivan <csully@google.com>
-To:     netdev@vger.kernel.org
-Cc:     Catherine Sullivan <csully@google.com>,
-        Sagi Shahar <sagis@google.com>,
-        Jon Olson <jonolson@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Luigi Rizzo <lrizzo@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=bpSDVv1LQKCnJhMg+sb3EeN2ipsKnwmSPWeBBANEZqg=;
+        b=dL8CCIqYIF2TjniRbUNIY/NjUl5l7aHalP8c6s5cyUdt6sx7JDIwlbi3oozlWIhN/w
+         8Jv26E0nicItNP7OuIb8Vk7d91dJL0v8S4qZHOjgObJj2gTo/xqJLEkvxOy8vzD9Y0dN
+         JxvwmCp46yB+ISg063wUl/gPGHtG1wgcKkcTczjKkYAWFcIgIQVExXRQ9lWuaFgAZrnZ
+         6Z+nzsUXV6CnFRjvjP1URJefIvJo6MbCCsMZ7uM0pGgr5EPbLnegQhlQaFMsVIOOUyJU
+         I5nB1/tv+3kMIJc+f8za/fNnK6qZ9AidURuPlhxtfFZPqEQOLO+U9a2eog6YYJxnHYS4
+         9ZMA==
+X-Gm-Message-State: APjAAAVrOYmKGJDLnffdOD9X3zHnJpifeh9xSlmntU4BuQ/rTn9Cmsh7
+        RjrnKvPJpe8sZ0DkrO+g4msR5A==
+X-Google-Smtp-Source: APXvYqyCU20o6xShb3Dlzx5ob6sClBu9NLxEZzXtpqzlCQ0yG9+iMLV6avMQ4rA5Jb7V2SGxYk9/Fg==
+X-Received: by 2002:adf:e910:: with SMTP id f16mr8920003wrm.183.1561744764951;
+        Fri, 28 Jun 2019 10:59:24 -0700 (PDT)
+Received: from apalos (athedsl-4461147.home.otenet.gr. [94.71.2.75])
+        by smtp.gmail.com with ESMTPSA id l8sm5796579wrg.40.2019.06.28.10.59.23
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 28 Jun 2019 10:59:24 -0700 (PDT)
+Date:   Fri, 28 Jun 2019 20:59:21 +0300
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        jaswinder.singh@linaro.org, ard.biesheuvel@linaro.org,
+        bjorn.topel@intel.com, magnus.karlsson@intel.com,
+        daniel@iogearbox.net, ast@kernel.org,
+        makita.toshiaki@lab.ntt.co.jp, jakub.kicinski@netronome.com,
+        john.fastabend@gmail.com, davem@davemloft.net
+Subject: Re: [PATCH 3/3, net-next] net: netsec: add XDP support
+Message-ID: <20190628175921.GA979@apalos>
+References: <1561718355-13919-1-git-send-email-ilias.apalodimas@linaro.org>
+ <1561718355-13919-4-git-send-email-ilias.apalodimas@linaro.org>
+ <20190628153552.78a8c5ad@carbon>
+ <20190628164741.GA27936@apalos>
+ <20190628192351.00003555@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190628192351.00003555@gmail.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for the following ethtool commands:
+Hi Maciej,
 
-ethtool -s|--change devname [msglvl N] [msglevel type on|off]
-ethtool -S|--statistics devname
-ethtool -i|--driver devname
-ethtool -l|--show-channels devname
-ethtool -L|--set-channels devname
-ethtool -g|--show-ring devname
-ethtool --reset devname
+> > On Fri, Jun 28, 2019 at 03:35:52PM +0200, Jesper Dangaard Brouer wrote:
+> > > On Fri, 28 Jun 2019 13:39:15 +0300
+> > > Ilias Apalodimas <ilias.apalodimas@linaro.org> wrote:
+> > >   
+> > > > +static int netsec_xdp_setup(struct netsec_priv *priv, struct bpf_prog *prog,
+> > > > +			    struct netlink_ext_ack *extack)
+> > > > +{
+> > > > +	struct net_device *dev = priv->ndev;
+> > > > +	struct bpf_prog *old_prog;
+> > > > +
+> > > > +	/* For now just support only the usual MTU sized frames */
+> > > > +	if (prog && dev->mtu > 1500) {
+> > > > +		NL_SET_ERR_MSG_MOD(extack, "Jumbo frames not supported on XDP");
+> > > > +		return -EOPNOTSUPP;
+> > > > +	}
+> > > > +
+> > > > +	if (netif_running(dev))
+> > > > +		netsec_netdev_stop(dev);
+> > > > +
+> > > > +	/* Detach old prog, if any */
+> > > > +	old_prog = xchg(&priv->xdp_prog, prog);
+> > > > +	if (old_prog)
+> > > > +		bpf_prog_put(old_prog);
+> > > > +
+> > > > +	if (netif_running(dev))
+> > > > +		netsec_netdev_open(dev);  
+> > > 
+> > > Shouldn't the if-statement be if (!netif_running(dev))
+> > >   
+> > > > +  
+> > This is there to restart the device if it's up already (to rebuild the rings).
+> > This should be fine as-is
+> 
+> I think that Jesper's concern was about that you could have already stopped the
+> netdev earlier via netsec_netdev_stop (before the xchg)? So at this point
+> __LINK_STATE_START might be not set.
+> 
+> Maybe initially store what netif_running(dev) returns in stack variable and
+> act on it, so your stop/open are symmetric?
+I did not write the open/close originally but to my understanding, 
+netsec_netdev_stop() won't change that the .ndo_close will. 
+So this check is there to ensure a user won't bring the interface down during 
+loading/re-loading of the program. Keeping in the stack would break that,
+wouldn't it?
 
-Signed-off-by: Catherine Sullivan <csully@google.com>
-Signed-off-by: Sagi Shahar <sagis@google.com>
-Signed-off-by: Jon Olson <jonolson@google.com>
-Acked-by: Willem de Bruijn <willemb@google.com>
-Reviewed-by: Luigi Rizzo <lrizzo@google.com>
----
- drivers/net/ethernet/google/gve/Makefile      |   2 +-
- drivers/net/ethernet/google/gve/gve.h         |   4 +
- drivers/net/ethernet/google/gve/gve_ethtool.c | 239 ++++++++++++++++++
- drivers/net/ethernet/google/gve/gve_main.c    |  39 +++
- 4 files changed, 283 insertions(+), 1 deletion(-)
- create mode 100644 drivers/net/ethernet/google/gve/gve_ethtool.c
+Thanks
+/Ilias
 
-diff --git a/drivers/net/ethernet/google/gve/Makefile b/drivers/net/ethernet/google/gve/Makefile
-index a1890c93705b..3354ce40eb97 100644
---- a/drivers/net/ethernet/google/gve/Makefile
-+++ b/drivers/net/ethernet/google/gve/Makefile
-@@ -1,4 +1,4 @@
- # Makefile for the Google virtual Ethernet (gve) driver
- 
- obj-$(CONFIG_GVE) += gve.o
--gve-objs := gve_main.o gve_tx.o gve_rx.o gve_adminq.o
-+gve-objs := gve_main.o gve_tx.o gve_rx.o gve_ethtool.o gve_adminq.o
-diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
-index b7cc23b06284..c765f718dc4a 100644
---- a/drivers/net/ethernet/google/gve/gve.h
-+++ b/drivers/net/ethernet/google/gve/gve.h
-@@ -449,4 +449,8 @@ int gve_reset(struct gve_priv *priv, bool attempt_teardown);
- int gve_adjust_queues(struct gve_priv *priv,
- 		      struct gve_queue_config new_rx_config,
- 		      struct gve_queue_config new_tx_config);
-+/* exported by ethtool.c */
-+extern const struct ethtool_ops gve_ethtool_ops;
-+/* needed by ethtool */
-+extern const char gve_version_str[];
- #endif /* _GVE_H_ */
-diff --git a/drivers/net/ethernet/google/gve/gve_ethtool.c b/drivers/net/ethernet/google/gve/gve_ethtool.c
-new file mode 100644
-index 000000000000..af23b40374c6
---- /dev/null
-+++ b/drivers/net/ethernet/google/gve/gve_ethtool.c
-@@ -0,0 +1,239 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/* Google virtual Ethernet (gve) driver
-+ *
-+ * Copyright (C) 2015-2019 Google, Inc.
-+ */
-+
-+#include <linux/rtnetlink.h>
-+#include "gve.h"
-+
-+static void gve_get_drvinfo(struct net_device *netdev,
-+			    struct ethtool_drvinfo *info)
-+{
-+	struct gve_priv *priv = netdev_priv(netdev);
-+
-+	strlcpy(info->driver, "gve", sizeof(info->driver));
-+	strlcpy(info->version, gve_version_str, sizeof(info->version));
-+	strlcpy(info->bus_info, pci_name(priv->pdev), sizeof(info->bus_info));
-+}
-+
-+static void gve_set_msglevel(struct net_device *netdev, u32 value)
-+{
-+	struct gve_priv *priv = netdev_priv(netdev);
-+
-+	priv->msg_enable = value;
-+}
-+
-+static u32 gve_get_msglevel(struct net_device *netdev)
-+{
-+	struct gve_priv *priv = netdev_priv(netdev);
-+
-+	return priv->msg_enable;
-+}
-+
-+static const char gve_gstrings_main_stats[][ETH_GSTRING_LEN] = {
-+	"rx_packets", "tx_packets", "rx_bytes", "tx_bytes",
-+	"rx_dropped", "tx_dropped", "tx_timeouts",
-+};
-+
-+#define GVE_MAIN_STATS_LEN  ARRAY_SIZE(gve_gstrings_main_stats)
-+#define NUM_GVE_TX_CNTS	5
-+#define NUM_GVE_RX_CNTS	2
-+
-+static void gve_get_strings(struct net_device *netdev, u32 stringset, u8 *data)
-+{
-+	struct gve_priv *priv = netdev_priv(netdev);
-+	char *s = (char *)data;
-+	int i;
-+
-+	if (stringset != ETH_SS_STATS)
-+		return;
-+
-+	memcpy(s, *gve_gstrings_main_stats,
-+	       sizeof(gve_gstrings_main_stats));
-+	s += sizeof(gve_gstrings_main_stats);
-+	for (i = 0; i < priv->rx_cfg.num_queues; i++) {
-+		snprintf(s, ETH_GSTRING_LEN, "rx_desc_cnt[%u]", i);
-+		s += ETH_GSTRING_LEN;
-+		snprintf(s, ETH_GSTRING_LEN, "rx_desc_fill_cnt[%u]", i);
-+		s += ETH_GSTRING_LEN;
-+	}
-+	for (i = 0; i < priv->tx_cfg.num_queues; i++) {
-+		snprintf(s, ETH_GSTRING_LEN, "tx_req[%u]", i);
-+		s += ETH_GSTRING_LEN;
-+		snprintf(s, ETH_GSTRING_LEN, "tx_done[%u]", i);
-+		s += ETH_GSTRING_LEN;
-+		snprintf(s, ETH_GSTRING_LEN, "tx_wake[%u]", i);
-+		s += ETH_GSTRING_LEN;
-+		snprintf(s, ETH_GSTRING_LEN, "tx_stop[%u]", i);
-+		s += ETH_GSTRING_LEN;
-+		snprintf(s, ETH_GSTRING_LEN, "tx_event_counter[%u]", i);
-+		s += ETH_GSTRING_LEN;
-+	}
-+}
-+
-+static int gve_get_sset_count(struct net_device *netdev, int sset)
-+{
-+	struct gve_priv *priv = netdev_priv(netdev);
-+
-+	switch (sset) {
-+	case ETH_SS_STATS:
-+		return GVE_MAIN_STATS_LEN +
-+		       (priv->rx_cfg.num_queues * NUM_GVE_RX_CNTS) +
-+		       (priv->tx_cfg.num_queues * NUM_GVE_TX_CNTS);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static void
-+gve_get_ethtool_stats(struct net_device *netdev,
-+		      struct ethtool_stats *stats, u64 *data)
-+{
-+	struct gve_priv *priv = netdev_priv(netdev);
-+	u64 rx_pkts, rx_bytes, tx_pkts, tx_bytes;
-+	int ring;
-+	int i;
-+
-+	ASSERT_RTNL();
-+
-+	for (rx_pkts = 0, rx_bytes = 0, ring = 0;
-+	     ring < priv->rx_cfg.num_queues; ring++) {
-+		if (priv->rx) {
-+			rx_pkts += priv->rx[ring].rpackets;
-+			rx_bytes += priv->rx[ring].rbytes;
-+		}
-+	}
-+	for (tx_pkts = 0, tx_bytes = 0, ring = 0;
-+	     ring < priv->tx_cfg.num_queues; ring++) {
-+		if (priv->tx) {
-+			tx_pkts += priv->tx[ring].pkt_done;
-+			tx_bytes += priv->tx[ring].bytes_done;
-+		}
-+	}
-+	memset(data, 0, GVE_MAIN_STATS_LEN * sizeof(*data));
-+
-+	i = 0;
-+	data[i++] = rx_pkts;
-+	data[i++] = tx_pkts;
-+	data[i++] = rx_bytes;
-+	data[i++] = tx_bytes;
-+	/* Skip rx_dropped and tx_dropped */
-+	i += 2;
-+	data[i++] = priv->tx_timeo_cnt;
-+	i = GVE_MAIN_STATS_LEN;
-+
-+	/* walk RX rings */
-+	if (priv->rx) {
-+		for (ring = 0; ring < priv->rx_cfg.num_queues; ring++) {
-+			struct gve_rx_ring *rx = &priv->rx[ring];
-+
-+			data[i++] = rx->desc.cnt;
-+			data[i++] = rx->desc.fill_cnt;
-+		}
-+	} else {
-+		int num_entries = priv->rx_cfg.num_queues * NUM_GVE_RX_CNTS;
-+
-+		memset(data + i, 0, num_entries * sizeof(*data));
-+		i += num_entries;
-+	}
-+	/* walk TX rings */
-+	if (priv->tx) {
-+		for (ring = 0; ring < priv->tx_cfg.num_queues; ring++) {
-+			struct gve_tx_ring *tx = &priv->tx[ring];
-+
-+			data[i++] = tx->req;
-+			data[i++] = tx->done;
-+			data[i++] = tx->wake_queue;
-+			data[i++] = tx->stop_queue;
-+			data[i++] = be32_to_cpu(gve_tx_load_event_counter(priv,
-+									  tx));
-+		}
-+	} else {
-+		int num_entries = priv->tx_cfg.num_queues * NUM_GVE_TX_CNTS;
-+
-+		memset(data + i, 0, num_entries * sizeof(*data));
-+		i += num_entries;
-+	}
-+}
-+
-+void gve_get_channels(struct net_device *netdev, struct ethtool_channels *cmd)
-+{
-+	struct gve_priv *priv = netdev_priv(netdev);
-+
-+	cmd->max_rx = priv->rx_cfg.max_queues;
-+	cmd->max_tx = priv->tx_cfg.max_queues;
-+	cmd->max_other = 0;
-+	cmd->max_combined = 0;
-+	cmd->rx_count = priv->rx_cfg.num_queues;
-+	cmd->tx_count = priv->tx_cfg.num_queues;
-+	cmd->other_count = 0;
-+	cmd->combined_count = 0;
-+}
-+
-+int gve_set_channels(struct net_device *netdev, struct ethtool_channels *cmd)
-+{
-+	struct gve_priv *priv = netdev_priv(netdev);
-+	struct gve_queue_config new_tx_cfg = priv->tx_cfg;
-+	struct gve_queue_config new_rx_cfg = priv->rx_cfg;
-+	struct ethtool_channels old_settings;
-+	int new_tx = cmd->tx_count;
-+	int new_rx = cmd->rx_count;
-+
-+	gve_get_channels(netdev, &old_settings);
-+
-+	/* Changing combined is not allowed allowed */
-+	if (cmd->combined_count != old_settings.combined_count)
-+		return -EINVAL;
-+
-+	if (!new_rx || !new_tx)
-+		return -EINVAL;
-+
-+	if (!netif_carrier_ok(netdev)) {
-+		priv->tx_cfg.num_queues = new_tx;
-+		priv->rx_cfg.num_queues = new_rx;
-+		return 0;
-+	}
-+
-+	new_tx_cfg.num_queues = new_tx;
-+	new_rx_cfg.num_queues = new_rx;
-+
-+	return gve_adjust_queues(priv, new_rx_cfg, new_tx_cfg);
-+}
-+
-+void gve_get_ringparam(struct net_device *netdev,
-+		       struct ethtool_ringparam *cmd)
-+{
-+	struct gve_priv *priv = netdev_priv(netdev);
-+
-+	cmd->rx_max_pending = priv->rx_desc_cnt;
-+	cmd->tx_max_pending = priv->tx_desc_cnt;
-+	cmd->rx_pending = priv->rx_desc_cnt;
-+	cmd->tx_pending = priv->tx_desc_cnt;
-+}
-+
-+int gve_user_reset(struct net_device *netdev, u32 *flags)
-+{
-+	struct gve_priv *priv = netdev_priv(netdev);
-+
-+	if (*flags == ETH_RESET_ALL) {
-+		*flags = 0;
-+		return gve_reset(priv, true);
-+	}
-+
-+	return -EOPNOTSUPP;
-+}
-+
-+const struct ethtool_ops gve_ethtool_ops = {
-+	.get_drvinfo = gve_get_drvinfo,
-+	.get_strings = gve_get_strings,
-+	.get_sset_count = gve_get_sset_count,
-+	.get_ethtool_stats = gve_get_ethtool_stats,
-+	.set_msglevel = gve_set_msglevel,
-+	.get_msglevel = gve_get_msglevel,
-+	.set_channels = gve_set_channels,
-+	.get_channels = gve_get_channels,
-+	.get_link = ethtool_op_get_link,
-+	.get_ringparam = gve_get_ringparam,
-+	.reset = gve_user_reset,
-+};
-diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
-index c1482924a80c..fce9a5f35c05 100644
---- a/drivers/net/ethernet/google/gve/gve_main.c
-+++ b/drivers/net/ethernet/google/gve/gve_main.c
-@@ -735,6 +735,44 @@ static int gve_close(struct net_device *dev)
- 	return gve_reset_recovery(priv, false);
- }
- 
-+int gve_adjust_queues(struct gve_priv *priv,
-+		      struct gve_queue_config new_rx_config,
-+		      struct gve_queue_config new_tx_config)
-+{
-+	int err;
-+
-+	if (netif_carrier_ok(priv->dev)) {
-+		/* To make this process as simple as possible we teardown the
-+		 * device, set the new configuration, and then bring the device
-+		 * up again.
-+		 */
-+		err = gve_close(priv->dev);
-+		/* we have already tried to reset in close,
-+		 * just fail at this point
-+		 */
-+		if (err)
-+			return err;
-+		priv->tx_cfg = new_tx_config;
-+		priv->rx_cfg = new_rx_config;
-+
-+		err = gve_open(priv->dev);
-+		if (err)
-+			goto err;
-+
-+		return 0;
-+	}
-+	/* Set the config for the next up. */
-+	priv->tx_cfg = new_tx_config;
-+	priv->rx_cfg = new_rx_config;
-+
-+	return 0;
-+err:
-+	netif_err(priv, drv, priv->dev,
-+		  "Adjust queues failed! !!! DISABLING ALL QUEUES !!!\n");
-+	gve_turndown(priv);
-+	return err;
-+}
-+
- static void gve_turndown(struct gve_priv *priv)
- {
- 	int idx;
-@@ -1071,6 +1109,7 @@ static int gve_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	}
- 	SET_NETDEV_DEV(dev, &pdev->dev);
- 	pci_set_drvdata(pdev, dev);
-+	dev->ethtool_ops = &gve_ethtool_ops;
- 	dev->netdev_ops = &gve_netdev_ops;
- 	/* advertise features */
- 	dev->hw_features = NETIF_F_HIGHDMA;
--- 
-2.22.0.410.gd8fdbe21b5-goog
-
+> 
+> > 
+> > > > +	return 0;
+> > > > +}  
+> > 
+> > Thanks
+> > /Ilias
+> 
