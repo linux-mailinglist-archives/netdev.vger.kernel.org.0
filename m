@@ -2,137 +2,357 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 236F15A580
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 21:55:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FD345A58C
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 21:59:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727099AbfF1Tzh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 15:55:37 -0400
-Received: from charlotte.tuxdriver.com ([70.61.120.58]:36152 "EHLO
-        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726762AbfF1Tzg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 15:55:36 -0400
-Received: from cpe-2606-a000-111b-405a-0-0-0-162e.dyn6.twc.com ([2606:a000:111b:405a::162e] helo=localhost)
-        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
-        (Exim 4.63)
-        (envelope-from <nhorman@tuxdriver.com>)
-        id 1hgwxy-0006ph-8t; Fri, 28 Jun 2019 15:55:31 -0400
-Date:   Fri, 28 Jun 2019 15:54:58 -0400
-From:   Neil Horman <nhorman@tuxdriver.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Willem de Bruijn <willemb@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: Re: [PATCH net-next] af_packet: convert pending frame counter to
- atomic_t
-Message-ID: <20190628195458.GC14635@hmswarspite.think-freely.org>
-References: <20190628145206.13871-1-nhorman@tuxdriver.com>
- <CAF=yD-Joh1ne4Y_pwDv8VOcWnKP-2veeXWw=eUBoZKr5___3TA@mail.gmail.com>
+        id S1727113AbfF1T7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 15:59:30 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:39140 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727042AbfF1T7a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 15:59:30 -0400
+Received: by mail-qk1-f196.google.com with SMTP id i125so5925744qkd.6;
+        Fri, 28 Jun 2019 12:59:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cJhgjCkZpHIUatP2nhlVnCZfaPWiUWPq7d2TqsqKWus=;
+        b=BSVgi8PCscqhEHzoUCCAj7fUlZMyc998nMRDauD0vNUgszL42IienlQOSaTT9ABnpF
+         tWMNstmsJ9IOUL1BVPRA+CEXJaNbAG6QftuHsH91izvjIpFHRQpKEByVaO/7qaA+8C0a
+         xCft1b8wJxJSmMf7SiZUANNkJotYl9HKBswY5guqDycPJ822XMkBqPnJZAg92+tQnQH6
+         MF6/ilhgE3DNE7iSE4EVbM+oUBpRzTpPTZjiSgQXhqsil36X4i+JLGnVcSwUN2R5s7he
+         /EICze3COW5YoLtGggZG7C283taOdk2LZ6h9feweg+uhZLEw3mHi8fgQ6VD3pYExOqnl
+         JRRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cJhgjCkZpHIUatP2nhlVnCZfaPWiUWPq7d2TqsqKWus=;
+        b=G1K54SJgCnlCM/DZUD3kBNeLupXoOXnysU+2f+aRXIpV+XaC8hYVymQVPzoZHu9nRD
+         1/689s5NG6uumL2SkZgadCCoa8WmANPidVUDxbeXT9dFva7LRugD8xSb7AFP4gn42Otj
+         1TvKAHdKosYq6PK/QQvtoYtyIDu7wOs6aOaqYbYwj0mc05spB2jXobYwk0StxX22231k
+         OyqrjcnJp2/K31y/+vstFLIhU8m29UXuUKvfFeBlb/6einL7Pm8Je+rXjGQZqhCrHsr7
+         cnBIpn+TXSGHhYWzu7sXuWip3/QB4S5cBs61G3ysElLWCVJ1LSfR5NZAFfG1AdvVPXzL
+         yjFA==
+X-Gm-Message-State: APjAAAWT6nmhi/a2AoHpNuuBCJIs/opK9zauUzafQsz7pfOkZDKoBVwF
+        ySTnP20BLv5bSq9Me7NraJTLconOQxlcUisPN9g=
+X-Google-Smtp-Source: APXvYqzCvIa2qn9DpW0/gJespF+zH52O4x1JM0D2roahuugk6RBj3HMY61EYb2a/ScCqUhhRexAh3lXwW/bIHFuaYjA=
+X-Received: by 2002:a37:a643:: with SMTP id p64mr10549535qke.36.1561751968583;
+ Fri, 28 Jun 2019 12:59:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAF=yD-Joh1ne4Y_pwDv8VOcWnKP-2veeXWw=eUBoZKr5___3TA@mail.gmail.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
-X-Spam-Score: -2.9 (--)
-X-Spam-Status: No
+References: <20190628055303.1249758-1-andriin@fb.com> <20190628055303.1249758-5-andriin@fb.com>
+ <CAPhsuW6UMdHidpmgRzM0sZaGc5gZAnT1B7vCJVt-MrLCMjOdig@mail.gmail.com>
+In-Reply-To: <CAPhsuW6UMdHidpmgRzM0sZaGc5gZAnT1B7vCJVt-MrLCMjOdig@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 28 Jun 2019 12:59:17 -0700
+Message-ID: <CAEf4Bzbo4r9=VZ2kYaOsZa7HHvjXeEw4uWXhpjcUDvazOcKrzw@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 4/9] libbpf: add kprobe/uprobe attach API
+To:     Song Liu <liu.song.a23@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Stanislav Fomichev <sdf@fomichev.me>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 28, 2019 at 11:15:09AM -0400, Willem de Bruijn wrote:
-> On Fri, Jun 28, 2019 at 10:53 AM Neil Horman <nhorman@tuxdriver.com> wrote:
+On Fri, Jun 28, 2019 at 12:46 PM Song Liu <liu.song.a23@gmail.com> wrote:
+>
+> On Thu, Jun 27, 2019 at 10:53 PM Andrii Nakryiko <andriin@fb.com> wrote:
 > >
-> > The AF_PACKET protocol, when running as a memory mapped socket uses a
-> > pending frame counter to track the number of skbs in flight during
-> > transmission.  It is incremented during the sendmsg call (via
-> > tpacket_snd), and decremented (possibly asynchronously) in the skb
-> > desructor during skb_free.
+> > Add ability to attach to kernel and user probes and retprobes.
+> > Implementation depends on perf event support for kprobes/uprobes.
 > >
-> > The counter is currently implemented as a percpu variable for each open
-> > socket, but for reads (via packet_read_pending), we iterate over every
-> > cpu variable, accumulating the total pending count.
-> >
-> > Given that the socket transmit path is an exclusive path (locked via the
-> > pg_vec_lock mutex), we do not have the ability to increment this counter
-> > on multiple cpus in parallel.  This implementation also seems to have
-> > the potential to be broken, in that, should an skb be freed on a cpu
-> > other than the one that it was initially transmitted on, we may
-> > decrement a counter that was not initially incremented, leading to
-> > underflow.
-> >
-> > As such, adjust the packet socket struct to convert the per-cpu counter
-> > to an atomic_t variable (to enforce consistency between the send path
-> > and the skb free path).  This saves us some space in the packet_sock
-> > structure, prevents the possibility of underflow, and should reduce the
-> > run time of packet_read_pending, as we only need to read a single
-> > variable, instead of having to loop over every available cpu variable
-> > instance.
-> >
-> > Tested by myself by running a small program which sends frames via
-> > AF_PACKET on multiple cpus in parallel, with good results.
-> >
-> > Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
-> > CC: "David S. Miller" <davem@davemloft.net>
-> > CC: Willem de Bruijn <willemb@google.com>
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 > > ---
-> 
-> This essentially is a revert of commit b013840810c2 ("packet: use
-> percpu mmap tx frame pending refcount"). That has some benchmark
-> numbers and also discusses the overflow issue.
-> 
-Yes it is.  I was looking at it thinking that the accumulation issue was more
-serious now that we actually sleep until we get a completion, rather than just
-schedule.  I.e if we're freeing frames in parallel, I was thinking it was
-possible for the ordering to result in neither instance getting a return value
-from packet_read_pending of 0, which would lead to a hang/maximal timeout, but
-as I look back, I think I was wrong about that.
-
-As for the performance, you're right.  They're almost the same, but I did some
-perf runs, and for 10000 iterations this patch is about 0.1% slower (measuring
-system time).  I kind of wonder if it isn't worth the code and data savings, but
-faster is faster.  Though thats on a 6 cpu system.  I suppose some more testing
-might be warranted on high cpu count systems (i.e. is there a point at which the
-looping over the cpu_possible_mask becomes more expensive), though perhaps that
-just so small it doesn't matter.
-
-> I think more interesting would be to eschew the counter when
-> MSG_DONTWAIT, as it is only used to know when to exit the loop if
-> need_wait.
-> 
-Yeah, that might be interesting.  Though that would mean needing to have
-tpacket_destruct_skb be aware of wether or not the frame being free was sent as
-part of a WAIT/DONTWAIT flagged call.
-
-
-> But, IMHO packet sockets are deprecated in favor of AF_XDP and
-> should be limited to bug fixes at this point.
-> 
-I don't see any documentation listing AF_PACKET as deprecated.
-
-People can use AF_XDP to do raw frame sends if they like,
-but AF_PACKET will still be around (ostensibly in perpetuity), to support
-existing applications.  I see no need to avoid improving it when we can.
-
-Neil
-
-
-> >  net/packet/af_packet.c | 40 +++++-----------------------------------
-> >  net/packet/internal.h  |  2 +-
-> >  2 files changed, 6 insertions(+), 36 deletions(-)
+> >  tools/lib/bpf/libbpf.c   | 213 +++++++++++++++++++++++++++++++++++++++
+> >  tools/lib/bpf/libbpf.h   |   7 ++
+> >  tools/lib/bpf/libbpf.map |   2 +
+> >  3 files changed, 222 insertions(+)
 > >
-> > diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-> > index 8d54f3047768..25ffb486fac9 100644
-> > --- a/net/packet/af_packet.c
-> > +++ b/net/packet/af_packet.c
-> > @@ -1154,43 +1154,17 @@ static void packet_increment_head(struct packet_ring_buffer *buff)
-> >
-> >  static void packet_inc_pending(struct packet_ring_buffer *rb)
-> >  {
-> > -       this_cpu_inc(*rb->pending_refcnt);
-> > +       atomic_inc(&rb->pending_refcnt);
+> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > index 606705f878ba..65d2fef41003 100644
+> > --- a/tools/lib/bpf/libbpf.c
+> > +++ b/tools/lib/bpf/libbpf.c
+> > @@ -4016,6 +4016,219 @@ struct bpf_link *bpf_program__attach_perf_event(struct bpf_program *prog,
+> >         return (struct bpf_link *)link;
 > >  }
-> 
-> If making this change, can also remove these helper functions. The
-> layer of indirection just hinders readability.
-> 
+> >
+> > +static int parse_uint(const char *buf)
+> > +{
+> > +       int ret;
+> > +
+> > +       errno = 0;
+> > +       ret = (int)strtol(buf, NULL, 10);
+> > +       if (errno) {
+> > +               ret = -errno;
+> > +               pr_debug("failed to parse '%s' as unsigned int\n", buf);
+> > +               return ret;
+> > +       }
+> > +       if (ret < 0) {
+> > +               pr_debug("failed to parse '%s' as unsigned int\n", buf);
+> > +               return -EINVAL;
+> > +       }
+> > +       return ret;
+> > +}
+> > +
+> > +static int parse_uint_from_file(const char* file)
+> > +{
+> > +       char buf[STRERR_BUFSIZE];
+> > +       int fd, ret;
+> > +
+> > +       fd = open(file, O_RDONLY);
+> > +       if (fd < 0) {
+> > +               ret = -errno;
+> > +               pr_debug("failed to open '%s': %s\n", file,
+> > +                        libbpf_strerror_r(ret, buf, sizeof(buf)));
+> > +               return ret;
+> > +       }
+> > +       ret = read(fd, buf, sizeof(buf));
+> > +       ret = ret < 0 ? -errno : ret;
+> > +       close(fd);
+> > +       if (ret < 0) {
+> > +               pr_debug("failed to read '%s': %s\n", file,
+> > +                       libbpf_strerror_r(ret, buf, sizeof(buf)));
+> > +               return ret;
+> > +       }
+> > +       if (ret == 0 || ret >= sizeof(buf)) {
+> > +               buf[sizeof(buf) - 1] = 0;
+> > +               pr_debug("unexpected input from '%s': '%s'\n", file, buf);
+> > +               return -EINVAL;
+> > +       }
+> > +       return parse_uint(buf);
+> > +}
+> > +
+> > +static int determine_kprobe_perf_type(void)
+> > +{
+> > +       const char *file = "/sys/bus/event_source/devices/kprobe/type";
+> > +       return parse_uint_from_file(file);
+> > +}
+> > +
+> > +static int determine_uprobe_perf_type(void)
+> > +{
+> > +       const char *file = "/sys/bus/event_source/devices/uprobe/type";
+> > +       return parse_uint_from_file(file);
+> > +}
+> > +
+> > +static int parse_config_from_file(const char *file)
+> > +{
+> > +       char buf[STRERR_BUFSIZE];
+> > +       int fd, ret;
+> > +
+> > +       fd = open(file, O_RDONLY);
+> > +       if (fd < 0) {
+> > +               ret = -errno;
+> > +               pr_debug("failed to open '%s': %s\n", file,
+> > +                        libbpf_strerror_r(ret, buf, sizeof(buf)));
+> > +               return ret;
+> > +       }
+> > +       ret = read(fd, buf, sizeof(buf));
+> > +       ret = ret < 0 ? -errno : ret;
+> > +       close(fd);
+> > +       if (ret < 0) {
+> > +               pr_debug("failed to read '%s': %s\n", file,
+> > +                       libbpf_strerror_r(ret, buf, sizeof(buf)));
+> > +               return ret;
+> > +       }
+> > +       if (ret == 0 || ret >= sizeof(buf)) {
+> > +               buf[sizeof(buf) - 1] = 0;
+> > +               pr_debug("unexpected input from '%s': '%s'\n", file, buf);
+> > +               return -EINVAL;
+> > +       }
+> > +       if (strncmp(buf, "config:", 7)) {
+> > +               pr_debug("expected 'config:' prefix, found '%s'\n", buf);
+> > +               return -EINVAL;
+> > +       }
+> > +       return parse_uint(buf + 7);
+> > +}
+> > +
+> > +static int determine_kprobe_retprobe_bit(void)
+> > +{
+> > +       const char *file = "/sys/bus/event_source/devices/kprobe/format/retprobe";
+> > +       return parse_config_from_file(file);
+> > +}
+> > +
+> > +static int determine_uprobe_retprobe_bit(void)
+> > +{
+> > +       const char *file = "/sys/bus/event_source/devices/uprobe/format/retprobe";
+> > +       return parse_config_from_file(file);
+> > +}
+>
+> Can we do the above with fscanf? Would that be easier?
+
+It would be less code, but also less strict semantics. E.g., fscanf
+would happily leave out any garbage after number (e.g., 123blablabla,
+would still parse). Also, from brief googling, fscanf doesn't handle
+overflows well.
+
+So I guess I'd vote for this more verbose, but also more strict
+checking, unless you insist on fscanf.
+
+>
+> > +
+> > +static int perf_event_open_probe(bool uprobe, bool retprobe, const char* name,
+> > +                                uint64_t offset, int pid)
+> > +{
+> > +       struct perf_event_attr attr = {};
+> > +       char errmsg[STRERR_BUFSIZE];
+> > +       int type, pfd, err;
+> > +
+> > +       type = uprobe ? determine_uprobe_perf_type()
+> > +                     : determine_kprobe_perf_type();
+> > +       if (type < 0) {
+> > +               pr_warning("failed to determine %s perf type: %s\n",
+> > +                          uprobe ? "uprobe" : "kprobe",
+> > +                          libbpf_strerror_r(type, errmsg, sizeof(errmsg)));
+> > +               return type;
+> > +       }
+> > +       if (retprobe) {
+> > +               int bit = uprobe ? determine_uprobe_retprobe_bit()
+> > +                                : determine_kprobe_retprobe_bit();
+> > +
+> > +               if (bit < 0) {
+> > +                       pr_warning("failed to determine %s retprobe bit: %s\n",
+> > +                                  uprobe ? "uprobe" : "kprobe",
+> > +                                  libbpf_strerror_r(bit, errmsg,
+> > +                                                    sizeof(errmsg)));
+> > +                       return bit;
+> > +               }
+> > +               attr.config |= 1 << bit;
+> > +       }
+> > +       attr.size = sizeof(attr);
+> > +       attr.type = type;
+> > +       attr.config1 = (uint64_t)(void *)name; /* kprobe_func or uprobe_path */
+> > +       attr.config2 = offset;                 /* kprobe_addr or probe_offset */
+> > +
+> > +       /* pid filter is meaningful only for uprobes */
+> > +       pfd = syscall(__NR_perf_event_open, &attr,
+> > +                     pid < 0 ? -1 : pid /* pid */,
+> > +                     pid == -1 ? 0 : -1 /* cpu */,
+> > +                     -1 /* group_fd */, PERF_FLAG_FD_CLOEXEC);
+> > +       if (pfd < 0) {
+> > +               err = -errno;
+> > +               pr_warning("%s perf_event_open() failed: %s\n",
+> > +                          uprobe ? "uprobe" : "kprobe",
+> > +                          libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
+>
+> We have another warning in bpf_program__attach_[k|u]probe(). I guess
+> we can remove this one here.
+
+This points specifically to perf_event_open() failing versus other
+possible failures. Messages in attach_{k,u}probe won't have that, they
+will repeat more generic "failed to attach" message. Believe me, if
+something goes wrong in libbpf, I'd rather have too much logging than
+too little :)
+
+>
+> > +               return err;
+> > +       }
+> > +       return pfd;
+> > +}
+> > +
+> > +struct bpf_link *bpf_program__attach_kprobe(struct bpf_program *prog,
+> > +                                           bool retprobe,
+> > +                                           const char *func_name)
+> > +{
+> > +       char errmsg[STRERR_BUFSIZE];
+> > +       struct bpf_link *link;
+> > +       int pfd, err;
+> > +
+> > +       pfd = perf_event_open_probe(false /* uprobe */, retprobe, func_name,
+> > +                                   0 /* offset */, -1 /* pid */);
+> > +       if (pfd < 0) {
+> > +               pr_warning("program '%s': failed to create %s '%s' perf event: %s\n",
+> > +                          bpf_program__title(prog, false),
+> > +                          retprobe ? "kretprobe" : "kprobe", func_name,
+> > +                          libbpf_strerror_r(pfd, errmsg, sizeof(errmsg)));
+> > +               return ERR_PTR(pfd);
+> > +       }
+> > +       link = bpf_program__attach_perf_event(prog, pfd);
+> > +       if (IS_ERR(link)) {
+> > +               close(pfd);
+> > +               err = PTR_ERR(link);
+> > +               pr_warning("program '%s': failed to attach to %s '%s': %s\n",
+> > +                          bpf_program__title(prog, false),
+> > +                          retprobe ? "kretprobe" : "kprobe", func_name,
+> > +                          libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
+> > +               return link;
+> > +       }
+> > +       return link;
+> > +}
+> > +
+> > +struct bpf_link *bpf_program__attach_uprobe(struct bpf_program *prog,
+> > +                                           bool retprobe, pid_t pid,
+> > +                                           const char *binary_path,
+> > +                                           size_t func_offset)
+> > +{
+> > +       char errmsg[STRERR_BUFSIZE];
+> > +       struct bpf_link *link;
+> > +       int pfd, err;
+> > +
+> > +       pfd = perf_event_open_probe(true /* uprobe */, retprobe,
+> > +                                   binary_path, func_offset, pid);
+> > +       if (pfd < 0) {
+> > +               pr_warning("program '%s': failed to create %s '%s:0x%zx' perf event: %s\n",
+> > +                          bpf_program__title(prog, false),
+> > +                          retprobe ? "uretprobe" : "uprobe",
+> > +                          binary_path, func_offset,
+> > +                          libbpf_strerror_r(pfd, errmsg, sizeof(errmsg)));
+> > +               return ERR_PTR(pfd);
+> > +       }
+> > +       link = bpf_program__attach_perf_event(prog, pfd);
+> > +       if (IS_ERR(link)) {
+> > +               close(pfd);
+> > +               err = PTR_ERR(link);
+> > +               pr_warning("program '%s': failed to attach to %s '%s:0x%zx': %s\n",
+> > +                          bpf_program__title(prog, false),
+> > +                          retprobe ? "uretprobe" : "uprobe",
+> > +                          binary_path, func_offset,
+> > +                          libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
+> > +               return link;
+> > +       }
+> > +       return link;
+> > +}
+> > +
+> >  enum bpf_perf_event_ret
+> >  bpf_perf_event_read_simple(void *mmap_mem, size_t mmap_size, size_t page_size,
+> >                            void **copy_mem, size_t *copy_size,
+> > diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+> > index 1bf66c4a9330..bd767cc11967 100644
+> > --- a/tools/lib/bpf/libbpf.h
+> > +++ b/tools/lib/bpf/libbpf.h
+> > @@ -171,6 +171,13 @@ LIBBPF_API int bpf_link__destroy(struct bpf_link *link);
+> >
+> >  LIBBPF_API struct bpf_link *
+> >  bpf_program__attach_perf_event(struct bpf_program *prog, int pfd);
+> > +LIBBPF_API struct bpf_link *
+> > +bpf_program__attach_kprobe(struct bpf_program *prog, bool retprobe,
+> > +                          const char *func_name);
+> > +LIBBPF_API struct bpf_link *
+> > +bpf_program__attach_uprobe(struct bpf_program *prog, bool retprobe,
+> > +                          pid_t pid, const char *binary_path,
+> > +                          size_t func_offset);
+> >
+> >  struct bpf_insn;
+> >
+> > diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+> > index 756f5aa802e9..57a40fb60718 100644
+> > --- a/tools/lib/bpf/libbpf.map
+> > +++ b/tools/lib/bpf/libbpf.map
+> > @@ -169,7 +169,9 @@ LIBBPF_0.0.4 {
+> >         global:
+> >                 bpf_link__destroy;
+> >                 bpf_object__load_xattr;
+> > +               bpf_program__attach_kprobe;
+> >                 bpf_program__attach_perf_event;
+> > +               bpf_program__attach_uprobe;
+> >                 btf_dump__dump_type;
+> >                 btf_dump__free;
+> >                 btf_dump__new;
+> > --
+> > 2.17.1
+> >
