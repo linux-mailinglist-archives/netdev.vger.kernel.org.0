@@ -2,138 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E78705A48E
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 20:53:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CF2B5A4A3
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 20:57:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726931AbfF1SxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 14:53:07 -0400
-Received: from mga07.intel.com ([134.134.136.100]:56007 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726563AbfF1SxH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Jun 2019 14:53:07 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 Jun 2019 11:53:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.63,428,1557212400"; 
-   d="asc'?scan'208";a="314213610"
-Received: from rarober1-mobl.amr.corp.intel.com ([10.251.157.137])
-  by orsmga004.jf.intel.com with ESMTP; 28 Jun 2019 11:53:03 -0700
-Message-ID: <fee5dd422d88806ee0b5a6b84f14cd6d50351343.camel@intel.com>
-Subject: Re: [PATCH 24/39] docs: driver-model: move it to the driver-api book
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Cc:     Mauro Carvalho Chehab <mchehab@infradead.org>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Harry Wei <harryxiyou@gmail.com>,
-        Alex Shi <alex.shi@linux.alibaba.com>,
+        id S1726883AbfF1S51 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 14:57:27 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:39464 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726835AbfF1S50 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 14:57:26 -0400
+Received: by mail-pl1-f194.google.com with SMTP id b7so3737037pls.6
+        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 11:57:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=GEJr3AqvHre2EqiUp9wkeTIrlXFQndtx5Gxgp/CLC/Y=;
+        b=XoArU2Aw8uy6yHzMzOQ8pchviB6L+RP4fgA/8H3T5PNGYyVaXqKQqTIwc7a4oy+fnV
+         F1iR3tXMQ34FbQ+fE8PXhJfHqbNf+Sn8tcEf7KYCanV+dVUAQA5PC6ql/3/lkLjzI4Cv
+         BT9bbsuFZ5wsJLWle1D+GKJmmk4aHobb+e2eY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=GEJr3AqvHre2EqiUp9wkeTIrlXFQndtx5Gxgp/CLC/Y=;
+        b=D76OPJAjzMsrRfdostQ6Yb2W5j29EFsAcVvI02rey43DOMq0f4Lr7txub5/fGkdVGg
+         n3Mnq6bqwO917Ywcvlr5PmzEyuaSn/ZB5LTTBuexDQq7QOoAoZDKfYR5Bl37YTNARVTh
+         TeN5g0YkOn5+xOop2D0NO4eoO5s856PUrdMk7PdwIcmKDtXNOxJiVll/C/SXUjVprl5W
+         yOVEE6RACeIlmHMuNCZdVGHh5zzxcv9Y0qFTknazFGNBt+7NfSrZeO38mTjSNAbo6Xsi
+         9wWv+6/46Y1RkDBFAo4muf/wifE55JEgJ4hau2hZCd9NO/fjD2avC+CoXe853CNK9aoS
+         jkNw==
+X-Gm-Message-State: APjAAAWlrq1IeNDpqLOhfeGPKZELOmjhUvQFvBEI+9eCzVZPy2NKqy5R
+        rnRNkzkNdBdLCuHK/bg5waLKDQ==
+X-Google-Smtp-Source: APXvYqxFoDW9J1n1b7IoCWK5H6zYvA3wRtWclaCyF1V0DeG5Vz04P8IhMaf+FOo/j1jTbYYohqE2hQ==
+X-Received: by 2002:a17:902:aa03:: with SMTP id be3mr13363364plb.240.1561748246107;
+        Fri, 28 Jun 2019 11:57:26 -0700 (PDT)
+Received: from [10.230.29.90] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id b15sm3008737pfi.141.2019.06.28.11.57.23
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 28 Jun 2019 11:57:25 -0700 (PDT)
+Subject: Re: [PATCH 2/4] lpfc: reduce stack size with
+ CONFIG_GCC_PLUGIN_STRUCTLEAK_VERBOSE
+To:     Arnd Bergmann <arnd@arndb.de>, Kees Cook <keescook@chromium.org>,
+        Dick Kennedy <dick.kennedy@broadcom.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Florian Schilhabel <florian.c.schilhabel@googlemail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        David Kershner <david.kershner@unisys.com>,
-        Julia Lawall <Julia.Lawall@lip6.fr>,
-        Gilles Muller <Gilles.Muller@lip6.fr>,
-        Nicolas Palix <nicolas.palix@imag.fr>,
-        Michal Marek <michal.lkml@markovi.net>,
-        linux-gpio@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        sparmaintainer@unisys.com, devel@driverdev.osuosl.org,
-        cocci@systeme.lip6.fr
-Date:   Fri, 28 Jun 2019 11:53:03 -0700
-In-Reply-To: <920ff36c66233113b1825ab504fe675ed5a5bd7b.1561724493.git.mchehab+samsung@kernel.org>
-References: <cover.1561724493.git.mchehab+samsung@kernel.org>
-         <920ff36c66233113b1825ab504fe675ed5a5bd7b.1561724493.git.mchehab+samsung@kernel.org>
-Content-Type: multipart/signed; micalg="pgp-sha512";
-        protocol="application/pgp-signature"; boundary="=-K11StWmkFkExVL88vQz+"
-User-Agent: Evolution 3.32.3 (3.32.3-1.fc30) 
+        "David S . Miller" <davem@davemloft.net>,
+        Wensong Zhang <wensong@linux-vs.org>,
+        Simon Horman <horms@verge.net.au>,
+        Julian Anastasov <ja@ssi.bg>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        James Morris <jmorris@namei.org>, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devel@driverdev.osuosl.org,
+        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        Hannes Reinecke <hare@suse.com>, Willy Tarreau <w@1wt.eu>,
+        Silvio Cesare <silvio.cesare@gmail.com>
+References: <20190628123819.2785504-1-arnd@arndb.de>
+ <20190628123819.2785504-2-arnd@arndb.de>
+From:   James Smart <james.smart@broadcom.com>
+Message-ID: <3027eebb-e49f-6db6-ae0a-39a61c0e34e1@broadcom.com>
+Date:   Fri, 28 Jun 2019 11:57:22 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
+In-Reply-To: <20190628123819.2785504-2-arnd@arndb.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---=-K11StWmkFkExVL88vQz+
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Fri, 2019-06-28 at 09:30 -0300, Mauro Carvalho Chehab wrote:
-> The audience for the Kernel driver-model is clearly Kernel hackers.
->=20
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+On 6/28/2019 5:37 AM, Arnd Bergmann wrote:
+> The lpfc_debug_dump_all_queues() function repeatedly calls into
+> lpfc_debug_dump_qe(), which has a temporary 128 byte buffer.
+> This was fine before the introduction of CONFIG_GCC_PLUGIN_STRUCTLEAK_VERBOSE
+> because each instance could occupy the same stack slot. However,
+> now they each get their own copy, which leads to a huge increase
+> in stack usage as seen from the compiler warning:
+>
+> drivers/scsi/lpfc/lpfc_debugfs.c: In function 'lpfc_debug_dump_all_queues':
+> drivers/scsi/lpfc/lpfc_debugfs.c:6474:1: error: the frame size of 1712 bytes is larger than 100 bytes [-Werror=frame-larger-than=]
+>
+> Avoid this by not marking lpfc_debug_dump_qe() as inline so the
+> compiler can choose to emit a static version of this function
+> when it's needed or otherwise silently drop it. As an added benefit,
+> not inlining multiple copies of this function means we save several
+> kilobytes of .text section, reducing the file size from 47kb to 43.
+>
+> It is somewhat unusual to have a function that is static but not
+> inline in a header file, but this does not cause problems here
+> because it is only used by other inline functions. It would
+> however seem reasonable to move all the lpfc_debug_dump_* functions
+> into lpfc_debugfs.c and not mark them inline as a later cleanup.
 
-Acked-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+I agree with this cleanup.
 
-For the 'ice' driver changes.
-
+>
+> Fixes: 81a56f6dcd20 ("gcc-plugins: structleak: Generalize to all variable types")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 > ---
->  Documentation/{ =3D> driver-api}/driver-model/binding.rst       | 0
->  Documentation/{ =3D> driver-api}/driver-model/bus.rst           | 0
->  Documentation/{ =3D> driver-api}/driver-model/class.rst         | 0
->  .../{ =3D> driver-api}/driver-model/design-patterns.rst         | 0
->  Documentation/{ =3D> driver-api}/driver-model/device.rst        | 0
->  Documentation/{ =3D> driver-api}/driver-model/devres.rst        | 0
->  Documentation/{ =3D> driver-api}/driver-model/driver.rst        | 0
->  Documentation/{ =3D> driver-api}/driver-model/index.rst         | 2 --
->  Documentation/{ =3D> driver-api}/driver-model/overview.rst      | 0
->  Documentation/{ =3D> driver-api}/driver-model/platform.rst      | 0
->  Documentation/{ =3D> driver-api}/driver-model/porting.rst       | 2 +-
->  Documentation/driver-api/gpio/driver.rst                      | 2 +-
->  Documentation/driver-api/index.rst                            | 1 +
->  Documentation/eisa.txt                                        | 4 ++--
->  Documentation/filesystems/sysfs.txt                           | 2 +-
->  Documentation/hwmon/submitting-patches.rst                    | 2 +-
->  Documentation/translations/zh_CN/filesystems/sysfs.txt        | 2 +-
->  drivers/base/platform.c                                       | 2 +-
->  drivers/gpio/gpio-cs5535.c                                    | 2 +-
->  drivers/net/ethernet/intel/ice/ice_main.c                     | 2 +-
->  drivers/staging/unisys/Documentation/overview.txt             | 4 ++--
->  include/linux/device.h                                        | 2 +-
->  include/linux/platform_device.h                               | 2 +-
->  scripts/coccinelle/free/devm_free.cocci                       | 2 +-
->  24 files changed, 16 insertions(+), 17 deletions(-)
->  rename Documentation/{ =3D> driver-api}/driver-model/binding.rst (100%)
->  rename Documentation/{ =3D> driver-api}/driver-model/bus.rst (100%)
->  rename Documentation/{ =3D> driver-api}/driver-model/class.rst (100%)
->  rename Documentation/{ =3D> driver-api}/driver-model/design-patterns.rst
-> (100%)
->  rename Documentation/{ =3D> driver-api}/driver-model/device.rst (100%)
->  rename Documentation/{ =3D> driver-api}/driver-model/devres.rst (100%)
->  rename Documentation/{ =3D> driver-api}/driver-model/driver.rst (100%)
->  rename Documentation/{ =3D> driver-api}/driver-model/index.rst (96%)
->  rename Documentation/{ =3D> driver-api}/driver-model/overview.rst (100%)
->  rename Documentation/{ =3D> driver-api}/driver-model/platform.rst (100%)
->  rename Documentation/{ =3D> driver-api}/driver-model/porting.rst (99%)
+>   drivers/scsi/lpfc/lpfc_debugfs.h | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+>
+>
 
+Reviewed-by: James Smart <james.smart@broadcom.com>
 
---=-K11StWmkFkExVL88vQz+
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEiTyZWz+nnTrOJ1LZ5W/vlVpL7c4FAl0WYg8ACgkQ5W/vlVpL
-7c71FA//aLp3imbzpY3ovZhJWfkCedgU23P55ANWPX+9LogGHwK/qtSXQlpOFKet
-AKb3TrRqbgzziAdpNGCgC9phQ5qo56UwhI6PAf+WweUQV0Q1y5VX9Uvis12Zut4i
-CiScVqBx3+Fgaj1KRXxoZKTmpdqsGCgQAr4BsqQUxYBWYk9al+iBz4YlqS2kQtyr
-HClWQ4taQ6T6xaVHnCkIZA5NaSvOnaQClg33sPyvWTXrXbnlcBnJ3pXttlOKpXRA
-ImO2jo16IYZFDpqCzlQpC1WjXz6vvFrHb2ukosXmYvNPBj33a//vD5PTvn6WUPkX
-euZ5dRMaHjCY6XA9lZ5/KgHgckHO7TuzNzOP1VNCfit1lszA5M4p74nAFeL4XfYy
-EKvosns0N5hrxl0M3VqtLfi4vqyC0S52SHeGzQ9Jugfi3Ey4f+RfGU1bqRlWu1SI
-4g/JtpDavi2dT/jer5JSX55XMnSPpHEGl5I7M8osiMSqUx1wsnubuT4StxBu5U5y
-MY11YSpOWwq1ufPph3M6Bd05gJxQxfY9mbQojyHl+gQm88PlF6tSvgKRyvFChfK1
-eBb+uyphD9mFl06ZVtimDSW8C/X7uCylET5CPahyh6Cb/Z2QfRuh07V1t7Jr0nox
-KZLcjeAWq2BLZnk+TBikfnYQZ+/29kyml3N+Dm/cP7JByhm53bo=
-=wwuU
------END PGP SIGNATURE-----
-
---=-K11StWmkFkExVL88vQz+--
+-- james
 
