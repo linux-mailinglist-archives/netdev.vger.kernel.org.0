@@ -2,118 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 57B6059839
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 12:14:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4208159863
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 12:28:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726550AbfF1KOc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 06:14:32 -0400
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:39109 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726519AbfF1KOc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 06:14:32 -0400
-Received: by mail-oi1-f195.google.com with SMTP id m202so3872985oig.6
-        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 03:14:31 -0700 (PDT)
+        id S1726786AbfF1K2q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 06:28:46 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:34388 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726653AbfF1K2q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 06:28:46 -0400
+Received: by mail-wr1-f65.google.com with SMTP id k11so5737797wrl.1
+        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 03:28:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HS6l2mvOx3M5tZnavsaRGyrhC++E8StAQDAuSIyZM7I=;
-        b=JySljVN5W7kAWQhIKprX4269QapVWm/Cr0E7LLbcx8TrTqsqJsHg91lABqJVRTyvIz
-         yRyHPb3jqJDAhSt9FnoBoYFqTpLMyxZzJo4HqXlSMeLg4j3hjbLLPO2XACGOSpRMpVG+
-         d4CEflqzrcFgmL7SUk1ubujMDWev1GlNPXrE+9J0F4j4B5UXMMB4fntWgx6UBi6dd9v6
-         +QXAEohfMFfOEeTJyDHygETIMUvOlVZcNBJgG3c6s46Q82w8iAv3luVu5sJP+H6mDZEg
-         Aa5ODwRKYAryujXvD563xjZeE6iAnqbBIzXZF+EdJ0OQn9+SzbQiiKT1WUlakkYHQvow
-         BZeQ==
+        d=brauner.io; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=00lQgp4KF8mWHCT3vLiiTY3cz1BNXZmrWPRpQYCYepQ=;
+        b=WvtXk5cgkogFhun+ZiE8ghcPR+1UCyc/a3gnHHaDJ2OoARpA7j7GPvZHcTvAvmoldN
+         7hZrC4XrFmRcPKeHZUeA/lmAI58KJnTJg5dxqgjmWnUH44QobZ38qiH1ciDZFGssNwR8
+         d2JbM5WtRmJIFjsWjE1y0ztGJf2D6lMaWXL5rmTrVO4N5b5BlsWCnkdR/Yeeie7MFKKR
+         oEQJTJarOPlUcveHA29/+uI+yKuU1azZPdnQt3pJPNE+tbWR51D8JMJzOmBfVWL0CltH
+         UTrCoRZrxz7b9gaY3Su9TFQ1pNF7Weh0YQPLrbh6Y+fJRKb5TFYWajaQPELLKQt66mxe
+         IisA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HS6l2mvOx3M5tZnavsaRGyrhC++E8StAQDAuSIyZM7I=;
-        b=sxo5EHzMg6mT2H+UBCxqSL1+Q97FqOsuewJgdK/3MR0cPyWPK/p7cnB2iUd4AIlJZ5
-         cAcV+xKfVcXnMUXQnmNI0lGvNsRNSIHdckxD8riodHSeUtczcA1yRtPTXq//l91wmjxk
-         EwfcHTwzIGbPfdivB4hZpcUBPYS5A7crkEVT+yTvrxytOy9x/dD9dvbRDQCJvvVwl5TI
-         +yMa78KSPi+xZWQfLftLur6lti7BsYp8+ePOGzLLf7lOsP3yNPv7XZKOiehK82+5wjkv
-         7xUu/VjQWZnF75GJp4jwiLdQOh2eoPxqRfFxSif+dGaod5+rYebOO0ZpP6SIfgPWOH3s
-         SINw==
-X-Gm-Message-State: APjAAAV4X22vQUpXQ3a3WDVTitkoGi/nMSs9vC5pN9s7dy2hvID+mvJH
-        cCK1/IItddUYQeep0SjqorcwwHxe2OeQiK/9qwiJ8mA5
-X-Google-Smtp-Source: APXvYqzhBPw/47Mt4qqMdqa5VuLzUbAOjCm2BeYvEtZOZjP2AzZ11yEE5VYLrHMFYUlw3SZFbYGPueSHJpWuHVrnhsU=
-X-Received: by 2002:a05:6808:8c2:: with SMTP id k2mr1166818oij.98.1561716871000;
- Fri, 28 Jun 2019 03:14:31 -0700 (PDT)
-MIME-Version: 1.0
-References: <d4692ea57ba7a3fe33549fc6222fb8aea5a4225e.1561537968.git.echaudro@redhat.com>
-In-Reply-To: <d4692ea57ba7a3fe33549fc6222fb8aea5a4225e.1561537968.git.echaudro@redhat.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Fri, 28 Jun 2019 12:14:20 +0200
-Message-ID: <CAJ8uoz3BoLiM04WW=91wYryrVBqj5GDsL5mvDaAyBAv-6MNbsQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2] libbpf: add xsk_ring_prod__nb_free() function
-To:     Eelco Chaudron <echaudro@redhat.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=00lQgp4KF8mWHCT3vLiiTY3cz1BNXZmrWPRpQYCYepQ=;
+        b=gttL5l3wRFnZqnarVBBUtXbNkwPsXAFR5F9kj0jw1AK03fvJnbGderBaWZlozE6tNP
+         +TN8YK3bjiOAO5WYcXcRePdBv6TBRx7fEonHYgDZCPl5R+HU2ezYUBmN24QLQeO/BAp0
+         ZMn2TSoaYCufSM0MeU1NgHTMm5AHk/tgVX5Gn2IzyC7yNhbBhLPdptFCl+xKGMMetKBp
+         1P3VjuUxlOyu30Xs/seE4bsB4Cpl8naBx/xtF0WS297QqMYArPY2qvrO8ui8KqBtRsGa
+         3ypurqLlSb2DxmqWWEzTbt9j9ZgNHvc3ihEPH0VXFJLHgDQoF4DgvYFYN5b7q4oyggdM
+         7q6g==
+X-Gm-Message-State: APjAAAUtI0SgF/lp9T0V8/ZUZ7eP1zC5IKVYoUYTRB1y48Drm7AOrPSJ
+        MhJBO335FlMH9wkK3frF+mUPLg==
+X-Google-Smtp-Source: APXvYqwceU7uOJWFzAL991B1wKGjN7mDumVTVPUijIsToU5QF3dnh/WIfSHQjHGLcY+56bqP2MuwWg==
+X-Received: by 2002:adf:fb84:: with SMTP id a4mr7863262wrr.41.1561717723814;
+        Fri, 28 Jun 2019 03:28:43 -0700 (PDT)
+Received: from brauner.io ([212.91.227.56])
+        by smtp.gmail.com with ESMTPSA id x6sm2241373wru.0.2019.06.28.03.28.42
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 28 Jun 2019 03:28:43 -0700 (PDT)
+Date:   Fri, 28 Jun 2019 12:28:42 +0200
+From:   Christian Brauner <christian@brauner.io>
+To:     Andy Lutomirski <luto@kernel.org>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        kernel-team <kernel-team@fb.com>, lmb@cloudflare.com,
+        Jann Horn <jannh@google.com>,
+        Greg KH <gregkh@linuxfoundation.org>, casey@schaufler-ca.com,
+        sds@tycho.nsa.gov, linux-security@vger.kernel.org
+Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
+Message-ID: <20190628102841.dye2ajyusukvwlwq@brauner.io>
+References: <20190627201923.2589391-1-songliubraving@fb.com>
+ <20190627201923.2589391-2-songliubraving@fb.com>
+ <21894f45-70d8-dfca-8c02-044f776c5e05@kernel.org>
+ <CALCETrUp3Tj062wG-noNdsY-sU9gsob_kVK=W_DxWciMpZFvyA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CALCETrUp3Tj062wG-noNdsY-sU9gsob_kVK=W_DxWciMpZFvyA@mail.gmail.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 26, 2019 at 10:33 AM Eelco Chaudron <echaudro@redhat.com> wrote:
->
-> When an AF_XDP application received X packets, it does not mean X
-> frames can be stuffed into the producer ring. To make it easier for
-> AF_XDP applications this API allows them to check how many frames can
-> be added into the ring.
->
-> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
-> ---
->
-> v1 -> v2
->  - Renamed xsk_ring_prod__free() to xsk_ring_prod__nb_free()
->  - Add caching so it will only touch global state when needed
->
->  tools/lib/bpf/xsk.h | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
-> index 82ea71a0f3ec..6acb81102346 100644
-> --- a/tools/lib/bpf/xsk.h
-> +++ b/tools/lib/bpf/xsk.h
-> @@ -76,11 +76,11 @@ xsk_ring_cons__rx_desc(const struct xsk_ring_cons *rx, __u32 idx)
->         return &descs[idx & rx->mask];
->  }
->
-> -static inline __u32 xsk_prod_nb_free(struct xsk_ring_prod *r, __u32 nb)
-> +static inline __u32 xsk_prod__nb_free(struct xsk_ring_prod *r, __u32 nb)
->  {
->         __u32 free_entries = r->cached_cons - r->cached_prod;
->
-> -       if (free_entries >= nb)
-> +       if (free_entries >= nb && nb != 0)
->                 return free_entries;
+On Thu, Jun 27, 2019 at 04:42:18PM -0700, Andy Lutomirski wrote:
+> [sigh, I finally set up lore nntp, and I goofed some addresses.  Hi
+> Kees and linux-api.]
 
-Thanks Eelco for the patch. Is the test nb != 0 introduced here so
-that the function will continue with the refresh from the global state
-when nb is set to 0? If so, could a user not instead just set the nb
-parameter to the size of the ring? This would always trigger a
-refresh, except when the number of free entries is equal to the size
-of the ring, but then we do not need the refresh anyway. This would
-eliminate the nb != 0 test that you introduced from the fast path.
+Love it or hate it but that should probably also Cc linux-security...
 
-/Magnus
-
->         /* Refresh the local tail pointer.
-> @@ -110,7 +110,7 @@ static inline __u32 xsk_cons_nb_avail(struct xsk_ring_cons *r, __u32 nb)
->  static inline size_t xsk_ring_prod__reserve(struct xsk_ring_prod *prod,
->                                             size_t nb, __u32 *idx)
->  {
-> -       if (xsk_prod_nb_free(prod, nb) < nb)
-> +       if (xsk_prod__nb_free(prod, nb) < nb)
->                 return 0;
->
->         *idx = prod->cached_prod;
-> --
-> 2.20.1
->
+> 
+> On Thu, Jun 27, 2019 at 4:40 PM Andy Lutomirski <luto@kernel.org> wrote:
+> >
+> > On 6/27/19 1:19 PM, Song Liu wrote:
+> > > This patch introduce unprivileged BPF access. The access control is
+> > > achieved via device /dev/bpf. Users with write access to /dev/bpf are able
+> > > to call sys_bpf().
+> > >
+> > > Two ioctl command are added to /dev/bpf:
+> > >
+> > > The two commands enable/disable permission to call sys_bpf() for current
+> > > task. This permission is noted by bpf_permitted in task_struct. This
+> > > permission is inherited during clone(CLONE_THREAD).
+> > >
+> > > Helper function bpf_capable() is added to check whether the task has got
+> > > permission via /dev/bpf.
+> > >
+> >
+> > > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> > > index 0e079b2298f8..79dc4d641cf3 100644
+> > > --- a/kernel/bpf/verifier.c
+> > > +++ b/kernel/bpf/verifier.c
+> > > @@ -9134,7 +9134,7 @@ int bpf_check(struct bpf_prog **prog, union bpf_attr *attr,
+> > >               env->insn_aux_data[i].orig_idx = i;
+> > >       env->prog = *prog;
+> > >       env->ops = bpf_verifier_ops[env->prog->type];
+> > > -     is_priv = capable(CAP_SYS_ADMIN);
+> > > +     is_priv = bpf_capable(CAP_SYS_ADMIN);
+> >
+> > Huh?  This isn't a hardening measure -- the "is_priv" verifier mode
+> > allows straight-up leaks of private kernel state to user mode.
+> >
+> > (For that matter, the pending lockdown stuff should possibly consider
+> > this a "confidentiality" issue.)
+> >
+> >
+> > I have a bigger issue with this patch, though: it's a really awkward way
+> > to pretend to have capabilities.  For bpf, it seems like you could make
+> > this be a *real* capability without too much pain since there's only one
+> > syscall there.  Just find a way to pass an fd to /dev/bpf into the
+> > syscall.  If this means you need a new bpf_with_cap() syscall that takes
+> > an extra argument, so be it.  The old bpf() syscall can just translate
+> > to bpf_with_cap(..., -1).
+> >
+> > For a while, I've considered a scheme I call "implicit rights".  There
+> > would be a directory in /dev called /dev/implicit_rights.  This would
+> > either be part of devtmpfs or a whole new filesystem -- it would *not*
+> > be any other filesystem.  The contents would be files that can't be read
+> > or written and exist only in memory.  You create them with a privileged
+> > syscall.  Certain actions that are sensitive but not at the level of
+> > CAP_SYS_ADMIN (use of large-attack-surface bpf stuff, creation of user
+> > namespaces, profiling the kernel, etc) could require an "implicit
+> > right".  When you do them, if you don't have CAP_SYS_ADMIN, the kernel
+> > would do a path walk for, say, /dev/implicit_rights/bpf and, if the
+> > object exists, can be opened, and actually refers to the "bpf" rights
+> > object, then the action is allowed.  Otherwise it's denied.
+> >
+> > This is extensible, and it doesn't require the rather ugly per-task
+> > state of whether it's enabled.
+> >
+> > For things like creation of user namespaces, there's an existing API,
+> > and the default is that it works without privilege.  Switching it to an
+> > implicit right has the benefit of not requiring code changes to programs
+> > that already work as non-root.
+> >
+> > But, for BPF in particular, this type of compatibility issue doesn't
+> > exist now.  You already can't use most eBPF functionality without
+> > privilege.  New bpf-using programs meant to run without privilege are
+> > *new*, so they can use a new improved API.  So, rather than adding this
+> > obnoxious ioctl, just make the API explicit, please.
+> >
+> > Also, please cc: linux-abi next time.
