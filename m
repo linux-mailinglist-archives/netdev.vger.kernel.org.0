@@ -2,117 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 532F459E69
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 17:06:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 342A159E95
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 17:15:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726762AbfF1PGY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 11:06:24 -0400
-Received: from sesbmg23.ericsson.net ([193.180.251.37]:43391 "EHLO
-        sesbmg23.ericsson.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726716AbfF1PGY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 11:06:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; d=ericsson.com; s=mailgw201801; c=relaxed/relaxed;
-        q=dns/txt; i=@ericsson.com; t=1561734381; x=1564326381;
-        h=From:Sender:Reply-To:Subject:Date:Message-ID:To:CC:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=RBdhbqwDBi8SHuR63H43n5YYTE3NygS3UXxU+S0KB7s=;
-        b=cO67tS/rfPGznvnVYlbF2AVsqZMw1EXWnbF5zcyIwAfEf1oAZW1ZOdtdQIOJdrrc
-        hRF2yQXlOhMu0hh2FUoCz1fsYtzOP77loW9Dqm1qMxuvNi+bcrdbrc5/NAkZZSlt
-        dnD29LYD+aJ+YXSOAzLn9LPinrLyr6UZdj8LEX6FpRM=;
-X-AuditID: c1b4fb25-3b1ff700000029f0-5c-5d162cedd4f3
-Received: from ESESBMB505.ericsson.se (Unknown_Domain [153.88.183.118])
-        by sesbmg23.ericsson.net (Symantec Mail Security) with SMTP id F8.BD.10736.DEC261D5; Fri, 28 Jun 2019 17:06:21 +0200 (CEST)
-Received: from ESESSMR506.ericsson.se (153.88.183.128) by
- ESESBMB505.ericsson.se (153.88.183.188) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1713.5; Fri, 28 Jun 2019 17:06:21 +0200
-Received: from ESESBMB503.ericsson.se (153.88.183.170) by
- ESESSMR506.ericsson.se (153.88.183.128) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1713.5; Fri, 28 Jun 2019 17:06:20 +0200
-Received: from tipsy.lab.linux.ericsson.se (153.88.183.153) by
- smtp.internal.ericsson.com (153.88.183.186) with Microsoft SMTP Server id
- 15.1.1713.5 via Frontend Transport; Fri, 28 Jun 2019 17:06:20 +0200
-From:   Jon Maloy <jon.maloy@ericsson.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     <gordan.mihaljevic@dektech.com.au>, <tung.q.nguyen@dektech.com.au>,
-        <hoang.h.le@dektech.com.au>, <jon.maloy@ericsson.com>,
-        <canh.d.luu@dektech.com.au>, <ying.xue@windriver.com>,
-        <tipc-discussion@lists.sourceforge.net>
-Subject: [net-next  1/1] tipc: embed jiffies in macro TIPC_BC_RETR_LIM
-Date:   Fri, 28 Jun 2019 17:06:20 +0200
-Message-ID: <1561734380-26868-1-git-send-email-jon.maloy@ericsson.com>
-X-Mailer: git-send-email 2.1.4
+        id S1726770AbfF1PPs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 11:15:48 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:33517 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726657AbfF1PPs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 11:15:48 -0400
+Received: by mail-ed1-f67.google.com with SMTP id i11so11316306edq.0
+        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 08:15:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5iKcqBcoazFnqH3lzbUbhSsaHjkPYWC+N5aCQnEhSm0=;
+        b=bnp/yomU/paF1YCdqRDlfXa4GbwvwdMZOjOvCld5H25qKk+7OJpM8XYTDe0WCFqIhI
+         lhcIugjwmMdhWW5CUNgp2kvgb5x4Yrkc48nBtIQAs2QPR2FCZPKuQ4op+f8yoKRPs3Gr
+         GxA8yOmVAzGZHa6ja6Qnk4auJH2GOV0gGdcoL4bnPJG71goq4EmS7I333fBCxxHWrWu7
+         nTtVh41dvl6gHg8yK6eoaH/8wvVWHKzVeblEIF2FNib0hH28ZUYvcpgx6BoxKOobT32C
+         Kny9higrReTRRraxjqPWn3/J/F1ai1QRx88NvbgAf3tslevMjXM6ATTGZncZ8N3706tn
+         aJUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5iKcqBcoazFnqH3lzbUbhSsaHjkPYWC+N5aCQnEhSm0=;
+        b=RIupR3qhyj8SQdmm2khriqaNm1BWUyo2bDlY5vlbR6z9zTieIQsUMM9kapb3f6ULjf
+         Q/dB70RXJSYTpS5n1Hur/6PEfhuMUxuZ37r/7oN2FlL1k+olP6r+U4kt1k7jph22fo37
+         4nQ4/knJVKy6NZvyXJRtKfRGUzP1QUJCmrfhhbo/SrXQpDGOfejXfbRFKx/+8nyvX1M/
+         EtnLM6wYxd028v0SXDQCyRZQkjdEkuk6wGR4psD/8PvS+w5D6qLJw7BharF9NmxdOY0C
+         9NostrvyyVPQQn4wQYX2ZomhHx3o+ZhMENDvhGhPBCoLRLtuwP3+omsJOeHKQol5/V3b
+         CG8g==
+X-Gm-Message-State: APjAAAXv0HNfGCZuK0YzBDZTFNbEI/ZzVqwH6YAYOHsBe/JKsLwt58gb
+        whG0Ftrs5rrOwMl6qUH4bjhnjgwtRdy7sKv49UM=
+X-Google-Smtp-Source: APXvYqwrJ6RmuL21FaSpCBtVmsXOaAY4RFubTkuBt2xlc1oei5BHh/9ZbaeWLv0Sin9JzV/uGVxkJzuQ9P7pq26TMmg=
+X-Received: by 2002:a50:9153:: with SMTP id f19mr12259980eda.70.1561734946713;
+ Fri, 28 Jun 2019 08:15:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrGLMWRmVeSWpSXmKPExsUyM2J7me5bHbFYgz3b5S1uNPQwW8w538Ji
-        sWL3JFaLt69msVscWyBmseV8lsWV9rPsFo+vX2d24PDYsvImk8e7K2weuxd8ZvL4vEnOY/2W
-        rUwBrFFcNimpOZllqUX6dglcGUdWtzAWzOWvmPz9PEsD4x6eLkZODgkBE4m+zZPZQGwhgaOM
-        Egc38HcxcgHZ3xglVnxfygyRAHKOTqmDsC8wSrxfFQ1iswloSLyc1sEIYosIGEu8WtnJBNLM
-        LPCYUeLL/VVgU4UF3CTuf78GZrMIqErceb4RzOYFih949IAV4go5ifPHf0ItU5aY+2EaE0SN
-        oMTJmU9YQGxmAQmJgy9eME9g5J+FJDULSWoBI9MqRtHi1OKk3HQjY73Uoszk4uL8PL281JJN
-        jMDQPbjlt+oOxstvHA8xCnAwKvHwLv4qGivEmlhWXJl7iFGCg1lJhFfynEisEG9KYmVValF+
-        fFFpTmrxIUZpDhYlcd713v9ihATSE0tSs1NTC1KLYLJMHJxSDYz58UHbf+o0Twn/OTHmBFO0
-        VUtk5cffa141Z3+1PHjZfW3QFlFR84IurYkK84T/Hm80WGYpIX5sy2SZ2ZX8nrqps63aN4v1
-        rlsQvLX55IaDs3boeNz+ETrf9+XMDaaeCtG7zv73O3T7RVUT7xrebzUm744otE0uX+mewvfL
-        dP/cSkGH2Z+W6CkpsRRnJBpqMRcVJwIAGB+H0VkCAAA=
+References: <20190628145206.13871-1-nhorman@tuxdriver.com>
+In-Reply-To: <20190628145206.13871-1-nhorman@tuxdriver.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 28 Jun 2019 11:15:09 -0400
+Message-ID: <CAF=yD-Joh1ne4Y_pwDv8VOcWnKP-2veeXWw=eUBoZKr5___3TA@mail.gmail.com>
+Subject: Re: [PATCH net-next] af_packet: convert pending frame counter to atomic_t
+To:     Neil Horman <nhorman@tuxdriver.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Willem de Bruijn <willemb@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The macro TIPC_BC_RETR_LIM is always used in combination with 'jiffies',
-so we can just as well perform the addition in the macro itself. This
-way, we get a few shorter code lines and one less line break.
+On Fri, Jun 28, 2019 at 10:53 AM Neil Horman <nhorman@tuxdriver.com> wrote:
+>
+> The AF_PACKET protocol, when running as a memory mapped socket uses a
+> pending frame counter to track the number of skbs in flight during
+> transmission.  It is incremented during the sendmsg call (via
+> tpacket_snd), and decremented (possibly asynchronously) in the skb
+> desructor during skb_free.
+>
+> The counter is currently implemented as a percpu variable for each open
+> socket, but for reads (via packet_read_pending), we iterate over every
+> cpu variable, accumulating the total pending count.
+>
+> Given that the socket transmit path is an exclusive path (locked via the
+> pg_vec_lock mutex), we do not have the ability to increment this counter
+> on multiple cpus in parallel.  This implementation also seems to have
+> the potential to be broken, in that, should an skb be freed on a cpu
+> other than the one that it was initially transmitted on, we may
+> decrement a counter that was not initially incremented, leading to
+> underflow.
+>
+> As such, adjust the packet socket struct to convert the per-cpu counter
+> to an atomic_t variable (to enforce consistency between the send path
+> and the skb free path).  This saves us some space in the packet_sock
+> structure, prevents the possibility of underflow, and should reduce the
+> run time of packet_read_pending, as we only need to read a single
+> variable, instead of having to loop over every available cpu variable
+> instance.
+>
+> Tested by myself by running a small program which sends frames via
+> AF_PACKET on multiple cpus in parallel, with good results.
+>
+> Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
+> CC: "David S. Miller" <davem@davemloft.net>
+> CC: Willem de Bruijn <willemb@google.com>
+> ---
 
-Signed-off-by: Jon Maloy <jon.maloy@ericsson.com>
----
- net/tipc/link.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+This essentially is a revert of commit b013840810c2 ("packet: use
+percpu mmap tx frame pending refcount"). That has some benchmark
+numbers and also discusses the overflow issue.
 
-diff --git a/net/tipc/link.c b/net/tipc/link.c
-index f8bf63b..66d3a07 100644
---- a/net/tipc/link.c
-+++ b/net/tipc/link.c
-@@ -207,7 +207,7 @@ enum {
- 	BC_NACK_SND_SUPPRESS,
- };
- 
--#define TIPC_BC_RETR_LIM msecs_to_jiffies(10)   /* [ms] */
-+#define TIPC_BC_RETR_LIM  (jiffies + msecs_to_jiffies(10))
- #define TIPC_UC_RETR_TIME (jiffies + msecs_to_jiffies(1))
- 
- /*
-@@ -976,8 +976,7 @@ int tipc_link_xmit(struct tipc_link *l, struct sk_buff_head *list,
- 			__skb_queue_tail(transmq, skb);
- 			/* next retransmit attempt */
- 			if (link_is_bc_sndlink(l))
--				TIPC_SKB_CB(skb)->nxt_retr =
--					jiffies + TIPC_BC_RETR_LIM;
-+				TIPC_SKB_CB(skb)->nxt_retr = TIPC_BC_RETR_LIM;
- 			__skb_queue_tail(xmitq, _skb);
- 			TIPC_SKB_CB(skb)->ackers = l->ackers;
- 			l->rcv_unacked = 0;
-@@ -1027,7 +1026,7 @@ static void tipc_link_advance_backlog(struct tipc_link *l,
- 		__skb_queue_tail(&l->transmq, skb);
- 		/* next retransmit attempt */
- 		if (link_is_bc_sndlink(l))
--			TIPC_SKB_CB(skb)->nxt_retr = jiffies + TIPC_BC_RETR_LIM;
-+			TIPC_SKB_CB(skb)->nxt_retr = TIPC_BC_RETR_LIM;
- 
- 		__skb_queue_tail(xmitq, _skb);
- 		TIPC_SKB_CB(skb)->ackers = l->ackers;
-@@ -1123,7 +1122,7 @@ static int tipc_link_bc_retrans(struct tipc_link *l, struct tipc_link *r,
- 		if (link_is_bc_sndlink(l)) {
- 			if (time_before(jiffies, TIPC_SKB_CB(skb)->nxt_retr))
- 				continue;
--			TIPC_SKB_CB(skb)->nxt_retr = jiffies + TIPC_BC_RETR_LIM;
-+			TIPC_SKB_CB(skb)->nxt_retr = TIPC_BC_RETR_LIM;
- 		}
- 		_skb = __pskb_copy(skb, LL_MAX_HEADER + MIN_H_SIZE, GFP_ATOMIC);
- 		if (!_skb)
--- 
-2.1.4
+I think more interesting would be to eschew the counter when
+MSG_DONTWAIT, as it is only used to know when to exit the loop if
+need_wait.
 
+But, IMHO packet sockets are deprecated in favor of AF_XDP and
+should be limited to bug fixes at this point.
+
+>  net/packet/af_packet.c | 40 +++++-----------------------------------
+>  net/packet/internal.h  |  2 +-
+>  2 files changed, 6 insertions(+), 36 deletions(-)
+>
+> diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+> index 8d54f3047768..25ffb486fac9 100644
+> --- a/net/packet/af_packet.c
+> +++ b/net/packet/af_packet.c
+> @@ -1154,43 +1154,17 @@ static void packet_increment_head(struct packet_ring_buffer *buff)
+>
+>  static void packet_inc_pending(struct packet_ring_buffer *rb)
+>  {
+> -       this_cpu_inc(*rb->pending_refcnt);
+> +       atomic_inc(&rb->pending_refcnt);
+>  }
+
+If making this change, can also remove these helper functions. The
+layer of indirection just hinders readability.
