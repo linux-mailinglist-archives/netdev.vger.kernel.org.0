@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6E695A723
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 00:49:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2621B5A732
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 00:49:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726875AbfF1WtG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 18:49:06 -0400
+        id S1727038AbfF1Wtd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 18:49:33 -0400
 Received: from mga05.intel.com ([192.55.52.43]:51493 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726643AbfF1WtG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726818AbfF1WtG (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 28 Jun 2019 18:49:06 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -17,18 +17,21 @@ Received: from orsmga005.jf.intel.com ([10.7.209.41])
   by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 Jun 2019 15:49:05 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.63,429,1557212400"; 
-   d="scan'208";a="338039122"
+   d="scan'208";a="338039124"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by orsmga005.jf.intel.com with ESMTP; 28 Jun 2019 15:49:05 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+Cc:     Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>,
         netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        Andrew Bowers <andrewx.bowers@intel.com>,
+        Tim Pepper <timothy.c.pepper@linux.intel.com>,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        Sasha Neftin <sasha.neftin@intel.com>,
+        Aaron Brown <aaron.f.brown@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 01/15] ice: Use struct_size() helper
-Date:   Fri, 28 Jun 2019 15:49:18 -0700
-Message-Id: <20190628224932.3389-2-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 02/15] e1000e: Increase pause and refresh time
+Date:   Fri, 28 Jun 2019 15:49:19 -0700
+Message-Id: <20190628224932.3389-3-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190628224932.3389-1-jeffrey.t.kirsher@intel.com>
 References: <20190628224932.3389-1-jeffrey.t.kirsher@intel.com>
@@ -39,51 +42,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+From: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
 
-One of the more common cases of allocation size calculations is finding
-the size of a structure that has a zero-sized array at the end, along
-with memory for some number of elements for that array. For example:
-
-struct foo {
-    int stuff;
-    struct boo entry[];
-};
-
-size = sizeof(struct foo) + count * sizeof(struct boo);
-instance = alloc(size, GFP_KERNEL);
-
-Instead of leaving these open-coded and prone to type mistakes, we can
-now use the new struct_size() helper:
-
-size = struct_size(instance, entry, count);
-
-This code was detected with the help of Coccinelle.
-
-Signed-off-by: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Suggested-by: Tim Pepper <timothy.c.pepper@linux.intel.com>
+Signed-off-by: Miguel Bernal Marin <miguel.bernal.marin@linux.intel.com>
+Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Acked-by: Sasha Neftin <sasha.neftin@intel.com>
+Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_sched.c | 4 ++--
+ drivers/net/ethernet/intel/e1000e/netdev.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_sched.c b/drivers/net/ethernet/intel/ice/ice_sched.c
-index 8d49f83be7a5..2a232504379d 100644
---- a/drivers/net/ethernet/intel/ice/ice_sched.c
-+++ b/drivers/net/ethernet/intel/ice/ice_sched.c
-@@ -683,10 +683,10 @@ ice_sched_add_elems(struct ice_port_info *pi, struct ice_sched_node *tc_node,
- 	u16 i, num_groups_added = 0;
- 	enum ice_status status = 0;
- 	struct ice_hw *hw = pi->hw;
--	u16 buf_size;
-+	size_t buf_size;
- 	u32 teid;
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index b081a1ef6859..2454a3757bf3 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -4046,12 +4046,12 @@ void e1000e_reset(struct e1000_adapter *adapter)
+ 	case e1000_pch_lpt:
+ 	case e1000_pch_spt:
+ 	case e1000_pch_cnp:
+-		fc->refresh_time = 0x0400;
++		fc->refresh_time = 0xFFFF;
++		fc->pause_time = 0xFFFF;
  
--	buf_size = sizeof(*buf) + sizeof(*buf->generic) * (num_nodes - 1);
-+	buf_size = struct_size(buf, generic, num_nodes - 1);
- 	buf = devm_kzalloc(ice_hw_to_dev(hw), buf_size, GFP_KERNEL);
- 	if (!buf)
- 		return ICE_ERR_NO_MEMORY;
+ 		if (adapter->netdev->mtu <= ETH_DATA_LEN) {
+ 			fc->high_water = 0x05C20;
+ 			fc->low_water = 0x05048;
+-			fc->pause_time = 0x0650;
+ 			break;
+ 		}
+ 
 -- 
 2.21.0
 
