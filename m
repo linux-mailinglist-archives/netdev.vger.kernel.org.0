@@ -2,100 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CFEA559315
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 06:56:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27FF159324
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 06:58:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726759AbfF1E4b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 00:56:31 -0400
-Received: from ozlabs.org ([203.11.71.1]:41721 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725783AbfF1E4b (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Jun 2019 00:56:31 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 45Zkxk6xRKz9s3Z;
-        Fri, 28 Jun 2019 14:56:26 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1561697788;
-        bh=SMVYaDCX0DoBKxkS7rKJexefBsuGF79pADX+AZ8pbsg=;
-        h=Date:From:To:Cc:Subject:From;
-        b=P7NJFYbjIoQIG/9t9bAZCrJfga6hEeEfUm/GrC/VJGincQ6tsGtsX29BWJ+xYevfo
-         VHl9NRxIQnErpsyeE/mTorg6NcvpuaitfHuBAwl4h3pvIcqj/DhBob4YrF2qIXfk5U
-         omDMueQa1jTXmKGTxv5l/P6pe1ePC1FVJKV02hOsSK2t5q/FZJSCuROjZ/X/vzSwAA
-         AZrBTiBUlMoO3k7RjqHEyBU2JkCcap5OoE9jCFbbGEjU7L2sRzDC6oa9BDNLqRdUoh
-         D/0o+m6pOzB4qMSTDrdHsz1r//eTC8QucuOHlUtJswGfHE3BCgwhXzxrIvp2sZpKqs
-         KN/sDQU3dhqRg==
-Date:   Fri, 28 Jun 2019 14:56:26 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Rob Herring <robherring2@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Maxime Ripard <maxime.ripard@bootlin.com>
-Subject: linux-next: manual merge of the devicetree tree with the net-next
- tree
-Message-ID: <20190628145626.49859e33@canb.auug.org.au>
+        id S1726935AbfF1E6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 00:58:04 -0400
+Received: from conssluserg-02.nifty.com ([210.131.2.81]:17874 "EHLO
+        conssluserg-02.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726240AbfF1E6E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 00:58:04 -0400
+Received: from mail-vs1-f49.google.com (mail-vs1-f49.google.com [209.85.217.49]) (authenticated)
+        by conssluserg-02.nifty.com with ESMTP id x5S4vmF1019231;
+        Fri, 28 Jun 2019 13:57:49 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com x5S4vmF1019231
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1561697869;
+        bh=SIK/nAM+sI54EJmk0mR1Usgw9j5vfYmGFrOtLjOZzLg=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=JxblWpm3C3r7r01gYCOajBSW84T6W3cnHh34fYXfzFs98o7YC0XLfQPjyIZJOe7wM
+         PY/Z814YyNy19enS/Ou211c5U7rm691JuQCgggAcE2sGPHLAj9wwCQolzRkbPaDRiu
+         FrTXIynHp8sn8Ga5l38WmMbWouAfZu8DxdTPzh8CSEslepOK3tMS5SQS+4VtUehZ9t
+         NSNHzUy1OY+BQNhszkLRTwslt4vvB1fQRAdLZXk9kVNL+2+OwXetOycQuOQ2VOQRtf
+         XghTnCtXDc6J9Kd7iUMUzD/WmoM3yPHVBRQHQLacTI0FvtiDEE2S7qU0bYPKqALUUD
+         5RDATmr7n88Ew==
+X-Nifty-SrcIP: [209.85.217.49]
+Received: by mail-vs1-f49.google.com with SMTP id m8so3223822vsj.0;
+        Thu, 27 Jun 2019 21:57:48 -0700 (PDT)
+X-Gm-Message-State: APjAAAVu7n6CngMno4scf2pMdH3Hmq9hLhKhaaiLPuIUzywdwnzZSMaq
+        //TzyUqqq0KFjBboz92i6ufgqEomdtaXqA+s3JY=
+X-Google-Smtp-Source: APXvYqyyvmsd8AAk5R7aaNFgntOJs2TjX0FeQ1b2WdSaf2T0LzzKUcfk9Z8oacISJcBzf5zvmHjL7/Pj9m8miFmaa6o=
+X-Received: by 2002:a67:d46:: with SMTP id 67mr4682467vsn.181.1561697868020;
+ Thu, 27 Jun 2019 21:57:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- boundary="Sig_/HF4KsNnPldgYIzA+x18Fgwl"; protocol="application/pgp-signature"
+References: <20190627163903.28398-1-yamada.masahiro@socionext.com>
+In-Reply-To: <20190627163903.28398-1-yamada.masahiro@socionext.com>
+From:   Masahiro Yamada <yamada.masahiro@socionext.com>
+Date:   Fri, 28 Jun 2019 13:57:12 +0900
+X-Gmail-Original-Message-ID: <CAK7LNARj+A1JDnUmA_ZFC5Shsy7Tg37LtXS27H7ZTgDbp5BO2w@mail.gmail.com>
+Message-ID: <CAK7LNARj+A1JDnUmA_ZFC5Shsy7Tg37LtXS27H7ZTgDbp5BO2w@mail.gmail.com>
+Subject: Re: [PATCH v3 0/4] Compile-test UAPI and kernel headers
+To:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+Cc:     Song Liu <songliubraving@fb.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Palmer Dabbelt <palmer@sifive.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        linux-riscv@lists.infradead.org, Sam Ravnborg <sam@ravnborg.org>,
+        Kees Cook <keescook@chromium.org>, xdp-newbies@vger.kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Anton Vorontsov <anton@enomsg.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Yonghong Song <yhs@fb.com>, Albert Ou <aou@eecs.berkeley.edu>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Jani Nikula <jani.nikula@intel.com>,
+        Michal Marek <michal.lkml@markovi.net>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Colin Cross <ccross@android.com>, bpf@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/HF4KsNnPldgYIzA+x18Fgwl
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Fri, Jun 28, 2019 at 1:41 AM Masahiro Yamada
+<yamada.masahiro@socionext.com> wrote:
+>
+> 1/4: Compile-test exported headers (reworked in v2)
+>
+> 2/4: fix a flaw I noticed when I was working on this series.
+>      Avoid generating intermediate wrappers.
+>
+> 3/4: maybe useful for 4/4 and in some other places.
+>      Add header-test-pattern-y syntax.
+>
+> 4/4: Compile-test kernel-space headers in include/.
+>      v2: compile as many headers as possible.
+>      v3: exclude more headers causing build errors
 
-Hi all,
 
-Today's linux-next merge of the devicetree tree got a conflict in:
-
-  Documentation/devicetree/bindings/net/ethernet.txt
-
-between commit:
-
-  79b647a0c0d5 ("dt-bindings: net: document new usxgmii phy mode")
-
-from the net-next tree and commit:
-
-  4e7a33bff7d7 ("dt-bindings: net: Add YAML schemas for the generic Etherne=
-t options")
-
-from the devicetree tree.
-
-I fixed it up (the latter seems to include the change made by the former,
-so I just used the latter) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
+I push this series to
+ git://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git
+ header-test-v3
+for somebody who wants to test it.
 
 
 
---=20
-Cheers,
-Stephen Rothwell
+>
+> Masahiro Yamada (4):
+>   kbuild: compile-test UAPI headers to ensure they are self-contained
+>   kbuild: do not create wrappers for header-test-y
+>   kbuild: support header-test-pattern-y
+>   kbuild: compile-test kernel headers to ensure they are self-contained
+>
+>  .gitignore                         |    1 -
+>  Documentation/dontdiff             |    1 -
+>  Documentation/kbuild/makefiles.txt |   13 +-
+>  Makefile                           |    4 +-
+>  include/Kbuild                     | 1250 ++++++++++++++++++++++++++++
+>  init/Kconfig                       |   22 +
+>  scripts/Makefile.build             |   10 +-
+>  scripts/Makefile.lib               |   13 +-
+>  scripts/cc-system-headers.sh       |    8 +
+>  usr/.gitignore                     |    1 -
+>  usr/Makefile                       |    2 +
+>  usr/include/.gitignore             |    3 +
+>  usr/include/Makefile               |  134 +++
+>  13 files changed, 1449 insertions(+), 13 deletions(-)
+>  create mode 100644 include/Kbuild
+>  create mode 100755 scripts/cc-system-headers.sh
+>  create mode 100644 usr/include/.gitignore
+>  create mode 100644 usr/include/Makefile
+>
+> --
+> 2.17.1
+>
+>
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
 
---Sig_/HF4KsNnPldgYIzA+x18Fgwl
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
 
------BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl0VnfoACgkQAVBC80lX
-0GxUdAf7B/AAcvZuhPX+dhS+jfUFUfhLRu9xggQj6gTXZ+YVzbNstn3CwrW4Gstv
-JwvExLmGjcIveNa1uSdlXHdZjWbmac1Qsb1h4/xmswxb7TbknFOsXcuoj7tjCN4P
-Ug9ikIH8VKWT3RVUrbnxQExL583XdCoSE2IW2uMJoSOs07nr0q+BUXX7vPI+E//o
-WdqQFBYJR+gvDT/uKz845I1yU/XedUOQvP5yaAob8MBBidohfvRhwD/z4lBFGM0I
-vgt2/Q2DMjDdxfitXXLR1Tw4/G7ED5Baitfge1LKddQsLaK7qwzeyxbi8GqjlJiO
-Ig9D/v3QryjdA9baAXAZCQ7T5fc+pA==
-=+e43
------END PGP SIGNATURE-----
-
---Sig_/HF4KsNnPldgYIzA+x18Fgwl--
+--
+Best Regards
+Masahiro Yamada
