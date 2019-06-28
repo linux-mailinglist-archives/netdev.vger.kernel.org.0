@@ -2,186 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0597F5A035
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 18:04:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03DD15A047
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 18:05:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726702AbfF1QEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 12:04:39 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:38693 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726542AbfF1QEi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 12:04:38 -0400
-Received: by mail-pg1-f194.google.com with SMTP id z75so2784096pgz.5
-        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 09:04:38 -0700 (PDT)
+        id S1726822AbfF1QFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 12:05:45 -0400
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:36975 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726542AbfF1QFp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 12:05:45 -0400
+Received: by mail-ot1-f68.google.com with SMTP id s20so6494168otp.4;
+        Fri, 28 Jun 2019 09:05:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Ej8QVKf/5ZTp8F2SHWsH8VnKFdML06Uqo03duPLklpc=;
-        b=AUPotkinOm43N5H/gahaeOa/ZfSD/qRznui6WEjHoGdqR1DVX7w1eJ5okgBc67YhJC
-         Rl72gAYHdRGRApSik5Ndjugys8OXk0OmyEdDLM2j7VcqrfcenKXclGkIhHJf1hrJyxGT
-         GrJMfd630CalysOnGL9dY6FD2MNnxQsdXElNqcFQdkz2AmDDfZgrI/RjH2GcEGkgCCbl
-         7a/kooFpC+psmoHRJhnSlZNDkE3D0bSqOZurRXTCbOL94D8bmGBIIDT1yddkCQHrkESN
-         uY4yR1HaIf7Ep9yCEfV1WLX3iYsGKPyCjEXbAmNKQrxF84kEsXwdT8l9UIHl0HyImx7F
-         F8tw==
+        d=googlemail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rB3m6lymfmEJSrj5bHYQhYToOLJuP/M6N6+Gh/hsbFw=;
+        b=bc/qm2AfIl7/pff81NO1XSTxiwj/Tf0ODnPhZSJ5FTf056oge76zhm015auns2dWOc
+         RinrawyZ0O2i6XS3+Gia3nZKyP4l+hj94CO63lQVLxbXgIhu7crlszsOV628/OdmjOHs
+         sgA2BP1tBdIoQGCZBW6+NVSOzl9jEECi2MCa0a/YPJDDCTBDdePstSg/jnqv6PrxCsmQ
+         ThKE283f5h0W/IlmNX0oHfVqT1Ne7o8ahjcCU6dkor7BD58aVUBqhrXrvV7DJyiPPXkB
+         MJa5LLDboqWiBQHW5V5SO5bR4xRlOCIXS7xPSUT6OYP8peQqJOrSThluXwg3T02RX4Hq
+         coBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Ej8QVKf/5ZTp8F2SHWsH8VnKFdML06Uqo03duPLklpc=;
-        b=RHfYWkMfGIVjdji1GUkGm2K1PnQP59yurp2siDQpL7/q1Pp4bAoR1VHkD9ECTs/G94
-         Cda2elOXDJ6eiOoDpQHysNfv6+blILT/4110SrU7wHKXRrR9TwLE0eYm/HYUtxcqB6uA
-         wwOqPS0HMyw5ksrj51fvgTjdw2ZUQv8C363DUPFvUw70HlWkAGReGl76xsNktygadAch
-         2dqgTol04mtm+dLRTYp+aYAqoxZpicb/9mrKO1MDZtbNeLTk/qp0aas1SWAlS54ZrTgT
-         bCPMumZxNsmUtdDPmRoHnBtT9IRvZkfLPV58JIpm4r8mw0Nfcg0S141LR9NpgyzTETM4
-         i/rg==
-X-Gm-Message-State: APjAAAVkMGqdgiK1ti4/TTpGTi+jweoPGhcI0eTjTE1jL8C7to4q8z2+
-        NIxN37oAR6wD86CahXPCBwqg3tTH8FM=
-X-Google-Smtp-Source: APXvYqzK9vlhFLJNP1OkFzCru9OvkgzJ1gNv0Lxizz1Nb0+9eYCDr7iROwBIp48kLR08iTPB6Z4p2g==
-X-Received: by 2002:a17:90a:ac11:: with SMTP id o17mr14297916pjq.134.1561737878313;
-        Fri, 28 Jun 2019 09:04:38 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id n2sm2246918pgp.27.2019.06.28.09.04.37
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 28 Jun 2019 09:04:37 -0700 (PDT)
-Date:   Fri, 28 Jun 2019 09:04:36 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     andrii.nakryiko@gmail.com, ast@fb.com, daniel@iogearbox.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH v3 bpf-next 3/9] libbpf: add ability to attach/detach BPF
- program to perf event
-Message-ID: <20190628160436.GH4866@mini-arch>
-References: <20190628055303.1249758-1-andriin@fb.com>
- <20190628055303.1249758-4-andriin@fb.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rB3m6lymfmEJSrj5bHYQhYToOLJuP/M6N6+Gh/hsbFw=;
+        b=f57rzuyiHsmTyh+TVoIAj1FYAiRWKgBIr4ozKq3hu0XIvUDr7tH+zU8MTJZA/hHuZV
+         ypjoYJhKR+2CCyyNySxt8E0J7Ys1lbm5ts9ThCKZ9bHd0wKp+ioR7I1gMOyhbcCZihij
+         fee0ecvLy5S47WCRGKySAz73TcPkqVr7jXLzYKUqiqMG1ExbNPvjt1C1VZV8LXVSWOHl
+         ndXGe3VP0VIhesHazh8QVgexDcyP80Wcup2pvMZeepJyK/eFVUDIIfDAnEO2b1HACRPX
+         6yuHLY0w7gh24fvIiB5QEp92s7UnqAVi7ndJgb6rmSKPpyfK3FXJxfMy0Kx3euFoe087
+         x4VQ==
+X-Gm-Message-State: APjAAAW6jhKf2xygj4clXyj4SY7oL7DW+1/H42IEKYRfEVpWpkUSkyAO
+        Q5st7kTGeUf8FO6kzuDuEbLBLUxco/3NeRmAaZI=
+X-Google-Smtp-Source: APXvYqxpqVINGUIuZUIFanNgoXeInzShDbpDl64F0HtsRM7t1NOYrZCC3Ebzuzy9/EHv7T38+pkX4a5YcGAPWYaVwrw=
+X-Received: by 2002:a9d:23ca:: with SMTP id t68mr8604745otb.98.1561737944761;
+ Fri, 28 Jun 2019 09:05:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190628055303.1249758-4-andriin@fb.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <20190617165836.4673-1-colin.king@canonical.com>
+ <20190619051308.23582-1-martin.blumenstingl@googlemail.com>
+ <92f9e5a6-d2a2-6bf2-ff8a-2430fe977f93@canonical.com> <CAFBinCDmYVPDMcwAAYhMfxxuTsG=xunduN58_8e20zE_Mhmb7Q@mail.gmail.com>
+ <CAFBinCC-LLpfXQRFcKBbUpCfKc0S9Xtt60QrhEThsOFV-T7vFw@mail.gmail.com>
+ <c46d2d17-c35b-46f0-0674-0c55bea3a272@canonical.com> <CAFBinCBk5aPVE+vq5px3QKS1T_R=WGXXxEJMC9X676KGvi9jdg@mail.gmail.com>
+ <26646ff1-059f-fb2d-e05d-43009aeb2150@canonical.com>
+In-Reply-To: <26646ff1-059f-fb2d-e05d-43009aeb2150@canonical.com>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Fri, 28 Jun 2019 18:05:33 +0200
+Message-ID: <CAFBinCAx5qrPK1z68bF-tGKpJQfKLnee65qBOxMS4nj8t381+Q@mail.gmail.com>
+Subject: Re: [PATCH] net: stmmac: add sanity check to device_property_read_u32_array
+ call
+To:     Colin Ian King <colin.king@canonical.com>
+Cc:     alexandre.torgue@st.com, davem@davemloft.net, joabreu@synopsys.com,
+        kernel-janitors@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
+        peppe.cavallaro@st.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/27, Andrii Nakryiko wrote:
-> bpf_program__attach_perf_event allows to attach BPF program to existing
-> perf event hook, providing most generic and most low-level way to attach BPF
-> programs. It returns struct bpf_link, which should be passed to
-> bpf_link__destroy to detach and free resources, associated with a link.
-> 
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
->  tools/lib/bpf/libbpf.c   | 58 ++++++++++++++++++++++++++++++++++++++++
->  tools/lib/bpf/libbpf.h   |  3 +++
->  tools/lib/bpf/libbpf.map |  1 +
->  3 files changed, 62 insertions(+)
-> 
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 455795e6f8af..606705f878ba 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -32,6 +32,7 @@
->  #include <linux/limits.h>
->  #include <linux/perf_event.h>
->  #include <linux/ring_buffer.h>
-> +#include <sys/ioctl.h>
->  #include <sys/stat.h>
->  #include <sys/types.h>
->  #include <sys/vfs.h>
-> @@ -3958,6 +3959,63 @@ int bpf_link__destroy(struct bpf_link *link)
->  	return err;
->  }
->  
-> +struct bpf_link_fd {
-> +	struct bpf_link link; /* has to be at the top of struct */
-[..]
-> +	int fd; /* hook FD */
-> +};
-Any cons to storing everything in bpf_link, instead of creating a
-"subclass"? Less things to worry about.
+Hi Colin,
 
-> +static int bpf_link__destroy_perf_event(struct bpf_link *link)
-> +{
-> +	struct bpf_link_fd *l = (void *)link;
-> +	int err;
-> +
-> +	if (l->fd < 0)
-> +		return 0;
-> +
-> +	err = ioctl(l->fd, PERF_EVENT_IOC_DISABLE, 0);
-> +	close(l->fd);
-> +	return err;
-> +}
-> +
-> +struct bpf_link *bpf_program__attach_perf_event(struct bpf_program *prog,
-> +						int pfd)
-> +{
-> +	char errmsg[STRERR_BUFSIZE];
-> +	struct bpf_link_fd *link;
-> +	int bpf_fd, err;
-> +
-> +	bpf_fd = bpf_program__fd(prog);
-> +	if (bpf_fd < 0) {
-> +		pr_warning("program '%s': can't attach before loaded\n",
-> +			   bpf_program__title(prog, false));
-> +		return ERR_PTR(-EINVAL);
-> +	}
-> +
-> +	link = malloc(sizeof(*link));
-> +	if (!link)
-> +		return ERR_PTR(-ENOMEM);
-> +	link->link.destroy = &bpf_link__destroy_perf_event;
-> +	link->fd = pfd;
-> +
-> +	if (ioctl(pfd, PERF_EVENT_IOC_SET_BPF, bpf_fd) < 0) {
-> +		err = -errno;
-> +		free(link);
-> +		pr_warning("program '%s': failed to attach to pfd %d: %s\n",
-> +			   bpf_program__title(prog, false), pfd,
-> +			   libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
-> +		return ERR_PTR(err);
-> +	}
-> +	if (ioctl(pfd, PERF_EVENT_IOC_ENABLE, 0) < 0) {
-> +		err = -errno;
-> +		free(link);
-> +		pr_warning("program '%s': failed to enable pfd %d: %s\n",
-> +			   bpf_program__title(prog, false), pfd,
-> +			   libbpf_strerror_r(err, errmsg, sizeof(errmsg)));
-> +		return ERR_PTR(err);
-> +	}
-> +	return (struct bpf_link *)link;
-> +}
-> +
->  enum bpf_perf_event_ret
->  bpf_perf_event_read_simple(void *mmap_mem, size_t mmap_size, size_t page_size,
->  			   void **copy_mem, size_t *copy_size,
-> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> index 5082a5ebb0c2..1bf66c4a9330 100644
-> --- a/tools/lib/bpf/libbpf.h
-> +++ b/tools/lib/bpf/libbpf.h
-> @@ -169,6 +169,9 @@ struct bpf_link;
->  
->  LIBBPF_API int bpf_link__destroy(struct bpf_link *link);
->  
-> +LIBBPF_API struct bpf_link *
-> +bpf_program__attach_perf_event(struct bpf_program *prog, int pfd);
-> +
->  struct bpf_insn;
->  
->  /*
-> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> index 3cde850fc8da..756f5aa802e9 100644
-> --- a/tools/lib/bpf/libbpf.map
-> +++ b/tools/lib/bpf/libbpf.map
-> @@ -169,6 +169,7 @@ LIBBPF_0.0.4 {
->  	global:
->  		bpf_link__destroy;
->  		bpf_object__load_xattr;
-> +		bpf_program__attach_perf_event;
->  		btf_dump__dump_type;
->  		btf_dump__free;
->  		btf_dump__new;
-> -- 
-> 2.17.1
-> 
+On Fri, Jun 28, 2019 at 10:32 AM Colin Ian King
+<colin.king@canonical.com> wrote:
+>
+> On 28/06/2019 05:15, Martin Blumenstingl wrote:
+> > On Tue, Jun 25, 2019 at 9:58 AM Colin Ian King <colin.king@canonical.com> wrote:
+> >>
+> >> On 25/06/2019 05:44, Martin Blumenstingl wrote:
+> >>> Hi Colin,
+> >>>
+> >>> On Thu, Jun 20, 2019 at 3:34 AM Martin Blumenstingl
+> >>> <martin.blumenstingl@googlemail.com> wrote:
+> >>>>
+> >>>> Hi Colin,
+> >>>>
+> >>>> On Wed, Jun 19, 2019 at 8:55 AM Colin Ian King <colin.king@canonical.com> wrote:
+> >>>>>
+> >>>>> On 19/06/2019 06:13, Martin Blumenstingl wrote:
+> >>>>>> Hi Colin,
+> >>>>>>
+> >>>>>>> Currently the call to device_property_read_u32_array is not error checked
+> >>>>>>> leading to potential garbage values in the delays array that are then used
+> >>>>>>> in msleep delays.  Add a sanity check to the property fetching.
+> >>>>>>>
+> >>>>>>> Addresses-Coverity: ("Uninitialized scalar variable")
+> >>>>>>> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> >>>>>> I have also sent a patch [0] to fix initialize the array.
+> >>>>>> can you please look at my patch so we can work out which one to use?
+> >>>>>>
+> >>>>>> my concern is that the "snps,reset-delays-us" property is optional,
+> >>>>>> the current dt-bindings documentation states that it's a required
+> >>>>>> property. in reality it isn't, there are boards (two examples are
+> >>>>>> mentioned in my patch: [0]) without it.
+> >>>>>>
+> >>>>>> so I believe that the resulting behavior has to be:
+> >>>>>> 1. don't delay if this property is missing (instead of delaying for
+> >>>>>>    <garbage value> ms)
+> >>>>>> 2. don't error out if this property is missing
+> >>>>>>
+> >>>>>> your patch covers #1, can you please check whether #2 is also covered?
+> >>>>>> I tested case #2 when submitting my patch and it worked fine (even
+> >>>>>> though I could not reproduce the garbage values which are being read
+> >>>>>> on some boards)
+> >>> in the meantime I have tested your patch.
+> >>> when I don't set the "snps,reset-delays-us" property then I get the
+> >>> following error:
+> >>>   invalid property snps,reset-delays-us
+> >>>
+> >>> my patch has landed in the meantime: [0]
+> >>> how should we proceed with your patch?
+>
+> Your fix is good, so I think we should just drop/forget about my fix.
+thank you for looking at the situation
+
+as far I understand the -net/-net-next tree all commits are immutable
+so if we want to remove your patch we need to send a revert
+do you want me to do that (I can do it on Monday) or will you take care of that?
+
+
+Martin
