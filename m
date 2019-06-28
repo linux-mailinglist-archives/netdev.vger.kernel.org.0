@@ -2,82 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BB51596E6
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 11:06:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33B6D59485
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 08:59:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726531AbfF1JGI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 05:06:08 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:42558 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726431AbfF1JGH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 05:06:07 -0400
-Received: by mail-ot1-f65.google.com with SMTP id l15so5254296otn.9
-        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 02:06:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WeO5JTNTbN5Pes6w6eEphdcv7Qn+nFED7FaaFx6h1y0=;
-        b=Mwvl80FlXqJrzBLIksBsYc4hmQWvfdbeVOrWxZ9EiE4YINaFI9SRlFzEe/ADVBhK1T
-         ZOVxMGV5IPdP04SzIbZjp2e/YJZctbEN6dY+GNO5taUh3Gk/dR2fDLCNLbjhrPI//oAB
-         rtP8neVQWw+zpfkeDrqxuRTA0pd2/jfnXsZFw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WeO5JTNTbN5Pes6w6eEphdcv7Qn+nFED7FaaFx6h1y0=;
-        b=KKhGnCYeu9vNJ9mG+1jQJtttTTYt4TGLd6gd7aP0okPIr/RJvgDrvqE5zWe2Ed/ry4
-         +V9vCTp94r1KC11S6E2arKgtD20ANs6HBLwI9l+owIyeEMTCMeDps7GKs80SnN/hM8vP
-         eOemvrLx578GoylzFHgDfuevE/RGlfmMaME735prUA/aN4H2qisVoEJpXVAnRF+T3zBB
-         0LIhry/oOuJ08MM5BRCO2bgnjZtsJkw6C5Ou7sVQ0XXgLwgwUE6rdSfzVqnGAYWckP+L
-         urxLpn8YIcCH7rIE1NlQ9DpQk9oNa8X6sbXqxDKwukBwhN6hhSN6Jkz17sqOYMUSQb5W
-         TTwA==
-X-Gm-Message-State: APjAAAV2IQfEZaqZ1DC2oiWzLrEpqGnkNr4hlXKaowEnacgN3Lc61+o1
-        dPg/HNHst/qMqKIxciRslUfjVZMpMX/FhvN8XhUhv0V8cpU=
-X-Google-Smtp-Source: APXvYqxS90VALAc1Mw4oeranbJW1WyAt33C8rQTBwVGMPDPAAt5uAUvioxxYy0/1pP2GXzfVZFDMHcSQbHewAlDBixw=
-X-Received: by 2002:a9d:28:: with SMTP id 37mr6901286ota.289.1561712767032;
- Fri, 28 Jun 2019 02:06:07 -0700 (PDT)
+        id S1727305AbfF1G7w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 02:59:52 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:51076 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726574AbfF1G7v (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 Jun 2019 02:59:51 -0400
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 54038D01547FC815F27D;
+        Fri, 28 Jun 2019 14:59:48 +0800 (CST)
+Received: from huawei.com (10.175.100.202) by DGGEMS401-HUB.china.huawei.com
+ (10.3.19.201) with Microsoft SMTP Server id 14.3.439.0; Fri, 28 Jun 2019
+ 14:59:41 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <pablo@netfilter.org>, <kadlec@blackhole.kfki.hu>, <fw@strlen.de>,
+        <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
+        <yoshfuji@linux-ipv6.org>, <netfilter-devel@vger.kernel.org>,
+        <coreteam@netfilter.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <linmiaohe@huawei.com>, <mingfangsen@huawei.com>
+Subject: [PATCH v4] net: netfilter: Fix rpfilter dropping vrf packets by mistake
+Date:   Fri, 28 Jun 2019 09:06:43 +0000
+Message-ID: <1561712803-195184-1-git-send-email-linmiaohe@huawei.com>
+X-Mailer: git-send-email 1.8.3.4
 MIME-Version: 1.0
-References: <20190627201923.2589391-1-songliubraving@fb.com>
- <20190627201923.2589391-2-songliubraving@fb.com> <21894f45-70d8-dfca-8c02-044f776c5e05@kernel.org>
-In-Reply-To: <21894f45-70d8-dfca-8c02-044f776c5e05@kernel.org>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Fri, 28 Jun 2019 10:05:56 +0100
-Message-ID: <CACAyw9-AXy9UFdGkDaaNxw9T8meB+NAH5Yp_0G3nuw1AN5impQ@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
-To:     Andy Lutomirski <luto@kernel.org>
-Cc:     Song Liu <songliubraving@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>, Jann Horn <jannh@google.com>,
-        gregkh@linuxfoundation.org, linux-abi@vger.kernel.org,
-        kees@chromium.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.175.100.202]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 28 Jun 2019 at 00:40, Andy Lutomirski <luto@kernel.org> wrote:
->
-> I have a bigger issue with this patch, though: it's a really awkward way
-> to pretend to have capabilities.  For bpf, it seems like you could make
-> this be a *real* capability without too much pain since there's only one
-> syscall there.  Just find a way to pass an fd to /dev/bpf into the
-> syscall.  If this means you need a new bpf_with_cap() syscall that takes
-> an extra argument, so be it.  The old bpf() syscall can just translate
-> to bpf_with_cap(..., -1).
+When firewalld is enabled with ipv4/ipv6 rpfilter, vrf
+ipv4/ipv6 packets will be dropped. Vrf device will pass
+through netfilter hook twice. One with enslaved device
+and another one with l3 master device. So in device may
+dismatch witch out device because out device is always
+enslaved device.So failed with the check of the rpfilter
+and drop the packets by mistake.
 
-I agree, this seems nicer from my POV, since it evades the issues with
-the Go runtime I pointed out in the other message.
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+---
+ net/ipv4/netfilter/ipt_rpfilter.c  | 1 +
+ net/ipv6/netfilter/ip6t_rpfilter.c | 8 +++++++-
+ 2 files changed, 8 insertions(+), 1 deletion(-)
 
-It also seems like this wouldn't have to create API churn in libbpf? We can
-"feature detect" the presence of the new syscall and use that instead. If
-you want you can even keep the semantics of having a "global" credential.
-
+diff --git a/net/ipv4/netfilter/ipt_rpfilter.c b/net/ipv4/netfilter/ipt_rpfilter.c
+index 59031670b16a..cc23f1ce239c 100644
+--- a/net/ipv4/netfilter/ipt_rpfilter.c
++++ b/net/ipv4/netfilter/ipt_rpfilter.c
+@@ -78,6 +78,7 @@ static bool rpfilter_mt(const struct sk_buff *skb, struct xt_action_param *par)
+ 	flow.flowi4_mark = info->flags & XT_RPFILTER_VALID_MARK ? skb->mark : 0;
+ 	flow.flowi4_tos = RT_TOS(iph->tos);
+ 	flow.flowi4_scope = RT_SCOPE_UNIVERSE;
++	flow.flowi4_oif = l3mdev_master_ifindex_rcu(xt_in(par));
+ 
+ 	return rpfilter_lookup_reverse(xt_net(par), &flow, xt_in(par), info->flags) ^ invert;
+ }
+diff --git a/net/ipv6/netfilter/ip6t_rpfilter.c b/net/ipv6/netfilter/ip6t_rpfilter.c
+index 6bcaf7357183..3c4a1772c15f 100644
+--- a/net/ipv6/netfilter/ip6t_rpfilter.c
++++ b/net/ipv6/netfilter/ip6t_rpfilter.c
+@@ -55,6 +55,10 @@ static bool rpfilter_lookup_reverse6(struct net *net, const struct sk_buff *skb,
+ 	if (rpfilter_addr_linklocal(&iph->saddr)) {
+ 		lookup_flags |= RT6_LOOKUP_F_IFACE;
+ 		fl6.flowi6_oif = dev->ifindex;
++	/* Set flowi6_oif for vrf devices to lookup route in l3mdev domain. */
++	} else if (netif_is_l3_master(dev) || netif_is_l3_slave(dev)) {
++		lookup_flags |= FLOWI_FLAG_SKIP_NH_OIF;
++		fl6.flowi6_oif = dev->ifindex;
+ 	} else if ((flags & XT_RPFILTER_LOOSE) == 0)
+ 		fl6.flowi6_oif = dev->ifindex;
+ 
+@@ -70,7 +74,9 @@ static bool rpfilter_lookup_reverse6(struct net *net, const struct sk_buff *skb,
+ 		goto out;
+ 	}
+ 
+-	if (rt->rt6i_idev->dev == dev || (flags & XT_RPFILTER_LOOSE))
++	if (rt->rt6i_idev->dev == dev ||
++	    l3mdev_master_ifindex_rcu(rt->rt6i_idev->dev) == dev->ifindex ||
++	    (flags & XT_RPFILTER_LOOSE))
+ 		ret = true;
+  out:
+ 	ip6_rt_put(rt);
 -- 
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+2.21.GIT
 
-www.cloudflare.com
