@@ -2,33 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A7B15A727
+	by mail.lfdr.de (Postfix) with ESMTP id 7A63E5A728
 	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 00:49:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726950AbfF1WtI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726936AbfF1WtI (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 28 Jun 2019 18:49:08 -0400
-Received: from mga05.intel.com ([192.55.52.43]:51493 "EHLO mga05.intel.com"
+Received: from mga05.intel.com ([192.55.52.43]:51494 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726563AbfF1WtG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726849AbfF1WtG (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 28 Jun 2019 18:49:06 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 Jun 2019 15:49:05 -0700
+  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 Jun 2019 15:49:06 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.63,429,1557212400"; 
-   d="scan'208";a="338039127"
+   d="scan'208";a="338039130"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by orsmga005.jf.intel.com with ESMTP; 28 Jun 2019 15:49:05 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Dann Frazier <dann.frazier@canonical.com>, netdev@vger.kernel.org,
+Cc:     Colin Ian King <colin.king@canonical.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
+        Jacob Keller <jacob.e.keller@intel.com>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 03/15] ixgbe: Avoid NULL pointer dereference with VF on non-IPsec hw
-Date:   Fri, 28 Jun 2019 15:49:20 -0700
-Message-Id: <20190628224932.3389-4-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 04/15] ixgbe: fix potential u32 overflow on shift
+Date:   Fri, 28 Jun 2019 15:49:21 -0700
+Message-Id: <20190628224932.3389-5-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190628224932.3389-1-jeffrey.t.kirsher@intel.com>
 References: <20190628224932.3389-1-jeffrey.t.kirsher@intel.com>
@@ -39,87 +40,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dann Frazier <dann.frazier@canonical.com>
+From: Colin Ian King <colin.king@canonical.com>
 
-An ipsec structure will not be allocated if the hardware does not support
-offload. Fixes the following Oops:
+The u32 variable rem is being shifted using u32 arithmetic however
+it is being passed to div_u64 that expects the expression to be a u64.
+The 32 bit shift may potentially overflow, so cast rem to a u64 before
+shifting to avoid this.  Also remove comment about overflow.
 
-[  191.045452] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
-[  191.054232] Mem abort info:
-[  191.057014]   ESR = 0x96000004
-[  191.060057]   Exception class = DABT (current EL), IL = 32 bits
-[  191.065963]   SET = 0, FnV = 0
-[  191.069004]   EA = 0, S1PTW = 0
-[  191.072132] Data abort info:
-[  191.074999]   ISV = 0, ISS = 0x00000004
-[  191.078822]   CM = 0, WnR = 0
-[  191.081780] user pgtable: 4k pages, 48-bit VAs, pgdp = 0000000043d9e467
-[  191.088382] [0000000000000000] pgd=0000000000000000
-[  191.093252] Internal error: Oops: 96000004 [#1] SMP
-[  191.098119] Modules linked in: vhost_net vhost tap vfio_pci vfio_virqfd vfio_iommu_type1 vfio xt_CHECKSUM iptable_mangle ipt_MASQUERADE iptable_nat nf_nat_ipv4 nf_nat xt_conntrack nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 ipt_REJECT nf_reject_ipv4 xt_tcpudp bridge stp llc ebtable_filter devlink ebtables ip6table_filter ip6_tables iptable_filter bpfilter ipmi_ssif nls_iso8859_1 input_leds joydev ipmi_si hns_roce_hw_v2 ipmi_devintf hns_roce ipmi_msghandler cppc_cpufreq sch_fq_codel ib_iser rdma_cm iw_cm ib_cm ib_core iscsi_tcp libiscsi_tcp libiscsi scsi_transport_iscsi ip_tables x_tables autofs4 ses enclosure btrfs zstd_compress raid10 raid456 async_raid6_recov async_memcpy async_pq async_xor async_tx xor hid_generic usbhid hid raid6_pq libcrc32c raid1 raid0 multipath linear ixgbevf hibmc_drm ttm
-[  191.168607]  drm_kms_helper aes_ce_blk aes_ce_cipher syscopyarea crct10dif_ce sysfillrect ghash_ce qla2xxx sysimgblt sha2_ce sha256_arm64 hisi_sas_v3_hw fb_sys_fops sha1_ce uas nvme_fc mpt3sas ixgbe drm hisi_sas_main nvme_fabrics usb_storage hclge scsi_transport_fc ahci libsas hnae3 raid_class libahci xfrm_algo scsi_transport_sas mdio aes_neon_bs aes_neon_blk crypto_simd cryptd aes_arm64
-[  191.202952] CPU: 94 PID: 0 Comm: swapper/94 Not tainted 4.19.0-rc1+ #11
-[  191.209553] Hardware name: Huawei D06 /D06, BIOS Hisilicon D06 UEFI RC0 - V1.20.01 04/26/2019
-[  191.218064] pstate: 20400089 (nzCv daIf +PAN -UAO)
-[  191.222873] pc : ixgbe_ipsec_vf_clear+0x60/0xd0 [ixgbe]
-[  191.228093] lr : ixgbe_msg_task+0x2d0/0x1088 [ixgbe]
-[  191.233044] sp : ffff000009b3bcd0
-[  191.236346] x29: ffff000009b3bcd0 x28: 0000000000000000
-[  191.241647] x27: ffff000009628000 x26: 0000000000000000
-[  191.246946] x25: ffff803f652d7600 x24: 0000000000000004
-[  191.252246] x23: ffff803f6a718900 x22: 0000000000000000
-[  191.257546] x21: 0000000000000000 x20: 0000000000000000
-[  191.262845] x19: 0000000000000000 x18: 0000000000000000
-[  191.268144] x17: 0000000000000000 x16: 0000000000000000
-[  191.273443] x15: 0000000000000000 x14: 0000000100000026
-[  191.278742] x13: 0000000100000025 x12: ffff8a5f7fbe0df0
-[  191.284042] x11: 000000010000000b x10: 0000000000000040
-[  191.289341] x9 : 0000000000001100 x8 : ffff803f6a824fd8
-[  191.294640] x7 : ffff803f6a825098 x6 : 0000000000000001
-[  191.299939] x5 : ffff000000f0ffc0 x4 : 0000000000000000
-[  191.305238] x3 : ffff000028c00000 x2 : ffff803f652d7600
-[  191.310538] x1 : 0000000000000000 x0 : ffff000000f205f0
-[  191.315838] Process swapper/94 (pid: 0, stack limit = 0x00000000addfed5a)
-[  191.322613] Call trace:
-[  191.325055]  ixgbe_ipsec_vf_clear+0x60/0xd0 [ixgbe]
-[  191.329927]  ixgbe_msg_task+0x2d0/0x1088 [ixgbe]
-[  191.334536]  ixgbe_msix_other+0x274/0x330 [ixgbe]
-[  191.339233]  __handle_irq_event_percpu+0x78/0x270
-[  191.343924]  handle_irq_event_percpu+0x40/0x98
-[  191.348355]  handle_irq_event+0x50/0xa8
-[  191.352180]  handle_fasteoi_irq+0xbc/0x148
-[  191.356263]  generic_handle_irq+0x34/0x50
-[  191.360259]  __handle_domain_irq+0x68/0xc0
-[  191.364343]  gic_handle_irq+0x84/0x180
-[  191.368079]  el1_irq+0xe8/0x180
-[  191.371208]  arch_cpu_idle+0x30/0x1a8
-[  191.374860]  do_idle+0x1dc/0x2a0
-[  191.378077]  cpu_startup_entry+0x2c/0x30
-[  191.381988]  secondary_start_kernel+0x150/0x1e0
-[  191.386506] Code: 6b15003f 54000320 f1404a9f 54000060 (79400260)
-
-Fixes: eda0333ac2930 ("ixgbe: add VF IPsec management")
-Signed-off-by: Dann Frazier <dann.frazier@canonical.com>
+Addresses-Coverity: ("Unintentional integer overflow")
+Fixes: cd4583206990 ("ixgbe: implement support for SDP/PPS output on X550 hardware")
+Fixes: 68d9676fc04e ("ixgbe: fix PTP SDP pin setup on X540 hardware")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+Acked-by: Jacob Keller <jacob.e.keller@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
-index ff85ce5791a3..31629fc7e820 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
-@@ -842,6 +842,9 @@ void ixgbe_ipsec_vf_clear(struct ixgbe_adapter *adapter, u32 vf)
- 	struct ixgbe_ipsec *ipsec = adapter->ipsec;
- 	int i;
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
+index 2c4d327fcc2e..0be13a90ff79 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
+@@ -205,11 +205,8 @@ static void ixgbe_ptp_setup_sdp_X540(struct ixgbe_adapter *adapter)
+ 	 */
+ 	rem = (NS_PER_SEC - rem);
  
-+	if (!ipsec)
-+		return;
-+
- 	/* search rx sa table */
- 	for (i = 0; i < IXGBE_IPSEC_MAX_SA_COUNT && ipsec->num_rx_sa; i++) {
- 		if (!ipsec->rx_tbl[i].used)
+-	/* Adjust the clock edge to align with the next full second. This
+-	 * assumes that the cycle counter shift is small enough to avoid
+-	 * overflowing when shifting the remainder.
+-	 */
+-	clock_edge += div_u64((rem << cc->shift), cc->mult);
++	/* Adjust the clock edge to align with the next full second. */
++	clock_edge += div_u64(((u64)rem << cc->shift), cc->mult);
+ 	trgttiml = (u32)clock_edge;
+ 	trgttimh = (u32)(clock_edge >> 32);
+ 
+@@ -291,11 +288,8 @@ static void ixgbe_ptp_setup_sdp_X550(struct ixgbe_adapter *adapter)
+ 	 */
+ 	rem = (NS_PER_SEC - rem);
+ 
+-	/* Adjust the clock edge to align with the next full second. This
+-	 * assumes that the cycle counter shift is small enough to avoid
+-	 * overflowing when shifting the remainder.
+-	 */
+-	clock_edge += div_u64((rem << cc->shift), cc->mult);
++	/* Adjust the clock edge to align with the next full second. */
++	clock_edge += div_u64(((u64)rem << cc->shift), cc->mult);
+ 
+ 	/* X550 hardware stores the time in 32bits of 'billions of cycles' and
+ 	 * 32bits of 'cycles'. There's no guarantee that cycles represents
 -- 
 2.21.0
 
