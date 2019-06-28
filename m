@@ -2,76 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DAED35A29A
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 19:41:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 221D85A2A5
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 19:41:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726907AbfF1Rlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 13:41:31 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:37437 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726674AbfF1Rla (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 13:41:30 -0400
-Received: by mail-io1-f65.google.com with SMTP id e5so14245870iok.4
-        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 10:41:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cs.washington.edu; s=goo201206;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uqJ6r1Mjakiqpd0ZD9iGpyAkpv+xSUcUqESly9SnS30=;
-        b=lOFXls3FkwUg97CyPjvyXgrcjW6i3Y09TjD9O1sKjz+4VVLO0kGXwLk7Lh5Ks/8aAW
-         JijWwpKYFieazAh57d6dT1oO3AO01TZnC7WoBmE1OSNdS8W3PrRrtsH2CbmHSwhjVWw+
-         zeSbiFOvp9Kpu25n4n1vGhIUhGVzJdYcNha8A=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uqJ6r1Mjakiqpd0ZD9iGpyAkpv+xSUcUqESly9SnS30=;
-        b=TF9KFfyc9xHzUxhe7wh9UQnXVXArQlsD31gZbJPNyVHtWD1KccybI8Rkh5uro+aGHr
-         CHe018liybWCBFEWWxycKsmuneWcsuw1TfVnk8N9gFLjj8wM4JfCpILkMjRuJjNvEoS5
-         uNY0Y5mg5zahWbBw0X99V4Np68PxgMLKaq3kY0FaVy+Hq7Xd6MMHzAirZVbVjyef/CKw
-         w42EwDypVFi2MCgwlRldTqNshH47HsLhpmVUJAR+LSjwSWgKIMUQ4R5hYHPLhxeRC5Sc
-         fYmczjNSRtIZnCYB6Me2+uk1gp33AUawXN0OfxK47qi5mIyaA4iR+G5XGC0kS6pF9xFG
-         lM5Q==
-X-Gm-Message-State: APjAAAUGIDdFV4Mx+LdryaVInWx//kyHMZdq/juuAgCb4veiY5v2aj1j
-        zTrKAHMU4AQWLo4mvwXoCpLc/JD0PvfaMEtPkg+6AA==
-X-Google-Smtp-Source: APXvYqwcltk4JmdpNvtJF1qrqeEE0+mFopXztg8enMwMB7rkn3G9Vg90wC0+Jkas2dqkKaCJf2/GoPK0tBQW9eKSXf8=
-X-Received: by 2002:a6b:f90f:: with SMTP id j15mr12016235iog.43.1561743689556;
- Fri, 28 Jun 2019 10:41:29 -0700 (PDT)
+        id S1726934AbfF1Rlg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 13:41:36 -0400
+Received: from mail.us.es ([193.147.175.20]:52734 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726694AbfF1Rlf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 Jun 2019 13:41:35 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id AFBC8DA737
+        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 19:41:33 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id A0BB5DA704
+        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 19:41:33 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 96181DA3F4; Fri, 28 Jun 2019 19:41:33 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 4071DDA704;
+        Fri, 28 Jun 2019 19:41:30 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Fri, 28 Jun 2019 19:41:30 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from salvia.here (unknown [31.4.195.66])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id EC06D4265A32;
+        Fri, 28 Jun 2019 19:41:29 +0200 (CEST)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH 0/4] Netfilter/IPVS fixes for net
+Date:   Fri, 28 Jun 2019 19:41:21 +0200
+Message-Id: <20190628174125.20739-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.11.0
 MIME-Version: 1.0
-References: <20190626231257.14495-1-lukenels@cs.washington.edu> <87y31nuspw.fsf@netronome.com>
-In-Reply-To: <87y31nuspw.fsf@netronome.com>
-From:   Luke Nelson <lukenels@cs.washington.edu>
-Date:   Fri, 28 Jun 2019 10:41:18 -0700
-Message-ID: <CADasFoAqjZVnMFGZNgQMhXsBC78vbb-u1PPv_aZx3fMXeHBXKg@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next] RV32G eBPF JIT
-To:     Jiong Wang <jiong.wang@netronome.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Luke Nelson <luke.r.nels@gmail.com>,
-        Xi Wang <xi.wang@gmail.com>,
-        Palmer Dabbelt <palmer@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        linux-riscv@lists.infradead.org, Netdev <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 27, 2019 at 5:18 AM Jiong Wang <jiong.wang@netronome.com> wrote:
->
-> #define BPF_ZEXT_REG(DST)
->         ((struct bpf_insn) {
->                  .code  = BPF_ALU | BPF_MOV | BPF_X
->
-> So it can't be BPF_ALU64. It is safe to remove this chunk of code.
->
+Hi,
 
-Thanks! I'll fix this in the next revision.
+The following patchset contains Netfilter fixes for net:
 
-- Luke
+1) Fix memleak reported by syzkaller when registering IPVS hooks,
+   patch from Julian Anastasov.
+
+2) Fix memory leak in start_sync_thread, also from Julian.
+
+3) Fix conntrack deletion via ctnetlink, from Felix Kaechele.
+
+4) Fix reject for ICMP due to incorrect checksum handling, from
+   He Zhe.
+
+You can pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
+
+Thanks.
+
+----------------------------------------------------------------
+
+The following changes since commit 85f9aa7565bd79b039325f2c01af7ffa717924df:
+
+  inet: clear num_timeout reqsk_alloc() (2019-06-19 17:46:57 -0400)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git HEAD
+
+for you to fetch changes up to 5d1549847c76b1ffcf8e388ef4d0f229bdd1d7e8:
+
+  netfilter: Fix remainder of pseudo-header protocol 0 (2019-06-28 19:30:50 +0200)
+
+----------------------------------------------------------------
+Felix Kaechele (1):
+      netfilter: ctnetlink: Fix regression in conntrack entry deletion
+
+He Zhe (1):
+      netfilter: Fix remainder of pseudo-header protocol 0
+
+Julian Anastasov (2):
+      ipvs: defer hook registration to avoid leaks
+      ipvs: fix tinfo memory leak in start_sync_thread
+
+ include/net/ip_vs.h                     |   6 +-
+ net/netfilter/ipvs/ip_vs_core.c         |  21 +++--
+ net/netfilter/ipvs/ip_vs_ctl.c          |   4 -
+ net/netfilter/ipvs/ip_vs_sync.c         | 134 +++++++++++++++++---------------
+ net/netfilter/nf_conntrack_netlink.c    |   7 +-
+ net/netfilter/nf_conntrack_proto_icmp.c |   2 +-
+ net/netfilter/nf_nat_proto.c            |   2 +-
+ net/netfilter/utils.c                   |   5 +-
+ 8 files changed, 99 insertions(+), 82 deletions(-)
+
