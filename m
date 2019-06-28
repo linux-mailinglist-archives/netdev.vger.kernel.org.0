@@ -2,159 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A7E8259BAC
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 14:38:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52A7159BC4
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 14:40:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727132AbfF1MiF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 08:38:05 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:44040 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726675AbfF1MiE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 08:38:04 -0400
-Received: by mail-ed1-f68.google.com with SMTP id k8so10643198edr.11
-        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 05:38:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xPcUko9FFAp/UvHdDyFahyCTJmb9UbRYhssd4xSE2/U=;
-        b=RrZ3UM+nJNcBDP4HshjSSrMTFoKzLGK90981RAMVEBB7tr+praVOUyIJFC8LwOXogl
-         Qcc5I2gPJ+GqrrJo+nwGeUTd77kpSArZYSlGSx5NUTR5OWX5K1bRbOpKjt0y6DtDFa2Y
-         3AlTr0yLaOpJjrH4K2AQlkLm9G1kY4+wNLOIFCUPzFjK9dU6LQxoLJ2SaF5mKUqQXxmP
-         MhHduRHiOpPL9CD9M2S7ZChnC6Hj3E8AkKPPhbRyfev8DENurTWBYyV9o66ZvSSlBqzU
-         cbx5QFEQ8L6qnnpABFZ8A3Kvhf9fQOTSXXjmuoA0l6NJA8D+XpLJ8PeDcC/XI62hNe1a
-         tU0Q==
+        id S1727234AbfF1Mke (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 08:40:34 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:55520 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726657AbfF1Mkd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 08:40:33 -0400
+Received: from mail-qk1-f199.google.com ([209.85.222.199])
+        by youngberry.canonical.com with esmtps (TLS1.0:RSA_AES_128_CBC_SHA1:16)
+        (Exim 4.76)
+        (envelope-from <gpiccoli@canonical.com>)
+        id 1hgqB5-0003IZ-Bi
+        for netdev@vger.kernel.org; Fri, 28 Jun 2019 12:40:31 +0000
+Received: by mail-qk1-f199.google.com with SMTP id n190so6292501qkd.5
+        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 05:40:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xPcUko9FFAp/UvHdDyFahyCTJmb9UbRYhssd4xSE2/U=;
-        b=KTbQZOLc+2qIw6cHG8ZxLtMY5EWGGUTWGmKx1kCECQ6bSEVxLnEvcg8i4t1T5YQf4n
-         35DBoIm8xTdlwepkapM3UOuWvOb3QBGH//80nH5bg90E0iclBzuycwbUE8nrrVODCrKP
-         bvzXRmCaoWiOdviOfxrWwcPkPhB0tKOk6kGA5iDYb9wedqep48V9arkoGT/rmjHMinWu
-         qvf8EPta1yzG4iGFkTE7biPzo2KMNztK0r+DB/wxyhSebLFIq2QgMxHejkAg3LZWyoSK
-         dmvPxFkJm+XnEKn89QoZd1b8j6EiGFj2DdoBLLdwSdxaL4Jr/Wcr9uPY88znkmTQG8MS
-         qDQA==
-X-Gm-Message-State: APjAAAVHnXh7Z3+UOgvgxFKOJokmMW8SitS+Ir6Z/SZIzSMknmqD8NvO
-        C6pAxm34K77TZvlc5kj7hM6/O93ZrYMDaEE4Z8nsAAcg
-X-Google-Smtp-Source: APXvYqzz/hxkHGMZiTwsK/C+HGcPgDhWiwj2KwE+sWryMEQi6RBqMB0HN8w3SwWIhQGN4Y1KAwHOwwCud9uDkc1kxm8=
-X-Received: by 2002:a17:906:19d3:: with SMTP id h19mr8442901ejd.300.1561725482959;
- Fri, 28 Jun 2019 05:38:02 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=6QZNYZ7T4oKi3Chj9wu06NNscOPwa7TKxsSAv+ick+A=;
+        b=MouwZcRSHJRUfh+XkwnZ9cqfeRjdAEYSufrrPl78M6fnqHIZAJEfZ+oMlAoxKaDjLP
+         GAAeIWDq9XULQf6Qj+Wtm2SXgqA3TDHJWNI/9qydciQbFiIJV0T/o00Y+0q+b8vr0Gmd
+         M0mL3AJBgAz3xeNSvNQJFHjeujJ7h4tjqoPzQ14TSC6ZvT8SznNohPKhpzXNHKeFHQGU
+         TNzsAmZx8JrIbWWFEVyX0IKXOEaDtMI9/p17f5YvazKqYvGAfUMQPNF4Nral5p03apTn
+         DBr0lJxu4U4y069zHc1M7/YqgvK09GWQYZgjPuffzB02MjVMv+b0Orr/zXLOkMg0pgLP
+         9y6g==
+X-Gm-Message-State: APjAAAWfR8I80ESadlJXB0ByFayjMw1+Vm3zAhCeJN4uAY84ImPhXOCr
+        2DpJNeuNEHzYGplgKF1+w3vA+wSIKunoDfpsX2yWm3RbXu1oUPTWVelJw22XdiWwbq8o6EAiTan
+        F5mlZulwyoOaJ7LDIM93edBeH/OWWsQ5Qjg==
+X-Received: by 2002:a0c:b04d:: with SMTP id l13mr8095163qvc.104.1561725630638;
+        Fri, 28 Jun 2019 05:40:30 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqwYQABwi7KQPdv5dtOO99sXd3KKt1AbHTD9efMX9lbQWk6YxG3nxtKZdeEkHbgOCnfiB0fa8w==
+X-Received: by 2002:a0c:b04d:: with SMTP id l13mr8095148qvc.104.1561725630488;
+        Fri, 28 Jun 2019 05:40:30 -0700 (PDT)
+Received: from [192.168.1.204] ([179.110.97.158])
+        by smtp.gmail.com with ESMTPSA id 18sm991619qke.131.2019.06.28.05.40.27
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 28 Jun 2019 05:40:29 -0700 (PDT)
+Subject: Re: [EXT] [PATCH V4] bnx2x: Prevent ptp_task to be rescheduled
+ indefinitely
+To:     Sudarsana Reddy Kalluru <skalluru@marvell.com>, davem@davemloft.net
+Cc:     GR-everest-linux-l2 <GR-everest-linux-l2@marvell.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Ariel Elior <aelior@marvell.com>,
+        "jay.vosburgh@canonical.com" <jay.vosburgh@canonical.com>
+References: <20190627163133.5990-1-gpiccoli@canonical.com>
+ <MN2PR18MB25287DF4D53BCD651E5AC97FD3FC0@MN2PR18MB2528.namprd18.prod.outlook.com>
+From:   "Guilherme G. Piccoli" <gpiccoli@canonical.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=gpiccoli@canonical.com; prefer-encrypt=mutual; keydata=
+ mQENBFpVBxcBCADPNKmu2iNKLepiv8+Ssx7+fVR8lrL7cvakMNFPXsXk+f0Bgq9NazNKWJIn
+ Qxpa1iEWTZcLS8ikjatHMECJJqWlt2YcjU5MGbH1mZh+bT3RxrJRhxONz5e5YILyNp7jX+Vh
+ 30rhj3J0vdrlIhPS8/bAt5tvTb3ceWEic9mWZMsosPavsKVcLIO6iZFlzXVu2WJ9cov8eQM/
+ irIgzvmFEcRyiQ4K+XUhuA0ccGwgvoJv4/GWVPJFHfMX9+dat0Ev8HQEbN/mko/bUS4Wprdv
+ 7HR5tP9efSLucnsVzay0O6niZ61e5c97oUa9bdqHyApkCnGgKCpg7OZqLMM9Y3EcdMIJABEB
+ AAG0LUd1aWxoZXJtZSBHLiBQaWNjb2xpIDxncGljY29saUBjYW5vbmljYWwuY29tPokBNwQT
+ AQgAIQUCWmClvQIbAwULCQgHAgYVCAkKCwIEFgIDAQIeAQIXgAAKCRDOR5EF9K/7Gza3B/9d
+ 5yczvEwvlh6ksYq+juyuElLvNwMFuyMPsvMfP38UslU8S3lf+ETukN1S8XVdeq9yscwtsRW/
+ 4YoUwHinJGRovqy8gFlm3SAtjfdqysgJqUJwBmOtcsHkmvFXJmPPGVoH9rMCUr9s6VDPox8f
+ q2W5M7XE9YpsfchS/0fMn+DenhQpV3W6pbLtuDvH/81GKrhxO8whSEkByZbbc+mqRhUSTdN3
+ iMpRL0sULKPVYbVMbQEAnfJJ1LDkPqlTikAgt3peP7AaSpGs1e3pFzSEEW1VD2jIUmmDku0D
+ LmTHRl4t9KpbU/H2/OPZkrm7809QovJGRAxjLLPcYOAP7DUeltveuQENBFpVBxcBCADbxD6J
+ aNw/KgiSsbx5Sv8nNqO1ObTjhDR1wJw+02Bar9DGuFvx5/qs3ArSZkl8qX0X9Vhptk8rYnkn
+ pfcrtPBYLoux8zmrGPA5vRgK2ItvSc0WN31YR/6nqnMfeC4CumFa/yLl26uzHJa5RYYQ47jg
+ kZPehpc7IqEQ5IKy6cCKjgAkuvM1rDP1kWQ9noVhTUFr2SYVTT/WBHqUWorjhu57/OREo+Tl
+ nxI1KrnmW0DbF52tYoHLt85dK10HQrV35OEFXuz0QPSNrYJT0CZHpUprkUxrupDgkM+2F5LI
+ bIcaIQ4uDMWRyHpDbczQtmTke0x41AeIND3GUc+PQ4hWGp9XABEBAAGJAR8EGAEIAAkFAlpV
+ BxcCGwwACgkQzkeRBfSv+xv1wwgAj39/45O3eHN5pK0XMyiRF4ihH9p1+8JVfBoSQw7AJ6oU
+ 1Hoa+sZnlag/l2GTjC8dfEGNoZd3aRxqfkTrpu2TcfT6jIAsxGjnu+fUCoRNZzmjvRziw3T8
+ egSPz+GbNXrTXB8g/nc9mqHPPprOiVHDSK8aGoBqkQAPZDjUtRwVx112wtaQwArT2+bDbb/Y
+ Yh6gTrYoRYHo6FuQl5YsHop/fmTahpTx11IMjuh6IJQ+lvdpdfYJ6hmAZ9kiVszDF6pGFVkY
+ kHWtnE2Aa5qkxnA2HoFpqFifNWn5TyvJFpyqwVhVI8XYtXyVHub/WbXLWQwSJA4OHmqU8gDl
+ X18zwLgdiQ==
+Message-ID: <44c04c0b-f4dc-8486-41bc-7964e95bf48e@canonical.com>
+Date:   Fri, 28 Jun 2019 09:40:24 -0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.1
 MIME-Version: 1.0
-References: <CA+h21hrRMrLH-RjBGhEJSTZd6_QPRSd3RkVRQF-wNKkrgKcRSA@mail.gmail.com>
- <20190628123009.GA10385@splinter>
-In-Reply-To: <20190628123009.GA10385@splinter>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Fri, 28 Jun 2019 15:37:51 +0300
-Message-ID: <CA+h21hpPD6E_qOS-SxWKeXZKLOnN8og1BN_vSgk1+7XXQVTnBw@mail.gmail.com>
-Subject: Re: What to do when a bridge port gets its pvid deleted?
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        stephen@networkplumber.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <MN2PR18MB25287DF4D53BCD651E5AC97FD3FC0@MN2PR18MB2528.namprd18.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 28 Jun 2019 at 15:30, Ido Schimmel <idosch@idosch.org> wrote:
->
-> On Tue, Jun 25, 2019 at 11:49:29PM +0300, Vladimir Oltean wrote:
-> > A number of DSA drivers (BCM53XX, Microchip KSZ94XX, Mediatek MT7530
-> > at the very least), as well as Mellanox Spectrum (I didn't look at all
-> > the pure switchdev drivers) try to restore the pvid to a default value
-> > on .port_vlan_del.
->
-> I don't know about DSA drivers, but that's not what mlxsw is doing. If
-> the VLAN that is configured as PVID is deleted from the bridge port, the
-> driver instructs the port to discard untagged and prio-tagged packets.
-> This is consistent with the bridge driver's behavior.
->
-> We do have a flow the "restores" the PVID, but that's when a port is
-> unlinked from its bridge master. The PVID we set is 4095 which cannot be
-> configured by the 8021q / bridge driver. This is due to the way the
-> underlying hardware works. Even if a port is not bridged and used purely
-> for routing, packets still do L2 lookup first which sends them directly
-> to the router block. If PVID is not configured, untagged packets could
-> not be routed. Obviously, at egress we strip this VLAN.
->
-> > Sure, the port stops receiving traffic when its pvid is a VLAN ID that
-> > is not installed in its hw filter, but as far as the bridge core is
-> > concerned, this is to be expected:
-> >
-> > # bridge vlan add dev swp2 vid 100 pvid untagged
-> > # bridge vlan
-> > port    vlan ids
-> > swp5     1 PVID Egress Untagged
-> >
-> > swp2     1 Egress Untagged
-> >          100 PVID Egress Untagged
-> >
-> > swp3     1 PVID Egress Untagged
-> >
-> > swp4     1 PVID Egress Untagged
-> >
-> > br0      1 PVID Egress Untagged
-> > # ping 10.0.0.1
-> > PING 10.0.0.1 (10.0.0.1) 56(84) bytes of data.
-> > 64 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.682 ms
-> > 64 bytes from 10.0.0.1: icmp_seq=2 ttl=64 time=0.299 ms
-> > 64 bytes from 10.0.0.1: icmp_seq=3 ttl=64 time=0.251 ms
-> > 64 bytes from 10.0.0.1: icmp_seq=4 ttl=64 time=0.324 ms
-> > 64 bytes from 10.0.0.1: icmp_seq=5 ttl=64 time=0.257 ms
-> > ^C
-> > --- 10.0.0.1 ping statistics ---
-> > 5 packets transmitted, 5 received, 0% packet loss, time 4188ms
-> > rtt min/avg/max/mdev = 0.251/0.362/0.682/0.163 ms
-> > # bridge vlan del dev swp2 vid 100
-> > # bridge vlan
-> > port    vlan ids
-> > swp5     1 PVID Egress Untagged
-> >
-> > swp2     1 Egress Untagged
-> >
-> > swp3     1 PVID Egress Untagged
-> >
-> > swp4     1 PVID Egress Untagged
-> >
-> > br0      1 PVID Egress Untagged
-> >
-> > # ping 10.0.0.1
-> > PING 10.0.0.1 (10.0.0.1) 56(84) bytes of data.
-> > ^C
-> > --- 10.0.0.1 ping statistics ---
-> > 8 packets transmitted, 0 received, 100% packet loss, time 7267ms
-> >
-> > What is the consensus here? Is there a reason why the bridge driver
-> > doesn't take care of this?
->
-> Take care of what? :) Always maintaining a PVID on the bridge port? It's
-> completely OK not to have a PVID.
->
+On 28/06/2019 02:22, Sudarsana Reddy Kalluru wrote:
+> [...]
+> Thanks for the changes.
+> 
+> Acked-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
+> 
 
-Yes, I didn't think it through during the first email. I came to the
-same conclusion in the second one.
+Thanks a lot Sudarsana!
 
-> > Do switchdev drivers have to restore the pvid to always be
-> > operational, even if their state becomes inconsistent with the upper
-> > dev? Is it just 'nice to have'? What if VID 1 isn't in the hw filter
-> > either (perfectly legal)?
->
-> Are you saying that DSA drivers always maintain a PVID on the bridge
-> port and allow untagged traffic to ingress regardless of the bridge
-> driver's configuration? If so, I think this needs to be fixed.
 
-Well, not at the DSA core level.
-But for Microchip:
-https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/tree/drivers/net/dsa/microchip/ksz9477.c#n576
-For Broadcom:
-https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/tree/drivers/net/dsa/b53/b53_common.c#n1376
-For Mediatek:
-https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/tree/drivers/net/dsa/mt7530.c#n1196
-
-There might be others as well.
+David, do you think it's still possible to get this merged as a fix in
+5.2 cycle, or it's gonna go in 5.3?
 
 Thanks,
--Vladimir
+
+Guilherme
