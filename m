@@ -2,201 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D7965A4B5
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 21:01:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD2345A4C1
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 21:05:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726931AbfF1TBr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 15:01:47 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:55631 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726565AbfF1TBr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 15:01:47 -0400
-Received: by mail-wm1-f66.google.com with SMTP id a15so10073983wmj.5;
-        Fri, 28 Jun 2019 12:01:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ckoxpxJTkoCeeN4f/pv9Q0LSUSeSbayeJqjMrlXsfu4=;
-        b=aeuXDOl4B/FrLr+xqHc+NSwH6W+FgWMzhO2qP7T3xYnfCoxgZfXx2BG6B4EmTh8NI1
-         owzcAdBzt7lT7O71SN3bCQqrFIZfsqNZcP45OeAjKDvPUV+0yQuLQrove9lHY9B04G0q
-         9IECVu8ycAPPMhz/MebVo4PbXL2AOqluLnLIl6K7uNnPb2IunSCpimP/1paoPBH8Ric8
-         wsRhJDf3n6lGk4fX7DeJPbC2ec4duf8Syrd2Mi4WB1ycrqSfoie/D5XzrzckDpoJoZAj
-         7EWbjv3EN98eGCctiACIKLjkP5V8JOViElmdxiI1pHcwLsxt+93p0yTLSxgmtQKUk20D
-         WpMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=ckoxpxJTkoCeeN4f/pv9Q0LSUSeSbayeJqjMrlXsfu4=;
-        b=HGKdp5basxl8wgUA0pUZ1WRjXO97eEepAIzv0/monRT35QeqPOlxcqitbegiLc/pG3
-         dxnhnsv5N89OIQgR2UaP9wvJzCkhlPW88FQ8OiT5G+8QlcrUqASWgZL9DuwIcAZPqW39
-         VoUWRxBskF4sbL8wx/8oED8ZeTPdap4d08QC8SNqpGUghJnZmk1XbD+Hw80KU1aFtvyy
-         LVqBTRYvgOYOkZQMDQnmLlK9F+XtiIoj46yCRNFV365hCrnlTRfYganonGJoRnE64jW1
-         e/+cpyOtUWNyt5PJd5L5eHg0I+2VrUoQoc8yI8LQ6259CBiFarJ9DSJi11QDLBzuIhEC
-         TsMw==
-X-Gm-Message-State: APjAAAWcxRMvzv8ki/+x+Nw8/rShsiAcpSO77iUzLbjhAj1NQtaaYPG8
-        jaRTxkzEAKUjr9p0OsVSfp3U5ceN
-X-Google-Smtp-Source: APXvYqzMnrV9MewVYZEH/cd/CrdO81xXl+6ATv+n329Tuf2QOzpW/WNm875lYRascC6GWlUaKH+Jiw==
-X-Received: by 2002:a1c:4054:: with SMTP id n81mr8321987wma.78.1561748503632;
-        Fri, 28 Jun 2019 12:01:43 -0700 (PDT)
-Received: from [192.168.1.17] (bkq83.neoplus.adsl.tpnet.pl. [83.28.184.83])
-        by smtp.gmail.com with ESMTPSA id z5sm2980090wmf.48.2019.06.28.12.01.41
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 28 Jun 2019 12:01:43 -0700 (PDT)
-Subject: Re: [PATCH 24/43] docs: leds: convert to ReST
-To:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Cc:     Mauro Carvalho Chehab <mchehab@infradead.org>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Vadim Pasternak <vadimp@mellanox.com>,
-        Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-leds@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, netdev@vger.kernel.org
-References: <cover.1561723979.git.mchehab+samsung@kernel.org>
- <2fecbe9a9cefda64771b43c5fc67495d897dd722.1561723980.git.mchehab+samsung@kernel.org>
-From:   Jacek Anaszewski <jacek.anaszewski@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=jacek.anaszewski@gmail.com; prefer-encrypt=mutual; keydata=
- mQINBFWjfaEBEADd66EQbd6yd8YjG0kbEDT2QIkx8C7BqMXR8AdmA1OMApbfSvEZFT1D/ECR
- eWFBS8XtApKQx1xAs1j5z70k3zebk2eeNs5ahxi6vM4Qh89vBM46biSKeeX5fLcv7asmGb/a
- FnHPAfQaKFyG/Bj9V+//ef67hpjJWR3s74C6LZCFLcbZM0z/wTH+baA5Jwcnqr4h/ygosvhP
- X3gkRzJLSFYekmEv+WHieeKXLrJdsUPUvPJTZtvi3ELUxHNOZwX2oRJStWpmL2QGMwPokRNQ
- 29GvnueQdQrIl2ylhul6TSrClMrKZqOajDFng7TLgvNfyVZE8WQwmrkTrdzBLfu3kScjE14Q
- Volq8OtQpTsw5570D4plVKh2ahlhrwXdneSot0STk9Dh1grEB/Jfw8dknvqkdjALUrrM45eF
- FM4FSMxIlNV8WxueHDss9vXRbCUxzGw37Ck9JWYo0EpcpcvwPf33yntYCbnt+RQRjv7vy3w5
- osVwRR4hpbL/fWt1AnZ+RvbP4kYSptOCPQ+Pp1tCw16BOaPjtlqSTcrlD2fo2IbaB5D21SUa
- IsdZ/XkD+V2S9jCrN1yyK2iKgxtDoUkWiqlfRgH2Ep1tZtb4NLF/S0oCr7rNLO7WbqLZQh1q
- ShfZR16h7YW//1/NFwnyCVaG1CP/L/io719dPWgEd/sVSKT2TwARAQABtC1KYWNlayBBbmFz
- emV3c2tpIDxqYWNlay5hbmFzemV3c2tpQGdtYWlsLmNvbT6JAj4EEwEIACgCGwMHCwkIBwMC
- AQYVCAIJCgsDFgIBAh4BAheABQJVo39tBQkJZgNMAAoJEL1qUBy3i3wmxLQQAK8QEQ0JqZEv
- 5hrxiwT+Qtkx1TULYriK9sYcY9zbi18YxbKB0C4Znh5iP5o7k26WnPGLM+w4qWvTAkHjuAI7
- aBrvb4nGRvE5s14PQ9IHgL7iL3zAAHT1azIZng9dUCCSontB+vQZu1x/Un0lVlVCvsvO7QVt
- hAZUlT3iucNMO0jpCiS3raZkNfab8M+JWP/iplaV0Kn+O7LX3A/RdLmx5ZhuT+zvyHwl2c3K
- T56UHaQnjkuHB2Ytk8HtOjNXGNYnm4nLx3ok3jEN1nWDRV/DeiPn8zz4Zebsp686OH9vvX/0
- R4dk2YEjUCY/S7CbJxXzUnLjboUAGmtTVOu/uJ7y11iS9XEoJ09HEzijQwWctJXLojcTXCFw
- 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
- eGGiEQ==
-Message-ID: <0b2a2452-20ca-1651-e03b-a15a8502b028@gmail.com>
-Date:   Fri, 28 Jun 2019 21:01:40 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <2fecbe9a9cefda64771b43c5fc67495d897dd722.1561723980.git.mchehab+samsung@kernel.org>
-Content-Type: text/plain; charset=utf-8
+        id S1726707AbfF1TFG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 15:05:06 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:16530 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726565AbfF1TFG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 15:05:06 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5SJ3YQC028170;
+        Fri, 28 Jun 2019 12:04:30 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=S5QH4BVKGeBUZnH0Y7rXt5wyQUJd1/Z5F2AJK2iZL4E=;
+ b=EHfdBzdwvBxLaMsCzNdVNKh5sESSDn0GZs/WW6piDUialnCdN0txkef6SM5LHJy7P4GA
+ 0RUuQXXDucfBETnbaIsRAXmtWzVZ3T+XUPkTnEuEKFAjrFO5R4m21qLgjN3H+2X2Tiax
+ BzCUM1dh7ThWL2ub7j9wqKauvIRlUGaj7Dk= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2td9ka31w1-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 28 Jun 2019 12:04:30 -0700
+Received: from ash-exhub102.TheFacebook.com (2620:10d:c0a8:82::f) by
+ ash-exhub101.TheFacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 28 Jun 2019 12:04:28 -0700
+Received: from NAM03-DM3-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.172) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Fri, 28 Jun 2019 12:04:28 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=testarcselector01; d=microsoft.com; cv=none;
+ b=g8vil7AjTXxxaazzjur3er/lUJVLITQMeNZGIO3pEgJRssnnOaAGrNmSquQOvkL+2o6oaY1uxonDvtxhZ+Dw8UANK5yZIdeLZKeJsrvpR5uJhgzSx4RfpoR0fzLteiWeC2mGCgGu3nu0bgxWLbxjXaDFUb8KiwqvRdhgD/E4SdU=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=testarcselector01;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=S5QH4BVKGeBUZnH0Y7rXt5wyQUJd1/Z5F2AJK2iZL4E=;
+ b=pqa+eC4br+yXvj8wdzYCfHQgccoclSjuqNd6U6qn/Ez4qZWG9DxmTfyNvQq5H0CIAEYcHlX7pTNr4/0iO+Q4i2RgOjG82AFeg2Afw+MMTzhFuIO639mfKUL8jLNNQxYCwV6rQdk7p/32BkPlpVwHZZLWagRTMjS55hMuxxp8anE=
+ARC-Authentication-Results: i=1; test.office365.com
+ 1;spf=none;dmarc=none;dkim=none;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector1-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=S5QH4BVKGeBUZnH0Y7rXt5wyQUJd1/Z5F2AJK2iZL4E=;
+ b=nh3IYwTK4hsIhKSeWcP2GeK7YWueEblyviEg7R58ZCOULT1M+K4ghLefmQn065SQwOcw8gvnZD+cy2iBFzxO4xwM4hCRlmn677rSlfg3/1Z4hil676SwCZinl1fad6mk8L16v7I/xx9mguOEWIMN/3wRAlKwU0H2k04fN8Kxtc4=
+Received: from MWHPR15MB1165.namprd15.prod.outlook.com (10.175.3.22) by
+ MWHPR15MB1838.namprd15.prod.outlook.com (10.174.255.16) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2008.16; Fri, 28 Jun 2019 19:04:24 +0000
+Received: from MWHPR15MB1165.namprd15.prod.outlook.com
+ ([fe80::400e:e329:ea98:aa0d]) by MWHPR15MB1165.namprd15.prod.outlook.com
+ ([fe80::400e:e329:ea98:aa0d%6]) with mapi id 15.20.2008.018; Fri, 28 Jun 2019
+ 19:04:24 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Andy Lutomirski <luto@kernel.org>
+CC:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "Alexei Starovoitov" <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Kernel Team" <Kernel-team@fb.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Jann Horn <jannh@google.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        "linux-abi@vger.kernel.org" <linux-abi@vger.kernel.org>,
+        "kees@chromium.org" <kees@chromium.org>
+Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
+Thread-Topic: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via
+ /dev/bpf
+Thread-Index: AQHVLSW5611trSWWQEuGSg4xXBva46awKSYAgAFFJoA=
+Date:   Fri, 28 Jun 2019 19:04:24 +0000
+Message-ID: <3C595328-3ABE-4421-9772-8D41094A4F57@fb.com>
+References: <20190627201923.2589391-1-songliubraving@fb.com>
+ <20190627201923.2589391-2-songliubraving@fb.com>
+ <21894f45-70d8-dfca-8c02-044f776c5e05@kernel.org>
+In-Reply-To: <21894f45-70d8-dfca-8c02-044f776c5e05@kernel.org>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3445.104.11)
+x-originating-ip: [2620:10d:c090:200::2127]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 646e147e-5cb0-4f02-5d39-08d6fbfb6f52
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR15MB1838;
+x-ms-traffictypediagnostic: MWHPR15MB1838:
+x-microsoft-antispam-prvs: <MWHPR15MB1838BFEE640EBBFB3BB5A7DBB3FC0@MWHPR15MB1838.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 00826B6158
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(346002)(396003)(376002)(136003)(39860400002)(189003)(199004)(6506007)(4326008)(2906002)(57306001)(68736007)(36756003)(54906003)(53936002)(11346002)(46003)(6246003)(446003)(5660300002)(476003)(316002)(6512007)(71200400001)(2616005)(486006)(71190400001)(25786009)(76116006)(229853002)(478600001)(53546011)(99286004)(6916009)(81166006)(81156014)(66476007)(76176011)(66946007)(86362001)(256004)(6436002)(66446008)(6486002)(186003)(73956011)(14444005)(50226002)(6116002)(64756008)(8936002)(66556008)(33656002)(102836004)(14454004)(7416002)(7736002)(8676002)(305945005);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1838;H:MWHPR15MB1165.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: VOBquLOJy518kQIBeS0UTiWod/vtsqynze0QGWp6O163xktoENly2sPAB+QzXvd9sUOAX8s3MJ5riMkw3Pu0oKhH82DUk5Oqsd2P9JSrdPLK5s790NmXWLwmBoc4qs2eld/tyz8mkjnwAI5WpSfJUW2+MIfQ6ftFRs9U76Qk/qawqFvKqagdgcHUJqwMmJRqGxWjvNDQjuoxUboEcmlQ+6yT8yyMPyom0FYszTWinMeqEqzxM5hgrG0zMSq5hbtA0Hhy3jFQgn5syfeZqp7U9TR1E+dW+ODsfU0dsxF28Yba7VTv8S4EezRZ0UX3gNOHgHDSRtCXXvXuw2iT60O94UFKluNz2R49pTIjv7w2gXwqO2vILGT8iru8gIFAsXyfFC8ZWg3I/NWq0BelXY+GtD+9eVK/QJ8hTuIbUfDjUBs=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <D168CFEC5201244EA94512D309D9EBC6@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 646e147e-5cb0-4f02-5d39-08d6fbfb6f52
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Jun 2019 19:04:24.0364
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: songliubraving@fb.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1838
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-28_09:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906280215
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Mauro,
+Hi Andy,=20
 
-On 6/28/19 2:20 PM, Mauro Carvalho Chehab wrote:
-> Rename the leds documentation files to ReST, add an
-> index for them and adjust in order to produce a nice html
-> output via the Sphinx build system.
-> 
-> At its new index.rst, let's add a :orphan: while this is not linked to
-> the main index.rst file, in order to avoid build warnings.
-> 
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-> Acked-by: Pavel Machek <pavel@ucw.cz>
-> ---
->  Documentation/laptops/thinkpad-acpi.txt       |   4 +-
->  Documentation/leds/index.rst                  |  25 ++
->  .../leds/{leds-blinkm.txt => leds-blinkm.rst} |  64 ++---
->  ...s-class-flash.txt => leds-class-flash.rst} |  49 ++--
->  .../leds/{leds-class.txt => leds-class.rst}   |  15 +-
->  .../leds/{leds-lm3556.txt => leds-lm3556.rst} | 100 ++++++--
->  .../leds/{leds-lp3944.txt => leds-lp3944.rst} |  23 +-
->  Documentation/leds/leds-lp5521.rst            | 115 +++++++++
->  Documentation/leds/leds-lp5521.txt            | 101 --------
->  Documentation/leds/leds-lp5523.rst            | 147 ++++++++++++
->  Documentation/leds/leds-lp5523.txt            | 130 ----------
->  Documentation/leds/leds-lp5562.rst            | 137 +++++++++++
->  Documentation/leds/leds-lp5562.txt            | 120 ----------
->  Documentation/leds/leds-lp55xx.rst            | 224 ++++++++++++++++++
->  Documentation/leds/leds-lp55xx.txt            | 194 ---------------
->  Documentation/leds/leds-mlxcpld.rst           | 118 +++++++++
->  Documentation/leds/leds-mlxcpld.txt           | 110 ---------
->  ...edtrig-oneshot.txt => ledtrig-oneshot.rst} |  11 +-
->  ...ig-transient.txt => ledtrig-transient.rst} |  63 +++--
->  ...edtrig-usbport.txt => ledtrig-usbport.rst} |  11 +-
->  Documentation/leds/{uleds.txt => uleds.rst}   |   5 +-
->  MAINTAINERS                                   |   2 +-
->  drivers/leds/trigger/Kconfig                  |   2 +-
->  drivers/leds/trigger/ledtrig-transient.c      |   2 +-
->  net/netfilter/Kconfig                         |   2 +-
->  25 files changed, 996 insertions(+), 778 deletions(-)
->  create mode 100644 Documentation/leds/index.rst
->  rename Documentation/leds/{leds-blinkm.txt => leds-blinkm.rst} (57%)
->  rename Documentation/leds/{leds-class-flash.txt => leds-class-flash.rst} (74%)
->  rename Documentation/leds/{leds-class.txt => leds-class.rst} (92%)
->  rename Documentation/leds/{leds-lm3556.txt => leds-lm3556.rst} (70%)
->  rename Documentation/leds/{leds-lp3944.txt => leds-lp3944.rst} (78%)
->  create mode 100644 Documentation/leds/leds-lp5521.rst
->  delete mode 100644 Documentation/leds/leds-lp5521.txt
->  create mode 100644 Documentation/leds/leds-lp5523.rst
->  delete mode 100644 Documentation/leds/leds-lp5523.txt
->  create mode 100644 Documentation/leds/leds-lp5562.rst
->  delete mode 100644 Documentation/leds/leds-lp5562.txt
->  create mode 100644 Documentation/leds/leds-lp55xx.rst
->  delete mode 100644 Documentation/leds/leds-lp55xx.txt
->  create mode 100644 Documentation/leds/leds-mlxcpld.rst
->  delete mode 100644 Documentation/leds/leds-mlxcpld.txt
->  rename Documentation/leds/{ledtrig-oneshot.txt => ledtrig-oneshot.rst} (90%)
->  rename Documentation/leds/{ledtrig-transient.txt => ledtrig-transient.rst} (81%)
->  rename Documentation/leds/{ledtrig-usbport.txt => ledtrig-usbport.rst} (86%)
->  rename Documentation/leds/{uleds.txt => uleds.rst} (95%)
+> On Jun 27, 2019, at 4:40 PM, Andy Lutomirski <luto@kernel.org> wrote:
+>=20
+> On 6/27/19 1:19 PM, Song Liu wrote:
+>> This patch introduce unprivileged BPF access. The access control is
+>> achieved via device /dev/bpf. Users with write access to /dev/bpf are ab=
+le
+>> to call sys_bpf().
+>> Two ioctl command are added to /dev/bpf:
+>> The two commands enable/disable permission to call sys_bpf() for current
+>> task. This permission is noted by bpf_permitted in task_struct. This
+>> permission is inherited during clone(CLONE_THREAD).
+>> Helper function bpf_capable() is added to check whether the task has got
+>> permission via /dev/bpf.
+>=20
+>> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+>> index 0e079b2298f8..79dc4d641cf3 100644
+>> --- a/kernel/bpf/verifier.c
+>> +++ b/kernel/bpf/verifier.c
+>> @@ -9134,7 +9134,7 @@ int bpf_check(struct bpf_prog **prog, union bpf_at=
+tr *attr,
+>>  		env->insn_aux_data[i].orig_idx =3D i;
+>>  	env->prog =3D *prog;
+>>  	env->ops =3D bpf_verifier_ops[env->prog->type];
+>> -	is_priv =3D capable(CAP_SYS_ADMIN);
+>> +	is_priv =3D bpf_capable(CAP_SYS_ADMIN);
+>=20
+> Huh?  This isn't a hardening measure -- the "is_priv" verifier mode allow=
+s straight-up leaks of private kernel state to user mode.
+>=20
+> (For that matter, the pending lockdown stuff should possibly consider thi=
+s a "confidentiality" issue.)
+>=20
+>=20
+> I have a bigger issue with this patch, though: it's a really awkward way =
+to pretend to have capabilities.  For bpf, it seems like you could make thi=
+s be a *real* capability without too much pain since there's only one sysca=
+ll there.  Just find a way to pass an fd to /dev/bpf into the syscall.  If =
+this means you need a new bpf_with_cap() syscall that takes an extra argume=
+nt, so be it.  The old bpf() syscall can just translate to bpf_with_cap(...=
+, -1).
+>=20
+> For a while, I've considered a scheme I call "implicit rights".  There wo=
+uld be a directory in /dev called /dev/implicit_rights.  This would either =
+be part of devtmpfs or a whole new filesystem -- it would *not* be any othe=
+r filesystem.  The contents would be files that can't be read or written an=
+d exist only in memory.  You create them with a privileged syscall.  Certai=
+n actions that are sensitive but not at the level of CAP_SYS_ADMIN (use of =
+large-attack-surface bpf stuff, creation of user namespaces, profiling the =
+kernel, etc) could require an "implicit right".  When you do them, if you d=
+on't have CAP_SYS_ADMIN, the kernel would do a path walk for, say, /dev/imp=
+licit_rights/bpf and, if the object exists, can be opened, and actually ref=
+ers to the "bpf" rights object, then the action is allowed.  Otherwise it's=
+ denied.
+>=20
+> This is extensible, and it doesn't require the rather ugly per-task state=
+ of whether it's enabled.
+>=20
+> For things like creation of user namespaces, there's an existing API, and=
+ the default is that it works without privilege.  Switching it to an implic=
+it right has the benefit of not requiring code changes to programs that alr=
+eady work as non-root.
+>=20
+> But, for BPF in particular, this type of compatibility issue doesn't exis=
+t now.  You already can't use most eBPF functionality without privilege.  N=
+ew bpf-using programs meant to run without privilege are *new*, so they can=
+ use a new improved API.  So, rather than adding this obnoxious ioctl, just=
+ make the API explicit, please.
+>=20
+> Also, please cc: linux-abi next time.
 
-Patches 4/9 and 24/43 applied to the for-next branch of linux-leds.git.
+Thanks for your inputs.=20
 
-Thanks!
+I think we need to clarify the use case here. In this case, we are NOT=20
+thinking about creating new tools for unprivileged users. Instead, we=20
+would like to use existing tools without root. Currently, users of these
+tools have to run them with root or sudo. But they would prefer not to.=20
 
--- 
-Best regards,
-Jacek Anaszewski
+On the kernel side, we are not planning provides a subset of safe=20
+features for unprivileged users. The permission here is all-or-nothing.=20
+
+Introducing bpf_with_cap() syscall means we need teach these tools to=20
+manage the fd, and use the new API when necessary. This is clearly not=20
+easy. On the other hand, current solution is easy to adopt for most=20
+tools (see 4/4 of this set).=20
+
+Also, for this use case, I don't see bpf_with_cap() more secure than=20
+this patch.
+
+Thanks,
+Song
+
+
