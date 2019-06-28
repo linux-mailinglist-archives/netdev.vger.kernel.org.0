@@ -2,57 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A3705A75F
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 01:05:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19EE55A760
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 01:05:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726809AbfF1XFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 19:05:18 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:40771 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726643AbfF1XFS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 19:05:18 -0400
-Received: by mail-lj1-f194.google.com with SMTP id a21so7500601ljh.7
-        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 16:05:17 -0700 (PDT)
+        id S1726844AbfF1XFr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 19:05:47 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:39073 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726631AbfF1XFr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 19:05:47 -0400
+Received: by mail-lf1-f65.google.com with SMTP id p24so4972614lfo.6
+        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 16:05:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=GqfzcGTh4R+wjudzcyBPWjah+lJ5/F0fn2v7GiYZZ1A=;
-        b=pzwBCZ+hEhuF0BWeVUfu6SkZIpY1bN87/e7nB8Y+GdcMuWSa97E/Uf5YhCv+jn4ha6
-         e//1PWFAausGWjhzQ1oVU6YvJ8VkrbqAPRNMtkMBAwP6lhw2P2T/SwZt1mZJD/X7n/vQ
-         OuwSNuRcqVhUeBZaud3kV5x1gnG7g2bVZTPUDuXw7B40081EL20cZfe2AChoXMxFRmVM
-         h7xKhLdNj9kWC3CRZLCr0zjiKMBJ0CyBjC5U3cJdTZqvpA0DHcKT22Aen4UtdO8N6cv2
-         EBRfiV6b69wnobETdZwwad4vP31sRQM/TyOHaHWKPAMRYT6rcQM/SZbqHMVknzgebqa8
-         QypA==
+        bh=7sPUicluoxi7PmWwcoxTyuD1lpqtIzHr2fbeIzcyxlg=;
+        b=LRXFanHjoU2xcv1X0KP2eXASm7z1hUw4HwZ9awsgjNI0gHWOP4kum3Ig0UpKxESOuw
+         iXedOAmnRqOJmi+tV5W11meCFcEeoYZVWnm0Z3MTd/NCaE+iOggstWg0BAY//70ZCobv
+         1Kp08aanSSrZlxAxHma89H+2/yBa/rPCRn81g2zT36Mum81gNwAJTf/bMPHX+S2f8dfy
+         T6mOcPFaJ1JfYXHv3Vj3UMggNxVvWRqz7wxfOYK/HdtDJm3hSTDL1sNvBMi545xf4r0P
+         eJMSb3RG78/QAul6xAFxPLBKDZBdkcm2xMg0DJSq3MOrGcSfbNl0AtQ5OuTK06ypIH2J
+         rlDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=GqfzcGTh4R+wjudzcyBPWjah+lJ5/F0fn2v7GiYZZ1A=;
-        b=QyZcQROBD/ExcX3vVttXpO0ffUKNjQI2rytWI4Srli4t4yn7Nu0v8s64+uetzj0i4o
-         0YXlg053XnQ9ntVWT9+cdd+p3yCRogRrpXLRIf9dJF2MFFw1hqwW53cbPWHZmjR2xET4
-         QmFB94/7KSQjEi2Q26bJzhe/it5oLD3OwdmaDzYtq7oyNY2tsX5p0nbib7Bz15lR3XKN
-         h8P3dHI1ooPz58RYHnPgFvSO6HtqutrlhjqyZ4xyWJz4yLNhzcTticjCLm2VfA2B/oJY
-         4lWw2erQi0lYkoCZdIcpCY0cxjaqhZsd9BGtLPqpdXld7ne4ScMSJ4amf2VUPCmwmCIF
-         dd2Q==
-X-Gm-Message-State: APjAAAWLoJZ5ewPqDdzEnSTySLlv+ERNl2+Sb0sl4vVOT58kvXZcgc30
-        6ktwLdHtdIdkwHFK3OoVcFjlxM4YKtQGOhBx4UCVfRtP0DnZAw==
-X-Google-Smtp-Source: APXvYqyb+IODZkDaSzeYM2z+Z6NUQ7nHDLo8t8QrnPDdXxpufnA1F1qjEioD/oQWkrnwtYqxsbD2prYuA8maHYT2544=
-X-Received: by 2002:a2e:5b1b:: with SMTP id p27mr7304303ljb.97.1561763116214;
- Fri, 28 Jun 2019 16:05:16 -0700 (PDT)
+        bh=7sPUicluoxi7PmWwcoxTyuD1lpqtIzHr2fbeIzcyxlg=;
+        b=tJSVO/PBkwlqG3ULNNZpYDdCNblk8cdLGbp7o2sK211QDBtoGzzP8/ySXnDP5YOVqN
+         cbkDX7cv3wPXJ7kzui4zznaCH0m3/XS9lqxIg0Jv/beu4cFeDo7IV0mziCOEanajxW6a
+         I/n+IS5BZFhMYsy3jT1b/DesPcb0hALoHS5FcuNHgI1MrQPWP/HG9qjPoLkhKIv+V27u
+         +BDdSyrkC2AyIAO3Sx+PDWxvrkRLV24+OaB1RyNANQtXlzB0RYocvR3L4pnufKxiwTXE
+         fUyZJk5tKRbUJ5xENNtCYgvhL+kkwiCiEuGNrmbCht1QIm2eLzsl8OpsTmV7mBARhRiA
+         aeiA==
+X-Gm-Message-State: APjAAAWQFRX7GL63IjaUlTjYcYkeL6XDADV+nJj+4P0uEv0nVcmLPQbJ
+        r/I1BWNhcQjKg6TFOiZ5g5wm4K0RjjOrg6gYKTo4Gg==
+X-Google-Smtp-Source: APXvYqxxmL4o3mQ1nhvKTdZbERxlO12aKIYMjfY5bxhRdIV9JX/bC+iLb31gPXSAz9QCb/hBn8aNR6D8hRUd49znT/g=
+X-Received: by 2002:a19:9156:: with SMTP id y22mr5965859lfj.43.1561763144657;
+ Fri, 28 Jun 2019 16:05:44 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190626185251.205687-1-csully@google.com> <20190626185251.205687-2-csully@google.com>
- <20190626160832.3f191a53@cakuba.netronome.com> <CAH_-1qzzWVKxDX3LaorsgYPjT5uhDgqdN3oMZtJ2p6AzDqRyXA@mail.gmail.com>
- <20190628114615.4fc81791@cakuba.netronome.com> <20190628200628.GS27733@lunn.ch>
-In-Reply-To: <20190628200628.GS27733@lunn.ch>
+References: <20190628175633.143501-1-csully@google.com> <20190628175633.143501-5-csully@google.com>
+ <20190628111052.26b7c0e2@hermes.lan>
+In-Reply-To: <20190628111052.26b7c0e2@hermes.lan>
 From:   Catherine Sullivan <csully@google.com>
-Date:   Fri, 28 Jun 2019 16:05:05 -0700
-Message-ID: <CAH_-1qxdG2nFXTQs30nVanmNuEmENV-bf=60NpAZPy9j3EjyWg@mail.gmail.com>
-Subject: Re: [net-next 1/4] gve: Add basic driver framework for Compute Engine
- Virtual NIC
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        netdev@vger.kernel.org, Sagi Shahar <sagis@google.com>,
+Date:   Fri, 28 Jun 2019 16:05:33 -0700
+Message-ID: <CAH_-1qz3cKSMbNYUZwa=tEM1=5QSF86GrSgDwbpu9-qoMwHXww@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 4/4] gve: Add ethtool support
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, Sagi Shahar <sagis@google.com>,
         Jon Olson <jonolson@google.com>,
         Willem de Bruijn <willemb@google.com>,
         Luigi Rizzo <lrizzo@google.com>
@@ -62,39 +59,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 28, 2019 at 1:06 PM Andrew Lunn <andrew@lunn.ch> wrote:
+On Fri, Jun 28, 2019 at 11:11 AM Stephen Hemminger
+<stephen@networkplumber.org> wrote:
 >
-> On Fri, Jun 28, 2019 at 11:46:15AM -0700, Jakub Kicinski wrote:
-> > On Fri, 28 Jun 2019 10:52:27 -0700, Catherine Sullivan wrote:
-> > > > > +if NET_VENDOR_GOOGLE
-> > > > > +
-> > > > > +config GVE
-> > > > > +     tristate "Google Virtual NIC (gVNIC) support"
-> > > > > +     depends on (PCI_MSI && X86)
-> > > >
-> > > > We usually prefer for drivers not to depend on the platform unless
-> > > > really necessary, but IDK how that applies to the curious new world
-> > > > of NICs nobody can buy :)
-> > >
-> > > This is the only platform it will ever need to run on so we would really
-> > > prefer to not have to support others :)
-> >
-> > I think the motivation is partially to force the uniform use of generic
-> > APIs across the drivers, so that re-factoring of core code is easier.
-> > Do you have any specific pain-points in mind where x86 dependency
-> > simplifies things? If not I think it's a better default to not have it.
-> > Not a big deal, though.
+> On Fri, 28 Jun 2019 10:56:33 -0700
+> Catherine Sullivan <csully@google.com> wrote:
 >
-> And maybe sometime in the future you might want to put this interface
-> in an ARM64 server?
+> > +static void
+> > +gve_get_ethtool_stats(struct net_device *netdev,
+> > +                   struct ethtool_stats *stats, u64 *data)
+> > +{
+> > +     struct gve_priv *priv = netdev_priv(netdev);
+> > +     u64 rx_pkts, rx_bytes, tx_pkts, tx_bytes;
+> > +     int ring;
+> > +     int i;
+> > +
+> > +     ASSERT_RTNL();
+> > +
+> > +     for (rx_pkts = 0, rx_bytes = 0, ring = 0;
+> > +          ring < priv->rx_cfg.num_queues; ring++) {
+> > +             if (priv->rx) {
+> > +                     rx_pkts += priv->rx[ring].rpackets;
+> > +                     rx_bytes += priv->rx[ring].rbytes;
+> > +             }
+> > +     }
+> > +     for (tx_pkts = 0, tx_bytes = 0, ring = 0;
+> > +          ring < priv->tx_cfg.num_queues; ring++) {
+> > +             if (priv->tx) {
+> > +                     tx_pkts += priv->tx[ring].pkt_done;
+> > +                     tx_bytes += priv->tx[ring].bytes_done;
+> > +             }
+> > +     }
+> > +     memset(data, 0, GVE_MAIN_STATS_LEN * sizeof(*data));
 >
-> One 'pain-paint' is that the driver might assume cache-coherency,
-> which is an x86 thing. If the generic APIs have been used, it should
-> not be an issue, but i've not spent the time to see if the DMA API has
-> been used correctly.
->
->      Andrew
+> memset here is unnecessary since ethtool_get_stats allocates
+> and zeros the memory already.
 
-Mostly it is just hesitation around lack of testing. But I've done a few quick
-compile tests and ARM and ARM64 don't seem to have any problems so
-I've removed the dependency in v3.
+Ah, thanks, removed in v3.
