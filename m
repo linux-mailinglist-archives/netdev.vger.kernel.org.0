@@ -2,134 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D5A2F597DE
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 11:49:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B6A7597E9
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 11:51:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726614AbfF1Js5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 05:48:57 -0400
-Received: from m9783.mail.qiye.163.com ([220.181.97.83]:37211 "EHLO
+        id S1726664AbfF1JvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 05:51:17 -0400
+Received: from m9783.mail.qiye.163.com ([220.181.97.83]:42695 "EHLO
         m9783.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726564AbfF1Js4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 05:48:56 -0400
-Received: from localhost.localdomain (unknown [123.59.132.129])
-        by m9783.mail.qiye.163.com (Hmail) with ESMTPA id D0074C1695;
-        Fri, 28 Jun 2019 17:48:47 +0800 (CST)
-From:   wenxu@ucloud.cn
-To:     pablo@netfilter.org, fw@strlen.de
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 4/4 nf-next v2] netfilter: Flow table support for the bridge family
-Date:   Fri, 28 Jun 2019 17:48:46 +0800
-Message-Id: <1561715326-3945-4-git-send-email-wenxu@ucloud.cn>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1561715326-3945-1-git-send-email-wenxu@ucloud.cn>
-References: <1561715326-3945-1-git-send-email-wenxu@ucloud.cn>
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVSUlOQkJCQk5KSE1JTUpZV1koWU
-        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NEk6ITo6TjgrSQsZHwwcNi0J
-        SwMaFAJVSlVKTk1KTEpOSElMQkpIVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
-        QlVKSElVSklCWVdZCAFZQUhDQ0g3Bg++
-X-HM-Tid: 0a6b9d7cc3822085kuqyd0074c1695
+        with ESMTP id S1726431AbfF1JvR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 05:51:17 -0400
+Received: from [192.168.188.14] (unknown [120.132.1.226])
+        by m9783.mail.qiye.163.com (Hmail) with ESMTPA id 5B427C10FE;
+        Fri, 28 Jun 2019 17:51:11 +0800 (CST)
+Subject: Re: [PATCH 2/3 nf-next] netfilter:nf_flow_table: Support bridge type
+ flow offload
+To:     Florian Westphal <fw@strlen.de>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
+References: <1561545148-11978-1-git-send-email-wenxu@ucloud.cn>
+ <1561545148-11978-2-git-send-email-wenxu@ucloud.cn>
+ <20190626183816.3ux3iifxaal4ffil@breakpoint.cc>
+ <20190626191945.2mktaqrcrfcrfc66@breakpoint.cc>
+ <dce5cba2-766c-063e-745f-23b3dd83494b@ucloud.cn>
+ <20190627125839.t56fnptdeqixt7wd@salvia>
+ <b2a48653-9f30-18a9-d0e1-eaa940a361a9@ucloud.cn>
+ <20190628060617.az2quv4bodrenuli@breakpoint.cc>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <6c0f1fb6-426d-0af0-13a5-b9c95c8abf21@ucloud.cn>
+Date:   Fri, 28 Jun 2019 17:51:05 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
+MIME-Version: 1.0
+In-Reply-To: <20190628060617.az2quv4bodrenuli@breakpoint.cc>
+Content-Type: text/plain; charset=iso-8859-15
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-HM-Spam-Status: e1kfGhgUHx5ZQUhXWQgYFAkeWUFZVklVSU9DS0tLSk9PQk5DTllXWShZQU
+        lCN1dZLVlBSVdZCQ4XHghZQVk1NCk2OjckKS43PlkG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OSo6Hhw4KzgxUQsjDwFIAxIa
+        Sz8wCkpVSlVKTk1KTEpOT0xKTU9JVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJS1VK
+        SElVSlVJSU1ZV1kIAVlBSUNMSjcG
+X-HM-Tid: 0a6b9d7ef4b82085kuqy5b427c10fe
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wenxu <wenxu@ucloud.cn>
 
-This patch adds the bridge flow table type, that implements the datapath
-flow table to forward IPv4 traffic through bridge.
+On 6/28/2019 2:06 PM, Florian Westphal wrote:
+> wenxu <wenxu@ucloud.cn> wrote:
+>> ns21 iperf to 10.0.0.8 with dport 22 in ns22
+>> first time with OFFLOAD enable
+>>
+>> nft add flowtable bridge firewall fb2 { hook ingress priority 0 \; devices = { veth21, veth22 } \; }
+>> nft add chain bridge firewall ftb-all {type filter hook forward priority 0 \; policy accept \; }
+>> nft add rule bridge firewall ftb-all counter ct zone 2 ip protocol tcp flow offload @fb2
+>>
+>> # iperf -c 10.0.0.8 -p 22 -t 60 -i2
+> [..]
+>> [  3]  0.0-60.0 sec   353 GBytes  50.5 Gbits/sec
+>>
+>> The second time on any offload:
+>> # iperf -c 10.0.0.8 -p 22 -t 60 -i2
+>> [  3]  0.0-60.0 sec   271 GBytes  38.8 Gbits/sec
+> Wow, this is pretty impressive.  Do you have numbers without
+> offload and no connection tracking?
 
-Signed-off-by: wenxu <wenxu@ucloud.cn>
----
- net/bridge/netfilter/Kconfig                |  8 +++++
- net/bridge/netfilter/Makefile               |  1 +
- net/bridge/netfilter/nf_flow_table_bridge.c | 46 +++++++++++++++++++++++++++++
- 3 files changed, 55 insertions(+)
- create mode 100644 net/bridge/netfilter/nf_flow_table_bridge.c
+There is no other connection  on the bridge in zone 2
 
-diff --git a/net/bridge/netfilter/Kconfig b/net/bridge/netfilter/Kconfig
-index f4fb0b9..cba5f71 100644
---- a/net/bridge/netfilter/Kconfig
-+++ b/net/bridge/netfilter/Kconfig
-@@ -33,6 +33,14 @@ config NF_CONNTRACK_BRIDGE
- 
- 	  To compile it as a module, choose M here.  If unsure, say N.
- 
-+config NF_FLOW_TABLE_BRIDGE
-+	tristate "Netfilter flow table bridge module"
-+	depends on NF_FLOW_TABLE && NF_CONNTRACK_BRIDGE
-+	help
-+          This option adds the flow table bridge support.
-+
-+	  To compile it as a module, choose M here.
-+
- endif # NF_TABLES_BRIDGE
- 
- menuconfig BRIDGE_NF_EBTABLES
-diff --git a/net/bridge/netfilter/Makefile b/net/bridge/netfilter/Makefile
-index 9d77673..deb81e6 100644
---- a/net/bridge/netfilter/Makefile
-+++ b/net/bridge/netfilter/Makefile
-@@ -7,6 +7,7 @@ obj-$(CONFIG_NFT_BRIDGE_REJECT)  += nft_reject_bridge.o
- 
- # connection tracking
- obj-$(CONFIG_NF_CONNTRACK_BRIDGE) += nf_conntrack_bridge.o
-+obj-$(CONFIG_NF_FLOW_TABLE_BRIDGE) += nf_flow_table_bridge.o
- 
- # packet logging
- obj-$(CONFIG_NF_LOG_BRIDGE) += nf_log_bridge.o
-diff --git a/net/bridge/netfilter/nf_flow_table_bridge.c b/net/bridge/netfilter/nf_flow_table_bridge.c
-new file mode 100644
-index 0000000..3a65b44
---- /dev/null
-+++ b/net/bridge/netfilter/nf_flow_table_bridge.c
-@@ -0,0 +1,46 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+#include <linux/kernel.h>
-+#include <linux/init.h>
-+#include <linux/module.h>
-+#include <linux/netfilter.h>
-+#include <net/netfilter/nf_flow_table.h>
-+#include <net/netfilter/nf_tables.h>
-+
-+static unsigned int
-+nf_flow_offload_bridge_hook(void *priv, struct sk_buff *skb,
-+			    const struct nf_hook_state *state)
-+{
-+	switch (skb->protocol) {
-+	case htons(ETH_P_IP):
-+		return nf_flow_offload_ip_hook(priv, skb, state);
-+	}
-+
-+	return NF_ACCEPT;
-+}
-+
-+static struct nf_flowtable_type flowtable_bridge = {
-+	.family		= NFPROTO_BRIDGE,
-+	.init		= nf_flow_table_init,
-+	.free		= nf_flow_table_free,
-+	.hook		= nf_flow_offload_bridge_hook,
-+	.owner		= THIS_MODULE,
-+};
-+
-+static int __init nf_flow_bridge_module_init(void)
-+{
-+	nft_register_flowtable_type(&flowtable_bridge);
-+
-+	return 0;
-+}
-+
-+static void __exit nf_flow_bridge_module_exit(void)
-+{
-+	nft_unregister_flowtable_type(&flowtable_bridge);
-+}
-+
-+module_init(nf_flow_bridge_module_init);
-+module_exit(nf_flow_bridge_module_exit);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("wenxu <wenxu@ucloud.cn>");
-+MODULE_ALIAS_NF_FLOWTABLE(AF_BRIDGE);
--- 
-1.8.3.1
-
+>
+> Is this with CONFIG_RETPOLINE=y (just curious)?
+Yes, it is enable.
