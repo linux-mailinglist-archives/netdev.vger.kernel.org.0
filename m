@@ -2,95 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D32DC597F8
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 11:54:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F6ED59825
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 12:05:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726561AbfF1Jyh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 05:54:37 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:36908 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726539AbfF1Jyf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 05:54:35 -0400
-Received: by mail-ed1-f67.google.com with SMTP id w13so10198267eds.4
-        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 02:54:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=HNmoLH7L65zh+oviWZRmLVKzaZLwx+ZIkWckjpUyKBQ=;
-        b=pcJbfKjM2ad/y+5/UddgYg5Cz58j5AZ0qF4vYduQT5G6UbZUJQpTEoZGGg1usZKLP9
-         KYS+X07KCpm94g3IW66CGdJociXACubVTm7SNwzltVsVoOB8DfXrZtFc1yjjXL/Zjzll
-         L7Z90vOpaCfSK7UggqwkBnKcfHQvnt9Ow9kmpwXhb8c/HnAgmC4IUNJdrDy6b91k8vh1
-         f+v7UaDLu9ZNVl2MabYbx27TiH18GvTG9PjGQyRZRjotblzuWlLmbokwCqb4pmIseqPu
-         qqtFkxSoNdrQhgmF+3s/HIFzPqCcmktNIqWoNQXpWN59juFzfGXnZjDT3l6pC7ekVMYy
-         ITZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=HNmoLH7L65zh+oviWZRmLVKzaZLwx+ZIkWckjpUyKBQ=;
-        b=Gyi5hTbDzt0rGPr1S45kXycP2TXWIbdNE/8mPqWi9SnGDDZ6drXYuFqKA7wOcZ3Wb7
-         0aTY9lo9OLETGBVKNBGI5nPtyiOQMiUA8qbZWrU7Sq3B4tUBur5pZlFkt0lEmPq5CQvt
-         8boqAvFBfNjjxhZs5M8v6wKNjpOXN9VrXzEvaZg4lsFB3lbA37Tb7Tr5Jq6ppYYbeyP/
-         xjm5S3V327Gg7HzTwT23Vdt5xiImessLIY+QqLOZETTtHwnZM6uVlUv4z6YRQJpR6dZN
-         C2EuVcZHUoDMo8q3hh3NEGnYb+ALRy4pOl7foRxoBw8RfkvbSNhhFLigcye3UeP4/hqJ
-         7XzA==
-X-Gm-Message-State: APjAAAXtrQyb+ZxOkP2OoGr5hK7ZevQObKFeBJXCySftovlIWOyCIkMF
-        Yl/ZQST79OZnANb9b6nYmPy6hw==
-X-Google-Smtp-Source: APXvYqz0piUDWyHsW3RnYXb/wRndogljwovgfmSHoyN0JEmE5i8Kz+TBlL9R3yKWDt/16Qv/u9SAGQ==
-X-Received: by 2002:a50:f98a:: with SMTP id q10mr10106210edn.267.1561715674240;
-        Fri, 28 Jun 2019 02:54:34 -0700 (PDT)
-Received: from tegmen.arch.suse.de (nat.nue.novell.com. [195.135.221.2])
-        by smtp.gmail.com with ESMTPSA id e12sm536721edb.72.2019.06.28.02.54.33
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 28 Jun 2019 02:54:33 -0700 (PDT)
-From:   Denis Kirjanov <kda@linux-powerpc.org>
-X-Google-Original-From: Denis Kirjanov <dkirjanov@suse.com>
-To:     stephen@networkplumber.org, dsahern@gmail.com
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        dledford@redhat.com, mkubecek@suse.cz,
-        Denis Kirjanov <kda@linux-powerpc.org>
-Subject: [PATCH iproute2-next v4 2/2] uapi: update if_link.h
-Date:   Fri, 28 Jun 2019 11:54:26 +0200
-Message-Id: <20190628095426.2819-2-dkirjanov@suse.com>
-X-Mailer: git-send-email 2.12.3
-In-Reply-To: <20190628095426.2819-1-dkirjanov@suse.com>
-References: <20190628095426.2819-1-dkirjanov@suse.com>
+        id S1726606AbfF1KFy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 06:05:54 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:44914 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726508AbfF1KFy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 06:05:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=Zo2lrLytL0COZvhU9U0To9L5I5lBFcCco9RAtI9unXs=; b=2BwXhftfW+MtnjSM+MVlnTD5c
+        7ozx2lr+mO+LZRsgVbEG9QvDaL83erzhB61QZ/Yf3Qm1MDC8KtCVSwU3TbiMQ4GYaHS8pA6VeAe0r
+        CKQLDPB53rsb9ARX8+LcF8rXkLvyCCFNPkFiVGtEEm2L38/dI9L1jL2YJnJb3KdeuyrmGpekLIMD/
+        LWRQtOnG/sm2KqeYEHwqG2HwgQzihD7WHGuo3Pw9nnVdn3jAXOPx6dw/iFktzjI2MbEeO0vhMsE52
+        53aiYX3TvV8SDYpABGugxIOESrdGcCveCVbHS/laEO1GdWoeGpW6MkOB6wVtzIn3rlxRnOBL7P9zx
+        2G0dNurVg==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:59104)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1hgnlJ-00007p-RR; Fri, 28 Jun 2019 11:05:46 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1hgnlH-0001Pp-1T; Fri, 28 Jun 2019 11:05:43 +0100
+Date:   Fri, 28 Jun 2019 11:05:42 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
+        davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 net-next 0/3] Better PHYLINK compliance for SJA1105 DSA
+Message-ID: <20190628100542.hmzqnp4bsnkikcvv@shell.armlinux.org.uk>
+References: <20190627214637.22366-1-olteanv@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190627214637.22366-1-olteanv@gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-update if_link.h to commit 75345f888f700c4ab2448287e35d48c760b202e6
-("ipoib: show VF broadcast address")
+On Fri, Jun 28, 2019 at 12:46:34AM +0300, Vladimir Oltean wrote:
+> After discussing with Russell King, it appears this driver is making a
+> few confusions and not performing some checks for consistent operation.
+> 
+> Changes in v2:
+> - Removed redundant print in the phylink_validate callback (in 2/3).
+> 
+> Vladimir Oltean (3):
+>   net: dsa: sja1105: Don't check state->link in phylink_mac_config
+>   net: dsa: sja1105: Check for PHY mode mismatches with what PHYLINK
+>     reports
+>   net: dsa: sja1105: Mark in-band AN modes not supported for PHYLINK
+> 
+>  drivers/net/dsa/sja1105/sja1105_main.c | 56 +++++++++++++++++++++++++-
+>  1 file changed, 54 insertions(+), 2 deletions(-)
 
-Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
----
- include/uapi/linux/if_link.h | 5 +++++
- 1 file changed, 5 insertions(+)
+Thanks.  For the whole series:
 
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index bfe7f9e6..5f271d84 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -692,6 +692,7 @@ enum {
- 	IFLA_VF_IB_NODE_GUID,	/* VF Infiniband node GUID */
- 	IFLA_VF_IB_PORT_GUID,	/* VF Infiniband port GUID */
- 	IFLA_VF_VLAN_LIST,	/* nested list of vlans, option for QinQ */
-+	IFLA_VF_BROADCAST,      /* VF broadcast */
- 	__IFLA_VF_MAX,
- };
- 
-@@ -702,6 +703,10 @@ struct ifla_vf_mac {
- 	__u8 mac[32]; /* MAX_ADDR_LEN */
- };
- 
-+struct ifla_vf_broadcast {
-+	__u8 broadcast[32];
-+};
-+
- struct ifla_vf_vlan {
- 	__u32 vf;
- 	__u32 vlan; /* 0 - 4095, 0 disables VLAN filter */
+Acked-by: Russell King <rmk+kernel@armlinux.org.uk>
+
 -- 
-2.12.3
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
