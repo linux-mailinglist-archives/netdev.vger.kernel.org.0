@@ -2,105 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CBFFB5A788
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 01:21:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D23625A7A7
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 01:33:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726731AbfF1XVq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 19:21:46 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:45536 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726631AbfF1XVq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 19:21:46 -0400
-Received: by mail-io1-f66.google.com with SMTP id e3so15905547ioc.12;
-        Fri, 28 Jun 2019 16:21:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=5imOLuCkEnTncHEfbSbR3RE3vi1mxjLFWo4/kKHfOWM=;
-        b=fQ2RRgVqreR4oLT3k6wPGXZewVg3nSP4si8Q59Egw/7fmaIO+3PPY+z2w3hYy4Y4dc
-         pgtF0rnUV6QfR5oIVDd/cuYBpXpbtxUoHsc42uA+9AdiDXlHdhkzor2lbeGy3WE/7jvV
-         tsNkqK7ssvBpn5endTcGgpkrDTpYlCn19Djyw03eqz7XNrB5huc+CEccxpk9/pQNkcEX
-         4Q+4u8p+sE2uw4EtyfR3oX5gC9lSbP/vKsCw3+rQzMovSUPCS/Jd4ipfdjH+1m7ux+Wy
-         yyZuLk9VzXfqqiRRGItE6hK8wnaxV12Q2HQ+9EVIOSsEpB0f6toPP1TZwSU1lmGr/ilH
-         mCWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=5imOLuCkEnTncHEfbSbR3RE3vi1mxjLFWo4/kKHfOWM=;
-        b=EOtFPK8jrS+VrM4uTKuQVO7CDGTv1Nr+L/ebI+sLXgd/fnV2SKGawgM6jOiaSbL2TR
-         PMQjBFrLwTtfPuU+Xpu6a4vUN3DxwJEKp5DcZo6HxSJjCF6XCWT3Hpu4MfWtkUxfZsbS
-         k9YRUSt9I2B/CH11eWLpnfR8nYstcyDAAYOjEAoHbXh9xy1ixfa6tQJnbQKBiSC5StQ0
-         Mi2/8Tk4lJv1HjoOmkTn+zhNSgHwPOvzXk2p2olm+yf/bf0RR31cxUsqqyC7tym9uvC8
-         RIIu2MWrtIJ8YEKtX3KVO/mAYZZIQo8YEUqK2eI8Mpo2uX7qCjJAKudjgLcbD26ZCw8F
-         5gSA==
-X-Gm-Message-State: APjAAAVzbtC1qTYmITBIku3Qzb2B+xttqllXTKPpvAn9AcHFXPyQh2Zs
-        bBKZ0bUdZrPiwO5xvRMqmQXM5nes
-X-Google-Smtp-Source: APXvYqwn2Grerjkb9E2B5YxkN1qWXAiqOm4rqhAkh/9zFLxJ7tk8QhHdjShwQlP3XVw4YxbBW8bT5g==
-X-Received: by 2002:a6b:ee15:: with SMTP id i21mr12858559ioh.281.1561764105701;
-        Fri, 28 Jun 2019 16:21:45 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:a468:85d6:9e2b:8578? ([2601:282:800:fd80:a468:85d6:9e2b:8578])
-        by smtp.googlemail.com with ESMTPSA id f4sm7577757iok.56.2019.06.28.16.21.44
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 28 Jun 2019 16:21:45 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next v4 1/2] ipaddress: correctly print a VF hw
- address in the IPoIB case
-To:     Denis Kirjanov <kda@linux-powerpc.org>, stephen@networkplumber.org
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        dledford@redhat.com, mkubecek@suse.cz
-References: <20190628095426.2819-1-dkirjanov@suse.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <10ad5a7d-b539-4847-c588-4c1a647e3c29@gmail.com>
-Date:   Fri, 28 Jun 2019 17:21:41 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        id S1726931AbfF1XdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 19:33:10 -0400
+Received: from www62.your-server.de ([213.133.104.62]:34138 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726672AbfF1XdJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 19:33:09 -0400
+Received: from [88.198.220.130] (helo=sslproxy01.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hh0Mc-0001Z2-Mt; Sat, 29 Jun 2019 01:33:06 +0200
+Received: from [178.193.45.231] (helo=linux.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hh0Mc-0006o5-EN; Sat, 29 Jun 2019 01:33:06 +0200
+Subject: Re: [PATCH bpf-next v6 0/5] xdp: Allow lookup into devmaps before
+ redirect
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+References: <156171315462.9468.3367572649463706996.stgit@alrua-x1>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <56d5758b-fa9f-c727-1219-5e1318e34ce6@iogearbox.net>
+Date:   Sat, 29 Jun 2019 01:33:05 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
 MIME-Version: 1.0
-In-Reply-To: <20190628095426.2819-1-dkirjanov@suse.com>
+In-Reply-To: <156171315462.9468.3367572649463706996.stgit@alrua-x1>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25494/Fri Jun 28 10:03:21 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/28/19 3:54 AM, Denis Kirjanov wrote:
-> Current code assumes that we print ethernet mac and
-> that doesn't work in the IPoIB case with SRIOV-enabled hardware
+On 06/28/2019 11:12 AM, Toke Høiland-Jørgensen wrote:
+> When using the bpf_redirect_map() helper to redirect packets from XDP, the eBPF
+> program cannot currently know whether the redirect will succeed, which makes it
+> impossible to gracefully handle errors. To properly fix this will probably
+> require deeper changes to the way TX resources are allocated, but one thing that
+> is fairly straight forward to fix is to allow lookups into devmaps, so programs
+> can at least know when a redirect is *guaranteed* to fail because there is no
+> entry in the map. Currently, programs work around this by keeping a shadow map
+> of another type which indicates whether a map index is valid.
 > 
-> Before:
-> 11: ib1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2044 qdisc pfifo_fast
-> state UP mode DEFAULT group default qlen 256
->         link/infiniband
-> 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
-> 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
->         vf 0 MAC 14:80:00:00:66:fe, spoof checking off, link-state
-> disable,
->     trust off, query_rss off
->     ...
+> This series contains two changes that are complementary ways to fix this issue:
 > 
-> After:
-> 11: ib1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2044 qdisc pfifo_fast
-> state UP mode DEFAULT group default qlen 256
->         link/infiniband
-> 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
-> 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
->         vf 0     link/infiniband
-> 80:00:00:66:fe:80:00:00:00:00:00:00:24:8a:07:03:00:a4:3e:7c brd
-> 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff, spoof
-> checking off, link-state disable, trust off, query_rss off
+> - Moving the map lookup into the bpf_redirect_map() helper (and caching the
+>   result), so the helper can return an error if no value is found in the map.
+>   This includes a refactoring of the devmap and cpumap code to not care about
+>   the index on enqueue.
 > 
-> v1->v2: updated kernel headers to uapi commit
-> v2->v3: fixed alignment
-> v3->v4: aligned print statements as used through the source
+> - Allowing regular lookups into devmaps from eBPF programs, using the read-only
+>   flag to make sure they don't change the values.
 > 
-> Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
+> The performance impact of the series is negligible, in the sense that I cannot
+> measure it because the variance between test runs is higher than the difference
+> pre/post series.
+> 
+> Changelog:
+> 
+> v6:
+>   - Factor out list handling in maps to a helper in list.h (new patch 1)
+>   - Rename variables in struct bpf_redirect_info (new patch 3 + patch 4)
+>   - Explain why we are clearing out the map in the info struct on lookup failure
+>   - Remove unneeded check for forwarding target in tracepoint macro
+> 
+> v5:
+>   - Rebase on latest bpf-next.
+>   - Update documentation for bpf_redirect_map() with the new meaning of flags.
+> 
+> v4:
+>   - Fix a few nits from Andrii
+>   - Lose the #defines in bpf.h and just compare the flags argument directly to
+>     XDP_TX in bpf_xdp_redirect_map().
+> 
+> v3:
+>   - Adopt Jonathan's idea of using the lower two bits of the flag value as the
+>     return code.
+>   - Always do the lookup, and cache the result for use in xdp_do_redirect(); to
+>     achieve this, refactor the devmap and cpumap code to get rid the bitmap for
+>     selecting which devices to flush.
+> 
+> v2:
+>   - For patch 1, make it clear that the change works for any map type.
+>   - For patch 2, just use the new BPF_F_RDONLY_PROG flag to make the return
+>     value read-only.
+> 
 > ---
->  ip/ipaddress.c | 40 +++++++++++++++++++++++++++++++++++-----
->  1 file changed, 35 insertions(+), 5 deletions(-)
+> 
+> Toke Høiland-Jørgensen (5):
+>       xskmap: Move non-standard list manipulation to helper
+>       devmap/cpumap: Use flush list instead of bitmap
+>       devmap: Rename ifindex member in bpf_redirect_info
+>       bpf_xdp_redirect_map: Perform map lookup in eBPF helper
+>       devmap: Allow map lookups from eBPF
+> 
+> 
+>  include/linux/filter.h     |    3 +
+>  include/linux/list.h       |   14 ++++++
+>  include/trace/events/xdp.h |    5 +-
+>  include/uapi/linux/bpf.h   |    7 ++-
+>  kernel/bpf/cpumap.c        |  105 +++++++++++++++++++----------------------
+>  kernel/bpf/devmap.c        |  112 ++++++++++++++++++++------------------------
+>  kernel/bpf/verifier.c      |    7 +--
+>  kernel/bpf/xskmap.c        |    3 -
+>  net/core/filter.c          |   60 ++++++++++++------------
+>  9 files changed, 157 insertions(+), 159 deletions(-)
 > 
 
-Fixed the alignment issues and applied.
-
+Applied, thanks!
