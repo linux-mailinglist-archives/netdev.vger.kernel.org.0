@@ -2,76 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 10F3C59C7B
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 15:04:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BABE59C80
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 15:05:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726720AbfF1NEn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 09:04:43 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:58810 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726566AbfF1NEn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Jun 2019 09:04:43 -0400
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id D28FF87630;
-        Fri, 28 Jun 2019 13:04:42 +0000 (UTC)
-Received: from carbon (ovpn-200-45.brq.redhat.com [10.40.200.45])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 48B335D704;
-        Fri, 28 Jun 2019 13:04:35 +0000 (UTC)
-Date:   Fri, 28 Jun 2019 15:04:34 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc:     netdev@vger.kernel.org, jaswinder.singh@linaro.org,
-        ard.biesheuvel@linaro.org, bjorn.topel@intel.com,
-        magnus.karlsson@intel.com, daniel@iogearbox.net, ast@kernel.org,
-        makita.toshiaki@lab.ntt.co.jp, jakub.kicinski@netronome.com,
-        john.fastabend@gmail.com, davem@davemloft.net,
-        maciejromanfijalkowski@gmail.com, brouer@redhat.com
-Subject: Re: [PATCH 1/3, net-next] net: netsec: Use page_pool API
-Message-ID: <20190628150434.30da8852@carbon>
-In-Reply-To: <1561718355-13919-2-git-send-email-ilias.apalodimas@linaro.org>
-References: <1561718355-13919-1-git-send-email-ilias.apalodimas@linaro.org>
-        <1561718355-13919-2-git-send-email-ilias.apalodimas@linaro.org>
+        id S1727090AbfF1NFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 09:05:03 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:47015 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727043AbfF1NFB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 09:05:01 -0400
+Received: by mail-io1-f71.google.com with SMTP id s83so6573561iod.13
+        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 06:05:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=YCxs/qt8Mwv3z7mR64kHU2i7RhK2QfF8Lu/zZDPEtsk=;
+        b=Uc7s2lagDeWki2df5/wvXhNnKDS19yBhtihWU5Xio+DN0eDmdDJ8PSLjsejMtVIlTx
+         XynkKanNtgfiBniFKGqEwq99QG43KXxyojpQcjk7WVCTt56lwgVurkwr+v3H6p5jVDCU
+         nVDYUhvcjqBPwVSu4JZOd9Q1CTLjTKE8j2acaqHRphQGvhXunoLZU495VyjQ3cpGMbLD
+         DdyhF5VPgUGoRexl8xHOTTVwnGw9FAoKblXsB5+udCHzpppnJXnOYMVm6sVpREacOJyd
+         cPk9rLfyI0YrsnQAYwQG8ERN3z0ehvjeG+rUsZJ/9nG10P/ZjAgPR9AhNBUg4lw4dJqm
+         Fm3w==
+X-Gm-Message-State: APjAAAV9oClTOGLMTpH1U+PrOy736xF1Qf9WX04tiVid2uVdzkIAwCks
+        uMEw0rkgR+76xlD+oNkY6/wb6/gsQ/TzubpQQJG3eUlERhds
+X-Google-Smtp-Source: APXvYqx8GKh0Tz0N6JPHNRL9IOslCQEy3zMhF+Ww6SA10ngn8dacBYWiHU7ErPZ6cdknibLtC5lh5DRaS2I+orgfp5ZsyEQIgEVu
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.26]); Fri, 28 Jun 2019 13:04:43 +0000 (UTC)
+X-Received: by 2002:a6b:8d92:: with SMTP id p140mr10485891iod.144.1561727100535;
+ Fri, 28 Jun 2019 06:05:00 -0700 (PDT)
+Date:   Fri, 28 Jun 2019 06:05:00 -0700
+In-Reply-To: <00000000000000ac4f058bd50039@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000104b00058c61eda4@google.com>
+Subject: Re: WARNING in is_bpf_text_address
+From:   syzbot <syzbot+bd3bba6ff3fcea7a6ec6@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, ast@kernel.org, bpf@vger.kernel.org,
+        bvanassche@acm.org, daniel@iogearbox.net, davem@davemloft.net,
+        hawk@kernel.org, jakub.kicinski@netronome.com,
+        johannes.berg@intel.com, johannes@sipsolutions.net,
+        john.fastabend@gmail.com, kafai@fb.com,
+        linux-kernel@vger.kernel.org, longman@redhat.com, mingo@kernel.org,
+        netdev@vger.kernel.org, paulmck@linux.vnet.ibm.com,
+        peterz@infradead.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de, tj@kernel.org,
+        torvalds@linux-foundation.org, will.deacon@arm.com,
+        xdp-newbies@vger.kernel.org, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 28 Jun 2019 13:39:13 +0300
-Ilias Apalodimas <ilias.apalodimas@linaro.org> wrote:
+syzbot has bisected this bug to:
 
-> Use page_pool and it's DMA mapping capabilities for Rx buffers instead
-> of netdev/napi_alloc_frag()
-> 
-> Although this will result in a slight performance penalty on small sized
-> packets (~10%) the use of the API will allow to easily add XDP support.
-> The penalty won't be visible in network testing i.e ipef/netperf etc, it
-> only happens during raw packet drops.
-> Furthermore we intend to add recycling capabilities on the API
-> in the future. Once the recycling is added the performance penalty will
-> go away.
-> The only 'real' penalty is the slightly increased memory usage, since we
-> now allocate a page per packet instead of the amount of bytes we need +
-> skb metadata (difference is roughly 2kb per packet).
-> With a minimum of 4BG of RAM on the only SoC that has this NIC the
-> extra memory usage is negligible (a bit more on 64K pages)
-> 
-> Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-> ---
->  drivers/net/ethernet/socionext/Kconfig  |   1 +
->  drivers/net/ethernet/socionext/netsec.c | 121 +++++++++++++++---------
->  2 files changed, 75 insertions(+), 47 deletions(-)
+commit a0b0fd53e1e67639b303b15939b9c653dbe7a8c4
+Author: Bart Van Assche <bvanassche@acm.org>
+Date:   Thu Feb 14 23:00:46 2019 +0000
 
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+     locking/lockdep: Free lock classes that are no longer in use
 
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=152f6a9da00000
+start commit:   abf02e29 Merge tag 'pm-5.2-rc6' of git://git.kernel.org/pu..
+git tree:       upstream
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=172f6a9da00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=132f6a9da00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=28ec3437a5394ee0
+dashboard link: https://syzkaller.appspot.com/bug?extid=bd3bba6ff3fcea7a6ec6
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14ae828aa00000
+
+Reported-by: syzbot+bd3bba6ff3fcea7a6ec6@syzkaller.appspotmail.com
+Fixes: a0b0fd53e1e6 ("locking/lockdep: Free lock classes that are no longer  
+in use")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
