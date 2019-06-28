@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 181855A731
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 00:49:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6E695A723
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 00:49:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726822AbfF1WtG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726875AbfF1WtG (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 28 Jun 2019 18:49:06 -0400
 Received: from mga05.intel.com ([192.55.52.43]:51493 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726563AbfF1WtG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726643AbfF1WtG (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 28 Jun 2019 18:49:06 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -17,17 +17,21 @@ Received: from orsmga005.jf.intel.com ([10.7.209.41])
   by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 Jun 2019 15:49:05 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.63,429,1557212400"; 
-   d="scan'208";a="338039119"
+   d="scan'208";a="338039122"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by orsmga005.jf.intel.com with ESMTP; 28 Jun 2019 15:49:05 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com
-Subject: [net-next 00/15][pull request] Intel Wired LAN Driver Updates 2019-06-28
-Date:   Fri, 28 Jun 2019 15:49:17 -0700
-Message-Id: <20190628224932.3389-1-jeffrey.t.kirsher@intel.com>
+Cc:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+        Andrew Bowers <andrewx.bowers@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Subject: [net-next 01/15] ice: Use struct_size() helper
+Date:   Fri, 28 Jun 2019 15:49:18 -0700
+Message-Id: <20190628224932.3389-2-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190628224932.3389-1-jeffrey.t.kirsher@intel.com>
+References: <20190628224932.3389-1-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -35,118 +39,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series contains a smorgasbord of updates to many of the Intel
-drivers.
+From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
 
-Gustavo A. R. Silva updates the ice and iavf drivers to use the
-strcut_size() helper where possible.
+One of the more common cases of allocation size calculations is finding
+the size of a structure that has a zero-sized array at the end, along
+with memory for some number of elements for that array. For example:
 
-Miguel increases the pause and refresh time for flow control in the
-e1000e driver during reset for certain devices.
+struct foo {
+    int stuff;
+    struct boo entry[];
+};
 
-Dann Frazier fixes a potential NULL pointer dereference in ixgbe driver
-when using non-IPSec enabled devices.
+size = sizeof(struct foo) + count * sizeof(struct boo);
+instance = alloc(size, GFP_KERNEL);
 
-Colin Ian King fixes a potential overflow during a shift in the ixgbe
-driver.  Also fixes a potential NULL pointer dereference in the iavf
-driver by adding a check.
+Instead of leaving these open-coded and prone to type mistakes, we can
+now use the new struct_size() helper:
 
-Venkatesh Srinivas converts the e1000 driver to use dma_wmb() instead of
-wmb() for doorbell writes to avoid SFENCEs in the transmit and receive
-paths.
+size = struct_size(instance, entry, count);
 
-Arjan updates the e1000e driver to improve boot time by over 100 msec by
-reducing the usleep ranges suring system startup.
+This code was detected with the help of Coccinelle.
 
-Artem updates the igb driver register dump in ethtool, first prepares
-the register dump for future additions of registers in the dump, then
-secondly, adds the RR2DCDELAY register to the dump.  When dealing with
-time-sensitive networks, this register is helpful in determining your
-latency from the device to the ring.
+Signed-off-by: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+---
+ drivers/net/ethernet/intel/ice/ice_sched.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Alex fixes the ixgbevf driver to use the current cached link state,
-rather than trying to re-check the value from the PF.
-
-Harshitha adds support for MACVLAN offloads in i40e by using channels as
-MACVLAN interfaces.
-
-Detlev Casanova updates the e1000e driver to use delayed work instead of
-timers to run the watchdog.
-
-Vitaly fixes an issue in e1000e, where when disconnecting and
-reconnecting the physical cable connection, the NIC enters a DMoff
-state.  This state causes a mismatch in link and duplexing, so check the
-PCIm function state and perform a PHY reset when in this state to
-resolve the issue.
-
-The following are changes since commit 5cdda5f1d6adde02da591ca2196f20289977dc56:
-  ipv4: enable route flushing in network namespaces
-and are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 10GbE
-
-Alexander Duyck (1):
-  ixgbevf: Use cached link state instead of re-reading the value for
-    ethtool
-
-Arjan van de Ven (1):
-  e1000e: Reduce boot time by tightening sleep ranges
-
-Artem Bityutskiy (2):
-  igb: minor ethool regdump amendment
-  igb: add RR2DCDELAY to ethtool registers dump
-
-Colin Ian King (2):
-  ixgbe: fix potential u32 overflow on shift
-  iavf: fix dereference of null rx_buffer pointer
-
-Dann Frazier (1):
-  ixgbe: Avoid NULL pointer dereference with VF on non-IPsec hw
-
-Detlev Casanova (1):
-  e1000e: Make watchdog use delayed work
-
-Gustavo A. R. Silva (2):
-  ice: Use struct_size() helper
-  iavf: use struct_size() helper
-
-Harshitha Ramamurthy (1):
-  i40e: Add macvlan support on i40e
-
-Jeff Kirsher (1):
-  iavf: Fix up debug print macro
-
-Miguel Bernal Marin (1):
-  e1000e: Increase pause and refresh time
-
-Venkatesh Srinivas (1):
-  e1000: Use dma_wmb() instead of wmb() before doorbell writes
-
-Vitaly Lifshits (1):
-  e1000e: PCIm function state support
-
- drivers/net/ethernet/intel/e1000/e1000_main.c |   6 +-
- .../net/ethernet/intel/e1000e/80003es2lan.c   |   2 +-
- drivers/net/ethernet/intel/e1000e/82571.c     |   2 +-
- drivers/net/ethernet/intel/e1000e/defines.h   |   3 +
- drivers/net/ethernet/intel/e1000e/e1000.h     |   5 +-
- drivers/net/ethernet/intel/e1000e/ethtool.c   |  14 +-
- drivers/net/ethernet/intel/e1000e/ich8lan.c   |  20 +-
- drivers/net/ethernet/intel/e1000e/mac.c       |   2 +-
- drivers/net/ethernet/intel/e1000e/netdev.c    |  90 ++--
- drivers/net/ethernet/intel/e1000e/nvm.c       |   2 +-
- drivers/net/ethernet/intel/i40e/i40e.h        |  27 +
- drivers/net/ethernet/intel/i40e/i40e_main.c   | 497 +++++++++++++++++-
- drivers/net/ethernet/intel/iavf/iavf_osdep.h  |  10 +-
- drivers/net/ethernet/intel/iavf/iavf_txrx.c   |   6 +-
- .../net/ethernet/intel/iavf/iavf_virtchnl.c   |  37 +-
- drivers/net/ethernet/intel/ice/ice_sched.c    |   4 +-
- drivers/net/ethernet/intel/igb/e1000_regs.h   |   2 +
- drivers/net/ethernet/intel/igb/igb_ethtool.c  |  75 +--
- .../net/ethernet/intel/ixgbe/ixgbe_ipsec.c    |   3 +
- drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c  |  14 +-
- drivers/net/ethernet/intel/ixgbevf/ethtool.c  |  10 +-
- 21 files changed, 686 insertions(+), 145 deletions(-)
-
+diff --git a/drivers/net/ethernet/intel/ice/ice_sched.c b/drivers/net/ethernet/intel/ice/ice_sched.c
+index 8d49f83be7a5..2a232504379d 100644
+--- a/drivers/net/ethernet/intel/ice/ice_sched.c
++++ b/drivers/net/ethernet/intel/ice/ice_sched.c
+@@ -683,10 +683,10 @@ ice_sched_add_elems(struct ice_port_info *pi, struct ice_sched_node *tc_node,
+ 	u16 i, num_groups_added = 0;
+ 	enum ice_status status = 0;
+ 	struct ice_hw *hw = pi->hw;
+-	u16 buf_size;
++	size_t buf_size;
+ 	u32 teid;
+ 
+-	buf_size = sizeof(*buf) + sizeof(*buf->generic) * (num_nodes - 1);
++	buf_size = struct_size(buf, generic, num_nodes - 1);
+ 	buf = devm_kzalloc(ice_hw_to_dev(hw), buf_size, GFP_KERNEL);
+ 	if (!buf)
+ 		return ICE_ERR_NO_MEMORY;
 -- 
 2.21.0
 
