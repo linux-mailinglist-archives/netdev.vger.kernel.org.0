@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 904165A0B8
-	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 18:24:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E1185A0BF
+	for <lists+netdev@lfdr.de>; Fri, 28 Jun 2019 18:27:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726812AbfF1QYQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 12:24:16 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:47016 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726667AbfF1QYQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 12:24:16 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8D8E514E03874;
-        Fri, 28 Jun 2019 09:24:15 -0700 (PDT)
-Date:   Fri, 28 Jun 2019 09:24:15 -0700 (PDT)
-Message-Id: <20190628.092415.219171929303857748.davem@davemloft.net>
-To:     Jose.Abreu@synopsys.com
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Joao.Pinto@synopsys.com, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com
-Subject: Re: [PATCH net-next v2 00/10] net: stmmac: 10GbE using XGMAC
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <cover.1561706800.git.joabreu@synopsys.com>
-References: <cover.1561706800.git.joabreu@synopsys.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 28 Jun 2019 09:24:15 -0700 (PDT)
+        id S1726807AbfF1Q07 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 28 Jun 2019 12:26:59 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:36324 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726605AbfF1Q07 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 Jun 2019 12:26:59 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 3C0C03082E55;
+        Fri, 28 Jun 2019 16:26:59 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-120-219.rdu2.redhat.com [10.10.120.219])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D3BFE608CA;
+        Fri, 28 Jun 2019 16:26:55 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <293c9bd3-f530-d75e-c353-ddeabac27cf6@6wind.com>
+References: <293c9bd3-f530-d75e-c353-ddeabac27cf6@6wind.com> <20190626190343.22031-1-aring@mojatatu.com> <20190626190343.22031-2-aring@mojatatu.com>
+To:     nicolas.dichtel@6wind.com
+Cc:     dhowells@redhat.com, Alexander Aring <aring@mojatatu.com>,
+        netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        kernel@mojatatu.com
+Subject: Re: [RFC iproute2 1/1] ip: netns: add mounted state file for each netns
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <18556.1561739215.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: 8BIT
+Date:   Fri, 28 Jun 2019 17:26:55 +0100
+Message-ID: <18557.1561739215@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Fri, 28 Jun 2019 16:26:59 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jose Abreu <Jose.Abreu@synopsys.com>
-Date: Fri, 28 Jun 2019 09:29:11 +0200
+Nicolas Dichtel <nicolas.dichtel@6wind.com> wrote:
 
-> Support for 10Gb Link using XGMAC core plus some performance tweaks.
+> David Howells was working on a mount notification mechanism:
+> https://lwn.net/Articles/760714/
+> https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/log/?h=notifications
 > 
-> Tested in a PCI based setup.
-> 
-> iperf3 TCP results:
-> 	TSO ON, MTU=1500, TX Queues = 1, RX Queues = 1, Flow Control ON
-> 	Pinned CPU (-A), Zero-Copy (-Z)
-> 
-> [ ID] Interval           Transfer     Bitrate         Retr
-> [  5]   0.00-600.00 sec   643 GBytes  9.21 Gbits/sec    1             sender
-> [  5]   0.00-600.00 sec   643 GBytes  9.21 Gbits/sec                  receiver
+> I don't know what is the status of this series.
 
-Series applied, thanks Jose.
+It's still alive.  I just posted a new version on it.  I'm hoping, possibly
+futiley, to get it in in this merge window.
 
-About the Kconfig change, maybe it just doesn't make sense to list all
-of the various speeds the chip supports... just a thought.
+David
