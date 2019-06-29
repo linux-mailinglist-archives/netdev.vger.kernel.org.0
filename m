@@ -2,362 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 748415AB96
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 15:34:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDBFB5AB9F
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 15:56:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726858AbfF2NeL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jun 2019 09:34:11 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:38634 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726785AbfF2NeK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jun 2019 09:34:10 -0400
-Received: by mail-pf1-f194.google.com with SMTP id y15so4352510pfn.5
-        for <netdev@vger.kernel.org>; Sat, 29 Jun 2019 06:34:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=B2aD0yS+yUjpaLgPrvkMMNviQ5TxjpjXAuiN4rCpeuI=;
-        b=VY6R4S5PPu5JS3HTrJ9fEGQTXAD1mBzr2SEAc09QO/VWtpvSrmQPtrPlRenA4/5klm
-         ZF7IfNG5Bjaot8NrtSCrhZTaT9JJ1lQx/50mV0Dmo51TK+G+8t3rRaMtsm31zK4e5fEu
-         r+kWLzD46NYA4QYWDuN+Q7ng0GJFlD7862IeHnvRa1I3cN17Qf3c9xuw5ajkrOFBhU0x
-         0gbNlCV82dzCfbMDHwCLmcBvj3yipFmr6U6lqBVxuzWICOFxlmAh4xZ3Y62nHNHu21hu
-         uRKRFVDq1aDAwrNl6prTobAkfxa3zmtQAo0vdPIu5nTr78q8VcN0CULj54fHc6gwpkpq
-         vM/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=B2aD0yS+yUjpaLgPrvkMMNviQ5TxjpjXAuiN4rCpeuI=;
-        b=exdqTFnUVA18yJ2ZbbxBq47FHp+2bBd+wH44ekL0yfCWYJUYoiJ0DP8T8L9IUlmIsp
-         HCv9laqgb5KCJsnjKsdw26zCAcjTKrfKv2ePfm3y2VADwizXtdGBwueE05t0QfdkXzA3
-         PDjHj2ABtwTTTKb/+QXIF9JxiVdyc7r6ZOicw/XDyxfUEdR1KKCr5n+tRIIVpvHXeIAX
-         T59EwStGu+ebqKPvJjNoKnIrpRVY3yheESIcXKfc/dkmdpJGOpCQ5mq2kz5gbumD3Qnr
-         0d5DAJEwHuwRmsok58aqX6FVKx+6F3hKEa/wm6JyuhYcTqav8wiSx6lhj/dgmKgqTac7
-         +NKg==
-X-Gm-Message-State: APjAAAUI07sFoIoJclOufVK0i3NPM+RZHL3em0PZnqfbOGIWlRRChxw/
-        rtz13CvRC8x76TNiSunWCTU+7pT2FA==
-X-Google-Smtp-Source: APXvYqx7vQcXVFxPTt9BZpOneFRebt7ABMbi8obJdLkDFMYuXRP7T5XNT4KClxPZW3G8hYV5kjMiVQ==
-X-Received: by 2002:a63:360d:: with SMTP id d13mr5343053pga.80.1561815249830;
-        Sat, 29 Jun 2019 06:34:09 -0700 (PDT)
-Received: from localhost.localdomain ([58.76.163.19])
-        by smtp.gmail.com with ESMTPSA id d9sm4686148pgj.34.2019.06.29.06.34.08
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sat, 29 Jun 2019 06:34:09 -0700 (PDT)
-From:   "Daniel T. Lee" <danieltimlee@gmail.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH 2/2] samples: pktgen: allow to specify destination port
-Date:   Sat, 29 Jun 2019 22:33:58 +0900
-Message-Id: <20190629133358.8251-2-danieltimlee@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190629133358.8251-1-danieltimlee@gmail.com>
-References: <20190629133358.8251-1-danieltimlee@gmail.com>
+        id S1726859AbfF2N4K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jun 2019 09:56:10 -0400
+Received: from mga06.intel.com ([134.134.136.31]:33034 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726754AbfF2N4K (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 29 Jun 2019 09:56:10 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 Jun 2019 06:55:42 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.63,431,1557212400"; 
+   d="scan'208";a="338175519"
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 29 Jun 2019 06:55:41 -0700
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1hhDpM-0001yQ-KJ; Sat, 29 Jun 2019 21:55:40 +0800
+Date:   Sat, 29 Jun 2019 21:54:48 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     Catherine Sullivan <csully@google.com>
+Cc:     kbuild-all@01.org, netdev@vger.kernel.org,
+        Catherine Sullivan <csully@google.com>,
+        Sagi Shahar <sagis@google.com>,
+        Jon Olson <jonolson@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Luigi Rizzo <lrizzo@google.com>
+Subject: Re: [PATCH net-next v2 2/4] gve: Add transmit and receive support
+Message-ID: <201906292107.taC5EgR4%lkp@intel.com>
+References: <20190628175633.143501-3-csully@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190628175633.143501-3-csully@google.com>
+X-Patchwork-Hint: ignore
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, kernel pktgen has the feature to specify udp destination port
-for sending packet. (e.g. pgset "udp_dst_min 9")
+Hi Catherine,
 
-But on samples, each of the scripts doesn't have any option to achieve this.
+I love your patch! Perhaps something to improve:
 
-This commit adds the DST_PORT option to specify the target port(s) in the script.
+[auto build test WARNING on net-next/master]
 
-    -p : ($DST_PORT)  destination PORT range (e.g. 433-444) is also allowed
+url:    https://github.com/0day-ci/linux/commits/Catherine-Sullivan/Add-gve-driver/20190629-143743
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.1-rc1-7-g2b96cd8-dirty
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
 
-Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+If you fix the issue, kindly add following tag
+Reported-by: kbuild test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+
+   drivers/net/ethernet/google/gve/gve_rx.c:11:6: sparse: sparse: symbol 'gve_rx_remove_from_block' was not declared. Should it be static?
+   drivers/net/ethernet/google/gve/gve_rx.c:217:16: sparse: sparse: incorrect type in argument 1 (different base types) @@    expected unsigned int val @@    got restricted __be3unsigned int val @@
+   drivers/net/ethernet/google/gve/gve_rx.c:217:16: sparse:    expected unsigned int val
+   drivers/net/ethernet/google/gve/gve_rx.c:217:16: sparse:    got restricted __be32 [usertype]
+   drivers/net/ethernet/google/gve/gve_rx.c:349:27: sparse: sparse: incorrect type in assignment (different base types) @@    expected restricted __wsum [usertype] csum @@    got restricted __wsum [usertype] csum @@
+   drivers/net/ethernet/google/gve/gve_rx.c:349:27: sparse:    expected restricted __wsum [usertype] csum
+   drivers/net/ethernet/google/gve/gve_rx.c:349:27: sparse:    got restricted __be16 [usertype] csum
+   drivers/net/ethernet/google/gve/gve_rx.c:374:19: sparse: sparse: incorrect type in assignment (different base types) @@    expected unsigned short [usertype] flags_seq @@    got resunsigned short [usertype] flags_seq @@
+   drivers/net/ethernet/google/gve/gve_rx.c:374:19: sparse:    expected unsigned short [usertype] flags_seq
+   drivers/net/ethernet/google/gve/gve_rx.c:374:19: sparse:    got restricted __be16 [usertype] flags_seq
+>> drivers/net/ethernet/google/gve/gve_rx.c:378:17: sparse: sparse: cast to restricted __be16
+>> drivers/net/ethernet/google/gve/gve_rx.c:378:17: sparse: sparse: cast to restricted __be16
+>> drivers/net/ethernet/google/gve/gve_rx.c:378:17: sparse: sparse: cast to restricted __be16
+>> drivers/net/ethernet/google/gve/gve_rx.c:378:17: sparse: sparse: cast to restricted __be16
+
+vim +378 drivers/net/ethernet/google/gve/gve_rx.c
+
+   212	
+   213	void gve_rx_write_doorbell(struct gve_priv *priv, struct gve_rx_ring *rx)
+   214	{
+   215		u32 db_idx = be32_to_cpu(rx->q_resources->db_index);
+   216	
+ > 217		writel(cpu_to_be32(rx->desc.fill_cnt), &priv->db_bar2[db_idx]);
+   218	}
+   219	
+   220	static enum pkt_hash_types gve_rss_type(__be16 pkt_flags)
+   221	{
+   222		if (likely(pkt_flags & (GVE_RXF_TCP | GVE_RXF_UDP)))
+   223			return PKT_HASH_TYPE_L4;
+   224		if (pkt_flags & (GVE_RXF_IPV4 | GVE_RXF_IPV6))
+   225			return PKT_HASH_TYPE_L3;
+   226		return PKT_HASH_TYPE_L2;
+   227	}
+   228	
+   229	static struct sk_buff *gve_rx_copy(struct net_device *dev,
+   230					   struct napi_struct *napi,
+   231					   struct gve_rx_slot_page_info *page_info,
+   232					   u16 len)
+   233	{
+   234		struct sk_buff *skb = napi_alloc_skb(napi, len);
+   235		void *va = page_info->page_address + GVE_RX_PAD +
+   236			   page_info->page_offset;
+   237	
+   238		if (unlikely(!skb))
+   239			return NULL;
+   240	
+   241		__skb_put(skb, len);
+   242	
+   243		skb_copy_to_linear_data(skb, va, len);
+   244	
+   245		skb->protocol = eth_type_trans(skb, dev);
+   246		return skb;
+   247	}
+   248	
+   249	static struct sk_buff *gve_rx_add_frags(struct net_device *dev,
+   250						struct napi_struct *napi,
+   251						struct gve_rx_slot_page_info *page_info,
+   252						u16 len)
+   253	{
+   254		struct sk_buff *skb = napi_get_frags(napi);
+   255	
+   256		if (unlikely(!skb))
+   257			return NULL;
+   258	
+   259		skb_add_rx_frag(skb, 0, page_info->page,
+   260				page_info->page_offset +
+   261				GVE_RX_PAD, len, PAGE_SIZE / 2);
+   262	
+   263		return skb;
+   264	}
+   265	
+   266	static void gve_rx_flip_buff(struct gve_rx_slot_page_info *page_info,
+   267				     struct gve_rx_data_slot *data_ring)
+   268	{
+   269		u64 addr = be64_to_cpu(data_ring->qpl_offset);
+   270	
+   271		page_info->page_offset ^= PAGE_SIZE / 2;
+   272		addr ^= PAGE_SIZE / 2;
+   273		data_ring->qpl_offset = cpu_to_be64(addr);
+   274	}
+   275	
+   276	static bool gve_rx(struct gve_rx_ring *rx, struct gve_rx_desc *rx_desc,
+   277			   netdev_features_t feat)
+   278	{
+   279		struct gve_rx_slot_page_info *page_info;
+   280		struct gve_priv *priv = rx->gve;
+   281		struct napi_struct *napi = &priv->ntfy_blocks[rx->ntfy_id].napi;
+   282		struct net_device *dev = priv->dev;
+   283		struct sk_buff *skb;
+   284		int pagecount;
+   285		u16 len;
+   286		u32 idx;
+   287	
+   288		/* drop this packet */
+   289		if (unlikely(rx_desc->flags_seq & GVE_RXF_ERR))
+   290			return true;
+   291	
+   292		len = be16_to_cpu(rx_desc->len) - GVE_RX_PAD;
+   293		idx = rx->data.cnt & rx->data.mask;
+   294		page_info = &rx->data.page_info[idx];
+   295	
+   296		/* gvnic can only receive into registered segments. If the buffer
+   297		 * can't be recycled, our only choice is to copy the data out of
+   298		 * it so that we can return it to the device.
+   299		 */
+   300	
+   301	#if PAGE_SIZE == 4096
+   302		if (len <= priv->rx_copybreak) {
+   303			/* Just copy small packets */
+   304			skb = gve_rx_copy(dev, napi, page_info, len);
+   305			goto have_skb;
+   306		}
+   307		if (unlikely(!gve_can_recycle_pages(dev))) {
+   308			skb = gve_rx_copy(dev, napi, page_info, len);
+   309			goto have_skb;
+   310		}
+   311		pagecount = page_count(page_info->page);
+   312		if (pagecount == 1) {
+   313			/* No part of this page is used by any SKBs; we attach
+   314			 * the page fragment to a new SKB and pass it up the
+   315			 * stack.
+   316			 */
+   317			skb = gve_rx_add_frags(dev, napi, page_info, len);
+   318			if (!skb)
+   319				return true;
+   320			/* Make sure the kernel stack can't release the page */
+   321			get_page(page_info->page);
+   322			/* "flip" to other packet buffer on this page */
+   323			gve_rx_flip_buff(page_info, &rx->data.data_ring[idx]);
+   324		} else if (pagecount >= 2) {
+   325			/* We have previously passed the other half of this
+   326			 * page up the stack, but it has not yet been freed.
+   327			 */
+   328			skb = gve_rx_copy(dev, napi, page_info, len);
+   329		} else {
+   330			WARN(pagecount < 1, "Pagecount should never be < 1");
+   331			return false;
+   332		}
+   333	#else
+   334		skb = gve_rx_copy(dev, napi, page_info, len);
+   335	#endif
+   336	
+   337	have_skb:
+   338		if (!skb)
+   339			return true;
+   340	
+   341		rx->data.cnt++;
+   342	
+   343		if (likely(feat & NETIF_F_RXCSUM)) {
+   344			/* NIC passes up the partial sum */
+   345			if (rx_desc->csum)
+   346				skb->ip_summed = CHECKSUM_COMPLETE;
+   347			else
+   348				skb->ip_summed = CHECKSUM_NONE;
+   349			skb->csum = rx_desc->csum;
+   350		}
+   351	
+   352		/* parse flags & pass relevant info up */
+   353		if (likely(feat & NETIF_F_RXHASH) &&
+   354		    gve_needs_rss(rx_desc->flags_seq))
+   355			skb_set_hash(skb, be32_to_cpu(rx_desc->rss_hash),
+   356				     gve_rss_type(rx_desc->flags_seq));
+   357	
+   358		if (skb_is_nonlinear(skb))
+   359			napi_gro_frags(napi);
+   360		else
+   361			napi_gro_receive(napi, skb);
+   362		return true;
+   363	}
+   364	
+   365	static bool gve_rx_work_pending(struct gve_rx_ring *rx)
+   366	{
+   367		struct gve_rx_desc *desc;
+   368		u16 flags_seq;
+   369		u32 next_idx;
+   370	
+   371		next_idx = rx->desc.cnt & rx->desc.mask;
+   372		desc = rx->desc.desc_ring + next_idx;
+   373	
+   374		flags_seq = desc->flags_seq;
+   375		/* Make sure we have synchronized the seq no with the device */
+   376		smp_rmb();
+   377	
+ > 378		return (GVE_SEQNO(flags_seq) == rx->desc.seqno);
+   379	}
+   380	
+
 ---
- samples/pktgen/README.rst                            |  1 +
- samples/pktgen/parameters.sh                         |  7 ++++++-
- .../pktgen/pktgen_bench_xmit_mode_netif_receive.sh   | 11 +++++++++++
- samples/pktgen/pktgen_bench_xmit_mode_queue_xmit.sh  | 11 +++++++++++
- samples/pktgen/pktgen_sample01_simple.sh             | 11 +++++++++++
- samples/pktgen/pktgen_sample02_multiqueue.sh         | 11 +++++++++++
- samples/pktgen/pktgen_sample03_burst_single_flow.sh  | 11 +++++++++++
- samples/pktgen/pktgen_sample04_many_flows.sh         | 11 +++++++++++
- samples/pktgen/pktgen_sample05_flow_per_thread.sh    | 12 +++++++++++-
- ...pktgen_sample06_numa_awared_queue_irq_affinity.sh | 11 +++++++++++
- 10 files changed, 95 insertions(+), 2 deletions(-)
-
-diff --git a/samples/pktgen/README.rst b/samples/pktgen/README.rst
-index ff8929da61c5..fd39215db508 100644
---- a/samples/pktgen/README.rst
-+++ b/samples/pktgen/README.rst
-@@ -20,6 +20,7 @@ across the sample scripts.  Usage example is printed on errors::
-   -s : ($PKT_SIZE)  packet size
-   -d : ($DEST_IP)   destination IP
-   -m : ($DST_MAC)   destination MAC-addr
-+  -p : ($DST_PORT)  destination PORT range (e.g. 433-444) is also allowed
-   -t : ($THREADS)   threads to start
-   -f : ($F_THREAD)  index of first thread (zero indexed CPU number)
-   -c : ($SKB_CLONE) SKB clones send before alloc new SKB
-diff --git a/samples/pktgen/parameters.sh b/samples/pktgen/parameters.sh
-index 72fc562876e2..a06b00a0c7b6 100644
---- a/samples/pktgen/parameters.sh
-+++ b/samples/pktgen/parameters.sh
-@@ -10,6 +10,7 @@ function usage() {
-     echo "  -s : (\$PKT_SIZE)  packet size"
-     echo "  -d : (\$DEST_IP)   destination IP"
-     echo "  -m : (\$DST_MAC)   destination MAC-addr"
-+    echo "  -p : (\$DST_PORT)  destination PORT range (e.g. 433-444) is also allowed"
-     echo "  -t : (\$THREADS)   threads to start"
-     echo "  -f : (\$F_THREAD)  index of first thread (zero indexed CPU number)"
-     echo "  -c : (\$SKB_CLONE) SKB clones send before alloc new SKB"
-@@ -23,7 +24,7 @@ function usage() {
- 
- ##  --- Parse command line arguments / parameters ---
- ## echo "Commandline options:"
--while getopts "s:i:d:m:f:t:c:n:b:vxh6" option; do
-+while getopts "s:i:d:m:p:f:t:c:n:b:vxh6" option; do
-     case $option in
-         i) # interface
-           export DEV=$OPTARG
-@@ -41,6 +42,10 @@ while getopts "s:i:d:m:f:t:c:n:b:vxh6" option; do
-           export DST_MAC=$OPTARG
- 	  info "Destination MAC set to: DST_MAC=$DST_MAC"
-           ;;
-+        p) # PORT
-+          export DST_PORT=$OPTARG
-+	  info "Destination PORT set to: DST_PORT=$DST_PORT"
-+          ;;
-         f)
- 	  export F_THREAD=$OPTARG
- 	  info "Index of first thread (zero indexed CPU number): $F_THREAD"
-diff --git a/samples/pktgen/pktgen_bench_xmit_mode_netif_receive.sh b/samples/pktgen/pktgen_bench_xmit_mode_netif_receive.sh
-index 2839f7d315cf..e14b1a9144d9 100755
---- a/samples/pktgen/pktgen_bench_xmit_mode_netif_receive.sh
-+++ b/samples/pktgen/pktgen_bench_xmit_mode_netif_receive.sh
-@@ -41,6 +41,10 @@ fi
- [ -z "$DST_MAC" ] && DST_MAC="90:e2:ba:ff:ff:ff"
- [ -z "$BURST" ] && BURST=1024
- [ -z "$COUNT" ] && COUNT="10000000" # Zero means indefinitely
-+if [ -n "$DST_PORT" ]; then
-+    read -r DST_MIN DST_MAX <<< $(parse_ports $DST_PORT)
-+    validate_ports $DST_MIN $DST_MAX
-+fi
- 
- # Base Config
- DELAY="0"        # Zero means max speed
-@@ -69,6 +73,13 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
-     pg_set $dev "dst_mac $DST_MAC"
-     pg_set $dev "dst$IP6 $DEST_IP"
- 
-+    if [ -n "$DST_PORT" ]; then
-+	# Single destination port or random port range
-+	pg_set $dev "flag UDPDST_RND"
-+	pg_set $dev "udp_dst_min $DST_MIN"
-+	pg_set $dev "udp_dst_max $DST_MAX"
-+    fi
-+
-     # Inject packet into RX path of stack
-     pg_set $dev "xmit_mode netif_receive"
- 
-diff --git a/samples/pktgen/pktgen_bench_xmit_mode_queue_xmit.sh b/samples/pktgen/pktgen_bench_xmit_mode_queue_xmit.sh
-index e1ee54465def..82c3e504e056 100755
---- a/samples/pktgen/pktgen_bench_xmit_mode_queue_xmit.sh
-+++ b/samples/pktgen/pktgen_bench_xmit_mode_queue_xmit.sh
-@@ -24,6 +24,10 @@ if [[ -n "$BURST" ]]; then
-     err 1 "Bursting not supported for this mode"
- fi
- [ -z "$COUNT" ] && COUNT="10000000" # Zero means indefinitely
-+if [ -n "$DST_PORT" ]; then
-+    read -r DST_MIN DST_MAX <<< $(parse_ports $DST_PORT)
-+    validate_ports $DST_MIN $DST_MAX
-+fi
- 
- # Base Config
- DELAY="0"        # Zero means max speed
-@@ -52,6 +56,13 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
-     pg_set $dev "dst_mac $DST_MAC"
-     pg_set $dev "dst$IP6 $DEST_IP"
- 
-+    if [ -n "$DST_PORT" ]; then
-+	# Single destination port or random port range
-+	pg_set $dev "flag UDPDST_RND"
-+	pg_set $dev "udp_dst_min $DST_MIN"
-+	pg_set $dev "udp_dst_max $DST_MAX"
-+    fi
-+
-     # Inject packet into TX qdisc egress path of stack
-     pg_set $dev "xmit_mode queue_xmit"
- done
-diff --git a/samples/pktgen/pktgen_sample01_simple.sh b/samples/pktgen/pktgen_sample01_simple.sh
-index e9ab4edba2d7..d1702fdde8f3 100755
---- a/samples/pktgen/pktgen_sample01_simple.sh
-+++ b/samples/pktgen/pktgen_sample01_simple.sh
-@@ -22,6 +22,10 @@ fi
- # Example enforce param "-m" for dst_mac
- [ -z "$DST_MAC" ] && usage && err 2 "Must specify -m dst_mac"
- [ -z "$COUNT" ]   && COUNT="100000" # Zero means indefinitely
-+if [ -n "$DST_PORT" ]; then
-+    read -r DST_MIN DST_MAX <<< $(parse_ports $DST_PORT)
-+    validate_ports $DST_MIN $DST_MAX
-+fi
- 
- # Base Config
- DELAY="0"        # Zero means max speed
-@@ -59,6 +63,13 @@ pg_set $DEV "flag NO_TIMESTAMP"
- pg_set $DEV "dst_mac $DST_MAC"
- pg_set $DEV "dst$IP6 $DEST_IP"
- 
-+if [ -n "$DST_PORT" ]; then
-+    # Single destination port or random port range
-+    pg_set $DEV "flag UDPDST_RND"
-+    pg_set $DEV "udp_dst_min $DST_MIN"
-+    pg_set $DEV "udp_dst_max $DST_MAX"
-+fi
-+
- # Setup random UDP port src range
- pg_set $DEV "flag UDPSRC_RND"
- pg_set $DEV "udp_src_min $UDP_MIN"
-diff --git a/samples/pktgen/pktgen_sample02_multiqueue.sh b/samples/pktgen/pktgen_sample02_multiqueue.sh
-index 99f740ae9857..7f7a9a27548f 100755
---- a/samples/pktgen/pktgen_sample02_multiqueue.sh
-+++ b/samples/pktgen/pktgen_sample02_multiqueue.sh
-@@ -29,6 +29,10 @@ if [ -z "$DEST_IP" ]; then
-     [ -z "$IP6" ] && DEST_IP="198.18.0.42" || DEST_IP="FD00::1"
- fi
- [ -z "$DST_MAC" ] && DST_MAC="90:e2:ba:ff:ff:ff"
-+if [ -n "$DST_PORT" ]; then
-+    read -r DST_MIN DST_MAX <<< $(parse_ports $DST_PORT)
-+    validate_ports $DST_MIN $DST_MAX
-+fi
- 
- # General cleanup everything since last run
- pg_ctrl "reset"
-@@ -60,6 +64,13 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
-     pg_set $dev "dst_mac $DST_MAC"
-     pg_set $dev "dst$IP6 $DEST_IP"
- 
-+    if [ -n "$DST_PORT" ]; then
-+	# Single destination port or random port range
-+	pg_set $dev "flag UDPDST_RND"
-+	pg_set $dev "udp_dst_min $DST_MIN"
-+	pg_set $dev "udp_dst_max $DST_MAX"
-+    fi
-+
-     # Setup random UDP port src range
-     pg_set $dev "flag UDPSRC_RND"
-     pg_set $dev "udp_src_min $UDP_MIN"
-diff --git a/samples/pktgen/pktgen_sample03_burst_single_flow.sh b/samples/pktgen/pktgen_sample03_burst_single_flow.sh
-index 8fdd36722d9e..b520637817ce 100755
---- a/samples/pktgen/pktgen_sample03_burst_single_flow.sh
-+++ b/samples/pktgen/pktgen_sample03_burst_single_flow.sh
-@@ -33,6 +33,10 @@ fi
- [ -z "$BURST" ]     && BURST=32
- [ -z "$CLONE_SKB" ] && CLONE_SKB="0" # No need for clones when bursting
- [ -z "$COUNT" ]     && COUNT="0" # Zero means indefinitely
-+if [ -n "$DST_PORT" ]; then
-+    read -r DST_MIN DST_MAX <<< $(parse_ports $DST_PORT)
-+    validate_ports $DST_MIN $DST_MAX
-+fi
- 
- # Base Config
- DELAY="0"  # Zero means max speed
-@@ -60,6 +64,13 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
-     pg_set $dev "dst_mac $DST_MAC"
-     pg_set $dev "dst$IP6 $DEST_IP"
- 
-+    if [ -n "$DST_PORT" ]; then
-+	# Single destination port or random port range
-+	pg_set $dev "flag UDPDST_RND"
-+	pg_set $dev "udp_dst_min $DST_MIN"
-+	pg_set $dev "udp_dst_max $DST_MAX"
-+    fi
-+
-     # Setup burst, for easy testing -b 0 disable bursting
-     # (internally in pktgen default and minimum burst=1)
-     if [[ ${BURST} -ne 0 ]]; then
-diff --git a/samples/pktgen/pktgen_sample04_many_flows.sh b/samples/pktgen/pktgen_sample04_many_flows.sh
-index 4df92b7176da..5b6e9d9cb5b5 100755
---- a/samples/pktgen/pktgen_sample04_many_flows.sh
-+++ b/samples/pktgen/pktgen_sample04_many_flows.sh
-@@ -17,6 +17,10 @@ source ${basedir}/parameters.sh
- [ -z "$DST_MAC" ]   && DST_MAC="90:e2:ba:ff:ff:ff"
- [ -z "$CLONE_SKB" ] && CLONE_SKB="0"
- [ -z "$COUNT" ]     && COUNT="0" # Zero means indefinitely
-+if [ -n "$DST_PORT" ]; then
-+    read -r DST_MIN DST_MAX <<< $(parse_ports $DST_PORT)
-+    validate_ports $DST_MIN $DST_MAX
-+fi
- 
- # NOTICE:  Script specific settings
- # =======
-@@ -56,6 +60,13 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
-     pg_set $dev "dst_mac $DST_MAC"
-     pg_set $dev "dst $DEST_IP"
- 
-+    if [ -n "$DST_PORT" ]; then
-+	# Single destination port or random port range
-+	pg_set $dev "flag UDPDST_RND"
-+	pg_set $dev "udp_dst_min $DST_MIN"
-+	pg_set $dev "udp_dst_max $DST_MAX"
-+    fi
-+
-     # Randomize source IP-addresses
-     pg_set $dev "flag IPSRC_RND"
-     pg_set $dev "src_min 198.18.0.0"
-diff --git a/samples/pktgen/pktgen_sample05_flow_per_thread.sh b/samples/pktgen/pktgen_sample05_flow_per_thread.sh
-index 7f8b5e59f01e..0c06e63fbe97 100755
---- a/samples/pktgen/pktgen_sample05_flow_per_thread.sh
-+++ b/samples/pktgen/pktgen_sample05_flow_per_thread.sh
-@@ -22,7 +22,10 @@ source ${basedir}/parameters.sh
- [ -z "$CLONE_SKB" ] && CLONE_SKB="0"
- [ -z "$BURST" ]     && BURST=32
- [ -z "$COUNT" ]     && COUNT="0" # Zero means indefinitely
--
-+if [ -n "$DST_PORT" ]; then
-+    read -r DST_MIN DST_MAX <<< $(parse_ports $DST_PORT)
-+    validate_ports $DST_MIN $DST_MAX
-+fi
- 
- # Base Config
- DELAY="0"  # Zero means max speed
-@@ -50,6 +53,13 @@ for ((thread = $F_THREAD; thread <= $L_THREAD; thread++)); do
-     pg_set $dev "dst_mac $DST_MAC"
-     pg_set $dev "dst $DEST_IP"
- 
-+    if [ -n "$DST_PORT" ]; then
-+	# Single destination port or random port range
-+	pg_set $dev "flag UDPDST_RND"
-+	pg_set $dev "udp_dst_min $DST_MIN"
-+	pg_set $dev "udp_dst_max $DST_MAX"
-+    fi
-+
-     # Setup source IP-addresses based on thread number
-     pg_set $dev "src_min 198.18.$((thread+1)).1"
-     pg_set $dev "src_max 198.18.$((thread+1)).1"
-diff --git a/samples/pktgen/pktgen_sample06_numa_awared_queue_irq_affinity.sh b/samples/pktgen/pktgen_sample06_numa_awared_queue_irq_affinity.sh
-index 353adc17205e..97f0266c0356 100755
---- a/samples/pktgen/pktgen_sample06_numa_awared_queue_irq_affinity.sh
-+++ b/samples/pktgen/pktgen_sample06_numa_awared_queue_irq_affinity.sh
-@@ -35,6 +35,10 @@ if [ -z "$DEST_IP" ]; then
-     [ -z "$IP6" ] && DEST_IP="198.18.0.42" || DEST_IP="FD00::1"
- fi
- [ -z "$DST_MAC" ] && DST_MAC="90:e2:ba:ff:ff:ff"
-+if [ -n "$DST_PORT" ]; then
-+    read -r DST_MIN DST_MAX <<< $(parse_ports $DST_PORT)
-+    validate_ports $DST_MIN $DST_MAX
-+fi
- 
- # General cleanup everything since last run
- pg_ctrl "reset"
-@@ -77,6 +81,13 @@ for ((i = 0; i < $THREADS; i++)); do
-     pg_set $dev "dst_mac $DST_MAC"
-     pg_set $dev "dst$IP6 $DEST_IP"
- 
-+    if [ -n "$DST_PORT" ]; then
-+	# Single destination port or random port range
-+	pg_set $dev "flag UDPDST_RND"
-+	pg_set $dev "udp_dst_min $DST_MIN"
-+	pg_set $dev "udp_dst_max $DST_MAX"
-+    fi
-+
-     # Setup random UDP port src range
-     pg_set $dev "flag UDPSRC_RND"
-     pg_set $dev "udp_src_min $UDP_MIN"
--- 
-2.17.1
-
+0-DAY kernel test infrastructure                Open Source Technology Center
+https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
