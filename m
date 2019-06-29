@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 483E15AC23
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 17:17:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F1F25AC20
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 17:17:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726954AbfF2PRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jun 2019 11:17:25 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:44258 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726897AbfF2PRU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jun 2019 11:17:20 -0400
-Received: by mail-pl1-f196.google.com with SMTP id t7so4873395plr.11
-        for <netdev@vger.kernel.org>; Sat, 29 Jun 2019 08:17:19 -0700 (PDT)
+        id S1726926AbfF2PRV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jun 2019 11:17:21 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:37963 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726908AbfF2PRV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jun 2019 11:17:21 -0400
+Received: by mail-pf1-f193.google.com with SMTP id y15so4420635pfn.5
+        for <netdev@vger.kernel.org>; Sat, 29 Jun 2019 08:17:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=kzxsL68qhh9R3O2+7ccN5C3ZlHChylS4TS0FRdut5mk=;
-        b=GolzO7PgtzeTnrAVew3FuFaNVtGwoiWi09XoWI4kxNpz2Yeh6/XW7+Sscr8fQYvZ5F
-         IHVdlwTp7AgAc+848g/Lydn6hs47cFqWR5/5YXU9vVGN2cdv93yEimbqkMdQcJgMES20
-         1VRNc5Wfd7nbmpDIDu5vKg6odNLfPIqG7HlcA=
+        bh=JFOw3VMsdqmGryCD4Peh9hH3bFiND6Nf+7Q9qzwwG6A=;
+        b=btV0S71x8zSXS51uilKc6w9hQ9C2+zpNI2Ejd3IUmkI2pk2asBixTMNEXbB/QGuay5
+         TXhcimG/KjknGvg+1R4P6RNGgLaybaA4ZU9EBxwPMaPn1dlbtQG8QchAgWce427trvLF
+         /ZTjSaQeRbQGPd4lWlXYQybyTM2E5dUtk3wjw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=kzxsL68qhh9R3O2+7ccN5C3ZlHChylS4TS0FRdut5mk=;
-        b=aNem4EMzHW1QaDwOM6Z89tpC70MTxTu2cxZuFprw2f9xweK2xsX2kxGdzHeoiaw5QD
-         KwJyjgX+aH0pVChkGCedzHMFnQqV3BCFGvhrQUeEXWDdUuriM7TVQHNRKrbWAKFfABi5
-         UK2t0lfg4oA90OqWGCDdSznOp+tCCbtaTdsVMOtLVASZvowsVyh4OcbkM38zMbM256ZW
-         ghiBXhrgldsUOBsDJFyjX833hiVEYmQFepYN1CEiaiiUJdDBjFvW5PxdhVETm16SzC+u
-         Z3kqrKxfDcMQvIfGSoWlAzhXuGwVcw9e/9MaimlQADnLLI/+Lj6/GRaxpMvFMTv12Tlp
-         bSJA==
-X-Gm-Message-State: APjAAAWP9QWNL1i7uDXbyHElSbvf4ku53intW/Zije0L8lzAg4NK1tzk
-        o8ZJLnF8P4wGVCUhpBGLzPpT9q7rPjE=
-X-Google-Smtp-Source: APXvYqy9uRgNQBfNrfjvqr1U1/kWE6mZPihSyhGPWy2GSnvncAfkq03fOENGN4UAv5g1jMyr+vOWWA==
-X-Received: by 2002:a17:902:20ec:: with SMTP id v41mr17195033plg.142.1561821439481;
-        Sat, 29 Jun 2019 08:17:19 -0700 (PDT)
+        bh=JFOw3VMsdqmGryCD4Peh9hH3bFiND6Nf+7Q9qzwwG6A=;
+        b=Xes0tMrqw6hPLei2p0ErmHSlliDaKwycI1Uhb49PacERDjUq2oWeLX0LnAdsLm1wkO
+         VAO7YVoWw3RuK6BgO6TJ0oLwD5dcTyB3rjcBEBMAujqKinqYicQT1T/PlZd8j5H2cT6K
+         wUlGterMH5t1h1prj6zedF+UhdwVHRqjYv//qgIJJzrKEGx+rcjq5yxDrkuodTwfP1ZH
+         VlOFQRSCxDnO0mWxNRitsZJU+bi+QZSXGbXKY/v+jegu5wF6G3nVE/Q5D5xKBnFRFn9E
+         0GnTFEFHKbGHF5/yZ0qkUpkDek+6Xs54Dtf0X7+MYivHTUHYGsDNSnYZsRq9XwIlZ5j6
+         xRtg==
+X-Gm-Message-State: APjAAAUqaJDR2dZl/k6dM16hTpTnccp8khGrVJqWdC0/i+OT3qIppmje
+        uo5c39zpWWnTH0TaI6VqAhizPA==
+X-Google-Smtp-Source: APXvYqza0/Go/P52ycu0wnXM/iM08lmG2K9aFeUc2cFqNQx16mWBrhQ0X6OqhllPkOi1Nygv3oix1A==
+X-Received: by 2002:a63:c342:: with SMTP id e2mr1424770pgd.79.1561821440126;
+        Sat, 29 Jun 2019 08:17:20 -0700 (PDT)
 Received: from localhost.localdomain.dhcp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id z14sm5048233pgs.79.2019.06.29.08.17.18
+        by smtp.gmail.com with ESMTPSA id z14sm5048233pgs.79.2019.06.29.08.17.19
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 29 Jun 2019 08:17:18 -0700 (PDT)
+        Sat, 29 Jun 2019 08:17:19 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org
-Subject: [PATCH net 3/5] bnxt_en: Fix statistics context reservation logic for RDMA driver.
-Date:   Sat, 29 Jun 2019 11:16:46 -0400
-Message-Id: <1561821408-17418-4-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net 4/5] bnxt_en: Cap the returned MSIX vectors to the RDMA driver.
+Date:   Sat, 29 Jun 2019 11:16:47 -0400
+Message-Id: <1561821408-17418-5-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1561821408-17418-1-git-send-email-michael.chan@broadcom.com>
 References: <1561821408-17418-1-git-send-email-michael.chan@broadcom.com>
@@ -54,54 +54,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current logic assumes that the RDMA driver uses one statistics
-context adjacent to the ones used by the network driver.  This
-assumption is not true and the statistics context used by the
-RDMA driver is tied to its MSIX base vector.  This wrong assumption
-can cause RDMA driver failure after changing ethtool rings on the
-network side.  Fix the statistics reservation logic accordingly.
+In an earlier commit to improve NQ reservations on 57500 chips, we
+set the resv_irqs on the 57500 VFs to the fixed value assigned by
+the PF regardless of how many are actually used.  The current
+code assumes that resv_irqs minus the ones used by the network driver
+must be the ones for the RDMA driver.  This is no longer true and
+we may return more MSIX vectors than requested, causing inconsistency.
+Fix it by capping the value.
 
-Fixes: 780baad44f0f ("bnxt_en: Reserve 1 stat_ctx for RDMA driver.")
+Fixes: 01989c6b69d9 ("bnxt_en: Improve NQ reservations.")
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index b9bc829..9090c79 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -5508,7 +5508,16 @@ static int bnxt_cp_rings_in_use(struct bnxt *bp)
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
+index bfa342a..fc77caf 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
+@@ -157,8 +157,10 @@ static int bnxt_req_msix_vecs(struct bnxt_en_dev *edev, int ulp_id,
  
- static int bnxt_get_func_stat_ctxs(struct bnxt *bp)
- {
--	return bp->cp_nr_rings + bnxt_get_ulp_stat_ctxs(bp);
-+	int ulp_stat = bnxt_get_ulp_stat_ctxs(bp);
-+	int cp = bp->cp_nr_rings;
-+
-+	if (!ulp_stat)
-+		return cp;
-+
-+	if (bnxt_nq_rings_in_use(bp) > cp + bnxt_get_ulp_msix_num(bp))
-+		return bnxt_get_ulp_msix_base(bp) + ulp_stat;
-+
-+	return cp + ulp_stat;
- }
+ 	if (BNXT_NEW_RM(bp)) {
+ 		struct bnxt_hw_resc *hw_resc = &bp->hw_resc;
++		int resv_msix;
  
- static bool bnxt_need_reserve_rings(struct bnxt *bp)
-@@ -7477,11 +7486,7 @@ unsigned int bnxt_get_avail_cp_rings_for_en(struct bnxt *bp)
- 
- unsigned int bnxt_get_avail_stat_ctxs_for_en(struct bnxt *bp)
- {
--	unsigned int stat;
--
--	stat = bnxt_get_max_func_stat_ctxs(bp) - bnxt_get_ulp_stat_ctxs(bp);
--	stat -= bp->cp_nr_rings;
--	return stat;
-+	return bnxt_get_max_func_stat_ctxs(bp) - bnxt_get_func_stat_ctxs(bp);
- }
- 
- int bnxt_get_avail_msix(struct bnxt *bp, int num)
+-		avail_msix = hw_resc->resv_irqs - bp->cp_nr_rings;
++		resv_msix = hw_resc->resv_irqs - bp->cp_nr_rings;
++		avail_msix = min_t(int, resv_msix, avail_msix);
+ 		edev->ulp_tbl[ulp_id].msix_requested = avail_msix;
+ 	}
+ 	bnxt_fill_msix_vecs(bp, ent);
 -- 
 2.5.1
 
