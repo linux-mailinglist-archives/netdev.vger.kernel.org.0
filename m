@@ -2,106 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 752C35ABA7
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 16:09:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 979A05ABB1
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 16:14:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726849AbfF2OJW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jun 2019 10:09:22 -0400
-Received: from mail-lj1-f176.google.com ([209.85.208.176]:35748 "EHLO
-        mail-lj1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726731AbfF2OJV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jun 2019 10:09:21 -0400
-Received: by mail-lj1-f176.google.com with SMTP id x25so8736086ljh.2
-        for <netdev@vger.kernel.org>; Sat, 29 Jun 2019 07:09:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=2vgkR24VCzDd24PACdl2RAw9h3W04PNxs0MORMvbdWw=;
-        b=BYBLjIyIVgszubuLYFlFbjUQQ5wv11XGOMxNdT3zSMFYUJyqIZgB6QMWdPc1QTIe1b
-         F2IWGqXf0fxPMJm1Mctgri1PeVQ3Bm/dQ+kAI/zP7I+OJxDgm8Ec0WvZkJ72JLdRcIKE
-         EeIOAy+IFJ6KpaUg0du+xNYlR8vgQ96INvdEPAIFthQxf3owh6f9rOBV29x4Lpk6rB8v
-         GOVgYp2q8X54np7eigwY4N1G3GQlVLWkgxt+GLGJff89fwDpMKpFnfQeyvEVRcrfVvif
-         glCO6rdEwgIr5G4B0ew09iqhypuCn0q1psz1n+jOEtj67lgTDABdUY9oURTlH9qG1AXM
-         dKPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=2vgkR24VCzDd24PACdl2RAw9h3W04PNxs0MORMvbdWw=;
-        b=W/8vXUUWfTtYlCgIi4GB7yCt/jZkJcTDDRMxLgI3DUYXzAFBG7k6RZV9X0xDWG+PBM
-         jKW2t+ohPppklyaeocd9c8a6QxBvMN2+zJdVmJtMoGjoSU93JEZ7nbLl9iGArcw1mxZb
-         skJNedAtk+mncdTEnDfbU2clkmNaDPauIqzFqcRcD+bDdU+/8lmRRVX1c4dWPIdLH9Xt
-         Um6INCmAg/gyHaTf+wjAKnr44OdiQxZrIxNmqC9tHRcfOuAVlJZB3RCCdLa8DTeVM+IJ
-         sox5bLyeHci/HLW1NUlRVEQvgA/l/XnfhZhO7ILI65B93V8zmJvU0YwscbpZKjczZClF
-         4Lhw==
-X-Gm-Message-State: APjAAAWlL9bzvakJdtvd1XM1KfjYJp9QWamLGLuczgWWVIhnoomjzJFY
-        UPgg3hCFx/7kKSzQdroq1xFlCV83WdQ56RuPnb5LHNno
-X-Google-Smtp-Source: APXvYqz9aTiWi76cPU/MB4L9AhISP9Av6oMwjf4IU29we+J8THpM87Gcaafbesr+oW6nsS/nRR14LU56/FZv4b4jOJs=
-X-Received: by 2002:a2e:8650:: with SMTP id i16mr9137473ljj.178.1561817359854;
- Sat, 29 Jun 2019 07:09:19 -0700 (PDT)
+        id S1726865AbfF2OOC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jun 2019 10:14:02 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:3016 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726770AbfF2OOC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 29 Jun 2019 10:14:02 -0400
+Received: from DGGEMM401-HUB.china.huawei.com (unknown [172.30.72.55])
+        by Forcepoint Email with ESMTP id EBD3F63A0F28E98C15C6;
+        Sat, 29 Jun 2019 22:13:59 +0800 (CST)
+Received: from dggeme766-chm.china.huawei.com (10.3.19.112) by
+ DGGEMM401-HUB.china.huawei.com (10.3.20.209) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Sat, 29 Jun 2019 22:13:59 +0800
+Received: from dggeme763-chm.china.huawei.com (10.3.19.109) by
+ dggeme766-chm.china.huawei.com (10.3.19.112) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1591.10; Sat, 29 Jun 2019 22:13:59 +0800
+Received: from dggeme763-chm.china.huawei.com ([10.6.66.36]) by
+ dggeme763-chm.china.huawei.com ([10.6.66.36]) with mapi id 15.01.1591.008;
+ Sat, 29 Jun 2019 22:13:59 +0800
+From:   linmiaohe <linmiaohe@huawei.com>
+To:     David Ahern <dsahern@gmail.com>,
+        "pablo@netfilter.org" <pablo@netfilter.org>
+CC:     "kadlec@blackhole.kfki.hu" <kadlec@blackhole.kfki.hu>,
+        "fw@strlen.de" <fw@strlen.de>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
+        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
+        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
+        "coreteam@netfilter.org" <coreteam@netfilter.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Mingfangsen <mingfangsen@huawei.com>
+Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0ggdjRdIG5ldDogbmV0ZmlsdGVyOiBGaXggcnBmaWx0?=
+ =?utf-8?Q?er_dropping_vrf_packets_by_mistake?=
+Thread-Topic: [PATCH v4] net: netfilter: Fix rpfilter dropping vrf packets by
+ mistake
+Thread-Index: AdUuGy8DDB3uB4ksWUWckzFOhXp+DAAFqTYAABSVBMA=
+Date:   Sat, 29 Jun 2019 14:13:59 +0000
+Message-ID: <cef929f9a14f462f9f7d3fa475f84e76@huawei.com>
+References: <2213b3e722a14ee48768ecc7118efc46@huawei.com>
+ <08740476-acfb-d35a-50b7-3aee42f23bfa@gmail.com>
+In-Reply-To: <08740476-acfb-d35a-50b7-3aee42f23bfa@gmail.com>
+Accept-Language: en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.184.189.20]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <CAAg6XZOVbPexui=MZC6QaL1-4e8SL6Z_z8S0+B6YAzSpgf8t8Q@mail.gmail.com>
-In-Reply-To: <CAAg6XZOVbPexui=MZC6QaL1-4e8SL6Z_z8S0+B6YAzSpgf8t8Q@mail.gmail.com>
-From:   Aks Kak <akskak2012@gmail.com>
-Date:   Sat, 29 Jun 2019 19:39:06 +0530
-Message-ID: <CAAg6XZMCLaZhW9XZJTYZ5JMJjiDOD1w4PuFeOVUtH7SGsaetog@mail.gmail.com>
-Subject: Re: Proxy arp for non-overlapping subnets on an interface without
- assigning IP aliases
-To:     netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ignore previous one or consider /27 as /25 at two places in previous mail:
-***************************************************************************************
-I have a linux box with 2 interfaces with following IPs
-eno1 : 10.1.1.0/24
-eno2 : 192.168.2.0/25
-
-I want to use network 10.3.3.0/25 as virtual IPs for 192.168.2.0/25
-i.e. I will be doing DNAT using NETMAP target of IPTABLES.
-
-DNAT and NETMAP, etc. is not the issue.
-
-For my requirement to work, main thing is who (or how) will give arp
-replies for 10.3.3.0/25 !!!
-I have 2 ways of achieving this:
-1. Create all 126 IPs 10.3.3.1 - 10.3.3.126 as alias IPs on eno1. I
-want to avoid it.
-2. Use proxy arp for entire subnet 10.3.3.0/25 on eno1 but this
-require having atleast one IP from this subnet to be created as IP
-alias on eno1, say 10.3.3.1/25. However, my concern is that this
-10.3.3.1, as it has been assigned to eno1,may be used by mistake to
-listen for any service, etc. or ping, etc. which otherwise I would
-have to control using iptables rule set. I totally want to avoid it.
-
-So, my query is how to do proxy arp for 10.3.3.0/25 on eno1 without
-assigning 10.3.3.1/25 to eno1???
-
-On Sat, Jun 29, 2019 at 7:34 PM Aks Kak <akskak2012@gmail.com> wrote:
->
-> I have a linux box with 2 interfaces with following IPs
-> eno1 : 10.1.1.0/24
-> eno2 : 192.168.2.0/27
->
-> I want to use network 10.3.3.0/25 as virtual IPs for 192.168.2.0/25
-> i.e. I will be doing DNAT using NETMAP target of IPTABLES.
->
-> DNAT and NETMAP, etc. is not the issue.
->
-> For my requirement to work, main thing is who (or how) will give arp
-> replies for 10.3.3.0/27 !!!
-> I have 2 ways of achieving this:
-> 1. Create all 126 IPs 10.3.3.1 - 10.3.3.126 as alias IPs on eno1. I
-> want to avoid it.
-> 2. Use proxy arp for entire subnet 10.3.3.0/25 on eno1 but this
-> require having atleast one IP from this subnet to be created as IP
-> alias on eno1, say 10.3.3.1/25. However, my concern is that this
-> 10.3.3.1, as it has been assigned to eno1,may be used by mistake to
-> listen for any service, etc. or ping, etc. which otherwise I would
-> have to control using iptables rule set. I totally want to avoid it.
->
-> So, my query is how to do proxy arp for 10.3.3.0/25 on eno1 without
-> assigning 10.3.3.1/25 to eno1???
+T24gNi8yOS8xOSAyMDoyMCBQTSwgRGF2aWQgQWhlcm4gd3JvdGU6DQo+IE9uIDYvMjgvMTkgODox
+MyBQTSwgbGlubWlhb2hlIHdyb3RlOg0KPiA+IFlvdSdyZSByaWdodC4gRmliIHJ1bGVzIGNvZGUg
+d291bGQgc2V0IEZMT1dJX0ZMQUdfU0tJUF9OSF9PSUYgZmxhZy4gIA0KPiA+IEJ1dCBJIHNldCBp
+dCBoZXJlIGZvciBkaXN0aW5ndWlzaCB3aXRoIHRoZSBmbGFncyAmIFhUX1JQRklMVEVSX0xPT1NF
+IA0KPiA+IGJyYW5jaC4gV2l0aG91dCB0aGlzLCB0aGV5IGRvIHRoZSBzYW1lIHdvcmsgYW5kIG1h
+eWJlIHNob3VsZCBiZSAgDQo+ID4gY29tYmluZWQuIEkgZG9uJ3Qgd2FudCB0byBkbyB0aGF0IGFz
+IHRoYXQgbWFrZXMgY29kZSBjb25mdXNpbmcuDQo+ID4gSXMgdGhpcyBjb2RlIHNuaXBldCBiZWxv
+dyBvayA/IElmIHNvLCBJIHdvdWxkIGRlbGV0ZSB0aGlzIGZsYWcgc2V0dGluZy4NCj4gPiAgDQo+
+ID4gICAgICAgIH0gZWxzZSBpZiAobmV0aWZfaXNfbDNfbWFzdGVyKGRldikgfHwgbmV0aWZfaXNf
+bDNfc2xhdmUoZGV2KSkgew0KPiA+ICAgICAgICAgICAgICAgIGZsNi5mbG93aTZfb2lmID0gZGV2
+LT5pZmluZGV4Ow0KPiA+ICAgICAgICAgfSBlbHNlIGlmICgoZmxhZ3MgJiBYVF9SUEZJTFRFUl9M
+T09TRSkgPT0gMCkNCj4gPiAgICAgICAgICAgICAgICAgZmw2LmZsb3dpNl9vaWYgPSBkZXYtPmlm
+aW5kZXg7DQoNCj4gdGhhdCBsb29rcyBmaW5lIHRvIG1lLCBidXQgaXQgaXMgdXAgdG8gUGFibG8u
+DQoNCkBEYXZpZCBBaGVybiAgTWFueSB0aGFua3MgZm9yIHlvdXIgdmFsdWFibGUgYWR2aWNlLg0K
+DQpAIFBhYmxvIEhpLCBjb3VsZCB5b3UgcGxlYXNlIHRlbGwgbWUgaWYgdGhpcyBjb2RlIHNuaXBl
+dCBpcyBvaz8NCklmIG5vdCwgd2hpY2ggY29kZSB3b3VsZCB5b3UgcHJlZmVyPyBJdCdzIHZlcnkg
+bmljZSBvZiB5b3UgdG8NCmZpZ3VyZSBpdCBvdXQgZm9yIG1lLiBUaGFua3MgYSBsb3QuDQoNCkhh
+dmUgYSBuaWNlIGRheS4NCkJlc3Qgd2lzaGVzLg0K
