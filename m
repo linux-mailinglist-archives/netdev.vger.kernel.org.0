@@ -2,112 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A8715ACC4
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 19:56:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 025895ACC8
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 20:02:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726883AbfF2R4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jun 2019 13:56:20 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:44382 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726864AbfF2R4T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 29 Jun 2019 13:56:19 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 1430CC057EC6;
-        Sat, 29 Jun 2019 17:56:19 +0000 (UTC)
-Received: from epycfail.redhat.com (unknown [10.36.112.13])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D719319C69;
-        Sat, 29 Jun 2019 17:56:17 +0000 (UTC)
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org
-Subject: [PATCH] ipv4: Fix off-by-one in route dump counter without netlink strict checking
-Date:   Sat, 29 Jun 2019 19:55:08 +0200
-Message-Id: <74faa085e6af026f8b9f0d3cce8a94147781f257.1561830851.git.sbrivio@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Sat, 29 Jun 2019 17:56:19 +0000 (UTC)
+        id S1726892AbfF2SCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jun 2019 14:02:17 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:38326 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726864AbfF2SCR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jun 2019 14:02:17 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id D4DB014B8D0DF;
+        Sat, 29 Jun 2019 11:02:16 -0700 (PDT)
+Date:   Sat, 29 Jun 2019 11:02:16 -0700 (PDT)
+Message-Id: <20190629.110216.897222978158891297.davem@davemloft.net>
+To:     fw@strlen.de
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        netfilter-devel@vger.kernel.org
+Subject: Re: [PATCH net v2] net: make skb_dst_force return true when dst is
+ refcounted
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190626184045.2922-1-fw@strlen.de>
+References: <20190626184045.2922-1-fw@strlen.de>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 29 Jun 2019 11:02:17 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In commit ee28906fd7a1 ("ipv4: Dump route exceptions if requested") I
-added a counter of per-node dumped routes (including actual routes and
-exceptions), analogous to the existing counter for dumped nodes. Dumping
-exceptions means we need to also keep track of how many routes are dumped
-for each node: this would be just one route per node, without exceptions.
+From: Florian Westphal <fw@strlen.de>
+Date: Wed, 26 Jun 2019 20:40:45 +0200
 
-When netlink strict checking is not enabled, we dump both routes and
-exceptions at the same time: the RTM_F_CLONED flag is not used as a
-filter. In this case, the per-node counter 'i_fa' is incremented by one
-to track the single dumped route, then also incremented by one for each
-exception dumped, and then stored as netlink callback argument as skip
-counter, 's_fa', to be used when a partial dump operation restarts.
+> netfilter did not expect that skb_dst_force() can cause skb to lose its
+> dst entry.
+> 
+> I got a bug report with a skb->dst NULL dereference in netfilter
+> output path.  The backtrace contains nf_reinject(), so the dst might have
+> been cleared when skb got queued to userspace.
+> 
+> Other users were fixed via
+> if (skb_dst(skb)) {
+> 	skb_dst_force(skb);
+> 	if (!skb_dst(skb))
+> 		goto handle_err;
+> }
+> 
+> But I think its preferable to make the 'dst might be cleared' part
+> of the function explicit.
+> 
+> In netfilter case, skb with a null dst is expected when queueing in
+> prerouting hook, so drop skb for the other hooks.
+> 
+> v2:
+>  v1 of this patch returned true in case skb had no dst entry.
+>  Eric said:
+>    Say if we have two skb_dst_force() calls for some reason
+>    on the same skb, only the first one will return false.
+> 
+>  This now returns false even when skb had no dst, as per Erics
+>  suggestion, so callers might need to check skb_dst() first before
+>  skb_dst_force().
+> 
+> Signed-off-by: Florian Westphal <fw@strlen.de>
+ ...
+>  Alternatively this could be routed via netfilter tree, let me
+>  know your preference.
 
-The per-node counter needs to be increased by one also when we skip a
-route (exception) due to a previous non-zero skip counter, because it
-needs to match the existing skip counter, if we are dumping both routes
-and exceptions. I missed this, and only incremented the counter, for
-regular routes, if the previous skip counter was zero. This means that,
-in case of a mixed dump, partial dump operations after the first one
-will start with a mismatching skip counter value, one less than expected.
-
-This means in turn that the first exception for a given node is skipped
-every time a partial dump operation restarts, if netlink strict checking
-is not enabled (iproute < 5.0).
-
-It turns out I didn't repeat the test in its final version, commit
-de755a85130e ("selftests: pmtu: Introduce list_flush_ipv4_exception test
-case"), which also counts the number of route exceptions returned, with
-iproute2 versions < 5.0 -- I was instead using the equivalent of the IPv6
-test as it was before commit b964641e9925 ("selftests: pmtu: Make
-list_flush_ipv6_exception test more demanding").
-
-Always increment the per-node counter by one if we previously dumped
-a regular route, so that it matches the current skip counter.
-
-Fixes: ee28906fd7a1 ("ipv4: Dump route exceptions if requested")
-Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
----
- net/ipv4/fib_trie.c | 22 ++++++++++++++--------
- 1 file changed, 14 insertions(+), 8 deletions(-)
-
-diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
-index 4400f5051977..2b2b3d291ab0 100644
---- a/net/ipv4/fib_trie.c
-+++ b/net/ipv4/fib_trie.c
-@@ -2126,14 +2126,20 @@ static int fn_trie_dump_leaf(struct key_vector *l, struct fib_table *tb,
- 				goto next;
- 		}
- 
--		if (filter->dump_routes && !s_fa) {
--			err = fib_dump_info(skb, NETLINK_CB(cb->skb).portid,
--					    cb->nlh->nlmsg_seq, RTM_NEWROUTE,
--					    tb->tb_id, fa->fa_type,
--					    xkey, KEYLENGTH - fa->fa_slen,
--					    fa->fa_tos, fi, flags);
--			if (err < 0)
--				goto stop;
-+		if (filter->dump_routes) {
-+			if (!s_fa) {
-+				err = fib_dump_info(skb,
-+						    NETLINK_CB(cb->skb).portid,
-+						    cb->nlh->nlmsg_seq,
-+						    RTM_NEWROUTE,
-+						    tb->tb_id, fa->fa_type,
-+						    xkey,
-+						    KEYLENGTH - fa->fa_slen,
-+						    fa->fa_tos, fi, flags);
-+				if (err < 0)
-+					goto stop;
-+			}
-+
- 			i_fa++;
- 		}
- 
--- 
-2.20.1
-
+Applied and I'll queue this up for -stable, thanks Florian.
