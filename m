@@ -2,70 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EBA75A9AB
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 10:50:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC5535A9B0
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 10:50:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726897AbfF2IuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jun 2019 04:50:20 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:43246 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726839AbfF2IuU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jun 2019 04:50:20 -0400
-Received: by mail-qk1-f193.google.com with SMTP id m14so7032225qka.10;
-        Sat, 29 Jun 2019 01:50:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kRCaPZUTNlS7a+mx62w/hxRGKkbBOJjALk1mlt6ypZY=;
-        b=Q26SSSteIECh9v3cROEI0AGN/KtJ6LihDFal40Ppds5cLo962l/9aTdp1VA+nyhoiY
-         jHu1r9dze84rI19Ft3K+pXx4S/hQADkTSWRXKkvPR713F3LtztNYL1SJRGzqIpyz6BJt
-         Wiz+3lz219UG7SA+tPYyrYiOs+lytkoL490dgDBQpQRVQl2FxrXnvSnvZhuanr7QjczE
-         vxvbolKbhO/sMo9ky4Kdc/MmPOycoG2c1unpis+qfZmnBL07uxxNRqM6s3Og1Yb86IxI
-         sW7SNCaT2tdZEnIhdmdaVIa76rK23YOtIrNkSaXz07qKInm64f9K+IrKIdFQ5PFVZXVS
-         ck6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kRCaPZUTNlS7a+mx62w/hxRGKkbBOJjALk1mlt6ypZY=;
-        b=JlIVtMDuEPmkckpr7t5M3fdQljkcDS3+qqGM6RJqbkMMv+0rpq2Q59rzsvNj5CDDXR
-         earRKedgJNRpousP4etxy96NmZ7y+ZErEFTt/BwQpvLEWZzLAHr++g17PftIqo3z+Tnw
-         V0Y6+PD6EOCZs2kmm1n/JrrFGaaj+CEN+ggaTnBfG4GbP7PqEm6TMb5CvFtD45OQrenl
-         asJx4dAEGEJc2Zr0gfS7sF81Jat/fdxziLYgFOU66hQpSk3mmEQBMkNBklCieC0SynU4
-         XNfI/zzKV+cRnN1JraNqNLRK8Qwg5lpXsS85gU404mSGL884jxSN7Bmp+cDSU2LBkkDY
-         Vgbw==
-X-Gm-Message-State: APjAAAWezNypPmO0LKSWhC97e/VyI3G1fOYbwl3jIV3zyvDbP9GKnpD1
-        onQVjDzr0PhlpScWaEez1CAd9jgeIfagDcVDhf8=
-X-Google-Smtp-Source: APXvYqwFGtClOquwzdwXU0rzZWXmX/Bq4+BGlgBrnI65uL7qt2P1B7Hrd3YMBiPfp12b0AdGGAo+Ui2DcQV113MFxMg=
-X-Received: by 2002:ae9:e40f:: with SMTP id q15mr11396108qkc.241.1561798219303;
- Sat, 29 Jun 2019 01:50:19 -0700 (PDT)
+        id S1726950AbfF2Iuw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jun 2019 04:50:52 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:40544 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726839AbfF2Iuw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 29 Jun 2019 04:50:52 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 9483881F01;
+        Sat, 29 Jun 2019 08:50:51 +0000 (UTC)
+Received: from localhost (unknown [10.43.2.74])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0F9A760600;
+        Sat, 29 Jun 2019 08:50:50 +0000 (UTC)
+Date:   Sat, 29 Jun 2019 10:50:42 +0200
+From:   Stanislaw Gruszka <sgruszka@redhat.com>
+To:     Soeren Moch <smoch@web.de>
+Cc:     Helmut Schaa <helmut.schaa@googlemail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] rt2x00: fix rx queue hang
+Message-ID: <20190629085041.GA2854@redhat.com>
+References: <20190617094656.3952-1-smoch@web.de>
+ <20190618093431.GA2577@redhat.com>
+ <b6899d78-447c-3cb3-4bec-e4050660ccaa@web.de>
+ <20190625095734.GA2886@redhat.com>
+ <8d7da251-8218-ff4b-2cf3-8ed69c97275e@web.de>
 MIME-Version: 1.0
-References: <20190629034906.1209916-1-andriin@fb.com> <20190629034906.1209916-5-andriin@fb.com>
-In-Reply-To: <20190629034906.1209916-5-andriin@fb.com>
-From:   Song Liu <liu.song.a23@gmail.com>
-Date:   Sat, 29 Jun 2019 01:50:08 -0700
-Message-ID: <CAPhsuW6VUbGHYEW1egZv3R_L2wytME1CODfi2yijH_Bwe1S-3Q@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 4/9] libbpf: add kprobe/uprobe attach API
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Stanislav Fomichev <sdf@fomichev.me>,
-        Song Liu <songliubraving@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8d7da251-8218-ff4b-2cf3-8ed69c97275e@web.de>
+User-Agent: Mutt/1.5.20 (2009-12-10)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.25]); Sat, 29 Jun 2019 08:50:51 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 28, 2019 at 8:49 PM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> Add ability to attach to kernel and user probes and retprobes.
-> Implementation depends on perf event support for kprobes/uprobes.
->
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+Hello
 
-Acked-by: Song Liu <songliubraving@fb.com>
+On Wed, Jun 26, 2019 at 03:28:00PM +0200, Soeren Moch wrote:
+> Hi Stanislaw,
+> 
+> the good news is: your patch below also solves the issue for me. But
+> removing the ENTRY_DATA_STATUS_PENDING check in
+> rt2x00usb_kick_rx_entry() alone does not help, while removing this check
+> in rt2x00usb_work_rxdone() alone does the trick.
+> 
+> So the real race seems to be that the flags set in the completion
+> handler are not yet visible on the cpu core running the workqueue. And
+> because the worker is not rescheduled when aborted, the entry can just
+> wait forever.
+> Do you think this could make sense?
+
+Yes.
+
+> > I'm somewhat reluctant to change the order, because TX processing
+> > might relay on it (we first mark we wait for TX status and
+> > then mark entry is no longer owned by hardware).
+> OK, maybe it's just good luck that changing the order solves the rx
+> problem. Or can memory barriers associated with the spinlock in
+> rt2x00lib_dmadone() be responsible for that?
+> (I'm testing on a armv7 system, Cortex-A9 quadcore.)
+
+I'm not sure, rt2x00queue_index_inc() also disable/enable interrupts,
+so maybe that make race not reproducible. 
+
+> While looking at it, why we double-clear ENTRY_OWNER_DEVICE_DATA in
+> rt2x00usb_interrupt_rxdone() directly and in rt2x00lib_dmadone() again,
+
+rt2x00lib_dmadone() is called also on other palaces (error paths)
+when we have to clear flags.
+
+> while not doing the same for tx? 
+
+If I remember correctly we have some races on rx (not happened on tx)
+that was solved by using test_and_clear_bit(ENTRY_OWNER_DEVICE_DATA).
+
+> Would it make more sense to possibly
+> set ENTRY_DATA_IO_FAILED before clearing ENTRY_OWNER_DEVICE_DATA in
+> rt2x00usb_interrupt_rxdone() as for tx?
+
+I don't think so, ENTRY_DATA_IO_FAILED should be only set on error
+case.
+
+> >  However on RX
+> > side ENTRY_DATA_STATUS_PENDING bit make no sense as we do not
+> > wait for status. We should remove ENTRY_DATA_STATUS_PENDING on
+> > RX side and perhaps this also will solve issue you observe.
+> I agree that removing the unnecessary checks is a good idea in any case.
+> > Could you please check below patch, if it fixes the problem as well?
+> At least I could not trigger the problem within transferring 10GB of
+> data. But maybe the probability for triggering this bug is just lower
+> because ENTRY_OWNER_DEVICE_DATA is cleared some time before
+> ENTRY_DATA_STATUS_PENDING is set?
+
+Not sure. Anyway, could you post patch removing not needed checks
+with proper description/changelog ?
+
+Stanislaw
