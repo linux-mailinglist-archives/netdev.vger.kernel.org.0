@@ -2,155 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6211F5AD62
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 22:42:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EBDA5AD74
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 23:11:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726927AbfF2UmM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jun 2019 16:42:12 -0400
-Received: from smtprelay0064.hostedemail.com ([216.40.44.64]:59902 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726909AbfF2UmL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jun 2019 16:42:11 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay08.hostedemail.com (Postfix) with ESMTP id 7EE17182CF668;
-        Sat, 29 Jun 2019 20:42:10 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::,RULES_HIT:41:69:355:379:599:800:960:966:968:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1431:1437:1515:1516:1518:1535:1544:1593:1594:1711:1730:1747:1777:1792:2196:2199:2393:2559:2562:2828:3138:3139:3140:3141:3142:3355:3622:3865:3866:3867:3868:3870:3871:4250:4321:4385:5007:6119:7974:10004:10848:11026:11232:11657:11658:11914:12043:12296:12297:12438:12555:12740:12760:12895:12986:13138:13161:13229:13231:13439:14181:14659:14721:21080:21451:21627:30034:30054:30055:30064:30070:30091,0,RBL:error,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:30,LUA_SUMMARY:none
-X-HE-Tag: blow05_873a3713ed920
-X-Filterd-Recvd-Size: 5034
-Received: from XPS-9350 (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
-        (Authenticated sender: joe@perches.com)
-        by omf02.hostedemail.com (Postfix) with ESMTPA;
-        Sat, 29 Jun 2019 20:42:09 +0000 (UTC)
-Message-ID: <9408eb59ecaa3e245fd71ec0211a34c3fb0e324b.camel@perches.com>
-Subject: Re: [net-next 08/15] iavf: Fix up debug print macro
-From:   Joe Perches <joe@perches.com>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        Andrew Bowers <andrewx.bowers@intel.com>
-Date:   Sat, 29 Jun 2019 13:42:06 -0700
-In-Reply-To: <20190628224932.3389-9-jeffrey.t.kirsher@intel.com>
-References: <20190628224932.3389-1-jeffrey.t.kirsher@intel.com>
-         <20190628224932.3389-9-jeffrey.t.kirsher@intel.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
+        id S1726927AbfF2VLB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jun 2019 17:11:01 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:37256 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726909AbfF2VLB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jun 2019 17:11:01 -0400
+Received: by mail-io1-f72.google.com with SMTP id j18so10840288ioj.4
+        for <netdev@vger.kernel.org>; Sat, 29 Jun 2019 14:11:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=iI+vf7XGdxN/YYPP07HgU1JapV/In43CoBtMmVlU0zc=;
+        b=uYEWrQfn5vFrKz5ej3qtwlcmVnnT6NiEQ8+OcS28xGlXN0HQne4XJ5XnM/VMuKkHqr
+         wWxCiMCdDMWslXaW/T6j8SXgDLWywL0Pkn8fjAbmJT84AlIlG9K2JyUr72UILhBbKehd
+         IlloVSLOEsxjeihXJyzjHzpeTyB+7wXuXBZ6tXe1B2HT3XF7KnLyOLgoNFLUXDAVTirA
+         AszYWWeHqZzsxkGZWoI2cC3XNpTNWT8oGNTYU/2glP3nCyfoOb4Dx5doihmtGy03qHuG
+         iUfUyHZU3JQzNKeqmULbO7s1/2LLi3rEvkn4NHaTndv3GBtQW0m7DXzzIy22yu94XLN3
+         Pzew==
+X-Gm-Message-State: APjAAAWCHCb/RyLOtO/pR3f6hdME9/Fict3PTLsg/2EODB6p3O2bPqmv
+        cAZYa5iA/DVhs8h4MeD6OrFRkR6HQMsRL+QGJPooze5LmXOV
+X-Google-Smtp-Source: APXvYqxUrjoo3PnWRqtB9E0kVCAY8bEvzzwxgHzzPwfKIzGqVN9E4ibJvNZEVz7+4oUptRKrbedzide4XQN2Mi9uNOkrx1Kx7s+W
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a5d:9ec4:: with SMTP id a4mr14785908ioe.125.1561842660304;
+ Sat, 29 Jun 2019 14:11:00 -0700 (PDT)
+Date:   Sat, 29 Jun 2019 14:11:00 -0700
+In-Reply-To: <000000000000d028b30588fed102@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f66c6e058c7cd4e0@google.com>
+Subject: Re: KASAN: use-after-free Write in xfrm_hash_rebuild
+From:   syzbot <syzbot+0165480d4ef07360eeda@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, fw@strlen.de, herbert@gondor.apana.org.au,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        steffen.klassert@secunet.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2019-06-28 at 15:49 -0700, Jeff Kirsher wrote:
-> This aligns the iavf_debug() macro with the other Intel drivers.
-> 
-> Add the bus number, bus_id field to i40e_bus_info so output shows
-> each physical port(i.e func) in following format:
->   [[[[<domain>]:]<bus>]:][<slot>][.[<func>]]
-> domains are numbered from 0 to ffff), bus (0-ff), slot (0-1f) and
-> function (0-7).
-> 
-> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-> Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-> ---
->  drivers/net/ethernet/intel/iavf/iavf_osdep.h | 10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/iavf/iavf_osdep.h b/drivers/net/ethernet/intel/iavf/iavf_osdep.h
-> index d39684558597..a452ce90679a 100644
-> --- a/drivers/net/ethernet/intel/iavf/iavf_osdep.h
-> +++ b/drivers/net/ethernet/intel/iavf/iavf_osdep.h
-> @@ -44,8 +44,12 @@ struct iavf_virt_mem {
->  #define iavf_allocate_virt_mem(h, m, s) iavf_allocate_virt_mem_d(h, m, s)
->  #define iavf_free_virt_mem(h, m) iavf_free_virt_mem_d(h, m)
->  
-> -#define iavf_debug(h, m, s, ...)  iavf_debug_d(h, m, s, ##__VA_ARGS__)
-> -extern void iavf_debug_d(void *hw, u32 mask, char *fmt_str, ...)
-> -	__printf(3, 4);
-> +#define iavf_debug(h, m, s, ...)				\
-> +do {								\
-> +	if (((m) & (h)->debug_mask))				\
-> +		pr_info("iavf %02x:%02x.%x " s,			\
-> +			(h)->bus.bus_id, (h)->bus.device,	\
-> +			(h)->bus.func, ##__VA_ARGS__);		\
-> +} while (0)
+syzbot has bisected this bug to:
 
-Why not change the function to do this?
+commit 1548bc4e0512700cf757192c106b3a20ab639223
+Author: Florian Westphal <fw@strlen.de>
+Date:   Fri Jan 4 13:17:02 2019 +0000
 
-And if this is really wanted this particular way
-the now unused function should be removed too.
+     xfrm: policy: delete inexact policies from inexact list on hash rebuild
 
-But I suggest emitting at KERN_DEBUG and using
-the more typical %pV vsprintf extension.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1734cba9a00000
+start commit:   249155c2 Merge branch 'parisc-5.2-4' of git://git.kernel.o..
+git tree:       upstream
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=14b4cba9a00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=10b4cba9a00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=9a31528e58cc12e2
+dashboard link: https://syzkaller.appspot.com/bug?extid=0165480d4ef07360eeda
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16cf37c3a00000
 
----
+Reported-by: syzbot+0165480d4ef07360eeda@syzkaller.appspotmail.com
+Fixes: 1548bc4e0512 ("xfrm: policy: delete inexact policies from inexact  
+list on hash rebuild")
 
- drivers/net/ethernet/intel/iavf/iavf_main.c  | 25 ++++++++++++++-----------
- drivers/net/ethernet/intel/iavf/iavf_osdep.h |  9 ++++++---
- 2 files changed, 20 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 881561b36083..8504fd71d398 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -143,25 +143,28 @@ enum iavf_status iavf_free_virt_mem_d(struct iavf_hw *hw,
- }
- 
- /**
-- * iavf_debug_d - OS dependent version of debug printing
-+ * _iavf_debug - OS dependent version of debug printing
-  * @hw:  pointer to the HW structure
-  * @mask: debug level mask
-- * @fmt_str: printf-type format description
-+ * @fmt: printf-type format description
-  **/
--void iavf_debug_d(void *hw, u32 mask, char *fmt_str, ...)
-+void _iavf_debug(const struct iavf_hw *hw, u32 mask, const char *fmt, ...)
- {
--	char buf[512];
--	va_list argptr;
-+	struct va_format vaf;
-+	va_list args;
- 
--	if (!(mask & ((struct iavf_hw *)hw)->debug_mask))
-+	if (!(hw->debug_mask & mask))
- 		return;
- 
--	va_start(argptr, fmt_str);
--	vsnprintf(buf, sizeof(buf), fmt_str, argptr);
--	va_end(argptr);
-+	va_start(args, fmt);
- 
--	/* the debug string is already formatted with a newline */
--	pr_info("%s", buf);
-+	vaf.fmt = fmt;
-+	vaf.va = &args;
-+
-+	pr_debug("iavf %02x:%02x.%x %pV",
-+		 hw->bus.bus_id, hw->bus.device, hw->bus.func, &vaf);
-+
-+	va_end(args);
- }
- 
- /**
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_osdep.h b/drivers/net/ethernet/intel/iavf/iavf_osdep.h
-index d39684558597..0e6ac7d262c8 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_osdep.h
-+++ b/drivers/net/ethernet/intel/iavf/iavf_osdep.h
-@@ -44,8 +44,11 @@ struct iavf_virt_mem {
- #define iavf_allocate_virt_mem(h, m, s) iavf_allocate_virt_mem_d(h, m, s)
- #define iavf_free_virt_mem(h, m) iavf_free_virt_mem_d(h, m)
- 
--#define iavf_debug(h, m, s, ...)  iavf_debug_d(h, m, s, ##__VA_ARGS__)
--extern void iavf_debug_d(void *hw, u32 mask, char *fmt_str, ...)
--	__printf(3, 4);
-+struct iavf_hw;
-+
-+__printf(3, 4)
-+void _iavf_debug(const struct iavf_hw *hw, u32 mask, const char *fmt, ...);
-+#define iavf_debug(hw, mask, fmt, ...)					\
-+	_iavf_debug(hw, mask, fmt, ##__VA_ARGS__)
- 
- #endif /* _IAVF_OSDEP_H_ */
-
-
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
