@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1334E5AADF
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 14:24:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E2825AAE2
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 14:25:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727022AbfF2MYf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jun 2019 08:24:35 -0400
-Received: from mx.0dd.nl ([5.2.79.48]:50808 "EHLO mx.0dd.nl"
+        id S1727064AbfF2MZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jun 2019 08:25:13 -0400
+Received: from mx.0dd.nl ([5.2.79.48]:50844 "EHLO mx.0dd.nl"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726892AbfF2MYf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 29 Jun 2019 08:24:35 -0400
+        id S1726892AbfF2MZN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 29 Jun 2019 08:25:13 -0400
 Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx.0dd.nl (Postfix) with ESMTPS id E3A885FE8C;
-        Sat, 29 Jun 2019 14:24:32 +0200 (CEST)
+        by mx.0dd.nl (Postfix) with ESMTPS id B87C45FE8C;
+        Sat, 29 Jun 2019 14:25:10 +0200 (CEST)
 Authentication-Results: mx.0dd.nl;
-        dkim=pass (2048-bit key) header.d=vdorst.com header.i=@vdorst.com header.b="navb87/B";
+        dkim=pass (2048-bit key) header.d=vdorst.com header.i=@vdorst.com header.b="aEffR9Jl";
         dkim-atps=neutral
 Received: from pc-rene.vdorst.com (pc-rene.vdorst.com [192.168.2.125])
-        by mail.vdorst.com (Postfix) with ESMTPA id 9732F1CE6915;
-        Sat, 29 Jun 2019 14:24:32 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com 9732F1CE6915
+        by mail.vdorst.com (Postfix) with ESMTPA id 84F421CE691F;
+        Sat, 29 Jun 2019 14:25:10 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com 84F421CE691F
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
-        s=default; t=1561811072;
-        bh=S+aJCigz6fwF72k/RqnynZOytfAg53dL/P7AVyy/NFk=;
+        s=default; t=1561811110;
+        bh=Bu6E7/v0dN+ECBnl6aRpZhpeAg3S+W/5IW/5FrwWJIw=;
         h=From:To:Cc:Subject:Date:From;
-        b=navb87/BGORIBmdir2smL2aIK21EEZq2HP+PltawpWQYfmzKTjVx+3QYR67t7AhRX
-         L7UDL5GxjJt/Id8r6I6XZZ7rqhVh/KtetRwoi3HNDedY6/TeydYoZHgFcVew8CUOzh
-         bWNsobgeyJ6htLWRdiQ1DpEJZX2VLrl8sOkNUTi6iIAzyJ6sEsWVkF+F6CI08eJ/1G
-         IPKKdGoPV3wurvB4l4/UZG0x9/7RHUoMqw4dsYVSOAOJPC+LSLo3QWxBv93lg3uFXK
-         97R3GO41An50a3+Z8CD1065fnJjMAr/Gvf8aFWyuKmAnc6/LdVyzrCwWmtkOFDSLvH
-         gM+XEOYFWBMtw==
+        b=aEffR9JlqHiIo6LHHQKWWJmHDp7ZdKOWTyteHfr77OCeZZIhlA+nrzJ+XuokwILvR
+         htzgQ0zUQgfdNUOMlKDFxkq6p0Ik1aPSMzjd8l1ftgQcJ07EtWNx0k5yk/8zhf8Eqk
+         jOauos5ZEFrB1uenxLCF6/ai3m9frVJskIJeXyLMhirvNH2YfBenbpG1NAWEmASqBa
+         LFOcaw30CHft9da3TEu4gj0fO4rA2pwAakO09Ug306FTzEiIr1Hu/PJS2mf4+CoFTa
+         CBEIilfylObw3ok9aZQrJfx2Bb6DxrSibeJQNHZYRInnh8acA4C1yneM4MiCCNyYuC
+         mDFbvn86S9ybg==
 From:   =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
 To:     sean.wang@mediatek.com, f.fainelli@gmail.com,
         linux@armlinux.org.uk, davem@davemloft.net, matthias.bgg@gmail.com,
@@ -40,9 +40,9 @@ To:     sean.wang@mediatek.com, f.fainelli@gmail.com,
 Cc:     frank-w@public-files.de, netdev@vger.kernel.org,
         linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org,
         =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
-Subject: [PATCH] net: ethernet: mediatek: Fix overlapping capability bits.
-Date:   Sat, 29 Jun 2019 14:24:19 +0200
-Message-Id: <20190629122419.19026-1-opensource@vdorst.com>
+Subject: [PATCH] net: ethernet: mediatek: Allow non TRGMII mode with MT7621 DDR2 devices
+Date:   Sat, 29 Jun 2019 14:24:51 +0200
+Message-Id: <20190629122451.19578-1-opensource@vdorst.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,34 +52,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Both MTK_TRGMII_MT7621_CLK and MTK_PATH_BIT are defined as bit 10.
+No reason to error out on a MT7621 device with DDR2 memory when non
+TRGMII mode is selected.
+Only MT7621 DDR2 clock setup is not supported for TRGMII mode.
+But non TRGMII mode doesn't need any special clock setup.
 
-This causes issues on non-MT7621 devices which has the
-MTK_PATH_BIT(MTK_ETH_PATH_GMAC1_RGMII) capability set.
-The wrong TRGMII setup code is executed.
-
-Moving the MTK_PATH_BIT to bit 11 fixes the issue.
-
-Fixes: 8efaa653a8a5 ("net: ethernet: mediatek: Add MT7621 TRGMII mode
-support")
 Signed-off-by: René van Dorst <opensource@vdorst.com>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index 876ce6798709..2cb8a915731c 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -626,7 +626,7 @@ enum mtk_eth_path {
- #define MTK_TRGMII_MT7621_CLK		BIT(10)
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index 066712f2e985..b20b3a5a1ebb 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -139,9 +139,12 @@ static int mt7621_gmac0_rgmii_adjust(struct mtk_eth *eth,
+ {
+ 	u32 val;
  
- /* Supported path present on SoCs */
--#define MTK_PATH_BIT(x)         BIT((x) + 10)
-+#define MTK_PATH_BIT(x)         BIT((x) + 11)
- 
- #define MTK_GMAC1_RGMII \
- 	(MTK_PATH_BIT(MTK_ETH_PATH_GMAC1_RGMII) | MTK_RGMII)
+-	/* Check DDR memory type. Currently DDR2 is not supported. */
++	/* Check DDR memory type.
++	 * Currently TRGMII mode with DDR2 memory is not supported.
++	 */
+ 	regmap_read(eth->ethsys, ETHSYS_SYSCFG, &val);
+-	if (val & SYSCFG_DRAM_TYPE_DDR2) {
++	if (interface == PHY_INTERFACE_MODE_TRGMII &&
++	    val & SYSCFG_DRAM_TYPE_DDR2) {
+ 		dev_err(eth->dev,
+ 			"TRGMII mode with DDR2 memory is not supported!\n");
+ 		return -EOPNOTSUPP;
 -- 
 2.20.1
 
