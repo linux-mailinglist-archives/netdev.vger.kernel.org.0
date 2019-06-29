@@ -2,97 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A53405A947
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 08:40:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C8015A97D
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 09:46:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726801AbfF2Gkj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jun 2019 02:40:39 -0400
-Received: from mga14.intel.com ([192.55.52.115]:40046 "EHLO mga14.intel.com"
+        id S1726863AbfF2Hp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jun 2019 03:45:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56032 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726156AbfF2Gkj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 29 Jun 2019 02:40:39 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 28 Jun 2019 23:40:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.63,430,1557212400"; 
-   d="scan'208";a="164862111"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 28 Jun 2019 23:40:37 -0700
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1hh72J-0004PI-Sa; Sat, 29 Jun 2019 14:40:35 +0800
-Date:   Sat, 29 Jun 2019 14:40:04 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     Catherine Sullivan <csully@google.com>
-Cc:     kbuild-all@01.org, netdev@vger.kernel.org,
-        Catherine Sullivan <csully@google.com>,
-        Sagi Shahar <sagis@google.com>,
-        Jon Olson <jonolson@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Luigi Rizzo <lrizzo@google.com>
-Subject: [RFC PATCH] gve: gve_get_channels() can be static
-Message-ID: <20190629064004.GA17772@lkp-kbuild18>
-References: <20190626185251.205687-5-csully@google.com>
+        id S1726796AbfF2Hp5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 29 Jun 2019 03:45:57 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D84F5214AF;
+        Sat, 29 Jun 2019 07:45:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1561794356;
+        bh=sLLH/3nMbbtUX5/jPH3tYQ4Sy81gT2DLouUp2Zn3m8A=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=j/nxeZFsvzDkJ/wYt5bmYrfTbc3x7nC8oSrcvC+W6aAoi6x0mFz0biupnIuytzAWs
+         3buw+GwJWcWQh2jpJvO2nCkvQ2eGBVkIAAKri9iDtbi1Vpy3dGveJNI0pmozy6xiiU
+         pfSRqaUcQ47qKW0WmhI/5vt/tEDxa000mcolBCa8=
+Date:   Sat, 29 Jun 2019 09:45:53 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Josh Elsasser <jelsasser@appneta.com>
+Cc:     Sasha Levin <sashal@kernel.org>, Matteo Croce <mcroce@redhat.com>,
+        stable@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>
+Subject: Re: net: check before dereferencing netdev_ops during busy poll
+Message-ID: <20190629074553.GA28708@kroah.com>
+References: <CAGnkfhxxw9keiNj_Qm=2GBYpY38HAq28cOROMRqXfbqq8wNbWQ@mail.gmail.com>
+ <20190628225533.GJ11506@sasha-vm>
+ <1560226F-F2C0-440D-9C58-D664DE3C7322@appneta.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190626185251.205687-5-csully@google.com>
-X-Patchwork-Hint: ignore
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <1560226F-F2C0-440D-9C58-D664DE3C7322@appneta.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Jun 28, 2019 at 07:03:01PM -0700, Josh Elsasser wrote:
+> On Jun 28, 2019, at 3:55 PM, Sasha Levin <sashal@kernel.org> wrote:
+> 
+> > What's the upstream commit id?
+> 
+> The commit wasn't needed upstream, as I only sent the original patch after
+> 79e7fff47b7b ("net: remove support for per driver ndo_busy_poll()") had
+> made the fix unnecessary in Linus' tree.
+> 
+> May've gotten lost in the shuffle due to my poor Fixes tags. The patch in
+> question applied only on top of the 4.9 stable release at the time, but the
+> actual NPE had been around in some form since 3.11 / 0602129286705 ("net: add
+> low latency socket poll").
 
-Fixes: ac0744578517 ("gve: Add ethtool support")
-Signed-off-by: kbuild test robot <lkp@intel.com>
----
- gve_ethtool.c |   10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+Ok, can people then resend this and be very explicit as to why this is
+needed only in a stable kernel tree and get reviews from people agreeing
+that this really is the correct fix?
 
-diff --git a/drivers/net/ethernet/google/gve/gve_ethtool.c b/drivers/net/ethernet/google/gve/gve_ethtool.c
-index 8e6863c..036389c 100644
---- a/drivers/net/ethernet/google/gve/gve_ethtool.c
-+++ b/drivers/net/ethernet/google/gve/gve_ethtool.c
-@@ -144,7 +144,7 @@ gve_get_ethtool_stats(struct net_device *netdev,
- 	}
- }
- 
--void gve_get_channels(struct net_device *netdev, struct ethtool_channels *cmd)
-+static void gve_get_channels(struct net_device *netdev, struct ethtool_channels *cmd)
- {
- 	struct gve_priv *priv = netdev_priv(netdev);
- 
-@@ -158,7 +158,7 @@ void gve_get_channels(struct net_device *netdev, struct ethtool_channels *cmd)
- 	cmd->combined_count = 0;
- }
- 
--int gve_set_channels(struct net_device *netdev, struct ethtool_channels *cmd)
-+static int gve_set_channels(struct net_device *netdev, struct ethtool_channels *cmd)
- {
- 	struct gve_priv *priv = netdev_priv(netdev);
- 	struct gve_queue_config new_tx_cfg = priv->tx_cfg;
-@@ -188,8 +188,8 @@ int gve_set_channels(struct net_device *netdev, struct ethtool_channels *cmd)
- 	return gve_adjust_queues(priv, new_rx_cfg, new_tx_cfg);
- }
- 
--void gve_get_ringparam(struct net_device *netdev,
--		       struct ethtool_ringparam *cmd)
-+static void gve_get_ringparam(struct net_device *netdev,
-+			      struct ethtool_ringparam *cmd)
- {
- 	struct gve_priv *priv = netdev_priv(netdev);
- 
-@@ -199,7 +199,7 @@ void gve_get_ringparam(struct net_device *netdev,
- 	cmd->tx_pending = priv->tx_desc_cnt;
- }
- 
--int gve_user_reset(struct net_device *netdev, u32 *flags)
-+static int gve_user_reset(struct net_device *netdev, u32 *flags)
- {
- 	struct gve_priv *priv = netdev_priv(netdev);
- 
+thanks,
+
+greg k-h
