@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D812E5ACE1
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 20:53:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D7145ACF1
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 20:57:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726927AbfF2Sx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jun 2019 14:53:28 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:34992 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726901AbfF2Sx1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jun 2019 14:53:27 -0400
-Received: by mail-pf1-f193.google.com with SMTP id d126so4558132pfd.2
-        for <netdev@vger.kernel.org>; Sat, 29 Jun 2019 11:53:27 -0700 (PDT)
+        id S1726936AbfF2S50 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jun 2019 14:57:26 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:45841 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726882AbfF2S50 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jun 2019 14:57:26 -0400
+Received: by mail-pl1-f194.google.com with SMTP id bi6so5057032plb.12
+        for <netdev@vger.kernel.org>; Sat, 29 Jun 2019 11:57:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=cxYWGW17XI/ND+W++7/fL9DbvzhUlqvuU2ZGsKQYeX4=;
-        b=vyz/vyQ/TDwubkGVLrHlJDsUKXhzDShKpR/Euic0teIEV1ImTjgzZS9ktbu9vq2JhA
-         IRAMDNpGxI9s7bjZOz3Q/HJUGoIHBtdHeMnadVKlyD8jOSJA8jfko0ClmixEoZm7+LHM
-         +lY2UkW2YHNMcKCL/ULyfTk+VIAWukr/DpP0P9JzUJIOIcy/BWswlDSNLBxDrYph1hAn
-         /Y/ptSMAaFJMiVabJ/XVyGaar6BT/77wY+JjJ6WP4ci2CqFEGYRrIZ/eB2Yd9hdXRiQu
-         c5DABxi1nTQhVyctRkq5ibgojHKIs4O2PEjyteO/vv31KPnL05VRc5It7AIz4yM5dymE
-         zIWQ==
+        bh=bRCRdRYrn423A1HBbi4MKLceCoMdoKMyRFxGDd/QBs0=;
+        b=gNfy/qRD8H9pkZnLh6jzsbycEV78ckh4KJrit1C26DM/bQHyAAi5HtyGVTb46KdBAR
+         Vm4y0R5u/qCnaajvPibA2rsyXoFeHN4boLKhWUagwNhVFwD5StGKb9NTxcOsFN7kCg2j
+         sqnv6c2oFagEfDtzFNGT0TYNPN0n5P34P3LhXodEH2DCph8axRmDQxqMUQiUjbdKbPfO
+         tCkoxZG+2Sg2usCVpomqsatGogJ5TIq0QpB+Oy0T9kOEE7sNcs8dwfK7dasCHM1JeXJR
+         UycbLUAmbmb856XXNJppPc5fm+bpQgMalLeLbdlnXVQalCgpJJalDwW9TxwsOSzAyY7O
+         48aw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=cxYWGW17XI/ND+W++7/fL9DbvzhUlqvuU2ZGsKQYeX4=;
-        b=EdK/B0h5CLhaPZEuPZnmEGWGJAIY0zbXX/QVVvLCn3YNVe868JrpOXSU5KMbrJPqdo
-         ytNybh+H0fJFP41ROcjxvxEqnYMaT2ceMHJn/IJ1VP2wn0xu2sDOaVogMaZNClkqDZd8
-         KwoXBlyX2eJ8mbhBoebHMugX5tiQMPAZtK+fb2ab16NGLo2N0lLh2xrNafWTT1k8Vd4P
-         xv2uGPoI5iMZvKpFbE46+gQD1Ph07oxVR0HgxJ3pxmCbNKTWKm7noXLCVvw30i7u5+fq
-         qYk2C3C68oGbNH2IZMA6MuFRnQ5/fqvVXYCXOevdBoP7iV8cetEGZ/0chOxgI3KITIR9
-         3hXg==
-X-Gm-Message-State: APjAAAW9rCax8MJbzUWq4nMjFIj7bDDOnckMW1sPM0ZmNF/FOsJXTWB/
-        JjM3Qw+JnwqbPKMd0X07RX+OMfF6SWE=
-X-Google-Smtp-Source: APXvYqyphSVyNMb2bME6dsUntVcOf8ryymFzvKlYEd7aU6/QvcxxyLyLCorkrGE33Q75VnUdgxB7FQ==
-X-Received: by 2002:a17:90a:fa07:: with SMTP id cm7mr21085171pjb.115.1561834406868;
-        Sat, 29 Jun 2019 11:53:26 -0700 (PDT)
+        bh=bRCRdRYrn423A1HBbi4MKLceCoMdoKMyRFxGDd/QBs0=;
+        b=sgiSOMtlEUHMtqYMPzAkEC8jb2FDJwBxTIFSsifzDKDi+/Voy9bNUNb/kCFxaL/LKj
+         8cfeHjTiNy8zYMvJ6SUbStR3RK7/F7PuDK2yt3DYTvu7en1oOStXMoFqSEf9fOLL10oO
+         t6zVf2XUpNQYIQKJNca7/3CebF/bn2uF2cFa5KXoPCnmtLYlUpvPFR9tZ0I9NIIuzuzy
+         RO1SvvPHVUjL8hM20rbR+hSKDLTeY/3GQvuwtnyuw359GPHY5ZlNsE3edF6R+jnSxdKl
+         lzpp2mLaj230bZTFXWVzre1ZGwHhASJiLYSZyZuv81g+P9jRZIeoj6Cv7781Sq3M1YA3
+         qImQ==
+X-Gm-Message-State: APjAAAV5hQ4FRCugeBAe1WyJ0kpYg+YSiiiHJUTMsvBOwe+4pfwbtKDg
+        sZnDKfHccJVFI4YgEGigtOqzpsdsrlk=
+X-Google-Smtp-Source: APXvYqxi6eu6tSL8RK13SCWNdUTLiby/YvAeQYXmjmduLvKtvkICTfc/f6+PKPZ3pur/ngb0hcgrtQ==
+X-Received: by 2002:a17:902:aa5:: with SMTP id 34mr19832178plp.166.1561834645206;
+        Sat, 29 Jun 2019 11:57:25 -0700 (PDT)
 Received: from cakuba.netronome.com (c-71-204-185-212.hsd1.ca.comcast.net. [71.204.185.212])
-        by smtp.gmail.com with ESMTPSA id a15sm4625690pgw.3.2019.06.29.11.53.26
+        by smtp.gmail.com with ESMTPSA id br18sm10379932pjb.20.2019.06.29.11.57.24
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sat, 29 Jun 2019 11:53:26 -0700 (PDT)
-Date:   Sat, 29 Jun 2019 11:53:24 -0700
+        Sat, 29 Jun 2019 11:57:25 -0700 (PDT)
+Date:   Sat, 29 Jun 2019 11:57:23 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     Shannon Nelson <snelson@pensando.io>
 Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 16/19] ionic: Add driver stats
-Message-ID: <20190629115324.7adfc3c9@cakuba.netronome.com>
-In-Reply-To: <20190628213934.8810-17-snelson@pensando.io>
+Subject: Re: [PATCH v2 net-next 14/19] ionic: Add Tx and Rx handling
+Message-ID: <20190629115723.5ae777bc@cakuba.netronome.com>
+In-Reply-To: <20190628213934.8810-15-snelson@pensando.io>
 References: <20190628213934.8810-1-snelson@pensando.io>
-        <20190628213934.8810-17-snelson@pensando.io>
+        <20190628213934.8810-15-snelson@pensando.io>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -62,174 +62,117 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 28 Jun 2019 14:39:31 -0700, Shannon Nelson wrote:
-> Add in the detailed statistics for ethtool -S that the driver
-> keeps as it processes packets.  Display of the additional
-> debug statistics can be enabled through the ethtool priv-flags
-> feature.
-> 
-> Signed-off-by: Shannon Nelson <snelson@pensando.io>
+On Fri, 28 Jun 2019 14:39:29 -0700, Shannon Nelson wrote:
+> +static int ionic_tx(struct queue *q, struct sk_buff *skb)
+> +{
+> +	struct tx_stats *stats = q_to_tx_stats(q);
+> +	int err;
+> +
+> +	if (skb->ip_summed == CHECKSUM_PARTIAL)
+> +		err = ionic_tx_calc_csum(q, skb);
+> +	else
+> +		err = ionic_tx_calc_no_csum(q, skb);
+> +	if (err)
+> +		return err;
+> +
+> +	err = ionic_tx_skb_frags(q, skb);
+> +	if (err)
+> +		return err;
+> +
+> +	skb_tx_timestamp(skb);
+> +	stats->pkts++;
+> +	stats->bytes += skb->len;
 
-> diff --git a/drivers/net/ethernet/pensando/ionic/Makefile b/drivers/net/ethernet/pensando/ionic/Makefile
-> index 0e2dc53f08d4..4f3cfbf36c23 100644
-> --- a/drivers/net/ethernet/pensando/ionic/Makefile
-> +++ b/drivers/net/ethernet/pensando/ionic/Makefile
-> @@ -4,4 +4,5 @@
->  obj-$(CONFIG_IONIC) := ionic.o
->  
->  ionic-y := ionic_main.o ionic_bus_pci.o ionic_dev.o ionic_ethtool.o \
-> -	   ionic_lif.o ionic_rx_filter.o ionic_txrx.o ionic_debugfs.o
-> +	   ionic_lif.o ionic_rx_filter.o ionic_txrx.o ionic_debugfs.o \
-> +	   ionic_stats.o
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-> index 2bbe5819387b..518e79c90fca 100644
-> --- a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-> @@ -8,6 +8,84 @@
->  #include "ionic_bus.h"
->  #include "ionic_lif.h"
->  #include "ionic_ethtool.h"
-> +#include "ionic_stats.h"
+Presumably this is 64bit so you should use 
+u64_stats_update_begin()
+u64_stats_update_end() 
+around it (and all other stats).
+
 > +
-> +static const char ionic_priv_flags_strings[][ETH_GSTRING_LEN] = {
-> +#define PRIV_F_SW_DBG_STATS		BIT(0)
-> +	"sw-dbg-stats",
-> +};
-> +#define PRIV_FLAGS_COUNT ARRAY_SIZE(ionic_priv_flags_strings)
+> +	ionic_txq_post(q, !netdev_xmit_more(), ionic_tx_clean, skb);
 > +
-> +static void ionic_get_stats_strings(struct lif *lif, u8 *buf)
-> +{
-> +	u32 i;
-> +
-> +	for (i = 0; i < ionic_num_stats_grps; i++)
-> +		ionic_stats_groups[i].get_strings(lif, &buf);
+> +	return 0;
 > +}
 > +
-> +static void ionic_get_stats(struct net_device *netdev,
-> +			    struct ethtool_stats *stats, u64 *buf)
+> +static int ionic_tx_descs_needed(struct queue *q, struct sk_buff *skb)
 > +{
-> +	struct lif *lif;
-> +	u32 i;
+> +	struct tx_stats *stats = q_to_tx_stats(q);
+> +	int err;
 > +
-> +	lif = netdev_priv(netdev);
+> +	/* If TSO, need roundup(skb->len/mss) descs */
+> +	if (skb_is_gso(skb))
+> +		return (skb->len / skb_shinfo(skb)->gso_size) + 1;
 > +
-> +	memset(buf, 0, stats->n_stats * sizeof(*buf));
-> +	for (i = 0; i < ionic_num_stats_grps; i++)
-> +		ionic_stats_groups[i].get_values(lif, &buf);
+> +	/* If non-TSO, just need 1 desc and nr_frags sg elems */
+> +	if (skb_shinfo(skb)->nr_frags <= IONIC_TX_MAX_SG_ELEMS)
+> +		return 1;
+> +
+> +	/* Too many frags, so linearize */
+> +	err = skb_linearize(skb);
+> +	if (err)
+> +		return err;
+> +
+> +	stats->linearize++;
+> +
+> +	/* Need 1 desc and zero sg elems */
+> +	return 1;
 > +}
 > +
-> +static int ionic_get_stats_count(struct lif *lif)
+> +netdev_tx_t ionic_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 > +{
-> +	int i, num_stats = 0;
-> +
-> +	for (i = 0; i < ionic_num_stats_grps; i++)
-> +		num_stats += ionic_stats_groups[i].get_count(lif);
-> +
-> +	return num_stats;
-> +}
-> +
-> +static int ionic_get_sset_count(struct net_device *netdev, int sset)
-> +{
+> +	u16 queue_index = skb_get_queue_mapping(skb);
 > +	struct lif *lif = netdev_priv(netdev);
-> +	int count = 0;
+> +	struct queue *q;
+> +	int ndescs;
+> +	int err;
 > +
-> +	switch (sset) {
-> +	case ETH_SS_STATS:
-> +		count = ionic_get_stats_count(lif);
-> +		break;
-> +	case ETH_SS_TEST:
-> +		break;
-> +	case ETH_SS_PRIV_FLAGS:
-> +		count = PRIV_FLAGS_COUNT;
-> +		break;
-> +	default:
-> +		return -EOPNOTSUPP;
+> +	if (unlikely(!test_bit(LIF_UP, lif->state))) {
+> +		dev_kfree_skb(skb);
+> +		return NETDEV_TX_OK;
 > +	}
-> +	return count;
-> +}
 > +
-> +static void ionic_get_strings(struct net_device *netdev,
-> +			      u32 sset, u8 *buf)
-> +{
-> +	struct lif *lif = netdev_priv(netdev);
+> +	if (likely(lif_to_txqcq(lif, queue_index)))
+> +		q = lif_to_txq(lif, queue_index);
+> +	else
+> +		q = lif_to_txq(lif, 0);
 > +
-> +	switch (sset) {
-> +	case ETH_SS_STATS:
-> +		ionic_get_stats_strings(lif, buf);
-> +		break;
-> +	case ETH_SS_PRIV_FLAGS:
-> +		memcpy(buf, ionic_priv_flags_strings,
-> +		       PRIV_FLAGS_COUNT * ETH_GSTRING_LEN);
-> +		break;
-> +	case ETH_SS_TEST:
-> +		// IONIC_TODO
-> +	default:
-> +		netdev_err(netdev, "Invalid sset %d\n", sset);
+> +	ndescs = ionic_tx_descs_needed(q, skb);
+> +	if (ndescs < 0)
+> +		goto err_out_drop;
+> +
+> +	if (!ionic_q_has_space(q, ndescs)) {
+> +		netif_stop_subqueue(netdev, queue_index);
+> +		q->stop++;
+> +
+> +		/* Might race with ionic_tx_clean, check again */
+> +		smp_rmb();
+> +		if (ionic_q_has_space(q, ndescs)) {
+> +			netif_wake_subqueue(netdev, queue_index);
+> +			q->wake++;
+> +		} else {
+> +			return NETDEV_TX_BUSY;
 
-Not really an error, as long as sset_count() returns a 0 nothing will
-happen.  Also you can drop the SS_TEST if you don't report it.
+This should never really happen..
 
+> +		}
 > +	}
+> +
+> +	if (skb_is_gso(skb))
+> +		err = ionic_tx_tso(q, skb);
+> +	else
+> +		err = ionic_tx(q, skb);
+> +
+> +	if (err)
+> +		goto err_out_drop;
+
+.. at this point if you can't guarantee fitting biggest possible frame
+in, you have to stop the ring.
+
+> +	return NETDEV_TX_OK;
+> +
+> +err_out_drop:
+> +	q->drop++;
+> +	dev_kfree_skb(skb);
+> +	return NETDEV_TX_OK;
 > +}
 
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_stats.h b/drivers/net/ethernet/pensando/ionic/ionic_stats.h
-> new file mode 100644
-> index 000000000000..b5487e7fd4fb
-> --- /dev/null
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_stats.h
-> @@ -0,0 +1,53 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
-> +
-> +#ifndef _IONIC_STATS_H_
-> +#define _IONIC_STATS_H_
-> +
-> +#define IONIC_STAT_TO_OFFSET(type, stat_name) (offsetof(type, stat_name))
-> +
-> +#define IONIC_STAT_DESC(type, stat_name) { \
-> +	.name = #stat_name, \
-> +	.offset = IONIC_STAT_TO_OFFSET(type, stat_name) \
-> +}
-> +
-> +#define IONIC_LIF_STAT_DESC(stat_name) \
-> +	IONIC_STAT_DESC(struct lif_sw_stats, stat_name)
-> +
-> +#define IONIC_TX_STAT_DESC(stat_name) \
-> +	IONIC_STAT_DESC(struct tx_stats, stat_name)
-> +
-> +#define IONIC_RX_STAT_DESC(stat_name) \
-> +	IONIC_STAT_DESC(struct rx_stats, stat_name)
-> +
-> +#define IONIC_TX_Q_STAT_DESC(stat_name) \
-> +	IONIC_STAT_DESC(struct queue, stat_name)
-> +
-> +#define IONIC_CQ_STAT_DESC(stat_name) \
-> +	IONIC_STAT_DESC(struct cq, stat_name)
-> +
-> +#define IONIC_INTR_STAT_DESC(stat_name) \
-> +	IONIC_STAT_DESC(struct intr, stat_name)
-> +
-> +#define IONIC_NAPI_STAT_DESC(stat_name) \
-> +	IONIC_STAT_DESC(struct napi_stats, stat_name)
-> +
-> +/* Interface structure for a particalar stats group */
-> +struct ionic_stats_group_intf {
-> +	void (*get_strings)(struct lif *lif, u8 **buf);
-> +	void (*get_values)(struct lif *lif, u64 **buf);
-> +	u64 (*get_count)(struct lif *lif);
-> +};
-> +
-> +extern const struct ionic_stats_group_intf ionic_stats_groups[];
-> +extern const int ionic_num_stats_grps;
-> +
-> +#define IONIC_READ_STAT64(base_ptr, desc_ptr) \
-> +	(*((u64 *)(((u8 *)(base_ptr)) + (desc_ptr)->offset)))
-> +
-> +struct ionic_stat_desc {
-> +	char name[ETH_GSTRING_LEN];
-> +	u64 offset;
-> +};
-> +
-> +#endif // _IONIC_STATS_H_
-
-Perhaps worth grepping the driver for C++ style comments?
