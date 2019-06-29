@@ -2,72 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 70B1B5A81F
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 04:10:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B93265A84A
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 04:13:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727051AbfF2CKD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 22:10:03 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:40393 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726682AbfF2CKB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 22:10:01 -0400
-Received: by mail-io1-f71.google.com with SMTP id v11so8671233iop.7
-        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 19:10:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=84uQch8ytJ1lCabOHF26kS1aihVf0OWc3QTgyNOP9t0=;
-        b=W76FR+NtYBBR7YNGHHvkld0PRecGphQwvYOEkT1IRm/rDgfREChNLXozxiIHtG8GvF
-         cOUdCPIbnYeWn6Kb1qpV3cDLZFFUqrJ9hu3Unw1Swp4nsjpCPTNbOI085FzJeikdOiZS
-         LGAp/4VXtD16vObRwF5tA7nJzOT8XOsemlSME0ZfVBy0XKbjYzuU0Jq+yzGXauMEZ3Ap
-         auqNKqMnil68SOxnl284g3fwciwitCuF44GkzDptf37qZoTFQmwxTXYi0SkZ2B88mVhR
-         ODS+6IWPjgKsD3iax+VfB0ldXP3M+eWnDpxbbaKe7Om/cTJVP4W6NTxnkctWwnr/MNjz
-         aqYA==
-X-Gm-Message-State: APjAAAVzOZuVnwHSNneoyT3cFTFuGM4FOdme57QhfaBLDkUGvtC3n4Nb
-        BCINRm54qmRPsVupD1PKccUiuNBazCk7V8PGOnDLOGIW50Gq
-X-Google-Smtp-Source: APXvYqwIj/ChdaSSPt20gSuvnjyqICrd1EGtQL3DgiudeFG0KMFP8BQKEBHpsTMm2Iudrae9YgBrLN5/PZRaKtNbeTFEr1JIeBQt
+        id S1726960AbfF2CNL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 22:13:11 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:2959 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726682AbfF2CNL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 Jun 2019 22:13:11 -0400
+Received: from DGGEMM404-HUB.china.huawei.com (unknown [172.30.72.57])
+        by Forcepoint Email with ESMTP id 009771E16AABD9844CA4;
+        Sat, 29 Jun 2019 10:13:07 +0800 (CST)
+Received: from dggeme714-chm.china.huawei.com (10.1.199.110) by
+ DGGEMM404-HUB.china.huawei.com (10.3.20.212) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Sat, 29 Jun 2019 10:13:06 +0800
+Received: from dggeme763-chm.china.huawei.com (10.3.19.109) by
+ dggeme714-chm.china.huawei.com (10.1.199.110) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1591.10; Sat, 29 Jun 2019 10:13:06 +0800
+Received: from dggeme763-chm.china.huawei.com ([10.6.66.36]) by
+ dggeme763-chm.china.huawei.com ([10.6.66.36]) with mapi id 15.01.1591.008;
+ Sat, 29 Jun 2019 10:13:06 +0800
+From:   linmiaohe <linmiaohe@huawei.com>
+To:     David Ahern <dsahern@gmail.com>
+CC:     "pablo@netfilter.org" <pablo@netfilter.org>,
+        "kadlec@blackhole.kfki.hu" <kadlec@blackhole.kfki.hu>,
+        "fw@strlen.de" <fw@strlen.de>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
+        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
+        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
+        "coreteam@netfilter.org" <coreteam@netfilter.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Mingfangsen <mingfangsen@huawei.com>
+Subject: Re: [PATCH v4] net: netfilter: Fix rpfilter dropping vrf packets by
+ mistake
+Thread-Topic: [PATCH v4] net: netfilter: Fix rpfilter dropping vrf packets by
+ mistake
+Thread-Index: AdUuGy8DDB3uB4ksWUWckzFOhXp+DA==
+Date:   Sat, 29 Jun 2019 02:13:06 +0000
+Message-ID: <2213b3e722a14ee48768ecc7118efc46@huawei.com>
+Accept-Language: en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.184.189.20]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-Received: by 2002:a5d:94d7:: with SMTP id y23mr12337354ior.296.1561774200691;
- Fri, 28 Jun 2019 19:10:00 -0700 (PDT)
-Date:   Fri, 28 Jun 2019 19:10:00 -0700
-In-Reply-To: <00000000000017c9e2058baf4825@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000073a232058c6ce410@google.com>
-Subject: Re: BUG: unable to handle kernel paging request in __do_softirq
-From:   syzbot <syzbot+0b224895cb9454584de1@syzkaller.appspotmail.com>
-To:     ast@kernel.org, bp@alien8.de, bpf@vger.kernel.org,
-        daniel@iogearbox.net, dvyukov@google.com, hpa@zytor.com,
-        jacob.jun.pan@linux.intel.com, john.fastabend@gmail.com,
-        konrad.wilk@oracle.com, len.brown@intel.com,
-        linux-kernel@vger.kernel.org, mingo@redhat.com,
-        netdev@vger.kernel.org, puwen@hygon.cn, rppt@linux.vnet.ibm.com,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de, x86@kernel.org
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
-
-commit e9db4ef6bf4ca9894bb324c76e01b8f1a16b2650
-Author: John Fastabend <john.fastabend@gmail.com>
-Date:   Sat Jun 30 13:17:47 2018 +0000
-
-     bpf: sockhash fix omitted bucket lock in sock_close
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16aac819a00000
-start commit:   29f785ff Merge branch 'fixes' of git://git.kernel.org/pub/..
-git tree:       upstream
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=15aac819a00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=11aac819a00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e5c77f8090a3b96b
-dashboard link: https://syzkaller.appspot.com/bug?extid=0b224895cb9454584de1
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1076d132a00000
-
-Reported-by: syzbot+0b224895cb9454584de1@syzkaller.appspotmail.com
-Fixes: e9db4ef6bf4c ("bpf: sockhash fix omitted bucket lock in sock_close")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+T24gNi8yOS8xOSAxOjA1IEFNLCBEYXZpZCBBaGVybiB3cm90ZToNCj4gT24gNi8yOC8xOSAzOjA2
+IEFNLCBNaWFvaGUgTGluIHdyb3RlOg0KPiA+IGRpZmYgLS1naXQgYS9uZXQvaXB2Ni9uZXRmaWx0
+ZXIvaXA2dF9ycGZpbHRlci5jIA0KPiA+IGIvbmV0L2lwdjYvbmV0ZmlsdGVyL2lwNnRfcnBmaWx0
+ZXIuYw0KPiA+IGluZGV4IDZiY2FmNzM1NzE4My4uM2M0YTE3NzJjMTVmIDEwMDY0NA0KPiA+IC0t
+LSBhL25ldC9pcHY2L25ldGZpbHRlci9pcDZ0X3JwZmlsdGVyLmMNCj4gPiArKysgYi9uZXQvaXB2
+Ni9uZXRmaWx0ZXIvaXA2dF9ycGZpbHRlci5jDQo+ID4gQEAgLTU1LDYgKzU1LDEwIEBAIHN0YXRp
+YyBib29sIHJwZmlsdGVyX2xvb2t1cF9yZXZlcnNlNihzdHJ1Y3QgbmV0ICpuZXQsIGNvbnN0IHN0
+cnVjdCBza19idWZmICpza2IsDQo+ID4gIAlpZiAocnBmaWx0ZXJfYWRkcl9saW5rbG9jYWwoJmlw
+aC0+c2FkZHIpKSB7DQo+ID4gIAkJbG9va3VwX2ZsYWdzIHw9IFJUNl9MT09LVVBfRl9JRkFDRTsN
+Cj4gPiAgCQlmbDYuZmxvd2k2X29pZiA9IGRldi0+aWZpbmRleDsNCj4gPiArCS8qIFNldCBmbG93
+aTZfb2lmIGZvciB2cmYgZGV2aWNlcyB0byBsb29rdXAgcm91dGUgaW4gbDNtZGV2IGRvbWFpbi4g
+Ki8NCj4gPiArCX0gZWxzZSBpZiAobmV0aWZfaXNfbDNfbWFzdGVyKGRldikgfHwgbmV0aWZfaXNf
+bDNfc2xhdmUoZGV2KSkgew0KPiA+ICsJCWxvb2t1cF9mbGFncyB8PSBGTE9XSV9GTEFHX1NLSVBf
+TkhfT0lGOw0KPg0KPiB5b3UgZG9uJ3QgbmVlZCB0byBzZXQgdGhhdCBmbGFnIGhlcmUuIEl0IGlz
+IGRvbmUgYnkgdGhlIGZpYl9ydWxlcyBjb2RlIGFzIG5lZWRlZC4NCj4NCllvdSdyZSByaWdodC4g
+RmliIHJ1bGVzIGNvZGUgd291bGQgc2V0IEZMT1dJX0ZMQUdfU0tJUF9OSF9PSUYgZmxhZy4gIEJ1
+dCBJIHNldA0KaXQgaGVyZSBmb3IgZGlzdGluZ3Vpc2ggd2l0aCB0aGUgZmxhZ3MgJiBYVF9SUEZJ
+TFRFUl9MT09TRSBicmFuY2guIFdpdGhvdXQNCnRoaXMsIHRoZXkgZG8gdGhlIHNhbWUgd29yayBh
+bmQgbWF5YmUgc2hvdWxkIGJlICBjb21iaW5lZC4gSSBkb24ndCB3YW50IHRvDQpkbyB0aGF0IGFz
+IHRoYXQgbWFrZXMgY29kZSBjb25mdXNpbmcuDQpJcyB0aGlzIGNvZGUgc25pcGV0IGJlbG93IG9r
+ID8gSWYgc28sIEkgd291bGQgZGVsZXRlIHRoaXMgZmxhZyBzZXR0aW5nLg0KIA0KICAgICAgIH0g
+ZWxzZSBpZiAobmV0aWZfaXNfbDNfbWFzdGVyKGRldikgfHwgbmV0aWZfaXNfbDNfc2xhdmUoZGV2
+KSkgew0KICAgICAgICAgICAgICAgZmw2LmZsb3dpNl9vaWYgPSBkZXYtPmlmaW5kZXg7DQogICAg
+ICAgIH0gZWxzZSBpZiAoKGZsYWdzICYgWFRfUlBGSUxURVJfTE9PU0UpID09IDApDQogICAgICAg
+ICAgICAgICAgZmw2LmZsb3dpNl9vaWYgPSBkZXYtPmlmaW5kZXg7DQo=
