@@ -2,65 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 63A795ACD5
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 20:17:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0C6F5ACD7
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 20:22:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726883AbfF2SRV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jun 2019 14:17:21 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:38592 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726864AbfF2SRV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jun 2019 14:17:21 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id AC38714B8D0F7;
-        Sat, 29 Jun 2019 11:17:20 -0700 (PDT)
-Date:   Sat, 29 Jun 2019 11:17:20 -0700 (PDT)
-Message-Id: <20190629.111720.426281750197769692.davem@davemloft.net>
-To:     edumazet@google.com
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        liuhangbin@gmail.com,
-        syzbot+6ca1abd0db68b5173a4f@syzkaller.appspotmail.com
-Subject: Re: [PATCH net] igmp: fix memory leak in igmpv3_del_delrec()
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190627082701.226711-1-edumazet@google.com>
-References: <20190627082701.226711-1-edumazet@google.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1726930AbfF2SWF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jun 2019 14:22:05 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:51268 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726864AbfF2SWF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 29 Jun 2019 14:22:05 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 4C745307D90E;
+        Sat, 29 Jun 2019 18:22:05 +0000 (UTC)
+Received: from localhost (unknown [10.36.112.13])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1BBEC5D9CA;
+        Sat, 29 Jun 2019 18:22:03 +0000 (UTC)
+Date:   Sat, 29 Jun 2019 20:21:59 +0200
+From:   Stefano Brivio <sbrivio@redhat.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH] ipv4: Fix off-by-one in route dump counter without
+ netlink strict checking
+Message-ID: <20190629202159.46ad6723@redhat.com>
+In-Reply-To: <74faa085e6af026f8b9f0d3cce8a94147781f257.1561830851.git.sbrivio@redhat.com>
+References: <74faa085e6af026f8b9f0d3cce8a94147781f257.1561830851.git.sbrivio@redhat.com>
+Organization: Red Hat
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 29 Jun 2019 11:17:20 -0700 (PDT)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Sat, 29 Jun 2019 18:22:05 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
-Date: Thu, 27 Jun 2019 01:27:01 -0700
+On Sat, 29 Jun 2019 19:55:08 +0200
+Stefano Brivio <sbrivio@redhat.com> wrote:
 
-> im->tomb and/or im->sources might not be NULL, but we
-> currently overwrite their values blindly.
+> Always increment the per-node counter by one if we previously dumped
+> a regular route, so that it matches the current skip counter.
 > 
-> Using swap() will make sure the following call to kfree_pmc(pmc)
-> will properly free the psf structures.
-> 
-> Tested with the C repro provided by syzbot, which basically does :
-> 
->  socket(PF_INET, SOCK_DGRAM, IPPROTO_IP) = 3
->  setsockopt(3, SOL_IP, IP_ADD_MEMBERSHIP, "\340\0\0\2\177\0\0\1\0\0\0\0", 12) = 0
->  ioctl(3, SIOCSIFFLAGS, {ifr_name="lo", ifr_flags=0}) = 0
->  setsockopt(3, SOL_IP, IP_MSFILTER, "\340\0\0\2\177\0\0\1\1\0\0\0\1\0\0\0\377\377\377\377", 20) = 0
->  ioctl(3, SIOCSIFFLAGS, {ifr_name="lo", ifr_flags=IFF_UP}) = 0
->  exit_group(0)                    = ?
-> 
-> BUG: memory leak
-> unreferenced object 0xffff88811450f140 (size 64):
- ...
-> Fixes: 24803f38a5c0 ("igmp: do not remove igmp souce list info when set link down")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Hangbin Liu <liuhangbin@gmail.com>
-> Reported-by: syzbot+6ca1abd0db68b5173a4f@syzkaller.appspotmail.com
+> Fixes: ee28906fd7a1 ("ipv4: Dump route exceptions if requested")
+> Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
 
-Applied and queued up for -stable, thanks.
+Sorry David, this was meant for net-next.
+
+-- 
+Stefano
