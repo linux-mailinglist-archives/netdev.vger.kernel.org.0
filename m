@@ -2,137 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C2F555AC4B
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 17:47:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAF4F5AC90
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 18:29:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726921AbfF2PrI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jun 2019 11:47:08 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:47571 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726851AbfF2PrH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jun 2019 11:47:07 -0400
-Received: by mail-io1-f72.google.com with SMTP id r27so10181892iob.14
-        for <netdev@vger.kernel.org>; Sat, 29 Jun 2019 08:47:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=jbJ2eKqYbg+CIxP4+lpCkdTZvmlLbaCmh2v1g2hcHF8=;
-        b=DIWRjfnLwN8YZ5ch+1GSV/n0U3Bvq4/fKRi8DqC6el/yxfuqb27EXtrqdKkvxaHlWc
-         eUpvdHldVD+32vSTwdyqhWuBNR9PmYjrYMpyOSAXZPgV+5kVscBcTnPO/hHpkKpvm9oj
-         aESTonMSwQRIRVUkb4vY6yPBArvm/pt+WfX6nivOSnzuk6Yqn8n/i2A1fxemhWjRbn8d
-         +nlYa4AhCarQJvPeVpsdfRr9j6n9PTdm43/wp2tysJBeRVLWGDEgoRxeJGrh3r3E39uR
-         ZAsTybiQwQ1LIQqwSWDVU/9dS/7BJPcNF3Tlt28RgL8mpXOOL7uw/D6XRIMqIXIIXsG0
-         7pkA==
-X-Gm-Message-State: APjAAAVsCnXHowkrbBUISgIRQ8z+9e+LjrCx246s1xFTlITUfH3Dn/YJ
-        o4XQNjf3lgjpEjUL5nD/QmSGz/JZT0K4pu2psOp+3rdDoCTH
-X-Google-Smtp-Source: APXvYqxNRLTQeEwFkg5Ty+r0QiSHT6Pb6DAK60VfYIJUCqbJeILzjqq4R8zPoKo+l5lzugoCL4DGtkwklNMTekBeqokyjZaKvAp7
+        id S1726982AbfF2Q3w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jun 2019 12:29:52 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:35875 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726837AbfF2Q3v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jun 2019 12:29:51 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 8ADF821B6B;
+        Sat, 29 Jun 2019 12:29:50 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Sat, 29 Jun 2019 12:29:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=0/mmxi
+        Ky9/ZbjOwnteYsdrM6KDXjUQ6NpKi66xp9rts=; b=P9blHm0PqRQQMJhFyl33rE
+        KRWMVBiEHm0tGkNy2hX+EY/lFmatIF+V8X5bhC4gjerWzfCXisX7y9nysDZ5TorJ
+        oj3JP1jCF4tKfIG7DP3H+pKtFhTII/g7w5TPEhPVRaHFC9g7q59r/ljg2l8svO7a
+        VpQ2jErhZ4Q6R7nxSkOBa2347a4TRCpr0g5U+K3DdLrhXLa3lYJdfMbUxyi2ak+9
+        SNIj6z48a4NyQSnCk9P6GItfLllt8hPVAsIPJrOwgwGmXrA9KbmdUpaD2zgd0Unn
+        +cmoJHT7WrEqB6VHRd8xUxxWO7hdrqMhi+ZOs5pVsqucnR6ElGUbO90kmqH7y2Ag
+        ==
+X-ME-Sender: <xms:_JEXXatlglaSE_NdnPyk5BX8PcglF4RPkOUKYzKQ-VoOdpZ0BLHzTw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrvddvgddutdefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjfgesthdtredttdervdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecukfhppedutd
+    elrdeihedrieefrddutddunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhes
+    ihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
+X-ME-Proxy: <xmx:_JEXXd8pB-Akyf8VQv0ukrekitHQ3Hy-Oxy5QlRjlPUjbw9eRcl9ew>
+    <xmx:_JEXXclJO0Rz2fHD_QHO96TFBK45f81UXd6RoBDlA05MPylwFfL78A>
+    <xmx:_JEXXVNMO3akauuad61oZg-pwebkSW5ewP_KwInwZCHK8JOqu2l4pA>
+    <xmx:_pEXXR_YQteuOsSe15b7-QT9KC2wmd9jnQAFX_0K1uXIUInOdohReg>
+Received: from localhost (bzq-109-65-63-101.red.bezeqint.net [109.65.63.101])
+        by mail.messagingengine.com (Postfix) with ESMTPA id CA4CC380079;
+        Sat, 29 Jun 2019 12:29:47 -0400 (EDT)
+Date:   Sat, 29 Jun 2019 19:29:45 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        nikolay@cumulusnetworks.com, linus.luessing@c0d3.blue
+Cc:     Ido Schimmel <idosch@mellanox.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: Re: [RFC net-next] net: dsa: add support for MC_DISABLED attribute
+Message-ID: <20190629162945.GB17143@splinter>
+References: <20190620235639.24102-1-vivien.didelot@gmail.com>
+ <5d653a4d-3270-8e53-a5e0-88ea5e7a4d3f@gmail.com>
+ <20190621172952.GB9284@t480s.localdomain>
+ <20190623070949.GB13466@splinter>
+ <20190623072605.2xqb56tjydqz2jkx@shell.armlinux.org.uk>
+ <20190623074427.GA21875@splinter>
 MIME-Version: 1.0
-X-Received: by 2002:a02:7642:: with SMTP id z63mr6340791jab.36.1561823226887;
- Sat, 29 Jun 2019 08:47:06 -0700 (PDT)
-Date:   Sat, 29 Jun 2019 08:47:06 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a40746058c784ef3@google.com>
-Subject: BUG: using smp_processor_id() in preemptible [ADDR] code: syz-executor
-From:   syzbot <syzbot+1a68504d96cd17b33a05@syzkaller.appspotmail.com>
-To:     allison@lohutok.net, davem@davemloft.net,
-        gregkh@linuxfoundation.org, jon.maloy@ericsson.com,
-        kuznet@ms2.inr.ac.ru, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        tglx@linutronix.de, tipc-discussion@lists.sourceforge.net,
-        ying.xue@windriver.com, yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190623074427.GA21875@splinter>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sun, Jun 23, 2019 at 10:44:27AM +0300, Ido Schimmel wrote:
+> On Sun, Jun 23, 2019 at 08:26:05AM +0100, Russell King - ARM Linux admin wrote:
+> > On Sun, Jun 23, 2019 at 07:09:52AM +0000, Ido Schimmel wrote:
+> > > When multicast snooping is enabled unregistered multicast traffic should
+> > > only be flooded to mrouter ports.
+> > 
+> > Given that IPv6 relies upon multicast working, and multicast snooping
+> > is a kernel configuration option, and MLD messages will only be sent
+> > when whenever the configuration on the target changes, and there may
+> > not be a multicast querier in the system, who does that ensure that
+> > IPv6 can work on a bridge where the kernel configured and built with
+> > multicast snooping enabled?
+> 
+> See commit b00589af3b04 ("bridge: disable snooping if there is no
+> querier"). I think that's unfortunate behavior that we need because
+> multicast snooping is enabled by default. If it weren't enabled by
+> default, then anyone enabling it would also make sure there's a querier
+> in the network.
 
-syzbot found the following crash on:
+Linus, Nik,
 
-HEAD commit:    ee7dd773 sis900: remove TxIDLE
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=17ceb9a9a00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7ac9edef4d37e5fb
-dashboard link: https://syzkaller.appspot.com/bug?extid=1a68504d96cd17b33a05
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=119b2a13a00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13127bada00000
+I brought this problem in the past, but we didn't reach a solution, so
+I'll try again :)
 
-The bug was bisected to:
+The problem:
 
-commit 52dfae5c85a4c1078e9f1d5e8947d4a25f73dd81
-Author: Jon Maloy <jon.maloy@ericsson.com>
-Date:   Thu Mar 22 19:42:52 2018 +0000
+Even if multicast snooping is enabled, the bridge driver will flood
+multicast packets to all the ports if no querier was detected on the
+link. The querier states (IPv4 & IPv6) are not currently reflected to
+switchdev drivers which means that the hardware data path will only
+flood unregistered multicast packets to mrouter ports (which can be an
+empty list).
 
-     tipc: obtain node identity from interface by default
+In default configurations (where multicast snooping is enabled and the
+bridge querier is disabled), this can prevent IPv6 ping from passing, as
+there are no mrouter ports and there is no MDB entry corresponding to
+the solicited-node multicast address.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=160ad903a00000
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=150ad903a00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=110ad903a00000
+Is there anything we can do about it? Enable the bridge querier if no
+other querier was detected? Commit c5c23260594c ("bridge: Add
+multicast_querier toggle and disable queries by default") disabled
+queries by default, but I'm only suggesting to turn them on if no other
+querier was detected on the link. Do you think it's still a problem?
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+1a68504d96cd17b33a05@syzkaller.appspotmail.com
-Fixes: 52dfae5c85a4 ("tipc: obtain node identity from interface by default")
+I would like to avoid having drivers take the querier state into account
+as it will only complicate things further.
 
-Started in network mode
-Own node identity 7f000001, cluster identity 4711
-New replicast peer: 172.20.20.22
-check_preemption_disabled: 3 callbacks suppressed
-BUG: using smp_processor_id() in preemptible [00000000] code:  
-syz-executor834/8612
-caller is dst_cache_get+0x3d/0xb0 net/core/dst_cache.c:68
-CPU: 0 PID: 8612 Comm: syz-executor834 Not tainted 5.2.0-rc6+ #48
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
-  check_preemption_disabled lib/smp_processor_id.c:47 [inline]
-  debug_smp_processor_id+0x251/0x280 lib/smp_processor_id.c:57
-  dst_cache_get+0x3d/0xb0 net/core/dst_cache.c:68
-  tipc_udp_xmit.isra.0+0xc4/0xb80 net/tipc/udp_media.c:164
-  tipc_udp_send_msg+0x29a/0x4b0 net/tipc/udp_media.c:254
-  tipc_bearer_xmit_skb+0x16c/0x360 net/tipc/bearer.c:503
-  tipc_enable_bearer+0xabe/0xd20 net/tipc/bearer.c:328
-  __tipc_nl_bearer_enable+0x2de/0x3a0 net/tipc/bearer.c:899
-  tipc_nl_bearer_enable+0x23/0x40 net/tipc/bearer.c:907
-  genl_family_rcv_msg+0x74b/0xf90 net/netlink/genetlink.c:629
-  genl_rcv_msg+0xca/0x16c net/netlink/genetlink.c:654
-  netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
-  genl_rcv+0x29/0x40 net/netlink/genetlink.c:665
-  netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
-  netlink_unicast+0x531/0x710 net/netlink/af_netlink.c:1328
-  netlink_sendmsg+0x8ae/0xd70 net/netlink/af_netlink.c:1917
-  sock_sendmsg_nosec net/socket.c:646 [inline]
-  sock_sendmsg+0xd7/0x130 net/socket.c:665
-  ___sys_sendmsg+0x803/0x920 net/socket.c:2286
-  __sys_sendmsg+0x105/0x1d0 net/socket.c:2324
-  __do_sys_sendmsg net/socket.c:2333 [inline]
-  __se_sys_sendmsg net/socket.c:2331 [inline]
-  __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2331
-  do_syscall_64+0xfd/0x680 arch/x86/entry/common.c:301
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x444679
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7  
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 1b d8 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fff0201a8b8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00000000004002e0 RCX: 0000000000444679
-RDX: 0000000000000000 RSI: 0000000020000580 RDI: 0000000000000003
-RBP: 00000000006cf018 R08: 0000000000000001 R09: 00000000004002e0
-R10: 0000000000000008 R11: 0000000000000246 R12: 0000000000402320
-R13: 00000000004023b0 R14: 0000000000000000 R15: 0000000000
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Thanks
