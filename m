@@ -2,120 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AAF4F5AC90
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 18:29:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF8255AC99
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 18:45:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726982AbfF2Q3w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jun 2019 12:29:52 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:35875 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726837AbfF2Q3v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jun 2019 12:29:51 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 8ADF821B6B;
-        Sat, 29 Jun 2019 12:29:50 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Sat, 29 Jun 2019 12:29:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=0/mmxi
-        Ky9/ZbjOwnteYsdrM6KDXjUQ6NpKi66xp9rts=; b=P9blHm0PqRQQMJhFyl33rE
-        KRWMVBiEHm0tGkNy2hX+EY/lFmatIF+V8X5bhC4gjerWzfCXisX7y9nysDZ5TorJ
-        oj3JP1jCF4tKfIG7DP3H+pKtFhTII/g7w5TPEhPVRaHFC9g7q59r/ljg2l8svO7a
-        VpQ2jErhZ4Q6R7nxSkOBa2347a4TRCpr0g5U+K3DdLrhXLa3lYJdfMbUxyi2ak+9
-        SNIj6z48a4NyQSnCk9P6GItfLllt8hPVAsIPJrOwgwGmXrA9KbmdUpaD2zgd0Unn
-        +cmoJHT7WrEqB6VHRd8xUxxWO7hdrqMhi+ZOs5pVsqucnR6ElGUbO90kmqH7y2Ag
-        ==
-X-ME-Sender: <xms:_JEXXatlglaSE_NdnPyk5BX8PcglF4RPkOUKYzKQ-VoOdpZ0BLHzTw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrvddvgddutdefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjfgesthdtredttdervdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecukfhppedutd
-    elrdeihedrieefrddutddunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhes
-    ihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
-X-ME-Proxy: <xmx:_JEXXd8pB-Akyf8VQv0ukrekitHQ3Hy-Oxy5QlRjlPUjbw9eRcl9ew>
-    <xmx:_JEXXclJO0Rz2fHD_QHO96TFBK45f81UXd6RoBDlA05MPylwFfL78A>
-    <xmx:_JEXXVNMO3akauuad61oZg-pwebkSW5ewP_KwInwZCHK8JOqu2l4pA>
-    <xmx:_pEXXR_YQteuOsSe15b7-QT9KC2wmd9jnQAFX_0K1uXIUInOdohReg>
-Received: from localhost (bzq-109-65-63-101.red.bezeqint.net [109.65.63.101])
-        by mail.messagingengine.com (Postfix) with ESMTPA id CA4CC380079;
-        Sat, 29 Jun 2019 12:29:47 -0400 (EDT)
-Date:   Sat, 29 Jun 2019 19:29:45 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        nikolay@cumulusnetworks.com, linus.luessing@c0d3.blue
-Cc:     Ido Schimmel <idosch@mellanox.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: Re: [RFC net-next] net: dsa: add support for MC_DISABLED attribute
-Message-ID: <20190629162945.GB17143@splinter>
-References: <20190620235639.24102-1-vivien.didelot@gmail.com>
- <5d653a4d-3270-8e53-a5e0-88ea5e7a4d3f@gmail.com>
- <20190621172952.GB9284@t480s.localdomain>
- <20190623070949.GB13466@splinter>
- <20190623072605.2xqb56tjydqz2jkx@shell.armlinux.org.uk>
- <20190623074427.GA21875@splinter>
+        id S1726906AbfF2Qpf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jun 2019 12:45:35 -0400
+Received: from smtprelay0042.hostedemail.com ([216.40.44.42]:48378 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726837AbfF2Qpe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jun 2019 12:45:34 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay08.hostedemail.com (Postfix) with ESMTP id 72872182CF666;
+        Sat, 29 Jun 2019 16:45:32 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::::::::::::::::::::::::::::,RULES_HIT:41:355:379:599:800:960:968:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1431:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2553:2559:2562:2828:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3870:3871:3872:3874:4037:4321:5007:6742:10004:10400:10848:10967:11232:11658:11914:12043:12297:12663:12740:12760:12895:13069:13138:13231:13311:13357:13439:14096:14097:14181:14659:14721:21080:21433:21627:30034:30054:30070:30090:30091,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.14.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:24,LUA_SUMMARY:none
+X-HE-Tag: wood26_67b7f2b025644
+X-Filterd-Recvd-Size: 3038
+Received: from XPS-9350 (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
+        (Authenticated sender: joe@perches.com)
+        by omf01.hostedemail.com (Postfix) with ESMTPA;
+        Sat, 29 Jun 2019 16:45:12 +0000 (UTC)
+Message-ID: <c3b83ba7f9b003dd4fb9cad885461ce93165dc04.camel@perches.com>
+Subject: Re: [PATCH V2] include: linux: Regularise the use of FIELD_SIZEOF
+ macro
+From:   Joe Perches <joe@perches.com>
+To:     Alexey Dobriyan <adobriyan@gmail.com>,
+        Andreas Dilger <adilger@dilger.ca>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Shyam Saini <shyam.saini@amarulasolutions.com>,
+        kernel-hardening@lists.openwall.com, linux-kernel@vger.kernel.org,
+        keescook@chromium.org, linux-arm-kernel@lists.infradead.org,
+        linux-mips@vger.kernel.org, intel-gvt-dev@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        netdev@vger.kernel.org, linux-ext4 <linux-ext4@vger.kernel.org>,
+        devel@lists.orangefs.org, linux-mm@kvack.org,
+        linux-sctp@vger.kernel.org, bpf@vger.kernel.org,
+        kvm@vger.kernel.org, mayhs11saini@gmail.com
+Date:   Sat, 29 Jun 2019 09:45:10 -0700
+In-Reply-To: <20190629142510.GA10629@avx2>
+References: <20190611193836.2772-1-shyam.saini@amarulasolutions.com>
+         <20190611134831.a60c11f4b691d14d04a87e29@linux-foundation.org>
+         <6DCAE4F8-3BEC-45F2-A733-F4D15850B7F3@dilger.ca>
+         <20190629142510.GA10629@avx2>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190623074427.GA21875@splinter>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 23, 2019 at 10:44:27AM +0300, Ido Schimmel wrote:
-> On Sun, Jun 23, 2019 at 08:26:05AM +0100, Russell King - ARM Linux admin wrote:
-> > On Sun, Jun 23, 2019 at 07:09:52AM +0000, Ido Schimmel wrote:
-> > > When multicast snooping is enabled unregistered multicast traffic should
-> > > only be flooded to mrouter ports.
+On Sat, 2019-06-29 at 17:25 +0300, Alexey Dobriyan wrote:
+> On Tue, Jun 11, 2019 at 03:00:10PM -0600, Andreas Dilger wrote:
+> > On Jun 11, 2019, at 2:48 PM, Andrew Morton <akpm@linux-foundation.org> wrote:
+> > > On Wed, 12 Jun 2019 01:08:36 +0530 Shyam Saini <shyam.saini@amarulasolutions.com> wrote:
+> > I did a check, and FIELD_SIZEOF() is used about 350x, while sizeof_field()
+> > is about 30x, and SIZEOF_FIELD() is only about 5x.
 > > 
-> > Given that IPv6 relies upon multicast working, and multicast snooping
-> > is a kernel configuration option, and MLD messages will only be sent
-> > when whenever the configuration on the target changes, and there may
-> > not be a multicast querier in the system, who does that ensure that
-> > IPv6 can work on a bridge where the kernel configured and built with
-> > multicast snooping enabled?
+> > That said, I'm much more in favour of "sizeof_field()" or "sizeof_member()"
+> > than FIELD_SIZEOF().  Not only does that better match "offsetof()", with
+> > which it is closely related, but is also closer to the original "sizeof()".
+> > 
+> > Since this is a rather trivial change, it can be split into a number of
+> > patches to get approval/landing via subsystem maintainers, and there is no
+> > huge urgency to remove the original macros until the users are gone.  It
+> > would make sense to remove SIZEOF_FIELD() and sizeof_field() quickly so
+> > they don't gain more users, and the remaining FIELD_SIZEOF() users can be
+> > whittled away as the patches come through the maintainer trees.
 > 
-> See commit b00589af3b04 ("bridge: disable snooping if there is no
-> querier"). I think that's unfortunate behavior that we need because
-> multicast snooping is enabled by default. If it weren't enabled by
-> default, then anyone enabling it would also make sure there's a querier
-> in the network.
+> The signature should be
+> 
+> 	sizeof_member(T, m)
+> 
+> it is proper English,
+> it is lowercase, so is easier to type,
+> it uses standard term (member, not field),
+> it blends in with standard "sizeof" operator,
 
-Linus, Nik,
+yes please.
 
-I brought this problem in the past, but we didn't reach a solution, so
-I'll try again :)
+Also, a simple script conversion applied
+immediately after an rc1 might be easiest
+rather than individual patches.
 
-The problem:
 
-Even if multicast snooping is enabled, the bridge driver will flood
-multicast packets to all the ports if no querier was detected on the
-link. The querier states (IPv4 & IPv6) are not currently reflected to
-switchdev drivers which means that the hardware data path will only
-flood unregistered multicast packets to mrouter ports (which can be an
-empty list).
-
-In default configurations (where multicast snooping is enabled and the
-bridge querier is disabled), this can prevent IPv6 ping from passing, as
-there are no mrouter ports and there is no MDB entry corresponding to
-the solicited-node multicast address.
-
-Is there anything we can do about it? Enable the bridge querier if no
-other querier was detected? Commit c5c23260594c ("bridge: Add
-multicast_querier toggle and disable queries by default") disabled
-queries by default, but I'm only suggesting to turn them on if no other
-querier was detected on the link. Do you think it's still a problem?
-
-I would like to avoid having drivers take the querier state into account
-as it will only complicate things further.
-
-Thanks
