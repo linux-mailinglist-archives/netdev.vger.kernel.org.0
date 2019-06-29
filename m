@@ -2,107 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 656355A7EF
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 02:59:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 760B25A7F8
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 03:15:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726789AbfF2A7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Jun 2019 20:59:31 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:38631 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726643AbfF2A7a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Jun 2019 20:59:30 -0400
-Received: by mail-qt1-f195.google.com with SMTP id n11so8407177qtl.5
-        for <netdev@vger.kernel.org>; Fri, 28 Jun 2019 17:59:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=zjhYcZSY1mARYBIzX7XVwQ/EibLPCVp5puzDjQbjh6k=;
-        b=m2cb3a8l4H1IwwUH123y/lPF2DQgJXES87c1+xghQkr2wsG0oTAnveOB5DVP/RLZ2X
-         l136+AcUcwUolCl6wxPV471D1uLzTDgTwA9mBeDpn6F/ClS4JusxgnLrIyJ76XpNB0H+
-         zjS88q8i107MTfm1avvCEyxowoTHFrVbUxS0WNGxS9RTNunbDAxvnCfT2yAc97BjI0xb
-         ZaHVTfYVdDzVINUDqap2R2m/+6/VqjWDoXSQshT3NZP8zytuMg2JzojAvzXFdsjNmBYi
-         UOnJtJiHWANwMhaPsYox6kfbLtt3LtkIFQ2Qt9nSD+EaaYw5R4YnwzebwYk/QpiMaBr+
-         JrTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=zjhYcZSY1mARYBIzX7XVwQ/EibLPCVp5puzDjQbjh6k=;
-        b=j7zK9pVoAvdbHfevgR7eLOjWlwtoE5Lxe/2sVktGgRmIVvDRDQRdJu0/yXqVvQHalj
-         8qHIDrfcSnsVoCmr+NOyiSj477HP/kj7ZN7nKqUWsTWuqtxy2F5bXrm2U9XjkkTX8/pW
-         8/KO5/WvFZ7QBsFfeoA0J3CQajK6nDPfXAn+ZFjJJ44NtXOceTQ4VOdhfmWMu4VWFQSO
-         k6Jzu/uL7nGhvbjpCDmJoWsYi8IzqpTItmGvtQ9PBEW1DR71T8YiSpi/yEIQlFOt1R9x
-         ody/WMWkVg289qzK+rzwW2netKmrr5ntFcpFW5IMdNL3PTm9c8/Eaxnww05mtKruy95m
-         fPSA==
-X-Gm-Message-State: APjAAAXz2186v/kzaDrKzjnVxSTwCwr4Yf/rjM9Q7FFHFg9WoeIIUB9g
-        Thyk7ieKETUqaxiUHRz8vszS+w==
-X-Google-Smtp-Source: APXvYqxkoi+dubFnlzWyNZfZbFl+q2aTvbNwmrU7cVn+CRhZTnrCv7S/Ckgj42DntQLSoCETwmVWhQ==
-X-Received: by 2002:ac8:25b1:: with SMTP id e46mr10746988qte.36.1561769969941;
-        Fri, 28 Jun 2019 17:59:29 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id d23sm1678467qkk.46.2019.06.28.17.59.28
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 28 Jun 2019 17:59:29 -0700 (PDT)
-Date:   Fri, 28 Jun 2019 17:59:25 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     daniel@iogearbox.net, ast@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com, bpf@vger.kernel.org
-Subject: Re: [PATCH 1/2] tls: remove close callback sock unlock/lock and
- flush_sync
-Message-ID: <20190628175925.79a763f5@cakuba.netronome.com>
-In-Reply-To: <5d16aec74b6cd_35a32adaec47c5c457@john-XPS-13-9370.notmuch>
-References: <156165697019.32598.7171757081688035707.stgit@john-XPS-13-9370>
-        <156165700197.32598.17496423044615153967.stgit@john-XPS-13-9370>
-        <20190627164402.31cbd466@cakuba.netronome.com>
-        <5d1620374694e_26962b1f6a4fa5c4f2@john-XPS-13-9370.notmuch>
-        <20190628113100.597bfbe6@cakuba.netronome.com>
-        <5d166d2deacfe_10452ad82c16e5c0a5@john-XPS-13-9370.notmuch>
-        <20190628154841.32b96fb1@cakuba.netronome.com>
-        <5d16aec74b6cd_35a32adaec47c5c457@john-XPS-13-9370.notmuch>
-Organization: Netronome Systems, Ltd.
+        id S1726819AbfF2BPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Jun 2019 21:15:19 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:8233 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726643AbfF2BPT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 Jun 2019 21:15:19 -0400
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 635BA4AA946E0D202CDB;
+        Sat, 29 Jun 2019 09:15:15 +0800 (CST)
+Received: from [127.0.0.1] (10.74.191.121) by DGGEMS408-HUB.china.huawei.com
+ (10.3.19.208) with Microsoft SMTP Server id 14.3.439.0; Sat, 29 Jun 2019
+ 09:15:05 +0800
+Subject: Re: [PATCH net-next 02/12] net: hns3: enable DCB when TC num is one
+ and pfc_en is non-zero
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Huazhong Tan <tanhuazhong@huawei.com>
+CC:     David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <linuxarm@huawei.com>, Peng Li <lipeng321@huawei.com>
+References: <1561722618-12168-1-git-send-email-tanhuazhong@huawei.com>
+ <1561722618-12168-3-git-send-email-tanhuazhong@huawei.com>
+ <CA+FuTSdWa0dMz15m79SLsNAw9zkp3+3MSfKiRwKnjZ7QAyq1Uw@mail.gmail.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <b3d14dce-45a9-2d13-93d5-be6e5ef0c709@huawei.com>
+Date:   Sat, 29 Jun 2019 09:15:05 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CA+FuTSdWa0dMz15m79SLsNAw9zkp3+3MSfKiRwKnjZ7QAyq1Uw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 28 Jun 2019 17:20:23 -0700, John Fastabend wrote:
-> > Why can't tls sockets exist outside of established state?  If shutdown
-> > doesn't call close, perhaps we can add a shutdown callback?  It doesn't
-> > seem to be called from BH?
-> > =20
->=20
-> Because the ulp would be shared in this case,
->=20
-> 	/* The TLS ulp is currently supported only for TCP sockets
-> 	 * in ESTABLISHED state.
-> 	 * Supporting sockets in LISTEN state will require us
-> 	 * to modify the accept implementation to clone rather then
-> 	 * share the ulp context.
-> 	 */
-> 	if (sk->sk_state !=3D TCP_ESTABLISHED)
-> 		return -ENOTSUPP;
->=20
-> In general I was trying to avoid modifying core TCP layer to fix
-> this corner case in tls.
+On 2019/6/29 2:47, Willem de Bruijn wrote:
+> On Fri, Jun 28, 2019 at 7:53 AM Huazhong Tan <tanhuazhong@huawei.com> wrote:
+>>
+>> From: Yunsheng Lin <linyunsheng@huawei.com>
+>>
+>> Currently when TC num is one, the DCB will be disabled no matter if
+>> pfc_en is non-zero or not.
+>>
+>> This patch enables the DCB if pfc_en is non-zero, even when TC num
+>> is one.
+>>
+>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+>> Signed-off-by: Peng Li <lipeng321@huawei.com>
+>> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+> 
+>> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+>> index 9edae5f..cb2fb5a 100644
+>> --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+>> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+>> @@ -597,8 +597,10 @@ static void hclge_tm_tc_info_init(struct hclge_dev *hdev)
+>>                 hdev->tm_info.prio_tc[i] =
+>>                         (i >= hdev->tm_info.num_tc) ? 0 : i;
+>>
+>> -       /* DCB is enabled if we have more than 1 TC */
+>> -       if (hdev->tm_info.num_tc > 1)
+>> +       /* DCB is enabled if we have more than 1 TC or pfc_en is
+>> +        * non-zero.
+>> +        */
+>> +       if (hdev->tm_info.num_tc > 1 || hdev->tm_info.pfc_en)
+> 
+> small nit: comments that just repeat the condition are not very informative.
+> 
+> More helpful might be to explain why the DCB should be enabled in both
+> these cases. Though such detailed comments, if useful, are better left
+> to the commit message usually.
 
-I see, thanks for clarifying! I was wondering if there's anything wrong
-in being in CLOSE/SYN/FIN states.
+Very helpful suggestion. thanks.
+Will keep that in mind next time.
 
-> > Sorry for all the questions, I'm not really able to fully wrap my head
-> > around this. I also feel like I'm missing the sockmap piece that may
-> > be why you prefer unhash over disconnect. =20
->=20
-> Yep, if we try to support listening sockets we need a some more
-> core infrastructure to push around ulp and user_data portions of
-> sockets. Its not going to be nice for stable. Also at least in TLS
-> and sockmap case its not really needed for any use case I know
-> of.
+> 
+>>                 hdev->flag |= HCLGE_FLAG_DCB_ENABLE;
+>>         else
+>>                 hdev->flag &= ~HCLGE_FLAG_DCB_ENABLE;
+>> @@ -1388,6 +1390,19 @@ void hclge_tm_schd_info_update(struct hclge_dev *hdev, u8 num_tc)
+>>         hclge_tm_schd_info_init(hdev);
+>>  }
+>>
+>> +void hclge_tm_pfc_info_update(struct hclge_dev *hdev)
+>> +{
+>> +       /* DCB is enabled if we have more than 1 TC or pfc_en is
+>> +        * non-zero.
+>> +        */
+>> +       if (hdev->tm_info.num_tc > 1 || hdev->tm_info.pfc_en)
+>> +               hdev->flag |= HCLGE_FLAG_DCB_ENABLE;
+>> +       else
+>> +               hdev->flag &= ~HCLGE_FLAG_DCB_ENABLE;
+>> +
+>> +       hclge_pfc_info_init(hdev);
+>> +}
+> 
+> Avoid introducing this code duplication by defining a helper?
+> 
 
-IIUC we can't go from ESTABLISHED to LISTEN without calling close()=20
-or disconnect() so I'm not clear on why are we hooking into unhash() =F0=9F=
-=98=95
+Will send out a new patch to remove the code duplication by defining a helper.
+
+> .
+> 
+
