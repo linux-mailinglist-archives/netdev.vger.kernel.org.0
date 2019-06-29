@@ -2,140 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D72A55AC2B
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 17:31:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2F555AC4B
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 17:47:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726860AbfF2Pbp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jun 2019 11:31:45 -0400
-Received: from wout2-smtp.messagingengine.com ([64.147.123.25]:58309 "EHLO
-        wout2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726836AbfF2Pbo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jun 2019 11:31:44 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id 362A52CF;
-        Sat, 29 Jun 2019 11:31:41 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Sat, 29 Jun 2019 11:31:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=h4IoQt
-        S8zRT80Ep+ouWOPOrpV1T1e5qhvVuN5URCl28=; b=Pun2zrEzjdcXNJ/AbTsekk
-        kAr//jtp+dtvzTX04OdbNmUtV9aNRGX0kxdcD4/GO1c8v3DB0LkFvBhritV3sECy
-        67/got8jZWzPxToEkKG3XWmjL2uM2anCdAGxi5AHRjpv4VoSea1HjChN5hx8t0BB
-        DluFv39ujnBLAK/OnWd7fYOVrUwMWDPc68/PlYeGbZFHvf4uRGLqNJ9hf4EugVAp
-        3nMDa2TKKK+Mm2bk067Da0hp76+qUBiSfjwfiLzXfZMd/FK/dkUPyDnoYi6MOKpF
-        2YQcBdOsaTlgghdF4UeSGG11aS5I+kjUYrlA2u4V9PqG4Yi/ZGXOuIrKnMGWxYJg
-        ==
-X-ME-Sender: <xms:W4QXXa6ftTxQcy5hr9jtcg_RI9CH3XJoCahuo0iudW58Z-6Tg3AQzA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrvddvgdeludcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepuddtle
-    drieehrdeifedruddtudenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehi
-    ughoshgthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
-X-ME-Proxy: <xmx:W4QXXYJGWMBMTm-dY_poLl1oZ3BfgltrSJ4EFTo2Hy3PlNCutBXKjQ>
-    <xmx:W4QXXUe-cbIqcBQ2rGzfMgcom2ZGAHHIwE9FUSCEmRrY7Ry9LMRwKA>
-    <xmx:W4QXXbfX1DV7TkV5zq4piW8HzNQx9omCmXiT-HCq_K6wI6hyXFWWsA>
-    <xmx:XIQXXYKkobkK8XOAOLFxirKoendaALw7r5zPBMhxbtHlqjcqP2x7XQ>
-Received: from localhost (bzq-109-65-63-101.red.bezeqint.net [109.65.63.101])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 8A0E4380076;
-        Sat, 29 Jun 2019 11:31:38 -0400 (EDT)
-Date:   Sat, 29 Jun 2019 18:31:35 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     f.fainelli@gmail.com, vivien.didelot@gmail.com
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: Re: [RFC net-next] net: dsa: add support for MC_DISABLED attribute
-Message-ID: <20190629153135.GA17143@splinter>
-References: <20190620235639.24102-1-vivien.didelot@gmail.com>
- <5d653a4d-3270-8e53-a5e0-88ea5e7a4d3f@gmail.com>
- <20190623064838.GA13466@splinter>
+        id S1726921AbfF2PrI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jun 2019 11:47:08 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:47571 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726851AbfF2PrH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jun 2019 11:47:07 -0400
+Received: by mail-io1-f72.google.com with SMTP id r27so10181892iob.14
+        for <netdev@vger.kernel.org>; Sat, 29 Jun 2019 08:47:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=jbJ2eKqYbg+CIxP4+lpCkdTZvmlLbaCmh2v1g2hcHF8=;
+        b=DIWRjfnLwN8YZ5ch+1GSV/n0U3Bvq4/fKRi8DqC6el/yxfuqb27EXtrqdKkvxaHlWc
+         eUpvdHldVD+32vSTwdyqhWuBNR9PmYjrYMpyOSAXZPgV+5kVscBcTnPO/hHpkKpvm9oj
+         aESTonMSwQRIRVUkb4vY6yPBArvm/pt+WfX6nivOSnzuk6Yqn8n/i2A1fxemhWjRbn8d
+         +nlYa4AhCarQJvPeVpsdfRr9j6n9PTdm43/wp2tysJBeRVLWGDEgoRxeJGrh3r3E39uR
+         ZAsTybiQwQ1LIQqwSWDVU/9dS/7BJPcNF3Tlt28RgL8mpXOOL7uw/D6XRIMqIXIIXsG0
+         7pkA==
+X-Gm-Message-State: APjAAAVsCnXHowkrbBUISgIRQ8z+9e+LjrCx246s1xFTlITUfH3Dn/YJ
+        o4XQNjf3lgjpEjUL5nD/QmSGz/JZT0K4pu2psOp+3rdDoCTH
+X-Google-Smtp-Source: APXvYqxNRLTQeEwFkg5Ty+r0QiSHT6Pb6DAK60VfYIJUCqbJeILzjqq4R8zPoKo+l5lzugoCL4DGtkwklNMTekBeqokyjZaKvAp7
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190623064838.GA13466@splinter>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+X-Received: by 2002:a02:7642:: with SMTP id z63mr6340791jab.36.1561823226887;
+ Sat, 29 Jun 2019 08:47:06 -0700 (PDT)
+Date:   Sat, 29 Jun 2019 08:47:06 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000a40746058c784ef3@google.com>
+Subject: BUG: using smp_processor_id() in preemptible [ADDR] code: syz-executor
+From:   syzbot <syzbot+1a68504d96cd17b33a05@syzkaller.appspotmail.com>
+To:     allison@lohutok.net, davem@davemloft.net,
+        gregkh@linuxfoundation.org, jon.maloy@ericsson.com,
+        kuznet@ms2.inr.ac.ru, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        tglx@linutronix.de, tipc-discussion@lists.sourceforge.net,
+        ying.xue@windriver.com, yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 23, 2019 at 06:48:41AM +0000, Ido Schimmel wrote:
-> On Thu, Jun 20, 2019 at 07:24:47PM -0700, Florian Fainelli wrote:
-> > On 6/20/2019 4:56 PM, Vivien Didelot wrote:
-> > > This patch adds support for enabling or disabling the flooding of
-> > > unknown multicast traffic on the CPU ports, depending on the value
-> > > of the switchdev SWITCHDEV_ATTR_ID_BRIDGE_MC_DISABLED attribute.
-> > > 
-> > > This allows the user to prevent the CPU to be flooded with a lot of
-> > > undesirable traffic that the network stack needs to filter in software.
-> > > 
-> > > The bridge has multicast snooping enabled by default, hence CPU ports
-> > > aren't bottlenecked with arbitrary network applications anymore.
-> > > But this can be an issue in some scenarios such as pinging the bridge's
-> > > IPv6 address. Setting /sys/class/net/br0/bridge/multicast_snooping to
-> > > 0 would restore unknown multicast flooding and thus fix ICMPv6. As
-> > > an alternative, enabling multicast_querier would program the bridge
-> > > address into the switch.
-> > From what I can read from mlxsw, we should probably also implement the
-> > SWITCHDEV_ATTR_ID_PORT_MROUTER attribute in order to be consistent.
-> > 
-> > Since the attribute MC_DISABLED is on the bridge master, we should also
-> > iterate over the list of switch ports being a member of that bridge and
-> > change their flooding attribute, taking into account whether
-> > BR_MCAST_FLOOD is set on that particular port or not. Just paraphrasing
-> > what mlxsw does here again...
-> 
-> When multicast snooping is enabled, unregistered multicast traffic
-> should be flooded to mrouter ports only. Otherwise, it should be flooded
-> to all ports.
-> 
-> > Once you act on the user-facing ports, you might be able to leave the
-> > CPU port flooding unconditionally, since it would only "flood" the CPU
-> > port either because an user-facing port has BR_MCAST_FLOOD set, or
-> > because this is known MC traffic that got programmed via the bridge's
-> > MDB. Would that work?
-> > 
-> > On a higher level, I really wish we did not have to re-implement a lot
-> > of identical or similar logic in each switch drivers and had a more
-> > central model of what is behaviorally expected.
-> 
-> Well, that model is the bridge driver... But I agree that we can
-> probably simplify the interface towards drivers and move more code up
-> the stack.
-> 
-> For example, two things mlxsw is doing when multicast snooping is
-> enabled:
-> 
-> 1. Writing MDB entries to the device. When multicast snooping is
-> disabled, MDB entries are ignored by the bridge driver. Can we agree to
-> have the bridge driver generate SWITCHDEV_OBJ_ID_PORT_MDB add / delete
-> for all MDB entries when multicast snooping is toggled?
-> 
-> 2. Flooding unregistered multicast traffic only to mrouter ports. The
-> bridge driver can iterate over the bridge members and toggle
-> BR_MCAST_FLOOD accordingly. It will not actually change this value. Only
-> emulate this change towards drivers.
-> 
-> I will try to come up with a more detailed list later this week.
+Hello,
 
-I reviewed the MC logic in mlxsw again and while I found some things
-that can be improved, I don't think major simplification can happen
-there.
+syzbot found the following crash on:
 
-Regarding "central model of what is behaviorally expected". IMO, the
-best thing is to make sure that all the implementations pass tests that
-codify what is to be expected. Given that the model is the Linux bridge,
-the tests should of course pass with veth pairs.
+HEAD commit:    ee7dd773 sis900: remove TxIDLE
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=17ceb9a9a00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7ac9edef4d37e5fb
+dashboard link: https://syzkaller.appspot.com/bug?extid=1a68504d96cd17b33a05
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=119b2a13a00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13127bada00000
 
-We have some tests under tools/testing/selftests/net/forwarding/, but
-not so much for MC. However, even if such tests were to be contributed,
-would you be able to run them on your hardware? I remember that in the
-past you complained about the number of required ports. Is there
-something you can do about it? How many ports are available on your
-platforms?
+The bug was bisected to:
+
+commit 52dfae5c85a4c1078e9f1d5e8947d4a25f73dd81
+Author: Jon Maloy <jon.maloy@ericsson.com>
+Date:   Thu Mar 22 19:42:52 2018 +0000
+
+     tipc: obtain node identity from interface by default
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=160ad903a00000
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=150ad903a00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=110ad903a00000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+1a68504d96cd17b33a05@syzkaller.appspotmail.com
+Fixes: 52dfae5c85a4 ("tipc: obtain node identity from interface by default")
+
+Started in network mode
+Own node identity 7f000001, cluster identity 4711
+New replicast peer: 172.20.20.22
+check_preemption_disabled: 3 callbacks suppressed
+BUG: using smp_processor_id() in preemptible [00000000] code:  
+syz-executor834/8612
+caller is dst_cache_get+0x3d/0xb0 net/core/dst_cache.c:68
+CPU: 0 PID: 8612 Comm: syz-executor834 Not tainted 5.2.0-rc6+ #48
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+  check_preemption_disabled lib/smp_processor_id.c:47 [inline]
+  debug_smp_processor_id+0x251/0x280 lib/smp_processor_id.c:57
+  dst_cache_get+0x3d/0xb0 net/core/dst_cache.c:68
+  tipc_udp_xmit.isra.0+0xc4/0xb80 net/tipc/udp_media.c:164
+  tipc_udp_send_msg+0x29a/0x4b0 net/tipc/udp_media.c:254
+  tipc_bearer_xmit_skb+0x16c/0x360 net/tipc/bearer.c:503
+  tipc_enable_bearer+0xabe/0xd20 net/tipc/bearer.c:328
+  __tipc_nl_bearer_enable+0x2de/0x3a0 net/tipc/bearer.c:899
+  tipc_nl_bearer_enable+0x23/0x40 net/tipc/bearer.c:907
+  genl_family_rcv_msg+0x74b/0xf90 net/netlink/genetlink.c:629
+  genl_rcv_msg+0xca/0x16c net/netlink/genetlink.c:654
+  netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
+  genl_rcv+0x29/0x40 net/netlink/genetlink.c:665
+  netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
+  netlink_unicast+0x531/0x710 net/netlink/af_netlink.c:1328
+  netlink_sendmsg+0x8ae/0xd70 net/netlink/af_netlink.c:1917
+  sock_sendmsg_nosec net/socket.c:646 [inline]
+  sock_sendmsg+0xd7/0x130 net/socket.c:665
+  ___sys_sendmsg+0x803/0x920 net/socket.c:2286
+  __sys_sendmsg+0x105/0x1d0 net/socket.c:2324
+  __do_sys_sendmsg net/socket.c:2333 [inline]
+  __se_sys_sendmsg net/socket.c:2331 [inline]
+  __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2331
+  do_syscall_64+0xfd/0x680 arch/x86/entry/common.c:301
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x444679
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7  
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 1b d8 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fff0201a8b8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000004002e0 RCX: 0000000000444679
+RDX: 0000000000000000 RSI: 0000000020000580 RDI: 0000000000000003
+RBP: 00000000006cf018 R08: 0000000000000001 R09: 00000000004002e0
+R10: 0000000000000008 R11: 0000000000000246 R12: 0000000000402320
+R13: 00000000004023b0 R14: 0000000000000000 R15: 0000000000
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
