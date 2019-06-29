@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 530875AC1F
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 17:17:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 483E15AC23
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 17:17:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726909AbfF2PRU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jun 2019 11:17:20 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:37827 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726862AbfF2PRT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jun 2019 11:17:19 -0400
-Received: by mail-pg1-f195.google.com with SMTP id g15so2021600pgi.4
-        for <netdev@vger.kernel.org>; Sat, 29 Jun 2019 08:17:18 -0700 (PDT)
+        id S1726954AbfF2PRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jun 2019 11:17:25 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:44258 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726897AbfF2PRU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jun 2019 11:17:20 -0400
+Received: by mail-pl1-f196.google.com with SMTP id t7so4873395plr.11
+        for <netdev@vger.kernel.org>; Sat, 29 Jun 2019 08:17:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=L1O6hShoZAyH3k160FlbG+43T9P9C6aounc+89AA/Ak=;
-        b=dZnkZJw9P/Ha3O6eO1OGu671PF0xE0xRtwjOrMoxjQV3/kjay9U9X2jSe0U67Zn9IY
-         87Dh7ZtNAGxr5MM2pCeeUNeHcjsWyzHZsojFg+haMNr7fuZiAq9MgI3Ic8yMFA/ib4Kt
-         zVnX2pIVv7tJh/m0mLxA3PhVUy8ily2o8BQfo=
+        bh=kzxsL68qhh9R3O2+7ccN5C3ZlHChylS4TS0FRdut5mk=;
+        b=GolzO7PgtzeTnrAVew3FuFaNVtGwoiWi09XoWI4kxNpz2Yeh6/XW7+Sscr8fQYvZ5F
+         IHVdlwTp7AgAc+848g/Lydn6hs47cFqWR5/5YXU9vVGN2cdv93yEimbqkMdQcJgMES20
+         1VRNc5Wfd7nbmpDIDu5vKg6odNLfPIqG7HlcA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=L1O6hShoZAyH3k160FlbG+43T9P9C6aounc+89AA/Ak=;
-        b=bM5sO1mXIse3B/yz2rGFdeAKwCnEupGmRDt5WMRppLFovbfhhjfJbLWm/ehNiIS5L9
-         IoFemPjtWPyrl/fjfTwtLz57naoHVIjwvWPXjJSiL99YaojKnnV8wGd9k07i7baU93xp
-         5IcohYMAh5mMUkkNcAx0aZ6bx3XGQuGOGJKUOmhC4PW2YE/Q/ZmtR3X7Gb4bfh/Ds6xK
-         TvlP3WO8SjH5xP0n/92Ue5PF08sw2ZltUG8RtfaezJhInPq/spvcS4EuZkGTmwM0BQAd
-         lXvjCAHes/qrWbI3kAB6MWevi0zw0U++0tqkVkZeO/KjuEzwHRQsqXUrvqa2SgJj3AWL
-         Vyrg==
-X-Gm-Message-State: APjAAAUJxPdZRO1oGCLBlRLszFFpBdqh/6eu2XZHaJl27M4runf4X0Dc
-        kxepjKZqK+U6xG0Z5QsJZjV5cQ==
-X-Google-Smtp-Source: APXvYqwuQRTKhC0rPNFaeOCYdtX7w9XP6v8kC8+LORfMOPIa6+0W+9lYWn/GgQ9lvYadHxnFceUkWw==
-X-Received: by 2002:a63:607:: with SMTP id 7mr12473542pgg.240.1561821438237;
-        Sat, 29 Jun 2019 08:17:18 -0700 (PDT)
+        bh=kzxsL68qhh9R3O2+7ccN5C3ZlHChylS4TS0FRdut5mk=;
+        b=aNem4EMzHW1QaDwOM6Z89tpC70MTxTu2cxZuFprw2f9xweK2xsX2kxGdzHeoiaw5QD
+         KwJyjgX+aH0pVChkGCedzHMFnQqV3BCFGvhrQUeEXWDdUuriM7TVQHNRKrbWAKFfABi5
+         UK2t0lfg4oA90OqWGCDdSznOp+tCCbtaTdsVMOtLVASZvowsVyh4OcbkM38zMbM256ZW
+         ghiBXhrgldsUOBsDJFyjX833hiVEYmQFepYN1CEiaiiUJdDBjFvW5PxdhVETm16SzC+u
+         Z3kqrKxfDcMQvIfGSoWlAzhXuGwVcw9e/9MaimlQADnLLI/+Lj6/GRaxpMvFMTv12Tlp
+         bSJA==
+X-Gm-Message-State: APjAAAWP9QWNL1i7uDXbyHElSbvf4ku53intW/Zije0L8lzAg4NK1tzk
+        o8ZJLnF8P4wGVCUhpBGLzPpT9q7rPjE=
+X-Google-Smtp-Source: APXvYqy9uRgNQBfNrfjvqr1U1/kWE6mZPihSyhGPWy2GSnvncAfkq03fOENGN4UAv5g1jMyr+vOWWA==
+X-Received: by 2002:a17:902:20ec:: with SMTP id v41mr17195033plg.142.1561821439481;
+        Sat, 29 Jun 2019 08:17:19 -0700 (PDT)
 Received: from localhost.localdomain.dhcp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id z14sm5048233pgs.79.2019.06.29.08.17.17
+        by smtp.gmail.com with ESMTPSA id z14sm5048233pgs.79.2019.06.29.08.17.18
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 29 Jun 2019 08:17:17 -0700 (PDT)
+        Sat, 29 Jun 2019 08:17:18 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org
-Subject: [PATCH net 2/5] bnxt_en: Fix ethtool selftest crash under error conditions.
-Date:   Sat, 29 Jun 2019 11:16:45 -0400
-Message-Id: <1561821408-17418-3-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net 3/5] bnxt_en: Fix statistics context reservation logic for RDMA driver.
+Date:   Sat, 29 Jun 2019 11:16:46 -0400
+Message-Id: <1561821408-17418-4-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1561821408-17418-1-git-send-email-michael.chan@broadcom.com>
 References: <1561821408-17418-1-git-send-email-michael.chan@broadcom.com>
@@ -54,43 +54,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After ethtool loopback packet tests, we re-open the nic for the next
-IRQ test.  If the open fails, we must not proceed with the IRQ test
-or we will crash with NULL pointer dereference.  Fix it by checking
-the bnxt_open_nic() return code before proceeding.
+The current logic assumes that the RDMA driver uses one statistics
+context adjacent to the ones used by the network driver.  This
+assumption is not true and the statistics context used by the
+RDMA driver is tied to its MSIX base vector.  This wrong assumption
+can cause RDMA driver failure after changing ethtool rings on the
+network side.  Fix the statistics reservation logic accordingly.
 
-Reported-by: Somasundaram Krishnasamy <somasundaram.krishnasamy@oracle.com>
-Fixes: 67fea463fd87 ("bnxt_en: Add interrupt test to ethtool -t selftest.")
+Fixes: 780baad44f0f ("bnxt_en: Reserve 1 stat_ctx for RDMA driver.")
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index a6c7baf..ec68707 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -2842,7 +2842,7 @@ static void bnxt_self_test(struct net_device *dev, struct ethtool_test *etest,
- 	bool offline = false;
- 	u8 test_results = 0;
- 	u8 test_mask = 0;
--	int rc, i;
-+	int rc = 0, i;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index b9bc829..9090c79 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -5508,7 +5508,16 @@ static int bnxt_cp_rings_in_use(struct bnxt *bp)
  
- 	if (!bp->num_tests || !BNXT_SINGLE_PF(bp))
- 		return;
-@@ -2913,9 +2913,9 @@ static void bnxt_self_test(struct net_device *dev, struct ethtool_test *etest,
- 		}
- 		bnxt_hwrm_phy_loopback(bp, false, false);
- 		bnxt_half_close_nic(bp);
--		bnxt_open_nic(bp, false, true);
-+		rc = bnxt_open_nic(bp, false, true);
- 	}
--	if (bnxt_test_irq(bp)) {
-+	if (rc || bnxt_test_irq(bp)) {
- 		buf[BNXT_IRQ_TEST_IDX] = 1;
- 		etest->flags |= ETH_TEST_FL_FAILED;
- 	}
+ static int bnxt_get_func_stat_ctxs(struct bnxt *bp)
+ {
+-	return bp->cp_nr_rings + bnxt_get_ulp_stat_ctxs(bp);
++	int ulp_stat = bnxt_get_ulp_stat_ctxs(bp);
++	int cp = bp->cp_nr_rings;
++
++	if (!ulp_stat)
++		return cp;
++
++	if (bnxt_nq_rings_in_use(bp) > cp + bnxt_get_ulp_msix_num(bp))
++		return bnxt_get_ulp_msix_base(bp) + ulp_stat;
++
++	return cp + ulp_stat;
+ }
+ 
+ static bool bnxt_need_reserve_rings(struct bnxt *bp)
+@@ -7477,11 +7486,7 @@ unsigned int bnxt_get_avail_cp_rings_for_en(struct bnxt *bp)
+ 
+ unsigned int bnxt_get_avail_stat_ctxs_for_en(struct bnxt *bp)
+ {
+-	unsigned int stat;
+-
+-	stat = bnxt_get_max_func_stat_ctxs(bp) - bnxt_get_ulp_stat_ctxs(bp);
+-	stat -= bp->cp_nr_rings;
+-	return stat;
++	return bnxt_get_max_func_stat_ctxs(bp) - bnxt_get_func_stat_ctxs(bp);
+ }
+ 
+ int bnxt_get_avail_msix(struct bnxt *bp, int num)
 -- 
 2.5.1
 
