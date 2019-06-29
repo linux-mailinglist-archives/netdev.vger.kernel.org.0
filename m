@@ -2,85 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E2825AAE2
-	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 14:25:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D95325AB83
+	for <lists+netdev@lfdr.de>; Sat, 29 Jun 2019 15:24:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727064AbfF2MZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jun 2019 08:25:13 -0400
-Received: from mx.0dd.nl ([5.2.79.48]:50844 "EHLO mx.0dd.nl"
+        id S1726801AbfF2NX7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jun 2019 09:23:59 -0400
+Received: from linuxlounge.net ([88.198.164.195]:57704 "EHLO linuxlounge.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726892AbfF2MZN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 29 Jun 2019 08:25:13 -0400
-Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx.0dd.nl (Postfix) with ESMTPS id B87C45FE8C;
-        Sat, 29 Jun 2019 14:25:10 +0200 (CEST)
-Authentication-Results: mx.0dd.nl;
-        dkim=pass (2048-bit key) header.d=vdorst.com header.i=@vdorst.com header.b="aEffR9Jl";
-        dkim-atps=neutral
-Received: from pc-rene.vdorst.com (pc-rene.vdorst.com [192.168.2.125])
-        by mail.vdorst.com (Postfix) with ESMTPA id 84F421CE691F;
-        Sat, 29 Jun 2019 14:25:10 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com 84F421CE691F
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
-        s=default; t=1561811110;
-        bh=Bu6E7/v0dN+ECBnl6aRpZhpeAg3S+W/5IW/5FrwWJIw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=aEffR9JlqHiIo6LHHQKWWJmHDp7ZdKOWTyteHfr77OCeZZIhlA+nrzJ+XuokwILvR
-         htzgQ0zUQgfdNUOMlKDFxkq6p0Ik1aPSMzjd8l1ftgQcJ07EtWNx0k5yk/8zhf8Eqk
-         jOauos5ZEFrB1uenxLCF6/ai3m9frVJskIJeXyLMhirvNH2YfBenbpG1NAWEmASqBa
-         LFOcaw30CHft9da3TEu4gj0fO4rA2pwAakO09Ug306FTzEiIr1Hu/PJS2mf4+CoFTa
-         CBEIilfylObw3ok9aZQrJfx2Bb6DxrSibeJQNHZYRInnh8acA4C1yneM4MiCCNyYuC
-         mDFbvn86S9ybg==
-From:   =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
-To:     sean.wang@mediatek.com, f.fainelli@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net, matthias.bgg@gmail.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com
-Cc:     frank-w@public-files.de, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org,
-        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
-Subject: [PATCH] net: ethernet: mediatek: Allow non TRGMII mode with MT7621 DDR2 devices
-Date:   Sat, 29 Jun 2019 14:24:51 +0200
-Message-Id: <20190629122451.19578-1-opensource@vdorst.com>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        id S1726731AbfF2NX6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 29 Jun 2019 09:23:58 -0400
+To:     nikolay@cumulusnetworks.com,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        bridge@lists.linux-foundation.org
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxlounge.net;
+        s=mail; t=1561814635;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references:openpgp:openpgp:autocrypt:autocrypt;
+        bh=QqTXtzyg2EecwjVnslryBBJzQRwdzLS4pErgFFoAMAg=;
+        b=H6WVbpcHJEI0fzQGaxalF5fhQ/9tWoJel0KPY3E+PjOFsVnWhb1f2SRb1WKccCG/qqGe9U
+        u2uXOB2h3UKm9LlXyESlPJpWWFZmh1bHS5amazjMieLF8h8FopNkGDXSVWm59rlxsZeQcw
+        nUXKWvEwzbbiW6BylfMU6658VKr0XQw=
+Cc:     netdev@vger.kernel.org
+References: <41ac3aa3-cbf7-1b7b-d847-1fb308334931@linuxlounge.net>
+ <E0170D52-C181-4F0F-B5F8-F1801C2A8F5A@cumulusnetworks.com>
+From:   Martin Weinelt <martin@linuxlounge.net>
+Openpgp: preference=signencrypt
+Autocrypt: addr=martin@linuxlounge.net; prefer-encrypt=mutual; keydata=
+ mQENBEv1rfkBCADFlzzmynjVg8L5ok/ef2Jxz8D96PtEAP//3U612b4QbHXzHC6+C2qmFEL6
+ 5kG1U1a7PPsEaS/A6K9AUpDhT7y6tX1IxAkSkdIEmIgWC5Pu2df4+xyWXarJfqlBeJ82biot
+ /qETntfo01wm0AtqfJzDh/BkUpQw0dbWBSnAF6LytoNEggIGnUGmzvCidrEEsTCO6YlHfKIH
+ cpz7iwgVZi4Ajtsky8v8P8P7sX0se/ce1L+qX/qN7TnXpcdVSfZpMnArTPkrmlJT4inBLhKx
+ UeDMQmHe+BQvATa21fhcqi3BPIMwIalzLqVSIvRmKY6oYdCbKLM2TZ5HmyJepusl2Gi3ABEB
+ AAG0J01hcnRpbiBXZWluZWx0IDxtYXJ0aW5AbGludXhsb3VuZ2UubmV0PokBWAQTAQoAQgIb
+ IwYLCQgHAwIGFQgCCQoLBBYCAwECHgECF4ACGQEWIQTu0BYCvL0ZbDi8mh+9SqBSj2PxfgUC
+ W/RuFQUJEd/znAAKCRC9SqBSj2PxfpfDCACDx6BYz6cGMiweQ96lXi+ihx7RBaXsfPp2KxUo
+ eHilrDPqknq62XJibCyNCJiYGNb+RUS5WfDUAqxdl4HuNxQMC/sYlbP4b7p9Y1Q9QiTP4f6M
+ 8+Uvpicin+9H/lye5hS/Gp2KUiVI/gzqW68WqMhARUYw00lVSlJHy+xHEGVuQ0vmeopjU81R
+ 0si4+HhMX2HtILTxoUcvm67AFKidTHYMJKwNyMHiLLvSK6wwiy+MXaiqrMVTwSIOQhLgLVcJ
+ 33GNJ2Emkgkhs6xcaiN8xTjxDmiU7b5lXW4JiAsd1rbKINajcA7DVlZ/evGfpN9FczyZ4W6F
+ Rf21CxSwtqv2SQHBuQENBEv1rfkBCADJX6bbb5LsXjdxDeFgqo+XRUvW0bzuS3SYNo0fuktM
+ 5WYMCX7TzoF556QU8A7C7bDUkT4THBUzfaA8ZKIuneYW2WN1OI0zRMpmWVeZcUQpXncWWKCg
+ LBNYtk9CCukPE0OpDFnbR+GhGd1KF/YyemYnzwW2f1NOtHjwT3iuYnzzZNlWoZAR2CRSD02B
+ YU87Mr2CMXrgG/pdRiaD+yBUG9RxCUkIWJQ5dcvgrsg81vOTj6OCp/47Xk/457O0pUFtySKS
+ jZkZN6S7YXl/t+8C9g7o3N58y/X95VVEw/G3KegUR2SwcLdok4HaxgOy5YHiC+qtGNZmDiQn
+ NXN7WIN/oof7ABEBAAGJATwEGAEKACYCGwwWIQTu0BYCvL0ZbDi8mh+9SqBSj2PxfgUCW/Ru
+ GAUJEd/znwAKCRC9SqBSj2PxfpzMCACH55MVYTVykq+CWj1WMKHex9iFg7M9DkWQCF/Zl+0v
+ QmyRMEMZnFW8GdX/Qgd4QbZMUTOGevGxFPTe4p0PPKqKEDXXXxTTHQETE/Hl0jJvyu+MgTxG
+ E9/KrWmsmQC7ogTFCHf0vvVY3UjWChOqRE19Buk4eYpMbuU1dYefLNcD15o4hGDhohYn3SJr
+ q9eaoO6rpnNIrNodeG+1vZYG1B2jpEdU4v354ziGcibt5835IONuVdvuZMFQJ4Pn2yyC+qJe
+ ekXwZ5f4JEt0lWD9YUxB2cU+xM9sbDcQ2b6+ypVFzMyfU0Q6LzYugAqajZ10gWKmeyjisgyq
+ sv5UJTKaOB/t
+Subject: Re: Use-after-free in br_multicast_rcv
+Message-ID: <18347ad7-a671-582d-3c6e-db148de685c1@linuxlounge.net>
+Date:   Sat, 29 Jun 2019 15:23:54 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+In-Reply-To: <E0170D52-C181-4F0F-B5F8-F1801C2A8F5A@cumulusnetworks.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-No reason to error out on a MT7621 device with DDR2 memory when non
-TRGMII mode is selected.
-Only MT7621 DDR2 clock setup is not supported for TRGMII mode.
-But non TRGMII mode doesn't need any special clock setup.
+On 6/29/19 3:11 PM, nikolay@cumulusnetworks.com wrote:
+> On 29 June 2019 14:54:44 EEST, Martin Weinelt <martin@linuxlounge.net> wrote:
+>> Hello,
+>>
+>> we've recently been experiencing memory leaks on our Linux-based
+>> routers,
+>> at least as far back as v4.19.16.
+>>
+>> After rebuilding with KASAN it found a use-after-free in 
+>> br_multicast_rcv which I could reproduce on v5.2.0-rc6. 
+>>
+>> Please find the KASAN report below, I'm anot sure what else to provide
+>> so
+>> feel free to ask.
+>>
+>> Best,
+>>  Martin
+>>
+>>
+> 
+> Hi Martin, 
+> I'll look into this, are there any specific steps to reproduce it? 
+> 
+> Thanks, 
+>    Nik
 
-Signed-off-by: René van Dorst <opensource@vdorst.com>
----
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+Hi Nik,
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 066712f2e985..b20b3a5a1ebb 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -139,9 +139,12 @@ static int mt7621_gmac0_rgmii_adjust(struct mtk_eth *eth,
- {
- 	u32 val;
- 
--	/* Check DDR memory type. Currently DDR2 is not supported. */
-+	/* Check DDR memory type.
-+	 * Currently TRGMII mode with DDR2 memory is not supported.
-+	 */
- 	regmap_read(eth->ethsys, ETHSYS_SYSCFG, &val);
--	if (val & SYSCFG_DRAM_TYPE_DDR2) {
-+	if (interface == PHY_INTERFACE_MODE_TRGMII &&
-+	    val & SYSCFG_DRAM_TYPE_DDR2) {
- 		dev_err(eth->dev,
- 			"TRGMII mode with DDR2 memory is not supported!\n");
- 		return -EOPNOTSUPP;
--- 
-2.20.1
+thanks for taking an interest. The setup is a public L2 mesh network
+based on the batman-adv kmod. The bridges see 100 Mbps+ of traffic most
+of the day and I unfortunately do not yet know what triggers this.
 
+
+Best,
+  Martin
+
+> 
+>> ==================================================================
+>> BUG: KASAN: use-after-free in br_multicast_rcv+0x480c/0x4ad0 [bridge]
+>> Read of size 2 at addr ffff8880421302b4 by task ksoftirqd/1/16
+>>
+>> CPU: 1 PID: 16 Comm: ksoftirqd/1 Tainted: G           OE     5.2.0-rc6+
+>> #1
+>> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1
+>> 04/01/2014
+>> Call Trace:
+>> dump_stack+0x71/0xab
+>> print_address_description+0x6a/0x280
+>> ? br_multicast_rcv+0x480c/0x4ad0 [bridge]
+>> __kasan_report+0x152/0x1aa
+>> ? br_multicast_rcv+0x480c/0x4ad0 [bridge]
+>> ? br_multicast_rcv+0x480c/0x4ad0 [bridge]
+>> kasan_report+0xe/0x20
+>> br_multicast_rcv+0x480c/0x4ad0 [bridge]
+>> ? br_multicast_disable_port+0x150/0x150 [bridge]
+>> ? ktime_get_with_offset+0xb4/0x150
+>> ? __kasan_kmalloc.constprop.6+0xa6/0xf0
+>> ? __netif_receive_skb+0x1b0/0x1b0
+>> ? br_fdb_update+0x10e/0x6e0 [bridge]
+>> ? br_handle_frame_finish+0x3c6/0x11d0 [bridge]
+>> br_handle_frame_finish+0x3c6/0x11d0 [bridge]
+>> ? br_pass_frame_up+0x3a0/0x3a0 [bridge]
+>> ? virtnet_probe+0x1c80/0x1c80 [virtio_net]
+>> br_handle_frame+0x731/0xd90 [bridge]
+>> ? select_idle_sibling+0x25/0x7d0
+>> ? br_handle_frame_finish+0x11d0/0x11d0 [bridge]
+>> __netif_receive_skb_core+0xced/0x2d70
+>> ? virtqueue_get_buf_ctx+0x230/0x1130 [virtio_ring]
+>> ? do_xdp_generic+0x20/0x20
+>> ? virtqueue_napi_complete+0x39/0x70 [virtio_net]
+>> ? virtnet_poll+0x94d/0xc78 [virtio_net]
+>> ? receive_buf+0x5120/0x5120 [virtio_net]
+>> ? __netif_receive_skb_one_core+0x97/0x1d0
+>> __netif_receive_skb_one_core+0x97/0x1d0
+>> ? __netif_receive_skb_core+0x2d70/0x2d70
+>> ? _raw_write_trylock+0x100/0x100
+>> ? __queue_work+0x41e/0xbe0
+>> process_backlog+0x19c/0x650
+>> ? _raw_read_lock_irq+0x40/0x40
+>> net_rx_action+0x71e/0xbc0
+>> ? __switch_to_asm+0x40/0x70
+>> ? napi_complete_done+0x360/0x360
+>> ? __switch_to_asm+0x34/0x70
+>> ? __switch_to_asm+0x40/0x70
+>> ? __schedule+0x85e/0x14d0
+>> __do_softirq+0x1db/0x5f9
+>> ? takeover_tasklets+0x5f0/0x5f0
+>> run_ksoftirqd+0x26/0x40
+>> smpboot_thread_fn+0x443/0x680
+>> ? sort_range+0x20/0x20
+>> ? schedule+0x94/0x210
+>> ? __kthread_parkme+0x78/0xf0
+>> ? sort_range+0x20/0x20
+>> kthread+0x2ae/0x3a0
+>> ? kthread_create_worker_on_cpu+0xc0/0xc0
+>> ret_from_fork+0x35/0x40
+>>
+>> The buggy address belongs to the page:
+>> page:ffffea0001084c00 refcount:0 mapcount:-128 mapping:0000000000000000
+>> index:0x0
+>> flags: 0xffffc000000000()
+>> raw: 00ffffc000000000 ffffea0000cfca08 ffffea0001098608
+>> 0000000000000000
+>> raw: 0000000000000000 0000000000000003 00000000ffffff7f
+>> 0000000000000000
+>> page dumped because: kasan: bad access detected
+>>
+>> Memory state around the buggy address:
+>> ffff888042130180: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+>> ffff888042130200: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+>>> ffff888042130280: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+>>                                     ^
+>> ffff888042130300: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+>> ffff888042130380: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+>> ==================================================================
+>> Disabling lock debugging due to kernel taint
+> 
+> 
