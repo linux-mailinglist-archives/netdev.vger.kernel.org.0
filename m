@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 390E45B098
-	for <lists+netdev@lfdr.de>; Sun, 30 Jun 2019 18:24:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9A625B09A
+	for <lists+netdev@lfdr.de>; Sun, 30 Jun 2019 18:24:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726769AbfF3QYD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Jun 2019 12:24:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52536 "EHLO mail.kernel.org"
+        id S1726811AbfF3QYH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Jun 2019 12:24:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52576 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726557AbfF3QYD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 30 Jun 2019 12:24:03 -0400
+        id S1726557AbfF3QYG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 30 Jun 2019 12:24:06 -0400
 Received: from localhost (unknown [37.142.3.125])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D4C1720673;
-        Sun, 30 Jun 2019 16:24:00 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0CA1020828;
+        Sun, 30 Jun 2019 16:24:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1561911841;
-        bh=iTIYmJLoBnHGzjWVtaIci5VRmhweR3hpsFeKvwEEZvs=;
+        s=default; t=1561911845;
+        bh=eMKAw6hO/FM8WHhjRwpO9rwUgAQFrJaAq6ai7mr3CJQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=levaDoXdY6truAr3jbxWHfcvD7h1opL6jJqVSgrISOC9bLr7BMpNU1M+A/06/SQBk
-         l1iGbr2zmrMbJ9qaoxS7STY4iF42fR2YU2R240EORcpMBCBKLYLJ7FihZ0mWlrfhVL
-         Bw623g/SVThxbevf7J9CCsnS4Rl0ZyJtK9T1l0uM=
+        b=2Ia+g7OtOyCqeB9kvnrB89nNST4+mwhAWLxPXnR3NDCOjjw+VYhdGqBfeP2NI1Yr+
+         lxdICETR1KBJnHASyvRSnK7OktXeHWgcZ8zEu9pNjYtI5BmYf6NwgHTH73exxbp2NL
+         Svm0pF/nEU9g/2mhqWI2xv25fl3Ks3/dUb2txmeE=
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@mellanox.com>
@@ -31,9 +31,9 @@ Cc:     Leon Romanovsky <leonro@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>,
         Yishai Hadas <yishaih@mellanox.com>,
         linux-netdev <netdev@vger.kernel.org>
-Subject: [PATCH mlx5-next v2 06/13] net/mlx5: Report EQE data upon CQ completion
-Date:   Sun, 30 Jun 2019 19:23:27 +0300
-Message-Id: <20190630162334.22135-7-leon@kernel.org>
+Subject: [PATCH mlx5-next v2 07/13] net/mlx5: Expose device definitions for object events
+Date:   Sun, 30 Jun 2019 19:23:28 +0300
+Message-Id: <20190630162334.22135-8-leon@kernel.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190630162334.22135-1-leon@kernel.org>
 References: <20190630162334.22135-1-leon@kernel.org>
@@ -46,160 +46,55 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yishai Hadas <yishaih@mellanox.com>
 
-Report EQE data upon CQ completion to let upper layers use this data.
+Expose an extra device definitions for objects events.
+
+It includes: object_type values for legacy objects and generic data
+header for any other object.
 
 Signed-off-by: Yishai Hadas <yishaih@mellanox.com>
 Acked-by: Saeed Mahameed <saeedm@mellanox.com>
 Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
 ---
- drivers/infiniband/hw/mlx5/cq.c                     | 2 +-
- drivers/infiniband/hw/mlx5/main.c                   | 2 +-
- drivers/infiniband/hw/mlx5/qp.c                     | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/cq.c        | 5 +++--
- drivers/net/ethernet/mellanox/mlx5/core/en.h        | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c   | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/eq.c        | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/fpga/conn.c | 3 ++-
- include/linux/mlx5/cq.h                             | 4 ++--
- 9 files changed, 13 insertions(+), 11 deletions(-)
+ include/linux/mlx5/mlx5_ifc.h | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-diff --git a/drivers/infiniband/hw/mlx5/cq.c b/drivers/infiniband/hw/mlx5/cq.c
-index 857a554e2c29..6ff984db9e24 100644
---- a/drivers/infiniband/hw/mlx5/cq.c
-+++ b/drivers/infiniband/hw/mlx5/cq.c
-@@ -37,7 +37,7 @@
- #include "mlx5_ib.h"
- #include "srq.h"
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index 3ef716c054c2..5d2bf91e130b 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -91,6 +91,20 @@ enum {
  
--static void mlx5_ib_cq_comp(struct mlx5_core_cq *cq)
-+static void mlx5_ib_cq_comp(struct mlx5_core_cq *cq, struct mlx5_eqe *eqe)
- {
- 	struct ib_cq *ibcq = &to_mibcq(cq)->ibcq;
+ enum {
+ 	MLX5_OBJ_TYPE_GENEVE_TLV_OPT = 0x000b,
++	MLX5_OBJ_TYPE_MKEY = 0xff01,
++	MLX5_OBJ_TYPE_QP = 0xff02,
++	MLX5_OBJ_TYPE_PSV = 0xff03,
++	MLX5_OBJ_TYPE_RMP = 0xff04,
++	MLX5_OBJ_TYPE_XRC_SRQ = 0xff05,
++	MLX5_OBJ_TYPE_RQ = 0xff06,
++	MLX5_OBJ_TYPE_SQ = 0xff07,
++	MLX5_OBJ_TYPE_TIR = 0xff08,
++	MLX5_OBJ_TYPE_TIS = 0xff09,
++	MLX5_OBJ_TYPE_DCT = 0xff0a,
++	MLX5_OBJ_TYPE_XRQ = 0xff0b,
++	MLX5_OBJ_TYPE_RQT = 0xff0e,
++	MLX5_OBJ_TYPE_FLOW_COUNTER = 0xff0f,
++	MLX5_OBJ_TYPE_CQ = 0xff10,
+ };
  
-diff --git a/drivers/infiniband/hw/mlx5/main.c b/drivers/infiniband/hw/mlx5/main.c
-index 6686f8f876f0..23997f744586 100644
---- a/drivers/infiniband/hw/mlx5/main.c
-+++ b/drivers/infiniband/hw/mlx5/main.c
-@@ -4463,7 +4463,7 @@ static void mlx5_ib_handle_internal_error(struct mlx5_ib_dev *ibdev)
- 	 * lock/unlock above locks Now need to arm all involved CQs.
- 	 */
- 	list_for_each_entry(mcq, &cq_armed_list, reset_notify) {
--		mcq->comp(mcq);
-+		mcq->comp(mcq, NULL);
- 	}
- 	spin_unlock_irqrestore(&ibdev->reset_flow_resource_lock, flags);
- }
-diff --git a/drivers/infiniband/hw/mlx5/qp.c b/drivers/infiniband/hw/mlx5/qp.c
-index 42375cdafd53..2a97619ed603 100644
---- a/drivers/infiniband/hw/mlx5/qp.c
-+++ b/drivers/infiniband/hw/mlx5/qp.c
-@@ -6406,7 +6406,7 @@ static void handle_drain_completion(struct ib_cq *cq,
- 		/* Run the CQ handler - this makes sure that the drain WR will
- 		 * be processed if wasn't processed yet.
- 		 */
--		mcq->mcq.comp(&mcq->mcq);
-+		mcq->mcq.comp(&mcq->mcq, NULL);
- 	}
+ enum {
+@@ -9755,4 +9769,11 @@ struct mlx5_ifc_query_esw_functions_out_bits {
+ 	u8         reserved_at_280[0x180];
+ };
  
- 	wait_for_completion(&sdrain->done);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/cq.c b/drivers/net/ethernet/mellanox/mlx5/core/cq.c
-index 1bd4336392a2..818edc63e428 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/cq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/cq.c
-@@ -58,7 +58,7 @@ void mlx5_cq_tasklet_cb(unsigned long data)
- 	list_for_each_entry_safe(mcq, temp, &ctx->process_list,
- 				 tasklet_ctx.list) {
- 		list_del_init(&mcq->tasklet_ctx.list);
--		mcq->tasklet_ctx.comp(mcq);
-+		mcq->tasklet_ctx.comp(mcq, NULL);
- 		mlx5_cq_put(mcq);
- 		if (time_after(jiffies, end))
- 			break;
-@@ -68,7 +68,8 @@ void mlx5_cq_tasklet_cb(unsigned long data)
- 		tasklet_schedule(&ctx->task);
- }
- 
--static void mlx5_add_cq_to_tasklet(struct mlx5_core_cq *cq)
-+static void mlx5_add_cq_to_tasklet(struct mlx5_core_cq *cq,
-+				   struct mlx5_eqe *eqe)
- {
- 	unsigned long flags;
- 	struct mlx5_eq_tasklet *tasklet_ctx = cq->tasklet_ctx.priv;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index c6a8b615b56d..e7b337998547 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -781,7 +781,7 @@ netdev_tx_t mlx5e_sq_xmit(struct mlx5e_txqsq *sq, struct sk_buff *skb,
- 			  struct mlx5e_tx_wqe *wqe, u16 pi, bool xmit_more);
- 
- void mlx5e_trigger_irq(struct mlx5e_icosq *sq);
--void mlx5e_completion_event(struct mlx5_core_cq *mcq);
-+void mlx5e_completion_event(struct mlx5_core_cq *mcq, struct mlx5_eqe *eqe);
- void mlx5e_cq_error_event(struct mlx5_core_cq *mcq, enum mlx5_event event);
- int mlx5e_napi_poll(struct napi_struct *napi, int budget);
- bool mlx5e_poll_tx_cq(struct mlx5e_cq *cq, int napi_budget);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-index e6c434efbd46..1c021a299baa 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-@@ -134,7 +134,7 @@ int mlx5e_napi_poll(struct napi_struct *napi, int budget)
- 	return work_done;
- }
- 
--void mlx5e_completion_event(struct mlx5_core_cq *mcq)
-+void mlx5e_completion_event(struct mlx5_core_cq *mcq, struct mlx5_eqe *eqe)
- {
- 	struct mlx5e_cq *cq = container_of(mcq, struct mlx5e_cq, mcq);
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-index 678454535460..41f25ea2e8d9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-@@ -153,7 +153,7 @@ static int mlx5_eq_comp_int(struct notifier_block *nb,
- 		cq = mlx5_eq_cq_get(eq, cqn);
- 		if (likely(cq)) {
- 			++cq->arm_sn;
--			cq->comp(cq);
-+			cq->comp(cq, eqe);
- 			mlx5_cq_put(cq);
- 		} else {
- 			mlx5_core_warn(eq->dev, "Completion event for bogus CQ 0x%x\n", cqn);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fpga/conn.c b/drivers/net/ethernet/mellanox/mlx5/core/fpga/conn.c
-index dc7b9d9f274d..028891823f32 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fpga/conn.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fpga/conn.c
-@@ -414,7 +414,8 @@ static void mlx5_fpga_conn_cq_tasklet(unsigned long data)
- 	mlx5_fpga_conn_cqes(conn, MLX5_FPGA_CQ_BUDGET);
- }
- 
--static void mlx5_fpga_conn_cq_complete(struct mlx5_core_cq *mcq)
-+static void mlx5_fpga_conn_cq_complete(struct mlx5_core_cq *mcq,
-+				       struct mlx5_eqe *eqe)
- {
- 	struct mlx5_fpga_conn *conn;
- 
-diff --git a/include/linux/mlx5/cq.h b/include/linux/mlx5/cq.h
-index e44157a2b7db..40748fc1b11b 100644
---- a/include/linux/mlx5/cq.h
-+++ b/include/linux/mlx5/cq.h
-@@ -47,7 +47,7 @@ struct mlx5_core_cq {
- 	struct completion	free;
- 	unsigned		vector;
- 	unsigned int		irqn;
--	void (*comp)		(struct mlx5_core_cq *);
-+	void (*comp)(struct mlx5_core_cq *cq, struct mlx5_eqe *eqe);
- 	void (*event)		(struct mlx5_core_cq *, enum mlx5_event);
- 	u32			cons_index;
- 	unsigned		arm_sn;
-@@ -55,7 +55,7 @@ struct mlx5_core_cq {
- 	int			pid;
- 	struct {
- 		struct list_head list;
--		void (*comp)(struct mlx5_core_cq *);
-+		void (*comp)(struct mlx5_core_cq *cq, struct mlx5_eqe *eqe);
- 		void		*priv;
- 	} tasklet_ctx;
- 	int			reset_notify_added;
++struct mlx5_ifc_affiliated_event_header_bits {
++	u8         reserved_at_0[0x10];
++	u8         obj_type[0x10];
++
++	u8         obj_id[0x20];
++};
++
+ #endif /* MLX5_IFC_H */
 -- 
 2.20.1
 
