@@ -2,120 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 16A405B0A6
-	for <lists+netdev@lfdr.de>; Sun, 30 Jun 2019 18:24:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 708515B0A9
+	for <lists+netdev@lfdr.de>; Sun, 30 Jun 2019 18:26:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726963AbfF3QYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Jun 2019 12:24:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52826 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726557AbfF3QYi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 30 Jun 2019 12:24:38 -0400
-Received: from localhost (unknown [37.142.3.125])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0349D20673;
-        Sun, 30 Jun 2019 16:24:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1561911877;
-        bh=lrcUkJ0Gtd6UBipS+mjdKit61DI16L9TqW5YQFOiF9U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pFPop87xQicuVwF+Ny5ONko4h1TH/4+iZmOvOup7A28RlHOF01lSnkR1kFXJidTdf
-         6s7K75r3+MhBejcRsJ80z2HtNjClvgMEU2wa9/TBituRYvt1ofQ/qEUa7/g68KT21m
-         hQJk0nig2MCIrFC/o75HtVq59Y1lJJ90TVYxjDDs=
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@mellanox.com>
-Cc:     Leon Romanovsky <leonro@mellanox.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Yishai Hadas <yishaih@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: [PATCH rdma-next v2 13/13] IB/mlx5: DEVX cleanup mdev
-Date:   Sun, 30 Jun 2019 19:23:34 +0300
-Message-Id: <20190630162334.22135-14-leon@kernel.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190630162334.22135-1-leon@kernel.org>
-References: <20190630162334.22135-1-leon@kernel.org>
+        id S1726647AbfF3QZ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Jun 2019 12:25:58 -0400
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:42200 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726557AbfF3QZ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Jun 2019 12:25:58 -0400
+Received: by mail-lj1-f196.google.com with SMTP id t28so10545963lje.9
+        for <netdev@vger.kernel.org>; Sun, 30 Jun 2019 09:25:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=0c2fo/z1d7POAVm35sVPDhPi3YhySRy0dSUq7hcCsyI=;
+        b=VMWUSoZrOXLjsDGFMajsASN3YyaakWDCMbknsCmQwYDGvLsxwNjTORMqCKuEuWphmU
+         7ArkKPFS+NXAVfnTLx3mfJWY1cuLJ/yTH/QErxr3A/xbCdEjcuLiOYyulXr6tpSOgOSw
+         RaajUih82bjfnBBBKiMyL+Xb8opNk9P3ZxEU4f1NtNpRnmEN4tcmXw659S62az7riKP7
+         Yo4RaWkJ14e74MbkAelCDwLV9jvw6JUaimsl3SSED9oyfiZu/TAbTU/8fpWtY4uO5rGG
+         R5Zyyb1NcFSMTyMOTWtSta/QIGGNVyoR1MqrHS11GuFPvc5mYplcCG1RElKukPOcYqyQ
+         3YPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=0c2fo/z1d7POAVm35sVPDhPi3YhySRy0dSUq7hcCsyI=;
+        b=ER9cG6pTKQ7E6c9qerLca/JF8IVKXIvSgbAysihgtHPcYFhBfjMsmD0Egvvj4IL7pp
+         7ZzfAi+DDTwdC7qijuZNIjPi1a76kEa3m5CtQUt5z3k2faYaHNEb5f0BUHiKZYunhrbT
+         4IfV7EufVglBvMC2/e2NehUOSD5F3yKVZKNuWtKO/cUxnOuRQ94nk7bDhPxJbm7HfVxE
+         sm4p+FqhdFhdfwygNzGtFkpVUR49c9h7t3sUZ6m5qiunEndmxBjtL0CoQDKaxnwvCvlV
+         cXImQmzjUi4JXDE43FyfvkmMfN7f/c1u2c9Is47vt7S/A8g6ozqqtXV01myt00WrN6gz
+         B5xg==
+X-Gm-Message-State: APjAAAWQjm5ZLItkhUw++2UHxSHFjlthz2Eu1SFkPsqUTCrEn+Wzug2y
+        0eMTyj9DghVGguAe1CikvTNvTA==
+X-Google-Smtp-Source: APXvYqwNqkrbZXGZxpHPV+cBoIpHWUqU+T13OxMc6h6z/+cAqoqIaVhq7u+4zbP56ewa7TWZZesjGw==
+X-Received: by 2002:a05:651c:95:: with SMTP id 21mr11823134ljq.128.1561911956619;
+        Sun, 30 Jun 2019 09:25:56 -0700 (PDT)
+Received: from khorivan (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
+        by smtp.gmail.com with ESMTPSA id q2sm2153772lfj.25.2019.06.30.09.25.55
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Sun, 30 Jun 2019 09:25:56 -0700 (PDT)
+Date:   Sun, 30 Jun 2019 19:25:53 +0300
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     netdev@vger.kernel.org, jaswinder.singh@linaro.org,
+        ard.biesheuvel@linaro.org, bjorn.topel@intel.com,
+        magnus.karlsson@intel.com, brouer@redhat.com, daniel@iogearbox.net,
+        ast@kernel.org, makita.toshiaki@lab.ntt.co.jp,
+        jakub.kicinski@netronome.com, john.fastabend@gmail.com,
+        davem@davemloft.net, maciejromanfijalkowski@gmail.com
+Subject: Re: [net-next, PATCH 3/3, v2] net: netsec: add XDP support
+Message-ID: <20190630162552.GB12704@khorivan>
+References: <1561785805-21647-1-git-send-email-ilias.apalodimas@linaro.org>
+ <1561785805-21647-4-git-send-email-ilias.apalodimas@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <1561785805-21647-4-git-send-email-ilias.apalodimas@linaro.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yishai Hadas <yishaih@mellanox.com>
+On Sat, Jun 29, 2019 at 08:23:25AM +0300, Ilias Apalodimas wrote:
+>The interface only supports 1 Tx queue so locking is introduced on
+>the Tx queue if XDP is enabled to make sure .ndo_start_xmit and
+>.ndo_xdp_xmit won't corrupt Tx ring
+>
+>- Performance (SMMU off)
+>
+>Benchmark   XDP_SKB     XDP_DRV
+>xdp1        291kpps     344kpps
+>rxdrop      282kpps     342kpps
+>
+>- Performance (SMMU on)
+>Benchmark   XDP_SKB     XDP_DRV
+>xdp1        167kpps     324kpps
+>rxdrop      164kpps     323kpps
+>
+>Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+>---
+> drivers/net/ethernet/socionext/netsec.c | 361 ++++++++++++++++++++++--
+> 1 file changed, 334 insertions(+), 27 deletions(-)
+>
 
-No need any more to hold mlx5_core_dev on the devx_object, it can be
-accessed from ib_dev.
+[...]
 
-Signed-off-by: Yishai Hadas <yishaih@mellanox.com>
-Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
----
- drivers/infiniband/hw/mlx5/devx.c | 18 ++++++++----------
- 1 file changed, 8 insertions(+), 10 deletions(-)
+>+
+>+static int netsec_xdp_setup(struct netsec_priv *priv, struct bpf_prog *prog,
+>+			    struct netlink_ext_ack *extack)
+>+{
+>+	struct net_device *dev = priv->ndev;
+>+	struct bpf_prog *old_prog;
+>+
+>+	/* For now just support only the usual MTU sized frames */
+>+	if (prog && dev->mtu > 1500) {
+>+		NL_SET_ERR_MSG_MOD(extack, "Jumbo frames not supported on XDP");
+>+		return -EOPNOTSUPP;
+>+	}
+>+
+>+	if (netif_running(dev))
+>+		netsec_netdev_stop(dev);
+And why to stop the interface. XDP allows to update prog in runtime.
 
-diff --git a/drivers/infiniband/hw/mlx5/devx.c b/drivers/infiniband/hw/mlx5/devx.c
-index 38064f4bfdf6..cb4f0fc79176 100644
---- a/drivers/infiniband/hw/mlx5/devx.c
-+++ b/drivers/infiniband/hw/mlx5/devx.c
-@@ -91,7 +91,6 @@ struct devx_async_event_file {
- 
- #define MLX5_MAX_DESTROY_INBOX_SIZE_DW MLX5_ST_SZ_DW(delete_fte_in)
- struct devx_obj {
--	struct mlx5_core_dev	*mdev;
- 	struct mlx5_ib_dev	*ib_dev;
- 	u64			obj_id;
- 	u32			dinlen; /* destroy inbox length */
-@@ -1297,7 +1296,7 @@ static void devx_free_indirect_mkey(struct rcu_head *rcu)
-  */
- static void devx_cleanup_mkey(struct devx_obj *obj)
- {
--	struct mlx5_mkey_table *table = &obj->mdev->priv.mkey_table;
-+	struct mlx5_mkey_table *table = &obj->ib_dev->mdev->priv.mkey_table;
- 	unsigned long flags;
- 
- 	write_lock_irqsave(&table->lock, flags);
-@@ -1350,12 +1349,12 @@ static int devx_obj_cleanup(struct ib_uobject *uobject,
- 		devx_cleanup_mkey(obj);
- 
- 	if (obj->flags & DEVX_OBJ_FLAGS_DCT)
--		ret = mlx5_core_destroy_dct(obj->mdev, &obj->core_dct);
-+		ret = mlx5_core_destroy_dct(obj->ib_dev->mdev, &obj->core_dct);
- 	else if (obj->flags & DEVX_OBJ_FLAGS_CQ)
--		ret = mlx5_core_destroy_cq(obj->mdev, &obj->core_cq);
-+		ret = mlx5_core_destroy_cq(obj->ib_dev->mdev, &obj->core_cq);
- 	else
--		ret = mlx5_cmd_exec(obj->mdev, obj->dinbox, obj->dinlen, out,
--				    sizeof(out));
-+		ret = mlx5_cmd_exec(obj->ib_dev->mdev, obj->dinbox,
-+				    obj->dinlen, out, sizeof(out));
- 	if (ib_is_destroy_retryable(ret, why, uobject))
- 		return ret;
- 
-@@ -1466,7 +1465,6 @@ static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_OBJ_CREATE)(
- 		goto obj_free;
- 
- 	uobj->object = obj;
--	obj->mdev = dev->mdev;
- 	INIT_LIST_HEAD(&obj->event_sub);
- 	obj->ib_dev = dev;
- 	devx_obj_build_destroy_cmd(cmd_in, cmd_out, obj->dinbox, &obj->dinlen,
-@@ -1495,11 +1493,11 @@ static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_OBJ_CREATE)(
- 		devx_cleanup_mkey(obj);
- obj_destroy:
- 	if (obj->flags & DEVX_OBJ_FLAGS_DCT)
--		mlx5_core_destroy_dct(obj->mdev, &obj->core_dct);
-+		mlx5_core_destroy_dct(obj->ib_dev->mdev, &obj->core_dct);
- 	else if (obj->flags & DEVX_OBJ_FLAGS_CQ)
--		mlx5_core_destroy_cq(obj->mdev, &obj->core_cq);
-+		mlx5_core_destroy_cq(obj->ib_dev->mdev, &obj->core_cq);
- 	else
--		mlx5_cmd_exec(obj->mdev, obj->dinbox, obj->dinlen, out,
-+		mlx5_cmd_exec(obj->ib_dev->mdev, obj->dinbox, obj->dinlen, out,
- 			      sizeof(out));
- obj_free:
- 	kfree(obj);
+>+
+>+	/* Detach old prog, if any */
+>+	old_prog = xchg(&priv->xdp_prog, prog);
+>+	if (old_prog)
+>+		bpf_prog_put(old_prog);
+>+
+>+	if (netif_running(dev))
+>+		netsec_netdev_open(dev);
+>+
+>+	return 0;
+>+}
+>+
+>+static int netsec_xdp(struct net_device *ndev, struct netdev_bpf *xdp)
+>+{
+>+	struct netsec_priv *priv = netdev_priv(ndev);
+>+
+>+	switch (xdp->command) {
+>+	case XDP_SETUP_PROG:
+>+		return netsec_xdp_setup(priv, xdp->prog, xdp->extack);
+>+	case XDP_QUERY_PROG:
+>+		xdp->prog_id = priv->xdp_prog ? priv->xdp_prog->aux->id : 0;
+>+		return 0;
+>+	default:
+>+		return -EINVAL;
+>+	}
+>+}
+>+
+> static const struct net_device_ops netsec_netdev_ops = {
+> 	.ndo_init		= netsec_netdev_init,
+> 	.ndo_uninit		= netsec_netdev_uninit,
+>@@ -1537,6 +1842,8 @@ static const struct net_device_ops netsec_netdev_ops = {
+> 	.ndo_set_mac_address    = eth_mac_addr,
+> 	.ndo_validate_addr	= eth_validate_addr,
+> 	.ndo_do_ioctl		= netsec_netdev_ioctl,
+>+	.ndo_xdp_xmit		= netsec_xdp_xmit,
+>+	.ndo_bpf		= netsec_xdp,
+> };
+>
+> static int netsec_of_probe(struct platform_device *pdev,
+>-- 
+>2.20.1
+>
+
 -- 
-2.20.1
-
+Regards,
+Ivan Khoronzhuk
