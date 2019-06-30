@@ -2,160 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EE86E5ADDD
-	for <lists+netdev@lfdr.de>; Sun, 30 Jun 2019 02:32:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1593C5ADDE
+	for <lists+netdev@lfdr.de>; Sun, 30 Jun 2019 02:33:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726961AbfF3AcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jun 2019 20:32:12 -0400
-Received: from mail-eopbgr80082.outbound.protection.outlook.com ([40.107.8.82]:49085
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726952AbfF3AcM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 29 Jun 2019 20:32:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+CuV7FV+5ZfTNZixnzmdi/OyhjL7LvTIKS3rpPAWtqw=;
- b=KcYtI2klo8/JTqNbqC3JioIqcG3jfWUHltf+g/4cWRBYR3zkCueieQhriBCLHWVURGdrncNYn0xDPAVsgvMgBqgJk1wpDLeCNbE+hEgCAu3/xPIjFH/9CXt2ybayzsftiHmvrxEL6y52sQUgiAhyapgrcpJH7MsrvrKvfqstUuk=
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (10.171.182.144) by
- VI1PR05MB4944.eurprd05.prod.outlook.com (20.177.51.29) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2032.18; Sun, 30 Jun 2019 00:32:08 +0000
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::f5d8:df9:731:682e]) by VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::f5d8:df9:731:682e%5]) with mapi id 15.20.2032.019; Sun, 30 Jun 2019
- 00:32:08 +0000
-From:   Jason Gunthorpe <jgg@mellanox.com>
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     Doug Ledford <dledford@redhat.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Majd Dibbiny <majd@mellanox.com>,
-        Mark Zhang <markz@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH rdma-next v4 06/17] RDMA/counter: Add "auto" configuration
- mode support
-Thread-Topic: [PATCH rdma-next v4 06/17] RDMA/counter: Add "auto"
- configuration mode support
-Thread-Index: AQHVJfsE3tKh9oGpaUGuOuzrE5Gb8Kazan8A
-Date:   Sun, 30 Jun 2019 00:32:08 +0000
-Message-ID: <20190630003200.GA7173@mellanox.com>
-References: <20190618172625.13432-1-leon@kernel.org>
- <20190618172625.13432-7-leon@kernel.org>
-In-Reply-To: <20190618172625.13432-7-leon@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MN2PR01CA0006.prod.exchangelabs.com (2603:10b6:208:10c::19)
- To VI1PR05MB4141.eurprd05.prod.outlook.com (2603:10a6:803:4d::16)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=jgg@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [156.34.55.100]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 59d54927-0236-4345-328f-08d6fcf26208
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR05MB4944;
-x-ms-traffictypediagnostic: VI1PR05MB4944:
-x-microsoft-antispam-prvs: <VI1PR05MB49440572A6068FBFE3FB7842CFFE0@VI1PR05MB4944.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 008421A8FF
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(136003)(366004)(346002)(39860400002)(376002)(199004)(189003)(25786009)(68736007)(8676002)(36756003)(305945005)(7736002)(53936002)(1076003)(6916009)(478600001)(6246003)(8936002)(71190400001)(71200400001)(3846002)(73956011)(2906002)(99286004)(6116002)(5660300002)(66556008)(64756008)(66476007)(316002)(66446008)(54906003)(66946007)(4326008)(14454004)(66066001)(81156014)(33656002)(6486002)(6512007)(86362001)(26005)(256004)(6506007)(386003)(446003)(76176011)(11346002)(486006)(186003)(102836004)(81166006)(229853002)(52116002)(2616005)(476003)(6436002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4944;H:VI1PR05MB4141.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: ZXeDRSTRs9TjuU8KBTlKqZ/JcX/gMjthPcE2WFLk2eT2f4hmxvU/k9zzeLvrdiyfirK0FeUNq+NKvcEHChHiRo3SIMBNVk+hl3huJugg1U2EWTnhiBGc1Ha0BgitTm20Fy0h3NUgOXc25T5JZNJrNvB+cgcdZrEeYDfu3eXFRFczAJpT+axQQPdTCa7/eMUjKTmVkEXpdvKKPWIov+EPT+jz0Da0CZeQvaBbesqqv0GmBh+tIp8Vsdj2zszN6fAbHAuFo0c1UNA827Uz2NwEWCsM2xz7lOVw6CxyWahwCULAd7GRmpffPbxmQQmo9dzzIcqcOHvZQBejQp7cRRb3PcZH7LBMzJKs3btSwxb5/1LldT4Jn855HV3mtV4NiEnW4kg+DgXF9ebiEjQx3au6EyiZEFBy73RWL7fZL7DvnXA=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3B0F99AFCC5F4B44A12EFD058D50D00C@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1726966AbfF3Adb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jun 2019 20:33:31 -0400
+Received: from relay10.mail.gandi.net ([217.70.178.230]:56301 "EHLO
+        relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726952AbfF3Adb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Jun 2019 20:33:31 -0400
+Received: from mail-ua1-f43.google.com (mail-ua1-f43.google.com [209.85.222.43])
+        (Authenticated sender: pshelar@ovn.org)
+        by relay10.mail.gandi.net (Postfix) with ESMTPSA id 239A4240002
+        for <netdev@vger.kernel.org>; Sun, 30 Jun 2019 00:33:26 +0000 (UTC)
+Received: by mail-ua1-f43.google.com with SMTP id c4so3674267uad.1
+        for <netdev@vger.kernel.org>; Sat, 29 Jun 2019 17:33:26 -0700 (PDT)
+X-Gm-Message-State: APjAAAVjnmo1PqoYa7EHz5k9UChJxWG3RmZUtt/hDTKl4dGINApPTTNT
+        Y2eJHtkKPXJ+pGmy2hsVPheNPgk1p9gGyloqY+s=
+X-Google-Smtp-Source: APXvYqwCP+V5F9oX4+/tUCUatdTPQjsT8iISpGlHuAHLmL2ZH1GuTNurup4rWgYxMVHHw49gM2QMgqWBKxCTWcNdTy8=
+X-Received: by 2002:ab0:699a:: with SMTP id t26mr9795246uaq.70.1561854805022;
+ Sat, 29 Jun 2019 17:33:25 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 59d54927-0236-4345-328f-08d6fcf26208
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Jun 2019 00:32:08.1250
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: jgg@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4944
+References: <1561642650-1974-1-git-send-email-john.hurley@netronome.com>
+In-Reply-To: <1561642650-1974-1-git-send-email-john.hurley@netronome.com>
+From:   Pravin Shelar <pshelar@ovn.org>
+Date:   Sat, 29 Jun 2019 17:33:18 -0700
+X-Gmail-Original-Message-ID: <CAOrHB_Bo2hbu6od6ixsyiJOoJiJKFJRbUek+NeN-dgyt-grV-g@mail.gmail.com>
+Message-ID: <CAOrHB_Bo2hbu6od6ixsyiJOoJiJKFJRbUek+NeN-dgyt-grV-g@mail.gmail.com>
+Subject: Re: [PATCH net 1/1] net: openvswitch: fix csum updates for MPLS actions
+To:     John Hurley <john.hurley@netronome.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Simon Horman <simon.horman@netronome.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        oss-drivers@netronome.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 18, 2019 at 08:26:14PM +0300, Leon Romanovsky wrote:
+On Thu, Jun 27, 2019 at 6:37 AM John Hurley <john.hurley@netronome.com> wrote:
+>
+> Skbs may have their checksum value populated by HW. If this is a checksum
+> calculated over the entire packet then the CHECKSUM_COMPLETE field is
+> marked. Changes to the data pointer on the skb throughout the network
+> stack still try to maintain this complete csum value if it is required
+> through functions such as skb_postpush_rcsum.
+>
+> The MPLS actions in Open vSwitch modify a CHECKSUM_COMPLETE value when
+> changes are made to packet data without a push or a pull. This occurs when
+> the ethertype of the MAC header is changed or when MPLS lse fields are
+> modified.
+>
+> The modification is carried out using the csum_partial function to get the
+> csum of a buffer and add it into the larger checksum. The buffer is an
+> inversion of the data to be removed followed by the new data. Because the
+> csum is calculated over 16 bits and these values align with 16 bits, the
+> effect is the removal of the old value from the CHECKSUM_COMPLETE and
+> addition of the new value.
+>
+> However, the csum fed into the function and the outcome of the
+> calculation are also inverted. This would only make sense if it was the
+> new value rather than the old that was inverted in the input buffer.
+>
+> Fix the issue by removing the bit inverts in the csum_partial calculation.
+>
+> The bug was verified and the fix tested by comparing the folded value of
+> the updated CHECKSUM_COMPLETE value with the folded value of a full
+> software checksum calculation (reset skb->csum to 0 and run
+> skb_checksum_complete(skb)). Prior to the fix the outcomes differed but
+> after they produce the same result.
+>
+> Fixes: 25cd9ba0abc0 ("openvswitch: Add basic MPLS support to kernel")
+> Fixes: bc7cc5999fd3 ("openvswitch: update checksum in {push,pop}_mpls")
+> Signed-off-by: John Hurley <john.hurley@netronome.com>
+> Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Reviewed-by: Simon Horman <simon.horman@netronome.com>
+> ---
 
-> +/**
-> + * rdma_counter_bind_qp_auto - Check and bind the QP to a counter base o=
-n
-> + *   the auto-mode rule
-> + */
-> +int rdma_counter_bind_qp_auto(struct ib_qp *qp, u8 port)
-> +{
-> +	struct rdma_port_counter *port_counter;
-> +	struct ib_device *dev =3D qp->device;
-> +	struct rdma_counter *counter;
-> +	int ret;
-> +
-> +	if (!rdma_is_port_valid(dev, port))
-> +		return -EINVAL;
-> +
-> +	port_counter =3D &dev->port_data[port].port_counter;
-> +	if (port_counter->mode.mode !=3D RDMA_COUNTER_MODE_AUTO)
-> +		return 0;
-> +
-> +	counter =3D rdma_get_counter_auto_mode(qp, port);
-> +	if (counter) {
-> +		ret =3D __rdma_counter_bind_qp(counter, qp);
-> +		if (ret) {
-> +			rdma_restrack_put(&counter->res);
-> +			return ret;
-> +		}
-> +		kref_get(&counter->kref);
+Thanks for fixing it.
+Acked-by: Pravin B Shelar <pshelar@ovn.org>
 
-The counter is left in the xarray while the kref is zero, this
-kref_get is wrong..
-
-Using two kref like things at the same time is a bad idea, the
-'rdma_get_counter_auto_mode' should return the kref held, not the
-restrack get. The restrack_del doesn't happen as long as the kref is
-positive, so we don't need the retrack thing here..
-
-> +	} else {
-> +		counter =3D rdma_counter_alloc(dev, port, RDMA_COUNTER_MODE_AUTO);
-> +		if (!counter)
-> +			return -ENOMEM;
-> +
-> +		auto_mode_init_counter(counter, qp, port_counter->mode.mask);
-> +
-> +		ret =3D __rdma_counter_bind_qp(counter, qp);
-> +		if (ret)
-> +			goto err_bind;
-> +
-> +		rdma_counter_res_add(counter, qp);
-> +		if (!rdma_restrack_get(&counter->res)) {
-> +			ret =3D -EINVAL;
-> +			goto err_get;
-> +		}
-
-and this shouldn't be needed as the kref is inited to 1 by the
-rdma_counter_alloc..
-
-> +	}
-> +
-> +	return 0;
-> +
-> +err_get:
-> +	 __rdma_counter_unbind_qp(qp);
-> +	__rdma_counter_dealloc(counter);
-> +err_bind:
-> +	rdma_counter_free(counter);
-> +	return ret;
-> +}
-
-And then all this error unwind and all the twisty __ functions should
-just be a single kref_put and the release should handle everything.
-
-Jason
+>  net/openvswitch/actions.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+>
+> diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
+> index 151518d..bd13146 100644
+> --- a/net/openvswitch/actions.c
+> +++ b/net/openvswitch/actions.c
+> @@ -166,8 +166,7 @@ static void update_ethertype(struct sk_buff *skb, struct ethhdr *hdr,
+>         if (skb->ip_summed == CHECKSUM_COMPLETE) {
+>                 __be16 diff[] = { ~(hdr->h_proto), ethertype };
+>
+> -               skb->csum = ~csum_partial((char *)diff, sizeof(diff),
+> -                                       ~skb->csum);
+> +               skb->csum = csum_partial((char *)diff, sizeof(diff), skb->csum);
+>         }
+>
+>         hdr->h_proto = ethertype;
+> @@ -259,8 +258,7 @@ static int set_mpls(struct sk_buff *skb, struct sw_flow_key *flow_key,
+>         if (skb->ip_summed == CHECKSUM_COMPLETE) {
+>                 __be32 diff[] = { ~(stack->label_stack_entry), lse };
+>
+> -               skb->csum = ~csum_partial((char *)diff, sizeof(diff),
+> -                                         ~skb->csum);
+> +               skb->csum = csum_partial((char *)diff, sizeof(diff), skb->csum);
+>         }
+>
+>         stack->label_stack_entry = lse;
+> --
+> 2.7.4
+>
