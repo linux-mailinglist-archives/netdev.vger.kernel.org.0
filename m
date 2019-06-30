@@ -2,86 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 373705ADD8
-	for <lists+netdev@lfdr.de>; Sun, 30 Jun 2019 02:14:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE86E5ADDD
+	for <lists+netdev@lfdr.de>; Sun, 30 Jun 2019 02:32:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726964AbfF3AO2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Jun 2019 20:14:28 -0400
-Received: from mout.web.de ([217.72.192.78]:41609 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726956AbfF3AO1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 29 Jun 2019 20:14:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1561853655;
-        bh=y0nA3tXsogstQ27IaLUCm30ZweAG3NlBkIABrgw/ptg=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=J6MP+C8mpQ4A/GD1lRN1fOi0LcabqjXyu61SMMvPyfhM/p6rPDBdunQXLbstsW2+d
-         gYj/buEPWXUSLqi9MkCJZv+KWo/XTe1vrDTfeL9OrpHyqg7mYCmH2MKvWbkeJSYXdQ
-         UmO2/ykkP7oS21f5D88xshBOCEijhQuHIg61JtxQ=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.3.100] ([84.46.37.29]) by smtp.web.de (mrweb102
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0MJTZX-1hik853toh-00328w; Sun, 30
- Jun 2019 02:14:14 +0200
-Subject: Re: r8169 not working on 5.2.0rc6 with GPD MicroPC
-To:     Heiner Kallweit <hkallweit1@gmail.com>, nic_swsd@realtek.com,
-        romieu@fr.zoreil.com
-Cc:     netdev@vger.kernel.org
-References: <0a560a5e-17f2-f6ff-1dad-66907133e9c2@web.de>
- <85548ec0-350b-118f-a60c-4be2235d5e4e@gmail.com>
-From:   Karsten Wiborg <karsten.wiborg@web.de>
-Openpgp: preference=signencrypt
-Message-ID: <4437a8a6-73f0-26a7-4a61-b215c641ff20@web.de>
-Date:   Sun, 30 Jun 2019 02:14:12 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726961AbfF3AcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Jun 2019 20:32:12 -0400
+Received: from mail-eopbgr80082.outbound.protection.outlook.com ([40.107.8.82]:49085
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726952AbfF3AcM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 29 Jun 2019 20:32:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+CuV7FV+5ZfTNZixnzmdi/OyhjL7LvTIKS3rpPAWtqw=;
+ b=KcYtI2klo8/JTqNbqC3JioIqcG3jfWUHltf+g/4cWRBYR3zkCueieQhriBCLHWVURGdrncNYn0xDPAVsgvMgBqgJk1wpDLeCNbE+hEgCAu3/xPIjFH/9CXt2ybayzsftiHmvrxEL6y52sQUgiAhyapgrcpJH7MsrvrKvfqstUuk=
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (10.171.182.144) by
+ VI1PR05MB4944.eurprd05.prod.outlook.com (20.177.51.29) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2032.18; Sun, 30 Jun 2019 00:32:08 +0000
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
+ ([fe80::f5d8:df9:731:682e]) by VI1PR05MB4141.eurprd05.prod.outlook.com
+ ([fe80::f5d8:df9:731:682e%5]) with mapi id 15.20.2032.019; Sun, 30 Jun 2019
+ 00:32:08 +0000
+From:   Jason Gunthorpe <jgg@mellanox.com>
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     Doug Ledford <dledford@redhat.com>,
+        Leon Romanovsky <leonro@mellanox.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Majd Dibbiny <majd@mellanox.com>,
+        Mark Zhang <markz@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH rdma-next v4 06/17] RDMA/counter: Add "auto" configuration
+ mode support
+Thread-Topic: [PATCH rdma-next v4 06/17] RDMA/counter: Add "auto"
+ configuration mode support
+Thread-Index: AQHVJfsE3tKh9oGpaUGuOuzrE5Gb8Kazan8A
+Date:   Sun, 30 Jun 2019 00:32:08 +0000
+Message-ID: <20190630003200.GA7173@mellanox.com>
+References: <20190618172625.13432-1-leon@kernel.org>
+ <20190618172625.13432-7-leon@kernel.org>
+In-Reply-To: <20190618172625.13432-7-leon@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MN2PR01CA0006.prod.exchangelabs.com (2603:10b6:208:10c::19)
+ To VI1PR05MB4141.eurprd05.prod.outlook.com (2603:10a6:803:4d::16)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=jgg@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [156.34.55.100]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 59d54927-0236-4345-328f-08d6fcf26208
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR05MB4944;
+x-ms-traffictypediagnostic: VI1PR05MB4944:
+x-microsoft-antispam-prvs: <VI1PR05MB49440572A6068FBFE3FB7842CFFE0@VI1PR05MB4944.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 008421A8FF
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(136003)(366004)(346002)(39860400002)(376002)(199004)(189003)(25786009)(68736007)(8676002)(36756003)(305945005)(7736002)(53936002)(1076003)(6916009)(478600001)(6246003)(8936002)(71190400001)(71200400001)(3846002)(73956011)(2906002)(99286004)(6116002)(5660300002)(66556008)(64756008)(66476007)(316002)(66446008)(54906003)(66946007)(4326008)(14454004)(66066001)(81156014)(33656002)(6486002)(6512007)(86362001)(26005)(256004)(6506007)(386003)(446003)(76176011)(11346002)(486006)(186003)(102836004)(81166006)(229853002)(52116002)(2616005)(476003)(6436002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4944;H:VI1PR05MB4141.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: ZXeDRSTRs9TjuU8KBTlKqZ/JcX/gMjthPcE2WFLk2eT2f4hmxvU/k9zzeLvrdiyfirK0FeUNq+NKvcEHChHiRo3SIMBNVk+hl3huJugg1U2EWTnhiBGc1Ha0BgitTm20Fy0h3NUgOXc25T5JZNJrNvB+cgcdZrEeYDfu3eXFRFczAJpT+axQQPdTCa7/eMUjKTmVkEXpdvKKPWIov+EPT+jz0Da0CZeQvaBbesqqv0GmBh+tIp8Vsdj2zszN6fAbHAuFo0c1UNA827Uz2NwEWCsM2xz7lOVw6CxyWahwCULAd7GRmpffPbxmQQmo9dzzIcqcOHvZQBejQp7cRRb3PcZH7LBMzJKs3btSwxb5/1LldT4Jn855HV3mtV4NiEnW4kg+DgXF9ebiEjQx3au6EyiZEFBy73RWL7fZL7DvnXA=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <3B0F99AFCC5F4B44A12EFD058D50D00C@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <85548ec0-350b-118f-a60c-4be2235d5e4e@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:jmpcrGZ0PEDjYVnIXmJrWopK8JSwgCRDsEMo0/hxI+KrgPnqpIe
- 2lGkksdC/1089lS7R8JtMfI74pucFor3ZChtqVuzGEMDO9BeCW4qNfRK0k/xpy728Oh4g3h
- assqeTZUkgBAzQNM+WuJTi0ypzMZk8eKu9t0LbbcK4LgIm8As2NCkK+Pe2V50THbgozW8k+
- YqQfNCqkilj0ypQJjYEiA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:V4pRCijkdrs=:rLplpH3eW7TyLW1c3fE3g8
- WVi+J31HPCgZFi35VQKVTrCSxiuq3OMrxKrAw3AQ5AkVKJysqOgi7ALHAZ0pzSjKWfUKGTWNu
- My2+ZGis+IOBnktiChfOMluPd3y3ga2AQKyKz3XyjuTxt1E+jW9YFXEV2ZBpYevaImYkdYWgc
- rvlzBTtCVHCBloGBvQzqBraSjiyTdKgrAJt3Udr8zWVc+zx4HtafmwbgfktDkFHUN/KVoK/oV
- MtjRcJ/FiBnJY0s2rJpPrie2jlIcTqyLBZI2bcGlETULYJz0XEGngAv7zDxqe3UmNuqx+Prfc
- D6z7lGT5vYydNuPxHL788JHlQIhYSwwhRlaMvUPXI5RBtgm2goVp4YxRGBTpZVT3AJbEEXqVv
- 4BDFbJEe8dxkSynyLKJKvGS33aBJ04u6iipUItN27/FIgdWHNEFIBfYeoXfJIQe8luVIrgaZX
- SgFvGnzU4a1FZegHOmNRRI1MiLfHKE7uGTOMElLmW4vmRBlvePeu9c4QkrfXtffEKF7WgUxAa
- dadhplufxiwmzwFkpP+8vWb1r1LaB2z9Cm9eBsBhdQGV40FtlZm7tqMGysWJ7mIwdp1uztsMj
- OEJogrd91s78X2h47uEVH3lATYe3pmKeeM46ibrce2IjSfKmwAD+sXBQxlVwhrSbQVxd5SwzU
- 86SINhT4xQncxFrJOxLnF+s06yV71ZbplfZuLjIvX22XeaDE9VpMmyD5IdYKPQdJwcTaKnWCx
- y2M3+NC+FJPt/z1GdOaTaW3pREp+HS7XKWqhh55Xnrc31oaRhCiyr1toMpy2HnUPRd71x/gD1
- aK3/qceS2aB7jD8HjJRRCtT0nPFPFI+TQlBbFjH3QwBl2d2zBflOILtjkUW5pWn6sC5qR/tlw
- WwQp6zdgV8IrEa+aVEDWzPhVhHbaNNqNdBsz2r5RuBr1rULhOmFfRyidGH+LJTbdDu2yAGNED
- uJTTXFIRwjnrfl/UDonkXXHsQMp+8IHALtNtPwixhxikPQdzHN7BGxwopQEjnbJlvIvi7jLHP
- YDQ6+FXtjt9feXQyzkk+c0bkKXQhWli2wthM6qu52zfqtMtHO/nDKx8ArlzPjhKXeHdAQT9M8
- ZfEUBi0+iA+Z2FFDAr+Xe2L8VLOvM3tqEze
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 59d54927-0236-4345-328f-08d6fcf26208
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Jun 2019 00:32:08.1250
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: jgg@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4944
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Heiner,
+On Tue, Jun 18, 2019 at 08:26:14PM +0300, Leon Romanovsky wrote:
 
-thanks for the speedy reply.
+> +/**
+> + * rdma_counter_bind_qp_auto - Check and bind the QP to a counter base o=
+n
+> + *   the auto-mode rule
+> + */
+> +int rdma_counter_bind_qp_auto(struct ib_qp *qp, u8 port)
+> +{
+> +	struct rdma_port_counter *port_counter;
+> +	struct ib_device *dev =3D qp->device;
+> +	struct rdma_counter *counter;
+> +	int ret;
+> +
+> +	if (!rdma_is_port_valid(dev, port))
+> +		return -EINVAL;
+> +
+> +	port_counter =3D &dev->port_data[port].port_counter;
+> +	if (port_counter->mode.mode !=3D RDMA_COUNTER_MODE_AUTO)
+> +		return 0;
+> +
+> +	counter =3D rdma_get_counter_auto_mode(qp, port);
+> +	if (counter) {
+> +		ret =3D __rdma_counter_bind_qp(counter, qp);
+> +		if (ret) {
+> +			rdma_restrack_put(&counter->res);
+> +			return ret;
+> +		}
+> +		kref_get(&counter->kref);
 
-On 6/30/19 12:09 AM, Heiner Kallweit wrote:
-> If r8169 (the mainline driver) is running, why do you want to switch
-> to r8168 (the Realtek vendor driver)? The latter is not supported by
-> the kernel community.
-Well I did install r8168 because r8169 is not working.
-Didn't even get to see the MAC of the NIC.
+The counter is left in the xarray while the kref is zero, this
+kref_get is wrong..
 
->> 2: eno1: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group
->> default qlen 1000
->>     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff
-> Seems like the network isn't started.
-Jepp, that is the output from the r8169.
+Using two kref like things at the same time is a bad idea, the
+'rdma_get_counter_auto_mode' should return the kref held, not the
+restrack get. The restrack_del doesn't happen as long as the kref is
+positive, so we don't need the retrack thing here..
 
-Regards,
-Karsten
+> +	} else {
+> +		counter =3D rdma_counter_alloc(dev, port, RDMA_COUNTER_MODE_AUTO);
+> +		if (!counter)
+> +			return -ENOMEM;
+> +
+> +		auto_mode_init_counter(counter, qp, port_counter->mode.mask);
+> +
+> +		ret =3D __rdma_counter_bind_qp(counter, qp);
+> +		if (ret)
+> +			goto err_bind;
+> +
+> +		rdma_counter_res_add(counter, qp);
+> +		if (!rdma_restrack_get(&counter->res)) {
+> +			ret =3D -EINVAL;
+> +			goto err_get;
+> +		}
+
+and this shouldn't be needed as the kref is inited to 1 by the
+rdma_counter_alloc..
+
+> +	}
+> +
+> +	return 0;
+> +
+> +err_get:
+> +	 __rdma_counter_unbind_qp(qp);
+> +	__rdma_counter_dealloc(counter);
+> +err_bind:
+> +	rdma_counter_free(counter);
+> +	return ret;
+> +}
+
+And then all this error unwind and all the twisty __ functions should
+just be a single kref_put and the release should handle everything.
+
+Jason
