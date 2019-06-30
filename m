@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ACE4D5AF1F
-	for <lists+netdev@lfdr.de>; Sun, 30 Jun 2019 08:51:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AC4B5AF23
+	for <lists+netdev@lfdr.de>; Sun, 30 Jun 2019 08:51:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726641AbfF3GvV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Jun 2019 02:51:21 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:64068 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726617AbfF3GvV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Jun 2019 02:51:21 -0400
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5U6mfcL013497
-        for <netdev@vger.kernel.org>; Sat, 29 Jun 2019 23:51:19 -0700
+        id S1726668AbfF3GvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Jun 2019 02:51:24 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:56042 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726658AbfF3GvY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Jun 2019 02:51:24 -0400
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5U6o0g3022386
+        for <netdev@vger.kernel.org>; Sat, 29 Jun 2019 23:51:23 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=kctTnMjnzzOz5/ECwrQFQJt7ImSYAfWDkmFVCCdCZTM=;
- b=U30AIzv5Vn8FzrZ/ZPlnrLSmC4YPyG2bochalFDMtQkQ1M+2reu2ph5RMlevNnmeP0tP
- DCAksaB0sN7xq8KOdl/i4SRcZTMH64h/leaIDiMaNNdvk/Vo3srjqqZZOfGl3PoPo8qW
- bJ345C2+JIOkQMh32vFCYOjCe4P2ZrF2eiY= 
+ content-type; s=facebook; bh=t5g8bHjRaIZMFxTROorZabVi100u7khkUvx+OsiWToA=;
+ b=L+37A+Z6Wu3sjh/wSXuPyVtL/uaKSYJ9Hr3xzwse8+2u+N7VKyQn+LFj1X00Vgou3ns6
+ VKmNv5wBFZsk0qdYluyosSI0ON4iH6NwQUUTYohhOq9DeLx6Wf1jzbPk7chhRn+9/OKa
+ SfIVbSuSlmu8MVa1H6V+bqwe9YxJFZrtMV0= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2te5t7j4ky-2
+        by mx0a-00082601.pphosted.com with ESMTP id 2te5p3j81s-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Sat, 29 Jun 2019 23:51:19 -0700
+        for <netdev@vger.kernel.org>; Sat, 29 Jun 2019 23:51:23 -0700
 Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Sat, 29 Jun 2019 23:51:18 -0700
+ 15.1.1713.5; Sat, 29 Jun 2019 23:51:21 -0700
 Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id DC76A8614EA; Sat, 29 Jun 2019 23:51:16 -0700 (PDT)
+        id E925F8614EA; Sat, 29 Jun 2019 23:51:18 -0700 (PDT)
 Smtp-Origin-Hostprefix: dev
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: dev101.prn2.facebook.com
@@ -38,9 +38,9 @@ To:     <andrii.nakryiko@gmail.com>, <ast@fb.com>, <daniel@iogearbox.net>,
         <netdev@vger.kernel.org>, <jakub.kicinski@netronome.com>
 CC:     Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH v4 bpf-next 3/4] selftests/bpf: test perf buffer API
-Date:   Sat, 29 Jun 2019 23:51:08 -0700
-Message-ID: <20190630065109.1794420-4-andriin@fb.com>
+Subject: [PATCH v4 bpf-next 4/4] tools/bpftool: switch map event_pipe to libbpf's perf_buffer
+Date:   Sat, 29 Jun 2019 23:51:09 -0700
+Message-ID: <20190630065109.1794420-5-andriin@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190630065109.1794420-1-andriin@fb.com>
 References: <20190630065109.1794420-1-andriin@fb.com>
@@ -60,152 +60,316 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add test verifying perf buffer API functionality.
+Switch event_pipe implementation to rely on new libbpf perf buffer API
+(it's raw low-level variant).
 
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-Acked-by: Song Liu <songliubraving@fb.com>
 ---
- .../selftests/bpf/prog_tests/perf_buffer.c    | 94 +++++++++++++++++++
- .../selftests/bpf/progs/test_perf_buffer.c    | 29 ++++++
- 2 files changed, 123 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/perf_buffer.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_perf_buffer.c
+ tools/bpf/bpftool/map_perf_ring.c | 201 ++++++++++--------------------
+ 1 file changed, 64 insertions(+), 137 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/perf_buffer.c b/tools/testing/selftests/bpf/prog_tests/perf_buffer.c
-new file mode 100644
-index 000000000000..64556ab0d1a9
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/perf_buffer.c
-@@ -0,0 +1,94 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#define _GNU_SOURCE
-+#include <pthread.h>
-+#include <sched.h>
-+#include <sys/socket.h>
-+#include <test_progs.h>
-+
-+static void on_sample(void *ctx, int cpu, void *data, __u32 size)
-+{
-+	int cpu_data = *(int *)data, duration = 0;
-+	cpu_set_t *cpu_seen = ctx;
-+
-+	if (cpu_data != cpu)
-+		CHECK(cpu_data != cpu, "check_cpu_data",
-+		      "cpu_data %d != cpu %d\n", cpu_data, cpu);
-+
-+	CPU_SET(cpu, cpu_seen);
-+}
-+
-+void test_perf_buffer(void)
-+{
-+	int err, prog_fd, nr_cpus, i, duration = 0;
-+	const char *prog_name = "kprobe/sys_nanosleep";
-+	const char *file = "./test_perf_buffer.o";
-+	struct perf_buffer_opts pb_opts = {};
-+	struct bpf_map *perf_buf_map;
-+	cpu_set_t cpu_set, cpu_seen;
-+	struct bpf_program *prog;
-+	struct bpf_object *obj;
-+	struct perf_buffer *pb;
-+	struct bpf_link *link;
-+
-+	nr_cpus = libbpf_num_possible_cpus();
-+	if (CHECK(nr_cpus < 0, "nr_cpus", "err %d\n", nr_cpus))
-+		return;
-+
-+	/* load program */
-+	err = bpf_prog_load(file, BPF_PROG_TYPE_KPROBE, &obj, &prog_fd);
-+	if (CHECK(err, "obj_load", "err %d errno %d\n", err, errno))
-+		return;
-+
-+	prog = bpf_object__find_program_by_title(obj, prog_name);
-+	if (CHECK(!prog, "find_probe", "prog '%s' not found\n", prog_name))
-+		goto out_close;
-+
-+	/* load map */
-+	perf_buf_map = bpf_object__find_map_by_name(obj, "perf_buf_map");
-+	if (CHECK(!perf_buf_map, "find_perf_buf_map", "not found\n"))
-+		goto out_close;
-+
-+	/* attach kprobe */
-+	link = bpf_program__attach_kprobe(prog, false /* retprobe */,
-+					      "sys_nanosleep");
-+	if (CHECK(IS_ERR(link), "attach_kprobe", "err %ld\n", PTR_ERR(link)))
-+		goto out_close;
-+
-+	/* set up perf buffer */
-+	pb_opts.sample_cb = on_sample;
-+	pb_opts.ctx = &cpu_seen;
-+	pb = perf_buffer__new(bpf_map__fd(perf_buf_map), 1, &pb_opts);
-+	if (CHECK(IS_ERR(pb), "perf_buf__new", "err %ld\n", PTR_ERR(pb)))
-+		goto out_detach;
-+
-+	/* trigger kprobe on every CPU */
-+	CPU_ZERO(&cpu_seen);
-+	for (i = 0; i < nr_cpus; i++) {
-+		CPU_ZERO(&cpu_set);
-+		CPU_SET(i, &cpu_set);
-+
-+		err = pthread_setaffinity_np(pthread_self(), sizeof(cpu_set),
-+					     &cpu_set);
-+		if (err && CHECK(err, "set_affinity", "cpu #%d, err %d\n",
-+				 i, err))
-+			goto out_detach;
-+
-+		usleep(1);
-+	}
-+
-+	/* read perf buffer */
-+	err = perf_buffer__poll(pb, 100);
-+	if (CHECK(err < 0, "perf_buffer__poll", "err %d\n", err))
-+		goto out_free_pb;
-+
-+	if (CHECK(CPU_COUNT(&cpu_seen) != nr_cpus, "seen_cpu_cnt",
-+		  "expect %d, seen %d\n", nr_cpus, CPU_COUNT(&cpu_seen)))
-+		goto out_free_pb;
-+
-+out_free_pb:
-+	perf_buffer__free(pb);
-+out_detach:
-+	bpf_link__destroy(link);
-+out_close:
-+	bpf_object__close(obj);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_perf_buffer.c b/tools/testing/selftests/bpf/progs/test_perf_buffer.c
-new file mode 100644
-index 000000000000..8609f0031bc0
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_perf_buffer.c
-@@ -0,0 +1,29 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2019 Facebook
-+
-+#include <linux/ptrace.h>
-+#include <linux/bpf.h>
-+#include "bpf_helpers.h"
-+
-+struct {
-+	int type;
-+	int key_size;
-+	int value_size;
-+} perf_buf_map SEC(".maps") = {
-+	.type = BPF_MAP_TYPE_PERF_EVENT_ARRAY,
-+	.key_size = sizeof(int),
-+	.value_size = sizeof(int),
+diff --git a/tools/bpf/bpftool/map_perf_ring.c b/tools/bpf/bpftool/map_perf_ring.c
+index 0507dfaf7a8f..c291de8ef116 100644
+--- a/tools/bpf/bpftool/map_perf_ring.c
++++ b/tools/bpf/bpftool/map_perf_ring.c
+@@ -28,7 +28,7 @@
+ 
+ #define MMAP_PAGE_CNT	16
+ 
+-static bool stop;
++static volatile bool stop;
+ 
+ struct event_ring_info {
+ 	int fd;
+@@ -44,32 +44,44 @@ struct perf_event_sample {
+ 	unsigned char data[];
+ };
+ 
++struct perf_event_lost {
++	struct perf_event_header header;
++	__u64 id;
++	__u64 lost;
 +};
 +
-+SEC("kprobe/sys_nanosleep")
-+int handle_sys_nanosleep_entry(struct pt_regs *ctx)
-+{
-+	int cpu = bpf_get_smp_processor_id();
+ static void int_exit(int signo)
+ {
+ 	fprintf(stderr, "Stopping...\n");
+ 	stop = true;
+ }
+ 
++struct event_pipe_ctx {
++	bool all_cpus;
++	int cpu;
++	int idx;
++};
 +
-+	bpf_perf_event_output(ctx, &perf_buf_map, BPF_F_CURRENT_CPU,
-+			      &cpu, sizeof(cpu));
-+	return 0;
-+}
+ static enum bpf_perf_event_ret
+-print_bpf_output(struct perf_event_header *event, void *private_data)
++print_bpf_output(void *private_data, int cpu, struct perf_event_header *event)
+ {
+-	struct perf_event_sample *e = container_of(event, struct perf_event_sample,
++	struct perf_event_sample *e = container_of(event,
++						   struct perf_event_sample,
+ 						   header);
+-	struct event_ring_info *ring = private_data;
+-	struct {
+-		struct perf_event_header header;
+-		__u64 id;
+-		__u64 lost;
+-	} *lost = (typeof(lost))event;
++	struct perf_event_lost *lost = container_of(event,
++						    struct perf_event_lost,
++						    header);
++	struct event_pipe_ctx *ctx = private_data;
++	int idx = ctx->all_cpus ? cpu : ctx->idx;
+ 
+ 	if (json_output) {
+ 		jsonw_start_object(json_wtr);
+ 		jsonw_name(json_wtr, "type");
+ 		jsonw_uint(json_wtr, e->header.type);
+ 		jsonw_name(json_wtr, "cpu");
+-		jsonw_uint(json_wtr, ring->cpu);
++		jsonw_uint(json_wtr, cpu);
+ 		jsonw_name(json_wtr, "index");
+-		jsonw_uint(json_wtr, ring->key);
++		jsonw_uint(json_wtr, idx);
+ 		if (e->header.type == PERF_RECORD_SAMPLE) {
+ 			jsonw_name(json_wtr, "timestamp");
+ 			jsonw_uint(json_wtr, e->time);
+@@ -89,7 +101,7 @@ print_bpf_output(struct perf_event_header *event, void *private_data)
+ 		if (e->header.type == PERF_RECORD_SAMPLE) {
+ 			printf("== @%lld.%09lld CPU: %d index: %d =====\n",
+ 			       e->time / 1000000000ULL, e->time % 1000000000ULL,
+-			       ring->cpu, ring->key);
++			       cpu, idx);
+ 			fprint_hex(stdout, e->data, e->size, " ");
+ 			printf("\n");
+ 		} else if (e->header.type == PERF_RECORD_LOST) {
+@@ -103,87 +115,25 @@ print_bpf_output(struct perf_event_header *event, void *private_data)
+ 	return LIBBPF_PERF_EVENT_CONT;
+ }
+ 
+-static void
+-perf_event_read(struct event_ring_info *ring, void **buf, size_t *buf_len)
+-{
+-	enum bpf_perf_event_ret ret;
+-
+-	ret = bpf_perf_event_read_simple(ring->mem,
+-					 MMAP_PAGE_CNT * get_page_size(),
+-					 get_page_size(), buf, buf_len,
+-					 print_bpf_output, ring);
+-	if (ret != LIBBPF_PERF_EVENT_CONT) {
+-		fprintf(stderr, "perf read loop failed with %d\n", ret);
+-		stop = true;
+-	}
+-}
+-
+-static int perf_mmap_size(void)
+-{
+-	return get_page_size() * (MMAP_PAGE_CNT + 1);
+-}
+-
+-static void *perf_event_mmap(int fd)
+-{
+-	int mmap_size = perf_mmap_size();
+-	void *base;
+-
+-	base = mmap(NULL, mmap_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+-	if (base == MAP_FAILED) {
+-		p_err("event mmap failed: %s\n", strerror(errno));
+-		return NULL;
+-	}
+-
+-	return base;
+-}
+-
+-static void perf_event_unmap(void *mem)
+-{
+-	if (munmap(mem, perf_mmap_size()))
+-		fprintf(stderr, "Can't unmap ring memory!\n");
+-}
+-
+-static int bpf_perf_event_open(int map_fd, int key, int cpu)
++int do_event_pipe(int argc, char **argv)
+ {
+-	struct perf_event_attr attr = {
++	struct perf_event_attr perf_attr = {
+ 		.sample_type = PERF_SAMPLE_RAW | PERF_SAMPLE_TIME,
+ 		.type = PERF_TYPE_SOFTWARE,
+ 		.config = PERF_COUNT_SW_BPF_OUTPUT,
++		.sample_period = 1,
++		.wakeup_events = 1,
+ 	};
+-	int pmu_fd;
+-
+-	pmu_fd = sys_perf_event_open(&attr, -1, cpu, -1, 0);
+-	if (pmu_fd < 0) {
+-		p_err("failed to open perf event %d for CPU %d", key, cpu);
+-		return -1;
+-	}
+-
+-	if (bpf_map_update_elem(map_fd, &key, &pmu_fd, BPF_ANY)) {
+-		p_err("failed to update map for event %d for CPU %d", key, cpu);
+-		goto err_close;
+-	}
+-	if (ioctl(pmu_fd, PERF_EVENT_IOC_ENABLE, 0)) {
+-		p_err("failed to enable event %d for CPU %d", key, cpu);
+-		goto err_close;
+-	}
+-
+-	return pmu_fd;
+-
+-err_close:
+-	close(pmu_fd);
+-	return -1;
+-}
+-
+-int do_event_pipe(int argc, char **argv)
+-{
+-	int i, nfds, map_fd, index = -1, cpu = -1;
+ 	struct bpf_map_info map_info = {};
+-	struct event_ring_info *rings;
+-	size_t tmp_buf_sz = 0;
+-	void *tmp_buf = NULL;
+-	struct pollfd *pfds;
++	struct perf_buffer_raw_opts opts;
++	struct event_pipe_ctx ctx = {
++		.all_cpus = true,
++		.cpu = -1,
++		.idx = -1,
++	};
++	struct perf_buffer *pb;
+ 	__u32 map_info_len;
+-	bool do_all = true;
++	int err, map_fd;
+ 
+ 	map_info_len = sizeof(map_info);
+ 	map_fd = map_parse_fd_and_info(&argc, &argv, &map_info, &map_info_len);
+@@ -205,7 +155,7 @@ int do_event_pipe(int argc, char **argv)
+ 			char *endptr;
+ 
+ 			NEXT_ARG();
+-			cpu = strtoul(*argv, &endptr, 0);
++			ctx.cpu = strtoul(*argv, &endptr, 0);
+ 			if (*endptr) {
+ 				p_err("can't parse %s as CPU ID", **argv);
+ 				goto err_close_map;
+@@ -216,7 +166,7 @@ int do_event_pipe(int argc, char **argv)
+ 			char *endptr;
+ 
+ 			NEXT_ARG();
+-			index = strtoul(*argv, &endptr, 0);
++			ctx.idx = strtoul(*argv, &endptr, 0);
+ 			if (*endptr) {
+ 				p_err("can't parse %s as index", **argv);
+ 				goto err_close_map;
+@@ -228,45 +178,32 @@ int do_event_pipe(int argc, char **argv)
+ 			goto err_close_map;
+ 		}
+ 
+-		do_all = false;
++		ctx.all_cpus = false;
+ 	}
+ 
+-	if (!do_all) {
+-		if (index == -1 || cpu == -1) {
++	if (!ctx.all_cpus) {
++		if (ctx.idx == -1 || ctx.cpu == -1) {
+ 			p_err("cpu and index must be specified together");
+ 			goto err_close_map;
+ 		}
+-
+-		nfds = 1;
+ 	} else {
+-		nfds = min(get_possible_cpus(), map_info.max_entries);
+-		cpu = 0;
+-		index = 0;
++		ctx.cpu = 0;
++		ctx.idx = 0;
+ 	}
+ 
+-	rings = calloc(nfds, sizeof(rings[0]));
+-	if (!rings)
++	opts.attr = &perf_attr;
++	opts.event_cb = print_bpf_output;
++	opts.ctx = &ctx;
++	opts.cpu_cnt = ctx.all_cpus ? 0 : 1;
++	opts.cpus = &ctx.cpu;
++	opts.map_keys = &ctx.idx;
 +
-+char _license[] SEC("license") = "GPL";
-+__u32 _version SEC("version") = 1;
++	pb = perf_buffer__new_raw(map_fd, MMAP_PAGE_CNT, &opts);
++	err = libbpf_get_error(pb);
++	if (err) {
++		p_err("failed to create perf buffer: %s (%d)",
++		      strerror(err), err);
+ 		goto err_close_map;
+-
+-	pfds = calloc(nfds, sizeof(pfds[0]));
+-	if (!pfds)
+-		goto err_free_rings;
+-
+-	for (i = 0; i < nfds; i++) {
+-		rings[i].cpu = cpu + i;
+-		rings[i].key = index + i;
+-
+-		rings[i].fd = bpf_perf_event_open(map_fd, rings[i].key,
+-						  rings[i].cpu);
+-		if (rings[i].fd < 0)
+-			goto err_close_fds_prev;
+-
+-		rings[i].mem = perf_event_mmap(rings[i].fd);
+-		if (!rings[i].mem)
+-			goto err_close_fds_current;
+-
+-		pfds[i].fd = rings[i].fd;
+-		pfds[i].events = POLLIN;
+ 	}
+ 
+ 	signal(SIGINT, int_exit);
+@@ -277,34 +214,24 @@ int do_event_pipe(int argc, char **argv)
+ 		jsonw_start_array(json_wtr);
+ 
+ 	while (!stop) {
+-		poll(pfds, nfds, 200);
+-		for (i = 0; i < nfds; i++)
+-			perf_event_read(&rings[i], &tmp_buf, &tmp_buf_sz);
++		err = perf_buffer__poll(pb, 200);
++		if (err < 0 && err != -EINTR) {
++			p_err("perf buffer polling failed: %s (%d)",
++			      strerror(err), err);
++			goto err_close_pb;
++		}
+ 	}
+-	free(tmp_buf);
+ 
+ 	if (json_output)
+ 		jsonw_end_array(json_wtr);
+ 
+-	for (i = 0; i < nfds; i++) {
+-		perf_event_unmap(rings[i].mem);
+-		close(rings[i].fd);
+-	}
+-	free(pfds);
+-	free(rings);
++	perf_buffer__free(pb);
+ 	close(map_fd);
+ 
+ 	return 0;
+ 
+-err_close_fds_prev:
+-	while (i--) {
+-		perf_event_unmap(rings[i].mem);
+-err_close_fds_current:
+-		close(rings[i].fd);
+-	}
+-	free(pfds);
+-err_free_rings:
+-	free(rings);
++err_close_pb:
++	perf_buffer__free(pb);
+ err_close_map:
+ 	close(map_fd);
+ 	return -1;
 -- 
 2.17.1
 
