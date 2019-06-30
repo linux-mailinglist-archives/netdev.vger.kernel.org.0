@@ -2,109 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F04515B08C
-	for <lists+netdev@lfdr.de>; Sun, 30 Jun 2019 18:20:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E82565B08E
+	for <lists+netdev@lfdr.de>; Sun, 30 Jun 2019 18:23:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726668AbfF3QUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Jun 2019 12:20:48 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:38973 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726659AbfF3QUs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Jun 2019 12:20:48 -0400
-Received: by mail-lj1-f193.google.com with SMTP id v18so10552844ljh.6
-        for <netdev@vger.kernel.org>; Sun, 30 Jun 2019 09:20:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=uT0azBp5Pz+yltW38ejp0vjnxXV37b9+kSG9CSkj6Sg=;
-        b=i/WFVhqose3KcBa7oAI0hwLwyxQ307FBH2ysvZesXoA58jqnJ/k7pTKXZr2Tg/5FVM
-         ESjuN98UPX7zMTJV90pDKZyv76oMpsCcSHPqzVtWnsSRr1psp1aFY7k/nFHZcAqcbZrJ
-         gZj6ogSsxjoTmMJv4jhTyAlq6Hk7azlTZF7/9Ci4oUDMZ9Fp8Xq04+mfn3Hmp8xrcSNG
-         lO5jJ0ry7n80nHpKrD9LYtitSyW/uWE9cqYvIaifPY0lssnpS1vV2mM+DKvwxeOnlYSI
-         UNRtXTvms1dJLUY2NEXBYqjFhRQ4jYhIvgE3ZB5JVL66Ua0Z6Mb//3bvD78eefQlqRDp
-         7q8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=uT0azBp5Pz+yltW38ejp0vjnxXV37b9+kSG9CSkj6Sg=;
-        b=jvsyshkIqYkQSrXkPWaTtMSRKqfb+AEhKnO4H10+BaU5/0CaeHCvmYVfGJzNB5QHhV
-         B1pYurXdrSE+y0/VUG/KBP4Y2k+g+TkgDiQdylOZx49bijHSzjZSi6qDtpVxkpJSrjtJ
-         LNKaJxRH6yKqFyD/kxwDOqw2EOox9ddi6oue3ZLK6qdKXgv5FlmIQTH2FUNg8YpJZQ21
-         vUQsERmoKq6Vc1+zvNwCVwaz36dIcF/a9Vo2+kzgvh3wHS1iAbaZ64bOwq/XJqeS2NPE
-         hJBXnkQrDK7bj25vMPXsVD1QMqH286UrxxYE8uZ63tk+Li4YMArDrQyXshd/maj23ywf
-         4FHQ==
-X-Gm-Message-State: APjAAAWmG8T5FZS70UDfGMS//g7MFUlmZSLFAx1COh606F4OTA/q1+im
-        1t/MX0MKGaT3pnFWpzUxvKOe5w==
-X-Google-Smtp-Source: APXvYqwjwSIdyzLjLFLV8nUIzyd+9tRjC9LK0XBI5kS/bnEcLdq67ROGzHEjy7bJIwf7Pa5UyAj3kQ==
-X-Received: by 2002:a2e:6313:: with SMTP id x19mr11591947ljb.25.1561911646063;
-        Sun, 30 Jun 2019 09:20:46 -0700 (PDT)
-Received: from khorivan (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
-        by smtp.gmail.com with ESMTPSA id p27sm2251629lfo.16.2019.06.30.09.20.44
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 30 Jun 2019 09:20:45 -0700 (PDT)
-Date:   Sun, 30 Jun 2019 19:20:43 +0300
-From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc:     netdev@vger.kernel.org, jaswinder.singh@linaro.org,
-        ard.biesheuvel@linaro.org, bjorn.topel@intel.com,
-        magnus.karlsson@intel.com, brouer@redhat.com, daniel@iogearbox.net,
-        ast@kernel.org, makita.toshiaki@lab.ntt.co.jp,
-        jakub.kicinski@netronome.com, john.fastabend@gmail.com,
-        davem@davemloft.net, maciejromanfijalkowski@gmail.com
-Subject: Re: [net-next, PATCH 3/3, v2] net: netsec: add XDP support
-Message-ID: <20190630162042.GA12704@khorivan>
-References: <1561785805-21647-1-git-send-email-ilias.apalodimas@linaro.org>
- <1561785805-21647-4-git-send-email-ilias.apalodimas@linaro.org>
+        id S1726673AbfF3QXm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Jun 2019 12:23:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52250 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726563AbfF3QXl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 30 Jun 2019 12:23:41 -0400
+Received: from localhost (unknown [37.142.3.125])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7B4CB20673;
+        Sun, 30 Jun 2019 16:23:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1561911820;
+        bh=GBatzlzwGiJD0iXzGqy7HGRuN4M8ynVxq0F24rRB8LI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=YLE7NnjqIsvHFSDC/nA6kR7l402njneH7QzevkNftYS5QSbzmUAEA9Ul5XmpVPcqS
+         aaEkeeJu6eE4v81TKxJe2aMYphanKiCivx9+QD3skSO4T7VoHnXLJeG8pe5HXquQhK
+         +rB3MipOxzHuYPym7S+p67zaBOpmtaOvuUWb2Xn8=
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@mellanox.com>
+Cc:     Leon Romanovsky <leonro@mellanox.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Yishai Hadas <yishaih@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>
+Subject: [PATCH rdma-next v2 00/13] DEVX asynchronous events
+Date:   Sun, 30 Jun 2019 19:23:21 +0300
+Message-Id: <20190630162334.22135-1-leon@kernel.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <1561785805-21647-4-git-send-email-ilias.apalodimas@linaro.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jun 29, 2019 at 08:23:25AM +0300, Ilias Apalodimas wrote:
+From: Leon Romanovsky <leonro@mellanox.com>
 
-[...]
+Changelog:
+ v1 -> v2:
+ * Added Saeed's ack to net patches
+ * Patch #2:
+  * Fix to gather user asynchronous events on top of kernel events.
+ * Patch #7:
+  * Fix obj_id to be 32 bits.
+ * Patch #8:
+  * Inline async_event_queue applicable fields into devx_async_event_file.
+  * Move to use bitfields in few places rather than flags.
+  * Shorten name of UAPI attribute.
+ * Patch #10:
+  * Use explicitly 'struct file *' instead of void *
+  * Store struct devx_async_event_file * instead of uobj * on the subscription.
+  * Drop 'is_obj_related' and use list_empty instead.
+  * Drop the temp arrays as part of the subscription API and move to simpler logic.
+  * Revise devx_cleanup_subscription() to be success oriented without
+    the is_close flag.
+  * Leave key level 1 in the tree upon bad flow to prevent a race with IRQ flow.
+  * Fix some styling notes.
+ * Patch #11:
+  * Use rcu read lock also for the un-affiliated event flow.
+  * Improve locking scheme as part of read events.
+  * Return -EIO as soon as destroyed occurred.
+  * Use a better errno as part read event failure when the buffer size
+    was too small.
+  * Upon hot unplug call wake_up_interruptible() unconditionally.
+  * Use eqe->data for affiliated events header.
+  * Fix some styling notes.
+ * Patch #12:
+  * Use rcu read lock also for the first XA layer.
+ * Patch #13:
+  * A new patch to clean up mdev usage from devx code, it can be accessed
+    from ib_dev now.
+ v0 -> v1:
+ * Fix the unbind / hot unplug flows to work properly.
+ * Fix Ref count handling on the eventfd mode in some flow.
+ * Rebased to latest rdma-next
 
->+
->+static int netsec_xdp(struct net_device *ndev, struct netdev_bpf *xdp)
->+{
->+	struct netsec_priv *priv = netdev_priv(ndev);
->+
->+	switch (xdp->command) {
->+	case XDP_SETUP_PROG:
->+		return netsec_xdp_setup(priv, xdp->prog, xdp->extack);
->+	case XDP_QUERY_PROG:
->+		xdp->prog_id = priv->xdp_prog ? priv->xdp_prog->aux->id : 0;
-xdp_attachment family to save bpf flags?
+Thanks
 
->+		return 0;
->+	default:
->+		return -EINVAL;
->+	}
->+}
->+
-> static const struct net_device_ops netsec_netdev_ops = {
-> 	.ndo_init		= netsec_netdev_init,
-> 	.ndo_uninit		= netsec_netdev_uninit,
->@@ -1537,6 +1842,8 @@ static const struct net_device_ops netsec_netdev_ops = {
-> 	.ndo_set_mac_address    = eth_mac_addr,
-> 	.ndo_validate_addr	= eth_validate_addr,
-> 	.ndo_do_ioctl		= netsec_netdev_ioctl,
->+	.ndo_xdp_xmit		= netsec_xdp_xmit,
->+	.ndo_bpf		= netsec_xdp,
-> };
->
-> static int netsec_of_probe(struct platform_device *pdev,
->-- 
->2.20.1
->
+------------------------------------------------------------------------------------
+From Yishai:
 
--- 
-Regards,
-Ivan Khoronzhuk
+This series enables RDMA applications that use the DEVX interface to
+subscribe and read device asynchronous events.
+
+The solution is designed to allow extension of events in the future
+without need to perform any changes in the driver code.
+
+To enable that few changes had been done in mlx5_core, it includes:
+ * Reading device event capabilities that are user related
+   (affiliated and un-affiliated) and set the matching mask upon
+   creating the matching EQ.
+ * Enable DEVX/mlx5_ib to register for ANY event instead of the option to
+   get some hard-coded ones.
+ * Enable DEVX/mlx5_ib to get the device raw data for CQ completion events.
+ * Enhance mlx5_core_create/destroy CQ to enable DEVX using them so that CQ
+   events will be reported as well.
+
+In mlx5_ib layer the below changes were done:
+ * A new DEVX API was introduced to allocate an event channel by using
+   the uverbs FD object type.
+ * Implement the FD channel operations to enable read/poo/close over it.
+ * A new DEVX API was introduced to subscribe for specific events over an
+   event channel.
+ * Manage an internal data structure  over XA(s) to subscribe/dispatch events
+   over the different event channels.
+ * Use from DEVX the mlx5_core APIs to create/destroy a CQ to be able to
+   get its relevant events.
+
+Yishai
+
+Yishai Hadas (13):
+  net/mlx5: Fix mlx5_core_destroy_cq() error flow
+  net/mlx5: Use event mask based on device capabilities
+  net/mlx5: Expose the API to register for ANY event
+  net/mlx5: mlx5_core_create_cq() enhancements
+  net/mlx5: Report a CQ error event only when a handler was set
+  net/mlx5: Report EQE data upon CQ completion
+  net/mlx5: Expose device definitions for object events
+  IB/mlx5: Introduce MLX5_IB_OBJECT_DEVX_ASYNC_EVENT_FD
+  IB/mlx5: Register DEVX with mlx5_core to get async events
+  IB/mlx5: Enable subscription for device events over DEVX
+  IB/mlx5: Implement DEVX dispatching event
+  IB/mlx5: Add DEVX support for CQ events
+  IB/mlx5: DEVX cleanup mdev
+
+ drivers/infiniband/hw/mlx5/cq.c               |    5 +-
+ drivers/infiniband/hw/mlx5/devx.c             | 1029 ++++++++++++++++-
+ drivers/infiniband/hw/mlx5/main.c             |   10 +-
+ drivers/infiniband/hw/mlx5/mlx5_ib.h          |   12 +
+ drivers/infiniband/hw/mlx5/odp.c              |    2 +-
+ drivers/infiniband/hw/mlx5/qp.c               |    2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/cq.c  |   21 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  |    2 +-
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |    3 +-
+ .../net/ethernet/mellanox/mlx5/core/en_txrx.c |    2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c  |   63 +-
+ .../ethernet/mellanox/mlx5/core/fpga/conn.c   |    6 +-
+ drivers/net/ethernet/mellanox/mlx5/core/fw.c  |    6 +
+ .../net/ethernet/mellanox/mlx5/core/lib/eq.h  |    5 +-
+ include/linux/mlx5/cq.h                       |    6 +-
+ include/linux/mlx5/device.h                   |    6 +-
+ include/linux/mlx5/driver.h                   |    2 +
+ include/linux/mlx5/eq.h                       |    2 +-
+ include/linux/mlx5/mlx5_ifc.h                 |   34 +-
+ include/uapi/rdma/mlx5_user_ioctl_cmds.h      |   19 +
+ include/uapi/rdma/mlx5_user_ioctl_verbs.h     |    9 +
+ 21 files changed, 1178 insertions(+), 68 deletions(-)
+
+--
+2.20.1
+
