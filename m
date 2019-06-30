@@ -2,91 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 730D15AFCD
-	for <lists+netdev@lfdr.de>; Sun, 30 Jun 2019 14:47:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 088895B021
+	for <lists+netdev@lfdr.de>; Sun, 30 Jun 2019 16:30:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726520AbfF3Mki (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Jun 2019 08:40:38 -0400
-Received: from mout.web.de ([217.72.192.78]:39531 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726500AbfF3Mkh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 30 Jun 2019 08:40:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1561898424;
-        bh=vXON2/tDrdrlRgRts43ALWOpPyXlNysEupL7Z4f2xZo=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=RI36uk/KIfqt9HUDBK/xxQncTrzFVWLOvmmKgSKPRVGKUJ/s5//1tyIHBglSr05TO
-         7Z1PnFAEiZY/NJHCpDuL76nPRWgkKKDSMOFm0HL4ymC1hw3pjDSiiwAxsP/RsCsjUn
-         k9m2N4do2H9CUnGQvXhnp8R1RfDrptbhVShu+uxY=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.179.31] ([84.46.37.29]) by smtp.web.de (mrweb102
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0M2uWg-1iZwP02tSo-00sewg; Sun, 30
- Jun 2019 14:40:24 +0200
-Subject: Re: r8169 not working on 5.2.0rc6 with GPD MicroPC
-To:     Heiner Kallweit <hkallweit1@gmail.com>, nic_swsd@realtek.com,
-        romieu@fr.zoreil.com
-Cc:     netdev@vger.kernel.org
-References: <0a560a5e-17f2-f6ff-1dad-66907133e9c2@web.de>
- <85548ec0-350b-118f-a60c-4be2235d5e4e@gmail.com>
- <4437a8a6-73f0-26a7-4a61-b215c641ff20@web.de>
- <b104dbf2-6adc-2eee-0a1a-505c013787c0@gmail.com>
-From:   Karsten Wiborg <karsten.wiborg@web.de>
-Openpgp: preference=signencrypt
-Message-ID: <62684063-10d1-58ad-55ad-ff35b231e3b0@web.de>
-Date:   Sun, 30 Jun 2019 14:40:14 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726557AbfF3O35 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Jun 2019 10:29:57 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:46722 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726500AbfF3O35 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Jun 2019 10:29:57 -0400
+Received: by mail-pg1-f196.google.com with SMTP id i8so1536846pgm.13;
+        Sun, 30 Jun 2019 07:29:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=A7XL+qSvCLvsjTbzTI2K8VFDVm1pv1sO4YoeogNZP4U=;
+        b=WocshXmMMY6BwgYpCy4zHm/Ouj9z7d7H/lj+vQDCYBdpdAy8OUaopHsgnr6Y+B97Fs
+         Yo8D5vpgW/gh1ZWd06NpV00WlHlxcGZREd2lHacooXqMV0qV5Dlk9auViSk7sdp26KIw
+         1yjz9ZLxDkJo3nx1NHI2I/d14RslPvZsWWOLh5Q4G8zaaXLmU3+/E1Fd4cib1YDZEXJE
+         1rL2THNoIjoXaICsqz1rre+zLSWJxtoU9XuW2bdBTe0JzVWZLi7PDz0dZXvr+0LPFvlh
+         /cpNCJQVjE5PKrneKsWW7v700qI0IpquHQw5+IDA2sJPkqQYBOPqv05BB2iAYvpCBDGm
+         kgYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=A7XL+qSvCLvsjTbzTI2K8VFDVm1pv1sO4YoeogNZP4U=;
+        b=GF0qkCZ//xcI/d/Za84MdNVEfsZ6BzG4SXfQfdVkrZZ9/HkGhMa2d6XbKn2W/+kq02
+         90QqKvr4oQCnJbtybrfH9tcMOHTNuh2D6Q/Xrc3EqiBq/kIa76CgdPW48AwS86z5xu9E
+         P/FQ07x3PmSJUZflea3CzC+dqx2uZePrI90lFqc5bJm5fc3ssu+VaglzhwfiC03MI8vX
+         v7pc7pVoJpdAGbOLDhiQYhfKYwAYyAiExHD61XxGlwKqQxhpeXWjHP2dG4pQ83U54EHY
+         3irZq0Htp2mW3loGhXkYEKuRQDJAjng5jdD0/Q508t/03qlaGudxCAJvUkZUEIrmmbrj
+         q4CQ==
+X-Gm-Message-State: APjAAAUChYvQXlzUvYitkJIp/gtAbgTUwqb89OxrOyY+k9QwaI2tQAu3
+        U+r0xT3586hc1jRrLLRYvoU=
+X-Google-Smtp-Source: APXvYqyUF3CwPFMn20FOljcrALPcEPpdki7WvtU6sHNL98Jy13f9+56fQo1hMMyrcAo/c/1QtOELnA==
+X-Received: by 2002:a63:1a5e:: with SMTP id a30mr18908127pgm.433.1561904996250;
+        Sun, 30 Jun 2019 07:29:56 -0700 (PDT)
+Received: from hari-Inspiron-1545 ([183.83.164.161])
+        by smtp.gmail.com with ESMTPSA id t8sm7930660pfq.31.2019.06.30.07.29.52
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 30 Jun 2019 07:29:55 -0700 (PDT)
+Date:   Sun, 30 Jun 2019 19:59:49 +0530
+From:   Hariprasad Kelam <hariprasad.kelam@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Andrew Lunn <andrew@lunn.ch>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hariprasad Kelam <hariprasad.kelam@gmail.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Luis Chamberlain <mcgrof@kernel.org>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: ethernet: broadcom: bcm63xx_enet: Remove unneeded memset
+Message-ID: <20190630142949.GA7422@hari-Inspiron-1545>
 MIME-Version: 1.0
-In-Reply-To: <b104dbf2-6adc-2eee-0a1a-505c013787c0@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:61ZSTrwpP5rTvQFFk/22hCa99srGcz+YNWBB5tttuaeLJJ6Dhq4
- YHeqQqaUOik/5aUwTrLNMJVv7BGkgnrIrUUNv15Py/mMkCrzZSNq9Cv+PL6GWJOH9R8b6yx
- DZVogrRGsImXH6m3ceYiudMRP07Tkae7b+7/j0f67VCq845qAsPaapn9FjZ0U6ivvH8BYUy
- W2OtGiq+mgB2hQ0n4AGvg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Y/bqo7tTVU4=:w0Amur+2s+k+fyHGj+mFOX
- 71TGZiZ4NLPAQunD/fOP7va5/EKVrbU1I+Nk7jJ7YlWTpPXiPL4tawoXQqoeKyAHWSAslqV/n
- CqeE4XteihkzRW6kPcXABx3Egx9CF7mRNcypAlnQ1OCzKNp7ehYM2TtnfPy0Kx/ZHnKzxVoNW
- 8OH0OlaVlo09TvNhMvAQL2IXdehL+A4Bs94GagdScgeZjeCM5hgxIKP36GGxNt0/4Z0Lf0FFE
- XwImW54EXNPRbN6RAiN8H0DS/AxdxxHlj/GC1/rA7MzYPmJtFqhACeEcCzLy1eiK+yU0C+QYl
- kx1nRY96I36HKShgMGIefBxpIhLuczyC7WenNz/BgO87m/LwEPNNDrZC9E3n7icn9bvKWqaUc
- ZpcGRUX4CyU8oStyAS1HxKjfF2rlJFADgZaxasAmUtang/mHJGGLk5k4UfZvpRunVWAcq3lx9
- FHoYzBEhZJVuEuVrg+VOm+cCs3JBqZbSxgvGIsmLL+Nz+exDipeIzWE3VHPvRwtQqCy7lIDkk
- KExxL1bv0r9IoEXRD7klesCqkh8wAGQAK0scHxZv7IoccmBq9yx7uFvFHRzd84rvlWFl0/BU7
- uaX+mcOCIZdTwHn5zz9Nzgvj8Ya2yYxzzXKRLj+5mOHxe8MYqcnWp21XuBeuZ6yAh2JMh9DxZ
- puLOLwGWUQY0ihBoe+okobs/8p70T5gQv76fG0gc/RTniwuPjIyb6HIFuswsA1egmPDwBi8ZX
- rGeIdySqOxFSpfO/dmSLoOw/Wt0D/E7jg9BdsJE/cA0eszxI6ZokTXb2jvHnj/nOn62dzdOma
- bIZ3OEYmq0Dom27kJ/jQ33uLu/VgcVCjvCIjolJ/8Sp2M4r+SpbIZI7L1oP4gQd/ygmdpV5J6
- Q8j12zibqMiaw8HWPJaxl/wtukf1FSW0YUuKblLg+j0Ry5O91gbuDNXzPULl+3HwvaTZcLn5E
- sUJt2Hwf/XTn63H/MqIzAg3rjw3xqK/uhtihNREQLkwqUYKY78Df5GdOg2VS4iALRbVsDGAp9
- 2QUhb+UkWFyJ3S3tkXLSUZbRJ4nljKxnCLU3aJJmjsbQPCz6bg/3MYk7N2IeQIU1WUh2q1Ou9
- n/OLkniPaKy14SLv3jCXl6E1pM4i2gI97AW
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Heiner,
+Remove unneeded memset as alloc_etherdev is using kvzalloc which uses
+__GFP_ZERO flag
 
-On 30/06/2019 11:12, Heiner Kallweit wrote:
-> Indeed the MAC is missing:
-> [    2.839776] r8169 0000:02:00.0 eth0: RTL8168h/8111h,
-> 00:00:00:00:00:00, XID 541, IRQ 126
->
-> This works with RTL8168h in other systems, so I'd say you should
-> check with the vendor. Maybe it's a BIOS issue.
-Tested some more. Found out that the Realtek-supplied r8168-8.046.00 is
-buggy (compilation bugged out, see one of my last mails). I just
-succeeded in compiling r8168-8.047.00, which ran straight out of the
-box. So the NIC is fine and not defect.
+Signed-off-by: Hariprasad Kelam <hariprasad.kelam@gmail.com>
+---
+ drivers/net/ethernet/broadcom/bcm63xx_enet.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-I do agree with you: I definitely would prefer an opensource driver but
-the r8169 simply didn't work.
+diff --git a/drivers/net/ethernet/broadcom/bcm63xx_enet.c b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
+index 85e6102..f2dd74c 100644
+--- a/drivers/net/ethernet/broadcom/bcm63xx_enet.c
++++ b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
+@@ -2659,8 +2659,7 @@ static int bcm_enetsw_probe(struct platform_device *pdev)
+ 	if (!dev)
+ 		return -ENOMEM;
+ 	priv = netdev_priv(dev);
+-	memset(priv, 0, sizeof(*priv));
+-
++
+ 	/* initialize default and fetch platform data */
+ 	priv->enet_is_sw = true;
+ 	priv->irq_rx = irq_rx;
+-- 
+2.7.4
 
-In regard of my success with r8168-8.047.00, do you still think it might
-be a BIOS-issue?
-
-Regards,
-Karsten
