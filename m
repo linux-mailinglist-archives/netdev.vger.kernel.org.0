@@ -2,426 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3DBB5C5CD
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 00:58:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F4FA5C5D0
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 01:02:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726936AbfGAW63 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 18:58:29 -0400
-Received: from mail-pg1-f201.google.com ([209.85.215.201]:49803 "EHLO
-        mail-pg1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726362AbfGAW62 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 18:58:28 -0400
-Received: by mail-pg1-f201.google.com with SMTP id 30so8381747pgk.16
-        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 15:58:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=fUouBDF/hJ3sqrdlOJGVxgfFWhJbu6DQj+SeFjBHgmk=;
-        b=tQPFhpmi/0LigTlNvCq+xi+DhKa/5TC4h2qXuHST6k50ywzcBmKNpfNoJoY9WE+LnY
-         4Dg7xKBljVxXAykE5Y2HgyY//D7L7mxetRJuKbjvLzsd5xYLb6b+jJVOY9AHxq2Xpcot
-         ibPXkWlkrod/6z5X/JeblydiSTHmseJdm40p05oTvo+KsYTPp2BU8Xk4S1807TxaPzyH
-         RHdNvYY4aOKhuDePHGJLFk8kMaAvbVLIUZTH13BZSmVrrA+jTqVQXBQ+4LANkkp981Ic
-         UHKpJIqx+pSHuELLgJYVjouT2x/CEA/JV6gezwu1xWLZw2ZKJVDn6KSo1hc8+0EPK5zD
-         df3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=fUouBDF/hJ3sqrdlOJGVxgfFWhJbu6DQj+SeFjBHgmk=;
-        b=VQs+J+HHyGZ6KhiRwoRbkPb/Vxpv2yV5bfgKm19JqTcw4W4qdDzb76Snog2hiLcJFe
-         JPxdELhoinnpPjKHAYm+zQcj7z0ZtXw8G5dPDmT1LfBKKc7LIShQMn/lWbbpIOUNNCjQ
-         aTBL2f7Vu7+4hNCRQm1+LLKe/NQhivwR45OCwAiVgAVb2sBHbfs7F877upGkuAyHHVXd
-         D6biTUyVXlK4BpMGUrG8ROrqvzq8qfEGFoBHppCaYtauULwPFdRAHfxYIXJL2+jLjJmv
-         0z5sy+ZnSUuCexTtJBwIsJsa1yXJaqg6Y51wrVL3ylW3Hu1ZNKzavNoveNZsd+Gzk69n
-         xv5w==
-X-Gm-Message-State: APjAAAWjn8PTvASo2mzcb2TwguEtO/6iOQZWescSmLQuaNOpEuRIjrMK
-        Z74ddRiYirTYUcG8CJISYkekCJkfzfLXCbMIe1idhwqgSqC0Ixs/+ja8hLvUZknox3sSXkAXYhK
-        tbVpJbZw+4Y2LgyMPANdBum23+1F0RBnhGZQjeNRSQVvLXclX7IxH9mDd6ybf3w==
-X-Google-Smtp-Source: APXvYqwyJk7Y+jsAun40DVm8jsmG7Ys8mZ/CaP7rx4GI8RqpEFOK/xvpSWPss7Q0l/kItDEYev/gP3VG/2U=
-X-Received: by 2002:a63:4d4a:: with SMTP id n10mr26584474pgl.396.1562021907824;
- Mon, 01 Jul 2019 15:58:27 -0700 (PDT)
-Date:   Mon,  1 Jul 2019 15:57:55 -0700
-In-Reply-To: <20190701225755.209250-1-csully@google.com>
-Message-Id: <20190701225755.209250-5-csully@google.com>
-Mime-Version: 1.0
-References: <20190701225755.209250-1-csully@google.com>
-X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
-Subject: [PATCH net-next v4 4/4] gve: Add ethtool support
-From:   Catherine Sullivan <csully@google.com>
-To:     netdev@vger.kernel.org
-Cc:     Catherine Sullivan <csully@google.com>,
-        Sagi Shahar <sagis@google.com>,
-        Jon Olson <jonolson@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Luigi Rizzo <lrizzo@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726688AbfGAXCm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 19:02:42 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:27198 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726362AbfGAXCm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 19:02:42 -0400
+Received: from pps.filterd (m0001255.ppops.net [127.0.0.1])
+        by mx0b-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x61N2L0b021328;
+        Mon, 1 Jul 2019 16:02:21 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=3wZHwOJX7quaesvn03e1knly+SlTK4xedajt9ZgEftI=;
+ b=nDWAiVatD2YbRXCRN32pDat8ZleS1dzVIHtEINHTzz0yUmmwJAGc6RSnSb7o75FOdJj1
+ U5wy0WyIEydp9jSmtOPumAGskF2luPVnC1yRYh74vUaD+nuc1PwD6bN9l2kRLnExecUS
+ joHSFEcbIz+uvVp2e/jCnE+TkmDWZbHLEjs= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0b-00082601.pphosted.com with ESMTP id 2tfgpm2f4f-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 01 Jul 2019 16:02:21 -0700
+Received: from prn-hub01.TheFacebook.com (2620:10d:c081:35::125) by
+ prn-hub05.TheFacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Mon, 1 Jul 2019 16:02:18 -0700
+Received: from NAM05-BY2-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
+ via Frontend Transport; Mon, 1 Jul 2019 16:02:18 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=testarcselector01; d=microsoft.com; cv=none;
+ b=wz0VhcxU3K9h9+mzEqgSbmujbOUKnp7fU8cuRe1tfPYS1zDzurtI8Lh36M85Em8Xq7e/5J1xF85uJeD+pUecCO+S/MflOqDHvIcUY/JqkvB829DjbKKnn3MZcsCChUwmu+iT6Ps2Eswp6tfZGJRH3C6IHRke0SS9CBCV5eKNJDU=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=testarcselector01;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3wZHwOJX7quaesvn03e1knly+SlTK4xedajt9ZgEftI=;
+ b=vVMmC5osTUI8M+fduJDkfVve319DdCqvHBsXEQCb9jiH2tKCCzwMc9KI5wq/F3J7AReKGtzVFKICwlk8klcLNwecyjeFoKTDSU5mv772xPJ9a9bqvo2O9bMlVFW2GWeVcxmrXsWNjoTL+wu0U07/tFCdniwcIZ65kWtbicW0KZk=
+ARC-Authentication-Results: i=1; test.office365.com
+ 1;spf=none;dmarc=none;dkim=none;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector1-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3wZHwOJX7quaesvn03e1knly+SlTK4xedajt9ZgEftI=;
+ b=pBIWQQ86lpuOYQ5hrtS6RyHbf7ZJUka64rXTOLUTgHsrWHdke2mlxwWab7zY6tZwHaYO+zAFsTNquXFoiO7oqRT4yp4Ef2tV/wcxTI0b3k0TqeORdXUZvjfppLH/ki4a5HNqulanFe602PCSgJ0ATyoR6KfERaPbdS8snSi0FYA=
+Received: from BYAPR15MB3384.namprd15.prod.outlook.com (20.179.59.17) by
+ BYAPR15MB2375.namprd15.prod.outlook.com (52.135.198.25) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2008.16; Mon, 1 Jul 2019 23:02:10 +0000
+Received: from BYAPR15MB3384.namprd15.prod.outlook.com
+ ([fe80::850b:bed:29d5:ae79]) by BYAPR15MB3384.namprd15.prod.outlook.com
+ ([fe80::850b:bed:29d5:ae79%7]) with mapi id 15.20.2032.019; Mon, 1 Jul 2019
+ 23:02:10 +0000
+From:   Yonghong Song <yhs@fb.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     Andrii Nakryiko <andriin@fb.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        "sdf@fomichev.me" <sdf@fomichev.me>,
+        Song Liu <songliubraving@fb.com>
+Subject: Re: [PATCH v4 bpf-next 3/9] libbpf: add ability to attach/detach BPF
+ program to perf event
+Thread-Topic: [PATCH v4 bpf-next 3/9] libbpf: add ability to attach/detach BPF
+ program to perf event
+Thread-Index: AQHVLi27vd5KKY/MU06fUnGqfnehB6a2AYKAgABSN4CAABHugA==
+Date:   Mon, 1 Jul 2019 23:02:10 +0000
+Message-ID: <c964a5ea-b672-368b-8aa9-e8d6afe15bc9@fb.com>
+References: <20190629034906.1209916-1-andriin@fb.com>
+ <20190629034906.1209916-4-andriin@fb.com>
+ <964c51ff-2b83-98e8-4b20-aaa7336a5536@fb.com>
+ <CAEf4Bzbz+bnM2E8aGP-eWtqDBepQ0Rc_KU-n+FQHnOrnFAWKwg@mail.gmail.com>
+In-Reply-To: <CAEf4Bzbz+bnM2E8aGP-eWtqDBepQ0Rc_KU-n+FQHnOrnFAWKwg@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: BYAPR03CA0024.namprd03.prod.outlook.com
+ (2603:10b6:a02:a8::37) To BYAPR15MB3384.namprd15.prod.outlook.com
+ (2603:10b6:a03:10e::17)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::1:fe3a]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d84f0026-3cbc-49a9-8805-08d6fe7825a8
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BYAPR15MB2375;
+x-ms-traffictypediagnostic: BYAPR15MB2375:
+x-microsoft-antispam-prvs: <BYAPR15MB23757EF382EB101480A12947D3F90@BYAPR15MB2375.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:50;
+x-forefront-prvs: 00851CA28B
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(39860400002)(366004)(396003)(376002)(346002)(52314003)(189003)(199004)(68736007)(5660300002)(14454004)(2906002)(6246003)(478600001)(486006)(6916009)(305945005)(6436002)(31686004)(31696002)(6486002)(7736002)(71190400001)(81166006)(229853002)(71200400001)(186003)(46003)(76176011)(52116002)(81156014)(8676002)(2616005)(8936002)(86362001)(6116002)(102836004)(6506007)(386003)(53546011)(4326008)(73956011)(11346002)(5024004)(446003)(256004)(476003)(14444005)(99286004)(6512007)(36756003)(66946007)(54906003)(53936002)(66446008)(64756008)(66556008)(66476007)(316002)(25786009);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2375;H:BYAPR15MB3384.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 3+h2z7jsWQIHlkefMnxBTl5U34KeJsXUVuxMyfJNPrc86ulRVMEX6TO+am0NhwSMpLl2vDZrKrJOQ/2YpIFtcfKX62hsahjPxxKNy9c1zKlz/+4Nl/Fxh/ZLmHxsseTzKKe47NoQwmvYCTN8+8o6p2JOoQapae7ZnpyQyHbaTLCLE4Zhpf9cVynt74AlhfnFjR0+G4HNfYlAXPDGMalIWm4IywprLY2C8SROuqu2o+K3OuRQdS0B7WysJFJj0dRLk2kTCFtQUnK454UCAWYGqvNpYUQuw0OEVTJqPAlLXesWlFPmcrbF5rVN+lcHBuai8iLnhQ8rzEkRO8LyQnYMFVWOrXdFwFTG/V2oPJjTGngOfVesvgQJVtswk1J7ibZDET2vZjlg77lHLwRD2PCvIVChSIv8StaR/Xue0YPd79Q=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <FBB3B98AA2E9834D8B7D158CEDC09729@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: d84f0026-3cbc-49a9-8805-08d6fe7825a8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Jul 2019 23:02:10.4564
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: yhs@fb.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2375
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-01_14:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1907010267
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for the following ethtool commands:
-
-ethtool -s|--change devname [msglvl N] [msglevel type on|off]
-ethtool -S|--statistics devname
-ethtool -i|--driver devname
-ethtool -l|--show-channels devname
-ethtool -L|--set-channels devname
-ethtool -g|--show-ring devname
-ethtool --reset devname
-
-Signed-off-by: Catherine Sullivan <csully@google.com>
-Signed-off-by: Sagi Shahar <sagis@google.com>
-Signed-off-by: Jon Olson <jonolson@google.com>
-Acked-by: Willem de Bruijn <willemb@google.com>
-Reviewed-by: Luigi Rizzo <lrizzo@google.com>
----
- drivers/net/ethernet/google/gve/Makefile      |   2 +-
- drivers/net/ethernet/google/gve/gve.h         |   4 +
- drivers/net/ethernet/google/gve/gve_ethtool.c | 243 ++++++++++++++++++
- drivers/net/ethernet/google/gve/gve_main.c    |  41 ++-
- 4 files changed, 288 insertions(+), 2 deletions(-)
- create mode 100644 drivers/net/ethernet/google/gve/gve_ethtool.c
-
-diff --git a/drivers/net/ethernet/google/gve/Makefile b/drivers/net/ethernet/google/gve/Makefile
-index a1890c93705b..3354ce40eb97 100644
---- a/drivers/net/ethernet/google/gve/Makefile
-+++ b/drivers/net/ethernet/google/gve/Makefile
-@@ -1,4 +1,4 @@
- # Makefile for the Google virtual Ethernet (gve) driver
- 
- obj-$(CONFIG_GVE) += gve.o
--gve-objs := gve_main.o gve_tx.o gve_rx.o gve_adminq.o
-+gve-objs := gve_main.o gve_tx.o gve_rx.o gve_ethtool.o gve_adminq.o
-diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
-index 7960d5532078..92372dc43be8 100644
---- a/drivers/net/ethernet/google/gve/gve.h
-+++ b/drivers/net/ethernet/google/gve/gve.h
-@@ -452,4 +452,8 @@ int gve_reset(struct gve_priv *priv, bool attempt_teardown);
- int gve_adjust_queues(struct gve_priv *priv,
- 		      struct gve_queue_config new_rx_config,
- 		      struct gve_queue_config new_tx_config);
-+/* exported by ethtool.c */
-+extern const struct ethtool_ops gve_ethtool_ops;
-+/* needed by ethtool */
-+extern const char gve_version_str[];
- #endif /* _GVE_H_ */
-diff --git a/drivers/net/ethernet/google/gve/gve_ethtool.c b/drivers/net/ethernet/google/gve/gve_ethtool.c
-new file mode 100644
-index 000000000000..52947d668e6d
---- /dev/null
-+++ b/drivers/net/ethernet/google/gve/gve_ethtool.c
-@@ -0,0 +1,243 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/* Google virtual Ethernet (gve) driver
-+ *
-+ * Copyright (C) 2015-2019 Google, Inc.
-+ */
-+
-+#include <linux/rtnetlink.h>
-+#include "gve.h"
-+
-+static void gve_get_drvinfo(struct net_device *netdev,
-+			    struct ethtool_drvinfo *info)
-+{
-+	struct gve_priv *priv = netdev_priv(netdev);
-+
-+	strlcpy(info->driver, "gve", sizeof(info->driver));
-+	strlcpy(info->version, gve_version_str, sizeof(info->version));
-+	strlcpy(info->bus_info, pci_name(priv->pdev), sizeof(info->bus_info));
-+}
-+
-+static void gve_set_msglevel(struct net_device *netdev, u32 value)
-+{
-+	struct gve_priv *priv = netdev_priv(netdev);
-+
-+	priv->msg_enable = value;
-+}
-+
-+static u32 gve_get_msglevel(struct net_device *netdev)
-+{
-+	struct gve_priv *priv = netdev_priv(netdev);
-+
-+	return priv->msg_enable;
-+}
-+
-+static const char gve_gstrings_main_stats[][ETH_GSTRING_LEN] = {
-+	"rx_packets", "tx_packets", "rx_bytes", "tx_bytes",
-+	"rx_dropped", "tx_dropped", "tx_timeouts",
-+};
-+
-+#define GVE_MAIN_STATS_LEN  ARRAY_SIZE(gve_gstrings_main_stats)
-+#define NUM_GVE_TX_CNTS	5
-+#define NUM_GVE_RX_CNTS	2
-+
-+static void gve_get_strings(struct net_device *netdev, u32 stringset, u8 *data)
-+{
-+	struct gve_priv *priv = netdev_priv(netdev);
-+	char *s = (char *)data;
-+	int i;
-+
-+	if (stringset != ETH_SS_STATS)
-+		return;
-+
-+	memcpy(s, *gve_gstrings_main_stats,
-+	       sizeof(gve_gstrings_main_stats));
-+	s += sizeof(gve_gstrings_main_stats);
-+	for (i = 0; i < priv->rx_cfg.num_queues; i++) {
-+		snprintf(s, ETH_GSTRING_LEN, "rx_desc_cnt[%u]", i);
-+		s += ETH_GSTRING_LEN;
-+		snprintf(s, ETH_GSTRING_LEN, "rx_desc_fill_cnt[%u]", i);
-+		s += ETH_GSTRING_LEN;
-+	}
-+	for (i = 0; i < priv->tx_cfg.num_queues; i++) {
-+		snprintf(s, ETH_GSTRING_LEN, "tx_req[%u]", i);
-+		s += ETH_GSTRING_LEN;
-+		snprintf(s, ETH_GSTRING_LEN, "tx_done[%u]", i);
-+		s += ETH_GSTRING_LEN;
-+		snprintf(s, ETH_GSTRING_LEN, "tx_wake[%u]", i);
-+		s += ETH_GSTRING_LEN;
-+		snprintf(s, ETH_GSTRING_LEN, "tx_stop[%u]", i);
-+		s += ETH_GSTRING_LEN;
-+		snprintf(s, ETH_GSTRING_LEN, "tx_event_counter[%u]", i);
-+		s += ETH_GSTRING_LEN;
-+	}
-+}
-+
-+static int gve_get_sset_count(struct net_device *netdev, int sset)
-+{
-+	struct gve_priv *priv = netdev_priv(netdev);
-+
-+	switch (sset) {
-+	case ETH_SS_STATS:
-+		return GVE_MAIN_STATS_LEN +
-+		       (priv->rx_cfg.num_queues * NUM_GVE_RX_CNTS) +
-+		       (priv->tx_cfg.num_queues * NUM_GVE_TX_CNTS);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static void
-+gve_get_ethtool_stats(struct net_device *netdev,
-+		      struct ethtool_stats *stats, u64 *data)
-+{
-+	struct gve_priv *priv = netdev_priv(netdev);
-+	u64 rx_pkts, rx_bytes, tx_pkts, tx_bytes;
-+	unsigned int start;
-+	int ring;
-+	int i;
-+
-+	ASSERT_RTNL();
-+
-+	for (rx_pkts = 0, rx_bytes = 0, ring = 0;
-+	     ring < priv->rx_cfg.num_queues; ring++) {
-+		if (priv->rx) {
-+			do {
-+				u64_stats_fetch_begin(&priv->rx[ring].statss);
-+				rx_pkts += priv->rx[ring].rpackets;
-+				rx_bytes += priv->rx[ring].rbytes;
-+			} while (u64_stats_fetch_retry(&priv->rx[ring].statss,
-+						       start));
-+		}
-+	}
-+	for (tx_pkts = 0, tx_bytes = 0, ring = 0;
-+	     ring < priv->tx_cfg.num_queues; ring++) {
-+		if (priv->tx) {
-+			do {
-+				u64_stats_fetch_begin(&priv->tx[ring].statss);
-+				tx_pkts += priv->tx[ring].pkt_done;
-+				tx_bytes += priv->tx[ring].bytes_done;
-+			} while (u64_stats_fetch_retry(&priv->tx[ring].statss,
-+						       start));
-+		}
-+	}
-+
-+	i = 0;
-+	data[i++] = rx_pkts;
-+	data[i++] = tx_pkts;
-+	data[i++] = rx_bytes;
-+	data[i++] = tx_bytes;
-+	/* Skip rx_dropped and tx_dropped */
-+	i += 2;
-+	data[i++] = priv->tx_timeo_cnt;
-+	i = GVE_MAIN_STATS_LEN;
-+
-+	/* walk RX rings */
-+	if (priv->rx) {
-+		for (ring = 0; ring < priv->rx_cfg.num_queues; ring++) {
-+			struct gve_rx_ring *rx = &priv->rx[ring];
-+
-+			data[i++] = rx->desc.cnt;
-+			data[i++] = rx->desc.fill_cnt;
-+		}
-+	} else {
-+		i += priv->rx_cfg.num_queues * NUM_GVE_RX_CNTS;
-+	}
-+	/* walk TX rings */
-+	if (priv->tx) {
-+		for (ring = 0; ring < priv->tx_cfg.num_queues; ring++) {
-+			struct gve_tx_ring *tx = &priv->tx[ring];
-+
-+			data[i++] = tx->req;
-+			data[i++] = tx->done;
-+			data[i++] = tx->wake_queue;
-+			data[i++] = tx->stop_queue;
-+			data[i++] = be32_to_cpu(gve_tx_load_event_counter(priv,
-+									  tx));
-+		}
-+	} else {
-+		i += priv->tx_cfg.num_queues * NUM_GVE_TX_CNTS;
-+	}
-+}
-+
-+static void gve_get_channels(struct net_device *netdev,
-+			     struct ethtool_channels *cmd)
-+{
-+	struct gve_priv *priv = netdev_priv(netdev);
-+
-+	cmd->max_rx = priv->rx_cfg.max_queues;
-+	cmd->max_tx = priv->tx_cfg.max_queues;
-+	cmd->max_other = 0;
-+	cmd->max_combined = 0;
-+	cmd->rx_count = priv->rx_cfg.num_queues;
-+	cmd->tx_count = priv->tx_cfg.num_queues;
-+	cmd->other_count = 0;
-+	cmd->combined_count = 0;
-+}
-+
-+static int gve_set_channels(struct net_device *netdev,
-+			    struct ethtool_channels *cmd)
-+{
-+	struct gve_priv *priv = netdev_priv(netdev);
-+	struct gve_queue_config new_tx_cfg = priv->tx_cfg;
-+	struct gve_queue_config new_rx_cfg = priv->rx_cfg;
-+	struct ethtool_channels old_settings;
-+	int new_tx = cmd->tx_count;
-+	int new_rx = cmd->rx_count;
-+
-+	gve_get_channels(netdev, &old_settings);
-+
-+	/* Changing combined is not allowed allowed */
-+	if (cmd->combined_count != old_settings.combined_count)
-+		return -EINVAL;
-+
-+	if (!new_rx || !new_tx)
-+		return -EINVAL;
-+
-+	if (!netif_carrier_ok(netdev)) {
-+		priv->tx_cfg.num_queues = new_tx;
-+		priv->rx_cfg.num_queues = new_rx;
-+		return 0;
-+	}
-+
-+	new_tx_cfg.num_queues = new_tx;
-+	new_rx_cfg.num_queues = new_rx;
-+
-+	return gve_adjust_queues(priv, new_rx_cfg, new_tx_cfg);
-+}
-+
-+static void gve_get_ringparam(struct net_device *netdev,
-+			      struct ethtool_ringparam *cmd)
-+{
-+	struct gve_priv *priv = netdev_priv(netdev);
-+
-+	cmd->rx_max_pending = priv->rx_desc_cnt;
-+	cmd->tx_max_pending = priv->tx_desc_cnt;
-+	cmd->rx_pending = priv->rx_desc_cnt;
-+	cmd->tx_pending = priv->tx_desc_cnt;
-+}
-+
-+static int gve_user_reset(struct net_device *netdev, u32 *flags)
-+{
-+	struct gve_priv *priv = netdev_priv(netdev);
-+
-+	if (*flags == ETH_RESET_ALL) {
-+		*flags = 0;
-+		return gve_reset(priv, true);
-+	}
-+
-+	return -EOPNOTSUPP;
-+}
-+
-+const struct ethtool_ops gve_ethtool_ops = {
-+	.get_drvinfo = gve_get_drvinfo,
-+	.get_strings = gve_get_strings,
-+	.get_sset_count = gve_get_sset_count,
-+	.get_ethtool_stats = gve_get_ethtool_stats,
-+	.set_msglevel = gve_set_msglevel,
-+	.get_msglevel = gve_get_msglevel,
-+	.set_channels = gve_set_channels,
-+	.get_channels = gve_get_channels,
-+	.get_link = ethtool_op_get_link,
-+	.get_ringparam = gve_get_ringparam,
-+	.reset = gve_user_reset,
-+};
-diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
-index 126d6533b965..6a147ed4627f 100644
---- a/drivers/net/ethernet/google/gve/gve_main.c
-+++ b/drivers/net/ethernet/google/gve/gve_main.c
-@@ -23,7 +23,7 @@
- #define GVE_VERSION		"1.0.0"
- #define GVE_VERSION_PREFIX	"GVE-"
- 
--static const char gve_version_str[] = GVE_VERSION;
-+const char gve_version_str[] = GVE_VERSION;
- static const char gve_version_prefix[] = GVE_VERSION_PREFIX;
- 
- static void gve_get_stats(struct net_device *dev, struct rtnl_link_stats64 *s)
-@@ -746,6 +746,44 @@ static int gve_close(struct net_device *dev)
- 	return gve_reset_recovery(priv, false);
- }
- 
-+int gve_adjust_queues(struct gve_priv *priv,
-+		      struct gve_queue_config new_rx_config,
-+		      struct gve_queue_config new_tx_config)
-+{
-+	int err;
-+
-+	if (netif_carrier_ok(priv->dev)) {
-+		/* To make this process as simple as possible we teardown the
-+		 * device, set the new configuration, and then bring the device
-+		 * up again.
-+		 */
-+		err = gve_close(priv->dev);
-+		/* we have already tried to reset in close,
-+		 * just fail at this point
-+		 */
-+		if (err)
-+			return err;
-+		priv->tx_cfg = new_tx_config;
-+		priv->rx_cfg = new_rx_config;
-+
-+		err = gve_open(priv->dev);
-+		if (err)
-+			goto err;
-+
-+		return 0;
-+	}
-+	/* Set the config for the next up. */
-+	priv->tx_cfg = new_tx_config;
-+	priv->rx_cfg = new_rx_config;
-+
-+	return 0;
-+err:
-+	netif_err(priv, drv, priv->dev,
-+		  "Adjust queues failed! !!! DISABLING ALL QUEUES !!!\n");
-+	gve_turndown(priv);
-+	return err;
-+}
-+
- static void gve_turndown(struct gve_priv *priv)
- {
- 	int idx;
-@@ -1082,6 +1120,7 @@ static int gve_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	}
- 	SET_NETDEV_DEV(dev, &pdev->dev);
- 	pci_set_drvdata(pdev, dev);
-+	dev->ethtool_ops = &gve_ethtool_ops;
- 	dev->netdev_ops = &gve_netdev_ops;
- 	/* advertise features */
- 	dev->hw_features = NETIF_F_HIGHDMA;
--- 
-2.22.0.410.gd8fdbe21b5-goog
-
+DQoNCk9uIDcvMS8xOSAyOjU3IFBNLCBBbmRyaWkgTmFrcnlpa28gd3JvdGU6DQo+IE9uIE1vbiwg
+SnVsIDEsIDIwMTkgYXQgMTA6MDMgQU0gWW9uZ2hvbmcgU29uZyA8eWhzQGZiLmNvbT4gd3JvdGU6
+DQo+Pg0KPj4NCj4+DQo+PiBPbiA2LzI4LzE5IDg6NDkgUE0sIEFuZHJpaSBOYWtyeWlrbyB3cm90
+ZToNCj4+PiBicGZfcHJvZ3JhbV9fYXR0YWNoX3BlcmZfZXZlbnQgYWxsb3dzIHRvIGF0dGFjaCBC
+UEYgcHJvZ3JhbSB0byBleGlzdGluZw0KPj4+IHBlcmYgZXZlbnQgaG9vaywgcHJvdmlkaW5nIG1v
+c3QgZ2VuZXJpYyBhbmQgbW9zdCBsb3ctbGV2ZWwgd2F5IHRvIGF0dGFjaCBCUEYNCj4+PiBwcm9n
+cmFtcy4gSXQgcmV0dXJucyBzdHJ1Y3QgYnBmX2xpbmssIHdoaWNoIHNob3VsZCBiZSBwYXNzZWQg
+dG8NCj4+PiBicGZfbGlua19fZGVzdHJveSB0byBkZXRhY2ggYW5kIGZyZWUgcmVzb3VyY2VzLCBh
+c3NvY2lhdGVkIHdpdGggYSBsaW5rLg0KPj4+DQo+Pj4gU2lnbmVkLW9mZi1ieTogQW5kcmlpIE5h
+a3J5aWtvIDxhbmRyaWluQGZiLmNvbT4NCj4+PiAtLS0NCj4+PiAgICB0b29scy9saWIvYnBmL2xp
+YmJwZi5jICAgfCA2MSArKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrDQo+
+Pj4gICAgdG9vbHMvbGliL2JwZi9saWJicGYuaCAgIHwgIDMgKysNCj4+PiAgICB0b29scy9saWIv
+YnBmL2xpYmJwZi5tYXAgfCAgMSArDQo+Pj4gICAgMyBmaWxlcyBjaGFuZ2VkLCA2NSBpbnNlcnRp
+b25zKCspDQo+Pj4NCj4+PiBkaWZmIC0tZ2l0IGEvdG9vbHMvbGliL2JwZi9saWJicGYuYyBiL3Rv
+b2xzL2xpYi9icGYvbGliYnBmLmMNCj4+PiBpbmRleCA0NTU3OTVlNmY4YWYuLjk4YzE1NWVjM2Jm
+YSAxMDA2NDQNCj4+PiAtLS0gYS90b29scy9saWIvYnBmL2xpYmJwZi5jDQo+Pj4gKysrIGIvdG9v
+bHMvbGliL2JwZi9saWJicGYuYw0KPj4+IEBAIC0zMiw2ICszMiw3IEBADQo+Pj4gICAgI2luY2x1
+ZGUgPGxpbnV4L2xpbWl0cy5oPg0KPj4+ICAgICNpbmNsdWRlIDxsaW51eC9wZXJmX2V2ZW50Lmg+
+DQo+Pj4gICAgI2luY2x1ZGUgPGxpbnV4L3JpbmdfYnVmZmVyLmg+DQo+Pj4gKyNpbmNsdWRlIDxz
+eXMvaW9jdGwuaD4NCj4+PiAgICAjaW5jbHVkZSA8c3lzL3N0YXQuaD4NCj4+PiAgICAjaW5jbHVk
+ZSA8c3lzL3R5cGVzLmg+DQo+Pj4gICAgI2luY2x1ZGUgPHN5cy92ZnMuaD4NCj4+PiBAQCAtMzk1
+OCw2ICszOTU5LDY2IEBAIGludCBicGZfbGlua19fZGVzdHJveShzdHJ1Y3QgYnBmX2xpbmsgKmxp
+bmspDQo+Pj4gICAgICAgIHJldHVybiBlcnI7DQo+Pj4gICAgfQ0KPj4+DQo+Pj4gK3N0cnVjdCBi
+cGZfbGlua19mZCB7DQo+Pj4gKyAgICAgc3RydWN0IGJwZl9saW5rIGxpbms7IC8qIGhhcyB0byBi
+ZSBhdCB0aGUgdG9wIG9mIHN0cnVjdCAqLw0KPj4+ICsgICAgIGludCBmZDsgLyogaG9vayBGRCAq
+Lw0KPj4+ICt9Ow0KPj4+ICsNCj4+PiArc3RhdGljIGludCBicGZfbGlua19fZGVzdHJveV9wZXJm
+X2V2ZW50KHN0cnVjdCBicGZfbGluayAqbGluaykNCj4+PiArew0KPj4+ICsgICAgIHN0cnVjdCBi
+cGZfbGlua19mZCAqbCA9ICh2b2lkICopbGluazsNCj4+PiArICAgICBpbnQgZXJyOw0KPj4+ICsN
+Cj4+PiArICAgICBpZiAobC0+ZmQgPCAwKQ0KPj4+ICsgICAgICAgICAgICAgcmV0dXJuIDA7DQo+
+Pj4gKw0KPj4+ICsgICAgIGVyciA9IGlvY3RsKGwtPmZkLCBQRVJGX0VWRU5UX0lPQ19ESVNBQkxF
+LCAwKTsNCj4+PiArICAgICBpZiAoZXJyKQ0KPj4+ICsgICAgICAgICAgICAgZXJyID0gLWVycm5v
+Ow0KPj4+ICsNCj4+PiArICAgICBjbG9zZShsLT5mZCk7DQo+Pj4gKyAgICAgcmV0dXJuIGVycjsN
+Cj4+PiArfQ0KPj4+ICsNCj4+PiArc3RydWN0IGJwZl9saW5rICpicGZfcHJvZ3JhbV9fYXR0YWNo
+X3BlcmZfZXZlbnQoc3RydWN0IGJwZl9wcm9ncmFtICpwcm9nLA0KPj4+ICsgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBpbnQgcGZkKQ0KPj4+ICt7DQo+Pj4gKyAg
+ICAgY2hhciBlcnJtc2dbU1RSRVJSX0JVRlNJWkVdOw0KPj4+ICsgICAgIHN0cnVjdCBicGZfbGlu
+a19mZCAqbGluazsNCj4+PiArICAgICBpbnQgcHJvZ19mZCwgZXJyOw0KPj4+ICsNCj4+PiArICAg
+ICBwcm9nX2ZkID0gYnBmX3Byb2dyYW1fX2ZkKHByb2cpOw0KPj4+ICsgICAgIGlmIChwcm9nX2Zk
+IDwgMCkgew0KPj4+ICsgICAgICAgICAgICAgcHJfd2FybmluZygicHJvZ3JhbSAnJXMnOiBjYW4n
+dCBhdHRhY2ggYmVmb3JlIGxvYWRlZFxuIiwNCj4+PiArICAgICAgICAgICAgICAgICAgICAgICAg
+YnBmX3Byb2dyYW1fX3RpdGxlKHByb2csIGZhbHNlKSk7DQo+Pj4gKyAgICAgICAgICAgICByZXR1
+cm4gRVJSX1BUUigtRUlOVkFMKTsNCj4+PiArICAgICB9DQo+Pg0KPj4gc2hvdWxkIHdlIGNoZWNr
+IHZhbGlkaXR5IG9mIHBmZCBoZXJlPw0KPj4gSWYgcGZkIDwgMCwgd2UganVzdCByZXR1cm4gRVJS
+X1BUUigtRUlOVkFMKT8NCj4gDQo+IEkgY2FuIGFkZCB0aGF0LiBJIGRpZG4ndCBkbyBpdCwgYmVj
+YXVzZSBpbiBnZW5lcmFsLCB5b3UgY2FuIHByb3ZpZGUgZmQNCj4+ID0gMCB3aGljaCBpcyBzdGls
+bCBub3QgYSB2YWxpZCBGRCBmb3IgUEVSRl9FVkVOVF9JT0NfU0VUX0JQRiBhbmQNCj4gUEVSRl9F
+VkVOVF9JT0NfRU5BQkxFLCBzbyBpbiBnZW5lcmFsIHdlIGNhbid0IGRldGVjdCB0aGlzIHJlbGlh
+Ymx5Lg0KDQpJIGp1c3Qgd2FudCBhIGNoZWNrIGZvciB2YWxpZGl0eSBvZiBpbnB1dCBwYXJhbWV0
+ZXIgd2hpY2ggd2lsbCBmYWlsdXJlIA0KbGF0ZXIgd2l0aCBkZWRpY2F0ZWQgZXJyb3IgbWVzc2Fn
+ZS4gQnV0IHRoZSBzYW1lIG5lZ2F0aXZlIHBmZCB3aWxsDQpiZSBwcmludGVkIGluIGlvY3RsIGVy
+cm9yIG1lc3NhZ2UuIEkgYW0gb2theSB3aXRoIHRoaXMuDQoNCj4gDQo+PiBUaGlzIHdheSwgaW4g
+YnBmX2xpbmtfX2Rlc3Ryb3lfcGVyZl9ldmVudCgpLCB3ZSBkbyBub3QgbmVlZCB0byBjaGVjaw0K
+Pj4gbC0+ZmQgPCAwIHNpbmNlIGl0IHdpbGwgYmUgYWx3YXlzIG5vbm5lZ2F0aXZlLg0KPiANCj4g
+VGhhdCBjaGVjayBpcyBub3QgbmVlZGVkIGFueXdheSwgYmVjYXVzZSBldmVuIGlmIHBmZCA8IDAs
+IGlvY3RsIHNob3VsZA0KPiBmYWlsIGFuZCByZXR1cm4gZXJyb3IuIEknbGwgcmVtb3ZlIHRoYXQg
+Y2hlY2suDQo+IA0KPj4NCj4+PiArDQo+Pj4gKyAgICAgbGluayA9IG1hbGxvYyhzaXplb2YoKmxp
+bmspKTsNCj4+PiArICAgICBpZiAoIWxpbmspDQo+Pj4gKyAgICAgICAgICAgICByZXR1cm4gRVJS
+X1BUUigtRU5PTUVNKTsNCj4+PiArICAgICBsaW5rLT5saW5rLmRlc3Ryb3kgPSAmYnBmX2xpbmtf
+X2Rlc3Ryb3lfcGVyZl9ldmVudDsNCj4+PiArICAgICBsaW5rLT5mZCA9IHBmZDsNCj4+PiArDQo+
+Pj4gKyAgICAgaWYgKGlvY3RsKHBmZCwgUEVSRl9FVkVOVF9JT0NfU0VUX0JQRiwgcHJvZ19mZCkg
+PCAwKSB7DQo+Pj4gKyAgICAgICAgICAgICBlcnIgPSAtZXJybm87DQo+Pj4gKyAgICAgICAgICAg
+ICBmcmVlKGxpbmspOw0KPj4+ICsgICAgICAgICAgICAgcHJfd2FybmluZygicHJvZ3JhbSAnJXMn
+OiBmYWlsZWQgdG8gYXR0YWNoIHRvIHBmZCAlZDogJXNcbiIsDQo+Pj4gKyAgICAgICAgICAgICAg
+ICAgICAgICAgIGJwZl9wcm9ncmFtX190aXRsZShwcm9nLCBmYWxzZSksIHBmZCwNCj4+PiArICAg
+ICAgICAgICAgICAgICAgICAgICAgbGliYnBmX3N0cmVycm9yX3IoZXJyLCBlcnJtc2csIHNpemVv
+ZihlcnJtc2cpKSk7DQo+Pj4gKyAgICAgICAgICAgICByZXR1cm4gRVJSX1BUUihlcnIpOw0KPj4+
+ICsgICAgIH0NCj4+PiArICAgICBpZiAoaW9jdGwocGZkLCBQRVJGX0VWRU5UX0lPQ19FTkFCTEUs
+IDApIDwgMCkgew0KPj4+ICsgICAgICAgICAgICAgZXJyID0gLWVycm5vOw0KPj4+ICsgICAgICAg
+ICAgICAgZnJlZShsaW5rKTsNCj4+PiArICAgICAgICAgICAgIHByX3dhcm5pbmcoInByb2dyYW0g
+JyVzJzogZmFpbGVkIHRvIGVuYWJsZSBwZmQgJWQ6ICVzXG4iLA0KPj4+ICsgICAgICAgICAgICAg
+ICAgICAgICAgICBicGZfcHJvZ3JhbV9fdGl0bGUocHJvZywgZmFsc2UpLCBwZmQsDQo+Pj4gKyAg
+ICAgICAgICAgICAgICAgICAgICAgIGxpYmJwZl9zdHJlcnJvcl9yKGVyciwgZXJybXNnLCBzaXpl
+b2YoZXJybXNnKSkpOw0KPj4+ICsgICAgICAgICAgICAgcmV0dXJuIEVSUl9QVFIoZXJyKTsNCj4+
+PiArICAgICB9DQo+Pj4gKyAgICAgcmV0dXJuIChzdHJ1Y3QgYnBmX2xpbmsgKilsaW5rOw0KPj4+
+ICt9DQo+Pj4gKw0KPj4+ICAgIGVudW0gYnBmX3BlcmZfZXZlbnRfcmV0DQo+Pj4gICAgYnBmX3Bl
+cmZfZXZlbnRfcmVhZF9zaW1wbGUodm9pZCAqbW1hcF9tZW0sIHNpemVfdCBtbWFwX3NpemUsIHNp
+emVfdCBwYWdlX3NpemUsDQo+Pj4gICAgICAgICAgICAgICAgICAgICAgICAgICB2b2lkICoqY29w
+eV9tZW0sIHNpemVfdCAqY29weV9zaXplLA0KPj4+IGRpZmYgLS1naXQgYS90b29scy9saWIvYnBm
+L2xpYmJwZi5oIGIvdG9vbHMvbGliL2JwZi9saWJicGYuaA0KPj4+IGluZGV4IDUwODJhNWViYjBj
+Mi4uMWJmNjZjNGE5MzMwIDEwMDY0NA0KPj4+IC0tLSBhL3Rvb2xzL2xpYi9icGYvbGliYnBmLmgN
+Cj4+PiArKysgYi90b29scy9saWIvYnBmL2xpYmJwZi5oDQo+Pj4gQEAgLTE2OSw2ICsxNjksOSBA
+QCBzdHJ1Y3QgYnBmX2xpbms7DQo+Pj4NCj4+PiAgICBMSUJCUEZfQVBJIGludCBicGZfbGlua19f
+ZGVzdHJveShzdHJ1Y3QgYnBmX2xpbmsgKmxpbmspOw0KPj4+DQo+Pj4gK0xJQkJQRl9BUEkgc3Ry
+dWN0IGJwZl9saW5rICoNCj4+PiArYnBmX3Byb2dyYW1fX2F0dGFjaF9wZXJmX2V2ZW50KHN0cnVj
+dCBicGZfcHJvZ3JhbSAqcHJvZywgaW50IHBmZCk7DQo+Pj4gKw0KPj4+ICAgIHN0cnVjdCBicGZf
+aW5zbjsNCj4+Pg0KPj4+ICAgIC8qDQo+Pj4gZGlmZiAtLWdpdCBhL3Rvb2xzL2xpYi9icGYvbGli
+YnBmLm1hcCBiL3Rvb2xzL2xpYi9icGYvbGliYnBmLm1hcA0KPj4+IGluZGV4IDNjZGU4NTBmYzhk
+YS4uNzU2ZjVhYTgwMmU5IDEwMDY0NA0KPj4+IC0tLSBhL3Rvb2xzL2xpYi9icGYvbGliYnBmLm1h
+cA0KPj4+ICsrKyBiL3Rvb2xzL2xpYi9icGYvbGliYnBmLm1hcA0KPj4+IEBAIC0xNjksNiArMTY5
+LDcgQEAgTElCQlBGXzAuMC40IHsNCj4+PiAgICAgICAgZ2xvYmFsOg0KPj4+ICAgICAgICAgICAg
+ICAgIGJwZl9saW5rX19kZXN0cm95Ow0KPj4+ICAgICAgICAgICAgICAgIGJwZl9vYmplY3RfX2xv
+YWRfeGF0dHI7DQo+Pj4gKyAgICAgICAgICAgICBicGZfcHJvZ3JhbV9fYXR0YWNoX3BlcmZfZXZl
+bnQ7DQo+Pj4gICAgICAgICAgICAgICAgYnRmX2R1bXBfX2R1bXBfdHlwZTsNCj4+PiAgICAgICAg
+ICAgICAgICBidGZfZHVtcF9fZnJlZTsNCj4+PiAgICAgICAgICAgICAgICBidGZfZHVtcF9fbmV3
+Ow0KPj4+DQo=
