@@ -2,57 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03DAD5C0E7
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 18:10:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 590FB5C0E9
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 18:10:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728238AbfGAQKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 12:10:36 -0400
-Received: from smtprelay0187.hostedemail.com ([216.40.44.187]:51287 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726646AbfGAQKg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 12:10:36 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay02.hostedemail.com (Postfix) with ESMTP id 47501629;
-        Mon,  1 Jul 2019 16:10:35 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::,RULES_HIT:41:355:379:599:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1538:1567:1593:1594:1711:1714:1730:1747:1777:1792:2198:2199:2393:2559:2562:2828:3138:3139:3140:3141:3142:3622:3865:3867:3871:4321:5007:9165:10004:10400:10848:11026:11232:11658:11914:12296:12297:12740:12760:12895:13069:13311:13357:13439:14659:14721:21080:21627:30003:30054:30091,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.14.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:27,LUA_SUMMARY:none
-X-HE-Tag: act42_3f2b48fec7d3c
-X-Filterd-Recvd-Size: 1392
-Received: from XPS-9350 (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
-        (Authenticated sender: joe@perches.com)
-        by omf17.hostedemail.com (Postfix) with ESMTPA;
-        Mon,  1 Jul 2019 16:10:33 +0000 (UTC)
-Message-ID: <42624f83da71354a5daef959a4749cb75516d37f.camel@perches.com>
-Subject: Re: [PATCH net] ipv4: don't set IPv6 only flags to IPv4 addresses
-From:   Joe Perches <joe@perches.com>
-To:     Matteo Croce <mcroce@redhat.com>, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Date:   Mon, 01 Jul 2019 09:10:32 -0700
-In-Reply-To: <20190701160805.32404-1-mcroce@redhat.com>
-References: <20190701160805.32404-1-mcroce@redhat.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
+        id S1728988AbfGAQKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 12:10:47 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:37689 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728804AbfGAQKr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 12:10:47 -0400
+Received: by mail-pl1-f195.google.com with SMTP id bh12so7578959plb.4
+        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 09:10:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=N2Uf2cCAYbzuCUem1tyG4B47u6mWDhxVH7gcw4H7xAc=;
+        b=DnUnhLNKaqz03i/Ct4xF9QTy8PszygnzQjTRtd499X153pcWJ4rHQlxnfFvx4L7UVg
+         ml5VYmSCSl822IlshDoQjtejtkgmQrP/h97GxoYPmY2JW70CokiDtH1mDSZJpNgEWGDR
+         BiI+TMiTxK7+Wvk1eFlejThBnXJP7OqNYqf/xfP2FO+DmAYniS7/bDNsyCrTTUQb146x
+         r3uEsPs98g6QhjoBIAT2DGXtjHy7gII9m7A6JpXahDf65A1U3O7sbqn6cXVYbrxwIu1e
+         Aa6kQuq0Fi6hG6MxPvtVzZWuCSibrpvY/rkbtsw6JUTvJEA/aflsCwglXFrmR99woOmm
+         6GLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=N2Uf2cCAYbzuCUem1tyG4B47u6mWDhxVH7gcw4H7xAc=;
+        b=NSvSj9ZkvKZ6HEEznjyuTtiJa0xJM7JwAxv5ygnzBOoFilAS6TvSmVFSFRjJ0LvR0W
+         2tiDmKhLi2RSiJd9X6H3xxHWrZnqtute7OlzSJXPDjsspOEZEYeKvc5EGqv0o4TZowNP
+         5zZUf0g0rNkPsTYCyqpvBnpzqLdz1C4OzWfDoXqi7ZNyRHVhDGTKfO8vmOJQ9/9OG93h
+         lGHioyf5MBCvS3CIsuqnjMOgQS0J0LgElOZRd1wHJs6pGCE/jQPsYCJDDsflAdraTQxh
+         UMbnAnqQKzCEeEUc4rIqFRA0hlWRt/CNY/nEdASlou7MkY4O/8x4gYdFSKxCQoLJN8P2
+         bjUw==
+X-Gm-Message-State: APjAAAVywmL0BbrYyzcVh9dulqxRCsLoL37Km1oWpb/iN0xAnkeJPCnW
+        491R41OhaEG44vwG+rhwH5jQyQ==
+X-Google-Smtp-Source: APXvYqwdVMK7/BppSCHOF5OQ1Bo+N5aJNmlh2C8q0CoeYbFxIB3M5kGOJecqDzC4qxGvc1M87CO4tw==
+X-Received: by 2002:a17:902:205:: with SMTP id 5mr27893497plc.165.1561997447087;
+        Mon, 01 Jul 2019 09:10:47 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id a21sm13878695pfi.27.2019.07.01.09.10.46
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 01 Jul 2019 09:10:46 -0700 (PDT)
+Date:   Mon, 1 Jul 2019 09:10:45 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     andrii.nakryiko@gmail.com, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net,
+        kernel-team@fb.com, songliubraving@fb.com
+Subject: Re: [PATCH v4 bpf-next 0/9] libbpf: add bpf_link and tracing attach
+ APIs
+Message-ID: <20190701161045.GE6757@mini-arch>
+References: <20190629034906.1209916-1-andriin@fb.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190629034906.1209916-1-andriin@fb.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2019-07-01 at 18:08 +0200, Matteo Croce wrote:
-> Avoid the situation where an IPV6 only flag is applied to an IPv4 address:
-[]
-> diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
-[]
-> @@ -468,6 +473,9 @@ static int __inet_insert_ifa(struct in_ifaddr *ifa, struct nlmsghdr *nlh,
->  	ifa->ifa_flags &= ~IFA_F_SECONDARY;
->  	last_primary = &in_dev->ifa_list;
->  
-> +	/* Don't set IPv6 only flags to IPv6 addresses */
+On 06/28, Andrii Nakryiko wrote:
+> This patchset adds the following APIs to allow attaching BPF programs to
+> tracing entities:
+> - bpf_program__attach_perf_event for attaching to any opened perf event FD,
+>   allowing users full control;
+> - bpf_program__attach_kprobe for attaching to kernel probes (both entry and
+>   return probes);
+> - bpf_program__attach_uprobe for attaching to user probes (both entry/return);
+> - bpf_program__attach_tracepoint for attaching to kernel tracepoints;
+> - bpf_program__attach_raw_tracepoint for attaching to raw kernel tracepoint
+>   (wrapper around bpf_raw_tracepoint_open);
+> 
+> This set of APIs makes libbpf more useful for tracing applications.
+> 
+> All attach APIs return abstract struct bpf_link that encapsulates logic of
+> detaching BPF program. See patch #2 for details. bpf_assoc was considered as
+> an alternative name for this opaque "handle", but bpf_link seems to be
+> appropriate semantically and is nice and short.
+> 
+> Pre-patch #1 makes internal libbpf_strerror_r helper function work w/ negative
+> error codes, lifting the burder off callers to keep track of error sign.
+> Patch #2 adds bpf_link abstraction.
+> Patch #3 adds attach_perf_event, which is the base for all other APIs.
+> Patch #4 adds kprobe/uprobe APIs.
+> Patch #5 adds tracepoint API.
+> Patch #6 adds raw_tracepoint API.
+> Patch #7 converts one existing test to use attach_perf_event.
+> Patch #8 adds new kprobe/uprobe tests.
+> Patch #9 converts some selftests currently using tracepoint to new APIs.
+> 
+> v3->v4:
+> - proper errno handling (Stanislav);
+> - bpf_fd -> prog_fd (Stanislav);
+> - switch to fprintf (Song);
+Reviewed-by: Stanislav Fomichev <sdf@google.com>
 
-umm, IPv4 addresses?
+Thanks!
 
-
+> v2->v3:
+> - added bpf_link concept (Daniel);
+> - didn't add generic bpf_link__attach_program for reasons described in [0];
+> - dropped Stanislav's Reviewed-by from patches #2-#6, in case he doesn't like
+>   the change;
+> v1->v2:
+> - preserve errno before close() call (Stanislav);
+> - use libbpf_perf_event_disable_and_close in selftest (Stanislav);
+> - remove unnecessary memset (Stanislav);
+> 
+> [0] https://lore.kernel.org/bpf/CAEf4BzZ7EM5eP2eaZn7T2Yb5QgVRiwAs+epeLR1g01TTx-6m6Q@mail.gmail.com/
+> 
+> Andrii Nakryiko (9):
+>   libbpf: make libbpf_strerror_r agnostic to sign of error
+>   libbpf: introduce concept of bpf_link
+>   libbpf: add ability to attach/detach BPF program to perf event
+>   libbpf: add kprobe/uprobe attach API
+>   libbpf: add tracepoint attach API
+>   libbpf: add raw tracepoint attach API
+>   selftests/bpf: switch test to new attach_perf_event API
+>   selftests/bpf: add kprobe/uprobe selftests
+>   selftests/bpf: convert existing tracepoint tests to new APIs
+> 
+>  tools/lib/bpf/libbpf.c                        | 359 ++++++++++++++++++
+>  tools/lib/bpf/libbpf.h                        |  21 +
+>  tools/lib/bpf/libbpf.map                      |   8 +-
+>  tools/lib/bpf/str_error.c                     |   2 +-
+>  .../selftests/bpf/prog_tests/attach_probe.c   | 155 ++++++++
+>  .../bpf/prog_tests/stacktrace_build_id.c      |  50 +--
+>  .../bpf/prog_tests/stacktrace_build_id_nmi.c  |  31 +-
+>  .../selftests/bpf/prog_tests/stacktrace_map.c |  43 +--
+>  .../bpf/prog_tests/stacktrace_map_raw_tp.c    |  15 +-
+>  .../selftests/bpf/progs/test_attach_probe.c   |  55 +++
+>  10 files changed, 644 insertions(+), 95 deletions(-)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/attach_probe.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_attach_probe.c
+> 
+> -- 
+> 2.17.1
+> 
