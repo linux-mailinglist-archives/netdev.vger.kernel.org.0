@@ -2,108 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DADC15BEB2
+	by mail.lfdr.de (Postfix) with ESMTP id 6BBFC5BEB1
 	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 16:51:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729866AbfGAOvW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 10:51:22 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:10649 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727337AbfGAOvW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Jul 2019 10:51:22 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 8D49A780F4;
-        Mon,  1 Jul 2019 14:51:17 +0000 (UTC)
-Received: from carbon (ovpn-200-45.brq.redhat.com [10.40.200.45])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 78AB62CFAD;
-        Mon,  1 Jul 2019 14:51:13 +0000 (UTC)
-Date:   Mon, 1 Jul 2019 16:51:11 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        brouer@redhat.com, Robert Olsson <robert@herjulf.net>
-Subject: Re: [PATCH 1/2] samples: pktgen: add some helper functions for port
- parsing
-Message-ID: <20190701165111.3e68cd6c@carbon>
-In-Reply-To: <20190629133358.8251-1-danieltimlee@gmail.com>
-References: <20190629133358.8251-1-danieltimlee@gmail.com>
+        id S1729863AbfGAOvQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 10:51:16 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:36786 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728706AbfGAOvP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 10:51:15 -0400
+Received: by mail-io1-f66.google.com with SMTP id h6so29500914ioh.3
+        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 07:51:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=+Ck1eoyLCbnE3A/umEm7h9O4HYaTBBL4U6JBkwzRO+w=;
+        b=nSgsCzGiHQE7orVZGPuEXR+T9WYro8E3k6V8n1hIreew8B15ZyM8skDFHiJfgG+End
+         5MH3XRzT8aqAneqq01IYWxfmNG8546alOcGG9m3YyGjZTT3pUiHDYD2vDkmFK4rr57k3
+         BFpODFoe/WwrcngOcxZsJoq6a4lXKJ8+1bUeNq8Q3p5yg9uCJtGjni/L9eDMklX0VF4i
+         k7/piC3OQDE2To0dqSEkYYXYe6VlIKWUGXG99aJo4bNBuFjkTlKrfGvXZy3g8dpYU/nw
+         JgZLzf0n0zpHxFrs8xcMHVY+2U5nrqHj7jkAMNEMU3XRJnoojWuD8EBgY8bEtq5FV9d5
+         lVqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=+Ck1eoyLCbnE3A/umEm7h9O4HYaTBBL4U6JBkwzRO+w=;
+        b=py0tUnVcYPfzl1naiVaCMZkwmPlbGr6+A+q9nTXLKJv52d5fdB5CZaDozvonENFekp
+         EXMUVqyEq093qYTFvX6RldhESBEO4/KemEIPgTtiSkKe9+11gFvF/ydx4st0wDSZT9UW
+         xB9dJW1LO8AZcrNnMzdEBi2HAfOTIQTIbBpJ4IHwp7otueIiIDvctPB4FigRiE0sEHLc
+         BJivgYjVxvCpIqo8OpWB21AVnX1iBcRxRGujaHZqJLGKMYvOo1u9KlLff0rn7jQYXx3B
+         Kk18UyeSpHZFeCaRmRDHqkXtN+q7k7E6hA1nJa2IKuIL3b6r0yWcrmAlFvaqejR+4P+k
+         coGQ==
+X-Gm-Message-State: APjAAAV5dKWs4xOc2MuOpVC0IvlLXGLxBPcfeeuqthQYKF4D+UZw2eLx
+        hG0kmiUDY1/pQen3rg7TZulIuUVn
+X-Google-Smtp-Source: APXvYqxMkmzMPvfmR/SgkzNLaSKdDLAbxsxV4dfWtVjfNiMw1ALsbZJp3Mzxjp8/eUiaEc+jDXmW2w==
+X-Received: by 2002:a6b:2c96:: with SMTP id s144mr26656875ios.57.1561992674477;
+        Mon, 01 Jul 2019 07:51:14 -0700 (PDT)
+Received: from ?IPv6:2601:282:800:fd80:f191:fe61:9293:d1ca? ([2601:282:800:fd80:f191:fe61:9293:d1ca])
+        by smtp.googlemail.com with ESMTPSA id r139sm23852785iod.61.2019.07.01.07.51.12
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 01 Jul 2019 07:51:13 -0700 (PDT)
+Subject: Re: [PATCH v3] ss: introduce switch to print exact value of data
+ rates
+To:     Tomasz Torcz <tomasz.torcz@nordea.com>
+Cc:     netdev@vger.kernel.org
+References: <c28e349c-25b7-7a09-b2b3-5e64294bb089@gmail.com>
+ <20190701115242.25960-1-tomasz.torcz@nordea.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <13d80225-8b36-3990-4718-aafbb9602d7d@gmail.com>
+Date:   Mon, 1 Jul 2019 08:51:12 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20190701115242.25960-1-tomasz.torcz@nordea.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.27]); Mon, 01 Jul 2019 14:51:22 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 29 Jun 2019 22:33:57 +0900
-"Daniel T. Lee" <danieltimlee@gmail.com> wrote:
-
-> This commit adds port parsing and port validate helper function to parse
-> single or range of port(s) from a given string. (e.g. 1234, 443-444)
+On 7/1/19 5:52 AM, Tomasz Torcz wrote:
+>   Introduce -X/--exact switch to disable human-friendly printing
+>  of data rates. Without the switch (default), data is presented as MBps/Kbps.
 > 
-> Helpers will be used in prior to set target port(s) in samples/pktgen.
-> 
-> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+>   Signed-off-by: Tomasz Torcz <tomasz.torcz@nordea.com>
 > ---
->  samples/pktgen/functions.sh | 34 ++++++++++++++++++++++++++++++++++
->  1 file changed, 34 insertions(+)
+>  man/man8/ss.8 |  3 +++
+>  misc/ss.c     | 12 ++++++++++--
+>  2 files changed, 13 insertions(+), 2 deletions(-)
+> 
+>  Changes in v3:
+>   - updated ss man page with new option
+> 
 
+ss now has Numeric option which can be used for this as well if we
+broaden the meaning to be 'raw numbers over human readable'.
 
-Nice bash shellcode with use of array variables.
-
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-
-> diff --git a/samples/pktgen/functions.sh b/samples/pktgen/functions.sh
-> index f8bb3cd0f4ce..4af4046d71be 100644
-> --- a/samples/pktgen/functions.sh
-> +++ b/samples/pktgen/functions.sh
-> @@ -162,3 +162,37 @@ function get_node_cpus()
->  
->  	echo $node_cpu_list
->  }
-> +
-> +# Given a single or range of port(s), return minimum and maximum port number.
-> +function parse_ports()
-> +{
-> +    local port_str=$1
-> +    local port_list
-> +    local min_port
-> +    local max_port
-> +
-> +    IFS="-" read -ra port_list <<< $port_str
-> +
-> +    min_port=${port_list[0]}
-> +    max_port=${port_list[1]:-$min_port}
-> +
-> +    echo $min_port $max_port
-> +}
-> +
-> +# Given a minimum and maximum port, verify port number.
-> +function validate_ports()
-> +{
-> +    local min_port=$1
-> +    local max_port=$2
-> +
-> +    # 0 < port < 65536
-> +    if [[ $min_port -gt 0 && $min_port -lt 65536 ]]; then
-> +	if [[ $max_port -gt 0 && $max_port -lt 65536 ]]; then
-> +	    if [[ $min_port -le $max_port ]]; then
-> +		return 0
-> +	    fi
-> +	fi
-> +    fi
-> +
-> +    err 5 "Invalid port(s): $min_port-$max_port"
-> +}
-
-
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
