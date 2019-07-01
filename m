@@ -2,89 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB9525B817
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 11:34:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB2A15B86E
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 11:55:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728360AbfGAJei (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 05:34:38 -0400
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:33947 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728321AbfGAJeh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 05:34:37 -0400
-Received: by mail-oi1-f195.google.com with SMTP id l12so9423926oil.1
-        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 02:34:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=yBOQL4AlA49bjQlqErsbDODVihHA5ZvWVTU0xteZNjM=;
-        b=sqgTYLC0jS+FvL1gHtpbAGC/SFNLb8Khi0zbul2zM9QIHbNFwew/u471bowmYEHrJl
-         h9EbSGIU/HYDlTleHv41zX4llIzx9RUen1vqGxeiNDKti/EDzikPP22JI2xXk05nNpqv
-         tdPXvDg2eEbYU9oP7lzvuB6AxCWLwVOrkGvHk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=yBOQL4AlA49bjQlqErsbDODVihHA5ZvWVTU0xteZNjM=;
-        b=ENSWOxXOUq5P4OcgNPQFf+gtmmi3CCYUTefXNjsvnuChRF7tVywVwAseRhpaTnJyCr
-         AEqVsHCwCxNB+ZloZLEAnaDpkkmvWQ0ECdrMiO3nGSLGMfDbZkSnYPEIcWqbcm1n/VaC
-         t4m568+FnRzNgJD8+dd3NHBzpKM08luPkkKlkMNz1pYO/MUmbPEc8GEdtPC/U0fED++U
-         eJqZHMUWTiTOJ8VRCYb/VTqoUvdv/C2D5HBA/u3Ce2O/XPZa1dJ0sD4+F0ScS8GQ5Ce8
-         yaniTRIGvHAE2int1QDYxlke/E1fud8u1OnWm+xMc5ayIN/GrCUl+i2Z9zsDEy7XsFse
-         ddmA==
-X-Gm-Message-State: APjAAAUUJsOZLx/Ge6TRHzPgsmT05TH65wW6QbwwXJ7cQddZsuOmDSFR
-        JzAdGppGmfjvwXsqR/6EyGv2WkU/gCWHQOsAOAIyqhnqHuA=
-X-Google-Smtp-Source: APXvYqwskeJabbHvnBxy9OrHFkf4zReo8vmmZTHqVVBtlsOL5J/ywx6cEEt9fZgNZ8oR/IU09XbV7Jctvx2AUgd5TkQ=
-X-Received: by 2002:aca:ea0b:: with SMTP id i11mr5961615oih.102.1561973676792;
- Mon, 01 Jul 2019 02:34:36 -0700 (PDT)
+        id S1727606AbfGAJzB convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 1 Jul 2019 05:55:01 -0400
+Received: from mail5.windriver.com ([192.103.53.11]:53660 "EHLO mail5.wrs.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727477AbfGAJzB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Jul 2019 05:55:01 -0400
+Received: from ALA-HCA.corp.ad.wrs.com (ala-hca.corp.ad.wrs.com [147.11.189.40])
+        by mail5.wrs.com (8.15.2/8.15.2) with ESMTPS id x619rqxD000538
+        (version=TLSv1 cipher=AES128-SHA bits=128 verify=FAIL);
+        Mon, 1 Jul 2019 02:54:17 -0700
+Received: from ALA-MBD.corp.ad.wrs.com ([169.254.3.194]) by
+ ALA-HCA.corp.ad.wrs.com ([147.11.189.40]) with mapi id 14.03.0439.000; Mon, 1
+ Jul 2019 02:53:59 -0700
+From:   "Hallsmark, Per" <Per.Hallsmark@windriver.com>
+To:     Alexey Dobriyan <adobriyan@gmail.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH] let proc net directory inodes reflect to active net
+ namespace
+Thread-Topic: [PATCH] let proc net directory inodes reflect to active net
+ namespace
+Thread-Index: AQHVK0C2SQYwxDnNd0ORdMMwE+Y4tqazHFaAgAJywgI=
+Date:   Mon, 1 Jul 2019 09:53:58 +0000
+Message-ID: <B7B4BB465792624BAF51F33077E99065DC5D8DC3@ALA-MBD.corp.ad.wrs.com>
+References: <B7B4BB465792624BAF51F33077E99065DC5D7225@ALA-MBD.corp.ad.wrs.com>,<20190629132959.GA9370@avx2>
+In-Reply-To: <20190629132959.GA9370@avx2>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [128.224.93.131]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-References: <20190627201923.2589391-1-songliubraving@fb.com>
- <20190627201923.2589391-2-songliubraving@fb.com> <CACAyw98RvDc+i3gpgnAtnM0ojAfQ-mHvzRXFRUcgkEPr3K4G-g@mail.gmail.com>
- <91C99EC0-C441-410E-A96F-D990045E4987@fb.com>
-In-Reply-To: <91C99EC0-C441-410E-A96F-D990045E4987@fb.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Mon, 1 Jul 2019 10:34:25 +0100
-Message-ID: <CACAyw98VyM8a-h_8jtsNdF0KfK69-AxzRR4K28HVsyUecb0a5Q@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>, Jann Horn <jannh@google.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 28 Jun 2019 at 20:10, Song Liu <songliubraving@fb.com> wrote:
-> There should be a master thread, no? Can we do that from the master threa=
-d at
-> the beginning of the execution?
+Indeed it does! :-)
 
-Unfortunately, no. The Go runtime has no such concept. This is all
-that is defined about program start up:
+I'll make a new version.
 
-  https://golang.org/ref/spec#Program_initialization_and_execution
+________________________________________
+From: Alexey Dobriyan [adobriyan@gmail.com]
+Sent: Saturday, June 29, 2019 15:29
+To: Hallsmark, Per
+Cc: David S. Miller; linux-kernel@vger.kernel.org; netdev@vger.kernel.org
+Subject: Re: [PATCH] let proc net directory inodes reflect to active net namespace
 
-Salient section:
+On Tue, Jun 25, 2019 at 10:36:06AM +0000, Hallsmark, Per wrote:
+> +struct proc_dir_entry *proc_net_mkdir(struct net *net, const char *name,
+> +                                   struct proc_dir_entry *parent)
+> +{
+> +     struct proc_dir_entry *pde;
+> +
+> +     pde = proc_mkdir_data(name, 0, parent, net);
+> +     pde->proc_dops = &proc_net_dentry_ops;
+> +
+> +     return pde;
+> +}
 
-  Package initialization=E2=80=94variable initialization and the invocation=
- of init
-  functions=E2=80=94happens in a single goroutine, sequentially, one packag=
-e at
-  a time. An init function may launch other goroutines, which can run
-  concurrently with the initialization code. However, initialization always
-  sequences the init functions: it will not invoke the next one until the
-  previous one has returned.
-
-This means that at the earliest possible moment for Go code to run,
-the scheduler is already active with at least GOMAXPROCS threads.
-
---=20
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
-
-www.cloudflare.com
+This requires NULL check at least.
