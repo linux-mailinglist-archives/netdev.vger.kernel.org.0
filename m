@@ -2,75 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F0645C4D3
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 23:09:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90D1D5C4DE
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 23:14:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726793AbfGAVJL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 17:09:11 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:46700 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726686AbfGAVJL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Jul 2019 17:09:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=FS3zYKTfBQ7R4y1qqZSwORo7QgLWjEnpO+Ly/y1JU2M=; b=ATUYRVdJ0TirIyX8MylR5qrsnz
-        6YH5mWLYJEZAMBPjQyFeVPahNq938hS11OP7jm4VYwrrVQm8LCvFYbD1ljAfKnwk0g3hJkgpdrKAI
-        A3EjlBVImAyeVHEaUU/+VVK/R5m65jfeKtvRM5lEqb4QAzNcS6qYs4shoqF3Oztf1+Qc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hi3Xq-0001t5-9g; Mon, 01 Jul 2019 23:09:02 +0200
-Date:   Mon, 1 Jul 2019 23:09:02 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
+        id S1726934AbfGAVOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 17:14:01 -0400
+Received: from zeniv.linux.org.uk ([195.92.253.2]:38522 "EHLO
+        ZenIV.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726586AbfGAVOB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 17:14:01 -0400
+Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92 #3 (Red Hat Linux))
+        id 1hi3ca-0007vi-4H; Mon, 01 Jul 2019 21:13:56 +0000
+Date:   Mon, 1 Jul 2019 22:13:56 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
 To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Matthias Kaehlcke <mka@chromium.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Douglas Anderson <dianders@chromium.org>
-Subject: Re: [PATCH 2/3] net: phy: realtek: Enable accessing RTL8211E
- extension pages
-Message-ID: <20190701210902.GL30468@lunn.ch>
-References: <20190701195225.120808-1-mka@chromium.org>
- <20190701195225.120808-2-mka@chromium.org>
- <20190701200248.GJ30468@lunn.ch>
- <35db1bff-f48e-5372-06b7-3140cb7cbb71@gmail.com>
+Cc:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next] r8169: fix ntohs/htons sparse warnings
+Message-ID: <20190701211356.GD17978@ZenIV.linux.org.uk>
+References: <1d1f9dba-1ade-7782-6cc0-3151a7086a4b@gmail.com>
+ <20190701195621.GC17978@ZenIV.linux.org.uk>
+ <81c45b3c-bbaa-c619-981c-8b8f4b73d5c5@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <35db1bff-f48e-5372-06b7-3140cb7cbb71@gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <81c45b3c-bbaa-c619-981c-8b8f4b73d5c5@gmail.com>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 01, 2019 at 10:37:16PM +0200, Heiner Kallweit wrote:
-> On 01.07.2019 22:02, Andrew Lunn wrote:
-> > On Mon, Jul 01, 2019 at 12:52:24PM -0700, Matthias Kaehlcke wrote:
-> >> The RTL8211E has extension pages, which can be accessed after
-> >> selecting a page through a custom method. Add a function to
-> >> modify bits in a register of an extension page and a few
-> >> helpers for dealing with ext pages.
-> >>
-> >> rtl8211e_modify_ext_paged() and rtl821e_restore_page() are
-> >> inspired by their counterparts phy_modify_paged() and
-> >> phy_restore_page().
-> > 
-> > Hi Matthias
-> > 
-> > While an extended page is selected, what happens to the normal
-> > registers in the range 0-0x1c? Are they still accessible?
-> > 
-> AFAIK: no
+On Mon, Jul 01, 2019 at 10:36:26PM +0200, Heiner Kallweit wrote:
 
-This it would be better to make use of the core paged access support,
-so that locking is done correctly.
+> > The code dealing with the value passed to __vlan_hwaccel_put_tag() as the
+> > third argument treats it as a host-endian integer.  So... Has anyone
+> > tested that code on b-e host?  Should that ntohs() actually be swab16(),
+> > yielding (on any host) the same value we currently get for l-e hosts only?
+> > 
+> I haven't seen any b-e host with a Realtek network chip yet.
 
-   Andrew
+Ever tried to google for realtek 8169 pcie card?  The first hit is this:
+https://www.amazon.com/Realtek-Chipset-Ethernet-Interface-Software/dp/B007MWYCG2
+and certainly does look like it should fit into at least some G5 Macs.
+What's more, googling for realtek 8169 PCI card brings quite a bit (top
+hit happens to be on ebay for ~$8).  That certainly shall fit into
+any number of big-endian motherboards...
+
+Sure, there's a plenty of embedded r8169 on motherboards (mostly x86 ones),
+but these beasts do exist on discrete cards.  I'm fairly certain that I've
+got one or two somewhere in the detritus pile and they are fairly cheap
+these days.
+
+So it wouldn't cost too much to put together a mixed network, with
+r8169 both on l-e and b-e hosts and play with VLAN setups there...
