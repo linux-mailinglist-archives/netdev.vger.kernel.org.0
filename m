@@ -2,126 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 988515BAD6
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 13:38:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 704C15BADE
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 13:41:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727296AbfGALiG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 07:38:06 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:40949 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727815AbfGALiG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 07:38:06 -0400
-Received: by mail-io1-f70.google.com with SMTP id v11so14845258iop.7
-        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 04:38:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=2e1SntskR1wk3R8YDQNaXdZrPYNsv+rRW/w+w1Z7SRM=;
-        b=o2s8GePpr/WGF6c6/zsD5IXPXbUTHRtwYZbPjPFfBTNma9Y0WAbkzjIwsLj4ZPxBa6
-         MGDHbnpKBLwJJvxFk40VBrjaupXoyc2HOREBP88O61andcwd0usUOKKlyn0I4HyLhMOf
-         ZbOP7HPxleM2Nt8F8QmqaADkDc2WS2QsogFyPLmtuNr2uaVVUHkSR3E0KGkSAEGFVrnv
-         BJ5IJ/9/ofM8lA5sPDz4ToySCgVP7IGXPPxBh6b7SxMcqoN2ZFd6BKTtOkWoeuTPw6q7
-         6QiuHyeKBrByroskbYG7AExuRukzOlO3GP06bsNsA/trTzVY0fnkezX22ktV2AV+TLf7
-         4sgQ==
-X-Gm-Message-State: APjAAAUe6NqYvuuvzNlHTboDPRfTJB+8GtQ1TmV6w3gSSBZ/8hwnlL9Z
-        QgyYOlhj21yF9TZX7q0m8JLFAVJapVDheZPHkWEuYrbGxgaK
-X-Google-Smtp-Source: APXvYqzb4b/7WqvWityk7fhaVl/oiH2xTFhn6YPl44xVi7nfsucuhRQW3JmnuwKx2YDBmqQOU/2rmVfWmlYWSlwLSD3eGgz2hWsP
+        id S1728500AbfGALlX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 07:41:23 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:47834 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727296AbfGALlX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Jul 2019 07:41:23 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id EAFF230917AA;
+        Mon,  1 Jul 2019 11:41:07 +0000 (UTC)
+Received: from carbon (ovpn-200-45.brq.redhat.com [10.40.200.45])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D3C6219732;
+        Mon,  1 Jul 2019 11:41:00 +0000 (UTC)
+Date:   Mon, 1 Jul 2019 13:40:59 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Cc:     grygorii.strashko@ti.com, hawk@kernel.org, davem@davemloft.net,
+        ast@kernel.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
+        daniel@iogearbox.net, jakub.kicinski@netronome.com,
+        john.fastabend@gmail.com, brouer@redhat.com
+Subject: Re: [PATCH v5 net-next 1/6] xdp: allow same allocator usage
+Message-ID: <20190701134059.71757892@carbon>
+In-Reply-To: <20190630172348.5692-2-ivan.khoronzhuk@linaro.org>
+References: <20190630172348.5692-1-ivan.khoronzhuk@linaro.org>
+        <20190630172348.5692-2-ivan.khoronzhuk@linaro.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:63a:: with SMTP id h26mr27782115jar.92.1561981085266;
- Mon, 01 Jul 2019 04:38:05 -0700 (PDT)
-Date:   Mon, 01 Jul 2019 04:38:05 -0700
-In-Reply-To: <000000000000cba2b6058ac09eeb@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000bbbb3d058c9d0f6d@google.com>
-Subject: Re: KMSAN: uninit-value in ax88178_bind
-From:   syzbot <syzbot+abd25d675d47f23f188c@syzkaller.appspotmail.com>
-To:     allison@lohutok.net, davem@davemloft.net, glider@google.com,
-        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, lynxis@fe80.eu,
-        marcel.ziswiler@toradex.com, netdev@vger.kernel.org,
-        opensource@jilayne.com, syzkaller-bugs@googlegroups.com,
-        tglx@linutronix.de, yang.wei9@zte.com.cn, zhang.run@zte.com.cn
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Mon, 01 Jul 2019 11:41:23 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following crash on:
 
-HEAD commit:    41550654 [UPSTREAM] KVM: x86: degrade WARN to pr_warn_rate..
-git tree:       kmsan
-console output: https://syzkaller.appspot.com/x/log.txt?x=1577f4d5a00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=40511ad0c5945201
-dashboard link: https://syzkaller.appspot.com/bug?extid=abd25d675d47f23f188c
-compiler:       clang version 9.0.0 (/home/glider/llvm/clang  
-80fee25776c2fb61e74c1ecb1a523375c2500b69)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17ea8283a00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11a1f57ba00000
+I'm very skeptical about this approach.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+abd25d675d47f23f188c@syzkaller.appspotmail.com
+On Sun, 30 Jun 2019 20:23:43 +0300
+Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
 
-usb 1-1: config 0 has no interface number 0
-usb 1-1: New USB device found, idVendor=04bb, idProduct=0930,  
-bcdDevice=d2.4a
-usb 1-1: New USB device strings: Mfr=0, Product=0, SerialNumber=0
-usb 1-1: config 0 descriptor??
-==================================================================
-BUG: KMSAN: uninit-value in is_valid_ether_addr  
-include/linux/etherdevice.h:195 [inline]
-BUG: KMSAN: uninit-value in asix_set_netdev_dev_addr  
-drivers/net/usb/asix_devices.c:61 [inline]
-BUG: KMSAN: uninit-value in ax88178_bind+0x635/0xad0  
-drivers/net/usb/asix_devices.c:1075
-CPU: 1 PID: 30 Comm: kworker/1:1 Not tainted 5.2.0-rc4+ #7
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Workqueue: usb_hub_wq hub_event
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x191/0x1f0 lib/dump_stack.c:113
-  kmsan_report+0x162/0x2d0 mm/kmsan/kmsan.c:611
-  __msan_warning+0x75/0xe0 mm/kmsan/kmsan_instr.c:304
-  is_valid_ether_addr include/linux/etherdevice.h:195 [inline]
-  asix_set_netdev_dev_addr drivers/net/usb/asix_devices.c:61 [inline]
-  ax88178_bind+0x635/0xad0 drivers/net/usb/asix_devices.c:1075
-  usbnet_probe+0x10d3/0x3950 drivers/net/usb/usbnet.c:1722
-  usb_probe_interface+0xd19/0x1310 drivers/usb/core/driver.c:361
-  really_probe+0x1344/0x1d90 drivers/base/dd.c:513
-  driver_probe_device+0x1ba/0x510 drivers/base/dd.c:670
-  __device_attach_driver+0x5b8/0x790 drivers/base/dd.c:777
-  bus_for_each_drv+0x28e/0x3b0 drivers/base/bus.c:454
-  __device_attach+0x489/0x750 drivers/base/dd.c:843
-  device_initial_probe+0x4a/0x60 drivers/base/dd.c:890
-  bus_probe_device+0x131/0x390 drivers/base/bus.c:514
-  device_add+0x25b5/0x2df0 drivers/base/core.c:2111
-  usb_set_configuration+0x309f/0x3710 drivers/usb/core/message.c:2027
-  generic_probe+0xe7/0x280 drivers/usb/core/generic.c:210
-  usb_probe_device+0x146/0x200 drivers/usb/core/driver.c:266
-  really_probe+0x1344/0x1d90 drivers/base/dd.c:513
-  driver_probe_device+0x1ba/0x510 drivers/base/dd.c:670
-  __device_attach_driver+0x5b8/0x790 drivers/base/dd.c:777
-  bus_for_each_drv+0x28e/0x3b0 drivers/base/bus.c:454
-  __device_attach+0x489/0x750 drivers/base/dd.c:843
-  device_initial_probe+0x4a/0x60 drivers/base/dd.c:890
-  bus_probe_device+0x131/0x390 drivers/base/bus.c:514
-  device_add+0x25b5/0x2df0 drivers/base/core.c:2111
-  usb_new_device+0x23e5/0x2fb0 drivers/usb/core/hub.c:2534
-  hub_port_connect drivers/usb/core/hub.c:5089 [inline]
-  hub_port_connect_change drivers/usb/core/hub.c:5204 [inline]
-  port_event drivers/usb/core/hub.c:5350 [inline]
-  hub_event+0x5853/0x7320 drivers/usb/core/hub.c:5432
-  process_one_work+0x1572/0x1f00 kernel/workqueue.c:2269
-  worker_thread+0x111b/0x2460 kernel/workqueue.c:2415
-  kthread+0x4b5/0x4f0 kernel/kthread.c:256
-  ret_from_fork+0x35/0x40 arch/x86/entry/entry_64.S:355
+> XDP rxqs can be same for ndevs running under same rx napi softirq.
+> But there is no ability to register same allocator for both rxqs,
+> by fact it can same rxq but has different ndev as a reference.
 
-Local variable description: ----buf@ax88178_bind
-Variable was created at:
-  ax88178_bind+0x60/0xad0 drivers/net/usb/asix_devices.c:1064
-  usbnet_probe+0x10d3/0x3950 drivers/net/usb/usbnet.c:1722
-==================================================================
+This description is not very clear. It can easily be misunderstood.
 
+It is an absolute requirement that each RX-queue have their own
+page_pool object/allocator. (This where the performance comes from) as
+the page_pool have NAPI protected array for alloc and XDP_DROP recycle.
+
+Your driver/hardware seems to have special case, where a single
+RX-queue can receive packets for two different net_device'es.
+
+Do you violate this XDP devmap redirect assumption[1]?
+[1] https://github.com/torvalds/linux/blob/v5.2-rc7/kernel/bpf/devmap.c#L324-L329
+
+
+> Due to last changes allocator destroy can be defered till the moment
+> all packets are recycled by destination interface, afterwards it's
+> freed. In order to schedule allocator destroy only after all users are
+> unregistered, add refcnt to allocator object and schedule to destroy
+> only it reaches 0.
+
+The guiding principles when designing an API, is to make it easy to
+use, but also make it hard to misuse.
+
+Your API change makes it easy to misuse the API.  As it make it easy to
+(re)use the allocator pointer (likely page_pool) for multiple
+xdp_rxq_info structs.  It is only valid for your use-case, because you
+have hardware where a single RX-queue delivers to two different
+net_devices.  For other normal use-cases, this will be a violation.
+
+If I was a user of this API, and saw your xdp_allocator_get(), then I
+would assume that this was the normal case.  As minimum, we need to add
+a comment in the code, about this specific/intended use-case.  I
+through about detecting the misuse, by adding a queue_index to
+xdp_mem_allocator, that can be checked against, when calling
+xdp_rxq_info_reg_mem_model() with another xdp_rxq_info struct (to catch
+the obvious mistake where queue_index mismatch).
+
+
+> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+> ---
+>  include/net/xdp_priv.h |  1 +
+>  net/core/xdp.c         | 46 ++++++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 47 insertions(+)
+> 
+> diff --git a/include/net/xdp_priv.h b/include/net/xdp_priv.h
+> index 6a8cba6ea79a..995b21da2f27 100644
+> --- a/include/net/xdp_priv.h
+> +++ b/include/net/xdp_priv.h
+> @@ -18,6 +18,7 @@ struct xdp_mem_allocator {
+>  	struct rcu_head rcu;
+>  	struct delayed_work defer_wq;
+>  	unsigned long defer_warn;
+> +	unsigned long refcnt;
+>  };
+>  
+>  #endif /* __LINUX_NET_XDP_PRIV_H__ */
+> diff --git a/net/core/xdp.c b/net/core/xdp.c
+> index b29d7b513a18..a44621190fdc 100644
+> --- a/net/core/xdp.c
+> +++ b/net/core/xdp.c
+> @@ -98,6 +98,18 @@ bool __mem_id_disconnect(int id, bool force)
+>  		WARN(1, "Request remove non-existing id(%d), driver bug?", id);
+>  		return true;
+>  	}
+> +
+> +	/* to avoid calling hash lookup twice, decrement refcnt here till it
+> +	 * reaches zero, then it can be called from workqueue afterwards.
+> +	 */
+> +	if (xa->refcnt)
+> +		xa->refcnt--;
+> +
+> +	if (xa->refcnt) {
+> +		mutex_unlock(&mem_id_lock);
+> +		return true;
+> +	}
+> +
+>  	xa->disconnect_cnt++;
+>  
+>  	/* Detects in-flight packet-pages for page_pool */
+> @@ -312,6 +324,33 @@ static bool __is_supported_mem_type(enum xdp_mem_type type)
+>  	return true;
+>  }
+>  
+> +static struct xdp_mem_allocator *xdp_allocator_get(void *allocator)
+
+API wise, when you have "get" operation, you usually also have a "put"
+operation...
+
+> +{
+> +	struct xdp_mem_allocator *xae, *xa = NULL;
+> +	struct rhashtable_iter iter;
+> +
+> +	mutex_lock(&mem_id_lock);
+> +	rhashtable_walk_enter(mem_id_ht, &iter);
+> +	do {
+> +		rhashtable_walk_start(&iter);
+> +
+> +		while ((xae = rhashtable_walk_next(&iter)) && !IS_ERR(xae)) {
+> +			if (xae->allocator == allocator) {
+> +				xae->refcnt++;
+> +				xa = xae;
+> +				break;
+> +			}
+> +		}
+> +
+> +		rhashtable_walk_stop(&iter);
+> +
+> +	} while (xae == ERR_PTR(-EAGAIN));
+> +	rhashtable_walk_exit(&iter);
+> +	mutex_unlock(&mem_id_lock);
+> +
+> +	return xa;
+> +}
+> +
+>  int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
+>  			       enum xdp_mem_type type, void *allocator)
+>  {
+> @@ -347,6 +386,12 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
+>  		}
+>  	}
+>  
+> +	xdp_alloc = xdp_allocator_get(allocator);
+> +	if (xdp_alloc) {
+> +		xdp_rxq->mem.id = xdp_alloc->mem.id;
+> +		return 0;
+> +	}
+> +
+
+The allocator pointer (in-practice) becomes the identifier for the
+mem.id (which rhashtable points to xdp_mem_allocator object).
+
+
+>  	xdp_alloc = kzalloc(sizeof(*xdp_alloc), gfp);
+>  	if (!xdp_alloc)
+>  		return -ENOMEM;
+> @@ -360,6 +405,7 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
+>  	xdp_rxq->mem.id = id;
+>  	xdp_alloc->mem  = xdp_rxq->mem;
+>  	xdp_alloc->allocator = allocator;
+> +	xdp_alloc->refcnt = 1;
+>  
+>  	/* Insert allocator into ID lookup table */
+>  	ptr = rhashtable_insert_slow(mem_id_ht, &id, &xdp_alloc->node);
+
+
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
