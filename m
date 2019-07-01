@@ -2,114 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 21E3D5C0B7
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 17:54:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F7675C0BA
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 17:56:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730137AbfGAPyv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 11:54:51 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:35779 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727589AbfGAPyu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 11:54:50 -0400
-Received: by mail-wm1-f65.google.com with SMTP id c6so60391wml.0;
-        Mon, 01 Jul 2019 08:54:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=cq95xuiLFEI6emBiYsdvZFxr6etn0mSivEmoTJ+NQJk=;
-        b=BiODAHp71E+SotRxGHOr5DAPDjAoGa9QWNP4Q2GsuwO1lnS5O80EEQkgp5J+MPi8M4
-         OWHEAkIRNhKgBFrtNySWGU2p/0pjj1vDrK6gL3obdjIC/2UjKsYbKMDvU2DEYdXtkI7R
-         2HoSF8QqpqG09Z0JuJWDLFFYeF4Xge8RUPqty1e0cWNa7s2X92GnAioenNZeJB9SKzqz
-         UPXGk4nLUGUKlNLr7VHdChrtWmHIQNT4ZI0mMAeXtAnDgQ8h6vp79H09xeNHeIaPlO7W
-         1R3KvlWgcefDnvajtXbIqPLzJ54qWpKYIDqJPEg1mdVVaivrtot6iGIbhG83bLhcgZRr
-         pCKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=cq95xuiLFEI6emBiYsdvZFxr6etn0mSivEmoTJ+NQJk=;
-        b=KaKUxsKAj3O+dd30UdWly5X8/CfbmhwjEP+Yn5oTfUCLXrMW3DeXXjO0qKuq+dY90F
-         IcGR3lm1H/R+Jhy5uDHO1TE8o7dLozxyXYyTxhtN0rpRU9Im+cfwdk/iy0p9rPLNo7Yl
-         8y2wvSm4NqQ8CVtAA3E2TrOvvz1bCkwnWqgvwkubBx4gHvUvy71QnE4qfbV+FIjbUGOc
-         kHnn0h0vBdiLvQ1qe+chbU89tEZPFN8uQjkX4q7Fbl3wb30RnXhXH77FjAJGQfO2/zJX
-         +KYwqdd1AZPyfHFIkRL60rlJhspJFCvvAUlZ+VbKWUaoIRpXiCkQZT/oo5Opgvvo0Bi8
-         hrig==
-X-Gm-Message-State: APjAAAX9H+iKWcRY/qPouYmQNhrjT06TQGtMeSSBDJ1LJ+V3lPCfXoxV
-        rO2kDhhJwW97qi+nnKR9pas=
-X-Google-Smtp-Source: APXvYqzfJfsS+mdflzd9Nr/1xNS8r3PTEzjpII3Hj4cFfXNUZXPVF20GH8n+kjJKjIO1CPCfqcC3HA==
-X-Received: by 2002:a1c:544d:: with SMTP id p13mr6872wmi.78.1561996488498;
-        Mon, 01 Jul 2019 08:54:48 -0700 (PDT)
-Received: from [192.168.8.147] (27.196.23.93.rev.sfr.net. [93.23.196.27])
-        by smtp.gmail.com with ESMTPSA id z6sm9886992wrw.2.2019.07.01.08.54.46
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Mon, 01 Jul 2019 08:54:47 -0700 (PDT)
-Subject: Re: [PATCH net-next 8/8] net: mscc: PTP Hardware Clock (PHC) support
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Richard Cochran <richardcochran@gmail.com>,
-        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
-        ralf@linux-mips.org, paul.burton@mips.com, jhogan@kernel.org,
-        Network Development <netdev@vger.kernel.org>,
-        linux-mips@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        allan.nielsen@microchip.com
-References: <20190701100327.6425-1-antoine.tenart@bootlin.com>
- <20190701100327.6425-9-antoine.tenart@bootlin.com>
- <CA+FuTSecj3FYGd5xnybgNFH7ndceLu9Orsa9O4RFp0U5bpNy7w@mail.gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <028ded20-61d1-4ac4-46fd-4a97faeac56a@gmail.com>
-Date:   Mon, 1 Jul 2019 17:54:41 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1730155AbfGAPz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 11:55:58 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:45980 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727370AbfGAPz6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Jul 2019 11:55:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=qAvuqM9wvrxZVoAPvKFSAyGBuX1/Agx1OTcZdKrt30s=; b=wiKRhMigVC0L/bJMtNll6y9YP+
+        J00ya1G54slJo86gspqDUoI3Y1ypqc/K28y33KMcGiIWW9rDTd+fl9XGDl+xBhLTOd8+IXDBTTNhY
+        G3ydgATopd+CxfRy1Kiirm3qOtGHGGApjgmDXUk0xBuRdlphcZTamNLMmDhkdTeV2MMg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hhyeg-00089Z-RH; Mon, 01 Jul 2019 17:55:46 +0200
+Date:   Mon, 1 Jul 2019 17:55:46 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Pawel Dembicki <paweldembicki@gmail.com>
+Cc:     linus.walleij@linaro.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/4] net: dsa: Change DT bindings for Vitesse VSC73xx
+ switches
+Message-ID: <20190701155546.GA30468@lunn.ch>
+References: <20190701152723.624-1-paweldembicki@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CA+FuTSecj3FYGd5xnybgNFH7ndceLu9Orsa9O4RFp0U5bpNy7w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190701152723.624-1-paweldembicki@gmail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Jul 01, 2019 at 05:27:20PM +0200, Pawel Dembicki wrote:
+> This commit document changes after split vsc73xx driver into core and
+> spi part. The change of DT bindings is required for support the same
+> vsc73xx chip, which need PI bus to communicate with CPU. It also
 
+SPI
 
-On 7/1/19 8:12 AM, Willem de Bruijn wrote:
-> On Mon, Jul 1, 2019 at 6:05 AM Antoine Tenart
-> <antoine.tenart@bootlin.com> wrote:
->>
->> This patch adds support for PTP Hardware Clock (PHC) to the Ocelot
->> switch for both PTP 1-step and 2-step modes.
->>
->> Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
+> introduce how to use vsc73xx platform driver.
 > 
->>  void ocelot_deinit(struct ocelot *ocelot)
->>  {
->> +       struct ocelot_port *port;
->> +       struct ocelot_skb *entry;
->> +       struct list_head *pos;
->> +       int i;
->> +
->>         destroy_workqueue(ocelot->stats_queue);
->>         mutex_destroy(&ocelot->stats_lock);
->>         ocelot_ace_deinit();
->> +
->> +       for (i = 0; i < ocelot->num_phys_ports; i++) {
->> +               port = ocelot->ports[i];
->> +
->> +               list_for_each(pos, &port->skbs) {
->> +                       entry = list_entry(pos, struct ocelot_skb, head);
->> +
->> +                       list_del(pos);
+> Signed-off-by: Pawel Dembicki <paweldembicki@gmail.com>
+> ---
+>  .../bindings/net/dsa/vitesse,vsc73xx.txt      | 74 ++++++++++++++++---
+>  1 file changed, 64 insertions(+), 10 deletions(-)
 > 
-> list_for_each_safe
+> diff --git a/Documentation/devicetree/bindings/net/dsa/vitesse,vsc73xx.txt b/Documentation/devicetree/bindings/net/dsa/vitesse,vsc73xx.txt
+> index ed4710c40641..c6a4cd85891c 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/vitesse,vsc73xx.txt
+> +++ b/Documentation/devicetree/bindings/net/dsa/vitesse,vsc73xx.txt
+> @@ -2,8 +2,8 @@ Vitesse VSC73xx Switches
+>  ========================
+>  
+>  This defines device tree bindings for the Vitesse VSC73xx switch chips.
+> -The Vitesse company has been acquired by Microsemi and Microsemi in turn
+> -acquired by Microchip but retains this vendor branding.
+> +The Vitesse company has been acquired by Microsemi and Microsemi has
+> +been acquired Microchip but retains this vendor branding.
+>  
+>  The currently supported switch chips are:
+>  Vitesse VSC7385 SparX-G5 5+1-port Integrated Gigabit Ethernet Switch
+> @@ -11,16 +11,26 @@ Vitesse VSC7388 SparX-G8 8-port Integrated Gigabit Ethernet Switch
+>  Vitesse VSC7395 SparX-G5e 5+1-port Integrated Gigabit Ethernet Switch
+>  Vitesse VSC7398 SparX-G8e 8-port Integrated Gigabit Ethernet Switch
+>  
+> -The device tree node is an SPI device so it must reside inside a SPI bus
+> -device tree node, see spi/spi-bus.txt
+> +This switch could have two different management interface.
+> +
+> +If SPI interface is used, the device tree node is an SPI device so it must
+> +reside inside a SPI bus device tree node, see spi/spi-bus.txt
+> +
+> +If Platform driver is used, the device tree node is an platform device so it
+> +must reside inside a platform bus device tree node.
+>  
+>  Required properties:
+>  
+> -- compatible: must be exactly one of:
+> -	"vitesse,vsc7385"
+> -	"vitesse,vsc7388"
+> -	"vitesse,vsc7395"
+> -	"vitesse,vsc7398"
 
-Also entry->skb seems to be leaked ?
+You cannot remove these. It will break backwards compatibility.
+Adding new compatible strings is fine, but you cannot remove existing
+ones.
 
-dev_kfree_skb_any(entry->skb) seems to be needed
-
-
-> 
->> +                       kfree(entry);
+	Andrew
 
