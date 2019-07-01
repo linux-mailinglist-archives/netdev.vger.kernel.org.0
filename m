@@ -2,79 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 681C05C446
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 22:23:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD59C5C458
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 22:33:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726780AbfGAUXp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 16:23:45 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:37719 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726620AbfGAUXo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 16:23:44 -0400
-Received: by mail-lj1-f195.google.com with SMTP id 131so14550721ljf.4
-        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 13:23:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2yeezC43PYS18W/SIzQiodt0jp2d2/Hn/sPPvB7Hkrs=;
-        b=fvRVEuWalo7Pr6238+rkM+9g1mlIvP6z++a9qdgrfo11+VJyASL1zgTmiIwKi5iMMT
-         YShRpuwPqGemeFZ7Z1VHUgwgWQVG4CtuVQki/LnGJ/ZSHEYN8zuBYrVylZDsn+HKSYbp
-         kBYu5NSjWoUZTfta3+Lvc1Cabxww2yqA6eBvfAoNI3iFLNr4murQmwNjSQqHjEiA/6kE
-         CMQT6EWcfQhNt2/XgGug8SxMLCVnV8ec3pNaGs0S04+U8TV+oYfv5Dq/+LzzRQVB8zpJ
-         CyNinv4oxe6ZcmMyqSVS1+GAOu2jd7E9RJ9EGZQ6IggtKvPw+34fkt0kOCVGw3+OIHRj
-         FeYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2yeezC43PYS18W/SIzQiodt0jp2d2/Hn/sPPvB7Hkrs=;
-        b=SDNEBc6vStsdtTDaGa0H85a5mfihqXwAjBW+vroxKplSsfsdFA/aUVeAHQkWsXqspm
-         AJk0T7dv3ApcEsM3Ku4GQXWF5bKLiM4J6phES3H4pQOdlPZTmlc7oEp5NZm+o3gqErDS
-         h1fsClA3trkOXPcNYRp06rkoZzDha2knzUK5PS4zAgTzZsLuGWbYj5GroYea6xr9vqMv
-         hbyma2Eqf5Km3HtQr5mDBKT27wrfX7dba/rCI4tGj3Pl1ajWYCNw9CJnIGbJffVHw0U+
-         y2b8eCju2UB7l109PP5lbHTL0nPc2aATYM9AbEGGHsE3GB+Qd0gjKpdbPvi/kqync7f0
-         8evw==
-X-Gm-Message-State: APjAAAXNLWISQoWS9nJPpJOXVc0hL4rPOryIaWATJEjL1MO0ZTVeABqU
-        6ZkoIfAWohbldfPxEiChBHnRkTuA1l1Xd/IgpXpj4w==
-X-Google-Smtp-Source: APXvYqyUxzE1vHY3FGSByUi6GK2txxEik41ysV2f+vH6fGH86OktUnzJ178axhcKMNZYGvJVxtG9YJ2PxCvsjyXPERM=
-X-Received: by 2002:a2e:81d8:: with SMTP id s24mr15172028ljg.37.1562012622393;
- Mon, 01 Jul 2019 13:23:42 -0700 (PDT)
+        id S1726642AbfGAUdR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 16:33:17 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:50796 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726509AbfGAUdQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 16:33:16 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x61KVLEj175533;
+        Mon, 1 Jul 2019 20:33:14 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2018-07-02;
+ bh=jEzPNLZ02t3QphNpzsBM68qrnjuWWKL/cytX9RD0wA4=;
+ b=wVw1RdJoKCyXkaEDuIBugEWfazkM29AP5gTAS3HDTPMpFQH7bBBy1e1fRzOz9HFYzetR
+ 0exfrcrFL2Q/0Lae3SNQ+zkzoNqIN2j1/Raoqx9NpiUr15M1CE0xw3kmyfy1tOkVqfSZ
+ JziNgOJdoDX49Ec8m+J/LZgM1Nuh2qn4D4JdNV4DLXLNG7EcHB89p8YdUHt1tnJza5Q3
+ aJ5FwHI/+OJkeau+LDUxCwtofkCbqUvgre0CFj6R2GyDDqwgRBRF3/FMQjZohJe9wEoh
+ CTijgRymK92zgX26bNkUbuwD85Bpd6udj8KS4phieozRe4d9t7NU0L0W1k595YmUy+Og cQ== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2120.oracle.com with ESMTP id 2te61pqswm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 01 Jul 2019 20:33:14 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x61KXD4n129025;
+        Mon, 1 Jul 2019 20:33:13 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3020.oracle.com with ESMTP id 2tebktvvnw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 01 Jul 2019 20:33:13 +0000
+Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x61KX9KI009720;
+        Mon, 1 Jul 2019 20:33:09 GMT
+Received: from [10.209.242.148] (/10.209.242.148)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 01 Jul 2019 13:33:09 -0700
+Subject: Re: [PATCH net-next 2/7] net/rds: Get rid of "wait_clean_list_grace"
+ and add locking
+To:     Gerd Rausch <gerd.rausch@oracle.com>, netdev@vger.kernel.org
+Cc:     David Miller <davem@davemloft.net>
+References: <5c49f180-0dbf-88b9-965d-6cb88061f31b@oracle.com>
+From:   santosh.shilimkar@oracle.com
+Organization: Oracle Corporation
+Message-ID: <02ee3384-fccf-e7c9-8e09-49d8dc70faf3@oracle.com>
+Date:   Mon, 1 Jul 2019 13:33:08 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-References: <20190701152723.624-1-paweldembicki@gmail.com> <45ff597a-5090-3874-b43d-5b5f45d2d2f6@gmail.com>
-In-Reply-To: <45ff597a-5090-3874-b43d-5b5f45d2d2f6@gmail.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Mon, 1 Jul 2019 22:23:30 +0200
-Message-ID: <CACRpkdaQhv+4RG8k+QaCE9F3-Oeo8-rjSqGgakr8r2pyOkyoGw@mail.gmail.com>
-Subject: Re: [PATCH 1/4] net: dsa: Change DT bindings for Vitesse VSC73xx switches
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Pawel Dembicki <paweldembicki@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <5c49f180-0dbf-88b9-965d-6cb88061f31b@oracle.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9305 signatures=668688
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1810050000 definitions=main-1907010238
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9305 signatures=668688
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1907010237
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 1, 2019 at 6:44 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
-
-> Take b53 for instance which supports MDIO and SPI by default, and
-> optionally memory mapped and SRAB (indirect memory map) accesses, they
-> all have the same compatible strings. Whether the switches will appear
-> as spi_device, platform_device, or something else is entirely based on
-> how the Device Tree is laid out.
-
-That's clever.
-
-Pawel can you restructure the series around this observation?
-
-Yours,
-Linus Walleij
+On 7/1/19 9:39 AM, Gerd Rausch wrote:
+> Waiting for activity on the "clean_list" to quiesce is no substitute
+> for proper locking.
+> 
+> We can have multiple threads competing for "llist_del_first"
+> via "rds_ib_reuse_mr", and a single thread competing
+> for "llist_del_all" and "llist_del_first" via "rds_ib_flush_mr_pool".
+> 
+> Since "llist_del_first" depends on "list->first->next" not to change
+> in the midst of the operation, simply waiting for all current calls
+> to "rds_ib_reuse_mr" to quiesce across all CPUs is woefully inadequate:
+> 
+> By the time "wait_clean_list_grace" is done iterating over all CPUs to see
+> that there is no concurrent caller to "rds_ib_reuse_mr", a new caller may
+> have just shown up on the first CPU.
+> 
+> Furthermore, <linux/llist.h> explicitly calls out the need for locking:
+>   * Cases where locking is needed:
+>   * If we have multiple consumers with llist_del_first used in one consumer,
+>   * and llist_del_first or llist_del_all used in other consumers,
+>   * then a lock is needed.
+> 
+> Also, while at it, drop the unused "pool" parameter
+> from "list_to_llist_nodes".
+> 
+> Signed-off-by: Gerd Rausch <gerd.rausch@oracle.com>
+> ---
+Looks good.
