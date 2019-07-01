@@ -2,151 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B296D5C09F
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 17:47:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 371255C0A1
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 17:49:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729937AbfGAPrn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 11:47:43 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:33994 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727373AbfGAPrm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 11:47:42 -0400
-Received: by mail-io1-f68.google.com with SMTP id k8so29956923iot.1
-        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 08:47:42 -0700 (PDT)
+        id S1729979AbfGAPtR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 11:49:17 -0400
+Received: from mail-yw1-f67.google.com ([209.85.161.67]:36842 "EHLO
+        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729973AbfGAPtQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 11:49:16 -0400
+Received: by mail-yw1-f67.google.com with SMTP id t126so145665ywf.3
+        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 08:49:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=OfVTi8HSGQbucQnQ2z2zaAjLXbwjLdUCiYBPlRHUr4Y=;
-        b=JRsC8dxgZ5dmwha53zTz1Cbd1cxA4ZrzGGNkJjAWfrg+ZXL6mQtz56BgHLL7GiXoIy
-         Bj7/MMNnVbXBPeASN5zfsl81nA551TyyrkaEQV29dg6PeMBNeuTx7crUI5PDjE18/1oB
-         TyTKmFu9EM5Od0wiPYcJl1ahbWuLxe7G4nVUiGKQGoQvFhICVPvgikr4lzyiZQXW+TZ8
-         Cs1//KoaG7DP5uYtQ7buNqb++/F3kT/gbm3N49LjAV+tFQdxYUsAZRiMD75Sg71bQuwv
-         ozKAz2z3LCWRk/z9Sp4BUQ6Ma1eYNGkvP99cbyrb5GnUTCwHQ98BQBVtmm/ptAcS4hO+
-         Kpng==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Kq+wnbBq/Yiwlhufxf5DcNxbDH6VKCaJIWYPDt1uop4=;
+        b=T0kExSnoaBymARSjTN9BRYIN7Sra2f79runCRwBFHrSHSoaG5/rKsvaIcfIa7Zg/fW
+         mUqAYhvVdeAHH4Ic+7fYx/qeW5E/DSIvjHmzPYTzTR4eensVwp7LV98/txph/k6wmQHj
+         6vxEvYAmyEGydGKoTpsbVwvYdsvmNFkWvjXe/D4JlxJnks6E0i1kvQd2LJNTM5UZvcfp
+         whD4W+793XKFtKEatGB/UVMukZMm65euVWWtGD9wZY57Qu9E13iUy5dBb9+DbTEu823L
+         OpsOO5IJh1reEEXDcSFNY1oF+JviAcYtgK57uVkgukjgw3M3/oU41PyR4SAoF3bfXPNj
+         Wt9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=OfVTi8HSGQbucQnQ2z2zaAjLXbwjLdUCiYBPlRHUr4Y=;
-        b=G8uQ3mxRb8Kv9Z63i53qvBRZW5s6Y3u/RqLOf/evS6hoHmeERas21FTdoEoou224jH
-         tmIlfdilYpv52+ULcuRVXY1o5+LoTRqnlpAXC9rimH7yvl3UhkbWEk63MhO6t7yPFyNc
-         FXxBeqGst0j1zCA62Qt7yiUjXfN0Nj6UezC9R8vJgH7rXz9Xf8+S5aSPnFCjU5uFUB4m
-         SP5OB2hxNkPt8jUk1mQ0QskDMh+efFN35dKneMfNZx7UOzV+iR4c2VNB7kWzK+odv/qh
-         Vad4ZBkcPFxAaGBqZo+an1MgwVAl/7ZdowK05X+urzcQY2fyz2Z6QQ5SkJ6pjAs+wYcD
-         nNjw==
-X-Gm-Message-State: APjAAAWoJKm0aayX0qndnixgkyxVd4oejUg8c6Cq8AVukmyUb1eM4qZ2
-        vDi8MHsV3wYXqMShtkTx47Q=
-X-Google-Smtp-Source: APXvYqyQZD589ggqQzveMkdaUuDT28hRTNdjuyS2MxPrjiombfAKXEkA3ITJ4xokd7Daq76+a8lfsQ==
-X-Received: by 2002:a6b:7e41:: with SMTP id k1mr1906923ioq.285.1561996061795;
-        Mon, 01 Jul 2019 08:47:41 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:f191:fe61:9293:d1ca? ([2601:282:800:fd80:f191:fe61:9293:d1ca])
-        by smtp.googlemail.com with ESMTPSA id p25sm12587908iol.48.2019.07.01.08.47.40
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 01 Jul 2019 08:47:40 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Kq+wnbBq/Yiwlhufxf5DcNxbDH6VKCaJIWYPDt1uop4=;
+        b=KVEObfUhwjszSaDS+e5I3cDgQqE+bFVxF0d3novDYjF6NxryLmEl5V0vMegLl4bATQ
+         awnB1yxhvt4IzFNKGocdRLBlzb6KDqESqCKYdgm+F5DOnio+uI0YGiLBzg28PDSqaxjt
+         cYBeviMpKxY8nzn3kcFFnEwHj07XZ80/CfQoVySh1VTtCGT9nDeaValGlFSN8/3F45ON
+         B0w4SEmrq6mdezRlpqtoEqM3dLKhPh/611HnhLZmWiXRIbABwQNjy4dX1aJWC4IkrDsN
+         0FqfdFL1pxn6QlgI8Hc9iXQN6jqJVOiDEDDFgr8IIVrTMBr1KZOytwfRq4zojn7EaL+W
+         3YNQ==
+X-Gm-Message-State: APjAAAWpya9Be6/5mm5lJEvy/53TikHXU4jFuAlkO5kR7taUFzYXBffN
+        3Hwdef+Fvs1ETS+xXwcULPn2zNKC
+X-Google-Smtp-Source: APXvYqwmIqn7ZJeZ7IFMKcGChQHrX4HAb1NeEFGMAJ/OyQ+//Q5vn20KyY4+Xs/ZT8PT6z0jviKtRQ==
+X-Received: by 2002:a81:7d07:: with SMTP id y7mr13216028ywc.377.1561996154648;
+        Mon, 01 Jul 2019 08:49:14 -0700 (PDT)
+Received: from mail-yb1-f178.google.com (mail-yb1-f178.google.com. [209.85.219.178])
+        by smtp.gmail.com with ESMTPSA id j9sm2629345ywc.43.2019.07.01.08.49.13
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Mon, 01 Jul 2019 08:49:13 -0700 (PDT)
+Received: by mail-yb1-f178.google.com with SMTP id f195so130851ybg.9
+        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 08:49:13 -0700 (PDT)
+X-Received: by 2002:a5b:4c9:: with SMTP id u9mr4807654ybp.235.1561996152992;
+ Mon, 01 Jul 2019 08:49:12 -0700 (PDT)
+MIME-Version: 1.0
+References: <1561984257-9798-1-git-send-email-john.hurley@netronome.com> <1561984257-9798-5-git-send-email-john.hurley@netronome.com>
+In-Reply-To: <1561984257-9798-5-git-send-email-john.hurley@netronome.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 1 Jul 2019 11:48:38 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSdwmg9Ui4K+PNurs2UN3EX1HSF2h2mV88h+PY8SCwKoPw@mail.gmail.com>
+Message-ID: <CA+FuTSdwmg9Ui4K+PNurs2UN3EX1HSF2h2mV88h+PY8SCwKoPw@mail.gmail.com>
 Subject: Re: [PATCH net-next v4 4/5] net: sched: add mpls manipulation actions
  to TC
-To:     John Hurley <john.hurley@netronome.com>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com, xiyou.wangcong@gmail.com,
-        simon.horman@netronome.com, jakub.kicinski@netronome.com,
+To:     John Hurley <john.hurley@netronome.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>, jiri@mellanox.com,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        David Ahern <dsahern@gmail.com>, simon.horman@netronome.com,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
         oss-drivers@netronome.com
-References: <1561984257-9798-1-git-send-email-john.hurley@netronome.com>
- <1561984257-9798-5-git-send-email-john.hurley@netronome.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <7f8a105b-5e9f-327d-f852-2f9e75e3081f@gmail.com>
-Date:   Mon, 1 Jul 2019 09:47:36 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
-MIME-Version: 1.0
-In-Reply-To: <1561984257-9798-5-git-send-email-john.hurley@netronome.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/1/19 6:30 AM, John Hurley wrote:
+On Mon, Jul 1, 2019 at 8:31 AM John Hurley <john.hurley@netronome.com> wrote:
+>
 > Currently, TC offers the ability to match on the MPLS fields of a packet
 > through the use of the flow_dissector_key_mpls struct. However, as yet, TC
 > actions do not allow the modification or manipulation of such fields.
-> 
+>
 > Add a new module that registers TC action ops to allow manipulation of
 > MPLS. This includes the ability to push and pop headers as well as modify
 > the contents of new or existing headers. A further action to decrement the
 > TTL field of an MPLS header is also provided.
+>
+> Signed-off-by: John Hurley <john.hurley@netronome.com>
+> Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Reviewed-by: Simon Horman <simon.horman@netronome.com>
 
-Would be good to document an example here and how to handle a label
-stack. The same example can be used with the iproute2 patch (I presume
-this one ;-)).
-
-
-> +static int valid_label(const struct nlattr *attr,
-> +		       struct netlink_ext_ack *extack)
+> +static __be32 tcf_mpls_get_lse(struct mpls_shim_hdr *lse,
+> +                              struct tcf_mpls_params *p, bool set_bos)
 > +{
-> +	const u32 *label = nla_data(attr);
+> +       u32 new_lse = 0;
 > +
-> +	if (!*label || *label & ~MPLS_LABEL_MASK) {
-> +		NL_SET_ERR_MSG_MOD(extack, "MPLS label out of range");
-> +		return -EINVAL;
-> +	}
+> +       if (lse)
+> +               new_lse = be32_to_cpu(lse->label_stack_entry);
+> +
+> +       if (p->tcfm_label) {
+> +               new_lse &= ~MPLS_LS_LABEL_MASK;
+> +               new_lse |= p->tcfm_label << MPLS_LS_LABEL_SHIFT;
+> +       }
+> +       if (p->tcfm_ttl) {
+> +               new_lse &= ~MPLS_LS_TTL_MASK;
+> +               new_lse |= p->tcfm_ttl << MPLS_LS_TTL_SHIFT;
+> +       }
+> +       if (p->tcfm_tc != ACT_MPLS_TC_NOT_SET) {
+> +               new_lse &= ~MPLS_LS_TC_MASK;
+> +               new_lse |= p->tcfm_tc << MPLS_LS_TC_SHIFT;
+> +       }
+> +       if (p->tcfm_bos != ACT_MPLS_BOS_NOT_SET) {
+> +               new_lse &= ~MPLS_LS_S_MASK;
+> +               new_lse |= p->tcfm_bos << MPLS_LS_S_SHIFT;
+> +       } else if (set_bos) {
+> +               new_lse |= 1 << MPLS_LS_S_SHIFT;
+> +       }
 
-core MPLS code (nla_get_labels) checks for MPLS_LABEL_IMPLNULL as well.
+not necessarily for this patchset, but perhaps it would make code more
+readable to add a struct mpls_label_type with integer bit fields to avoid
+all this explicit masking and shifting.
 
-
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct nla_policy mpls_policy[TCA_MPLS_MAX + 1] = {
-> +	[TCA_MPLS_UNSPEC]	= { .strict_start_type = TCA_MPLS_UNSPEC + 1 },
-> +	[TCA_MPLS_PARMS]	= NLA_POLICY_EXACT_LEN(sizeof(struct tc_mpls)),
-> +	[TCA_MPLS_PROTO]	= { .type = NLA_U16 },
-> +	[TCA_MPLS_LABEL]	= NLA_POLICY_VALIDATE_FN(NLA_U32, valid_label),
-> +	[TCA_MPLS_TC]		= NLA_POLICY_RANGE(NLA_U8, 0, 7),
-> +	[TCA_MPLS_TTL]		= NLA_POLICY_MIN(NLA_U8, 1),
-> +	[TCA_MPLS_BOS]		= NLA_POLICY_RANGE(NLA_U8, 0, 1),
-> +};
-> +
-> +static int tcf_mpls_init(struct net *net, struct nlattr *nla,
-> +			 struct nlattr *est, struct tc_action **a,
-> +			 int ovr, int bind, bool rtnl_held,
-> +			 struct tcf_proto *tp, struct netlink_ext_ack *extack)
+> +static int tcf_mpls_act(struct sk_buff *skb, const struct tc_action *a,
+> +                       struct tcf_result *res)
 > +{
-> +	struct tc_action_net *tn = net_generic(net, mpls_net_id);
-> +	struct nlattr *tb[TCA_MPLS_MAX + 1];
-> +	struct tcf_chain *goto_ch = NULL;
-> +	struct tcf_mpls_params *p;
-> +	struct tc_mpls *parm;
-> +	bool exists = false;
-> +	struct tcf_mpls *m;
-> +	int ret = 0, err;
-> +	u8 mpls_ttl = 0;
+> +       struct tcf_mpls *m = to_mpls(a);
+> +       struct mpls_shim_hdr *pkt_lse;
+> +       struct tcf_mpls_params *p;
+> +       __be32 new_lse;
+> +       u32 cpu_lse;
+> +       int ret;
+> +       u8 ttl;
 > +
-> +	if (!nla) {
-> +		NL_SET_ERR_MSG_MOD(extack, "Missing netlink attributes");
-> +		return -EINVAL;
-> +	}
+> +       tcf_lastuse_update(&m->tcf_tm);
+> +       bstats_cpu_update(this_cpu_ptr(m->common.cpu_bstats), skb);
 > +
-> +	err = nla_parse_nested(tb, TCA_MPLS_MAX, nla, mpls_policy, extack);
-> +	if (err < 0)
-> +		return err;
+> +       /* Ensure 'data' points at mac_header prior calling mpls manipulating
+> +        * functions.
+> +        */
+> +       if (skb_at_tc_ingress(skb))
+> +               skb_push_rcsum(skb, skb->mac_len);
 > +
-> +	if (!tb[TCA_MPLS_PARMS]) {
-> +		NL_SET_ERR_MSG_MOD(extack, "No MPLS params");
-> +		return -EINVAL;
-> +	}
-> +	parm = nla_data(tb[TCA_MPLS_PARMS]);
+> +       ret = READ_ONCE(m->tcf_action);
 > +
-> +	/* Verify parameters against action type. */
-> +	switch (parm->m_action) {
-> +	case TCA_MPLS_ACT_POP:
-> +		if (!tb[TCA_MPLS_PROTO] ||
-> +		    !eth_proto_is_802_3(nla_get_be16(tb[TCA_MPLS_PROTO]))) {
-> +			NL_SET_ERR_MSG_MOD(extack, "Invalid protocol type for MPLS pop");
+> +       p = rcu_dereference_bh(m->mpls_p);
+> +
+> +       switch (p->tcfm_action) {
+> +       case TCA_MPLS_ACT_POP:
+> +               if (skb_mpls_pop(skb, p->tcfm_proto))
+> +                       goto drop;
+> +               break;
+> +       case TCA_MPLS_ACT_PUSH:
+> +               new_lse = tcf_mpls_get_lse(NULL, p, !eth_p_mpls(skb->protocol));
+> +               if (skb_mpls_push(skb, new_lse, p->tcfm_proto))
+> +                       goto drop;
+> +               break;
+> +       case TCA_MPLS_ACT_MODIFY:
+> +               new_lse = tcf_mpls_get_lse(mpls_hdr(skb), p, false);
+> +               if (skb_mpls_update_lse(skb, new_lse))
+> +                       goto drop;
+> +               break;
+> +       case TCA_MPLS_ACT_DEC_TTL:
+> +               pkt_lse = mpls_hdr(skb);
+> +               cpu_lse = be32_to_cpu(pkt_lse->label_stack_entry);
+> +               ttl = (cpu_lse & MPLS_LS_TTL_MASK) >> MPLS_LS_TTL_SHIFT;
+> +               if (!--ttl)
+> +                       goto drop;
+> +
+> +               cpu_lse &= ~MPLS_LS_TTL_MASK;
+> +               cpu_lse |= ttl << MPLS_LS_TTL_SHIFT;
 
-would be better to call out '!tb[TCA_MPLS_PROTO]' with its own 'Protocol
-must be set given for pop' message.
+this could perhaps use a helper of its own?
 
+
+> +               if (skb_mpls_update_lse(skb, cpu_to_be32(cpu_lse)))
+> +                       goto drop;
+> +               break;
+> +       }
