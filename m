@@ -2,90 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FFAE5B80F
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 11:32:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB9525B817
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 11:34:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728371AbfGAJcQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 05:32:16 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:44103 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728143AbfGAJcQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 05:32:16 -0400
-Received: from compute7.internal (compute7.nyi.internal [10.202.2.47])
-        by mailout.nyi.internal (Postfix) with ESMTP id D6AE721B74;
-        Mon,  1 Jul 2019 05:32:14 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute7.internal (MEProxy); Mon, 01 Jul 2019 05:32:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bernat.ch; h=
-        from:to:cc:subject:references:date:in-reply-to:message-id
-        :mime-version:content-type:content-transfer-encoding; s=fm3; bh=
-        IJ6GUF7j7DADCe5/F/QbGL7vG/nLvnbwXu0sHIZ4W0k=; b=WtV7ljixw77ez3eE
-        96CcMOfDGZ0j5TJM8lEz5w7Vr5iWIWb/i5h3s+jLMZLC2zTWQU3lw3nj1/B3GyCh
-        kTD6KX+YwIrmRKlkxVDLPUedVSGSUqQkevO0SziEpKqnuHx3sGjnqC1SYibz2HjB
-        lpB9IyRn+UfVHb4OLdkQqC+VqtjMyVlCZs+Z1TaUlqJWhc8G9TSxBiE84aE3yfqj
-        MJ83mDWqhtOvsSW45EOI7/mgbNZOZoYOrPkYGNPOyEBEpgwjOBU5u/9f5mDfagVn
-        tY0EIc+E+06bmzJfrMhbZrKNdoIHGvRXTqz9j3fn225LcgWobUvicuAj7dL35+w/
-        UV+bFw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm3; bh=IJ6GUF7j7DADCe5/F/QbGL7vG/nLvnbwXu0sHIZ4W
-        0k=; b=T8ivQKDGge0Gzj69G8SsWl5TLUhSbS8f+uKfz3rbVjOJnutCuPbmFA9IU
-        mqgZLk9eqqZCtTf3WU2ggw1mL0+a4akM4R39rxD0u2Fyi1eAXF1GqtW9nmbRMTV/
-        2xqh1x8bMCaMDtBMB4eO8EOf/UazlvrbjOuy/QLwB7WgK6om25Al38T1rSF910e/
-        ptpnqbIaydCcuFgqczJmLyx0PCTHIT9Nu8+9WYwXizEOToc9gU1X6Cf6KJCUl6uZ
-        tu3WslJxF8+foqRXyKEwjbqhEpr3/Jm/qRxppAxYL1oEbmTm/sbK4w0vfQ6Rj4ue
-        cdGjcjXNefG1Gft86pILd7LQDboFw==
-X-ME-Sender: <xms:HtMZXRzhK448ag7Ec5Yf-Y0KtX_m8_wtZPJpJgIxoMiYHee8x9lL4g>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrvdeigdduhecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefhvffufhffjgfkfgggtgfgsehtkeertddtreejnecuhfhrohhmpeggihhntggv
-    nhhtuceuvghrnhgrthcuoehvihhntggvnhhtsegsvghrnhgrthdrtghhqeenucfkphepke
-    ehrddurddutddvrddvfedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehvihhntggvnhht
-    segsvghrnhgrthdrtghhnecuvehluhhsthgvrhfuihiivgeptd
-X-ME-Proxy: <xmx:HtMZXUUCM_NbyZ9hxXvKp8Mo7pbmHCko7yegz1pskqueirL2sRs8iQ>
-    <xmx:HtMZXV_Ne6o3vCvQwYR7LfbxytRZUPvk2kif2jRi18xIHSq4Vq-Q5Q>
-    <xmx:HtMZXftC0F827ibX6mITsuuCsK3ljlGiVCkd_J7e3wwvjmi6Pg9guQ>
-    <xmx:HtMZXS1tqHLj9fa4H7EtUd_1WVJwYJlcG04316puAQYtUIkNcj4t4Q>
-Received: from neo.luffy.cx (230.102.1.85.dynamic.wline.res.cust.swisscom.ch [85.1.102.230])
-        by mail.messagingengine.com (Postfix) with ESMTPA id D029480060;
-        Mon,  1 Jul 2019 05:32:13 -0400 (EDT)
-Received: by neo.luffy.cx (Postfix, from userid 500)
-        id 3330C10FB; Mon,  1 Jul 2019 11:32:12 +0200 (CEST)
-From:   Vincent Bernat <vincent@bernat.ch>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v1] bonding: add an option to specify a delay between peer notifications
-References: <20190630185931.18746-1-vincent@bernat.ch>
-        <20190701092758.GA2250@nanopsycho>
-Date:   Mon, 01 Jul 2019 11:32:12 +0200
-In-Reply-To: <20190701092758.GA2250@nanopsycho> (Jiri Pirko's message of "Mon,
-        1 Jul 2019 11:27:58 +0200")
-Message-ID: <m3h886f6cj.fsf@bernat.ch>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S1728360AbfGAJei (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 05:34:38 -0400
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:33947 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728321AbfGAJeh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 05:34:37 -0400
+Received: by mail-oi1-f195.google.com with SMTP id l12so9423926oil.1
+        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 02:34:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=yBOQL4AlA49bjQlqErsbDODVihHA5ZvWVTU0xteZNjM=;
+        b=sqgTYLC0jS+FvL1gHtpbAGC/SFNLb8Khi0zbul2zM9QIHbNFwew/u471bowmYEHrJl
+         h9EbSGIU/HYDlTleHv41zX4llIzx9RUen1vqGxeiNDKti/EDzikPP22JI2xXk05nNpqv
+         tdPXvDg2eEbYU9oP7lzvuB6AxCWLwVOrkGvHk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=yBOQL4AlA49bjQlqErsbDODVihHA5ZvWVTU0xteZNjM=;
+        b=ENSWOxXOUq5P4OcgNPQFf+gtmmi3CCYUTefXNjsvnuChRF7tVywVwAseRhpaTnJyCr
+         AEqVsHCwCxNB+ZloZLEAnaDpkkmvWQ0ECdrMiO3nGSLGMfDbZkSnYPEIcWqbcm1n/VaC
+         t4m568+FnRzNgJD8+dd3NHBzpKM08luPkkKlkMNz1pYO/MUmbPEc8GEdtPC/U0fED++U
+         eJqZHMUWTiTOJ8VRCYb/VTqoUvdv/C2D5HBA/u3Ce2O/XPZa1dJ0sD4+F0ScS8GQ5Ce8
+         yaniTRIGvHAE2int1QDYxlke/E1fud8u1OnWm+xMc5ayIN/GrCUl+i2Z9zsDEy7XsFse
+         ddmA==
+X-Gm-Message-State: APjAAAUUJsOZLx/Ge6TRHzPgsmT05TH65wW6QbwwXJ7cQddZsuOmDSFR
+        JzAdGppGmfjvwXsqR/6EyGv2WkU/gCWHQOsAOAIyqhnqHuA=
+X-Google-Smtp-Source: APXvYqwskeJabbHvnBxy9OrHFkf4zReo8vmmZTHqVVBtlsOL5J/ywx6cEEt9fZgNZ8oR/IU09XbV7Jctvx2AUgd5TkQ=
+X-Received: by 2002:aca:ea0b:: with SMTP id i11mr5961615oih.102.1561973676792;
+ Mon, 01 Jul 2019 02:34:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+References: <20190627201923.2589391-1-songliubraving@fb.com>
+ <20190627201923.2589391-2-songliubraving@fb.com> <CACAyw98RvDc+i3gpgnAtnM0ojAfQ-mHvzRXFRUcgkEPr3K4G-g@mail.gmail.com>
+ <91C99EC0-C441-410E-A96F-D990045E4987@fb.com>
+In-Reply-To: <91C99EC0-C441-410E-A96F-D990045E4987@fb.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Mon, 1 Jul 2019 10:34:25 +0100
+Message-ID: <CACAyw98VyM8a-h_8jtsNdF0KfK69-AxzRR4K28HVsyUecb0a5Q@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>, Jann Horn <jannh@google.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
- ❦  1 juillet 2019 11:27 +02, Jiri Pirko <jiri@resnulli.us>:
+On Fri, 28 Jun 2019 at 20:10, Song Liu <songliubraving@fb.com> wrote:
+> There should be a master thread, no? Can we do that from the master threa=
+d at
+> the beginning of the execution?
 
->>+module_param(peer_notif_delay, int, 0);
->>+MODULE_PARM_DESC(peer_notif_delay, "Delay between each peer notification on "
->>+				   "failover event, in milliseconds");
->
-> No module options please. Use netlink. See bond_changelink() function.
+Unfortunately, no. The Go runtime has no such concept. This is all
+that is defined about program start up:
 
-It's also present in the patch. I'll do a v2 removing the ability to set
-the default value through a module parameter.
--- 
-Don't patch bad code - rewrite it.
-            - The Elements of Programming Style (Kernighan & Plauger)
+  https://golang.org/ref/spec#Program_initialization_and_execution
+
+Salient section:
+
+  Package initialization=E2=80=94variable initialization and the invocation=
+ of init
+  functions=E2=80=94happens in a single goroutine, sequentially, one packag=
+e at
+  a time. An init function may launch other goroutines, which can run
+  concurrently with the initialization code. However, initialization always
+  sequences the init functions: it will not invoke the next one until the
+  previous one has returned.
+
+This means that at the earliest possible moment for Go code to run,
+the scheduler is already active with at least GOMAXPROCS threads.
+
+--=20
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+
+www.cloudflare.com
