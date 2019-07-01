@@ -2,107 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D486E5C4CA
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 23:06:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F0645C4D3
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 23:09:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726820AbfGAVG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 17:06:56 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:35858 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726658AbfGAVGz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 17:06:55 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x61L3u9h097818;
-        Mon, 1 Jul 2019 21:06:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2018-07-02;
- bh=6X4vdIlZYMauMJrFIKBO03ACwYmAe7Gd2ZFgeyq8mn4=;
- b=HBjTeM04W+Qwn7uafca3oGtrOzZKYGtKBBqPCyEJIZtipxjw1pKA5vLP28CQSag8gcJs
- AnnZumtoZrZGzdCDnTxtgVXtez4/y8QC2QAlbu9k5a6ABG23NTmX3uwq1iRgstO7WmBl
- bOMdbt9y7dSo/1xOTys3i2lGlPgP/T8TCwMkj1c/qbV+y5HrUxmYFiLYim1uKy/48+jA
- gVhgxBq3dAXvDBxp6YObLKSnwC2NcLaiBg/WzddgNJOmmFrbA09pFJgUXq2rI+HGvCsm
- QjeaI4MkZ5GyhlCtlOj7MEDIU0vh/a40DKN6cs44irLYvmZhKYjen+c7MErfYqj0Qi81 Ug== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2120.oracle.com with ESMTP id 2te5tbfy47-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 01 Jul 2019 21:06:53 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x61L3IqZ155933;
-        Mon, 1 Jul 2019 21:06:52 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3030.oracle.com with ESMTP id 2tebqg53nd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 01 Jul 2019 21:06:52 +0000
-Received: from abhmp0008.oracle.com (abhmp0008.oracle.com [141.146.116.14])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x61L6pjg032036;
-        Mon, 1 Jul 2019 21:06:51 GMT
-Received: from [10.211.54.238] (/10.211.54.238)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 01 Jul 2019 14:06:51 -0700
-Subject: Re: [PATCH net-next 3/7] net/rds: Wait for the FRMR_IS_FREE (or
- FRMR_IS_STALE) transition after posting IB_WR_LOCAL_INV
-To:     santosh.shilimkar@oracle.com, netdev@vger.kernel.org
-Cc:     David Miller <davem@davemloft.net>
-References: <505e9af7-a0cd-bf75-4a72-5d883ee06bf1@oracle.com>
- <c79821e0-307c-5736-6eb5-e20983097345@oracle.com>
- <01c251f4-c8f8-fcb8-bccc-341d4a3db90a@oracle.com>
- <b5669540-3892-9d79-85ba-79e96ddd3a81@oracle.com>
-From:   Gerd Rausch <gerd.rausch@oracle.com>
-Message-ID: <14c34ac2-38ed-9d51-f27d-74120ff34c54@oracle.com>
-Date:   Mon, 1 Jul 2019 14:06:50 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.1
+        id S1726793AbfGAVJL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 17:09:11 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:46700 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726686AbfGAVJL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Jul 2019 17:09:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=FS3zYKTfBQ7R4y1qqZSwORo7QgLWjEnpO+Ly/y1JU2M=; b=ATUYRVdJ0TirIyX8MylR5qrsnz
+        6YH5mWLYJEZAMBPjQyFeVPahNq938hS11OP7jm4VYwrrVQm8LCvFYbD1ljAfKnwk0g3hJkgpdrKAI
+        A3EjlBVImAyeVHEaUU/+VVK/R5m65jfeKtvRM5lEqb4QAzNcS6qYs4shoqF3Oztf1+Qc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hi3Xq-0001t5-9g; Mon, 01 Jul 2019 23:09:02 +0200
+Date:   Mon, 1 Jul 2019 23:09:02 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Matthias Kaehlcke <mka@chromium.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>
+Subject: Re: [PATCH 2/3] net: phy: realtek: Enable accessing RTL8211E
+ extension pages
+Message-ID: <20190701210902.GL30468@lunn.ch>
+References: <20190701195225.120808-1-mka@chromium.org>
+ <20190701195225.120808-2-mka@chromium.org>
+ <20190701200248.GJ30468@lunn.ch>
+ <35db1bff-f48e-5372-06b7-3140cb7cbb71@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <b5669540-3892-9d79-85ba-79e96ddd3a81@oracle.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9305 signatures=668688
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1810050000 definitions=main-1907010245
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9305 signatures=668688
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
- definitions=main-1907010245
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <35db1bff-f48e-5372-06b7-3140cb7cbb71@gmail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Santosh,
+On Mon, Jul 01, 2019 at 10:37:16PM +0200, Heiner Kallweit wrote:
+> On 01.07.2019 22:02, Andrew Lunn wrote:
+> > On Mon, Jul 01, 2019 at 12:52:24PM -0700, Matthias Kaehlcke wrote:
+> >> The RTL8211E has extension pages, which can be accessed after
+> >> selecting a page through a custom method. Add a function to
+> >> modify bits in a register of an extension page and a few
+> >> helpers for dealing with ext pages.
+> >>
+> >> rtl8211e_modify_ext_paged() and rtl821e_restore_page() are
+> >> inspired by their counterparts phy_modify_paged() and
+> >> phy_restore_page().
+> > 
+> > Hi Matthias
+> > 
+> > While an extended page is selected, what happens to the normal
+> > registers in the range 0-0x1c? Are they still accessible?
+> > 
+> AFAIK: no
 
-On 01/07/2019 14.00, santosh.shilimkar@oracle.com wrote:
->>
-> Look for command timeout in CX3 sources. 60 second is upper bound in
-> CX3. Its not standard in specs(at least not that I know) though
-> and may vary from vendor to vendor.
-> 
+This it would be better to make use of the core paged access support,
+so that locking is done correctly.
 
-I am not seeing it. Can you point me to the right place?
-
-% grep -ni timeout drivers/net/ethernet/mellanox/mlx4/*.[ch]
-drivers/net/ethernet/mellanox/mlx4/cmd.c:116:	GO_BIT_TIMEOUT_MSECS	= 10000
-[...]
-drivers/net/ethernet/mellanox/mlx4/mlx4_en.h:101:#define MLX4_EN_WATCHDOG_TIMEOUT	(15 * HZ)
-drivers/net/ethernet/mellanox/mlx4/mlx4_en.h:155:#define MLX4_EN_TX_POLL_TIMEOUT	(HZ / 4)
-drivers/net/ethernet/mellanox/mlx4/mlx4_en.h:171:#define MLX4_EN_LOOPBACK_TIMEOUT	100
-[...]
-drivers/net/ethernet/mellanox/mlx4/reset.c:61:#define MLX4_SEM_TIMEOUT_JIFFIES	(10 * HZ)
-drivers/net/ethernet/mellanox/mlx4/reset.c:62:#define MLX4_RESET_TIMEOUT_JIFFIES	(2 * HZ)
-
-
-% grep -i timeout drivers/infiniband/hw/mlx4/*.[ch] 
-drivers/infiniband/hw/mlx4/cm.c:42:#define CM_CLEANUP_CACHE_TIMEOUT  (30 * HZ)
-[...]
-drivers/infiniband/hw/mlx4/mcg.c:46:#define MAD_TIMEOUT_MS	2000
-[...]
-drivers/infiniband/hw/mlx4/qp.c:4358:		while (wait_for_completion_timeout(&sdrain->done, HZ / 10) <= 0)
-
-Thanks,
-
-  Gerd
+   Andrew
