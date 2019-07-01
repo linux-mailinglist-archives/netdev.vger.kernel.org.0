@@ -2,107 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13A3D5BE5F
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 16:34:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DADC15BEB2
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 16:51:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729711AbfGAOeP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 10:34:15 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:38021 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727064AbfGAOeP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 10:34:15 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id AA39621FC1;
-        Mon,  1 Jul 2019 10:34:13 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Mon, 01 Jul 2019 10:34:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dead10ck.com; h=
-        message-id:subject:from:to:date:in-reply-to:references
-        :content-type:mime-version:content-transfer-encoding; s=fm3; bh=
-        W71MN8JnqffLQ5MZmuiO5lF4wUj46V9qQyxbK4q2Jm8=; b=aD9v0GWC3W5rGJ0N
-        hZrs6CE3D3Ghop3TDwsx6S8MFMwVgqcGbPF08Al22+9pR8bxmDSxyKd14CsjHcJS
-        nwIg9371XXXuyIHqRlKvxnEzXnXjW6leYkcLTAFanR+AaZ90BFlDJFDOjkqaRl02
-        p8nbK2DnK/Jniogy5uEaXQ2LXcOFCZu5AefuI26xL5rLBR1kNkuvJ6mRTBau6WnA
-        B7JEL0Nvm0cILzSis5bSsvbLsrUrvMFvItWi+7Rs54vrHoY0Ch4vLDYAsLMdseE4
-        H3p1aLcudIo+nqtnLz9+PpIi4ekznW0iod8hAtf67D7EtFI0TI3BxwIkJVb1aOK8
-        x08QHQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm3; bh=W71MN8JnqffLQ5MZmuiO5lF4wUj46V9qQyxbK4q2J
-        m8=; b=MWat1hzZ8ewg4/ly7nL+MXVdJHBrDNAwPUp5CclsqLGYbSPXYLRgcQICR
-        VfFcLK0d/0wJY9bZACcJFwhUvBCxc3/Nc7xQcZ11QmGqV8qqHCHupKCAXVuZyLbF
-        bsrktldB4daL9BSpEWULhM0rXEpdaZXZ7XnfPaXXgzve5O6wB476zeXbKB9n3Fmq
-        DxfwfkqmyfHP8jacxnRTRLolN4emXqz0P1gAfScE2vRBWDhHOK7lZwrcVfGfLBD4
-        U7P5PmbAIgmG7/jfBvOg5r1hY8abdt7jiFAaDtTS6bJAnDptfZHcVHU09uX/hB0t
-        eNxsOtuhkSHa56O42pEyjzrFDFSKA==
-X-ME-Sender: <xms:5RkaXeg9zFJyhL7d9fKp2jec9rAX-rQvX5B-6xAeakVDu8XPikKSXQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrvdeigdejkecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhepkffuhffvffgjfhgtfggggfesthejre
-    dttderjeenucfhrhhomhepufhkhihlvghrucfjrgifthhhohhrnhgvuceoshhkhihlvghr
-    seguvggrugdutdgtkhdrtghomheqnecukfhppedujedurdeikedrvdeggedrheejnecurf
-    grrhgrmhepmhgrihhlfhhrohhmpehskhihlhgvrhesuggvrgguuddttghkrdgtohhmnecu
-    vehluhhsthgvrhfuihiivgeptd
-X-ME-Proxy: <xmx:5RkaXU5Pe4SgI3dTU7x5NY8mkn58j_AR93gUg0sylnp5esnz9VX2IQ>
-    <xmx:5RkaXRRvMQo00SfWTo1q8IoZXKdwcIay2H8yDcj_bQ_6X8Duq27OOA>
-    <xmx:5RkaXRXIXdeb3tEH260c58h3it14WZSPq-SC2hPHfoqygeSzHNPFDw>
-    <xmx:5RkaXSmDSuf2P6dLd62S_tXTMWsr0MDUpw7p-PKcIU8fOscZci3nBg>
-Received: from fedora-x1-dead10ck (unknown [171.68.244.57])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 9E362380087;
-        Mon,  1 Jul 2019 10:34:12 -0400 (EDT)
-Message-ID: <7cc8efb985c2e770a328919e1b99d93f30d7295a.camel@dead10ck.com>
-Subject: Re: iwl_mvm_add_new_dqa_stream_wk BUG in lib/list_debug.c:56
-From:   Skyler Hawthorne <skyler@dead10ck.com>
-To:     Marc Haber <mh+netdev@zugschlus.de>, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Date:   Mon, 01 Jul 2019 07:34:11 -0700
-In-Reply-To: <20190625130317.GB31363@torres.zugschlus.de>
-References: <20190530081257.GA26133@torres.zugschlus.de>
-         <20190602134842.GC3249@torres.zugschlus.de>
-         <20190625130317.GB31363@torres.zugschlus.de>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.32.3 (3.32.3-1.fc30) 
+        id S1729866AbfGAOvW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 10:51:22 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:10649 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727337AbfGAOvW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Jul 2019 10:51:22 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 8D49A780F4;
+        Mon,  1 Jul 2019 14:51:17 +0000 (UTC)
+Received: from carbon (ovpn-200-45.brq.redhat.com [10.40.200.45])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 78AB62CFAD;
+        Mon,  1 Jul 2019 14:51:13 +0000 (UTC)
+Date:   Mon, 1 Jul 2019 16:51:11 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     "Daniel T. Lee" <danieltimlee@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        brouer@redhat.com, Robert Olsson <robert@herjulf.net>
+Subject: Re: [PATCH 1/2] samples: pktgen: add some helper functions for port
+ parsing
+Message-ID: <20190701165111.3e68cd6c@carbon>
+In-Reply-To: <20190629133358.8251-1-danieltimlee@gmail.com>
+References: <20190629133358.8251-1-danieltimlee@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.27]); Mon, 01 Jul 2019 14:51:22 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello, I'm also still experiencing this issue on 5.1.15. It's making it
-very difficult to use my work laptop in my office, since it has many
-access points and frequently has to reauthenticate. I hit this bug 1-3
-times per day, and the only way to fix it is a hard shutdown. Has there
-been any effort to identify and/or fix the cause?
+On Sat, 29 Jun 2019 22:33:57 +0900
+"Daniel T. Lee" <danieltimlee@gmail.com> wrote:
+
+> This commit adds port parsing and port validate helper function to parse
+> single or range of port(s) from a given string. (e.g. 1234, 443-444)
+> 
+> Helpers will be used in prior to set target port(s) in samples/pktgen.
+> 
+> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+> ---
+>  samples/pktgen/functions.sh | 34 ++++++++++++++++++++++++++++++++++
+>  1 file changed, 34 insertions(+)
+
+
+Nice bash shellcode with use of array variables.
+
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+
+> diff --git a/samples/pktgen/functions.sh b/samples/pktgen/functions.sh
+> index f8bb3cd0f4ce..4af4046d71be 100644
+> --- a/samples/pktgen/functions.sh
+> +++ b/samples/pktgen/functions.sh
+> @@ -162,3 +162,37 @@ function get_node_cpus()
+>  
+>  	echo $node_cpu_list
+>  }
+> +
+> +# Given a single or range of port(s), return minimum and maximum port number.
+> +function parse_ports()
+> +{
+> +    local port_str=$1
+> +    local port_list
+> +    local min_port
+> +    local max_port
+> +
+> +    IFS="-" read -ra port_list <<< $port_str
+> +
+> +    min_port=${port_list[0]}
+> +    max_port=${port_list[1]:-$min_port}
+> +
+> +    echo $min_port $max_port
+> +}
+> +
+> +# Given a minimum and maximum port, verify port number.
+> +function validate_ports()
+> +{
+> +    local min_port=$1
+> +    local max_port=$2
+> +
+> +    # 0 < port < 65536
+> +    if [[ $min_port -gt 0 && $min_port -lt 65536 ]]; then
+> +	if [[ $max_port -gt 0 && $max_port -lt 65536 ]]; then
+> +	    if [[ $min_port -le $max_port ]]; then
+> +		return 0
+> +	    fi
+> +	fi
+> +    fi
+> +
+> +    err 5 "Invalid port(s): $min_port-$max_port"
+> +}
+
+
 
 -- 
-Skyler
-
-On Tue, 2019-06-25 at 15:03 +0200, Marc Haber wrote:
-> On Sun, Jun 02, 2019 at 03:48:42PM +0200, Marc Haber wrote:
-> > On Thu, May 30, 2019 at 10:12:57AM +0200, Marc Haber wrote:
-> > > on my primary notebook, a Lenovo X260, with an Intel Wireless
-> > > 8260
-> > > (8086:24f3), running Debian unstable, I have started to see
-> > > network
-> > > hangs since upgrading to kernel 5.1. In this situation, I cannot
-> > > restart Network-Manager (the call just hangs), I can log out of
-> > > X, but
-> > > the system does not cleanly shut down and I need to Magic SysRq
-> > > myself
-> > > out of the running system. This happens about once every two
-> > > days.
-> > 
-> > The issue is also present in 5.1.5 and 5.1.6.
-> 
-> Almost a month later, 5.1.15 still crashes about twice a day on my
-> Notebook. The error message seems pretty clear to me, how can I go on
-> from there and may be identify a line number outside of a library?
-> 
-> Greetings
-> Marc
-> 
-> 
-
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
