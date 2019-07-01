@@ -2,200 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F03B15C083
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 17:45:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B296D5C09F
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 17:47:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728465AbfGAPpA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 11:45:00 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:33738 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727279AbfGAPpA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 11:45:00 -0400
-Received: by mail-qt1-f196.google.com with SMTP id h24so12104992qto.0;
-        Mon, 01 Jul 2019 08:44:59 -0700 (PDT)
+        id S1729937AbfGAPrn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 11:47:43 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:33994 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727373AbfGAPrm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 11:47:42 -0400
+Received: by mail-io1-f68.google.com with SMTP id k8so29956923iot.1
+        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 08:47:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FOE44j1xWpRZ28qyZ1p6w3LG2DITsR83YnSX3ZLYcF8=;
-        b=icjmOShcMwYRtNRtI8WpIgD+VQDOR+trS7r8z9FsG8UaC2RkU8iqXrzo0g4XuFasdV
-         FsrlRwQ7fyWtDWyg9SyXjoXv+9dSELU29eqVf++n5DgkT2ZPuwYlx5OlIJy0yesoX8i1
-         p8rHCHgd9jI2rrgOuocl9W4ehVozSn8heJEeHVzTf3t9suC4syd1GiLY4csQRMVpzJnk
-         cFykaausbhFqnJ9/6Dgz+GWLvb8aSYHnN6daK/rm7+RPy8uVxOwdUVudh7nDmrbtT0q/
-         ahaMpzkebQ/ASD+jbqxt9jGJsTh/NbS/N1xNGaq/qNvPS2XmnDffdZcJ2YUVus7SgKF0
-         gYoQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=OfVTi8HSGQbucQnQ2z2zaAjLXbwjLdUCiYBPlRHUr4Y=;
+        b=JRsC8dxgZ5dmwha53zTz1Cbd1cxA4ZrzGGNkJjAWfrg+ZXL6mQtz56BgHLL7GiXoIy
+         Bj7/MMNnVbXBPeASN5zfsl81nA551TyyrkaEQV29dg6PeMBNeuTx7crUI5PDjE18/1oB
+         TyTKmFu9EM5Od0wiPYcJl1ahbWuLxe7G4nVUiGKQGoQvFhICVPvgikr4lzyiZQXW+TZ8
+         Cs1//KoaG7DP5uYtQ7buNqb++/F3kT/gbm3N49LjAV+tFQdxYUsAZRiMD75Sg71bQuwv
+         ozKAz2z3LCWRk/z9Sp4BUQ6Ma1eYNGkvP99cbyrb5GnUTCwHQ98BQBVtmm/ptAcS4hO+
+         Kpng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FOE44j1xWpRZ28qyZ1p6w3LG2DITsR83YnSX3ZLYcF8=;
-        b=qpxyUisvmZbPadui7Y6VhWYI/WKJFnBk6A9spsBg3XktUT2UvCCVaNRGzoDzgI02xs
-         RgAHIILEgDlL64elxgY3ECE2EMz66wMAYn+BYltvvr+EYJqYv/pWlp/QnFmxbEARvAwh
-         fMZB3SDEq2wgP4CDktc6JJnxDApn0ZoG9At3wq0PZf91jIdYMgE5JcR1YyO037QPsIeM
-         nVW+sbPdw8TU5bEsSwuwpUogYFjMvb51xUG7PiVowNUojfvPBQBT8+YrzbBzdELMsG7B
-         XvBktQiPmzKJlHrbjLD6Y75nOeH7UTsoP4VExEhvX225qKxa2X00CPmBmQUIFVCNZcai
-         bUFw==
-X-Gm-Message-State: APjAAAWTqAD/WBMLaUqTetodPypRFfGiDTPaW9/Z+6wIR+gbcT0LkUka
-        Cfg0GAHUx/buktIUWmjLTczULCJaJWk/rHHTLRw=
-X-Google-Smtp-Source: APXvYqzNe5IEnVInZYd15vZ3Af3znDb/qIQKL21Y0sax7w8t5o12AQTTFATVb2nhbKIkmKqLf/rBgnobR3oiMZBLlRk=
-X-Received: by 2002:ac8:290c:: with SMTP id y12mr20573471qty.141.1561995899130;
- Mon, 01 Jul 2019 08:44:59 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=OfVTi8HSGQbucQnQ2z2zaAjLXbwjLdUCiYBPlRHUr4Y=;
+        b=G8uQ3mxRb8Kv9Z63i53qvBRZW5s6Y3u/RqLOf/evS6hoHmeERas21FTdoEoou224jH
+         tmIlfdilYpv52+ULcuRVXY1o5+LoTRqnlpAXC9rimH7yvl3UhkbWEk63MhO6t7yPFyNc
+         FXxBeqGst0j1zCA62Qt7yiUjXfN0Nj6UezC9R8vJgH7rXz9Xf8+S5aSPnFCjU5uFUB4m
+         SP5OB2hxNkPt8jUk1mQ0QskDMh+efFN35dKneMfNZx7UOzV+iR4c2VNB7kWzK+odv/qh
+         Vad4ZBkcPFxAaGBqZo+an1MgwVAl/7ZdowK05X+urzcQY2fyz2Z6QQ5SkJ6pjAs+wYcD
+         nNjw==
+X-Gm-Message-State: APjAAAWoJKm0aayX0qndnixgkyxVd4oejUg8c6Cq8AVukmyUb1eM4qZ2
+        vDi8MHsV3wYXqMShtkTx47Q=
+X-Google-Smtp-Source: APXvYqyQZD589ggqQzveMkdaUuDT28hRTNdjuyS2MxPrjiombfAKXEkA3ITJ4xokd7Daq76+a8lfsQ==
+X-Received: by 2002:a6b:7e41:: with SMTP id k1mr1906923ioq.285.1561996061795;
+        Mon, 01 Jul 2019 08:47:41 -0700 (PDT)
+Received: from ?IPv6:2601:282:800:fd80:f191:fe61:9293:d1ca? ([2601:282:800:fd80:f191:fe61:9293:d1ca])
+        by smtp.googlemail.com with ESMTPSA id p25sm12587908iol.48.2019.07.01.08.47.40
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 01 Jul 2019 08:47:40 -0700 (PDT)
+Subject: Re: [PATCH net-next v4 4/5] net: sched: add mpls manipulation actions
+ to TC
+To:     John Hurley <john.hurley@netronome.com>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, xiyou.wangcong@gmail.com,
+        simon.horman@netronome.com, jakub.kicinski@netronome.com,
+        oss-drivers@netronome.com
+References: <1561984257-9798-1-git-send-email-john.hurley@netronome.com>
+ <1561984257-9798-5-git-send-email-john.hurley@netronome.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <7f8a105b-5e9f-327d-f852-2f9e75e3081f@gmail.com>
+Date:   Mon, 1 Jul 2019 09:47:36 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-References: <20190628231049.22149-1-sdf@google.com> <20190628231049.22149-2-sdf@google.com>
- <8e469767-a108-ba42-f8c8-6fd505393699@fb.com>
-In-Reply-To: <8e469767-a108-ba42-f8c8-6fd505393699@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 1 Jul 2019 08:44:48 -0700
-Message-ID: <CAEf4BzYUv3v2qV7p6ibEfnR2rs0Hy3D_K_uxCMGbVu-pqkaWmg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/2] selftests/bpf: add verifier tests for wide stores
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1561984257-9798-5-git-send-email-john.hurley@netronome.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jun 29, 2019 at 11:02 PM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 6/28/19 4:10 PM, Stanislav Fomichev wrote:
-> > Make sure that wide stores are allowed at proper (aligned) addresses.
-> > Note that user_ip6 is naturally aligned on 8-byte boundary, so
-> > correct addresses are user_ip6[0] and user_ip6[2]. msg_src_ip6 is,
-> > however, aligned on a 4-byte bondary, so only msg_src_ip6[1]
-> > can be wide-stored.
-> >
-> > Cc: Andrii Nakryiko <andriin@fb.com>
-> > Cc: Yonghong Song <yhs@fb.com>
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > ---
-> >   tools/testing/selftests/bpf/test_verifier.c   | 17 ++++++--
-> >   .../selftests/bpf/verifier/wide_store.c       | 40 +++++++++++++++++++
-> >   2 files changed, 54 insertions(+), 3 deletions(-)
-> >   create mode 100644 tools/testing/selftests/bpf/verifier/wide_store.c
-> >
-> > diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
-> > index c5514daf8865..b0773291012a 100644
-> > --- a/tools/testing/selftests/bpf/test_verifier.c
-> > +++ b/tools/testing/selftests/bpf/test_verifier.c
-> > @@ -105,6 +105,7 @@ struct bpf_test {
-> >                       __u64 data64[TEST_DATA_LEN / 8];
-> >               };
-> >       } retvals[MAX_TEST_RUNS];
-> > +     enum bpf_attach_type expected_attach_type;
-> >   };
-> >
-> >   /* Note we want this to be 64 bit aligned so that the end of our array is
-> > @@ -850,6 +851,7 @@ static void do_test_single(struct bpf_test *test, bool unpriv,
-> >       int fd_prog, expected_ret, alignment_prevented_execution;
-> >       int prog_len, prog_type = test->prog_type;
-> >       struct bpf_insn *prog = test->insns;
-> > +     struct bpf_load_program_attr attr;
-> >       int run_errs, run_successes;
-> >       int map_fds[MAX_NR_MAPS];
-> >       const char *expected_err;
-> > @@ -881,8 +883,17 @@ static void do_test_single(struct bpf_test *test, bool unpriv,
-> >               pflags |= BPF_F_STRICT_ALIGNMENT;
-> >       if (test->flags & F_NEEDS_EFFICIENT_UNALIGNED_ACCESS)
-> >               pflags |= BPF_F_ANY_ALIGNMENT;
-> > -     fd_prog = bpf_verify_program(prog_type, prog, prog_len, pflags,
-> > -                                  "GPL", 0, bpf_vlog, sizeof(bpf_vlog), 4);
-> > +
-> > +     memset(&attr, 0, sizeof(attr));
-> > +     attr.prog_type = prog_type;
-> > +     attr.expected_attach_type = test->expected_attach_type;
-> > +     attr.insns = prog;
-> > +     attr.insns_cnt = prog_len;
-> > +     attr.license = "GPL";
-> > +     attr.log_level = 4;
-> > +     attr.prog_flags = pflags;
-> > +
-> > +     fd_prog = bpf_load_program_xattr(&attr, bpf_vlog, sizeof(bpf_vlog));
-> >       if (fd_prog < 0 && !bpf_probe_prog_type(prog_type, 0)) {
-> >               printf("SKIP (unsupported program type %d)\n", prog_type);
-> >               skips++;
-> > @@ -912,7 +923,7 @@ static void do_test_single(struct bpf_test *test, bool unpriv,
-> >                       printf("FAIL\nUnexpected success to load!\n");
-> >                       goto fail_log;
-> >               }
-> > -             if (!strstr(bpf_vlog, expected_err)) {
-> > +             if (!expected_err || !strstr(bpf_vlog, expected_err)) {
-> >                       printf("FAIL\nUnexpected error message!\n\tEXP: %s\n\tRES: %s\n",
-> >                             expected_err, bpf_vlog);
-> >                       goto fail_log;
-> > diff --git a/tools/testing/selftests/bpf/verifier/wide_store.c b/tools/testing/selftests/bpf/verifier/wide_store.c
-> > new file mode 100644
-> > index 000000000000..c6385f45b114
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/verifier/wide_store.c
-> > @@ -0,0 +1,40 @@
-> > +#define BPF_SOCK_ADDR(field, off, res, err) \
-> > +{ \
-> > +     "wide store to bpf_sock_addr." #field "[" #off "]", \
-> > +     .insns = { \
-> > +     BPF_MOV64_IMM(BPF_REG_0, 1), \
-> > +     BPF_STX_MEM(BPF_DW, BPF_REG_1, BPF_REG_0, \
-> > +                 offsetof(struct bpf_sock_addr, field[off])), \
-> > +     BPF_EXIT_INSN(), \
-> > +     }, \
-> > +     .result = res, \
-> > +     .prog_type = BPF_PROG_TYPE_CGROUP_SOCK_ADDR, \
-> > +     .expected_attach_type = BPF_CGROUP_UDP6_SENDMSG, \
-> > +     .errstr = err, \
-> > +}
-> > +
-> > +/* user_ip6[0] is u64 aligned */
-> > +BPF_SOCK_ADDR(user_ip6, 0, ACCEPT,
-> > +           NULL),
-> > +BPF_SOCK_ADDR(user_ip6, 1, REJECT,
-> > +           "invalid bpf_context access off=12 size=8"),
-> > +BPF_SOCK_ADDR(user_ip6, 2, ACCEPT,
-> > +           NULL),
-> > +BPF_SOCK_ADDR(user_ip6, 3, REJECT,
-> > +           "invalid bpf_context access off=20 size=8"),
-> > +BPF_SOCK_ADDR(user_ip6, 4, REJECT,
-> > +           "invalid bpf_context access off=24 size=8"),
->
-> With offset 4, we have
-> #968/p wide store to bpf_sock_addr.user_ip6[4] OK
->
-> This test case can be removed. user code typically
-> won't write bpf_sock_addr.user_ip6[4], and compiler
-> typically will give a warning since it is out of
-> array bound. Any particular reason you want to
-> include this one?
+On 7/1/19 6:30 AM, John Hurley wrote:
+> Currently, TC offers the ability to match on the MPLS fields of a packet
+> through the use of the flow_dissector_key_mpls struct. However, as yet, TC
+> actions do not allow the modification or manipulation of such fields.
+> 
+> Add a new module that registers TC action ops to allow manipulation of
+> MPLS. This includes the ability to push and pop headers as well as modify
+> the contents of new or existing headers. A further action to decrement the
+> TTL field of an MPLS header is also provided.
 
-I agree, user_ip6[4] is essentially 8-byte write to user_port field.
+Would be good to document an example here and how to handle a label
+stack. The same example can be used with the iproute2 patch (I presume
+this one ;-)).
 
->
->
-> > +
-> > +/* msg_src_ip6[0] is _not_ u64 aligned */
-> > +BPF_SOCK_ADDR(msg_src_ip6, 0, REJECT,
-> > +           "invalid bpf_context access off=44 size=8"),
-> > +BPF_SOCK_ADDR(msg_src_ip6, 1, ACCEPT,
-> > +           NULL),
-> > +BPF_SOCK_ADDR(msg_src_ip6, 2, REJECT,
-> > +           "invalid bpf_context access off=52 size=8"),
-> > +BPF_SOCK_ADDR(msg_src_ip6, 3, REJECT,
-> > +           "invalid bpf_context access off=56 size=8"),
-> > +BPF_SOCK_ADDR(msg_src_ip6, 4, REJECT,
-> > +           "invalid bpf_context access off=60 size=8"),
->
-> The same as above, offset=4 case can be removed?
 
-And this one is a write into a struct hole, which should be rejected
-even without wide-store check, right?
+> +static int valid_label(const struct nlattr *attr,
+> +		       struct netlink_ext_ack *extack)
+> +{
+> +	const u32 *label = nla_data(attr);
+> +
+> +	if (!*label || *label & ~MPLS_LABEL_MASK) {
+> +		NL_SET_ERR_MSG_MOD(extack, "MPLS label out of range");
+> +		return -EINVAL;
+> +	}
 
->
-> > +
-> > +#undef BPF_SOCK_ADDR
-> >
+core MPLS code (nla_get_labels) checks for MPLS_LABEL_IMPLNULL as well.
+
+
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct nla_policy mpls_policy[TCA_MPLS_MAX + 1] = {
+> +	[TCA_MPLS_UNSPEC]	= { .strict_start_type = TCA_MPLS_UNSPEC + 1 },
+> +	[TCA_MPLS_PARMS]	= NLA_POLICY_EXACT_LEN(sizeof(struct tc_mpls)),
+> +	[TCA_MPLS_PROTO]	= { .type = NLA_U16 },
+> +	[TCA_MPLS_LABEL]	= NLA_POLICY_VALIDATE_FN(NLA_U32, valid_label),
+> +	[TCA_MPLS_TC]		= NLA_POLICY_RANGE(NLA_U8, 0, 7),
+> +	[TCA_MPLS_TTL]		= NLA_POLICY_MIN(NLA_U8, 1),
+> +	[TCA_MPLS_BOS]		= NLA_POLICY_RANGE(NLA_U8, 0, 1),
+> +};
+> +
+> +static int tcf_mpls_init(struct net *net, struct nlattr *nla,
+> +			 struct nlattr *est, struct tc_action **a,
+> +			 int ovr, int bind, bool rtnl_held,
+> +			 struct tcf_proto *tp, struct netlink_ext_ack *extack)
+> +{
+> +	struct tc_action_net *tn = net_generic(net, mpls_net_id);
+> +	struct nlattr *tb[TCA_MPLS_MAX + 1];
+> +	struct tcf_chain *goto_ch = NULL;
+> +	struct tcf_mpls_params *p;
+> +	struct tc_mpls *parm;
+> +	bool exists = false;
+> +	struct tcf_mpls *m;
+> +	int ret = 0, err;
+> +	u8 mpls_ttl = 0;
+> +
+> +	if (!nla) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Missing netlink attributes");
+> +		return -EINVAL;
+> +	}
+> +
+> +	err = nla_parse_nested(tb, TCA_MPLS_MAX, nla, mpls_policy, extack);
+> +	if (err < 0)
+> +		return err;
+> +
+> +	if (!tb[TCA_MPLS_PARMS]) {
+> +		NL_SET_ERR_MSG_MOD(extack, "No MPLS params");
+> +		return -EINVAL;
+> +	}
+> +	parm = nla_data(tb[TCA_MPLS_PARMS]);
+> +
+> +	/* Verify parameters against action type. */
+> +	switch (parm->m_action) {
+> +	case TCA_MPLS_ACT_POP:
+> +		if (!tb[TCA_MPLS_PROTO] ||
+> +		    !eth_proto_is_802_3(nla_get_be16(tb[TCA_MPLS_PROTO]))) {
+> +			NL_SET_ERR_MSG_MOD(extack, "Invalid protocol type for MPLS pop");
+
+would be better to call out '!tb[TCA_MPLS_PROTO]' with its own 'Protocol
+must be set given for pop' message.
+
