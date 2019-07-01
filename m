@@ -2,89 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BF7F5C5FA
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 01:46:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 718AC5C5FB
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 01:49:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726930AbfGAXqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 19:46:43 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:38468 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726678AbfGAXqm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 19:46:42 -0400
-Received: by mail-lj1-f195.google.com with SMTP id r9so14991295ljg.5
-        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 16:46:41 -0700 (PDT)
+        id S1726917AbfGAXtv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 19:49:51 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:37072 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726362AbfGAXtv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 19:49:51 -0400
+Received: by mail-pg1-f195.google.com with SMTP id g15so4847047pgi.4
+        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 16:49:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dev-mellanox-co-il.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hRqDKrW3IPavUWp1F9Nqj698h13KeKAId+GIMKLYSdY=;
-        b=FJQreLHAlWPp1grBA6lKU8XTQ2pihXY0G90YVw1q+EUg63+ET8xHn74vw4qLIQJEKj
-         TySXsT0QRjj7tsvwPN4d83lOYVZKAe3QzeaexJgxxivYXmuv+QjxEm8p2KBKcxJXy1AX
-         EYmX57+gt7YhdKgr7upMJ3vgM+IwmjaCMOgXo6LLypui2xXt1Ssd7MADXGvwz6Sr8ohY
-         tJhNhS62DvMfKVwSHhpiBq5pKJhC07T+o1g+ebda5QcL7qGe/wvOGWu/P11Ixh8TuJLR
-         Ov4aeyXAW206/Qu2Y9T3PCrL2KydRQ3Jn2QiVsLXEFDYuHc9m3y3JL0OWcWdegWiMQ6Q
-         CBTQ==
+        d=appneta.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HUtQgswb3xQ3WOlcNU5RSVl6qVgTLnoNUqQDufVCLK8=;
+        b=cTOcMnfbwPu+d9AFojXbx5XQqonbLmyM68qZ/LRWbWMyQGI970Fsbokkr0Nr8ADLq/
+         4LBb/kbpN7YxavOhch1ZB2vom9DNtwAANgEOxU8lq142dEnHwtkPz6lSna0gYK9JcTkp
+         Ywa51xSnjIpUZ6ui3J0kOyPtN5YgKWMDeDRyw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hRqDKrW3IPavUWp1F9Nqj698h13KeKAId+GIMKLYSdY=;
-        b=NEnDouPW6AWOB8euZZzbMLNFYhjnwz6xofPfIzxqbfuyEE2nuyAiSwjOa+XPNM2+58
-         V8hPRqSj96p7+pv/yizC81eXSyoIewEmo+Gaztjo24MFenwWbWQGRppunXjNBjoWvdW/
-         OiXoTyVcpV35IxN6R7uKrmzPw8yBv5Rzk+/D+ZIQYjAei7cIx4jQKK6FPmpPZZtswrf0
-         0y4UGsw2KhKsceWjwCo/lmx+bniVGkKBpQwCcaazCE/5cycMWKXKKtQrArbSf+u7jbwn
-         cFQaV0jSivBlDXffnTrw+jftmvikvPjBMe46mbg4eIqVT7yKWE+8s01Rf+r/DdTq/hZk
-         9C7w==
-X-Gm-Message-State: APjAAAVvarJXNlVu6lXgCQBbkDunjzZVOqhrbXqxNybiSBIbrP3WXVJB
-        /HvZhaBXD7KHHKp1qwTvF4sq8jQRbA1lUTosw3hrx9bu
-X-Google-Smtp-Source: APXvYqzFrIplv3BW0HA02fmm2tSKYl4pdMS2Y/sZwRN4bqZbW/iIteW1OVWe4r7jHlJnHl0Wuf3s3QzsuUl3RhQK7y4=
-X-Received: by 2002:a05:651c:95:: with SMTP id 21mr15867633ljq.128.1562024800727;
- Mon, 01 Jul 2019 16:46:40 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HUtQgswb3xQ3WOlcNU5RSVl6qVgTLnoNUqQDufVCLK8=;
+        b=D4+WjfeMd1F+K96oOU1IRNSmnyjMtvJ3C/IvhzY2wUJu50Qb/NOVKcsLMrVcxsZ2ee
+         os4IXSZnrB8JSuzOKK4qL5NCXfbOegxVqXq/VT8PZBFYn5AH84uAw1qeGu1B3klw302K
+         yp9pmPtTeu0mfyo46SvkEuxLNnGAdu2dQhagGvGxgpO7Y1jvTCauBM3Ebt6DRIwGoh5m
+         MzN5UQbxHkAxui5MWN6hAFPQnQnJ8p/XyxLzbFHBohsm3Gw5CIYyYN0+wwtYS/6buVdm
+         jGgi/SDuyg62z5BaTIg1rRF747KE7/FqJzjSPrzqKRn3q7+N2BP3PIixb8twhcGRY1Mz
+         F+4Q==
+X-Gm-Message-State: APjAAAXa7UHYFsSWv1M4216HZ9HVlfOYeU2VBDVOjx9jNqqYZwvKp+2B
+        Pl6WxX4uzsFhfGyEiOZYan8Xpwom8PhO/CY=
+X-Google-Smtp-Source: APXvYqy82MTCSBml1S7C/RmvcskOUTSKKrfHmTZsFpaXFzgDlvLpoVqfggRFxg0NTXA5MFMDUfIpNg==
+X-Received: by 2002:a65:534c:: with SMTP id w12mr15105808pgr.51.1562024990982;
+        Mon, 01 Jul 2019 16:49:50 -0700 (PDT)
+Received: from debian9-jae.jaalam.net (64-46-6-129.dyn.novuscom.net. [64.46.6.129])
+        by smtp.gmail.com with ESMTPSA id v138sm13583761pfc.15.2019.07.01.16.49.49
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 01 Jul 2019 16:49:50 -0700 (PDT)
+From:   Josh Elsasser <jelsasser@appneta.com>
+To:     stable@vger.kernel.org
+Cc:     Josh Elsasser <jelsasser@appneta.com>, gregkh@linuxfoundation.org,
+        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Edward Cree <ecree@solarflare.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Duyck <alexander.h.duyck@intel.com>,
+        Matteo Croce <mcroce@redhat.com>
+Subject: [PATCH 4.4.y] net: check before dereferencing netdev_ops during busy poll
+Date:   Mon,  1 Jul 2019 16:48:47 -0700
+Message-Id: <20190701234847.73385-1-jelsasser@appneta.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20190628223516.9368-1-saeedm@mellanox.com>
-In-Reply-To: <20190628223516.9368-1-saeedm@mellanox.com>
-From:   Saeed Mahameed <saeedm@dev.mellanox.co.il>
-Date:   Mon, 1 Jul 2019 16:46:29 -0700
-Message-ID: <CALzJLG-LEPqr3kDTYRKq8V-URsdTS2F87mV_qO9HaCX6CY7VZQ@mail.gmail.com>
-Subject: Re: [PATCH mlx5-next 00/18] Mellanox, mlx5 E-Switch and low level updates
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     Leon Romanovsky <leonro@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 28, 2019 at 3:35 PM Saeed Mahameed <saeedm@mellanox.com> wrote:
->
-> Hi All,
->
-> This series includes some low level updates mainly in the E-Switch
-> netdev and rdma vport representors areas.
->
-> From Parav and Huy:
->  1) Added hardware bits and structures definitions for sub-functions
->  2) Small code cleanup and improvement for PF pci driver.
->
-> From Bodong:
->  3) Use the correct name semantics of vport index and vport number
->  4) Cleanup the rep and netdev reference when unloading IB rep.
->  5) Bluefield (ECPF) updates and refactoring for better E-Switch
->     management on ECPF embedded CPU NIC:
->     5.1) Consolidate querying eswitch number of VFs
->     5.2) Register event handler at the correct E-Switch init stage
->     5.3) Setup PF's inline mode and vlan pop when the ECPF is the
->          E-Swtich manager ( the host PF is basically a VF ).
->     5.4) Handle Vport UC address changes in switchdev mode.
->
-> From Shay:
->  6) Add support for MCQI and MCQS hardware registers.
->
-> In case of no objections these patches will be applied to mlx5-next and
-> will be sent later as pull request to both rdma-next and net-next trees.
+init_dummy_netdev() leaves its netdev_ops pointer zeroed. This leads
+to a NULL pointer dereference when sk_busy_loop fires against an iwlwifi
+wireless adapter and checks napi->dev->netdev_ops->ndo_busy_poll.
 
-Applied to mlx5-next,
+Avoid this by ensuring napi->dev->netdev_ops is valid before following
+the pointer, avoiding the following panic when busy polling on a dummy
+netdev:
 
-Thanks!
+  BUG: unable to handle kernel NULL pointer dereference at 00000000000000c8
+  IP: [<ffffffff817b4b72>] sk_busy_loop+0x92/0x2f0
+  Call Trace:
+   [<ffffffff815a3134>] ? uart_write_room+0x74/0xf0
+   [<ffffffff817964a9>] sock_poll+0x99/0xa0
+   [<ffffffff81223142>] do_sys_poll+0x2e2/0x520
+   [<ffffffff8118d3fc>] ? get_page_from_freelist+0x3bc/0xa30
+   [<ffffffff810ada22>] ? update_curr+0x62/0x140
+   [<ffffffff811ea671>] ? __slab_free+0xa1/0x2a0
+   [<ffffffff811ea671>] ? __slab_free+0xa1/0x2a0
+   [<ffffffff8179dbb1>] ? skb_free_head+0x21/0x30
+   [<ffffffff81221bd0>] ? poll_initwait+0x50/0x50
+   [<ffffffff811eaa36>] ? kmem_cache_free+0x1c6/0x1e0
+   [<ffffffff815a4884>] ? uart_write+0x124/0x1d0
+   [<ffffffff810bd1cd>] ? remove_wait_queue+0x4d/0x60
+   [<ffffffff810bd224>] ? __wake_up+0x44/0x50
+   [<ffffffff81582731>] ? tty_write_unlock+0x31/0x40
+   [<ffffffff8158c5c6>] ? tty_ldisc_deref+0x16/0x20
+   [<ffffffff81584820>] ? tty_write+0x1e0/0x2f0
+   [<ffffffff81587e50>] ? process_echoes+0x80/0x80
+   [<ffffffff8120c17b>] ? __vfs_write+0x2b/0x130
+   [<ffffffff8120d09a>] ? vfs_write+0x15a/0x1a0
+   [<ffffffff81223455>] SyS_poll+0x75/0x100
+   [<ffffffff819a6524>] entry_SYSCALL_64_fastpath+0x24/0xcf
+
+Commit 79e7fff47b7b ("net: remove support for per driver ndo_busy_poll()")
+indirectly fixed this upstream in linux-4.11 by removing the offending
+pointer usage. No other users of napi->dev touch its netdev_ops.
+
+Fixes: 8b80cda536ea ("net: rename include/net/ll_poll.h to include/net/busy_poll.h") # 4.4.y
+Signed-off-by: Josh Elsasser <jelsasser@appneta.com>
+---
+
+This is a straightforward backport of the 4.9.y fix[1] for this crash, which doesn't
+apply to the older LTS releases. Only build-tested on 4.4.y, as I don't have access
+to wireless hardware and firmware that runs on older LTS kernels.
+
+[1]: https://lore.kernel.org/stable/20190701234143.72631-1-jelsasser@appneta.com/T/#u
+
+ include/net/busy_poll.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/net/busy_poll.h b/include/net/busy_poll.h
+index 1d67fb6b23a0..6d238506d49b 100644
+--- a/include/net/busy_poll.h
++++ b/include/net/busy_poll.h
+@@ -93,7 +93,7 @@ static inline bool sk_busy_loop(struct sock *sk, int nonblock)
+ 		goto out;
+ 
+ 	ops = napi->dev->netdev_ops;
+-	if (!ops->ndo_busy_poll)
++	if (!ops || !ops->ndo_busy_poll)
+ 		goto out;
+ 
+ 	do {
+-- 
+2.20.1
+
