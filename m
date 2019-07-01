@@ -2,53 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0483D5C476
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 22:48:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D88E35C478
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 22:48:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726960AbfGAUs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 16:48:28 -0400
-Received: from mail-pf1-f202.google.com ([209.85.210.202]:32979 "EHLO
-        mail-pf1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726869AbfGAUs1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 16:48:27 -0400
-Received: by mail-pf1-f202.google.com with SMTP id d190so9471518pfa.0
-        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 13:48:27 -0700 (PDT)
+        id S1726762AbfGAUsa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 16:48:30 -0400
+Received: from mail-pf1-f201.google.com ([209.85.210.201]:43210 "EHLO
+        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726966AbfGAUsa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 16:48:30 -0400
+Received: by mail-pf1-f201.google.com with SMTP id j7so9473270pfn.10
+        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 13:48:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=INF3BhAYxiC5zN7sI0E/1ejr1GqqfZAk7apZjO1QaBg=;
-        b=v2SizwqEzo0HRILTfG8hKxn7HR13u+sEEwA0E2mO0W6/SZR7mMFwY+758HE5rxyQCY
-         VD/dggiH60mX67ZVxSLvFNiWjPucZAhEm5O52i7Fn/4hCZUr4nZkv081l3/Ef7bExx5q
-         bFV81flb81bsZczZgRa4WfJ3BdwAYoen4RpuxzY/BzOB5X3tb00X9PyutYI5Yr9HUrB8
-         IlkOfc/k+60toNvVS7sCneoOhkFHHSSdwO9f60rekNvED0hAqNPCqFDg7EZ/7uI2bK6M
-         Jx9OMyP31TVJEi96s55nTQTRWgSTD3X5MJuAXY2vqdeNfxXsg0XjqlS9icviBqZgfiyc
-         326A==
+        bh=ModQgDPhzuyPvFACPBg8Rl25O3S/FpNHFLqMvCgTcWw=;
+        b=dUpLFaPB+BU41OsL1OLcuRtyiDgDA8iVJSZWYmxw78QWCy1r+Ih5YnaNWZR7AUpGul
+         9N+8i7qXndq2f4e/hlXbbdnD4Rjl+0KgMYn3qkuRZmUOfZ9peKN9cAjaeZx+W9LCQpis
+         HaugJijk+EePaKKIXoOQaILV8XQaghEMSCOZj7buK61rge5tEnnPuG94M0dnNk0jdc1x
+         UIhhXXEcgZFdYhekyBDcQvvhcsIBpuSLpLqC+qJiV5jvlGh/6KwbPiQCYuROkJVfsa+2
+         BDFV4aBEHyd1D+9BnlyzchGRyVoVj8iBmcXedTsZ2DbzPaVUKITZzISZ6o9YaIv4A5bx
+         6t9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=INF3BhAYxiC5zN7sI0E/1ejr1GqqfZAk7apZjO1QaBg=;
-        b=lS7WaubmWkdB7GUKiYWAmrqB898acOU8pq0OLnn9FDl1Q37GJaSaMSxYvpkw9WrnkX
-         pwklaJiyFxyWA8/LrHjpBKoqR+ac39vk6hsKAqaZLW+kE+Eu02IGFXxbg/+g1yOdpfy0
-         FUObkL2o6kwmZ8JC/L/xr/+LTFY900po2AJ1mUeV/mcFfvkwA8pYfGRDI92+l4Jru+eV
-         EYqWW7mMpCxApKD9YcN05lIn/xpd76bg8EGBRh/D3ibVzTHFLhnECmL+IM08O8CltBf1
-         9O65Dq+Zy5pUzo8yjalW2DUMVBPLmMHTlxdkwgqEnRgzXRfZ84JXqpRDrKMUBm7EgUhp
-         GGng==
-X-Gm-Message-State: APjAAAUAdHsWUEhw2hvzzvA0R8asf13Et5aLgo9RmoQ/jIxct3EAqP31
-        Km1clUzITuF0zoNVuefua+w09NCvAmoucgqvEhKc+pP+pSiP9ZRB6N+dPUb5OvOO79R+CHzEW/l
-        MYPcP9AcgGQVqE3tnaIeQvilMIgeb7wEqJf+id5ld0FN4vyJb43k7zA==
-X-Google-Smtp-Source: APXvYqzKhBy10PewYzuyN7H79WKX0/koGTFebHygP4NeE8AacXlN2HnrwjKNM0sSDjoyFhVV3C8IUEg=
-X-Received: by 2002:a65:6541:: with SMTP id a1mr26318110pgw.409.1562014106370;
- Mon, 01 Jul 2019 13:48:26 -0700 (PDT)
-Date:   Mon,  1 Jul 2019 13:48:14 -0700
+        bh=ModQgDPhzuyPvFACPBg8Rl25O3S/FpNHFLqMvCgTcWw=;
+        b=K9aVa+zD5KkVsxrIyTxW46zWamRTWKqzL4HeYf4775VK0VIPwUg7kcYaL/53xbZ19t
+         fvvHXFdYfPO8ZOZBTfW3o2UhM3w27/+y4lxswPBoTlCMGU1j5+8kDsWAqe1UDweyS7F/
+         zLSTunXmBAtRqxFIpTnFpPuZk0Sj01NtkRGBOjtB7/EpfzM9DbEfaMbU9FNfF7tZ2aom
+         rGmpRSRJHKvBZ2ZMBbDP8glVyacRSRBXqWf86MLATMwAmQK8SpsoM4Yry9NmRow7IJqJ
+         CuBnhigi4lqLWaF0AlhlSoOyrEft0nHabkdaHj9upBxGrD1c+GJvX0fc7UQhT/cZ0+cU
+         OTSA==
+X-Gm-Message-State: APjAAAWr2ht1nJ96XoAUEuDlL5ldFlICys5pJGf2vfEwImCDTLlwkChZ
+        CljRx1zEBz+418zb2UD38k7rF4iOYluEGxRgejIEBgHa/NBTFcM3J/2u1A6j5Ac629YQoKOLEdo
+        UtbrTNVjVYuzl3wT8GIoB6kecTS5OFlb/ydgWtyOfawlNckqT/M/7vw==
+X-Google-Smtp-Source: APXvYqwDLKwFedoIlfJGc8j4Hwl8kx2YHwbLy6maX2cN+vxpk09sCOh/uJJB9/1v/89aIxlj8nl5JVU=
+X-Received: by 2002:a63:3f48:: with SMTP id m69mr26107172pga.17.1562014108970;
+ Mon, 01 Jul 2019 13:48:28 -0700 (PDT)
+Date:   Mon,  1 Jul 2019 13:48:15 -0700
 In-Reply-To: <20190701204821.44230-1-sdf@google.com>
-Message-Id: <20190701204821.44230-2-sdf@google.com>
+Message-Id: <20190701204821.44230-3-sdf@google.com>
 Mime-Version: 1.0
 References: <20190701204821.44230-1-sdf@google.com>
 X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
-Subject: [PATCH bpf-next 1/8] bpf: add BPF_CGROUP_SOCK_OPS callback that is
- executed on every RTT
+Subject: [PATCH bpf-next 2/8] bpf: split shared bpf_tcp_sock and bpf_sock_ops implementation
 From:   Stanislav Fomichev <sdf@google.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
@@ -63,93 +62,239 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Performance impact should be minimal because it's under a new
-BPF_SOCK_OPS_RTT_CB_FLAG flag that has to be explicitly enabled.
+We've added bpf_tcp_sock member to bpf_sock_ops and don't expect
+any new tcp_sock fields in bpf_sock_ops. Let's remove
+CONVERT_COMMON_TCP_SOCK_FIELDS so bpf_tcp_sock can be independently
+extended.
 
-Suggested-by: Eric Dumazet <edumazet@google.com>
 Cc: Eric Dumazet <edumazet@google.com>
 Cc: Priyaranjan Jha <priyarjha@google.com>
 Cc: Yuchung Cheng <ycheng@google.com>
 Cc: Soheil Hassas Yeganeh <soheil@google.com>
 Signed-off-by: Stanislav Fomichev <sdf@google.com>
 ---
- include/net/tcp.h        | 8 ++++++++
- include/uapi/linux/bpf.h | 6 +++++-
- net/ipv4/tcp_input.c     | 4 ++++
- 3 files changed, 17 insertions(+), 1 deletion(-)
+ net/core/filter.c | 180 ++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 126 insertions(+), 54 deletions(-)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 9d36cc88d043..e16d8a3fd3b4 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -2221,6 +2221,14 @@ static inline bool tcp_bpf_ca_needs_ecn(struct sock *sk)
- 	return (tcp_call_bpf(sk, BPF_SOCK_OPS_NEEDS_ECN, 0, NULL) == 1);
- }
- 
-+static inline void tcp_bpf_rtt(struct sock *sk)
-+{
-+	struct tcp_sock *tp = tcp_sk(sk);
-+
-+	if (BPF_SOCK_OPS_TEST_FLAG(tp, BPF_SOCK_OPS_RTT_CB_FLAG))
-+		tcp_call_bpf(sk, BPF_SOCK_OPS_RTT_CB, 0, NULL);
-+}
-+
- #if IS_ENABLED(CONFIG_SMC)
- extern struct static_key_false tcp_have_smc;
- #endif
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index cffea1826a1f..9cdd0aaeba06 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -1770,6 +1770,7 @@ union bpf_attr {
-  * 		* **BPF_SOCK_OPS_RTO_CB_FLAG** (retransmission time out)
-  * 		* **BPF_SOCK_OPS_RETRANS_CB_FLAG** (retransmission)
-  * 		* **BPF_SOCK_OPS_STATE_CB_FLAG** (TCP state change)
-+ * 		* **BPF_SOCK_OPS_RTT_CB_FLAG** (every RTT)
-  *
-  * 		Therefore, this function can be used to clear a callback flag by
-  * 		setting the appropriate bit to zero. e.g. to disable the RTO
-@@ -3314,7 +3315,8 @@ struct bpf_sock_ops {
- #define BPF_SOCK_OPS_RTO_CB_FLAG	(1<<0)
- #define BPF_SOCK_OPS_RETRANS_CB_FLAG	(1<<1)
- #define BPF_SOCK_OPS_STATE_CB_FLAG	(1<<2)
--#define BPF_SOCK_OPS_ALL_CB_FLAGS       0x7		/* Mask of all currently
-+#define BPF_SOCK_OPS_RTT_CB_FLAG	(1<<3)
-+#define BPF_SOCK_OPS_ALL_CB_FLAGS       0xF		/* Mask of all currently
- 							 * supported cb flags
- 							 */
- 
-@@ -3369,6 +3371,8 @@ enum {
- 	BPF_SOCK_OPS_TCP_LISTEN_CB,	/* Called on listen(2), right after
- 					 * socket transition to LISTEN state.
- 					 */
-+	BPF_SOCK_OPS_RTT_CB,		/* Called on every RTT.
-+					 */
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 4836264f82ee..ad908526545d 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -5194,54 +5194,6 @@ static const struct bpf_func_proto bpf_lwt_seg6_adjust_srh_proto = {
  };
+ #endif /* CONFIG_IPV6_SEG6_BPF */
  
- /* List of TCP states. There is a build check in net/ipv4/tcp.c to detect
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index b71efeb0ae5b..c21e8a22fb3b 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -778,6 +778,8 @@ static void tcp_rtt_estimator(struct sock *sk, long mrtt_us)
- 				tp->rttvar_us -= (tp->rttvar_us - tp->mdev_max_us) >> 2;
- 			tp->rtt_seq = tp->snd_nxt;
- 			tp->mdev_max_us = tcp_rto_min_us(sk);
-+
-+			tcp_bpf_rtt(sk);
- 		}
- 	} else {
- 		/* no previous measure. */
-@@ -786,6 +788,8 @@ static void tcp_rtt_estimator(struct sock *sk, long mrtt_us)
- 		tp->rttvar_us = max(tp->mdev_us, tcp_rto_min_us(sk));
- 		tp->mdev_max_us = tp->rttvar_us;
- 		tp->rtt_seq = tp->snd_nxt;
-+
-+		tcp_bpf_rtt(sk);
+-#define CONVERT_COMMON_TCP_SOCK_FIELDS(md_type, CONVERT)		\
+-do {									\
+-	switch (si->off) {						\
+-	case offsetof(md_type, snd_cwnd):				\
+-		CONVERT(snd_cwnd); break;				\
+-	case offsetof(md_type, srtt_us):				\
+-		CONVERT(srtt_us); break;				\
+-	case offsetof(md_type, snd_ssthresh):				\
+-		CONVERT(snd_ssthresh); break;				\
+-	case offsetof(md_type, rcv_nxt):				\
+-		CONVERT(rcv_nxt); break;				\
+-	case offsetof(md_type, snd_nxt):				\
+-		CONVERT(snd_nxt); break;				\
+-	case offsetof(md_type, snd_una):				\
+-		CONVERT(snd_una); break;				\
+-	case offsetof(md_type, mss_cache):				\
+-		CONVERT(mss_cache); break;				\
+-	case offsetof(md_type, ecn_flags):				\
+-		CONVERT(ecn_flags); break;				\
+-	case offsetof(md_type, rate_delivered):				\
+-		CONVERT(rate_delivered); break;				\
+-	case offsetof(md_type, rate_interval_us):			\
+-		CONVERT(rate_interval_us); break;			\
+-	case offsetof(md_type, packets_out):				\
+-		CONVERT(packets_out); break;				\
+-	case offsetof(md_type, retrans_out):				\
+-		CONVERT(retrans_out); break;				\
+-	case offsetof(md_type, total_retrans):				\
+-		CONVERT(total_retrans); break;				\
+-	case offsetof(md_type, segs_in):				\
+-		CONVERT(segs_in); break;				\
+-	case offsetof(md_type, data_segs_in):				\
+-		CONVERT(data_segs_in); break;				\
+-	case offsetof(md_type, segs_out):				\
+-		CONVERT(segs_out); break;				\
+-	case offsetof(md_type, data_segs_out):				\
+-		CONVERT(data_segs_out); break;				\
+-	case offsetof(md_type, lost_out):				\
+-		CONVERT(lost_out); break;				\
+-	case offsetof(md_type, sacked_out):				\
+-		CONVERT(sacked_out); break;				\
+-	case offsetof(md_type, bytes_received):				\
+-		CONVERT(bytes_received); break;				\
+-	case offsetof(md_type, bytes_acked):				\
+-		CONVERT(bytes_acked); break;				\
+-	}								\
+-} while (0)
+-
+ #ifdef CONFIG_INET
+ static struct sock *sk_lookup(struct net *net, struct bpf_sock_tuple *tuple,
+ 			      int dif, int sdif, u8 family, u8 proto)
+@@ -5623,9 +5575,6 @@ u32 bpf_tcp_sock_convert_ctx_access(enum bpf_access_type type,
+ 				      offsetof(struct tcp_sock, FIELD)); \
+ 	} while (0)
+ 
+-	CONVERT_COMMON_TCP_SOCK_FIELDS(struct bpf_tcp_sock,
+-				       BPF_TCP_SOCK_GET_COMMON);
+-
+ 	if (insn > insn_buf)
+ 		return insn - insn_buf;
+ 
+@@ -5640,6 +5589,69 @@ u32 bpf_tcp_sock_convert_ctx_access(enum bpf_access_type type,
+ 				      offsetof(struct tcp_sock, rtt_min) +
+ 				      offsetof(struct minmax_sample, v));
+ 		break;
++	case offsetof(struct bpf_tcp_sock, snd_cwnd):
++		BPF_TCP_SOCK_GET_COMMON(snd_cwnd);
++		break;
++	case offsetof(struct bpf_tcp_sock, srtt_us):
++		BPF_TCP_SOCK_GET_COMMON(srtt_us);
++		break;
++	case offsetof(struct bpf_tcp_sock, snd_ssthresh):
++		BPF_TCP_SOCK_GET_COMMON(snd_ssthresh);
++		break;
++	case offsetof(struct bpf_tcp_sock, rcv_nxt):
++		BPF_TCP_SOCK_GET_COMMON(rcv_nxt);
++		break;
++	case offsetof(struct bpf_tcp_sock, snd_nxt):
++		BPF_TCP_SOCK_GET_COMMON(snd_nxt);
++		break;
++	case offsetof(struct bpf_tcp_sock, snd_una):
++		BPF_TCP_SOCK_GET_COMMON(snd_una);
++		break;
++	case offsetof(struct bpf_tcp_sock, mss_cache):
++		BPF_TCP_SOCK_GET_COMMON(mss_cache);
++		break;
++	case offsetof(struct bpf_tcp_sock, ecn_flags):
++		BPF_TCP_SOCK_GET_COMMON(ecn_flags);
++		break;
++	case offsetof(struct bpf_tcp_sock, rate_delivered):
++		BPF_TCP_SOCK_GET_COMMON(rate_delivered);
++		break;
++	case offsetof(struct bpf_tcp_sock, rate_interval_us):
++		BPF_TCP_SOCK_GET_COMMON(rate_interval_us);
++		break;
++	case offsetof(struct bpf_tcp_sock, packets_out):
++		BPF_TCP_SOCK_GET_COMMON(packets_out);
++		break;
++	case offsetof(struct bpf_tcp_sock, retrans_out):
++		BPF_TCP_SOCK_GET_COMMON(retrans_out);
++		break;
++	case offsetof(struct bpf_tcp_sock, total_retrans):
++		BPF_TCP_SOCK_GET_COMMON(total_retrans);
++		break;
++	case offsetof(struct bpf_tcp_sock, segs_in):
++		BPF_TCP_SOCK_GET_COMMON(segs_in);
++		break;
++	case offsetof(struct bpf_tcp_sock, data_segs_in):
++		BPF_TCP_SOCK_GET_COMMON(data_segs_in);
++		break;
++	case offsetof(struct bpf_tcp_sock, segs_out):
++		BPF_TCP_SOCK_GET_COMMON(segs_out);
++		break;
++	case offsetof(struct bpf_tcp_sock, data_segs_out):
++		BPF_TCP_SOCK_GET_COMMON(data_segs_out);
++		break;
++	case offsetof(struct bpf_tcp_sock, lost_out):
++		BPF_TCP_SOCK_GET_COMMON(lost_out);
++		break;
++	case offsetof(struct bpf_tcp_sock, sacked_out):
++		BPF_TCP_SOCK_GET_COMMON(sacked_out);
++		break;
++	case offsetof(struct bpf_tcp_sock, bytes_received):
++		BPF_TCP_SOCK_GET_COMMON(bytes_received);
++		break;
++	case offsetof(struct bpf_tcp_sock, bytes_acked):
++		BPF_TCP_SOCK_GET_COMMON(bytes_acked);
++		break;
  	}
- 	tp->srtt_us = max(1U, srtt);
- }
+ 
+ 	return insn - insn_buf;
+@@ -7913,9 +7925,6 @@ static u32 sock_ops_convert_ctx_access(enum bpf_access_type type,
+ 			SOCK_OPS_GET_FIELD(BPF_FIELD, OBJ_FIELD, OBJ);	      \
+ 	} while (0)
+ 
+-	CONVERT_COMMON_TCP_SOCK_FIELDS(struct bpf_sock_ops,
+-				       SOCK_OPS_GET_TCP_SOCK_FIELD);
+-
+ 	if (insn > insn_buf)
+ 		return insn - insn_buf;
+ 
+@@ -8085,6 +8094,69 @@ static u32 sock_ops_convert_ctx_access(enum bpf_access_type type,
+ 		SOCK_OPS_GET_OR_SET_FIELD(sk_txhash, sk_txhash,
+ 					  struct sock, type);
+ 		break;
++	case offsetof(struct bpf_sock_ops, snd_cwnd):
++		SOCK_OPS_GET_TCP_SOCK_FIELD(snd_cwnd);
++		break;
++	case offsetof(struct bpf_sock_ops, srtt_us):
++		SOCK_OPS_GET_TCP_SOCK_FIELD(srtt_us);
++		break;
++	case offsetof(struct bpf_sock_ops, snd_ssthresh):
++		SOCK_OPS_GET_TCP_SOCK_FIELD(snd_ssthresh);
++		break;
++	case offsetof(struct bpf_sock_ops, rcv_nxt):
++		SOCK_OPS_GET_TCP_SOCK_FIELD(rcv_nxt);
++		break;
++	case offsetof(struct bpf_sock_ops, snd_nxt):
++		SOCK_OPS_GET_TCP_SOCK_FIELD(snd_nxt);
++		break;
++	case offsetof(struct bpf_sock_ops, snd_una):
++		SOCK_OPS_GET_TCP_SOCK_FIELD(snd_una);
++		break;
++	case offsetof(struct bpf_sock_ops, mss_cache):
++		SOCK_OPS_GET_TCP_SOCK_FIELD(mss_cache);
++		break;
++	case offsetof(struct bpf_sock_ops, ecn_flags):
++		SOCK_OPS_GET_TCP_SOCK_FIELD(ecn_flags);
++		break;
++	case offsetof(struct bpf_sock_ops, rate_delivered):
++		SOCK_OPS_GET_TCP_SOCK_FIELD(rate_delivered);
++		break;
++	case offsetof(struct bpf_sock_ops, rate_interval_us):
++		SOCK_OPS_GET_TCP_SOCK_FIELD(rate_interval_us);
++		break;
++	case offsetof(struct bpf_sock_ops, packets_out):
++		SOCK_OPS_GET_TCP_SOCK_FIELD(packets_out);
++		break;
++	case offsetof(struct bpf_sock_ops, retrans_out):
++		SOCK_OPS_GET_TCP_SOCK_FIELD(retrans_out);
++		break;
++	case offsetof(struct bpf_sock_ops, total_retrans):
++		SOCK_OPS_GET_TCP_SOCK_FIELD(total_retrans);
++		break;
++	case offsetof(struct bpf_sock_ops, segs_in):
++		SOCK_OPS_GET_TCP_SOCK_FIELD(segs_in);
++		break;
++	case offsetof(struct bpf_sock_ops, data_segs_in):
++		SOCK_OPS_GET_TCP_SOCK_FIELD(data_segs_in);
++		break;
++	case offsetof(struct bpf_sock_ops, segs_out):
++		SOCK_OPS_GET_TCP_SOCK_FIELD(segs_out);
++		break;
++	case offsetof(struct bpf_sock_ops, data_segs_out):
++		SOCK_OPS_GET_TCP_SOCK_FIELD(data_segs_out);
++		break;
++	case offsetof(struct bpf_sock_ops, lost_out):
++		SOCK_OPS_GET_TCP_SOCK_FIELD(lost_out);
++		break;
++	case offsetof(struct bpf_sock_ops, sacked_out):
++		SOCK_OPS_GET_TCP_SOCK_FIELD(sacked_out);
++		break;
++	case offsetof(struct bpf_sock_ops, bytes_received):
++		SOCK_OPS_GET_TCP_SOCK_FIELD(bytes_received);
++		break;
++	case offsetof(struct bpf_sock_ops, bytes_acked):
++		SOCK_OPS_GET_TCP_SOCK_FIELD(bytes_acked);
++		break;
+ 	case offsetof(struct bpf_sock_ops, sk):
+ 		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(
+ 						struct bpf_sock_ops_kern,
 -- 
 2.22.0.410.gd8fdbe21b5-goog
 
