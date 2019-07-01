@@ -2,75 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B6D15BF0C
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 17:08:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E84FB5BF0F
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 17:08:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728509AbfGAPId (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 11:08:33 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:33752 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727568AbfGAPId (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Jul 2019 11:08:33 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 1C826C1EB207;
-        Mon,  1 Jul 2019 15:08:28 +0000 (UTC)
-Received: from carbon (ovpn-200-45.brq.redhat.com [10.40.200.45])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 211376085B;
-        Mon,  1 Jul 2019 15:08:20 +0000 (UTC)
-Date:   Mon, 1 Jul 2019 17:08:19 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        brouer@redhat.com, Robert Olsson <robert@herjulf.net>,
-        Jean Hsiao <jhsiao@redhat.com>
-Subject: Re: [PATCH 2/2] samples: pktgen: allow to specify destination port
-Message-ID: <20190701170819.548a7457@carbon>
-In-Reply-To: <20190629133358.8251-2-danieltimlee@gmail.com>
-References: <20190629133358.8251-1-danieltimlee@gmail.com>
-        <20190629133358.8251-2-danieltimlee@gmail.com>
+        id S1728635AbfGAPIi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 11:08:38 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:43469 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727568AbfGAPIi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 11:08:38 -0400
+Received: by mail-wr1-f65.google.com with SMTP id p13so14240467wru.10;
+        Mon, 01 Jul 2019 08:08:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=LrbpjkQWerlunh+jeg3XioAotSIW/UwN3t21/vc60iI=;
+        b=JXWwK7v6XEcs0OcGV8++JG1skKr/kr821hTyDG9c7CSJo5gWT5oFllmVtyWXK8FXFj
+         yf3FfYlSQ51/rEml0Fzx/WmfBKNx3Ut/mbSvITyYvbM5pY6iEdE0BcBprLybJ3hA/LZg
+         qiDdj3fOXQiNGT43YPcVPWeL21JoKL7VMRST43yF93hIzxie87lb5+8UwQY+jmXfU3hY
+         TUJG19mgj3lF5yWOZI77MANVBqYIdwTwAgO6rE0cGt7Y6oqOsVIvH3lbvanjfv3QRBaX
+         u1nhRbZusAzjFGsfNgQuqJe3bWWz+jk6sK6u5c0ZiYhy/2FdHPN0AFOL8ulY5sEBgieX
+         Ae1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=LrbpjkQWerlunh+jeg3XioAotSIW/UwN3t21/vc60iI=;
+        b=Nvu0DLmAPCrNZwdbCYTQe7CgIB9PFLyRu4oRNAWY620rLwqbwHUbvYngtl9MsEzIwf
+         02NaAfvjuv6xOBTqnYY7t9qlZcuOMaLNgPIQcvKh31LfVJLFELR3649POzmAs3DApIwM
+         ok+CGx0V0wfvNy8yik1zhbYAZB04lBE4gEC3HPJbIMgFRLA+wIpiZFM3+//2bKoFs748
+         vXMJeOdhZVPl7ZP10ugptsrqShMVprg5IdDVkOUMZDHxC1YAelzVKKdEaQ2wMuh7+LF9
+         hYRiqHNwp7o0FiV4wRoU7Foyme2Mm6QwQvdT+r6r9u+n2/45fMo/A7WHYsdto7tFDNLE
+         SQdQ==
+X-Gm-Message-State: APjAAAU20wqYBFkGe2ulgBEvVbt/dkx2ZYeJKgDoM0SexgEeIuepdCPO
+        WVqHfwaR77hgJ7BxTzctwPk=
+X-Google-Smtp-Source: APXvYqzZdW0/Y4hmwKKDz/2X7Q0VwEU4tO5q2PLye3hB7/1KoFP9nEEiTBMs9FfvVZZ33rZ/AahFwA==
+X-Received: by 2002:a5d:4992:: with SMTP id r18mr19297196wrq.107.1561993716303;
+        Mon, 01 Jul 2019 08:08:36 -0700 (PDT)
+Received: from localhost ([51.15.41.238])
+        by smtp.gmail.com with ESMTPSA id n125sm15427370wmf.6.2019.07.01.08.08.35
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 01 Jul 2019 08:08:35 -0700 (PDT)
+Date:   Mon, 1 Jul 2019 16:08:34 +0100
+From:   Stefan Hajnoczi <stefanha@gmail.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     netdev@vger.kernel.org, kvm@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v2 3/3] vsock/virtio: fix flush of works during the
+ .remove()
+Message-ID: <20190701150834.GB11900@stefanha-x1.localdomain>
+References: <20190628123659.139576-1-sgarzare@redhat.com>
+ <20190628123659.139576-4-sgarzare@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Mon, 01 Jul 2019 15:08:33 +0000 (UTC)
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="0eh6TmSyL6TZE2Uz"
+Content-Disposition: inline
+In-Reply-To: <20190628123659.139576-4-sgarzare@redhat.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 29 Jun 2019 22:33:58 +0900
-"Daniel T. Lee" <danieltimlee@gmail.com> wrote:
 
-> Currently, kernel pktgen has the feature to specify udp destination port
-> for sending packet. (e.g. pgset "udp_dst_min 9")
-> 
-> But on samples, each of the scripts doesn't have any option to achieve this.
-> 
-> This commit adds the DST_PORT option to specify the target port(s) in the script.
-> 
->     -p : ($DST_PORT)  destination PORT range (e.g. 433-444) is also allowed
-> 
-> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+--0eh6TmSyL6TZE2Uz
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Nice feature, this look very usable for testing.  I think my QA asked
-me for something similar.
+On Fri, Jun 28, 2019 at 02:36:59PM +0200, Stefano Garzarella wrote:
+> This patch moves the flush of works after vdev->config->del_vqs(vdev),
+> because we need to be sure that no workers run before to free the
+> 'vsock' object.
+>=20
+> Since we stopped the workers using the [tx|rx|event]_run flags,
+> we are sure no one is accessing the device while we are calling
+> vdev->config->reset(vdev), so we can safely move the workers' flush.
 
-One nitpick is that script named pktgen_sample03_burst_single_flow.sh
-implies this is a single flow, but by specifying a port-range this will
-be more flows.  I'm okay with adding this, as the end-user specifying a
-port-range should realize this.  Thus, you get my ACK.
+What about send_pkt and loopback work?  How were they stopped safely?
 
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+For example, if send_pkt work executes then we're in trouble since it
+accesses the tx virtqueue which is deleted by ->del_vqs().
 
-Another thing you should realize (but you/we cannot do anything about)
-is that when the scripts use burst or clone, then the port (UDPDST_RND)
-will be the same for all packets in the same burst.  I don't know if it
-matters for your use-case.
+--0eh6TmSyL6TZE2Uz
+Content-Type: application/pgp-signature; name="signature.asc"
 
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl0aIfIACgkQnKSrs4Gr
+c8iHxwf/f/ztZPmFyV30cfT2/l/WmLT+ofdX6M4X2Z7eEb3qolhp0sYuGZjAXdAP
+FrEZY0n5LGLBskjM4s3HThB2uyV/ByLZPDBKuA7SszFKZWGbB/VgR7Z2BzDCaaz2
+7HnJPZoeE7KzeCygCEQ7dneriR+/HgqEW6VZFlaOYX31Nv4X7hUYerrqwmcP9qS+
+tMXxWcsEMjZi9bQFxr+MCZqEJoK/Xct0Yt0ssNUxNz6Uv/KAG7XIaRXP/f+GjHXy
+Uyw/MJKpC4T3N+YwpR9xfGWvLK7NZqvuorr4JGqB8R49AODaYBJepjdxnd6OD8bY
+qmeew3QFothoW6phvjI3A4uKJVsYvw==
+=KE3u
+-----END PGP SIGNATURE-----
+
+--0eh6TmSyL6TZE2Uz--
