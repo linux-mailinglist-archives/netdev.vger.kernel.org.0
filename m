@@ -2,79 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 427E15BEFC
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 17:04:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B6D15BF0C
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 17:08:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729990AbfGAPEI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 11:04:08 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:40245 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727715AbfGAPEI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 11:04:08 -0400
-Received: by mail-qk1-f193.google.com with SMTP id c70so11228021qkg.7;
-        Mon, 01 Jul 2019 08:04:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9+VrEp0J9K+HfaNVqcJSqEqg3MQ2AUENDamu/jtKp1Q=;
-        b=buTr7AAdHBk+m/FmUzWWNQEVps/jscWgdX75phHj/YPqWAUTI4JKBZlT/unEZocFZR
-         I9p8rd2aiTbDoFmYiOecvRalN8hTBu5lKZVBWZeZ4FU8tuPI/sInMjKIHrCkvliNye7R
-         wwQPm6AbId0OrOk/djfbV3Fo2vYkciTxsDTlfJhg6W3B7Ozhc126JzCbpQ2kyigA4nUQ
-         2sq+6d31okhHr8djsAGwQTK9P2sjVtj/FqQUzdN4Paru21x0gTuhuSB2v+I743x2/S+X
-         c6UcnKPbRgu6lnYvqfJHpRcZVdXCrNR30u4A6wLAhNoqfHqXmyFz5EBwwna44zCB0FrO
-         ehxA==
-X-Gm-Message-State: APjAAAUevNI19yr3Xh0zwNzS5F0cwgtDzCGJ1RoftL5dm2janIVut1j6
-        bKlS9+ax3oZcPRYXia60Gv1DDmyf1UnVNpTbvtU=
-X-Google-Smtp-Source: APXvYqwqcSPBj+y3Ek3wEnw9sJPkLJyXKkIOZdqZJPHOppZrs17NHOoh+6neHpAZWB/TTwdU8S2a6KLC0v5EWPbWwVA=
-X-Received: by 2002:a37:4ac3:: with SMTP id x186mr20270454qka.138.1561993446857;
- Mon, 01 Jul 2019 08:04:06 -0700 (PDT)
+        id S1728509AbfGAPId (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 11:08:33 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:33752 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727568AbfGAPId (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Jul 2019 11:08:33 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 1C826C1EB207;
+        Mon,  1 Jul 2019 15:08:28 +0000 (UTC)
+Received: from carbon (ovpn-200-45.brq.redhat.com [10.40.200.45])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 211376085B;
+        Mon,  1 Jul 2019 15:08:20 +0000 (UTC)
+Date:   Mon, 1 Jul 2019 17:08:19 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     "Daniel T. Lee" <danieltimlee@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        brouer@redhat.com, Robert Olsson <robert@herjulf.net>,
+        Jean Hsiao <jhsiao@redhat.com>
+Subject: Re: [PATCH 2/2] samples: pktgen: allow to specify destination port
+Message-ID: <20190701170819.548a7457@carbon>
+In-Reply-To: <20190629133358.8251-2-danieltimlee@gmail.com>
+References: <20190629133358.8251-1-danieltimlee@gmail.com>
+        <20190629133358.8251-2-danieltimlee@gmail.com>
 MIME-Version: 1.0
-References: <20190628103158.2446356-1-arnd@arndb.de> <20190628.093215.173840298920978641.davem@davemloft.net>
-In-Reply-To: <20190628.093215.173840298920978641.davem@davemloft.net>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 1 Jul 2019 17:03:50 +0200
-Message-ID: <CAK8P3a1gunW+R16=GDG+NJ_eaYyiVCDisOa+w5F7tzSGkE2qHQ@mail.gmail.com>
-Subject: Re: [PATCH] hinic: reduce rss_init stack usage
-To:     David Miller <davem@davemloft.net>
-Cc:     Aviad Krawczyk <aviad.krawczyk@huawei.com>, xuechaojing@huawei.com,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        zhaochen6@huawei.com, Eric Dumazet <edumazet@google.com>,
-        Dann Frazier <dann.frazier@canonical.com>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Mon, 01 Jul 2019 15:08:33 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 28, 2019 at 6:32 PM David Miller <davem@davemloft.net> wrote:
->
-> From: Arnd Bergmann <arnd@arndb.de>
-> Date: Fri, 28 Jun 2019 12:31:44 +0200
->
-> > On 32-bit architectures, putting an array of 256 u32 values on the
-> > stack uses more space than the warning limit:
-> >
-> > drivers/net/ethernet/huawei/hinic/hinic_main.c: In function 'hinic_rss_init':
-> > drivers/net/ethernet/huawei/hinic/hinic_main.c:286:1: error: the frame size of 1068 bytes is larger than 1024 bytes [-Werror=frame-larger-than=]
-> >
-> > I considered changing the code to use u8 values here, since that's
-> > all the hardware supports, but dynamically allocating the array is
-> > a more isolated fix here.
-> >
-> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
->
-> Applied to net-next.
+On Sat, 29 Jun 2019 22:33:58 +0900
+"Daniel T. Lee" <danieltimlee@gmail.com> wrote:
 
-Thanks
+> Currently, kernel pktgen has the feature to specify udp destination port
+> for sending packet. (e.g. pgset "udp_dst_min 9")
+> 
+> But on samples, each of the scripts doesn't have any option to achieve this.
+> 
+> This commit adds the DST_PORT option to specify the target port(s) in the script.
+> 
+>     -p : ($DST_PORT)  destination PORT range (e.g. 433-444) is also allowed
+> 
+> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
 
-> Arnd, please make it clear what tree you are targetting in the
-> future.
+Nice feature, this look very usable for testing.  I think my QA asked
+me for something similar.
 
-Sorry about missing this again. I usually remember but sometimes
-one slips through when I send a lot of patches for different subsystems
-at once.
+One nitpick is that script named pktgen_sample03_burst_single_flow.sh
+implies this is a single flow, but by specifying a port-range this will
+be more flows.  I'm okay with adding this, as the end-user specifying a
+port-range should realize this.  Thus, you get my ACK.
 
-      Arnd
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+
+Another thing you should realize (but you/we cannot do anything about)
+is that when the scripts use burst or clone, then the port (UDPDST_RND)
+will be the same for all packets in the same burst.  I don't know if it
+matters for your use-case.
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
