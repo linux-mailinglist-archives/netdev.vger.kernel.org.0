@@ -2,175 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7EBA5B3C5
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 07:02:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7410A5B3CB
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 07:09:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727281AbfGAFB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 01:01:56 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:45689 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726651AbfGAFBz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Jul 2019 01:01:55 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 45cZwb6BCHz9s4V;
-        Mon,  1 Jul 2019 15:01:51 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1561957311;
-        bh=WjOo7BdhBFl450vHjjIDoQzFNDy8ygcgGkM8SW8EWVc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tbRsO5uNSrqKYqJDlbMgeZtW7tmw8M8xN8Qa6+XAtvFbiDPRkqynZBVHcybKUUdvZ
-         5IiRyP0CwPdFwPvIbPJ6g+JiQ+YC+dp3w7HkzRqIQz5MgZ9oZADfNLCnWyWX/iw88/
-         1Sjl1KvSyJ+NZ9wEu+2k93vfaFTNlf/3ryjJYaZwwPWb+BIeT8Qxbrxn/BM/JlTQXv
-         e1h8rqpTPMgmv/1UDlZGnt4S3jtWCCOPB42XNixT/ZNYKRmMZUmqaywUoQYFmdsLP2
-         /D6i5mXewzh84tkeC/eX247wrGI93EXxu4pkXQCH4jBC7tDM8cwxypwm06XIaj0I2g
-         4hQDDVstV7H8g==
-Date:   Mon, 1 Jul 2019 15:01:51 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        Tal Gilboa <talgi@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: Re: linux-next: build failure after merge of the bpf-next tree
-Message-ID: <20190701150151.6bdb7749@canb.auug.org.au>
-In-Reply-To: <20190701145722.5809cb2c@canb.auug.org.au>
-References: <20190701145722.5809cb2c@canb.auug.org.au>
+        id S1727216AbfGAFJV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 01:09:21 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:42373 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726483AbfGAFJV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 01:09:21 -0400
+Received: by mail-qk1-f196.google.com with SMTP id b18so9996659qkc.9
+        for <netdev@vger.kernel.org>; Sun, 30 Jun 2019 22:09:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=M0+3rkTOxrBQnGgZwbRK/n9QcJ7Vj4bYLlp4CkN2fVs=;
+        b=TVF/0x0ySR+gK3cDJBD7zack+c+4yrlXDC6HXULmlnKE0AUu9lB5G/+Zm48nzlSf9f
+         SO/QedbVeeX4tDOiuPuO8Pcnjk5f3ne8M27we0Q9YpcHhzO9xJqQfR+RxLkTSxQtrkGc
+         GO3hV64lu8bv1jWmbpGrMJeUjiOJbcqbm5ymh5lAR2zDYQ6oT29V9xhCrFyLmAaWQNUy
+         VzmmgkRrgTMTlIS1ENbH/rSTU5Tww/nI5QxACSrMnYCPuAgAkDnCsnmgVlF+hljggEcy
+         qzS6ycwoCaVLdU2kCz5krIaIyB/L1VfpvXEboUANpye+MJD40uzzB5ta6F/A40ZrFrkq
+         kKdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=M0+3rkTOxrBQnGgZwbRK/n9QcJ7Vj4bYLlp4CkN2fVs=;
+        b=sYrTmMDSGF3zbKStGrOAGDUZiZrmnd0e+YhN9gIjkEsnXlAMr/rY/ofPv2lSLjyR9U
+         PsNFki09Ga9ZFKxjLgVdN85ZwPZAiDCyPBJCYly0yWVwOnBP6CD1rJf+PEjszzRH4Z4R
+         G+GZtQw27rYkgzVCWXuHzgDSa7CQG32iw81coPYs5np+ouGh3juW7x2jTaEoy7+MG8am
+         y3nKYWEAuc86NGgpzHoD9ApZTbsZ+ckAeyQuI27hDqob3xtObAPutVNCx8TKb58Tcy8m
+         1zdnAV8Soo2Vo5Jx0tl4rHxOao2ITTnwJUosSY3haI/8+JsuDDh5M5jhv+h6UdsJ4hPg
+         csxA==
+X-Gm-Message-State: APjAAAWG+B7QDxm7t/nE5fNMeomhOxg6edIqe2Tr+0DTJUOS6lOL1MRP
+        xnQOGT2u10U86q5kXjkn/UP5WoZR+KK2AIinz9RBgg==
+X-Google-Smtp-Source: APXvYqxPXXMq+e6c2PMdwsMsZqvK6M7xzZTMcrRA5OHdGdm9CcEfDbc4yuhWL3bNvMjKuXVRF0G9orXxlMe58EWt/SY=
+X-Received: by 2002:a37:a484:: with SMTP id n126mr17603801qke.366.1561957759898;
+ Sun, 30 Jun 2019 22:09:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- boundary="Sig_/8q26T++EcfQYJm_DWTzAXFa"; protocol="application/pgp-signature"
+References: <20190627095247.8792-1-chiu@endlessm.com>
+In-Reply-To: <20190627095247.8792-1-chiu@endlessm.com>
+From:   Chris Chiu <chiu@endlessm.com>
+Date:   Mon, 1 Jul 2019 13:09:09 +0800
+Message-ID: <CAB4CAwcAfApWuwr_GDqSwN5w3tDOzR9p9ddck6JYrB+OAvWK8g@mail.gmail.com>
+Subject: Re: [PATCH] rtl8xxxu: Fix wifi low signal strength issue of RTL8723BU
+To:     Jes Sorensen <jes.sorensen@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        David Miller <davem@davemloft.net>
+Cc:     linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        Linux Upstreaming Team <linux@endlessm.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/8q26T++EcfQYJm_DWTzAXFa
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-
-Hi all,
-
-On Mon, 1 Jul 2019 14:57:22 +1000 Stephen Rothwell <sfr@canb.auug.org.au> w=
-rote:
->=20
-> After merging the bpf-next tree, today's linux-next build (x86_64
-> allmodconfig) failed like this:
->=20
-> drivers/net/ethernet/mellanox/mlx5/core/en_main.c:1605:5: error: conflict=
-ing types for 'mlx5e_open_cq'
->  int mlx5e_open_cq(struct mlx5e_channel *c, struct dim_cq_moder moder,
->      ^~~~~~~~~~~~~
-> In file included from drivers/net/ethernet/mellanox/mlx5/core/en_main.c:4=
-3:
-> drivers/net/ethernet/mellanox/mlx5/core/en.h:977:5: note: previous declar=
-ation of 'mlx5e_open_cq' was here
->  int mlx5e_open_cq(struct mlx5e_channel *c, struct net_dim_cq_moder moder,
->      ^~~~~~~~~~~~~
->=20
-> Caused by commit
->=20
->   8960b38932be ("linux/dim: Rename externally used net_dim members")
->=20
-> from the net-next tree interacting with commit
->=20
->   db05815b36cb ("net/mlx5e: Add XSK zero-copy support")
->=20
-> I have applied the following merge fix patch.
->=20
-> From 8e92dbee0daa6bac412daebd08073ba9ca31c7a6 Mon Sep 17 00:00:00 2001
-> From: Stephen Rothwell <sfr@canb.auug.org.au>
-> Date: Mon, 1 Jul 2019 14:55:02 +1000
-> Subject: [PATCH] net/mlx5e: fix up for "linux/dim: Rename externally used
->  net_dim members"
->=20
-> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+On Thu, Jun 27, 2019 at 5:52 PM Chris Chiu <chiu@endlessm.com> wrote:
+>
+> The WiFi tx power of RTL8723BU is extremely low after booting. So
+> the WiFi scan gives very limited AP list and it always fails to
+> connect to the selected AP. This module only supports 1x1 antenna
+> and the antenna is switched to bluetooth due to some incorrect
+> register settings.
+>
+> This commit hand over the antenna control to PTA, the wifi signal
+> will be back to normal and the bluetooth scan can also work at the
+> same time. However, the btcoexist still needs to be handled under
+> different circumstances. If there's a BT connection established,
+> the wifi still fails to connect until disconneting the BT.
+>
+> Signed-off-by: Chris Chiu <chiu@endlessm.com>
 > ---
->  drivers/net/ethernet/mellanox/mlx5/core/en.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/e=
-thernet/mellanox/mlx5/core/en.h
-> index 9cebaa642727..f0d77eb66acf 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-> @@ -974,7 +974,7 @@ int mlx5e_open_xdpsq(struct mlx5e_channel *c, struct =
-mlx5e_params *params,
->  void mlx5e_close_xdpsq(struct mlx5e_xdpsq *sq);
-> =20
->  struct mlx5e_cq_param;
-> -int mlx5e_open_cq(struct mlx5e_channel *c, struct net_dim_cq_moder moder,
-> +int mlx5e_open_cq(struct mlx5e_channel *c, struct dim_cq_moder moder,
->  		  struct mlx5e_cq_param *param, struct mlx5e_cq *cq);
->  void mlx5e_close_cq(struct mlx5e_cq *cq);
-> =20
+>  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c | 9 ++++++---
+>  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c  | 3 ++-
+>  2 files changed, 8 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
+> index 3adb1d3d47ac..6c3c70d93ac1 100644
+> --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
+> +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
+> @@ -1525,7 +1525,7 @@ static void rtl8723b_enable_rf(struct rtl8xxxu_priv *priv)
+>         /*
+>          * WLAN action by PTA
+>          */
+> -       rtl8xxxu_write8(priv, REG_WLAN_ACT_CONTROL_8723B, 0x04);
+> +       rtl8xxxu_write8(priv, REG_WLAN_ACT_CONTROL_8723B, 0x0c);
+>
+>         /*
+>          * BT select S0/S1 controlled by WiFi
+> @@ -1568,9 +1568,12 @@ static void rtl8723b_enable_rf(struct rtl8xxxu_priv *priv)
+>         rtl8xxxu_gen2_h2c_cmd(priv, &h2c, sizeof(h2c.ant_sel_rsv));
+>
+>         /*
+> -        * 0x280, 0x00, 0x200, 0x80 - not clear
+> +        * Different settings per different antenna position.
+> +        * Antenna switch to BT: 0x280, 0x00 (inverse)
+> +        * Antenna switch to WiFi: 0x0, 0x280 (inverse)
+> +        * Antenna controlled by PTA: 0x200, 0x80 (inverse)
+>          */
+> -       rtl8xxxu_write32(priv, REG_S0S1_PATH_SWITCH, 0x00);
+> +       rtl8xxxu_write32(priv, REG_S0S1_PATH_SWITCH, 0x80);
+>
+>         /*
+>          * Software control, antenna at WiFi side
+> diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+> index 8136e268b4e6..87b2179a769e 100644
+> --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+> +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+> @@ -3891,12 +3891,13 @@ static int rtl8xxxu_init_device(struct ieee80211_hw *hw)
+>
+>         /* Check if MAC is already powered on */
+>         val8 = rtl8xxxu_read8(priv, REG_CR);
+> +       val16 = rtl8xxxu_read16(priv, REG_SYS_CLKR);
+>
+>         /*
+>          * Fix 92DU-VC S3 hang with the reason is that secondary mac is not
+>          * initialized. First MAC returns 0xea, second MAC returns 0x00
+>          */
+> -       if (val8 == 0xea)
+> +       if (val8 == 0xea || !(val16 & BIT(11)))
+>                 macpower = false;
+>         else
+>                 macpower = true;
+> --
+> 2.11.0
+>
 
-Also, this:
+Gentle ping. Cheers.
 
-drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c: In function 'mlx5e_=
-open_xsk':
-drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c:64:9: error: variabl=
-e 'icocq_moder' has initializer but incomplete type
-  struct net_dim_cq_moder icocq_moder =3D {};
-         ^~~~~~~~~~~~~~~~
-drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c:64:26: error: storag=
-e size of 'icocq_moder' isn't known
-  struct net_dim_cq_moder icocq_moder =3D {};
-                          ^~~~~~~~~~~
-
-For which I applied this:
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Mon, 1 Jul 2019 15:00:08 +1000
-Subject: [PATCH] another fix for "linux/dim: Rename externally used net_dim
- members"
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
----
- drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c b/drive=
-rs/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
-index 9b4d47c47c92..aaffa6f68dc0 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
-@@ -61,7 +61,7 @@ int mlx5e_open_xsk(struct mlx5e_priv *priv, struct mlx5e_=
-params *params,
- 		   struct mlx5e_channel *c)
- {
- 	struct mlx5e_channel_param cparam =3D {};
--	struct net_dim_cq_moder icocq_moder =3D {};
-+	struct dim_cq_moder icocq_moder =3D {};
- 	int err;
-=20
- 	if (!mlx5e_validate_xsk_param(params, xsk, priv->mdev))
---=20
-2.20.1
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/8q26T++EcfQYJm_DWTzAXFa
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl0Zk78ACgkQAVBC80lX
-0GynlAf/TAXj6eOTQEJHc9LUGD2vYwpRK5PjDE8ICklrLrCwyRXizERRYW22cI3n
-Ki9asTlcFFUc9GM+UWbbU59iVfJW/pP0jyvjNeNt5biLowwYZ9htM64lr5nzunpl
-fOGg0z8YSQJhn3dx43GS/pz7W6NjcFC1FNcRogYrd51AeYQPDz0XtfIAX7i6K+Et
-iYN5uLWYnNrVTpENuQdgOPn61jvz6zU8syuU2+AkrF9UWVwQhlw7fbhPGQu0mZZ2
-R9hs/RjHu6Rj8N718qeEFqMUxUn7TLdLgvCAwXcxY6nm1x2z6/N2ROR5xc5YdrYF
-f2cuiBySDt55jF3Md2r+/8mbrPM4qg==
-=wmto
------END PGP SIGNATURE-----
-
---Sig_/8q26T++EcfQYJm_DWTzAXFa--
+Chris
