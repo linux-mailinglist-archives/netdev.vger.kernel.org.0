@@ -2,82 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 862285C60D
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 01:52:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A47095C9F5
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 09:30:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727022AbfGAXwE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 19:52:04 -0400
-Received: from mail-pf1-f182.google.com ([209.85.210.182]:44526 "EHLO
-        mail-pf1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726811AbfGAXwE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 19:52:04 -0400
-Received: by mail-pf1-f182.google.com with SMTP id t16so7297006pfe.11
-        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 16:52:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=appneta.com; s=google;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=U3UCHfQa0yO6+9MSJSdhp8ydnzBOoWVKB7F2MUDXIbg=;
-        b=b5Iea5vhGThzBv+VWqfZbdQPWSQb/trP2oBbiSl1ZLRctqr33FGui2k/L5AGnmsaV7
-         22BsGyqjddZ3Wi5jEi48VQUnbZznpyn2+DkAdVy3r8kSlaGNo04U+/udCAyV3AjEqF5v
-         Bkjrem0QYozuKu9xpdQRdVpt7Z1Va3i7P4HXI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=U3UCHfQa0yO6+9MSJSdhp8ydnzBOoWVKB7F2MUDXIbg=;
-        b=Lga3/Fc6FZ4Uanq27fuWTtqErveBEVSGeMo98R6X8yp91RHPo6WxCsDgoP0uZcDV3m
-         4e45QhZhmhd0yx5AADf62cX3c1lbjAyw9uJ3Z22wCyAQm9Z6BEVQUIGgDj/DcUWypSLF
-         6Smbm5LVkqRp9I7uxiIwWr2qqdx15pF/V7VlC02LBzv8lzpZSLiMx2avI0GE7aDWUQBl
-         ysJV+Vzq8U/T9SJPTjg6DfgRO95FF29nDFjG633RW9AtR/iBtIGZNFmLwi10/FtQYskz
-         FobYPXGHdheNfPfoKplJSPLJy1ws1YhLNeFICXRA3xcjb4TEwZtoWDUsx8dquetGhbny
-         W7Gg==
-X-Gm-Message-State: APjAAAXHDaRR96kW+HbKst0LekyLHYlMB78QW24Bj2STVuxQcOB+yrPY
-        eNgzAkZpbnECsEgtVpdlOwso
-X-Google-Smtp-Source: APXvYqz0b5AzL/SN3RQHm/dlupgSF+1Fo4cZiZxEFKyd+V0xZqiqECBH1Pl8dWl5yxYv7lc45QuLDA==
-X-Received: by 2002:a63:4f65:: with SMTP id p37mr27044600pgl.327.1562025123383;
-        Mon, 01 Jul 2019 16:52:03 -0700 (PDT)
-Received: from [192.168.1.144] (64-46-6-129.dyn.novuscom.net. [64.46.6.129])
-        by smtp.gmail.com with ESMTPSA id y12sm11153359pgi.10.2019.07.01.16.52.02
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 01 Jul 2019 16:52:02 -0700 (PDT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
-Subject: Re: net: check before dereferencing netdev_ops during busy poll
-From:   Josh Elsasser <jelsasser@appneta.com>
-In-Reply-To: <CAGnkfhx3ykbEsW+=FtpMFWU=_Vnie7RpPYWpWqa1S1HPMXj9kw@mail.gmail.com>
-Date:   Mon, 1 Jul 2019 16:52:01 -0700
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, stable@vger.kernel.org,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
-Content-Transfer-Encoding: 7bit
-Message-Id: <AFBE995B-8C7D-430D-B722-615C6CBBF6E9@appneta.com>
-References: <CAGnkfhxxw9keiNj_Qm=2GBYpY38HAq28cOROMRqXfbqq8wNbWQ@mail.gmail.com>
- <20190628225533.GJ11506@sasha-vm>
- <1560226F-F2C0-440D-9C58-D664DE3C7322@appneta.com>
- <20190629074553.GA28708@kroah.com>
- <CAGnkfhzmGbeQe7L55nEv575XyubWqCLz=7NQPpH+TajDkkDiXg@mail.gmail.com>
- <20190701175241.GB9081@kroah.com>
- <CAGnkfhx3ykbEsW+=FtpMFWU=_Vnie7RpPYWpWqa1S1HPMXj9kw@mail.gmail.com>
-To:     Matteo Croce <mcroce@redhat.com>
-X-Mailer: Apple Mail (2.3445.104.11)
+        id S1726344AbfGBHaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 03:30:12 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:35052 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725845AbfGBHaM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jul 2019 03:30:12 -0400
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id D5C8F26AC966FD5D207D;
+        Tue,  2 Jul 2019 15:30:08 +0800 (CST)
+Received: from localhost.localdomain (10.175.34.53) by
+ DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
+ 14.3.439.0; Tue, 2 Jul 2019 15:29:57 +0800
+From:   Xue Chaojing <xuechaojing@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <luoshaokai@huawei.com>, <cloud.wangxiaoyun@huawei.com>,
+        <xuechaojing@huawei.com>, <chiqijun@huawei.com>,
+        <wulike1@huawei.com>
+Subject: [PATCH net-next] hinic: remove standard netdev stats
+Date:   Mon, 1 Jul 2019 23:40:00 +0000
+Message-ID: <20190701234000.31738-1-xuechaojing@huawei.com>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.175.34.53]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Jul 1, 2019, at 11:03 AM, Matteo Croce <mcroce@redhat.com> wrote:
+This patch removes standard netdev stats in ethtool -S.
 
-> Josh, as you are the original author, can you please resend it to -stable?
-> Feel free to add this tag:
-> 
-> Tested-by: Matteo Croce <mcroce@redhat.com>
+Suggested-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Signed-off-by: Xue Chaojing <xuechaojing@huawei.com>
+---
+ .../net/ethernet/huawei/hinic/hinic_ethtool.c | 47 +------------------
+ 1 file changed, 1 insertion(+), 46 deletions(-)
 
-For sure. Resent with your Tested-by, along with a second patch that applies 
-to the 4.4.y LTS kernel.
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c b/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
+index 8d98f37c88a8..73a20f01ad4c 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
+@@ -440,35 +440,6 @@ static u32 hinic_get_rxfh_indir_size(struct net_device *netdev)
+ 
+ #define ARRAY_LEN(arr) ((int)((int)sizeof(arr) / (int)sizeof(arr[0])))
+ 
+-#define HINIC_NETDEV_STAT(_stat_item) { \
+-	.name = #_stat_item, \
+-	.size = FIELD_SIZEOF(struct rtnl_link_stats64, _stat_item), \
+-	.offset = offsetof(struct rtnl_link_stats64, _stat_item) \
+-}
+-
+-static struct hinic_stats hinic_netdev_stats[] = {
+-	HINIC_NETDEV_STAT(rx_packets),
+-	HINIC_NETDEV_STAT(tx_packets),
+-	HINIC_NETDEV_STAT(rx_bytes),
+-	HINIC_NETDEV_STAT(tx_bytes),
+-	HINIC_NETDEV_STAT(rx_errors),
+-	HINIC_NETDEV_STAT(tx_errors),
+-	HINIC_NETDEV_STAT(rx_dropped),
+-	HINIC_NETDEV_STAT(tx_dropped),
+-	HINIC_NETDEV_STAT(multicast),
+-	HINIC_NETDEV_STAT(collisions),
+-	HINIC_NETDEV_STAT(rx_length_errors),
+-	HINIC_NETDEV_STAT(rx_over_errors),
+-	HINIC_NETDEV_STAT(rx_crc_errors),
+-	HINIC_NETDEV_STAT(rx_frame_errors),
+-	HINIC_NETDEV_STAT(rx_fifo_errors),
+-	HINIC_NETDEV_STAT(rx_missed_errors),
+-	HINIC_NETDEV_STAT(tx_aborted_errors),
+-	HINIC_NETDEV_STAT(tx_carrier_errors),
+-	HINIC_NETDEV_STAT(tx_fifo_errors),
+-	HINIC_NETDEV_STAT(tx_heartbeat_errors),
+-};
+-
+ #define HINIC_FUNC_STAT(_stat_item) {	\
+ 	.name = #_stat_item, \
+ 	.size = FIELD_SIZEOF(struct hinic_vport_stats, _stat_item), \
+@@ -658,20 +629,11 @@ static void hinic_get_ethtool_stats(struct net_device *netdev,
+ {
+ 	struct hinic_dev *nic_dev = netdev_priv(netdev);
+ 	struct hinic_vport_stats vport_stats = {0};
+-	const struct rtnl_link_stats64 *net_stats;
+ 	struct hinic_phy_port_stats *port_stats;
+-	struct rtnl_link_stats64 temp;
+ 	u16 i = 0, j = 0;
+ 	char *p;
+ 	int err;
+ 
+-	net_stats = dev_get_stats(netdev, &temp);
+-	for (j = 0; j < ARRAY_LEN(hinic_netdev_stats); j++, i++) {
+-		p = (char *)net_stats + hinic_netdev_stats[j].offset;
+-		data[i] = (hinic_netdev_stats[j].size ==
+-				sizeof(u64)) ? *(u64 *)p : *(u32 *)p;
+-	}
+-
+ 	err = hinic_get_vport_stats(nic_dev, &vport_stats);
+ 	if (err)
+ 		netif_err(nic_dev, drv, netdev,
+@@ -716,8 +678,7 @@ static int hinic_get_sset_count(struct net_device *netdev, int sset)
+ 	switch (sset) {
+ 	case ETH_SS_STATS:
+ 		q_num = nic_dev->num_qps;
+-		count = ARRAY_LEN(hinic_netdev_stats) +
+-			ARRAY_LEN(hinic_function_stats) +
++		count = ARRAY_LEN(hinic_function_stats) +
+ 			(ARRAY_LEN(hinic_tx_queue_stats) +
+ 			ARRAY_LEN(hinic_rx_queue_stats)) * q_num;
+ 
+@@ -738,12 +699,6 @@ static void hinic_get_strings(struct net_device *netdev,
+ 
+ 	switch (stringset) {
+ 	case ETH_SS_STATS:
+-		for (i = 0; i < ARRAY_LEN(hinic_netdev_stats); i++) {
+-			memcpy(p, hinic_netdev_stats[i].name,
+-			       ETH_GSTRING_LEN);
+-			p += ETH_GSTRING_LEN;
+-		}
+-
+ 		for (i = 0; i < ARRAY_LEN(hinic_function_stats); i++) {
+ 			memcpy(p, hinic_function_stats[i].name,
+ 			       ETH_GSTRING_LEN);
+-- 
+2.17.1
 
-I'm still a little hazy on how net fixes work for older LTS releases, so I
-hope I've sent these properly. I can respin if necessary.
