@@ -2,132 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A47095C9F5
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 09:30:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 891325C620
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 01:59:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726344AbfGBHaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 03:30:12 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:35052 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725845AbfGBHaM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jul 2019 03:30:12 -0400
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id D5C8F26AC966FD5D207D;
-        Tue,  2 Jul 2019 15:30:08 +0800 (CST)
-Received: from localhost.localdomain (10.175.34.53) by
- DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
- 14.3.439.0; Tue, 2 Jul 2019 15:29:57 +0800
-From:   Xue Chaojing <xuechaojing@huawei.com>
-To:     <davem@davemloft.net>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <luoshaokai@huawei.com>, <cloud.wangxiaoyun@huawei.com>,
-        <xuechaojing@huawei.com>, <chiqijun@huawei.com>,
-        <wulike1@huawei.com>
-Subject: [PATCH net-next] hinic: remove standard netdev stats
-Date:   Mon, 1 Jul 2019 23:40:00 +0000
-Message-ID: <20190701234000.31738-1-xuechaojing@huawei.com>
+        id S1727074AbfGAX7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 19:59:31 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:13974 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727035AbfGAX7a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 19:59:30 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x61NvWYv024450
+        for <netdev@vger.kernel.org>; Mon, 1 Jul 2019 16:59:29 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=aTX3W/4MT51viNBfDmp8dl3UMdM3eDt03b8FTyWCWwY=;
+ b=Yl8F2j4HJzEifhb/1QIK+fTwuvEaUKrYL5w/P3xg6QvUXlYOMT4FS7pRG4UOm04/Vt/s
+ mBpjT7UmUWYaFEoiq/68tV2G6Grf8K5C11UzNZmOGonIysO+MAFccUBX89/wPCl5WjJz
+ 3VYOFDIjBPC7HXFJcQQh6LStcMqM3wA8uic= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2tfrhvgsca-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 16:59:28 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 1 Jul 2019 16:59:06 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id B49B286149D; Mon,  1 Jul 2019 16:59:04 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <andrii.nakryiko@gmail.com>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <ast@fb.com>, <daniel@iogearbox.net>,
+        <kernel-team@fb.com>, <yhs@fb.com>
+CC:     Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH v5 bpf-next 0/9] libbpf: add bpf_link and tracing attach APIs
+Date:   Mon, 1 Jul 2019 16:58:54 -0700
+Message-ID: <20190701235903.660141-1-andriin@fb.com>
 X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.175.34.53]
-X-CFilter-Loop: Reflected
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-01_14:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1907010279
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch removes standard netdev stats in ethtool -S.
+This patchset adds the following APIs to allow attaching BPF programs to
+tracing entities:
+- bpf_program__attach_perf_event for attaching to any opened perf event FD,
+  allowing users full control;
+- bpf_program__attach_kprobe for attaching to kernel probes (both entry and
+  return probes);
+- bpf_program__attach_uprobe for attaching to user probes (both entry/return);
+- bpf_program__attach_tracepoint for attaching to kernel tracepoints;
+- bpf_program__attach_raw_tracepoint for attaching to raw kernel tracepoint
+  (wrapper around bpf_raw_tracepoint_open);
 
-Suggested-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Signed-off-by: Xue Chaojing <xuechaojing@huawei.com>
----
- .../net/ethernet/huawei/hinic/hinic_ethtool.c | 47 +------------------
- 1 file changed, 1 insertion(+), 46 deletions(-)
+This set of APIs makes libbpf more useful for tracing applications.
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c b/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
-index 8d98f37c88a8..73a20f01ad4c 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_ethtool.c
-@@ -440,35 +440,6 @@ static u32 hinic_get_rxfh_indir_size(struct net_device *netdev)
- 
- #define ARRAY_LEN(arr) ((int)((int)sizeof(arr) / (int)sizeof(arr[0])))
- 
--#define HINIC_NETDEV_STAT(_stat_item) { \
--	.name = #_stat_item, \
--	.size = FIELD_SIZEOF(struct rtnl_link_stats64, _stat_item), \
--	.offset = offsetof(struct rtnl_link_stats64, _stat_item) \
--}
--
--static struct hinic_stats hinic_netdev_stats[] = {
--	HINIC_NETDEV_STAT(rx_packets),
--	HINIC_NETDEV_STAT(tx_packets),
--	HINIC_NETDEV_STAT(rx_bytes),
--	HINIC_NETDEV_STAT(tx_bytes),
--	HINIC_NETDEV_STAT(rx_errors),
--	HINIC_NETDEV_STAT(tx_errors),
--	HINIC_NETDEV_STAT(rx_dropped),
--	HINIC_NETDEV_STAT(tx_dropped),
--	HINIC_NETDEV_STAT(multicast),
--	HINIC_NETDEV_STAT(collisions),
--	HINIC_NETDEV_STAT(rx_length_errors),
--	HINIC_NETDEV_STAT(rx_over_errors),
--	HINIC_NETDEV_STAT(rx_crc_errors),
--	HINIC_NETDEV_STAT(rx_frame_errors),
--	HINIC_NETDEV_STAT(rx_fifo_errors),
--	HINIC_NETDEV_STAT(rx_missed_errors),
--	HINIC_NETDEV_STAT(tx_aborted_errors),
--	HINIC_NETDEV_STAT(tx_carrier_errors),
--	HINIC_NETDEV_STAT(tx_fifo_errors),
--	HINIC_NETDEV_STAT(tx_heartbeat_errors),
--};
--
- #define HINIC_FUNC_STAT(_stat_item) {	\
- 	.name = #_stat_item, \
- 	.size = FIELD_SIZEOF(struct hinic_vport_stats, _stat_item), \
-@@ -658,20 +629,11 @@ static void hinic_get_ethtool_stats(struct net_device *netdev,
- {
- 	struct hinic_dev *nic_dev = netdev_priv(netdev);
- 	struct hinic_vport_stats vport_stats = {0};
--	const struct rtnl_link_stats64 *net_stats;
- 	struct hinic_phy_port_stats *port_stats;
--	struct rtnl_link_stats64 temp;
- 	u16 i = 0, j = 0;
- 	char *p;
- 	int err;
- 
--	net_stats = dev_get_stats(netdev, &temp);
--	for (j = 0; j < ARRAY_LEN(hinic_netdev_stats); j++, i++) {
--		p = (char *)net_stats + hinic_netdev_stats[j].offset;
--		data[i] = (hinic_netdev_stats[j].size ==
--				sizeof(u64)) ? *(u64 *)p : *(u32 *)p;
--	}
--
- 	err = hinic_get_vport_stats(nic_dev, &vport_stats);
- 	if (err)
- 		netif_err(nic_dev, drv, netdev,
-@@ -716,8 +678,7 @@ static int hinic_get_sset_count(struct net_device *netdev, int sset)
- 	switch (sset) {
- 	case ETH_SS_STATS:
- 		q_num = nic_dev->num_qps;
--		count = ARRAY_LEN(hinic_netdev_stats) +
--			ARRAY_LEN(hinic_function_stats) +
-+		count = ARRAY_LEN(hinic_function_stats) +
- 			(ARRAY_LEN(hinic_tx_queue_stats) +
- 			ARRAY_LEN(hinic_rx_queue_stats)) * q_num;
- 
-@@ -738,12 +699,6 @@ static void hinic_get_strings(struct net_device *netdev,
- 
- 	switch (stringset) {
- 	case ETH_SS_STATS:
--		for (i = 0; i < ARRAY_LEN(hinic_netdev_stats); i++) {
--			memcpy(p, hinic_netdev_stats[i].name,
--			       ETH_GSTRING_LEN);
--			p += ETH_GSTRING_LEN;
--		}
--
- 		for (i = 0; i < ARRAY_LEN(hinic_function_stats); i++) {
- 			memcpy(p, hinic_function_stats[i].name,
- 			       ETH_GSTRING_LEN);
+All attach APIs return abstract struct bpf_link that encapsulates logic of
+detaching BPF program. See patch #2 for details. bpf_assoc was considered as
+an alternative name for this opaque "handle", but bpf_link seems to be
+appropriate semantically and is nice and short.
+
+Pre-patch #1 makes internal libbpf_strerror_r helper function work w/ negative
+error codes, lifting the burder off callers to keep track of error sign.
+Patch #2 adds bpf_link abstraction.
+Patch #3 adds attach_perf_event, which is the base for all other APIs.
+Patch #4 adds kprobe/uprobe APIs.
+Patch #5 adds tracepoint API.
+Patch #6 adds raw_tracepoint API.
+Patch #7 converts one existing test to use attach_perf_event.
+Patch #8 adds new kprobe/uprobe tests.
+Patch #9 converts some selftests currently using tracepoint to new APIs.
+
+v4->v5:
+- typo and small nits (Yonghong);
+- validate pfd in attach_perf_event (Yonghong);
+- parse_uint_from_file fixes (Yonghong);
+- check for malloc failure in attach_raw_tracepoint (Yonghong);
+- attach_probes selftests clean up fixes (Yonghong);
+v3->v4:
+- proper errno handling (Stanislav);
+- bpf_fd -> prog_fd (Stanislav);
+- switch to fprintf (Song);
+v2->v3:
+- added bpf_link concept (Daniel);
+- didn't add generic bpf_link__attach_program for reasons described in [0];
+- dropped Stanislav's Reviewed-by from patches #2-#6, in case he doesn't like
+  the change;
+v1->v2:
+- preserve errno before close() call (Stanislav);
+- use libbpf_perf_event_disable_and_close in selftest (Stanislav);
+- remove unnecessary memset (Stanislav);
+
+[0] https://lore.kernel.org/bpf/CAEf4BzZ7EM5eP2eaZn7T2Yb5QgVRiwAs+epeLR1g01TTx-6m6Q@mail.gmail.com/
+
+Andrii Nakryiko (9):
+  libbpf: make libbpf_strerror_r agnostic to sign of error
+  libbpf: introduce concept of bpf_link
+  libbpf: add ability to attach/detach BPF program to perf event
+  libbpf: add kprobe/uprobe attach API
+  libbpf: add tracepoint attach API
+  libbpf: add raw tracepoint attach API
+  selftests/bpf: switch test to new attach_perf_event API
+  selftests/bpf: add kprobe/uprobe selftests
+  selftests/bpf: convert existing tracepoint tests to new APIs
+
+ tools/lib/bpf/libbpf.c                        | 367 ++++++++++++++++++
+ tools/lib/bpf/libbpf.h                        |  21 +
+ tools/lib/bpf/libbpf.map                      |   8 +-
+ tools/lib/bpf/str_error.c                     |   2 +-
+ .../selftests/bpf/prog_tests/attach_probe.c   | 166 ++++++++
+ .../bpf/prog_tests/stacktrace_build_id.c      |  55 +--
+ .../bpf/prog_tests/stacktrace_build_id_nmi.c  |  31 +-
+ .../selftests/bpf/prog_tests/stacktrace_map.c |  43 +-
+ .../bpf/prog_tests/stacktrace_map_raw_tp.c    |  15 +-
+ .../selftests/bpf/progs/test_attach_probe.c   |  55 +++
+ 10 files changed, 664 insertions(+), 99 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/attach_probe.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_attach_probe.c
+
 -- 
 2.17.1
 
