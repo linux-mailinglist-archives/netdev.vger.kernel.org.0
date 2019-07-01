@@ -2,82 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 461325BBA4
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 14:38:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D7405BC06
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 14:44:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728143AbfGAMii (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 08:38:38 -0400
-Received: from mail-wr1-f50.google.com ([209.85.221.50]:36618 "EHLO
-        mail-wr1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727320AbfGAMii (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 08:38:38 -0400
-Received: by mail-wr1-f50.google.com with SMTP id n4so13700361wrs.3
-        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 05:38:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=7OdKOBOEu/IiRXNpUgC/xr2SjNnwUtufZkc62ZD3w7k=;
-        b=YNLqqHpgCvD7ZFkr7RNnRPIv4z9Q3csPk6uFefnmQMzgqixiPY2wQAd0xA/ta3798H
-         DxN/9VRTVRAb7VefDUtRF3k9g8GPSyXAcrhdiVxerMdLb3wg/ifPjZm/+47BkQ24jdjD
-         bBY8npHJbtgpHu8BQUxS0zoZ/E0wWd/wRccX/C6f4WKhZeNcUgdAshPR8v+REKT6lu+S
-         dTodUOqbHUupV5ZQQjFkWUz2OOiKiHjuhUO27ix0lxMUhEJs+4ujA+Jy5wD1UibN6lWw
-         1G1gFRCEJeIJPqRz0NYtVL9ltM+22m0fQpFxaaRpbg5e5u4Gpi6NhkoBFIv4K28DqNLS
-         ITGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=7OdKOBOEu/IiRXNpUgC/xr2SjNnwUtufZkc62ZD3w7k=;
-        b=BGmuC4rENCLu9yU0UbA4Ee2X3QY16bCaJ9PXaYqYkNStJsZbx3sEDhDCbhfHOPXYbr
-         y7sfId32Hz54to3sqFILdK4Kj3qxh7zeEJsRmAKgZJ1SXcHHvLwLrS6i9MdgTkRvZxf1
-         wnJUiGm2Hbu02FYFykg2Oml+Fl+fAp3G/zxEbLIaCURLrAe69MjDpqDHK0qPGwds7rbU
-         3syJ8ezybkzoHoAw5Z1Lj386r6ni+XPJ2ZlpKy0/dNVhcXyjRhX15zKip8F7/m+82nkT
-         6mqfLTGWXy1vPVxb2xH482Lj/gse9lAoRmQs7rad89CINahnjvKmwlasO+oUayX8bDq6
-         kHZw==
-X-Gm-Message-State: APjAAAVY8vuPcX1GPb/oZU6synb1fbXjSUJL2NjBiFLplqFrbBOhoc/b
-        ipdqiWOpdGBOTSrc9EYlVPCaoFa1P0I=
-X-Google-Smtp-Source: APXvYqyzCuWh8WfyySHcg0HQQOM9nPZ/AYnmyhSa/XTaeuGSq3xvQgunEhI4MiJAXwLu2yIYI2xtIQ==
-X-Received: by 2002:a5d:518f:: with SMTP id k15mr18705158wrv.321.1561984715727;
-        Mon, 01 Jul 2019 05:38:35 -0700 (PDT)
-Received: from ?IPv6:2a01:e35:8b63:dc30:78cb:f345:e2db:cb5a? ([2a01:e35:8b63:dc30:78cb:f345:e2db:cb5a])
-        by smtp.gmail.com with ESMTPSA id n125sm14952756wmf.6.2019.07.01.05.38.34
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 01 Jul 2019 05:38:35 -0700 (PDT)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [RFC iproute2] netns: add mounting state file for each netns
-To:     Matteo Croce <mcroce@redhat.com>, netdev@vger.kernel.org
-Cc:     Alexander Aring <aring@mojatatu.com>
-References: <20190630192933.30743-1-mcroce@redhat.com>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <e2173091-1c7a-fd74-95ea-41eedbab92d3@6wind.com>
-Date:   Mon, 1 Jul 2019 14:38:34 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.1
+        id S1727423AbfGAMov (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 08:44:51 -0400
+Received: from mx.0dd.nl ([5.2.79.48]:53902 "EHLO mx.0dd.nl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726329AbfGAMou (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Jul 2019 08:44:50 -0400
+Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx.0dd.nl (Postfix) with ESMTPS id D5BDF5FBBA;
+        Mon,  1 Jul 2019 14:44:47 +0200 (CEST)
+Authentication-Results: mx.0dd.nl;
+        dkim=pass (2048-bit key; secure) header.d=vdorst.com header.i=@vdorst.com header.b="s0QcYMee";
+        dkim-atps=neutral
+Received: from www (www.vdorst.com [192.168.2.222])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.vdorst.com (Postfix) with ESMTPSA id 987321CEAE35;
+        Mon,  1 Jul 2019 14:44:47 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com 987321CEAE35
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
+        s=default; t=1561985087;
+        bh=HD07xirr5v6niPTGZlUhmDwV64b2Isb4hPBudEVnkxk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=s0QcYMee9v616AwnQE7o/KyMHJxWrvg97rhqGBYBzqm7tI0neQIrXhvAbSBmhKD0+
+         /juQUY3TY4xroXrrElNvz1V++cvQ9wtf5nM5LuobL7BkndHbv22WzCweGQqJsDDnTg
+         87kZhwVKbdlzjOoza5+aDtYM8sMc3hljar5K7IK+h/VoQR/8VLA0qF5Y57clNp4C5S
+         plDuc8y69EsLzYbknY1SYBI1wncJ+k1DJr7POylVHUzUE8yGeksp2qPsebQTWRJi7K
+         ZuVu6tF653OM8/MM1J4JjnR9RkkGyelUFVjAy5w370fGK5xhltvIZCKNLgi+nq9057
+         3mrWYN1W7NaFw==
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1]) by
+ www.vdorst.com (Horde Framework) with HTTPS; Mon, 01 Jul 2019 12:44:47 +0000
+Date:   Mon, 01 Jul 2019 12:44:47 +0000
+Message-ID: <20190701124447.Horde.RNUh-fSQf6XMauvPaGIYpKj@www.vdorst.com>
+From:   =?utf-8?b?UmVuw6k=?= van Dorst <opensource@vdorst.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     sean.wang@mediatek.com, f.fainelli@gmail.com,
+        linux@armlinux.org.uk, David Miller <davem@davemloft.net>,
+        matthias.bgg@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        frank-w@public-files.de,
+        Network Development <netdev@vger.kernel.org>,
+        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org
+Subject: Re: [PATCH] net: ethernet: mediatek: Fix overlapping capability
+ bits.
+References: <20190629122419.19026-1-opensource@vdorst.com>
+ <CA+FuTSdr8HCRJTE8pEVxsga3N-xx-fEAxzKAAyPFWH6doVRHbQ@mail.gmail.com>
+In-Reply-To: <CA+FuTSdr8HCRJTE8pEVxsga3N-xx-fEAxzKAAyPFWH6doVRHbQ@mail.gmail.com>
+User-Agent: Horde Application Framework 5
+Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
 MIME-Version: 1.0
-In-Reply-To: <20190630192933.30743-1-mcroce@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 30/06/2019 à 21:29, Matteo Croce a écrit :
-> When ip creates a netns, there is a small time interval between the
-> placeholder file creation in NETNS_RUN_DIR and the bind mount from /proc.
-> 
-> Add a temporary file named .mounting-$netns which gets deleted after the
-> bind mount, so watching for delete event matching the .mounting-* name
-> will notify watchers only after the bind mount has been done.
-Probably a naive question, but why creating those '.mounting-$netns' files in
-the directory where netns are stored? Why not another directory, something like
-/var/run/netns-monitor/?
+Quoting Willem de Bruijn <willemdebruijn.kernel@gmail.com>:
+
+> On Sat, Jun 29, 2019 at 8:24 AM René van Dorst <opensource@vdorst.com> wrote:
+>>
+>> Both MTK_TRGMII_MT7621_CLK and MTK_PATH_BIT are defined as bit 10.
+>>
+>> This causes issues on non-MT7621 devices which has the
+>> MTK_PATH_BIT(MTK_ETH_PATH_GMAC1_RGMII) capability set.
+>> The wrong TRGMII setup code is executed.
+>>
+>> Moving the MTK_PATH_BIT to bit 11 fixes the issue.
+>>
+>> Fixes: 8efaa653a8a5 ("net: ethernet: mediatek: Add MT7621 TRGMII mode
+>> support")
+>> Signed-off-by: René van Dorst <opensource@vdorst.com>
+>
+> This targets net? Please mark networking patches [PATCH net] or [PATCH
+> net-next].
+
+Hi Willem,
+
+Thanks for you input.
+
+This patch was for net-next.
+
+>
+>> ---
+>>  drivers/net/ethernet/mediatek/mtk_eth_soc.h | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h  
+>> b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+>> index 876ce6798709..2cb8a915731c 100644
+>> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+>> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+>> @@ -626,7 +626,7 @@ enum mtk_eth_path {
+>>  #define MTK_TRGMII_MT7621_CLK          BIT(10)
+>>
+>>  /* Supported path present on SoCs */
+>> -#define MTK_PATH_BIT(x)         BIT((x) + 10)
+>>
+>> +#define MTK_PATH_BIT(x)         BIT((x) + 11)
+>>
+>
+> To avoid this happening again, perhaps make the reserved range more explicit?
+>
+> For instance
+>
+> #define MTK_FIXED_BIT_LAST 10
+> #define MTK_TRGMII_MT7621_CLK  BIT(MTK_FIXED_BIT_LAST)
+>
+> #define MTK_PATH_BIT_FIRST  (MTK_FIXED_BIT_LAST + 1)
+> #define MTK_PATH_BIT_LAST (MTK_FIXED_BIT_LAST + 7)
+> #define MTK_MUX_BIT_FIRST (MTK_PATH_BIT_LAST + 1)
+>
+> Though I imagine there are cleaner approaches. Perhaps define all
+> fields as enum instead of just mtk_eth_mux and mtk_eth_path. Then
+> there can be no accidental collision.
+
+You mean in a similar way as done in the ethtool.h [0]?
+
+Use a enum to define the unique bits.
+
+enum mtk_bits {
+	MTK_RGMII_BIT = 0,
+	MTK_SGMII_BIT,
+	MTK_TRGMII_BIT,
+	AND SO ON ....
+};
+
+Also move the mtk_eth_mux and mtk_eth_path in to this enum.
+
+Then use defines to convert bits to values.
+
+#define MTK_RGMII  BIT(MTK_RGMII_BIT)
+#define MTK_TRGMII BIT(MTK_TRGMII_BIT)
+
+Replace the MTK_PATH_BIT and MTK_PATH_BIT macro with BIT()
+
+Is this what you had in mind?
+
+Greats,
+
+René
+
+[0]:  
+https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/ethtool.h#L1402
 
 
-Regards,
-Nicolas
+
