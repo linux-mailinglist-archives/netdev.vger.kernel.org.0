@@ -2,71 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AB765C134
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 18:37:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 031E25C11D
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 18:31:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729282AbfGAQhc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 12:37:32 -0400
-Received: from forward100p.mail.yandex.net ([77.88.28.100]:50559 "EHLO
-        forward100p.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727702AbfGAQhc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 12:37:32 -0400
-X-Greylist: delayed 461 seconds by postgrey-1.27 at vger.kernel.org; Mon, 01 Jul 2019 12:37:31 EDT
-Received: from mxback8j.mail.yandex.net (mxback8j.mail.yandex.net [IPv6:2a02:6b8:0:1619::111])
-        by forward100p.mail.yandex.net (Yandex) with ESMTP id B10845980F78
-        for <netdev@vger.kernel.org>; Mon,  1 Jul 2019 19:29:48 +0300 (MSK)
-Received: from smtp1p.mail.yandex.net (smtp1p.mail.yandex.net [2a02:6b8:0:1472:2741:0:8b6:6])
-        by mxback8j.mail.yandex.net (nwsmtp/Yandex) with ESMTP id 30Hpcmc82A-TmVe7fkd;
-        Mon, 01 Jul 2019 19:29:48 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.ru; s=mail; t=1561998588;
-        bh=LWcSBCOWkhkmijW+vwQrZlV6XLIRqwIu0SU6W4ztBnk=;
-        h=Subject:From:To:Date:Message-ID;
-        b=k+61aRCEdPUgbWnZJGTvqfW40Y34mHUmI6JGpQZ0WRlLiyrCCegRKhmlCBJRMIBeQ
-         6Bnpg0EYf5vnqsG1AoiAAuO8NBQba0M+7OJnJmrtX2JvoPTBkEwPq3gCkb+I6/gJL2
-         s7iSp/WnyS30Dzz/wRzT5cDkVHomGSZ0Xu1SwE7I=
-Authentication-Results: mxback8j.mail.yandex.net; dkim=pass header.i=@yandex.ru
-Received: by smtp1p.mail.yandex.net (nwsmtp/Yandex) with ESMTPSA id QczCzjdTbT-TlqGHbKg;
-        Mon, 01 Jul 2019 19:29:48 +0300
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (Client certificate not present)
-To:     netdev@vger.kernel.org
-From:   =?UTF-8?B?0JDQu9C10LrRgdC10Lk=?= <ne-vlezay80@yandex.ru>
-Subject: [PATCH] User mode linux bump maximum MTU tuntap interface
-Message-ID: <54cee375-f1c3-a2b3-ea89-919b0af60433@yandex.ru>
-Date:   Mon, 1 Jul 2019 19:29:46 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+        id S1728079AbfGAQbG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 12:31:06 -0400
+Received: from mail-vk1-f202.google.com ([209.85.221.202]:37922 "EHLO
+        mail-vk1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726840AbfGAQbG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 12:31:06 -0400
+Received: by mail-vk1-f202.google.com with SMTP id u202so3689887vku.5
+        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 09:31:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=Hpk2/HOQHvfBVy9PRqwSIyvQNicnJjMAmm/xrZF8TLY=;
+        b=nQV1jzz67Ra7/sE4GMgvu4vle7yKaa+RoY7+C/wvdCMMGfDafqJ0SvSaUNPPOVrZnQ
+         M4ARhJpo1XokggAYW7ZPHOdIFeSO091+H6nbxoED3GFNuSWOBkEzTANPdBCWv36t2BK1
+         EqrqESUrVC6TcVsPHopKcoxg2e1hVKfOhfNSRQgk5QhEvmobcuRRD910Hdtlxg3f9hj6
+         kMiuhC7VFzmq/kIokZYIvYYPWB7HTDLltwdoJNXigZPzvUkq9QkOoP8zr75rCtGHHv+9
+         0nniR0Qva7c9BGycCcwkKgikHe5jGs6lpavHE9VMA6JfJq6pZ3YKx/QDc7ARIY/uPTjk
+         MA7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=Hpk2/HOQHvfBVy9PRqwSIyvQNicnJjMAmm/xrZF8TLY=;
+        b=KACw/jKsNspsfA8LWeLgYAZmPcJD7U9Yy7Ypk3YR5aB1hlt3cIBnxawIxxUcSGvLew
+         99fI4KnDHy0yyTPJEAijwJcNIt9eyw3XAmewlRnoJaqa0mLkzNl9aMAlsRmbLZ8Nc8v/
+         +gAEpl2xLPhVq+FQ1Dgqk2kWnF/bov/i1aFBK9j6w2wE6kuExrbA78KstNztsiQG1Xv8
+         oFY5oNkx2qqCXsqP7UZv9LaZqwJ8RdCVFrbazbGUKhrOUlbrXUaiYYrng/ruoT66+4/G
+         q6NhA9kLTbORQ75DFmGA14GDK70iCICApbWE3ucjxIrBgQ+qmN+O06bMkn5vQrk0j0/O
+         J1zw==
+X-Gm-Message-State: APjAAAW0eD1Hp4LZcjzHOiyEf8IeFCMY6INr/vcMJJfCOZVOAj5AxNpX
+        +ImxvTJmhiXjwFhK2kPtYFhA5zK3+L+fCADOLixoThCm+yFlqH2Jm+csZcQC4gn6tnHYLittKzN
+        VWY5W0zKiiwcEw4koctJQZJH5B6XWCaozFADseGT1b5gDHE/riWCQwQ==
+X-Google-Smtp-Source: APXvYqzak49YiI/f5chbYe5zglmIxd9QJKqUV/71MhqZQTxuui9yCSsgFUqi5HwQ6EiNu/OtDVWLQ84=
+X-Received: by 2002:a1f:a494:: with SMTP id n142mr8582411vke.49.1561998665373;
+ Mon, 01 Jul 2019 09:31:05 -0700 (PDT)
+Date:   Mon,  1 Jul 2019 09:31:00 -0700
+Message-Id: <20190701163103.237550-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
+Subject: [PATCH bpf-next v2 0/3] bpf: allow wide (u64) aligned stores for some
+ fields of bpf_sock_addr
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello, the parameter  ETH_MAX_PACKET limited to 1500 bytes is the not
-support jumbo frames.
+Clang can generate 8-byte stores for user_ip6 & msg_src_ip6,
+let's support that on the verifier side.
 
-This patch change ETH_MAX_PACKET the 65535 bytes to jumbo frame support
-with user mode linux tuntap driver.
+v2:
+* Add simple cover letter (Yonghong Song)
+* Update comments (Yonghong Song)
+* Remove [4] selftests (Yonghong Song)
 
+Stanislav Fomichev (3):
+  bpf: allow wide (u64) aligned stores for some fields of bpf_sock_addr
+  bpf: sync bpf.h to tools/
+  selftests/bpf: add verifier tests for wide stores
 
-PATCH:
+ include/linux/filter.h                        |  6 ++++
+ include/uapi/linux/bpf.h                      |  4 +--
+ net/core/filter.c                             | 22 +++++++-----
+ tools/include/uapi/linux/bpf.h                |  4 +--
+ tools/testing/selftests/bpf/test_verifier.c   | 17 +++++++--
+ .../selftests/bpf/verifier/wide_store.c       | 36 +++++++++++++++++++
+ 6 files changed, 74 insertions(+), 15 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/verifier/wide_store.c
 
--------------------
-
-diff -ruNp ./src/1/linux-5.1/arch/um/include/shared/net_user.h
-./src/linux-5.1/$
---- ./arch/um/include/shared/net_user.h 2019-05-06 00:42:58.000000000 +0000
-+++ ./arch/um/include/shared/net_user.h 2019-07-01 16:09:20.316666597 +0000
-@@ -9,7 +9,7 @@
- #define ETH_ADDR_LEN (6)
- #define ETH_HEADER_ETHERTAP (16)
- #define ETH_HEADER_OTHER (26) /* 14 for ethernet + VLAN + MPLS for
-crazy peopl$
--#define ETH_MAX_PACKET (1500)
-+#define ETH_MAX_PACKET (65535)
- 
- #define UML_NET_VERSION (4)
-
+-- 
+2.22.0.410.gd8fdbe21b5-goog
