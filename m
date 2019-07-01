@@ -2,48 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F53E5C2D5
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 20:22:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62F165C300
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 20:27:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727072AbfGASWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 14:22:38 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:46748 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726671AbfGASWi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 14:22:38 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 64CBD14C6D77B;
-        Mon,  1 Jul 2019 11:22:37 -0700 (PDT)
-Date:   Mon, 01 Jul 2019 11:22:36 -0700 (PDT)
-Message-Id: <20190701.112236.1672634172707343585.davem@davemloft.net>
-To:     mcroce@redhat.com
-Cc:     joe@perches.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org
-Subject: Re: [PATCH net] ipv4: don't set IPv6 only flags to IPv4 addresses
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <CAGnkfhx9F1G8K6PjBdUnkCO07GR=ktWAnqOLTcOvg7VGwWb69Q@mail.gmail.com>
-References: <20190701160805.32404-1-mcroce@redhat.com>
-        <42624f83da71354a5daef959a4749cb75516d37f.camel@perches.com>
-        <CAGnkfhx9F1G8K6PjBdUnkCO07GR=ktWAnqOLTcOvg7VGwWb69Q@mail.gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 01 Jul 2019 11:22:37 -0700 (PDT)
+        id S1726859AbfGAS1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 14:27:49 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:34764 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726563AbfGAS1t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 14:27:49 -0400
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from parav@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 1 Jul 2019 21:27:43 +0300
+Received: from sw-mtx-036.mtx.labs.mlnx (sw-mtx-036.mtx.labs.mlnx [10.12.150.149])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x61IRf8d001480;
+        Mon, 1 Jul 2019 21:27:42 +0300
+From:   Parav Pandit <parav@mellanox.com>
+To:     netdev@vger.kernel.org
+Cc:     saeedm@mellanox.com, jakub.kicinski@netronome.com,
+        jiri@mellanox.com, Parav Pandit <parav@mellanox.com>
+Subject: [PATCH] devlink: Introduce PCI PF and VF port flavour and attribute
+Date:   Mon,  1 Jul 2019 13:27:38 -0500
+Message-Id: <20190701182738.24763-1-parav@mellanox.com>
+X-Mailer: git-send-email 2.19.2
+In-Reply-To: <20190701122734.18770-1-parav@mellanox.com>
+References: <20190701122734.18770-1-parav@mellanox.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matteo Croce <mcroce@redhat.com>
-Date: Mon, 1 Jul 2019 18:13:32 +0200
+Introduce PCI PF and VF port flavour and port attributes such as PF
+number and VF number.
 
-> Can this be edidet on patchwork instead of spamming with a v2?
+$ devlink port show
+pci/0000:05:00.0/0: type eth netdev eth0 flavour pcipf pfnum 0
+pci/0000:05:00.0/1: type eth netdev eth1 flavour pcivf pfnum 0 vfnum 0
+pci/0000:05:00.0/2: type eth netdev eth2 flavour pcivf pfnum 0 vfnum 1
 
-"Spamming"?
+Acked-by: Jiri Pirko <jiri@mellanox.com>
+Signed-off-by: Parav Pandit <parav@mellanox.com>
+---
+ devlink/devlink.c            | 23 +++++++++++++++++++++++
+ include/uapi/linux/devlink.h | 11 +++++++++++
+ 2 files changed, 34 insertions(+)
 
-It's never spamming, resends make my life SO much easier.
+diff --git a/devlink/devlink.c b/devlink/devlink.c
+index 559f624e..15493426 100644
+--- a/devlink/devlink.c
++++ b/devlink/devlink.c
+@@ -2771,6 +2771,10 @@ static const char *port_flavour_name(uint16_t flavour)
+ 		return "cpu";
+ 	case DEVLINK_PORT_FLAVOUR_DSA:
+ 		return "dsa";
++	case DEVLINK_PORT_FLAVOUR_PCI_PF:
++		return "pcipf";
++	case DEVLINK_PORT_FLAVOUR_PCI_VF:
++		return "pcivf";
+ 	default:
+ 		return "<unknown flavour>";
+ 	}
+@@ -2803,8 +2807,27 @@ static void pr_out_port(struct dl *dl, struct nlattr **tb)
+ 	if (tb[DEVLINK_ATTR_PORT_FLAVOUR]) {
+ 		uint16_t port_flavour =
+ 				mnl_attr_get_u16(tb[DEVLINK_ATTR_PORT_FLAVOUR]);
++		uint16_t pf_vf;
+ 
+ 		pr_out_str(dl, "flavour", port_flavour_name(port_flavour));
++		if (port_flavour == DEVLINK_PORT_FLAVOUR_PCI_PF) {
++			if (tb[DEVLINK_ATTR_PORT_PCI_PF_NUMBER]) {
++				pf_vf = mnl_attr_get_u16(
++					tb[DEVLINK_ATTR_PORT_PCI_PF_NUMBER]);
++				pr_out_uint(dl, "pfnum", pf_vf);
++			}
++		} else if (port_flavour == DEVLINK_PORT_FLAVOUR_PCI_VF) {
++			if (tb[DEVLINK_ATTR_PORT_PCI_PF_NUMBER]) {
++				pf_vf = mnl_attr_get_u16(
++					tb[DEVLINK_ATTR_PORT_PCI_PF_NUMBER]);
++				pr_out_uint(dl, "pfnum", pf_vf);
++			}
++			if (tb[DEVLINK_ATTR_PORT_PCI_VF_NUMBER]) {
++				pf_vf = mnl_attr_get_u16(
++					tb[DEVLINK_ATTR_PORT_PCI_VF_NUMBER]);
++				pr_out_uint(dl, "vfnum", pf_vf);
++			}
++		}
+ 	}
+ 	if (tb[DEVLINK_ATTR_PORT_SPLIT_GROUP])
+ 		pr_out_uint(dl, "split_group",
+diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+index 6544824a..fc195cbd 100644
+--- a/include/uapi/linux/devlink.h
++++ b/include/uapi/linux/devlink.h
+@@ -169,6 +169,14 @@ enum devlink_port_flavour {
+ 	DEVLINK_PORT_FLAVOUR_DSA, /* Distributed switch architecture
+ 				   * interconnect port.
+ 				   */
++	DEVLINK_PORT_FLAVOUR_PCI_PF, /* Represents eswitch port for
++				      * the PCI PF. It is an internal
++				      * port that faces the PCI PF.
++				      */
++	DEVLINK_PORT_FLAVOUR_PCI_VF, /* Represents eswitch port
++				      * for the PCI VF. It is an internal
++				      * port that faces the PCI VF.
++				      */
+ };
+ 
+ enum devlink_param_cmode {
+@@ -337,6 +345,9 @@ enum devlink_attr {
+ 	DEVLINK_ATTR_FLASH_UPDATE_STATUS_DONE,	/* u64 */
+ 	DEVLINK_ATTR_FLASH_UPDATE_STATUS_TOTAL,	/* u64 */
+ 
++	DEVLINK_ATTR_PORT_PCI_PF_NUMBER,	/* u16 */
++	DEVLINK_ATTR_PORT_PCI_VF_NUMBER,	/* u16 */
++
+ 	/* add new attributes above here, update the policy in devlink.c */
+ 
+ 	__DEVLINK_ATTR_MAX,
+-- 
+2.19.2
+
