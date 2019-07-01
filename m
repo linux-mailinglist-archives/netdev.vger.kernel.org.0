@@ -2,60 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EDA845B6D9
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 10:29:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03FB35B706
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 10:42:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727492AbfGAI3Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 04:29:24 -0400
-Received: from mx140-tc.baidu.com ([61.135.168.140]:47198 "EHLO
-        tc-sys-mailedm03.tc.baidu.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727243AbfGAI3Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 04:29:24 -0400
-Received: from localhost (cp01-cos-dev01.cp01.baidu.com [10.92.119.46])
-        by tc-sys-mailedm03.tc.baidu.com (Postfix) with ESMTP id A1ACA450003E
-        for <netdev@vger.kernel.org>; Mon,  1 Jul 2019 16:29:07 +0800 (CST)
-From:   Li RongQing <lirongqing@baidu.com>
-To:     netdev@vger.kernel.org
-Subject: [PATCH] xfrm: use list_for_each_entry_safe in xfrm_policy_flush
-Date:   Mon,  1 Jul 2019 16:29:07 +0800
-Message-Id: <1561969747-8629-1-git-send-email-lirongqing@baidu.com>
-X-Mailer: git-send-email 1.7.1
+        id S1727923AbfGAImR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 04:42:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57594 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726442AbfGAImQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Jul 2019 04:42:16 -0400
+Received: from localhost (unknown [193.47.165.251])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C22C320881;
+        Mon,  1 Jul 2019 08:42:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1561970536;
+        bh=EuJJCr8afeJG/qvEREgqqIK72eu1U4Vw/fvqo5aoqwk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=E5WHAS4jl8qvLVvuSQLeN9j3xI4FREcZ7YbHHJ4ub+MqHDljdFQeTnXp6BkkqeJDm
+         JLlwZBMnG0LvJXX4mL+hWt8a79RnvVaaR/bBLaOGYrYh3xlf2CY4FT1r9D/7UvVKO7
+         9kZtoVOEK7AoHdNot6llg+8Q/1ehODG8L+inmNsY=
+Date:   Mon, 1 Jul 2019 11:42:13 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jason Gunthorpe <jgg@mellanox.com>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Majd Dibbiny <majd@mellanox.com>,
+        Mark Zhang <markz@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH rdma-next v4 06/17] RDMA/counter: Add "auto"
+ configuration mode support
+Message-ID: <20190701084213.GJ4727@mtr-leonro.mtl.com>
+References: <20190618172625.13432-1-leon@kernel.org>
+ <20190618172625.13432-7-leon@kernel.org>
+ <20190630004048.GB7173@mellanox.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190630004048.GB7173@mellanox.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The iterated pol maybe be freed since it is not protected
-by RCU or spinlock when put it, lead to UAF, so use _safe
-function to iterate over it against removal
+On Sun, Jun 30, 2019 at 12:40:54AM +0000, Jason Gunthorpe wrote:
+> On Tue, Jun 18, 2019 at 08:26:14PM +0300, Leon Romanovsky wrote:
+>
+> > +static void __rdma_counter_dealloc(struct rdma_counter *counter)
+> > +{
+> > +	mutex_lock(&counter->lock);
+> > +	counter->device->ops.counter_dealloc(counter);
+> > +	mutex_unlock(&counter->lock);
+> > +}
+>
+> Does this lock do anything? The kref is 0 at this point, so no other
+> thread can have a pointer to this lock.
 
-Signed-off-by: Li RongQing <lirongqing@baidu.com>
----
- net/xfrm/xfrm_policy.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Yes, it is leftover from atomic_read implementation.
 
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 3235562f6588..87d770dab1f5 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -1772,7 +1772,7 @@ xfrm_policy_flush_secctx_check(struct net *net, u8 type, bool task_valid)
- int xfrm_policy_flush(struct net *net, u8 type, bool task_valid)
- {
- 	int dir, err = 0, cnt = 0;
--	struct xfrm_policy *pol;
-+	struct xfrm_policy *pol, *tmp;
- 
- 	spin_lock_bh(&net->xfrm.xfrm_policy_lock);
- 
-@@ -1781,7 +1781,7 @@ int xfrm_policy_flush(struct net *net, u8 type, bool task_valid)
- 		goto out;
- 
- again:
--	list_for_each_entry(pol, &net->xfrm.policy_all, walk.all) {
-+	list_for_each_entry_safe(pol, tmp, &net->xfrm.policy_all, walk.all) {
- 		dir = xfrm_policy_id2dir(pol->index);
- 		if (pol->walk.dead ||
- 		    dir >= XFRM_POLICY_MAX ||
--- 
-2.16.2
+>
+> > +
+> > +static void rdma_counter_dealloc(struct rdma_counter *counter)
+> > +{
+> > +	if (!counter)
+> > +		return;
+>
+> Counter is never NULL.
 
+Ohh, right, I'll clean some code near rdma_counter_dealloc/__rdma_counter_dealloc.
+
+Thanks
+
+>
+> Jason
