@@ -2,144 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 98ADA5BB5F
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 14:21:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B0545BB6B
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 14:23:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728021AbfGAMUz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 08:20:55 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:42683 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727243AbfGAMUz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 08:20:55 -0400
-Received: by mail-wr1-f66.google.com with SMTP id x17so13586051wrl.9;
-        Mon, 01 Jul 2019 05:20:53 -0700 (PDT)
+        id S1728520AbfGAMXm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 08:23:42 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:38700 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727938AbfGAMXm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 08:23:42 -0400
+Received: by mail-ed1-f65.google.com with SMTP id r12so23209397edo.5;
+        Mon, 01 Jul 2019 05:23:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=wDK+VGNLOh5xPyZh6wAjqtdgmRlRlNiDvHJYuCNXtQI=;
-        b=DGmE2t0LmdkCDNwjx/jVMYLqQGB9FcnDRaBOVKqAZX077VZuX92c5e0iTPy4Cr3aTo
-         pwvh9lcYW3jrw0dt0eKg/BGzryj9CRirOXTPyAeqZ+TQOSCmBThRSAMKcV6VTgyn7Qnm
-         uFF7SzS6zmvNJO5larxrkPcaco+TjJuykfzz7clS5iJPYQ/pXGoTD6khn2OgTtKsNJ7x
-         IIUBxIW/AQ8vczIQJTZuSIG5DqY4SUIfGFBHxgQ4tZKym4HGnBJr9gc4TKQwmM3O0Llv
-         2pMJUDam/OLPrXrG5fRt9c4w4+qEktF4LUyVNLXeyfCeZ01ZVyjyM/oUOdR6g4KTSXxG
-         qh2g==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TqJ5FwFb7YyscLWlQXilVsOJTgQDq/FFV13jnAzIBSA=;
+        b=SL8qpN87+0x+YgiO7CxEarJHROlGcqh2Hz8kq2O/Xcy6RIT4sMzzDVbyxuLHskKkDY
+         KTR6ri9py2vcxPGxcQ9KPtHJiIY17F0lAo8lR/9D61FOc1d7Q1obGl7/Zj4MIgfHbtRn
+         Q2Zmfpi3HMGX6MhOYPUiKGs43PAQHMY2/dAoJTW8ZFWvXNCyYfk7Cj9an6Jm7d6MrPpr
+         rLtyKyfErpdU6wyepGoCK2aYLJiJ4lRy+rjFfjhUF5HBIq6NQGdrjbybSdJhCl8bkz1E
+         o5xnFH/dBkK7IVDvqJvAuldVd2ZlLpawCbJa9vsX2yby7HzP+F3SITT+gc2HobR54ZlQ
+         6A0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=wDK+VGNLOh5xPyZh6wAjqtdgmRlRlNiDvHJYuCNXtQI=;
-        b=rwMSWYtIvtxcWk7BqAo0Obz3zEMGtoY3ptavyTWlEWRVLX+p26/wTv9/yC7fBQ+J13
-         SQZ/8V6gG5EwpQuKWHwKAk34kfeNsd7CvWDrPKI8mvqTLQF3KI+flcD9t41u9Sddbv7x
-         Dvbktxh6dbxpOCcBydF/unh2oGv1f5kNIQqp6u3zLzSe168g2uoTVcydCu27NANSKFGY
-         s/GLKlwxWpS3z8ngwK+oh35+00hoaOaqKaApkt7SJ1JO/24ab60mbPdUfBNosuq3HX/I
-         9jHEMltSk8rtlGXhfd2BKxbODckJeFLKntvFDv3pngAPsQKQ0+NLmMaEoUgU+zKit17w
-         qtQQ==
-X-Gm-Message-State: APjAAAXvuzJGuhqxSSucNqt00Q1TxOlv57+2+iXP69dcxBCnyGRh3Lx4
-        tXS7KMAjK8lMW7ybNxfmVrcZQWm3
-X-Google-Smtp-Source: APXvYqyQ7atvdEI+wUbwck5kAALCn2WuV1fSHPqK0zpVspqgBezpseLvGFdydiRzCtyK24pLPQ7xBA==
-X-Received: by 2002:adf:ab0f:: with SMTP id q15mr3238025wrc.325.1561983652973;
-        Mon, 01 Jul 2019 05:20:52 -0700 (PDT)
-Received: from Red ([2a01:cb1d:147:7200:2e56:dcff:fed2:c6d6])
-        by smtp.googlemail.com with ESMTPSA id h19sm19567752wrb.81.2019.07.01.05.20.51
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 01 Jul 2019 05:20:52 -0700 (PDT)
-Date:   Mon, 1 Jul 2019 14:20:50 +0200
-From:   Corentin Labbe <clabbe.montjoie@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     jacmet@sunsite.dk, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [BUG] net: dm9600: false link status
-Message-ID: <20190701122050.GA11021@Red>
-References: <20190627132137.GB29016@Red>
- <20190627144339.GG31189@lunn.ch>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TqJ5FwFb7YyscLWlQXilVsOJTgQDq/FFV13jnAzIBSA=;
+        b=dUIWWD9DRQuyp3V7G8ATh6HdkFdPDOq+DXNDA8w2tLMfCRGWeIWdp3ly7BKXC/8GIp
+         VeEHskBSdoDUfHfExvALoUe1ThEEtnlbQH/3Gfb16UQ0sBE926RbaMqKflJjpEbh/iG3
+         1Ysco/0gQ9di784HDlC7f4RBb5Wu9QdbExpV3tb3C+CzKleAbAdbHaRlLMbtKXrDXY0g
+         RIHBNPjSrruJ03qmnBC2uXs2JXxAbNjAu31z4lbBwEp140ZLo3ihg3+LEvlgBmj2fqf6
+         0/fEikvKz3Zvvxjgds3cRN6+d2boJhgKjTm+8nC2+rxW8Zz9tr6vxgRisxad71ZpRuW/
+         4LwA==
+X-Gm-Message-State: APjAAAUMuqX0UF0W1gAV8IW5hGoWRlF95oqcqddaWHzALzhzc/Z2unkH
+        zK6ISLBq3BlCMtmLME7VYgwF/Y5sYGG2jEMTdm8=
+X-Google-Smtp-Source: APXvYqx0HFUnYm5/0uR+9Qh51tm1qPSRjeb5pdf0KaghBF5O1NR0L3wpZtjTEGFSRaNosFZa0Miceq4KmgZoL2uihCk=
+X-Received: by 2002:a50:bdc2:: with SMTP id z2mr28517471edh.245.1561983820432;
+ Mon, 01 Jul 2019 05:23:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190627144339.GG31189@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <cover.1561706800.git.joabreu@synopsys.com> <e4e9ee4cb9c3e7957fe0a09f88b20bc011e2bd4c.1561706801.git.joabreu@synopsys.com>
+ <CA+FuTSc4MFfjBNpvN2hRh9_MRmxSYw2xY6wp32Hsbw0E=pqUdw@mail.gmail.com> <BN8PR12MB326638B0BA74DA762C89DF54D3F90@BN8PR12MB3266.namprd12.prod.outlook.com>
+In-Reply-To: <BN8PR12MB326638B0BA74DA762C89DF54D3F90@BN8PR12MB3266.namprd12.prod.outlook.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 1 Jul 2019 08:23:03 -0400
+Message-ID: <CAF=yD-+55uqYawF9oUFVT5T_cyxso4s5r+vxFrcxBTXuieNVRA@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 06/10] net: stmmac: Do not disable interrupts
+ when cleaning TX
+To:     Jose Abreu <Jose.Abreu@synopsys.com>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Joao Pinto <Joao.Pinto@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 27, 2019 at 04:43:39PM +0200, Andrew Lunn wrote:
-> On Thu, Jun 27, 2019 at 03:21:37PM +0200, Corentin Labbe wrote:
-> > Hello
-> > 
-> > I own an USB dongle which is a "Davicom DM96xx USB 10/100 Ethernet".
-> > According to the CHIP_ID, it is a DM9620.
-> > 
-> > Since I needed for bringing network to uboot for a board, I have started to create its uboot's driver.
-> > My uboot driver is based on the dm9600 Linux driver.
-> > 
-> > The dongle was working but very very slowy (24Kib/s).
-> > After some debug i found that the main problem was that it always link to 10Mbit/s Half-duplex. (according to the MAC registers)
-> > 
-> > For checking the status of the dongle I have plugged it on a Linux box which give me:
-> > dm9601 6-2:1.0 enp0s29f0u2: link up, 100Mbps, full-duplex, lpa 0xFFFF
-> > 
-> > But in fact the Linux driver is tricked.
-> > 
-> > I have added debug of MDIO write/read and got:
-> > [157550.926974] dm9601 6-2:1.0 (unnamed net_device) (uninitialized): dm9601_mdio_write() phy_id=0x00, loc=0x00, val=0x8000
-> 
-> Writing the reset bit. Ideally you should read back the register and
-> wait for this bit to clear. Try adding this, and see if this helps, or
-> you get 0xffff.
-> 
+On Mon, Jul 1, 2019 at 6:15 AM Jose Abreu <Jose.Abreu@synopsys.com> wrote:
+>
+> From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+>
+> > By the
+> >
+> >         if ((status & handle_rx) && (chan < priv->plat->rx_queues_to_use)) {
+> >                 stmmac_disable_dma_irq(priv, priv->ioaddr, chan);
+> >                 napi_schedule_irqoff(&ch->rx_napi);
+> >         }
+> >
+> > branch directly above? If so, is it possible to have fewer rx than tx
+> > queues and miss this?
+>
+> Yes, it is possible.
 
-I get 0xFFFF
+And that is not a problem?
 
-> > [157550.931962] dm9601 6-2:1.0 (unnamed net_device) (uninitialized): dm9601_mdio_write() phy_id=0x00, loc=0x04, val=0x05e1
-> 
-> Advertisement control register.  
-> 
-> > [157550.951967] dm9601 6-2:1.0 (unnamed net_device) (uninitialized): dm9601_mdio_read() phy_id=0x00, loc=0x00, returns=0xffff
-> 
-> And now things are bad. In theory, the power down bit is set, and some
-> PHYs don't respond properly when powered down. However, it is unclear
-> how it got into this state. Did the reset kill it, or setting the
-> advertisement? Or is the PHY simply not responding at all. The MDIO
-> data lines have a pull up, so if the device does not respond, reads
-> give 0xffff.
-> 
-> Maybe also check register 0, bit 7, EXT_PHY. Is it 0, indicating the
-> internal PHY should be used?
-> 
-> You could also try reading PHY registers 2 and 3 and see if you can
-> get a valid looking PHY ID. Maybe try that before hitting the reset
-> bit?
-> 
+>
+> > this logic seems more complex than needed?
+> >
+> >         if (status)
+> >                 status |= handle_rx | handle_tx;
+> >
+> >         if ((status & handle_rx) && (chan < priv->plat->rx_queues_to_use)) {
+> >
+> >         }
+> >
+> >         if ((status & handle_tx) && (chan < priv->plat->tx_queues_to_use)) {
+> >
+> >         }
+> >
+> > status & handle_rx implies status & handle_tx and vice versa.
+>
+> This is removed in patch 09/10.
+>
+> > > -       if (work_done < budget && napi_complete_done(napi, work_done))
+> > > -               stmmac_enable_dma_irq(priv, priv->ioaddr, chan);
+> > > +       if (work_done < budget)
+> > > +               napi_complete_done(napi, work_done);
+> >
+> > It does seem odd that stmmac_napi_poll_rx and stmmac_napi_poll_tx both
+> > call stmmac_enable_dma_irq(..) independent of the other. Shouldn't the
+> > IRQ remain masked while either is active or scheduled? That is almost
+> > what this patch does, though not exactly.
+>
+> After patch 09/10 the interrupts will only be disabled by RX NAPI and
+> re-enabled by it again. I can do some tests on whether disabling
+> interrupts independently gives more performance but I wouldn't expect so
+> because the real bottleneck when I do iperf3 tests is the RX path ...
 
-Always get 0xFFFF before and after
-
-Note that the eeprom dump via ethtool -e suffer the same problem.
-
-> > So it exsists two problem:
-> > - Linux saying 100Mbps, full-duplex even if it is false.
-> 
-> The driver is using the old mii code, not a phy driver. So i cannot
-> help too much with linux. But if you can get the MDIO bus working
-> reliably, it should be possible to move this over to phylib. The
-> internal PHY appears to have all the standard registers, so the
-> generic PHY driver has a good chance of working.
-> 
-
-I have investigated more and in fact I dont have a dm9620.
-I own another diferent dongle in my stock that i never used and fun fact, it has the same VID/PID and the same bug.
-I opened both dongle and all chips have no marking and got only 4x8 pins.
-Since dm9620 have 64 pins, my dongles are clearly not such hw.
-
-I googled the inscription written on the second case and found a dm9620 clone/counterfeiting named qf9700/sr9700.
-But thoses chips should have marking (according to some photos on the web), so I probably own a counterfeiting of a clone/counterfeiting.
-
-Note that the sr9700 driver is mainline but fail to work with my dongle.
-
-At least, now i know that have a chip not designed to work with an external PHY, so all EXTPHY registers could be ignored.
-My last ressort is to brute force all values until something happen.
-
-My simple tries, write 0xsomeval everywhere, lead to something, phy/eeprom return now 0x000y.
-Probably, this chip doesnt have any PHY...
-
-Regards
+Sharing the IRQ sounds fine. My only concern was TX-only IRQs in case
+more TX than RX queues are configured. If that is possible with this
+driver.
