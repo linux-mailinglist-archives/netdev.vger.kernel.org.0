@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 689005BB88
+	by mail.lfdr.de (Postfix) with ESMTP id D16D15BB89
 	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 14:31:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728914AbfGAMbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 08:31:14 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:43044 "EHLO
+        id S1727239AbfGAMbR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 08:31:17 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:41132 "EHLO
         mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727239AbfGAMbO (ORCPT
+        with ESMTP id S1728909AbfGAMbO (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 08:31:14 -0400
-Received: by mail-ed1-f66.google.com with SMTP id e3so23199969edr.10
-        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 05:31:12 -0700 (PDT)
+Received: by mail-ed1-f66.google.com with SMTP id p15so23219221eds.8
+        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 05:31:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=jZFFaBntFOF6JRAZzNgyKqVJG53qU5arVep/YxRIE2c=;
-        b=K4F9RfhsyAPtc9Q8Br9Zus6zRsICwymqr6TIgeI4cdbycOVqusT5Z1CjFPoqCuP8Ni
-         S2j0LgpyhgucmBH61R67Folm4XV+77S/ZazlK3o1PbCe952x2+hl7sTFAJlqRCStGVnC
-         vcWKEGZ9fuDRLqyFy2jb+4g2JET/AFp4FASHyrkOZ24U2yrzjO2pQIsnRimnmtElxY6n
-         OSersWYToMpA7t+SJyKP1rjy2vw39xTg6/URtl6C9dHQiFq5E06HjH1OpFrL/mi+jrT2
-         7RADvNILOepDi2ePSmmjESE2cVB2d+o/XDe2NGSTlJqdqwZPzQ+bvPRCr5NM3lSbwph0
-         CPBw==
+        bh=DoyCZtmIB+Vznz4UkmlQ+1eB/hSfD15pJd3VqmIYMIA=;
+        b=JWnYFvJoLpvFGu72Q/gRQn91cc1K0WAl52lueTgxAplr4xb/wVOUV6pWmhWjvYJNmg
+         JGoOZF1MkIVlRQrxtSLg+3+bWeEtY66asIWD9qS1zw0aXIAz13Bq49yWmO3SxdPJ8uoy
+         zf7q1iUjUjY1btpWnU5g/4ty/GEbJ5HrXcE3ZpQFQCUmSHgp1RHm+CHqm2TifjdfxjgQ
+         y9AyHPi7FDiFs6e0MmqNCnqZSApgfs9QG7NxIBmCziikwH+lqWdWIgXDV5ahensGzeK3
+         979RXZgoEj1nHdf2XCkvvyF983giDjsD+Py9FkpTb+KE1YMWABrsdQJoKQlqm2JTLZ36
+         4ZHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=jZFFaBntFOF6JRAZzNgyKqVJG53qU5arVep/YxRIE2c=;
-        b=PVknpfyrdlFsUPMUTUCiOOeksU9RyD5Rx9M4HEiYfXYQWf2c9fqGRrZqRRgzv2ObYB
-         GilIo9VtlW4e6WReZ+miDlOhSYwywo6iCsep42QJ8tIs71D40GGIusFn5eOAPpQvLpk8
-         Js6zfRDxx0olHmgrxec0npHHvpqU805wtr+S4f/SjswlfcQ6fKBDdq0zIzj81wKQ86ls
-         BIBPexHlCgyHll/wg8XtO9uy+8nmg6xvxEgTSoO3OcQxVJz/Dze+cocAMEW0AcJw7+Q5
-         gt0Nqb8Ky9m3o76r8V9qrW3kylZ63Ar7GFJGhXVQiCrNQWIzGeIGRwlBCU7LL/kLCoW1
-         Nh2g==
-X-Gm-Message-State: APjAAAV3c7Jx0EJ9NTM2R378dFvbApm8nOU/97FSi24hPc/6Zzuk98hT
-        eONqw/je4ZqXNOY0HdjLbMTEWP4rn2A=
-X-Google-Smtp-Source: APXvYqxw3cPvfub0kBgbeFnQ+BO5wimfCL5OUnIBbCX2wojQAtSIcjkPAN74TUL7jnGcUCEFrtIjaw==
-X-Received: by 2002:a17:906:25c5:: with SMTP id n5mr22599223ejb.195.1561984271671;
-        Mon, 01 Jul 2019 05:31:11 -0700 (PDT)
+        bh=DoyCZtmIB+Vznz4UkmlQ+1eB/hSfD15pJd3VqmIYMIA=;
+        b=QTp3tvizPub2vfoWcbf5AY+argLHncPWA3Fnnrx3ZzI2EW6pQn2OhHB3NMYiVsvM6N
+         LweT/wwL9dJix/xXccnjLPr51iZV81Q9iWc7tGsgOe2hH1/jFuoWpGcRXQvgvyCSQBjY
+         gHr3Q6aJnVUjnYu253fa8pp9awOXRPJ/2dAIP06VwM6eotUeI4TOUPIiQt2mO2MbiXXD
+         FF2z8FmuX5kTFBuEg3ZgPCCApF59U1vEs8pZ+wgAMUcWP/UwiKJxfBGgZh1/QagQk1bN
+         Xj0XO7vKjlxXK8XobiVthQC1PoY4WQzjjaQqJvmoI3xTW3oS5uBq/vyADuCN6wxg/2F3
+         HHhw==
+X-Gm-Message-State: APjAAAWO63KEd1ACZqGlIZTB+wrkIxPH7rUKjUWNQMxGtCP3yLSESk6V
+        GObOw9dgju7oQnmDk4gt/eoOvTLfa/k=
+X-Google-Smtp-Source: APXvYqzEANFZZ3SZfWLpJ8X78Kqg0eVTIiAPI5/Hsn/ywQnEA1tx2pHyYMaWXCUwkROfZNKqwtzGqA==
+X-Received: by 2002:aa7:c99a:: with SMTP id c26mr28019612edt.118.1561984272821;
+        Mon, 01 Jul 2019 05:31:12 -0700 (PDT)
 Received: from jhurley-Precision-Tower-3420.netronome.com ([80.76.204.157])
-        by smtp.gmail.com with ESMTPSA id a3sm2099204ejn.64.2019.07.01.05.31.10
+        by smtp.gmail.com with ESMTPSA id a3sm2099204ejn.64.2019.07.01.05.31.11
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Mon, 01 Jul 2019 05:31:11 -0700 (PDT)
+        Mon, 01 Jul 2019 05:31:12 -0700 (PDT)
 From:   John Hurley <john.hurley@netronome.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, xiyou.wangcong@gmail.com,
         dsahern@gmail.com, simon.horman@netronome.com,
         jakub.kicinski@netronome.com, oss-drivers@netronome.com,
         John Hurley <john.hurley@netronome.com>
-Subject: [PATCH net-next v4 2/5] net: core: move pop MPLS functionality from OvS to core helper
-Date:   Mon,  1 Jul 2019 13:30:54 +0100
-Message-Id: <1561984257-9798-3-git-send-email-john.hurley@netronome.com>
+Subject: [PATCH net-next v4 3/5] net: core: add MPLS update core helper and use in OvS
+Date:   Mon,  1 Jul 2019 13:30:55 +0100
+Message-Id: <1561984257-9798-4-git-send-email-john.hurley@netronome.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1561984257-9798-1-git-send-email-john.hurley@netronome.com>
 References: <1561984257-9798-1-git-send-email-john.hurley@netronome.com>
@@ -60,52 +60,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Open vSwitch provides code to pop an MPLS header to a packet. In
-preparation for supporting this in TC, move the pop code to an skb helper
-that can be reused.
-
-Remove the, now unused, update_ethertype static function from OvS.
+Open vSwitch allows the updating of an existing MPLS header on a packet.
+In preparation for supporting similar functionality in TC, move this to a
+common skb helper function.
 
 Signed-off-by: John Hurley <john.hurley@netronome.com>
 Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Reviewed-by: Simon Horman <simon.horman@netronome.com>
 ---
  include/linux/skbuff.h    |  1 +
- net/core/skbuff.c         | 42 ++++++++++++++++++++++++++++++++++++++++++
- net/openvswitch/actions.c | 37 ++-----------------------------------
- 3 files changed, 45 insertions(+), 35 deletions(-)
+ net/core/skbuff.c         | 34 ++++++++++++++++++++++++++++++++++
+ net/openvswitch/actions.c | 13 +++----------
+ 3 files changed, 38 insertions(+), 10 deletions(-)
 
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 0112256..89d5c43 100644
+index 89d5c43..1545c4c 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -3447,6 +3447,7 @@ int __skb_vlan_pop(struct sk_buff *skb, u16 *vlan_tci);
- int skb_vlan_pop(struct sk_buff *skb);
+@@ -3448,6 +3448,7 @@ int skb_vlan_pop(struct sk_buff *skb);
  int skb_vlan_push(struct sk_buff *skb, __be16 vlan_proto, u16 vlan_tci);
  int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto);
-+int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto);
+ int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto);
++int skb_mpls_update_lse(struct sk_buff *skb, __be32 mpls_lse);
  struct sk_buff *pskb_extract(struct sk_buff *skb, int off, int to_copy,
  			     gfp_t gfp);
  
 diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index f1d1e47..ce30989 100644
+index ce30989..398ebcb 100644
 --- a/net/core/skbuff.c
 +++ b/net/core/skbuff.c
-@@ -5391,6 +5391,48 @@ int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto)
- EXPORT_SYMBOL_GPL(skb_mpls_push);
+@@ -5433,6 +5433,40 @@ int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto)
+ EXPORT_SYMBOL_GPL(skb_mpls_pop);
  
  /**
-+ * skb_mpls_pop() - pop the outermost MPLS header
++ * skb_mpls_update_lse() - modify outermost MPLS header and update csum
 + *
 + * @skb: buffer
-+ * @next_proto: ethertype of header after popped MPLS header
++ * @mpls_lse: new MPLS label stack entry to update to
 + *
 + * Expects skb->data at mac header.
 + *
 + * Returns 0 on success, -errno otherwise.
 + */
-+int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto)
++int skb_mpls_update_lse(struct sk_buff *skb, __be32 mpls_lse)
 +{
++	struct mpls_shim_hdr *old_lse = mpls_hdr(skb);
 +	int err;
 +
 +	if (unlikely(!eth_p_mpls(skb->protocol)))
@@ -115,86 +114,47 @@ index f1d1e47..ce30989 100644
 +	if (unlikely(err))
 +		return err;
 +
-+	skb_postpull_rcsum(skb, mpls_hdr(skb), MPLS_HLEN);
-+	memmove(skb_mac_header(skb) + MPLS_HLEN, skb_mac_header(skb),
-+		skb->mac_len);
++	if (skb->ip_summed == CHECKSUM_COMPLETE) {
++		__be32 diff[] = { ~old_lse->label_stack_entry, mpls_lse };
 +
-+	__skb_pull(skb, MPLS_HLEN);
-+	skb_reset_mac_header(skb);
-+	skb_set_network_header(skb, skb->mac_len);
-+
-+	if (skb->dev && skb->dev->type == ARPHRD_ETHER) {
-+		struct ethhdr *hdr;
-+
-+		/* use mpls_hdr() to get ethertype to account for VLANs. */
-+		hdr = (struct ethhdr *)((void *)mpls_hdr(skb) - ETH_HLEN);
-+		skb_mod_eth_type(skb, hdr, next_proto);
++		skb->csum = csum_partial((char *)diff, sizeof(diff), skb->csum);
 +	}
-+	skb->protocol = next_proto;
++
++	old_lse->label_stack_entry = mpls_lse;
 +
 +	return 0;
 +}
-+EXPORT_SYMBOL_GPL(skb_mpls_pop);
++EXPORT_SYMBOL_GPL(skb_mpls_update_lse);
 +
 +/**
   * alloc_skb_with_frags - allocate skb with page frags
   *
   * @header_len: size of linear part
 diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
-index a9a6c9c..62715bb 100644
+index 62715bb..3572e11 100644
 --- a/net/openvswitch/actions.c
 +++ b/net/openvswitch/actions.c
-@@ -160,18 +160,6 @@ static int do_execute_actions(struct datapath *dp, struct sk_buff *skb,
- 			      struct sw_flow_key *key,
- 			      const struct nlattr *attr, int len);
- 
--static void update_ethertype(struct sk_buff *skb, struct ethhdr *hdr,
--			     __be16 ethertype)
--{
--	if (skb->ip_summed == CHECKSUM_COMPLETE) {
--		__be16 diff[] = { ~(hdr->h_proto), ethertype };
--
--		skb->csum = csum_partial((char *)diff, sizeof(diff), skb->csum);
--	}
--
--	hdr->h_proto = ethertype;
--}
--
- static int push_mpls(struct sk_buff *skb, struct sw_flow_key *key,
- 		     const struct ovs_action_push_mpls *mpls)
- {
-@@ -190,31 +178,10 @@ static int pop_mpls(struct sk_buff *skb, struct sw_flow_key *key,
- {
+@@ -193,19 +193,12 @@ static int set_mpls(struct sk_buff *skb, struct sw_flow_key *flow_key,
+ 	__be32 lse;
  	int err;
  
 -	err = skb_ensure_writable(skb, skb->mac_len + MPLS_HLEN);
 -	if (unlikely(err))
-+	err = skb_mpls_pop(skb, ethertype);
-+	if (err)
- 		return err;
- 
--	skb_postpull_rcsum(skb, mpls_hdr(skb), MPLS_HLEN);
+-		return err;
 -
--	memmove(skb_mac_header(skb) + MPLS_HLEN, skb_mac_header(skb),
--		skb->mac_len);
+ 	stack = mpls_hdr(skb);
+ 	lse = OVS_MASKED(stack->label_stack_entry, *mpls_lse, *mask);
+-	if (skb->ip_summed == CHECKSUM_COMPLETE) {
+-		__be32 diff[] = { ~(stack->label_stack_entry), lse };
 -
--	__skb_pull(skb, MPLS_HLEN);
--	skb_reset_mac_header(skb);
--	skb_set_network_header(skb, skb->mac_len);
--
--	if (ovs_key_mac_proto(key) == MAC_PROTO_ETHERNET) {
--		struct ethhdr *hdr;
--
--		/* mpls_hdr() is used to locate the ethertype field correctly in the
--		 * presence of VLAN tags.
--		 */
--		hdr = (struct ethhdr *)((void *)mpls_hdr(skb) - ETH_HLEN);
--		update_ethertype(skb, hdr, ethertype);
+-		skb->csum = csum_partial((char *)diff, sizeof(diff), skb->csum);
 -	}
--	if (eth_p_mpls(skb->protocol))
--		skb->protocol = ethertype;
--
- 	invalidate_flow_key(key);
++	err = skb_mpls_update_lse(skb, lse);
++	if (err)
++		return err;
+ 
+-	stack->label_stack_entry = lse;
+ 	flow_key->mpls.top_lse = lse;
  	return 0;
  }
 -- 
