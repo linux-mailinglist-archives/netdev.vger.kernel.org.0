@@ -2,75 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 202765B2EF
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 04:42:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71EEA5B2B8
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 03:29:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726979AbfGACg7 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 30 Jun 2019 22:36:59 -0400
-Received: from smtp1.qwestoffice.com ([64.26.60.190]:40908 "EHLO
-        smtp1.qwestoffice.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726840AbfGACg7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Jun 2019 22:36:59 -0400
-X-Greylist: delayed 5000 seconds by postgrey-1.27 at vger.kernel.org; Sun, 30 Jun 2019 22:36:59 EDT
-Received: from smtpauth04a.mfg.siteprotect.com ([64.26.60.160] helo=smtpauth01.mfg.siteprotect.com)
-        by semf06.mfg.siteprotect.com with esmtps (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <pastoraltland@qwestoffice.net>)
-        id 1hhksx-0002tO-7q; Sun, 30 Jun 2019 21:13:37 -0400
-Received: from favour.homerouter.cpe (unknown [169.159.88.122])
-        (Authenticated sender: eagle147@qwestoffice.net)
-        by smtpauth01.mfg.siteprotect.com (Postfix) with ESMTPSA id 45cTrk1bpjz8XmCp1;
-        Sun, 30 Jun 2019 21:13:08 -0400 (EDT)
-Content-Type: text/plain; charset="utf-8"
+        id S1727172AbfGAB1y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Jun 2019 21:27:54 -0400
+Received: from mail-yb1-f195.google.com ([209.85.219.195]:46606 "EHLO
+        mail-yb1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727159AbfGAB1y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Jun 2019 21:27:54 -0400
+Received: by mail-yb1-f195.google.com with SMTP id p2so8044070ybl.13
+        for <netdev@vger.kernel.org>; Sun, 30 Jun 2019 18:27:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=v4wz4jFOlFe7di2Mk6TbfcyOi87/+hjmbOtVtZ7YxpU=;
+        b=vCf/LcJrQYtgT0KSwCi1dnh8A9lMV8xs9U9r2LGZrIX55Dt4c39i7lIO4UWvnxtYal
+         hC0BOj0/QexNBf/yjAQmvmZ1yFgsBb15faLukCYXnYWpuCVCvbObAaIkG0e3l6dQK7NT
+         2V0ZhgL5o6pRIbsZqXcdIDoNaysJrRfJXKLizYXgjfs/Ribr0xdxgbPUaExNCnEeCZ9d
+         D/3wvu4GbrUzNtho97tbO069yrWyskzcWceVJp93CQ271mtJdn0O3siKW4oxnlhxIos/
+         /vegSDTkZSnZq0S4Nnv3jExbxftqqzYV0GeVA3HVhWUrLBVJx/eLwhY1OoN1OJ2PHKTE
+         T1dQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=v4wz4jFOlFe7di2Mk6TbfcyOi87/+hjmbOtVtZ7YxpU=;
+        b=hCROmbAlkG7CP0k4RZ7O8p8grCAUD1Lr55SgAxuan8tDdlH+R97Uci8ufK96g3iVmR
+         BG3tRmrOf25RmdYALoA15NMhZ7FBfVvq+vUw/xOmhhmKVe6edlsQSgTph/Ammf6jO4Z9
+         P47qnZBUNPcxRlOcG5hzIFkhLSXIxoLhyS+sKz6e7HXN/RyA1Ai2CqN7x+CzXcbH606h
+         x1yD4OOoJoIYwGgWvBAw6kGWGiPNMJSRMgXAt9hwhya21GBPIJwZ/4wlZpdxd8tocjgd
+         wNSQEp/RmZvwgdhZIDb6gIpomTGrtlbsSGZemxMGvozwHNW4Fpkw0sNYuoAtT8PDPY1Q
+         0Tsg==
+X-Gm-Message-State: APjAAAXu0DGJpbc71ZjyssXMZt1gq2grQEtBRiEBq39O8x6exfCNYdE5
+        N0DNRt8qkUtWEXSq2rXPQ768thzP
+X-Google-Smtp-Source: APXvYqyfqjXHKbyPCk++5/3QtFa+Mcq6qt5iJJM2V9fw0UpCC+eIgTIzpktJ2lJ/tCgJUAneOrGaUQ==
+X-Received: by 2002:a25:6b06:: with SMTP id g6mr5179808ybc.446.1561944473253;
+        Sun, 30 Jun 2019 18:27:53 -0700 (PDT)
+Received: from mail-yw1-f42.google.com (mail-yw1-f42.google.com. [209.85.161.42])
+        by smtp.gmail.com with ESMTPSA id e12sm2369719ywa.49.2019.06.30.18.27.51
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Sun, 30 Jun 2019 18:27:52 -0700 (PDT)
+Received: by mail-yw1-f42.google.com with SMTP id b143so7670371ywb.7
+        for <netdev@vger.kernel.org>; Sun, 30 Jun 2019 18:27:51 -0700 (PDT)
+X-Received: by 2002:a81:4807:: with SMTP id v7mr11769454ywa.494.1561944471513;
+ Sun, 30 Jun 2019 18:27:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Description: Mail message body
-Subject: Contract for your services
-To:     Recipients <pastoraltland@qwestoffice.net>
-From:   "Ryo Tomiche" <pastoraltland@qwestoffice.net>
-Date:   Sun, 30 Jun 2019 19:12:40 -0600
-Reply-To: sales.0015012@gmail.com
-Authentication-Results: mfg.siteprotect.com; auth=pass smtp.auth=eagle147@qwestoffice.net smtp.mailfrom=<pastoraltland@qwestoffice.net>
-Message-ID: <E1hhksx-0002tO-7q@semf06.mfg.siteprotect.com>
-X-Originating-IP: 64.26.60.160
-X-portal.siteprotect.com-Domain: qwest.outbound
-X-portal.siteprotect.com-Username: 64.26.60.160
-Authentication-Results: mfg.siteprotect.com; auth=pass smtp.auth=64.26.60.160@qwest.outbound
-X-portal.siteprotect.com-Outgoing-Class: unsure
-X-portal.siteprotect.com-Outgoing-Evidence: Combined (0.88)
-X-Recommended-Action: accept
-X-Filter-ID: Mvzo4OR0dZXEDF/gcnlw0Ud2CCyxmm2KHETL0VYw/ASpSDasLI4SayDByyq9LIhVc6BdccSERX76
- Sje+YVnP5kTNWdUk1Ol2OGx3IfrIJKyP9eGNFz9TW9u+Jt8z2T3KY7JBVvMNn6YIM1t4EQH8mbqW
- SamTv53JTWBEqpFC10D2lM5ls/C6wQZ7KfPNcLe48oJ+7khrSYkQE7GjPQDX1LbZKxjXENzQ3JWI
- OnhrOga6FCa3yw/5oWCiYnS+gRR2JfF0UJWSyq+VxD93JAWKq7U1WD/b1HU9DhlXcAhWt2J67ugD
- 4F8y5lQC5wjO6xm9p+gJnrBXEhW3xVvYPnrEnc1XpdtXMqczDhwknicr521Q49H3gfOio2gHGAxg
- RwbqcV4IdWsN7NlZ0oKNTT8Qrr9igH8GRINpFWKFvV+eLKFrHU22wbXbEkDFa+h94pM9QjJ+bBzd
- paaOssGBQ/kZjvcHhSEMADABN8RQZ41h/gR5mrsmitJBMypBfpAc9jxwYXfqlxqeOkxf/sW1JbRn
- 8jVO3w6ImljevIB3fyoai8KYN60+x6mQ0sk4Q1eCA5EGa9MfWWLiaYd1ss0a0Sy29V0tcFOTPjZD
- WGSm114rBhG03VnPuHLIDnV4UQdAJdVZWA5vs71lBrpxE5ZPdLFohImlouMlt7ZfT9whUcH3tqtm
- NHrUmdo/KAUDBec7ZPQ3esseJUSjHz/88doLK5oKLElYYd3OQvcOebEE7gvQpx0fSboAWp3I2cFS
- UxWGROls58fMnqZUTt7CyKlJUh+zhvSLKj5DkLrFXuAgc5O/d4D38DZdoFhenX4cSd4kFFuGqSZZ
- MLLlV2ocoSd4NvkI4eHPSa4ukV9i8LvYcaKS07eUcBZ7ya6N+49Zuv8ywsFsnTNG9uZmi+0JkvsN
- flxNo67SmVMjlJLW5E4hewjRpNaexkOlRS7Yc20zzBSpqhqvaKW8EYjS7rhpMXmMyj1fu95CfVvt
- msfBRHQbHbBlMPOyHwzEzW/thbsDql8kZtGyGVICCsNqQOT7LRA6TtF5KWAGvu9O9axLZVAINZLK
- xYfxHXkSvfYx00VZsUMCr3Ak/WOTrsS1s3XPYvwzXQlmN8uef4sShWz9LK4eEBMs4+0B/qL3OrVC
- xkwbawqHu7KFuVX+ToJn6HftNKtWcl/LWvWOwCatXLidQ7aQAOUAb2sBFJ17XmqH1nJJLz9aclVf
- GplHcpVCCoX989hgB8R+yBJO8mvxFSRBlRkRfH6HHd2dzoNMKc87Biv3lr75qPcZ45mt5fA3Kjrv
- ySNJ2DJiFMMMHe5bShKkdKpEwslZpaD28xtu5Ddwb0f9mck3Rej4gfMlLvB6ykSh2341U23udltU
- VqrfBMGcIVEshGSH+iSc6knUG0Y31VByOzZyXbOq3nBRfE/uykbJxctvBPnzl403khavEKPQc4jY
- /bW8OD36XZ6TrJxuIGKswvkutmnePPwKampn45QwD8jULienFocn1J36NM06VEOCELxzB9duwqQe
- ErIl+W8EDUkfYChucFXykVqIa6qeQcGrckOgBcOpyKA69LF1Ge2GaGfxmfqCKALl8fsPg/aHE2BE
- aBQsfCuBILYLDdiI+quFItBwvrdDnI+5MubeRy7sP3ScvFBZ+fUODEv/UZkbm/VjFLUtGOC+7ukC
- f411wDyLaL5NOPr7jEz2GJ1VQz1kL8WPjJ2VwuCBx4gRN70fEoXlgXn/HKOpe99OPIUR7UcEpC6b
- uQ==
-X-Report-Abuse-To: spam@semfq03.mfg.siteprotect.com
+References: <88846d6ff622a908655562e0be1a094e3b5a3b2d.camel@domdv.de>
+In-Reply-To: <88846d6ff622a908655562e0be1a094e3b5a3b2d.camel@domdv.de>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Sun, 30 Jun 2019 21:27:14 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSdL6+q5H8jNKWYB49BCSQi=QeGJWTCUL8qaHWD2gNbHmw@mail.gmail.com>
+Message-ID: <CA+FuTSdL6+q5H8jNKWYB49BCSQi=QeGJWTCUL8qaHWD2gNbHmw@mail.gmail.com>
+Subject: Re: [PATCH net 1/2] macsec: fix use-after-free of skb during RX
+To:     Andreas Steinmetz <ast@domdv.de>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Sabrina Dubroca <sd@queasysnail.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We’d like to contract your services for a period of 12 months. Please advise if you are open to new opportunities.
+On Sun, Jun 30, 2019 at 4:48 PM Andreas Steinmetz <ast@domdv.de> wrote:
+>
+> Fix use-after-free of skb when rx_handler returns RX_HANDLER_PASS.
+>
+> Signed-off-by: Andreas Steinmetz <ast@domdv.de>
 
-Regards,
-
-Ryo Tomiche
+Acked-by: Willem de Bruijn <willemb@google.com>
