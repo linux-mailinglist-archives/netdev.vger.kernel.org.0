@@ -2,103 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 743695BC33
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 14:57:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FE695BC68
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 15:11:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727256AbfGAM5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 08:57:54 -0400
-Received: from mx.0dd.nl ([5.2.79.48]:53944 "EHLO mx.0dd.nl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726329AbfGAM5y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Jul 2019 08:57:54 -0400
-Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx.0dd.nl (Postfix) with ESMTPS id 89C175FBBA;
-        Mon,  1 Jul 2019 14:57:52 +0200 (CEST)
-Authentication-Results: mx.0dd.nl;
-        dkim=pass (2048-bit key) header.d=vdorst.com header.i=@vdorst.com header.b="S+L8MgYG";
-        dkim-atps=neutral
-Received: from www (www.vdorst.com [192.168.2.222])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.vdorst.com (Postfix) with ESMTPSA id 419711CEAF08;
-        Mon,  1 Jul 2019 14:57:52 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com 419711CEAF08
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
-        s=default; t=1561985872;
-        bh=SvuIg99z70EzCu3ysoMBUjr+NraXTm8gQI0tZ5NYnaY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=S+L8MgYGmrCUYG2LNVNFLQsVpm9L+PkhSAFTMJjjfaDvQnPECwjLBMUdxltspPM6N
-         QQhy0dgDUPnG7iv7tivRqoEF0Giw/hgqluu0+srb0kbSYXkc5hjjSE1INZ80+HvX0M
-         MFaeKZcUVr6xxH6Pz9n8a+YGbIFL4bjthxY5NZ4y/RFYouWrOYWzbW0DopoWiIvj5h
-         Jmy0CM7ChKjgcOj0TFIq/9HO5AUHxDdgzT+fP6MaTMO9R65JsY+Oj7N2unjmow3qu9
-         5cTLRFyMgpXNujY7QcsKMnCcTdg3XuuOKrB60SpgxRQAl22jmmxHSO65nJiYGBJKwa
-         Piho7ehqeKEVA==
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1]) by
- www.vdorst.com (Horde Framework) with HTTPS; Mon, 01 Jul 2019 12:57:52 +0000
-Date:   Mon, 01 Jul 2019 12:57:52 +0000
-Message-ID: <20190701125752.Horde.M4sGI0OXZNgSa9VpOKj-m3s@www.vdorst.com>
-From:   =?utf-8?b?UmVuw6k=?= van Dorst <opensource@vdorst.com>
-To:     sean.wang@mediatek.com, f.fainelli@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net, matthias.bgg@gmail.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com
-Cc:     frank-w@public-files.de, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org
-Subject: Re: [PATCH] net: ethernet: mediatek: Allow non TRGMII mode with
- MT7621 DDR2 devices
-In-Reply-To: <20190629122451.19578-1-opensource@vdorst.com>
-User-Agent: Horde Application Framework 5
-Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
+        id S1728096AbfGANKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 09:10:54 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:39804 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726329AbfGANKy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 09:10:54 -0400
+Received: by mail-qt1-f195.google.com with SMTP id i34so14518285qta.6;
+        Mon, 01 Jul 2019 06:10:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=hBqqOfAzGbzl/D2babDWeF0YoSFJC5IfACjSA3b99fU=;
+        b=pnVdNCENtriillJ7LrCzscnOug9P3F8gawxi3YesIVadbIXX3OYkjMkYhkVjIThMB6
+         9+gOpMJlUxfO0XGPHiT84pwW1yPO9LrhWJ9JfthJ7thu2Jb9aZ4N7Q269NM6vwBpzmwW
+         vvsJKF8iV75UxBr05Zu9GnCcKPXIyOLCZSW/mww7KBKmyWYt6lt0UkPRRx2SRoh9G7DR
+         37rUx1Z3f2Kr3NwKorztWUOpDQFoW7vUqI5ZoCqEuhhOXLDlRfs32aCdY1prSQwOXyi0
+         XvZdH0xbi3xvXOvkDR2xnHl92Qab9qIQeFJci3609+uHGETuBpFGjOB6EB1T8onbgG26
+         7rkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=hBqqOfAzGbzl/D2babDWeF0YoSFJC5IfACjSA3b99fU=;
+        b=HSdx8LUYa5y2NY+nCdSZ7aR34fygje352gSxzKJyrFmbhQNRDlsH75e+Y9SDECZ2HW
+         VOCbU3Ln/2Z2Tga0Tr9Kt/RYoYIcIV7nhTL1h7gu8wDdZuhU+uNzDCO/yN2oEtc5D6Q8
+         fDP3DyWYeonGkWCCLy9bWNw4rhQILF04YLzg6BoAbJoSfmeknwo2rMbi4qUlvLToBYEs
+         xKhfaogZy7wyqLqtljhiPkP+PxxktulHxIdYuZCHv4sCQrbTvKnNZPvCqFyLgDlKLdtu
+         dqivNitk1Qh2tzjVVD+0cO7Z5KxatTIo6WZfi+x063HHMaPXyYNT6yrW/Aewi5naC9xD
+         IfOw==
+X-Gm-Message-State: APjAAAXcesRXPbx8UeAhw0HgDDVTdCKBl/Cf5ldF3Uy7x8/eOessWmSW
+        aOeBFPYXd9yk0oM/oM0t0XssebBe7xaEElmG17o=
+X-Google-Smtp-Source: APXvYqyK/Igd9RHCvatr9CYk9ik99HwYaCQLpSv/aNdEylvKwl0yJjjS7gUOwpUrW9hY3ikB8CEfUGcRBAblbDVujxw=
+X-Received: by 2002:ac8:4442:: with SMTP id m2mr20820589qtn.107.1561986653046;
+ Mon, 01 Jul 2019 06:10:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+References: <20190626155911.13574-1-ivan.khoronzhuk@linaro.org>
+ <CAJ+HfNid3PntipAJHuPR-tQudf+E6UQK6mPDHdc0O=wCUSjEEA@mail.gmail.com> <20190629.105306.762888643756822083.davem@davemloft.net>
+In-Reply-To: <20190629.105306.762888643756822083.davem@davemloft.net>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Mon, 1 Jul 2019 15:10:40 +0200
+Message-ID: <CAJ+HfNi3+hu+D=nJOrtC_xVzE442BoYo4mXqT28rGPG83Dr_sw@mail.gmail.com>
+Subject: Re: [PATCH net-next] xdp: xdp_umem: fix umem pages mapping for 32bits systems
+To:     David Miller <davem@davemloft.net>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Xdp <xdp-newbies@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quoting René van Dorst <opensource@vdorst.com>:
-
-I see that I also forgot to tag this patch for net-next.
-
-Greats,
-
-René
-
-> No reason to error out on a MT7621 device with DDR2 memory when non
-> TRGMII mode is selected.
-> Only MT7621 DDR2 clock setup is not supported for TRGMII mode.
-> But non TRGMII mode doesn't need any special clock setup.
+On Sat, 29 Jun 2019 at 19:53, David Miller <davem@davemloft.net> wrote:
 >
-> Signed-off-by: René van Dorst <opensource@vdorst.com>
-> ---
->  drivers/net/ethernet/mediatek/mtk_eth_soc.c | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
+> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com>
+> Date: Wed, 26 Jun 2019 22:50:23 +0200
 >
-> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c  
-> b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> index 066712f2e985..b20b3a5a1ebb 100644
-> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> @@ -139,9 +139,12 @@ static int mt7621_gmac0_rgmii_adjust(struct  
-> mtk_eth *eth,
->  {
->  	u32 val;
+> > On Wed, 26 Jun 2019 at 17:59, Ivan Khoronzhuk
+> > <ivan.khoronzhuk@linaro.org> wrote:
+> >>
+> >> Use kmap instead of page_address as it's not always in low memory.
+> >>
+> >
+> > Ah, some 32-bit love. :-) Thanks for working on this!
+> >
+> > For future patches, please base AF_XDP patches on the bpf/bpf-next
+> > tree instead of net/net-next.
+> >
+> > Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
 >
-> -	/* Check DDR memory type. Currently DDR2 is not supported. */
-> +	/* Check DDR memory type.
-> +	 * Currently TRGMII mode with DDR2 memory is not supported.
-> +	 */
->  	regmap_read(eth->ethsys, ETHSYS_SYSCFG, &val);
-> -	if (val & SYSCFG_DRAM_TYPE_DDR2) {
-> +	if (interface == PHY_INTERFACE_MODE_TRGMII &&
-> +	    val & SYSCFG_DRAM_TYPE_DDR2) {
->  		dev_err(eth->dev,
->  			"TRGMII mode with DDR2 memory is not supported!\n");
->  		return -EOPNOTSUPP;
-> --
-> 2.20.1
+> Alexei and Daniel, I'll let you guys take this one.
+>
+> Thanks.
+
+Ivan, kbuild reported some build issues. Faulty, or not; Please have a
+look at them.
 
 
-
+Cheers,
+Bj=C3=B6rn
