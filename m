@@ -2,98 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1D2D5C503
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 23:32:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44E935C50D
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 23:38:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726957AbfGAVcj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 17:32:39 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:40574 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726762AbfGAVcj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 17:32:39 -0400
-Received: by mail-pf1-f194.google.com with SMTP id p184so7172641pfp.7
-        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 14:32:38 -0700 (PDT)
+        id S1726780AbfGAVit (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 17:38:49 -0400
+Received: from mail-pf1-f201.google.com ([209.85.210.201]:41820 "EHLO
+        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726586AbfGAVit (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 17:38:49 -0400
+Received: by mail-pf1-f201.google.com with SMTP id q14so9560717pff.8
+        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 14:38:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=C0X5jiAvybtGT/loYYHyiQvKoV7rqikrQaBhLQSGbp8=;
-        b=jjoJbGBa9GzeNgQ3WKQDcqFI3qHbmDaSRISWXWi5agU39APN5qW/NevphRSzkpKX2K
-         LW8ntAaMTXlZgX9NTCrRCgjUyTd4lEDag+fWRV7IHVSxIIsNBbo7GspgUQNh+U0UpBO0
-         gt5zy8Ym4peEewD43T2gz6Gy0WIlf/jYhN3ZM=
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=OTUJ01SFZhn+HS7HslaW0tNe6NVNBc4RfKl+Kzib+Cg=;
+        b=OcEbXpnj5wNQ6860l+tts2r0EuPjSbzSoSSlBwUmIuAR7no4+BpmzdioRq6G6Pfxre
+         IchxGvEmLrsWK6js9bmq7hFgb85oNgqQ3BXmGmJ6rrbIaH1XLtrN1yTBj5/JdnhSJ26T
+         wD5PsZSvDSXhRAs1zblZEjBv/OFofputLyvBJS++FB0cw7WjfJw9kakVgWAcRJV63Yuq
+         X7t0coqnvYEx76lT1B6614mdfmE9BXRtCOQ5W463Dm/4DAhV3RzqtOjo0I3LyBaLApby
+         PUanumpR+qDDs2l9ql2XjpZHxtGlffM9wU6arnoTzKJUbs1FfvUCrNQHZt0+gFc2Tapd
+         gQqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=C0X5jiAvybtGT/loYYHyiQvKoV7rqikrQaBhLQSGbp8=;
-        b=EhP4P2pbD6Or0byokz7+n/7CVSGF41/BjP1SBy2SAXPZtPMP4s3QNej4GAs0C8HfNz
-         3XXZrXBe/GPij7RTFEEBJhNfmhotXpy0PmCUUjEqxM4g3QsGr9G9qGJdg1Ko3gUPoyyK
-         +5PyP9dqWEKy/G8AsbZJMpj9wcc9uMwQWpdXbehq+O1QxiyUd+3tr/QEy6o86D+vjXr6
-         nE4WwXTbfy3LX172M0YMp1cT15+F+BQDNjZ+UPXp/sZyUAc7PLNGV28LAf9YOw9xxuUY
-         1OvOmrbh9sqGw8pjN4aZeJPjBm6y3rkSnaF0GJhNnQE2noemmUoMPwTokxml9Y8s+wpj
-         tz9Q==
-X-Gm-Message-State: APjAAAW9zdv75Zjg8orNZJ5sdHha6WgKYq9Ym78raRlybX19QC4y8sAy
-        C8pcMHBaZOzUKSyTNsNHe6I6gw==
-X-Google-Smtp-Source: APXvYqwkzkzcV9PbHxj/QnYdd5yERCuo0JSsX2rAk8NaM2SJlwiKj/eA3KncDCGFLbDSAnHU0k+Kkw==
-X-Received: by 2002:a17:90a:b78b:: with SMTP id m11mr1548372pjr.106.1562016758601;
-        Mon, 01 Jul 2019 14:32:38 -0700 (PDT)
-Received: from localhost ([2620:15c:202:1:75a:3f6e:21d:9374])
-        by smtp.gmail.com with ESMTPSA id q19sm13254119pfc.62.2019.07.01.14.32.37
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 01 Jul 2019 14:32:38 -0700 (PDT)
-Date:   Mon, 1 Jul 2019 14:32:36 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Douglas Anderson <dianders@chromium.org>
-Subject: Re: [PATCH 2/3] net: phy: realtek: Enable accessing RTL8211E
- extension pages
-Message-ID: <20190701213236.GB250418@google.com>
-References: <20190701195225.120808-1-mka@chromium.org>
- <20190701195225.120808-2-mka@chromium.org>
- <d2386f7d-b4bc-d983-1b83-cc2aa4aec38b@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <d2386f7d-b4bc-d983-1b83-cc2aa4aec38b@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=OTUJ01SFZhn+HS7HslaW0tNe6NVNBc4RfKl+Kzib+Cg=;
+        b=rJvn7MRRTGjAEFjF9RFgvQIlQm3HkL09VI6DMzHqn/93dkac3Y+/6tnw4f3IvfadVA
+         k8JapUXjNTe+aKBcz9a8xUHD0xHktEapn2NI0iX+KOGg87Tpfr15qMZ+6mtt8/xx/AMi
+         NgFUfYXkJyFMzY6l3ofAAWgjSdH/Tak9v3yN3AyH47NaqGxMZsKWVm81irus5G9Gjd2k
+         NYkakGAxbnPNJxpjp8dH36/y6xFX9HqbaVdcyXqjMEXbjD2D/7FyDYg4sQLYHIpRrRKz
+         vSp3bePnW0ogLn6Q329qWwM8N/rjtoEwJEsIWGmN94MG8W5pNsMOJvG+eKiMqovxzKVK
+         5jkQ==
+X-Gm-Message-State: APjAAAXjie/SeFtslJ4/icu7lFq9RTmCLfXjwbc4wbAsQjWD/Xr311eo
+        IANIGbz+E1EdCd+AQKvcpAP3Dot37Y1J2Ds8EMolo6W6jYZzqI0/Xx0aMG+NFkra77PcvsOWaXQ
+        kTqhj5cDHIrjpOYpoLMYzaEKa0jT9FiHBS9u/JcsP3iVAZKyhqeSHGzmdVe7GqXJR
+X-Google-Smtp-Source: APXvYqxRjOZxEOpxINh2MmiFz0Ml5puffMjY53rE/2UOJPx179Po5p93zh0ljQ0A+05+xBw0SGIG89WgYNVo
+X-Received: by 2002:a63:394:: with SMTP id 142mr19109129pgd.43.1562017127889;
+ Mon, 01 Jul 2019 14:38:47 -0700 (PDT)
+Date:   Mon,  1 Jul 2019 14:38:43 -0700
+Message-Id: <20190701213843.102002-1-maheshb@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
+Subject: [PATCHv3 next 0/3] blackhole device to invalidate dst
+From:   Mahesh Bandewar <maheshb@google.com>
+To:     Netdev <netdev@vger.kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Daniel Axtens <dja@axtens.net>,
+        Mahesh Bandewar <mahesh@bandewar.net>,
+        Mahesh Bandewar <maheshb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 01, 2019 at 10:43:12PM +0200, Heiner Kallweit wrote:
-> On 01.07.2019 21:52, Matthias Kaehlcke wrote:
-> > The RTL8211E has extension pages, which can be accessed after
-> > selecting a page through a custom method. Add a function to
-> > modify bits in a register of an extension page and a few
-> > helpers for dealing with ext pages.
-> > 
-> > rtl8211e_modify_ext_paged() and rtl821e_restore_page() are
-> > inspired by their counterparts phy_modify_paged() and
-> > phy_restore_page().
-> > 
-> > Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-> > ---
-> > This code might be applicable to other Realtek PHYs, but I don't
-> > have access to the datasheets to confirm it, so for now it's just
-> > for the RTL8211E.
-> > 
-> This extended page mechanism exists on a number of older Realtek
-> PHY's. For most extended pages however Realtek releases no public
-> documentation.
-> Considering that we use these helpers in one place only,  I don't
-> really see a need for them.
+When we invalidate dst or mark it "dead", we assign 'lo' to
+dst->dev. First of all this assignment is racy and more over,
+it has MTU implications.
 
-I see it as self-documenting code, that may be reused, rather than
-inline code with comments.
+The standard dev MTU is 1500 while the Loopback MTU is 64k. TCP
+code when dereferencing the dst don't check if the dst is valid
+or not. TCP when dereferencing a dead-dst while negotiating a
+new connection, may use dst device which is 'lo' instead of
+using the correct device. Consider the following scenario:
 
-In any case I'm looking into another patch that would write registers
-on extented pages rather than doing a modify, if that materializes I
-think we would want the helpers.
+A SYN arrives on an interface and tcp-layer while processing
+SYNACK finds a dst and associates it with SYNACK skb. Now before
+skb gets passed to L3 for processing, if that dst gets "dead"
+(because of the virtual device getting disappeared & then reappeared),
+the 'lo' gets assigned to that dst (lo MTU = 64k). Let's assume
+the SYN has ADV_MSS set as 9k while the output device through
+which this SYNACK is going to go out has standard MTU of 1500.
+The MTU check during the route check passes since MIN(9K, 64K)
+is 9k and TCP successfully negotiates 9k MSS. The subsequent
+data packet; bigger in size gets passed to the device and it 
+won't be marked as GSO since the assumed MTU of the device is
+9k.
+
+This either crashes the NIC and we have seen fixes that went
+into drivers to handle this scenario. 8914a595110a ('bnx2x:
+disable GSO where gso_size is too big for hardware') and
+2b16f048729b ('net: create skb_gso_validate_mac_len()') and
+with those fixes TCP eventually recovers but not before
+few dropped segments.
+
+Well, I'm not a TCP expert and though we have experienced
+these corner cases in our environment, I could not reproduce 
+this case reliably in my test setup to try this fix myself.
+However, Michael Chan <michael.chan@broadcom.com> had a setup
+where these fixes helped him mitigate the issue and not cause
+the crash.
+
+The idea here is to not alter the data-path with additional
+locks or smb()/rmb() barriers to avoid racy assignments but
+to create a new device that has really low MTU that has
+.ndo_start_xmit essentially a kfree_skb(). Make use of this
+device instead of 'lo' when marking the dst dead.
+
+First patch implements the blackhole device and second
+patch uses it in IPv4 and IPv6 stack while the third patch
+is the self test that ensures the sanity of this device.
+
+v1->v2
+  fixed the self-test patch to handle the conflict
+
+v2 -> v3
+  fixed Kconfig text/string.
+
+Mahesh Bandewar (3):
+  loopback: create blackhole net device similar to loopack.
+  blackhole_netdev: use blackhole_netdev to invalidate dst entries
+  blackhole_dev: add a selftest
+
+ drivers/net/loopback.c                        |  76 +++++++++++--
+ include/linux/netdevice.h                     |   2 +
+ lib/Kconfig.debug                             |   9 ++
+ lib/Makefile                                  |   1 +
+ lib/test_blackhole_dev.c                      | 100 ++++++++++++++++++
+ net/core/dst.c                                |   2 +-
+ net/ipv4/route.c                              |   3 +-
+ net/ipv6/route.c                              |   2 +-
+ tools/testing/selftests/net/Makefile          |   2 +-
+ tools/testing/selftests/net/config            |   1 +
+ .../selftests/net/test_blackhole_dev.sh       |  11 ++
+ 11 files changed, 195 insertions(+), 14 deletions(-)
+ create mode 100644 lib/test_blackhole_dev.c
+ create mode 100755 tools/testing/selftests/net/test_blackhole_dev.sh
+
+-- 
+2.22.0.410.gd8fdbe21b5-goog
+
