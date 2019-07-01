@@ -2,72 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AEBB85C0EC
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 18:11:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53F1A5C0F3
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 18:14:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729029AbfGAQLl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 12:11:41 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:46048 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727748AbfGAQLl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Jul 2019 12:11:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=d9Af5O7l79U2DHb92mI2uPYGZXrMTu1/85MNMLeFZxQ=; b=QX/AMLFuTEXX91268xImbz99YO
-        OKbYckaKRnE3WuJp/OtwseaVhvy5PbfZhKjlM38OFdChqlxHR8053UMN6RLdVoRXRDQimpB6/KHx0
-        01gR/3zlNDYdBNLmsVNpkuaZ6IkuAgcfpnpLwy4Is8+dOBx/e1HSA1IZYQ73YHee1iEQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hhytz-0008H2-0V; Mon, 01 Jul 2019 18:11:35 +0200
-Date:   Mon, 1 Jul 2019 18:11:34 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Pawel Dembicki <paweldembicki@gmail.com>
-Cc:     linus.walleij@linaro.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/4] net: dsa: vsc73xx: add support for parallel mode
-Message-ID: <20190701161134.GC30468@lunn.ch>
-References: <20190701152723.624-1-paweldembicki@gmail.com>
- <20190701152723.624-3-paweldembicki@gmail.com>
+        id S1729965AbfGAQOL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 12:14:11 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:42443 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728726AbfGAQOK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 12:14:10 -0400
+Received: by mail-lf1-f68.google.com with SMTP id x144so9198605lfa.9
+        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 09:14:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0U0YPTwJgVIJVRdYc6tYY8FIRvP636LwdBcXQglF9w0=;
+        b=ZTGIimF8m4qAIqTUoATDA5KYKjbD3VAysQPkHYNPieUHtwWAfP/JHrR5mMcL1jmavO
+         4gFsC3yaDu6RuaPgU5nWN78lLegRoHN2Sl8xXG2hox7H8TlAx4YZwtvnjleyb1IIEnEX
+         W30EZLtEfQuDGC5u/5LLFZuP47/xQSuPIdiOvYsbjxIC4HeNC06p9K7pRZvkMmndZlQU
+         9rYw4pOv4PqkUZK+kqNQKekXRBiTOvkHhAFfl4MnTgwuSNewNWFGE16wipdL6CTJUEVw
+         8yo+VjwctITrBuuFFnyFhIbSC7+0uKUo5q6BQimDziNYOn9X+GFZG9LSWLZp6cMI5oON
+         Z2hw==
+X-Gm-Message-State: APjAAAXPgfNFl19y90+Ucnca+Fieds5LLCFjNqFkIniokG3FJANddZKB
+        rcc34E46OkmqhG5SrasklhCP38jeA+y63rmwy2V9Xw==
+X-Google-Smtp-Source: APXvYqzriltBqe9R7oQnUm+t1kiD/JXfO+P5w1S5DjKPm1jZ3LxfH1T50G3V+2i3+aAxPMfHqfVYaccEHxDlHv7SpJE=
+X-Received: by 2002:ac2:4466:: with SMTP id y6mr6082599lfl.0.1561997648899;
+ Mon, 01 Jul 2019 09:14:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190701152723.624-3-paweldembicki@gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+References: <20190701160805.32404-1-mcroce@redhat.com> <42624f83da71354a5daef959a4749cb75516d37f.camel@perches.com>
+In-Reply-To: <42624f83da71354a5daef959a4749cb75516d37f.camel@perches.com>
+From:   Matteo Croce <mcroce@redhat.com>
+Date:   Mon, 1 Jul 2019 18:13:32 +0200
+Message-ID: <CAGnkfhx9F1G8K6PjBdUnkCO07GR=ktWAnqOLTcOvg7VGwWb69Q@mail.gmail.com>
+Subject: Re: [PATCH net] ipv4: don't set IPv6 only flags to IPv4 addresses
+To:     Joe Perches <joe@perches.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 01, 2019 at 05:27:22PM +0200, Pawel Dembicki wrote:
-> +static int vsc73xx_platform_read(struct vsc73xx *vsc, u8 block, u8 subblock,
-> +				 u8 reg, u32 *val)
-> +{
-> +	struct vsc73xx_platform *vsc_platform = vsc->priv;
-> +	u32 offset;
-> +
-> +	if (!vsc73xx_is_addr_valid(block, subblock))
-> +		return -EINVAL;
-> +
-> +	offset = vsc73xx_make_addr(block, subblock, reg);
-> +
-> +	mutex_lock(&vsc->lock);
-> +		*val = ioread32be(vsc_platform->base_addr + offset);
-> +	mutex_unlock(&vsc->lock);
+On Mon, Jul 1, 2019 at 6:10 PM Joe Perches <joe@perches.com> wrote:
+>
+> On Mon, 2019-07-01 at 18:08 +0200, Matteo Croce wrote:
+> > Avoid the situation where an IPV6 only flag is applied to an IPv4 address:
+> []
+> > diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
+> []
+> > @@ -468,6 +473,9 @@ static int __inet_insert_ifa(struct in_ifaddr *ifa, struct nlmsghdr *nlh,
+> >       ifa->ifa_flags &= ~IFA_F_SECONDARY;
+> >       last_primary = &in_dev->ifa_list;
+> >
+> > +     /* Don't set IPv6 only flags to IPv6 addresses */
+>
+> umm, IPv4 addresses?
+>
+>
 
-Hi Pawel
+Ouch, right.
 
-What is this mutex protecting?
+/* Don't set IPv6 only flags to IPv4 addresses */
 
-Plus the indentation is wrong.
+Can this be edidet on patchwork instead of spamming with a v2?
 
-Thanks
-	Andrew
+-- 
+Matteo Croce
+per aspera ad upstream
