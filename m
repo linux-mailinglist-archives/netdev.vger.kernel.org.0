@@ -2,141 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 786D05B622
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 09:53:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECA035B633
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 09:57:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727448AbfGAHxr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 03:53:47 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:33209 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726036AbfGAHxq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 03:53:46 -0400
-Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x617rh0D004617, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (RTITCASV01.realtek.com.tw[172.21.6.18])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x617rh0D004617
-        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Mon, 1 Jul 2019 15:53:43 +0800
-Received: from fc30.localdomain (172.21.177.138) by RTITCASV01.realtek.com.tw
- (172.21.6.18) with Microsoft SMTP Server id 14.3.439.0; Mon, 1 Jul 2019
- 15:53:42 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     <netdev@vger.kernel.org>
-CC:     <nic_swsd@realtek.com>, <linux-kernel@vger.kernel.org>,
-        <linux-usb@vger.kernel.org>, Hayes Wang <hayeswang@realtek.com>
-Subject: [PATCH net] r8152: fix the setting of detecting the linking change for runtime suspend
-Date:   Mon, 1 Jul 2019 15:53:19 +0800
-Message-ID: <1394712342-15778-286-albertk@realtek.com>
-X-Mailer: Microsoft Office Outlook 11
+        id S1727614AbfGAH5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 03:57:37 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:42943 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726036AbfGAH5h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 03:57:37 -0400
+Received: by mail-qk1-f193.google.com with SMTP id b18so10234993qkc.9
+        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 00:57:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mtyfCDkCjq5RHAVYhMnNoIQKBSXSMCI67JdQ5H2fFB4=;
+        b=CMfvCiQ9YcwZMzl4gxArCw2oFzR+5VwPbG22HvLIBEuInytw5vIVm3X8wYi+SLPMqf
+         ShzzQOvX3lx4nDaIXJXgZZyzdvFqMcBoLGxeMrzy2SO48kTtUJeWHbZS0rHeWMWuYKYU
+         ZElTKLFd6vSjn93nyBlLvaWF8mgOyX3DoT1GF6/CwKdg5a0A1s7neYlcm47XEUKmdqET
+         AUKk1MA6xlA+kQplohG8lWA+u7uDzG3RpZ5sm7LCv5CjjP1wNyDFNpJGKwIYsGxClHXS
+         o9kSagK/mZ17fupgVAwYkWbPaz3/+UHmAbC6POxg3z2lC0AxI5oCNWJbdf4zGN3fH8cb
+         GrTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mtyfCDkCjq5RHAVYhMnNoIQKBSXSMCI67JdQ5H2fFB4=;
+        b=iSdBulLS0UX+5PL8QrYZ5Md5+rGzz/kuVm071yiKN60IaBz5kIbdlW7NeQj7Y5Ib5t
+         88lw797P/DaTwmALhWRtmYQ9vKS4VfR5sDEOi09pjc5XdweuBjcxNhSSUwUFPV8mhbT7
+         ScTFSca/zqIFWWV5KbU/HLWfSbXRCJlQ2Z1bImmYwNq3umxwEQclrDTuWnR1XiEBFe4J
+         /TtnQw9m9VycmWuG2pTeNPPWQg3Ajl5aa9OUsgIx0DfYjkDDytzJzPD56kxuUwqWTGI9
+         3KmmhQvd2/0swgIS619aBm5bn1UHUem25bxCfeQR1ZsoADodE9cZvqbOE2Ebw4KQ4KZv
+         /7tA==
+X-Gm-Message-State: APjAAAXhA2RdsZnjGeBXbw+o+MQmeNQSTvLGLaNpwukkRZF6vyN4h9hl
+        qmo2h6EcGvsb/mDiglVfy8hp7C5QQHCR3iG2nTvWsA==
+X-Google-Smtp-Source: APXvYqxC/e7W+DgJp9+vritpFFPsVD69EJBRr3ZtHuge17WlBjm2xWd+OHXCNSjuto3JiVwTQToBG8Zo+1zk586Z/Us=
+X-Received: by 2002:ae9:e306:: with SMTP id v6mr19147089qkf.145.1561967856075;
+ Mon, 01 Jul 2019 00:57:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [172.21.177.138]
+References: <20190617065600.40405-1-chiu@endlessm.com>
+In-Reply-To: <20190617065600.40405-1-chiu@endlessm.com>
+From:   Daniel Drake <drake@endlessm.com>
+Date:   Mon, 1 Jul 2019 15:57:25 +0800
+Message-ID: <CAD8Lp46vNbaDkC4sYaw6GijMtHiK41EcS0Wjwp61MdyfcwcqgQ@mail.gmail.com>
+Subject: Re: [RFC PATCH v5] rtl8xxxu: Improve TX performance of RTL8723BU on
+ rtl8xxxu driver
+To:     Chris Chiu <chiu@endlessm.com>
+Cc:     Jes Sorensen <jes.sorensen@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        David Miller <davem@davemloft.net>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        Linux Upstreaming Team <linux@endlessm.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-1. Rename r8153b_queue_wake() to r8153_queue_wake().
+On Mon, Jun 17, 2019 at 2:56 PM Chris Chiu <chiu@endlessm.com> wrote:
+> With this commit, the tx rate of each data and qos data packet will
+> be 39Mbps (MCS4) with the 0xF00000 as the tx rate mask. The 20th bit
+> to 23th bit means MCS4 to MCS7. It means that the firmware still picks
+> the lowest rate from the rate mask and explains why the tx rate of
+> data and qos data is always lowest 1Mbps because the default rate mask
+> passed is always 0xFFFFFFF ranges from the basic CCK rate, OFDM rate,
+> and MCS rate. However, with Realtek's driver, the tx rate observed from
+> wireshark under the same condition is almost 65Mbps or 72Mbps
+suggestion: add:
+, indicating that rtl8xxxu could still be further improved.
 
-2. Correct the setting. The enable bit should be 0xd38c bit 0. Besides,
-   the 0xd38a bit 0 and 0xd398 bit 8 have to be cleared for both enabled
-   and disabled.
+Then remove this paragraph, I think we're in agreement of the approach here:
+> I believe the firmware of RTL8723BU may need fix. And I think we
+> can still bring in the dm_watchdog as rtlwifi to improve from the
+> driver side. Please leave precious comments for my commits and
+> suggest what I can do better. Or suggest if there's any better idea
+> to fix this. Thanks.
 
-Signed-off-by: Hayes Wang <hayeswang@realtek.com>
----
- drivers/net/usb/r8152.c | 38 +++++++++++++++++++++++++++-----------
- 1 file changed, 27 insertions(+), 11 deletions(-)
+> Signed-off-by: Chris Chiu <chiu@endlessm.com>
+Reviewed-by: Daniel Drake <drake@endlessm.com>
 
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index e0dcb681cfe5..101d1325f3f1 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -53,6 +53,9 @@
- #define PAL_BDC_CR		0xd1a0
- #define PLA_TEREDO_TIMER	0xd2cc
- #define PLA_REALWOW_TIMER	0xd2e8
-+#define PLA_SUSPEND_FLAG	0xd38a
-+#define PLA_INDICATE_FALG	0xd38c
-+#define PLA_EXTRA_STATUS	0xd398
- #define PLA_EFUSE_DATA		0xdd00
- #define PLA_EFUSE_CMD		0xdd02
- #define PLA_LEDSEL		0xdd90
-@@ -336,6 +339,15 @@
- /* PLA_BOOT_CTRL */
- #define AUTOLOAD_DONE		0x0002
- 
-+/* PLA_SUSPEND_FLAG */
-+#define LINK_CHG_EVENT		BIT(0)
-+
-+/* PLA_INDICATE_FALG */
-+#define UPCOMING_RUNTIME_D3	BIT(0)
-+
-+/* PLA_EXTRA_STATUS */
-+#define LINK_CHANGE_FLAG	BIT(8)
-+
- /* USB_USB2PHY */
- #define USB2PHY_SUSPEND		0x0001
- #define USB2PHY_L1		0x0002
-@@ -2806,20 +2818,24 @@ static void r8153b_power_cut_en(struct r8152 *tp, bool enable)
- 	ocp_write_word(tp, MCU_TYPE_USB, USB_MISC_0, ocp_data);
- }
- 
--static void r8153b_queue_wake(struct r8152 *tp, bool enable)
-+static void r8153_queue_wake(struct r8152 *tp, bool enable)
- {
- 	u32 ocp_data;
- 
--	ocp_data = ocp_read_byte(tp, MCU_TYPE_PLA, 0xd38a);
-+	ocp_data = ocp_read_byte(tp, MCU_TYPE_PLA, PLA_INDICATE_FALG);
- 	if (enable)
--		ocp_data |= BIT(0);
-+		ocp_data |= UPCOMING_RUNTIME_D3;
- 	else
--		ocp_data &= ~BIT(0);
--	ocp_write_byte(tp, MCU_TYPE_PLA, 0xd38a, ocp_data);
-+		ocp_data &= ~UPCOMING_RUNTIME_D3;
-+	ocp_write_byte(tp, MCU_TYPE_PLA, PLA_INDICATE_FALG, ocp_data);
-+
-+	ocp_data = ocp_read_byte(tp, MCU_TYPE_PLA, PLA_SUSPEND_FLAG);
-+	ocp_data &= ~LINK_CHG_EVENT;
-+	ocp_write_byte(tp, MCU_TYPE_PLA, PLA_SUSPEND_FLAG, ocp_data);
- 
--	ocp_data = ocp_read_byte(tp, MCU_TYPE_PLA, 0xd38c);
--	ocp_data &= ~BIT(0);
--	ocp_write_byte(tp, MCU_TYPE_PLA, 0xd38c, ocp_data);
-+	ocp_data = ocp_read_word(tp, MCU_TYPE_PLA, PLA_EXTRA_STATUS);
-+	ocp_data &= ~LINK_CHANGE_FLAG;
-+	ocp_write_word(tp, MCU_TYPE_PLA, PLA_EXTRA_STATUS, ocp_data);
- }
- 
- static bool rtl_can_wakeup(struct r8152 *tp)
-@@ -2887,14 +2903,14 @@ static void rtl8153_runtime_enable(struct r8152 *tp, bool enable)
- static void rtl8153b_runtime_enable(struct r8152 *tp, bool enable)
- {
- 	if (enable) {
--		r8153b_queue_wake(tp, true);
-+		r8153_queue_wake(tp, true);
- 		r8153b_u1u2en(tp, false);
- 		r8153_u2p3en(tp, false);
- 		rtl_runtime_suspend_enable(tp, true);
- 		r8153b_ups_en(tp, true);
- 	} else {
- 		r8153b_ups_en(tp, false);
--		r8153b_queue_wake(tp, false);
-+		r8153_queue_wake(tp, false);
- 		rtl_runtime_suspend_enable(tp, false);
- 		r8153_u2p3en(tp, true);
- 		r8153b_u1u2en(tp, true);
-@@ -4221,7 +4237,7 @@ static void r8153b_init(struct r8152 *tp)
- 
- 	r8153b_power_cut_en(tp, false);
- 	r8153b_ups_en(tp, false);
--	r8153b_queue_wake(tp, false);
-+	r8153_queue_wake(tp, false);
- 	rtl_runtime_suspend_enable(tp, false);
- 	r8153b_u1u2en(tp, true);
- 	usb_enable_lpm(tp->udev);
--- 
-2.21.0
+> +        * is supported and no iface_combinations are providec.
 
+typo: provided
