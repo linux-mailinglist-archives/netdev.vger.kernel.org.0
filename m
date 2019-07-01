@@ -2,110 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 756F45B45A
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 07:50:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 423845B546
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 08:46:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727387AbfGAFuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 01:50:09 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:40893 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725777AbfGAFuJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 01:50:09 -0400
-Received: by mail-wr1-f67.google.com with SMTP id p11so12265125wre.7
-        for <netdev@vger.kernel.org>; Sun, 30 Jun 2019 22:50:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=OHRBICDcjj1Gb85Cks7Ctqit62DxDJRlY7sUuo7CvwU=;
-        b=NtaiYYaQLvf2yjROEeAHfaExrwaBCmf/q2GFIEv0uJc/eEwSiUV/KejKFg4tNERheU
-         jRd0DViq91raUJbyEXRZW4NWhCamoJUU0nS2Q/Yg3zKmIHs0/GRt1Xz1CSynv5ATEz2d
-         k/G+JG4j1wc+0DBu5CMTWGWMfNqI2Z7JSdintl8BV0uxv2a8In2JOQ8BX5qLKyLCe6il
-         xsx9jX4AD80HCRuoHvq0eY00olON3HAUtXudIXAZtF/0C2abJjOfHKKF5uZj5K3wQ+bz
-         2uABXEGFnszsjNB7CeN2G4ZlE+X2+CNkoivdGzqlcHLJg8duymPcm+ERnv2OJr26RGt5
-         eE8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=OHRBICDcjj1Gb85Cks7Ctqit62DxDJRlY7sUuo7CvwU=;
-        b=jJUR1wspQ3YSOOUbdHsWLdA75wZXkQvtmapCmVxKJkI2YknNZ3FnZaKIhgWKwJSY+H
-         0Bgvq97e409oeyE2Bayb/S0OAN6oCdrQUebvcJBhyd0/FuGVMqDZHKN95kRgtKsJhPqY
-         rq9VOHa/uvix3Y/rtnX/4Giq4/FfS9qZAAiVkRL8jdIaEAY1VpLYTyk6mPfnflYSUNXy
-         QDqOvyisvQJ7sTO4uFfn7c6bEDPr7XghMvqYfuhv4WJ3uirCylYMCJDKmVY098ib3zfV
-         Yxr5V20Mdrm09nPzS3/sdnivsbg3qD9WWslP9uf+Un6H4n1j5ZDTJZ8Bn/ULebumpqXk
-         Myuw==
-X-Gm-Message-State: APjAAAXWP+MAmH00J1KH8PD6/JFIrvFwtTRx1HmBPSBHWOHkz2yNYjCN
-        +lS6X3kgoWVU3FoQVRB3kc69do1W
-X-Google-Smtp-Source: APXvYqyXO4If8JXchEWmNpDDa8tk+oH5NjeL7Zz6j8n/1SlVbodfEKxlYTMek4rB15U+LxflCEGt7w==
-X-Received: by 2002:adf:f902:: with SMTP id b2mr8090010wrr.199.1561960206990;
-        Sun, 30 Jun 2019 22:50:06 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8bd6:c00:cc53:f7f8:f2d6:4eaf? (p200300EA8BD60C00CC53F7F8F2D64EAF.dip0.t-ipconnect.de. [2003:ea:8bd6:c00:cc53:f7f8:f2d6:4eaf])
-        by smtp.googlemail.com with ESMTPSA id v18sm10367777wrd.51.2019.06.30.22.50.06
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 30 Jun 2019 22:50:06 -0700 (PDT)
-Subject: Re: r8169 not working on 5.2.0rc6 with GPD MicroPC
-To:     Karsten Wiborg <karsten.wiborg@web.de>,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     nic_swsd@realtek.com, romieu@fr.zoreil.com, netdev@vger.kernel.org
-References: <0a560a5e-17f2-f6ff-1dad-66907133e9c2@web.de>
- <85548ec0-350b-118f-a60c-4be2235d5e4e@gmail.com>
- <4437a8a6-73f0-26a7-4a61-b215c641ff20@web.de>
- <b104dbf2-6adc-2eee-0a1a-505c013787c0@gmail.com>
- <62684063-10d1-58ad-55ad-ff35b231e3b0@web.de> <20190630145511.GA5330@lunn.ch>
- <3825ebc5-15bc-2787-4d73-cccbfe96a0cc@web.de>
- <27dfc508-dee0-9dad-1e6b-2a5df93c3977@gmail.com>
- <173251e0-add7-b2f5-0701-0717ed4a9b04@web.de>
- <de38facc-37ed-313f-cf1e-1ec6de9810c8@gmail.com>
- <116e4be6-e710-eb2d-0992-a132f62a8727@web.de>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <94b0f05e-2521-7251-ab92-b099a3cf99c9@gmail.com>
-Date:   Mon, 1 Jul 2019 07:50:01 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <116e4be6-e710-eb2d-0992-a132f62a8727@web.de>
-Content-Type: text/plain; charset=utf-8
+        id S1727537AbfGAGqc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 02:46:32 -0400
+Received: from mail-eopbgr00088.outbound.protection.outlook.com ([40.107.0.88]:2628
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727080AbfGAGqc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Jul 2019 02:46:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NI1ONVtXH9b3vNa3xrsNeneQXFbKfff23lkE/mX238E=;
+ b=IA+qIkw7fdzjm8diUMfJQo9F2r3GNdshy3dXB34VKOdkmc2TBQ2Qjig33rZIx4uuDKC6NwQsxAgaI/HR0huu8oGvfLu3d7GaqHJ2C238MoK49abFvPk08wB+oCttekkDUs4b6R+3L/6SlA1QiIXCfv4YTn0u89vAmypvbKz7fqs=
+Received: from AM4PR0501MB2769.eurprd05.prod.outlook.com (10.172.222.15) by
+ AM4PR0501MB2164.eurprd05.prod.outlook.com (10.165.82.144) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2032.20; Mon, 1 Jul 2019 06:46:28 +0000
+Received: from AM4PR0501MB2769.eurprd05.prod.outlook.com
+ ([fe80::2d5b:c43:f265:f180]) by AM4PR0501MB2769.eurprd05.prod.outlook.com
+ ([fe80::2d5b:c43:f265:f180%11]) with mapi id 15.20.2032.019; Mon, 1 Jul 2019
+ 06:46:28 +0000
+From:   Ran Rozenstein <ranro@mellanox.com>
+To:     Tariq Toukan <tariqt@mellanox.com>,
+        David Miller <davem@davemloft.net>,
+        "fw@strlen.de" <fw@strlen.de>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Maor Gottlieb <maorg@mellanox.com>
+Subject: RE: [PATCH net-next 0/2] net: ipv4: fix circular-list infinite loop
+Thread-Topic: [PATCH net-next 0/2] net: ipv4: fix circular-list infinite loop
+Thread-Index: AQHVLOBa1UBc7Rc+R0ChDsfcyl8nZaavuFoAgAQgoQCAAX5AcA==
+Date:   Mon, 1 Jul 2019 06:46:28 +0000
+Message-ID: <AM4PR0501MB27693D777034422FC18A98B9C5F90@AM4PR0501MB2769.eurprd05.prod.outlook.com>
+References: <20190627120333.12469-1-fw@strlen.de>
+ <20190627.095458.1221651269287757130.davem@davemloft.net>
+ <d419cd16-e693-2214-fa41-4c9c81f1649d@mellanox.com>
+In-Reply-To: <d419cd16-e693-2214-fa41-4c9c81f1649d@mellanox.com>
+Accept-Language: he-IL, en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=ranro@mellanox.com; 
+x-originating-ip: [193.47.165.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5825167a-4901-443e-badf-08d6fdefd84b
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR0501MB2164;
+x-ms-traffictypediagnostic: AM4PR0501MB2164:
+x-microsoft-antispam-prvs: <AM4PR0501MB2164A8C4B05BAC0D3B76E39DC5F90@AM4PR0501MB2164.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 00851CA28B
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(366004)(136003)(376002)(346002)(396003)(13464003)(199004)(189003)(7696005)(9686003)(11346002)(4744005)(55016002)(476003)(53936002)(6436002)(486006)(68736007)(3846002)(66066001)(86362001)(99286004)(14454004)(6116002)(66946007)(7736002)(102836004)(73956011)(14444005)(446003)(25786009)(74316002)(229853002)(53546011)(71190400001)(71200400001)(76116006)(76176011)(478600001)(305945005)(2501003)(6506007)(4326008)(52536014)(256004)(81156014)(81166006)(8676002)(5660300002)(8936002)(66476007)(66446008)(64756008)(66556008)(6246003)(107886003)(26005)(2906002)(33656002)(186003)(316002)(110136005)(54906003);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR0501MB2164;H:AM4PR0501MB2769.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: YENZhnmn6YjhoKoBJjr391sQcpeZK+OzKH4IXuf1+EYcg8Y3nW9gli1JjIKV7/HoRKyNqErZLVe699FKlbaRPSf0JCYmdQ2O57WQdh01Z2WvHI9XuPp7RKy0Hmh4FCZCCOri+88S5NBcRCprT0BFn3vRzdqpwhAuE0lOGvJAiyKoflu4nPezljxavDBxUY1bgBV5bHj6tfpG/22vxvcmVKVEmJKC7k8U/t7VvZFdYqFgiVW4yUxO7rYkQHMO9MKSu0kIY8lNmwDtLZP8/4QMfYhN7hDm0YY2Y/QP48+ImTFui1+u/+Uvy7y0NC/Wdinv/H/7BtMPQ7nIfvDETomTVEtMH91BxKhbsBK17GRBwySfitbqV5uy1H6NNmHpXCVPAw0/cNDD2mNAiszq5xx8hfyJJsqTfgx3lg/tb5A8dZ0=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5825167a-4901-443e-badf-08d6fdefd84b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Jul 2019 06:46:28.5722
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ranro@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0501MB2164
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01.07.2019 00:21, Karsten Wiborg wrote:
-> Hi Heiner,
-> 
-> On 30/06/2019 23:55, Heiner Kallweit wrote:
->> This one shows that the vendor driver (r8168) uses a random MAC address.
->> Means the driver can't read a valid MAC address from the chip, maybe due
->> to a broken BIOS.
->> Alternatively you could use r8169 and set a MAC address manually with
->> ifconfig <if> hw ether <MAC address>
-> Hmm, did some more testing:
-> did a rmmod r8168 and (after "un"blacklisting the r8169) modprobed the
-> r8169. This time r8169 came up nicely but with a complete different MAC
-> (forgot to not than one though).
-> So I guess the vendor compilation did other stuff besides just compiling
-> the r8168 kernel module.
-> 
-> Did another test:
-> blacklisted the r8168, renamed r8168.ko to r8168.bak, depmod -a and
-> powercycled the system. Funny it came up with both r8168 and r8169
-> loaded and I got my intended IP address from. DHCP, so r8168 somewhat
-> got loaded and used his MAC.
-> Did another rmmod r8168, rmmod r8169 and then modprobe r8169.
-> Even though I did NOT configure a MAC address myself manually it came up
-> with a new MAC address and of course got a dynamich IP address.
-> So I don't know where the vendor somewhat changed something (with his
-> compiling/installing) to the effect that r8169 now works?!?
-> 
-When the vendor driver assigns a random MAC address, it writes it to the
-chip. The related registers may be persistent (can't say exactly due to
-missing documentation).
-
-> Regards,
-> Karsten
-> 
-Heiner
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogVGFyaXEgVG91a2FuDQo+
+IFNlbnQ6IFN1bmRheSwgSnVuZSAzMCwgMjAxOSAxMDo1Nw0KPiBUbzogRGF2aWQgTWlsbGVyIDxk
+YXZlbUBkYXZlbWxvZnQubmV0PjsgZndAc3RybGVuLmRlDQo+IENjOiBuZXRkZXZAdmdlci5rZXJu
+ZWwub3JnOyBSYW4gUm96ZW5zdGVpbiA8cmFucm9AbWVsbGFub3guY29tPjsgVGFyaXENCj4gVG91
+a2FuIDx0YXJpcXRAbWVsbGFub3guY29tPg0KPiBTdWJqZWN0OiBSZTogW1BBVENIIG5ldC1uZXh0
+IDAvMl0gbmV0OiBpcHY0OiBmaXggY2lyY3VsYXItbGlzdCBpbmZpbml0ZSBsb29wDQo+IA0KPiAN
+Cj4gDQo+IE9uIDYvMjcvMjAxOSA3OjU0IFBNLCBEYXZpZCBNaWxsZXIgd3JvdGU6DQo+ID4gRnJv
+bTogRmxvcmlhbiBXZXN0cGhhbCA8ZndAc3RybGVuLmRlPg0KPiA+IERhdGU6IFRodSwgMjcgSnVu
+IDIwMTkgMTQ6MDM6MzEgKzAyMDANCj4gPg0KPiA+PiBUYXJpcSBhbmQgUmFuIHJlcG9ydGVkIGEg
+cmVncmVzc2lvbiBjYXVzZWQgYnkgbmV0LW5leHQgY29tbWl0DQo+ID4+IDI2MzhlYjhiNTBjZiAo
+Im5ldDogaXB2NDogcHJvdmlkZSBfX3JjdSBhbm5vdGF0aW9uIGZvciBpZmFfbGlzdCIpLg0KPiA+
+Pg0KPiA+PiBUaGlzIGhhcHBlbnMgd2hlbiBuZXQuaXB2NC5jb25mLiRkZXYucHJvbW90ZV9zZWNv
+bmRhcmllcyBzeXNjdGwgaXMNCj4gPj4gZW5hYmxlZCAtLSB3ZSBjYW4gYXJyYW5nZSBmb3IgaWZh
+LT5uZXh0IHRvIHBvaW50IGF0IGlmYSwgc28gbmV4dA0KPiA+PiBwcm9jZXNzIHRoYXQgdHJpZXMg
+dG8gd2FsayB0aGUgbGlzdCBsb29wcyBmb3JldmVyLg0KPiA+Pg0KPiA+PiBGaXggdGhpcyBhbmQg
+ZXh0ZW5kIHJ0bmV0bGluay5zaCB3aXRoIGEgc21hbGwgdGVzdCBjYXNlIGZvciB0aGlzLg0KPiA+
+DQo+ID4gU2VyaWVzIGFwcGxpZWQsIHRoYW5rcyBGbG9yaWFuLg0KPiA+DQo+IA0KPiBUaGFua3Mg
+RmxvcmlhbiENCj4gDQo+IFJhbiwgcGxlYXNlIHRlc3QgYW5kIHVwZGF0ZS4NCj4gDQo+IFRhcmlx
+DQoNClRoYW5rcyBGbG9yaWFuLg0KRGlkbid0IHJlcHJvZHVjZSB0b25pZ2h0IHdpdGggdGhlIGZp
+eGVzLg0KDQpSYW4uDQoNCg==
