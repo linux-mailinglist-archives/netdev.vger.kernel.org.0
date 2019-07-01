@@ -2,100 +2,272 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E177D5C194
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 19:02:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D52C35C1AC
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 19:03:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729759AbfGARCE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 13:02:04 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:39040 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729374AbfGARCB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 13:02:01 -0400
-Received: by mail-wr1-f66.google.com with SMTP id x4so14652846wrt.6
-        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 10:01:59 -0700 (PDT)
+        id S1729846AbfGARDT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 13:03:19 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:40662 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727261AbfGARDS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 13:03:18 -0400
+Received: by mail-wm1-f66.google.com with SMTP id v19so264341wmj.5
+        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 10:03:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=SG3c1bytHc4Lg6OlNggpaL51TFc+3K1rkGSSWjHw9kU=;
+        b=Pu0M+D5IWXH6Dbwks64En+Od19SEYzWFFcxnPG0+fyxU8gjOKGfEtPzVj4NZWpVRIp
+         ckOQzyiO3OExYIxCh5LUN96SfemaexrshOBavF9kdNW1eH3drgYKvhWLjEqptcBbPvVs
+         iKh9HP1o6ixL1aCkBixRGgXiJx9Go9IoTtf4o=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=BitDIcqhWgHEgMJLtZLbAJSwkoBiueOjWJvTMdME7eM=;
-        b=ApVIUozcHoAHBeBdsNij3PcN5jvyKkaV39rdwb7YTGmhWtYjlSJLAKGRvcq/VFWGg0
-         fWIrggUq8E4uVeKQUSFZ6OSP0zMfQCvqpgMoX50P+jD6vX0rJHyQgmNkgHnKbMBeexyC
-         VqqkDEofzJ64gGo0YpCiBRMv1ZJdLoZx9BDpi2LSYc+cHlaUBBVQitMj8vnfoQJKG1Xm
-         4EN11/slVG9etgyXnf1Dcsc7GcCREAE6p7Jn9hQR4La+Q89nJcNTTD7gDU2r+lI6cEl/
-         yu2YpeqJAPUVopBCJoeD9uf+I3QxXq9YibUISBR2jmS4iDbXgONFkUjIlQZYqiQAF8fO
-         1IeA==
-X-Gm-Message-State: APjAAAU5r5013lqz7Y3uDW+q6Riavh35oCzFuuR+tXa7NkVF/vfF5lvI
-        aAnUTmqJB4u3Fmdq2OWit7G72b0u/cU=
-X-Google-Smtp-Source: APXvYqzdjKhn5cL0AZCHMwwfaVQOBDJ9MfI7VOZ8/Kd+4+q4hHSgVhw+dtUPdP46hDZYDoj92QS0+g==
-X-Received: by 2002:adf:f101:: with SMTP id r1mr20277421wro.170.1562000518600;
-        Mon, 01 Jul 2019 10:01:58 -0700 (PDT)
-Received: from raver.teknoraver.net (net-188-216-18-190.cust.vodafonedsl.it. [188.216.18.190])
-        by smtp.gmail.com with ESMTPSA id f12sm24948938wrg.5.2019.07.01.10.01.57
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 01 Jul 2019 10:01:57 -0700 (PDT)
-From:   Matteo Croce <mcroce@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Subject: [PATCH net v2] ipv4: don't set IPv6 only flags to IPv4 addresses
-Date:   Mon,  1 Jul 2019 19:01:55 +0200
-Message-Id: <20190701170155.1967-1-mcroce@redhat.com>
-X-Mailer: git-send-email 2.21.0
+        bh=SG3c1bytHc4Lg6OlNggpaL51TFc+3K1rkGSSWjHw9kU=;
+        b=tIwyiOwvvtpSqNzJWOG8z1eSw1uyYT9fzw8rsk25NPDFPJ98+wGH2d6aKXMw3IdWSP
+         AFbKsnY+locp36eTVO64sv/oaIIAFqNHWm7r4ZGplY1eottv8XtyuMx9GLrzpJlACehH
+         DR8waIiBw0IzcVtznKLOikDs+qDxA+iQDHHaLr6sO/bq5Yv8LX/y3k53U+rICV8Piz+L
+         0etw0PJPfDat7L88X0cELNSSm/hfg9Abdx34JYGlfIdzltYNGz1vL+q6dBTZUjg0vRow
+         u6tEAnnRwHC0TLDI/swoBQOy2ci9T7IQsF6G47zck72qQyvR6SZfwgIPHtZao8wTUH0q
+         3TAg==
+X-Gm-Message-State: APjAAAWvcJuC0k/psppVOg4MXprYVUWbVuDQ9kKhUH9DX5Oyqq57XRKU
+        k1ouKkU3SYXBx78lnM6KOe7pWtEpC/U=
+X-Google-Smtp-Source: APXvYqwQWppoJhJWlHXTbnp7Km8CRzdAdEO19J9WGTowCqoH7908fSAoX11S/h15bAGbEhklRAH9mQ==
+X-Received: by 2002:a1c:770d:: with SMTP id t13mr163768wmi.79.1562000595571;
+        Mon, 01 Jul 2019 10:03:15 -0700 (PDT)
+Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id n3sm11268603wro.59.2019.07.01.10.03.14
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Mon, 01 Jul 2019 10:03:15 -0700 (PDT)
+Subject: Re: Use-after-free in br_multicast_rcv
+To:     Martin Weinelt <martin@linuxlounge.net>,
+        bridge@lists.linux-foundation.org,
+        Roopa Prabhu <roopa@cumulusnetworks.com>
+Cc:     netdev@vger.kernel.org
+References: <41ac3aa3-cbf7-1b7b-d847-1fb308334931@linuxlounge.net>
+ <E0170D52-C181-4F0F-B5F8-F1801C2A8F5A@cumulusnetworks.com>
+ <21ab085f-0f7f-88bc-b661-af74dd9eeea2@linuxlounge.net>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <cc232ed3-9e02-ebb4-4901-9d617013abb8@cumulusnetworks.com>
+Date:   Mon, 1 Jul 2019 20:03:14 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
+In-Reply-To: <21ab085f-0f7f-88bc-b661-af74dd9eeea2@linuxlounge.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Avoid the situation where an IPV6 only flag is applied to an IPv4 address:
+Hi Martin,
 
-    # ip addr add 192.0.2.1/24 dev dummy0 nodad home mngtmpaddr noprefixroute
-    # ip -4 addr show dev dummy0
-    2: dummy0: <BROADCAST,NOARP,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN group default qlen 1000
-        inet 192.0.2.1/24 scope global noprefixroute dummy0
-           valid_lft forever preferred_lft forever
+On 01/07/2019 19:53, Martin Weinelt wrote:
+> Hi Nik,
+> 
+> more info below.
+> 
+> On 6/29/19 3:11 PM, nikolay@cumulusnetworks.com wrote:
+>> On 29 June 2019 14:54:44 EEST, Martin Weinelt <martin@linuxlounge.net> wrote:
+>>> Hello,
+>>>
+>>> we've recently been experiencing memory leaks on our Linux-based
+>>> routers,
+>>> at least as far back as v4.19.16.
+>>>
+>>> After rebuilding with KASAN it found a use-after-free in 
+>>> br_multicast_rcv which I could reproduce on v5.2.0-rc6. 
+>>>
+>>> Please find the KASAN report below, I'm anot sure what else to provide
+>>> so
+>>> feel free to ask.
+>>>
+>>> Best,
+>>>  Martin
+>>>
+>>>
+>>
+>> Hi Martin, 
+>> I'll look into this, are there any specific steps to reproduce it? 
+>>
+>> Thanks, 
+>>    Nik
+>>>  
+> Each server is a KVM Guest and has 18 bridges with the same master/slave
+> relationships:
+> 
+>   bridge -> batman-adv -> {l2 tunnel, virtio device}
+> 
+> Linus Lüssing from the batman-adv asked me to apply this patch to help
+> debugging.
+> 
+> v5.2-rc6-170-g728254541ebc with this patch yielded the following KASAN 
+> report, not sure if the additional information at the end is a result of
+> the added patch though.
+> 
+> Best,
+>   Martin
+> 
 
-Or worse, by sending a malicious netlink command:
+I see a couple of issues that can cause out-of-bounds accesses in br_multicast.c
+more specifically there're pskb_may_pull calls and accesses to stale skb pointers.
+I've had these on my "to fix" list for some time now, will prepare, test the fixes and
+send them for review. In a few minutes I'll send a test patch for you.
+That being said, I thought you said you've been experiencing memory leaks, but below
+reports are for out-of-bounds accesses, could you please clarify if you were
+speaking about these or is there another issue as well ?
+If you're experiencing memory leaks, are you sure they're related to the bridge ?
+You could try kmemleak for those.
 
-    # ip -4 addr show dev dummy0
-    2: dummy0: <BROADCAST,NOARP,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN group default qlen 1000
-        inet 192.0.2.1/24 scope global nodad optimistic dadfailed home tentative mngtmpaddr noprefixroute stable-privacy dummy0
-           valid_lft forever preferred_lft forever
+Thank you,
+ Nik
 
-Signed-off-by: Matteo Croce <mcroce@redhat.com>
----
- net/ipv4/devinet.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
-index c6bd0f7a020a..c5ebfa199794 100644
---- a/net/ipv4/devinet.c
-+++ b/net/ipv4/devinet.c
-@@ -62,6 +62,11 @@
- #include <net/net_namespace.h>
- #include <net/addrconf.h>
- 
-+#define IPV6ONLY_FLAGS	\
-+		(IFA_F_NODAD | IFA_F_OPTIMISTIC | IFA_F_DADFAILED | \
-+		 IFA_F_HOMEADDRESS | IFA_F_TENTATIVE | \
-+		 IFA_F_MANAGETEMPADDR | IFA_F_STABLE_PRIVACY)
-+
- static struct ipv4_devconf ipv4_devconf = {
- 	.data = {
- 		[IPV4_DEVCONF_ACCEPT_REDIRECTS - 1] = 1,
-@@ -468,6 +473,9 @@ static int __inet_insert_ifa(struct in_ifaddr *ifa, struct nlmsghdr *nlh,
- 	ifa->ifa_flags &= ~IFA_F_SECONDARY;
- 	last_primary = &in_dev->ifa_list;
- 
-+	/* Don't set IPv6 only flags to IPv4 addresses */
-+	ifa->ifa_flags &= ~IPV6ONLY_FLAGS;
-+
- 	for (ifap = &in_dev->ifa_list; (ifa1 = *ifap) != NULL;
- 	     ifap = &ifa1->ifa_next) {
- 		if (!(ifa1->ifa_flags & IFA_F_SECONDARY) &&
--- 
-2.21.0
+> From 47a04e977311a0c45f26905588f563b55239da7f Mon Sep 17 00:00:00 2001
+> From: =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>
+> Date: Sat, 29 Jun 2019 20:24:23 +0200
+> Subject: [PATCH] bridge: DEBUG: ipv6_addr_is_ll_all_nodes() wrappers for impr.
+>  call traces
+> 
+> ---
+>  net/bridge/br_multicast.c | 70 +++++++++++++++++++++++++++++++++++----
+>  1 file changed, 63 insertions(+), 7 deletions(-)
+> 
+> diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
+> index de22c8fbbb15..224a43318955 100644
+> --- a/net/bridge/br_multicast.c
+> +++ b/net/bridge/br_multicast.c
+> @@ -57,6 +57,42 @@ static void br_ip6_multicast_leave_group(struct net_bridge *br,
+>  					 struct net_bridge_port *port,
+>  					 const struct in6_addr *group,
+>  					 __u16 vid, const unsigned char *src);
+> +
+> +static noinline void br_ip6_multicast_leave_group_mld2report(
+> +					 struct net_bridge *br,
+> +					 struct net_bridge_port *port,
+> +					 const struct in6_addr *group,
+> +					 __u16 vid,
+> +					 const unsigned char *src)
+> +{
+> +	br_ip6_multicast_leave_group(br, port, group, vid, src);
+> +}
+> +
+> +static noinline void br_ip6_multicast_leave_group_ipv6rcv(
+> +					 struct net_bridge *br,
+> +					 struct net_bridge_port *port,
+> +					 const struct in6_addr *group,
+> +					 __u16 vid,
+> +					 const unsigned char *src)
+> +{
+> +	br_ip6_multicast_leave_group(br, port, group, vid, src);
+> +}
+> +
+> +
+> +static noinline bool ipv6_addr_is_ll_all_nodes_addgroup(const struct in6_addr *addr)
+> +{
+> +	return ipv6_addr_is_ll_all_nodes(addr);
+> +}
+> +
+> +static noinline bool ipv6_addr_is_ll_all_nodes_leavegroup(const struct in6_addr *addr)
+> +{
+> +	return ipv6_addr_is_ll_all_nodes(addr);
+> +}
+> +
+> +static noinline bool ipv6_addr_is_ll_all_nodes_mcastrcv(const struct in6_addr *addr)
+> +{
+> +	return ipv6_addr_is_ll_all_nodes(addr);
+> +}
+>  #endif
+>  
+>  static struct net_bridge_mdb_entry *br_mdb_ip_get_rcu(struct net_bridge *br,
+> @@ -595,7 +631,7 @@ static int br_ip6_multicast_add_group(struct net_bridge *br,
+>  {
+>  	struct br_ip br_group;
+>  
+> -	if (ipv6_addr_is_ll_all_nodes(group))
+> +	if (ipv6_addr_is_ll_all_nodes_addgroup(group))
+>  		return 0;
+>  
+>  	memset(&br_group, 0, sizeof(br_group));
+> @@ -605,6 +641,26 @@ static int br_ip6_multicast_add_group(struct net_bridge *br,
+>  
+>  	return br_multicast_add_group(br, port, &br_group, src);
+>  }
+> +
+> +static noinline int br_ip6_multicast_add_group_mld2report(
+> +				      struct net_bridge *br,
+> +				      struct net_bridge_port *port,
+> +				      const struct in6_addr *group,
+> +				      __u16 vid,
+> +				      const unsigned char *src)
+> +{
+> +	return br_ip6_multicast_add_group(br, port, group, vid, src);
+> +}
+> +
+> +static noinline int br_ip6_multicast_add_group_ipv6rcv(
+> +				      struct net_bridge *br,
+> +				      struct net_bridge_port *port,
+> +				      const struct in6_addr *group,
+> +				      __u16 vid,
+> +				      const unsigned char *src)
+> +{
+> +	return br_ip6_multicast_add_group(br, port, group, vid, src);
+> +}
+>  #endif
+>  
+>  static void br_multicast_router_expired(struct timer_list *t)
+> @@ -1022,10 +1078,10 @@ static int br_ip6_multicast_mld2_report(struct net_bridge *br,
+>  		if ((grec->grec_type == MLD2_CHANGE_TO_INCLUDE ||
+>  		     grec->grec_type == MLD2_MODE_IS_INCLUDE) &&
+>  		    ntohs(*nsrcs) == 0) {
+> -			br_ip6_multicast_leave_group(br, port, &grec->grec_mca,
+> +			br_ip6_multicast_leave_group_mld2report(br, port, &grec->grec_mca,
+>  						     vid, src);
+>  		} else {
+> -			err = br_ip6_multicast_add_group(br, port,
+> +			err = br_ip6_multicast_add_group_mld2report(br, port,
+>  							 &grec->grec_mca, vid,
+>  							 src);
+>  			if (err)
+> @@ -1494,7 +1550,7 @@ static void br_ip6_multicast_leave_group(struct net_bridge *br,
+>  	struct br_ip br_group;
+>  	struct bridge_mcast_own_query *own_query;
+>  
+> -	if (ipv6_addr_is_ll_all_nodes(group))
+> +	if (ipv6_addr_is_ll_all_nodes_leavegroup(group))
+>  		return;
+>  
+>  	own_query = port ? &port->ip6_own_query : &br->ip6_own_query;
+> @@ -1658,7 +1714,7 @@ static int br_multicast_ipv6_rcv(struct net_bridge *br,
+>  	err = ipv6_mc_check_mld(skb);
+>  
+>  	if (err == -ENOMSG) {
+> -		if (!ipv6_addr_is_ll_all_nodes(&ipv6_hdr(skb)->daddr))
+> +		if (!ipv6_addr_is_ll_all_nodes_mcastrcv(&ipv6_hdr(skb)->daddr))
+>  			BR_INPUT_SKB_CB(skb)->mrouters_only = 1;
+>  
+>  		if (ipv6_addr_is_all_snoopers(&ipv6_hdr(skb)->daddr)) {
+> @@ -1683,7 +1739,7 @@ static int br_multicast_ipv6_rcv(struct net_bridge *br,
+>  	case ICMPV6_MGM_REPORT:
+>  		src = eth_hdr(skb)->h_source;
+>  		BR_INPUT_SKB_CB(skb)->mrouters_only = 1;
+> -		err = br_ip6_multicast_add_group(br, port, &mld->mld_mca, vid,
+> +		err = br_ip6_multicast_add_group_ipv6rcv(br, port, &mld->mld_mca, vid,
+>  						 src);
+>  		break;
+>  	case ICMPV6_MLD2_REPORT:
+> @@ -1694,7 +1750,7 @@ static int br_multicast_ipv6_rcv(struct net_bridge *br,
+>  		break;
+>  	case ICMPV6_MGM_REDUCTION:
+>  		src = eth_hdr(skb)->h_source;
+> -		br_ip6_multicast_leave_group(br, port, &mld->mld_mca, vid, src);
+> +		br_ip6_multicast_leave_group_ipv6rcv(br, port, &mld->mld_mca, vid, src);
+>  		break;
+>  	}
+>  
+> 
 
