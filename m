@@ -2,179 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 493FA5B925
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 12:38:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 674DA5B966
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 12:50:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728954AbfGAKik (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 06:38:40 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:54383 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727124AbfGAKij (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 06:38:39 -0400
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1hhthk-0000tX-Ah; Mon, 01 Jul 2019 12:38:36 +0200
-Received: from [IPv6:2a03:f580:87bc:d400:c9d4:83d5:b99:4f4d] (unknown [IPv6:2a03:f580:87bc:d400:c9d4:83d5:b99:4f4d])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 0414C42A6FA;
-        Mon,  1 Jul 2019 10:38:34 +0000 (UTC)
-Subject: Re: [PATCH V3] can: flexcan: fix stop mode acknowledgment
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-Cc:     dl-linux-imx <linux-imx@nxp.com>,
-        "wg@grandegger.com" <wg@grandegger.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20190619074035.25719-1-qiangqing.zhang@nxp.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
+        id S1727921AbfGAKuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 06:50:14 -0400
+Received: from mout.web.de ([212.227.15.14]:44469 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727124AbfGAKuO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Jul 2019 06:50:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1561978194;
+        bh=A9juv7KEALyG/8d4tzO2tyzoZXceHsI2LTIg1lN/Jvo=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=G3vfoH6xgKX2KypOJvdupNT4PHc5LAa2axFw7sO/zGXfPySyKGApRl/bINaaghNj+
+         rS1EZHxkTkX5Bv6mQ1tHkXYLYil3U9ll6F28X2FNVZk0ftOF/kHIHTE8bsS8DrrR/b
+         1Zu4+ApAuJploM7+fmaU8bkQaQfdMICg+NP/BhNw=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.4] ([77.13.129.177]) by smtp.web.de (mrweb001
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0MZDga-1hyKo21Ijc-00Kya1; Mon, 01
+ Jul 2019 12:49:54 +0200
+Subject: Re: [PATCH] rt2x00: fix rx queue hang
+To:     Stanislaw Gruszka <sgruszka@redhat.com>
+Cc:     Helmut Schaa <helmut.schaa@googlemail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+References: <20190617094656.3952-1-smoch@web.de>
+ <20190618093431.GA2577@redhat.com>
+ <b6899d78-447c-3cb3-4bec-e4050660ccaa@web.de>
+ <20190625095734.GA2886@redhat.com>
+ <8d7da251-8218-ff4b-2cf3-8ed69c97275e@web.de>
+ <20190629085041.GA2854@redhat.com>
+From:   Soeren Moch <smoch@web.de>
 Openpgp: preference=signencrypt
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <42ef6763-c8a6-9fcd-4706-8ebfa2f51ba0@pengutronix.de>
-Date:   Mon, 1 Jul 2019 12:37:58 +0200
+Autocrypt: addr=smoch@web.de; prefer-encrypt=mutual; keydata=
+ mQMuBFF1CvoRCADuPSewZ3cFP42zIHDvyXJuBIqMfjbKsx27T97oRza/j12Cz1aJ9qIfjOt5
+ 9cHpi+NeCo5n5Pchlb11IGMjrd70NAByx87PwGL2MO5k/kMNucbYgN8Haas4Y3ECgrURFrZK
+ vvTMqFNQM/djQgjxUlEIej9wlnUO2xe7uF8rB+sQ+MqzMFwesCsoWgl+gRui7AhjxDJ2+nmy
+ Ec8ZtuTrWcTNJDsPMehLRBTf84RVg+4pkv4zH7ICzb4AWJxuTFDfQsSxfLuPmYtG0z7Jvjnt
+ iDaaa3p9+gmZYEWaIAn9W7XTLn0jEpgK35sMtW1qJ4XKuBXzDYyN6RSId/RfkPG5X6tXAQDH
+ KCd0I2P2dBVbSWfKP5nOaBH6Fph7nxFFayuFEUNcuQgAlO7L2bW8nRNKlBbBVozIekqpyCU7
+ mCdqdJBj29gm2oRcWTDB9/ARAT2z56q34BmHieY/luIGsWN54axeALlNgpNQEcKmTE4WuPaa
+ YztGF3z18/lKDmYBbokIha+jw5gdunzXXtj5JGiwD6+qxUxoptsBooD678XxqxxhBuNPVPZ0
+ rncSqYrumNYqcrMXo4F58T+bly2NUSqmDHBROn30BuW2CAcmfQtequGiESNHgyJLCaBWRs5R
+ bm/u6OlBST2KeAMPUfGvL6lWyvNzoJCWfUdVVxjgh56/s6Rp6gCHAO5q9ItsPJ5xvSWnX4hE
+ bAq8Bckrv2E8F0Bg/qJmbZ53FQf9GEytLQe0xhYCe/vEO8oRfsZRTMsGxFH1DMvfZ7f/MrPW
+ CTyPQ3KnwJxi9Mot2AtP1V1kfjiJ/jtuVTk021x45b6K9mw0/lX7lQ+dycrjTm6ccu98UiW1
+ OGw4rApMgHJR9pA59N7FAtI0bHsGVKlSzWVMdVNUCtF9R4VXUNxMZz84/ZcZ9hTK59KnrJb/
+ ft/IEAIEpdY7IOVI7mso060k3IFFV/HbWI/erjAGPaXR3Cccf0aH28nKIIVREfWd/7BU050G
+ P0RTccOxtYp9KHCF3W6bC9raJXlIoktbpYYJJgHUfIrPXrnnmKkWy6AgbkPh/Xi49c5oGolN
+ aNGeFuvYWbQaU29lcmVuIE1vY2ggPHNtb2NoQHdlYi5kZT6IegQTEQgAIgUCUXUK+gIbAwYL
+ CQgHAwIGFQgCCQoLBBYCAwECHgECF4AACgkQANCJ0qFZnBAmcQEAkMwkC8NpkNTFQ+wc1j0C
+ D1zWXsI3BE+elCcGlzcK8d0A/04iWXt16ussH2x+LzceaJlUJUOs6c4khyCRzWWXKK1HuQIN
+ BFF1CvoQCADVUJEklP4MK6yoxlb+/fFsPw2YBNfpstx6TB8EC7TefHY1vIe/O4i4Vf4YfR+E
+ dbFRfEc1uStvd/NBOZmEZYOwXgKuckwKSEGKCDz5IBhiI84e0Je4ZkHP3poljJenZEtdfiSG
+ ZKtEjWJUv34EQGbkal7oJ2FLdlicquDmSq/WSjFenfVuGKx4Cx4jb3D0RP8A0lCGMHY6qhlq
+ fA4SgtjbFiSPXolTCCWGJr3L5CYnPaxg4r0G5FWt+4FZsUmvdUTWB1lZV7LGk1dBjdnPv6UT
+ X9VtL2dWl1GJHajKBJp9yz8OmkptxHLY1ZeqZRv9zEognqiE2VGiKTZe1Ajs55+HAAMFB/4g
+ FrF01xxygoi4x5zFzTB0VGmKIYK/rsnDxJFJoaR/S9iSycSZPTxECCy955fIFLy+GEF5J3Mb
+ G1ETO4ue2wjBMRMJZejEbD42oFgsT1qV+h8TZYWLZNoc/B/hArl5cUMa+tqz8Ih2+EUXr9wn
+ lYqqw/ita/7yP3ScDL9NGtZ+D4rp4h08FZKKKJq8lpy7pTmd/Nt5rnwPuWxagWM0C2nMnjtm
+ GL2tWQL0AmGIbapr0uMkvw6XsQ9NRYYyKyftP1YhgIvTiF2pAJRlmn/RZL6ZuCSJRZFMLT/v
+ 3wqJe3ZMlKtufQP8iemqsUSKhJJVIwAKloCX08K8RJ6JRjga/41HiGEEGBEIAAkFAlF1CvoC
+ GwwACgkQANCJ0qFZnBD/XQEAgRNZehpq0lRRtZkevVooDWftWF34jFgxigwqep7EtBwBAIlW
+ iHJPk0kAK21A1fmcp11cd6t8Jgfn1ciPuc0fqaRb
+Message-ID: <06c55c1d-6da6-76b2-f6e7-c8eeccd5aa35@web.de>
+Date:   Mon, 1 Jul 2019 12:49:50 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+ Thunderbird/60.7.1
 MIME-Version: 1.0
-In-Reply-To: <20190619074035.25719-1-qiangqing.zhang@nxp.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="CtEx9EuPCx90ZiAfPbOGGu1CxAL2Apkt1"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <20190629085041.GA2854@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Content-Language: en-GB
+X-Provags-ID: V03:K1:SEuWNML7nRz5SrQ51HbvkurnQHsUALLgR2TZ9j4rooAj21nQUN6
+ rNgfBruJ5RZEni85NG7YR4i+0rCpilP8++iZ0VYb/wm9xpBdq03f7jfoiN9FaJz2d/kONbc
+ ZRJUC7jQiJdqQoeQSqmmYVJOvWjPETsI40gq/I5FylVEAxmWawXa2zoNszGA7WWjlHIYlq1
+ 88mf3hg75wrgQ/ge7OQBQ==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:toJL8zBMtZ0=:vCwmx/PEyoEXHmv+XuH8AG
+ zn1xFVjanxL+ag7Ji8jn21eGTmSUwG0r5ppAmVg7njSmaZLLko1T3taXhDluHD5O5oEiMOYj2
+ Qp+saWCFluOx8DdGZSpARBLpfzsSj8zXGJ9AuF6qD4zVNTC0Yh6Of02q3zSKB4vA1c3aU5Dem
+ T630m55Zi/wPhn4HUcszzEfMM8JZRukhtIN58NZGJBGwLI0Qhr4U32MFsx9YIwtD9MLJZDltv
+ igqSa/8H4ALJJ89NnQC8fYTn+zKIQ9pigAegslkPM+l9KAXesmHchwg9vjKB27vCqboTalYhZ
+ 9hPlpnFDq3h4EDV3pel1TaaMyikCDsm4DcYaFYjAZnWgDzIIbholm7Zj/bLxdaG02n+WoRk/C
+ dVO7+Ljk7eF14MVHy7+QnlnaKLRpWIVPJo6H3Wj/Lj0c5HOJC31nyJWjTGbUwoGilsjAah2/k
+ nde5qutr/aYC8YskTrKsWWaCZDX/BPYC6fCuyhKIPvmG9ZQ7P1wdpV29Ug6FZYODvKfi1KAOS
+ Kmqvy6OBGRN4kODTcoQtc8RoAa2tz7MlKnGD3tgGpFyczBFkDh1hSMXYmQLKHvXQyqHy14GNM
+ aYbdcmy8OV1WfUUB1XcpNkHhKbHKgH/CWAuuQ7IUepuGik7LXjsI7bKbws0Ee6R0w0yDfT0zO
+ OBWd5655F6Njcgt2/TwdKowNnxER2XUCffa9no0w7TdIoF3rSwVmqTv42wyGQlEYaPV1j2EoW
+ osCb8c7kHs4A4ODG+Jkv9aTh59TcX59Q3FTAz/fsgGnakD++7yK/EIRlt7s2Lo3zK2Qp7GXkN
+ WvdwGbxQf9WN2RTQJQT3ZyOCZPB8aon9IlH5Ha6ibDlK7t4g99ernjyOYUFBMRBpf4Jyptko0
+ uLAqYXy3ZeOudJDvhLxSGPiUMYycWbWOCEuPB/KIx26flQT+/a4VM5K1AcZ/Ub8yZqneUJy6t
+ QhuR4x2QFYf3i3SO/Bp95kX7YCIOpmxMs//TKr4oWf/BExbS9oThWgUqH5sYQ3XTa8IjXJGXV
+ Lxqc4HBQHMiRLerC8Ea0ZezTOzZzM2fF5Fc1Zsd7WvqN+KF1eVTV5/GNvXslj2mlSiwCrb4on
+ pwqS26LShY63QE=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---CtEx9EuPCx90ZiAfPbOGGu1CxAL2Apkt1
-Content-Type: multipart/mixed; boundary="vDeLvfVUrJvD2FXwUXwMD8Hd2EQiXbsiQ";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Joakim Zhang <qiangqing.zhang@nxp.com>,
- "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-Cc: dl-linux-imx <linux-imx@nxp.com>, "wg@grandegger.com"
- <wg@grandegger.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Message-ID: <42ef6763-c8a6-9fcd-4706-8ebfa2f51ba0@pengutronix.de>
-Subject: Re: [PATCH V3] can: flexcan: fix stop mode acknowledgment
-References: <20190619074035.25719-1-qiangqing.zhang@nxp.com>
-In-Reply-To: <20190619074035.25719-1-qiangqing.zhang@nxp.com>
+Hello!
 
---vDeLvfVUrJvD2FXwUXwMD8Hd2EQiXbsiQ
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
+On 29.06.19 10:50, Stanislaw Gruszka wrote:
+> Hello
+>
+> On Wed, Jun 26, 2019 at 03:28:00PM +0200, Soeren Moch wrote:
+>> Hi Stanislaw,
+>>
+>> the good news is: your patch below also solves the issue for me. But
+>> removing the ENTRY_DATA_STATUS_PENDING check in
+>> rt2x00usb_kick_rx_entry() alone does not help, while removing this che=
+ck
+>> in rt2x00usb_work_rxdone() alone does the trick.
+>>
+>> So the real race seems to be that the flags set in the completion
+>> handler are not yet visible on the cpu core running the workqueue. And=
 
-On 6/19/19 9:42 AM, Joakim Zhang wrote:
-> To enter stop mode, the CPU should manually assert a global Stop Mode
-> request and check the acknowledgment asserted by FlexCAN. The CPU must
-> only consider the FlexCAN in stop mode when both request and
-> acknowledgment conditions are satisfied.
->=20
-> Fixes: de3578c198c6 ("can: flexcan: add self wakeup support")
-> Reported-by: Marc Kleine-Budde <mkl@pengutronix.de>
-> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
->=20
-> ChangeLog:
-> V1->V2:
-> 	* regmap_read()-->regmap_read_poll_timeout()
-> V2->V3:
-> 	* change the way of error return, it will make easy for function
-> 	extension.
+>> because the worker is not rescheduled when aborted, the entry can just=
 
-Please rebase to linux-next/master, as this is a fix.
+>> wait forever.
+>> Do you think this could make sense?
+> Yes.
+>
+>>> I'm somewhat reluctant to change the order, because TX processing
+>>> might relay on it (we first mark we wait for TX status and
+>>> then mark entry is no longer owned by hardware).
+>> OK, maybe it's just good luck that changing the order solves the rx
+>> problem. Or can memory barriers associated with the spinlock in
+>> rt2x00lib_dmadone() be responsible for that?
+>> (I'm testing on a armv7 system, Cortex-A9 quadcore.)
+> I'm not sure, rt2x00queue_index_inc() also disable/enable interrupts,
+> so maybe that make race not reproducible.=20
+I tested some more, the race is between setting ENTRY_DATA_IO_FAILED (if
+needed) and enabling workqueue processing. This enabling was done via
+ENTRY_DATA_STATUS_PENDING in my patch. So setting
+ENTRY_DATA_STATUS_PENDING behind the spinlock in
+rt2x00lib_dmadone()/rt2x00queue_index_inc() moved this very close to
+setting of ENTRY_DATA_IO_FAILED (if needed). While still in the wrong
+order, this made it very unlikely for the race to show up.
+>
+>> While looking at it, why we double-clear ENTRY_OWNER_DEVICE_DATA in
+>> rt2x00usb_interrupt_rxdone() directly and in rt2x00lib_dmadone() again=
+,
+> rt2x00lib_dmadone() is called also on other palaces (error paths)
+> when we have to clear flags.
+Yes, but also clearing ENTRY_OWNER_DEVICE_DATA in
+rt2x00usb_interrupt_rxdone() directly is not necessary and can lead to
+the wrong processing order.
+>>  while not doing the same for tx?=20
+> If I remember correctly we have some races on rx (not happened on tx)
+> that was solved by using test_and_clear_bit(ENTRY_OWNER_DEVICE_DATA).
+I searched in the history, it actually was the other way around. You
+changed test_and_clear_bit() to test_bit() in the TX path. I think this
+is also the right way to go in RX.
+>> Would it make more sense to possibly
+>> set ENTRY_DATA_IO_FAILED before clearing ENTRY_OWNER_DEVICE_DATA in
+>> rt2x00usb_interrupt_rxdone() as for tx?
+> I don't think so, ENTRY_DATA_IO_FAILED should be only set on error
+> case.
 
-Marc
+Yes of course. But if the error occurs, it should be signalled before
+enabling the workqueue processing, see the race described above.
 
---=20
-Pengutronix e.K.                  | Marc Kleine-Budde           |
-Industrial Linux Solutions        | Phone: +49-231-2826-924     |
-Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |
-Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
+After some more testing I'm convinced that this would be the right fix
+for this problem. I will send a v2 of this patch accordingly.
+>
+>>>  However on RX
+>>> side ENTRY_DATA_STATUS_PENDING bit make no sense as we do not
+>>> wait for status. We should remove ENTRY_DATA_STATUS_PENDING on
+>>> RX side and perhaps this also will solve issue you observe.
+>> I agree that removing the unnecessary checks is a good idea in any cas=
+e.
+>>> Could you please check below patch, if it fixes the problem as well?
+>> At least I could not trigger the problem within transferring 10GB of
+>> data. But maybe the probability for triggering this bug is just lower
+>> because ENTRY_OWNER_DEVICE_DATA is cleared some time before
+>> ENTRY_DATA_STATUS_PENDING is set?
+> Not sure. Anyway, could you post patch removing not needed checks
+> with proper description/changelog ?
+>
+OK, I will do so.
 
+Soeren
 
---vDeLvfVUrJvD2FXwUXwMD8Hd2EQiXbsiQ--
-
---CtEx9EuPCx90ZiAfPbOGGu1CxAL2Apkt1
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl0Z4oYACgkQWsYho5Hk
-nSBrgQgAgLWzsaWnUrrHa4ZkTf04iRA2C9WAbJU9+bkWMaSptOt/u8ndGZXWi91z
-xQq8sV+j6CYAoMxYIZj+MiZhhkqkgQEstUYw3hvtWE3x4WAyLPyVYpg6JmnMV/ar
-Yrfk2+hkR+UziBOMaKdF8aX+ImiksQrlcGhj2nrxrucLrdCu1rpKxVP4s/4eP34m
-4SOLS3MequqZpYtN0rxZeJreRVymm0stNMU54AG9dmaF3EzxKtEmjMHQtzbPW4k3
-Cgvgvxy6w3OF0b8syZul3DmcbIkBm2fwJ8rV1Z2ojuraubGGwWW4TkZzIN5RqV0W
-Qux43aOkexWnHnav8+N5K6h9dy9NgA==
-=VwiK
------END PGP SIGNATURE-----
-
---CtEx9EuPCx90ZiAfPbOGGu1CxAL2Apkt1--
