@@ -2,174 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 023685B25F
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 01:46:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 041055B2A5
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 03:02:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727251AbfF3Xqz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Jun 2019 19:46:55 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:43852 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726917AbfF3Xqz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Jun 2019 19:46:55 -0400
-Received: by mail-pl1-f195.google.com with SMTP id cl9so6301957plb.10;
-        Sun, 30 Jun 2019 16:46:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=A6kq3xfcTnwLBiBV3ctiAErmF3NRCSlEnFmtaNhnXok=;
-        b=Ygn7+cu41HkcAPBkxqiMdAycsuSTCUphtFxUkI+FHiF3u/96Ok7FsVXwNXFMrguz2C
-         Ol/+CdkVaaC5+b2mvHxdDvHxBJ5F/eWfKNr3Lt8HoHr3fWTUEZf+3Ae7Z7+ConwL4XOe
-         Ir8AO9zDxsUe0TQleJZTH8J8CxqphD48wc3jDP6PQcs8KOpNz8SlaHrvHNdQ92FoRoV9
-         Wx6lyGSeQZ2klx42HTXspC16tYOwghK+q9UfQa4949J+Alqwuh1qoEkI3Rbqw9i06LBH
-         kLfCkFXEVqzYSmse6Rv38Lk277rBnXJOdnhzUE2CvPdwiPZvWj+NEZcNRJKrJaoFjvRp
-         eXcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=A6kq3xfcTnwLBiBV3ctiAErmF3NRCSlEnFmtaNhnXok=;
-        b=KmzQFPTg37nyirQWhve8XYoVOmRmULpMkN9zQXFg4Qj67VyI1K6SOV0ffCYcTWQhnn
-         3HhLCspvRFkzrYkvCCz4+jOD3XDxdCpv6hlZi6zH6Xu3/AvkPRRz1HTfMsoJGJfGV5im
-         Bx/9C4Nq5xGT05qNruWAw7gJM5i2xLoLShey+ukhlF+ae6jq/HuXt2U//FW98CA5m8uZ
-         HSDz+Tm0hNPKa1ropVK7NhiCps9WqFESgPLnWpfCpvLTf4mv7qDH3Lwpst0RxpqE9meq
-         uDHTVdVvf9Rp1fbvdk3KI0hb6lJN2XLJLpH5Yly1eDrQ/Yy+/O2Rgv7kFVvbECk16gFq
-         An1w==
-X-Gm-Message-State: APjAAAXT2B0l3HVfDVj0ijGf1EGMzG9Tn6q979ssdQ7Vodgk92cLeg1Q
-        fvqosT/JqIoMfGyKFMJ/o1sTjl2FnCY=
-X-Google-Smtp-Source: APXvYqzzDTDlwaZQT6F4ZDmY0tHy7f+zo0oVdXhG3651u2LCun4cOzlCfadDtb1yBZxrHOgRZcyj4w==
-X-Received: by 2002:a17:902:bcc4:: with SMTP id o4mr24884473pls.90.1561938413906;
-        Sun, 30 Jun 2019 16:46:53 -0700 (PDT)
-Received: from debian.net.fpt ([58.187.168.105])
-        by smtp.gmail.com with ESMTPSA id t8sm289092pji.24.2019.06.30.16.46.49
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 30 Jun 2019 16:46:53 -0700 (PDT)
-From:   Phong Tran <tranmanphong@gmail.com>
-To:     syzbot+8a3fc6674bbc3978ed4e@syzkaller.appspotmail.com
-Cc:     davem@davemloft.net, glider@google.com,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        lynxis@fe80.eu, marcel.ziswiler@toradex.com,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        yang.wei9@zte.com.cn, zhang.run@zte.com.cn,
-        skhan@linuxfoundation.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Phong Tran <tranmanphong@gmail.com>
-Subject: [PATCH] net: usb: asix: init MAC address buffers
-Date:   Mon,  1 Jul 2019 06:45:33 +0700
-Message-Id: <20190630234533.15089-1-tranmanphong@gmail.com>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <00000000000008f06d058a6e9783@google.com>
-References: <00000000000008f06d058a6e9783@google.com>
+        id S1727201AbfGABCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Jun 2019 21:02:25 -0400
+Received: from conuserg-12.nifty.com ([210.131.2.79]:64182 "EHLO
+        conuserg-12.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726040AbfGABCZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Jun 2019 21:02:25 -0400
+Received: from grover.flets-west.jp (softbank126125154139.bbtec.net [126.125.154.139]) (authenticated)
+        by conuserg-12.nifty.com with ESMTP id x610x4fr000634;
+        Mon, 1 Jul 2019 09:59:05 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com x610x4fr000634
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1561942746;
+        bh=k6lypsY8EtklIWOXM9lo9DSpQkaOGO3EP2tLY2qrygs=;
+        h=From:To:Cc:Subject:Date:From;
+        b=RV7ivx/luT13tyKFQqp2bzeMpPuELrJCg9fzB9Izj3h9p/ZMwQ1dZT6LLW+TGOiia
+         y7GXNUCQeMJvbLyYJp4c6896ESTp4uj92EuSL6k9rlafDuvM+I5/D/zuLKRV7aX5Mr
+         hKleV/abWphBI55RVHfAyHVvem0AZalk/lBgfViVIVL2e3dI9lRxL0wq3+JfFGanC5
+         mv6ZNUnGJUBGxfJbiLw9xV/uRqek9ZvLivUrGDZ0JN/YI/Bxjikn/ddnD2lc99zBwI
+         nic+be8jWSUlygiFUgs6kWl8faUFT40BXRNmZSzifX/qacxH8tCcUgk4os320VPQke
+         eIRoc/XiFB7og==
+X-Nifty-SrcIP: [126.125.154.139]
+From:   Masahiro Yamada <yamada.masahiro@socionext.com>
+To:     linux-kbuild@vger.kernel.org
+Cc:     Sam Ravnborg <sam@ravnborg.org>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Tony Luck <tony.luck@intel.com>, linux-doc@vger.kernel.org,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        linux-riscv@lists.infradead.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        xdp-newbies@vger.kernel.org, Anton Vorontsov <anton@enomsg.org>,
+        Palmer Dabbelt <palmer@sifive.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Colin Cross <ccross@android.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Kees Cook <keescook@chromium.org>,
+        Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH 0/7] Compile-test UAPI and kernel headers
+Date:   Mon,  1 Jul 2019 09:58:38 +0900
+Message-Id: <20190701005845.12475-1-yamada.masahiro@socionext.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is for fixing bug KMSAN: uninit-value in ax88772_bind
 
-Tested by
-https://groups.google.com/d/msg/syzkaller-bugs/aFQurGotng4/cFe9nxMCCwAJ
+1/7: add CONFIG_CC_CAN_LINK to use it in 2/7
 
-Reported-by: syzbot+8a3fc6674bbc3978ed4e@syzkaller.appspotmail.com
+2/7: Compile-test exported headers
 
-syzbot found the following crash on:
+3/7: Do not generate intermediate wrappers.
+     This will avoid header search path issue.
 
-HEAD commit:    f75e4cfe kmsan: use kmsan_handle_urb() in urb.c
-git tree:       kmsan
-console output: https://syzkaller.appspot.com/x/log.txt?x=136d720ea00000
-kernel config:
-https://syzkaller.appspot.com/x/.config?x=602468164ccdc30a
-dashboard link:
-https://syzkaller.appspot.com/bug?extid=8a3fc6674bbc3978ed4e
-compiler:       clang version 9.0.0 (/home/glider/llvm/clang
-06d00afa61eef8f7f501ebdb4e8612ea43ec2d78)
-syz repro:
-https://syzkaller.appspot.com/x/repro.syz?x=12788316a00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=120359aaa00000
+4/7: maybe useful for 7/7 and in some other places.
+     Add header-test-pattern-y syntax.
 
-==================================================================
-BUG: KMSAN: uninit-value in is_valid_ether_addr
-include/linux/etherdevice.h:200 [inline]
-BUG: KMSAN: uninit-value in asix_set_netdev_dev_addr
-drivers/net/usb/asix_devices.c:73 [inline]
-BUG: KMSAN: uninit-value in ax88772_bind+0x93d/0x11e0
-drivers/net/usb/asix_devices.c:724
-CPU: 0 PID: 3348 Comm: kworker/0:2 Not tainted 5.1.0+ #1
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-Google 01/01/2011
-Workqueue: usb_hub_wq hub_event
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x191/0x1f0 lib/dump_stack.c:113
-  kmsan_report+0x130/0x2a0 mm/kmsan/kmsan.c:622
-  __msan_warning+0x75/0xe0 mm/kmsan/kmsan_instr.c:310
-  is_valid_ether_addr include/linux/etherdevice.h:200 [inline]
-  asix_set_netdev_dev_addr drivers/net/usb/asix_devices.c:73 [inline]
-  ax88772_bind+0x93d/0x11e0 drivers/net/usb/asix_devices.c:724
-  usbnet_probe+0x10f5/0x3940 drivers/net/usb/usbnet.c:1728
-  usb_probe_interface+0xd66/0x1320 drivers/usb/core/driver.c:361
-  really_probe+0xdae/0x1d80 drivers/base/dd.c:513
-  driver_probe_device+0x1b3/0x4f0 drivers/base/dd.c:671
-  __device_attach_driver+0x5b8/0x790 drivers/base/dd.c:778
-  bus_for_each_drv+0x28e/0x3b0 drivers/base/bus.c:454
-  __device_attach+0x454/0x730 drivers/base/dd.c:844
-  device_initial_probe+0x4a/0x60 drivers/base/dd.c:891
-  bus_probe_device+0x137/0x390 drivers/base/bus.c:514
-  device_add+0x288d/0x30e0 drivers/base/core.c:2106
-  usb_set_configuration+0x30dc/0x3750 drivers/usb/core/message.c:2027
-  generic_probe+0xe7/0x280 drivers/usb/core/generic.c:210
-  usb_probe_device+0x14c/0x200 drivers/usb/core/driver.c:266
-  really_probe+0xdae/0x1d80 drivers/base/dd.c:513
-  driver_probe_device+0x1b3/0x4f0 drivers/base/dd.c:671
-  __device_attach_driver+0x5b8/0x790 drivers/base/dd.c:778
-  bus_for_each_drv+0x28e/0x3b0 drivers/base/bus.c:454
-  __device_attach+0x454/0x730 drivers/base/dd.c:844
-  device_initial_probe+0x4a/0x60 drivers/base/dd.c:891
-  bus_probe_device+0x137/0x390 drivers/base/bus.c:514
-  device_add+0x288d/0x30e0 drivers/base/core.c:2106
-  usb_new_device+0x23e5/0x2ff0 drivers/usb/core/hub.c:2534
-  hub_port_connect drivers/usb/core/hub.c:5089 [inline]
-  hub_port_connect_change drivers/usb/core/hub.c:5204 [inline]
-  port_event drivers/usb/core/hub.c:5350 [inline]
-  hub_event+0x48d1/0x7290 drivers/usb/core/hub.c:5432
-  process_one_work+0x1572/0x1f00 kernel/workqueue.c:2269
-  process_scheduled_works kernel/workqueue.c:2331 [inline]
-  worker_thread+0x189c/0x2460 kernel/workqueue.c:2417
-  kthread+0x4b5/0x4f0 kernel/kthread.c:254
-  ret_from_fork+0x35/0x40 arch/x86/entry/entry_64.S:355
+5/7: Minor cleanup of gen_kheaders.sh
 
-Signed-off-by: Phong Tran <tranmanphong@gmail.com>
----
- drivers/net/usb/asix_devices.c | 3 +++
- 1 file changed, 3 insertions(+)
+6/7: Exclude all files without ".h" extension
+     from the kheaders_data.tar.xz
+     This will be needed by 7/7 because we need to
+     exclude "*.h.s" from the archive
 
-diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
-index c9bc96310ed4..f514d19316b1 100644
---- a/drivers/net/usb/asix_devices.c
-+++ b/drivers/net/usb/asix_devices.c
-@@ -230,6 +230,7 @@ static int ax88172_bind(struct usbnet *dev, struct usb_interface *intf)
- 	int i;
- 	unsigned long gpio_bits = dev->driver_info->data;
- 
-+	memset(buf, 0, sizeof(buf));
- 	usbnet_get_endpoints(dev,intf);
- 
- 	/* Toggle the GPIOs in a manufacturer/model specific way */
-@@ -681,6 +682,7 @@ static int ax88772_bind(struct usbnet *dev, struct usb_interface *intf)
- 	u32 phyid;
- 	struct asix_common_private *priv;
- 
-+	memset(buf, 0, sizeof(buf));
- 	usbnet_get_endpoints(dev, intf);
- 
- 	/* Maybe the boot loader passed the MAC address via device tree */
-@@ -1063,6 +1065,7 @@ static int ax88178_bind(struct usbnet *dev, struct usb_interface *intf)
- 	int ret;
- 	u8 buf[ETH_ALEN];
- 
-+	memset(buf, 0, sizeof(buf));
- 	usbnet_get_endpoints(dev,intf);
- 
- 	/* Get the MAC address */
+7/7: Compile-test kernel-space headers in include/.
+
+
+Masahiro Yamada (7):
+  init/Kconfig: add CONFIG_CC_CAN_LINK
+  kbuild: compile-test exported headers to ensure they are
+    self-contained
+  kbuild: do not create wrappers for header-test-y
+  kbuild: support header-test-pattern-y
+  kheaders: remove meaningless -R option of 'ls'
+  kheaders: include only headers into kheaders_data.tar.xz
+  kbuild: compile-test kernel headers to ensure they are self-contained
+
+ .gitignore                         |    1 -
+ Documentation/dontdiff             |    1 -
+ Documentation/kbuild/makefiles.txt |   13 +-
+ Makefile                           |    4 +-
+ include/Kbuild                     | 1253 ++++++++++++++++++++++++++++
+ init/Kconfig                       |   24 +
+ kernel/gen_kheaders.sh             |   51 +-
+ net/bpfilter/Kconfig               |    2 +-
+ scripts/Makefile.build             |   10 +-
+ scripts/Makefile.lib               |   13 +-
+ usr/.gitignore                     |    1 -
+ usr/Makefile                       |    2 +
+ usr/include/.gitignore             |    3 +
+ usr/include/Makefile               |  131 +++
+ 14 files changed, 1462 insertions(+), 47 deletions(-)
+ create mode 100644 include/Kbuild
+ create mode 100644 usr/include/.gitignore
+ create mode 100644 usr/include/Makefile
+
 -- 
-2.11.0
+2.17.1
 
