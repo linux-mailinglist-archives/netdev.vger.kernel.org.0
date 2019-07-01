@@ -2,86 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 422B35B8CA
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 12:14:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71E4E5B802
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 11:28:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728741AbfGAKOG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 06:14:06 -0400
-Received: from mx22.baidu.com ([220.181.50.185]:41442 "EHLO baidu.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727707AbfGAKOG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Jul 2019 06:14:06 -0400
-X-Greylist: delayed 2801 seconds by postgrey-1.27 at vger.kernel.org; Mon, 01 Jul 2019 06:14:04 EDT
-Received: from BC-Mail-Ex09.internal.baidu.com (unknown [172.31.40.19])
-        by Forcepoint Email with ESMTPS id 87DDB8F0A2B90;
-        Mon,  1 Jul 2019 17:27:19 +0800 (CST)
-Received: from BC-Bak-Ex15.internal.baidu.com (172.31.51.48) by
- BC-Mail-Ex09.internal.baidu.com (172.31.40.19) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1531.3; Mon, 1 Jul 2019 17:27:20 +0800
-Received: from BC-Bak-Ex13.internal.baidu.com (172.31.51.46) by
- BC-Bak-Ex15.internal.baidu.com (172.31.51.48) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1591.10; Mon, 1 Jul 2019 17:27:20 +0800
-Received: from BC-Bak-Ex13.internal.baidu.com ([172.31.51.46]) by
- BC-Bak-Ex13.internal.baidu.com ([172.31.51.46]) with mapi id 15.01.1591.016;
- Mon, 1 Jul 2019 17:27:20 +0800
-From:   "Li,Rongqing" <lirongqing@baidu.com>
-To:     Florian Westphal <fw@strlen.de>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: =?gb2312?B?tPC4tDogW1BBVENIXSB4ZnJtOiB1c2UgbGlzdF9mb3JfZWFjaF9lbnRyeV9z?=
- =?gb2312?B?YWZlIGluIHhmcm1fcG9saWN5X2ZsdXNo?=
-Thread-Topic: [PATCH] xfrm: use list_for_each_entry_safe in xfrm_policy_flush
-Thread-Index: AQHVL+vpIpFTefhRnEG/M1pEJJk8AKa1fZVQ
-Date:   Mon, 1 Jul 2019 09:27:20 +0000
-Message-ID: <b0b31ecbc1c54f3580df8a519c85eeab@baidu.com>
-References: <1561969747-8629-1-git-send-email-lirongqing@baidu.com>
- <20190701090345.fkd7lrecicrewpnt@breakpoint.cc>
-In-Reply-To: <20190701090345.fkd7lrecicrewpnt@breakpoint.cc>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.22.202.10]
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        id S1728321AbfGAJ2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 05:28:01 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:36224 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727994AbfGAJ2B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 05:28:01 -0400
+Received: by mail-wr1-f67.google.com with SMTP id n4so12987607wrs.3
+        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 02:27:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=TVa7BZVGfSVHKC1+sJSJ5WBILZeAdecNHAPrES+3RKs=;
+        b=iDY+VZ1wRI1OPEac3QL2xiuSiPkoFTgMTLjTZEcXN8q2Xzo/6K4vSW7fr7OcVPahCj
+         nXhow62k/jxQv78mjB3svVK4wzDC0PmlNFiGG6qgY8/5tY0feXEm6r7iVRxVR5k2u/TG
+         vE/tRUogaurnERVEzqlxjlkBxxzz28UIctLpVU7/3CrVHPU++ZlU4rL/w2grLAr3lZOm
+         fBLsWiRbMwVqhF6euib4QAgCHp1NGXJ6hwAVGMv5d7dnTKjDA81ygzlNJ6hT8GSIRD3m
+         Lq7hQeUFZ51qtOxxhjACltKfrvvxV73IEU05taCQC51w6POgrsFretSW5QM/M7DMI28C
+         vzuA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=TVa7BZVGfSVHKC1+sJSJ5WBILZeAdecNHAPrES+3RKs=;
+        b=TIDMVA0On23hDhOmzgIq0y/V9/noDXSUXMfr3Ip1+pnd0bjsEMd27qR0/ykel8Gyol
+         Qlk6XIVon9KD17CD2MsfAjViXhbtth/buz1KR44B1L9OD1w+JjeFa3C+qffdY//fRKre
+         gguKBo4GcLH/e4YIjxqtVeLypuJkN7zOJr9K5bFv+fRdJeXJ7dr/Hd9sCJSBmxvjckpA
+         A1qH636aDpQHZ5LhFcRU+GZjoaA+XGiOn6/j741XBg+5jXLwmTKTxG0fqhByXrDOTXji
+         eROuB+hsiYUr1oW32C1uUso+rPu3lbv6q5ylbgauFpiSg/nKyXdawwpOO6liVsGHaAW+
+         I92w==
+X-Gm-Message-State: APjAAAXhA7la7fs+W8f106a6TgP6e04ryZCYF0Z8Q34h2j2r1FAOs3cp
+        seNG9+6PCGEpNqvS6pOPu1FaqQ==
+X-Google-Smtp-Source: APXvYqxneWhpoTvhpq7f1pi7fSRdiJa0zWAskBXvTDhAqoU5KKOZI4ypp/mWX1zt5551OuU+Q8kmMg==
+X-Received: by 2002:adf:f483:: with SMTP id l3mr19511140wro.256.1561973279389;
+        Mon, 01 Jul 2019 02:27:59 -0700 (PDT)
+Received: from localhost (ip-213-220-235-213.net.upcbroadband.cz. [213.220.235.213])
+        by smtp.gmail.com with ESMTPSA id t1sm14508384wra.74.2019.07.01.02.27.58
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 01 Jul 2019 02:27:58 -0700 (PDT)
+Date:   Mon, 1 Jul 2019 11:27:58 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Vincent Bernat <vincent@bernat.ch>
+Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v1] bonding: add an option to specify a delay
+ between peer notifications
+Message-ID: <20190701092758.GA2250@nanopsycho>
+References: <20190630185931.18746-1-vincent@bernat.ch>
 MIME-Version: 1.0
-X-Baidu-BdMsfe-DateCheck: 1_BC-Mail-Ex09_2019-07-01 17:27:21:014
-X-Baidu-BdMsfe-VirusCheck: BC-Mail-Ex09_GRAY_Inside_WithoutAtta_2019-07-01
- 17:27:21:045
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190630185931.18746-1-vincent@bernat.ch>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS3Tyrz+1K28/i0tLS0tDQo+ILeivP7IyzogRmxvcmlhbiBXZXN0cGhhbCBbbWFp
-bHRvOmZ3QHN0cmxlbi5kZV0NCj4gt6LLzcqxvOQ6IDIwMTnE6jfUwjHI1SAxNzowNA0KPiDK1bz+
-yMs6IExpLFJvbmdxaW5nIDxsaXJvbmdxaW5nQGJhaWR1LmNvbT4NCj4gs63LzTogbmV0ZGV2QHZn
-ZXIua2VybmVsLm9yZw0KPiDW98ziOiBSZTogW1BBVENIXSB4ZnJtOiB1c2UgbGlzdF9mb3JfZWFj
-aF9lbnRyeV9zYWZlIGluIHhmcm1fcG9saWN5X2ZsdXNoDQo+IA0KPiBMaSBSb25nUWluZyA8bGly
-b25ncWluZ0BiYWlkdS5jb20+IHdyb3RlOg0KPiA+IFRoZSBpdGVyYXRlZCBwb2wgbWF5YmUgYmUg
-ZnJlZWQgc2luY2UgaXQgaXMgbm90IHByb3RlY3RlZCBieSBSQ1Ugb3INCj4gPiBzcGlubG9jayB3
-aGVuIHB1dCBpdCwgbGVhZCB0byBVQUYsIHNvIHVzZSBfc2FmZSBmdW5jdGlvbiB0byBpdGVyYXRl
-DQo+ID4gb3ZlciBpdCBhZ2FpbnN0IHJlbW92YWwNCj4gPg0KPiA+IFNpZ25lZC1vZmYtYnk6IExp
-IFJvbmdRaW5nIDxsaXJvbmdxaW5nQGJhaWR1LmNvbT4NCj4gPiAtLS0NCj4gPiAgbmV0L3hmcm0v
-eGZybV9wb2xpY3kuYyB8IDQgKystLQ0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRpb25z
-KCspLCAyIGRlbGV0aW9ucygtKQ0KPiA+DQo+ID4gZGlmZiAtLWdpdCBhL25ldC94ZnJtL3hmcm1f
-cG9saWN5LmMgYi9uZXQveGZybS94ZnJtX3BvbGljeS5jIGluZGV4DQo+ID4gMzIzNTU2MmY2NTg4
-Li44N2Q3NzBkYWIxZjUgMTAwNjQ0DQo+ID4gLS0tIGEvbmV0L3hmcm0veGZybV9wb2xpY3kuYw0K
-PiA+ICsrKyBiL25ldC94ZnJtL3hmcm1fcG9saWN5LmMNCj4gPiBAQCAtMTc3Miw3ICsxNzcyLDcg
-QEAgeGZybV9wb2xpY3lfZmx1c2hfc2VjY3R4X2NoZWNrKHN0cnVjdCBuZXQgKm5ldCwNCj4gPiB1
-OCB0eXBlLCBib29sIHRhc2tfdmFsaWQpICBpbnQgeGZybV9wb2xpY3lfZmx1c2goc3RydWN0IG5l
-dCAqbmV0LCB1OA0KPiA+IHR5cGUsIGJvb2wgdGFza192YWxpZCkgIHsNCj4gPiAgCWludCBkaXIs
-IGVyciA9IDAsIGNudCA9IDA7DQo+ID4gLQlzdHJ1Y3QgeGZybV9wb2xpY3kgKnBvbDsNCj4gPiAr
-CXN0cnVjdCB4ZnJtX3BvbGljeSAqcG9sLCAqdG1wOw0KPiA+DQo+ID4gIAlzcGluX2xvY2tfYmgo
-Jm5ldC0+eGZybS54ZnJtX3BvbGljeV9sb2NrKTsNCj4gPg0KPiA+IEBAIC0xNzgxLDcgKzE3ODEs
-NyBAQCBpbnQgeGZybV9wb2xpY3lfZmx1c2goc3RydWN0IG5ldCAqbmV0LCB1OCB0eXBlLCBib29s
-DQo+IHRhc2tfdmFsaWQpDQo+ID4gIAkJZ290byBvdXQ7DQo+ID4NCj4gPiAgYWdhaW46DQo+ID4g
-LQlsaXN0X2Zvcl9lYWNoX2VudHJ5KHBvbCwgJm5ldC0+eGZybS5wb2xpY3lfYWxsLCB3YWxrLmFs
-bCkgew0KPiA+ICsJbGlzdF9mb3JfZWFjaF9lbnRyeV9zYWZlKHBvbCwgdG1wLCAmbmV0LT54ZnJt
-LnBvbGljeV9hbGwsIHdhbGsuYWxsKQ0KPiA+ICt7DQo+ID4gIAkJZGlyID0geGZybV9wb2xpY3lf
-aWQyZGlyKHBvbC0+aW5kZXgpOw0KPiA+ICAJCWlmIChwb2wtPndhbGsuZGVhZCB8fA0KPiA+ICAJ
-CSAgICBkaXIgPj0gWEZSTV9QT0xJQ1lfTUFYIHx8DQo+IA0KPiBUaGlzIGZ1bmN0aW9uIGRyb3Bz
-IHRoZSBsb2NrLCBidXQgYWZ0ZXIgcmUtYWNxdWlyZSBqdW1wcyB0byB0aGUgJ2FnYWluJw0KPiBs
-YWJlbCwgc28gSSBkbyBub3Qgc2VlIHRoZSBVQUYgYXMgdGhlIGVudGlyZSBsb29wIGdldHMgcmVz
-dGFydGVkLg0KDQpZb3UgYXJlIHJpZ2h0LCBzb3JyeSBmb3IgdGhlIG5vaXNlDQoNCi1MaQ0K
+Sun, Jun 30, 2019 at 08:59:31PM CEST, vincent@bernat.ch wrote:
+
+[...]
+
+
+>+module_param(peer_notif_delay, int, 0);
+>+MODULE_PARM_DESC(peer_notif_delay, "Delay between each peer notification on "
+>+				   "failover event, in milliseconds");
+
+No module options please. Use netlink. See bond_changelink() function.
+
+[...]
