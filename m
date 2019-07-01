@@ -2,241 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 29D715C0A6
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 17:51:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F03B15C083
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 17:45:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729973AbfGAPvj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 11:51:39 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:41749 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729630AbfGAPvi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 11:51:38 -0400
-Received: from [5.158.153.52] (helo=mitra.tec.linutronix.de)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA1:256)
-        (Exim 4.80)
-        (envelope-from <b.spranger@linutronix.de>)
-        id 1hhyad-0002lb-Tx; Mon, 01 Jul 2019 17:51:36 +0200
-From:   Benedikt Spranger <b.spranger@linutronix.de>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: [RFC PATCH v2 2/2] Documentation: net: dsa: b53: Describe b53 configuration
-Date:   Mon,  1 Jul 2019 17:42:09 +0200
-Message-Id: <20190701154209.27656-3-b.spranger@linutronix.de>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190701154209.27656-1-b.spranger@linutronix.de>
-References: <20190701154209.27656-1-b.spranger@linutronix.de>
+        id S1728465AbfGAPpA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 11:45:00 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:33738 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727279AbfGAPpA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 11:45:00 -0400
+Received: by mail-qt1-f196.google.com with SMTP id h24so12104992qto.0;
+        Mon, 01 Jul 2019 08:44:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FOE44j1xWpRZ28qyZ1p6w3LG2DITsR83YnSX3ZLYcF8=;
+        b=icjmOShcMwYRtNRtI8WpIgD+VQDOR+trS7r8z9FsG8UaC2RkU8iqXrzo0g4XuFasdV
+         FsrlRwQ7fyWtDWyg9SyXjoXv+9dSELU29eqVf++n5DgkT2ZPuwYlx5OlIJy0yesoX8i1
+         p8rHCHgd9jI2rrgOuocl9W4ehVozSn8heJEeHVzTf3t9suC4syd1GiLY4csQRMVpzJnk
+         cFykaausbhFqnJ9/6Dgz+GWLvb8aSYHnN6daK/rm7+RPy8uVxOwdUVudh7nDmrbtT0q/
+         ahaMpzkebQ/ASD+jbqxt9jGJsTh/NbS/N1xNGaq/qNvPS2XmnDffdZcJ2YUVus7SgKF0
+         gYoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FOE44j1xWpRZ28qyZ1p6w3LG2DITsR83YnSX3ZLYcF8=;
+        b=qpxyUisvmZbPadui7Y6VhWYI/WKJFnBk6A9spsBg3XktUT2UvCCVaNRGzoDzgI02xs
+         RgAHIILEgDlL64elxgY3ECE2EMz66wMAYn+BYltvvr+EYJqYv/pWlp/QnFmxbEARvAwh
+         fMZB3SDEq2wgP4CDktc6JJnxDApn0ZoG9At3wq0PZf91jIdYMgE5JcR1YyO037QPsIeM
+         nVW+sbPdw8TU5bEsSwuwpUogYFjMvb51xUG7PiVowNUojfvPBQBT8+YrzbBzdELMsG7B
+         XvBktQiPmzKJlHrbjLD6Y75nOeH7UTsoP4VExEhvX225qKxa2X00CPmBmQUIFVCNZcai
+         bUFw==
+X-Gm-Message-State: APjAAAWTqAD/WBMLaUqTetodPypRFfGiDTPaW9/Z+6wIR+gbcT0LkUka
+        Cfg0GAHUx/buktIUWmjLTczULCJaJWk/rHHTLRw=
+X-Google-Smtp-Source: APXvYqzNe5IEnVInZYd15vZ3Af3znDb/qIQKL21Y0sax7w8t5o12AQTTFATVb2nhbKIkmKqLf/rBgnobR3oiMZBLlRk=
+X-Received: by 2002:ac8:290c:: with SMTP id y12mr20573471qty.141.1561995899130;
+ Mon, 01 Jul 2019 08:44:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20190628231049.22149-1-sdf@google.com> <20190628231049.22149-2-sdf@google.com>
+ <8e469767-a108-ba42-f8c8-6fd505393699@fb.com>
+In-Reply-To: <8e469767-a108-ba42-f8c8-6fd505393699@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 1 Jul 2019 08:44:48 -0700
+Message-ID: <CAEf4BzYUv3v2qV7p6ibEfnR2rs0Hy3D_K_uxCMGbVu-pqkaWmg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/2] selftests/bpf: add verifier tests for wide stores
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Document the different needs of documentation for the b53 driver.
+On Sat, Jun 29, 2019 at 11:02 PM Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 6/28/19 4:10 PM, Stanislav Fomichev wrote:
+> > Make sure that wide stores are allowed at proper (aligned) addresses.
+> > Note that user_ip6 is naturally aligned on 8-byte boundary, so
+> > correct addresses are user_ip6[0] and user_ip6[2]. msg_src_ip6 is,
+> > however, aligned on a 4-byte bondary, so only msg_src_ip6[1]
+> > can be wide-stored.
+> >
+> > Cc: Andrii Nakryiko <andriin@fb.com>
+> > Cc: Yonghong Song <yhs@fb.com>
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > ---
+> >   tools/testing/selftests/bpf/test_verifier.c   | 17 ++++++--
+> >   .../selftests/bpf/verifier/wide_store.c       | 40 +++++++++++++++++++
+> >   2 files changed, 54 insertions(+), 3 deletions(-)
+> >   create mode 100644 tools/testing/selftests/bpf/verifier/wide_store.c
+> >
+> > diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
+> > index c5514daf8865..b0773291012a 100644
+> > --- a/tools/testing/selftests/bpf/test_verifier.c
+> > +++ b/tools/testing/selftests/bpf/test_verifier.c
+> > @@ -105,6 +105,7 @@ struct bpf_test {
+> >                       __u64 data64[TEST_DATA_LEN / 8];
+> >               };
+> >       } retvals[MAX_TEST_RUNS];
+> > +     enum bpf_attach_type expected_attach_type;
+> >   };
+> >
+> >   /* Note we want this to be 64 bit aligned so that the end of our array is
+> > @@ -850,6 +851,7 @@ static void do_test_single(struct bpf_test *test, bool unpriv,
+> >       int fd_prog, expected_ret, alignment_prevented_execution;
+> >       int prog_len, prog_type = test->prog_type;
+> >       struct bpf_insn *prog = test->insns;
+> > +     struct bpf_load_program_attr attr;
+> >       int run_errs, run_successes;
+> >       int map_fds[MAX_NR_MAPS];
+> >       const char *expected_err;
+> > @@ -881,8 +883,17 @@ static void do_test_single(struct bpf_test *test, bool unpriv,
+> >               pflags |= BPF_F_STRICT_ALIGNMENT;
+> >       if (test->flags & F_NEEDS_EFFICIENT_UNALIGNED_ACCESS)
+> >               pflags |= BPF_F_ANY_ALIGNMENT;
+> > -     fd_prog = bpf_verify_program(prog_type, prog, prog_len, pflags,
+> > -                                  "GPL", 0, bpf_vlog, sizeof(bpf_vlog), 4);
+> > +
+> > +     memset(&attr, 0, sizeof(attr));
+> > +     attr.prog_type = prog_type;
+> > +     attr.expected_attach_type = test->expected_attach_type;
+> > +     attr.insns = prog;
+> > +     attr.insns_cnt = prog_len;
+> > +     attr.license = "GPL";
+> > +     attr.log_level = 4;
+> > +     attr.prog_flags = pflags;
+> > +
+> > +     fd_prog = bpf_load_program_xattr(&attr, bpf_vlog, sizeof(bpf_vlog));
+> >       if (fd_prog < 0 && !bpf_probe_prog_type(prog_type, 0)) {
+> >               printf("SKIP (unsupported program type %d)\n", prog_type);
+> >               skips++;
+> > @@ -912,7 +923,7 @@ static void do_test_single(struct bpf_test *test, bool unpriv,
+> >                       printf("FAIL\nUnexpected success to load!\n");
+> >                       goto fail_log;
+> >               }
+> > -             if (!strstr(bpf_vlog, expected_err)) {
+> > +             if (!expected_err || !strstr(bpf_vlog, expected_err)) {
+> >                       printf("FAIL\nUnexpected error message!\n\tEXP: %s\n\tRES: %s\n",
+> >                             expected_err, bpf_vlog);
+> >                       goto fail_log;
+> > diff --git a/tools/testing/selftests/bpf/verifier/wide_store.c b/tools/testing/selftests/bpf/verifier/wide_store.c
+> > new file mode 100644
+> > index 000000000000..c6385f45b114
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/bpf/verifier/wide_store.c
+> > @@ -0,0 +1,40 @@
+> > +#define BPF_SOCK_ADDR(field, off, res, err) \
+> > +{ \
+> > +     "wide store to bpf_sock_addr." #field "[" #off "]", \
+> > +     .insns = { \
+> > +     BPF_MOV64_IMM(BPF_REG_0, 1), \
+> > +     BPF_STX_MEM(BPF_DW, BPF_REG_1, BPF_REG_0, \
+> > +                 offsetof(struct bpf_sock_addr, field[off])), \
+> > +     BPF_EXIT_INSN(), \
+> > +     }, \
+> > +     .result = res, \
+> > +     .prog_type = BPF_PROG_TYPE_CGROUP_SOCK_ADDR, \
+> > +     .expected_attach_type = BPF_CGROUP_UDP6_SENDMSG, \
+> > +     .errstr = err, \
+> > +}
+> > +
+> > +/* user_ip6[0] is u64 aligned */
+> > +BPF_SOCK_ADDR(user_ip6, 0, ACCEPT,
+> > +           NULL),
+> > +BPF_SOCK_ADDR(user_ip6, 1, REJECT,
+> > +           "invalid bpf_context access off=12 size=8"),
+> > +BPF_SOCK_ADDR(user_ip6, 2, ACCEPT,
+> > +           NULL),
+> > +BPF_SOCK_ADDR(user_ip6, 3, REJECT,
+> > +           "invalid bpf_context access off=20 size=8"),
+> > +BPF_SOCK_ADDR(user_ip6, 4, REJECT,
+> > +           "invalid bpf_context access off=24 size=8"),
+>
+> With offset 4, we have
+> #968/p wide store to bpf_sock_addr.user_ip6[4] OK
+>
+> This test case can be removed. user code typically
+> won't write bpf_sock_addr.user_ip6[4], and compiler
+> typically will give a warning since it is out of
+> array bound. Any particular reason you want to
+> include this one?
 
-Signed-off-by: Benedikt Spranger <b.spranger@linutronix.de>
----
- Documentation/networking/dsa/b53.rst   | 174 +++++++++++++++++++++++++
- Documentation/networking/dsa/index.rst |   1 +
- 2 files changed, 175 insertions(+)
- create mode 100644 Documentation/networking/dsa/b53.rst
+I agree, user_ip6[4] is essentially 8-byte write to user_port field.
 
-diff --git a/Documentation/networking/dsa/b53.rst b/Documentation/networking/dsa/b53.rst
-new file mode 100644
-index 000000000000..23f1d79a6258
---- /dev/null
-+++ b/Documentation/networking/dsa/b53.rst
-@@ -0,0 +1,174 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+==========================================
-+Broadcom RoboSwitch Ethernet switch driver
-+==========================================
-+
-+The Broadcom RoboSwitch Ethernet switch family is used in quite a range of
-+xDSL router, cable modems and other multimedia devices.
-+
-+The actual implementation supports the devices BCM5325E, BCM5365, BCM539x,
-+BCM53115 and BCM53125 as well as BCM63XX.
-+
-+Implementation details
-+======================
-+
-+The driver is located in ``drivers/net/dsa/b53/`` and is implemented as a
-+DSA driver; see ``Documentation/networking/dsa/dsa.rst`` for details on the
-+subsystem and what it provides.
-+
-+The switch is, if possible, configured to enable a Broadcom specific 4-bytes
-+switch tag which gets inserted by the switch for every packet forwarded to the
-+CPU interface, conversely, the CPU network interface should insert a similar
-+tag for packets entering the CPU port. The tag format is described in
-+``net/dsa/tag_brcm.c``.
-+
-+The configuration of the device depends on whether or not tagging is
-+supported.
-+
-+The interface names and example network configuration are used according the
-+configuration described in the :ref:`dsa-config-showcases`.
-+
-+Configuration with tagging support
-+----------------------------------
-+
-+The tagging based configuration is desired. It is not specific to the b53
-+DSA driver and will work like all DSA drivers which supports tagging.
-+
-+See :ref:`dsa-tagged-configuration`.
-+
-+Configuration without tagging support
-+-------------------------------------
-+
-+Older models (5325, 5365) support a different tag format that is not supported
-+yet. 539x and 531x5 require managed mode and some special handling, which is
-+also not yet supported. The tagging support is disabled in these cases and the
-+switch need a different configuration.
-+
-+The configuration slightly differ from the :ref:`dsa-vlan-configuration`.
-+
-+single port
-+~~~~~~~~~~~
-+The configuration can only be set up via VLAN tagging and bridge setup.
-+By default packages are tagged with vid 1:
-+
-+.. code-block:: sh
-+
-+  # tag traffic on CPU port
-+  ip link add link eth0 name eth0.1 type vlan id 1
-+  ip link add link eth0 name eth0.2 type vlan id 2
-+  ip link add link eth0 name eth0.3 type vlan id 3
-+
-+  # The master interface needs to be brought up before the slave ports.
-+  ip link set eth0 up
-+  ip link set eth0.1 up
-+  ip link set eth0.2 up
-+  ip link set eth0.3 up
-+
-+  # bring up the slave interfaces
-+  ip link set wan up
-+  ip link set lan1 up
-+  ip link set lan2 up
-+
-+  # create bridge
-+  ip link add name br0 type bridge
-+
-+  # activate VLAN filtering
-+  ip link set dev br0 type bridge vlan_filtering 1
-+
-+  # add ports to bridges
-+  ip link set dev wan master br0
-+  ip link set dev lan1 master br0
-+  ip link set dev lan2 master br0
-+
-+  # tag traffic on ports
-+  bridge vlan add dev lan1 vid 2 pvid untagged
-+  bridge vlan del dev lan1 vid 1
-+  bridge vlan add dev lan2 vid 3 pvid untagged
-+  bridge vlan del dev lan2 vid 1
-+
-+  # configure the VLANs
-+  ip addr add 192.0.2.1/30 dev eth0.1
-+  ip addr add 192.0.2.5/30 dev eth0.2
-+  ip addr add 192.0.2.9/30 dev eth0.3
-+
-+  # bring up the bridge devices
-+  ip link set br0 up
-+
-+
-+bridge
-+~~~~~~
-+
-+.. code-block:: sh
-+
-+  # tag traffic on CPU port
-+  ip link add link eth0 name eth0.1 type vlan id 1
-+
-+  # The master interface needs to be brought up before the slave ports.
-+  ip link set eth0 up
-+  ip link set eth0.1 up
-+
-+  # bring up the slave interfaces
-+  ip link set wan up
-+  ip link set lan1 up
-+  ip link set lan2 up
-+
-+  # create bridge
-+  ip link add name br0 type bridge
-+
-+  # activate VLAN filtering
-+  ip link set dev br0 type bridge vlan_filtering 1
-+
-+  # add ports to bridge
-+  ip link set dev wan master br0
-+  ip link set dev lan1 master br0
-+  ip link set dev lan2 master br0
-+  ip link set eth0.1 master br0
-+
-+  # configure the bridge
-+  ip addr add 192.0.2.129/25 dev br0
-+
-+  # bring up the bridge
-+  ip link set dev br0 up
-+
-+gateway
-+~~~~~~~
-+
-+.. code-block:: sh
-+
-+  # tag traffic on CPU port
-+  ip link add link eth0 name eth0.1 type vlan id 1
-+  ip link add link eth0 name eth0.2 type vlan id 2
-+
-+  # The master interface needs to be brought up before the slave ports.
-+  ip link set eth0 up
-+  ip link set eth0.1 up
-+  ip link set eth0.2 up
-+
-+  # bring up the slave interfaces
-+  ip link set wan up
-+  ip link set lan1 up
-+  ip link set lan2 up
-+
-+  # create bridge
-+  ip link add name br0 type bridge
-+
-+  # activate VLAN filtering
-+  ip link set dev br0 type bridge vlan_filtering 1
-+
-+  # add ports to bridges
-+  ip link set dev wan master br0
-+  ip link set eth0.1 master br0
-+  ip link set dev lan1 master br0
-+  ip link set dev lan2 master br0
-+
-+  # tag traffic on ports
-+  bridge vlan add dev wan vid 2 pvid untagged
-+  bridge vlan del dev wan vid 1
-+
-+  # configure the VLANs
-+  ip addr add 192.0.2.1/30 dev eth0.2
-+  ip addr add 192.0.2.129/25 dev br0
-+
-+  # bring up the bridge devices
-+  ip link set br0 up
-diff --git a/Documentation/networking/dsa/index.rst b/Documentation/networking/dsa/index.rst
-index c279cfbf9083..ee631e2d646f 100644
---- a/Documentation/networking/dsa/index.rst
-+++ b/Documentation/networking/dsa/index.rst
-@@ -6,6 +6,7 @@ Distributed Switch Architecture
-    :maxdepth: 1
- 
-    dsa
-+   b53
-    bcm_sf2
-    lan9303
-    sja1105
--- 
-2.20.1
+>
+>
+> > +
+> > +/* msg_src_ip6[0] is _not_ u64 aligned */
+> > +BPF_SOCK_ADDR(msg_src_ip6, 0, REJECT,
+> > +           "invalid bpf_context access off=44 size=8"),
+> > +BPF_SOCK_ADDR(msg_src_ip6, 1, ACCEPT,
+> > +           NULL),
+> > +BPF_SOCK_ADDR(msg_src_ip6, 2, REJECT,
+> > +           "invalid bpf_context access off=52 size=8"),
+> > +BPF_SOCK_ADDR(msg_src_ip6, 3, REJECT,
+> > +           "invalid bpf_context access off=56 size=8"),
+> > +BPF_SOCK_ADDR(msg_src_ip6, 4, REJECT,
+> > +           "invalid bpf_context access off=60 size=8"),
+>
+> The same as above, offset=4 case can be removed?
 
+And this one is a write into a struct hole, which should be rejected
+even without wide-store check, right?
+
+>
+> > +
+> > +#undef BPF_SOCK_ADDR
+> >
