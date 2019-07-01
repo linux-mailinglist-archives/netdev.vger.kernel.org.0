@@ -2,79 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03FB35B706
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 10:42:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96DFC5B713
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 10:45:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727923AbfGAImR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 04:42:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57594 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726442AbfGAImQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Jul 2019 04:42:16 -0400
-Received: from localhost (unknown [193.47.165.251])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C22C320881;
-        Mon,  1 Jul 2019 08:42:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1561970536;
-        bh=EuJJCr8afeJG/qvEREgqqIK72eu1U4Vw/fvqo5aoqwk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=E5WHAS4jl8qvLVvuSQLeN9j3xI4FREcZ7YbHHJ4ub+MqHDljdFQeTnXp6BkkqeJDm
-         JLlwZBMnG0LvJXX4mL+hWt8a79RnvVaaR/bBLaOGYrYh3xlf2CY4FT1r9D/7UvVKO7
-         9kZtoVOEK7AoHdNot6llg+8Q/1ehODG8L+inmNsY=
-Date:   Mon, 1 Jul 2019 11:42:13 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jason Gunthorpe <jgg@mellanox.com>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Majd Dibbiny <majd@mellanox.com>,
-        Mark Zhang <markz@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH rdma-next v4 06/17] RDMA/counter: Add "auto"
- configuration mode support
-Message-ID: <20190701084213.GJ4727@mtr-leonro.mtl.com>
-References: <20190618172625.13432-1-leon@kernel.org>
- <20190618172625.13432-7-leon@kernel.org>
- <20190630004048.GB7173@mellanox.com>
+        id S1727836AbfGAIpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 04:45:44 -0400
+Received: from mail-pg1-f174.google.com ([209.85.215.174]:46660 "EHLO
+        mail-pg1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726442AbfGAIpo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 04:45:44 -0400
+Received: by mail-pg1-f174.google.com with SMTP id i8so2488824pgm.13
+        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 01:45:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OmIQTVezf0Ag+Dm9FyktGRzvtIo7c1dt2XsDapMoMcw=;
+        b=YdJlE2dxgn0NJdJl9LN1qBZMvryR2/ORmBXIGnEQxnNk0dHfkvBPDyO9wxv0KfC7lX
+         HnWPjQNovzCjwQnMJvST9F+fNVqk8mHDs8S7zZ8O0iSltGqOoDNvmC7qYmgXH+WjgUd5
+         GGbfdOQ+aIf5T6O5JJAVtRZ4bpFCDuH6pT+L9vDt2DjDFs/cjZYutt/+HT7rxymf52sE
+         qgM4ztv27RIWMCBCq1k/cTjRBV/kndSWm0qpf4e5F3dqk3mfRho3pH8IYaotWVKKOlxC
+         SXZfXQPmSG7TQg5LFAG5f+CHh6w+/cDhXvR3IP2M/fuObGEDwSn32J2gjAlaoiYiLW5J
+         RVQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OmIQTVezf0Ag+Dm9FyktGRzvtIo7c1dt2XsDapMoMcw=;
+        b=pSfax0apnwjFdvqcEGrAqY2L2Qn8kiZL38XmIjeUqFDp8PJlcucryYKk+y99j67aVe
+         pe4XgfoBn+M3bb5dGF5LKWnXLTLLIJeKbGTsEQ6TK21bJG+dMUTrleTU74uL9PHIKMV3
+         bpNtlTzo9MwsV9xZoTQm19OjKawAxjHtlpyqlCnDoOr/vYnwPlJpOTiYMuvFcLx3faqk
+         9jYdXnM+BfGqhZsa5GVYHAzhXrfCfqYg2rPQOZUVAA1OzyRLClXsO1bycr1AqYiKrLTL
+         eKG8/YmI3PuV0ZYFyOlbJV7M77td2k9HJ9iKUzHYJ1p86ps46OACLhD0+z6yWCrifKfv
+         GPAA==
+X-Gm-Message-State: APjAAAXIRCPfaoHwQ4DRve25Nm0TKR7F4bGT6zIUf5+UR0Th7emQwCVe
+        8bma0wgCxHjVF9QIsfb47uxjm/weBkI=
+X-Google-Smtp-Source: APXvYqzYWg2YQ+oFgn++G/o6jQZOTFiugZPpvkTMZXXXGjSKmafJHd9gQaLI4Tvg3lwUpRPDlDk14g==
+X-Received: by 2002:a65:6497:: with SMTP id e23mr3324324pgv.89.1561970743736;
+        Mon, 01 Jul 2019 01:45:43 -0700 (PDT)
+Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id b5sm23864788pga.72.2019.07.01.01.45.41
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 01 Jul 2019 01:45:43 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     David Miller <davem@davemloft.net>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH net] Documentation/networking: fix default_ttl typo in mpls-sysctl
+Date:   Mon,  1 Jul 2019 16:45:28 +0800
+Message-Id: <20190701084528.25872-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.19.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190630004048.GB7173@mellanox.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 30, 2019 at 12:40:54AM +0000, Jason Gunthorpe wrote:
-> On Tue, Jun 18, 2019 at 08:26:14PM +0300, Leon Romanovsky wrote:
->
-> > +static void __rdma_counter_dealloc(struct rdma_counter *counter)
-> > +{
-> > +	mutex_lock(&counter->lock);
-> > +	counter->device->ops.counter_dealloc(counter);
-> > +	mutex_unlock(&counter->lock);
-> > +}
->
-> Does this lock do anything? The kref is 0 at this point, so no other
-> thread can have a pointer to this lock.
+default_ttl should be integer instead of bool
 
-Yes, it is leftover from atomic_read implementation.
+Reported-by: Ying Xu <yinxu@redhat.com>
+Fixes: a59166e47086 ("mpls: allow TTL propagation from IP packets to be configured")
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+---
+ Documentation/networking/mpls-sysctl.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->
-> > +
-> > +static void rdma_counter_dealloc(struct rdma_counter *counter)
-> > +{
-> > +	if (!counter)
-> > +		return;
->
-> Counter is never NULL.
+diff --git a/Documentation/networking/mpls-sysctl.txt b/Documentation/networking/mpls-sysctl.txt
+index 2f24a1912a48..025cc9b96992 100644
+--- a/Documentation/networking/mpls-sysctl.txt
++++ b/Documentation/networking/mpls-sysctl.txt
+@@ -30,7 +30,7 @@ ip_ttl_propagate - BOOL
+ 	0 - disabled / RFC 3443 [Short] Pipe Model
+ 	1 - enabled / RFC 3443 Uniform Model (default)
+ 
+-default_ttl - BOOL
++default_ttl - INTEGER
+ 	Default TTL value to use for MPLS packets where it cannot be
+ 	propagated from an IP header, either because one isn't present
+ 	or ip_ttl_propagate has been disabled.
+-- 
+2.19.2
 
-Ohh, right, I'll clean some code near rdma_counter_dealloc/__rdma_counter_dealloc.
-
-Thanks
-
->
-> Jason
