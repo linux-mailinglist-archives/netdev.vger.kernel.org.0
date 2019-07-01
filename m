@@ -2,78 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 009655C106
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 18:21:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14CCD5C116
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 18:27:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728192AbfGAQVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 12:21:19 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:32778 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726646AbfGAQVS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 12:21:18 -0400
-Received: by mail-io1-f68.google.com with SMTP id u13so30202048iop.0
-        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 09:21:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=BvFmfxuF2tIHDGSIqt3Fo6EbJKEXQ251TGDX9ptSbJ8=;
-        b=BdkYMUeB1OiaKsiX//R2vDFxrFqvfZWKEMjAY0LjDRQFLQmiAlYRbYDDhquISMo1El
-         33BFcFNxlEcuvy6CRj4F2MureAijd6gzPBrHZvSlDw2g5gNOixF3sABmMa0eESCeGRRb
-         BGRe18FEBEYsz16Q1SWw5zMS1tholivmy4joaLFXZDtaR87+YOnCSXtPjYQHC8XQvCq/
-         /N4OFu/+TPal48oO3pXn2zYhIPc3l9kWS2zCUfPLB4dkxApF321GgeFupmwAxkBYRyKI
-         VzwZFT7M6nhC0L4aj7LlwmPGC2bZODM8EFmfWq9lLvufF4DAqrjmdi1WNX6VppPYvI6l
-         pwmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=BvFmfxuF2tIHDGSIqt3Fo6EbJKEXQ251TGDX9ptSbJ8=;
-        b=mlGc5u/vMVMaRFNx1Byrmo2dfgqxvUnVY+UgHt1xFOu62Xte5CruMy2/K/t9BD/npI
-         o/dwJdQ7NqMddABFOHlCZk1itrimgue0T/pO/LdXJGCGqrLZnPuhKwUJ9pQyO23fQvVW
-         rLu2rNPe9Y4bjNIIHgXvInOXi5tRDoNJt5trU5f2AlG54QZCmdTEApk46WAgyOLA3POo
-         s2XjgFM6XhHmof+/srAVDCLoDbYVPi1T6C8qpARd7dlrkGkD7BibBmYOx9AZCKW+fpBn
-         HzfS7Voicqk04SVTmhXXFreXKcHaI6/dAO9ZbnQjzcJPr8e88eB+TKPXVwr5Moe30I4j
-         2jwA==
-X-Gm-Message-State: APjAAAXyHV41HtISXrOdo2n4xN3k0ShmGqy5Nz1+eaWd+n/xiEcQCIhA
-        KxMlKEid+xragsREACTHhjQ=
-X-Google-Smtp-Source: APXvYqyRUgCxiXOb7RJ103Dp7qIwTyfTBNWQ3dzCC50YWEmMBo70vvJsyOZ0HquHgDCLZcM81SKL6A==
-X-Received: by 2002:a02:3f1d:: with SMTP id d29mr31154507jaa.116.1561998078056;
-        Mon, 01 Jul 2019 09:21:18 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:f191:fe61:9293:d1ca? ([2601:282:800:fd80:f191:fe61:9293:d1ca])
-        by smtp.googlemail.com with ESMTPSA id y18sm12386574iob.64.2019.07.01.09.21.16
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 01 Jul 2019 09:21:17 -0700 (PDT)
-Subject: Re: [PATCH net] Documentation/networking: fix default_ttl typo in
- mpls-sysctl
-To:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
-Cc:     David Miller <davem@davemloft.net>
-References: <20190701084528.25872-1-liuhangbin@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <b4655d5f-58cd-3019-e67d-9c0688f5a57b@gmail.com>
-Date:   Mon, 1 Jul 2019 10:21:15 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        id S1729074AbfGAQ1E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 12:27:04 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:54314 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727387AbfGAQ1D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 12:27:03 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
+        (Exim 4.76)
+        (envelope-from <colin.king@canonical.com>)
+        id 1hhz8r-000310-TS; Mon, 01 Jul 2019 16:26:58 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Haim Dreyfuss <haim.dreyfuss@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.or, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] iwlwifi: mvm: fix comparison of u32 variable with less than zero
+Date:   Mon,  1 Jul 2019 17:26:57 +0100
+Message-Id: <20190701162657.15174-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20190701084528.25872-1-liuhangbin@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/1/19 2:45 AM, Hangbin Liu wrote:
-> default_ttl should be integer instead of bool
-> 
-> Reported-by: Ying Xu <yinxu@redhat.com>
-> Fixes: a59166e47086 ("mpls: allow TTL propagation from IP packets to be configured")
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-> ---
->  Documentation/networking/mpls-sysctl.txt | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-Reviewed-by: David Ahern <dsahern@gmail.com>
+From: Colin Ian King <colin.king@canonical.com>
+
+The comparison of the u32 variable wgds_tbl_idx with less than zero is
+always going to be false because it is unsigned.  Fix this by making
+wgds_tbl_idx a plain signed int.
+
+Addresses-Coverity: ("Unsigned compared against 0")
+Fixes: 4fd445a2c855 ("iwlwifi: mvm: Add log information about SAR status")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/wireless/intel/iwlwifi/mvm/nvm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/nvm.c b/drivers/net/wireless/intel/iwlwifi/mvm/nvm.c
+index 719f793b3487..a9bb43a2f27b 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/nvm.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/nvm.c
+@@ -620,7 +620,7 @@ void iwl_mvm_rx_chub_update_mcc(struct iwl_mvm *mvm,
+ 	enum iwl_mcc_source src;
+ 	char mcc[3];
+ 	struct ieee80211_regdomain *regd;
+-	u32 wgds_tbl_idx;
++	int wgds_tbl_idx;
+ 
+ 	lockdep_assert_held(&mvm->mutex);
+ 
+-- 
+2.20.1
 
