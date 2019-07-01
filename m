@@ -2,114 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E0F35B773
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 11:06:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 422B35B8CA
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 12:14:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728284AbfGAJGv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 05:06:51 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:36746 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728184AbfGAJGv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 05:06:51 -0400
-Received: by mail-pl1-f195.google.com with SMTP id k8so7018030plt.3;
-        Mon, 01 Jul 2019 02:06:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=zyv4q9EGM1CdD7ChrPZEfCjXpHIw1XhG13en0sw9xH4=;
-        b=Uz/oKGOvMEp2zUHMHJe47Cf7+oRDlx63v9VTEeYkk26TUcFGUHfUo8cvvfAC5tvgNE
-         okgHM3PDCD3FQhPH36L0RqKknLvb5cXwM4yy2qG+9eL3uejvkr4NKBHAMgKaWUw1DhwM
-         MLubvQHaO8eZiOiKQ5CbSj1Hc05uynZarz0b46/IMa/d9RiBC5sZUzuEoO3FQZuEZZbv
-         aPTKEV62+suuJzPYsPfPyxGzYzNLR8VwsfzSVttyFWcThj4iFiPc6AGgieVbfOtnZkD2
-         JtC8v8nBZKf3bLZSyvV3+3GWznGX/5GwMnkoXeLU9qLIShwkPwSvIRrC3chynagwddI8
-         voQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=zyv4q9EGM1CdD7ChrPZEfCjXpHIw1XhG13en0sw9xH4=;
-        b=MJWpfKC8rR0p9xYFeCDM7DsplLA/NFvP3o88JdrIQssqnvBtdFxPuXdkG9fHs5wDUg
-         6yXpj4lmP9atQhK3YZ+S9FtGJoJpQcR1t9FssInxwirlzI/GfgCwxA2H068/7+TUQRuS
-         CyaV5o8Hha2sUcSGPkKips5l71JXVtV46Bya3yPfUh8ysta7e0bJ3iHPBuLo8b2VswbD
-         siTGUag2BIv5ikZQ8Z9e7mQUBl127oFf9cqV7pP8wSsUgiC6U4UFNvgds74oJCLscS/3
-         BeoUBrvAhI0bj0AfuKFauS5UHZe2EQtVhqKLHH56VP6K0OeJYR2wv5Aj2aw8Zs5bs2y9
-         93NA==
-X-Gm-Message-State: APjAAAUjnaGWwFLN13AT9vAyhawn9yEiDng8nwE7QqeZp3IycXTqfSVv
-        nKz2kV3fW8QnovJkW4dXJyl2QYIJfeUwtQ==
-X-Google-Smtp-Source: APXvYqzbUenPrZbCJbaJV+y1L8+ydJop9YV2WYADFI511rE0dHvaRDGxxSqZbdf5WeWlV04IcCwaQQ==
-X-Received: by 2002:a17:902:1004:: with SMTP id b4mr28286589pla.325.1561972010687;
-        Mon, 01 Jul 2019 02:06:50 -0700 (PDT)
-Received: from ubuntu ([104.192.108.10])
-        by smtp.gmail.com with ESMTPSA id q4sm10152534pjq.27.2019.07.01.02.06.48
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 01 Jul 2019 02:06:50 -0700 (PDT)
-Date:   Mon, 1 Jul 2019 02:06:44 -0700
-From:   Gen Zhang <blackgod016574@gmail.com>
-To:     Jiri Slaby <jslaby@suse.cz>
-Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ipv6_sockglue: Fix a missing-check bug in
- ip6_ra_control()
-Message-ID: <20190701090644.GA88924@ubuntu>
-References: <20190524031946.GA6463@zhanggen-UX430UQ>
- <1b5f82ae-31a7-db36-dc9d-efc46cda2af3@suse.cz>
+        id S1728741AbfGAKOG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 06:14:06 -0400
+Received: from mx22.baidu.com ([220.181.50.185]:41442 "EHLO baidu.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727707AbfGAKOG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Jul 2019 06:14:06 -0400
+X-Greylist: delayed 2801 seconds by postgrey-1.27 at vger.kernel.org; Mon, 01 Jul 2019 06:14:04 EDT
+Received: from BC-Mail-Ex09.internal.baidu.com (unknown [172.31.40.19])
+        by Forcepoint Email with ESMTPS id 87DDB8F0A2B90;
+        Mon,  1 Jul 2019 17:27:19 +0800 (CST)
+Received: from BC-Bak-Ex15.internal.baidu.com (172.31.51.48) by
+ BC-Mail-Ex09.internal.baidu.com (172.31.40.19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1531.3; Mon, 1 Jul 2019 17:27:20 +0800
+Received: from BC-Bak-Ex13.internal.baidu.com (172.31.51.46) by
+ BC-Bak-Ex15.internal.baidu.com (172.31.51.48) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1591.10; Mon, 1 Jul 2019 17:27:20 +0800
+Received: from BC-Bak-Ex13.internal.baidu.com ([172.31.51.46]) by
+ BC-Bak-Ex13.internal.baidu.com ([172.31.51.46]) with mapi id 15.01.1591.016;
+ Mon, 1 Jul 2019 17:27:20 +0800
+From:   "Li,Rongqing" <lirongqing@baidu.com>
+To:     Florian Westphal <fw@strlen.de>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: =?gb2312?B?tPC4tDogW1BBVENIXSB4ZnJtOiB1c2UgbGlzdF9mb3JfZWFjaF9lbnRyeV9z?=
+ =?gb2312?B?YWZlIGluIHhmcm1fcG9saWN5X2ZsdXNo?=
+Thread-Topic: [PATCH] xfrm: use list_for_each_entry_safe in xfrm_policy_flush
+Thread-Index: AQHVL+vpIpFTefhRnEG/M1pEJJk8AKa1fZVQ
+Date:   Mon, 1 Jul 2019 09:27:20 +0000
+Message-ID: <b0b31ecbc1c54f3580df8a519c85eeab@baidu.com>
+References: <1561969747-8629-1-git-send-email-lirongqing@baidu.com>
+ <20190701090345.fkd7lrecicrewpnt@breakpoint.cc>
+In-Reply-To: <20190701090345.fkd7lrecicrewpnt@breakpoint.cc>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.22.202.10]
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1b5f82ae-31a7-db36-dc9d-efc46cda2af3@suse.cz>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Baidu-BdMsfe-DateCheck: 1_BC-Mail-Ex09_2019-07-01 17:27:21:014
+X-Baidu-BdMsfe-VirusCheck: BC-Mail-Ex09_GRAY_Inside_WithoutAtta_2019-07-01
+ 17:27:21:045
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 01, 2019 at 10:57:36AM +0200, Jiri Slaby wrote:
-> On 24. 05. 19, 5:19, Gen Zhang wrote:
-> > In function ip6_ra_control(), the pointer new_ra is allocated a memory 
-> > space via kmalloc(). And it is used in the following codes. However, 
-> > when there is a memory allocation error, kmalloc() fails. Thus null 
-> > pointer dereference may happen. And it will cause the kernel to crash. 
-> > Therefore, we should check the return value and handle the error.
-> > 
-> > Signed-off-by: Gen Zhang <blackgod016574@gmail.com>
-> > 
-> > ---
-> > diff --git a/net/ipv6/ipv6_sockglue.c b/net/ipv6/ipv6_sockglue.c
-> > index 40f21fe..0a3d035 100644
-> > --- a/net/ipv6/ipv6_sockglue.c
-> > +++ b/net/ipv6/ipv6_sockglue.c
-> > @@ -68,6 +68,8 @@ int ip6_ra_control(struct sock *sk, int sel)
-> >  		return -ENOPROTOOPT;
-> >  
-> >  	new_ra = (sel >= 0) ? kmalloc(sizeof(*new_ra), GFP_KERNEL) : NULL;
-> > +	if (sel >= 0 && !new_ra)
-> > +		return -ENOMEM;
-> >  
-> >  	write_lock_bh(&ip6_ra_lock);
-> >  	for (rap = &ip6_ra_chain; (ra = *rap) != NULL; rap = &ra->next) {
-> > 
-> 
-> Was this really an omission? There is (!new_ra) handling below the for loop:
->         if (!new_ra) {
->                 write_unlock_bh(&ip6_ra_lock);
->                 return -ENOBUFS;
->         }
-> 
-> It used to handle both (sel >= 0) and (sel == 0) cases and it used to
-> return ENOBUFS in case of failure. For (sel >= 0) it also could at least
-> return EADDRINUSE when a collision was found -- even if memory was
-> exhausted.
-> 
-> In anyway, how could this lead to a pointer dereference? And why/how did
-> this get a CVE number?
-> 
-> thanks,
-> -- 
-> js
-> suse labs
-This CVE is already disputed by other maintainers and marked *DISPUTED*
-on the website.
-
-Thanks
-Gen
+DQoNCj4gLS0tLS3Tyrz+1K28/i0tLS0tDQo+ILeivP7IyzogRmxvcmlhbiBXZXN0cGhhbCBbbWFp
+bHRvOmZ3QHN0cmxlbi5kZV0NCj4gt6LLzcqxvOQ6IDIwMTnE6jfUwjHI1SAxNzowNA0KPiDK1bz+
+yMs6IExpLFJvbmdxaW5nIDxsaXJvbmdxaW5nQGJhaWR1LmNvbT4NCj4gs63LzTogbmV0ZGV2QHZn
+ZXIua2VybmVsLm9yZw0KPiDW98ziOiBSZTogW1BBVENIXSB4ZnJtOiB1c2UgbGlzdF9mb3JfZWFj
+aF9lbnRyeV9zYWZlIGluIHhmcm1fcG9saWN5X2ZsdXNoDQo+IA0KPiBMaSBSb25nUWluZyA8bGly
+b25ncWluZ0BiYWlkdS5jb20+IHdyb3RlOg0KPiA+IFRoZSBpdGVyYXRlZCBwb2wgbWF5YmUgYmUg
+ZnJlZWQgc2luY2UgaXQgaXMgbm90IHByb3RlY3RlZCBieSBSQ1Ugb3INCj4gPiBzcGlubG9jayB3
+aGVuIHB1dCBpdCwgbGVhZCB0byBVQUYsIHNvIHVzZSBfc2FmZSBmdW5jdGlvbiB0byBpdGVyYXRl
+DQo+ID4gb3ZlciBpdCBhZ2FpbnN0IHJlbW92YWwNCj4gPg0KPiA+IFNpZ25lZC1vZmYtYnk6IExp
+IFJvbmdRaW5nIDxsaXJvbmdxaW5nQGJhaWR1LmNvbT4NCj4gPiAtLS0NCj4gPiAgbmV0L3hmcm0v
+eGZybV9wb2xpY3kuYyB8IDQgKystLQ0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRpb25z
+KCspLCAyIGRlbGV0aW9ucygtKQ0KPiA+DQo+ID4gZGlmZiAtLWdpdCBhL25ldC94ZnJtL3hmcm1f
+cG9saWN5LmMgYi9uZXQveGZybS94ZnJtX3BvbGljeS5jIGluZGV4DQo+ID4gMzIzNTU2MmY2NTg4
+Li44N2Q3NzBkYWIxZjUgMTAwNjQ0DQo+ID4gLS0tIGEvbmV0L3hmcm0veGZybV9wb2xpY3kuYw0K
+PiA+ICsrKyBiL25ldC94ZnJtL3hmcm1fcG9saWN5LmMNCj4gPiBAQCAtMTc3Miw3ICsxNzcyLDcg
+QEAgeGZybV9wb2xpY3lfZmx1c2hfc2VjY3R4X2NoZWNrKHN0cnVjdCBuZXQgKm5ldCwNCj4gPiB1
+OCB0eXBlLCBib29sIHRhc2tfdmFsaWQpICBpbnQgeGZybV9wb2xpY3lfZmx1c2goc3RydWN0IG5l
+dCAqbmV0LCB1OA0KPiA+IHR5cGUsIGJvb2wgdGFza192YWxpZCkgIHsNCj4gPiAgCWludCBkaXIs
+IGVyciA9IDAsIGNudCA9IDA7DQo+ID4gLQlzdHJ1Y3QgeGZybV9wb2xpY3kgKnBvbDsNCj4gPiAr
+CXN0cnVjdCB4ZnJtX3BvbGljeSAqcG9sLCAqdG1wOw0KPiA+DQo+ID4gIAlzcGluX2xvY2tfYmgo
+Jm5ldC0+eGZybS54ZnJtX3BvbGljeV9sb2NrKTsNCj4gPg0KPiA+IEBAIC0xNzgxLDcgKzE3ODEs
+NyBAQCBpbnQgeGZybV9wb2xpY3lfZmx1c2goc3RydWN0IG5ldCAqbmV0LCB1OCB0eXBlLCBib29s
+DQo+IHRhc2tfdmFsaWQpDQo+ID4gIAkJZ290byBvdXQ7DQo+ID4NCj4gPiAgYWdhaW46DQo+ID4g
+LQlsaXN0X2Zvcl9lYWNoX2VudHJ5KHBvbCwgJm5ldC0+eGZybS5wb2xpY3lfYWxsLCB3YWxrLmFs
+bCkgew0KPiA+ICsJbGlzdF9mb3JfZWFjaF9lbnRyeV9zYWZlKHBvbCwgdG1wLCAmbmV0LT54ZnJt
+LnBvbGljeV9hbGwsIHdhbGsuYWxsKQ0KPiA+ICt7DQo+ID4gIAkJZGlyID0geGZybV9wb2xpY3lf
+aWQyZGlyKHBvbC0+aW5kZXgpOw0KPiA+ICAJCWlmIChwb2wtPndhbGsuZGVhZCB8fA0KPiA+ICAJ
+CSAgICBkaXIgPj0gWEZSTV9QT0xJQ1lfTUFYIHx8DQo+IA0KPiBUaGlzIGZ1bmN0aW9uIGRyb3Bz
+IHRoZSBsb2NrLCBidXQgYWZ0ZXIgcmUtYWNxdWlyZSBqdW1wcyB0byB0aGUgJ2FnYWluJw0KPiBs
+YWJlbCwgc28gSSBkbyBub3Qgc2VlIHRoZSBVQUYgYXMgdGhlIGVudGlyZSBsb29wIGdldHMgcmVz
+dGFydGVkLg0KDQpZb3UgYXJlIHJpZ2h0LCBzb3JyeSBmb3IgdGhlIG5vaXNlDQoNCi1MaQ0K
