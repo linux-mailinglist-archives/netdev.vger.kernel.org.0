@@ -2,97 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EECCC5C3B6
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 21:35:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BC265C3DE
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 21:53:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726734AbfGATfk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 15:35:40 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:53246 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726442AbfGATfj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 15:35:39 -0400
-Received: by mail-wm1-f67.google.com with SMTP id s3so659674wms.2
-        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 12:35:38 -0700 (PDT)
+        id S1726803AbfGATwb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 15:52:31 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:39188 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726605AbfGATwb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 15:52:31 -0400
+Received: by mail-pg1-f195.google.com with SMTP id 196so6508506pgc.6
+        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 12:52:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=vDeAxGzEs4/X5RIYjZzZpTnMqHHKkVms3oUY/s4YrB0=;
-        b=Di+Ye0iBUr8epx4FHEsUiBf7LvMDOPG/VBlOQ2cR+klmzbOeu8/DG+C3jn970Htn+N
-         rqRlil+mDcbwhCxPKaklc/IB0Rpbbm4aCpA10RgSFFVnIGEJZMvKOHuzYQOaQ22hapQ2
-         8PQ3Osj2yJllqB9dMxwNfMAbqQvGTeuRXl19mXdYWzizaQ0DCgA+hSRUCSEbD71pf+u6
-         /RVNJwNyOZ12h6E67oBcRcpqyQ/cYBmni63vULrwAAOyn2X+alm214W2vXbT1o11Hg7s
-         JM+aVAXDX1Udg6zrG4MynPU4sI3FjR6bLDW1q53SjaY3GWicfyGrk25Q6GYmACedbZc1
-         pfYg==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Y4Hod/x1MVNHO5bSEWzPdLsP26qI40u5ky94UaZs3Ok=;
+        b=RG1N9qyoJc8Gm1mGDNB+WCBLXDNI+CswCxWxzW1nPlRqvvtqh6yqfRwMyDL1wIbxUW
+         shUYjVAbOiNaLQqgic7RgUERn5Xd5mKsMxX+lsCCYm1/BDq5b1nJYhaZP37eyh0NxrCM
+         SHkjoSPJM/HW4DBdT9aEbAFBc5TbMpKPJzkoQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=vDeAxGzEs4/X5RIYjZzZpTnMqHHKkVms3oUY/s4YrB0=;
-        b=Vrojl/O6lzFYUL/WMliG1Z157ng7YD/CWzNN2UW+NIk+JlMG3zzqTVv3N8HOLdqv6/
-         eoKC/LmHoTQKRuwywxfD8PHWQXpo80Hwi8hc2u0h4UzyESxJiuMJ5/CjFiPukJqfkOZa
-         mLviMlP2hBr093hxPrDXUjjkarpQoeps/NaM8K1upAQ8jJ/KTSHFfe39+5UxCRJVKOzT
-         z4nqjJ1NXw+/y0HjEF2sY6r+H4cDn8si0rRDlEJp4lSJji3Tkh+ULXC2kZ5KaFJlbevW
-         igXKFNiRMl9ip6gOcP9RWBjeqBPkxAp/UzAnxhyjkl5B6KIRdL4POLUuOt8wfy/J96mf
-         6yhg==
-X-Gm-Message-State: APjAAAW4y2ibkTWqVGAUDN1dEoaOIm3F/yAeSevRMt+ot9sNHFS/6YCW
-        GHvScHNDY1Uk9pdoW9k75tBB2KKA
-X-Google-Smtp-Source: APXvYqz18dEy/DbEEPSFVSYja4TE6YVvMCUoCYDcYWbZAKOb5btvV3y8GIudfjcictwOvkJFqRO9WQ==
-X-Received: by 2002:a7b:cc97:: with SMTP id p23mr538029wma.120.1562009737196;
-        Mon, 01 Jul 2019 12:35:37 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8bd6:c00:8dac:9ad2:a34c:33bc? (p200300EA8BD60C008DAC9AD2A34C33BC.dip0.t-ipconnect.de. [2003:ea:8bd6:c00:8dac:9ad2:a34c:33bc])
-        by smtp.googlemail.com with ESMTPSA id x4sm13120319wrw.14.2019.07.01.12.35.36
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Y4Hod/x1MVNHO5bSEWzPdLsP26qI40u5ky94UaZs3Ok=;
+        b=cJH36XyhAh9htsEu9Q/E2ReRmMiWI5wpmFR+0RnWjLTHdoJIUBwIfbO9Y5tjksFz7F
+         py4HIUuND402GMtVhPjpBrD5h/GecUR0+fEVne3PxPE1im7T+ImL0YZznwCmF/lG0vN/
+         4vO3P4jM7kQGVSfmd9lnBBVXxvHiAGT31kony1tkwPUSvZ499KIPdiMz1twxY2wq8SGV
+         qGFG9UUHwJ53xo5Imb0APmKZFbkmsg/GWxfZDaBzQaAQNO5ahTi2uDcN5baj/nYZ8fmY
+         qrHkpG5o8ZjXI0JU/SQpoSVFvY8P469AOPbguRqzb6QhPzamwAXq6DyzOT1RMEP/Aerg
+         8dPQ==
+X-Gm-Message-State: APjAAAX68RB1N/Bf5OVZ1lD92KUUumt2SgSC4RglkgdnEcZQkJ+TMA6p
+        w85GsJglWtq9QKFOawbJf+q38w==
+X-Google-Smtp-Source: APXvYqwQMv6Ji9rV5QoYqMLRG2WCQNLYyCsww96zbtRJtLi1AdVa1f2X6XL5FCL9ah8axoRlfhKodA==
+X-Received: by 2002:a63:d0:: with SMTP id 199mr26577010pga.85.1562010750726;
+        Mon, 01 Jul 2019 12:52:30 -0700 (PDT)
+Received: from localhost ([2620:15c:202:1:75a:3f6e:21d:9374])
+        by smtp.gmail.com with ESMTPSA id v23sm11428812pff.185.2019.07.01.12.52.29
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 01 Jul 2019 12:35:36 -0700 (PDT)
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] r8169: fix ntohs/htons sparse warnings
-Message-ID: <1d1f9dba-1ade-7782-6cc0-3151a7086a4b@gmail.com>
-Date:   Mon, 1 Jul 2019 21:35:28 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        Mon, 01 Jul 2019 12:52:30 -0700 (PDT)
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>
+Subject: [PATCH 1/3] dt-bindings: net: Add bindings for Realtek PHYs
+Date:   Mon,  1 Jul 2019 12:52:23 -0700
+Message-Id: <20190701195225.120808-1-mka@chromium.org>
+X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sparse complains about casting to/from restricted __be16. Fix this.
+Add the 'realtek,enable-ssc' property to enable Spread Spectrum
+Clocking (SSC) on Realtek PHYs that support it.
 
-Fixes: 759d09574172 ("r8169: improve handling VLAN tag")
-Reported-by: kbuild test robot <lkp@intel.com>
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ .../devicetree/bindings/net/realtek.txt       | 21 +++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/realtek.txt
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index a73f25321..450c74dc1 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -1528,7 +1528,7 @@ static int rtl8169_set_features(struct net_device *dev,
- static inline u32 rtl8169_tx_vlan_tag(struct sk_buff *skb)
- {
- 	return (skb_vlan_tag_present(skb)) ?
--		TxVlanTag | htons(skb_vlan_tag_get(skb)) : 0x00;
-+		TxVlanTag | (__force u16)htons(skb_vlan_tag_get(skb)) : 0x00;
- }
- 
- static void rtl8169_rx_vlan_tag(struct RxDesc *desc, struct sk_buff *skb)
-@@ -1537,7 +1537,7 @@ static void rtl8169_rx_vlan_tag(struct RxDesc *desc, struct sk_buff *skb)
- 
- 	if (opts2 & RxVlanTag)
- 		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
--				       ntohs(opts2 & 0xffff));
-+				       ntohs((__force __be16)(opts2 & 0xffff)));
- }
- 
- static void rtl8169_get_regs(struct net_device *dev, struct ethtool_regs *regs,
+diff --git a/Documentation/devicetree/bindings/net/realtek.txt b/Documentation/devicetree/bindings/net/realtek.txt
+new file mode 100644
+index 000000000000..9fad97e7404f
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/realtek.txt
+@@ -0,0 +1,21 @@
++Realtek PHY properties.
++
++This document describes properties of Realtek PHYs.
++
++Optional properties:
++- realtek,enable-ssc	Enable Spread Spectrum Clocking (SSC) on this port.
++			SSC is only available on some Realtek PHYs (e.g.
++			RTL8211E).
++
++Example:
++
++mdio0 {
++	compatible = "snps,dwmac-mdio";
++	#address-cells = <1>;
++	#size-cells = <0>;
++
++	ethphy: ethernet-phy@1 {
++		reg = <1>;
++		realtek,enable-ssc;
++	};
++};
 -- 
-2.22.0
+2.22.0.410.gd8fdbe21b5-goog
 
