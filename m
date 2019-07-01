@@ -2,60 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CDE0D5BD3E
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 15:46:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A70D65BD49
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 15:51:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727536AbfGANqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 09:46:52 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:45652 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727397AbfGANqw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Jul 2019 09:46:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=XmzQ1OqKXvP8DVrfufoLKrTLMjLZvx796OsgHMSOyac=; b=YVAKHVL1DZYyQASo9ypLzmJdy1
-        DfYprLHSA9ryH2Sa9vP51XikNRe8bi2EjMjtiWtjveaq7ThcEBBW+yv64fkGlUk6lnKzz3Uog+gu+
-        DeQvrJI7S3AnBi8rc5oT71xahB/jO0PPCr0UAGieBErUQmxZMqYwOUH5LbuFKb5zuZQ8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hhwdr-0007Es-NB; Mon, 01 Jul 2019 15:46:47 +0200
-Date:   Mon, 1 Jul 2019 15:46:47 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Sergej Benilov <sergej.benilov@googlemail.com>
-Cc:     venza@brownhat.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] sis900: add ethtool tests (link, eeprom)
-Message-ID: <20190701134647.GC25795@lunn.ch>
-References: <20190701090333.25277-1-sergej.benilov@googlemail.com>
+        id S1727629AbfGANvM convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 1 Jul 2019 09:51:12 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:32874 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727536AbfGANvM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 09:51:12 -0400
+Received: by mail-lj1-f195.google.com with SMTP id h10so13296552ljg.0
+        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 06:51:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=RUkQ1p+oYMFsbNOv3BrbEawl9u1j7dcZAIuDmtA+aH8=;
+        b=kqqCcllS4xKa4ciF/c4XVFq8Kh1dkLmh3ldvdQ6hLLtusjMItrlqsKrSby2tIQTPi3
+         9JeJagOQnEcFaLqEqqoWRZKqTr2eZ0V5vEnQc/EIld8wZOUmtUSOfrcXfOjWGnFYnhrf
+         +syrSoo6hOMXrhfQrouAOR8AtIwJ283lzQRMFatiIorJjXle/DjKOHJ4rPIDdTaTvnco
+         vv3Kv/Qeq73fpaMWAgF3dIJZrIDPYXQBkz3sB1P1Mt6J8wKwn/nIid6tFu5xfcdoOuf1
+         9zOOtvrXYVeFgbnIk8/9SCdgvdyNPg9/Q14z7dRfitXYFKotL9zmYduNmF3tbOHBTbXi
+         aMiA==
+X-Gm-Message-State: APjAAAXPD3pfTmtIVQ201yt3X3CSJlCzCtfiZvlFsAmhmJlireVitVJR
+        wdHUDxWz1UP3AHz0BcNsbFebZNjeU/TNlqbzKLNCSz+Q
+X-Google-Smtp-Source: APXvYqyNrtNaOtgrooLs9XK7GL/b/N4p3AfJWiVtM+m37BjPtz1+RaWEmtUPgVUh+A3E22yAw1EO6itIR0yO7sSpP0E=
+X-Received: by 2002:a2e:9117:: with SMTP id m23mr861741ljg.134.1561989070102;
+ Mon, 01 Jul 2019 06:51:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190701090333.25277-1-sergej.benilov@googlemail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+References: <20190630192933.30743-1-mcroce@redhat.com> <e2173091-1c7a-fd74-95ea-41eedbab92d3@6wind.com>
+In-Reply-To: <e2173091-1c7a-fd74-95ea-41eedbab92d3@6wind.com>
+From:   Matteo Croce <mcroce@redhat.com>
+Date:   Mon, 1 Jul 2019 15:50:34 +0200
+Message-ID: <CAGnkfhz92SA7_kbARMzTqj3sTE3pgE=FEOXzFQxX6m=cemJUkg@mail.gmail.com>
+Subject: Re: [RFC iproute2] netns: add mounting state file for each netns
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Alexander Aring <aring@mojatatu.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 01, 2019 at 11:03:33AM +0200, Sergej Benilov wrote:
-> Add tests for ethtool: link test, EEPROM read test.
-> Correct a few typos, too.
+On Mon, Jul 1, 2019 at 2:38 PM Nicolas Dichtel
+<nicolas.dichtel@6wind.com> wrote:
+>
+> Le 30/06/2019 à 21:29, Matteo Croce a écrit :
+> > When ip creates a netns, there is a small time interval between the
+> > placeholder file creation in NETNS_RUN_DIR and the bind mount from /proc.
+> >
+> > Add a temporary file named .mounting-$netns which gets deleted after the
+> > bind mount, so watching for delete event matching the .mounting-* name
+> > will notify watchers only after the bind mount has been done.
+> Probably a naive question, but why creating those '.mounting-$netns' files in
+> the directory where netns are stored? Why not another directory, something like
+> /var/run/netns-monitor/?
+>
+>
+> Regards,
+> Nicolas
 
-Hi Sergej
+Yes, would work too. But ideally I'd wait for the mount inotify notifications.
 
-Please split this up into two patches. The first one should fixing the
-typos.
-
-Rather than implementing a test for the EEPROM, add support for
-ethtool --eeprom-dump. That is much more useful.
-
-The link test does not show you anything which you cannot get via ip
-link show. If there is no carrier, the link is down. So drop that.
-
-The patch also has white space issues. Spaces where there should be
-tabs. Please run ./scripts/checkpatch.pl.
-
-     Andrew
+-- 
+Matteo Croce
+per aspera ad upstream
