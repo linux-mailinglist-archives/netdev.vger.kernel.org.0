@@ -2,208 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F9295C1F4
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 19:26:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E11145C1FB
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 19:31:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729527AbfGAR0w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 13:26:52 -0400
-Received: from mga05.intel.com ([192.55.52.43]:29647 "EHLO mga05.intel.com"
+        id S1729686AbfGARb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 13:31:28 -0400
+Received: from linuxlounge.net ([88.198.164.195]:56452 "EHLO linuxlounge.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729374AbfGAR0w (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Jul 2019 13:26:52 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 01 Jul 2019 10:26:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.63,440,1557212400"; 
-   d="asc'?scan'208";a="157358237"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
-  by orsmga008.jf.intel.com with ESMTP; 01 Jul 2019 10:26:51 -0700
-Message-ID: <1203ebd7c815a4aba4cf6ff12c4d7a8548c51952.camel@intel.com>
-Subject: Re: [net-next 08/15] iavf: Fix up debug print macro
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Reply-To: jeffrey.t.kirsher@intel.com
-To:     Joe Perches <joe@perches.com>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        Andrew Bowers <andrewx.bowers@intel.com>
-Date:   Mon, 01 Jul 2019 10:27:17 -0700
-In-Reply-To: <9408eb59ecaa3e245fd71ec0211a34c3fb0e324b.camel@perches.com>
-References: <20190628224932.3389-1-jeffrey.t.kirsher@intel.com>
-         <20190628224932.3389-9-jeffrey.t.kirsher@intel.com>
-         <9408eb59ecaa3e245fd71ec0211a34c3fb0e324b.camel@perches.com>
-Organization: Intel
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-s/9T3Yq9eTbqzYHkqaXV"
-User-Agent: Evolution 3.32.3 (3.32.3-1.fc30) 
-MIME-Version: 1.0
+        id S1727849AbfGARb2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Jul 2019 13:31:28 -0400
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        bridge@lists.linux-foundation.org,
+        Roopa Prabhu <roopa@cumulusnetworks.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxlounge.net;
+        s=mail; t=1562002285;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references:openpgp:openpgp:autocrypt:autocrypt;
+        bh=aWKgJMb+TS/EjABfNXN1Y47POkRjcI6nGrOk4+90WBc=;
+        b=GzyNN9RBVda1v2iAyUMcf/nzNrKuBOTw/Is50W9TQgzB8iRZMdAhPHcRVddSsTdEFKbnWi
+        ZsPxY7zMYT3disSGqC3KP6V0Gp3NtmjCiARZwsxRSDbfR5xfTT6SlC8VJ8Bdu3mppYCo37
+        f77BlsKHKA2Iu+Wy0zqV+z3VxQaypjU=
+Cc:     netdev@vger.kernel.org
+References: <41ac3aa3-cbf7-1b7b-d847-1fb308334931@linuxlounge.net>
+ <E0170D52-C181-4F0F-B5F8-F1801C2A8F5A@cumulusnetworks.com>
+ <21ab085f-0f7f-88bc-b661-af74dd9eeea2@linuxlounge.net>
+ <cc232ed3-9e02-ebb4-4901-9d617013abb8@cumulusnetworks.com>
+From:   Martin Weinelt <martin@linuxlounge.net>
+Openpgp: preference=signencrypt
+Autocrypt: addr=martin@linuxlounge.net; prefer-encrypt=mutual; keydata=
+ mQENBEv1rfkBCADFlzzmynjVg8L5ok/ef2Jxz8D96PtEAP//3U612b4QbHXzHC6+C2qmFEL6
+ 5kG1U1a7PPsEaS/A6K9AUpDhT7y6tX1IxAkSkdIEmIgWC5Pu2df4+xyWXarJfqlBeJ82biot
+ /qETntfo01wm0AtqfJzDh/BkUpQw0dbWBSnAF6LytoNEggIGnUGmzvCidrEEsTCO6YlHfKIH
+ cpz7iwgVZi4Ajtsky8v8P8P7sX0se/ce1L+qX/qN7TnXpcdVSfZpMnArTPkrmlJT4inBLhKx
+ UeDMQmHe+BQvATa21fhcqi3BPIMwIalzLqVSIvRmKY6oYdCbKLM2TZ5HmyJepusl2Gi3ABEB
+ AAG0J01hcnRpbiBXZWluZWx0IDxtYXJ0aW5AbGludXhsb3VuZ2UubmV0PokBWAQTAQoAQgIb
+ IwYLCQgHAwIGFQgCCQoLBBYCAwECHgECF4ACGQEWIQTu0BYCvL0ZbDi8mh+9SqBSj2PxfgUC
+ W/RuFQUJEd/znAAKCRC9SqBSj2PxfpfDCACDx6BYz6cGMiweQ96lXi+ihx7RBaXsfPp2KxUo
+ eHilrDPqknq62XJibCyNCJiYGNb+RUS5WfDUAqxdl4HuNxQMC/sYlbP4b7p9Y1Q9QiTP4f6M
+ 8+Uvpicin+9H/lye5hS/Gp2KUiVI/gzqW68WqMhARUYw00lVSlJHy+xHEGVuQ0vmeopjU81R
+ 0si4+HhMX2HtILTxoUcvm67AFKidTHYMJKwNyMHiLLvSK6wwiy+MXaiqrMVTwSIOQhLgLVcJ
+ 33GNJ2Emkgkhs6xcaiN8xTjxDmiU7b5lXW4JiAsd1rbKINajcA7DVlZ/evGfpN9FczyZ4W6F
+ Rf21CxSwtqv2SQHBuQENBEv1rfkBCADJX6bbb5LsXjdxDeFgqo+XRUvW0bzuS3SYNo0fuktM
+ 5WYMCX7TzoF556QU8A7C7bDUkT4THBUzfaA8ZKIuneYW2WN1OI0zRMpmWVeZcUQpXncWWKCg
+ LBNYtk9CCukPE0OpDFnbR+GhGd1KF/YyemYnzwW2f1NOtHjwT3iuYnzzZNlWoZAR2CRSD02B
+ YU87Mr2CMXrgG/pdRiaD+yBUG9RxCUkIWJQ5dcvgrsg81vOTj6OCp/47Xk/457O0pUFtySKS
+ jZkZN6S7YXl/t+8C9g7o3N58y/X95VVEw/G3KegUR2SwcLdok4HaxgOy5YHiC+qtGNZmDiQn
+ NXN7WIN/oof7ABEBAAGJATwEGAEKACYCGwwWIQTu0BYCvL0ZbDi8mh+9SqBSj2PxfgUCW/Ru
+ GAUJEd/znwAKCRC9SqBSj2PxfpzMCACH55MVYTVykq+CWj1WMKHex9iFg7M9DkWQCF/Zl+0v
+ QmyRMEMZnFW8GdX/Qgd4QbZMUTOGevGxFPTe4p0PPKqKEDXXXxTTHQETE/Hl0jJvyu+MgTxG
+ E9/KrWmsmQC7ogTFCHf0vvVY3UjWChOqRE19Buk4eYpMbuU1dYefLNcD15o4hGDhohYn3SJr
+ q9eaoO6rpnNIrNodeG+1vZYG1B2jpEdU4v354ziGcibt5835IONuVdvuZMFQJ4Pn2yyC+qJe
+ ekXwZ5f4JEt0lWD9YUxB2cU+xM9sbDcQ2b6+ypVFzMyfU0Q6LzYugAqajZ10gWKmeyjisgyq
+ sv5UJTKaOB/t
+Subject: Re: Use-after-free in br_multicast_rcv
+Message-ID: <3fcf8b05-e1ad-ac97-10bf-bd2b6354424c@linuxlounge.net>
+Date:   Mon, 1 Jul 2019 19:31:23 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+In-Reply-To: <cc232ed3-9e02-ebb4-4901-9d617013abb8@cumulusnetworks.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Nik,
 
---=-s/9T3Yq9eTbqzYHkqaXV
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On 7/1/19 7:03 PM, Nikolay Aleksandrov wrote:
+> Hi Martin,
+> 
+> On 01/07/2019 19:53, Martin Weinelt wrote:
+>> Hi Nik,
+>>
+>> more info below.
+>>
+>> On 6/29/19 3:11 PM, nikolay@cumulusnetworks.com wrote:
+>>> On 29 June 2019 14:54:44 EEST, Martin Weinelt <martin@linuxlounge.net> wrote:
+>>>> Hello,
+>>>>
+>>>> we've recently been experiencing memory leaks on our Linux-based
+>>>> routers,
+>>>> at least as far back as v4.19.16.
+>>>>
+>>>> After rebuilding with KASAN it found a use-after-free in 
+>>>> br_multicast_rcv which I could reproduce on v5.2.0-rc6. 
+>>>>
+>>>> Please find the KASAN report below, I'm anot sure what else to provide
+>>>> so
+>>>> feel free to ask.
+>>>>
+>>>> Best,
+>>>>  Martin
+>>>>
+>>>>
+>>>
+>>> Hi Martin, 
+>>> I'll look into this, are there any specific steps to reproduce it? 
+>>>
+>>> Thanks, 
+>>>    Nik
+>>>>  
+>> Each server is a KVM Guest and has 18 bridges with the same master/slave
+>> relationships:
+>>
+>>   bridge -> batman-adv -> {l2 tunnel, virtio device}
+>>
+>> Linus Lüssing from the batman-adv asked me to apply this patch to help
+>> debugging.
+>>
+>> v5.2-rc6-170-g728254541ebc with this patch yielded the following KASAN 
+>> report, not sure if the additional information at the end is a result of
+>> the added patch though.
+>>
+>> Best,
+>>   Martin
+>>
+> 
+> I see a couple of issues that can cause out-of-bounds accesses in br_multicast.c
+> more specifically there're pskb_may_pull calls and accesses to stale skb pointers.
+> I've had these on my "to fix" list for some time now, will prepare, test the fixes and
+> send them for review. In a few minutes I'll send a test patch for you.
+> That being said, I thought you said you've been experiencing memory leaks, but below
+> reports are for out-of-bounds accesses, could you please clarify if you were
+> speaking about these or is there another issue as well ?
+> If you're experiencing memory leaks, are you sure they're related to the bridge ?
+> You could try kmemleak for those.
+> 
+> Thank you,
+>  Nik
+> 
 
-On Sat, 2019-06-29 at 13:42 -0700, Joe Perches wrote:
-> On Fri, 2019-06-28 at 15:49 -0700, Jeff Kirsher wrote:
-> > This aligns the iavf_debug() macro with the other Intel drivers.
-> >=20
-> > Add the bus number, bus_id field to i40e_bus_info so output shows
-> > each physical port(i.e func) in following format:
-> >   [[[[<domain>]:]<bus>]:][<slot>][.[<func>]]
-> > domains are numbered from 0 to ffff), bus (0-ff), slot (0-1f) and
-> > function (0-7).
-> >=20
-> > Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-> > Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-> > ---
-> >  drivers/net/ethernet/intel/iavf/iavf_osdep.h | 10 +++++++---
-> >  1 file changed, 7 insertions(+), 3 deletions(-)
-> >=20
-> > diff --git a/drivers/net/ethernet/intel/iavf/iavf_osdep.h
-> > b/drivers/net/ethernet/intel/iavf/iavf_osdep.h
-> > index d39684558597..a452ce90679a 100644
-> > --- a/drivers/net/ethernet/intel/iavf/iavf_osdep.h
-> > +++ b/drivers/net/ethernet/intel/iavf/iavf_osdep.h
-> > @@ -44,8 +44,12 @@ struct iavf_virt_mem {
-> >  #define iavf_allocate_virt_mem(h, m, s)
-> > iavf_allocate_virt_mem_d(h, m, s)
-> >  #define iavf_free_virt_mem(h, m) iavf_free_virt_mem_d(h, m)
-> > =20
-> > -#define iavf_debug(h, m, s, ...)  iavf_debug_d(h, m, s,
-> > ##__VA_ARGS__)
-> > -extern void iavf_debug_d(void *hw, u32 mask, char *fmt_str, ...)
-> > -	__printf(3, 4);
-> > +#define iavf_debug(h, m, s, ...)				\
-> > +do {							=09
-> > \
-> > +	if (((m) & (h)->debug_mask))				\
-> > +		pr_info("iavf %02x:%02x.%x " s,			\
-> > +			(h)->bus.bus_id, (h)->bus.device,	\
-> > +			(h)->bus.func, ##__VA_ARGS__);		\
-> > +} while (0)
->=20
-> Why not change the function to do this?
->=20
-> And if this is really wanted this particular way
-> the now unused function should be removed too.
->=20
-> But I suggest emitting at KERN_DEBUG and using
-> the more typical %pV vsprintf extension.
+we had been experiencing memory leaks on v4.19.37, thats why we started to turn on
+KASAN and kmemleak in the first place. This is when we found this use-after-free.
 
-I see what you are saying, I was only looking at the macro in the osdep
-to align with our other drivers and sync up with our internal driver
-code.  Let me review the iavf driver debug function to see if there are
-additional fix-ups/sync-ups needed.
+The memory leak exists, and is a separate issue. Apparently kmemleak does not work,
+I suspect the early log size is too small
 
->=20
-> ---
->=20
->  drivers/net/ethernet/intel/iavf/iavf_main.c  | 25 ++++++++++++++--
-> ---------
->  drivers/net/ethernet/intel/iavf/iavf_osdep.h |  9 ++++++---
->  2 files changed, 20 insertions(+), 14 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c
-> b/drivers/net/ethernet/intel/iavf/iavf_main.c
-> index 881561b36083..8504fd71d398 100644
-> --- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-> +++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-> @@ -143,25 +143,28 @@ enum iavf_status iavf_free_virt_mem_d(struct
-> iavf_hw *hw,
->  }
-> =20
->  /**
-> - * iavf_debug_d - OS dependent version of debug printing
-> + * _iavf_debug - OS dependent version of debug printing
->   * @hw:  pointer to the HW structure
->   * @mask: debug level mask
-> - * @fmt_str: printf-type format description
-> + * @fmt: printf-type format description
->   **/
-> -void iavf_debug_d(void *hw, u32 mask, char *fmt_str, ...)
-> +void _iavf_debug(const struct iavf_hw *hw, u32 mask, const char
-> *fmt, ...)
->  {
-> -	char buf[512];
-> -	va_list argptr;
-> +	struct va_format vaf;
-> +	va_list args;
-> =20
-> -	if (!(mask & ((struct iavf_hw *)hw)->debug_mask))
-> +	if (!(hw->debug_mask & mask))
->  		return;
-> =20
-> -	va_start(argptr, fmt_str);
-> -	vsnprintf(buf, sizeof(buf), fmt_str, argptr);
-> -	va_end(argptr);
-> +	va_start(args, fmt);
-> =20
-> -	/* the debug string is already formatted with a newline */
-> -	pr_info("%s", buf);
-> +	vaf.fmt =3D fmt;
-> +	vaf.va =3D &args;
-> +
-> +	pr_debug("iavf %02x:%02x.%x %pV",
-> +		 hw->bus.bus_id, hw->bus.device, hw->bus.func, &vaf);
-> +
-> +	va_end(args);
->  }
-> =20
->  /**
-> diff --git a/drivers/net/ethernet/intel/iavf/iavf_osdep.h
-> b/drivers/net/ethernet/intel/iavf/iavf_osdep.h
-> index d39684558597..0e6ac7d262c8 100644
-> --- a/drivers/net/ethernet/intel/iavf/iavf_osdep.h
-> +++ b/drivers/net/ethernet/intel/iavf/iavf_osdep.h
-> @@ -44,8 +44,11 @@ struct iavf_virt_mem {
->  #define iavf_allocate_virt_mem(h, m, s) iavf_allocate_virt_mem_d(h,
-> m, s)
->  #define iavf_free_virt_mem(h, m) iavf_free_virt_mem_d(h, m)
-> =20
-> -#define iavf_debug(h, m, s, ...)  iavf_debug_d(h, m, s,
-> ##__VA_ARGS__)
-> -extern void iavf_debug_d(void *hw, u32 mask, char *fmt_str, ...)
-> -	__printf(3, 4);
-> +struct iavf_hw;
-> +
-> +__printf(3, 4)
-> +void _iavf_debug(const struct iavf_hw *hw, u32 mask, const char
-> *fmt, ...);
-> +#define iavf_debug(hw, mask, fmt, ...)			=09
-> 	\
-> +	_iavf_debug(hw, mask, fmt, ##__VA_ARGS__)
-> =20
->  #endif /* _IAVF_OSDEP_H_ */
->=20
->=20
+root@gw02:~# echo scan > /sys/kernel/debug/kmemleak                                                                                                                                                                                 -bash: echo: write error: Device or resource busy
 
+CONFIG_HAVE_DEBUG_KMEMLEAK=y
+CONFIG_DEBUG_KMEMLEAK=y
+CONFIG_DEBUG_KMEMLEAK_EARLY_LOG_SIZE=400
+# CONFIG_DEBUG_KMEMLEAK_TEST is not set
+# CONFIG_DEBUG_KMEMLEAK_DEFAULT_OFF is not set
+CONFIG_DEBUG_KMEMLEAK_AUTO_SCAN=y
 
---=-s/9T3Yq9eTbqzYHkqaXV
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
+I'll increase the early log size with the next build to try and get more information
+on the memory leak, I'll open a separate thread for that then.
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiTyZWz+nnTrOJ1LZ5W/vlVpL7c4FAl0aQnUACgkQ5W/vlVpL
-7c5kKxAAg93E8Vy1gg22APPqvrB+lcpzn/hbDpvY3QK9PxDuWZ3pxFepzzj/1TSh
-yTFO/ULCQwT1JY9lvdomczh1uEyUOgZi1kfvmDAuBdFcqxEh5qtqrbVJe0Bq3rkV
-RAsn1SLmmxtUKhgL4YDeD09dhYOBkm+rp6N8yXrGr+QoEtJMiSCgteFIRVkhKWRr
-C4dni0ApmqG7M0/4CH0Ng6kKnj0PMYh8aR01/pn1+cMlEYUzZfupBN6iANE3winR
-/V3k/lp699/yF/AvXYEfOqLniFqNNE9ggps7YD9icOEUGGW77AR2C5yZ8R+Z1975
-0utR5n5NMEpRgUq59I7+0XNwejc/DthF57nwZ3nagPel14qS5UQ7H+PsEI00QLIw
-TO1OcS3Hovr0PvpaAqO1lwaJpZUBc82HfG+F3VQcNI313KWlBB+Zqwoj/NIE+rEy
-SD1Y8Gp9P6VokmQTr8fpRysV5Qhung1h/CMMAR5NpY3r0c0/4+/Y6OsLpA9S3ccT
-ngMMVKUNf1TcEfT0DIIiCd/1o3WigqD1UvPOdaYU0sFuJcid1sj+DmARo5lU9V81
-bdtgPhZvXuD1m+VPBOmpMMy4Z/smTbzZhZwYstd1f5K2jf42Ae7AvVVyzGumO+Ew
-CRMT4nHIVYYHM44SCr7mMmsJ15Tryk40Lj5oVnglNCBcYvUDsMs=
-=aFFD
------END PGP SIGNATURE-----
-
---=-s/9T3Yq9eTbqzYHkqaXV--
-
+Thanks,
+  Martin
