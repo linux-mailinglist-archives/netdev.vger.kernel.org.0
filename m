@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05B225C15E
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 18:45:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68CE05C162
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 18:45:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728798AbfGAQpD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 12:45:03 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:46019 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727030AbfGAQpD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 12:45:03 -0400
-Received: by mail-wr1-f65.google.com with SMTP id f9so14560111wre.12;
-        Mon, 01 Jul 2019 09:45:00 -0700 (PDT)
+        id S1729464AbfGAQpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 12:45:19 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:33385 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727030AbfGAQpS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 12:45:18 -0400
+Received: by mail-wm1-f66.google.com with SMTP id h19so455809wme.0;
+        Mon, 01 Jul 2019 09:45:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=7NELOaL2scXHWWm7oinAh+81YZ8Jd9noLrtdveepJvE=;
-        b=pC2AhWhTnS36/Vlc/LYWxqyyaGwuI1ZfHe4H07qtdtfZ3tKPZJ+P8B70DirDQLnNcq
-         JvywAxCG+Y9XLhNhXbw3NlJzbhTs0vsePrTzQPuDUeeqP4jk3zyKFHSU7iW7Wi+ARIeO
-         hSIQ5HXZjttu9H9troBtS5Cd1JmmK0fe9bEdz6OhVW7+QvOYSC9acjnHw68CixFbDn/C
-         0XdGDibntupcr3qmtfhPlcgpx/MtF0tUCosWcLcJIHxwodrkAYS4h1kOQ7aCT+CMfq+C
-         g9puWGGxsuZvFpobIFCNQI6xom5c4RJiZlwtqowxZrDjSBa39BJd6kzUjYJvR6vz1MSr
-         HIMA==
+        bh=8Wrak9T/dqG3Cj1so+ph+ncSMKddxwdFBJ2/cQ9fA/w=;
+        b=Ea4BqHthzHUPUeD7zqotXw+WJ/OTt8xMa//IS2ZjZ6YqPom1EHWnCr6JAB+w38gK8f
+         sKSlXOxc7ZE6+w1q3s2VVNjkG6Xn0oX5fCqxF4FGX4qfL/l94S7dia2bOcEEr9rU6Mcr
+         8k3ZwE/Jl2R7CV4sARe1N3zDeDwmNgu1EQTz7ZA73MdlrvLx0mdGZDPyIjyEY0BNGt8H
+         m7Nv2fSz4hpbSV1K5n+uQWCtc3YW7w2M9UdF2O1pdZIjQ+5XbAdOGubtIYlaTxK0ckkp
+         HUQkCjtbAEbBBJRzyl/tbIQ1HmVcxqmdUyJfKyVZxPB9hRaP0DjFaSzM3kBLpsERPUbS
+         89Ng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=7NELOaL2scXHWWm7oinAh+81YZ8Jd9noLrtdveepJvE=;
-        b=sbfAHR9j7vYOpIWUkCABMio6O2YxL4Jf+gx45bTc1UYyxsbkBBi4jcgUb3vtCKoUaD
-         piGiY/0KIi4sNh0MqqfQifIk+ItjidayIxGpOdm6fW5NvUHPcOSsugdyJRZpwaWbp6Sd
-         EBwEF3AlZmU2+j7ioYf2RI1VPI/YJzLqRqoT5znrS1lYIDrHa1aIReHXSeFORNjb+nF1
-         Zs3IBu0p/7sCwJpWODJbuGhs9++XMvTX0ZXqTGGcP4rEdXcuxTQSU8Mf6X1e47bL0vDn
-         58FjOd/HM6C+/P7F0uCxYek2KtR2kritjoZ37KDD+G0eAVQDwhOV6GOcLwtA6LZubQs4
-         ZQpg==
-X-Gm-Message-State: APjAAAX+4Sa7yhhG/r5zinVyuy8+GpMovm38w9hU0HNenDlzCEGJWkL/
-        pjKmS3B/H53zaAGnfQBse4qyPbge
-X-Google-Smtp-Source: APXvYqxJ3h/IzGZkeqMSCW0aEFT5AzevfSo2OB5wwrLeMOMxc9OGUdqpSLVWl5lhmt9dlLvkeURTHw==
-X-Received: by 2002:adf:fa4c:: with SMTP id y12mr19534454wrr.282.1561999499280;
-        Mon, 01 Jul 2019 09:44:59 -0700 (PDT)
+        bh=8Wrak9T/dqG3Cj1so+ph+ncSMKddxwdFBJ2/cQ9fA/w=;
+        b=KuA0FauEKZPWIQnEA1AW25+KjvYYkCI5qDG0XD56ZtfVDJ5OvOj6z66VRgv3tuQdcO
+         QLhFF1dHFZzYuPthpcQ2cNlw8pkSx4gCLaItT7oLyNe2ZkyBOClZfGdhbcNFU5W9fqcg
+         F6zvMKYe0dWQFwAR2t2lj304XAYnenhBBzI1npR5/xFxeHWR0fhJW/fidJTaMpnM3ooo
+         Yo7ZiA+QV10/b8Jt1ZmnLpT9mKRYgjoe34jlomAWoz6AnfC1AEnBI2hIk8KLUmg24qnb
+         5IL8owfyjefYJv47oMCfrQsBtyANUJhiXsgftffs2wl6iuc2Lwr/EE9oKF+0UwTxjH4W
+         Kfiw==
+X-Gm-Message-State: APjAAAWXZ/v7kK8Rixh4BU7t62kDeBGuIvgJiR+xT4+i6B9tdodmnGO7
+        dbWdWzc0IYAzHOK/JB1J/npfqhVs
+X-Google-Smtp-Source: APXvYqwaurz4/UAR0mTocZnDtauJ2EKslJ/980SxMWg/w3dbNntT2diwvIhHRkidDfUjw2T38oWRxw==
+X-Received: by 2002:a1c:e108:: with SMTP id y8mr125291wmg.65.1561999515553;
+        Mon, 01 Jul 2019 09:45:15 -0700 (PDT)
 Received: from [10.67.50.91] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id z19sm183536wmi.7.2019.07.01.09.44.56
+        by smtp.googlemail.com with ESMTPSA id t14sm9558475wrr.33.2019.07.01.09.45.12
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 01 Jul 2019 09:44:58 -0700 (PDT)
-Subject: Re: [PATCH 1/4] net: dsa: Change DT bindings for Vitesse VSC73xx
- switches
+        Mon, 01 Jul 2019 09:45:15 -0700 (PDT)
+Subject: Re: [PATCH 3/4] net: dsa: vsc73xx: add support for parallel mode
 To:     Pawel Dembicki <paweldembicki@gmail.com>
 Cc:     linus.walleij@linaro.org, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -56,6 +55,7 @@ Cc:     linus.walleij@linaro.org, Andrew Lunn <andrew@lunn.ch>,
         Mark Rutland <mark.rutland@arm.com>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20190701152723.624-1-paweldembicki@gmail.com>
+ <20190701152723.624-3-paweldembicki@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -112,67 +112,80 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <45ff597a-5090-3874-b43d-5b5f45d2d2f6@gmail.com>
-Date:   Mon, 1 Jul 2019 09:44:49 -0700
+Message-ID: <b7afaf2e-ca4e-2795-658d-2f0289203833@gmail.com>
+Date:   Mon, 1 Jul 2019 09:45:10 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.1
 MIME-Version: 1.0
-In-Reply-To: <20190701152723.624-1-paweldembicki@gmail.com>
+In-Reply-To: <20190701152723.624-3-paweldembicki@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 7/1/19 8:27 AM, Pawel Dembicki wrote:
-> This commit document changes after split vsc73xx driver into core and
-> spi part. The change of DT bindings is required for support the same
-> vsc73xx chip, which need PI bus to communicate with CPU. It also
-> introduce how to use vsc73xx platform driver.
+> This patch add platform part of vsc73xx driver.
+> It allows to use chip connected by PI interface.
 > 
 > Signed-off-by: Pawel Dembicki <paweldembicki@gmail.com>
 > ---
->  .../bindings/net/dsa/vitesse,vsc73xx.txt      | 74 ++++++++++++++++---
->  1 file changed, 64 insertions(+), 10 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/dsa/vitesse,vsc73xx.txt b/Documentation/devicetree/bindings/net/dsa/vitesse,vsc73xx.txt
-> index ed4710c40641..c6a4cd85891c 100644
-> --- a/Documentation/devicetree/bindings/net/dsa/vitesse,vsc73xx.txt
-> +++ b/Documentation/devicetree/bindings/net/dsa/vitesse,vsc73xx.txt
-> @@ -2,8 +2,8 @@ Vitesse VSC73xx Switches
->  ========================
->  
->  This defines device tree bindings for the Vitesse VSC73xx switch chips.
-> -The Vitesse company has been acquired by Microsemi and Microsemi in turn
-> -acquired by Microchip but retains this vendor branding.
-> +The Vitesse company has been acquired by Microsemi and Microsemi has
-> +been acquired Microchip but retains this vendor branding.
->  
->  The currently supported switch chips are:
->  Vitesse VSC7385 SparX-G5 5+1-port Integrated Gigabit Ethernet Switch
-> @@ -11,16 +11,26 @@ Vitesse VSC7388 SparX-G8 8-port Integrated Gigabit Ethernet Switch
->  Vitesse VSC7395 SparX-G5e 5+1-port Integrated Gigabit Ethernet Switch
->  Vitesse VSC7398 SparX-G8e 8-port Integrated Gigabit Ethernet Switch
->  
-> -The device tree node is an SPI device so it must reside inside a SPI bus
-> -device tree node, see spi/spi-bus.txt
-> +This switch could have two different management interface.
-> +
-> +If SPI interface is used, the device tree node is an SPI device so it must
-> +reside inside a SPI bus device tree node, see spi/spi-bus.txt
-> +
-> +If Platform driver is used, the device tree node is an platform device so it
-> +must reside inside a platform bus device tree node.
 
-That should not be required because the device remains the same and how
-it connects to the host is entirely described by the Device Tree topology.
+[snip]
 
-Take b53 for instance which supports MDIO and SPI by default, and
-optionally memory mapped and SRAB (indirect memory map) accesses, they
-all have the same compatible strings. Whether the switches will appear
-as spi_device, platform_device, or something else is entirely based on
-how the Device Tree is laid out.
+> +	struct vsc73xx_platform *vsc_platform = vsc->priv;
+> +	u32 offset;
+> +
+> +	if (!vsc73xx_is_addr_valid(block, subblock))
+> +		return -EINVAL;
+> +
+> +	offset = vsc73xx_make_addr(block, subblock, reg);
+> +
+> +	mutex_lock(&vsc->lock);
+> +		iowrite32be(val, vsc_platform->base_addr + offset);
+> +	mutex_unlock(&vsc->lock);
+
+Similar question from Andrew, why is the locking done in the platform
+layer, should not that be done in the core I/O operation instead?
+
+> +
+> +	return 0;
+> +}
+> +
+> +static int vsc73xx_platform_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct vsc73xx_platform *vsc_platform;
+> +	struct resource *res = NULL;
+> +	int ret;
+> +
+> +	vsc_platform = devm_kzalloc(dev, sizeof(*vsc_platform), GFP_KERNEL);
+> +	if (!vsc_platform)
+> +		return -ENOMEM;
+> +
+> +	platform_set_drvdata(pdev, vsc_platform);
+> +	vsc_platform->pdev = pdev;
+> +	vsc_platform->vsc.dev = dev;
+> +	vsc_platform->vsc.priv = vsc_platform;
+> +	vsc_platform->vsc.ops = &vsc73xx_platform_ops;
+> +
+> +	/* obtain I/O memory space */
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	if (!res) {
+> +		dev_err(&pdev->dev, "cannot obtain I/O memory space\n");
+> +		ret = -ENXIO;
+> +		return ret;
+> +	}
+> +
+> +	vsc_platform->base_addr = devm_ioremap_resource(&pdev->dev, res);
+
+devm_ioremap_resource takes care of checking that the resource pointer
+is valid, no need to do that here.
+
+> +	if (!vsc_platform->base_addr) {
+
+if (IS_ERR(vsc_platform->base_addr))
 -- 
 Florian
