@@ -2,153 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CA585C2BD
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 20:14:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDCF95C2BE
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 20:15:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727207AbfGASOp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 14:14:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37338 "EHLO mail.kernel.org"
+        id S1727197AbfGASPb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 14:15:31 -0400
+Received: from mout.web.de ([212.227.17.11]:33727 "EHLO mout.web.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725853AbfGASOp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Jul 2019 14:14:45 -0400
-Received: from localhost (unknown [37.142.3.125])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9B9BD20B7C;
-        Mon,  1 Jul 2019 18:14:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1562004883;
-        bh=C2K3onpVkhu6w6pZo99WHPU+233K511hcHqMI4ahYD0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qfmqC8jAUWKEOak/3mLrVTVHeV7bv1Zsg/2KWGi6AxA8HTlJhX3b6owcoGBTifQvB
-         0wI9Mlh0BZZ303Q+bCXfOWq+NUf7UY6FTHlshvhLwyi+6/G0EDtkKMoxX1e5nt+KNf
-         opHg1DOG2VfaptB6NbgD5PhPvfLMynQkthWNpQhs=
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@mellanox.com>
-Cc:     Leon Romanovsky <leonro@mellanox.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Max Gurtovoy <maxg@mellanox.com>,
-        Yishai Hadas <yishaih@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: [PATCH rdma-next 2/2] IB/mlx5: Implement VHCA tunnel mechanism in DEVX
-Date:   Mon,  1 Jul 2019 21:14:02 +0300
-Message-Id: <20190701181402.25286-3-leon@kernel.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190701181402.25286-1-leon@kernel.org>
-References: <20190701181402.25286-1-leon@kernel.org>
+        id S1725853AbfGASPa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Jul 2019 14:15:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1562004914;
+        bh=wjEl8FTofarDW/hjL3Oj6Vl3tT1Gdt2yjJVEwq+qa4A=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=E28VSRYokXR1w0lCVSNiOYtJe3VutTAzwyQuJoSWKauQheHkdbBmtQBUc06xIw0Ha
+         XZ++P7BgF66Stl9xcysG5xDhg90FApMpzlx/5uVovVtpiO+rso8tclurW/6Eg2uwSt
+         PfTqoOy0uTgNkiwVCXYwkUWOGTsTj62V0gbnc6GI=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.3.114] ([46.59.214.39]) by smtp.web.de (mrweb102
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0LetUp-1iKPZl1pSp-00qipZ; Mon, 01
+ Jul 2019 20:15:14 +0200
+Subject: Re: r8169 not working on 5.2.0rc6 with GPD MicroPC
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     nic_swsd@realtek.com, romieu@fr.zoreil.com, netdev@vger.kernel.org
+References: <4437a8a6-73f0-26a7-4a61-b215c641ff20@web.de>
+ <b104dbf2-6adc-2eee-0a1a-505c013787c0@gmail.com>
+ <62684063-10d1-58ad-55ad-ff35b231e3b0@web.de> <20190630145511.GA5330@lunn.ch>
+ <3825ebc5-15bc-2787-4d73-cccbfe96a0cc@web.de>
+ <27dfc508-dee0-9dad-1e6b-2a5df93c3977@gmail.com>
+ <173251e0-add7-b2f5-0701-0717ed4a9b04@web.de>
+ <de38facc-37ed-313f-cf1e-1ec6de9810c8@gmail.com>
+ <116e4be6-e710-eb2d-0992-a132f62a8727@web.de>
+ <94b0f05e-2521-7251-ab92-b099a3cf99c9@gmail.com>
+ <20190701133507.GB25795@lunn.ch>
+From:   Karsten Wiborg <karsten.wiborg@web.de>
+Message-ID: <672d3b3f-e55d-e2bb-1d8c-a83d0a0c057a@web.de>
+Date:   Mon, 1 Jul 2019 20:15:12 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190701133507.GB25795@lunn.ch>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256; boundary="------------ms070106030603010202000800"
+X-Provags-ID: V03:K1:z9qRMVHeMh2h5LGprMdaWqk9SQK1zbRIsSsRMQw5XI2GgAwMGy9
+ Vp2MeR35aOJ9xLAegePZ5IWXAMU1aJsELtonN9rXRMgXUWP8yi7Jz6fYpucP7KTTjj09LeF
+ 91RtRJiTmvUrBJmWzv2mnmO0XXBD69yXFWpkMj0iRgEyDPhlFUx/qcoDPp7AsAbkNgjEIfH
+ BhIWD8RMOwsbxva8RElng==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:/2EfNXxSQRs=:jl0YpLU86naPJ9NybSA8FI
+ kchz19J7ppzVGXpZt3b5rYYWQMaog7JhhuUdDwns3m4FwRAyPJXv6tcIGfheypwoersLps0+h
+ TEty3fCXpJ0yUKCYx9gsI/xgvGZwfILvTfeKffRvxm0um9e9TA5PiudUVzcpAMgeaLmUCGJPi
+ 8bfGx4fnQEsz+DgZffNhY1U6C1bNGdxP1uoO2cFle/ISwEb4P2sIkop/WddEYPVmz9AdwP4qn
+ SGVYj/Lm4YzH5AYW/Qp2v/W8jkr3PBQg8tDZ0Jo+VBF0lh/YJX9lkymwwxMq8SIxLXRvv5Ql1
+ bFgmYSOWG5wREftfu0aV18wMhnJykpcN4a/A+bXweW6dwQi8YQP7PrsPwxKCmu+XdxtzclVHp
+ 6ORw4LZrLuIHnTulwlxFjle6XmLVMKk9+HBTL5K5C2kGgbEtccGlJvvrXt3GP6bCzlKC4Y/KG
+ +AW0cnh6kwvpia3GfrEVYyqlVG6S5CxgMGGqnBiN/2yLMf64NxVVaZJ81BjAvfil5Di/R7oSk
+ P4rUc/IlbMillkZsSjJwKd3Mt3BRLAXlNvkiNHkmaOE5szLa7NC00oHLB8LqzgU79KyjzgTQV
+ Zq84/CHbNNU4NSw5Vi746vnW9E2ddbRjO9x4SV4TZcNddY7pa9CGjKJC67CVQsZMNN5oUD3Du
+ z7xMphtHaycfio3JAFoIniSAnm+lxIdTWJ4fiqtJl60b2I0uhKmmoRA/BUePhPCwQxhXN0ioj
+ P2QceJL1Yw4LM5k/OaVWJRb1/Sx6uYKQpRNzTTk8l4FPzvFPAGsuJNxH6N8hC7EPrABzziIfx
+ BczzSFjxp9HNcfgd0xYspI3SUctPVXEHT5APe91JzMRCW/iu7Y6lEDeIyELSdrGryduDVI1VS
+ tunx7JfT3eP0fVaOwQpPBVSWoIelskX4ptD4H5k2zr1yGhE9mCuWaMe0wXkPPpfrvCNsHTLWu
+ RWedugWJPOWMEvcsfLc5PqaLkPOFbfzMyWcJXRysxArsv+gYB2TAv+totqF42YwqNEUocuIja
+ vvlf6/KyPZ+2jvpknou3c1f3+3BeIPYJU2J/Cv+ZVWDJzIy57Wn9K1yixYE0LogjuJbhLp2mS
+ jvvo8zg2zXS/v0=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Max Gurtovoy <maxg@mellanox.com>
+This is a cryptographically signed message in MIME format.
 
-This mechanism will allow function-A to perform operations "on behalf"
-of function-B via tunnel object. Function-A will have privileges for
-creating and using this tunnel object.
+--------------ms070106030603010202000800
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: quoted-printable
 
-For example, in the device emulation feature presented in Bluefield-1 SoC,
-using device emulation capability, one can present NVMe function to the host OS.
+Hi Andrew, Heiner,
 
-Since the NVMe function doesn't have a normal command interface to the HCA HW,
-here is a need to create a channel that will be able to issue commands "on behalf"
-of this function.
+the device is a really small notebook. So detaching mains still leaves
+the battery which is delicately built in. So can't currently remove
+power completely.
 
-This channel is the VHCA_TUNNEL general object. The emulation software will create
-this tunnel for every managed function and issue commands via devx general cmd
-interface using the appropriate tunnel ID. When devX context will receive a command
-with non-zero vhca_tunnel_id, it will pass the command as-is down to the HCA.
+Anyway can I deliver more debugging data to you guys which might add
+support for the r8169 for this device?
 
-All the validation, security and resource tracking of the commands and the created
-tunneled objects is in the responsibility of the HCA FW. When a VHCA_TUNNEL object
-destroyed, the device will issue an internal FLR (function level reset) to the
-emulated function associated with this tunnel. This will destroy all the created
-resources using the tunnel mechanism.
+Regards,
+Karsten
 
-Signed-off-by: Max Gurtovoy <maxg@mellanox.com>
-Reviewed-by: Yishai Hadas <yishaih@mellanox.com>
-Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
----
- drivers/infiniband/hw/mlx5/devx.c | 24 ++++++++++++++++++++----
- 1 file changed, 20 insertions(+), 4 deletions(-)
+On 01/07/2019 15:35, Andrew Lunn wrote:
+>> When the vendor driver assigns a random MAC address, it writes it to t=
+he
+>> chip. The related registers may be persistent (can't say exactly due t=
+o
+>> missing documentation).
+>=20
+> If the device supports WOL, it could be it is powered using the
+> standby supply, not the main supply. Try pulling the plug from the
+> wall to really remove all power.
+>=20
+>      Andrew
+>=20
 
-diff --git a/drivers/infiniband/hw/mlx5/devx.c b/drivers/infiniband/hw/mlx5/devx.c
-index cb4f0fc79176..26ba6bf5d19a 100644
---- a/drivers/infiniband/hw/mlx5/devx.c
-+++ b/drivers/infiniband/hw/mlx5/devx.c
-@@ -894,12 +894,16 @@ static int devx_get_uid(struct mlx5_ib_ucontext *c, void *cmd_in)
- 
- 	return c->devx_uid;
- }
--static bool devx_is_general_cmd(void *in)
-+
-+static bool devx_is_general_cmd(void *in, struct mlx5_ib_dev *dev)
- {
- 	u16 opcode = MLX5_GET(general_obj_in_cmd_hdr, in, opcode);
- 
--	if (opcode >= MLX5_CMD_OP_GENERAL_START &&
--	    opcode < MLX5_CMD_OP_GENERAL_END)
-+	/* Pass all cmds for vhca_tunnel as general, tracking is done in FW */
-+	if ((MLX5_CAP_GEN_64(dev->mdev, vhca_tunnel_commands) &&
-+	     MLX5_GET(general_obj_in_cmd_hdr, in, vhca_tunnel_id)) ||
-+	    (opcode >= MLX5_CMD_OP_GENERAL_START &&
-+	     opcode < MLX5_CMD_OP_GENERAL_END))
- 		return true;
- 
- 	switch (opcode) {
-@@ -1025,7 +1029,7 @@ static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_OTHER)(
- 		return uid;
- 
- 	/* Only white list of some general HCA commands are allowed for this method. */
--	if (!devx_is_general_cmd(cmd_in))
-+	if (!devx_is_general_cmd(cmd_in, dev))
- 		return -EINVAL;
- 
- 	cmd_out = uverbs_zalloc(attrs, cmd_out_len);
-@@ -1420,6 +1424,9 @@ static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_OBJ_CREATE)(
- 	u32 obj_id;
- 	u16 opcode;
- 
-+	if (MLX5_GET(general_obj_in_cmd_hdr, cmd_in, vhca_tunnel_id))
-+		return -EINVAL;
-+
- 	uid = devx_get_uid(c, cmd_in);
- 	if (uid < 0)
- 		return uid;
-@@ -1519,6 +1526,9 @@ static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_OBJ_MODIFY)(
- 	int err;
- 	int uid;
- 
-+	if (MLX5_GET(general_obj_in_cmd_hdr, cmd_in, vhca_tunnel_id))
-+		return -EINVAL;
-+
- 	uid = devx_get_uid(c, cmd_in);
- 	if (uid < 0)
- 		return uid;
-@@ -1561,6 +1571,9 @@ static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_OBJ_QUERY)(
- 	int uid;
- 	struct mlx5_ib_dev *mdev = to_mdev(c->ibucontext.device);
- 
-+	if (MLX5_GET(general_obj_in_cmd_hdr, cmd_in, vhca_tunnel_id))
-+		return -EINVAL;
-+
- 	uid = devx_get_uid(c, cmd_in);
- 	if (uid < 0)
- 		return uid;
-@@ -1698,6 +1711,9 @@ static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_OBJ_ASYNC_QUERY)(
- 	struct devx_async_cmd_event_file *ev_file;
- 	struct devx_async_data *async_data;
- 
-+	if (MLX5_GET(general_obj_in_cmd_hdr, cmd_in, vhca_tunnel_id))
-+		return -EINVAL;
-+
- 	uid = devx_get_uid(c, cmd_in);
- 	if (uid < 0)
- 		return uid;
--- 
-2.20.1
 
+--------------ms070106030603010202000800
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCC
+DL8wggVeMIIDRqADAgECAgMCtSAwDQYJKoZIhvcNAQENBQAwVDEUMBIGA1UEChMLQ0FjZXJ0
+IEluYy4xHjAcBgNVBAsTFWh0dHA6Ly93d3cuQ0FjZXJ0Lm9yZzEcMBoGA1UEAxMTQ0FjZXJ0
+IENsYXNzIDMgUm9vdDAeFw0xNzA5MTkyMjIxNDFaFw0xOTA5MTkyMjIxNDFaMD8xFzAVBgNV
+BAMTDkthcnN0ZW4gV2lib3JnMSQwIgYJKoZIhvcNAQkBFhVrYXJzdGVuLndpYm9yZ0B3ZWIu
+ZGUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCxUcZmRqMxfrFV78BS7Qwg1EE1
+eSX5VXBIZkRuDKGCqzs6xDj9HikNvq+KK7/U+OZza5hDD0NlfFkgrY0dCYQuLOD4iYWPjPJt
+V1aTarzfCeNnzDAhZTK3ocWQ+d14ReuDO7RoVrhfthgXO5t/QPCrsb7L3J30QYRVI3Gumj3H
+Bkwp59AeVLvmHSEGgo4/VP5PTHN7HKxGgV44DoyvWj+jk3zN5+ljE7PbK4htM/IIL9dhhdSo
+t4pUPsX+CG6I+gel5ewfeDQwsc350jjHLMFr0Kex5ZC4VNziHFo+ttokcSlkKes0HPdRMnIq
+7l6QMWDQAgf2zNak1x/nqLMFNJmdAgMBAAGjggFMMIIBSDAMBgNVHRMBAf8EAjAAMFYGCWCG
+SAGG+EIBDQRJFkdUbyBnZXQgeW91ciBvd24gY2VydGlmaWNhdGUgZm9yIEZSRUUgaGVhZCBv
+dmVyIHRvIGh0dHA6Ly93d3cuQ0FjZXJ0Lm9yZzAOBgNVHQ8BAf8EBAMCA6gwQAYDVR0lBDkw
+NwYIKwYBBQUHAwQGCCsGAQUFBwMCBgorBgEEAYI3CgMEBgorBgEEAYI3CgMDBglghkgBhvhC
+BAEwMgYIKwYBBQUHAQEEJjAkMCIGCCsGAQUFBzABhhZodHRwOi8vb2NzcC5jYWNlcnQub3Jn
+MDgGA1UdHwQxMC8wLaAroCmGJ2h0dHA6Ly9jcmwuY2FjZXJ0Lm9yZy9jbGFzczMtcmV2b2tl
+LmNybDAgBgNVHREEGTAXgRVrYXJzdGVuLndpYm9yZ0B3ZWIuZGUwDQYJKoZIhvcNAQENBQAD
+ggIBABfkSQnvEpwjuIOOJnpM5dpQPTldD5c+PIxasWCo2infcPCrkxFJLvM0rN8v/OTquWAA
+drUntI5izNgSEfX0eLeR/203c/trNIAXqsRmmY+vmXqw/ACUYC8yTXAkpRvNFMEqIIX1YsCB
+k+U4mlzZTs0VZbO6JmEAuM4X/JQieXhaF3P83CACrpmGKbmIJC9w9sutUZj2M7+oXAAngI/j
+xmSTO7C3JlSQiALpFu44cKr38ZZjRlUNc3VCsgTQ9fzNE4XEgsrM+veB9jHpb1iMN5GontKv
+M11o0wsgc176jwH1NJlWPXxlnN1tJoNyS5B7VHk58h9uX/9gbTJDigoYfEKricMV2QKilx2K
+RCQtAYil3Y/o7A/66l7Z17lD7aU/fLtjlZrzWZLGpGBDZIXp3ikga3UGvYIUyryDZHLkd2wo
+FKuWkPOCWFMnTsA4Ycn82xdNNhtXRyLOtSKzBPBOytvcGiUbIMh7q9xrlxgfu+ET3mYleoam
+K6Mlo9T9I/GQBw2yY3lZRHJB2YDTA22zr4H/J7XOZc+NxUSEsx0bgm6Pp/jRHcHusboGkqkU
+h+3en/VKTmXLwKzE4B2PieCftrSw8KMEqEOb17uUgGinPV023ztXB2wxdumlMVJc9vC473iY
+pc7JrBLL/d7cR6HPFQXNFhXJNE5dYcn7h6gy4W0CMIIHWTCCBUGgAwIBAgIDCkGKMA0GCSqG
+SIb3DQEBCwUAMHkxEDAOBgNVBAoTB1Jvb3QgQ0ExHjAcBgNVBAsTFWh0dHA6Ly93d3cuY2Fj
+ZXJ0Lm9yZzEiMCAGA1UEAxMZQ0EgQ2VydCBTaWduaW5nIEF1dGhvcml0eTEhMB8GCSqGSIb3
+DQEJARYSc3VwcG9ydEBjYWNlcnQub3JnMB4XDTExMDUyMzE3NDgwMloXDTIxMDUyMDE3NDgw
+MlowVDEUMBIGA1UEChMLQ0FjZXJ0IEluYy4xHjAcBgNVBAsTFWh0dHA6Ly93d3cuQ0FjZXJ0
+Lm9yZzEcMBoGA1UEAxMTQ0FjZXJ0IENsYXNzIDMgUm9vdDCCAiIwDQYJKoZIhvcNAQEBBQAD
+ggIPADCCAgoCggIBAKtJNRFIfNImflOUz0Op3SjXQiqL84d4GVh8D57aiX3h++tykA10oZZk
+q5+gJJlz2uJVdscXe/UErEa4w75/ZI0QbCTzYZzA8pD6Ueb1aQFjww9W4kpCz+JEjCUoqMV5
+CX1GuYrz6fM0KQhF5Byfy5QEHIGoFLOYZcRD7E6CjQnRvapbjZLQ7N6QxX8KwuPr5jFaXnQ+
+lzNZ6MMDPWAzv/fRb0fEze5ig1JuLgiapNkVGJGmhZJHsK5I6223IeyFGmhyNav/8BBdwPSU
+p2rVO5J+TJAFfpPBLIukjmJ0FXFuC3ED6q8VOJrU0gVyb4z5K+taciX5OUbjchs+BMNkJyIQ
+KopPWKcDrb60LhPtXapI19V91Cp7XPpGBFDkzA5CW4zt2/LP/JaT4NsRNlRiNDiPDGCbO5dW
+OK3z0luLoFvqTpa4fNfVoIZwQNORKbeiPK31jLvPGpKK5DR7wNhsX+kKwsOnIJpa3yxdUly6
+R9Wb7yQocDggL9V/KcCyQQNokszgnMyXS0XvOhAKq3A6mJVwrTWx6oUrpByAITGprmB6gCZI
+ALgBwJNjVSKRPFbnr9s6JfOPMVTqJouBWfmh0VMRxXudA/Z0EeBtsSw/LIaRmXGapneLNGDR
+FLQsrJ2vjBDTn8Rq+G8T/HNZ92ZCdB6K4/jc0m+YnMtHmJVABfvpAgMBAAGjggINMIICCTAd
+BgNVHQ4EFgQUdahxYEyIE/B42Yl3tW3Fid+8sXowgaMGA1UdIwSBmzCBmIAUFrUyG9TH8+Dm
+jvO90rA67rI5GNGhfaR7MHkxEDAOBgNVBAoTB1Jvb3QgQ0ExHjAcBgNVBAsTFWh0dHA6Ly93
+d3cuY2FjZXJ0Lm9yZzEiMCAGA1UEAxMZQ0EgQ2VydCBTaWduaW5nIEF1dGhvcml0eTEhMB8G
+CSqGSIb3DQEJARYSc3VwcG9ydEBjYWNlcnQub3JnggEAMA8GA1UdEwEB/wQFMAMBAf8wXQYI
+KwYBBQUHAQEEUTBPMCMGCCsGAQUFBzABhhdodHRwOi8vb2NzcC5DQWNlcnQub3JnLzAoBggr
+BgEFBQcwAoYcaHR0cDovL3d3dy5DQWNlcnQub3JnL2NhLmNydDBKBgNVHSAEQzBBMD8GCCsG
+AQQBgZBKMDMwMQYIKwYBBQUHAgEWJWh0dHA6Ly93d3cuQ0FjZXJ0Lm9yZy9pbmRleC5waHA/
+aWQ9MTAwNAYJYIZIAYb4QgEIBCcWJWh0dHA6Ly93d3cuQ0FjZXJ0Lm9yZy9pbmRleC5waHA/
+aWQ9MTAwUAYJYIZIAYb4QgENBEMWQVRvIGdldCB5b3VyIG93biBjZXJ0aWZpY2F0ZSBmb3Ig
+RlJFRSwgZ28gdG8gaHR0cDovL3d3dy5DQWNlcnQub3JnMA0GCSqGSIb3DQEBCwUAA4ICAQAp
+KIWuRKm5r6R5E/CooyuXYPNc7uMvwfbiZqARrjY3OnYVBFPqQvX56sAV2KaC2eRhrnILKVyQ
+Q+hBsuF32wITRHhHVa9Y/MyY9kW50SD42CEH/m2qc9SzxgfpCYXMO/K2viwcJdVxjDm1Luq+
+GIG6sJO4D+Pm1yaMMVpyA4RS5qb1MyJFCsgLDYq4Nm+QCaGrvdfVTi5xotSu+qdUK+s1jVq3
+VIgv7nSf7UgWyg1I0JTTrKSi9iTfkuO960NAkW4cGI5WtIIS86mTn9S8nK2cde5alxuV53Qt
+HA+wLJef+6kzOXrnAzqSjiL2jA3k2X4Ndhj3AfnvlpaiVXPAPHG0HRpWQ7fDCo1y/OIQCQtB
+zoyUoPkD/XFzS4pXM+WOdH4VAQDmzEoc53+VGS3FpQyLu7XthbNc09+4ufLKxw0BFKxwWMWM
+jTPUnWajGlCVI/xI4AZDEtnNp4Y5LzZyo4AQ5OHz0ctbGsDkgJp8E3MGT9ujayQKurMcvEp4
+u+XjdTilSKeiHq921F73OIZWWonO1sOnebJSoMbxhbQljPI/lrMQ2Y1sVzufb4Y6GIIiNsiw
+kTjbKqGTqoQ/9SdlrnPVyNXTd+pLncdBu8fA46A/5H2kjXPmEkvfoXNzczqA6NXLji/L6hOn
+1kGLrPo8idck9U604GGSt/M3mMS+lqO3ijGCAzswggM3AgEBMFswVDEUMBIGA1UEChMLQ0Fj
+ZXJ0IEluYy4xHjAcBgNVBAsTFWh0dHA6Ly93d3cuQ0FjZXJ0Lm9yZzEcMBoGA1UEAxMTQ0Fj
+ZXJ0IENsYXNzIDMgUm9vdAIDArUgMA0GCWCGSAFlAwQCAQUAoIIBsTAYBgkqhkiG9w0BCQMx
+CwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0xOTA3MDExODE1MTJaMC8GCSqGSIb3DQEJ
+BDEiBCDw9TVwcoxi4PEJC1gjZpy98jEWpvTeMkeCMdtiSMtFnzBqBgkrBgEEAYI3EAQxXTBb
+MFQxFDASBgNVBAoTC0NBY2VydCBJbmMuMR4wHAYDVQQLExVodHRwOi8vd3d3LkNBY2VydC5v
+cmcxHDAaBgNVBAMTE0NBY2VydCBDbGFzcyAzIFJvb3QCAwK1IDBsBgkqhkiG9w0BCQ8xXzBd
+MAsGCWCGSAFlAwQBKjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwICAgCA
+MA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIHMA0GCCqGSIb3DQMCAgEoMGwGCyqGSIb3DQEJEAIL
+MV2gWzBUMRQwEgYDVQQKEwtDQWNlcnQgSW5jLjEeMBwGA1UECxMVaHR0cDovL3d3dy5DQWNl
+cnQub3JnMRwwGgYDVQQDExNDQWNlcnQgQ2xhc3MgMyBSb290AgMCtSAwDQYJKoZIhvcNAQEB
+BQAEggEARVLMRiNnwpIbDl68+6WxaASZYuhX5TlczUkQ13WroaXlcFqAu30Qc0JhbELdspq8
+Ah+hqcZUtM1y11FLeImPBuhKIQN/47dBHh3CY5zrZjd2CaYKN44EStOLrVFtJKMepRqclcwV
+cfXWXT9hdWS45+UzP0QE5Zu5pQLUilq4ve8aFrduU064H3QEEpf7LCM5NJvLmZ5aluf11AEO
+Bn9poHlxK5x5sGaW1/cRKibJwk4Fkz5Jkoo9mxX2Mc0IU1u6Wy8ufMn29p5sVIMHOiUAEjza
+TBgkQfLwMrv1QhvsF60OY2saK3UkmMFhpggokAOVmDWBG0Coyx7Wuy0/3laVQgAAAAAAAA==
+--------------ms070106030603010202000800--
