@@ -2,137 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CBE425C45F
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 22:41:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23C935C48D
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 22:50:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726838AbfGAUlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 16:41:07 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:46180 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726620AbfGAUlH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 16:41:07 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x61KdmZL079039;
-        Mon, 1 Jul 2019 20:41:04 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2018-07-02;
- bh=bBe36s3bg2kObvt/BO5jZnInXaNShaBTpTacLg64CXE=;
- b=bjMCIsKp35MwLRtSu12MC0KJ0xFVcpaRxRyymr83wRiUi7JY+zTjQGZjifYy+n/FuAIU
- qhmqH4t5IsTFcJ5Nxo/OE6GQZTrTXJ20HrIyzCKSTM196uzR2xk4TNqVrE6huzZkxZ68
- GQRJfr64Xmy3glbkuTI/v1lmrwrW4fgxTvKx7gID+IUO2S9BBabyLDWveqaoxDj8+/vw
- 1+PtGhaDa4uqkszw89hMjNBtmp9HwG6P23HVot+q4cpROZ15Nsv3d9ppetjiCqq52D48
- FpbDOnbBF0biSsKjS3thQ4/SXkeyZaRzDnErIHrdOnd+9HkQJJqR90OHlwpM99/GMrk8 SA== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by aserp2120.oracle.com with ESMTP id 2te5tbfv1x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 01 Jul 2019 20:41:04 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x61Kbphp030751;
-        Mon, 1 Jul 2019 20:41:03 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by aserp3030.oracle.com with ESMTP id 2tebakcy4w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 01 Jul 2019 20:41:03 +0000
-Received: from abhmp0007.oracle.com (abhmp0007.oracle.com [141.146.116.13])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x61Kf1Cr005619;
-        Mon, 1 Jul 2019 20:41:01 GMT
-Received: from [10.209.242.148] (/10.209.242.148)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 01 Jul 2019 13:41:01 -0700
-Subject: Re: [PATCH net-next 3/7] net/rds: Wait for the FRMR_IS_FREE (or
- FRMR_IS_STALE) transition after posting IB_WR_LOCAL_INV
-To:     Gerd Rausch <gerd.rausch@oracle.com>, netdev@vger.kernel.org
-Cc:     David Miller <davem@davemloft.net>
-References: <505e9af7-a0cd-bf75-4a72-5d883ee06bf1@oracle.com>
-From:   santosh.shilimkar@oracle.com
-Organization: Oracle Corporation
-Message-ID: <c79821e0-307c-5736-6eb5-e20983097345@oracle.com>
-Date:   Mon, 1 Jul 2019 13:41:00 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        id S1727040AbfGAUt4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 16:49:56 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:51661 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726686AbfGAUty (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 16:49:54 -0400
+Received: by mail-wm1-f68.google.com with SMTP id 207so831189wma.1;
+        Mon, 01 Jul 2019 13:49:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=G2ozsz8yyViKWYfdB4NDhthbwOXBk4pYx/VsCelpvWE=;
+        b=jmIxnHM7ZHUfWXWInLHYOklrS+UIIPAq9//w6qAnnaR8iKO5uboXIaKh25dHn4QCdz
+         5BoU6hy3B6Uxwyqx7EMftclo9JSE5rw9XuruyPIj58LfzYWMFHAnUkZ8ZIpH8dEkPZIa
+         twRcbxJrIMnB15zJHspp/VaGHfO1zrb11h98LTrwECU1GD8t26uqQmH5t6VhQxc2f8fj
+         I8ssWT2Hdw752Dicz6PT5mBBBQdzcbVRYq1uPU0BJeAXuryYjfe5UsM6CuvlRByb1/Ma
+         Ki7N6EzLo4nve+bx32RmcK05Uwk0o5LMf/MyGE/9Z5XE99X+FX3jXRyQkdbBwAiWuJLJ
+         gD1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=G2ozsz8yyViKWYfdB4NDhthbwOXBk4pYx/VsCelpvWE=;
+        b=NR2nj7bVO2R0Gvk9kB90AZ3OMWb39SeCuGi/ao71zQPr9Ntgo+hsw+ZsjDXiz41q9k
+         sPpJGY0tAsm0XatpKOfeozqNzQKkjEJEa/FVaOunVUim+nBUbzD0y0lSRtQmjG7geMZ4
+         Az2qqAtbef9GuE/R0MK8dwTjFSNFpb9S3pet8SEce5vOISRbGpOdyKQ+3rbOmA6jR6sD
+         LO0mdT6AMn9dbYZvA6gPY0m1odkcbZfl8n2HrgC7VBbLma/2MK/OiJvAPAiWo+slq3WD
+         03khAvab5coAESNvB/bN+YQojuTGSw1U+TcpiniyuBwCtEPBhzrhxOJL5SwmVO2K3ys0
+         t0CA==
+X-Gm-Message-State: APjAAAW9kTR4Lh2JuB0pfHKZq90nA9lzBBAOzjaKDwBYXWNy6pnbjxnk
+        fK1qlIktmyOuF1Ter5+ex6U=
+X-Google-Smtp-Source: APXvYqzGd7kRO9VlCev3rUxiJU/HAnhEAi7O+d8K82CjMrYQWzw14tcz6EgQPXVvawTqw0MgE+2b5Q==
+X-Received: by 2002:a1c:448b:: with SMTP id r133mr681423wma.114.1562014192656;
+        Mon, 01 Jul 2019 13:49:52 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8bd6:c00:8dac:9ad2:a34c:33bc? (p200300EA8BD60C008DAC9AD2A34C33BC.dip0.t-ipconnect.de. [2003:ea:8bd6:c00:8dac:9ad2:a34c:33bc])
+        by smtp.googlemail.com with ESMTPSA id w20sm25408931wra.96.2019.07.01.13.49.51
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 01 Jul 2019 13:49:52 -0700 (PDT)
+Subject: Re: [PATCH 2/3] net: phy: realtek: Enable accessing RTL8211E
+ extension pages
+To:     Matthias Kaehlcke <mka@chromium.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>
+References: <20190701195225.120808-1-mka@chromium.org>
+ <20190701195225.120808-2-mka@chromium.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <d2386f7d-b4bc-d983-1b83-cc2aa4aec38b@gmail.com>
+Date:   Mon, 1 Jul 2019 22:43:12 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <505e9af7-a0cd-bf75-4a72-5d883ee06bf1@oracle.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+In-Reply-To: <20190701195225.120808-2-mka@chromium.org>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9305 signatures=668688
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1810050000 definitions=main-1907010239
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9305 signatures=668688
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=2 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
- definitions=main-1907010240
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/1/19 9:39 AM, Gerd Rausch wrote:
-> In order to:
-> 1) avoid a silly bouncing between "clean_list" and "drop_list"
->     triggered by function "rds_ib_reg_frmr" as it is releases frmr
->     regions whose state is not "FRMR_IS_FREE" right away.
+On 01.07.2019 21:52, Matthias Kaehlcke wrote:
+> The RTL8211E has extension pages, which can be accessed after
+> selecting a page through a custom method. Add a function to
+> modify bits in a register of an extension page and a few
+> helpers for dealing with ext pages.
 > 
-> 2) prevent an invalid access error in a race from a pending
->     "IB_WR_LOCAL_INV" operation with a teardown ("dma_unmap_sg", "put_page")
->     and de-registration ("ib_dereg_mr") of the corresponding
->     memory region.
+> rtl8211e_modify_ext_paged() and rtl821e_restore_page() are
+> inspired by their counterparts phy_modify_paged() and
+> phy_restore_page().
 > 
-> Signed-off-by: Gerd Rausch <gerd.rausch@oracle.com>
+> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
 > ---
->   net/rds/ib_frmr.c | 89 ++++++++++++++++++++++++++++++-----------------
->   net/rds/ib_mr.h   |  2 ++
->   2 files changed, 59 insertions(+), 32 deletions(-)
+> This code might be applicable to other Realtek PHYs, but I don't
+> have access to the datasheets to confirm it, so for now it's just
+> for the RTL8211E.
 > 
-> diff --git a/net/rds/ib_frmr.c b/net/rds/ib_frmr.c
-> index 9f8aa310c27a..3c953034dca3 100644
-> --- a/net/rds/ib_frmr.c
-> +++ b/net/rds/ib_frmr.c
-> @@ -76,6 +76,7 @@ static struct rds_ib_mr *rds_ib_alloc_frmr(struct rds_ib_device *rds_ibdev,
->   
->   	frmr->fr_state = FRMR_IS_FREE;
->   	init_waitqueue_head(&frmr->fr_inv_done);
-> +	init_waitqueue_head(&frmr->fr_reg_done);
->   	return ibmr;
->   
->   out_no_cigar:
-> @@ -124,6 +125,7 @@ static int rds_ib_post_reg_frmr(struct rds_ib_mr *ibmr)
->   	 */
->   	ib_update_fast_reg_key(frmr->mr, ibmr->remap_count++);
->   	frmr->fr_state = FRMR_IS_INUSE;
-> +	frmr->fr_reg = true;
->   
->   	memset(&reg_wr, 0, sizeof(reg_wr));
->   	reg_wr.wr.wr_id = (unsigned long)(void *)ibmr;
-> @@ -144,7 +146,29 @@ static int rds_ib_post_reg_frmr(struct rds_ib_mr *ibmr)
->   		if (printk_ratelimit())
->   			pr_warn("RDS/IB: %s returned error(%d)\n",
->   				__func__, ret);
-> +		goto out;
+This extended page mechanism exists on a number of older Realtek
+PHY's. For most extended pages however Realtek releases no public
+documentation.
+Considering that we use these helpers in one place only,  I don't
+really see a need for them.
+
+>  drivers/net/phy/realtek.c | 61 +++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 61 insertions(+)
+> 
+> diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+> index a669945eb829..dfc2e20ef335 100644
+> --- a/drivers/net/phy/realtek.c
+> +++ b/drivers/net/phy/realtek.c
+> @@ -26,6 +26,9 @@
+>  #define RTL821x_EXT_PAGE_SELECT			0x1e
+>  #define RTL821x_PAGE_SELECT			0x1f
+>  
+> +#define RTL8211E_EXT_PAGE			7
+> +#define RTL8211E_EPAGSR				0x1e
+> +
+>  #define RTL8211F_INSR				0x1d
+>  
+>  #define RTL8211F_TX_DELAY			BIT(8)
+> @@ -53,6 +56,64 @@ static int rtl821x_write_page(struct phy_device *phydev, int page)
+>  	return __phy_write(phydev, RTL821x_PAGE_SELECT, page);
+>  }
+>  
+> +static int rtl821e_select_ext_page(struct phy_device *phydev, int page)
+> +{
+> +	int rc;
+> +
+> +	rc = phy_write(phydev, RTL821x_PAGE_SELECT, RTL8211E_EXT_PAGE);
+> +	if (rc)
+> +		return rc;
+> +
+> +	return phy_write(phydev, RTL8211E_EPAGSR, page);
+> +}
+> +
+> +static int rtl821e_restore_page(struct phy_device *phydev, int oldpage, int ret)
+> +{
+> +	int r;
+> +
+> +	if (oldpage >= 0) {
+> +		r = phy_write(phydev, RTL821x_PAGE_SELECT, oldpage);
+> +
+> +		/* Propagate the operation return code if the page write
+> +		 * was successful.
+> +		 */
+> +		if (ret >= 0 && r < 0)
+> +			ret = r;
+> +	} else {
+> +		/* Propagate the page selection error code */
+> +		ret = oldpage;
 > +	}
 > +
-> +	if (!frmr->fr_reg)
+> +	return ret;
+> +}
+> +
+> +static int __maybe_unused rtl8211e_modify_ext_paged(struct phy_device *phydev,
+> +				    int page, u32 regnum, u16 mask, u16 set)
+> +{
+> +	int ret = 0;
+> +	int oldpage;
+> +	int new;
+> +
+> +	oldpage = phy_read(phydev, RTL821x_PAGE_SELECT);
+> +	if (oldpage < 0)
 > +		goto out;
 > +
-> +	/* Wait for the registration to complete in order to prevent an invalid
-> +	 * access error resulting from a race between the memory region already
-> +	 * being accessed while registration is still pending.
-> +	 */
-> +	wait_event_timeout(frmr->fr_reg_done, !frmr->fr_reg,
-> +			   msecs_to_jiffies(100));
+> +	ret = rtl821e_select_ext_page(phydev, page);
+> +	if (ret)
+> +		goto out;
 > +
-This arbitrary timeout in this patch as well as pacth 1/7 which
-Dave pointed out has any logic ?
+> +	ret = phy_read(phydev, regnum);
+> +	if (ret < 0)
+> +		goto out;
+> +
+> +	new = (ret & ~mask) | set;
+> +	if (new != ret)
+> +		ret = phy_write(phydev, regnum, new);
+> +
+> +out:
+> +	return rtl821e_restore_page(phydev, oldpage, ret);
+> +}
+> +
+>  static int rtl8201_ack_interrupt(struct phy_device *phydev)
+>  {
+>  	int err;
+> 
 
-MR registration command issued to hardware can at times take as
-much as command timeout(e.g 60 seconds in CX3) and upto that its still
-legitimate operation and not necessary failure. We shouldn't add
-arbitrary time outs in ULPs.
-
-Regards,
-Santosh
