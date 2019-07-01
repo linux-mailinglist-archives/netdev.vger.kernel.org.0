@@ -2,190 +2,387 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 68CE05C162
-	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 18:45:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7A975C176
+	for <lists+netdev@lfdr.de>; Mon,  1 Jul 2019 18:53:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729464AbfGAQpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 12:45:19 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:33385 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727030AbfGAQpS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 12:45:18 -0400
-Received: by mail-wm1-f66.google.com with SMTP id h19so455809wme.0;
-        Mon, 01 Jul 2019 09:45:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=8Wrak9T/dqG3Cj1so+ph+ncSMKddxwdFBJ2/cQ9fA/w=;
-        b=Ea4BqHthzHUPUeD7zqotXw+WJ/OTt8xMa//IS2ZjZ6YqPom1EHWnCr6JAB+w38gK8f
-         sKSlXOxc7ZE6+w1q3s2VVNjkG6Xn0oX5fCqxF4FGX4qfL/l94S7dia2bOcEEr9rU6Mcr
-         8k3ZwE/Jl2R7CV4sARe1N3zDeDwmNgu1EQTz7ZA73MdlrvLx0mdGZDPyIjyEY0BNGt8H
-         m7Nv2fSz4hpbSV1K5n+uQWCtc3YW7w2M9UdF2O1pdZIjQ+5XbAdOGubtIYlaTxK0ckkp
-         HUQkCjtbAEbBBJRzyl/tbIQ1HmVcxqmdUyJfKyVZxPB9hRaP0DjFaSzM3kBLpsERPUbS
-         89Ng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=8Wrak9T/dqG3Cj1so+ph+ncSMKddxwdFBJ2/cQ9fA/w=;
-        b=KuA0FauEKZPWIQnEA1AW25+KjvYYkCI5qDG0XD56ZtfVDJ5OvOj6z66VRgv3tuQdcO
-         QLhFF1dHFZzYuPthpcQ2cNlw8pkSx4gCLaItT7oLyNe2ZkyBOClZfGdhbcNFU5W9fqcg
-         F6zvMKYe0dWQFwAR2t2lj304XAYnenhBBzI1npR5/xFxeHWR0fhJW/fidJTaMpnM3ooo
-         Yo7ZiA+QV10/b8Jt1ZmnLpT9mKRYgjoe34jlomAWoz6AnfC1AEnBI2hIk8KLUmg24qnb
-         5IL8owfyjefYJv47oMCfrQsBtyANUJhiXsgftffs2wl6iuc2Lwr/EE9oKF+0UwTxjH4W
-         Kfiw==
-X-Gm-Message-State: APjAAAWXZ/v7kK8Rixh4BU7t62kDeBGuIvgJiR+xT4+i6B9tdodmnGO7
-        dbWdWzc0IYAzHOK/JB1J/npfqhVs
-X-Google-Smtp-Source: APXvYqwaurz4/UAR0mTocZnDtauJ2EKslJ/980SxMWg/w3dbNntT2diwvIhHRkidDfUjw2T38oWRxw==
-X-Received: by 2002:a1c:e108:: with SMTP id y8mr125291wmg.65.1561999515553;
-        Mon, 01 Jul 2019 09:45:15 -0700 (PDT)
-Received: from [10.67.50.91] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id t14sm9558475wrr.33.2019.07.01.09.45.12
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 01 Jul 2019 09:45:15 -0700 (PDT)
-Subject: Re: [PATCH 3/4] net: dsa: vsc73xx: add support for parallel mode
-To:     Pawel Dembicki <paweldembicki@gmail.com>
-Cc:     linus.walleij@linaro.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20190701152723.624-1-paweldembicki@gmail.com>
- <20190701152723.624-3-paweldembicki@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
+        id S1728449AbfGAQxw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 12:53:52 -0400
+Received: from linuxlounge.net ([88.198.164.195]:54328 "EHLO linuxlounge.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727563AbfGAQxw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Jul 2019 12:53:52 -0400
+To:     nikolay@cumulusnetworks.com, bridge@lists.linux-foundation.org,
+        Roopa Prabhu <roopa@cumulusnetworks.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxlounge.net;
+        s=mail; t=1562000026;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references:openpgp:openpgp:autocrypt:autocrypt;
+        bh=XdVbDsduQcNuVif0PodgUuj+obZj2fc0FOXXZhKJjcE=;
+        b=hHUKfH3umu/ly/W3NGsw4nU/i5drkTBFO4JfB2p62Um1JiV/IxduWCEn4WVBxKTh6ORn4z
+        FLC3lQCLebXbPhYkJ4jnrH1lCNEH0HzdPi956kyrBsFTCvBPwnR0v4SUUgtJjTNfPD+BxX
+        NBxF24dLfZcHfCGUQXf5pvLeHzkdVYg=
+Cc:     netdev@vger.kernel.org
+References: <41ac3aa3-cbf7-1b7b-d847-1fb308334931@linuxlounge.net>
+ <E0170D52-C181-4F0F-B5F8-F1801C2A8F5A@cumulusnetworks.com>
+From:   Martin Weinelt <martin@linuxlounge.net>
 Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <b7afaf2e-ca4e-2795-658d-2f0289203833@gmail.com>
-Date:   Mon, 1 Jul 2019 09:45:10 -0700
+Autocrypt: addr=martin@linuxlounge.net; prefer-encrypt=mutual; keydata=
+ mQENBEv1rfkBCADFlzzmynjVg8L5ok/ef2Jxz8D96PtEAP//3U612b4QbHXzHC6+C2qmFEL6
+ 5kG1U1a7PPsEaS/A6K9AUpDhT7y6tX1IxAkSkdIEmIgWC5Pu2df4+xyWXarJfqlBeJ82biot
+ /qETntfo01wm0AtqfJzDh/BkUpQw0dbWBSnAF6LytoNEggIGnUGmzvCidrEEsTCO6YlHfKIH
+ cpz7iwgVZi4Ajtsky8v8P8P7sX0se/ce1L+qX/qN7TnXpcdVSfZpMnArTPkrmlJT4inBLhKx
+ UeDMQmHe+BQvATa21fhcqi3BPIMwIalzLqVSIvRmKY6oYdCbKLM2TZ5HmyJepusl2Gi3ABEB
+ AAG0J01hcnRpbiBXZWluZWx0IDxtYXJ0aW5AbGludXhsb3VuZ2UubmV0PokBWAQTAQoAQgIb
+ IwYLCQgHAwIGFQgCCQoLBBYCAwECHgECF4ACGQEWIQTu0BYCvL0ZbDi8mh+9SqBSj2PxfgUC
+ W/RuFQUJEd/znAAKCRC9SqBSj2PxfpfDCACDx6BYz6cGMiweQ96lXi+ihx7RBaXsfPp2KxUo
+ eHilrDPqknq62XJibCyNCJiYGNb+RUS5WfDUAqxdl4HuNxQMC/sYlbP4b7p9Y1Q9QiTP4f6M
+ 8+Uvpicin+9H/lye5hS/Gp2KUiVI/gzqW68WqMhARUYw00lVSlJHy+xHEGVuQ0vmeopjU81R
+ 0si4+HhMX2HtILTxoUcvm67AFKidTHYMJKwNyMHiLLvSK6wwiy+MXaiqrMVTwSIOQhLgLVcJ
+ 33GNJ2Emkgkhs6xcaiN8xTjxDmiU7b5lXW4JiAsd1rbKINajcA7DVlZ/evGfpN9FczyZ4W6F
+ Rf21CxSwtqv2SQHBuQENBEv1rfkBCADJX6bbb5LsXjdxDeFgqo+XRUvW0bzuS3SYNo0fuktM
+ 5WYMCX7TzoF556QU8A7C7bDUkT4THBUzfaA8ZKIuneYW2WN1OI0zRMpmWVeZcUQpXncWWKCg
+ LBNYtk9CCukPE0OpDFnbR+GhGd1KF/YyemYnzwW2f1NOtHjwT3iuYnzzZNlWoZAR2CRSD02B
+ YU87Mr2CMXrgG/pdRiaD+yBUG9RxCUkIWJQ5dcvgrsg81vOTj6OCp/47Xk/457O0pUFtySKS
+ jZkZN6S7YXl/t+8C9g7o3N58y/X95VVEw/G3KegUR2SwcLdok4HaxgOy5YHiC+qtGNZmDiQn
+ NXN7WIN/oof7ABEBAAGJATwEGAEKACYCGwwWIQTu0BYCvL0ZbDi8mh+9SqBSj2PxfgUCW/Ru
+ GAUJEd/znwAKCRC9SqBSj2PxfpzMCACH55MVYTVykq+CWj1WMKHex9iFg7M9DkWQCF/Zl+0v
+ QmyRMEMZnFW8GdX/Qgd4QbZMUTOGevGxFPTe4p0PPKqKEDXXXxTTHQETE/Hl0jJvyu+MgTxG
+ E9/KrWmsmQC7ogTFCHf0vvVY3UjWChOqRE19Buk4eYpMbuU1dYefLNcD15o4hGDhohYn3SJr
+ q9eaoO6rpnNIrNodeG+1vZYG1B2jpEdU4v354ziGcibt5835IONuVdvuZMFQJ4Pn2yyC+qJe
+ ekXwZ5f4JEt0lWD9YUxB2cU+xM9sbDcQ2b6+ypVFzMyfU0Q6LzYugAqajZ10gWKmeyjisgyq
+ sv5UJTKaOB/t
+Subject: Re: Use-after-free in br_multicast_rcv
+Message-ID: <21ab085f-0f7f-88bc-b661-af74dd9eeea2@linuxlounge.net>
+Date:   Mon, 1 Jul 2019 18:53:45 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.1
-MIME-Version: 1.0
-In-Reply-To: <20190701152723.624-3-paweldembicki@gmail.com>
+ Thunderbird/60.7.2
+In-Reply-To: <E0170D52-C181-4F0F-B5F8-F1801C2A8F5A@cumulusnetworks.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/1/19 8:27 AM, Pawel Dembicki wrote:
-> This patch add platform part of vsc73xx driver.
-> It allows to use chip connected by PI interface.
+Hi Nik,
+
+more info below.
+
+On 6/29/19 3:11 PM, nikolay@cumulusnetworks.com wrote:
+> On 29 June 2019 14:54:44 EEST, Martin Weinelt <martin@linuxlounge.net> wrote:
+>> Hello,
+>>
+>> we've recently been experiencing memory leaks on our Linux-based
+>> routers,
+>> at least as far back as v4.19.16.
+>>
+>> After rebuilding with KASAN it found a use-after-free in 
+>> br_multicast_rcv which I could reproduce on v5.2.0-rc6. 
+>>
+>> Please find the KASAN report below, I'm anot sure what else to provide
+>> so
+>> feel free to ask.
+>>
+>> Best,
+>>  Martin
+>>
+>>
 > 
-> Signed-off-by: Pawel Dembicki <paweldembicki@gmail.com>
-> ---
+> Hi Martin, 
+> I'll look into this, are there any specific steps to reproduce it? 
+> 
+> Thanks, 
+>    Nik
+> 
+ 
+Each server is a KVM Guest and has 18 bridges with the same master/slave
+relationships:
 
-[snip]
+  bridge -> batman-adv -> {l2 tunnel, virtio device}
 
-> +	struct vsc73xx_platform *vsc_platform = vsc->priv;
-> +	u32 offset;
-> +
-> +	if (!vsc73xx_is_addr_valid(block, subblock))
-> +		return -EINVAL;
-> +
-> +	offset = vsc73xx_make_addr(block, subblock, reg);
-> +
-> +	mutex_lock(&vsc->lock);
-> +		iowrite32be(val, vsc_platform->base_addr + offset);
-> +	mutex_unlock(&vsc->lock);
+Linus Lüssing from the batman-adv asked me to apply this patch to help
+debugging.
 
-Similar question from Andrew, why is the locking done in the platform
-layer, should not that be done in the core I/O operation instead?
+v5.2-rc6-170-g728254541ebc with this patch yielded the following KASAN 
+report, not sure if the additional information at the end is a result of
+the added patch though.
 
-> +
-> +	return 0;
-> +}
-> +
-> +static int vsc73xx_platform_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct vsc73xx_platform *vsc_platform;
-> +	struct resource *res = NULL;
-> +	int ret;
-> +
-> +	vsc_platform = devm_kzalloc(dev, sizeof(*vsc_platform), GFP_KERNEL);
-> +	if (!vsc_platform)
-> +		return -ENOMEM;
-> +
-> +	platform_set_drvdata(pdev, vsc_platform);
-> +	vsc_platform->pdev = pdev;
-> +	vsc_platform->vsc.dev = dev;
-> +	vsc_platform->vsc.priv = vsc_platform;
-> +	vsc_platform->vsc.ops = &vsc73xx_platform_ops;
-> +
-> +	/* obtain I/O memory space */
-> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	if (!res) {
-> +		dev_err(&pdev->dev, "cannot obtain I/O memory space\n");
-> +		ret = -ENXIO;
-> +		return ret;
-> +	}
-> +
-> +	vsc_platform->base_addr = devm_ioremap_resource(&pdev->dev, res);
+Best,
+  Martin
 
-devm_ioremap_resource takes care of checking that the resource pointer
-is valid, no need to do that here.
+From 47a04e977311a0c45f26905588f563b55239da7f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>
+Date: Sat, 29 Jun 2019 20:24:23 +0200
+Subject: [PATCH] bridge: DEBUG: ipv6_addr_is_ll_all_nodes() wrappers for impr.
+ call traces
 
-> +	if (!vsc_platform->base_addr) {
+---
+ net/bridge/br_multicast.c | 70 +++++++++++++++++++++++++++++++++++----
+ 1 file changed, 63 insertions(+), 7 deletions(-)
 
-if (IS_ERR(vsc_platform->base_addr))
+diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
+index de22c8fbbb15..224a43318955 100644
+--- a/net/bridge/br_multicast.c
++++ b/net/bridge/br_multicast.c
+@@ -57,6 +57,42 @@ static void br_ip6_multicast_leave_group(struct net_bridge *br,
+ 					 struct net_bridge_port *port,
+ 					 const struct in6_addr *group,
+ 					 __u16 vid, const unsigned char *src);
++
++static noinline void br_ip6_multicast_leave_group_mld2report(
++					 struct net_bridge *br,
++					 struct net_bridge_port *port,
++					 const struct in6_addr *group,
++					 __u16 vid,
++					 const unsigned char *src)
++{
++	br_ip6_multicast_leave_group(br, port, group, vid, src);
++}
++
++static noinline void br_ip6_multicast_leave_group_ipv6rcv(
++					 struct net_bridge *br,
++					 struct net_bridge_port *port,
++					 const struct in6_addr *group,
++					 __u16 vid,
++					 const unsigned char *src)
++{
++	br_ip6_multicast_leave_group(br, port, group, vid, src);
++}
++
++
++static noinline bool ipv6_addr_is_ll_all_nodes_addgroup(const struct in6_addr *addr)
++{
++	return ipv6_addr_is_ll_all_nodes(addr);
++}
++
++static noinline bool ipv6_addr_is_ll_all_nodes_leavegroup(const struct in6_addr *addr)
++{
++	return ipv6_addr_is_ll_all_nodes(addr);
++}
++
++static noinline bool ipv6_addr_is_ll_all_nodes_mcastrcv(const struct in6_addr *addr)
++{
++	return ipv6_addr_is_ll_all_nodes(addr);
++}
+ #endif
+ 
+ static struct net_bridge_mdb_entry *br_mdb_ip_get_rcu(struct net_bridge *br,
+@@ -595,7 +631,7 @@ static int br_ip6_multicast_add_group(struct net_bridge *br,
+ {
+ 	struct br_ip br_group;
+ 
+-	if (ipv6_addr_is_ll_all_nodes(group))
++	if (ipv6_addr_is_ll_all_nodes_addgroup(group))
+ 		return 0;
+ 
+ 	memset(&br_group, 0, sizeof(br_group));
+@@ -605,6 +641,26 @@ static int br_ip6_multicast_add_group(struct net_bridge *br,
+ 
+ 	return br_multicast_add_group(br, port, &br_group, src);
+ }
++
++static noinline int br_ip6_multicast_add_group_mld2report(
++				      struct net_bridge *br,
++				      struct net_bridge_port *port,
++				      const struct in6_addr *group,
++				      __u16 vid,
++				      const unsigned char *src)
++{
++	return br_ip6_multicast_add_group(br, port, group, vid, src);
++}
++
++static noinline int br_ip6_multicast_add_group_ipv6rcv(
++				      struct net_bridge *br,
++				      struct net_bridge_port *port,
++				      const struct in6_addr *group,
++				      __u16 vid,
++				      const unsigned char *src)
++{
++	return br_ip6_multicast_add_group(br, port, group, vid, src);
++}
+ #endif
+ 
+ static void br_multicast_router_expired(struct timer_list *t)
+@@ -1022,10 +1078,10 @@ static int br_ip6_multicast_mld2_report(struct net_bridge *br,
+ 		if ((grec->grec_type == MLD2_CHANGE_TO_INCLUDE ||
+ 		     grec->grec_type == MLD2_MODE_IS_INCLUDE) &&
+ 		    ntohs(*nsrcs) == 0) {
+-			br_ip6_multicast_leave_group(br, port, &grec->grec_mca,
++			br_ip6_multicast_leave_group_mld2report(br, port, &grec->grec_mca,
+ 						     vid, src);
+ 		} else {
+-			err = br_ip6_multicast_add_group(br, port,
++			err = br_ip6_multicast_add_group_mld2report(br, port,
+ 							 &grec->grec_mca, vid,
+ 							 src);
+ 			if (err)
+@@ -1494,7 +1550,7 @@ static void br_ip6_multicast_leave_group(struct net_bridge *br,
+ 	struct br_ip br_group;
+ 	struct bridge_mcast_own_query *own_query;
+ 
+-	if (ipv6_addr_is_ll_all_nodes(group))
++	if (ipv6_addr_is_ll_all_nodes_leavegroup(group))
+ 		return;
+ 
+ 	own_query = port ? &port->ip6_own_query : &br->ip6_own_query;
+@@ -1658,7 +1714,7 @@ static int br_multicast_ipv6_rcv(struct net_bridge *br,
+ 	err = ipv6_mc_check_mld(skb);
+ 
+ 	if (err == -ENOMSG) {
+-		if (!ipv6_addr_is_ll_all_nodes(&ipv6_hdr(skb)->daddr))
++		if (!ipv6_addr_is_ll_all_nodes_mcastrcv(&ipv6_hdr(skb)->daddr))
+ 			BR_INPUT_SKB_CB(skb)->mrouters_only = 1;
+ 
+ 		if (ipv6_addr_is_all_snoopers(&ipv6_hdr(skb)->daddr)) {
+@@ -1683,7 +1739,7 @@ static int br_multicast_ipv6_rcv(struct net_bridge *br,
+ 	case ICMPV6_MGM_REPORT:
+ 		src = eth_hdr(skb)->h_source;
+ 		BR_INPUT_SKB_CB(skb)->mrouters_only = 1;
+-		err = br_ip6_multicast_add_group(br, port, &mld->mld_mca, vid,
++		err = br_ip6_multicast_add_group_ipv6rcv(br, port, &mld->mld_mca, vid,
+ 						 src);
+ 		break;
+ 	case ICMPV6_MLD2_REPORT:
+@@ -1694,7 +1750,7 @@ static int br_multicast_ipv6_rcv(struct net_bridge *br,
+ 		break;
+ 	case ICMPV6_MGM_REDUCTION:
+ 		src = eth_hdr(skb)->h_source;
+-		br_ip6_multicast_leave_group(br, port, &mld->mld_mca, vid, src);
++		br_ip6_multicast_leave_group_ipv6rcv(br, port, &mld->mld_mca, vid, src);
+ 		break;
+ 	}
+ 
 -- 
-Florian
+2.20.1
+
+
+[  409.353973] ==================================================================                                                                                                                                     
+[  409.356970] BUG: KASAN: out-of-bounds in br_multicast_rcv+0x36e9/0x4080 [bridge]  
+[  409.359360] Read of size 2 at addr ffff888046e980b8 by task swapper/2/0      
+[  409.361668]                                                                                                                                                                                                                                                                         
+[  409.362215] CPU: 2 PID: 0 Comm: swapper/2 Tainted: G           OE     5.2.0-rc6+ #1        
+[  409.364503] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1 04/01/2014
+[  409.367006] Call Trace:                                                         
+[  409.367699]  <IRQ>                                                                                                                                                                                                                                                                  
+[  409.368283]  dump_stack+0x71/0xab                                                                                                                                                                                  
+[  409.369175]  print_address_description+0x6a/0x280                                  
+[  409.370350]  ? br_multicast_rcv+0x36e9/0x4080 [bridge]                                     
+[  409.371752]  __kasan_report+0x152/0x1aa                                                                                                                                                                                                                                             
+[  409.372703]  ? br_multicast_rcv+0x36e9/0x4080 [bridge]                       
+[  409.373950]  ? br_multicast_rcv+0x36e9/0x4080 [bridge]                       
+[  409.375308]  kasan_report+0xe/0x20                                           
+[  409.376149]  br_multicast_rcv+0x36e9/0x4080 [bridge]                                                                                                                                                                                                                                
+[  409.377460]  ? br_multicast_disable_port+0x150/0x150 [bridge]
+[  409.379079]  ? kvm_clock_get_cycles+0xd/0x10                          
+[  409.380291]  ? __kasan_kmalloc.constprop.6+0xa6/0xf0             
+[  409.381693]  ? netif_receive_skb_internal+0x84/0x1a0                                                                                                                                                                                                                                
+[  409.383075]  ? __netif_receive_skb+0x1b0/0x1b0      
+[  409.384355]  ? br_fdb_update+0x10e/0x6e0 [bridge]                   
+[  409.385700]  ? br_handle_frame_finish+0x3c6/0x11d0 [bridge]        
+[  409.387283]  br_handle_frame_finish+0x3c6/0x11d0 [bridge]                                                                                                                                                                                                                           
+[  409.388807]  ? br_pass_frame_up+0x3a0/0x3a0 [bridge]                   
+[  409.390200]  ? virtnet_probe+0x1c80/0x1c80 [virtio_net]               
+[  409.391685]  br_handle_frame+0x731/0xd90 [bridge]                
+[  409.393017]  ? br_handle_frame_finish+0x11d0/0x11d0 [bridge]                                                                                                                                                                                                                        
+[  409.394591]  ? __update_load_avg_se+0x592/0xa70                                   
+[  409.395862]  ? __update_load_avg_se+0x592/0xa70                                                                
+[  409.397065]  __netif_receive_skb_core+0xced/0x2d70                           
+[  409.398208]  ? napi_complete_done+0x10/0x360                                                                                                                                                                                                                                        
+[  409.399249]  ? virtqueue_get_buf_ctx+0x271/0x1130 [virtio_ring]                     
+[  409.400632]  ? do_xdp_generic+0x20/0x20                                      
+[  409.401565]  ? virtqueue_napi_complete+0x39/0x70 [virtio_net]
+[  409.404824]  ? virtnet_poll+0x94d/0xc78 [virtio_net]       
+[  409.407552]  ? receive_buf+0x5120/0x5120 [virtio_net]                                                                                                                                                              
+[  409.410255]  ? __netif_receive_skb_one_core+0x97/0x1d0                            
+[  409.413023]  ? account_entity_enqueue+0x340/0x4c0                             
+[  409.415639]  __netif_receive_skb_one_core+0x97/0x1d0                                                                                                                                                               
+[  409.418346]  ? __netif_receive_skb_core+0x2d70/0x2d70                             
+[  409.421143]  ? _raw_write_trylock+0x100/0x100                                 
+[  409.423775]  process_backlog+0x19c/0x650                                      
+[  409.426383]  net_rx_action+0x71e/0xbc0                                                                                                                                                                             
+[  409.428960]  ? napi_complete_done+0x360/0x360                                     
+[  409.431693]  ? handle_irq_event_percpu+0xeb/0x140                            
+[  409.434705]  ? _raw_spin_lock+0x7a/0xd0                                      
+[  409.439881]  ? _raw_write_trylock+0x100/0x100                                
+[  409.444967]  __do_softirq+0x1db/0x5f9                                        
+[  409.447999]  irq_exit+0x123/0x150                                            
+[  409.451116]  do_IRQ+0x71/0x160                                    
+[  409.453709]  common_interrupt+0xf/0xf                
+[  409.456384]  </IRQ>                                                                                            
+[  409.458708] RIP: 0010:native_safe_halt+0xe/0x10                                                                                                                                                                    
+[  409.461587] Code: 09 f9 fe 48 8b 04 24 e9 12 ff ff ff e9 07 00 00 00 0f 00 2d d4 60 52 00 f4 c3 66 90 e9 07 00 00 00 0f 00 2d c4 60 52 00 fb f4 <c3> 90 66 66 66 66 90 41 56 41 55 41 54 55 53 e8 7e 05 ba fe 65 44
+[  409.469813] RSP: 0018:ffff88805056fd98 EFLAGS: 00000246 ORIG_RAX: ffffffffffffffd3  
+[  409.474002] RAX: ffffffff97f1ad00 RBX: 0000000000000002 RCX: ffffffff96abbbd6
+[  409.477775] RDX: 1ffff1100a0a63d0 RSI: 0000000000000004 RDI: ffff8880510b3f38
+[  409.481830] RBP: ffffed100a0a63d0 R08: ffffed100a2167e8 R09: ffffed100a2167e7                                  
+[  409.486087] R10: ffff8880510b3f3b R11: ffffed100a2167e8 R12: ffffffff98e60480                                                                                                                                      
+[  409.490757] R13: 0000000000000002 R14: 0000000000000000 R15: ffff888050531e80       
+[  409.495061]  ? ldsem_down_write+0x590/0x590                                         
+[  409.499258]  ? rcu_idle_enter+0x106/0x150                                    
+[  409.502755]  ? tsc_verify_tsc_adjust+0x96/0x2a0                               
+[  409.506287]  default_idle+0x1f/0x280                                          
+[  409.509105]  do_idle+0x2d8/0x3e0                                              
+[  409.511741]  ? arch_cpu_idle_exit+0x40/0x40                                                                    
+[  409.514588]  cpu_startup_entry+0x19/0x20                                      
+[  409.517355]  start_secondary+0x316/0x3f0                                            
+[  409.520051]  ? set_cpu_sibling_map+0x19c0/0x19c0                                    
+[  409.522871]  secondary_startup_64+0xa4/0xb0                                   
+[  409.525603]                                                                   
+[  409.527708] Allocated by task 0:                        
+[  409.530201]  save_stack+0x19/0x70                                             
+[  409.532757]  __kasan_kmalloc.constprop.6+0xa6/0xf0                            
+[  409.535660]  __kmalloc_node_track_caller+0xe3/0x2c0                           
+[  409.538641]  __kmalloc_reserve.isra.45+0x2e/0xb0     
+[  409.541426]  pskb_expand_head+0x118/0xcb0                                     
+[  409.544107]  __pskb_pull_tail+0xb9/0x1980                                     
+[  409.546749]  validate_xmit_skb+0x556/0xab0                                    
+[  409.549387]  __dev_queue_xmit+0x11bc/0x2b70                            
+[  409.552145]  ip_finish_output2+0xa7e/0x18c0                    
+[  409.554817]  ip_output+0x1a1/0x2b0                          
+[  409.557335]  ip_forward+0xe39/0x1a20                              
+[  409.559875]  ip_rcv+0xb3/0x180                    
+[  409.562271]  __netif_receive_skb_one_core+0x145/0x1d0                                                          
+[  409.565068]  netif_receive_skb_internal+0x84/0x1a0
+[  409.567841]  napi_gro_flush+0x1d7/0x380                                             
+[  409.570492]  napi_complete_done+0x172/0x360                                         
+[  409.573147]  virtqueue_napi_complete+0x2a/0x70 [virtio_net]
+[  409.576154]  virtnet_poll+0x94d/0xc78 [virtio_net]   
+[  409.578963]  net_rx_action+0x71e/0xbc0            
+[  409.581482]  __do_softirq+0x1db/0x5f9                                         
+[  409.584023]                                                                   
+[  409.586052] Freed by task 12968:                                              
+[  409.588489]  save_stack+0x19/0x70                                 
+[  409.591065]  __kasan_slab_free+0x122/0x180                                    
+[  409.593775]  kfree+0xa6/0x1f0                                                                                  
+[  409.596228]  consume_skb+0x69/0x160                                           
+[  409.598803]  tun_do_read+0x53c/0x1b30 [tun]                                         
+[  409.601563]  tun_chr_read_iter+0x14a/0x2d0 [tun]                                    
+[  409.604477]  new_sync_read+0x3e3/0x6b0                     
+[  409.606956]  vfs_read+0xe9/0x2d0
+[  409.609283]  ksys_read+0xe8/0x1c0                 
+[  409.611566]  do_syscall_64+0xa0/0x2c0                                         
+[  409.613927]  entry_SYSCALL_64_after_hwframe+0x44/0xa9                         
+[  409.616671]                                                                   
+[  409.618573] The buggy address belongs to the object at ffff888046e98000
+[  409.618573]  which belongs to the cache kmalloc-2k of size 2048               
+[  409.624699] The buggy address is located 184 bytes inside of                  
+[  409.624699]  2048-byte region [ffff888046e98000, ffff888046e98800)            
+[  409.630602] The buggy address belongs to the page:      
+[  409.633445] page:ffffea00011ba600 refcount:1 mapcount:0 mapping:ffff888050c02a80 index:0x0 compound_mapcount: 0
+[  409.638069] flags: 0xffffc000010200(slab|head)
+[  409.641048] raw: 00ffffc000010200 dead000000000100 dead000000000200 ffff888050c02a80
+[  409.644876] raw: 0000000000000000 00000000000f000f 00000001ffffffff 0000000000000000
+[  409.648486] page dumped because: kasan: bad access detected
+[  409.651569]
+[  409.653718] Memory state around the buggy address:
+[  409.656635]  ffff888046e97f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[  409.660222]  ffff888046e98000: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[  409.663775] >ffff888046e98080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[  409.667332]                                         ^
+[  409.670247]  ffff888046e98100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[  409.673815]  ffff888046e98180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[  409.677391] ==================================================================
+[  409.681002] Disabling lock debugging due to kernel taint
