@@ -2,93 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 71E2F5C91D
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 08:10:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62BE35C92F
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 08:18:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725868AbfGBGKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 02:10:22 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:40192 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725775AbfGBGKW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 02:10:22 -0400
-Received: by mail-io1-f65.google.com with SMTP id n5so34377350ioc.7;
-        Mon, 01 Jul 2019 23:10:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dpESTJoUvt6Vlyr2kYxBbiDvhF3//mz2Ax3svrqr2kE=;
-        b=W865J4+mrF5Yn7FnCiXw+p98Y95MH4uAyIgkm0DqjJL+9nNU9iqodi4ESm+R1PPEZ4
-         /KKeDkiMDgGukVHp19vlTdAekaez0CCS/SdEjr+02UYkt5RdrRTsDQr4W8AUDZEA3hLS
-         1ODcMsklNh67jggsDpAdfbDwtN1XD1A85qxcpE1hzgw4kOvLaBE099lSbLPuALAAO6zG
-         +gn4mL+CIm7sHpXGwT09+LNzl7B9YHLyrrlhHypKKw1bqmwwKFyPINUQgjoM3L0memAC
-         w2IVyLDV2jTBwGntYSSs2olA75P/EkhjwLK2AlnWwh+HvDeK56h/fZTpPr+J1CoCeCr+
-         pmCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dpESTJoUvt6Vlyr2kYxBbiDvhF3//mz2Ax3svrqr2kE=;
-        b=IwGI6kjVveMvV7PxMxu8yCPaR+rjFNJS3J/HzHKvweW54pRmqPBNE7E559sdt4eMnj
-         +QsZlYujwui6yHR7nYzV7e99uT8JKqqCEcQ93CE+GuyJb2zBdi64c2aBxkTGDC/DaSNu
-         ElFQ6crqkhFpsm6FTqWJxj6Si0az/lc8TkKwlNFPXDmlpryeTWstGdIO5nxW5q3iG7+c
-         kZR6CxvVHw1Ucfd9ofjf3c4zk8mGZQL9sF87To/1FddUWPPm/sLwwLdLATiWrQmEt6oO
-         2ovEA4Brl0oD7TYlRh5tybquBgx7/q3xM2NryylY0nEgdAr/cyOkYMKrSvX4CEyQX3WE
-         JOrg==
-X-Gm-Message-State: APjAAAV67LgbB7KqsdsOl65D2bPadolF2tB3yVmJotc5WfRolQriGP0T
-        +AlWHnfXAsiJ5SUbMZ93N7Qiwx+t2F1Kd5ORAwY=
-X-Google-Smtp-Source: APXvYqztAWJLT71TV/JWgo+PXC1kmCfC0etfReJR3ZZR93dVUlfCDuiYYwZrXSgqgXeJglZwGFtaFlCI7aFbD2+76q8=
-X-Received: by 2002:a5e:aa15:: with SMTP id s21mr29112371ioe.221.1562047821457;
- Mon, 01 Jul 2019 23:10:21 -0700 (PDT)
+        id S1726046AbfGBGSW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 02:18:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48946 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725802AbfGBGSV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jul 2019 02:18:21 -0400
+Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 26C4D2146F;
+        Tue,  2 Jul 2019 06:18:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1562048300;
+        bh=IxbrC5K9TC/Kv5iK1DLlG+8ia477FeG/8e82AOrQ8Rs=;
+        h=Date:From:To:Cc:Subject:From;
+        b=upBKdPKrGf3ce3dFHcbmuihW5ewLNuEpFOx9RngVAJX4wEyY+igBpcLxMwlC8vJYH
+         5Ecko+AcWok3bYJueLT1ZMhT/KXtWXyrzLYnWqDi2jrmH6tEpY2pFs8sk0RRKk7XHp
+         KuYPLFr7QLtWNon8wDKYDu0BwlJIQXmRIcrPDIAc=
+Date:   Mon, 1 Jul 2019 23:18:18 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     dccp@vger.kernel.org, netdev@vger.kernel.org,
+        Gerrit Renker <gerrit@erg.abdn.ac.uk>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Subject: Reminder: 6 open syzbot bugs in "net/dccp" subsystem
+Message-ID: <20190702061818.GE27702@sol.localdomain>
 MIME-Version: 1.0
-References: <20190702054647.1686489-1-andriin@fb.com>
-In-Reply-To: <20190702054647.1686489-1-andriin@fb.com>
-From:   Y Song <ys114321@gmail.com>
-Date:   Mon, 1 Jul 2019 23:09:45 -0700
-Message-ID: <CAH3MdRUv9eJuecKq7weG614+6oEtfLeUHnTxoU19qr39p9-mrQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: fix GCC8 warning for strncpy
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     andrii.nakryiko@gmail.com, bpf <bpf@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Magnus Karlsson <magnus.karlsson@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 1, 2019 at 10:47 PM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> GCC8 started emitting warning about using strncpy with number of bytes
-> exactly equal destination size, which is generally unsafe, as can lead
-> to non-zero terminated string being copied. Use IFNAMSIZ - 1 as number
-> of bytes to ensure name is always zero-terminated.
->
-> Cc: Magnus Karlsson <magnus.karlsson@intel.com>
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
->  tools/lib/bpf/xsk.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-> index bf15a80a37c2..9588e7f87d0b 100644
-> --- a/tools/lib/bpf/xsk.c
-> +++ b/tools/lib/bpf/xsk.c
-> @@ -327,7 +327,7 @@ static int xsk_get_max_queues(struct xsk_socket *xsk)
->
->         channels.cmd = ETHTOOL_GCHANNELS;
->         ifr.ifr_data = (void *)&channels;
-> -       strncpy(ifr.ifr_name, xsk->ifname, IFNAMSIZ);
-> +       strncpy(ifr.ifr_name, xsk->ifname, IFNAMSIZ - 1);
+[This email was generated by a script.  Let me know if you have any suggestions
+to make it better, or if you want it re-generated with the latest status.]
 
-To accommodate the xsk->ifname string length FNAMSIZ - 1, we need to have
-    ifr.ifr_name[FNAMSIZ - 1] = '\0';
-right?
+Of the currently open syzbot reports against the upstream kernel, I've manually
+marked 6 of them as possibly being bugs in the "net/dccp" subsystem.  I've
+listed these reports below, sorted by an algorithm that tries to list first the
+reports most likely to be still valid, important, and actionable.
 
->         err = ioctl(fd, SIOCETHTOOL, &ifr);
->         if (err && errno != EOPNOTSUPP) {
->                 ret = -errno;
-> --
-> 2.17.1
->
+Of these 6 bugs, 1 was seen in mainline in the last week.
+
+If you believe a bug is no longer valid, please close the syzbot report by
+sending a '#syz fix', '#syz dup', or '#syz invalid' command in reply to the
+original thread, as explained at https://goo.gl/tpsmEJ#status
+
+If you believe I misattributed a bug to the "net/dccp" subsystem, please let me
+know, and if possible forward the report to the correct people or mailing list.
+
+Here are the bugs:
+
+--------------------------------------------------------------------------------
+Title:              BUG: please report to dccp@vger.kernel.org => prev = 0, last = 0 at net/dccp/ccids/lib/packet_history.c:LINE/tfrc_rx_hist_sample_rtt()
+Last occurred:      3 days ago
+Reported:           603 days ago
+Branches:           Mainline and others
+Dashboard link:     https://syzkaller.appspot.com/bug?id=0881c535c265ca965edc49c0ac3d0a9850d26eb1
+Original thread:    https://groups.google.com/d/msgid/syzkaller-bugs/94eb2c05611406f6a5055d38a272%40google.com
+
+This bug has a C reproducer.
+
+For some reason the original report email for this bug is missing from the LKML
+archive at lore.kernel.org, so my script couldn't check whether anyone has
+replied to it or not.  The Google Groups link above should still work, though. 
+Also try searching for the bug title.
+
+--------------------------------------------------------------------------------
+Title:              KASAN: use-after-free Read in ccid2_hc_tx_packet_recv
+Last occurred:      4 days ago
+Reported:           455 days ago
+Branches:           Mainline and others
+Dashboard link:     https://syzkaller.appspot.com/bug?id=31f032fe94df7aca6ce5d45455f6acefa26515e4
+Original thread:    https://lkml.kernel.org/lkml/0000000000003872fd0568da185f@google.com/T/#u
+
+This bug has a C reproducer.
+
+No one replied to the original thread for this bug.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+554ccde221001ab5479a@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please consider replying to the
+original thread.  For the git send-email command to use, or tips on how to reply
+if the thread isn't in your mailbox, see the "Reply instructions" at
+https://lkml.kernel.org/r/0000000000003872fd0568da185f@google.com
+
+--------------------------------------------------------------------------------
+Title:              KASAN: use-after-free Read in ccid_hc_tx_delete
+Last occurred:      45 days ago
+Reported:           308 days ago
+Branches:           Mainline and others
+Dashboard link:     https://syzkaller.appspot.com/bug?id=3e769c60cb2d1cab692fd541dae957b1fd31bde4
+Original thread:    https://lkml.kernel.org/lkml/000000000000de3c7705746dcbb7@google.com/T/#u
+
+This bug has a C reproducer.
+
+No one replied to the original thread for this bug.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+3967c1caf256f4d5aefe@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please consider replying to the
+original thread.  For the git send-email command to use, or tips on how to reply
+if the thread isn't in your mailbox, see the "Reply instructions" at
+https://lkml.kernel.org/r/000000000000de3c7705746dcbb7@google.com
+
+--------------------------------------------------------------------------------
+Title:              KMSAN: uninit-value in dccp_invalid_packet
+Last occurred:      437 days ago
+Reported:           438 days ago
+Branches:           Mainline (with KMSAN patches)
+Dashboard link:     https://syzkaller.appspot.com/bug?id=89916fdba284272cdbd0bf00de942f41d052c3f4
+Original thread:    https://lkml.kernel.org/lkml/0000000000000e2bf3056a36962d@google.com/T/#u
+
+This bug has a C reproducer.
+
+No one replied to the original thread for this bug.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+00763607efc31f91b276@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please consider replying to the
+original thread.  For the git send-email command to use, or tips on how to reply
+if the thread isn't in your mailbox, see the "Reply instructions" at
+https://lkml.kernel.org/r/0000000000000e2bf3056a36962d@google.com
+
+--------------------------------------------------------------------------------
+Title:              suspicious RCU usage at ./include/net/inet_sock.h:LINE
+Last occurred:      513 days ago
+Reported:           603 days ago
+Branches:           Mainline and others
+Dashboard link:     https://syzkaller.appspot.com/bug?id=78f9fe251de26a75a60690bc2384d62d2db32299
+Original thread:    https://groups.google.com/d/msgid/syzkaller-bugs/001a1140ad88c4f006055d3836d2%40google.com
+
+This bug has a C reproducer.
+
+For some reason the original report email for this bug is missing from the LKML
+archive at lore.kernel.org, so my script couldn't check whether anyone has
+replied to it or not.  The Google Groups link above should still work, though. 
+Also try searching for the bug title.
+
+--------------------------------------------------------------------------------
+Title:              WARNING: suspicious RCU usage in pid_task
+Last occurred:      280 days ago
+Reported:           380 days ago
+Branches:           Mainline and others
+Dashboard link:     https://syzkaller.appspot.com/bug?id=5b9f20bfdfb67155f627c5e13c258ca56eff026a
+Original thread:    https://lkml.kernel.org/lkml/0000000000002b532a056ebcb3eb@google.com/T/#u
+
+This bug has a C reproducer.
+
+The original thread for this bug received 1 reply, 301 days ago.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+c2d4c3ae3fd90bbaf059@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please consider replying to the
+original thread.  For the git send-email command to use, or tips on how to reply
+if the thread isn't in your mailbox, see the "Reply instructions" at
+https://lkml.kernel.org/r/0000000000002b532a056ebcb3eb@google.com
+
