@@ -2,92 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 61BE55D602
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 20:18:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFF575DAFC
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 03:36:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726765AbfGBSSm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 14:18:42 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:34377 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726291AbfGBSSm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 14:18:42 -0400
-Received: by mail-ed1-f68.google.com with SMTP id s49so28253985edb.1;
-        Tue, 02 Jul 2019 11:18:40 -0700 (PDT)
+        id S1727451AbfGCBgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 21:36:20 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:37026 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726963AbfGCBgT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 21:36:19 -0400
+Received: by mail-pg1-f194.google.com with SMTP id g15so304747pgi.4
+        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 18:36:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=6FDA9K8Eg0DrYoV6H18cZ4zmwn9YbWUb9dW3L/lchDM=;
-        b=XmvpP4bpmD2ftx2G8tJmGIqF+j0wqzhUqr4xYm3CvOdKAzC95mR4abl5+vdbXvut0c
-         9+gC7S4NoEq/C9Vbpnxryq8emDlq60+IKRu0UUKwcIOlVJSvK3+Idq9uiGg8/xaEgB8X
-         nN1x+ExDkRHvT78ZMpnVV/lzAGTufx40ZD9izY1oL1wDJnMJPR5hgOnSjVk7TM1AVyr2
-         7KNrvOCvVUDuLC+fUkPvTLPWC3Ciia6vUmrTFZIO5MPUWzNWelxklms441wCDObHlUhd
-         cJpaBsCONU79OqZL2ga+x6C+YqYPbl/6EkO2o7+3aJQX9Voxl3bbe2zkcndU+Kj+eufT
-         CA0A==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=OaclItD7NGDSjsey3tbhT+f/k4HSHLV82rGxlZ0Hupo=;
+        b=kNWWevjxDFBtqAHSafz0REmEmitiL+6A7lBBl6Z9Ytlbj41dK1+CNpX10CgV6tqN3Q
+         eUO2uHEK6BoSJvCJsVLJ5JTU5r2ZSOiSxxGple/5brcgy+DhHf1VnPyzTJOktf0jQ5Gq
+         ipxFgLa4IjlJJWkBbWJhuJp/4xqjI/H7t+PIY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=6FDA9K8Eg0DrYoV6H18cZ4zmwn9YbWUb9dW3L/lchDM=;
-        b=MFp2WfrlrXFx2cLdB1EGYkxhFpeWGn/xTDb+/O+XPE7JB9mLzsA5y/RJaDEWhAQWD0
-         7/62vPH1qanEInbykvczPZujaC2DtEhOpr3Ip+OJQoIBpKUdR075z6wX7KAdl2fOxE9a
-         FmsJWgNAYL4c5hQjWyCw3ZXBfWTa1LAKO9ybOM94ox6viUhJpCSC9HSahGzq9GGz25ag
-         86GeiIQu2gqakcMKmPOkHOWPAoAVFDBrbDVhJVx83ykTGpIF2Aw7EoDF9CYmlWDQmGPN
-         pNM2QT30IZlX8nhz2GMTEEIQSjAlAgCV+KhaMfDa4yW1TMc5P9h3s+oyKrsD/6cIEsPV
-         0rdQ==
-X-Gm-Message-State: APjAAAUvPv24VefnRdSmyikhSeEM0ljF7Tc0+8buc6dkxLPeBgROm/aC
-        CKEGMxsXWNl/uqn6UmVb7ag=
-X-Google-Smtp-Source: APXvYqxTB811HcYtVYVeo5x+nXbAJILikgNeh0Gur9Y7ztJZkIvOOszbI7RHmnanShh3mT1l8E6xyQ==
-X-Received: by 2002:a50:f599:: with SMTP id u25mr38225155edm.195.1562091519834;
-        Tue, 02 Jul 2019 11:18:39 -0700 (PDT)
-Received: from archlinux-epyc ([2a01:4f9:2b:2b15::2])
-        by smtp.gmail.com with ESMTPSA id q16sm2890782ejj.85.2019.07.02.11.18.38
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 02 Jul 2019 11:18:39 -0700 (PDT)
-Date:   Tue, 2 Jul 2019 11:18:37 -0700
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Miaoqing Pan <miaoqing@codeaurora.org>,
-        Kalle Valo <kvalo@codeaurora.org>
-Cc:     ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com
-Subject: -Wsometimes-uninitialized warning after
- 8b97b055dc9db09b48d5a9a37d847900dd00d3cc
-Message-ID: <20190702181837.GA118849@archlinux-epyc>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=OaclItD7NGDSjsey3tbhT+f/k4HSHLV82rGxlZ0Hupo=;
+        b=gavGXRWB50YXcCV7Cx/AW28T70WhWh/sDNhmmiO3+2mqcQTg8eAOXK5iAVF3tcPr3A
+         j6+AcQGMCau5iSaruzWzIbjlP4g/92hgmSraIZIlhV0uKSnR+wJiNyB8/8ro4d5GdUHn
+         8MWD99pB/FpFaQvmzlRACzRvPYIo/DTyUyoi0bVYdkCslQ+BFLs+WI3Ht+8Ylsy5yznE
+         s4dacEKHKzbzyVLfn2T8ISYIzai3QCEfWj/ecCJbUQvoAZvbmBukE3ioEHqQM3jnMc4i
+         unCwxajuj3sgCpHu65cAoyn6GKPrrOLLRTILO0dSgxx0p4tMxJYyBQfkwA6AEBZ7IUSo
+         lNkQ==
+X-Gm-Message-State: APjAAAUYJNmzqwDW2AGycO4qusCKm1MuHy6j3mjFSwk9ofYmldWFj0Tw
+        YmycESEa2XFDgF/BRqRVDXhPkg==
+X-Google-Smtp-Source: APXvYqww3bvpNMLM4w4pBewDgte906pGeOLG/xtRE1fYclLJgRjEFZT5FyrXB5cCVp9gYsCY5g1ngA==
+X-Received: by 2002:a17:90a:be08:: with SMTP id a8mr7519671pjs.69.1562101445606;
+        Tue, 02 Jul 2019 14:04:05 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id q3sm48479pgv.21.2019.07.02.14.04.02
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 02 Jul 2019 14:04:02 -0700 (PDT)
+Date:   Tue, 2 Jul 2019 11:24:35 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Andy Lutomirski <luto@kernel.org>
+Cc:     Song Liu <songliubraving@fb.com>,
+        "linux-security@vger.kernel.org" <linux-security@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Jann Horn <jannh@google.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linux API <linux-api@vger.kernel.org>
+Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
+Message-ID: <201907021115.DCD56BBABB@keescook>
+References: <20190627201923.2589391-1-songliubraving@fb.com>
+ <20190627201923.2589391-2-songliubraving@fb.com>
+ <21894f45-70d8-dfca-8c02-044f776c5e05@kernel.org>
+ <3C595328-3ABE-4421-9772-8D41094A4F57@fb.com>
+ <CALCETrWBnH4Q43POU8cQ7YMjb9LioK28FDEQf7aHZbdf1eBZWg@mail.gmail.com>
+ <0DE7F23E-9CD2-4F03-82B5-835506B59056@fb.com>
+ <CALCETrWBWbNFJvsTCeUchu3BZJ3SH3dvtXLUB2EhnPrzFfsLNA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <CALCETrWBWbNFJvsTCeUchu3BZJ3SH3dvtXLUB2EhnPrzFfsLNA@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+On Mon, Jul 01, 2019 at 06:59:13PM -0700, Andy Lutomirski wrote:
+> I think I'm understanding your motivation.  You're not trying to make
+> bpf() generically usable without privilege -- you're trying to create
+> a way to allow certain users to access dangerous bpf functionality
+> within some limits.
+> 
+> That's a perfectly fine goal, but I think you're reinventing the
+> wheel, and the wheel you're reinventing is quite complicated and
+> already exists.  I think you should teach bpftool to be secure when
+> installed setuid root or with fscaps enabled and put your policy in
+> bpftool.  If you want to harden this a little bit, it would seem
+> entirely reasonable to add a new CAP_BPF_ADMIN and change some, but
+> not all, of the capable() checks to check CAP_BPF_ADMIN instead of the
+> capabilities that they currently check.
 
-After commit 8b97b055dc9d ("ath10k: fix failure to set multiple fixed
-rate") in -next, clang warns:
+If finer grained controls are wanted, it does seem like the /dev/bpf
+path makes the most sense. open, request abilities, use fd. The open can
+be mediated by DAC and LSM. The request can be mediated by LSM. This
+provides a way to add policy at the LSM level and at the tool level.
+(i.e. For tool-level controls: leave LSM wide open, make /dev/bpf owned
+by "bpfadmin" and bpftool becomes setuid "bpfadmin". For fine-grained
+controls, leave /dev/bpf wide open and add policy to SELinux, etc.)
 
-../drivers/net/wireless/ath/ath10k/mac.c:7528:7: warning: variable 'vht_pfr' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-                if (!ath10k_mac_can_set_bitrate_mask(ar, band, mask,
-                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-../drivers/net/wireless/ath/ath10k/mac.c:7551:20: note: uninitialized use occurs here
-                arvif->vht_pfr = vht_pfr;
-                                 ^~~~~~~
-../drivers/net/wireless/ath/ath10k/mac.c:7528:3: note: remove the 'if' if its condition is always true
-                if (!ath10k_mac_can_set_bitrate_mask(ar, band, mask,
-                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-../drivers/net/wireless/ath/ath10k/mac.c:7483:12: note: initialize the variable 'vht_pfr' to silence this warning
-        u8 vht_pfr;
-                  ^
-                   = '\0'
-1 warning generated.
+With only a new CAP, you don't get the fine-grained controls. (The
+"request abilities" part is the key there.)
 
-This definitely seems legitimate as the call to
-ath10k_mac_can_set_bitrate_mask might fail and vht_pfr
-won't be initialized. I would fix this myself but I assume
-there is a sane default value for vht_pfr other than just
-0 that should be used?
-
-Please look into this when you get a chance. Thanks,
-Nathan
+-- 
+Kees Cook
