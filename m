@@ -2,140 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E95D15CFB6
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 14:44:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B83875CFD4
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 14:54:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726825AbfGBMok (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 08:44:40 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:39620 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726167AbfGBMok (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 08:44:40 -0400
-Received: by mail-qk1-f196.google.com with SMTP id i125so13779128qkd.6;
-        Tue, 02 Jul 2019 05:44:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:subject:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=12DvkmsIeJchtWeIYbkkPm0CS9UwzM+pY9NcdRKJXAs=;
-        b=lsJx5lBpRBZjNj+5nK4dJ+DtsTXH08kT7T/VPeQKT9M/7F8t14tEA1L6HB7mqquGz5
-         QUs9FAa4cCqDpE8UR885Mj5VOhX8Ws8B5tiOm7WdYsv8Zvo4eOqsCeFQ48+twRIRixic
-         DA+RmflG5Jew7L7Ekh8Pky2lnbDl2QcJ7PfMGy6EjNCQt31vRouRsVDSS+wU0eOl7Nvk
-         gQ1D4pgMhjiH1oIfwB+A9lsBueHqNQZZfb9uloz0AgW4cp0Y1tKCiRxdt0RcAs7VoJgf
-         cigPc85MExR2+ibp1QK1WVStKAnuGyMHL8BecDVG6hxHHQpkgsQmzKy5lcnWBi1cAmyU
-         MwIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=12DvkmsIeJchtWeIYbkkPm0CS9UwzM+pY9NcdRKJXAs=;
-        b=uTLiStz2u9wuxjdZfcHloyYQibEhJiukh0sHAh3ZP0JkVuacd9Iq3F90WpGLlUeEDg
-         bD/DfKe2hk7YlNT7pcWC1pSTKbyT8/Tr0nXS5NZK8Wmvi/2TLSZx3dc4yleICu5Giyoj
-         RhA01vjJmOZ8cuF7oj5oh4WbGWErQ2BlTfuRKExcA5gWNgncQm1qaamFsd2C1iZxmXV2
-         au7BhPWtngJGdcVCO/MX2XtlL+9b1FqWyvtT30KxQu6T+YPAZTL0CFzGcq1g8eMnapLs
-         8FUC1hL+CPUaOoQfJH6t9ClOcRtGO/lf5Ii/xmL7gBluAlD34IywSuF+u5H/FHr2l6+a
-         6buQ==
-X-Gm-Message-State: APjAAAXV/T9/wg9tSh3i7WcED/x1AzLk9jv6n708vrzYZlSZce8rTWMJ
-        7+bA84JPr3LYO8e0kt5Y4qY=
-X-Google-Smtp-Source: APXvYqxVzJZDPRBzxtZBOov+pn/D6Gdft1M0srMH15n4l+GpGb00FLuFSt6r+WXgCdR6Be8w6RbBqw==
-X-Received: by 2002:a37:6587:: with SMTP id z129mr24845496qkb.295.1562071478848;
-        Tue, 02 Jul 2019 05:44:38 -0700 (PDT)
-Received: from ?IPv6:2620:10d:c0a8:11c1::1019? ([2620:10d:c091:480::c41e])
-        by smtp.gmail.com with ESMTPSA id o71sm6087975qke.18.2019.07.02.05.44.37
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Tue, 02 Jul 2019 05:44:38 -0700 (PDT)
-From:   Jes Sorensen <jes.sorensen@gmail.com>
-X-Google-Original-From: Jes Sorensen <Jes.Sorensen@gmail.com>
-Subject: Re: [PATCH] rtl8xxxu: Fix wifi low signal strength issue of RTL8723BU
-To:     Chris Chiu <chiu@endlessm.com>, kvalo@codeaurora.org,
-        davem@davemloft.net
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux@endlessm.com
-References: <20190627095247.8792-1-chiu@endlessm.com>
-Message-ID: <31f59db2-0e04-447b-48f8-66ea53ebfa7d@gmail.com>
-Date:   Tue, 2 Jul 2019 08:44:36 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1726980AbfGBMy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 08:54:58 -0400
+Received: from albert.telenet-ops.be ([195.130.137.90]:58288 "EHLO
+        albert.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726820AbfGBMy5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 08:54:57 -0400
+Received: from ramsan ([84.194.98.4])
+        by albert.telenet-ops.be with bizsmtp
+        id Xoup2000305gfCL06oup4h; Tue, 02 Jul 2019 14:54:54 +0200
+Received: from geert (helo=localhost)
+        by ramsan with local-esmtp (Exim 4.90_1)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1hiIJ7-0001Wd-2N; Tue, 02 Jul 2019 14:54:49 +0200
+Date:   Tue, 2 Jul 2019 14:54:49 +0200 (CEST)
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     Mahesh Bandewar <maheshb@google.com>
+cc:     Netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Daniel Axtens <dja@axtens.net>,
+        Mahesh Bandewar <mahesh@bandewar.net>,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: suspicious RCU usage (was: Re: [PATCHv3 next 1/3] loopback: create
+ blackhole net device similar to loopack.)
+In-Reply-To: <20190701213849.102759-1-maheshb@google.com>
+Message-ID: <alpine.DEB.2.21.1907021450320.5764@ramsan.of.borg>
+References: <20190701213849.102759-1-maheshb@google.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-In-Reply-To: <20190627095247.8792-1-chiu@endlessm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/27/19 5:52 AM, Chris Chiu wrote:
-> The WiFi tx power of RTL8723BU is extremely low after booting. So
-> the WiFi scan gives very limited AP list and it always fails to
-> connect to the selected AP. This module only supports 1x1 antenna
-> and the antenna is switched to bluetooth due to some incorrect
-> register settings.
-> 
-> This commit hand over the antenna control to PTA, the wifi signal
-> will be back to normal and the bluetooth scan can also work at the
-> same time. However, the btcoexist still needs to be handled under
-> different circumstances. If there's a BT connection established,
-> the wifi still fails to connect until disconneting the BT.
-> 
-> Signed-off-by: Chris Chiu <chiu@endlessm.com>
+ 	Hi Mahesh,
+
+On Mon, 1 Jul 2019, Mahesh Bandewar wrote:
+> Create a blackhole net device that can be used for "dead"
+> dst entries instead of loopback device. This blackhole device differs
+> from loopback in few aspects: (a) It's not per-ns. (b)  MTU on this
+> device is ETH_MIN_MTU (c) The xmit function is essentially kfree_skb().
+> and (d) since it's not registered it won't have ifindex.
+>
+> Lower MTU effectively make the device not pass the MTU check during
+> the route check when a dst associated with the skb is dead.
+>
+> Signed-off-by: Mahesh Bandewar <maheshb@google.com>
+
+This is now commit 4de83b88c66a1e4d ("loopback: create blackhole net
+device similar to loopack.") in net-next, and causes the following
+warning on arm64:
+
+     WARNING: suspicious RCU usage
+     5.2.0-rc6-arm64-renesas-01699-g4de83b88c66a1e4d #263 Not tainted
+     -----------------------------
+     include/linux/rtnetlink.h:85 suspicious rcu_dereference_protected() usage!
+
+     other info that might help us debug this:
+
+
+     rcu_scheduler_active = 2, debug_locks = 1
+     no locks held by swapper/0/1.
+
+     stack backtrace:
+     CPU: 2 PID: 1 Comm: swapper/0 Not tainted 5.2.0-rc6-arm64-renesas-01699-g4de83b88c66a1e4d #263
+     Hardware name: Renesas Salvator-X 2nd version board based on r8a7795 ES2.0+ (DT)
+     Call trace:
+      dump_backtrace+0x0/0x148
+      show_stack+0x14/0x20
+      dump_stack+0xd4/0x11c
+      lockdep_rcu_suspicious+0xcc/0x110
+      dev_init_scheduler+0x114/0x150
+      blackhole_netdev_init+0x40/0x80
+      do_one_initcall+0x178/0x37c
+      kernel_init_freeable+0x490/0x530
+      kernel_init+0x10/0x100
+      ret_from_fork+0x10/0x1c
+
+
 > ---
->  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c | 9 ++++++---
->  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c  | 3 ++-
->  2 files changed, 8 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
-> index 3adb1d3d47ac..6c3c70d93ac1 100644
-> --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
-> +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
-> @@ -1525,7 +1525,7 @@ static void rtl8723b_enable_rf(struct rtl8xxxu_priv *priv)
->  	/*
->  	 * WLAN action by PTA
->  	 */
-> -	rtl8xxxu_write8(priv, REG_WLAN_ACT_CONTROL_8723B, 0x04);
-> +	rtl8xxxu_write8(priv, REG_WLAN_ACT_CONTROL_8723B, 0x0c);
->  
->  	/*
->  	 * BT select S0/S1 controlled by WiFi
-> @@ -1568,9 +1568,12 @@ static void rtl8723b_enable_rf(struct rtl8xxxu_priv *priv)
->  	rtl8xxxu_gen2_h2c_cmd(priv, &h2c, sizeof(h2c.ant_sel_rsv));
->  
->  	/*
-> -	 * 0x280, 0x00, 0x200, 0x80 - not clear
-> +	 * Different settings per different antenna position.
-> +	 * Antenna switch to BT: 0x280, 0x00 (inverse)
-> +	 * Antenna switch to WiFi: 0x0, 0x280 (inverse)
-> +	 * Antenna controlled by PTA: 0x200, 0x80 (inverse)
->  	 */
-> -	rtl8xxxu_write32(priv, REG_S0S1_PATH_SWITCH, 0x00);
-> +	rtl8xxxu_write32(priv, REG_S0S1_PATH_SWITCH, 0x80);
->  
->  	/*
->  	 * Software control, antenna at WiFi side
-> diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-> index 8136e268b4e6..87b2179a769e 100644
-> --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-> +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-> @@ -3891,12 +3891,13 @@ static int rtl8xxxu_init_device(struct ieee80211_hw *hw)
->  
->  	/* Check if MAC is already powered on */
->  	val8 = rtl8xxxu_read8(priv, REG_CR);
-> +	val16 = rtl8xxxu_read16(priv, REG_SYS_CLKR);
->  
->  	/*
->  	 * Fix 92DU-VC S3 hang with the reason is that secondary mac is not
->  	 * initialized. First MAC returns 0xea, second MAC returns 0x00
->  	 */
-> -	if (val8 == 0xea)
-> +	if (val8 == 0xea || !(val16 & BIT(11)))
->  		macpower = false;
->  	else
->  		macpower = true;
+> v1->v2->v3
+>  no change
+>
+> drivers/net/loopback.c    | 76 ++++++++++++++++++++++++++++++++++-----
+> include/linux/netdevice.h |  2 ++
+> 2 files changed, 69 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/net/loopback.c b/drivers/net/loopback.c
+> index 87d361666cdd..3b39def5471e 100644
+> --- a/drivers/net/loopback.c
+> +++ b/drivers/net/loopback.c
+> @@ -55,6 +55,13 @@
+> #include <net/net_namespace.h>
+> #include <linux/u64_stats_sync.h>
+>
+> +/* blackhole_netdev - a device used for dsts that are marked expired!
+> + * This is global device (instead of per-net-ns) since it's not needed
+> + * to be per-ns and gets initialized at boot time.
+> + */
+> +struct net_device *blackhole_netdev;
+> +EXPORT_SYMBOL(blackhole_netdev);
+> +
+> /* The higher levels take care of making this non-reentrant (it's
+>  * called with bh's disabled).
+>  */
+> @@ -150,12 +157,14 @@ static const struct net_device_ops loopback_ops = {
+> 	.ndo_set_mac_address = eth_mac_addr,
+> };
+>
+> -/* The loopback device is special. There is only one instance
+> - * per network namespace.
+> - */
+> -static void loopback_setup(struct net_device *dev)
+> +static void gen_lo_setup(struct net_device *dev,
+> +			 unsigned int mtu,
+> +			 const struct ethtool_ops *eth_ops,
+> +			 const struct header_ops *hdr_ops,
+> +			 const struct net_device_ops *dev_ops,
+> +			 void (*dev_destructor)(struct net_device *dev))
+> {
+> -	dev->mtu		= 64 * 1024;
+> +	dev->mtu		= mtu;
+> 	dev->hard_header_len	= ETH_HLEN;	/* 14	*/
+> 	dev->min_header_len	= ETH_HLEN;	/* 14	*/
+> 	dev->addr_len		= ETH_ALEN;	/* 6	*/
+> @@ -174,11 +183,20 @@ static void loopback_setup(struct net_device *dev)
+> 		| NETIF_F_NETNS_LOCAL
+> 		| NETIF_F_VLAN_CHALLENGED
+> 		| NETIF_F_LOOPBACK;
+> -	dev->ethtool_ops	= &loopback_ethtool_ops;
+> -	dev->header_ops		= &eth_header_ops;
+> -	dev->netdev_ops		= &loopback_ops;
+> +	dev->ethtool_ops	= eth_ops;
+> +	dev->header_ops		= hdr_ops;
+> +	dev->netdev_ops		= dev_ops;
+> 	dev->needs_free_netdev	= true;
+> -	dev->priv_destructor	= loopback_dev_free;
+> +	dev->priv_destructor	= dev_destructor;
+> +}
+> +
+> +/* The loopback device is special. There is only one instance
+> + * per network namespace.
+> + */
+> +static void loopback_setup(struct net_device *dev)
+> +{
+> +	gen_lo_setup(dev, (64 * 1024), &loopback_ethtool_ops, &eth_header_ops,
+> +		     &loopback_ops, loopback_dev_free);
+> }
+>
+> /* Setup and register the loopback device. */
+> @@ -213,3 +231,43 @@ static __net_init int loopback_net_init(struct net *net)
+> struct pernet_operations __net_initdata loopback_net_ops = {
+> 	.init = loopback_net_init,
+> };
+> +
+> +/* blackhole netdevice */
+> +static netdev_tx_t blackhole_netdev_xmit(struct sk_buff *skb,
+> +					 struct net_device *dev)
+> +{
+> +	kfree_skb(skb);
+> +	net_warn_ratelimited("%s(): Dropping skb.\n", __func__);
+> +	return NETDEV_TX_OK;
+> +}
+> +
+> +static const struct net_device_ops blackhole_netdev_ops = {
+> +	.ndo_start_xmit = blackhole_netdev_xmit,
+> +};
+> +
+> +/* This is a dst-dummy device used specifically for invalidated
+> + * DSTs and unlike loopback, this is not per-ns.
+> + */
+> +static void blackhole_netdev_setup(struct net_device *dev)
+> +{
+> +	gen_lo_setup(dev, ETH_MIN_MTU, NULL, NULL, &blackhole_netdev_ops, NULL);
+> +}
+> +
+> +/* Setup and register the blackhole_netdev. */
+> +static int __init blackhole_netdev_init(void)
+> +{
+> +	blackhole_netdev = alloc_netdev(0, "blackhole_dev", NET_NAME_UNKNOWN,
+> +					blackhole_netdev_setup);
+> +	if (!blackhole_netdev)
+> +		return -ENOMEM;
+> +
+> +	dev_init_scheduler(blackhole_netdev);
+> +	dev_activate(blackhole_netdev);
+> +
+> +	blackhole_netdev->flags |= IFF_UP | IFF_RUNNING;
+> +	dev_net_set(blackhole_netdev, &init_net);
+> +
+> +	return 0;
+> +}
+> +
+> +device_initcall(blackhole_netdev_init);
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index eeacebd7debb..88292953aa6f 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -4870,4 +4870,6 @@ do {								\
+> #define PTYPE_HASH_SIZE	(16)
+> #define PTYPE_HASH_MASK	(PTYPE_HASH_SIZE - 1)
+>
+> +extern struct net_device *blackhole_netdev;
+> +
+> #endif	/* _LINUX_NETDEVICE_H */
+>
+Gr{oetje,eeting}s,
 
-This part I would like to ask you take a good look at the other chips to
-make sure you don't break support for 8192cu, 8723au, 8188eu with this.
+ 						Geert
 
-Cheers,
-Jes
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+ 							    -- Linus Torvalds
+
