@@ -2,91 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 564955CEF4
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 13:58:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81DB45CF0E
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 14:05:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726526AbfGBL5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 07:57:54 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:44538 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725867AbfGBL5y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 07:57:54 -0400
-Received: by mail-wr1-f65.google.com with SMTP id e3so7935516wrs.11
-        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 04:57:52 -0700 (PDT)
+        id S1726432AbfGBMFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 08:05:04 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:45637 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726252AbfGBMFE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 08:05:04 -0400
+Received: by mail-wr1-f66.google.com with SMTP id f9so17459830wre.12
+        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 05:05:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=twoed304bVANHmzTBGu83qACybedl04wF9pEcLlsQ7g=;
-        b=p5+MgVUg30QZOEvU3DNgmUA3aC46BhnbMqOeupqqsWTqAXZSMCgbzOB+jammgHIiJe
-         SBoanEe6kV+few/FCFhJv+wqst9rDwGhBbeUIzciEytg9mjufMW+0tBNnYkR+p4e2z57
-         tnu7X4hXVAJBD0WhvyRUp0o1AQsHAkD5OYlstXyB0waLFkOIQbf/FJTZ7r+WJfR83aGJ
-         R+VSjJugI22/GaEC5k4W7PM5UofS0vjDOqMmRKV2dTa/HOdFJEivTSQhFP7tNYSmUIRh
-         IqxjP0KexxLnKoiUM8NBQnyQcll7Swi8PFRr+AqR5vvBmJStxGkIk7jh+i//oOOrLy8B
-         8C1g==
+        d=cumulusnetworks.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=z8dZZIPpeZ1Qw73KcIU6q0OGE71quMthD7zEmsELvnY=;
+        b=WaX5g02y0EPpCZNkzhaCztvLQ4Ru36Q/9DnYFyUVnT0Lt2Ro7A+fs9wicsQPbmRCRB
+         4CRVtdcJRyW27MwQnkNt+FgU/9GS5MdEme98/kchdypCjlY0t9uaTr0Lrop/lxd1XHgk
+         erq8PbI4Sm3m38nhYGFMzmqGR5/S8/Jvpj4CQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=twoed304bVANHmzTBGu83qACybedl04wF9pEcLlsQ7g=;
-        b=CT0J33gRLgF+UJnr2I9PJ63cs3+dtvBpsoSCtt9z21arhST9UXG/5aEdFpdxGok/IS
-         Aczm/Pwc7GakjOjKKxhDoSi1RAV4FkwGCCrwvj7/4dbJLnwbSm7hIvAQap+M1i5V6784
-         cXfgSs7+Npj3o3WLFn3IMRfJUUmiVf1b88A3DYnOi8hXDPvAA8dY+FAcdMJ49ibrESh6
-         WaLtWUDoaBcVEFBd4AuL9q1Aqs7Cl+5HhtqwGx/Ds2mXBsdb6W0dUvDeAOetWqEJJud1
-         ni16oI/W1LZoPa6pK/5aeuwo0fTjleRZyTb35b1+SxoatZ4s46aS906RpQcK4/RMu+nL
-         1ZbA==
-X-Gm-Message-State: APjAAAUqskTAIgnEiqmPnekTk8pe7zNT5hyoEJ0qWP8/y4nUyfglOzJV
-        pvj8hSzl0cthq6BoJw+F+UbF/g==
-X-Google-Smtp-Source: APXvYqwikzNFnHZpdxrcgln2rDmWrFAF+J4y5fKblz1UG9SGZcsUr6O6KdmPdmTb/GLXfW8cLJTRmw==
-X-Received: by 2002:a5d:618d:: with SMTP id j13mr23127089wru.195.1562068671649;
-        Tue, 02 Jul 2019 04:57:51 -0700 (PDT)
-Received: from localhost (ip-213-220-235-213.net.upcbroadband.cz. [213.220.235.213])
-        by smtp.gmail.com with ESMTPSA id e20sm20148618wrc.9.2019.07.02.04.57.51
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=z8dZZIPpeZ1Qw73KcIU6q0OGE71quMthD7zEmsELvnY=;
+        b=XpYkc0WEuDwsbWW92tWFOfj5SHJepiHie/5X37LvBk2U5YH0N+WSPDHah62MjNANQE
+         Pi/Z0SQN/D0lx2VPPwuNIHuGat5r87ym8oS8mua/r2mkxE9a4lSId8F5ro3yGK1tLAZ9
+         zhFOlXaUKYjSxjOD5g6CmZzhDYEK3IRqRGBU/TWMnZQ79eQKOVWr1w45Goty9FlbyI5z
+         LEVPckmP+9203hnbhBbwupxrYHMzZUtvnjSS7EbkG3zVFscpaax9YWC1L+KyP4Rvcw3y
+         J3XJD73Gtf00ApZokbkFCGHyppKk3WMTje/uAb/YQTCW9qGwzY9KfmmZUpsF8zoRkXlg
+         J0yw==
+X-Gm-Message-State: APjAAAX8YCpiVZwgOs3YkRQu2pSUdUZdcmQTTJe9iMEvFSA93gMX3BJJ
+        5kR/KrW+M1JYEojxU7XcgeHSZG8mJvU=
+X-Google-Smtp-Source: APXvYqxSvvR0qkSlyguGfRbfByRydHf5S7LBqHmC+qbtMiQVH/XrqNL4opuMaag4Wu6VRzDleQPELg==
+X-Received: by 2002:a05:6000:11ca:: with SMTP id i10mr3816459wrx.56.1562069102074;
+        Tue, 02 Jul 2019 05:05:02 -0700 (PDT)
+Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id x5sm2542655wmf.33.2019.07.02.05.05.01
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 02 Jul 2019 04:57:51 -0700 (PDT)
-Date:   Tue, 2 Jul 2019 13:57:50 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Linville <linville@tuxdriver.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v6 01/15] rtnetlink: provide permanent hardware
- address in RTM_NEWLINK
-Message-ID: <20190702115750.GL2250@nanopsycho>
-References: <cover.1562067622.git.mkubecek@suse.cz>
- <b6e0aefbcb58297b3ec0a12ee4be8e5194eee61a.1562067622.git.mkubecek@suse.cz>
+        Tue, 02 Jul 2019 05:05:01 -0700 (PDT)
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+To:     netdev@vger.kernel.org
+Cc:     roopa@cumulusnetworks.com, davem@davemloft.net,
+        martin@linuxlounge.net, bridge@lists.linux-foundation.org,
+        yoshfuji@linux-ipv6.org,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Subject: [PATCH net 0/4] net: bridge: fix possible stale skb pointers
+Date:   Tue,  2 Jul 2019 15:00:17 +0300
+Message-Id: <20190702120021.13096-1-nikolay@cumulusnetworks.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b6e0aefbcb58297b3ec0a12ee4be8e5194eee61a.1562067622.git.mkubecek@suse.cz>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Jul 02, 2019 at 01:49:44PM CEST, mkubecek@suse.cz wrote:
->Permanent hardware address of a network device was traditionally provided
->via ethtool ioctl interface but as Jiri Pirko pointed out in a review of
->ethtool netlink interface, rtnetlink is much more suitable for it so let's
->add it to the RTM_NEWLINK message.
->
->Add IFLA_PERM_ADDRESS attribute to RTM_NEWLINK messages unless the
->permanent address is all zeros (i.e. device driver did not fill it). As
->permanent address is not modifiable, reject userspace requests containing
->IFLA_PERM_ADDRESS attribute.
->
->Note: we already provide permanent hardware address for bond slaves;
->unfortunately we cannot drop that attribute for backward compatibility
->reasons.
->
->v5 -> v6: only add the attribute if permanent address is not zero
->
->Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+Hi,
+In the bridge driver we have a couple of places which call pskb_may_pull
+but we've cached skb pointers before that and use them after which can
+lead to out-of-bounds/stale pointer use. I've had these in my "to fix"
+list for some time and now we got a report (patch 01) so here they are.
+Patches 02-04 are fixes based on code inspection. Also patch 01 was
+tested by Martin Weinelt, Martin if you don't mind please add your
+tested-by tag to it by replying with Tested-by: name <email>.
+I've also briefly tested the set by trying to exercise those code paths.
 
-Acked-by: Jiri Pirko <jiri@mellanox.com>
+Thanks,
+ Nik
+
+Nikolay Aleksandrov (4):
+  net: bridge: mcast: fix stale nsrcs pointer in igmp3/mld2 report
+    handling
+  net: bridge: mcast: fix stale ipv6 hdr pointer when handling v6 query
+  net: bridge: don't cache ether dest pointer on input
+  net: bridge: stp: don't cache eth dest pointer before skb pull
+
+ net/bridge/br_input.c     |  8 +++-----
+ net/bridge/br_multicast.c | 23 +++++++++++++----------
+ net/bridge/br_stp_bpdu.c  |  3 +--
+ 3 files changed, 17 insertions(+), 17 deletions(-)
+
+-- 
+2.21.0
+
