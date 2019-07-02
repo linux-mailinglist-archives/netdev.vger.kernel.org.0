@@ -2,26 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B89815CEC8
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 13:50:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A5705CECD
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 13:50:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727113AbfGBLuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 07:50:17 -0400
-Received: from mx2.suse.de ([195.135.220.15]:38700 "EHLO mx1.suse.de"
+        id S1727137AbfGBLuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 07:50:22 -0400
+Received: from mx2.suse.de ([195.135.220.15]:38790 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727059AbfGBLuQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jul 2019 07:50:16 -0400
+        id S1727059AbfGBLuV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jul 2019 07:50:21 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 929D0B14A;
-        Tue,  2 Jul 2019 11:50:14 +0000 (UTC)
+        by mx1.suse.de (Postfix) with ESMTP id 9A28EB152;
+        Tue,  2 Jul 2019 11:50:19 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 413B1E0159; Tue,  2 Jul 2019 13:50:14 +0200 (CEST)
-Message-Id: <4dcac81783de8686edefa262a1db75f9e961b123.1562067622.git.mkubecek@suse.cz>
+        id 47A25E0159; Tue,  2 Jul 2019 13:50:19 +0200 (CEST)
+Message-Id: <0647ac484dac2c655d0e4260d81e86405688ff5b.1562067622.git.mkubecek@suse.cz>
 In-Reply-To: <cover.1562067622.git.mkubecek@suse.cz>
 References: <cover.1562067622.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH net-next v6 07/15] ethtool: support for netlink notifications
+Subject: [PATCH net-next v6 08/15] ethtool: move string arrays into common
+ file
 To:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org
 Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         Jiri Pirko <jiri@resnulli.us>, Andrew Lunn <andrew@lunn.ch>,
@@ -30,157 +31,252 @@ Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         Stephen Hemminger <stephen@networkplumber.org>,
         Johannes Berg <johannes@sipsolutions.net>,
         linux-kernel@vger.kernel.org
-Date:   Tue,  2 Jul 2019 13:50:14 +0200 (CEST)
+Date:   Tue,  2 Jul 2019 13:50:19 +0200 (CEST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add infrastructure for ethtool netlink notifications. There is only one
-multicast group "monitor" which is used to notify userspace about changes
-and actions performed. Notification messages (types using suffix _NTF)
-share the format with replies to GET requests.
-
-Notifications are supposed to be broadcasted on every configuration change,
-whether it is done using the netlink interface or ioctl one. Netlink SET
-requests only trigger a notification if some data is actually changed.
-
-To trigger an ethtool notification, both ethtool netlink and external code
-use ethtool_notify() helper. This helper requires RTNL to be held and may
-sleep. Handlers sending messages for specific notification message types
-are registered in ethnl_notify_handlers array. As notifications can be
-triggered from other code, ethnl_ok flag is used to prevent an attempt to
-send notification before genetlink family is registered.
+Introduce file net/ethtool/common.c for code shared by ioctl and netlink
+ethtool interface. Move name tables of features, RSS hash functions,
+tunables and PHY tunables into this file.
 
 Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 ---
- include/linux/ethtool_netlink.h      |  5 ++++
- include/linux/netdevice.h            | 12 ++++++++++
- include/uapi/linux/ethtool_netlink.h |  2 ++
- net/ethtool/netlink.c                | 35 ++++++++++++++++++++++++++++
- 4 files changed, 54 insertions(+)
+ net/ethtool/Makefile |  2 +-
+ net/ethtool/common.c | 84 ++++++++++++++++++++++++++++++++++++++++++++
+ net/ethtool/common.h | 17 +++++++++
+ net/ethtool/ioctl.c  | 83 ++-----------------------------------------
+ 4 files changed, 104 insertions(+), 82 deletions(-)
+ create mode 100644 net/ethtool/common.c
+ create mode 100644 net/ethtool/common.h
 
-diff --git a/include/linux/ethtool_netlink.h b/include/linux/ethtool_netlink.h
-index 0412adb4f42f..2a15e64a16f3 100644
---- a/include/linux/ethtool_netlink.h
-+++ b/include/linux/ethtool_netlink.h
-@@ -5,5 +5,10 @@
+diff --git a/net/ethtool/Makefile b/net/ethtool/Makefile
+index 482fdb9380fa..11782306593b 100644
+--- a/net/ethtool/Makefile
++++ b/net/ethtool/Makefile
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
  
- #include <uapi/linux/ethtool_netlink.h>
- #include <linux/ethtool.h>
-+#include <linux/netdevice.h>
+-obj-y				+= ioctl.o
++obj-y				+= ioctl.o common.o
+ 
+ obj-$(CONFIG_ETHTOOL_NETLINK)	+= ethtool_nl.o
+ 
+diff --git a/net/ethtool/common.c b/net/ethtool/common.c
+new file mode 100644
+index 000000000000..b0ce420e994e
+--- /dev/null
++++ b/net/ethtool/common.c
+@@ -0,0 +1,84 @@
++// SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note
 +
-+enum ethtool_multicast_groups {
-+	ETHNL_MCGRP_MONITOR,
++#include "common.h"
++
++const char netdev_features_strings[NETDEV_FEATURE_COUNT][ETH_GSTRING_LEN] = {
++	[NETIF_F_SG_BIT] =               "tx-scatter-gather",
++	[NETIF_F_IP_CSUM_BIT] =          "tx-checksum-ipv4",
++	[NETIF_F_HW_CSUM_BIT] =          "tx-checksum-ip-generic",
++	[NETIF_F_IPV6_CSUM_BIT] =        "tx-checksum-ipv6",
++	[NETIF_F_HIGHDMA_BIT] =          "highdma",
++	[NETIF_F_FRAGLIST_BIT] =         "tx-scatter-gather-fraglist",
++	[NETIF_F_HW_VLAN_CTAG_TX_BIT] =  "tx-vlan-hw-insert",
++
++	[NETIF_F_HW_VLAN_CTAG_RX_BIT] =  "rx-vlan-hw-parse",
++	[NETIF_F_HW_VLAN_CTAG_FILTER_BIT] = "rx-vlan-filter",
++	[NETIF_F_HW_VLAN_STAG_TX_BIT] =  "tx-vlan-stag-hw-insert",
++	[NETIF_F_HW_VLAN_STAG_RX_BIT] =  "rx-vlan-stag-hw-parse",
++	[NETIF_F_HW_VLAN_STAG_FILTER_BIT] = "rx-vlan-stag-filter",
++	[NETIF_F_VLAN_CHALLENGED_BIT] =  "vlan-challenged",
++	[NETIF_F_GSO_BIT] =              "tx-generic-segmentation",
++	[NETIF_F_LLTX_BIT] =             "tx-lockless",
++	[NETIF_F_NETNS_LOCAL_BIT] =      "netns-local",
++	[NETIF_F_GRO_BIT] =              "rx-gro",
++	[NETIF_F_GRO_HW_BIT] =           "rx-gro-hw",
++	[NETIF_F_LRO_BIT] =              "rx-lro",
++
++	[NETIF_F_TSO_BIT] =              "tx-tcp-segmentation",
++	[NETIF_F_GSO_ROBUST_BIT] =       "tx-gso-robust",
++	[NETIF_F_TSO_ECN_BIT] =          "tx-tcp-ecn-segmentation",
++	[NETIF_F_TSO_MANGLEID_BIT] =	 "tx-tcp-mangleid-segmentation",
++	[NETIF_F_TSO6_BIT] =             "tx-tcp6-segmentation",
++	[NETIF_F_FSO_BIT] =              "tx-fcoe-segmentation",
++	[NETIF_F_GSO_GRE_BIT] =		 "tx-gre-segmentation",
++	[NETIF_F_GSO_GRE_CSUM_BIT] =	 "tx-gre-csum-segmentation",
++	[NETIF_F_GSO_IPXIP4_BIT] =	 "tx-ipxip4-segmentation",
++	[NETIF_F_GSO_IPXIP6_BIT] =	 "tx-ipxip6-segmentation",
++	[NETIF_F_GSO_UDP_TUNNEL_BIT] =	 "tx-udp_tnl-segmentation",
++	[NETIF_F_GSO_UDP_TUNNEL_CSUM_BIT] = "tx-udp_tnl-csum-segmentation",
++	[NETIF_F_GSO_PARTIAL_BIT] =	 "tx-gso-partial",
++	[NETIF_F_GSO_SCTP_BIT] =	 "tx-sctp-segmentation",
++	[NETIF_F_GSO_ESP_BIT] =		 "tx-esp-segmentation",
++	[NETIF_F_GSO_UDP_L4_BIT] =	 "tx-udp-segmentation",
++
++	[NETIF_F_FCOE_CRC_BIT] =         "tx-checksum-fcoe-crc",
++	[NETIF_F_SCTP_CRC_BIT] =        "tx-checksum-sctp",
++	[NETIF_F_FCOE_MTU_BIT] =         "fcoe-mtu",
++	[NETIF_F_NTUPLE_BIT] =           "rx-ntuple-filter",
++	[NETIF_F_RXHASH_BIT] =           "rx-hashing",
++	[NETIF_F_RXCSUM_BIT] =           "rx-checksum",
++	[NETIF_F_NOCACHE_COPY_BIT] =     "tx-nocache-copy",
++	[NETIF_F_LOOPBACK_BIT] =         "loopback",
++	[NETIF_F_RXFCS_BIT] =            "rx-fcs",
++	[NETIF_F_RXALL_BIT] =            "rx-all",
++	[NETIF_F_HW_L2FW_DOFFLOAD_BIT] = "l2-fwd-offload",
++	[NETIF_F_HW_TC_BIT] =		 "hw-tc-offload",
++	[NETIF_F_HW_ESP_BIT] =		 "esp-hw-offload",
++	[NETIF_F_HW_ESP_TX_CSUM_BIT] =	 "esp-tx-csum-hw-offload",
++	[NETIF_F_RX_UDP_TUNNEL_PORT_BIT] =	 "rx-udp_tunnel-port-offload",
++	[NETIF_F_HW_TLS_RECORD_BIT] =	"tls-hw-record",
++	[NETIF_F_HW_TLS_TX_BIT] =	 "tls-hw-tx-offload",
++	[NETIF_F_HW_TLS_RX_BIT] =	 "tls-hw-rx-offload",
 +};
- 
- #endif /* _LINUX_ETHTOOL_NETLINK_H_ */
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 88292953aa6f..c57d9917fd50 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -4350,6 +4350,18 @@ struct netdev_notifier_bonding_info {
- void netdev_bonding_info_change(struct net_device *dev,
- 				struct netdev_bonding_info *bonding_info);
- 
-+#if IS_ENABLED(CONFIG_ETHTOOL_NETLINK)
-+void ethtool_notify(struct net_device *dev, struct netlink_ext_ack *extack,
-+		    unsigned int cmd, u32 req_mask, const void *data);
-+#else
-+static inline void ethtool_notify(struct net_device *dev,
-+				  struct netlink_ext_ack *extack,
-+				  unsigned int cmd, u32 req_mask,
-+				  const void *data)
-+{
-+}
-+#endif
 +
- static inline
- struct sk_buff *skb_gso_segment(struct sk_buff *skb, netdev_features_t features)
++const char
++rss_hash_func_strings[ETH_RSS_HASH_FUNCS_COUNT][ETH_GSTRING_LEN] = {
++	[ETH_RSS_HASH_TOP_BIT] =	"toeplitz",
++	[ETH_RSS_HASH_XOR_BIT] =	"xor",
++	[ETH_RSS_HASH_CRC32_BIT] =	"crc32",
++};
++
++const char
++tunable_strings[__ETHTOOL_TUNABLE_COUNT][ETH_GSTRING_LEN] = {
++	[ETHTOOL_ID_UNSPEC]     = "Unspec",
++	[ETHTOOL_RX_COPYBREAK]	= "rx-copybreak",
++	[ETHTOOL_TX_COPYBREAK]	= "tx-copybreak",
++	[ETHTOOL_PFC_PREVENTION_TOUT] = "pfc-prevention-tout",
++};
++
++const char
++phy_tunable_strings[__ETHTOOL_PHY_TUNABLE_COUNT][ETH_GSTRING_LEN] = {
++	[ETHTOOL_ID_UNSPEC]     = "Unspec",
++	[ETHTOOL_PHY_DOWNSHIFT]	= "phy-downshift",
++	[ETHTOOL_PHY_FAST_LINK_DOWN] = "phy-fast-link-down",
++};
+diff --git a/net/ethtool/common.h b/net/ethtool/common.h
+new file mode 100644
+index 000000000000..41b2efc1e4e1
+--- /dev/null
++++ b/net/ethtool/common.h
+@@ -0,0 +1,17 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++
++#ifndef _ETHTOOL_COMMON_H
++#define _ETHTOOL_COMMON_H
++
++#include <linux/ethtool.h>
++
++extern const char
++netdev_features_strings[NETDEV_FEATURE_COUNT][ETH_GSTRING_LEN];
++extern const char
++rss_hash_func_strings[ETH_RSS_HASH_FUNCS_COUNT][ETH_GSTRING_LEN];
++extern const char
++tunable_strings[__ETHTOOL_TUNABLE_COUNT][ETH_GSTRING_LEN];
++extern const char
++phy_tunable_strings[__ETHTOOL_PHY_TUNABLE_COUNT][ETH_GSTRING_LEN];
++
++#endif /* _ETHTOOL_COMMON_H */
+diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+index 6288e69e94fc..b35366dd9997 100644
+--- a/net/ethtool/ioctl.c
++++ b/net/ethtool/ioctl.c
+@@ -27,6 +27,8 @@
+ #include <net/xdp_sock.h>
+ #include <net/flow_offload.h>
+ 
++#include "common.h"
++
+ /*
+  * Some useful ethtool_ops methods that're device independent.
+  * If we find that all drivers want to do the same thing here,
+@@ -54,87 +56,6 @@ EXPORT_SYMBOL(ethtool_op_get_ts_info);
+ 
+ #define ETHTOOL_DEV_FEATURE_WORDS	((NETDEV_FEATURE_COUNT + 31) / 32)
+ 
+-static const char netdev_features_strings[NETDEV_FEATURE_COUNT][ETH_GSTRING_LEN] = {
+-	[NETIF_F_SG_BIT] =               "tx-scatter-gather",
+-	[NETIF_F_IP_CSUM_BIT] =          "tx-checksum-ipv4",
+-	[NETIF_F_HW_CSUM_BIT] =          "tx-checksum-ip-generic",
+-	[NETIF_F_IPV6_CSUM_BIT] =        "tx-checksum-ipv6",
+-	[NETIF_F_HIGHDMA_BIT] =          "highdma",
+-	[NETIF_F_FRAGLIST_BIT] =         "tx-scatter-gather-fraglist",
+-	[NETIF_F_HW_VLAN_CTAG_TX_BIT] =  "tx-vlan-hw-insert",
+-
+-	[NETIF_F_HW_VLAN_CTAG_RX_BIT] =  "rx-vlan-hw-parse",
+-	[NETIF_F_HW_VLAN_CTAG_FILTER_BIT] = "rx-vlan-filter",
+-	[NETIF_F_HW_VLAN_STAG_TX_BIT] =  "tx-vlan-stag-hw-insert",
+-	[NETIF_F_HW_VLAN_STAG_RX_BIT] =  "rx-vlan-stag-hw-parse",
+-	[NETIF_F_HW_VLAN_STAG_FILTER_BIT] = "rx-vlan-stag-filter",
+-	[NETIF_F_VLAN_CHALLENGED_BIT] =  "vlan-challenged",
+-	[NETIF_F_GSO_BIT] =              "tx-generic-segmentation",
+-	[NETIF_F_LLTX_BIT] =             "tx-lockless",
+-	[NETIF_F_NETNS_LOCAL_BIT] =      "netns-local",
+-	[NETIF_F_GRO_BIT] =              "rx-gro",
+-	[NETIF_F_GRO_HW_BIT] =           "rx-gro-hw",
+-	[NETIF_F_LRO_BIT] =              "rx-lro",
+-
+-	[NETIF_F_TSO_BIT] =              "tx-tcp-segmentation",
+-	[NETIF_F_GSO_ROBUST_BIT] =       "tx-gso-robust",
+-	[NETIF_F_TSO_ECN_BIT] =          "tx-tcp-ecn-segmentation",
+-	[NETIF_F_TSO_MANGLEID_BIT] =	 "tx-tcp-mangleid-segmentation",
+-	[NETIF_F_TSO6_BIT] =             "tx-tcp6-segmentation",
+-	[NETIF_F_FSO_BIT] =              "tx-fcoe-segmentation",
+-	[NETIF_F_GSO_GRE_BIT] =		 "tx-gre-segmentation",
+-	[NETIF_F_GSO_GRE_CSUM_BIT] =	 "tx-gre-csum-segmentation",
+-	[NETIF_F_GSO_IPXIP4_BIT] =	 "tx-ipxip4-segmentation",
+-	[NETIF_F_GSO_IPXIP6_BIT] =	 "tx-ipxip6-segmentation",
+-	[NETIF_F_GSO_UDP_TUNNEL_BIT] =	 "tx-udp_tnl-segmentation",
+-	[NETIF_F_GSO_UDP_TUNNEL_CSUM_BIT] = "tx-udp_tnl-csum-segmentation",
+-	[NETIF_F_GSO_PARTIAL_BIT] =	 "tx-gso-partial",
+-	[NETIF_F_GSO_SCTP_BIT] =	 "tx-sctp-segmentation",
+-	[NETIF_F_GSO_ESP_BIT] =		 "tx-esp-segmentation",
+-	[NETIF_F_GSO_UDP_L4_BIT] =	 "tx-udp-segmentation",
+-
+-	[NETIF_F_FCOE_CRC_BIT] =         "tx-checksum-fcoe-crc",
+-	[NETIF_F_SCTP_CRC_BIT] =        "tx-checksum-sctp",
+-	[NETIF_F_FCOE_MTU_BIT] =         "fcoe-mtu",
+-	[NETIF_F_NTUPLE_BIT] =           "rx-ntuple-filter",
+-	[NETIF_F_RXHASH_BIT] =           "rx-hashing",
+-	[NETIF_F_RXCSUM_BIT] =           "rx-checksum",
+-	[NETIF_F_NOCACHE_COPY_BIT] =     "tx-nocache-copy",
+-	[NETIF_F_LOOPBACK_BIT] =         "loopback",
+-	[NETIF_F_RXFCS_BIT] =            "rx-fcs",
+-	[NETIF_F_RXALL_BIT] =            "rx-all",
+-	[NETIF_F_HW_L2FW_DOFFLOAD_BIT] = "l2-fwd-offload",
+-	[NETIF_F_HW_TC_BIT] =		 "hw-tc-offload",
+-	[NETIF_F_HW_ESP_BIT] =		 "esp-hw-offload",
+-	[NETIF_F_HW_ESP_TX_CSUM_BIT] =	 "esp-tx-csum-hw-offload",
+-	[NETIF_F_RX_UDP_TUNNEL_PORT_BIT] =	 "rx-udp_tunnel-port-offload",
+-	[NETIF_F_HW_TLS_RECORD_BIT] =	"tls-hw-record",
+-	[NETIF_F_HW_TLS_TX_BIT] =	 "tls-hw-tx-offload",
+-	[NETIF_F_HW_TLS_RX_BIT] =	 "tls-hw-rx-offload",
+-};
+-
+-static const char
+-rss_hash_func_strings[ETH_RSS_HASH_FUNCS_COUNT][ETH_GSTRING_LEN] = {
+-	[ETH_RSS_HASH_TOP_BIT] =	"toeplitz",
+-	[ETH_RSS_HASH_XOR_BIT] =	"xor",
+-	[ETH_RSS_HASH_CRC32_BIT] =	"crc32",
+-};
+-
+-static const char
+-tunable_strings[__ETHTOOL_TUNABLE_COUNT][ETH_GSTRING_LEN] = {
+-	[ETHTOOL_ID_UNSPEC]     = "Unspec",
+-	[ETHTOOL_RX_COPYBREAK]	= "rx-copybreak",
+-	[ETHTOOL_TX_COPYBREAK]	= "tx-copybreak",
+-	[ETHTOOL_PFC_PREVENTION_TOUT] = "pfc-prevention-tout",
+-};
+-
+-static const char
+-phy_tunable_strings[__ETHTOOL_PHY_TUNABLE_COUNT][ETH_GSTRING_LEN] = {
+-	[ETHTOOL_ID_UNSPEC]     = "Unspec",
+-	[ETHTOOL_PHY_DOWNSHIFT]	= "phy-downshift",
+-	[ETHTOOL_PHY_FAST_LINK_DOWN] = "phy-fast-link-down",
+-};
+-
+ static int ethtool_get_features(struct net_device *dev, void __user *useraddr)
  {
-diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
-index 805f314f4454..8938a1f09057 100644
---- a/include/uapi/linux/ethtool_netlink.h
-+++ b/include/uapi/linux/ethtool_netlink.h
-@@ -91,4 +91,6 @@ enum {
- #define ETHTOOL_GENL_NAME "ethtool"
- #define ETHTOOL_GENL_VERSION 1
- 
-+#define ETHTOOL_MCGRP_MONITOR_NAME "monitor"
-+
- #endif /* _UAPI_LINUX_ETHTOOL_NETLINK_H_ */
-diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
-index e13f29bbd625..a7a0bfe1818c 100644
---- a/net/ethtool/netlink.c
-+++ b/net/ethtool/netlink.c
-@@ -6,6 +6,8 @@
- 
- static struct genl_family ethtool_genl_family;
- 
-+static bool ethnl_ok __read_mostly;
-+
- static const struct nla_policy dflt_header_policy[ETHTOOL_A_HEADER_MAX + 1] = {
- 	[ETHTOOL_A_HEADER_UNSPEC]	= { .type = NLA_REJECT },
- 	[ETHTOOL_A_HEADER_DEV_INDEX]	= { .type = NLA_U32 },
-@@ -176,11 +178,41 @@ struct sk_buff *ethnl_reply_init(size_t payload, struct net_device *dev, u8 cmd,
- 	return NULL;
- }
- 
-+/* notifications */
-+
-+typedef void (*ethnl_notify_handler_t)(struct net_device *dev,
-+				       struct netlink_ext_ack *extack,
-+				       unsigned int cmd, u32 req_mask,
-+				       const void *data);
-+
-+static const ethnl_notify_handler_t ethnl_notify_handlers[] = {
-+};
-+
-+void ethtool_notify(struct net_device *dev, struct netlink_ext_ack *extack,
-+		    unsigned int cmd, u32 req_mask, const void *data)
-+{
-+	if (unlikely(!ethnl_ok))
-+		return;
-+	ASSERT_RTNL();
-+
-+	if (likely(cmd < ARRAY_SIZE(ethnl_notify_handlers) &&
-+		   ethnl_notify_handlers[cmd]))
-+		ethnl_notify_handlers[cmd](dev, extack, cmd, req_mask, data);
-+	else
-+		WARN_ONCE(1, "notification %u not implemented (dev=%s, req_mask=0x%x)\n",
-+			  cmd, netdev_name(dev), req_mask);
-+}
-+EXPORT_SYMBOL(ethtool_notify);
-+
- /* genetlink setup */
- 
- static const struct genl_ops ethtool_genl_ops[] = {
- };
- 
-+static const struct genl_multicast_group ethtool_nl_mcgrps[] = {
-+	[ETHNL_MCGRP_MONITOR] = { .name = ETHTOOL_MCGRP_MONITOR_NAME },
-+};
-+
- static struct genl_family ethtool_genl_family = {
- 	.name		= ETHTOOL_GENL_NAME,
- 	.version	= ETHTOOL_GENL_VERSION,
-@@ -188,6 +220,8 @@ static struct genl_family ethtool_genl_family = {
- 	.parallel_ops	= true,
- 	.ops		= ethtool_genl_ops,
- 	.n_ops		= ARRAY_SIZE(ethtool_genl_ops),
-+	.mcgrps		= ethtool_nl_mcgrps,
-+	.n_mcgrps	= ARRAY_SIZE(ethtool_nl_mcgrps),
- };
- 
- /* module setup */
-@@ -199,6 +233,7 @@ static int __init ethnl_init(void)
- 	ret = genl_register_family(&ethtool_genl_family);
- 	if (WARN(ret < 0, "ethtool: genetlink family registration failed"))
- 		return ret;
-+	ethnl_ok = true;
- 
- 	return 0;
- }
+ 	struct ethtool_gfeatures cmd = {
 -- 
 2.22.0
 
