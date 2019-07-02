@@ -2,99 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D1815D1E4
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 16:40:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC50F5D1E7
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 16:40:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726283AbfGBOkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 10:40:18 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:40801 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725940AbfGBOkR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 10:40:17 -0400
-Received: by mail-wm1-f68.google.com with SMTP id v19so1302066wmj.5
-        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 07:40:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=tTmjtWmWf6ZvGqYByeM0PAx1Zh0B/h0VLok6y8JFxKo=;
-        b=a30Sb2J/457IynmLDyZPJms4qf14q0PyLiU/z8Glv3g2iB72yL7nDusskvXdF81q3k
-         r3OWjTSWFOC15CEywhzL5pY4ysjnI/mgdoT/kGh/hTFFI5vdFQAIQP6aNJQQjWacD/zw
-         euIUYnxmpkoLLiK8U3UfPMlMgrdNmP8KKXro0XK/c8wX/49sdVzPjkQkrbqN7JOdVrg1
-         iD63o/xOhc9I0V/jvgpi9rJ7euFyEN82buXmobY3vpLJ5lg+luNBEr03tM+WJbhyYgyP
-         WQXkLrw23kkHQqy3gmXGSWW3Qpt/nNFaJRYM/3l5H3Dc1QBIIRS+20qeoRAqLDrwsmtb
-         gb7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=tTmjtWmWf6ZvGqYByeM0PAx1Zh0B/h0VLok6y8JFxKo=;
-        b=qGb1euKLF3Acr8MYUa7DPYm6bihl6QvsuJRk72xCC32aI4Tq9rpDSKzVnN6jMjZqtA
-         7+uH5nVHBcFxHJCNVqPEi7dNhoCp7I/A403kHtqtStIPqNAiefFB3/Klp487wUjPp4nf
-         X3Xf6N18bEScDFSXnDTD0krrdMxfGSRTG14J0/ZnwgCt+QOFI+qTX+v4CawAGU86aE4Y
-         b9Lm238bO8m13DEDBaF296vfyn1sBxEzIXPFaEUJKd67ELpMYOhI7gVf9piJwMSpxhkk
-         lwZetEIWrYYiGStFob0t3aX1rV6wFB3ymj4MFugUeAE9lRLXfnNDBPPbExo+n79FNF+e
-         gcNg==
-X-Gm-Message-State: APjAAAWu77XZrFsS5+2M4E+liJEQTapmtfNj6n0QwVb0Bafk5hQFNaNK
-        /gEoyb3ST5y760cmj+n/wBK0tzYejduLysrbVYw=
-X-Google-Smtp-Source: APXvYqztise+8XJdpsu/8AJaoAsgwG0QyM0Qr630Y9vulFEOxxuIcTCA/unfEunjR6/r5ZRJIUjKEB7ANireHmdbTrU=
-X-Received: by 2002:a05:600c:2182:: with SMTP id e2mr3687092wme.104.1562078415791;
- Tue, 02 Jul 2019 07:40:15 -0700 (PDT)
+        id S1727068AbfGBOkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 10:40:31 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:53878 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725940AbfGBOkb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 10:40:31 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
+        (Exim 4.76)
+        (envelope-from <colin.king@canonical.com>)
+        id 1hiJxK-0004Hn-VT; Tue, 02 Jul 2019 14:40:27 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Maya Erez <merez@codeaurora.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, wil6210@qti.qualcomm.com,
+        netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] wil6210: fix wil_cid_valid with negative cid values
+Date:   Tue,  2 Jul 2019 15:40:26 +0100
+Message-Id: <20190702144026.13013-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <54cee375-f1c3-a2b3-ea89-919b0af60433@yandex.ru> <fc526c78-2d3f-90ca-8317-a89eb653cbf9@yandex.ru>
-In-Reply-To: <fc526c78-2d3f-90ca-8317-a89eb653cbf9@yandex.ru>
-From:   Richard Weinberger <richard.weinberger@gmail.com>
-Date:   Tue, 2 Jul 2019 16:40:03 +0200
-Message-ID: <CAFLxGvytDC1TFdT0m9vvijz_93B8TziWURcR-3mskWB-7TzFag@mail.gmail.com>
-Subject: Re: [PATCH] User mode linux bump maximum MTU tuntap interface [RESAND]
-To:     =?UTF-8?B?0JDQu9C10LrRgdC10Lk=?= <ne-vlezay80@yandex.ru>
-Cc:     netdev@vger.kernel.org, linux-um@lists.infradead.org,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CC'ing um folks.
+From: Colin Ian King <colin.king@canonical.com>
 
-On Tue, Jul 2, 2019 at 3:01 PM =D0=90=D0=BB=D0=B5=D0=BA=D1=81=D0=B5=D0=B9 <=
-ne-vlezay80@yandex.ru> wrote:
->
-> Hello, the parameter  ETH_MAX_PACKET limited to 1500 bytes is the not
-> support jumbo frames.
->
-> This patch change ETH_MAX_PACKET the 65535 bytes to jumbo frame support
-> with user mode linux tuntap driver.
->
->
-> PATCH:
->
-> -------------------
->
->
-> diff -ruNP ../linux_orig/linux-5.1/arch/um/include/shared/net_user.h
-> ./arch/um/include/shared/net_user.h
-> --- a/arch/um/include/shared/net_user.h    2019-05-06 00:42:58.000000000
-> +0000
-> +++ b/arch/um/include/shared/net_user.h    2019-07-02 07:14:13.593333356
-> +0000
-> @@ -9,7 +9,7 @@
->  #define ETH_ADDR_LEN (6)
->  #define ETH_HEADER_ETHERTAP (16)
->  #define ETH_HEADER_OTHER (26) /* 14 for ethernet + VLAN + MPLS for
-> crazy people */
-> -#define ETH_MAX_PACKET (1500)
-> +#define ETH_MAX_PACKET (65535)
->
->  #define UML_NET_VERSION (4)
->
-> -------------------
->
->
+There are several occasions where a negative cid value is passed
+into wil_cid_valid and this is converted into a u8 causing the
+range check of cid >= 0 to always succeed.  Fix this by making
+the cid argument an int to handle any -ve error value of cid.
 
+An example of this behaviour is in wil_cfg80211_dump_station,
+where cid is assigned -ENOENT if the call to wil_find_cid_by_idx
+fails, and this -ve value is passed to wil_cid_valid.  I believe
+that the conversion of -ENOENT to the u8 value 254 which is
+greater than wil->max_assoc_sta causes wil_find_cid_by_idx to
+currently work fine, but I think is by luck and not the
+intended behaviour.
 
---=20
-Thanks,
-//richard
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/wireless/ath/wil6210/wil6210.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/ath/wil6210/wil6210.h b/drivers/net/wireless/ath/wil6210/wil6210.h
+index 6f456b311a39..25a1adcb38eb 100644
+--- a/drivers/net/wireless/ath/wil6210/wil6210.h
++++ b/drivers/net/wireless/ath/wil6210/wil6210.h
+@@ -1144,7 +1144,7 @@ static inline void wil_c(struct wil6210_priv *wil, u32 reg, u32 val)
+ /**
+  * wil_cid_valid - check cid is valid
+  */
+-static inline bool wil_cid_valid(struct wil6210_priv *wil, u8 cid)
++static inline bool wil_cid_valid(struct wil6210_priv *wil, int cid)
+ {
+ 	return (cid >= 0 && cid < wil->max_assoc_sta);
+ }
+-- 
+2.20.1
+
