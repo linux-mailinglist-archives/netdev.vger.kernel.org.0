@@ -2,232 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B74B85CD1E
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 12:00:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E2905CD20
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 12:02:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727169AbfGBKA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 06:00:56 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:38383 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726213AbfGBKAz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 06:00:55 -0400
-Received: by mail-pl1-f194.google.com with SMTP id 9so117531ple.5
-        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 03:00:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=gcpSo2zN747jEWG2nxHZ/JI8q6vz3s3mmrB7ZXpv6Yk=;
-        b=tnnYOTAsHjg/CzlLK41jHssHNTw8jR8fAS8dnA1kdv1dxEbqXyZFnnufaL5sy+j9wC
-         Oi5aJuy5YnuS6ECUBQaDmKv2Iw3/tL/VDBpti4U12/8UiTiaR/oYL4f4KQzUeWTpEhQo
-         TlMlh+qT0/XhCpENdCD2M1ZDNPnfoe6WIEgI7x11v/eSJDjWf7qihJ7eSkf67kIU2ZyB
-         mRRXKHywna0apP/IUvISB1tnhzviZa0FBhUlv/kSprxTrgr5PfFspQS6ECuLD5FSnkdF
-         z2gxXwU6yOZNL88rGAiSB3SY2ahlRdFhPA0pUGfQJJJOqHbsZYvi6ott+Fsqjdku+JBE
-         5ZGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=gcpSo2zN747jEWG2nxHZ/JI8q6vz3s3mmrB7ZXpv6Yk=;
-        b=ugYFSm6i1oej49l40m0MCV/CWJk1Qg51+zXnIelUCWR119iHZlwmFO+O6Ta24SNlbS
-         9kPHgW6BWXjyzOXjhuU3q7iSmeewORI0OiQinWo3cptenWVP09TV7QZKF+kGAnhxsPM3
-         n0X5cLZ+bkcZmNoRUwppQs98tgx/1mv9NKeDvWOexJyP9tClqnsaHW/81EGHlzMEHwnA
-         5HCkcRo2da4Xgtx5wu9zAq8N1gqKEL72iwyruP5q+Y7eM5uL/7vY0vm7fqgiuzi/RrEc
-         gri58zIBzNVD7gPKMVjVoI1kYv//NuhpkEgClSj9eW6JMSDb1jaB+N5t6HTgIvFzv2OA
-         4V9g==
-X-Gm-Message-State: APjAAAWf2msA782IVnZVBPa+Bh2IvqQ2lv47YwNTA8wv3n0aMhZqrvSP
-        Ut24am+YvqHd7QS5U87kO7c=
-X-Google-Smtp-Source: APXvYqy6yZ1s1Cu2K46eHDEidHKoG1OH2LR9v97zt7QJm0j3xwR3LHNVZdmbbs3rt8lneGE6On6L/Q==
-X-Received: by 2002:a17:902:7603:: with SMTP id k3mr34676335pll.245.1562061654761;
-        Tue, 02 Jul 2019 03:00:54 -0700 (PDT)
-Received: from [172.20.20.103] ([222.151.198.97])
-        by smtp.gmail.com with ESMTPSA id a5sm123793pjv.21.2019.07.02.03.00.51
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Tue, 02 Jul 2019 03:00:54 -0700 (PDT)
-Subject: Re: [Bridge] VLAN tags in mac_len
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        netdev@vger.kernel.org, roopa@cumulusnetworks.com,
-        bridge@lists.linux-foundation.org,
-        Zahari Doychev <zahari.doychev@linux.com>, jhs@mojatatu.com,
-        Simon Horman <simon.horman@netronome.com>,
-        David Ahern <dsahern@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-References: <68c99662210c8e9e37f198ddf8cb00bccf301c4b.camel@sipsolutions.net>
- <20190615151913.cgrfyflwwnhym4u2@ast-mbp.dhcp.thefacebook.com>
- <e487656b854ca999d14eb8072e5553eb2676a9f4.camel@sipsolutions.net>
- <828a23fe-8466-ae65-7829-620f32aacead@gmail.com>
- <411e7717a68243fc775910ee01fa110c45ce0630.camel@sipsolutions.net>
-From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
-Message-ID: <0860e598-b270-aee5-4e94-4193e4271356@gmail.com>
-Date:   Tue, 2 Jul 2019 19:00:48 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1726455AbfGBKCy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 06:02:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39036 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725996AbfGBKCx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jul 2019 06:02:53 -0400
+Received: from localhost (unknown [37.142.3.125])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6408A205ED;
+        Tue,  2 Jul 2019 10:02:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1562061772;
+        bh=h5R9OqZQY3ZxC+GjjI+tK/ggfL3/K+WtJUAr8K9Ec0E=;
+        h=From:To:Cc:Subject:Date:From;
+        b=hiHzdtdlKKQLmDKrCQlkYYtjiLvHPlWC2WEVIASXiY69tFB2IPDA2gLE3Sefq1n/Z
+         ZqtZYLglJI0GifUt5OVs5Vi5PzCgBmAcbF9Lr0hCWXjG9X2gt0lOvgndKxINGSNX7E
+         HIL7pcunWpEf4t1XnvhO2SfuRh74E6Mm6aIxMEYM=
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@mellanox.com>
+Cc:     Leon Romanovsky <leonro@mellanox.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Majd Dibbiny <majd@mellanox.com>,
+        Mark Zhang <markz@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>
+Subject: [PATCH rdma-next v5 00/17] Statistics counter support
+Date:   Tue,  2 Jul 2019 13:02:29 +0300
+Message-Id: <20190702100246.17382-1-leon@kernel.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <411e7717a68243fc775910ee01fa110c45ce0630.camel@sipsolutions.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019/06/28 20:02, Johannes Berg wrote:
-> On Mon, 2019-06-17 at 20:15 +0900, Toshiaki Makita wrote:
->> I'll try to explain the problem I see, which cannot be fixed by option 1...
->> The bug is in tcf_vlan_act(), and mainly in skb->data, not in mac_len.
->>
->> Consider about vlan packets from NIC, but non-hw-accelerated, where
->> vlan devices are configured to receive them.
->>
->> When __netif_receive_skb_core() is called, skb is like this.
->>
->> +-----+------+--------
->>> eth | vlan | TCP/IP
->>
->> +-----+------+--------
->>         ^
->>        data
->>
->> skb->data is at the beginning of the vlan header.
-> 
-> Right.
-> 
->> This is reasonable because we did not process the vlan tag at this point.
-> 
-> I think with this simple sentence you just threw a whole new semantic
-> issue into the mix, one that I at least hadn't considered.
->
-> However, it's not clear to me whether we should consider a tag as
-> processed or not when we push it.
+From: Leon Romanovsky <leonro@mellanox.com>
 
-It's clear that we always insert a tag as unprocessed in a single tag case.
-The tag is inserted as hw-offloaded one, and hw-offloaded one is treated
-as an unprocessed tag in __netif_receive_skb_core().
-The single tag is the most common usage I think, so unprocessed should be
-the expected behavior.
+Changelog:
+ v4 -> v5:
+ * Patch #6 and #14 - consolidated many counter release functions,
+   removed mutex lock protection from dealloc_counter() call
+   and simplified kref_put/kref_get operations.
+ * Added Saeed's ACK tags.
+ v3 -> v4:
+ * Add counter_dealloc() callback function
+ * Moved to kref implementation
+ * Fixed lock during spinlock
+ v2 -> v3:
+ * We didn't change use of atomics over kref for management of unbind
+   counter from QP. The reason to it that bind and unbind are non-symmetric
+   in regards of put and get, so we need to count differently memory
+   release flows of HW objects (restrack) and SW bind operations.
+ * Everything else was addressed.
+ v1 -> v2:
+ * Rebased to latest rdma-next
+ v0 -> v1:
+ * Changed wording of counter comment
+ * Removed unneeded assignments
+ * Added extra patch to present global counters
 
-Also, tc vlan act was originally introduced to replace OVS vlan action.
-It's in fact used as HW offload path of ovs-vswitchd, and should behave the same as
-OVS push_vlan action. And push_vlan action inserts a tag as unprocessed one.
+----------------------------------------------------
 
-> In a sense, this means we should have two different VLAN tag push
-> options - considering it processed or unprocessed. Or maybe it should
-> always be considered unprocessed, but that's not what we do today.
->
->> Then after vlan_do_receive() (receive the skb on a vlan device), the skb is like this.
->>
->> +-----+--------
->>> eth | TCP/IP
->>
->> +-----+--------
->>         ^
->>        data
->>
->> Or if reorder_hdr is off (which does not remove vlan tags when receiving on vlan devices),
->>
->> +-----+------+--------
->>> eth | vlan | TCP/IP
->>
->> +-----+------+--------
->>                ^
->>               data
->>
->> Relying on this mechanism, we are currently able to handle multiple vlan tags.
->>
->> For example if we have 2 tags,
->>
->> - On __netif_receive_skb_core() invocation
->>
->> +-----+------+------+--------
->>> eth | vlan | vlan | TCP/IP
->>
->> +-----+------+------+--------
->>         ^
->>        data
->>
->> - After first vlan_do_receive()
->>
->> +-----+------+--------
->>> eth | vlan | TCP/IP
->>
->> +-----+------+--------
->>         ^
->>        data
->>
->> Or if reorder_hdr is off,
->>
->> +-----+------+------+--------
->>> eth | vlan | vlan | TCP/IP
->>
->> +-----+------+------+--------
->>                ^
->>               data
->>
->> When we process one tag, the data goes forward by one tag.
-> 
-> Right, that's a very good point.
-> 
->> Now looking at TC vlan case...
->>
->> After it inserts two tags, the skb looks like:
->>
->> (The first tag is in vlan_tci)
->> +-----+------+--------
->>> eth | vlan | TCP/IP
->>
->> +-----+------+--------
->>                ^
->>               data
->>
->> The data pointer went forward before we process it.
->> This is apparently wrong. I think we don't want to (or cannot?) handle cases like this
->> after tcf_vlan_act(). This is why I said we should remember mac_len there.
-> 
-> Right, makes a lot of sense.
-> 
-> If you consider a tc VLAN pop, you'd argue that it should pop the next
-> unprocessed tag I guess, since if it was processed then it doesn't
-> really exist any more (semantically, you still see it if reorder_hdr is
-> off), right?
+Hi,
 
-Right.
+This series from Mark provides dynamic statistics infrastructure.
+He uses netlink interface to configure and retrieve those counters.
 
->> So, my opinion is:
->> On ingress, data pointer can be at the end of vlan header and mac_len probably should
->> include vlan tag length, but only after the vlan tag is processed.
-> 
-> You're basically arguing for option (3), I think, making VLAN push/pop
-> not manipulate mac_len since they can just push/pop *unprocessed* tags,
-> right?
+This infrastructure allows to users monitor various objects by binding
+to them counters. As the beginning, we used QP object as target for
+those counters, but future patches will include ODP MR information too.
 
-Ah, true, on the second thought (2b) is not an appropriate fix but (3) is.
-(3) more correctly emulates already tagged packets from wire so it should
-cause least confusion.
+Two binding modes are supported:
+ - Auto: This allows a user to build automatic set of objects to a counter
+   according to common criteria. For example in a per-type scheme, where in
+   one process all QPs with same QP type are bound automatically to a single
+   counter.
+ - Manual: This allows a user to manually bind objects on a counter.
 
-> I fear this will cause all kinds of trouble in other code. Perhaps we
-> need to make this processed/unprocessed state more explicit.
+Those two modes are mutual-exclusive with separation between processes,
+objects created by different processes cannot be bound to a same counter.
 
-But (3) makes mac_len the same as the already tagged packets from NICs.
-If other code cannot handle the packets correctly, they need to be fixed anyway.
+For objects which don't support counter binding, we will return
+pre-allocated counters.
 
-As you explained OVS MPLS seems to rely on mac_len adjustment by skb_vlan_push(), but
-it means the OVS MPLS code cannot correctly handle double-tagged packets from NICs,
-so it needs a fix anyway (use __vlan_get_protocol() to get the real mac_len?).
+$ rdma statistic qp set link mlx5_2/1 auto type on
+$ rdma statistic qp set link mlx5_2/1 auto off
+$ rdma statistic qp bind link mlx5_2/1 lqpn 178
+$ rdma statistic qp unbind link mlx5_2/1 cntn 4 lqpn 178
+$ rdma statistic show
+$ rdma statistic qp mode
 
->> Bridge may need to handle mac_len that is not equal to ETH_HLEN but to me it's a
->> different problem.
-> 
-> Yes. Like I just said to Daniel, I think we should make bridge handle
-> mac_len so that we can just exclude it from this whole discussion.
-> Regardless of the mac_len and processed/unprocessed tags, it would just
-> work as expected.
+Thanks
 
-That's OK, it should help packets from vlan devices with reorder_hdr off.
 
-Toshiaki Makita
+Mark Zhang (17):
+  net/mlx5: Add rts2rts_qp_counters_set_id field in hca cap
+  RDMA/restrack: Introduce statistic counter
+  RDMA/restrack: Add an API to attach a task to a resource
+  RDMA/restrack: Make is_visible_in_pid_ns() as an API
+  RDMA/counter: Add set/clear per-port auto mode support
+  RDMA/counter: Add "auto" configuration mode support
+  IB/mlx5: Support set qp counter
+  IB/mlx5: Add counter set id as a parameter for
+    mlx5_ib_query_q_counters()
+  IB/mlx5: Support statistic q counter configuration
+  RDMA/nldev: Allow counter auto mode configration through RDMA netlink
+  RDMA/netlink: Implement counter dumpit calback
+  IB/mlx5: Add counter_alloc_stats() and counter_update_stats() support
+  RDMA/core: Get sum value of all counters when perform a sysfs stat
+    read
+  RDMA/counter: Allow manual mode configuration support
+  RDMA/nldev: Allow counter manual mode configration through RDMA
+    netlink
+  RDMA/nldev: Allow get counter mode through RDMA netlink
+  RDMA/nldev: Allow get default counter statistics through RDMA netlink
+
+ drivers/infiniband/core/Makefile     |   2 +-
+ drivers/infiniband/core/counters.c   | 634 +++++++++++++++++++++++++++
+ drivers/infiniband/core/device.c     |  10 +
+ drivers/infiniband/core/nldev.c      | 551 ++++++++++++++++++++++-
+ drivers/infiniband/core/restrack.c   |  49 ++-
+ drivers/infiniband/core/restrack.h   |   3 +
+ drivers/infiniband/core/sysfs.c      |  16 +-
+ drivers/infiniband/core/verbs.c      |   9 +
+ drivers/infiniband/hw/mlx5/main.c    |  77 +++-
+ drivers/infiniband/hw/mlx5/mlx5_ib.h |   6 +
+ drivers/infiniband/hw/mlx5/qp.c      |  76 +++-
+ include/linux/mlx5/mlx5_ifc.h        |   4 +-
+ include/linux/mlx5/qp.h              |   1 +
+ include/rdma/ib_verbs.h              |  31 ++
+ include/rdma/rdma_counter.h          |  65 +++
+ include/rdma/restrack.h              |   4 +
+ include/uapi/rdma/rdma_netlink.h     |  52 ++-
+ 17 files changed, 1559 insertions(+), 31 deletions(-)
+ create mode 100644 drivers/infiniband/core/counters.c
+ create mode 100644 include/rdma/rdma_counter.h
+
+--
+2.20.1
+
