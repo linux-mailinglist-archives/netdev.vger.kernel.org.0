@@ -2,136 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C33B15D38C
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 17:52:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BBFF5D39B
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 17:53:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727084AbfGBPwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 11:52:42 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:55876 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725996AbfGBPwm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 11:52:42 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212])
-        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_128_CBC_SHA1:16)
-        (Exim 4.76)
-        (envelope-from <colin.king@canonical.com>)
-        id 1hiL5E-00029O-8p; Tue, 02 Jul 2019 15:52:40 +0000
-Subject: Re: mlxsw: spectrum: PTP: Support timestamping on Spectrum-1 -
- potential null ptr dereference
-To:     Petr Machata <petrm@mellanox.com>
-Cc:     Jiri Pirko <jiri@mellanox.com>, Ido Schimmel <idosch@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <4fb676a6-1de8-8bcf-5f2e-3157827546c8@canonical.com>
- <87r278sado.fsf@mellanox.com>
-From:   Colin Ian King <colin.king@canonical.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <e0f886ed-34cb-7b4b-a72c-726ca429bedd@canonical.com>
-Date:   Tue, 2 Jul 2019 16:52:39 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726780AbfGBPxS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 11:53:18 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:33371 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726046AbfGBPxS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 11:53:18 -0400
+Received: by mail-pg1-f194.google.com with SMTP id m4so7891720pgk.0
+        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 08:53:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=cl0v8wIi5ckV/JFTMr62z9IJnCBwgq6PTLXNZySJFKE=;
+        b=BshvCv0z48GDRlOe7wUUakEQ7WtAa6qqMxNiKS5VyGMORJhmGXBbwBb3fYxkLSIwfX
+         t3IY+Mm2FOv7fSzVA361hclrSmxT8ykILSHq5gdRKnLKWyOJwW5DRfLgN+tmGPAIgLuG
+         wmCaW/nIZWD2mwm+1eysoj200TWQVJlqjSVQyUWDGcu7jJ28U0LWQPX8MCz98yPjtdki
+         cHC8f2S4FcWmxWZLQ64JzUEfcyy2zjRNbdtlFomOuWkANc47lZIA5LstyjRrI1imqOlJ
+         j2DSqs9//sFGOHphCtCfUYZ7XwQxNIHYojoMsnGXdXNwAltpmEdUXzp9fd65+7EkV5ry
+         ApdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=cl0v8wIi5ckV/JFTMr62z9IJnCBwgq6PTLXNZySJFKE=;
+        b=MK+GGY+SziWi1pM8q9ddwUhCfT4lxAS6SC6if622kqrRLXrkEphM6qBmlH8MNGDBOX
+         0fxTRMx4hhcCO+eiM1S/vbugvbC/kMmz5GqbGSgNFqPhZnArjO9k151cGyL78Jz8pjw4
+         anCxMzoV62RCcjmCf1cY7TCgiSn14DciEwIj8l2Yyo+N/Sws8MkBVn7CNjzjNXl2h5Hl
+         6kyyHKnTQe6XIt2JXK4yiSmZR1oHXw2tYHFplcnzUG+saCmaxOHuMzHzhZpW6UpWZOAL
+         08H1q1uV3fRDgrIXKjTHhbyn6am0rmPlaL9XdNMMTUQvRW4106OfL9W4dqIdRqZAC3wP
+         0gDw==
+X-Gm-Message-State: APjAAAXoJYoCiY8kJMfhCHZ67WM+IfNtZLumrs/GESCh2+s+bbQOW0Lq
+        8au/dCdDKlg+Q0SjmBDjQ9o9VQ==
+X-Google-Smtp-Source: APXvYqycrzymxcdSRUPnb+KLUWdFvBSdBC/+ZeideYCH3ZcxbIG30pYV4vOVAAIvgC9L4pK46S5UKA==
+X-Received: by 2002:a63:d301:: with SMTP id b1mr207334pgg.379.1562082797621;
+        Tue, 02 Jul 2019 08:53:17 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id m13sm11837936pgv.89.2019.07.02.08.53.16
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 02 Jul 2019 08:53:17 -0700 (PDT)
+Date:   Tue, 2 Jul 2019 08:53:16 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     YueHaibing <yuehaibing@huawei.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, sdf@google.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next] bpf: cgroup: Fix build error without CONFIG_NET
+Message-ID: <20190702155316.GJ6757@mini-arch>
+References: <20190702132913.26060-1-yuehaibing@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <87r278sado.fsf@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190702132913.26060-1-yuehaibing@huawei.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02/07/2019 16:51, Petr Machata wrote:
+On 07/02, YueHaibing wrote:
+> If CONFIG_NET is not set, gcc building fails:
 > 
-> Colin Ian King <colin.king@canonical.com> writes:
+> kernel/bpf/cgroup.o: In function `cg_sockopt_func_proto':
+> cgroup.c:(.text+0x237e): undefined reference to `bpf_sk_storage_get_proto'
+> cgroup.c:(.text+0x2394): undefined reference to `bpf_sk_storage_delete_proto'
+> kernel/bpf/cgroup.o: In function `__cgroup_bpf_run_filter_getsockopt':
+> (.text+0x2a1f): undefined reference to `lock_sock_nested'
+> (.text+0x2ca2): undefined reference to `release_sock'
+> kernel/bpf/cgroup.o: In function `__cgroup_bpf_run_filter_setsockopt':
+> (.text+0x3006): undefined reference to `lock_sock_nested'
+> (.text+0x32bb): undefined reference to `release_sock'
 > 
->> Hi,
->>
->> Static analysis with Coverity on today's linux-next has found a
->> potential null pointer dereference bug with the following commit:
->>
->> commit d92e4e6e33c8b19635be70fb8935b627d2e4f8fe
->> Author: Petr Machata <petrm@mellanox.com>
->> Date:   Sun Jun 30 09:04:56 2019 +0300
->>
->>     mlxsw: spectrum: PTP: Support timestamping on Spectrum-1
->>
->>
->> In function: mlxsw_sp1_ptp_packet_finish the offending code is as follows:
->>
->>        /* Between capturing the packet and finishing it, there is a
->> window of
->>         * opportunity for the originating port to go away (e.g. due to a
->>         * split). Also make sure the SKB device reference is still valid.
->>         */
->>        mlxsw_sp_port = mlxsw_sp->ports[local_port];
->>        if (!mlxsw_sp_port && (!skb->dev || skb->dev == mlxsw_sp_port->dev)) {
->>                dev_kfree_skb_any(skb);
->>                return;
->>        }
->>
->> If mlxsw_sp_port is null and skb->dev is not-null then the comparison
->> "skb->dev == mlxsw_sp_port->dev" ends up with a null pointer dereference.
->>
->> I think the if statement should be:
->>
->> if (mlxsw_sp_port && (!skb->dev || skb->dev == mlxsw_sp_port->dev))
->>
->> ..but I'm not 100% sure as I may be missing something a bit more subtle
->> here.
-> 
-> Yes, that line is wrong. It's missing a pair of parens, it should be:
-> 
->         if (!(mlxsw_sp_port && (!skb->dev || skb->dev == mlxsw_sp_port->dev))) {
-> 
-> I.e. I need a port && I need the skb->dev to still refer to that port
-> (or else be NULL). If that doesn't hold, bail out.
+> Add CONFIG_NET dependency to fix this.
+Can you share the config? Do I understand correctly that you have
+CONFIG_NET=n and CONFIG_BPF=y? What parts of BPF do you expect to
+work in this case?
 
-Ah, that makes sense.
+Less invasive fix would be something along the lines:
 
+diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+index 76fa0076f20d..0a00eaca6fae 100644
+--- a/kernel/bpf/cgroup.c
++++ b/kernel/bpf/cgroup.c
+@@ -939,6 +939,7 @@ int __cgroup_bpf_run_filter_sysctl(struct ctl_table_header *head,
+ }
+ EXPORT_SYMBOL(__cgroup_bpf_run_filter_sysctl);
+ 
++#ifdef CONFIG_NET
+ static bool __cgroup_bpf_prog_array_is_empty(struct cgroup *cgrp,
+ 					     enum bpf_attach_type attach_type)
+ {
+@@ -1120,6 +1121,7 @@ int __cgroup_bpf_run_filter_getsockopt(struct sock *sk, int level,
+ 	return ret;
+ }
+ EXPORT_SYMBOL(__cgroup_bpf_run_filter_getsockopt);
++#endif
+ 
+ static ssize_t sysctl_cpy_dir(const struct ctl_dir *dir, char **bufp,
+ 			      size_t *lenp)
+@@ -1386,10 +1388,12 @@ static const struct bpf_func_proto *
+ cg_sockopt_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ {
+ 	switch (func_id) {
++#ifdef CONFIG_NET
+ 	case BPF_FUNC_sk_storage_get:
+ 		return &bpf_sk_storage_get_proto;
+ 	case BPF_FUNC_sk_storage_delete:
+ 		return &bpf_sk_storage_delete_proto;
++#endif
+ #ifdef CONFIG_INET
+ 	case BPF_FUNC_tcp_sock:
+ 		return &bpf_tcp_sock_proto;
+
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Fixes: 0d01da6afc54 ("bpf: implement getsockopt and setsockopt hooks")
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> ---
+>  init/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> Thanks for the report, I'll spin a fix!
+> diff --git a/init/Kconfig b/init/Kconfig
+> index e2e51b5..341cf2a 100644
+> --- a/init/Kconfig
+> +++ b/init/Kconfig
+> @@ -998,6 +998,7 @@ config CGROUP_PERF
+>  config CGROUP_BPF
+>  	bool "Support for eBPF programs attached to cgroups"
+>  	depends on BPF_SYSCALL
+> +	depends on NET
+>  	select SOCK_CGROUP_DATA
+>  	help
+>  	  Allow attaching eBPF programs to a cgroup using the bpf(2)
+> -- 
+> 2.7.4
 > 
-OK, thanks!
+> 
