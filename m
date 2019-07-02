@@ -2,60 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B4A85C6FF
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 04:16:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AE6A5C709
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 04:18:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726781AbfGBCQC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 22:16:02 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:54010 "EHLO
+        id S1727090AbfGBCSU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 22:18:20 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:54054 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726434AbfGBCQB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 22:16:01 -0400
+        with ESMTP id S1726434AbfGBCSU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 22:18:20 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 12A7D14DE97EF;
-        Mon,  1 Jul 2019 19:16:01 -0700 (PDT)
-Date:   Mon, 01 Jul 2019 19:16:00 -0700 (PDT)
-Message-Id: <20190701.191600.1570499492484804858.davem@davemloft.net>
-To:     xiyou.wangcong@gmail.com
-Cc:     netdev@vger.kernel.org, dcaratti@redhat.com, chrism@mellanox.com,
-        willy@infradead.org
-Subject: Re: [Patch net 0/3] idr: fix overflow cases on 32-bit CPU
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 38C1C14DE9A78;
+        Mon,  1 Jul 2019 19:18:19 -0700 (PDT)
+Date:   Mon, 01 Jul 2019 19:18:18 -0700 (PDT)
+Message-Id: <20190701.191818.2016313422296779356.davem@davemloft.net>
+To:     mrv@mojatatu.com
+Cc:     netdev@vger.kernel.org, kernel@mojatatu.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us
+Subject: Re: [PATCH net-next 0/2] Fix batched event generation for mirred
+ action
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190628180343.8230-1-xiyou.wangcong@gmail.com>
-References: <20190628180343.8230-1-xiyou.wangcong@gmail.com>
+In-Reply-To: <1561746618-29349-1-git-send-email-mrv@mojatatu.com>
+References: <1561746618-29349-1-git-send-email-mrv@mojatatu.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 01 Jul 2019 19:16:01 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 01 Jul 2019 19:18:19 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <xiyou.wangcong@gmail.com>
-Date: Fri, 28 Jun 2019 11:03:40 -0700
+From: Roman Mashak <mrv@mojatatu.com>
+Date: Fri, 28 Jun 2019 14:30:16 -0400
 
-> idr_get_next_ul() is problematic by design, it can't handle
-> the following overflow case well on 32-bit CPU:
+> When adding or deleting a batch of entries, the kernel sends upto
+> TCA_ACT_MAX_PRIO entries in an event to user space. However it does not
+> consider that the action sizes may vary and require different skb sizes.
 > 
-> u32 id = UINT_MAX;
-> idr_alloc_u32(&id);
-> while (idr_get_next_ul(&id) != NULL)
->  id++;
+> For example :
 > 
-> when 'id' overflows and becomes 0 after UINT_MAX, the loop
-> goes infinite.
+> % cat tc-batch.sh
+> TC="sudo /mnt/iproute2.git/tc/tc"
 > 
-> Fix this by eliminating external users of idr_get_next_ul()
-> and migrating them to idr_for_each_entry_continue_ul(). And
-> add an additional parameter for these iteration macros to detect
-> overflow properly.
+> $TC actions flush action mirred
+> for i in `seq 1 $1`;
+> do
+>    cmd="action mirred egress redirect dev lo index $i "
+>    args=$args$cmd
+> done
+> $TC actions add $args
+> %
+> % ./tc-batch.sh 32
+> Error: Failed to fill netlink attributes while adding TC action.
+> We have an error talking to the kernel
+> %
 > 
-> Please merge this through networking tree, as all the users
-> are in networking subsystem.
+> patch 1 adds callback in tc_action_ops of mirred action, which calculates
+> the action size, and passes size to tcf_add_notify()/tcf_del_notify().
+> 
+> patch 2 updates the TDC test suite with relevant test cases.
 
-Series applied, thanks Cong.
+Series applied, thanks.
