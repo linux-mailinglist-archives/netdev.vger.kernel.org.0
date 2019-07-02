@@ -2,132 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 452E35D37F
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 17:51:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8B915D386
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 17:51:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726404AbfGBPvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 11:51:20 -0400
-Received: from mail-eopbgr10083.outbound.protection.outlook.com ([40.107.1.83]:41729
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725922AbfGBPvU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jul 2019 11:51:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=brO73ixZOe8DGZmg5e2jQmlH+kevr1g/wfAWOvS3o+o=;
- b=QlSOKQrB5aTAUXnr3tUCMYfLRkhiFq67wi5CVJNPI1zGuhOYB4e+B/AB6K3iRx9Ze58D8kLdnaH/39fEIj2bLtvGft1JwYxU2AABGbHGIG7cC9AIjEsO8K/nzv3kgQhVN45I9CTjyP8ZF79T7L6Rsg60pKaWYtrz/yP+5hhHuwc=
-Received: from AM6PR05MB6037.eurprd05.prod.outlook.com (20.179.2.84) by
- AM6PR05MB4197.eurprd05.prod.outlook.com (52.135.161.30) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2032.18; Tue, 2 Jul 2019 15:51:17 +0000
-Received: from AM6PR05MB6037.eurprd05.prod.outlook.com
- ([fe80::c5b1:6971:9d4b:d5cd]) by AM6PR05MB6037.eurprd05.prod.outlook.com
- ([fe80::c5b1:6971:9d4b:d5cd%7]) with mapi id 15.20.2032.019; Tue, 2 Jul 2019
- 15:51:17 +0000
-From:   Petr Machata <petrm@mellanox.com>
-To:     Colin Ian King <colin.king@canonical.com>
-CC:     Jiri Pirko <jiri@mellanox.com>, Ido Schimmel <idosch@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: mlxsw: spectrum: PTP: Support timestamping on Spectrum-1 -
- potential null ptr dereference
-Thread-Topic: mlxsw: spectrum: PTP: Support timestamping on Spectrum-1 -
- potential null ptr dereference
-Thread-Index: AQHVMOcY3L7Wjb9apkGPAWlUHGBxiaa3eieA
-Date:   Tue, 2 Jul 2019 15:51:17 +0000
-Message-ID: <87r278sado.fsf@mellanox.com>
-References: <4fb676a6-1de8-8bcf-5f2e-3157827546c8@canonical.com>
-In-Reply-To: <4fb676a6-1de8-8bcf-5f2e-3157827546c8@canonical.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: AM6PR10CA0070.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:209:80::47) To AM6PR05MB6037.eurprd05.prod.outlook.com
- (2603:10a6:20b:aa::20)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=petrm@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [78.45.160.211]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 408e183b-4fb7-454b-cea3-08d6ff051e2a
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM6PR05MB4197;
-x-ms-traffictypediagnostic: AM6PR05MB4197:
-x-microsoft-antispam-prvs: <AM6PR05MB4197308712FF4EF53E3BFF2CDBF80@AM6PR05MB4197.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4125;
-x-forefront-prvs: 008663486A
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(396003)(346002)(136003)(39860400002)(376002)(51914003)(199004)(189003)(2906002)(8936002)(52116002)(478600001)(186003)(68736007)(305945005)(2616005)(11346002)(446003)(6246003)(81166006)(6486002)(3846002)(86362001)(6116002)(5660300002)(6436002)(25786009)(8676002)(76176011)(102836004)(256004)(316002)(64756008)(71190400001)(71200400001)(6916009)(229853002)(66066001)(476003)(73956011)(99286004)(386003)(486006)(53936002)(14454004)(66476007)(66446008)(7736002)(54906003)(81156014)(66946007)(66556008)(6512007)(4326008)(36756003)(26005)(6506007);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB4197;H:AM6PR05MB6037.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: /xmhY/JQ2JFy1WGjf40O3s61MD44c8F5/5vOPlURdhY/2FWzz0lkaJ2beTokbTh2/VNo9E4lSebxRYokIJFQzkbg8Y1nBEBmKJLK9fl08Qh2jfOEoKMFrjxHXPedF0NzXaM0m2tC2T8nzbyxUEGlVvvV7LjBKhkghZrxGHvNxLSDIHvQRXP1JwLO+tAYY0bxDNQgO5BwrpVuQxVVh+SXweQxsru0iJ9OKSMjZSBbCVuWd+4RJtOzP80vsOIT1B5i1LPPSvkq+RsQTw7O3HzWC9TKKObVRQ0Pgb3BuOxZZTQ6SsX0qYVVX+j7QJdlUV0AEvpdKBxHTChZsa786t9BzCS0FQYaHp2Gj355UZiY1uyW8Y//JDzqRC4agNsvbhijJfYbh3OzV8vKgeYlxBytom6mzIM1iK8vF1XLK/jy5EA=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S1727074AbfGBPvr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 11:51:47 -0400
+Received: from host.76.145.23.62.rev.coltfrance.com ([62.23.145.76]:40022 "EHLO
+        proxy.6wind.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726962AbfGBPvq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 11:51:46 -0400
+Received: from bretzel.dev.6wind.com (unknown [10.16.0.19])
+        by proxy.6wind.com (Postfix) with ESMTPS id 36B4C2DD900;
+        Tue,  2 Jul 2019 17:51:44 +0200 (CEST)
+Received: from dichtel by bretzel.dev.6wind.com with local (Exim 4.89)
+        (envelope-from <dichtel@bretzel.dev.6wind.com>)
+        id 1hiL4K-0002z8-5H; Tue, 02 Jul 2019 17:51:44 +0200
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+To:     steffen.klassert@secunet.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Lorenzo Colitti <lorenzo@google.com>,
+        Benedict Wong <benedictwong@google.com>,
+        Shannon Nelson <shannon.nelson@oracle.com>,
+        Antony Antony <antony@phenome.org>,
+        Eyal Birger <eyal.birger@gmail.com>,
+        Julien Floret <julien.floret@6wind.com>
+Subject: [PATCH ipsec v2] xfrm interface: fix memory leak on creation
+Date:   Tue,  2 Jul 2019 17:51:39 +0200
+Message-Id: <20190702155139.11399-1-nicolas.dichtel@6wind.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 408e183b-4fb7-454b-cea3-08d6ff051e2a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Jul 2019 15:51:17.1501
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: petrm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB4197
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The following commands produce a backtrace and return an error but the xfrm
+interface is created (in the wrong netns):
+$ ip netns add foo
+$ ip netns add bar
+$ ip -n foo netns set bar 0
+$ ip -n foo link add xfrmi0 link-netnsid 0 type xfrm dev lo if_id 23
+RTNETLINK answers: Invalid argument
+$ ip -n bar link ls xfrmi0
+2: xfrmi0@lo: <NOARP,M-DOWN> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/none 00:00:00:00:00:00 brd 00:00:00:00:00:00
 
-Colin Ian King <colin.king@canonical.com> writes:
+Here is the backtrace:
+[   79.879174] WARNING: CPU: 0 PID: 1178 at net/core/dev.c:8172 rollback_registered_many+0x86/0x3c1
+[   79.880260] Modules linked in: xfrm_interface nfsv3 nfs_acl auth_rpcgss nfsv4 nfs lockd grace sunrpc fscache button parport_pc parport serio_raw evdev pcspkr loop ext4 crc16 mbcache jbd2 crc32c_generic ide_cd_mod ide_gd_mod cdrom ata_$
+eneric ata_piix libata scsi_mod 8139too piix psmouse i2c_piix4 ide_core 8139cp mii i2c_core floppy
+[   79.883698] CPU: 0 PID: 1178 Comm: ip Not tainted 5.2.0-rc6+ #106
+[   79.884462] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1 04/01/2014
+[   79.885447] RIP: 0010:rollback_registered_many+0x86/0x3c1
+[   79.886120] Code: 01 e8 d7 7d c6 ff 0f 0b 48 8b 45 00 4c 8b 20 48 8d 58 90 49 83 ec 70 48 8d 7b 70 48 39 ef 74 44 8a 83 d0 04 00 00 84 c0 75 1f <0f> 0b e8 61 cd ff ff 48 b8 00 01 00 00 00 00 ad de 48 89 43 70 66
+[   79.888667] RSP: 0018:ffffc900015ab740 EFLAGS: 00010246
+[   79.889339] RAX: ffff8882353e5700 RBX: ffff8882353e56a0 RCX: ffff8882353e5710
+[   79.890174] RDX: ffffc900015ab7e0 RSI: ffffc900015ab7e0 RDI: ffff8882353e5710
+[   79.891029] RBP: ffffc900015ab7e0 R08: ffffc900015ab7e0 R09: ffffc900015ab7e0
+[   79.891866] R10: ffffc900015ab7a0 R11: ffffffff82233fec R12: ffffc900015ab770
+[   79.892728] R13: ffffffff81eb7ec0 R14: ffff88822ed6cf00 R15: 00000000ffffffea
+[   79.893557] FS:  00007ff350f31740(0000) GS:ffff888237a00000(0000) knlGS:0000000000000000
+[   79.894581] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   79.895317] CR2: 00000000006c8580 CR3: 000000022c272000 CR4: 00000000000006f0
+[   79.896137] Call Trace:
+[   79.896464]  unregister_netdevice_many+0x12/0x6c
+[   79.896998]  __rtnl_newlink+0x6e2/0x73b
+[   79.897446]  ? __kmalloc_node_track_caller+0x15e/0x185
+[   79.898039]  ? pskb_expand_head+0x5f/0x1fe
+[   79.898556]  ? stack_access_ok+0xd/0x2c
+[   79.899009]  ? deref_stack_reg+0x12/0x20
+[   79.899462]  ? stack_access_ok+0xd/0x2c
+[   79.899927]  ? stack_access_ok+0xd/0x2c
+[   79.900404]  ? __module_text_address+0x9/0x4f
+[   79.900910]  ? is_bpf_text_address+0x5/0xc
+[   79.901390]  ? kernel_text_address+0x67/0x7b
+[   79.901884]  ? __kernel_text_address+0x1a/0x25
+[   79.902397]  ? unwind_get_return_address+0x12/0x23
+[   79.903122]  ? __cmpxchg_double_slab.isra.37+0x46/0x77
+[   79.903772]  rtnl_newlink+0x43/0x56
+[   79.904217]  rtnetlink_rcv_msg+0x200/0x24c
 
-> Hi,
->
-> Static analysis with Coverity on today's linux-next has found a
-> potential null pointer dereference bug with the following commit:
->
-> commit d92e4e6e33c8b19635be70fb8935b627d2e4f8fe
-> Author: Petr Machata <petrm@mellanox.com>
-> Date:   Sun Jun 30 09:04:56 2019 +0300
->
->     mlxsw: spectrum: PTP: Support timestamping on Spectrum-1
->
->
-> In function: mlxsw_sp1_ptp_packet_finish the offending code is as follows=
-:
->
->        /* Between capturing the packet and finishing it, there is a
-> window of
->         * opportunity for the originating port to go away (e.g. due to a
->         * split). Also make sure the SKB device reference is still valid.
->         */
->        mlxsw_sp_port =3D mlxsw_sp->ports[local_port];
->        if (!mlxsw_sp_port && (!skb->dev || skb->dev =3D=3D mlxsw_sp_port-=
->dev)) {
->                dev_kfree_skb_any(skb);
->                return;
->        }
->
-> If mlxsw_sp_port is null and skb->dev is not-null then the comparison
-> "skb->dev =3D=3D mlxsw_sp_port->dev" ends up with a null pointer derefere=
-nce.
->
-> I think the if statement should be:
->
-> if (mlxsw_sp_port && (!skb->dev || skb->dev =3D=3D mlxsw_sp_port->dev))
->
-> ..but I'm not 100% sure as I may be missing something a bit more subtle
-> here.
+In fact, each time a xfrm interface was created, a netdev was allocated
+by __rtnl_newlink()/rtnl_create_link() and then another one by
+xfrmi_newlink()/xfrmi_create(). Only the second one was registered, it's
+why the previous commands produce a backtrace: dev_change_net_namespace()
+was called on a netdev with reg_state set to NETREG_UNINITIALIZED (the
+first one).
 
-Yes, that line is wrong. It's missing a pair of parens, it should be:
+CC: Lorenzo Colitti <lorenzo@google.com>
+CC: Benedict Wong <benedictwong@google.com>
+CC: Steffen Klassert <steffen.klassert@secunet.com>
+CC: Shannon Nelson <shannon.nelson@oracle.com>
+CC: Antony Antony <antony@phenome.org>
+CC: Eyal Birger <eyal.birger@gmail.com>
+Fixes: f203b76d7809 ("xfrm: Add virtual xfrm interfaces")
+Reported-by: Julien Floret <julien.floret@6wind.com>
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+---
 
-        if (!(mlxsw_sp_port && (!skb->dev || skb->dev =3D=3D mlxsw_sp_port-=
->dev))) {
+v1 -> v2:
+ - fix typos in commit log
 
-I.e. I need a port && I need the skb->dev to still refer to that port
-(or else be NULL). If that doesn't hold, bail out.
+ net/xfrm/xfrm_interface.c | 98 +++++++++++----------------------------
+ 1 file changed, 28 insertions(+), 70 deletions(-)
 
-Thanks for the report, I'll spin a fix!
+diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
+index ad3a2555c517..7dbe0c608df5 100644
+--- a/net/xfrm/xfrm_interface.c
++++ b/net/xfrm/xfrm_interface.c
+@@ -133,7 +133,7 @@ static void xfrmi_dev_free(struct net_device *dev)
+ 	free_percpu(dev->tstats);
+ }
+ 
+-static int xfrmi_create2(struct net_device *dev)
++static int xfrmi_create(struct net_device *dev)
+ {
+ 	struct xfrm_if *xi = netdev_priv(dev);
+ 	struct net *net = dev_net(dev);
+@@ -156,54 +156,7 @@ static int xfrmi_create2(struct net_device *dev)
+ 	return err;
+ }
+ 
+-static struct xfrm_if *xfrmi_create(struct net *net, struct xfrm_if_parms *p)
+-{
+-	struct net_device *dev;
+-	struct xfrm_if *xi;
+-	char name[IFNAMSIZ];
+-	int err;
+-
+-	if (p->name[0]) {
+-		strlcpy(name, p->name, IFNAMSIZ);
+-	} else {
+-		err = -EINVAL;
+-		goto failed;
+-	}
+-
+-	dev = alloc_netdev(sizeof(*xi), name, NET_NAME_UNKNOWN, xfrmi_dev_setup);
+-	if (!dev) {
+-		err = -EAGAIN;
+-		goto failed;
+-	}
+-
+-	dev_net_set(dev, net);
+-
+-	xi = netdev_priv(dev);
+-	xi->p = *p;
+-	xi->net = net;
+-	xi->dev = dev;
+-	xi->phydev = dev_get_by_index(net, p->link);
+-	if (!xi->phydev) {
+-		err = -ENODEV;
+-		goto failed_free;
+-	}
+-
+-	err = xfrmi_create2(dev);
+-	if (err < 0)
+-		goto failed_dev_put;
+-
+-	return xi;
+-
+-failed_dev_put:
+-	dev_put(xi->phydev);
+-failed_free:
+-	free_netdev(dev);
+-failed:
+-	return ERR_PTR(err);
+-}
+-
+-static struct xfrm_if *xfrmi_locate(struct net *net, struct xfrm_if_parms *p,
+-				   int create)
++static struct xfrm_if *xfrmi_locate(struct net *net, struct xfrm_if_parms *p)
+ {
+ 	struct xfrm_if __rcu **xip;
+ 	struct xfrm_if *xi;
+@@ -211,17 +164,11 @@ static struct xfrm_if *xfrmi_locate(struct net *net, struct xfrm_if_parms *p,
+ 
+ 	for (xip = &xfrmn->xfrmi[0];
+ 	     (xi = rtnl_dereference(*xip)) != NULL;
+-	     xip = &xi->next) {
+-		if (xi->p.if_id == p->if_id) {
+-			if (create)
+-				return ERR_PTR(-EEXIST);
+-
++	     xip = &xi->next)
++		if (xi->p.if_id == p->if_id)
+ 			return xi;
+-		}
+-	}
+-	if (!create)
+-		return ERR_PTR(-ENODEV);
+-	return xfrmi_create(net, p);
++
++	return NULL;
+ }
+ 
+ static void xfrmi_dev_uninit(struct net_device *dev)
+@@ -686,21 +633,33 @@ static int xfrmi_newlink(struct net *src_net, struct net_device *dev,
+ 			struct netlink_ext_ack *extack)
+ {
+ 	struct net *net = dev_net(dev);
+-	struct xfrm_if_parms *p;
++	struct xfrm_if_parms p;
+ 	struct xfrm_if *xi;
++	int err;
+ 
+-	xi = netdev_priv(dev);
+-	p = &xi->p;
+-
+-	xfrmi_netlink_parms(data, p);
++	xfrmi_netlink_parms(data, &p);
+ 
+ 	if (!tb[IFLA_IFNAME])
+ 		return -EINVAL;
+ 
+-	nla_strlcpy(p->name, tb[IFLA_IFNAME], IFNAMSIZ);
++	nla_strlcpy(p.name, tb[IFLA_IFNAME], IFNAMSIZ);
+ 
+-	xi = xfrmi_locate(net, p, 1);
+-	return PTR_ERR_OR_ZERO(xi);
++	xi = xfrmi_locate(net, &p);
++	if (xi)
++		return -EEXIST;
++
++	xi = netdev_priv(dev);
++	xi->p = p;
++	xi->net = net;
++	xi->dev = dev;
++	xi->phydev = dev_get_by_index(net, p.link);
++	if (!xi->phydev)
++		return -ENODEV;
++
++	err = xfrmi_create(dev);
++	if (err < 0)
++		dev_put(xi->phydev);
++	return err;
+ }
+ 
+ static void xfrmi_dellink(struct net_device *dev, struct list_head *head)
+@@ -717,9 +676,8 @@ static int xfrmi_changelink(struct net_device *dev, struct nlattr *tb[],
+ 
+ 	xfrmi_netlink_parms(data, &xi->p);
+ 
+-	xi = xfrmi_locate(net, &xi->p, 0);
+-
+-	if (IS_ERR_OR_NULL(xi)) {
++	xi = xfrmi_locate(net, &xi->p);
++	if (!xi) {
+ 		xi = netdev_priv(dev);
+ 	} else {
+ 		if (xi->dev != dev)
+-- 
+2.21.0
+
