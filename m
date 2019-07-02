@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C7E345CF12
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 14:05:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9698F5CF0F
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 14:05:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726908AbfGBMFH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 08:05:07 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:34996 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726252AbfGBMFG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 08:05:06 -0400
-Received: by mail-wm1-f65.google.com with SMTP id c6so737541wml.0
-        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 05:05:05 -0700 (PDT)
+        id S1726966AbfGBMFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 08:05:08 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:46161 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726455AbfGBMFH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 08:05:07 -0400
+Received: by mail-wr1-f65.google.com with SMTP id n4so17472486wrw.13
+        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 05:05:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cumulusnetworks.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=jZeZkNBqQvCAlH/hG07VtX1l/wTFKdXlR218Y21cdaA=;
-        b=VfM/JxZtMLXdHJ304kMnAg+hNAShLmLB+f4aXwzJ40luxY0rk5+bKx12dupRbLqRIC
-         TwCGJTdwyrt1kqFtmp/6+lGZmtXRf//2toowM4iGF9qtZ4XL8nzCGwKj5Xwb0gF7Rdf7
-         ZDakyGjX7DTyaxGt/YkAd5+o1aNYkoZICShuk=
+        bh=GSx4QIELcR9xkyWBBehy9lJ5hvGJj8dGQFampul0IVo=;
+        b=c07Tl1f1180GeriB7zwf34KMNMsCmC/35YWN2Xf7IiGiK2diGwyj2aLaRuQ5b1sDmD
+         g/fu1pIACSjwIQd/ayCbGYfovi7AWeJm+ZOPyfiW1/RtwRVvY2pXOW0i+tY3uzayykT2
+         EH6Tnx3B37L0IDhBlr2e1XLQgEH67keGETSCA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=jZeZkNBqQvCAlH/hG07VtX1l/wTFKdXlR218Y21cdaA=;
-        b=s/JX5rL6gfKJG1yHeVTQmYQ+2fFyPH8YIyLe9LVxcQF5mMtjgiOTE3XO1NU1zT/jc1
-         JyJ3OWYpMGRoVtZTyxulvGP13C+AL2nN9+96TFQi8asXprSubzr/H7zOl4/jO2IMq0OY
-         +yLtBfIYpsXrkXkxKakg4X06oTb7MqUh1VsfcnmIBEx4nu/ovEEYSP01jIk0jq9hif8V
-         4rI8PHUlsm7o+Fxq9m8FVJQtkPn8qs3qAaEbwOgv+B5Ths6+Wdfl95rjUH+RpiYtwRHb
-         VV9bE3nAfutBPumEG0eoNaB61Xj2Y0fMmoV6uhA4JpAhBQvPEbKMS59L90g/O5xKYg6d
-         5B7g==
-X-Gm-Message-State: APjAAAUx1M7Op4jjLN1WnslgybOIHdEhuOS1hiUdc/YHqa834T78xV5I
-        3VkLNmh0/wreo95vg4tQuqUFTGTtiv0=
-X-Google-Smtp-Source: APXvYqytdprwFvV9n4ofcfgurfK6tThS7bCfZ36HkC9giWMgFD/S8bTrG5sypK+LW+CqDK0VEgs2qg==
-X-Received: by 2002:a1c:968c:: with SMTP id y134mr3083565wmd.122.1562069104211;
-        Tue, 02 Jul 2019 05:05:04 -0700 (PDT)
+        bh=GSx4QIELcR9xkyWBBehy9lJ5hvGJj8dGQFampul0IVo=;
+        b=SKK4CLbkGXRhtx/iaRiy7IxOorPWc7/6fPqwFt5BZDsxmuqf2cgSOBFvh5oYeb+zSV
+         LEF+Dn0CjN93nITE9KdctlAkaGg5JFTcLbZIDuGtpiJZahzM1lZtroWeiSjUplnzp044
+         odB9rtLz5QpZC/cOslNqx9pKMrG2JR88NdCc28PBn+Y8ClpaAOdiPy/rsv9W378vZkVY
+         PCgLnpdJsIcUrlryXQgMQFCTpu9gDrNKl1hvbeynXPGjHiSecdKCZvmRn+DVyuOI2/rt
+         +WIXr2ofDMeEGSbgEqbAGYgCnKqzUw4qA5HBb/P7F5NMyTM4J8jC4thu9ZLiGt1Iibuu
+         bpjA==
+X-Gm-Message-State: APjAAAUc08rOkTWuygsJB9zQ635AFrZtH6NS2rIhFhhAvlU8gM8nTO1r
+        04t3D4I2qvGMxKPISrimAI4oIbjpsO4=
+X-Google-Smtp-Source: APXvYqzxxVjoGTiFJtaahtI1xEpd1fIsUsn8/FDyH+w3WSKMF+W5Sor6PwOTl0I1q/PCDNIvh61wcw==
+X-Received: by 2002:adf:b69a:: with SMTP id j26mr15838677wre.93.1562069105328;
+        Tue, 02 Jul 2019 05:05:05 -0700 (PDT)
 Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id x5sm2542655wmf.33.2019.07.02.05.05.03
+        by smtp.gmail.com with ESMTPSA id x5sm2542655wmf.33.2019.07.02.05.05.04
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 02 Jul 2019 05:05:03 -0700 (PDT)
+        Tue, 02 Jul 2019 05:05:04 -0700 (PDT)
 From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 To:     netdev@vger.kernel.org
 Cc:     roopa@cumulusnetworks.com, davem@davemloft.net,
         martin@linuxlounge.net, bridge@lists.linux-foundation.org,
         yoshfuji@linux-ipv6.org,
         Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Subject: [PATCH net 2/4] net: bridge: mcast: fix stale ipv6 hdr pointer when handling v6 query
-Date:   Tue,  2 Jul 2019 15:00:19 +0300
-Message-Id: <20190702120021.13096-3-nikolay@cumulusnetworks.com>
+Subject: [PATCH net 3/4] net: bridge: don't cache ether dest pointer on input
+Date:   Tue,  2 Jul 2019 15:00:20 +0300
+Message-Id: <20190702120021.13096-4-nikolay@cumulusnetworks.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190702120021.13096-1-nikolay@cumulusnetworks.com>
 References: <20190702120021.13096-1-nikolay@cumulusnetworks.com>
@@ -60,37 +60,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We get a pointer to the ipv6 hdr in br_ip6_multicast_query but we may
-call pskb_may_pull afterwards and end up using a stale pointer.
-So use the header directly, it's just 1 place where it's needed.
+We would cache ether dst pointer on input in br_handle_frame_finish but
+after the neigh suppress code that could lead to a stale pointer since
+both ipv4 and ipv6 suppress code do pskb_may_pull. This means we have to
+always reload it after the suppress code so there's no point in having
+it cached just retrieve it directly.
 
-Fixes: 08b202b67264 ("bridge br_multicast: IPv6 MLD support.")
+Fixes: 057658cb33fbf ("bridge: suppress arp pkts on BR_NEIGH_SUPPRESS ports")
+Fixes: ed842faeb2bd ("bridge: suppress nd pkts on BR_NEIGH_SUPPRESS ports")
 Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 ---
- net/bridge/br_multicast.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ net/bridge/br_input.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-index f37897e7b97b..3d8deac2353d 100644
---- a/net/bridge/br_multicast.c
-+++ b/net/bridge/br_multicast.c
-@@ -1279,7 +1279,6 @@ static int br_ip6_multicast_query(struct net_bridge *br,
- 				  u16 vid)
- {
- 	unsigned int transport_len = ipv6_transport_len(skb);
--	const struct ipv6hdr *ip6h = ipv6_hdr(skb);
- 	struct mld_msg *mld;
- 	struct net_bridge_mdb_entry *mp;
- 	struct mld2_query *mld2q;
-@@ -1323,7 +1322,7 @@ static int br_ip6_multicast_query(struct net_bridge *br,
+diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+index 21b74e7a7b2f..52c712984cc7 100644
+--- a/net/bridge/br_input.c
++++ b/net/bridge/br_input.c
+@@ -74,7 +74,6 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+ 	struct net_bridge_fdb_entry *dst = NULL;
+ 	struct net_bridge_mdb_entry *mdst;
+ 	bool local_rcv, mcast_hit = false;
+-	const unsigned char *dest;
+ 	struct net_bridge *br;
+ 	u16 vid = 0;
  
- 	if (is_general_query) {
- 		saddr.proto = htons(ETH_P_IPV6);
--		saddr.u.ip6 = ip6h->saddr;
-+		saddr.u.ip6 = ipv6_hdr(skb)->saddr;
+@@ -92,10 +91,9 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+ 		br_fdb_update(br, p, eth_hdr(skb)->h_source, vid, false);
  
- 		br_multicast_query_received(br, port, &br->ip6_other_query,
- 					    &saddr, max_delay);
+ 	local_rcv = !!(br->dev->flags & IFF_PROMISC);
+-	dest = eth_hdr(skb)->h_dest;
+-	if (is_multicast_ether_addr(dest)) {
++	if (is_multicast_ether_addr(eth_hdr(skb)->h_dest)) {
+ 		/* by definition the broadcast is also a multicast address */
+-		if (is_broadcast_ether_addr(dest)) {
++		if (is_broadcast_ether_addr(eth_hdr(skb)->h_dest)) {
+ 			pkt_type = BR_PKT_BROADCAST;
+ 			local_rcv = true;
+ 		} else {
+@@ -145,7 +143,7 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+ 		}
+ 		break;
+ 	case BR_PKT_UNICAST:
+-		dst = br_fdb_find_rcu(br, dest, vid);
++		dst = br_fdb_find_rcu(br, eth_hdr(skb)->h_dest, vid);
+ 	default:
+ 		break;
+ 	}
 -- 
 2.21.0
 
