@@ -2,397 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BC2C5CD62
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 12:14:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C4975CD56
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 12:09:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727198AbfGBKN6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 06:13:58 -0400
-Received: from mga07.intel.com ([134.134.136.100]:51646 "EHLO mga07.intel.com"
+        id S1726960AbfGBKJM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 06:09:12 -0400
+Received: from mga18.intel.com ([134.134.136.126]:34090 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725868AbfGBKN6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jul 2019 06:13:58 -0400
+        id S1725835AbfGBKJM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jul 2019 06:09:12 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 Jul 2019 02:22:55 -0700
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 Jul 2019 02:27:41 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.63,442,1557212400"; 
-   d="scan'208";a="315171788"
-Received: from mkarlsso-mobl.ger.corp.intel.com (HELO localhost.localdomain) ([10.252.32.218])
-  by orsmga004.jf.intel.com with ESMTP; 02 Jul 2019 02:22:49 -0700
-From:   Magnus Karlsson <magnus.karlsson@intel.com>
-To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org, brouer@redhat.com
-Cc:     bpf@vger.kernel.org, bruce.richardson@intel.com,
-        ciara.loftus@intel.com, jakub.kicinski@netronome.com,
-        xiaolong.ye@intel.com, qi.z.zhang@intel.com, maximmi@mellanox.com,
-        sridhar.samudrala@intel.com, kevin.laatz@intel.com,
-        ilias.apalodimas@linaro.org, kiran.patil@intel.com,
-        axboe@kernel.dk, maciej.fijalkowski@intel.com,
-        maciejromanfijalkowski@gmail.com, intel-wired-lan@lists.osuosl.org
-Subject: [PATCH bpf-next v2 6/6] samples/bpf: add use of need_sleep flag in xdpsock
-Date:   Tue,  2 Jul 2019 11:21:28 +0200
-Message-Id: <1562059288-26773-7-git-send-email-magnus.karlsson@intel.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1562059288-26773-1-git-send-email-magnus.karlsson@intel.com>
-References: <1562059288-26773-1-git-send-email-magnus.karlsson@intel.com>
+   d="scan'208";a="247208758"
+Received: from irsmsx152.ger.corp.intel.com ([163.33.192.66])
+  by orsmga001.jf.intel.com with ESMTP; 02 Jul 2019 02:27:39 -0700
+Received: from irsmsx103.ger.corp.intel.com ([169.254.3.140]) by
+ IRSMSX152.ger.corp.intel.com ([169.254.6.79]) with mapi id 14.03.0439.000;
+ Tue, 2 Jul 2019 10:27:38 +0100
+From:   "Richardson, Bruce" <bruce.richardson@intel.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "Laatz, Kevin" <kevin.laatz@intel.com>
+CC:     Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "Topel, Bjorn" <bjorn.topel@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "Loftus, Ciara" <ciara.loftus@intel.com>
+Subject: RE: [PATCH 00/11] XDP unaligned chunk placement support
+Thread-Topic: [PATCH 00/11] XDP unaligned chunk placement support
+Thread-Index: AQHVJ4i5lf51JKLIg0itC+9xR96zh6asrBSAgAKnKQCAAKqjAIABPLiAgABF0QCABFa7gIAAboQAgADCFaA=
+Date:   Tue, 2 Jul 2019 09:27:38 +0000
+Message-ID: <59AF69C657FD0841A61C55336867B5B07ED8B210@IRSMSX103.ger.corp.intel.com>
+References: <20190620083924.1996-1-kevin.laatz@intel.com>
+        <FA8389B9-F89C-4BFF-95EE-56F702BBCC6D@gmail.com>
+        <ef7e9469-e7be-647b-8bb1-da29bc01fa2e@intel.com>
+        <20190627142534.4f4b8995@cakuba.netronome.com>
+        <f0ca817a-02b4-df22-d01b-7bc07171a4dc@intel.com>
+        <BAE24CBF-416D-4665-B2C9-CE1F5EAE28FF@gmail.com>
+        <07e404eb-f712-b15a-4884-315aff3f7c7d@intel.com>
+ <20190701142002.1b17cc0b@cakuba.netronome.com>
+In-Reply-To: <20190701142002.1b17cc0b@cakuba.netronome.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiMWI5MmI0MTAtOWQxYS00NTljLTgyMTctODU4NDg3ODU3NWRlIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiQzhtQ09KNStDWFRZMGtnc0VYN0dJVmdYRmljTUhPdHNRXC8wS2J1d2k4OFdDQmpVQzlkV3ptU3htVVdcLzhtNW9WIn0=
+x-ctpclassification: CTP_NT
+dlp-product: dlpe-windows
+dlp-version: 11.0.600.7
+dlp-reaction: no-action
+x-originating-ip: [163.33.239.182]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit adds using the need_sleep flag to the xdpsock sample
-application. It is turned on by default as we think it is a feature
-that seems to always produce a performance benefit, if the application
-has been written taking advantage of it. It can be turned off in the
-sample app by using the '-m' command line option.
-
-The txpush and l2fwd sub applications have also been updated to
-support poll() with multiple sockets.
-
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
----
- samples/bpf/xdpsock_user.c | 192 ++++++++++++++++++++++++++++-----------------
- 1 file changed, 120 insertions(+), 72 deletions(-)
-
-diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
-index 93eaaf7..7d771af 100644
---- a/samples/bpf/xdpsock_user.c
-+++ b/samples/bpf/xdpsock_user.c
-@@ -67,8 +67,10 @@ static int opt_ifindex;
- static int opt_queue;
- static int opt_poll;
- static int opt_interval = 1;
--static u32 opt_xdp_bind_flags;
-+static u32 opt_xdp_bind_flags = XDP_USE_NEED_WAKEUP;
- static int opt_xsk_frame_size = XSK_UMEM__DEFAULT_FRAME_SIZE;
-+static int opt_timeout = 1000;
-+static bool opt_might_sleep = true;
- static __u32 prog_id;
- 
- struct xsk_umem_info {
-@@ -352,6 +354,7 @@ static struct option long_options[] = {
- 	{"zero-copy", no_argument, 0, 'z'},
- 	{"copy", no_argument, 0, 'c'},
- 	{"frame-size", required_argument, 0, 'f'},
-+	{"no-might-sleep", no_argument, 0, 'm'},
- 	{0, 0, 0, 0}
- };
- 
-@@ -372,6 +375,7 @@ static void usage(const char *prog)
- 		"  -z, --zero-copy      Force zero-copy mode.\n"
- 		"  -c, --copy           Force copy mode.\n"
- 		"  -f, --frame-size=n   Set the frame size (must be a power of two, default is %d).\n"
-+		"  -m, --no-might-sleep Turn off use of driver might sleep flag.\n"
- 		"\n";
- 	fprintf(stderr, str, prog, XSK_UMEM__DEFAULT_FRAME_SIZE);
- 	exit(EXIT_FAILURE);
-@@ -384,8 +388,9 @@ static void parse_command_line(int argc, char **argv)
- 	opterr = 0;
- 
- 	for (;;) {
--		c = getopt_long(argc, argv, "Frtli:q:psSNn:czf:", long_options,
--				&option_index);
-+
-+		c = getopt_long(argc, argv, "Frtli:q:psSNn:czf:m",
-+				long_options, &option_index);
- 		if (c == -1)
- 			break;
- 
-@@ -429,6 +434,9 @@ static void parse_command_line(int argc, char **argv)
- 			break;
- 		case 'f':
- 			opt_xsk_frame_size = atoi(optarg);
-+		case 'm':
-+			opt_might_sleep = false;
-+			opt_xdp_bind_flags &= ~XDP_USE_NEED_WAKEUP;
- 			break;
- 		default:
- 			usage(basename(argv[0]));
-@@ -459,7 +467,8 @@ static void kick_tx(struct xsk_socket_info *xsk)
- 	exit_with_error(errno);
- }
- 
--static inline void complete_tx_l2fwd(struct xsk_socket_info *xsk)
-+static inline void complete_tx_l2fwd(struct xsk_socket_info *xsk,
-+				     struct pollfd *fds)
- {
- 	u32 idx_cq = 0, idx_fq = 0;
- 	unsigned int rcvd;
-@@ -468,7 +477,9 @@ static inline void complete_tx_l2fwd(struct xsk_socket_info *xsk)
- 	if (!xsk->outstanding_tx)
- 		return;
- 
--	kick_tx(xsk);
-+	if (!opt_might_sleep || xsk_ring_prod__needs_wakeup(&xsk->tx))
-+		kick_tx(xsk);
-+
- 	ndescs = (xsk->outstanding_tx > BATCH_SIZE) ? BATCH_SIZE :
- 		xsk->outstanding_tx;
- 
-@@ -482,6 +493,8 @@ static inline void complete_tx_l2fwd(struct xsk_socket_info *xsk)
- 		while (ret != rcvd) {
- 			if (ret < 0)
- 				exit_with_error(-ret);
-+			if (xsk_ring_prod__needs_wakeup(&xsk->umem->fq))
-+				ret = poll(fds, num_socks, opt_timeout);
- 			ret = xsk_ring_prod__reserve(&xsk->umem->fq, rcvd,
- 						     &idx_fq);
- 		}
-@@ -505,7 +518,8 @@ static inline void complete_tx_only(struct xsk_socket_info *xsk)
- 	if (!xsk->outstanding_tx)
- 		return;
- 
--	kick_tx(xsk);
-+	if (!opt_might_sleep || xsk_ring_prod__needs_wakeup(&xsk->tx))
-+		kick_tx(xsk);
- 
- 	rcvd = xsk_ring_cons__peek(&xsk->umem->cq, BATCH_SIZE, &idx);
- 	if (rcvd > 0) {
-@@ -515,20 +529,25 @@ static inline void complete_tx_only(struct xsk_socket_info *xsk)
- 	}
- }
- 
--static void rx_drop(struct xsk_socket_info *xsk)
-+static void rx_drop(struct xsk_socket_info *xsk, struct pollfd *fds)
- {
- 	unsigned int rcvd, i;
- 	u32 idx_rx = 0, idx_fq = 0;
- 	int ret;
- 
- 	rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE, &idx_rx);
--	if (!rcvd)
-+	if (!rcvd) {
-+		if (xsk_ring_prod__needs_wakeup(&xsk->umem->fq))
-+			ret = poll(fds, num_socks, opt_timeout);
- 		return;
-+	}
- 
- 	ret = xsk_ring_prod__reserve(&xsk->umem->fq, rcvd, &idx_fq);
- 	while (ret != rcvd) {
- 		if (ret < 0)
- 			exit_with_error(-ret);
-+		if (xsk_ring_prod__needs_wakeup(&xsk->umem->fq))
-+			ret = poll(fds, num_socks, opt_timeout);
- 		ret = xsk_ring_prod__reserve(&xsk->umem->fq, rcvd, &idx_fq);
- 	}
- 
-@@ -549,42 +568,65 @@ static void rx_drop(struct xsk_socket_info *xsk)
- static void rx_drop_all(void)
- {
- 	struct pollfd fds[MAX_SOCKS + 1];
--	int i, ret, timeout, nfds = 1;
-+	int i, ret;
- 
- 	memset(fds, 0, sizeof(fds));
- 
- 	for (i = 0; i < num_socks; i++) {
- 		fds[i].fd = xsk_socket__fd(xsks[i]->xsk);
- 		fds[i].events = POLLIN;
--		timeout = 1000; /* 1sn */
- 	}
- 
- 	for (;;) {
- 		if (opt_poll) {
--			ret = poll(fds, nfds, timeout);
-+			ret = poll(fds, num_socks, opt_timeout);
- 			if (ret <= 0)
- 				continue;
- 		}
- 
- 		for (i = 0; i < num_socks; i++)
--			rx_drop(xsks[i]);
-+			rx_drop(xsks[i], fds);
-+	}
-+}
-+
-+static void tx_only(struct xsk_socket_info *xsk, u32 frame_nb)
-+{
-+	u32 idx;
-+
-+	if (xsk_ring_prod__reserve(&xsk->tx, BATCH_SIZE, &idx) == BATCH_SIZE) {
-+		unsigned int i;
-+
-+		for (i = 0; i < BATCH_SIZE; i++) {
-+			xsk_ring_prod__tx_desc(&xsk->tx, idx + i)->addr	=
-+				(frame_nb + i) << XSK_UMEM__DEFAULT_FRAME_SHIFT;
-+			xsk_ring_prod__tx_desc(&xsk->tx, idx + i)->len =
-+				sizeof(pkt_data) - 1;
-+		}
-+
-+		xsk_ring_prod__submit(&xsk->tx, BATCH_SIZE);
-+		xsk->outstanding_tx += BATCH_SIZE;
-+		frame_nb += BATCH_SIZE;
-+		frame_nb %= NUM_FRAMES;
- 	}
-+
-+	complete_tx_only(xsk);
- }
- 
--static void tx_only(struct xsk_socket_info *xsk)
-+static void tx_only_all(void)
- {
--	int timeout, ret, nfds = 1;
--	struct pollfd fds[nfds + 1];
--	u32 idx, frame_nb = 0;
-+	struct pollfd fds[MAX_SOCKS];
-+	u32 frame_nb[MAX_SOCKS] = {};
-+	int i, ret;
- 
- 	memset(fds, 0, sizeof(fds));
--	fds[0].fd = xsk_socket__fd(xsk->xsk);
--	fds[0].events = POLLOUT;
--	timeout = 1000; /* 1sn */
-+	for (i = 0; i < num_socks; i++) {
-+		fds[0].fd = xsk_socket__fd(xsks[i]->xsk);
-+		fds[0].events = POLLOUT;
-+	}
- 
- 	for (;;) {
- 		if (opt_poll) {
--			ret = poll(fds, nfds, timeout);
-+			ret = poll(fds, num_socks, opt_timeout);
- 			if (ret <= 0)
- 				continue;
- 
-@@ -592,69 +634,75 @@ static void tx_only(struct xsk_socket_info *xsk)
- 				continue;
- 		}
- 
--		if (xsk_ring_prod__reserve(&xsk->tx, BATCH_SIZE, &idx) ==
--		    BATCH_SIZE) {
--			unsigned int i;
--
--			for (i = 0; i < BATCH_SIZE; i++) {
--				xsk_ring_prod__tx_desc(&xsk->tx, idx + i)->addr
--					= (frame_nb + i) * opt_xsk_frame_size;
--				xsk_ring_prod__tx_desc(&xsk->tx, idx + i)->len =
--					sizeof(pkt_data) - 1;
--			}
--
--			xsk_ring_prod__submit(&xsk->tx, BATCH_SIZE);
--			xsk->outstanding_tx += BATCH_SIZE;
--			frame_nb += BATCH_SIZE;
--			frame_nb %= NUM_FRAMES;
--		}
--
--		complete_tx_only(xsk);
-+		for (i = 0; i < num_socks; i++)
-+			tx_only(xsks[i], frame_nb[i]);
- 	}
- }
- 
--static void l2fwd(struct xsk_socket_info *xsk)
-+static void l2fwd(struct xsk_socket_info *xsk, struct pollfd *fds)
- {
--	for (;;) {
--		unsigned int rcvd, i;
--		u32 idx_rx = 0, idx_tx = 0;
--		int ret;
-+	unsigned int rcvd, i;
-+	u32 idx_rx = 0, idx_tx = 0;
-+	int ret;
- 
--		for (;;) {
--			complete_tx_l2fwd(xsk);
-+	complete_tx_l2fwd(xsk, fds);
- 
--			rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE,
--						   &idx_rx);
--			if (rcvd > 0)
--				break;
--		}
-+	rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE, &idx_rx);
-+	if (!rcvd) {
-+		if (xsk_ring_prod__needs_wakeup(&xsk->umem->fq))
-+			ret = poll(fds, num_socks, opt_timeout);
-+		return;
-+	}
- 
-+	ret = xsk_ring_prod__reserve(&xsk->tx, rcvd, &idx_tx);
-+	while (ret != rcvd) {
-+		if (ret < 0)
-+			exit_with_error(-ret);
-+		if (xsk_ring_prod__needs_wakeup(&xsk->tx))
-+			kick_tx(xsk);
- 		ret = xsk_ring_prod__reserve(&xsk->tx, rcvd, &idx_tx);
--		while (ret != rcvd) {
--			if (ret < 0)
--				exit_with_error(-ret);
--			ret = xsk_ring_prod__reserve(&xsk->tx, rcvd, &idx_tx);
--		}
-+	}
-+
-+	for (i = 0; i < rcvd; i++) {
-+		u64 addr = xsk_ring_cons__rx_desc(&xsk->rx, idx_rx)->addr;
-+		u32 len = xsk_ring_cons__rx_desc(&xsk->rx, idx_rx++)->len;
-+		char *pkt = xsk_umem__get_data(xsk->umem->buffer, addr);
-+
-+		swap_mac_addresses(pkt);
- 
--		for (i = 0; i < rcvd; i++) {
--			u64 addr = xsk_ring_cons__rx_desc(&xsk->rx,
--							  idx_rx)->addr;
--			u32 len = xsk_ring_cons__rx_desc(&xsk->rx,
--							 idx_rx++)->len;
--			char *pkt = xsk_umem__get_data(xsk->umem->buffer, addr);
-+		hex_dump(pkt, len, addr);
-+		xsk_ring_prod__tx_desc(&xsk->tx, idx_tx)->addr = addr;
-+		xsk_ring_prod__tx_desc(&xsk->tx, idx_tx++)->len = len;
-+	}
- 
--			swap_mac_addresses(pkt);
-+	xsk_ring_prod__submit(&xsk->tx, rcvd);
-+	xsk_ring_cons__release(&xsk->rx, rcvd);
- 
--			hex_dump(pkt, len, addr);
--			xsk_ring_prod__tx_desc(&xsk->tx, idx_tx)->addr = addr;
--			xsk_ring_prod__tx_desc(&xsk->tx, idx_tx++)->len = len;
--		}
-+	xsk->rx_npkts += rcvd;
-+	xsk->outstanding_tx += rcvd;
-+}
-+
-+static void l2fwd_all(void)
-+{
-+	struct pollfd fds[MAX_SOCKS];
-+	int i, ret;
-+
-+	memset(fds, 0, sizeof(fds));
-+
-+	for (i = 0; i < num_socks; i++) {
-+		fds[i].fd = xsk_socket__fd(xsks[i]->xsk);
-+		fds[i].events = POLLOUT | POLLIN;
-+	}
- 
--		xsk_ring_prod__submit(&xsk->tx, rcvd);
--		xsk_ring_cons__release(&xsk->rx, rcvd);
-+	for (;;) {
-+		if (opt_poll) {
-+			ret = poll(fds, num_socks, opt_timeout);
-+			if (ret <= 0)
-+				continue;
-+		}
- 
--		xsk->rx_npkts += rcvd;
--		xsk->outstanding_tx += rcvd;
-+		for (i = 0; i < num_socks; i++)
-+			l2fwd(xsks[i], fds);
- 	}
- }
- 
-@@ -705,9 +753,9 @@ int main(int argc, char **argv)
- 	if (opt_bench == BENCH_RXDROP)
- 		rx_drop_all();
- 	else if (opt_bench == BENCH_TXONLY)
--		tx_only(xsks[0]);
-+		tx_only_all();
- 	else
--		l2fwd(xsks[0]);
-+		l2fwd_all();
- 
- 	return 0;
- }
--- 
-2.7.4
-
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFrdWIgS2ljaW5za2kg
+W21haWx0bzpqYWt1Yi5raWNpbnNraUBuZXRyb25vbWUuY29tXQ0KPiBTZW50OiBNb25kYXksIEp1
+bHkgMSwgMjAxOSAxMDoyMCBQTQ0KPiBUbzogTGFhdHosIEtldmluIDxrZXZpbi5sYWF0ekBpbnRl
+bC5jb20+DQo+IENjOiBKb25hdGhhbiBMZW1vbiA8am9uYXRoYW4ubGVtb25AZ21haWwuY29tPjsg
+bmV0ZGV2QHZnZXIua2VybmVsLm9yZzsNCj4gYXN0QGtlcm5lbC5vcmc7IGRhbmllbEBpb2dlYXJi
+b3gubmV0OyBUb3BlbCwgQmpvcm4NCj4gPGJqb3JuLnRvcGVsQGludGVsLmNvbT47IEthcmxzc29u
+LCBNYWdudXMgPG1hZ251cy5rYXJsc3NvbkBpbnRlbC5jb20+Ow0KPiBicGZAdmdlci5rZXJuZWwu
+b3JnOyBpbnRlbC13aXJlZC1sYW5AbGlzdHMub3N1b3NsLm9yZzsgUmljaGFyZHNvbiwgQnJ1Y2UN
+Cj4gPGJydWNlLnJpY2hhcmRzb25AaW50ZWwuY29tPjsgTG9mdHVzLCBDaWFyYSA8Y2lhcmEubG9m
+dHVzQGludGVsLmNvbT4NCj4gU3ViamVjdDogUmU6IFtQQVRDSCAwMC8xMV0gWERQIHVuYWxpZ25l
+ZCBjaHVuayBwbGFjZW1lbnQgc3VwcG9ydA0KPiANCj4gT24gTW9uLCAxIEp1bCAyMDE5IDE1OjQ0
+OjI5ICswMTAwLCBMYWF0eiwgS2V2aW4gd3JvdGU6DQo+ID4gT24gMjgvMDYvMjAxOSAyMToyOSwg
+Sm9uYXRoYW4gTGVtb24gd3JvdGU6DQo+ID4gPiBPbiAyOCBKdW4gMjAxOSwgYXQgOToxOSwgTGFh
+dHosIEtldmluIHdyb3RlOg0KPiA+ID4+IE9uIDI3LzA2LzIwMTkgMjI6MjUsIEpha3ViIEtpY2lu
+c2tpIHdyb3RlOg0KPiA+ID4+PiBJIHRoaW5rIHRoYXQncyB2ZXJ5IGxpbWl0aW5nLsKgIFdoYXQg
+aXMgdGhlIGNoYWxsZW5nZSBpbiBwcm92aWRpbmcNCj4gPiA+Pj4gYWxpZ25lZCBhZGRyZXNzZXMs
+IGV4YWN0bHk/DQo+ID4gPj4gVGhlIGNoYWxsZW5nZXMgYXJlIHR3by1mb2xkOg0KPiA+ID4+IDEp
+IGl0IHByZXZlbnRzIHVzaW5nIGFyYml0cmFyeSBidWZmZXIgc2l6ZXMsIHdoaWNoIHdpbGwgYmUg
+YW4gaXNzdWUNCj4gPiA+PiBzdXBwb3J0aW5nIGUuZy4ganVtYm8gZnJhbWVzIGluIGZ1dHVyZS4N
+Cj4gPiA+PiAyKSBoaWdoZXIgbGV2ZWwgdXNlci1zcGFjZSBmcmFtZXdvcmtzIHdoaWNoIG1heSB3
+YW50IHRvIHVzZSBBRl9YRFAsDQo+ID4gPj4gc3VjaCBhcyBEUERLLCBkbyBub3QgY3VycmVudGx5
+IHN1cHBvcnQgaGF2aW5nIGJ1ZmZlcnMgd2l0aCAnZml4ZWQnDQo+ID4gPj4gYWxpZ25tZW50Lg0K
+PiA+ID4+IMKgwqDCoCBUaGUgcmVhc29uIHRoYXQgRFBESyB1c2VzIGFyYml0cmFyeSBwbGFjZW1l
+bnQgaXMgdGhhdDoNCj4gPiA+PiDCoMKgwqAgwqDCoMKgIC0gaXQgd291bGQgc3RvcCB0aGluZ3Mg
+d29ya2luZyBvbiBjZXJ0YWluIE5JQ3Mgd2hpY2ggbmVlZA0KPiA+ID4+IHRoZSBhY3R1YWwgd3Jp
+dGFibGUgc3BhY2Ugc3BlY2lmaWVkIGluIHVuaXRzIG9mIDFrIC0gdGhlcmVmb3JlIHdlDQo+ID4g
+Pj4gbmVlZCAyaw0KPiA+ID4+ICsgbWV0YWRhdGEgc3BhY2UuDQo+ID4gPj4gwqDCoMKgIMKgwqDC
+oCAtIHdlIHBsYWNlIHBhZGRpbmcgYmV0d2VlbiBidWZmZXJzIHRvIGF2b2lkIGNvbnN0YW50bHkN
+Cj4gPiA+PiBoaXR0aW5nIHRoZSBzYW1lIG1lbW9yeSBjaGFubmVscyB3aGVuIGFjY2Vzc2luZyBt
+ZW1vcnkuDQo+ID4gPj4gwqDCoMKgIMKgwqDCoCAtIGl0IGFsbG93cyB0aGUgYXBwbGljYXRpb24g
+dG8gY2hvb3NlIHRoZSBhY3R1YWwgYnVmZmVyDQo+ID4gPj4gc2l6ZSBpdCB3YW50cyB0byB1c2Uu
+DQo+ID4gPj4gwqDCoMKgIFdlIG1ha2UgdXNlIG9mIHRoZSBhYm92ZSB0byBhbGxvdyB1cyB0byBz
+cGVlZCB1cCBwcm9jZXNzaW5nDQo+ID4gPj4gc2lnbmlmaWNhbnRseSBhbmQgYWxzbyByZWR1Y2Ug
+dGhlIHBhY2tldCBidWZmZXIgbWVtb3J5IHNpemUuDQo+ID4gPj4NCj4gPiA+PiDCoMKgwqAgTm90
+IGhhdmluZyBhcmJpdHJhcnkgYnVmZmVyIGFsaWdubWVudCBhbHNvIG1lYW5zIGFuIEFGX1hEUA0K
+PiA+ID4+IGRyaXZlciBmb3IgRFBESyBjYW5ub3QgYmUgYSBkcm9wLWluIHJlcGxhY2VtZW50IGZv
+ciBleGlzdGluZw0KPiA+ID4+IGRyaXZlcnMgaW4gdGhvc2UgZnJhbWV3b3Jrcy4gRXZlbiB3aXRo
+IGEgbmV3IGNhcGFiaWxpdHkgdG8gYWxsb3cgYW4NCj4gPiA+PiBhcmJpdHJhcnkgYnVmZmVyIGFs
+aWdubWVudCwgZXhpc3RpbmcgYXBwcyB3aWxsIG5lZWQgdG8gYmUgbW9kaWZpZWQNCj4gPiA+PiB0
+byB1c2UgdGhhdCBuZXcgY2FwYWJpbGl0eS4NCj4gPiA+DQo+ID4gPiBTaW5jZSBhbGwgYnVmZmVy
+cyBpbiB0aGUgdW1lbSBhcmUgdGhlIHNhbWUgY2h1bmsgc2l6ZSwgdGhlIG9yaWdpbmFsDQo+ID4g
+PiBidWZmZXIgYWRkcmVzcyBjYW4gYmUgcmVjYWxjdWxhdGVkIHdpdGggc29tZSBtdWx0aXBseS9z
+aGlmdCBtYXRoLg0KPiA+ID4gSG93ZXZlciwgdGhpcyBpcyBtb3JlIGV4cGVuc2l2ZSB0aGFuIGp1
+c3QgYSBtYXNrIG9wZXJhdGlvbi4NCj4gPg0KPiA+IFllcywgd2UgY2FuIGRvIHRoaXMuDQo+IA0K
+PiBUaGF0J2QgYmUgYmVzdCwgY2FuIERQREsgcmVhc29uYWJseSBndWFyYW50ZWUgdGhlIHNsaWNp
+bmcgaXMgdW5pZm9ybT8NCj4gRS5nLiBpdCdzIG5vdCBkZXNwZXJhdGUgYnVmZmVyIHBvb2xzIHdp
+dGggZGlmZmVyZW50IGJhc2VzPw0KDQpJdCdzIGdlbmVyYWxseSB1bmlmb3JtLCBidXQgaGFuZGxp
+bmcgdGhlIGNyb3NzaW5nIG9mIChodWdlKXBhZ2UgYm91bmRhcmllcw0KY29tcGxpY2F0ZXMgdGhp
+bmdzIGEgYml0LiBUaGVyZWZvcmUgSSB0aGluayB0aGUgZmluYWwgb3B0aW9uIGJlbG93DQppcyBi
+ZXN0IGFzIGl0IGF2b2lkcyBhbnkgc3VjaCBwcm9ibGVtcy4NCg0KPiANCj4gPiBBbm90aGVyIG9w
+dGlvbiB3ZSBoYXZlIGlzIHRvIGFkZCBhIHNvY2tldCBvcHRpb24gZm9yIHF1ZXJ5aW5nIHRoZQ0K
+PiA+IG1ldGFkYXRhIGxlbmd0aCBmcm9tIHRoZSBkcml2ZXIgKGFzc3VtaW5nIGl0IGRvZXNuJ3Qg
+dmFyeSBwZXIgcGFja2V0KS4NCj4gPiBXZSBjYW4gdXNlIHRoYXQgaW5mb3JtYXRpb24gdG8gZ2V0
+IGJhY2sgdG8gdGhlIG9yaWdpbmFsIGFkZHJlc3MgdXNpbmcNCj4gPiBzdWJ0cmFjdGlvbi4NCj4g
+DQo+IFVuZm9ydHVuYXRlbHkgdGhlIG1ldGFkYXRhIGRlcGVuZHMgb24gdGhlIHBhY2tldCBhbmQg
+aG93IG11Y2ggaW5mbyB0aGUNCj4gZGV2aWNlIHdhcyBhYmxlIHRvIGV4dHJhY3QuICBTbyBpdCdz
+IHZhcmlhYmxlIGxlbmd0aC4NCj4gDQo+ID4gQWx0ZXJuYXRpdmVseSwgd2UgY2FuIGNoYW5nZSB0
+aGUgUnggZGVzY3JpcHRvciBmb3JtYXQgdG8gaW5jbHVkZSB0aGUNCj4gPiBtZXRhZGF0YSBsZW5n
+dGguIFdlIGNvdWxkIGRvIHRoaXMgaW4gYSBjb3VwbGUgb2Ygd2F5cywgZm9yIGV4YW1wbGUsDQo+
+ID4gcmF0aGVyIHRoYW4gcmV0dXJuaW5nIHRoZSBhZGRyZXNzIGFzIHRoZSBzdGFydCBvZiB0aGUg
+cGFja2V0LCBpbnN0ZWFkDQo+ID4gcmV0dXJuIHRoZSBidWZmZXIgYWRkcmVzcyB0aGF0IHdhcyBw
+YXNzZWQgaW4sIGFuZCBhZGRpbmcgYW5vdGhlcg0KPiA+IDE2LWJpdCBmaWVsZCB0byBzcGVjaWZ5
+IHRoZSBzdGFydCBvZiBwYWNrZXQgb2Zmc2V0IHdpdGggdGhhdCBidWZmZXIuDQo+ID4gSWYgdXNp
+bmcgYW5vdGhlciAxNi1iaXRzIG9mIHRoZSBkZXNjcmlwdG9yIHNwYWNlIGlzIG5vdCBkZXNpcmFi
+bGUsIGFuDQo+ID4gYWx0ZXJuYXRpdmUgY291bGQgYmUgdG8gbGltaXQgdW1lbSBzaXplcyB0byBl
+LmcuIDJeNDggYml0cyAoMjU2DQo+ID4gdGVyYWJ5dGVzIHNob3VsZCBiZSBlbm91Z2gsIHJpZ2h0
+IDotKSApIGFuZCB1c2UgdGhlIHJlbWFpbmluZyAxNiBiaXRzDQo+ID4gb2YgdGhlIGFkZHJlc3Mg
+YXMgYSBwYWNrZXQgb2Zmc2V0LiBPdGhlciB2YXJpYXRpb25zIG9uIHRoZXNlIGFwcHJvYWNoDQo+
+ID4gYXJlIG9idmlvdXNseSBwb3NzaWJsZSB0b28uDQo+IA0KPiBTZWVtcyByZWFzb25hYmxlIHRv
+IG1lLi4NCg0KSSB0aGluayB0aGlzIGlzIHByb2JhYmx5IHRoZSBiZXN0IHNvbHV0aW9uLCBhbmQg
+YWxzbyBoYXMgdGhlIGFkdmFudGFnZSB0aGF0DQphIGJ1ZmZlciByZXRhaW5zIGl0cyBiYXNlIGFk
+ZHJlc3MgdGhlIGZ1bGwgd2F5IHRocm91Z2ggdGhlIGN5Y2xlIG9mIFJ4IGFuZCBUeC4NCg==
