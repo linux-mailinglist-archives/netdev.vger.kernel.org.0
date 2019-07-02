@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 413935CD39
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 12:03:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C3585CD3C
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 12:03:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727271AbfGBKDi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 06:03:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39450 "EHLO mail.kernel.org"
+        id S1727280AbfGBKDn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 06:03:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39484 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727126AbfGBKDh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jul 2019 06:03:37 -0400
+        id S1727126AbfGBKDm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jul 2019 06:03:42 -0400
 Received: from localhost (unknown [37.142.3.125])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5CE9221841;
-        Tue,  2 Jul 2019 10:03:36 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0777420665;
+        Tue,  2 Jul 2019 10:03:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1562061817;
-        bh=tWBlJf5IHyDiQpIrQs+xhtwKkNpmfjwHNdac/4b9Zm4=;
+        s=default; t=1562061820;
+        bh=lYaA9nmu2rJSLHVx1eKr+SeAAjgGRfjh3nThnDtGGfc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cgxf8zQUwfR7CZgjuU7Wmq8+ZkALCLcDYMz6kFvqCg1rzKBNGWe/9Ieny5D0dvT+7
-         q/Oh/lJwvsPSc14tF6D0KtpMcxdUxly3EgJ/4WmX1qDQg7et2Y9X8L0p+/+3H1IY9D
-         bkXoUAqUQvFd2ZMLKAKT5q4HtisgNf/7VWFW0YTo=
+        b=KXNs5ytRjqWn78Vw4qcJ5jpW8ZHoETUKZvB3zvA0J71JoItOcDYAkObhXmGySgT0d
+         3MWfFg9k6pxr2FEd4aguBlb6cOip8OjwKg6jHKtPooJt1nOwV5Q+NiOLl2mBVGq/RD
+         K7s5/cmX6UETosgilMY/mhh+ooqooPkqKY6Rn03w=
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@mellanox.com>
@@ -32,9 +32,9 @@ Cc:     Leon Romanovsky <leonro@mellanox.com>,
         Mark Zhang <markz@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>,
         linux-netdev <netdev@vger.kernel.org>
-Subject: [PATCH rdma-next v5 13/17] RDMA/core: Get sum value of all counters when perform a sysfs stat read
-Date:   Tue,  2 Jul 2019 13:02:42 +0300
-Message-Id: <20190702100246.17382-14-leon@kernel.org>
+Subject: [PATCH rdma-next v5 14/17] RDMA/counter: Allow manual mode configuration support
+Date:   Tue,  2 Jul 2019 13:02:43 +0300
+Message-Id: <20190702100246.17382-15-leon@kernel.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190702100246.17382-1-leon@kernel.org>
 References: <20190702100246.17382-1-leon@kernel.org>
@@ -47,201 +47,335 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Mark Zhang <markz@mellanox.com>
 
-Since a QP can only be bound to one counter, then if it is bound to a
-separate counter, for backward compatibility purpose, the statistic
-value must be:
-* stat of default counter
-+ stat of all running allocated counters
-+ stat of all deallocated counters (history stats)
+In manual mode a QP is bound to a counter manually. If counter is not
+specified then a new one will be allocated.
+Manually mode is enabled when user binds a QP, and disabled when the
+last manually bound QP is unbound.
+When auto-mode is turned off and there are counters left, manual mode
+is enabled so that the user is able to access these counters.
 
 Signed-off-by: Mark Zhang <markz@mellanox.com>
 Reviewed-by: Majd Dibbiny <majd@mellanox.com>
 Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
 ---
- drivers/infiniband/core/counters.c | 89 ++++++++++++++++++++++++++++++
- drivers/infiniband/core/sysfs.c    | 10 +++-
- include/rdma/rdma_counter.h        |  2 +
- 3 files changed, 98 insertions(+), 3 deletions(-)
+ drivers/infiniband/core/counters.c | 219 ++++++++++++++++++++++++++++-
+ include/rdma/rdma_counter.h        |   7 +
+ include/uapi/rdma/rdma_netlink.h   |   6 +
+ 3 files changed, 229 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/infiniband/core/counters.c b/drivers/infiniband/core/counters.c
-index ca9adee19159..2de4c555eba9 100644
+index 2de4c555eba9..6ac8bf1240de 100644
 --- a/drivers/infiniband/core/counters.c
 +++ b/drivers/infiniband/core/counters.c
-@@ -158,6 +158,20 @@ static int __rdma_counter_unbind_qp(struct ib_qp *qp)
- 	return ret;
- }
- 
-+static void counter_history_stat_update(const struct rdma_counter *counter)
-+{
-+	struct ib_device *dev = counter->device;
-+	struct rdma_port_counter *port_counter;
-+	int i;
-+
-+	port_counter = &dev->port_data[counter->port].port_counter;
-+	if (!port_counter->hstats)
-+		return;
-+
-+	for (i = 0; i < counter->stats->num_counters; i++)
-+		port_counter->hstats->value[i] += counter->stats->value[i];
-+}
-+
+@@ -27,7 +27,9 @@ static int __counter_set_mode(struct rdma_counter_mode *curr,
  /**
-  * rdma_get_counter_auto_mode - Find the counter that @qp should be bound
-  *     with in auto mode
-@@ -215,6 +229,7 @@ static void counter_release(struct kref *kref)
+  * rdma_counter_set_auto_mode() - Turn on/off per-port auto mode
+  *
+- * When @on is true, the @mask must be set
++ * When @on is true, the @mask must be set; When @on is false, it goes
++ * into manual mode if there's any counter, so that the user is able to
++ * manually access them.
+  */
+ int rdma_counter_set_auto_mode(struct ib_device *dev, u8 port,
+ 			       bool on, enum rdma_nl_counter_mask mask)
+@@ -45,8 +47,13 @@ int rdma_counter_set_auto_mode(struct ib_device *dev, u8 port,
+ 			ret = -EINVAL;
+ 			goto out;
+ 		}
+-		ret = __counter_set_mode(&port_counter->mode,
+-					 RDMA_COUNTER_MODE_NONE, 0);
++
++		if (port_counter->num_counters)
++			ret = __counter_set_mode(&port_counter->mode,
++						 RDMA_COUNTER_MODE_MANUAL, 0);
++		else
++			ret = __counter_set_mode(&port_counter->mode,
++						 RDMA_COUNTER_MODE_NONE, 0);
+ 	}
+ 
+ out:
+@@ -57,7 +64,9 @@ int rdma_counter_set_auto_mode(struct ib_device *dev, u8 port,
+ static struct rdma_counter *rdma_counter_alloc(struct ib_device *dev, u8 port,
+ 					       enum rdma_nl_counter_mode mode)
+ {
++	struct rdma_port_counter *port_counter;
  	struct rdma_counter *counter;
++	int ret;
  
- 	counter = container_of(kref, struct rdma_counter, kref);
-+	counter_history_stat_update(counter);
- 	counter->device->ops.counter_dealloc(counter);
- 	rdma_counter_free(counter);
- }
-@@ -299,6 +314,55 @@ int rdma_counter_query_stats(struct rdma_counter *counter)
- 	return ret;
- }
+ 	if (!dev->ops.counter_dealloc || !dev->ops.counter_alloc_stats)
+ 		return NULL;
+@@ -73,12 +82,27 @@ static struct rdma_counter *rdma_counter_alloc(struct ib_device *dev, u8 port,
+ 	if (!counter->stats)
+ 		goto err_stats;
  
-+static u64 get_running_counters_hwstat_sum(struct ib_device *dev,
-+					   u8 port, u32 index)
-+{
-+	struct rdma_restrack_entry *res;
-+	struct rdma_restrack_root *rt;
-+	struct rdma_counter *counter;
-+	unsigned long id = 0;
-+	u64 sum = 0;
-+
-+	rt = &dev->res[RDMA_RESTRACK_COUNTER];
-+	xa_lock(&rt->xa);
-+	xa_for_each(&rt->xa, id, res) {
-+		if (!rdma_restrack_get(res))
-+			continue;
-+
-+		xa_unlock(&rt->xa);
-+
-+		counter = container_of(res, struct rdma_counter, res);
-+		if ((counter->device != dev) || (counter->port != port) ||
-+		    rdma_counter_query_stats(counter))
-+			goto next;
-+
-+		sum += counter->stats->value[index];
-+
-+next:
-+		xa_lock(&rt->xa);
-+		rdma_restrack_put(res);
++	port_counter = &dev->port_data[port].port_counter;
++	mutex_lock(&port_counter->lock);
++	if (mode == RDMA_COUNTER_MODE_MANUAL) {
++		ret = __counter_set_mode(&port_counter->mode,
++					 RDMA_COUNTER_MODE_MANUAL, 0);
++		if (ret)
++			goto err_mode;
 +	}
 +
-+	xa_unlock(&rt->xa);
-+	return sum;
++	port_counter->num_counters++;
++	mutex_unlock(&port_counter->lock);
++
+ 	counter->mode.mode = mode;
+ 	kref_init(&counter->kref);
+ 	mutex_init(&counter->lock);
+ 
+ 	return counter;
+ 
++err_mode:
++	mutex_unlock(&port_counter->lock);
++	kfree(counter->stats);
+ err_stats:
+ 	kfree(counter);
+ 	return NULL;
+@@ -86,6 +110,18 @@ static struct rdma_counter *rdma_counter_alloc(struct ib_device *dev, u8 port,
+ 
+ static void rdma_counter_free(struct rdma_counter *counter)
+ {
++	struct rdma_port_counter *port_counter;
++
++	port_counter = &counter->device->port_data[counter->port].port_counter;
++	mutex_lock(&port_counter->lock);
++	port_counter->num_counters--;
++	if (!port_counter->num_counters &&
++	    (port_counter->mode.mode == RDMA_COUNTER_MODE_MANUAL))
++		__counter_set_mode(&port_counter->mode, RDMA_COUNTER_MODE_NONE,
++				   0);
++
++	mutex_unlock(&port_counter->lock);
++
+ 	rdma_restrack_del(&counter->res);
+ 	kfree(counter->stats);
+ 	kfree(counter);
+@@ -363,6 +399,183 @@ u64 rdma_counter_get_hwstat_value(struct ib_device *dev, u8 port, u32 index)
+ 	return sum;
+ }
+ 
++static struct ib_qp *rdma_counter_get_qp(struct ib_device *dev, u32 qp_num)
++{
++	struct rdma_restrack_entry *res = NULL;
++	struct ib_qp *qp = NULL;
++
++	res = rdma_restrack_get_byid(dev, RDMA_RESTRACK_QP, qp_num);
++	if (IS_ERR(res))
++		return NULL;
++
++	if (!rdma_is_visible_in_pid_ns(res))
++		goto err;
++
++	qp = container_of(res, struct ib_qp, res);
++	if (qp->qp_type == IB_QPT_RAW_PACKET && !capable(CAP_NET_RAW))
++		goto err;
++
++	return qp;
++
++err:
++	rdma_restrack_put(&qp->res);
++	return NULL;
++}
++
++static int rdma_counter_bind_qp_manual(struct rdma_counter *counter,
++				       struct ib_qp *qp)
++{
++	if ((counter->device != qp->device) || (counter->port != qp->port))
++		return -EINVAL;
++
++	return __rdma_counter_bind_qp(counter, qp);
++}
++
++static struct rdma_counter *rdma_get_counter_by_id(struct ib_device *dev,
++						   u32 counter_id)
++{
++	struct rdma_restrack_entry *res;
++	struct rdma_counter *counter;
++
++	res = rdma_restrack_get_byid(dev, RDMA_RESTRACK_COUNTER, counter_id);
++	if (IS_ERR(res))
++		return NULL;
++
++	if (!rdma_is_visible_in_pid_ns(res)) {
++		rdma_restrack_put(res);
++		return NULL;
++	}
++
++	counter = container_of(res, struct rdma_counter, res);
++	kref_get(&counter->kref);
++	rdma_restrack_put(res);
++
++	return counter;
 +}
 +
 +/**
-+ * rdma_counter_get_hwstat_value() - Get the sum value of all counters on a
-+ *   specific port, including the running ones and history data
++ * rdma_counter_bind_qpn() - Bind QP @qp_num to counter @counter_id
 + */
-+u64 rdma_counter_get_hwstat_value(struct ib_device *dev, u8 port, u32 index)
++int rdma_counter_bind_qpn(struct ib_device *dev, u8 port,
++			  u32 qp_num, u32 counter_id)
++{
++	struct rdma_counter *counter;
++	struct ib_qp *qp;
++	int ret;
++
++	qp = rdma_counter_get_qp(dev, qp_num);
++	if (!qp)
++		return -ENOENT;
++
++	counter = rdma_get_counter_by_id(dev, counter_id);
++	if (!counter) {
++		ret = -ENOENT;
++		goto err;
++	}
++
++	if (counter->res.task != qp->res.task) {
++		ret = -EINVAL;
++		goto err_task;
++	}
++
++	ret = rdma_counter_bind_qp_manual(counter, qp);
++	if (ret)
++		goto err_task;
++
++	rdma_restrack_put(&qp->res);
++	return 0;
++
++err_task:
++	kref_put(&counter->kref, counter_release);
++err:
++	rdma_restrack_put(&qp->res);
++	return ret;
++}
++
++/**
++ * rdma_counter_bind_qpn_alloc() - Alloc a counter and bind QP @qp_num to it
++ *   The id of new counter is returned in @counter_id
++ */
++int rdma_counter_bind_qpn_alloc(struct ib_device *dev, u8 port,
++				u32 qp_num, u32 *counter_id)
++{
++	struct rdma_counter *counter;
++	struct ib_qp *qp;
++	int ret;
++
++	if (!rdma_is_port_valid(dev, port))
++		return -EINVAL;
++
++	qp = rdma_counter_get_qp(dev, qp_num);
++	if (!qp)
++		return -ENOENT;
++
++	if (rdma_is_port_valid(dev, qp->port) && (qp->port != port)) {
++		ret = -EINVAL;
++		goto err;
++	}
++
++	counter = rdma_counter_alloc(dev, port, RDMA_COUNTER_MODE_MANUAL);
++	if (!counter) {
++		ret = -ENOMEM;
++		goto err;
++	}
++
++	ret = rdma_counter_bind_qp_manual(counter, qp);
++	if (ret)
++		goto err_bind;
++
++	if (counter_id)
++		*counter_id = counter->id;
++
++	rdma_counter_res_add(counter, qp);
++
++	rdma_restrack_put(&qp->res);
++	return ret;
++
++err_bind:
++	rdma_counter_free(counter);
++err:
++	rdma_restrack_put(&qp->res);
++	return ret;
++}
++
++/**
++ * rdma_counter_unbind_qpn() - Unbind QP @qp_num from a counter
++ */
++int rdma_counter_unbind_qpn(struct ib_device *dev, u8 port,
++			    u32 qp_num, u32 counter_id)
 +{
 +	struct rdma_port_counter *port_counter;
-+	u64 sum;
++	struct ib_qp *qp;
++	int ret;
++
++	if (!rdma_is_port_valid(dev, port))
++		return -EINVAL;
++
++	qp = rdma_counter_get_qp(dev, qp_num);
++	if (!qp)
++		return -ENOENT;
++
++	if (rdma_is_port_valid(dev, qp->port) && (qp->port != port)) {
++		ret = -EINVAL;
++		goto out;
++	}
 +
 +	port_counter = &dev->port_data[port].port_counter;
-+	sum = get_running_counters_hwstat_sum(dev, port, index);
-+	sum += port_counter->hstats->value[index];
++	if (!qp->counter || qp->counter->id != counter_id ||
++	    port_counter->mode.mode != RDMA_COUNTER_MODE_MANUAL) {
++		ret = -EINVAL;
++		goto out;
++	}
 +
-+	return sum;
++	ret = rdma_counter_unbind_qp(qp, false);
++
++out:
++	rdma_restrack_put(&qp->res);
++	return ret;
 +}
 +
  void rdma_counter_init(struct ib_device *dev)
  {
  	struct rdma_port_counter *port_counter;
-@@ -311,9 +375,34 @@ void rdma_counter_init(struct ib_device *dev)
- 		port_counter = &dev->port_data[port].port_counter;
- 		port_counter->mode.mode = RDMA_COUNTER_MODE_NONE;
- 		mutex_init(&port_counter->lock);
-+
-+		port_counter->hstats = dev->ops.alloc_hw_stats(dev, port);
-+		if (!port_counter->hstats)
-+			goto fail;
- 	}
-+
-+	return;
-+
-+fail:
-+	rdma_for_each_port(dev, port) {
-+		port_counter = &dev->port_data[port].port_counter;
-+		kfree(port_counter->hstats);
-+		port_counter->hstats = NULL;
-+	}
-+
-+	return;
- }
- 
- void rdma_counter_release(struct ib_device *dev)
- {
-+	struct rdma_port_counter *port_counter;
-+	u32 port;
-+
-+	if (!dev->ops.alloc_hw_stats)
-+		return;
-+
-+	rdma_for_each_port(dev, port) {
-+		port_counter = &dev->port_data[port].port_counter;
-+		kfree(port_counter->hstats);
-+	}
- }
-diff --git a/drivers/infiniband/core/sysfs.c b/drivers/infiniband/core/sysfs.c
-index c78d0c9646ae..c59b80e0a740 100644
---- a/drivers/infiniband/core/sysfs.c
-+++ b/drivers/infiniband/core/sysfs.c
-@@ -43,6 +43,7 @@
- #include <rdma/ib_mad.h>
- #include <rdma/ib_pma.h>
- #include <rdma/ib_cache.h>
-+#include <rdma/rdma_counter.h>
- 
- struct ib_port;
- 
-@@ -800,9 +801,12 @@ static int update_hw_stats(struct ib_device *dev, struct rdma_hw_stats *stats,
- 	return 0;
- }
- 
--static ssize_t print_hw_stat(struct rdma_hw_stats *stats, int index, char *buf)
-+static ssize_t print_hw_stat(struct ib_device *dev, int port_num,
-+			     struct rdma_hw_stats *stats, int index, char *buf)
- {
--	return sprintf(buf, "%llu\n", stats->value[index]);
-+	u64 v = rdma_counter_get_hwstat_value(dev, port_num, index);
-+
-+	return sprintf(buf, "%llu\n", stats->value[index] + v);
- }
- 
- static ssize_t show_hw_stats(struct kobject *kobj, struct attribute *attr,
-@@ -828,7 +832,7 @@ static ssize_t show_hw_stats(struct kobject *kobj, struct attribute *attr,
- 	ret = update_hw_stats(dev, stats, hsa->port_num, hsa->index);
- 	if (ret)
- 		goto unlock;
--	ret = print_hw_stat(stats, hsa->index, buf);
-+	ret = print_hw_stat(dev, hsa->port_num, stats, hsa->index, buf);
- unlock:
- 	mutex_unlock(&stats->lock);
- 
 diff --git a/include/rdma/rdma_counter.h b/include/rdma/rdma_counter.h
-index f2a5c8efc404..bf2c3578768f 100644
+index bf2c3578768f..6603e10eb352 100644
 --- a/include/rdma/rdma_counter.h
 +++ b/include/rdma/rdma_counter.h
-@@ -27,6 +27,7 @@ struct rdma_counter_mode {
- 
+@@ -28,6 +28,7 @@ struct rdma_counter_mode {
  struct rdma_port_counter {
  	struct rdma_counter_mode mode;
-+	struct rdma_hw_stats *hstats;
+ 	struct rdma_hw_stats *hstats;
++	unsigned int num_counters;
  	struct mutex lock;
  };
  
-@@ -49,5 +50,6 @@ int rdma_counter_bind_qp_auto(struct ib_qp *qp, u8 port);
- int rdma_counter_unbind_qp(struct ib_qp *qp, bool force);
+@@ -51,5 +52,11 @@ int rdma_counter_unbind_qp(struct ib_qp *qp, bool force);
  
  int rdma_counter_query_stats(struct rdma_counter *counter);
-+u64 rdma_counter_get_hwstat_value(struct ib_device *dev, u8 port, u32 index);
+ u64 rdma_counter_get_hwstat_value(struct ib_device *dev, u8 port, u32 index);
++int rdma_counter_bind_qpn(struct ib_device *dev, u8 port,
++			  u32 qp_num, u32 counter_id);
++int rdma_counter_bind_qpn_alloc(struct ib_device *dev, u8 port,
++				u32 qp_num, u32 *counter_id);
++int rdma_counter_unbind_qpn(struct ib_device *dev, u8 port,
++			    u32 qp_num, u32 counter_id);
  
  #endif /* _RDMA_COUNTER_H_ */
+diff --git a/include/uapi/rdma/rdma_netlink.h b/include/uapi/rdma/rdma_netlink.h
+index 22c5bc7a82dd..ebd728f9e351 100644
+--- a/include/uapi/rdma/rdma_netlink.h
++++ b/include/uapi/rdma/rdma_netlink.h
+@@ -536,6 +536,12 @@ enum rdma_nl_counter_mode {
+ 	 */
+ 	RDMA_COUNTER_MODE_AUTO,
+ 
++	/*
++	 * Which qp are bound with which counter is explicitly specified
++	 * by the user
++	 */
++	RDMA_COUNTER_MODE_MANUAL,
++
+ 	/*
+ 	 * Always the end
+ 	 */
 -- 
 2.20.1
 
