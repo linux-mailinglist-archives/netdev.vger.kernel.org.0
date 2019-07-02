@@ -2,230 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19F485D5C0
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 19:55:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C50395D5C2
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 19:55:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726966AbfGBRzH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 13:55:07 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:46643 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726486AbfGBRzH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 13:55:07 -0400
-Received: by mail-io1-f67.google.com with SMTP id i10so25285812iol.13;
-        Tue, 02 Jul 2019 10:55:06 -0700 (PDT)
+        id S1726628AbfGBRzj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 13:55:39 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:40149 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726193AbfGBRzi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 13:55:38 -0400
+Received: by mail-io1-f68.google.com with SMTP id n5so39089595ioc.7;
+        Tue, 02 Jul 2019 10:55:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=U/Z4Dj4Y0qCwdeyEvtqgR34poFjwE8weburaMF45MeQ=;
-        b=s3N41a7kPqOIX37fs5hOJz20BwsXZJD2/DvSrm03Otz2GraweucH2293NQXQ4xcUc/
-         qHiHPm5xV/4FlbfEIyy2F4bjbCjxt01ZPQvcnoX4nZQJMKaiC9UBNEjR6qtYsq7BpiZc
-         s0WY6CydtXoprZ8xU9uvQaGUzZKbhL2h+p2W5HOcTf/L4w19Eq69A8FccnxC/AUNOT7s
-         Y7hfrKaw23ZT1WLidKh9Yg0JBvuxsr4P/0G6GDUzztPr/fwwORGqaGFFHE64PRXtJZKH
-         ecJK4ddelBZ1XI2mB+4en6wDAKbahp8+1c4Zh1jTPxyF+pwNB3pNctfynWfB7YSyuwK0
-         2hfw==
+        bh=3T5EysXS4+ylwMPKQI/Jl/hs5CUHoOyJkrz2X2C8PnQ=;
+        b=CV1OGf9sDtpAuDJ7X3upD8Rs3kldx7Rdmhnwb2VnAay24jra1YJhzyHgMB4HvRYe45
+         rZGMxpah47P9wdvgmAgZhscezAoH3duKuPpzNTGKV2NFq/54yp2XzzkiAEueJhSZSr/V
+         4PMrNecE3moAzjs6QlpLl4r1p/2MvN8OE25WCejxqhqMUkuplffp2WGBwussPNe2eJVv
+         gin9adMPsxZ84+WIPeMB8DurpbtLvFpBg4an56i8OXbO8O28CLv/DxRWOrb+07gEw9Be
+         hbN3h88HzZp6pWfTFvUgcgh36vewN/h8m6OWGiWe6D5tBPT7tjkWrfW4vJ477VrFUVE7
+         CVeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=U/Z4Dj4Y0qCwdeyEvtqgR34poFjwE8weburaMF45MeQ=;
-        b=mr1ASSWBLGS7s2Qy0GAslrslZGhTaaN8GBK8f5z90jpuV0gRrHlyrEbAI6EqzfCLHh
-         GEhARUVwyiCeszygR7VzqOweKdy4dNpUHGhKSr+FPxK3q7v+mxBmE14fKZ8vbV2+TxCj
-         db/x+nD5NuVoGmNnWks9QweoUoMFL545/ZjV15HW6fc0Dm/vlZr//GZMqKWvn891Nkyo
-         NZwumLtgOmKu+3Nb/aZ8ns1r3P6g+fr0RuOIxLg1YE5hZT4bRlKEGaR4D9ZltYyiGgNr
-         02CnvaIx3LVgi3dBekbTDF6bUmvYUGcUagG9/Qn5KauwcsotVpieBjyMsNdzlRtXrdCs
-         ireQ==
-X-Gm-Message-State: APjAAAVGbWM3WfDRZx9b5wuGuNK9pzQ/vTA04d6bdUCRaJVtR3/qljz+
-        XtbxMSxgBnAxpA0HxJaNlFIsVcxy0ixcmwyXsx2ylpbwH0U=
-X-Google-Smtp-Source: APXvYqyJ7J/5mF5SmC9nDXpaZLD88ofj1dqhd9nZh2LiPIHrtBNayhXrkSUr0pePIGuGLEUAgU7Z9UJkQC3JYcEWuWU=
-X-Received: by 2002:a5d:8f86:: with SMTP id l6mr6268331iol.97.1562090106352;
- Tue, 02 Jul 2019 10:55:06 -0700 (PDT)
+        bh=3T5EysXS4+ylwMPKQI/Jl/hs5CUHoOyJkrz2X2C8PnQ=;
+        b=LaHKYsQuXRWIe3girmbZpcnKc8I9uV2GVoKVbTGLknmeifHUBbPM8z480IJ+20bmNa
+         qDD3z8OtK9bl4vzCHymu0MdjfwJ6+cTm8bE2D9CDl7i7tmmObha0r3+HEFYpYAdkWJsh
+         mIjXuLZk063WGTihgkZEz/sC8XHJtfO8AmGnkpDmYMPdXWhiGO8Shg8OYcKgIkybjPUm
+         VZbvPCXwzGm+cXiteYXC7/lKauBXCcy/kQjwtrcx6XWoN2TkyT4ZHbIoMTZN0M2NhP0e
+         ufjc4uTdB+NudVq2v15Ls51a3fUa+YBibxBxn2eIK05NFr5QhsKwj3Mtn7+sCwx2H7Nd
+         Rp3w==
+X-Gm-Message-State: APjAAAWBr5eR2rFc8/dQg/u+xZCB7vwL+xRcQL4kFzqhjXKQRbd0lH8v
+        QBSchbcNAjcVwHm3RZXnYdbRw8G9X3EHAUPRoZQ=
+X-Google-Smtp-Source: APXvYqw1Sn8fUPQHt6IeGCA6PVv3wZ9SOwJ/5V6EPzacF2q5ZRivawkxxDkqbqVPHOAqLIApCDPozrco/71KCiWHpXg=
+X-Received: by 2002:a5e:aa15:: with SMTP id s21mr32062256ioe.221.1562090137753;
+ Tue, 02 Jul 2019 10:55:37 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190702153908.41562-1-iii@linux.ibm.com>
-In-Reply-To: <20190702153908.41562-1-iii@linux.ibm.com>
+References: <20190702161403.191066-1-sdf@google.com>
+In-Reply-To: <20190702161403.191066-1-sdf@google.com>
 From:   Y Song <ys114321@gmail.com>
-Date:   Tue, 2 Jul 2019 10:54:30 -0700
-Message-ID: <CAH3MdRV2_GSBRqBc_vB--N4=tg-BzfHXho2Gz_4g-FnDdALh-g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf: fix compiling loop{1,2,3}.c on s390
-To:     Ilya Leoshkevich <iii@linux.ibm.com>
-Cc:     bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>
+Date:   Tue, 2 Jul 2019 10:55:01 -0700
+Message-ID: <CAH3MdRXz-AHMuNQNWhnrxCrZhD9xKi44HiQdMh99R1FGaFYnhA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 0/8] bpf: TCP RTT sock_ops bpf callback
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Priyaranjan Jha <priyarjha@google.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 2, 2019 at 8:40 AM Ilya Leoshkevich <iii@linux.ibm.com> wrote:
+On Tue, Jul 2, 2019 at 9:14 AM Stanislav Fomichev <sdf@google.com> wrote:
 >
-> Use PT_REGS_RC(ctx) instead of ctx->rax, which is not present on s390.
+> Congestion control team would like to have a periodic callback to
+> track some TCP statistics. Let's add a sock_ops callback that can be
+> selectively enabled on a socket by socket basis and is executed for
+> every RTT. BPF program frequency can be further controlled by calling
+> bpf_ktime_get_ns and bailing out early.
 >
-> Pass -D__TARGET_ARCH_$(ARCH) to selftests in order to choose a proper
-> PT_REGS_RC variant.
+> I run neper tcp_stream and tcp_rr tests with the sample program
+> from the last patch and didn't observe any noticeable performance
+> difference.
 >
-> Fix s930 -> s390 typo.
+> v2:
+> * add a comment about second accept() in selftest (Yonghong Song)
+> * refer to tcp_bpf.readme in sample program (Yonghong Song)
 >
-> On s390, provide the forward declaration of struct pt_regs and cast it
-> to user_pt_regs in PT_REGS_* macros. This is necessary, because instead
-> of the full struct pt_regs, s390 exposes only its first field
-> user_pt_regs to userspace, and bpf_helpers.h is used with both userspace
-> (in selftests) and kernel (in samples) headers.
->
-> On x86, provide userspace versions of PT_REGS_* macros. Unlike s390, x86
-> provides struct pt_regs to both userspace and kernel, however, with
-> different field names.
->
-> Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
+> Suggested-by: Eric Dumazet <edumazet@google.com>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Priyaranjan Jha <priyarjha@google.com>
+> Cc: Yuchung Cheng <ycheng@google.com>
+> Cc: Soheil Hassas Yeganeh <soheil@google.com>
+> Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+> Acked-by: Yuchung Cheng <ycheng@google.com>
 
+Ack for the whole series.
 Acked-by: Yonghong Song <yhs@fb.com>
 
-> ---
->  tools/testing/selftests/bpf/Makefile      |  4 +-
->  tools/testing/selftests/bpf/bpf_helpers.h | 46 +++++++++++++++--------
->  tools/testing/selftests/bpf/progs/loop1.c |  2 +-
->  tools/testing/selftests/bpf/progs/loop2.c |  2 +-
->  tools/testing/selftests/bpf/progs/loop3.c |  2 +-
->  5 files changed, 37 insertions(+), 19 deletions(-)
 >
-> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> index d60fee59fbd1..599b320bef65 100644
-> --- a/tools/testing/selftests/bpf/Makefile
-> +++ b/tools/testing/selftests/bpf/Makefile
-> @@ -1,5 +1,6 @@
->  # SPDX-License-Identifier: GPL-2.0
->  include ../../../../scripts/Kbuild.include
-> +include ../../../scripts/Makefile.arch
+> Stanislav Fomichev (8):
+>   bpf: add BPF_CGROUP_SOCK_OPS callback that is executed on every RTT
+>   bpf: split shared bpf_tcp_sock and bpf_sock_ops implementation
+>   bpf: add dsack_dups/delivered{,_ce} to bpf_tcp_sock
+>   bpf: add icsk_retransmits to bpf_tcp_sock
+>   bpf/tools: sync bpf.h
+>   selftests/bpf: test BPF_SOCK_OPS_RTT_CB
+>   samples/bpf: add sample program that periodically dumps TCP stats
+>   samples/bpf: fix tcp_bpf.readme detach command
 >
->  LIBDIR := ../../../lib
->  BPFDIR := $(LIBDIR)/bpf
-> @@ -138,7 +139,8 @@ CLANG_SYS_INCLUDES := $(shell $(CLANG) -v -E - </dev/null 2>&1 \
+>  include/net/tcp.h                           |   8 +
+>  include/uapi/linux/bpf.h                    |  12 +-
+>  net/core/filter.c                           | 207 +++++++++++-----
+>  net/ipv4/tcp_input.c                        |   4 +
+>  samples/bpf/Makefile                        |   1 +
+>  samples/bpf/tcp_bpf.readme                  |   2 +-
+>  samples/bpf/tcp_dumpstats_kern.c            |  68 ++++++
+>  tools/include/uapi/linux/bpf.h              |  12 +-
+>  tools/testing/selftests/bpf/Makefile        |   3 +-
+>  tools/testing/selftests/bpf/progs/tcp_rtt.c |  61 +++++
+>  tools/testing/selftests/bpf/test_tcp_rtt.c  | 254 ++++++++++++++++++++
+>  11 files changed, 574 insertions(+), 58 deletions(-)
+>  create mode 100644 samples/bpf/tcp_dumpstats_kern.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/tcp_rtt.c
+>  create mode 100644 tools/testing/selftests/bpf/test_tcp_rtt.c
 >
->  CLANG_FLAGS = -I. -I./include/uapi -I../../../include/uapi \
->               $(CLANG_SYS_INCLUDES) \
-> -             -Wno-compare-distinct-pointer-types
-> +             -Wno-compare-distinct-pointer-types \
-> +             -D__TARGET_ARCH_$(ARCH)
->
->  $(OUTPUT)/test_l4lb_noinline.o: CLANG_FLAGS += -fno-inline
->  $(OUTPUT)/test_xdp_noinline.o: CLANG_FLAGS += -fno-inline
-> diff --git a/tools/testing/selftests/bpf/bpf_helpers.h b/tools/testing/selftests/bpf/bpf_helpers.h
-> index 1a5b1accf091..faf86d83301a 100644
-> --- a/tools/testing/selftests/bpf/bpf_helpers.h
-> +++ b/tools/testing/selftests/bpf/bpf_helpers.h
-> @@ -312,8 +312,8 @@ static int (*bpf_skb_adjust_room)(void *ctx, __s32 len_diff, __u32 mode,
->  #if defined(__TARGET_ARCH_x86)
->         #define bpf_target_x86
->         #define bpf_target_defined
-> -#elif defined(__TARGET_ARCH_s930x)
-> -       #define bpf_target_s930x
-> +#elif defined(__TARGET_ARCH_s390)
-> +       #define bpf_target_s390
->         #define bpf_target_defined
->  #elif defined(__TARGET_ARCH_arm)
->         #define bpf_target_arm
-> @@ -338,8 +338,8 @@ static int (*bpf_skb_adjust_room)(void *ctx, __s32 len_diff, __u32 mode,
->  #ifndef bpf_target_defined
->  #if defined(__x86_64__)
->         #define bpf_target_x86
-> -#elif defined(__s390x__)
-> -       #define bpf_target_s930x
-> +#elif defined(__s390__)
-> +       #define bpf_target_s390
->  #elif defined(__arm__)
->         #define bpf_target_arm
->  #elif defined(__aarch64__)
-> @@ -355,6 +355,7 @@ static int (*bpf_skb_adjust_room)(void *ctx, __s32 len_diff, __u32 mode,
->
->  #if defined(bpf_target_x86)
->
-> +#ifdef __KERNEL__
->  #define PT_REGS_PARM1(x) ((x)->di)
->  #define PT_REGS_PARM2(x) ((x)->si)
->  #define PT_REGS_PARM3(x) ((x)->dx)
-> @@ -365,19 +366,34 @@ static int (*bpf_skb_adjust_room)(void *ctx, __s32 len_diff, __u32 mode,
->  #define PT_REGS_RC(x) ((x)->ax)
->  #define PT_REGS_SP(x) ((x)->sp)
->  #define PT_REGS_IP(x) ((x)->ip)
-> +#else
-> +#define PT_REGS_PARM1(x) ((x)->rdi)
-> +#define PT_REGS_PARM2(x) ((x)->rsi)
-> +#define PT_REGS_PARM3(x) ((x)->rdx)
-> +#define PT_REGS_PARM4(x) ((x)->rcx)
-> +#define PT_REGS_PARM5(x) ((x)->r8)
-> +#define PT_REGS_RET(x) ((x)->rsp)
-> +#define PT_REGS_FP(x) ((x)->rbp)
-> +#define PT_REGS_RC(x) ((x)->rax)
-> +#define PT_REGS_SP(x) ((x)->rsp)
-> +#define PT_REGS_IP(x) ((x)->rip)
-> +#endif
->
-> -#elif defined(bpf_target_s390x)
-> +#elif defined(bpf_target_s390)
->
-> -#define PT_REGS_PARM1(x) ((x)->gprs[2])
-> -#define PT_REGS_PARM2(x) ((x)->gprs[3])
-> -#define PT_REGS_PARM3(x) ((x)->gprs[4])
-> -#define PT_REGS_PARM4(x) ((x)->gprs[5])
-> -#define PT_REGS_PARM5(x) ((x)->gprs[6])
-> -#define PT_REGS_RET(x) ((x)->gprs[14])
-> -#define PT_REGS_FP(x) ((x)->gprs[11]) /* Works only with CONFIG_FRAME_POINTER */
-> -#define PT_REGS_RC(x) ((x)->gprs[2])
-> -#define PT_REGS_SP(x) ((x)->gprs[15])
-> -#define PT_REGS_IP(x) ((x)->psw.addr)
-> +/* s390 provides user_pt_regs instead of struct pt_regs to userspace */
-> +struct pt_regs;
-> +#define PT_REGS_PARM1(x) (((const volatile user_pt_regs *)(x))->gprs[2])
-> +#define PT_REGS_PARM2(x) (((const volatile user_pt_regs *)(x))->gprs[3])
-> +#define PT_REGS_PARM3(x) (((const volatile user_pt_regs *)(x))->gprs[4])
-> +#define PT_REGS_PARM4(x) (((const volatile user_pt_regs *)(x))->gprs[5])
-> +#define PT_REGS_PARM5(x) (((const volatile user_pt_regs *)(x))->gprs[6])
-> +#define PT_REGS_RET(x) (((const volatile user_pt_regs *)(x))->gprs[14])
-> +/* Works only with CONFIG_FRAME_POINTER */
-> +#define PT_REGS_FP(x) (((const volatile user_pt_regs *)(x))->gprs[11])
-> +#define PT_REGS_RC(x) (((const volatile user_pt_regs *)(x))->gprs[2])
-> +#define PT_REGS_SP(x) (((const volatile user_pt_regs *)(x))->gprs[15])
-> +#define PT_REGS_IP(x) (((const volatile user_pt_regs *)(x))->psw.addr)
->
->  #elif defined(bpf_target_arm)
->
-> diff --git a/tools/testing/selftests/bpf/progs/loop1.c b/tools/testing/selftests/bpf/progs/loop1.c
-> index dea395af9ea9..7cdb7f878310 100644
-> --- a/tools/testing/selftests/bpf/progs/loop1.c
-> +++ b/tools/testing/selftests/bpf/progs/loop1.c
-> @@ -18,7 +18,7 @@ int nested_loops(volatile struct pt_regs* ctx)
->         for (j = 0; j < 300; j++)
->                 for (i = 0; i < j; i++) {
->                         if (j & 1)
-> -                               m = ctx->rax;
-> +                               m = PT_REGS_RC(ctx);
->                         else
->                                 m = j;
->                         sum += i * m;
-> diff --git a/tools/testing/selftests/bpf/progs/loop2.c b/tools/testing/selftests/bpf/progs/loop2.c
-> index 0637bd8e8bcf..9b2f808a2863 100644
-> --- a/tools/testing/selftests/bpf/progs/loop2.c
-> +++ b/tools/testing/selftests/bpf/progs/loop2.c
-> @@ -16,7 +16,7 @@ int while_true(volatile struct pt_regs* ctx)
->         int i = 0;
->
->         while (true) {
-> -               if (ctx->rax & 1)
-> +               if (PT_REGS_RC(ctx) & 1)
->                         i += 3;
->                 else
->                         i += 7;
-> diff --git a/tools/testing/selftests/bpf/progs/loop3.c b/tools/testing/selftests/bpf/progs/loop3.c
-> index 30a0f6cba080..d727657d51e2 100644
-> --- a/tools/testing/selftests/bpf/progs/loop3.c
-> +++ b/tools/testing/selftests/bpf/progs/loop3.c
-> @@ -16,7 +16,7 @@ int while_true(volatile struct pt_regs* ctx)
->         __u64 i = 0, sum = 0;
->         do {
->                 i++;
-> -               sum += ctx->rax;
-> +               sum += PT_REGS_RC(ctx);
->         } while (i < 0x100000000ULL);
->         return sum;
->  }
 > --
-> 2.21.0
->
+> 2.22.0.410.gd8fdbe21b5-goog
