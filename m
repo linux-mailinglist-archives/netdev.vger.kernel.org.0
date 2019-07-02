@@ -2,142 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E1915D591
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 19:47:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CA535D5B8
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 19:54:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727028AbfGBRrR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 13:47:17 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:43621 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726193AbfGBRrR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 13:47:17 -0400
-Received: by mail-qt1-f194.google.com with SMTP id w17so19454982qto.10
-        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 10:47:17 -0700 (PDT)
+        id S1726678AbfGBRyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 13:54:12 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:43685 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726150AbfGBRyL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 13:54:11 -0400
+Received: by mail-io1-f66.google.com with SMTP id k20so12739001ios.10;
+        Tue, 02 Jul 2019 10:54:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=5mRc/loyS1lK1v5UFOL02pvAf/1UCF0nrKUwEs2bpNs=;
-        b=njermmfhY+nZUJk67TAMtvcCqzgfDu4XstOlYEqpjiQ6BxOz4iW00KDZqhGAX8U8oJ
-         q3FWC9asXdRFScTDuAlxz0Xw0/cG6xyhyWGw8prEC5gxAojxrjfAfnWL/Eae6Mfs16sS
-         77yCUVrYhNG9g0iFhv1YmEI/+4ajtBAMSXtyhiRA/j/DmXfmWhWUYp3Tws78ogz/wIFa
-         uHDpb5bfntag6nbk6BzDeKh3TkgYqXseJf9Cwbor4gHU6dHLh0MHNLBxf4ZNXNqy1fnm
-         GL2pXqJ5UG9PchM0hDFwbh5HNgQKKfY720pDbsEYomDut3Zlx1RGkef7/gghsEN9ZyzS
-         UMtw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=4SxTyhIcg3+qLl0diKxGNqrI+DVjZ+HIytvBevQdK5U=;
+        b=Y2KEZRxSiW1w+yzwKAx6dWbJE8qZYtTazVd++IzLk/ancCWwbOT54jM+m6I9m927vo
+         LvapFQdgY3Xpt3sGN5dXGGqsFpqCgzyQyYKzaNo2CoWtLUU+D0tEbsd8bIko24mq2En9
+         CjEA097rW1mTUa6iDmGaq9a53/yJBvrpJqlzWutZvyute8mndrQJKkNnE0DUk3/FufVZ
+         wu+wxHeMionfbQxnV+8BZq2G+xY5pWpRG3kc8zAUNP1cgVy8RefIvkZKWgh9t1LImlkU
+         EVAbx0g0A3IcVKy2BoVmyAlvMm7xx2haMedqGVB4bGzYvs1B76XtQeEVigIn1fwMX1hg
+         K2wQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=5mRc/loyS1lK1v5UFOL02pvAf/1UCF0nrKUwEs2bpNs=;
-        b=E3JR+roFJ2aHJyY/qUne7oF/emPZKWMNBxbnUeanMNJ3bTOOogT1NMZj628f1vSSEm
-         FlO3UXKt8bAC9ds5qEecHY4Qhzsyl1DECy239BqBFMGfj3qD/15yII0dNDXf7Nd22csd
-         vZiiaugLgxYGaNbID6+pMZIGGnG/0EreUQ8mERt9OPzH1+o/iSUoFG/ELpK0Gwq2b1x5
-         6ugJbXpOZx1Y0AONh1f1n6KbopWI/FLqTJT7L6QIE4Mss6rHcs8NWhADK3O73RFF8YQm
-         blf9FBp+7zdRZS6RhkCzb/+iB29oBFX23rLQRzUH6qyW4u51duLpjCIBLz+42cukWWju
-         u0nQ==
-X-Gm-Message-State: APjAAAWVmLrS/mEyqY03FozvlQLtbtirmFx7ea0dlLQEkceKZT5RyTsr
-        JinfsmEXeojLHTxFjex5itZIyJosQ8Q=
-X-Google-Smtp-Source: APXvYqzn4bCK8s2mLX1vD3XtieHCgr/rbxs0S9f5j3ACAqPtwi+POh/jLTHGNb6Nga8uFhwZbGwr2g==
-X-Received: by 2002:ac8:2410:: with SMTP id c16mr26150911qtc.108.1562089636595;
-        Tue, 02 Jul 2019 10:47:16 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id a54sm7051848qtk.85.2019.07.02.10.47.15
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 02 Jul 2019 10:47:16 -0700 (PDT)
-Date:   Tue, 2 Jul 2019 10:47:11 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     Jiri Pirko <jiri@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: Re: [PATCH net-next 1/3] devlink: Introduce PCI PF port flavour and
- port attribute
-Message-ID: <20190702104711.77618f6a@cakuba.netronome.com>
-In-Reply-To: <AM0PR05MB4866085BC8B082EFD5B59DD2D1F80@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <20190701122734.18770-1-parav@mellanox.com>
-        <20190701122734.18770-2-parav@mellanox.com>
-        <20190701162650.17854185@cakuba.netronome.com>
-        <AM0PR05MB4866085BC8B082EFD5B59DD2D1F80@AM0PR05MB4866.eurprd05.prod.outlook.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=4SxTyhIcg3+qLl0diKxGNqrI+DVjZ+HIytvBevQdK5U=;
+        b=nIqjiZMgIq9J7arcBW6XbgUrPwC/giM4ApM1MAjVqMA+v5m2HFth+p6dp17BSs/xzm
+         1vqocYD++8GqTr0Jh2ljHCZiq1TgffyBIRcTcq7At6d5hQvAts+hJXU8pM/uaC9As/Pw
+         Mha1gmuv3Ut5Ho/M3bCwTW4PRf6hrzyVyosDfzNdMeVOkeVyfvvyHNiGoq19vXuudR4H
+         0fxQEOSzQyE59wYYbsmpyedvjJzmpKlJvZeo/deTmZrwYJXs4/yH0juWZ9q5poUS2vb5
+         hWdg5rmtkd7KKNCOngiOKt04zo4yxI8gp/nYTLfxnP1nENVLg+9IBKh6VcSApiEvCKK6
+         7JDg==
+X-Gm-Message-State: APjAAAXnqNsFq8/AVt0DZVs8617uNQVv5dqmnjZmkPW3CcJgF+IYF555
+        y73yC++e/If6Pqc8yQIk0LVekBpeajD1xGt8ANFvfSvA
+X-Google-Smtp-Source: APXvYqy12ib+QiknsniPWEIIgY9CVXdQwQpzSonBEkQvIzRrbW3iy5WZwl4EufLAsbYdA1blichu/7Z8NNCbWjNBwj8=
+X-Received: by 2002:a05:6638:199:: with SMTP id a25mr36733180jaq.18.1562090050662;
+ Tue, 02 Jul 2019 10:54:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <20190702153908.41562-1-iii@linux.ibm.com> <CAH3MdRUk5x2D9yRuKpGpVuDMFF0JbYeB+Y0Qz6chtPgfm-1vxA@mail.gmail.com>
+ <1AE29825-8FB2-4682-8822-5F3D16965657@linux.ibm.com>
+In-Reply-To: <1AE29825-8FB2-4682-8822-5F3D16965657@linux.ibm.com>
+From:   Y Song <ys114321@gmail.com>
+Date:   Tue, 2 Jul 2019 10:53:34 -0700
+Message-ID: <CAH3MdRXZtsiLNyJ2y3rf2XVfa+j=BJCQktARncgnzFvSAKo=-g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: fix compiling loop{1,2,3}.c on s390
+To:     Ilya Leoshkevich <iii@linux.ibm.com>
+Cc:     bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2 Jul 2019 04:26:47 +0000, Parav Pandit wrote:
-> > On Mon,  1 Jul 2019 07:27:32 -0500, Parav Pandit wrote: =20
-> > > In an eswitch, PCI PF may have port which is normally represented
-> > > using a representor netdevice.
-> > > To have better visibility of eswitch port, its association with PF, a
-> > > representor netdevice and port number, introduce a PCI PF port flavour
-> > > and port attriute.
-> > >
-> > > When devlink port flavour is PCI PF, fill up PCI PF attributes of the
-> > > port.
-> > >
-> > > Extend port name creation using PCI PF number on best effort basis.
-> > > So that vendor drivers can skip defining their own scheme.
-> > >
-> > > $ devlink port show
-> > > pci/0000:05:00.0/0: type eth netdev eth0 flavour pcipf pfnum 0
-> > >
-> > > Acked-by: Jiri Pirko <jiri@mellanox.com>
-> > > Signed-off-by: Parav Pandit <parav@mellanox.com>
-> > > diff --git a/include/net/devlink.h b/include/net/devlink.h index
-> > > 6625ea068d5e..8db9c0e83fb5 100644
-> > > --- a/include/net/devlink.h
-> > > +++ b/include/net/devlink.h
-> > > @@ -38,6 +38,10 @@ struct devlink {
-> > >  	char priv[0] __aligned(NETDEV_ALIGN);  };
-> > >
-> > > +struct devlink_port_pci_pf_attrs { =20
-> >=20
-> > Why the named structure?  Anonymous one should be just fine?
-> > =20
-> No specific reason for this patch. But named structure allows to
-> extend it more easily with code readability.=20
-
-I'd argue the readability - I hove to scroll up/look up the structure
-just to see it has a single member.  But no big deal :)
-
-> Such as subsequently we want to add the peer_mac etc port attributes.
-> Named structure to store those attributes are helpful.=20
-
-It remains to be seen if peer attributes are flavour specific =F0=9F=A4=94
-I'd imagine most port types would have some form of a peer (other
-than a network port, perhaps).  But perhaps different peer attributes.
-
-> > > diff --git a/net/core/devlink.c b/net/core/devlink.c index
-> > > 89c533778135..001f9e2c96f0 100644
-> > > --- a/net/core/devlink.c
-> > > +++ b/net/core/devlink.c
-> > > @@ -517,6 +517,11 @@ static int devlink_nl_port_attrs_put(struct sk_b=
-uff *msg, =20
-> > >  		return -EMSGSIZE;
-> > >  	if (nla_put_u32(msg, DEVLINK_ATTR_PORT_NUMBER, attrs->port_number))
-> > >  		return -EMSGSIZE; =20
-> >=20
-> > Why would we report network port information for PF and VF port
-> > flavours? =20
+On Tue, Jul 2, 2019 at 9:58 AM Ilya Leoshkevich <iii@linux.ibm.com> wrote:
 >
-> I didn't see any immediate need to report, at the same time didn't
-> find any reason to treat such port flavours differently than existing
-> one. It just gives a clear view of the device's eswitch. Might find
-> it useful during debugging while inspecting device internal tables..
+> > Am 02.07.2019 um 18:42 schrieb Y Song <ys114321@gmail.com>:
+> >
+> > On Tue, Jul 2, 2019 at 8:40 AM Ilya Leoshkevich <iii@linux.ibm.com> wro=
+te:
+> >>
+> >> -#elif defined(__s390x__)
+> >> -       #define bpf_target_s930x
+> >
+> > I see in some other places (e.g., bcc) where
+> > macro __s390x__ is also used to indicate a s390 architecture.
+> > Could you explain the difference between __s390__ and
+> > __s390x__?
+>
+> __s390__ is defined for 32-bit and 64-bit variants, __s390x__ is defined
+> for 64-bit variant only.
 
-PFs and VFs ports are not tied to network ports in switchdev mode.
-You have only one network port under a devlink instance AFAIR, anyway.
+Thanks.
 
-> > > +	if (devlink_port->attrs.flavour =3D=3D DEVLINK_PORT_FLAVOUR_PCI_PF)=
- {
-> > > +		if (nla_put_u16(msg, DEVLINK_ATTR_PORT_PCI_PF_NUMBER,
-> > > +				attrs->pci_pf.pf))
-> > > +			return -EMSGSIZE;
-> > > +	}
-> > >  	if (!attrs->split)
-> > >  		return 0;
-> > >  	if (nla_put_u32(msg, DEVLINK_ATTR_PORT_SPLIT_GROUP, attrs->port_num=
-ber)) =20
+>
+> >> #if defined(bpf_target_x86)
+> >>
+> >> +#ifdef __KERNEL__
+> >
+> > In samples/bpf/,  __KERNEL__ is defined at clang options and
+> > in selftests/bpf/, the __KERNEL__ is not defined.
+> >
+> > I checked x86 pt_regs definition with and without __KERNEL__.
+> > They are identical except some register name difference.
+> > I am wondering whether we can unify into all without
+> > __KERNEL__. Is __KERNEL__ really needed?
+>
+> Right now removing it causes the build to fail, but the errors look
+> fixable. However, I wonder whether there is a plan regarding this:
+> should eBPF programs be built with user headers, kernel headers,
+> or both? Status quo appears to be "both", so I=E2=80=99ve decided to stic=
+k with
+> that in this patch.
+
+Your patch is okay in the sense it maintains the current behavor.
+I think it is okay since user level and kernel pt_regs layout are the same
+except certain names are different.
+
+>
+> >> +/* s390 provides user_pt_regs instead of struct pt_regs to userspace =
+*/
+> >> +struct pt_regs;
+> >> +#define PT_REGS_PARM1(x) (((const volatile user_pt_regs *)(x))->gprs[=
+2])
+> >
+> > Is user_pt_regs a recent change or has been there for quite some time?
+> > I am asking since bcc did not use user_pt_regs yet.
+>
+> It was added in late 2017 in commit 466698e654e8 ("s390/bpf: correct
+> broken uapi for BPF_PROG_TYPE_PERF_EVENT program type=E2=80=9C).
+
+Thanks.
