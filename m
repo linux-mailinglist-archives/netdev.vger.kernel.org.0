@@ -2,112 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FD2B5D23E
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 17:00:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D23A65D244
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 17:01:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727039AbfGBPAG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 11:00:06 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:37416 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726966AbfGBPAG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 11:00:06 -0400
-Received: by mail-qt1-f193.google.com with SMTP id y57so18776041qtk.4
-        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 08:00:05 -0700 (PDT)
+        id S1726977AbfGBPBn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 11:01:43 -0400
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:33942 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725981AbfGBPBn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 11:01:43 -0400
+Received: by mail-oi1-f193.google.com with SMTP id l12so13291145oil.1;
+        Tue, 02 Jul 2019 08:01:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:subject:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+YGwmXcv7uu2nfynM4BuMCgcoI2zuMXaKYw9SxwVbWE=;
-        b=LQ3IlvBhtvvp2q4Xk1DvAT+P+LuorF/YSLI5aMavyr/I9CLeIUdKgcPiD3oqcWnHce
-         NBlpl7GprU4ycMSH3T7wn1ba5IOwz0/OQR8wkm9SY1F1hYoab1oGWuvAj4dSWTZiPfrT
-         2DrhmZbH0+bYz7RAPmzQxIAOgv83BMK64TG1DMuJ2UEtS79Z1SUpBN1mrvbdhTdGfpOA
-         aAPj34ieGlmoosp+Z2HnW0k1X0arqLn4FudwQCvDFUyV7iVwRMPuew71jQ0odgw8cWOQ
-         BmFTnQ1r36WvN0P/j/9Iqw7XiYyj7fVh7AtmLmu4eoqy1MiMZhSeiqCRYDRZP9SD7Din
-         uiPQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Wu4n6rt8dpZFT6Rp38QtTJKHyefNt4oXtkanq1KfYnk=;
+        b=eCsTmrn1/4HhdFxlat2QV5hCplRz6CB9F27W1WRgR6BU6rnPsWmXFAYkH2Ky3l2Mxn
+         XcNUt0BbtOaRvRhLj+W0YrE/BMReTe79kFT8VsAnDODOBr+adj55iQyv81dBjfxFTifW
+         d3s11jzxStz+7/Qy2Lr8LAkR71rx/nv56g0dgHrn6aevgkmgPUsL3qcftHMZxS9UFryP
+         k80FNBKkVi7EClYuhk9lnkw5aatMej5nNX/jvIHPneqPIX/0u6E3OGA0rmELTsvtHx/C
+         /qZ7UZQLPe3+HTA7qw2UPLnFATxEJze8ilimKRIsKsenhUObwnW1N933Wtx02wKIAoPC
+         Oy3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=+YGwmXcv7uu2nfynM4BuMCgcoI2zuMXaKYw9SxwVbWE=;
-        b=SkLfyD2SI/QE5MO82LL2OQeZlFLlfemo5jTzSJFsBR/eu/3E+ObCN6lUpUp3zHGQTr
-         P0dBMwIYbf+DZ1kIkFXsHh4sbaDLzMdL7x39+pDAJfGwwjEF9/5KFKX55f634P3RxXdf
-         4Yi8XyJuAXEd9HI/DtOIJ4/+hqcjKrEP1dzN7VY4BViIoSwweYc/0dQZlcWYpOEEW0Uo
-         mBgKixc2K58QDLavkZ6c1vt2vJOXu8cYlhr5FHos1bWCmIA3fFoASuU38Zy6bzXgWG7z
-         0IW2QnzYfnBFc6zZhm9BcN4NKDciA1u7iOIqc2wncQ5AXkHznv/fEzYMGZ0a102IA6BA
-         g+Hg==
-X-Gm-Message-State: APjAAAUOY9hkZ7dOacEnI+RaDZlX0TYCaULPQeJqnOIxs1naRtetaeex
-        gaAgM9TgBKqfIIR+4Mk6Ct2g53GJd/E=
-X-Google-Smtp-Source: APXvYqwZxpXZ8drk0t2Y6Zf5C7uK3zRe4uTzBBNOk+AhqnjhsIiSyl5eA7VBKoDm+sUTft76A/Urfg==
-X-Received: by 2002:aed:33e6:: with SMTP id v93mr25870674qtd.157.1562079604623;
-        Tue, 02 Jul 2019 08:00:04 -0700 (PDT)
-Received: from ?IPv6:2620:10d:c0a8:11c1::1019? ([2620:10d:c091:480::c41e])
-        by smtp.gmail.com with ESMTPSA id t197sm6366261qke.2.2019.07.02.08.00.02
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Tue, 02 Jul 2019 08:00:03 -0700 (PDT)
-From:   Jes Sorensen <jes.sorensen@gmail.com>
-X-Google-Original-From: Jes Sorensen <Jes.Sorensen@gmail.com>
-Subject: Re: [PATCH 1/1] mlx5: Fix build when CONFIG_MLX5_EN_RXNFC is disabled
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "kernel-team@fb.com" <kernel-team@fb.com>,
-        "jsorensen@fb.com" <jsorensen@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20190625152708.23729-1-Jes.Sorensen@gmail.com>
- <20190625152708.23729-2-Jes.Sorensen@gmail.com>
- <ff76fcde486792ad01be1476a66a726d6e1ab933.camel@mellanox.com>
-Message-ID: <21f6c5a0-49c1-fa47-f55a-048b07f9be1d@gmail.com>
-Date:   Tue, 2 Jul 2019 11:00:01 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Wu4n6rt8dpZFT6Rp38QtTJKHyefNt4oXtkanq1KfYnk=;
+        b=alE+Kh7OW0V0G0gEISvCAYQagZmgU8YrFOQi73F9RS67xnMLMKu12aSeR6I2uH1kxj
+         wZixl6cVCFVI2ZAMpf/YJ0TkAlbRpgIdAEnlcI9iZ8edMRuP82ogtlodHO0MX5nRFdRH
+         NLGZ8zvXvlFNefErYgQhAEy0ZZySetDMrepuInOxhnxLmX1NATsrg7/jl26bVj0W0tGY
+         8ilbiePBTypIEzV9h/3ss0W+3ePoCkA0XyjSoBqPvspoElBV3/9EQVPa9o/zOU0UVlOA
+         nzw1+YJJpcbm91PK61CtadSVJO6TLEABA6a2p79zE68yhWMMpR4WiTm0Gh4Gyxt0dl9J
+         clrQ==
+X-Gm-Message-State: APjAAAUOtmKwLlHvOyCmILla3zGpyCisgMIHzZBuarKrNxHe9BCeV6+W
+        TMzEOu6JcEd/QkDzcHvPlnFim2jQRWabz89QFjw=
+X-Google-Smtp-Source: APXvYqys/5PUoAJe+X6a6JgO6aiyne8nF8T9en3E395817ZJ1kIeIrjteFy3bHIb7hlImllnPR88MjC1/nD2nfDbfKM=
+X-Received: by 2002:a05:6808:8c2:: with SMTP id k2mr3154282oij.98.1562079702002;
+ Tue, 02 Jul 2019 08:01:42 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <ff76fcde486792ad01be1476a66a726d6e1ab933.camel@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <CGME20190702143639eucas1p2b168c68c35b70aac75cad6c72ccc81ad@eucas1p2.samsung.com>
+ <20190702143634.19688-1-i.maximets@samsung.com>
+In-Reply-To: <20190702143634.19688-1-i.maximets@samsung.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Tue, 2 Jul 2019 17:01:30 +0200
+Message-ID: <CAJ8uoz34wS-Ut=TiULN32Zs-terBkzSiEws65jsd=f4S_rp43Q@mail.gmail.com>
+Subject: Re: [PATCH bpf] xdp: fix race on generic receive path
+To:     Ilya Maximets <i.maximets@samsung.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, bpf <bpf@vger.kernel.org>,
+        xdp-newbies@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/25/19 2:00 PM, Saeed Mahameed wrote:
-> On Tue, 2019-06-25 at 11:27 -0400, Jes Sorensen wrote:
->> From: Jes Sorensen <jsorensen@fb.com>
->>
->> The previous patch broke the build with a static declaration for
->> a public function.
->>
->> Fixes: 8f0916c6dc5c (net/mlx5e: Fix ethtool rxfh commands when
->> CONFIG_MLX5_EN_RXNFC is disabled)
->> Signed-off-by: Jes Sorensen <jsorensen@fb.com>
->> ---
->>  drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c | 3 ++-
->>  1 file changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
->> b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
->> index dd764e0471f2..776040d91bd4 100644
->> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
->> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
->> @@ -1905,7 +1905,8 @@ static int mlx5e_flash_device(struct net_device
->> *dev,
->>  /* When CONFIG_MLX5_EN_RXNFC=n we only support ETHTOOL_GRXRINGS
->>   * otherwise this function will be defined from en_fs_ethtool.c
->>   */
-> 
-> As the above comment states, when CONFIG_MLX5_EN_RXNFC is disabled,
-> mlx5e_get_rxnfc is only defined, declared and used in this file, so it
-> must be static. Otherwise it will be defined in another file which
-> provides much much more functionality for ethtool flow steering.
-> 
-> can you please provide more information of what went wrong on your
-> build machine ?
+On Tue, Jul 2, 2019 at 4:36 PM Ilya Maximets <i.maximets@samsung.com> wrote:
+>
+> Unlike driver mode, generic xdp receive could be triggered
+> by different threads on different CPU cores at the same time
+> leading to the fill and rx queue breakage. For example, this
+> could happen while sending packets from two processes to the
+> first interface of veth pair while the second part of it is
+> open with AF_XDP socket.
+>
+> Need to take a lock for each generic receive to avoid race.
 
-Sorry was swamped here!
+Thanks for this catch Ilya. Do you have any performance numbers you
+could share of the impact of adding this spin lock? The reason I ask
+is that if the impact is negligible, then let us just add it. But if
+it is too large, we might want to brain storm about some other
+possible solutions.
 
-Looks like you're right, it only triggers in our build due to some
-patches we don't have from upstream. I did the patch against upstream
-and applied it to our tree, so should have checked further there.
+Thanks: Magnus
 
-Cheers,
-Jes
-
+> Fixes: c497176cb2e4 ("xsk: add Rx receive functions and poll support")
+> Signed-off-by: Ilya Maximets <i.maximets@samsung.com>
+> ---
+>  include/net/xdp_sock.h |  2 ++
+>  net/xdp/xsk.c          | 32 +++++++++++++++++++++++---------
+>  2 files changed, 25 insertions(+), 9 deletions(-)
+>
+> diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
+> index d074b6d60f8a..ac3c047d058c 100644
+> --- a/include/net/xdp_sock.h
+> +++ b/include/net/xdp_sock.h
+> @@ -67,6 +67,8 @@ struct xdp_sock {
+>          * in the SKB destructor callback.
+>          */
+>         spinlock_t tx_completion_lock;
+> +       /* Protects generic receive. */
+> +       spinlock_t rx_lock;
+>         u64 rx_dropped;
+>  };
+>
+> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> index a14e8864e4fa..19f41d2b670c 100644
+> --- a/net/xdp/xsk.c
+> +++ b/net/xdp/xsk.c
+> @@ -119,17 +119,22 @@ int xsk_generic_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
+>  {
+>         u32 metalen = xdp->data - xdp->data_meta;
+>         u32 len = xdp->data_end - xdp->data;
+> +       unsigned long flags;
+>         void *buffer;
+>         u64 addr;
+>         int err;
+>
+> -       if (xs->dev != xdp->rxq->dev || xs->queue_id != xdp->rxq->queue_index)
+> -               return -EINVAL;
+> +       spin_lock_irqsave(&xs->rx_lock, flags);
+> +
+> +       if (xs->dev != xdp->rxq->dev || xs->queue_id != xdp->rxq->queue_index) {
+> +               err = -EINVAL;
+> +               goto out_unlock;
+> +       }
+>
+>         if (!xskq_peek_addr(xs->umem->fq, &addr) ||
+>             len > xs->umem->chunk_size_nohr - XDP_PACKET_HEADROOM) {
+> -               xs->rx_dropped++;
+> -               return -ENOSPC;
+> +               err = -ENOSPC;
+> +               goto out_drop;
+>         }
+>
+>         addr += xs->umem->headroom;
+> @@ -138,13 +143,21 @@ int xsk_generic_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
+>         memcpy(buffer, xdp->data_meta, len + metalen);
+>         addr += metalen;
+>         err = xskq_produce_batch_desc(xs->rx, addr, len);
+> -       if (!err) {
+> -               xskq_discard_addr(xs->umem->fq);
+> -               xsk_flush(xs);
+> -               return 0;
+> -       }
+> +       if (err)
+> +               goto out_drop;
+> +
+> +       xskq_discard_addr(xs->umem->fq);
+> +       xskq_produce_flush_desc(xs->rx);
+>
+> +       spin_unlock_irqrestore(&xs->rx_lock, flags);
+> +
+> +       xs->sk.sk_data_ready(&xs->sk);
+> +       return 0;
+> +
+> +out_drop:
+>         xs->rx_dropped++;
+> +out_unlock:
+> +       spin_unlock_irqrestore(&xs->rx_lock, flags);
+>         return err;
+>  }
+>
+> @@ -765,6 +778,7 @@ static int xsk_create(struct net *net, struct socket *sock, int protocol,
+>
+>         xs = xdp_sk(sk);
+>         mutex_init(&xs->mutex);
+> +       spin_lock_init(&xs->rx_lock);
+>         spin_lock_init(&xs->tx_completion_lock);
+>
+>         mutex_lock(&net->xdp.lock);
+> --
+> 2.17.1
+>
