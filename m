@@ -2,83 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3786F5DAD5
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 03:29:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 620F85DB13
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 03:43:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727400AbfGCB3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 21:29:14 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:50097 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727206AbfGCB3N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 21:29:13 -0400
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1hiPRS-0002Ke-Ln; Tue, 02 Jul 2019 22:31:54 +0200
-Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1hiPRQ-0003zP-8H; Tue, 02 Jul 2019 22:31:52 +0200
-Date:   Tue, 2 Jul 2019 22:31:52 +0200
-From:   Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Yuiko Oshino <yuiko.oshino@microchip.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>, kernel@pengutronix.de,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: net: micrel: confusion about phyids used in driver
-Message-ID: <20190702203152.gviukfldjhdnmu7j@pengutronix.de>
-References: <20190509202929.wg3slwnrfhu4f6no@pengutronix.de>
- <da599967-c423-80dd-945d-5b993c041e90@gmail.com>
- <20190509210745.GD11588@lunn.ch>
- <20190510072243.h6h3bgvr2ovsh5g5@pengutronix.de>
+        id S1727200AbfGCBn0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 21:43:26 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:49726 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726329AbfGCBnZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jul 2019 21:43:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=Content-Type:MIME-Version:Message-ID:Subject:Cc:To:From:Date:
+        Sender:Reply-To:Content-Transfer-Encoding:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=r02h9MTl0BX08PCqISfFd+97NJJEJLJZHaEFTSLVzmQ=; b=cz3FRZpIXEdBacZ9X8yxYsqKdd
+        3TwMjwPk+OiCunEKlvtvOfTpo6KkvmAV9eMTXyWqDvXf0no9JJEeu7mj5DmuY5uiquynQG+OGpTBH
+        9uutB4Lht+UCDAUOwmbgVhpE6NQzm4En/OSanGKvCRVKwVgA87AOB4HRR/zYvQNtgiCk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hiPg9-0000GT-HO; Tue, 02 Jul 2019 22:47:05 +0200
+Date:   Tue, 2 Jul 2019 22:47:05 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Cc:     Roopa Prabhu <roopa@cumulusnetworks.com>,
+        bridge@lists.linux-foundation.org, netdev <netdev@vger.kernel.org>
+Subject: Validation of forward_delay seems wrong...
+Message-ID: <20190702204705.GC28471@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190510072243.h6h3bgvr2ovsh5g5@pengutronix.de>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Yuiko Oshino,
+Hi Nikolay
 
-On Fri, May 10, 2019 at 09:22:43AM +0200, Uwe Kleine-König wrote:
-> On Thu, May 09, 2019 at 11:07:45PM +0200, Andrew Lunn wrote:
-> > On Thu, May 09, 2019 at 10:55:29PM +0200, Heiner Kallweit wrote:
-> > > On 09.05.2019 22:29, Uwe Kleine-König wrote:
-> > > > I have a board here that has a KSZ8051MLL (datasheet:
-> > > > http://ww1.microchip.com/downloads/en/DeviceDoc/ksz8051mll.pdf, phyid:
-> > > > 0x0022155x) assembled. The actual phyid is 0x00221556.
-> > >
-> > > I think the datasheets are the source of the confusion. If the
-> > > datasheets for different chips list 0x0022155x as PHYID each, and
-> > > authors of support for additional chips don't check the existing code,
-> > > then happens what happened.
-> > > 
-> > > However it's not a rare exception and not Microchip-specific that
-> > > sometimes vendors use the same PHYID for different chips.
-> 
-> From the vendor's POV it is even sensible to reuse the phy IDs iff the
-> chips are "compatible".
-> 
-> Assuming that the last nibble of the phy ID actually helps to
-> distinguish the different (not completely) compatible chips, we need
-> some more detailed information than available in the data sheets I have.
-> There is one person in the recipents of this mail with an @microchip.com
-> address (hint, hint!).
+The man page says that the bridge forward_delay is in units of
+seconds, and should be between 2 and 30.
 
-can you give some input here or forward to a person who can?
+I've tested on a couple of different kernel versions, and this appears
+to be not working correctly:
 
-Best regards
-Uwe
+ip link set br0 type bridge forward_delay 2
+RTNETLINK answers: Numerical result out of range
 
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+ip link set br0 type bridge forward_delay 199
+RTNETLINK answers: Numerical result out of range
+
+ip link set br0 type bridge forward_delay 200
+# 
+
+ip link set br0 type bridge forward_delay 3000
+#
+
+ip link set br0 type bridge forward_delay 3001
+RTNETLINK answers: Numerical result out of range
+
+I've not checked what delay is actually being used here, but clearly
+something is mixed up.
+
+grep HZ .config 
+CONFIG_HZ_PERIODIC=y
+# CONFIG_NO_HZ_IDLE is not set
+# CONFIG_NO_HZ_FULL is not set
+# CONFIG_NO_HZ is not set
+CONFIG_HZ_FIXED=0
+CONFIG_HZ_100=y
+# CONFIG_HZ_200 is not set
+# CONFIG_HZ_250 is not set
+# CONFIG_HZ_300 is not set
+# CONFIG_HZ_500 is not set
+# CONFIG_HZ_1000 is not set
+CONFIG_HZ=100
+
+Thanks
+	Andrew
