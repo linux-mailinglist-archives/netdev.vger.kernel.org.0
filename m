@@ -2,149 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 041D15C96F
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 08:41:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 993F75C979
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 08:44:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726150AbfGBGlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 02:41:15 -0400
-Received: from mail-eopbgr50061.outbound.protection.outlook.com ([40.107.5.61]:34784
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725775AbfGBGlO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jul 2019 02:41:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Q51U10N1efXcL4OLR9vZo1wZcXZpRk5PaQBst2BqxG8=;
- b=iLcIeHJ+4XsZj1qkuw6LLeSYazRJk1zM5v+5afmLg4ocwhzxWCTXbiHdOa9DUXgOzJdcU50P/fqUM57E9LZsihsIzaN9rOQ+BGuqdUkAnnPEtrPcF0gXJWDwKW0BMYcOHPJL87dLiydSaxnvpfGcZvlAZrW4OIihdTEsHTdoAWs=
-Received: from AM4PR05MB3137.eurprd05.prod.outlook.com (10.171.186.14) by
- AM4PR05MB3267.eurprd05.prod.outlook.com (10.171.188.28) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2032.20; Tue, 2 Jul 2019 06:41:10 +0000
-Received: from AM4PR05MB3137.eurprd05.prod.outlook.com
- ([fe80::bc5a:ba8b:1a69:91b6]) by AM4PR05MB3137.eurprd05.prod.outlook.com
- ([fe80::bc5a:ba8b:1a69:91b6%6]) with mapi id 15.20.2032.019; Tue, 2 Jul 2019
- 06:41:10 +0000
-From:   Leon Romanovsky <leonro@mellanox.com>
-To:     Sagi Grimberg <sagi@grimberg.me>
-CC:     Idan Burstein <idanb@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Tal Gilboa <talgi@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        Yamin Friedman <yaminf@mellanox.com>,
-        Max Gurtovoy <maxg@mellanox.com>
-Subject: Re: [for-next V2 10/10] RDMA/core: Provide RDMA DIM support for ULPs
-Thread-Topic: [for-next V2 10/10] RDMA/core: Provide RDMA DIM support for ULPs
-Thread-Index: AQHVK5ipN3jilxV+8U2qs/jSBNzPpaas3rOAgACzgACACUbbgIAAEgGA
-Date:   Tue, 2 Jul 2019 06:41:09 +0000
-Message-ID: <20190702064107.GS4727@mtr-leonro.mtl.com>
-References: <20190625205701.17849-1-saeedm@mellanox.com>
- <20190625205701.17849-11-saeedm@mellanox.com>
- <adb3687a-6db3-b1a4-cd32-8b4889550c81@grimberg.me>
- <AM5PR0501MB248327B260F97EF97CD5B80EC5E20@AM5PR0501MB2483.eurprd05.prod.outlook.com>
- <9d26c90c-8e0b-656f-341f-a67251549126@grimberg.me>
-In-Reply-To: <9d26c90c-8e0b-656f-341f-a67251549126@grimberg.me>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: AM6P195CA0051.EURP195.PROD.OUTLOOK.COM
- (2603:10a6:209:87::28) To AM4PR05MB3137.eurprd05.prod.outlook.com
- (2603:10a6:205:3::14)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=leonro@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [37.142.3.125]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: fe5d869e-9ebc-488f-5f65-08d6feb84489
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR05MB3267;
-x-ms-traffictypediagnostic: AM4PR05MB3267:
-x-microsoft-antispam-prvs: <AM4PR05MB32672840F8D4A1E400AF67BAB0F80@AM4PR05MB3267.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 008663486A
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(396003)(136003)(39860400002)(376002)(366004)(189003)(199004)(6512007)(316002)(6246003)(9686003)(486006)(71190400001)(33656002)(476003)(14454004)(71200400001)(107886003)(76176011)(446003)(52116002)(54906003)(4326008)(53936002)(99286004)(14444005)(256004)(26005)(5660300002)(11346002)(186003)(68736007)(305945005)(25786009)(6506007)(81156014)(2906002)(66446008)(64756008)(1076003)(73956011)(66556008)(66476007)(6916009)(386003)(8676002)(81166006)(6436002)(229853002)(6486002)(478600001)(8936002)(66946007)(102836004)(86362001)(3846002)(66066001)(7736002)(6116002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR05MB3267;H:AM4PR05MB3137.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 8lhCUANWc/d33Xukf18ceduC+WIBrDWTxQnRcZvt6WdYFBzi9Zy4T0jFxSpwJiM9bGfC6L4U0rsFv9BxUA4yz7PVzpflceKotIaaL2kPoeuZ7H5YeB/LAAfXpa6rWqUHno4Db77E2QL/AwabzGJM0fVx9ML35tDlWYHqS2Cj4aoasYO527IL0XyGmzT69J4fO9iIrHF3PeAFIXUzXBRANDSZWUqet8+iCUfiHG/ujMb21I1B4++OdKa7+J607ik+aXOe7fl3busUUZYn4Y1jYeNgNHgx85KdiE+1ckKntUhsx7lH3h2VGjxoSaGEl89mbdQtLmZnqeQZOcQx/O9hrt0+84qc+gmHtB0yAjHZ3rwTi6iPYDYmffwryGe6Q/helm8VcnlIFax7I8XZFNGPfTASi6GYNvhu+k7p/+H55cU=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <99AC63E018BA7C40B5DC3552DAB7F0E2@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1725981AbfGBGoF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 02:44:05 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:34189 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725852AbfGBGoF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 02:44:05 -0400
+Received: by mail-io1-f65.google.com with SMTP id k8so34624577iot.1
+        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 23:44:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XnaWd9P9xKybW0lXkt79Iun5uzyN370d1KKFn14u8pU=;
+        b=WRys2EvSKJfQDwTCYG+P7QnksaGqhATBxeEhJj8d3MZe0mKBEB7pE9/WxiA3x4z4bc
+         X6EvE9Q/tvimkyF1/0lXAId9x6WuKfW9YRRFLqpTjVI+LpnCmZyvLLAbrUqzFW+f8p5g
+         wbWbMZMx4P+XIDJ4xlnKH6eXl/os3wp5PpBQNIxNhMSslT3lV8TPQHGi2Zonz+mlufg6
+         4QDpvbOwxKjTA9/JPfcG8tc8FFSUuYFDv53jum5mIoQR36ZVP9X6FmF/yjPytmQnHZ2E
+         +/htcwo9DZQVMg7eSh8/WaGyoHLtdfPADQ4cyudwJ+3x5UnRcKRSOJT6ndq8RGWTHD3Y
+         6Cqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XnaWd9P9xKybW0lXkt79Iun5uzyN370d1KKFn14u8pU=;
+        b=Fh4zHKwoZ5hkHx1S+DCM1ZyMWv6HzDneaWU0KHHYwlf0z+J7BxoDBBRmfCznMC+Aro
+         mmv3WGEQf4axclUtZd0LajpHZOEvVs/E+l5ASJc+QXJjw0IVDXdhSpj08agMScfbGcgd
+         u+SqUzzSCWdOA4z3k/KYyawSW+MKQtCxlOFi1uJxQgIDAuaum+GwEdWaG2R//dIx8i0d
+         Dk5kh4qHlz0ycQ8s/Ftf3A2XJwTs4JQIeM8cddNAUhq/QU8pF7LgYr1j+qPpW4DAX1G+
+         xFz2awipT4z8srJg+70o5597a2IIQ7HcJ+kKcu/Dyy5uzIxT0byZaQR3hpBUob5Eee0+
+         msMA==
+X-Gm-Message-State: APjAAAWGgWJVH3QaU6pVU0u9oPmJayBa75s+L1vbsy8EZth8Yk+U5aPq
+        aSY8FbEWVD4jq80a/eItn3B762LHkgw0D4UFHaEQMw==
+X-Google-Smtp-Source: APXvYqwSRYk/6MNpauII6NxLVu48MJXQ1Z2SV6sf8Ubr37AzxK35/nHXsW2GbkiEnJkfl71BlOxRi7SBYVhoBqy/rEo=
+X-Received: by 2002:a02:7087:: with SMTP id f129mr34565969jac.38.1562049844133;
+ Mon, 01 Jul 2019 23:44:04 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fe5d869e-9ebc-488f-5f65-08d6feb84489
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Jul 2019 06:41:10.0063
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: leonro@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR05MB3267
+References: <000000000000d028b30588fed102@google.com> <000000000000db481c058c462e4c@google.com>
+In-Reply-To: <000000000000db481c058c462e4c@google.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Tue, 2 Jul 2019 08:43:51 +0200
+Message-ID: <CACT4Y+axVLwc4b8hyQswuFJNwkFB45Zs7XDfi6O3CE0pG=5edA@mail.gmail.com>
+Subject: Re: KASAN: use-after-free Write in xfrm_hash_rebuild
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     syzbot <syzbot+0165480d4ef07360eeda@syzkaller.appspotmail.com>,
+        David Miller <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 01, 2019 at 10:36:41PM -0700, Sagi Grimberg wrote:
-> Hey Idan,
+On Tue, Jul 2, 2019 at 8:38 AM Hillf Danton <hdanton@sina.com> wrote:
 >
-> > " Please don't. This is a bad choice to opt it in by default."
+>
+> On Wed, 26 Jun 2019 20:59:05 -0700 (PDT)
+> > syzbot has found a reproducer for the following crash on:
 > >
-> > I disagree here. I'd prefer Linux to have good out of the box experienc=
-e (e.g. reach 100G in 4K NVMeOF on Intel servers) with the default paramete=
-rs. Especially since Yamin have shown it is beneficial / not hurting in ter=
-ms of performance for variety of use cases. The whole concept of DIM is tha=
-t it adapts to the workload requirements in terms of bandwidth and latency.
+> > HEAD commit:    249155c2 Merge branch 'parisc-5.2-4' of git://git.kernel.o..
+> > git tree:       upstream
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=10f017c3a00000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=9a31528e58cc12e2
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=0165480d4ef07360eeda
+> > compiler:       clang version 9.0.0 (/home/glider/llvm/clang 80fee25776c2fb61e74c1ecb1a523375c2500b69)
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16cf37c3a00000
+> >
+> > IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> > Reported-by: syzbot+0165480d4ef07360eeda@syzkaller.appspotmail.com
+> >
+> > ==================================================================
+> > BUG: KASAN: use-after-free in __write_once_size  include/linux/compiler.h:221 [inline]
+> > BUG: KASAN: use-after-free in __hlist_del include/linux/list.h:748 [inline]
+> > BUG: KASAN: use-after-free in hlist_del_rcu include/linux/rculist.h:455  [inline]
+> > BUG: KASAN: use-after-free in xfrm_hash_rebuild+0xa0d/0x1000  net/xfrm/xfrm_policy.c:1318
+> > Write of size 8 at addr ffff888095e79c00 by task kworker/1:3/8066
+> >
+> > CPU: 1 PID: 8066 Comm: kworker/1:3 Not tainted 5.2.0-rc6+ #7
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
+> > Google 01/01/2011
+> > Workqueue: events xfrm_hash_rebuild
+> > Call Trace:
+> >   __dump_stack lib/dump_stack.c:77 [inline]
+> >   dump_stack+0x1d8/0x2f8 lib/dump_stack.c:113
+> >   print_address_description+0x6d/0x310 mm/kasan/report.c:188
+> >   __kasan_report+0x14b/0x1c0 mm/kasan/report.c:317
+> >   kasan_report+0x26/0x50 mm/kasan/common.c:614
+> >   __asan_report_store8_noabort+0x17/0x20 mm/kasan/generic_report.c:137
+> >   __write_once_size include/linux/compiler.h:221 [inline]
+> >   __hlist_del include/linux/list.h:748 [inline]
+> >   hlist_del_rcu include/linux/rculist.h:455 [inline]
+> >   xfrm_hash_rebuild+0xa0d/0x1000 net/xfrm/xfrm_policy.c:1318
+> >   process_one_work+0x814/0x1130 kernel/workqueue.c:2269
+> >   worker_thread+0xc01/0x1640 kernel/workqueue.c:2415
+> >   kthread+0x325/0x350 kernel/kthread.c:255
+> >   ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+> >
+> > Allocated by task 8064:
+> >   save_stack mm/kasan/common.c:71 [inline]
+> >   set_track mm/kasan/common.c:79 [inline]
+> >   __kasan_kmalloc+0x11c/0x1b0 mm/kasan/common.c:489
+> >   kasan_kmalloc+0x9/0x10 mm/kasan/common.c:503
+> >   __do_kmalloc mm/slab.c:3660 [inline]
+> >   __kmalloc+0x23c/0x310 mm/slab.c:3669
+> >   kmalloc include/linux/slab.h:552 [inline]
+> >   kzalloc include/linux/slab.h:742 [inline]
+> >   xfrm_hash_alloc+0x38/0xe0 net/xfrm/xfrm_hash.c:21
+> >   xfrm_policy_init net/xfrm/xfrm_policy.c:4036 [inline]
+> >   xfrm_net_init+0x269/0xd60 net/xfrm/xfrm_policy.c:4120
+> >   ops_init+0x336/0x420 net/core/net_namespace.c:130
+> >   setup_net+0x212/0x690 net/core/net_namespace.c:316
+> >   copy_net_ns+0x224/0x380 net/core/net_namespace.c:439
+> >   create_new_namespaces+0x4ec/0x700 kernel/nsproxy.c:103
+> >   unshare_nsproxy_namespaces+0x12a/0x190 kernel/nsproxy.c:202
+> >   ksys_unshare+0x540/0xac0 kernel/fork.c:2692
+> >   __do_sys_unshare kernel/fork.c:2760 [inline]
+> >   __se_sys_unshare kernel/fork.c:2758 [inline]
+> >   __x64_sys_unshare+0x38/0x40 kernel/fork.c:2758
+> >   do_syscall_64+0xfe/0x140 arch/x86/entry/common.c:301
+> >   entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> >
+> > Freed by task 17:
+> >   save_stack mm/kasan/common.c:71 [inline]
+> >   set_track mm/kasan/common.c:79 [inline]
+> >   __kasan_slab_free+0x12a/0x1e0 mm/kasan/common.c:451
+> >   kasan_slab_free+0xe/0x10 mm/kasan/common.c:459
+> >   __cache_free mm/slab.c:3432 [inline]
+> >   kfree+0xae/0x120 mm/slab.c:3755
+> >   xfrm_hash_free+0x38/0xd0 net/xfrm/xfrm_hash.c:35
+> >   xfrm_bydst_resize net/xfrm/xfrm_policy.c:602 [inline]
+> >   xfrm_hash_resize+0x13f1/0x1840 net/xfrm/xfrm_policy.c:680
+> >   process_one_work+0x814/0x1130 kernel/workqueue.c:2269
+> >   worker_thread+0xc01/0x1640 kernel/workqueue.c:2415
+> >   kthread+0x325/0x350 kernel/kthread.c:255
+> >   ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+> >
+> > The buggy address belongs to the object at ffff888095e79c00
+> >   which belongs to the cache kmalloc-64 of size 64
+> > The buggy address is located 0 bytes inside of
+> >   64-byte region [ffff888095e79c00, ffff888095e79c40)
+> > The buggy address belongs to the page:
+> > page:ffffea0002579e40 refcount:1 mapcount:0 mapping:ffff8880aa400340
+> > index:0x0
+> > flags: 0x1fffc0000000200(slab)
+> > raw: 01fffc0000000200 ffffea0002540888 ffffea0002907548 ffff8880aa400340
+> > raw: 0000000000000000 ffff888095e79000 0000000100000020 0000000000000000
+> > page dumped because: kasan: bad access detected
+> >
+> > Memory state around the buggy address:
+> >   ffff888095e79b00: 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc
+> >   ffff888095e79b80: 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc
+> > > ffff888095e79c00: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+> >                     ^
+> >   ffff888095e79c80: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+> >   ffff888095e79d00: 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc
+> > ==================================================================
+> >
 >
-> Well, its a Mellanox device driver after all.
+> --- a/net/xfrm/xfrm_policy.c
+> +++ b/net/xfrm/xfrm_policy.c
+> @@ -1203,6 +1203,11 @@ xfrm_policy_inexact_insert(struct xfrm_policy *policy, u8 dir, int excl)
+>         return delpol;
+>  }
 >
-> But do note that by far, the vast majority of users are not saturating
-> 100G of 4K I/O. The absolute vast majority of users are primarily
-> sensitive to synchronous QD=3D1 I/O latency, and when the workload
-> is much more dynamic than the synthetic 100%/50%/0% read mix.
+> +static inline bool xfrm_policy_node_hashed(struct hlist_node *node)
+> +{
+> +       return node->pprev && node->pprev != LIST_POISON2;
+
+Is it right to open code LIST_POISON2 use here? As far as I see all
+current uses of LIST_POISON2 are encapsulated in list functions.
+
+> +}
+> +
+>  static void xfrm_hash_rebuild(struct work_struct *work)
+>  {
+>         struct net *net = container_of(work, struct net,
+> @@ -1315,7 +1320,9 @@ static void xfrm_hash_rebuild(struct work_struct *work)
+>                 chain = policy_hash_bysel(net, &policy->selector,
+>                                           policy->family, dir);
 >
-> As much as I'm a fan (IIRC I was the one giving a first pass at this),
-> the dim default opt-in is not only not beneficial, but potentially
-> harmful to the majority of users out-of-the-box experience.
+> -               hlist_del_rcu(&policy->bydst);
+> +               /* check bydst still hashed in case that policy survived bydst resize */
+> +               if (xfrm_policy_node_hashed(&policy->bydst))
+> +                       hlist_del_rcu(&policy->bydst);
 >
-> Given that this is a fresh code with almost no exposure, and that was
-> not tested outside of Yamin running limited performance testing, I think
-> it would be a mistake to add it as a default opt-in, that can come as an
-> incremental stage.
->
-> Obviously, I cannot tell what Mellanox should/shouldn't do in its own
-> device driver of course, but I just wanted to emphasize that I think
-> this is a mistake.
-
-Hi Sagi,
-
-I'm not sharing your worries about bad out-of-the-box experience for a
-number of reasons.
-
-First of all, this code is part of upstream kernel and will take time
-till users actually start to use it as is and not as part of some distro
-backports or MOFED packages.
-
-Second, Yamin did extensive testing and worked very close with Or G.
-and I have very high confident in the results of their team work.
-
-Third (outcome of first), actually the opposite is true, the setting
-this option as a default will give us more time to fix/adjust code if
-needed, before users will see any potential degradation.
-
->
-> > Moreover, net-dim is enabled by default, I don't see why RDMA is differ=
-ent.
->
-> Very different animals.
-
-Yes and no, the logic behind is the same and both solutions have same
-constrains of throughput vs. latency.
-
-Thanks
+>                 if (!chain) {
+>                         void *p = xfrm_policy_inexact_insert(policy, dir, 0);
+> --
