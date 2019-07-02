@@ -2,100 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F0D15D2A5
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 17:20:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56C725D2A6
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 17:21:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726283AbfGBPUr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 11:20:47 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:43243 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725780AbfGBPUq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 11:20:46 -0400
-Received: by mail-pg1-f196.google.com with SMTP id f25so7836384pgv.10
-        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 08:20:46 -0700 (PDT)
+        id S1726686AbfGBPVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 11:21:00 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:43647 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726413AbfGBPU7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 11:20:59 -0400
+Received: by mail-pl1-f193.google.com with SMTP id cl9so533843plb.10
+        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 08:20:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=Vy/yZ/n5ClLY1qISZNlSWGbzy8L79W0QJBOBUkiGiwc=;
-        b=CGxwPWNCA3mybOVTqjzzkpmGfFV2Vrm0m50eQAI8eqVBu95IDnHwerya4iMFeQ7DL7
-         awFq6it2K4WLi2ixTYXn+Dx0/7/2G6YugluzatCv+gYDW9kBJLqDu241mDkwPko7haqm
-         EI49YsZu82Kayhh7y/lMC8jkxg7C81/OJQs0pSVKEjfmcCB1YKh1ypSwp7nZgNRuZO9q
-         kNU4FWBI8paMlT9F17pNLjYSme5CfMz/As8ZZi7rkntNggvvH0BKpkuDpX4PuQLlFpT1
-         fhFGM9Mi+zT7KLll2ZCcoeZWnHtxzsI0o1weuDCiGECtDayvjymd7Y4ngSMWWJkY6it6
-         QaGw==
+        bh=DKzdEoM6Lmp9JUgVQf/KSYmgH23uDbw/uvQ6/6yRYvE=;
+        b=GmIKtRK6eBgpW5N6NyYg5FQ7yd4ziypLbZ19nbjkIC/TlCkSwMh48b5t2KcNwX+0rF
+         v3bVNYU7zWO8qSuZXKajUO6fXaFM1qJGnpYK0kMkXc9ef00sfHd9ZNs3MyRYVvxku8GV
+         HLfPtbCzApNK+XFkSp+iK+jKCxlo3etsWIiOBBRtOsL568M9yzaQPp7il1nI4Gb7jSOO
+         JFV52hVcu/Jyo0oLeQ4NWaYUuJW7R9kJF9mdfE08FWRmJO2wXlIKcVtw2LeaaqkFGUw2
+         FYiwdOuglOymndWBooZbskwof6ET/SjwgR8zm3pgRk4StJUi7IudT/1vazp/f2FQDMnt
+         OsmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Vy/yZ/n5ClLY1qISZNlSWGbzy8L79W0QJBOBUkiGiwc=;
-        b=qHDOIUnm6KRMMpOhNNUQykPp4VbdRL4A+sqHug5ySj+VWFqkBhKOlXCvEyUWl+jpEg
-         aC03XSDXbDxx4YR3TG/gF7hQNddipMuy/n/CijL7l8SexvVpSOqb3iLS5o8N7NVLsPHx
-         6p+46j7KkkvrMQh5X4MwXjBft0ccSN0prXvxkyDzisGfwAzXbdWGHfV7fSMZ6GlzcFqF
-         bQ0GYIobntI48ZVG679l62w5yaX+Ble7n2OYE7VYdXgU4Vym2Idr27GKPNEDzSdFGeXo
-         eit5j1bY7HaSUBG4ibBlic7MKS78grOBq1KsihjT1tYrEOkxCQTzhbdtX4rC6owEgFq7
-         /zww==
-X-Gm-Message-State: APjAAAUvqe5BH5WVUiJ1AU6rfn7ZhjEj6bxZ6/sT1hURtfkN9cku338q
-        0uGO5cTbBlN7xASvGxA76xF9mea2dac=
-X-Google-Smtp-Source: APXvYqwIpIT/ewZBvuE1KwHMVr4758qCSfWkqIaLCMGJHtRRi8W2dMDFyHbkkf/opVpK9cMvFc5qLQ==
-X-Received: by 2002:a17:90a:1aa4:: with SMTP id p33mr6274593pjp.27.1562080845980;
-        Tue, 02 Jul 2019 08:20:45 -0700 (PDT)
+        bh=DKzdEoM6Lmp9JUgVQf/KSYmgH23uDbw/uvQ6/6yRYvE=;
+        b=ICmeTXXJ7Fd9ok9hvhBSRazKLF449p1OLtXVLUF2Pf4bXMnJgsTB6uKI2fXCJNXo3o
+         nw/z3k4M+NNa96gKui6twxn+3wvfFHhyD6ePqdVY2a+22ICd384BVhXa5pGB4JIrnWIF
+         1fJ3fQmzinLU0u7r4uZ88ZGmB0CcGGa/UGqeeQM7MwuqeGDKn7oS2ftu3LbND67sF1h5
+         L0/TKMCd0FXroZwJPqnq4YMmWbE0jNEukk2sqwzblX9XD9ytv6eV2VcswYNr2ZEfxm2j
+         H9S9TFyUm8bH03kqmquKYh7/kBomYHiYJz93KWWjcfA0f9rTOeKKWGNqCu18K7O/EhaN
+         QZmw==
+X-Gm-Message-State: APjAAAXAQnybIm7FM2gvkp2PSB1KhhzZupxlprXF3/nEScWcyOHY1WBT
+        ykPZ0WIIThUTIeOSXhFCCSI=
+X-Google-Smtp-Source: APXvYqzF0cQ+/VJDorqycm3dfNF/lUqKXl/HB8dDHfxrLrzA/xgiZGFxu9LQhnzDpZ2b94QWbbUYow==
+X-Received: by 2002:a17:902:9a49:: with SMTP id x9mr24556514plv.282.1562080859248;
+        Tue, 02 Jul 2019 08:20:59 -0700 (PDT)
 Received: from ap-To-be-filled-by-O-E-M.8.8.8.8 ([14.33.120.60])
-        by smtp.gmail.com with ESMTPSA id c98sm2919647pje.1.2019.07.02.08.20.43
+        by smtp.gmail.com with ESMTPSA id e10sm14683769pfi.173.2019.07.02.08.20.57
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 02 Jul 2019 08:20:45 -0700 (PDT)
+        Tue, 02 Jul 2019 08:20:58 -0700 (PDT)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, pablo@netfilter.org, laforge@gnumonks.org,
         osmocom-net-gprs@lists.osmocom.org, netdev@vger.kernel.org
 Cc:     ap420073@gmail.com
-Subject: [PATCH net 0/6] gtp: fix several bugs
-Date:   Wed,  3 Jul 2019 00:20:34 +0900
-Message-Id: <20190702152034.22412-1-ap420073@gmail.com>
+Subject: [PATCH net 1/6] gtp: fix suspicious RCU usage
+Date:   Wed,  3 Jul 2019 00:20:51 +0900
+Message-Id: <20190702152051.22513-1-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series fixes several bugs in the gtp module.
+gtp_encap_enable_socket() and gtp_encap_destroy() are not protected
+by rcu_read_lock(). and it's not safe to write sk->sk_user_data.
+This patch make these functions to use lock_sock() instead of
+rcu_dereference_sk_user_data().
 
-First patch fixes suspicious RCU usage.
-The problem is to use rcu_dereference_sk_user_data() outside of
-RCU read critical section.
+Test commands:
+    gtp-link add gtp1
 
-Second patch fixes use-after-free.
-gtp_encap_destroy() is called twice.
-gtp_encap_destroy() use both gtp->sk0 and gtp->sk1u.
-these pointers can be freed in gtp_encap_destroy().
-So, gtp_encap_destroy() should avoid using freed sk pointer.
+Splat looks like:
+[   83.238315] =============================
+[   83.239127] WARNING: suspicious RCU usage
+[   83.239702] 5.2.0-rc6+ #49 Not tainted
+[   83.240268] -----------------------------
+[   83.241205] drivers/net/gtp.c:799 suspicious rcu_dereference_check() usage!
+[   83.243828]
+[   83.243828] other info that might help us debug this:
+[   83.243828]
+[   83.246325]
+[   83.246325] rcu_scheduler_active = 2, debug_locks = 1
+[   83.247314] 1 lock held by gtp-link/1008:
+[   83.248523]  #0: 0000000017772c7f (rtnl_mutex){+.+.}, at: __rtnl_newlink+0x5f5/0x11b0
+[   83.251503]
+[   83.251503] stack backtrace:
+[   83.252173] CPU: 0 PID: 1008 Comm: gtp-link Not tainted 5.2.0-rc6+ #49
+[   83.253271] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[   83.254562] Call Trace:
+[   83.254995]  dump_stack+0x7c/0xbb
+[   83.255567]  gtp_encap_enable_socket+0x2df/0x360 [gtp]
+[   83.256415]  ? gtp_find_dev+0x1a0/0x1a0 [gtp]
+[   83.257161]  ? memset+0x1f/0x40
+[   83.257843]  gtp_newlink+0x90/0xa21 [gtp]
+[   83.258497]  ? __netlink_ns_capable+0xc3/0xf0
+[   83.259260]  __rtnl_newlink+0xb9f/0x11b0
+[   83.260022]  ? rtnl_link_unregister+0x230/0x230
+[ ... ]
 
-Third patch removes duplicate code in gtp_dellink().
-gtp_dellink() calls gtp_encap_disable() twice.
-So, remove one of them.
+Fixes: 1e3a3abd8b28 ("gtp: make GTP sockets in gtp_newlink optional")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+---
+ drivers/net/gtp.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-Fourth patch fixes usage of GFP_KERNEL.
-GFP_KERNEL can not be used in RCU read critical section.
-This patch make ipv4_pdp_add() to use GFP_ATOMIC instead of GFP_KERNEL.
-
-Fifth patch fixes use-after-free in gtp_newlink().
-gtp_newlink() uses gtp_net which would be destroyed by the __exit_net
-routine.
-So, gtp_newlink should not be called after the __exit_net routine.
-
-Sixth patch adds missing error handling routine in gtp_encap_enable().
-gtp_encap_enable() will fail, if invalid role value is sent from
-user-space. if so, gtp_encap_enable() should execute error handling
-routine.
-
-Taehee Yoo (6):
-  gtp: fix suspicious RCU usage
-  gtp: fix use-after-free in gtp_encap_destroy()
-  gtp: remove duplicate code in gtp_dellink()
-  gtp: fix Illegal context switch in RCU read-side critical section.
-  gtp: fix use-after-free in gtp_newlink()
-  gtp: add missing gtp_encap_disable_sock() in gtp_encap_enable()
-
- drivers/net/gtp.c | 37 +++++++++++++++++++++++++++++--------
- 1 file changed, 29 insertions(+), 8 deletions(-)
-
+diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
+index fc45b749db46..939da5442f65 100644
+--- a/drivers/net/gtp.c
++++ b/drivers/net/gtp.c
+@@ -289,12 +289,14 @@ static void gtp_encap_destroy(struct sock *sk)
+ {
+ 	struct gtp_dev *gtp;
+ 
+-	gtp = rcu_dereference_sk_user_data(sk);
++	lock_sock(sk);
++	gtp = sk->sk_user_data;
+ 	if (gtp) {
+ 		udp_sk(sk)->encap_type = 0;
+ 		rcu_assign_sk_user_data(sk, NULL);
+ 		sock_put(sk);
+ 	}
++	release_sock(sk);
+ }
+ 
+ static void gtp_encap_disable_sock(struct sock *sk)
+@@ -796,7 +798,8 @@ static struct sock *gtp_encap_enable_socket(int fd, int type,
+ 		goto out_sock;
+ 	}
+ 
+-	if (rcu_dereference_sk_user_data(sock->sk)) {
++	lock_sock(sock->sk);
++	if (sock->sk->sk_user_data) {
+ 		sk = ERR_PTR(-EBUSY);
+ 		goto out_sock;
+ 	}
+@@ -812,6 +815,7 @@ static struct sock *gtp_encap_enable_socket(int fd, int type,
+ 	setup_udp_tunnel_sock(sock_net(sock->sk), sock, &tuncfg);
+ 
+ out_sock:
++	release_sock(sock->sk);
+ 	sockfd_put(sock);
+ 	return sk;
+ }
 -- 
 2.17.1
 
