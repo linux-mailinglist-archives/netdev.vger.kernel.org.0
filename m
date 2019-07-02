@@ -2,174 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D23A65D244
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 17:01:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1BE85D247
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 17:01:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726977AbfGBPBn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 11:01:43 -0400
-Received: from mail-oi1-f193.google.com ([209.85.167.193]:33942 "EHLO
-        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725981AbfGBPBn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 11:01:43 -0400
-Received: by mail-oi1-f193.google.com with SMTP id l12so13291145oil.1;
-        Tue, 02 Jul 2019 08:01:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Wu4n6rt8dpZFT6Rp38QtTJKHyefNt4oXtkanq1KfYnk=;
-        b=eCsTmrn1/4HhdFxlat2QV5hCplRz6CB9F27W1WRgR6BU6rnPsWmXFAYkH2Ky3l2Mxn
-         XcNUt0BbtOaRvRhLj+W0YrE/BMReTe79kFT8VsAnDODOBr+adj55iQyv81dBjfxFTifW
-         d3s11jzxStz+7/Qy2Lr8LAkR71rx/nv56g0dgHrn6aevgkmgPUsL3qcftHMZxS9UFryP
-         k80FNBKkVi7EClYuhk9lnkw5aatMej5nNX/jvIHPneqPIX/0u6E3OGA0rmELTsvtHx/C
-         /qZ7UZQLPe3+HTA7qw2UPLnFATxEJze8ilimKRIsKsenhUObwnW1N933Wtx02wKIAoPC
-         Oy3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Wu4n6rt8dpZFT6Rp38QtTJKHyefNt4oXtkanq1KfYnk=;
-        b=alE+Kh7OW0V0G0gEISvCAYQagZmgU8YrFOQi73F9RS67xnMLMKu12aSeR6I2uH1kxj
-         wZixl6cVCFVI2ZAMpf/YJ0TkAlbRpgIdAEnlcI9iZ8edMRuP82ogtlodHO0MX5nRFdRH
-         NLGZ8zvXvlFNefErYgQhAEy0ZZySetDMrepuInOxhnxLmX1NATsrg7/jl26bVj0W0tGY
-         8ilbiePBTypIEzV9h/3ss0W+3ePoCkA0XyjSoBqPvspoElBV3/9EQVPa9o/zOU0UVlOA
-         nzw1+YJJpcbm91PK61CtadSVJO6TLEABA6a2p79zE68yhWMMpR4WiTm0Gh4Gyxt0dl9J
-         clrQ==
-X-Gm-Message-State: APjAAAUOtmKwLlHvOyCmILla3zGpyCisgMIHzZBuarKrNxHe9BCeV6+W
-        TMzEOu6JcEd/QkDzcHvPlnFim2jQRWabz89QFjw=
-X-Google-Smtp-Source: APXvYqys/5PUoAJe+X6a6JgO6aiyne8nF8T9en3E395817ZJ1kIeIrjteFy3bHIb7hlImllnPR88MjC1/nD2nfDbfKM=
-X-Received: by 2002:a05:6808:8c2:: with SMTP id k2mr3154282oij.98.1562079702002;
- Tue, 02 Jul 2019 08:01:42 -0700 (PDT)
+        id S1727095AbfGBPBw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 11:01:52 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:54489 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725981AbfGBPBw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 11:01:52 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212])
+        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_128_CBC_SHA1:16)
+        (Exim 4.76)
+        (envelope-from <colin.king@canonical.com>)
+        id 1hiKI2-0006EM-1q; Tue, 02 Jul 2019 15:01:50 +0000
+To:     Petr Machata <petrm@mellanox.com>, Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+From:   Colin Ian King <colin.king@canonical.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
+ 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
+Subject: re: mlxsw: spectrum: PTP: Support timestamping on Spectrum-1 -
+ potential null ptr dereference
+Message-ID: <4fb676a6-1de8-8bcf-5f2e-3157827546c8@canonical.com>
+Date:   Tue, 2 Jul 2019 16:01:49 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <CGME20190702143639eucas1p2b168c68c35b70aac75cad6c72ccc81ad@eucas1p2.samsung.com>
- <20190702143634.19688-1-i.maximets@samsung.com>
-In-Reply-To: <20190702143634.19688-1-i.maximets@samsung.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Tue, 2 Jul 2019 17:01:30 +0200
-Message-ID: <CAJ8uoz34wS-Ut=TiULN32Zs-terBkzSiEws65jsd=f4S_rp43Q@mail.gmail.com>
-Subject: Re: [PATCH bpf] xdp: fix race on generic receive path
-To:     Ilya Maximets <i.maximets@samsung.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, bpf <bpf@vger.kernel.org>,
-        xdp-newbies@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 2, 2019 at 4:36 PM Ilya Maximets <i.maximets@samsung.com> wrote:
->
-> Unlike driver mode, generic xdp receive could be triggered
-> by different threads on different CPU cores at the same time
-> leading to the fill and rx queue breakage. For example, this
-> could happen while sending packets from two processes to the
-> first interface of veth pair while the second part of it is
-> open with AF_XDP socket.
->
-> Need to take a lock for each generic receive to avoid race.
+Hi,
 
-Thanks for this catch Ilya. Do you have any performance numbers you
-could share of the impact of adding this spin lock? The reason I ask
-is that if the impact is negligible, then let us just add it. But if
-it is too large, we might want to brain storm about some other
-possible solutions.
+Static analysis with Coverity on today's linux-next has found a
+potential null pointer dereference bug with the following commit:
 
-Thanks: Magnus
+commit d92e4e6e33c8b19635be70fb8935b627d2e4f8fe
+Author: Petr Machata <petrm@mellanox.com>
+Date:   Sun Jun 30 09:04:56 2019 +0300
 
-> Fixes: c497176cb2e4 ("xsk: add Rx receive functions and poll support")
-> Signed-off-by: Ilya Maximets <i.maximets@samsung.com>
-> ---
->  include/net/xdp_sock.h |  2 ++
->  net/xdp/xsk.c          | 32 +++++++++++++++++++++++---------
->  2 files changed, 25 insertions(+), 9 deletions(-)
->
-> diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
-> index d074b6d60f8a..ac3c047d058c 100644
-> --- a/include/net/xdp_sock.h
-> +++ b/include/net/xdp_sock.h
-> @@ -67,6 +67,8 @@ struct xdp_sock {
->          * in the SKB destructor callback.
->          */
->         spinlock_t tx_completion_lock;
-> +       /* Protects generic receive. */
-> +       spinlock_t rx_lock;
->         u64 rx_dropped;
->  };
->
-> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> index a14e8864e4fa..19f41d2b670c 100644
-> --- a/net/xdp/xsk.c
-> +++ b/net/xdp/xsk.c
-> @@ -119,17 +119,22 @@ int xsk_generic_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
->  {
->         u32 metalen = xdp->data - xdp->data_meta;
->         u32 len = xdp->data_end - xdp->data;
-> +       unsigned long flags;
->         void *buffer;
->         u64 addr;
->         int err;
->
-> -       if (xs->dev != xdp->rxq->dev || xs->queue_id != xdp->rxq->queue_index)
-> -               return -EINVAL;
-> +       spin_lock_irqsave(&xs->rx_lock, flags);
-> +
-> +       if (xs->dev != xdp->rxq->dev || xs->queue_id != xdp->rxq->queue_index) {
-> +               err = -EINVAL;
-> +               goto out_unlock;
-> +       }
->
->         if (!xskq_peek_addr(xs->umem->fq, &addr) ||
->             len > xs->umem->chunk_size_nohr - XDP_PACKET_HEADROOM) {
-> -               xs->rx_dropped++;
-> -               return -ENOSPC;
-> +               err = -ENOSPC;
-> +               goto out_drop;
->         }
->
->         addr += xs->umem->headroom;
-> @@ -138,13 +143,21 @@ int xsk_generic_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
->         memcpy(buffer, xdp->data_meta, len + metalen);
->         addr += metalen;
->         err = xskq_produce_batch_desc(xs->rx, addr, len);
-> -       if (!err) {
-> -               xskq_discard_addr(xs->umem->fq);
-> -               xsk_flush(xs);
-> -               return 0;
-> -       }
-> +       if (err)
-> +               goto out_drop;
-> +
-> +       xskq_discard_addr(xs->umem->fq);
-> +       xskq_produce_flush_desc(xs->rx);
->
-> +       spin_unlock_irqrestore(&xs->rx_lock, flags);
-> +
-> +       xs->sk.sk_data_ready(&xs->sk);
-> +       return 0;
-> +
-> +out_drop:
->         xs->rx_dropped++;
-> +out_unlock:
-> +       spin_unlock_irqrestore(&xs->rx_lock, flags);
->         return err;
->  }
->
-> @@ -765,6 +778,7 @@ static int xsk_create(struct net *net, struct socket *sock, int protocol,
->
->         xs = xdp_sk(sk);
->         mutex_init(&xs->mutex);
-> +       spin_lock_init(&xs->rx_lock);
->         spin_lock_init(&xs->tx_completion_lock);
->
->         mutex_lock(&net->xdp.lock);
-> --
-> 2.17.1
->
+    mlxsw: spectrum: PTP: Support timestamping on Spectrum-1
+
+
+In function: mlxsw_sp1_ptp_packet_finish the offending code is as follows:
+
+       /* Between capturing the packet and finishing it, there is a
+window of
+        * opportunity for the originating port to go away (e.g. due to a
+        * split). Also make sure the SKB device reference is still valid.
+        */
+       mlxsw_sp_port = mlxsw_sp->ports[local_port];
+       if (!mlxsw_sp_port && (!skb->dev || skb->dev ==
+mlxsw_sp_port->dev)) {
+               dev_kfree_skb_any(skb);
+               return;
+       }
+
+If mlxsw_sp_port is null and skb->dev is not-null then the comparison
+"skb->dev == mlxsw_sp_port->dev" ends up with a null pointer dereference.
+
+I think the if statement should be:
+
+if (mlxsw_sp_port && (!skb->dev || skb->dev == mlxsw_sp_port->dev))
+
+..but I'm not 100% sure as I may be missing something a bit more subtle
+here.
+
+Colin
+
