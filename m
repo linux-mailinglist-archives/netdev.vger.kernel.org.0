@@ -2,115 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DE48D5CD85
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 12:25:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 509505CD87
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 12:26:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727210AbfGBKZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 06:25:51 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:45206 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725922AbfGBKZv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 06:25:51 -0400
-Received: by mail-ot1-f66.google.com with SMTP id x21so16613164otq.12
-        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 03:25:50 -0700 (PDT)
+        id S1727240AbfGBK0h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 06:26:37 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:46715 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725867AbfGBK0g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 06:26:36 -0400
+Received: by mail-lf1-f65.google.com with SMTP id z15so10962030lfh.13
+        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 03:26:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=dn3a4srJGS7NUWBTCy05NkcHicDxkX+ax+mSbJwndrI=;
-        b=vyMoOT23xKhLQvjqP8sORQ8ZfeC0NzbS4beg29Xqg3JsR7tMHOeccymgBym3QeukJP
-         lzU7igM+t91nvt2mnCcoVHwvmqAO+znPhqDCEXl3EqhqmY/YDDFus70TJwN+N8sYUL/L
-         D89fRzTKxBhHAyS6ur5nmgEcmFbZyjEwppSk8ieGrTaslX+bxriBg52uMyoMGIdycy6U
-         5+D/DjgS2jtC0vePzT0yNXGwQ+HDP4GQfSOwwtPrOeJQ+5ILKF+aqBK1e+9GdmGGwM/F
-         T8hpZLRxNTvBub7STYpW/SfYL52wslDLCijX2Bxdk1bYg4ylF8IQ+/5t57943VDBPkou
-         Tqtw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DeZFKcL+XG2c5ZKWW0w2NnGzf6Xq9dHYkXwDwQU346Y=;
+        b=PQZ6k6eJltTW4GNNymgmXPZNfvpbvCvSs034QHf+ziKAA/v9+JeYiYHhZBwM9/Xcu9
+         Z5A/tGYJ0ItnWOlc8G4iVZsSccInbQ7nub+28M3IfjdOyQ+fUhakYZOI+ssD2OcqDdUe
+         +MXzUnQpUllp8pvDZ+s8F2gW9thObT4VKovvnBCvgWZmlzq5u12WoGwFIZnD3WmgsPj2
+         NbcnBez1+ZFfJ8shYa6FIA8Ooi72NYC9XWCiSw9jmxP2J3Rl8JR9VDjjcXUJy/jhw/UV
+         60lxc/mEJM7qC4u/16MDCYzv7t4NgYJpDXwNT12lOdXkZT5nNyooTdhVWA4rgJHElOZe
+         sNTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=dn3a4srJGS7NUWBTCy05NkcHicDxkX+ax+mSbJwndrI=;
-        b=BpV6IlMgirKjTTXTt36m8MmEnAT4T8n1WzjyqM/ynNp0rq74DvVtMMYwByymisVCgZ
-         nu6GW/FeJtkpsHobNFPtK+hhUjPdhnrCTGa9T/JZOvIJb2rrRSe3F/JAJIp2OzOPKJak
-         gJBBlDVqsbi6aXRMizEQRhgHJ+gGjCOOicUAqEIPFyvjbLvNTZDe4HSrj4SmvS0hdJ0B
-         f5cPVuhIyRasyJNGmx3Xx+kz88qiNWbeAIJg+c8Fhmdow3C7sr3MEXgywZ5BXl6dX/z/
-         +6W0sLopsqcnVOxFACvrk87icV+PhNx8Y/VwFNZ70o1IBZY7/vzyLaL4fr3rW5/KGq72
-         Qd8g==
-X-Gm-Message-State: APjAAAXEofIo1mdZx0z1b3k0COUN0W2+vBJaMCjnA/p12vDc300YI1b8
-        cRo2I+/w35kZIdKFdmptQEl0jQ==
-X-Google-Smtp-Source: APXvYqytzmvI5JRZPKcQdv+sq5spB99V79PgnpLs9OdtX9GllBOPxbdZFk1Bq+gxkb4B63NYwNNAHg==
-X-Received: by 2002:a9d:7c83:: with SMTP id q3mr24074170otn.273.1562063150413;
-        Tue, 02 Jul 2019 03:25:50 -0700 (PDT)
-Received: from localhost.localdomain (li964-79.members.linode.com. [45.33.10.79])
-        by smtp.gmail.com with ESMTPSA id r130sm2681760oib.41.2019.07.02.03.25.46
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 02 Jul 2019 03:25:49 -0700 (PDT)
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH] bpf, libbpf: Smatch: Fix potential NULL pointer dereference
-Date:   Tue,  2 Jul 2019 18:25:31 +0800
-Message-Id: <20190702102531.23512-1-leo.yan@linaro.org>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DeZFKcL+XG2c5ZKWW0w2NnGzf6Xq9dHYkXwDwQU346Y=;
+        b=GF1dMwiwQE9IRQiphTJXyV97iaqO2QW3V/owYYVhkAg8AGd/CnxVx36Rq2jVy1bKk8
+         6kiJPoOAJXC2EpEo4BUwWmPN6grvBMVvF45K0gDEhseIL9AZtYPehC66hl2vMSS0Mzhd
+         Cu2OiSS/jlDdql4NboB22kzYIK5BEJKvE38C9FQ6i07lU6gmoCLPKeLwro7u2o2hTHOU
+         oBOlAs5tKkngSkGFefhPKQb9aS40jMb2tiQFo/qSyKzeH1fVkauox2Fv6nNq3RzjeSVd
+         DDj/hP8O35zHGEhjqPXA6c+bK2BbQacEiRFEgMJpcMVylLVWE8mtUuN2xShHsep0WUiz
+         1Fdg==
+X-Gm-Message-State: APjAAAWaw3lHcOyoz7lFCzq0UW9fO2cMuphIoEO0vQiI/FwHYpM0DzND
+        ke7XDgufuXhbp5r+yfe9U+Rny19sGkbj3bDIAg27P+t8f/E=
+X-Google-Smtp-Source: APXvYqy1PU3kGSPpJ8rYZcQcXhszY6LVElHCYFYM7aU4T+Ik3a/7EECzjUolK7gfdjp0MoPnRtt9uC67rwFQ6Rude9M=
+X-Received: by 2002:ac2:5212:: with SMTP id a18mr14126163lfl.50.1562063194689;
+ Tue, 02 Jul 2019 03:26:34 -0700 (PDT)
+MIME-Version: 1.0
+References: <CAGWhr0AOApbf4-4RJHibUaKa8MmOfGS+uH6Rx4x1PQGZXRbCOQ@mail.gmail.com>
+In-Reply-To: <CAGWhr0AOApbf4-4RJHibUaKa8MmOfGS+uH6Rx4x1PQGZXRbCOQ@mail.gmail.com>
+From:   Ji Jianwen <jijianwen@gmail.com>
+Date:   Tue, 2 Jul 2019 18:26:23 +0800
+Message-ID: <CAGWhr0Bg3mnaddCg=RexXgUGeP5EyqiU63n_c9NAgyfx-wpJ2Q@mail.gmail.com>
+Subject: Re: [iproute2] Can't create ip6 tunnel device
+To:     netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, maheshb@google.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Based on the following report from Smatch, fix the potential
-NULL pointer dereference check.
+It seems this issue was introduced by commit below, I am able to run
+the command successfully mentioned at previous mail without it.
 
-  tools/lib/bpf/libbpf.c:3493
-  bpf_prog_load_xattr() warn: variable dereferenced before check 'attr'
-  (see line 3483)
+commit ba126dcad20e6d0e472586541d78bdd1ac4f1123 (HEAD)
+Author: Mahesh Bandewar <maheshb@google.com>
+Date:   Thu Jun 6 16:44:26 2019 -0700
 
-3479 int bpf_prog_load_xattr(const struct bpf_prog_load_attr *attr,
-3480                         struct bpf_object **pobj, int *prog_fd)
-3481 {
-3482         struct bpf_object_open_attr open_attr = {
-3483                 .file           = attr->file,
-3484                 .prog_type      = attr->prog_type,
-                                       ^^^^^^
-3485         };
+    ip6tunnel: fix 'ip -6 {show|change} dev <name>' cmds
 
-At the head of function, it directly access 'attr' without checking if
-it's NULL pointer.  This patch moves the values assignment after
-validating 'attr' and 'attr->file'.
-
-Signed-off-by: Leo Yan <leo.yan@linaro.org>
----
- tools/lib/bpf/libbpf.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 197b574406b3..809b633fa3d9 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -3479,10 +3479,7 @@ int bpf_prog_load(const char *file, enum bpf_prog_type type,
- int bpf_prog_load_xattr(const struct bpf_prog_load_attr *attr,
- 			struct bpf_object **pobj, int *prog_fd)
- {
--	struct bpf_object_open_attr open_attr = {
--		.file		= attr->file,
--		.prog_type	= attr->prog_type,
--	};
-+	struct bpf_object_open_attr open_attr;
- 	struct bpf_program *prog, *first_prog = NULL;
- 	enum bpf_attach_type expected_attach_type;
- 	enum bpf_prog_type prog_type;
-@@ -3495,6 +3492,9 @@ int bpf_prog_load_xattr(const struct bpf_prog_load_attr *attr,
- 	if (!attr->file)
- 		return -EINVAL;
- 
-+	open_attr.file = attr->file;
-+	open_attr.prog_type = attr->prog_type;
-+
- 	obj = bpf_object__open_xattr(&open_attr);
- 	if (IS_ERR_OR_NULL(obj))
- 		return -ENOENT;
--- 
-2.17.1
-
+On Tue, Jul 2, 2019 at 2:53 PM Ji Jianwen <jijianwen@gmail.com> wrote:
+>
+> Hello  there,
+>
+> I got error when creating ip6 tunnel device on a rhel-8.0.0 system.
+>
+> Here are the steps to reproduce the issue.
+> # # uname -r
+> 4.18.0-80.el8.x86_64
+> # dnf install -y libcap-devel bison flex git gcc
+> # git clone git://git.kernel.org/pub/scm/network/iproute2/iproute2.git
+> # cd iproute2  &&  git log --pretty=oneline --abbrev-commit
+> d0272f54 (HEAD -> master, origin/master, origin/HEAD) devlink: fix
+> libc and kernel headers collision
+> ee09370a devlink: fix format string warning for 32bit targets
+> 68c46872 ip address: do not set mngtmpaddr option for IPv4 addresses
+> e4448b6c ip address: do not set home option for IPv4 addresses
+> ....
+>
+> # ./configure && make && make install
+> # ip -6 tunnel add ip6tnl1 mode ip6ip6 remote 2001:db8:ffff:100::2
+> local 2001:db8:ffff:100::1 hoplimit 1 tclass 0x0 dev eno1   --->
+> please replace eno1 with the network card name of your system
+> add tunnel "ip6tnl0" failed: File exists
+>
+> Please help take a look. Thanks!
+>
+> Br,
+> Jianwen
