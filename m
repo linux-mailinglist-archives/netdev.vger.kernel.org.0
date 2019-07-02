@@ -2,94 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 23D2C5D24C
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 17:04:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF7F45D24B
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 17:04:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727039AbfGBPE2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 11:04:28 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:62530 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725981AbfGBPE0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 11:04:26 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x62F1IVI012242;
-        Tue, 2 Jul 2019 08:04:23 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0818;
- bh=k1ReAweHB51/J9Hj/2gZ9PybHrHv1N9UjQtW0Vx4tFo=;
- b=EB063j/ESI8JBKosojOYB0qyaLioDlwWU6vYbEiCUTNFKbF2sTOTLTjnh6kO5/NM+CYS
- FAWN2k0wCbhmIDPaUtFetNSI9AIgZM8reyR26To+qXQHc+i+fCEsc4AOa59qPMRePkFG
- 0tSdc0PC4qRTNuUJMdl2WdkJ7dqaTYzuYb/hmQ8BXporBwvo2Fg3/Yp6jTyMQSTMjSye
- oJiwL/+s58Loi9bPM0fG0pArMnitIjeOf+l78YH5etTOnGun1BvcGchSyVD8xWGuSYox
- s9H2BJE9V+ghw7/t6DCipnXnm2fWepOFIE7ka2dHyhsD0LL04jJmBdP5t83cqKlGTroV iQ== 
-Received: from sc-exch04.marvell.com ([199.233.58.184])
-        by mx0a-0016f401.pphosted.com with ESMTP id 2tg4jrsgft-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 02 Jul 2019 08:04:23 -0700
-Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Tue, 2 Jul
- 2019 08:04:22 -0700
-Received: from maili.marvell.com (10.93.176.43) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server id 15.0.1367.3 via Frontend
- Transport; Tue, 2 Jul 2019 08:04:22 -0700
-Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
-        by maili.marvell.com (Postfix) with ESMTP id C430E3F7041;
-        Tue,  2 Jul 2019 08:04:21 -0700 (PDT)
-Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id x62F4LbQ031179;
-        Tue, 2 Jul 2019 08:04:21 -0700
-Received: (from root@localhost)
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id x62F4Ll4031178;
-        Tue, 2 Jul 2019 08:04:21 -0700
-From:   Sudarsana Reddy Kalluru <skalluru@marvell.com>
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <mkalderon@marvell.com>,
-        <aelior@marvell.com>
-Subject: [PATCH net-next 1/1] qed: Add support for Timestamping the unicast PTP packets.
-Date:   Tue, 2 Jul 2019 08:04:12 -0700
-Message-ID: <20190702150412.31132-1-skalluru@marvell.com>
-X-Mailer: git-send-email 2.12.0
+        id S1726861AbfGBPEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 11:04:23 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:59770 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725981AbfGBPEW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jul 2019 11:04:22 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 1B47730860B0;
+        Tue,  2 Jul 2019 15:04:22 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-120-219.rdu2.redhat.com [10.10.120.219])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EFFD978361;
+        Tue,  2 Jul 2019 15:04:20 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+ Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+ Kingdom.
+ Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net] rxrpc: Fix oops in tracepoint
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Marc Dionne <marc.dionne@auristor.com>, dhowells@redhat.com,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
+Date:   Tue, 02 Jul 2019 16:04:19 +0100
+Message-ID: <156207985906.2089.12488693451155589820.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/unknown-version
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-02_08:,,
- signatures=0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.44]); Tue, 02 Jul 2019 15:04:22 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch masks the lower 4 bits of PARAM-MASK registers as required
-by the Hardware to detect/timestamp the unicast PTP packets. The register
-definition in the header file captures more details on the individual bits.
+If the rxrpc_eproto tracepoint is enabled, an oops will be cause by the
+trace line that rxrpc_extract_header() tries to emit when a protocol error
+occurs (typically because the packet is short) because the call argument is
+NULL.
 
-Signed-off-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
+Fix this by using ?: to assume 0 as the debug_id if call is NULL.
+
+This can then be induced by:
+
+	echo -e '\0\0\0\0\0\0\0\0' | ncat -4u --send-only <addr> 20001
+
+where addr has the following program running on it:
+
+	#include <stdio.h>
+	#include <stdlib.h>
+	#include <string.h>
+	#include <unistd.h>
+	#include <sys/socket.h>
+	#include <arpa/inet.h>
+	#include <linux/rxrpc.h>
+	int main(void)
+	{
+		struct sockaddr_rxrpc srx;
+		int fd;
+		memset(&srx, 0, sizeof(srx));
+		srx.srx_family			= AF_RXRPC;
+		srx.srx_service			= 0;
+		srx.transport_type		= AF_INET;
+		srx.transport_len		= sizeof(srx.transport.sin);
+		srx.transport.sin.sin_family	= AF_INET;
+		srx.transport.sin.sin_port	= htons(0x4e21);
+		fd = socket(AF_RXRPC, SOCK_DGRAM, AF_INET6);
+		bind(fd, (struct sockaddr *)&srx, sizeof(srx));
+		sleep(20);
+		return 0;
+	}
+
+It results in the following oops.
+
+	BUG: kernel NULL pointer dereference, address: 0000000000000340
+	#PF: supervisor read access in kernel mode
+	#PF: error_code(0x0000) - not-present page
+	...
+	RIP: 0010:trace_event_raw_event_rxrpc_rx_eproto+0x47/0xac
+	...
+	Call Trace:
+	 <IRQ>
+	 rxrpc_extract_header+0x86/0x171
+	 ? rcu_read_lock_sched_held+0x5d/0x63
+	 ? rxrpc_new_skb+0xd4/0x109
+	 rxrpc_input_packet+0xef/0x14fc
+	 ? rxrpc_input_data+0x986/0x986
+	 udp_queue_rcv_one_skb+0xbf/0x3d0
+	 udp_unicast_rcv_skb.isra.8+0x64/0x71
+	 ip_protocol_deliver_rcu+0xe4/0x1b4
+	 ip_local_deliver+0xf0/0x154
+	 __netif_receive_skb_one_core+0x50/0x6c
+	 netif_receive_skb_internal+0x26b/0x2e9
+	 napi_gro_receive+0xf8/0x1da
+	 rtl8169_poll+0x303/0x4c4
+	 net_rx_action+0x10e/0x333
+	 __do_softirq+0x1a5/0x38f
+	 irq_exit+0x54/0xc4
+	 do_IRQ+0xda/0xf8
+	 common_interrupt+0xf/0xf
+	 </IRQ>
+	 ...
+	 ? cpuidle_enter_state+0x23c/0x34d
+	 cpuidle_enter+0x2a/0x36
+	 do_idle+0x163/0x1ea
+	 cpu_startup_entry+0x1d/0x1f
+	 start_secondary+0x157/0x172
+	 secondary_startup_64+0xa4/0xb0
+
+Fixes: a25e21f0bcd2 ("rxrpc, afs: Use debug_ids rather than pointers in traces")
+Signed-off-by: David Howells <dhowells@redhat.com>
+Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
 ---
- drivers/net/ethernet/qlogic/qed/qed_ptp.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_ptp.c b/drivers/net/ethernet/qlogic/qed/qed_ptp.c
-index f3ebdc5..4a7acfc 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_ptp.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_ptp.c
-@@ -243,7 +243,7 @@ static int qed_ptp_hw_cfg_filters(struct qed_dev *cdev,
- 		return -EINVAL;
- 	}
+ include/trace/events/rxrpc.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/trace/events/rxrpc.h b/include/trace/events/rxrpc.h
+index d85816878a52..cc1d060cbf13 100644
+--- a/include/trace/events/rxrpc.h
++++ b/include/trace/events/rxrpc.h
+@@ -1379,7 +1379,7 @@ TRACE_EVENT(rxrpc_rx_eproto,
+ 			     ),
  
--	qed_wr(p_hwfn, p_ptt, NIG_REG_LLH_PTP_PARAM_MASK, 0);
-+	qed_wr(p_hwfn, p_ptt, NIG_REG_LLH_PTP_PARAM_MASK, 0xF);
- 	qed_wr(p_hwfn, p_ptt, NIG_REG_LLH_PTP_RULE_MASK, rule_mask);
- 	qed_wr(p_hwfn, p_ptt, NIG_REG_RX_PTP_EN, enable_cfg);
- 
-@@ -253,7 +253,7 @@ static int qed_ptp_hw_cfg_filters(struct qed_dev *cdev,
- 		qed_wr(p_hwfn, p_ptt, NIG_REG_TX_LLH_PTP_RULE_MASK, 0x3FFF);
- 	} else {
- 		qed_wr(p_hwfn, p_ptt, NIG_REG_TX_PTP_EN, enable_cfg);
--		qed_wr(p_hwfn, p_ptt, NIG_REG_TX_LLH_PTP_PARAM_MASK, 0);
-+		qed_wr(p_hwfn, p_ptt, NIG_REG_TX_LLH_PTP_PARAM_MASK, 0xF);
- 		qed_wr(p_hwfn, p_ptt, NIG_REG_TX_LLH_PTP_RULE_MASK, rule_mask);
- 	}
- 
--- 
-1.8.3.1
+ 	    TP_fast_assign(
+-		    __entry->call = call->debug_id;
++		    __entry->call = call ? call->debug_id : 0;
+ 		    __entry->serial = serial;
+ 		    __entry->why = why;
+ 			   ),
 
