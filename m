@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F188E5CF3B
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 14:15:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D8215CF38
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 14:15:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726475AbfGBMPU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 08:15:20 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:37530 "EHLO
+        id S1726830AbfGBMPV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 08:15:21 -0400
+Received: from s3.sipsolutions.net ([144.76.43.62]:37532 "EHLO
         sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725835AbfGBMPU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 08:15:20 -0400
+        with ESMTP id S1725922AbfGBMPV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 08:15:21 -0400
 Received: by sipsolutions.net with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <johannes@sipsolutions.net>)
-        id 1hiHgf-00079y-QJ; Tue, 02 Jul 2019 14:15:06 +0200
-Message-ID: <b85553d9869611f6ff04bb3bc1ee575cc788f5b2.camel@sipsolutions.net>
+        id 1hiHgm-0007A3-0S; Tue, 02 Jul 2019 14:15:12 +0200
+Message-ID: <97399f90279564e83bb464a66347b386738eaa9c.camel@sipsolutions.net>
 Subject: Re: [PATCH net-next v6 02/15] netlink: rename
  nl80211_validate_nested() to nla_validate_nested()
 From:   Johannes Berg <johannes@sipsolutions.net>
@@ -27,7 +27,7 @@ Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         John Linville <linville@tuxdriver.com>,
         Stephen Hemminger <stephen@networkplumber.org>,
         linux-kernel@vger.kernel.org
-Date:   Tue, 02 Jul 2019 14:15:04 +0200
+Date:   Tue, 02 Jul 2019 14:15:10 +0200
 In-Reply-To: <d0c23ac629c4a0343acc9f09484e078962c55402.1562067622.git.mkubecek@suse.cz>
 References: <cover.1562067622.git.mkubecek@suse.cz>
          <d0c23ac629c4a0343acc9f09484e078962c55402.1562067622.git.mkubecek@suse.cz>
@@ -48,7 +48,7 @@ On Tue, 2019-07-02 at 13:49 +0200, Michal Kubecek wrote:
 
 Umm, right, not sure how that happened. Sorry about that.
 
-Reviewed-by: Johannes Berg <johannes@sipsolutions.net?
+Reviewed-by: Johannes Berg <johannes@sipsolutions.net>
 
 johannes
 
