@@ -2,86 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AD4A65C8F2
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 07:46:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 723025C8F8
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 08:00:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725922AbfGBFqz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 01:46:55 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:4324 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725789AbfGBFqy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 01:46:54 -0400
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x625hL8U014345
-        for <netdev@vger.kernel.org>; Mon, 1 Jul 2019 22:46:53 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=F7DB+7gf0K3QCbq7V50rpdH9bvZe2aJ1bU7On+a3fmk=;
- b=ZOqCnAawg77EGx4nq61uQNHM0Cwho3IRgp8F0n5o0I4xHxCPq6c6f4mWuBJ898GJ1ZiG
- /B+FHgz2uLu+z8qX/EFETvTrPd3hXEqBzvhqZgIXIwwzWwsASWew1FWv5/4KOmS9m6VQ
- +hUMFkUVKx8jRSPq7OA0w1BTb0+v4S76E+U= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2tfwnjgja8-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 22:46:53 -0700
-Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 1 Jul 2019 22:46:52 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id A6CBE8614A2; Mon,  1 Jul 2019 22:46:49 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <andrii.nakryiko@gmail.com>, <bpf@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <ast@fb.com>, <daniel@iogearbox.net>
-CC:     Andrii Nakryiko <andriin@fb.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH bpf-next] libbpf: fix GCC8 warning for strncpy
-Date:   Mon, 1 Jul 2019 22:46:47 -0700
-Message-ID: <20190702054647.1686489-1-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1725858AbfGBF7Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 01:59:25 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:39049 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725802AbfGBF7Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 01:59:25 -0400
+Received: by mail-wr1-f67.google.com with SMTP id x4so16236519wrt.6
+        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 22:59:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=JarJ3d5k32mkG4Xjq3ZOqdnEd6nWGE8yZCJuBSCZ9jA=;
+        b=HaYBeO97z+m0sCsgBhu5xnKbl5VWaPRfFQYiV+i09LQ5J8TuiZ9Qeb2pMFIlqEV55L
+         IiglmnbFBKY+0I/SyytQL7deHavchHn8MB6mWX6Q4YQ2CcQF+FU92W6mPgNDd56/ZtdL
+         bG+XGEiSl/9tCj2dS4pPScRPNmZo1vtOF6thgBMJvCF8p5b5qwzdSI3CyHlm3RWqcgqK
+         xEOzjwpB7vgpkCBEht469EX9GKEYNBx4F006mCnHhKB/Nkrbsrg+FAvLJsX6+06hoRo4
+         PBa49AvYTgS8HtouY8nm0hfMcTNz1FKs/xotCfQjgbm6Va6Yn6bnJNg2zpR4VmKWkFh4
+         ypGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=JarJ3d5k32mkG4Xjq3ZOqdnEd6nWGE8yZCJuBSCZ9jA=;
+        b=ps8spgC3RYUtBD/CcFqFPIhZT/LCh9WWRrsVuQA4Cnf+I1vUuVQfm4CYnifGsaR3xL
+         l3DnCFFMmmVJscXx/nJdPqeTEDra7lLRNSRnGY7Xi/D/v8yLyH1OSfvQ8dS62rcwEEGT
+         v0kxDdUIFUs9m5O1h/blUYER+gyqiNPgu6fUbn6wui2A3yu8mK69a5o0d5AVeA1aaIlA
+         7iKpPfkppN7wx2YoSq7fYbLRpIq/cbVCyY9ankLkev9IfC2dS8lCLXA3yh3Vvv4CCm76
+         wHPH3VlIXWLUDjt/aE/1MrNjJFUDII4PGf2YPowCXedNKSjKAJ0l2rcGY8xRdyztsN0T
+         p/vQ==
+X-Gm-Message-State: APjAAAVRUaDf1Yt6e0oK+ALxP5udarKXerakymRxX2qp+ly2TfwwWOnB
+        AmlLlhGtNRlRLvSCN82zslOPDUp8
+X-Google-Smtp-Source: APXvYqxM7/I9EiwfVgrYdlpkGK+GTJlncDZc+QXcAa01U+Xa3xQoD/J8qJvSWFZSm1MYyHkWmt0hHQ==
+X-Received: by 2002:a5d:4642:: with SMTP id j2mr20570543wrs.211.1562047163101;
+        Mon, 01 Jul 2019 22:59:23 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8bd6:c00:d5f3:78fc:5357:f218? (p200300EA8BD60C00D5F378FC5357F218.dip0.t-ipconnect.de. [2003:ea:8bd6:c00:d5f3:78fc:5357:f218])
+        by smtp.googlemail.com with ESMTPSA id d9sm15941943wrb.71.2019.07.01.22.59.22
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 01 Jul 2019 22:59:22 -0700 (PDT)
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next] Revert "r8169: improve handling VLAN tag"
+Message-ID: <df6fcca2-6db6-0d76-deb2-6b2e98e8bf54@gmail.com>
+Date:   Tue, 2 Jul 2019 07:59:17 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-02_03:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907020064
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-GCC8 started emitting warning about using strncpy with number of bytes
-exactly equal destination size, which is generally unsafe, as can lead
-to non-zero terminated string being copied. Use IFNAMSIZ - 1 as number
-of bytes to ensure name is always zero-terminated.
+This reverts commit 759d095741721888b6ee51afa74e0a66ce65e974.
 
-Cc: Magnus Karlsson <magnus.karlsson@intel.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+The patch was based on a misunderstanding. As Al Viro pointed out [0]
+it's simply wrong on big endian. So let's revert it.
+
+[0] https://marc.info/?t=156200975600004&r=1&w=2
+
+Reported-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- tools/lib/bpf/xsk.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/realtek/r8169_main.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-index bf15a80a37c2..9588e7f87d0b 100644
---- a/tools/lib/bpf/xsk.c
-+++ b/tools/lib/bpf/xsk.c
-@@ -327,7 +327,7 @@ static int xsk_get_max_queues(struct xsk_socket *xsk)
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index a73f25321..22b2f3dcb 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -1528,7 +1528,7 @@ static int rtl8169_set_features(struct net_device *dev,
+ static inline u32 rtl8169_tx_vlan_tag(struct sk_buff *skb)
+ {
+ 	return (skb_vlan_tag_present(skb)) ?
+-		TxVlanTag | htons(skb_vlan_tag_get(skb)) : 0x00;
++		TxVlanTag | swab16(skb_vlan_tag_get(skb)) : 0x00;
+ }
  
- 	channels.cmd = ETHTOOL_GCHANNELS;
- 	ifr.ifr_data = (void *)&channels;
--	strncpy(ifr.ifr_name, xsk->ifname, IFNAMSIZ);
-+	strncpy(ifr.ifr_name, xsk->ifname, IFNAMSIZ - 1);
- 	err = ioctl(fd, SIOCETHTOOL, &ifr);
- 	if (err && errno != EOPNOTSUPP) {
- 		ret = -errno;
+ static void rtl8169_rx_vlan_tag(struct RxDesc *desc, struct sk_buff *skb)
+@@ -1536,8 +1536,7 @@ static void rtl8169_rx_vlan_tag(struct RxDesc *desc, struct sk_buff *skb)
+ 	u32 opts2 = le32_to_cpu(desc->opts2);
+ 
+ 	if (opts2 & RxVlanTag)
+-		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
+-				       ntohs(opts2 & 0xffff));
++		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), swab16(opts2 & 0xffff));
+ }
+ 
+ static void rtl8169_get_regs(struct net_device *dev, struct ethtool_regs *regs,
 -- 
-2.17.1
+2.22.0
 
