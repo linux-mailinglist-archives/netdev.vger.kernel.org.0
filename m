@@ -2,155 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD0335DB29
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 03:50:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3786F5DAD5
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 03:29:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727392AbfGCBus (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 21:50:48 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:33625 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726635AbfGCBus (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 21:50:48 -0400
-Received: by mail-lf1-f66.google.com with SMTP id y17so531553lfe.0
-        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 18:50:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=OtNNYBNm1JpUmlbSXfOacWdVL+xLaEisgn4cxAyFWvc=;
-        b=XkXLcra1GETf+BjtJgZFGGJHgfnyaEAhtVwPsFzqTDtvSzk7K4cYGXdzyMAn0iXhD2
-         jsNS6ZX2Aig66f9lDi2DLk1VyTpg3+i6+S6+juCkqyrX+EgUjwPPgnJtLo2kld0p2Dc8
-         mCYGIjeTEDVqSC1PpMFh9xH34snfD/cCl6XZf5oCIQVG8O8rVciIhMX9NnqexpCU9HN7
-         YUm7aWXL2c54UWB+iwQ6zBqf1j7H3sZwddoqOAoAy7101fVpNGN+EO/kVTsjZ8Tkk6K+
-         +1/1g0WsmEjJnan0VHjp5QH1Y5+G32htVXnLNhAFEtB297GY/1rPX5IZSa01NuqSmvDs
-         RDGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mail-followup-to
-         :references:mime-version:content-disposition:in-reply-to:user-agent;
-        bh=OtNNYBNm1JpUmlbSXfOacWdVL+xLaEisgn4cxAyFWvc=;
-        b=l4p7D8nfOhW5IaOWg1uRpwGMXkmdS9aZd/gWkVbilJS1j7C8oyvZ6hgsVjojuTe1p4
-         467wou3dI3NbqMRnbqPLJwSykvAY8QWXsZfD8H4esDpaTIYbxI6dmCNa38qoj8xVRBU8
-         FMpHZBcWwMpMTVRO7tLekrkN8Z/xi3UOpJOiJPP6vWcxR+tS2DLzGCDOUmd5HpAUnUc4
-         +9aWvd4EYvcKhnX1XzuYK+2tJDPbXOsm6Pnv3n5DZ79jlLVV3Mp/HDB35jS6R99rmo2X
-         N6owRd6uGCFUMQZEeDq45Oi6+CHt3t2jModGYo4Nhzq9Tvvu2dlkrgnUjKbsCl/H0jhy
-         RA+Q==
-X-Gm-Message-State: APjAAAUiEqoAAqGuVNruPZslQeYYb9UpG26/Hi3Kq0GEBD+fiBUGaoNq
-        Ve8RSIEtnLaNhOR2oa7ftL5d4A==
-X-Google-Smtp-Source: APXvYqzEF5k5CVr4U5Ts3OSMxtAglpPUPMGzRm0CSe0eCHDtkMHcNuXCddOhxidOixjNKCUNogmnDg==
-X-Received: by 2002:a19:7912:: with SMTP id u18mr15034634lfc.81.1562099313342;
-        Tue, 02 Jul 2019 13:28:33 -0700 (PDT)
-Received: from khorivan (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
-        by smtp.gmail.com with ESMTPSA id o187sm7642lfa.88.2019.07.02.13.28.32
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 02 Jul 2019 13:28:32 -0700 (PDT)
-Date:   Tue, 2 Jul 2019 23:28:30 +0300
-From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        grygorii.strashko@ti.com, jakub.kicinski@netronome.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
-Subject: Re: [PATCH] net: core: page_pool: add user refcnt and reintroduce
- page_pool_destroy
-Message-ID: <20190702202829.GI4510@khorivan>
-Mail-Followup-To: Jesper Dangaard Brouer <brouer@redhat.com>,
-        netdev@vger.kernel.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        grygorii.strashko@ti.com, jakub.kicinski@netronome.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
-References: <20190702153902.0e42b0b2@carbon>
- <156207778364.29180.5111562317930943530.stgit@firesoul>
- <20190702144426.GD4510@khorivan>
- <20190702165230.6caa36e3@carbon>
- <20190702145612.GF4510@khorivan>
- <20190702171029.76c60538@carbon>
- <20190702152112.GG4510@khorivan>
- <20190702202907.15fb30ce@carbon>
- <20190702185839.GH4510@khorivan>
+        id S1727400AbfGCB3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 21:29:14 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:50097 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727206AbfGCB3N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 21:29:13 -0400
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1hiPRS-0002Ke-Ln; Tue, 02 Jul 2019 22:31:54 +0200
+Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1hiPRQ-0003zP-8H; Tue, 02 Jul 2019 22:31:52 +0200
+Date:   Tue, 2 Jul 2019 22:31:52 +0200
+From:   Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Yuiko Oshino <yuiko.oshino@microchip.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>, kernel@pengutronix.de,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: net: micrel: confusion about phyids used in driver
+Message-ID: <20190702203152.gviukfldjhdnmu7j@pengutronix.de>
+References: <20190509202929.wg3slwnrfhu4f6no@pengutronix.de>
+ <da599967-c423-80dd-945d-5b993c041e90@gmail.com>
+ <20190509210745.GD11588@lunn.ch>
+ <20190510072243.h6h3bgvr2ovsh5g5@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20190702185839.GH4510@khorivan>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190510072243.h6h3bgvr2ovsh5g5@pengutronix.de>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 02, 2019 at 09:58:40PM +0300, Ivan Khoronzhuk wrote:
->On Tue, Jul 02, 2019 at 08:29:07PM +0200, Jesper Dangaard Brouer wrote:
->>On Tue, 2 Jul 2019 18:21:13 +0300
->>Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
->>
->>>On Tue, Jul 02, 2019 at 05:10:29PM +0200, Jesper Dangaard Brouer wrote:
->>>>On Tue, 2 Jul 2019 17:56:13 +0300
->>>>Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
->>>>
->>>>> On Tue, Jul 02, 2019 at 04:52:30PM +0200, Jesper Dangaard Brouer wrote:
->>>>> >On Tue, 2 Jul 2019 17:44:27 +0300
->>>>> >Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
->>>>> >
->>>>> >> On Tue, Jul 02, 2019 at 04:31:39PM +0200, Jesper Dangaard Brouer wrote:
->>>>> >> >From: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
->>>>> >> >
->>>>> >> >Jesper recently removed page_pool_destroy() (from driver invocation) and
->>>>> >> >moved shutdown and free of page_pool into xdp_rxq_info_unreg(), in-order to
->>>>> >> >handle in-flight packets/pages. This created an asymmetry in drivers
->>>>> >> >create/destroy pairs.
->>>>> >> >
->>>>> >> >This patch add page_pool user refcnt and reintroduce page_pool_destroy.
->>>>> >> >This serves two purposes, (1) simplify drivers error handling as driver now
->>>>> >> >drivers always calls page_pool_destroy() and don't need to track if
->>>>> >> >xdp_rxq_info_reg_mem_model() was unsuccessful. (2) allow special cases
->>>>> >> >where a single RX-queue (with a single page_pool) provides packets for two
->>>>> >> >net_device'es, and thus needs to register the same page_pool twice with two
->>>>> >> >xdp_rxq_info structures.
->>>>> >>
->>>>> >> As I tend to use xdp level patch there is no more reason to mention (2) case
->>>>> >> here. XDP patch serves it better and can prevent not only obj deletion but also
->>>>> >> pool flush, so, this one patch I could better leave only for (1) case.
->>>>> >
->>>>> >I don't understand what you are saying.
->>>>> >
->>>>> >Do you approve this patch, or do you reject this patch?
->>>>> >
->>>>> It's not reject, it's proposition to use both, XDP and page pool patches,
->>>>> each having its goal.
->>>>
->>>>Just to be clear, if you want this patch to get accepted you have to
->>>>reply with your Signed-off-by (as I wrote).
->>>>
->>>>Maybe we should discuss it in another thread, about why you want two
->>>>solutions to the same problem.
->>>
->>>If it solves same problem I propose to reject this one and use this:
->>>https://lkml.org/lkml/2019/7/2/651
->>
->>No, I propose using this one, and rejecting the other one.
->
->There is at least several arguments against this one (related (2) purpose)
->
->It allows:
->- avoid changes to page_pool/mlx5/netsec
->- save not only allocator obj but allocator "page/buffer flush"
->- buffer flush can be present not only in page_pool but for other allocators
-> that can behave differently and not so simple solution.
->- to not limit cpsw/(potentially others) to use "page_pool" allocator only
->....
->
->This patch better leave also, as it simplifies error path for page_pool and
->have more error prone usage comparing with existent one.
->
->Please, don't limit cpsw and potentially other drivers to use only
->page_pool it can be zca or etc... I don't won't to modify each allocator.
->I propose to add both as by fact they solve different problems with common
->solution.
+Hello Yuiko Oshino,
 
-I can pick up this one but remove description related to (2) and add
-appropriate modifications to cpsw.
+On Fri, May 10, 2019 at 09:22:43AM +0200, Uwe Kleine-König wrote:
+> On Thu, May 09, 2019 at 11:07:45PM +0200, Andrew Lunn wrote:
+> > On Thu, May 09, 2019 at 10:55:29PM +0200, Heiner Kallweit wrote:
+> > > On 09.05.2019 22:29, Uwe Kleine-König wrote:
+> > > > I have a board here that has a KSZ8051MLL (datasheet:
+> > > > http://ww1.microchip.com/downloads/en/DeviceDoc/ksz8051mll.pdf, phyid:
+> > > > 0x0022155x) assembled. The actual phyid is 0x00221556.
+> > >
+> > > I think the datasheets are the source of the confusion. If the
+> > > datasheets for different chips list 0x0022155x as PHYID each, and
+> > > authors of support for additional chips don't check the existing code,
+> > > then happens what happened.
+> > > 
+> > > However it's not a rare exception and not Microchip-specific that
+> > > sometimes vendors use the same PHYID for different chips.
+> 
+> From the vendor's POV it is even sensible to reuse the phy IDs iff the
+> chips are "compatible".
+> 
+> Assuming that the last nibble of the phy ID actually helps to
+> distinguish the different (not completely) compatible chips, we need
+> some more detailed information than available in the data sheets I have.
+> There is one person in the recipents of this mail with an @microchip.com
+> address (hint, hint!).
+
+can you give some input here or forward to a person who can?
+
+Best regards
+Uwe
 
 -- 
-Regards,
-Ivan Khoronzhuk
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
