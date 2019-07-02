@@ -2,101 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BFF575DAFC
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 03:36:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE0535D61A
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 20:27:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727451AbfGCBgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 21:36:20 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:37026 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726963AbfGCBgT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 21:36:19 -0400
-Received: by mail-pg1-f194.google.com with SMTP id g15so304747pgi.4
-        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 18:36:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=OaclItD7NGDSjsey3tbhT+f/k4HSHLV82rGxlZ0Hupo=;
-        b=kNWWevjxDFBtqAHSafz0REmEmitiL+6A7lBBl6Z9Ytlbj41dK1+CNpX10CgV6tqN3Q
-         eUO2uHEK6BoSJvCJsVLJ5JTU5r2ZSOiSxxGple/5brcgy+DhHf1VnPyzTJOktf0jQ5Gq
-         ipxFgLa4IjlJJWkBbWJhuJp/4xqjI/H7t+PIY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=OaclItD7NGDSjsey3tbhT+f/k4HSHLV82rGxlZ0Hupo=;
-        b=gavGXRWB50YXcCV7Cx/AW28T70WhWh/sDNhmmiO3+2mqcQTg8eAOXK5iAVF3tcPr3A
-         j6+AcQGMCau5iSaruzWzIbjlP4g/92hgmSraIZIlhV0uKSnR+wJiNyB8/8ro4d5GdUHn
-         8MWD99pB/FpFaQvmzlRACzRvPYIo/DTyUyoi0bVYdkCslQ+BFLs+WI3Ht+8Ylsy5yznE
-         s4dacEKHKzbzyVLfn2T8ISYIzai3QCEfWj/ecCJbUQvoAZvbmBukE3ioEHqQM3jnMc4i
-         unCwxajuj3sgCpHu65cAoyn6GKPrrOLLRTILO0dSgxx0p4tMxJYyBQfkwA6AEBZ7IUSo
-         lNkQ==
-X-Gm-Message-State: APjAAAUYJNmzqwDW2AGycO4qusCKm1MuHy6j3mjFSwk9ofYmldWFj0Tw
-        YmycESEa2XFDgF/BRqRVDXhPkg==
-X-Google-Smtp-Source: APXvYqww3bvpNMLM4w4pBewDgte906pGeOLG/xtRE1fYclLJgRjEFZT5FyrXB5cCVp9gYsCY5g1ngA==
-X-Received: by 2002:a17:90a:be08:: with SMTP id a8mr7519671pjs.69.1562101445606;
-        Tue, 02 Jul 2019 14:04:05 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id q3sm48479pgv.21.2019.07.02.14.04.02
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 02 Jul 2019 14:04:02 -0700 (PDT)
-Date:   Tue, 2 Jul 2019 11:24:35 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Andy Lutomirski <luto@kernel.org>
-Cc:     Song Liu <songliubraving@fb.com>,
-        "linux-security@vger.kernel.org" <linux-security@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+        id S1726605AbfGBS1C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 14:27:02 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:41526 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725851AbfGBS1C (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jul 2019 14:27:02 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id B94B3C04BD48;
+        Tue,  2 Jul 2019 18:27:01 +0000 (UTC)
+Received: from griffin.upir.cz (unknown [10.40.205.84])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5CA82422C;
+        Tue,  2 Jul 2019 18:27:00 +0000 (UTC)
+From:   Jiri Benc <jbenc@redhat.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Jann Horn <jannh@google.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Linux API <linux-api@vger.kernel.org>
-Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
-Message-ID: <201907021115.DCD56BBABB@keescook>
-References: <20190627201923.2589391-1-songliubraving@fb.com>
- <20190627201923.2589391-2-songliubraving@fb.com>
- <21894f45-70d8-dfca-8c02-044f776c5e05@kernel.org>
- <3C595328-3ABE-4421-9772-8D41094A4F57@fb.com>
- <CALCETrWBnH4Q43POU8cQ7YMjb9LioK28FDEQf7aHZbdf1eBZWg@mail.gmail.com>
- <0DE7F23E-9CD2-4F03-82B5-835506B59056@fb.com>
- <CALCETrWBWbNFJvsTCeUchu3BZJ3SH3dvtXLUB2EhnPrzFfsLNA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALCETrWBWbNFJvsTCeUchu3BZJ3SH3dvtXLUB2EhnPrzFfsLNA@mail.gmail.com>
+        Song Liu <liu.song.a23@gmail.com>, Y Song <ys114321@gmail.com>
+Subject: [PATCH bpf-next] selftests: bpf: standardize to static __always_inline
+Date:   Tue,  2 Jul 2019 20:26:51 +0200
+Message-Id: <b62ef44131bbe3b905fc42990d16b667a65c820c.1562091849.git.jbenc@redhat.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.31]); Tue, 02 Jul 2019 18:27:01 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 01, 2019 at 06:59:13PM -0700, Andy Lutomirski wrote:
-> I think I'm understanding your motivation.  You're not trying to make
-> bpf() generically usable without privilege -- you're trying to create
-> a way to allow certain users to access dangerous bpf functionality
-> within some limits.
-> 
-> That's a perfectly fine goal, but I think you're reinventing the
-> wheel, and the wheel you're reinventing is quite complicated and
-> already exists.  I think you should teach bpftool to be secure when
-> installed setuid root or with fscaps enabled and put your policy in
-> bpftool.  If you want to harden this a little bit, it would seem
-> entirely reasonable to add a new CAP_BPF_ADMIN and change some, but
-> not all, of the capable() checks to check CAP_BPF_ADMIN instead of the
-> capabilities that they currently check.
+The progs for bpf selftests use several different notations to force
+function inlining. Standardize to what most of them use,
+static __always_inline.
 
-If finer grained controls are wanted, it does seem like the /dev/bpf
-path makes the most sense. open, request abilities, use fd. The open can
-be mediated by DAC and LSM. The request can be mediated by LSM. This
-provides a way to add policy at the LSM level and at the tool level.
-(i.e. For tool-level controls: leave LSM wide open, make /dev/bpf owned
-by "bpfadmin" and bpftool becomes setuid "bpfadmin". For fine-grained
-controls, leave /dev/bpf wide open and add policy to SELinux, etc.)
+Suggested-by: Song Liu <liu.song.a23@gmail.com>
+Signed-off-by: Jiri Benc <jbenc@redhat.com>
+---
+ tools/testing/selftests/bpf/progs/pyperf.h    |  9 +++--
+ .../testing/selftests/bpf/progs/strobemeta.h  | 36 ++++++++++---------
+ .../testing/selftests/bpf/progs/test_jhash.h  |  3 +-
+ .../selftests/bpf/progs/test_seg6_loop.c      | 23 ++++++------
+ .../selftests/bpf/progs/test_verif_scale2.c   |  2 +-
+ 5 files changed, 38 insertions(+), 35 deletions(-)
 
-With only a new CAP, you don't get the fine-grained controls. (The
-"request abilities" part is the key there.)
-
+diff --git a/tools/testing/selftests/bpf/progs/pyperf.h b/tools/testing/selftests/bpf/progs/pyperf.h
+index 6b0781391be5..abf6224649be 100644
+--- a/tools/testing/selftests/bpf/progs/pyperf.h
++++ b/tools/testing/selftests/bpf/progs/pyperf.h
+@@ -75,8 +75,7 @@ typedef struct {
+ 	void* co_name; // PyCodeObject.co_name
+ } FrameData;
+ 
+-static inline __attribute__((__always_inline__)) void*
+-get_thread_state(void* tls_base, PidData* pidData)
++static __always_inline void *get_thread_state(void *tls_base, PidData *pidData)
+ {
+ 	void* thread_state;
+ 	int key;
+@@ -87,8 +86,8 @@ get_thread_state(void* tls_base, PidData* pidData)
+ 	return thread_state;
+ }
+ 
+-static inline __attribute__((__always_inline__)) bool
+-get_frame_data(void* frame_ptr, PidData* pidData, FrameData* frame, Symbol* symbol)
++static __always_inline bool get_frame_data(void *frame_ptr, PidData *pidData,
++					   FrameData *frame, Symbol *symbol)
+ {
+ 	// read data from PyFrameObject
+ 	bpf_probe_read(&frame->f_back,
+@@ -161,7 +160,7 @@ struct bpf_elf_map SEC("maps") stackmap = {
+ 	.max_elem = 1000,
+ };
+ 
+-static inline __attribute__((__always_inline__)) int __on_event(struct pt_regs *ctx)
++static __always_inline int __on_event(struct pt_regs *ctx)
+ {
+ 	uint64_t pid_tgid = bpf_get_current_pid_tgid();
+ 	pid_t pid = (pid_t)(pid_tgid >> 32);
+diff --git a/tools/testing/selftests/bpf/progs/strobemeta.h b/tools/testing/selftests/bpf/progs/strobemeta.h
+index 1ff73f60a3e4..553bc3b62e89 100644
+--- a/tools/testing/selftests/bpf/progs/strobemeta.h
++++ b/tools/testing/selftests/bpf/progs/strobemeta.h
+@@ -266,8 +266,8 @@ struct tls_index {
+ 	uint64_t offset;
+ };
+ 
+-static inline __attribute__((always_inline))
+-void *calc_location(struct strobe_value_loc *loc, void *tls_base)
++static __always_inline void *calc_location(struct strobe_value_loc *loc,
++					   void *tls_base)
+ {
+ 	/*
+ 	 * tls_mode value is:
+@@ -327,10 +327,10 @@ void *calc_location(struct strobe_value_loc *loc, void *tls_base)
+ 		: NULL;
+ }
+ 
+-static inline __attribute__((always_inline))
+-void read_int_var(struct strobemeta_cfg *cfg, size_t idx, void *tls_base,
+-		  struct strobe_value_generic *value,
+-		  struct strobemeta_payload *data)
++static __always_inline void read_int_var(struct strobemeta_cfg *cfg,
++					 size_t idx, void *tls_base,
++					 struct strobe_value_generic *value,
++					 struct strobemeta_payload *data)
+ {
+ 	void *location = calc_location(&cfg->int_locs[idx], tls_base);
+ 	if (!location)
+@@ -342,10 +342,11 @@ void read_int_var(struct strobemeta_cfg *cfg, size_t idx, void *tls_base,
+ 		data->int_vals_set_mask |= (1 << idx);
+ }
+ 
+-static inline __attribute__((always_inline))
+-uint64_t read_str_var(struct strobemeta_cfg* cfg, size_t idx, void *tls_base,
+-		      struct strobe_value_generic *value,
+-		      struct strobemeta_payload *data, void *payload)
++static __always_inline uint64_t read_str_var(struct strobemeta_cfg *cfg,
++					     size_t idx, void *tls_base,
++					     struct strobe_value_generic *value,
++					     struct strobemeta_payload *data,
++					     void *payload)
+ {
+ 	void *location;
+ 	uint32_t len;
+@@ -371,10 +372,11 @@ uint64_t read_str_var(struct strobemeta_cfg* cfg, size_t idx, void *tls_base,
+ 	return len;
+ }
+ 
+-static inline __attribute__((always_inline))
+-void *read_map_var(struct strobemeta_cfg *cfg, size_t idx, void *tls_base,
+-		   struct strobe_value_generic *value,
+-		   struct strobemeta_payload* data, void *payload)
++static __always_inline void *read_map_var(struct strobemeta_cfg *cfg,
++					  size_t idx, void *tls_base,
++					  struct strobe_value_generic *value,
++					  struct strobemeta_payload *data,
++					  void *payload)
+ {
+ 	struct strobe_map_descr* descr = &data->map_descrs[idx];
+ 	struct strobe_map_raw map;
+@@ -435,9 +437,9 @@ void *read_map_var(struct strobemeta_cfg *cfg, size_t idx, void *tls_base,
+  * read_strobe_meta returns NULL, if no metadata was read; otherwise returns
+  * pointer to *right after* payload ends
+  */
+-static inline __attribute__((always_inline))
+-void *read_strobe_meta(struct task_struct* task,
+-		       struct strobemeta_payload* data) {
++static __always_inline void *read_strobe_meta(struct task_struct *task,
++					      struct strobemeta_payload *data)
++{
+ 	pid_t pid = bpf_get_current_pid_tgid() >> 32;
+ 	struct strobe_value_generic value = {0};
+ 	struct strobemeta_cfg *cfg;
+diff --git a/tools/testing/selftests/bpf/progs/test_jhash.h b/tools/testing/selftests/bpf/progs/test_jhash.h
+index 3d12c11a8d47..c300734d26f6 100644
+--- a/tools/testing/selftests/bpf/progs/test_jhash.h
++++ b/tools/testing/selftests/bpf/progs/test_jhash.h
+@@ -1,9 +1,10 @@
+ // SPDX-License-Identifier: GPL-2.0
+ // Copyright (c) 2019 Facebook
++#include <features.h>
+ 
+ typedef unsigned int u32;
+ 
+-static __attribute__((always_inline)) u32 rol32(u32 word, unsigned int shift)
++static __always_inline u32 rol32(u32 word, unsigned int shift)
+ {
+ 	return (word << shift) | (word >> ((-shift) & 31));
+ }
+diff --git a/tools/testing/selftests/bpf/progs/test_seg6_loop.c b/tools/testing/selftests/bpf/progs/test_seg6_loop.c
+index 463964d79f73..1dbe1d4d467e 100644
+--- a/tools/testing/selftests/bpf/progs/test_seg6_loop.c
++++ b/tools/testing/selftests/bpf/progs/test_seg6_loop.c
+@@ -54,7 +54,7 @@ struct sr6_tlv_t {
+ 	unsigned char value[0];
+ } BPF_PACKET_HEADER;
+ 
+-static __attribute__((always_inline)) struct ip6_srh_t *get_srh(struct __sk_buff *skb)
++static __always_inline struct ip6_srh_t *get_srh(struct __sk_buff *skb)
+ {
+ 	void *cursor, *data_end;
+ 	struct ip6_srh_t *srh;
+@@ -88,9 +88,9 @@ static __attribute__((always_inline)) struct ip6_srh_t *get_srh(struct __sk_buff
+ 	return srh;
+ }
+ 
+-static __attribute__((always_inline))
+-int update_tlv_pad(struct __sk_buff *skb, uint32_t new_pad,
+-		   uint32_t old_pad, uint32_t pad_off)
++static __always_inline int update_tlv_pad(struct __sk_buff *skb,
++					  uint32_t new_pad, uint32_t old_pad,
++					  uint32_t pad_off)
+ {
+ 	int err;
+ 
+@@ -118,10 +118,11 @@ int update_tlv_pad(struct __sk_buff *skb, uint32_t new_pad,
+ 	return 0;
+ }
+ 
+-static __attribute__((always_inline))
+-int is_valid_tlv_boundary(struct __sk_buff *skb, struct ip6_srh_t *srh,
+-			  uint32_t *tlv_off, uint32_t *pad_size,
+-			  uint32_t *pad_off)
++static __always_inline int is_valid_tlv_boundary(struct __sk_buff *skb,
++						 struct ip6_srh_t *srh,
++						 uint32_t *tlv_off,
++						 uint32_t *pad_size,
++						 uint32_t *pad_off)
+ {
+ 	uint32_t srh_off, cur_off;
+ 	int offset_valid = 0;
+@@ -177,9 +178,9 @@ int is_valid_tlv_boundary(struct __sk_buff *skb, struct ip6_srh_t *srh,
+ 	return 0;
+ }
+ 
+-static __attribute__((always_inline))
+-int add_tlv(struct __sk_buff *skb, struct ip6_srh_t *srh, uint32_t tlv_off,
+-	    struct sr6_tlv_t *itlv, uint8_t tlv_size)
++static __always_inline int add_tlv(struct __sk_buff *skb,
++				   struct ip6_srh_t *srh, uint32_t tlv_off,
++				   struct sr6_tlv_t *itlv, uint8_t tlv_size)
+ {
+ 	uint32_t srh_off = (char *)srh - (char *)(long)skb->data;
+ 	uint8_t len_remaining, new_pad;
+diff --git a/tools/testing/selftests/bpf/progs/test_verif_scale2.c b/tools/testing/selftests/bpf/progs/test_verif_scale2.c
+index 77830693eccb..9897150ed516 100644
+--- a/tools/testing/selftests/bpf/progs/test_verif_scale2.c
++++ b/tools/testing/selftests/bpf/progs/test_verif_scale2.c
+@@ -2,7 +2,7 @@
+ // Copyright (c) 2019 Facebook
+ #include <linux/bpf.h>
+ #include "bpf_helpers.h"
+-#define ATTR __attribute__((always_inline))
++#define ATTR __always_inline
+ #include "test_jhash.h"
+ 
+ SEC("scale90_inline")
 -- 
-Kees Cook
+2.18.1
+
