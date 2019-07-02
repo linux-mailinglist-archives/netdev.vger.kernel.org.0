@@ -2,143 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C7B0B5D4AD
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 18:49:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25BA25D4EA
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 18:58:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727031AbfGBQtX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 12:49:23 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:51482 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726150AbfGBQtW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 12:49:22 -0400
-Received: by mail-wm1-f66.google.com with SMTP id 207so1542269wma.1
-        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 09:49:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=knQ2jzZVsQSPwZs7eFJmdH3996iyk554lANQSOkuNzs=;
-        b=cyU9S2MNNu2uDQHJfzhKP/cnXuvOuHysOSQzt7ncpcNxvqNuVYndJzGNDSKMMlWWIV
-         psFKPjKGx86zVvXJH+OxE7u7OY2s7WBUsZ7CEWk7QfVp/ixzaCf77IWKM4LaKg7Z4vHW
-         fIuA0rzCFFObvqk4sgG31XnyeW1wSu2kHAXba8DDW9QIb4e3INurN2ON4WawCY2L+QAn
-         AsM8FyvMdjGPc7bSkcU1siEZv4S0A0vKdZf9Q2cclvVzH/ciIEqSLA9iVlXmaUk7abKF
-         MpE0y3+SuszORqS6XNsu+ssKX2fPRhzGB6fPo9ffvdnrmL9wDq4T5/IWIjJLP8ynnaEm
-         CK9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=knQ2jzZVsQSPwZs7eFJmdH3996iyk554lANQSOkuNzs=;
-        b=ESAEZmV3nmBOkHb+KVwFtX9UznWrh3JYkN6DOMimRdGx4Tco06EX+Hdwg2+e9FgnJ9
-         xYXpHB6vM4fHLlABlzi2c2/Wjw21V2V4t1gyVj4wU7HhpZ6RQQr1WJFhOMgbJUNLHjRD
-         siibfR0vfWuQvYUY7h9+TKUdSJgroBvmN7+v11SjnK/QdI+4xwi9BwPk/vrFvk8WoxQ7
-         hm78IxvfDavwp3yzONUchsc3foiaQVmdKsjtM9nUPrHm7OLFHdnms1YLOVpAb2PimjGQ
-         T3xzuGxzzwl5e9T579YhrFOZu+iKC3cvwper8vMn1wyU3habujbkLDYXgPfwqhTsGCc7
-         Zkww==
-X-Gm-Message-State: APjAAAVyGUSBN5C/FksODYDLvE2xUkI5uG5HNQV+ZlpgGDN4uhqcIPce
-        ULkqHT9UaAsIIwz8fZN+rH8nlKI/
-X-Google-Smtp-Source: APXvYqzm+6ZbQGj5v10nzhiSQe8ANZJfwZGJTH0IOKKF597plkjiGd/Vo/wXTQ8k7MsUqukjknbWPw==
-X-Received: by 2002:a1c:4184:: with SMTP id o126mr3991671wma.68.1562086160850;
-        Tue, 02 Jul 2019 09:49:20 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8bd6:c00:5180:2626:d7af:c0a1? (p200300EA8BD60C0051802626D7AFC0A1.dip0.t-ipconnect.de. [2003:ea:8bd6:c00:5180:2626:d7af:c0a1])
-        by smtp.googlemail.com with ESMTPSA id o20sm34949930wrh.8.2019.07.02.09.49.19
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 02 Jul 2019 09:49:20 -0700 (PDT)
-Subject: Re: [PATCH net-next] r8169: add random MAC address fallback
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <61a7754f-bdf9-f69a-296d-47353a78c8b4@gmail.com>
-Message-ID: <60c26de4-23bc-a94b-d4a0-1216d8053e1f@gmail.com>
-Date:   Tue, 2 Jul 2019 18:49:14 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <61a7754f-bdf9-f69a-296d-47353a78c8b4@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1726413AbfGBQ6m convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 2 Jul 2019 12:58:42 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:5786 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726252AbfGBQ6m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 12:58:42 -0400
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x62GvsfJ189647
+        for <netdev@vger.kernel.org>; Tue, 2 Jul 2019 12:58:40 -0400
+Received: from e06smtp05.uk.ibm.com (e06smtp05.uk.ibm.com [195.75.94.101])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2tg8ub6ms2-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 12:58:40 -0400
+Received: from localhost
+        by e06smtp05.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
+        Tue, 2 Jul 2019 17:58:38 +0100
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (9.149.109.194)
+        by e06smtp05.uk.ibm.com (192.168.101.135) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Tue, 2 Jul 2019 17:58:35 +0100
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x62GwYLA39780482
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 2 Jul 2019 16:58:34 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C399FA4054;
+        Tue,  2 Jul 2019 16:58:34 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A2A49A405B;
+        Tue,  2 Jul 2019 16:58:34 +0000 (GMT)
+Received: from dyn-9-152-98-98.boeblingen.de.ibm.com (unknown [9.152.98.98])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue,  2 Jul 2019 16:58:34 +0000 (GMT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 11.5 \(3445.9.1\))
+Subject: Re: [PATCH bpf-next] selftests/bpf: fix compiling loop{1,2,3}.c on
+ s390
+From:   Ilya Leoshkevich <iii@linux.ibm.com>
+In-Reply-To: <CAH3MdRUk5x2D9yRuKpGpVuDMFF0JbYeB+Y0Qz6chtPgfm-1vxA@mail.gmail.com>
+Date:   Tue, 2 Jul 2019 18:58:34 +0200
+Cc:     bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>
+Content-Transfer-Encoding: 8BIT
+References: <20190702153908.41562-1-iii@linux.ibm.com>
+ <CAH3MdRUk5x2D9yRuKpGpVuDMFF0JbYeB+Y0Qz6chtPgfm-1vxA@mail.gmail.com>
+To:     Y Song <ys114321@gmail.com>
+X-Mailer: Apple Mail (2.3445.9.1)
+X-TM-AS-GCONF: 00
+x-cbid: 19070216-0020-0000-0000-0000034F8CD6
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19070216-0021-0000-0000-000021A31F2A
+Message-Id: <1AE29825-8FB2-4682-8822-5F3D16965657@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-02_08:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=3 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1907020185
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02.07.2019 08:18, Heiner Kallweit wrote:
->>From 1c8bacf724f1450e5256c68fbff407305faf9cbd Mon Sep 17 00:00:00 2001
+> Am 02.07.2019 um 18:42 schrieb Y Song <ys114321@gmail.com>:
 > 
+> On Tue, Jul 2, 2019 at 8:40 AM Ilya Leoshkevich <iii@linux.ibm.com> wrote:
+>> 
+>> -#elif defined(__s390x__)
+>> -       #define bpf_target_s930x
 > 
-> 
+> I see in some other places (e.g., bcc) where
+> macro __s390x__ is also used to indicate a s390 architecture.
+> Could you explain the difference between __s390__ and
+> __s390x__?
 
-Sorry, something went wrong when preparing the commit message. I'll resubmit.
+__s390__ is defined for 32-bit and 64-bit variants, __s390x__ is defined
+for 64-bit variant only.
 
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> ---
->  drivers/net/ethernet/realtek/r8169_main.c | 40 +++++++++++++++--------
->  1 file changed, 27 insertions(+), 13 deletions(-)
+>> #if defined(bpf_target_x86)
+>> 
+>> +#ifdef __KERNEL__
 > 
-> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> index 450c74dc1..d6c137b7f 100644
-> --- a/drivers/net/ethernet/realtek/r8169_main.c
-> +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> @@ -6651,13 +6651,36 @@ static int rtl_get_ether_clk(struct rtl8169_private *tp)
->  	return rc;
->  }
->  
-> +static void rtl_init_mac_address(struct rtl8169_private *tp)
-> +{
-> +	struct net_device *dev = tp->dev;
-> +	u8 *mac_addr = dev->dev_addr;
-> +	int rc, i;
-> +
-> +	rc = eth_platform_get_mac_address(tp_to_dev(tp), mac_addr);
-> +	if (!rc)
-> +		goto done;
-> +
-> +	rtl_read_mac_address(tp, mac_addr);
-> +	if (is_valid_ether_addr(mac_addr))
-> +		goto done;
-> +
-> +	for (i = 0; i < ETH_ALEN; i++)
-> +		mac_addr[i] = RTL_R8(tp, MAC0 + i);
-> +	if (is_valid_ether_addr(mac_addr))
-> +		goto done;
-> +
-> +	eth_hw_addr_random(dev);
-> +	dev_warn(tp_to_dev(tp), "can't read MAC address, setting random one\n");
-> +done:
-> +	rtl_rar_set(tp, mac_addr);
-> +}
-> +
->  static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->  {
-> -	/* align to u16 for is_valid_ether_addr() */
-> -	u8 mac_addr[ETH_ALEN] __aligned(2) = {};
->  	struct rtl8169_private *tp;
->  	struct net_device *dev;
-> -	int chipset, region, i;
-> +	int chipset, region;
->  	int jumbo_max, rc;
->  
->  	dev = devm_alloc_etherdev(&pdev->dev, sizeof (*tp));
-> @@ -6749,16 +6772,7 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->  	u64_stats_init(&tp->rx_stats.syncp);
->  	u64_stats_init(&tp->tx_stats.syncp);
->  
-> -	/* get MAC address */
-> -	rc = eth_platform_get_mac_address(&pdev->dev, mac_addr);
-> -	if (rc)
-> -		rtl_read_mac_address(tp, mac_addr);
-> -
-> -	if (is_valid_ether_addr(mac_addr))
-> -		rtl_rar_set(tp, mac_addr);
-> -
-> -	for (i = 0; i < ETH_ALEN; i++)
-> -		dev->dev_addr[i] = RTL_R8(tp, MAC0 + i);
-> +	rtl_init_mac_address(tp);
->  
->  	dev->ethtool_ops = &rtl8169_ethtool_ops;
->  
+> In samples/bpf/,  __KERNEL__ is defined at clang options and
+> in selftests/bpf/, the __KERNEL__ is not defined.
 > 
+> I checked x86 pt_regs definition with and without __KERNEL__.
+> They are identical except some register name difference.
+> I am wondering whether we can unify into all without
+> __KERNEL__. Is __KERNEL__ really needed?
 
+Right now removing it causes the build to fail, but the errors look
+fixable. However, I wonder whether there is a plan regarding this:
+should eBPF programs be built with user headers, kernel headers,
+or both? Status quo appears to be "both", so I’ve decided to stick with
+that in this patch.
+
+>> +/* s390 provides user_pt_regs instead of struct pt_regs to userspace */
+>> +struct pt_regs;
+>> +#define PT_REGS_PARM1(x) (((const volatile user_pt_regs *)(x))->gprs[2])
+> 
+> Is user_pt_regs a recent change or has been there for quite some time?
+> I am asking since bcc did not use user_pt_regs yet.
+
+It was added in late 2017 in commit 466698e654e8 ("s390/bpf: correct
+broken uapi for BPF_PROG_TYPE_PERF_EVENT program type“).
