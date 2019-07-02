@@ -2,163 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CC685C94E
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 08:26:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 041D15C96F
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 08:41:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725867AbfGBG0j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 02:26:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51932 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725775AbfGBG0j (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jul 2019 02:26:39 -0400
-Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 86D5920881;
-        Tue,  2 Jul 2019 06:26:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1562048797;
-        bh=6pZ6iJpOc1ZTWUbGVsDBw5d6tYWFi40wN8o7XSwebAU=;
-        h=Date:From:To:Cc:Subject:From;
-        b=a2Lisoh3oqhqx3C9sD23kkdayqOrMXRzozveGIjf9YtYpGLaHpHyFE9UnYv+YK2lb
-         WgL9zQ+tloeVqisUx8f/0HhchYyLbqkZ4+6vvbloMvDi7S39uGpFfhNrYlRAlWbNpG
-         /U+9XO77qfuUtgKBgQM5DYsbsF89QWPUexWT7790=
-Date:   Mon, 1 Jul 2019 23:26:36 -0700
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     netdev@vger.kernel.org, Arvid Brodin <arvid.brodin@alten.se>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Reminder: 5 open syzbot bugs in "net/hsr" subsystem
-Message-ID: <20190702062636.GC3054@sol.localdomain>
+        id S1726150AbfGBGlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 02:41:15 -0400
+Received: from mail-eopbgr50061.outbound.protection.outlook.com ([40.107.5.61]:34784
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725775AbfGBGlO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jul 2019 02:41:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Q51U10N1efXcL4OLR9vZo1wZcXZpRk5PaQBst2BqxG8=;
+ b=iLcIeHJ+4XsZj1qkuw6LLeSYazRJk1zM5v+5afmLg4ocwhzxWCTXbiHdOa9DUXgOzJdcU50P/fqUM57E9LZsihsIzaN9rOQ+BGuqdUkAnnPEtrPcF0gXJWDwKW0BMYcOHPJL87dLiydSaxnvpfGcZvlAZrW4OIihdTEsHTdoAWs=
+Received: from AM4PR05MB3137.eurprd05.prod.outlook.com (10.171.186.14) by
+ AM4PR05MB3267.eurprd05.prod.outlook.com (10.171.188.28) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2032.20; Tue, 2 Jul 2019 06:41:10 +0000
+Received: from AM4PR05MB3137.eurprd05.prod.outlook.com
+ ([fe80::bc5a:ba8b:1a69:91b6]) by AM4PR05MB3137.eurprd05.prod.outlook.com
+ ([fe80::bc5a:ba8b:1a69:91b6%6]) with mapi id 15.20.2032.019; Tue, 2 Jul 2019
+ 06:41:10 +0000
+From:   Leon Romanovsky <leonro@mellanox.com>
+To:     Sagi Grimberg <sagi@grimberg.me>
+CC:     Idan Burstein <idanb@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@mellanox.com>,
+        Or Gerlitz <ogerlitz@mellanox.com>,
+        Tal Gilboa <talgi@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        Yamin Friedman <yaminf@mellanox.com>,
+        Max Gurtovoy <maxg@mellanox.com>
+Subject: Re: [for-next V2 10/10] RDMA/core: Provide RDMA DIM support for ULPs
+Thread-Topic: [for-next V2 10/10] RDMA/core: Provide RDMA DIM support for ULPs
+Thread-Index: AQHVK5ipN3jilxV+8U2qs/jSBNzPpaas3rOAgACzgACACUbbgIAAEgGA
+Date:   Tue, 2 Jul 2019 06:41:09 +0000
+Message-ID: <20190702064107.GS4727@mtr-leonro.mtl.com>
+References: <20190625205701.17849-1-saeedm@mellanox.com>
+ <20190625205701.17849-11-saeedm@mellanox.com>
+ <adb3687a-6db3-b1a4-cd32-8b4889550c81@grimberg.me>
+ <AM5PR0501MB248327B260F97EF97CD5B80EC5E20@AM5PR0501MB2483.eurprd05.prod.outlook.com>
+ <9d26c90c-8e0b-656f-341f-a67251549126@grimberg.me>
+In-Reply-To: <9d26c90c-8e0b-656f-341f-a67251549126@grimberg.me>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: AM6P195CA0051.EURP195.PROD.OUTLOOK.COM
+ (2603:10a6:209:87::28) To AM4PR05MB3137.eurprd05.prod.outlook.com
+ (2603:10a6:205:3::14)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=leonro@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [37.142.3.125]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: fe5d869e-9ebc-488f-5f65-08d6feb84489
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR05MB3267;
+x-ms-traffictypediagnostic: AM4PR05MB3267:
+x-microsoft-antispam-prvs: <AM4PR05MB32672840F8D4A1E400AF67BAB0F80@AM4PR05MB3267.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 008663486A
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(396003)(136003)(39860400002)(376002)(366004)(189003)(199004)(6512007)(316002)(6246003)(9686003)(486006)(71190400001)(33656002)(476003)(14454004)(71200400001)(107886003)(76176011)(446003)(52116002)(54906003)(4326008)(53936002)(99286004)(14444005)(256004)(26005)(5660300002)(11346002)(186003)(68736007)(305945005)(25786009)(6506007)(81156014)(2906002)(66446008)(64756008)(1076003)(73956011)(66556008)(66476007)(6916009)(386003)(8676002)(81166006)(6436002)(229853002)(6486002)(478600001)(8936002)(66946007)(102836004)(86362001)(3846002)(66066001)(7736002)(6116002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR05MB3267;H:AM4PR05MB3137.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 8lhCUANWc/d33Xukf18ceduC+WIBrDWTxQnRcZvt6WdYFBzi9Zy4T0jFxSpwJiM9bGfC6L4U0rsFv9BxUA4yz7PVzpflceKotIaaL2kPoeuZ7H5YeB/LAAfXpa6rWqUHno4Db77E2QL/AwabzGJM0fVx9ML35tDlWYHqS2Cj4aoasYO527IL0XyGmzT69J4fO9iIrHF3PeAFIXUzXBRANDSZWUqet8+iCUfiHG/ujMb21I1B4++OdKa7+J607ik+aXOe7fl3busUUZYn4Y1jYeNgNHgx85KdiE+1ckKntUhsx7lH3h2VGjxoSaGEl89mbdQtLmZnqeQZOcQx/O9hrt0+84qc+gmHtB0yAjHZ3rwTi6iPYDYmffwryGe6Q/helm8VcnlIFax7I8XZFNGPfTASi6GYNvhu+k7p/+H55cU=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <99AC63E018BA7C40B5DC3552DAB7F0E2@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.12.1 (2019-06-15)
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fe5d869e-9ebc-488f-5f65-08d6feb84489
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Jul 2019 06:41:10.0063
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: leonro@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR05MB3267
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[This email was generated by a script.  Let me know if you have any suggestions
-to make it better, or if you want it re-generated with the latest status.]
+On Mon, Jul 01, 2019 at 10:36:41PM -0700, Sagi Grimberg wrote:
+> Hey Idan,
+>
+> > " Please don't. This is a bad choice to opt it in by default."
+> >
+> > I disagree here. I'd prefer Linux to have good out of the box experienc=
+e (e.g. reach 100G in 4K NVMeOF on Intel servers) with the default paramete=
+rs. Especially since Yamin have shown it is beneficial / not hurting in ter=
+ms of performance for variety of use cases. The whole concept of DIM is tha=
+t it adapts to the workload requirements in terms of bandwidth and latency.
+>
+> Well, its a Mellanox device driver after all.
+>
+> But do note that by far, the vast majority of users are not saturating
+> 100G of 4K I/O. The absolute vast majority of users are primarily
+> sensitive to synchronous QD=3D1 I/O latency, and when the workload
+> is much more dynamic than the synthetic 100%/50%/0% read mix.
+>
+> As much as I'm a fan (IIRC I was the one giving a first pass at this),
+> the dim default opt-in is not only not beneficial, but potentially
+> harmful to the majority of users out-of-the-box experience.
+>
+> Given that this is a fresh code with almost no exposure, and that was
+> not tested outside of Yamin running limited performance testing, I think
+> it would be a mistake to add it as a default opt-in, that can come as an
+> incremental stage.
+>
+> Obviously, I cannot tell what Mellanox should/shouldn't do in its own
+> device driver of course, but I just wanted to emphasize that I think
+> this is a mistake.
 
-Of the currently open syzbot reports against the upstream kernel, I've manually
-marked 5 of them as possibly being bugs in the "net/hsr" subsystem.  I've listed
-these reports below, sorted by an algorithm that tries to list first the reports
-most likely to be still valid, important, and actionable.
+Hi Sagi,
 
-Of these 5 bugs, 4 were seen in mainline in the last week.
+I'm not sharing your worries about bad out-of-the-box experience for a
+number of reasons.
 
-If you believe a bug is no longer valid, please close the syzbot report by
-sending a '#syz fix', '#syz dup', or '#syz invalid' command in reply to the
-original thread, as explained at https://goo.gl/tpsmEJ#status
+First of all, this code is part of upstream kernel and will take time
+till users actually start to use it as is and not as part of some distro
+backports or MOFED packages.
 
-If you believe I misattributed a bug to the "net/hsr" subsystem, please let me
-know, and if possible forward the report to the correct people or mailing list.
+Second, Yamin did extensive testing and worked very close with Or G.
+and I have very high confident in the results of their team work.
 
-Here are the bugs:
+Third (outcome of first), actually the opposite is true, the setting
+this option as a default will give us more time to fix/adjust code if
+needed, before users will see any potential degradation.
 
---------------------------------------------------------------------------------
-Title:              KMSAN: uninit-value in hsr_register_frame_in
-Last occurred:      1 day ago
-Reported:           140 days ago
-Branches:           Mainline (with KMSAN patches)
-Dashboard link:     https://syzkaller.appspot.com/bug?id=2ad30d6cef7180728e401174df99d001bae578fe
-Original thread:    https://lkml.kernel.org/lkml/0000000000003bb1540581a55575@google.com/T/#u
+>
+> > Moreover, net-dim is enabled by default, I don't see why RDMA is differ=
+ent.
+>
+> Very different animals.
 
-This bug has a C reproducer.
+Yes and no, the logic behind is the same and both solutions have same
+constrains of throughput vs. latency.
 
-No one replied to the original thread for this bug.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+b8152ab439b9c5174ffd@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000003bb1540581a55575@google.com
-
---------------------------------------------------------------------------------
-Title:              WARNING in hsr_addr_subst_dest
-Last occurred:      0 days ago
-Reported:           180 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=924b5574f42ebeddc94fad06f2fa329b199d58d3
-Original thread:    https://lkml.kernel.org/lkml/0000000000001b1a1d057e776c92@google.com/T/#u
-
-This bug has a C reproducer.
-
-syzbot has bisected this bug, but I think the bisection result is incorrect.
-
-The original thread for this bug received 2 replies; the last was 111 days ago.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+b92e4f1472a54e1c7dec@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000001b1a1d057e776c92@google.com
-
---------------------------------------------------------------------------------
-Title:              WARNING in hsr_forward_skb
-Last occurred:      0 days ago
-Reported:           180 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=13de4605e86ebcf39093017dc255aa0fd6c2f12d
-Original thread:    https://lkml.kernel.org/lkml/0000000000009f94c1057e772431@google.com/T/#u
-
-This bug has a C reproducer.
-
-syzbot has bisected this bug, but I think the bisection result is incorrect.
-
-The original thread for this bug received 4 replies; the last was 110 days ago.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+fdce8f2a8903f3ba0e6b@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000009f94c1057e772431@google.com
-
---------------------------------------------------------------------------------
-Title:              memory leak in hsr_create_self_node
-Last occurred:      4 days ago
-Reported:           35 days ago
-Branches:           Mainline
-Dashboard link:     https://syzkaller.appspot.com/bug?id=291f241bec2fdf1bc2418cca91cc1d4e7f36027b
-Original thread:    https://lkml.kernel.org/lkml/000000000000ea09dd0589e3af1a@google.com/T/#u
-
-This bug has a C reproducer.
-
-No one has replied to the original thread for this bug yet.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+c6167ec3de7def23d1e8@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000ea09dd0589e3af1a@google.com
-
---------------------------------------------------------------------------------
-Title:              BUG: corrupted list in hsr_prune_nodes
-Last occurred:      78 days ago
-Reported:           78 days ago
-Branches:           bpf-next
-Dashboard link:     https://syzkaller.appspot.com/bug?id=583fd57905151af7bc057ec47208d4873e953db7
-Original thread:    https://lkml.kernel.org/lkml/000000000000ca5ede0586804c42@google.com/T/#u
-
-Unfortunately, this bug does not have a reproducer.
-
-No one has replied to the original thread for this bug yet.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+99ad9e40137a83c70ee3@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000ca5ede0586804c42@google.com
-
+Thanks
