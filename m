@@ -2,96 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AF365D92D
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 02:36:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69D5A5DA30
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 03:03:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727138AbfGCAgS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 20:36:18 -0400
-Received: from mail-qk1-f171.google.com ([209.85.222.171]:39326 "EHLO
-        mail-qk1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727072AbfGCAgS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 20:36:18 -0400
-Received: by mail-qk1-f171.google.com with SMTP id i125so400946qkd.6
-        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 17:36:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=CO/zkcBTjGj/Gk7ldnLr/giPGw3ebAPAi0AoWNxKN14=;
-        b=iAe0fDD2GjdbVBEEajN/7v4xcF+apwCIdhlHmAPfp32G46Eimj8j/r3yj0R+GSmT27
-         DEsDTz7TQTzHuOTF79TPQJhhLElo8jWRz5nWd09WjiFGu38UwH6OS8GHllZywNbt8DaU
-         6htWRIMwclPk11epzSccu8fWGLc/D+0Qe2qzE1hL+Mz8j5ZEgv3Gg+NHvhlscWDhULuc
-         dBFbrrR4qzB04lu1khDxRLinghRaP4enJrqO/wt46AkLyt/bUcl0Frd65DSaVX0DAoTi
-         0NVl+pNmkGg/ImfroA1uGP2SvXJOYqdxWb7xifIPLTqJxhZOJ0AtZi/oSn1mdVP4CUE3
-         n7BA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=CO/zkcBTjGj/Gk7ldnLr/giPGw3ebAPAi0AoWNxKN14=;
-        b=jSg0CO81eafXRBwfVFq4jkssQ2B1sDBbL9u19iVXpV3Bzks+1rlo8IRbhBZmXKfTtn
-         vtc2PeIEpQK5cfz9J4HEp0z3yBylsFgcjkG8vfXkGO4nwsQ7bAC3JdCjFZfV4agXyM5n
-         3O2k/X/OtMR+dnNzVF3elv+zLnWtfs9zbfuNYyknbsRZZpB1t78SDO+XeHLXZJgHcjSw
-         2mHWgLGR8Rtk39RhTQsw3AXgcD7W6N9FoNyJ3sQcOYXQtfFri/3aVjFNkDyM6k8NEuYb
-         ckZD8jOJJoT0FfkzpNj5fEGCnFu/yGnuMeBnUPeHaMKYpIIV2zdf+MHxIta+mGnwwFXW
-         ILug==
-X-Gm-Message-State: APjAAAW2sq4oCe6HCsoaO44kbUss7toO6UeFonpgcMg/jWIeya4vGh5m
-        3XVAAHDu/b5mX3MUVuvOcKPQXj1lIOE=
-X-Google-Smtp-Source: APXvYqyOOTWQktUNqY+v5vSmWgwE1pjmNiVDRezZZGQA87U7hS/rNXdtBhG/UVHlhp4IhyFmAmNjIA==
-X-Received: by 2002:a37:895:: with SMTP id 143mr28218801qki.38.1562110978022;
-        Tue, 02 Jul 2019 16:42:58 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id j8sm149305qki.85.2019.07.02.16.42.57
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 02 Jul 2019 16:42:57 -0700 (PDT)
-Date:   Tue, 2 Jul 2019 16:42:52 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     Jiri Pirko <jiri@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: Re: [PATCH net-next 1/3] devlink: Introduce PCI PF port flavour and
- port attribute
-Message-ID: <20190702164252.6d4fe5e3@cakuba.netronome.com>
-In-Reply-To: <AM0PR05MB4866C19C9E6ED767A44C3064D1F80@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <20190701122734.18770-1-parav@mellanox.com>
-        <20190701122734.18770-2-parav@mellanox.com>
-        <20190701162650.17854185@cakuba.netronome.com>
-        <AM0PR05MB4866085BC8B082EFD5B59DD2D1F80@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190702104711.77618f6a@cakuba.netronome.com>
-        <AM0PR05MB4866C19C9E6ED767A44C3064D1F80@AM0PR05MB4866.eurprd05.prod.outlook.com>
-Organization: Netronome Systems, Ltd.
+        id S1727118AbfGCBDn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 21:03:43 -0400
+Received: from mail.us.es ([193.147.175.20]:47694 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727082AbfGCBDn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jul 2019 21:03:43 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 30E1D80786
+        for <netdev@vger.kernel.org>; Wed,  3 Jul 2019 01:46:32 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 21731202D2
+        for <netdev@vger.kernel.org>; Wed,  3 Jul 2019 01:46:32 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 15D71DA801; Wed,  3 Jul 2019 01:46:32 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id EE809DA704;
+        Wed,  3 Jul 2019 01:46:29 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Wed, 03 Jul 2019 01:46:29 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id CD7B34265A2F;
+        Wed,  3 Jul 2019 01:46:29 +0200 (CEST)
+Date:   Wed, 3 Jul 2019 01:46:29 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     wenxu@ucloud.cn
+Cc:     fw@strlen.de, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 1/2 nf-next v3] netfilter: nft_meta: Add
+ NFT_META_BRI_IIFVPROTO support
+Message-ID: <20190702234629.zgjpu664dr6jgawc@salvia>
+References: <1561682975-21790-1-git-send-email-wenxu@ucloud.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1561682975-21790-1-git-send-email-wenxu@ucloud.cn>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2 Jul 2019 18:50:31 +0000, Parav Pandit wrote:
-> > > I didn't see any immediate need to report, at the same time didn't
-> > > find any reason to treat such port flavours differently than existing
-> > > one. It just gives a clear view of the device's eswitch. Might find it
-> > > useful during debugging while inspecting device internal tables..  
-> > 
-> > PFs and VFs ports are not tied to network ports in switchdev mode.
-> > You have only one network port under a devlink instance AFAIR, anyway.
-> >   
-> I am not sure what do you mean by network port.
-
-DEVLINK_PORT_FLAVOUR_PHYSICAL
-
-> Do you intent to see a physical port that connects to physical network?
+On Fri, Jun 28, 2019 at 08:49:34AM +0800, wenxu@ucloud.cn wrote:
+> From: wenxu <wenxu@ucloud.cn>
 > 
-> As I described in the comment of the PF and VF flavour, it is an eswitch port.
-> I have shown the diagram also of the eswitch in the cover letter.
-> Port_number doesn't have to a physical port. Flavour describe what
-> port type is and number says what is the eswitch port number.
-> Hope it clarifies.
+> This patch provide a meta to get the bridge vlan proto
+> 
+> nft add rule bridge firewall zones counter meta br_vlan_proto 0x8100
 
-I understand what you're doing.  If you want to expose some device
-specific eswitch port ID please add a new attribute for that.
-The fact that that ID may match port_number for your device today 
-is coincidental.  port_number, and split attributes should not be
-exposed for PCI ports.
+Applied, thanks.
