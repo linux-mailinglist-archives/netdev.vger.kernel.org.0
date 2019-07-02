@@ -2,226 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B83875CFD4
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 14:54:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1098B5CFEF
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 15:00:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726980AbfGBMy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 08:54:58 -0400
-Received: from albert.telenet-ops.be ([195.130.137.90]:58288 "EHLO
-        albert.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726820AbfGBMy5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 08:54:57 -0400
-Received: from ramsan ([84.194.98.4])
-        by albert.telenet-ops.be with bizsmtp
-        id Xoup2000305gfCL06oup4h; Tue, 02 Jul 2019 14:54:54 +0200
-Received: from geert (helo=localhost)
-        by ramsan with local-esmtp (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1hiIJ7-0001Wd-2N; Tue, 02 Jul 2019 14:54:49 +0200
-Date:   Tue, 2 Jul 2019 14:54:49 +0200 (CEST)
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-To:     Mahesh Bandewar <maheshb@google.com>
-cc:     Netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        David Miller <davem@davemloft.net>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Daniel Axtens <dja@axtens.net>,
-        Mahesh Bandewar <mahesh@bandewar.net>,
-        "Paul E. McKenney" <paulmck@linux.ibm.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: suspicious RCU usage (was: Re: [PATCHv3 next 1/3] loopback: create
- blackhole net device similar to loopack.)
-In-Reply-To: <20190701213849.102759-1-maheshb@google.com>
-Message-ID: <alpine.DEB.2.21.1907021450320.5764@ramsan.of.borg>
-References: <20190701213849.102759-1-maheshb@google.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        id S1726702AbfGBNAp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 09:00:45 -0400
+Received: from forward101o.mail.yandex.net ([37.140.190.181]:40011 "EHLO
+        forward101o.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726167AbfGBNAp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 09:00:45 -0400
+X-Greylist: delayed 323 seconds by postgrey-1.27 at vger.kernel.org; Tue, 02 Jul 2019 09:00:44 EDT
+Received: from mxback2o.mail.yandex.net (mxback2o.mail.yandex.net [IPv6:2a02:6b8:0:1a2d::1c])
+        by forward101o.mail.yandex.net (Yandex) with ESMTP id 3ED3E3C003CD
+        for <netdev@vger.kernel.org>; Tue,  2 Jul 2019 15:55:20 +0300 (MSK)
+Received: from smtp4o.mail.yandex.net (smtp4o.mail.yandex.net [2a02:6b8:0:1a2d::28])
+        by mxback2o.mail.yandex.net (nwsmtp/Yandex) with ESMTP id rmrFR1Rjr7-tKue70Qb;
+        Tue, 02 Jul 2019 15:55:20 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.ru; s=mail; t=1562072120;
+        bh=yQXUyy0AsGu3g/kNCiWJzkpPEUubO8yGCeXG5OLp1uo=;
+        h=In-Reply-To:From:To:Date:References:Subject:Message-ID;
+        b=BRsgqzFA34M92V5SGGuNSJQBXCReJ2HAORcF28JfI0VBujsn2kcoOYYJQgRwJnuBR
+         F0r8XeVyCK/Wfs00zXMAhHWilnUl8t4R1pKQ8VUYS7R5LVdtfRb4bGOf5L32PKHpVZ
+         g07G7QNMXQgVv+0ETEbg66ihEUTriWpiot7MInVE=
+Authentication-Results: mxback2o.mail.yandex.net; dkim=pass header.i=@yandex.ru
+Received: by smtp4o.mail.yandex.net (nwsmtp/Yandex) with ESMTPSA id a9JB0mSfq3-tJ94otW6;
+        Tue, 02 Jul 2019 15:55:19 +0300
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (Client certificate not present)
+Subject: [PATCH] User mode linux bump maximum MTU tuntap interface [RESAND]
+References: <54cee375-f1c3-a2b3-ea89-919b0af60433@yandex.ru>
+To:     netdev@vger.kernel.org
+From:   =?UTF-8?B?0JDQu9C10LrRgdC10Lk=?= <ne-vlezay80@yandex.ru>
+X-Forwarded-Message-Id: <54cee375-f1c3-a2b3-ea89-919b0af60433@yandex.ru>
+Message-ID: <fc526c78-2d3f-90ca-8317-a89eb653cbf9@yandex.ru>
+Date:   Tue, 2 Jul 2019 15:55:17 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+In-Reply-To: <54cee375-f1c3-a2b3-ea89-919b0af60433@yandex.ru>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
- 	Hi Mahesh,
+Hello, the parameter  ETH_MAX_PACKET limited to 1500 bytes is the not
+support jumbo frames.
 
-On Mon, 1 Jul 2019, Mahesh Bandewar wrote:
-> Create a blackhole net device that can be used for "dead"
-> dst entries instead of loopback device. This blackhole device differs
-> from loopback in few aspects: (a) It's not per-ns. (b)  MTU on this
-> device is ETH_MIN_MTU (c) The xmit function is essentially kfree_skb().
-> and (d) since it's not registered it won't have ifindex.
->
-> Lower MTU effectively make the device not pass the MTU check during
-> the route check when a dst associated with the skb is dead.
->
-> Signed-off-by: Mahesh Bandewar <maheshb@google.com>
-
-This is now commit 4de83b88c66a1e4d ("loopback: create blackhole net
-device similar to loopack.") in net-next, and causes the following
-warning on arm64:
-
-     WARNING: suspicious RCU usage
-     5.2.0-rc6-arm64-renesas-01699-g4de83b88c66a1e4d #263 Not tainted
-     -----------------------------
-     include/linux/rtnetlink.h:85 suspicious rcu_dereference_protected() usage!
-
-     other info that might help us debug this:
+This patch change ETH_MAX_PACKET the 65535 bytes to jumbo frame support
+with user mode linux tuntap driver.
 
 
-     rcu_scheduler_active = 2, debug_locks = 1
-     no locks held by swapper/0/1.
+PATCH:
 
-     stack backtrace:
-     CPU: 2 PID: 1 Comm: swapper/0 Not tainted 5.2.0-rc6-arm64-renesas-01699-g4de83b88c66a1e4d #263
-     Hardware name: Renesas Salvator-X 2nd version board based on r8a7795 ES2.0+ (DT)
-     Call trace:
-      dump_backtrace+0x0/0x148
-      show_stack+0x14/0x20
-      dump_stack+0xd4/0x11c
-      lockdep_rcu_suspicious+0xcc/0x110
-      dev_init_scheduler+0x114/0x150
-      blackhole_netdev_init+0x40/0x80
-      do_one_initcall+0x178/0x37c
-      kernel_init_freeable+0x490/0x530
-      kernel_init+0x10/0x100
-      ret_from_fork+0x10/0x1c
+-------------------
 
 
-> ---
-> v1->v2->v3
->  no change
->
-> drivers/net/loopback.c    | 76 ++++++++++++++++++++++++++++++++++-----
-> include/linux/netdevice.h |  2 ++
-> 2 files changed, 69 insertions(+), 9 deletions(-)
->
-> diff --git a/drivers/net/loopback.c b/drivers/net/loopback.c
-> index 87d361666cdd..3b39def5471e 100644
-> --- a/drivers/net/loopback.c
-> +++ b/drivers/net/loopback.c
-> @@ -55,6 +55,13 @@
-> #include <net/net_namespace.h>
-> #include <linux/u64_stats_sync.h>
->
-> +/* blackhole_netdev - a device used for dsts that are marked expired!
-> + * This is global device (instead of per-net-ns) since it's not needed
-> + * to be per-ns and gets initialized at boot time.
-> + */
-> +struct net_device *blackhole_netdev;
-> +EXPORT_SYMBOL(blackhole_netdev);
-> +
-> /* The higher levels take care of making this non-reentrant (it's
->  * called with bh's disabled).
->  */
-> @@ -150,12 +157,14 @@ static const struct net_device_ops loopback_ops = {
-> 	.ndo_set_mac_address = eth_mac_addr,
-> };
->
-> -/* The loopback device is special. There is only one instance
-> - * per network namespace.
-> - */
-> -static void loopback_setup(struct net_device *dev)
-> +static void gen_lo_setup(struct net_device *dev,
-> +			 unsigned int mtu,
-> +			 const struct ethtool_ops *eth_ops,
-> +			 const struct header_ops *hdr_ops,
-> +			 const struct net_device_ops *dev_ops,
-> +			 void (*dev_destructor)(struct net_device *dev))
-> {
-> -	dev->mtu		= 64 * 1024;
-> +	dev->mtu		= mtu;
-> 	dev->hard_header_len	= ETH_HLEN;	/* 14	*/
-> 	dev->min_header_len	= ETH_HLEN;	/* 14	*/
-> 	dev->addr_len		= ETH_ALEN;	/* 6	*/
-> @@ -174,11 +183,20 @@ static void loopback_setup(struct net_device *dev)
-> 		| NETIF_F_NETNS_LOCAL
-> 		| NETIF_F_VLAN_CHALLENGED
-> 		| NETIF_F_LOOPBACK;
-> -	dev->ethtool_ops	= &loopback_ethtool_ops;
-> -	dev->header_ops		= &eth_header_ops;
-> -	dev->netdev_ops		= &loopback_ops;
-> +	dev->ethtool_ops	= eth_ops;
-> +	dev->header_ops		= hdr_ops;
-> +	dev->netdev_ops		= dev_ops;
-> 	dev->needs_free_netdev	= true;
-> -	dev->priv_destructor	= loopback_dev_free;
-> +	dev->priv_destructor	= dev_destructor;
-> +}
-> +
-> +/* The loopback device is special. There is only one instance
-> + * per network namespace.
-> + */
-> +static void loopback_setup(struct net_device *dev)
-> +{
-> +	gen_lo_setup(dev, (64 * 1024), &loopback_ethtool_ops, &eth_header_ops,
-> +		     &loopback_ops, loopback_dev_free);
-> }
->
-> /* Setup and register the loopback device. */
-> @@ -213,3 +231,43 @@ static __net_init int loopback_net_init(struct net *net)
-> struct pernet_operations __net_initdata loopback_net_ops = {
-> 	.init = loopback_net_init,
-> };
-> +
-> +/* blackhole netdevice */
-> +static netdev_tx_t blackhole_netdev_xmit(struct sk_buff *skb,
-> +					 struct net_device *dev)
-> +{
-> +	kfree_skb(skb);
-> +	net_warn_ratelimited("%s(): Dropping skb.\n", __func__);
-> +	return NETDEV_TX_OK;
-> +}
-> +
-> +static const struct net_device_ops blackhole_netdev_ops = {
-> +	.ndo_start_xmit = blackhole_netdev_xmit,
-> +};
-> +
-> +/* This is a dst-dummy device used specifically for invalidated
-> + * DSTs and unlike loopback, this is not per-ns.
-> + */
-> +static void blackhole_netdev_setup(struct net_device *dev)
-> +{
-> +	gen_lo_setup(dev, ETH_MIN_MTU, NULL, NULL, &blackhole_netdev_ops, NULL);
-> +}
-> +
-> +/* Setup and register the blackhole_netdev. */
-> +static int __init blackhole_netdev_init(void)
-> +{
-> +	blackhole_netdev = alloc_netdev(0, "blackhole_dev", NET_NAME_UNKNOWN,
-> +					blackhole_netdev_setup);
-> +	if (!blackhole_netdev)
-> +		return -ENOMEM;
-> +
-> +	dev_init_scheduler(blackhole_netdev);
-> +	dev_activate(blackhole_netdev);
-> +
-> +	blackhole_netdev->flags |= IFF_UP | IFF_RUNNING;
-> +	dev_net_set(blackhole_netdev, &init_net);
-> +
-> +	return 0;
-> +}
-> +
-> +device_initcall(blackhole_netdev_init);
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index eeacebd7debb..88292953aa6f 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -4870,4 +4870,6 @@ do {								\
-> #define PTYPE_HASH_SIZE	(16)
-> #define PTYPE_HASH_MASK	(PTYPE_HASH_SIZE - 1)
->
-> +extern struct net_device *blackhole_netdev;
-> +
-> #endif	/* _LINUX_NETDEVICE_H */
->
-Gr{oetje,eeting}s,
-
- 						Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
- 							    -- Linus Torvalds
+diff -ruNP ../linux_orig/linux-5.1/arch/um/include/shared/net_user.h
+./arch/um/include/shared/net_user.h
+--- a/arch/um/include/shared/net_user.h    2019-05-06 00:42:58.000000000
++0000
++++ b/arch/um/include/shared/net_user.h    2019-07-02 07:14:13.593333356
++0000
+@@ -9,7 +9,7 @@
+ #define ETH_ADDR_LEN (6)
+ #define ETH_HEADER_ETHERTAP (16)
+ #define ETH_HEADER_OTHER (26) /* 14 for ethernet + VLAN + MPLS for
+crazy people */
+-#define ETH_MAX_PACKET (1500)
++#define ETH_MAX_PACKET (65535)
+ 
+ #define UML_NET_VERSION (4)
+ 
+-------------------
+ 
 
