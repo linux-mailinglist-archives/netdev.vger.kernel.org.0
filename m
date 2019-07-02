@@ -2,83 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A3DA45D40F
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 18:14:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB5845D414
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 18:15:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727050AbfGBQO2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 12:14:28 -0400
-Received: from mail-pf1-f201.google.com ([209.85.210.201]:37340 "EHLO
-        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726652AbfGBQO2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 12:14:28 -0400
-Received: by mail-pf1-f201.google.com with SMTP id x18so11122081pfj.4
-        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 09:14:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=qE7suO2UFdUOl1bpnieLTUEEVsWprC362QKm2f24m1I=;
-        b=XiQtO1DME3wcd5SCB4YdN1LYplzMNGMSuGLeXa2eYVb9gQ5OHo2Vi/R6oJr7RstZH+
-         oq+fuQHJlGp6dowSzFHdU5ndkxOjHcH37fw2yJC+uQJjPr/1OKtYVdbdSryE8yhFqOKr
-         HzJLgjEjekbpC9ghDnwJcJMxQm1LCyBak0cnXbYI/Znray5/Q4FyKtrAfg7wMyixW4PG
-         qCgHPbDNXAA7WGF+LT1nJ/LSDF33vLsRxOAPPpUzG1TrPNi59SdEavxo+EZqV6IESgHx
-         vQ8TWq9sQRyzGVeJCm5R/8n5fqlGg0ob9BlZAWDpbPltrmboYvdC7z3RxWrf+C+B8Vm+
-         Vlyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=qE7suO2UFdUOl1bpnieLTUEEVsWprC362QKm2f24m1I=;
-        b=BVP+EsT6fkIhR3tttSWd2BynapTcDr4WeRn/hJZRX1syc1CbTsAWFy2+dA4nKJ0asf
-         /czY8wjdyaHUVa6DGNFABsRa6PpTyFCOriNmgNSzDQD7mfqGeqKbhMl7rod9lcR2DQwg
-         Pvx9VMpTV92AYBXYlUpFVI+vqw5K6YcUQTjqwpNxIUDIHzDUOUbecf84wqUhfOxjT8BX
-         qJum8+HvXP5xPzCEJqskp8Ckp8A3nUaLu68vKZOQ98ij3g3ycIC5G5A6+1POV+ey9cIF
-         R+T3uOQyMUTPNZq0Q0UKEFFX2DYtwvW4dXdjwZJW4mTfWolK8KdA+QhATv5QP4/qr5/7
-         9sVA==
-X-Gm-Message-State: APjAAAWE2PqGIOUGMXHxm2JQZluOvFM+cjBLFJgp10PdPacuwDVi6q6s
-        k5dwA8DlqWpBTbGRFebnFjafmyfi7tC8uYdtIJZTSKPQzA5kiy9GEAEF3o69BwzRH1ZVTLqd55P
-        BvRdLCF32yWmdncefrqA7ZTnbVusAprXlhe5w46Y8UYU7KYDowHs2tQ==
-X-Google-Smtp-Source: APXvYqwznCVcMsVuucOGPPCknJOX6GBJT2rd+FNqfh4ENBG7v6QZ/GecD3M22ouChVCv0SvTVNexja8=
-X-Received: by 2002:a63:490a:: with SMTP id w10mr30955818pga.6.1562084066857;
- Tue, 02 Jul 2019 09:14:26 -0700 (PDT)
-Date:   Tue,  2 Jul 2019 09:14:03 -0700
-In-Reply-To: <20190702161403.191066-1-sdf@google.com>
-Message-Id: <20190702161403.191066-9-sdf@google.com>
-Mime-Version: 1.0
-References: <20190702161403.191066-1-sdf@google.com>
-X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
-Subject: [PATCH bpf-next v2 8/8] samples/bpf: fix tcp_bpf.readme detach command
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        Stanislav Fomichev <sdf@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Yuchung Cheng <ycheng@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726591AbfGBQPq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 12:15:46 -0400
+Received: from xavier.telenet-ops.be ([195.130.132.52]:45774 "EHLO
+        xavier.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726404AbfGBQPq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 12:15:46 -0400
+Received: from ramsan ([84.194.98.4])
+        by xavier.telenet-ops.be with bizsmtp
+        id XsFi2000t05gfCL01sFiK5; Tue, 02 Jul 2019 18:15:44 +0200
+Received: from geert (helo=localhost)
+        by ramsan with local-esmtp (Exim 4.90_1)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1hiLRW-0003TW-LY; Tue, 02 Jul 2019 18:15:42 +0200
+Date:   Tue, 2 Jul 2019 18:15:42 +0200 (CEST)
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        Tal Gilboa <talgi@mellanox.com>
+cc:     "David S. Miller" <davem@davemloft.net>,
+        Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@mellanox.com>,
+        Leon Romanovsky <leonro@mellanox.com>,
+        Or Gerlitz <ogerlitz@mellanox.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [for-next V2 06/10] linux/dim: Move implementation to .c files
+In-Reply-To: <20190625205701.17849-7-saeedm@mellanox.com>
+Message-ID: <alpine.DEB.2.21.1907021810220.13058@ramsan.of.borg>
+References: <20190625205701.17849-1-saeedm@mellanox.com> <20190625205701.17849-7-saeedm@mellanox.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Copy-paste, should be detach, not attach.
+ 	Hi Saeed, Tal,
 
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-Acked-by: Yuchung Cheng <ycheng@google.com>
----
- samples/bpf/tcp_bpf.readme | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Tue, 25 Jun 2019, Saeed Mahameed wrote:
+> From: Tal Gilboa <talgi@mellanox.com>
+>
+> Moved all logic from dim.h and net_dim.h to dim.c and net_dim.c.
+> This is both more structurally appealing and would allow to only
+> expose externally used functions.
+>
+> Signed-off-by: Tal Gilboa <talgi@mellanox.com>
+> Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 
-diff --git a/samples/bpf/tcp_bpf.readme b/samples/bpf/tcp_bpf.readme
-index fee746621aec..78e247f62108 100644
---- a/samples/bpf/tcp_bpf.readme
-+++ b/samples/bpf/tcp_bpf.readme
-@@ -25,4 +25,4 @@ attached to the cgroupv2).
- 
- To remove (unattach) a socket_ops BPF program from a cgroupv2:
- 
--  bpftool cgroup attach /tmp/cgroupv2/foo sock_ops pinned /sys/fs/bpf/tcp_prog
-+  bpftool cgroup detach /tmp/cgroupv2/foo sock_ops pinned /sys/fs/bpf/tcp_prog
--- 
-2.22.0.410.gd8fdbe21b5-goog
+This is now commit 4f75da3666c0c572 ("linux/dim: Move implementation to
+.c files") in net-next.
 
+> --- a/drivers/net/ethernet/broadcom/Kconfig
+> +++ b/drivers/net/ethernet/broadcom/Kconfig
+> @@ -8,6 +8,7 @@ config NET_VENDOR_BROADCOM
+> 	default y
+> 	depends on (SSB_POSSIBLE && HAS_DMA) || PCI || BCM63XX || \
+> 		   SIBYTE_SB1xxx_SOC
+> +	select DIMLIB
+
+Merely enabling a NET_VENDOR_* symbol should not enable inclusion of
+any additional code, cfr. the help text for the NET_VENDOR_BROADCOM
+option.
+
+Hence please move the select to the config symbol(s) for the driver(s)
+that need it.
+
+> --- a/lib/Kconfig
+> +++ b/lib/Kconfig
+> @@ -562,6 +562,14 @@ config SIGNATURE
+> 	  Digital signature verification. Currently only RSA is supported.
+> 	  Implementation is done using GnuPG MPI library
+>
+> +config DIMLIB
+> +	bool "DIM library"
+> +	default y
+
+Please drop this line, as optional library code should never be included
+by default.
+
+Thanks!
+
+Gr{oetje,eeting}s,
+
+ 						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+ 							    -- Linus Torvalds
