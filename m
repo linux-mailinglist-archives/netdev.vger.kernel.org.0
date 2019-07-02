@@ -2,138 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 472145D2AE
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 17:21:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1CF55D2AD
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 17:21:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727080AbfGBPVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 11:21:25 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:49862 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725972AbfGBPVZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 11:21:25 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x62FKKVD027998;
-        Tue, 2 Jul 2019 08:21:22 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0818;
- bh=vkx+RJXHCQ50F/GXEa5DKaagPgbdVNWq1BM62Nt1PXA=;
- b=T38W4+8ZRvssplr8vYGyLW8G24vCQukmbkiiDtmBgd4QQHDgSHE75mBQYwyA9hKxY+9N
- poi6q3E3OZhcqB75JiUoH0WOM7HikVMJvlq13kiDsNnW8pjX2YL6zTeFI5jb0qeuMQmH
- ywzHVfPbSJJ8jjp56CSzIaFFeq+12NnXQLzcU8iDqXkqt0z9vNvnHvgB9i3znH/knUsA
- zVQ7ItXkDS77bFB5WBrkPht424LnQt7pN/z5ORSzX35uoDW+cTLz9Eh9Nsbw2zK1QNvA
- VfwDAK6r++iJmRvjuln+B6blWc4EJxZlUrBPWPlbTNxqQ9q+CQzrAMZ5TWnFZ/pYpORM Ww== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0a-0016f401.pphosted.com with ESMTP id 2tg4jrsjsf-6
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 02 Jul 2019 08:21:22 -0700
-Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Tue, 2 Jul
- 2019 08:21:06 -0700
-Received: from maili.marvell.com (10.93.176.43) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server id 15.0.1367.3 via Frontend
- Transport; Tue, 2 Jul 2019 08:21:06 -0700
-Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
-        by maili.marvell.com (Postfix) with ESMTP id B725A3F703F;
-        Tue,  2 Jul 2019 08:21:06 -0700 (PDT)
-Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id x62FL6oP031765;
-        Tue, 2 Jul 2019 08:21:06 -0700
-Received: (from root@localhost)
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id x62FL5Ed031764;
-        Tue, 2 Jul 2019 08:21:05 -0700
-From:   Sudarsana Reddy Kalluru <skalluru@marvell.com>
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <mkalderon@marvell.com>,
-        <aelior@marvell.com>, <jiri@resnulli.us>
-Subject: [PATCH net-next 1/1] devlink: Add APIs to publish/unpublish the port parameters.
-Date:   Tue, 2 Jul 2019 08:20:56 -0700
-Message-ID: <20190702152056.31728-1-skalluru@marvell.com>
-X-Mailer: git-send-email 2.12.0
+        id S1727029AbfGBPVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 11:21:18 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:34536 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725996AbfGBPVR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 11:21:17 -0400
+Received: by mail-lj1-f193.google.com with SMTP id p17so17332350ljg.1
+        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 08:21:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=0TkSkngZdck7UKTXKBmDJA2j9VIjGdFPAA61I5eODcU=;
+        b=KTlThSTnOE6lWvTUThYJDYVL/7CL8piTPRnDz6JcXOmmAg8MNvTDGEBh8ippIy7YMi
+         xgN+zOYARvDCuA0Vk6ljON7ABQTDsqcUuUeKhZMmXLP9ecr7ak0M5/QeRB+YGTc5dQMx
+         Pc7Y8nQkEudHGoAb3DpBdRcqlh+XohQsCGZvqzlyAgpA3ttu96IQYASM0jyHg6yRlwRI
+         Wyh1eMycvU7sT/jiWnY/4H15x2BS17oiy5NLwQhxmMuDpkzWJfPrh39Qv3A7EE2u4owr
+         cxuWzUVVO0PZprn2VzEpqbOOeuk786a+1HLhu25036vorlCqRoTzoUlT5Rwj8OrC0eOo
+         uEtg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to:user-agent;
+        bh=0TkSkngZdck7UKTXKBmDJA2j9VIjGdFPAA61I5eODcU=;
+        b=sDE4l7KpxyA5QjGRizuOxghecNMhFVdz4KkbFMuImhHj1f6+F/0fyV+Kj4VSxbluV0
+         6EK+2WXaRSUP5fIednCwGrwia2yk2DS/9oqdQDFBMWtcZFDxv+lESni9zvpbUax+Klme
+         bLPJ66qXddWoAznMoFgjwYC9wdad7oCJveGdFJV4xcGPVa7T7DkweInzsJcJ2aA7cwlA
+         i6lfZhnMKlSwuCRuUu2txP7SpFds9pX2CrVigNzbECAX9kLlpxfAAU2kq4pyz9sE7ZGE
+         M5bv4X8J704Bk/oQgktsn6zD1BLatq1xeDnLSlCgD8PQHByQGtJzm4oV6T7oc/JY/mYb
+         VsTw==
+X-Gm-Message-State: APjAAAW06BX364FEoMc7Uc4b4a987w0QrISOl3PLjHxwfxwfyUnS1NA2
+        jj9eszEnqPMzvUPc0CghY5kSFA==
+X-Google-Smtp-Source: APXvYqxO5e9n3+IyfuLwxEvPs4G0YXZWy2MJuHoj1o6g3GQB3lVvbxA4zPP4MFCS6YZb4/Wnfii+Yw==
+X-Received: by 2002:a2e:9ad1:: with SMTP id p17mr18019700ljj.34.1562080876092;
+        Tue, 02 Jul 2019 08:21:16 -0700 (PDT)
+Received: from khorivan (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
+        by smtp.gmail.com with ESMTPSA id t21sm3009177lfd.85.2019.07.02.08.21.15
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 02 Jul 2019 08:21:15 -0700 (PDT)
+Date:   Tue, 2 Jul 2019 18:21:13 +0300
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     netdev@vger.kernel.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        grygorii.strashko@ti.com, jakub.kicinski@netronome.com,
+        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
+Subject: Re: [PATCH] net: core: page_pool: add user refcnt and reintroduce
+ page_pool_destroy
+Message-ID: <20190702152112.GG4510@khorivan>
+Mail-Followup-To: Jesper Dangaard Brouer <brouer@redhat.com>,
+        netdev@vger.kernel.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        grygorii.strashko@ti.com, jakub.kicinski@netronome.com,
+        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
+References: <20190702153902.0e42b0b2@carbon>
+ <156207778364.29180.5111562317930943530.stgit@firesoul>
+ <20190702144426.GD4510@khorivan>
+ <20190702165230.6caa36e3@carbon>
+ <20190702145612.GF4510@khorivan>
+ <20190702171029.76c60538@carbon>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-02_08:,,
- signatures=0
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20190702171029.76c60538@carbon>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The patch adds devlink interfaces for drivers to publish/unpublish the
-devlink port parameters.
+On Tue, Jul 02, 2019 at 05:10:29PM +0200, Jesper Dangaard Brouer wrote:
+>On Tue, 2 Jul 2019 17:56:13 +0300
+>Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
+>
+>> On Tue, Jul 02, 2019 at 04:52:30PM +0200, Jesper Dangaard Brouer wrote:
+>> >On Tue, 2 Jul 2019 17:44:27 +0300
+>> >Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
+>> >
+>> >> On Tue, Jul 02, 2019 at 04:31:39PM +0200, Jesper Dangaard Brouer wrote:
+>> >> >From: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+>> >> >
+>> >> >Jesper recently removed page_pool_destroy() (from driver invocation) and
+>> >> >moved shutdown and free of page_pool into xdp_rxq_info_unreg(), in-order to
+>> >> >handle in-flight packets/pages. This created an asymmetry in drivers
+>> >> >create/destroy pairs.
+>> >> >
+>> >> >This patch add page_pool user refcnt and reintroduce page_pool_destroy.
+>> >> >This serves two purposes, (1) simplify drivers error handling as driver now
+>> >> >drivers always calls page_pool_destroy() and don't need to track if
+>> >> >xdp_rxq_info_reg_mem_model() was unsuccessful. (2) allow special cases
+>> >> >where a single RX-queue (with a single page_pool) provides packets for two
+>> >> >net_device'es, and thus needs to register the same page_pool twice with two
+>> >> >xdp_rxq_info structures.
+>> >>
+>> >> As I tend to use xdp level patch there is no more reason to mention (2) case
+>> >> here. XDP patch serves it better and can prevent not only obj deletion but also
+>> >> pool flush, so, this one patch I could better leave only for (1) case.
+>> >
+>> >I don't understand what you are saying.
+>> >
+>> >Do you approve this patch, or do you reject this patch?
+>> >
+>> It's not reject, it's proposition to use both, XDP and page pool patches,
+>> each having its goal.
+>
+>Just to be clear, if you want this patch to get accepted you have to
+>reply with your Signed-off-by (as I wrote).
+>
+>Maybe we should discuss it in another thread, about why you want two
+>solutions to the same problem.
 
-Signed-off-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
----
- include/net/devlink.h |  2 ++
- net/core/devlink.c    | 42 ++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 44 insertions(+)
+If it solves same problem I propose to reject this one and use this:
+https://lkml.org/lkml/2019/7/2/651
 
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 6c51e86..2e2d7fc 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -651,6 +651,8 @@ int devlink_port_params_register(struct devlink_port *devlink_port,
- void devlink_port_params_unregister(struct devlink_port *devlink_port,
- 				    const struct devlink_param *params,
- 				    size_t params_count);
-+void devlink_port_params_publish(struct devlink_port *devlink_port);
-+void devlink_port_params_unpublish(struct devlink_port *ddevlink_port);
- int devlink_param_driverinit_value_get(struct devlink *devlink, u32 param_id,
- 				       union devlink_param_value *init_val);
- int devlink_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 4baf716..c06c23f 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -6378,6 +6378,48 @@ void devlink_port_params_unregister(struct devlink_port *devlink_port,
- }
- EXPORT_SYMBOL_GPL(devlink_port_params_unregister);
- 
-+/**
-+ *	devlink_port_params_publish - publish port configuration parameters
-+ *
-+ *	@devlink_port: devlink port
-+ *
-+ *	Publish previously registered port configuration parameters.
-+ */
-+void devlink_port_params_publish(struct devlink_port *devlink_port)
-+{
-+	struct devlink_param_item *param_item;
-+
-+	list_for_each_entry(param_item, &devlink_port->param_list, list) {
-+		if (param_item->published)
-+			continue;
-+		param_item->published = true;
-+		devlink_param_notify(devlink_port->devlink, devlink_port->index,
-+				     param_item, DEVLINK_CMD_PORT_PARAM_NEW);
-+	}
-+}
-+EXPORT_SYMBOL_GPL(devlink_port_params_publish);
-+
-+/**
-+ *	devlink_port_params_unpublish - unpublish port configuration parameters
-+ *
-+ *	@devlink_port: devlink port
-+ *
-+ *	Unpublish previously registered port configuration parameters.
-+ */
-+void devlink_port_params_unpublish(struct devlink_port *devlink_port)
-+{
-+	struct devlink_param_item *param_item;
-+
-+	list_for_each_entry(param_item, &devlink_port->param_list, list) {
-+		if (!param_item->published)
-+			continue;
-+		param_item->published = false;
-+		devlink_param_notify(devlink_port->devlink, devlink_port->index,
-+				     param_item, DEVLINK_CMD_PORT_PARAM_DEL);
-+	}
-+}
-+EXPORT_SYMBOL_GPL(devlink_port_params_unpublish);
-+
- static int
- __devlink_param_driverinit_value_get(struct list_head *param_list, u32 param_id,
- 				     union devlink_param_value *init_val)
 -- 
-1.8.3.1
-
+Regards,
+Ivan Khoronzhuk
