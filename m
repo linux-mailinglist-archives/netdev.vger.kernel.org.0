@@ -2,93 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 116485CF10
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 14:05:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64C275CF06
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 14:03:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726951AbfGBMFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 08:05:08 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:34183 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725767AbfGBMFH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 08:05:07 -0400
-Received: by mail-wr1-f68.google.com with SMTP id u18so988962wru.1
-        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 05:05:07 -0700 (PDT)
+        id S1726591AbfGBMDj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 08:03:39 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:39683 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725835AbfGBMDi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 08:03:38 -0400
+Received: by mail-wm1-f65.google.com with SMTP id z23so702008wma.4
+        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 05:03:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=idQcbvzPIu1BSdVQIplt97QLkM9ok6uSRBt+kD2R0VY=;
-        b=Jcf5gvAuECDHnSqlWrJl59LMVaLbAq8Zcjj51ekAPjCZnrcPLabHmGPaEC/zzSNAPh
-         REueJzvJg/hipwla5YFSjsi+BhDtSH0TpqY2lAxiiGvHbJ+3/HB8eyarYmn5Q3PdrQTy
-         kwUI9wi0zeGfbhZDFT/O6IAGaK/a5cYvHspWg=
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Gm6GhJ7gb2LUevWRbLpcuyKEIGbt2fZGuGZRBRjtrqo=;
+        b=bQ8Ccg7NMvFz5SZ6bdMtcHci+tw+AVpOAcAvig717mhKAU267n1pDLGerYlOyaF/l/
+         GlxVJVT+q9H9/5/2WnKqW2xmPMzmC68pRIhvKQ/EuvGokbZ/6C065TC3eQxl65Eo433N
+         ESC/7CWXCxK7A/UwMJJACnJ+qqKjOQEBvzcOKti2c5cm69YOZFf+QOhcXTi42Rk3nyTP
+         vb5ZjqySvu9iQcU5U8uCRP6n7OuTXCsLy1UbM04HCVP5W3D+ornDtdGemnIcjNtwxff/
+         +FJkcvuItvzJTuKIEAnnDGKT+bHuHgnAmKMSEB8mrfm9fgG5cnpON3IPIWj/PjCjsrvN
+         ZbEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=idQcbvzPIu1BSdVQIplt97QLkM9ok6uSRBt+kD2R0VY=;
-        b=tJ2I7waBFJ2KAW/nYCXEhWLExxqT2/GOBudHQcRfPwGWvxQLBakujNWvBrdXOg9RzV
-         8Z9zpUBZ/sQZPx/8DJzjEmVqtwRL3dux2bCMTgm0C+Ft6eRk6XW7BUUitevrVW7UtZ6k
-         nQnfcCRwkVpJZ4mzoDyXMVcLPNPPysJ/MvnHW6ErwOpOrxT3co77tEuZmlV0wOBVDbjR
-         z2o5pOFZEQbtfJgQzgRWyJx+XS2zfy5m+hILvCqjByQNnuqPdijT/IuaFPkIH1vdUWBZ
-         SFcbiIOd7oWDm/4Tq1MXgH9r/M4nVwD2+gFXLPWSCoc/seJAxta+69+5V7JB/6SD8wCt
-         HFBg==
-X-Gm-Message-State: APjAAAXtBrH2l5cAqsk4/5tzdQqo/NIVZdnoN7uBz0Q7kXjKWOT+f4H1
-        du/k9Y+0wcYp1McLp1jsSqI0nxC9eTI=
-X-Google-Smtp-Source: APXvYqwfE1BZM0ah4AdPm6PvSxcO/B0fXqWs+cIVyF+4T5t9StbPfChMJtqePWxmMI2XbhzR6h38bA==
-X-Received: by 2002:adf:ab0f:: with SMTP id q15mr7637137wrc.325.1562069106370;
-        Tue, 02 Jul 2019 05:05:06 -0700 (PDT)
-Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id x5sm2542655wmf.33.2019.07.02.05.05.05
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Gm6GhJ7gb2LUevWRbLpcuyKEIGbt2fZGuGZRBRjtrqo=;
+        b=UiktGlpdp1G1aXtq8S7j6auD/Zkn06Kw3jxXE7BAwlYNVV/xY63MGA8aTfNH7HyMLC
+         DCeFSZqAG2MO5OTVw6cx2+Vy5j4kaOjn+kjbdwHFRbqNkAMfDiD82z7xGLXDNft6WfP1
+         0bRJoQL6GsJZs6yZJqeSZtrLJZvuGyVPrQ1z3aYyvHQtvYfcBp8T6gcNFThy7JCK3t8i
+         Sx5mqNLb1KBd2DSCgeVAOstwJ/5yb7uTrkHeLNpH+AMs9EZaMYTv9W6t8c7eLUpqZjsI
+         DuZWN8VscSFpxSmtI/FHHTbnQgNd/4XYktXaeAqnCR07xP+xxqbGjd7IEJd3KEVcVJLJ
+         IQZA==
+X-Gm-Message-State: APjAAAUNPu4xq7NIg4CMNNLwF/uu5SKg2w/dlgxMdppSFEbxr9nTja47
+        eAfPaFHyhS94Bb0M0K+cZ/0=
+X-Google-Smtp-Source: APXvYqzY1WIZXqGwqXvHrmdMUEorT4psdCq6z0c+xvUPrw4/kcZzicISqdSJdPPkYLHuIAf54uR9IQ==
+X-Received: by 2002:a7b:cf27:: with SMTP id m7mr3351914wmg.7.1562069016717;
+        Tue, 02 Jul 2019 05:03:36 -0700 (PDT)
+Received: from localhost (ip-213-220-235-213.net.upcbroadband.cz. [213.220.235.213])
+        by smtp.gmail.com with ESMTPSA id y16sm10463591wru.28.2019.07.02.05.03.36
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 02 Jul 2019 05:05:05 -0700 (PDT)
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-To:     netdev@vger.kernel.org
-Cc:     roopa@cumulusnetworks.com, davem@davemloft.net,
-        martin@linuxlounge.net, bridge@lists.linux-foundation.org,
-        yoshfuji@linux-ipv6.org,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Subject: [PATCH net 4/4] net: bridge: stp: don't cache eth dest pointer before skb pull
-Date:   Tue,  2 Jul 2019 15:00:21 +0300
-Message-Id: <20190702120021.13096-5-nikolay@cumulusnetworks.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190702120021.13096-1-nikolay@cumulusnetworks.com>
-References: <20190702120021.13096-1-nikolay@cumulusnetworks.com>
+        Tue, 02 Jul 2019 05:03:36 -0700 (PDT)
+Date:   Tue, 2 Jul 2019 14:03:35 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Linville <linville@tuxdriver.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v6 02/15] netlink: rename
+ nl80211_validate_nested() to nla_validate_nested()
+Message-ID: <20190702120335.GM2250@nanopsycho>
+References: <cover.1562067622.git.mkubecek@suse.cz>
+ <d0c23ac629c4a0343acc9f09484e078962c55402.1562067622.git.mkubecek@suse.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d0c23ac629c4a0343acc9f09484e078962c55402.1562067622.git.mkubecek@suse.cz>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Don't cache eth dest pointer before calling pskb_may_pull.
+Tue, Jul 02, 2019 at 01:49:49PM CEST, mkubecek@suse.cz wrote:
+>Function nl80211_validate_nested() is not specific to nl80211, it's
+>a counterpart to nla_validate_nested_deprecated() with strict validation.
+>For consistency with other validation and parse functions, rename it to
+>nla_validate_nested().
+>
+>Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 
-Fixes: cf0f02d04a83 ("[BRIDGE]: use llc for receiving STP packets")
-Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
----
- net/bridge/br_stp_bpdu.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/net/bridge/br_stp_bpdu.c b/net/bridge/br_stp_bpdu.c
-index 68a6922b4141..7796dd9d42d7 100644
---- a/net/bridge/br_stp_bpdu.c
-+++ b/net/bridge/br_stp_bpdu.c
-@@ -143,7 +143,6 @@ void br_send_tcn_bpdu(struct net_bridge_port *p)
- void br_stp_rcv(const struct stp_proto *proto, struct sk_buff *skb,
- 		struct net_device *dev)
- {
--	const unsigned char *dest = eth_hdr(skb)->h_dest;
- 	struct net_bridge_port *p;
- 	struct net_bridge *br;
- 	const unsigned char *buf;
-@@ -172,7 +171,7 @@ void br_stp_rcv(const struct stp_proto *proto, struct sk_buff *skb,
- 	if (p->state == BR_STATE_DISABLED)
- 		goto out;
- 
--	if (!ether_addr_equal(dest, br->group_addr))
-+	if (!ether_addr_equal(eth_hdr(skb)->h_dest, br->group_addr))
- 		goto out;
- 
- 	if (p->flags & BR_BPDU_GUARD) {
--- 
-2.21.0
-
+Acked-by: Jiri Pirko <jiri@mellanox.com>
