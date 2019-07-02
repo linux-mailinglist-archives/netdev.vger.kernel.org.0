@@ -2,125 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A7CF5C6B2
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 03:40:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCE755C6BB
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 03:45:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726896AbfGBBk2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 21:40:28 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:39584 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726688AbfGBBk2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 21:40:28 -0400
-Received: by mail-wm1-f65.google.com with SMTP id z23so1398848wma.4
-        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 18:40:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=O0aGPzxpn5jU2+jECo0xtLyN2fgRg5n6CQlLcFfTgKQ=;
-        b=rvP2Dqo6p2zrA0Bh1HNu1uvcNiz5KZXkeHEjF6PQYAysNLDYw8cMouEs5nnjrDtPJl
-         d6Uo6eK+lCKfuZjxvYdensjZ8+DlHclZRfG0fPUHW36zaev4wEIO2FbWpS8asn92E5DS
-         YsYINNEd2jHmQPzUTvHmzg27tADNzK+3GRjsUKv65JT9IW4GsDjFdQRM2b1etBQfradg
-         UiS2gmlINt7DXopN5NY8VTwbioJ+vqf0hC1pMFsGS+sin7ylwq4BGa8l+UNRHXE2baR8
-         Ss6NxyeqEzFf6eddc4wFqacN39kzMzwRx3nVvbu9xDfU7YAn/ztfVm3qi1A7+8+bOuRh
-         pEFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to:content-transfer-encoding;
-        bh=O0aGPzxpn5jU2+jECo0xtLyN2fgRg5n6CQlLcFfTgKQ=;
-        b=M9VcObcb2XPK+OOCg5dzBB2Y47yWdDpH1lAz1umeMI1wlUSi2SNc0fdYgKjTn6VERs
-         ru+grISydphmV5Px1CjsU3/43xLQxYDuFANz73xCxf2+N8foQ5zdfZERCaanzK26CTQO
-         v5hLrrd0zlPqByr6vi38v8OG4drS226xxxL5ing92MfKBwbf9W6NX58bXlenNaGjdt6E
-         I8hIbQzo1Uspieo20ohqKX8QR/3DnOytre/xqaNoZUMsRy2mC4JbWVSXHwhW0jBsa7JO
-         Nhmjsq0JzOtSsgIPRGSNAy+sdnSbRN/8hrCpACepTjrv+LPSxWWzbChZMHuHEPHQyhh0
-         UDTw==
-X-Gm-Message-State: APjAAAU2KmIeExfmX/aL3IUPWOAmMbtVaO6LiLZW5PSxqLXtQtkRCfiy
-        7kPBThaphOdyCVpEkHeGE21WcfMiVKwzTjkg0LQ=
-X-Google-Smtp-Source: APXvYqydHfJKuMmP6B5BEWWutCEz9p5s0m8sfo3QlGo3YsB+mw5PnMW28lYw5uHXOnwddjN2CP84775LZhImbliWOzQ=
-X-Received: by 2002:a1c:e3c1:: with SMTP id a184mr1016932wmh.24.1562031625944;
- Mon, 01 Jul 2019 18:40:25 -0700 (PDT)
-MIME-Version: 1.0
-Received: by 2002:adf:f106:0:0:0:0:0 with HTTP; Mon, 1 Jul 2019 18:40:25 -0700 (PDT)
-From:   Mr Jarrah Mohmmed <jarrahmohamed10@gmail.com>
-Date:   Mon, 1 Jul 2019 18:40:25 -0700
-X-Google-Sender-Auth: KRMxXlwkA-WKYG-Xw-f81pp-jUs
-Message-ID: <CAJLAee_LAXMz2of3FPc+g5OaMDoktHY=0CXKOe69KmJfhh4XtQ@mail.gmail.com>
-Subject: YOUR URGENT RESPOND IS NEEDED
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+        id S1726869AbfGBBpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 21:45:44 -0400
+Received: from mail-eopbgr00084.outbound.protection.outlook.com ([40.107.0.84]:43662
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726347AbfGBBpo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Jul 2019 21:45:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9f6Cba8MWxLipm3J7aqw6G4BWTpjPbM4fJz55MeNllM=;
+ b=XsCue82d0M91hjRmttoPow9EwEw++YlIIv4E9TX+lHJl0BN2ceBIyVbGkVNMe+VlDkuY2KgxTZjDlIWJil44d3scUJ5oCBSIW2x2fIEoYwdB38DHEwi7rMLXA4Zd17CMoVx/HypbKbd/69BNogOnGKheTLk8KsPJp118XHvtCXM=
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.138.152) by
+ DB7PR04MB4746.eurprd04.prod.outlook.com (20.176.233.80) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2032.18; Tue, 2 Jul 2019 01:45:41 +0000
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::58d4:6713:ac7d:83d2]) by DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::58d4:6713:ac7d:83d2%3]) with mapi id 15.20.2032.019; Tue, 2 Jul 2019
+ 01:45:41 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     "mkl@pengutronix.de" <mkl@pengutronix.de>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+CC:     "wg@grandegger.com" <wg@grandegger.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>
+Subject: [PATCH V4] can: flexcan: fix stop mode acknowledgment
+Thread-Topic: [PATCH V4] can: flexcan: fix stop mode acknowledgment
+Thread-Index: AQHVMHfaCqKrzVTOS0G/H4Ie2l5GYA==
+Date:   Tue, 2 Jul 2019 01:45:41 +0000
+Message-ID: <20190702014316.26444-1-qiangqing.zhang@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.17.1
+x-clientproxiedby: SG2PR03CA0112.apcprd03.prod.outlook.com
+ (2603:1096:4:91::16) To DB7PR04MB4618.eurprd04.prod.outlook.com
+ (2603:10a6:5:36::24)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=qiangqing.zhang@nxp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 02189176-a006-4fc4-7834-08d6fe8efd41
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB7PR04MB4746;
+x-ms-traffictypediagnostic: DB7PR04MB4746:
+x-microsoft-antispam-prvs: <DB7PR04MB4746CB06C98F65DA8A95E410E6F80@DB7PR04MB4746.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4714;
+x-forefront-prvs: 008663486A
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(346002)(136003)(376002)(39860400002)(396003)(54534003)(199004)(189003)(478600001)(186003)(8936002)(2906002)(52116002)(50226002)(64756008)(68736007)(305945005)(81156014)(86362001)(6486002)(81166006)(5660300002)(8676002)(25786009)(3846002)(102836004)(6116002)(6436002)(1076003)(386003)(256004)(71200400001)(14444005)(71190400001)(2616005)(99286004)(476003)(73956011)(66066001)(486006)(53936002)(316002)(66446008)(2501003)(110136005)(66476007)(14454004)(54906003)(26005)(7736002)(66946007)(66556008)(6506007)(6512007)(4326008)(36756003);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB4746;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: mF3o1Nzi4WEEO3HnGnINSe1xTIcPUHkb0QiO0F2Y9/n7lvJIU7sAqPIKA4YbOZSDmIOwh4b74ncN3m6ouiJMcgAtCwYZFvRZeevl5dt6FM8V4X0FMrBXNbv6y1yBSKBM8RHefed5rpSFEs0sTbDaGr1VEG1pe45IevlVOfrkskYfXIsclBJuAM0mlz/dEE8dowLyBBFYILpB/KiR0LZKHEpIuxhXY0SFtjXhJvuBPXTEOs7fgWXQb2arY4J2ZPOGva1yDaolqOtMHKXBpVluXxRiyfhn4vyw/gBmOBaAgeIFjZiKzS/WvBy14Y2qYNVABvNSFJkD8SD3mVDeY37frAtNVKYZbNmtooevcQVWaTUSLPuv2bhHUfWTvIPxF9KLbz95eP3bVki/H/RjWY2/xB32/zYcJqSPdTpA1IVHUCM=
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 02189176-a006-4fc4-7834-08d6fe8efd41
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Jul 2019 01:45:41.1358
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: qiangqing.zhang@nxp.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4746
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My Dear Friend,
+To enter stop mode, the CPU should manually assert a global Stop Mode
+request and check the acknowledgment asserted by FlexCAN. The CPU must
+only consider the FlexCAN in stop mode when both request and
+acknowledgment conditions are satisfied.
 
-Before I introduce myself, I wish to inform you that this letter is
-not a hoax mail and I urge you to treat it serious. This letter must
-come to you as a big surprise, but I believe it is only a day that
-people meet and become great friends and business partners. Please I
-want you to read this letter very carefully and I must apologize for
-barging this message into your mail box without any formal
-introduction due to the urgency and confidentiality of this business
-and I know that this message will come to you as a surprise. Please
-this is not a joke and I will not like you to joke with it ok, with
-due respect to your person and much sincerity of purpose, I make this
-contact with you as I believe that you can be of great assistance to
-me. My name is Mr. Jarrah Mohmmed, from Burkina Faso, West Africa. I
-work in United Bank for Africa (UBA) as telex manager, please see this
-as a confidential message and do not reveal it to another person and
-let me know whether you can be of assistance regarding my proposal
-below because it is top secret.
+Fixes: de3578c198c6 ("can: flexcan: add self wakeup support")
+Reported-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
 
-I am about to retire from active Banking service to start a new life
-but I am skeptical to reveal this particular secret to a stranger. You
-must assure me that everything will be handled confidentially because
-we are not going to suffer again in life. It has been 10 years now
-that most of the greedy African Politicians used our bank to launder
-money overseas through the help of their Political advisers. Most of
-the funds which they transferred out of the shores of Africa were gold
-and oil money that was supposed to have been used to develop the
-continent. Their Political advisers always inflated the amounts before
-transferring to foreign accounts, so I also used the opportunity to
-divert part of the funds hence I am aware that there is no official
-trace of how much was transferred as all the accounts used for such
-transfers were being closed after transfer. I acted as the Bank
-Officer to most of the politicians and when I discovered that they
-were using me to succeed in their greedy act; I also cleaned some of
-their banking records from the Bank files and no one cared to ask me
-because the money was too much for them to control. They laundered
-over $5billion Dollars during the process.
+ChangeLog:
+V1->V2:
+	* regmap_read()-->regmap_read_poll_timeout()
+V2->V3:
+	* change the way of error return, it will make easy for function
+	extension.
+V3->V4:
+	* rebase to linux-next/master, as this is a fix.
+---
+ drivers/net/can/flexcan.c | 31 +++++++++++++++++++++++++++----
+ 1 file changed, 27 insertions(+), 4 deletions(-)
 
-Before I send this message to you, I have already diverted ($18million
-Dollars) to an escrow account belonging to no one in the bank. The
-bank is anxious now to know who the beneficiary to the funds is
-because they have made a lot of profits with the funds. It is more
-than Eight years now and most of the politicians are no longer using
-our bank to transfer funds overseas. The ($10.5million Dollars) has
-been laying waste in our bank and I don=E2=80=99t want to retire from the b=
-ank
-without transferring the funds to a foreign account to enable me share
-the proceeds with the receiver (a foreigner). The money will be shared
-60% for me and 40% for you. There is no one coming to ask you about
-the funds because I secured everything. I only want you to assist me
-by providing a reliable bank account where the funds can be
-transferred.
+diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+index 1c66fb2ad76b..bf1bd6f5dbb1 100644
+--- a/drivers/net/can/flexcan.c
++++ b/drivers/net/can/flexcan.c
+@@ -400,9 +400,10 @@ static void flexcan_enable_wakeup_irq(struct flexcan_p=
+riv *priv, bool enable)
+ 	priv->write(reg_mcr, &regs->mcr);
+ }
+=20
+-static inline void flexcan_enter_stop_mode(struct flexcan_priv *priv)
++static inline int flexcan_enter_stop_mode(struct flexcan_priv *priv)
+ {
+ 	struct flexcan_regs __iomem *regs =3D priv->regs;
++	unsigned int ackval;
+ 	u32 reg_mcr;
+=20
+ 	reg_mcr =3D priv->read(&regs->mcr);
+@@ -412,20 +413,37 @@ static inline void flexcan_enter_stop_mode(struct fle=
+xcan_priv *priv)
+ 	/* enable stop request */
+ 	regmap_update_bits(priv->stm.gpr, priv->stm.req_gpr,
+ 			   1 << priv->stm.req_bit, 1 << priv->stm.req_bit);
++
++	/* get stop acknowledgment */
++	if (regmap_read_poll_timeout(priv->stm.gpr, priv->stm.ack_gpr,
++				     ackval, ackval & (1 << priv->stm.ack_bit),
++				     0, FLEXCAN_TIMEOUT_US))
++		return -ETIMEDOUT;
++
++	return 0;
+ }
+=20
+-static inline void flexcan_exit_stop_mode(struct flexcan_priv *priv)
++static inline int flexcan_exit_stop_mode(struct flexcan_priv *priv)
+ {
+ 	struct flexcan_regs __iomem *regs =3D priv->regs;
++	unsigned int ackval;
+ 	u32 reg_mcr;
+=20
+ 	/* remove stop request */
+ 	regmap_update_bits(priv->stm.gpr, priv->stm.req_gpr,
+ 			   1 << priv->stm.req_bit, 0);
+=20
++	/* get stop acknowledgment */
++	if (regmap_read_poll_timeout(priv->stm.gpr, priv->stm.ack_gpr,
++				     ackval, !(ackval & (1 << priv->stm.ack_bit)),
++				     0, FLEXCAN_TIMEOUT_US))
++		return -ETIMEDOUT;
++
+ 	reg_mcr =3D priv->read(&regs->mcr);
+ 	reg_mcr &=3D ~FLEXCAN_MCR_SLF_WAK;
+ 	priv->write(reg_mcr, &regs->mcr);
++
++	return 0;
+ }
+=20
+ static inline void flexcan_error_irq_enable(const struct flexcan_priv *pri=
+v)
+@@ -1615,7 +1633,9 @@ static int __maybe_unused flexcan_suspend(struct devi=
+ce *device)
+ 		 */
+ 		if (device_may_wakeup(device)) {
+ 			enable_irq_wake(dev->irq);
+-			flexcan_enter_stop_mode(priv);
++			err =3D flexcan_enter_stop_mode(priv);
++			if (err)
++				return err;
+ 		} else {
+ 			err =3D flexcan_chip_disable(priv);
+ 			if (err)
+@@ -1665,10 +1685,13 @@ static int __maybe_unused flexcan_noirq_resume(stru=
+ct device *device)
+ {
+ 	struct net_device *dev =3D dev_get_drvdata(device);
+ 	struct flexcan_priv *priv =3D netdev_priv(dev);
++	int err;
+=20
+ 	if (netif_running(dev) && device_may_wakeup(device)) {
+ 		flexcan_enable_wakeup_irq(priv, false);
+-		flexcan_exit_stop_mode(priv);
++		err =3D flexcan_exit_stop_mode(priv);
++		if (err)
++			return err;
+ 	}
+=20
+ 	return 0;
+--=20
+2.17.1
 
-You are not to face any difficulties or legal implications as I am
-going to handle the transfer personally. If you are capable of
-receiving the funds, do let me know immediately to enable me give you
-a detailed information on what to do. For me, I have not stolen the
-money from anyone because the other people that took the whole money
-did not face any problems. This is my chance to grab my own life
-opportunity but you must keep the details of the funds secret to avoid
-any leakages as no one in the bank knows about my plans. Please get
-back to me if you are interested and capable to handle this project, I
-shall intimate you on what to do when I hear from your confirmation
-and acceptance. If you are capable of being my trusted associate, do
-declare your consent to me I am looking forward to hear Email Address
-(jarrahmohamed10@gmail.com)
-Thanks with my best regards.
-
-Mr. Jarrah Mohmmed
