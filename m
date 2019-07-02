@@ -2,197 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 993F75C979
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 08:44:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 041935C983
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 08:48:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725981AbfGBGoF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 02:44:05 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:34189 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725852AbfGBGoF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 02:44:05 -0400
-Received: by mail-io1-f65.google.com with SMTP id k8so34624577iot.1
-        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 23:44:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XnaWd9P9xKybW0lXkt79Iun5uzyN370d1KKFn14u8pU=;
-        b=WRys2EvSKJfQDwTCYG+P7QnksaGqhATBxeEhJj8d3MZe0mKBEB7pE9/WxiA3x4z4bc
-         X6EvE9Q/tvimkyF1/0lXAId9x6WuKfW9YRRFLqpTjVI+LpnCmZyvLLAbrUqzFW+f8p5g
-         wbWbMZMx4P+XIDJ4xlnKH6eXl/os3wp5PpBQNIxNhMSslT3lV8TPQHGi2Zonz+mlufg6
-         4QDpvbOwxKjTA9/JPfcG8tc8FFSUuYFDv53jum5mIoQR36ZVP9X6FmF/yjPytmQnHZ2E
-         +/htcwo9DZQVMg7eSh8/WaGyoHLtdfPADQ4cyudwJ+3x5UnRcKRSOJT6ndq8RGWTHD3Y
-         6Cqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XnaWd9P9xKybW0lXkt79Iun5uzyN370d1KKFn14u8pU=;
-        b=Fh4zHKwoZ5hkHx1S+DCM1ZyMWv6HzDneaWU0KHHYwlf0z+J7BxoDBBRmfCznMC+Aro
-         mmv3WGEQf4axclUtZd0LajpHZOEvVs/E+l5ASJc+QXJjw0IVDXdhSpj08agMScfbGcgd
-         u+SqUzzSCWdOA4z3k/KYyawSW+MKQtCxlOFi1uJxQgIDAuaum+GwEdWaG2R//dIx8i0d
-         Dk5kh4qHlz0ycQ8s/Ftf3A2XJwTs4JQIeM8cddNAUhq/QU8pF7LgYr1j+qPpW4DAX1G+
-         xFz2awipT4z8srJg+70o5597a2IIQ7HcJ+kKcu/Dyy5uzIxT0byZaQR3hpBUob5Eee0+
-         msMA==
-X-Gm-Message-State: APjAAAWGgWJVH3QaU6pVU0u9oPmJayBa75s+L1vbsy8EZth8Yk+U5aPq
-        aSY8FbEWVD4jq80a/eItn3B762LHkgw0D4UFHaEQMw==
-X-Google-Smtp-Source: APXvYqwSRYk/6MNpauII6NxLVu48MJXQ1Z2SV6sf8Ubr37AzxK35/nHXsW2GbkiEnJkfl71BlOxRi7SBYVhoBqy/rEo=
-X-Received: by 2002:a02:7087:: with SMTP id f129mr34565969jac.38.1562049844133;
- Mon, 01 Jul 2019 23:44:04 -0700 (PDT)
+        id S1726541AbfGBGsV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 02:48:21 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:43654 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725812AbfGBGsV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 02:48:21 -0400
+Received: from cpc129250-craw9-2-0-cust139.know.cable.virginm.net ([82.43.126.140] helo=[192.168.0.10])
+        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_128_CBC_SHA1:16)
+        (Exim 4.76)
+        (envelope-from <colin.king@canonical.com>)
+        id 1hiCaQ-0003VS-53; Tue, 02 Jul 2019 06:48:18 +0000
+Subject: Re: [PATCH] net: stmmac: add sanity check to
+ device_property_read_u32_array call
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     alexandre.torgue@st.com, davem@davemloft.net, joabreu@synopsys.com,
+        kernel-janitors@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
+        peppe.cavallaro@st.com
+References: <20190617165836.4673-1-colin.king@canonical.com>
+ <20190619051308.23582-1-martin.blumenstingl@googlemail.com>
+ <92f9e5a6-d2a2-6bf2-ff8a-2430fe977f93@canonical.com>
+ <CAFBinCDmYVPDMcwAAYhMfxxuTsG=xunduN58_8e20zE_Mhmb7Q@mail.gmail.com>
+ <CAFBinCC-LLpfXQRFcKBbUpCfKc0S9Xtt60QrhEThsOFV-T7vFw@mail.gmail.com>
+ <c46d2d17-c35b-46f0-0674-0c55bea3a272@canonical.com>
+ <CAFBinCBk5aPVE+vq5px3QKS1T_R=WGXXxEJMC9X676KGvi9jdg@mail.gmail.com>
+ <26646ff1-059f-fb2d-e05d-43009aeb2150@canonical.com>
+ <CAFBinCAx5qrPK1z68bF-tGKpJQfKLnee65qBOxMS4nj8t381+Q@mail.gmail.com>
+ <CAFBinCCpJLSQiUeqpQTKQDgjy7-ROgjYa913Xe1My_oc6miTzw@mail.gmail.com>
+From:   Colin Ian King <colin.king@canonical.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <ae0207d3-6523-c197-d5b1-bdafafb800f9@canonical.com>
+Date:   Tue, 2 Jul 2019 07:48:17 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <000000000000d028b30588fed102@google.com> <000000000000db481c058c462e4c@google.com>
-In-Reply-To: <000000000000db481c058c462e4c@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Tue, 2 Jul 2019 08:43:51 +0200
-Message-ID: <CACT4Y+axVLwc4b8hyQswuFJNwkFB45Zs7XDfi6O3CE0pG=5edA@mail.gmail.com>
-Subject: Re: KASAN: use-after-free Write in xfrm_hash_rebuild
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     syzbot <syzbot+0165480d4ef07360eeda@syzkaller.appspotmail.com>,
-        David Miller <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAFBinCCpJLSQiUeqpQTKQDgjy7-ROgjYa913Xe1My_oc6miTzw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 2, 2019 at 8:38 AM Hillf Danton <hdanton@sina.com> wrote:
->
->
-> On Wed, 26 Jun 2019 20:59:05 -0700 (PDT)
-> > syzbot has found a reproducer for the following crash on:
-> >
-> > HEAD commit:    249155c2 Merge branch 'parisc-5.2-4' of git://git.kernel.o..
-> > git tree:       upstream
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=10f017c3a00000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=9a31528e58cc12e2
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=0165480d4ef07360eeda
-> > compiler:       clang version 9.0.0 (/home/glider/llvm/clang 80fee25776c2fb61e74c1ecb1a523375c2500b69)
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16cf37c3a00000
-> >
-> > IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> > Reported-by: syzbot+0165480d4ef07360eeda@syzkaller.appspotmail.com
-> >
-> > ==================================================================
-> > BUG: KASAN: use-after-free in __write_once_size  include/linux/compiler.h:221 [inline]
-> > BUG: KASAN: use-after-free in __hlist_del include/linux/list.h:748 [inline]
-> > BUG: KASAN: use-after-free in hlist_del_rcu include/linux/rculist.h:455  [inline]
-> > BUG: KASAN: use-after-free in xfrm_hash_rebuild+0xa0d/0x1000  net/xfrm/xfrm_policy.c:1318
-> > Write of size 8 at addr ffff888095e79c00 by task kworker/1:3/8066
-> >
-> > CPU: 1 PID: 8066 Comm: kworker/1:3 Not tainted 5.2.0-rc6+ #7
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-> > Google 01/01/2011
-> > Workqueue: events xfrm_hash_rebuild
-> > Call Trace:
-> >   __dump_stack lib/dump_stack.c:77 [inline]
-> >   dump_stack+0x1d8/0x2f8 lib/dump_stack.c:113
-> >   print_address_description+0x6d/0x310 mm/kasan/report.c:188
-> >   __kasan_report+0x14b/0x1c0 mm/kasan/report.c:317
-> >   kasan_report+0x26/0x50 mm/kasan/common.c:614
-> >   __asan_report_store8_noabort+0x17/0x20 mm/kasan/generic_report.c:137
-> >   __write_once_size include/linux/compiler.h:221 [inline]
-> >   __hlist_del include/linux/list.h:748 [inline]
-> >   hlist_del_rcu include/linux/rculist.h:455 [inline]
-> >   xfrm_hash_rebuild+0xa0d/0x1000 net/xfrm/xfrm_policy.c:1318
-> >   process_one_work+0x814/0x1130 kernel/workqueue.c:2269
-> >   worker_thread+0xc01/0x1640 kernel/workqueue.c:2415
-> >   kthread+0x325/0x350 kernel/kthread.c:255
-> >   ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-> >
-> > Allocated by task 8064:
-> >   save_stack mm/kasan/common.c:71 [inline]
-> >   set_track mm/kasan/common.c:79 [inline]
-> >   __kasan_kmalloc+0x11c/0x1b0 mm/kasan/common.c:489
-> >   kasan_kmalloc+0x9/0x10 mm/kasan/common.c:503
-> >   __do_kmalloc mm/slab.c:3660 [inline]
-> >   __kmalloc+0x23c/0x310 mm/slab.c:3669
-> >   kmalloc include/linux/slab.h:552 [inline]
-> >   kzalloc include/linux/slab.h:742 [inline]
-> >   xfrm_hash_alloc+0x38/0xe0 net/xfrm/xfrm_hash.c:21
-> >   xfrm_policy_init net/xfrm/xfrm_policy.c:4036 [inline]
-> >   xfrm_net_init+0x269/0xd60 net/xfrm/xfrm_policy.c:4120
-> >   ops_init+0x336/0x420 net/core/net_namespace.c:130
-> >   setup_net+0x212/0x690 net/core/net_namespace.c:316
-> >   copy_net_ns+0x224/0x380 net/core/net_namespace.c:439
-> >   create_new_namespaces+0x4ec/0x700 kernel/nsproxy.c:103
-> >   unshare_nsproxy_namespaces+0x12a/0x190 kernel/nsproxy.c:202
-> >   ksys_unshare+0x540/0xac0 kernel/fork.c:2692
-> >   __do_sys_unshare kernel/fork.c:2760 [inline]
-> >   __se_sys_unshare kernel/fork.c:2758 [inline]
-> >   __x64_sys_unshare+0x38/0x40 kernel/fork.c:2758
-> >   do_syscall_64+0xfe/0x140 arch/x86/entry/common.c:301
-> >   entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> >
-> > Freed by task 17:
-> >   save_stack mm/kasan/common.c:71 [inline]
-> >   set_track mm/kasan/common.c:79 [inline]
-> >   __kasan_slab_free+0x12a/0x1e0 mm/kasan/common.c:451
-> >   kasan_slab_free+0xe/0x10 mm/kasan/common.c:459
-> >   __cache_free mm/slab.c:3432 [inline]
-> >   kfree+0xae/0x120 mm/slab.c:3755
-> >   xfrm_hash_free+0x38/0xd0 net/xfrm/xfrm_hash.c:35
-> >   xfrm_bydst_resize net/xfrm/xfrm_policy.c:602 [inline]
-> >   xfrm_hash_resize+0x13f1/0x1840 net/xfrm/xfrm_policy.c:680
-> >   process_one_work+0x814/0x1130 kernel/workqueue.c:2269
-> >   worker_thread+0xc01/0x1640 kernel/workqueue.c:2415
-> >   kthread+0x325/0x350 kernel/kthread.c:255
-> >   ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-> >
-> > The buggy address belongs to the object at ffff888095e79c00
-> >   which belongs to the cache kmalloc-64 of size 64
-> > The buggy address is located 0 bytes inside of
-> >   64-byte region [ffff888095e79c00, ffff888095e79c40)
-> > The buggy address belongs to the page:
-> > page:ffffea0002579e40 refcount:1 mapcount:0 mapping:ffff8880aa400340
-> > index:0x0
-> > flags: 0x1fffc0000000200(slab)
-> > raw: 01fffc0000000200 ffffea0002540888 ffffea0002907548 ffff8880aa400340
-> > raw: 0000000000000000 ffff888095e79000 0000000100000020 0000000000000000
-> > page dumped because: kasan: bad access detected
-> >
-> > Memory state around the buggy address:
-> >   ffff888095e79b00: 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc
-> >   ffff888095e79b80: 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc
-> > > ffff888095e79c00: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
-> >                     ^
-> >   ffff888095e79c80: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
-> >   ffff888095e79d00: 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc fc
-> > ==================================================================
-> >
->
-> --- a/net/xfrm/xfrm_policy.c
-> +++ b/net/xfrm/xfrm_policy.c
-> @@ -1203,6 +1203,11 @@ xfrm_policy_inexact_insert(struct xfrm_policy *policy, u8 dir, int excl)
->         return delpol;
->  }
->
-> +static inline bool xfrm_policy_node_hashed(struct hlist_node *node)
-> +{
-> +       return node->pprev && node->pprev != LIST_POISON2;
+On 01/07/2019 23:43, Martin Blumenstingl wrote:
+> On Fri, Jun 28, 2019 at 6:05 PM Martin Blumenstingl
+> <martin.blumenstingl@googlemail.com> wrote:
+>>
+>> Hi Colin,
+>>
+>> On Fri, Jun 28, 2019 at 10:32 AM Colin Ian King
+>> <colin.king@canonical.com> wrote:
+>>>
+>>> On 28/06/2019 05:15, Martin Blumenstingl wrote:
+>>>> On Tue, Jun 25, 2019 at 9:58 AM Colin Ian King <colin.king@canonical.com> wrote:
+>>>>>
+>>>>> On 25/06/2019 05:44, Martin Blumenstingl wrote:
+>>>>>> Hi Colin,
+>>>>>>
+>>>>>> On Thu, Jun 20, 2019 at 3:34 AM Martin Blumenstingl
+>>>>>> <martin.blumenstingl@googlemail.com> wrote:
+>>>>>>>
+>>>>>>> Hi Colin,
+>>>>>>>
+>>>>>>> On Wed, Jun 19, 2019 at 8:55 AM Colin Ian King <colin.king@canonical.com> wrote:
+>>>>>>>>
+>>>>>>>> On 19/06/2019 06:13, Martin Blumenstingl wrote:
+>>>>>>>>> Hi Colin,
+>>>>>>>>>
+>>>>>>>>>> Currently the call to device_property_read_u32_array is not error checked
+>>>>>>>>>> leading to potential garbage values in the delays array that are then used
+>>>>>>>>>> in msleep delays.  Add a sanity check to the property fetching.
+>>>>>>>>>>
+>>>>>>>>>> Addresses-Coverity: ("Uninitialized scalar variable")
+>>>>>>>>>> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+>>>>>>>>> I have also sent a patch [0] to fix initialize the array.
+>>>>>>>>> can you please look at my patch so we can work out which one to use?
+>>>>>>>>>
+>>>>>>>>> my concern is that the "snps,reset-delays-us" property is optional,
+>>>>>>>>> the current dt-bindings documentation states that it's a required
+>>>>>>>>> property. in reality it isn't, there are boards (two examples are
+>>>>>>>>> mentioned in my patch: [0]) without it.
+>>>>>>>>>
+>>>>>>>>> so I believe that the resulting behavior has to be:
+>>>>>>>>> 1. don't delay if this property is missing (instead of delaying for
+>>>>>>>>>    <garbage value> ms)
+>>>>>>>>> 2. don't error out if this property is missing
+>>>>>>>>>
+>>>>>>>>> your patch covers #1, can you please check whether #2 is also covered?
+>>>>>>>>> I tested case #2 when submitting my patch and it worked fine (even
+>>>>>>>>> though I could not reproduce the garbage values which are being read
+>>>>>>>>> on some boards)
+>>>>>> in the meantime I have tested your patch.
+>>>>>> when I don't set the "snps,reset-delays-us" property then I get the
+>>>>>> following error:
+>>>>>>   invalid property snps,reset-delays-us
+>>>>>>
+>>>>>> my patch has landed in the meantime: [0]
+>>>>>> how should we proceed with your patch?
+>>>
+>>> Your fix is good, so I think we should just drop/forget about my fix.
+>> thank you for looking at the situation
+>>
+>> as far I understand the -net/-net-next tree all commits are immutable
+>> so if we want to remove your patch we need to send a revert
+>> do you want me to do that (I can do it on Monday) or will you take care of that?
+> I just sent the patch: [0]
 
-Is it right to open code LIST_POISON2 use here? As far as I see all
-current uses of LIST_POISON2 are encapsulated in list functions.
+Thank you, much appreciated.
+> 
+> 
+> [0] https://patchwork.ozlabs.org/patch/1125686/
+> 
 
-> +}
-> +
->  static void xfrm_hash_rebuild(struct work_struct *work)
->  {
->         struct net *net = container_of(work, struct net,
-> @@ -1315,7 +1320,9 @@ static void xfrm_hash_rebuild(struct work_struct *work)
->                 chain = policy_hash_bysel(net, &policy->selector,
->                                           policy->family, dir);
->
-> -               hlist_del_rcu(&policy->bydst);
-> +               /* check bydst still hashed in case that policy survived bydst resize */
-> +               if (xfrm_policy_node_hashed(&policy->bydst))
-> +                       hlist_del_rcu(&policy->bydst);
->
->                 if (!chain) {
->                         void *p = xfrm_policy_inexact_insert(policy, dir, 0);
-> --
