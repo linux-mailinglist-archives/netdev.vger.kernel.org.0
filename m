@@ -2,167 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AE855D1B1
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 16:24:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E62425D1B8
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 16:27:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727050AbfGBOYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 10:24:51 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:45871 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726628AbfGBOYv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 10:24:51 -0400
-Received: by mail-lj1-f196.google.com with SMTP id m23so17065794lje.12
-        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 07:24:49 -0700 (PDT)
+        id S1726951AbfGBO1f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 10:27:35 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:42502 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726341AbfGBO1e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 10:27:34 -0400
+Received: by mail-wr1-f66.google.com with SMTP id x17so18061281wrl.9
+        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 07:27:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=bSHjqClvRfHK2U9qiOj5LIMtdVJcukiMxcH2n03yaCU=;
-        b=HFTZp006q8TZVX5sIuJIMOkk1C9wJQO4rJGRAiNBk/2WlyfUJ1rdVQY+PYz0ZhQz3Q
-         wT17e2X0kch1+uP8KvE/V1ET2jlNw8aK4cHsN9Zf832n78lQJQUY75gbrep4TC2UbVpA
-         axaAvW+VgyPKfoktsN3yY2BkGI/5aoxuUHGyQG0WSr2OOvsF8q/VePxkmkaj/PJRO9vE
-         rGWXVn0dbCitwyb/iSKcxQgRgC7wf16i4cJRuO/qWn8T4MKiDjladJV35U+7gNDPkgpt
-         /fHPgF/QGWi5AyHp75MflzSGf05Yw5Z8bbdVS03YBHG/wVa/f2iIl+T0k5Bb5yqMYZdq
-         I35A==
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=EvUD0G7ZLwM85um29w40yj3BLaLrf8+fkprze7AgXNg=;
+        b=DrpE3UpNbWUGjDYvTqLX3fvgMdTrRLaxHJLpNBeQZU7wzjche41R79xGFkswL8KoPY
+         zVSzzUZv5rfcljAXNiFx7suJ7R/xmVM/zaPGOLwYNMyUPF1s0Q1+R1vGLKZDaA2o8PCt
+         IPh7RBd7m4PGlp5POrk1oLrfn5CJOSBQgIjgg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to:user-agent;
-        bh=bSHjqClvRfHK2U9qiOj5LIMtdVJcukiMxcH2n03yaCU=;
-        b=PdI74saUIxDcLDLHtTYKfG5pwiTlKIEqqw5o3lPZAuto4i5ttuI2mDJzSI2Pxw5ovh
-         +coRNAkjCPLTx2ODZL+A9fQLcU+gb+vCLYyPYAaX2b8Xd8iYXnlam9amSXoEy8vKnL78
-         aI/T8dmqI5N2cuUEcoUMCKjK7ObhY41qRgWs1IlowwM1a0pJ/EzWOPsbxJT/ybzXiSD4
-         dUUniICIaIEVHZJm8lH943+5QftjvoCmIhw5u8bBHNSXObBl8n3YM1kxN6HrMfqAIRXY
-         /fYylNQznP9OQS16mGQfgsJkUbnv2zuCLM+5FrpG5tZfhe5qB72mKyNPtbnf2CGLZg0N
-         gnJA==
-X-Gm-Message-State: APjAAAWw5b1q+IfmxTyyho5DaoFfTNpNAH1Bi/bFbK+4sQDvB3DghK/P
-        IcX0MFSkB82NFQyULkQvLkuESQ==
-X-Google-Smtp-Source: APXvYqznUXLZarmJq51xBmcNdfHn/7nzoCiQ/8SROQ+yDmBZCj4RCuLLzIa94kh5HISHvcZ/J8lmOA==
-X-Received: by 2002:a2e:9a96:: with SMTP id p22mr17345327lji.57.1562077488680;
-        Tue, 02 Jul 2019 07:24:48 -0700 (PDT)
-Received: from khorivan (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
-        by smtp.gmail.com with ESMTPSA id w28sm3817013ljd.12.2019.07.02.07.24.47
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 02 Jul 2019 07:24:48 -0700 (PDT)
-Date:   Tue, 2 Jul 2019 17:24:46 +0300
-From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     grygorii.strashko@ti.com, davem@davemloft.net, ast@kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
-        daniel@iogearbox.net, jakub.kicinski@netronome.com,
-        john.fastabend@gmail.com
-Subject: Re: [PATCH v5 net-next 6/6] net: ethernet: ti: cpsw: add XDP support
-Message-ID: <20190702142444.GC4510@khorivan>
-Mail-Followup-To: Jesper Dangaard Brouer <brouer@redhat.com>,
-        grygorii.strashko@ti.com, davem@davemloft.net, ast@kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
-        daniel@iogearbox.net, jakub.kicinski@netronome.com,
-        john.fastabend@gmail.com
-References: <20190630172348.5692-1-ivan.khoronzhuk@linaro.org>
- <20190630172348.5692-7-ivan.khoronzhuk@linaro.org>
- <20190701181901.150c0b71@carbon>
- <20190702113738.GB4510@khorivan>
- <20190702153902.0e42b0b2@carbon>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=EvUD0G7ZLwM85um29w40yj3BLaLrf8+fkprze7AgXNg=;
+        b=sAoYrSXX9B48qFEMvxdimbPhLMaSVEqVaG0a3p9ZPcx1pjhMulgP3T75BhN2H4QeZ6
+         FNM9MSo/FPQA1HN2cK7ZroTu+2ZT5YjWygH/KPNuikfuvM2iWvuyCEQuwSmDl9pzffis
+         UA7Xuwj6yHekvm7iGPXxucYSDD9Kie7cHyQk3fj5YFNUi5CqFLSGspA4pFa4bSVnc82l
+         JQTFYfZwwGpahHTUNFMo8q44AEUYrwn9UY51Ym2dkZ1fat2R1yFlABBn1p2wCCgGVfYq
+         2rX1XoPimPSZXlSIPI7dtuR6GMbQi8WFvJmbsimr/yjQMr1iAeziLDjbk1t6+qOfU+dz
+         gQaw==
+X-Gm-Message-State: APjAAAWYxbkDcE/nY9PDKeTsJpuYUX8xcA4KlzS8oEsI4UlDKpggeDaB
+        l/LtHKNvQaZkBgdL3yU58magUQ==
+X-Google-Smtp-Source: APXvYqxh4w3loFivtXTdoyivP+vj02ZyRUER9CIjkB7eqjStukVyHFTwuU3SE6szdCB0CMJhrLhD3Q==
+X-Received: by 2002:a5d:5386:: with SMTP id d6mr16098031wrv.207.1562077652079;
+        Tue, 02 Jul 2019 07:27:32 -0700 (PDT)
+Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id o11sm2203164wmh.37.2019.07.02.07.27.30
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Tue, 02 Jul 2019 07:27:31 -0700 (PDT)
+Subject: Re: [RFC net-next] net: dsa: add support for MC_DISABLED attribute
+To:     =?UTF-8?Q?Linus_L=c3=bcssing?= <linus.luessing@c0d3.blue>,
+        Ido Schimmel <idosch@idosch.org>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        bridge@lists.linux-foundation.org, b.a.t.m.a.n@lists.open-mesh.org
+References: <20190620235639.24102-1-vivien.didelot@gmail.com>
+ <5d653a4d-3270-8e53-a5e0-88ea5e7a4d3f@gmail.com>
+ <20190621172952.GB9284@t480s.localdomain> <20190623070949.GB13466@splinter>
+ <20190623072605.2xqb56tjydqz2jkx@shell.armlinux.org.uk>
+ <20190623074427.GA21875@splinter> <20190629162945.GB17143@splinter>
+ <20190630165601.GC2500@otheros>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <da75f439-87fb-6e77-4042-a95953f92f75@cumulusnetworks.com>
+Date:   Tue, 2 Jul 2019 17:27:29 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20190702153902.0e42b0b2@carbon>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20190630165601.GC2500@otheros>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 02, 2019 at 03:39:02PM +0200, Jesper Dangaard Brouer wrote:
->On Tue, 2 Jul 2019 14:37:39 +0300
->Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
->
->> On Mon, Jul 01, 2019 at 06:19:01PM +0200, Jesper Dangaard Brouer wrote:
->> >On Sun, 30 Jun 2019 20:23:48 +0300
->> >Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
->> >
->> >> +static int cpsw_ndev_create_xdp_rxq(struct cpsw_priv *priv, int ch)
->> >> +{
->> >> +	struct cpsw_common *cpsw = priv->cpsw;
->> >> +	int ret, new_pool = false;
->> >> +	struct xdp_rxq_info *rxq;
->> >> +
->> >> +	rxq = &priv->xdp_rxq[ch];
->> >> +
->> >> +	ret = xdp_rxq_info_reg(rxq, priv->ndev, ch);
->> >> +	if (ret)
->> >> +		return ret;
->> >> +
->> >> +	if (!cpsw->page_pool[ch]) {
->> >> +		ret =  cpsw_create_rx_pool(cpsw, ch);
->> >> +		if (ret)
->> >> +			goto err_rxq;
->> >> +
->> >> +		new_pool = true;
->> >> +	}
->> >> +
->> >> +	ret = xdp_rxq_info_reg_mem_model(rxq, MEM_TYPE_PAGE_POOL,
->> >> +					 cpsw->page_pool[ch]);
->> >> +	if (!ret)
->> >> +		return 0;
->> >> +
->> >> +	if (new_pool) {
->> >> +		page_pool_free(cpsw->page_pool[ch]);
->> >> +		cpsw->page_pool[ch] = NULL;
->> >> +	}
->> >> +
->> >> +err_rxq:
->> >> +	xdp_rxq_info_unreg(rxq);
->> >> +	return ret;
->> >> +}
->> >
->> >Looking at this, and Ilias'es XDP-netsec error handling path, it might
->> >be a mistake that I removed page_pool_destroy() and instead put the
->> >responsibility on xdp_rxq_info_unreg().
->>
->> As for me this is started not from page_pool_free, but rather from calling
->> unreg_mem_model from rxq_info_unreg. Then, if page_pool_free is hidden
->> it looks more a while normal to move all chain to be self destroyed.
->>
->> >
->> >As here, we have to detect if page_pool_create() was a success, and then
->> >if xdp_rxq_info_reg_mem_model() was a failure, explicitly call
->> >page_pool_free() because the xdp_rxq_info_unreg() call cannot "free"
->> >the page_pool object given it was not registered.
->>
->> Yes, it looked a little bit ugly from the beginning, but, frankly,
->> I have got used to this already.
->>
->> >
->> >Ivan's patch in[1], might be a better approach, which forced all
->> >drivers to explicitly call page_pool_free(), even-though it just
->> >dec-refcnt and the real call to page_pool_free() happened via
->> >xdp_rxq_info_unreg().
->> >
->> >To better handle error path, I would re-introduce page_pool_destroy(),
->>
->> So, you might to do it later as I understand, and not for my special
->> case but becouse it makes error path to look a little bit more pretty.
->> I'm perfectly fine with this, and better you add this, for now my
->> implementation requires only "xdp: allow same allocator usage" patch,
->> but if you insist I can resend also patch in question afterwards my
->> series is applied (with modification to cpsw & netsec & mlx5 & page_pool).
->>
->> What's your choice? I can add to your series patch needed for cpsw to
->> avoid some misuse.
->
->I will try to create a cleaned-up version of your patch[1] and
->re-introduce page_pool_destroy() for drivers to use, then we can build
->your driver on top of that.
+On 30/06/2019 19:56, Linus Lüssing wrote:
+> On Sat, Jun 29, 2019 at 07:29:45PM +0300, Ido Schimmel wrote:
+>> I would like to avoid having drivers take the querier state into account
+>> as it will only complicate things further.
+> 
+> I absolutely share your pain. Initially in the early prototypes of
+> multicast awareness in batman-adv we did not consider the querier state.
+> And doing so later did indeed complicate the code a good bit in batman-adv
+> (together with the IGMP/MLD suppression issues). I would have loved to
+> avoid that.
+> 
+> 
+>> Is there anything we can do about it? Enable the bridge querier if no
+>> other querier was detected? Commit c5c23260594c ("bridge: Add
+>> multicast_querier toggle and disable queries by default") disabled
+>> queries by default, but I'm only suggesting to turn them on if no other
+>> querier was detected on the link. Do you think it's still a problem?
+> 
+> As soon as you start becoming the querier, you will not be able to reliably
+> detect anymore whether you are the only querier candidate.
+> 
+> If any random Linux host using a bridge device were potentially becoming
+> a querier, that would cause quite some trouble when this host is
+> behind some bad, bottleneck connection. This host will receive
+> all multicast traffic, not just IGMP/MLD reports. And with a
+> congested connection and then unreliable IGMP/MLD, multicast would
+> become unreliable overall in this domain. So it's important that
+> your querier is not running in the "dark, remote, dusty closet" of
+> your network (topologically speaking).
+> 
 
-I've corrected patch to xdp core and tested. The "page pool API" change
-seems is orthogonal now. So no limits to send v6 that is actually done
-and no more strict dependency on page pool API changes whenever that
-can happen.
++1
+We definitely don't want random hosts becoming queriers
 
--- 
-Regards,
-Ivan Khoronzhuk
+>> On Sun, Jun 23, 2019 at 10:44:27AM +0300, Ido Schimmel wrote:
+>>> See commit b00589af3b04 ("bridge: disable snooping if there is no
+>>> querier"). I think that's unfortunate behavior that we need because
+>>> multicast snooping is enabled by default. If it weren't enabled by
+>>> default, then anyone enabling it would also make sure there's a querier
+>>> in the network.
+> 
+> I do not quite understand that point. In a way, that's what we
+> have right now, isn't it? By default it's disabled, because by
+> default there is no querier on the link. So anyone wanting to use
+> multicast snooping will need to make sure there's a querier in the
+> network.
+> 
+
+Indeed, also you could create the bridge with explicit mcast parameters if you need
+different behaviour on start. Unfortunately I think you'll have to handle
+the querier state.
+
+> 
+> Overall I think the querier (election) mechanism in the standards could
+> need an update. While the lowest-address first might have
+> worked well back then, in uniform, fully wired networks where the
+> position of the querier did not matter, this is not a good
+> solution anymore in networks involving wireless, dynamic connections.
+> Especially in wireless mesh networks this is a bit of an issue for
+> us. Ideally, the querier mechanism were dismissed in favour of simply
+> unsolicited, periodic IGMP/MLD reports...
+> 
+> But of course, updating IETF standards is no solution for now. 
+> 
+> While more complicated, it would not be impossible to consider the
+> querier state, would it? I mean you probably already need to
+> consider the case of a user disabling multicast snooping during
+> runtime, right? So similarly, you could react to appearing or
+> disappearing queriers?
+> 
+> Cheers, Linus
+> 
+
+Thanks,
+ Nik
