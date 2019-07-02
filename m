@@ -2,59 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 723025C8F8
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 08:00:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBA5D5C919
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 08:08:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725858AbfGBF7Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 01:59:25 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:39049 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725802AbfGBF7Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 01:59:25 -0400
-Received: by mail-wr1-f67.google.com with SMTP id x4so16236519wrt.6
-        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 22:59:23 -0700 (PDT)
+        id S1725940AbfGBGIF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 02:08:05 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:51564 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725822AbfGBGIF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 02:08:05 -0400
+Received: by mail-wm1-f65.google.com with SMTP id 207so1640350wma.1;
+        Mon, 01 Jul 2019 23:08:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=JarJ3d5k32mkG4Xjq3ZOqdnEd6nWGE8yZCJuBSCZ9jA=;
-        b=HaYBeO97z+m0sCsgBhu5xnKbl5VWaPRfFQYiV+i09LQ5J8TuiZ9Qeb2pMFIlqEV55L
-         IiglmnbFBKY+0I/SyytQL7deHavchHn8MB6mWX6Q4YQ2CcQF+FU92W6mPgNDd56/ZtdL
-         bG+XGEiSl/9tCj2dS4pPScRPNmZo1vtOF6thgBMJvCF8p5b5qwzdSI3CyHlm3RWqcgqK
-         xEOzjwpB7vgpkCBEht469EX9GKEYNBx4F006mCnHhKB/Nkrbsrg+FAvLJsX6+06hoRo4
-         PBa49AvYTgS8HtouY8nm0hfMcTNz1FKs/xotCfQjgbm6Va6Yn6bnJNg2zpR4VmKWkFh4
-         ypGQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=lve1vjRn+vNM45mBAySyDNXYT3W/b0QVj9SHJfPanGs=;
+        b=EvNkQbbCBhYPT6j/WduVkVn8+LUaU/B/JfHuplh25DI4oTX4Npui55yQSKeHG329Hy
+         gCL9EqIlKU7jcje5b5EPrcg6vdjIeZ+u4N65WKIxXgHSzU7nBK7XA1yYS0yspuqSxQNg
+         dnAEu3wbTD9zYGH8BHPoPq1/dMHJDJaGF+mBGG8BA7O+r48NrJqczPzhQwCUr23T0rNC
+         vxwQdCvoXH8elH2k6kyIjF6EehZjgPtUPvGFWTq+U9pgX73HSbjjF5zDVUfa0lGbbh7B
+         sKn6aJt9MMiET/+fRcr+KBk73mUCXGRrv3XHdr1+8XUiUGGtrVTUbbMPAjF0DCCGCOhx
+         j6Uw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=JarJ3d5k32mkG4Xjq3ZOqdnEd6nWGE8yZCJuBSCZ9jA=;
-        b=ps8spgC3RYUtBD/CcFqFPIhZT/LCh9WWRrsVuQA4Cnf+I1vUuVQfm4CYnifGsaR3xL
-         l3DnCFFMmmVJscXx/nJdPqeTEDra7lLRNSRnGY7Xi/D/v8yLyH1OSfvQ8dS62rcwEEGT
-         v0kxDdUIFUs9m5O1h/blUYER+gyqiNPgu6fUbn6wui2A3yu8mK69a5o0d5AVeA1aaIlA
-         7iKpPfkppN7wx2YoSq7fYbLRpIq/cbVCyY9ankLkev9IfC2dS8lCLXA3yh3Vvv4CCm76
-         wHPH3VlIXWLUDjt/aE/1MrNjJFUDII4PGf2YPowCXedNKSjKAJ0l2rcGY8xRdyztsN0T
-         p/vQ==
-X-Gm-Message-State: APjAAAVRUaDf1Yt6e0oK+ALxP5udarKXerakymRxX2qp+ly2TfwwWOnB
-        AmlLlhGtNRlRLvSCN82zslOPDUp8
-X-Google-Smtp-Source: APXvYqxM7/I9EiwfVgrYdlpkGK+GTJlncDZc+QXcAa01U+Xa3xQoD/J8qJvSWFZSm1MYyHkWmt0hHQ==
-X-Received: by 2002:a5d:4642:: with SMTP id j2mr20570543wrs.211.1562047163101;
-        Mon, 01 Jul 2019 22:59:23 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=lve1vjRn+vNM45mBAySyDNXYT3W/b0QVj9SHJfPanGs=;
+        b=SlGlB784VxE1SLWVGikHXVizM3qad9RGRiqQ9uHZx9JQowyhMPML4w18eGRjYLUPk7
+         oInF9ayMas1uxDp4NRGA2sU5qSQGEx399dEFCY7GIEcIBV+5MPVmImMK2I4ddJhyIdfM
+         3bkHsG0KeYGinXL9Z2P23RIGR/oSWfcVuY/SIzQLluVuOlpepj3l2zNz8GeSCzf19W4M
+         8mXe3VI9rZ5XC3Jd4f2VeXXQyWwgGiKG2qKvDvbc2VZm5VfBZxtcrZOgrODCjGPDMjub
+         Iia+wT/hrloouOKI4oDwwLx8bBX6xOa74yPvugGVMmwBA7y6+cdhH1S7x1c83/bNlwiP
+         hiYw==
+X-Gm-Message-State: APjAAAWH7s0Vu6kheJVgqdNnVvFt6V+0W/V5WmUWMWt2vsRhR98qnVFf
+        G+6bjWTFVfO3FXT+PpXXhWU=
+X-Google-Smtp-Source: APXvYqwJvKbLRroUbMo4RgCa43Mv0w3ssqvmo6D0RZbveWlTcKdX2RcWfLq7Kn2wc8fxaCgcGtpbcA==
+X-Received: by 2002:a7b:c04f:: with SMTP id u15mr1188846wmc.106.1562047683475;
+        Mon, 01 Jul 2019 23:08:03 -0700 (PDT)
 Received: from ?IPv6:2003:ea:8bd6:c00:d5f3:78fc:5357:f218? (p200300EA8BD60C00D5F378FC5357F218.dip0.t-ipconnect.de. [2003:ea:8bd6:c00:d5f3:78fc:5357:f218])
-        by smtp.googlemail.com with ESMTPSA id d9sm15941943wrb.71.2019.07.01.22.59.22
+        by smtp.googlemail.com with ESMTPSA id h19sm25332448wrb.81.2019.07.01.23.08.02
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 01 Jul 2019 22:59:22 -0700 (PDT)
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
+        Mon, 01 Jul 2019 23:08:02 -0700 (PDT)
+Subject: Re: [PATCH 2/3] net: phy: realtek: Enable accessing RTL8211E
+ extension pages
+To:     Matthias Kaehlcke <mka@chromium.org>, Andrew Lunn <andrew@lunn.ch>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>
+References: <20190701195225.120808-1-mka@chromium.org>
+ <20190701195225.120808-2-mka@chromium.org> <20190701200248.GJ30468@lunn.ch>
+ <35db1bff-f48e-5372-06b7-3140cb7cbb71@gmail.com>
+ <20190701210902.GL30468@lunn.ch> <20190702000925.GD250418@google.com>
 From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] Revert "r8169: improve handling VLAN tag"
-Message-ID: <df6fcca2-6db6-0d76-deb2-6b2e98e8bf54@gmail.com>
-Date:   Tue, 2 Jul 2019 07:59:17 +0200
+Message-ID: <bdacdf76-8eae-e865-9c00-8e70a12ad303@gmail.com>
+Date:   Tue, 2 Jul 2019 08:07:57 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 MIME-Version: 1.0
+In-Reply-To: <20190702000925.GD250418@google.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -63,42 +74,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 759d095741721888b6ee51afa74e0a66ce65e974.
+On 02.07.2019 02:09, Matthias Kaehlcke wrote:
+> On Mon, Jul 01, 2019 at 11:09:02PM +0200, Andrew Lunn wrote:
+>> On Mon, Jul 01, 2019 at 10:37:16PM +0200, Heiner Kallweit wrote:
+>>> On 01.07.2019 22:02, Andrew Lunn wrote:
+>>>> On Mon, Jul 01, 2019 at 12:52:24PM -0700, Matthias Kaehlcke wrote:
+>>>>> The RTL8211E has extension pages, which can be accessed after
+>>>>> selecting a page through a custom method. Add a function to
+>>>>> modify bits in a register of an extension page and a few
+>>>>> helpers for dealing with ext pages.
+>>>>>
+>>>>> rtl8211e_modify_ext_paged() and rtl821e_restore_page() are
+>>>>> inspired by their counterparts phy_modify_paged() and
+>>>>> phy_restore_page().
+>>>>
+>>>> Hi Matthias
+>>>>
+>>>> While an extended page is selected, what happens to the normal
+>>>> registers in the range 0-0x1c? Are they still accessible?
+>>>>
+>>> AFAIK: no
+>>
+>> This it would be better to make use of the core paged access support,
+>> so that locking is done correctly.
+> 
+> Do I understand correctly that this would involve assigning
+> .read/write_page and use phy_select_page() and phy_restore_page()?
+> 
+> Besides the benefit of locking this would also result in less code and
+> we could get rid of the custom _restore_page().
+> 
+Interestingly certain Realtek PHY's (incl. RTL8211E) support two paging
+mechanisms.
 
-The patch was based on a misunderstanding. As Al Viro pointed out [0]
-it's simply wrong on big endian. So let's revert it.
+1. Normal paging (set reg 0x1f to page number) - set by core paging
+2. Extended pages (set reg 0x1f to 7, and reg 0x1e to ext. page number)
 
-[0] https://marc.info/?t=156200975600004&r=1&w=2
-
-Reported-by: Al Viro <viro@zeniv.linux.org.uk>
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index a73f25321..22b2f3dcb 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -1528,7 +1528,7 @@ static int rtl8169_set_features(struct net_device *dev,
- static inline u32 rtl8169_tx_vlan_tag(struct sk_buff *skb)
- {
- 	return (skb_vlan_tag_present(skb)) ?
--		TxVlanTag | htons(skb_vlan_tag_get(skb)) : 0x00;
-+		TxVlanTag | swab16(skb_vlan_tag_get(skb)) : 0x00;
- }
- 
- static void rtl8169_rx_vlan_tag(struct RxDesc *desc, struct sk_buff *skb)
-@@ -1536,8 +1536,7 @@ static void rtl8169_rx_vlan_tag(struct RxDesc *desc, struct sk_buff *skb)
- 	u32 opts2 = le32_to_cpu(desc->opts2);
- 
- 	if (opts2 & RxVlanTag)
--		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
--				       ntohs(opts2 & 0xffff));
-+		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), swab16(opts2 & 0xffff));
- }
- 
- static void rtl8169_get_regs(struct net_device *dev, struct ethtool_regs *regs,
--- 
-2.22.0
-
+Newer Realtek PHY's use normal paging only.
