@@ -2,49 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BC7565D97D
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 02:45:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F38E5DA5F
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 03:10:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727129AbfGCApg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 20:45:36 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:45208 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726430AbfGCApg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 20:45:36 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1FC06140093FF;
-        Tue,  2 Jul 2019 15:15:21 -0700 (PDT)
-Date:   Tue, 02 Jul 2019 15:15:20 -0700 (PDT)
-Message-Id: <20190702.151520.28926436187090300.davem@davemloft.net>
-To:     edumazet@google.com
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        jsperbeck@google.com, jarod@redhat.com, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net
-Subject: Re: [PATCH net-next] bonding/main: fix NULL dereference in
- bond_select_active_slave()
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190701174851.70293-1-edumazet@google.com>
-References: <20190701174851.70293-1-edumazet@google.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 02 Jul 2019 15:15:21 -0700 (PDT)
+        id S1727272AbfGCBKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 21:10:24 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:41793 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726329AbfGCBKY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 21:10:24 -0400
+Received: by mail-pl1-f195.google.com with SMTP id m7so229424pls.8
+        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 18:10:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=upcQJVUXF2P8RFoQW3rHZSKflzeQU5Q2gI0H8MqI5NI=;
+        b=2IP/zI06toBzHwsXMk0535bXtGZzQISSXhxQnTLvK7rM9CbSgsoXsbjOrXgciCnyri
+         k9ZPnKBmK+zeln1aeiFozOR0Ynur2psFRPn+ymFdQ/RrkWlF7smIe97yxFUfusth/KSn
+         9BykAHyBWKbH4Zx8aHHp/DuSzDMGRb9Pz4fxu3n7LCqCfa+iUbXFWo/YsXe+X1GW0TLS
+         +K6CBH7okFtCgJvR6JRNdl31S65CivtqBiQiabuwQ+4i1B1nIxZje8487QLqwBNwnsGZ
+         J58DfIQrTTmuTxv3kwCfwVG71xemjX9Bt67W1/k4r11p0UmkzLxXHCJl+MqNHNCs+ke3
+         ifrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=upcQJVUXF2P8RFoQW3rHZSKflzeQU5Q2gI0H8MqI5NI=;
+        b=Bkh7BvRL0u0T51EQZ26AlpFORP8ekhMrkG++bJ9K171GkdibAcjwl2VTSwuCDq7rNz
+         wkT0D7bB86doxrJRWW+OTSeKf1btXd5nNBTAghEksAOGceDPG3TjSant+ufjzOwelTPd
+         n+RqxXNwnhIjfrkfaP6ubAnMTftrrpEHD0yeNuKkRJtDDFbSjlUSnWQy6LFHMX1KmkW1
+         npuw4swTQ18k6lx8xVTLi0Q9/QxFGMxQQeVcJ0j9mKj3aLJS4OKibjUq8iB3eai7JIEy
+         wk826oBE0un7h2VSSW1cxpMeLz3CepkcVJldZs8NEX1ZSwK5s368ScErAMo+gqE4zM6a
+         KtFQ==
+X-Gm-Message-State: APjAAAXgY4v/NCOvy+rrvFGU+ausN9x7EO8ssIWGSFdiPYofjbvxdUkP
+        YDCqaB8tu3uy9MGbU73AFR7V8mBPIvw=
+X-Google-Smtp-Source: APXvYqyV2+Upl4oXqleSMgUbVgn2FDTE/ACd8Q+pqJd6CcfBPjf9RoBMPbKesUSdk2PA0EtbUpo8ig==
+X-Received: by 2002:a17:902:9041:: with SMTP id w1mr16904440plz.132.1562106029378;
+        Tue, 02 Jul 2019 15:20:29 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id t32sm137998pgk.29.2019.07.02.15.20.27
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 02 Jul 2019 15:20:28 -0700 (PDT)
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org
+Cc:     netdev@vger.kernel.org,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: [PATCH v2] net: don't warn in inet diag when IPV6 is disabled
+Date:   Tue,  2 Jul 2019 15:20:21 -0700
+Message-Id: <20190702222021.28899-1-stephen@networkplumber.org>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
-Date: Mon,  1 Jul 2019 10:48:51 -0700
+If IPV6 was disabled, then ss command would cause a kernel warning
+because the command was attempting to dump IPV6 socket information.
+The fix is to just remove the warning.
 
-> A bonding master can be up while best_slave is NULL.
- ...
-> Fixes: e2a7420df2e0 ("bonding/main: convert to using slave printk macros")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reported-by: John Sperbeck <jsperbeck@google.com>
+Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=202249
+Fixes: 432490f9d455 ("net: ip, diag -- Add diag interface for raw sockets")
+Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
+---
+ net/ipv4/raw_diag.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-Applied, thanks.
+diff --git a/net/ipv4/raw_diag.c b/net/ipv4/raw_diag.c
+index 899e34ceb560..e35736b99300 100644
+--- a/net/ipv4/raw_diag.c
++++ b/net/ipv4/raw_diag.c
+@@ -24,9 +24,6 @@ raw_get_hashinfo(const struct inet_diag_req_v2 *r)
+ 		return &raw_v6_hashinfo;
+ #endif
+ 	} else {
+-		pr_warn_once("Unexpected inet family %d\n",
+-			     r->sdiag_family);
+-		WARN_ON_ONCE(1);
+ 		return ERR_PTR(-EINVAL);
+ 	}
+ }
+-- 
+2.20.1
+
