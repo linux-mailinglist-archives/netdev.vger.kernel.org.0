@@ -2,234 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 830195D30F
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 17:39:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 452E35D37F
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 17:51:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726529AbfGBPjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 11:39:24 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:1226 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726046AbfGBPjY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 11:39:24 -0400
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x62Fc0N0012747
-        for <netdev@vger.kernel.org>; Tue, 2 Jul 2019 11:39:23 -0400
-Received: from e06smtp02.uk.ibm.com (e06smtp02.uk.ibm.com [195.75.94.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2tg6phh6tm-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 11:39:22 -0400
-Received: from localhost
-        by e06smtp02.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
-        Tue, 2 Jul 2019 16:39:20 +0100
-Received: from b06avi18626390.portsmouth.uk.ibm.com (9.149.26.192)
-        by e06smtp02.uk.ibm.com (192.168.101.132) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Tue, 2 Jul 2019 16:39:19 +0100
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x62Fd78Q38404482
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 2 Jul 2019 15:39:07 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E7EFAA4055;
-        Tue,  2 Jul 2019 15:39:17 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C0D48A4053;
-        Tue,  2 Jul 2019 15:39:17 +0000 (GMT)
-Received: from white.boeblingen.de.ibm.com (unknown [9.152.98.98])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue,  2 Jul 2019 15:39:17 +0000 (GMT)
-From:   Ilya Leoshkevich <iii@linux.ibm.com>
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Ilya Leoshkevich <iii@linux.ibm.com>
-Subject: [PATCH bpf-next] selftests/bpf: fix compiling loop{1,2,3}.c on s390
-Date:   Tue,  2 Jul 2019 17:39:08 +0200
-X-Mailer: git-send-email 2.21.0
+        id S1726404AbfGBPvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 11:51:20 -0400
+Received: from mail-eopbgr10083.outbound.protection.outlook.com ([40.107.1.83]:41729
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725922AbfGBPvU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jul 2019 11:51:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=brO73ixZOe8DGZmg5e2jQmlH+kevr1g/wfAWOvS3o+o=;
+ b=QlSOKQrB5aTAUXnr3tUCMYfLRkhiFq67wi5CVJNPI1zGuhOYB4e+B/AB6K3iRx9Ze58D8kLdnaH/39fEIj2bLtvGft1JwYxU2AABGbHGIG7cC9AIjEsO8K/nzv3kgQhVN45I9CTjyP8ZF79T7L6Rsg60pKaWYtrz/yP+5hhHuwc=
+Received: from AM6PR05MB6037.eurprd05.prod.outlook.com (20.179.2.84) by
+ AM6PR05MB4197.eurprd05.prod.outlook.com (52.135.161.30) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2032.18; Tue, 2 Jul 2019 15:51:17 +0000
+Received: from AM6PR05MB6037.eurprd05.prod.outlook.com
+ ([fe80::c5b1:6971:9d4b:d5cd]) by AM6PR05MB6037.eurprd05.prod.outlook.com
+ ([fe80::c5b1:6971:9d4b:d5cd%7]) with mapi id 15.20.2032.019; Tue, 2 Jul 2019
+ 15:51:17 +0000
+From:   Petr Machata <petrm@mellanox.com>
+To:     Colin Ian King <colin.king@canonical.com>
+CC:     Jiri Pirko <jiri@mellanox.com>, Ido Schimmel <idosch@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: mlxsw: spectrum: PTP: Support timestamping on Spectrum-1 -
+ potential null ptr dereference
+Thread-Topic: mlxsw: spectrum: PTP: Support timestamping on Spectrum-1 -
+ potential null ptr dereference
+Thread-Index: AQHVMOcY3L7Wjb9apkGPAWlUHGBxiaa3eieA
+Date:   Tue, 2 Jul 2019 15:51:17 +0000
+Message-ID: <87r278sado.fsf@mellanox.com>
+References: <4fb676a6-1de8-8bcf-5f2e-3157827546c8@canonical.com>
+In-Reply-To: <4fb676a6-1de8-8bcf-5f2e-3157827546c8@canonical.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: AM6PR10CA0070.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:209:80::47) To AM6PR05MB6037.eurprd05.prod.outlook.com
+ (2603:10a6:20b:aa::20)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=petrm@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [78.45.160.211]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 408e183b-4fb7-454b-cea3-08d6ff051e2a
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM6PR05MB4197;
+x-ms-traffictypediagnostic: AM6PR05MB4197:
+x-microsoft-antispam-prvs: <AM6PR05MB4197308712FF4EF53E3BFF2CDBF80@AM6PR05MB4197.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4125;
+x-forefront-prvs: 008663486A
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(396003)(346002)(136003)(39860400002)(376002)(51914003)(199004)(189003)(2906002)(8936002)(52116002)(478600001)(186003)(68736007)(305945005)(2616005)(11346002)(446003)(6246003)(81166006)(6486002)(3846002)(86362001)(6116002)(5660300002)(6436002)(25786009)(8676002)(76176011)(102836004)(256004)(316002)(64756008)(71190400001)(71200400001)(6916009)(229853002)(66066001)(476003)(73956011)(99286004)(386003)(486006)(53936002)(14454004)(66476007)(66446008)(7736002)(54906003)(81156014)(66946007)(66556008)(6512007)(4326008)(36756003)(26005)(6506007);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB4197;H:AM6PR05MB6037.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: /xmhY/JQ2JFy1WGjf40O3s61MD44c8F5/5vOPlURdhY/2FWzz0lkaJ2beTokbTh2/VNo9E4lSebxRYokIJFQzkbg8Y1nBEBmKJLK9fl08Qh2jfOEoKMFrjxHXPedF0NzXaM0m2tC2T8nzbyxUEGlVvvV7LjBKhkghZrxGHvNxLSDIHvQRXP1JwLO+tAYY0bxDNQgO5BwrpVuQxVVh+SXweQxsru0iJ9OKSMjZSBbCVuWd+4RJtOzP80vsOIT1B5i1LPPSvkq+RsQTw7O3HzWC9TKKObVRQ0Pgb3BuOxZZTQ6SsX0qYVVX+j7QJdlUV0AEvpdKBxHTChZsa786t9BzCS0FQYaHp2Gj355UZiY1uyW8Y//JDzqRC4agNsvbhijJfYbh3OzV8vKgeYlxBytom6mzIM1iK8vF1XLK/jy5EA=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-x-cbid: 19070215-0008-0000-0000-000002F92A8B
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19070215-0009-0000-0000-0000226674A5
-Message-Id: <20190702153908.41562-1-iii@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-02_08:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=799 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907020169
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 408e183b-4fb7-454b-cea3-08d6ff051e2a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Jul 2019 15:51:17.1501
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: petrm@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB4197
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use PT_REGS_RC(ctx) instead of ctx->rax, which is not present on s390.
 
-Pass -D__TARGET_ARCH_$(ARCH) to selftests in order to choose a proper
-PT_REGS_RC variant.
+Colin Ian King <colin.king@canonical.com> writes:
 
-Fix s930 -> s390 typo.
+> Hi,
+>
+> Static analysis with Coverity on today's linux-next has found a
+> potential null pointer dereference bug with the following commit:
+>
+> commit d92e4e6e33c8b19635be70fb8935b627d2e4f8fe
+> Author: Petr Machata <petrm@mellanox.com>
+> Date:   Sun Jun 30 09:04:56 2019 +0300
+>
+>     mlxsw: spectrum: PTP: Support timestamping on Spectrum-1
+>
+>
+> In function: mlxsw_sp1_ptp_packet_finish the offending code is as follows=
+:
+>
+>        /* Between capturing the packet and finishing it, there is a
+> window of
+>         * opportunity for the originating port to go away (e.g. due to a
+>         * split). Also make sure the SKB device reference is still valid.
+>         */
+>        mlxsw_sp_port =3D mlxsw_sp->ports[local_port];
+>        if (!mlxsw_sp_port && (!skb->dev || skb->dev =3D=3D mlxsw_sp_port-=
+>dev)) {
+>                dev_kfree_skb_any(skb);
+>                return;
+>        }
+>
+> If mlxsw_sp_port is null and skb->dev is not-null then the comparison
+> "skb->dev =3D=3D mlxsw_sp_port->dev" ends up with a null pointer derefere=
+nce.
+>
+> I think the if statement should be:
+>
+> if (mlxsw_sp_port && (!skb->dev || skb->dev =3D=3D mlxsw_sp_port->dev))
+>
+> ..but I'm not 100% sure as I may be missing something a bit more subtle
+> here.
 
-On s390, provide the forward declaration of struct pt_regs and cast it
-to user_pt_regs in PT_REGS_* macros. This is necessary, because instead
-of the full struct pt_regs, s390 exposes only its first field
-user_pt_regs to userspace, and bpf_helpers.h is used with both userspace
-(in selftests) and kernel (in samples) headers.
+Yes, that line is wrong. It's missing a pair of parens, it should be:
 
-On x86, provide userspace versions of PT_REGS_* macros. Unlike s390, x86
-provides struct pt_regs to both userspace and kernel, however, with
-different field names.
+        if (!(mlxsw_sp_port && (!skb->dev || skb->dev =3D=3D mlxsw_sp_port-=
+>dev))) {
 
-Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
----
- tools/testing/selftests/bpf/Makefile      |  4 +-
- tools/testing/selftests/bpf/bpf_helpers.h | 46 +++++++++++++++--------
- tools/testing/selftests/bpf/progs/loop1.c |  2 +-
- tools/testing/selftests/bpf/progs/loop2.c |  2 +-
- tools/testing/selftests/bpf/progs/loop3.c |  2 +-
- 5 files changed, 37 insertions(+), 19 deletions(-)
+I.e. I need a port && I need the skb->dev to still refer to that port
+(or else be NULL). If that doesn't hold, bail out.
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index d60fee59fbd1..599b320bef65 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -1,5 +1,6 @@
- # SPDX-License-Identifier: GPL-2.0
- include ../../../../scripts/Kbuild.include
-+include ../../../scripts/Makefile.arch
- 
- LIBDIR := ../../../lib
- BPFDIR := $(LIBDIR)/bpf
-@@ -138,7 +139,8 @@ CLANG_SYS_INCLUDES := $(shell $(CLANG) -v -E - </dev/null 2>&1 \
- 
- CLANG_FLAGS = -I. -I./include/uapi -I../../../include/uapi \
- 	      $(CLANG_SYS_INCLUDES) \
--	      -Wno-compare-distinct-pointer-types
-+	      -Wno-compare-distinct-pointer-types \
-+	      -D__TARGET_ARCH_$(ARCH)
- 
- $(OUTPUT)/test_l4lb_noinline.o: CLANG_FLAGS += -fno-inline
- $(OUTPUT)/test_xdp_noinline.o: CLANG_FLAGS += -fno-inline
-diff --git a/tools/testing/selftests/bpf/bpf_helpers.h b/tools/testing/selftests/bpf/bpf_helpers.h
-index 1a5b1accf091..faf86d83301a 100644
---- a/tools/testing/selftests/bpf/bpf_helpers.h
-+++ b/tools/testing/selftests/bpf/bpf_helpers.h
-@@ -312,8 +312,8 @@ static int (*bpf_skb_adjust_room)(void *ctx, __s32 len_diff, __u32 mode,
- #if defined(__TARGET_ARCH_x86)
- 	#define bpf_target_x86
- 	#define bpf_target_defined
--#elif defined(__TARGET_ARCH_s930x)
--	#define bpf_target_s930x
-+#elif defined(__TARGET_ARCH_s390)
-+	#define bpf_target_s390
- 	#define bpf_target_defined
- #elif defined(__TARGET_ARCH_arm)
- 	#define bpf_target_arm
-@@ -338,8 +338,8 @@ static int (*bpf_skb_adjust_room)(void *ctx, __s32 len_diff, __u32 mode,
- #ifndef bpf_target_defined
- #if defined(__x86_64__)
- 	#define bpf_target_x86
--#elif defined(__s390x__)
--	#define bpf_target_s930x
-+#elif defined(__s390__)
-+	#define bpf_target_s390
- #elif defined(__arm__)
- 	#define bpf_target_arm
- #elif defined(__aarch64__)
-@@ -355,6 +355,7 @@ static int (*bpf_skb_adjust_room)(void *ctx, __s32 len_diff, __u32 mode,
- 
- #if defined(bpf_target_x86)
- 
-+#ifdef __KERNEL__
- #define PT_REGS_PARM1(x) ((x)->di)
- #define PT_REGS_PARM2(x) ((x)->si)
- #define PT_REGS_PARM3(x) ((x)->dx)
-@@ -365,19 +366,34 @@ static int (*bpf_skb_adjust_room)(void *ctx, __s32 len_diff, __u32 mode,
- #define PT_REGS_RC(x) ((x)->ax)
- #define PT_REGS_SP(x) ((x)->sp)
- #define PT_REGS_IP(x) ((x)->ip)
-+#else
-+#define PT_REGS_PARM1(x) ((x)->rdi)
-+#define PT_REGS_PARM2(x) ((x)->rsi)
-+#define PT_REGS_PARM3(x) ((x)->rdx)
-+#define PT_REGS_PARM4(x) ((x)->rcx)
-+#define PT_REGS_PARM5(x) ((x)->r8)
-+#define PT_REGS_RET(x) ((x)->rsp)
-+#define PT_REGS_FP(x) ((x)->rbp)
-+#define PT_REGS_RC(x) ((x)->rax)
-+#define PT_REGS_SP(x) ((x)->rsp)
-+#define PT_REGS_IP(x) ((x)->rip)
-+#endif
- 
--#elif defined(bpf_target_s390x)
-+#elif defined(bpf_target_s390)
- 
--#define PT_REGS_PARM1(x) ((x)->gprs[2])
--#define PT_REGS_PARM2(x) ((x)->gprs[3])
--#define PT_REGS_PARM3(x) ((x)->gprs[4])
--#define PT_REGS_PARM4(x) ((x)->gprs[5])
--#define PT_REGS_PARM5(x) ((x)->gprs[6])
--#define PT_REGS_RET(x) ((x)->gprs[14])
--#define PT_REGS_FP(x) ((x)->gprs[11]) /* Works only with CONFIG_FRAME_POINTER */
--#define PT_REGS_RC(x) ((x)->gprs[2])
--#define PT_REGS_SP(x) ((x)->gprs[15])
--#define PT_REGS_IP(x) ((x)->psw.addr)
-+/* s390 provides user_pt_regs instead of struct pt_regs to userspace */
-+struct pt_regs;
-+#define PT_REGS_PARM1(x) (((const volatile user_pt_regs *)(x))->gprs[2])
-+#define PT_REGS_PARM2(x) (((const volatile user_pt_regs *)(x))->gprs[3])
-+#define PT_REGS_PARM3(x) (((const volatile user_pt_regs *)(x))->gprs[4])
-+#define PT_REGS_PARM4(x) (((const volatile user_pt_regs *)(x))->gprs[5])
-+#define PT_REGS_PARM5(x) (((const volatile user_pt_regs *)(x))->gprs[6])
-+#define PT_REGS_RET(x) (((const volatile user_pt_regs *)(x))->gprs[14])
-+/* Works only with CONFIG_FRAME_POINTER */
-+#define PT_REGS_FP(x) (((const volatile user_pt_regs *)(x))->gprs[11])
-+#define PT_REGS_RC(x) (((const volatile user_pt_regs *)(x))->gprs[2])
-+#define PT_REGS_SP(x) (((const volatile user_pt_regs *)(x))->gprs[15])
-+#define PT_REGS_IP(x) (((const volatile user_pt_regs *)(x))->psw.addr)
- 
- #elif defined(bpf_target_arm)
- 
-diff --git a/tools/testing/selftests/bpf/progs/loop1.c b/tools/testing/selftests/bpf/progs/loop1.c
-index dea395af9ea9..7cdb7f878310 100644
---- a/tools/testing/selftests/bpf/progs/loop1.c
-+++ b/tools/testing/selftests/bpf/progs/loop1.c
-@@ -18,7 +18,7 @@ int nested_loops(volatile struct pt_regs* ctx)
- 	for (j = 0; j < 300; j++)
- 		for (i = 0; i < j; i++) {
- 			if (j & 1)
--				m = ctx->rax;
-+				m = PT_REGS_RC(ctx);
- 			else
- 				m = j;
- 			sum += i * m;
-diff --git a/tools/testing/selftests/bpf/progs/loop2.c b/tools/testing/selftests/bpf/progs/loop2.c
-index 0637bd8e8bcf..9b2f808a2863 100644
---- a/tools/testing/selftests/bpf/progs/loop2.c
-+++ b/tools/testing/selftests/bpf/progs/loop2.c
-@@ -16,7 +16,7 @@ int while_true(volatile struct pt_regs* ctx)
- 	int i = 0;
- 
- 	while (true) {
--		if (ctx->rax & 1)
-+		if (PT_REGS_RC(ctx) & 1)
- 			i += 3;
- 		else
- 			i += 7;
-diff --git a/tools/testing/selftests/bpf/progs/loop3.c b/tools/testing/selftests/bpf/progs/loop3.c
-index 30a0f6cba080..d727657d51e2 100644
---- a/tools/testing/selftests/bpf/progs/loop3.c
-+++ b/tools/testing/selftests/bpf/progs/loop3.c
-@@ -16,7 +16,7 @@ int while_true(volatile struct pt_regs* ctx)
- 	__u64 i = 0, sum = 0;
- 	do {
- 		i++;
--		sum += ctx->rax;
-+		sum += PT_REGS_RC(ctx);
- 	} while (i < 0x100000000ULL);
- 	return sum;
- }
--- 
-2.21.0
-
+Thanks for the report, I'll spin a fix!
