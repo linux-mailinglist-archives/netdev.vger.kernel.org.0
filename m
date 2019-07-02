@@ -2,116 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CA535D5B8
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 19:54:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19F485D5C0
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 19:55:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726678AbfGBRyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 13:54:12 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:43685 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726150AbfGBRyL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 13:54:11 -0400
-Received: by mail-io1-f66.google.com with SMTP id k20so12739001ios.10;
-        Tue, 02 Jul 2019 10:54:11 -0700 (PDT)
+        id S1726966AbfGBRzH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 13:55:07 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:46643 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726486AbfGBRzH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 13:55:07 -0400
+Received: by mail-io1-f67.google.com with SMTP id i10so25285812iol.13;
+        Tue, 02 Jul 2019 10:55:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=4SxTyhIcg3+qLl0diKxGNqrI+DVjZ+HIytvBevQdK5U=;
-        b=Y2KEZRxSiW1w+yzwKAx6dWbJE8qZYtTazVd++IzLk/ancCWwbOT54jM+m6I9m927vo
-         LvapFQdgY3Xpt3sGN5dXGGqsFpqCgzyQyYKzaNo2CoWtLUU+D0tEbsd8bIko24mq2En9
-         CjEA097rW1mTUa6iDmGaq9a53/yJBvrpJqlzWutZvyute8mndrQJKkNnE0DUk3/FufVZ
-         wu+wxHeMionfbQxnV+8BZq2G+xY5pWpRG3kc8zAUNP1cgVy8RefIvkZKWgh9t1LImlkU
-         EVAbx0g0A3IcVKy2BoVmyAlvMm7xx2haMedqGVB4bGzYvs1B76XtQeEVigIn1fwMX1hg
-         K2wQ==
+         :cc;
+        bh=U/Z4Dj4Y0qCwdeyEvtqgR34poFjwE8weburaMF45MeQ=;
+        b=s3N41a7kPqOIX37fs5hOJz20BwsXZJD2/DvSrm03Otz2GraweucH2293NQXQ4xcUc/
+         qHiHPm5xV/4FlbfEIyy2F4bjbCjxt01ZPQvcnoX4nZQJMKaiC9UBNEjR6qtYsq7BpiZc
+         s0WY6CydtXoprZ8xU9uvQaGUzZKbhL2h+p2W5HOcTf/L4w19Eq69A8FccnxC/AUNOT7s
+         Y7hfrKaw23ZT1WLidKh9Yg0JBvuxsr4P/0G6GDUzztPr/fwwORGqaGFFHE64PRXtJZKH
+         ecJK4ddelBZ1XI2mB+4en6wDAKbahp8+1c4Zh1jTPxyF+pwNB3pNctfynWfB7YSyuwK0
+         2hfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=4SxTyhIcg3+qLl0diKxGNqrI+DVjZ+HIytvBevQdK5U=;
-        b=nIqjiZMgIq9J7arcBW6XbgUrPwC/giM4ApM1MAjVqMA+v5m2HFth+p6dp17BSs/xzm
-         1vqocYD++8GqTr0Jh2ljHCZiq1TgffyBIRcTcq7At6d5hQvAts+hJXU8pM/uaC9As/Pw
-         Mha1gmuv3Ut5Ho/M3bCwTW4PRf6hrzyVyosDfzNdMeVOkeVyfvvyHNiGoq19vXuudR4H
-         0fxQEOSzQyE59wYYbsmpyedvjJzmpKlJvZeo/deTmZrwYJXs4/yH0juWZ9q5poUS2vb5
-         hWdg5rmtkd7KKNCOngiOKt04zo4yxI8gp/nYTLfxnP1nENVLg+9IBKh6VcSApiEvCKK6
-         7JDg==
-X-Gm-Message-State: APjAAAXnqNsFq8/AVt0DZVs8617uNQVv5dqmnjZmkPW3CcJgF+IYF555
-        y73yC++e/If6Pqc8yQIk0LVekBpeajD1xGt8ANFvfSvA
-X-Google-Smtp-Source: APXvYqy12ib+QiknsniPWEIIgY9CVXdQwQpzSonBEkQvIzRrbW3iy5WZwl4EufLAsbYdA1blichu/7Z8NNCbWjNBwj8=
-X-Received: by 2002:a05:6638:199:: with SMTP id a25mr36733180jaq.18.1562090050662;
- Tue, 02 Jul 2019 10:54:10 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=U/Z4Dj4Y0qCwdeyEvtqgR34poFjwE8weburaMF45MeQ=;
+        b=mr1ASSWBLGS7s2Qy0GAslrslZGhTaaN8GBK8f5z90jpuV0gRrHlyrEbAI6EqzfCLHh
+         GEhARUVwyiCeszygR7VzqOweKdy4dNpUHGhKSr+FPxK3q7v+mxBmE14fKZ8vbV2+TxCj
+         db/x+nD5NuVoGmNnWks9QweoUoMFL545/ZjV15HW6fc0Dm/vlZr//GZMqKWvn891Nkyo
+         NZwumLtgOmKu+3Nb/aZ8ns1r3P6g+fr0RuOIxLg1YE5hZT4bRlKEGaR4D9ZltYyiGgNr
+         02CnvaIx3LVgi3dBekbTDF6bUmvYUGcUagG9/Qn5KauwcsotVpieBjyMsNdzlRtXrdCs
+         ireQ==
+X-Gm-Message-State: APjAAAVGbWM3WfDRZx9b5wuGuNK9pzQ/vTA04d6bdUCRaJVtR3/qljz+
+        XtbxMSxgBnAxpA0HxJaNlFIsVcxy0ixcmwyXsx2ylpbwH0U=
+X-Google-Smtp-Source: APXvYqyJ7J/5mF5SmC9nDXpaZLD88ofj1dqhd9nZh2LiPIHrtBNayhXrkSUr0pePIGuGLEUAgU7Z9UJkQC3JYcEWuWU=
+X-Received: by 2002:a5d:8f86:: with SMTP id l6mr6268331iol.97.1562090106352;
+ Tue, 02 Jul 2019 10:55:06 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190702153908.41562-1-iii@linux.ibm.com> <CAH3MdRUk5x2D9yRuKpGpVuDMFF0JbYeB+Y0Qz6chtPgfm-1vxA@mail.gmail.com>
- <1AE29825-8FB2-4682-8822-5F3D16965657@linux.ibm.com>
-In-Reply-To: <1AE29825-8FB2-4682-8822-5F3D16965657@linux.ibm.com>
+References: <20190702153908.41562-1-iii@linux.ibm.com>
+In-Reply-To: <20190702153908.41562-1-iii@linux.ibm.com>
 From:   Y Song <ys114321@gmail.com>
-Date:   Tue, 2 Jul 2019 10:53:34 -0700
-Message-ID: <CAH3MdRXZtsiLNyJ2y3rf2XVfa+j=BJCQktARncgnzFvSAKo=-g@mail.gmail.com>
+Date:   Tue, 2 Jul 2019 10:54:30 -0700
+Message-ID: <CAH3MdRV2_GSBRqBc_vB--N4=tg-BzfHXho2Gz_4g-FnDdALh-g@mail.gmail.com>
 Subject: Re: [PATCH bpf-next] selftests/bpf: fix compiling loop{1,2,3}.c on s390
 To:     Ilya Leoshkevich <iii@linux.ibm.com>
 Cc:     bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 2, 2019 at 9:58 AM Ilya Leoshkevich <iii@linux.ibm.com> wrote:
+On Tue, Jul 2, 2019 at 8:40 AM Ilya Leoshkevich <iii@linux.ibm.com> wrote:
 >
-> > Am 02.07.2019 um 18:42 schrieb Y Song <ys114321@gmail.com>:
-> >
-> > On Tue, Jul 2, 2019 at 8:40 AM Ilya Leoshkevich <iii@linux.ibm.com> wro=
-te:
-> >>
-> >> -#elif defined(__s390x__)
-> >> -       #define bpf_target_s930x
-> >
-> > I see in some other places (e.g., bcc) where
-> > macro __s390x__ is also used to indicate a s390 architecture.
-> > Could you explain the difference between __s390__ and
-> > __s390x__?
+> Use PT_REGS_RC(ctx) instead of ctx->rax, which is not present on s390.
 >
-> __s390__ is defined for 32-bit and 64-bit variants, __s390x__ is defined
-> for 64-bit variant only.
+> Pass -D__TARGET_ARCH_$(ARCH) to selftests in order to choose a proper
+> PT_REGS_RC variant.
+>
+> Fix s930 -> s390 typo.
+>
+> On s390, provide the forward declaration of struct pt_regs and cast it
+> to user_pt_regs in PT_REGS_* macros. This is necessary, because instead
+> of the full struct pt_regs, s390 exposes only its first field
+> user_pt_regs to userspace, and bpf_helpers.h is used with both userspace
+> (in selftests) and kernel (in samples) headers.
+>
+> On x86, provide userspace versions of PT_REGS_* macros. Unlike s390, x86
+> provides struct pt_regs to both userspace and kernel, however, with
+> different field names.
+>
+> Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
 
-Thanks.
+Acked-by: Yonghong Song <yhs@fb.com>
 
+> ---
+>  tools/testing/selftests/bpf/Makefile      |  4 +-
+>  tools/testing/selftests/bpf/bpf_helpers.h | 46 +++++++++++++++--------
+>  tools/testing/selftests/bpf/progs/loop1.c |  2 +-
+>  tools/testing/selftests/bpf/progs/loop2.c |  2 +-
+>  tools/testing/selftests/bpf/progs/loop3.c |  2 +-
+>  5 files changed, 37 insertions(+), 19 deletions(-)
 >
-> >> #if defined(bpf_target_x86)
-> >>
-> >> +#ifdef __KERNEL__
-> >
-> > In samples/bpf/,  __KERNEL__ is defined at clang options and
-> > in selftests/bpf/, the __KERNEL__ is not defined.
-> >
-> > I checked x86 pt_regs definition with and without __KERNEL__.
-> > They are identical except some register name difference.
-> > I am wondering whether we can unify into all without
-> > __KERNEL__. Is __KERNEL__ really needed?
+> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+> index d60fee59fbd1..599b320bef65 100644
+> --- a/tools/testing/selftests/bpf/Makefile
+> +++ b/tools/testing/selftests/bpf/Makefile
+> @@ -1,5 +1,6 @@
+>  # SPDX-License-Identifier: GPL-2.0
+>  include ../../../../scripts/Kbuild.include
+> +include ../../../scripts/Makefile.arch
 >
-> Right now removing it causes the build to fail, but the errors look
-> fixable. However, I wonder whether there is a plan regarding this:
-> should eBPF programs be built with user headers, kernel headers,
-> or both? Status quo appears to be "both", so I=E2=80=99ve decided to stic=
-k with
-> that in this patch.
-
-Your patch is okay in the sense it maintains the current behavor.
-I think it is okay since user level and kernel pt_regs layout are the same
-except certain names are different.
-
+>  LIBDIR := ../../../lib
+>  BPFDIR := $(LIBDIR)/bpf
+> @@ -138,7 +139,8 @@ CLANG_SYS_INCLUDES := $(shell $(CLANG) -v -E - </dev/null 2>&1 \
 >
-> >> +/* s390 provides user_pt_regs instead of struct pt_regs to userspace =
-*/
-> >> +struct pt_regs;
-> >> +#define PT_REGS_PARM1(x) (((const volatile user_pt_regs *)(x))->gprs[=
-2])
-> >
-> > Is user_pt_regs a recent change or has been there for quite some time?
-> > I am asking since bcc did not use user_pt_regs yet.
+>  CLANG_FLAGS = -I. -I./include/uapi -I../../../include/uapi \
+>               $(CLANG_SYS_INCLUDES) \
+> -             -Wno-compare-distinct-pointer-types
+> +             -Wno-compare-distinct-pointer-types \
+> +             -D__TARGET_ARCH_$(ARCH)
 >
-> It was added in late 2017 in commit 466698e654e8 ("s390/bpf: correct
-> broken uapi for BPF_PROG_TYPE_PERF_EVENT program type=E2=80=9C).
-
-Thanks.
+>  $(OUTPUT)/test_l4lb_noinline.o: CLANG_FLAGS += -fno-inline
+>  $(OUTPUT)/test_xdp_noinline.o: CLANG_FLAGS += -fno-inline
+> diff --git a/tools/testing/selftests/bpf/bpf_helpers.h b/tools/testing/selftests/bpf/bpf_helpers.h
+> index 1a5b1accf091..faf86d83301a 100644
+> --- a/tools/testing/selftests/bpf/bpf_helpers.h
+> +++ b/tools/testing/selftests/bpf/bpf_helpers.h
+> @@ -312,8 +312,8 @@ static int (*bpf_skb_adjust_room)(void *ctx, __s32 len_diff, __u32 mode,
+>  #if defined(__TARGET_ARCH_x86)
+>         #define bpf_target_x86
+>         #define bpf_target_defined
+> -#elif defined(__TARGET_ARCH_s930x)
+> -       #define bpf_target_s930x
+> +#elif defined(__TARGET_ARCH_s390)
+> +       #define bpf_target_s390
+>         #define bpf_target_defined
+>  #elif defined(__TARGET_ARCH_arm)
+>         #define bpf_target_arm
+> @@ -338,8 +338,8 @@ static int (*bpf_skb_adjust_room)(void *ctx, __s32 len_diff, __u32 mode,
+>  #ifndef bpf_target_defined
+>  #if defined(__x86_64__)
+>         #define bpf_target_x86
+> -#elif defined(__s390x__)
+> -       #define bpf_target_s930x
+> +#elif defined(__s390__)
+> +       #define bpf_target_s390
+>  #elif defined(__arm__)
+>         #define bpf_target_arm
+>  #elif defined(__aarch64__)
+> @@ -355,6 +355,7 @@ static int (*bpf_skb_adjust_room)(void *ctx, __s32 len_diff, __u32 mode,
+>
+>  #if defined(bpf_target_x86)
+>
+> +#ifdef __KERNEL__
+>  #define PT_REGS_PARM1(x) ((x)->di)
+>  #define PT_REGS_PARM2(x) ((x)->si)
+>  #define PT_REGS_PARM3(x) ((x)->dx)
+> @@ -365,19 +366,34 @@ static int (*bpf_skb_adjust_room)(void *ctx, __s32 len_diff, __u32 mode,
+>  #define PT_REGS_RC(x) ((x)->ax)
+>  #define PT_REGS_SP(x) ((x)->sp)
+>  #define PT_REGS_IP(x) ((x)->ip)
+> +#else
+> +#define PT_REGS_PARM1(x) ((x)->rdi)
+> +#define PT_REGS_PARM2(x) ((x)->rsi)
+> +#define PT_REGS_PARM3(x) ((x)->rdx)
+> +#define PT_REGS_PARM4(x) ((x)->rcx)
+> +#define PT_REGS_PARM5(x) ((x)->r8)
+> +#define PT_REGS_RET(x) ((x)->rsp)
+> +#define PT_REGS_FP(x) ((x)->rbp)
+> +#define PT_REGS_RC(x) ((x)->rax)
+> +#define PT_REGS_SP(x) ((x)->rsp)
+> +#define PT_REGS_IP(x) ((x)->rip)
+> +#endif
+>
+> -#elif defined(bpf_target_s390x)
+> +#elif defined(bpf_target_s390)
+>
+> -#define PT_REGS_PARM1(x) ((x)->gprs[2])
+> -#define PT_REGS_PARM2(x) ((x)->gprs[3])
+> -#define PT_REGS_PARM3(x) ((x)->gprs[4])
+> -#define PT_REGS_PARM4(x) ((x)->gprs[5])
+> -#define PT_REGS_PARM5(x) ((x)->gprs[6])
+> -#define PT_REGS_RET(x) ((x)->gprs[14])
+> -#define PT_REGS_FP(x) ((x)->gprs[11]) /* Works only with CONFIG_FRAME_POINTER */
+> -#define PT_REGS_RC(x) ((x)->gprs[2])
+> -#define PT_REGS_SP(x) ((x)->gprs[15])
+> -#define PT_REGS_IP(x) ((x)->psw.addr)
+> +/* s390 provides user_pt_regs instead of struct pt_regs to userspace */
+> +struct pt_regs;
+> +#define PT_REGS_PARM1(x) (((const volatile user_pt_regs *)(x))->gprs[2])
+> +#define PT_REGS_PARM2(x) (((const volatile user_pt_regs *)(x))->gprs[3])
+> +#define PT_REGS_PARM3(x) (((const volatile user_pt_regs *)(x))->gprs[4])
+> +#define PT_REGS_PARM4(x) (((const volatile user_pt_regs *)(x))->gprs[5])
+> +#define PT_REGS_PARM5(x) (((const volatile user_pt_regs *)(x))->gprs[6])
+> +#define PT_REGS_RET(x) (((const volatile user_pt_regs *)(x))->gprs[14])
+> +/* Works only with CONFIG_FRAME_POINTER */
+> +#define PT_REGS_FP(x) (((const volatile user_pt_regs *)(x))->gprs[11])
+> +#define PT_REGS_RC(x) (((const volatile user_pt_regs *)(x))->gprs[2])
+> +#define PT_REGS_SP(x) (((const volatile user_pt_regs *)(x))->gprs[15])
+> +#define PT_REGS_IP(x) (((const volatile user_pt_regs *)(x))->psw.addr)
+>
+>  #elif defined(bpf_target_arm)
+>
+> diff --git a/tools/testing/selftests/bpf/progs/loop1.c b/tools/testing/selftests/bpf/progs/loop1.c
+> index dea395af9ea9..7cdb7f878310 100644
+> --- a/tools/testing/selftests/bpf/progs/loop1.c
+> +++ b/tools/testing/selftests/bpf/progs/loop1.c
+> @@ -18,7 +18,7 @@ int nested_loops(volatile struct pt_regs* ctx)
+>         for (j = 0; j < 300; j++)
+>                 for (i = 0; i < j; i++) {
+>                         if (j & 1)
+> -                               m = ctx->rax;
+> +                               m = PT_REGS_RC(ctx);
+>                         else
+>                                 m = j;
+>                         sum += i * m;
+> diff --git a/tools/testing/selftests/bpf/progs/loop2.c b/tools/testing/selftests/bpf/progs/loop2.c
+> index 0637bd8e8bcf..9b2f808a2863 100644
+> --- a/tools/testing/selftests/bpf/progs/loop2.c
+> +++ b/tools/testing/selftests/bpf/progs/loop2.c
+> @@ -16,7 +16,7 @@ int while_true(volatile struct pt_regs* ctx)
+>         int i = 0;
+>
+>         while (true) {
+> -               if (ctx->rax & 1)
+> +               if (PT_REGS_RC(ctx) & 1)
+>                         i += 3;
+>                 else
+>                         i += 7;
+> diff --git a/tools/testing/selftests/bpf/progs/loop3.c b/tools/testing/selftests/bpf/progs/loop3.c
+> index 30a0f6cba080..d727657d51e2 100644
+> --- a/tools/testing/selftests/bpf/progs/loop3.c
+> +++ b/tools/testing/selftests/bpf/progs/loop3.c
+> @@ -16,7 +16,7 @@ int while_true(volatile struct pt_regs* ctx)
+>         __u64 i = 0, sum = 0;
+>         do {
+>                 i++;
+> -               sum += ctx->rax;
+> +               sum += PT_REGS_RC(ctx);
+>         } while (i < 0x100000000ULL);
+>         return sum;
+>  }
+> --
+> 2.21.0
+>
