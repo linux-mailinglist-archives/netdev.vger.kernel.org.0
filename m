@@ -2,207 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 21AF05C653
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 02:32:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E2355C657
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 02:36:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727028AbfGBAb6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 20:31:58 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:39205 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726866AbfGBAb6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 20:31:58 -0400
-Received: by mail-pf1-f194.google.com with SMTP id j2so7348572pfe.6
-        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 17:31:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=EWG9D9Z1nsPT0YVF0HcZk/r7kC+7lwO/rqB586b/trk=;
-        b=YFNaPcMYk/l5tRAYWxrkr0av7YJgasS9t4M1tytaS0SPRxKRV6Bcmub9KkLn/Tdkbr
-         7XGrlDSbfKhm6nHBDVs89NKWsTP8MxJ9YLL+5IYbmXAYQvXVVPcQgkCfXnLk9UO3q+Yc
-         N+CiAkLHWGkOExfuPzVtn3Vgc7dkZ8uBURor27VPbMAdBla2u1KY//85wWPj1EOpqQ6R
-         Q/cAh5GJ3rXa2nNLfEgT9pumq9BH67i+OgHaMgJx7V9iGPSlMAm1gcIEzDGyefi2PeuD
-         dP8cVbtVQK59lgzyTnGK/24myB3MH/YBiitjGzFRtTDdrgBq1Qmhbglj9hUewYzQ2028
-         okuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=EWG9D9Z1nsPT0YVF0HcZk/r7kC+7lwO/rqB586b/trk=;
-        b=bYqKRchCUdQdwX9JQx4jPPFpbrCv1EFDm7tVCZtIj8xHs3L2cBvOIKBQ4KQ7RmrCro
-         7+7wx1NQBXnFe+lambhQhbAqXXfPujnxQgpDWBTt35wz/LHDr37X98ZgmrDLgWFfUFui
-         aT0YAWITNiTwoMfsX8iG8KeBgv31zRTGGo0Ab+QoV9p85AK6ouUfHjyeR/GYIQDuSOtf
-         8GPICSBAUuBM8M6iLDPv+IG8viMrrDFBeeWkK/9GyIsmBFo3OI3l0IcFeQ9BJr9UbZb3
-         uXfTssggHquOQbxkyARXHR+ysbEpOWvZtBz7iDyeDkwD6HHXwfU5XCi5Fz9YwlX+GyWP
-         Eg/A==
-X-Gm-Message-State: APjAAAXOXTY0E+X3Nh8tHsJEqGoCecF7skOM90i8fVvbgi5My4bhOLn2
-        5rKtBjBgUqrS10s79JMruzgH1g==
-X-Google-Smtp-Source: APXvYqx9MEWf0FlC2lSmxm6Hquxa/UOYWWQVGr18lFmZ00tfwxuqJ9fR/mWxlKHIJUVxfaxn2K3fCA==
-X-Received: by 2002:a17:90a:228b:: with SMTP id s11mr2209184pjc.23.1562027517225;
-        Mon, 01 Jul 2019 17:31:57 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id n5sm16344470pgd.26.2019.07.01.17.31.56
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 01 Jul 2019 17:31:56 -0700 (PDT)
-Date:   Mon, 1 Jul 2019 17:31:56 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Y Song <ys114321@gmail.com>
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Priyaranjan Jha <priyarjha@google.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
-Subject: Re: [PATCH bpf-next 7/8] samples/bpf: add sample program that
- periodically dumps TCP stats
-Message-ID: <20190702003156.GI6757@mini-arch>
-References: <20190701204821.44230-1-sdf@google.com>
- <20190701204821.44230-8-sdf@google.com>
- <CAH3MdRX+utr3w1gC537ui7nLOZ+b8yrSKeO3CMuszXG5sGg3NA@mail.gmail.com>
+        id S1727025AbfGBAgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 20:36:33 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:23042 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726678AbfGBAgc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 20:36:32 -0400
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x620TgqS027642;
+        Mon, 1 Jul 2019 17:36:12 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : subject :
+ date : message-id : references : in-reply-to : content-type : content-id :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=MxuQDGLar3lEkiJniyi4tR7wMuhAOJCRJA6Oc11diyU=;
+ b=WiPxjo0Y7MLm6ehJD2XGFf02rDKk9BWl0lCDegis1AYzO/FahnDv3sSVVXBz1QMHyW9r
+ 7ADYaZMH1g1Yp+BdZYsjfmsQeQIDeyahodpY5z9bXyoAjiAOvXY+I/qU2pqBaslA+lUz
+ u3Ks8FPKH5g1FfJErJS8yfJ78+tCqkk9h2E= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2tfns49jsh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 01 Jul 2019 17:36:12 -0700
+Received: from ash-exhub102.TheFacebook.com (2620:10d:c0a8:82::f) by
+ ash-exhub202.TheFacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 1 Jul 2019 17:36:11 -0700
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.172) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Mon, 1 Jul 2019 17:36:11 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector1-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MxuQDGLar3lEkiJniyi4tR7wMuhAOJCRJA6Oc11diyU=;
+ b=hheo/DY7UGhSHbr3FBWA8luebxLFuGTYGCSTcPME+B4gegFMfnzgN2DEuB14vuwREJxju6uXJIN6850O/a8O0zjaRhW+VQ8Ys1+gVZH0TCcbzSQUNy4NqqK1TVTgnebpobkj/0V43qND2KbwI8B1mOtv34PvAAhBJJCsJ3O+IXI=
+Received: from BYAPR15MB3384.namprd15.prod.outlook.com (20.179.59.17) by
+ BYAPR15MB3159.namprd15.prod.outlook.com (20.178.207.220) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2032.20; Tue, 2 Jul 2019 00:36:09 +0000
+Received: from BYAPR15MB3384.namprd15.prod.outlook.com
+ ([fe80::850b:bed:29d5:ae79]) by BYAPR15MB3384.namprd15.prod.outlook.com
+ ([fe80::850b:bed:29d5:ae79%7]) with mapi id 15.20.2032.019; Tue, 2 Jul 2019
+ 00:36:09 +0000
+From:   Yonghong Song <yhs@fb.com>
+To:     Andrii Nakryiko <andriin@fb.com>,
+        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [PATCH v5 bpf-next 0/9] libbpf: add bpf_link and tracing attach
+ APIs
+Thread-Topic: [PATCH v5 bpf-next 0/9] libbpf: add bpf_link and tracing attach
+ APIs
+Thread-Index: AQHVMGkObzHJIo0eEECT0SFQdyxRGaa2e3IA
+Date:   Tue, 2 Jul 2019 00:36:09 +0000
+Message-ID: <fb734118-a051-c3de-560d-42f0fcc79cdd@fb.com>
+References: <20190701235903.660141-1-andriin@fb.com>
+In-Reply-To: <20190701235903.660141-1-andriin@fb.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: CO2PR04CA0141.namprd04.prod.outlook.com (2603:10b6:104::19)
+ To BYAPR15MB3384.namprd15.prod.outlook.com (2603:10b6:a03:10e::17)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::1:fe3a]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 410f01f1-48ae-4add-9224-08d6fe8546de
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BYAPR15MB3159;
+x-ms-traffictypediagnostic: BYAPR15MB3159:
+x-ms-exchange-purlcount: 1
+x-microsoft-antispam-prvs: <BYAPR15MB315982A3C4598FD0642C4C36D3F80@BYAPR15MB3159.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 008663486A
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(39860400002)(346002)(376002)(136003)(396003)(199004)(189003)(256004)(31696002)(14444005)(2201001)(86362001)(5024004)(478600001)(36756003)(66446008)(64756008)(73956011)(66946007)(446003)(316002)(7736002)(66556008)(6246003)(305945005)(6306002)(8676002)(6636002)(81156014)(81166006)(6512007)(53936002)(2501003)(6486002)(46003)(71190400001)(6436002)(71200400001)(229853002)(2616005)(476003)(186003)(14454004)(5660300002)(11346002)(486006)(110136005)(68736007)(102836004)(966005)(25786009)(8936002)(53546011)(386003)(6506007)(31686004)(76176011)(99286004)(66476007)(52116002)(6116002)(2906002);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB3159;H:BYAPR15MB3384.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 7wxQ8t/h/NteMrhDD5U3hQ7Qnbc98EFyykM3St1L8CxbAKHy1rhOQNyr+Vol/vVYstgOw3gJgB/jsKDAzHEW2EXwhRDyEzn9TZ07ycFLcFewQYyD3u5CVaVG7AojtKRSsQIgZ6DRglAziCjeewImR19uYiaYDfHEl1tQMt21Wppg8V3r+qbI53lAA2dBP08281IylFmgJJHx/0RH2m5kF5/tLBNFIYQlHWp4UMC1t6Pvru34ne9ZGHipAr2bc/RTF0o0ZLZU67dyGt9pnMi6XDkXJjkMVwetah2AIHal3o68MXKdDttWjMZ6Zxc8nKD7r+A/8RWbkt5b8Ad+g9WwD61+FpoKW0Nko2h/7hHZE/6qGPv+DmQVic67oW6LOJRea+OBeUKfioyflmJDNlpAQnpd+HfITwthrhGSlok6BV8=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <A9854EAB0E284349B0F6C6563BD259C6@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAH3MdRX+utr3w1gC537ui7nLOZ+b8yrSKeO3CMuszXG5sGg3NA@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 410f01f1-48ae-4add-9224-08d6fe8546de
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Jul 2019 00:36:09.5789
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: yhs@fb.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3159
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-01_14:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1907020002
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/01, Y Song wrote:
-> On Mon, Jul 1, 2019 at 1:49 PM Stanislav Fomichev <sdf@google.com> wrote:
-> >
-> > Uses new RTT callback to dump stats every second.
-> >
-> > $ mkdir -p /tmp/cgroupv2
-> > $ mount -t cgroup2 none /tmp/cgroupv2
-> > $ mkdir -p /tmp/cgroupv2/foo
-> > $ echo $$ >> /tmp/cgroupv2/foo/cgroup.procs
-> > $ bpftool prog load ./tcp_dumpstats_kern.o /sys/fs/bpf/tcp_prog
-> > $ bpftool cgroup attach /tmp/cgroupv2/foo sock_ops pinned /sys/fs/bpf/tcp_prog
-> > $ bpftool prog tracelog
-> > $ # run neper/netperf/etc
-> >
-> > Used neper to compare performance with and without this program attached
-> > and didn't see any noticeable performance impact.
-> >
-> > Sample output:
-> >   <idle>-0     [015] ..s.  2074.128800: 0: dsack_dups=0 delivered=242526
-> >   <idle>-0     [015] ..s.  2074.128808: 0: delivered_ce=0 icsk_retransmits=0
-> >   <idle>-0     [015] ..s.  2075.130133: 0: dsack_dups=0 delivered=323599
-> >   <idle>-0     [015] ..s.  2075.130138: 0: delivered_ce=0 icsk_retransmits=0
-> >   <idle>-0     [005] .Ns.  2076.131440: 0: dsack_dups=0 delivered=404648
-> >   <idle>-0     [005] .Ns.  2076.131447: 0: delivered_ce=0 icsk_retransmits=0
-> >
-> > Cc: Eric Dumazet <edumazet@google.com>
-> > Cc: Priyaranjan Jha <priyarjha@google.com>
-> > Cc: Yuchung Cheng <ycheng@google.com>
-> > Cc: Soheil Hassas Yeganeh <soheil@google.com>
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > ---
-> >  samples/bpf/Makefile             |  1 +
-> >  samples/bpf/tcp_dumpstats_kern.c | 65 ++++++++++++++++++++++++++++++++
-> >  2 files changed, 66 insertions(+)
-> >  create mode 100644 samples/bpf/tcp_dumpstats_kern.c
-> 
-> Currently, the bpf program into the repo. If we do not have another
-> script to use
-> this program for testing, the instructions in the commit message should be
-> added to the bpf program as comments so people know what to do with this file
-> without going through git commit message.
-> 
-> Is it possible to create a script to run with this bpf program?
-There is a general instruction in samples/bpf/tcp_bpf.readme
-with bpftool examples/etc. Should I just a comment at the top
-of the BPF program to point people to that .readme file instead?
-
-> >
-> > diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-> > index 0917f8cf4fab..eaebbeead42f 100644
-> > --- a/samples/bpf/Makefile
-> > +++ b/samples/bpf/Makefile
-> > @@ -154,6 +154,7 @@ always += tcp_iw_kern.o
-> >  always += tcp_clamp_kern.o
-> >  always += tcp_basertt_kern.o
-> >  always += tcp_tos_reflect_kern.o
-> > +always += tcp_dumpstats_kern.o
-> >  always += xdp_redirect_kern.o
-> >  always += xdp_redirect_map_kern.o
-> >  always += xdp_redirect_cpu_kern.o
-> > diff --git a/samples/bpf/tcp_dumpstats_kern.c b/samples/bpf/tcp_dumpstats_kern.c
-> > new file mode 100644
-> > index 000000000000..5d22bf61db65
-> > --- /dev/null
-> > +++ b/samples/bpf/tcp_dumpstats_kern.c
-> > @@ -0,0 +1,65 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +#include <linux/bpf.h>
-> > +
-> > +#include "bpf_helpers.h"
-> > +#include "bpf_endian.h"
-> > +
-> > +#define INTERVAL                       1000000000ULL
-> > +
-> > +int _version SEC("version") = 1;
-> > +char _license[] SEC("license") = "GPL";
-> > +
-> > +struct {
-> > +       __u32 type;
-> > +       __u32 map_flags;
-> > +       int *key;
-> > +       __u64 *value;
-> > +} bpf_next_dump SEC(".maps") = {
-> > +       .type = BPF_MAP_TYPE_SK_STORAGE,
-> > +       .map_flags = BPF_F_NO_PREALLOC,
-> > +};
-> > +
-> > +SEC("sockops")
-> > +int _sockops(struct bpf_sock_ops *ctx)
-> > +{
-> > +       struct bpf_tcp_sock *tcp_sk;
-> > +       struct bpf_sock *sk;
-> > +       __u64 *next_dump;
-> > +       __u64 now;
-> > +
-> > +       switch (ctx->op) {
-> > +       case BPF_SOCK_OPS_TCP_CONNECT_CB:
-> > +               bpf_sock_ops_cb_flags_set(ctx, BPF_SOCK_OPS_RTT_CB_FLAG);
-> > +               return 1;
-> > +       case BPF_SOCK_OPS_RTT_CB:
-> > +               break;
-> > +       default:
-> > +               return 1;
-> > +       }
-> > +
-> > +       sk = ctx->sk;
-> > +       if (!sk)
-> > +               return 1;
-> > +
-> > +       next_dump = bpf_sk_storage_get(&bpf_next_dump, sk, 0,
-> > +                                      BPF_SK_STORAGE_GET_F_CREATE);
-> > +       if (!next_dump)
-> > +               return 1;
-> > +
-> > +       now = bpf_ktime_get_ns();
-> > +       if (now < *next_dump)
-> > +               return 1;
-> > +
-> > +       tcp_sk = bpf_tcp_sock(sk);
-> > +       if (!tcp_sk)
-> > +               return 1;
-> > +
-> > +       *next_dump = now + INTERVAL;
-> > +
-> > +       bpf_printk("dsack_dups=%u delivered=%u\n",
-> > +                  tcp_sk->dsack_dups, tcp_sk->delivered);
-> > +       bpf_printk("delivered_ce=%u icsk_retransmits=%u\n",
-> > +                  tcp_sk->delivered_ce, tcp_sk->icsk_retransmits);
-> > +
-> > +       return 1;
-> > +}
-> > --
-> > 2.22.0.410.gd8fdbe21b5-goog
-> >
+DQoNCk9uIDcvMS8xOSA0OjU4IFBNLCBBbmRyaWkgTmFrcnlpa28gd3JvdGU6DQo+IFRoaXMgcGF0
+Y2hzZXQgYWRkcyB0aGUgZm9sbG93aW5nIEFQSXMgdG8gYWxsb3cgYXR0YWNoaW5nIEJQRiBwcm9n
+cmFtcyB0bw0KPiB0cmFjaW5nIGVudGl0aWVzOg0KPiAtIGJwZl9wcm9ncmFtX19hdHRhY2hfcGVy
+Zl9ldmVudCBmb3IgYXR0YWNoaW5nIHRvIGFueSBvcGVuZWQgcGVyZiBldmVudCBGRCwNCj4gICAg
+YWxsb3dpbmcgdXNlcnMgZnVsbCBjb250cm9sOw0KPiAtIGJwZl9wcm9ncmFtX19hdHRhY2hfa3By
+b2JlIGZvciBhdHRhY2hpbmcgdG8ga2VybmVsIHByb2JlcyAoYm90aCBlbnRyeSBhbmQNCj4gICAg
+cmV0dXJuIHByb2Jlcyk7DQo+IC0gYnBmX3Byb2dyYW1fX2F0dGFjaF91cHJvYmUgZm9yIGF0dGFj
+aGluZyB0byB1c2VyIHByb2JlcyAoYm90aCBlbnRyeS9yZXR1cm4pOw0KPiAtIGJwZl9wcm9ncmFt
+X19hdHRhY2hfdHJhY2Vwb2ludCBmb3IgYXR0YWNoaW5nIHRvIGtlcm5lbCB0cmFjZXBvaW50czsN
+Cj4gLSBicGZfcHJvZ3JhbV9fYXR0YWNoX3Jhd190cmFjZXBvaW50IGZvciBhdHRhY2hpbmcgdG8g
+cmF3IGtlcm5lbCB0cmFjZXBvaW50DQo+ICAgICh3cmFwcGVyIGFyb3VuZCBicGZfcmF3X3RyYWNl
+cG9pbnRfb3Blbik7DQo+IA0KPiBUaGlzIHNldCBvZiBBUElzIG1ha2VzIGxpYmJwZiBtb3JlIHVz
+ZWZ1bCBmb3IgdHJhY2luZyBhcHBsaWNhdGlvbnMuDQo+IA0KPiBBbGwgYXR0YWNoIEFQSXMgcmV0
+dXJuIGFic3RyYWN0IHN0cnVjdCBicGZfbGluayB0aGF0IGVuY2Fwc3VsYXRlcyBsb2dpYyBvZg0K
+PiBkZXRhY2hpbmcgQlBGIHByb2dyYW0uIFNlZSBwYXRjaCAjMiBmb3IgZGV0YWlscy4gYnBmX2Fz
+c29jIHdhcyBjb25zaWRlcmVkIGFzDQo+IGFuIGFsdGVybmF0aXZlIG5hbWUgZm9yIHRoaXMgb3Bh
+cXVlICJoYW5kbGUiLCBidXQgYnBmX2xpbmsgc2VlbXMgdG8gYmUNCj4gYXBwcm9wcmlhdGUgc2Vt
+YW50aWNhbGx5IGFuZCBpcyBuaWNlIGFuZCBzaG9ydC4NCj4gDQo+IFByZS1wYXRjaCAjMSBtYWtl
+cyBpbnRlcm5hbCBsaWJicGZfc3RyZXJyb3JfciBoZWxwZXIgZnVuY3Rpb24gd29yayB3LyBuZWdh
+dGl2ZQ0KPiBlcnJvciBjb2RlcywgbGlmdGluZyB0aGUgYnVyZGVyIG9mZiBjYWxsZXJzIHRvIGtl
+ZXAgdHJhY2sgb2YgZXJyb3Igc2lnbi4NCj4gUGF0Y2ggIzIgYWRkcyBicGZfbGluayBhYnN0cmFj
+dGlvbi4NCj4gUGF0Y2ggIzMgYWRkcyBhdHRhY2hfcGVyZl9ldmVudCwgd2hpY2ggaXMgdGhlIGJh
+c2UgZm9yIGFsbCBvdGhlciBBUElzLg0KPiBQYXRjaCAjNCBhZGRzIGtwcm9iZS91cHJvYmUgQVBJ
+cy4NCj4gUGF0Y2ggIzUgYWRkcyB0cmFjZXBvaW50IEFQSS4NCj4gUGF0Y2ggIzYgYWRkcyByYXdf
+dHJhY2Vwb2ludCBBUEkuDQo+IFBhdGNoICM3IGNvbnZlcnRzIG9uZSBleGlzdGluZyB0ZXN0IHRv
+IHVzZSBhdHRhY2hfcGVyZl9ldmVudC4NCj4gUGF0Y2ggIzggYWRkcyBuZXcga3Byb2JlL3Vwcm9i
+ZSB0ZXN0cy4NCj4gUGF0Y2ggIzkgY29udmVydHMgc29tZSBzZWxmdGVzdHMgY3VycmVudGx5IHVz
+aW5nIHRyYWNlcG9pbnQgdG8gbmV3IEFQSXMuDQo+IA0KPiB2NC0+djU6DQo+IC0gdHlwbyBhbmQg
+c21hbGwgbml0cyAoWW9uZ2hvbmcpOw0KPiAtIHZhbGlkYXRlIHBmZCBpbiBhdHRhY2hfcGVyZl9l
+dmVudCAoWW9uZ2hvbmcpOw0KPiAtIHBhcnNlX3VpbnRfZnJvbV9maWxlIGZpeGVzIChZb25naG9u
+Zyk7DQo+IC0gY2hlY2sgZm9yIG1hbGxvYyBmYWlsdXJlIGluIGF0dGFjaF9yYXdfdHJhY2Vwb2lu
+dCAoWW9uZ2hvbmcpOw0KPiAtIGF0dGFjaF9wcm9iZXMgc2VsZnRlc3RzIGNsZWFuIHVwIGZpeGVz
+IChZb25naG9uZyk7DQo+IHYzLT52NDoNCj4gLSBwcm9wZXIgZXJybm8gaGFuZGxpbmcgKFN0YW5p
+c2xhdik7DQo+IC0gYnBmX2ZkIC0+IHByb2dfZmQgKFN0YW5pc2xhdik7DQo+IC0gc3dpdGNoIHRv
+IGZwcmludGYgKFNvbmcpOw0KPiB2Mi0+djM6DQo+IC0gYWRkZWQgYnBmX2xpbmsgY29uY2VwdCAo
+RGFuaWVsKTsNCj4gLSBkaWRuJ3QgYWRkIGdlbmVyaWMgYnBmX2xpbmtfX2F0dGFjaF9wcm9ncmFt
+IGZvciByZWFzb25zIGRlc2NyaWJlZCBpbiBbMF07DQo+IC0gZHJvcHBlZCBTdGFuaXNsYXYncyBS
+ZXZpZXdlZC1ieSBmcm9tIHBhdGNoZXMgIzItIzYsIGluIGNhc2UgaGUgZG9lc24ndCBsaWtlDQo+
+ICAgIHRoZSBjaGFuZ2U7DQo+IHYxLT52MjoNCj4gLSBwcmVzZXJ2ZSBlcnJubyBiZWZvcmUgY2xv
+c2UoKSBjYWxsIChTdGFuaXNsYXYpOw0KPiAtIHVzZSBsaWJicGZfcGVyZl9ldmVudF9kaXNhYmxl
+X2FuZF9jbG9zZSBpbiBzZWxmdGVzdCAoU3RhbmlzbGF2KTsNCj4gLSByZW1vdmUgdW5uZWNlc3Nh
+cnkgbWVtc2V0IChTdGFuaXNsYXYpOw0KPiANCj4gWzBdIGh0dHBzOi8vbG9yZS5rZXJuZWwub3Jn
+L2JwZi9DQUVmNEJ6WjdFTTVlUDJlYVpuN1QyWWI1UWdWUml3QXMrZXBlTFIxZzAxVFR4LTZtNlFA
+bWFpbC5nbWFpbC5jb20vDQo+IA0KPiBBbmRyaWkgTmFrcnlpa28gKDkpOg0KPiAgICBsaWJicGY6
+IG1ha2UgbGliYnBmX3N0cmVycm9yX3IgYWdub3N0aWMgdG8gc2lnbiBvZiBlcnJvcg0KPiAgICBs
+aWJicGY6IGludHJvZHVjZSBjb25jZXB0IG9mIGJwZl9saW5rDQo+ICAgIGxpYmJwZjogYWRkIGFi
+aWxpdHkgdG8gYXR0YWNoL2RldGFjaCBCUEYgcHJvZ3JhbSB0byBwZXJmIGV2ZW50DQo+ICAgIGxp
+YmJwZjogYWRkIGtwcm9iZS91cHJvYmUgYXR0YWNoIEFQSQ0KPiAgICBsaWJicGY6IGFkZCB0cmFj
+ZXBvaW50IGF0dGFjaCBBUEkNCj4gICAgbGliYnBmOiBhZGQgcmF3IHRyYWNlcG9pbnQgYXR0YWNo
+IEFQSQ0KPiAgICBzZWxmdGVzdHMvYnBmOiBzd2l0Y2ggdGVzdCB0byBuZXcgYXR0YWNoX3BlcmZf
+ZXZlbnQgQVBJDQo+ICAgIHNlbGZ0ZXN0cy9icGY6IGFkZCBrcHJvYmUvdXByb2JlIHNlbGZ0ZXN0
+cw0KPiAgICBzZWxmdGVzdHMvYnBmOiBjb252ZXJ0IGV4aXN0aW5nIHRyYWNlcG9pbnQgdGVzdHMg
+dG8gbmV3IEFQSXMNCj4gDQo+ICAgdG9vbHMvbGliL2JwZi9saWJicGYuYyAgICAgICAgICAgICAg
+ICAgICAgICAgIHwgMzY3ICsrKysrKysrKysrKysrKysrKw0KPiAgIHRvb2xzL2xpYi9icGYvbGli
+YnBmLmggICAgICAgICAgICAgICAgICAgICAgICB8ICAyMSArDQo+ICAgdG9vbHMvbGliL2JwZi9s
+aWJicGYubWFwICAgICAgICAgICAgICAgICAgICAgIHwgICA4ICstDQo+ICAgdG9vbHMvbGliL2Jw
+Zi9zdHJfZXJyb3IuYyAgICAgICAgICAgICAgICAgICAgIHwgICAyICstDQo+ICAgLi4uL3NlbGZ0
+ZXN0cy9icGYvcHJvZ190ZXN0cy9hdHRhY2hfcHJvYmUuYyAgIHwgMTY2ICsrKysrKysrDQo+ICAg
+Li4uL2JwZi9wcm9nX3Rlc3RzL3N0YWNrdHJhY2VfYnVpbGRfaWQuYyAgICAgIHwgIDU1ICstLQ0K
+PiAgIC4uLi9icGYvcHJvZ190ZXN0cy9zdGFja3RyYWNlX2J1aWxkX2lkX25taS5jICB8ICAzMSAr
+LQ0KPiAgIC4uLi9zZWxmdGVzdHMvYnBmL3Byb2dfdGVzdHMvc3RhY2t0cmFjZV9tYXAuYyB8ICA0
+MyArLQ0KPiAgIC4uLi9icGYvcHJvZ190ZXN0cy9zdGFja3RyYWNlX21hcF9yYXdfdHAuYyAgICB8
+ICAxNSArLQ0KPiAgIC4uLi9zZWxmdGVzdHMvYnBmL3Byb2dzL3Rlc3RfYXR0YWNoX3Byb2JlLmMg
+ICB8ICA1NSArKysNCj4gICAxMCBmaWxlcyBjaGFuZ2VkLCA2NjQgaW5zZXJ0aW9ucygrKSwgOTkg
+ZGVsZXRpb25zKC0pDQo+ICAgY3JlYXRlIG1vZGUgMTAwNjQ0IHRvb2xzL3Rlc3Rpbmcvc2VsZnRl
+c3RzL2JwZi9wcm9nX3Rlc3RzL2F0dGFjaF9wcm9iZS5jDQo+ICAgY3JlYXRlIG1vZGUgMTAwNjQ0
+IHRvb2xzL3Rlc3Rpbmcvc2VsZnRlc3RzL2JwZi9wcm9ncy90ZXN0X2F0dGFjaF9wcm9iZS5jDQoN
+Ckxvb2tzIGdvb2QgdG8gbWUuIEFjayBmb3IgdGhlIHdob2xlIHNlcmllcy4NCkFja2VkLWJ5OiBZ
+b25naG9uZyBTb25nIDx5aHNAZmIuY29tPg0K
