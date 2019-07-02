@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C40F15CD2B
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 12:03:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE4AE5CD2D
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 12:03:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727202AbfGBKDL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 06:03:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39242 "EHLO mail.kernel.org"
+        id S1727213AbfGBKDP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 06:03:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39270 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727126AbfGBKDL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jul 2019 06:03:11 -0400
+        id S1727126AbfGBKDP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jul 2019 06:03:15 -0400
 Received: from localhost (unknown [37.142.3.125])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1134D2064A;
-        Tue,  2 Jul 2019 10:03:09 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 984C820665;
+        Tue,  2 Jul 2019 10:03:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1562061790;
-        bh=ot2N/KMUaGw8ZGZLFLatENtSYAPzI0t4Oq4OS+O9yJM=;
+        s=default; t=1562061794;
+        bh=wBCkRsnv9a1K8SJPoJTWZZwKmMKrVkDuueaN17ULxzY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rkShIrC2l0kKaRXsZ82d3kpr2RWKlP1yChYgwSIOQt5wltEf0c1NkY1g8mMqVNjB7
-         0Oh1C4fMSAbAIXQdA2vYKKGpC7/euJ3Q+W3EdWhCIZ5Vjm1zbeB+Ie4/eLoniF2A2g
-         50SuENrkNgqerxFY2YEkp94AcnE/omu5RQsBb8fk=
+        b=LvCVaLoQQGQvUecyhCHFBy0RfJQU/Awt4JLwVFSZHYTc9Zp8ttDm/o9c62gHTHx3B
+         U85gLFSylISqAUgeCx0Bq1VzvcMNLZmqHAL+QdwdUbIxqqj62Dg7R0aw6noZ37pHpO
+         M8WttYUSGm68WKyPSeVIdoA9zzPwLSAGpn8NVUcg=
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@mellanox.com>
@@ -32,9 +32,9 @@ Cc:     Leon Romanovsky <leonro@mellanox.com>,
         Mark Zhang <markz@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>,
         linux-netdev <netdev@vger.kernel.org>
-Subject: [PATCH rdma-next v5 06/17] RDMA/counter: Add "auto" configuration mode support
-Date:   Tue,  2 Jul 2019 13:02:35 +0300
-Message-Id: <20190702100246.17382-7-leon@kernel.org>
+Subject: [PATCH mlx5-next v5 07/17] IB/mlx5: Support set qp counter
+Date:   Tue,  2 Jul 2019 13:02:36 +0300
+Message-Id: <20190702100246.17382-8-leon@kernel.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190702100246.17382-1-leon@kernel.org>
 References: <20190702100246.17382-1-leon@kernel.org>
@@ -47,369 +47,186 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Mark Zhang <markz@mellanox.com>
 
-In auto mode all QPs belong to one category are bind automatically to
-a single counter set. Currently only "qp type" is supported.
-
-In this mode the qp counter is set in RST2INIT modification, and when
-a qp is destroyed the counter is unbound.
+Support bind a qp with counter. If counter is null then bind the qp to
+the default counter. Different QP state has different operation:
+- RESET: Set the counter field so that it will take effective
+  during RST2INIT change;
+- RTS: Issue an RTS2RTS change to update the QP counter;
+- Other: Set the counter field and mark the counter_pending flag,
+  when QP is moved to RTS state and this flag is set, then issue
+  an RTS2RTS modification to update the counter.
 
 Signed-off-by: Mark Zhang <markz@mellanox.com>
 Reviewed-by: Majd Dibbiny <majd@mellanox.com>
+Acked-by: Saeed Mahameed <saeedm@mellanox.com>
 Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
 ---
- drivers/infiniband/core/counters.c | 221 +++++++++++++++++++++++++++++
- drivers/infiniband/core/device.c   |   3 +
- drivers/infiniband/core/verbs.c    |   9 ++
- include/rdma/ib_verbs.h            |  18 +++
- include/rdma/rdma_counter.h        |   8 ++
- 5 files changed, 259 insertions(+)
+ drivers/infiniband/hw/mlx5/mlx5_ib.h |  6 +++
+ drivers/infiniband/hw/mlx5/qp.c      | 76 +++++++++++++++++++++++++++-
+ include/linux/mlx5/qp.h              |  1 +
+ 3 files changed, 81 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/infiniband/core/counters.c b/drivers/infiniband/core/counters.c
-index 6167914fba06..60639452669c 100644
---- a/drivers/infiniband/core/counters.c
-+++ b/drivers/infiniband/core/counters.c
-@@ -54,6 +54,227 @@ int rdma_counter_set_auto_mode(struct ib_device *dev, u8 port,
- 	return ret;
+diff --git a/drivers/infiniband/hw/mlx5/mlx5_ib.h b/drivers/infiniband/hw/mlx5/mlx5_ib.h
+index bdb83fc85f94..c0f4327bd1a5 100644
+--- a/drivers/infiniband/hw/mlx5/mlx5_ib.h
++++ b/drivers/infiniband/hw/mlx5/mlx5_ib.h
+@@ -439,6 +439,10 @@ struct mlx5_ib_qp {
+ 	u32			flags_en;
+ 	/* storage for qp sub type when core qp type is IB_QPT_DRIVER */
+ 	enum ib_qp_type		qp_sub_type;
++	/* A flag to indicate if there's a new counter is configured
++	 * but not take effective
++	 */
++	u32                     counter_pending;
+ };
+ 
+ struct mlx5_ib_cq_buf {
+@@ -1456,4 +1460,6 @@ void mlx5_ib_put_xlt_emergency_page(void);
+ int bfregn_to_uar_index(struct mlx5_ib_dev *dev,
+ 			struct mlx5_bfreg_info *bfregi, u32 bfregn,
+ 			bool dyn_bfreg);
++
++int mlx5_ib_qp_set_counter(struct ib_qp *qp, struct rdma_counter *counter);
+ #endif /* MLX5_IB_H */
+diff --git a/drivers/infiniband/hw/mlx5/qp.c b/drivers/infiniband/hw/mlx5/qp.c
+index 4fbf60fed374..42375cdafd53 100644
+--- a/drivers/infiniband/hw/mlx5/qp.c
++++ b/drivers/infiniband/hw/mlx5/qp.c
+@@ -34,6 +34,7 @@
+ #include <rdma/ib_umem.h>
+ #include <rdma/ib_cache.h>
+ #include <rdma/ib_user_verbs.h>
++#include <rdma/rdma_counter.h>
+ #include <linux/mlx5/fs.h>
+ #include "mlx5_ib.h"
+ #include "ib_rep.h"
+@@ -3380,6 +3381,35 @@ static unsigned int get_tx_affinity(struct mlx5_ib_dev *dev,
+ 	return tx_port_affinity;
  }
  
-+static struct rdma_counter *rdma_counter_alloc(struct ib_device *dev, u8 port,
-+					       enum rdma_nl_counter_mode mode)
++static int __mlx5_ib_qp_set_counter(struct ib_qp *qp,
++				    struct rdma_counter *counter)
 +{
-+	struct rdma_counter *counter;
++	struct mlx5_ib_dev *dev = to_mdev(qp->device);
++	struct mlx5_ib_qp *mqp = to_mqp(qp);
++	struct mlx5_qp_context context = {};
++	struct mlx5_ib_port *mibport = NULL;
++	struct mlx5_ib_qp_base *base;
++	u32 set_id;
 +
-+	if (!dev->ops.counter_dealloc)
-+		return NULL;
-+
-+	counter = kzalloc(sizeof(*counter), GFP_KERNEL);
-+	if (!counter)
-+		return NULL;
-+
-+	counter->device    = dev;
-+	counter->port      = port;
-+	counter->res.type  = RDMA_RESTRACK_COUNTER;
-+	counter->mode.mode = mode;
-+	kref_init(&counter->kref);
-+	mutex_init(&counter->lock);
-+
-+	return counter;
-+}
-+
-+static void rdma_counter_free(struct rdma_counter *counter)
-+{
-+	rdma_restrack_del(&counter->res);
-+	kfree(counter);
-+}
-+
-+static void auto_mode_init_counter(struct rdma_counter *counter,
-+				   const struct ib_qp *qp,
-+				   enum rdma_nl_counter_mask new_mask)
-+{
-+	struct auto_mode_param *param = &counter->mode.param;
-+
-+	counter->mode.mode = RDMA_COUNTER_MODE_AUTO;
-+	counter->mode.mask = new_mask;
-+
-+	if (new_mask & RDMA_COUNTER_MASK_QP_TYPE)
-+		param->qp_type = qp->qp_type;
-+}
-+
-+static bool auto_mode_match(struct ib_qp *qp, struct rdma_counter *counter,
-+			    enum rdma_nl_counter_mask auto_mask)
-+{
-+	struct auto_mode_param *param = &counter->mode.param;
-+	bool match = true;
-+
-+	if (rdma_is_kernel_res(&counter->res) != rdma_is_kernel_res(&qp->res))
-+		return false;
-+
-+	/* Ensure that counter belong to right PID */
-+	if (!rdma_is_kernel_res(&counter->res) &&
-+	    !rdma_is_kernel_res(&qp->res) &&
-+	    (task_pid_vnr(counter->res.task) != current->pid))
-+		return false;
-+
-+	if (auto_mask & RDMA_COUNTER_MASK_QP_TYPE)
-+		match &= (param->qp_type == qp->qp_type);
-+
-+	return match;
-+}
-+
-+static int __rdma_counter_bind_qp(struct rdma_counter *counter,
-+				  struct ib_qp *qp)
-+{
-+	int ret;
-+
-+	if (qp->counter)
-+		return -EINVAL;
-+
-+	if (!qp->device->ops.counter_bind_qp)
-+		return -EOPNOTSUPP;
-+
-+	mutex_lock(&counter->lock);
-+	ret = qp->device->ops.counter_bind_qp(counter, qp);
-+	mutex_unlock(&counter->lock);
-+
-+	return ret;
-+}
-+
-+static int __rdma_counter_unbind_qp(struct ib_qp *qp)
-+{
-+	struct rdma_counter *counter = qp->counter;
-+	int ret;
-+
-+	if (!qp->device->ops.counter_unbind_qp)
-+		return -EOPNOTSUPP;
-+
-+	mutex_lock(&counter->lock);
-+	ret = qp->device->ops.counter_unbind_qp(qp);
-+	mutex_unlock(&counter->lock);
-+
-+	return ret;
-+}
-+
-+/**
-+ * rdma_get_counter_auto_mode - Find the counter that @qp should be bound
-+ *     with in auto mode
-+ *
-+ * Return: The counter (with ref-count increased) if found
-+ */
-+static struct rdma_counter *rdma_get_counter_auto_mode(struct ib_qp *qp,
-+						       u8 port)
-+{
-+	struct rdma_port_counter *port_counter;
-+	struct rdma_counter *counter = NULL;
-+	struct ib_device *dev = qp->device;
-+	struct rdma_restrack_entry *res;
-+	struct rdma_restrack_root *rt;
-+	unsigned long id = 0;
-+
-+	port_counter = &dev->port_data[port].port_counter;
-+	rt = &dev->res[RDMA_RESTRACK_COUNTER];
-+	xa_lock(&rt->xa);
-+	xa_for_each(&rt->xa, id, res) {
-+		if (!rdma_is_visible_in_pid_ns(res))
-+			continue;
-+
-+		counter = container_of(res, struct rdma_counter, res);
-+		if ((counter->device != qp->device) || (counter->port != port))
-+			goto next;
-+
-+		if (auto_mode_match(qp, counter, port_counter->mode.mask))
-+			break;
-+next:
-+		counter = NULL;
-+	}
-+
-+	if (counter)
-+		kref_get(&counter->kref);
-+
-+	xa_unlock(&rt->xa);
-+	return counter;
-+}
-+
-+static void rdma_counter_res_add(struct rdma_counter *counter,
-+				 struct ib_qp *qp)
-+{
-+	if (rdma_is_kernel_res(&qp->res)) {
-+		rdma_restrack_set_task(&counter->res, qp->res.kern_name);
-+		rdma_restrack_kadd(&counter->res);
-+	} else {
-+		rdma_restrack_attach_task(&counter->res, qp->res.task);
-+		rdma_restrack_uadd(&counter->res);
-+	}
-+}
-+
-+static void counter_release(struct kref *kref)
-+{
-+	struct rdma_counter *counter;
-+
-+	counter = container_of(kref, struct rdma_counter, kref);
-+	counter->device->ops.counter_dealloc(counter);
-+	rdma_counter_free(counter);
-+}
-+
-+/**
-+ * rdma_counter_bind_qp_auto - Check and bind the QP to a counter base on
-+ *   the auto-mode rule
-+ */
-+int rdma_counter_bind_qp_auto(struct ib_qp *qp, u8 port)
-+{
-+	struct rdma_port_counter *port_counter;
-+	struct ib_device *dev = qp->device;
-+	struct rdma_counter *counter;
-+	int ret;
-+
-+	if (!rdma_is_port_valid(dev, port))
-+		return -EINVAL;
-+
-+	port_counter = &dev->port_data[port].port_counter;
-+	if (port_counter->mode.mode != RDMA_COUNTER_MODE_AUTO)
++	if (!MLX5_CAP_GEN(dev->mdev, rts2rts_qp_counters_set_id))
 +		return 0;
 +
-+	counter = rdma_get_counter_auto_mode(qp, port);
 +	if (counter) {
-+		ret = __rdma_counter_bind_qp(counter, qp);
-+		if (ret) {
-+			kref_put(&counter->kref, counter_release);
-+			return ret;
-+		}
++		set_id = counter->id;
 +	} else {
-+		counter = rdma_counter_alloc(dev, port, RDMA_COUNTER_MODE_AUTO);
-+		if (!counter)
-+			return -ENOMEM;
-+
-+		auto_mode_init_counter(counter, qp, port_counter->mode.mask);
-+
-+		ret = __rdma_counter_bind_qp(counter, qp);
-+		if (ret) {
-+			rdma_counter_free(counter);
-+			return ret;
-+		}
-+
-+		rdma_counter_res_add(counter, qp);
++		mibport = &dev->port[mqp->port - 1];
++		set_id = mibport->cnts.set_id;
 +	}
 +
-+	return 0;
++	base = &mqp->trans_qp.base;
++	context.qp_counter_set_usr_page &= cpu_to_be32(0xffffff);
++	context.qp_counter_set_usr_page |= cpu_to_be32(set_id << 24);
++	return mlx5_core_qp_modify(dev->mdev,
++				   MLX5_CMD_OP_RTS2RTS_QP,
++				   MLX5_QP_OPTPAR_COUNTER_SET_ID,
++				   &context, &base->mqp);
 +}
 +
-+/**
-+ * rdma_counter_unbind_qp - Unbind a qp from a counter
-+ * @force:
-+ *   true - Decrease the counter ref-count anyway (e.g., qp destroy)
-+ */
-+int rdma_counter_unbind_qp(struct ib_qp *qp, bool force)
-+{
-+	struct rdma_counter *counter = qp->counter;
-+	int ret;
-+
-+	if (!counter)
-+		return -EINVAL;
-+
-+	ret = __rdma_counter_unbind_qp(qp);
-+	if (ret && !force)
-+		return ret;
-+
-+	kref_put(&counter->kref, counter_release);
-+	return 0;
-+}
-+
- void rdma_counter_init(struct ib_device *dev)
- {
- 	struct rdma_port_counter *port_counter;
-diff --git a/drivers/infiniband/core/device.c b/drivers/infiniband/core/device.c
-index 6579865e4866..f3181b74c863 100644
---- a/drivers/infiniband/core/device.c
-+++ b/drivers/infiniband/core/device.c
-@@ -2471,6 +2471,9 @@ void ib_set_device_ops(struct ib_device *dev, const struct ib_device_ops *ops)
- 	SET_DEVICE_OP(dev_ops, alloc_xrcd);
- 	SET_DEVICE_OP(dev_ops, attach_mcast);
- 	SET_DEVICE_OP(dev_ops, check_mr_status);
-+	SET_DEVICE_OP(dev_ops, counter_bind_qp);
-+	SET_DEVICE_OP(dev_ops, counter_dealloc);
-+	SET_DEVICE_OP(dev_ops, counter_unbind_qp);
- 	SET_DEVICE_OP(dev_ops, create_ah);
- 	SET_DEVICE_OP(dev_ops, create_counters);
- 	SET_DEVICE_OP(dev_ops, create_cq);
-diff --git a/drivers/infiniband/core/verbs.c b/drivers/infiniband/core/verbs.c
-index 4a04e94a72db..92349bf37589 100644
---- a/drivers/infiniband/core/verbs.c
-+++ b/drivers/infiniband/core/verbs.c
-@@ -1690,6 +1690,14 @@ static int _ib_modify_qp(struct ib_qp *qp, struct ib_qp_attr *attr,
- 		}
+ static int __mlx5_ib_modify_qp(struct ib_qp *ibqp,
+ 			       const struct ib_qp_attr *attr, int attr_mask,
+ 			       enum ib_qp_state cur_state,
+@@ -3433,6 +3463,7 @@ static int __mlx5_ib_modify_qp(struct ib_qp *ibqp,
+ 	struct mlx5_ib_port *mibport = NULL;
+ 	enum mlx5_qp_state mlx5_cur, mlx5_new;
+ 	enum mlx5_qp_optpar optpar;
++	u32 set_id = 0;
+ 	int mlx5_st;
+ 	int err;
+ 	u16 op;
+@@ -3595,8 +3626,12 @@ static int __mlx5_ib_modify_qp(struct ib_qp *ibqp,
+ 			port_num = 0;
+ 
+ 		mibport = &dev->port[port_num];
++		if (ibqp->counter)
++			set_id = ibqp->counter->id;
++		else
++			set_id = mibport->cnts.set_id;
+ 		context->qp_counter_set_usr_page |=
+-			cpu_to_be32((u32)(mibport->cnts.set_id) << 24);
++			cpu_to_be32(set_id << 24);
  	}
  
-+	/*
-+	 * Bind this qp to a counter automatically based on the rdma counter
-+	 * rules. This only set in RST2INIT with port specified
-+	 */
-+	if (!qp->counter && (attr_mask & IB_QP_PORT) &&
-+	    ((attr_mask & IB_QP_STATE) && attr->qp_state == IB_QPS_INIT))
-+		rdma_counter_bind_qp_auto(qp, attr->port_num);
-+
- 	ret = ib_security_modify_qp(qp, attr, attr_mask, udata);
- 	if (ret)
- 		goto out;
-@@ -1885,6 +1893,7 @@ int ib_destroy_qp_user(struct ib_qp *qp, struct ib_udata *udata)
- 	if (!qp->uobject)
- 		rdma_rw_cleanup_mrs(qp);
+ 	if (!ibqp->uobject && cur_state == IB_QPS_RESET && new_state == IB_QPS_INIT)
+@@ -3624,7 +3659,7 @@ static int __mlx5_ib_modify_qp(struct ib_qp *ibqp,
  
-+	rdma_counter_unbind_qp(qp, true);
- 	rdma_restrack_del(&qp->res);
- 	ret = qp->device->ops.destroy_qp(qp, udata);
- 	if (!ret) {
-diff --git a/include/rdma/ib_verbs.h b/include/rdma/ib_verbs.h
-index 3d19c056fbc0..0205472eb73a 100644
---- a/include/rdma/ib_verbs.h
-+++ b/include/rdma/ib_verbs.h
-@@ -1698,6 +1698,9 @@ struct ib_qp {
- 	 * Implementation details of the RDMA core, don't use in drivers:
- 	 */
- 	struct rdma_restrack_entry     res;
+ 		raw_qp_param.operation = op;
+ 		if (cur_state == IB_QPS_RESET && new_state == IB_QPS_INIT) {
+-			raw_qp_param.rq_q_ctr_id = mibport->cnts.set_id;
++			raw_qp_param.rq_q_ctr_id = set_id;
+ 			raw_qp_param.set_mask |= MLX5_RAW_QP_MOD_SET_RQ_Q_CTR_ID;
+ 		}
+ 
+@@ -3701,6 +3736,12 @@ static int __mlx5_ib_modify_qp(struct ib_qp *ibqp,
+ 		qp->db.db[MLX5_SND_DBR] = 0;
+ 	}
+ 
++	if ((new_state == IB_QPS_RTS) && qp->counter_pending) {
++		err = __mlx5_ib_qp_set_counter(ibqp, ibqp->counter);
++		if (!err)
++			qp->counter_pending = 0;
++	}
 +
-+	/* The counter the qp is bind to */
-+	struct rdma_counter    *counter;
+ out:
+ 	kfree(context);
+ 	return err;
+@@ -6435,3 +6476,34 @@ void mlx5_ib_drain_rq(struct ib_qp *qp)
+ 
+ 	handle_drain_completion(cq, &rdrain, dev);
+ }
++
++/**
++ * Bind a qp to a counter. If @counter is NULL then bind the qp to
++ * the default counter
++ */
++int mlx5_ib_qp_set_counter(struct ib_qp *qp, struct rdma_counter *counter)
++{
++	struct mlx5_ib_qp *mqp = to_mqp(qp);
++	int err = 0;
++
++	mutex_lock(&mqp->mutex);
++	if (mqp->state == IB_QPS_RESET) {
++		qp->counter = counter;
++		goto out;
++	}
++
++	if (mqp->state == IB_QPS_RTS) {
++		err = __mlx5_ib_qp_set_counter(qp, counter);
++		if (!err)
++			qp->counter = counter;
++
++		goto out;
++	}
++
++	mqp->counter_pending = 1;
++	qp->counter = counter;
++
++out:
++	mutex_unlock(&mqp->mutex);
++	return err;
++}
+diff --git a/include/linux/mlx5/qp.h b/include/linux/mlx5/qp.h
+index 08e43cd9e742..a8270869f0b6 100644
+--- a/include/linux/mlx5/qp.h
++++ b/include/linux/mlx5/qp.h
+@@ -71,6 +71,7 @@ enum mlx5_qp_optpar {
+ 	MLX5_QP_OPTPAR_CQN_RCV			= 1 << 19,
+ 	MLX5_QP_OPTPAR_DC_HS			= 1 << 20,
+ 	MLX5_QP_OPTPAR_DC_KEY			= 1 << 21,
++	MLX5_QP_OPTPAR_COUNTER_SET_ID		= 1 << 25,
  };
  
- struct ib_dm {
-@@ -2485,6 +2488,21 @@ struct ib_device_ops {
- 			 u8 pdata_len);
- 	int (*iw_create_listen)(struct iw_cm_id *cm_id, int backlog);
- 	int (*iw_destroy_listen)(struct iw_cm_id *cm_id);
-+	/**
-+	 * counter_bind_qp - Bind a QP to a counter.
-+	 * @counter - The counter to be bound. If counter->id is zero then
-+	 *   the driver needs to allocate a new counter and set counter->id
-+	 */
-+	int (*counter_bind_qp)(struct rdma_counter *counter, struct ib_qp *qp);
-+	/**
-+	 * counter_unbind_qp - Unbind the qp from the dynamically-allocated
-+	 *   counter and bind it onto the default one
-+	 */
-+	int (*counter_unbind_qp)(struct ib_qp *qp);
-+	/**
-+	 * counter_dealloc -De-allocate the hw counter
-+	 */
-+	int (*counter_dealloc)(struct rdma_counter *counter);
- 
- 	DECLARE_RDMA_OBJ_SIZE(ib_ah);
- 	DECLARE_RDMA_OBJ_SIZE(ib_cq);
-diff --git a/include/rdma/rdma_counter.h b/include/rdma/rdma_counter.h
-index 8dd2619c015d..9f93a2403c9c 100644
---- a/include/rdma/rdma_counter.h
-+++ b/include/rdma/rdma_counter.h
-@@ -7,11 +7,14 @@
- #define _RDMA_COUNTER_H_
- 
- #include <linux/mutex.h>
-+#include <linux/pid_namespace.h>
- 
- #include <rdma/ib_verbs.h>
- #include <rdma/restrack.h>
- #include <rdma/rdma_netlink.h>
- 
-+struct ib_qp;
-+
- struct auto_mode_param {
- 	int qp_type;
- };
-@@ -31,6 +34,9 @@ struct rdma_counter {
- 	struct rdma_restrack_entry	res;
- 	struct ib_device		*device;
- 	uint32_t			id;
-+	struct kref			kref;
-+	struct rdma_counter_mode	mode;
-+	struct mutex			lock;
- 	u8				port;
- };
- 
-@@ -38,5 +44,7 @@ void rdma_counter_init(struct ib_device *dev);
- void rdma_counter_release(struct ib_device *dev);
- int rdma_counter_set_auto_mode(struct ib_device *dev, u8 port,
- 			       bool on, enum rdma_nl_counter_mask mask);
-+int rdma_counter_bind_qp_auto(struct ib_qp *qp, u8 port);
-+int rdma_counter_unbind_qp(struct ib_qp *qp, bool force);
- 
- #endif /* _RDMA_COUNTER_H_ */
+ enum mlx5_qp_state {
 -- 
 2.20.1
 
