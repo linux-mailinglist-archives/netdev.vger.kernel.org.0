@@ -2,74 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 16EC35D06A
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 15:22:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCA1A5D0AD
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 15:29:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726830AbfGBNV7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 09:21:59 -0400
-Received: from zeniv.linux.org.uk ([195.92.253.2]:49026 "EHLO
-        ZenIV.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726375AbfGBNV7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 09:21:59 -0400
-Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92 #3 (Red Hat Linux))
-        id 1hiIjD-00044l-Ed; Tue, 02 Jul 2019 13:21:47 +0000
-Date:   Tue, 2 Jul 2019 14:21:47 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     syzbot <syzbot+d88a977731a9888db7ba@syzkaller.appspotmail.com>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Re: kernel panic: corrupted stack end in dput
-Message-ID: <20190702132147.GG17978@ZenIV.linux.org.uk>
-References: <000000000000a5d3cb058c9a64f0@google.com>
+        id S1726831AbfGBN3a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 09:29:30 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:43714 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725922AbfGBN3a (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jul 2019 09:29:30 -0400
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id AEDEFF87C39AEE16812D;
+        Tue,  2 Jul 2019 21:29:25 +0800 (CST)
+Received: from localhost (10.133.213.239) by DGGEMS408-HUB.china.huawei.com
+ (10.3.19.208) with Microsoft SMTP Server id 14.3.439.0; Tue, 2 Jul 2019
+ 21:29:17 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <ast@kernel.org>, <daniel@iogearbox.net>, <kafai@fb.com>,
+        <songliubraving@fb.com>, <yhs@fb.com>, <sdf@google.com>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH bpf-next] bpf: cgroup: Fix build error without CONFIG_NET
+Date:   Tue, 2 Jul 2019 21:29:13 +0800
+Message-ID: <20190702132913.26060-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <000000000000a5d3cb058c9a64f0@google.com>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+Content-Type: text/plain
+X-Originating-IP: [10.133.213.239]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 02, 2019 at 05:21:26PM +0800, Hillf Danton wrote:
+If CONFIG_NET is not set, gcc building fails:
 
-> Hello,
+kernel/bpf/cgroup.o: In function `cg_sockopt_func_proto':
+cgroup.c:(.text+0x237e): undefined reference to `bpf_sk_storage_get_proto'
+cgroup.c:(.text+0x2394): undefined reference to `bpf_sk_storage_delete_proto'
+kernel/bpf/cgroup.o: In function `__cgroup_bpf_run_filter_getsockopt':
+(.text+0x2a1f): undefined reference to `lock_sock_nested'
+(.text+0x2ca2): undefined reference to `release_sock'
+kernel/bpf/cgroup.o: In function `__cgroup_bpf_run_filter_setsockopt':
+(.text+0x3006): undefined reference to `lock_sock_nested'
+(.text+0x32bb): undefined reference to `release_sock'
 
-> --- a/fs/dcache.c
-> +++ b/fs/dcache.c
-> @@ -673,14 +673,11 @@ static struct dentry *dentry_kill(struct dentry *dentry)
-> 	if (!IS_ROOT(dentry)) {
-> 		parent = dentry->d_parent;
-> 		if (unlikely(!spin_trylock(&parent->d_lock))) {
-> -			parent = __lock_parent(dentry);
-> -			if (likely(inode || !dentry->d_inode))
-> -				goto got_locks;
-> -			/* negative that became positive */
-> -			if (parent)
-> -				spin_unlock(&parent->d_lock);
-> -			inode = dentry->d_inode;
-> -			goto slow_positive;
-> +			/*
-> +			 * fine if peer is busy either populating or
-> +			 * cleaning up parent
-> +			 */
-> +			parent = NULL;
-> 		}
-> 	}
-> 	__dentry_kill(dentry);
+Add CONFIG_NET dependency to fix this.
 
-This is very much *NOT* fine.
-	1) trylock can fail from any number of reasons, starting
-with "somebody is going through the hash chain doing a lookup on
-something completely unrelated"
-	2) whoever had been holding the lock and whatever they'd
-been doing might be over right after we get the return value from
-spin_trylock().
-	3) even had that been really somebody adding children in
-the same parent *AND* even if they really kept doing that, rather
-than unlocking and buggering off, would you care to explain why
-dentry_unlist() called by __dentry_kill() and removing the victim
-from the list of children would be safe to do in parallel with that?
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Fixes: 0d01da6afc54 ("bpf: implement getsockopt and setsockopt hooks")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ init/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-NAK, in case it's not obvious from the above.
+diff --git a/init/Kconfig b/init/Kconfig
+index e2e51b5..341cf2a 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -998,6 +998,7 @@ config CGROUP_PERF
+ config CGROUP_BPF
+ 	bool "Support for eBPF programs attached to cgroups"
+ 	depends on BPF_SYSCALL
++	depends on NET
+ 	select SOCK_CGROUP_DATA
+ 	help
+ 	  Allow attaching eBPF programs to a cgroup using the bpf(2)
+-- 
+2.7.4
+
+
