@@ -2,110 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 20E2D5D0C0
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 15:37:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 643DA5D0C8
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 15:39:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726951AbfGBNhi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 09:37:38 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:58050 "EHLO mx1.redhat.com"
+        id S1727059AbfGBNjN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 09:39:13 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:47102 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725922AbfGBNhi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jul 2019 09:37:38 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        id S1727035AbfGBNjM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jul 2019 09:39:12 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 049C1A96F1;
-        Tue,  2 Jul 2019 13:37:28 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-120-219.rdu2.redhat.com [10.10.120.219])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6ACB417966;
-        Tue,  2 Jul 2019 13:37:25 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <0000000000004c2416058c594b30@google.com>
-References: <0000000000004c2416058c594b30@google.com>
-To:     syzbot <syzbot+1e0edc4b8b7494c28450@syzkaller.appspotmail.com>,
-        ebiggers@kernel.org
-Cc:     dhowells@redhat.com, davem@davemloft.net,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Re: kernel BUG at net/rxrpc/local_object.c:LINE!
+        by mx1.redhat.com (Postfix) with ESMTPS id B1F5F3082A27;
+        Tue,  2 Jul 2019 13:39:11 +0000 (UTC)
+Received: from carbon (ovpn-200-45.brq.redhat.com [10.40.200.45])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B38AE7DF53;
+        Tue,  2 Jul 2019 13:39:03 +0000 (UTC)
+Date:   Tue, 2 Jul 2019 15:39:02 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Cc:     grygorii.strashko@ti.com, davem@davemloft.net, ast@kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
+        daniel@iogearbox.net, jakub.kicinski@netronome.com,
+        john.fastabend@gmail.com, brouer@redhat.com
+Subject: Re: [PATCH v5 net-next 6/6] net: ethernet: ti: cpsw: add XDP
+ support
+Message-ID: <20190702153902.0e42b0b2@carbon>
+In-Reply-To: <20190702113738.GB4510@khorivan>
+References: <20190630172348.5692-1-ivan.khoronzhuk@linaro.org>
+        <20190630172348.5692-7-ivan.khoronzhuk@linaro.org>
+        <20190701181901.150c0b71@carbon>
+        <20190702113738.GB4510@khorivan>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <24281.1562074644.1@warthog.procyon.org.uk>
-Date:   Tue, 02 Jul 2019 14:37:24 +0100
-Message-ID: <24282.1562074644@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.38]); Tue, 02 Jul 2019 13:37:38 +0000 (UTC)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Tue, 02 Jul 2019 13:39:11 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot <syzbot+1e0edc4b8b7494c28450@syzkaller.appspotmail.com> wrote:
+On Tue, 2 Jul 2019 14:37:39 +0300
+Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
 
-I *think* the reproducer boils down to the attached, but I can't get syzkaller
-to work and the attached sample does not cause the oops to occur.  Can you try
-it in your environment?
-
-> The bug was bisected to:
+> On Mon, Jul 01, 2019 at 06:19:01PM +0200, Jesper Dangaard Brouer wrote:
+> >On Sun, 30 Jun 2019 20:23:48 +0300
+> >Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
+> >  
+> >> +static int cpsw_ndev_create_xdp_rxq(struct cpsw_priv *priv, int ch)
+> >> +{
+> >> +	struct cpsw_common *cpsw = priv->cpsw;
+> >> +	int ret, new_pool = false;
+> >> +	struct xdp_rxq_info *rxq;
+> >> +
+> >> +	rxq = &priv->xdp_rxq[ch];
+> >> +
+> >> +	ret = xdp_rxq_info_reg(rxq, priv->ndev, ch);
+> >> +	if (ret)
+> >> +		return ret;
+> >> +
+> >> +	if (!cpsw->page_pool[ch]) {
+> >> +		ret =  cpsw_create_rx_pool(cpsw, ch);
+> >> +		if (ret)
+> >> +			goto err_rxq;
+> >> +
+> >> +		new_pool = true;
+> >> +	}
+> >> +
+> >> +	ret = xdp_rxq_info_reg_mem_model(rxq, MEM_TYPE_PAGE_POOL,
+> >> +					 cpsw->page_pool[ch]);
+> >> +	if (!ret)
+> >> +		return 0;
+> >> +
+> >> +	if (new_pool) {
+> >> +		page_pool_free(cpsw->page_pool[ch]);
+> >> +		cpsw->page_pool[ch] = NULL;
+> >> +	}
+> >> +
+> >> +err_rxq:
+> >> +	xdp_rxq_info_unreg(rxq);
+> >> +	return ret;
+> >> +}  
+> >
+> >Looking at this, and Ilias'es XDP-netsec error handling path, it might
+> >be a mistake that I removed page_pool_destroy() and instead put the
+> >responsibility on xdp_rxq_info_unreg().  
+>
+> As for me this is started not from page_pool_free, but rather from calling
+> unreg_mem_model from rxq_info_unreg. Then, if page_pool_free is hidden
+> it looks more a while normal to move all chain to be self destroyed.
 > 
-> commit 46894a13599a977ac35411b536fb3e0b2feefa95
-> Author: David Howells <dhowells@redhat.com>
-> Date:   Thu Oct 4 08:32:28 2018 +0000
+> >
+> >As here, we have to detect if page_pool_create() was a success, and then
+> >if xdp_rxq_info_reg_mem_model() was a failure, explicitly call
+> >page_pool_free() because the xdp_rxq_info_unreg() call cannot "free"
+> >the page_pool object given it was not registered.  
+>
+> Yes, it looked a little bit ugly from the beginning, but, frankly,
+> I have got used to this already.
 > 
->     rxrpc: Use IPv4 addresses throught the IPv6
+> >
+> >Ivan's patch in[1], might be a better approach, which forced all
+> >drivers to explicitly call page_pool_free(), even-though it just
+> >dec-refcnt and the real call to page_pool_free() happened via
+> >xdp_rxq_info_unreg().
+> >
+> >To better handle error path, I would re-introduce page_pool_destroy(),
+>
+> So, you might to do it later as I understand, and not for my special
+> case but becouse it makes error path to look a little bit more pretty.
+> I'm perfectly fine with this, and better you add this, for now my
+> implementation requires only "xdp: allow same allocator usage" patch,
+> but if you insist I can resend also patch in question afterwards my
+> series is applied (with modification to cpsw & netsec & mlx5 & page_pool).
+> 
+> What's your choice? I can add to your series patch needed for cpsw to
+> avoid some misuse.
 
-This might not be the correct bisection point.  If you look at the attached
-sample, you're mixing AF_INET and AF_INET6.  If you try AF_INET throughout,
-that might get a different point.  On the other hand, since you've bound the
-socket, the AF_INET6 passed to socket() should be ignored.
+I will try to create a cleaned-up version of your patch[1] and
+re-introduce page_pool_destroy() for drivers to use, then we can build
+your driver on top of that.
 
-David
----
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <linux/rxrpc.h>
 
-static const unsigned char inet4_addr[4] = {
-	0xe0, 0x00, 0x00, 0x01
-};
+> >as a driver API, that would gracefully handle NULL-pointer case, and
+> >then call page_pool_free() with the atomic_dec_and_test().  (It should
+> >hopefully simplify the error handling code a bit)
+> >
+> >[1] https://lore.kernel.org/netdev/20190625175948.24771-2-ivan.khoronzhuk@linaro.org/
+[...]
 
-int main(void)
-{
-	struct sockaddr_rxrpc srx;
-	int fd;
-
-	memset(&srx, 0, sizeof(srx));
-	srx.srx_family			= AF_RXRPC;
-	srx.srx_service			= 0;
-	srx.transport_type		= AF_INET;
-	srx.transport_len		= sizeof(srx.transport.sin);
-	srx.transport.sin.sin_family	= AF_INET;
-	srx.transport.sin.sin_port	= htons(0x4e21);
-	memcpy(&srx.transport.sin.sin_addr, inet4_addr, 4);
-
-	fd = socket(AF_RXRPC, SOCK_DGRAM, AF_INET6);
-	if (fd == -1) {
-		perror("socket");
-		exit(1);
-	}
-
-	if (bind(fd, (struct sockaddr *)&srx, sizeof(srx)) == -1) {
-		perror("bind");
-		exit(1);
-	}
-
-	sleep(20);
-
-	// Whilst sleeping, hit with:
-	// echo -e '\0\0\0\0\0\0\0\0' | ncat -4u --send-only 224.0.0.1 20001
-	
-	return 0;
-}
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
