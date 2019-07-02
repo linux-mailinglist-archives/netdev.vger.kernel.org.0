@@ -2,246 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C68E5D47E
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 18:42:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48C295D486
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 18:44:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726305AbfGBQmr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 12:42:47 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:34459 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725972AbfGBQmr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 12:42:47 -0400
-Received: by mail-io1-f66.google.com with SMTP id k8so38599363iot.1;
-        Tue, 02 Jul 2019 09:42:46 -0700 (PDT)
+        id S1726544AbfGBQon (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 12:44:43 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:42242 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726046AbfGBQon (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 12:44:43 -0400
+Received: by mail-pf1-f194.google.com with SMTP id q10so8530670pff.9
+        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 09:44:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=s0ki2w+XK48wMx0rfPZcn3FzdkHo8iVXQA/GXa6Bu4c=;
-        b=IAECKsXa8rZEI59VMz5awc5VBf7XAGhF5HXXpTWE42C3BJYL7wAJ8ml8YQxOB1aGWx
-         6R3F81vPc+UbfrgUU+sQN+CWYB/S0JuuKPY1x3G1GdKwuUd+HQrS7pnXL0Vqxj+FNlXY
-         9RSp4T/AjEI5EYgCuvnYc8j5/7ap9woZcIKchXO3xm0quZ2y1cOjLbqnu3CIv18J/TFZ
-         sKhBS4gER3guwnE9TV9Bc/h/gJ4cogzU9/hN7ghvvYj20O/jNdyJB4QbrDDYaKGYHB6C
-         fdiyEgOZYhdG7Zn/dVFYILCzjMpbxq0FY6utmWlsEYGi6EBYGDpefLD95CUVLC0ozJqM
-         ec9Q==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version;
+        bh=u2J78wtvcN3MhG47CanHh++C24e3NUHgUzNQbhkWO3U=;
+        b=BO8SaqSRklB5a/2x6t7ls8KQPmN4GqrnUeZqDLEhvLDPxAbCJEfyts9o4pNyg/mSZW
+         BZgpdqI2BbX9lhE0zZXK6HOUVYHbJu5jeQI0W+Itpe+CdIs69VvDSQIR9NARFpvoW2I6
+         QrJlgcpaB3fVfNXmOiet8XDMnOuKgBdUehbTR6NDoyqFVpBioppqZnqOtBqP/TGE8wig
+         dq7cIQyGTMHtz6l5vbal0m0VmerTmuf6uy9L6MGLjj+yKGiWqkFlk194FCxSCDUB8/Oi
+         4RwQSJZN9gprFkRB2kWY9yqsDTUSnAfU4nFA6Qq0dESvX/q1a70KVBc6nZgjqbrXBvZu
+         cQxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=s0ki2w+XK48wMx0rfPZcn3FzdkHo8iVXQA/GXa6Bu4c=;
-        b=sHEmWjZnyZzyrqRT6DL28nfY2KblrkoPZhuqloED9H379rv/yv2QaOpsXxAKjCRhdC
-         HK9HZOS4970x28HJvveSKOiqB3sX9sP/OHJdKFwsIn7OB3C56vb4ChvMZLsaK9VX0LvO
-         JnZAT5q4dvu3kdyXf/ccHjmxm5morAtR81eYsjXwH6Gkdw9+bqGfsNgqAf89Qg1xOVC2
-         06VfPH2tgwoMOLfoKNuNDCqhYTPaGCR+G4AGxgwD16ORDWv5O4Ujzz1R36IZkbyG894H
-         9ufhmdFOcaRzsoN/L4kOe0JFaY/OTZODSuGwMI4hhfgfWHkIe01LqtF6HwBi6sQu9Voc
-         j3sg==
-X-Gm-Message-State: APjAAAXCzUSysBpdvGNltc1Qp85oEKgKGTMuRSud+GO4lQFiQIVZWlKX
-        0eFtJPI9IoXIhKwaU+DeWfqYh4+tTCbscCA63g7xZqoD
-X-Google-Smtp-Source: APXvYqxfaZhVcerXp64gVYUn6cRQbkQnUo7+vb2H82DWQPSs22iCHeanWIqOBbvEnqLfpi9ZbBZFk+njYtQL0LsSbe4=
-X-Received: by 2002:a5d:8f86:: with SMTP id l6mr5954450iol.97.1562085765720;
- Tue, 02 Jul 2019 09:42:45 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version;
+        bh=u2J78wtvcN3MhG47CanHh++C24e3NUHgUzNQbhkWO3U=;
+        b=L0Y6VMQ7BBAoxLDJ6vM+Qi/4XZwPLj+7f44hQ4r4OxyXDN1Ia5J3P2KlqxsfaS1fas
+         i2Kj/AA7S8mvGfMQLkxJkpCkEpu0UgtYfzLaIHYdHHHKrMssuZvhNq4rdLHnp+wr4sMt
+         EOF9AyGxgcvaSnYtD9bH01awVPZjAwwBDNKxWlT7+7iJXk2hqfxcemJG0VKctc1JgTni
+         eZwzEhw8PzkHNDPvI0TWaQO/GS23WXSrB7IlkOmDjdYY8SaDX9L8tky6cEPqkKyNs218
+         892KJqj8TtZ7yrF9IYHei03XDprniBwUJUhoFn/8yH2gkXZY2mDNXfr1GMe4pvzvuFzv
+         SFNw==
+X-Gm-Message-State: APjAAAUFcGxcKNsfO7pbe6nJ9AKCFx+HKjBwpX/FNtylq3Mue4Y6remV
+        AIQlCdMjketySssSboUXdII=
+X-Google-Smtp-Source: APXvYqyjBfgHU+yj8uiUfhKtPehSy4wrAFpeOFqQPLvWnKXgLxzr+rxGXQebt1PHeBUGQhPlZfK2Pg==
+X-Received: by 2002:a63:2b8e:: with SMTP id r136mr3185699pgr.216.1562085882450;
+        Tue, 02 Jul 2019 09:44:42 -0700 (PDT)
+Received: from [172.20.54.151] ([2620:10d:c090:200::ef17])
+        by smtp.gmail.com with ESMTPSA id i15sm14753418pfd.160.2019.07.02.09.44.41
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 02 Jul 2019 09:44:41 -0700 (PDT)
+From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
+To:     "Magnus Karlsson" <magnus.karlsson@gmail.com>
+Cc:     "Network Development" <netdev@vger.kernel.org>,
+        "=?utf-8?b?QmrDtnJuIFTDtnBlbA==?=" <bjorn.topel@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        "Jakub Kicinski" <jakub.kicinski@netronome.com>,
+        jeffrey.t.kirsher@intel.com, kernel-team@fb.com
+Subject: Re: [PATCH 2/3 bpf-next] i40e: Support zero-copy XDP_TX on the RX
+ path for AF_XDP sockets.
+Date:   Tue, 02 Jul 2019 09:44:40 -0700
+X-Mailer: MailMate (1.12.5r5635)
+Message-ID: <62858EAE-68E0-4B30-BDB2-5157D748D1BB@gmail.com>
+In-Reply-To: <CAJ8uoz0EL9gx87JmhjBmYscx-J2UCYK73OV73T3eohOEp0BEUw@mail.gmail.com>
+References: <20190628221555.3009654-1-jonathan.lemon@gmail.com>
+ <20190628221555.3009654-3-jonathan.lemon@gmail.com>
+ <CAJ8uoz0EL9gx87JmhjBmYscx-J2UCYK73OV73T3eohOEp0BEUw@mail.gmail.com>
 MIME-Version: 1.0
-References: <20190702153908.41562-1-iii@linux.ibm.com>
-In-Reply-To: <20190702153908.41562-1-iii@linux.ibm.com>
-From:   Y Song <ys114321@gmail.com>
-Date:   Tue, 2 Jul 2019 09:42:09 -0700
-Message-ID: <CAH3MdRUk5x2D9yRuKpGpVuDMFF0JbYeB+Y0Qz6chtPgfm-1vxA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf: fix compiling loop{1,2,3}.c on s390
-To:     Ilya Leoshkevich <iii@linux.ibm.com>
-Cc:     bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; format=flowed
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 2, 2019 at 8:40 AM Ilya Leoshkevich <iii@linux.ibm.com> wrote:
->
-> Use PT_REGS_RC(ctx) instead of ctx->rax, which is not present on s390.
->
-> Pass -D__TARGET_ARCH_$(ARCH) to selftests in order to choose a proper
-> PT_REGS_RC variant.
->
-> Fix s930 -> s390 typo.
->
-> On s390, provide the forward declaration of struct pt_regs and cast it
-> to user_pt_regs in PT_REGS_* macros. This is necessary, because instead
-> of the full struct pt_regs, s390 exposes only its first field
-> user_pt_regs to userspace, and bpf_helpers.h is used with both userspace
-> (in selftests) and kernel (in samples) headers.
->
-> On x86, provide userspace versions of PT_REGS_* macros. Unlike s390, x86
-> provides struct pt_regs to both userspace and kernel, however, with
-> different field names.
->
-> Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
-> ---
->  tools/testing/selftests/bpf/Makefile      |  4 +-
->  tools/testing/selftests/bpf/bpf_helpers.h | 46 +++++++++++++++--------
->  tools/testing/selftests/bpf/progs/loop1.c |  2 +-
->  tools/testing/selftests/bpf/progs/loop2.c |  2 +-
->  tools/testing/selftests/bpf/progs/loop3.c |  2 +-
->  5 files changed, 37 insertions(+), 19 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> index d60fee59fbd1..599b320bef65 100644
-> --- a/tools/testing/selftests/bpf/Makefile
-> +++ b/tools/testing/selftests/bpf/Makefile
-> @@ -1,5 +1,6 @@
->  # SPDX-License-Identifier: GPL-2.0
->  include ../../../../scripts/Kbuild.include
-> +include ../../../scripts/Makefile.arch
->
->  LIBDIR := ../../../lib
->  BPFDIR := $(LIBDIR)/bpf
-> @@ -138,7 +139,8 @@ CLANG_SYS_INCLUDES := $(shell $(CLANG) -v -E - </dev/null 2>&1 \
->
->  CLANG_FLAGS = -I. -I./include/uapi -I../../../include/uapi \
->               $(CLANG_SYS_INCLUDES) \
-> -             -Wno-compare-distinct-pointer-types
-> +             -Wno-compare-distinct-pointer-types \
-> +             -D__TARGET_ARCH_$(ARCH)
->
->  $(OUTPUT)/test_l4lb_noinline.o: CLANG_FLAGS += -fno-inline
->  $(OUTPUT)/test_xdp_noinline.o: CLANG_FLAGS += -fno-inline
-> diff --git a/tools/testing/selftests/bpf/bpf_helpers.h b/tools/testing/selftests/bpf/bpf_helpers.h
-> index 1a5b1accf091..faf86d83301a 100644
-> --- a/tools/testing/selftests/bpf/bpf_helpers.h
-> +++ b/tools/testing/selftests/bpf/bpf_helpers.h
-> @@ -312,8 +312,8 @@ static int (*bpf_skb_adjust_room)(void *ctx, __s32 len_diff, __u32 mode,
->  #if defined(__TARGET_ARCH_x86)
->         #define bpf_target_x86
->         #define bpf_target_defined
-> -#elif defined(__TARGET_ARCH_s930x)
-> -       #define bpf_target_s930x
-> +#elif defined(__TARGET_ARCH_s390)
-> +       #define bpf_target_s390
->         #define bpf_target_defined
->  #elif defined(__TARGET_ARCH_arm)
->         #define bpf_target_arm
-> @@ -338,8 +338,8 @@ static int (*bpf_skb_adjust_room)(void *ctx, __s32 len_diff, __u32 mode,
->  #ifndef bpf_target_defined
->  #if defined(__x86_64__)
->         #define bpf_target_x86
-> -#elif defined(__s390x__)
-> -       #define bpf_target_s930x
+On 1 Jul 2019, at 4:04, Magnus Karlsson wrote:
 
-I see in some other places (e.g., bcc) where
-macro __s390x__ is also used to indicate a s390 architecture.
-Could you explain the difference between __s390__ and
-__s390x__?
-
-> +#elif defined(__s390__)
-> +       #define bpf_target_s390
->  #elif defined(__arm__)
->         #define bpf_target_arm
->  #elif defined(__aarch64__)
-> @@ -355,6 +355,7 @@ static int (*bpf_skb_adjust_room)(void *ctx, __s32 len_diff, __u32 mode,
+> On Sat, Jun 29, 2019 at 12:18 AM Jonathan Lemon
+> <jonathan.lemon@gmail.com> wrote:
+>>
+>> When the XDP program attached to a zero-copy AF_XDP socket returns 
+>> XDP_TX,
+>> queue the umem frame on the XDP TX ring.  Space on the recycle stack 
+>> is
+>> pre-allocated when the xsk is created.  (taken from tx_ring, since 
+>> the
+>> xdp ring is not initialized yet)
+>>
+>> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+>> ---
+>>  drivers/net/ethernet/intel/i40e/i40e_txrx.h |  1 +
+>>  drivers/net/ethernet/intel/i40e/i40e_xsk.c  | 54 
+>> +++++++++++++++++++--
+>>  2 files changed, 51 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.h 
+>> b/drivers/net/ethernet/intel/i40e/i40e_txrx.h
+>> index 100e92d2982f..3e7954277737 100644
+>> --- a/drivers/net/ethernet/intel/i40e/i40e_txrx.h
+>> +++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.h
+>> @@ -274,6 +274,7 @@ static inline unsigned int 
+>> i40e_txd_use_count(unsigned int size)
+>>  #define I40E_TX_FLAGS_TSYN             BIT(8)
+>>  #define I40E_TX_FLAGS_FD_SB            BIT(9)
+>>  #define I40E_TX_FLAGS_UDP_TUNNEL       BIT(10)
+>> +#define I40E_TX_FLAGS_ZC_FRAME         BIT(11)
+>>  #define I40E_TX_FLAGS_VLAN_MASK                0xffff0000
+>>  #define I40E_TX_FLAGS_VLAN_PRIO_MASK   0xe0000000
+>>  #define I40E_TX_FLAGS_VLAN_PRIO_SHIFT  29
+>> diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c 
+>> b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+>> index ce8650d06962..020f9859215d 100644
+>> --- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+>> +++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+>> @@ -91,7 +91,8 @@ static int i40e_xsk_umem_enable(struct i40e_vsi 
+>> *vsi, struct xdp_umem *umem,
+>>             qid >= netdev->real_num_tx_queues)
+>>                 return -EINVAL;
+>>
+>> -       if (!xsk_umem_recycle_alloc(umem, vsi->rx_rings[0]->count))
+>> +       if (!xsk_umem_recycle_alloc(umem, vsi->rx_rings[0]->count +
+>> +                                         vsi->tx_rings[0]->count))
+>>                 return -ENOMEM;
+>>
+>>         err = i40e_xsk_umem_dma_map(vsi, umem);
+>> @@ -175,6 +176,48 @@ int i40e_xsk_umem_setup(struct i40e_vsi *vsi, 
+>> struct xdp_umem *umem,
+>>                 i40e_xsk_umem_disable(vsi, qid);
+>>  }
+>>
+>> +static int i40e_xmit_rcvd_zc(struct i40e_ring *rx_ring, struct 
+>> xdp_buff *xdp)
 >
->  #if defined(bpf_target_x86)
->
-> +#ifdef __KERNEL__
+> This function looks very much like i40e_xmit_xdp_ring(). How can we
+> refactor them to make them share more code and not lose performance at
+> the same time? This comment is also valid for the ixgbe driver patch
+> that follows.
 
-In samples/bpf/,  __KERNEL__ is defined at clang options and
-in selftests/bpf/, the __KERNEL__ is not defined.
+The next patch will split these into a small preamble setup and then
+call a common send function.
+-- 
+Jonathan
 
-I checked x86 pt_regs definition with and without __KERNEL__.
-They are identical except some register name difference.
-I am wondering whether we can unify into all without
-__KERNEL__. Is __KERNEL__ really needed?
 
->  #define PT_REGS_PARM1(x) ((x)->di)
->  #define PT_REGS_PARM2(x) ((x)->si)
->  #define PT_REGS_PARM3(x) ((x)->dx)
-> @@ -365,19 +366,34 @@ static int (*bpf_skb_adjust_room)(void *ctx, __s32 len_diff, __u32 mode,
->  #define PT_REGS_RC(x) ((x)->ax)
->  #define PT_REGS_SP(x) ((x)->sp)
->  #define PT_REGS_IP(x) ((x)->ip)
-> +#else
-> +#define PT_REGS_PARM1(x) ((x)->rdi)
-> +#define PT_REGS_PARM2(x) ((x)->rsi)
-> +#define PT_REGS_PARM3(x) ((x)->rdx)
-> +#define PT_REGS_PARM4(x) ((x)->rcx)
-> +#define PT_REGS_PARM5(x) ((x)->r8)
-> +#define PT_REGS_RET(x) ((x)->rsp)
-> +#define PT_REGS_FP(x) ((x)->rbp)
-> +#define PT_REGS_RC(x) ((x)->rax)
-> +#define PT_REGS_SP(x) ((x)->rsp)
-> +#define PT_REGS_IP(x) ((x)->rip)
-> +#endif
->
-> -#elif defined(bpf_target_s390x)
-> +#elif defined(bpf_target_s390)
->
-> -#define PT_REGS_PARM1(x) ((x)->gprs[2])
-> -#define PT_REGS_PARM2(x) ((x)->gprs[3])
-> -#define PT_REGS_PARM3(x) ((x)->gprs[4])
-> -#define PT_REGS_PARM4(x) ((x)->gprs[5])
-> -#define PT_REGS_PARM5(x) ((x)->gprs[6])
-> -#define PT_REGS_RET(x) ((x)->gprs[14])
-> -#define PT_REGS_FP(x) ((x)->gprs[11]) /* Works only with CONFIG_FRAME_POINTER */
-> -#define PT_REGS_RC(x) ((x)->gprs[2])
-> -#define PT_REGS_SP(x) ((x)->gprs[15])
-> -#define PT_REGS_IP(x) ((x)->psw.addr)
-> +/* s390 provides user_pt_regs instead of struct pt_regs to userspace */
-> +struct pt_regs;
-> +#define PT_REGS_PARM1(x) (((const volatile user_pt_regs *)(x))->gprs[2])
-> +#define PT_REGS_PARM2(x) (((const volatile user_pt_regs *)(x))->gprs[3])
-> +#define PT_REGS_PARM3(x) (((const volatile user_pt_regs *)(x))->gprs[4])
-> +#define PT_REGS_PARM4(x) (((const volatile user_pt_regs *)(x))->gprs[5])
-> +#define PT_REGS_PARM5(x) (((const volatile user_pt_regs *)(x))->gprs[6])
-> +#define PT_REGS_RET(x) (((const volatile user_pt_regs *)(x))->gprs[14])
-> +/* Works only with CONFIG_FRAME_POINTER */
-> +#define PT_REGS_FP(x) (((const volatile user_pt_regs *)(x))->gprs[11])
-> +#define PT_REGS_RC(x) (((const volatile user_pt_regs *)(x))->gprs[2])
-> +#define PT_REGS_SP(x) (((const volatile user_pt_regs *)(x))->gprs[15])
-> +#define PT_REGS_IP(x) (((const volatile user_pt_regs *)(x))->psw.addr)
-
-Is user_pt_regs a recent change or has been there for quite some time?
-I am asking since bcc did not use user_pt_regs yet.
 
 >
->  #elif defined(bpf_target_arm)
+> Thanks: Magnus
 >
-> diff --git a/tools/testing/selftests/bpf/progs/loop1.c b/tools/testing/selftests/bpf/progs/loop1.c
-> index dea395af9ea9..7cdb7f878310 100644
-> --- a/tools/testing/selftests/bpf/progs/loop1.c
-> +++ b/tools/testing/selftests/bpf/progs/loop1.c
-> @@ -18,7 +18,7 @@ int nested_loops(volatile struct pt_regs* ctx)
->         for (j = 0; j < 300; j++)
->                 for (i = 0; i < j; i++) {
->                         if (j & 1)
-> -                               m = ctx->rax;
-> +                               m = PT_REGS_RC(ctx);
->                         else
->                                 m = j;
->                         sum += i * m;
-> diff --git a/tools/testing/selftests/bpf/progs/loop2.c b/tools/testing/selftests/bpf/progs/loop2.c
-> index 0637bd8e8bcf..9b2f808a2863 100644
-> --- a/tools/testing/selftests/bpf/progs/loop2.c
-> +++ b/tools/testing/selftests/bpf/progs/loop2.c
-> @@ -16,7 +16,7 @@ int while_true(volatile struct pt_regs* ctx)
->         int i = 0;
->
->         while (true) {
-> -               if (ctx->rax & 1)
-> +               if (PT_REGS_RC(ctx) & 1)
->                         i += 3;
->                 else
->                         i += 7;
-> diff --git a/tools/testing/selftests/bpf/progs/loop3.c b/tools/testing/selftests/bpf/progs/loop3.c
-> index 30a0f6cba080..d727657d51e2 100644
-> --- a/tools/testing/selftests/bpf/progs/loop3.c
-> +++ b/tools/testing/selftests/bpf/progs/loop3.c
-> @@ -16,7 +16,7 @@ int while_true(volatile struct pt_regs* ctx)
->         __u64 i = 0, sum = 0;
->         do {
->                 i++;
-> -               sum += ctx->rax;
-> +               sum += PT_REGS_RC(ctx);
->         } while (i < 0x100000000ULL);
->         return sum;
->  }
-> --
-> 2.21.0
->
+>> +{
+>> +       struct i40e_ring *xdp_ring;
+>> +       struct i40e_tx_desc *tx_desc;
+>> +       struct i40e_tx_buffer *tx_bi;
+>> +       struct xdp_frame *xdpf;
+>> +       dma_addr_t dma;
+>> +
+>> +       xdp_ring = rx_ring->vsi->xdp_rings[rx_ring->queue_index];
+>> +
+>> +       if (!unlikely(I40E_DESC_UNUSED(xdp_ring))) {
+>> +               xdp_ring->tx_stats.tx_busy++;
+>> +               return I40E_XDP_CONSUMED;
+>> +       }
+>> +       xdpf = convert_to_xdp_frame_keep_zc(xdp);
+>> +       if (unlikely(!xdpf))
+>> +               return I40E_XDP_CONSUMED;
+>> +       xdpf->handle = xdp->handle;
+>> +
+>> +       dma = xdp_umem_get_dma(rx_ring->xsk_umem, xdp->handle);
+>> +       tx_bi = &xdp_ring->tx_bi[xdp_ring->next_to_use];
+>> +       tx_bi->bytecount = xdpf->len;
+>> +       tx_bi->gso_segs = 1;
+>> +       tx_bi->xdpf = xdpf;
+>> +       tx_bi->tx_flags = I40E_TX_FLAGS_ZC_FRAME;
+>> +
+>> +       tx_desc = I40E_TX_DESC(xdp_ring, xdp_ring->next_to_use);
+>> +       tx_desc->buffer_addr = cpu_to_le64(dma);
+>> +       tx_desc->cmd_type_offset_bsz = 
+>> build_ctob(I40E_TX_DESC_CMD_ICRC |
+>> +                                                 
+>> I40E_TX_DESC_CMD_EOP,
+>> +                                                 0, xdpf->len, 0);
+>> +       smp_wmb();
+>> +
+>> +       xdp_ring->next_to_use++;
+>> +       if (xdp_ring->next_to_use == xdp_ring->count)
+>> +               xdp_ring->next_to_use = 0;
+>> +
+>> +       tx_bi->next_to_watch = tx_desc;
+>> +
+>> +       return I40E_XDP_TX;
+>> +}
+>> +
+>>  /**
+>>   * i40e_run_xdp_zc - Executes an XDP program on an xdp_buff
+>>   * @rx_ring: Rx ring
+>> @@ -187,7 +230,6 @@ int i40e_xsk_umem_setup(struct i40e_vsi *vsi, 
+>> struct xdp_umem *umem,
+>>  static int i40e_run_xdp_zc(struct i40e_ring *rx_ring, struct 
+>> xdp_buff *xdp)
+>>  {
+>>         int err, result = I40E_XDP_PASS;
+>> -       struct i40e_ring *xdp_ring;
+>>         struct bpf_prog *xdp_prog;
+>>         u32 act;
+>>
+>> @@ -202,8 +244,7 @@ static int i40e_run_xdp_zc(struct i40e_ring 
+>> *rx_ring, struct xdp_buff *xdp)
+>>         case XDP_PASS:
+>>                 break;
+>>         case XDP_TX:
+>> -               xdp_ring = 
+>> rx_ring->vsi->xdp_rings[rx_ring->queue_index];
+>> -               result = i40e_xmit_xdp_tx_ring(xdp, xdp_ring);
+>> +               result = i40e_xmit_rcvd_zc(rx_ring, xdp);
+>>                 break;
+>>         case XDP_REDIRECT:
+>>                 err = xdp_do_redirect(rx_ring->netdev, xdp, 
+>> xdp_prog);
+>> @@ -628,6 +669,11 @@ static bool i40e_xmit_zc(struct i40e_ring 
+>> *xdp_ring, unsigned int budget)
+>>  static void i40e_clean_xdp_tx_buffer(struct i40e_ring *tx_ring,
+>>                                      struct i40e_tx_buffer *tx_bi)
+>>  {
+>> +       if (tx_bi->tx_flags & I40E_TX_FLAGS_ZC_FRAME) {
+>> +               xsk_umem_recycle_addr(tx_ring->xsk_umem, 
+>> tx_bi->xdpf->handle);
+>> +               tx_bi->tx_flags = 0;
+>> +               return;
+>> +       }
+>>         xdp_return_frame(tx_bi->xdpf);
+>>         dma_unmap_single(tx_ring->dev,
+>>                          dma_unmap_addr(tx_bi, dma),
+>> --
+>> 2.17.1
+>>
