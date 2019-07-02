@@ -2,72 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC50F5D1E7
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 16:40:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AC605D1F6
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 16:44:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727068AbfGBOkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 10:40:31 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:53878 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725940AbfGBOkb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 10:40:31 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
-        (Exim 4.76)
-        (envelope-from <colin.king@canonical.com>)
-        id 1hiJxK-0004Hn-VT; Tue, 02 Jul 2019 14:40:27 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Maya Erez <merez@codeaurora.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, wil6210@qti.qualcomm.com,
-        netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next] wil6210: fix wil_cid_valid with negative cid values
-Date:   Tue,  2 Jul 2019 15:40:26 +0100
-Message-Id: <20190702144026.13013-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.20.1
+        id S1727024AbfGBOoc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 10:44:32 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:46368 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726831AbfGBOoc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 10:44:32 -0400
+Received: by mail-lf1-f66.google.com with SMTP id z15so11552062lfh.13
+        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 07:44:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=WjQyJp2iY5fGQc+V5V9CzoNmpSilM+nwtjmuAYauCEg=;
+        b=NiF3piWStntZFsAy372v0MM1GMImhKld5gDip0Lu1PLdyy6+Ltl6+a2jJU5tTmYId9
+         8jZ85ljZHm/Bpx3imlNI+faosGx7aI2iRRrJiM5V+sj0CV6CX1wIYNmXGiEY981UNrxO
+         hf8yWMUWJOFuRXFWZ+dmcoS5Gk704pP5LQwI3JsKuHQrZ7x3sfjvw597qSs8xEaES7oM
+         hpqzKPmzVUxa0Z7jiwBzpTrtulmisvOdcmKjTaOkdj0lrwULUL/oMw4WWU5HNrxnq/O8
+         QVwG8w9rbhVvPmzIPIiOmh5pw20NMIIUgjXgIlRIinWcl9CqWcCz6+i7ZHYeqoCmWlpa
+         5c4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to:user-agent;
+        bh=WjQyJp2iY5fGQc+V5V9CzoNmpSilM+nwtjmuAYauCEg=;
+        b=TE5naagjq0aR6Z1fqZZSnz5vLplk6Q+o96LZRaydCMsujeaRMONIQll5iK0U0YohxD
+         TwFKA4bb24KVYv1E89I7bWp+VUobKFzyv4biz6zGgfGPsGbsLLNegcAnomf9rVD7wejY
+         FpKrZ0mXBmstkhOeVYtci7MA1UYpLKuRIdP54YtScfXijlGd2kppER1lJsShQIGBJiHJ
+         AyoEvzjzWMURjilGtZFsfWMophcql4Y5pDVmur+dGaMDQgsAN0MdOulBn4c5N8MFEkKM
+         DO+VX0QmzHNe7liDMQzgDNjemd8woq2STekkunkiRG871d+iTM+3b8FyKMVB8gSK9lkp
+         ViUw==
+X-Gm-Message-State: APjAAAUDx/qopvs2ql+INtV5TPdztzsNESthaqnUjuX4iM6iNM/hOoZl
+        6EPgz17WH+SGxsvAquqXWA3Rlg==
+X-Google-Smtp-Source: APXvYqwfPQEhJ9ZqyNl1gitN8PCg095jCz3ViGeh+JQ6PhSKFerq2czllQDDaVCc7B0WKAcPGCi1og==
+X-Received: by 2002:ac2:51a3:: with SMTP id f3mr13273142lfk.125.1562078670487;
+        Tue, 02 Jul 2019 07:44:30 -0700 (PDT)
+Received: from khorivan (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
+        by smtp.gmail.com with ESMTPSA id 11sm3821577ljc.66.2019.07.02.07.44.29
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 02 Jul 2019 07:44:30 -0700 (PDT)
+Date:   Tue, 2 Jul 2019 17:44:27 +0300
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     netdev@vger.kernel.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        grygorii.strashko@ti.com, jakub.kicinski@netronome.com,
+        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
+Subject: Re: [PATCH] net: core: page_pool: add user refcnt and reintroduce
+ page_pool_destroy
+Message-ID: <20190702144426.GD4510@khorivan>
+Mail-Followup-To: Jesper Dangaard Brouer <brouer@redhat.com>,
+        netdev@vger.kernel.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        grygorii.strashko@ti.com, jakub.kicinski@netronome.com,
+        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
+References: <20190702153902.0e42b0b2@carbon>
+ <156207778364.29180.5111562317930943530.stgit@firesoul>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <156207778364.29180.5111562317930943530.stgit@firesoul>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+On Tue, Jul 02, 2019 at 04:31:39PM +0200, Jesper Dangaard Brouer wrote:
+>From: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+>
+>Jesper recently removed page_pool_destroy() (from driver invocation) and
+>moved shutdown and free of page_pool into xdp_rxq_info_unreg(), in-order to
+>handle in-flight packets/pages. This created an asymmetry in drivers
+>create/destroy pairs.
+>
+>This patch add page_pool user refcnt and reintroduce page_pool_destroy.
+>This serves two purposes, (1) simplify drivers error handling as driver now
+>drivers always calls page_pool_destroy() and don't need to track if
+>xdp_rxq_info_reg_mem_model() was unsuccessful. (2) allow special cases
+>where a single RX-queue (with a single page_pool) provides packets for two
+>net_device'es, and thus needs to register the same page_pool twice with two
+>xdp_rxq_info structures.
 
-There are several occasions where a negative cid value is passed
-into wil_cid_valid and this is converted into a u8 causing the
-range check of cid >= 0 to always succeed.  Fix this by making
-the cid argument an int to handle any -ve error value of cid.
+As I tend to use xdp level patch there is no more reason to mention (2) case
+here. XDP patch serves it better and can prevent not only obj deletion but also
+pool flush, so, this one patch I could better leave only for (1) case.
 
-An example of this behaviour is in wil_cfg80211_dump_station,
-where cid is assigned -ENOENT if the call to wil_find_cid_by_idx
-fails, and this -ve value is passed to wil_cid_valid.  I believe
-that the conversion of -ENOENT to the u8 value 254 which is
-greater than wil->max_assoc_sta causes wil_find_cid_by_idx to
-currently work fine, but I think is by luck and not the
-intended behaviour.
-
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/net/wireless/ath/wil6210/wil6210.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/ath/wil6210/wil6210.h b/drivers/net/wireless/ath/wil6210/wil6210.h
-index 6f456b311a39..25a1adcb38eb 100644
---- a/drivers/net/wireless/ath/wil6210/wil6210.h
-+++ b/drivers/net/wireless/ath/wil6210/wil6210.h
-@@ -1144,7 +1144,7 @@ static inline void wil_c(struct wil6210_priv *wil, u32 reg, u32 val)
- /**
-  * wil_cid_valid - check cid is valid
-  */
--static inline bool wil_cid_valid(struct wil6210_priv *wil, u8 cid)
-+static inline bool wil_cid_valid(struct wil6210_priv *wil, int cid)
- {
- 	return (cid >= 0 && cid < wil->max_assoc_sta);
- }
 -- 
-2.20.1
-
+Regards,
+Ivan Khoronzhuk
