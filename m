@@ -2,53 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CC7235C64F
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 02:27:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21AF05C653
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 02:32:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727036AbfGBA1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 20:27:05 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:42866 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726866AbfGBA1F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 20:27:05 -0400
-Received: by mail-io1-f66.google.com with SMTP id u19so24475613ior.9;
-        Mon, 01 Jul 2019 17:27:05 -0700 (PDT)
+        id S1727028AbfGBAb6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 20:31:58 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:39205 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726866AbfGBAb6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 20:31:58 -0400
+Received: by mail-pf1-f194.google.com with SMTP id j2so7348572pfe.6
+        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 17:31:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=msi3sIe/2rMoiFrFYyGGvyE4Wu0xewK5rPPdG+6lYn8=;
-        b=AfBN8LmSqeGgskBqoEmnmS8ybWRuUohBhf6pYxueGAQDxk+aJaIynrcs7thghMvFbC
-         hDpxSM8LLS6omQgRYJ7TliK3x4hfLUQ5DmpJ7M6NN1pV5dYYUD2iKuyO+jEzdglVhEQD
-         xQNXUMoYXX45PIlyc6XeF/t7FwpiRA7qnSLIHPRGRQzo+XOKSYqPLLzeuQhrxnpaw1jE
-         PpjSV7usaP2fbx9jTBYaKHErJnbhghnWLurK0FdiZq2Dp7sOTUZPPcVs0ufsTwmof2lh
-         pBoVNSdMjG157kRjV6/luiboZG6cmYC5sg04CiOMv29sQgHDPdhvIn8cXJjSc3/vzG++
-         m4Uw==
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=EWG9D9Z1nsPT0YVF0HcZk/r7kC+7lwO/rqB586b/trk=;
+        b=YFNaPcMYk/l5tRAYWxrkr0av7YJgasS9t4M1tytaS0SPRxKRV6Bcmub9KkLn/Tdkbr
+         7XGrlDSbfKhm6nHBDVs89NKWsTP8MxJ9YLL+5IYbmXAYQvXVVPcQgkCfXnLk9UO3q+Yc
+         N+CiAkLHWGkOExfuPzVtn3Vgc7dkZ8uBURor27VPbMAdBla2u1KY//85wWPj1EOpqQ6R
+         Q/cAh5GJ3rXa2nNLfEgT9pumq9BH67i+OgHaMgJx7V9iGPSlMAm1gcIEzDGyefi2PeuD
+         dP8cVbtVQK59lgzyTnGK/24myB3MH/YBiitjGzFRtTDdrgBq1Qmhbglj9hUewYzQ2028
+         okuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=msi3sIe/2rMoiFrFYyGGvyE4Wu0xewK5rPPdG+6lYn8=;
-        b=YeR7+dPLQBlMU4lhmkJ6AyZkbeBZAjd9rgQAei/XzgGNKQZyIO0enEOY+23Hgtf5jb
-         LuRi18b6KLuGMI23sYq5s3O9/lSvzX0+Pzn1ejIO3Qcjun8GLuFJlFfkCnm5gVybxiuN
-         ntpUbiwhBlYhIIGeZgc2AfXNEDLTIOcZYJU67Fq9/FjvTfnkLAyksVIDei1GviGafDb2
-         AXj8a45pP4OAbJwY6f0BnUM3LEcnsr8WA47+BpWytFUDacj4yhTNUoNlhfXZr2yBOOBI
-         kzCZsJC73VfXZjAFrvan4qP/4//33rU/Ar4C70ziatcEK1yXrqzvNNE0v8NzqcFkWkRT
-         cUzw==
-X-Gm-Message-State: APjAAAX3TJIPetcqfOkxJai0ukyFedtnlWhRXgaWjEoMIBoV/06DBgLO
-        BnLbGYR1eM86iG+UIhGSVhuvHugVvnFDjMm1Aw8=
-X-Google-Smtp-Source: APXvYqylXNYNiQCClbHXcFgG3J/fkEa2SqCly+StUIRmzNT89jL95outBI31qsU6sVnlwWkZ6DZjuZlw+kshyvcRfo0=
-X-Received: by 2002:a5d:9448:: with SMTP id x8mr31542962ior.102.1562027224739;
- Mon, 01 Jul 2019 17:27:04 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190701204821.44230-1-sdf@google.com> <20190701204821.44230-7-sdf@google.com>
- <CAH3MdRXx4uO3pTFiLZk8j9ooO0gd1ppbSyT8zHMsVs01P6wKpA@mail.gmail.com> <20190702000736.GH6757@mini-arch>
-In-Reply-To: <20190702000736.GH6757@mini-arch>
-From:   Y Song <ys114321@gmail.com>
-Date:   Mon, 1 Jul 2019 17:26:28 -0700
-Message-ID: <CAH3MdRUSaqHmuu1cx5ckPvWYSDot8uwHCbgMRp26kKtkQ10N=w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 6/8] selftests/bpf: test BPF_SOCK_OPS_RTT_CB
-To:     Stanislav Fomichev <sdf@fomichev.me>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=EWG9D9Z1nsPT0YVF0HcZk/r7kC+7lwO/rqB586b/trk=;
+        b=bYqKRchCUdQdwX9JQx4jPPFpbrCv1EFDm7tVCZtIj8xHs3L2cBvOIKBQ4KQ7RmrCro
+         7+7wx1NQBXnFe+lambhQhbAqXXfPujnxQgpDWBTt35wz/LHDr37X98ZgmrDLgWFfUFui
+         aT0YAWITNiTwoMfsX8iG8KeBgv31zRTGGo0Ab+QoV9p85AK6ouUfHjyeR/GYIQDuSOtf
+         8GPICSBAUuBM8M6iLDPv+IG8viMrrDFBeeWkK/9GyIsmBFo3OI3l0IcFeQ9BJr9UbZb3
+         uXfTssggHquOQbxkyARXHR+ysbEpOWvZtBz7iDyeDkwD6HHXwfU5XCi5Fz9YwlX+GyWP
+         Eg/A==
+X-Gm-Message-State: APjAAAXOXTY0E+X3Nh8tHsJEqGoCecF7skOM90i8fVvbgi5My4bhOLn2
+        5rKtBjBgUqrS10s79JMruzgH1g==
+X-Google-Smtp-Source: APXvYqx9MEWf0FlC2lSmxm6Hquxa/UOYWWQVGr18lFmZ00tfwxuqJ9fR/mWxlKHIJUVxfaxn2K3fCA==
+X-Received: by 2002:a17:90a:228b:: with SMTP id s11mr2209184pjc.23.1562027517225;
+        Mon, 01 Jul 2019 17:31:57 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id n5sm16344470pgd.26.2019.07.01.17.31.56
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 01 Jul 2019 17:31:56 -0700 (PDT)
+Date:   Mon, 1 Jul 2019 17:31:56 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Y Song <ys114321@gmail.com>
 Cc:     Stanislav Fomichev <sdf@google.com>,
         netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         David Miller <davem@davemloft.net>,
@@ -58,158 +56,153 @@ Cc:     Stanislav Fomichev <sdf@google.com>,
         Priyaranjan Jha <priyarjha@google.com>,
         Yuchung Cheng <ycheng@google.com>,
         Soheil Hassas Yeganeh <soheil@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH bpf-next 7/8] samples/bpf: add sample program that
+ periodically dumps TCP stats
+Message-ID: <20190702003156.GI6757@mini-arch>
+References: <20190701204821.44230-1-sdf@google.com>
+ <20190701204821.44230-8-sdf@google.com>
+ <CAH3MdRX+utr3w1gC537ui7nLOZ+b8yrSKeO3CMuszXG5sGg3NA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAH3MdRX+utr3w1gC537ui7nLOZ+b8yrSKeO3CMuszXG5sGg3NA@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 1, 2019 at 5:07 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
->
-> On 07/01, Y Song wrote:
-> > On Mon, Jul 1, 2019 at 1:49 PM Stanislav Fomichev <sdf@google.com> wrote:
-> > >
-> > > Make sure the callback is invoked for syn-ack and data packet.
-> > >
-> > > Cc: Eric Dumazet <edumazet@google.com>
-> > > Cc: Priyaranjan Jha <priyarjha@google.com>
-> > > Cc: Yuchung Cheng <ycheng@google.com>
-> > > Cc: Soheil Hassas Yeganeh <soheil@google.com>
-> > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > > ---
-> > >  tools/testing/selftests/bpf/Makefile        |   3 +-
-> > >  tools/testing/selftests/bpf/progs/tcp_rtt.c |  61 +++++
-> > >  tools/testing/selftests/bpf/test_tcp_rtt.c  | 253 ++++++++++++++++++++
-> > >  3 files changed, 316 insertions(+), 1 deletion(-)
-> > >  create mode 100644 tools/testing/selftests/bpf/progs/tcp_rtt.c
-> > >  create mode 100644 tools/testing/selftests/bpf/test_tcp_rtt.c
-> > >
-> > > diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> > > index de1754a8f5fe..2620406a53ec 100644
-> > > --- a/tools/testing/selftests/bpf/Makefile
-> > > +++ b/tools/testing/selftests/bpf/Makefile
-> > > @@ -27,7 +27,7 @@ TEST_GEN_PROGS = test_verifier test_tag test_maps test_lru_map test_lpm_map test
-> > >         test_cgroup_storage test_select_reuseport test_section_names \
-> > >         test_netcnt test_tcpnotify_user test_sock_fields test_sysctl test_hashmap \
-> > >         test_btf_dump test_cgroup_attach xdping test_sockopt test_sockopt_sk \
-> > > -       test_sockopt_multi
-> > > +       test_sockopt_multi test_tcp_rtt
-> > >
-> > >  BPF_OBJ_FILES = $(patsubst %.c,%.o, $(notdir $(wildcard progs/*.c)))
-> > >  TEST_GEN_FILES = $(BPF_OBJ_FILES)
-> > > @@ -107,6 +107,7 @@ $(OUTPUT)/test_cgroup_attach: cgroup_helpers.c
-> > >  $(OUTPUT)/test_sockopt: cgroup_helpers.c
-> > >  $(OUTPUT)/test_sockopt_sk: cgroup_helpers.c
-> > >  $(OUTPUT)/test_sockopt_multi: cgroup_helpers.c
-> > > +$(OUTPUT)/test_tcp_rtt: cgroup_helpers.c
-> > >
-> > >  .PHONY: force
-> > >
-> > > diff --git a/tools/testing/selftests/bpf/progs/tcp_rtt.c b/tools/testing/selftests/bpf/progs/tcp_rtt.c
-> > > new file mode 100644
-> > > index 000000000000..233bdcb1659e
-> > > --- /dev/null
-> > > +++ b/tools/testing/selftests/bpf/progs/tcp_rtt.c
-> > > @@ -0,0 +1,61 @@
-> > > +// SPDX-License-Identifier: GPL-2.0
-> > > +#include <linux/bpf.h>
-> > > +#include "bpf_helpers.h"
-> > > +
-> > > +char _license[] SEC("license") = "GPL";
-> > > +__u32 _version SEC("version") = 1;
-> > > +
-> > > +struct tcp_rtt_storage {
-> > > +       __u32 invoked;
-> > > +       __u32 dsack_dups;
-> > > +       __u32 delivered;
-> > > +       __u32 delivered_ce;
-> > > +       __u32 icsk_retransmits;
-> > > +};
-[...]
-> > > +
-> > > +static void *server_thread(void *arg)
-> > > +{
-> > > +       struct sockaddr_storage addr;
-> > > +       socklen_t len = sizeof(addr);
-> > > +       int fd = *(int *)arg;
-> > > +       int client_fd;
-> > > +
-> > > +       if (listen(fd, 1) < 0)
-> > > +               error(1, errno, "Failed to listed on socket");
+On 07/01, Y Song wrote:
+> On Mon, Jul 1, 2019 at 1:49 PM Stanislav Fomichev <sdf@google.com> wrote:
 > >
-> > The error() here only reports the error, right? In case of error,
-> > should the control jumps to the end of this function and return?
-> > The same for several error() calls below.
-> No, error() calls exit(), so the whole process should die. Do you think
-> it's better to gracefully handle that with pthread_join?
-
-Thanks for explanation of error() semantics.
-test_tcp_rtt is a standalone a program, so exiting
-with a meaningful error message is fine to me. No need to change then.
-
->
-> > > +
-> > > +       client_fd = accept(fd, (struct sockaddr *)&addr, &len);
-> > > +       if (client_fd < 0)
-> > > +               error(1, errno, "Failed to accept client");
-> > > +
-> > > +       if (accept(fd, (struct sockaddr *)&addr, &len) >= 0)
-> > > +               error(1, errno, "Unexpected success in second accept");
+> > Uses new RTT callback to dump stats every second.
 > >
-> > What is the purpose of this second default to-be-failed accept() call?
-> So the server_thread waits here for the next client (that never arrives)
-> and doesn't exit and call close(client_fd). I can add a comment here to
-> clarify. Alternatively, I can just drop close(client_fd) and let
-> the thread exit. WDYT?
+> > $ mkdir -p /tmp/cgroupv2
+> > $ mount -t cgroup2 none /tmp/cgroupv2
+> > $ mkdir -p /tmp/cgroupv2/foo
+> > $ echo $$ >> /tmp/cgroupv2/foo/cgroup.procs
+> > $ bpftool prog load ./tcp_dumpstats_kern.o /sys/fs/bpf/tcp_prog
+> > $ bpftool cgroup attach /tmp/cgroupv2/foo sock_ops pinned /sys/fs/bpf/tcp_prog
+> > $ bpftool prog tracelog
+> > $ # run neper/netperf/etc
+> >
+> > Used neper to compare performance with and without this program attached
+> > and didn't see any noticeable performance impact.
+> >
+> > Sample output:
+> >   <idle>-0     [015] ..s.  2074.128800: 0: dsack_dups=0 delivered=242526
+> >   <idle>-0     [015] ..s.  2074.128808: 0: delivered_ce=0 icsk_retransmits=0
+> >   <idle>-0     [015] ..s.  2075.130133: 0: dsack_dups=0 delivered=323599
+> >   <idle>-0     [015] ..s.  2075.130138: 0: delivered_ce=0 icsk_retransmits=0
+> >   <idle>-0     [005] .Ns.  2076.131440: 0: dsack_dups=0 delivered=404648
+> >   <idle>-0     [005] .Ns.  2076.131447: 0: delivered_ce=0 icsk_retransmits=0
+> >
+> > Cc: Eric Dumazet <edumazet@google.com>
+> > Cc: Priyaranjan Jha <priyarjha@google.com>
+> > Cc: Yuchung Cheng <ycheng@google.com>
+> > Cc: Soheil Hassas Yeganeh <soheil@google.com>
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > ---
+> >  samples/bpf/Makefile             |  1 +
+> >  samples/bpf/tcp_dumpstats_kern.c | 65 ++++++++++++++++++++++++++++++++
+> >  2 files changed, 66 insertions(+)
+> >  create mode 100644 samples/bpf/tcp_dumpstats_kern.c
+> 
+> Currently, the bpf program into the repo. If we do not have another
+> script to use
+> this program for testing, the instructions in the commit message should be
+> added to the bpf program as comments so people know what to do with this file
+> without going through git commit message.
+> 
+> Is it possible to create a script to run with this bpf program?
+There is a general instruction in samples/bpf/tcp_bpf.readme
+with bpftool examples/etc. Should I just a comment at the top
+of the BPF program to point people to that .readme file instead?
 
-Adding a comment to explain should be good enough. Thanks!
-
->
-> > > +
-> > > +       close(client_fd);
-> > > +
-> > > +       return NULL;
-> > > +}
-> > > +
-> > > +int main(int args, char **argv)
-> > > +{
-> > > +       int server_fd, cgroup_fd;
-> > > +       int err = EXIT_SUCCESS;
-> > > +       pthread_t tid;
-> > > +
-> > > +       if (setup_cgroup_environment())
-> > > +               goto cleanup_obj;
-> > > +
-> > > +       cgroup_fd = create_and_get_cgroup(CG_PATH);
-> > > +       if (cgroup_fd < 0)
-> > > +               goto cleanup_cgroup_env;
-> > > +
-> > > +       if (join_cgroup(CG_PATH))
-> > > +               goto cleanup_cgroup;
-> > > +
-> > > +       server_fd = start_server();
-> > > +       if (server_fd < 0) {
-> > > +               err = EXIT_FAILURE;
-> > > +               goto cleanup_cgroup;
-> > > +       }
-> > > +
-> > > +       pthread_create(&tid, NULL, server_thread, (void *)&server_fd);
-> > > +
-> > > +       if (run_test(cgroup_fd, server_fd))
-> > > +               err = EXIT_FAILURE;
-> > > +
-> > > +       close(server_fd);
-> > > +
-> > > +       printf("test_sockopt_sk: %s\n",
-> > > +              err == EXIT_SUCCESS ? "PASSED" : "FAILED");
-> > > +
-> > > +cleanup_cgroup:
-> > > +       close(cgroup_fd);
-> > > +cleanup_cgroup_env:
-> > > +       cleanup_cgroup_environment();
-> > > +cleanup_obj:
-> > > +       return err;
-> > > +}
-> > > --
-> > > 2.22.0.410.gd8fdbe21b5-goog
-> > >
+> >
+> > diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+> > index 0917f8cf4fab..eaebbeead42f 100644
+> > --- a/samples/bpf/Makefile
+> > +++ b/samples/bpf/Makefile
+> > @@ -154,6 +154,7 @@ always += tcp_iw_kern.o
+> >  always += tcp_clamp_kern.o
+> >  always += tcp_basertt_kern.o
+> >  always += tcp_tos_reflect_kern.o
+> > +always += tcp_dumpstats_kern.o
+> >  always += xdp_redirect_kern.o
+> >  always += xdp_redirect_map_kern.o
+> >  always += xdp_redirect_cpu_kern.o
+> > diff --git a/samples/bpf/tcp_dumpstats_kern.c b/samples/bpf/tcp_dumpstats_kern.c
+> > new file mode 100644
+> > index 000000000000..5d22bf61db65
+> > --- /dev/null
+> > +++ b/samples/bpf/tcp_dumpstats_kern.c
+> > @@ -0,0 +1,65 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +#include <linux/bpf.h>
+> > +
+> > +#include "bpf_helpers.h"
+> > +#include "bpf_endian.h"
+> > +
+> > +#define INTERVAL                       1000000000ULL
+> > +
+> > +int _version SEC("version") = 1;
+> > +char _license[] SEC("license") = "GPL";
+> > +
+> > +struct {
+> > +       __u32 type;
+> > +       __u32 map_flags;
+> > +       int *key;
+> > +       __u64 *value;
+> > +} bpf_next_dump SEC(".maps") = {
+> > +       .type = BPF_MAP_TYPE_SK_STORAGE,
+> > +       .map_flags = BPF_F_NO_PREALLOC,
+> > +};
+> > +
+> > +SEC("sockops")
+> > +int _sockops(struct bpf_sock_ops *ctx)
+> > +{
+> > +       struct bpf_tcp_sock *tcp_sk;
+> > +       struct bpf_sock *sk;
+> > +       __u64 *next_dump;
+> > +       __u64 now;
+> > +
+> > +       switch (ctx->op) {
+> > +       case BPF_SOCK_OPS_TCP_CONNECT_CB:
+> > +               bpf_sock_ops_cb_flags_set(ctx, BPF_SOCK_OPS_RTT_CB_FLAG);
+> > +               return 1;
+> > +       case BPF_SOCK_OPS_RTT_CB:
+> > +               break;
+> > +       default:
+> > +               return 1;
+> > +       }
+> > +
+> > +       sk = ctx->sk;
+> > +       if (!sk)
+> > +               return 1;
+> > +
+> > +       next_dump = bpf_sk_storage_get(&bpf_next_dump, sk, 0,
+> > +                                      BPF_SK_STORAGE_GET_F_CREATE);
+> > +       if (!next_dump)
+> > +               return 1;
+> > +
+> > +       now = bpf_ktime_get_ns();
+> > +       if (now < *next_dump)
+> > +               return 1;
+> > +
+> > +       tcp_sk = bpf_tcp_sock(sk);
+> > +       if (!tcp_sk)
+> > +               return 1;
+> > +
+> > +       *next_dump = now + INTERVAL;
+> > +
+> > +       bpf_printk("dsack_dups=%u delivered=%u\n",
+> > +                  tcp_sk->dsack_dups, tcp_sk->delivered);
+> > +       bpf_printk("delivered_ce=%u icsk_retransmits=%u\n",
+> > +                  tcp_sk->delivered_ce, tcp_sk->icsk_retransmits);
+> > +
+> > +       return 1;
+> > +}
+> > --
+> > 2.22.0.410.gd8fdbe21b5-goog
+> >
