@@ -2,170 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 62BE35C92F
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 08:18:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED1BB5C930
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 08:18:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726046AbfGBGSW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 02:18:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48946 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725802AbfGBGSV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jul 2019 02:18:21 -0400
-Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 26C4D2146F;
-        Tue,  2 Jul 2019 06:18:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1562048300;
-        bh=IxbrC5K9TC/Kv5iK1DLlG+8ia477FeG/8e82AOrQ8Rs=;
-        h=Date:From:To:Cc:Subject:From;
-        b=upBKdPKrGf3ce3dFHcbmuihW5ewLNuEpFOx9RngVAJX4wEyY+igBpcLxMwlC8vJYH
-         5Ecko+AcWok3bYJueLT1ZMhT/KXtWXyrzLYnWqDi2jrmH6tEpY2pFs8sk0RRKk7XHp
-         KuYPLFr7QLtWNon8wDKYDu0BwlJIQXmRIcrPDIAc=
-Date:   Mon, 1 Jul 2019 23:18:18 -0700
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     dccp@vger.kernel.org, netdev@vger.kernel.org,
-        Gerrit Renker <gerrit@erg.abdn.ac.uk>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Subject: Reminder: 6 open syzbot bugs in "net/dccp" subsystem
-Message-ID: <20190702061818.GE27702@sol.localdomain>
+        id S1725835AbfGBGSx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 02:18:53 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:35623 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725775AbfGBGSx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 02:18:53 -0400
+Received: by mail-wm1-f65.google.com with SMTP id c6so1865917wml.0
+        for <netdev@vger.kernel.org>; Mon, 01 Jul 2019 23:18:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=jwZi0018qUB5CHidxDKKx41C6zt1VKosai416bkz7EI=;
+        b=Z4sI/Xsg2jtC5wq8+M0X4AYLaEbneXmEjwHAjUBlrwTtg3AqpXn0kqtgTOa/M2Kczc
+         2m3zWvyoNsXxTPLGsAEXfEWRlt/0m3PQ08d6DjgkkViqROEYEq6PIQnB0KaFD9SeO7OP
+         IXgdgVKKKS16vryiwtzSf6ViZEfHx1E8zRS4ZnARljOkkSP1BzyZBs1VuFO1yM2DPI+p
+         PWxIXEwi6QIaLsqOhBuXNXh/9C3QuzzXH3nBV9LG0W3lJzooaasDUeIXI/afDxl+R09s
+         xmYSXMjqVnVA1sbIfTgn35ixKD/vBpSQnZzWi88r++uC0H76Pne1lmsj8PnVWU66DprE
+         Qjfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=jwZi0018qUB5CHidxDKKx41C6zt1VKosai416bkz7EI=;
+        b=IKK90solQXJaU2LiWg1UXImeHa/4vE7qf9OCETttYCmbgR4wWL9JkGHAhJCsnZw/F/
+         W26KDtImtlLOGO8QxUvtpDuE/CZmq/+4StUlDQeRmQEWeee/R25p4DS7omF6fR7XEfiu
+         /m2TJ0cIVdKuCGpup8Vr3qRh9kXJHes0ZBptUZ2AhVhVB/JqW87f8cDFFm2zFnASpBtM
+         CsnHMqI/JF5sb5uBpOrbVkLm/onmfNk4eWJDvRdRf6qwYbfM7WjZ8z+6gjRijCHvaa0I
+         Rm2fJY3qXh1pe8SWV/dH0qT0hrzbjzTt5IKPJTbEzfL84CaC3fwxsl5y/3MLkZeGDg8/
+         QKNQ==
+X-Gm-Message-State: APjAAAW0BEoy+E3Kws/jevV8ZIEwoJPEKT4kYTNwrqX0W9h4fhw71y/z
+        q6wJzZqO0AtYKfNP+ZSgrUy9VO3i
+X-Google-Smtp-Source: APXvYqwqPpjcLaHYkUvCnv8J5NWbqGwMZu+7ACvcgukvbKUVHQrJJF3JRzaYGz3/7I8SP9vycrhXqg==
+X-Received: by 2002:a1c:6545:: with SMTP id z66mr1937550wmb.77.1562048330913;
+        Mon, 01 Jul 2019 23:18:50 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8bd6:c00:d5f3:78fc:5357:f218? (p200300EA8BD60C00D5F378FC5357F218.dip0.t-ipconnect.de. [2003:ea:8bd6:c00:d5f3:78fc:5357:f218])
+        by smtp.googlemail.com with ESMTPSA id k82sm1854062wma.15.2019.07.01.23.18.50
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 01 Jul 2019 23:18:50 -0700 (PDT)
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next] r8169: add random MAC address fallback
+Message-ID: <61a7754f-bdf9-f69a-296d-47353a78c8b4@gmail.com>
+Date:   Tue, 2 Jul 2019 08:18:45 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[This email was generated by a script.  Let me know if you have any suggestions
-to make it better, or if you want it re-generated with the latest status.]
+>From 1c8bacf724f1450e5256c68fbff407305faf9cbd Mon Sep 17 00:00:00 2001
 
-Of the currently open syzbot reports against the upstream kernel, I've manually
-marked 6 of them as possibly being bugs in the "net/dccp" subsystem.  I've
-listed these reports below, sorted by an algorithm that tries to list first the
-reports most likely to be still valid, important, and actionable.
 
-Of these 6 bugs, 1 was seen in mainline in the last week.
 
-If you believe a bug is no longer valid, please close the syzbot report by
-sending a '#syz fix', '#syz dup', or '#syz invalid' command in reply to the
-original thread, as explained at https://goo.gl/tpsmEJ#status
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 40 +++++++++++++++--------
+ 1 file changed, 27 insertions(+), 13 deletions(-)
 
-If you believe I misattributed a bug to the "net/dccp" subsystem, please let me
-know, and if possible forward the report to the correct people or mailing list.
-
-Here are the bugs:
-
---------------------------------------------------------------------------------
-Title:              BUG: please report to dccp@vger.kernel.org => prev = 0, last = 0 at net/dccp/ccids/lib/packet_history.c:LINE/tfrc_rx_hist_sample_rtt()
-Last occurred:      3 days ago
-Reported:           603 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=0881c535c265ca965edc49c0ac3d0a9850d26eb1
-Original thread:    https://groups.google.com/d/msgid/syzkaller-bugs/94eb2c05611406f6a5055d38a272%40google.com
-
-This bug has a C reproducer.
-
-For some reason the original report email for this bug is missing from the LKML
-archive at lore.kernel.org, so my script couldn't check whether anyone has
-replied to it or not.  The Google Groups link above should still work, though. 
-Also try searching for the bug title.
-
---------------------------------------------------------------------------------
-Title:              KASAN: use-after-free Read in ccid2_hc_tx_packet_recv
-Last occurred:      4 days ago
-Reported:           455 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=31f032fe94df7aca6ce5d45455f6acefa26515e4
-Original thread:    https://lkml.kernel.org/lkml/0000000000003872fd0568da185f@google.com/T/#u
-
-This bug has a C reproducer.
-
-No one replied to the original thread for this bug.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+554ccde221001ab5479a@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000003872fd0568da185f@google.com
-
---------------------------------------------------------------------------------
-Title:              KASAN: use-after-free Read in ccid_hc_tx_delete
-Last occurred:      45 days ago
-Reported:           308 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=3e769c60cb2d1cab692fd541dae957b1fd31bde4
-Original thread:    https://lkml.kernel.org/lkml/000000000000de3c7705746dcbb7@google.com/T/#u
-
-This bug has a C reproducer.
-
-No one replied to the original thread for this bug.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+3967c1caf256f4d5aefe@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/000000000000de3c7705746dcbb7@google.com
-
---------------------------------------------------------------------------------
-Title:              KMSAN: uninit-value in dccp_invalid_packet
-Last occurred:      437 days ago
-Reported:           438 days ago
-Branches:           Mainline (with KMSAN patches)
-Dashboard link:     https://syzkaller.appspot.com/bug?id=89916fdba284272cdbd0bf00de942f41d052c3f4
-Original thread:    https://lkml.kernel.org/lkml/0000000000000e2bf3056a36962d@google.com/T/#u
-
-This bug has a C reproducer.
-
-No one replied to the original thread for this bug.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+00763607efc31f91b276@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000000e2bf3056a36962d@google.com
-
---------------------------------------------------------------------------------
-Title:              suspicious RCU usage at ./include/net/inet_sock.h:LINE
-Last occurred:      513 days ago
-Reported:           603 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=78f9fe251de26a75a60690bc2384d62d2db32299
-Original thread:    https://groups.google.com/d/msgid/syzkaller-bugs/001a1140ad88c4f006055d3836d2%40google.com
-
-This bug has a C reproducer.
-
-For some reason the original report email for this bug is missing from the LKML
-archive at lore.kernel.org, so my script couldn't check whether anyone has
-replied to it or not.  The Google Groups link above should still work, though. 
-Also try searching for the bug title.
-
---------------------------------------------------------------------------------
-Title:              WARNING: suspicious RCU usage in pid_task
-Last occurred:      280 days ago
-Reported:           380 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=5b9f20bfdfb67155f627c5e13c258ca56eff026a
-Original thread:    https://lkml.kernel.org/lkml/0000000000002b532a056ebcb3eb@google.com/T/#u
-
-This bug has a C reproducer.
-
-The original thread for this bug received 1 reply, 301 days ago.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+c2d4c3ae3fd90bbaf059@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lkml.kernel.org/r/0000000000002b532a056ebcb3eb@google.com
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 450c74dc1..d6c137b7f 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -6651,13 +6651,36 @@ static int rtl_get_ether_clk(struct rtl8169_private *tp)
+ 	return rc;
+ }
+ 
++static void rtl_init_mac_address(struct rtl8169_private *tp)
++{
++	struct net_device *dev = tp->dev;
++	u8 *mac_addr = dev->dev_addr;
++	int rc, i;
++
++	rc = eth_platform_get_mac_address(tp_to_dev(tp), mac_addr);
++	if (!rc)
++		goto done;
++
++	rtl_read_mac_address(tp, mac_addr);
++	if (is_valid_ether_addr(mac_addr))
++		goto done;
++
++	for (i = 0; i < ETH_ALEN; i++)
++		mac_addr[i] = RTL_R8(tp, MAC0 + i);
++	if (is_valid_ether_addr(mac_addr))
++		goto done;
++
++	eth_hw_addr_random(dev);
++	dev_warn(tp_to_dev(tp), "can't read MAC address, setting random one\n");
++done:
++	rtl_rar_set(tp, mac_addr);
++}
++
+ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ {
+-	/* align to u16 for is_valid_ether_addr() */
+-	u8 mac_addr[ETH_ALEN] __aligned(2) = {};
+ 	struct rtl8169_private *tp;
+ 	struct net_device *dev;
+-	int chipset, region, i;
++	int chipset, region;
+ 	int jumbo_max, rc;
+ 
+ 	dev = devm_alloc_etherdev(&pdev->dev, sizeof (*tp));
+@@ -6749,16 +6772,7 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	u64_stats_init(&tp->rx_stats.syncp);
+ 	u64_stats_init(&tp->tx_stats.syncp);
+ 
+-	/* get MAC address */
+-	rc = eth_platform_get_mac_address(&pdev->dev, mac_addr);
+-	if (rc)
+-		rtl_read_mac_address(tp, mac_addr);
+-
+-	if (is_valid_ether_addr(mac_addr))
+-		rtl_rar_set(tp, mac_addr);
+-
+-	for (i = 0; i < ETH_ALEN; i++)
+-		dev->dev_addr[i] = RTL_R8(tp, MAC0 + i);
++	rtl_init_mac_address(tp);
+ 
+ 	dev->ethtool_ops = &rtl8169_ethtool_ops;
+ 
+-- 
+2.22.0
 
