@@ -2,224 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F0805CC0F
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 10:33:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEC065CC2F
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 10:46:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726967AbfGBIdj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 04:33:39 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:36984 "EHLO mx1.redhat.com"
+        id S1727060AbfGBIqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 04:46:25 -0400
+Received: from linuxlounge.net ([88.198.164.195]:46120 "EHLO linuxlounge.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725867AbfGBIdi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jul 2019 04:33:38 -0400
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 469E030BB367;
-        Tue,  2 Jul 2019 08:33:38 +0000 (UTC)
-Received: from [10.72.12.205] (ovpn-12-205.pek2.redhat.com [10.72.12.205])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6674D60C43;
-        Tue,  2 Jul 2019 08:33:30 +0000 (UTC)
-Subject: Re: [PATCH bpf-next v3] virtio_net: add XDP meta data support
-To:     Yuya Kusakabe <yuya.kusakabe@gmail.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        hawk@kernel.org, jakub.kicinski@netronome.com,
-        john.fastabend@gmail.com, kafai@fb.com, mst@redhat.com,
-        netdev@vger.kernel.org, songliubraving@fb.com, yhs@fb.com
-References: <32dc2f4e-4f19-4fa5-1d24-17a025a08297@gmail.com>
- <20190702081646.23230-1-yuya.kusakabe@gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <ca724dcf-4ffb-ff49-d307-1b45143712b5@redhat.com>
-Date:   Tue, 2 Jul 2019 16:33:28 +0800
+        id S1725851AbfGBIqZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jul 2019 04:46:25 -0400
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        bridge@lists.linux-foundation.org,
+        Roopa Prabhu <roopa@cumulusnetworks.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxlounge.net;
+        s=mail; t=1562057182;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references:openpgp:openpgp:autocrypt:autocrypt;
+        bh=HcrU3xHf2es9K1eWmG8nbhDoxCTyXkGXB9fNsN37JPM=;
+        b=cpOxtmSaP4trU3ozqBS66YZqBZWhUwjWDFuCuUs9XDb55dKzLjizVEO9O2JeTgOhFskerw
+        IinNen6G4pMYKhk0XtE6GbHHBvu2IBjIMPTPZLmOUfLO8qc7svfe4VJhoL6uiyxZc4Aa3u
+        EOuyYNmZ3JRSgRJrPNuAVkqg4TXOJUo=
+Cc:     netdev@vger.kernel.org
+References: <41ac3aa3-cbf7-1b7b-d847-1fb308334931@linuxlounge.net>
+ <E0170D52-C181-4F0F-B5F8-F1801C2A8F5A@cumulusnetworks.com>
+ <21ab085f-0f7f-88bc-b661-af74dd9eeea2@linuxlounge.net>
+ <cc232ed3-9e02-ebb4-4901-9d617013abb8@cumulusnetworks.com>
+ <3fcf8b05-e1ad-ac97-10bf-bd2b6354424c@linuxlounge.net>
+ <908e9e90-70cc-7bbe-f83f-0810c9ef3925@cumulusnetworks.com>
+ <5e43ba82-de32-e419-efc3-5dfca8291973@linuxlounge.net>
+ <6dc6e89b-8b40-7dac-ec69-f4223d5dc147@cumulusnetworks.com>
+From:   Martin Weinelt <martin@linuxlounge.net>
+Openpgp: preference=signencrypt
+Autocrypt: addr=martin@linuxlounge.net; prefer-encrypt=mutual; keydata=
+ mQENBEv1rfkBCADFlzzmynjVg8L5ok/ef2Jxz8D96PtEAP//3U612b4QbHXzHC6+C2qmFEL6
+ 5kG1U1a7PPsEaS/A6K9AUpDhT7y6tX1IxAkSkdIEmIgWC5Pu2df4+xyWXarJfqlBeJ82biot
+ /qETntfo01wm0AtqfJzDh/BkUpQw0dbWBSnAF6LytoNEggIGnUGmzvCidrEEsTCO6YlHfKIH
+ cpz7iwgVZi4Ajtsky8v8P8P7sX0se/ce1L+qX/qN7TnXpcdVSfZpMnArTPkrmlJT4inBLhKx
+ UeDMQmHe+BQvATa21fhcqi3BPIMwIalzLqVSIvRmKY6oYdCbKLM2TZ5HmyJepusl2Gi3ABEB
+ AAG0J01hcnRpbiBXZWluZWx0IDxtYXJ0aW5AbGludXhsb3VuZ2UubmV0PokBWAQTAQoAQgIb
+ IwYLCQgHAwIGFQgCCQoLBBYCAwECHgECF4ACGQEWIQTu0BYCvL0ZbDi8mh+9SqBSj2PxfgUC
+ W/RuFQUJEd/znAAKCRC9SqBSj2PxfpfDCACDx6BYz6cGMiweQ96lXi+ihx7RBaXsfPp2KxUo
+ eHilrDPqknq62XJibCyNCJiYGNb+RUS5WfDUAqxdl4HuNxQMC/sYlbP4b7p9Y1Q9QiTP4f6M
+ 8+Uvpicin+9H/lye5hS/Gp2KUiVI/gzqW68WqMhARUYw00lVSlJHy+xHEGVuQ0vmeopjU81R
+ 0si4+HhMX2HtILTxoUcvm67AFKidTHYMJKwNyMHiLLvSK6wwiy+MXaiqrMVTwSIOQhLgLVcJ
+ 33GNJ2Emkgkhs6xcaiN8xTjxDmiU7b5lXW4JiAsd1rbKINajcA7DVlZ/evGfpN9FczyZ4W6F
+ Rf21CxSwtqv2SQHBuQENBEv1rfkBCADJX6bbb5LsXjdxDeFgqo+XRUvW0bzuS3SYNo0fuktM
+ 5WYMCX7TzoF556QU8A7C7bDUkT4THBUzfaA8ZKIuneYW2WN1OI0zRMpmWVeZcUQpXncWWKCg
+ LBNYtk9CCukPE0OpDFnbR+GhGd1KF/YyemYnzwW2f1NOtHjwT3iuYnzzZNlWoZAR2CRSD02B
+ YU87Mr2CMXrgG/pdRiaD+yBUG9RxCUkIWJQ5dcvgrsg81vOTj6OCp/47Xk/457O0pUFtySKS
+ jZkZN6S7YXl/t+8C9g7o3N58y/X95VVEw/G3KegUR2SwcLdok4HaxgOy5YHiC+qtGNZmDiQn
+ NXN7WIN/oof7ABEBAAGJATwEGAEKACYCGwwWIQTu0BYCvL0ZbDi8mh+9SqBSj2PxfgUCW/Ru
+ GAUJEd/znwAKCRC9SqBSj2PxfpzMCACH55MVYTVykq+CWj1WMKHex9iFg7M9DkWQCF/Zl+0v
+ QmyRMEMZnFW8GdX/Qgd4QbZMUTOGevGxFPTe4p0PPKqKEDXXXxTTHQETE/Hl0jJvyu+MgTxG
+ E9/KrWmsmQC7ogTFCHf0vvVY3UjWChOqRE19Buk4eYpMbuU1dYefLNcD15o4hGDhohYn3SJr
+ q9eaoO6rpnNIrNodeG+1vZYG1B2jpEdU4v354ziGcibt5835IONuVdvuZMFQJ4Pn2yyC+qJe
+ ekXwZ5f4JEt0lWD9YUxB2cU+xM9sbDcQ2b6+ypVFzMyfU0Q6LzYugAqajZ10gWKmeyjisgyq
+ sv5UJTKaOB/t
+Subject: Re: Use-after-free in br_multicast_rcv
+Message-ID: <c66cd547-6cbe-40bf-e42c-d307956644fa@linuxlounge.net>
+Date:   Tue, 2 Jul 2019 10:46:22 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <20190702081646.23230-1-yuya.kusakabe@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+ Thunderbird/60.7.1
+In-Reply-To: <6dc6e89b-8b40-7dac-ec69-f4223d5dc147@cumulusnetworks.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Tue, 02 Jul 2019 08:33:38 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Nik,
 
-On 2019/7/2 下午4:16, Yuya Kusakabe wrote:
-> This adds XDP meta data support to both receive_small() and
-> receive_mergeable().
->
-> Fixes: de8f3a83b0a0 ("bpf: add meta pointer for direct access")
-> Signed-off-by: Yuya Kusakabe <yuya.kusakabe@gmail.com>
-> ---
-> v3:
->   - fix preserve the vnet header in receive_small().
-> v2:
->   - keep copy untouched in page_to_skb().
->   - preserve the vnet header in receive_small().
->   - fix indentation.
-> ---
->   drivers/net/virtio_net.c | 45 +++++++++++++++++++++++++++-------------
->   1 file changed, 31 insertions(+), 14 deletions(-)
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 4f3de0ac8b0b..03a1ae6fe267 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -371,7 +371,7 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
->   				   struct receive_queue *rq,
->   				   struct page *page, unsigned int offset,
->   				   unsigned int len, unsigned int truesize,
-> -				   bool hdr_valid)
-> +				   bool hdr_valid, unsigned int metasize)
->   {
->   	struct sk_buff *skb;
->   	struct virtio_net_hdr_mrg_rxbuf *hdr;
-> @@ -393,7 +393,7 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
->   	else
->   		hdr_padded_len = sizeof(struct padded_vnet_hdr);
->   
-> -	if (hdr_valid)
-> +	if (hdr_valid && !metasize)
->   		memcpy(hdr, p, hdr_len);
->   
->   	len -= hdr_len;
-> @@ -405,6 +405,11 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
->   		copy = skb_tailroom(skb);
->   	skb_put_data(skb, p, copy);
->   
-> +	if (metasize) {
-> +		__skb_pull(skb, metasize);
-> +		skb_metadata_set(skb, metasize);
-> +	}
-> +
->   	len -= copy;
->   	offset += copy;
->   
-> @@ -644,6 +649,7 @@ static struct sk_buff *receive_small(struct net_device *dev,
->   	unsigned int delta = 0;
->   	struct page *xdp_page;
->   	int err;
-> +	unsigned int metasize = 0;
->   
->   	len -= vi->hdr_len;
->   	stats->bytes += len;
-> @@ -683,10 +689,13 @@ static struct sk_buff *receive_small(struct net_device *dev,
->   
->   		xdp.data_hard_start = buf + VIRTNET_RX_PAD + vi->hdr_len;
->   		xdp.data = xdp.data_hard_start + xdp_headroom;
-> -		xdp_set_data_meta_invalid(&xdp);
->   		xdp.data_end = xdp.data + len;
-> +		xdp.data_meta = xdp.data;
->   		xdp.rxq = &rq->xdp_rxq;
->   		orig_data = xdp.data;
-> +		/* Copy the vnet header to the front of data_hard_start to avoid
-> +		 * overwriting by XDP meta data */
-> +		memcpy(xdp.data_hard_start - vi->hdr_len, xdp.data - vi->hdr_len, vi->hdr_len);
+On 7/2/19 12:37 AM, Nikolay Aleksandrov wrote:
+> On 7/2/19 1:17 AM, Martin Weinelt wrote:
+>> Hi again,
+>>
+>> On 7/1/19 7:37 PM, Nikolay Aleksandrov wrote:
+>>> I see, thanks for clarifying this. So on the KASAN could you please try the attached patch ?
+>>> Also could you please run the br_multicast_rcv+xxx addresses through
+>>> linux/scripts/faddr2line for your kernel/bridge:
+>>> usage: faddr2line [--list] <object file> <func+offset> <func+offset>...
+>>>
+>>> Thanks,
+>>>  Nik
+>>>
+>>
+>> back with a new report. This is 5.2.0-rc7 + your patch.
+>>
+>> Best,
+>>   Martin
+>>
+> 
+> Thanks! Aaargh.. I made a stupid mistake hurrying to send the patch, apologies.
+> Here's the fixed version, please give it a go. This report is because
+> of my change, not because of the previous bug that should've been fixed.
+> 
 
+I applied your latest patch against 5.2.0-rc7 and it seems to have fixed the issue as,
+after 6 hours of uptime, the KASAN report isn't coming up anymore.
 
-What happens if we have a large metadata that occupies all headroom here?
+Also there are currently no kmemleak results coming up on 5.2.0-rc7, so I'll be
+looking at the v4.19.x series next.
 
-Thanks
+Thank you!
 
-
->   		act = bpf_prog_run_xdp(xdp_prog, &xdp);
->   		stats->xdp_packets++;
->   
-> @@ -695,9 +704,11 @@ static struct sk_buff *receive_small(struct net_device *dev,
->   			/* Recalculate length in case bpf program changed it */
->   			delta = orig_data - xdp.data;
->   			len = xdp.data_end - xdp.data;
-> +			metasize = xdp.data - xdp.data_meta;
->   			break;
->   		case XDP_TX:
->   			stats->xdp_tx++;
-> +			xdp.data_meta = xdp.data;
->   			xdpf = convert_to_xdp_frame(&xdp);
->   			if (unlikely(!xdpf))
->   				goto err_xdp;
-> @@ -736,10 +747,12 @@ static struct sk_buff *receive_small(struct net_device *dev,
->   	skb_reserve(skb, headroom - delta);
->   	skb_put(skb, len);
->   	if (!delta) {
-> -		buf += header_offset;
-> -		memcpy(skb_vnet_hdr(skb), buf, vi->hdr_len);
-> +		memcpy(skb_vnet_hdr(skb), buf + VIRTNET_RX_PAD, vi->hdr_len);
->   	} /* keep zeroed vnet hdr since packet was changed by bpf */
->   
-> +	if (metasize)
-> +		skb_metadata_set(skb, metasize);
-> +
->   err:
->   	return skb;
->   
-> @@ -760,8 +773,8 @@ static struct sk_buff *receive_big(struct net_device *dev,
->   				   struct virtnet_rq_stats *stats)
->   {
->   	struct page *page = buf;
-> -	struct sk_buff *skb = page_to_skb(vi, rq, page, 0, len,
-> -					  PAGE_SIZE, true);
-> +	struct sk_buff *skb =
-> +		page_to_skb(vi, rq, page, 0, len, PAGE_SIZE, true, 0);
->   
->   	stats->bytes += len - vi->hdr_len;
->   	if (unlikely(!skb))
-> @@ -793,6 +806,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->   	unsigned int truesize;
->   	unsigned int headroom = mergeable_ctx_to_headroom(ctx);
->   	int err;
-> +	unsigned int metasize = 0;
->   
->   	head_skb = NULL;
->   	stats->bytes += len - vi->hdr_len;
-> @@ -839,8 +853,8 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->   		data = page_address(xdp_page) + offset;
->   		xdp.data_hard_start = data - VIRTIO_XDP_HEADROOM + vi->hdr_len;
->   		xdp.data = data + vi->hdr_len;
-> -		xdp_set_data_meta_invalid(&xdp);
->   		xdp.data_end = xdp.data + (len - vi->hdr_len);
-> +		xdp.data_meta = xdp.data;
->   		xdp.rxq = &rq->xdp_rxq;
->   
->   		act = bpf_prog_run_xdp(xdp_prog, &xdp);
-> @@ -852,8 +866,9 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->   			 * adjustments. Note other cases do not build an
->   			 * skb and avoid using offset
->   			 */
-> -			offset = xdp.data -
-> -					page_address(xdp_page) - vi->hdr_len;
-> +			metasize = xdp.data - xdp.data_meta;
-> +			offset = xdp.data - page_address(xdp_page) -
-> +				 vi->hdr_len - metasize;
->   
->   			/* recalculate len if xdp.data or xdp.data_end were
->   			 * adjusted
-> @@ -863,14 +878,15 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->   			if (unlikely(xdp_page != page)) {
->   				rcu_read_unlock();
->   				put_page(page);
-> -				head_skb = page_to_skb(vi, rq, xdp_page,
-> -						       offset, len,
-> -						       PAGE_SIZE, false);
-> +				head_skb = page_to_skb(vi, rq, xdp_page, offset,
-> +						       len, PAGE_SIZE, false,
-> +						       metasize);
->   				return head_skb;
->   			}
->   			break;
->   		case XDP_TX:
->   			stats->xdp_tx++;
-> +			xdp.data_meta = xdp.data;
->   			xdpf = convert_to_xdp_frame(&xdp);
->   			if (unlikely(!xdpf))
->   				goto err_xdp;
-> @@ -921,7 +937,8 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
->   		goto err_skb;
->   	}
->   
-> -	head_skb = page_to_skb(vi, rq, page, offset, len, truesize, !xdp_prog);
-> +	head_skb = page_to_skb(vi, rq, page, offset, len, truesize, !xdp_prog,
-> +			       metasize);
->   	curr_skb = head_skb;
->   
->   	if (unlikely(!curr_skb))
+Best
+  Martin
