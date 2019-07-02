@@ -2,76 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C36EF5CC74
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 11:12:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13C325CD68
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 12:19:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727132AbfGBJMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 05:12:16 -0400
-Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:50990 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725851AbfGBJMQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 05:12:16 -0400
-Received: from mailhost.synopsys.com (mdc-mailhost1.synopsys.com [10.225.0.209])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 7E0BFC0BD1;
-        Tue,  2 Jul 2019 09:12:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1562058736; bh=MXYUQxPCERQHdIJRtSDEXTJHNvOhl9taWreAQc8jCzQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=d9yIlswJ3fbMbeqgHoR93Jqqeccy0IGwyaGekW7caQU6SaDPG7vB+WIVXTMQoYWOV
-         sZhneZCKqcrnqHYhZsiXPpO4JgsL5DTpWOTw8eBkeiV2+rIKuGgQMotZ0SAI7RWwpx
-         0ShfZQ8eZ3HllCJcSFcjsW2INCUP/2v8ce2CY6gkX3QczNeUdyirOrQg6gfgqCsJq4
-         YkC9oPHBRkqS0GjQmcMZglNeLx7JK39ZPlaWeMs4swjaHoP16joFQbwnllYtmiOGHc
-         LeNSsHDde10lowBxMcZXQDy35hUWn9UNT0fkLcujUOyU7PFWxHwnZBPgcp7XPeVWWn
-         x/5qqMciDPWKg==
-Received: from de02.synopsys.com (germany.internal.synopsys.com [10.225.17.21])
-        by mailhost.synopsys.com (Postfix) with ESMTP id A0EBEA0057;
-        Tue,  2 Jul 2019 09:12:13 +0000 (UTC)
-Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by de02.synopsys.com (Postfix) with ESMTP id 2000D3FECB;
-        Tue,  2 Jul 2019 11:12:13 +0200 (CEST)
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>
-Subject: [PATCH net-next] net: stmmac: Re-word Kconfig entry
-Date:   Tue,  2 Jul 2019 11:12:10 +0200
-Message-Id: <eac9ac857255993581bec265fb5ce7e3bdd20c78.1562058669.git.joabreu@synopsys.com>
+        id S1726432AbfGBKTJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 06:19:09 -0400
+Received: from mga03.intel.com ([134.134.136.65]:56020 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725868AbfGBKTJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jul 2019 06:19:09 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 Jul 2019 02:22:12 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.63,442,1557212400"; 
+   d="scan'208";a="315171591"
+Received: from mkarlsso-mobl.ger.corp.intel.com (HELO localhost.localdomain) ([10.252.32.218])
+  by orsmga004.jf.intel.com with ESMTP; 02 Jul 2019 02:22:05 -0700
+From:   Magnus Karlsson <magnus.karlsson@intel.com>
+To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org, brouer@redhat.com
+Cc:     bpf@vger.kernel.org, bruce.richardson@intel.com,
+        ciara.loftus@intel.com, jakub.kicinski@netronome.com,
+        xiaolong.ye@intel.com, qi.z.zhang@intel.com, maximmi@mellanox.com,
+        sridhar.samudrala@intel.com, kevin.laatz@intel.com,
+        ilias.apalodimas@linaro.org, kiran.patil@intel.com,
+        axboe@kernel.dk, maciej.fijalkowski@intel.com,
+        maciejromanfijalkowski@gmail.com, intel-wired-lan@lists.osuosl.org
+Subject: [PATCH bpf-next v2 0/6] add need_wakeup flag to the AF_XDP rings
+Date:   Tue,  2 Jul 2019 11:21:22 +0200
+Message-Id: <1562059288-26773-1-git-send-email-magnus.karlsson@intel.com>
 X-Mailer: git-send-email 2.7.4
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We support many speeds and it doesn't make much sense to list them all
-in the Kconfig. Let's just call it Multi-Gigabit.
+This patch set adds support for a new flag called need_wakeup in the
+AF_XDP Tx and fill rings. When this flag is set by the driver, it
+means that the application has to explicitly wake up the kernel Rx
+(for the bit in the fill ring) or kernel Tx (for bit in the Tx ring)
+processing by issuing a syscall. Poll() can wake up both and sendto()
+will wake up Tx processing only.
 
-Suggested-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Jose Abreu <joabreu@synopsys.com>
-Cc: Joao Pinto <jpinto@synopsys.com>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Cc: Alexandre Torgue <alexandre.torgue@st.com>
----
- drivers/net/ethernet/stmicro/stmmac/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The main reason for introducing this new flag is to be able to
+efficiently support the case when application and driver is executing
+on the same core. Previously, the driver was just busy-spinning on the
+fill ring if it ran out of buffers in the HW and there were none to
+get from the fill ring. This approach works when the application and
+driver is running on different cores as the application can replenish
+the fill ring while the driver is busy-spinning. Though, this is a
+lousy approach if both of them are running on the same core as the
+probability of the fill ring getting more entries when the driver is
+busy-spinning is zero. With this new feature the driver now sets the
+need_wakeup flag and returns to the application. The application can
+then replenish the fill queue and then explicitly wake up the Rx
+processing in the kernel using the syscall poll(). For Tx, the flag is
+only set to one if the driver has no outstanding Tx completion
+interrupts. If it has some, the flag is zero as it will be woken up by
+a completion interrupt anyway. This flag can also be used in other
+situations where the driver needs to be woken up explicitly.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-index 2acb999b7f63..943189dcccb1 100644
---- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
-+++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-@@ -1,6 +1,6 @@
- # SPDX-License-Identifier: GPL-2.0-only
- config STMMAC_ETH
--	tristate "STMicroelectronics 10/100/1000/EQOS/2500/5000/10000 Ethernet driver"
-+	tristate "STMicroelectronics Multi-Gigabit Ethernet driver"
- 	depends on HAS_IOMEM && HAS_DMA
- 	select MII
- 	select PHYLINK
--- 
+As a nice side effect, this new flag also improves the Tx performance
+of the case where application and driver are running on two different
+cores as it reduces the number of syscalls to the kernel. The kernel
+tells user space if it needs to be woken up by a syscall, and this
+eliminates many of the syscalls. The Rx performance of the 2-core case
+is on the other hand slightly worse, since there is a need to use a
+syscall now to wake up the driver, instead of the driver
+busy-spinning. It does waste less CPU cycles though, which might lead
+to better overall system performance.
+
+This new flag needs some simple driver support. If the driver does not
+support it, the Rx flag is always zero and the Tx flag is always
+one. This makes any application relying on this feature default to the
+old behavior of not requiring any syscalls in the Rx path and always
+having to call sendto() in the Tx path.
+
+For backwards compatibility reasons, this feature has to be explicitly
+turned on using a new bind flag (XDP_USE_NEED_WAKEUP). I recommend
+that you always turn it on as it has a large positive performance
+impact for the one core case and does not degrade 2 core performance
+and actually improves it for Tx heavy workloads.
+
+Here are some performance numbers measured on my local,
+non-performance optimized development system. That is why you are
+seeing numbers lower than the ones from Björn and Jesper. 64 byte
+packets at 40Gbit/s line rate. All results in Mpps. Cores == 1 means
+that both application and driver is executing on the same core. Cores
+== 2 that they are on different cores.
+
+                              Applications
+need_wakeup  cores    txpush    rxdrop      l2fwd
+---------------------------------------------------------------
+     n         1       0.07      0.06        0.03
+     y         1       21.6      8.2         6.5
+     n         2       32.3      11.7        8.7
+     y         2       33.1      11.7        8.7
+
+Overall, the need_wakeup flag provides the same or better performance
+in all the micro-benchmarks. The reduction of sendto() calls in txpush
+is large. Only a few per second is needed. For l2fwd, the drop is 50%
+for the 1 core case and more than 99.9% for the 2 core case. Do not
+know why I am not seeing the same drop for the 1 core case yet.
+
+The name and inspiration of the flag has been taken from io_uring by
+Jens Axboe. Details about this feature in io_uring can be found in
+http://kernel.dk/io_uring.pdf, section 8.3. It also addresses most of
+the denial of service and sendto() concerns raised by Maxim
+Mikityanskiy in https://www.spinics.net/lists/netdev/msg554657.html.
+
+The typical Tx part of an application will have to change from:
+
+ret = sendto(fd,....)
+
+to:
+
+if (xsk_ring_prod__needs_wakeup(&xsk->tx))
+       ret = sendto(fd,....)
+
+and th Rx part from:
+
+rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE, &idx_rx);
+if (!rcvd)
+       return;
+
+to:
+
+rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE, &idx_rx);
+if (!rcvd) {
+       if (xsk_ring_prod__needs_wakeup(&xsk->umem->fq))
+              ret = poll(fd,.....);
+       return;
+}
+
+v1 -> v2:
+* Fixed bisectability problem pointed out by Jakub
+* Added missing initiliztion of the Tx need_wakeup flag to 1
+
+This patch has been applied against commit 8daed7677a1d ("Merge branch 'bpf-lookup-devmap'")
+
+Structure of the patch set:
+
+Patch 1: Replaces the ndo_xsk_async_xmit with ndo_xsk_wakeup to
+         support waking up both Rx and Tx processing
+Patch 2: Implements the need_wakeup functionality in common code
+Patch 3-4: Add need_wakeup support to the i40e and ixgbe drivers
+Patch 5: Add need_wakeup support to libbpf
+Patch 6: Add need_wakeup support to the xdpsock sample application
+
+Thanks: Magnus
+
+Magnus Karlsson (6):
+  xsk: replace ndo_xsk_async_xmit with ndo_xsk_wakeup
+  xsk: add support for need_wakeup flag in AF_XDP rings
+  i40e: add support for AF_XDP need_wakup feature
+  ixgbe: add support for AF_XDP need_wakup feature
+  libbpf: add support for need_wakeup flag in AF_XDP part
+  samples/bpf: add use of need_sleep flag in xdpsock
+
+ drivers/net/ethernet/intel/i40e/i40e_main.c        |   5 +-
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c         |  23 ++-
+ drivers/net/ethernet/intel/i40e/i40e_xsk.h         |   2 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c      |   5 +-
+ .../net/ethernet/intel/ixgbe/ixgbe_txrx_common.h   |   2 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c       |  20 ++-
+ include/linux/netdevice.h                          |  18 +-
+ include/net/xdp_sock.h                             |  33 +++-
+ include/uapi/linux/if_xdp.h                        |  13 ++
+ net/xdp/xdp_umem.c                                 |  12 +-
+ net/xdp/xsk.c                                      |  93 +++++++++-
+ net/xdp/xsk_queue.h                                |   1 +
+ samples/bpf/xdpsock_user.c                         | 192 +++++++++++++--------
+ tools/include/uapi/linux/if_xdp.h                  |  13 ++
+ tools/lib/bpf/xsk.c                                |   4 +
+ tools/lib/bpf/xsk.h                                |   6 +
+ 16 files changed, 350 insertions(+), 92 deletions(-)
+
+--
 2.7.4
-
