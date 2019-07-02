@@ -2,113 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 88EB05CCDD
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 11:48:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EAEB5CCEE
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 11:50:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727110AbfGBJsu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 05:48:50 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:33436 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726793AbfGBJsu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 05:48:50 -0400
-Received: by mail-wr1-f66.google.com with SMTP id n9so17055682wru.0
-        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 02:48:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=UdYCIZGQ7tAt7A88vWqWA422Qpx5IuQReKn9P3m3xX8=;
-        b=PZuM9EJbQb3YhMp+qaw+VF6BwkhSSyYMquhljCcVZSO+tjIcy06ofVIGPbwYNmREXi
-         pRcuGFWqgU+nSlEobDVIi97m26fD20LGHZVCL/m/+eGewb0yAO7NlvlF/9gBYN5Rgy0B
-         UVcUnIeulg2Ui8pzjNF76wVB55J/p/3pN/YrI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=UdYCIZGQ7tAt7A88vWqWA422Qpx5IuQReKn9P3m3xX8=;
-        b=VSA0NlCCTQ1vZjb9xM+s5diFH3RSp6VAU3hDa9dx239yo3eHpbIf+k6AEQc+vtnDBA
-         OZrTJy0cu15edOXmFI4RFHDJ3MGnjqcpWb2bBZYKY5iM/jX67Y4pSKuBXJBZjkNwCF9+
-         dEMEackvLQ1toaJ7aTtfeIB9UAJMd2e10b1zaRPlo9UeJ9tBohzJhT0/ULbQm/hDIPDn
-         ykHEf6NGQcfaUfBSVKSUnrxE9y5C1PtVlcqnWXQjY12itHtxZepfUj2RSultQ6MlW8FJ
-         dtBhyXYETchvcgLEJCV+VNMoy2pTT3FEqizgEIFriJrZg+Yo+qTXdgnAaFJei83fmev8
-         oWwQ==
-X-Gm-Message-State: APjAAAXwSGTUpa2MOvBwXckxupDm+bJ5S4QVT5DHm8wGhzOuztCYgCAt
-        RMMevTxnrHub9mI0vnJMbGRaRg==
-X-Google-Smtp-Source: APXvYqw+cs3wphtlInYiqa/iYYLL5YBkbuaWsrCFwdpkqDK8kfUrPvl8YI8TNOvUo+26MvPNs1E1Ng==
-X-Received: by 2002:adf:9487:: with SMTP id 7mr9588274wrr.114.1562060928176;
-        Tue, 02 Jul 2019 02:48:48 -0700 (PDT)
-Received: from [10.176.68.244] ([192.19.248.250])
-        by smtp.gmail.com with ESMTPSA id l124sm2421987wmf.36.2019.07.02.02.48.46
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 02 Jul 2019 02:48:47 -0700 (PDT)
-Subject: Re: use exact allocation for dma coherent memory
-To:     Christoph Hellwig <hch@lst.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Ian Abbott <abbotti@mev.co.uk>,
-        H Hartley Sweeten <hsweeten@visionengravers.com>
-Cc:     devel@driverdev.osuosl.org, linux-s390@vger.kernel.org,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, linux-wireless@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-mm@kvack.org, iommu@lists.linux-foundation.org,
-        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
-        linux-media@vger.kernel.org
-References: <20190614134726.3827-1-hch@lst.de> <20190701084833.GA22927@lst.de>
-From:   Arend Van Spriel <arend.vanspriel@broadcom.com>
-Message-ID: <74eb9d99-6aa6-d1ad-e66d-6cc9c496b2f3@broadcom.com>
-Date:   Tue, 2 Jul 2019 11:48:44 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+        id S1727152AbfGBJul (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 05:50:41 -0400
+Received: from mout.web.de ([212.227.17.12]:55975 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725868AbfGBJuk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jul 2019 05:50:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1562061022;
+        bh=iCyjFEsFbP9E2gjuUs9RhQNMZ4EWNf6g9m5XYPk0YGU=;
+        h=X-UI-Sender-Class:To:From:Subject:Cc:Date;
+        b=Se8KBEA4v5YnQn/pjuWWaNKziyu3i5cCnScREsyTf0bD4EUit06VboiJ9SBRiN7s3
+         F9av6xvkDCQh6QVaDnXFVvFJ62mJWdXDldBge0y+3yLNdTIWRN2YhnC84MBBAKOzmM
+         5q22bG4vLE2jc8pdociy+n/FC56IlNXQHNw4nwp4=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.2] ([78.48.11.114]) by smtp.web.de (mrweb101
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0LvSU3-1ihC3B1Mhf-010YwQ; Tue, 02
+ Jul 2019 11:50:22 +0200
+To:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        brcm80211-dev-list@cypress.com,
+        brcm80211-dev-list.pdl@broadcom.com,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        Wright Feng <wright.feng@cypress.com>
+From:   Markus Elfring <Markus.Elfring@web.de>
+Subject: [PATCH] brcmfmac: Replace two seq_printf() calls in
+ brcmf_feat_fwcap_debugfs_read()
+Openpgp: preference=signencrypt
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ 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 FEE=
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org
+Message-ID: <7d96085a-76e8-c290-698a-e1473d3f4be7@web.de>
+Date:   Tue, 2 Jul 2019 11:50:10 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20190701084833.GA22927@lst.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:PF5gJ1KYGE6sBYJu6b5K5HpJrPz/0D0L/G08/MsEjt5f3vN/Quq
+ aRlJwgS1CIbVvoA2wAJQe27ocvjpHfm2XIYqG7TqAkVPIdgYX3wAeLjd+BeCpeQM9wejKyD
+ tseU5rMVAffIbQdPxmJFHdlb7NX8Dh34BnG3TaWvhQFkrrkrkT1YXpyA0FCiOdTTCVhbnNM
+ +3sVerSIlrLWrm79Fc/AA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:l/G/KTK7KrY=:znOHhRCVTJSCSX1Wk1Ilp+
+ jey+SCa9lIZ3T3+ATGN+0TkSSgWCgAxfXjZv2St2mNT4ioV+tEn/3zkfbwZJ+7levcLDlpuFB
+ 65d9iBrKzHxMI3Zrrw37e91VMqX9TMGgG1OBtmP3q30CXnuduMb1Www8f4/senq/zli0EOBii
+ ukJkvUADsNpaWgDj8cGosVspAUXAP7AoNeVKJ4/jbpLCLxjyf1qq+dSx0VvXtDRBwR5lNryB0
+ N63oI7LifUozTj4INcros69b1MrSCqUaW4lioaAvEwk3pzs/fqsHcue74Pd1cNuNsyRfLH/1c
+ Pn7ZQPmg12ZsBdL8EcSUAVxj8lWQCZE1Ib/FcLRxRoFlzldvJIk7Fl0BkbM4vgG3LgGQ9HAhc
+ OJbI93lj0ig+ldBiUhfnBG/gQYbdatIcmsfgfWobZ1yApX449G5KS31zMPo1oPdMVGI6wyJL2
+ 0LGIH1T9OhMhl2EWgiep8Pk1InVke596hFTboBdGI5q5sGc5D8pFcaOl39sCcfcdoWS+v0DNW
+ 22sN6sqmjHzVU2A8dDo7T+4Athgke21NZ5RoVDB5hhsbiXYa5oeBTGMY3FSR9X07DiHvBAjtF
+ QMs7iI5p41bqUsa7SSDzSToCAPBNXj8s2GNjv5vvWB3eFpFLSH/BamJ1EiMcQh+SYxOrrJTH/
+ xaG+0La8R6qyCcdQFIW4fYktmh7ydmYIMcZot/lIhspHbaX4b/ZW0X0Ia3JLlR6fs6DWFWQVd
+ 9h5H50KREaocdqYc7cdru2EmnP0be35ud3i1xtrfMKkXaL9Azm+QszSQRC8iBCpMhcZ8A2s9N
+ iCO7EEMQrY+CtOKd87J7H7La60sRqStb/Utdc7yQI6rrsEatZjOVabtQT8PtZBDeSrik4wMOZ
+ hO0rTlQ4wWQgFWq72uRBuej4y5u/AatchvmrTvb6LCa4aCSgUSk/ro2Ww6bMIAuaRWc9RbgTJ
+ 14gdJkmASMWSIab62J+HMGOOfbvIUmEEIhDFBD13bahxhfou7tV5/tEw6DWdN6HcY3kOm03Cw
+ eKv2vl6vNguTrj3wEdxvBcjbq5XBLuhg+IRacXHGvMoLUTN2hpfpBWtZgrkwMavek6QLSIPKX
+ aHKFha+hpP2J65zxZgrn0mDSq1F4l3cF1Uw
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Markus Elfring <elfring@users.sourceforge.net>
+Date: Tue, 2 Jul 2019 11:31:07 +0200
 
+A line break and a single string should be put into a sequence.
+Thus use the corresponding output functions.
 
-On 7/1/2019 10:48 AM, Christoph Hellwig wrote:
-> On Fri, Jun 14, 2019 at 03:47:10PM +0200, Christoph Hellwig wrote:
->> Switching to a slightly cleaned up alloc_pages_exact is pretty easy,
->> but it turns out that because we didn't filter valid gfp_t flags
->> on the DMA allocator, a bunch of drivers were passing __GFP_COMP
->> to it, which is rather bogus in too many ways to explain.  Arm has
->> been filtering it for a while, but this series instead tries to fix
->> the drivers and warn when __GFP_COMP is passed, which makes it much
->> larger than just adding the functionality.
-> 
-> Dear driver maintainers,
-> 
-> can you look over the patches touching your drivers, please?  I'd
-> like to get as much as possible of the driver patches into this
-> merge window, so that it can you through your maintainer trees.
+This issue was detected by using the Coccinelle software.
 
-You made me look ;-) Actually not touching my drivers so I'm off the 
-hook. However, I was wondering if drivers could know so I decided to 
-look into the DMA-API.txt documentation which currently states:
+Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+=2D--
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/feature.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-"""
-The flag parameter (dma_alloc_coherent() only) allows the caller to
-specify the ``GFP_`` flags (see kmalloc()) for the allocation (the
-implementation may choose to ignore flags that affect the location of
-the returned memory, like GFP_DMA).
-"""
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/feature.c b/=
+drivers/net/wireless/broadcom/brcm80211/brcmfmac/feature.c
+index 73aff4e4039d..ec0e80296e43 100644
+=2D-- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/feature.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/feature.c
+@@ -225,10 +225,10 @@ static int brcmf_feat_fwcap_debugfs_read(struct seq_=
+file *seq, void *data)
+ 	}
 
-I do expect you are going to change that description as well now that 
-you are going to issue a warning on __GFP_COMP. Maybe include that in 
-patch 15/16 where you introduce that warning.
+ 	/* Usually there is a space at the end of capabilities string */
+-	seq_printf(seq, "%s", caps);
++	seq_puts(seq, caps);
+ 	/* So make sure we don't print two line breaks */
+ 	if (tmp > caps && *(tmp - 1) !=3D '\n')
+-		seq_printf(seq, "\n");
++		seq_putc(seq, '\n');
 
-Regards,
-Arend
+ 	return 0;
+ }
+=2D-
+2.22.0
+
