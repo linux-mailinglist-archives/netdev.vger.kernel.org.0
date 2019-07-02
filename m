@@ -2,79 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A8E245CF3F
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 14:16:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 564955CEF4
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 13:58:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726967AbfGBMQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 08:16:09 -0400
-Received: from paleale.coelho.fi ([176.9.41.70]:54838 "EHLO
-        farmhouse.coelho.fi" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726658AbfGBMQJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 08:16:09 -0400
-X-Greylist: delayed 1301 seconds by postgrey-1.27 at vger.kernel.org; Tue, 02 Jul 2019 08:16:08 EDT
-Received: from 91-156-6-193.elisa-laajakaista.fi ([91.156.6.193] helo=redipa)
-        by farmhouse.coelho.fi with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <luca@coelho.fi>)
-        id 1hiHMY-0004Nr-Tm; Tue, 02 Jul 2019 14:54:19 +0300
-Message-ID: <859d0a7dfa39b34919ffd83b4b9b923504a3d737.camel@coelho.fi>
-Subject: Re: [PATCH][next] iwlwifi: mvm: fix comparison of u32 variable with
- less than zero
-From:   Luca Coelho <luca@coelho.fi>
-To:     Colin King <colin.king@canonical.com>,
-        Haim Dreyfuss <haim.dreyfuss@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.or, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Tue, 02 Jul 2019 14:54:16 +0300
-In-Reply-To: <20190701162657.15174-1-colin.king@canonical.com>
-References: <20190701162657.15174-1-colin.king@canonical.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.30.5-1.1 
+        id S1726526AbfGBL5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 07:57:54 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:44538 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725867AbfGBL5y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 07:57:54 -0400
+Received: by mail-wr1-f65.google.com with SMTP id e3so7935516wrs.11
+        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 04:57:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=twoed304bVANHmzTBGu83qACybedl04wF9pEcLlsQ7g=;
+        b=p5+MgVUg30QZOEvU3DNgmUA3aC46BhnbMqOeupqqsWTqAXZSMCgbzOB+jammgHIiJe
+         SBoanEe6kV+few/FCFhJv+wqst9rDwGhBbeUIzciEytg9mjufMW+0tBNnYkR+p4e2z57
+         tnu7X4hXVAJBD0WhvyRUp0o1AQsHAkD5OYlstXyB0waLFkOIQbf/FJTZ7r+WJfR83aGJ
+         R+VSjJugI22/GaEC5k4W7PM5UofS0vjDOqMmRKV2dTa/HOdFJEivTSQhFP7tNYSmUIRh
+         IqxjP0KexxLnKoiUM8NBQnyQcll7Swi8PFRr+AqR5vvBmJStxGkIk7jh+i//oOOrLy8B
+         8C1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=twoed304bVANHmzTBGu83qACybedl04wF9pEcLlsQ7g=;
+        b=CT0J33gRLgF+UJnr2I9PJ63cs3+dtvBpsoSCtt9z21arhST9UXG/5aEdFpdxGok/IS
+         Aczm/Pwc7GakjOjKKxhDoSi1RAV4FkwGCCrwvj7/4dbJLnwbSm7hIvAQap+M1i5V6784
+         cXfgSs7+Npj3o3WLFn3IMRfJUUmiVf1b88A3DYnOi8hXDPvAA8dY+FAcdMJ49ibrESh6
+         WaLtWUDoaBcVEFBd4AuL9q1Aqs7Cl+5HhtqwGx/Ds2mXBsdb6W0dUvDeAOetWqEJJud1
+         ni16oI/W1LZoPa6pK/5aeuwo0fTjleRZyTb35b1+SxoatZ4s46aS906RpQcK4/RMu+nL
+         1ZbA==
+X-Gm-Message-State: APjAAAUqskTAIgnEiqmPnekTk8pe7zNT5hyoEJ0qWP8/y4nUyfglOzJV
+        pvj8hSzl0cthq6BoJw+F+UbF/g==
+X-Google-Smtp-Source: APXvYqwikzNFnHZpdxrcgln2rDmWrFAF+J4y5fKblz1UG9SGZcsUr6O6KdmPdmTb/GLXfW8cLJTRmw==
+X-Received: by 2002:a5d:618d:: with SMTP id j13mr23127089wru.195.1562068671649;
+        Tue, 02 Jul 2019 04:57:51 -0700 (PDT)
+Received: from localhost (ip-213-220-235-213.net.upcbroadband.cz. [213.220.235.213])
+        by smtp.gmail.com with ESMTPSA id e20sm20148618wrc.9.2019.07.02.04.57.51
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 02 Jul 2019 04:57:51 -0700 (PDT)
+Date:   Tue, 2 Jul 2019 13:57:50 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Linville <linville@tuxdriver.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v6 01/15] rtnetlink: provide permanent hardware
+ address in RTM_NEWLINK
+Message-ID: <20190702115750.GL2250@nanopsycho>
+References: <cover.1562067622.git.mkubecek@suse.cz>
+ <b6e0aefbcb58297b3ec0a12ee4be8e5194eee61a.1562067622.git.mkubecek@suse.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b6e0aefbcb58297b3ec0a12ee4be8e5194eee61a.1562067622.git.mkubecek@suse.cz>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2019-07-01 at 17:26 +0100, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
-> 
-> The comparison of the u32 variable wgds_tbl_idx with less than zero is
-> always going to be false because it is unsigned.  Fix this by making
-> wgds_tbl_idx a plain signed int.
-> 
-> Addresses-Coverity: ("Unsigned compared against 0")
-> Fixes: 4fd445a2c855 ("iwlwifi: mvm: Add log information about SAR status")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> ---
->  drivers/net/wireless/intel/iwlwifi/mvm/nvm.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/nvm.c b/drivers/net/wireless/intel/iwlwifi/mvm/nvm.c
-> index 719f793b3487..a9bb43a2f27b 100644
-> --- a/drivers/net/wireless/intel/iwlwifi/mvm/nvm.c
-> +++ b/drivers/net/wireless/intel/iwlwifi/mvm/nvm.c
-> @@ -620,7 +620,7 @@ void iwl_mvm_rx_chub_update_mcc(struct iwl_mvm *mvm,
->  	enum iwl_mcc_source src;
->  	char mcc[3];
->  	struct ieee80211_regdomain *regd;
-> -	u32 wgds_tbl_idx;
-> +	int wgds_tbl_idx;
->  
->  	lockdep_assert_held(&mvm->mutex);
+Tue, Jul 02, 2019 at 01:49:44PM CEST, mkubecek@suse.cz wrote:
+>Permanent hardware address of a network device was traditionally provided
+>via ethtool ioctl interface but as Jiri Pirko pointed out in a review of
+>ethtool netlink interface, rtnetlink is much more suitable for it so let's
+>add it to the RTM_NEWLINK message.
+>
+>Add IFLA_PERM_ADDRESS attribute to RTM_NEWLINK messages unless the
+>permanent address is all zeros (i.e. device driver did not fill it). As
+>permanent address is not modifiable, reject userspace requests containing
+>IFLA_PERM_ADDRESS attribute.
+>
+>Note: we already provide permanent hardware address for bond slaves;
+>unfortunately we cannot drop that attribute for backward compatibility
+>reasons.
+>
+>v5 -> v6: only add the attribute if permanent address is not zero
+>
+>Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 
-Thanks, Colin!
-
-I applied this to our internal tree and it will reach the mainline
-following our normal upstreaming process.
-
---
-Cheers,
-Luca.
-
+Acked-by: Jiri Pirko <jiri@mellanox.com>
