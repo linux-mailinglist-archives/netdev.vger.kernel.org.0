@@ -2,162 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BE0C5D23A
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 16:59:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FD2B5D23E
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 17:00:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726936AbfGBO7T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 10:59:19 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:53531 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725981AbfGBO7T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jul 2019 10:59:19 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id ED90585A03;
-        Tue,  2 Jul 2019 14:59:16 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-120-219.rdu2.redhat.com [10.10.120.219])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7D8AB7854B;
-        Tue,  2 Jul 2019 14:59:13 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
- Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
- Kingdom.
- Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net] rxrpc: Fix send on a connected, but unbound socket
-From:   David Howells <dhowells@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     syzbot+7966f2a0b2c7da8939b4@syzkaller.appspotmail.com,
-        Marc Dionne <marc.dionne@auristor.com>, dhowells@redhat.com,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-Date:   Tue, 02 Jul 2019 15:59:12 +0100
-Message-ID: <156207955265.1655.13658692984261290810.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/unknown-version
+        id S1727039AbfGBPAG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 11:00:06 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:37416 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726966AbfGBPAG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 11:00:06 -0400
+Received: by mail-qt1-f193.google.com with SMTP id y57so18776041qtk.4
+        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 08:00:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:subject:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=+YGwmXcv7uu2nfynM4BuMCgcoI2zuMXaKYw9SxwVbWE=;
+        b=LQ3IlvBhtvvp2q4Xk1DvAT+P+LuorF/YSLI5aMavyr/I9CLeIUdKgcPiD3oqcWnHce
+         NBlpl7GprU4ycMSH3T7wn1ba5IOwz0/OQR8wkm9SY1F1hYoab1oGWuvAj4dSWTZiPfrT
+         2DrhmZbH0+bYz7RAPmzQxIAOgv83BMK64TG1DMuJ2UEtS79Z1SUpBN1mrvbdhTdGfpOA
+         aAPj34ieGlmoosp+Z2HnW0k1X0arqLn4FudwQCvDFUyV7iVwRMPuew71jQ0odgw8cWOQ
+         BmFTnQ1r36WvN0P/j/9Iqw7XiYyj7fVh7AtmLmu4eoqy1MiMZhSeiqCRYDRZP9SD7Din
+         uiPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=+YGwmXcv7uu2nfynM4BuMCgcoI2zuMXaKYw9SxwVbWE=;
+        b=SkLfyD2SI/QE5MO82LL2OQeZlFLlfemo5jTzSJFsBR/eu/3E+ObCN6lUpUp3zHGQTr
+         P0dBMwIYbf+DZ1kIkFXsHh4sbaDLzMdL7x39+pDAJfGwwjEF9/5KFKX55f634P3RxXdf
+         4Yi8XyJuAXEd9HI/DtOIJ4/+hqcjKrEP1dzN7VY4BViIoSwweYc/0dQZlcWYpOEEW0Uo
+         mBgKixc2K58QDLavkZ6c1vt2vJOXu8cYlhr5FHos1bWCmIA3fFoASuU38Zy6bzXgWG7z
+         0IW2QnzYfnBFc6zZhm9BcN4NKDciA1u7iOIqc2wncQ5AXkHznv/fEzYMGZ0a102IA6BA
+         g+Hg==
+X-Gm-Message-State: APjAAAUOY9hkZ7dOacEnI+RaDZlX0TYCaULPQeJqnOIxs1naRtetaeex
+        gaAgM9TgBKqfIIR+4Mk6Ct2g53GJd/E=
+X-Google-Smtp-Source: APXvYqwZxpXZ8drk0t2Y6Zf5C7uK3zRe4uTzBBNOk+AhqnjhsIiSyl5eA7VBKoDm+sUTft76A/Urfg==
+X-Received: by 2002:aed:33e6:: with SMTP id v93mr25870674qtd.157.1562079604623;
+        Tue, 02 Jul 2019 08:00:04 -0700 (PDT)
+Received: from ?IPv6:2620:10d:c0a8:11c1::1019? ([2620:10d:c091:480::c41e])
+        by smtp.gmail.com with ESMTPSA id t197sm6366261qke.2.2019.07.02.08.00.02
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Tue, 02 Jul 2019 08:00:03 -0700 (PDT)
+From:   Jes Sorensen <jes.sorensen@gmail.com>
+X-Google-Original-From: Jes Sorensen <Jes.Sorensen@gmail.com>
+Subject: Re: [PATCH 1/1] mlx5: Fix build when CONFIG_MLX5_EN_RXNFC is disabled
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "kernel-team@fb.com" <kernel-team@fb.com>,
+        "jsorensen@fb.com" <jsorensen@fb.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20190625152708.23729-1-Jes.Sorensen@gmail.com>
+ <20190625152708.23729-2-Jes.Sorensen@gmail.com>
+ <ff76fcde486792ad01be1476a66a726d6e1ab933.camel@mellanox.com>
+Message-ID: <21f6c5a0-49c1-fa47-f55a-048b07f9be1d@gmail.com>
+Date:   Tue, 2 Jul 2019 11:00:01 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <ff76fcde486792ad01be1476a66a726d6e1ab933.camel@mellanox.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.26]); Tue, 02 Jul 2019 14:59:18 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If sendmsg() or sendmmsg() is called on a connected socket that hasn't had
-bind() called on it, then an oops will occur when the kernel tries to
-connect the call because no local endpoint has been allocated.
+On 6/25/19 2:00 PM, Saeed Mahameed wrote:
+> On Tue, 2019-06-25 at 11:27 -0400, Jes Sorensen wrote:
+>> From: Jes Sorensen <jsorensen@fb.com>
+>>
+>> The previous patch broke the build with a static declaration for
+>> a public function.
+>>
+>> Fixes: 8f0916c6dc5c (net/mlx5e: Fix ethtool rxfh commands when
+>> CONFIG_MLX5_EN_RXNFC is disabled)
+>> Signed-off-by: Jes Sorensen <jsorensen@fb.com>
+>> ---
+>>  drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c | 3 ++-
+>>  1 file changed, 2 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+>> b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+>> index dd764e0471f2..776040d91bd4 100644
+>> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+>> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+>> @@ -1905,7 +1905,8 @@ static int mlx5e_flash_device(struct net_device
+>> *dev,
+>>  /* When CONFIG_MLX5_EN_RXNFC=n we only support ETHTOOL_GRXRINGS
+>>   * otherwise this function will be defined from en_fs_ethtool.c
+>>   */
+> 
+> As the above comment states, when CONFIG_MLX5_EN_RXNFC is disabled,
+> mlx5e_get_rxnfc is only defined, declared and used in this file, so it
+> must be static. Otherwise it will be defined in another file which
+> provides much much more functionality for ethtool flow steering.
+> 
+> can you please provide more information of what went wrong on your
+> build machine ?
 
-Fix this by implicitly binding the socket if it is in the
-RXRPC_CLIENT_UNBOUND state, just like it does for the RXRPC_UNBOUND state.
+Sorry was swamped here!
 
-Further, the state should be transitioned to RXRPC_CLIENT_BOUND after this
-to prevent further attempts to bind it.
+Looks like you're right, it only triggers in our build due to some
+patches we don't have from upstream. I did the patch against upstream
+and applied it to our tree, so should have checked further there.
 
-This can be tested with:
-
-	#include <stdio.h>
-	#include <stdlib.h>
-	#include <string.h>
-	#include <sys/socket.h>
-	#include <arpa/inet.h>
-	#include <linux/rxrpc.h>
-	static const unsigned char inet6_addr[16] = {
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, 0xac, 0x14, 0x14, 0xaa
-	};
-	int main(void)
-	{
-		struct sockaddr_rxrpc srx;
-		struct cmsghdr *cm;
-		struct msghdr msg;
-		unsigned char control[16];
-		int fd;
-		memset(&srx, 0, sizeof(srx));
-		srx.srx_family = 0x21;
-		srx.srx_service = 0;
-		srx.transport_type = AF_INET;
-		srx.transport_len = 0x1c;
-		srx.transport.sin6.sin6_family = AF_INET6;
-		srx.transport.sin6.sin6_port = htons(0x4e22);
-		srx.transport.sin6.sin6_flowinfo = htons(0x4e22);
-		srx.transport.sin6.sin6_scope_id = htons(0xaa3b);
-		memcpy(&srx.transport.sin6.sin6_addr, inet6_addr, 16);
-		cm = (struct cmsghdr *)control;
-		cm->cmsg_len	= CMSG_LEN(sizeof(unsigned long));
-		cm->cmsg_level	= SOL_RXRPC;
-		cm->cmsg_type	= RXRPC_USER_CALL_ID;
-		*(unsigned long *)CMSG_DATA(cm) = 0;
-		msg.msg_name = NULL;
-		msg.msg_namelen = 0;
-		msg.msg_iov = NULL;
-		msg.msg_iovlen = 0;
-		msg.msg_control = control;
-		msg.msg_controllen = cm->cmsg_len;
-		msg.msg_flags = 0;
-		fd = socket(AF_RXRPC, SOCK_DGRAM, AF_INET);
-		connect(fd, (struct sockaddr *)&srx, sizeof(srx));
-		sendmsg(fd, &msg, 0);
-		return 0;
-	}
-
-
-Leading to the following oops:
-
-	BUG: kernel NULL pointer dereference, address: 0000000000000018
-	#PF: supervisor read access in kernel mode
-	#PF: error_code(0x0000) - not-present page
-	...
-	RIP: 0010:rxrpc_connect_call+0x42/0xa01
-	...
-	Call Trace:
-	 ? mark_held_locks+0x47/0x59
-	 ? __local_bh_enable_ip+0xb6/0xba
-	 rxrpc_new_client_call+0x3b1/0x762
-	 ? rxrpc_do_sendmsg+0x3c0/0x92e
-	 rxrpc_do_sendmsg+0x3c0/0x92e
-	 rxrpc_sendmsg+0x16b/0x1b5
-	 sock_sendmsg+0x2d/0x39
-	 ___sys_sendmsg+0x1a4/0x22a
-	 ? release_sock+0x19/0x9e
-	 ? reacquire_held_locks+0x136/0x160
-	 ? release_sock+0x19/0x9e
-	 ? find_held_lock+0x2b/0x6e
-	 ? __lock_acquire+0x268/0xf73
-	 ? rxrpc_connect+0xdd/0xe4
-	 ? __local_bh_enable_ip+0xb6/0xba
-	 __sys_sendmsg+0x5e/0x94
-	 do_syscall_64+0x7d/0x1bf
-	 entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-Fixes: 2341e0775747 ("rxrpc: Simplify connect() implementation and simplify sendmsg() op")
-Reported-by: syzbot+7966f2a0b2c7da8939b4@syzkaller.appspotmail.com
-Signed-off-by: David Howells <dhowells@redhat.com>
-Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
----
-
- net/rxrpc/af_rxrpc.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/rxrpc/af_rxrpc.c b/net/rxrpc/af_rxrpc.c
-index f9f4721cdfa7..d09eaf153544 100644
---- a/net/rxrpc/af_rxrpc.c
-+++ b/net/rxrpc/af_rxrpc.c
-@@ -545,6 +545,7 @@ static int rxrpc_sendmsg(struct socket *sock, struct msghdr *m, size_t len)
- 
- 	switch (rx->sk.sk_state) {
- 	case RXRPC_UNBOUND:
-+	case RXRPC_CLIENT_UNBOUND:
- 		rx->srx.srx_family = AF_RXRPC;
- 		rx->srx.srx_service = 0;
- 		rx->srx.transport_type = SOCK_DGRAM;
-@@ -569,10 +570,9 @@ static int rxrpc_sendmsg(struct socket *sock, struct msghdr *m, size_t len)
- 		}
- 
- 		rx->local = local;
--		rx->sk.sk_state = RXRPC_CLIENT_UNBOUND;
-+		rx->sk.sk_state = RXRPC_CLIENT_BOUND;
- 		/* Fall through */
- 
--	case RXRPC_CLIENT_UNBOUND:
- 	case RXRPC_CLIENT_BOUND:
- 		if (!m->msg_name &&
- 		    test_bit(RXRPC_SOCK_CONNECTED, &rx->flags)) {
+Cheers,
+Jes
 
