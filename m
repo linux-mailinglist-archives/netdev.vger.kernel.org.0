@@ -2,73 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 38D805C73A
-	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 04:28:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1BA05C74F
+	for <lists+netdev@lfdr.de>; Tue,  2 Jul 2019 04:29:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727443AbfGBC1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Jul 2019 22:27:36 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:54170 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727433AbfGBC1f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 22:27:35 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3041A14DEB6DA;
-        Mon,  1 Jul 2019 19:27:34 -0700 (PDT)
-Date:   Mon, 01 Jul 2019 19:27:33 -0700 (PDT)
-Message-Id: <20190701.192733.26575663343081553.davem@davemloft.net>
-To:     ilias.apalodimas@linaro.org
-Cc:     netdev@vger.kernel.org, jaswinder.singh@linaro.org,
-        ard.biesheuvel@linaro.org, bjorn.topel@intel.com,
-        magnus.karlsson@intel.com, brouer@redhat.com, daniel@iogearbox.net,
-        ast@kernel.org, makita.toshiaki@lab.ntt.co.jp,
-        jakub.kicinski@netronome.com, john.fastabend@gmail.com,
-        maciejromanfijalkowski@gmail.com
-Subject: Re: [PATCH 0/3, net-next, v2] net: netsec: Add XDP Support
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1561785805-21647-1-git-send-email-ilias.apalodimas@linaro.org>
-References: <1561785805-21647-1-git-send-email-ilias.apalodimas@linaro.org>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1727223AbfGBC24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Jul 2019 22:28:56 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:36082 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727295AbfGBC2z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Jul 2019 22:28:55 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x622Nfps017509;
+        Tue, 2 Jul 2019 02:28:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2018-07-02;
+ bh=P8OgiDfBC4NDMAOUr0W/55iaFxGNy4leDtMD4bsZGfY=;
+ b=RaiZNwaop1lxaQkqChcL/FdSJZig2d31PXwFg85WDp+r0oGoQcK5KVn404caxcn57MCx
+ jTUI7ARHIBmKs40k1Z+aoU+xdrBpg0X99A0tTS2Izwie1reVEq503WYlAmJEou+WJ5oA
+ NtelKWpKosEIMtbvb3YGmvFsubpDRv3h/sFbAdMizeJZZFw9v4tTsoQcKIqcsq2mPRYP
+ VnQ71G4dEMLv18UK6D40QeUXy6/x3wcwx0ng7f2iO3aWIEI96nbxGjpueViZiBjad2j5
+ h627+oWtjh9xfSvadzsSCJ8HSwn9cwO06wa5N07LUxAW1GNgqcLKrPmJXmi8G2CxJOQD bg== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2120.oracle.com with ESMTP id 2te61prpha-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 02 Jul 2019 02:28:47 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x622NRU3140721;
+        Tue, 2 Jul 2019 02:28:47 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by aserp3020.oracle.com with ESMTP id 2tebku0b43-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 02 Jul 2019 02:28:46 +0000
+Received: from abhmp0009.oracle.com (abhmp0009.oracle.com [141.146.116.15])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x622SjJE004739;
+        Tue, 2 Jul 2019 02:28:45 GMT
+Received: from [10.159.132.152] (/10.159.132.152)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 01 Jul 2019 19:28:45 -0700
+Subject: Re: [PATCH net-next 3/7] net/rds: Wait for the FRMR_IS_FREE (or
+ FRMR_IS_STALE) transition after posting IB_WR_LOCAL_INV
+To:     Gerd Rausch <gerd.rausch@oracle.com>, netdev@vger.kernel.org
+Cc:     David Miller <davem@davemloft.net>
+References: <505e9af7-a0cd-bf75-4a72-5d883ee06bf1@oracle.com>
+ <c79821e0-307c-5736-6eb5-e20983097345@oracle.com>
+ <01c251f4-c8f8-fcb8-bccc-341d4a3db90a@oracle.com>
+ <b5669540-3892-9d79-85ba-79e96ddd3a81@oracle.com>
+ <14c34ac2-38ed-9d51-f27d-74120ff34c54@oracle.com>
+From:   santosh.shilimkar@oracle.com
+Organization: Oracle Corporation
+Message-ID: <79d25e7c-ad9e-f6d8-b0fe-4ce04c658e1e@oracle.com>
+Date:   Mon, 1 Jul 2019 19:28:44 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
+MIME-Version: 1.0
+In-Reply-To: <14c34ac2-38ed-9d51-f27d-74120ff34c54@oracle.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 01 Jul 2019 19:27:34 -0700 (PDT)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9305 signatures=668688
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1810050000 definitions=main-1907020023
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9305 signatures=668688
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1907020023
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Date: Sat, 29 Jun 2019 08:23:22 +0300
 
-> This is a respin of https://www.spinics.net/lists/netdev/msg526066.html
-> Since page_pool API fixes are merged into net-next we can now safely use 
-> it's DMA mapping capabilities. 
-> 
-> First patch changes the buffer allocation from napi/netdev_alloc_frag()
-> to page_pool API. Although this will lead to slightly reduced performance 
-> (on raw packet drops only) we can use the API for XDP buffer recycling. 
-> Another side effect is a slight increase in memory usage, due to using a 
-> single page per packet.
-> 
-> The second patch adds XDP support on the driver. 
-> There's a bunch of interesting options that come up due to the single 
-> Tx queue.
-> Locking is needed(to avoid messing up the Tx queues since ndo_xdp_xmit 
-> and the normal stack can co-exist). We also need to track down the 
-> 'buffer type' for TX and properly free or recycle the packet depending 
-> on it's nature.
-> 
-> 
-> Changes since RFC:
-> - Bug fixes from Jesper and Maciej
-> - Added page pool API to retrieve the DMA direction
-> 
-> Changes since v1:
-> - Use page_pool_free correctly if xdp_rxq_info_reg() failed
 
-Series applied, thanks.
+On 7/1/19 2:06 PM, Gerd Rausch wrote:
+> Hi Santosh,
+> 
+> On 01/07/2019 14.00, santosh.shilimkar@oracle.com wrote:
+>>>
+>> Look for command timeout in CX3 sources. 60 second is upper bound in
+>> CX3. Its not standard in specs(at least not that I know) though
+>> and may vary from vendor to vendor.
+>>
+> 
+> I am not seeing it. Can you point me to the right place?
+>
+Below. All command timeouts are 60 seconds.
 
-I realize from the discussion on patch #3 there will be follow-ups to this.
+enum {
+         MLX4_CMD_TIME_CLASS_A   = 60000,
+         MLX4_CMD_TIME_CLASS_B   = 60000,
+         MLX4_CMD_TIME_CLASS_C   = 60000,
+};
+
+But having said that, I re-looked the code you are patching
+and thats actually only FRWR code which is purely work-request
+based so this command timeout shouldn't matter.
+
+If the work request fails, then it will lead to flush errors and
+MRs will be marked as STALE. So this wait may not be necessary
+
+There is a socket call RDS_GET_MR which needs to be synchronous
+and that Avinash has actually fixed by making this MR registration
+processes synchronous. Inline registration is still kept async.
+RDS_GET_MR case is what actually showing the issue you saw
+and the fix for that Avinash has it in production kernel.
+
+I believe with that change, registration issue becomes non-issue
+already.
+
+And as far as invalidation concerned with proxy qp, it not longer
+races with data path qp.
+
+May be you can try those changes if not already to see if it
+addresses the couple of cases where you ended up adding
+timeouts.
+
+Regards,
+Santosh
