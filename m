@@ -2,70 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DCFC5E4B0
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 14:59:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BD2E5E4C1
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 15:01:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726969AbfGCM7Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 08:59:24 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:44860 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725847AbfGCM7X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 08:59:23 -0400
-Received: by mail-qk1-f196.google.com with SMTP id p144so2461838qke.11;
-        Wed, 03 Jul 2019 05:59:23 -0700 (PDT)
+        id S1727031AbfGCNBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 09:01:42 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:35432 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725933AbfGCNBm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 09:01:42 -0400
+Received: by mail-qt1-f193.google.com with SMTP id d23so2913298qto.2;
+        Wed, 03 Jul 2019 06:01:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:subject:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=B3EbCvz8X6j0zzkGiu03xLcJoPBmlD1JcdVbnYZ1AM0=;
-        b=kPKV/kPrPzogkaCvQyzRg/c8dr8quQTQpvi+Cap2nAr5jbHSvqbvTJzTp6BvkbDvVu
-         jIFT07EYyUtwZao9gaKVX9kqdsaIljf84DqpAZ+ZxTQw497ttJZLhIUjKc+JZHhn2jEY
-         52c+Bfk5XVL0yDuKnzqd8Jp/z4wvp8o53KdqJq2aimGRXc93zhApMAYbKK4sr4YXbT6T
-         rYO+9zllfrWUo6Sxp/4ZCpALQH3cD0h7jatKOA8SM73Ivv7suTDw9CEvEmthD2OrmgTH
-         j4E2dPT6Bv2Ppa1d4dytTNOYhvFi/0ffn9x5SDpzp26AEiSYGoJULeHngSLuouSAJ5Ux
-         JW4g==
+        bh=zOwWMRCLSzYayOqA0/S/uTmbNChTaq0MzbltnUW5FxI=;
+        b=Ij7RZFuK5WQRiu8VSbvHSEhaJa/mnsaU9/5GhZF6CnxeIMzhTdAuqc96aLTEdFXXMK
+         yhBCFDrXKbouUzWN3Wq1gZf4qijAl1KOlRPwX0Utt+txkqQ+U4+vBSeGMUoi6Lvqn2v6
+         2leRJ39y6Fqh2uSDd2QxLoHAy8Kx/94WAFTRAisIzjfla05vWZeG+5iFYIa5TjLdHWYt
+         YPW8YkLBOKbvMW0LQQX0jWMN6WfWbgeIKrQ61FiVH1gpIUcEUpKXxBwBrSbkmMTB0ix6
+         7bBcdie+ko5W8MdakCdhk8BeYQUScEPtzJtVI/0LhHok751xTTFwoghZS0o6pD4GjLYH
+         49EA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:subject:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=B3EbCvz8X6j0zzkGiu03xLcJoPBmlD1JcdVbnYZ1AM0=;
-        b=FOPI1BRaNljBNuFyrdLx20egWULXduS7YRmfzJOLHzW/FAsmbFr5CfhdVomC/Quqya
-         LzuAoVfgyYN4C4n6Uk4G+pFrZIcJ1GzFCeznIdv2P+hD9Hd3BEQVHujmPLn0V+r7nfQC
-         FaKi3nsSOiBGEHsSBwLXD2spMUHjDf0IcqvcD/HTmKvGJsp05hlBneVNDRCDrx1qcjUR
-         QIVHiTm8YH6QAnzuitH9ZxhfljBG4vjCDVirwQmhryuEsUnAWtBTlxxCRZCMHhaAAvKm
-         nui6hay+jP5i9LbTLesLdBpezYA5qvlCHFj7zbtDGBrETxRAUAf0JAmNLU1CwcjBwp08
-         I/ZA==
-X-Gm-Message-State: APjAAAUbkAJBV+ZAKrjd79oLzlKg5aYvJnD38GXUU/ez9If+wdG9WFrH
-        xsRwE7JaSOx4Z9w+j6EWy1icXOF6fPE=
-X-Google-Smtp-Source: APXvYqwiMScv8YFY/uIqT4gRFTXx7BmI72I2/asiZLeQvcpTyote35EuKr+TQcP3CYjZ2zLQyL6/uw==
-X-Received: by 2002:a05:620a:1285:: with SMTP id w5mr28646990qki.302.1562158762393;
-        Wed, 03 Jul 2019 05:59:22 -0700 (PDT)
+        bh=zOwWMRCLSzYayOqA0/S/uTmbNChTaq0MzbltnUW5FxI=;
+        b=rUHXO6M/sQUWXdRM54i9ex2F86TCbRyCuUordULC6cWNqGlQobZK7ezALh0Wx8rq2G
+         uvqLG/cWT0czXSYgSNVXNDV3enjluoPyUhb25/ApeV/otoVevYOtrlgtwilHfyQ8zqyq
+         eGS9vEhpHadab+Q++KCrFmCHTSoaexh9gH+oBmD6dgzmYcOY3WJ9WbGoGTm/SOJb60tW
+         SlyHpiyRDEfFPsc9Bv7FueafVdnDy4mgQ2EPGc+XOoqYKVK+CU1ckZHLlUP8zzBfa0/U
+         cYCsu+zVNqaDSvgsts+FnX7rGaS5cjhBGchHo4AeN4ib8KXrIUQ48cnntSo8mlJfim4E
+         WO+Q==
+X-Gm-Message-State: APjAAAWZFPXqUztqESnvzAP4G4Lkj7KA+msHbSQvplKzCI4plDssjE7Z
+        Zv3n3vWKuZI5GOU7/GUho/k=
+X-Google-Smtp-Source: APXvYqymLHrXn9+dZNQRLMDmXjtfMhrejm/JMPcr1rvuLJJOMPHIW3gnrvBehpb3Z2r96ynnnDbLCA==
+X-Received: by 2002:aed:39e5:: with SMTP id m92mr29964740qte.135.1562158900632;
+        Wed, 03 Jul 2019 06:01:40 -0700 (PDT)
 Received: from ?IPv6:2620:10d:c0a8:11d9::105b? ([2620:10d:c091:480::2a6d])
-        by smtp.gmail.com with ESMTPSA id u7sm891625qkm.62.2019.07.03.05.59.19
+        by smtp.gmail.com with ESMTPSA id s127sm870575qkd.107.2019.07.03.06.01.39
         (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Wed, 03 Jul 2019 05:59:21 -0700 (PDT)
+        Wed, 03 Jul 2019 06:01:40 -0700 (PDT)
 From:   Jes Sorensen <jes.sorensen@gmail.com>
 X-Google-Original-From: Jes Sorensen <Jes.Sorensen@gmail.com>
 Subject: Re: [PATCH] rtl8xxxu: Fix wifi low signal strength issue of RTL8723BU
-To:     Daniel Drake <drake@endlessm.com>
-Cc:     Chris Chiu <chiu@endlessm.com>, Kalle Valo <kvalo@codeaurora.org>,
+To:     Chris Chiu <chiu@endlessm.com>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
         David Miller <davem@davemloft.net>,
         linux-wireless <linux-wireless@vger.kernel.org>,
         netdev <netdev@vger.kernel.org>,
         Linux Kernel <linux-kernel@vger.kernel.org>,
-        Linux Upstreaming Team <linux@endlessm.com>,
-        Larry Finger <Larry.Finger@lwfinger.net>
+        Linux Upstreaming Team <linux@endlessm.com>
 References: <20190627095247.8792-1-chiu@endlessm.com>
- <CAD8Lp44R0a1=fVi=fGv69w1ppdcaFV01opkdkhaX-eJ=K=tYeA@mail.gmail.com>
- <4c99866e-55b7-8852-c078-6b31dce21ee4@gmail.com>
- <CAD8Lp47mWH1-VsZaHr6_qmSU2EEOr9tQJ3CUhfi_JkQGgKpegA@mail.gmail.com>
-Message-ID: <89dbfb9d-a31a-9ecb-66bd-42ac0fc49e70@gmail.com>
-Date:   Wed, 3 Jul 2019 08:59:19 -0400
+ <31f59db2-0e04-447b-48f8-66ea53ebfa7d@gmail.com>
+ <CAB4CAwcEdcg91Bgb+JoCdk_zQKsWT-K+cb07-5mrrx+__X2RMA@mail.gmail.com>
+Message-ID: <afa1e967-dba0-d6ea-fe62-67a9411638a7@gmail.com>
+Date:   Wed, 3 Jul 2019 09:01:37 -0400
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.6.1
 MIME-Version: 1.0
-In-Reply-To: <CAD8Lp47mWH1-VsZaHr6_qmSU2EEOr9tQJ3CUhfi_JkQGgKpegA@mail.gmail.com>
+In-Reply-To: <CAB4CAwcEdcg91Bgb+JoCdk_zQKsWT-K+cb07-5mrrx+__X2RMA@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -74,37 +72,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/3/19 3:42 AM, Daniel Drake wrote:
-> On Tue, Jul 2, 2019 at 8:42 PM Jes Sorensen <jes.sorensen@gmail.com> wrote:
->> We definitely don't want to bring over the vendor code, since it's a
->> pile of spaghetti, but we probably need to get something sorted. This
->> went down the drain when the bluetooth driver was added without taking
->> it into account - long after this driver was merged.
+On 7/2/19 11:25 PM, Chris Chiu wrote:
+> On Tue, Jul 2, 2019 at 8:44 PM Jes Sorensen <jes.sorensen@gmail.com> wrote:
+>>
+>> On 6/27/19 5:52 AM, Chris Chiu wrote:
+>>> The WiFi tx power of RTL8723BU is extremely low after booting. So
+>>> the WiFi scan gives very limited AP list and it always fails to
+>>> connect to the selected AP. This module only supports 1x1 antenna
+>>> and the antenna is switched to bluetooth due to some incorrect
+>>> register settings.
+>>>
+>>> This commit hand over the antenna control to PTA, the wifi signal
+>>> will be back to normal and the bluetooth scan can also work at the
+>>> same time. However, the btcoexist still needs to be handled under
+>>> different circumstances. If there's a BT connection established,
+>>> the wifi still fails to connect until disconneting the BT.
+>>>
+>>> Signed-off-by: Chris Chiu <chiu@endlessm.com>
+>>> ---
+>>>  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c | 9 ++++++---
+>>>  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c  | 3 ++-
+>>>  2 files changed, 8 insertions(+), 4 deletions(-)
+>>>
+>>> diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
+>>> index 3adb1d3d47ac..6c3c70d93ac1 100644
+>>> --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
+>>> +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
+>>> @@ -1525,7 +1525,7 @@ static void rtl8723b_enable_rf(struct rtl8xxxu_priv *priv)
+>>>       /*
+>>>        * WLAN action by PTA
+>>>        */
+>>> -     rtl8xxxu_write8(priv, REG_WLAN_ACT_CONTROL_8723B, 0x04);
+>>> +     rtl8xxxu_write8(priv, REG_WLAN_ACT_CONTROL_8723B, 0x0c);
+>>>
+>>>       /*
+>>>        * BT select S0/S1 controlled by WiFi
+>>> @@ -1568,9 +1568,12 @@ static void rtl8723b_enable_rf(struct rtl8xxxu_priv *priv)
+>>>       rtl8xxxu_gen2_h2c_cmd(priv, &h2c, sizeof(h2c.ant_sel_rsv));
+>>>
+>>>       /*
+>>> -      * 0x280, 0x00, 0x200, 0x80 - not clear
+>>> +      * Different settings per different antenna position.
+>>> +      * Antenna switch to BT: 0x280, 0x00 (inverse)
+>>> +      * Antenna switch to WiFi: 0x0, 0x280 (inverse)
+>>> +      * Antenna controlled by PTA: 0x200, 0x80 (inverse)
+>>>        */
+>>> -     rtl8xxxu_write32(priv, REG_S0S1_PATH_SWITCH, 0x00);
+>>> +     rtl8xxxu_write32(priv, REG_S0S1_PATH_SWITCH, 0x80);
+>>>
+>>>       /*
+>>>        * Software control, antenna at WiFi side
+>>> diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+>>> index 8136e268b4e6..87b2179a769e 100644
+>>> --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+>>> +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+>>> @@ -3891,12 +3891,13 @@ static int rtl8xxxu_init_device(struct ieee80211_hw *hw)
+>>>
+>>>       /* Check if MAC is already powered on */
+>>>       val8 = rtl8xxxu_read8(priv, REG_CR);
+>>> +     val16 = rtl8xxxu_read16(priv, REG_SYS_CLKR);
+>>>
+>>>       /*
+>>>        * Fix 92DU-VC S3 hang with the reason is that secondary mac is not
+>>>        * initialized. First MAC returns 0xea, second MAC returns 0x00
+>>>        */
+>>> -     if (val8 == 0xea)
+>>> +     if (val8 == 0xea || !(val16 & BIT(11)))
+>>>               macpower = false;
+>>>       else
+>>>               macpower = true;
+>>
+>> This part I would like to ask you take a good look at the other chips to
+>> make sure you don't break support for 8192cu, 8723au, 8188eu with this.
+>>
+>> Cheers,
+>> Jes
 > 
-> Yeah, I didn't mean bring over quite so literally.. Chris is studying
-> it and figuring out the neatest way to reimplement the required bits.
+> I checked the vendor code of 8192cu and 8188eu, they don't have this part
+> of code to check the REG_CR before power on sequence. I can only find
+> similar code in rtl8723be.
+> if (tmp_u1b != 0 && tmp_u1b !=0xea)
+>     rtlhal->mac_func_enable = true;
 > 
-> As for the relationship with bluetooth.. actually the bug that Chris
-> is working on here is that the rtl8xxxu wifi signal is totally
-> unusable *until* the bluetooth driver is loaded.
+> By definition, the BIT(11) of REG_SYS_CLKR in rtl8xxxu_regs.h is
+> SYS_CLK_MAC_CLK_ENABLE. It seems to make sense to check this value
+> for macpower no matter what chip it is. I think I can make it more
+> self-expressive
+> as down below.
+> 
+>  if (val8 == 0xea || !(val16 & SYS_CLK_MAC_CLK_ENABLE))
 
-So this is not my experience at all from when I wrote the code. The
-8723bu dongle I used for it came up just fine.
+Yes, please always use the descriptive defines rather than hard coding
+the bit numbers.
 
-> Once the bluetooth driver is loaded, at the point of bluetooth
-> firmware upload, the rtl8xxxu signal magiaclly strength becomes good.
-> I think this is consistent with other rtl8xxxu problem reports that we
-> saw lying around, although they had not been diagnosed in so much
-> detail.
+> And per the comment, this code is for 92DU-VC S3 hang problem and I think an
+> OR check for SYS_CLK_MAC_CLK_ENABLE is still safe for this.
 
-See this is the very opposite of what I have experienced. The bluetooth
-driver ruins the signal when it's loaded with my dongle.
-
-> The rtl8723bu vendor driver does not suffer this problem, it works
-> fine with or without the bluetooth driver in place.
-
-My point is this seems to be very dongle dependent :( We have to be
-careful not breaking it for some users while fixing it for others.
+Sounds reasonable - keep in mind that some of these bugs may have been
+fixed for one chip, and then just copied forward.
 
 Cheers,
 Jes
