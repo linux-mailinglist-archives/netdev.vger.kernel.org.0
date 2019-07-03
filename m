@@ -2,92 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BCE15EAB2
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 19:42:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDD295EAED
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 19:53:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726900AbfGCRmz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 13:42:55 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:34706 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726430AbfGCRmz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 13:42:55 -0400
-Received: by mail-qk1-f195.google.com with SMTP id t8so3492332qkt.1
-        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 10:42:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=9aZmH+Pg7dlHICbo2t+3qKmRAkyWEbku6oFpnfKvKao=;
-        b=WH9HHfJk52kzOOibbgRfRkij7cs0Pi+rOYg4utplJBcJAtNYCP00f26DistQeaElS0
-         OOgPVoqUXidFgsWcM4UCe/xScx8cAD/uWsTBnt3wIezwKcEA4K4wPabJjhhvobY0fjSh
-         qvWpl1JO1Tv5GjiodYThyQBw1bhqulF4KlJMzZt8VXFCIDziYZzrkWjt1yhdBx49a8Ge
-         Kl1f3qg8yO5a6GsFiZ8kQN1AyeMFoJn9vcB+PHs4/3dd3BlNFU3+/86J0py7Nc3bX5MU
-         uP4fpRaX4hbQULiFEvkYeyNtxOTjoBlm5Q++iL1oQSQy7rv5VfqmekLJr6TrpJhlxVlV
-         CB0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=9aZmH+Pg7dlHICbo2t+3qKmRAkyWEbku6oFpnfKvKao=;
-        b=GBTzAQbwRYUM7XrqWatC0Djuqz6v6X2CX2bTOeyFmVr/RoldMuMJ8wm0lfUKvIIOGs
-         AIyhUFRFu77g4rvdsR4JuRoU2MkzfFHvy3r7LMplkfhbyVXH0kZh6hFTgeQg2ckthno9
-         OSr/0YB1VCPCI5ZDEXzjcrtxPMJykX6CNy7/tRqy5LmOtn3GZnXR0Lswir6dYnI6I9yW
-         LglVS1IqF7Urr5TmGV2T1020pZl64fWiTumr5WvsBK+LhRZujsuBTRBKIrRcLZLWeZ0+
-         8QsTEj8/CJtHMaXYfk92Ha8wsBk1uF4apz/kUFKDndIA/raDEH1U4ne3cxPNA/mHBnpM
-         iB2g==
-X-Gm-Message-State: APjAAAUtr0IPSnlXvO3Ryc3eR2wMrFLsE8vra0FRgWG3K3en5+Zb8McQ
-        7vJhWvlo6oCvot+zf09vhbW9HQ==
-X-Google-Smtp-Source: APXvYqx0N/ArL09FpIHbw3Mrm9q1Z8Hl4jAzzJQuhCOa1hvGbPVyBJQjwVfmcO/twh6DMlbjOXT6DA==
-X-Received: by 2002:a37:4243:: with SMTP id p64mr32137574qka.9.1562175774109;
-        Wed, 03 Jul 2019 10:42:54 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id q9sm1184643qkm.63.2019.07.03.10.42.52
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 03 Jul 2019 10:42:53 -0700 (PDT)
-Date:   Wed, 3 Jul 2019 10:42:44 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Sudarsana Reddy Kalluru <skalluru@marvell.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        "Ariel Elior" <aelior@marvell.com>
-Subject: Re: [EXT] Re: [PATCH net-next 4/4] qed: Add devlink support for
- configuration attributes.
-Message-ID: <20190703104244.7d26e734@cakuba.netronome.com>
-In-Reply-To: <MN2PR18MB2528065BE3D46045F7EA1888D3FB0@MN2PR18MB2528.namprd18.prod.outlook.com>
-References: <20190617114528.17086-1-skalluru@marvell.com>
-        <20190617114528.17086-5-skalluru@marvell.com>
-        <20190617155411.53cf07cf@cakuba.netronome.com>
-        <MN2PR18MB25289FE6D99432939990C979D3E40@MN2PR18MB2528.namprd18.prod.outlook.com>
-        <20190620133748.GD2504@nanopsycho>
-        <MN2PR18MB2528065BE3D46045F7EA1888D3FB0@MN2PR18MB2528.namprd18.prod.outlook.com>
-Organization: Netronome Systems, Ltd.
+        id S1726915AbfGCRxo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 13:53:44 -0400
+Received: from mx2.suse.de ([195.135.220.15]:57864 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725933AbfGCRxo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jul 2019 13:53:44 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 135E8AD7F;
+        Wed,  3 Jul 2019 17:53:42 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 316DCE0159; Wed,  3 Jul 2019 19:53:39 +0200 (CEST)
+Date:   Wed, 3 Jul 2019 19:53:39 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Jiri Pirko <jiri@resnulli.us>, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Linville <linville@tuxdriver.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v6 09/15] ethtool: generic handlers for GET
+ requests
+Message-ID: <20190703175339.GO20101@unicorn.suse.cz>
+References: <cover.1562067622.git.mkubecek@suse.cz>
+ <4faa0ce52dfe02c9cde5a46012b16c9af6764c5e.1562067622.git.mkubecek@suse.cz>
+ <20190703142510.GA2250@nanopsycho>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190703142510.GA2250@nanopsycho>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 3 Jul 2019 12:56:39 +0000, Sudarsana Reddy Kalluru wrote:
-> Apologies for bringing this topic again. From the driver(s) code
-> paths/'devlink man pages', I understood that devlink-port object is
-> an entity on top of the PCI bus device. Some drivers say NFP
-> represents vnics (on pci-dev) as a devlink-ports and, some represents
-> (virtual?) ports on the PF/device as devlink-ports. In the case of
-> Marvell NIC driver, we don't have [port] partitioning of the PCI
-> device. And the config attributes are specific to PCI-device (not the
-> vports/vnics of PF). Hence I didn't see a need for creating
-> devlink-port objects in the system for Marvell NICs. And planning to
-> add the config attributes to 'devlink-dev' object. Please let me know
-> if my understanding and the proposal is ok?
+On Wed, Jul 03, 2019 at 04:25:10PM +0200, Jiri Pirko wrote:
+> Tue, Jul 02, 2019 at 01:50:24PM CEST, mkubecek@suse.cz wrote:
+> 
+> [...]	
+> 	
+> >+/* generic ->doit() handler for GET type requests */
+> >+static int ethnl_get_doit(struct sk_buff *skb, struct genl_info *info)
+> 
+> It is very unfortunate for review to introduce function in a patch and
+> don't use it. In general, this approach is frowned upon. You should use
+> whatever you introduce in the same patch. I understand it is sometimes
+> hard.
 
-I understand where you're coming from.  
+It's not as if I introduced something and didn't show how to use it.
+First use is in the very next patch so if you insist on reading each
+patch separately without context, just combine 09/15 and 10/15 together;
+the overlap is minimal (10/15 adds an entry into get_requests[]
+introduced in 09/15).
 
-We want to make that judgement call on attribute-by-attribute basis.  
-We want consistency across vendors (and, frankly, multiple drivers of
-the same vendor).  If attribute looks like it belongs to the port,
-rather than the entire device/ASIC operation, we should make it a port
-attribute.
+I could have done that myself but the resulting patch would add over
+1000 lines (also something frown upon in general) and if someone asked
+if it could be split, the only honest answer I could give would be:
+"Of course it should be split, it consists of two completely logically
+separated parts (which are also 99% separated in code)."
+
+> IIUC, you have one ethnl_get_doit for all possible commands, and you
+
+Not all of them, only GET requests (and related notifications) and out
+of them, only those which fit the common pattern. There will be e.g. Rx
+rules and stats (maybe others) where dump request won't be iterating
+through devices so that they will need at least their own dumpit
+handler.
+
+> have this ops to do cmd-specific tasks. That is quite unusual. Plus if
+> you consider the complicated datastructures connected with this, 
+> I'm lost from the beginning :( Any particular reason form this indirection?
+> I don't think any other generic netlink code does that (correct me if
+> I'm wrong). The nice thing about generic netlink is the fact that
+> you have separate handlers per cmd.
+> 
+> I don't think you need these ops and indirections. For the common parts,
+> just have a set of common helpers, as the other generic netlink users
+> are doing. The code would be much easier to read and follow then.
+
+As I said last time, what you suggest is going back to what I already
+had in the early versions; so I have pretty good idea what the result
+would look like.
+
+I could go that way, having a separate main handler for each request
+type and call common helpers from it. But as there would always be
+a doit() handler, a dumpit() handler and mostly also a notification
+handler, I would have to factor out the functions which are now
+callbacks in struct get_request_ops anyway. To avoid too many
+parameters, I would end up with structures very similar to what I have
+now.  (Not really "I would", the structures were already there, the only
+difference was that the "request" and "data" parts were two structures
+rather than one.)
+
+So at the moment, I would have 5 functions looking almost the same as
+ethnl_get_doit(), 5 functions looking almost as ethnl_get_dumpit() and
+2 functions looking like ethnl_std_notify(), with the prospect of more
+to be added. Any change in the logic would need to be repeated for all
+of them. Moreover, you also proposed (or rather requested) to drop the
+infomask concept and split the message types into multiple separate
+ones. With that change, the number of almost copies would be 21 doit(),
+21 dumpit() and 13 notification handlers (for now, that is).
+
+I'm also not happy about the way typical GET and SET request processing
+looks now. But I would much rather go in the opposite direction: define
+relationship between message attributes and data structure members so
+that most of the size estimate, data prepare, message fill and data
+update functions which are all repeating the same pattern could be
+replaced by universal functions doing these actions according to the
+description. The direction you suggest is the direction I came from.
+
+Seriously, I don't know what to think. Anywhere I look, return code is
+checked with "if (ret < 0)" (sure, some use "if (ret)" but it's
+certainly not prevalent or universally preferred, more like 1:1), now
+you tell me it's wrong. Networking stack is full of simple helpers and
+wrappers, yet you keep telling me simple wrappers are wrong. Networking
+stack is full of abstractions and ops, you tell me it's wrong. It's
+really confusing...
+
+Michal
