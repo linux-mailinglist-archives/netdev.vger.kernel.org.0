@@ -2,72 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9004D5E837
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 17:55:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14A315E853
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 18:01:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726601AbfGCPzV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 11:55:21 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:51494 "EHLO vps0.lunn.ch"
+        id S1726910AbfGCQBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 12:01:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55114 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725933AbfGCPzV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jul 2019 11:55:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=Y5u5+eN+IOcT/cjbotCc6sj/oFgAPYdu3ukdDY4zf34=; b=CLHlKmx3VU/sWoaxoxQff59Py3
-        /fYjhCOFUo/6gKq5mcXzmI5HmVAwbgTNOLfeIxNsCpchudYmUQWpfX/2YJapvNc8ryy/vwiwYsHRp
-        5TBrH3sd2z6ntPbmWwtxnnY2TfDTuLw/nGREmtleJzgcBCgOGR7uyOpuB3eOg5pQ9MuM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hihbK-00063z-TD; Wed, 03 Jul 2019 17:55:18 +0200
-Date:   Wed, 3 Jul 2019 17:55:18 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Benjamin Beckmeyer <beb@eks-engel.de>
-Cc:     netdev@vger.kernel.org
-Subject: Re: i.mx6ul with DSA in multi chip addressing mode - no MDIO access
-Message-ID: <20190703155518.GE18473@lunn.ch>
-References: <21680b63-2d87-6841-23eb-551e58866719@eks-engel.de>
+        id S1726574AbfGCQBk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jul 2019 12:01:40 -0400
+Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A821F2189E;
+        Wed,  3 Jul 2019 16:01:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1562169699;
+        bh=sEHptRbLdsEYKSwjvY3/qz3IvFgJjdcb8qCsSzdw0vY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=CR/aA+HR1zGuRCS/ctRotaVzni53LoFZ77UI7OI9cYOVYeUKMDl3Ed1l2w3VRH9EZ
+         MYVEp+cWb34lbTInhOsRIKWeByf8P2aSr02Akc0V4iC76iRrlxqTmKFkMVKaTl+Cxh
+         f5/Tput0fGNikRUjsD6//pJ98OcGBcTLCjfz48So=
+Date:   Wed, 3 Jul 2019 09:01:37 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Boris Pismenny <borisp@mellanox.com>,
+        Aviad Yehezkel <aviadye@mellanox.com>,
+        Dave Watson <davejwatson@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        davem@davemloft.net, glider@google.com,
+        herbert@gondor.apana.org.au, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        bpf@vger.kernel.org,
+        syzbot <syzbot+6f50c99e8f6194bf363f@syzkaller.appspotmail.com>
+Subject: Re: [net/tls] Re: KMSAN: uninit-value in aesti_encrypt
+Message-ID: <20190703160137.GB21629@sol.localdomain>
+References: <000000000000a97a15058c50c52e@google.com>
+ <20190627164627.GF686@sol.localdomain>
+ <5d1508c79587a_e392b1ee39f65b45b@john-XPS-13-9370.notmuch>
+ <20190627190123.GA669@sol.localdomain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <21680b63-2d87-6841-23eb-551e58866719@eks-engel.de>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <20190627190123.GA669@sol.localdomain>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 03, 2019 at 03:10:34PM +0200, Benjamin Beckmeyer wrote:
-> Hey folks,
+On Thu, Jun 27, 2019 at 12:01:23PM -0700, Eric Biggers wrote:
+> On Thu, Jun 27, 2019 at 11:19:51AM -0700, John Fastabend wrote:
+> > Eric Biggers wrote:
+> > > [+TLS maintainers]
+> > > 
+> > > Very likely a net/tls bug, not a crypto bug.
+> > > 
+> > > Possibly a duplicate of other reports such as "KMSAN: uninit-value in gf128mul_4k_lle (3)"
+> > > 
+> > > See https://lore.kernel.org/netdev/20190625055019.GD17703@sol.localdomain/ for
+> > > the list of 17 other open syzbot bugs I've assigned to the TLS subsystem.  TLS
+> > > maintainers, when are you planning to look into these?
+> > > 
+> > > On Thu, Jun 27, 2019 at 09:37:05AM -0700, syzbot wrote:
+> > 
+> > I'm looking at this issue now. There is a series on bpf list now to address
+> > many of those 17 open issues but this is a separate issue. I can reproduce
+> > it locally so should have a fix soon.
+> > 
 > 
-> I'm having a problem with a custom i.mx6ul board. When DSA is loaded I can't 
-> get access to the switch via MDIO, but the DSA is working properly. I set up
-> a bridge for testing and the switch is in forwarding mode and i can ping the 
-> board. But the MDIO access isn't working at address 2 for the switch. When I 
-> delete the DSA from the devicetree and start the board up, I can access the 
-> switch via MDIO.
+> Okay, great!  However, just to clarify, the 17 syzbot bugs I assigned to TLS are
+> in addition to the 30 I assigned to BPF
+> (https://lore.kernel.org/lkml/20190624050114.GA30702@sol.localdomain/).
+> (Well, since I sent that it's actually up to 35 now.)
 > 
-> With DSA up and running:
+> I do expect most of these are duplicates, so when you are fixing the bugs, it
+> would be really helpful (for everyone, including you in the future :-) ) if you
+> would include the corresponding Reported-by syzbot line for *every* syzbot
+> report you think is addressed, so they get closed.
 > 
-> mii -i 2 0 0x9800
-> mii -i 2 1
-> phyid:2, reg:0x01 -> 0x4000
-> mii -i 2 0 0x9803
-> mii -i 2 1
-> phyid:2, reg:0x01 -> 0x4000
-> mii -i 2 1 0x1883
-> mii -i 2 1
-> phyid:2, reg:0x01 -> 0x4000
 
-Hi Benjamin
+Hi John, there's no activity on your patch thread
+(https://lore.kernel.org/bpf/5d1507e7b3eb6_e392b1ee39f65b463@john-XPS-13-9370.notmuch/T/#t)
+this week yet, nor do the patches seem to be applied anywhere.  What is the ETA
+on actually fixing the bug(s)?  There are now like 20 syzbot reports for
+seemingly the same bug, since it's apparently causing massive memory corruption;
+and this is wasting a lot of other kernel developers' time.  This has been going
+on for over a month; any reason why it's taking so long to fix?
 
-I'm guessing that the driver is also using register 0 and 1 at the
-same time you are, e.g. to poll the PHYs for link status etc.
+Also, have you written a regression test for this bug so it doesn't happen
+again?
 
-There are trace points for MDIO, so you can get the kernel to log all
-registers access. That should confirm if i'm right.
-
-	  Andrew
+- Eric
