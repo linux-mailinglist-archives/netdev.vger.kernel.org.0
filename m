@@ -2,169 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DB6A5ED4B
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 22:15:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF6D05ED3A
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 22:09:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727066AbfGCUOs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 16:14:48 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:38241 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726581AbfGCUOr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 16:14:47 -0400
-Received: by mail-wm1-f65.google.com with SMTP id s15so3711417wmj.3;
-        Wed, 03 Jul 2019 13:14:45 -0700 (PDT)
+        id S1726885AbfGCUJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 16:09:56 -0400
+Received: from mail-pl1-f201.google.com ([209.85.214.201]:34575 "EHLO
+        mail-pl1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726581AbfGCUJ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 16:09:56 -0400
+Received: by mail-pl1-f201.google.com with SMTP id p14so1935463plq.1
+        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 13:09:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=KGRGCWyzALDC/wgl3gDRBe1xns6oSqRLv+D34iEHye0=;
-        b=pjpkaCb85EinJW0a5vQs5C55nMP34arf7Ry/cbJ4A1kpNzLP3w8c984F//IjnMupU2
-         mJC5sWeuPUcfZOa/0biCUTBEv9ZYtzIgpH+pKDCA7CuSr6qjm70ZZQTgMXDbFqqvTtyE
-         tE7Gp7a0yt2Wtfhqtzyuw1O8q8FWsdwKsi85JHWioENvRgxup/Q4TMuogpjPD2uEitbK
-         6H6+iSSpBB+mFP2wrHabAs7mhlCh4qb7kiJAq//1wzOqDz4aH/Q2PMi9PA4eOharURdi
-         DU6O+TgkH1ICpdw7Q5T02bo4oTFXN9poJuhnaRj0Rrmw1t+PPjbzO4Z/ntZ2QeLDjldS
-         QiPQ==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=BN89+k9094WqEXxXChOvHBZDOQJA6yhrhv3VMUQMnEM=;
+        b=K8MRzRIBJbBaW47J3sMChiokQJ5Pbl6uK6L1v+1m6VjrDYU2D0BpHF1co/tBMTFBCE
+         U0f/ZTBKtbSoqP8D3RULSdYg6l3f32kqusK1tV+qZYvyHw39EGoyj50GoInl7tqeuq0L
+         50ZEVsdAMk/OER11a8EVu0s0cOVqzpMf6xawwuOg2fPpmpEonS626ZOWiobyKAe7Z8GL
+         FPx+jCVgLIHhZEfTbLsLyaantLnMZhGVQ4kDl1P1bQoEA6Sa8BKq7lYAheQQsKFNQtVv
+         7ZTqsFBJixUAm6/68fj86Afm643qMsSjna3xJZsEN3K3YVBWJX94GK0vjg+0u3PZlY9v
+         UyyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=KGRGCWyzALDC/wgl3gDRBe1xns6oSqRLv+D34iEHye0=;
-        b=B3h+QCATovrlNsOFBmL8jhC4taWEoMjilufPz69hrUaskgGJteSrM0GLjOtMTkd8+Z
-         gqWUZs0eWe826JmD0v82cMmyehZrlzOfM3p9E4ZBlOEAGt58hno9b5EGw+nbQcBCLIv6
-         mQn83yRwDJ5USBkLawP8vQzi2hBARDTigXM/Yn2tngQk6KVwqDR2RNqTJKyNf8ADWhWK
-         /gHHz18HseHU20kLZJtzWmnSgJrn9VjL1YylZXWNNf9FLozEGuq92BMSFJYLk5jRwEtw
-         FtgGmBGGHO22EyQY6GNEL9f4WvMkQ1Qd2LTCWxarCNsq3Ey3wR6V9acN+xSXAHu3huqn
-         jHSQ==
-X-Gm-Message-State: APjAAAURNuA03kFe0eKtIldyqXOG1k1wUA/PAjhdCDt+veJ/bNpbaG6C
-        S8BlJJPN4Hgveda/NCCgM8B9AFvq
-X-Google-Smtp-Source: APXvYqxKIv2erFklghRAxLVhTS8uHe6icyW/Gq6R7uuo19PCXRq5akB6xCsRa2oNl+VWfhZiY8YwnQ==
-X-Received: by 2002:a7b:ce88:: with SMTP id q8mr9346411wmj.89.1562184884981;
-        Wed, 03 Jul 2019 13:14:44 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8bd6:c00:4503:872e:8227:c4e0? (p200300EA8BD60C004503872E8227C4E0.dip0.t-ipconnect.de. [2003:ea:8bd6:c00:4503:872e:8227:c4e0])
-        by smtp.googlemail.com with ESMTPSA id a67sm3840405wmh.40.2019.07.03.13.14.44
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 03 Jul 2019 13:14:44 -0700 (PDT)
-Subject: Re: [PATCH v2 2/7] net: phy: realtek: Allow disabling RTL8211E EEE
- LED mode
-To:     Matthias Kaehlcke <mka@chromium.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Douglas Anderson <dianders@chromium.org>
-References: <20190703193724.246854-1-mka@chromium.org>
- <20190703193724.246854-2-mka@chromium.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <743dda1b-532d-175f-1f87-5d80ba4a2e94@gmail.com>
-Date:   Wed, 3 Jul 2019 22:09:39 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <20190703193724.246854-2-mka@chromium.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=BN89+k9094WqEXxXChOvHBZDOQJA6yhrhv3VMUQMnEM=;
+        b=b1aVoJET8K5UVT9XByEu+2spZVr76TUd3Lhk+hGGu+AWi5R5xGtzAcF0oJpbF3iK0b
+         o2jUKU+8pctRRdz+ZINJfAve78ZtwYXMctvmz+KLWA+sU6/cy/CBBNwc19/1vrW/Rmw8
+         CVnXKlo/vCqrBow3zgbIYoWMh6BhAa7GPC8KMURMOfTbdfMt+gWztWs0HbjPEei/K1Om
+         48/xr9GrHgjgqBYQxrko6tXvXqdSLRjXgCAnol0ghW2TXNL2W4Qv3dCWRKDFXB01vLbW
+         c9QekC5L7RdhCbhlDdt119Dr0S/11n3oDYBvQWY3aIxQ3v5JCnJgX5yiu6R1UsY7o0eV
+         nk7Q==
+X-Gm-Message-State: APjAAAXytzd200NIvnapSvGMQ75FD9lr11bUO8Ba7cTxpUFpqyvZ5AlK
+        yL/STzrnqQljM72q50G3X0WOa1Voo+fMpGohHKTP3URlUbRhrx7uXz7suNK5vYN05M/WmjufHS1
+        Tl5dIMuGPblhrEm6q3fdsktKvPfQqjnKa1RwQWbLPv+nJLyJ2mzUR3g==
+X-Google-Smtp-Source: APXvYqyzj3pNZUq0lUUOOru49jBq4TYaogDc0IKpUqW1iz6p8mOMJldp9NLgBKyIwQXi5rZ+90Jpkbw=
+X-Received: by 2002:a65:6656:: with SMTP id z22mr37400171pgv.197.1562184594830;
+ Wed, 03 Jul 2019 13:09:54 -0700 (PDT)
+Date:   Wed,  3 Jul 2019 13:09:52 -0700
+Message-Id: <20190703200952.159728-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
+Subject: [PATCH bpf-next] selftests/bpf: add test_tcp_rtt to .gitignore
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03.07.2019 21:37, Matthias Kaehlcke wrote:
-> EEE LED mode is enabled by default on the RTL8211E. Disable it when
-> the device tree property 'realtek,eee-led-mode-disable' exists.
-> 
-> The magic values to disable EEE LED mode were taken from the RTL8211E
-> datasheet, unfortunately they are not further documented.
-> 
-> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-> ---
-> Changes in v2:
-> - patch added to the series
-> ---
->  drivers/net/phy/realtek.c | 37 ++++++++++++++++++++++++++++++++++++-
->  1 file changed, 36 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-> index a669945eb829..eb815cbe1e72 100644
-> --- a/drivers/net/phy/realtek.c
-> +++ b/drivers/net/phy/realtek.c
-> @@ -9,8 +9,9 @@
->   * Copyright (c) 2004 Freescale Semiconductor, Inc.
->   */
->  #include <linux/bitops.h>
-> -#include <linux/phy.h>
->  #include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/phy.h>
->  
->  #define RTL821x_PHYSR				0x11
->  #define RTL821x_PHYSR_DUPLEX			BIT(13)
-> @@ -26,6 +27,10 @@
->  #define RTL821x_EXT_PAGE_SELECT			0x1e
->  #define RTL821x_PAGE_SELECT			0x1f
->  
-> +/* RTL8211E page 5 */
-> +#define RTL8211E_EEE_LED_MODE1			0x05
-> +#define RTL8211E_EEE_LED_MODE2			0x06
-> +
->  #define RTL8211F_INSR				0x1d
->  
->  #define RTL8211F_TX_DELAY			BIT(8)
-> @@ -53,6 +58,35 @@ static int rtl821x_write_page(struct phy_device *phydev, int page)
->  	return __phy_write(phydev, RTL821x_PAGE_SELECT, page);
->  }
->  
-> +static int rtl8211e_disable_eee_led_mode(struct phy_device *phydev)
-> +{
+Forgot to add it in the original patch.
 
-You define return type int but AFAICS the return value is never used,
-also in subsequent patches.
+Fixes: b55873984dab ("selftests/bpf: test BPF_SOCK_OPS_RTT_CB")
+Reported-by: Andrii Nakryiko <andriin@fb.com>
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
+---
+ tools/testing/selftests/bpf/.gitignore | 1 +
+ 1 file changed, 1 insertion(+)
 
-> +	int ret = 0;
-> +	int oldpage;
-> +
-> +	oldpage = phy_select_page(phydev, 5);
-> +	if (oldpage < 0)
-> +		goto out;
-> +
-> +	/* write magic values to disable EEE LED mode */
-> +	ret = __phy_write(phydev, RTL8211E_EEE_LED_MODE1, 0x8b82);
-> +	if (ret)
-> +		goto out;
-> +
-> +	ret = __phy_write(phydev, RTL8211E_EEE_LED_MODE2, 0x052b);
-> +
-> +out:
-> +	return phy_restore_page(phydev, oldpage, ret);
-> +}
-> +
-> +static int rtl8211e_config_init(struct phy_device *phydev)
-> +{
-> +	struct device *dev = &phydev->mdio.dev;
-> +
-> +	if (of_property_read_bool(dev->of_node, "realtek,eee-led-mode-disable"))
-> +		rtl8211e_disable_eee_led_mode(phydev);
-> +
-> +	return 0;
-> +}
-
-I suppose checkpatch complains about the missing empty line.
-You add it in a later patch, in case of a v3 you could fix that.
-
->  static int rtl8201_ack_interrupt(struct phy_device *phydev)
->  {
->  	int err;
-> @@ -310,6 +344,7 @@ static struct phy_driver realtek_drvs[] = {
->  		.name		= "RTL8211E Gigabit Ethernet",
->  		.config_init	= &rtl8211e_config_init,
->  		.ack_interrupt	= &rtl821x_ack_interrupt,
-> +		.config_init	= &rtl8211e_config_init,
->  		.config_intr	= &rtl8211e_config_intr,
->  		.suspend	= genphy_suspend,
->  		.resume		= genphy_resume,
-> 
+diff --git a/tools/testing/selftests/bpf/.gitignore b/tools/testing/selftests/bpf/.gitignore
+index a2f7f79c7908..90f70d2c7c22 100644
+--- a/tools/testing/selftests/bpf/.gitignore
++++ b/tools/testing/selftests/bpf/.gitignore
+@@ -42,3 +42,4 @@ xdping
+ test_sockopt
+ test_sockopt_sk
+ test_sockopt_multi
++test_tcp_rtt
+-- 
+2.22.0.410.gd8fdbe21b5-goog
 
