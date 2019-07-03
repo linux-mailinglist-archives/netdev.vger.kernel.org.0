@@ -2,119 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C98035EE7C
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 23:27:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 125215EE85
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 23:29:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727349AbfGCV1u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 17:27:50 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:55733 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726902AbfGCV1t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 17:27:49 -0400
-Received: by mail-wm1-f65.google.com with SMTP id a15so3644767wmj.5;
-        Wed, 03 Jul 2019 14:27:48 -0700 (PDT)
+        id S1727360AbfGCV3L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 17:29:11 -0400
+Received: from mail-pf1-f202.google.com ([209.85.210.202]:52358 "EHLO
+        mail-pf1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726902AbfGCV3K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 17:29:10 -0400
+Received: by mail-pf1-f202.google.com with SMTP id a20so2232411pfn.19
+        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 14:29:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=t9ppNu+tTe8IMaz8VD3GfS+xRVxRIJDS97FL0GEnxCo=;
-        b=JeLJ6Y3ufQlegAik9zWghxwF/mrLQWjE5NIpiZJd699FR9cSWOLeh3FrojugG83BwJ
-         DyldNdCjU7FbDJclPm2i6bzFggqRqbxYU4H8uVEYA7A4FE6t6vHcZYZJMWZOyhnZjyhe
-         RUZyVEQe2OLYC81n+dKvND0ZeU6SmUb5qUG73qB8B1baVlp/I0BvnYcmM3AvqbZhXo8I
-         hknyeLUpIF/3L5dxRTm65VR/Cg9AqKFgcu2xstwC2NWcYGp9SRKbJlOj7n7pVOIqXwYO
-         8VztMEobWnweJL4tmuEidzUCY/pVUyAoF2HDryk/LYahWYfk/VoKMP9rKWe6tpITqRtg
-         Qb8A==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=CgE+VohwMcJGdxE48xVXINshCDvVZZROM0YSvSs/nZc=;
+        b=Oz++jnhL9NjxRAUFQ8xHj/kjaK5SYRAIfeHKqAeE0yluWI/88f2cYSC7wQHjNVymxO
+         3Wjfz6kfoYpsg+fumv7AOx8bo16cERcUEQKrvY5ENOP264eKDUIOaj9sT8g0rNA4hol1
+         uPCAKOWqe4fU8/sbdiYx9MrvNXJCCCUUbooCzN5oyUB17L3lkTMpZseuWV49X85VkiYE
+         ATtjOuiydvF2MSCWeMwW/cJJAua7hpAw2tQJ/g5mi88FszMX6R9VASiBGM6LKPQBiCfd
+         4XdQ2XBBJb3sApBJtcVg3GGkAucWTsF49QEp6gf2ZFv4odnHraxYcVEYJ1uLxSGORK/r
+         tiUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=t9ppNu+tTe8IMaz8VD3GfS+xRVxRIJDS97FL0GEnxCo=;
-        b=r5bgVdt+H06tfx7kBORttd8AFUUCSh22eIoazPBWsonPj3CjMePaoreWx6o5C8SX4K
-         vNuEfZsDjkdy+js9M56R7N9nLGUH91qEXUlOVsH+nhwPxH94dB0bk8jQqrRlgpQAPQq1
-         marZ1kYt/+jap7MhtQVBai9cv4eSeulG7Qkykh9UkCDtDZ1JuMRNpDTFGFMpkFd4MADW
-         CZm/Q6SaJeCK+AQ1OCOwfgJjVWDUZsQ3ywPMO/7H1Ti9ij5QsjQjIH9SL16JYueLYSmP
-         3mBeaBxoeJ6ng85Q2gOpKNp01uHwnhw6HUz7KgCPGRvoJ6MpAIHUx+hP/IYOk+ZfNsVB
-         AbOw==
-X-Gm-Message-State: APjAAAXmygoDxmPWZUJTWfrCGdFjKHvGQS/PKITbyksgLTO5gt0EAHx5
-        Xbt1aCF4gKJrg1WtoRyZwv0=
-X-Google-Smtp-Source: APXvYqx2tUA/FQ/KELmCVtbRZYYZSkMb7PcEqhhQv19yjNdu85ImPP9Oy2RQ/bY9Xeq5QyvfBlkFhQ==
-X-Received: by 2002:a1c:1f06:: with SMTP id f6mr892554wmf.60.1562189267692;
-        Wed, 03 Jul 2019 14:27:47 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8bd6:c00:4503:872e:8227:c4e0? (p200300EA8BD60C004503872E8227C4E0.dip0.t-ipconnect.de. [2003:ea:8bd6:c00:4503:872e:8227:c4e0])
-        by smtp.googlemail.com with ESMTPSA id a64sm7593935wmf.1.2019.07.03.14.27.46
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 03 Jul 2019 14:27:47 -0700 (PDT)
-Subject: Re: [PATCH v2 4/7] net: phy: realtek: Enable accessing RTL8211E
- extension pages
-To:     Matthias Kaehlcke <mka@chromium.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Douglas Anderson <dianders@chromium.org>
-References: <20190703193724.246854-1-mka@chromium.org>
- <20190703193724.246854-4-mka@chromium.org>
- <dd7a569b-41e4-5925-88fc-227e69c82f67@gmail.com>
- <20190703203650.GF250418@google.com>
- <98326ec2-6e90-fd3a-32f5-cf0db26c31a9@gmail.com>
- <20190703212407.GI250418@google.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <3e47639a-bbbb-f438-bc66-a29423090e95@gmail.com>
-Date:   Wed, 3 Jul 2019 23:27:41 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <20190703212407.GI250418@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=CgE+VohwMcJGdxE48xVXINshCDvVZZROM0YSvSs/nZc=;
+        b=YG3dqSQwMSN209pAjpZToyWbO2+bi4q7xbfO+z/P3w3cF6wHYMU6cfFFwTduoy7QTV
+         yfyjMX5ePL+QCqTpM9dNOxyyDL1yhXwpUSX3KC2aLOtaLZegzCM3myUb3gan7ppzF6e0
+         K2/aCgbayz86kHwhDeSrr3sdj5ttHsJ8//rOHrOqgUvcrmm/1a2ANbEXRUnKjTguTUrE
+         fhoYi34YvF/I1vJWNGcfldtoc1XGLkZx5pX3Sn0Hp8fQDjlf52m6EweBhz/JYyrAbcUm
+         uRt+iQCxem9cERY8E6TtE90eM8H+k+WQmdo/CkTJ774qUhEWOvThMyzyqXxtknbQ6r5T
+         mKPw==
+X-Gm-Message-State: APjAAAXcJQ3jS2o0XZV1QIM5pI7PhqEho03Cgfb0rBBUx8DjiBt+nbsu
+        SyR/Xtaff0UCsh0sPuP2DEfHaG1Vc+8S4YKJPpQzOS7hyOXxfyrH3u3pav5g2TlfytyLq5DOPi0
+        8yxagaUVOkgSRPAhsDE9r1NP9499eKrwDmZv1qU/h0XLuIHm8Xs4X8w==
+X-Google-Smtp-Source: APXvYqzuzzu2Mg63kpyc077g1axsioM4rPPlggjndgv/G6aX/yVsXzoTH86t3Xi2Cxe1r8YNOAXJq/I=
+X-Received: by 2002:a63:1226:: with SMTP id h38mr38749013pgl.196.1562189349900;
+ Wed, 03 Jul 2019 14:29:09 -0700 (PDT)
+Date:   Wed,  3 Jul 2019 14:29:07 -0700
+Message-Id: <20190703212907.189141-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
+Subject: [PATCH bpf-next] selftests/bpf: fix test_align liveliness expectations
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03.07.2019 23:24, Matthias Kaehlcke wrote:
-> On Wed, Jul 03, 2019 at 11:01:09PM +0200, Heiner Kallweit wrote:
->> On 03.07.2019 22:36, Matthias Kaehlcke wrote:
->>> On Wed, Jul 03, 2019 at 10:12:12PM +0200, Heiner Kallweit wrote:
->>>> On 03.07.2019 21:37, Matthias Kaehlcke wrote:
->>>>> The RTL8211E has extension pages, which can be accessed after
->>>>> selecting a page through a custom method. Add a function to
->>>>> modify bits in a register of an extension page and a helper for
->>>>> selecting an ext page.
->>>>>
->>>>> rtl8211e_modify_ext_paged() is inspired by its counterpart
->>>>> phy_modify_paged().
->>>>>
->>>>> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
->>>>> ---
->>>>> Changes in v2:
->>>>> - assign .read/write_page handlers for RTL8211E
->>>>
->>>> Maybe this was planned, but it's not part of the patch.
->>>
->>> Oops, it was definitely there when I tested ... I guess this got
->>> somehow lost when changing the patch order and resolving minor
->>> conflicts, seems like I only build tested after that :/
->>>
->> RTL8211E also supports normal pages (reg 0x1f = page).
->> See e.g. rtl8168e_2_hw_phy_config in the r8169 driver, this network
->> chip has an integrated RTL8211E PHY. There settings on page 3 and 5
->> are done.
->> Therefore I would prefer to use .read/write_page for normal paging
->> in all Realtek PHY drivers. Means the code here would remain as it
->> is and just the changelog would need to be fixed.
-> 
-> Do I understand correctly that you suggest an additional patch that
-> assigns .read/write_page() for all entries of realtek_drvs?
-> 
+Commit 2589726d12a1 ("bpf: introduce bounded loops") caused a change
+in the way some registers liveliness is reported in the test_align.
+Add missing "_w" to a couple of tests. Note, there are no offset
+changes!
 
-No, basically all the Realtek PHY drivers use the following already:
-.read_page	= rtl821x_read_page,
-.write_page	= rtl821x_write_page,
-What I mean is that this should stay as it is, and not be overwritten
-with the extended paging.
+Fixes: 2589726d12a1 ("bpf: introduce bounded loops")
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
+---
+ tools/testing/selftests/bpf/test_align.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/tools/testing/selftests/bpf/test_align.c b/tools/testing/selftests/bpf/test_align.c
+index 3c789d03b629..0262f7b374f9 100644
+--- a/tools/testing/selftests/bpf/test_align.c
++++ b/tools/testing/selftests/bpf/test_align.c
+@@ -180,7 +180,7 @@ static struct bpf_align_test tests[] = {
+ 		},
+ 		.prog_type = BPF_PROG_TYPE_SCHED_CLS,
+ 		.matches = {
+-			{7, "R0=pkt(id=0,off=8,r=8,imm=0)"},
++			{7, "R0_w=pkt(id=0,off=8,r=8,imm=0)"},
+ 			{7, "R3_w=inv(id=0,umax_value=255,var_off=(0x0; 0xff))"},
+ 			{8, "R3_w=inv(id=0,umax_value=510,var_off=(0x0; 0x1fe))"},
+ 			{9, "R3_w=inv(id=0,umax_value=1020,var_off=(0x0; 0x3fc))"},
+@@ -315,7 +315,7 @@ static struct bpf_align_test tests[] = {
+ 			/* Calculated offset in R6 has unknown value, but known
+ 			 * alignment of 4.
+ 			 */
+-			{8, "R2=pkt(id=0,off=0,r=8,imm=0)"},
++			{8, "R2_w=pkt(id=0,off=0,r=8,imm=0)"},
+ 			{8, "R6_w=inv(id=0,umax_value=1020,var_off=(0x0; 0x3fc))"},
+ 			/* Offset is added to packet pointer R5, resulting in
+ 			 * known fixed offset, and variable offset from R6.
+@@ -405,7 +405,7 @@ static struct bpf_align_test tests[] = {
+ 			/* Calculated offset in R6 has unknown value, but known
+ 			 * alignment of 4.
+ 			 */
+-			{8, "R2=pkt(id=0,off=0,r=8,imm=0)"},
++			{8, "R2_w=pkt(id=0,off=0,r=8,imm=0)"},
+ 			{8, "R6_w=inv(id=0,umax_value=1020,var_off=(0x0; 0x3fc))"},
+ 			/* Adding 14 makes R6 be (4n+2) */
+ 			{9, "R6_w=inv(id=0,umin_value=14,umax_value=1034,var_off=(0x2; 0x7fc))"},
+@@ -473,12 +473,12 @@ static struct bpf_align_test tests[] = {
+ 			/* (4n) + 14 == (4n+2).  We blow our bounds, because
+ 			 * the add could overflow.
+ 			 */
+-			{7, "R5=inv(id=0,var_off=(0x2; 0xfffffffffffffffc))"},
++			{7, "R5_w=inv(id=0,var_off=(0x2; 0xfffffffffffffffc))"},
+ 			/* Checked s>=0 */
+ 			{9, "R5=inv(id=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc))"},
+ 			/* packet pointer + nonnegative (4n+2) */
+ 			{11, "R6_w=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc))"},
+-			{13, "R4=pkt(id=1,off=4,r=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc))"},
++			{13, "R4_w=pkt(id=1,off=4,r=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc))"},
+ 			/* NET_IP_ALIGN + (4n+2) == (4n), alignment is fine.
+ 			 * We checked the bounds, but it might have been able
+ 			 * to overflow if the packet pointer started in the
+@@ -486,7 +486,7 @@ static struct bpf_align_test tests[] = {
+ 			 * So we did not get a 'range' on R6, and the access
+ 			 * attempt will fail.
+ 			 */
+-			{15, "R6=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc))"},
++			{15, "R6_w=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc))"},
+ 		}
+ 	},
+ 	{
+@@ -521,7 +521,7 @@ static struct bpf_align_test tests[] = {
+ 			/* Calculated offset in R6 has unknown value, but known
+ 			 * alignment of 4.
+ 			 */
+-			{7, "R2=pkt(id=0,off=0,r=8,imm=0)"},
++			{7, "R2_w=pkt(id=0,off=0,r=8,imm=0)"},
+ 			{9, "R6_w=inv(id=0,umax_value=1020,var_off=(0x0; 0x3fc))"},
+ 			/* Adding 14 makes R6 be (4n+2) */
+ 			{10, "R6_w=inv(id=0,umin_value=14,umax_value=1034,var_off=(0x2; 0x7fc))"},
+@@ -574,7 +574,7 @@ static struct bpf_align_test tests[] = {
+ 			/* Calculated offset in R6 has unknown value, but known
+ 			 * alignment of 4.
+ 			 */
+-			{7, "R2=pkt(id=0,off=0,r=8,imm=0)"},
++			{7, "R2_w=pkt(id=0,off=0,r=8,imm=0)"},
+ 			{10, "R6_w=inv(id=0,umax_value=60,var_off=(0x0; 0x3c))"},
+ 			/* Adding 14 makes R6 be (4n+2) */
+ 			{11, "R6_w=inv(id=0,umin_value=14,umax_value=74,var_off=(0x2; 0x7c))"},
+-- 
+2.22.0.410.gd8fdbe21b5-goog
+
