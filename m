@@ -2,86 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E5BB75E614
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 16:07:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A7295E61E
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 16:10:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727158AbfGCOHT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 10:07:19 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:11614 "EHLO mx1.redhat.com"
+        id S1726614AbfGCOKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 10:10:02 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:51238 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727032AbfGCOHS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jul 2019 10:07:18 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id F3F323E2CD;
-        Wed,  3 Jul 2019 14:07:17 +0000 (UTC)
-Received: from localhost.localdomain.com (ovpn-117-79.ams2.redhat.com [10.36.117.79])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0770C1001B18;
-        Wed,  3 Jul 2019 14:07:16 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Subject: [PATCH net-next v2 5/5] ipv4: use indirect call wrappers for {tcp,udp}_{recv,send}msg()
-Date:   Wed,  3 Jul 2019 16:06:56 +0200
-Message-Id: <21a27b8f0014712f29cef00d1191841ad8dd57d9.1562162469.git.pabeni@redhat.com>
-In-Reply-To: <cover.1562162469.git.pabeni@redhat.com>
-References: <cover.1562162469.git.pabeni@redhat.com>
+        id S1725847AbfGCOKB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jul 2019 10:10:01 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=f6EkhFgDj5yNV/vCI0wtMQPeE4pwYm8OnUmJ/ES9SNk=; b=ZJsMtNKLwWz4HxFysQuizCRFHx
+        uUVbL+SUaZeE7XUmuGSIVsCr74aJAsQAYhPcpDWs18Fros2e3mEH/T6mYgqil3qfaoNd8T8qC6/Nb
+        KHKc4moBUYt5cIev2JfDm93JJHbVQ4hdyRygVKqn52HfN8V9sZQ3qEBoDtPPQRNArxts=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hifxO-0004xj-Ir; Wed, 03 Jul 2019 16:09:58 +0200
+Date:   Wed, 3 Jul 2019 16:09:58 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Parav Pandit <parav@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com
+Subject: Re: [PATCH net-next 1/3] devlink: Introduce PCI PF port flavour and
+ port attribute
+Message-ID: <20190703140958.GB18473@lunn.ch>
+References: <20190701122734.18770-2-parav@mellanox.com>
+ <20190701162650.17854185@cakuba.netronome.com>
+ <AM0PR05MB4866085BC8B082EFD5B59DD2D1F80@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20190702104711.77618f6a@cakuba.netronome.com>
+ <AM0PR05MB4866C19C9E6ED767A44C3064D1F80@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20190702164252.6d4fe5e3@cakuba.netronome.com>
+ <AM0PR05MB4866F1AF0CF5914B372F0BCCD1FB0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20190702191536.4de1ac68@cakuba.netronome.com>
+ <AM0PR05MB486624D2D9BAD293CD5FB33CD1FB0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20190703103720.GU2250@nanopsycho>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.30]); Wed, 03 Jul 2019 14:07:18 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190703103720.GU2250@nanopsycho>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This avoids an indirect call per syscall for common ipv4 transports
+> However, we expose it for DEVLINK_PORT_FLAVOUR_CPU and
+> DEVLINK_PORT_FLAVOUR_DSA. Not sure if it makes sense there either.
+> Ccing Florian, Andrew and Vivien.
+> What do you guys think?
 
-v1 -> v2:
- - avoid unneeded reclaration for udp_sendmsg, as suggested by Willem
+Hi Jiri
 
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- net/ipv4/af_inet.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+DSA and CPU ports are physical ports of the switch. And there can be
+multiple DSA ports, and maybe sometime real soon now, multiple CPU
+ports. So having a number associated with them is useful.
 
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index 8421e2f5bbb3..ed2301ef872e 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -804,7 +804,8 @@ int inet_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
- 	if (unlikely(inet_send_prepare(sk)))
- 		return -EAGAIN;
- 
--	return sk->sk_prot->sendmsg(sk, msg, size);
-+	return INDIRECT_CALL_2(sk->sk_prot->sendmsg, tcp_sendmsg, udp_sendmsg,
-+			       sk, msg, size);
- }
- EXPORT_SYMBOL(inet_sendmsg);
- 
-@@ -822,6 +823,8 @@ ssize_t inet_sendpage(struct socket *sock, struct page *page, int offset,
- }
- EXPORT_SYMBOL(inet_sendpage);
- 
-+INDIRECT_CALLABLE_DECLARE(int udp_recvmsg(struct sock *, struct msghdr *,
-+					  size_t, int, int, int *));
- int inet_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- 		 int flags)
- {
-@@ -832,8 +835,9 @@ int inet_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- 	if (likely(!(flags & MSG_ERRQUEUE)))
- 		sock_rps_record_flow(sk);
- 
--	err = sk->sk_prot->recvmsg(sk, msg, size, flags & MSG_DONTWAIT,
--				   flags & ~MSG_DONTWAIT, &addr_len);
-+	err = INDIRECT_CALL_2(sk->sk_prot->recvmsg, tcp_recvmsg, udp_recvmsg,
-+			      sk, msg, size, flags & MSG_DONTWAIT,
-+			      flags & ~MSG_DONTWAIT, &addr_len);
- 	if (err >= 0)
- 		msg->msg_namelen = addr_len;
- 	return err;
--- 
-2.20.1
-
+       Andrew
