@@ -2,88 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B63BE5E122
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 11:36:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D0935E13E
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 11:45:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726765AbfGCJgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 05:36:19 -0400
-Received: from www62.your-server.de ([213.133.104.62]:49120 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726308AbfGCJgT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 05:36:19 -0400
-Received: from [78.46.172.2] (helo=sslproxy05.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hibgW-0005es-Iy; Wed, 03 Jul 2019 11:36:16 +0200
-Received: from [2a02:1205:5054:6d70:b45c:ec96:516a:e956] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hibgW-000UNG-CN; Wed, 03 Jul 2019 11:36:16 +0200
-Subject: Re: [PATCH v4 bpf-next 0/4] libbpf: add perf buffer abstraction and
- API
-To:     Andrii Nakryiko <andriin@fb.com>, andrii.nakryiko@gmail.com,
-        ast@fb.com, kernel-team@fb.com, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, jakub.kicinski@netronome.com
-References: <20190630065109.1794420-1-andriin@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <5a48c2f1-2abc-2deb-6863-c9f20e4ac03b@iogearbox.net>
-Date:   Wed, 3 Jul 2019 11:36:15 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.3.0
+        id S1726917AbfGCJpl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 05:45:41 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:41590 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725847AbfGCJpk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jul 2019 05:45:40 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 95DA8B2DD4;
+        Wed,  3 Jul 2019 09:45:40 +0000 (UTC)
+Received: from T460ec.redhat.com (ovpn-116-169.ams2.redhat.com [10.36.116.169])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9A7B110A9827;
+        Wed,  3 Jul 2019 09:45:38 +0000 (UTC)
+From:   Eelco Chaudron <echaudro@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andrii.nakryiko@gmail.com,
+        magnus.karlsson@gmail.com
+Subject: [PATCH bpf-next v3] libbpf: add xsk_ring_prod__nb_free() function
+Date:   Wed,  3 Jul 2019 11:45:28 +0200
+Message-Id: <ea49f66f73aedcdade979605dab6b2474e2dc4cb.1562145300.git.echaudro@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20190630065109.1794420-1-andriin@fb.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25499/Wed Jul  3 10:03:10 2019)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.26]); Wed, 03 Jul 2019 09:45:40 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/30/2019 08:51 AM, Andrii Nakryiko wrote:
-> This patchset adds a high-level API for setting up and polling perf buffers
-> associated with BPF_MAP_TYPE_PERF_EVENT_ARRAY map. Details of APIs are
-> described in corresponding commit.
-> 
-> Patch #1 adds a set of APIs to set up and work with perf buffer.
-> Patch #2 enhances libbpf to support auto-setting PERF_EVENT_ARRAY map size.
-> Patch #3 adds test.
-> Patch #4 converts bpftool map event_pipe to new API.
-> 
-> v3->v4:
-> - fixed bpftool event_pipe cmd error handling (Jakub);
-> 
-> v2->v3:
-> - added perf_buffer__new_raw for more low-level control;
-> - converted bpftool map event_pipe to new API (Daniel);
-> - fixed bug with error handling in create_maps (Song);
-> 
-> v1->v2:
-> - add auto-sizing of PERF_EVENT_ARRAY maps;
-> 
-> Andrii Nakryiko (4):
->   libbpf: add perf buffer API
->   libbpf: auto-set PERF_EVENT_ARRAY size to number of CPUs
->   selftests/bpf: test perf buffer API
->   tools/bpftool: switch map event_pipe to libbpf's perf_buffer
-> 
->  tools/bpf/bpftool/map_perf_ring.c             | 201 +++------
->  tools/lib/bpf/libbpf.c                        | 397 +++++++++++++++++-
->  tools/lib/bpf/libbpf.h                        |  49 +++
->  tools/lib/bpf/libbpf.map                      |   4 +
->  .../selftests/bpf/prog_tests/perf_buffer.c    |  94 +++++
->  .../selftests/bpf/progs/test_perf_buffer.c    |  29 ++
->  6 files changed, 630 insertions(+), 144 deletions(-)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/perf_buffer.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_perf_buffer.c
+When an AF_XDP application received X packets, it does not mean X
+frames can be stuffed into the producer ring. To make it easier for
+AF_XDP applications this API allows them to check how many frames can
+be added into the ring.
 
-Hm, set looks good, but this does not apply cleanly. Please rebase against
-bpf-next and resubmit. Please also update tools/lib/bpf/README.rst with regards
-to the perf_buffer__ prefix. While at it, you could also address Jakub's comment.
+Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+---
 
-Thanks,
-Daniel
+v2 -> v3
+ - Removed cache by pass option
+
+v1 -> v2
+ - Renamed xsk_ring_prod__free() to xsk_ring_prod__nb_free()
+ - Add caching so it will only touch global state when needed
+
+ tools/lib/bpf/xsk.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
+index 82ea71a0f3ec..3411556e04d9 100644
+--- a/tools/lib/bpf/xsk.h
++++ b/tools/lib/bpf/xsk.h
+@@ -76,7 +76,7 @@ xsk_ring_cons__rx_desc(const struct xsk_ring_cons *rx, __u32 idx)
+ 	return &descs[idx & rx->mask];
+ }
+ 
+-static inline __u32 xsk_prod_nb_free(struct xsk_ring_prod *r, __u32 nb)
++static inline __u32 xsk_prod__nb_free(struct xsk_ring_prod *r, __u32 nb)
+ {
+ 	__u32 free_entries = r->cached_cons - r->cached_prod;
+ 
+@@ -110,7 +110,7 @@ static inline __u32 xsk_cons_nb_avail(struct xsk_ring_cons *r, __u32 nb)
+ static inline size_t xsk_ring_prod__reserve(struct xsk_ring_prod *prod,
+ 					    size_t nb, __u32 *idx)
+ {
+-	if (xsk_prod_nb_free(prod, nb) < nb)
++	if (xsk_prod__nb_free(prod, nb) < nb)
+ 		return 0;
+ 
+ 	*idx = prod->cached_prod;
+-- 
+2.20.1
+
