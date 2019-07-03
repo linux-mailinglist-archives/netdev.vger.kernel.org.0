@@ -2,186 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B2E6B5E7D0
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 17:26:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 835075E7D7
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 17:29:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726994AbfGCP0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 11:26:22 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:45017 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726870AbfGCP0W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 11:26:22 -0400
-Received: by mail-pg1-f196.google.com with SMTP id i18so1412604pgl.11;
-        Wed, 03 Jul 2019 08:26:21 -0700 (PDT)
+        id S1726760AbfGCP3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 11:29:05 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:41014 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725933AbfGCP3F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 11:29:05 -0400
+Received: by mail-qt1-f195.google.com with SMTP id d17so2464998qtj.8
+        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 08:29:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6QROen4N3MxmsNite+g7qwf/F2DzBAOrXmr+wrgNUV0=;
-        b=mL4FL2ocXEMUft2oJQXTLNkmp2DMQhRFIDfUUudoCHFYlSIrh6ynFfZlCuB+8NOMim
-         VMk9y7HplpNPFC6KGuTDgS6dN8TuY0uxMMdes5b9KmZGrzUiZGiaxWrWNJVy4prSIHHm
-         EStziaTU3MfmVowvDCqYVV6LvbKF/35GxNu7JH78aAPAJWUgbZYIdpXbVU+5xnPvG27X
-         hxbdI4InhdFTJmwB9CBPRdoD9eLEvdQ8oL0wG7ftUT2i9Xk8p1/xNX2Huh82tc6DK0gO
-         Ze2D7YCXmmd35uGFHjWxQNENe8fZI3z5nHbp48GVshQkZUvqiWXJVAmYWkq8tAORAnGI
-         A5cw==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=6ITfgvCoSDquYzNHx50rE0eTR8cXMCjfYa33YYyA+tI=;
+        b=TnLbUwYle2MzE4+4LC6Y7RdNmlRh1uybKz5e3u1RxNObo1Zsq/k5RndgT1J4A9GGaK
+         w3On5jV0RtoKJCMno1sVlHBMKOPoiC89SJNTOPyBxzsEvn9LI87d7KaElhRj7Rg5MuwU
+         DvkNM5Q14qVmMv5McIMgU2kfGaRpEle6fPWgmLfTC7zFr2ms2J1h3YGYxiVSGbrB3iRD
+         iTVMTP7rc9JGP0v0a6YVA3UWg1LX3U+LQ7j2q1lCqWQHFbDSUGZ8sTPd2sQQiQ7CA4fX
+         PZRvV99ljdBDcKYxoyLcmRlm1/PxZzg+/wfuYo3C7553j6suurW15ix8xB/+bfpZPjLn
+         sKGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=6QROen4N3MxmsNite+g7qwf/F2DzBAOrXmr+wrgNUV0=;
-        b=r1mvjbIZh5tvyZJ2n4KCnCgZMvLjELDByJX2IPMVagERhZvrzGOPbVP2ZW8SK+5zMy
-         JvXY1NrFnFDnm9vvFwXo5+Q1m7wg41ksW9CMkpOdHOP6CxjME36+4KtEwSyOPdBn3vnx
-         3peaFIDn9d1AgdZx9q2b/knq6UroPHbSI4pugFVxHaFhDkmsS3Wgrn7gtwOMbQc08NHy
-         ywQXxbYvhlb19OdsQAZ0izA3ImLo4l86X0ojM+5kRkLVF1SM5POxJz1F5ceBYdaQ9U9d
-         V1elTaz2e6UaGJ4IpTCzH4gfd5EPLTh8D9+W33fw/VAkGqAU9IYho/YLotMHRxJ0wCnD
-         beyg==
-X-Gm-Message-State: APjAAAVlCUzlHX5RzAFZiTOqM/9IUeaI25Q/2vIUj84zRbku7YVgh0NK
-        bxDHPFl++/Q+NZzxh6nXCPYEeC1f
-X-Google-Smtp-Source: APXvYqwyIwTtUGuTTdJ9VDhykSgyTtX+5oH5cD/Vk+9O8Lfm6DJ0XbWSbihJbPJDOXwi1P6wrXn71w==
-X-Received: by 2002:a63:125c:: with SMTP id 28mr28274843pgs.255.1562167581005;
-        Wed, 03 Jul 2019 08:26:21 -0700 (PDT)
-Received: from [10.230.28.107] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id r27sm6054940pgn.25.2019.07.03.08.26.19
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 03 Jul 2019 08:26:20 -0700 (PDT)
-Subject: Re: [PATCH v2 1/4] net: dsa: Change DT bindings for Vitesse VSC73xx
- switches
-To:     Pawel Dembicki <paweldembicki@gmail.com>
-Cc:     linus.walleij@linaro.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20190701152723.624-1-paweldembicki@gmail.com>
- <20190703085757.1027-1-paweldembicki@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Message-ID: <97789626-8371-703b-b515-7eef5cdf198d@gmail.com>
-Date:   Wed, 3 Jul 2019 08:26:18 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=6ITfgvCoSDquYzNHx50rE0eTR8cXMCjfYa33YYyA+tI=;
+        b=AAh7l6P9+ebdgi4l8bU1zfr1/T5B/dMlTvzI5j9k6S1OwKePa1g58Kg7K4TiFmUk4N
+         MMLwvKh8x9s+rYw49SvkB0dw1UMCnk87em4V0mgm9cbz+RmH8xpSBBMKjRhHkWZCmmh1
+         x6VWMlua159kReNmeLzz72xfdzxgC1lawMYQ/ZF+bXrj4Pq2zf7/XBANYhuuklC4UUU7
+         1FiapFGcIBkDc9WAsgsMQyCWD2Qnonr2tdi/Sq6zeZjVH3uiwyKY12eWkt6fMzAnBOi3
+         CA0m3N3pVi3Wm6JcPPJa2Qry6Bk4b7OyE6enzi3eO661GNFNQy/yfSgEvF0+7yq3RaBW
+         PeLw==
+X-Gm-Message-State: APjAAAXAXIJ13CKYwUKsQkJU6QgqJACyu3ITV8gMc9Ag+wI1DZLsmo1D
+        TnGJ0iKK4brumzo8DIRH+bmSUw==
+X-Google-Smtp-Source: APXvYqwAuc7UEfIDHechO/jvBiVuRjhU6so0LdDMnPpFWwShwUOdiDH4g5R1okJt/iH7VGdpNIi2yQ==
+X-Received: by 2002:a05:6214:1249:: with SMTP id q9mr32193857qvv.154.1562167744166;
+        Wed, 03 Jul 2019 08:29:04 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-156-34-55-100.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.55.100])
+        by smtp.gmail.com with ESMTPSA id b67sm1097108qkd.82.2019.07.03.08.29.03
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 03 Jul 2019 08:29:03 -0700 (PDT)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1hihBv-00009v-0f; Wed, 03 Jul 2019 12:29:03 -0300
+Date:   Wed, 3 Jul 2019 12:29:03 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        Leon Romanovsky <leonro@mellanox.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Yishai Hadas <yishaih@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH rdma-next v2 00/13] DEVX asynchronous events
+Message-ID: <20190703152902.GA582@ziepe.ca>
+References: <20190630162334.22135-1-leon@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20190703085757.1027-1-paweldembicki@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190630162334.22135-1-leon@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 7/3/2019 1:57 AM, Pawel Dembicki wrote:
-> This commit introduce how to use vsc73xx platform driver.
+On Sun, Jun 30, 2019 at 07:23:21PM +0300, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@mellanox.com>
 > 
-> Signed-off-by: Pawel Dembicki <paweldembicki@gmail.com>
-
-Pawel, please resubmit your patches starting a new thread, not as reply
-to the existing ones, see
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/networking/netdev-FAQ.rst#n134
-for details. Also, David Miller typically likes to have a cover letter
-for patch count > 1.
-
-Thanks!
-
-> ---
-> Changes in v2:
-> - Drop -spi and -platform suffix
-> - Change commit message
+> Changelog:
+>  v1 -> v2:
+>  * Added Saeed's ack to net patches
+>  * Patch #2:
+>   * Fix to gather user asynchronous events on top of kernel events.
+>  * Patch #7:
+>   * Fix obj_id to be 32 bits.
+>  * Patch #8:
+>   * Inline async_event_queue applicable fields into devx_async_event_file.
+>   * Move to use bitfields in few places rather than flags.
+>   * Shorten name of UAPI attribute.
+>  * Patch #10:
+>   * Use explicitly 'struct file *' instead of void *
+>   * Store struct devx_async_event_file * instead of uobj * on the subscription.
+>   * Drop 'is_obj_related' and use list_empty instead.
+>   * Drop the temp arrays as part of the subscription API and move to simpler logic.
+>   * Revise devx_cleanup_subscription() to be success oriented without
+>     the is_close flag.
+>   * Leave key level 1 in the tree upon bad flow to prevent a race with IRQ flow.
+>   * Fix some styling notes.
+>  * Patch #11:
+>   * Use rcu read lock also for the un-affiliated event flow.
+>   * Improve locking scheme as part of read events.
+>   * Return -EIO as soon as destroyed occurred.
+>   * Use a better errno as part read event failure when the buffer size
+>     was too small.
+>   * Upon hot unplug call wake_up_interruptible() unconditionally.
+>   * Use eqe->data for affiliated events header.
+>   * Fix some styling notes.
+>  * Patch #12:
+>   * Use rcu read lock also for the first XA layer.
+>  * Patch #13:
+>   * A new patch to clean up mdev usage from devx code, it can be accessed
+>     from ib_dev now.
+>  v0 -> v1:
+>  * Fix the unbind / hot unplug flows to work properly.
+>  * Fix Ref count handling on the eventfd mode in some flow.
+>  * Rebased to latest rdma-next
 > 
->  .../bindings/net/dsa/vitesse,vsc73xx.txt      | 57 +++++++++++++++++--
->  1 file changed, 53 insertions(+), 4 deletions(-)
+> Thanks
 > 
-> diff --git a/Documentation/devicetree/bindings/net/dsa/vitesse,vsc73xx.txt b/Documentation/devicetree/bindings/net/dsa/vitesse,vsc73xx.txt
-> index ed4710c40641..c55e0148657d 100644
-> --- a/Documentation/devicetree/bindings/net/dsa/vitesse,vsc73xx.txt
-> +++ b/Documentation/devicetree/bindings/net/dsa/vitesse,vsc73xx.txt
-> @@ -2,8 +2,8 @@ Vitesse VSC73xx Switches
->  ========================
->  
->  This defines device tree bindings for the Vitesse VSC73xx switch chips.
-> -The Vitesse company has been acquired by Microsemi and Microsemi in turn
-> -acquired by Microchip but retains this vendor branding.
-> +The Vitesse company has been acquired by Microsemi and Microsemi has
-> +been acquired Microchip but retains this vendor branding.
->  
->  The currently supported switch chips are:
->  Vitesse VSC7385 SparX-G5 5+1-port Integrated Gigabit Ethernet Switch
-> @@ -11,8 +11,13 @@ Vitesse VSC7388 SparX-G8 8-port Integrated Gigabit Ethernet Switch
->  Vitesse VSC7395 SparX-G5e 5+1-port Integrated Gigabit Ethernet Switch
->  Vitesse VSC7398 SparX-G8e 8-port Integrated Gigabit Ethernet Switch
->  
-> -The device tree node is an SPI device so it must reside inside a SPI bus
-> -device tree node, see spi/spi-bus.txt
-> +This switch could have two different management interface.
-> +
-> +If SPI interface is used, the device tree node is an SPI device so it must
-> +reside inside a SPI bus device tree node, see spi/spi-bus.txt
-> +
-> +If Platform driver is used, the device tree node is an platform device so it
-> +must reside inside a platform bus device tree node.
->  
->  Required properties:
->  
-> @@ -38,6 +43,7 @@ and subnodes of DSA switches.
->  
->  Examples:
->  
-> +SPI:
->  switch@0 {
->  	compatible = "vitesse,vsc7395";
->  	reg = <0>;
-> @@ -79,3 +85,46 @@ switch@0 {
->  		};
->  	};
->  };
-> +
-> +Platform:
-> +switch@2,0 {
-> +	#address-cells = <1>;
-> +	#size-cells = <1>;
-> +	compatible = "vitesse,vsc7385";
-> +	reg = <0x2 0x0 0x20000>;
-> +	reset-gpios = <&gpio0 12 GPIO_ACTIVE_LOW>;
-> +
-> +	ports {
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +
-> +		port@0 {
-> +			reg = <0>;
-> +			label = "lan1";
-> +		};
-> +		port@1 {
-> +			reg = <1>;
-> +			label = "lan2";
-> +		};
-> +		port@2 {
-> +			reg = <2>;
-> +			label = "lan3";
-> +		};
-> +		port@3 {
-> +			reg = <3>;
-> +			label = "lan4";
-> +		};
-> +		vsc: port@6 {
-> +			reg = <6>;
-> +			label = "cpu";
-> +			ethernet = <&enet0>;
-> +			phy-mode = "rgmii";
-> +			fixed-link {
-> +				speed = <1000>;
-> +				full-duplex;
-> +				pause;
-> +			};
-> +		};
-> +	};
-> +
-> +};
+> >From Yishai:
 > 
+> This series enables RDMA applications that use the DEVX interface to
+> subscribe and read device asynchronous events.
+> 
+> The solution is designed to allow extension of events in the future
+> without need to perform any changes in the driver code.
+> 
+> To enable that few changes had been done in mlx5_core, it includes:
+>  * Reading device event capabilities that are user related
+>    (affiliated and un-affiliated) and set the matching mask upon
+>    creating the matching EQ.
+>  * Enable DEVX/mlx5_ib to register for ANY event instead of the option to
+>    get some hard-coded ones.
+>  * Enable DEVX/mlx5_ib to get the device raw data for CQ completion events.
+>  * Enhance mlx5_core_create/destroy CQ to enable DEVX using them so that CQ
+>    events will be reported as well.
+> 
+> In mlx5_ib layer the below changes were done:
+>  * A new DEVX API was introduced to allocate an event channel by using
+>    the uverbs FD object type.
+>  * Implement the FD channel operations to enable read/poo/close over it.
+>  * A new DEVX API was introduced to subscribe for specific events over an
+>    event channel.
+>  * Manage an internal data structure  over XA(s) to subscribe/dispatch events
+>    over the different event channels.
+>  * Use from DEVX the mlx5_core APIs to create/destroy a CQ to be able to
+>    get its relevant events.
+> 
+> Yishai
+> 
+> Yishai Hadas (13):
+>   net/mlx5: Fix mlx5_core_destroy_cq() error flow
+>   net/mlx5: Use event mask based on device capabilities
+>   net/mlx5: Expose the API to register for ANY event
+>   net/mlx5: mlx5_core_create_cq() enhancements
+>   net/mlx5: Report a CQ error event only when a handler was set
+>   net/mlx5: Report EQE data upon CQ completion
+>   net/mlx5: Expose device definitions for object events
+>   IB/mlx5: Introduce MLX5_IB_OBJECT_DEVX_ASYNC_EVENT_FD
+>   IB/mlx5: Register DEVX with mlx5_core to get async events
+>   IB/mlx5: Enable subscription for device events over DEVX
+>   IB/mlx5: Implement DEVX dispatching event
+>   IB/mlx5: Add DEVX support for CQ events
+>   IB/mlx5: DEVX cleanup mdev
 
--- 
-Florian
+This looks OK now, can you please apply the net patches to the shared
+branch
+
+Thanks,
+Jason
