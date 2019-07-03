@@ -2,145 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 318BC5E0E2
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 11:19:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09CC85E101
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 11:27:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727198AbfGCJT1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 05:19:27 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:53776 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725796AbfGCJT1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 05:19:27 -0400
-Received: by mail-wm1-f66.google.com with SMTP id x15so1409346wmj.3
-        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 02:19:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=SgRgzBfMCM335xb+32SxDmtjQnPWCUW4qJ17ucMxUTA=;
-        b=C/aqGJfLS2YcJDBdd8G/0s43thDicErCALrqKH3OyTxfKTsUnq7ipEYF35VFui41nH
-         rG81+sKJZA4VBbzaeUtSytllSDrtbkqFy90NKvjtYV3rNfsqVBxO9JWs+ZvBTR1yrErn
-         +qCmnoM4Wb8GhnYnHMmgRACfJGXT7u0jGN5D7xvo3Ubhc6kSRghU9e6axPDOKIU29F1+
-         37DRkSM0Z/pawYLcQcgx6+u4DiJoMcOFV2numCz4WPd7aKI5m1ncAXsicnAyyqnzVXk2
-         ASLyYkh38cxFhEHoBzePt8pA3GNRNwKb8v3s90MoNRRE/MoZ/kjKGj+qb9C2sqFp7IT1
-         1IyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=SgRgzBfMCM335xb+32SxDmtjQnPWCUW4qJ17ucMxUTA=;
-        b=Bv3HLaf5gI4UjUbH7xRERhaf1OxXYB+eocGL/XzYDo1NmZN3/Y4VhbgVdlBqQXrmNs
-         lV7lMefJO1Nljm4dBE8Dgu2XcPIgBK/2+2UGsdG/YcBYakV8q4/qdgGybDlA+y61DAxm
-         kgOAq7wEiHsSYqJzQj5kWwJM+Av+eAm16Yj8KArcUsWnb0OxsmUnjRaeee/VrxB362Pg
-         rDuyVOgNbA9yHEVhcHHKOobKawsP1l2Jo5+iTWnYKgCWs12xU4qioMfOesjdJvknA6h7
-         BDMAh7JEMIPJw++ZflKjlzB8bXFFPtrUgdrOPYygl7whWMk9VfuIWUGPbPLQ0ksLwmgm
-         A0wA==
-X-Gm-Message-State: APjAAAV3SzSXvqOxuSYeP8eOBYJC6YVIuvyYjUxYUfdsnkp47RND/gB4
-        W/lPtKydSNT21I9GcOXrH74=
-X-Google-Smtp-Source: APXvYqwQRXWWXb/6oQ9JojaUv1UFw2OVtjuE85zXRZEa31Ld+q+67SPWj6CKv3KLpddQ1QHVg0Hk3g==
-X-Received: by 2002:a1c:cc0d:: with SMTP id h13mr6960488wmb.119.1562145562404;
-        Wed, 03 Jul 2019 02:19:22 -0700 (PDT)
-Received: from [192.168.8.147] (196.166.185.81.rev.sfr.net. [81.185.166.196])
-        by smtp.gmail.com with ESMTPSA id n125sm2294985wmf.6.2019.07.03.02.19.21
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Wed, 03 Jul 2019 02:19:21 -0700 (PDT)
-Subject: Re: [PATCH net] tcp: refine memory limit test in tcp_fragment()
-To:     Tony Lu <tonylu@linux.alibaba.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Christoph Paasch <cpaasch@apple.com>,
-        oliver.yang@linux.alibaba.com, xlpang@linux.alibaba.com,
-        dust.li@linux.alibaba.com
-References: <20190621130955.147974-1-edumazet@google.com>
- <20190703032718.GC55248@TonyMac-Alibaba>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <c98b4997-d641-432f-b2bb-cdbdb9f02143@gmail.com>
-Date:   Wed, 3 Jul 2019 11:19:20 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1727049AbfGCJ1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 05:27:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36814 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725847AbfGCJ1k (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jul 2019 05:27:40 -0400
+Received: from localhost (unknown [37.142.3.125])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E113121882;
+        Wed,  3 Jul 2019 09:27:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1562146059;
+        bh=RAVO5XzfNxIvBVXnbM1rsn/7lLkHV12mdi3EIqh9w8Y=;
+        h=From:Date:To:Cc:Subject:References:In-Reply-To:From;
+        b=VPQHq19ItLmdCGv2g5FyjeljYtPfySIbhRmmyIYRbAwqVMO7CbJV6aFliBvVbwXfK
+         1hu0GTG5A/R2gtUqOgyS0GsXh/bsFTamo8PZHycGfYDM2GDO29W/0Ylj+s4zKqqkvb
+         U0P2kcFOo5PETzTNHN4+TTsLOeZX0wREb/bsWbg0=
+From:   leon@kernel.org
+Date:   Wed, 3 Jul 2019 12:27:35 +0300
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        Eran Ben Elisha <eranbe@mellanox.com>,
+        Tariq Toukan <tariqt@mellanox.com>
+Subject: Re: [PATCH mlx5-next 4/5] net/mlx5: Introduce TLS TX offload
+ hardware bits and structures
+Message-ID: <20190703092735.GZ4727@mtr-leonro.mtl.com>
+References: <20190703073909.14965-1-saeedm@mellanox.com>
+ <20190703073909.14965-5-saeedm@mellanox.com>
 MIME-Version: 1.0
-In-Reply-To: <20190703032718.GC55248@TonyMac-Alibaba>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190703073909.14965-5-saeedm@mellanox.com>
+erom:   Leon Romanovsky <leonro@mellanox.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jul 03, 2019 at 07:39:32AM +0000, Saeed Mahameed wrote:
+> From: Eran Ben Elisha <eranbe@mellanox.com>
+>
+> Add TLS offload related IFC structs, layouts and enumerations.
+>
+> Signed-off-by: Eran Ben Elisha <eranbe@mellanox.com>
+> Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
+> Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+> ---
+>  include/linux/mlx5/device.h   |  14 +++++
+>  include/linux/mlx5/mlx5_ifc.h | 104 ++++++++++++++++++++++++++++++++--
+>  2 files changed, 114 insertions(+), 4 deletions(-)
 
+<...>
 
-On 7/2/19 8:27 PM, Tony Lu wrote:
-> Hello Eric,
-> 
-> 	We have applied that commit e358f4af19db ("tcp: tcp_fragment() should apply sane memory limits")
-> 	as a hotpatch in production environment. We found that it will make
-> 	tcp long connection reset during sending out packet when applying
-> 	that commit. 
-> 	
-> 	Our applications which in A/B test have suffered that
-> 	and made them retransmit large data, and then caused retransmission
-> 	storm and lower the performance and increase RT.
-> 
-> 	Therefore we discontinued to apply this hotpatch in A/B test.
-> 
-> 	After invesgation, we found this patch already fix this issue in
-> 	stable. Before applying this patch, we have some questions:
-> 
+> @@ -2725,7 +2739,8 @@ struct mlx5_ifc_traffic_counter_bits {
+>
+>  struct mlx5_ifc_tisc_bits {
+>  	u8         strict_lag_tx_port_affinity[0x1];
+> -	u8         reserved_at_1[0x3];
+> +	u8         tls_en[0x1];
+> +	u8         reserved_at_1[0x2];
 
-Which stable version are you referring to exactly ?
+It should be reserved_at_2.
 
-> 	1. This commit in stable hard coded a magic number 0x20000. I am
-> 	wondering this value and if there any better solution.
-
-0x20000 is two times 64KB, please read the changelog for the rationale.
-
-> 	2. Is there any known or unknown side effect? If any, we could test
-> 	it in some suspicious scenarios before testing in prod env.
-
-No known side effect.
-
-Honestly, applications setting small SO_SNDBUF values can not expect good TCP performance anyway.
-
-
-> 
-> 	Thanks.
-> 
-> Cheers,
-> Tony Lu
-> 
-> On Fri, Jun 21, 2019 at 06:09:55AM -0700, Eric Dumazet wrote:
->> tcp_fragment() might be called for skbs in the write queue.
->>
->> Memory limits might have been exceeded because tcp_sendmsg() only
->> checks limits at full skb (64KB) boundaries.
->>
->> Therefore, we need to make sure tcp_fragment() wont punish applications
->> that might have setup very low SO_SNDBUF values.
->>
->> Fixes: f070ef2ac667 ("tcp: tcp_fragment() should apply sane memory limits")
->> Signed-off-by: Eric Dumazet <edumazet@google.com>
->> Reported-by: Christoph Paasch <cpaasch@apple.com>
->> ---
->>  net/ipv4/tcp_output.c | 3 ++-
->>  1 file changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
->> index 00c01a01b547ec67c971dc25a74c9258563cf871..0ebc33d1c9e5099d163a234930e213ee35e9fbd1 100644
->> --- a/net/ipv4/tcp_output.c
->> +++ b/net/ipv4/tcp_output.c
->> @@ -1296,7 +1296,8 @@ int tcp_fragment(struct sock *sk, enum tcp_queue tcp_queue,
->>  	if (nsize < 0)
->>  		nsize = 0;
->>  
->> -	if (unlikely((sk->sk_wmem_queued >> 1) > sk->sk_sndbuf)) {
->> +	if (unlikely((sk->sk_wmem_queued >> 1) > sk->sk_sndbuf &&
->> +		     tcp_queue != TCP_FRAG_IN_WRITE_QUEUE)) {
->>  		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPWQUEUETOOBIG);
->>  		return -ENOMEM;
->>  	}
->> -- 
->> 2.22.0.410.gd8fdbe21b5-goog
+Thanks
