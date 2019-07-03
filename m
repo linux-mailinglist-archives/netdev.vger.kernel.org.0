@@ -2,144 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 12A6E5EA54
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 19:21:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BBDC5EAA5
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 19:40:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727171AbfGCRV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 13:21:27 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:44029 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727116AbfGCRV0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 13:21:26 -0400
-Received: by mail-lj1-f195.google.com with SMTP id 16so3274071ljv.10;
-        Wed, 03 Jul 2019 10:21:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=kmYvquEADVAMciJoVWVna+nWEH18FTud+FJTYj28hHk=;
-        b=Xs2EPHtuaSZGrWvCpsXjY9TqhScmwra8dX5FPpUgi15DJpI1QQyVZ/nEqwn7dqDBkb
-         qS8B4wpiUjKQK/OucG+QsCCJPlZPtkjMaedZIJz0OD8lG5qfVZcwlYOWFG/E3jqzLEcM
-         qlzFWJakyUhILPaXkfPG/6qnn83ud+OQ3UitIHBKqdRUuSRt0vllFayCiQlHhwT9xI0q
-         LhNLp+INqQkPs/2uXT7q/Do/5/Q53sw6Xkw1wJyW7QrjQBo6dgLB4zo0qRElYdYn5+Mf
-         0lHnod9m+2p7q5iM7O+2RiiS/rCukRBeX1hfWzDWhNRt9nw0cHuZQR3zoIf6+1N6iPUF
-         Yayw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=kmYvquEADVAMciJoVWVna+nWEH18FTud+FJTYj28hHk=;
-        b=hbRPv33FdZGimlr1+6rbIA942QdiIXvCk0BncmuUGnDXdD3+dajjjc0ZZU2mrywEYp
-         IkHf4QpN+/QIu7M/ia3QNAMws4pwAStiDoysvBymp/U7AqWxGuzUCP4M6dm4QOfSKlmu
-         NyhOhZGs1D5rD6OfZ72dyY+sWGsZncaUHcGkVaATsIG7s1giHPdEmv3nt1mqbijQDYdW
-         BViW5gVbjcOsVfn4ivcUUV9IzSPQC93WeVkL4CHLSgoXXtmWJvrhI3i4U3Zd07ZNwisF
-         hoL8Khfnm/sZFcvT9tKkh0/pCM0dbd4RVjXpPnrj45vmrlYnVz53zdkWn7q9mMnrhkO7
-         Nlmw==
-X-Gm-Message-State: APjAAAXbQlqGvQnjKmFxmCOiKioBvVjG0fh/yePpN+MWIitYX0PiC4oA
-        QOIND6monHFxMiQjamigRHk=
-X-Google-Smtp-Source: APXvYqwtoRqmRijNXeN0NdmQdzAxlK3Bi5IyzgiPpH2z7dLB3SyqrtHGbJOEwifAY9jQqng9stekJg==
-X-Received: by 2002:a2e:98f:: with SMTP id 137mr20858418ljj.232.1562174484805;
-        Wed, 03 Jul 2019 10:21:24 -0700 (PDT)
-Received: from krolik-desktop.lan ([91.238.216.6])
-        by smtp.gmail.com with ESMTPSA id 11sm581165ljc.66.2019.07.03.10.21.23
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 03 Jul 2019 10:21:23 -0700 (PDT)
-From:   Pawel Dembicki <paweldembicki@gmail.com>
-Cc:     Pawel Dembicki <paweldembicki@gmail.com>, linus.walleij@linaro.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 4/4] net: dsa: vsc73xx: Assert reset if iCPU is enabled
-Date:   Wed,  3 Jul 2019 19:19:24 +0200
-Message-Id: <20190703171924.31801-5-paweldembicki@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190703171924.31801-1-paweldembicki@gmail.com>
-References: <20190703171924.31801-1-paweldembicki@gmail.com>
+        id S1726993AbfGCRkg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 13:40:36 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:53372 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726574AbfGCRkg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jul 2019 13:40:36 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id A62BB308FFB1;
+        Wed,  3 Jul 2019 17:40:24 +0000 (UTC)
+Received: from carbon (ovpn-200-17.brq.redhat.com [10.40.200.17])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 575A13795;
+        Wed,  3 Jul 2019 17:40:15 +0000 (UTC)
+Date:   Wed, 3 Jul 2019 19:40:13 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Cc:     grygorii.strashko@ti.com, hawk@kernel.org, davem@davemloft.net,
+        ast@kernel.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
+        daniel@iogearbox.net, jakub.kicinski@netronome.com,
+        john.fastabend@gmail.com, brouer@redhat.com
+Subject: Re: [PATCH v6 net-next 1/5] xdp: allow same allocator usage
+Message-ID: <20190703194013.02842e42@carbon>
+In-Reply-To: <20190703101903.8411-2-ivan.khoronzhuk@linaro.org>
+References: <20190703101903.8411-1-ivan.khoronzhuk@linaro.org>
+        <20190703101903.8411-2-ivan.khoronzhuk@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Wed, 03 Jul 2019 17:40:35 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Driver allow to use devices with disabled iCPU only.
+On Wed,  3 Jul 2019 13:18:59 +0300
+Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
 
-Some devices have pre-initialised iCPU by bootloader.
-That state make switch unmanaged. This patch force reset
-if device is in unmanaged state. In the result chip lost
-internal firmware from RAM and it can be managed.
+> First of all, it is an absolute requirement that each RX-queue have
+> their own page_pool object/allocator. And this change is intendant
+> to handle special case, where a single RX-queue can receive packets
+> from two different net_devices.
+> 
+> In order to protect against using same allocator for 2 different rx
+> queues, add queue_index to xdp_mem_allocator to catch the obvious
+> mistake where queue_index mismatch, as proposed by Jesper Dangaard
+> Brouer.
+> 
+> Adding this on xdp allocator level allows drivers with such dependency
+> change the allocators w/o modifications.
+> 
+> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+> ---
+>  include/net/xdp_priv.h |  2 ++
+>  net/core/xdp.c         | 55 ++++++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 57 insertions(+)
+> 
+> diff --git a/include/net/xdp_priv.h b/include/net/xdp_priv.h
+> index 6a8cba6ea79a..9858a4057842 100644
+> --- a/include/net/xdp_priv.h
+> +++ b/include/net/xdp_priv.h
+> @@ -18,6 +18,8 @@ struct xdp_mem_allocator {
+>  	struct rcu_head rcu;
+>  	struct delayed_work defer_wq;
+>  	unsigned long defer_warn;
+> +	unsigned long refcnt;
+> +	u32 queue_index;
+>  };
 
-Signed-off-by: Pawel Dembicki <paweldembicki@gmail.com>
----
- drivers/net/dsa/vitesse-vsc73xx-core.c | 36 ++++++++++++--------------
- 1 file changed, 17 insertions(+), 19 deletions(-)
+I don't like this approach, because I think we need to extend struct
+xdp_mem_allocator with a net_device pointer, for doing dev_hold(), to
+correctly handle lifetime issues. (As I tried to explain previously).
+This will be much harder after this change, which is why I proposed the
+other patch.
 
-diff --git a/drivers/net/dsa/vitesse-vsc73xx-core.c b/drivers/net/dsa/vitesse-vsc73xx-core.c
-index 10063f31d9a3..4525702faf68 100644
---- a/drivers/net/dsa/vitesse-vsc73xx-core.c
-+++ b/drivers/net/dsa/vitesse-vsc73xx-core.c
-@@ -417,22 +417,8 @@ static int vsc73xx_detect(struct vsc73xx *vsc)
- 	}
- 
- 	if (val == 0xffffffff) {
--		dev_info(vsc->dev, "chip seems dead, assert reset\n");
--		gpiod_set_value_cansleep(vsc->reset, 1);
--		/* Reset pulse should be 20ns minimum, according to datasheet
--		 * table 245, so 10us should be fine
--		 */
--		usleep_range(10, 100);
--		gpiod_set_value_cansleep(vsc->reset, 0);
--		/* Wait 20ms according to datasheet table 245 */
--		msleep(20);
--
--		ret = vsc73xx_read(vsc, VSC73XX_BLOCK_SYSTEM, 0,
--				   VSC73XX_ICPU_MBOX_VAL, &val);
--		if (val == 0xffffffff) {
--			dev_err(vsc->dev, "seems not to help, giving up\n");
--			return -ENODEV;
--		}
-+		dev_info(vsc->dev, "chip seems dead.\n");
-+		return -EAGAIN;
- 	}
- 
- 	ret = vsc73xx_read(vsc, VSC73XX_BLOCK_SYSTEM, 0,
-@@ -483,9 +469,8 @@ static int vsc73xx_detect(struct vsc73xx *vsc)
- 	}
- 	if (icpu_si_boot_en && !icpu_pi_en) {
- 		dev_err(vsc->dev,
--			"iCPU enabled boots from SI, no external memory\n");
--		dev_err(vsc->dev, "no idea how to deal with this\n");
--		return -ENODEV;
-+			"iCPU enabled boots from PI/SI, no external memory\n");
-+		return -EAGAIN;
- 	}
- 	if (!icpu_si_boot_en && icpu_pi_en) {
- 		dev_err(vsc->dev,
-@@ -1158,6 +1143,19 @@ int vsc73xx_probe(struct vsc73xx *vsc)
- 		msleep(20);
- 
- 	ret = vsc73xx_detect(vsc);
-+	if (ret == -EAGAIN) {
-+		dev_err(vsc->dev,
-+			"Chip seams to be out of control. Assert reset and try again.\n");
-+		gpiod_set_value_cansleep(vsc->reset, 1);
-+		/* Reset pulse should be 20ns minimum, according to datasheet
-+		 * table 245, so 10us should be fine
-+		 */
-+		usleep_range(10, 100);
-+		gpiod_set_value_cansleep(vsc->reset, 0);
-+		/* Wait 20ms according to datasheet table 245 */
-+		msleep(20);
-+		ret = vsc73xx_detect(vsc);
-+	}
- 	if (ret) {
- 		dev_err(dev, "no chip found (%d)\n", ret);
- 		return -ENODEV;
+
+>  #endif /* __LINUX_NET_XDP_PRIV_H__ */
+> diff --git a/net/core/xdp.c b/net/core/xdp.c
+> index 829377cc83db..4f0ddbb3717a 100644
+> --- a/net/core/xdp.c
+> +++ b/net/core/xdp.c
+> @@ -98,6 +98,18 @@ static bool __mem_id_disconnect(int id, bool force)
+>  		WARN(1, "Request remove non-existing id(%d), driver bug?", id);
+>  		return true;
+>  	}
+> +
+> +	/* to avoid calling hash lookup twice, decrement refcnt here till it
+> +	 * reaches zero, then it can be called from workqueue afterwards.
+> +	 */
+> +	if (xa->refcnt)
+> +		xa->refcnt--;
+> +
+> +	if (xa->refcnt) {
+> +		mutex_unlock(&mem_id_lock);
+> +		return true;
+> +	}
+> +
+>  	xa->disconnect_cnt++;
+>  
+>  	/* Detects in-flight packet-pages for page_pool */
+> @@ -312,6 +324,33 @@ static bool __is_supported_mem_type(enum xdp_mem_type type)
+>  	return true;
+>  }
+>  
+> +static struct xdp_mem_allocator *xdp_allocator_find(void *allocator)
+> +{
+> +	struct xdp_mem_allocator *xae, *xa = NULL;
+> +	struct rhashtable_iter iter;
+> +
+> +	if (!allocator)
+> +		return xa;
+> +
+> +	rhashtable_walk_enter(mem_id_ht, &iter);
+> +	do {
+> +		rhashtable_walk_start(&iter);
+> +
+> +		while ((xae = rhashtable_walk_next(&iter)) && !IS_ERR(xae)) {
+> +			if (xae->allocator == allocator) {
+> +				xa = xae;
+> +				break;
+> +			}
+> +		}
+> +
+> +		rhashtable_walk_stop(&iter);
+> +
+> +	} while (xae == ERR_PTR(-EAGAIN));
+> +	rhashtable_walk_exit(&iter);
+> +
+> +	return xa;
+> +}
+> +
+>  int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
+>  			       enum xdp_mem_type type, void *allocator)
+>  {
+> @@ -347,6 +386,20 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
+>  		}
+>  	}
+>  
+> +	mutex_lock(&mem_id_lock);
+> +	xdp_alloc = xdp_allocator_find(allocator);
+> +	if (xdp_alloc) {
+> +		/* One allocator per queue is supposed only */
+> +		if (xdp_alloc->queue_index != xdp_rxq->queue_index)
+> +			return -EINVAL;
+> +
+> +		xdp_rxq->mem.id = xdp_alloc->mem.id;
+> +		xdp_alloc->refcnt++;
+> +		mutex_unlock(&mem_id_lock);
+> +		return 0;
+> +	}
+> +	mutex_unlock(&mem_id_lock);
+> +
+>  	xdp_alloc = kzalloc(sizeof(*xdp_alloc), gfp);
+>  	if (!xdp_alloc)
+>  		return -ENOMEM;
+> @@ -360,6 +413,8 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
+>  	xdp_rxq->mem.id = id;
+>  	xdp_alloc->mem  = xdp_rxq->mem;
+>  	xdp_alloc->allocator = allocator;
+> +	xdp_alloc->refcnt = 1;
+> +	xdp_alloc->queue_index = xdp_rxq->queue_index;
+>  
+>  	/* Insert allocator into ID lookup table */
+>  	ptr = rhashtable_insert_slow(mem_id_ht, &id, &xdp_alloc->node);
+
+
+
 -- 
-2.20.1
-
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
