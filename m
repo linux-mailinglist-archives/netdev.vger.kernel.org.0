@@ -2,123 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E89D5E87B
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 18:13:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49EFA5E887
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 18:15:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726877AbfGCQNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 12:13:21 -0400
-Received: from mail-eopbgr130053.outbound.protection.outlook.com ([40.107.13.53]:22501
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725847AbfGCQNV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jul 2019 12:13:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1tz6mlnb0S7Jzil7xfbTcOsxJajvYNvTxMQKr5Mx5r0=;
- b=EZUg0ISRGLh+DZeZfPXkqcK31RUW/7cdKfcJHuLCY//0+gTP1aC1k+NAEM6e2qtRqS8KyTI73sDXw99OyGB3YJJdR8hg0ufahLDP3G+tW48/mabj4H8HJSNQnUe7El4GVIj98IijMJ5cy/8Vm95JTHzipkP3UmnR0Wyan8jeGJo=
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
- AM0PR05MB4738.eurprd05.prod.outlook.com (52.133.59.146) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2032.20; Wed, 3 Jul 2019 16:13:18 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::217d:2cd7:c8da:9279]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::217d:2cd7:c8da:9279%5]) with mapi id 15.20.2032.019; Wed, 3 Jul 2019
- 16:13:18 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     Jiri Pirko <jiri@resnulli.us>, Andrew Lunn <andrew@lunn.ch>
-CC:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jiri Pirko <jiri@mellanox.com>,
+        id S1726977AbfGCQO5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 12:14:57 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:36934 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726473AbfGCQO5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 12:14:57 -0400
+Received: by mail-io1-f67.google.com with SMTP id e5so1742347iok.4;
+        Wed, 03 Jul 2019 09:14:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=kdryzXbCbzDfJP4dXE/8MzkyDavCGnlKuzeemQ+TiVE=;
+        b=vRHm7wc6IwyVzI2KJ1/ggfLsbkwNF8TjNgYG+YcJ55vtYJpAszIaXwG9bj+pky/Tqy
+         ajI2asAuUI549bMqf5wx6RVq3CruOC02zkqF/N8/q3/sBExo90alnQjzH+pRJlq7IEMX
+         hLKi8MaZHDlX2+9DduXJWGH8Scck5b2Ix9tzTRtXwttLFjuTTNiDYLMDYzdbX/f1j+ev
+         LuxFa7xWqsJtEDdm8+2d7mpN8EYcu9zOvWhBQ9sIPp7EtZ46TTFY1UorwIO86+FUNZ5g
+         XXA2X5HyLgq0gjbWLzgrjc/xnJIV/bRvvjyriGwWmr/uVgUuKMTkKMVeH3jV1vgTSAjW
+         tcbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=kdryzXbCbzDfJP4dXE/8MzkyDavCGnlKuzeemQ+TiVE=;
+        b=Q8XEy1P6o4GIQJza7LoOCUs26PHmn0wBZbMvNEPNlN3BOhqDtCUCuW5g6+SOv3ZauN
+         H60L4n6g6xJC75RFTLu9NerLfwwFE8xyGkuAN1HMhOS/MMmpVkak2oLNdHQXaKU+WVKK
+         VBgXl2gnS16xQOhq2K1s59bmiYxOrriHtP64nu0RIwkhRjAF8R8cW5rDAztdtbW5BC9s
+         dGylt2j3X/qY9tR6r6TOScqk0I+MWXjituCdxgC5RznUXX0jRR3sIasjW9PvNfs8Iugk
+         lzvJtZXmEydEtvnoszbraPH2VC8oD/+WSkIfGpqL6d+TeyiI5mBFo2zQBNoshj3NlG8q
+         85Sw==
+X-Gm-Message-State: APjAAAWp3prJNV2jYztSgMxk7Dxffmt0VdyUBzGO77brxrWefW4XS9jj
+        9dVeh3zmBAoaYSrfRci3ZOgWz2/QAcY=
+X-Google-Smtp-Source: APXvYqwUX87x3z0i6i3URdkVyW37nBeRT9KQ8nLzY5lOnThla46DeABRo/y5QORYPGb+8UyyWVhMeg==
+X-Received: by 2002:a5d:9c46:: with SMTP id 6mr30163372iof.6.1562170495847;
+        Wed, 03 Jul 2019 09:14:55 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id n17sm2240193iog.63.2019.07.03.09.14.52
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 03 Jul 2019 09:14:54 -0700 (PDT)
+Date:   Wed, 03 Jul 2019 09:14:46 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Eric Biggers <ebiggers@kernel.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Cc:     Hillf Danton <hdanton@sina.com>,
+        syzbot <syzbot+d88a977731a9888db7ba@syzkaller.appspotmail.com>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>
-Subject: RE: [PATCH net-next 1/3] devlink: Introduce PCI PF port flavour and
- port attribute
-Thread-Topic: [PATCH net-next 1/3] devlink: Introduce PCI PF port flavour and
- port attribute
-Thread-Index: AQHVMAhn8T46v1pXDUi3XMXT/4YtI6a2aNkAgABHFVCAAOxagIAAD8wAgABTlQCAACfsUIAAAsAAgAApQ+CAAGLsAIAAO2kAgAAG3ICAABtdcA==
-Date:   Wed, 3 Jul 2019 16:13:17 +0000
-Message-ID: <AM0PR05MB48665F6CA614A3770D6ABCF4D1FB0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <20190701162650.17854185@cakuba.netronome.com>
- <AM0PR05MB4866085BC8B082EFD5B59DD2D1F80@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20190702104711.77618f6a@cakuba.netronome.com>
- <AM0PR05MB4866C19C9E6ED767A44C3064D1F80@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20190702164252.6d4fe5e3@cakuba.netronome.com>
- <AM0PR05MB4866F1AF0CF5914B372F0BCCD1FB0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20190702191536.4de1ac68@cakuba.netronome.com>
- <AM0PR05MB486624D2D9BAD293CD5FB33CD1FB0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20190703103720.GU2250@nanopsycho> <20190703140958.GB18473@lunn.ch>
- <20190703143431.GC2250@nanopsycho>
-In-Reply-To: <20190703143431.GC2250@nanopsycho>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=parav@mellanox.com; 
-x-originating-ip: [122.172.186.70]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 879dbfcd-9fab-46e0-58a7-08d6ffd15c46
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM0PR05MB4738;
-x-ms-traffictypediagnostic: AM0PR05MB4738:
-x-microsoft-antispam-prvs: <AM0PR05MB4738A12E529CF5A67430FE86D1FB0@AM0PR05MB4738.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 00872B689F
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(346002)(396003)(366004)(39860400002)(136003)(199004)(13464003)(189003)(316002)(11346002)(476003)(446003)(186003)(74316002)(305945005)(5660300002)(66476007)(66946007)(73956011)(478600001)(71200400001)(71190400001)(4326008)(7736002)(8676002)(81166006)(81156014)(25786009)(76116006)(64756008)(66446008)(66556008)(8936002)(52536014)(256004)(486006)(33656002)(3846002)(2906002)(6246003)(6116002)(6506007)(14454004)(9686003)(229853002)(68736007)(14444005)(55016002)(54906003)(110136005)(76176011)(86362001)(66066001)(99286004)(7696005)(6436002)(53936002)(55236004)(26005)(53546011)(102836004);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB4738;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 4YRNhdNXRfeCd+itMEWlSBHuEFpc/k0r5br+wF6Ufn1rWayDV57dS17DzfuQ46HBtYaZ5EvhWkbc2KKvb0IkJFTZ/CQ6G+DBf+cbMBtfWr3dnE78aYvZTXwPHSSuHgXuvpdXDUPattA1IR6VRb2sqKDclS5HteS4ugEaJTAMV38iOIoPdx9+LO2v3kpkpuzgEJNO+NrF4Agt/bluBCD0nTvVfO9HWwCtiFHQcg7prsDm/xiLcKFohFSeF7mEJD1naIVo9/bbQ86b5eKVQLetqoG6yO/Oh1iHfezB34GFtDbf23+mvzsBsgMHS7bRumYvt2mpwHf5ILYtqn73DuqqDs0oII5Wanrh2i7xgHTzFtVmr+RXyJvTliZz+v1Ja1KUWW9gT07stpkhysyQOXzbsxDhfXxs7ODp1j+REXetA8k=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 879dbfcd-9fab-46e0-58a7-08d6ffd15c46
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jul 2019 16:13:17.9506
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: parav@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4738
+        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        bpf@vger.kernel.org, Boris Pismenny <borisp@mellanox.com>,
+        Aviad Yehezkel <aviadye@mellanox.com>,
+        Dave Watson <davejwatson@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Message-ID: <5d1cd47644b45_8ce2b1bd49125c4ed@john-XPS-13-9370.notmuch>
+In-Reply-To: <20190703154543.GA21629@sol.localdomain>
+References: <20190703064307.13740-1-hdanton@sina.com>
+ <20190703144000.GH17978@ZenIV.linux.org.uk>
+ <20190703152334.GI17978@ZenIV.linux.org.uk>
+ <20190703154543.GA21629@sol.localdomain>
+Subject: Re: kernel panic: corrupted stack end in dput
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Eric Biggers wrote:
+> [+bpf and tls maintainers]
+> 
+> On Wed, Jul 03, 2019 at 04:23:34PM +0100, Al Viro wrote:
+> > On Wed, Jul 03, 2019 at 03:40:00PM +0100, Al Viro wrote:
+> > > On Wed, Jul 03, 2019 at 02:43:07PM +0800, Hillf Danton wrote:
+> > > 
+> > > > > This is very much *NOT* fine.
+> > > > > 	1) trylock can fail from any number of reasons, starting
+> > > > > with "somebody is going through the hash chain doing a lookup on
+> > > > > something completely unrelated"
+> > > > 
+> > > > They are also a red light that we need to bail out of spiraling up
+> > > > the directory hierarchy imho.
+> > > 
+> > > Translation: "let's leak the reference to parent, shall we?"
+> > > 
+> > > > > 	2) whoever had been holding the lock and whatever they'd
+> > > > > been doing might be over right after we get the return value from
+> > > > > spin_trylock().
+> > > > 
+> > > > Or after we send a mail using git. I don't know.
+> > > > 
+> > > > > 	3) even had that been really somebody adding children in
+> > > > > the same parent *AND* even if they really kept doing that, rather
+> > > > > than unlocking and buggering off, would you care to explain why
+> > > > > dentry_unlist() called by __dentry_kill() and removing the victim
+> > > > > from the list of children would be safe to do in parallel with that?
+> > > > >
+> > > > My bad. I have to walk around that unsafety.
+> > > 
+> > > WHAT unsafety?  Can you explain what are you seeing and how to
+> > > reproduce it, whatever it is?
+> > 
+> > BTW, what makes you think that it's something inside dput() itself?
+> > All I see is that at some point in the beginning of the loop body
+> > in dput() we observe a buggered stack.
+> > 
+> > Is that the first iteration through the loop?  IOW, is that just
+> > the place where we first notice preexisting corruption, or is
+> > that something the code called from that loop does?  If it's
+> > a stack overflow, I would be very surprised to see it here -
+> > dput() is iterative and it's called on a very shallow stack in
+> > those traces.
+> > 
+> > What happens if you e.g. turn that
+> > 	dput(dentry);
+> > in __fput() into
+> > 	rcu_read_lock(); rcu_read_unlock(); // trigger the check
+> > 	dput(dentry);
+> > 
+> > and run your reporducer?
+> > 
+> 
+> Please don't waste your time on this, it looks like just another report from the
+> massive memory corruption in BPF and/or TLS.  Look at reproducer:
+> 
+> bpf$MAP_CREATE(0x0, &(0x7f0000000280)={0xf, 0x4, 0x4, 0x400, 0x0, 0x1}, 0x3c)
+> socket$rxrpc(0x21, 0x2, 0x800000000a)
+> r0 = socket$inet6_tcp(0xa, 0x1, 0x0)
+> setsockopt$inet6_tcp_int(r0, 0x6, 0x13, &(0x7f00000000c0)=0x100000001, 0x1d4)
+> connect$inet6(r0, &(0x7f0000000140), 0x1c)
+> bpf$MAP_CREATE(0x0, &(0x7f0000000000)={0x5}, 0xfffffffffffffdcb)
+> bpf$MAP_CREATE(0x2, &(0x7f0000003000)={0x3, 0x0, 0x77fffb, 0x0, 0x10020000000, 0x0}, 0x2c)
+> setsockopt$inet6_tcp_TCP_ULP(r0, 0x6, 0x1f, &(0x7f0000000040)='tls\x00', 0x4)
+> 
+> It's the same as like 20 other syzbot reports.
+
+There is a missing synchronize_rcu we need to add and we have a race
+between map_free and tls close at the moment. The race cuases us to
+incorrectly set the sk->prot pointers when tls socket is closed in
+this case. I've added a hook to the ULP side now that should let
+the map_free reset the saved sk->prot pointers on the TLS side and
+am testing this now.
+
+The 20 syzbot reports appear to all be due to these two issues.
+This has nothing to do with dput().
+
+Thanks,
+John
+
+> 
+> - Eric
 
 
-> -----Original Message-----
-> From: Jiri Pirko <jiri@resnulli.us>
-> Sent: Wednesday, July 3, 2019 8:05 PM
-> To: Andrew Lunn <andrew@lunn.ch>
-> Cc: Parav Pandit <parav@mellanox.com>; Jakub Kicinski
-> <jakub.kicinski@netronome.com>; Jiri Pirko <jiri@mellanox.com>;
-> netdev@vger.kernel.org; Saeed Mahameed <saeedm@mellanox.com>;
-> vivien.didelot@gmail.com; f.fainelli@gmail.com
-> Subject: Re: [PATCH net-next 1/3] devlink: Introduce PCI PF port flavour =
-and
-> port attribute
->=20
-> Wed, Jul 03, 2019 at 04:09:58PM CEST, andrew@lunn.ch wrote:
-> >> However, we expose it for DEVLINK_PORT_FLAVOUR_CPU and
-> >> DEVLINK_PORT_FLAVOUR_DSA. Not sure if it makes sense there either.
-> >> Ccing Florian, Andrew and Vivien.
-> >> What do you guys think?
-> >
-> >Hi Jiri
-> >
-> >DSA and CPU ports are physical ports of the switch. And there can be
-> >multiple DSA ports, and maybe sometime real soon now, multiple CPU
-> >ports. So having a number associated with them is useful.
->=20
-> Okay. Makes sense.
->=20
-Ok. I should probably update the comment section for port_number as its sco=
-pe is expanded.
-Should I revise the series with updated comment?
-
-> >
-> >       Andrew
