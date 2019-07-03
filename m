@@ -2,143 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EFE45ED4E
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 22:15:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF68D5ED61
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 22:18:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727189AbfGCUOv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 16:14:51 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:39454 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727087AbfGCUOu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 16:14:50 -0400
-Received: by mail-wr1-f67.google.com with SMTP id x4so4180383wrt.6;
-        Wed, 03 Jul 2019 13:14:48 -0700 (PDT)
+        id S1726918AbfGCUSn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 16:18:43 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:39129 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726550AbfGCUSn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 16:18:43 -0400
+Received: by mail-qk1-f196.google.com with SMTP id i125so3877837qkd.6
+        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 13:18:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=WBfRrtE2AUjJNR4gQtkNz6C4Ih4H5C4/HnLfvNurTLE=;
-        b=m75QlRBhAxn2WVHWttp32A4fbPXuLCsrvUgVySGzABKtmbdv0cqa7TbWGaWQPu1xnP
-         4GQwU12hhWmQTX6OEOY+br9Me+QXKmh7NEPsM7Vy2+16/qv0AlC5Av7g4yrqvWbFt9ZX
-         w8zjVzas+0kxPDibtCPIhA3rQXnSQkHKcWja5yPvJS1ElUZ2/uwPaLT5fEFVHpuflXp8
-         6v2VN2fDbtCNawiVyeZon2bABdHkA8U1UjcINQseIw0tCqj2uG2ufXhiSy6ZIDGpZjrW
-         ApVkx6jUCK3RzoATfSn9El6m8BOYJDDxqItTOqxdZQjjEBt1VCu3M+FqB9QnV77YgnLL
-         Z27w==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=bkikyEsPp/F/lyGTUMYkhINszh6ssHACtXvD7E7R8r0=;
+        b=iMtFvdN/HLQUVN2/izzHHh77KwximeFqU/BT9eVWVDqXcyM4ZpubaPk0Q4FlF6iGxa
+         s3buYLskL9gE8ojKQPoHgqWptw9wAWoMp8SLIvXqzzcAmEb9jpEt/nr8808MmvfFFegp
+         qQ83BN34LORm1e8VlXqQWnK+3oxp5ovi96oTMEiJ9+tEuVCSUNx+mVgFGBYpZ6kqrpie
+         5dfkEvgV7kqdUAAG22YYJv0Lcc2Dynyr1HN5HNM4POjceXTFtq+32q+xNV0N/2ogSugS
+         BzSKaeGxE6Jkd37bsz0uB/NfwbTGwmzpfF4QfzaRpmQjSNvYSynnJ7RrSp24Ez6TiTTq
+         mjGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=WBfRrtE2AUjJNR4gQtkNz6C4Ih4H5C4/HnLfvNurTLE=;
-        b=HMAyTA8lLMWTmhj7YCOi2xuBghH404LAREkoZnnwRNFwccayg1BTud/knXxqXjXdez
-         6w4SM2/55t4wf7hrluMNQEU7Bs+bhbLMCTN+bYVRBOTKGuEJGI3WjNF+necmfKA3ZHmU
-         wfOZ1pE/1+0ms8M2C12xKy6QesvSfI0ksOBI+4uaZyZPDLnZHsxfzohsELuOHBwcoE0g
-         X3kelNTiHqndGIt+NXDYsfNRSrCquuckQJN3KWPSmEx35CCGMO1p6TL8XZ+MKJ11f+b4
-         6xSCsVLBlFUWC0zNtDHpWwPP3zcg8iO/ZJaOxNmx4WcYsiwrySCyk8TP+ueo/mpurC1o
-         Z43w==
-X-Gm-Message-State: APjAAAXazkb/VhwzVF2dpru2mIMbF8Rr28thGr5FIPL12INieSrW1yOa
-        Xgk4pQA6r2RR3gcI1pWG0Hw=
-X-Google-Smtp-Source: APXvYqzZvKG/LNrrMgkl4hBygW/G0g6FMChhpeglD+mK4TjOgqKfe9gbhCEJwKd4cJHKyFdYTiGkgQ==
-X-Received: by 2002:a5d:500f:: with SMTP id e15mr18914764wrt.41.1562184887930;
-        Wed, 03 Jul 2019 13:14:47 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8bd6:c00:4503:872e:8227:c4e0? (p200300EA8BD60C004503872E8227C4E0.dip0.t-ipconnect.de. [2003:ea:8bd6:c00:4503:872e:8227:c4e0])
-        by smtp.googlemail.com with ESMTPSA id t80sm3548106wmt.26.2019.07.03.13.14.47
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 03 Jul 2019 13:14:47 -0700 (PDT)
-Subject: Re: [PATCH v2 6/7] dt-bindings: net: realtek: Add property to
- configure LED mode
-To:     Matthias Kaehlcke <mka@chromium.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Douglas Anderson <dianders@chromium.org>
-References: <20190703193724.246854-1-mka@chromium.org>
- <20190703193724.246854-6-mka@chromium.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <e7fa2c8c-d53e-2480-d239-e2c0b362dc4f@gmail.com>
-Date:   Wed, 3 Jul 2019 22:13:21 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=bkikyEsPp/F/lyGTUMYkhINszh6ssHACtXvD7E7R8r0=;
+        b=G/fkYMX0nXxNjNJ4pKt100Jxxtp7zIN2k37YgiEPW+0rjIP6DrUnPZPMqucWgt2xOv
+         JuOmUuGZgW/ciW0itimNkYKDabAWQVdRchXEcYV/9vmwTcHqztpHdeSSJ3clZYW0f2Jo
+         qaorr4+YCJjiQg/caPhQrJ5U0RaJLlipy5QdRpPUQ89eRofEHBdGY4S1HQUoPGvcJf0h
+         jPsWu7BAbdIa9MCUzMdBAUHmNiflP9oeJOuI8qhw2e5sjTZ9In6sjUnxuk7iA5mmFTdX
+         E54LfeVG6JX8QA/LctoOJ2nzykAl7fFWf5bI9qW8TsXYdOIGg0+sjzajPFqU5qckLI2z
+         nnfw==
+X-Gm-Message-State: APjAAAUnJUCKFNJfDZ3gaS6/0JUXA3pPqIYufKuVlb6QUteMyrntseVP
+        UbML362/BBEHzWF/F/uYv0tBTw==
+X-Google-Smtp-Source: APXvYqx5L3IJiCJXtOOcMAtf3QcBzfoutHFawXK/gtVmcoc5gUhnOz7mQExGxwqmiHHoDosSMczpyQ==
+X-Received: by 2002:a37:9cc2:: with SMTP id f185mr1989999qke.172.1562185121606;
+        Wed, 03 Jul 2019 13:18:41 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-156-34-55-100.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.55.100])
+        by smtp.gmail.com with ESMTPSA id y6sm1277932qki.67.2019.07.03.13.18.41
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 03 Jul 2019 13:18:41 -0700 (PDT)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1hiliC-0007Gr-Nm; Wed, 03 Jul 2019 17:18:40 -0300
+Date:   Wed, 3 Jul 2019 17:18:40 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Leon Romanovsky <leon@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        Leon Romanovsky <leonro@mellanox.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Yishai Hadas <yishaih@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH rdma-next v2 10/13] IB/mlx5: Enable subscription for
+ device events over DEVX
+Message-ID: <20190703201840.GA27910@ziepe.ca>
+References: <20190630162334.22135-1-leon@kernel.org>
+ <20190630162334.22135-11-leon@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20190703193724.246854-6-mka@chromium.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190630162334.22135-11-leon@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03.07.2019 21:37, Matthias Kaehlcke wrote:
-> The LED behavior of some Realtek PHYs is configurable. Add the
-> property 'realtek,led-modes' to specify the configuration of the
-> LEDs.
+On Sun, Jun 30, 2019 at 07:23:31PM +0300, Leon Romanovsky wrote:
+> From: Yishai Hadas <yishaih@mellanox.com>
 > 
-> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-> ---
-> Changes in v2:
-> - patch added to the series
-> ---
->  .../devicetree/bindings/net/realtek.txt         |  9 +++++++++
->  include/dt-bindings/net/realtek.h               | 17 +++++++++++++++++
->  2 files changed, 26 insertions(+)
->  create mode 100644 include/dt-bindings/net/realtek.h
+> Enable subscription for device events over DEVX.
 > 
-> diff --git a/Documentation/devicetree/bindings/net/realtek.txt b/Documentation/devicetree/bindings/net/realtek.txt
-> index 71d386c78269..40b0d6f9ee21 100644
-> --- a/Documentation/devicetree/bindings/net/realtek.txt
-> +++ b/Documentation/devicetree/bindings/net/realtek.txt
-> @@ -9,6 +9,12 @@ Optional properties:
->  
->  	SSC is only available on some Realtek PHYs (e.g. RTL8211E).
->  
-> +- realtek,led-modes: LED mode configuration.
-> +
-> +	A 0..3 element vector, with each element configuring the operating
-> +	mode of an LED. Omitted LEDs are turned off. Allowed values are
-> +	defined in "include/dt-bindings/net/realtek.h".
-> +
->  Example:
->  
->  mdio0 {
-> @@ -20,5 +26,8 @@ mdio0 {
->  		reg = <1>;
->  		realtek,eee-led-mode-disable;
->  		realtek,enable-ssc;
-> +		realtek,led-modes = <RTL8211E_LINK_ACTIVITY
-> +				     RTL8211E_LINK_100
-> +				     RTL8211E_LINK_1000>;
->  	};
->  };
-> diff --git a/include/dt-bindings/net/realtek.h b/include/dt-bindings/net/realtek.h
-> new file mode 100644
-> index 000000000000..8d64f58d58f8
-> --- /dev/null
-> +++ b/include/dt-bindings/net/realtek.h
-> @@ -0,0 +1,17 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef _DT_BINDINGS_REALTEK_H
-> +#define _DT_BINDINGS_REALTEK_H
-> +
-> +/* LED modes for RTL8211E PHY */
-> +
-> +#define RTL8211E_LINK_10		1
-> +#define RTL8211E_LINK_100		2
-> +#define RTL8211E_LINK_1000		4
-> +#define RTL8211E_LINK_10_100		3
-> +#define RTL8211E_LINK_10_1000		5
-> +#define RTL8211E_LINK_100_1000		6
-> +#define RTL8211E_LINK_10_100_1000	7
-> +
-> +#define RTL8211E_LINK_ACTIVITY		(1 << 16)
-
-I don't see where this is used.
-
-> +
-> +#endif
+> Each subscription is added to the two level XA data structure according
+> to its event number and the DEVX object information in case was given
+> with the given target fd.
 > 
+> Those events will be reported over the given fd once will occur.
+> Downstream patches will mange the dispatching to any subscription.
 
+BTW Matt,
+
+Here is another vote for a 64 bit indexing xarray in the kernel.. Any
+further thought on doing that?
+
+Jason
