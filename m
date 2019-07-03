@@ -2,83 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C82555E296
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 13:08:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC68D5E2B2
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 13:16:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726930AbfGCLIP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 07:08:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46914 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726621AbfGCLIO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jul 2019 07:08:14 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 425E721882;
-        Wed,  3 Jul 2019 11:08:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1562152093;
-        bh=eUAofhSVMslURLsFFrIei9Cjn3qD2rxuwcSKgkuaHB4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=xo5f1QcvJZiCFHf6wkH3yfSpiAGhvudzsCoWPukPJnDsBvYgzqXtIMxertwJ6h1oL
-         Y0KMp3H0VbNylkO2G7KjYQztVxjIKyBM9w+p/b9JPGiuHeP7RjWSaj7/G0/+z3xvP0
-         nrsm9li85lEptjkCEMXrDnRgYh6kOrVDvT8RFVjA=
-Date:   Wed, 3 Jul 2019 13:08:10 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Stanislaw Gruszka <sgruszka@redhat.com>
-Cc:     Helmut Schaa <helmut.schaa@googlemail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] rt2x00: no need to check return value of debugfs_create
- functions
-Message-ID: <20190703110810.GA18323@kroah.com>
-References: <20190703065631.GA28822@kroah.com>
- <20190703105759.GB30509@redhat.com>
+        id S1726871AbfGCLP7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 07:15:59 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:8135 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726621AbfGCLP7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jul 2019 07:15:59 -0400
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 91DE721F7131172F8F4A;
+        Wed,  3 Jul 2019 19:15:56 +0800 (CST)
+Received: from localhost.localdomain (10.67.165.24) by
+ DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
+ 14.3.439.0; Wed, 3 Jul 2019 19:15:48 +0800
+From:   Yonglong Liu <liuyonglong@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@huawei.com>, <salil.mehta@huawei.com>,
+        <yisen.zhuang@huawei.com>, <shiju.jose@huawei.com>
+Subject: [PATCH net] net: hns: add support for vlan TSO
+Date:   Wed, 3 Jul 2019 19:12:30 +0800
+Message-ID: <1562152350-14244-1-git-send-email-liuyonglong@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190703105759.GB30509@redhat.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Type: text/plain
+X-Originating-IP: [10.67.165.24]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 03, 2019 at 12:58:00PM +0200, Stanislaw Gruszka wrote:
-> On Wed, Jul 03, 2019 at 08:56:31AM +0200, Greg Kroah-Hartman wrote:
-> > When calling debugfs functions, there is no need to ever check the
-> > return value.  The function can work or not, but the code logic should
-> > never do something different based on this.
-> > 
-> > Because we don't need to save the individual debugfs files and
-> > directories, remove the local storage of them and just remove the entire
-> > debugfs directory in a single call, making things a lot simpler.
-> > 
-> > Cc: Stanislaw Gruszka <sgruszka@redhat.com>
-> > Cc: Helmut Schaa <helmut.schaa@googlemail.com>
-> > Cc: Kalle Valo <kvalo@codeaurora.org>
-> > Cc: "David S. Miller" <davem@davemloft.net>
-> > Cc: linux-wireless@vger.kernel.org
-> > Cc: netdev@vger.kernel.org
-> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > ---
-> >  .../net/wireless/ralink/rt2x00/rt2x00debug.c  | 100 ++++--------------
-> >  1 file changed, 23 insertions(+), 77 deletions(-)
-> 
-> This patch will not apply on wireless-drivers-next due to my recent
-> change which add new debugfs file:
-> 
-> commit e7f15d58dfe43f18199251f430d7713b0b8fad34
-> Author: Stanislaw Gruszka <sgruszka@redhat.com>
-> Date:   Thu May 2 11:07:00 2019 +0200
-> 
->     rt2x00: add restart hw
-> 
-> Could you please rebase the patch ? (I can do this as well
-> if you want me to).
+The hip07 chip support vlan TSO, this patch adds NETIF_F_TSO
+and NETIF_F_TSO6 flags to vlan_features to improve the
+performance after adding vlan to the net ports.
 
-No problem, I can rebase and redo it, I'll go suck down the
-wireless-drivers-next tree and resend it, thanks for leting me know.
+Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
+---
+ drivers/net/ethernet/hisilicon/hns/hns_enet.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-greg k-h
+diff --git a/drivers/net/ethernet/hisilicon/hns/hns_enet.c b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
+index fe879c0..2235dd5 100644
+--- a/drivers/net/ethernet/hisilicon/hns/hns_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
+@@ -2370,6 +2370,7 @@ static int hns_nic_dev_probe(struct platform_device *pdev)
+ 		ndev->hw_features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
+ 			NETIF_F_RXCSUM | NETIF_F_SG | NETIF_F_GSO |
+ 			NETIF_F_GRO | NETIF_F_TSO | NETIF_F_TSO6;
++		ndev->vlan_features |= NETIF_F_TSO | NETIF_F_TSO6;
+ 		ndev->max_mtu = MAC_MAX_MTU_V2 -
+ 				(ETH_HLEN + ETH_FCS_LEN + VLAN_HLEN);
+ 		break;
+-- 
+2.8.1
+
