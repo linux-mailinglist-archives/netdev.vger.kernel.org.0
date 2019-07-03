@@ -2,81 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 11FFF5DECC
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 09:23:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 333DD5DED8
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 09:26:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727147AbfGCHX2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 03:23:28 -0400
-Received: from mx2.suse.de ([195.135.220.15]:51422 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726327AbfGCHX2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jul 2019 03:23:28 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 1123EAE2E;
-        Wed,  3 Jul 2019 07:23:27 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 3615BE0159; Wed,  3 Jul 2019 09:23:26 +0200 (CEST)
-Date:   Wed, 3 Jul 2019 09:23:26 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        David Miller <davem@davemloft.net>,
-        Jiri Pirko <jiri@resnulli.us>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Linville <linville@tuxdriver.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v6 05/15] ethtool: helper functions for netlink
- interface
-Message-ID: <20190703072326.GI20101@unicorn.suse.cz>
-References: <cover.1562067622.git.mkubecek@suse.cz>
- <44957b13e8edbced71aca893908d184eb9e57341.1562067622.git.mkubecek@suse.cz>
- <20190702183724.423e3b1e@cakuba.netronome.com>
+        id S1727185AbfGCH0N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 03:26:13 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:14659 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726670AbfGCH0N (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jul 2019 03:26:13 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id F2A123083391;
+        Wed,  3 Jul 2019 07:26:12 +0000 (UTC)
+Received: from carbon (ovpn-200-45.brq.redhat.com [10.40.200.45])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5CCF680F70;
+        Wed,  3 Jul 2019 07:26:05 +0000 (UTC)
+Date:   Wed, 3 Jul 2019 09:26:03 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Cc:     grygorii.strashko@ti.com, hawk@kernel.org, davem@davemloft.net,
+        ast@kernel.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
+        daniel@iogearbox.net, jakub.kicinski@netronome.com,
+        john.fastabend@gmail.com, brouer@redhat.com
+Subject: Re: [PATCH v5 net-next 6/6] net: ethernet: ti: cpsw: add XDP
+ support
+Message-ID: <20190703092603.66f36914@carbon>
+In-Reply-To: <20190630172348.5692-7-ivan.khoronzhuk@linaro.org>
+References: <20190630172348.5692-1-ivan.khoronzhuk@linaro.org>
+        <20190630172348.5692-7-ivan.khoronzhuk@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190702183724.423e3b1e@cakuba.netronome.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.44]); Wed, 03 Jul 2019 07:26:13 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 02, 2019 at 06:37:24PM -0700, Jakub Kicinski wrote:
-> On Tue,  2 Jul 2019 13:50:04 +0200 (CEST), Michal Kubecek wrote:
-> > Add common request/reply header definition and helpers to parse request
-> > header and fill reply header. Provide ethnl_update_* helpers to update
-> > structure members from request attributes (to be used for *_SET requests).
-> > 
-> > Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
-> 
-> > diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
-> > index 3c98b41f04e5..e13f29bbd625 100644
-> > --- a/net/ethtool/netlink.c
-> > +++ b/net/ethtool/netlink.c
-> > @@ -1,8 +1,181 @@
-> >  // SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note
-> >  
-> > +#include <net/sock.h>
-> >  #include <linux/ethtool_netlink.h>
-> >  #include "netlink.h"
-> >  
-> > +static struct genl_family ethtool_genl_family;
-> > +
-> > +static const struct nla_policy dflt_header_policy[ETHTOOL_A_HEADER_MAX + 1] = {
-> > +	[ETHTOOL_A_HEADER_UNSPEC]	= { .type = NLA_REJECT },
-> 
-> I think we want strict checking on all new netlink interfaces, and
-> unfortunately that feature is opt-in.. so you need to add:
-> 
-> 	.strict_start_type = ETHTOOL_A_HEADER_UNSPEC + 1
-> 
-> To the first attr.
 
-Oops... I'll have to check again how this works. I thought using
-nla_parse_nested() instead of nla_parse_nested_deprecated() is
-sufficient to have everything strict checked.
+On Sun, 30 Jun 2019 20:23:48 +0300 Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
 
-Michal
+> Add XDP support based on rx page_pool allocator, one frame per page.
+> Page pool allocator is used with assumption that only one rx_handler
+> is running simultaneously. DMA map/unmap is reused from page pool
+> despite there is no need to map whole page.
+> 
+> Due to specific of cpsw, the same TX/RX handler can be used by 2
+> network devices, so special fields in buffer are added to identify
+> an interface the frame is destined to. Thus XDP works for both
+> interfaces, that allows to test xdp redirect between two interfaces
+> easily. Aslo, each rx queue have own page pools, but common for both
+> netdevs.
+
+Looking at the details what happen when a single RX-queue can receive
+into multiple net_device'es.  I realize that this driver will
+violate/kill some of the "hidden"/implicit RX-bulking that the
+XDP_REDIRECT code depend on for performance.
+
+Specifically, it violate this assumption:
+ https://github.com/torvalds/linux/blob/v5.2-rc7/kernel/bpf/devmap.c#L324-L329
+
+	/* Ingress dev_rx will be the same for all xdp_frame's in
+	 * bulk_queue, because bq stored per-CPU and must be flushed
+	 * from net_device drivers NAPI func end.
+	 */
+	if (!bq->dev_rx)
+		bq->dev_rx = dev_rx;
+
+This drivers "NAPI func end", can have received into multiple
+net_devices, before it's NAPI cycle ends.  Thus, violating this code
+assumption.
+
+Knowing all xdp_frame's in the bulk queue is from the same net_device,
+can be used to further optimize XDP.  E.g. the dev->netdev_ops->ndo_xdp_xmit()
+call don't take fully advantage of this, yet.  If we merge this driver,
+it will block optimizations in this area.
+
+NACK
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
