@@ -2,252 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AED625DD8D
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 06:46:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4D5E5DD8E
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 06:46:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726581AbfGCEqG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 00:46:06 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:51928 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725904AbfGCEqG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 00:46:06 -0400
-Received: by mail-wm1-f66.google.com with SMTP id 207so707646wma.1
-        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 21:46:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wYhh1FZzURTT7jH4X0+BMDoH/6wRanTlqxHaq9ZAeIo=;
-        b=dQRSzZmUe1oWkQbqMVhHq7Z3a+ParxHjVuN4zzmMeN7jWd7RuDzM1G94+XusklGZRy
-         0JKGxw/gkYiH/09tv5hefVtrawoo77R3FEAormbcWaJFmx3cm1zSd8/S19kYiItWER7t
-         0LHQSv/BBFagOdYumbEf4hJUNIKYH5pz8CtlsuaUYveabhGr9qbVl8ixKBiqvjv5g610
-         TG/hvXsgFVUo9nrW9Ue0BxoaHLuZfYoNNxnyP2A9u0lwdA56n4aJX4mqCqy8E7/+hKeW
-         Q8T28gH8ChWgDJPL2up3LqflSLbF9sgnxiHRkoe/0n0MisFBWYHBdyN1hUgC6oSsOBX2
-         4Vyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wYhh1FZzURTT7jH4X0+BMDoH/6wRanTlqxHaq9ZAeIo=;
-        b=ldGFtYdiz2Wl4PwIJULcGeLIGAOZRlHFOPK4ilgImxEmfq99DXMk0l0VVpggVKlXYP
-         6Q5QTFpyZq9FhPxj4WDcGdla2Ow5KwJEyl5jLhD3Pk9NhnPkhXDEsb6lQkuuk/QtHtk7
-         XtD/rUoVlfDKJg8KtcGAISRmSAYfrJpV5ogC3lkYPmw6rWbndxQZlY67llNVmr5g/BDR
-         nM6wi9HPMQbrQdoUKiYFgt9MbqAzqb78OgHZb1AfkD3uAeVOLXao40BAoKaJ/y6Mxor7
-         L80pKIuqN2FSxOhxatsx8abx/3BvV53ytKcG7jmg4eGWzcaGhCdLgq9FXjZcumSPRc9y
-         DfOA==
-X-Gm-Message-State: APjAAAU1EBZ6Ni4lnMSguzdWJIx5xxGBBJyDT791Qm4dbWERKwJC6VzE
-        /D3eI6z4lK4Un5+pCAVSMttZPCmo0qujiRU1MKlFNQ==
-X-Google-Smtp-Source: APXvYqypB8Gwxv/tNWr1/m7SPPHay5N8t9sQgm11whZDoZ0H119QZPeC/ixVqENlUCif7avjYDOVoJVygfC0VJYk2Rg=
-X-Received: by 2002:a1c:6a06:: with SMTP id f6mr5759985wmc.159.1562129162963;
- Tue, 02 Jul 2019 21:46:02 -0700 (PDT)
+        id S1726743AbfGCEqR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 00:46:17 -0400
+Received: from mail-eopbgr80082.outbound.protection.outlook.com ([40.107.8.82]:6486
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725828AbfGCEqR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jul 2019 00:46:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MQ1Og//LK+mHvtHJqj01qWT1y3epmRgG0Qerzuh8Dlk=;
+ b=Rww0JdqteNCn+llXnNO704ecwH2b99c5TCpWwaqdBBJ5X+Bi8zdEWkQB6ndrccCBlI67Kaaw0Eqx7NwqwV+xB1pvPFVSaRzwxsXUIjarBsrbveletRoll+sSM2FeNqv6Y8h1LojKbjNMKU7cb7hVfamNIeMWS9QKISmyk9fErMA=
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
+ AM0PR05MB6577.eurprd05.prod.outlook.com (20.179.33.18) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2032.20; Wed, 3 Jul 2019 04:46:14 +0000
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::217d:2cd7:c8da:9279]) by AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::217d:2cd7:c8da:9279%5]) with mapi id 15.20.2032.019; Wed, 3 Jul 2019
+ 04:46:13 +0000
+From:   Parav Pandit <parav@mellanox.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+CC:     Jiri Pirko <jiri@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: RE: [PATCH net-next 1/3] devlink: Introduce PCI PF port flavour and
+ port attribute
+Thread-Topic: [PATCH net-next 1/3] devlink: Introduce PCI PF port flavour and
+ port attribute
+Thread-Index: AQHVMAhn8T46v1pXDUi3XMXT/4YtI6a2aNkAgABHFVCAAOxagIAAD8wAgABTlQCAACfsUIAAAsAAgAApQ+A=
+Date:   Wed, 3 Jul 2019 04:46:13 +0000
+Message-ID: <AM0PR05MB486624D2D9BAD293CD5FB33CD1FB0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+References: <20190701122734.18770-1-parav@mellanox.com>
+        <20190701122734.18770-2-parav@mellanox.com>
+        <20190701162650.17854185@cakuba.netronome.com>
+        <AM0PR05MB4866085BC8B082EFD5B59DD2D1F80@AM0PR05MB4866.eurprd05.prod.outlook.com>
+        <20190702104711.77618f6a@cakuba.netronome.com>
+        <AM0PR05MB4866C19C9E6ED767A44C3064D1F80@AM0PR05MB4866.eurprd05.prod.outlook.com>
+        <20190702164252.6d4fe5e3@cakuba.netronome.com>
+        <AM0PR05MB4866F1AF0CF5914B372F0BCCD1FB0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20190702191536.4de1ac68@cakuba.netronome.com>
+In-Reply-To: <20190702191536.4de1ac68@cakuba.netronome.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=parav@mellanox.com; 
+x-originating-ip: [106.51.22.216]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0b2fa85f-bd22-4538-c264-08d6ff7160ca
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM0PR05MB6577;
+x-ms-traffictypediagnostic: AM0PR05MB6577:
+x-microsoft-antispam-prvs: <AM0PR05MB657725E15853D4D58607B89ED1FB0@AM0PR05MB6577.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-forefront-prvs: 00872B689F
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(39860400002)(136003)(376002)(346002)(396003)(189003)(199004)(13464003)(186003)(229853002)(26005)(102836004)(5660300002)(7696005)(6506007)(54906003)(99286004)(256004)(9456002)(9686003)(76176011)(53546011)(74316002)(478600001)(4326008)(76116006)(6436002)(2906002)(68736007)(6116002)(3846002)(33656002)(55236004)(7736002)(8936002)(305945005)(66066001)(8676002)(86362001)(53936002)(107886003)(6246003)(64756008)(81166006)(78486014)(66946007)(66446008)(66476007)(66556008)(446003)(316002)(6916009)(71190400001)(55016002)(11346002)(14454004)(71200400001)(81156014)(25786009)(73956011)(476003)(52536014)(486006);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB6577;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: tFWmJbu9N1FoxHEVgLZyQ/i3wT22gw4pjG8JDh6e3cpaoBuT7t3CPUGY72EW7au4yXnp/ndmKAstIoap4bsJA9ZaW+j//evXFy+fmgqqLwMgpTW/pYow85D/k+HMFC0ZyvxSeB8jzqQEoiOtvjFsv+dYoWIjC9q00UOmnM+d9u01Cc3QlDtng52lTluiz5TJzl92vEJsSFwV+BgpoqJbd05IOqtH8IIeYJNcVsToOLVq/gV20/XpIGA7gvwm9FkmJKNrKHXBf/gxYzSIshrJQI17xzm3SOjtFmMVr2gC0Mi6tuZdpVVZuhCNJOXTP6ckjz48pJKYud2Ew09rR6/OoiOoQEuvSCLw+UGxvmwekqk/pHj8azTFfTo61NlrF+sz3mYWE3qF5kSjwWf0p5K9y4AE7xenwxXrPlbL1gfoMfs=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20190701213849.102759-1-maheshb@google.com> <alpine.DEB.2.21.1907021450320.5764@ramsan.of.borg>
-In-Reply-To: <alpine.DEB.2.21.1907021450320.5764@ramsan.of.borg>
-From:   =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ==?= 
-        <maheshb@google.com>
-Date:   Tue, 2 Jul 2019 21:45:46 -0700
-Message-ID: <CAF2d9jhikNn94WD7mefMDpiZK-baCwsPJRXti_WSFE6_v+Ci-w@mail.gmail.com>
-Subject: Re: suspicious RCU usage (was: Re: [PATCHv3 next 1/3] loopback:
- create blackhole net device similar to loopack.)
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        David Miller <davem@davemloft.net>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Daniel Axtens <dja@axtens.net>,
-        Mahesh Bandewar <mahesh@bandewar.net>,
-        "Paul E. McKenney" <paulmck@linux.ibm.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0b2fa85f-bd22-4538-c264-08d6ff7160ca
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jul 2019 04:46:13.8112
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: parav@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6577
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 2, 2019 at 5:54 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->
->         Hi Mahesh,
->
-> On Mon, 1 Jul 2019, Mahesh Bandewar wrote:
-> > Create a blackhole net device that can be used for "dead"
-> > dst entries instead of loopback device. This blackhole device differs
-> > from loopback in few aspects: (a) It's not per-ns. (b)  MTU on this
-> > device is ETH_MIN_MTU (c) The xmit function is essentially kfree_skb().
-> > and (d) since it's not registered it won't have ifindex.
-> >
-> > Lower MTU effectively make the device not pass the MTU check during
-> > the route check when a dst associated with the skb is dead.
-> >
-> > Signed-off-by: Mahesh Bandewar <maheshb@google.com>
->
-> This is now commit 4de83b88c66a1e4d ("loopback: create blackhole net
-> device similar to loopack.") in net-next, and causes the following
-> warning on arm64:
->
->      WARNING: suspicious RCU usage
->      5.2.0-rc6-arm64-renesas-01699-g4de83b88c66a1e4d #263 Not tainted
->      -----------------------------
->      include/linux/rtnetlink.h:85 suspicious rcu_dereference_protected() usage!
->
->      other info that might help us debug this:
->
->
->      rcu_scheduler_active = 2, debug_locks = 1
->      no locks held by swapper/0/1.
->
-thanks for the report. Let me take a look at this.
 
->      stack backtrace:
->      CPU: 2 PID: 1 Comm: swapper/0 Not tainted 5.2.0-rc6-arm64-renesas-01699-g4de83b88c66a1e4d #263
->      Hardware name: Renesas Salvator-X 2nd version board based on r8a7795 ES2.0+ (DT)
->      Call trace:
->       dump_backtrace+0x0/0x148
->       show_stack+0x14/0x20
->       dump_stack+0xd4/0x11c
->       lockdep_rcu_suspicious+0xcc/0x110
->       dev_init_scheduler+0x114/0x150
->       blackhole_netdev_init+0x40/0x80
->       do_one_initcall+0x178/0x37c
->       kernel_init_freeable+0x490/0x530
->       kernel_init+0x10/0x100
->       ret_from_fork+0x10/0x1c
->
->
-> > ---
-> > v1->v2->v3
-> >  no change
+
+> -----Original Message-----
+> From: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Sent: Wednesday, July 3, 2019 7:46 AM
+> To: Parav Pandit <parav@mellanox.com>
+> Cc: Jiri Pirko <jiri@mellanox.com>; netdev@vger.kernel.org; Saeed
+> Mahameed <saeedm@mellanox.com>
+> Subject: Re: [PATCH net-next 1/3] devlink: Introduce PCI PF port flavour =
+and
+> port attribute
+>=20
+> On Wed, 3 Jul 2019 02:08:39 +0000, Parav Pandit wrote:
+> > > If you want to expose some device specific eswitch port ID please
+> > > add a new attribute for that.
+> > > The fact that that ID may match port_number for your device today is
+> > > coincidental.  port_number, and split attributes should not be
+> > > exposed for PCI ports.
 > >
-> > drivers/net/loopback.c    | 76 ++++++++++++++++++++++++++++++++++-----
-> > include/linux/netdevice.h |  2 ++
-> > 2 files changed, 69 insertions(+), 9 deletions(-)
-> >
-> > diff --git a/drivers/net/loopback.c b/drivers/net/loopback.c
-> > index 87d361666cdd..3b39def5471e 100644
-> > --- a/drivers/net/loopback.c
-> > +++ b/drivers/net/loopback.c
-> > @@ -55,6 +55,13 @@
-> > #include <net/net_namespace.h>
-> > #include <linux/u64_stats_sync.h>
-> >
-> > +/* blackhole_netdev - a device used for dsts that are marked expired!
-> > + * This is global device (instead of per-net-ns) since it's not needed
-> > + * to be per-ns and gets initialized at boot time.
-> > + */
-> > +struct net_device *blackhole_netdev;
-> > +EXPORT_SYMBOL(blackhole_netdev);
-> > +
-> > /* The higher levels take care of making this non-reentrant (it's
-> >  * called with bh's disabled).
-> >  */
-> > @@ -150,12 +157,14 @@ static const struct net_device_ops loopback_ops = {
-> >       .ndo_set_mac_address = eth_mac_addr,
-> > };
-> >
-> > -/* The loopback device is special. There is only one instance
-> > - * per network namespace.
-> > - */
-> > -static void loopback_setup(struct net_device *dev)
-> > +static void gen_lo_setup(struct net_device *dev,
-> > +                      unsigned int mtu,
-> > +                      const struct ethtool_ops *eth_ops,
-> > +                      const struct header_ops *hdr_ops,
-> > +                      const struct net_device_ops *dev_ops,
-> > +                      void (*dev_destructor)(struct net_device *dev))
-> > {
-> > -     dev->mtu                = 64 * 1024;
-> > +     dev->mtu                = mtu;
-> >       dev->hard_header_len    = ETH_HLEN;     /* 14   */
-> >       dev->min_header_len     = ETH_HLEN;     /* 14   */
-> >       dev->addr_len           = ETH_ALEN;     /* 6    */
-> > @@ -174,11 +183,20 @@ static void loopback_setup(struct net_device *dev)
-> >               | NETIF_F_NETNS_LOCAL
-> >               | NETIF_F_VLAN_CHALLENGED
-> >               | NETIF_F_LOOPBACK;
-> > -     dev->ethtool_ops        = &loopback_ethtool_ops;
-> > -     dev->header_ops         = &eth_header_ops;
-> > -     dev->netdev_ops         = &loopback_ops;
-> > +     dev->ethtool_ops        = eth_ops;
-> > +     dev->header_ops         = hdr_ops;
-> > +     dev->netdev_ops         = dev_ops;
-> >       dev->needs_free_netdev  = true;
-> > -     dev->priv_destructor    = loopback_dev_free;
-> > +     dev->priv_destructor    = dev_destructor;
-> > +}
-> > +
-> > +/* The loopback device is special. There is only one instance
-> > + * per network namespace.
-> > + */
-> > +static void loopback_setup(struct net_device *dev)
-> > +{
-> > +     gen_lo_setup(dev, (64 * 1024), &loopback_ethtool_ops, &eth_header_ops,
-> > +                  &loopback_ops, loopback_dev_free);
-> > }
-> >
-> > /* Setup and register the loopback device. */
-> > @@ -213,3 +231,43 @@ static __net_init int loopback_net_init(struct net *net)
-> > struct pernet_operations __net_initdata loopback_net_ops = {
-> >       .init = loopback_net_init,
-> > };
-> > +
-> > +/* blackhole netdevice */
-> > +static netdev_tx_t blackhole_netdev_xmit(struct sk_buff *skb,
-> > +                                      struct net_device *dev)
-> > +{
-> > +     kfree_skb(skb);
-> > +     net_warn_ratelimited("%s(): Dropping skb.\n", __func__);
-> > +     return NETDEV_TX_OK;
-> > +}
-> > +
-> > +static const struct net_device_ops blackhole_netdev_ops = {
-> > +     .ndo_start_xmit = blackhole_netdev_xmit,
-> > +};
-> > +
-> > +/* This is a dst-dummy device used specifically for invalidated
-> > + * DSTs and unlike loopback, this is not per-ns.
-> > + */
-> > +static void blackhole_netdev_setup(struct net_device *dev)
-> > +{
-> > +     gen_lo_setup(dev, ETH_MIN_MTU, NULL, NULL, &blackhole_netdev_ops, NULL);
-> > +}
-> > +
-> > +/* Setup and register the blackhole_netdev. */
-> > +static int __init blackhole_netdev_init(void)
-> > +{
-> > +     blackhole_netdev = alloc_netdev(0, "blackhole_dev", NET_NAME_UNKNOWN,
-> > +                                     blackhole_netdev_setup);
-> > +     if (!blackhole_netdev)
-> > +             return -ENOMEM;
-> > +
-> > +     dev_init_scheduler(blackhole_netdev);
-> > +     dev_activate(blackhole_netdev);
-> > +
-> > +     blackhole_netdev->flags |= IFF_UP | IFF_RUNNING;
-> > +     dev_net_set(blackhole_netdev, &init_net);
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +device_initcall(blackhole_netdev_init);
-> > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> > index eeacebd7debb..88292953aa6f 100644
-> > --- a/include/linux/netdevice.h
-> > +++ b/include/linux/netdevice.h
-> > @@ -4870,4 +4870,6 @@ do {                                                            \
-> > #define PTYPE_HASH_SIZE       (16)
-> > #define PTYPE_HASH_MASK       (PTYPE_HASH_SIZE - 1)
-> >
-> > +extern struct net_device *blackhole_netdev;
-> > +
-> > #endif        /* _LINUX_NETDEVICE_H */
-> >
-> Gr{oetje,eeting}s,
->
->                                                 Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                                             -- Linus Torvalds
->
+> > So your concern is non mellanox hw has eswitch but there may not be a
+> > unique handle to identify a eswitch port?
+>=20
+> That's not a concern, no.  Like any debug attribute it should be optional=
+.
+>=20
+> > Or that handle may be wider than 32-bit?
+>=20
+> 64 bit would probably be better, yes, although that wasn't my initial
+> concern.
+>=20
+Why 32-bit is not enough?
+
+> > And instead of treating port_number as handle, there should be
+> > different attribute, is that the ask?
+>=20
+> Yes, the ask, as always, is to not abuse existing attributes to carry
+> tangentially related information.
+
+Why it is tangential?
+Devlink_port has got a port_number. Depending on flavour this port_number r=
+epresents a port.
+If it is floavour=3DPHYSICAL, its physical port number.
+If it is eswitch pf/vf ports, it represents eswitch port.
+
+Why you see it only as physical_port_number?
+
+Jiri,
+Do you see it this way too?
+
