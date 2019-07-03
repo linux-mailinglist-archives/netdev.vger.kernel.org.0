@@ -2,110 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 503095DB43
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 04:00:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E4865DB4F
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 04:04:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727092AbfGCB7x convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 2 Jul 2019 21:59:53 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:3017 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726329AbfGCB7x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jul 2019 21:59:53 -0400
-Received: from DGGEMM401-HUB.china.huawei.com (unknown [172.30.72.55])
-        by Forcepoint Email with ESMTP id 90A18A470A45D8703D9A;
-        Wed,  3 Jul 2019 09:59:48 +0800 (CST)
-Received: from dggeme715-chm.china.huawei.com (10.1.199.111) by
- DGGEMM401-HUB.china.huawei.com (10.3.20.209) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Wed, 3 Jul 2019 09:59:48 +0800
-Received: from dggeme763-chm.china.huawei.com (10.3.19.109) by
- dggeme715-chm.china.huawei.com (10.1.199.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1591.10; Wed, 3 Jul 2019 09:59:48 +0800
-Received: from dggeme763-chm.china.huawei.com ([10.6.66.36]) by
- dggeme763-chm.china.huawei.com ([10.6.66.36]) with mapi id 15.01.1591.008;
- Wed, 3 Jul 2019 09:59:47 +0800
-From:   linmiaohe <linmiaohe@huawei.com>
-To:     David Ahern <dsahern@gmail.com>
-CC:     "pablo@netfilter.org" <pablo@netfilter.org>,
-        "kadlec@blackhole.kfki.hu" <kadlec@blackhole.kfki.hu>,
-        "fw@strlen.de" <fw@strlen.de>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
-        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
-        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
-        "coreteam@netfilter.org" <coreteam@netfilter.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Mingfangsen <mingfangsen@huawei.com>
-Subject: Re: [PATCH v5] net: netfilter: Fix rpfilter dropping vrf packets by
- mistake
-Thread-Topic: [PATCH v5] net: netfilter: Fix rpfilter dropping vrf packets by
- mistake
-Thread-Index: AdUxQkGnwofogVcmQkqkZWrkNMYBtA==
-Date:   Wed, 3 Jul 2019 01:59:47 +0000
-Message-ID: <4b5cc7929a83472e9b2e64d84397eccc@huawei.com>
-Accept-Language: en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.184.189.20]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1727182AbfGCCE0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 22:04:26 -0400
+Received: from mail-qt1-f171.google.com ([209.85.160.171]:38062 "EHLO
+        mail-qt1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726430AbfGCCE0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 22:04:26 -0400
+Received: by mail-qt1-f171.google.com with SMTP id n11so852618qtl.5
+        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 19:04:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=D+csHyoXmCSfo36FjRvnFg+jSmMkHBvbr36bQgH7vNk=;
+        b=mSPg9yAuCQf0++B9j2eL4h8AxelwNz6s8rBhCtOzR9ETFAzSzwNRwYxfefPE70gqzz
+         klH0aVmx7Jo6j39VTbd7/EzqoGJLfp8wdsYfnl3XufZtCPF2MHesQ1i13AK0GbD5eVYH
+         2Z7c8hFaBl47V0UVztztD42Y/1BMFlQ9VPhnhZJvggSf6xP9b1N1TnOHITpNOg4ffc8b
+         lxumVSZgbKRhzeU68dP8Lz3vDB9TPvgN48fcHHUx4RZKIKMp5610/N3hMavuxlCAb2CV
+         G0gQkwMjYFYqfel79Qw2ld0wS43k0OOfpAfMSd6UBif906QBiHGjgEDQA8uFEouzjN9e
+         fczg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=D+csHyoXmCSfo36FjRvnFg+jSmMkHBvbr36bQgH7vNk=;
+        b=EzziyCShGu29olch18IeSy2f+mCZQoVIoBcCnq03hjJn+F5Zi6Fp5OPNFovhPXL+Hk
+         m5GnN22z/loj2Zyrge5zdYGv3m1+Ug8cw3AbCdCKJusEM4j7wo/7Wiz/WOqnjxnpm95E
+         5UHV5ZQpD8lyAQfZuvGAI8S4sACNWkGJVoJc7Zw3tcG3BrjyYTDP6L2faO9D7zEFaydi
+         b0zCAOXEzdc4ZaVvvuZ/8RjL8qSTotTIQZfqCSH8dQ/t62dAJe68VjVolLfTVncY6+6Q
+         4lojWwhqrgAp07nPYfd5TZxjTGiYovpvt3WRdSgf8NN0NaEDAoaN+X6RiY+XLtIYnyck
+         rZgg==
+X-Gm-Message-State: APjAAAUFKJM95YdonjPUZdSHCUHHXwdHHNVHnbMzHbl8B/nN3sB+77k9
+        nAyPD1hXudQfzcehgnLs1qRcjA==
+X-Google-Smtp-Source: APXvYqyNNXeWcpsv07GuG3AuJ6PH8AJPyEjMJU4wwj+LUGZw2xzKqfxmBouRwJ788Gpa2tYTsHOj3g==
+X-Received: by 2002:a0c:baa8:: with SMTP id x40mr30028502qvf.168.1562119465176;
+        Tue, 02 Jul 2019 19:04:25 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id t2sm433654qth.33.2019.07.02.19.04.23
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 02 Jul 2019 19:04:25 -0700 (PDT)
+Date:   Tue, 2 Jul 2019 19:04:19 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jiri Pirko <jiri@resnulli.us>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Linville <linville@tuxdriver.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v6 11/15] ethtool: provide link mode names as a
+ string set
+Message-ID: <20190702190419.1cb8a189@cakuba.netronome.com>
+In-Reply-To: <1e1bf53de26780ecc0e448aa07dc429ef590798a.1562067622.git.mkubecek@suse.cz>
+References: <cover.1562067622.git.mkubecek@suse.cz>
+        <1e1bf53de26780ecc0e448aa07dc429ef590798a.1562067622.git.mkubecek@suse.cz>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add David Ahern. @David Ahern I'am so sorry but I rerun scripts/get_maintainer.pl .
-You are not in the list , so I forgot to add you to the email-to list. I'am sorry again.
-Have a good day.
-Best wishes.
+On Tue,  2 Jul 2019 13:50:34 +0200 (CEST), Michal Kubecek wrote:
+> +const char *const link_mode_names[] = {
+> +	__DEFINE_LINK_MODE_NAME(10, T, Half),
+> +	__DEFINE_LINK_MODE_NAME(10, T, Full),
+> +	__DEFINE_LINK_MODE_NAME(100, T, Half),
+> +	__DEFINE_LINK_MODE_NAME(100, T, Full),
+> +	__DEFINE_LINK_MODE_NAME(1000, T, Half),
+> +	__DEFINE_LINK_MODE_NAME(1000, T, Full),
+> +	__DEFINE_SPECIAL_MODE_NAME(Autoneg, "Autoneg"),
+> +	__DEFINE_SPECIAL_MODE_NAME(TP, "TP"),
+> +	__DEFINE_SPECIAL_MODE_NAME(AUI, "AUI"),
+> +	__DEFINE_SPECIAL_MODE_NAME(MII, "MII"),
+> +	__DEFINE_SPECIAL_MODE_NAME(FIBRE, "FIBRE"),
+> +	__DEFINE_SPECIAL_MODE_NAME(BNC, "BNC"),
 
-When firewalld is enabled with ipv4/ipv6 rpfilter, vrf
-ipv4/ipv6 packets will be dropped. Vrf device will pass through netfilter hook twice. One with enslaved device and another one with l3 master device. So in device may dismatch witch out device because out device is always enslaved device.So failed with the check of the rpfilter and drop the packets by mistake.
+> +	__DEFINE_LINK_MODE_NAME(10000, T, Full),
+> +	__DEFINE_SPECIAL_MODE_NAME(Pause, "Pause"),
+> +	__DEFINE_SPECIAL_MODE_NAME(Asym_Pause, "Asym_Pause"),
+> +	__DEFINE_LINK_MODE_NAME(2500, X, Full),
+> +	__DEFINE_SPECIAL_MODE_NAME(Backplane, "Backplane"),
+> +	__DEFINE_LINK_MODE_NAME(1000, KX, Full),
+...
+> +	__DEFINE_LINK_MODE_NAME(5000, T, Full),
+> +	__DEFINE_SPECIAL_MODE_NAME(FEC_NONE, "None"),
+> +	__DEFINE_SPECIAL_MODE_NAME(FEC_RS, "RS"),
+> +	__DEFINE_SPECIAL_MODE_NAME(FEC_BASER, "BASER"),
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
----
- net/ipv4/netfilter/ipt_rpfilter.c  | 1 +  net/ipv6/netfilter/ip6t_rpfilter.c | 8 ++++++--
- 2 files changed, 7 insertions(+), 2 deletions(-)
+Why are port types and FEC params among link mode strings?
 
-diff --git a/net/ipv4/netfilter/ipt_rpfilter.c b/net/ipv4/netfilter/ipt_rpfilter.c
-index 59031670b16a..cc23f1ce239c 100644
---- a/net/ipv4/netfilter/ipt_rpfilter.c
-+++ b/net/ipv4/netfilter/ipt_rpfilter.c
-@@ -78,6 +78,7 @@ static bool rpfilter_mt(const struct sk_buff *skb, struct xt_action_param *par)
- 	flow.flowi4_mark = info->flags & XT_RPFILTER_VALID_MARK ? skb->mark : 0;
- 	flow.flowi4_tos = RT_TOS(iph->tos);
- 	flow.flowi4_scope = RT_SCOPE_UNIVERSE;
-+	flow.flowi4_oif = l3mdev_master_ifindex_rcu(xt_in(par));
- 
- 	return rpfilter_lookup_reverse(xt_net(par), &flow, xt_in(par), info->flags) ^ invert;  } diff --git a/net/ipv6/netfilter/ip6t_rpfilter.c b/net/ipv6/netfilter/ip6t_rpfilter.c
-index 6bcaf7357183..d800801a5dd2 100644
---- a/net/ipv6/netfilter/ip6t_rpfilter.c
-+++ b/net/ipv6/netfilter/ip6t_rpfilter.c
-@@ -55,7 +55,9 @@ static bool rpfilter_lookup_reverse6(struct net *net, const struct sk_buff *skb,
- 	if (rpfilter_addr_linklocal(&iph->saddr)) {
- 		lookup_flags |= RT6_LOOKUP_F_IFACE;
- 		fl6.flowi6_oif = dev->ifindex;
--	} else if ((flags & XT_RPFILTER_LOOSE) == 0)
-+	/* Set flowi6_oif for vrf devices to lookup route in l3mdev domain. */
-+	} else if (netif_is_l3_master(dev) || netif_is_l3_slave(dev) ||
-+		  (flags & XT_RPFILTER_LOOSE) == 0)
- 		fl6.flowi6_oif = dev->ifindex;
- 
- 	rt = (void *)ip6_route_lookup(net, &fl6, skb, lookup_flags); @@ -70,7 +72,9 @@ static bool rpfilter_lookup_reverse6(struct net *net, const struct sk_buff *skb,
- 		goto out;
- 	}
- 
--	if (rt->rt6i_idev->dev == dev || (flags & XT_RPFILTER_LOOSE))
-+	if (rt->rt6i_idev->dev == dev ||
-+	    l3mdev_master_ifindex_rcu(rt->rt6i_idev->dev) == dev->ifindex ||
-+	    (flags & XT_RPFILTER_LOOSE))
- 		ret = true;
-  out:
- 	ip6_rt_put(rt);
---
-2.21.GIT
-
+> +	__DEFINE_LINK_MODE_NAME(50000, KR, Full),
+...
+> +	__DEFINE_LINK_MODE_NAME(1000, T1, Full),
+> +};
