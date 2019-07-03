@@ -2,138 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 17F325DB2A
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 03:51:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 503095DB43
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 04:00:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727329AbfGCBvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 21:51:12 -0400
-Received: from mail-yw1-f65.google.com ([209.85.161.65]:42182 "EHLO
-        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726963AbfGCBvM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 21:51:12 -0400
-Received: by mail-yw1-f65.google.com with SMTP id n127so378198ywd.9
-        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 18:51:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FpqwjPLz3qKsSQsne+q+/HAtmLYclnEssSjW53066EE=;
-        b=AF/zf4dEuQSmx9zBo/xsY6LDdlP4XCcXCbTMC/A51Kt8ql5xWK7D2UQXSeujIaIgYm
-         L/QLErod5DGg4P78V82bFliio/9q/nHTRcQ66mrDpzAYsxY2OQGL4ff4sOYeah8DYPsY
-         DrTQg3ultxq9e+1aA4peuIxjVlD3khMIuBlB/UaaTPDWSWHy9YskCQtIik2rtHgX/1kW
-         iwHf1rP7yFOP3X8ymMY0qaBGUWxEZEp0dmxy3dlBb6fL/Rlik29z2XyMQ8ySrprNMaS6
-         Qg2S5sJiCCVjgUWu8+rVTdqtP0tATCF3jYfEHmSxs/P6ne4DTcqNr+CcV3TDhEqENBaW
-         Q6kA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FpqwjPLz3qKsSQsne+q+/HAtmLYclnEssSjW53066EE=;
-        b=FIqIvcbYSSL9n1WtZMEKiMIjOGYZyx06C7PayO5/TrSkkt2iNjfBrCvH+nnWkGjPoc
-         L1CsbzOjJXmtFEZ3hK7d1Ori33TygY0Fgjihi9Bra0kRRBfKOGX1uKniyalXBNEEz1lf
-         cxV4dMbxqDnH61cSpeYbJyj864MGODVf9d2gfPp/htKeV8xc1v6eECYVj4kYFa9mtYsw
-         XXkILACuta7452KoQ4njNbSfYExvaNu7vrm+GFqzdBOqWkxr1UWqYymFK8GtAdWkdNo9
-         X+689O+iiYFI8WUVfpg2Yf1Yer5EYnJCmoVj8VXg2ZhA6CjLl5ecotkssYP9RI89HUyU
-         5COQ==
-X-Gm-Message-State: APjAAAVB6IoV5ZkWr5nOaBhopXgxYnoRiwnUrYPr+SsCuHuinQ1/zsi5
-        rcsxjaQUsk3DKOgABVEAyF35UKuj
-X-Google-Smtp-Source: APXvYqyQYfbiyvKuaimLQghVZr9KGhC3lXvPit/rA2O+PUOnhpw24Sm9E2FbHAYYLqGS3eIa22jnbA==
-X-Received: by 2002:a81:170c:: with SMTP id 12mr6955073ywx.54.1562118670860;
-        Tue, 02 Jul 2019 18:51:10 -0700 (PDT)
-Received: from mail-yw1-f49.google.com (mail-yw1-f49.google.com. [209.85.161.49])
-        by smtp.gmail.com with ESMTPSA id p185sm239172ywb.92.2019.07.02.18.51.10
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Tue, 02 Jul 2019 18:51:10 -0700 (PDT)
-Received: by mail-yw1-f49.google.com with SMTP id q128so399949ywc.1
-        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 18:51:10 -0700 (PDT)
-X-Received: by 2002:a0d:c0c4:: with SMTP id b187mr19229690ywd.389.1562118669661;
- Tue, 02 Jul 2019 18:51:09 -0700 (PDT)
+        id S1727092AbfGCB7x convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 2 Jul 2019 21:59:53 -0400
+Received: from szxga02-in.huawei.com ([45.249.212.188]:3017 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726329AbfGCB7x (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jul 2019 21:59:53 -0400
+Received: from DGGEMM401-HUB.china.huawei.com (unknown [172.30.72.55])
+        by Forcepoint Email with ESMTP id 90A18A470A45D8703D9A;
+        Wed,  3 Jul 2019 09:59:48 +0800 (CST)
+Received: from dggeme715-chm.china.huawei.com (10.1.199.111) by
+ DGGEMM401-HUB.china.huawei.com (10.3.20.209) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Wed, 3 Jul 2019 09:59:48 +0800
+Received: from dggeme763-chm.china.huawei.com (10.3.19.109) by
+ dggeme715-chm.china.huawei.com (10.1.199.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1591.10; Wed, 3 Jul 2019 09:59:48 +0800
+Received: from dggeme763-chm.china.huawei.com ([10.6.66.36]) by
+ dggeme763-chm.china.huawei.com ([10.6.66.36]) with mapi id 15.01.1591.008;
+ Wed, 3 Jul 2019 09:59:47 +0800
+From:   linmiaohe <linmiaohe@huawei.com>
+To:     David Ahern <dsahern@gmail.com>
+CC:     "pablo@netfilter.org" <pablo@netfilter.org>,
+        "kadlec@blackhole.kfki.hu" <kadlec@blackhole.kfki.hu>,
+        "fw@strlen.de" <fw@strlen.de>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
+        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
+        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
+        "coreteam@netfilter.org" <coreteam@netfilter.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Mingfangsen <mingfangsen@huawei.com>
+Subject: Re: [PATCH v5] net: netfilter: Fix rpfilter dropping vrf packets by
+ mistake
+Thread-Topic: [PATCH v5] net: netfilter: Fix rpfilter dropping vrf packets by
+ mistake
+Thread-Index: AdUxQkGnwofogVcmQkqkZWrkNMYBtA==
+Date:   Wed, 3 Jul 2019 01:59:47 +0000
+Message-ID: <4b5cc7929a83472e9b2e64d84397eccc@huawei.com>
+Accept-Language: en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.184.189.20]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-References: <e748ac8df5f8a3451540ad144a2c0afb962632f8.camel@domdv.de> <CA+FuTSfih0pBbOnXxkw4UpmiqDnNLf4k8O-=7XW4m7fj5ogqXw@mail.gmail.com>
-In-Reply-To: <CA+FuTSfih0pBbOnXxkw4UpmiqDnNLf4k8O-=7XW4m7fj5ogqXw@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 2 Jul 2019 21:50:33 -0400
-X-Gmail-Original-Message-ID: <CA+FuTScf_wNwLdph=GY6f==tu_cM-BeVbAUgnMVuyubGB2-T=g@mail.gmail.com>
-Message-ID: <CA+FuTScf_wNwLdph=GY6f==tu_cM-BeVbAUgnMVuyubGB2-T=g@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/3] macsec: remove superfluous function calls
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Andreas Steinmetz <ast@domdv.de>,
-        Network Development <netdev@vger.kernel.org>,
-        Sabrina Dubroca <sd@queasysnail.net>
-Content-Type: text/plain; charset="UTF-8"
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jun 30, 2019 at 9:57 PM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> On Sun, Jun 30, 2019 at 4:48 PM Andreas Steinmetz <ast@domdv.de> wrote:
-> >
-> > Remove superfluous skb_share_check() and skb_unshare().
-> > macsec_decrypt is only called by macsec_handle_frame which
-> > already does a skb_unshare().
->
-> There is a subtle difference. skb_unshare() acts on cloned skbs, not
-> shared skbs.
->
-> It creates a private copy of data if clones may access it
-> concurrently, which clearly is needed when modifying for decryption.
->
-> At rx_handler, I don't think a shared skb happen (unlike clones, e.g.,
-> from packet sockets). But it is peculiar that most, if not all,
-> rx_handlers seem to test for it. That have started with the bridge
-> device:
->
-> commit 7b995651e373d6424f81db23f2ec503306dfd7f0
-> Author: Herbert Xu <herbert@gondor.apana.org.au>
-> Date:   Sun Oct 14 00:39:01 2007 -0700
->
->     [BRIDGE]: Unshare skb upon entry
->
->     Due to the special location of the bridging hook, it should never see a
->     shared packet anyway (certainly not with any in-kernel code).  So it
->     makes sense to unshare the skb there if necessary as that will greatly
->     simplify the code below it (in particular, netfilter).
->
-> Anyway, remove the check only if certain.
+Add David Ahern. @David Ahern I'am so sorry but I rerun scripts/get_maintainer.pl .
+You are not in the list , so I forgot to add you to the email-to list. I'am sorry again.
+Have a good day.
+Best wishes.
 
-Did you see this point? I notice the v2 without this mentioned. I
-don't think you can remove an skb_share_check solely on the basis of a
-previous skb_unshare. I agree that here a shared skb is unlikely, but
-that is for a very different, less obvious, reason.
+When firewalld is enabled with ipv4/ipv6 rpfilter, vrf
+ipv4/ipv6 packets will be dropped. Vrf device will pass through netfilter hook twice. One with enslaved device and another one with l3 master device. So in device may dismatch witch out device because out device is always enslaved device.So failed with the check of the rpfilter and drop the packets by mistake.
 
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+---
+ net/ipv4/netfilter/ipt_rpfilter.c  | 1 +  net/ipv6/netfilter/ip6t_rpfilter.c | 8 ++++++--
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
+diff --git a/net/ipv4/netfilter/ipt_rpfilter.c b/net/ipv4/netfilter/ipt_rpfilter.c
+index 59031670b16a..cc23f1ce239c 100644
+--- a/net/ipv4/netfilter/ipt_rpfilter.c
++++ b/net/ipv4/netfilter/ipt_rpfilter.c
+@@ -78,6 +78,7 @@ static bool rpfilter_mt(const struct sk_buff *skb, struct xt_action_param *par)
+ 	flow.flowi4_mark = info->flags & XT_RPFILTER_VALID_MARK ? skb->mark : 0;
+ 	flow.flowi4_tos = RT_TOS(iph->tos);
+ 	flow.flowi4_scope = RT_SCOPE_UNIVERSE;
++	flow.flowi4_oif = l3mdev_master_ifindex_rcu(xt_in(par));
+ 
+ 	return rpfilter_lookup_reverse(xt_net(par), &flow, xt_in(par), info->flags) ^ invert;  } diff --git a/net/ipv6/netfilter/ip6t_rpfilter.c b/net/ipv6/netfilter/ip6t_rpfilter.c
+index 6bcaf7357183..d800801a5dd2 100644
+--- a/net/ipv6/netfilter/ip6t_rpfilter.c
++++ b/net/ipv6/netfilter/ip6t_rpfilter.c
+@@ -55,7 +55,9 @@ static bool rpfilter_lookup_reverse6(struct net *net, const struct sk_buff *skb,
+ 	if (rpfilter_addr_linklocal(&iph->saddr)) {
+ 		lookup_flags |= RT6_LOOKUP_F_IFACE;
+ 		fl6.flowi6_oif = dev->ifindex;
+-	} else if ((flags & XT_RPFILTER_LOOSE) == 0)
++	/* Set flowi6_oif for vrf devices to lookup route in l3mdev domain. */
++	} else if (netif_is_l3_master(dev) || netif_is_l3_slave(dev) ||
++		  (flags & XT_RPFILTER_LOOSE) == 0)
+ 		fl6.flowi6_oif = dev->ifindex;
+ 
+ 	rt = (void *)ip6_route_lookup(net, &fl6, skb, lookup_flags); @@ -70,7 +72,9 @@ static bool rpfilter_lookup_reverse6(struct net *net, const struct sk_buff *skb,
+ 		goto out;
+ 	}
+ 
+-	if (rt->rt6i_idev->dev == dev || (flags & XT_RPFILTER_LOOSE))
++	if (rt->rt6i_idev->dev == dev ||
++	    l3mdev_master_ifindex_rcu(rt->rt6i_idev->dev) == dev->ifindex ||
++	    (flags & XT_RPFILTER_LOOSE))
+ 		ret = true;
+  out:
+ 	ip6_rt_put(rt);
+--
+2.21.GIT
 
-
->
-> >
-> > Signed-off-by: Andreas Steinmetz <ast@domdv.de>
-> >
-> > --- a/drivers/net/macsec.c      2019-06-30 22:02:54.906908179 +0200
-> > +++ b/drivers/net/macsec.c      2019-06-30 22:03:07.315785186 +0200
-> > @@ -939,9 +939,6 @@
-> >         u16 icv_len = secy->icv_len;
-> >
-> >         macsec_skb_cb(skb)->valid = false;
-> > -       skb = skb_share_check(skb, GFP_ATOMIC);
-> > -       if (!skb)
-> > -               return ERR_PTR(-ENOMEM);
-> >
-> >         ret = skb_cow_data(skb, 0, &trailer);
-> >         if (unlikely(ret < 0)) {
-> > @@ -973,11 +970,6 @@
-> >
-> >                 aead_request_set_crypt(req, sg, sg, len, iv);
-> >                 aead_request_set_ad(req, macsec_hdr_len(macsec_skb_cb(skb)->has_sci));
-> > -               skb = skb_unshare(skb, GFP_ATOMIC);
-> > -               if (!skb) {
-> > -                       aead_request_free(req);
-> > -                       return ERR_PTR(-ENOMEM);
-> > -               }
-> >         } else {
-> >                 /* integrity only: all headers + data authenticated */
-> >                 aead_request_set_crypt(req, sg, sg, icv_len, iv);
-> >
