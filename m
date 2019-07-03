@@ -2,121 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 442A65EF99
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 01:23:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A52A5EFAE
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 01:40:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727416AbfGCXXf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 19:23:35 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:35235 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727168AbfGCXXe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 19:23:34 -0400
-Received: by mail-pf1-f194.google.com with SMTP id u14so808212pfn.2
-        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 16:23:34 -0700 (PDT)
+        id S1727379AbfGCXjv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 19:39:51 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:36309 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726562AbfGCXjv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 19:39:51 -0400
+Received: by mail-io1-f68.google.com with SMTP id h6so9039359ioh.3;
+        Wed, 03 Jul 2019 16:39:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=XN3qgR1tVFK8sR9o1ybEyQRnUeXtfxfXh+O+zHL4/+Y=;
-        b=NzaNPXi+YZBGhIbIgIUZaTohxouzyDY7kLRqaDb4+9gt2fecCZ8L3hIKaY4vXMfsYQ
-         FxCmxwlE32iIfosrg9EOn5v5GkBgijUn24kBLYBMZN08ljM7nepXFEurCwjzALS56CR9
-         U5pBPaqa6xQnuBxvVQwfk/PA1nRUA3Q34yqUo=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sC1hWLWPHtDF7lICnZ0xHZ7zLIO7+HLBlu2ZrIyAjDY=;
+        b=Ro7acgfcoM6HFmkSr2x43kSg1YzhjWscPdw2+opYOGkjySPv6eB6CM4x0OGJsVM9F8
+         MB15FBOqXmr+U0kP657Okfl1ufm5ZxS3JmGaX3MRJcZ8CnmBBPsnybAYjbC2SEa019Xr
+         wc+9F3GFQK2Dqs3rKPfqHBVlhVA+Et5vWjKtaJ3QNlQRl+Ed6iKLU0N7cyrXy1C7XwTt
+         GunmxgML0piOrWfzyvrwjGxH3XKDCUKNWo2ReD53PHKwFO3V6HUHGLMvrjiM/S0BlhIx
+         nUQsUIu0LuPJJk8CMeE4iUtg3pIufYhPvjRGg3PIrmGY+D3zsKGlFc1FCdlgIHduLINJ
+         4FQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=XN3qgR1tVFK8sR9o1ybEyQRnUeXtfxfXh+O+zHL4/+Y=;
-        b=RBxus6iioWw/H/cpONGJExxasoKaBWxZv1I5neOMbZ9v0olBIHA87o2enTnPabilC1
-         SLTwhldeM1VKbnKRx8m2snKN99FuoEp6r6xym8ygNwa1XHicJLNu7QyL+pYKgwFgTQ1v
-         0Eu3KgMhdYbTmGR1XDBA7SrA0OoWKVd21JQXaNQklDWNsCz1O97WRVhlcmYvAqQhylIW
-         J9UMbLCeT4iGyxP5Ier2ImQR6UcL/Ds3TUc6mNhRbnCOkGrUF4tdu2llXlO6cuKZz4QS
-         tIkGjaa1jS9bIZ2nGgH4p2dG3ekzdkDq2dPXQTlti9RP8i/23UUDNR/a7LGG3QQWJ099
-         fX7Q==
-X-Gm-Message-State: APjAAAW0aRQ+6w8bJaYYNaaQQqC8s4Re8X+fi0tqoCZ0JB+L+6IaOhtJ
-        zX5R2ll15oA9exbMCKuRqWgosw==
-X-Google-Smtp-Source: APXvYqx7unjhBypVqBgNvPTq6zAIlWKbNq6OlF0jySSP96LUGqlwwpVzJOnU2WwDUiZnU1HtSWbhLA==
-X-Received: by 2002:a63:5107:: with SMTP id f7mr25033521pgb.266.1562196214038;
-        Wed, 03 Jul 2019 16:23:34 -0700 (PDT)
-Received: from localhost ([2620:15c:202:1:75a:3f6e:21d:9374])
-        by smtp.gmail.com with ESMTPSA id v22sm5837535pgk.69.2019.07.03.16.23.32
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 03 Jul 2019 16:23:33 -0700 (PDT)
-Date:   Wed, 3 Jul 2019 16:23:31 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Douglas Anderson <dianders@chromium.org>
-Subject: Re: [PATCH v2 6/7] dt-bindings: net: realtek: Add property to
- configure LED mode
-Message-ID: <20190703232331.GL250418@google.com>
-References: <20190703193724.246854-1-mka@chromium.org>
- <20190703193724.246854-6-mka@chromium.org>
- <e8fe7baf-e4e0-c713-7b93-07a3859c33c6@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sC1hWLWPHtDF7lICnZ0xHZ7zLIO7+HLBlu2ZrIyAjDY=;
+        b=F/mIcCtuASOioOVlK/sh91XeaBZYb7MjNzgmCukX+6FWS42ioUCxOSlhioSTsiLmsP
+         MYZn1MfumwMP0pS9Mj6+bycL4RiUMAgMybkTi4UV/8NMxvp2Fm8PMrZyH12OxPRoUJpd
+         hgyfkURO5r4aHcYoY2wj9VDsUqxnUQbCdKxKUbZxNBSdAoz+gxUcuOnaRp+beCQWz04e
+         4YK4XCUd7iNDBgIOdbXHmNhX19UqY5ohTl4hfOKKfSclcvZDMBu5snMP+V2yPc8rsUsa
+         ePNDZdDKk/CLi8Y3NIxgZVefTJPY7tdgSRwgE/hP5dvuA1lfJ2LWXLLsIIpTd7QEUBIS
+         5a8A==
+X-Gm-Message-State: APjAAAXzTILhoutfIb3bPmSgm7GG71FOuQE4vLQALkJkQ0mGCOzNy/Z3
+        9dXaXNKrW4xaoG2XhSv96nLUq88Iwx4mhRK6F90=
+X-Google-Smtp-Source: APXvYqworXYV7mXzgAu6WEW5Gt7vDxcAgOdG/buODsHxK+ENH/51Bx5vgNiAQxLaq38KUGaStYHPBZfaT9Kb2hMJaL4=
+X-Received: by 2002:a6b:bf01:: with SMTP id p1mr7790287iof.181.1562197190332;
+ Wed, 03 Jul 2019 16:39:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <e8fe7baf-e4e0-c713-7b93-07a3859c33c6@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20190703205100.142904-1-sdf@google.com>
+In-Reply-To: <20190703205100.142904-1-sdf@google.com>
+From:   Y Song <ys114321@gmail.com>
+Date:   Wed, 3 Jul 2019 16:39:14 -0700
+Message-ID: <CAH3MdRWePmAZNRfGNcBdjKAJ+D33=4Vgg1STYC3khNps8AmaHQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: make verifier loop tests arch independent
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ilya Leoshkevich <iii@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian,
+On Wed, Jul 3, 2019 at 1:51 PM Stanislav Fomichev <sdf@google.com> wrote:
+>
+> Take the first x bytes of pt_regs for scalability tests, there is
+> no real reason we need x86 specific rax.
+>
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
+>  tools/testing/selftests/bpf/progs/loop1.c | 3 ++-
+>  tools/testing/selftests/bpf/progs/loop2.c | 3 ++-
+>  tools/testing/selftests/bpf/progs/loop3.c | 3 ++-
+>  3 files changed, 6 insertions(+), 3 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/progs/loop1.c b/tools/testing/selftests/bpf/progs/loop1.c
+> index dea395af9ea9..d530c61d2517 100644
+> --- a/tools/testing/selftests/bpf/progs/loop1.c
+> +++ b/tools/testing/selftests/bpf/progs/loop1.c
+> @@ -14,11 +14,12 @@ SEC("raw_tracepoint/kfree_skb")
+>  int nested_loops(volatile struct pt_regs* ctx)
+>  {
+>         int i, j, sum = 0, m;
+> +       volatile int *any_reg = (volatile int *)ctx;
+>
+>         for (j = 0; j < 300; j++)
+>                 for (i = 0; i < j; i++) {
+>                         if (j & 1)
+> -                               m = ctx->rax;
+> +                               m = *any_reg;
 
-On Wed, Jul 03, 2019 at 02:37:47PM -0700, Florian Fainelli wrote:
-> On 7/3/19 12:37 PM, Matthias Kaehlcke wrote:
-> > The LED behavior of some Realtek PHYs is configurable. Add the
-> > property 'realtek,led-modes' to specify the configuration of the
-> > LEDs.
-> > 
-> > Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-> > ---
-> > Changes in v2:
-> > - patch added to the series
-> > ---
-> >  .../devicetree/bindings/net/realtek.txt         |  9 +++++++++
-> >  include/dt-bindings/net/realtek.h               | 17 +++++++++++++++++
-> >  2 files changed, 26 insertions(+)
-> >  create mode 100644 include/dt-bindings/net/realtek.h
-> > 
-> > diff --git a/Documentation/devicetree/bindings/net/realtek.txt b/Documentation/devicetree/bindings/net/realtek.txt
-> > index 71d386c78269..40b0d6f9ee21 100644
-> > --- a/Documentation/devicetree/bindings/net/realtek.txt
-> > +++ b/Documentation/devicetree/bindings/net/realtek.txt
-> > @@ -9,6 +9,12 @@ Optional properties:
-> >  
-> >  	SSC is only available on some Realtek PHYs (e.g. RTL8211E).
-> >  
-> > +- realtek,led-modes: LED mode configuration.
-> > +
-> > +	A 0..3 element vector, with each element configuring the operating
-> > +	mode of an LED. Omitted LEDs are turned off. Allowed values are
-> > +	defined in "include/dt-bindings/net/realtek.h".
-> 
-> This should probably be made more general and we should define LED modes
-> that makes sense regardless of the PHY device, introduce a set of
-> generic functions for validating and then add new function pointer for
-> setting the LED configuration to the PHY driver. This would allow to be
-> more future proof where each PHY driver could expose standard LEDs class
-> devices to user-space, and it would also allow facilities like: ethtool
-> -p to plug into that.
-> 
-> Right now, each driver invents its own way of configuring LEDs, that
-> does not scale, and there is not really a good reason for that other
-> than reviewing drivers in isolation and therefore making it harder to
-> extract the commonality. Yes, I realize that since you are the latest
-> person submitting something in that area, you are being selected :)
+I agree. ctx->rax here is only to generate some operations, which
+cannot be optimized away by the compiler. dereferencing a volatile
+pointee may just serve that purpose.
 
-I see the merit of your proposal to come up with a generic mechanism
-to configure Ethernet LEDs, however I can't justify spending much of
-my work time on this. If it is deemed useful I'm happy to send another
-version of the current patchset that addresses the reviewer's comments,
-but if the implementation of a generic LED configuration interface is
-a requirement I will have to abandon at least the LED configuration
-part of this series.
+Comparing the byte code generated with ctx->rax and *any_reg, they are
+slightly different. Using *any_reg is slighly worse, but this should
+be still okay for the test.
+
+>                         else
+>                                 m = j;
+>                         sum += i * m;
+> diff --git a/tools/testing/selftests/bpf/progs/loop2.c b/tools/testing/selftests/bpf/progs/loop2.c
+> index 0637bd8e8bcf..91bb89d901e3 100644
+> --- a/tools/testing/selftests/bpf/progs/loop2.c
+> +++ b/tools/testing/selftests/bpf/progs/loop2.c
+> @@ -14,9 +14,10 @@ SEC("raw_tracepoint/consume_skb")
+>  int while_true(volatile struct pt_regs* ctx)
+>  {
+>         int i = 0;
+> +       volatile int *any_reg = (volatile int *)ctx;
+>
+>         while (true) {
+> -               if (ctx->rax & 1)
+> +               if (*any_reg & 1)
+>                         i += 3;
+>                 else
+>                         i += 7;
+> diff --git a/tools/testing/selftests/bpf/progs/loop3.c b/tools/testing/selftests/bpf/progs/loop3.c
+> index 30a0f6cba080..3a7f12d7186c 100644
+> --- a/tools/testing/selftests/bpf/progs/loop3.c
+> +++ b/tools/testing/selftests/bpf/progs/loop3.c
+> @@ -14,9 +14,10 @@ SEC("raw_tracepoint/consume_skb")
+>  int while_true(volatile struct pt_regs* ctx)
+>  {
+>         __u64 i = 0, sum = 0;
+> +       volatile __u64 *any_reg = (volatile __u64 *)ctx;
+>         do {
+>                 i++;
+> -               sum += ctx->rax;
+> +               sum += *any_reg;
+>         } while (i < 0x100000000ULL);
+>         return sum;
+>  }
+> --
+> 2.22.0.410.gd8fdbe21b5-goog
+
+Ilya Leoshkevich (iii@linux.ibm.com, cc'ed) has another patch set
+trying to solve this problem by introducing s360 arch register access
+macros. I guess for now that patch set is not needed any more?
