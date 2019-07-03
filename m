@@ -2,137 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CAC635DCDF
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 05:26:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85F415DCE3
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 05:27:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727248AbfGCD0Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 23:26:25 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:43626 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727179AbfGCD0Z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jul 2019 23:26:25 -0400
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id C3A5D8A5EF48C5630538;
-        Wed,  3 Jul 2019 11:26:22 +0800 (CST)
-Received: from [127.0.0.1] (10.133.213.239) by DGGEMS407-HUB.china.huawei.com
- (10.3.19.207) with Microsoft SMTP Server id 14.3.439.0; Wed, 3 Jul 2019
- 11:26:18 +0800
-Subject: Re: [PATCH bpf-next] bpf: cgroup: Fix build error without CONFIG_NET
-To:     Yonghong Song <yhs@fb.com>
-References: <20190702132913.26060-1-yuehaibing@huawei.com>
- <20190702155316.GJ6757@mini-arch>
- <fd312c26-db8e-cae3-1c14-869d8e3a62ae@fb.com>
-CC:     Stanislav Fomichev <sdf@fomichev.me>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        "sdf@google.com" <sdf@google.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-From:   Yuehaibing <yuehaibing@huawei.com>
-Message-ID: <780afbff-5b93-099c-f318-7f2704af13d6@huawei.com>
-Date:   Wed, 3 Jul 2019 11:26:17 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.2.0
+        id S1727130AbfGCD1X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 23:27:23 -0400
+Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:43041 "EHLO
+        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727049AbfGCD1X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 23:27:23 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0TVvQlX0_1562124439;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0TVvQlX0_1562124439)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 03 Jul 2019 11:27:19 +0800
+Date:   Wed, 3 Jul 2019 11:27:18 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        oliver.yang@linux.alibaba.com, xlpang@linux.alibaba.com,
+        dust.li@linux.alibaba.com
+Subject: Re: [PATCH net] tcp: refine memory limit test in tcp_fragment()
+Message-ID: <20190703032718.GC55248@TonyMac-Alibaba>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <20190621130955.147974-1-edumazet@google.com>
 MIME-Version: 1.0
-In-Reply-To: <fd312c26-db8e-cae3-1c14-869d8e3a62ae@fb.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.133.213.239]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190621130955.147974-1-edumazet@google.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019/7/3 0:04, Yonghong Song wrote:
-> 
-> 
-> On 7/2/19 8:53 AM, Stanislav Fomichev wrote:
->> On 07/02, YueHaibing wrote:
->>> If CONFIG_NET is not set, gcc building fails:
->>>
->>> kernel/bpf/cgroup.o: In function `cg_sockopt_func_proto':
->>> cgroup.c:(.text+0x237e): undefined reference to `bpf_sk_storage_get_proto'
->>> cgroup.c:(.text+0x2394): undefined reference to `bpf_sk_storage_delete_proto'
->>> kernel/bpf/cgroup.o: In function `__cgroup_bpf_run_filter_getsockopt':
->>> (.text+0x2a1f): undefined reference to `lock_sock_nested'
->>> (.text+0x2ca2): undefined reference to `release_sock'
->>> kernel/bpf/cgroup.o: In function `__cgroup_bpf_run_filter_setsockopt':
->>> (.text+0x3006): undefined reference to `lock_sock_nested'
->>> (.text+0x32bb): undefined reference to `release_sock'
->>>
->>> Add CONFIG_NET dependency to fix this.
->> Can you share the config? Do I understand correctly that you have
->> CONFIG_NET=n and CONFIG_BPF=y? What parts of BPF do you expect to
->> work in this case?
->>
->> Less invasive fix would be something along the lines:
->>
->> diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
->> index 76fa0076f20d..0a00eaca6fae 100644
->> --- a/kernel/bpf/cgroup.c
->> +++ b/kernel/bpf/cgroup.c
->> @@ -939,6 +939,7 @@ int __cgroup_bpf_run_filter_sysctl(struct ctl_table_header *head,
->>   }
->>   EXPORT_SYMBOL(__cgroup_bpf_run_filter_sysctl);
->>   
->> +#ifdef CONFIG_NET
->>   static bool __cgroup_bpf_prog_array_is_empty(struct cgroup *cgrp,
->>   					     enum bpf_attach_type attach_type)
->>   {
->> @@ -1120,6 +1121,7 @@ int __cgroup_bpf_run_filter_getsockopt(struct sock *sk, int level,
->>   	return ret;
->>   }
->>   EXPORT_SYMBOL(__cgroup_bpf_run_filter_getsockopt);
->> +#endif
->>   
->>   static ssize_t sysctl_cpy_dir(const struct ctl_dir *dir, char **bufp,
->>   			      size_t *lenp)
->> @@ -1386,10 +1388,12 @@ static const struct bpf_func_proto *
->>   cg_sockopt_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->>   {
->>   	switch (func_id) {
->> +#ifdef CONFIG_NET
->>   	case BPF_FUNC_sk_storage_get:
->>   		return &bpf_sk_storage_get_proto;
->>   	case BPF_FUNC_sk_storage_delete:
->>   		return &bpf_sk_storage_delete_proto;
->> +#endif
->>   #ifdef CONFIG_INET
->>   	case BPF_FUNC_tcp_sock:
->>   		return &bpf_tcp_sock_proto;
-> 
-> Ah. Just send another email without checking inbox.
-> Looks like the above change is preferred.
-> YueHaibing, could you make change and resubmit your patch?
+Hello Eric,
 
-Sure, I will test and resubmit it.
+	We have applied that commit e358f4af19db ("tcp: tcp_fragment() should apply sane memory limits")
+	as a hotpatch in production environment. We found that it will make
+	tcp long connection reset during sending out packet when applying
+	that commit. 
+	
+	Our applications which in A/B test have suffered that
+	and made them retransmit large data, and then caused retransmission
+	storm and lower the performance and increase RT.
 
+	Therefore we discontinued to apply this hotpatch in A/B test.
+
+	After invesgation, we found this patch already fix this issue in
+	stable. Before applying this patch, we have some questions:
+
+	1. This commit in stable hard coded a magic number 0x20000. I am
+	wondering this value and if there any better solution.
+	2. Is there any known or unknown side effect? If any, we could test
+	it in some suspicious scenarios before testing in prod env.
+
+	Thanks.
+
+Cheers,
+Tony Lu
+
+On Fri, Jun 21, 2019 at 06:09:55AM -0700, Eric Dumazet wrote:
+> tcp_fragment() might be called for skbs in the write queue.
 > 
->>
->>> Reported-by: Hulk Robot <hulkci@huawei.com>
->>> Fixes: 0d01da6afc54 ("bpf: implement getsockopt and setsockopt hooks")
->>> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
->>> ---
->>>   init/Kconfig | 1 +
->>>   1 file changed, 1 insertion(+)
->>>
->>> diff --git a/init/Kconfig b/init/Kconfig
->>> index e2e51b5..341cf2a 100644
->>> --- a/init/Kconfig
->>> +++ b/init/Kconfig
->>> @@ -998,6 +998,7 @@ config CGROUP_PERF
->>>   config CGROUP_BPF
->>>   	bool "Support for eBPF programs attached to cgroups"
->>>   	depends on BPF_SYSCALL
->>> +	depends on NET
->>>   	select SOCK_CGROUP_DATA
->>>   	help
->>>   	  Allow attaching eBPF programs to a cgroup using the bpf(2)
->>> -- 
->>> 2.7.4
->>>
->>>
-
+> Memory limits might have been exceeded because tcp_sendmsg() only
+> checks limits at full skb (64KB) boundaries.
+> 
+> Therefore, we need to make sure tcp_fragment() wont punish applications
+> that might have setup very low SO_SNDBUF values.
+> 
+> Fixes: f070ef2ac667 ("tcp: tcp_fragment() should apply sane memory limits")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Reported-by: Christoph Paasch <cpaasch@apple.com>
+> ---
+>  net/ipv4/tcp_output.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+> index 00c01a01b547ec67c971dc25a74c9258563cf871..0ebc33d1c9e5099d163a234930e213ee35e9fbd1 100644
+> --- a/net/ipv4/tcp_output.c
+> +++ b/net/ipv4/tcp_output.c
+> @@ -1296,7 +1296,8 @@ int tcp_fragment(struct sock *sk, enum tcp_queue tcp_queue,
+>  	if (nsize < 0)
+>  		nsize = 0;
+>  
+> -	if (unlikely((sk->sk_wmem_queued >> 1) > sk->sk_sndbuf)) {
+> +	if (unlikely((sk->sk_wmem_queued >> 1) > sk->sk_sndbuf &&
+> +		     tcp_queue != TCP_FRAG_IN_WRITE_QUEUE)) {
+>  		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPWQUEUETOOBIG);
+>  		return -ENOMEM;
+>  	}
+> -- 
+> 2.22.0.410.gd8fdbe21b5-goog
