@@ -2,139 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EF735EDB7
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 22:36:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 504145EDBE
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 22:41:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727267AbfGCUgx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 16:36:53 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:44996 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727008AbfGCUgx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 16:36:53 -0400
-Received: by mail-pg1-f194.google.com with SMTP id i18so1780074pgl.11
-        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 13:36:52 -0700 (PDT)
+        id S1727127AbfGCUlT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 16:41:19 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:33762 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726955AbfGCUlS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 16:41:18 -0400
+Received: by mail-qt1-f194.google.com with SMTP id h24so5690138qto.0
+        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 13:41:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=rfHYB+lTiI64lxTRcrT8/UH1l7TT30GDFo4j4mMP0os=;
-        b=lzqeBcEuokgv9F+An1HdqVa1FTlpZRSoxJVcua0QQjegnNqpBg13lqdi5uQD9G4S1A
-         zzo2oYALjBRFRF6PsnkhuJjeEtqUHtc4uzNZKKitT/lsjVFmiwZrCIepl+bIri9ldgo/
-         kOhgUwfQa1yH/168NopNHSZYBWEp/1YkmWVUY=
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=7UrgCJh7ynybyKVyA1NdfWdn/54CS6hsmMgsbu19Pro=;
+        b=1xNP2ViByzwg7pUQH7ecLseKnc6Kf20ns0UGpDVoStT7GQGvwmwE6SJ0k1iU5yGYP1
+         YkAGhrv0HN2QIN8wQn6mXjkbKkeU5iP2vQLDN2W3vBP0GIuM0QWyFHyFz6ZvUz/PtGTu
+         LbFashhUsq2OaHMk3U4qMxU16BQ81vhjqjqPqmmr29MJZE1diWeHz5ZEjXmgySm2Zcwl
+         vEonLtxm9XIuu8gCqbEbILaGG75AS6iF8/PterCoeKr5wJQYNeLwGrDFJEKOPk6IN3/W
+         Do59BlnuM6zXZnfMXtx78p5hoPPsg3DnI2cUOWPuIIvurACVL6MnBqrNQuyXjnrggF21
+         sFAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=rfHYB+lTiI64lxTRcrT8/UH1l7TT30GDFo4j4mMP0os=;
-        b=jxOOFf6zJd5v1Ikt7tXWkBvHQZdgKQtEmBkqGiETdoqycCQgZxrbzkjBGRR9ujUTDE
-         WJfs25Q154pWnJ1JjT73sna3Kp3YfXt/72jftIbOdyGl8/h9Lu/Z1kVyBxwIGlN9IObL
-         T9aGbj7KfqqHh4WB5LoaHTtnV9JHyKIbwosIe5vHUaRTy4QVKuugKogS66G2RsbjBTIM
-         Xltb3Z7SU65P64fbbLbpCljoiBm7gXXnX+20Vk1VhcnUnbLgoy/jwyDlsgy/y7u1SZ3b
-         cJQOCBr+rLX5w5+b/WpdYUfWLzIj9Is8hfVUZCGamoJYi3iwSrjn3WwXsTTHOtH+zcbL
-         1rQA==
-X-Gm-Message-State: APjAAAUccR0qQ5VeE3OmhGP699i4h2BL6Cj03auLhQdpVjDyq4LI2tlK
-        qamGeZKErYeJQYU80/ouJ+xvzQ==
-X-Google-Smtp-Source: APXvYqzQxQSIwg820yjADqUQOcipDJH4aw/rukCrBqhLYubTwlnkIxMpQhcr9BOdFoKBZowj+r6xTQ==
-X-Received: by 2002:a63:f817:: with SMTP id n23mr39418076pgh.35.1562186212565;
-        Wed, 03 Jul 2019 13:36:52 -0700 (PDT)
-Received: from localhost ([2620:15c:202:1:75a:3f6e:21d:9374])
-        by smtp.gmail.com with ESMTPSA id u7sm3080371pgr.94.2019.07.03.13.36.51
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 03 Jul 2019 13:36:51 -0700 (PDT)
-Date:   Wed, 3 Jul 2019 13:36:50 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Douglas Anderson <dianders@chromium.org>
-Subject: Re: [PATCH v2 4/7] net: phy: realtek: Enable accessing RTL8211E
- extension pages
-Message-ID: <20190703203650.GF250418@google.com>
-References: <20190703193724.246854-1-mka@chromium.org>
- <20190703193724.246854-4-mka@chromium.org>
- <dd7a569b-41e4-5925-88fc-227e69c82f67@gmail.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=7UrgCJh7ynybyKVyA1NdfWdn/54CS6hsmMgsbu19Pro=;
+        b=iyQNXi+fs/3OgI5+xG0lZ+n/jhsLxagzL6nEXqVXY3LqbMtHT00O4rce++dxAzxwHS
+         sXOIWvDDavEk3lrN914WWwftyU9Xtg1MaX6HMcs1nQIazgdSX9Ay4Q13QfQHsaefFJU0
+         PFRKb5+zSA/A8PCsADEBe4Zo7dYU9t+8HbyJaTIr/u1hjtLibBTeJRcF9RSzdB53MprG
+         8B6qkRIJNazpUV6EaGQMpjOlmmL3KQbY8mPcqYmQSCF6jUp9iRu9qWqRXWYKQxzmezdt
+         iay7AJ/UF0qPFL5gLYpvXdPLb5YOdPxOF+8kzLKGvh4O/UQYzgGAUr41b9rjL0F7I/k9
+         cbmw==
+X-Gm-Message-State: APjAAAX9UJnEvDGGMEzTDSDfYbopr20mEptVfSE88jMiOlsgWrx0kE5B
+        NZqJgNZH9+iBLUcHg6x//AT2KA==
+X-Google-Smtp-Source: APXvYqyNeh/RKaf68L+vXqVqLoLkpZavQ2W3Xnd/iPV5JNOmdb39n5515aLelaTUJXaJbjErhrpkTg==
+X-Received: by 2002:aed:2fa7:: with SMTP id m36mr33207887qtd.344.1562186477682;
+        Wed, 03 Jul 2019 13:41:17 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id y20sm1452439qka.14.2019.07.03.13.41.15
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 03 Jul 2019 13:41:17 -0700 (PDT)
+Date:   Wed, 3 Jul 2019 13:41:13 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Jose Abreu <Jose.Abreu@synopsys.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        Joao Pinto <Joao.Pinto@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Maxime Ripard <maxime.ripard@bootlin.com>,
+        Chen-Yu Tsai <wens@csie.org>
+Subject: Re: [PATCH net-next 1/3] net: stmmac: Implement RX Coalesce Frames
+ setting
+Message-ID: <20190703134113.0e256b33@cakuba.netronome.com>
+In-Reply-To: <003df660052f33891ab74ee79c5f1272b72bde54.1562149883.git.joabreu@synopsys.com>
+References: <cover.1562149883.git.joabreu@synopsys.com>
+        <003df660052f33891ab74ee79c5f1272b72bde54.1562149883.git.joabreu@synopsys.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <dd7a569b-41e4-5925-88fc-227e69c82f67@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 03, 2019 at 10:12:12PM +0200, Heiner Kallweit wrote:
-> On 03.07.2019 21:37, Matthias Kaehlcke wrote:
-> > The RTL8211E has extension pages, which can be accessed after
-> > selecting a page through a custom method. Add a function to
-> > modify bits in a register of an extension page and a helper for
-> > selecting an ext page.
-> > 
-> > rtl8211e_modify_ext_paged() is inspired by its counterpart
-> > phy_modify_paged().
-> > 
-> > Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-> > ---
-> > Changes in v2:
-> > - assign .read/write_page handlers for RTL8211E
+On Wed,  3 Jul 2019 12:37:48 +0200, Jose Abreu wrote:
+> Add support for coalescing RX path by specifying number of frames which
+> don't need to have interrupt on completion bit set.
 > 
-> Maybe this was planned, but it's not part of the patch.
-
-Oops, it was definitely there when I tested ... I guess this got
-somehow lost when changing the patch order and resolving minor
-conflicts, seems like I only build tested after that :/
-
-> > - use phy_select_page() and phy_restore_page(), get rid of
-> >   rtl8211e_restore_page()
-> > - s/rtl821e_select_ext_page/rtl8211e_select_ext_page/
-> > - updated commit message
-> > ---
-> >  drivers/net/phy/realtek.c | 42 +++++++++++++++++++++++++++++++++++++++
-> >  1 file changed, 42 insertions(+)
-> > 
-> > diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-> > index eb815cbe1e72..9cd6241e2a6d 100644
-> > --- a/drivers/net/phy/realtek.c
-> > +++ b/drivers/net/phy/realtek.c
-> > @@ -27,6 +27,9 @@
-> >  #define RTL821x_EXT_PAGE_SELECT			0x1e
-> >  #define RTL821x_PAGE_SELECT			0x1f
-> >  
-> > +#define RTL8211E_EXT_PAGE			7
-> > +#define RTL8211E_EPAGSR				0x1e
-> > +
-> >  /* RTL8211E page 5 */
-> >  #define RTL8211E_EEE_LED_MODE1			0x05
-> >  #define RTL8211E_EEE_LED_MODE2			0x06
-> > @@ -58,6 +61,44 @@ static int rtl821x_write_page(struct phy_device *phydev, int page)
-> >  	return __phy_write(phydev, RTL821x_PAGE_SELECT, page);
-> >  }
-> >  
-> > +static int rtl8211e_select_ext_page(struct phy_device *phydev, int page)
-> > +{
-> > +	int ret, oldpage;
-> > +
-> > +	oldpage = phy_select_page(phydev, RTL8211E_EXT_PAGE);
-> > +	if (oldpage < 0)
-> > +		return oldpage;
-> > +
-> > +	ret = __phy_write(phydev, RTL8211E_EPAGSR, page);
-> > +	if (ret)
-> > +		return phy_restore_page(phydev, page, ret);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int __maybe_unused rtl8211e_modify_ext_paged(struct phy_device *phydev,
-> > +				    int page, u32 regnum, u16 mask, u16 set)
+> This is only available when RX Watchdog is enabled.
 > 
-> This __maybe_unused isn't too nice as you use the function in a subsequent patch.
+> Signed-off-by: Jose Abreu <joabreu@synopsys.com>
+> Cc: Joao Pinto <jpinto@synopsys.com>
+> Cc: David S. Miller <davem@davemloft.net>
+> Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+> Cc: Alexandre Torgue <alexandre.torgue@st.com>
+> Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+> Cc: Maxime Ripard <maxime.ripard@bootlin.com>
+> Cc: Chen-Yu Tsai <wens@csie.org>
 
-It's needed to avoid a compiler warning (unless we don't care about
-that for an interim version), the attribute is removed again in the
-next patch.
+Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
