@@ -2,141 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AB63A5E4EC
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 15:12:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C38A5E518
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 15:16:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726964AbfGCNMG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 09:12:06 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:49491 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725830AbfGCNMG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 09:12:06 -0400
-Received: by mail-io1-f70.google.com with SMTP id x24so2550314ioh.16
-        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 06:12:05 -0700 (PDT)
+        id S1727239AbfGCNQC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 09:16:02 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:38813 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726430AbfGCNQC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 09:16:02 -0400
+Received: by mail-pf1-f193.google.com with SMTP id y15so1276098pfn.5;
+        Wed, 03 Jul 2019 06:16:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=/N6bhv7n5rk1xSnhXzu5sWrDYu3AD9vXv7D2iO8sl+I=;
+        b=nADW0EpdVCqFBqlWCB+D3raoOeTtpbpjdsZivyFYxE9wrNuGMroi3Dbdqn+CDkARsC
+         HgNko1T8oWX0lCrgtMu/MFM7ZH6G2N1PPGjXoRKXm9RtAq1Mfs1uPZyT4H+dR3a/MWqW
+         GRQT+xDeE70u0gO/4HzkvhRUNaEracqrmW9w3ADEAeno/aroPvo0lN+j8onfWXCd5lVn
+         4RMKyXahAdY3jomiCTOG/ngNcrxNm5zonJm7kys25w+1oiC/zfMClQcqd908xUhNYoOT
+         LFkCKYjSzexFi1ixuZPaRJu40/VK2Q63KXkCrbcYsduuBnTD1Z6Ofy86k+oPnpaqZMOS
+         ZMoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=0LKzWy3rKCKUf2ADkmhCBlAO8nooReUA+k7uMtJw9z8=;
-        b=Z8hJGBIGqmcUPjJvMWnp+TZzr7184WpCro4nnwnp+O9WwYN/iqXsDvOFekjpg1j1wa
-         M5YaBiPeZoKsaygXwP9O41ij6vMskZLldDNqo1klIECqqBWYC+GH2KAbBv2jC9NJq6XN
-         +kux/vR4cc5AOeuG2iIFFLJIqXUOK8Mn+qYxq47rqqB8rqHTLznoIUsvKIO8Sdxwt8w9
-         m2TC7/YpZMHkTrwGsFfdopxGpuHNCF75+KaURtajTL4DiP4PEOL91C/8XcrZ89l+UWlw
-         o/CVHGCAWrhja9xHZ7Kr8cU2VAxCcedg/GRbWuowgm1mLxTopzbBgsiU2PShUJzjjkAi
-         PVQw==
-X-Gm-Message-State: APjAAAXhC2Kjh1lAOXaMZrYHIwrTaUEep5TktlgUpJTk2E+xzsvXafu4
-        PqfqcKCETfALS66ZOhPsIkDHEU1f3aWfG1EX84N5sSpxanQJ
-X-Google-Smtp-Source: APXvYqzjw5aaitiWWD6dEocipz83t7ATXlepPRhnUXEFvzDxK0lxT2Q2XJhDNQIEV9xnvLBTPgvvzofYGptzSTHYKvri+paEh/nX
-MIME-Version: 1.0
-X-Received: by 2002:a02:b696:: with SMTP id i22mr10221274jam.87.1562159525386;
- Wed, 03 Jul 2019 06:12:05 -0700 (PDT)
-Date:   Wed, 03 Jul 2019 06:12:05 -0700
-In-Reply-To: <00000000000035c756058848954a@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000097dfa5058cc69be3@google.com>
-Subject: Re: KASAN: use-after-free Read in hci_cmd_timeout
-From:   syzbot <syzbot+19a9f729f05272857487@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johan.hedberg@gmail.com,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        marcel@holtmann.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=/N6bhv7n5rk1xSnhXzu5sWrDYu3AD9vXv7D2iO8sl+I=;
+        b=OCODlUVZ9xXYLCJz/rUppfObwjQrHoKkvtzsGGazmk8OBnjDFYGXPOnc3jBsUR5NSf
+         Mi9wLqQQk3Hiy6n4h6Ka0lqLSmXYnzenvd3cHnqJEFBLZy1C6RjTfQ+T3hJgLRya4hfS
+         vbOBC1qtyP+qONSpkfIMAjUHhkf3H/vSW52eVcY/WiO4MFIWfWpWAcb5zEl4JDsllxIY
+         qR1acat4DfuqpikXKiA5ZjtGe0nQP9QEUOlFQyQ4GgRnh+1wjYsYyyPoVtdnsvpmwxRt
+         rarvkH3IFvNYzavenujXHtHmdiC6GuPnPdFiEIMc/UM9lFCvSIxhqlvM2ceacIAH87R/
+         CkdQ==
+X-Gm-Message-State: APjAAAVIY+tjNVzdUW57PJQyqn7MpXSHGWamCwuZcarEc0dtzUwclZdh
+        2DF+Pm6ucMEkOcqIlQ4IKauvRumb3Vw=
+X-Google-Smtp-Source: APXvYqwauB2XShUYH/QSH+xCmI/kvQbp5/gZMfeCOo17rCDj5koY6RTu/aIw6+Z1YQUpXnQ202BEcA==
+X-Received: by 2002:a17:90a:b104:: with SMTP id z4mr12756193pjq.102.1562159761898;
+        Wed, 03 Jul 2019 06:16:01 -0700 (PDT)
+Received: from hfq-skylake.ipads-lab.se.sjtu.edu.cn ([202.120.40.82])
+        by smtp.googlemail.com with ESMTPSA id u5sm2181765pgp.19.2019.07.03.06.15.58
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 03 Jul 2019 06:16:00 -0700 (PDT)
+From:   Fuqian Huang <huangfq.daxian@gmail.com>
+Cc:     Tariq Toukan <tariqt@mellanox.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Fuqian Huang <huangfq.daxian@gmail.com>
+Subject: [PATCH 14/30] net/ethernet: Use kmemdup rather than duplicating its implementation
+Date:   Wed,  3 Jul 2019 21:15:51 +0800
+Message-Id: <20190703131551.25316-1-huangfq.daxian@gmail.com>
+X-Mailer: git-send-email 2.11.0
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following crash on:
+kmemdup is introduced to duplicate a region of memory in a neat way.
+Rather than kmalloc/kzalloc + memset, which the programmer needs to
+write the size twice (sometimes lead to mistakes), kmemdup improves
+readability, leads to smaller code and also reduce the chances of mistakes.
+Suggestion to use kmemdup rather than using kmalloc/kzalloc + memset.
 
-HEAD commit:    eca94432 Bluetooth: Fix faulty expression for minimum encr..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1006cc8ba00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=f6451f0da3d42d53
-dashboard link: https://syzkaller.appspot.com/bug?extid=19a9f729f05272857487
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=125b7999a00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=176deefba00000
+Signed-off-by: Fuqian Huang <huangfq.daxian@gmail.com>
+---
+ drivers/net/ethernet/mellanox/mlx4/resource_tracker.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+19a9f729f05272857487@syzkaller.appspotmail.com
-
-Bluetooth: hci0: command 0xfc11 tx timeout
-==================================================================
-BUG: KASAN: use-after-free in hci_cmd_timeout+0x1fe/0x220  
-net/bluetooth/hci_core.c:2614
-Read of size 8 at addr ffff88809e8a3c48 by task kworker/0:5/9461
-
-CPU: 0 PID: 9461 Comm: kworker/0:5 Not tainted 5.2.0-rc7+ #40
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Workqueue: events hci_cmd_timeout
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
-  print_address_description.cold+0x7c/0x20d mm/kasan/report.c:188
-  __kasan_report.cold+0x1b/0x40 mm/kasan/report.c:317
-  kasan_report+0x12/0x20 mm/kasan/common.c:614
-  __asan_report_load8_noabort+0x14/0x20 mm/kasan/generic_report.c:132
-  hci_cmd_timeout+0x1fe/0x220 net/bluetooth/hci_core.c:2614
-  process_one_work+0x989/0x1790 kernel/workqueue.c:2269
-  worker_thread+0x98/0xe40 kernel/workqueue.c:2415
-  kthread+0x354/0x420 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-
-Allocated by task 9446:
-  save_stack+0x23/0x90 mm/kasan/common.c:71
-  set_track mm/kasan/common.c:79 [inline]
-  __kasan_kmalloc mm/kasan/common.c:489 [inline]
-  __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:462
-  kasan_slab_alloc+0xf/0x20 mm/kasan/common.c:497
-  slab_post_alloc_hook mm/slab.h:437 [inline]
-  slab_alloc mm/slab.c:3326 [inline]
-  kmem_cache_alloc+0x11a/0x6f0 mm/slab.c:3488
-  skb_clone+0x154/0x3d0 net/core/skbuff.c:1321
-  hci_cmd_work+0xe0/0x2a0 net/bluetooth/hci_core.c:4495
-  process_one_work+0x989/0x1790 kernel/workqueue.c:2269
-  worker_thread+0x98/0xe40 kernel/workqueue.c:2415
-  kthread+0x354/0x420 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-
-Freed by task 1501:
-  save_stack+0x23/0x90 mm/kasan/common.c:71
-  set_track mm/kasan/common.c:79 [inline]
-  __kasan_slab_free+0x102/0x150 mm/kasan/common.c:451
-  kasan_slab_free+0xe/0x10 mm/kasan/common.c:459
-  __cache_free mm/slab.c:3432 [inline]
-  kmem_cache_free+0x86/0x260 mm/slab.c:3698
-  kfree_skbmem net/core/skbuff.c:620 [inline]
-  kfree_skbmem+0xc5/0x150 net/core/skbuff.c:614
-  __kfree_skb net/core/skbuff.c:677 [inline]
-  kfree_skb net/core/skbuff.c:694 [inline]
-  kfree_skb+0xf0/0x390 net/core/skbuff.c:688
-  hci_dev_do_open+0xb20/0x1760 net/bluetooth/hci_core.c:1550
-  hci_power_on+0x10d/0x580 net/bluetooth/hci_core.c:2171
-  process_one_work+0x989/0x1790 kernel/workqueue.c:2269
-  worker_thread+0x98/0xe40 kernel/workqueue.c:2415
-  kthread+0x354/0x420 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-
-The buggy address belongs to the object at ffff88809e8a3b80
-  which belongs to the cache skbuff_head_cache of size 224
-The buggy address is located 200 bytes inside of
-  224-byte region [ffff88809e8a3b80, ffff88809e8a3c60)
-The buggy address belongs to the page:
-page:ffffea00027a28c0 refcount:1 mapcount:0 mapping:ffff88821baabb40  
-index:0x0
-flags: 0x1fffc0000000200(slab)
-raw: 01fffc0000000200 ffffea00027b2d08 ffffea00021b83c8 ffff88821baabb40
-raw: 0000000000000000 ffff88809e8a3040 000000010000000c 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
-  ffff88809e8a3b00: fb fb fb fb fc fc fc fc fc fc fc fc fc fc fc fc
-  ffff88809e8a3b80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> ffff88809e8a3c00: fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
-                                               ^
-  ffff88809e8a3c80: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
-  ffff88809e8a3d00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
+diff --git a/drivers/net/ethernet/mellanox/mlx4/resource_tracker.c b/drivers/net/ethernet/mellanox/mlx4/resource_tracker.c
+index 4356f3a58002..e971a6bdf0d5 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/resource_tracker.c
++++ b/drivers/net/ethernet/mellanox/mlx4/resource_tracker.c
+@@ -4437,14 +4437,13 @@ int mlx4_QP_FLOW_STEERING_ATTACH_wrapper(struct mlx4_dev *dev, int slave,
+ 		goto err_detach;
+ 
+ 	mbox_size = qp_attach_mbox_size(inbox->buf);
+-	rrule->mirr_mbox = kmalloc(mbox_size, GFP_KERNEL);
++	rrule->mirr_mbox = kmemdup(inbox->buf, mbox_size, GFP_KERNEL);
+ 	if (!rrule->mirr_mbox) {
+ 		err = -ENOMEM;
+ 		goto err_put_rule;
+ 	}
+ 	rrule->mirr_mbox_size = mbox_size;
+ 	rrule->mirr_rule_id = 0;
+-	memcpy(rrule->mirr_mbox, inbox->buf, mbox_size);
+ 
+ 	/* set different port */
+ 	ctrl = (struct mlx4_net_trans_rule_hw_ctrl *)rrule->mirr_mbox;
+-- 
+2.11.0
 
