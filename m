@@ -2,83 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 506105E604
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 16:05:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FA525E60E
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 16:07:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727100AbfGCOF2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 10:05:28 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:51204 "EHLO vps0.lunn.ch"
+        id S1726762AbfGCOHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 10:07:10 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:49890 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727079AbfGCOF1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jul 2019 10:05:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=ocBZZm2C0AqTeZY6iNexdtzLdOjyd9FHHH3bSX7zaec=; b=SnKFE7+Zlhm90oZGy2bd5UIeuU
-        ZsmnkDOgJtBzYEu9NLHTb2eZj794oqlnrJAvCTWhFxVIy7cGt80hhKjSVF03oDW7AEid1qGF0PJZg
-        555lSSrP7JQlP+6gQekUzsztjjpaX3SHcO56tpSzNNpluDZ2AqndwA1qaLIOUHl8BVtM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hifsu-0004uU-MQ; Wed, 03 Jul 2019 16:05:20 +0200
-Date:   Wed, 3 Jul 2019 16:05:20 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Voon Weifeng <weifeng.voon@intel.com>
+        id S1725830AbfGCOHK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jul 2019 10:07:10 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 2A70B3162908;
+        Wed,  3 Jul 2019 14:07:05 +0000 (UTC)
+Received: from localhost.localdomain.com (ovpn-117-79.ams2.redhat.com [10.36.117.79])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1D0591001B21;
+        Wed,  3 Jul 2019 14:07:02 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jose Abreu <joabreu@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        biao huang <biao.huang@mediatek.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Kweh Hock Leong <hock.leong.kweh@intel.com>
-Subject: Re: [PATCH v1 net-next] net: stmmac: enable clause 45 mdio support
-Message-ID: <20190703140520.GA18473@lunn.ch>
-References: <1562147404-4371-1-git-send-email-weifeng.voon@intel.com>
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Subject: [PATCH net-next v2 0/5] net: use ICW for sk_proto->{send,recv}msg
+Date:   Wed,  3 Jul 2019 16:06:51 +0200
+Message-Id: <cover.1562162469.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1562147404-4371-1-git-send-email-weifeng.voon@intel.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Wed, 03 Jul 2019 14:07:10 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 03, 2019 at 05:50:04PM +0800, Voon Weifeng wrote:
-> @@ -155,22 +171,26 @@ static int stmmac_mdio_read(struct mii_bus *bus, int phyaddr, int phyreg)
->  	struct stmmac_priv *priv = netdev_priv(ndev);
->  	unsigned int mii_address = priv->hw->mii.addr;
->  	unsigned int mii_data = priv->hw->mii.data;
-> -	u32 v;
-> -	int data;
->  	u32 value = MII_BUSY;
-> +	int data = 0;
-> +	u32 v;
->  
->  	value |= (phyaddr << priv->hw->mii.addr_shift)
->  		& priv->hw->mii.addr_mask;
->  	value |= (phyreg << priv->hw->mii.reg_shift) & priv->hw->mii.reg_mask;
->  	value |= (priv->clk_csr << priv->hw->mii.clk_csr_shift)
->  		& priv->hw->mii.clk_csr_mask;
-> -	if (priv->plat->has_gmac4)
-> +	if (priv->plat->has_gmac4) {
->  		value |= MII_GMAC4_READ;
-> +		if (phyreg & MII_ADDR_C45)
-> +			stmmac_mdio_c45_setup(priv, phyreg, &value, &data);
-> +	}
->  
->  	if (readl_poll_timeout(priv->ioaddr + mii_address, v, !(v & MII_BUSY),
->  			       100, 10000))
->  		return -EBUSY;
->  
-> +	writel(data, priv->ioaddr + mii_data);
+This series extends ICW usage to one of the few remaining spots in fast-path
+still hitting per packet retpoline overhead, namely the sk_proto->{send,recv}msg
+calls.
 
-That looks odd. Could you explain why it is needed.
+The first 3 patches in this series refactor the existing code so that applying
+the ICW macros is straight-forward: we demux inet_{recv,send}msg in ipv4 and
+ipv6 variants so that each of them can easily select the appropriate TCP or UDP
+direct call. While at it, a new helper is created to avoid excessive code
+duplication, and the current ICWs for inet_{recv,send}msg are adjusted
+accordingly.
 
-Thanks
-	Andrew
+The last 2 patches really introduce the new ICW use-case, respectively for the
+ipv6 and the ipv4 code path.
+
+This gives up to 5% performance improvement under UDP flood, and smaller but
+measurable gains for TCP RR workloads.
+
+v1 -> v2:
+ - drop inet6_{recv,send}msg declaration from header file,
+   prefer ICW macro instead
+ - avoid unneeded reclaration for udp_sendmsg, as suggested by Willem
+
+Paolo Abeni (5):
+  inet: factor out inet_send_prepare()
+  ipv6: provide and use ipv6 specific version for {recv,send}msg
+  net: adjust socket level ICW to cope with ipv6 variant of
+    {recv,send}msg
+  ipv6: use indirect call wrappers for {tcp,udpv6}_{recv,send}msg()
+  ipv4: use indirect call wrappers for {tcp,udp}_{recv,send}msg()
+
+ include/net/inet_common.h |  1 +
+ net/ipv4/af_inet.c        | 31 ++++++++++++++++++-----------
+ net/ipv6/af_inet6.c       | 41 +++++++++++++++++++++++++++++++++++----
+ net/socket.c              | 23 +++++++++++-----------
+ 4 files changed, 69 insertions(+), 27 deletions(-)
+
+-- 
+2.20.1
+
