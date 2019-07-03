@@ -2,79 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CA535E421
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 14:41:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0B525E48E
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 14:52:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726721AbfGCMlj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 08:41:39 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:44770 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725943AbfGCMlj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 08:41:39 -0400
-Received: by mail-lf1-f67.google.com with SMTP id r15so1649521lfm.11
-        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 05:41:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Xy4atC47KUkhRxvml94Kq1gg6hZsMUYINS4fjvWdvCo=;
-        b=McGlDSOxEhWCKthKIE+gpLcPxbWgwKMrrLO60s7Qh4nwlG49H+YLqxceuhzil1otMt
-         K37j2Icrf10zt7CxCWNJi1UDiM+ejYhV1kb2j1jWfRnwY8u9S0O8PtNMWArTBz4Gxb7w
-         R6teFD8bDFWDPt5c9JoIKrYC48wvC/px85/MDRT+SA9nxDgoBNhSks7DE4FDo61vDmEL
-         V0gSZfi9DaWn1asSSQN0/4VhIQ83nmB9GVns7ibbxOSDedWet6lcvPkvFoETlRymLS1n
-         yo8SnuurCvS+8qYuBTeAx/GTnUFau/ttRSu97efdls7MS/OtVLUq/sefWcGcGf0dQr7l
-         yuZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Xy4atC47KUkhRxvml94Kq1gg6hZsMUYINS4fjvWdvCo=;
-        b=XW9zd3G9ZX4VWNpAj4QocKArRLI1MTZHKZesxruXcg2OQyUQuuu3mAKq5dvaZw7DC6
-         PrHzc66DxLYE+7VQYVN4RGsUhEPBQ7VihW6OumgogII4M9L1rWE08QTEy6xpDUIi21pp
-         byjv33vwgw9qfbrRVOc17x4C+nctqta0pbbG9O8m3V5ZGrEinflDVzjWcsNkt0ZQuIFF
-         uKzV/2TRiXIu5u4U3PV8h+oQyMGgWRbXAHiFWssQvWtwrdFbnCB7GUsOp7TTEZZbMvqh
-         nhlfpEkh/qGuN9bspFO6PKPyRNmXpdjn7Ps9vQr9O4qwWRyURNQeb6nerunFY1suH0bp
-         5vdg==
-X-Gm-Message-State: APjAAAXMdZJbL43O4UmxV7OZlrmGBK8fz4YK2ojLFPH83HrVZMiYBnKQ
-        VglGn/KU2FwkR5aq3ZTqOrq2ch6H76+3EQsO2omPBw==
-X-Google-Smtp-Source: APXvYqxSZq8kK+Sf3ly/VpTa30WhTR81fi6H8aQwENAVhDZ+xbderjUjpKdryIIlUpIb+lO7f/hQ0SNAIZdSKuEFh/Q=
-X-Received: by 2002:a19:7616:: with SMTP id c22mr18395121lff.115.1562157697300;
- Wed, 03 Jul 2019 05:41:37 -0700 (PDT)
+        id S1726581AbfGCMwj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 08:52:39 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:45964 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725830AbfGCMwj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jul 2019 08:52:39 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id DA2DC356E4;
+        Wed,  3 Jul 2019 12:52:38 +0000 (UTC)
+Received: from T460ec.redhat.com (ovpn-116-169.ams2.redhat.com [10.36.116.169])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id ADD977BE6C;
+        Wed,  3 Jul 2019 12:52:36 +0000 (UTC)
+From:   Eelco Chaudron <echaudro@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andrii.nakryiko@gmail.com,
+        magnus.karlsson@gmail.com
+Subject: [PATCH bpf-next v3] libbpf: add xsk_ring_prod__nb_free() function
+Date:   Wed,  3 Jul 2019 14:52:32 +0200
+Message-Id: <ea49f66f73aedcdade979605dab6b2474e2dc4cb.1562145300.git.echaudro@redhat.com>
 MIME-Version: 1.0
-References: <20190701152723.624-1-paweldembicki@gmail.com> <20190703085757.1027-1-paweldembicki@gmail.com>
-In-Reply-To: <20190703085757.1027-1-paweldembicki@gmail.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Wed, 3 Jul 2019 14:41:26 +0200
-Message-ID: <CACRpkdabQbVosWjD22E6pM8t3gu8c=5qNMEtRsp2HLV0PJ9nYg@mail.gmail.com>
-Subject: Re: [PATCH v2 1/4] net: dsa: Change DT bindings for Vitesse VSC73xx switches
-To:     Pawel Dembicki <paweldembicki@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.30]); Wed, 03 Jul 2019 12:52:38 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 3, 2019 at 10:58 AM Pawel Dembicki <paweldembicki@gmail.com> wrote:
+When an AF_XDP application received X packets, it does not mean X
+frames can be stuffed into the producer ring. To make it easier for
+AF_XDP applications this API allows them to check how many frames can
+be added into the ring.
 
-> This commit introduce how to use vsc73xx platform driver.
->
-> Signed-off-by: Pawel Dembicki <paweldembicki@gmail.com>
-> ---
-> Changes in v2:
-> - Drop -spi and -platform suffix
-> - Change commit message
+Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+---
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+v2 -> v3
+ - Removed cache by pass option
 
-Yours,
-Linus Walleij
+v1 -> v2
+ - Renamed xsk_ring_prod__free() to xsk_ring_prod__nb_free()
+ - Add caching so it will only touch global state when needed
+
+ tools/lib/bpf/xsk.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
+index 82ea71a0f3ec..3411556e04d9 100644
+--- a/tools/lib/bpf/xsk.h
++++ b/tools/lib/bpf/xsk.h
+@@ -76,7 +76,7 @@ xsk_ring_cons__rx_desc(const struct xsk_ring_cons *rx, __u32 idx)
+ 	return &descs[idx & rx->mask];
+ }
+ 
+-static inline __u32 xsk_prod_nb_free(struct xsk_ring_prod *r, __u32 nb)
++static inline __u32 xsk_prod__nb_free(struct xsk_ring_prod *r, __u32 nb)
+ {
+ 	__u32 free_entries = r->cached_cons - r->cached_prod;
+ 
+@@ -110,7 +110,7 @@ static inline __u32 xsk_cons_nb_avail(struct xsk_ring_cons *r, __u32 nb)
+ static inline size_t xsk_ring_prod__reserve(struct xsk_ring_prod *prod,
+ 					    size_t nb, __u32 *idx)
+ {
+-	if (xsk_prod_nb_free(prod, nb) < nb)
++	if (xsk_prod__nb_free(prod, nb) < nb)
+ 		return 0;
+ 
+ 	*idx = prod->cached_prod;
+-- 
+2.20.1
+
