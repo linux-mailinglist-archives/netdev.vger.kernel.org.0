@@ -2,68 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A7295E61E
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 16:10:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30A7A5E644
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 16:16:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726614AbfGCOKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 10:10:02 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:51238 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725847AbfGCOKB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jul 2019 10:10:01 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=f6EkhFgDj5yNV/vCI0wtMQPeE4pwYm8OnUmJ/ES9SNk=; b=ZJsMtNKLwWz4HxFysQuizCRFHx
-        uUVbL+SUaZeE7XUmuGSIVsCr74aJAsQAYhPcpDWs18Fros2e3mEH/T6mYgqil3qfaoNd8T8qC6/Nb
-        KHKc4moBUYt5cIev2JfDm93JJHbVQ4hdyRygVKqn52HfN8V9sZQ3qEBoDtPPQRNArxts=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hifxO-0004xj-Ir; Wed, 03 Jul 2019 16:09:58 +0200
-Date:   Wed, 3 Jul 2019 16:09:58 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Parav Pandit <parav@mellanox.com>,
+        id S1727153AbfGCOQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 10:16:18 -0400
+Received: from mx2.suse.de ([195.135.220.15]:38702 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726217AbfGCOQS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jul 2019 10:16:18 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 22072AF2C;
+        Wed,  3 Jul 2019 14:16:17 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id E765CE0159; Wed,  3 Jul 2019 16:16:14 +0200 (CEST)
+Date:   Wed, 3 Jul 2019 16:16:14 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Jiri Pirko <jiri@resnulli.us>, David Miller <davem@davemloft.net>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com
-Subject: Re: [PATCH net-next 1/3] devlink: Introduce PCI PF port flavour and
- port attribute
-Message-ID: <20190703140958.GB18473@lunn.ch>
-References: <20190701122734.18770-2-parav@mellanox.com>
- <20190701162650.17854185@cakuba.netronome.com>
- <AM0PR05MB4866085BC8B082EFD5B59DD2D1F80@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20190702104711.77618f6a@cakuba.netronome.com>
- <AM0PR05MB4866C19C9E6ED767A44C3064D1F80@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20190702164252.6d4fe5e3@cakuba.netronome.com>
- <AM0PR05MB4866F1AF0CF5914B372F0BCCD1FB0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20190702191536.4de1ac68@cakuba.netronome.com>
- <AM0PR05MB486624D2D9BAD293CD5FB33CD1FB0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20190703103720.GU2250@nanopsycho>
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Linville <linville@tuxdriver.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v6 07/15] ethtool: support for netlink
+ notifications
+Message-ID: <20190703141614.GL20101@unicorn.suse.cz>
+References: <cover.1562067622.git.mkubecek@suse.cz>
+ <4dcac81783de8686edefa262a1db75f9e961b123.1562067622.git.mkubecek@suse.cz>
+ <20190703133352.GY2250@nanopsycho>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190703103720.GU2250@nanopsycho>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <20190703133352.GY2250@nanopsycho>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> However, we expose it for DEVLINK_PORT_FLAVOUR_CPU and
-> DEVLINK_PORT_FLAVOUR_DSA. Not sure if it makes sense there either.
-> Ccing Florian, Andrew and Vivien.
-> What do you guys think?
+On Wed, Jul 03, 2019 at 03:33:52PM +0200, Jiri Pirko wrote:
+> >+/* notifications */
+> >+
+> >+typedef void (*ethnl_notify_handler_t)(struct net_device *dev,
+> >+				       struct netlink_ext_ack *extack,
+> >+				       unsigned int cmd, u32 req_mask,
+> >+				       const void *data);
+> >+
+> >+static const ethnl_notify_handler_t ethnl_notify_handlers[] = {
+> >+};
+> >+
+> >+void ethtool_notify(struct net_device *dev, struct netlink_ext_ack *extack,
+> >+		    unsigned int cmd, u32 req_mask, const void *data)
+> 
+> What's "req_mask" ?
 
-Hi Jiri
+It's infomask to interpret the same way as if it came from request
+header (the notification triggered by a SET request or its ioctl
+equivalent uses the same format as corresponding GET_REPLY message and
+is created by the same code). But it could be called infomask, I have no
+strong opinion about that.
 
-DSA and CPU ports are physical ports of the switch. And there can be
-multiple DSA ports, and maybe sometime real soon now, multiple CPU
-ports. So having a number associated with them is useful.
+> >+{
+> >+	if (unlikely(!ethnl_ok))
+> >+		return;
+> >+	ASSERT_RTNL();
+> >+
+> >+	if (likely(cmd < ARRAY_SIZE(ethnl_notify_handlers) &&
+> >+		   ethnl_notify_handlers[cmd]))
+> 
+> How it could be null?
 
-       Andrew
+Notification message types share the enum with other kernel messages:
+
+/* message types - kernel to userspace */
+enum {
+	ETHTOOL_MSG_KERNEL_NONE,
+	ETHTOOL_MSG_STRSET_GET_REPLY,
+	ETHTOOL_MSG_SETTINGS_GET_REPLY,
+	ETHTOOL_MSG_SETTINGS_NTF,
+	ETHTOOL_MSG_SETTINGS_SET_REPLY,
+	ETHTOOL_MSG_INFO_GET_REPLY,
+	ETHTOOL_MSG_PARAMS_GET_REPLY,
+	ETHTOOL_MSG_PARAMS_NTF,
+	ETHTOOL_MSG_NWAYRST_NTF,
+	ETHTOOL_MSG_PHYSID_NTF,
+	ETHTOOL_MSG_RESET_NTF,
+	ETHTOOL_MSG_RESET_ACT_REPLY,
+	ETHTOOL_MSG_RXFLOW_GET_REPLY,
+	ETHTOOL_MSG_RXFLOW_NTF,
+	ETHTOOL_MSG_RXFLOW_SET_REPLY,
+
+	/* add new constants above here */
+	__ETHTOOL_MSG_KERNEL_CNT,
+	ETHTOOL_MSG_KERNEL_MAX = (__ETHTOOL_MSG_KERNEL_CNT - 1)
+};
+
+Only entries for *_NTF types are non-null in ethnl_notify_handlers[]:
+
+static const ethnl_notify_handler_t ethnl_notify_handlers[] = {
+	[ETHTOOL_MSG_SETTINGS_NTF]	= ethnl_std_notify,
+	[ETHTOOL_MSG_PARAMS_NTF]	= ethnl_std_notify,
+	[ETHTOOL_MSG_NWAYRST_NTF]	= ethnl_nwayrst_notify,
+	[ETHTOOL_MSG_PHYSID_NTF]	= ethnl_physid_notify,
+	[ETHTOOL_MSG_RESET_NTF]		= ethnl_reset_notify,
+	[ETHTOOL_MSG_RXFLOW_NTF]	= ethnl_rxflow_notify,
+};
+
+If the check above fails, it means that kernel code tried to send
+a notification with type which does not exist or is not a notification,
+i.e. a bug in kernel; that's why the WARN_ONCE.
+
+Michal
+
+> >+		ethnl_notify_handlers[cmd](dev, extack, cmd, req_mask, data);
+> >+	else
+> >+		WARN_ONCE(1, "notification %u not implemented (dev=%s, req_mask=0x%x)\n",
+> >+			  cmd, netdev_name(dev), req_mask);
+> >+}
+> >+EXPORT_SYMBOL(ethtool_notify);
