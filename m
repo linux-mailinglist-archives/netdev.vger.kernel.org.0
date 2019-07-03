@@ -2,135 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EDBE5DB5C
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 04:08:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E0E85DB62
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 04:11:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727107AbfGCCIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 22:08:43 -0400
-Received: from mail-eopbgr30059.outbound.protection.outlook.com ([40.107.3.59]:59970
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726329AbfGCCIn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jul 2019 22:08:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SHOnnTjiz6hIzee8sPfl+qU8r7UuAKvecbN9esSqZHg=;
- b=Qo84JkXcFwZoMbnri7KM0Bxdb/AHR0u9vJ3SBgv4ZDAVhlnGaE42atSjPSP1NyRirIV7gvn7Z5YGdLv9Ec9W+lYUi1isgHZaGByKbTEQk9wrQEpc469/Ql6KFKAG3PWzEmiBaXvhJQF9ntsxhG7Vz09DzK2SXhK8ZcPO6ypTsSM=
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
- AM0PR05MB6385.eurprd05.prod.outlook.com (20.179.33.147) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2032.20; Wed, 3 Jul 2019 02:08:39 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::217d:2cd7:c8da:9279]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::217d:2cd7:c8da:9279%5]) with mapi id 15.20.2032.019; Wed, 3 Jul 2019
- 02:08:39 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-CC:     Jiri Pirko <jiri@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: RE: [PATCH net-next 1/3] devlink: Introduce PCI PF port flavour and
- port attribute
-Thread-Topic: [PATCH net-next 1/3] devlink: Introduce PCI PF port flavour and
- port attribute
-Thread-Index: AQHVMAhn8T46v1pXDUi3XMXT/4YtI6a2aNkAgABHFVCAAOxagIAAD8wAgABTlQCAACfsUA==
-Date:   Wed, 3 Jul 2019 02:08:39 +0000
-Message-ID: <AM0PR05MB4866F1AF0CF5914B372F0BCCD1FB0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <20190701122734.18770-1-parav@mellanox.com>
-        <20190701122734.18770-2-parav@mellanox.com>
-        <20190701162650.17854185@cakuba.netronome.com>
-        <AM0PR05MB4866085BC8B082EFD5B59DD2D1F80@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190702104711.77618f6a@cakuba.netronome.com>
-        <AM0PR05MB4866C19C9E6ED767A44C3064D1F80@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20190702164252.6d4fe5e3@cakuba.netronome.com>
-In-Reply-To: <20190702164252.6d4fe5e3@cakuba.netronome.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=parav@mellanox.com; 
-x-originating-ip: [106.51.22.216]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: dddefc92-5ef8-4edd-d94b-08d6ff5b5d76
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM0PR05MB6385;
-x-ms-traffictypediagnostic: AM0PR05MB6385:
-x-microsoft-antispam-prvs: <AM0PR05MB63859F1DA23C85710FB00021D1FB0@AM0PR05MB6385.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6108;
-x-forefront-prvs: 00872B689F
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(366004)(39860400002)(376002)(136003)(396003)(13464003)(189003)(199004)(7736002)(74316002)(107886003)(78486014)(33656002)(86362001)(6246003)(64756008)(66446008)(478600001)(446003)(8676002)(305945005)(6916009)(256004)(66066001)(229853002)(71200400001)(6436002)(73956011)(81156014)(81166006)(66946007)(9686003)(53936002)(55016002)(66556008)(71190400001)(486006)(476003)(14454004)(5660300002)(186003)(9456002)(11346002)(2906002)(66476007)(26005)(52536014)(6506007)(55236004)(102836004)(8936002)(76176011)(25786009)(53546011)(54906003)(316002)(4326008)(68736007)(3846002)(7696005)(6116002)(99286004)(76116006);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB6385;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: XcXWMnTjJn3R66n91tLzVA9y02Tn9aHIFHY14lO1pjfzWjRY1vq3zUqUuv/dehfqANld9fXhoabVyXgUZv7fsaSUWjgjnlig2eopfxS4p1jBHZHivNAe1Yr2xIA3F+5g6Nir10eK0f2DD2pbtTZZxzFd/SMJSgMKqSxkLLK+sxdW/aLGffn7nrEE0ftzSFiPiIey3ax+0y6TBG3HUX5fYqDNYlnBvz000zScPRf5kdgaz3ccgxbJSRPHi5JH6MoPmeb8UHlFlDOsv2tEihW160rzcEhcrJcL5YIOhTkqGU+yQfDReO83QMB1thwk98qKNka3lTwUvu6hGgZDllIpr8ky5k1sAXmy6a+366JTuaYgNQwOzBHRq4FU/nQcWi6hNU+WgO/1QKFNxamc4y3bEZzDae42iDHu6lTMmAf1PKw=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727384AbfGCCLa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 22:11:30 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:35267 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726329AbfGCCLa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 22:11:30 -0400
+Received: by mail-qt1-f194.google.com with SMTP id d23so895538qto.2
+        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 19:11:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=gfRLnUMpvQF4xvVuNB3lMwbLOVw0h67iy3HrcU5WJts=;
+        b=MAVNS178nXOTz84cbWexGGY36D6edM48ZYHVkM5Fv3RtGqu1rPZCT3aHPSg/8crhjS
+         YwCStc+teSy9pCCUHViHJJIscKNVQYsvLx2QGSuKDZe8D2Y6qb9lblPS0w13sme2qsxh
+         A9bxfFmXVxST14WM8URw4bSaFqxV8lluc+DloTml/EZhVQQ0ELA5R4YB3py91lNs42Pd
+         U0FkylavJaiQ5U2erVzCNCRVpBaR22SsbfZtIK0SId0V79dBxO3V43XcNS77EOU1i3gg
+         iGw53ybfWG5bj57oWAFrEvqHWzwb+7bkyfDHnMQ19+/9L7T58uNX/v2Rf8IqqHGO+lhg
+         mreQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=gfRLnUMpvQF4xvVuNB3lMwbLOVw0h67iy3HrcU5WJts=;
+        b=GGZGVv+IHO3sdwfIH41VbKksW6BgU0P2bZLmHgiLKMmD3nNQPf/W4EUaprOj7Uoz0B
+         vDUmFw7o96bG0eawOqQU/tFRRgUKhH/VexhI2BgfxUThalaHC6VzqaixJ94ATb3k1qOe
+         Y6B6iDs4TcW47FWGjxd8LsiQ17guAspiYPRO0Q4WD5R3RJh67gJyXVZaofiK87+05FkS
+         XEecL+QbMUwcFvGsKmD74/IZObpw6ciVzxczBuTVNzz1cCHAKUDl+//3yRDaOa0ncmov
+         2BIO0HOH0yhTXAOWsvxp2MQYnLhgCINdmGemEQ76V2kHJvebHaDeMpI4aso63HWwSzx0
+         cxkQ==
+X-Gm-Message-State: APjAAAVe+gicWPwtXVGfybwIwUw8jTTnokXbhS/dUHUnq95jtPgRmxXx
+        p5XyyHFviSBr9aIF8CqSfk+aFo8xRMk=
+X-Google-Smtp-Source: APXvYqw1ToIbfnaYWP+zvspA2rUdGgQ6c/tdGz1YfhNGkfO1j/K5mz5MtxUqvUNCgB605r6Ug8HZmQ==
+X-Received: by 2002:ac8:2c35:: with SMTP id d50mr27032789qta.313.1562119889240;
+        Tue, 02 Jul 2019 19:11:29 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id z50sm390789qtz.36.2019.07.02.19.11.27
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 02 Jul 2019 19:11:29 -0700 (PDT)
+Date:   Tue, 2 Jul 2019 19:11:24 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jiri Pirko <jiri@resnulli.us>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Linville <linville@tuxdriver.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v6 11/15] ethtool: provide link mode names as a
+ string set
+Message-ID: <20190702191124.259c6628@cakuba.netronome.com>
+In-Reply-To: <20190702190419.1cb8a189@cakuba.netronome.com>
+References: <cover.1562067622.git.mkubecek@suse.cz>
+        <1e1bf53de26780ecc0e448aa07dc429ef590798a.1562067622.git.mkubecek@suse.cz>
+        <20190702190419.1cb8a189@cakuba.netronome.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dddefc92-5ef8-4edd-d94b-08d6ff5b5d76
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jul 2019 02:08:39.3111
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: parav@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6385
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 2 Jul 2019 19:04:19 -0700, Jakub Kicinski wrote:
+> On Tue,  2 Jul 2019 13:50:34 +0200 (CEST), Michal Kubecek wrote:
+> > +const char *const link_mode_names[] = {
+> > +	__DEFINE_LINK_MODE_NAME(10, T, Half),
+> > +	__DEFINE_LINK_MODE_NAME(10, T, Full),
+> > +	__DEFINE_LINK_MODE_NAME(100, T, Half),
+> > +	__DEFINE_LINK_MODE_NAME(100, T, Full),
+> > +	__DEFINE_LINK_MODE_NAME(1000, T, Half),
+> > +	__DEFINE_LINK_MODE_NAME(1000, T, Full),
+> > +	__DEFINE_SPECIAL_MODE_NAME(Autoneg, "Autoneg"),
+> > +	__DEFINE_SPECIAL_MODE_NAME(TP, "TP"),
+> > +	__DEFINE_SPECIAL_MODE_NAME(AUI, "AUI"),
+> > +	__DEFINE_SPECIAL_MODE_NAME(MII, "MII"),
+> > +	__DEFINE_SPECIAL_MODE_NAME(FIBRE, "FIBRE"),
+> > +	__DEFINE_SPECIAL_MODE_NAME(BNC, "BNC"),  
+> 
+> > +	__DEFINE_LINK_MODE_NAME(10000, T, Full),
+> > +	__DEFINE_SPECIAL_MODE_NAME(Pause, "Pause"),
+> > +	__DEFINE_SPECIAL_MODE_NAME(Asym_Pause, "Asym_Pause"),
+> > +	__DEFINE_LINK_MODE_NAME(2500, X, Full),
+> > +	__DEFINE_SPECIAL_MODE_NAME(Backplane, "Backplane"),
+> > +	__DEFINE_LINK_MODE_NAME(1000, KX, Full),  
+> ...
+> > +	__DEFINE_LINK_MODE_NAME(5000, T, Full),
+> > +	__DEFINE_SPECIAL_MODE_NAME(FEC_NONE, "None"),
+> > +	__DEFINE_SPECIAL_MODE_NAME(FEC_RS, "RS"),
+> > +	__DEFINE_SPECIAL_MODE_NAME(FEC_BASER, "BASER"),  
+> 
+> Why are port types and FEC params among link mode strings?
 
+Ah, FEC for autoneg, but port type?
 
-> -----Original Message-----
-> From: Jakub Kicinski <jakub.kicinski@netronome.com>
-> Sent: Wednesday, July 3, 2019 5:13 AM
-> To: Parav Pandit <parav@mellanox.com>
-> Cc: Jiri Pirko <jiri@mellanox.com>; netdev@vger.kernel.org; Saeed
-> Mahameed <saeedm@mellanox.com>
-> Subject: Re: [PATCH net-next 1/3] devlink: Introduce PCI PF port flavour =
-and
-> port attribute
->=20
-> On Tue, 2 Jul 2019 18:50:31 +0000, Parav Pandit wrote:
-> > > > I didn't see any immediate need to report, at the same time didn't
-> > > > find any reason to treat such port flavours differently than
-> > > > existing one. It just gives a clear view of the device's eswitch.
-> > > > Might find it useful during debugging while inspecting device inter=
-nal
-> tables..
-> > >
-> > > PFs and VFs ports are not tied to network ports in switchdev mode.
-> > > You have only one network port under a devlink instance AFAIR, anyway=
-.
-> > >
-> > I am not sure what do you mean by network port.
->=20
-> DEVLINK_PORT_FLAVOUR_PHYSICAL
->=20
-> > Do you intent to see a physical port that connects to physical network?
-> >
-> > As I described in the comment of the PF and VF flavour, it is an eswitc=
-h
-> port.
-> > I have shown the diagram also of the eswitch in the cover letter.
-> > Port_number doesn't have to a physical port. Flavour describe what
-> > port type is and number says what is the eswitch port number.
-> > Hope it clarifies.
->=20
-> I understand what you're doing. =20
-o.k.
+> > +	__DEFINE_LINK_MODE_NAME(50000, KR, Full),  
+> ...
+> > +	__DEFINE_LINK_MODE_NAME(1000, T1, Full),
+> > +};  
 
-> If you want to expose some device specific
-> eswitch port ID please add a new attribute for that.
-> The fact that that ID may match port_number for your device today is
-> coincidental.  port_number, and split attributes should not be exposed fo=
-r
-> PCI ports.
-So your concern is non mellanox hw has eswitch but there may not be a uniqu=
-e handle to identify a eswitch port?
-Or that handle may be wider than 32-bit?
-And instead of treating port_number as handle, there should be different at=
-tribute, is that the ask?
