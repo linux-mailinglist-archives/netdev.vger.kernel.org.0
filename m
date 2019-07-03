@@ -2,281 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A77A15E07D
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 11:08:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BD225E094
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 11:10:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727186AbfGCJIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 05:08:00 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:39110 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726670AbfGCJIA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 05:08:00 -0400
-Received: by mail-lf1-f66.google.com with SMTP id p24so1212913lfo.6;
-        Wed, 03 Jul 2019 02:07:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=3vyXLhcZmY9wdde3eL521RhW8CECQuom4LE2YV+rSac=;
-        b=PclZ6cGIvW1KdSLX6VoGKbiTIeu5+vinnhbHXh9jw26gy9P6N+ovnsB0OiEYYbCGTr
-         PZuGO0mC1G+eJ66FLB53bE5U0vqw9apMyHxDxiJT+2b2lxGVIqGCjNgJvS+7UBxWeF85
-         GQYWiggmiNedxT1NG2YSW2Wigq39mda81R6Y0yT1vQqrTCUpJlCdBmhOHQN8IGsnZnRi
-         OrUbEe8Eiq/NSQgC/hqtbKUHi8jN46eM4LW0j5IaYkMki5x3xRr62/kgaifUObPY3Krz
-         QobG41ve9zMKmM1WIKO0avb5jMBEsYF/4S47ESnk1CITjjWkZQ310+pYRy66ONmKQkH5
-         4TRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=3vyXLhcZmY9wdde3eL521RhW8CECQuom4LE2YV+rSac=;
-        b=t8LSDPn9fY3SK+i/ZDwj0cVYNqRywuXqyI6mO5QMtYw7fw/LMCLHG/4a/K3TYWBg0Q
-         hFvg7vWMhBftb90JctHDcnVpwaw1xGWIrySymUBabVl5li3z0lUHFSVcbDQsimFksDIq
-         9z06ZZ+elSi1I2mTqbQC9VHEtZ0G8A1mRYXrhVfuE8FWWM6G4LwyIKsTolHI7tKKnNLV
-         rc8GMvMnAZfXx2cI8ilfsdB1YMFj5y0KYaSHh3eWGL4cmraazFb6LloK2PmUyQdmY7Yf
-         QjIclK8R323IMjuCbyNZyQUQwhqC1SZ986TYj7KtvaKlaesPg8Psv9pcCnmthnudTFFM
-         x2Cg==
-X-Gm-Message-State: APjAAAVCcARcsbKoukXhfA4MInRnzvPzEwjbGKA7U0wH/iNKcNdA1Yi7
-        ra+VoVvdNOZW9YxpHrM9YCs=
-X-Google-Smtp-Source: APXvYqwqb3/FH5fyDg0fZ/J7/dXfUSGhiubXTbuqCypbXGZLu1cX88j70vDwOHXbRG9Go5V7kRNlfg==
-X-Received: by 2002:ac2:5938:: with SMTP id v24mr2730731lfi.161.1562144876375;
-        Wed, 03 Jul 2019 02:07:56 -0700 (PDT)
-Received: from krolik-desktop.lan ([91.238.216.6])
-        by smtp.gmail.com with ESMTPSA id u21sm364427lju.2.2019.07.03.02.07.55
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 03 Jul 2019 02:07:55 -0700 (PDT)
-From:   Pawel Dembicki <paweldembicki@gmail.com>
-Cc:     paweldembicki@gmail.com, linus.walleij@linaro.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/4] net: dsa: vsc73xx: add support for parallel mode
-Date:   Wed,  3 Jul 2019 11:07:31 +0200
-Message-Id: <20190703090732.1760-1-paweldembicki@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190701152723.624-3-paweldembicki@gmail.com>
-References: <20190701152723.624-3-paweldembicki@gmail.com>
+        id S1727249AbfGCJKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 05:10:40 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:38304 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727114AbfGCJKj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jul 2019 05:10:39 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 5626B8AE4D;
+        Wed,  3 Jul 2019 09:10:39 +0000 (UTC)
+Received: from [10.36.116.85] (ovpn-116-85.ams2.redhat.com [10.36.116.85])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id E3CAE5BBA4;
+        Wed,  3 Jul 2019 09:10:37 +0000 (UTC)
+From:   "Eelco Chaudron" <echaudro@redhat.com>
+To:     "Magnus Karlsson" <magnus.karlsson@gmail.com>
+Cc:     "Network Development" <netdev@vger.kernel.org>,
+        "Alexei Starovoitov" <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        "Martin KaFai Lau" <kafai@fb.com>,
+        "Song Liu" <songliubraving@fb.com>, "Yonghong Song" <yhs@fb.com>,
+        "Andrii Nakryiko" <andrii.nakryiko@gmail.com>
+Subject: Re: [PATCH bpf-next v2] libbpf: add xsk_ring_prod__nb_free() function
+Date:   Wed, 03 Jul 2019 11:10:30 +0200
+Message-ID: <B0DB9024-43D8-4DBA-A588-15154B82D413@redhat.com>
+In-Reply-To: <CAJ8uoz3BoLiM04WW=91wYryrVBqj5GDsL5mvDaAyBAv-6MNbsQ@mail.gmail.com>
+References: <d4692ea57ba7a3fe33549fc6222fb8aea5a4225e.1561537968.git.echaudro@redhat.com>
+ <CAJ8uoz3BoLiM04WW=91wYryrVBqj5GDsL5mvDaAyBAv-6MNbsQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; format=flowed
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.25]); Wed, 03 Jul 2019 09:10:39 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch add platform part of vsc73xx driver.
-It allows to use chip connected by parallel interface.
 
-Signed-off-by: Pawel Dembicki <paweldembicki@gmail.com>
----
-Changes in v2:
-- drop mutex
-- fix indentation
 
- drivers/net/dsa/Kconfig                    |   8 ++
- drivers/net/dsa/Makefile                   |   1 +
- drivers/net/dsa/vitesse-vsc73xx-platform.c | 160 +++++++++++++++++++++
- 3 files changed, 169 insertions(+)
- create mode 100644 drivers/net/dsa/vitesse-vsc73xx-platform.c
+On 28 Jun 2019, at 12:14, Magnus Karlsson wrote:
 
-diff --git a/drivers/net/dsa/Kconfig b/drivers/net/dsa/Kconfig
-index 4ab2aa09e2e4..80965808949d 100644
---- a/drivers/net/dsa/Kconfig
-+++ b/drivers/net/dsa/Kconfig
-@@ -116,4 +116,12 @@ config NET_DSA_VITESSE_VSC73XX_SPI
- 	---help---
- 	  This enables support for the Vitesse VSC7385, VSC7388, VSC7395
- 	  and VSC7398 SparX integrated ethernet switches in SPI managed mode.
-+
-+config NET_DSA_VITESSE_VSC73XX_PLATFORM
-+	tristate "Vitesse VSC7385/7388/7395/7398 Platform mode support"
-+	depends on HAS_IOMEM
-+	select NET_DSA_VITESSE_VSC73XX
-+	---help---
-+	  This enables support for the Vitesse VSC7385, VSC7388, VSC7395
-+	  and VSC7398 SparX integrated ethernet switches in Platform managed mode.
- endmenu
-diff --git a/drivers/net/dsa/Makefile b/drivers/net/dsa/Makefile
-index 117bf78be211..d5e4c668ac03 100644
---- a/drivers/net/dsa/Makefile
-+++ b/drivers/net/dsa/Makefile
-@@ -15,6 +15,7 @@ obj-$(CONFIG_NET_DSA_SMSC_LAN9303) += lan9303-core.o
- obj-$(CONFIG_NET_DSA_SMSC_LAN9303_I2C) += lan9303_i2c.o
- obj-$(CONFIG_NET_DSA_SMSC_LAN9303_MDIO) += lan9303_mdio.o
- obj-$(CONFIG_NET_DSA_VITESSE_VSC73XX) += vitesse-vsc73xx-core.o
-+obj-$(CONFIG_NET_DSA_VITESSE_VSC73XX_PLATFORM) += vitesse-vsc73xx-platform.o
- obj-$(CONFIG_NET_DSA_VITESSE_VSC73XX_SPI) += vitesse-vsc73xx-spi.o
- obj-y				+= b53/
- obj-y				+= microchip/
-diff --git a/drivers/net/dsa/vitesse-vsc73xx-platform.c b/drivers/net/dsa/vitesse-vsc73xx-platform.c
-new file mode 100644
-index 000000000000..149d921b8499
---- /dev/null
-+++ b/drivers/net/dsa/vitesse-vsc73xx-platform.c
-@@ -0,0 +1,160 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* DSA driver for:
-+ * Vitesse VSC7385 SparX-G5 5+1-port Integrated Gigabit Ethernet Switch
-+ * Vitesse VSC7388 SparX-G8 8-port Integrated Gigabit Ethernet Switch
-+ * Vitesse VSC7395 SparX-G5e 5+1-port Integrated Gigabit Ethernet Switch
-+ * Vitesse VSC7398 SparX-G8e 8-port Integrated Gigabit Ethernet Switch
-+ *
-+ * This driver takes control of the switch chip over Platform and
-+ * configures it to route packages around when connected to a CPU port.
-+ *
-+ * Copyright (C) 2019 pawel Dembicki <paweldembicki@gmail.com>
-+ * Based on vitesse-vsc-spi.c by:
-+ * Copyright (C) 2018 Linus Wallej <linus.walleij@linaro.org>
-+ * Includes portions of code from the firmware uploader by:
-+ * Copyright (C) 2009 Gabor Juhos <juhosg@openwrt.org>
-+ */
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+
-+#include "vitesse-vsc73xx.h"
-+
-+#define VSC73XX_CMD_PLATFORM_BLOCK_SHIFT		14
-+#define VSC73XX_CMD_PLATFORM_BLOCK_MASK			0x7
-+#define VSC73XX_CMD_PLATFORM_SUBBLOCK_SHIFT		10
-+#define VSC73XX_CMD_PLATFORM_SUBBLOCK_MASK		0xf
-+#define VSC73XX_CMD_PLATFORM_REGISTER_SHIFT		2
-+
-+/**
-+ * struct vsc73xx_platform - VSC73xx Platform state container
-+ */
-+struct vsc73xx_platform {
-+	struct platform_device	*pdev;
-+	void __iomem		*base_addr;
-+	struct vsc73xx		vsc;
-+};
-+
-+static const struct vsc73xx_ops vsc73xx_platform_ops;
-+
-+static u32 vsc73xx_make_addr(u8 block, u8 subblock, u8 reg)
-+{
-+	u32 ret;
-+
-+	ret = (block & VSC73XX_CMD_PLATFORM_BLOCK_MASK)
-+		<< VSC73XX_CMD_PLATFORM_BLOCK_SHIFT;
-+	ret |= (subblock & VSC73XX_CMD_PLATFORM_SUBBLOCK_MASK)
-+		<< VSC73XX_CMD_PLATFORM_SUBBLOCK_SHIFT;
-+	ret |= reg << VSC73XX_CMD_PLATFORM_REGISTER_SHIFT;
-+
-+	return ret;
-+}
-+
-+static int vsc73xx_platform_read(struct vsc73xx *vsc, u8 block, u8 subblock,
-+				 u8 reg, u32 *val)
-+{
-+	struct vsc73xx_platform *vsc_platform = vsc->priv;
-+	u32 offset;
-+
-+	if (!vsc73xx_is_addr_valid(block, subblock))
-+		return -EINVAL;
-+
-+	offset = vsc73xx_make_addr(block, subblock, reg);
-+	*val = ioread32be(vsc_platform->base_addr + offset);
-+
-+	return 0;
-+}
-+
-+static int vsc73xx_platform_write(struct vsc73xx *vsc, u8 block, u8 subblock,
-+				  u8 reg, u32 val)
-+{
-+	struct vsc73xx_platform *vsc_platform = vsc->priv;
-+	u32 offset;
-+
-+	if (!vsc73xx_is_addr_valid(block, subblock))
-+		return -EINVAL;
-+
-+	offset = vsc73xx_make_addr(block, subblock, reg);
-+	iowrite32be(val, vsc_platform->base_addr + offset);
-+
-+	return 0;
-+}
-+
-+static int vsc73xx_platform_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct vsc73xx_platform *vsc_platform;
-+	struct resource *res = NULL;
-+	int ret;
-+
-+	vsc_platform = devm_kzalloc(dev, sizeof(*vsc_platform), GFP_KERNEL);
-+	if (!vsc_platform)
-+		return -ENOMEM;
-+
-+	platform_set_drvdata(pdev, vsc_platform);
-+	vsc_platform->pdev = pdev;
-+	vsc_platform->vsc.dev = dev;
-+	vsc_platform->vsc.priv = vsc_platform;
-+	vsc_platform->vsc.ops = &vsc73xx_platform_ops;
-+
-+	/* obtain I/O memory space */
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res) {
-+		dev_err(&pdev->dev, "cannot obtain I/O memory space\n");
-+		ret = -ENXIO;
-+		return ret;
-+	}
-+
-+	vsc_platform->base_addr = devm_ioremap_resource(&pdev->dev, res);
-+	if (IS_ERR(vsc_platform->base_addr)) {
-+		dev_err(&pdev->dev, "cannot request I/O memory space\n");
-+		ret = -ENXIO;
-+		return ret;
-+	}
-+
-+	return vsc73xx_probe(&vsc_platform->vsc);
-+}
-+
-+static int vsc73xx_platform_remove(struct platform_device *pdev)
-+{
-+	struct vsc73xx_platform *vsc_platform = platform_get_drvdata(pdev);
-+
-+	return vsc73xx_remove(&vsc_platform->vsc);
-+}
-+
-+static const struct vsc73xx_ops vsc73xx_platform_ops = {
-+	.read = vsc73xx_platform_read,
-+	.write = vsc73xx_platform_write,
-+};
-+
-+static const struct of_device_id vsc73xx_of_match[] = {
-+	{
-+		.compatible = "vitesse,vsc7385",
-+	},
-+	{
-+		.compatible = "vitesse,vsc7388",
-+	},
-+	{
-+		.compatible = "vitesse,vsc7395",
-+	},
-+	{
-+		.compatible = "vitesse,vsc7398",
-+	},
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, vsc73xx_of_match);
-+
-+static struct platform_driver vsc73xx_platform_driver = {
-+	.probe = vsc73xx_platform_probe,
-+	.remove = vsc73xx_platform_remove,
-+	.driver = {
-+		.name = "vsc73xx-platform",
-+		.of_match_table = vsc73xx_of_match,
-+	},
-+};
-+module_platform_driver(vsc73xx_platform_driver);
-+
-+MODULE_AUTHOR("Pawel Dembicki <paweldembicki@gmail.com>");
-+MODULE_DESCRIPTION("Vitesse VSC7385/7388/7395/7398 Platform driver");
-+MODULE_LICENSE("GPL v2");
--- 
-2.20.1
+> On Wed, Jun 26, 2019 at 10:33 AM Eelco Chaudron <echaudro@redhat.com> 
+> wrote:
+>>
+>> When an AF_XDP application received X packets, it does not mean X
+>> frames can be stuffed into the producer ring. To make it easier for
+>> AF_XDP applications this API allows them to check how many frames can
+>> be added into the ring.
+>>
+>> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+>> ---
+>>
+>> v1 -> v2
+>>  - Renamed xsk_ring_prod__free() to xsk_ring_prod__nb_free()
+>>  - Add caching so it will only touch global state when needed
+>>
+>>  tools/lib/bpf/xsk.h | 6 +++---
+>>  1 file changed, 3 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
+>> index 82ea71a0f3ec..6acb81102346 100644
+>> --- a/tools/lib/bpf/xsk.h
+>> +++ b/tools/lib/bpf/xsk.h
+>> @@ -76,11 +76,11 @@ xsk_ring_cons__rx_desc(const struct xsk_ring_cons 
+>> *rx, __u32 idx)
+>>         return &descs[idx & rx->mask];
+>>  }
+>>
+>> -static inline __u32 xsk_prod_nb_free(struct xsk_ring_prod *r, __u32 
+>> nb)
+>> +static inline __u32 xsk_prod__nb_free(struct xsk_ring_prod *r, __u32 
+>> nb)
+>>  {
+>>         __u32 free_entries = r->cached_cons - r->cached_prod;
+>>
+>> -       if (free_entries >= nb)
+>> +       if (free_entries >= nb && nb != 0)
+>>                 return free_entries;
+>
+> Thanks Eelco for the patch. Is the test nb != 0 introduced here so
+> that the function will continue with the refresh from the global state
+> when nb is set to 0? If so, could a user not instead just set the nb
+> parameter to the size of the ring? This would always trigger a
+> refresh, except when the number of free entries is equal to the size
+> of the ring, but then we do not need the refresh anyway. This would
+> eliminate the nb != 0 test that you introduced from the fast path.
 
+Will remove this change from the fast path, and your suggestion can be 
+used if circumvention of the cache is needed. Will sent out a v3 soon...
+
+>>         /* Refresh the local tail pointer.
+>> @@ -110,7 +110,7 @@ static inline __u32 xsk_cons_nb_avail(struct 
+>> xsk_ring_cons *r, __u32 nb)
+>>  static inline size_t xsk_ring_prod__reserve(struct xsk_ring_prod 
+>> *prod,
+>>                                             size_t nb, __u32 *idx)
+>>  {
+>> -       if (xsk_prod_nb_free(prod, nb) < nb)
+>> +       if (xsk_prod__nb_free(prod, nb) < nb)
+>>                 return 0;
+>>
+>>         *idx = prod->cached_prod;
+>> --
+>> 2.20.1
+>>
