@@ -2,135 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DBC75DEFC
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 09:39:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B56D05DF03
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 09:39:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727205AbfGCHjD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 03:39:03 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:42344 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726670AbfGCHjD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 03:39:03 -0400
-Received: by mail-lf1-f66.google.com with SMTP id s19so290865lfb.9
-        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 00:39:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=2Wp52PBXKgmN1eJSawD7UHQEQNJnFNq41D1U5ZiE5Bo=;
-        b=Xh1pMxs44/cvgbIPdlvqWFnxIJ8en8yjJHAJY6KuWeq1CEy3k59s8hTBuaV/uvBt3m
-         ycpPeoODSURlw/yRgrS9/Ix2TTPYntmr15kL0HXjEBAHulbR0XvdXSwImep3KZ0jLT6X
-         xTkSmgo0jYD7TQosCD70j71q3pejld6xQVHya/IukRJm4km2mbLSsSnNzkY9CLXVAbZ5
-         0YS8qFpA0RjSPWjfTu8/nVmGbQ1PtI8oOMysnJSZb2Vdg3P95jdot7hY+X1M9Hs47pr0
-         F2PcCz6fK0JvmGwcEVYXEgRU5iqE+h0xid1o2dDSun7EagnjIf1nf0tmqTHNq8QWjhDP
-         3SuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to:user-agent;
-        bh=2Wp52PBXKgmN1eJSawD7UHQEQNJnFNq41D1U5ZiE5Bo=;
-        b=VLwGdvGDPdubhqpXm6p+ZhEXtMm1akQFYLQkFe2KGKdA2ADAsnvbMkTSMa76ndjdRS
-         fZiY14d4YWC7hS278oxe7XhnViNkVqWMcOotIEtSkQca6HdH2+yTbpgJKiux8u9Hwekf
-         w30UzZJVitxkABTmr3TMB+DjvpjJiOzTMDxCEWYiiYj7wOCXbLZqjFCQei3R2bTGarkF
-         NRbqb79ymACs3kp1OFB3RXEzoBf0BVURMnOcvGtlc4LLAiVO+Sps1jMtnLFXLjK48RZs
-         dnlbe4l1viEp3ApMY969SCdhaE9N0a8CoJhL7fNlyTiwYHlUVa62ngpfC/zttaXAhwta
-         AJOg==
-X-Gm-Message-State: APjAAAUp9QRg4/PcKLzOo5dbHmScAOPTOEvY0KUQHdY+3II40KlKUbEl
-        oDVy1u4W89Z0Kqq6SHkMXjYJxQ==
-X-Google-Smtp-Source: APXvYqwM0R72JZGl28dY5apLp/0qpK7E8sI9lybonc8uNIDSvz67trZs+adr4gBSsGpVXl3/NyBo2A==
-X-Received: by 2002:ac2:42ca:: with SMTP id n10mr5174666lfl.121.1562139540856;
-        Wed, 03 Jul 2019 00:39:00 -0700 (PDT)
-Received: from khorivan (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
-        by smtp.gmail.com with ESMTPSA id h129sm263683lfd.74.2019.07.03.00.38.59
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 03 Jul 2019 00:39:00 -0700 (PDT)
-Date:   Wed, 3 Jul 2019 10:38:58 +0300
-From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     grygorii.strashko@ti.com, hawk@kernel.org, davem@davemloft.net,
-        ast@kernel.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
-        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
-        daniel@iogearbox.net, jakub.kicinski@netronome.com,
-        john.fastabend@gmail.com
-Subject: Re: [PATCH v5 net-next 6/6] net: ethernet: ti: cpsw: add XDP support
-Message-ID: <20190703073857.GA2927@khorivan>
-Mail-Followup-To: Jesper Dangaard Brouer <brouer@redhat.com>,
-        grygorii.strashko@ti.com, hawk@kernel.org, davem@davemloft.net,
-        ast@kernel.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
-        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
-        daniel@iogearbox.net, jakub.kicinski@netronome.com,
-        john.fastabend@gmail.com
-References: <20190630172348.5692-1-ivan.khoronzhuk@linaro.org>
- <20190630172348.5692-7-ivan.khoronzhuk@linaro.org>
- <20190703092603.66f36914@carbon>
+        id S1727262AbfGCHj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 03:39:28 -0400
+Received: from mail-eopbgr00088.outbound.protection.outlook.com ([40.107.0.88]:30325
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727008AbfGCHj1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jul 2019 03:39:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uSVsRO57URHCioHYKVJSkGBiWHy5PYnBCzwEtcpDL2U=;
+ b=PBMWs93XKoa2yzE+G3UOXuX8IuKDfL584qsog7TQetAQ7B1kbtHfkbWQ7bP5UtOJd4m1uQLO+NS/pQrs02w/k70xLntQtt/I1Qefj26GxvWVKepCdIAiVmFZUNoSitqZmjvNua2mezx8lWD50F3JeH9sQaFEOZraF0cB3ZrNNPo=
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
+ DB6PR0501MB2309.eurprd05.prod.outlook.com (10.168.55.138) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2032.20; Wed, 3 Jul 2019 07:39:24 +0000
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::c1b3:b3a8:bced:493c]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::c1b3:b3a8:bced:493c%4]) with mapi id 15.20.2032.019; Wed, 3 Jul 2019
+ 07:39:24 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leonro@mellanox.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
+Subject: [PATCH mlx5-next 0/5] Mellanox, mlx5 low level updates 2019-07-02
+Thread-Topic: [PATCH mlx5-next 0/5] Mellanox, mlx5 low level updates
+ 2019-07-02
+Thread-Index: AQHVMXJveOPdXjGEB0qnqkH/hqttvA==
+Date:   Wed, 3 Jul 2019 07:39:24 +0000
+Message-ID: <20190703073909.14965-1-saeedm@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.21.0
+x-originating-ip: [73.15.39.150]
+x-clientproxiedby: BYAPR02CA0046.namprd02.prod.outlook.com
+ (2603:10b6:a03:54::23) To DB6PR0501MB2759.eurprd05.prod.outlook.com
+ (2603:10a6:4:84::7)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 766e3f5a-173a-4864-fc7d-08d6ff89919e
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2309;
+x-ms-traffictypediagnostic: DB6PR0501MB2309:
+x-microsoft-antispam-prvs: <DB6PR0501MB23093CF5D86497B9AAC21ACFBEFB0@DB6PR0501MB2309.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 00872B689F
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(376002)(39860400002)(396003)(346002)(199004)(189003)(53754006)(66556008)(66946007)(66446008)(6512007)(64756008)(73956011)(66476007)(5660300002)(1076003)(52116002)(54906003)(71200400001)(2906002)(15650500001)(66066001)(256004)(99286004)(14444005)(3846002)(7736002)(6116002)(53936002)(6436002)(71190400001)(4326008)(6486002)(68736007)(81156014)(110136005)(305945005)(26005)(36756003)(316002)(2616005)(50226002)(8676002)(478600001)(476003)(8936002)(25786009)(86362001)(486006)(450100002)(386003)(6506007)(81166006)(186003)(14454004)(6636002)(102836004);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2309;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: fRy8cJ5eQoFpmoXlzqph0aYs5bBcEEHhcBy6XptMV3DUWlEaXpDrpyYuHppRUoxNTNGRm2wCUCW6mhfDo0ih1BKiNFPK7BPbqxtrfhp/e88LoT+WVNIfVuHXqDXTywyr+fV/WVav2mItAagzj45w0gfJwl+DKA0EYla+K0u1yS2ccAiOkvEP01E2IwZ5gILHy2SmIue6i1sCRGGYjdHcSTKWX0CtDjqzDoDEhPy0EbRcqgNjeKy83JYMS2iZ7u5SN0yXx8Ag8e/I7yG4dI4uB/kq3TvsgG9mDu+lnZRq6KVdefl8NlJaAjX+2PiRX6AdOtIs1ISgqX4ZY3RbIK1jVguhA279H//2UUmJJWmN9T3pu+3LOkkqz7+7aExaQTQ0U71at02oYJqWIOJb/0V6wOy9+OOdl5xmqhtsp4SwWPM=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20190703092603.66f36914@carbon>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 766e3f5a-173a-4864-fc7d-08d6ff89919e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jul 2019 07:39:24.2795
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2309
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 03, 2019 at 09:26:03AM +0200, Jesper Dangaard Brouer wrote:
->
->On Sun, 30 Jun 2019 20:23:48 +0300 Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
->
->> Add XDP support based on rx page_pool allocator, one frame per page.
->> Page pool allocator is used with assumption that only one rx_handler
->> is running simultaneously. DMA map/unmap is reused from page pool
->> despite there is no need to map whole page.
->>
->> Due to specific of cpsw, the same TX/RX handler can be used by 2
->> network devices, so special fields in buffer are added to identify
->> an interface the frame is destined to. Thus XDP works for both
->> interfaces, that allows to test xdp redirect between two interfaces
->> easily. Aslo, each rx queue have own page pools, but common for both
->> netdevs.
->
->Looking at the details what happen when a single RX-queue can receive
->into multiple net_device'es.  I realize that this driver will
->violate/kill some of the "hidden"/implicit RX-bulking that the
->XDP_REDIRECT code depend on for performance.
->
->Specifically, it violate this assumption:
-> https://github.com/torvalds/linux/blob/v5.2-rc7/kernel/bpf/devmap.c#L324-L329
->
->	/* Ingress dev_rx will be the same for all xdp_frame's in
->	 * bulk_queue, because bq stored per-CPU and must be flushed
->	 * from net_device drivers NAPI func end.
->	 */
->	if (!bq->dev_rx)
->		bq->dev_rx = dev_rx;
->
->This drivers "NAPI func end", can have received into multiple
->net_devices, before it's NAPI cycle ends.  Thus, violating this code
->assumption.
-). I said, I moved to be per device in rx_handler. It violates nothing.
+Hi All,
 
->
->Knowing all xdp_frame's in the bulk queue is from the same net_device,
->can be used to further optimize XDP.  E.g. the dev->netdev_ops->ndo_xdp_xmit()
->call don't take fully advantage of this, yet.  If we merge this driver,
->it will block optimizations in this area.
->
->NACK
+This series includes some low level updates to mlx5 driver, required for
+shared mlx5-next branch.
 
-Jesper,
+Tariq extends the WQE control fields names.
+Eran adds the required HW definitions and structures for upcoming TLS
+support.
+Parav improves and refactors the E-Switch "function changed" handler.
 
-Seems I said that I moved it to flush, that does
-dev->netdev_ops->ndo_xdp_xmit(), to rx_handler, so that it's done per device,
-so device is knows per each flush.
+In case of no objections these patches will be applied to mlx5-next and
+will be sent later as pull request to both rdma-next and net-next trees.
 
-In the code, I hope everyone can see ..., after each flush dev_rx is cleared
-to 0. So no any impact on it.
+Thanks,
+Saeed.
 
-As for me, it's very not clear and strange decision.
+---
 
--- 
-Regards,
-Ivan Khoronzhuk
+Eran Ben Elisha (1):
+  net/mlx5: Introduce TLS TX offload hardware bits and structures
+
+Parav Pandit (3):
+  net/mlx5: Introduce and use mlx5_eswitch_get_total_vports()
+  net/mlx5: E-Switch prepare functions change handler to be modular
+  net/mlx5: Refactor mlx5_esw_query_functions for modularity
+
+Tariq Toukan (1):
+  net/mlx5: Properly name the generic WQE control field
+
+ drivers/infiniband/hw/mlx5/ib_rep.c           |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/eswitch.c |  42 +++++--
+ .../net/ethernet/mellanox/mlx5/core/eswitch.h |   7 +-
+ .../mellanox/mlx5/core/eswitch_offloads.c     |  46 +++++---
+ .../net/ethernet/mellanox/mlx5/core/fs_core.c |  26 +++--
+ .../net/ethernet/mellanox/mlx5/core/sriov.c   |  15 ++-
+ .../net/ethernet/mellanox/mlx5/core/vport.c   |  15 +++
+ include/linux/mlx5/device.h                   |  14 +++
+ include/linux/mlx5/driver.h                   |   9 +-
+ include/linux/mlx5/eswitch.h                  |   3 +
+ include/linux/mlx5/mlx5_ifc.h                 | 104 +++++++++++++++++-
+ include/linux/mlx5/qp.h                       |   7 +-
+ include/linux/mlx5/vport.h                    |   3 -
+ 13 files changed, 232 insertions(+), 61 deletions(-)
+
+--=20
+2.21.0
+
