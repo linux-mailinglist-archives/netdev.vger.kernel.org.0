@@ -2,83 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B1465EC14
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 21:01:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2655B5EC35
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 21:06:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727091AbfGCTBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 15:01:40 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:42471 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726473AbfGCTBk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 15:01:40 -0400
-Received: by mail-qt1-f193.google.com with SMTP id h18so2869152qtm.9;
-        Wed, 03 Jul 2019 12:01:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=a4hi8wKrbqTGeszTm6+N010zWRC1VvcFxJuDUZi2Xrc=;
-        b=M3cBmORnKXkNXvPbiVJl2qFUt9EXm1TgZku8X1lfQuzXPiidtjslbcbJ17eAtHmi3S
-         KWT1O9SIBjQniMpLiFyPckjKKIKcbXLCKM1kw+z/i70KCsonx9otLPCMhXp5DleBBZCr
-         DPVXSpQ1HXueLtgcfR5TvGNcMxhdFQjlTDbUGrFVM7YAgB7w2h9b2tgkeT9ewcMpwaJl
-         uQVYl9IZcTsjWi3lSY4V8PbAH75VBAuUmXujwf5LyHE/Kxkt73jBusQg9nU09EAyrhfk
-         kWxM2Z9Nkf3IK4dgNluQMy3x4XDbw9Nv3pIJaNaShDAWeOlfS3s4vaFm3M+2VykRaQ1U
-         TASA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=a4hi8wKrbqTGeszTm6+N010zWRC1VvcFxJuDUZi2Xrc=;
-        b=W9KWRUUl5iS1dlRC505rsbAbKQVn736vJ+XW8os74lNah3wr9D45uGPtgJM8laVGn+
-         nHMY728ofqQhpQ39g1aZrf4U+E7rvNUS5m7MItQXMyfuKi+/BkEM6Nxqt8ZBdWQY+op/
-         Q76NVV2z7tXZ/oxiXFphFB5meLMJ7zxC//FPcxWA1Rqs+6noVBbJiIxN1b3k4tisYeMP
-         jGjCVy/6Gm9QovyvUXQ8lwQqs8j+20K7YsZ0Kp9zV+6Zbr0pgQ3mUhHXp7dSwyb5ngf1
-         dA+BLSTPfCoZO3PwzbPVpjkZhdAyQ2CMngsgeEsuIRaKML0WFTLhCUZnyURFbLSRmONn
-         p6NQ==
-X-Gm-Message-State: APjAAAXJ7mpNI/k+4dh9KKMRczIanyh/2rMIZfdiduuK65wm2df63/oh
-        ld8cDVGiyLK/64ieFN0kNT7upzwSF+bSzjF83GU=
-X-Google-Smtp-Source: APXvYqwUll0xYu2yPKQ1EbnRp9gmuHua63nYAx/pK0sNp1+oiv0SlxTX94tCkPYNiEa2T/EXcdPR28N5Or99e4O8CHw=
-X-Received: by 2002:a0c:d0fc:: with SMTP id b57mr33827753qvh.78.1562180499352;
- Wed, 03 Jul 2019 12:01:39 -0700 (PDT)
+        id S1727016AbfGCTGL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 15:06:11 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:40266 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726656AbfGCTGL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 15:06:11 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x63Iuunx005011
+        for <netdev@vger.kernel.org>; Wed, 3 Jul 2019 12:06:09 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=VLkVfmJlk3uSVtLV/lERM0fi3/Q5HY6guOVtFybnL9I=;
+ b=q28jPPQZVkXm7nLPau/mtDbK6xnsoxHnXNSC4DfPg6GR/ZjbBYSrlF+4k2xsG3AiyDjo
+ cbvxWlZeYMtHM5YiJ4YAtjZSL7naqIF5eHMVO0mYzfGjdMjroIikYDaSrW6W2NsulR9U
+ pd+fDDs15NugBOC3bCp/OHqvT7OqXl5DaNQ= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by m0001303.ppops.net with ESMTP id 2tgy4y8s4k-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 12:06:09 -0700
+Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Wed, 3 Jul 2019 12:06:07 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id B5F8F861544; Wed,  3 Jul 2019 12:06:05 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <andrii.nakryiko@gmail.com>, <ast@fb.com>, <daniel@iogearbox.net>,
+        <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <yhs@fb.com>,
+        <kernel-team@fb.com>
+CC:     Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH v3 bpf-next 0/4] capture integers in BTF type info for map defs
+Date:   Wed, 3 Jul 2019 12:06:00 -0700
+Message-ID: <20190703190604.4173641-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-References: <20190702161403.191066-1-sdf@google.com> <20190702161403.191066-7-sdf@google.com>
-In-Reply-To: <20190702161403.191066-7-sdf@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 3 Jul 2019 12:01:27 -0700
-Message-ID: <CAEf4Bzak755ixqVetwaPOi96-aNbGwshO3anrP_i_dvPG_quQw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 6/8] selftests/bpf: test BPF_SOCK_OPS_RTT_CB
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Priyaranjan Jha <priyarjha@google.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-03_04:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=922 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1907030232
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 2, 2019 at 9:14 AM Stanislav Fomichev <sdf@google.com> wrote:
->
-> Make sure the callback is invoked for syn-ack and data packet.
->
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Priyaranjan Jha <priyarjha@google.com>
-> Cc: Yuchung Cheng <ycheng@google.com>
-> Cc: Soheil Hassas Yeganeh <soheil@google.com>
-> Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-> Acked-by: Yuchung Cheng <ycheng@google.com>
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> ---
->  tools/testing/selftests/bpf/Makefile        |   3 +-
->  tools/testing/selftests/bpf/progs/tcp_rtt.c |  61 +++++
->  tools/testing/selftests/bpf/test_tcp_rtt.c  | 254 ++++++++++++++++++++
->  3 files changed, 317 insertions(+), 1 deletion(-)
->  create mode 100644 tools/testing/selftests/bpf/progs/tcp_rtt.c
->  create mode 100644 tools/testing/selftests/bpf/test_tcp_rtt.c
+This patch set implements an update to how BTF-defined maps are specified. The
+change is in how integer attributes, e.g., type, max_entries, map_flags, are
+specified: now they are captured as part of map definition struct's BTF type
+information (using array dimension), eliminating the need for compile-time
+data initialization and keeping all the metadata in one place.
 
-Can you please post a follow-up patch to add test_tcp_rtt to .gitignore?
+All existing selftests that were using BTF-defined maps are updated, along
+with some other selftests, that were switched to new syntax.
+
+v2->v3:
+- rename __int into __uint (Yonghong);
+v1->v2:
+- split bpf_helpers.h change from libbpf change (Song).
+
+Andrii Nakryiko (4):
+  libbpf: capture value in BTF type info for BTF-defined map defs
+  selftests/bpf: add __int and __type macro for BTF-defined maps
+  selftests/bpf: convert selftests using BTF-defined maps to new syntax
+  selftests/bpf: convert legacy BPF maps to BTF-defined ones
+
+ tools/lib/bpf/libbpf.c                        |  58 +++++----
+ tools/testing/selftests/bpf/bpf_helpers.h     |   3 +
+ tools/testing/selftests/bpf/progs/bpf_flow.c  |  28 ++---
+ .../selftests/bpf/progs/get_cgroup_id_kern.c  |  26 ++---
+ .../testing/selftests/bpf/progs/netcnt_prog.c |  20 ++--
+ tools/testing/selftests/bpf/progs/pyperf.h    |  90 +++++++-------
+ .../selftests/bpf/progs/sample_map_ret0.c     |  24 ++--
+ .../selftests/bpf/progs/socket_cookie_prog.c  |  13 +--
+ .../bpf/progs/sockmap_verdict_prog.c          |  48 ++++----
+ .../testing/selftests/bpf/progs/strobemeta.h  |  68 +++++------
+ .../selftests/bpf/progs/test_btf_newkv.c      |  13 +--
+ .../bpf/progs/test_get_stack_rawtp.c          |  39 +++----
+ .../selftests/bpf/progs/test_global_data.c    |  37 +++---
+ tools/testing/selftests/bpf/progs/test_l4lb.c |  65 ++++-------
+ .../selftests/bpf/progs/test_l4lb_noinline.c  |  65 ++++-------
+ .../selftests/bpf/progs/test_map_in_map.c     |  30 ++---
+ .../selftests/bpf/progs/test_map_lock.c       |  26 ++---
+ .../testing/selftests/bpf/progs/test_obj_id.c |  12 +-
+ .../bpf/progs/test_select_reuseport_kern.c    |  67 ++++-------
+ .../bpf/progs/test_send_signal_kern.c         |  26 ++---
+ .../bpf/progs/test_sock_fields_kern.c         |  78 +++++--------
+ .../selftests/bpf/progs/test_spin_lock.c      |  36 +++---
+ .../bpf/progs/test_stacktrace_build_id.c      |  55 ++++-----
+ .../selftests/bpf/progs/test_stacktrace_map.c |  52 +++------
+ .../selftests/bpf/progs/test_tcp_estats.c     |  13 +--
+ .../selftests/bpf/progs/test_tcpbpf_kern.c    |  26 ++---
+ .../selftests/bpf/progs/test_tcpnotify_kern.c |  28 ++---
+ tools/testing/selftests/bpf/progs/test_xdp.c  |  26 ++---
+ .../selftests/bpf/progs/test_xdp_loop.c       |  26 ++---
+ .../selftests/bpf/progs/test_xdp_noinline.c   |  81 +++++--------
+ .../selftests/bpf/progs/xdp_redirect_map.c    |  12 +-
+ .../testing/selftests/bpf/progs/xdping_kern.c |  12 +-
+ .../selftests/bpf/test_queue_stack_map.h      |  30 ++---
+ .../testing/selftests/bpf/test_sockmap_kern.h | 110 +++++++++---------
+ 34 files changed, 571 insertions(+), 772 deletions(-)
+
+-- 
+2.17.1
+
