@@ -2,91 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 06EFF5E01E
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 10:45:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 012B75E05D
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 10:58:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727198AbfGCIpt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 04:45:49 -0400
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:41888 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726400AbfGCIps (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 04:45:48 -0400
-Received: by mail-oi1-f196.google.com with SMTP id g7so1396178oia.8;
-        Wed, 03 Jul 2019 01:45:48 -0700 (PDT)
+        id S1727217AbfGCI6T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 04:58:19 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:32985 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726400AbfGCI6T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 04:58:19 -0400
+Received: by mail-lf1-f68.google.com with SMTP id y17so1218959lfe.0;
+        Wed, 03 Jul 2019 01:58:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=2mMVMreh3hJKLJhjIAM6H3oxpyFnkoyLmzafE6hiSIY=;
+        b=UXws+LNoc7XAqzFvu2ppbTf8wVcwsxHXrk3Ud4xWb0tXIqA2dh9Wp/KRTsplhNpRra
+         3WSW3yODUK1V9ndVDC9S0J6MBtc1GPi5ahtLaAYAKhDtboQW6norrPX3/3ptnODRgxVb
+         1RENdrzUS8xvpaQs/4AXCXevjmtWNfMSJK4dN0PGACa+e8x7JenM0wNjajQBSSJLkly8
+         ++qulESU0o8WGAvfC1i5XM+oHspsEodECy/e+RLr+JdzCnGgF8FIs5VeUZsW39sMEx5/
+         Th1TPtOXN5SlEdR9r1eoGlOSD+b/u0ImwZZvIrvIp7D2UrC2YP1PjNf/6DJLIvxmngBS
+         39iQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LyVZBS5jn++4pkEk1/rurUCjm6Iwr/LV+UH79/IW+aA=;
-        b=EZ0zq+K66Xo7xswhkc90jMaA/VuZbkdyoFNeqR1KjSJhnRij4beJ7R04ieCoVqlWE9
-         jiMkLSXL9AcOcN4ZDpjCGEWVg4rJQ7JtZAJzRdUHWBcxPLNJlHEJCcnjJaM6IgNyTDhZ
-         y4e6Mgh2YeAjTvZA5D8JM6+jYezKa7QP1PBOm0Nps8YbLj4zwS4DHLnuoRnCKPxajBwF
-         8GC2AcVMEfdxWax1Xj5x8vzdngzSYhr/rs7cEuO87pobq0GIg1nh/6RDVmpamV80lzQy
-         fR7qSxkD2pol4hNhEM4Pb+0+anQigQB/Elhie8NYMXpxm7Wbb2Kd6o3PLCMQA04TREkL
-         +riA==
-X-Gm-Message-State: APjAAAVQkKHj9X4WbNxt+4AM5dfYzKCw8n6wW3XMFSXPXSQkeGu+rP9K
-        TCgBFtQifSM2P8j075ujrB1DsoxR+mh17bX7I6A=
-X-Google-Smtp-Source: APXvYqy6FsG08oXqoozMwxCegLkHJZaZKbf5DvRU1354+sTZCS91CFl1SbUhZ/GPT/+v4ndewHhmHHLsF7dBTBQ4gRU=
-X-Received: by 2002:aca:c4d5:: with SMTP id u204mr5856840oif.131.1562143547995;
- Wed, 03 Jul 2019 01:45:47 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=2mMVMreh3hJKLJhjIAM6H3oxpyFnkoyLmzafE6hiSIY=;
+        b=CVjy36jew3MVJPqq+6DzSoscckJeYorTFczHqSpDc4D6Zn2WWJUAAaAkroo97RS27O
+         9yTqoCkeOvJjNB4ELHJ1BUIifM/RqmTYK/wWc5jD9NfGHvniYQsdNHNQ3nlYQ3FlkVKc
+         bSTRVn0KM1lx8Z2EPCrZTbAwwOpckfCHnoh8r1pdCHSvraW6+vlBTDQuwq3E5+RFAAzC
+         f7PQnTctjZpqrFS667krlmH85MgkAy6q0w1k5fFEHi5hD42RYyyEvzdtZhL5DDF2AX47
+         XZlKAWzNZJeQ/vFvYb36RgIsg3E3SYI2KflHYSyXDSCX6t7WBiQS/CV8oQutPCraRjZ7
+         5lUQ==
+X-Gm-Message-State: APjAAAWZuD9+HJs52Fm8Sd0uPCY3wy0MXd+spw3Gv7uI6zOhLMQbO1Lk
+        BcSiG5LGA5kvDVWTl8jKHp4=
+X-Google-Smtp-Source: APXvYqzBE5JWkQEYewzfdunGupYNiyEuR9qo8QLMdsdBwvBsO19vdVFSYv3J+rTIfOgB9HV+S9xlKg==
+X-Received: by 2002:a19:80c4:: with SMTP id b187mr2931361lfd.122.1562144297227;
+        Wed, 03 Jul 2019 01:58:17 -0700 (PDT)
+Received: from krolik-desktop.lan ([91.238.216.6])
+        by smtp.gmail.com with ESMTPSA id p76sm348625ljb.49.2019.07.03.01.58.15
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 03 Jul 2019 01:58:16 -0700 (PDT)
+From:   Pawel Dembicki <paweldembicki@gmail.com>
+Cc:     paweldembicki@gmail.com, linus.walleij@linaro.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/4] net: dsa: Change DT bindings for Vitesse VSC73xx switches
+Date:   Wed,  3 Jul 2019 10:57:56 +0200
+Message-Id: <20190703085757.1027-1-paweldembicki@gmail.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190701152723.624-1-paweldembicki@gmail.com>
+References: <20190701152723.624-1-paweldembicki@gmail.com>
 MIME-Version: 1.0
-References: <20190703061631.84485-1-maheshb@google.com>
-In-Reply-To: <20190703061631.84485-1-maheshb@google.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 3 Jul 2019 10:45:36 +0200
-Message-ID: <CAMuHMdUSz7cA7+TSDLjb9Bwp6H5=G-q0O9uZk+EwMRKpNrrCBw@mail.gmail.com>
-Subject: Re: [PATCH next] loopback: fix lockdep splat
-To:     Mahesh Bandewar <maheshb@google.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        David Miller <davem@davemloft.net>,
-        Mahesh Bandewar <mahesh@bandewar.net>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Mahesh,
+This commit introduce how to use vsc73xx platform driver.
 
-s/lockdep/rcu/ in the subject.
+Signed-off-by: Pawel Dembicki <paweldembicki@gmail.com>
+---
+Changes in v2:
+- Drop -spi and -platform suffix
+- Change commit message
 
-On Wed, Jul 3, 2019 at 8:16 AM Mahesh Bandewar <maheshb@google.com> wrote:
-> dev_init_scheduler() and dev_activate() expect the caller to
-> hold RTNL. Since we don't want blackhole device to be initialized
-> per ns, we are initializing at init.
->
-> [    3.855027] Call Trace:
-> [    3.855034]  dump_stack+0x67/0x95
-> [    3.855037]  lockdep_rcu_suspicious+0xd5/0x110
-> [    3.855044]  dev_init_scheduler+0xe3/0x120
-> [    3.855048]  ? net_olddevs_init+0x60/0x60
-> [    3.855050]  blackhole_netdev_init+0x45/0x6e
-> [    3.855052]  do_one_initcall+0x6c/0x2fa
-> [    3.855058]  ? rcu_read_lock_sched_held+0x8c/0xa0
-> [    3.855066]  kernel_init_freeable+0x1e5/0x288
-> [    3.855071]  ? rest_init+0x260/0x260
-> [    3.855074]  kernel_init+0xf/0x180
-> [    3.855076]  ? rest_init+0x260/0x260
-> [    3.855078]  ret_from_fork+0x24/0x30
->
-> Fixes: 4de83b88c66 ("loopback: create blackhole net device similar to loopack.")
-> Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Signed-off-by: Mahesh Bandewar <maheshb@google.com>
+ .../bindings/net/dsa/vitesse,vsc73xx.txt      | 57 +++++++++++++++++--
+ 1 file changed, 53 insertions(+), 4 deletions(-)
 
-Thanks, that got rid of the rcu splat.
-
-Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
+diff --git a/Documentation/devicetree/bindings/net/dsa/vitesse,vsc73xx.txt b/Documentation/devicetree/bindings/net/dsa/vitesse,vsc73xx.txt
+index ed4710c40641..c55e0148657d 100644
+--- a/Documentation/devicetree/bindings/net/dsa/vitesse,vsc73xx.txt
++++ b/Documentation/devicetree/bindings/net/dsa/vitesse,vsc73xx.txt
+@@ -2,8 +2,8 @@ Vitesse VSC73xx Switches
+ ========================
+ 
+ This defines device tree bindings for the Vitesse VSC73xx switch chips.
+-The Vitesse company has been acquired by Microsemi and Microsemi in turn
+-acquired by Microchip but retains this vendor branding.
++The Vitesse company has been acquired by Microsemi and Microsemi has
++been acquired Microchip but retains this vendor branding.
+ 
+ The currently supported switch chips are:
+ Vitesse VSC7385 SparX-G5 5+1-port Integrated Gigabit Ethernet Switch
+@@ -11,8 +11,13 @@ Vitesse VSC7388 SparX-G8 8-port Integrated Gigabit Ethernet Switch
+ Vitesse VSC7395 SparX-G5e 5+1-port Integrated Gigabit Ethernet Switch
+ Vitesse VSC7398 SparX-G8e 8-port Integrated Gigabit Ethernet Switch
+ 
+-The device tree node is an SPI device so it must reside inside a SPI bus
+-device tree node, see spi/spi-bus.txt
++This switch could have two different management interface.
++
++If SPI interface is used, the device tree node is an SPI device so it must
++reside inside a SPI bus device tree node, see spi/spi-bus.txt
++
++If Platform driver is used, the device tree node is an platform device so it
++must reside inside a platform bus device tree node.
+ 
+ Required properties:
+ 
+@@ -38,6 +43,7 @@ and subnodes of DSA switches.
+ 
+ Examples:
+ 
++SPI:
+ switch@0 {
+ 	compatible = "vitesse,vsc7395";
+ 	reg = <0>;
+@@ -79,3 +85,46 @@ switch@0 {
+ 		};
+ 	};
+ };
++
++Platform:
++switch@2,0 {
++	#address-cells = <1>;
++	#size-cells = <1>;
++	compatible = "vitesse,vsc7385";
++	reg = <0x2 0x0 0x20000>;
++	reset-gpios = <&gpio0 12 GPIO_ACTIVE_LOW>;
++
++	ports {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		port@0 {
++			reg = <0>;
++			label = "lan1";
++		};
++		port@1 {
++			reg = <1>;
++			label = "lan2";
++		};
++		port@2 {
++			reg = <2>;
++			label = "lan3";
++		};
++		port@3 {
++			reg = <3>;
++			label = "lan4";
++		};
++		vsc: port@6 {
++			reg = <6>;
++			label = "cpu";
++			ethernet = <&enet0>;
++			phy-mode = "rgmii";
++			fixed-link {
++				speed = <1000>;
++				full-duplex;
++				pause;
++			};
++		};
++	};
++
++};
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.20.1
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
