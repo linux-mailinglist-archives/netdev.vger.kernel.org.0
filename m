@@ -2,110 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1ECC05E257
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 12:49:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1E345E066
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 10:59:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727107AbfGCKt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 06:49:27 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:50335 "EHLO ozlabs.org"
+        id S1727241AbfGCI7L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 04:59:11 -0400
+Received: from mga01.intel.com ([192.55.52.88]:31283 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726544AbfGCKt1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jul 2019 06:49:27 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 45dyXg5Kw8z9s4Y;
-        Wed,  3 Jul 2019 20:49:23 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1562150964;
-        bh=wcJRF5awK9VFplzQrvl0xSNRx3Qpc7cMbU202oXK/bE=;
-        h=Date:From:To:Cc:Subject:From;
-        b=R1uWKAifUwCwvrVaqOS6ql1oNTIskGbaHY1sAWqqnC2TVj5qIh9eBDRfyeGwNqtxd
-         cDThu0moCJ6dkORD3ioXIzF3cPj7HCIsxmvqd4+SGgTAFMcBA6hYAc+DLqlhYEzBVx
-         uMK15vGPJekJ3bYsYadRGe7bRcVN3t18Ztsp8Bpu0C00U88eRMnl8PWeyVxiCh0S5A
-         S7iUsY+Ho7ODnprGxyjQARSeyMO/UGdLzu0fo1OG2E0IXoHamO6rOdKuatTh4JSYBh
-         WRYkVnWnSDd7kpbJGSAH5XP270rwF25/WSiTRGmDp6Ceze2fqY7dFIT/u71cqVnseJ
-         C1vsaEaaRDhFA==
-Date:   Wed, 3 Jul 2019 20:49:21 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Eiichi Tsukata <devel@etsukata.com>
-Subject: linux-next: manual merge of the akpm tree with the net-next tree
-Message-ID: <20190703204921.69bc9074@canb.auug.org.au>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- boundary="Sig_/RMargG3XWq7_PIiCvD6joQA"; protocol="application/pgp-signature"
+        id S1727045AbfGCI7L (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jul 2019 04:59:11 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Jul 2019 01:59:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.63,446,1557212400"; 
+   d="scan'208";a="184692476"
+Received: from wvoon-ilbpg2.png.intel.com ([10.88.227.88])
+  by fmsmga001.fm.intel.com with ESMTP; 03 Jul 2019 01:59:09 -0700
+From:   Voon Weifeng <weifeng.voon@intel.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jose Abreu <joabreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>
+Subject: [PATCH v1 net-next] net: stmmac: Enable dwmac4 jumbo frame more than 8KiB
+Date:   Thu,  4 Jul 2019 00:59:10 +0800
+Message-Id: <1562173150-808-1-git-send-email-weifeng.voon@intel.com>
+X-Mailer: git-send-email 1.9.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/RMargG3XWq7_PIiCvD6joQA
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+From: Weifeng Voon <weifeng.voon@intel.com>
 
-Hi all,
+Enable GMAC v4.xx and beyond to support 16KiB buffer.
 
-Today's linux-next merge of the akpm tree got a conflict in:
+Signed-off-by: Weifeng Voon <weifeng.voon@intel.com>
+Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
 
-  net/ipv6/sysctl_net_ipv6.c
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
+index cf6436d3d6c7..dbde23e7e169 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
+@@ -443,6 +443,15 @@ static void dwmac4_clear(struct dma_desc *p)
+ 	p->des3 = 0;
+ }
+ 
++static int set_16kib_bfsize(int mtu)
++{
++	int ret = 0;
++
++	if (unlikely(mtu >= BUF_SIZE_8KiB))
++		ret = BUF_SIZE_16KiB;
++	return ret;
++}
++
+ const struct stmmac_desc_ops dwmac4_desc_ops = {
+ 	.tx_status = dwmac4_wrback_get_tx_status,
+ 	.rx_status = dwmac4_wrback_get_rx_status,
+@@ -469,4 +478,6 @@ static void dwmac4_clear(struct dma_desc *p)
+ 	.clear = dwmac4_clear,
+ };
+ 
+-const struct stmmac_mode_ops dwmac4_ring_mode_ops = { };
++const struct stmmac_mode_ops dwmac4_ring_mode_ops = {
++	.set_16kib_bfsize = set_16kib_bfsize,
++};
+-- 
+1.9.1
 
-between commit:
-
-  00dc3307c0f7 ("net/ipv6: Fix misuse of proc_dointvec "flowlabel_reflect"")
-
-from the net-next tree and patch:
-
-  "proc-sysctl-add-shared-variables-for-range-check-fix-2-fix"
-
-from the akpm tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc net/ipv6/sysctl_net_ipv6.c
-index 57f520d1bf45,e00cf070e542..000000000000
---- a/net/ipv6/sysctl_net_ipv6.c
-+++ b/net/ipv6/sysctl_net_ipv6.c
-@@@ -112,8 -112,8 +112,8 @@@ static struct ctl_table ipv6_table_temp
-  		.data		=3D &init_net.ipv6.sysctl.flowlabel_reflect,
-  		.maxlen		=3D sizeof(int),
-  		.mode		=3D 0644,
- -		.proc_handler	=3D proc_dointvec,
- +		.proc_handler	=3D proc_dointvec_minmax,
-- 		.extra1		=3D &zero,
-+ 		.extra1		=3D SYSCTL_ZERO,
-  		.extra2		=3D &flowlabel_reflect_max,
-  	},
-  	{
-
---Sig_/RMargG3XWq7_PIiCvD6joQA
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl0ciDEACgkQAVBC80lX
-0GwpZAf8DYM6yf+jJSeiMzFBHbQsePC0ea5FZ5eVPIRS9Yeai3g+CUfNrBgGi0qV
-faGK895dzjZpylJk9nZveABDCX+sY0TXByp8jYDDPSh9KJAcUDKbzrqiIOQFPEUh
-qPLglC7k6VnybrSmFVmNf1/jC2AH1/cTRkohBaD/EweLKJVxmFwyCMPNrpg54HDo
-QQSZGXqvd5LjGR2o5UhA/OQGDE9ron8wnr2N+dF0pTTgMqkE8sXvKbNHFXII7QdN
-UB8UljWT4IH3t5GbmBn94xAFkSzclwpTFhdvmVpmox8STpkavfAmC31QR5AS+nbO
-2W1n3BFUWqMsL+wVdwaEfZicyyxvvA==
-=AHoM
------END PGP SIGNATURE-----
-
---Sig_/RMargG3XWq7_PIiCvD6joQA--
