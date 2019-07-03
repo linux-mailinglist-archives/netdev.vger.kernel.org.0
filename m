@@ -2,144 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C5EB5E328
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 13:50:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86EBB5E340
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 13:54:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727028AbfGCLum (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 07:50:42 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:49966 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726490AbfGCLum (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 07:50:42 -0400
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x63BlbnN142732
-        for <netdev@vger.kernel.org>; Wed, 3 Jul 2019 07:50:41 -0400
-Received: from e06smtp05.uk.ibm.com (e06smtp05.uk.ibm.com [195.75.94.101])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2tgsu057ru-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 07:50:40 -0400
-Received: from localhost
-        by e06smtp05.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
-        Wed, 3 Jul 2019 12:50:38 +0100
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (9.149.109.194)
-        by e06smtp05.uk.ibm.com (192.168.101.135) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Wed, 3 Jul 2019 12:50:36 +0100
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x63BoZqh57409556
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 3 Jul 2019 11:50:35 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 45634A4053;
-        Wed,  3 Jul 2019 11:50:35 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1F724A4040;
-        Wed,  3 Jul 2019 11:50:35 +0000 (GMT)
-Received: from white.boeblingen.de.ibm.com (unknown [9.152.98.248])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed,  3 Jul 2019 11:50:35 +0000 (GMT)
-From:   Ilya Leoshkevich <iii@linux.ibm.com>
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Ilya Leoshkevich <iii@linux.ibm.com>
-Subject: [PATCH bpf-next] selftests/bpf: fix test_reuseport_array on s390
-Date:   Wed,  3 Jul 2019 13:50:34 +0200
-X-Mailer: git-send-email 2.21.0
+        id S1727028AbfGCLyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 07:54:12 -0400
+Received: from mga18.intel.com ([134.134.136.126]:7366 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725786AbfGCLyL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jul 2019 07:54:11 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Jul 2019 04:54:10 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.63,446,1557212400"; 
+   d="scan'208";a="172108791"
+Received: from npg-dpdk-virtio-tbie-2.sh.intel.com (HELO ___) ([10.67.104.151])
+  by FMSMGA003.fm.intel.com with ESMTP; 03 Jul 2019 04:54:08 -0700
+Date:   Wed, 3 Jul 2019 19:52:45 +0800
+From:   Tiwei Bie <tiwei.bie@intel.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     mst@redhat.com, alex.williamson@redhat.com,
+        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, dan.daly@intel.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com
+Subject: Re: [RFC v2] vhost: introduce mdev based hardware vhost backend
+Message-ID: <20190703115245.GA22374@___>
+References: <20190703091339.1847-1-tiwei.bie@intel.com>
+ <7b8279b2-aa7e-7adc-eeff-20dfaf4400d0@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-x-cbid: 19070311-0020-0000-0000-0000034FCB2B
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19070311-0021-0000-0000-000021A361C6
-Message-Id: <20190703115034.53984-1-iii@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-03_03:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=674 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907030143
+In-Reply-To: <7b8279b2-aa7e-7adc-eeff-20dfaf4400d0@redhat.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix endianness issue: passing a pointer to 64-bit fd as a 32-bit key
-does not work on big-endian architectures. So cast fd to 32-bits when
-necessary.
+On Wed, Jul 03, 2019 at 06:09:51PM +0800, Jason Wang wrote:
+> On 2019/7/3 下午5:13, Tiwei Bie wrote:
+> > Details about this can be found here:
+> > 
+> > https://lwn.net/Articles/750770/
+> > 
+> > What's new in this version
+> > ==========================
+> > 
+> > A new VFIO device type is introduced - vfio-vhost. This addressed
+> > some comments from here: https://patchwork.ozlabs.org/cover/984763/
+> > 
+> > Below is the updated device interface:
+> > 
+> > Currently, there are two regions of this device: 1) CONFIG_REGION
+> > (VFIO_VHOST_CONFIG_REGION_INDEX), which can be used to setup the
+> > device; 2) NOTIFY_REGION (VFIO_VHOST_NOTIFY_REGION_INDEX), which
+> > can be used to notify the device.
+> > 
+> > 1. CONFIG_REGION
+> > 
+> > The region described by CONFIG_REGION is the main control interface.
+> > Messages will be written to or read from this region.
+> > 
+> > The message type is determined by the `request` field in message
+> > header. The message size is encoded in the message header too.
+> > The message format looks like this:
+> > 
+> > struct vhost_vfio_op {
+> > 	__u64 request;
+> > 	__u32 flags;
+> > 	/* Flag values: */
+> >   #define VHOST_VFIO_NEED_REPLY 0x1 /* Whether need reply */
+> > 	__u32 size;
+> > 	union {
+> > 		__u64 u64;
+> > 		struct vhost_vring_state state;
+> > 		struct vhost_vring_addr addr;
+> > 	} payload;
+> > };
+> > 
+> > The existing vhost-kernel ioctl cmds are reused as the message
+> > requests in above structure.
+> 
+> 
+> Still a comments like V1. What's the advantage of inventing a new protocol?
 
-Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
----
- tools/testing/selftests/bpf/test_maps.c | 21 +++++++++++++++------
- 1 file changed, 15 insertions(+), 6 deletions(-)
+I'm trying to make it work in VFIO's way..
 
-diff --git a/tools/testing/selftests/bpf/test_maps.c b/tools/testing/selftests/bpf/test_maps.c
-index a3fbc571280a..5443b9bd75ed 100644
---- a/tools/testing/selftests/bpf/test_maps.c
-+++ b/tools/testing/selftests/bpf/test_maps.c
-@@ -1418,7 +1418,7 @@ static void test_map_wronly(void)
- 	assert(bpf_map_get_next_key(fd, &key, &value) == -1 && errno == EPERM);
- }
- 
--static void prepare_reuseport_grp(int type, int map_fd,
-+static void prepare_reuseport_grp(int type, int map_fd, size_t map_elem_size,
- 				  __s64 *fds64, __u64 *sk_cookies,
- 				  unsigned int n)
- {
-@@ -1428,6 +1428,8 @@ static void prepare_reuseport_grp(int type, int map_fd,
- 	const int optval = 1;
- 	unsigned int i;
- 	u64 sk_cookie;
-+	void *value;
-+	__s32 fd32;
- 	__s64 fd64;
- 	int err;
- 
-@@ -1449,8 +1451,14 @@ static void prepare_reuseport_grp(int type, int map_fd,
- 		      "err:%d errno:%d\n", err, errno);
- 
- 		/* reuseport_array does not allow unbound sk */
--		err = bpf_map_update_elem(map_fd, &index0, &fd64,
--					  BPF_ANY);
-+		if (map_elem_size == sizeof(__u64))
-+			value = &fd64;
-+		else {
-+			assert(map_elem_size == sizeof(__u32));
-+			fd32 = (__s32)fd64;
-+			value = &fd32;
-+		}
-+		err = bpf_map_update_elem(map_fd, &index0, value, BPF_ANY);
- 		CHECK(err != -1 || errno != EINVAL,
- 		      "reuseport array update unbound sk",
- 		      "sock_type:%d err:%d errno:%d\n",
-@@ -1478,7 +1486,7 @@ static void prepare_reuseport_grp(int type, int map_fd,
- 			 * reuseport_array does not allow
- 			 * non-listening tcp sk.
- 			 */
--			err = bpf_map_update_elem(map_fd, &index0, &fd64,
-+			err = bpf_map_update_elem(map_fd, &index0, value,
- 						  BPF_ANY);
- 			CHECK(err != -1 || errno != EINVAL,
- 			      "reuseport array update non-listening sk",
-@@ -1541,7 +1549,7 @@ static void test_reuseport_array(void)
- 	for (t = 0; t < ARRAY_SIZE(types); t++) {
- 		type = types[t];
- 
--		prepare_reuseport_grp(type, map_fd, grpa_fds64,
-+		prepare_reuseport_grp(type, map_fd, sizeof(__u64), grpa_fds64,
- 				      grpa_cookies, ARRAY_SIZE(grpa_fds64));
- 
- 		/* Test BPF_* update flags */
-@@ -1649,7 +1657,8 @@ static void test_reuseport_array(void)
- 				sizeof(__u32), sizeof(__u32), array_size, 0);
- 	CHECK(map_fd == -1, "reuseport array create",
- 	      "map_fd:%d, errno:%d\n", map_fd, errno);
--	prepare_reuseport_grp(SOCK_STREAM, map_fd, &fd64, &sk_cookie, 1);
-+	prepare_reuseport_grp(SOCK_STREAM, map_fd, sizeof(__u32), &fd64,
-+			      &sk_cookie, 1);
- 	fd = fd64;
- 	err = bpf_map_update_elem(map_fd, &index3, &fd, BPF_NOEXIST);
- 	CHECK(err == -1, "reuseport array update 32 bit fd",
--- 
-2.21.0
+> I believe either of the following should be better:
+> 
+> - using vhost ioctl,  we can start from SET_VRING_KICK/SET_VRING_CALL and
+> extend it with e.g notify region. The advantages is that all exist userspace
+> program could be reused without modification (or minimal modification). And
+> vhost API hides lots of details that is not necessary to be understood by
+> application (e.g in the case of container).
 
+Do you mean reusing vhost's ioctl on VFIO device fd directly,
+or introducing another mdev driver (i.e. vhost_mdev instead of
+using the existing vfio_mdev) for mdev device?
+
+> 
+> - using PCI layout, then you don't even need to re-invent notifiy region at
+> all and we can pass-through them to guest.
+
+Like what you said previously, virtio has transports other than PCI.
+And it will look a bit odd when using transports other than PCI..
+
+> 
+> Personally, I prefer vhost ioctl.
+
++1
+
+> 
+> 
+> > 
+[...]
+> > 
+> > 3. VFIO interrupt ioctl API
+> > 
+> > VFIO interrupt ioctl API is used to setup device interrupts.
+> > IRQ-bypass can also be supported.
+> > 
+> > Currently, the data path interrupt can be configured via the
+> > VFIO_VHOST_VQ_IRQ_INDEX with virtqueue's callfd.
+> 
+> 
+> How about DMA API? Do you expect to use VFIO IOMMU API or using vhost
+> SET_MEM_TABLE? VFIO IOMMU API is more generic for sure but with
+> SET_MEM_TABLE DMA can be done at the level of parent device which means it
+> can work for e.g the card with on-chip IOMMU.
+
+Agree. In this RFC, it assumes userspace will use VFIO IOMMU API
+to do the DMA programming. But like what you said, there could be
+a problem when using cards with on-chip IOMMU.
+
+> 
+> And what's the plan for vIOMMU?
+
+As this RFC assumes userspace will use VFIO IOMMU API, userspace
+just needs to follow the same way like what vfio-pci device does
+in QEMU to support vIOMMU.
+
+> 
+> 
+> > 
+> > Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
+> > ---
+> >   drivers/vhost/Makefile     |   2 +
+> >   drivers/vhost/vdpa.c       | 770 +++++++++++++++++++++++++++++++++++++
+> >   include/linux/vdpa_mdev.h  |  72 ++++
+> >   include/uapi/linux/vfio.h  |  19 +
+> >   include/uapi/linux/vhost.h |  25 ++
+> >   5 files changed, 888 insertions(+)
+> >   create mode 100644 drivers/vhost/vdpa.c
+> >   create mode 100644 include/linux/vdpa_mdev.h
+> 
+> 
+> We probably need some sample parent device implementation. It could be a
+> software datapath like e.g we can start from virtio-net device in guest or a
+> vhost/tap on host.
+
+Yeah, something like this would be interesting!
+
+Thanks,
+Tiwei
+
+> 
+> Thanks
+> 
+> 
+> > 
