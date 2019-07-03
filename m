@@ -2,192 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 744155E39F
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 14:16:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FE695E3B8
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 14:23:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726743AbfGCMQm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 08:16:42 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:42948 "EHLO mx1.redhat.com"
+        id S1725933AbfGCMXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 08:23:18 -0400
+Received: from mail.us.es ([193.147.175.20]:41648 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725830AbfGCMQl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jul 2019 08:16:41 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1725944AbfGCMXR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jul 2019 08:23:17 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id D5EC0179894
+        for <netdev@vger.kernel.org>; Wed,  3 Jul 2019 14:23:15 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id C4E5FA0AC7
+        for <netdev@vger.kernel.org>; Wed,  3 Jul 2019 14:23:15 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id BA39A1021B2; Wed,  3 Jul 2019 14:23:15 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id AD7C110219C;
+        Wed,  3 Jul 2019 14:23:13 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Wed, 03 Jul 2019 14:23:13 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 35E6530872E8;
-        Wed,  3 Jul 2019 12:16:41 +0000 (UTC)
-Received: from [10.72.12.173] (ovpn-12-173.pek2.redhat.com [10.72.12.173])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9A9EF5D9DE;
-        Wed,  3 Jul 2019 12:16:25 +0000 (UTC)
-Subject: Re: [RFC v2] vhost: introduce mdev based hardware vhost backend
-To:     Tiwei Bie <tiwei.bie@intel.com>
-Cc:     mst@redhat.com, alex.williamson@redhat.com,
-        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, dan.daly@intel.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com
-References: <20190703091339.1847-1-tiwei.bie@intel.com>
- <7b8279b2-aa7e-7adc-eeff-20dfaf4400d0@redhat.com>
- <20190703115245.GA22374@___>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <64833f91-02cd-7143-f12e-56ab93b2418d@redhat.com>
-Date:   Wed, 3 Jul 2019 20:16:23 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 887B44265A32;
+        Wed,  3 Jul 2019 14:23:13 +0200 (CEST)
+Date:   Wed, 3 Jul 2019 14:23:13 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Cc:     wenxu@ucloud.cn, fw@strlen.de, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 1/2 nf-next v3] netfilter: nft_meta: Add
+ NFT_META_BRI_IIFVPROTO support
+Message-ID: <20190703122313.cidsxiaao6y2b6pt@salvia>
+References: <1561682975-21790-1-git-send-email-wenxu@ucloud.cn>
+ <366e228f-7253-e388-4799-f0f9c18d1111@cumulusnetworks.com>
 MIME-Version: 1.0
-In-Reply-To: <20190703115245.GA22374@___>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.47]); Wed, 03 Jul 2019 12:16:41 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <366e228f-7253-e388-4799-f0f9c18d1111@cumulusnetworks.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jul 03, 2019 at 03:08:01PM +0300, Nikolay Aleksandrov wrote:
+> On 28/06/2019 03:49, wenxu@ucloud.cn wrote:
+> > From: wenxu <wenxu@ucloud.cn>
+> > 
+> > This patch provide a meta to get the bridge vlan proto
+> > 
+> > nft add rule bridge firewall zones counter meta br_vlan_proto 0x8100
+> > 
+> > Signed-off-by: wenxu <wenxu@ucloud.cn>
+> > ---
+> >  include/uapi/linux/netfilter/nf_tables.h | 2 ++
+> >  net/netfilter/nft_meta.c                 | 9 +++++++++
+> >  2 files changed, 11 insertions(+)
+> > 
+> 
+> Hi,
+> When using the internal bridge API outside of the bridge I'd advise you to CC bridge
+> maintainers as well.
 
-On 2019/7/3 下午7:52, Tiwei Bie wrote:
-> On Wed, Jul 03, 2019 at 06:09:51PM +0800, Jason Wang wrote:
->> On 2019/7/3 下午5:13, Tiwei Bie wrote:
->>> Details about this can be found here:
->>>
->>> https://lwn.net/Articles/750770/
->>>
->>> What's new in this version
->>> ==========================
->>>
->>> A new VFIO device type is introduced - vfio-vhost. This addressed
->>> some comments from here: https://patchwork.ozlabs.org/cover/984763/
->>>
->>> Below is the updated device interface:
->>>
->>> Currently, there are two regions of this device: 1) CONFIG_REGION
->>> (VFIO_VHOST_CONFIG_REGION_INDEX), which can be used to setup the
->>> device; 2) NOTIFY_REGION (VFIO_VHOST_NOTIFY_REGION_INDEX), which
->>> can be used to notify the device.
->>>
->>> 1. CONFIG_REGION
->>>
->>> The region described by CONFIG_REGION is the main control interface.
->>> Messages will be written to or read from this region.
->>>
->>> The message type is determined by the `request` field in message
->>> header. The message size is encoded in the message header too.
->>> The message format looks like this:
->>>
->>> struct vhost_vfio_op {
->>> 	__u64 request;
->>> 	__u32 flags;
->>> 	/* Flag values: */
->>>    #define VHOST_VFIO_NEED_REPLY 0x1 /* Whether need reply */
->>> 	__u32 size;
->>> 	union {
->>> 		__u64 u64;
->>> 		struct vhost_vring_state state;
->>> 		struct vhost_vring_addr addr;
->>> 	} payload;
->>> };
->>>
->>> The existing vhost-kernel ioctl cmds are reused as the message
->>> requests in above structure.
->>
->> Still a comments like V1. What's the advantage of inventing a new protocol?
-> I'm trying to make it work in VFIO's way..
->
->> I believe either of the following should be better:
->>
->> - using vhost ioctl,  we can start from SET_VRING_KICK/SET_VRING_CALL and
->> extend it with e.g notify region. The advantages is that all exist userspace
->> program could be reused without modification (or minimal modification). And
->> vhost API hides lots of details that is not necessary to be understood by
->> application (e.g in the case of container).
-> Do you mean reusing vhost's ioctl on VFIO device fd directly,
-> or introducing another mdev driver (i.e. vhost_mdev instead of
-> using the existing vfio_mdev) for mdev device?
+Will keep this mind, thanks.
 
+> This patch is clearly wrong since you cannot access the vlan
+> fields directly because bridge vlan support might be disabled from the kernel config
+> as Pablo has noticed as well. In general I'd try to avoid using the internal API directly,
+> but that is a different matter.
 
-Can we simply add them into ioctl of mdev_parent_ops?
+BROPT_VLAN_ENABLED is exposed through netlink and sysfs, and this only
+consults the value. I guess you refer to the fact that...
 
+> Please consult with include/linux/if_bridge.h for exported
+> functions that are supposed to be visible outside of the bridge, if you need anything else
+> make sure to add support for it there. The usage of br_opt_get directly for example must
+> be changed to br_vlan_enabled().
 
->
->> - using PCI layout, then you don't even need to re-invent notifiy region at
->> all and we can pass-through them to guest.
-> Like what you said previously, virtio has transports other than PCI.
-> And it will look a bit odd when using transports other than PCI..
+Indeed... this patch should be using br_vlan_enabled() instead.
 
-
-Yes.
-
-
->
->> Personally, I prefer vhost ioctl.
-> +1
->
->>
-> [...]
->>> 3. VFIO interrupt ioctl API
->>>
->>> VFIO interrupt ioctl API is used to setup device interrupts.
->>> IRQ-bypass can also be supported.
->>>
->>> Currently, the data path interrupt can be configured via the
->>> VFIO_VHOST_VQ_IRQ_INDEX with virtqueue's callfd.
->>
->> How about DMA API? Do you expect to use VFIO IOMMU API or using vhost
->> SET_MEM_TABLE? VFIO IOMMU API is more generic for sure but with
->> SET_MEM_TABLE DMA can be done at the level of parent device which means it
->> can work for e.g the card with on-chip IOMMU.
-> Agree. In this RFC, it assumes userspace will use VFIO IOMMU API
-> to do the DMA programming. But like what you said, there could be
-> a problem when using cards with on-chip IOMMU.
-
-
-Yes, another issue is SET_MEM_TABLE can not be used to update just a 
-part of the table. This seems less flexible than VFIO API but it could 
-be extended.
-
-
->
->> And what's the plan for vIOMMU?
-> As this RFC assumes userspace will use VFIO IOMMU API, userspace
-> just needs to follow the same way like what vfio-pci device does
-> in QEMU to support vIOMMU.
-
-
-Right, this is more a question for the qemu part. It means it needs to 
-go for ordinary VFIO path to get all notifiers/listeners support from 
-vIOMMU.
-
-
->
->>
->>> Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
->>> ---
->>>    drivers/vhost/Makefile     |   2 +
->>>    drivers/vhost/vdpa.c       | 770 +++++++++++++++++++++++++++++++++++++
->>>    include/linux/vdpa_mdev.h  |  72 ++++
->>>    include/uapi/linux/vfio.h  |  19 +
->>>    include/uapi/linux/vhost.h |  25 ++
->>>    5 files changed, 888 insertions(+)
->>>    create mode 100644 drivers/vhost/vdpa.c
->>>    create mode 100644 include/linux/vdpa_mdev.h
->>
->> We probably need some sample parent device implementation. It could be a
->> software datapath like e.g we can start from virtio-net device in guest or a
->> vhost/tap on host.
-> Yeah, something like this would be interesting!
-
-
-Plan to do something like that :) ?
-
-Thanks
-
-
->
-> Thanks,
-> Tiwei
->
->> Thanks
->>
->>
+Thanks.
