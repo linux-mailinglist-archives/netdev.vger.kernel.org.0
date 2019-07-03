@@ -2,66 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7C5B5DB1E
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 03:47:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17F325DB2A
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 03:51:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727152AbfGCBrs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 21:47:48 -0400
-Received: from mail-yw1-f68.google.com ([209.85.161.68]:43137 "EHLO
-        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726329AbfGCBrs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 21:47:48 -0400
-Received: by mail-yw1-f68.google.com with SMTP id t2so371623ywe.10
-        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 18:47:48 -0700 (PDT)
+        id S1727329AbfGCBvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 21:51:12 -0400
+Received: from mail-yw1-f65.google.com ([209.85.161.65]:42182 "EHLO
+        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726963AbfGCBvM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 21:51:12 -0400
+Received: by mail-yw1-f65.google.com with SMTP id n127so378198ywd.9
+        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 18:51:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=4pHsUc/95b4xot9oTHX51FihAVuuP1I8UE3xSm/7qSY=;
-        b=nKdAI/dFOyPumICkOTGJxzaI2XPIcn3JfND+tkUaVf+3i7GBxJ58ye8U+nzJf0Roe1
-         kiC9qawt2y3xt/f3AHBOWrOeszjWx+Y1D3+xMXZ3wrLib3w1Admv2W0m6pZVL63DMLin
-         AJgLiIl6W1r1tZbn0PNUCTfIa+BcqWlyvw/V5PpqYpfS37JzgXX5a37eBKWYoCCZbMMK
-         fkQ65TIRP4/re/srafKX/h3PA8b4ms5uH75dSxW56xQLtuRSNDSP0MKE34evt04ZIDqs
-         LlrPAq3ql1Vongzqro6vgYEYmKSH7qp9gTuACtVA04Sv7/Ney2wAgVrTVJ3PJXPTbZJz
-         1+eA==
+        bh=FpqwjPLz3qKsSQsne+q+/HAtmLYclnEssSjW53066EE=;
+        b=AF/zf4dEuQSmx9zBo/xsY6LDdlP4XCcXCbTMC/A51Kt8ql5xWK7D2UQXSeujIaIgYm
+         L/QLErod5DGg4P78V82bFliio/9q/nHTRcQ66mrDpzAYsxY2OQGL4ff4sOYeah8DYPsY
+         DrTQg3ultxq9e+1aA4peuIxjVlD3khMIuBlB/UaaTPDWSWHy9YskCQtIik2rtHgX/1kW
+         iwHf1rP7yFOP3X8ymMY0qaBGUWxEZEp0dmxy3dlBb6fL/Rlik29z2XyMQ8ySrprNMaS6
+         Qg2S5sJiCCVjgUWu8+rVTdqtP0tATCF3jYfEHmSxs/P6ne4DTcqNr+CcV3TDhEqENBaW
+         Q6kA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=4pHsUc/95b4xot9oTHX51FihAVuuP1I8UE3xSm/7qSY=;
-        b=PXEptTjTmsKdQgf7F5bSJk/ZxHg7qE3mVK6wooQUPj6w04mmeUksX8aHHE4LgQUjKF
-         75MpegLFB4yEPRPoXCjBJcReogW4dlYnO3NYi9RJmMUeW581/BQ+0/ou2HFzfRuW26TZ
-         5JXooZzDX20SwrlEa2vgpImdYWgka2K1szeAGxvVZCQAwOMGwn82R69+J1qRN8kMESKw
-         Mwi3ygr0PBRzmQPl4coiyZ9v+G10LawD6T/CUCMALQ6cMSy2dcbkeERCVf5oxzDXGhBP
-         NtzYa2BjlRVcBmKQthw6YfKCd/BagtMz1E/xaIpu9N991vOXyfqoG01NMR+tiTmU0ElM
-         OP7g==
-X-Gm-Message-State: APjAAAXOKdLuiaIV9Q2r1TL96WfOsFaBogaJwFWG9fgLqyPIsmeGYn2v
-        NCSydpaEmybSpBM0YAMHrqiUNf74
-X-Google-Smtp-Source: APXvYqxU088p3f79oRJA0aI975E5u21yC7dz3Dq4P1z57BpVc7i6zQ4+6BMK5Auavq2vQSCX4Ac1cQ==
-X-Received: by 2002:a81:4c3:: with SMTP id 186mr20796923ywe.462.1562118467120;
-        Tue, 02 Jul 2019 18:47:47 -0700 (PDT)
-Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
-        by smtp.gmail.com with ESMTPSA id x199sm397723ywd.99.2019.07.02.18.47.45
+        bh=FpqwjPLz3qKsSQsne+q+/HAtmLYclnEssSjW53066EE=;
+        b=FIqIvcbYSSL9n1WtZMEKiMIjOGYZyx06C7PayO5/TrSkkt2iNjfBrCvH+nnWkGjPoc
+         L1CsbzOjJXmtFEZ3hK7d1Ori33TygY0Fgjihi9Bra0kRRBfKOGX1uKniyalXBNEEz1lf
+         cxV4dMbxqDnH61cSpeYbJyj864MGODVf9d2gfPp/htKeV8xc1v6eECYVj4kYFa9mtYsw
+         XXkILACuta7452KoQ4njNbSfYExvaNu7vrm+GFqzdBOqWkxr1UWqYymFK8GtAdWkdNo9
+         X+689O+iiYFI8WUVfpg2Yf1Yer5EYnJCmoVj8VXg2ZhA6CjLl5ecotkssYP9RI89HUyU
+         5COQ==
+X-Gm-Message-State: APjAAAVB6IoV5ZkWr5nOaBhopXgxYnoRiwnUrYPr+SsCuHuinQ1/zsi5
+        rcsxjaQUsk3DKOgABVEAyF35UKuj
+X-Google-Smtp-Source: APXvYqyQYfbiyvKuaimLQghVZr9KGhC3lXvPit/rA2O+PUOnhpw24Sm9E2FbHAYYLqGS3eIa22jnbA==
+X-Received: by 2002:a81:170c:: with SMTP id 12mr6955073ywx.54.1562118670860;
+        Tue, 02 Jul 2019 18:51:10 -0700 (PDT)
+Received: from mail-yw1-f49.google.com (mail-yw1-f49.google.com. [209.85.161.49])
+        by smtp.gmail.com with ESMTPSA id p185sm239172ywb.92.2019.07.02.18.51.10
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Tue, 02 Jul 2019 18:47:46 -0700 (PDT)
-Received: by mail-yb1-f174.google.com with SMTP id f18so379980ybr.10
-        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 18:47:45 -0700 (PDT)
-X-Received: by 2002:a5b:4c9:: with SMTP id u9mr10014083ybp.235.1562118465542;
- Tue, 02 Jul 2019 18:47:45 -0700 (PDT)
+        Tue, 02 Jul 2019 18:51:10 -0700 (PDT)
+Received: by mail-yw1-f49.google.com with SMTP id q128so399949ywc.1
+        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 18:51:10 -0700 (PDT)
+X-Received: by 2002:a0d:c0c4:: with SMTP id b187mr19229690ywd.389.1562118669661;
+ Tue, 02 Jul 2019 18:51:09 -0700 (PDT)
 MIME-Version: 1.0
-References: <1250be5ff32bc4312b3f3e724a8798db0563ea3c.camel@domdv.de>
- <CA+FuTSdzM3AFFrvANczVzXeRP0TVZ06K--GkmTZVAk-6SKQGxA@mail.gmail.com>
- <94382bd8cfbf924779ce86cd6405331f70f65c27.camel@domdv.de> <CAF=yD-LBRZjns1x9_UrhBYZGX8JNeM+r-cYJV=eyYKDTSG8rBQ@mail.gmail.com>
- <a7c67e7e22103fc7cf02c520a8b42d9aa525700f.camel@domdv.de>
-In-Reply-To: <a7c67e7e22103fc7cf02c520a8b42d9aa525700f.camel@domdv.de>
+References: <e748ac8df5f8a3451540ad144a2c0afb962632f8.camel@domdv.de> <CA+FuTSfih0pBbOnXxkw4UpmiqDnNLf4k8O-=7XW4m7fj5ogqXw@mail.gmail.com>
+In-Reply-To: <CA+FuTSfih0pBbOnXxkw4UpmiqDnNLf4k8O-=7XW4m7fj5ogqXw@mail.gmail.com>
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 2 Jul 2019 21:47:08 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSe3=ZuHemWRM5yvdB-shotPeoLnQOqz0CjugtG3ToMiNg@mail.gmail.com>
-Message-ID: <CA+FuTSe3=ZuHemWRM5yvdB-shotPeoLnQOqz0CjugtG3ToMiNg@mail.gmail.com>
-Subject: Re: [PATCH net 2/2] macsec: fix checksumming after decryption
-To:     Andreas Steinmetz <ast@domdv.de>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+Date:   Tue, 2 Jul 2019 21:50:33 -0400
+X-Gmail-Original-Message-ID: <CA+FuTScf_wNwLdph=GY6f==tu_cM-BeVbAUgnMVuyubGB2-T=g@mail.gmail.com>
+Message-ID: <CA+FuTScf_wNwLdph=GY6f==tu_cM-BeVbAUgnMVuyubGB2-T=g@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/3] macsec: remove superfluous function calls
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Andreas Steinmetz <ast@domdv.de>,
         Network Development <netdev@vger.kernel.org>,
         Sabrina Dubroca <sd@queasysnail.net>
 Content-Type: text/plain; charset="UTF-8"
@@ -70,41 +67,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 2, 2019 at 3:48 PM Andreas Steinmetz <ast@domdv.de> wrote:
+On Sun, Jun 30, 2019 at 9:57 PM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
 >
-> On Tue, 2019-07-02 at 10:35 -0400, Willem de Bruijn wrote:
-> > On Tue, Jul 2, 2019 at 12:25 AM Andreas Steinmetz <ast@domdv.de> wrote:
-> > > On Sun, 2019-06-30 at 21:47 -0400, Willem de Bruijn wrote:
-> > > > On Sun, Jun 30, 2019 at 4:48 PM Andreas Steinmetz <ast@domdv.de>
-> > > > wrote:
-> > > > > Fix checksumming after decryption.
-> > > > >
-> > > > > Signed-off-by: Andreas Steinmetz <ast@domdv.de>
-> > > > >
-> > > > > --- a/drivers/net/macsec.c      2019-06-30 22:14:10.250285314 +0200
-> > > > > +++ b/drivers/net/macsec.c      2019-06-30 22:15:11.931230417 +0200
-> > > > > @@ -869,6 +869,7 @@
-> > > > >
-> > > > >  static void macsec_finalize_skb(struct sk_buff *skb, u8 icv_len,
-> > > > > u8 hdr_len)
-> > > > >  {
-> > > > > +       skb->ip_summed = CHECKSUM_NONE;
-> > > > >         memmove(skb->data + hdr_len, skb->data, 2 * ETH_ALEN);
-> > > > >         skb_pull(skb, hdr_len);
-> > > > >         pskb_trim_unique(skb, skb->len - icv_len);
-> > > >
-> > > > Does this belong in macset_reset_skb?
-> > >
-> > > Putting this in macsec_reset_skb would then miss out the "nosci:" part
-> > > of the RX path in macsec_handle_frame().
+> On Sun, Jun 30, 2019 at 4:48 PM Andreas Steinmetz <ast@domdv.de> wrote:
 > >
-> > It is called on each nskb before calling netif_rx.
-> >
-> > It indeed is not called when returning RX_HANDLER_PASS, but that is correct?
+> > Remove superfluous skb_share_check() and skb_unshare().
+> > macsec_decrypt is only called by macsec_handle_frame which
+> > already does a skb_unshare().
 >
-> This is correct. Packets passed on with RX_HANDLER_PASS are either not for this
-> driver or the special case of being destined for a KaY and in this case being
-> the MACsec ethernet protocol and thus not IP, so no checksumming.
+> There is a subtle difference. skb_unshare() acts on cloned skbs, not
+> shared skbs.
+>
+> It creates a private copy of data if clones may access it
+> concurrently, which clearly is needed when modifying for decryption.
+>
+> At rx_handler, I don't think a shared skb happen (unlike clones, e.g.,
+> from packet sockets). But it is peculiar that most, if not all,
+> rx_handlers seem to test for it. That have started with the bridge
+> device:
+>
+> commit 7b995651e373d6424f81db23f2ec503306dfd7f0
+> Author: Herbert Xu <herbert@gondor.apana.org.au>
+> Date:   Sun Oct 14 00:39:01 2007 -0700
+>
+>     [BRIDGE]: Unshare skb upon entry
+>
+>     Due to the special location of the bridging hook, it should never see a
+>     shared packet anyway (certainly not with any in-kernel code).  So it
+>     makes sense to unshare the skb there if necessary as that will greatly
+>     simplify the code below it (in particular, netfilter).
+>
+> Anyway, remove the check only if certain.
 
-So this could have been set in macsec_reset_skb, then? As all relevant cases
-call it. Anyway, it's not very important and already merged.
+Did you see this point? I notice the v2 without this mentioned. I
+don't think you can remove an skb_share_check solely on the basis of a
+previous skb_unshare. I agree that here a shared skb is unlikely, but
+that is for a very different, less obvious, reason.
+
+
+
+
+>
+> >
+> > Signed-off-by: Andreas Steinmetz <ast@domdv.de>
+> >
+> > --- a/drivers/net/macsec.c      2019-06-30 22:02:54.906908179 +0200
+> > +++ b/drivers/net/macsec.c      2019-06-30 22:03:07.315785186 +0200
+> > @@ -939,9 +939,6 @@
+> >         u16 icv_len = secy->icv_len;
+> >
+> >         macsec_skb_cb(skb)->valid = false;
+> > -       skb = skb_share_check(skb, GFP_ATOMIC);
+> > -       if (!skb)
+> > -               return ERR_PTR(-ENOMEM);
+> >
+> >         ret = skb_cow_data(skb, 0, &trailer);
+> >         if (unlikely(ret < 0)) {
+> > @@ -973,11 +970,6 @@
+> >
+> >                 aead_request_set_crypt(req, sg, sg, len, iv);
+> >                 aead_request_set_ad(req, macsec_hdr_len(macsec_skb_cb(skb)->has_sci));
+> > -               skb = skb_unshare(skb, GFP_ATOMIC);
+> > -               if (!skb) {
+> > -                       aead_request_free(req);
+> > -                       return ERR_PTR(-ENOMEM);
+> > -               }
+> >         } else {
+> >                 /* integrity only: all headers + data authenticated */
+> >                 aead_request_set_crypt(req, sg, sg, icv_len, iv);
+> >
