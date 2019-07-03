@@ -2,176 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DEB15DC26
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 04:21:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7E3C5DC5C
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 04:22:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727875AbfGCCQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 22:16:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54524 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727860AbfGCCQN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jul 2019 22:16:13 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 768332187F;
-        Wed,  3 Jul 2019 02:16:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1562120172;
-        bh=lX4Mr5SESkWVekixij8Gaj+QffjIR57OTaibDAW5Bl8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zdzr3mEY6Wf6kXwMF5g5blUxFhdwBo4H5Hbele9WJgRIthHqX1kKAORzsYUAxRBii
-         53K0tZw+cTaX9/1bGxX0LQANYKEKhvsJG7FXfpSDAEcBUFO9EeC/ACJD+/0vT2FO5Y
-         WEyO45WvJjNhrjT4NqQll/1n1hKepU9F0jDFePSI=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dmitry Bogdanov <dmitry.bogdanov@aquantia.com>,
-        Igor Russkikh <igor.russkikh@aquantia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 34/39] net: aquantia: fix vlans not working over bridged network
-Date:   Tue,  2 Jul 2019 22:15:09 -0400
-Message-Id: <20190703021514.17727-34-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190703021514.17727-1-sashal@kernel.org>
-References: <20190703021514.17727-1-sashal@kernel.org>
+        id S1727828AbfGCCWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 22:22:22 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:44332 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727663AbfGCCPm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 22:15:42 -0400
+Received: by mail-qk1-f195.google.com with SMTP id p144so604311qke.11
+        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 19:15:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=leu2Z7lZQLubhQ6t1284nOghnTElOtB44m4CQPkjFxQ=;
+        b=oa3fZ3ygrR3MY3w/gVIBWkUIzgoXw8v00xIGHsLde/Erucmsx0IG9zYhVXNxnOhQv5
+         E/809stHnTGkXQ3Ay/IP0GIjPzfiRu8a+Lu7yzdIHfykqLwFjIoL2CKDomrGwpWE5uoi
+         0QinTE5fNT4Pf2N9o31DwzDCH/MZa0I2WEbPX8dT5sZ0BwFWjpXkyBREnqY139WHxQdV
+         mV48WqJRovjwpGUgEZ1GD4ZJklIl64OLeA/3LSRQ7o2fCDsvg+N6j6ZrKtj9cRvO3vQf
+         WFIAEEH7SDEGBc3vCjEMDjAviPkfZnBHRPetMibIN8Gp0b2+vyHxjf757CXYBYwh2J8k
+         BQUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=leu2Z7lZQLubhQ6t1284nOghnTElOtB44m4CQPkjFxQ=;
+        b=LI5Tw84mmjDFjClaCzeJ1a4J8/nesZ5t9nBbhtAjvBFhUGzva5xNx1x7U3r2EGqiP7
+         l39zSkzpbjRcpE6+kYs2tujRn7YOxKQzZFSYowqeHNArUX8X9TWy2MHbWM7zad5YDEwe
+         t0QThRL/vUax5e8rgNcrlYJ3sYN+x06avEsu+IK36d4MhuV37qB+vcLEkuszzEEdc5Ca
+         NwtOkuHaLZrt//bXiziiNc0QcBMzDhCUW7MsOJ7BQCuoeU0HdVLHgB2F5m+H48nRHp70
+         EjPWU5jNjTO6pfLpulGtC/P8qzBQtC4MV7UImnctyll/Z2u1LjZ8PSKaKGstysNGT4ig
+         ORiQ==
+X-Gm-Message-State: APjAAAU7ngwdrLLwf/a/Jhp3Zll1QTha8uC5HSCketBVfDJ5zoPivZE1
+        F3WyIG4QURkTPhZQozuDWuTpMQ==
+X-Google-Smtp-Source: APXvYqw3JihPwXL4EeG6NBmta3hdu4hoF2PLLZp1dotp37tQucIDZIOEBEbufO0nZtCC5XOqOzn2lg==
+X-Received: by 2002:a37:a98c:: with SMTP id s134mr28012734qke.176.1562120141404;
+        Tue, 02 Jul 2019 19:15:41 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id o21sm328283qtq.16.2019.07.02.19.15.40
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 02 Jul 2019 19:15:41 -0700 (PDT)
+Date:   Tue, 2 Jul 2019 19:15:36 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Parav Pandit <parav@mellanox.com>
+Cc:     Jiri Pirko <jiri@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: Re: [PATCH net-next 1/3] devlink: Introduce PCI PF port flavour and
+ port attribute
+Message-ID: <20190702191536.4de1ac68@cakuba.netronome.com>
+In-Reply-To: <AM0PR05MB4866F1AF0CF5914B372F0BCCD1FB0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+References: <20190701122734.18770-1-parav@mellanox.com>
+        <20190701122734.18770-2-parav@mellanox.com>
+        <20190701162650.17854185@cakuba.netronome.com>
+        <AM0PR05MB4866085BC8B082EFD5B59DD2D1F80@AM0PR05MB4866.eurprd05.prod.outlook.com>
+        <20190702104711.77618f6a@cakuba.netronome.com>
+        <AM0PR05MB4866C19C9E6ED767A44C3064D1F80@AM0PR05MB4866.eurprd05.prod.outlook.com>
+        <20190702164252.6d4fe5e3@cakuba.netronome.com>
+        <AM0PR05MB4866F1AF0CF5914B372F0BCCD1FB0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dmitry Bogdanov <dmitry.bogdanov@aquantia.com>
+On Wed, 3 Jul 2019 02:08:39 +0000, Parav Pandit wrote:
+> > If you want to expose some device specific
+> > eswitch port ID please add a new attribute for that.
+> > The fact that that ID may match port_number for your device today is
+> > coincidental.  port_number, and split attributes should not be exposed for
+> > PCI ports.
+>
+> So your concern is non mellanox hw has eswitch but there may not be a
+> unique handle to identify a eswitch port?
 
-[ Upstream commit 48dd73d08d4dda47ee31cc8611fb16840fc16803 ]
+That's not a concern, no.  Like any debug attribute it should be
+optional.
 
-In configuration of vlan over bridge over aquantia device
-it was found that vlan tagged traffic is dropped on chip.
+> Or that handle may be wider than 32-bit?
 
-The reason is that bridge device enables promisc mode,
-but in atlantic chip vlan filters will still apply.
-So we have to corellate promisc settings with vlan configuration.
+64 bit would probably be better, yes, although that wasn't my initial
+concern.
 
-The solution is to track in a separate state variable the
-need of vlan forced promisc. And also consider generic
-promisc configuration when doing vlan filter config.
+> And instead of treating port_number as handle, there should be
+> different attribute, is that the ask?
 
-Fixes: 7975d2aff5af ("net: aquantia: add support of rx-vlan-filter offload")
-Signed-off-by: Dmitry Bogdanov <dmitry.bogdanov@aquantia.com>
-Signed-off-by: Igor Russkikh <igor.russkikh@aquantia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- .../ethernet/aquantia/atlantic/aq_filters.c   | 10 ++++++++--
- .../net/ethernet/aquantia/atlantic/aq_nic.c   |  1 +
- .../net/ethernet/aquantia/atlantic/aq_nic.h   |  1 +
- .../aquantia/atlantic/hw_atl/hw_atl_b0.c      | 19 +++++++++++++------
- 4 files changed, 23 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_filters.c b/drivers/net/ethernet/aquantia/atlantic/aq_filters.c
-index 18bc035da850..1fff462a4175 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_filters.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_filters.c
-@@ -843,9 +843,14 @@ int aq_filters_vlans_update(struct aq_nic_s *aq_nic)
- 		return err;
- 
- 	if (aq_nic->ndev->features & NETIF_F_HW_VLAN_CTAG_FILTER) {
--		if (hweight < AQ_VLAN_MAX_FILTERS)
--			err = aq_hw_ops->hw_filter_vlan_ctrl(aq_hw, true);
-+		if (hweight < AQ_VLAN_MAX_FILTERS && hweight > 0) {
-+			err = aq_hw_ops->hw_filter_vlan_ctrl(aq_hw,
-+				!(aq_nic->packet_filter & IFF_PROMISC));
-+			aq_nic->aq_nic_cfg.is_vlan_force_promisc = false;
-+		} else {
- 		/* otherwise left in promiscue mode */
-+			aq_nic->aq_nic_cfg.is_vlan_force_promisc = true;
-+		}
- 	}
- 
- 	return err;
-@@ -866,6 +871,7 @@ int aq_filters_vlan_offload_off(struct aq_nic_s *aq_nic)
- 	if (unlikely(!aq_hw_ops->hw_filter_vlan_ctrl))
- 		return -EOPNOTSUPP;
- 
-+	aq_nic->aq_nic_cfg.is_vlan_force_promisc = true;
- 	err = aq_hw_ops->hw_filter_vlan_ctrl(aq_hw, false);
- 	if (err)
- 		return err;
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-index ff83667410bd..550abfe6973d 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-@@ -117,6 +117,7 @@ void aq_nic_cfg_start(struct aq_nic_s *self)
- 
- 	cfg->link_speed_msk &= cfg->aq_hw_caps->link_speed_msk;
- 	cfg->features = cfg->aq_hw_caps->hw_features;
-+	cfg->is_vlan_force_promisc = true;
- }
- 
- static int aq_nic_update_link_status(struct aq_nic_s *self)
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.h b/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
-index 8e34c1e49bf2..65e681be9b5d 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
-@@ -36,6 +36,7 @@ struct aq_nic_cfg_s {
- 	u32 flow_control;
- 	u32 link_speed_msk;
- 	u32 wol;
-+	bool is_vlan_force_promisc;
- 	u16 is_mc_list_enabled;
- 	u16 mc_list_count;
- 	bool is_autoneg;
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-index ec302fdfec63..a4cc04741115 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-@@ -771,8 +771,15 @@ static int hw_atl_b0_hw_packet_filter_set(struct aq_hw_s *self,
- 					  unsigned int packet_filter)
- {
- 	unsigned int i = 0U;
-+	struct aq_nic_cfg_s *cfg = self->aq_nic_cfg;
-+
-+	hw_atl_rpfl2promiscuous_mode_en_set(self,
-+					    IS_FILTER_ENABLED(IFF_PROMISC));
-+
-+	hw_atl_rpf_vlan_prom_mode_en_set(self,
-+				     IS_FILTER_ENABLED(IFF_PROMISC) ||
-+				     cfg->is_vlan_force_promisc);
- 
--	hw_atl_rpfl2promiscuous_mode_en_set(self, IS_FILTER_ENABLED(IFF_PROMISC));
- 	hw_atl_rpfl2multicast_flr_en_set(self,
- 					 IS_FILTER_ENABLED(IFF_ALLMULTI), 0);
- 
-@@ -781,13 +788,13 @@ static int hw_atl_b0_hw_packet_filter_set(struct aq_hw_s *self,
- 
- 	hw_atl_rpfl2broadcast_en_set(self, IS_FILTER_ENABLED(IFF_BROADCAST));
- 
--	self->aq_nic_cfg->is_mc_list_enabled = IS_FILTER_ENABLED(IFF_MULTICAST);
-+	cfg->is_mc_list_enabled = IS_FILTER_ENABLED(IFF_MULTICAST);
- 
- 	for (i = HW_ATL_B0_MAC_MIN; i < HW_ATL_B0_MAC_MAX; ++i)
- 		hw_atl_rpfl2_uc_flr_en_set(self,
--					   (self->aq_nic_cfg->is_mc_list_enabled &&
--				    (i <= self->aq_nic_cfg->mc_list_count)) ?
--				    1U : 0U, i);
-+					   (cfg->is_mc_list_enabled &&
-+					    (i <= cfg->mc_list_count)) ?
-+					   1U : 0U, i);
- 
- 	return aq_hw_err_from_flags(self);
- }
-@@ -1079,7 +1086,7 @@ static int hw_atl_b0_hw_vlan_set(struct aq_hw_s *self,
- static int hw_atl_b0_hw_vlan_ctrl(struct aq_hw_s *self, bool enable)
- {
- 	/* set promisc in case of disabing the vland filter */
--	hw_atl_rpf_vlan_prom_mode_en_set(self, !!!enable);
-+	hw_atl_rpf_vlan_prom_mode_en_set(self, !enable);
- 
- 	return aq_hw_err_from_flags(self);
- }
--- 
-2.20.1
-
+Yes, the ask, as always, is to not abuse existing attributes to carry
+tangentially related information.
