@@ -2,163 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A803D5E0B1
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 11:15:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 318BC5E0E2
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 11:19:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727251AbfGCJO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 05:14:58 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:45099 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727008AbfGCJO5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 05:14:57 -0400
-Received: by mail-wr1-f65.google.com with SMTP id f9so1853014wre.12;
-        Wed, 03 Jul 2019 02:14:56 -0700 (PDT)
+        id S1727198AbfGCJT1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 05:19:27 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:53776 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725796AbfGCJT1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 05:19:27 -0400
+Received: by mail-wm1-f66.google.com with SMTP id x15so1409346wmj.3
+        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 02:19:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=lMART3am9pWyOxnMhWlb45/gJVQGInIr11h4R6xfxH4=;
-        b=f2qyXvKO8+f+AuUjin7CqwXeE0Ga3HeWuyEYBaaGc+UwaFejqxHfryHROkXHME8FVm
-         6cPDGURKrLajBSDB5utM0xsCZaUabbFOrG+2XFvmbYZUHrxr3vgl1DOVYBYhg9Gp3Fke
-         bDwJtfXwC47tA8rOx0XMa7+yoHyrS/9KvykBXxpgXpz3j9fFzrJUg1J4F+ipFHFCrawG
-         2nJ0Cm+iBz3IRm9WIYGSwS+QYx1YPn8rZ/k8Am5vZwXO5dJVcHjg/fEcHlZ9QDVUxwQ2
-         NXgh3/xHAgoeUv7K6QLjQlwN9YUIFsd5zHBiSp26KsLJaLDUOUZkGrLkO/XEtcHuMLd3
-         2R4g==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=SgRgzBfMCM335xb+32SxDmtjQnPWCUW4qJ17ucMxUTA=;
+        b=C/aqGJfLS2YcJDBdd8G/0s43thDicErCALrqKH3OyTxfKTsUnq7ipEYF35VFui41nH
+         rG81+sKJZA4VBbzaeUtSytllSDrtbkqFy90NKvjtYV3rNfsqVBxO9JWs+ZvBTR1yrErn
+         +qCmnoM4Wb8GhnYnHMmgRACfJGXT7u0jGN5D7xvo3Ubhc6kSRghU9e6axPDOKIU29F1+
+         37DRkSM0Z/pawYLcQcgx6+u4DiJoMcOFV2numCz4WPd7aKI5m1ncAXsicnAyyqnzVXk2
+         ASLyYkh38cxFhEHoBzePt8pA3GNRNwKb8v3s90MoNRRE/MoZ/kjKGj+qb9C2sqFp7IT1
+         1IyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=lMART3am9pWyOxnMhWlb45/gJVQGInIr11h4R6xfxH4=;
-        b=bwSmgPJKywFPEfknoTn+Rg3hi1nHLbEWPYCpCjkKBWMDXCzOCZNgtikOJf8iq/WxzY
-         61Nyv2OC12SKsReSHDW4636lIJARIK2EStyT5uqNiDHHJ3WakAvJhD2svfnNznfUWCn4
-         GGQ4FtKrf75gI8P6RdtqQ0a9OntT5pplFoJpjq1lyd4Vez1ysgL2Om+3wWllcwIf/iqb
-         33dCA97SyA7LfX310df/Xhe2eo395EXZgv2YLODjgRCQW94e0JTmmNs4k3rWlFNCczpo
-         NP5OyA5NBFV4+sZbyB6vDRiNKeuy2cdc8N5qxrusSUuJUQ1TFHrv6lOvTXWIGSIAmOMO
-         R/tg==
-X-Gm-Message-State: APjAAAW7FImwhwnvbmiQEjzq2CaGwx4AShtIfMu7NdiGqUVovKRqwDQ9
-        r+bxDr7/J1Zfs0dA5OPgLbU=
-X-Google-Smtp-Source: APXvYqzasBfYpcZTJ2DlrlFwe3DY2hUvRtKYYQff/WD1ChvV/9imQB0Ha2M7v94UGw7/KW2Dc9TQZQ==
-X-Received: by 2002:adf:e803:: with SMTP id o3mr4360588wrm.69.1562145295443;
-        Wed, 03 Jul 2019 02:14:55 -0700 (PDT)
-Received: from localhost ([51.15.41.238])
-        by smtp.gmail.com with ESMTPSA id b2sm1921496wrp.72.2019.07.03.02.14.54
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 03 Jul 2019 02:14:54 -0700 (PDT)
-Date:   Wed, 3 Jul 2019 10:14:53 +0100
-From:   Stefan Hajnoczi <stefanha@gmail.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     netdev@vger.kernel.org, kvm@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v2 0/3] vsock/virtio: several fixes in the .probe() and
- .remove()
-Message-ID: <20190703091453.GA11844@stefanha-x1.localdomain>
-References: <20190628123659.139576-1-sgarzare@redhat.com>
- <20190701151113.GE11900@stefanha-x1.localdomain>
- <20190701170357.jtuhy3ank7mv6izb@steredhat>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=SgRgzBfMCM335xb+32SxDmtjQnPWCUW4qJ17ucMxUTA=;
+        b=Bv3HLaf5gI4UjUbH7xRERhaf1OxXYB+eocGL/XzYDo1NmZN3/Y4VhbgVdlBqQXrmNs
+         lV7lMefJO1Nljm4dBE8Dgu2XcPIgBK/2+2UGsdG/YcBYakV8q4/qdgGybDlA+y61DAxm
+         kgOAq7wEiHsSYqJzQj5kWwJM+Av+eAm16Yj8KArcUsWnb0OxsmUnjRaeee/VrxB362Pg
+         rDuyVOgNbA9yHEVhcHHKOobKawsP1l2Jo5+iTWnYKgCWs12xU4qioMfOesjdJvknA6h7
+         BDMAh7JEMIPJw++ZflKjlzB8bXFFPtrUgdrOPYygl7whWMk9VfuIWUGPbPLQ0ksLwmgm
+         A0wA==
+X-Gm-Message-State: APjAAAV3SzSXvqOxuSYeP8eOBYJC6YVIuvyYjUxYUfdsnkp47RND/gB4
+        W/lPtKydSNT21I9GcOXrH74=
+X-Google-Smtp-Source: APXvYqwQRXWWXb/6oQ9JojaUv1UFw2OVtjuE85zXRZEa31Ld+q+67SPWj6CKv3KLpddQ1QHVg0Hk3g==
+X-Received: by 2002:a1c:cc0d:: with SMTP id h13mr6960488wmb.119.1562145562404;
+        Wed, 03 Jul 2019 02:19:22 -0700 (PDT)
+Received: from [192.168.8.147] (196.166.185.81.rev.sfr.net. [81.185.166.196])
+        by smtp.gmail.com with ESMTPSA id n125sm2294985wmf.6.2019.07.03.02.19.21
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Wed, 03 Jul 2019 02:19:21 -0700 (PDT)
+Subject: Re: [PATCH net] tcp: refine memory limit test in tcp_fragment()
+To:     Tony Lu <tonylu@linux.alibaba.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        oliver.yang@linux.alibaba.com, xlpang@linux.alibaba.com,
+        dust.li@linux.alibaba.com
+References: <20190621130955.147974-1-edumazet@google.com>
+ <20190703032718.GC55248@TonyMac-Alibaba>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <c98b4997-d641-432f-b2bb-cdbdb9f02143@gmail.com>
+Date:   Wed, 3 Jul 2019 11:19:20 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="6TrnltStXW4iwmi0"
-Content-Disposition: inline
-In-Reply-To: <20190701170357.jtuhy3ank7mv6izb@steredhat>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+In-Reply-To: <20190703032718.GC55248@TonyMac-Alibaba>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---6TrnltStXW4iwmi0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jul 01, 2019 at 07:03:57PM +0200, Stefano Garzarella wrote:
-> On Mon, Jul 01, 2019 at 04:11:13PM +0100, Stefan Hajnoczi wrote:
-> > On Fri, Jun 28, 2019 at 02:36:56PM +0200, Stefano Garzarella wrote:
-> > > During the review of "[PATCH] vsock/virtio: Initialize core virtio vs=
-ock
-> > > before registering the driver", Stefan pointed out some possible issu=
-es
-> > > in the .probe() and .remove() callbacks of the virtio-vsock driver.
-> > >=20
-> > > This series tries to solve these issues:
-> > > - Patch 1 adds RCU critical sections to avoid use-after-free of
-> > >   'the_virtio_vsock' pointer.
-> > > - Patch 2 stops workers before to call vdev->config->reset(vdev) to
-> > >   be sure that no one is accessing the device.
-> > > - Patch 3 moves the works flush at the end of the .remove() to avoid
-> > >   use-after-free of 'vsock' object.
-> > >=20
-> > > v2:
-> > > - Patch 1: use RCU to protect 'the_virtio_vsock' pointer
-> > > - Patch 2: no changes
-> > > - Patch 3: flush works only at the end of .remove()
-> > > - Removed patch 4 because virtqueue_detach_unused_buf() returns all t=
-he buffers
-> > >   allocated.
-> > >=20
-> > > v1: https://patchwork.kernel.org/cover/10964733/
-> >=20
-> > This looks good to me.
->=20
-> Thanks for the review!
->=20
-> >=20
-> > Did you run any stress tests?  For example an SMP guest constantly
-> > connecting and sending packets together with a script that
-> > hotplug/unplugs vhost-vsock-pci from the host side.
->=20
-> Yes, I started an SMP guest (-smp 4 -monitor tcp:127.0.0.1:1234,server,no=
-wait)
-> and I run these scripts to stress the .probe()/.remove() path:
->=20
-> - guest
->   while true; do
->       cat /dev/urandom | nc-vsock -l 4321 > /dev/null &
->       cat /dev/urandom | nc-vsock -l 5321 > /dev/null &
->       cat /dev/urandom | nc-vsock -l 6321 > /dev/null &
->       cat /dev/urandom | nc-vsock -l 7321 > /dev/null &
->       wait
->   done
->=20
-> - host
->   while true; do
->       cat /dev/urandom | nc-vsock 3 4321 > /dev/null &
->       cat /dev/urandom | nc-vsock 3 5321 > /dev/null &
->       cat /dev/urandom | nc-vsock 3 6321 > /dev/null &
->       cat /dev/urandom | nc-vsock 3 7321 > /dev/null &
->       sleep 2
->       echo "device_del v1" | nc 127.0.0.1 1234
->       sleep 1
->       echo "device_add vhost-vsock-pci,id=3Dv1,guest-cid=3D3" | nc 127.0.=
-0.1 1234
->       sleep 1
->   done
->=20
-> Do you think is enough or is better to have a test more accurate?
+On 7/2/19 8:27 PM, Tony Lu wrote:
+> Hello Eric,
+> 
+> 	We have applied that commit e358f4af19db ("tcp: tcp_fragment() should apply sane memory limits")
+> 	as a hotpatch in production environment. We found that it will make
+> 	tcp long connection reset during sending out packet when applying
+> 	that commit. 
+> 	
+> 	Our applications which in A/B test have suffered that
+> 	and made them retransmit large data, and then caused retransmission
+> 	storm and lower the performance and increase RT.
+> 
+> 	Therefore we discontinued to apply this hotpatch in A/B test.
+> 
+> 	After invesgation, we found this patch already fix this issue in
+> 	stable. Before applying this patch, we have some questions:
+> 
 
-That's good when left running overnight so that thousands of hotplug
-events are tested.
+Which stable version are you referring to exactly ?
 
-Stefan
+> 	1. This commit in stable hard coded a magic number 0x20000. I am
+> 	wondering this value and if there any better solution.
 
---6TrnltStXW4iwmi0
-Content-Type: application/pgp-signature; name="signature.asc"
+0x20000 is two times 64KB, please read the changelog for the rationale.
 
------BEGIN PGP SIGNATURE-----
+> 	2. Is there any known or unknown side effect? If any, we could test
+> 	it in some suspicious scenarios before testing in prod env.
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl0ccg0ACgkQnKSrs4Gr
-c8hyTQgAmrtuLTRHUWq+SnSxTw9xESj0gUVZd4sbTh6S0V4rPGdVbra3YbPfZfkH
-IaakopaoNOkTWrPnhYmwgU30HpR8IAq/y7clSCsRIfPUYDSZok/iyag75Cy5oKno
-lVANXMQYQ4Kgkq07R+BER41HW3MELCrSAX57rIat1F1OD3KouG6YicgmP7wetWcU
-HVXVfjP7u1a2lUmuBdlcgPKX05STySKyNEQ3QdtLI6bgM6rGkx8OYn38Qe9cQuyi
-zVG7+8JLFoJav87vvcIIB0IT8ifWocctQY//efyVVnrfHN6T5/35TPcM4bBW8HrK
-Zs+bh7qyccexuuow4DrBHexFCIdtCw==
-=jl/1
------END PGP SIGNATURE-----
+No known side effect.
 
---6TrnltStXW4iwmi0--
+Honestly, applications setting small SO_SNDBUF values can not expect good TCP performance anyway.
+
+
+> 
+> 	Thanks.
+> 
+> Cheers,
+> Tony Lu
+> 
+> On Fri, Jun 21, 2019 at 06:09:55AM -0700, Eric Dumazet wrote:
+>> tcp_fragment() might be called for skbs in the write queue.
+>>
+>> Memory limits might have been exceeded because tcp_sendmsg() only
+>> checks limits at full skb (64KB) boundaries.
+>>
+>> Therefore, we need to make sure tcp_fragment() wont punish applications
+>> that might have setup very low SO_SNDBUF values.
+>>
+>> Fixes: f070ef2ac667 ("tcp: tcp_fragment() should apply sane memory limits")
+>> Signed-off-by: Eric Dumazet <edumazet@google.com>
+>> Reported-by: Christoph Paasch <cpaasch@apple.com>
+>> ---
+>>  net/ipv4/tcp_output.c | 3 ++-
+>>  1 file changed, 2 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+>> index 00c01a01b547ec67c971dc25a74c9258563cf871..0ebc33d1c9e5099d163a234930e213ee35e9fbd1 100644
+>> --- a/net/ipv4/tcp_output.c
+>> +++ b/net/ipv4/tcp_output.c
+>> @@ -1296,7 +1296,8 @@ int tcp_fragment(struct sock *sk, enum tcp_queue tcp_queue,
+>>  	if (nsize < 0)
+>>  		nsize = 0;
+>>  
+>> -	if (unlikely((sk->sk_wmem_queued >> 1) > sk->sk_sndbuf)) {
+>> +	if (unlikely((sk->sk_wmem_queued >> 1) > sk->sk_sndbuf &&
+>> +		     tcp_queue != TCP_FRAG_IN_WRITE_QUEUE)) {
+>>  		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPWQUEUETOOBIG);
+>>  		return -ENOMEM;
+>>  	}
+>> -- 
+>> 2.22.0.410.gd8fdbe21b5-goog
