@@ -2,87 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E9B715EEB4
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 23:42:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C97E5EEC3
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 23:45:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727290AbfGCVm0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 17:42:26 -0400
-Received: from ozlabs.org ([203.11.71.1]:54825 "EHLO ozlabs.org"
+        id S1727411AbfGCVo4 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 3 Jul 2019 17:44:56 -0400
+Received: from mga06.intel.com ([134.134.136.31]:50343 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726821AbfGCVmZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jul 2019 17:42:25 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 45fF2703htz9sCJ;
-        Thu,  4 Jul 2019 07:42:22 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1562190143;
-        bh=o+473wFhtVjiy0ckHYq5we6vAWRdKnr3jC+e6q2Np30=;
-        h=Date:From:To:Cc:Subject:From;
-        b=cIKJ1VjzJ5NXt3UMrJSSHCFknoDp+MeSPNpv9aq4N8aW783KT/kDOXOm0Bke1ZLTs
-         XWebXhZUaizMh6BU6ObKd+EWVw6mCrwEsJjovQfjNVX/gPaw4A+6n0k3Gi5SMztZLf
-         E7q25hfxJ55TDkv7s9VvEMnFoM5bTjCMP609VeGqCY8gQoxK4uYKseFVM8YTh9aBlg
-         tWJbKLd1fkAUEL9x8fl47vhMKZHWYQkzW0yPQy6N2LJVBgxHAhU4QaxkijZZdsFb01
-         sJbavEScAR23AgzSSWOOrArDZBb9CMLJSKVffSQxNNkksbhxLmjXMzrJGmngGlw1gG
-         hRQ7MFPaiSzNg==
-Date:   Thu, 4 Jul 2019 07:42:20 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mahesh Bandewar <maheshb@google.com>
-Subject: linux-next: Fixes tag needs some work in the net-next tree
-Message-ID: <20190704074220.42e4771e@canb.auug.org.au>
+        id S1727116AbfGCVo4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jul 2019 17:44:56 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Jul 2019 14:44:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.63,448,1557212400"; 
+   d="scan'208";a="184861600"
+Received: from orsmsx110.amr.corp.intel.com ([10.22.240.8])
+  by fmsmga001.fm.intel.com with ESMTP; 03 Jul 2019 14:44:55 -0700
+Received: from orsmsx112.amr.corp.intel.com (10.22.240.13) by
+ ORSMSX110.amr.corp.intel.com (10.22.240.8) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Wed, 3 Jul 2019 14:44:55 -0700
+Received: from orsmsx104.amr.corp.intel.com ([169.254.4.70]) by
+ ORSMSX112.amr.corp.intel.com ([169.254.3.232]) with mapi id 14.03.0439.000;
+ Wed, 3 Jul 2019 14:44:55 -0700
+From:   "Bowers, AndrewX" <andrewx.bowers@intel.com>
+To:     "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [Intel-wired-lan] [PATCH net-next] iavf: remove unused debug
+ function iavf_debug_d
+Thread-Topic: [Intel-wired-lan] [PATCH net-next] iavf: remove unused debug
+ function iavf_debug_d
+Thread-Index: AQHVMJ5XiQrcda6PCk6e4wmTDurJL6a5b8lw
+Date:   Wed, 3 Jul 2019 21:44:55 +0000
+Message-ID: <26D9FDECA4FBDD4AADA65D8E2FC68A4A1D3FD2B4@ORSMSX104.amr.corp.intel.com>
+References: <20190702062021.41524-1-yuehaibing@huawei.com>
+In-Reply-To: <20190702062021.41524-1-yuehaibing@huawei.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiYWU0MDViMDUtOWIyMy00YjFhLWJhZmEtZTA0ZjZmNzg1NzY0IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiazgyelwvMVNkSFBKQ0ZTM3BsTCtcL1hZdzNWSjdTeTVCeWN4MGFtRWpEN2I3dW1Xc0hZVUFtZzl2NUNmeklVWW90In0=
+x-ctpclassification: CTP_NT
+dlp-product: dlpe-windows
+dlp-version: 11.0.400.15
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.140]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
- boundary="Sig_//+.awAE4SFPtT.RyYWny0+a"; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_//+.awAE4SFPtT.RyYWny0+a
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+> -----Original Message-----
+> From: Intel-wired-lan [mailto:intel-wired-lan-bounces@osuosl.org] On
+> Behalf Of YueHaibing
+> Sent: Monday, July 1, 2019 11:20 PM
+> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; davem@davemloft.net;
+> intel-wired-lan@lists.osuosl.org
+> Cc: netdev@vger.kernel.org; YueHaibing <yuehaibing@huawei.com>; linux-
+> kernel@vger.kernel.org
+> Subject: [Intel-wired-lan] [PATCH net-next] iavf: remove unused debug
+> function iavf_debug_d
+> 
+> There is no caller of function iavf_debug_d() in tree since commit
+> 75051ce4c5d8 ("iavf: Fix up debug print macro"), so it can be removed.
+> 
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> ---
+>  drivers/net/ethernet/intel/iavf/iavf_main.c | 22 ----------------------
+>  1 file changed, 22 deletions(-)
 
-Hi all,
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 
-In commit
 
-  d62962b37ceb ("loopback: fix lockdep splat")
-
-Fixes tag
-
-  Fixes: 4de83b88c66 ("loopback: create blackhole net device similar to loo=
-pack.")
-
-has these problem(s):
-
-  - SHA1 should be at least 12 digits long
-    Can be fixed by setting core.abbrev to 12 (or more) or (for git v2.11
-    or later) just making sure it is not set (or set to "auto").
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_//+.awAE4SFPtT.RyYWny0+a
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl0dITwACgkQAVBC80lX
-0Gz6zwf+Maozgm+A2X2QXXhY4JeyxbZuDCuvlK47fqNn0lWOStxC7ZSGGBQt+ODe
-7EvVuHxu3PQFLfM+TmrEQSVhDrB7PFUo/LNsb6/XkaE+Uxs8DFTYCyCfp9YkpgWF
-BDRVNv6rROkFMVLJixX1aI4BS1JJPUBRTN6RNJs0EW5fzKZujCBMkj122RqDp5E8
-2ZtMdlXRZ97vIkrPBdlHVHGg0pTYo/UvzI1aqvE0QGzGqkJUyeZIV0pXypOSSdz+
-zSWZFddIwblscF3MnfrtTn5DawEMpg5scu2tGrvQGw1Ow0IR/9xiK2SrebDIL/qd
-Ar1LUBPZxH+H6LiwUyDXdh3YhpU9Hg==
-=X12Y
------END PGP SIGNATURE-----
-
---Sig_//+.awAE4SFPtT.RyYWny0+a--
