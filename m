@@ -2,158 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 280F05DBDD
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 04:19:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51BA65DC82
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 04:27:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728427AbfGCCTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 22:19:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56970 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727411AbfGCCTH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jul 2019 22:19:07 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 201A221873;
-        Wed,  3 Jul 2019 02:19:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1562120345;
-        bh=lENIlEV+ZrCZrAg2zRAaefLXf3dzUtTHps/YFHXJheI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MUtqGOCfTuocVT4h0RmrFD8aqYnWO4vq+IwoF5UHMQ4M8e+1NkoJoSMYqSFiZrXFS
-         B9QL6IDV3Gk+O7J8qVvH+L/brhRXlgiWAuQmikJJm9i8w6RtTvCuVHeXd01az4udrE
-         Z8WWbXB6lsP+UmxW3YO4b5ADYsKPaDKP0j5SPU1Q=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sergej Benilov <sergej.benilov@googlemail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 5/6] sis900: fix TX completion
-Date:   Tue,  2 Jul 2019 22:18:57 -0400
-Message-Id: <20190703021858.18653-5-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190703021858.18653-1-sashal@kernel.org>
-References: <20190703021858.18653-1-sashal@kernel.org>
+        id S1727367AbfGCC1O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 22:27:14 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:8762 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727100AbfGCC1O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 22:27:14 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x632QbbZ018356;
+        Tue, 2 Jul 2019 19:27:11 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pfpt0818;
+ bh=pDY67x1/wjxa/xo+UI5Ng9SntzglZxlUZyviB/r/dck=;
+ b=avMtdiQ0e9SNmCl9V9+sx1QcYH7spBIsPDhLryGXcZvRp/k4cbgCCLP6o72swgpR9Fr9
+ upqDQSk6p19j4XMnaLyO/7d39a2lhHSzLfnUwVv935tEtsJbLu2+2yiEIwk8231Wb5Ed
+ 2TbPwM3a8Bi5Oj9OEorQ9TKj4wBuYmu1m+EtwPMcchKu4Zojz1kRXDwjZwd1pb5qo1iP
+ q8+2WcndzpemLlwp3OZ9z5HoFz/mwUD/E5DbN/DpiF9q8PAKs1o3Ihd/nJaH2RuZzXKc
+ 8JkgD+ix777LjPo/HO1WPbAMioW1bQAfE2etORuC3eBwkGWSn1y4+ofKgy9DdfEMpoyh Kg== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0a-0016f401.pphosted.com with ESMTP id 2tge6q92v7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 02 Jul 2019 19:27:11 -0700
+Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Tue, 2 Jul
+ 2019 19:27:10 -0700
+Received: from NAM05-CO1-obe.outbound.protection.outlook.com (104.47.48.58) by
+ SC-EXCH03.marvell.com (10.93.176.83) with Microsoft SMTP Server (TLS) id
+ 15.0.1367.3 via Frontend Transport; Tue, 2 Jul 2019 19:27:10 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=marvell.onmicrosoft.com; s=selector2-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pDY67x1/wjxa/xo+UI5Ng9SntzglZxlUZyviB/r/dck=;
+ b=HCB3fbi2csbAy4Axg8m23bPBNHENjrfmWJYndeHqRxf6cqI1DBGua6GRrSwwbccogdxAPLAIbQ0t076rry0G9QuwXZI/nsY1QytQsh8Du77D3sbBoYEEGEX2cs7dlck4hj7FaLfHri/TuL8mvwxYEuMgRJE3DyO8xZcYyAT7DQ4=
+Received: from MN2PR18MB2528.namprd18.prod.outlook.com (20.179.80.86) by
+ MN2PR18MB3006.namprd18.prod.outlook.com (20.179.84.80) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2032.20; Wed, 3 Jul 2019 02:27:05 +0000
+Received: from MN2PR18MB2528.namprd18.prod.outlook.com
+ ([fe80::a8ef:cea:5dba:ddb1]) by MN2PR18MB2528.namprd18.prod.outlook.com
+ ([fe80::a8ef:cea:5dba:ddb1%4]) with mapi id 15.20.2032.019; Wed, 3 Jul 2019
+ 02:27:05 +0000
+From:   Sudarsana Reddy Kalluru <skalluru@marvell.com>
+To:     David Miller <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Michal Kalderon <mkalderon@marvell.com>,
+        Ariel Elior <aelior@marvell.com>
+Subject: RE: [PATCH net-next 1/1] qed: Add support for Timestamping the
+ unicast PTP packets.
+Thread-Topic: [PATCH net-next 1/1] qed: Add support for Timestamping the
+ unicast PTP packets.
+Thread-Index: AQHVMOd4MvMsKvGAHE2LNv0ZTsPqBaa3tXKAgABzGkA=
+Date:   Wed, 3 Jul 2019 02:27:05 +0000
+Message-ID: <MN2PR18MB2528FFF4D24086CD7D3D85EED3FB0@MN2PR18MB2528.namprd18.prod.outlook.com>
+References: <20190702150412.31132-1-skalluru@marvell.com>
+ <20190702.122329.529953597219619097.davem@davemloft.net>
+In-Reply-To: <20190702.122329.529953597219619097.davem@davemloft.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [14.140.231.66]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 1544d4a0-2737-44c2-0eb5-08d6ff5df0b5
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MN2PR18MB3006;
+x-ms-traffictypediagnostic: MN2PR18MB3006:
+x-microsoft-antispam-prvs: <MN2PR18MB30064AD2EE638D4115D07329D3FB0@MN2PR18MB3006.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5236;
+x-forefront-prvs: 00872B689F
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(346002)(366004)(39860400002)(396003)(376002)(13464003)(189003)(199004)(229853002)(8676002)(102836004)(2906002)(66476007)(66556008)(186003)(256004)(54906003)(71190400001)(6916009)(66946007)(52536014)(9686003)(4744005)(11346002)(107886003)(81156014)(53936002)(6116002)(3846002)(71200400001)(7696005)(76116006)(6506007)(74316002)(305945005)(4326008)(81166006)(5660300002)(446003)(26005)(486006)(14454004)(476003)(73956011)(64756008)(66446008)(6436002)(68736007)(33656002)(86362001)(6246003)(478600001)(7736002)(25786009)(55236004)(66066001)(99286004)(76176011)(316002)(53546011)(8936002)(55016002);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR18MB3006;H:MN2PR18MB2528.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: marvell.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: M/SDWr/AWy1x9Qtd8loUVt/3NRCf7rsXedgVKqeVD3yoY5TvrOVDbNhSRPWeVusBNjNYH2dScBk2LlPR1Aq8RkTpzgoiiiLhOiWmTtR8sk+UlkUACjt3YebNq0i5j+t2g8c3JzlbikMSs9RoXjUtckYGtpiieoSFf3qXkkyJOotEq64ENpndD337COzMOE+S1OAG3hEl2wSnzdT9UYqmA27myMBUibRYRrrcpxqocTO0+bMQTWg/RD+qFfiYBd4686vvExZikLH1yJCt2e7r9tQ3zQ3Os+2CCmvAWjojz3JyI1wMclirWXJI/k4Dp/Mt2yX7xgHUPB4CMxw8phphv8lATx/3bokU+yx2uZ78JhUAgMIdsJ+0TTH+8nxv57kFoKkvmy5dCm1px30BbKDDO03IIJwxmSAHS93GDPeV5NQ=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1544d4a0-2737-44c2-0eb5-08d6ff5df0b5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jul 2019 02:27:05.3643
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: skalluru@marvell.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR18MB3006
+X-OriginatorOrg: marvell.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-03_01:,,
+ signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sergej Benilov <sergej.benilov@googlemail.com>
-
-[ Upstream commit 8ac8a01092b2added0749ef937037bf1912e13e3 ]
-
-Since commit 605ad7f184b60cfaacbc038aa6c55ee68dee3c89 "tcp: refine TSO autosizing",
-outbound throughput is dramatically reduced for some connections, as sis900
-is doing TX completion within idle states only.
-
-Make TX completion happen after every transmitted packet.
-
-Test:
-netperf
-
-before patch:
-> netperf -H remote -l -2000000 -- -s 1000000
-MIGRATED TCP STREAM TEST from 0.0.0.0 () port 0 AF_INET to 95.223.112.76 () port 0 AF_INET : demo
-Recv   Send    Send
-Socket Socket  Message  Elapsed
-Size   Size    Size     Time     Throughput
-bytes  bytes   bytes    secs.    10^6bits/sec
-
- 87380 327680 327680    253.44      0.06
-
-after patch:
-> netperf -H remote -l -10000000 -- -s 1000000
-MIGRATED TCP STREAM TEST from 0.0.0.0 () port 0 AF_INET to 95.223.112.76 () port 0 AF_INET : demo
-Recv   Send    Send
-Socket Socket  Message  Elapsed
-Size   Size    Size     Time     Throughput
-bytes  bytes   bytes    secs.    10^6bits/sec
-
- 87380 327680 327680    5.38       14.89
-
-Thx to Dave Miller and Eric Dumazet for helpful hints
-
-Signed-off-by: Sergej Benilov <sergej.benilov@googlemail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/sis/sis900.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/ethernet/sis/sis900.c b/drivers/net/ethernet/sis/sis900.c
-index fd812d2e5e1c..dff5b56738d3 100644
---- a/drivers/net/ethernet/sis/sis900.c
-+++ b/drivers/net/ethernet/sis/sis900.c
-@@ -1058,7 +1058,7 @@ sis900_open(struct net_device *net_dev)
- 	sis900_set_mode(sis_priv, HW_SPEED_10_MBPS, FDX_CAPABLE_HALF_SELECTED);
- 
- 	/* Enable all known interrupts by setting the interrupt mask. */
--	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxIDLE);
-+	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxIDLE | TxDESC);
- 	sw32(cr, RxENA | sr32(cr));
- 	sw32(ier, IE);
- 
-@@ -1581,7 +1581,7 @@ static void sis900_tx_timeout(struct net_device *net_dev)
- 	sw32(txdp, sis_priv->tx_ring_dma);
- 
- 	/* Enable all known interrupts by setting the interrupt mask. */
--	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxIDLE);
-+	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxIDLE | TxDESC);
- }
- 
- /**
-@@ -1621,7 +1621,7 @@ sis900_start_xmit(struct sk_buff *skb, struct net_device *net_dev)
- 			spin_unlock_irqrestore(&sis_priv->lock, flags);
- 			return NETDEV_TX_OK;
- 	}
--	sis_priv->tx_ring[entry].cmdsts = (OWN | skb->len);
-+	sis_priv->tx_ring[entry].cmdsts = (OWN | INTR | skb->len);
- 	sw32(cr, TxENA | sr32(cr));
- 
- 	sis_priv->cur_tx ++;
-@@ -1677,7 +1677,7 @@ static irqreturn_t sis900_interrupt(int irq, void *dev_instance)
- 	do {
- 		status = sr32(isr);
- 
--		if ((status & (HIBERR|TxURN|TxERR|TxIDLE|RxORN|RxERR|RxOK)) == 0)
-+		if ((status & (HIBERR|TxURN|TxERR|TxIDLE|TxDESC|RxORN|RxERR|RxOK)) == 0)
- 			/* nothing intresting happened */
- 			break;
- 		handled = 1;
-@@ -1687,7 +1687,7 @@ static irqreturn_t sis900_interrupt(int irq, void *dev_instance)
- 			/* Rx interrupt */
- 			sis900_rx(net_dev);
- 
--		if (status & (TxURN | TxERR | TxIDLE))
-+		if (status & (TxURN | TxERR | TxIDLE | TxDESC))
- 			/* Tx interrupt */
- 			sis900_finish_xmit(net_dev);
- 
-@@ -1899,8 +1899,8 @@ static void sis900_finish_xmit (struct net_device *net_dev)
- 
- 		if (tx_status & OWN) {
- 			/* The packet is not transmitted yet (owned by hardware) !
--			 * Note: the interrupt is generated only when Tx Machine
--			 * is idle, so this is an almost impossible case */
-+			 * Note: this is an almost impossible condition
-+			 * in case of TxDESC ('descriptor interrupt') */
- 			break;
- 		}
- 
-@@ -2476,7 +2476,7 @@ static int sis900_resume(struct pci_dev *pci_dev)
- 	sis900_set_mode(sis_priv, HW_SPEED_10_MBPS, FDX_CAPABLE_HALF_SELECTED);
- 
- 	/* Enable all known interrupts by setting the interrupt mask. */
--	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxIDLE);
-+	sw32(imr, RxSOVR | RxORN | RxERR | RxOK | TxURN | TxERR | TxIDLE | TxDESC);
- 	sw32(cr, RxENA | sr32(cr));
- 	sw32(ier, IE);
- 
--- 
-2.20.1
-
+> -----Original Message-----
+> From: David Miller <davem@davemloft.net>
+> Sent: Wednesday, July 3, 2019 12:53 AM
+> To: Sudarsana Reddy Kalluru <skalluru@marvell.com>
+> Cc: netdev@vger.kernel.org; Michal Kalderon <mkalderon@marvell.com>;
+> Ariel Elior <aelior@marvell.com>
+> Subject: Re: [PATCH net-next 1/1] qed: Add support for Timestamping the
+> unicast PTP packets.
+>=20
+> From: Sudarsana Reddy Kalluru <skalluru@marvell.com>
+> Date: Tue, 2 Jul 2019 08:04:12 -0700
+>=20
+> > The register definition in the header file captures more details on
+> > the individual bits.
+>=20
+> Where is this register definition in the header file and why aren't CPP d=
+efines
+> from there being used instead of a mask constant mask?
+>=20
+> Thanks.
+Sorry, my mistake. taking back my statement. Will send the updated patch wi=
+th CPP define.
