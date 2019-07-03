@@ -2,170 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BDF4F5E4E8
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 15:11:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB63A5E4EC
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 15:12:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726977AbfGCNK6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 09:10:58 -0400
-Received: from mx-relay47-hz2.antispameurope.com ([94.100.136.247]:57750 "EHLO
-        mx-relay47-hz2.antispameurope.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725933AbfGCNK6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 09:10:58 -0400
-Received: from b2b-92-50-72-125.unitymedia.biz ([92.50.72.125]) by mx-relay47-hz2.antispameurope.com;
- Wed, 03 Jul 2019 15:10:41 +0200
-Received: from [192.168.101.59] (192.168.101.59) by eks-ex.eks-engel.local
- (192.168.100.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1034.26; Wed, 3 Jul
- 2019 15:10:35 +0200
-To:     <netdev@vger.kernel.org>
-From:   Benjamin Beckmeyer <beb@eks-engel.de>
-Subject: i.mx6ul with DSA in multi chip addressing mode - no MDIO access
-Message-ID: <21680b63-2d87-6841-23eb-551e58866719@eks-engel.de>
-Date:   Wed, 3 Jul 2019 15:10:34 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726964AbfGCNMG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 09:12:06 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:49491 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725830AbfGCNMG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 09:12:06 -0400
+Received: by mail-io1-f70.google.com with SMTP id x24so2550314ioh.16
+        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 06:12:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=0LKzWy3rKCKUf2ADkmhCBlAO8nooReUA+k7uMtJw9z8=;
+        b=Z8hJGBIGqmcUPjJvMWnp+TZzr7184WpCro4nnwnp+O9WwYN/iqXsDvOFekjpg1j1wa
+         M5YaBiPeZoKsaygXwP9O41ij6vMskZLldDNqo1klIECqqBWYC+GH2KAbBv2jC9NJq6XN
+         +kux/vR4cc5AOeuG2iIFFLJIqXUOK8Mn+qYxq47rqqB8rqHTLznoIUsvKIO8Sdxwt8w9
+         m2TC7/YpZMHkTrwGsFfdopxGpuHNCF75+KaURtajTL4DiP4PEOL91C/8XcrZ89l+UWlw
+         o/CVHGCAWrhja9xHZ7Kr8cU2VAxCcedg/GRbWuowgm1mLxTopzbBgsiU2PShUJzjjkAi
+         PVQw==
+X-Gm-Message-State: APjAAAXhC2Kjh1lAOXaMZrYHIwrTaUEep5TktlgUpJTk2E+xzsvXafu4
+        PqfqcKCETfALS66ZOhPsIkDHEU1f3aWfG1EX84N5sSpxanQJ
+X-Google-Smtp-Source: APXvYqzjw5aaitiWWD6dEocipz83t7ATXlepPRhnUXEFvzDxK0lxT2Q2XJhDNQIEV9xnvLBTPgvvzofYGptzSTHYKvri+paEh/nX
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [192.168.101.59]
-X-ClientProxiedBy: eks-ex.eks-engel.local (192.168.100.30) To
- eks-ex.eks-engel.local (192.168.100.30)
-X-cloud-security-sender: beb@eks-engel.de
-X-cloud-security-recipient: netdev@vger.kernel.org
-X-cloud-security-Virusscan: CLEAN
-X-cloud-security-disclaimer: This E-Mail was scanned by E-Mailservice on mx-relay47-hz2.antispameurope.com with B84CA40314
-X-cloud-security-connect: b2b-92-50-72-125.unitymedia.biz[92.50.72.125], TLS=1, IP=92.50.72.125
-X-cloud-security: scantime:.1954
+X-Received: by 2002:a02:b696:: with SMTP id i22mr10221274jam.87.1562159525386;
+ Wed, 03 Jul 2019 06:12:05 -0700 (PDT)
+Date:   Wed, 03 Jul 2019 06:12:05 -0700
+In-Reply-To: <00000000000035c756058848954a@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000097dfa5058cc69be3@google.com>
+Subject: Re: KASAN: use-after-free Read in hci_cmd_timeout
+From:   syzbot <syzbot+19a9f729f05272857487@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johan.hedberg@gmail.com,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        marcel@holtmann.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hey folks,
+syzbot has found a reproducer for the following crash on:
 
-I'm having a problem with a custom i.mx6ul board. When DSA is loaded I can't 
-get access to the switch via MDIO, but the DSA is working properly. I set up
-a bridge for testing and the switch is in forwarding mode and i can ping the 
-board. But the MDIO access isn't working at address 2 for the switch. When I 
-delete the DSA from the devicetree and start the board up, I can access the 
-switch via MDIO.
+HEAD commit:    eca94432 Bluetooth: Fix faulty expression for minimum encr..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1006cc8ba00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=f6451f0da3d42d53
+dashboard link: https://syzkaller.appspot.com/bug?extid=19a9f729f05272857487
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=125b7999a00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=176deefba00000
 
-With DSA up and running:
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+19a9f729f05272857487@syzkaller.appspotmail.com
 
-mii -i 2 0 0x9800
-mii -i 2 1
-phyid:2, reg:0x01 -> 0x4000
-mii -i 2 0 0x9803
-mii -i 2 1
-phyid:2, reg:0x01 -> 0x4000
-mii -i 2 1 0x1883
-mii -i 2 1
-phyid:2, reg:0x01 -> 0x4000
+Bluetooth: hci0: command 0xfc11 tx timeout
+==================================================================
+BUG: KASAN: use-after-free in hci_cmd_timeout+0x1fe/0x220  
+net/bluetooth/hci_core.c:2614
+Read of size 8 at addr ffff88809e8a3c48 by task kworker/0:5/9461
 
-No DSA:
+CPU: 0 PID: 9461 Comm: kworker/0:5 Not tainted 5.2.0-rc7+ #40
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Workqueue: events hci_cmd_timeout
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+  print_address_description.cold+0x7c/0x20d mm/kasan/report.c:188
+  __kasan_report.cold+0x1b/0x40 mm/kasan/report.c:317
+  kasan_report+0x12/0x20 mm/kasan/common.c:614
+  __asan_report_load8_noabort+0x14/0x20 mm/kasan/generic_report.c:132
+  hci_cmd_timeout+0x1fe/0x220 net/bluetooth/hci_core.c:2614
+  process_one_work+0x989/0x1790 kernel/workqueue.c:2269
+  worker_thread+0x98/0xe40 kernel/workqueue.c:2415
+  kthread+0x354/0x420 kernel/kthread.c:255
+  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
 
-mii -i 2 0 0x9800
-mii -i 2 1
-phyid:2, reg:0x01 -> 0xde04
-mii -i 2 0 0x9803
-mii -i 2 1
-phyid:2, reg:0x01 -> 0x3901
-mii -i 2 1 0x1883
-mii -i 2 1
-phyid:2, reg:0x01 -> 0x1883
+Allocated by task 9446:
+  save_stack+0x23/0x90 mm/kasan/common.c:71
+  set_track mm/kasan/common.c:79 [inline]
+  __kasan_kmalloc mm/kasan/common.c:489 [inline]
+  __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:462
+  kasan_slab_alloc+0xf/0x20 mm/kasan/common.c:497
+  slab_post_alloc_hook mm/slab.h:437 [inline]
+  slab_alloc mm/slab.c:3326 [inline]
+  kmem_cache_alloc+0x11a/0x6f0 mm/slab.c:3488
+  skb_clone+0x154/0x3d0 net/core/skbuff.c:1321
+  hci_cmd_work+0xe0/0x2a0 net/bluetooth/hci_core.c:4495
+  process_one_work+0x989/0x1790 kernel/workqueue.c:2269
+  worker_thread+0x98/0xe40 kernel/workqueue.c:2415
+  kthread+0x354/0x420 kernel/kthread.c:255
+  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
 
-Here is the device tree for our board:
-&mdio0 {
-        switch0: switch0@2 {
-                compatible = "marvell,mv88e6190";
-                reg = <2>;
-                pinctrl-0 = <&pinctrl_gpios>;
-                reset-gpios = <&gpio4 16 GPIO_ACTIVE_LOW>;
+Freed by task 1501:
+  save_stack+0x23/0x90 mm/kasan/common.c:71
+  set_track mm/kasan/common.c:79 [inline]
+  __kasan_slab_free+0x102/0x150 mm/kasan/common.c:451
+  kasan_slab_free+0xe/0x10 mm/kasan/common.c:459
+  __cache_free mm/slab.c:3432 [inline]
+  kmem_cache_free+0x86/0x260 mm/slab.c:3698
+  kfree_skbmem net/core/skbuff.c:620 [inline]
+  kfree_skbmem+0xc5/0x150 net/core/skbuff.c:614
+  __kfree_skb net/core/skbuff.c:677 [inline]
+  kfree_skb net/core/skbuff.c:694 [inline]
+  kfree_skb+0xf0/0x390 net/core/skbuff.c:688
+  hci_dev_do_open+0xb20/0x1760 net/bluetooth/hci_core.c:1550
+  hci_power_on+0x10d/0x580 net/bluetooth/hci_core.c:2171
+  process_one_work+0x989/0x1790 kernel/workqueue.c:2269
+  worker_thread+0x98/0xe40 kernel/workqueue.c:2415
+  kthread+0x354/0x420 kernel/kthread.c:255
+  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
 
-                dsa,member = <0 0>;
+The buggy address belongs to the object at ffff88809e8a3b80
+  which belongs to the cache skbuff_head_cache of size 224
+The buggy address is located 200 bytes inside of
+  224-byte region [ffff88809e8a3b80, ffff88809e8a3c60)
+The buggy address belongs to the page:
+page:ffffea00027a28c0 refcount:1 mapcount:0 mapping:ffff88821baabb40  
+index:0x0
+flags: 0x1fffc0000000200(slab)
+raw: 01fffc0000000200 ffffea00027b2d08 ffffea00021b83c8 ffff88821baabb40
+raw: 0000000000000000 ffff88809e8a3040 000000010000000c 0000000000000000
+page dumped because: kasan: bad access detected
 
-                ports {
-                        #address-cells = <1>;
-                        #size-cells = <0>;
-
-                        port@0 {
-                                reg = <0>;
-                                label = "cpu";
-                                ethernet = <&fec1>;
-                                phy-mode = "rmii";
-                                fixed-link {
-                                        speed = <100>;
-                                        full-duplex;
-                                };
-                        };
-
-                        port@1 {
-                                reg = <1>;
-                                label = "lan1";
-                        };
-                        port@2 {
-                                reg = <2>;
-                                label = "lan2";
-                        };
-
-                        port@3 {
-                                reg = <3>;
-                                label = "lan3";
-                        };
-
-                        port@4 {
-                                reg = <4>;
-                                label = "lan4";
-                        };
-
-                        port@5 {
-                                reg = <5>;
-                                label = "lan5";
-                        };
-
-                        port@6 {
-                                reg = <6>;
-                                label = "lan6";
-                        };
-
-                        port@7 {
-                                reg = <7>;
-                                label = "lan7";
-                        };
-                        port@8 {
-                                reg = <8>;
-                                label = "lan8";
-                        };
-                        port@9 {
-                                reg = <9>;
-                                label = "serdes1";
-                                fixed-link {
-                                        speed = <1000>;
-                                        full-duplex;
-                                };
-                        };
-                        port@10 {
-                                reg = <10>;
-                                label = "serdes2";
-                                fixed-link {
-                                        speed = <1000>;
-                                        full-duplex;
-                                };
-                        };
-                };
-        };
-};
-
-On a different custom board we have another switching chip in single chip 
-addressing mode the MDIO access works like a charm with activated DSA.
-
-Currently I'm on linux-4.14.118. Other kernels (4.19.55, 5.1.14) I've 
-tested stuck at or reboot while DSA is loading. Same devicetree there.
-Let me know if you need some more input.
-
-Thanks in advance for your help.
-
-Best regards, 
-Benjamin Beckmeyer
+Memory state around the buggy address:
+  ffff88809e8a3b00: fb fb fb fb fc fc fc fc fc fc fc fc fc fc fc fc
+  ffff88809e8a3b80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> ffff88809e8a3c00: fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
+                                               ^
+  ffff88809e8a3c80: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
+  ffff88809e8a3d00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
 
