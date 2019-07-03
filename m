@@ -2,95 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A7E3C5DC5C
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 04:22:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 788A35DB8E
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 04:16:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727828AbfGCCWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 22:22:22 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:44332 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727663AbfGCCPm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 22:15:42 -0400
-Received: by mail-qk1-f195.google.com with SMTP id p144so604311qke.11
-        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 19:15:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=leu2Z7lZQLubhQ6t1284nOghnTElOtB44m4CQPkjFxQ=;
-        b=oa3fZ3ygrR3MY3w/gVIBWkUIzgoXw8v00xIGHsLde/Erucmsx0IG9zYhVXNxnOhQv5
-         E/809stHnTGkXQ3Ay/IP0GIjPzfiRu8a+Lu7yzdIHfykqLwFjIoL2CKDomrGwpWE5uoi
-         0QinTE5fNT4Pf2N9o31DwzDCH/MZa0I2WEbPX8dT5sZ0BwFWjpXkyBREnqY139WHxQdV
-         mV48WqJRovjwpGUgEZ1GD4ZJklIl64OLeA/3LSRQ7o2fCDsvg+N6j6ZrKtj9cRvO3vQf
-         WFIAEEH7SDEGBc3vCjEMDjAviPkfZnBHRPetMibIN8Gp0b2+vyHxjf757CXYBYwh2J8k
-         BQUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=leu2Z7lZQLubhQ6t1284nOghnTElOtB44m4CQPkjFxQ=;
-        b=LI5Tw84mmjDFjClaCzeJ1a4J8/nesZ5t9nBbhtAjvBFhUGzva5xNx1x7U3r2EGqiP7
-         l39zSkzpbjRcpE6+kYs2tujRn7YOxKQzZFSYowqeHNArUX8X9TWy2MHbWM7zad5YDEwe
-         t0QThRL/vUax5e8rgNcrlYJ3sYN+x06avEsu+IK36d4MhuV37qB+vcLEkuszzEEdc5Ca
-         NwtOkuHaLZrt//bXiziiNc0QcBMzDhCUW7MsOJ7BQCuoeU0HdVLHgB2F5m+H48nRHp70
-         EjPWU5jNjTO6pfLpulGtC/P8qzBQtC4MV7UImnctyll/Z2u1LjZ8PSKaKGstysNGT4ig
-         ORiQ==
-X-Gm-Message-State: APjAAAU7ngwdrLLwf/a/Jhp3Zll1QTha8uC5HSCketBVfDJ5zoPivZE1
-        F3WyIG4QURkTPhZQozuDWuTpMQ==
-X-Google-Smtp-Source: APXvYqw3JihPwXL4EeG6NBmta3hdu4hoF2PLLZp1dotp37tQucIDZIOEBEbufO0nZtCC5XOqOzn2lg==
-X-Received: by 2002:a37:a98c:: with SMTP id s134mr28012734qke.176.1562120141404;
-        Tue, 02 Jul 2019 19:15:41 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id o21sm328283qtq.16.2019.07.02.19.15.40
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 02 Jul 2019 19:15:41 -0700 (PDT)
-Date:   Tue, 2 Jul 2019 19:15:36 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     Jiri Pirko <jiri@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: Re: [PATCH net-next 1/3] devlink: Introduce PCI PF port flavour and
- port attribute
-Message-ID: <20190702191536.4de1ac68@cakuba.netronome.com>
-In-Reply-To: <AM0PR05MB4866F1AF0CF5914B372F0BCCD1FB0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <20190701122734.18770-1-parav@mellanox.com>
-        <20190701122734.18770-2-parav@mellanox.com>
-        <20190701162650.17854185@cakuba.netronome.com>
-        <AM0PR05MB4866085BC8B082EFD5B59DD2D1F80@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190702104711.77618f6a@cakuba.netronome.com>
-        <AM0PR05MB4866C19C9E6ED767A44C3064D1F80@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190702164252.6d4fe5e3@cakuba.netronome.com>
-        <AM0PR05MB4866F1AF0CF5914B372F0BCCD1FB0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-Organization: Netronome Systems, Ltd.
+        id S1728008AbfGCCQj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 22:16:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55012 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727991AbfGCCQj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jul 2019 22:16:39 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id AFA3C21882;
+        Wed,  3 Jul 2019 02:16:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1562120198;
+        bh=/Ee2WZO4rde4TtUHzNrdFEtRJg+LA0aD8ucF+Vmu5hw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=H9SjWcmjK0rxw0F0lCYr9ZTxm2A6fR1L9YL9m3M/FAiQy9SGDVLxyry4fbavOhEXY
+         8QjdgWPXS71nzH6UmbtuEX+hJx9Xm2cura7nU+7JVgoBjx5PxJmPds8YfrcuzCK0Nf
+         ddDV1NQR9rQ2fxCbZRouuHN9us/gOVazawcx7dcI=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Petr Oros <poros@redhat.com>, Ivan Vecera <ivecera@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 09/26] be2net: fix link failure after ethtool offline test
+Date:   Tue,  2 Jul 2019 22:16:08 -0400
+Message-Id: <20190703021625.18116-9-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190703021625.18116-1-sashal@kernel.org>
+References: <20190703021625.18116-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 3 Jul 2019 02:08:39 +0000, Parav Pandit wrote:
-> > If you want to expose some device specific
-> > eswitch port ID please add a new attribute for that.
-> > The fact that that ID may match port_number for your device today is
-> > coincidental.  port_number, and split attributes should not be exposed for
-> > PCI ports.
->
-> So your concern is non mellanox hw has eswitch but there may not be a
-> unique handle to identify a eswitch port?
+From: Petr Oros <poros@redhat.com>
 
-That's not a concern, no.  Like any debug attribute it should be
-optional.
+[ Upstream commit 2e5db6eb3c23e5dc8171eb8f6af7a97ef9fcf3a9 ]
 
-> Or that handle may be wider than 32-bit?
+Certain cards in conjunction with certain switches need a little more
+time for link setup that results in ethtool link test failure after
+offline test. Patch adds a loop that waits for a link setup finish.
 
-64 bit would probably be better, yes, although that wasn't my initial
-concern.
+Changes in v2:
+- added fixes header
 
-> And instead of treating port_number as handle, there should be
-> different attribute, is that the ask?
+Fixes: 4276e47e2d1c ("be2net: Add link test to list of ethtool self tests.")
+Signed-off-by: Petr Oros <poros@redhat.com>
+Reviewed-by: Ivan Vecera <ivecera@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ .../net/ethernet/emulex/benet/be_ethtool.c    | 28 +++++++++++++++----
+ 1 file changed, 22 insertions(+), 6 deletions(-)
 
-Yes, the ask, as always, is to not abuse existing attributes to carry
-tangentially related information.
+diff --git a/drivers/net/ethernet/emulex/benet/be_ethtool.c b/drivers/net/ethernet/emulex/benet/be_ethtool.c
+index bfb16a474490..d1905d50c26c 100644
+--- a/drivers/net/ethernet/emulex/benet/be_ethtool.c
++++ b/drivers/net/ethernet/emulex/benet/be_ethtool.c
+@@ -895,7 +895,7 @@ static void be_self_test(struct net_device *netdev, struct ethtool_test *test,
+ 			 u64 *data)
+ {
+ 	struct be_adapter *adapter = netdev_priv(netdev);
+-	int status;
++	int status, cnt;
+ 	u8 link_status = 0;
+ 
+ 	if (adapter->function_caps & BE_FUNCTION_CAPS_SUPER_NIC) {
+@@ -906,6 +906,9 @@ static void be_self_test(struct net_device *netdev, struct ethtool_test *test,
+ 
+ 	memset(data, 0, sizeof(u64) * ETHTOOL_TESTS_NUM);
+ 
++	/* check link status before offline tests */
++	link_status = netif_carrier_ok(netdev);
++
+ 	if (test->flags & ETH_TEST_FL_OFFLINE) {
+ 		if (be_loopback_test(adapter, BE_MAC_LOOPBACK, &data[0]) != 0)
+ 			test->flags |= ETH_TEST_FL_FAILED;
+@@ -926,13 +929,26 @@ static void be_self_test(struct net_device *netdev, struct ethtool_test *test,
+ 		test->flags |= ETH_TEST_FL_FAILED;
+ 	}
+ 
+-	status = be_cmd_link_status_query(adapter, NULL, &link_status, 0);
+-	if (status) {
+-		test->flags |= ETH_TEST_FL_FAILED;
+-		data[4] = -1;
+-	} else if (!link_status) {
++	/* link status was down prior to test */
++	if (!link_status) {
+ 		test->flags |= ETH_TEST_FL_FAILED;
+ 		data[4] = 1;
++		return;
++	}
++
++	for (cnt = 10; cnt; cnt--) {
++		status = be_cmd_link_status_query(adapter, NULL, &link_status,
++						  0);
++		if (status) {
++			test->flags |= ETH_TEST_FL_FAILED;
++			data[4] = -1;
++			break;
++		}
++
++		if (link_status)
++			break;
++
++		msleep_interruptible(500);
+ 	}
+ }
+ 
+-- 
+2.20.1
+
