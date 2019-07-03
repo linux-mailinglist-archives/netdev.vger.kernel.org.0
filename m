@@ -2,244 +2,252 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EDEF15DCEC
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 05:28:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AED625DD8D
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 06:46:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727388AbfGCD2T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 23:28:19 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:44900 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727368AbfGCD2S (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jul 2019 23:28:18 -0400
-Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id A3FACB18341EC7883529;
-        Wed,  3 Jul 2019 11:28:16 +0800 (CST)
-Received: from [127.0.0.1] (10.74.191.121) by DGGEMS410-HUB.china.huawei.com
- (10.3.19.210) with Microsoft SMTP Server id 14.3.439.0; Wed, 3 Jul 2019
- 11:28:12 +0800
-Subject: Re: [PATCH net-next] skbuff: increase verbosity when dumping skb data
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <xiyou.wangcong@gmail.com>,
-        <herbert@gondor.apana.org.au>, <eric.dumazet@gmail.com>,
-        <saeedm@mellanox.com>, Willem de Bruijn <willemb@google.com>
-References: <20190702193927.116668-1-willemdebruijn.kernel@gmail.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <254abb52-e201-eb12-d6c2-6bd96e505871@huawei.com>
-Date:   Wed, 3 Jul 2019 11:28:11 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S1726581AbfGCEqG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 00:46:06 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:51928 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725904AbfGCEqG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 00:46:06 -0400
+Received: by mail-wm1-f66.google.com with SMTP id 207so707646wma.1
+        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 21:46:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wYhh1FZzURTT7jH4X0+BMDoH/6wRanTlqxHaq9ZAeIo=;
+        b=dQRSzZmUe1oWkQbqMVhHq7Z3a+ParxHjVuN4zzmMeN7jWd7RuDzM1G94+XusklGZRy
+         0JKGxw/gkYiH/09tv5hefVtrawoo77R3FEAormbcWaJFmx3cm1zSd8/S19kYiItWER7t
+         0LHQSv/BBFagOdYumbEf4hJUNIKYH5pz8CtlsuaUYveabhGr9qbVl8ixKBiqvjv5g610
+         TG/hvXsgFVUo9nrW9Ue0BxoaHLuZfYoNNxnyP2A9u0lwdA56n4aJX4mqCqy8E7/+hKeW
+         Q8T28gH8ChWgDJPL2up3LqflSLbF9sgnxiHRkoe/0n0MisFBWYHBdyN1hUgC6oSsOBX2
+         4Vyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wYhh1FZzURTT7jH4X0+BMDoH/6wRanTlqxHaq9ZAeIo=;
+        b=ldGFtYdiz2Wl4PwIJULcGeLIGAOZRlHFOPK4ilgImxEmfq99DXMk0l0VVpggVKlXYP
+         6Q5QTFpyZq9FhPxj4WDcGdla2Ow5KwJEyl5jLhD3Pk9NhnPkhXDEsb6lQkuuk/QtHtk7
+         XtD/rUoVlfDKJg8KtcGAISRmSAYfrJpV5ogC3lkYPmw6rWbndxQZlY67llNVmr5g/BDR
+         nM6wi9HPMQbrQdoUKiYFgt9MbqAzqb78OgHZb1AfkD3uAeVOLXao40BAoKaJ/y6Mxor7
+         L80pKIuqN2FSxOhxatsx8abx/3BvV53ytKcG7jmg4eGWzcaGhCdLgq9FXjZcumSPRc9y
+         DfOA==
+X-Gm-Message-State: APjAAAU1EBZ6Ni4lnMSguzdWJIx5xxGBBJyDT791Qm4dbWERKwJC6VzE
+        /D3eI6z4lK4Un5+pCAVSMttZPCmo0qujiRU1MKlFNQ==
+X-Google-Smtp-Source: APXvYqypB8Gwxv/tNWr1/m7SPPHay5N8t9sQgm11whZDoZ0H119QZPeC/ixVqENlUCif7avjYDOVoJVygfC0VJYk2Rg=
+X-Received: by 2002:a1c:6a06:: with SMTP id f6mr5759985wmc.159.1562129162963;
+ Tue, 02 Jul 2019 21:46:02 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190702193927.116668-1-willemdebruijn.kernel@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.191.121]
-X-CFilter-Loop: Reflected
+References: <20190701213849.102759-1-maheshb@google.com> <alpine.DEB.2.21.1907021450320.5764@ramsan.of.borg>
+In-Reply-To: <alpine.DEB.2.21.1907021450320.5764@ramsan.of.borg>
+From:   =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ==?= 
+        <maheshb@google.com>
+Date:   Tue, 2 Jul 2019 21:45:46 -0700
+Message-ID: <CAF2d9jhikNn94WD7mefMDpiZK-baCwsPJRXti_WSFE6_v+Ci-w@mail.gmail.com>
+Subject: Re: suspicious RCU usage (was: Re: [PATCHv3 next 1/3] loopback:
+ create blackhole net device similar to loopack.)
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Daniel Axtens <dja@axtens.net>,
+        Mahesh Bandewar <mahesh@bandewar.net>,
+        "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019/7/3 3:39, Willem de Bruijn wrote:
-> From: Willem de Bruijn <willemb@google.com>
-> 
-> skb_warn_bad_offload and netdev_rx_csum_fault trigger on hard to debug
-> issues. Dump more state and the header.
-> 
-> Optionally dump the entire packet and linear segment. This is required
-> to debug checksum bugs that may include bytes past skb_tail_pointer().
-> 
-> Both call sites call this function inside a net_ratelimit() block.
-> Limit full packet log further to a hard limit of can_dump_full (5).
-> 
-> Based on an earlier patch by Cong Wang, see link below.
-> 
-> Link: https://patchwork.ozlabs.org/patch/1000841/
-> Signed-off-by: Willem de Bruijn <willemb@google.com>
-> ---
->  include/linux/skbuff.h |   1 +
->  net/core/dev.c         |  16 ++-----
->  net/core/skbuff.c      | 103 +++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 108 insertions(+), 12 deletions(-)
-> 
-> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> index b5d427b149c92..48b08549a8b78 100644
-> --- a/include/linux/skbuff.h
-> +++ b/include/linux/skbuff.h
-> @@ -1024,6 +1024,7 @@ static inline bool skb_unref(struct sk_buff *skb)
->  void skb_release_head_state(struct sk_buff *skb);
->  void kfree_skb(struct sk_buff *skb);
->  void kfree_skb_list(struct sk_buff *segs);
-> +void skb_dump(const char *level, const struct sk_buff *skb, bool full_pkt);
->  void skb_tx_error(struct sk_buff *skb);
->  void consume_skb(struct sk_buff *skb);
->  void __consume_stateless_skb(struct sk_buff *skb);
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 58529318b3a94..fc676b2610e3c 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -2900,12 +2900,10 @@ static void skb_warn_bad_offload(const struct sk_buff *skb)
->  		else
->  			name = netdev_name(dev);
->  	}
-> -	WARN(1, "%s: caps=(%pNF, %pNF) len=%d data_len=%d gso_size=%d "
-> -	     "gso_type=%d ip_summed=%d\n",
-> +	skb_dump(KERN_WARNING, skb, false);
-> +	WARN(1, "%s: caps=(%pNF, %pNF)\n",
->  	     name, dev ? &dev->features : &null_features,
-> -	     skb->sk ? &skb->sk->sk_route_caps : &null_features,
-> -	     skb->len, skb->data_len, skb_shinfo(skb)->gso_size,
-> -	     skb_shinfo(skb)->gso_type, skb->ip_summed);
-> +	     skb->sk ? &skb->sk->sk_route_caps : &null_features);
->  }
->  
->  /*
-> @@ -3124,13 +3122,7 @@ void netdev_rx_csum_fault(struct net_device *dev, struct sk_buff *skb)
->  {
->  	if (net_ratelimit()) {
->  		pr_err("%s: hw csum failure\n", dev ? dev->name : "<unknown>");
-> -		if (dev)
-> -			pr_err("dev features: %pNF\n", &dev->features);
-> -		pr_err("skb len=%u data_len=%u pkt_type=%u gso_size=%u gso_type=%u nr_frags=%u ip_summed=%u csum=%x csum_complete_sw=%d csum_valid=%d csum_level=%u\n",
-> -		       skb->len, skb->data_len, skb->pkt_type,
-> -		       skb_shinfo(skb)->gso_size, skb_shinfo(skb)->gso_type,
-> -		       skb_shinfo(skb)->nr_frags, skb->ip_summed, skb->csum,
-> -		       skb->csum_complete_sw, skb->csum_valid, skb->csum_level);
-> +		skb_dump(KERN_ERR, skb, true);
->  		dump_stack();
->  	}
->  }
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index 5323441a12ccf..5d501066d00ca 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -707,6 +707,109 @@ void kfree_skb_list(struct sk_buff *segs)
->  }
->  EXPORT_SYMBOL(kfree_skb_list);
->  
-> +/* Dump skb information and contents.
-> + *
-> + * Must only be called from net_ratelimit()-ed paths.
-> + *
-> + * Dumps up to can_dump_full whole packets if full_pkt, headers otherwise.
-> + */
-> +void skb_dump(const char *level, const struct sk_buff *skb, bool full_pkt)
-> +{
-> +	static atomic_t can_dump_full = ATOMIC_INIT(5);
-> +	struct skb_shared_info *sh = skb_shinfo(skb);
-> +	struct net_device *dev = skb->dev;
-> +	struct sock *sk = skb->sk;
-> +	struct sk_buff *list_skb;
-> +	bool has_mac, has_trans;
-> +	int headroom, tailroom;
-> +	int i, len, seg_len;
-> +
-> +	if (full_pkt)
-> +		full_pkt = atomic_dec_if_positive(&can_dump_full) >= 0;
-> +
-> +	if (full_pkt)
-> +		len = skb->len;
+On Tue, Jul 2, 2019 at 5:54 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+>
+>         Hi Mahesh,
+>
+> On Mon, 1 Jul 2019, Mahesh Bandewar wrote:
+> > Create a blackhole net device that can be used for "dead"
+> > dst entries instead of loopback device. This blackhole device differs
+> > from loopback in few aspects: (a) It's not per-ns. (b)  MTU on this
+> > device is ETH_MIN_MTU (c) The xmit function is essentially kfree_skb().
+> > and (d) since it's not registered it won't have ifindex.
+> >
+> > Lower MTU effectively make the device not pass the MTU check during
+> > the route check when a dst associated with the skb is dead.
+> >
+> > Signed-off-by: Mahesh Bandewar <maheshb@google.com>
+>
+> This is now commit 4de83b88c66a1e4d ("loopback: create blackhole net
+> device similar to loopack.") in net-next, and causes the following
+> warning on arm64:
+>
+>      WARNING: suspicious RCU usage
+>      5.2.0-rc6-arm64-renesas-01699-g4de83b88c66a1e4d #263 Not tainted
+>      -----------------------------
+>      include/linux/rtnetlink.h:85 suspicious rcu_dereference_protected() usage!
+>
+>      other info that might help us debug this:
+>
+>
+>      rcu_scheduler_active = 2, debug_locks = 1
+>      no locks held by swapper/0/1.
+>
+thanks for the report. Let me take a look at this.
 
-Minor question:
-Here we set the len to skb->len if full_pkt is true when skb_dump is
-called with frag_list skb and full_pkt being true below, which may
-cause some problem?
-
-Maybe change the definition to:
-void skb_dump(const char *level, const struct sk_buff *skb, int len, bool full_pkt)
-
-
-skb_dump(KERN_ERR, skb, skb->len, true);
-
-> +	else
-> +		len = min_t(int, skb->len, MAX_HEADER + 128);
-> +
-> +	headroom = skb_headroom(skb);
-> +	tailroom = skb_tailroom(skb);
-> +
-> +	has_mac = skb_mac_header_was_set(skb);
-> +	has_trans = skb_transport_header_was_set(skb);
-> +
-> +	printk("%sskb len=%u headroom=%u headlen=%u tailroom=%u\n"
-> +	       "mac=(%d,%d) net=(%d,%d) trans=%d\n"
-> +	       "shinfo(txflags=%u nr_frags=%u gso(size=%hu type=%u segs=%hu))\n"
-> +	       "csum(0x%x ip_summed=%u complete_sw=%u valid=%u level=%u)\n"
-> +	       "hash(0x%x sw=%u l4=%u) proto=0x%04x pkttype=%u iif=%d\n",
-> +	       level, skb->len, headroom, skb_headlen(skb), tailroom,
-> +	       has_mac ? skb->mac_header : -1,
-> +	       has_mac ? skb_mac_header_len(skb) : -1,
-> +	       skb->network_header,
-> +	       has_trans ? skb_network_header_len(skb) : -1,
-> +	       has_trans ? skb->transport_header : -1,
-> +	       sh->tx_flags, sh->nr_frags,
-> +	       sh->gso_size, sh->gso_type, sh->gso_segs,
-> +	       skb->csum, skb->ip_summed, skb->csum_complete_sw,
-> +	       skb->csum_valid, skb->csum_level,
-> +	       skb->hash, skb->sw_hash, skb->l4_hash,
-> +	       ntohs(skb->protocol), skb->pkt_type, skb->skb_iif);
-> +
-> +	if (dev)
-> +		printk("%sdev name=%s feat=0x%pNF\n",
-> +		       level, dev->name, &dev->features);
-> +	if (sk)
-> +		printk("%ssk family=%hu type=%hu proto=%hu\n",
-> +		       level, sk->sk_family, sk->sk_type, sk->sk_protocol);
-> +
-> +	if (full_pkt && headroom)
-> +		print_hex_dump(level, "skb headroom: ", DUMP_PREFIX_OFFSET,
-> +			       16, 1, skb->head, headroom, false);
-> +
-> +	seg_len = min_t(int, skb_headlen(skb), len);
-> +	if (seg_len)
-> +		print_hex_dump(level, "skb linear:   ", DUMP_PREFIX_OFFSET,
-> +			       16, 1, skb->data, seg_len, false);
-> +	len -= seg_len;
-> +
-> +	if (full_pkt && tailroom)
-> +		print_hex_dump(level, "skb tailroom: ", DUMP_PREFIX_OFFSET,
-> +			       16, 1, skb_tail_pointer(skb), tailroom, false);
-> +
-> +	for (i = 0; len && i < skb_shinfo(skb)->nr_frags; i++) {
-> +		skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
-> +		u32 p_off, p_len, copied;
-> +		struct page *p;
-> +		u8 *vaddr;
-> +
-> +		skb_frag_foreach_page(frag, frag->page_offset,
-> +				      skb_frag_size(frag), p, p_off, p_len,
-> +				      copied) {
-> +			seg_len = min_t(int, p_len, len);
-> +			vaddr = kmap_atomic(p);
-> +			print_hex_dump(level, "skb frag:     ",
-> +				       DUMP_PREFIX_OFFSET,
-> +				       16, 1, vaddr + p_off, seg_len, false);
-> +			kunmap_atomic(vaddr);
-> +			len -= seg_len;
-> +			if (!len)
-> +				break;
-> +		}
-> +	}
-> +
-> +	if (len && skb_has_frag_list(skb)) {
-> +		printk("skb fraglist:\n");
-> +		skb_walk_frags(skb, list_skb) {
-> +			if (len <= 0)
-> +				break;
-> +			skb_dump(level, list_skb, len);
-
-Here we call skb_dump passing len as full_pkt.
-
-Maybe call it with skb_dump(level, list_skb, len, full_pkt);
-
-> +			len -= list_skb->len;
-> +		}
-> +	}
-> +}
-> +EXPORT_SYMBOL(skb_dump);
-> +
->  /**
->   *	skb_tx_error - report an sk_buff xmit error
->   *	@skb: buffer that triggered an error
-> 
-
+>      stack backtrace:
+>      CPU: 2 PID: 1 Comm: swapper/0 Not tainted 5.2.0-rc6-arm64-renesas-01699-g4de83b88c66a1e4d #263
+>      Hardware name: Renesas Salvator-X 2nd version board based on r8a7795 ES2.0+ (DT)
+>      Call trace:
+>       dump_backtrace+0x0/0x148
+>       show_stack+0x14/0x20
+>       dump_stack+0xd4/0x11c
+>       lockdep_rcu_suspicious+0xcc/0x110
+>       dev_init_scheduler+0x114/0x150
+>       blackhole_netdev_init+0x40/0x80
+>       do_one_initcall+0x178/0x37c
+>       kernel_init_freeable+0x490/0x530
+>       kernel_init+0x10/0x100
+>       ret_from_fork+0x10/0x1c
+>
+>
+> > ---
+> > v1->v2->v3
+> >  no change
+> >
+> > drivers/net/loopback.c    | 76 ++++++++++++++++++++++++++++++++++-----
+> > include/linux/netdevice.h |  2 ++
+> > 2 files changed, 69 insertions(+), 9 deletions(-)
+> >
+> > diff --git a/drivers/net/loopback.c b/drivers/net/loopback.c
+> > index 87d361666cdd..3b39def5471e 100644
+> > --- a/drivers/net/loopback.c
+> > +++ b/drivers/net/loopback.c
+> > @@ -55,6 +55,13 @@
+> > #include <net/net_namespace.h>
+> > #include <linux/u64_stats_sync.h>
+> >
+> > +/* blackhole_netdev - a device used for dsts that are marked expired!
+> > + * This is global device (instead of per-net-ns) since it's not needed
+> > + * to be per-ns and gets initialized at boot time.
+> > + */
+> > +struct net_device *blackhole_netdev;
+> > +EXPORT_SYMBOL(blackhole_netdev);
+> > +
+> > /* The higher levels take care of making this non-reentrant (it's
+> >  * called with bh's disabled).
+> >  */
+> > @@ -150,12 +157,14 @@ static const struct net_device_ops loopback_ops = {
+> >       .ndo_set_mac_address = eth_mac_addr,
+> > };
+> >
+> > -/* The loopback device is special. There is only one instance
+> > - * per network namespace.
+> > - */
+> > -static void loopback_setup(struct net_device *dev)
+> > +static void gen_lo_setup(struct net_device *dev,
+> > +                      unsigned int mtu,
+> > +                      const struct ethtool_ops *eth_ops,
+> > +                      const struct header_ops *hdr_ops,
+> > +                      const struct net_device_ops *dev_ops,
+> > +                      void (*dev_destructor)(struct net_device *dev))
+> > {
+> > -     dev->mtu                = 64 * 1024;
+> > +     dev->mtu                = mtu;
+> >       dev->hard_header_len    = ETH_HLEN;     /* 14   */
+> >       dev->min_header_len     = ETH_HLEN;     /* 14   */
+> >       dev->addr_len           = ETH_ALEN;     /* 6    */
+> > @@ -174,11 +183,20 @@ static void loopback_setup(struct net_device *dev)
+> >               | NETIF_F_NETNS_LOCAL
+> >               | NETIF_F_VLAN_CHALLENGED
+> >               | NETIF_F_LOOPBACK;
+> > -     dev->ethtool_ops        = &loopback_ethtool_ops;
+> > -     dev->header_ops         = &eth_header_ops;
+> > -     dev->netdev_ops         = &loopback_ops;
+> > +     dev->ethtool_ops        = eth_ops;
+> > +     dev->header_ops         = hdr_ops;
+> > +     dev->netdev_ops         = dev_ops;
+> >       dev->needs_free_netdev  = true;
+> > -     dev->priv_destructor    = loopback_dev_free;
+> > +     dev->priv_destructor    = dev_destructor;
+> > +}
+> > +
+> > +/* The loopback device is special. There is only one instance
+> > + * per network namespace.
+> > + */
+> > +static void loopback_setup(struct net_device *dev)
+> > +{
+> > +     gen_lo_setup(dev, (64 * 1024), &loopback_ethtool_ops, &eth_header_ops,
+> > +                  &loopback_ops, loopback_dev_free);
+> > }
+> >
+> > /* Setup and register the loopback device. */
+> > @@ -213,3 +231,43 @@ static __net_init int loopback_net_init(struct net *net)
+> > struct pernet_operations __net_initdata loopback_net_ops = {
+> >       .init = loopback_net_init,
+> > };
+> > +
+> > +/* blackhole netdevice */
+> > +static netdev_tx_t blackhole_netdev_xmit(struct sk_buff *skb,
+> > +                                      struct net_device *dev)
+> > +{
+> > +     kfree_skb(skb);
+> > +     net_warn_ratelimited("%s(): Dropping skb.\n", __func__);
+> > +     return NETDEV_TX_OK;
+> > +}
+> > +
+> > +static const struct net_device_ops blackhole_netdev_ops = {
+> > +     .ndo_start_xmit = blackhole_netdev_xmit,
+> > +};
+> > +
+> > +/* This is a dst-dummy device used specifically for invalidated
+> > + * DSTs and unlike loopback, this is not per-ns.
+> > + */
+> > +static void blackhole_netdev_setup(struct net_device *dev)
+> > +{
+> > +     gen_lo_setup(dev, ETH_MIN_MTU, NULL, NULL, &blackhole_netdev_ops, NULL);
+> > +}
+> > +
+> > +/* Setup and register the blackhole_netdev. */
+> > +static int __init blackhole_netdev_init(void)
+> > +{
+> > +     blackhole_netdev = alloc_netdev(0, "blackhole_dev", NET_NAME_UNKNOWN,
+> > +                                     blackhole_netdev_setup);
+> > +     if (!blackhole_netdev)
+> > +             return -ENOMEM;
+> > +
+> > +     dev_init_scheduler(blackhole_netdev);
+> > +     dev_activate(blackhole_netdev);
+> > +
+> > +     blackhole_netdev->flags |= IFF_UP | IFF_RUNNING;
+> > +     dev_net_set(blackhole_netdev, &init_net);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +device_initcall(blackhole_netdev_init);
+> > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> > index eeacebd7debb..88292953aa6f 100644
+> > --- a/include/linux/netdevice.h
+> > +++ b/include/linux/netdevice.h
+> > @@ -4870,4 +4870,6 @@ do {                                                            \
+> > #define PTYPE_HASH_SIZE       (16)
+> > #define PTYPE_HASH_MASK       (PTYPE_HASH_SIZE - 1)
+> >
+> > +extern struct net_device *blackhole_netdev;
+> > +
+> > #endif        /* _LINUX_NETDEVICE_H */
+> >
+> Gr{oetje,eeting}s,
+>
+>                                                 Geert
+>
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+>
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                                             -- Linus Torvalds
+>
