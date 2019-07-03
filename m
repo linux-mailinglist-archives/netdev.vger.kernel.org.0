@@ -2,154 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 131DD5DCD7
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 05:25:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAC635DCDF
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 05:26:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727164AbfGCDZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 23:25:24 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:41058 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727103AbfGCDZY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 23:25:24 -0400
-Received: by mail-qk1-f196.google.com with SMTP id v22so768393qkj.8
-        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 20:25:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iJsosknFSMZqJio20riiWMLc4/tQoWtv3tru77r3tTA=;
-        b=FWM+RRyxyzu8W+QS8juDSU5bmX9P7C113BNP6FOv/ShOeGz6jH+oLijFv2qHlcoPEh
-         0uNnlRJPD1HICYWFfgrkBqgyYiaM0ix34Ed85bYE0ETi5Yf2OTtCLWmEN1JmfBorDCQ+
-         gBYsx2cunyHNgXf3CW6nFykqWWDUi6C2kW1U5TGMBstmHC7ZRWlZ7PqYE+wA8msyn80X
-         V6Nd5jEbWYKcLEXnJBZDauBhGXspHCC0kqENicar5+vH/qujt4GlNCbqt0hcNcFULxfJ
-         9cx/W6zcBkFBTc++dqD7TNGKdJEpbYFzRMcHlD5SfBiJ+ppNRXivhbbt9baIpLioc7V/
-         ZCYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iJsosknFSMZqJio20riiWMLc4/tQoWtv3tru77r3tTA=;
-        b=qEipIC8kKeasDAc1bLcU6MJ3cBZk6WyHEm33iO3b6m9JaRcbVtQYFuv78FaQWr8pfK
-         H/gQSHenRUEZYFjExl3VhyfXNkgjy4o+/DgTxuKlydE2a9etTXIrZW3t0CTdLndiOO8F
-         a5SBv/zX5hBoQxWWVT7oGVHSGIl3CaWcmWMzxfWBfu5PWjGBqTYjsVw0oyIjlkoL/Ek+
-         NzhzX58EcZ6WuuGRK1A0WTAdPwPlNomn7pZJ0MI8tr7ypctYkZb6Padu/aKts+FZ6/2J
-         s8nUnDE02PFJeLm0hF//wWju0QEtqxNM+Po6PYuwLVxxALJsQBhf9eZHr4LjMCO+FAfy
-         BbyA==
-X-Gm-Message-State: APjAAAWIQa+EoB4mLGbJyZqqqFAdYg7TLEbsR3YgPaRvgZ/gBkpFW6ej
-        8YnWl+uZ9KeIexqgmjAAAOFR5PYC7ffJ5WRHnAVQhw==
-X-Google-Smtp-Source: APXvYqynhs3N20tz4EeRWUTKfzSM1e2Oi0HEF0ofk6gfdWiN2oBM1EZrbIrCFhjo8NMaXAJ/1/KyFHIpwqWU6t0nOQc=
-X-Received: by 2002:a37:9e4b:: with SMTP id h72mr28861404qke.297.1562124322973;
- Tue, 02 Jul 2019 20:25:22 -0700 (PDT)
+        id S1727248AbfGCD0Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 23:26:25 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:43626 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727179AbfGCD0Z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jul 2019 23:26:25 -0400
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id C3A5D8A5EF48C5630538;
+        Wed,  3 Jul 2019 11:26:22 +0800 (CST)
+Received: from [127.0.0.1] (10.133.213.239) by DGGEMS407-HUB.china.huawei.com
+ (10.3.19.207) with Microsoft SMTP Server id 14.3.439.0; Wed, 3 Jul 2019
+ 11:26:18 +0800
+Subject: Re: [PATCH bpf-next] bpf: cgroup: Fix build error without CONFIG_NET
+To:     Yonghong Song <yhs@fb.com>
+References: <20190702132913.26060-1-yuehaibing@huawei.com>
+ <20190702155316.GJ6757@mini-arch>
+ <fd312c26-db8e-cae3-1c14-869d8e3a62ae@fb.com>
+CC:     Stanislav Fomichev <sdf@fomichev.me>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        "sdf@google.com" <sdf@google.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
+From:   Yuehaibing <yuehaibing@huawei.com>
+Message-ID: <780afbff-5b93-099c-f318-7f2704af13d6@huawei.com>
+Date:   Wed, 3 Jul 2019 11:26:17 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
 MIME-Version: 1.0
-References: <20190627095247.8792-1-chiu@endlessm.com> <31f59db2-0e04-447b-48f8-66ea53ebfa7d@gmail.com>
-In-Reply-To: <31f59db2-0e04-447b-48f8-66ea53ebfa7d@gmail.com>
-From:   Chris Chiu <chiu@endlessm.com>
-Date:   Wed, 3 Jul 2019 11:25:11 +0800
-Message-ID: <CAB4CAwcEdcg91Bgb+JoCdk_zQKsWT-K+cb07-5mrrx+__X2RMA@mail.gmail.com>
-Subject: Re: [PATCH] rtl8xxxu: Fix wifi low signal strength issue of RTL8723BU
-To:     Jes Sorensen <jes.sorensen@gmail.com>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        David Miller <davem@davemloft.net>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Linux Upstreaming Team <linux@endlessm.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <fd312c26-db8e-cae3-1c14-869d8e3a62ae@fb.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.133.213.239]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 2, 2019 at 8:44 PM Jes Sorensen <jes.sorensen@gmail.com> wrote:
->
-> On 6/27/19 5:52 AM, Chris Chiu wrote:
-> > The WiFi tx power of RTL8723BU is extremely low after booting. So
-> > the WiFi scan gives very limited AP list and it always fails to
-> > connect to the selected AP. This module only supports 1x1 antenna
-> > and the antenna is switched to bluetooth due to some incorrect
-> > register settings.
-> >
-> > This commit hand over the antenna control to PTA, the wifi signal
-> > will be back to normal and the bluetooth scan can also work at the
-> > same time. However, the btcoexist still needs to be handled under
-> > different circumstances. If there's a BT connection established,
-> > the wifi still fails to connect until disconneting the BT.
-> >
-> > Signed-off-by: Chris Chiu <chiu@endlessm.com>
-> > ---
-> >  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c | 9 ++++++---
-> >  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c  | 3 ++-
-> >  2 files changed, 8 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
-> > index 3adb1d3d47ac..6c3c70d93ac1 100644
-> > --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
-> > +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
-> > @@ -1525,7 +1525,7 @@ static void rtl8723b_enable_rf(struct rtl8xxxu_priv *priv)
-> >       /*
-> >        * WLAN action by PTA
-> >        */
-> > -     rtl8xxxu_write8(priv, REG_WLAN_ACT_CONTROL_8723B, 0x04);
-> > +     rtl8xxxu_write8(priv, REG_WLAN_ACT_CONTROL_8723B, 0x0c);
-> >
-> >       /*
-> >        * BT select S0/S1 controlled by WiFi
-> > @@ -1568,9 +1568,12 @@ static void rtl8723b_enable_rf(struct rtl8xxxu_priv *priv)
-> >       rtl8xxxu_gen2_h2c_cmd(priv, &h2c, sizeof(h2c.ant_sel_rsv));
-> >
-> >       /*
-> > -      * 0x280, 0x00, 0x200, 0x80 - not clear
-> > +      * Different settings per different antenna position.
-> > +      * Antenna switch to BT: 0x280, 0x00 (inverse)
-> > +      * Antenna switch to WiFi: 0x0, 0x280 (inverse)
-> > +      * Antenna controlled by PTA: 0x200, 0x80 (inverse)
-> >        */
-> > -     rtl8xxxu_write32(priv, REG_S0S1_PATH_SWITCH, 0x00);
-> > +     rtl8xxxu_write32(priv, REG_S0S1_PATH_SWITCH, 0x80);
-> >
-> >       /*
-> >        * Software control, antenna at WiFi side
-> > diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-> > index 8136e268b4e6..87b2179a769e 100644
-> > --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-> > +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-> > @@ -3891,12 +3891,13 @@ static int rtl8xxxu_init_device(struct ieee80211_hw *hw)
-> >
-> >       /* Check if MAC is already powered on */
-> >       val8 = rtl8xxxu_read8(priv, REG_CR);
-> > +     val16 = rtl8xxxu_read16(priv, REG_SYS_CLKR);
-> >
-> >       /*
-> >        * Fix 92DU-VC S3 hang with the reason is that secondary mac is not
-> >        * initialized. First MAC returns 0xea, second MAC returns 0x00
-> >        */
-> > -     if (val8 == 0xea)
-> > +     if (val8 == 0xea || !(val16 & BIT(11)))
-> >               macpower = false;
-> >       else
-> >               macpower = true;
->
-> This part I would like to ask you take a good look at the other chips to
-> make sure you don't break support for 8192cu, 8723au, 8188eu with this.
->
-> Cheers,
-> Jes
+On 2019/7/3 0:04, Yonghong Song wrote:
+> 
+> 
+> On 7/2/19 8:53 AM, Stanislav Fomichev wrote:
+>> On 07/02, YueHaibing wrote:
+>>> If CONFIG_NET is not set, gcc building fails:
+>>>
+>>> kernel/bpf/cgroup.o: In function `cg_sockopt_func_proto':
+>>> cgroup.c:(.text+0x237e): undefined reference to `bpf_sk_storage_get_proto'
+>>> cgroup.c:(.text+0x2394): undefined reference to `bpf_sk_storage_delete_proto'
+>>> kernel/bpf/cgroup.o: In function `__cgroup_bpf_run_filter_getsockopt':
+>>> (.text+0x2a1f): undefined reference to `lock_sock_nested'
+>>> (.text+0x2ca2): undefined reference to `release_sock'
+>>> kernel/bpf/cgroup.o: In function `__cgroup_bpf_run_filter_setsockopt':
+>>> (.text+0x3006): undefined reference to `lock_sock_nested'
+>>> (.text+0x32bb): undefined reference to `release_sock'
+>>>
+>>> Add CONFIG_NET dependency to fix this.
+>> Can you share the config? Do I understand correctly that you have
+>> CONFIG_NET=n and CONFIG_BPF=y? What parts of BPF do you expect to
+>> work in this case?
+>>
+>> Less invasive fix would be something along the lines:
+>>
+>> diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+>> index 76fa0076f20d..0a00eaca6fae 100644
+>> --- a/kernel/bpf/cgroup.c
+>> +++ b/kernel/bpf/cgroup.c
+>> @@ -939,6 +939,7 @@ int __cgroup_bpf_run_filter_sysctl(struct ctl_table_header *head,
+>>   }
+>>   EXPORT_SYMBOL(__cgroup_bpf_run_filter_sysctl);
+>>   
+>> +#ifdef CONFIG_NET
+>>   static bool __cgroup_bpf_prog_array_is_empty(struct cgroup *cgrp,
+>>   					     enum bpf_attach_type attach_type)
+>>   {
+>> @@ -1120,6 +1121,7 @@ int __cgroup_bpf_run_filter_getsockopt(struct sock *sk, int level,
+>>   	return ret;
+>>   }
+>>   EXPORT_SYMBOL(__cgroup_bpf_run_filter_getsockopt);
+>> +#endif
+>>   
+>>   static ssize_t sysctl_cpy_dir(const struct ctl_dir *dir, char **bufp,
+>>   			      size_t *lenp)
+>> @@ -1386,10 +1388,12 @@ static const struct bpf_func_proto *
+>>   cg_sockopt_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>>   {
+>>   	switch (func_id) {
+>> +#ifdef CONFIG_NET
+>>   	case BPF_FUNC_sk_storage_get:
+>>   		return &bpf_sk_storage_get_proto;
+>>   	case BPF_FUNC_sk_storage_delete:
+>>   		return &bpf_sk_storage_delete_proto;
+>> +#endif
+>>   #ifdef CONFIG_INET
+>>   	case BPF_FUNC_tcp_sock:
+>>   		return &bpf_tcp_sock_proto;
+> 
+> Ah. Just send another email without checking inbox.
+> Looks like the above change is preferred.
+> YueHaibing, could you make change and resubmit your patch?
 
-I checked the vendor code of 8192cu and 8188eu, they don't have this part
-of code to check the REG_CR before power on sequence. I can only find
-similar code in rtl8723be.
-if (tmp_u1b != 0 && tmp_u1b !=0xea)
-    rtlhal->mac_func_enable = true;
+Sure, I will test and resubmit it.
 
-By definition, the BIT(11) of REG_SYS_CLKR in rtl8xxxu_regs.h is
-SYS_CLK_MAC_CLK_ENABLE. It seems to make sense to check this value
-for macpower no matter what chip it is. I think I can make it more
-self-expressive
-as down below.
+> 
+>>
+>>> Reported-by: Hulk Robot <hulkci@huawei.com>
+>>> Fixes: 0d01da6afc54 ("bpf: implement getsockopt and setsockopt hooks")
+>>> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+>>> ---
+>>>   init/Kconfig | 1 +
+>>>   1 file changed, 1 insertion(+)
+>>>
+>>> diff --git a/init/Kconfig b/init/Kconfig
+>>> index e2e51b5..341cf2a 100644
+>>> --- a/init/Kconfig
+>>> +++ b/init/Kconfig
+>>> @@ -998,6 +998,7 @@ config CGROUP_PERF
+>>>   config CGROUP_BPF
+>>>   	bool "Support for eBPF programs attached to cgroups"
+>>>   	depends on BPF_SYSCALL
+>>> +	depends on NET
+>>>   	select SOCK_CGROUP_DATA
+>>>   	help
+>>>   	  Allow attaching eBPF programs to a cgroup using the bpf(2)
+>>> -- 
+>>> 2.7.4
+>>>
+>>>
 
- if (val8 == 0xea || !(val16 & SYS_CLK_MAC_CLK_ENABLE))
-
-And per the comment, this code is for 92DU-VC S3 hang problem and I think an
-OR check for SYS_CLK_MAC_CLK_ENABLE is still safe for this.
-
-Chris
