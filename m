@@ -2,109 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 557785DB00
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 03:37:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7C5B5DB1E
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 03:47:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727304AbfGCBhb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 21:37:31 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:45752 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727080AbfGCBhb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 21:37:31 -0400
-Received: by mail-qk1-f193.google.com with SMTP id s22so512191qkj.12
-        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 18:37:30 -0700 (PDT)
+        id S1727152AbfGCBrs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 21:47:48 -0400
+Received: from mail-yw1-f68.google.com ([209.85.161.68]:43137 "EHLO
+        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726329AbfGCBrs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 21:47:48 -0400
+Received: by mail-yw1-f68.google.com with SMTP id t2so371623ywe.10
+        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 18:47:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=itC4RfMamo4nBUphW+p9hF/96GAi0A3uCODUBRvJI84=;
-        b=TMhO5cgS+76xq5nHpxySpbIhABSRUywM4yxx2+y9FXTrvyuMrU3Cp2feNwPsOeRsKW
-         DwKwJWsXiHOYGDICseJdVlYxguntHUvsU6MrtNgLZzUMElpHNBXa/6Jjn0/xtQMqMIB8
-         Li6ad1O97GJAVS+d57FQzz6F3TMcNdl9iVk4T74Lx6hRRdmkPYI4UUEoAioE0m+84vvk
-         DeVz4JERwD1PMdQMjQ3gICjK8PxsLEGU3AUM9Lg9AWg6DAaTXRItWMCoZYyHLuxDhIsD
-         OpmqLVAEODV5QsCL8faaQnLfHa0ajB/20e6HjUrjqvxAQtCeJhPZL1UO8W1JyqkAll4C
-         8i3w==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4pHsUc/95b4xot9oTHX51FihAVuuP1I8UE3xSm/7qSY=;
+        b=nKdAI/dFOyPumICkOTGJxzaI2XPIcn3JfND+tkUaVf+3i7GBxJ58ye8U+nzJf0Roe1
+         kiC9qawt2y3xt/f3AHBOWrOeszjWx+Y1D3+xMXZ3wrLib3w1Admv2W0m6pZVL63DMLin
+         AJgLiIl6W1r1tZbn0PNUCTfIa+BcqWlyvw/V5PpqYpfS37JzgXX5a37eBKWYoCCZbMMK
+         fkQ65TIRP4/re/srafKX/h3PA8b4ms5uH75dSxW56xQLtuRSNDSP0MKE34evt04ZIDqs
+         LlrPAq3ql1Vongzqro6vgYEYmKSH7qp9gTuACtVA04Sv7/Ney2wAgVrTVJ3PJXPTbZJz
+         1+eA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=itC4RfMamo4nBUphW+p9hF/96GAi0A3uCODUBRvJI84=;
-        b=VaDEpBNrLuS5aFyRV3R1IZPm1EI7fWD6TzctLRMeIzWxl45IlERBjnj1SccL1FjHVV
-         ITcibhUxvxUnqCG/+krEA2xXS9k4fiDPdIK0SNkocxdBriZbeIIb9utD6seK5CZMzu9L
-         ko/mrhIN0sYgXJ5oWUvxs0dolC40N+EpYjqrwRZDrlvJNB18ZZhnPDXQonIdIhPnVWKY
-         aZxJ54sxW7KY1DDH//qKLggCWqH4p42vYeLAn/PSrC8hNacISFB5+rBy6L4UT9QG2hOS
-         IC5Iw0bT6LfWzBAsVYQpYyM08ze5S+K+uleIZyMwqq5FabB7Qg7fLQEqXgLC61C46gX3
-         96gg==
-X-Gm-Message-State: APjAAAXhBAB14DddVgMGyruHECM+iJElua+sKBV+F5iXdoyN/dkaGVLN
-        LCxscKHRAu8T7KSA/84kJuEjNFu4V5I=
-X-Google-Smtp-Source: APXvYqyyl+pNFApWH9ul5KAlVhaGUV3rJBSAcAPkIU+AHaxs/CaVSypyCo85+p1EbI/jfLSIHXgbvA==
-X-Received: by 2002:a37:f511:: with SMTP id l17mr25845461qkk.99.1562117850182;
-        Tue, 02 Jul 2019 18:37:30 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id n3sm280989qkk.54.2019.07.02.18.37.28
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 02 Jul 2019 18:37:30 -0700 (PDT)
-Date:   Tue, 2 Jul 2019 18:37:24 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jiri Pirko <jiri@resnulli.us>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Linville <linville@tuxdriver.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v6 05/15] ethtool: helper functions for netlink
- interface
-Message-ID: <20190702183724.423e3b1e@cakuba.netronome.com>
-In-Reply-To: <44957b13e8edbced71aca893908d184eb9e57341.1562067622.git.mkubecek@suse.cz>
-References: <cover.1562067622.git.mkubecek@suse.cz>
-        <44957b13e8edbced71aca893908d184eb9e57341.1562067622.git.mkubecek@suse.cz>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4pHsUc/95b4xot9oTHX51FihAVuuP1I8UE3xSm/7qSY=;
+        b=PXEptTjTmsKdQgf7F5bSJk/ZxHg7qE3mVK6wooQUPj6w04mmeUksX8aHHE4LgQUjKF
+         75MpegLFB4yEPRPoXCjBJcReogW4dlYnO3NYi9RJmMUeW581/BQ+0/ou2HFzfRuW26TZ
+         5JXooZzDX20SwrlEa2vgpImdYWgka2K1szeAGxvVZCQAwOMGwn82R69+J1qRN8kMESKw
+         Mwi3ygr0PBRzmQPl4coiyZ9v+G10LawD6T/CUCMALQ6cMSy2dcbkeERCVf5oxzDXGhBP
+         NtzYa2BjlRVcBmKQthw6YfKCd/BagtMz1E/xaIpu9N991vOXyfqoG01NMR+tiTmU0ElM
+         OP7g==
+X-Gm-Message-State: APjAAAXOKdLuiaIV9Q2r1TL96WfOsFaBogaJwFWG9fgLqyPIsmeGYn2v
+        NCSydpaEmybSpBM0YAMHrqiUNf74
+X-Google-Smtp-Source: APXvYqxU088p3f79oRJA0aI975E5u21yC7dz3Dq4P1z57BpVc7i6zQ4+6BMK5Auavq2vQSCX4Ac1cQ==
+X-Received: by 2002:a81:4c3:: with SMTP id 186mr20796923ywe.462.1562118467120;
+        Tue, 02 Jul 2019 18:47:47 -0700 (PDT)
+Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
+        by smtp.gmail.com with ESMTPSA id x199sm397723ywd.99.2019.07.02.18.47.45
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Tue, 02 Jul 2019 18:47:46 -0700 (PDT)
+Received: by mail-yb1-f174.google.com with SMTP id f18so379980ybr.10
+        for <netdev@vger.kernel.org>; Tue, 02 Jul 2019 18:47:45 -0700 (PDT)
+X-Received: by 2002:a5b:4c9:: with SMTP id u9mr10014083ybp.235.1562118465542;
+ Tue, 02 Jul 2019 18:47:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <1250be5ff32bc4312b3f3e724a8798db0563ea3c.camel@domdv.de>
+ <CA+FuTSdzM3AFFrvANczVzXeRP0TVZ06K--GkmTZVAk-6SKQGxA@mail.gmail.com>
+ <94382bd8cfbf924779ce86cd6405331f70f65c27.camel@domdv.de> <CAF=yD-LBRZjns1x9_UrhBYZGX8JNeM+r-cYJV=eyYKDTSG8rBQ@mail.gmail.com>
+ <a7c67e7e22103fc7cf02c520a8b42d9aa525700f.camel@domdv.de>
+In-Reply-To: <a7c67e7e22103fc7cf02c520a8b42d9aa525700f.camel@domdv.de>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 2 Jul 2019 21:47:08 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSe3=ZuHemWRM5yvdB-shotPeoLnQOqz0CjugtG3ToMiNg@mail.gmail.com>
+Message-ID: <CA+FuTSe3=ZuHemWRM5yvdB-shotPeoLnQOqz0CjugtG3ToMiNg@mail.gmail.com>
+Subject: Re: [PATCH net 2/2] macsec: fix checksumming after decryption
+To:     Andreas Steinmetz <ast@domdv.de>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Sabrina Dubroca <sd@queasysnail.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  2 Jul 2019 13:50:04 +0200 (CEST), Michal Kubecek wrote:
-> Add common request/reply header definition and helpers to parse request
-> header and fill reply header. Provide ethnl_update_* helpers to update
-> structure members from request attributes (to be used for *_SET requests).
-> 
-> Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+On Tue, Jul 2, 2019 at 3:48 PM Andreas Steinmetz <ast@domdv.de> wrote:
+>
+> On Tue, 2019-07-02 at 10:35 -0400, Willem de Bruijn wrote:
+> > On Tue, Jul 2, 2019 at 12:25 AM Andreas Steinmetz <ast@domdv.de> wrote:
+> > > On Sun, 2019-06-30 at 21:47 -0400, Willem de Bruijn wrote:
+> > > > On Sun, Jun 30, 2019 at 4:48 PM Andreas Steinmetz <ast@domdv.de>
+> > > > wrote:
+> > > > > Fix checksumming after decryption.
+> > > > >
+> > > > > Signed-off-by: Andreas Steinmetz <ast@domdv.de>
+> > > > >
+> > > > > --- a/drivers/net/macsec.c      2019-06-30 22:14:10.250285314 +0200
+> > > > > +++ b/drivers/net/macsec.c      2019-06-30 22:15:11.931230417 +0200
+> > > > > @@ -869,6 +869,7 @@
+> > > > >
+> > > > >  static void macsec_finalize_skb(struct sk_buff *skb, u8 icv_len,
+> > > > > u8 hdr_len)
+> > > > >  {
+> > > > > +       skb->ip_summed = CHECKSUM_NONE;
+> > > > >         memmove(skb->data + hdr_len, skb->data, 2 * ETH_ALEN);
+> > > > >         skb_pull(skb, hdr_len);
+> > > > >         pskb_trim_unique(skb, skb->len - icv_len);
+> > > >
+> > > > Does this belong in macset_reset_skb?
+> > >
+> > > Putting this in macsec_reset_skb would then miss out the "nosci:" part
+> > > of the RX path in macsec_handle_frame().
+> >
+> > It is called on each nskb before calling netif_rx.
+> >
+> > It indeed is not called when returning RX_HANDLER_PASS, but that is correct?
+>
+> This is correct. Packets passed on with RX_HANDLER_PASS are either not for this
+> driver or the special case of being destined for a KaY and in this case being
+> the MACsec ethernet protocol and thus not IP, so no checksumming.
 
-> diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
-> index 3c98b41f04e5..e13f29bbd625 100644
-> --- a/net/ethtool/netlink.c
-> +++ b/net/ethtool/netlink.c
-> @@ -1,8 +1,181 @@
->  // SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note
->  
-> +#include <net/sock.h>
->  #include <linux/ethtool_netlink.h>
->  #include "netlink.h"
->  
-> +static struct genl_family ethtool_genl_family;
-> +
-> +static const struct nla_policy dflt_header_policy[ETHTOOL_A_HEADER_MAX + 1] = {
-> +	[ETHTOOL_A_HEADER_UNSPEC]	= { .type = NLA_REJECT },
-
-I think we want strict checking on all new netlink interfaces, and
-unfortunately that feature is opt-in.. so you need to add:
-
-	.strict_start_type = ETHTOOL_A_HEADER_UNSPEC + 1
-
-To the first attr.
-
-> +	[ETHTOOL_A_HEADER_DEV_INDEX]	= { .type = NLA_U32 },
-> +	[ETHTOOL_A_HEADER_DEV_NAME]	= { .type = NLA_NUL_STRING,
-> +					    .len = IFNAMSIZ - 1 },
-> +	[ETHTOOL_A_HEADER_INFOMASK]	= { .type = NLA_U32 },
-> +	[ETHTOOL_A_HEADER_GFLAGS]	= { .type = NLA_U32 },
-> +	[ETHTOOL_A_HEADER_RFLAGS]	= { .type = NLA_U32 },
-> +};
-
-
+So this could have been set in macsec_reset_skb, then? As all relevant cases
+call it. Anyway, it's not very important and already merged.
