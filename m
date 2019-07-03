@@ -2,196 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EAB975E4DE
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 15:09:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDF4F5E4E8
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 15:11:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726924AbfGCNJn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 09:09:43 -0400
-Received: from mga02.intel.com ([134.134.136.20]:36251 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726581AbfGCNJn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jul 2019 09:09:43 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Jul 2019 06:09:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.63,446,1557212400"; 
-   d="scan'208";a="172127499"
-Received: from npg-dpdk-virtio-tbie-2.sh.intel.com (HELO ___) ([10.67.104.151])
-  by FMSMGA003.fm.intel.com with ESMTP; 03 Jul 2019 06:09:40 -0700
-Date:   Wed, 3 Jul 2019 21:08:17 +0800
-From:   Tiwei Bie <tiwei.bie@intel.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     mst@redhat.com, alex.williamson@redhat.com,
-        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, dan.daly@intel.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com
-Subject: Re: [RFC v2] vhost: introduce mdev based hardware vhost backend
-Message-ID: <20190703130817.GA1978@___>
-References: <20190703091339.1847-1-tiwei.bie@intel.com>
- <7b8279b2-aa7e-7adc-eeff-20dfaf4400d0@redhat.com>
- <20190703115245.GA22374@___>
- <64833f91-02cd-7143-f12e-56ab93b2418d@redhat.com>
+        id S1726977AbfGCNK6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 09:10:58 -0400
+Received: from mx-relay47-hz2.antispameurope.com ([94.100.136.247]:57750 "EHLO
+        mx-relay47-hz2.antispameurope.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725933AbfGCNK6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 09:10:58 -0400
+Received: from b2b-92-50-72-125.unitymedia.biz ([92.50.72.125]) by mx-relay47-hz2.antispameurope.com;
+ Wed, 03 Jul 2019 15:10:41 +0200
+Received: from [192.168.101.59] (192.168.101.59) by eks-ex.eks-engel.local
+ (192.168.100.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1034.26; Wed, 3 Jul
+ 2019 15:10:35 +0200
+To:     <netdev@vger.kernel.org>
+From:   Benjamin Beckmeyer <beb@eks-engel.de>
+Subject: i.mx6ul with DSA in multi chip addressing mode - no MDIO access
+Message-ID: <21680b63-2d87-6841-23eb-551e58866719@eks-engel.de>
+Date:   Wed, 3 Jul 2019 15:10:34 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <64833f91-02cd-7143-f12e-56ab93b2418d@redhat.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [192.168.101.59]
+X-ClientProxiedBy: eks-ex.eks-engel.local (192.168.100.30) To
+ eks-ex.eks-engel.local (192.168.100.30)
+X-cloud-security-sender: beb@eks-engel.de
+X-cloud-security-recipient: netdev@vger.kernel.org
+X-cloud-security-Virusscan: CLEAN
+X-cloud-security-disclaimer: This E-Mail was scanned by E-Mailservice on mx-relay47-hz2.antispameurope.com with B84CA40314
+X-cloud-security-connect: b2b-92-50-72-125.unitymedia.biz[92.50.72.125], TLS=1, IP=92.50.72.125
+X-cloud-security: scantime:.1954
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 03, 2019 at 08:16:23PM +0800, Jason Wang wrote:
-> On 2019/7/3 下午7:52, Tiwei Bie wrote:
-> > On Wed, Jul 03, 2019 at 06:09:51PM +0800, Jason Wang wrote:
-> > > On 2019/7/3 下午5:13, Tiwei Bie wrote:
-> > > > Details about this can be found here:
-> > > > 
-> > > > https://lwn.net/Articles/750770/
-> > > > 
-> > > > What's new in this version
-> > > > ==========================
-> > > > 
-> > > > A new VFIO device type is introduced - vfio-vhost. This addressed
-> > > > some comments from here: https://patchwork.ozlabs.org/cover/984763/
-> > > > 
-> > > > Below is the updated device interface:
-> > > > 
-> > > > Currently, there are two regions of this device: 1) CONFIG_REGION
-> > > > (VFIO_VHOST_CONFIG_REGION_INDEX), which can be used to setup the
-> > > > device; 2) NOTIFY_REGION (VFIO_VHOST_NOTIFY_REGION_INDEX), which
-> > > > can be used to notify the device.
-> > > > 
-> > > > 1. CONFIG_REGION
-> > > > 
-> > > > The region described by CONFIG_REGION is the main control interface.
-> > > > Messages will be written to or read from this region.
-> > > > 
-> > > > The message type is determined by the `request` field in message
-> > > > header. The message size is encoded in the message header too.
-> > > > The message format looks like this:
-> > > > 
-> > > > struct vhost_vfio_op {
-> > > > 	__u64 request;
-> > > > 	__u32 flags;
-> > > > 	/* Flag values: */
-> > > >    #define VHOST_VFIO_NEED_REPLY 0x1 /* Whether need reply */
-> > > > 	__u32 size;
-> > > > 	union {
-> > > > 		__u64 u64;
-> > > > 		struct vhost_vring_state state;
-> > > > 		struct vhost_vring_addr addr;
-> > > > 	} payload;
-> > > > };
-> > > > 
-> > > > The existing vhost-kernel ioctl cmds are reused as the message
-> > > > requests in above structure.
-> > > 
-> > > Still a comments like V1. What's the advantage of inventing a new protocol?
-> > I'm trying to make it work in VFIO's way..
-> > 
-> > > I believe either of the following should be better:
-> > > 
-> > > - using vhost ioctl,  we can start from SET_VRING_KICK/SET_VRING_CALL and
-> > > extend it with e.g notify region. The advantages is that all exist userspace
-> > > program could be reused without modification (or minimal modification). And
-> > > vhost API hides lots of details that is not necessary to be understood by
-> > > application (e.g in the case of container).
-> > Do you mean reusing vhost's ioctl on VFIO device fd directly,
-> > or introducing another mdev driver (i.e. vhost_mdev instead of
-> > using the existing vfio_mdev) for mdev device?
-> 
-> 
-> Can we simply add them into ioctl of mdev_parent_ops?
+Hey folks,
 
-Right, either way, these ioctls have to be and just need to be
-added in the ioctl of the mdev_parent_ops. But another thing we
-also need to consider is that which file descriptor the userspace
-will do the ioctl() on. So I'm wondering do you mean let the
-userspace do the ioctl() on the VFIO device fd of the mdev
-device?
+I'm having a problem with a custom i.mx6ul board. When DSA is loaded I can't 
+get access to the switch via MDIO, but the DSA is working properly. I set up
+a bridge for testing and the switch is in forwarding mode and i can ping the 
+board. But the MDIO access isn't working at address 2 for the switch. When I 
+delete the DSA from the devicetree and start the board up, I can access the 
+switch via MDIO.
 
-> 
-> 
-> > 
-[...]
-> > > > 3. VFIO interrupt ioctl API
-> > > > 
-> > > > VFIO interrupt ioctl API is used to setup device interrupts.
-> > > > IRQ-bypass can also be supported.
-> > > > 
-> > > > Currently, the data path interrupt can be configured via the
-> > > > VFIO_VHOST_VQ_IRQ_INDEX with virtqueue's callfd.
-> > > 
-> > > How about DMA API? Do you expect to use VFIO IOMMU API or using vhost
-> > > SET_MEM_TABLE? VFIO IOMMU API is more generic for sure but with
-> > > SET_MEM_TABLE DMA can be done at the level of parent device which means it
-> > > can work for e.g the card with on-chip IOMMU.
-> > Agree. In this RFC, it assumes userspace will use VFIO IOMMU API
-> > to do the DMA programming. But like what you said, there could be
-> > a problem when using cards with on-chip IOMMU.
-> 
-> 
-> Yes, another issue is SET_MEM_TABLE can not be used to update just a part of
-> the table. This seems less flexible than VFIO API but it could be extended.
+With DSA up and running:
 
-Agree.
+mii -i 2 0 0x9800
+mii -i 2 1
+phyid:2, reg:0x01 -> 0x4000
+mii -i 2 0 0x9803
+mii -i 2 1
+phyid:2, reg:0x01 -> 0x4000
+mii -i 2 1 0x1883
+mii -i 2 1
+phyid:2, reg:0x01 -> 0x4000
 
-> 
-> 
-> > 
-> > > And what's the plan for vIOMMU?
-> > As this RFC assumes userspace will use VFIO IOMMU API, userspace
-> > just needs to follow the same way like what vfio-pci device does
-> > in QEMU to support vIOMMU.
-> 
-> 
-> Right, this is more a question for the qemu part. It means it needs to go
-> for ordinary VFIO path to get all notifiers/listeners support from vIOMMU.
+No DSA:
 
-Yeah.
+mii -i 2 0 0x9800
+mii -i 2 1
+phyid:2, reg:0x01 -> 0xde04
+mii -i 2 0 0x9803
+mii -i 2 1
+phyid:2, reg:0x01 -> 0x3901
+mii -i 2 1 0x1883
+mii -i 2 1
+phyid:2, reg:0x01 -> 0x1883
 
-> 
-> 
-> > 
-> > > 
-> > > > Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
-> > > > ---
-> > > >    drivers/vhost/Makefile     |   2 +
-> > > >    drivers/vhost/vdpa.c       | 770 +++++++++++++++++++++++++++++++++++++
-> > > >    include/linux/vdpa_mdev.h  |  72 ++++
-> > > >    include/uapi/linux/vfio.h  |  19 +
-> > > >    include/uapi/linux/vhost.h |  25 ++
-> > > >    5 files changed, 888 insertions(+)
-> > > >    create mode 100644 drivers/vhost/vdpa.c
-> > > >    create mode 100644 include/linux/vdpa_mdev.h
-> > > 
-> > > We probably need some sample parent device implementation. It could be a
-> > > software datapath like e.g we can start from virtio-net device in guest or a
-> > > vhost/tap on host.
-> > Yeah, something like this would be interesting!
-> 
-> 
-> Plan to do something like that :) ?
+Here is the device tree for our board:
+&mdio0 {
+        switch0: switch0@2 {
+                compatible = "marvell,mv88e6190";
+                reg = <2>;
+                pinctrl-0 = <&pinctrl_gpios>;
+                reset-gpios = <&gpio4 16 GPIO_ACTIVE_LOW>;
 
-I don't have a plan yet.. But it's something that can be done I think.
+                dsa,member = <0 0>;
 
-Thanks,
-Tiwei
+                ports {
+                        #address-cells = <1>;
+                        #size-cells = <0>;
 
-> 
-> Thanks
-> 
-> 
-> > 
-> > Thanks,
-> > Tiwei
-> > 
-> > > Thanks
-> > > 
-> > > 
+                        port@0 {
+                                reg = <0>;
+                                label = "cpu";
+                                ethernet = <&fec1>;
+                                phy-mode = "rmii";
+                                fixed-link {
+                                        speed = <100>;
+                                        full-duplex;
+                                };
+                        };
+
+                        port@1 {
+                                reg = <1>;
+                                label = "lan1";
+                        };
+                        port@2 {
+                                reg = <2>;
+                                label = "lan2";
+                        };
+
+                        port@3 {
+                                reg = <3>;
+                                label = "lan3";
+                        };
+
+                        port@4 {
+                                reg = <4>;
+                                label = "lan4";
+                        };
+
+                        port@5 {
+                                reg = <5>;
+                                label = "lan5";
+                        };
+
+                        port@6 {
+                                reg = <6>;
+                                label = "lan6";
+                        };
+
+                        port@7 {
+                                reg = <7>;
+                                label = "lan7";
+                        };
+                        port@8 {
+                                reg = <8>;
+                                label = "lan8";
+                        };
+                        port@9 {
+                                reg = <9>;
+                                label = "serdes1";
+                                fixed-link {
+                                        speed = <1000>;
+                                        full-duplex;
+                                };
+                        };
+                        port@10 {
+                                reg = <10>;
+                                label = "serdes2";
+                                fixed-link {
+                                        speed = <1000>;
+                                        full-duplex;
+                                };
+                        };
+                };
+        };
+};
+
+On a different custom board we have another switching chip in single chip 
+addressing mode the MDIO access works like a charm with activated DSA.
+
+Currently I'm on linux-4.14.118. Other kernels (4.19.55, 5.1.14) I've 
+tested stuck at or reboot while DSA is loading. Same devicetree there.
+Let me know if you need some more input.
+
+Thanks in advance for your help.
+
+Best regards, 
+Benjamin Beckmeyer
+
