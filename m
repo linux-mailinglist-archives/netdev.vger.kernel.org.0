@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ACA45DB98
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 04:18:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5455C5DBBC
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 04:18:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728027AbfGCCQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 22:16:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55062 "EHLO mail.kernel.org"
+        id S1728193AbfGCCRv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 22:17:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55078 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728015AbfGCCQl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Jul 2019 22:16:41 -0400
+        id S1727309AbfGCCQm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Jul 2019 22:16:42 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E636521880;
-        Wed,  3 Jul 2019 02:16:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 232D52189F;
+        Wed,  3 Jul 2019 02:16:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1562120200;
-        bh=hDN+aGT3OiKMxarLMhNarocFprAxKpWY3qy8Dxr1DEQ=;
+        s=default; t=1562120202;
+        bh=giDXluMr/f+PyEt9s7AQYNZMVzDufPbq38SXiAfoHCY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pv37dDIZM3yBs3Kj5nB+ojADNmzLGT/6s1wiLXXBR4ZOnPFogmDgo8QY+J/3YYt7J
-         Q/kCMAovG2SytcVIAbZOiMJ5uEPcQfQNeAsWLN0u02u3ho5GDj57+2vbU5Vr5zLkQN
-         uKfCtZ/mI1Dx5JJmzp03Jp0KewCc0Eq4fgSJgjR0=
+        b=ogzHmPBETNOfxAQb+Y1WfkJoRzVy3YXH90MtviArLcYadyhsgbrbj2YMXXOJHtw8q
+         jNq39grrc4emuF8YaRffZdvVA+vGI8UN2jkZWPWfd9slbYoSWp8UW5ilA4/wXfHbAr
+         oIbXp16sn8B+lpAMqFvcLKijfhtIU88/ijwjrNPo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Roland Hii <roland.king.guan.hii@intel.com>,
@@ -30,16 +30,15 @@ Cc:     Roland Hii <roland.king.guan.hii@intel.com>,
         Voon Weifeng <weifeng.voon@intel.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 11/26] net: stmmac: fixed new system time seconds value calculation
-Date:   Tue,  2 Jul 2019 22:16:10 -0400
-Message-Id: <20190703021625.18116-11-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 12/26] net: stmmac: set IC bit when transmitting frames with HW timestamp
+Date:   Tue,  2 Jul 2019 22:16:11 -0400
+Message-Id: <20190703021625.18116-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190703021625.18116-1-sashal@kernel.org>
 References: <20190703021625.18116-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -48,45 +47,72 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Roland Hii <roland.king.guan.hii@intel.com>
 
-[ Upstream commit a1e5388b4d5fc78688e5e9ee6641f779721d6291 ]
+[ Upstream commit d0bb82fd60183868f46c8ccc595a3d61c3334a18 ]
 
-When ADDSUB bit is set, the system time seconds field is calculated as
-the complement of the seconds part of the update value.
+When transmitting certain PTP frames, e.g. SYNC and DELAY_REQ, the
+PTP daemon, e.g. ptp4l, is polling the driver for the frame transmit
+hardware timestamp. The polling will most likely timeout if the tx
+coalesce is enabled due to the Interrupt-on-Completion (IC) bit is
+not set in tx descriptor for those frames.
 
-For example, if 3.000000001 seconds need to be subtracted from the
-system time, this field is calculated as
-2^32 - 3 = 4294967296 - 3 = 0x100000000 - 3 = 0xFFFFFFFD
+This patch will ignore the tx coalesce parameter and set the IC bit
+when transmitting PTP frames which need to report out the frame
+transmit hardware timestamp to user space.
 
-Previously, the 0x100000000 is mistakenly written as 100000000.
-
-This is further simplified from
-  sec = (0x100000000ULL - sec);
-to
-  sec = -sec;
-
-Fixes: ba1ffd74df74 ("stmmac: fix PTP support for GMAC4")
+Fixes: f748be531d70 ("net: stmmac: Rework coalesce timer and fix multi-queue races")
 Signed-off-by: Roland Hii <roland.king.guan.hii@intel.com>
 Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
 Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 22 ++++++++++++-------
+ 1 file changed, 14 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
-index 8d9cc2157afd..7423262ce590 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
-@@ -122,7 +122,7 @@ static int adjust_systime(void __iomem *ioaddr, u32 sec, u32 nsec,
- 		 * programmed with (2^32 – <new_sec_value>)
- 		 */
- 		if (gmac4)
--			sec = (100000000ULL - sec);
-+			sec = -sec;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 45e64d71a93f..5c18874614ba 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -2938,12 +2938,15 @@ static netdev_tx_t stmmac_tso_xmit(struct sk_buff *skb, struct net_device *dev)
  
- 		value = readl(ioaddr + PTP_TCR);
- 		if (value & PTP_TCR_TSCTRLSSR)
+ 	/* Manage tx mitigation */
+ 	tx_q->tx_count_frames += nfrags + 1;
+-	if (priv->tx_coal_frames <= tx_q->tx_count_frames) {
++	if (likely(priv->tx_coal_frames > tx_q->tx_count_frames) &&
++	    !(priv->synopsys_id >= DWMAC_CORE_4_00 &&
++	    (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
++	    priv->hwts_tx_en)) {
++		stmmac_tx_timer_arm(priv, queue);
++	} else {
++		tx_q->tx_count_frames = 0;
+ 		stmmac_set_tx_ic(priv, desc);
+ 		priv->xstats.tx_set_ic_bit++;
+-		tx_q->tx_count_frames = 0;
+-	} else {
+-		stmmac_tx_timer_arm(priv, queue);
+ 	}
+ 
+ 	skb_tx_timestamp(skb);
+@@ -3157,12 +3160,15 @@ static netdev_tx_t stmmac_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	 * element in case of no SG.
+ 	 */
+ 	tx_q->tx_count_frames += nfrags + 1;
+-	if (priv->tx_coal_frames <= tx_q->tx_count_frames) {
++	if (likely(priv->tx_coal_frames > tx_q->tx_count_frames) &&
++	    !(priv->synopsys_id >= DWMAC_CORE_4_00 &&
++	    (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
++	    priv->hwts_tx_en)) {
++		stmmac_tx_timer_arm(priv, queue);
++	} else {
++		tx_q->tx_count_frames = 0;
+ 		stmmac_set_tx_ic(priv, desc);
+ 		priv->xstats.tx_set_ic_bit++;
+-		tx_q->tx_count_frames = 0;
+-	} else {
+-		stmmac_tx_timer_arm(priv, queue);
+ 	}
+ 
+ 	skb_tx_timestamp(skb);
 -- 
 2.20.1
 
