@@ -2,94 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 294E05ED04
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 21:54:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57B1C5ED2F
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 22:08:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726876AbfGCTyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 15:54:41 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:43864 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726739AbfGCTyk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 15:54:40 -0400
-Received: by mail-pl1-f195.google.com with SMTP id cl9so1776424plb.10
-        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 12:54:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=K9b45FRKzrUcD1ARvm02L/3QoVbWczPOEnA4S5/BQE0=;
-        b=qtg6d6jk1lDaCzQ+HSTsI3e09Aj5zJ1lvioZQoceoBcNFMP/m/DrG7NkDNXI3Be23t
-         oslb3H08nPY+pGj2+HHCxLe/jz49d0wW1fpd3k5fBoKVeP290J45WPV0MXBLSbhlS9se
-         gry8vnETYsloSyNcOMIqWG0aGPinqeutggOxFuTnY0PpByWzu+/pDt/wrGItCpUmOvXj
-         SpxTjBtoUcWvQx4gHtpVBC4gXrvlmNvMJgdp6x/pma3QJfnrRnJxrFtioitlZROThMtS
-         95xzPAZwK3UpaM8LvS50FijWE42QVVf3unBlzERXR2x/UgNR52c+xlCtPRkSP8WYicqr
-         t9jg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=K9b45FRKzrUcD1ARvm02L/3QoVbWczPOEnA4S5/BQE0=;
-        b=P9oo1W06BOrsWPelcqU6uwkwuh5YTE0X6XJzotCk7kQHjtGBmJRpK9/G7384UTvUro
-         2zSRPGG5IBkoML4pAegGJ2JcOE5+O+fk7g1PAP/+o0cgC9xNod7/+YII7xXT6RoLX67Z
-         yrQkGNXlikfwk1ofey5+WHUmWtVIz8dXiaOTlhr1HRmYuvxr5m4yjCgtzskLYzFAY1q7
-         l4eCc3lbAYYf6QOJ6dK+wTW9xHP9xfpfi+PNRjLridVB5H7FDIl7mURUEDhs9HLA2oya
-         sWprwzGwli/ub1oRLuDdnsp6/fkkjCILefLKAGfeMhj6aDJU0thE1vmS2grT6NdnZx4r
-         zpzQ==
-X-Gm-Message-State: APjAAAWkKOk+1Y3BjLsD6nn9lbITLpwiyBTM4qAVX6ZyiLKyAxuwQoi8
-        DLrxnLC6Rjmgz1CsWr3gQQfShg==
-X-Google-Smtp-Source: APXvYqzK77v5bhd2zVi69lR9/dc2eztpoHo/Aojc1eeyJ+9KnwUeCppE9m7iAu3YoPcZ5pryL3Qn2g==
-X-Received: by 2002:a17:902:9a85:: with SMTP id w5mr42793300plp.221.1562183679819;
-        Wed, 03 Jul 2019 12:54:39 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id 191sm3503421pfu.177.2019.07.03.12.54.39
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 03 Jul 2019 12:54:39 -0700 (PDT)
-Date:   Wed, 3 Jul 2019 12:54:38 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Priyaranjan Jha <priyarjha@google.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
-Subject: Re: [PATCH bpf-next v2 6/8] selftests/bpf: test BPF_SOCK_OPS_RTT_CB
-Message-ID: <20190703195438.GA29524@mini-arch>
-References: <20190702161403.191066-1-sdf@google.com>
- <20190702161403.191066-7-sdf@google.com>
- <CAEf4Bzak755ixqVetwaPOi96-aNbGwshO3anrP_i_dvPG_quQw@mail.gmail.com>
+        id S1727074AbfGCUHw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 16:07:52 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:52146 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726885AbfGCUHw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jul 2019 16:07:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=z7jk6x5FmWmv60BLPQd58n5oT9q9Kq0RFvPsjKqmiOk=; b=InPLH5l4f68ZtWZU/0SiSQfH30
+        7UMlutMNJunhbk7FjlM1CLUrTyea6VUQG92J0+C4oHJt99iMjFRvrYDB9SQB50yhc9VCVEICv0Hon
+        6Wb+cW+2lTPpbXkXBxAb05Vu243aqvOL7nQq2dEuuxjLO96XPFB0TvxfbGi2+cgZ4Pvc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hilXb-0007TL-JZ; Wed, 03 Jul 2019 22:07:43 +0200
+Date:   Wed, 3 Jul 2019 22:07:43 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Matthias Kaehlcke <mka@chromium.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>
+Subject: Re: [PATCH v2 6/7] dt-bindings: net: realtek: Add property to
+ configure LED mode
+Message-ID: <20190703200743.GF18473@lunn.ch>
+References: <20190703193724.246854-1-mka@chromium.org>
+ <20190703193724.246854-6-mka@chromium.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAEf4Bzak755ixqVetwaPOi96-aNbGwshO3anrP_i_dvPG_quQw@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20190703193724.246854-6-mka@chromium.org>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/03, Andrii Nakryiko wrote:
-> On Tue, Jul 2, 2019 at 9:14 AM Stanislav Fomichev <sdf@google.com> wrote:
-> >
-> > Make sure the callback is invoked for syn-ack and data packet.
-> >
-> > Cc: Eric Dumazet <edumazet@google.com>
-> > Cc: Priyaranjan Jha <priyarjha@google.com>
-> > Cc: Yuchung Cheng <ycheng@google.com>
-> > Cc: Soheil Hassas Yeganeh <soheil@google.com>
-> > Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-> > Acked-by: Yuchung Cheng <ycheng@google.com>
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > ---
-> >  tools/testing/selftests/bpf/Makefile        |   3 +-
-> >  tools/testing/selftests/bpf/progs/tcp_rtt.c |  61 +++++
-> >  tools/testing/selftests/bpf/test_tcp_rtt.c  | 254 ++++++++++++++++++++
-> >  3 files changed, 317 insertions(+), 1 deletion(-)
-> >  create mode 100644 tools/testing/selftests/bpf/progs/tcp_rtt.c
-> >  create mode 100644 tools/testing/selftests/bpf/test_tcp_rtt.c
-> 
-> Can you please post a follow-up patch to add test_tcp_rtt to .gitignore?
-Sure, will do, thanks for a report!
+On Wed, Jul 03, 2019 at 12:37:23PM -0700, Matthias Kaehlcke wrote:
+
+Hi Matthias
+
+Maybe add a #define for 0, so we know what it does.
+
+> +#define RTL8211E_LINK_10		1
+> +#define RTL8211E_LINK_100		2
+> +#define RTL8211E_LINK_1000		4
