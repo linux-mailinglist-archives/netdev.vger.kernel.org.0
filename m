@@ -2,122 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E0B045E313
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 13:46:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28DE95E31A
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 13:49:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726743AbfGCLqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 07:46:33 -0400
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:42961 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726598AbfGCLqd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 07:46:33 -0400
-Received: by mail-oi1-f196.google.com with SMTP id s184so1783172oie.9
-        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 04:46:32 -0700 (PDT)
+        id S1726984AbfGCLth (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 07:49:37 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:38432 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725786AbfGCLth (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 07:49:37 -0400
+Received: by mail-wm1-f66.google.com with SMTP id s15so2051980wmj.3
+        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 04:49:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=mYCFppVyTLYn4jIWsRodglihiRKb1A76Dy+J8v19wzc=;
-        b=D/9AaR+4ugUBBoe5/1T1+ZEwBrg3e3P4WhtXCOVCc7lRsXoCa76A7XhNR0j7h1SCJU
-         ZhQ8En4MthdgoIQtVTcxsKV/bApkPtLlwcJ7GYSPzh9P2IRq9NzjA7PEu9sC7TNSCddQ
-         FVvPmsxBtpYPwOsdA74BIXEpzq0OmWT1vx6C7YBcT8fF7hzaXA0Evginy/jJI1uJ9zbC
-         zL14fynQYfCMydKMRLXIb73eCcvdkGE1i8pa7xeIfaAn1Do9Z6Lx7tGQms0O637oz/Ix
-         yU+KnN7NhgWUn+dUA/5/VSg5HNp4LXLUkLG4jEQupWEZuDvgWX9pjdSSX8PdvbNW8/Hq
-         xwqg==
+        bh=S9V/QrIo8BVJ8mssqOv2wdWJBV+O5Z9tAnibsn5EX+8=;
+        b=2N3nyyTUQiGkSvwmlzHhVkaqTiYdsVtuPqyujhGIIPucaPCRKaTlT70Smsst9aecWe
+         KRlG4k6kmAqoPd4nBszKrVH7Y+npHNUOotxPTtP5x2uNV95LdgRJSVqO5wW32sR/7XbA
+         M7bAXyzoH7rlCZbEP96IiPMllJOxY6nebhUEXm/7qtSiXAMsLcZDYs52XE9OCe2DtkhN
+         bHCzqHSM4ToKIScgme2VmmV+e6qYihRFeAlzzqLfvnuIYERxQxAJFYS42fSFnwuGJIf3
+         TZRF5Tx5hWjm+u+8VlV53dyC3/SxwqxqfB4+OtUH/40x1uTDfM5jadNCDlewvtxJUrqX
+         WwNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=mYCFppVyTLYn4jIWsRodglihiRKb1A76Dy+J8v19wzc=;
-        b=i+lSH018eYUNlTaw3kh8bn5igmhvW9ckz74xNro5dO40p9mSPNJM1dEs4alcLknSaZ
-         cnL/qfBvUxRmLkgNeor7z61U/IA4AiQcGOxucIN/hmAFxJl6FHSzTHPk0ibhl6SlWam/
-         lEqErC4wDMQRwtTop/DvZje6iGXe5Bfv/6jMCkGkoRlfYeC2gB0+LHVOyg8dUisF781v
-         JsHVjVlhWFNGmXkp+AFKupl+q9/XsX7Q/drC+xb0Hsfd4iX7zlcMQGB6vyuEP7hjDlyh
-         xuZhEqYSpk0SqvP28ULK8Zvx6K87HA/wOE7lLJc1rybXKH5xyrivsZP5gd5hmA4lqxBD
-         i0IQ==
-X-Gm-Message-State: APjAAAU0lE+JbiD2eV4zfBAwW8NsRbxiAiOnZiAptuCXGhQRJVOabkWv
-        bq8JUAFjDwCYjDJvGDGCKf7ZTA==
-X-Google-Smtp-Source: APXvYqwX7as5iFvdGwU6iDuxDN356j60jVpv0gxRnDRYGhYLxaoZipVDwgA728jdYwbcktjADrrxZw==
-X-Received: by 2002:aca:c715:: with SMTP id x21mr3307037oif.142.1562154392368;
-        Wed, 03 Jul 2019 04:46:32 -0700 (PDT)
-Received: from leoy-ThinkPad-X240s (li964-79.members.linode.com. [45.33.10.79])
-        by smtp.gmail.com with ESMTPSA id 198sm692180oie.13.2019.07.03.04.46.28
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 03 Jul 2019 04:46:31 -0700 (PDT)
-Date:   Wed, 3 Jul 2019 19:46:25 +0800
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: Re: [PATCH] bpf, libbpf: Smatch: Fix potential NULL pointer
- dereference
-Message-ID: <20190703114625.GG6852@leoy-ThinkPad-X240s>
-References: <20190702102531.23512-1-leo.yan@linaro.org>
- <b834fba1-5b2c-4406-8275-1cf8383655e3@iogearbox.net>
+        bh=S9V/QrIo8BVJ8mssqOv2wdWJBV+O5Z9tAnibsn5EX+8=;
+        b=FPgv74uHTczEXOTaULQFkiz+23VSgNj5f0cI/4YJtLQ2N3HcU2SXfApuIirMgH52Z8
+         AUQen9SR76amaFsfwlgDm1dmquRMhEs4xhlHDrTqTCeUdq/3Hn93AowIQhuEAuU98QZt
+         S4TiNtUtig2i0mMAzpGn8j1sMRWB2j3YrjDFSEMbGKKfjrBT7Q3F4jV2+t1n0V8pFvNW
+         CNI6VXrY1Nz1aZJI3+SaNmAxCaLArShkmePHqRrqx4Fp5n4VtPPwSMx9wjSQ3MpsG8mB
+         Z7RZXvzEmk4vqHLXTV9eV6iaQVpY68oAy4s2vHXX/CdbZXUui+IwSisIU5CkcWECCpMf
+         yP9A==
+X-Gm-Message-State: APjAAAXmoHEP+terRQXVWsjpMGrEH/y7/DyDXjaz2aJ4pzmgyXW/uOBu
+        w3y0gTpAHIwaTY9C22e8UlU=
+X-Google-Smtp-Source: APXvYqyCDqifBl22qNuQX6LoC3NtGrzt7+4Oi3nSvEuHRuRNA+ALGN/g9Pt1jEb7KAT/6qRGlOR1Cw==
+X-Received: by 2002:a1c:d10c:: with SMTP id i12mr7831583wmg.152.1562154574290;
+        Wed, 03 Jul 2019 04:49:34 -0700 (PDT)
+Received: from localhost (ip-213-220-235-213.net.upcbroadband.cz. [213.220.235.213])
+        by smtp.gmail.com with ESMTPSA id v15sm1753328wrt.25.2019.07.03.04.49.33
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 03 Jul 2019 04:49:34 -0700 (PDT)
+Date:   Wed, 3 Jul 2019 13:49:33 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Linville <linville@tuxdriver.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v6 06/15] ethtool: netlink bitset handling
+Message-ID: <20190703114933.GW2250@nanopsycho>
+References: <cover.1562067622.git.mkubecek@suse.cz>
+ <cb614bebee1686293127194e8f7ced72955c7c7f.1562067622.git.mkubecek@suse.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <b834fba1-5b2c-4406-8275-1cf8383655e3@iogearbox.net>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <cb614bebee1686293127194e8f7ced72955c7c7f.1562067622.git.mkubecek@suse.cz>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 03, 2019 at 12:23:05PM +0200, Daniel Borkmann wrote:
-> On 07/02/2019 12:25 PM, Leo Yan wrote:
-> > Based on the following report from Smatch, fix the potential
-> > NULL pointer dereference check.
-> > 
-> >   tools/lib/bpf/libbpf.c:3493
-> >   bpf_prog_load_xattr() warn: variable dereferenced before check 'attr'
-> >   (see line 3483)
-> > 
-> > 3479 int bpf_prog_load_xattr(const struct bpf_prog_load_attr *attr,
-> > 3480                         struct bpf_object **pobj, int *prog_fd)
-> > 3481 {
-> > 3482         struct bpf_object_open_attr open_attr = {
-> > 3483                 .file           = attr->file,
-> > 3484                 .prog_type      = attr->prog_type,
-> >                                        ^^^^^^
-> > 3485         };
-> > 
-> > At the head of function, it directly access 'attr' without checking if
-> > it's NULL pointer.  This patch moves the values assignment after
-> > validating 'attr' and 'attr->file'.
-> > 
-> > Signed-off-by: Leo Yan <leo.yan@linaro.org>
-> > ---
-> >  tools/lib/bpf/libbpf.c | 8 ++++----
-> >  1 file changed, 4 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> > index 197b574406b3..809b633fa3d9 100644
-> > --- a/tools/lib/bpf/libbpf.c
-> > +++ b/tools/lib/bpf/libbpf.c
-> > @@ -3479,10 +3479,7 @@ int bpf_prog_load(const char *file, enum bpf_prog_type type,
-> >  int bpf_prog_load_xattr(const struct bpf_prog_load_attr *attr,
-> >  			struct bpf_object **pobj, int *prog_fd)
-> >  {
-> > -	struct bpf_object_open_attr open_attr = {
-> > -		.file		= attr->file,
-> > -		.prog_type	= attr->prog_type,
-> > -	};
+Tue, Jul 02, 2019 at 01:50:09PM CEST, mkubecek@suse.cz wrote:
+>The ethtool netlink code uses common framework for passing arbitrary
+>length bit sets to allow future extensions. A bitset can be a list (only
+>one bitmap) or can consist of value and mask pair (used e.g. when client
+>want to modify only some bits). A bitset can use one of two formats:
+>verbose (bit by bit) or compact.
+>
+>Verbose format consists of bitset size (number of bits), list flag and
+>an array of bit nests, telling which bits are part of the list or which
+>bits are in the mask and which of them are to be set. In requests, bits
+>can be identified by index (position) or by name. In replies, kernel
+>provides both index and name. Verbose format is suitable for "one shot"
+>applications like standard ethtool command as it avoids the need to
+>either keep bit names (e.g. link modes) in sync with kernel or having to
+>add an extra roundtrip for string set request (e.g. for private flags).
+>
+>Compact format uses one (list) or two (value/mask) arrays of 32-bit
+>words to store the bitmap(s). It is more suitable for long running
+>applications (ethtool in monitor mode or network management daemons)
+>which can retrieve the names once and then pass only compact bitmaps to
+>save space.
+>
+>Userspace requests can use either format and ETHTOOL_RF_COMPACT flag in
+>request header tells kernel which format to use in reply. Notifications
+>always use compact format.
+>
+>Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+>---
+> Documentation/networking/ethtool-netlink.txt |  61 ++
+> include/uapi/linux/ethtool_netlink.h         |  35 ++
+> net/ethtool/Makefile                         |   2 +-
+> net/ethtool/bitset.c                         | 606 +++++++++++++++++++
+> net/ethtool/bitset.h                         |  40 ++
+> net/ethtool/netlink.h                        |   9 +
+> 6 files changed, 752 insertions(+), 1 deletion(-)
+> create mode 100644 net/ethtool/bitset.c
+> create mode 100644 net/ethtool/bitset.h
+>
+>diff --git a/Documentation/networking/ethtool-netlink.txt b/Documentation/networking/ethtool-netlink.txt
+>index 97c369aa290b..4636682c551f 100644
+>--- a/Documentation/networking/ethtool-netlink.txt
+>+++ b/Documentation/networking/ethtool-netlink.txt
+>@@ -73,6 +73,67 @@ set, the behaviour is the same as (or closer to) the behaviour before it was
+> introduced.
 > 
-> Applied, thanks! Fyi, I retained the zeroing of open_attr as otherwise if we ever
-> extend struct bpf_object_open_attr in future, we'll easily miss this and pass in
-> garbage to bpf_object__open_xattr().
+> 
+>+Bit sets
+>+--------
+>+
+>+For short bitmaps of (reasonably) fixed length, standard NLA_BITFIELD32 type
+>+is used. For arbitrary length bitmaps, ethtool netlink uses a nested attribute
+>+with contents of one of two forms: compact (two binary bitmaps representing
+>+bit values and mask of affected bits) and bit-by-bit (list of bits identified
+>+by either index or name).
+>+
+>+Compact form: nested (bitset) atrribute contents:
+>+
+>+    ETHTOOL_A_BITSET_LIST	(flag)		no mask, only a list
+>+    ETHTOOL_A_BITSET_SIZE	(u32)		number of significant bits
+>+    ETHTOOL_A_BITSET_VALUE	(binary)	bitmap of bit values
+>+    ETHTOOL_A_BITSET_MASK	(binary)	bitmap of valid bits
+>+
+>+Value and mask must have length at least ETHTOOL_A_BITSET_SIZE bits rounded up
+>+to a multiple of 32 bits. They consist of 32-bit words in host byte order,
 
-Thanks for the info, Daniel.
+Looks like the blocks are similar to NLA_BITFIELD32. Why don't you user
+nested array of NLA_BITFIELD32 instead?
 
-I checked the link [1] and thanks for the improvement when applied this
-patch.
 
-Thanks,
-Leo Yan
+>+words ordered from least significant to most significant (i.e. the same way as
+>+bitmaps are passed with ioctl interface).
+>+
+>+For compact form, ETHTOOL_A_BITSET_SIZE and ETHTOOL_A_BITSET_VALUE are
+>+mandatory.  Similar to BITFIELD32, a compact form bit set requests to set bits
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/commit/?id=33bae185f74d49a0d7b1bfaafb8e959efce0f243
+Double space^^
+
+
+>+in the mask to 1 (if the bit is set in value) or 0 (if not) and preserve the
+>+rest. If ETHTOOL_A_BITSET_LIST is present, there is no mask and bitset
+>+represents a simple list of bits.
+
+Okay, that is a bit confusing. Why not to rename to something like:
+ETHTOOL_A_BITSET_NO_MASK (flag)
+?
+
+
+>+
+>+Kernel bit set length may differ from userspace length if older application is
+>+used on newer kernel or vice versa. If userspace bitmap is longer, an error is
+>+issued only if the request actually tries to set values of some bits not
+>+recognized by kernel.
+>+
+>+Bit-by-bit form: nested (bitset) attribute contents:
+>+
+>+    ETHTOOL_A_BITSET_LIST	(flag)		no mask, only a list
+>+    ETHTOOL_A_BITSET_SIZE	(u32)		number of significant bits
+>+    ETHTOOL_A_BITSET_BIT	(nested)	array of bits
+>+	ETHTOOL_A_BITSET_BIT+   (nested)	one bit
+>+	    ETHTOOL_A_BIT_INDEX	(u32)		bit index (0 for LSB)
+>+	    ETHTOOL_A_BIT_NAME	(string)	bit name
+>+	    ETHTOOL_A_BIT_VALUE	(flag)		present if bit is set
+>+
+>+Bit size is optional for bit-by-bit form. ETHTOOL_A_BITSET_BITS nest can only
+>+contain ETHTOOL_A_BITS_BIT attributes but there can be an arbitrary number of
+>+them.  A bit may be identified by its index or by its name. When used in
+>+requests, listed bits are set to 0 or 1 according to ETHTOOL_A_BIT_VALUE, the
+>+rest is preserved. A request fails if index exceeds kernel bit length or if
+>+name is not recognized.
+>+
+>+When ETHTOOL_A_BITSET_LIST flag is present, bitset is interpreted as a simple
+>+bit list. ETHTOOL_A_BIT_VALUE attributes are not used in such case. Bit list
+>+represents a bitmap with listed bits set and the rest zero.
+>+
+>+In requests, application can use either form. Form used by kernel in reply is
+>+determined by a flag in flags field of request header. Semantics of value and
+>+mask depends on the attribute. General idea is that flags control request
+>+processing, info_mask control which parts of the information are returned in
+>+"get" request and index identifies a particular subcommand or an object to
+>+which the request applies.
+
+This is quite complex and confusing. Having the same API for 2 APIs is
+odd. The API should be crystal clear, easy to use.
+
+Why can't you have 2 commands, one working with bit arrays only, one
+working with strings? Something like:
+X_GET
+   ETHTOOL_A_BITS (nested)
+      ETHTOOL_A_BIT_ARRAY (BITFIELD32)
+X_NAMES_GET
+   ETHTOOL_A_BIT_NAMES (nested)
+	ETHTOOL_A_BIT_INDEX
+	ETHTOOL_A_BIT_NAME
+
+For set, you can also have multiple cmds:
+X_SET  - to set many at once, by bit index
+   ETHTOOL_A_BITS (nested)
+      ETHTOOL_A_BIT_ARRAY (BITFIELD32)
+X_ONE_SET   - to set one, by bit index
+   ETHTOOL_A_BIT_INDEX
+   ETHTOOL_A_BIT_VALUE
+X_ONE_SET   - to set one, by name
+   ETHTOOL_A_BIT_NAME
+   ETHTOOL_A_BIT_VALUE
+
+
+[...]
