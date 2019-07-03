@@ -2,155 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 56CED5DCA0
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 04:46:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E73F5DCBA
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 05:05:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727504AbfGCCqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Jul 2019 22:46:52 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:25486 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726430AbfGCCqw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 22:46:52 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x632ajxm024177;
-        Tue, 2 Jul 2019 19:46:43 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pfpt0818;
- bh=8cUCrPMFYn3RR4V3pVU1X1xLeexsf6Odxj/aGqrayPU=;
- b=tk7Okjo9GTFvYw8RZw8ynd8RVBa2l530OylHuIxHb8SUlWEnQiZZO9oUzMwYEuTNNbN4
- +AgcU3dGQvqF4eiOCz7zPcuAweiZvtwurFYm0r4zCLpCFDYdSrB2mwdA99KVRfrVgFw1
- 4s4XNdxE8BYFZWCi5EPIBMMnYqMpJ18mybl07rq9LOwPLTV6MsT3u5cQ3+DUNO9QTaTT
- jt8jdkDWqEYvX96ColQm/E6uFlL8deDfkl1wo6FcFt5TrjzuMpQ2Dy4KiwwXT+aolr4y
- RTI3FY/Ay1T1CDQSNiru1iyUmGFBHTUsSozotJ9dsvWZvyOhhB1h+QPT9u5+cYDPlctJ sw== 
-Received: from sc-exch01.marvell.com ([199.233.58.181])
-        by mx0b-0016f401.pphosted.com with ESMTP id 2tg5733je7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 02 Jul 2019 19:46:43 -0700
-Received: from SC-EXCH04.marvell.com (10.93.176.84) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Tue, 2 Jul
- 2019 19:46:41 -0700
-Received: from NAM05-DM3-obe.outbound.protection.outlook.com (104.47.49.58) by
- SC-EXCH04.marvell.com (10.93.176.84) with Microsoft SMTP Server (TLS) id
- 15.0.1367.3 via Frontend Transport; Tue, 2 Jul 2019 19:46:41 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector2-marvell-onmicrosoft-com;
+        id S1727190AbfGCDE6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Jul 2019 23:04:58 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:6958 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727049AbfGCDE6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Jul 2019 23:04:58 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x6332CNV009590;
+        Tue, 2 Jul 2019 20:04:33 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=9AYLO9ASELn0D7E5DC//s9kQbzWmpMYOstCY8UNsIFE=;
+ b=SbEe8EqQygDbep9lQdDQ6X2x5WeY/R8lAbBn1fkvRQKpgxy3ZH4LgIVX72EU7AS6ZrEF
+ ymnfTj8clI5ca1CYUwF95bjF7RL0G1eHtoKbXHAsyo/td31fMW7H+Hr08W1iMEqKuDGZ
+ xm8fswETczeHBZojXeGs/jgMDOpjlgskHLc= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0001303.ppops.net with ESMTP id 2tga3r2bqn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 02 Jul 2019 20:04:33 -0700
+Received: from ash-exhub201.TheFacebook.com (2620:10d:c0a8:83::7) by
+ ash-exhub201.TheFacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 2 Jul 2019 20:04:32 -0700
+Received: from NAM04-BN3-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Tue, 2 Jul 2019 20:04:32 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector1-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8cUCrPMFYn3RR4V3pVU1X1xLeexsf6Odxj/aGqrayPU=;
- b=Ll2rzZ/TM4AoPwGoPXhxt89v8sx4iwvenGLrp5wxw6b0cI8qVcdbTZkoe/se162N/mjw0QN2emGBkiErPGXwPQHa5VeVskWLd4DaKRxtE5GJWVevbo2dkH8ijWgQxZwL0QK62e4lm4ng6earKkkn0LdH56dJu6CpwAoEvqP+ukY=
-Received: from MN2PR18MB2528.namprd18.prod.outlook.com (20.179.80.86) by
- MN2PR18MB2766.namprd18.prod.outlook.com (20.178.255.217) with Microsoft SMTP
+ bh=9AYLO9ASELn0D7E5DC//s9kQbzWmpMYOstCY8UNsIFE=;
+ b=WKSCOPze1/vsUm8OG3Ru44pv+Dvf9ARoi+gmpKisI58RyXJ0T6cTw8NxpcpiWvzbavOmXZCp+M1PtHzGgHxgmq0Q288NdGbIaaY47/j8CkGyq2L4klc42eDUQqhDnlfhqo0dNjSuG9jHkTQ6xl/tijHE+fYJ8CG2nX1hjrIWXEs=
+Received: from BYAPR15MB2311.namprd15.prod.outlook.com (52.135.197.145) by
+ BYAPR15MB2967.namprd15.prod.outlook.com (20.178.237.148) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2032.20; Wed, 3 Jul 2019 02:46:35 +0000
-Received: from MN2PR18MB2528.namprd18.prod.outlook.com
- ([fe80::a8ef:cea:5dba:ddb1]) by MN2PR18MB2528.namprd18.prod.outlook.com
- ([fe80::a8ef:cea:5dba:ddb1%4]) with mapi id 15.20.2032.019; Wed, 3 Jul 2019
- 02:46:35 +0000
-From:   Sudarsana Reddy Kalluru <skalluru@marvell.com>
-To:     Parav Pandit <parav@mellanox.com>, Andrew Lunn <andrew@lunn.ch>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        "Ariel Elior" <aelior@marvell.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>
-Subject: RE: [PATCH net-next 1/1] devlink: Add APIs to publish/unpublish the
- port parameters.
-Thread-Topic: [PATCH net-next 1/1] devlink: Add APIs to publish/unpublish the
- port parameters.
-Thread-Index: AQHVMPpBpknp8pmVkkqrkESNlCeW4qa4LMJg
-Date:   Wed, 3 Jul 2019 02:46:35 +0000
-Message-ID: <MN2PR18MB25280E0966EF3B8D9BEBF4F7D3FB0@MN2PR18MB2528.namprd18.prod.outlook.com>
-References: <20190702152056.31728-1-skalluru@marvell.com>
- <20190702161133.GP30468@lunn.ch>
- <AM0PR05MB4866D7B26F48AF0BED9055EED1F80@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20190702164844.GA28471@lunn.ch>
- <AM0PR05MB4866CBFB93C42453068376DED1F80@AM0PR05MB4866.eurprd05.prod.outlook.com>
-In-Reply-To: <AM0PR05MB4866CBFB93C42453068376DED1F80@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ 15.20.2032.18; Wed, 3 Jul 2019 03:04:31 +0000
+Received: from BYAPR15MB2311.namprd15.prod.outlook.com
+ ([fe80::849a:6325:7aee:17de]) by BYAPR15MB2311.namprd15.prod.outlook.com
+ ([fe80::849a:6325:7aee:17de%6]) with mapi id 15.20.2032.019; Wed, 3 Jul 2019
+ 03:04:31 +0000
+From:   Lawrence Brakmo <brakmo@fb.com>
+To:     Y Song <ys114321@gmail.com>, Stanislav Fomichev <sdf@google.com>
+CC:     netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Priyaranjan Jha <priyarjha@google.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        "Soheil Hassas Yeganeh" <soheil@google.com>
+Subject: Re: [PATCH bpf-next v2 0/8] bpf: TCP RTT sock_ops bpf callback
+Thread-Topic: [PATCH bpf-next v2 0/8] bpf: TCP RTT sock_ops bpf callback
+Thread-Index: AQHVMPE5/cVpphylzUetGXhX7OOc+qa3nKeAgAAkLQA=
+Date:   Wed, 3 Jul 2019 03:04:31 +0000
+Message-ID: <0E380C87-29CC-4F4C-869B-22C1A18F9B35@fb.com>
+References: <20190702161403.191066-1-sdf@google.com>
+ <CAH3MdRXz-AHMuNQNWhnrxCrZhD9xKi44HiQdMh99R1FGaFYnhA@mail.gmail.com>
+In-Reply-To: <CAH3MdRXz-AHMuNQNWhnrxCrZhD9xKi44HiQdMh99R1FGaFYnhA@mail.gmail.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-originating-ip: [14.140.231.66]
+user-agent: Microsoft-MacOutlook/10.1a.0.190609
+x-originating-ip: [2620:10d:c090:180::1:20cc]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a5a85ad6-7ab2-41ba-44c3-08d6ff60aa27
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MN2PR18MB2766;
-x-ms-traffictypediagnostic: MN2PR18MB2766:
-x-microsoft-antispam-prvs: <MN2PR18MB27662BF3A795C2ECC5117408D3FB0@MN2PR18MB2766.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2201;
+x-ms-office365-filtering-correlation-id: 5398688c-2fd8-4139-1349-08d6ff632b90
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BYAPR15MB2967;
+x-ms-traffictypediagnostic: BYAPR15MB2967:
+x-microsoft-antispam-prvs: <BYAPR15MB2967D564B94D22BEE845ABBDA9FB0@BYAPR15MB2967.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
 x-forefront-prvs: 00872B689F
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(376002)(396003)(39860400002)(346002)(366004)(13464003)(189003)(199004)(81166006)(54906003)(8676002)(81156014)(55016002)(33656002)(6246003)(2906002)(8936002)(229853002)(316002)(305945005)(53936002)(66446008)(74316002)(6436002)(446003)(7736002)(476003)(11346002)(71190400001)(71200400001)(486006)(9686003)(110136005)(478600001)(102836004)(14454004)(66476007)(52536014)(66066001)(55236004)(64756008)(4326008)(68736007)(76116006)(26005)(186003)(5660300002)(25786009)(256004)(66556008)(14444005)(66946007)(86362001)(6116002)(76176011)(3846002)(99286004)(53546011)(6506007)(7696005)(73956011);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR18MB2766;H:MN2PR18MB2528.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: marvell.com does not designate
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(979002)(396003)(366004)(39860400002)(376002)(346002)(136003)(199004)(189003)(46003)(7416002)(102836004)(2906002)(8676002)(14454004)(73956011)(2616005)(36756003)(33656002)(66476007)(66556008)(316002)(66446008)(76116006)(6506007)(8936002)(81156014)(91956017)(5660300002)(6512007)(64756008)(66946007)(53936002)(6246003)(53546011)(81166006)(305945005)(476003)(86362001)(54906003)(110136005)(11346002)(76176011)(71200400001)(4326008)(6436002)(7736002)(71190400001)(25786009)(58126008)(6116002)(99286004)(446003)(6486002)(229853002)(256004)(186003)(478600001)(68736007)(486006)(969003)(989001)(999001)(1009001)(1019001);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2967;H:BYAPR15MB2311.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: I80ytVEuRNm3NA7QFQ1/FfusIekl3yu8ZbZGdfGXt4F6nX3oNSE0PuLmvZw4+lsP6u2MmeLwaYoXlCrBUfqzaCyWVMxgmiwmJ6pV3Y4u1zRBcQ+BN6nR7I4Lr+8kVCfJ05iU95FKlsC285dXx5UON4wvqG5/bhz2WQaboafGR52MGWDqMJvZubioTqHGmDzURM+KEVj/noDik0mTIAOUVaRYqNuYuAxNqctk5VwkZ2zl8/Va/769rh1tJ1FLEfcZawrGUs6KdA45eoTW7YLuf/2wv2dIeVHujr32L0J9NlWtJt1WGlgrVjQ9ICuQxrWu1bKhsy83wEWspdkqzDyqOTKVeZ3zHBESHQ62HleMpnxnJGHqRiM657PweEtzRd91IJxsMYS0jEA95aXOyBZ4msf0wIBRq6AtMczkWYwhfCU=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+x-microsoft-antispam-message-info: TUIvAzq3YNxW2XkKocuLYUTGKLq6sedBxlM+SV6cBER04bjroc5B+Wg6Ks6FKVKZGs3oKyHBnGBAei7a3getoUYSWDeTlRr3cNntH+6CMTBk9IJT05rvW9D6zsVfKmTeGFjIESsGWNotKYaY0LV5zQow5sTNSTg7ICeKJlhOuXSMG4sminGUuf79fVl9NNTE6ggIrntqDbgKAb+Wrmpo4Bj5l9kohRPs93B2R7mnIFoMwrJNc/Zk6ZSfhXWd6AAc8iXdhhZPo+AslPwI7zlbLn5R+9uE3aegLydeh/JumfkrcN/729cPjLNI5cYuHPmZDD3LohIhrZWySG9MYXNrmiM/zh1JLppo7HFhz6gevFhGF/iREn/fnrBsErMugIwJIYeEJNCl+STBjuHyOgf26gJJmmFpMzbvtiQZxq1KWtE=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <1ACEC932C278124388E0E54E3A3C05FB@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: a5a85ad6-7ab2-41ba-44c3-08d6ff60aa27
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jul 2019 02:46:35.4598
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5398688c-2fd8-4139-1349-08d6ff632b90
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jul 2019 03:04:31.5702
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: skalluru@marvell.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR18MB2766
-X-OriginatorOrg: marvell.com
+X-MS-Exchange-CrossTenant-userprincipalname: brakmo@fb.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2967
+X-OriginatorOrg: fb.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-03_01:,,
  signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1907030035
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-> -----Original Message-----
-> From: Parav Pandit <parav@mellanox.com>
-> Sent: Tuesday, July 2, 2019 10:49 PM
-> To: Andrew Lunn <andrew@lunn.ch>
-> Cc: Sudarsana Reddy Kalluru <skalluru@marvell.com>;
-> davem@davemloft.net; netdev@vger.kernel.org; Michal Kalderon
-> <mkalderon@marvell.com>; Ariel Elior <aelior@marvell.com>;
-> jiri@resnulli.us
-> Subject: [EXT] RE: [PATCH net-next 1/1] devlink: Add APIs to
-> publish/unpublish the port parameters.
->=20
-> External Email
->=20
-> ----------------------------------------------------------------------
->=20
->=20
-> > -----Original Message-----
-> > From: Andrew Lunn <andrew@lunn.ch>
-> > Sent: Tuesday, July 2, 2019 10:19 PM
-> > To: Parav Pandit <parav@mellanox.com>
-> > Cc: Sudarsana Reddy Kalluru <skalluru@marvell.com>;
-> > davem@davemloft.net; netdev@vger.kernel.org;
-> mkalderon@marvell.com;
-> > aelior@marvell.com; jiri@resnulli.us
-> > Subject: Re: [PATCH net-next 1/1] devlink: Add APIs to
-> > publish/unpublish the port parameters.
-> >
-> > > A vendor driver calling these APIs is needed at minimum.
-> >
-> > Not a vendor driver, but a mainline driver.
-> >
-> My apologies for terminology.
-> I meant to say that a NIC/hw driver from the kernel tree that created the
-> devlink port should call this API (as user) in the patch.
-> You said it rightly below. Thanks.
->=20
-> > But yes, a new API should not be added without at least one user.
-> >
-> >     Andrew
-Thanks a lot for your reviews.
-Marvell NIC driver has a requirement to support the display/configuration o=
-f device attributes. Sent the proposed changes with following 'subject line=
-',
-     [PATCH net-next 4/4] qed: Add devlink support for configuration attrib=
-utes.
-Have received a comment (from community) suggesting to move some of the att=
-ributes to devlink-port interface, which
-requires the proposed APIs.
-
-Will update the commit message and send it with the Marvel driver patch ser=
-ies which use this functionality.
+DQrvu79PbiA3LzIvMTksIDEwOjU1IEFNLCAibmV0ZGV2LW93bmVyQHZnZXIua2VybmVsLm9yZyBv
+biBiZWhhbGYgb2YgWSBTb25nIiA8bmV0ZGV2LW93bmVyQHZnZXIua2VybmVsLm9yZyBvbiBiZWhh
+bGYgb2YgeXMxMTQzMjFAZ21haWwuY29tPiB3cm90ZToNCg0KICAgIE9uIFR1ZSwgSnVsIDIsIDIw
+MTkgYXQgOToxNCBBTSBTdGFuaXNsYXYgRm9taWNoZXYgPHNkZkBnb29nbGUuY29tPiB3cm90ZToN
+CiAgICA+DQogICAgPiBDb25nZXN0aW9uIGNvbnRyb2wgdGVhbSB3b3VsZCBsaWtlIHRvIGhhdmUg
+YSBwZXJpb2RpYyBjYWxsYmFjayB0bw0KICAgID4gdHJhY2sgc29tZSBUQ1Agc3RhdGlzdGljcy4g
+TGV0J3MgYWRkIGEgc29ja19vcHMgY2FsbGJhY2sgdGhhdCBjYW4gYmUNCiAgICA+IHNlbGVjdGl2
+ZWx5IGVuYWJsZWQgb24gYSBzb2NrZXQgYnkgc29ja2V0IGJhc2lzIGFuZCBpcyBleGVjdXRlZCBm
+b3INCiAgICA+IGV2ZXJ5IFJUVC4gQlBGIHByb2dyYW0gZnJlcXVlbmN5IGNhbiBiZSBmdXJ0aGVy
+IGNvbnRyb2xsZWQgYnkgY2FsbGluZw0KICAgID4gYnBmX2t0aW1lX2dldF9ucyBhbmQgYmFpbGlu
+ZyBvdXQgZWFybHkuDQogICAgPg0KICAgID4gSSBydW4gbmVwZXIgdGNwX3N0cmVhbSBhbmQgdGNw
+X3JyIHRlc3RzIHdpdGggdGhlIHNhbXBsZSBwcm9ncmFtDQogICAgPiBmcm9tIHRoZSBsYXN0IHBh
+dGNoIGFuZCBkaWRuJ3Qgb2JzZXJ2ZSBhbnkgbm90aWNlYWJsZSBwZXJmb3JtYW5jZQ0KICAgID4g
+ZGlmZmVyZW5jZS4NCiAgICA+DQogICAgPiB2MjoNCiAgICA+ICogYWRkIGEgY29tbWVudCBhYm91
+dCBzZWNvbmQgYWNjZXB0KCkgaW4gc2VsZnRlc3QgKFlvbmdob25nIFNvbmcpDQogICAgPiAqIHJl
+ZmVyIHRvIHRjcF9icGYucmVhZG1lIGluIHNhbXBsZSBwcm9ncmFtIChZb25naG9uZyBTb25nKQ0K
+ICAgID4NCiAgICA+IFN1Z2dlc3RlZC1ieTogRXJpYyBEdW1hemV0IDxlZHVtYXpldEBnb29nbGUu
+Y29tPg0KICAgID4gQ2M6IEVyaWMgRHVtYXpldCA8ZWR1bWF6ZXRAZ29vZ2xlLmNvbT4NCiAgICA+
+IENjOiBQcml5YXJhbmphbiBKaGEgPHByaXlhcmpoYUBnb29nbGUuY29tPg0KICAgID4gQ2M6IFl1
+Y2h1bmcgQ2hlbmcgPHljaGVuZ0Bnb29nbGUuY29tPg0KICAgID4gQ2M6IFNvaGVpbCBIYXNzYXMg
+WWVnYW5laCA8c29oZWlsQGdvb2dsZS5jb20+DQogICAgPiBBY2tlZC1ieTogU29oZWlsIEhhc3Nh
+cyBZZWdhbmVoIDxzb2hlaWxAZ29vZ2xlLmNvbT4NCiAgICA+IEFja2VkLWJ5OiBZdWNodW5nIENo
+ZW5nIDx5Y2hlbmdAZ29vZ2xlLmNvbT4NCiAgICANCiAgICBBY2sgZm9yIHRoZSB3aG9sZSBzZXJp
+ZXMuDQogICAgQWNrZWQtYnk6IFlvbmdob25nIFNvbmcgPHloc0BmYi5jb20+DQoNClRoYW5rcywg
+dGhpcyBpcyBhIHZlcnkgbmljZSBmZWF0dXJlIQ0KICAgIA0KQWNrIGZvciB0aGUgd2hvbGUgc2Vy
+aWVzLg0KQWNrZWQtYnk6IExhd3JlbmNlIEJyYWttbyA8YnJha21vQGZiLmNvbT4NCg0KICAgID4N
+CiAgICA+IFN0YW5pc2xhdiBGb21pY2hldiAoOCk6DQogICAgPiAgIGJwZjogYWRkIEJQRl9DR1JP
+VVBfU09DS19PUFMgY2FsbGJhY2sgdGhhdCBpcyBleGVjdXRlZCBvbiBldmVyeSBSVFQNCiAgICA+
+ICAgYnBmOiBzcGxpdCBzaGFyZWQgYnBmX3RjcF9zb2NrIGFuZCBicGZfc29ja19vcHMgaW1wbGVt
+ZW50YXRpb24NCiAgICA+ICAgYnBmOiBhZGQgZHNhY2tfZHVwcy9kZWxpdmVyZWR7LF9jZX0gdG8g
+YnBmX3RjcF9zb2NrDQogICAgPiAgIGJwZjogYWRkIGljc2tfcmV0cmFuc21pdHMgdG8gYnBmX3Rj
+cF9zb2NrDQogICAgPiAgIGJwZi90b29sczogc3luYyBicGYuaA0KICAgID4gICBzZWxmdGVzdHMv
+YnBmOiB0ZXN0IEJQRl9TT0NLX09QU19SVFRfQ0INCiAgICA+ICAgc2FtcGxlcy9icGY6IGFkZCBz
+YW1wbGUgcHJvZ3JhbSB0aGF0IHBlcmlvZGljYWxseSBkdW1wcyBUQ1Agc3RhdHMNCiAgICA+ICAg
+c2FtcGxlcy9icGY6IGZpeCB0Y3BfYnBmLnJlYWRtZSBkZXRhY2ggY29tbWFuZA0KICAgID4NCiAg
+ICA+ICBpbmNsdWRlL25ldC90Y3AuaCAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICA4ICsN
+CiAgICA+ICBpbmNsdWRlL3VhcGkvbGludXgvYnBmLmggICAgICAgICAgICAgICAgICAgIHwgIDEy
+ICstDQogICAgPiAgbmV0L2NvcmUvZmlsdGVyLmMgICAgICAgICAgICAgICAgICAgICAgICAgICB8
+IDIwNyArKysrKysrKysrKy0tLS0tDQogICAgPiAgbmV0L2lwdjQvdGNwX2lucHV0LmMgICAgICAg
+ICAgICAgICAgICAgICAgICB8ICAgNCArDQogICAgPiAgc2FtcGxlcy9icGYvTWFrZWZpbGUgICAg
+ICAgICAgICAgICAgICAgICAgICB8ICAgMSArDQogICAgPiAgc2FtcGxlcy9icGYvdGNwX2JwZi5y
+ZWFkbWUgICAgICAgICAgICAgICAgICB8ICAgMiArLQ0KICAgID4gIHNhbXBsZXMvYnBmL3RjcF9k
+dW1wc3RhdHNfa2Vybi5jICAgICAgICAgICAgfCAgNjggKysrKysrDQogICAgPiAgdG9vbHMvaW5j
+bHVkZS91YXBpL2xpbnV4L2JwZi5oICAgICAgICAgICAgICB8ICAxMiArLQ0KICAgID4gIHRvb2xz
+L3Rlc3Rpbmcvc2VsZnRlc3RzL2JwZi9NYWtlZmlsZSAgICAgICAgfCAgIDMgKy0NCiAgICA+ICB0
+b29scy90ZXN0aW5nL3NlbGZ0ZXN0cy9icGYvcHJvZ3MvdGNwX3J0dC5jIHwgIDYxICsrKysrDQog
+ICAgPiAgdG9vbHMvdGVzdGluZy9zZWxmdGVzdHMvYnBmL3Rlc3RfdGNwX3J0dC5jICB8IDI1NCAr
+KysrKysrKysrKysrKysrKysrKw0KICAgID4gIDExIGZpbGVzIGNoYW5nZWQsIDU3NCBpbnNlcnRp
+b25zKCspLCA1OCBkZWxldGlvbnMoLSkNCiAgICA+ICBjcmVhdGUgbW9kZSAxMDA2NDQgc2FtcGxl
+cy9icGYvdGNwX2R1bXBzdGF0c19rZXJuLmMNCiAgICA+ICBjcmVhdGUgbW9kZSAxMDA2NDQgdG9v
+bHMvdGVzdGluZy9zZWxmdGVzdHMvYnBmL3Byb2dzL3RjcF9ydHQuYw0KICAgID4gIGNyZWF0ZSBt
+b2RlIDEwMDY0NCB0b29scy90ZXN0aW5nL3NlbGZ0ZXN0cy9icGYvdGVzdF90Y3BfcnR0LmMNCiAg
+ICA+DQogICAgPiAtLQ0KICAgID4gMi4yMi4wLjQxMC5nZDhmZGJlMjFiNS1nb29nDQogICAgDQoN
+Cg==
