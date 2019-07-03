@@ -2,129 +2,1184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F40515E19E
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 12:07:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F5825E1BB
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 12:10:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727046AbfGCKHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 06:07:36 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:34336 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725820AbfGCKHd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 06:07:33 -0400
-Received: by mail-wr1-f66.google.com with SMTP id u18so2112665wru.1
-        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 03:07:31 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=VNvFKH5K+pDMmuMUJ4DZzYn2K79WWFEugthw2tWzrCE=;
-        b=TFfOhcaDr9mI8MLSg+N0IJOlq2VHdEF6+ZftM+ZbAPeUVc3a5kOsonY7oQdaE3uWmX
-         xx8g0Yp7EMbAYe+xewyEaMKvX1IARedo3bZtTrwzu3O8O3Yp3Wubz3hGAwegtU63gaQt
-         YQXsM2iKuD7djoQ77gbltJGDNRnV3BRpzWfOe6Q0w3AClrIrFvPCpRscLr9mT4rVUca/
-         cmxyPoInVj5GfDwvXX3m8F27O9u8s53rpq+O9VWGe1sRukW/Ylb2dxvv5uiY+gjaXNCj
-         jCe5ooFf0sTpkbSuHIajvjupgzHtgbYlLkMUSq1mP8eJkZPozYeQFcLmKsEn51Ml7C4t
-         z5PA==
-X-Gm-Message-State: APjAAAVl6JV6fvnAhFYNUiWBjPVZ72DJiTrT2GALcXSC0mRXYsPlsanD
-        yHj8SiZFXa5BvcuWDyCWWSPZsA==
-X-Google-Smtp-Source: APXvYqzGzHZlSIMty2RhAvvB1Uo0isxGnCtD5XKYMHI9/IRY2pIO6xkm3T2evQoOaleJYQ+jY3ZeIw==
-X-Received: by 2002:adf:dfc4:: with SMTP id q4mr27669596wrn.54.1562148450882;
-        Wed, 03 Jul 2019 03:07:30 -0700 (PDT)
-Received: from steredhat (host21-207-dynamic.52-79-r.retail.telecomitalia.it. [79.52.207.21])
-        by smtp.gmail.com with ESMTPSA id z5sm1183115wmf.48.2019.07.03.03.07.29
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 03 Jul 2019 03:07:30 -0700 (PDT)
-Date:   Wed, 3 Jul 2019 12:07:27 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Stefan Hajnoczi <stefanha@gmail.com>
-Cc:     netdev@vger.kernel.org, kvm@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v2 0/3] vsock/virtio: several fixes in the .probe() and
- .remove()
-Message-ID: <20190703100727.kuwpyc5sksrgmoxb@steredhat>
-References: <20190628123659.139576-1-sgarzare@redhat.com>
- <20190701151113.GE11900@stefanha-x1.localdomain>
- <20190701170357.jtuhy3ank7mv6izb@steredhat>
- <20190703091453.GA11844@stefanha-x1.localdomain>
+        id S1727221AbfGCKKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 06:10:05 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:48742 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726473AbfGCKKE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jul 2019 06:10:04 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id EAF9530C7E6A;
+        Wed,  3 Jul 2019 10:10:03 +0000 (UTC)
+Received: from [10.72.12.173] (ovpn-12-173.pek2.redhat.com [10.72.12.173])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id ED429863D9;
+        Wed,  3 Jul 2019 10:09:52 +0000 (UTC)
+Subject: Re: [RFC v2] vhost: introduce mdev based hardware vhost backend
+To:     Tiwei Bie <tiwei.bie@intel.com>, mst@redhat.com,
+        alex.williamson@redhat.com, maxime.coquelin@redhat.com
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
+References: <20190703091339.1847-1-tiwei.bie@intel.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <7b8279b2-aa7e-7adc-eeff-20dfaf4400d0@redhat.com>
+Date:   Wed, 3 Jul 2019 18:09:51 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190703091453.GA11844@stefanha-x1.localdomain>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20190703091339.1847-1-tiwei.bie@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Wed, 03 Jul 2019 10:10:04 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 03, 2019 at 10:14:53AM +0100, Stefan Hajnoczi wrote:
-> On Mon, Jul 01, 2019 at 07:03:57PM +0200, Stefano Garzarella wrote:
-> > On Mon, Jul 01, 2019 at 04:11:13PM +0100, Stefan Hajnoczi wrote:
-> > > On Fri, Jun 28, 2019 at 02:36:56PM +0200, Stefano Garzarella wrote:
-> > > > During the review of "[PATCH] vsock/virtio: Initialize core virtio vsock
-> > > > before registering the driver", Stefan pointed out some possible issues
-> > > > in the .probe() and .remove() callbacks of the virtio-vsock driver.
-> > > > 
-> > > > This series tries to solve these issues:
-> > > > - Patch 1 adds RCU critical sections to avoid use-after-free of
-> > > >   'the_virtio_vsock' pointer.
-> > > > - Patch 2 stops workers before to call vdev->config->reset(vdev) to
-> > > >   be sure that no one is accessing the device.
-> > > > - Patch 3 moves the works flush at the end of the .remove() to avoid
-> > > >   use-after-free of 'vsock' object.
-> > > > 
-> > > > v2:
-> > > > - Patch 1: use RCU to protect 'the_virtio_vsock' pointer
-> > > > - Patch 2: no changes
-> > > > - Patch 3: flush works only at the end of .remove()
-> > > > - Removed patch 4 because virtqueue_detach_unused_buf() returns all the buffers
-> > > >   allocated.
-> > > > 
-> > > > v1: https://patchwork.kernel.org/cover/10964733/
-> > > 
-> > > This looks good to me.
-> > 
-> > Thanks for the review!
-> > 
-> > > 
-> > > Did you run any stress tests?  For example an SMP guest constantly
-> > > connecting and sending packets together with a script that
-> > > hotplug/unplugs vhost-vsock-pci from the host side.
-> > 
-> > Yes, I started an SMP guest (-smp 4 -monitor tcp:127.0.0.1:1234,server,nowait)
-> > and I run these scripts to stress the .probe()/.remove() path:
-> > 
-> > - guest
-> >   while true; do
-> >       cat /dev/urandom | nc-vsock -l 4321 > /dev/null &
-> >       cat /dev/urandom | nc-vsock -l 5321 > /dev/null &
-> >       cat /dev/urandom | nc-vsock -l 6321 > /dev/null &
-> >       cat /dev/urandom | nc-vsock -l 7321 > /dev/null &
-> >       wait
-> >   done
-> > 
-> > - host
-> >   while true; do
-> >       cat /dev/urandom | nc-vsock 3 4321 > /dev/null &
-> >       cat /dev/urandom | nc-vsock 3 5321 > /dev/null &
-> >       cat /dev/urandom | nc-vsock 3 6321 > /dev/null &
-> >       cat /dev/urandom | nc-vsock 3 7321 > /dev/null &
-> >       sleep 2
-> >       echo "device_del v1" | nc 127.0.0.1 1234
-> >       sleep 1
-> >       echo "device_add vhost-vsock-pci,id=v1,guest-cid=3" | nc 127.0.0.1 1234
-> >       sleep 1
-> >   done
-> > 
-> > Do you think is enough or is better to have a test more accurate?
-> 
-> That's good when left running overnight so that thousands of hotplug
-> events are tested.
 
-Honestly I run the test for ~30 mins (because without the patch the
-crash happens in a few seconds), but of course, I'll run it this night :)
+On 2019/7/3 下午5:13, Tiwei Bie wrote:
+> Details about this can be found here:
+>
+> https://lwn.net/Articles/750770/
+>
+> What's new in this version
+> ==========================
+>
+> A new VFIO device type is introduced - vfio-vhost. This addressed
+> some comments from here: https://patchwork.ozlabs.org/cover/984763/
+>
+> Below is the updated device interface:
+>
+> Currently, there are two regions of this device: 1) CONFIG_REGION
+> (VFIO_VHOST_CONFIG_REGION_INDEX), which can be used to setup the
+> device; 2) NOTIFY_REGION (VFIO_VHOST_NOTIFY_REGION_INDEX), which
+> can be used to notify the device.
+>
+> 1. CONFIG_REGION
+>
+> The region described by CONFIG_REGION is the main control interface.
+> Messages will be written to or read from this region.
+>
+> The message type is determined by the `request` field in message
+> header. The message size is encoded in the message header too.
+> The message format looks like this:
+>
+> struct vhost_vfio_op {
+> 	__u64 request;
+> 	__u32 flags;
+> 	/* Flag values: */
+>   #define VHOST_VFIO_NEED_REPLY 0x1 /* Whether need reply */
+> 	__u32 size;
+> 	union {
+> 		__u64 u64;
+> 		struct vhost_vring_state state;
+> 		struct vhost_vring_addr addr;
+> 	} payload;
+> };
+>
+> The existing vhost-kernel ioctl cmds are reused as the message
+> requests in above structure.
 
-Thanks,
-Stefano
+
+Still a comments like V1. What's the advantage of inventing a new 
+protocol? I believe either of the following should be better:
+
+- using vhost ioctl,  we can start from SET_VRING_KICK/SET_VRING_CALL 
+and extend it with e.g notify region. The advantages is that all exist 
+userspace program could be reused without modification (or minimal 
+modification). And vhost API hides lots of details that is not necessary 
+to be understood by application (e.g in the case of container).
+
+- using PCI layout, then you don't even need to re-invent notifiy region 
+at all and we can pass-through them to guest.
+
+Personally, I prefer vhost ioctl.
+
+
+>
+> Each message will be written to or read from this region at offset 0:
+>
+> int vhost_vfio_write(struct vhost_dev *dev, struct vhost_vfio_op *op)
+> {
+> 	int count = VHOST_VFIO_OP_HDR_SIZE + op->size;
+> 	struct vhost_vfio *vfio = dev->opaque;
+> 	int ret;
+>
+> 	ret = pwrite64(vfio->device_fd, op, count, vfio->config_offset);
+> 	if (ret != count)
+> 		return -1;
+>
+> 	return 0;
+> }
+>
+> int vhost_vfio_read(struct vhost_dev *dev, struct vhost_vfio_op *op)
+> {
+> 	int count = VHOST_VFIO_OP_HDR_SIZE + op->size;
+> 	struct vhost_vfio *vfio = dev->opaque;
+> 	uint64_t request = op->request;
+> 	int ret;
+>
+> 	ret = pread64(vfio->device_fd, op, count, vfio->config_offset);
+> 	if (ret != count || request != op->request)
+> 		return -1;
+>
+> 	return 0;
+> }
+>
+> It's quite straightforward to set things to the device. Just need to
+> write the message to device directly:
+>
+> int vhost_vfio_set_features(struct vhost_dev *dev, uint64_t features)
+> {
+> 	struct vhost_vfio_op op;
+>
+> 	op.request = VHOST_SET_FEATURES;
+> 	op.flags = 0;
+> 	op.size = sizeof(features);
+> 	op.payload.u64 = features;
+>
+> 	return vhost_vfio_write(dev, &op);
+> }
+>
+> To get things from the device, two steps are needed.
+> Take VHOST_GET_FEATURE as an example:
+>
+> int vhost_vfio_get_features(struct vhost_dev *dev, uint64_t *features)
+> {
+> 	struct vhost_vfio_op op;
+> 	int ret;
+>
+> 	op.request = VHOST_GET_FEATURES;
+> 	op.flags = VHOST_VFIO_NEED_REPLY;
+> 	op.size = 0;
+>
+> 	/* Just need to write the header */
+> 	ret = vhost_vfio_write(dev, &op);
+> 	if (ret != 0)
+> 		goto out;
+>
+> 	/* `op` wasn't changed during write */
+> 	op.flags = 0;
+> 	op.size = sizeof(*features);
+>
+> 	ret = vhost_vfio_read(dev, &op);
+> 	if (ret != 0)
+> 		goto out;
+>
+> 	*features = op.payload.u64;
+> out:
+> 	return ret;
+> }
+>
+> 2. NOTIFIY_REGION (mmap-able)
+>
+> The region described by NOTIFY_REGION will be used to notify
+> the device.
+>
+> Each queue will have a page for notification, and it can be mapped
+> to VM (if hardware also supports), and the virtio driver in the VM
+> will be able to notify the device directly.
+>
+> The region described by NOTIFY_REGION is also write-able. If
+> the accelerator's notification register(s) cannot be mapped to
+> the VM, write() can also be used to notify the device. Something
+> like this:
+>
+> void notify_relay(void *opaque)
+> {
+> 	......
+> 	offset = host_page_size * queue_idx;
+>
+> 	ret = pwrite64(vfio->device_fd, &queue_idx, sizeof(queue_idx),
+> 			vfio->notify_offset + offset);
+> 	......
+> }
+>
+> 3. VFIO interrupt ioctl API
+>
+> VFIO interrupt ioctl API is used to setup device interrupts.
+> IRQ-bypass can also be supported.
+>
+> Currently, the data path interrupt can be configured via the
+> VFIO_VHOST_VQ_IRQ_INDEX with virtqueue's callfd.
+
+
+How about DMA API? Do you expect to use VFIO IOMMU API or using vhost 
+SET_MEM_TABLE? VFIO IOMMU API is more generic for sure but with 
+SET_MEM_TABLE DMA can be done at the level of parent device which means 
+it can work for e.g the card with on-chip IOMMU.
+
+And what's the plan for vIOMMU?
+
+
+>
+> Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
+> ---
+>   drivers/vhost/Makefile     |   2 +
+>   drivers/vhost/vdpa.c       | 770 +++++++++++++++++++++++++++++++++++++
+>   include/linux/vdpa_mdev.h  |  72 ++++
+>   include/uapi/linux/vfio.h  |  19 +
+>   include/uapi/linux/vhost.h |  25 ++
+>   5 files changed, 888 insertions(+)
+>   create mode 100644 drivers/vhost/vdpa.c
+>   create mode 100644 include/linux/vdpa_mdev.h
+
+
+We probably need some sample parent device implementation. It could be a 
+software datapath like e.g we can start from virtio-net device in guest 
+or a vhost/tap on host.
+
+Thanks
+
+
+>
+> diff --git a/drivers/vhost/Makefile b/drivers/vhost/Makefile
+> index 6c6df24f770c..cabb71095940 100644
+> --- a/drivers/vhost/Makefile
+> +++ b/drivers/vhost/Makefile
+> @@ -10,4 +10,6 @@ vhost_vsock-y := vsock.o
+>   
+>   obj-$(CONFIG_VHOST_RING) += vringh.o
+>   
+> +obj-$(CONFIG_VHOST_VFIO) += vdpa.o
+> +
+>   obj-$(CONFIG_VHOST)	+= vhost.o
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> new file mode 100644
+> index 000000000000..5c9426e2a091
+> --- /dev/null
+> +++ b/drivers/vhost/vdpa.c
+> @@ -0,0 +1,770 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (C) 2018-2019 Intel Corporation.
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/kernel.h>
+> +#include <linux/vfio.h>
+> +#include <linux/vhost.h>
+> +#include <linux/mdev.h>
+> +#include <linux/vdpa_mdev.h>
+> +#include <asm/uaccess.h>
+> +
+> +#define VDPA_CONFIG_SIZE		0x1000000
+> +
+> +#define VDPA_VFIO_VHOST_OFFSET_SHIFT	40
+> +#define VDPA_VFIO_VHOST_OFFSET_MASK \
+> +		((1ULL << VDPA_VFIO_VHOST_OFFSET_SHIFT) - 1)
+> +#define VDPA_VFIO_VHOST_OFFSET_TO_INDEX(offset) \
+> +		((offset) >> VDPA_VFIO_VHOST_OFFSET_SHIFT)
+> +#define VDPA_VFIO_VHOST_INDEX_TO_OFFSET(index) \
+> +		((u64)(index) << VDPA_VFIO_VHOST_OFFSET_SHIFT)
+> +#define VDPA_VFIO_VHOST_REGION_OFFSET(offset) \
+> +		((offset) & VDPA_VFIO_VHOST_OFFSET_MASK)
+> +
+> +struct vdpa_dev *vdpa_alloc(struct mdev_device *mdev, void *private,
+> +			    int max_vrings)
+> +{
+> +	struct vdpa_dev *vdpa;
+> +	size_t size;
+> +
+> +	size = sizeof(struct vdpa_dev) + max_vrings *
+> +			sizeof(struct vdpa_vring_info);
+> +
+> +	vdpa = kzalloc(size, GFP_KERNEL);
+> +	if (vdpa == NULL)
+> +		return NULL;
+> +
+> +	mutex_init(&vdpa->ops_lock);
+> +
+> +	vdpa->mdev = mdev;
+> +	vdpa->private = private;
+> +	vdpa->max_vrings = max_vrings;
+> +
+> +	return vdpa;
+> +}
+> +EXPORT_SYMBOL(vdpa_alloc);
+> +
+> +void vdpa_free(struct vdpa_dev *vdpa)
+> +{
+> +	struct mdev_device *mdev;
+> +
+> +	mdev = vdpa->mdev;
+> +
+> +	vdpa->ops->stop(vdpa);
+> +	mdev_set_drvdata(mdev, NULL);
+> +	mutex_destroy(&vdpa->ops_lock);
+> +	kfree(vdpa);
+> +}
+> +EXPORT_SYMBOL(vdpa_free);
+> +
+> +static ssize_t vdpa_handle_config_read(struct mdev_device *mdev,
+> +		char __user *buf, size_t count, loff_t *ppos)
+> +{
+> +	struct vdpa_dev *vdpa;
+> +	struct vhost_vfio_op *op = NULL;
+> +	loff_t pos = *ppos;
+> +	loff_t offset;
+> +	int ret;
+> +
+> +	vdpa = mdev_get_drvdata(mdev);
+> +	if (!vdpa) {
+> +		ret = -ENODEV;
+> +		goto out;
+> +	}
+> +
+> +	offset = VDPA_VFIO_VHOST_REGION_OFFSET(pos);
+> +	if (offset != 0) {
+> +		ret = -EINVAL;
+> +		goto out;
+> +	}
+> +
+> +	if (!vdpa->pending_reply) {
+> +		ret = 0;
+> +		goto out;
+> +	}
+> +
+> +	vdpa->pending_reply = false;
+> +
+> +	op = kzalloc(VHOST_VFIO_OP_HDR_SIZE + VHOST_VFIO_OP_PAYLOAD_MAX_SIZE,
+> +		     GFP_KERNEL);
+> +	if (op == NULL) {
+> +		ret = -ENOMEM;
+> +		goto out;
+> +	}
+> +
+> +	op->request = vdpa->pending.request;
+> +
+> +	switch (op->request) {
+> +	case VHOST_GET_VRING_BASE:
+> +		op->payload.state = vdpa->pending.payload.state;
+> +		op->size = sizeof(op->payload.state);
+> +		break;
+> +	case VHOST_GET_FEATURES:
+> +		op->payload.u64 = vdpa->pending.payload.u64;
+> +		op->size = sizeof(op->payload.u64);
+> +		break;
+> +	default:
+> +		ret = -EINVAL;
+> +		goto out_free;
+> +	}
+> +
+> +	if (op->size + VHOST_VFIO_OP_HDR_SIZE != count) {
+> +		ret = -EINVAL;
+> +		goto out_free;
+> +	}
+> +
+> +	if (copy_to_user(buf, op, count)) {
+> +		ret = -EFAULT;
+> +		goto out_free;
+> +	}
+> +
+> +	ret = count;
+> +
+> +out_free:
+> +	kfree(op);
+> +out:
+> +	return ret;
+> +}
+> +
+> +ssize_t vdpa_read(struct mdev_device *mdev, char __user *buf,
+> +		  size_t count, loff_t *ppos)
+> +{
+> +	int done = 0;
+> +	unsigned int index;
+> +	loff_t pos = *ppos;
+> +	struct vdpa_dev *vdpa;
+> +
+> +	vdpa = mdev_get_drvdata(mdev);
+> +	if (!vdpa)
+> +		return -ENODEV;
+> +
+> +	mutex_lock(&vdpa->ops_lock);
+> +
+> +	index = VDPA_VFIO_VHOST_OFFSET_TO_INDEX(pos);
+> +
+> +	switch (index) {
+> +	case VFIO_VHOST_CONFIG_REGION_INDEX:
+> +		done = vdpa_handle_config_read(mdev, buf, count, ppos);
+> +		break;
+> +	}
+> +
+> +	if (done > 0)
+> +		*ppos += done;
+> +
+> +	mutex_unlock(&vdpa->ops_lock);
+> +
+> +	return done;
+> +}
+> +EXPORT_SYMBOL(vdpa_read);
+> +
+> +static int vhost_set_vring_addr(struct mdev_device *mdev,
+> +		struct vhost_vring_addr *addr)
+> +{
+> +	struct vdpa_dev *vdpa;
+> +	int qid = addr->index;
+> +	struct vdpa_vring_info *vring;
+> +
+> +	vdpa = mdev_get_drvdata(mdev);
+> +	if (!vdpa)
+> +		return -ENODEV;
+> +
+> +	if (qid >= vdpa->max_vrings)
+> +		return -EINVAL;
+> +
+> +	if (qid >= vdpa->nr_vring)
+> +		vdpa->nr_vring = qid + 1;
+> +
+> +	vring = &vdpa->vring_info[qid];
+> +
+> +	vring->desc_user_addr = addr->desc_user_addr;
+> +	vring->used_user_addr = addr->used_user_addr;
+> +	vring->avail_user_addr = addr->avail_user_addr;
+> +	vring->log_guest_addr = addr->log_guest_addr;
+> +
+> +	return 0;
+> +}
+> +
+> +static int vhost_set_vring_num(struct mdev_device *mdev,
+> +		struct vhost_vring_state *num)
+> +{
+> +	struct vdpa_dev *vdpa;
+> +	int qid = num->index;
+> +	struct vdpa_vring_info *vring;
+> +
+> +	vdpa = mdev_get_drvdata(mdev);
+> +	if (!vdpa)
+> +		return -ENODEV;
+> +
+> +	if (qid >= vdpa->max_vrings)
+> +		return -EINVAL;
+> +
+> +	vring = &vdpa->vring_info[qid];
+> +
+> +	vring->size = num->num;
+> +
+> +	return 0;
+> +}
+> +
+> +static int vhost_set_vring_base(struct mdev_device *mdev,
+> +		struct vhost_vring_state *base)
+> +{
+> +	struct vdpa_dev *vdpa;
+> +	int qid = base->index;
+> +	struct vdpa_vring_info *vring;
+> +
+> +	vdpa = mdev_get_drvdata(mdev);
+> +	if (!vdpa)
+> +		return -ENODEV;
+> +
+> +	if (qid >= vdpa->max_vrings)
+> +		return -EINVAL;
+> +
+> +	vring = &vdpa->vring_info[qid];
+> +
+> +	vring->base = base->num;
+> +
+> +	return 0;
+> +}
+> +
+> +static int vhost_get_vring_base(struct mdev_device *mdev,
+> +		struct vhost_vring_state *base)
+> +{
+> +	struct vdpa_dev *vdpa;
+> +	int qid = base->index;
+> +
+> +	vdpa = mdev_get_drvdata(mdev);
+> +	if (!vdpa)
+> +		return -ENODEV;
+> +
+> +	vdpa->pending_reply = true;
+> +	vdpa->pending.request = VHOST_GET_VRING_BASE;
+> +	vdpa->pending.payload.state.index = qid;
+> +	vdpa->pending.payload.state.num = vdpa->vring_info[qid].base;
+> +
+> +	return 0;
+> +}
+> +
+> +static int vhost_set_log_base(struct mdev_device *mdev, u64 *log_base)
+> +{
+> +	struct vdpa_dev *vdpa;
+> +
+> +	vdpa = mdev_get_drvdata(mdev);
+> +	if (!vdpa)
+> +		return -ENODEV;
+> +
+> +	vdpa->log_base = *log_base;
+> +	return 0;
+> +}
+> +
+> +static int vhost_set_features(struct mdev_device *mdev, u64 *features)
+> +{
+> +	struct vdpa_dev *vdpa;
+> +
+> +	vdpa = mdev_get_drvdata(mdev);
+> +	if (!vdpa)
+> +		return -ENODEV;
+> +
+> +	vdpa->features = *features;
+> +	vdpa->ops->set_features(vdpa);
+> +
+> +	return 0;
+> +}
+> +
+> +static int vhost_get_features(struct mdev_device *mdev, u64 *features)
+> +{
+> +	struct vdpa_dev *vdpa;
+> +
+> +	vdpa = mdev_get_drvdata(mdev);
+> +	if (!vdpa)
+> +		return -ENODEV;
+> +
+> +	vdpa->pending_reply = true;
+> +	vdpa->pending.request = VHOST_GET_FEATURES;
+> +	vdpa->pending.payload.u64 =
+> +		vdpa->ops->supported_features(vdpa);
+> +
+> +	return 0;
+> +}
+> +
+> +static int vhost_set_owner(struct mdev_device *mdev)
+> +{
+> +	// TODO
+> +	return 0;
+> +}
+> +
+> +static int vhost_reset_owner(struct mdev_device *mdev)
+> +{
+> +	// TODO
+> +	return 0;
+> +}
+> +
+> +static int vhost_set_state(struct mdev_device *mdev, u64 *state)
+> +{
+> +	struct vdpa_dev *vdpa;
+> +
+> +	vdpa = mdev_get_drvdata(mdev);
+> +	if (!vdpa)
+> +		return -ENODEV;
+> +
+> +	if (*state >= VHOST_DEVICE_S_MAX)
+> +		return -EINVAL;
+> +
+> +	if (vdpa->state == *state)
+> +		return 0;
+> +
+> +	vdpa->state = *state;
+> +
+> +	switch (vdpa->state) {
+> +	case VHOST_DEVICE_S_RUNNING:
+> +		vdpa->ops->start(vdpa);
+> +		break;
+> +	case VHOST_DEVICE_S_STOPPED:
+> +		vdpa->ops->stop(vdpa);
+> +		break;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static ssize_t vdpa_handle_config_write(struct mdev_device *mdev,
+> +		const char __user *buf, size_t count, loff_t *ppos)
+> +{
+> +	struct vhost_vfio_op *op = NULL;
+> +	loff_t pos = *ppos;
+> +	loff_t offset;
+> +	int ret;
+> +
+> +	offset = VDPA_VFIO_VHOST_REGION_OFFSET(pos);
+> +	if (offset != 0) {
+> +		ret = -EINVAL;
+> +		goto out;
+> +	}
+> +
+> +	if (count < VHOST_VFIO_OP_HDR_SIZE) {
+> +		ret = -EINVAL;
+> +		goto out;
+> +	}
+> +
+> +	op = kzalloc(VHOST_VFIO_OP_HDR_SIZE + VHOST_VFIO_OP_PAYLOAD_MAX_SIZE,
+> +		     GFP_KERNEL);
+> +	if (op == NULL) {
+> +		ret = -ENOMEM;
+> +		goto out;
+> +	}
+> +
+> +	if (copy_from_user(op, buf, VHOST_VFIO_OP_HDR_SIZE)) {
+> +		ret = -EINVAL;
+> +		goto out_free;
+> +	}
+> +
+> +	if (op->size > VHOST_VFIO_OP_PAYLOAD_MAX_SIZE ||
+> +	    op->size + VHOST_VFIO_OP_HDR_SIZE != count) {
+> +		ret = -EINVAL;
+> +		goto out_free;
+> +	}
+> +
+> +	if (copy_from_user(&op->payload, buf + VHOST_VFIO_OP_HDR_SIZE,
+> +			   op->size)) {
+> +		ret = -EFAULT;
+> +		goto out_free;
+> +	}
+> +
+> +	switch (op->request) {
+> +	case VHOST_SET_LOG_BASE:
+> +		vhost_set_log_base(mdev, &op->payload.u64);
+> +		break;
+> +	case VHOST_SET_VRING_ADDR:
+> +		vhost_set_vring_addr(mdev, &op->payload.addr);
+> +		break;
+> +	case VHOST_SET_VRING_NUM:
+> +		vhost_set_vring_num(mdev, &op->payload.state);
+> +		break;
+> +	case VHOST_SET_VRING_BASE:
+> +		vhost_set_vring_base(mdev, &op->payload.state);
+> +		break;
+> +	case VHOST_GET_VRING_BASE:
+> +		vhost_get_vring_base(mdev, &op->payload.state);
+> +		break;
+> +	case VHOST_SET_FEATURES:
+> +		vhost_set_features(mdev, &op->payload.u64);
+> +		break;
+> +	case VHOST_GET_FEATURES:
+> +		vhost_get_features(mdev, &op->payload.u64);
+> +		break;
+> +	case VHOST_SET_OWNER:
+> +		vhost_set_owner(mdev);
+> +		break;
+> +	case VHOST_RESET_OWNER:
+> +		vhost_reset_owner(mdev);
+> +		break;
+> +	case VHOST_DEVICE_SET_STATE:
+> +		vhost_set_state(mdev, &op->payload.u64);
+> +		break;
+> +	default:
+> +		break;
+> +	}
+> +
+> +	ret = count;
+> +
+> +out_free:
+> +	kfree(op);
+> +out:
+> +	return ret;
+> +}
+> +
+> +static ssize_t vdpa_handle_notify_write(struct mdev_device *mdev,
+> +		const char __user *buf, size_t count, loff_t *ppos)
+> +{
+> +	struct vdpa_dev *vdpa;
+> +	int qid;
+> +
+> +	vdpa = mdev_get_drvdata(mdev);
+> +	if (!vdpa)
+> +		return -ENODEV;
+> +
+> +	if (count < sizeof(qid))
+> +		return -EINVAL;
+> +
+> +	if (copy_from_user(&qid, buf, sizeof(qid)))
+> +		return -EINVAL;
+> +
+> +	vdpa->ops->notify(vdpa, qid);
+> +
+> +	return count;
+> +}
+> +
+> +ssize_t vdpa_write(struct mdev_device *mdev, const char __user *buf,
+> +		   size_t count, loff_t *ppos)
+> +{
+> +	int done = 0;
+> +	unsigned int index;
+> +	loff_t pos = *ppos;
+> +	struct vdpa_dev *vdpa;
+> +
+> +	vdpa = mdev_get_drvdata(mdev);
+> +	if (!vdpa)
+> +		return -ENODEV;
+> +
+> +	mutex_lock(&vdpa->ops_lock);
+> +
+> +	index = VDPA_VFIO_VHOST_OFFSET_TO_INDEX(pos);
+> +
+> +	switch (index) {
+> +	case VFIO_VHOST_CONFIG_REGION_INDEX:
+> +		done = vdpa_handle_config_write(mdev, buf, count, ppos);
+> +		break;
+> +	case VFIO_VHOST_NOTIFY_REGION_INDEX:
+> +		done = vdpa_handle_notify_write(mdev, buf, count, ppos);
+> +		break;
+> +	}
+> +
+> +	if (done > 0)
+> +		*ppos += done;
+> +
+> +	mutex_unlock(&vdpa->ops_lock);
+> +
+> +	return done;
+> +}
+> +EXPORT_SYMBOL(vdpa_write);
+> +
+> +static int vdpa_get_region_info(struct mdev_device *mdev,
+> +				struct vfio_region_info *region_info,
+> +				u16 *cap_type_id, void **cap_type)
+> +{
+> +	struct vdpa_dev *vdpa;
+> +	u32 index, flags;
+> +	u64 size = 0;
+> +
+> +	if (!mdev)
+> +		return -EINVAL;
+> +
+> +	vdpa = mdev_get_drvdata(mdev);
+> +	if (!vdpa)
+> +		return -EINVAL;
+> +
+> +	index = region_info->index;
+> +	if (index >= VFIO_VHOST_NUM_REGIONS)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&vdpa->ops_lock);
+> +
+> +	flags = VFIO_REGION_INFO_FLAG_READ | VFIO_REGION_INFO_FLAG_WRITE;
+> +
+> +	switch (index) {
+> +	case VFIO_VHOST_CONFIG_REGION_INDEX:
+> +		size = VDPA_CONFIG_SIZE;
+> +		break;
+> +	case VFIO_VHOST_NOTIFY_REGION_INDEX:
+> +		size = (u64)vdpa->max_vrings << PAGE_SHIFT;
+> +		flags |= VFIO_REGION_INFO_FLAG_MMAP;
+> +		break;
+> +	default:
+> +		size = 0;
+> +		break;
+> +	}
+> +
+> +	region_info->size = size;
+> +	region_info->offset = VDPA_VFIO_VHOST_INDEX_TO_OFFSET(index);
+> +	region_info->flags = flags;
+> +	mutex_unlock(&vdpa->ops_lock);
+> +	return 0;
+> +}
+> +
+> +static int vdpa_reset(struct mdev_device *mdev)
+> +{
+> +	struct vdpa_dev *vdpa;
+> +
+> +	if (!mdev)
+> +		return -EINVAL;
+> +
+> +	vdpa = mdev_get_drvdata(mdev);
+> +	if (!vdpa)
+> +		return -EINVAL;
+> +
+> +	return 0;
+> +}
+> +
+> +static int vdpa_get_device_info(struct mdev_device *mdev,
+> +				struct vfio_device_info *dev_info)
+> +{
+> +	struct vdpa_dev *vdpa;
+> +
+> +	vdpa = mdev_get_drvdata(mdev);
+> +	if (!vdpa)
+> +		return -ENODEV;
+> +
+> +	dev_info->flags = VFIO_DEVICE_FLAGS_VHOST | VFIO_DEVICE_RESET;
+> +	dev_info->num_regions = VFIO_VHOST_NUM_REGIONS;
+> +	dev_info->num_irqs = VFIO_VHOST_NUM_IRQS;
+> +
+> +	return 0;
+> +}
+> +
+> +static int vdpa_get_irq_info(struct mdev_device *mdev,
+> +			     struct vfio_irq_info *info)
+> +{
+> +	struct vdpa_dev *vdpa;
+> +
+> +	vdpa = mdev_get_drvdata(mdev);
+> +	if (!vdpa)
+> +		return -ENODEV;
+> +
+> +	if (info->index != VFIO_VHOST_VQ_IRQ_INDEX)
+> +		return -EINVAL;
+> +
+> +	info->flags = VFIO_IRQ_INFO_EVENTFD;
+> +	info->count = vdpa->max_vrings;
+> +
+> +	return 0;
+> +}
+> +
+> +static int vdpa_set_irqs(struct mdev_device *mdev, uint32_t flags,
+> +			 unsigned int index, unsigned int start,
+> +			 unsigned int count, void *data)
+> +{
+> +	struct vdpa_dev *vdpa;
+> +	int *fd = data, i;
+> +
+> +	vdpa = mdev_get_drvdata(mdev);
+> +	if (!vdpa)
+> +		return -EINVAL;
+> +
+> +	if (index != VFIO_VHOST_VQ_IRQ_INDEX)
+> +		return -ENOTSUPP;
+> +
+> +	for (i = 0; i < count; i++)
+> +		vdpa->ops->set_eventfd(vdpa, start + i,
+> +			(flags & VFIO_IRQ_SET_DATA_EVENTFD) ? fd[i] : -1);
+> +
+> +	return 0;
+> +}
+> +
+> +long vdpa_ioctl(struct mdev_device *mdev, unsigned int cmd, unsigned long arg)
+> +{
+> +	int ret = 0;
+> +	unsigned long minsz;
+> +	struct vdpa_dev *vdpa;
+> +
+> +	if (!mdev)
+> +		return -EINVAL;
+> +
+> +	vdpa = mdev_get_drvdata(mdev);
+> +	if (!vdpa)
+> +		return -ENODEV;
+> +
+> +	switch (cmd) {
+> +	case VFIO_DEVICE_GET_INFO:
+> +	{
+> +		struct vfio_device_info info;
+> +
+> +		minsz = offsetofend(struct vfio_device_info, num_irqs);
+> +
+> +		if (copy_from_user(&info, (void __user *)arg, minsz))
+> +			return -EFAULT;
+> +
+> +		if (info.argsz < minsz)
+> +			return -EINVAL;
+> +
+> +		ret = vdpa_get_device_info(mdev, &info);
+> +		if (ret)
+> +			return ret;
+> +
+> +		if (copy_to_user((void __user *)arg, &info, minsz))
+> +			return -EFAULT;
+> +
+> +		return 0;
+> +	}
+> +	case VFIO_DEVICE_GET_REGION_INFO:
+> +	{
+> +		struct vfio_region_info info;
+> +		u16 cap_type_id = 0;
+> +		void *cap_type = NULL;
+> +
+> +		minsz = offsetofend(struct vfio_region_info, offset);
+> +
+> +		if (copy_from_user(&info, (void __user *)arg, minsz))
+> +			return -EFAULT;
+> +
+> +		if (info.argsz < minsz)
+> +			return -EINVAL;
+> +
+> +		ret = vdpa_get_region_info(mdev, &info, &cap_type_id,
+> +					   &cap_type);
+> +		if (ret)
+> +			return ret;
+> +
+> +		if (copy_to_user((void __user *)arg, &info, minsz))
+> +			return -EFAULT;
+> +
+> +		return 0;
+> +	}
+> +	case VFIO_DEVICE_GET_IRQ_INFO:
+> +	{
+> +		struct vfio_irq_info info;
+> +
+> +		minsz = offsetofend(struct vfio_irq_info, count);
+> +
+> +		if (copy_from_user(&info, (void __user *)arg, minsz))
+> +			return -EFAULT;
+> +
+> +		if (info.argsz < minsz || info.index >= vdpa->max_vrings)
+> +			return -EINVAL;
+> +
+> +		ret = vdpa_get_irq_info(mdev, &info);
+> +		if (ret)
+> +			return ret;
+> +
+> +		if (copy_to_user((void __user *)arg, &info, minsz))
+> +			return -EFAULT;
+> +
+> +		return 0;
+> +	}
+> +	case VFIO_DEVICE_SET_IRQS:
+> +	{
+> +		struct vfio_irq_set hdr;
+> +		size_t data_size = 0;
+> +		u8 *data = NULL;
+> +
+> +		minsz = offsetofend(struct vfio_irq_set, count);
+> +
+> +		if (copy_from_user(&hdr, (void __user *)arg, minsz))
+> +			return -EFAULT;
+> +
+> +		ret = vfio_set_irqs_validate_and_prepare(&hdr, vdpa->max_vrings,
+> +							 VFIO_VHOST_NUM_IRQS,
+> +							 &data_size);
+> +		if (ret)
+> +			return ret;
+> +
+> +		if (data_size) {
+> +			data = memdup_user((void __user *)(arg + minsz),
+> +					   data_size);
+> +			if (IS_ERR(data))
+> +				return PTR_ERR(data);
+> +		}
+> +
+> +		ret = vdpa_set_irqs(mdev, hdr.flags, hdr.index, hdr.start,
+> +				hdr.count, data);
+> +
+> +		kfree(data);
+> +		return ret;
+> +	}
+> +	case VFIO_DEVICE_RESET:
+> +		return vdpa_reset(mdev);
+> +	}
+> +	return -ENOTTY;
+> +}
+> +EXPORT_SYMBOL(vdpa_ioctl);
+> +
+> +static const struct vm_operations_struct vdpa_mm_ops = {
+> +#ifdef CONFIG_HAVE_IOREMAP_PROT
+> +	.access = generic_access_phys
+> +#endif
+> +};
+> +
+> +int vdpa_mmap(struct mdev_device *mdev, struct vm_area_struct *vma)
+> +{
+> +	struct vdpa_dev *vdpa;
+> +	unsigned int index;
+> +	loff_t pos;
+> +	loff_t offset;
+> +	int qid, ret;
+> +
+> +	vdpa = mdev_get_drvdata(mdev);
+> +	if (!vdpa)
+> +		return -ENODEV;
+> +
+> +	pos = vma->vm_pgoff << PAGE_SHIFT;
+> +
+> +	index = VDPA_VFIO_VHOST_OFFSET_TO_INDEX(pos);
+> +	offset = VDPA_VFIO_VHOST_REGION_OFFSET(pos);
+> +
+> +	qid = offset >> PAGE_SHIFT;
+> +
+> +	if (vma->vm_end < vma->vm_start)
+> +		return -EINVAL;
+> +	if ((vma->vm_flags & VM_SHARED) == 0)
+> +		return -EINVAL;
+> +	if (index != VFIO_VHOST_NOTIFY_REGION_INDEX)
+> +		return -EINVAL;
+> +	if (qid < 0 || qid >= vdpa->max_vrings)
+> +		return -EINVAL;
+> +
+> +	if (vma->vm_end - vma->vm_start > PAGE_SIZE)
+> +		return -EINVAL;
+> +
+> +	if (vdpa->ops->get_notify_addr == NULL)
+> +		return -ENOTSUPP;
+> +
+> +	mutex_lock(&vdpa->ops_lock);
+> +
+> +	vma->vm_ops = &vdpa_mm_ops;
+> +	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
+> +
+> +	vma->vm_pgoff = vdpa->ops->get_notify_addr(vdpa, qid) >> PAGE_SHIFT;
+> +
+> +	ret = remap_pfn_range(vma, vma->vm_start, vma->vm_pgoff,
+> +			vma->vm_end - vma->vm_start, vma->vm_page_prot);
+> +
+> +	mutex_unlock(&vdpa->ops_lock);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL(vdpa_mmap);
+> +
+> +int vdpa_open(struct mdev_device *mdev)
+> +{
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(vdpa_open);
+> +
+> +void vdpa_close(struct mdev_device *mdev)
+> +{
+> +}
+> +EXPORT_SYMBOL(vdpa_close);
+> +
+> +MODULE_VERSION("0.0.0");
+> +MODULE_LICENSE("GPL v2");
+> +MODULE_DESCRIPTION("Hardware vhost accelerator abstraction");
+> diff --git a/include/linux/vdpa_mdev.h b/include/linux/vdpa_mdev.h
+> new file mode 100644
+> index 000000000000..4bbdf7e2e712
+> --- /dev/null
+> +++ b/include/linux/vdpa_mdev.h
+> @@ -0,0 +1,72 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (C) 2018-2019 Intel Corporation.
+> + */
+> +
+> +#ifndef VDPA_MDEV_H
+> +#define VDPA_MDEV_H
+> +
+> +struct mdev_device;
+> +struct vdpa_dev;
+> +
+> +/*
+> + * XXX: Any comments about the vDPA API design for drivers
+> + *      would be appreciated!
+> + */
+> +
+> +typedef int (*vdpa_start_device_t)(struct vdpa_dev *vdpa);
+> +typedef int (*vdpa_stop_device_t)(struct vdpa_dev *vdpa);
+> +typedef int (*vdpa_set_features_t)(struct vdpa_dev *vdpa);
+> +typedef int (*vdpa_set_eventfd_t)(struct vdpa_dev *vdpa, int queue_idx, int fd);
+> +typedef u64 (*vdpa_supported_features_t)(struct vdpa_dev *vdpa);
+> +typedef void (*vdpa_notify_device_t)(struct vdpa_dev *vdpa, int queue_idx);
+> +typedef u64 (*vdpa_get_notify_addr_t)(struct vdpa_dev *vdpa, int queue_idx);
+> +
+> +struct vdpa_device_ops {
+> +	vdpa_start_device_t		start;
+> +	vdpa_stop_device_t		stop;
+> +	vdpa_set_eventfd_t		set_eventfd;
+> +	vdpa_supported_features_t	supported_features;
+> +	vdpa_notify_device_t		notify;
+> +	vdpa_get_notify_addr_t		get_notify_addr;
+> +	vdpa_set_features_t		set_features;
+> +};
+> +
+> +struct vdpa_vring_info {
+> +	u64 desc_user_addr;
+> +	u64 used_user_addr;
+> +	u64 avail_user_addr;
+> +	u64 log_guest_addr;
+> +	u16 size;
+> +	u16 base;
+> +};
+> +
+> +struct vdpa_dev {
+> +	struct mdev_device *mdev;
+> +	struct mutex ops_lock;
+> +	int nr_vring;
+> +	u64 features;
+> +	u64 state;
+> +	bool pending_reply;
+> +	struct vhost_vfio_op pending;
+> +	const struct vdpa_device_ops *ops;
+> +	void *private;
+> +	int max_vrings;
+> +	uint64_t log_base;
+> +	uint64_t log_size;
+> +	struct vdpa_vring_info vring_info[0];
+> +};
+> +
+> +struct vdpa_dev *vdpa_alloc(struct mdev_device *mdev, void *private,
+> +			    int max_vrings);
+> +void vdpa_free(struct vdpa_dev *vdpa);
+> +ssize_t vdpa_read(struct mdev_device *mdev, char __user *buf,
+> +		  size_t count, loff_t *ppos);
+> +ssize_t vdpa_write(struct mdev_device *mdev, const char __user *buf,
+> +		   size_t count, loff_t *ppos);
+> +long vdpa_ioctl(struct mdev_device *mdev, unsigned int cmd, unsigned long arg);
+> +int vdpa_mmap(struct mdev_device *mdev, struct vm_area_struct *vma);
+> +int vdpa_open(struct mdev_device *mdev);
+> +void vdpa_close(struct mdev_device *mdev);
+> +
+> +#endif /* VDPA_MDEV_H */
+> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+> index 8f10748dac79..6c5718ab7eeb 100644
+> --- a/include/uapi/linux/vfio.h
+> +++ b/include/uapi/linux/vfio.h
+> @@ -201,6 +201,7 @@ struct vfio_device_info {
+>   #define VFIO_DEVICE_FLAGS_AMBA  (1 << 3)	/* vfio-amba device */
+>   #define VFIO_DEVICE_FLAGS_CCW	(1 << 4)	/* vfio-ccw device */
+>   #define VFIO_DEVICE_FLAGS_AP	(1 << 5)	/* vfio-ap device */
+> +#define VFIO_DEVICE_FLAGS_VHOST	(1 << 6)	/* vfio-vhost device */
+>   	__u32	num_regions;	/* Max region index + 1 */
+>   	__u32	num_irqs;	/* Max IRQ index + 1 */
+>   };
+> @@ -217,6 +218,7 @@ struct vfio_device_info {
+>   #define VFIO_DEVICE_API_AMBA_STRING		"vfio-amba"
+>   #define VFIO_DEVICE_API_CCW_STRING		"vfio-ccw"
+>   #define VFIO_DEVICE_API_AP_STRING		"vfio-ap"
+> +#define VFIO_DEVICE_API_VHOST_STRING		"vfio-vhost"
+>   
+>   /**
+>    * VFIO_DEVICE_GET_REGION_INFO - _IOWR(VFIO_TYPE, VFIO_BASE + 8,
+> @@ -573,6 +575,23 @@ enum {
+>   	VFIO_CCW_NUM_IRQS
+>   };
+>   
+> +/*
+> + * The vfio-vhost bus driver makes use of the following fixed region and
+> + * IRQ index mapping. Unimplemented regions return a size of zero.
+> + * Unimplemented IRQ types return a count of zero.
+> + */
+> +
+> +enum {
+> +	VFIO_VHOST_CONFIG_REGION_INDEX,
+> +	VFIO_VHOST_NOTIFY_REGION_INDEX,
+> +	VFIO_VHOST_NUM_REGIONS
+> +};
+> +
+> +enum {
+> +	VFIO_VHOST_VQ_IRQ_INDEX,
+> +	VFIO_VHOST_NUM_IRQS
+> +};
+> +
+>   /**
+>    * VFIO_DEVICE_GET_PCI_HOT_RESET_INFO - _IORW(VFIO_TYPE, VFIO_BASE + 12,
+>    *					      struct vfio_pci_hot_reset_info)
+> diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
+> index 40d028eed645..ad95b90c5c05 100644
+> --- a/include/uapi/linux/vhost.h
+> +++ b/include/uapi/linux/vhost.h
+> @@ -116,4 +116,29 @@
+>   #define VHOST_VSOCK_SET_GUEST_CID	_IOW(VHOST_VIRTIO, 0x60, __u64)
+>   #define VHOST_VSOCK_SET_RUNNING		_IOW(VHOST_VIRTIO, 0x61, int)
+>   
+> +/* VHOST_DEVICE specific defines */
+> +
+> +#define VHOST_DEVICE_SET_STATE _IOW(VHOST_VIRTIO, 0x70, __u64)
+> +
+> +#define VHOST_DEVICE_S_STOPPED 0
+> +#define VHOST_DEVICE_S_RUNNING 1
+> +#define VHOST_DEVICE_S_MAX     2
+> +
+> +struct vhost_vfio_op {
+> +	__u64 request;
+> +	__u32 flags;
+> +	/* Flag values: */
+> +#define VHOST_VFIO_NEED_REPLY 0x1 /* Whether need reply */
+> +	__u32 size;
+> +	union {
+> +		__u64 u64;
+> +		struct vhost_vring_state state;
+> +		struct vhost_vring_addr addr;
+> +	} payload;
+> +};
+> +
+> +#define VHOST_VFIO_OP_HDR_SIZE \
+> +		((unsigned long)&((struct vhost_vfio_op *)NULL)->payload)
+> +#define VHOST_VFIO_OP_PAYLOAD_MAX_SIZE 1024 /* FIXME TBD */
+> +
+>   #endif
