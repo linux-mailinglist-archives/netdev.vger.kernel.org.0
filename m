@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 308135E9F3
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 19:02:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DC9E5E9F0
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 19:02:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727342AbfGCRCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 13:02:17 -0400
-Received: from mail-qk1-f202.google.com ([209.85.222.202]:45511 "EHLO
-        mail-qk1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727242AbfGCRCQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 13:02:16 -0400
-Received: by mail-qk1-f202.google.com with SMTP id k125so3729887qkc.12
-        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 10:02:16 -0700 (PDT)
+        id S1727367AbfGCRCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 13:02:21 -0400
+Received: from mail-qk1-f201.google.com ([209.85.222.201]:35049 "EHLO
+        mail-qk1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727353AbfGCRCT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 13:02:19 -0400
+Received: by mail-qk1-f201.google.com with SMTP id 5so3789264qki.2
+        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 10:02:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=7zXPbkaWJfiDYFqUaQDv1CcnFA8M8EK5B7uTwERQ454=;
-        b=nomp9tHgj5x1czbVL2zJDJqXtjpKSKSPuyKFUjvAnaURASlRHYALaHhtn8TAxyG9JM
-         tmJdn2pGDwGaYKQxll828yehZpKwqT8HfPtgvD+pebT4VXbM8ZPV82rjIewOGerCVgWq
-         +eca2s280/NGFe80fGEGJCW4WQ9TjxJZ/kRj+OFHAprYBKLCdXygwT6zKRFgHDMNLKI8
-         fMeGZzL+fz3MGtfoiXlIt7aZJEqLs9r3kbmXEF6h6K2JEIqQmIrnFiGmybC/IlfPK4oG
-         poBvAW0u77XLIpwoMDaU+TOvWnFixK2tm376kgKBDoVBX9CKnu+Lnv7zIeOpWodtnhNY
-         t1PQ==
+        bh=ld5qNoKshdyRmavLPGoPc6BR++OK/w6IRlR9/ebcOn4=;
+        b=TZrCGi3jcqjHluRGRqVScSH3nnF0ngfzc7kFNydCQYZVuwuUp9YebJ1FMq1bxqWMB2
+         tHhtCnnfbK7nhfIkJVSbdsly1Sb2uJEw63ORMMbMjGr+rgwFeja8VYmU9bIvdijewmMB
+         skRF5jPJjA2NhKt8fyeSp1jCTaAEYa1NkzzKxF1iRkEaRFI3/EQRfY+F+d+TlRIsPdAv
+         IzoPvqZd+U6VyoEB4zaqJQ0v0zehg1PHAldRx3VPq/5pID7CAoImHt+9f8+LdaSB4iK/
+         jfZo3e5+EO4pm+3WJra8HHkX2pcDrI7PQWAwwDh+lDqqDiUn/6Y+hvW1lnoMzw3cM47K
+         dJnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=7zXPbkaWJfiDYFqUaQDv1CcnFA8M8EK5B7uTwERQ454=;
-        b=VOMsPvGZ6jakFV8FiZ+nJyZtF0egEup5eab+lh5ll7jLGMmMJ8WIzyCEFw+xEr+QGF
-         9cY7uTJ6A2kp71x1PrqERyODI2dd6yrwLGpO4Hx0A0rndL7gFGMpLcJ6O6Mu0Dhv/jbN
-         b32/CMKRRy7xoEsaloOgB0mQkr3vKr/QxHR4rGSRFJnKc4YI40+lh+cgsTDjZeFUYieU
-         4U00WLC60K+cHMfTYtKTk2z2HaDjrg29jcVJ0XjDMsvcxJVfzkCQHVMFAZ9F/+ZJ2GrM
-         VaBCTJr7UCGQ2cgIHetz+e0TXmY1wzZb1vktYoDHs50ZuHV3jKVSZ4+idNx1S5IElXyq
-         pi0Q==
-X-Gm-Message-State: APjAAAVptji2yf8KFa+7OuSAGd5dSFG5fbPZT2ehV+IO702oiZBl7Tlv
-        lWGMgIUvOGNm6Z7BNvBHON6hKNJNmvIZ
-X-Google-Smtp-Source: APXvYqw2+o4+1Uveyzv9avWN5ZCckB/E4IsSuP8b1U0tKJD988+pjZxmb77+rL2WN8IbVBCDnR75BYEHcheH
-X-Received: by 2002:ac8:17ac:: with SMTP id o41mr31315016qtj.184.1562173334642;
- Wed, 03 Jul 2019 10:02:14 -0700 (PDT)
-Date:   Wed,  3 Jul 2019 10:01:17 -0700
+        bh=ld5qNoKshdyRmavLPGoPc6BR++OK/w6IRlR9/ebcOn4=;
+        b=Xx92DqlaWzJjAdaWVp4u458vX+Rq27P4B+uQz39/h69HJQ6KoVK39+lMJG6ACpiJv1
+         /ymMYUF3nKlo11JKTle0AS66FcEMo0EU/3BLGml16SJInkkCld9VLZeqxmvDKSjtdPuP
+         hHDRGkLSb7EbLXYNCaj44toU41joakAJyZGC0WtpHKHJyYzLctVDxscXV0WVIKmDJGIU
+         AwjsKj2u3i8LeadyeQAIYNscKlyD79/rNMLwOQC8tNumLgGN83va5A5Od55MqdlBDunG
+         Py0/oJO16R2CFYp0beJ5bamWgK8ObVy/mYw+kbziKGCBR5AVIfWgT2LzSHicHu7vnB2P
+         JbAQ==
+X-Gm-Message-State: APjAAAUIDmwVBT5v50SI39RtTvY2KnDA7C07UptKiD2/v6Vt9LhIg1ns
+        iV7GQQxSm4bkmHSTQaFldVi53IKTDA+6
+X-Google-Smtp-Source: APXvYqzUJWgXSVAR31qVHYmLDhXP3MkV6i2uPSVDio5Wx5fkOVznYsw7k/Ij5SbCILaDCrihlPc/nePm9qGy
+X-Received: by 2002:ac8:6958:: with SMTP id n24mr32368355qtr.360.1562173338277;
+ Wed, 03 Jul 2019 10:02:18 -0700 (PDT)
+Date:   Wed,  3 Jul 2019 10:01:18 -0700
 In-Reply-To: <20190703170118.196552-1-brianvv@google.com>
-Message-Id: <20190703170118.196552-6-brianvv@google.com>
+Message-Id: <20190703170118.196552-7-brianvv@google.com>
 Mime-Version: 1.0
 References: <20190703170118.196552-1-brianvv@google.com>
 X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
-Subject: [PATCH bpf-next RFC v3 5/6] selftests/bpf: test BPF_MAP_DUMP command
- on a bpf hashmap
+Subject: [PATCH bpf-next RFC v3 6/6] selftests/bpf: add test to measure
+ performance of BPF_MAP_DUMP
 From:   Brian Vazquez <brianvv@google.com>
 To:     Brian Vazquez <brianvv.kernel@gmail.com>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -64,97 +64,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This tests exercise the new command on a bpf hashmap and make sure it
-works as expected.
+This tests compares the amount of time that takes to read an entire
+table of 100K elements on a bpf hashmap using both BPF_MAP_DUMP and
+BPF_MAP_GET_NEXT_KEY + BPF_MAP_LOOKUP_ELEM.
 
 Signed-off-by: Brian Vazquez <brianvv@google.com>
 ---
- tools/testing/selftests/bpf/test_maps.c | 82 ++++++++++++++++++++++++-
- 1 file changed, 80 insertions(+), 2 deletions(-)
+ tools/testing/selftests/bpf/test_maps.c | 65 +++++++++++++++++++++++++
+ 1 file changed, 65 insertions(+)
 
 diff --git a/tools/testing/selftests/bpf/test_maps.c b/tools/testing/selftests/bpf/test_maps.c
-index a3fbc571280a..b19ba6aa8e36 100644
+index b19ba6aa8e36..786d0e340aed 100644
 --- a/tools/testing/selftests/bpf/test_maps.c
 +++ b/tools/testing/selftests/bpf/test_maps.c
-@@ -309,6 +309,85 @@ static void test_hashmap_walk(unsigned int task, void *data)
+@@ -18,6 +18,7 @@
+ #include <sys/socket.h>
+ #include <netinet/in.h>
+ #include <linux/bpf.h>
++#include <linux/time64.h>
+ 
+ #include <bpf/bpf.h>
+ #include <bpf/libbpf.h>
+@@ -388,6 +389,69 @@ static void test_hashmap_dump(void)
  	close(fd);
  }
  
-+static void test_hashmap_dump(void)
++static void test_hashmap_dump_perf(void)
 +{
-+	int fd, i, max_entries = 5;
-+	uint64_t keys[max_entries], values[max_entries];
-+	uint64_t key, value, next_key, prev_key;
++	int fd, i, max_entries = 100000;
++	uint64_t key, value, next_key;
 +	bool next_key_valid = true;
-+	void *buf, *elem;
-+	u32 buf_len;
++	void *buf;
++	u32 buf_len, entries;
++	int j = 0;
++	int clk_id = CLOCK_MONOTONIC;
++	struct timespec begin, end;
++	long long time_spent, dump_time_spent;
++	double res;
++	int tests[] = {1, 2, 230, 5000, 73000, 100000, 234567};
++	int test_len = ARRAY_SIZE(tests);
 +	const int elem_size = sizeof(key) + sizeof(value);
 +
 +	fd = helper_fill_hashmap(max_entries);
-+
-+	// Get the elements in the hashmap, and store them in that order
-+	assert(bpf_map_get_next_key(fd, NULL, &key) == 0);
-+	i = 0;
-+	keys[i] = key;
-+	for (i = 1; next_key_valid; i++) {
-+		next_key_valid = bpf_map_get_next_key(fd, &key, &next_key) == 0;
-+		assert(bpf_map_lookup_elem(fd, &key, &values[i - 1]) == 0);
-+		keys[i-1] = key;
-+		key = next_key;
-+	}
-+
-+	// Alloc memory for the whole table
-+	buf = malloc(elem_size * max_entries);
++	// Alloc memory considering the largest buffer
++	buf = malloc(elem_size * tests[test_len-1]);
 +	assert(buf != NULL);
 +
-+	// Check that buf_len < elem_size returns EINVAL
-+	buf_len = elem_size-1;
++test:
++	entries = tests[j];
++	buf_len = elem_size*tests[j];
++	j++;
++	clock_gettime(clk_id, &begin);
 +	errno = 0;
-+	assert(bpf_map_dump(fd, NULL, buf, &buf_len) == -1 && errno == EINVAL);
-+
-+	// Check that it returns the first two elements
-+	errno = 0;
-+	buf_len = elem_size * 2;
 +	i = 0;
-+	assert(bpf_map_dump(fd, NULL, buf, &buf_len) == 0 &&
-+	       buf_len == 2*elem_size);
-+	elem = buf;
-+	assert((*(uint64_t *)elem) == keys[i] &&
-+	       (*(uint64_t *)(elem + sizeof(key))) == values[i]);
-+	elem = buf + elem_size;
-+	i++;
-+	assert((*(uint64_t *)elem) == keys[i] &&
-+	       (*(uint64_t *)(elem + sizeof(key))) == values[i]);
-+	i++;
++	while (errno == 0) {
++		bpf_map_dump(fd, !i ? NULL : &key,
++				  buf, &buf_len);
++		if (errno)
++			break;
++		if (!i)
++			key = *((uint64_t *)(buf + buf_len - elem_size));
++		i += buf_len / elem_size;
++	}
++	clock_gettime(clk_id, &end);
++	assert(i  == max_entries);
++	dump_time_spent = NSEC_PER_SEC * (end.tv_sec - begin.tv_sec) +
++			  end.tv_nsec - begin.tv_nsec;
++	next_key_valid = true;
++	clock_gettime(clk_id, &begin);
++	assert(bpf_map_get_next_key(fd, NULL, &key) == 0);
++	for (i = 0; next_key_valid; i++) {
++		next_key_valid = bpf_map_get_next_key(fd, &key, &next_key) == 0;
++		assert(bpf_map_lookup_elem(fd, &key, &value) == 0);
++		key = next_key;
++	}
++	clock_gettime(clk_id, &end);
++	time_spent = NSEC_PER_SEC * (end.tv_sec - begin.tv_sec) +
++		     end.tv_nsec - begin.tv_nsec;
++	res = (1-((double)dump_time_spent/time_spent))*100;
++	printf("buf_len_%u:\t %llu entry-by-entry: %llu improvement %lf\n",
++	       entries, dump_time_spent, time_spent, res);
++	assert(i  == max_entries);
 +
-+	/* Check that prev_key contains key from last_elem retrieved in previous
-+	 * call
-+	 */
-+	prev_key = *((uint64_t *)elem);
-+	assert(bpf_map_dump(fd, &prev_key, buf, &buf_len) == 0 &&
-+	       buf_len == elem_size*2);
-+	elem = buf;
-+	assert((*(uint64_t *)elem) == keys[i] &&
-+	       (*(uint64_t *)(elem + sizeof(key))) == values[i]);
-+	elem = buf + elem_size;
-+	i++;
-+	assert((*(uint64_t *)elem) == keys[i] &&
-+	       (*(uint64_t *)(elem + sizeof(key))) == values[i]);
-+	i++;
-+	assert(prev_key == (*(uint64_t *)elem));
-+
-+	/* Continue reading from map and verify buf_len only contains 1 element
-+	 * even though buf_len is 2 elem_size.
-+	 */
-+	assert(bpf_map_dump(fd, &prev_key, buf, &buf_len) == 0 &&
-+	       buf_len == elem_size);
-+	elem = buf;
-+	assert((*(uint64_t *)elem) == keys[i] &&
-+	       (*(uint64_t *)(elem + sizeof(key))) == values[i]);
-+
-+	assert(bpf_map_dump(fd, &prev_key, buf, &buf_len) == -1 &&
-+	       errno == ENOENT);
-+
++	if (j < test_len)
++		goto test;
 +	free(buf);
 +	close(fd);
 +}
@@ -162,26 +155,14 @@ index a3fbc571280a..b19ba6aa8e36 100644
  static void test_hashmap_zero_seed(void)
  {
  	int i, first, second, old_flags;
-@@ -1668,6 +1747,7 @@ static void run_all_tests(void)
- 	test_hashmap_percpu(0, NULL);
+@@ -1748,6 +1812,7 @@ static void run_all_tests(void)
  	test_hashmap_walk(0, NULL);
  	test_hashmap_zero_seed();
-+	test_hashmap_dump();
+ 	test_hashmap_dump();
++	test_hashmap_dump_perf();
  
  	test_arraymap(0, NULL);
  	test_arraymap_percpu(0, NULL);
-@@ -1705,11 +1785,9 @@ int main(void)
- 
- 	map_flags = BPF_F_NO_PREALLOC;
- 	run_all_tests();
--
- #define CALL
- #include <map_tests/tests.h>
- #undef CALL
--
- 	printf("test_maps: OK, %d SKIPPED\n", skips);
- 	return 0;
- }
 -- 
 2.22.0.410.gd8fdbe21b5-goog
 
