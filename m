@@ -2,81 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C97E5EEC3
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 23:45:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E53EF5EF05
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 00:08:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727411AbfGCVo4 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 3 Jul 2019 17:44:56 -0400
-Received: from mga06.intel.com ([134.134.136.31]:50343 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727116AbfGCVo4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jul 2019 17:44:56 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Jul 2019 14:44:56 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.63,448,1557212400"; 
-   d="scan'208";a="184861600"
-Received: from orsmsx110.amr.corp.intel.com ([10.22.240.8])
-  by fmsmga001.fm.intel.com with ESMTP; 03 Jul 2019 14:44:55 -0700
-Received: from orsmsx112.amr.corp.intel.com (10.22.240.13) by
- ORSMSX110.amr.corp.intel.com (10.22.240.8) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Wed, 3 Jul 2019 14:44:55 -0700
-Received: from orsmsx104.amr.corp.intel.com ([169.254.4.70]) by
- ORSMSX112.amr.corp.intel.com ([169.254.3.232]) with mapi id 14.03.0439.000;
- Wed, 3 Jul 2019 14:44:55 -0700
-From:   "Bowers, AndrewX" <andrewx.bowers@intel.com>
-To:     "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [Intel-wired-lan] [PATCH net-next] iavf: remove unused debug
- function iavf_debug_d
-Thread-Topic: [Intel-wired-lan] [PATCH net-next] iavf: remove unused debug
- function iavf_debug_d
-Thread-Index: AQHVMJ5XiQrcda6PCk6e4wmTDurJL6a5b8lw
-Date:   Wed, 3 Jul 2019 21:44:55 +0000
-Message-ID: <26D9FDECA4FBDD4AADA65D8E2FC68A4A1D3FD2B4@ORSMSX104.amr.corp.intel.com>
-References: <20190702062021.41524-1-yuehaibing@huawei.com>
-In-Reply-To: <20190702062021.41524-1-yuehaibing@huawei.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiYWU0MDViMDUtOWIyMy00YjFhLWJhZmEtZTA0ZjZmNzg1NzY0IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiazgyelwvMVNkSFBKQ0ZTM3BsTCtcL1hZdzNWSjdTeTVCeWN4MGFtRWpEN2I3dW1Xc0hZVUFtZzl2NUNmeklVWW90In0=
-x-ctpclassification: CTP_NT
-dlp-product: dlpe-windows
-dlp-version: 11.0.400.15
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.140]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1727200AbfGCWIr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 18:08:47 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:36323 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726902AbfGCWIq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 18:08:46 -0400
+Received: by mail-pf1-f195.google.com with SMTP id r7so1930382pfl.3
+        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 15:08:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=WjjWRdXySZkjpj26g1Pm4rzHQ2nCZawoM/TZfTFAezI=;
+        b=UxSjmshB/efA5VRE78aPgnfuO/Sq/XiYw8vG5chnT45W8s9eIhSvPBCC/mGRdhQRAM
+         aPD+zvMYLU6QJzAWBsTOmtbTqcGwnfwfDl1uFLrkBkjO6z7a5yH1SyE3GJ6Y5hBtDN+d
+         XZAsuPc8zy95h9yxwn1SR3uls7dO9xvIAB3do=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=WjjWRdXySZkjpj26g1Pm4rzHQ2nCZawoM/TZfTFAezI=;
+        b=OKY7lji9yDfylGicHiNhJMyqj+13iwLUwUPo3XKxAieqZzGquY0Pt6Eeg7LgxEmXLh
+         dTz5ufvvKGufp7lW8LoNVFDNq7b6azlrQy6uROmk4k4eM6WXnNr80T7bwWcWnJ5h4P8U
+         zQXbODIpWjNw8uFUeM27urpQBPcrD0ZNxGbMGQ7xFt/Pjio1EhChUyDZ7yDyfJT0fKr6
+         B8SS/eJ5FFiV/8pbCIThitMvT7NDDUXVlcIMuDMjieXfP8RzVro9aZC7EWI0ZJBYgcfY
+         DQGvSNFGYmVeR7Cddf4trfpAGIOXph5BKbUSfqW00Wh2YopUKT+VegHNNsl6EPHNJ7Od
+         k+bA==
+X-Gm-Message-State: APjAAAW7JFs4c+aJP0dsOlMmJqozrBq4Xg82QCg71GnGf3rQ6frz7X+2
+        e8qry3cM4P6N6RfJ6IK+1pY7oQ==
+X-Google-Smtp-Source: APXvYqyNI7R7rRmSWaIP0fI91rk/hM1ha6x5voe4cvZVNb4VcCHs7IcJLnAucRtMAGfGWBsihbi9aw==
+X-Received: by 2002:a17:90b:8d8:: with SMTP id ds24mr15201077pjb.135.1562191725828;
+        Wed, 03 Jul 2019 15:08:45 -0700 (PDT)
+Received: from localhost ([2620:15c:202:1:75a:3f6e:21d:9374])
+        by smtp.gmail.com with ESMTPSA id m16sm3360862pfd.127.2019.07.03.15.08.44
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 03 Jul 2019 15:08:45 -0700 (PDT)
+Date:   Wed, 3 Jul 2019 15:08:43 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Douglas Anderson <dianders@chromium.org>
+Subject: Re: [PATCH v2 1/7] dt-bindings: net: Add bindings for Realtek PHYs
+Message-ID: <20190703220843.GJ250418@google.com>
+References: <20190703193724.246854-1-mka@chromium.org>
+ <CAL_JsqJdBAMPc1sZJfL7V9cxGgCb4GWwRokwJDmac5L2AO2-wg@mail.gmail.com>
+ <20190703213327.GH18473@lunn.ch>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20190703213327.GH18473@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Intel-wired-lan [mailto:intel-wired-lan-bounces@osuosl.org] On
-> Behalf Of YueHaibing
-> Sent: Monday, July 1, 2019 11:20 PM
-> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; davem@davemloft.net;
-> intel-wired-lan@lists.osuosl.org
-> Cc: netdev@vger.kernel.org; YueHaibing <yuehaibing@huawei.com>; linux-
-> kernel@vger.kernel.org
-> Subject: [Intel-wired-lan] [PATCH net-next] iavf: remove unused debug
-> function iavf_debug_d
+On Wed, Jul 03, 2019 at 11:33:27PM +0200, Andrew Lunn wrote:
+> > I think if we're going to have custom properties for phys, we should
+> > have a compatible string to at least validate whether the custom
+> > properties are even valid for the node.
 > 
-> There is no caller of function iavf_debug_d() in tree since commit
-> 75051ce4c5d8 ("iavf: Fix up debug print macro"), so it can be removed.
+> Hi Rob
 > 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
->  drivers/net/ethernet/intel/iavf/iavf_main.c | 22 ----------------------
->  1 file changed, 22 deletions(-)
+> What happens with other enumerable busses where a compatible string is
+> not used?
+> 
+> The Ethernet PHY subsystem will ignore the compatible string and load
+> the driver which fits the enumeration data. Using the compatible
+> string only to get the right YAML validator seems wrong. I would
+> prefer adding some other property with a clear name indicates its is
+> selecting the validator, and has nothing to do with loading the
+> correct driver. And it can then be used as well for USB and PCI
+> devices etc.
 
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-
-
+I also have doubts whether a compatible string is the right answer
+here. It's not needed/used by the subsystem, but would it be a
+required property because it's needed for validation?
