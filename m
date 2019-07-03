@@ -2,181 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BBDC5EAA5
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 19:40:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BCE15EAB2
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 19:42:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726993AbfGCRkg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 13:40:36 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:53372 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726574AbfGCRkg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jul 2019 13:40:36 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id A62BB308FFB1;
-        Wed,  3 Jul 2019 17:40:24 +0000 (UTC)
-Received: from carbon (ovpn-200-17.brq.redhat.com [10.40.200.17])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 575A13795;
-        Wed,  3 Jul 2019 17:40:15 +0000 (UTC)
-Date:   Wed, 3 Jul 2019 19:40:13 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Cc:     grygorii.strashko@ti.com, hawk@kernel.org, davem@davemloft.net,
-        ast@kernel.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
-        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
-        daniel@iogearbox.net, jakub.kicinski@netronome.com,
-        john.fastabend@gmail.com, brouer@redhat.com
-Subject: Re: [PATCH v6 net-next 1/5] xdp: allow same allocator usage
-Message-ID: <20190703194013.02842e42@carbon>
-In-Reply-To: <20190703101903.8411-2-ivan.khoronzhuk@linaro.org>
-References: <20190703101903.8411-1-ivan.khoronzhuk@linaro.org>
-        <20190703101903.8411-2-ivan.khoronzhuk@linaro.org>
+        id S1726900AbfGCRmz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 13:42:55 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:34706 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726430AbfGCRmz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 13:42:55 -0400
+Received: by mail-qk1-f195.google.com with SMTP id t8so3492332qkt.1
+        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 10:42:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=9aZmH+Pg7dlHICbo2t+3qKmRAkyWEbku6oFpnfKvKao=;
+        b=WH9HHfJk52kzOOibbgRfRkij7cs0Pi+rOYg4utplJBcJAtNYCP00f26DistQeaElS0
+         OOgPVoqUXidFgsWcM4UCe/xScx8cAD/uWsTBnt3wIezwKcEA4K4wPabJjhhvobY0fjSh
+         qvWpl1JO1Tv5GjiodYThyQBw1bhqulF4KlJMzZt8VXFCIDziYZzrkWjt1yhdBx49a8Ge
+         Kl1f3qg8yO5a6GsFiZ8kQN1AyeMFoJn9vcB+PHs4/3dd3BlNFU3+/86J0py7Nc3bX5MU
+         uP4fpRaX4hbQULiFEvkYeyNtxOTjoBlm5Q++iL1oQSQy7rv5VfqmekLJr6TrpJhlxVlV
+         CB0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=9aZmH+Pg7dlHICbo2t+3qKmRAkyWEbku6oFpnfKvKao=;
+        b=GBTzAQbwRYUM7XrqWatC0Djuqz6v6X2CX2bTOeyFmVr/RoldMuMJ8wm0lfUKvIIOGs
+         AIyhUFRFu77g4rvdsR4JuRoU2MkzfFHvy3r7LMplkfhbyVXH0kZh6hFTgeQg2ckthno9
+         OSr/0YB1VCPCI5ZDEXzjcrtxPMJykX6CNy7/tRqy5LmOtn3GZnXR0Lswir6dYnI6I9yW
+         LglVS1IqF7Urr5TmGV2T1020pZl64fWiTumr5WvsBK+LhRZujsuBTRBKIrRcLZLWeZ0+
+         8QsTEj8/CJtHMaXYfk92Ha8wsBk1uF4apz/kUFKDndIA/raDEH1U4ne3cxPNA/mHBnpM
+         iB2g==
+X-Gm-Message-State: APjAAAUtr0IPSnlXvO3Ryc3eR2wMrFLsE8vra0FRgWG3K3en5+Zb8McQ
+        7vJhWvlo6oCvot+zf09vhbW9HQ==
+X-Google-Smtp-Source: APXvYqx0N/ArL09FpIHbw3Mrm9q1Z8Hl4jAzzJQuhCOa1hvGbPVyBJQjwVfmcO/twh6DMlbjOXT6DA==
+X-Received: by 2002:a37:4243:: with SMTP id p64mr32137574qka.9.1562175774109;
+        Wed, 03 Jul 2019 10:42:54 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id q9sm1184643qkm.63.2019.07.03.10.42.52
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 03 Jul 2019 10:42:53 -0700 (PDT)
+Date:   Wed, 3 Jul 2019 10:42:44 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Sudarsana Reddy Kalluru <skalluru@marvell.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Michal Kalderon <mkalderon@marvell.com>,
+        "Ariel Elior" <aelior@marvell.com>
+Subject: Re: [EXT] Re: [PATCH net-next 4/4] qed: Add devlink support for
+ configuration attributes.
+Message-ID: <20190703104244.7d26e734@cakuba.netronome.com>
+In-Reply-To: <MN2PR18MB2528065BE3D46045F7EA1888D3FB0@MN2PR18MB2528.namprd18.prod.outlook.com>
+References: <20190617114528.17086-1-skalluru@marvell.com>
+        <20190617114528.17086-5-skalluru@marvell.com>
+        <20190617155411.53cf07cf@cakuba.netronome.com>
+        <MN2PR18MB25289FE6D99432939990C979D3E40@MN2PR18MB2528.namprd18.prod.outlook.com>
+        <20190620133748.GD2504@nanopsycho>
+        <MN2PR18MB2528065BE3D46045F7EA1888D3FB0@MN2PR18MB2528.namprd18.prod.outlook.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Wed, 03 Jul 2019 17:40:35 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  3 Jul 2019 13:18:59 +0300
-Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
+On Wed, 3 Jul 2019 12:56:39 +0000, Sudarsana Reddy Kalluru wrote:
+> Apologies for bringing this topic again. From the driver(s) code
+> paths/'devlink man pages', I understood that devlink-port object is
+> an entity on top of the PCI bus device. Some drivers say NFP
+> represents vnics (on pci-dev) as a devlink-ports and, some represents
+> (virtual?) ports on the PF/device as devlink-ports. In the case of
+> Marvell NIC driver, we don't have [port] partitioning of the PCI
+> device. And the config attributes are specific to PCI-device (not the
+> vports/vnics of PF). Hence I didn't see a need for creating
+> devlink-port objects in the system for Marvell NICs. And planning to
+> add the config attributes to 'devlink-dev' object. Please let me know
+> if my understanding and the proposal is ok?
 
-> First of all, it is an absolute requirement that each RX-queue have
-> their own page_pool object/allocator. And this change is intendant
-> to handle special case, where a single RX-queue can receive packets
-> from two different net_devices.
-> 
-> In order to protect against using same allocator for 2 different rx
-> queues, add queue_index to xdp_mem_allocator to catch the obvious
-> mistake where queue_index mismatch, as proposed by Jesper Dangaard
-> Brouer.
-> 
-> Adding this on xdp allocator level allows drivers with such dependency
-> change the allocators w/o modifications.
-> 
-> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-> ---
->  include/net/xdp_priv.h |  2 ++
->  net/core/xdp.c         | 55 ++++++++++++++++++++++++++++++++++++++++++
->  2 files changed, 57 insertions(+)
-> 
-> diff --git a/include/net/xdp_priv.h b/include/net/xdp_priv.h
-> index 6a8cba6ea79a..9858a4057842 100644
-> --- a/include/net/xdp_priv.h
-> +++ b/include/net/xdp_priv.h
-> @@ -18,6 +18,8 @@ struct xdp_mem_allocator {
->  	struct rcu_head rcu;
->  	struct delayed_work defer_wq;
->  	unsigned long defer_warn;
-> +	unsigned long refcnt;
-> +	u32 queue_index;
->  };
+I understand where you're coming from.  
 
-I don't like this approach, because I think we need to extend struct
-xdp_mem_allocator with a net_device pointer, for doing dev_hold(), to
-correctly handle lifetime issues. (As I tried to explain previously).
-This will be much harder after this change, which is why I proposed the
-other patch.
-
-
->  #endif /* __LINUX_NET_XDP_PRIV_H__ */
-> diff --git a/net/core/xdp.c b/net/core/xdp.c
-> index 829377cc83db..4f0ddbb3717a 100644
-> --- a/net/core/xdp.c
-> +++ b/net/core/xdp.c
-> @@ -98,6 +98,18 @@ static bool __mem_id_disconnect(int id, bool force)
->  		WARN(1, "Request remove non-existing id(%d), driver bug?", id);
->  		return true;
->  	}
-> +
-> +	/* to avoid calling hash lookup twice, decrement refcnt here till it
-> +	 * reaches zero, then it can be called from workqueue afterwards.
-> +	 */
-> +	if (xa->refcnt)
-> +		xa->refcnt--;
-> +
-> +	if (xa->refcnt) {
-> +		mutex_unlock(&mem_id_lock);
-> +		return true;
-> +	}
-> +
->  	xa->disconnect_cnt++;
->  
->  	/* Detects in-flight packet-pages for page_pool */
-> @@ -312,6 +324,33 @@ static bool __is_supported_mem_type(enum xdp_mem_type type)
->  	return true;
->  }
->  
-> +static struct xdp_mem_allocator *xdp_allocator_find(void *allocator)
-> +{
-> +	struct xdp_mem_allocator *xae, *xa = NULL;
-> +	struct rhashtable_iter iter;
-> +
-> +	if (!allocator)
-> +		return xa;
-> +
-> +	rhashtable_walk_enter(mem_id_ht, &iter);
-> +	do {
-> +		rhashtable_walk_start(&iter);
-> +
-> +		while ((xae = rhashtable_walk_next(&iter)) && !IS_ERR(xae)) {
-> +			if (xae->allocator == allocator) {
-> +				xa = xae;
-> +				break;
-> +			}
-> +		}
-> +
-> +		rhashtable_walk_stop(&iter);
-> +
-> +	} while (xae == ERR_PTR(-EAGAIN));
-> +	rhashtable_walk_exit(&iter);
-> +
-> +	return xa;
-> +}
-> +
->  int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
->  			       enum xdp_mem_type type, void *allocator)
->  {
-> @@ -347,6 +386,20 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
->  		}
->  	}
->  
-> +	mutex_lock(&mem_id_lock);
-> +	xdp_alloc = xdp_allocator_find(allocator);
-> +	if (xdp_alloc) {
-> +		/* One allocator per queue is supposed only */
-> +		if (xdp_alloc->queue_index != xdp_rxq->queue_index)
-> +			return -EINVAL;
-> +
-> +		xdp_rxq->mem.id = xdp_alloc->mem.id;
-> +		xdp_alloc->refcnt++;
-> +		mutex_unlock(&mem_id_lock);
-> +		return 0;
-> +	}
-> +	mutex_unlock(&mem_id_lock);
-> +
->  	xdp_alloc = kzalloc(sizeof(*xdp_alloc), gfp);
->  	if (!xdp_alloc)
->  		return -ENOMEM;
-> @@ -360,6 +413,8 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
->  	xdp_rxq->mem.id = id;
->  	xdp_alloc->mem  = xdp_rxq->mem;
->  	xdp_alloc->allocator = allocator;
-> +	xdp_alloc->refcnt = 1;
-> +	xdp_alloc->queue_index = xdp_rxq->queue_index;
->  
->  	/* Insert allocator into ID lookup table */
->  	ptr = rhashtable_insert_slow(mem_id_ht, &id, &xdp_alloc->node);
-
-
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+We want to make that judgement call on attribute-by-attribute basis.  
+We want consistency across vendors (and, frankly, multiple drivers of
+the same vendor).  If attribute looks like it belongs to the port,
+rather than the entire device/ASIC operation, we should make it a port
+attribute.
