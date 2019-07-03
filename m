@@ -2,83 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 69B5D5E11C
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 11:34:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B63BE5E122
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 11:36:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726413AbfGCJey (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 05:34:54 -0400
-Received: from mail-wr1-f54.google.com ([209.85.221.54]:42579 "EHLO
-        mail-wr1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725820AbfGCJey (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 05:34:54 -0400
-Received: by mail-wr1-f54.google.com with SMTP id a10so862006wrp.9
-        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 02:34:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ZCaGvqtjPu+wMpfCpkHUU1Nn3NIhv5ULL6eB8EUuNns=;
-        b=rNZ27E06UkQ5XV4bn8nk4JRTjCU+cDmJeaA5YkduS6EGJvmw7E9OkIK80ViY5JlHUQ
-         hWsrMfyYuzvTX1pwp0cVvdK0DVV2ipZSKG0YTcxno2NT9QCoaLndilCPGICgTu6jCCBY
-         Fwil2mIUT0eH1InKk1noNNcLa2CsmueBNib2z8sH8h1sX0ktYsC4feJcjkl08gRSgMCp
-         GOH57orM0Upb1T4it+hFFlPDhMny0cskZylyLgUnl9NS+L/ltXWxv7seq8hnas9gc7WS
-         ava8iNsQFYC1qdZw38wHu9TstGYvV9y8F9RIR3yysXFaZWOQPl6yYVqyPt07D6/xso8b
-         Hzzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ZCaGvqtjPu+wMpfCpkHUU1Nn3NIhv5ULL6eB8EUuNns=;
-        b=f0pmeD0SSrIIwmwBPTJMAz5qAYuWpk+uD9Q9DU6ZLF30aXkvzc16H/sWURIkd5zPfA
-         6v50LZ85pH61meds0z8vygvUeTz2vR60BnONBB7A+bePpRlZ8K6Ag4T5ZbUjqNgNcgZ3
-         w1h9KIIOFDS9cT6O5eTnziNmt+7Edu1YFgdMtJ9U5MqJvRWCRbDTkoBlb1LNxDtuMWLn
-         Xz+TXhafBGcFggAm8Qo5J+nIYoVbbzWyhZnXyj98AO1CVPt5egCrGNDHVBG22cOUWutx
-         GkahsAmWK5baEc1gKE5hhGGpXC3NV71Ahcj7yLD0Bi4bFBgNp8zS3EsBmdF7tTfNKUE7
-         BA1A==
-X-Gm-Message-State: APjAAAVzlEAu6h0hdlDjtC18ta2ECNCWRTvXcteRdjXi12XAQ0L445Jf
-        VOkpuv1yam0IeS5YudHYNatl+K2v
-X-Google-Smtp-Source: APXvYqz7uxKnONomCjeeY+VnTRzGh/zhO0udNyOKPD102SDYOPTlpe7nY7taOd4gQ8mUJ00cX+nJRw==
-X-Received: by 2002:adf:e446:: with SMTP id t6mr28920171wrm.115.1562146492667;
-        Wed, 03 Jul 2019 02:34:52 -0700 (PDT)
-Received: from [192.168.8.147] (196.166.185.81.rev.sfr.net. [81.185.166.196])
-        by smtp.gmail.com with ESMTPSA id p4sm480236wrs.35.2019.07.03.02.34.51
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Wed, 03 Jul 2019 02:34:52 -0700 (PDT)
-Subject: Re: Shall we add some note info for tcp_min_snd_mss?
-To:     ZhangXiao <xiao.zhang@windriver.com>, edumazet@google.com,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org
-References: <5D1C68C8.6020408@windriver.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <564a6863-0db9-a07b-0cfc-b41ea8e9c9f8@gmail.com>
-Date:   Wed, 3 Jul 2019 11:34:50 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1726765AbfGCJgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 05:36:19 -0400
+Received: from www62.your-server.de ([213.133.104.62]:49120 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726308AbfGCJgT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 05:36:19 -0400
+Received: from [78.46.172.2] (helo=sslproxy05.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hibgW-0005es-Iy; Wed, 03 Jul 2019 11:36:16 +0200
+Received: from [2a02:1205:5054:6d70:b45c:ec96:516a:e956] (helo=linux.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hibgW-000UNG-CN; Wed, 03 Jul 2019 11:36:16 +0200
+Subject: Re: [PATCH v4 bpf-next 0/4] libbpf: add perf buffer abstraction and
+ API
+To:     Andrii Nakryiko <andriin@fb.com>, andrii.nakryiko@gmail.com,
+        ast@fb.com, kernel-team@fb.com, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, jakub.kicinski@netronome.com
+References: <20190630065109.1794420-1-andriin@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <5a48c2f1-2abc-2deb-6863-c9f20e4ac03b@iogearbox.net>
+Date:   Wed, 3 Jul 2019 11:36:15 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.3.0
 MIME-Version: 1.0
-In-Reply-To: <5D1C68C8.6020408@windriver.com>
-Content-Type: text/plain; charset=gbk
+In-Reply-To: <20190630065109.1794420-1-andriin@fb.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25499/Wed Jul  3 10:03:10 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 7/3/19 1:35 AM, ZhangXiao wrote:
-> Hi David & Eric,
+On 06/30/2019 08:51 AM, Andrii Nakryiko wrote:
+> This patchset adds a high-level API for setting up and polling perf buffers
+> associated with BPF_MAP_TYPE_PERF_EVENT_ARRAY map. Details of APIs are
+> described in corresponding commit.
 > 
-> Commit 5f3e2bf0 (tcp: add tcp_min_snd_mss sysctl) add a new interface to
-> adjust network. While if this variable been set too large, for example
-> larger then (MTU - 40), the net link maybe damaged. So, how about adding
-> some warning messages for the operator/administrator? In document, or in
-> source code.
+> Patch #1 adds a set of APIs to set up and work with perf buffer.
+> Patch #2 enhances libbpf to support auto-setting PERF_EVENT_ARRAY map size.
+> Patch #3 adds test.
+> Patch #4 converts bpftool map event_pipe to new API.
+> 
+> v3->v4:
+> - fixed bpftool event_pipe cmd error handling (Jakub);
+> 
+> v2->v3:
+> - added perf_buffer__new_raw for more low-level control;
+> - converted bpftool map event_pipe to new API (Daniel);
+> - fixed bug with error handling in create_maps (Song);
+> 
+> v1->v2:
+> - add auto-sizing of PERF_EVENT_ARRAY maps;
+> 
+> Andrii Nakryiko (4):
+>   libbpf: add perf buffer API
+>   libbpf: auto-set PERF_EVENT_ARRAY size to number of CPUs
+>   selftests/bpf: test perf buffer API
+>   tools/bpftool: switch map event_pipe to libbpf's perf_buffer
+> 
+>  tools/bpf/bpftool/map_perf_ring.c             | 201 +++------
+>  tools/lib/bpf/libbpf.c                        | 397 +++++++++++++++++-
+>  tools/lib/bpf/libbpf.h                        |  49 +++
+>  tools/lib/bpf/libbpf.map                      |   4 +
+>  .../selftests/bpf/prog_tests/perf_buffer.c    |  94 +++++
+>  .../selftests/bpf/progs/test_perf_buffer.c    |  29 ++
+>  6 files changed, 630 insertions(+), 144 deletions(-)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/perf_buffer.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_perf_buffer.c
 
-What kind of warning message do you 
-envision exactly ?
+Hm, set looks good, but this does not apply cleanly. Please rebase against
+bpf-next and resubmit. Please also update tools/lib/bpf/README.rst with regards
+to the perf_buffer__ prefix. While at it, you could also address Jakub's comment.
 
-The sysctl is global, devices MTU can be quite arbitrary.
-
-Like almost all sysctls, sysadmins are supposed to know what they are doing.
+Thanks,
+Daniel
