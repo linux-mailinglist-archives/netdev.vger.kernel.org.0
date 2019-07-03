@@ -2,180 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF74A5E5BC
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 15:49:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63E0A5E5F5
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 16:02:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726598AbfGCNt4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 09:49:56 -0400
-Received: from mail-eopbgr50052.outbound.protection.outlook.com ([40.107.5.52]:47781
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725944AbfGCNtz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jul 2019 09:49:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0ESDwWlQQ8Kki/pY9CcSCfF2Zs+0gGtRrotelTMZqsU=;
- b=e5t6hsk0wOS1PmJHpPib0goX4i1ieNBbAw1hrdT1niFGL3k/0ziebSVqKLz1xvx/niFha7Sqg6XP/GTFN9iSxS3LvRVTMepjBteDAgAiXiy6te8WsdXJs7fD2XaKV9bDEwicO6GXqQ1Ge8FlEn12l+xhYUEoYgc2L0srZKBifnU=
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
- AM0PR05MB4131.eurprd05.prod.outlook.com (52.134.93.26) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2032.20; Wed, 3 Jul 2019 13:49:51 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::217d:2cd7:c8da:9279]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::217d:2cd7:c8da:9279%5]) with mapi id 15.20.2032.019; Wed, 3 Jul 2019
- 13:49:51 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-CC:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>
-Subject: RE: [PATCH net-next 1/3] devlink: Introduce PCI PF port flavour and
- port attribute
-Thread-Topic: [PATCH net-next 1/3] devlink: Introduce PCI PF port flavour and
- port attribute
-Thread-Index: AQHVMAhn8T46v1pXDUi3XMXT/4YtI6a2aNkAgABHFVCAAOxagIAAD8wAgABTlQCAACfsUIAAAsAAgAApQ+CAAGLsAIAANQgw
-Date:   Wed, 3 Jul 2019 13:49:51 +0000
-Message-ID: <AM0PR05MB4866675A8CB5BDB2890E14BBD1FB0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <20190701122734.18770-1-parav@mellanox.com>
- <20190701122734.18770-2-parav@mellanox.com>
- <20190701162650.17854185@cakuba.netronome.com>
- <AM0PR05MB4866085BC8B082EFD5B59DD2D1F80@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20190702104711.77618f6a@cakuba.netronome.com>
- <AM0PR05MB4866C19C9E6ED767A44C3064D1F80@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20190702164252.6d4fe5e3@cakuba.netronome.com>
- <AM0PR05MB4866F1AF0CF5914B372F0BCCD1FB0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20190702191536.4de1ac68@cakuba.netronome.com>
- <AM0PR05MB486624D2D9BAD293CD5FB33CD1FB0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20190703103720.GU2250@nanopsycho>
-In-Reply-To: <20190703103720.GU2250@nanopsycho>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=parav@mellanox.com; 
-x-originating-ip: [122.172.186.70]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4c6186d4-08d0-4829-de4b-08d6ffbd523e
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM0PR05MB4131;
-x-ms-traffictypediagnostic: AM0PR05MB4131:
-x-microsoft-antispam-prvs: <AM0PR05MB41312B4E202F5D3D2D4EA2A5D1FB0@AM0PR05MB4131.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 00872B689F
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(376002)(366004)(39860400002)(136003)(346002)(13464003)(199004)(189003)(8676002)(25786009)(476003)(446003)(6506007)(55236004)(11346002)(53546011)(102836004)(81166006)(52536014)(14454004)(486006)(8936002)(99286004)(4326008)(6246003)(68736007)(478600001)(54906003)(14444005)(6916009)(256004)(5660300002)(81156014)(66556008)(66476007)(73956011)(316002)(2906002)(186003)(53936002)(7696005)(66946007)(76176011)(6436002)(3846002)(55016002)(66066001)(76116006)(64756008)(26005)(229853002)(6116002)(66446008)(33656002)(305945005)(7736002)(71190400001)(86362001)(74316002)(71200400001)(9686003);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB4131;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: /5K1csLZmO8IfoOjukRjUIic5hOrzFpp4P2rwrjRnPgbSGFGLuyDEcE4HALr9GntukQlA3wy+UK18I3q2+vYV5IkeNmZBSqCw+fFqjmsJ6yq7G9xzYB5+cbzO6Fq1v4LISBnL5wi9e3Ua/LB++y7oEm2FENNea10CUzDUGfK5D5GF10ez9fIR9Ci79STHj9SvB6Iyh/XSHTD7ND50jPIhmQ25HPJS6W7Ze2/J7p9BDkLIM1slowGLnwOzh3vFNJhYxBv4XFVzDflciGN+SI7qjtNWtU1a+oj6yod7IMEIHD0ywIXiwYkIc3axaDO87wL0bZv+7wVc0SB6YkHqgkgCl46q+1uxQv2O3iOJP3NrCPJ/HT+KH32mwXnNOZRtGHOd08h3rl5QrtfDiPA9P4jCzEVZMOHi6trc57wiRAMD8k=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727006AbfGCOCx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 10:02:53 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:42275 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725830AbfGCOCw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 10:02:52 -0400
+Received: by mail-ed1-f67.google.com with SMTP id z25so2192975edq.9
+        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 07:02:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aeStSFOkTsadATmiRlRxF0BaV7V2c9DiehvDdkg1e8s=;
+        b=t9TY8J1vMoDEXrYxDBls2w5eeTkkpap78bxf1FIaKgXPrjOcnxOEBUwfWBdrnipJsk
+         PBIfxy3kNvGzOTnpco2snzQ+EIh5M+0cUyjQphK8m+UTEFIGBG7v42IbQN08izN+4E5g
+         q2m6dzocmimWdCM/9uJn/4MQJf+7nHJUa8K4sMghsm7IE9vNyWtgoFQCUet+3yK+XHOP
+         Alx9n2dbUDkuvquflgSIGtCa2ujWS0Q/DmIGSjr4LeIzv8jebXpqVTT3F3evxzHLQRoh
+         0nOdCkWaj0sJroPXHsYx4ciJ0ZglX/XhzpSyTxUG62PNw09F0gnTU7aT6m5UCA5JTZzv
+         smkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aeStSFOkTsadATmiRlRxF0BaV7V2c9DiehvDdkg1e8s=;
+        b=Tpd6wy7hEw2KZ2O1k1WAs4BhluTWiwOTARnUj/Y3TAH2BTqQ+drd9HYl4ATVhWmfxi
+         8zPwlwboy+rHE9p7Sm9XNOe5giRFycnLDlWURr05iesNy4YqN1gdoMuf9FGzD3IZ6tBA
+         LgRX2GW6jVBS5B2Y8am56AW8zxZVNpSUqBVmg1WC0x4E6R4WtZignZ5wlGGHjYPuRBYQ
+         edHjWMxYKPzfxNR3cOGunCmu5mZFm659KNNwhFfXj5zCY2j+RHBULuhv6m78h3ncdGH6
+         4QXUO/OiGFroSAxWYOLBk+gM/Q86nsppMDzkL43CV2/FdQ8LKXoOqJtRT9/e2QAwdvYD
+         0AsQ==
+X-Gm-Message-State: APjAAAUygIrOr0ooeJ2qnoiOPYe++KD9e+rAVAFw2eoy35wzhllV+lGF
+        UjX7+J1snj06xL92JoMrNYlghja1g5Tk63KuX3Y=
+X-Google-Smtp-Source: APXvYqyZzLRmuVl3iTUdl6SoZZTxXQcV3TfTBx3d2+Kbimz+Cvmndwt1tErw63WUiomFqKZVqV4mQGxEh9Nxk/WcJcQ=
+X-Received: by 2002:a50:a3ec:: with SMTP id t41mr42769567edb.43.1562162570373;
+ Wed, 03 Jul 2019 07:02:50 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4c6186d4-08d0-4829-de4b-08d6ffbd523e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jul 2019 13:49:51.1558
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: parav@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4131
+References: <1562113531-29296-1-git-send-email-john.hurley@netronome.com>
+ <CA+FuTSd3DaYsY1o_GFp-X=uRkfb6i0PUPbUsUagERmAZS+Hd7Q@mail.gmail.com> <CAK+XE==_AahZczgb4hU9auoj8=Kcx66JEdK3ZQ3TYpQuxdT05A@mail.gmail.com>
+In-Reply-To: <CAK+XE==_AahZczgb4hU9auoj8=Kcx66JEdK3ZQ3TYpQuxdT05A@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 3 Jul 2019 10:02:14 -0400
+Message-ID: <CAF=yD-LsMtAVLU_dnQFPUVeTNZT6saO-ZNeptVsoY_NkQFbbBQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v5 0/5] Add MPLS actions to TC
+To:     John Hurley <john.hurley@netronome.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        David Ahern <dsahern@gmail.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        oss-drivers@netronome.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jul 3, 2019 at 4:33 AM John Hurley <john.hurley@netronome.com> wrote:
+>
+> On Wed, Jul 3, 2019 at 3:19 AM Willem de Bruijn
+> <willemdebruijn.kernel@gmail.com> wrote:
+> >
+> > On Tue, Jul 2, 2019 at 8:32 PM John Hurley <john.hurley@netronome.com> wrote:
+> > >
+> > > This patchset introduces a new TC action module that allows the
+> > > manipulation of the MPLS headers of packets. The code impliments
+> > > functionality including push, pop, and modify.
+> > >
+> > > Also included are tests for the new funtionality. Note that these will
+> > > require iproute2 changes to be submitted soon.
+> > >
+> > > NOTE: these patches are applied to net-next along with the patch:
+> > > [PATCH net 1/1] net: openvswitch: fix csum updates for MPLS actions
+> > > This patch has been accepted into net but, at time of posting, is not yet
+> > > in net-next.
+> > >
+> > > v4-v5:
+> > > - move mpls_hdr() call to after skb_ensure_writable - patch 3
+> > >   (Willem de Bruijn)
+> > > - move mpls_dec_ttl to helper - patch 4 (Willem de Bruijn)
+> > > - add iproute2 usage example to commit msg - patch 4 (David Ahern)
+> > > - align label validation with mpls core code - patch 4 (David Ahern)
+> > > - improve extack message for no proto in mpls pop - patch 4 (David Ahern)
+> > > v3-v4:
+> > > - refactor and reuse OvS code (Cong Wang)
+> > > - use csum API rather than skb_post*rscum to update skb->csum (Cong Wang)
+> > > - remove unnecessary warning (Cong Wang)
+> > > - add comments to uapi attributes (David Ahern)
+> > > - set strict type policy check for TCA_MPLS_UNSPEC (David Ahern)
+> > > - expand/improve extack messages (David Ahern)
+> > > - add option to manually set BOS
+> > > v2-v3:
+> > > - remove a few unnecessary line breaks (Jiri Pirko)
+> > > - retract hw offload patch from set (resubmit with driver changes) (Jiri)
+> > > v1->v2:
+> > > - ensure TCA_ID_MPLS does not conflict with TCA_ID_CTINFO (Davide Caratti)
+> > >
+> > > John Hurley (5):
+> > >   net: core: move push MPLS functionality from OvS to core helper
+> > >   net: core: move pop MPLS functionality from OvS to core helper
+> > >   net: core: add MPLS update core helper and use in OvS
+> > >   net: sched: add mpls manipulation actions to TC
+> > >   selftests: tc-tests: actions: add MPLS tests
+> >
+> > Reviewed-by: Willem de Bruijn <willemb@google.com>
+> >
+> > I did have some conflicts applying the patches from patchwork (to diff
+> > v4 vs v5). Might be my process. This is clean against net-next, right?
+>
+> Hi Willem, thanks for review.
+> See the note in the cover letter....
+> We had a patch accepted into net earlier in the week, these patches
+> are applied to net-next + that patch.
+> Unfortunately when we applied the patches direct to net-next and tried
+> to merge in net then we got merge conflicts that needed manually
+> fixed.
+> Basically, the above patches should apply cleanly to net-next once net
+> has been merged in.
 
-
-> -----Original Message-----
-> From: Jiri Pirko <jiri@resnulli.us>
-> Sent: Wednesday, July 3, 2019 4:07 PM
-> To: Parav Pandit <parav@mellanox.com>
-> Cc: Jakub Kicinski <jakub.kicinski@netronome.com>; Jiri Pirko
-> <jiri@mellanox.com>; netdev@vger.kernel.org; Saeed Mahameed
-> <saeedm@mellanox.com>; vivien.didelot@gmail.com; andrew@lunn.ch;
-> f.fainelli@gmail.com
-> Subject: Re: [PATCH net-next 1/3] devlink: Introduce PCI PF port flavour =
-and
-> port attribute
->=20
-> Wed, Jul 03, 2019 at 06:46:13AM CEST, parav@mellanox.com wrote:
-> >
-> >
-> >> -----Original Message-----
-> >> From: Jakub Kicinski <jakub.kicinski@netronome.com>
-> >> Sent: Wednesday, July 3, 2019 7:46 AM
-> >> To: Parav Pandit <parav@mellanox.com>
-> >> Cc: Jiri Pirko <jiri@mellanox.com>; netdev@vger.kernel.org; Saeed
-> >> Mahameed <saeedm@mellanox.com>
-> >> Subject: Re: [PATCH net-next 1/3] devlink: Introduce PCI PF port
-> >> flavour and port attribute
-> >>
-> >> On Wed, 3 Jul 2019 02:08:39 +0000, Parav Pandit wrote:
-> >> > > If you want to expose some device specific eswitch port ID please
-> >> > > add a new attribute for that.
-> >> > > The fact that that ID may match port_number for your device today
-> >> > > is coincidental.  port_number, and split attributes should not be
-> >> > > exposed for PCI ports.
-> >> >
-> >> > So your concern is non mellanox hw has eswitch but there may not be
-> >> > a unique handle to identify a eswitch port?
-> >>
-> >> That's not a concern, no.  Like any debug attribute it should be optio=
-nal.
-> >>
-> >> > Or that handle may be wider than 32-bit?
-> >>
-> >> 64 bit would probably be better, yes, although that wasn't my initial
-> >> concern.
-> >>
-> >Why 32-bit is not enough?
-> >
-> >> > And instead of treating port_number as handle, there should be
-> >> > different attribute, is that the ask?
-> >>
-> >> Yes, the ask, as always, is to not abuse existing attributes to carry
-> >> tangentially related information.
-> >
-> >Why it is tangential?
-> >Devlink_port has got a port_number. Depending on flavour this port_numbe=
-r
-> represents a port.
-> >If it is floavour=3DPHYSICAL, its physical port number.
-> >If it is eswitch pf/vf ports, it represents eswitch port.
-> >
-> >Why you see it only as physical_port_number?
->=20
-> The original intention was like that. See the desc of
-> devlink_port_attrs_set():
->=20
->  *      @port_number: number of the port that is facing user, for example
->  *                    the front panel port number
->=20
-> For vf/pf representors, this is not applicable and should be indeed avoid=
-ed.
->=20
-Physical port number is not applicable but this is useful information that =
-completes the eswitch picture.
-Because eswitch has this termination end point anyway.
-Instead of inventing some new vendor specific field, I see value in using e=
-xisting port_number field.
-Will wait for others inputs.
-
-> However, we expose it for DEVLINK_PORT_FLAVOUR_CPU and
-> DEVLINK_PORT_FLAVOUR_DSA. Not sure if it makes sense there either.
-> Ccing Florian, Andrew and Vivien.
-> What do you guys think?
->=20
-> Perhaps we should have:
-> 	if (attrs->flavour =3D=3D DEVLINK_PORT_FLAVOUR_PHYSICAL &&
-> 	    nla_put_u32(msg, DEVLINK_ATTR_PORT_NUMBER, attrs-
-> >port_number))
->                 return -EMSGSIZE;
-> in devlink_nl_port_attrs_put()
-
+Ah, that explains. Excellent, thanks for the follow-up. I had missed
+that point in the cover letter (clearly).
