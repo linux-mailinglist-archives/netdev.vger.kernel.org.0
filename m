@@ -2,116 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3EA25DF0E
-	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 09:39:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2591D5DF14
+	for <lists+netdev@lfdr.de>; Wed,  3 Jul 2019 09:42:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727321AbfGCHjn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 03:39:43 -0400
-Received: from mail-eopbgr00088.outbound.protection.outlook.com ([40.107.0.88]:30325
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727275AbfGCHjn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jul 2019 03:39:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cogv/01jWVbLdH/H8gCBRaURAqQl6ft94grw6u9q930=;
- b=Okl/6zu7/85sICc+4cmS3o6qBSzFm7u7gpMRksaCZNCwdyzszm5lP0SGOy8T8SNcfG9qZAWwGzEhEkFOkhQhgf49JV8V+vUfDSH/Wjfhi7mO2SAbiwq8kY6yJijUfXLW6hJHsXA0YST3wjecXjlBTbFUygwFZz2KEJv/FmIyp08=
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
- DB6PR0501MB2309.eurprd05.prod.outlook.com (10.168.55.138) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2032.20; Wed, 3 Jul 2019 07:39:34 +0000
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::c1b3:b3a8:bced:493c]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::c1b3:b3a8:bced:493c%4]) with mapi id 15.20.2032.019; Wed, 3 Jul 2019
- 07:39:34 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leonro@mellanox.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>
-Subject: [PATCH mlx5-next 5/5] net/mlx5: Properly name the generic WQE control
- field
-Thread-Topic: [PATCH mlx5-next 5/5] net/mlx5: Properly name the generic WQE
- control field
-Thread-Index: AQHVMXJ1iRJq1NpHbE60fMU1k+OF7Q==
-Date:   Wed, 3 Jul 2019 07:39:34 +0000
-Message-ID: <20190703073909.14965-6-saeedm@mellanox.com>
-References: <20190703073909.14965-1-saeedm@mellanox.com>
-In-Reply-To: <20190703073909.14965-1-saeedm@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: git-send-email 2.21.0
-x-originating-ip: [73.15.39.150]
-x-clientproxiedby: BYAPR02CA0046.namprd02.prod.outlook.com
- (2603:10b6:a03:54::23) To DB6PR0501MB2759.eurprd05.prod.outlook.com
- (2603:10a6:4:84::7)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 121c043e-201a-45ec-1be3-08d6ff8997aa
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2309;
-x-ms-traffictypediagnostic: DB6PR0501MB2309:
-x-microsoft-antispam-prvs: <DB6PR0501MB23091BC0C1FB643E0716C642BEFB0@DB6PR0501MB2309.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3513;
-x-forefront-prvs: 00872B689F
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(376002)(39860400002)(396003)(346002)(199004)(189003)(66556008)(66946007)(66446008)(6512007)(64756008)(73956011)(66476007)(107886003)(5660300002)(1076003)(52116002)(54906003)(71200400001)(2906002)(66066001)(256004)(99286004)(76176011)(14444005)(3846002)(7736002)(6116002)(53936002)(6436002)(71190400001)(4326008)(6486002)(68736007)(81156014)(110136005)(305945005)(26005)(36756003)(316002)(2616005)(50226002)(8676002)(478600001)(476003)(8936002)(25786009)(86362001)(486006)(450100002)(386003)(6506007)(81166006)(186003)(11346002)(446003)(4744005)(14454004)(6636002)(102836004)(41533002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2309;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: KmTWmm59x/tmKLeDqq3DLtyP7zNm4NMO9CANnwoUPWcBQ2OPyANlvI9y42vTxZhY4fUvpGb0RQ+56jmPn/V3/hNZsu/NRqcnoTqklCkfDefHZKEaKG9qsyI9Dyiqhw3DOxg4SMnmLmz4VSBC0bvuVtlQWq/E2p/snnx4NcRSlhc58oTr/WwnsWhpuiViSP1crViT7K6KJfOiA0wmjFvRa3kgGUJaPlK32EivPWfEcs1I9cxJygUdVQpCtA1qT1gQ9DeRrzokIN8Xxn/x0IcLyRwjCTiDHqbY/XxImpP62B56nbyGgtqjoKKI5BplDrIaw4DzTHwLOiydyRBkOCPXNA8eZlRzVHeNM7CtQV0PPC7pttn92uzvSi6Y3blowxoaG+7U9g/B/8wSq/28vlNLGrNpkSO4JlGeFig+mW4lTPo=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S1727212AbfGCHmP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 03:42:15 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:39283 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727108AbfGCHmO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 03:42:14 -0400
+Received: by mail-qt1-f193.google.com with SMTP id i34so1480790qta.6
+        for <netdev@vger.kernel.org>; Wed, 03 Jul 2019 00:42:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vbcXnianh87vXEjFT9B3w4NaWyc5uSKsAaNy2YUdSho=;
+        b=dxP42nkV2Pahhr14oxk8h1+yFAtHKvsqK+i/hKWRTlIRRlRO5mFwJG9ui1MB8rtU01
+         sYBVHMMi8p89rlPnckYovpljhcmbRZ4OQRlLOvW6H/7OHl3KAogXVqLzGOQCoiFt55ei
+         f8pjU9lYEX7VRj04zhgxmYjCT4rICFJuuMGUyWSW7TClIYf535dZ5VJAi8skgOzIREJ3
+         m03y2w8s9hV7MBbsYwP59mI6vCoIycMafoNg10QoZMr+HEbKVS17+nW3aES4NDjsMMGv
+         SETeuUCeyOOlMJZoNazL/PITVGLR6bc/9zoUO2zpuWCq+hGalbrJpS7fuVPmMaVHbQJv
+         H/0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vbcXnianh87vXEjFT9B3w4NaWyc5uSKsAaNy2YUdSho=;
+        b=rpKC8B9AmjH2nbhgNIKW+xNMJ/ijwLbyXmxbDscnxDi8hMFt82dB3JvR+WdOeTETP2
+         4BydhID+fsucw3XJDnhv9T1O+zrKllh979uifWko6jyQ9twhJZ9Iw7nsclisjZET1pQd
+         zfcRe0uuVO2uKb/7IOXRuaiYONQb0vI/qGfRhpHkHrZAWxhk7cUSMI2PBBBQ3CIQAdN7
+         QhlmvlEAbJbOGxrgYdnpt82l1Ta35VzXx4UkYx6yFSA/1IAA7nlnJsAKHe+67k8S6EM0
+         73zM26ZyVdbiS1mvyY01dkIgzs49cZFyHkEG/5jnAsWrtViceXLpPKM00PfI2fsu4Gt+
+         UQ8Q==
+X-Gm-Message-State: APjAAAW5CLPqoqr+6ppSGZIE5XZ0JxcfXe5SMdeJL4656+535l5CoZTp
+        g5jCBB9Ek+MKGJeH1seK8LF7EWEeng7qQw5mK2M8XQ==
+X-Google-Smtp-Source: APXvYqw2helkZ3RMQLGNhGXrJACkePG5udZckFLg9KzZq3HT+da0RblRTkPUzH2vRKtJZ1SuWZitoxREttaJ45NLpCw=
+X-Received: by 2002:a0c:d4d0:: with SMTP id y16mr29761996qvh.191.1562139733812;
+ Wed, 03 Jul 2019 00:42:13 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 121c043e-201a-45ec-1be3-08d6ff8997aa
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jul 2019 07:39:34.6049
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2309
+References: <20190627095247.8792-1-chiu@endlessm.com> <CAD8Lp44R0a1=fVi=fGv69w1ppdcaFV01opkdkhaX-eJ=K=tYeA@mail.gmail.com>
+ <4c99866e-55b7-8852-c078-6b31dce21ee4@gmail.com>
+In-Reply-To: <4c99866e-55b7-8852-c078-6b31dce21ee4@gmail.com>
+From:   Daniel Drake <drake@endlessm.com>
+Date:   Wed, 3 Jul 2019 15:42:02 +0800
+Message-ID: <CAD8Lp47mWH1-VsZaHr6_qmSU2EEOr9tQJ3CUhfi_JkQGgKpegA@mail.gmail.com>
+Subject: Re: [PATCH] rtl8xxxu: Fix wifi low signal strength issue of RTL8723BU
+To:     Jes Sorensen <jes.sorensen@gmail.com>
+Cc:     Chris Chiu <chiu@endlessm.com>, Kalle Valo <kvalo@codeaurora.org>,
+        David Miller <davem@davemloft.net>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        Linux Upstreaming Team <linux@endlessm.com>,
+        Larry Finger <Larry.Finger@lwfinger.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tariq Toukan <tariqt@mellanox.com>
+On Tue, Jul 2, 2019 at 8:42 PM Jes Sorensen <jes.sorensen@gmail.com> wrote:
+> We definitely don't want to bring over the vendor code, since it's a
+> pile of spaghetti, but we probably need to get something sorted. This
+> went down the drain when the bluetooth driver was added without taking
+> it into account - long after this driver was merged.
 
-A generic WQE control field is used for different purposes
-in different cases.
-Use union to allow using the proper name in each case.
+Yeah, I didn't mean bring over quite so literally.. Chris is studying
+it and figuring out the neatest way to reimplement the required bits.
 
-Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
----
- include/linux/mlx5/qp.h | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+As for the relationship with bluetooth.. actually the bug that Chris
+is working on here is that the rtl8xxxu wifi signal is totally
+unusable *until* the bluetooth driver is loaded.
+Once the bluetooth driver is loaded, at the point of bluetooth
+firmware upload, the rtl8xxxu signal magiaclly strength becomes good.
+I think this is consistent with other rtl8xxxu problem reports that we
+saw lying around, although they had not been diagnosed in so much
+detail.
+The rtl8723bu vendor driver does not suffer this problem, it works
+fine with or without the bluetooth driver in place.
 
-diff --git a/include/linux/mlx5/qp.h b/include/linux/mlx5/qp.h
-index d1f353c64797..127d224443e3 100644
---- a/include/linux/mlx5/qp.h
-+++ b/include/linux/mlx5/qp.h
-@@ -202,7 +202,12 @@ struct mlx5_wqe_ctrl_seg {
- 	u8			signature;
- 	u8			rsvd[2];
- 	u8			fm_ce_se;
--	__be32			imm;
-+	union {
-+		__be32		general_id;
-+		__be32		imm;
-+		__be32		umr_mkey;
-+		__be32		tisn;
-+	};
- };
-=20
- #define MLX5_WQE_CTRL_DS_MASK 0x3f
---=20
-2.21.0
-
+Daniel
