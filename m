@@ -2,147 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E6FE5FC93
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 19:37:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FE725FC97
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 19:39:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727071AbfGDRh5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 13:37:57 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:39716 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726087AbfGDRh5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 13:37:57 -0400
-Received: by mail-wm1-f65.google.com with SMTP id z23so6908470wma.4
-        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 10:37:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=B5nIfwYWmjUNgUUiv6hekzxAO6Dp8+9khx/LeA0BFcs=;
-        b=Kc5gVuijZStvTeUxfmwsoWw2Tb/A4W7Er185KF+/Ef2mefoDnMREFsjqljjUFEvn0s
-         6OPe7/LeO9t5aFQ/pMvtGRLqSXlmqBuCnWKTIbLd76CsESuzFo0kUVAHL8hTcw7VnwNW
-         HEP6zmY/YDSF/1ljQ2ZO7jBnAXZ17R6JjVuaOpcWPOfm8oDWZBN2UKb95oUNOuXtTQ06
-         I+XOUuMf8rxYHY/cE2/frOLlBTphSkpP6Zw+lVN6Vf3Lyd4/EaOrFXAL7dVAn6Sphj/I
-         NfcgEN6jYSHzwXp53aFZWdSdJpRcFy3TwyTahAnIEr41w/vBFQGKTUoISwEmsXNi3ldT
-         /Brw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=B5nIfwYWmjUNgUUiv6hekzxAO6Dp8+9khx/LeA0BFcs=;
-        b=YxV57RC3wrIQrFzI6gcoN8toEYq1RqfrfQJMP5sFruJRCR19+vAmRqLtlWE9tz/6Aw
-         kcVoMtbzKDn6Kz4ULmyfvn9kQdyI9N+g0Tsdx67PBnPz5shFAU8rRlgc+87rC5KNJ3zV
-         zZmuVNVnH2USnpjEVvfI9M4+Kcb2mgu3NoYn3s/DeBZ1URDIC9G4jt8ECzTaWqL0zpLp
-         NIeyORiJ2w3iY2w71c1JQrjLVdSJZCeleVm54ZLM2BuFgq8Epb2kV9OZdZT7bDyXg/Tt
-         PhQ+bPb7zqh+lJQgN92OpRCsN/SzjfmjFkqxDU6Wf5cVu0zXkfAeH8/Ga4AMwGObkakA
-         9y2g==
-X-Gm-Message-State: APjAAAVEAu5z0bvSNfFjAjWNvquUJG7iasf8AZF6RTKh1btewZsPT22a
-        7pp2rpAr0vwI+yMPaGL48ZOdWQ==
-X-Google-Smtp-Source: APXvYqytX0NxwogWuQ3awjhcCBOCzKFYg/arRPGqjwm50OTUKsD0mrx+Cx+r0G3KvgeK4AVA8tMo2Q==
-X-Received: by 2002:a1c:2e16:: with SMTP id u22mr433969wmu.80.1562261874602;
-        Thu, 04 Jul 2019 10:37:54 -0700 (PDT)
-Received: from [172.20.1.254] ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id m9sm6488541wrn.92.2019.07.04.10.37.53
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 04 Jul 2019 10:37:53 -0700 (PDT)
-Subject: Re: [PATCH] tools bpftool: Fix json dump crash on powerpc
-To:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Michael Petlan <mpetlan@redhat.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>
-References: <20190704085856.17502-1-jolsa@kernel.org>
-From:   Quentin Monnet <quentin.monnet@netronome.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=quentin.monnet@netronome.com; prefer-encrypt=mutual; keydata=
- mQINBFnqRlsBEADfkCdH/bkkfjbglpUeGssNbYr/TD4aopXiDZ0dL2EwafFImsGOWmCIIva2
- MofTQHQ0tFbwY3Ir74exzU9X0aUqrtHirQHLkKeMwExgDxJYysYsZGfM5WfW7j8X4aVwYtfs
- AVRXxAOy6/bw1Mccq8ZMTYKhdCgS3BfC7qK+VYC4bhM2AOWxSQWlH5WKQaRbqGOVLyq8Jlxk
- 2FGLThUsPRlXKz4nl+GabKCX6x3rioSuNoHoWdoPDKsRgYGbP9LKRRQy3ZeJha4x+apy8rAM
- jcGHppIrciyfH38+LdV1FVi6sCx8sRKX++ypQc3fa6O7d7mKLr6uy16xS9U7zauLu1FYLy2U
- N/F1c4F+bOlPMndxEzNc/XqMOM9JZu1XLluqbi2C6JWGy0IYfoyirddKpwzEtKIwiDBI08JJ
- Cv4jtTWKeX8pjTmstay0yWbe0sTINPh+iDw+ybMwgXhr4A/jZ1wcKmPCFOpb7U3JYC+ysD6m
- 6+O/eOs21wVag/LnnMuOKHZa2oNsi6Zl0Cs6C7Vve87jtj+3xgeZ8NLvYyWrQhIHRu1tUeuf
- T8qdexDphTguMGJbA8iOrncHXjpxWhMWykIyN4TYrNwnyhqP9UgqRPLwJt5qB1FVfjfAlaPV
- sfsxuOEwvuIt19B/3pAP0nbevNymR3QpMPRl4m3zXCy+KPaSSQARAQABtC1RdWVudGluIE1v
- bm5ldCA8cXVlbnRpbi5tb25uZXRAbmV0cm9ub21lLmNvbT6JAj0EEwEIACcFAlnqRlsCGyMF
- CQlmAYAFCwkIBwIGFQgJCgsCBBYCAwECHgECF4AACgkQNvcEyYwwfB7tChAAqFWG30+DG3Sx
- B7lfPaqs47oW98s5tTMprA+0QMqUX2lzHX7xWb5v8qCpuujdiII6RU0ZhwNKh/SMJ7rbYlxK
- qCOw54kMI+IU7UtWCej+Ps3LKyG54L5HkBpbdM8BLJJXZvnMqfNWx9tMISHkd/LwogvCMZrP
- TAFkPf286tZCIz0EtGY/v6YANpEXXrCzboWEiIccXRmbgBF4VK/frSveuS7OHKCu66VVbK7h
- kyTgBsbfyQi7R0Z6w6sgy+boe7E71DmCnBn57py5OocViHEXRgO/SR7uUK3lZZ5zy3+rWpX5
- nCCo0C1qZFxp65TWU6s8Xt0Jq+Fs7Kg/drI7b5/Z+TqJiZVrTfwTflqPRmiuJ8lPd+dvuflY
- JH0ftAWmN3sT7cTYH54+HBIo1vm5UDvKWatTNBmkwPh6d3cZGALZvwL6lo0KQHXZhCVdljdQ
- rwWdE25aCQkhKyaCFFuxr3moFR0KKLQxNykrVTJIRuBS8sCyxvWcZYB8tA5gQ/DqNKBdDrT8
- F9z2QvNE5LGhWDGddEU4nynm2bZXHYVs2uZfbdZpSY31cwVS/Arz13Dq+McMdeqC9J2wVcyL
- DJPLwAg18Dr5bwA8SXgILp0QcYWtdTVPl+0s82h+ckfYPOmkOLMgRmkbtqPhAD95vRD7wMnm
- ilTVmCi6+ND98YblbzL64YG5Ag0EWepGWwEQAM45/7CeXSDAnk5UMXPVqIxF8yCRzVe+UE0R
- QQsdNwBIVdpXvLxkVwmeu1I4aVvNt3Hp2eiZJjVndIzKtVEoyi5nMvgwMVs8ZKCgWuwYwBzU
- Vs9eKABnT0WilzH3gA5t9LuumekaZS7z8IfeBlZkGXEiaugnSAESkytBvHRRlQ8b1qnXha3g
- XtxyEqobKO2+dI0hq0CyUnGXT40Pe2woVPm50qD4HYZKzF5ltkl/PgRNHo4gfGq9D7dW2OlL
- 5I9qp+zNYj1G1e/ytPWuFzYJVT30MvaKwaNdurBiLc9VlWXbp53R95elThbrhEfUqWbAZH7b
- ALWfAotD07AN1msGFCES7Zes2AfAHESI8UhVPfJcwLPlz/Rz7/K6zj5U6WvH6aj4OddQFvN/
- icvzlXna5HljDZ+kRkVtn+9zrTMEmgay8SDtWliyR8i7fvnHTLny5tRnE5lMNPRxO7wBwIWX
- TVCoBnnI62tnFdTDnZ6C3rOxVF6FxUJUAcn+cImb7Vs7M5uv8GufnXNUlsvsNS6kFTO8eOjh
- 4fe5IYLzvX9uHeYkkjCNVeUH5NUsk4NGOhAeCS6gkLRA/3u507UqCPFvVXJYLSjifnr92irt
- 0hXm89Ms5fyYeXppnO3l+UMKLkFUTu6T1BrDbZSiHXQoqrvU9b1mWF0CBM6aAYFGeDdIVe4x
- ABEBAAGJAiUEGAEIAA8FAlnqRlsCGwwFCQlmAYAACgkQNvcEyYwwfB4QwhAAqBTOgI9k8MoM
- gVA9SZj92vYet9gWOVa2Inj/HEjz37tztnywYVKRCRfCTG5VNRv1LOiCP1kIl/+crVHm8g78
- iYc5GgBKj9O9RvDm43NTDrH2uzz3n66SRJhXOHgcvaNE5ViOMABU+/pzlg34L/m4LA8SfwUG
- ducP39DPbF4J0OqpDmmAWNYyHh/aWf/hRBFkyM2VuizN9cOS641jrhTO/HlfTlYjIb4Ccu9Y
- S24xLj3kkhbFVnOUZh8celJ31T9GwCK69DXNwlDZdri4Bh0N8DtRfrhkHj9JRBAun5mdwF4m
- yLTMSs4Jwa7MaIwwb1h3d75Ws7oAmv7y0+RgZXbAk2XN32VM7emkKoPgOx6Q5o8giPRX8mpc
- PiYojrO4B4vaeKAmsmVer/Sb5y9EoD7+D7WygJu2bDrqOm7U7vOQybzZPBLqXYxl/F5vOobC
- 5rQZgudR5bI8uQM0DpYb+Pwk3bMEUZQ4t497aq2vyMLRi483eqT0eG1QBE4O8dFNYdK5XUIz
- oHhplrRgXwPBSOkMMlLKu+FJsmYVFeLAJ81sfmFuTTliRb3Fl2Q27cEr7kNKlsz/t6vLSEN2
- j8x+tWD8x53SEOSn94g2AyJA9Txh2xBhWGuZ9CpBuXjtPrnRSd8xdrw36AL53goTt/NiLHUd
- RHhSHGnKaQ6MfrTge5Q0h5A=
-Message-ID: <f287a4c6-f9f6-f001-edab-83a7d3a9074e@netronome.com>
-Date:   Thu, 4 Jul 2019 18:37:53 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1727152AbfGDRjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 13:39:53 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:43966 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726120AbfGDRjw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Jul 2019 13:39:52 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 3BCE9356F5;
+        Thu,  4 Jul 2019 17:39:52 +0000 (UTC)
+Received: from carbon (ovpn-200-17.brq.redhat.com [10.40.200.17])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3383B9CB0;
+        Thu,  4 Jul 2019 17:39:45 +0000 (UTC)
+Date:   Thu, 4 Jul 2019 19:39:44 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     brouer@redhat.com, netdev@vger.kernel.org,
+        jaswinder.singh@linaro.org, ard.biesheuvel@linaro.org,
+        arnd@arndb.de
+Subject: Re: [net-next, PATCH, v2] net: netsec: Sync dma for device on
+ buffer allocation
+Message-ID: <20190704193944.5ef80468@carbon>
+In-Reply-To: <1562251569-16506-1-git-send-email-ilias.apalodimas@linaro.org>
+References: <1562251569-16506-1-git-send-email-ilias.apalodimas@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <20190704085856.17502-1-jolsa@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.30]); Thu, 04 Jul 2019 17:39:52 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2019-07-04 10:58 UTC+0200 ~ Jiri Olsa <jolsa@kernel.org>
-> Michael reported crash with by bpf program in json mode on powerpc:
-> 
->   # bpftool prog -p dump jited id 14
->   [{
->         "name": "0xd00000000a9aa760",
->         "insns": [{
->                 "pc": "0x0",
->                 "operation": "nop",
->                 "operands": [null
->                 ]
->             },{
->                 "pc": "0x4",
->                 "operation": "nop",
->                 "operands": [null
->                 ]
->             },{
->                 "pc": "0x8",
->                 "operation": "mflr",
->   Segmentation fault (core dumped)
-> 
-> The code is assuming char pointers in format, which is not always
-> true at least for powerpc. Fixing this by dumping the whole string
-> into buffer based on its format.
-> 
-> Please note that libopcodes code does not check return values from
-> fprintf callback, so there's no point to return error in case of
-> allocation failure.
-> 
-> Reported-by: Michael Petlan <mpetlan@redhat.com>
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+On Thu,  4 Jul 2019 17:46:09 +0300
+Ilias Apalodimas <ilias.apalodimas@linaro.org> wrote:
 
-Looks good to me, thank you for the fix!
+> Quoting Arnd,
+> 
+> We have to do a sync_single_for_device /somewhere/ before the
+> buffer is given to the device. On a non-cache-coherent machine with
+> a write-back cache, there may be dirty cache lines that get written back
+> after the device DMA's data into it (e.g. from a previous memset
+> from before the buffer got freed), so you absolutely need to flush any
+> dirty cache lines on it first.
+> 
+> Since the coherency is configurable in this device make sure we cover
+> all configurations by explicitly syncing the allocated buffer for the
+> device before refilling it's descriptors
+> 
+> Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+> ---
+> 
+> Changes since V1: 
+> - Make the code more readable
+>  
+>  drivers/net/ethernet/socionext/netsec.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
+> index 5544a722543f..ada7626bf3a2 100644
+> --- a/drivers/net/ethernet/socionext/netsec.c
+> +++ b/drivers/net/ethernet/socionext/netsec.c
+> @@ -727,21 +727,26 @@ static void *netsec_alloc_rx_data(struct netsec_priv *priv,
+>  {
+>  
+>  	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
+> +	enum dma_data_direction dma_dir;
+> +	dma_addr_t dma_start;
+>  	struct page *page;
+>  
+>  	page = page_pool_dev_alloc_pages(dring->page_pool);
+>  	if (!page)
+>  		return NULL;
+>  
+> +	dma_start = page_pool_get_dma_addr(page);
+>  	/* We allocate the same buffer length for XDP and non-XDP cases.
+>  	 * page_pool API will map the whole page, skip what's needed for
+>  	 * network payloads and/or XDP
+>  	 */
+> -	*dma_handle = page_pool_get_dma_addr(page) + NETSEC_RXBUF_HEADROOM;
+> +	*dma_handle = dma_start + NETSEC_RXBUF_HEADROOM;
+>  	/* Make sure the incoming payload fits in the page for XDP and non-XDP
+>  	 * cases and reserve enough space for headroom + skb_shared_info
+>  	 */
+>  	*desc_len = PAGE_SIZE - NETSEC_RX_BUF_NON_DATA;
+> +	dma_dir = page_pool_get_dma_dir(dring->page_pool);
+> +	dma_sync_single_for_device(priv->dev, dma_start, PAGE_SIZE, dma_dir);
 
-Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
+It's it costly to sync_for_device the entire page size?
+
+E.g. we already know that the head-room is not touched by device.  And
+we actually want this head-room cache-hot for e.g. xdp_frame, thus it
+would be unfortunate if the head-room is explicitly evicted from the
+cache here.
+
+Even smarter, the driver could do the sync for_device, when it
+release/recycle page, as it likely know the exact length that was used
+by the packet.
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
