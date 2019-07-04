@@ -2,182 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 891445F4EE
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 10:49:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D1255F4F5
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 10:52:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727151AbfGDItS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 04:49:18 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:35102 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726908AbfGDItS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 04:49:18 -0400
-Received: by mail-wm1-f67.google.com with SMTP id c6so5205473wml.0
-        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 01:49:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Opqt53sCXyUJn1dYGcaUv8QqkV6K1DcB1fwzBj1dwmA=;
-        b=gZ4XEZxkgMW8Yw0Bz/cr8Thcx689u4KUu6s2K8mOLx18BKhblzhAwbNMg6C9sclyKb
-         7TzAPwuwnThLEoPy8PVWUDUeoZ1rm1Wj7yW+miJ4/NCrsW9kWov49nKyEBwuQCdZVA+2
-         RK/h2xqJYlQ76BfFjDn8AvJJ0XwflT3VnnelAmEAwprPBcluKYiw0AHcNc/ZbKgqsf9t
-         +addGwqv2rTD/NCVmgG73StmjwHeEJRsyT1kvuwVSNXzcznEjk9lalZgCoHt5btErf24
-         Er9Uh7XZDeAnlMR1+zedqy5sUxZcVuAfoAArTDWqA+MiuXKSuRItT2bEUg6RBlsnpR1S
-         Z8Hg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Opqt53sCXyUJn1dYGcaUv8QqkV6K1DcB1fwzBj1dwmA=;
-        b=tob87r2kE7iCtRr9ujPDBmiCGLqFsH/vc/GG73kFrroT5c5nn1+GFu3dmXVxEwzHGn
-         T3gv6XXP8Fku2ud3Gr28Z5TJoWNZciAmgfDZQjpIuIwjfEcMnw3LXq2hSvZXzUorAS7t
-         tG+YgRJ7xIc84oyJPDIYbylwj6KB1EEIx2XlIXnSfShXci9e0KzzpgobmOrUkIZLdpvq
-         pSCEmXSmwVu0UkWSoCT92qEkFfvBtYjgoqJNFpwP6bMsMbzr6JzddeVvOZZDBlkqIIWm
-         j4u6bTLY/6/wkHINVHJbJeFtjYZKNuj/JiM+RCLmC4fIU03p1/0Xog1GxCqHRrddUcU2
-         mfkg==
-X-Gm-Message-State: APjAAAU/0lwOwgY9jaQl9wsV5MPUDDHqU6uJO1/KYGgSGD4F8TAkduuc
-        D7AeNqLxFp5otbJP+Id0dVs=
-X-Google-Smtp-Source: APXvYqwtnYbOzxOXk6NyUec2QzT2mnnKsI8JZcQL5lVe4kpI7MU1EYEoR0UTqTUAdblTQOD1rBr/vg==
-X-Received: by 2002:a7b:cf27:: with SMTP id m7mr11788619wmg.7.1562230154732;
-        Thu, 04 Jul 2019 01:49:14 -0700 (PDT)
-Received: from localhost (ip-213-220-235-213.net.upcbroadband.cz. [213.220.235.213])
-        by smtp.gmail.com with ESMTPSA id z25sm4811468wmf.38.2019.07.04.01.49.14
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 04 Jul 2019 01:49:14 -0700 (PDT)
-Date:   Thu, 4 Jul 2019 10:49:13 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Linville <linville@tuxdriver.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v6 09/15] ethtool: generic handlers for GET
- requests
-Message-ID: <20190704084913.GA18546@nanopsycho>
-References: <cover.1562067622.git.mkubecek@suse.cz>
- <4faa0ce52dfe02c9cde5a46012b16c9af6764c5e.1562067622.git.mkubecek@suse.cz>
+        id S1727106AbfGDIwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 04:52:36 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:26742 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727068AbfGDIwg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 04:52:36 -0400
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x648puxd099630
+        for <netdev@vger.kernel.org>; Thu, 4 Jul 2019 04:52:35 -0400
+Received: from e06smtp01.uk.ibm.com (e06smtp01.uk.ibm.com [195.75.94.97])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2thdcfta8j-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 04:52:35 -0400
+Received: from localhost
+        by e06smtp01.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
+        Thu, 4 Jul 2019 09:52:33 +0100
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (9.149.109.198)
+        by e06smtp01.uk.ibm.com (192.168.101.131) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Thu, 4 Jul 2019 09:52:30 +0100
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x648qUMU50593822
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 4 Jul 2019 08:52:30 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id EDAA85204F;
+        Thu,  4 Jul 2019 08:52:29 +0000 (GMT)
+Received: from white.boeblingen.de.ibm.com (unknown [9.152.98.248])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id B429F52050;
+        Thu,  4 Jul 2019 08:52:29 +0000 (GMT)
+From:   Ilya Leoshkevich <iii@linux.ibm.com>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org, ys114321@gmail.com
+Cc:     Ilya Leoshkevich <iii@linux.ibm.com>
+Subject: [PATCH v2 bpf-next] selftests/bpf: fix "alu with different scalars 1" on s390
+Date:   Thu,  4 Jul 2019 10:52:24 +0200
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4faa0ce52dfe02c9cde5a46012b16c9af6764c5e.1562067622.git.mkubecek@suse.cz>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+x-cbid: 19070408-4275-0000-0000-000003490E47
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19070408-4276-0000-0000-000038592C83
+Message-Id: <20190704085224.65223-1-iii@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-04_05:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=716 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1907040116
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Jul 02, 2019 at 01:50:24PM CEST, mkubecek@suse.cz wrote:
+BPF_LDX_MEM is used to load the least significant byte of the retrieved
+test_val.index, however, on big-endian machines it ends up retrieving
+the most significant byte.
 
-[...]
+Use the correct least significant byte offset on big-endian machines.
 
+Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
+---
 
->+/* The structure holding data for unified processing GET requests consists of
->+ * two parts: request info and reply data. Request info is related to client
->+ * request and for dump request it stays constant through all processing;
->+ * reply data contains data for composing a reply message. When processing
->+ * a dump request, request info is filled only once but reply data is filled
->+ * from scratch for each reply message.
->+ *
->+ * +-----------------+-----------------+------------------+-----------------+
->+ * | common_req_info |  specific info  | ethnl_reply_data |  specific data  |
->+ * +-----------------+-----------------+------------------+-----------------+
->+ * |<---------- request info --------->|<----------- reply data ----------->|
->+ *
->+ * Request info always starts at offset 0 with struct ethnl_req_info which
->+ * holds information from parsing the common header. It may be followed by
->+ * other members for request attributes specific for current message type.
->+ * Reply data starts with struct ethnl_reply_data which may be followed by
->+ * other members holding data needed to compose a message.
->+ */
->+
+v1->v2:
+- use __BYTE_ORDER instead of __BYTE_ORDER__.
 
-[...]
+ tools/testing/selftests/bpf/verifier/value_ptr_arith.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
+diff --git a/tools/testing/selftests/bpf/verifier/value_ptr_arith.c b/tools/testing/selftests/bpf/verifier/value_ptr_arith.c
+index c3de1a2c9dc5..e5940c4e8b8f 100644
+--- a/tools/testing/selftests/bpf/verifier/value_ptr_arith.c
++++ b/tools/testing/selftests/bpf/verifier/value_ptr_arith.c
+@@ -183,7 +183,11 @@
+ 	BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
+ 	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 1),
+ 	BPF_EXIT_INSN(),
++#if __BYTE_ORDER == __LITTLE_ENDIAN
+ 	BPF_LDX_MEM(BPF_B, BPF_REG_1, BPF_REG_0, 0),
++#else
++	BPF_LDX_MEM(BPF_B, BPF_REG_1, BPF_REG_0, sizeof(int) - 1),
++#endif
+ 	BPF_JMP_IMM(BPF_JEQ, BPF_REG_1, 0, 3),
+ 	BPF_MOV64_IMM(BPF_REG_2, 0),
+ 	BPF_MOV64_IMM(BPF_REG_3, 0x100000),
+-- 
+2.21.0
 
->+/**
->+ * struct get_request_ops - unified handling of GET requests
->+ * @request_cmd:      command id for request (GET)
->+ * @reply_cmd:        command id for reply (GET_REPLY)
->+ * @hdr_attr:         attribute type for request header
->+ * @max_attr:         maximum (top level) attribute type
->+ * @data_size:        total length of data structure
->+ * @repdata_offset:   offset of "reply data" part (struct ethnl_reply_data)
-
-For example, this looks quite scarry for me. You have one big chunk of
-data (according to the scheme above) specific for cmd with reply starting
-at arbitrary offset.
-
-
-
->+ * @request_policy:   netlink policy for message contents
->+ * @header_policy:    (optional) netlink policy for request header
->+ * @default_infomask: default infomask (to use if none specified)
->+ * @all_reqflags:     allowed request specific flags
->+ * @allow_nodev_do:   allow non-dump request with no device identification
->+ * @parse_request:
->+ *	Parse request except common header (struct ethnl_req_info). Common
->+ *	header is already filled on entry, the rest up to @repdata_offset
->+ *	is zero initialized. This callback should only modify type specific
->+ *	request info by parsed attributes from request message.
->+ * @prepare_data:
->+ *	Retrieve and prepare data needed to compose a reply message. Calls to
->+ *	ethtool_ops handlers should be limited to this callback. Common reply
->+ *	data (struct ethnl_reply_data) is filled on entry, type specific part
->+ *	after it is zero initialized. This callback should only modify the
->+ *	type specific part of reply data. Device identification from struct
->+ *	ethnl_reply_data is to be used as for dump requests, it iterates
->+ *	through network devices which common_req_info::dev points to the
->+ *	device from client request.
->+ * @reply_size:
->+ *	Estimate reply message size. Returned value must be sufficient for
->+ *	message payload without common reply header. The callback may returned
->+ *	estimate higher than actual message size if exact calculation would
->+ *	not be worth the saved memory space.
->+ * @fill_reply:
->+ *	Fill reply message payload (except for common header) from reply data.
->+ *	The callback must not generate more payload than previously called
->+ *	->reply_size() estimated.
->+ * @cleanup:
->+ *	Optional cleanup called when reply data is no longer needed. Can be
->+ *	used e.g. to free any additional data structures outside the main
->+ *	structure which were allocated by ->prepare_data(). When processing
->+ *	dump requests, ->cleanup() is called for each message.
->+ *
->+ * Description of variable parts of GET request handling when using the unified
->+ * infrastructure. When used, a pointer to an instance of this structure is to
->+ * be added to &get_requests array and generic handlers ethnl_get_doit(),
->+ * ethnl_get_dumpit(), ethnl_get_start() and ethnl_get_done() used in
->+ * @ethnl_genl_ops
->+ */
->+struct get_request_ops {
->+	u8			request_cmd;
->+	u8			reply_cmd;
->+	u16			hdr_attr;
->+	unsigned int		max_attr;
->+	unsigned int		data_size;
->+	unsigned int		repdata_offset;
->+	const struct nla_policy *request_policy;
->+	const struct nla_policy *header_policy;
->+	u32			default_infomask;
->+	u32			all_reqflags;
->+	bool			allow_nodev_do;
->+
->+	int (*parse_request)(struct ethnl_req_info *req_info,
->+			     struct nlattr **tb,
->+			     struct netlink_ext_ack *extack);
->+	int (*prepare_data)(struct ethnl_req_info *req_info,
->+			    struct genl_info *info);
->+	int (*reply_size)(const struct ethnl_req_info *req_info);
->+	int (*fill_reply)(struct sk_buff *skb,
->+			  const struct ethnl_req_info *req_info);
->+	void (*cleanup)(struct ethnl_req_info *req_info);
->+};
->+
-> #endif /* _NET_ETHTOOL_NETLINK_H */
->-- 
->2.22.0
->
