@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F2C045F12A
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 04:12:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72B795F130
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 04:12:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727263AbfGDCMW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 22:12:22 -0400
+        id S1727284AbfGDCM0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 22:12:26 -0400
 Received: from mga03.intel.com ([134.134.136.65]:7957 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726955AbfGDCMU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jul 2019 22:12:20 -0400
+        id S1726736AbfGDCMY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jul 2019 22:12:24 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
   by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Jul 2019 19:12:18 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.63,449,1557212400"; 
-   d="scan'208";a="315741759"
+   d="scan'208";a="315741763"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by orsmga004.jf.intel.com with ESMTP; 03 Jul 2019 19:12:18 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net, dledford@redhat.com, jgg@mellanox.com
 Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
         linux-rdma@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com, poswald@suse.com, mustafa.ismail@intel.com,
+        sassmann@redhat.com, mustafa.ismail@intel.com,
         shiraz.saleem@intel.com, Dave Ertman <david.m.ertman@intel.com>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 1/3] ice: Initialize and register platform device to provide RDMA
-Date:   Wed,  3 Jul 2019 19:12:50 -0700
-Message-Id: <20190704021252.15534-2-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 2/3] ice: Implement peer communications
+Date:   Wed,  3 Jul 2019 19:12:51 -0700
+Message-Id: <20190704021252.15534-3-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190704021252.15534-1-jeffrey.t.kirsher@intel.com>
 References: <20190704021252.15534-1-jeffrey.t.kirsher@intel.com>
@@ -43,1219 +43,1885 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tony Nguyen <anthony.l.nguyen@intel.com>
 
-The RDMA block does not advertise on the PCI bus or any other bus.
-Thus the ice driver needs to provide access to the RDMA hardware block
-via a virtual bus; utilize the platform bus to provide this access.
-
-This patch initializes the driver to support RDMA as well as creates
-and registers a platform device for the RDMA driver to register to. At
-this point the driver is fully initialized to register a platform
-driver, however, can not yet register as the ops have not been
-implemented.
-
-We refer to the interaction of this platform device as Inter-Driver
-Communication (IDC); where the platform device is referred to as the peer
-device and the platform driver is referred to as the peer driver.
+Set and implement operations for the peer device and peer driver to
+communicate with each other, via ice_ops and ice_peer_ops, to request
+resources and manage event notification.
 
 Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ice/Makefile       |   1 +
- drivers/net/ethernet/intel/ice/ice.h          |  13 +
- .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   1 +
- drivers/net/ethernet/intel/ice/ice_common.c   |   5 +
- drivers/net/ethernet/intel/ice/ice_dcb_lib.c  |  31 ++
- drivers/net/ethernet/intel/ice/ice_dcb_lib.h  |   2 +
- .../net/ethernet/intel/ice/ice_hw_autogen.h   |   1 +
- drivers/net/ethernet/intel/ice/ice_idc.c      | 427 ++++++++++++++++++
- drivers/net/ethernet/intel/ice/ice_idc.h      | 360 +++++++++++++++
- drivers/net/ethernet/intel/ice/ice_idc_int.h  |  67 +++
- drivers/net/ethernet/intel/ice/ice_main.c     |  42 ++
- drivers/net/ethernet/intel/ice/ice_type.h     |   1 +
- 12 files changed, 951 insertions(+)
- create mode 100644 drivers/net/ethernet/intel/ice/ice_idc.c
- create mode 100644 drivers/net/ethernet/intel/ice/ice_idc.h
- create mode 100644 drivers/net/ethernet/intel/ice/ice_idc_int.h
+ drivers/net/ethernet/intel/ice/ice.h          |   2 +
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  32 +
+ drivers/net/ethernet/intel/ice/ice_common.c   | 189 ++++
+ drivers/net/ethernet/intel/ice/ice_common.h   |   9 +
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.c  |  33 +
+ drivers/net/ethernet/intel/ice/ice_idc.c      | 927 ++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_idc.h      |  17 +
+ drivers/net/ethernet/intel/ice/ice_idc_int.h  |  15 +
+ drivers/net/ethernet/intel/ice/ice_lib.c      |  35 +-
+ drivers/net/ethernet/intel/ice/ice_lib.h      |   2 +
+ drivers/net/ethernet/intel/ice/ice_main.c     |  52 +-
+ drivers/net/ethernet/intel/ice/ice_sched.c    |  69 +-
+ drivers/net/ethernet/intel/ice/ice_switch.c   |  27 +
+ drivers/net/ethernet/intel/ice/ice_switch.h   |   4 +
+ drivers/net/ethernet/intel/ice/ice_type.h     |   3 +
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  |  25 -
+ 16 files changed, 1409 insertions(+), 32 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/Makefile b/drivers/net/ethernet/intel/ice/Makefile
-index 2d140ba83781..1500f7724b6f 100644
---- a/drivers/net/ethernet/intel/ice/Makefile
-+++ b/drivers/net/ethernet/intel/ice/Makefile
-@@ -15,6 +15,7 @@ ice-y := ice_main.o	\
- 	 ice_sched.o	\
- 	 ice_lib.o	\
- 	 ice_txrx.o	\
-+	 ice_idc.o	\
- 	 ice_ethtool.o
- ice-$(CONFIG_PCI_IOV) += ice_virtchnl_pf.o ice_sriov.o
- ice-$(CONFIG_DCB) += ice_dcb.o ice_dcb_lib.o
 diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index 9ee6b55553c0..6ee2774699f0 100644
+index 6ee2774699f0..4855d3425043 100644
 --- a/drivers/net/ethernet/intel/ice/ice.h
 +++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -38,6 +38,7 @@
- #include "ice_switch.h"
- #include "ice_common.h"
- #include "ice_sched.h"
-+#include "ice_idc_int.h"
- #include "ice_virtchnl_pf.h"
- #include "ice_sriov.h"
+@@ -302,6 +302,7 @@ struct ice_vsi {
+ 	u16 num_rxq;			 /* Used Rx queues */
+ 	u16 num_rx_desc;
+ 	u16 num_tx_desc;
++	u16 qset_handle[ICE_MAX_TRAFFIC_CLASS];
+ 	struct ice_tc_cfg tc_cfg;
+ } ____cacheline_internodealigned_in_smp;
  
-@@ -84,6 +85,7 @@ extern const char ice_drv_ver[];
- #define ICE_MAX_SMALL_RSS_QS	8
- #define ICE_RES_VALID_BIT	0x8000
- #define ICE_RES_MISC_VEC_ID	(ICE_RES_VALID_BIT - 1)
-+#define ICE_RES_RDMA_VEC_ID	(ICE_RES_MISC_VEC_ID - 1)
- #define ICE_INVAL_Q_INDEX	0xffff
- #define ICE_INVAL_VFID		256
- #define ICE_MAX_VF_COUNT	256
-@@ -331,6 +333,7 @@ struct ice_q_vector {
- enum ice_pf_flags {
- 	ICE_FLAG_MSIX_ENA,
- 	ICE_FLAG_FLTR_SYNC,
-+	ICE_FLAG_IWARP_ENA,
- 	ICE_FLAG_RSS_ENA,
- 	ICE_FLAG_SRIOV_ENA,
- 	ICE_FLAG_SRIOV_CAPABLE,
-@@ -373,6 +376,9 @@ struct ice_pf {
- 	struct mutex avail_q_mutex;	/* protects access to avail_[rx|tx]qs */
- 	struct mutex sw_mutex;		/* lock for protecting VSI alloc flow */
- 	u32 msg_enable;
-+	/* Total number of MSIX vectors reserved for base driver */
-+	u32 num_rdma_msix;
-+	u32 rdma_base_vector;
- 	u32 hw_csum_rx_error;
- 	u32 oicr_idx;		/* Other interrupt cause MSIX vector index */
- 	u32 num_avail_sw_msix;	/* remaining MSIX SW vectors left unclaimed */
-@@ -399,6 +405,7 @@ struct ice_pf {
- 	unsigned long tx_timeout_last_recovery;
- 	u32 tx_timeout_recovery_level;
- 	char int_name[ICE_INT_NAME_STR_LEN];
-+	struct ice_peer_dev_int **peers;
- 	u32 sw_int_count;
- };
- 
-@@ -406,6 +413,8 @@ struct ice_netdev_priv {
- 	struct ice_vsi *vsi;
- };
- 
-+extern struct ida ice_peer_index_ida;
-+
- /**
-  * ice_irq_dynamic_ena - Enable default interrupt generation settings
-  * @hw: pointer to HW struct
-@@ -463,6 +472,10 @@ int ice_set_rss(struct ice_vsi *vsi, u8 *seed, u8 *lut, u16 lut_size);
+@@ -471,6 +472,7 @@ struct ice_vsi *ice_lb_vsi_setup(struct ice_pf *pf, struct ice_port_info *pi);
+ int ice_set_rss(struct ice_vsi *vsi, u8 *seed, u8 *lut, u16 lut_size);
  int ice_get_rss(struct ice_vsi *vsi, u8 *seed, u8 *lut, u16 lut_size);
  void ice_fill_rss_lut(u8 *lut, u16 rss_table_size, u16 rss_size);
++int ice_schedule_reset(struct ice_pf *pf, enum ice_reset_req reset);
  void ice_print_link_msg(struct ice_vsi *vsi, bool isup);
-+int ice_init_peer_devices(struct ice_pf *pf);
-+int
-+ice_for_each_peer(struct ice_pf *pf, void *data,
-+		  int (*fn)(struct ice_peer_dev_int *, void *));
- #ifdef CONFIG_DCB
- int ice_pf_ena_all_vsi(struct ice_pf *pf, bool locked);
- void ice_pf_dis_all_vsi(struct ice_pf *pf, bool locked);
+ int ice_init_peer_devices(struct ice_pf *pf);
+ int
 diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-index 765e3c2ed045..1e1bd5f0c2a2 100644
+index 1e1bd5f0c2a2..8e4f20b696ae 100644
 --- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
 +++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-@@ -96,6 +96,7 @@ struct ice_aqc_list_caps_elem {
- #define ICE_AQC_CAPS_TXQS				0x0042
- #define ICE_AQC_CAPS_MSIX				0x0043
- #define ICE_AQC_CAPS_MAX_MTU				0x0047
-+#define ICE_AQC_CAPS_IWARP				0x0051
+@@ -1441,6 +1441,36 @@ struct ice_aqc_dis_txq {
+ 	struct ice_aqc_dis_txq_item qgrps[1];
+ };
  
- 	u8 major_ver;
- 	u8 minor_ver;
++/* Add Tx RDMA Queue Set (indirect 0x0C33) */
++struct ice_aqc_add_rdma_qset {
++	u8 num_qset_grps;
++	u8 reserved[7];
++	__le32 addr_high;
++	__le32 addr_low;
++};
++
++/* This is the descriptor of each qset entry for the Add Tx RDMA Queue Set
++ * command (0x0C33). Only used within struct ice_aqc_add_rdma_qset.
++ */
++struct ice_aqc_add_tx_rdma_qset_entry {
++	__le16 tx_qset_id;
++	u8 rsvd[2];
++	__le32 qset_teid;
++	struct ice_aqc_txsched_elem info;
++};
++
++/* The format of the command buffer for Add Tx RDMA Queue Set(0x0C33)
++ * is an array of the following structs. Please note that the length of
++ * each struct ice_aqc_add_rdma_qset is variable due to the variable
++ * number of queues in each group!
++ */
++struct ice_aqc_add_rdma_qset_data {
++	__le32 parent_teid;
++	__le16 num_qsets;
++	u8 rsvd[2];
++	struct ice_aqc_add_tx_rdma_qset_entry rdma_qsets[1];
++};
++
+ /* Configure Firmware Logging Command (indirect 0xFF09)
+  * Logging Information Read Response (indirect 0xFF10)
+  * Note: The 0xFF10 command has no input parameters.
+@@ -1576,6 +1606,7 @@ struct ice_aq_desc {
+ 		struct ice_aqc_get_set_rss_key get_set_rss_key;
+ 		struct ice_aqc_add_txqs add_txqs;
+ 		struct ice_aqc_dis_txqs dis_txqs;
++		struct ice_aqc_add_rdma_qset add_rdma_qset;
+ 		struct ice_aqc_add_get_update_free_vsi vsi_cmd;
+ 		struct ice_aqc_add_update_free_vsi_resp add_update_free_vsi_res;
+ 		struct ice_aqc_fw_logging fw_logging;
+@@ -1697,6 +1728,7 @@ enum ice_adminq_opc {
+ 	/* Tx queue handling commands/events */
+ 	ice_aqc_opc_add_txqs				= 0x0C30,
+ 	ice_aqc_opc_dis_txqs				= 0x0C31,
++	ice_aqc_opc_add_rdma_qset			= 0x0C33,
+ 
+ 	/* debug commands */
+ 	ice_aqc_opc_fw_logging				= 0xFF09,
 diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index 2e0731c1e1a3..2788b2ede440 100644
+index 2788b2ede440..6cc8cfd97f88 100644
 --- a/drivers/net/ethernet/intel/ice/ice_common.c
 +++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -1613,6 +1613,11 @@ ice_parse_caps(struct ice_hw *hw, void *buf, u32 cap_count,
- 				  "%s: MSIX first vector index = %d\n", prefix,
- 				  caps->msix_vector_first_id);
- 			break;
-+		case ICE_AQC_CAPS_IWARP:
-+			caps->iwarp = (number == 1);
-+			ice_debug(hw, ICE_DBG_INIT,
-+				  "%s: iWARP = %d\n", prefix, caps->iwarp);
+@@ -2711,6 +2711,59 @@ ice_aq_dis_lan_txq(struct ice_hw *hw, u8 num_qgrps,
+ 	return status;
+ }
+ 
++/**
++ * ice_aq_add_rdma_qsets
++ * @hw: pointer to the hardware structure
++ * @num_qset_grps: Number of RDMA Qset groups
++ * @qset_list: list of qset groups to be added
++ * @buf_size: size of buffer for indirect command
++ * @cd: pointer to command details structure or NULL
++ *
++ * Add Tx RDMA Qsets (0x0C33)
++ */
++static enum ice_status
++ice_aq_add_rdma_qsets(struct ice_hw *hw, u8 num_qset_grps,
++		      struct ice_aqc_add_rdma_qset_data *qset_list,
++		      u16 buf_size, struct ice_sq_cd *cd)
++{
++	struct ice_aqc_add_rdma_qset_data *list;
++	u16 i, sum_header_size, sum_q_size = 0;
++	struct ice_aqc_add_rdma_qset *cmd;
++	struct ice_aq_desc desc;
++
++	cmd = &desc.params.add_rdma_qset;
++
++	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_add_rdma_qset);
++
++	if (!qset_list)
++		return ICE_ERR_PARAM;
++
++	if (num_qset_grps > ICE_LAN_TXQ_MAX_QGRPS)
++		return ICE_ERR_PARAM;
++
++	sum_header_size = num_qset_grps *
++		(sizeof(*qset_list) - sizeof(*qset_list->rdma_qsets));
++
++	list = qset_list;
++	for (i = 0; i < num_qset_grps; i++) {
++		struct ice_aqc_add_tx_rdma_qset_entry *qset = list->rdma_qsets;
++		u16 num_qsets = le16_to_cpu(list->num_qsets);
++
++		sum_q_size += num_qsets * sizeof(*qset);
++		list = (struct ice_aqc_add_rdma_qset_data *)
++			(qset + num_qsets);
++	}
++
++	if (buf_size != (sum_header_size + sum_q_size))
++		return ICE_ERR_PARAM;
++
++	desc.flags |= cpu_to_le16(ICE_AQ_FLAG_RD);
++
++	cmd->num_qset_grps = num_qset_grps;
++
++	return ice_aq_send_cmd(hw, &desc, qset_list, buf_size, cd);
++}
++
+ /* End of FW Admin Queue command wrappers */
+ 
+ /**
+@@ -3179,6 +3232,142 @@ ice_cfg_vsi_lan(struct ice_port_info *pi, u16 vsi_handle, u8 tc_bitmap,
+ 			      ICE_SCHED_NODE_OWNER_LAN);
+ }
+ 
++/**
++ * ice_cfg_vsi_rdma - configure the VSI RDMA queues
++ * @pi: port information structure
++ * @vsi_handle: software VSI handle
++ * @tc_bitmap: TC bitmap
++ * @max_rdmaqs: max RDMA queues array per TC
++ *
++ * This function adds/updates the VSI RDMA queues per TC.
++ */
++enum ice_status
++ice_cfg_vsi_rdma(struct ice_port_info *pi, u16 vsi_handle, u8 tc_bitmap,
++		 u16 *max_rdmaqs)
++{
++	return ice_cfg_vsi_qs(pi, vsi_handle, tc_bitmap, max_rdmaqs,
++			      ICE_SCHED_NODE_OWNER_RDMA);
++}
++
++/**
++ * ice_ena_vsi_rdma_qset
++ * @pi: port information structure
++ * @vsi_handle: software VSI handle
++ * @tc: TC number
++ * @rdma_qset: pointer to RDMA qset
++ * @num_qsets: number of RDMA qsets
++ * @qset_teid: pointer to qset node teids
++ *
++ * This function adds RDMA qset
++ */
++enum ice_status
++ice_ena_vsi_rdma_qset(struct ice_port_info *pi, u16 vsi_handle, u8 tc,
++		      u16 *rdma_qset, u16 num_qsets, u32 *qset_teid)
++{
++	struct ice_aqc_txsched_elem_data node = { 0 };
++	struct ice_aqc_add_rdma_qset_data *buf;
++	struct ice_sched_node *parent;
++	enum ice_status status;
++	struct ice_hw *hw;
++	u16 buf_size;
++	u8 i;
++
++	if (!pi || pi->port_state != ICE_SCHED_PORT_STATE_READY)
++		return ICE_ERR_CFG;
++	hw = pi->hw;
++
++	if (!ice_is_vsi_valid(hw, vsi_handle))
++		return ICE_ERR_PARAM;
++
++	buf_size = sizeof(*buf) + sizeof(*buf->rdma_qsets) * (num_qsets - 1);
++	buf = devm_kzalloc(ice_hw_to_dev(hw), buf_size, GFP_KERNEL);
++	if (!buf)
++		return ICE_ERR_NO_MEMORY;
++	mutex_lock(&pi->sched_lock);
++
++	parent = ice_sched_get_free_qparent(pi, vsi_handle, tc,
++					    ICE_SCHED_NODE_OWNER_RDMA);
++	if (!parent) {
++		status = ICE_ERR_PARAM;
++		goto rdma_error_exit;
++	}
++	buf->parent_teid = parent->info.node_teid;
++	node.parent_teid = parent->info.node_teid;
++
++	buf->num_qsets = cpu_to_le16(num_qsets);
++	for (i = 0; i < num_qsets; i++) {
++		buf->rdma_qsets[i].tx_qset_id = cpu_to_le16(rdma_qset[i]);
++		buf->rdma_qsets[i].info.valid_sections =
++						ICE_AQC_ELEM_VALID_GENERIC;
++	}
++	status = ice_aq_add_rdma_qsets(hw, 1, buf, buf_size, NULL);
++	if (status) {
++		ice_debug(hw, ICE_DBG_RDMA, "add RDMA qset failed\n");
++		goto rdma_error_exit;
++	}
++	node.data.elem_type = ICE_AQC_ELEM_TYPE_LEAF;
++	for (i = 0; i < num_qsets; i++) {
++		node.node_teid = buf->rdma_qsets[i].qset_teid;
++		status = ice_sched_add_node(pi, hw->num_tx_sched_layers - 1,
++					    &node);
++		if (status)
 +			break;
- 		case ICE_AQC_CAPS_MAX_MTU:
- 			caps->max_mtu = number;
- 			ice_debug(hw, ICE_DBG_INIT, "%s: max MTU = %d\n",
++		qset_teid[i] = le32_to_cpu(node.node_teid);
++	}
++rdma_error_exit:
++	mutex_unlock(&pi->sched_lock);
++	devm_kfree(ice_hw_to_dev(hw), buf);
++	return status;
++}
++
++/**
++ * ice_dis_vsi_rdma_qset - free RDMA resources
++ * @pi: port_info struct
++ * @count: number of RDMA qsets to free
++ * @qset_teid: TEID of qset node
++ * @q_id: list of queue IDs being disabled
++ */
++enum ice_status
++ice_dis_vsi_rdma_qset(struct ice_port_info *pi, u16 count, u32 *qset_teid,
++		      u16 *q_id)
++{
++	struct ice_aqc_dis_txq_item qg_list;
++	enum ice_status status = 0;
++	u16 qg_size;
++	int i;
++
++	if (!pi || pi->port_state != ICE_SCHED_PORT_STATE_READY)
++		return ICE_ERR_CFG;
++
++	qg_size = sizeof(qg_list);
++
++	mutex_lock(&pi->sched_lock);
++
++	for (i = 0; i < count; i++) {
++		struct ice_sched_node *node;
++
++		node = ice_sched_find_node_by_teid(pi->root, qset_teid[i]);
++		if (!node)
++			continue;
++
++		qg_list.parent_teid = node->info.parent_teid;
++		qg_list.num_qs = 1;
++		qg_list.q_id[0] =
++			cpu_to_le16(q_id[i] |
++				    ICE_AQC_Q_DIS_BUF_ELEM_TYPE_RDMA_QSET);
++
++		status = ice_aq_dis_lan_txq(pi->hw, 1, &qg_list, qg_size,
++					    ICE_NO_RESET, 0, NULL);
++		if (status)
++			break;
++
++		ice_free_sched_node(pi, node);
++	}
++
++	mutex_unlock(&pi->sched_lock);
++	return status;
++}
++
+ /**
+  * ice_replay_pre_init - replay pre initialization
+  * @hw: pointer to the HW struct
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.h b/drivers/net/ethernet/intel/ice/ice_common.h
+index d1f8353fe6bb..f56c05119378 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.h
++++ b/drivers/net/ethernet/intel/ice/ice_common.h
+@@ -108,6 +108,15 @@ ice_aq_set_port_id_led(struct ice_port_info *pi, bool is_orig_mode,
+ 		       struct ice_sq_cd *cd);
+ 
+ enum ice_status
++ice_cfg_vsi_rdma(struct ice_port_info *pi, u16 vsi_handle, u8 tc_bitmap,
++		 u16 *max_rdmaqs);
++enum ice_status
++ice_ena_vsi_rdma_qset(struct ice_port_info *pi, u16 vsi_handle, u8 tc,
++		      u16 *rdma_qset, u16 num_qsets, u32 *qset_teid);
++enum ice_status
++ice_dis_vsi_rdma_qset(struct ice_port_info *pi, u16 count, u32 *qset_teid,
++		      u16 *q_id);
++enum ice_status
+ ice_dis_vsi_txq(struct ice_port_info *pi, u16 vsi_handle, u8 tc, u8 num_queues,
+ 		u16 *q_handle, u16 *q_ids, u32 *q_teids,
+ 		enum ice_disq_rst_src rst_src, u16 vmvf_num,
 diff --git a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-index fe88b127ca42..c6466e16eef1 100644
+index c6466e16eef1..ded039a1e3e7 100644
 --- a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
 +++ b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-@@ -501,6 +501,37 @@ ice_tx_prepare_vlan_flags_dcb(struct ice_ring *tx_ring,
+@@ -106,6 +106,7 @@ void ice_vsi_cfg_dcb_rings(struct ice_vsi *vsi)
+ static void ice_pf_dcb_recfg(struct ice_pf *pf)
+ {
+ 	struct ice_dcbx_cfg *dcbcfg = &pf->hw.port_info->local_dcbx_cfg;
++	struct ice_event *event;
+ 	u8 tc_map = 0;
+ 	int v, ret;
+ 
+@@ -129,6 +130,35 @@ static void ice_pf_dcb_recfg(struct ice_pf *pf)
+ 
+ 		ice_vsi_map_rings_to_vectors(pf->vsi[v]);
+ 	}
++	event = devm_kzalloc(&pf->pdev->dev, sizeof(*event), GFP_KERNEL);
++	if (!event)
++		return;
++
++	set_bit(ICE_EVENT_TC_CHANGE, event->type);
++	event->reporter = NULL;
++	ice_setup_dcb_qos_info(pf, &event->info.port_qos);
++	ice_for_each_peer(pf, event, ice_peer_check_for_reg);
++	devm_kfree(&pf->pdev->dev, event);
++}
++
++/**
++ * ice_peer_prep_tc_change - Pre-notify RDMA Peer in blocking call of TC change
++ * @peer_dev_int: ptr to peer device internal struct
++ * @data: ptr to opaque data
++ */
++static int
++ice_peer_prep_tc_change(struct ice_peer_dev_int *peer_dev_int,
++			void __always_unused *data)
++{
++	struct ice_peer_dev *peer_dev = &peer_dev_int->peer_dev;
++
++	if (!ice_validate_peer_dev(peer_dev))
++		return 0;
++
++	if (peer_dev->peer_ops && peer_dev->peer_ops->prep_tc_change)
++		peer_dev->peer_ops->prep_tc_change(peer_dev);
++
++	return 0;
+ }
+ 
+ /**
+@@ -160,6 +190,9 @@ int ice_pf_dcb_cfg(struct ice_pf *pf, struct ice_dcbx_cfg *new_cfg, bool locked)
+ 		return ret;
+ 	}
+ 
++	/* Notify capable peers about impending change to TCs */
++	ice_for_each_peer(pf, NULL, ice_peer_prep_tc_change);
++
+ 	/* Store old config in case FW config fails */
+ 	old_cfg = devm_kzalloc(&pf->pdev->dev, sizeof(*old_cfg), GFP_KERNEL);
+ 	memcpy(old_cfg, curr_cfg, sizeof(*old_cfg));
+diff --git a/drivers/net/ethernet/intel/ice/ice_idc.c b/drivers/net/ethernet/intel/ice/ice_idc.c
+index 0bf66e9fa159..550c3839b581 100644
+--- a/drivers/net/ethernet/intel/ice/ice_idc.c
++++ b/drivers/net/ethernet/intel/ice/ice_idc.c
+@@ -10,6 +10,44 @@ DEFINE_IDA(ice_peer_index_ida);
+ 
+ static const struct peer_dev_id peer_dev_ids[] = ASSIGN_PEER_INFO;
+ 
++/**
++ * ice_validate_peer_dev - validate peer device state
++ * @peer_dev: ptr to peer device
++ *
++ * This helper function checks if PF is in a minimal state and if the peer
++ * device is valid. This should be called before engaging in peer operations.
++ *
++ * Returns true if the peer device is valid, false otherwise.
++ */
++#ifndef CONFIG_DCB
++static
++#endif
++bool ice_validate_peer_dev(struct ice_peer_dev *peer_dev)
++{
++	struct ice_peer_dev_int *peer_dev_int;
++	struct ice_pf *pf;
++
++	if (!peer_dev || !peer_dev->pdev)
++		return false;
++
++	if (!peer_dev->peer_ops)
++		return false;
++
++	pf = pci_get_drvdata(peer_dev->pdev);
++	if (!pf)
++		return false;
++
++	peer_dev_int = peer_to_ice_dev_int(peer_dev);
++	if (!peer_dev_int)
++		return false;
++
++	if (test_bit(ICE_PEER_DEV_STATE_REMOVED, peer_dev_int->state) ||
++	    test_bit(ICE_PEER_DEV_STATE_INIT, peer_dev_int->state))
++		return false;
++
++	return true;
++}
++
+ /**
+  * ice_peer_state_change - manage state machine for peer
+  * @peer_dev: pointer to peer's configuration
+@@ -155,6 +193,155 @@ ice_peer_state_change(struct ice_peer_dev_int *peer_dev, long new_state,
+ 		mutex_unlock(&peer_dev->peer_dev_state_mutex);
+ }
+ 
++/**
++ * ice_peer_close - close a peer device
++ * @peer_dev_int: device to close
++ * @data: pointer to opaque data
++ *
++ * This function will also set the state bit for the peer to CLOSED. This
++ * function is meant to be called from a ice_for_each_peer().
++ */
++int ice_peer_close(struct ice_peer_dev_int *peer_dev_int, void *data)
++{
++	enum ice_close_reason reason = *(enum ice_close_reason *)(data);
++	struct ice_peer_dev *peer_dev = &peer_dev_int->peer_dev;
++	struct ice_pf *pf;
++	int i;
++
++	/* return 0 so ice_for_each_peer will continue closing other peers */
++	if (!ice_validate_peer_dev(peer_dev))
++		return 0;
++	pf = pci_get_drvdata(peer_dev->pdev);
++
++	if (test_bit(__ICE_DOWN, pf->state) ||
++	    test_bit(__ICE_SUSPENDED, pf->state) ||
++	    test_bit(__ICE_NEEDS_RESTART, pf->state))
++		return 0;
++
++	mutex_lock(&peer_dev_int->peer_dev_state_mutex);
++
++	/* no peer driver, already closed, closing or opening nothing to do */
++	if (test_bit(ICE_PEER_DEV_STATE_CLOSED, peer_dev_int->state) ||
++	    test_bit(ICE_PEER_DEV_STATE_CLOSING, peer_dev_int->state) ||
++	    test_bit(ICE_PEER_DEV_STATE_OPENING, peer_dev_int->state) ||
++	    test_bit(ICE_PEER_DEV_STATE_REMOVED, peer_dev_int->state))
++		goto peer_close_out;
++
++	/* Set the peer state to CLOSING */
++	ice_peer_state_change(peer_dev_int, ICE_PEER_DEV_STATE_CLOSING, true);
++
++	for (i = 0; i < ICE_EVENT_NBITS; i++)
++		bitmap_zero(peer_dev_int->current_events[i].type,
++			    ICE_EVENT_NBITS);
++
++	if (peer_dev->peer_ops && peer_dev->peer_ops->close)
++		peer_dev->peer_ops->close(peer_dev, reason);
++
++	/* Set the peer state to CLOSED */
++	ice_peer_state_change(peer_dev_int, ICE_PEER_DEV_STATE_CLOSED, true);
++
++peer_close_out:
++	mutex_unlock(&peer_dev_int->peer_dev_state_mutex);
++
++	return 0;
++}
++
++/**
++ * ice_close_peer_for_reset - queue work to close peer for reset
++ * @peer_dev_int: pointer peer dev internal struct
++ * @data: pointer to opaque data used for reset type
++ */
++int ice_close_peer_for_reset(struct ice_peer_dev_int *peer_dev_int, void *data)
++{
++	struct ice_peer_dev *peer_dev = &peer_dev_int->peer_dev;
++	enum ice_reset_req reset;
++
++	if (!ice_validate_peer_dev(peer_dev))
++		return 0;
++
++	reset = *(enum ice_reset_req *)data;
++
++	switch (reset) {
++	case ICE_RESET_GLOBR:
++		peer_dev_int->rst_type = ICE_REASON_GLOBR_REQ;
++		break;
++	case ICE_RESET_CORER:
++		peer_dev_int->rst_type = ICE_REASON_CORER_REQ;
++		break;
++	case ICE_RESET_PFR:
++		peer_dev_int->rst_type = ICE_REASON_PFR_REQ;
++		break;
++	default:
++		/* reset type is invalid */
++		return 1;
++	}
++	queue_work(peer_dev_int->ice_peer_wq, &peer_dev_int->peer_close_task);
++	return 0;
++}
++
++/**
++ * ice_check_peer_drv_for_events - check peer_drv for events to report
++ * @peer_dev: peer device to report to
++ */
++static void ice_check_peer_drv_for_events(struct ice_peer_dev *peer_dev)
++{
++	const struct ice_peer_ops *p_ops = peer_dev->peer_ops;
++	struct ice_peer_dev_int *peer_dev_int;
++	struct ice_peer_drv_int *peer_drv_int;
++	int i;
++
++	peer_dev_int = peer_to_ice_dev_int(peer_dev);
++	peer_drv_int = peer_dev_int->peer_drv_int;
++
++	for_each_set_bit(i, peer_dev_int->events, ICE_EVENT_NBITS) {
++		struct ice_event *curr = &peer_drv_int->current_events[i];
++
++		if (!bitmap_empty(curr->type, ICE_EVENT_NBITS) &&
++		    p_ops->event_handler)
++			p_ops->event_handler(peer_dev, curr);
++	}
++}
++
++/**
++ * ice_check_peer_for_events - check peer_devs for events new peer reg'd for
++ * @src_peer_int: peer to check for events
++ * @data: ptr to opaque data, to be used for the peer struct that opened
++ *
++ * This function is to be called when a peer device is opened.
++ *
++ * Since a new peer opening would have missed any events that would
++ * have happened before its opening, we need to walk the peers and see
++ * if any of them have events that the new peer cares about
++ *
++ * This function is meant to be called by a device_for_each_child.
++ */
++static int
++ice_check_peer_for_events(struct ice_peer_dev_int *src_peer_int, void *data)
++{
++	struct ice_peer_dev *new_peer = (struct ice_peer_dev *)data;
++	struct ice_peer_dev *src_peer = &src_peer_int->peer_dev;
++	const struct ice_peer_ops *p_ops = new_peer->peer_ops;
++	struct ice_peer_dev_int *new_peer_int;
++	int i;
++
++	if (!ice_validate_peer_dev(new_peer) ||
++	    !ice_validate_peer_dev(src_peer))
++		return 0;
++
++	new_peer_int = peer_to_ice_dev_int(new_peer);
++
++	for_each_set_bit(i, new_peer_int->events, ICE_EVENT_NBITS) {
++		struct ice_event *curr = &src_peer_int->current_events[i];
++
++		if (!bitmap_empty(curr->type, ICE_EVENT_NBITS) &&
++		    new_peer->index != src_peer->index &&
++		    p_ops->event_handler)
++			p_ops->event_handler(new_peer, curr);
++	}
++
++	return 0;
++}
++
+ /**
+  * ice_for_each_peer - iterate across and call function for each peer dev
+  * @pf: pointer to private board struct
+@@ -184,6 +371,88 @@ ice_for_each_peer(struct ice_pf *pf, void *data,
  	return 0;
  }
  
 +/**
-+ * ice_setup_dcb_qos_info - Setup DCB QoS information
-+ * @pf: ptr to ice_pf
-+ * @qos_info: QoS param instance
-+ */
-+void ice_setup_dcb_qos_info(struct ice_pf *pf, struct ice_qos_params *qos_info)
-+{
-+	struct ice_dcbx_cfg *dcbx_cfg;
-+	u32 up2tc;
-+	int i;
-+
-+	dcbx_cfg = &pf->hw.port_info->local_dcbx_cfg;
-+	up2tc = rd32(&pf->hw, PRTDCB_TUP2TC);
-+	qos_info->num_apps = dcbx_cfg->numapps;
-+
-+	qos_info->num_tc = ice_dcb_get_num_tc(dcbx_cfg);
-+
-+	for (i = 0; i < ICE_IDC_MAX_USER_PRIORITY; i++)
-+		qos_info->up2tc[i] = (up2tc >> (i * 3)) & 0x7;
-+
-+	for (i = 0; i < IEEE_8021QAZ_MAX_TCS; i++)
-+		qos_info->tc_info[i].rel_bw =
-+			dcbx_cfg->etscfg.tcbwtable[i];
-+
-+	for (i = 0; i < qos_info->num_apps; i++) {
-+		qos_info->apps[i].priority = dcbx_cfg->app[i].priority;
-+		qos_info->apps[i].prot_id = dcbx_cfg->app[i].prot_id;
-+		qos_info->apps[i].selector = dcbx_cfg->app[i].selector;
-+	}
-+}
-+
- /**
-  * ice_dcb_need_recfg - Check if DCB needs reconfig
-  * @pf: board private structure
-diff --git a/drivers/net/ethernet/intel/ice/ice_dcb_lib.h b/drivers/net/ethernet/intel/ice/ice_dcb_lib.h
-index 819081053ff5..bce3899afb3a 100644
---- a/drivers/net/ethernet/intel/ice/ice_dcb_lib.h
-+++ b/drivers/net/ethernet/intel/ice/ice_dcb_lib.h
-@@ -19,6 +19,7 @@ void ice_update_dcb_stats(struct ice_pf *pf);
- int
- ice_tx_prepare_vlan_flags_dcb(struct ice_ring *tx_ring,
- 			      struct ice_tx_buf *first);
-+void ice_setup_dcb_qos_info(struct ice_pf *pf, struct ice_qos_params *qos_info);
- void
- ice_dcb_process_lldp_set_mib_change(struct ice_pf *pf,
- 				    struct ice_rq_event_info *event);
-@@ -56,6 +57,7 @@ ice_tx_prepare_vlan_flags_dcb(struct ice_ring __always_unused *tx_ring,
- 
- #define ice_update_dcb_stats(pf) do {} while (0)
- #define ice_vsi_cfg_dcb_rings(vsi) do {} while (0)
-+#define ice_setup_dcb_qos_info(pf, qos_info) do {} while (0)
- #define ice_dcb_process_lldp_set_mib_change(pf, event) do {} while (0)
- #define ice_set_cgd_num(tlan_ctx, ring) do {} while (0)
- #endif /* CONFIG_DCB */
-diff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
-index 6c5ce05742b1..0fa393f909dd 100644
---- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
-+++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
-@@ -55,6 +55,7 @@
- #define PRTDCB_GENS				0x00083020
- #define PRTDCB_GENS_DCBX_STATUS_S		0
- #define PRTDCB_GENS_DCBX_STATUS_M		ICE_M(0x7, 0)
-+#define PRTDCB_TUP2TC				0x001D26C0
- #define GLFLXP_RXDID_FLAGS(_i, _j)		(0x0045D000 + ((_i) * 4 + (_j) * 256))
- #define GLFLXP_RXDID_FLAGS_FLEXIFLAG_4N_S	0
- #define GLFLXP_RXDID_FLAGS_FLEXIFLAG_4N_M	ICE_M(0x3F, 0)
-diff --git a/drivers/net/ethernet/intel/ice/ice_idc.c b/drivers/net/ethernet/intel/ice/ice_idc.c
-new file mode 100644
-index 000000000000..0bf66e9fa159
---- /dev/null
-+++ b/drivers/net/ethernet/intel/ice/ice_idc.c
-@@ -0,0 +1,427 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2019, Intel Corporation. */
-+
-+/* Inter-Driver Communication */
-+#include "ice.h"
-+#include "ice_lib.h"
-+#include "ice_dcb_lib.h"
-+
-+DEFINE_IDA(ice_peer_index_ida);
-+
-+static const struct peer_dev_id peer_dev_ids[] = ASSIGN_PEER_INFO;
-+
-+/**
-+ * ice_peer_state_change - manage state machine for peer
-+ * @peer_dev: pointer to peer's configuration
-+ * @new_state: the state requested to transition into
-+ * @locked: boolean to determine if call made with mutex held
-+ *
-+ * This function handles all state transitions for peer devices.
-+ * The state machine is as follows:
-+ *
-+ *     +<-----------------------+<-----------------------------+
-+ *				|<-------+<----------+	       +
-+ *				\/	 +	     +	       +
-+ *    INIT  --------------> PROBED --> OPENING	  CLOSED --> REMOVED
-+ *					 +           +
-+ *				       OPENED --> CLOSING
-+ *					 +	     +
-+ *				       PREP_RST	     +
-+ *					 +	     +
-+ *				      PREPPED	     +
-+ *					 +---------->+
-+ */
-+static void
-+ice_peer_state_change(struct ice_peer_dev_int *peer_dev, long new_state,
-+		      bool locked)
-+{
-+	if (!locked)
-+		mutex_lock(&peer_dev->peer_dev_state_mutex);
-+
-+	switch (new_state) {
-+	case ICE_PEER_DEV_STATE_INIT:
-+		if (test_and_clear_bit(ICE_PEER_DEV_STATE_REMOVED,
-+				       peer_dev->state)) {
-+			set_bit(ICE_PEER_DEV_STATE_INIT, peer_dev->state);
-+			dev_info(&peer_dev->peer_dev.platform_dev.dev,
-+				 "state transition from _REMOVED to _INIT\n");
-+		} else {
-+			set_bit(ICE_PEER_DEV_STATE_INIT, peer_dev->state);
-+			dev_info(&peer_dev->peer_dev.platform_dev.dev,
-+				 "state set to _INIT\n");
-+		}
-+		break;
-+	case ICE_PEER_DEV_STATE_PROBED:
-+		if (test_and_clear_bit(ICE_PEER_DEV_STATE_INIT,
-+				       peer_dev->state)) {
-+			set_bit(ICE_PEER_DEV_STATE_PROBED, peer_dev->state);
-+			dev_info(&peer_dev->peer_dev.platform_dev.dev,
-+				 "state transition from _INIT to _PROBED\n");
-+		} else if (test_and_clear_bit(ICE_PEER_DEV_STATE_REMOVED,
-+					      peer_dev->state)) {
-+			set_bit(ICE_PEER_DEV_STATE_PROBED, peer_dev->state);
-+			dev_info(&peer_dev->peer_dev.platform_dev.dev,
-+				 "state transition from _REMOVED to _PROBED\n");
-+		} else if (test_and_clear_bit(ICE_PEER_DEV_STATE_OPENING,
-+					      peer_dev->state)) {
-+			set_bit(ICE_PEER_DEV_STATE_PROBED, peer_dev->state);
-+			dev_info(&peer_dev->peer_dev.platform_dev.dev,
-+				 "state transition from _OPENING to _PROBED\n");
-+		}
-+		break;
-+	case ICE_PEER_DEV_STATE_OPENING:
-+		if (test_and_clear_bit(ICE_PEER_DEV_STATE_PROBED,
-+				       peer_dev->state)) {
-+			set_bit(ICE_PEER_DEV_STATE_OPENING, peer_dev->state);
-+			dev_info(&peer_dev->peer_dev.platform_dev.dev,
-+				 "state transition from _PROBED to _OPENING\n");
-+		} else if (test_and_clear_bit(ICE_PEER_DEV_STATE_CLOSED,
-+					      peer_dev->state)) {
-+			set_bit(ICE_PEER_DEV_STATE_OPENING, peer_dev->state);
-+			dev_info(&peer_dev->peer_dev.platform_dev.dev,
-+				 "state transition from _CLOSED to _OPENING\n");
-+		}
-+		break;
-+	case ICE_PEER_DEV_STATE_OPENED:
-+		if (test_and_clear_bit(ICE_PEER_DEV_STATE_OPENING,
-+				       peer_dev->state)) {
-+			set_bit(ICE_PEER_DEV_STATE_OPENED, peer_dev->state);
-+			dev_info(&peer_dev->peer_dev.platform_dev.dev,
-+				 "state transition from _OPENING to _OPENED\n");
-+		}
-+		break;
-+	case ICE_PEER_DEV_STATE_PREP_RST:
-+		if (test_and_clear_bit(ICE_PEER_DEV_STATE_OPENED,
-+				       peer_dev->state)) {
-+			set_bit(ICE_PEER_DEV_STATE_PREP_RST, peer_dev->state);
-+			dev_info(&peer_dev->peer_dev.platform_dev.dev,
-+				 "state transition from _OPENED to _PREP_RST\n");
-+		}
-+		break;
-+	case ICE_PEER_DEV_STATE_PREPPED:
-+		if (test_and_clear_bit(ICE_PEER_DEV_STATE_PREP_RST,
-+				       peer_dev->state)) {
-+			set_bit(ICE_PEER_DEV_STATE_PREPPED, peer_dev->state);
-+			dev_info(&peer_dev->peer_dev.platform_dev.dev,
-+				 "state transition _PREP_RST to _PREPPED\n");
-+		}
-+		break;
-+	case ICE_PEER_DEV_STATE_CLOSING:
-+		if (test_and_clear_bit(ICE_PEER_DEV_STATE_OPENED,
-+				       peer_dev->state)) {
-+			set_bit(ICE_PEER_DEV_STATE_CLOSING, peer_dev->state);
-+			dev_info(&peer_dev->peer_dev.platform_dev.dev,
-+				 "state transition from _OPENED to _CLOSING\n");
-+		}
-+		if (test_and_clear_bit(ICE_PEER_DEV_STATE_PREPPED,
-+				       peer_dev->state)) {
-+			set_bit(ICE_PEER_DEV_STATE_CLOSING, peer_dev->state);
-+			dev_info(&peer_dev->peer_dev.platform_dev.dev,
-+				 "state transition _PREPPED to _CLOSING\n");
-+		}
-+		/* NOTE - up to peer to handle this situation correctly */
-+		if (test_and_clear_bit(ICE_PEER_DEV_STATE_PREP_RST,
-+				       peer_dev->state)) {
-+			set_bit(ICE_PEER_DEV_STATE_CLOSING, peer_dev->state);
-+			dev_warn(&peer_dev->peer_dev.platform_dev.dev,
-+				 "WARN: Peer state PREP_RST to _CLOSING\n");
-+		}
-+		break;
-+	case ICE_PEER_DEV_STATE_CLOSED:
-+		if (test_and_clear_bit(ICE_PEER_DEV_STATE_CLOSING,
-+				       peer_dev->state)) {
-+			set_bit(ICE_PEER_DEV_STATE_CLOSED, peer_dev->state);
-+			dev_info(&peer_dev->peer_dev.platform_dev.dev,
-+				 "state transition from _CLOSING to _CLOSED\n");
-+		}
-+		break;
-+	case ICE_PEER_DEV_STATE_REMOVED:
-+		if (test_and_clear_bit(ICE_PEER_DEV_STATE_OPENED,
-+				       peer_dev->state) ||
-+		    test_and_clear_bit(ICE_PEER_DEV_STATE_CLOSED,
-+				       peer_dev->state)) {
-+			set_bit(ICE_PEER_DEV_STATE_REMOVED, peer_dev->state);
-+			dev_info(&peer_dev->peer_dev.platform_dev.dev,
-+				 "state from _OPENED/_CLOSED to _REMOVED\n");
-+			/* Clear registration for events when peer removed */
-+			bitmap_zero(peer_dev->events, ICE_PEER_DEV_STATE_NBITS);
-+		}
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	if (!locked)
-+		mutex_unlock(&peer_dev->peer_dev_state_mutex);
-+}
-+
-+/**
-+ * ice_for_each_peer - iterate across and call function for each peer dev
-+ * @pf: pointer to private board struct
-+ * @data: data to pass to function on each call
-+ * @fn: pointer to function to call for each peer
-+ *
-+ * This function is to be used similarly to ice_for_each_peer
-+ */
-+int
-+ice_for_each_peer(struct ice_pf *pf, void *data,
-+		  int (*fn)(struct ice_peer_dev_int *, void *))
-+{
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(peer_dev_ids); i++) {
-+		struct ice_peer_dev_int *peer_dev_int;
-+		int ret;
-+
-+		peer_dev_int = pf->peers[i];
-+		if (peer_dev_int) {
-+			ret = fn(peer_dev_int, data);
-+			if (ret)
-+				return ret;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_unreg_peer_device - unregister specified device
-+ * @peer_dev_int: ptr to peer device internal
-+ * @data: ptr to opaque data
-+ *
-+ * This function invokes device unregistration, removes ID associated with
-+ * the specified device.
-+ */
-+int
-+ice_unreg_peer_device(struct ice_peer_dev_int *peer_dev_int,
-+		      void __always_unused *data)
-+{
-+	struct ice_pf *pf;
-+
-+	if (!peer_dev_int)
-+		return 0;
-+
-+	platform_device_unregister(&peer_dev_int->peer_dev.platform_dev);
-+
-+	pf = pci_get_drvdata(peer_dev_int->peer_dev.pdev);
-+	if (!pf)
-+		return 0;
-+
-+	if (peer_dev_int->ice_peer_wq) {
-+		if (peer_dev_int->peer_prep_task.func)
-+			cancel_work_sync(&peer_dev_int->peer_prep_task);
-+
-+		if (peer_dev_int->peer_close_task.func)
-+			cancel_work_sync(&peer_dev_int->peer_close_task);
-+		destroy_workqueue(peer_dev_int->ice_peer_wq);
-+	}
-+
-+	/* Cleanup the allocated ID for this peer device */
-+	ida_simple_remove(&ice_peer_index_ida, peer_dev_int->peer_dev.index);
-+
-+	devm_kfree(&pf->pdev->dev, peer_dev_int);
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_unroll_peer - destroy peers and peer_wq in case of error
++ * ice_finish_init_peer_device - complete peer device initialization
 + * @peer_dev_int: ptr to peer device internal struct
 + * @data: ptr to opaque data
 + *
-+ * This function releases resources in the event of a failure in creating
-+ * peer devices or their individual work_queues. Meant to be called from
-+ * a ice_for_each_peer invocation
++ * This function completes remaining initialization of peer_devices
 + */
 +int
-+ice_unroll_peer(struct ice_peer_dev_int *peer_dev_int,
-+		void __always_unused *data)
++ice_finish_init_peer_device(struct ice_peer_dev_int *peer_dev_int,
++			    void __always_unused *data)
++{
++	struct ice_peer_dev *peer_dev = &peer_dev_int->peer_dev;
++	struct ice_peer_drv *peer_drv;
++	struct ice_pf *pf;
++	int ret = 0;
++
++	/* peer_dev will not always be populated at the time of this check */
++	if (!ice_validate_peer_dev(peer_dev))
++		return ret;
++
++	peer_drv = peer_dev->peer_drv;
++	pf = pci_get_drvdata(peer_dev->pdev);
++	/* There will be several assessments of the peer_dev's state in this
++	 * chunk of logic.  We need to hold the peer_dev_int's state mutex
++	 * for the entire part so that the flow progresses without another
++	 * context changing things mid-flow
++	 */
++	mutex_lock(&peer_dev_int->peer_dev_state_mutex);
++
++	if (!peer_dev->peer_ops) {
++		dev_err(&pf->pdev->dev,
++			"peer_ops not defined on peer dev\n");
++		goto init_unlock;
++	}
++
++	if (!peer_dev->peer_ops->open) {
++		dev_err(&pf->pdev->dev,
++			"peer_ops:open not defined on peer dev\n");
++		goto init_unlock;
++	}
++
++	if (!peer_dev->peer_ops->close) {
++		dev_err(&pf->pdev->dev,
++			"peer_ops:close not defined on peer dev\n");
++		goto init_unlock;
++	}
++
++	/* Peer driver expected to set driver_id during registration */
++	if (!peer_drv->driver_id) {
++		dev_err(&pf->pdev->dev,
++			"Peer driver did not set driver_id\n");
++		goto init_unlock;
++	}
++
++	if ((test_bit(ICE_PEER_DEV_STATE_CLOSED, peer_dev_int->state) ||
++	     test_bit(ICE_PEER_DEV_STATE_PROBED, peer_dev_int->state)) &&
++	    ice_pf_state_is_nominal(pf)) {
++		ice_peer_state_change(peer_dev_int, ICE_PEER_DEV_STATE_OPENING,
++				      true);
++		ret = peer_dev->peer_ops->open(peer_dev);
++		if (ret) {
++			dev_err(&pf->pdev->dev,
++				"Peer %d failed to open\n",
++				peer_dev->peer_dev_id);
++			ice_peer_state_change(peer_dev_int,
++					      ICE_PEER_DEV_STATE_PROBED, true);
++			goto init_unlock;
++		}
++
++		ice_peer_state_change(peer_dev_int, ICE_PEER_DEV_STATE_OPENED,
++				      true);
++		ret = ice_for_each_peer(pf, peer_dev,
++					ice_check_peer_for_events);
++		ice_check_peer_drv_for_events(peer_dev);
++	}
++
++init_unlock:
++	mutex_unlock(&peer_dev_int->peer_dev_state_mutex);
++
++	return ret;
++}
++
+ /**
+  * ice_unreg_peer_device - unregister specified device
+  * @peer_dev_int: ptr to peer device internal
+@@ -196,6 +465,7 @@ int
+ ice_unreg_peer_device(struct ice_peer_dev_int *peer_dev_int,
+ 		      void __always_unused *data)
+ {
++	struct ice_peer_drv_int *peer_drv_int;
+ 	struct ice_pf *pf;
+ 
+ 	if (!peer_dev_int)
+@@ -207,6 +477,8 @@ ice_unreg_peer_device(struct ice_peer_dev_int *peer_dev_int,
+ 	if (!pf)
+ 		return 0;
+ 
++	peer_drv_int = peer_dev_int->peer_drv_int;
++
+ 	if (peer_dev_int->ice_peer_wq) {
+ 		if (peer_dev_int->peer_prep_task.func)
+ 			cancel_work_sync(&peer_dev_int->peer_prep_task);
+@@ -219,6 +491,8 @@ ice_unreg_peer_device(struct ice_peer_dev_int *peer_dev_int,
+ 	/* Cleanup the allocated ID for this peer device */
+ 	ida_simple_remove(&ice_peer_index_ida, peer_dev_int->peer_dev.index);
+ 
++	devm_kfree(&pf->pdev->dev, peer_drv_int);
++
+ 	devm_kfree(&pf->pdev->dev, peer_dev_int);
+ 
+ 	return 0;
+@@ -248,6 +522,607 @@ ice_unroll_peer(struct ice_peer_dev_int *peer_dev_int,
+ 	return 0;
+ }
+ 
++/**
++ * ice_find_vsi - Find the VSI from VSI ID
++ * @pf: The PF pointer to search in
++ * @vsi_num: The VSI ID to search for
++ */
++static struct ice_vsi *ice_find_vsi(struct ice_pf *pf, u16 vsi_num)
++{
++	int i;
++
++	ice_for_each_vsi(pf, i)
++		if (pf->vsi[i] && pf->vsi[i]->vsi_num == vsi_num)
++			return  pf->vsi[i];
++	return NULL;
++}
++
++/**
++ * ice_peer_alloc_rdma_qsets - Allocate Leaf Nodes for RDMA Qset
++ * @peer_dev: peer that is requesting the Leaf Nodes
++ * @res: Resources to be allocated
++ * @partial_acceptable: If partial allocation is acceptable to the peer
++ *
++ * This function allocates Leaf Nodes for given RDMA Qset resources
++ * for the peer device.
++ */
++static int
++ice_peer_alloc_rdma_qsets(struct ice_peer_dev *peer_dev, struct ice_res *res,
++			  int __maybe_unused partial_acceptable)
++{
++	u16 max_rdmaqs[ICE_MAX_TRAFFIC_CLASS];
++	enum ice_status status;
++	struct ice_vsi *vsi;
++	struct ice_pf *pf;
++	int i, ret = 0;
++	u32 *qset_teid;
++	u16 *qs_handle;
++
++	if (!ice_validate_peer_dev(peer_dev) || !res)
++		return -EINVAL;
++
++	pf = pci_get_drvdata(peer_dev->pdev);
++
++	if (res->cnt_req > ICE_MAX_TXQ_PER_TXQG)
++		return -EINVAL;
++
++	qset_teid = devm_kcalloc(&pf->pdev->dev, res->cnt_req,
++				 sizeof(*qset_teid), GFP_KERNEL);
++	if (!qset_teid)
++		return -ENOMEM;
++
++	qs_handle = devm_kcalloc(&pf->pdev->dev, res->cnt_req,
++				 sizeof(*qs_handle), GFP_KERNEL);
++	if (!qs_handle) {
++		devm_kfree(&pf->pdev->dev, qset_teid);
++		return -ENOMEM;
++	}
++
++	ice_for_each_traffic_class(i)
++		max_rdmaqs[i] = 0;
++
++	for (i = 0; i < res->cnt_req; i++) {
++		struct ice_rdma_qset_params *qset;
++
++		qset = &res->res[i].res.qsets;
++		if (qset->vsi_id != peer_dev->pf_vsi_num) {
++			dev_err(&pf->pdev->dev,
++				"RDMA QSet invalid VSI requested\n");
++			ret = -EINVAL;
++			goto out;
++		}
++		max_rdmaqs[qset->tc]++;
++		qs_handle[i] = qset->qs_handle;
++	}
++
++	vsi = ice_find_vsi(pf, peer_dev->pf_vsi_num);
++	if (!vsi) {
++		dev_err(&pf->pdev->dev, "RDMA QSet invalid VSI\n");
++		ret = -EINVAL;
++		goto out;
++	}
++
++	status = ice_cfg_vsi_rdma(vsi->port_info, vsi->idx, vsi->tc_cfg.ena_tc,
++				  max_rdmaqs);
++	if (status) {
++		dev_err(&pf->pdev->dev, "Failed VSI RDMA qset config\n");
++		ret = -EINVAL;
++		goto out;
++	}
++
++	for (i = 0; i < res->cnt_req; i++) {
++		struct ice_rdma_qset_params *qset;
++
++		qset = &res->res[i].res.qsets;
++		status = ice_ena_vsi_rdma_qset(vsi->port_info, vsi->idx,
++					       qset->tc, &qs_handle[i], 1,
++					       &qset_teid[i]);
++		if (status) {
++			dev_err(&pf->pdev->dev,
++				"Failed VSI RDMA qset enable\n");
++			ret = -EINVAL;
++			goto out;
++		}
++		vsi->qset_handle[qset->tc] = qset->qs_handle;
++		qset->teid = qset_teid[i];
++	}
++
++out:
++	devm_kfree(&pf->pdev->dev, qset_teid);
++	devm_kfree(&pf->pdev->dev, qs_handle);
++	return ret;
++}
++
++/**
++ * ice_peer_free_rdma_qsets - Free leaf nodes for RDMA Qset
++ * @peer_dev: peer that requested qsets to be freed
++ * @res: Resource to be freed
++ */
++static int
++ice_peer_free_rdma_qsets(struct ice_peer_dev *peer_dev, struct ice_res *res)
++{
++	enum ice_status status;
++	int count, i, ret = 0;
++	struct ice_vsi *vsi;
++	struct ice_pf *pf;
++	u16 vsi_id;
++	u32 *teid;
++	u16 *q_id;
++
++	if (!ice_validate_peer_dev(peer_dev) || !res)
++		return -EINVAL;
++
++	pf = pci_get_drvdata(peer_dev->pdev);
++
++	count = res->res_allocated;
++	if (count > ICE_MAX_TXQ_PER_TXQG)
++		return -EINVAL;
++
++	teid = devm_kcalloc(&pf->pdev->dev, count, sizeof(*teid), GFP_KERNEL);
++	if (!teid)
++		return -ENOMEM;
++
++	q_id = devm_kcalloc(&pf->pdev->dev, count, sizeof(*q_id), GFP_KERNEL);
++	if (!q_id) {
++		devm_kfree(&pf->pdev->dev, teid);
++		return -ENOMEM;
++	}
++
++	vsi_id = res->res[0].res.qsets.vsi_id;
++	vsi = ice_find_vsi(pf, vsi_id);
++	if (!vsi) {
++		dev_err(&pf->pdev->dev, "RDMA Invalid VSI\n");
++		ret = -EINVAL;
++		goto rdma_free_out;
++	}
++
++	for (i = 0; i < count; i++) {
++		struct ice_rdma_qset_params *qset;
++
++		qset = &res->res[i].res.qsets;
++		if (qset->vsi_id != vsi_id) {
++			dev_err(&pf->pdev->dev, "RDMA Invalid VSI ID\n");
++			ret = -EINVAL;
++			goto rdma_free_out;
++		}
++		q_id[i] = qset->qs_handle;
++		teid[i] = qset->teid;
++
++		vsi->qset_handle[qset->tc] = 0;
++	}
++
++	status = ice_dis_vsi_rdma_qset(vsi->port_info, count, teid, q_id);
++	if (status)
++		ret = -EINVAL;
++
++rdma_free_out:
++	devm_kfree(&pf->pdev->dev, teid);
++	devm_kfree(&pf->pdev->dev, q_id);
++
++	return ret;
++}
++
++/**
++ * ice_peer_alloc_res - Allocate requested resources for peer device
++ * @peer_dev: peer that is requesting resources
++ * @res: Resources to be allocated
++ * @partial_acceptable: If partial allocation is acceptable to the peer
++ *
++ * This function allocates requested resources for the peer device.
++ */
++static int
++ice_peer_alloc_res(struct ice_peer_dev *peer_dev, struct ice_res *res,
++		   int partial_acceptable)
 +{
 +	struct ice_pf *pf;
++	int ret;
 +
-+	pf = pci_get_drvdata(peer_dev_int->peer_dev.pdev);
++	if (!ice_validate_peer_dev(peer_dev) || !res)
++		return -EINVAL;
 +
-+	if (peer_dev_int->ice_peer_wq)
-+		destroy_workqueue(peer_dev_int->ice_peer_wq);
-+	devm_kfree(&pf->pdev->dev, peer_dev_int);
++	pf = pci_get_drvdata(peer_dev->pdev);
++	if (!ice_pf_state_is_nominal(pf))
++		return -EBUSY;
 +
-+	return 0;
-+}
-+
-+/**
-+ * ice_reserve_peer_qvector - Reserve vector resources for peer drivers
-+ * @pf: board private structure to initialize
-+ */
-+static int ice_reserve_peer_qvector(struct ice_pf *pf)
-+{
-+	if (test_bit(ICE_FLAG_IWARP_ENA, pf->flags)) {
-+		int index;
-+
-+		index = ice_get_res(pf, pf->irq_tracker, pf->num_rdma_msix,
-+				    ICE_RES_RDMA_VEC_ID);
-+		if (index < 0)
-+			return index;
-+		pf->num_avail_sw_msix -= pf->num_rdma_msix;
-+		pf->rdma_base_vector = index;
++	switch (res->res_type) {
++	case ICE_RDMA_QSETS_TXSCHED:
++		ret = ice_peer_alloc_rdma_qsets(peer_dev, res,
++						partial_acceptable);
++		break;
++	default:
++		ret = -EINVAL;
++		break;
 +	}
++
++	return ret;
++}
++
++/**
++ * ice_peer_free_res - Free given resources
++ * @peer_dev: peer that is requesting freeing of resources
++ * @res: Resources to be freed
++ *
++ * Free/Release resources allocated to given peer device.
++ */
++static int
++ice_peer_free_res(struct ice_peer_dev *peer_dev, struct ice_res *res)
++{
++	int ret;
++
++	if (!ice_validate_peer_dev(peer_dev) || !res)
++		return -EINVAL;
++
++	switch (res->res_type) {
++	case ICE_RDMA_QSETS_TXSCHED:
++		ret = ice_peer_free_rdma_qsets(peer_dev, res);
++		break;
++	default:
++		ret = -EINVAL;
++		break;
++	}
++
++	return ret;
++}
++
++/**
++ * ice_peer_reg_for_notif - register a peer to receive specific notifications
++ * @peer_dev: peer that is registering for event notifications
++ * @events: mask of event types peer is registering for
++ */
++static void
++ice_peer_reg_for_notif(struct ice_peer_dev *peer_dev, struct ice_event *events)
++{
++	struct ice_peer_dev_int *peer_dev_int;
++	struct ice_pf *pf;
++
++	if (!ice_validate_peer_dev(peer_dev) || !events)
++		return;
++
++	peer_dev_int = peer_to_ice_dev_int(peer_dev);
++	pf = pci_get_drvdata(peer_dev->pdev);
++
++	bitmap_or(peer_dev_int->events, peer_dev_int->events, events->type,
++		  ICE_EVENT_NBITS);
++
++	/* Check to see if any events happened previous to peer registering */
++	ice_for_each_peer(pf, peer_dev, ice_check_peer_for_events);
++	ice_check_peer_drv_for_events(peer_dev);
++}
++
++/**
++ * ice_peer_unreg_for_notif - unreg a peer from receiving certain notifications
++ * @peer_dev: peer that is unregistering from event notifications
++ * @events: mask of event types peer is unregistering for
++ */
++static void
++ice_peer_unreg_for_notif(struct ice_peer_dev *peer_dev,
++			 struct ice_event *events)
++{
++	struct ice_peer_dev_int *peer_dev_int;
++
++	if (!ice_validate_peer_dev(peer_dev) || !events)
++		return;
++
++	peer_dev_int = peer_to_ice_dev_int(peer_dev);
++
++	bitmap_andnot(peer_dev_int->events, peer_dev_int->events, events->type,
++		      ICE_EVENT_NBITS);
++}
++
++/**
++ * ice_peer_check_for_reg - check to see if any peers are reg'd for event
++ * @peer_dev_int: ptr to peer device internal struct
++ * @data: ptr to opaque data, to be used for ice_event to report
++ *
++ * This function is to be called by device_for_each_child to handle an
++ * event reported by a peer or the ice driver.
++ */
++int ice_peer_check_for_reg(struct ice_peer_dev_int *peer_dev_int, void *data)
++{
++	struct ice_event *event = (struct ice_event *)data;
++	DECLARE_BITMAP(comp_events, ICE_EVENT_NBITS);
++	struct ice_peer_dev *peer_dev;
++	bool check = true;
++
++	peer_dev = &peer_dev_int->peer_dev;
++
++	if (!ice_validate_peer_dev(peer_dev) || !data)
++	/* If invalid dev, in this case return 0 instead of error
++	 * because caller ignores this return value
++	 */
++		return 0;
++
++	if (event->reporter)
++		check = event->reporter->index != peer_dev->index;
++
++	if (bitmap_and(comp_events, event->type, peer_dev_int->events,
++		       ICE_EVENT_NBITS) &&
++	    (test_bit(ICE_PEER_DEV_STATE_OPENED, peer_dev_int->state) ||
++	     test_bit(ICE_PEER_DEV_STATE_PREP_RST, peer_dev_int->state) ||
++	     test_bit(ICE_PEER_DEV_STATE_PREPPED, peer_dev_int->state)) &&
++	    check &&
++	    peer_dev->peer_ops->event_handler)
++		peer_dev->peer_ops->event_handler(peer_dev, event);
++
 +	return 0;
 +}
 +
 +/**
-+ * ice_peer_device_release - release function for platform peer device
-+ * @dev: pointer to device structure
++ * ice_peer_report_state_change - accept report of a peer state change
++ * @peer_dev: peer that is sending notification about state change
++ * @event: ice_event holding info on what the state change is
 + *
-+ * This callback function is accessed by platform bus infrastructure when
-+ * all references on the peer platform device we registered are removed
-+ * (e.g. the peer priver has been removed).  We will use this opportunity
-+ * to set the peer's state to init to be ready if the peer driver re-loads.
++ * We also need to parse the list of peers to see if anyone is registered
++ * for notifications about this state change event, and if so, notify them.
 + */
-+static void ice_peer_device_release(struct device *dev)
++static void
++ice_peer_report_state_change(struct ice_peer_dev *peer_dev,
++			     struct ice_event *event)
++{
++	struct ice_peer_dev_int *peer_dev_int;
++	struct ice_peer_drv_int *peer_drv_int;
++	int e_type, drv_event = 0;
++	struct ice_pf *pf;
++
++	if (!ice_validate_peer_dev(peer_dev) || !event)
++		return;
++
++	pf = pci_get_drvdata(peer_dev->pdev);
++	peer_dev_int = peer_to_ice_dev_int(peer_dev);
++	peer_drv_int = peer_dev_int->peer_drv_int;
++
++	e_type = find_first_bit(event->type, ICE_EVENT_NBITS);
++	if (!e_type)
++		return;
++
++	switch (e_type) {
++	/* Check for peer_drv events */
++	case ICE_EVENT_MBX_CHANGE:
++		drv_event = 1;
++		if (event->info.mbx_rdy)
++			set_bit(ICE_PEER_DRV_STATE_MBX_RDY,
++				peer_drv_int->state);
++		else
++			clear_bit(ICE_PEER_DRV_STATE_MBX_RDY,
++				  peer_drv_int->state);
++		break;
++
++	/* Check for peer_dev events */
++	case ICE_EVENT_API_CHANGE:
++		if (event->info.api_rdy)
++			set_bit(ICE_PEER_DEV_STATE_API_RDY,
++				peer_dev_int->state);
++		else
++			clear_bit(ICE_PEER_DEV_STATE_API_RDY,
++				  peer_dev_int->state);
++		break;
++
++	default:
++		return;
++	}
++
++	/* store the event and state to notify any new peers opening */
++	if (drv_event)
++		memcpy(&peer_drv_int->current_events[e_type], event,
++		       sizeof(*event));
++	else
++		memcpy(&peer_dev_int->current_events[e_type], event,
++		       sizeof(*event));
++
++	ice_for_each_peer(pf, event, ice_peer_check_for_reg);
++}
++
++/**
++ * ice_peer_unregister - request to unregister peer
++ * @peer_dev: peer device
++ *
++ * This function triggers close/remove on peer_dev allowing peer
++ * to unregister.
++ */
++static int ice_peer_unregister(struct ice_peer_dev *peer_dev)
++{
++	enum ice_close_reason reason = ICE_REASON_PEER_DEV_UNINIT;
++	struct ice_peer_dev_int *peer_dev_int;
++	struct ice_pf *pf;
++	int ret;
++
++	if (!ice_validate_peer_dev(peer_dev))
++		return -EINVAL;
++
++	pf = pci_get_drvdata(peer_dev->pdev);
++	if (ice_is_reset_in_progress(pf->state))
++		return -EBUSY;
++
++	peer_dev_int = peer_to_ice_dev_int(peer_dev);
++
++	ret = ice_peer_close(peer_dev_int, &reason);
++	if (ret)
++		return ret;
++
++	peer_dev->peer_ops = NULL;
++
++	ice_peer_state_change(peer_dev_int, ICE_PEER_DEV_STATE_REMOVED, false);
++
++	return ret;
++}
++
++/**
++ * ice_peer_register - Called by peer to open communication with LAN
++ * @peer_dev: ptr to peer device
++ *
++ * registering peer is expected to populate the ice_peerdrv->name field
++ * before calling this function.
++ */
++static int ice_peer_register(struct ice_peer_dev *peer_dev)
++{
++	struct ice_peer_drv_int *peer_drv_int;
++	struct ice_peer_dev_int *peer_dev_int;
++	struct ice_peer_drv *peer_drv;
++
++	if (!peer_dev) {
++		pr_err("Failed to reg peer dev: peer_dev ptr NULL\n");
++		return -EINVAL;
++	}
++
++	if (!peer_dev->pdev) {
++		pr_err("Failed to reg peer dev: peer dev pdev NULL\n");
++		return -EINVAL;
++	}
++
++	if (!peer_dev->peer_ops || !peer_dev->ops) {
++		pr_err("Failed to reg peer dev: peer dev peer_ops/ops NULL\n");
++		return -EINVAL;
++	}
++
++	peer_drv = peer_dev->peer_drv;
++	if (!peer_drv) {
++		pr_err("Failed to reg peer dev: peer drv NULL\n");
++		return -EINVAL;
++	}
++
++	if (peer_drv->ver.major != ICE_PEER_MAJOR_VER ||
++	    peer_drv->ver.minor != ICE_PEER_MINOR_VER) {
++		pr_err("failed to register due to version mismatch:\n");
++		pr_err("expected major ver %d, caller specified major ver %d\n",
++		       ICE_PEER_MAJOR_VER, peer_drv->ver.major);
++		pr_err("expected minor ver %d, caller specified minor ver %d\n",
++		       ICE_PEER_MINOR_VER, peer_drv->ver.minor);
++		return -EINVAL;
++	}
++
++	peer_dev_int = peer_to_ice_dev_int(peer_dev);
++	peer_drv_int = peer_dev_int->peer_drv_int;
++	if (!peer_drv_int) {
++		pr_err("Failed to match peer_drv_int to peer_dev\n");
++		return -EINVAL;
++	}
++
++	peer_drv_int->peer_drv = peer_drv;
++
++	ice_peer_state_change(peer_dev_int, ICE_PEER_DEV_STATE_PROBED, false);
++
++	return 0;
++}
++
++/**
++ * ice_peer_request_reset - accept request from peer to perform a reset
++ * @peer_dev: peer device that is request a reset
++ * @reset_type: type of reset the peer is requesting
++ */
++static int
++ice_peer_request_reset(struct ice_peer_dev *peer_dev,
++		       enum ice_peer_reset_type reset_type)
++{
++	enum ice_reset_req reset;
++	struct ice_pf *pf;
++
++	if (!ice_validate_peer_dev(peer_dev))
++		return -EINVAL;
++
++	pf = pci_get_drvdata(peer_dev->pdev);
++
++	switch (reset_type) {
++	case ICE_PEER_PFR:
++		reset = ICE_RESET_PFR;
++		break;
++	case ICE_PEER_CORER:
++		reset = ICE_RESET_CORER;
++		break;
++	case ICE_PEER_GLOBR:
++		reset = ICE_RESET_GLOBR;
++		break;
++	default:
++		dev_err(&pf->pdev->dev, "incorrect reset request from peer\n");
++		return -EINVAL;
++	}
++
++	return ice_schedule_reset(pf, reset);
++}
++
++/**
++ * ice_peer_is_vsi_ready - query if VSI in nominal state
++ * @peer_dev: pointer to ice_peer_dev struct
++ */
++static int ice_peer_is_vsi_ready(struct ice_peer_dev *peer_dev)
++{
++	DECLARE_BITMAP(check_bits, __ICE_STATE_NBITS) = { 0 };
++	struct ice_netdev_priv *np;
++	struct ice_vsi *vsi;
++
++	/* If the peer_dev or associated values are not valid, then return
++	 * 0 as there is no ready port associated with the values passed in
++	 * as parameters.
++	 */
++
++	if (!ice_validate_peer_dev(peer_dev))
++		return 0;
++
++	if (!peer_dev->netdev)
++		return 0;
++
++	np = netdev_priv(peer_dev->netdev);
++	vsi = np->vsi;
++	if (!vsi)
++		return 0;
++
++	bitmap_set(check_bits, 0, __ICE_STATE_NOMINAL_CHECK_BITS);
++	if (bitmap_intersects(vsi->state, check_bits, __ICE_STATE_NBITS))
++		return 0;
++
++	return 1;
++}
++
++/**
++ * ice_peer_update_vsi_filter - update filters for RDMA VSI
++ * @peer_dev: pointer to RDMA peer device
++ * @filter: selection of filters to enable or disable
++ * @enable: bool whether to enable or disable filters
++ */
++static int
++ice_peer_update_vsi_filter(struct ice_peer_dev *peer_dev,
++			   enum ice_rdma_filter __maybe_unused filter,
++			   bool enable)
++{
++	struct ice_pf *pf;
++	int ret, v;
++	u16 idx;
++
++	if (!ice_validate_peer_dev(peer_dev))
++		return -EINVAL;
++
++	pf = pci_get_drvdata(peer_dev->pdev);
++
++	ice_for_each_vsi(pf, v)
++		if (peer_dev->pf_vsi_num == pf->vsi[v]->vsi_num) {
++			idx = pf->vsi[v]->idx;
++			break;
++		}
++	if (v >= pf->num_alloc_vsi)
++		return -EINVAL;
++
++	ret = ice_cfg_iwarp_fltr(&pf->hw, idx, enable);
++
++	if (ret)
++		dev_err(&pf->pdev->dev, "Failed to  %sable iWARP filtering\n",
++			enable ? "en" : "dis");
++
++	return ret;
++}
++
++/* Initialize the ice_ops struct, which is used in 'ice_init_peer_devices' */
++static const struct ice_ops ops = {
++	.alloc_res			= ice_peer_alloc_res,
++	.free_res			= ice_peer_free_res,
++	.is_vsi_ready			= ice_peer_is_vsi_ready,
++	.reg_for_notification		= ice_peer_reg_for_notif,
++	.unreg_for_notification		= ice_peer_unreg_for_notif,
++	.notify_state_change		= ice_peer_report_state_change,
++	.request_reset			= ice_peer_request_reset,
++	.peer_register			= ice_peer_register,
++	.peer_unregister		= ice_peer_unregister,
++	.update_vsi_filter		= ice_peer_update_vsi_filter,
++};
++
+ /**
+  * ice_reserve_peer_qvector - Reserve vector resources for peer drivers
+  * @pf: board private structure to initialize
+@@ -267,6 +1142,41 @@ static int ice_reserve_peer_qvector(struct ice_pf *pf)
+ 	return 0;
+ }
+ 
++/**
++ * ice_peer_close_task - call peer's close asynchronously
++ * @work: pointer to work_struct contained by the peer_dev_int struct
++ *
++ * This method (asynchronous) of calling a peer's close function is
++ * meant to be used in the reset path.
++ */
++static void ice_peer_close_task(struct work_struct *work)
 +{
 +	struct ice_peer_dev_int *peer_dev_int;
 +	struct ice_peer_dev *peer_dev;
 +
-+	peer_dev = dev_to_ice_peer(dev);
-+	peer_dev_int = container_of(peer_dev, struct ice_peer_dev_int,
-+				    peer_dev);
++	peer_dev_int = container_of(work, struct ice_peer_dev_int,
++				    peer_close_task);
 +
-+	ice_peer_state_change(peer_dev_int, ICE_PEER_DEV_STATE_INIT, false);
++	peer_dev = &peer_dev_int->peer_dev;
++	if (!peer_dev || !peer_dev->peer_ops)
++		return;
++
++	/* If this peer_dev is going to close, we do not want any state changes
++	 * to happen until after we successfully finish or abort the close.
++	 * Grab the peer_dev_state_mutex to protect this flow
++	 */
++	mutex_lock(&peer_dev_int->peer_dev_state_mutex);
++
++	ice_peer_state_change(peer_dev_int, ICE_PEER_DEV_STATE_CLOSING, true);
++
++	if (peer_dev->peer_ops->close)
++		peer_dev->peer_ops->close(peer_dev, peer_dev_int->rst_type);
++
++	ice_peer_state_change(peer_dev_int, ICE_PEER_DEV_STATE_CLOSED, true);
++
++	mutex_unlock(&peer_dev_int->peer_dev_state_mutex);
 +}
 +
-+/**
-+ * ice_init_peer_devices - initializes peer devices
-+ * @pf: ptr to ice_pf
-+ *
-+ * This function initializes peer devices and associates them with specified
-+ * pci_dev as their parent.
-+ */
-+int ice_init_peer_devices(struct ice_pf *pf)
-+{
-+	struct pci_dev *pdev = pf->pdev;
-+	struct msix_entry *entry = NULL;
-+	struct ice_port_info *port_info;
-+	struct ice_vsi *vsi;
-+	int status = 0;
-+	int i;
-+
-+	/* Reserve vector resources */
-+	status = ice_reserve_peer_qvector(pf);
-+	if (status < 0) {
-+		dev_err(&pdev->dev,
-+			"failed to reserve vectors for peer drivers\n");
-+		return status;
-+	}
-+	for (i = 0; i < ARRAY_SIZE(peer_dev_ids); i++) {
-+		struct ice_peer_dev_int *peer_dev_int;
-+		struct platform_device *platform_dev;
-+		struct ice_qos_params *qos_info;
-+		struct ice_peer_dev *peer_dev;
-+		int j;
-+
-+		/* don't create an RDMA platform_device if NIC does not
-+		 * support RDMA functionality
-+		 */
-+		if (peer_dev_ids[i].id == ICE_PEER_RDMA_DEV &&
-+		    !test_bit(ICE_FLAG_IWARP_ENA, pf->flags)) {
-+			dev_warn(&pf->pdev->dev,
-+				 "RDMA not possible with this device config\n");
-+			continue;
-+		}
-+
-+		peer_dev_int = devm_kzalloc(&pdev->dev, sizeof(*peer_dev_int),
+ /**
+  * ice_peer_device_release - release function for platform peer device
+  * @dev: pointer to device structure
+@@ -313,6 +1223,7 @@ int ice_init_peer_devices(struct ice_pf *pf)
+ 	}
+ 	for (i = 0; i < ARRAY_SIZE(peer_dev_ids); i++) {
+ 		struct ice_peer_dev_int *peer_dev_int;
++		struct ice_peer_drv_int *peer_drv_int;
+ 		struct platform_device *platform_dev;
+ 		struct ice_qos_params *qos_info;
+ 		struct ice_peer_dev *peer_dev;
+@@ -334,6 +1245,19 @@ int ice_init_peer_devices(struct ice_pf *pf)
+ 			return -ENOMEM;
+ 		pf->peers[i] = peer_dev_int;
+ 
++		peer_drv_int = devm_kzalloc(&pdev->dev, sizeof(*peer_drv_int),
 +					    GFP_KERNEL);
-+		if (!peer_dev_int)
-+			return -ENOMEM;
-+		pf->peers[i] = peer_dev_int;
-+
-+		mutex_init(&peer_dev_int->peer_dev_state_mutex);
-+
-+		peer_dev = &peer_dev_int->peer_dev;
-+		peer_dev->peer_ops = NULL;
-+		peer_dev->hw_addr = (u8 __iomem *)pf->hw.hw_addr;
-+		peer_dev->ver.major = ICE_PEER_MAJOR_VER;
-+		peer_dev->ver.minor = ICE_PEER_MINOR_VER;
-+		peer_dev->ver.support = ICE_IDC_FEATURES;
-+		peer_dev->peer_dev_id = peer_dev_ids[i].id;
-+		port_info = pf->hw.port_info;
-+		vsi = pf->vsi[0];
-+		peer_dev->pf_vsi_num = vsi->vsi_num;
-+		peer_dev->netdev = vsi->netdev;
-+		peer_dev->initial_mtu = vsi->netdev->mtu;
-+		ether_addr_copy(peer_dev->lan_addr, port_info->mac.lan_addr);
-+
-+		platform_dev = &peer_dev->platform_dev;
-+		platform_dev->name = peer_dev_ids[i].name;
-+		platform_dev->id = PLATFORM_DEVID_AUTO;
-+		platform_dev->id_auto = true;
-+		platform_dev->dev.release = ice_peer_device_release;
-+		platform_dev->dev.parent = &pdev->dev;
-+		peer_dev_int->ice_peer_wq =
-+			alloc_ordered_workqueue("ice_peer_wq_%d", WQ_UNBOUND,
-+						i);
-+		if (!peer_dev_int->ice_peer_wq)
++		if (!peer_drv_int)
 +			return -ENOMEM;
 +
-+		/* Assign a unique index and hence name for peer device */
-+		status = ida_simple_get(&ice_peer_index_ida, 0, 0, GFP_KERNEL);
-+		if (status < 0) {
-+			dev_err(&pdev->dev,
-+				"failed to get unique index for device\n");
-+			devm_kfree(&pdev->dev, peer_dev);
-+			return status;
-+		}
-+		peer_dev->index = status;
-+		peer_dev->pdev = pdev;
-+		peer_dev->ari_ena = pci_ari_enabled(pdev->bus);
-+		peer_dev->bus_num = PCI_BUS_NUM(pdev->devfn);
-+		if (!peer_dev->ari_ena) {
-+			peer_dev->dev_num = PCI_SLOT(pdev->devfn);
-+			peer_dev->fn_num = PCI_FUNC(pdev->devfn);
-+		} else {
-+			peer_dev->dev_num = 0;
-+			peer_dev->fn_num = pdev->devfn & 0xff;
-+		}
++		peer_drv_int->peer_dev = &peer_dev_int->peer_dev;
++		peer_dev_int->peer_drv_int = peer_drv_int;
 +
-+		qos_info = &peer_dev->initial_qos_info;
++		/* Initialize driver values */
++		for (j = 0; j < ICE_EVENT_NBITS; j++)
++			bitmap_zero(peer_drv_int->current_events[j].type,
++				    ICE_EVENT_NBITS);
 +
-+		/* setup qos_info fields with defaults */
-+		qos_info->num_apps = 0;
-+		qos_info->num_tc = 1;
-+
-+		for (j = 0; j < ICE_IDC_MAX_USER_PRIORITY; j++)
-+			qos_info->up2tc[j] = 0;
-+
-+		qos_info->tc_info[0].rel_bw = 100;
-+		for (j = 1; j < IEEE_8021QAZ_MAX_TCS; j++)
-+			qos_info->tc_info[j].rel_bw = 0;
-+
-+		/* for DCB, override the qos_info defaults. */
-+		ice_setup_dcb_qos_info(pf, qos_info);
-+
-+		/* make sure peer specific resources such as msix_count and
-+		 * msix_entries are initialized
-+		 */
-+		switch (peer_dev_ids[i].id) {
-+		case ICE_PEER_RDMA_DEV:
-+			if (test_bit(ICE_FLAG_IWARP_ENA, pf->flags)) {
-+				peer_dev->msix_count = pf->num_rdma_msix;
-+				entry = &pf->msix_entries[pf->rdma_base_vector];
-+			}
-+			break;
-+		default:
-+			break;
-+		}
-+
-+		peer_dev->msix_entries = entry;
-+		ice_peer_state_change(peer_dev_int, ICE_PEER_DEV_STATE_INIT,
-+				      false);
-+		status = platform_device_register(platform_dev);
-+		if (status) {
-+			pr_err("Failed to register peer device %s\n",
-+			       platform_dev->name);
-+			return status;
-+		}
-+	}
-+
-+	return status;
-+}
+ 		mutex_init(&peer_dev_int->peer_dev_state_mutex);
+ 
+ 		peer_dev = &peer_dev_int->peer_dev;
+@@ -361,6 +1285,7 @@ int ice_init_peer_devices(struct ice_pf *pf)
+ 						i);
+ 		if (!peer_dev_int->ice_peer_wq)
+ 			return -ENOMEM;
++		INIT_WORK(&peer_dev_int->peer_close_task, ice_peer_close_task);
+ 
+ 		/* Assign a unique index and hence name for peer device */
+ 		status = ida_simple_get(&ice_peer_index_ida, 0, 0, GFP_KERNEL);
+@@ -397,6 +1322,8 @@ int ice_init_peer_devices(struct ice_pf *pf)
+ 
+ 		/* for DCB, override the qos_info defaults. */
+ 		ice_setup_dcb_qos_info(pf, qos_info);
++		/* Initialize ice_ops */
++		peer_dev->ops = &ops;
+ 
+ 		/* make sure peer specific resources such as msix_count and
+ 		 * msix_entries are initialized
 diff --git a/drivers/net/ethernet/intel/ice/ice_idc.h b/drivers/net/ethernet/intel/ice/ice_idc.h
-new file mode 100644
-index 000000000000..d29e946fe2f1
---- /dev/null
+index d29e946fe2f1..455c1192ca4f 100644
+--- a/drivers/net/ethernet/intel/ice/ice_idc.h
 +++ b/drivers/net/ethernet/intel/ice/ice_idc.h
-@@ -0,0 +1,360 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (c) 2019, Intel Corporation. */
+@@ -357,4 +357,21 @@ static inline struct ice_peer_dev *dev_to_ice_peer(struct device *_dev)
+ 	platform_dev = container_of(_dev, struct platform_device, dev);
+ 	return container_of(platform_dev, struct ice_peer_dev, platform_dev);
+ }
 +
-+#ifndef _ICE_IDC_H_
-+#define _ICE_IDC_H_
-+
-+#include <linux/kernel.h>
-+#include <linux/device.h>
-+#include <linux/if_ether.h>
-+#include <linux/netdevice.h>
-+#include <linux/dcbnl.h>
-+#include <linux/platform_device.h>
-+
-+/* This major and minor version represent IDC API version information.
-+ * During peer driver registration, peer driver specifies major and minor
-+ * version information (via. peer_driver:ver_info). It gets checked against
-+ * following defines and if mismatch, then peer driver registration
-+ * fails and appropriate message gets logged.
++/* structure representing peer driver
++ * Peer driver to initialize those function ptrs and
++ * it will be invoked by ICE as part of driver_registration
++ * via bus infrastructure
 + */
-+#define ICE_PEER_MAJOR_VER		6
-+#define ICE_PEER_MINOR_VER		1
++struct ice_peer_drv {
++	u16 driver_id;
++#define ICE_PEER_LAN_DRIVER		0
++#define ICE_PEER_RDMA_DRIVER		4
++#define ICE_PEER_ADK_DRIVER		5
 +
-+enum ice_peer_features {
-+	ICE_PEER_FEATURE_ADK_SUPPORT,
-+	ICE_PEER_FEATURE_PTP_SUPPORT,
-+	ICE_PEER_FEATURE_SRIOV_SUPPORT,
-+	ICE_PEER_FEATURE_PCIIOV_SUPPORT,
-+	ICE_PEER_FEATURE_NBITS
-+};
-+
-+#define ICE_SRIOV_SUP		BIT(ICE_PEER_FEATURE_SRIOV_SUPPORT)
-+
-+#ifdef CONFIG_PCI_IOV
-+#define ICE_PCIIOV_SUP		BIT(ICE_PEER_FEATURE_PCIIOV_SUPPORT)
-+#else
-+#define ICE_PCIIOV_SUP		0
-+#endif /* CONFIG_PCI_IOV */
-+
-+#define ICE_IDC_FEATURES (ICE_SRIOV_SUP | ICE_PCIIOV_SUP)
-+
-+enum ice_event_type {
-+	ICE_EVENT_LINK_CHANGE = 0x0,
-+	ICE_EVENT_MTU_CHANGE,
-+	ICE_EVENT_TC_CHANGE,
-+	ICE_EVENT_API_CHANGE,
-+	ICE_EVENT_MBX_CHANGE,
-+	ICE_EVENT_NBITS		/* must be last */
-+};
-+
-+enum ice_res_type {
-+	ICE_INVAL_RES = 0x0,
-+	ICE_VSI,
-+	ICE_VEB,
-+	ICE_EVENT_Q,
-+	ICE_EGRESS_CMPL_Q,
-+	ICE_CMPL_EVENT_Q,
-+	ICE_ASYNC_EVENT_Q,
-+	ICE_DOORBELL_Q,
-+	ICE_RDMA_QSETS_TXSCHED,
-+};
-+
-+enum ice_peer_reset_type {
-+	ICE_PEER_PFR = 0,
-+	ICE_PEER_CORER,
-+	ICE_PEER_CORER_SW_CORE,
-+	ICE_PEER_CORER_SW_FULL,
-+	ICE_PEER_GLOBR,
-+};
-+
-+/* reason notified to peer driver as part of event handling */
-+enum ice_close_reason {
-+	ICE_REASON_INVAL = 0x0,
-+	ICE_REASON_HW_UNRESPONSIVE,
-+	ICE_REASON_INTERFACE_DOWN, /* Administrative down */
-+	ICE_REASON_PEER_DRV_UNREG, /* peer driver getting unregistered */
-+	ICE_REASON_PEER_DEV_UNINIT,
-+	ICE_REASON_GLOBR_REQ,
-+	ICE_REASON_CORER_REQ,
-+	ICE_REASON_EMPR_REQ,
-+	ICE_REASON_PFR_REQ,
-+	ICE_REASON_HW_RESET_PENDING,
-+	ICE_REASON_PARAM_CHANGE,
-+};
-+
-+enum ice_rdma_filter {
-+	ICE_RDMA_FILTER_INVAL = 0x0,
-+	ICE_RDMA_FILTER_IWARP,
-+	ICE_RDMA_FILTER_ROCEV2,
-+	ICE_RDMA_FILTER_BOTH,
-+};
-+
-+/* This information is needed to handle peer driver registration,
-+ * instead of adding more params to peer_drv_registration function,
-+ * let's get it thru' peer_drv object.
-+ */
-+struct ice_ver_info {
-+	u16 major;
-+	u16 minor;
-+	u64 support;
-+};
-+
-+/* Struct to hold per DCB APP info */
-+struct ice_dcb_app_info {
-+	u8  priority;
-+	u8  selector;
-+	u16 prot_id;
-+};
-+
-+struct ice_peer_dev;
-+struct ice_peer_dev_int;
-+
-+#define ICE_IDC_MAX_USER_PRIORITY	8
-+#define ICE_IDC_MAX_APPS		8
-+
-+/* Struct to hold per RDMA Qset info */
-+struct ice_rdma_qset_params {
-+	u32 teid;	/* qset TEID */
-+	u16 qs_handle; /* RDMA driver provides this */
-+	u16 vsi_id; /* VSI index */
-+	u8 tc; /* TC branch the QSet should belong to */
-+	u8 reserved[3];
-+};
-+
-+struct ice_res_base {
-+	/* Union for future provision e.g. other res_type */
-+	union {
-+		struct ice_rdma_qset_params qsets;
-+	} res;
-+};
-+
-+struct ice_res {
-+	/* Type of resource. Filled by peer driver */
-+	enum ice_res_type res_type;
-+	/* Count requested by peer driver */
-+	u16 cnt_req;
-+
-+	/* Number of resources allocated. Filled in by callee.
-+	 * Based on this value, caller to fill up "resources"
-+	 */
-+	u16 res_allocated;
-+
-+	/* Unique handle to resources allocated. Zero if call fails.
-+	 * Allocated by callee and for now used by caller for internal
-+	 * tracking purpose.
-+	 */
-+	u32 res_handle;
-+
-+	/* Peer driver has to allocate sufficient memory, to accommodate
-+	 * cnt_requested before calling this function.
-+	 * Memory has to be zero initialized. It is input/output param.
-+	 * As a result of alloc_res API, this structures will be populated.
-+	 */
-+	struct ice_res_base res[1];
-+};
-+
-+struct ice_qos_info {
-+	u64 tc_ctx;
-+	u8 rel_bw;
-+	u8 prio_type;
-+	u8 egress_virt_up;
-+	u8 ingress_virt_up;
-+};
-+
-+/* Struct to hold QoS info */
-+struct ice_qos_params {
-+	struct ice_qos_info tc_info[IEEE_8021QAZ_MAX_TCS];
-+	u8 up2tc[ICE_IDC_MAX_USER_PRIORITY];
-+	u8 vsi_relative_bw;
-+	u8 vsi_priority_type;
-+	u32 num_apps;
-+	struct ice_dcb_app_info apps[ICE_IDC_MAX_APPS];
-+	u8 num_tc;
-+};
-+
-+union ice_event_info {
-+	/* ICE_EVENT_LINK_CHANGE */
-+	struct {
-+		struct net_device *lwr_nd;
-+		u16 vsi_num; /* HW index of VSI corresponding to lwr ndev */
-+		u8 new_link_state;
-+		u8 lport;
-+	} link_info;
-+	/* ICE_EVENT_MTU_CHANGE */
-+	u16 mtu;
-+	/* ICE_EVENT_TC_CHANGE */
-+	struct ice_qos_params port_qos;
-+	/* ICE_EVENT_API_CHANGE */
-+	u8 api_rdy;
-+	/* ICE_EVENT_MBX_CHANGE */
-+	u8 mbx_rdy;
-+};
-+
-+/* ice_event elements are to be passed back and forth between the ice driver
-+ * and the peer drivers. They are to be used to both register/unregister
-+ * for event reporting and to report an event (events can be either ice
-+ * generated or peer generated).
-+ *
-+ * For (un)registering for events, the structure needs to be populated with:
-+ *   reporter - pointer to the ice_peer_dev struct of the peer (un)registering
-+ *   type - bitmap with bits set for event types to (un)register for
-+ *
-+ * For reporting events, the structure needs to be populated with:
-+ *   reporter - pointer to peer that generated the event (NULL for ice)
-+ *   type - bitmap with single bit set for this event type
-+ *   info - union containing data relevant to this event type
-+ */
-+struct ice_event {
-+	struct ice_peer_dev *reporter;
-+	DECLARE_BITMAP(type, ICE_EVENT_NBITS);
-+	union ice_event_info info;
-+};
-+
-+/* Following APIs are implemented by ICE driver and invoked by peer drivers */
-+struct ice_ops {
-+	/* APIs to allocate resources such as VEB, VSI, Doorbell queues,
-+	 * completion queues, Tx/Rx queues, etc...
-+	 */
-+	int (*alloc_res)(struct ice_peer_dev *peer_dev,
-+			 struct ice_res *res,
-+			 int partial_acceptable);
-+	int (*free_res)(struct ice_peer_dev *peer_dev,
-+			struct ice_res *res);
-+
-+	int (*is_vsi_ready)(struct ice_peer_dev *peer_dev);
-+	int (*peer_register)(struct ice_peer_dev *peer_dev);
-+	int (*peer_unregister)(struct ice_peer_dev *peer_dev);
-+	int (*request_reset)(struct ice_peer_dev *dev,
-+			     enum ice_peer_reset_type reset_type);
-+
-+	void (*notify_state_change)(struct ice_peer_dev *dev,
-+				    struct ice_event *event);
-+
-+	/* Notification APIs */
-+	void (*reg_for_notification)(struct ice_peer_dev *dev,
-+				     struct ice_event *event);
-+	void (*unreg_for_notification)(struct ice_peer_dev *dev,
-+				       struct ice_event *event);
-+	int (*update_vsi_filter)(struct ice_peer_dev *peer_dev,
-+				 enum ice_rdma_filter filter, bool enable);
-+	int (*vc_send)(struct ice_peer_dev *peer_dev, u32 vf_id, u8 *msg,
-+		       u16 len);
-+};
-+
-+/* Following APIs are implemented by peer drivers and invoked by ICE driver */
-+struct ice_peer_ops {
-+	void (*event_handler)(struct ice_peer_dev *peer_dev,
-+			      struct ice_event *event);
-+
-+	/* Why we have 'open' and when it is expected to be called:
-+	 * 1. symmetric set of API w.r.t close
-+	 * 2. To be invoked form driver initialization path
-+	 *     - call peer_driver:open once ice driver is fully initialized
-+	 * 3. To be invoked upon RESET complete
-+	 *
-+	 * Calls to open are performed from ice_finish_init_peer_device
-+	 * which is invoked from the service task. This helps keep devices
-+	 * from having their open called until the ice driver is ready and
-+	 * has scheduled its service task.
-+	 */
-+	int (*open)(struct ice_peer_dev *peer_dev);
-+
-+	/* Peer's close function is to be called when the peer needs to be
-+	 * quiesced. This can be for a variety of reasons (enumerated in the
-+	 * ice_close_reason enum struct). A call to close will only be
-+	 * followed by a call to either remove or open. No IDC calls from the
-+	 * peer should be accepted until it is re-opened.
-+	 *
-+	 * The *reason* parameter is the reason for the call to close. This
-+	 * can be for any reason enumerated in the ice_close_reason struct.
-+	 * It's primary reason is for the peer's bookkeeping and in case the
-+	 * peer want to perform any different tasks dictated by the reason.
-+	 */
-+	void (*close)(struct ice_peer_dev *peer_dev,
-+		      enum ice_close_reason reason);
-+
-+	int (*vc_receive)(struct ice_peer_dev *peer_dev, u32 vf_id, u8 *msg,
-+			  u16 len);
-+	/* tell RDMA peer to prepare for TC change in a blocking call
-+	 * that will directly precede the change event
-+	 */
-+	void (*prep_tc_change)(struct ice_peer_dev *peer_dev);
-+};
-+
-+#define ICE_PEER_RDMA_NAME	"ice_rdma"
-+#define ICE_PEER_RDMA_DEV	0x00000010
-+#define ICE_MAX_NUM_PEERS	4
-+
-+/* The const struct that instantiates peer_dev_id needs to be initialized
-+ * in the .c with the macro ASSIGN_PEER_INFO.
-+ * For example:
-+ * static const struct peer_dev_id peer_dev_ids[] = ASSIGN_PEER_INFO;
-+ */
-+struct peer_dev_id {
-+	char *name;
-+	int id;
-+};
-+
-+#define ASSIGN_PEER_INFO					\
-+{								\
-+	{ ICE_PEER_RDMA_NAME, ICE_PEER_RDMA_DEV },		\
-+}
-+
-+/* structure representing peer device */
-+struct ice_peer_dev {
-+	struct platform_device platform_dev;
 +	struct ice_ver_info ver;
-+	struct pci_dev *pdev; /* PCI device of corresponding to main function */
-+	/* KVA / Linear address corresponding to BAR0 of underlying
-+	 * pci_device.
-+	 */
-+	u8 __iomem *hw_addr;
-+	int peer_dev_id;
++	const char *name;
 +
-+	unsigned int index;
-+
-+	u8 ftype;	/* PF(false) or VF (true) */
-+
-+	/* Data VSI created by driver */
-+	u16 pf_vsi_num;
-+
-+	u8 lan_addr[ETH_ALEN]; /* default MAC address of main netdev */
-+	u16 initial_mtu; /* Initial MTU of main netdev */
-+	struct ice_qos_params initial_qos_info;
-+	struct net_device *netdev;
-+	/* PCI info */
-+	u8 ari_ena;
-+	u16 bus_num;
-+	u16 dev_num;
-+	u16 fn_num;
-+
-+	/* Based on peer driver type, this shall point to corresponding MSIx
-+	 * entries in pf->msix_entries (which were allocated as part of driver
-+	 * initialization) e.g. for RDMA driver, msix_entries reserved will be
-+	 * num_online_cpus + 1.
-+	 */
-+	u16 msix_count; /* How many vectors are reserved for this device */
-+	struct msix_entry *msix_entries;
-+
-+	/* Following struct contains function pointers to be initialized
-+	 * by ICE driver and called by peer driver
-+	 */
-+	const struct ice_ops *ops;
-+
-+	/* Following struct contains function pointers to be initialized
-+	 * by peer driver and called by ICE driver
-+	 */
-+	const struct ice_peer_ops *peer_ops;
-+
-+	/* Pointer to peer_drv struct to be populated by peer driver */
-+	struct ice_peer_drv *peer_drv;
 +};
 +
-+static inline struct ice_peer_dev *dev_to_ice_peer(struct device *_dev)
-+{
-+	struct platform_device *platform_dev;
-+
-+	platform_dev = container_of(_dev, struct platform_device, dev);
-+	return container_of(platform_dev, struct ice_peer_dev, platform_dev);
-+}
-+#endif /* _ICE_IDC_H_*/
+ #endif /* _ICE_IDC_H_*/
 diff --git a/drivers/net/ethernet/intel/ice/ice_idc_int.h b/drivers/net/ethernet/intel/ice/ice_idc_int.h
-new file mode 100644
-index 000000000000..f8ff8cac7a26
---- /dev/null
+index f8ff8cac7a26..e67955a36342 100644
+--- a/drivers/net/ethernet/intel/ice/ice_idc_int.h
 +++ b/drivers/net/ethernet/intel/ice/ice_idc_int.h
-@@ -0,0 +1,67 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (c) 2019, Intel Corporation. */
+@@ -6,8 +6,16 @@
+ 
+ #include "ice_idc.h"
+ 
++int ice_close_peer_for_reset(struct ice_peer_dev_int *peer_dev_int, void *data);
+ int ice_unroll_peer(struct ice_peer_dev_int *peer_dev_int, void *data);
+ int ice_unreg_peer_device(struct ice_peer_dev_int *peer_dev_int, void *data);
++int ice_peer_close(struct ice_peer_dev_int *peer_dev_int, void *data);
++int ice_peer_check_for_reg(struct ice_peer_dev_int *peer_dev_int, void *data);
++int
++ice_finish_init_peer_device(struct ice_peer_dev_int *peer_dev_int, void *data);
++#ifdef CONFIG_DCB
++bool ice_validate_peer_dev(struct ice_peer_dev *peer);
++#endif /* CONFIG_DCB */
+ 
+ enum ice_peer_dev_state {
+ 	ICE_PEER_DEV_STATE_INIT,
+@@ -64,4 +72,11 @@ struct ice_peer_dev_int {
+ 
+ 	enum ice_close_reason rst_type;
+ };
 +
-+#ifndef _ICE_IDC_INT_H_
-+#define _ICE_IDC_INT_H_
++static inline struct
++ice_peer_dev_int *peer_to_ice_dev_int(struct ice_peer_dev *peer_dev)
++{
++	return container_of(peer_dev, struct ice_peer_dev_int, peer_dev);
++}
 +
-+#include "ice_idc.h"
+ #endif /* !_ICE_IDC_INT_H_ */
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
+index a19f5920733b..65a3f814b87d 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_lib.c
+@@ -1464,6 +1464,31 @@ int ice_add_mac_to_list(struct ice_vsi *vsi, struct list_head *add_list,
+ 	return 0;
+ }
+ 
++/**
++ * ice_pf_state_is_nominal - checks the PF for nominal state
++ * @pf: pointer to PF to check
++ *
++ * Check the PF's state for a collection of bits that would indicate
++ * the PF is in a state that would inhibit normal operation for
++ * driver functionality.
++ *
++ * Returns true if PF is in a nominal state.
++ * Returns false otherwise
++ */
++bool ice_pf_state_is_nominal(struct ice_pf *pf)
++{
++	DECLARE_BITMAP(check_bits, __ICE_STATE_NBITS) = { 0 };
 +
-+int ice_unroll_peer(struct ice_peer_dev_int *peer_dev_int, void *data);
-+int ice_unreg_peer_device(struct ice_peer_dev_int *peer_dev_int, void *data);
++	if (!pf)
++		return false;
 +
-+enum ice_peer_dev_state {
-+	ICE_PEER_DEV_STATE_INIT,
-+	ICE_PEER_DEV_STATE_PROBED,
-+	ICE_PEER_DEV_STATE_OPENING,
-+	ICE_PEER_DEV_STATE_OPENED,
-+	ICE_PEER_DEV_STATE_PREP_RST,
-+	ICE_PEER_DEV_STATE_PREPPED,
-+	ICE_PEER_DEV_STATE_CLOSING,
-+	ICE_PEER_DEV_STATE_CLOSED,
-+	ICE_PEER_DEV_STATE_REMOVED,
-+	ICE_PEER_DEV_STATE_API_RDY,
-+	ICE_PEER_DEV_STATE_NBITS,	/* must be last */
-+};
++	bitmap_set(check_bits, 0, __ICE_STATE_NOMINAL_CHECK_BITS);
++	if (bitmap_intersects(pf->state, check_bits, __ICE_STATE_NBITS))
++		return false;
 +
-+enum ice_peer_drv_state {
-+	ICE_PEER_DRV_STATE_MBX_RDY,
-+	ICE_PEER_DRV_STATE_NBITS,	/* must be last */
-+};
++	return true;
++}
 +
-+struct ice_peer_drv_int {
-+	struct ice_peer_drv *peer_drv;
-+	struct ice_peer_dev *peer_dev;
+ /**
+  * ice_update_eth_stats - Update VSI-specific ethernet statistics counters
+  * @vsi: the VSI to be updated
+@@ -2684,9 +2709,17 @@ void ice_vsi_free_rx_rings(struct ice_vsi *vsi)
+  */
+ void ice_vsi_close(struct ice_vsi *vsi)
+ {
++	enum ice_close_reason reason = ICE_REASON_INTERFACE_DOWN;
++	struct device *dev = &vsi->back->pdev->dev;
++	int ret = 0;
 +
-+	/* States associated with peer driver */
-+	DECLARE_BITMAP(state, ICE_PEER_DRV_STATE_NBITS);
++	if (vsi->type == ICE_VSI_PF)
++		ret = ice_for_each_peer(vsi->back, &reason, ice_peer_close);
 +
-+	/* if this peer_dev is the originator of an event, these are the
-+	 * most recent events of each type
-+	 */
-+	struct ice_event current_events[ICE_EVENT_NBITS];
-+};
++	if (ret)
++		dev_dbg(dev, "Peer device did not implement close function\n");
+ 	if (!test_and_set_bit(__ICE_DOWN, vsi->state))
+ 		ice_down(vsi);
+-
+ 	ice_vsi_free_irq(vsi);
+ 	ice_vsi_free_tx_rings(vsi);
+ 	ice_vsi_free_rx_rings(vsi);
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.h b/drivers/net/ethernet/intel/ice/ice_lib.h
+index 6e43ef03bfc3..5353a71fcca0 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.h
++++ b/drivers/net/ethernet/intel/ice/ice_lib.h
+@@ -11,6 +11,8 @@ int ice_add_mac_to_list(struct ice_vsi *vsi, struct list_head *add_list,
+ 
+ void ice_free_fltr_list(struct device *dev, struct list_head *h);
+ 
++bool ice_pf_state_is_nominal(struct ice_pf *pf);
 +
-+struct ice_peer_dev_int {
-+	struct ice_peer_dev peer_dev; /* public structure */
-+	struct ice_peer_drv_int *peer_drv_int; /* driver private structure */
-+
-+	/* if this peer_dev is the originator of an event, these are the
-+	 * most recent events of each type
-+	 */
-+	struct ice_event current_events[ICE_EVENT_NBITS];
-+	/* Events a peer has registered to be notified about */
-+	DECLARE_BITMAP(events, ICE_EVENT_NBITS);
-+
-+	/* States associated with peer device */
-+	DECLARE_BITMAP(state, ICE_PEER_DEV_STATE_NBITS);
-+	struct mutex peer_dev_state_mutex; /* peer_dev state mutex */
-+
-+	/* per peer workqueue */
-+	struct workqueue_struct *ice_peer_wq;
-+
-+	struct work_struct peer_prep_task;
-+	struct work_struct peer_close_task;
-+
-+	enum ice_close_reason rst_type;
-+};
-+#endif /* !_ICE_IDC_INT_H_ */
+ void ice_update_eth_stats(struct ice_vsi *vsi);
+ 
+ int ice_vsi_cfg_rxqs(struct ice_vsi *vsi);
 diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 28ec0d57941d..08bce0d67634 100644
+index 08bce0d67634..62b45c918ab5 100644
 --- a/drivers/net/ethernet/intel/ice/ice_main.c
 +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -2092,6 +2092,8 @@ static void ice_init_pf(struct ice_pf *pf)
- {
- 	bitmap_zero(pf->flags, ICE_PF_FLAGS_NBITS);
- 	set_bit(ICE_FLAG_MSIX_ENA, pf->flags);
-+	if (pf->hw.func_caps.common_cap.iwarp)
-+		set_bit(ICE_FLAG_IWARP_ENA, pf->flags);
- #ifdef CONFIG_PCI_IOV
- 	if (pf->hw.func_caps.common_cap.sr_iov_1_1) {
- 		struct ice_hw *hw = &pf->hw;
-@@ -2145,6 +2147,17 @@ static int ice_ena_msix_range(struct ice_pf *pf)
- 	v_budget += pf->num_lan_msix;
- 	v_left -= pf->num_lan_msix;
+@@ -576,6 +576,7 @@ static void ice_reset_subtask(struct ice_pf *pf)
+ 		/* return if no valid reset type requested */
+ 		if (reset_type == ICE_RESET_INVAL)
+ 			return;
++		ice_for_each_peer(pf, &reset_type, ice_close_peer_for_reset);
+ 		ice_prepare_for_reset(pf);
  
-+	/* reserve vectors for RDMA peer driver */
-+	if (test_bit(ICE_FLAG_IWARP_ENA, pf->flags)) {
-+		/* RDMA peer driver needs one extra to handle misc causes */
-+		needed = min_t(int, num_online_cpus(), v_left) + 1;
-+		if (v_left < needed)
-+			goto no_vecs_left_err;
-+		pf->num_rdma_msix = needed;
-+		v_budget += needed;
-+		v_left -= needed;
-+	}
-+
- 	pf->msix_entries = devm_kcalloc(&pf->pdev->dev, v_budget,
- 					sizeof(*pf->msix_entries), GFP_KERNEL);
- 
-@@ -2171,6 +2184,8 @@ static int ice_ena_msix_range(struct ice_pf *pf)
- 			 "not enough vectors. requested = %d, obtained = %d\n",
- 			 v_budget, v_actual);
- 		if (v_actual >= (pf->num_lan_msix + 1)) {
-+			clear_bit(ICE_FLAG_IWARP_ENA, pf->flags);
-+			pf->num_rdma_msix = 0;
- 			pf->num_avail_sw_msix = v_actual -
- 						(pf->num_lan_msix + 1);
- 		} else if (v_actual >= 2) {
-@@ -2189,6 +2204,11 @@ static int ice_ena_msix_range(struct ice_pf *pf)
- 	devm_kfree(&pf->pdev->dev, pf->msix_entries);
- 	goto exit_err;
- 
-+no_vecs_left_err:
-+	dev_err(&pf->pdev->dev,
-+		"not enough vectors. requested = %d, available = %d\n",
-+		needed, v_left);
-+	err = -ERANGE;
- exit_err:
- 	pf->num_lan_msix = 0;
- 	clear_bit(ICE_FLAG_MSIX_ENA, pf->flags);
-@@ -2351,6 +2371,12 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
- 
- 	ice_init_pf(pf);
- 
-+	pf->peers = devm_kcalloc(dev, ICE_MAX_NUM_PEERS, sizeof(*pf->peers),
-+				 GFP_KERNEL);
-+	if (!pf->peers) {
-+		err = -ENOMEM;
-+		goto err_init_peer_unroll;
-+	}
- 	err = ice_init_pf_dcb(pf, false);
- 	if (err) {
- 		clear_bit(ICE_FLAG_DCB_CAPABLE, pf->flags);
-@@ -2432,10 +2458,20 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
- 		goto err_alloc_sw_unroll;
+ 		/* make sure we are ready to rebuild */
+@@ -1336,6 +1337,8 @@ static void ice_service_task(struct work_struct *work)
+ 		return;
  	}
  
-+	err = ice_init_peer_devices(pf);
-+	if (err) {
-+		dev_err(dev, "Failed to initialize peer devices: 0x%x\n", err);
-+		err = -EIO;
-+		goto err_init_peer_unroll;
++	/* Invoke remaining initialization of peer devices */
++	ice_for_each_peer(pf, NULL, ice_finish_init_peer_device);
+ 	ice_check_for_hang_subtask(pf);
+ 	ice_sync_fltr_subtask(pf);
+ 	ice_handle_mdd_event(pf);
+@@ -1375,6 +1378,42 @@ static void ice_set_ctrlq_len(struct ice_hw *hw)
+ 	hw->mailboxq.sq_buf_size = ICE_MBXQ_MAX_BUF_LEN;
+ }
+ 
++/**
++ * ice_schedule_reset - schedule a reset
++ * @pf: board private structure
++ * @reset: reset being requested
++ */
++int ice_schedule_reset(struct ice_pf *pf, enum ice_reset_req reset)
++{
++	/* bail out if earlier reset has failed */
++	if (test_bit(__ICE_RESET_FAILED, pf->state)) {
++		dev_dbg(&pf->pdev->dev, "earlier reset has failed\n");
++		return -EIO;
++	}
++	/* bail if reset/recovery already in progress */
++	if (ice_is_reset_in_progress(pf->state)) {
++		dev_dbg(&pf->pdev->dev, "Reset already in progress\n");
++		return -EBUSY;
 +	}
 +
- 	ice_verify_cacheline_size(pf);
++	switch (reset) {
++	case ICE_RESET_PFR:
++		set_bit(__ICE_PFR_REQ, pf->state);
++		break;
++	case ICE_RESET_CORER:
++		set_bit(__ICE_CORER_REQ, pf->state);
++		break;
++	case ICE_RESET_GLOBR:
++		set_bit(__ICE_GLOBR_REQ, pf->state);
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	ice_service_task_schedule(pf);
++	return 0;
++}
++
+ /**
+  * ice_irq_affinity_notify - Callback for affinity changes
+  * @notify: context as to what irq was changed
+@@ -2496,6 +2535,7 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
+ static void ice_remove(struct pci_dev *pdev)
+ {
+ 	struct ice_pf *pf = pci_get_drvdata(pdev);
++	enum ice_close_reason reason;
+ 	int i;
  
- 	return 0;
+ 	if (!pf)
+@@ -2507,8 +2547,10 @@ static void ice_remove(struct pci_dev *pdev)
+ 		msleep(100);
+ 	}
  
-+	/* Unwind non-managed device resources, etc. if something failed */
-+err_init_peer_unroll:
-+	ice_for_each_peer(pf, NULL, ice_unroll_peer);
- err_alloc_sw_unroll:
- 	set_bit(__ICE_SERVICE_DIS, pf->state);
- 	set_bit(__ICE_DOWN, pf->state);
-@@ -2477,6 +2513,7 @@ static void ice_remove(struct pci_dev *pdev)
+-	set_bit(__ICE_DOWN, pf->state);
+ 	ice_service_task_stop(pf);
++	reason = ICE_REASON_INTERFACE_DOWN;
++	ice_for_each_peer(pf, &reason, ice_peer_close);
++	set_bit(__ICE_DOWN, pf->state);
+ 
  	if (test_bit(ICE_FLAG_SRIOV_ENA, pf->flags))
  		ice_free_vfs(pf);
- 	ice_vsi_release_all(pf);
-+	ice_for_each_peer(pf, NULL, ice_unreg_peer_device);
- 	ice_free_irq_msix_misc(pf);
- 	ice_for_each_vsi(pf, i) {
- 		if (!pf->vsi[i])
-@@ -2676,6 +2713,7 @@ static int __init ice_module_init(void)
- 	if (status) {
- 		pr_err("failed to register PCI driver, err %d\n", status);
- 		destroy_workqueue(ice_wq);
-+		ida_destroy(&ice_peer_index_ida);
+@@ -3946,6 +3988,7 @@ static int ice_change_mtu(struct net_device *netdev, int new_mtu)
+ 	struct ice_netdev_priv *np = netdev_priv(netdev);
+ 	struct ice_vsi *vsi = np->vsi;
+ 	struct ice_pf *pf = vsi->back;
++	struct ice_event *event;
+ 	u8 count = 0;
+ 
+ 	if (new_mtu == netdev->mtu) {
+@@ -3997,6 +4040,13 @@ static int ice_change_mtu(struct net_device *netdev, int new_mtu)
+ 		}
  	}
  
- 	return status;
-@@ -2692,6 +2730,10 @@ static void __exit ice_module_exit(void)
- {
- 	pci_unregister_driver(&ice_driver);
- 	destroy_workqueue(ice_wq);
-+	/* release all cached layer within ida tree, associated with
-+	 * ice_peer_index_ida object
-+	 */
-+	ida_destroy(&ice_peer_index_ida);
- 	pr_info("module unloaded\n");
++	event = devm_kzalloc(&pf->pdev->dev, sizeof(*event), GFP_KERNEL);
++	set_bit(ICE_EVENT_MTU_CHANGE, event->type);
++	event->reporter = NULL;
++	event->info.mtu = new_mtu;
++	ice_for_each_peer(pf, event, ice_peer_check_for_reg);
++	devm_kfree(&pf->pdev->dev, event);
++
+ 	netdev_info(netdev, "changed MTU to %d\n", new_mtu);
+ 	return 0;
  }
- module_exit(ice_module_exit);
-diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
-index 24bbef8bbe69..99822b4e8621 100644
---- a/drivers/net/ethernet/intel/ice/ice_type.h
-+++ b/drivers/net/ethernet/intel/ice/ice_type.h
-@@ -161,6 +161,7 @@ struct ice_hw_common_caps {
- 	u8 rss_table_entry_width;	/* RSS Entry width in bits */
+diff --git a/drivers/net/ethernet/intel/ice/ice_sched.c b/drivers/net/ethernet/intel/ice/ice_sched.c
+index 2a232504379d..1bc5b8e61eee 100644
+--- a/drivers/net/ethernet/intel/ice/ice_sched.c
++++ b/drivers/net/ethernet/intel/ice/ice_sched.c
+@@ -576,6 +576,50 @@ ice_alloc_lan_q_ctx(struct ice_hw *hw, u16 vsi_handle, u8 tc, u16 new_numqs)
+ 	return 0;
+ }
  
- 	u8 dcb;
-+	u8 iwarp;
++/**
++ * ice_alloc_rdma_q_ctx - allocate RDMA queue contexts for the given VSI and TC
++ * @hw: pointer to the HW struct
++ * @vsi_handle: VSI handle
++ * @tc: TC number
++ * @new_numqs: number of queues
++ */
++static enum ice_status
++ice_alloc_rdma_q_ctx(struct ice_hw *hw, u16 vsi_handle, u8 tc, u16 new_numqs)
++{
++	struct ice_vsi_ctx *vsi_ctx;
++	struct ice_q_ctx *q_ctx;
++
++	vsi_ctx = ice_get_vsi_ctx(hw, vsi_handle);
++	if (!vsi_ctx)
++		return ICE_ERR_PARAM;
++	/* allocate RDMA queue contexts */
++	if (!vsi_ctx->rdma_q_ctx[tc]) {
++		vsi_ctx->rdma_q_ctx[tc] = devm_kcalloc(ice_hw_to_dev(hw),
++						       new_numqs,
++						       sizeof(*q_ctx),
++						       GFP_KERNEL);
++		if (!vsi_ctx->rdma_q_ctx[tc])
++			return ICE_ERR_NO_MEMORY;
++		vsi_ctx->num_rdma_q_entries[tc] = new_numqs;
++		return 0;
++	}
++	/* num queues are increased, update the queue contexts */
++	if (new_numqs > vsi_ctx->num_rdma_q_entries[tc]) {
++		u16 prev_num = vsi_ctx->num_rdma_q_entries[tc];
++
++		q_ctx = devm_kcalloc(ice_hw_to_dev(hw), new_numqs,
++				     sizeof(*q_ctx), GFP_KERNEL);
++		if (!q_ctx)
++			return ICE_ERR_NO_MEMORY;
++		memcpy(q_ctx, vsi_ctx->rdma_q_ctx[tc],
++		       prev_num * sizeof(*q_ctx));
++		devm_kfree(ice_hw_to_dev(hw), vsi_ctx->rdma_q_ctx[tc]);
++		vsi_ctx->rdma_q_ctx[tc] = q_ctx;
++		vsi_ctx->num_rdma_q_entries[tc] = new_numqs;
++	}
++	return 0;
++}
++
+ /**
+  * ice_sched_clear_agg - clears the aggregator related information
+  * @hw: pointer to the hardware structure
+@@ -1447,13 +1491,22 @@ ice_sched_update_vsi_child_nodes(struct ice_port_info *pi, u16 vsi_handle,
+ 	if (!vsi_ctx)
+ 		return ICE_ERR_PARAM;
+ 
+-	prev_numqs = vsi_ctx->sched.max_lanq[tc];
++	if (owner == ICE_SCHED_NODE_OWNER_LAN)
++		prev_numqs = vsi_ctx->sched.max_lanq[tc];
++	else
++		prev_numqs = vsi_ctx->sched.max_rdmaq[tc];
+ 	/* num queues are not changed or less than the previous number */
+ 	if (new_numqs <= prev_numqs)
+ 		return status;
+-	status = ice_alloc_lan_q_ctx(hw, vsi_handle, tc, new_numqs);
+-	if (status)
+-		return status;
++	if (owner == ICE_SCHED_NODE_OWNER_LAN) {
++		status = ice_alloc_lan_q_ctx(hw, vsi_handle, tc, new_numqs);
++		if (status)
++			return status;
++	} else {
++		status = ice_alloc_rdma_q_ctx(hw, vsi_handle, tc, new_numqs);
++		if (status)
++			return status;
++	}
+ 
+ 	if (new_numqs)
+ 		ice_sched_calc_vsi_child_nodes(hw, new_numqs, new_num_nodes);
+@@ -1468,7 +1521,10 @@ ice_sched_update_vsi_child_nodes(struct ice_port_info *pi, u16 vsi_handle,
+ 					       new_num_nodes, owner);
+ 	if (status)
+ 		return status;
+-	vsi_ctx->sched.max_lanq[tc] = new_numqs;
++	if (owner == ICE_SCHED_NODE_OWNER_LAN)
++		vsi_ctx->sched.max_lanq[tc] = new_numqs;
++	else
++		vsi_ctx->sched.max_rdmaq[tc] = new_numqs;
+ 
+ 	return 0;
+ }
+@@ -1534,6 +1590,7 @@ ice_sched_cfg_vsi(struct ice_port_info *pi, u16 vsi_handle, u8 tc, u16 maxqs,
+ 		 * recreate the child nodes all the time in these cases.
+ 		 */
+ 		vsi_ctx->sched.max_lanq[tc] = 0;
++		vsi_ctx->sched.max_rdmaq[tc] = 0;
+ 	}
+ 
+ 	/* update the VSI child nodes */
+@@ -1665,6 +1722,8 @@ ice_sched_rm_vsi_cfg(struct ice_port_info *pi, u16 vsi_handle, u8 owner)
+ 		}
+ 		if (owner == ICE_SCHED_NODE_OWNER_LAN)
+ 			vsi_ctx->sched.max_lanq[i] = 0;
++		else
++			vsi_ctx->sched.max_rdmaq[i] = 0;
+ 	}
+ 	status = 0;
+ 
+diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
+index 8271fd651725..92c44973af51 100644
+--- a/drivers/net/ethernet/intel/ice/ice_switch.c
++++ b/drivers/net/ethernet/intel/ice/ice_switch.c
+@@ -346,6 +346,10 @@ static void ice_clear_vsi_q_ctx(struct ice_hw *hw, u16 vsi_handle)
+ 			devm_kfree(ice_hw_to_dev(hw), vsi->lan_q_ctx[i]);
+ 			vsi->lan_q_ctx[i] = NULL;
+ 		}
++		if (vsi->rdma_q_ctx[i]) {
++			devm_kfree(ice_hw_to_dev(hw), vsi->rdma_q_ctx[i]);
++			vsi->rdma_q_ctx[i] = NULL;
++		}
+ 	}
+ }
+ 
+@@ -467,6 +471,29 @@ ice_update_vsi(struct ice_hw *hw, u16 vsi_handle, struct ice_vsi_ctx *vsi_ctx,
+ 	return ice_aq_update_vsi(hw, vsi_ctx, cd);
+ }
+ 
++/**
++ * ice_cfg_iwarp_fltr - enable/disable iWARP filtering on VSI
++ * @hw: pointer to HW struct
++ * @vsi_handle: VSI SW index
++ * @enable: boolean for enable/disable
++ */
++enum ice_status
++ice_cfg_iwarp_fltr(struct ice_hw *hw, u16 vsi_handle, bool enable)
++{
++	struct ice_vsi_ctx *ctx;
++
++	ctx = ice_get_vsi_ctx(hw, vsi_handle);
++	if (!ctx)
++		return ICE_ERR_DOES_NOT_EXIST;
++
++	if (enable)
++		ctx->info.q_opt_flags |= ICE_AQ_VSI_Q_OPT_PE_FLTR_EN;
++	else
++		ctx->info.q_opt_flags &= ~ICE_AQ_VSI_Q_OPT_PE_FLTR_EN;
++
++	return ice_update_vsi(hw, vsi_handle, ctx, NULL);
++}
++
+ /**
+  * ice_aq_alloc_free_vsi_list
+  * @hw: pointer to the HW struct
+diff --git a/drivers/net/ethernet/intel/ice/ice_switch.h b/drivers/net/ethernet/intel/ice/ice_switch.h
+index cb123fbe30be..a81a9dd509d7 100644
+--- a/drivers/net/ethernet/intel/ice/ice_switch.h
++++ b/drivers/net/ethernet/intel/ice/ice_switch.h
+@@ -31,6 +31,8 @@ struct ice_vsi_ctx {
+ 	u8 vf_num;
+ 	u16 num_lan_q_entries[ICE_MAX_TRAFFIC_CLASS];
+ 	struct ice_q_ctx *lan_q_ctx[ICE_MAX_TRAFFIC_CLASS];
++	u16 num_rdma_q_entries[ICE_MAX_TRAFFIC_CLASS];
++	struct ice_q_ctx *rdma_q_ctx[ICE_MAX_TRAFFIC_CLASS];
  };
  
- /* Function specific capabilities */
+ enum ice_sw_fwd_act_type {
+@@ -225,6 +227,8 @@ void ice_remove_vsi_fltr(struct ice_hw *hw, u16 vsi_handle);
+ enum ice_status
+ ice_add_vlan(struct ice_hw *hw, struct list_head *m_list);
+ enum ice_status ice_remove_vlan(struct ice_hw *hw, struct list_head *v_list);
++enum ice_status
++ice_cfg_iwarp_fltr(struct ice_hw *hw, u16 vsi_handle, bool enable);
+ 
+ /* Promisc/defport setup for VSIs */
+ enum ice_status
+diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
+index 99822b4e8621..737181f006ee 100644
+--- a/drivers/net/ethernet/intel/ice/ice_type.h
++++ b/drivers/net/ethernet/intel/ice/ice_type.h
+@@ -31,6 +31,7 @@ static inline bool ice_is_tc_ena(u8 bitmap, u8 tc)
+ #define ICE_DBG_LAN		BIT_ULL(8)
+ #define ICE_DBG_SW		BIT_ULL(13)
+ #define ICE_DBG_SCHED		BIT_ULL(14)
++#define ICE_DBG_RDMA		BIT_ULL(15)
+ #define ICE_DBG_RES		BIT_ULL(17)
+ #define ICE_DBG_AQ_MSG		BIT_ULL(24)
+ #define ICE_DBG_AQ_CMD		BIT_ULL(27)
+@@ -242,6 +243,7 @@ struct ice_sched_node {
+ 	u8 tc_num;
+ 	u8 owner;
+ #define ICE_SCHED_NODE_OWNER_LAN	0
++#define ICE_SCHED_NODE_OWNER_RDMA	2
+ };
+ 
+ /* Access Macros for Tx Sched Elements data */
+@@ -267,6 +269,7 @@ struct ice_sched_vsi_info {
+ 	struct ice_sched_node *ag_node[ICE_MAX_TRAFFIC_CLASS];
+ 	struct list_head list_entry;
+ 	u16 max_lanq[ICE_MAX_TRAFFIC_CLASS];
++	u16 max_rdmaq[ICE_MAX_TRAFFIC_CLASS];
+ };
+ 
+ /* driver defines the policy */
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+index 5d24b539648f..8feb0ddad729 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+@@ -1310,31 +1310,6 @@ static int ice_alloc_vfs(struct ice_pf *pf, u16 num_alloc_vfs)
+ 	return ret;
+ }
+ 
+-/**
+- * ice_pf_state_is_nominal - checks the PF for nominal state
+- * @pf: pointer to PF to check
+- *
+- * Check the PF's state for a collection of bits that would indicate
+- * the PF is in a state that would inhibit normal operation for
+- * driver functionality.
+- *
+- * Returns true if PF is in a nominal state.
+- * Returns false otherwise
+- */
+-static bool ice_pf_state_is_nominal(struct ice_pf *pf)
+-{
+-	DECLARE_BITMAP(check_bits, __ICE_STATE_NBITS) = { 0 };
+-
+-	if (!pf)
+-		return false;
+-
+-	bitmap_set(check_bits, 0, __ICE_STATE_NOMINAL_CHECK_BITS);
+-	if (bitmap_intersects(pf->state, check_bits, __ICE_STATE_NBITS))
+-		return false;
+-
+-	return true;
+-}
+-
+ /**
+  * ice_pci_sriov_ena - Enable or change number of VFs
+  * @pf: pointer to the PF structure
 -- 
 2.21.0
 
