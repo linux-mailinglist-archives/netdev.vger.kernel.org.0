@@ -2,85 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ECDC5FA1D
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 16:32:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF3A35FA34
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 16:39:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727482AbfGDOcE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 10:32:04 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:54110 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727246AbfGDOcE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Jul 2019 10:32:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=WqfUMJML9WSOHiE+CrfUgXW6vEXB3qi3LNfexS8xML0=; b=3v1Lt8NFOhvJOPPSJPTOPzt1RV
-        3f3ZhkET4aT3VtARntPcv8Hwo5Sub5yXo3h8bAQNmIy9vrEvC/lKF4yfV0MUSz+VyTcV4Tcu3Vpag
-        0432dP8eFpEt9Q9BdBKhutojaDf0VW/bi4DfmQAAAsx9gfaPbUVJTKxVrb6igSVph8zc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hj2mB-0004Ep-66; Thu, 04 Jul 2019 16:31:55 +0200
-Date:   Thu, 4 Jul 2019 16:31:55 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org,
-        Jiri Pirko <jiri@resnulli.us>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Linville <linville@tuxdriver.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v6 06/15] ethtool: netlink bitset handling
-Message-ID: <20190704143155.GE13859@lunn.ch>
-References: <cb614bebee1686293127194e8f7ced72955c7c7f.1562067622.git.mkubecek@suse.cz>
- <20190703114933.GW2250@nanopsycho>
- <20190703181851.GP20101@unicorn.suse.cz>
- <20190704080435.GF2250@nanopsycho>
- <20190704115236.GR20101@unicorn.suse.cz>
- <6c070d62ffe342f5bc70556ef0f85740d04ae4a3.camel@sipsolutions.net>
- <20190704121718.GS20101@unicorn.suse.cz>
- <2f1a8edb0b000b4eb7adcaca0d1fb05fdd73a587.camel@sipsolutions.net>
- <20190704125315.GT20101@unicorn.suse.cz>
- <a6fbee05df0efd2528a06922bcb514d321b1a8bc.camel@sipsolutions.net>
+        id S1727487AbfGDOjl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 10:39:41 -0400
+Received: from mx-relay30-hz1.antispameurope.com ([94.100.133.206]:58697 "EHLO
+        mx-relay30-hz1.antispameurope.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727388AbfGDOjl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 10:39:41 -0400
+Received: from b2b-92-50-72-125.unitymedia.biz ([92.50.72.125]) by mx-relay30-hz1.antispameurope.com;
+ Thu, 04 Jul 2019 16:39:34 +0200
+Received: from [192.168.101.59] (192.168.101.59) by eks-ex.eks-engel.local
+ (192.168.100.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1034.26; Thu, 4 Jul
+ 2019 16:39:21 +0200
+Subject: Re: i.mx6ul with DSA in multi chip addressing mode - no MDIO access
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <netdev@vger.kernel.org>
+References: <21680b63-2d87-6841-23eb-551e58866719@eks-engel.de>
+ <20190703155518.GE18473@lunn.ch>
+ <d1181129-ec9d-01c1-3102-e1dc5dec0378@eks-engel.de>
+ <20190704132756.GB13859@lunn.ch>
+From:   Benjamin Beckmeyer <beb@eks-engel.de>
+Message-ID: <00b365da-9c7a-a78a-c10a-f031748e0af7@eks-engel.de>
+Date:   Thu, 4 Jul 2019 16:39:20 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a6fbee05df0efd2528a06922bcb514d321b1a8bc.camel@sipsolutions.net>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <20190704132756.GB13859@lunn.ch>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [192.168.101.59]
+X-ClientProxiedBy: eks-ex.eks-engel.local (192.168.100.30) To
+ eks-ex.eks-engel.local (192.168.100.30)
+X-cloud-security-sender: beb@eks-engel.de
+X-cloud-security-recipient: netdev@vger.kernel.org
+X-cloud-security-Virusscan: CLEAN
+X-cloud-security-disclaimer: This E-Mail was scanned by E-Mailservice on mx-relay30-hz1.antispameurope.com with 580013A0B34
+X-cloud-security-connect: b2b-92-50-72-125.unitymedia.biz[92.50.72.125], TLS=1, IP=92.50.72.125
+X-cloud-security: scantime:1.212
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> OK, here I guess I see what you mean. You're saying if ethtool were to
-> send a value/mask of "0..0100/0..0111" you wouldn't know what to do with
-> BIT(4) as long as the kernel knows about that bit?
-> 
-> I guess the difference now is depending on the operation. NLA_BITFIELD32
-> is sort of built on the assumption of having a "toggle" operation. If
-> you want to have a "set to" operation, then you don't really need the
-> selector/mask at all, just the value.
+> On Thu, Jul 04, 2019 at 10:54:47AM +0200, Benjamin Beckmeyer wrote:
+>> On 03.07.19 17:55, Andrew Lunn wrote:
+>>> On Wed, Jul 03, 2019 at 03:10:34PM +0200, Benjamin Beckmeyer wrote:
+>>>> Hey folks,
+>>>>
+>>>> I'm having a problem with a custom i.mx6ul board. When DSA is loaded I can't 
+>>>> get access to the switch via MDIO, but the DSA is working properly. I set up
+>>>> a bridge for testing and the switch is in forwarding mode and i can ping the 
+>>>> board. But the MDIO access isn't working at address 2 for the switch. When I 
+>>>> delete the DSA from the devicetree and start the board up, I can access the 
+>>>> switch via MDIO.
+>>>>
+>>>> With DSA up and running:
+>>>>
+>>>> mii -i 2 0 0x9800
+>>>> mii -i 2 1
+>>>> phyid:2, reg:0x01 -> 0x4000
+>>>> mii -i 2 0 0x9803
+>>>> mii -i 2 1
+>>>> phyid:2, reg:0x01 -> 0x4000
+>>>> mii -i 2 1 0x1883
+>>>> mii -i 2 1
+>>>> phyid:2, reg:0x01 -> 0x4000
+>>> Hi Benjamin
+>>>
+>>> I'm guessing that the driver is also using register 0 and 1 at the
+>>> same time you are, e.g. to poll the PHYs for link status etc.
+>>>
+>>> There are trace points for MDIO, so you can get the kernel to log all
+>>> registers access. That should confirm if i'm right.
+>>>
+>>> 	  Andrew
+>> Hi Andrew,
+>> you were absolutly right. The bus is really busy the whole time, I've 
+>> checked that with the tracepoints in mdio_access.
+>>
+>> But I'm still wondering why isn't that with a single chip addressing 
+>> mode configured switch? I mean, okay, the switch has more ports, but
+>> I've checked the accesses for both. The 6321(single chip addressing 
+>> mode) has around 4-5 accesses to the MDIO bus and the 6390(multi chip 
+>> addressing mode) has around 600 accesses per second. 
+> Hi Benjamin
+>
+> In single chip mode, reading a register is atomic. With multi-chip,
+> you need to access two registers, so it clearly is not atomic. And so
+> any other action on the bus will cause you problems when doing things
+> from user space without being able to take the register mutex.
+>
+> But 4-5 vs 600 suggests you don't have the interrupt line in your
+> device tree. If you have the interrupt line connected to a GPIO, and
+> the driver knows about it, it has no need to poll the PHYs. I also
+> added support for 'polled interrupts', as a fall back when then
+> interrupt is not listed in device tree. 10 times a second the driver
+> polls the interrupt status register, and if any interrupts have
+> happened within the switch, it triggers the needed handlers. Reading
+> one status register every 100ms is much less effort than reading all
+> the PHY status registers once per second.
+>
+> Still, 600 per second sounds too high. Do you have an SNMP agent
+> getting statistics?
+>
+> 	Andrew
 
-I don't think it is as simple as this. User space has a few different
-things it wants to pass to the kernel:
+Hi Andrew,
+thanks for the hint with the interrupt line. I added it now but I'm 
+having the same problem. But it is older kernel and tomorrow I will try
+a newer kernel in which your patch with the polled setup is applied to.
+And I will get an oscilloscop to look if anything is happening on the 
+interrupt line. 
 
-I want to set this bit to 0
-I want to set this bit to 1
-I don't want to change this bit
-In my world view, this bit is unused
+Is this device tree snip correct (about interrupts)?
 
-The kernel has had a long history of trouble with flag bits in system
-calls. It has not validated that unused bits are clear. Meaning when
-you actually want to make use of the unused bits you cannot because
-userspace has been passing random values in them since day 1.
+--snip
 
-We need a design which is clear to everybody which bits are unused and
-should be validated as being unused and an error returned if an unused
-bit is actually used. A value and a mask is not sufficient for
-this. We need the length in bits.
+&fec1 {
+        pinctrl-names = "default";
+        pinctrl-0 = <&pinctrl_enet1>;
+        reset-gpios = <&gpio5 9 GPIO_ACTIVE_LOW>;
+        phy-supply = <&reg_3v3>;
+        phy-mode = "rmii";
+        phy-handle = <&fecphy1>;
+        status = "okay";
 
-      Andrew
+        mdio0: mdio {
+                #address-cells = <1>;
+                #size-cells = <0>;
+
+                fecphy1: fecphy1@1 {
+                        reg = <0x1>;
+                };
+        };
+};
+
+&mdio0 {
+        interrupt-parent = <&gpio1>;
+        interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
+
+        switch0: switch0@2 {
+                compatible = "marvell,mv88e6190";
+                reg = <2>;
+                pinctrl-0 = <&pinctrl_gpios>;
+                reset-gpios = <&gpio4 16 GPIO_ACTIVE_LOW>;
+                dsa,member = <0 0>;
+
+                ports {
+                        #address-cells = <1>;
+                        #size-cells = <0>;
+
+                        port@0 {
+                                reg = <0>;
+                                label = "cpu";
+                                ethernet = <&fec1>;
+                                phy-mode = "rmii";
+                                fixed-link {
+                                        speed = <100>;
+                                        full-duplex;
+                                };
+                        };
+
+--snip
+
+There is no SNMP agent running at all.
+
+Cheers, 
+Benjamin
+
