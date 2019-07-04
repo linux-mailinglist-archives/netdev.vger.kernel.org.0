@@ -2,205 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD47E5F77F
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 13:52:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BC405F782
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 13:54:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727625AbfGDLwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 07:52:41 -0400
-Received: from mx2.suse.de ([195.135.220.15]:49974 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727604AbfGDLwl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Jul 2019 07:52:41 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 513B9B023;
-        Thu,  4 Jul 2019 11:52:39 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 721C7E0159; Thu,  4 Jul 2019 13:52:36 +0200 (CEST)
-Date:   Thu, 4 Jul 2019 13:52:36 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Jiri Pirko <jiri@resnulli.us>, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Linville <linville@tuxdriver.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v6 06/15] ethtool: netlink bitset handling
-Message-ID: <20190704115236.GR20101@unicorn.suse.cz>
-References: <cover.1562067622.git.mkubecek@suse.cz>
- <cb614bebee1686293127194e8f7ced72955c7c7f.1562067622.git.mkubecek@suse.cz>
- <20190703114933.GW2250@nanopsycho>
- <20190703181851.GP20101@unicorn.suse.cz>
- <20190704080435.GF2250@nanopsycho>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190704080435.GF2250@nanopsycho>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1727612AbfGDLyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 07:54:00 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:39662 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727436AbfGDLyA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 07:54:00 -0400
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from paulb@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 4 Jul 2019 14:53:57 +0300
+Received: from reg-r-vrt-019-180.mtr.labs.mlnx (reg-r-vrt-019-180.mtr.labs.mlnx [10.213.19.180])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x64BrvPC030691;
+        Thu, 4 Jul 2019 14:53:57 +0300
+From:   Paul Blakey <paulb@mellanox.com>
+To:     Jiri Pirko <jiri@mellanox.com>, Paul Blakey <paulb@mellanox.com>,
+        Roi Dayan <roid@mellanox.com>,
+        Yossi Kuperman <yossiku@mellanox.com>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        Aaron Conole <aconole@redhat.com>,
+        Zhike Wang <wangzhike@jd.com>
+Cc:     Rony Efraim <ronye@mellanox.com>, nst-kernel@redhat.com,
+        John Hurley <john.hurley@netronome.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Justin Pettit <jpettit@ovn.org>
+Subject: [PATCH net-next v3 0/4] net/sched: Introduce tc connection tracking
+Date:   Thu,  4 Jul 2019 14:53:49 +0300
+Message-Id: <1562241233-5176-1-git-send-email-paulb@mellanox.com>
+X-Mailer: git-send-email 1.8.4.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 04, 2019 at 10:04:35AM +0200, Jiri Pirko wrote:
-> Wed, Jul 03, 2019 at 08:18:51PM CEST, mkubecek@suse.cz wrote:
-> >On Wed, Jul 03, 2019 at 01:49:33PM +0200, Jiri Pirko wrote:
-> >> Tue, Jul 02, 2019 at 01:50:09PM CEST, mkubecek@suse.cz wrote:
-> >> >+Compact form: nested (bitset) atrribute contents:
-> >> >+
-> >> >+    ETHTOOL_A_BITSET_LIST	(flag)		no mask, only a list
-> >> >+    ETHTOOL_A_BITSET_SIZE	(u32)		number of significant bits
-> >> >+    ETHTOOL_A_BITSET_VALUE	(binary)	bitmap of bit values
-> >> >+    ETHTOOL_A_BITSET_MASK	(binary)	bitmap of valid bits
-> >> >+
-> >> >+Value and mask must have length at least ETHTOOL_A_BITSET_SIZE bits rounded up
-> >> >+to a multiple of 32 bits. They consist of 32-bit words in host byte order,
-> >> 
-> >> Looks like the blocks are similar to NLA_BITFIELD32. Why don't you user
-> >> nested array of NLA_BITFIELD32 instead?
-> >
-> >That would mean a layout like
-> >
-> >  4 bytes of attr header
-> >  4 bytes of value
-> >  4 bytes of mask
-> >  4 bytes of attr header
-> >  4 bytes of value
-> >  4 bytes of mask
-> >  ...
-> >
-> >i.e. interleaved headers, words of value and words of mask. Having value
-> >and mask contiguous looks cleaner to me. Also, I can quickly check the
-> >sizes without iterating through a (potentially long) array.
-> 
-> Yeah, if you are not happy with this, I suggest to introduce
-> NLA_BITFIELD with arbitrary size. That would be probably cleanest.
+Hi,
 
-There is still the question if it it should be implemented as a nested
-attribute which could look like the current compact form without the
-"list" flag (if there is no mask, it's a list). Or an unstructured data
-block consisting of u32 bit length and one or two bitmaps of
-corresponding length. I would prefer the nested attribute, netlink was
-designed to represent structured data, passing structures as binary goes
-against the design (just looked at VFINFO in rtnetlink few days ago,
-it's awful, IMHO).
+This patch series add connection tracking capabilities in tc sw datapath.
+It does so via a new tc action, called act_ct, and new tc flower classifier matching
+on conntrack state, mark and label.
 
-Either way, I would still prefer to have bitmaps represented as an array
-of 32-bit blocks in host byte order. This would be easy to handle in
-kernel both in places where we have u32 based bitmaps and unsigned long
-based ones. Other options seem less appealing:
+Usage is as follows:
+$ tc qdisc add dev ens1f0_0 ingress
+$ tc qdisc add dev ens1f0_1 ingress
 
-  - u8 based: only complicates processing
-  - u64 based: have to care about alignment
-  - unsigned long based: alignment and also problems with 64-bit kernel
-    vs. 32-bit userspace
+$ tc filter add dev ens1f0_0 ingress \
+  prio 1 chain 0 proto ip \
+  flower ip_proto tcp ct_state -trk \
+  action ct zone 2 pipe \
+  action goto chain 2
+$ tc filter add dev ens1f0_0 ingress \
+  prio 1 chain 2 proto ip \
+  flower ct_state +trk+new \
+  action ct zone 2 commit mark 0xbb nat src addr 5.5.5.7 pipe \
+  action mirred egress redirect dev ens1f0_1
+$ tc filter add dev ens1f0_0 ingress \
+  prio 1 chain 2 proto ip \
+  flower ct_zone 2 ct_mark 0xbb ct_state +trk+est \
+  action ct nat pipe \
+  action mirred egress redirect dev ens1f0_1
 
-> >> This is quite complex and confusing. Having the same API for 2 APIs is
-> >> odd. The API should be crystal clear, easy to use.
-> >> 
-> >> Why can't you have 2 commands, one working with bit arrays only, one
-> >> working with strings? Something like:
-> >> X_GET
-> >>    ETHTOOL_A_BITS (nested)
-> >>       ETHTOOL_A_BIT_ARRAY (BITFIELD32)
-> >> X_NAMES_GET
-> >>    ETHTOOL_A_BIT_NAMES (nested)
-> >> 	ETHTOOL_A_BIT_INDEX
-> >> 	ETHTOOL_A_BIT_NAME
-> >> 
-> >> For set, you can also have multiple cmds:
-> >> X_SET  - to set many at once, by bit index
-> >>    ETHTOOL_A_BITS (nested)
-> >>       ETHTOOL_A_BIT_ARRAY (BITFIELD32)
-> >> X_ONE_SET   - to set one, by bit index
-> >>    ETHTOOL_A_BIT_INDEX
-> >>    ETHTOOL_A_BIT_VALUE
-> >> X_ONE_SET   - to set one, by name
-> >>    ETHTOOL_A_BIT_NAME
-> >>    ETHTOOL_A_BIT_VALUE
-> >
-> >This looks as if you assume there is nothing except the bitset in the
-> >message but that is not true. Even with your proposed breaking of
-> >current groups, you would still have e.g. 4 bitsets in reply to netdev
-> >features query, 3 in timestamping info GET request and often bitsets
-> >combined with other data (e.g. WoL modes and optional WoL password).
-> >If you wanted to further refine the message granularity to the level of
-> >single parameters, we might be out of message type ids already.
-> 
-> You can still have multiple bitsets(bitfields) in single message and
-> have separate cmd/cmds to get string-bit mapping. No need to mangle it.
+$ tc filter add dev ens1f0_1 ingress \
+  prio 1 chain 0 proto ip \
+  flower ip_proto tcp ct_state -trk \
+  action ct zone 2 pipe \
+  action goto chain 1
+$ tc filter add dev ens1f0_1 ingress \
+  prio 1 chain 1 proto ip \
+  flower ct_zone 2 ct_mark 0xbb ct_state +trk+est \
+  action ct nat pipe \
+  action mirred egress redirect dev ens1f0_0
 
-Let's take a look at what it means in practice, the command is
+The pattern used in the design here closely resembles OvS, as the plan is to also offload
+OvS conntrack rules to tc. OvS datapath rules uses it's recirculation mechanism to send
+specific packets to conntrack, and return with the new conntrack state (ct_state) on some other recirc_id
+to be matched again (we use goto chain for this).
 
-  ethtool --set-prif-flags eth3 legacy-rx on
+This results in the following OvS datapath rules:
 
-on an ixgbe card. Currently, ethtool (from the github repository) does
+recirc_id(0),in_port(ens1f0_0),ct_state(-trk),... actions:ct(zone=2),recirc(2)
+recirc_id(2),in_port(ens1f0_0),ct_state(+new+trk),ct_mark(0xbb),... actions:ct(commit,zone=2,nat(src=5.5.5.7),mark=0xbb),ens1f0_1
+recirc_id(2),in_port(ens1f0_0),ct_state(+est+trk),ct_mark(0xbb),... actions:ct(zone=2,nat),ens1f0_1
 
-------------------------------------------------------------------------
-ETHTOOL_CMD_SETTINGS_SET (K->U, 68 bytes)
-    ETHTOOL_A_HEADER
-        ETHTOOL_A_DEV_NAME = "eth3"
-    ETHTOOL_A_SETTINGS_PRIV_FLAGS
-        ETHTOOL_A_BITSET_BITS
-            ETHTOOL_A_BITS_BIT
-                ETHTOOL_A_BIT_NAME = "legacy-rx"
-                ETHTOOL_A_BIT_VALUE
+recirc_id(1),in_port(ens1f0_1),ct_state(-trk),... actions:ct(zone=2),recirc(1)
+recirc_id(1),in_port(ens1f0_1),ct_state(+est+trk),... actions:ct(zone=2,nat),ens1f0_0
 
-NLMSG_ERR (K->U, 36 bytes) err = 0
-------------------------------------------------------------------------
+Changelog:
+	See individual patches.
 
-If we had only compact form (or some of the NLA_BITFIELD solutions we
-are talking about), you would need
+Paul Blakey (4):
+  net/sched: Introduce action ct
+  net/flow_dissector: add connection tracking dissection
+  net/sched: cls_flower: Add matching on conntrack info
+  tc-tests: Add tc action ct tests
 
-------------------------------------------------------------------------
-ETHTOOL_CMD_STRSET_GET (U->K, 52 bytes)
-    ETHTOOL_A_HEADER
-        ETHTOOL_A_DEV_NAME = "eth3"
-    ETHTOOL_A_STRSET_STRINGSETS
-        ETHTOOL_A_STRINGSETS_STRINGSET
-            ETHTOOL_A_STRINGSET_ID = 2 (ETH_SS_PRIV_FLAGS)
+ include/linux/skbuff.h                             |  10 +
+ include/net/flow_dissector.h                       |  15 +
+ include/net/flow_offload.h                         |   5 +
+ include/net/tc_act/tc_ct.h                         |  64 ++
+ include/uapi/linux/pkt_cls.h                       |  17 +
+ include/uapi/linux/tc_act/tc_ct.h                  |  41 +
+ net/core/flow_dissector.c                          |  44 +
+ net/sched/Kconfig                                  |  11 +
+ net/sched/Makefile                                 |   1 +
+ net/sched/act_ct.c                                 | 978 +++++++++++++++++++++
+ net/sched/cls_api.c                                |   5 +
+ net/sched/cls_flower.c                             | 127 ++-
+ .../selftests/tc-testing/tc-tests/actions/ct.json  | 314 +++++++
+ 13 files changed, 1627 insertions(+), 5 deletions(-)
+ create mode 100644 include/net/tc_act/tc_ct.h
+ create mode 100644 include/uapi/linux/tc_act/tc_ct.h
+ create mode 100644 net/sched/act_ct.c
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/actions/ct.json
 
-ETHTOOL_CMD_STRSET_GET_REPLY (K->U, 128 bytes)
-    ETHTOOL_A_HEADER
-        ETHTOOL_A_DEV_INDEX = 9
-        ETHTOOL_A_DEV_NAME = "eth3"
-    ETHTOOL_A_STRSET_STRINGSETS
-        ETHTOOL_A_STRINGSETS_STRINGSET
-            ETHTOOL_A_STRINGSET_ID = 2 (ETH_SS_PRIV_FLAGS)
-            ETHTOOL_A_STRINGSET_COUNT = 2
-            ETHTOOL_A_STRINGSET_STRINGS
-                ETHTOOL_A_STRINGS_STRING
-                    ETHTOOL_A_STRING_INDEX = 0
-                    ETHTOOL_A_STRING_VALUE = "legacy-rx"
-                ETHTOOL_A_STRINGS_STRING
-                    ETHTOOL_A_STRING_INDEX = 1
-                    ETHTOOL_A_STRING_VALUE = "vf-ipsec"
+-- 
+1.8.3.1
 
-NLMSG_ERR (K->U, 36 bytes) err = 0
-
-ETHTOOL_CMD_SETTINGS_SET (K->U, 64 bytes)
-    ETHTOOL_A_HEADER
-        ETHTOOL_A_DEV_NAME = "eth3"
-    ETHTOOL_A_SETTINGS_PRIV_FLAGS
-        ETHTOOL_A_BITSET_SIZE = 2
-        ETHTOOL_A_BITSET_VALUE = 00000001
-        ETHTOOL_A_BITSET_MASK = 00000001
-
-NLMSG_ERR (K->U, 36 bytes) err = 0
-------------------------------------------------------------------------
-
-That's an extra roundtrip, lot more chat and the SETTINGS_SET message is
-only 4 bytes shorter in the end. And we can consider ourselves lucky
-this NIC has only two private flags. Or that we didn't need to enable or
-disable a netdev feature (56 bits) or link mode (69 bits and growing).
-
-We could reduce the overhead by allowing STRSET_GET query to only ask
-for specific string(s) but there would still be the extra roundtrip
-which I dislike in the ioctl interface. Florian also said in the v5
-discussion that he would like if it was possible to get names and data
-together in one request.
-
-Michal
