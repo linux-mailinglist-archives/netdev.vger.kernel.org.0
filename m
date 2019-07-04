@@ -2,103 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D01045FDCD
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 22:42:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8E825FDD0
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 22:43:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727113AbfGDUmU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 16:42:20 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:35505 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726844AbfGDUmT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 16:42:19 -0400
-Received: by mail-pl1-f193.google.com with SMTP id w24so3540516plp.2
-        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 13:42:19 -0700 (PDT)
+        id S1727340AbfGDUmp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 16:42:45 -0400
+Received: from mail-vs1-f65.google.com ([209.85.217.65]:33868 "EHLO
+        mail-vs1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726911AbfGDUmo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 16:42:44 -0400
+Received: by mail-vs1-f65.google.com with SMTP id m23so2563965vso.1
+        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 13:42:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=JtQVAQz6NVyH2NItSA5pmHp1/PwtbtiVXqtTWIa5Jvg=;
-        b=vHe0b/q666zEE3c2nrbReFiDm6+Zdp14v0xC5Z1hgqUaPIpDuevVWGaM2wD80Ct6UO
-         BHnbptgVI9NWagXJ4QkkZp8zMCfFbiai/kJQHlDFjiSFD3wtlAcCRHc4AJaUXmwCBjui
-         bTeAijyVOMy7Y8QMGa5OV1x2zh5k46YvTVdFAgxzazgPo+Mn+Prp+1wwHdciPILzZQMZ
-         QIjP9ZISG6GxTJr4w6yQ0iqfxxqhPn4kVMvMXPr3QDQmpj8bgYMPNMyeFg+PHnR23LbC
-         L1pngCZWB4+2fkvdHKyNRQehS56M6Moe4UB7a7YmHjcRU1UypYjU7XnRValIP9GnaY9h
-         YpSQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rcJ0C5reJPUPRr282vI9k081OUcgrz+/xcYOLqs9gP0=;
+        b=VkvlDok6E4OX5H7Q5JvfdGowsbZDdxUCKC6KLupjDhRgWTZMuK5h1gXLVfPFeU8jXO
+         T01nirzQnrayUcnFBKfOk1zYC+tIUntJ8ihjX8+YyZadlCcIztlDkpcBQq4BHTKjTt49
+         AzQXmEepycbdGCSNnp2E+39UUQ7YnqzZErGXo8i6cLhWbOW0Wx6rcje/SLN5qDaefkKp
+         Oyv69SFa/LFlamy8EiXCVitMuCHydzwc1I1ATCcJw7LIP8YwGSYjGP/BirgPqRIBCLwQ
+         2kEaRgD/Up6e97bCHLJchdt4SX827hmBJRvjwsf5icokb+NfaRaUxHLiehNL0tlVBird
+         b72A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=JtQVAQz6NVyH2NItSA5pmHp1/PwtbtiVXqtTWIa5Jvg=;
-        b=RkZYchuVCNw2+TwQ91t7WSlUMN+NecvmENV4cuZdVSD8N+sy6qDp5RL+Jp1gS45aAg
-         rvURDi9y5ju+/7Rn94S3cDeS3atLvtUhDq4grGeIdV8t/JgY7dVzfd97HxK1GcnFcTXa
-         2VmVCyt8E3A5yLheLa+aTq3lLbs2pVZYTmOUnhi4GkEPouAMn6LS0hzuQvprqSt+tnID
-         qj4p5Q72z9m34GIP+EDnX9kh0HIATGaUyAaJH47JzFwC5xpYMyOvw+bFw/n6iDO6JYDT
-         tyscZBNiP1/nm8BwuwkKeihn6UK74wQnSPfpsM8DBgt9DvC6lmg1+w3uo8ymKq4d+ENU
-         wyjA==
-X-Gm-Message-State: APjAAAWWNQgyYhDaKD2BzUlev21JvoMrp6w5oyLlsg3Ks0uFw8abTf7M
-        K4eR5tcth1sPXrlGUOuH0xKilA==
-X-Google-Smtp-Source: APXvYqzQ8AsnCq4ngmBo7O1aaeOK29eAo6/X+aRaJQgUmDdb1YMpWAJ987/eMo0Agxx6mFiFUrhkTQ==
-X-Received: by 2002:a17:902:e211:: with SMTP id ce17mr181011plb.193.1562272938912;
-        Thu, 04 Jul 2019 13:42:18 -0700 (PDT)
-Received: from cakuba.netronome.com ([2601:646:8e00:e50::3])
-        by smtp.gmail.com with ESMTPSA id h26sm13468206pfq.64.2019.07.04.13.42.15
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 04 Jul 2019 13:42:18 -0700 (PDT)
-Date:   Thu, 4 Jul 2019 13:42:10 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Michael Petlan <mpetlan@redhat.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>
-Subject: Re: [PATCH] tools bpftool: Fix json dump crash on powerpc
-Message-ID: <20190704134210.17b8407c@cakuba.netronome.com>
-In-Reply-To: <20190704085856.17502-1-jolsa@kernel.org>
-References: <20190704085856.17502-1-jolsa@kernel.org>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rcJ0C5reJPUPRr282vI9k081OUcgrz+/xcYOLqs9gP0=;
+        b=oJSY8HEuvUvgKUjxu9O5Pr8et+LWX1RivWJ9qGemXNPu2lAwjSkuJWCpp0riTAX71Q
+         WFWExlfw2GuNI7ZVYo5vMzIsvEmpKFEyMdLeg7jf+MjSbP9/alwRq4ZEn+Fiyg19pfPD
+         Haz67Sxnws6BKIBSJerA4nRivWKJigVnYll/3trpeCJ8ydhi2Qs22WySCVVdDZeu0yUJ
+         epKKVOEP9Y0jrrXdbShOWFbA1ryFWHTBVbMTg9g0CcbSsKPEWqIgiQpngvly05GYFM5g
+         zw7mVjyYcX0cdxusqpVJlr02i53Xkqkd6yLdj5Pb/tYBMPwvX2TRpQuxF03YO20GpPmc
+         XC/w==
+X-Gm-Message-State: APjAAAXOs6V4AzkKz/J+eJAh7BPMKMylQ5UAHxBXSL0qrPR6dXGJMkG9
+        iWfwXDREIswcJMHR3Xi5zXIF+hz2tEwaAHEumHoT2ZLL
+X-Google-Smtp-Source: APXvYqwXd/B81tX4NOC9TTmvSWzTMjjs8ARqpz+wtD2NqFhfTltyEEUu8d8/9kTn14bdE5bkKc7e63shL2zV4htuJKA=
+X-Received: by 2002:a67:eb12:: with SMTP id a18mr75466vso.119.1562272963879;
+ Thu, 04 Jul 2019 13:42:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20190704153803.12739-1-bigeasy@linutronix.de> <20190704153803.12739-7-bigeasy@linutronix.de>
+In-Reply-To: <20190704153803.12739-7-bigeasy@linutronix.de>
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+Date:   Thu, 4 Jul 2019 13:42:32 -0700
+Message-ID: <CAJpBn1x=s8YLD6B3jY4aT_v=uhjA6gYJJ-DGoyeiqno7+by_kw@mail.gmail.com>
+Subject: Re: [PATCH 6/7] nfp: Use spinlock_t instead of struct spinlock
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>, tglx@linutronix.de,
+        Peter Zijlstra <peterz@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        OSS Drivers <oss-drivers@netronome.com>,
+        Linux Netdev List <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  4 Jul 2019 10:58:56 +0200, Jiri Olsa wrote:
-> Michael reported crash with by bpf program in json mode on powerpc:
-> 
->   # bpftool prog -p dump jited id 14
->   [{
->         "name": "0xd00000000a9aa760",
->         "insns": [{
->                 "pc": "0x0",
->                 "operation": "nop",
->                 "operands": [null
->                 ]
->             },{
->                 "pc": "0x4",
->                 "operation": "nop",
->                 "operands": [null
->                 ]
->             },{
->                 "pc": "0x8",
->                 "operation": "mflr",
->   Segmentation fault (core dumped)
-> 
-> The code is assuming char pointers in format, which is not always
-> true at least for powerpc. Fixing this by dumping the whole string
-> into buffer based on its format.
-> 
-> Please note that libopcodes code does not check return values from
-> fprintf callback, so there's no point to return error in case of
-> allocation failure.
+On Thu,  4 Jul 2019 17:38:02 +0200, Sebastian Andrzej Siewior wrote:
+> For spinlocks the type spinlock_t should be used instead of "struct
+> spinlock".
+>
+> Use spinlock_t for spinlock's definition.
+>
+> Cc: Jakub Kicinski <jakub.kicinski@netronome.com>
 
-Well, it doesn't check it today, it may perhaps do it in the future?
-Let's flip the question - since it doesn't check it today, why not
-propagate the error? :)  We should stay close to how fprintf would
-behave, IMHO.
+Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 
-Fixes: 107f041212c1 ("tools: bpftool: add JSON output for `bpftool prog dump jited *` command")
 
-> Reported-by: Michael Petlan <mpetlan@redhat.com>
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: oss-drivers@netronome.com
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> ---
+>  drivers/net/ethernet/netronome/nfp/nfp_net.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net.h b/drivers/net/ethernet/netronome/nfp/nfp_net.h
+> index df9aff2684ed0..4690363fc5421 100644
+> --- a/drivers/net/ethernet/netronome/nfp/nfp_net.h
+> +++ b/drivers/net/ethernet/netronome/nfp/nfp_net.h
+> @@ -392,7 +392,7 @@ struct nfp_net_r_vector {
+>               struct {
+>                       struct tasklet_struct tasklet;
+>                       struct sk_buff_head queue;
+> -                     struct spinlock lock;
+> +                     spinlock_t lock;
+>               };
+>       };
+>
