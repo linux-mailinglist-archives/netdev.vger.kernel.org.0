@@ -2,169 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AFF8D5F6CA
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 12:44:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F8015F6DE
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 12:55:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727566AbfGDKn5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 06:43:57 -0400
-Received: from mail-ed1-f53.google.com ([209.85.208.53]:44985 "EHLO
-        mail-ed1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727385AbfGDKn4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 06:43:56 -0400
-Received: by mail-ed1-f53.google.com with SMTP id k8so4965294edr.11
-        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 03:43:55 -0700 (PDT)
+        id S1727587AbfGDKzj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 06:55:39 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:39146 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727563AbfGDKzj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 06:55:39 -0400
+Received: by mail-pg1-f193.google.com with SMTP id u17so2268128pgi.6
+        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 03:55:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=4ofw2FIl5QoNB/0eRNrrBlKwXN68NmrFtclAc0VH8Ag=;
-        b=ZqCyhHKT6tzVfewJDzArRYM9qGvYIm/Yei+7I4xb53wFriNKV3pZfuZqWZQcdemlZI
-         tv8av7N7C+k23RcIfFT1OkDOTRUIRBxUGPFx0mTe2dcZA+ItV3nQWVARM/sQnPjoTBe0
-         UFLOAznpn8YtsOw7FsJh5H8rCqKHE7CmcT6MRyJJciI0eRPXki4xB6xEak/czyQXXFFK
-         WCfy9jxrsnyotRe7p6j0+51cRa1Nd4q4yYwB5CKFB/E7oKKHJf/D4Xt642oTNFekMaTI
-         AShTGHLVlTIsyZifkqM8D/Ixq8KLN84AITNB8Ji18TEzmtsiRz7EgON6CdZfUXTwfjEI
-         h5qQ==
+        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fFkhCc619vRd94uoe7aHJSBMFEl+zNjNnFnyvCKwJS0=;
+        b=QjuddBdT3mG9W3uWDvKTXBPIOLTcSFsfepx1jK2sznc1aG6YJkBmHbP+BsddK1cqr1
+         lfAS53bpdUpcra2w7BKad2vDOuh/obpSEYT4QwKuKbXr+XwQRj5DejtAClEcHInc7bJ5
+         wDhMvcZj2LuRhZViyKpcs4Y+eTTOw89Bo6VKmTjlMvKmsrh8N9yE+bzGpz8e+nW2TUaL
+         9sPBD+us9WHl3Y6g+GydcriY2ya1U0KWpXbTTn3MVPjn1x1LiXAlmzzK6vc7bFUhrJx7
+         u666QJY8Ppoyaj3tQSJzarTiql3uQng0hs5n/o4X5EZWazShxbTgeDz+ZCKNE1H0ffMd
+         OVNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=4ofw2FIl5QoNB/0eRNrrBlKwXN68NmrFtclAc0VH8Ag=;
-        b=RTBwLT4C9UL9lnfY+ezMP2IiW2SMNHeKACzl3rX/Cb5YvLiWerk+iYKUAJpSu3zV/n
-         PSVTo4CDjI43JJozg4lQU2T3ODpPyQnPsrub9qfk2gEgx847OHh5iAMj326PymWZrCaT
-         WqhNoUvTlAjPEVrCkKiNt57bvy1+HMWiYYSxOp+N+iKP2nDVPd0HtPRCMJv84poycgIb
-         uJTC+dSHkhcSVShH/8SMJyBxBEhDDCF4wH4C0ZKucLCmfNAlKnBZ6rAEyFVZlfmznQvP
-         avHe+cXVNEggI/M3P0hMh1KReeefiTTPF2kwjljm6GsSpbaHHU/Jw3rwI/YAOEueB9+l
-         Um1w==
-X-Gm-Message-State: APjAAAX1kV9UL6kPE4TL5K0vaj50AUYGO2i4o47wDyamN3eMW7F2F43i
-        qfNib/JuToxC4gGkPGcIehxj65EZ
-X-Google-Smtp-Source: APXvYqw98/IWIZKGbMHJn9aGD7kIVJfBNgZp9nLPMy1eARJwskfjLlJUdtiqVPJRbRAINhnJBrgkzA==
-X-Received: by 2002:a05:6402:1459:: with SMTP id d25mr47413412edx.235.1562237034376;
-        Thu, 04 Jul 2019 03:43:54 -0700 (PDT)
-Received: from win95.local (D96447CA.static.ziggozakelijk.nl. [217.100.71.202])
-        by smtp.gmail.com with ESMTPSA id j17sm1674875ede.60.2019.07.04.03.43.52
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 04 Jul 2019 03:43:53 -0700 (PDT)
-Subject: Re: bug: tpacket_snd can cause data corruption
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Willem de Bruijn <willemb@google.com>,
-        Network Development <netdev@vger.kernel.org>
-References: <1562152028-2693-1-git-send-email-debrabander@gmail.com>
- <CAF=yD-+wHzfP6QWJzc=num_VaFvN3RYXV-c3+-VY8EjS87WEiA@mail.gmail.com>
-From:   Frank de Brabander <debrabander@gmail.com>
-Message-ID: <d32bc4b8-b547-1d78-e245-2ec51df19c77@gmail.com>
-Date:   Thu, 4 Jul 2019 12:43:51 +0200
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.7.2
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fFkhCc619vRd94uoe7aHJSBMFEl+zNjNnFnyvCKwJS0=;
+        b=AnPrS675Exp5NOrGMTjjL5CwYNEhGAUa/YJmsVzzOX0KJ8HUjo5dfB/ha2fcW2a7JO
+         hkytW9LHGUIEtpsxiqvV1HZl54sJ9WaL8e9sb3GmlRF98KP7Z4wZsTZWw24SBWZ+gxw1
+         czOj0iZcy/xldcTcKbYi1iMq4z1tJqp57IAXVg1x8Qml25GyrQ+XhoGBH8hXbBaP6nGZ
+         FHrQSVaHKvBzcfm7bCKH+/ddbjkqI+js84mtmQ9uFH/Y2HPEZwtuDC0UPoTWdhbFX0Xk
+         M52XHc9ypjVmRUZWAdTB1X3Xxs0F7unNYAR0v0lPe4HYF+fWSIxsoZmra+Fu80oftJCa
+         l7+w==
+X-Gm-Message-State: APjAAAWFpAB/dgBcLgoP8Zmo3ruqCd61qSoX04bGm3R9Tk0ujDTgA2WX
+        eR4jdtink8q90rF8QctqXN6SfQ==
+X-Google-Smtp-Source: APXvYqz5o52E88f0jIRgzlTBYcftTP9a6vzhxvfuOSWu42Tgt4yPhyIirW2xi948NDsJcJHMStf+3A==
+X-Received: by 2002:a17:90a:a407:: with SMTP id y7mr18979498pjp.97.1562237738664;
+        Thu, 04 Jul 2019 03:55:38 -0700 (PDT)
+Received: from localhost.localdomain (220-133-8-232.HINET-IP.hinet.net. [220.133.8.232])
+        by smtp.gmail.com with ESMTPSA id k22sm5562533pfk.157.2019.07.04.03.55.36
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Thu, 04 Jul 2019 03:55:38 -0700 (PDT)
+From:   Chris Chiu <chiu@endlessm.com>
+To:     jes.sorensen@gmail.com, kvalo@codeaurora.org, davem@davemloft.net
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux@endlessm.com
+Subject: [PATCH v2] rtl8xxxu: Fix wifi low signal strength issue of RTL8723BU
+Date:   Thu,  4 Jul 2019 18:55:28 +0800
+Message-Id: <20190704105528.74028-1-chiu@endlessm.com>
+X-Mailer: git-send-email 2.20.1 (Apple Git-117)
 MIME-Version: 1.0
-In-Reply-To: <CAF=yD-+wHzfP6QWJzc=num_VaFvN3RYXV-c3+-VY8EjS87WEiA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03-07-19 18:07, Willem de Bruijn wrote:
+The WiFi tx power of RTL8723BU is extremely low after booting. So
+the WiFi scan gives very limited AP list and it always fails to
+connect to the selected AP. This module only supports 1x1 antenna
+and the antenna is switched to bluetooth due to some incorrect
+register settings.
 
-> On Wed, Jul 3, 2019 at 7:08 AM Frank de Brabander <debrabander@gmail.com> wrote:
->> In commit 5cd8d46e a fix was applied for data corruption in
->> tpacket_snd. A selftest was added in commit 358be656 which
->> validates this fix.
->>
->> Unfortunately this bug still persists, although since this fix less
->> likely to trigger. This bug was initially observed using a PACKET_MMAP
->> application, but can also be seen by tweaking the kernel selftest.
->>
->> By tweaking the selftest txring_overwrite.c to run
->> as an infinite loop, the data corruption will still trigger. It
->> seems to occur faster by generating interrupts (e.g. by plugging
->> in USB devices). Tested with kernel version 5.2-RC7.
->>
->> Cause for this bug is still unclear.
-> The cause of the original bug is well understood.
->
-> The issue you report I expect is due to background traffic. And more
-> about the test than the kernel implementation.
->
-> Can you reproduce the issue when running the modified test in a
-> network namespace (./in_netns.sh ./txring_overwrite)?
->
-> I observe the issue report outside that, but not inside. That implies
-> that what we're observing is random background traffic. The modified
-> test then drops the unexpected packet because it mismatches on length.
-> As a result the next read (the test always sends two packets, then
-> reads both) will report a data mismatch. Because it is reading the
-> first test packet, but expecting the second. Output with a bit more
-> data:
->
-> count: 200
-> count: 300
-> count: 400
-> count: 500
->   read: 90B != 100B
-> wrong pattern: 0x61 != 0x62
-> count: 600
-> count: 700
-> count: 800
->   read: 90B != 100B
-> wrong pattern: 0x61 != 0x62
-> count: 900
->   read: 90B != 100B
-> wrong pattern: 0x61 != 0x62
->
-> Notice the clear pattern.
->
-> This does not trigger inside a network namespace, which is how
-> kselftest invokes txring_override (from run_afpackettests).
-I'm also able to reproduce the issue inside a network namespace.
+Compare with the vendor driver https://github.com/lwfinger/rtl8723bu,
+we realized that the 8723bu's enable_rf() does the same thing as
+rtw_btcoex_HAL_Initialize() in vendor driver. And it by default
+sets the antenna path to BTC_ANT_PATH_BT which we verified it's
+the cause of the wifi weak tx power. The vendor driver will set
+the antenna path to BTC_ANT_PATH_PTA in the consequent btcoexist
+mechanism, by the function halbtc8723b1ant_PsTdma.
 
-I've added the extra logging, as seen in your output, for
-mismatches on length. Running the test without ./in_netns.sh
-is indeed as you describe:
+This commit hand over the antenna control to PTA(Packet Traffic
+Arbitration), which compares the weight of bluetooth/wifi traffic
+then determine whether to continue current wifi traffic or not.
+After PTA take control, The wifi signal will be back to normal and
+the bluetooth scan can also work at the same time. However, the
+btcoexist still needs to be handled under different circumstances.
+If there's a BT connection established, the wifi still fails to
+connect until BT disconnected.
 
-read error: 66 != 100
-wrong pattern: 0x61 != 0x62
-read error: 66 != 100
-wrong pattern: 0x61 != 0x62
-read error: 74 != 100
-read error: 66 != 100
-wrong pattern: 0x53 != 0x61
-wrong pattern: 0x53 != 0x62
-read error: 66 != 100
-read error: 66 != 100
-read error: 66 != 100
-wrong pattern: 0x61 != 0x62
-read error: 95 != 100
-read error: 95 != 100
-wrong pattern: 0xffffffbe != 0x61
-wrong pattern: 0x61 != 0x62
-read error: 66 != 100
+Signed-off-by: Chris Chiu <chiu@endlessm.com>
+---
 
-But even when running the test with ./in_netns.sh it shows
-"wrong pattern", this time without length mismatches:
 
-wrong pattern: 0x62 != 0x61
-wrong pattern: 0x62 != 0x61
-wrong pattern: 0x62 != 0x61
-wrong pattern: 0x62 != 0x61
-wrong pattern: 0x62 != 0x61
-wrong pattern: 0x62 != 0x61
-wrong pattern: 0x62 != 0x61
-wrong pattern: 0x62 != 0x61
-wrong pattern: 0x62 != 0x61
-wrong pattern: 0x62 != 0x61
+Note:
+ v2:
+  - Replace BIT(11) with the descriptive definition
+  - Meaningful comment for the REG_S0S1_PATH_SWITCH setting
 
-As already mentioned, it seems to trigger mainly (only ?) when
-an USB device is connected. The PC I'm testing this on has an
-USB hub with many ports and connected devices. When connecting
-this USB hub, the amount of "wrong pattern" errors that are
-shown seems to correlate to the amount of new devices
-that the kernel should detect. Connecting in a single USB device
-also triggers the error, but not on every attempt.
 
-Unfortunately have not found any other way to force the
-error to trigger. E.g. running stress-ng to generate CPU load or
-timer interrupts does not seem to have any impact.
+ drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c | 11 ++++++++---
+ drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c  |  3 ++-
+ 2 files changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
+index 3adb1d3d47ac..ceffe05bd65b 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
+@@ -1525,7 +1525,7 @@ static void rtl8723b_enable_rf(struct rtl8xxxu_priv *priv)
+ 	/*
+ 	 * WLAN action by PTA
+ 	 */
+-	rtl8xxxu_write8(priv, REG_WLAN_ACT_CONTROL_8723B, 0x04);
++	rtl8xxxu_write8(priv, REG_WLAN_ACT_CONTROL_8723B, 0x0c);
+ 
+ 	/*
+ 	 * BT select S0/S1 controlled by WiFi
+@@ -1568,9 +1568,14 @@ static void rtl8723b_enable_rf(struct rtl8xxxu_priv *priv)
+ 	rtl8xxxu_gen2_h2c_cmd(priv, &h2c, sizeof(h2c.ant_sel_rsv));
+ 
+ 	/*
+-	 * 0x280, 0x00, 0x200, 0x80 - not clear
++	 * Different settings per different antenna position.
++	 *      Antenna Position:   | Normal   Inverse
++	 * --------------------------------------------------
++	 * Antenna switch to BT:    |  0x280,   0x00
++	 * Antenna switch to WiFi:  |  0x0,     0x280
++	 * Antenna switch to PTA:   |  0x200,   0x80
+ 	 */
+-	rtl8xxxu_write32(priv, REG_S0S1_PATH_SWITCH, 0x00);
++	rtl8xxxu_write32(priv, REG_S0S1_PATH_SWITCH, 0x80);
+ 
+ 	/*
+ 	 * Software control, antenna at WiFi side
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+index 8136e268b4e6..c6c41fb962ff 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+@@ -3891,12 +3891,13 @@ static int rtl8xxxu_init_device(struct ieee80211_hw *hw)
+ 
+ 	/* Check if MAC is already powered on */
+ 	val8 = rtl8xxxu_read8(priv, REG_CR);
++	val16 = rtl8xxxu_read16(priv, REG_SYS_CLKR);
+ 
+ 	/*
+ 	 * Fix 92DU-VC S3 hang with the reason is that secondary mac is not
+ 	 * initialized. First MAC returns 0xea, second MAC returns 0x00
+ 	 */
+-	if (val8 == 0xea)
++	if (val8 == 0xea || !(val16 & SYS_CLK_MAC_CLK_ENABLE))
+ 		macpower = false;
+ 	else
+ 		macpower = true;
+-- 
+2.11.0
+
