@@ -2,130 +2,315 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 65C235F84B
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 14:39:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 647CC5F857
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 14:42:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727723AbfGDMhg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 08:37:36 -0400
-Received: from mail-eopbgr140079.outbound.protection.outlook.com ([40.107.14.79]:24622
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727632AbfGDMhg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Jul 2019 08:37:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mb0G0kYWIjDFLIa52A1USNtVHtoYh7p6DHJE8NesGSk=;
- b=DdauWu4LnWxxDgNXuUmg1BgVlx5iD5PxxBuJgNHgbZJ4xz++dduYZfR5IXIlMOcyQrRbdcOCJ7BFOVGHE446sKxAihFeYq2s0ocrL8h6LERGqZfyfhqNcWgCHKw9D+55HqUbDChEOFL0/9N8t9O1v6e02mL4Ozeigo7AsVb5Tk0=
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (10.171.182.144) by
- VI1PR05MB4127.eurprd05.prod.outlook.com (10.171.182.142) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2032.20; Thu, 4 Jul 2019 12:37:33 +0000
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::f5d8:df9:731:682e]) by VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::f5d8:df9:731:682e%5]) with mapi id 15.20.2032.019; Thu, 4 Jul 2019
- 12:37:33 +0000
-From:   Jason Gunthorpe <jgg@mellanox.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "poswald@suse.com" <poswald@suse.com>,
-        "mustafa.ismail@intel.com" <mustafa.ismail@intel.com>,
-        "shiraz.saleem@intel.com" <shiraz.saleem@intel.com>,
-        Dave Ertman <david.m.ertman@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>
-Subject: Re: [net-next 1/3] ice: Initialize and register platform device to
- provide RDMA
-Thread-Topic: [net-next 1/3] ice: Initialize and register platform device to
- provide RDMA
-Thread-Index: AQHVMg3rTq5orI7nM0W8xdFRWAzlRqa6YIUAgAADtwCAAAIkgA==
-Date:   Thu, 4 Jul 2019 12:37:33 +0000
-Message-ID: <20190704123729.GF3401@mellanox.com>
-References: <20190704021252.15534-1-jeffrey.t.kirsher@intel.com>
- <20190704021252.15534-2-jeffrey.t.kirsher@intel.com>
- <20190704121632.GB3401@mellanox.com> <20190704122950.GA6007@kroah.com>
-In-Reply-To: <20190704122950.GA6007@kroah.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MN2PR10CA0011.namprd10.prod.outlook.com
- (2603:10b6:208:120::24) To VI1PR05MB4141.eurprd05.prod.outlook.com
- (2603:10a6:803:4d::16)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=jgg@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [156.34.55.100]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b3d41838-0718-4b97-cd6d-08d7007c62e8
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR05MB4127;
-x-ms-traffictypediagnostic: VI1PR05MB4127:
-x-microsoft-antispam-prvs: <VI1PR05MB4127F23B478A8C37A3B82410CFFA0@VI1PR05MB4127.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0088C92887
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(346002)(366004)(376002)(396003)(136003)(189003)(199004)(446003)(7736002)(305945005)(478600001)(11346002)(5660300002)(66476007)(66556008)(64756008)(66446008)(86362001)(66946007)(486006)(476003)(8936002)(66066001)(81166006)(81156014)(8676002)(2616005)(52116002)(99286004)(76176011)(6116002)(3846002)(73956011)(54906003)(6246003)(33656002)(6916009)(6486002)(229853002)(1076003)(71200400001)(71190400001)(6512007)(316002)(14454004)(7416002)(4326008)(25786009)(6506007)(2906002)(102836004)(386003)(26005)(36756003)(6436002)(53936002)(68736007)(256004)(14444005)(186003);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4127;H:VI1PR05MB4141.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: jpgutqyNeQHwhXZsfmdvFWa9SngH9MpWsGfQNfYXlsySVph8hbEOav2xZ3L/vrpS1k18jNiKtetfVttyGIbjwmyhwPKwKbJYjGZGM3GWQZqQSWwjxhhqxFI+/80MTopyxrJPVF6kSuzUC9dOSPa86JTrtBowbyPlcodmXGePZFwFq4yEP7Z9XvtwB5+Z7sOk3u8+cBDyz+t+yuZhMPgB/RqLfFe1ah0m57DKvAEz+TJj3eMEjYJPouY/t+3CW4ghBjyTDtcBXABfFpq3c6s3yLemKRNQi9fYG/BDZg6S9aGz33m+kFoWiyI0OpjU3jwIsMCf3GAK06AwEyKiQK7TJTelWcxgzxUcOC4ugjpn3nGc33350xNo8uwEgWs1IUC2JJSjpr4yuoAFjad4WyQW/+53tdz/ADbKZ9tkt4j90gw=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <09E1FD57259BC54B92285BA15701C14E@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1727720AbfGDMl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 08:41:57 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:56538 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727117AbfGDMl4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Jul 2019 08:41:56 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id CED41308FC20;
+        Thu,  4 Jul 2019 12:41:53 +0000 (UTC)
+Received: from carbon (ovpn-200-17.brq.redhat.com [10.40.200.17])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C72E218666;
+        Thu,  4 Jul 2019 12:41:45 +0000 (UTC)
+Date:   Thu, 4 Jul 2019 14:41:44 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Cc:     grygorii.strashko@ti.com, davem@davemloft.net, ast@kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        xdp-newbies@vger.kernel.org, ilias.apalodimas@linaro.org,
+        netdev@vger.kernel.org, daniel@iogearbox.net,
+        jakub.kicinski@netronome.com, john.fastabend@gmail.com,
+        brouer@redhat.com
+Subject: Re: [PATCH v6 net-next 1/5] xdp: allow same allocator usage
+Message-ID: <20190704144144.5edd18eb@carbon>
+In-Reply-To: <20190704102239.GA3406@khorivan>
+References: <20190703101903.8411-1-ivan.khoronzhuk@linaro.org>
+        <20190703101903.8411-2-ivan.khoronzhuk@linaro.org>
+        <20190703194013.02842e42@carbon>
+        <20190704102239.GA3406@khorivan>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b3d41838-0718-4b97-cd6d-08d7007c62e8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jul 2019 12:37:33.4281
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: jgg@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4127
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.43]); Thu, 04 Jul 2019 12:41:56 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 04, 2019 at 02:29:50PM +0200, Greg KH wrote:
-> On Thu, Jul 04, 2019 at 12:16:41PM +0000, Jason Gunthorpe wrote:
-> > On Wed, Jul 03, 2019 at 07:12:50PM -0700, Jeff Kirsher wrote:
-> > > From: Tony Nguyen <anthony.l.nguyen@intel.com>
-> > >=20
-> > > The RDMA block does not advertise on the PCI bus or any other bus.
-> > > Thus the ice driver needs to provide access to the RDMA hardware bloc=
-k
-> > > via a virtual bus; utilize the platform bus to provide this access.
-> > >=20
-> > > This patch initializes the driver to support RDMA as well as creates
-> > > and registers a platform device for the RDMA driver to register to. A=
-t
-> > > this point the driver is fully initialized to register a platform
-> > > driver, however, can not yet register as the ops have not been
-> > > implemented.
-> >=20
-> > I think you need Greg's ack on all this driver stuff - particularly
-> > that a platform_device is OK.
->=20
-> A platform_device is almost NEVER ok.
->=20
-> Don't abuse it, make a real device on a real bus.  If you don't have a
-> real bus and just need to create a device to hang other things off of,
-> then use the virtual one, that's what it is there for.
+On Thu, 4 Jul 2019 13:22:40 +0300
+Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
 
-Ideally I'd like to see all the RDMA drivers that connect to ethernet
-drivers use some similar scheme.
+> On Wed, Jul 03, 2019 at 07:40:13PM +0200, Jesper Dangaard Brouer wrote:
+> >On Wed,  3 Jul 2019 13:18:59 +0300
+> >Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
+> >  
+> >> First of all, it is an absolute requirement that each RX-queue have
+> >> their own page_pool object/allocator. And this change is intendant
+> >> to handle special case, where a single RX-queue can receive packets
+> >> from two different net_devices.
+> >>
+> >> In order to protect against using same allocator for 2 different rx
+> >> queues, add queue_index to xdp_mem_allocator to catch the obvious
+> >> mistake where queue_index mismatch, as proposed by Jesper Dangaard
+> >> Brouer.
+> >>
+> >> Adding this on xdp allocator level allows drivers with such dependency
+> >> change the allocators w/o modifications.
+> >>
+> >> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+> >> ---
+> >>  include/net/xdp_priv.h |  2 ++
+> >>  net/core/xdp.c         | 55 ++++++++++++++++++++++++++++++++++++++++++
+> >>  2 files changed, 57 insertions(+)
+> >>
+> >> diff --git a/include/net/xdp_priv.h b/include/net/xdp_priv.h
+> >> index 6a8cba6ea79a..9858a4057842 100644
+> >> --- a/include/net/xdp_priv.h
+> >> +++ b/include/net/xdp_priv.h
+> >> @@ -18,6 +18,8 @@ struct xdp_mem_allocator {
+> >>  	struct rcu_head rcu;
+> >>  	struct delayed_work defer_wq;
+> >>  	unsigned long defer_warn;
+> >> +	unsigned long refcnt;
+> >> +	u32 queue_index;
+> >>  };  
+> >
+> >I don't like this approach, because I think we need to extend struct
+> >xdp_mem_allocator with a net_device pointer, for doing dev_hold(), to
+> >correctly handle lifetime issues. (As I tried to explain previously).
+> >This will be much harder after this change, which is why I proposed the
+> >other patch.  
+> My concern comes not from zero also.
+> It's partly continuation of not answered questions from here:
+> https://lwn.net/ml/netdev/20190625122822.GC6485@khorivan/
+> 
+> "For me it's important to know only if it means that alloc.count is
+> freed at first call of __mem_id_disconnect() while shutdown.
+> The workqueue for the rest is connected only with ring cache protected
+> by ring lock and not supposed that alloc.count can be changed while
+> workqueue tries to shutdonwn the pool."
 
-Should it be some generic virtual bus?
+Yes.  The alloc.count is only freed on first call.  I considered
+changing the shutdown API, to have two shutdown calls, where the call
+used from the work-queue will not have the loop emptying alloc.count,
+but instead have a WARN_ON(alloc.count), as it MUST be empty (once is
+code running from work-queue).
 
-This is for a PCI device that plugs into multiple subsystems in the
-kernel, ie it has net driver functionality, rdma functionality, some
-even have SCSI functionality
+> So patch you propose to leave works only because of luck, because fast
+> cache is cleared before workqueue is scheduled and no races between two
+> workqueues for fast cache later. I'm not really against this patch, but
+> I have to try smth better.
 
-Jason
+It is not "luck".  It does the correct thing as we never enter the
+while loop in __page_pool_request_shutdown() from a work-queue, but it
+is not obvious from the code.  The not-so-nice thing is that two
+work-queue shutdowns will be racing with each-other, in the multi
+netdev use-case, but access to the ptr_ring is safe/locked.
+
+
+> So, the patch is fine only because of specific of page_pool implementation.
+> I'm not sure that in future similar workqueue completion will be lucky for
+> another allocator (it easily can happen due to xdp frame can live longer
+> than an allocator). Similar problem can happen with other drivers having
+> same allocator, that can use zca (potentially can use smth similar),
+> af_xdp api allows to switch on it or some other allocators....
+> 
+> But not the essence. The concern about adding smth new to the allocator
+> later, like net device, can be solved with a little modification to the patch,
+> (despite here can be several more approaches) for instance, like this:
+> (by fact it's still the same, when mem_alloc instance per each register call
+> but with same void *allocator)
+
+Okay, below you have demonstrated that it is possible to extend later,
+although it will make the code (IMHO) "ugly" and more complicated...
+So, I guess, I cannot object to this not being extensible.
+
+ 
+> diff --git a/include/net/xdp_priv.h b/include/net/xdp_priv.h
+> index 6a8cba6ea79a..c7ad0f41e1b0 100644
+> --- a/include/net/xdp_priv.h
+> +++ b/include/net/xdp_priv.h
+> @@ -18,6 +18,8 @@ struct xdp_mem_allocator {
+>  	struct rcu_head rcu;
+>  	struct delayed_work defer_wq;
+>  	unsigned long defer_warn;
+> +	unsigned long *refcnt;
+> +	u32 queue_index;
+>  };
+>  
+>  #endif /* __LINUX_NET_XDP_PRIV_H__ */
+> diff --git a/net/core/xdp.c b/net/core/xdp.c
+> index 829377cc83db..a44e3e4c8307 100644
+> --- a/net/core/xdp.c
+> +++ b/net/core/xdp.c
+> @@ -64,9 +64,37 @@ static const struct rhashtable_params mem_id_rht_params = {
+>  	.obj_cmpfn = xdp_mem_id_cmp,
+>  };
+>  
+> +static struct xdp_mem_allocator *xdp_allocator_find(void *allocator)
+> +{
+> +	struct xdp_mem_allocator *xae, *xa = NULL;
+> +	struct rhashtable_iter iter;
+> +
+> +	if (!allocator)
+> +		return xa;
+> +
+> +	rhashtable_walk_enter(mem_id_ht, &iter);
+> +	do {
+> +		rhashtable_walk_start(&iter);
+> +
+> +		while ((xae = rhashtable_walk_next(&iter)) && !IS_ERR(xae)) {
+> +			if (xae->allocator == allocator) {
+> +				xa = xae;
+> +				break;
+> +			}
+> +		}
+> +
+> +		rhashtable_walk_stop(&iter);
+> +
+> +	} while (xae == ERR_PTR(-EAGAIN));
+> +	rhashtable_walk_exit(&iter);
+> +
+> +	return xa;
+> +}
+> +
+>  static void __xdp_mem_allocator_rcu_free(struct rcu_head *rcu)
+>  {
+>  	struct xdp_mem_allocator *xa;
+> +	void *allocator;
+>  
+>  	xa = container_of(rcu, struct xdp_mem_allocator, rcu);
+>  
+> @@ -74,15 +102,27 @@ static void __xdp_mem_allocator_rcu_free(struct rcu_head *rcu)
+>  	if (xa->mem.type == MEM_TYPE_PAGE_POOL)
+>  		page_pool_free(xa->page_pool);
+>  
+> -	/* Allow this ID to be reused */
+> -	ida_simple_remove(&mem_id_pool, xa->mem.id);
+> +	kfree(xa->refcnt);
+> +	allocator = xa->allocator;
+> +	while (xa) {
+> +		xa = xdp_allocator_find(allocator);
+> +		if (!xa)
+> +			break;
+> +
+> +		mutex_lock(&mem_id_lock);
+> +		rhashtable_remove_fast(mem_id_ht, &xa->node, mem_id_rht_params);
+> +		mutex_unlock(&mem_id_lock);
+>  
+> -	/* Poison memory */
+> -	xa->mem.id = 0xFFFF;
+> -	xa->mem.type = 0xF0F0;
+> -	xa->allocator = (void *)0xDEAD9001;
+> +		/* Allow this ID to be reused */
+> +		ida_simple_remove(&mem_id_pool, xa->mem.id);
+>  
+> -	kfree(xa);
+> +		/* Poison memory */
+> +		xa->mem.id = 0xFFFF;
+> +		xa->mem.type = 0xF0F0;
+> +		xa->allocator = (void *)0xDEAD9001;
+> +
+> +		kfree(xa);
+> +	}
+>  }
+>  
+>  static bool __mem_id_disconnect(int id, bool force)
+> @@ -98,6 +138,18 @@ static bool __mem_id_disconnect(int id, bool force)
+>  		WARN(1, "Request remove non-existing id(%d), driver bug?", id);
+>  		return true;
+>  	}
+> +
+> +	/* to avoid calling hash lookup twice, decrement refcnt here till it
+> +	 * reaches zero, then it can be called from workqueue afterwards.
+> +	 */
+> +	if (*xa->refcnt)
+> +		(*xa->refcnt)--;
+> +
+> +	if (*xa->refcnt) {
+> +		mutex_unlock(&mem_id_lock);
+> +		return true;
+> +	}
+> +
+>  	xa->disconnect_cnt++;
+>  
+>  	/* Detects in-flight packet-pages for page_pool */
+> @@ -106,8 +158,7 @@ static bool __mem_id_disconnect(int id, bool force)
+>  
+>  	trace_mem_disconnect(xa, safe_to_remove, force);
+>  
+> -	if ((safe_to_remove || force) &&
+> -	    !rhashtable_remove_fast(mem_id_ht, &xa->node, mem_id_rht_params))
+> +	if (safe_to_remove || force)
+>  		call_rcu(&xa->rcu, __xdp_mem_allocator_rcu_free);
+>  
+>  	mutex_unlock(&mem_id_lock);
+> @@ -316,6 +367,7 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
+>  			       enum xdp_mem_type type, void *allocator)
+>  {
+>  	struct xdp_mem_allocator *xdp_alloc;
+> +	unsigned long *refcnt = NULL;
+>  	gfp_t gfp = GFP_KERNEL;
+>  	int id, errno, ret;
+>  	void *ptr;
+> @@ -347,6 +399,19 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
+>  		}
+>  	}
+>  
+> +	mutex_lock(&mem_id_lock);
+> +	xdp_alloc = xdp_allocator_find(allocator);
+> +	if (xdp_alloc) {
+> +		/* One allocator per queue is supposed only */
+> +		if (xdp_alloc->queue_index != xdp_rxq->queue_index) {
+> +			mutex_unlock(&mem_id_lock);
+> +			return -EINVAL;
+> +		}
+> +
+> +		refcnt = xdp_alloc->refcnt;
+> +	}
+> +	mutex_unlock(&mem_id_lock);
+> +
+>  	xdp_alloc = kzalloc(sizeof(*xdp_alloc), gfp);
+>  	if (!xdp_alloc)
+>  		return -ENOMEM;
+> @@ -360,6 +425,7 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
+>  	xdp_rxq->mem.id = id;
+>  	xdp_alloc->mem  = xdp_rxq->mem;
+>  	xdp_alloc->allocator = allocator;
+> +	xdp_alloc->queue_index = xdp_rxq->queue_index;
+>  
+>  	/* Insert allocator into ID lookup table */
+>  	ptr = rhashtable_insert_slow(mem_id_ht, &id, &xdp_alloc->node);
+> @@ -370,6 +436,16 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
+>  		goto err;
+>  	}
+>  
+> +	if (!refcnt) {
+> +		refcnt = kzalloc(sizeof(*xdp_alloc->refcnt), gfp);
+> +		if (!refcnt) {
+> +			errno = -ENOMEM;
+> +			goto err;
+> +		}
+> +	}
+> +
+> +	(*refcnt)++;
+> +	xdp_alloc->refcnt = refcnt;
+>  	mutex_unlock(&mem_id_lock);
+>  
+>  	trace_mem_connect(xdp_alloc, xdp_rxq);
+> 
+ 
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
