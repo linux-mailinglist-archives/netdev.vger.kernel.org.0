@@ -2,117 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 909B05FDCA
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 22:30:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D01045FDCD
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 22:42:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727074AbfGDUae (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 16:30:34 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:46621 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726743AbfGDUae (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 16:30:34 -0400
-Received: by mail-lj1-f195.google.com with SMTP id v24so7164783ljg.13
-        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 13:30:33 -0700 (PDT)
+        id S1727113AbfGDUmU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 16:42:20 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:35505 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726844AbfGDUmT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 16:42:19 -0400
+Received: by mail-pl1-f193.google.com with SMTP id w24so3540516plp.2
+        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 13:42:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dev-mellanox-co-il.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hDvNGTfpzti9ZMevfZxr+UUXUVHDJdSxhTZfmsWYqHo=;
-        b=YXrdw14IN06jCfqJuiPtx6MNvsbgBbkbmODggNSGKWmam4qcQNQseuibRExwBcmYDn
-         n4kEZbNr29QiFYWuH8YF4i92HEhNHTVoqm0w3wz7BIsf+MCW5F8tBx1jnda9qSsXE3re
-         hO+FXQRWsxqNUx5EJyz+4GqFaak9jqc0G7ci6IVlqCmRTGV2Ds0Iye5/P4s+tKWUpuN3
-         ZZtNzgIvuoD+1aH6dlnUQL7cvHpGXr0hA+53GJW6w6+zGsAfxabTejr+UcL5Jjh+umE2
-         LjmPjZd3fyAiycgS2KBd+qK+WBhZ03vvPeuQVnOmU+54yyckh8s/+lrAwxeQWJN/bvVE
-         UEKw==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=JtQVAQz6NVyH2NItSA5pmHp1/PwtbtiVXqtTWIa5Jvg=;
+        b=vHe0b/q666zEE3c2nrbReFiDm6+Zdp14v0xC5Z1hgqUaPIpDuevVWGaM2wD80Ct6UO
+         BHnbptgVI9NWagXJ4QkkZp8zMCfFbiai/kJQHlDFjiSFD3wtlAcCRHc4AJaUXmwCBjui
+         bTeAijyVOMy7Y8QMGa5OV1x2zh5k46YvTVdFAgxzazgPo+Mn+Prp+1wwHdciPILzZQMZ
+         QIjP9ZISG6GxTJr4w6yQ0iqfxxqhPn4kVMvMXPr3QDQmpj8bgYMPNMyeFg+PHnR23LbC
+         L1pngCZWB4+2fkvdHKyNRQehS56M6Moe4UB7a7YmHjcRU1UypYjU7XnRValIP9GnaY9h
+         YpSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hDvNGTfpzti9ZMevfZxr+UUXUVHDJdSxhTZfmsWYqHo=;
-        b=d6XfqdghIqfYGIlYq6WHRf6jUg395rHj6eQuyli3zqbA74jQQBC2Q5Ncjxi1P6XRQS
-         ys2iVlfDGxbvpBAfPxkKKe8oBog108aQaN7RgMTy0MmZJ3uyLA8BBk2RJkoC6jO0akv3
-         2Y93+vMmfWQat+0upiRZnUuXMLD69ln1KJaqSSudMgI8nSfiitmwrP9+kiTgnZujjygi
-         H9hVVUip47dUNoSy26gojFfvBKn6OTukKKDZIG+V9aFswTqPkyzsUkiXiXHIJtyoOBXY
-         7w4vNtOlcsTK22VPjYFoPFfH6cU1R3eKhbHkoOcNosBrc9GYix0kyeGyZ+r7pG+543oC
-         1mTQ==
-X-Gm-Message-State: APjAAAVdUqw2OdxfNaKanbjOX+xCLOKVb0puFF7bnRcbdMx2Iav2npNO
-        M+jOu0wy05ZZJkmQD1c7epukMYkOeRhSmLBTY35jJA==
-X-Google-Smtp-Source: APXvYqxUK4CXo1PSxZL0K6TwnIt+O4gKyM24+nKJY/xOhFN0YFBbgoi2kUkZs4sv0uW6KkhridDbcJDYKzl6r6KkDqQ=
-X-Received: by 2002:a2e:2b8f:: with SMTP id r15mr32732ljr.210.1562272232034;
- Thu, 04 Jul 2019 13:30:32 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=JtQVAQz6NVyH2NItSA5pmHp1/PwtbtiVXqtTWIa5Jvg=;
+        b=RkZYchuVCNw2+TwQ91t7WSlUMN+NecvmENV4cuZdVSD8N+sy6qDp5RL+Jp1gS45aAg
+         rvURDi9y5ju+/7Rn94S3cDeS3atLvtUhDq4grGeIdV8t/JgY7dVzfd97HxK1GcnFcTXa
+         2VmVCyt8E3A5yLheLa+aTq3lLbs2pVZYTmOUnhi4GkEPouAMn6LS0hzuQvprqSt+tnID
+         qj4p5Q72z9m34GIP+EDnX9kh0HIATGaUyAaJH47JzFwC5xpYMyOvw+bFw/n6iDO6JYDT
+         tyscZBNiP1/nm8BwuwkKeihn6UK74wQnSPfpsM8DBgt9DvC6lmg1+w3uo8ymKq4d+ENU
+         wyjA==
+X-Gm-Message-State: APjAAAWWNQgyYhDaKD2BzUlev21JvoMrp6w5oyLlsg3Ks0uFw8abTf7M
+        K4eR5tcth1sPXrlGUOuH0xKilA==
+X-Google-Smtp-Source: APXvYqzQ8AsnCq4ngmBo7O1aaeOK29eAo6/X+aRaJQgUmDdb1YMpWAJ987/eMo0Agxx6mFiFUrhkTQ==
+X-Received: by 2002:a17:902:e211:: with SMTP id ce17mr181011plb.193.1562272938912;
+        Thu, 04 Jul 2019 13:42:18 -0700 (PDT)
+Received: from cakuba.netronome.com ([2601:646:8e00:e50::3])
+        by smtp.gmail.com with ESMTPSA id h26sm13468206pfq.64.2019.07.04.13.42.15
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 04 Jul 2019 13:42:18 -0700 (PDT)
+Date:   Thu, 4 Jul 2019 13:42:10 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Michael Petlan <mpetlan@redhat.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>
+Subject: Re: [PATCH] tools bpftool: Fix json dump crash on powerpc
+Message-ID: <20190704134210.17b8407c@cakuba.netronome.com>
+In-Reply-To: <20190704085856.17502-1-jolsa@kernel.org>
+References: <20190704085856.17502-1-jolsa@kernel.org>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <20190704181235.8966-1-saeedm@mellanox.com> <20190704181235.8966-15-saeedm@mellanox.com>
- <20190704131237.239bfa56@cakuba.netronome.com>
-In-Reply-To: <20190704131237.239bfa56@cakuba.netronome.com>
-From:   Saeed Mahameed <saeedm@dev.mellanox.co.il>
-Date:   Thu, 4 Jul 2019 16:30:21 -0400
-Message-ID: <CALzJLG_qF=Yv58_EpV0bRm8_=Kn2AtsOywDDMjhwxSUOW44EAQ@mail.gmail.com>
-Subject: Re: [net-next 14/14] net/mlx5e: Add kTLS TX HW offload support
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        Boris Pismenny <borisp@mellanox.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 4, 2019 at 4:12 PM Jakub Kicinski
-<jakub.kicinski@netronome.com> wrote:
->
-> On Thu, 4 Jul 2019 18:16:15 +0000, Saeed Mahameed wrote:
-> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-> > index 483d321d2151..6854f132d505 100644
-> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-> > @@ -50,6 +50,15 @@ static const struct counter_desc sw_stats_desc[] = {
-> >  #ifdef CONFIG_MLX5_EN_TLS
-> >       { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_tls_ooo) },
-> >       { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_tls_resync_bytes) },
-> > +
-> > +     { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_ooo) },
->
-> Why do you call this stat tx_ktls_ooo, and not tx_tls_ooo (extra 'k')?
->
-> For nfp I used the stats' names from mlx5 FPGA to make sure we are all
-> consistent.  I've added them to the tls-offload.rst doc and Boris has
-> reviewed it.
->
->  * ``rx_tls_decrypted`` - number of successfully decrypted TLS segments
->  * ``tx_tls_encrypted`` - number of in-order TLS segments passed to device
->    for encryption
->  * ``tx_tls_ooo`` - number of TX packets which were part of a TLS stream
->    but did not arrive in the expected order
->  * ``tx_tls_drop_no_sync_data`` - number of TX packets dropped because
->    they arrived out of order and associated record could not be found
->
-> Why can't you use the same names for the stats as you used for your mlx5
-> FPGA?
->
+On Thu,  4 Jul 2019 10:58:56 +0200, Jiri Olsa wrote:
+> Michael reported crash with by bpf program in json mode on powerpc:
+> 
+>   # bpftool prog -p dump jited id 14
+>   [{
+>         "name": "0xd00000000a9aa760",
+>         "insns": [{
+>                 "pc": "0x0",
+>                 "operation": "nop",
+>                 "operands": [null
+>                 ]
+>             },{
+>                 "pc": "0x4",
+>                 "operation": "nop",
+>                 "operands": [null
+>                 ]
+>             },{
+>                 "pc": "0x8",
+>                 "operation": "mflr",
+>   Segmentation fault (core dumped)
+> 
+> The code is assuming char pointers in format, which is not always
+> true at least for powerpc. Fixing this by dumping the whole string
+> into buffer based on its format.
+> 
+> Please note that libopcodes code does not check return values from
+> fprintf callback, so there's no point to return error in case of
+> allocation failure.
 
-Actually i agree here, I asked tariq to have FPGA TLS and new mlx5
-embedded TLS  mutually exclusive.
-so there shouldn't be any reason to have new counter names for non FPGA tls.
+Well, it doesn't check it today, it may perhaps do it in the future?
+Let's flip the question - since it doesn't check it today, why not
+propagate the error? :)  We should stay close to how fprintf would
+behave, IMHO.
 
-> > +     { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_ooo_drop_no_sync_data) },
-> > +     { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_ooo_drop_bypass_req) },
-> > +     { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_ooo_dump_bytes) },
-> > +     { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_ooo_dump_packets) },
-> > +     { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_enc_packets) },
-> > +     { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_enc_bytes) },
-> > +     { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_ctx) },
-> >  #endif
-> >
-> >       { MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_lro_packets) },
->
-> Dave, please don't apply this, I will review in depth once I get
-> through the earlier 200 emails ;)
+Fixes: 107f041212c1 ("tools: bpftool: add JSON output for `bpftool prog dump jited *` command")
 
-Jakub can you please expedite ?
-Dave if it is ok with you i will re-spin and push a  new pull request
-with  mlx5-next dependencies + 2 Devlink fw version patches,
-and independently, i will post the TLS series for Jakub to review ?
+> Reported-by: Michael Petlan <mpetlan@redhat.com>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
