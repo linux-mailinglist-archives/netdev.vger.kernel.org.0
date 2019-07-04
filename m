@@ -2,172 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DCF985F966
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 15:53:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7545A5F967
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 15:53:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727342AbfGDNxg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727351AbfGDNxg (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 4 Jul 2019 09:53:36 -0400
-Received: from mail-eopbgr70085.outbound.protection.outlook.com ([40.107.7.85]:41302
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727232AbfGDNxf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Jul 2019 09:53:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ixcefz1xxDQz3FUtsw4JKoTZIzOw57ZF6do0PWrAzOE=;
- b=dDlahK03oZrkHvQSxj/i9F3W1ywsLfpFWN5L/5fHK3Um7g2KneYI3YWnOyzD6msDs6Irg10os9ZVtlSiQJuzfELiHnza+1xisMge2C93Wws3C+OsjjahYiX5ZcQJH0QCDY27qI+PHRKLVGjApSQhgoFBzVer1bqA43bRysf4jYw=
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (10.171.182.144) by
- VI1PR05MB6126.eurprd05.prod.outlook.com (20.178.205.24) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2032.18; Thu, 4 Jul 2019 13:53:30 +0000
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::f5d8:df9:731:682e]) by VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::f5d8:df9:731:682e%5]) with mapi id 15.20.2032.019; Thu, 4 Jul 2019
- 13:53:30 +0000
-From:   Jason Gunthorpe <jgg@mellanox.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "poswald@suse.com" <poswald@suse.com>,
-        "mustafa.ismail@intel.com" <mustafa.ismail@intel.com>,
-        "shiraz.saleem@intel.com" <shiraz.saleem@intel.com>,
-        Dave Ertman <david.m.ertman@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>
-Subject: Re: [net-next 1/3] ice: Initialize and register platform device to
- provide RDMA
-Thread-Topic: [net-next 1/3] ice: Initialize and register platform device to
- provide RDMA
-Thread-Index: AQHVMg3rTq5orI7nM0W8xdFRWAzlRqa6YIUAgAADtwCAAAIkgIAAAXuAgAABkQCAABAnAIAAAgUA
-Date:   Thu, 4 Jul 2019 13:53:30 +0000
-Message-ID: <20190704135326.GO3401@mellanox.com>
-References: <20190704021252.15534-1-jeffrey.t.kirsher@intel.com>
- <20190704021252.15534-2-jeffrey.t.kirsher@intel.com>
- <20190704121632.GB3401@mellanox.com> <20190704122950.GA6007@kroah.com>
- <20190704123729.GF3401@mellanox.com> <20190704124247.GA6807@kroah.com>
- <20190704124824.GK3401@mellanox.com> <20190704134612.GB10963@kroah.com>
-In-Reply-To: <20190704134612.GB10963@kroah.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: BL0PR0102CA0031.prod.exchangelabs.com
- (2603:10b6:207:18::44) To VI1PR05MB4141.eurprd05.prod.outlook.com
- (2603:10a6:803:4d::16)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=jgg@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [156.34.55.100]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 31ba23d9-8bbe-4333-c372-08d70086ff30
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR05MB6126;
-x-ms-traffictypediagnostic: VI1PR05MB6126:
-x-microsoft-antispam-prvs: <VI1PR05MB6126A2022E706B4F792C3F3FCFFA0@VI1PR05MB6126.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 0088C92887
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(396003)(366004)(346002)(39860400002)(376002)(189003)(199004)(229853002)(25786009)(66066001)(7416002)(8676002)(102836004)(33656002)(71200400001)(71190400001)(81166006)(8936002)(81156014)(14444005)(5024004)(305945005)(6436002)(86362001)(53936002)(256004)(14454004)(6116002)(3846002)(76176011)(7736002)(2906002)(54906003)(68736007)(478600001)(1076003)(316002)(26005)(6246003)(446003)(5660300002)(6512007)(66946007)(476003)(186003)(6486002)(2616005)(73956011)(52116002)(11346002)(66556008)(486006)(66476007)(64756008)(66446008)(36756003)(386003)(4326008)(6916009)(6506007)(99286004);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB6126;H:VI1PR05MB4141.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: HwzUJy0BnleITRK6bQVlw3pmh4T9XYWE5qTZ4vxqlQHLNhCHyAbwY4BR3Bh6qHqmFAK8OGjiA77NQM2oeLVx1V4DlVd8CfXQ505rakJ4S3QszqwpoASrvGqQLNOB1dZiBi91yObhoURgMjjUlWl3gDR44UacusyJTxwe7UEEWecQpdNGAXRkkebTfh0BLDthNlWhx9/AlYgd9pFDt2sE8yc5gLFUodc1ZOK4TDNhwA7IUGbQkmIEpTasTcA/7R+yW0KaIUT+TPRtMBgYI6/BibR8C1SdlXXUOTEefY79BtHKHZv6nIaomXtXab4kz/GCnvU71d/O2+Y2M0Mj/YSYh6dAYsBVLU6vGUNSPzUc8UJuzObr5+yC6MF+xqZnNIDuNKYYeAk+h1lc5F8MAdV51UWsAU1M7PfRckJON+dewCg=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <09F44F309599384583F51663347E2962@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+Received: from mail-vk1-f196.google.com ([209.85.221.196]:35653 "EHLO
+        mail-vk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727026AbfGDNxg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 09:53:36 -0400
+Received: by mail-vk1-f196.google.com with SMTP id m17so633128vkl.2
+        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 06:53:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=uYvSkcotS/gDPYpWgwke+Ro/F2OQSKZ0Zx2yUM0DaZM=;
+        b=d1F4jSTsFCLravdDMoOepHaMe3xW6uTyIvkbT22i1D/NNcRQZQh01paDpxwQMKWHYb
+         UA0JlUrAhXoken3hTG6uypyoSRRyHSPOIBjJxJnXpHPl/4PY5bhwZKzKgw3rrLC2Aluz
+         15cw/h6HZs6FOoFIJk0j7yN4n9Omv5J9yjieoajasrw/x2YP4WTMmbZG1qPc/e+F6uaE
+         8u4UHaoheJS6c3u86BuQ5l0f7wJ9hi7hHaBmtggQbdqI0Nssz2UH4wAZo0Yl8UOU8tPn
+         8kYvxEdD7C+cX9IwN3vpdr+S15FjNcSyjJij4oSq6bcnvuGtK+ZEWAlr7FtSl9dUxTQl
+         f4bw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=uYvSkcotS/gDPYpWgwke+Ro/F2OQSKZ0Zx2yUM0DaZM=;
+        b=E0zXbtSOu88dl50nTu2vkVWLzkVK1D+XgqFz34jLiyE5smIcbLz7rSnG6Bqvze92mm
+         lZnu9fgsRykThLbxgRwMCQJ7HBgg4Mi4rrI94Trf8UzB1TRYUN+NzIbq8yU2qNjVWpmt
+         1yNpM3/rKnvXBlgeKuzBP8bCm9faaQq+mn9yrmd0oo9BQVkPMoacIYpLuuEsvD94c4Hd
+         8Mzy0o5jhs85S72rb6s0NU4apXL0/z2exoW16Hh/ukDs/1PEXv3NX15ms3gpUtO3SyJT
+         gqFnke0PL+3JNV//gXyGqg4ZitV7pQwQjfonRPYyL6fcqsPADd20fi8gc5vURC5rVHnD
+         OIRg==
+X-Gm-Message-State: APjAAAXZ4I0fOmj20XTQLhUWsbeca7Vyn9sqX4naSZBjOaQDTqwpvXdA
+        9glceea5fMFar7iF2Ks0/2cz8m2XrB2L6g1RXRY=
+X-Google-Smtp-Source: APXvYqxDipPMbOHzqxjnYXdHoKkA2bnLUkx4KUUNLdyLE1mYnY0F1DM5VcHpyoSgeUlQBf65Q4WQzh+lBL8dt/vhIPg=
+X-Received: by 2002:a1f:9748:: with SMTP id z69mr13058931vkd.25.1562248414826;
+ Thu, 04 Jul 2019 06:53:34 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 31ba23d9-8bbe-4333-c372-08d70086ff30
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jul 2019 13:53:30.8065
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: jgg@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6126
+Received: by 2002:a67:e81:0:0:0:0:0 with HTTP; Thu, 4 Jul 2019 06:53:34 -0700 (PDT)
+Reply-To: mohamedallyson2019@gmail.com
+From:   Mohamed Allyson <mohamed.allyson2015@gmail.com>
+Date:   Thu, 4 Jul 2019 06:53:34 -0700
+Message-ID: <CAHu39-Tcx+hqphdYyKSWCjvZzVgx9MpqGi-fWxTEisxMRfOmBw@mail.gmail.com>
+Subject: VERY URGENT!!!
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 04, 2019 at 03:46:12PM +0200, Greg KH wrote:
-> On Thu, Jul 04, 2019 at 12:48:29PM +0000, Jason Gunthorpe wrote:
-> > On Thu, Jul 04, 2019 at 02:42:47PM +0200, Greg KH wrote:
-> > > On Thu, Jul 04, 2019 at 12:37:33PM +0000, Jason Gunthorpe wrote:
-> > > > On Thu, Jul 04, 2019 at 02:29:50PM +0200, Greg KH wrote:
-> > > > > On Thu, Jul 04, 2019 at 12:16:41PM +0000, Jason Gunthorpe wrote:
-> > > > > > On Wed, Jul 03, 2019 at 07:12:50PM -0700, Jeff Kirsher wrote:
-> > > > > > > From: Tony Nguyen <anthony.l.nguyen@intel.com>
-> > > > > > >=20
-> > > > > > > The RDMA block does not advertise on the PCI bus or any other=
- bus.
-> > > > > > > Thus the ice driver needs to provide access to the RDMA hardw=
-are block
-> > > > > > > via a virtual bus; utilize the platform bus to provide this a=
-ccess.
-> > > > > > >=20
-> > > > > > > This patch initializes the driver to support RDMA as well as =
-creates
-> > > > > > > and registers a platform device for the RDMA driver to regist=
-er to. At
-> > > > > > > this point the driver is fully initialized to register a plat=
-form
-> > > > > > > driver, however, can not yet register as the ops have not bee=
-n
-> > > > > > > implemented.
-> > > > > >=20
-> > > > > > I think you need Greg's ack on all this driver stuff - particul=
-arly
-> > > > > > that a platform_device is OK.
-> > > > >=20
-> > > > > A platform_device is almost NEVER ok.
-> > > > >=20
-> > > > > Don't abuse it, make a real device on a real bus.  If you don't h=
-ave a
-> > > > > real bus and just need to create a device to hang other things of=
-f of,
-> > > > > then use the virtual one, that's what it is there for.
-> > > >=20
-> > > > Ideally I'd like to see all the RDMA drivers that connect to ethern=
-et
-> > > > drivers use some similar scheme.
-> > >=20
-> > > Why?  They should be attached to a "real" device, why make any up?
-> >=20
-> > ? A "real" device, like struct pci_device, can only bind to one
-> > driver. How can we bind it concurrently to net, rdma, scsi, etc?
->=20
-> MFD was designed for this very problem.
->=20
-> > > > This is for a PCI device that plugs into multiple subsystems in the
-> > > > kernel, ie it has net driver functionality, rdma functionality, som=
-e
-> > > > even have SCSI functionality
-> > >=20
-> > > Sounds like a MFD device, why aren't you using that functionality
-> > > instead?
-> >=20
-> > This was also my advice, but in another email Jeff says:
-> >=20
-> >   MFD architecture was also considered, and we selected the simpler
-> >   platform model. Supporting a MFD architecture would require an
-> >   additional MFD core driver, individual platform netdev, RDMA function
-> >   drivers, and stripping a large portion of the netdev drivers into
-> >   MFD core. The sub-devices registered by MFD core for function
-> >   drivers are indeed platform devices. =20
->=20
-> So, "mfd is too hard, let's abuse a platform device" is ok?
->=20
-> People have been wanting to do MFD drivers for PCI devices for a long
-> time, it's about time someone actually did the work for it, I bet it
-> will not be all that complex if tiny embedded drivers can do it :)
+Hello Dear Friend,
 
-Okay, sounds like a NAK to me. I'll drop these patches from the RDMA
-patchworks and Jeff can work through the MFD stuff first.
+My name is Mr. Mohamed Allyson. I have decided to seek a confidential
+co-operation  with you in the execution of the deal described
+here-under for our both  mutual benefit and I hope you will keep it a
+top secret because of the nature  of the transaction, During the
+course of our bank year auditing, I discovered  an unclaimed/abandoned
+fund, sum total of {US$19.3 Million United State  Dollars} in the bank
+account that belongs to a Saudi Arabia businessman Who unfortunately
+lost his life and entire family in a Motor Accident.
 
-Jason
+Now our bank has been waiting for any of the relatives to come-up for
+the claim but nobody has done that. I personally has been unsuccessful
+in locating any of the relatives, now, I sincerely seek your consent
+to present you as the next of kin / Will Beneficiary to the deceased
+so that the proceeds of this account valued at {US$19.3 Million United
+State Dollars} can be paid to you, which we will share in these
+percentages ratio, 60% to me and 40% to you. All I request is your
+utmost sincere co-operation; trust and maximum confidentiality to
+achieve this project successfully. I have carefully mapped out the
+moralities for execution of this transaction under a legitimate
+arrangement to protect you from any breach of the law both in your
+country and here in Burkina Faso when the fund is being transferred to
+your bank account.
+
+I will have to provide all the relevant document that will be
+requested to indicate that you are the rightful beneficiary of this
+legacy and our bank will release the fund to you without any further
+delay, upon your consideration and acceptance of this offer, please
+send me the following information as stated below so we can proceed
+and get this fund transferred to your designated bank account
+immediately.
+
+-Your Full Name:
+-Your Contact Address:
+-Your direct Mobile telephone Number:
+-Your Date of Birth:
+-Your occupation:
+
+I await your swift response and re-assurance through my Private email
+address: mohamedallyson2019@gmail.com
+
+
+Best regards,
+Mr. Mohamed Allyson
