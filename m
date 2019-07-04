@@ -2,89 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FB225F1A3
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 04:59:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFB5F5F1BC
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 05:15:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727188AbfGDC7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 22:59:14 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:36251 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727004AbfGDC7N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 22:59:13 -0400
-Received: by mail-pg1-f195.google.com with SMTP id c13so2182388pgg.3;
-        Wed, 03 Jul 2019 19:59:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=cdGNxnCG0dRMJ1+NSl9LIvswxDirWPGLvHhxjBvgLBg=;
-        b=Bl9EX14hsyMh1TbRFVAEiPY0YsMGwRNJWb2jOLCWtq7VYUpc+Ql3X+vnTdwsTE1Mjj
-         Xw9R1qbJpqWcPybC7B/4RG5+d59sPyJCOZzCCxjhSDSApD/n6IPglHdt/fcT9ydtbEVg
-         ffSFi0Jj5aV7aIMjHpL1sAI1iE84I/CbvJSfZpn6rDAaWruQmzghG4LzCpXVd3PORL2Z
-         pNF0Sczh2Zjp5O8TRn+d/rAsHF/+bfpymK9A0HdTgKJoYO/lm5t/iebFplNiir/Rx5g9
-         7Z2JrMpPys+PhYLJ2Kky+19jH1ijK+GvCEP5DXD35+lJDXF/M2G6/4p2QTqoI09W2hXb
-         9AkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=cdGNxnCG0dRMJ1+NSl9LIvswxDirWPGLvHhxjBvgLBg=;
-        b=IKZuZeCvr39NJOK62Bu748wVj6nlM9BXRf5IDzbhzcZImxheDjiLBOy+Dt1iXcFU0f
-         VlVo9JXfnfg2XhulwyAGqVOBHLqKAr6nyEFQcy0sF1RIZak9+YMnENsY6b0w5yTr0AQf
-         l47vE/vNFa+2JrGI3JMIPHfe83GpbqkJqrAm/zDOtc8JN6SsDN0GGYaNp8sSrLM7xDZY
-         rxJIqx9Jb+js101TxEicU7aXzJ+AewevhS7KfG8nTtq6mVTOAe3zDOlkHPvUM2ZKgcsw
-         m95flLL+xQKEkNk2mR37px6oebq3OmV0f4CyGM4IzctbL1h+T3b71ulj0R71BaOFtO5b
-         fYog==
-X-Gm-Message-State: APjAAAXLxKGTIj5miWSKjwUBEM7yQbaJA6eCT88fHKWFrPOTy0L413yE
-        Mp6wwfoVo8aUkJWIe0nSRCo=
-X-Google-Smtp-Source: APXvYqwY4iu+EFJOXIvAaE4uZFsF5WtzhQD09WQtvm68YZFKudL5xQwT7dxwcZl7ElVVmQ6BOF4glQ==
-X-Received: by 2002:a17:90b:d82:: with SMTP id bg2mr16831319pjb.87.1562209153111;
-        Wed, 03 Jul 2019 19:59:13 -0700 (PDT)
-Received: from hari-Inspiron-1545 ([183.83.92.187])
-        by smtp.gmail.com with ESMTPSA id i36sm3472199pgl.70.2019.07.03.19.59.09
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 03 Jul 2019 19:59:12 -0700 (PDT)
-Date:   Thu, 4 Jul 2019 08:29:06 +0530
-From:   Hariprasad Kelam <hariprasad.kelam@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>,
-        Hariprasad Kelam <hariprasad.kelam@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: ethernet: allwinner: Remove unneeded memset
-Message-ID: <20190704025906.GA20005@hari-Inspiron-1545>
+        id S1727202AbfGDDOP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 23:14:15 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:40194 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726696AbfGDDOP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 23:14:15 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6434PWP193276;
+        Thu, 4 Jul 2019 03:13:12 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id :
+ mime-version : date : from : to : cc : subject : content-type :
+ content-transfer-encoding; s=corp-2018-07-02;
+ bh=pNCu0QyzDiiTDwZZZKKayKgr5kYJuplRGSbV94S6ShA=;
+ b=HuMdgSIOPHRfop6AhhMizUBhYrNRwFbNZP3xDXJk3ndC4o7mMZV4REy+dkuq0Kl36Mdz
+ hIo5HVGOhUfrdvriwr31vxpwRZ7H7xrGkfY/PVs0wFvBVsQWvR/4Y2iDXJanD7KI9Efy
+ +ORXCVcmVy4h7JKLvCCXN4mHW6RRY+WMUJb+I8K+uVUY+xWqLfIMnWdSwMg3PlKMbjr2
+ fDFK/GM6QBawJEumMR3ht8lBlj7qe+SpNqEM+esk75MLFlXzX7NRZQF7lZWCvFE/yUNz
+ Gzd/0ET6UcUkkuI42C2bV38vPkL//c4Cp1FKQewzwiwq8oT6ZFXI104R0qUY0T8TSM4C LA== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by aserp2120.oracle.com with ESMTP id 2te5tbvebx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 04 Jul 2019 03:13:12 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x6433LU4087344;
+        Thu, 4 Jul 2019 03:13:11 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3020.oracle.com with ESMTP id 2tebbkpsbn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 04 Jul 2019 03:13:11 +0000
+Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x643DBUV104313;
+        Thu, 4 Jul 2019 03:13:11 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by userp3020.oracle.com with ESMTP id 2tebbkpsbk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 04 Jul 2019 03:13:11 +0000
+Received: from abhmp0005.oracle.com (abhmp0005.oracle.com [141.146.116.11])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x643D8Pg025951;
+        Thu, 4 Jul 2019 03:13:08 GMT
+Message-Id: <201907040313.x643D8Pg025951@userv0121.oracle.com>
+Received: from localhost (/10.159.211.102) by default (Oracle Beehive Gateway
+ v4.0) with ESMTP ; Wed, 03 Jul 2019 20:13:08 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.5.24 (2015-08-30)
+Date:   Wed, 3 Jul 2019 20:13:08 -0700 (PDT)
+From:   Kris Van Hees <kris.van.hees@oracle.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        dtrace-devel@oss.oracle.com, linux-kernel@vger.kernel.org
+Cc:     rostedt@goodmis.org, mhiramat@kernel.org, acme@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net,
+        Peter Zijlstra <peterz@infradead.org>, Chris Mason <clm@fb.com>
+Subject: [PATCH 0/1] tools/dtrace: initial implementation of DTrace
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9307 signatures=668688
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1907040040
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove unneeded memset as alloc_etherdev is using kvzalloc which uses
-__GFP_ZERO flag
+This patch is also available, applied to bpf-next, at the following URL:
 
-Signed-off-by: Hariprasad Kelam <hariprasad.kelam@gmail.com>
----
- drivers/net/ethernet/allwinner/sun4i-emac.c | 1 -
- 1 file changed, 1 deletion(-)
+	https://github.com/oracle/dtrace-linux-kernel/tree/dtrace-bpf
 
-diff --git a/drivers/net/ethernet/allwinner/sun4i-emac.c b/drivers/net/ethernet/allwinner/sun4i-emac.c
-index 9e06dff..6253e5e 100644
---- a/drivers/net/ethernet/allwinner/sun4i-emac.c
-+++ b/drivers/net/ethernet/allwinner/sun4i-emac.c
-@@ -818,7 +818,6 @@ static int emac_probe(struct platform_device *pdev)
- 	SET_NETDEV_DEV(ndev, &pdev->dev);
- 
- 	db = netdev_priv(ndev);
--	memset(db, 0, sizeof(*db));
- 
- 	db->dev = &pdev->dev;
- 	db->ndev = ndev;
--- 
-2.7.4
+As suggested in feedback to my earlier patch submissions, this code takes an
+approach to avoid kernel code changes as much as possible.  The current patch
+does not involve any kernel code changes.  Further development of this code
+will continue with this approach, incrementally adding features to this first
+minimal implementation.  The goal is a fully featured and functional DTrace
+implementation involving kernel changes only when strictly necessary.
 
+The code presented here supports two very basic functions:
+
+1. Listing probes that are used in BPF programs
+
+   # dtrace -l -s bpf_sample.o
+      ID   PROVIDER            MODULE                          FUNCTION NAME
+   18876        fbt           vmlinux                        ksys_write entry
+   70423    syscall           vmlinux                             write entry
+
+2. Loading BPF tracing programs and collecting data that they generate
+
+   # dtrace -s bpf_sample.o
+   CPU     ID
+    15  70423 0xffff8c0968bf8ec0 0x00000000000001 0x0055e019eb3f60 0x0000000000002c
+    15  18876 0xffff8c0968bf8ec0 0x00000000000001 0x0055e019eb3f60 0x0000000000002c
+   ...
+
+Only kprobes and syscall tracepoints are supported since this is an initial
+patch.  It does show the use of a generic BPF function to implement the actual
+probe action, called from two distinct probe types.  Follow-up patches will
+add more probe types, add more tracing features from the D language, add
+support for D script compilation to BPF, etc.
+
+The implementation makes use of libbpf for handling BPF ELF objects, and uses
+the perf event output ring buffer (supported through BPF) to retrieve the
+tracing data.  The next step in development will be adding support to libbpf
+for programs using shared functions from a collection of functions included in
+the BPF ELF object (as suggested by Alexei).  
+
+The code is structured as follows:
+ tools/dtrace/dtrace.c      = command line utility
+ tools/dtrace/dt_bpf.c      = interface to libbpf
+ tools/dtrace/dt_buffer.c   = perf event output buffer handling
+ tools/dtrace/dt_fbt.c      = kprobes probe provider
+ tools/dtrace/dt_syscall.c  = syscall tracepoint probe provider
+ tools/dtrace/dt_probe.c    = generic probe and probe provider handling code
+                              This implements a generic interface to the actual
+                              probe providers (dt_fbt and dt_syscall).
+ tools/dtrace/dt_hash.c     = general probe hashing implementation
+ tools/dtrace/dt_utils.c    = support code (manage list of online CPUs)
+ tools/dtrace/dtrace.h      = API header file (used by BPF program source code)
+ tools/dtrace/dtrace_impl.h = implementation header file
+ tools/dtrace/bpf_sample.c  = sample BPF program using two probe types
+
+I included an entry for the MAINTAINERS file.  I offer to actively maintain
+this code, and to keep advancing its development.
+
+	Cheers,
+	Kris Van Hees
