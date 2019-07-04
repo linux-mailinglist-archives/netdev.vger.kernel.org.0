@@ -2,187 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EEE65FEAB
-	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 01:32:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4C1F5FEB5
+	for <lists+netdev@lfdr.de>; Fri,  5 Jul 2019 01:49:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727592AbfGDXcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 19:32:24 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:39874 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726038AbfGDXcX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 19:32:23 -0400
-Received: by mail-ed1-f68.google.com with SMTP id m10so6657091edv.6;
-        Thu, 04 Jul 2019 16:32:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cX6nHtTKELS0nlqmaRfVAhra97bpjvwlsmKbwJvPrso=;
-        b=rxl1wTXi046K+QqtyHJvHyAJgrlScrICo4IcfjX78f7TBSCH6gB+2yKRSQChPuc0x2
-         6so96zGpdM1L5QmCnq3tQqZZJHTtqc6z5VtiaKA/xM14WOkTv7KfSp+9GE6j+n4k/gLb
-         FH/XIN6SSU/8GfvtL57cO4NYTDiZHE+roDOuZng/6OcVdu7/UVItQzAIYDL100fB3TGl
-         MHBbmZRYz+I7LW0kIVIK77oU7leOx9DDqh8VXyJEWysbfH3g0V9BirA/CZAqdCAp/JD6
-         exjODXOaliCajA2UgpL95TJlvOy2kfpVZaIDFnfTHWio87wMdnxWdnanWXzv2TQ1toXk
-         3gPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cX6nHtTKELS0nlqmaRfVAhra97bpjvwlsmKbwJvPrso=;
-        b=PgY9Bf8Kk87KuGC6Igy1OugcD/xKh5uSX9jlF6lahaZmtgPPUahi+WbpJkOC6nMmJR
-         ZwqrSuTxjvNcpJ0vmLA/vZpI7C0Vf2fxVH2gonsSHsAZt5st2cI0pZ5wgSUMcwSLXEGZ
-         E/Zgb/IKt8Ge3kvXxbX0jKBDsnL1z66Xh214lvELN+OP3GCKnW+ybn7raHXTpcZ58Nkq
-         EQUE663K4V+VpbZHriXcnMQprWJGOHq4hpjft9T0lJ0hh+rx7I4he5cETnLETXwJPawR
-         4oRcyh80HroNdPXRdikPREDiPLy1dxHn2MIMOBMnTdby4DPoGLOlxS2OEcMv2mMHfLVE
-         9qOQ==
-X-Gm-Message-State: APjAAAWjgqH/gEGX+x4Fk/iTeZ2bNI15+2RTwQ5rBjLwo9+fNCOenkST
-        ExvUwGO6ZUN3rscbpVaOUBybvogBXkq3KibcUzw=
-X-Google-Smtp-Source: APXvYqwubu8GnrljQuP6hpQyT0Bj/7SRpfGpd1V8szw8gCaTzMPhkSeoUuAvBgEbpax9UIQXw7I/eJvRRVTgRPDSEf8=
-X-Received: by 2002:a50:aa14:: with SMTP id o20mr1159284edc.165.1562283141133;
- Thu, 04 Jul 2019 16:32:21 -0700 (PDT)
-MIME-Version: 1.0
-References: <1561131532-14860-1-git-send-email-claudiu.manoil@nxp.com>
- <1561131532-14860-5-git-send-email-claudiu.manoil@nxp.com>
- <20190621164940.GL31306@lunn.ch> <VI1PR04MB4880D8F90BBCD30BF8A69C9696E00@VI1PR04MB4880.eurprd04.prod.outlook.com>
- <20190624115558.GA5690@piout.net> <20190624142625.GR31306@lunn.ch>
- <20190624152344.3bv46jjhhygo6zwl@lx-anielsen.microsemi.net>
- <20190624162431.GX31306@lunn.ch> <20190624182614.GC5690@piout.net>
-In-Reply-To: <20190624182614.GC5690@piout.net>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Fri, 5 Jul 2019 02:32:09 +0300
-Message-ID: <CA+h21hqGtA5ou7a3wjSuHxa_4fXk4GZohTAxnUdfLZjV3nq5Eg@mail.gmail.com>
-Subject: Re: [PATCH net-next 4/6] arm64: dts: fsl: ls1028a: Add Felix switch
- port DT node
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Allan Nielsen <Allan.Nielsen@microsemi.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S1727620AbfGDXtL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 19:49:11 -0400
+Received: from mail.us.es ([193.147.175.20]:32826 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726038AbfGDXtK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Jul 2019 19:49:10 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id EB64B819A8
+        for <netdev@vger.kernel.org>; Fri,  5 Jul 2019 01:49:07 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id D91846DA85
+        for <netdev@vger.kernel.org>; Fri,  5 Jul 2019 01:49:07 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id CE468DA4D1; Fri,  5 Jul 2019 01:49:07 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 72306DA704;
+        Fri,  5 Jul 2019 01:49:05 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Fri, 05 Jul 2019 01:49:05 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from salvia.here (sys.soleta.eu [212.170.55.40])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id 404154265A31;
+        Fri,  5 Jul 2019 01:49:04 +0200 (CEST)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netdev@vger.kernel.org
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        thomas.lendacky@amd.com, f.fainelli@gmail.com,
+        ariel.elior@cavium.com, michael.chan@broadcom.com,
+        madalin.bucur@nxp.com, yisen.zhuang@huawei.com,
+        salil.mehta@huawei.com, jeffrey.t.kirsher@intel.com,
+        tariqt@mellanox.com, saeedm@mellanox.com, jiri@mellanox.com,
+        idosch@mellanox.com, jakub.kicinski@netronome.com,
+        peppe.cavallaro@st.com, grygorii.strashko@ti.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, linux-net-drivers@solarflare.com,
+        ogerlitz@mellanox.com, Manish.Chopra@cavium.com,
+        marcelo.leitner@gmail.com, mkubecek@suse.cz,
+        venkatkumar.duvvuru@broadcom.com, maxime.chevallier@bootlin.com,
+        cphealy@gmail.com
+Subject: [PATCH 00/15 net-next,v2] netfilter: add hardware offload infrastructure
+Date:   Fri,  5 Jul 2019 01:48:28 +0200
+Message-Id: <20190704234843.6601-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.11.0
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 25 Jun 2019 at 00:23, Alexandre Belloni
-<alexandre.belloni@bootlin.com> wrote:
->
-> On 24/06/2019 18:24:31+0200, Andrew Lunn wrote:
-> > On Mon, Jun 24, 2019 at 05:23:45PM +0200, Allan W. Nielsen wrote:
-> > > Hi Andrew,
-> > >
-> > > The 06/24/2019 16:26, Andrew Lunn wrote:
-> > > > > > Yeah, there are 2 ethernet controller ports (managed by the enetc driver)
-> > > > > > connected inside the SoC via SGMII links to 2 of the switch ports, one of
-> > > > > > these switch ports can be configured as CPU port (with follow-up patches).
-> > > > > >
-> > > > > > This configuration may look prettier on DSA, but the main restriction here
-> > > > > > is that the entire functionality is provided by the ocelot driver which is a
-> > > > > > switchdev driver.  I don't think it would be a good idea to copy-paste code
-> > > > > > from ocelot to a separate dsa driver.
-> > > > > >
-> > > > >
-> > > > > We should probably make the ocelot driver a DSA driver then...
-> > > > An important part of DSA is being able to direct frames out specific
-> > > > ports when they ingress via the CPU port. Does the silicon support
-> > > > this? At the moment, i think it is using polled IO.
-> > >
-> > > That is supported, it requires a bit of initial configuration of the Chip, but
-> > > nothing big (I believe this configuration is part of Claudiu's change-set).
-> > >
-> > > But how do you envision this done?
-> > >
-> > > - Let the existing SwitchDev driver and the DSA driver use a set of common
-> > >   functions.
-> > > - Convert the existing Ocelot driver from SwitchDev to DSA
-> > > - Fork (copy) the existing driver of Ocelot, and modify it as needed for the
-> > >   Felix driver
-> > >
-> > > My guess is the first one, but I would like to understand what you have in mind.
-> >
-> > I don't know the various architectures the switch is used in. But it
-> > does seem like a core library, and then a switchdev wrapper for Ocelot
-> > and a DSA wrapper for Felix would make sense.
->
-> Ocelot could also be used in a DSA setting where one port can be
-> connected to an external MAC and be used to inject/extract frames
-> to/from any other ports. In that case, the IFH would serve as the DSA
-> tag.
->
->
-> --
-> Alexandre Belloni, Bootlin
-> Embedded Linux and Kernel engineering
-> https://bootlin.com
+Hi,
 
-Hi everyone,
+This patchset adds support for Netfilter hardware offloads.
 
-Thank you for the nice discussion.
-I've been talking off-list to Claudiu and Alexandru about switchdev vs
-DSA for the Felix/Ocelot switches.
-My initial reaction was the same as Andrew's - there's a CPU-facing
-Ethernet MAC with some vendor-defined injection and extraction
-headers? Sounds like DSA.
-But then we discussed about what DSA for Felix/Ocelot would look like.
-Here are some points to consider:
-- DSA is typically used for discrete switches, switchdev is typically
-used for embedded ones. As far as I understand from Allan's message,
-Ocelot is really an entire switching SoC that's running Linux inside
-(on the MIPS CPU) with a switchdev driver. There is no (mainline?)
-driver that would control the Ocelot SoC from a higher-level Linux
-system. The latter would (maybe) fit DSA more.
-- The D in DSA is for cascaded switches. Apart from the absence of
-such a "Ocelot SoC" driver (which maybe can be written, I don't know),
-I think the switching core itself has some fundamental limitations
-that make a DSA implementation questionable:
-    1. The switch has a single port which can apply these vendor tags.
-Also the injection header is different than the extraction header. See
-more at #4.
-    2. The switch will tag all frames that go upstream on this port
-towards the CPU, no matter what source port they came from. It can't
-be told "hey, don't add a tag for frames coming from this
-downstream-facing port, because it's a DSA port and not front-panel,
-so there's another switch underneath you who already added a tag to
-the frame". So frames that arrive at the CPU through an array of N
-cascaded Felix/Ocelot switches will need to be peeled off, one by one,
-by N vendor tags.
-    3. The extraction header does not contain a field for the "switch
-id", only for the "source port". This means that if you want to figure
-out the switch id, you really *need* to make a topology out of those
-stacked vendor tags and figure out which switch it was by counting the
-tags. It also means that you can only have Felix/Ocelot in a linear
-topology.
-    4. The switch cannot parse its own vendor tags. This is a big one,
-because it means that for an autonomously forwarded frame which
-transits two cascaded switches but doesn't reach the CPU, there is no
-one in the path who's going to consume the vendor tag. So the frame
-will exit the other front-panel port with extra bytes in it.
+This patchset reuses the existing block infrastructure, the
+netdev_ops->ndo_setup_tc() interface, TC_SETUP_CLSFLOWER classifier and
+the flow rule API.
 
-Ok, let's say that all of the above limitations have one thing in
-common - the vendor tags aren't really thought out with DSA-like
-setups in mind. In theory it's possible to not use the native tags and
-instead implement a dsa_8021q tagger for it. But then, RX timestamps
-for PTP are also transmitted to the CPU through this vendor header,
-and losing PTP is a big no-no.
+Patch #1 moves tcf_block_cb code before the indirect block
+         infrastructure to avoid forward declarations in the next
+         patches. This is just a preparation patch.
 
-So my conclusion is that DSA for Felix/Ocelot doesn't make a lot of
-sense if the whole purpose is to hide the CPU-facing netdev.
-In a cascaded setup, these switches could only sit at the top of tree,
-and ironically, they'd be better modeled as a switchdev DSA master
-port than part of the DSA tree itself. Put these switches anywhere
-else in the tree and they're just troublemakers.
-As for the LS1028A, I think that connecting this embedded switch via
-two Ethernet MACs is just poorly thought out design, but that doesn't
-mean DSA is going to help it in any way other than perhaps cosmetic.
+Patch #2 adds tcf_block_cb_alloc() to allocate flow block callbacks.
 
-Regards,
--Vladimir
+Patch #3 adds tcf_block_cb_free() to release flow block callbacks.
+
+Patch #4 adds the tcf_block_setup() infrastructure, which allows drivers
+         to set up flow block callbacks. This infrastructure transports
+         these objects via list (through the tc_block_offload object)
+         back to the core for registration.
+
+            CLS_API                           DRIVER
+        TC_SETUP_BLOCK    ---------->  setup flow_block_cb object &
+                                 it adds object to flow_block_offload->cb_list
+                                                |
+            CLS_API     <-----------------------'
+           registers                     list with flow blocks
+         flow_block_cb &                   travels back to
+       calls ->reoffload               the core for registration
+
+         This patch introduces a global flow block list for all drivers
+	 which is a temporary artifact to make incremental changes, it
+	 is removed in patch #12!
+
+Patch #5 extends tcf_block_cb_alloc() to allow drivers to set a release
+         callback that is invoked from tcf_block_cb_free() to release
+         private driver block information.
+
+Patch #6 adds tcf_setup_block_offload(), this helper function is used by
+         most drivers to setup the block, including common bind and
+         unbind operations.
+
+Patch #7 adapts drivers to use the infrastructure introduced in Patch #4.
+
+Patch #8 stops exposing the tc block structure to drivers, by caching
+         the only information that drivers need, ie. block is shared
+         flag.
+
+Patch #9 removes the tcf_block_cb_register() / _unregister()
+         infrastructure, since it is now unused after Patch #7.
+
+Patch #10 moves the flow_block API to the net/core/flow_offload.c file.
+          This renames from tcf_block_cb to flow_block_cb as well as the
+          functions to allocate, release, lookup and setup flow block
+          callbacks.
+
+Patch #11 makes sure that only one flow block callback per device is
+          possible by now. This means only one of the ethtool / tc /
+          netfilter subsystems can use hardware offloads, until drivers
+          are updated to remove this limitation.
+
+Patch #12 introduces a flow block list per-driver, this is a step
+	  towards offloading multiple subsystems. This needs more work
+	  on the driver side to support for this.
+
+Patch #13 renames TC_BLOCK_{UN}BIND to FLOW_BLOCK_{UN}BIND.
+
+Patch #14 renames TCF_BLOCK_BINDER_TYPE_* to FLOW_BLOCK_BINDER_TYPE_*.
+
+Patch #15 introduces basic netfilter hardware offload infrastructure
+          for the ingress chain. This includes 5-tuple exact matching
+	  and accept / drop rule actions. Only basechains are supported
+	  at this stage, no .reoffload callback is implemented either.
+	  Default policy to "accept" is only supported for now.
+
+An example ruleset looks like this:
+
+	table netdev filter {
+		flags offload;
+
+		chain ingress {
+	                type filter hook ingress device eth0 priority 0;
+
+			ip daddr 192.168.0.10 tcp dport 22 drop
+	        }
+	}
+
+The 'offload' flag specifies that this table (and anything that is enclosed
+into this table) belongs to hardware.
+
+Please, apply, thanks.
+
+Pablo Neira Ayuso (15):
+  net: sched: move tcf_block_cb before indr_block
+  net: sched: add tcf_block_cb_alloc()
+  net: sched: add tcf_block_cb_free()
+  net: sched: add tcf_block_setup()
+  net: sched: add release callback to struct tcf_block_cb
+  net: sched: add tcf_setup_block_offload()
+  net: use tcf_block_setup() infrastructure
+  net: cls_api: do not expose tcf_block to drivers
+  net: sched: remove tcf_block_cb_{register,unregister}()
+  net: flow_offload: add flow_block_cb API
+  net: flow_offload: don't allow subsystem to reuse blocks
+  net: flow_offload: make flow block callback list per-driver
+  net: flow_offload: rename TC_BLOCK_{UN}BIND to FLOW_BLOCK_{UN}BIND
+  net: flow_offload: rename TCF_BLOCK_BINDER_TYPE_* to FLOW_BLOCK_BINDER_TYPE_*
+  netfilter: nf_tables: add hardware offload support
+
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c          |  26 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c      |  29 +-
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c    |  26 +-
+ drivers/net/ethernet/intel/i40e/i40e_main.c        |  26 +-
+ drivers/net/ethernet/intel/iavf/iavf_main.c        |  35 +-
+ drivers/net/ethernet/intel/igb/igb_main.c          |  26 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c      |  29 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  29 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |  70 ++-
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.c     |  97 ++--
+ drivers/net/ethernet/mscc/ocelot_ace.h             |   4 +-
+ drivers/net/ethernet/mscc/ocelot_flower.c          |  47 +-
+ drivers/net/ethernet/mscc/ocelot_tc.c              |  42 +-
+ drivers/net/ethernet/netronome/nfp/abm/cls.c       |  22 +-
+ drivers/net/ethernet/netronome/nfp/abm/main.h      |   2 +-
+ drivers/net/ethernet/netronome/nfp/bpf/main.c      |  30 +-
+ .../net/ethernet/netronome/nfp/flower/offload.c    |  76 +--
+ drivers/net/ethernet/qlogic/qede/qede_main.c       |  23 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  |  23 +-
+ drivers/net/netdevsim/netdev.c                     |  29 +-
+ include/net/flow_offload.h                         |  56 +++
+ include/net/netfilter/nf_tables.h                  |  13 +
+ include/net/netfilter/nf_tables_offload.h          |  76 +++
+ include/net/pkt_cls.h                              |  90 +---
+ include/uapi/linux/netfilter/nf_tables.h           |   2 +
+ net/core/flow_offload.c                            | 123 +++++
+ net/dsa/slave.c                                    |  28 +-
+ net/netfilter/Makefile                             |   2 +-
+ net/netfilter/nf_tables_api.c                      |  22 +-
+ net/netfilter/nf_tables_offload.c                  | 261 ++++++++++
+ net/netfilter/nft_cmp.c                            |  53 +++
+ net/netfilter/nft_immediate.c                      |  31 ++
+ net/netfilter/nft_meta.c                           |  27 ++
+ net/netfilter/nft_payload.c                        | 187 ++++++++
+ net/sched/cls_api.c                                | 526 ++++++++++-----------
+ net/sched/sch_ingress.c                            |   6 +-
+ 36 files changed, 1411 insertions(+), 783 deletions(-)
+ create mode 100644 include/net/netfilter/nf_tables_offload.h
+ create mode 100644 net/netfilter/nf_tables_offload.c
+
+-- 
+2.11.0
+
