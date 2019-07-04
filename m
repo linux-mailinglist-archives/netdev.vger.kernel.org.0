@@ -2,56 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A5C75F80C
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 14:25:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 803065F81C
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 14:29:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727847AbfGDMZJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 08:25:09 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:58917 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727843AbfGDMZI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 08:25:08 -0400
-Received: from [5.158.153.52] (helo=kurt.tec.linutronix.de)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA1:256)
-        (Exim 4.80)
-        (envelope-from <kurt@linutronix.de>)
-        id 1hj0nP-00025J-29; Thu, 04 Jul 2019 14:25:03 +0200
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH iproute2 1/1] utils: Fix get_s64() function
-Date:   Thu,  4 Jul 2019 14:24:27 +0200
-Message-Id: <20190704122427.22256-2-kurt@linutronix.de>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20190704122427.22256-1-kurt@linutronix.de>
-References: <20190704122427.22256-1-kurt@linutronix.de>
+        id S1727677AbfGDM3z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 08:29:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44496 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727602AbfGDM3z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Jul 2019 08:29:55 -0400
+Received: from localhost (unknown [89.205.128.15])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1CFDB20673;
+        Thu,  4 Jul 2019 12:29:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1562243394;
+        bh=cCA734VwPTICEaI1cmL5+rdDiipXZEg0/8PoB29Wtek=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BW/VwhEpy7xItdMoud2x9A4L/D196EuzHEmR+FKfdvcBeJ7dzqgt9VqXNte3QlywX
+         WS5PjUxkXsaRB1WqshDoTW1tmwj30TFxVWVqYH8nT0xBYHTYeb0FU1tGy3pCl7SmvF
+         sgvJZRPmww3SZqknHO/eV8IYduPV1nQifV7nmW7w=
+Date:   Thu, 4 Jul 2019 14:29:50 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jason Gunthorpe <jgg@mellanox.com>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "poswald@suse.com" <poswald@suse.com>,
+        "mustafa.ismail@intel.com" <mustafa.ismail@intel.com>,
+        "shiraz.saleem@intel.com" <shiraz.saleem@intel.com>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>
+Subject: Re: [net-next 1/3] ice: Initialize and register platform device to
+ provide RDMA
+Message-ID: <20190704122950.GA6007@kroah.com>
+References: <20190704021252.15534-1-jeffrey.t.kirsher@intel.com>
+ <20190704021252.15534-2-jeffrey.t.kirsher@intel.com>
+ <20190704121632.GB3401@mellanox.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190704121632.GB3401@mellanox.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-get_s64() uses internally strtoll() to parse the value out of a given
-string. strtoll() returns a long long. However, the intermediate variable is
-long only which might be 32 bit on some systems. So, fix it.
+On Thu, Jul 04, 2019 at 12:16:41PM +0000, Jason Gunthorpe wrote:
+> On Wed, Jul 03, 2019 at 07:12:50PM -0700, Jeff Kirsher wrote:
+> > From: Tony Nguyen <anthony.l.nguyen@intel.com>
+> > 
+> > The RDMA block does not advertise on the PCI bus or any other bus.
+> > Thus the ice driver needs to provide access to the RDMA hardware block
+> > via a virtual bus; utilize the platform bus to provide this access.
+> > 
+> > This patch initializes the driver to support RDMA as well as creates
+> > and registers a platform device for the RDMA driver to register to. At
+> > this point the driver is fully initialized to register a platform
+> > driver, however, can not yet register as the ops have not been
+> > implemented.
+> 
+> I think you need Greg's ack on all this driver stuff - particularly
+> that a platform_device is OK.
 
-Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
----
- lib/utils.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+A platform_device is almost NEVER ok.
 
-diff --git a/lib/utils.c b/lib/utils.c
-index be0f11b00280..9c3702fd4a04 100644
---- a/lib/utils.c
-+++ b/lib/utils.c
-@@ -390,7 +390,7 @@ int get_u8(__u8 *val, const char *arg, int base)
- 
- int get_s64(__s64 *val, const char *arg, int base)
- {
--	long res;
-+	long long res;
- 	char *ptr;
- 
- 	errno = 0;
--- 
-2.11.0
+Don't abuse it, make a real device on a real bus.  If you don't have a
+real bus and just need to create a device to hang other things off of,
+then use the virtual one, that's what it is there for.
 
+thanks,
+
+greg k-h
