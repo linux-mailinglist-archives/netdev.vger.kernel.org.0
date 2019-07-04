@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51FC85F90A
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 15:21:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0498A5F90B
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 15:21:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727199AbfGDNVb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 09:21:31 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:39166 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727026AbfGDNVa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 09:21:30 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x64DJtmC007998;
-        Thu, 4 Jul 2019 06:21:28 -0700
+        id S1727242AbfGDNVe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 09:21:34 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:47078 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727026AbfGDNVe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 09:21:34 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x64DKUPF030763;
+        Thu, 4 Jul 2019 06:21:31 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=nZCfGDpUi7ipPKNZ5eAzsq61c9N3eh1qw3q2obPLDEk=;
- b=qHpUxx/XzUv77nsWG4Ub4s0OkIyC2BE5cOmnetXhAHMbiFMtKXEdyZWRFPFP2gkZJ5dn
- 2H6s3xy3YYqutFKJJgPWqeDDrg5tKrxDb3JmPEBfc9oWkinpTdmU0IcXG3Xi1SvYhVEV
- UJD+L/r6j+J4qO28oLslWOwqGtaj4rdU8bw6dooCws13b4IWSjauhhx18YsiUwKAUfZP
- QVwciaul6NMRr769qE5bDNO1lduvziJa/JSjq93FjbBkTE7sWBS93TIMYSyoGB86RVPC
- NO2gbty3z6syx6RoPSHDe5LJ5NFN4U7D8LUY+66MOw/oND44ODbtmOKK/CIW7Kynnoza +A== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 2tgtf75hbb-2
+ content-type; s=pfpt0818; bh=Dkiu9LwVyE8NcPD58FsB78Ejllr8hy36DWLi/oH3vUQ=;
+ b=Ev0w7lIuk67IbRHtIjvWBy/9r7+ipKTDnpqM0i4r0KLbj3e/7IEiQjYfx11ZWZrn44Fa
+ BnkfI7h+OAhYeZHaJZpwE9T8Pwx98m/KOTZe3fk2Kw4zt1Yyzwd6GAoHNfhk0bJ8rOIA
+ jRH2kgOtHfO5HeDMNhHjdATZ3dw8hR//YK0y129Wmip0sxJ9Z8A5gXin1bEXDq15BRuu
+ rhFUF2TcXsx+OHPhYK4k5fMFRHtDG4XJy5tUv/9PII8KLc2ciLmqr982gsUmW49GLpgu
+ BtAhCykOzqEP9aGKVLp0uvjXwOjzhsE3uJJORozPlod/Bv1aCrG1diqGPk2eNbvZESVK XQ== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0a-0016f401.pphosted.com with ESMTP id 2th9482372-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 04 Jul 2019 06:21:28 -0700
-Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Thu, 4 Jul
- 2019 06:21:26 -0700
+        Thu, 04 Jul 2019 06:21:30 -0700
+Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Thu, 4 Jul
+ 2019 06:21:30 -0700
 Received: from maili.marvell.com (10.93.176.43) by SC-EXCH01.marvell.com
  (10.93.176.81) with Microsoft SMTP Server id 15.0.1367.3 via Frontend
- Transport; Thu, 4 Jul 2019 06:21:26 -0700
+ Transport; Thu, 4 Jul 2019 06:21:29 -0700
 Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
-        by maili.marvell.com (Postfix) with ESMTP id 91C553F703F;
-        Thu,  4 Jul 2019 06:21:26 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id BBE883F703F;
+        Thu,  4 Jul 2019 06:21:29 -0700 (PDT)
 Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id x64DLQPN013657;
-        Thu, 4 Jul 2019 06:21:26 -0700
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id x64DLTl4013661;
+        Thu, 4 Jul 2019 06:21:29 -0700
 Received: (from root@localhost)
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id x64DLQvP013656;
-        Thu, 4 Jul 2019 06:21:26 -0700
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id x64DLTn9013660;
+        Thu, 4 Jul 2019 06:21:29 -0700
 From:   Sudarsana Reddy Kalluru <skalluru@marvell.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <mkalderon@marvell.com>,
         <aelior@marvell.com>
-Subject: [PATCH net-next v2 1/4] devlink: Add APIs to publish/unpublish the port parameters.
-Date:   Thu, 4 Jul 2019 06:20:08 -0700
-Message-ID: <20190704132011.13600-2-skalluru@marvell.com>
+Subject: [PATCH net-next v2 2/4] qed: Add APIs for device attributes configuration.
+Date:   Thu, 4 Jul 2019 06:20:09 -0700
+Message-ID: <20190704132011.13600-3-skalluru@marvell.com>
 X-Mailer: git-send-email 2.12.0
 In-Reply-To: <20190704132011.13600-1-skalluru@marvell.com>
 References: <20190704132011.13600-1-skalluru@marvell.com>
@@ -60,85 +60,153 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kernel has no interface to publish the devlink port parameters. This is
-required for exporting the port params to the user space, so that user
-can read or update the port params.
-This patch adds devlink interfaces (for drivers) to publish/unpublish the
-devlink port parameters.
+The patch adds driver APIs for reading/configuring the device attributes.
 
 Signed-off-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
 Signed-off-by: Ariel Elior <aelior@marvell.com>
 ---
- include/net/devlink.h |  2 ++
- net/core/devlink.c    | 42 ++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 44 insertions(+)
+ drivers/net/ethernet/qlogic/qed/qed_hsi.h | 17 ++++++++
+ drivers/net/ethernet/qlogic/qed/qed_mcp.c | 64 +++++++++++++++++++++++++++++++
+ drivers/net/ethernet/qlogic/qed/qed_mcp.h | 14 +++++++
+ 3 files changed, 95 insertions(+)
 
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 6625ea0..47a1e8f 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -653,6 +653,8 @@ int devlink_port_params_register(struct devlink_port *devlink_port,
- void devlink_port_params_unregister(struct devlink_port *devlink_port,
- 				    const struct devlink_param *params,
- 				    size_t params_count);
-+void devlink_port_params_publish(struct devlink_port *devlink_port);
-+void devlink_port_params_unpublish(struct devlink_port *ddevlink_port);
- int devlink_param_driverinit_value_get(struct devlink *devlink, u32 param_id,
- 				       union devlink_param_value *init_val);
- int devlink_param_driverinit_value_set(struct devlink *devlink, u32 param_id,
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 89c5337..0cd7994 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -6380,6 +6380,48 @@ void devlink_port_params_unregister(struct devlink_port *devlink_port,
- }
- EXPORT_SYMBOL_GPL(devlink_port_params_unregister);
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_hsi.h b/drivers/net/ethernet/qlogic/qed/qed_hsi.h
+index e054f6c..557a12e 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_hsi.h
++++ b/drivers/net/ethernet/qlogic/qed/qed_hsi.h
+@@ -12580,6 +12580,8 @@ struct public_drv_mb {
+ #define DRV_MSG_CODE_BW_UPDATE_ACK		0x32000000
+ #define DRV_MSG_CODE_NIG_DRAIN			0x30000000
+ #define DRV_MSG_CODE_S_TAG_UPDATE_ACK		0x3b000000
++#define DRV_MSG_CODE_GET_NVM_CFG_OPTION		0x003e0000
++#define DRV_MSG_CODE_SET_NVM_CFG_OPTION		0x003f0000
+ #define DRV_MSG_CODE_INITIATE_PF_FLR            0x02010000
+ #define DRV_MSG_CODE_VF_DISABLED_DONE		0xc0000000
+ #define DRV_MSG_CODE_CFG_VF_MSIX		0xc0010000
+@@ -12748,6 +12750,21 @@ struct public_drv_mb {
+ #define DRV_MB_PARAM_FEATURE_SUPPORT_PORT_EEE		0x00000002
+ #define DRV_MB_PARAM_FEATURE_SUPPORT_FUNC_VLINK		0x00010000
  
-+/**
-+ *	devlink_port_params_publish - publish port configuration parameters
-+ *
-+ *	@devlink_port: devlink port
-+ *
-+ *	Publish previously registered port configuration parameters.
-+ */
-+void devlink_port_params_publish(struct devlink_port *devlink_port)
++#define DRV_MB_PARAM_NVM_CFG_OPTION_ID_SHIFT		0
++#define DRV_MB_PARAM_NVM_CFG_OPTION_ID_MASK		0x0000FFFF
++#define DRV_MB_PARAM_NVM_CFG_OPTION_ALL_SHIFT		16
++#define DRV_MB_PARAM_NVM_CFG_OPTION_ALL_MASK		0x00010000
++#define DRV_MB_PARAM_NVM_CFG_OPTION_INIT_SHIFT		17
++#define DRV_MB_PARAM_NVM_CFG_OPTION_INIT_MASK		0x00020000
++#define DRV_MB_PARAM_NVM_CFG_OPTION_COMMIT_SHIFT	18
++#define DRV_MB_PARAM_NVM_CFG_OPTION_COMMIT_MASK		0x00040000
++#define DRV_MB_PARAM_NVM_CFG_OPTION_FREE_SHIFT		19
++#define DRV_MB_PARAM_NVM_CFG_OPTION_FREE_MASK		0x00080000
++#define DRV_MB_PARAM_NVM_CFG_OPTION_ENTITY_SEL_SHIFT	20
++#define DRV_MB_PARAM_NVM_CFG_OPTION_ENTITY_SEL_MASK	0x00100000
++#define DRV_MB_PARAM_NVM_CFG_OPTION_ENTITY_ID_SHIFT	24
++#define DRV_MB_PARAM_NVM_CFG_OPTION_ENTITY_ID_MASK	0x0f000000
++
+ 	u32 fw_mb_header;
+ #define FW_MSG_CODE_MASK			0xffff0000
+ #define FW_MSG_CODE_UNSUPPORTED                 0x00000000
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_mcp.c b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
+index 758702c..573911a 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_mcp.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_mcp.c
+@@ -3750,3 +3750,67 @@ int qed_mcp_get_ppfid_bitmap(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt)
+ 
+ 	return 0;
+ }
++
++int qed_mcp_nvm_get_cfg(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
++			u16 option_id, u8 entity_id, u16 flags, u8 *p_buf,
++			u32 *p_len)
 +{
-+	struct devlink_param_item *param_item;
++	u32 mb_param = 0, resp, param;
++	int rc;
 +
-+	list_for_each_entry(param_item, &devlink_port->param_list, list) {
-+		if (param_item->published)
-+			continue;
-+		param_item->published = true;
-+		devlink_param_notify(devlink_port->devlink, devlink_port->index,
-+				     param_item, DEVLINK_CMD_PORT_PARAM_NEW);
++	QED_MFW_SET_FIELD(mb_param, DRV_MB_PARAM_NVM_CFG_OPTION_ID, option_id);
++	if (flags & QED_NVM_CFG_OPTION_INIT)
++		QED_MFW_SET_FIELD(mb_param,
++				  DRV_MB_PARAM_NVM_CFG_OPTION_INIT, 1);
++	if (flags & QED_NVM_CFG_OPTION_FREE)
++		QED_MFW_SET_FIELD(mb_param,
++				  DRV_MB_PARAM_NVM_CFG_OPTION_FREE, 1);
++	if (flags & QED_NVM_CFG_OPTION_ENTITY_SEL) {
++		QED_MFW_SET_FIELD(mb_param,
++				  DRV_MB_PARAM_NVM_CFG_OPTION_ENTITY_SEL, 1);
++		QED_MFW_SET_FIELD(mb_param,
++				  DRV_MB_PARAM_NVM_CFG_OPTION_ENTITY_ID,
++				  entity_id);
 +	}
-+}
-+EXPORT_SYMBOL_GPL(devlink_port_params_publish);
 +
-+/**
-+ *	devlink_port_params_unpublish - unpublish port configuration parameters
-+ *
-+ *	@devlink_port: devlink port
-+ *
-+ *	Unpublish previously registered port configuration parameters.
-+ */
-+void devlink_port_params_unpublish(struct devlink_port *devlink_port)
++	rc = qed_mcp_nvm_rd_cmd(p_hwfn, p_ptt,
++				DRV_MSG_CODE_GET_NVM_CFG_OPTION,
++				mb_param, &resp, &param, p_len, (u32 *)p_buf);
++
++	return rc;
++}
++
++int qed_mcp_nvm_set_cfg(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
++			u16 option_id, u8 entity_id, u16 flags, u8 *p_buf,
++			u32 len)
 +{
-+	struct devlink_param_item *param_item;
++	u32 mb_param = 0, resp, param;
++	int rc;
 +
-+	list_for_each_entry(param_item, &devlink_port->param_list, list) {
-+		if (!param_item->published)
-+			continue;
-+		param_item->published = false;
-+		devlink_param_notify(devlink_port->devlink, devlink_port->index,
-+				     param_item, DEVLINK_CMD_PORT_PARAM_DEL);
++	QED_MFW_SET_FIELD(mb_param, DRV_MB_PARAM_NVM_CFG_OPTION_ID, option_id);
++	if (flags & QED_NVM_CFG_OPTION_ALL)
++		QED_MFW_SET_FIELD(mb_param,
++				  DRV_MB_PARAM_NVM_CFG_OPTION_ALL, 1);
++	if (flags & QED_NVM_CFG_OPTION_INIT)
++		QED_MFW_SET_FIELD(mb_param,
++				  DRV_MB_PARAM_NVM_CFG_OPTION_INIT, 1);
++	if (flags & QED_NVM_CFG_OPTION_COMMIT)
++		QED_MFW_SET_FIELD(mb_param,
++				  DRV_MB_PARAM_NVM_CFG_OPTION_COMMIT, 1);
++	if (flags & QED_NVM_CFG_OPTION_FREE)
++		QED_MFW_SET_FIELD(mb_param,
++				  DRV_MB_PARAM_NVM_CFG_OPTION_FREE, 1);
++	if (flags & QED_NVM_CFG_OPTION_ENTITY_SEL) {
++		QED_MFW_SET_FIELD(mb_param,
++				  DRV_MB_PARAM_NVM_CFG_OPTION_ENTITY_SEL, 1);
++		QED_MFW_SET_FIELD(mb_param,
++				  DRV_MB_PARAM_NVM_CFG_OPTION_ENTITY_ID,
++				  entity_id);
 +	}
-+}
-+EXPORT_SYMBOL_GPL(devlink_port_params_unpublish);
 +
- static int
- __devlink_param_driverinit_value_get(struct list_head *param_list, u32 param_id,
- 				     union devlink_param_value *init_val)
++	rc = qed_mcp_nvm_wr_cmd(p_hwfn, p_ptt,
++				DRV_MSG_CODE_SET_NVM_CFG_OPTION,
++				mb_param, &resp, &param, len, (u32 *)p_buf);
++
++	return rc;
++}
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_mcp.h b/drivers/net/ethernet/qlogic/qed/qed_mcp.h
+index e4f8fe4..550b4dd 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_mcp.h
++++ b/drivers/net/ethernet/qlogic/qed/qed_mcp.h
+@@ -251,6 +251,12 @@ struct qed_mfw_tlv_generic {
+ 	struct qed_mfw_tlv_iscsi iscsi;
+ };
+ 
++#define QED_NVM_CFG_OPTION_ALL		BIT(0)
++#define QED_NVM_CFG_OPTION_INIT		BIT(1)
++#define QED_NVM_CFG_OPTION_COMMIT       BIT(2)
++#define QED_NVM_CFG_OPTION_FREE		BIT(3)
++#define QED_NVM_CFG_OPTION_ENTITY_SEL	BIT(4)
++
+ /**
+  * @brief - returns the link params of the hw function
+  *
+@@ -1202,4 +1208,12 @@ void qed_mcp_resc_lock_default_init(struct qed_resc_lock_params *p_lock,
+  */
+ int qed_mcp_get_ppfid_bitmap(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt);
+ 
++int qed_mcp_nvm_get_cfg(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
++			u16 option_id, u8 entity_id, u16 flags, u8 *p_buf,
++			u32 *p_len);
++
++int qed_mcp_nvm_set_cfg(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
++			u16 option_id, u8 entity_id, u16 flags, u8 *p_buf,
++			u32 len);
++
+ #endif
 -- 
 1.8.3.1
 
