@@ -2,167 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CEADF5FC48
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 19:12:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6D605FC4C
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 19:13:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727363AbfGDRL7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 13:11:59 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:36791 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727357AbfGDRL7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 13:11:59 -0400
-Received: by mail-lf1-f68.google.com with SMTP id q26so4673729lfc.3
-        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 10:11:57 -0700 (PDT)
+        id S1727275AbfGDRNf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 13:13:35 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:52415 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726012AbfGDRNe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 13:13:34 -0400
+Received: by mail-wm1-f65.google.com with SMTP id s3so6395995wms.2;
+        Thu, 04 Jul 2019 10:13:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=CTw8LgIZLrVf0RNEYgPzuF2QYpEPgzEFcRlidCnudh0=;
-        b=HuH/JsuO8405NViujKhNY1PieKnPq4PjbXEVCQ8+n9tCjMRS8m7dARScFiDdFYh3k8
-         n32TRp7u0m6z3B0D9FzZ2syCVdiokCbih6m/OLiRNp/yIxKjzN9OoRbwwvyX4acKfZ0a
-         HiR74sR6doIrqFfn15vn/I7sCL+1WNOGHamtMsZpL4+x80kHV63tLlnZhnCVz1yKiYdt
-         JwoXpYR/t9TGopxvLD9dXbWfd1Y3kfx/ZltscCN7A6jCa3yiAZfHo6lStppWvT8UbzjI
-         YAjvVwLHFfOqGwE9KnRSjpbwTrjMjNB6bUSqQx3zlUXk30JToslEQ9jX8eIx8jlyYSkY
-         Pp4Q==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bVkyOsnwbLJnvov8gKU5rdvTrE1Z1ljmL0ULAFvpbeg=;
+        b=bGG9ggHK/zW4uS7jJqgIgO+nREbqlh4Ev3uIK7HHlROlCbzGlJshPiqPNofyKOE88S
+         CMzUglWE1UfZiR+IyiGgZVAbmVf/VvDqirzBJXXRpQMEUuQVUtywXc/M+NuYvYoIk3FX
+         dpEO1rgNJ3rAiujbOWsaGln5p03adEPu8SUGw8LdAygow3wdWtZZSJBm7JzBtduparMQ
+         eFxV1XOwaCdM8Kp9P0pU4axlHiZ78dzFzY5ci6AE7JByAHXECRPrFZR6yddUJEOOgZeg
+         nnBPg09c7oFyBVwKFia/9KOF1YWLNps8jZQGbkWPMtkdH3JsWwbM/nyJP3efUlZyXPeP
+         uwNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to:user-agent;
-        bh=CTw8LgIZLrVf0RNEYgPzuF2QYpEPgzEFcRlidCnudh0=;
-        b=LNt8XgCdtd6aD51HS5s73ZX1JUjvmU3WW6BkO/ck/cb8BUbl8gpif3x+R2NyXjo+/p
-         Q+q1uzisEh8c1/V8Hne/D6ghVWcU7lMzQgoGZAw3z2e0GJeV//LS2U/bAM/BMJ8NUile
-         c72m2Vkm2cHW/Q85LjJ8rDGKYz1sEiX488fpdchep7VYulrHzT8DM7qdin8YC1hluLdr
-         QO6HEjsHvh+iKbwyxHeYjt1xlc8ljMu37Ky/F/uCK6g35ChyX8eG4/LchWV26i3hj7vL
-         CTI07XCKPJtEe3oEM2o+V45i92QmCJl8QxlC3ToXk192F/6v2ADQTukcFDYL19JE8WYu
-         wexg==
-X-Gm-Message-State: APjAAAUgws5VckBG+kUBhzpp/5L6XrxQe12YvYKc4nxXhrdDXRmMytvD
-        er+IBlcYkzgAy3vbsPGnucwfKQ==
-X-Google-Smtp-Source: APXvYqwC1GwtWVldB9WJdDmz7RXuTaX/Qg+aRxyVkDoNEMfG5HVm/l90xvLZWEUL8tSpzufWb3TkNw==
-X-Received: by 2002:ac2:5442:: with SMTP id d2mr1501791lfn.70.1562260316525;
-        Thu, 04 Jul 2019 10:11:56 -0700 (PDT)
-Received: from khorivan ([46.211.38.218])
-        by smtp.gmail.com with ESMTPSA id w21sm669798lfl.84.2019.07.04.10.11.45
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 04 Jul 2019 10:11:56 -0700 (PDT)
-Date:   Thu, 4 Jul 2019 20:11:41 +0300
-From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     grygorii.strashko@ti.com, davem@davemloft.net, ast@kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        xdp-newbies@vger.kernel.org, ilias.apalodimas@linaro.org,
-        netdev@vger.kernel.org, daniel@iogearbox.net,
-        jakub.kicinski@netronome.com, john.fastabend@gmail.com
-Subject: Re: [PATCH v6 net-next 1/5] xdp: allow same allocator usage
-Message-ID: <20190704171135.GB2923@khorivan>
-Mail-Followup-To: Jesper Dangaard Brouer <brouer@redhat.com>,
-        grygorii.strashko@ti.com, davem@davemloft.net, ast@kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        xdp-newbies@vger.kernel.org, ilias.apalodimas@linaro.org,
-        netdev@vger.kernel.org, daniel@iogearbox.net,
-        jakub.kicinski@netronome.com, john.fastabend@gmail.com
-References: <20190703101903.8411-1-ivan.khoronzhuk@linaro.org>
- <20190703101903.8411-2-ivan.khoronzhuk@linaro.org>
- <20190703194013.02842e42@carbon>
- <20190704102239.GA3406@khorivan>
- <20190704144144.5edd18eb@carbon>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bVkyOsnwbLJnvov8gKU5rdvTrE1Z1ljmL0ULAFvpbeg=;
+        b=rAEObOvk3WVK4jmzKbmEC2Zn2dDxMjQFdJJIKYGo9pIL20Sl9BQ6KTKhKwnKOLHyDs
+         XI1rkrB/S+Gzb7mdqNHWjgGM63BjkHW5nRxdzY5HMJgYr1PWdff83oVnudKDEJ+gd6iQ
+         at/M4wSmwRdoLy1sQCsOOatFkHy/KgfolM0PYhfGGX+QQ7AUuyD/fjgNksXko6MPmc55
+         iQMMdKCek9y7ZS+EAVrpS4G+xGaXKBxb89Uvaqd5gght/wl+S+NhWuLtxs8SbssM1A3D
+         Hyc0QBPG+AtO1h/+n39rbDsdplIECmbK3zNvHmyvCZGYNEF1YipXXYxAtNFgpFAUxp/m
+         f/7A==
+X-Gm-Message-State: APjAAAV9B/JRu4boUnbhIJqSvdgSI6wabWz+aas2gwd2vwUdP133z1mf
+        CPR7BlijC+d90GLH2ViVC0SBUQHHDJ+RMfwnbgc=
+X-Google-Smtp-Source: APXvYqwRvtnSu8SXq9oMh7dpaCOtxaaM6f9X7CsV89vnYM7FnXZ6Fkl7GffIv1GaVqztG7YdU1Op7iZ7usEStfXSNfc=
+X-Received: by 2002:a7b:c106:: with SMTP id w6mr419153wmi.80.1562260412563;
+ Thu, 04 Jul 2019 10:13:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20190704144144.5edd18eb@carbon>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <201907040313.x643D8Pg025951@userv0121.oracle.com> <201907040314.x643EUoA017906@aserv0122.oracle.com>
+In-Reply-To: <201907040314.x643EUoA017906@aserv0122.oracle.com>
+From:   Brendan Gregg <brendan.d.gregg@gmail.com>
+Date:   Thu, 4 Jul 2019 10:13:06 -0700
+Message-ID: <CAE40pdeSfJBpbBHTmwz1xZ+MW02=kJ0krq1mN+EkjSLqf2GX_w@mail.gmail.com>
+Subject: Re: [PATCH 1/1] tools/dtrace: initial implementation of DTrace
+To:     Kris Van Hees <kris.van.hees@oracle.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        dtrace-devel@oss.oracle.com, LKML <linux-kernel@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Peter Zijlstra <peterz@infradead.org>, Chris Mason <clm@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 04, 2019 at 02:41:44PM +0200, Jesper Dangaard Brouer wrote:
->On Thu, 4 Jul 2019 13:22:40 +0300
->Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
+On Wed, Jul 3, 2019 at 8:17 PM Kris Van Hees <kris.van.hees@oracle.com> wrote:
 >
->> On Wed, Jul 03, 2019 at 07:40:13PM +0200, Jesper Dangaard Brouer wrote:
->> >On Wed,  3 Jul 2019 13:18:59 +0300
->> >Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
->> >
->> >> First of all, it is an absolute requirement that each RX-queue have
->> >> their own page_pool object/allocator. And this change is intendant
->> >> to handle special case, where a single RX-queue can receive packets
->> >> from two different net_devices.
->> >>
->> >> In order to protect against using same allocator for 2 different rx
->> >> queues, add queue_index to xdp_mem_allocator to catch the obvious
->> >> mistake where queue_index mismatch, as proposed by Jesper Dangaard
->> >> Brouer.
->> >>
->> >> Adding this on xdp allocator level allows drivers with such dependency
->> >> change the allocators w/o modifications.
->> >>
->> >> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
->> >> ---
->> >>  include/net/xdp_priv.h |  2 ++
->> >>  net/core/xdp.c         | 55 ++++++++++++++++++++++++++++++++++++++++++
->> >>  2 files changed, 57 insertions(+)
->> >>
->> >> diff --git a/include/net/xdp_priv.h b/include/net/xdp_priv.h
->> >> index 6a8cba6ea79a..9858a4057842 100644
->> >> --- a/include/net/xdp_priv.h
->> >> +++ b/include/net/xdp_priv.h
->> >> @@ -18,6 +18,8 @@ struct xdp_mem_allocator {
->> >>  	struct rcu_head rcu;
->> >>  	struct delayed_work defer_wq;
->> >>  	unsigned long defer_warn;
->> >> +	unsigned long refcnt;
->> >> +	u32 queue_index;
->> >>  };
->> >
->> >I don't like this approach, because I think we need to extend struct
->> >xdp_mem_allocator with a net_device pointer, for doing dev_hold(), to
->> >correctly handle lifetime issues. (As I tried to explain previously).
->> >This will be much harder after this change, which is why I proposed the
->> >other patch.
->> My concern comes not from zero also.
->> It's partly continuation of not answered questions from here:
->> https://lwn.net/ml/netdev/20190625122822.GC6485@khorivan/
->>
->> "For me it's important to know only if it means that alloc.count is
->> freed at first call of __mem_id_disconnect() while shutdown.
->> The workqueue for the rest is connected only with ring cache protected
->> by ring lock and not supposed that alloc.count can be changed while
->> workqueue tries to shutdonwn the pool."
+> This initial implementation of a tiny subset of DTrace functionality
+> provides the following options:
 >
->Yes.  The alloc.count is only freed on first call.  I considered
->changing the shutdown API, to have two shutdown calls, where the call
->used from the work-queue will not have the loop emptying alloc.count,
->but instead have a WARN_ON(alloc.count), as it MUST be empty (once is
->code running from work-queue).
+>         dtrace [-lvV] [-b bufsz] -s script
+>             -b  set trace buffer size
+>             -l  list probes (only works with '-s script' for now)
+>             -s  enable or list probes for the specified BPF program
+>             -V  report DTrace API version
 >
->> So patch you propose to leave works only because of luck, because fast
->> cache is cleared before workqueue is scheduled and no races between two
->> workqueues for fast cache later. I'm not really against this patch, but
->> I have to try smth better.
->
->It is not "luck".  It does the correct thing as we never enter the
->while loop in __page_pool_request_shutdown() from a work-queue, but it
->is not obvious from the code.  The not-so-nice thing is that two
->work-queue shutdowns will be racing with each-other, in the multi
->netdev use-case, but access to the ptr_ring is safe/locked.
+> The patch comprises quite a bit of code due to DTrace requiring a few
+> crucial components, even in its most basic form.
 
-So, having this, and being prudent to generic code changes, lets roll back
-to idea from v.4:
-https://lkml.org/lkml/2019/6/25/996
-but use changes from following patch, reintroducing page destroy:
-https://www.spinics.net/lists/netdev/msg583145.html
-with appropriate small modifications for cpsw.
+This patchset has moved from adding tests (which actually belong in
+selftests, not tools/dtrace), to the start of adding a giant tracer to
+the kernel code base.
 
-In case of some issue connected with it (not supposed), or two/more
-allocators used by cpsw, or one more driver having such multi ndev
-capabilities (supposed), would be nice to use this link as reference
-and it can be base for similar modifications.
+First, in some ways you're doing this for me -- I've been the number
+one user of DTrace for 15 years -- and thanks, but no thanks. I don't
+need this anymore. I needed this 6 years ago, and I would have helped
+you build it, but in the meantime Linux has built something better,
+built from the ground up for BPF: bpftrace.
 
-Unless Jesper disagrees with this ofc.
+Second, you argued that DTrace was needed because of speculative
+tracing (a feature I never used), as you had customers who wanted it.
+Those customers aren't going to be happy with this initial tiny
+implementation of DTrace -- this is really the start of adding a large
+and complex tracer to the kernel.
 
-I will send v7 soon after verification is completed.
+We've all been working under the assumption that these user-space
+tracers did not belong in the kernel, and so far that's been working
+fine for us. Is it now open season for tracers in the kernel? Let's
+have:
 
--- 
-Regards,
-Ivan Khoronzhuk
+tools/bpftrace
+tools/ply
+tools/systemtap
+tools/LTTng
+tools/sysdig
+tools/ktap
+etc
+
+Yes, that's ridiculous. If there's only going to be one, let's have
+the best one, bpftrace. We'll offer a version that is GPL, C, and has
+no dependencies.
+
+But it would be news to us all that we're allowed to have even one.
+
+There are more things that don't make sense about this, but I'll stop
+here for now.
+
+
+
+
+Brendan
