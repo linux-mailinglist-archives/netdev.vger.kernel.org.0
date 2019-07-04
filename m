@@ -2,149 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F8015F6DE
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 12:55:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B62BA5F71C
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 13:11:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727587AbfGDKzj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 06:55:39 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:39146 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727563AbfGDKzj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 06:55:39 -0400
-Received: by mail-pg1-f193.google.com with SMTP id u17so2268128pgi.6
-        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 03:55:39 -0700 (PDT)
+        id S1727670AbfGDLLQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 07:11:16 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:45314 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727436AbfGDLLP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 07:11:15 -0400
+Received: by mail-wr1-f67.google.com with SMTP id f9so6162578wre.12
+        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 04:11:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fFkhCc619vRd94uoe7aHJSBMFEl+zNjNnFnyvCKwJS0=;
-        b=QjuddBdT3mG9W3uWDvKTXBPIOLTcSFsfepx1jK2sznc1aG6YJkBmHbP+BsddK1cqr1
-         lfAS53bpdUpcra2w7BKad2vDOuh/obpSEYT4QwKuKbXr+XwQRj5DejtAClEcHInc7bJ5
-         wDhMvcZj2LuRhZViyKpcs4Y+eTTOw89Bo6VKmTjlMvKmsrh8N9yE+bzGpz8e+nW2TUaL
-         9sPBD+us9WHl3Y6g+GydcriY2ya1U0KWpXbTTn3MVPjn1x1LiXAlmzzK6vc7bFUhrJx7
-         u666QJY8Ppoyaj3tQSJzarTiql3uQng0hs5n/o4X5EZWazShxbTgeDz+ZCKNE1H0ffMd
-         OVNA==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=l8xOwRoeewzebcQAt1yKxsHLrRV9J9YjppTfdC6bYO4=;
+        b=AcU/Og0Im9zeCUoAjQfz6t1TPM7Mfh0ysWoMMrnoAxopui+jfwRP+8ITrmS17IrY1C
+         KEs0UE42QQXFtM3Plib24n04BsaZx7YpdSdT+lXwkDmW5UXo5AVmjENp8T4Yk5L4W3qL
+         ya3qtdkWWGhERgwew7vMxaZiQ0oib0yFn8XnrueuwqH8INdv94RXEj/zk8dU3Gtn4O0A
+         6EwHajqBOaWPjJJmtSLrm8PZE5Ma9nIUkyig0AkkUrnFH46TF6oLK4F+36SuPCPJzrid
+         vsMqp3WqEkNc7NWqF0JoS9TZcj/Wt9C7JFdlMtv8VS6Ms36Kj4I2IsGthBfqv69AJ3yx
+         KAhg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fFkhCc619vRd94uoe7aHJSBMFEl+zNjNnFnyvCKwJS0=;
-        b=AnPrS675Exp5NOrGMTjjL5CwYNEhGAUa/YJmsVzzOX0KJ8HUjo5dfB/ha2fcW2a7JO
-         hkytW9LHGUIEtpsxiqvV1HZl54sJ9WaL8e9sb3GmlRF98KP7Z4wZsTZWw24SBWZ+gxw1
-         czOj0iZcy/xldcTcKbYi1iMq4z1tJqp57IAXVg1x8Qml25GyrQ+XhoGBH8hXbBaP6nGZ
-         FHrQSVaHKvBzcfm7bCKH+/ddbjkqI+js84mtmQ9uFH/Y2HPEZwtuDC0UPoTWdhbFX0Xk
-         M52XHc9ypjVmRUZWAdTB1X3Xxs0F7unNYAR0v0lPe4HYF+fWSIxsoZmra+Fu80oftJCa
-         l7+w==
-X-Gm-Message-State: APjAAAWFpAB/dgBcLgoP8Zmo3ruqCd61qSoX04bGm3R9Tk0ujDTgA2WX
-        eR4jdtink8q90rF8QctqXN6SfQ==
-X-Google-Smtp-Source: APXvYqz5o52E88f0jIRgzlTBYcftTP9a6vzhxvfuOSWu42Tgt4yPhyIirW2xi948NDsJcJHMStf+3A==
-X-Received: by 2002:a17:90a:a407:: with SMTP id y7mr18979498pjp.97.1562237738664;
-        Thu, 04 Jul 2019 03:55:38 -0700 (PDT)
-Received: from localhost.localdomain (220-133-8-232.HINET-IP.hinet.net. [220.133.8.232])
-        by smtp.gmail.com with ESMTPSA id k22sm5562533pfk.157.2019.07.04.03.55.36
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Thu, 04 Jul 2019 03:55:38 -0700 (PDT)
-From:   Chris Chiu <chiu@endlessm.com>
-To:     jes.sorensen@gmail.com, kvalo@codeaurora.org, davem@davemloft.net
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux@endlessm.com
-Subject: [PATCH v2] rtl8xxxu: Fix wifi low signal strength issue of RTL8723BU
-Date:   Thu,  4 Jul 2019 18:55:28 +0800
-Message-Id: <20190704105528.74028-1-chiu@endlessm.com>
-X-Mailer: git-send-email 2.20.1 (Apple Git-117)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=l8xOwRoeewzebcQAt1yKxsHLrRV9J9YjppTfdC6bYO4=;
+        b=kdMslk5d7NlbQ+/X5QiDqwvM1JdBBQjFE4yr4IEybCT61zjACNGGgfoLczn1uRKpJ9
+         rFHdBEwjKr5zb6ZhDsD5bN2DanRRI58sGXCeVTG6OOrUYZPaPz3c03+O7kPESVrmfk7B
+         3tubnHJxW3sRJzJM5PSq3DlimFvtmdkqVI52k/UhidOStAgfLmi1m4W9/r461eDQH5mM
+         Maop3z21hsaG6DDvV9ecXkwYXlyTbCtAKPxYBDUP4R1SdaDK/SdhfIv4t0f6myh8hHNX
+         ENgOK6ZpzTFFGoth7MXv4zS7e4L6IpKdeH588jfw2LTuYZindeuqJOA8U3L4ppxtG5gM
+         Of/A==
+X-Gm-Message-State: APjAAAU5TM6gM5a/DI3fxP6gg+1wbfMotz81tiU+F+/PHyuMV0CcTwZm
+        /9PRv6Qe7r8/pZbYoMnvGUbEDQ==
+X-Google-Smtp-Source: APXvYqwc3n6Z1DTK4DI0irtOTjnyQp+cY9JrkG89Fk1+0XQ7A/1JudehcvBrF5/bUdDdbNSumzT99A==
+X-Received: by 2002:adf:dfc4:: with SMTP id q4mr32763692wrn.54.1562238673665;
+        Thu, 04 Jul 2019 04:11:13 -0700 (PDT)
+Received: from apalos (athedsl-428434.home.otenet.gr. [79.131.225.144])
+        by smtp.gmail.com with ESMTPSA id r4sm4942586wrv.34.2019.07.04.04.11.11
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 04 Jul 2019 04:11:12 -0700 (PDT)
+Date:   Thu, 4 Jul 2019 14:11:09 +0300
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Jose Abreu <Jose.Abreu@synopsys.com>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Joao Pinto <Joao.Pinto@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Maxime Ripard <maxime.ripard@bootlin.com>,
+        Chen-Yu Tsai <wens@csie.org>
+Subject: Re: [PATCH net-next 3/3] net: stmmac: Introducing support for Page
+ Pool
+Message-ID: <20190704111109.GA12011@apalos>
+References: <cover.1562149883.git.joabreu@synopsys.com>
+ <1b254bb7fc6044c5e6e2fdd9e00088d1d13a808b.1562149883.git.joabreu@synopsys.com>
+ <20190704120018.4523a119@carbon>
+ <BN8PR12MB3266BC5322AADFAC49D9BAFAD3FA0@BN8PR12MB3266.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN8PR12MB3266BC5322AADFAC49D9BAFAD3FA0@BN8PR12MB3266.namprd12.prod.outlook.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The WiFi tx power of RTL8723BU is extremely low after booting. So
-the WiFi scan gives very limited AP list and it always fails to
-connect to the selected AP. This module only supports 1x1 antenna
-and the antenna is switched to bluetooth due to some incorrect
-register settings.
+On Thu, Jul 04, 2019 at 10:13:37AM +0000, Jose Abreu wrote:
+> From: Jesper Dangaard Brouer <brouer@redhat.com>
+> 
+> > The page_pool DMA mapping cannot be "kept" when page traveling into the
+> > network stack attached to an SKB.  (Ilias and I have a long term plan[1]
+> > to allow this, but you cannot do it ATM).
+> 
+> The reason I recycle the page is this previous call to:
+> 
+> 	skb_copy_to_linear_data()
+> 
+> So, technically, I'm syncing to CPU the page(s) and then memcpy to a 
+> previously allocated SKB ... So it's safe to just recycle the mapping I 
+> think.
+> 
+> Its kind of using bounce buffers and I do see performance gain in this 
+> (I think the reason is because my setup uses swiotlb for DMA mapping).
 
-Compare with the vendor driver https://github.com/lwfinger/rtl8723bu,
-we realized that the 8723bu's enable_rf() does the same thing as
-rtw_btcoex_HAL_Initialize() in vendor driver. And it by default
-sets the antenna path to BTC_ANT_PATH_BT which we verified it's
-the cause of the wifi weak tx power. The vendor driver will set
-the antenna path to BTC_ANT_PATH_PTA in the consequent btcoexist
-mechanism, by the function halbtc8723b1ant_PsTdma.
+Maybe. Have you tested this on big/small packets?
+Can you do a test with 64b/128b and 1024b for example?
+The memcpy might be cheap for the small sized packets (and cheaper than the dma
+map/unmap)
 
-This commit hand over the antenna control to PTA(Packet Traffic
-Arbitration), which compares the weight of bluetooth/wifi traffic
-then determine whether to continue current wifi traffic or not.
-After PTA take control, The wifi signal will be back to normal and
-the bluetooth scan can also work at the same time. However, the
-btcoexist still needs to be handled under different circumstances.
-If there's a BT connection established, the wifi still fails to
-connect until BT disconnected.
+> 
+> Anyway, I'm open to some suggestions on how to improve this ...
+> 
+> > Also remember that the page_pool requires you driver to do the DMA-sync
+> > operation.  I see a dma_sync_single_for_cpu(), but I didn't see a
+> > dma_sync_single_for_device() (well, I noticed one getting removed).
+> > (For some HW Ilias tells me that the dma_sync_single_for_device can be
+> > elided, so maybe this can still be correct for you).
+> 
+> My HW just needs descriptors refilled which are in different coherent 
+> region so I don't see any reason for dma_sync_single_for_device() ...
+I am abit overloaded at the moment. I'll try to have a look at this and get back
+to you
 
-Signed-off-by: Chris Chiu <chiu@endlessm.com>
----
-
-
-Note:
- v2:
-  - Replace BIT(11) with the descriptive definition
-  - Meaningful comment for the REG_S0S1_PATH_SWITCH setting
-
-
- drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c | 11 ++++++++---
- drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c  |  3 ++-
- 2 files changed, 10 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
-index 3adb1d3d47ac..ceffe05bd65b 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c
-@@ -1525,7 +1525,7 @@ static void rtl8723b_enable_rf(struct rtl8xxxu_priv *priv)
- 	/*
- 	 * WLAN action by PTA
- 	 */
--	rtl8xxxu_write8(priv, REG_WLAN_ACT_CONTROL_8723B, 0x04);
-+	rtl8xxxu_write8(priv, REG_WLAN_ACT_CONTROL_8723B, 0x0c);
- 
- 	/*
- 	 * BT select S0/S1 controlled by WiFi
-@@ -1568,9 +1568,14 @@ static void rtl8723b_enable_rf(struct rtl8xxxu_priv *priv)
- 	rtl8xxxu_gen2_h2c_cmd(priv, &h2c, sizeof(h2c.ant_sel_rsv));
- 
- 	/*
--	 * 0x280, 0x00, 0x200, 0x80 - not clear
-+	 * Different settings per different antenna position.
-+	 *      Antenna Position:   | Normal   Inverse
-+	 * --------------------------------------------------
-+	 * Antenna switch to BT:    |  0x280,   0x00
-+	 * Antenna switch to WiFi:  |  0x0,     0x280
-+	 * Antenna switch to PTA:   |  0x200,   0x80
- 	 */
--	rtl8xxxu_write32(priv, REG_S0S1_PATH_SWITCH, 0x00);
-+	rtl8xxxu_write32(priv, REG_S0S1_PATH_SWITCH, 0x80);
- 
- 	/*
- 	 * Software control, antenna at WiFi side
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index 8136e268b4e6..c6c41fb962ff 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-@@ -3891,12 +3891,13 @@ static int rtl8xxxu_init_device(struct ieee80211_hw *hw)
- 
- 	/* Check if MAC is already powered on */
- 	val8 = rtl8xxxu_read8(priv, REG_CR);
-+	val16 = rtl8xxxu_read16(priv, REG_SYS_CLKR);
- 
- 	/*
- 	 * Fix 92DU-VC S3 hang with the reason is that secondary mac is not
- 	 * initialized. First MAC returns 0xea, second MAC returns 0x00
- 	 */
--	if (val8 == 0xea)
-+	if (val8 == 0xea || !(val16 & SYS_CLK_MAC_CLK_ENABLE))
- 		macpower = false;
- 	else
- 		macpower = true;
--- 
-2.11.0
-
+Cheers
+/Ilias
