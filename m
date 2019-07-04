@@ -2,124 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BE03F5FADA
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 17:29:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86D415FAE8
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 17:33:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727602AbfGDP3u convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 4 Jul 2019 11:29:50 -0400
-Received: from mga09.intel.com ([134.134.136.24]:4001 "EHLO mga09.intel.com"
+        id S1727677AbfGDPdl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 11:33:41 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:42078 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727066AbfGDP3u (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Jul 2019 11:29:50 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Jul 2019 08:29:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.63,451,1557212400"; 
-   d="scan'208";a="166286219"
-Received: from pgsmsx113.gar.corp.intel.com ([10.108.55.202])
-  by fmsmga007.fm.intel.com with ESMTP; 04 Jul 2019 08:29:47 -0700
-Received: from pgsmsx103.gar.corp.intel.com ([169.254.2.4]) by
- pgsmsx113.gar.corp.intel.com ([169.254.6.230]) with mapi id 14.03.0439.000;
- Thu, 4 Jul 2019 23:29:46 +0800
-From:   "Voon, Weifeng" <weifeng.voon@intel.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        id S1726822AbfGDPdl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Jul 2019 11:33:41 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id D50423091799;
+        Thu,  4 Jul 2019 15:33:36 +0000 (UTC)
+Received: from carbon (ovpn-200-17.brq.redhat.com [10.40.200.17])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D1B4A84290;
+        Thu,  4 Jul 2019 15:33:26 +0000 (UTC)
+Date:   Thu, 4 Jul 2019 17:33:25 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Jose Abreu <Jose.Abreu@synopsys.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "Giuseppe Cavallaro" <peppe.cavallaro@st.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Joao Pinto <Joao.Pinto@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@st.com>,
-        biao huang <biao.huang@mediatek.com>,
-        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
-        "Kweh, Hock Leong" <hock.leong.kweh@intel.com>
-Subject: RE: [PATCH v1 net-next] net: stmmac: enable clause 45 mdio support
-Thread-Topic: [PATCH v1 net-next] net: stmmac: enable clause 45 mdio support
-Thread-Index: AQHVMUGmUw8CyhUBakCg51utnm9b/6a4aBMAgAFBlaD//59qAIAArWRQgAAA3wCAAJ+BsA==
-Date:   Thu, 4 Jul 2019 15:29:46 +0000
-Message-ID: <D6759987A7968C4889FDA6FA91D5CBC8147388E0@PGSMSX103.gar.corp.intel.com>
-References: <1562147404-4371-1-git-send-email-weifeng.voon@intel.com>
- <20190703140520.GA18473@lunn.ch>
- <D6759987A7968C4889FDA6FA91D5CBC8147384B6@PGSMSX103.gar.corp.intel.com>
- <20190704033038.GA6276@lunn.ch>
- <D6759987A7968C4889FDA6FA91D5CBC81473862D@PGSMSX103.gar.corp.intel.com>
- <20190704135420.GD13859@lunn.ch>
-In-Reply-To: <20190704135420.GD13859@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.0.600.7
-dlp-reaction: no-action
-x-originating-ip: [172.30.20.205]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Maxime Ripard <maxime.ripard@bootlin.com>,
+        Chen-Yu Tsai <wens@csie.org>, brouer@redhat.com
+Subject: Re: [PATCH net-next 3/3] net: stmmac: Introducing support for Page
+ Pool
+Message-ID: <20190704173325.2e21cc93@carbon>
+In-Reply-To: <BYAPR12MB32692AA2F18A530D56383739D3FA0@BYAPR12MB3269.namprd12.prod.outlook.com>
+References: <cover.1562149883.git.joabreu@synopsys.com>
+        <1b254bb7fc6044c5e6e2fdd9e00088d1d13a808b.1562149883.git.joabreu@synopsys.com>
+        <20190704113916.665de2ec@carbon>
+        <BYAPR12MB326902688C3F40BB3DA6EEEBD3FA0@BYAPR12MB3269.namprd12.prod.outlook.com>
+        <20190704170920.1e81ed6e@carbon>
+        <BYAPR12MB32692AA2F18A530D56383739D3FA0@BYAPR12MB3269.namprd12.prod.outlook.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Thu, 04 Jul 2019 15:33:40 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > > > > @@ -155,22 +171,26 @@ static int stmmac_mdio_read(struct
-> > > > > > mii_bus *bus,
-> > > > > int phyaddr, int phyreg)
-> > > > > >  	struct stmmac_priv *priv = netdev_priv(ndev);
-> > > > > >  	unsigned int mii_address = priv->hw->mii.addr;
-> > > > > >  	unsigned int mii_data = priv->hw->mii.data;
-> > > > > > -	u32 v;
-> > > > > > -	int data;
-> > > > > >  	u32 value = MII_BUSY;
-> > > > > > +	int data = 0;
-> > > > > > +	u32 v;
-> > > > > >
-> > > > > >  	value |= (phyaddr << priv->hw->mii.addr_shift)
-> > > > > >  		& priv->hw->mii.addr_mask;
-> > > > > >  	value |= (phyreg << priv->hw->mii.reg_shift) & priv->hw-
-> > > > > >mii.reg_mask;
-> > > > > >  	value |= (priv->clk_csr << priv->hw->mii.clk_csr_shift)
-> > > > > >  		& priv->hw->mii.clk_csr_mask;
-> > > > > > -	if (priv->plat->has_gmac4)
-> > > > > > +	if (priv->plat->has_gmac4) {
-> > > > > >  		value |= MII_GMAC4_READ;
-> > > > > > +		if (phyreg & MII_ADDR_C45)
-> > > > > > +			stmmac_mdio_c45_setup(priv, phyreg, &value,
-> &data);
-> > > > > > +	}
-> > > > > >
-> > > > > >  	if (readl_poll_timeout(priv->ioaddr + mii_address,
-> v, !(v &
-> > > > > MII_BUSY),
-> > > > > >  			       100, 10000))
-> > > > > >  		return -EBUSY;
-> > > > > >
-> > > > > > +	writel(data, priv->ioaddr + mii_data);
-> > > > >
-> > > > > That looks odd. Could you explain why it is needed.
-> > > > >
-> > > > > Thanks
-> > > > > 	Andrew
-> > > >
-> > > > Hi Andrew,
-> > > > This mdio c45 support needed to access DWC xPCS which is a
-> > > > Clause-45
-> > >
-> > > I mean it looks odd doing a write to the data register in the middle
-> > > of stmmac_mdio_read().
-> >
-> > MAC is using an indirect access to access mdio devices. In order to
-> > read, the driver needs to write into both mii_data and mii_address to
-> > select c45, read/write command, phy address, address to read, and etc.
-> 
-> Yes, that is all clear. The stmmac_mdio_c45_setup() does part of this
-> setup. There is also a write to mii_address which i snipped out when
-> replying. But why do you need to write to the data registers during a
-> read? C22 does not need this write. Are there some bits in the top of
-> the data register which are relevant to C45?
-> 
+On Thu, 4 Jul 2019 15:18:19 +0000
+Jose Abreu <Jose.Abreu@synopsys.com> wrote:
 
-Yes, the top 16 bit of the data register only valid when C45 is enable.
-It contains the Register address which MDIO c45 frame intended for.
+> From: Jesper Dangaard Brouer <brouer@redhat.com>
+> 
+> > You can just use page_pool_free() (p.s I'm working on reintroducing
+> > page_pool_destroy wrapper).  As you say, you will not have in-flight
+> > frames/pages in this driver use-case.  
+> 
+> Well, if I remove the request_shutdown() it will trigger the "API usage 
+> violation" WARN ...
+> 
+> I think this is due to alloc cache only be freed in request_shutdown(), 
+> or I'm having some leak :D
+
+Sorry, for not being clear.  You of-cause first have to call
+page_pool_request_shutdown() and then call page_pool_free().
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
