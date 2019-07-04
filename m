@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B50E75F9B3
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 16:07:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB6395F99A
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 16:06:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727251AbfGDOGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 10:06:25 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:47472 "EHLO huawei.com"
+        id S1727383AbfGDOGa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 10:06:30 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:47474 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726817AbfGDOGY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Jul 2019 10:06:24 -0400
+        id S1727207AbfGDOG3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Jul 2019 10:06:29 -0400
 Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id DC89B1B48A6223FCA715;
+        by Forcepoint Email with ESMTP id D8497951752DBEBBD4F7;
         Thu,  4 Jul 2019 22:06:21 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.132) by
  DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
@@ -24,9 +24,9 @@ CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linuxarm@huawei.com>, Jian Shen <shenjian15@huawei.com>,
         Peng Li <lipeng321@huawei.com>,
         "Huazhong Tan" <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 1/9] net: hns3: enable broadcast promisc mode when initializing VF
-Date:   Thu, 4 Jul 2019 22:04:20 +0800
-Message-ID: <1562249068-40176-2-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 2/9] net: hns3: fix flow control configure issue for fibre port
+Date:   Thu, 4 Jul 2019 22:04:21 +0800
+Message-ID: <1562249068-40176-3-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1562249068-40176-1-git-send-email-tanhuazhong@huawei.com>
 References: <1562249068-40176-1-git-send-email-tanhuazhong@huawei.com>
@@ -41,53 +41,71 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jian Shen <shenjian15@huawei.com>
 
-For revision 0x20, the broadcast promisc is enabled by firmware,
-it's unnecessary to enable it when initializing VF.
+Flow control autoneg is unsupported for fibre port. It takes no
+effect for flow control when restart autoneg. This patch fixes
+it, return -EOPNOTSUPP when user tries to enable flow control
+autoneg.
 
-For revision 0x21, it's necessary to enable broadcast promisc mode
-when initializing or re-initializing VF, otherwise, it will be
-unable to send and receive promisc packets.
-
-Fixes: f01f5559cac8 ("net: hns3: don't allow vf to enable promisc mode")
 Signed-off-by: Jian Shen <shenjian15@huawei.com>
 Signed-off-by: Peng Li <lipeng321@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index 42006cc..ff7e8cb 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -2589,6 +2589,12 @@ static int hclgevf_reset_hdev(struct hclgevf_dev *hdev)
- 		return ret;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index 62c6263..2ecc10a 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -8179,8 +8179,9 @@ static void hclge_get_pauseparam(struct hnae3_handle *handle, u32 *auto_neg,
+ {
+ 	struct hclge_vport *vport = hclge_get_vport(handle);
+ 	struct hclge_dev *hdev = vport->back;
++	struct phy_device *phydev = hdev->hw.mac.phydev;
+ 
+-	*auto_neg = hclge_get_autoneg(handle);
++	*auto_neg = phydev ? hclge_get_autoneg(handle) : 0;
+ 
+ 	if (hdev->tm_info.fc_mode == HCLGE_FC_PFC) {
+ 		*rx_en = 0;
+@@ -8211,11 +8212,13 @@ static int hclge_set_pauseparam(struct hnae3_handle *handle, u32 auto_neg,
+ 	struct phy_device *phydev = hdev->hw.mac.phydev;
+ 	u32 fc_autoneg;
+ 
+-	fc_autoneg = hclge_get_autoneg(handle);
+-	if (auto_neg != fc_autoneg) {
+-		dev_info(&hdev->pdev->dev,
+-			 "To change autoneg please use: ethtool -s <dev> autoneg <on|off>\n");
+-		return -EOPNOTSUPP;
++	if (phydev) {
++		fc_autoneg = hclge_get_autoneg(handle);
++		if (auto_neg != fc_autoneg) {
++			dev_info(&hdev->pdev->dev,
++				 "To change autoneg please use: ethtool -s <dev> autoneg <on|off>\n");
++			return -EOPNOTSUPP;
++		}
  	}
  
-+	if (pdev->revision >= 0x21) {
-+		ret = hclgevf_set_promisc_mode(hdev, true);
-+		if (ret)
-+			return ret;
-+	}
-+
- 	dev_info(&hdev->pdev->dev, "Reset done\n");
+ 	if (hdev->tm_info.fc_mode == HCLGE_FC_PFC) {
+@@ -8226,16 +8229,13 @@ static int hclge_set_pauseparam(struct hnae3_handle *handle, u32 auto_neg,
  
- 	return 0;
-@@ -2668,9 +2674,11 @@ static int hclgevf_init_hdev(struct hclgevf_dev *hdev)
- 	 * firmware makes sure broadcast packets can be accepted.
- 	 * For revision 0x21, default to enable broadcast promisc mode.
- 	 */
--	ret = hclgevf_set_promisc_mode(hdev, true);
--	if (ret)
--		goto err_config;
-+	if (pdev->revision >= 0x21) {
-+		ret = hclgevf_set_promisc_mode(hdev, true);
-+		if (ret)
-+			goto err_config;
-+	}
+ 	hclge_set_flowctrl_adv(hdev, rx_en, tx_en);
  
- 	/* Initialize RSS for this VF */
- 	ret = hclgevf_rss_init_hw(hdev);
+-	if (!fc_autoneg)
++	if (!auto_neg)
+ 		return hclge_cfg_pauseparam(hdev, rx_en, tx_en);
+ 
+ 	if (phydev)
+ 		return phy_start_aneg(phydev);
+ 
+-	if (hdev->pdev->revision == 0x20)
+-		return -EOPNOTSUPP;
+-
+-	return hclge_restart_autoneg(handle);
++	return -EOPNOTSUPP;
+ }
+ 
+ static void hclge_get_ksettings_an_result(struct hnae3_handle *handle,
 -- 
 2.7.4
 
