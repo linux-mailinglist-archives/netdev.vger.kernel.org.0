@@ -2,102 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 660795F0FE
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 03:38:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DDD55F120
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 04:07:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727153AbfGDBiD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 21:38:03 -0400
-Received: from mga14.intel.com ([192.55.52.115]:20681 "EHLO mga14.intel.com"
+        id S1727095AbfGDCHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 22:07:51 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:40891 "EHLO ozlabs.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726574AbfGDBiD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jul 2019 21:38:03 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Jul 2019 18:38:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.63,449,1557212400"; 
-   d="scan'208";a="169312757"
-Received: from npg-dpdk-virtio-tbie-2.sh.intel.com (HELO ___) ([10.67.104.151])
-  by orsmga006.jf.intel.com with ESMTP; 03 Jul 2019 18:38:00 -0700
-Date:   Thu, 4 Jul 2019 09:36:36 +0800
-From:   Tiwei Bie <tiwei.bie@intel.com>
-To:     Alex Williamson <alex.williamson@redhat.com>
-Cc:     mst@redhat.com, jasowang@redhat.com, maxime.coquelin@redhat.com,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        dan.daly@intel.com, cunming.liang@intel.com, zhihong.wang@intel.com
-Subject: Re: [RFC v2] vhost: introduce mdev based hardware vhost backend
-Message-ID: <20190704013636.GA26992@___>
-References: <20190703091339.1847-1-tiwei.bie@intel.com>
- <20190703123157.2452bf95@x1.home>
+        id S1726736AbfGDCHu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Jul 2019 22:07:50 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 45fLwM5YR1z9sBp;
+        Thu,  4 Jul 2019 12:07:47 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1562206067;
+        bh=FZC5OmKx87+MlDzcP0uX/EGD8A8QXvO+bKQTAKFNPHQ=;
+        h=Date:From:To:Cc:Subject:From;
+        b=QPNNxX29URxDDHh6fJqWVzz19YXoS9MEi/tnIqYFwG5ePsYZjALYBKs5qS9gH6rjQ
+         Gi207c+a5eQvJ30KjPyjZxsIASlckitkULavSgyDkDKF3yD9euvy3SESEBk75cxG3N
+         GFtKnPL2kYTFNdL4K+5CXxDr8OWWrqaL8KytdSVKhfLVIPZvMNvtdHcmB9zy+gSxLz
+         QIDx+/CqNaO0cU9kmT9+k7vGxKUaJ1zu8h5Su0sT4Kiv53TtKklvQyfy8CMLtIiqrl
+         dTPOTMLvozIX+aKsk1mNjPLOwt/Lk5NvxfC0q+8fZM0m4FJ7kA0MJgVBDee1txOMDp
+         SgGyBWhFB3KQg==
+Date:   Thu, 4 Jul 2019 12:07:46 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Po-Hsu Lin <po-hsu.lin@canonical.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Mahesh Bandewar <maheshb@google.com>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20190704120746.23390c34@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20190703123157.2452bf95@x1.home>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ boundary="Sig_/XidfUzLJcY7Hg=ulE2tv0XA"; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 03, 2019 at 12:31:57PM -0600, Alex Williamson wrote:
-> On Wed,  3 Jul 2019 17:13:39 +0800
-> Tiwei Bie <tiwei.bie@intel.com> wrote:
-> > diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> > index 8f10748dac79..6c5718ab7eeb 100644
-> > --- a/include/uapi/linux/vfio.h
-> > +++ b/include/uapi/linux/vfio.h
-> > @@ -201,6 +201,7 @@ struct vfio_device_info {
-> >  #define VFIO_DEVICE_FLAGS_AMBA  (1 << 3)	/* vfio-amba device */
-> >  #define VFIO_DEVICE_FLAGS_CCW	(1 << 4)	/* vfio-ccw device */
-> >  #define VFIO_DEVICE_FLAGS_AP	(1 << 5)	/* vfio-ap device */
-> > +#define VFIO_DEVICE_FLAGS_VHOST	(1 << 6)	/* vfio-vhost device */
-> >  	__u32	num_regions;	/* Max region index + 1 */
-> >  	__u32	num_irqs;	/* Max IRQ index + 1 */
-> >  };
-> > @@ -217,6 +218,7 @@ struct vfio_device_info {
-> >  #define VFIO_DEVICE_API_AMBA_STRING		"vfio-amba"
-> >  #define VFIO_DEVICE_API_CCW_STRING		"vfio-ccw"
-> >  #define VFIO_DEVICE_API_AP_STRING		"vfio-ap"
-> > +#define VFIO_DEVICE_API_VHOST_STRING		"vfio-vhost"
-> >  
-> >  /**
-> >   * VFIO_DEVICE_GET_REGION_INFO - _IOWR(VFIO_TYPE, VFIO_BASE + 8,
-> > @@ -573,6 +575,23 @@ enum {
-> >  	VFIO_CCW_NUM_IRQS
-> >  };
-> >  
-> > +/*
-> > + * The vfio-vhost bus driver makes use of the following fixed region and
-> > + * IRQ index mapping. Unimplemented regions return a size of zero.
-> > + * Unimplemented IRQ types return a count of zero.
-> > + */
-> > +
-> > +enum {
-> > +	VFIO_VHOST_CONFIG_REGION_INDEX,
-> > +	VFIO_VHOST_NOTIFY_REGION_INDEX,
-> > +	VFIO_VHOST_NUM_REGIONS
-> > +};
-> > +
-> > +enum {
-> > +	VFIO_VHOST_VQ_IRQ_INDEX,
-> > +	VFIO_VHOST_NUM_IRQS
-> > +};
-> > +
-> 
-> Note that the vfio API has evolved a bit since vfio-pci started this
-> way, with fixed indexes for pre-defined region types.  We now support
-> device specific regions which can be identified by a capability within
-> the REGION_INFO ioctl return data.  This allows a bit more flexibility,
-> at the cost of complexity, but the infrastructure already exists in
-> kernel and QEMU to make it relatively easy.  I think we'll have the
-> same support for interrupts soon too.  If you continue to pursue the
-> vfio-vhost direction you might want to consider these before committing
-> to fixed indexes.  Thanks,
+--Sig_/XidfUzLJcY7Hg=ulE2tv0XA
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Thanks for the details! Will give it a try!
+Hi all,
 
-Thanks,
-Tiwei
+Today's linux-next merge of the net-next tree got a conflict in:
+
+  tools/testing/selftests/net/config
+
+between commit:
+
+  ff95bf28c234 ("selftests/net: skip psock_tpacket test if KALLSYMS was not=
+ enabled")
+
+from the net tree and commit:
+
+  af5136f95045 ("selftests/net: SO_TXTIME with ETF and FQ")
+  509e56b37cc3 ("blackhole_dev: add a selftest")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc tools/testing/selftests/net/config
+index 3dea2cba2325,e4b878d95ba0..000000000000
+--- a/tools/testing/selftests/net/config
++++ b/tools/testing/selftests/net/config
+@@@ -25,4 -25,6 +25,7 @@@ CONFIG_NF_TABLES_IPV6=3D
+  CONFIG_NF_TABLES_IPV4=3Dy
+  CONFIG_NFT_CHAIN_NAT_IPV6=3Dm
+  CONFIG_NFT_CHAIN_NAT_IPV4=3Dm
+ +CONFIG_KALLSYMS=3Dy
++ CONFIG_NET_SCH_FQ=3Dm
++ CONFIG_NET_SCH_ETF=3Dm
++ CONFIG_TEST_BLACKHOLE_DEV=3Dm
+
+--Sig_/XidfUzLJcY7Hg=ulE2tv0XA
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl0dX3IACgkQAVBC80lX
+0GwskAf+M/f2Jog5t1K6Y0vSyLWCN+X1iASgzbyekBP8Z0AY/7p6hc1UPv0V9Jrc
+WOuZhkteYf34tePR1UyU2sMmKO41pIZaveDAF2fHDRrZ2KSLPD3GuJEQ05AOIUW1
+3gYPHYcGR/u0R1glVFQ70E416iLFakeYhCCCC8UmDtVZri9SZo388kPRxvyia21i
+oeHTNqjuxRRK/JtHNDt0FlQnUIuTylLk4xEOn6TfYXZsZVW/XLE7bmnDhwZLQPa8
+OSmqJGVN0dMz+yQyoxK1aq6tKBUGYwgaSG0JVTr847UT/aMSH6kwEx+zXsJvgRlB
+4i0ILBOhqOUPlE9s1M8w3Oq6Ri+6hA==
+=IL5W
+-----END PGP SIGNATURE-----
+
+--Sig_/XidfUzLJcY7Hg=ulE2tv0XA--
