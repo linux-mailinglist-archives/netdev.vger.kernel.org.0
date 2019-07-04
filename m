@@ -2,82 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 346005F3C8
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 09:32:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 922325F3F9
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 09:40:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727471AbfGDHcF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 03:32:05 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:36579 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726199AbfGDHcF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 03:32:05 -0400
-Received: by mail-wm1-f68.google.com with SMTP id u8so4933303wmm.1;
-        Thu, 04 Jul 2019 00:32:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=LIycO9Bp5HsEisueoexKc7Ktz+dHZjKCymeUJisu9LE=;
-        b=h2TsbIwrEdlwAo+FjRKB5ttID/9BlvxXUuFWQyMBoCiaN+2ndtSyxVEO8h2ERRK2vp
-         8XuW0A7vvjn+OVmfdjyDLto+fwJ/3Y/4r6xqNYMPu3RAZCZxg+TxDInw9uytzWIoGQ/3
-         BkIHpivNSr7DCUeYvRuZ6MNTK9mYhTooC7UYuo17d/qxwS8N6cejllrf28/8ivTUdyJs
-         AwTTm8LYy9PQ1sLO4b9GQZlLIZsYW1H/qVYhcC7Vl0aX05StNIsqNIaOZpHTe818Fdpa
-         xjmuEyXI1vna90PmyBvQyhHVfEaG+YIsGUNtW97WracAYjGHZSJRC93Pj8UxiBfqccO7
-         oI1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=LIycO9Bp5HsEisueoexKc7Ktz+dHZjKCymeUJisu9LE=;
-        b=F8UQ2SsmyJuFEYtDaGzIV72Ol5/bg2oBHYcAz7A8mJk+JAe0dQLrZ+r1wDh/XevbIT
-         F1az86XNFLdLhA3ckUNCqgt/MgEQ1YIGQSduVw+6w+HZLolbUnDWyEi8OXkS2tvkET4D
-         1ltgF1AbFFSOmy2V6GlwtyDiOger4/UuON1Jjl8aTBF9Q4vQicl+1R5OUuuibfo+QVnu
-         E7qkCOvWmpn5MJ2/kWRBSKQZoWfOC49psIGP0HWKzidJYcOS05DEgfZV35wEzuV0lo7F
-         geTsZIcJyCjicC/Eod4YeZmDxZvxndprl4rXrLv+z8IxvDbJD+G/fCyfQ+1Z+d4lcDXZ
-         Jcww==
-X-Gm-Message-State: APjAAAUrJSnsJ2dsEznY1s8lBiWeo6bS/JX3s5lP02XjovyPBTJ9MzoL
-        PlFQVECUrC6rP+RiJAHH7PJeA88=
-X-Google-Smtp-Source: APXvYqwS5YuPl+0VZZboG78UNwuk9JWUSV1WNe6aLEYZS6fci6B/aMjrNqbya1Qn+HaL8D6z/nX2UQ==
-X-Received: by 2002:a1c:448b:: with SMTP id r133mr11651230wma.114.1562225523452;
-        Thu, 04 Jul 2019 00:32:03 -0700 (PDT)
-Received: from avx2 ([46.53.251.222])
-        by smtp.gmail.com with ESMTPSA id r2sm5571394wme.30.2019.07.04.00.32.02
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 04 Jul 2019 00:32:02 -0700 (PDT)
-Date:   Thu, 4 Jul 2019 10:32:00 +0300
-From:   Alexey Dobriyan <adobriyan@gmail.com>
-To:     "Hallsmark, Per" <Per.Hallsmark@windriver.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2] let proc net directory inodes reflect to active net
- namespace
-Message-ID: <20190704073200.GA2165@avx2>
-References: <B7B4BB465792624BAF51F33077E99065DC5D8E5D@ALA-MBD.corp.ad.wrs.com>
+        id S1727063AbfGDHk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 03:40:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47100 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726199AbfGDHkZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Jul 2019 03:40:25 -0400
+Received: from localhost (unknown [193.47.165.251])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0D91A2133F;
+        Thu,  4 Jul 2019 07:40:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1562226024;
+        bh=cpEKmomI1qco2Y1+UNn5Q5duVRzevtRlz/bSZ6oJVWw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pP8hR1LapyiJvVnAHqMn1tozUemvOAzKh0mJWYzZ5lZQnSP+vksyuKQlutYX5QgZy
+         +Tu6xCVxnSs+UHhHu2oC9S82KqoSC9kcgYf8iT1+T94UWA0Zq6l0Qirk1TZzVtkNBg
+         WMg2sDsRQt6Ac5FV+EKr9ErXYfq9cJrBBGAK7zOs=
+Date:   Thu, 4 Jul 2019 10:40:21 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     dledford@redhat.com, jgg@mellanox.com, davem@davemloft.net,
+        Mustafa Ismail <mustafa.ismail@intel.com>,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com, poswald@suse.com,
+        david.m.ertman@intel.com, Shiraz Saleem <shiraz.saleem@intel.com>
+Subject: Re: [rdma 14/16] RDMA/irdma: Add ABI definitions
+Message-ID: <20190704074021.GH4727@mtr-leonro.mtl.com>
+References: <20190704021259.15489-1-jeffrey.t.kirsher@intel.com>
+ <20190704021259.15489-16-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <B7B4BB465792624BAF51F33077E99065DC5D8E5D@ALA-MBD.corp.ad.wrs.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20190704021259.15489-16-jeffrey.t.kirsher@intel.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jul 01, 2019 at 11:06:34AM +0000, Hallsmark, Per wrote:
-
-> +struct proc_dir_entry *proc_net_mkdir(struct net *net, const char *name,
-> +				      struct proc_dir_entry *parent)
-> +{
-> +	struct proc_dir_entry *pde;
+On Wed, Jul 03, 2019 at 07:12:57PM -0700, Jeff Kirsher wrote:
+> From: Mustafa Ismail <mustafa.ismail@intel.com>
+>
+> Add ABI definitions for irdma.
+>
+> Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
+> Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
+> ---
+>  include/uapi/rdma/irdma-abi.h | 130 ++++++++++++++++++++++++++++++++++
+>  1 file changed, 130 insertions(+)
+>  create mode 100644 include/uapi/rdma/irdma-abi.h
+>
+> diff --git a/include/uapi/rdma/irdma-abi.h b/include/uapi/rdma/irdma-abi.h
+> new file mode 100644
+> index 000000000000..bdfbda4c829e
+> --- /dev/null
+> +++ b/include/uapi/rdma/irdma-abi.h
+> @@ -0,0 +1,130 @@
+> +/* SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause */
+> +/* Copyright (c) 2006 - 2019 Intel Corporation.  All rights reserved.
+> + * Copyright (c) 2005 Topspin Communications.  All rights reserved.
+> + * Copyright (c) 2005 Cisco Systems.  All rights reserved.
+> + * Copyright (c) 2005 Open Grid Computing, Inc. All rights reserved.
+> + */
 > +
-> +	pde = proc_mkdir_data(name, 0, parent, net);
-> +	if (!pde)
-> +		return NULL;
-> +	pde->proc_dops = &proc_net_dentry_ops;
+> +#ifndef IRDMA_ABI_H
+> +#define IRDMA_ABI_H
+> +
+> +#include <linux/types.h>
+> +
+> +/* irdma must support legacy GEN_1 i40iw kernel
+> + * and user-space whose last ABI ver is 5
+> + */
+> +#define IRDMA_ABI_VER 6
 
-OK, this is buggy in a different way:
-once proc_mkdir_data() returns, proc entry is live and should be fully
-ready, so dentry operations should be glued before that.
+Can you please elaborate about it more?
+There is no irdma code in RDMA yet, so it makes me wonder why new define
+shouldn't start from 1.
 
-I'll send proper patch.
+Thanks
