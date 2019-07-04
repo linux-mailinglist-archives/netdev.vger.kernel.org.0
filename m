@@ -2,118 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B62BA5F71C
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 13:11:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD47E5F77F
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 13:52:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727670AbfGDLLQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 07:11:16 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:45314 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727436AbfGDLLP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 07:11:15 -0400
-Received: by mail-wr1-f67.google.com with SMTP id f9so6162578wre.12
-        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 04:11:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=l8xOwRoeewzebcQAt1yKxsHLrRV9J9YjppTfdC6bYO4=;
-        b=AcU/Og0Im9zeCUoAjQfz6t1TPM7Mfh0ysWoMMrnoAxopui+jfwRP+8ITrmS17IrY1C
-         KEs0UE42QQXFtM3Plib24n04BsaZx7YpdSdT+lXwkDmW5UXo5AVmjENp8T4Yk5L4W3qL
-         ya3qtdkWWGhERgwew7vMxaZiQ0oib0yFn8XnrueuwqH8INdv94RXEj/zk8dU3Gtn4O0A
-         6EwHajqBOaWPjJJmtSLrm8PZE5Ma9nIUkyig0AkkUrnFH46TF6oLK4F+36SuPCPJzrid
-         vsMqp3WqEkNc7NWqF0JoS9TZcj/Wt9C7JFdlMtv8VS6Ms36Kj4I2IsGthBfqv69AJ3yx
-         KAhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=l8xOwRoeewzebcQAt1yKxsHLrRV9J9YjppTfdC6bYO4=;
-        b=kdMslk5d7NlbQ+/X5QiDqwvM1JdBBQjFE4yr4IEybCT61zjACNGGgfoLczn1uRKpJ9
-         rFHdBEwjKr5zb6ZhDsD5bN2DanRRI58sGXCeVTG6OOrUYZPaPz3c03+O7kPESVrmfk7B
-         3tubnHJxW3sRJzJM5PSq3DlimFvtmdkqVI52k/UhidOStAgfLmi1m4W9/r461eDQH5mM
-         Maop3z21hsaG6DDvV9ecXkwYXlyTbCtAKPxYBDUP4R1SdaDK/SdhfIv4t0f6myh8hHNX
-         ENgOK6ZpzTFFGoth7MXv4zS7e4L6IpKdeH588jfw2LTuYZindeuqJOA8U3L4ppxtG5gM
-         Of/A==
-X-Gm-Message-State: APjAAAU5TM6gM5a/DI3fxP6gg+1wbfMotz81tiU+F+/PHyuMV0CcTwZm
-        /9PRv6Qe7r8/pZbYoMnvGUbEDQ==
-X-Google-Smtp-Source: APXvYqwc3n6Z1DTK4DI0irtOTjnyQp+cY9JrkG89Fk1+0XQ7A/1JudehcvBrF5/bUdDdbNSumzT99A==
-X-Received: by 2002:adf:dfc4:: with SMTP id q4mr32763692wrn.54.1562238673665;
-        Thu, 04 Jul 2019 04:11:13 -0700 (PDT)
-Received: from apalos (athedsl-428434.home.otenet.gr. [79.131.225.144])
-        by smtp.gmail.com with ESMTPSA id r4sm4942586wrv.34.2019.07.04.04.11.11
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 04 Jul 2019 04:11:12 -0700 (PDT)
-Date:   Thu, 4 Jul 2019 14:11:09 +0300
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Jose Abreu <Jose.Abreu@synopsys.com>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        Chen-Yu Tsai <wens@csie.org>
-Subject: Re: [PATCH net-next 3/3] net: stmmac: Introducing support for Page
- Pool
-Message-ID: <20190704111109.GA12011@apalos>
-References: <cover.1562149883.git.joabreu@synopsys.com>
- <1b254bb7fc6044c5e6e2fdd9e00088d1d13a808b.1562149883.git.joabreu@synopsys.com>
- <20190704120018.4523a119@carbon>
- <BN8PR12MB3266BC5322AADFAC49D9BAFAD3FA0@BN8PR12MB3266.namprd12.prod.outlook.com>
+        id S1727625AbfGDLwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 07:52:41 -0400
+Received: from mx2.suse.de ([195.135.220.15]:49974 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727604AbfGDLwl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Jul 2019 07:52:41 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 513B9B023;
+        Thu,  4 Jul 2019 11:52:39 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 721C7E0159; Thu,  4 Jul 2019 13:52:36 +0200 (CEST)
+Date:   Thu, 4 Jul 2019 13:52:36 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Jiri Pirko <jiri@resnulli.us>, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Linville <linville@tuxdriver.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v6 06/15] ethtool: netlink bitset handling
+Message-ID: <20190704115236.GR20101@unicorn.suse.cz>
+References: <cover.1562067622.git.mkubecek@suse.cz>
+ <cb614bebee1686293127194e8f7ced72955c7c7f.1562067622.git.mkubecek@suse.cz>
+ <20190703114933.GW2250@nanopsycho>
+ <20190703181851.GP20101@unicorn.suse.cz>
+ <20190704080435.GF2250@nanopsycho>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <BN8PR12MB3266BC5322AADFAC49D9BAFAD3FA0@BN8PR12MB3266.namprd12.prod.outlook.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+In-Reply-To: <20190704080435.GF2250@nanopsycho>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 04, 2019 at 10:13:37AM +0000, Jose Abreu wrote:
-> From: Jesper Dangaard Brouer <brouer@redhat.com>
+On Thu, Jul 04, 2019 at 10:04:35AM +0200, Jiri Pirko wrote:
+> Wed, Jul 03, 2019 at 08:18:51PM CEST, mkubecek@suse.cz wrote:
+> >On Wed, Jul 03, 2019 at 01:49:33PM +0200, Jiri Pirko wrote:
+> >> Tue, Jul 02, 2019 at 01:50:09PM CEST, mkubecek@suse.cz wrote:
+> >> >+Compact form: nested (bitset) atrribute contents:
+> >> >+
+> >> >+    ETHTOOL_A_BITSET_LIST	(flag)		no mask, only a list
+> >> >+    ETHTOOL_A_BITSET_SIZE	(u32)		number of significant bits
+> >> >+    ETHTOOL_A_BITSET_VALUE	(binary)	bitmap of bit values
+> >> >+    ETHTOOL_A_BITSET_MASK	(binary)	bitmap of valid bits
+> >> >+
+> >> >+Value and mask must have length at least ETHTOOL_A_BITSET_SIZE bits rounded up
+> >> >+to a multiple of 32 bits. They consist of 32-bit words in host byte order,
+> >> 
+> >> Looks like the blocks are similar to NLA_BITFIELD32. Why don't you user
+> >> nested array of NLA_BITFIELD32 instead?
+> >
+> >That would mean a layout like
+> >
+> >  4 bytes of attr header
+> >  4 bytes of value
+> >  4 bytes of mask
+> >  4 bytes of attr header
+> >  4 bytes of value
+> >  4 bytes of mask
+> >  ...
+> >
+> >i.e. interleaved headers, words of value and words of mask. Having value
+> >and mask contiguous looks cleaner to me. Also, I can quickly check the
+> >sizes without iterating through a (potentially long) array.
 > 
-> > The page_pool DMA mapping cannot be "kept" when page traveling into the
-> > network stack attached to an SKB.  (Ilias and I have a long term plan[1]
-> > to allow this, but you cannot do it ATM).
-> 
-> The reason I recycle the page is this previous call to:
-> 
-> 	skb_copy_to_linear_data()
-> 
-> So, technically, I'm syncing to CPU the page(s) and then memcpy to a 
-> previously allocated SKB ... So it's safe to just recycle the mapping I 
-> think.
-> 
-> Its kind of using bounce buffers and I do see performance gain in this 
-> (I think the reason is because my setup uses swiotlb for DMA mapping).
+> Yeah, if you are not happy with this, I suggest to introduce
+> NLA_BITFIELD with arbitrary size. That would be probably cleanest.
 
-Maybe. Have you tested this on big/small packets?
-Can you do a test with 64b/128b and 1024b for example?
-The memcpy might be cheap for the small sized packets (and cheaper than the dma
-map/unmap)
+There is still the question if it it should be implemented as a nested
+attribute which could look like the current compact form without the
+"list" flag (if there is no mask, it's a list). Or an unstructured data
+block consisting of u32 bit length and one or two bitmaps of
+corresponding length. I would prefer the nested attribute, netlink was
+designed to represent structured data, passing structures as binary goes
+against the design (just looked at VFINFO in rtnetlink few days ago,
+it's awful, IMHO).
 
-> 
-> Anyway, I'm open to some suggestions on how to improve this ...
-> 
-> > Also remember that the page_pool requires you driver to do the DMA-sync
-> > operation.  I see a dma_sync_single_for_cpu(), but I didn't see a
-> > dma_sync_single_for_device() (well, I noticed one getting removed).
-> > (For some HW Ilias tells me that the dma_sync_single_for_device can be
-> > elided, so maybe this can still be correct for you).
-> 
-> My HW just needs descriptors refilled which are in different coherent 
-> region so I don't see any reason for dma_sync_single_for_device() ...
-I am abit overloaded at the moment. I'll try to have a look at this and get back
-to you
+Either way, I would still prefer to have bitmaps represented as an array
+of 32-bit blocks in host byte order. This would be easy to handle in
+kernel both in places where we have u32 based bitmaps and unsigned long
+based ones. Other options seem less appealing:
 
-Cheers
-/Ilias
+  - u8 based: only complicates processing
+  - u64 based: have to care about alignment
+  - unsigned long based: alignment and also problems with 64-bit kernel
+    vs. 32-bit userspace
+
+> >> This is quite complex and confusing. Having the same API for 2 APIs is
+> >> odd. The API should be crystal clear, easy to use.
+> >> 
+> >> Why can't you have 2 commands, one working with bit arrays only, one
+> >> working with strings? Something like:
+> >> X_GET
+> >>    ETHTOOL_A_BITS (nested)
+> >>       ETHTOOL_A_BIT_ARRAY (BITFIELD32)
+> >> X_NAMES_GET
+> >>    ETHTOOL_A_BIT_NAMES (nested)
+> >> 	ETHTOOL_A_BIT_INDEX
+> >> 	ETHTOOL_A_BIT_NAME
+> >> 
+> >> For set, you can also have multiple cmds:
+> >> X_SET  - to set many at once, by bit index
+> >>    ETHTOOL_A_BITS (nested)
+> >>       ETHTOOL_A_BIT_ARRAY (BITFIELD32)
+> >> X_ONE_SET   - to set one, by bit index
+> >>    ETHTOOL_A_BIT_INDEX
+> >>    ETHTOOL_A_BIT_VALUE
+> >> X_ONE_SET   - to set one, by name
+> >>    ETHTOOL_A_BIT_NAME
+> >>    ETHTOOL_A_BIT_VALUE
+> >
+> >This looks as if you assume there is nothing except the bitset in the
+> >message but that is not true. Even with your proposed breaking of
+> >current groups, you would still have e.g. 4 bitsets in reply to netdev
+> >features query, 3 in timestamping info GET request and often bitsets
+> >combined with other data (e.g. WoL modes and optional WoL password).
+> >If you wanted to further refine the message granularity to the level of
+> >single parameters, we might be out of message type ids already.
+> 
+> You can still have multiple bitsets(bitfields) in single message and
+> have separate cmd/cmds to get string-bit mapping. No need to mangle it.
+
+Let's take a look at what it means in practice, the command is
+
+  ethtool --set-prif-flags eth3 legacy-rx on
+
+on an ixgbe card. Currently, ethtool (from the github repository) does
+
+------------------------------------------------------------------------
+ETHTOOL_CMD_SETTINGS_SET (K->U, 68 bytes)
+    ETHTOOL_A_HEADER
+        ETHTOOL_A_DEV_NAME = "eth3"
+    ETHTOOL_A_SETTINGS_PRIV_FLAGS
+        ETHTOOL_A_BITSET_BITS
+            ETHTOOL_A_BITS_BIT
+                ETHTOOL_A_BIT_NAME = "legacy-rx"
+                ETHTOOL_A_BIT_VALUE
+
+NLMSG_ERR (K->U, 36 bytes) err = 0
+------------------------------------------------------------------------
+
+If we had only compact form (or some of the NLA_BITFIELD solutions we
+are talking about), you would need
+
+------------------------------------------------------------------------
+ETHTOOL_CMD_STRSET_GET (U->K, 52 bytes)
+    ETHTOOL_A_HEADER
+        ETHTOOL_A_DEV_NAME = "eth3"
+    ETHTOOL_A_STRSET_STRINGSETS
+        ETHTOOL_A_STRINGSETS_STRINGSET
+            ETHTOOL_A_STRINGSET_ID = 2 (ETH_SS_PRIV_FLAGS)
+
+ETHTOOL_CMD_STRSET_GET_REPLY (K->U, 128 bytes)
+    ETHTOOL_A_HEADER
+        ETHTOOL_A_DEV_INDEX = 9
+        ETHTOOL_A_DEV_NAME = "eth3"
+    ETHTOOL_A_STRSET_STRINGSETS
+        ETHTOOL_A_STRINGSETS_STRINGSET
+            ETHTOOL_A_STRINGSET_ID = 2 (ETH_SS_PRIV_FLAGS)
+            ETHTOOL_A_STRINGSET_COUNT = 2
+            ETHTOOL_A_STRINGSET_STRINGS
+                ETHTOOL_A_STRINGS_STRING
+                    ETHTOOL_A_STRING_INDEX = 0
+                    ETHTOOL_A_STRING_VALUE = "legacy-rx"
+                ETHTOOL_A_STRINGS_STRING
+                    ETHTOOL_A_STRING_INDEX = 1
+                    ETHTOOL_A_STRING_VALUE = "vf-ipsec"
+
+NLMSG_ERR (K->U, 36 bytes) err = 0
+
+ETHTOOL_CMD_SETTINGS_SET (K->U, 64 bytes)
+    ETHTOOL_A_HEADER
+        ETHTOOL_A_DEV_NAME = "eth3"
+    ETHTOOL_A_SETTINGS_PRIV_FLAGS
+        ETHTOOL_A_BITSET_SIZE = 2
+        ETHTOOL_A_BITSET_VALUE = 00000001
+        ETHTOOL_A_BITSET_MASK = 00000001
+
+NLMSG_ERR (K->U, 36 bytes) err = 0
+------------------------------------------------------------------------
+
+That's an extra roundtrip, lot more chat and the SETTINGS_SET message is
+only 4 bytes shorter in the end. And we can consider ourselves lucky
+this NIC has only two private flags. Or that we didn't need to enable or
+disable a netdev feature (56 bits) or link mode (69 bits and growing).
+
+We could reduce the overhead by allowing STRSET_GET query to only ask
+for specific string(s) but there would still be the extra roundtrip
+which I dislike in the ioctl interface. Florian also said in the v5
+discussion that he would like if it was possible to get names and data
+together in one request.
+
+Michal
