@@ -2,100 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 182235F9C8
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 16:11:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D20FB5F9E1
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 16:16:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727242AbfGDOLQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 10:11:16 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:33049 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727196AbfGDOLP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 10:11:15 -0400
-Received: by mail-wm1-f65.google.com with SMTP id h19so5396836wme.0
-        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 07:11:14 -0700 (PDT)
+        id S1727266AbfGDOQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 10:16:51 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:37871 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726875AbfGDOQv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 10:16:51 -0400
+Received: by mail-ed1-f66.google.com with SMTP id w13so5585019eds.4
+        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 07:16:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id;
-        bh=xMgsYX1AlkZeW8QfKJgEPDAQtSAEWuuhGQkYf2wCav8=;
-        b=vyw9BL0mwIX+t4a0LrutWaKwJqzmyGeqRhJb4ZLLGoziYIzVnwLFAsg38XMko247xQ
-         oDfCs28QNM2NWDPKsRnZTYKV5WSYOFHeb5zPAFvNt8n/HaQ9RiKkl6CipF3LP7oW83Ze
-         S/dyaeQN/78RuVxKaTijc2D7xFdIYc5JfAWW8rvJMT1BtLz3HjAOpLg1EBb5MAc8AZUf
-         yHxoBay/CEfGgv5p7n6n8zrvjGBDfMZWgWSeeQnDkFgXzCFVYRYvaJoKrZcQtmnqJefK
-         vFItL199LiCzdCZ4RG/YRn0z5sjv97WncHKyF9X5RpFPbHGJK+/72FbjBeij5SOO0d/h
-         yTYQ==
+        bh=ex8dXKJ8Epkd3yYLIeEf6nBJprMcPEDpPx1N+EIdIV0=;
+        b=eZ0PFRP/FuKawOUgBlvV1FbUJg9l3sKBaoZ/gRBlNLWwhA3l5QW96O3oKKudz01+P1
+         AB74XTy/31H3RerqtkD6o6urHS8ZH1LrQRO1gUWquK3ZjYg2QYtRiRmK6Qog7TzIp+el
+         uSOfkOcVDYK8dTvud932F+YSL2MnM06XJXfgZWYsoS3rMSDjaZXAEo3Dd1IsXMsMWpGZ
+         THihfeOKoZqsJg/35v6GccctKEz27fVOyvCQqCZmUlrq6Jqc7zTrXJIrUG7kz29DVRoi
+         q4XsaGsx1HYUF7dkr7b+Cd6nNcdXd+6t+mOHNS2BVt6pFW6bZ0FsgrTwGJQaVewEUHru
+         UQEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=xMgsYX1AlkZeW8QfKJgEPDAQtSAEWuuhGQkYf2wCav8=;
-        b=X5griqwvEMGMk6hg9WDqCHWIU5S7VdD6RrLF8J1Fk/edwEDzFXBLiszMt+ECsmo3Tf
-         s9wsk3vmpMYHEwHenQbTiIukv07EXOjxpfBhwetLUWx4wmJrlFb3MiocbI6bkBjgmUQV
-         m2Z3qkYD4RGOW+Tt9TBf03muPB3FqlVDaVjSFB0AWU/Tde1gyZUJ5N/Qo+zvYME8ox9P
-         mbwyiC+VAkuhmNpIvEPBH7WEoRw47Yn1PvxUetTgFnwtCdsLT6OV3VNKxa2iG7Be4HlP
-         hHGjOTqnvydRH5d3ir9Aa/EDQPJoC7o8V4tyUdHax3ngsvC2jVmBTBq6m5s7hUSxXs6m
-         Tzxg==
-X-Gm-Message-State: APjAAAUocc7rfi8E+hPvY6EvqHAJtijNa0IvV+MjrKvDma6F6fnFu9EJ
-        EFy9ZT8ylOxkuW9YyPZcjev1K7FDQf1Lbw==
-X-Google-Smtp-Source: APXvYqxncxnZpqiU7wEhnIYHMboSYGkJE+Kibfz0t1mjbfwRpq3kz4dIUORr2Z4+83/+LlVkiex0Bw==
-X-Received: by 2002:a7b:cb94:: with SMTP id m20mr12250754wmi.144.1562249473191;
-        Thu, 04 Jul 2019 07:11:13 -0700 (PDT)
-Received: from apalos.lan (athedsl-428434.home.otenet.gr. [79.131.225.144])
-        by smtp.gmail.com with ESMTPSA id l11sm5477712wrw.97.2019.07.04.07.11.11
+        bh=ex8dXKJ8Epkd3yYLIeEf6nBJprMcPEDpPx1N+EIdIV0=;
+        b=FvZB5KqM4AHIlWgQSDNXWxrfekA9uB/yejFPSF7Ry51AsBrmeSdrN0j7JJrLsdjTFh
+         eA9xeiaq518Ncf2PZRqxTm2nD6oI9LV9khciD9DpeQqc8HZeY1uAU9rZq1Q5utkjr1qL
+         IQ6Bs0NNOYq5A9kMAqnPiJVS4TNTzgid/3mn8acjoLlZgzxBeGea45FfaRypAMeG7skh
+         69QEh22PFF9azHo4qAHytiXeANGOHW3WQ3w3M7ByJsrZ65FyVm8LqT0J0QH4givgHLi2
+         02bWaa+q6UJbiEWQ/qOsTR2UlaMLJUzWMdb162wk+co37/Uq1eMWbCWrRdeJGaNdEVwY
+         0Q8A==
+X-Gm-Message-State: APjAAAXr6fV4KmGhb5nh1uk4jZSn/F+DL1/wjRZy6ae54UylreJ4yk7K
+        CRsBM0bQZcRJOqOSZb0xsI8ig3b6kfo=
+X-Google-Smtp-Source: APXvYqz+F40i6+UZyn4/fQPabwzks9lnXZsM74EsAoUhHNAth7fCQVq9qWxFiKA8YF8ULtlh/lRJFQ==
+X-Received: by 2002:a17:907:20b7:: with SMTP id pw23mr40345606ejb.127.1562249809647;
+        Thu, 04 Jul 2019 07:16:49 -0700 (PDT)
+Received: from jhurley-Precision-Tower-3420.netronome.com ([80.76.204.157])
+        by smtp.gmail.com with ESMTPSA id s27sm1702705eda.36.2019.07.04.07.16.48
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Thu, 04 Jul 2019 07:11:12 -0700 (PDT)
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     netdev@vger.kernel.org, jaswinder.singh@linaro.org
-Cc:     ard.biesheuvel@linaro.org, arnd@arndb.de,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Subject: [PATCH] net: netsec: Sync dma for device on buffer allocation
-Date:   Thu,  4 Jul 2019 17:11:09 +0300
-Message-Id: <1562249469-14807-1-git-send-email-ilias.apalodimas@linaro.org>
+        Thu, 04 Jul 2019 07:16:49 -0700 (PDT)
+From:   John Hurley <john.hurley@netronome.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, xiyou.wangcong@gmail.com,
+        dsahern@gmail.com, willemdebruijn.kernel@gmail.com,
+        dcaratti@redhat.com, simon.horman@netronome.com,
+        jakub.kicinski@netronome.com, oss-drivers@netronome.com,
+        John Hurley <john.hurley@netronome.com>
+Subject: [PATCH net-next v6 0/5] Add MPLS actions to TC
+Date:   Thu,  4 Jul 2019 15:16:37 +0100
+Message-Id: <1562249802-24937-1-git-send-email-john.hurley@netronome.com>
 X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quoting Arnd,
+This patchset introduces a new TC action module that allows the
+manipulation of the MPLS headers of packets. The code impliments
+functionality including push, pop, and modify.
 
-We have to do a sync_single_for_device /somewhere/ before the
-buffer is given to the device. On a non-cache-coherent machine with
-a write-back cache, there may be dirty cache lines that get written back
-after the device DMA's data into it (e.g. from a previous memset
-from before the buffer got freed), so you absolutely need to flush any
-dirty cache lines on it first.
+Also included are tests for the new funtionality. Note that these will
+require iproute2 changes to be submitted soon.
 
-Since the coherency is configurable in this device make sure we cover
-all configurations by explicitly syncing the allocated buffer for the
-device before refilling it's descriptors
+NOTE: these patches are applied to net-next along with the patch:
+[PATCH net 1/1] net: openvswitch: fix csum updates for MPLS actions
+This patch has been accepted into net but, at time of posting, is not yet
+in net-next.
 
-Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
----
- drivers/net/ethernet/socionext/netsec.c | 5 +++++
- 1 file changed, 5 insertions(+)
+v5-v6:
+- add CONFIG_NET_ACT_MPLS to tc-testing config file - patch 5
+  (Davide Caratti)
+v4-v5:
+- move mpls_hdr() call to after skb_ensure_writable - patch 3
+  (Willem de Bruijn)
+- move mpls_dec_ttl to helper - patch 4 (Willem de Bruijn)
+- add iproute2 usage example to commit msg - patch 4 (David Ahern)
+- align label validation with mpls core code - patch 4 (David Ahern)
+- improve extack message for no proto in mpls pop - patch 4 (David Ahern)
+v3-v4:
+- refactor and reuse OvS code (Cong Wang)
+- use csum API rather than skb_post*rscum to update skb->csum (Cong Wang)
+- remove unnecessary warning (Cong Wang)
+- add comments to uapi attributes (David Ahern)
+- set strict type policy check for TCA_MPLS_UNSPEC (David Ahern)
+- expand/improve extack messages (David Ahern)
+- add option to manually set BOS
+v2-v3:
+- remove a few unnecessary line breaks (Jiri Pirko)
+- retract hw offload patch from set (resubmit with driver changes) (Jiri)
+v1->v2:
+- ensure TCA_ID_MPLS does not conflict with TCA_ID_CTINFO (Davide Caratti)
 
-diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
-index 5544a722543f..e05a7191336d 100644
---- a/drivers/net/ethernet/socionext/netsec.c
-+++ b/drivers/net/ethernet/socionext/netsec.c
-@@ -727,6 +727,7 @@ static void *netsec_alloc_rx_data(struct netsec_priv *priv,
- {
- 
- 	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
-+	enum dma_data_direction dma_dir;
- 	struct page *page;
- 
- 	page = page_pool_dev_alloc_pages(dring->page_pool);
-@@ -742,6 +743,10 @@ static void *netsec_alloc_rx_data(struct netsec_priv *priv,
- 	 * cases and reserve enough space for headroom + skb_shared_info
- 	 */
- 	*desc_len = PAGE_SIZE - NETSEC_RX_BUF_NON_DATA;
-+	dma_dir = page_pool_get_dma_dir(dring->page_pool);
-+	dma_sync_single_for_device(priv->dev,
-+				   *dma_handle - NETSEC_RXBUF_HEADROOM,
-+				   PAGE_SIZE, dma_dir);
- 
- 	return page_address(page);
- }
+John Hurley (5):
+  net: core: move push MPLS functionality from OvS to core helper
+  net: core: move pop MPLS functionality from OvS to core helper
+  net: core: add MPLS update core helper and use in OvS
+  net: sched: add mpls manipulation actions to TC
+  selftests: tc-tests: actions: add MPLS tests
+
+ include/linux/skbuff.h                             |   4 +
+ include/net/tc_act/tc_mpls.h                       |  30 +
+ include/uapi/linux/pkt_cls.h                       |   3 +-
+ include/uapi/linux/tc_act/tc_mpls.h                |  33 +
+ net/core/skbuff.c                                  | 169 +++++
+ net/openvswitch/actions.c                          |  81 +-
+ net/sched/Kconfig                                  |  11 +
+ net/sched/Makefile                                 |   1 +
+ net/sched/act_mpls.c                               | 406 +++++++++++
+ tools/testing/selftests/tc-testing/config          |   1 +
+ .../tc-testing/tc-tests/actions/mpls.json          | 812 +++++++++++++++++++++
+ 11 files changed, 1478 insertions(+), 73 deletions(-)
+ create mode 100644 include/net/tc_act/tc_mpls.h
+ create mode 100644 include/uapi/linux/tc_act/tc_mpls.h
+ create mode 100644 net/sched/act_mpls.c
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/actions/mpls.json
+
 -- 
-2.20.1
+2.7.4
 
