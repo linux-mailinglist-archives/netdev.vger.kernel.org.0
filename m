@@ -2,113 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF0A65FE42
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 23:51:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A23E5FE48
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 23:55:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727276AbfGDVvB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 17:51:01 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:34656 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726069AbfGDVvB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 17:51:01 -0400
-Received: by mail-qt1-f196.google.com with SMTP id k10so1675243qtq.1
-        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 14:51:00 -0700 (PDT)
+        id S1727416AbfGDVzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 17:55:44 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:36708 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727115AbfGDVzo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 17:55:44 -0400
+Received: by mail-pl1-f193.google.com with SMTP id k8so3613896plt.3
+        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 14:55:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=MTaW+lneOwrfeQUjieT5VA6MLG6XGeAqlaz+nMyhVlY=;
-        b=QkO8JAVIiLCm3HGcqbSEMC/Tf4Q8syu1AOdLd9H0Q8uPWhBkSETfGHMS+1P/i1BaVN
-         7LrHnWSMLJeIVyYn5ZOYispqySqEd5TrZc6br+scLrodjE7Ey1OJ5RQcuyqof90thW1L
-         xNFeaLlhGrhPRhbp3+NNOYSvdjcQYqOAj5gfPXcvWm8MMet1MLXy2OHrigsVR01MANZ1
-         Y6bgz14C25YIcOJgl4nrWcoJIODbPa3sILL5JT3tMF/2MRhryGZgNAhBnxRTDsza0RXB
-         t32SIcfvOPix2fuqpHRv0C01hOVfsxzuvVYHJqw/YnVJl2/klG1C4AF/CdcGQ2N5v9aJ
-         zyWw==
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=5ltpvdJcMcB2LWBbGgZ5IQZBNUBSt3TMPtfONO3MHSU=;
+        b=Ko4r5n2W5k3OXWCw0Fy4k3GUUc1011Q2k769m2o5bZd3C9g0zAWNNpkvRju/ErrBac
+         O7+RI1cP4/rNsawvhW1SF+23f7tXx9WUupd0nhonNYAA227lgluUVbljvE7kdgGEzvhN
+         2rqrwKb9KLQjnkRKT3kjCLHO2uPNSNSuLK9OFJZUgF20O7v3/QjMn9Xf6FoSSyYI5k4u
+         BKj+Xg5oyoh/oexLunaOJjcFsS6i4JaPsQ2EYmMOlB9GXUNmOafhYuSOlLjA8Vhw2p9d
+         mbAridHUZQrGHdHwDmIHP3WOK6ElQzGJT3lZPTaQHz1YDxD+iVVWsHRIiYrKUDwzfo4Q
+         AJyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=MTaW+lneOwrfeQUjieT5VA6MLG6XGeAqlaz+nMyhVlY=;
-        b=tLOiqqWv6yqewwhX1a/bQrGUKZmmPUvahy5MdNYT9uaMq/yKwwBxI+22Apqs3ciknp
-         nHil4a969gQDVyOXbTAHY+ZyCVUbSNisBW/LpUii23pO2J7+UFPQ5XoYPJ7FFwdQKkAA
-         yjzYPlBIKK86KlbUkI8k3nSH1yrIS31V9UzqAFe2iCA/DxbNdyez2AWvbTSloDrXRC9l
-         v1MVbNSmwCkq4lxT/FWcVPI/vm8/rPoNADcKYVy1X2sBA7FaAiC2T4EdmuScczt9enaw
-         VdlEmFrGo4LhQ/YOihVFs9KA078K46GfbTkifSEvZzuMqtbwJiyzUqV9HpD1jivGJc2t
-         2VtQ==
-X-Gm-Message-State: APjAAAU6nrOMxGZvBm7XYpnPynXZ51a93aR/1H0SrEWbfPEmar0r1xx9
-        u4b+42nN3zCI0gbWFICE+qgyug==
-X-Google-Smtp-Source: APXvYqxPhZeBZcqE39jvZbC8dZXqrrlXHAnbai3aLg1pot5h+XGtJng5QjpP3cVlcNs+5FTDSoB3mg==
-X-Received: by 2002:a0c:c94d:: with SMTP id v13mr379616qvj.211.1562277060565;
-        Thu, 04 Jul 2019 14:51:00 -0700 (PDT)
-Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id t2sm3542329qth.33.2019.07.04.14.50.59
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 04 Jul 2019 14:51:00 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=5ltpvdJcMcB2LWBbGgZ5IQZBNUBSt3TMPtfONO3MHSU=;
+        b=BKB9XffGYaHStmDmiWpSF/6GcCWWwPob0mXuZzo75DiycW/NkIBFa+rBw/2xNdSbl+
+         G0p+FmrxhhPIMgtwNTPEft5QhL47dTKwdN+8FNMHyLkyISch9a39MQdLr0NX8PDWtqHP
+         5pQ2CikVUGtHVEuGJEhKN/e9NyyT5M13H6WbCtoGDGRHSoBSxEv6rugCoX1CrIzpuUK+
+         XsPAiFZJ63kH9R2Lmn4QLiKUlvHNS/GAMonST3/gAsvNYSYZIzhBr07G7EOpruD4JUOB
+         M7WxRozGJylfHzs3JosTH8w5HXn2CAEfobsPMlq/vo83h4g2s3Uga3q2NFvG0qRq/BAc
+         IX4w==
+X-Gm-Message-State: APjAAAXNgtdyPa0YAay4WHIrcOZIO5GmhKvqduW0jyZ8zURN3yDbSskH
+        dQ2sPXnXLFk37+LpsfjNCK+46w==
+X-Google-Smtp-Source: APXvYqw8On7PTA/qF6QkNdwGRoRkul2SWrM1vDz+0uxLDzdzSrGaUx4JsWbIlCVHkvRKhFPrzFTVQQ==
+X-Received: by 2002:a17:902:8203:: with SMTP id x3mr469284pln.304.1562277343627;
+        Thu, 04 Jul 2019 14:55:43 -0700 (PDT)
+Received: from cakuba.netronome.com ([2601:646:8e00:e50::3])
+        by smtp.gmail.com with ESMTPSA id u65sm15839222pjb.1.2019.07.04.14.55.32
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 04 Jul 2019 14:55:43 -0700 (PDT)
+Date:   Thu, 4 Jul 2019 14:55:21 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
-        alexei.starovoitov@gmail.com,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Dirk van der Merwe <dirk.vandermerwe@netronome.com>
-Subject: [PATCH net 2/2] selftests/tls: add test for poll() with data in TLS ULP
-Date:   Thu,  4 Jul 2019 14:50:37 -0700
-Message-Id: <20190704215037.6008-3-jakub.kicinski@netronome.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190704215037.6008-1-jakub.kicinski@netronome.com>
-References: <20190704215037.6008-1-jakub.kicinski@netronome.com>
+To:     Paul Blakey <paulb@mellanox.com>
+Cc:     Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>,
+        Yossi Kuperman <yossiku@mellanox.com>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        Aaron Conole <aconole@redhat.com>,
+        Zhike Wang <wangzhike@jd.com>,
+        Rony Efraim <ronye@mellanox.com>, nst-kernel@redhat.com,
+        John Hurley <john.hurley@netronome.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Justin Pettit <jpettit@ovn.org>
+Subject: Re: [PATCH net-next v3 1/4] net/sched: Introduce action ct
+Message-ID: <20190704145521.29f67ba4@cakuba.netronome.com>
+In-Reply-To: <1562241233-5176-2-git-send-email-paulb@mellanox.com>
+References: <1562241233-5176-1-git-send-email-paulb@mellanox.com>
+        <1562241233-5176-2-git-send-email-paulb@mellanox.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a test which checks if leftover record data in TLS
-layer correctly wakes up poll().
+On Thu,  4 Jul 2019 14:53:50 +0300, Paul Blakey wrote:
+> +static const struct nla_policy ct_policy[TCA_CT_MAX + 1] = {
+> +	[TCA_CT_ACTION] = { .type = NLA_U16 },
 
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Reviewed-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
----
- tools/testing/selftests/net/tls.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+Please use strict checking in all new policies.
 
-diff --git a/tools/testing/selftests/net/tls.c b/tools/testing/selftests/net/tls.c
-index 278c86134556..090fff9dbc48 100644
---- a/tools/testing/selftests/net/tls.c
-+++ b/tools/testing/selftests/net/tls.c
-@@ -644,6 +644,32 @@ TEST_F(tls, poll_wait)
- 	EXPECT_EQ(recv(self->cfd, recv_mem, send_len, MSG_WAITALL), send_len);
- }
- 
-+TEST_F(tls, poll_wait_split)
-+{
-+	struct pollfd fd = { 0, 0, 0 };
-+	char send_mem[20] = {};
-+	char recv_mem[15];
-+
-+	fd.fd = self->cfd;
-+	fd.events = POLLIN;
-+	/* Send 20 bytes */
-+	EXPECT_EQ(send(self->fd, send_mem, sizeof(send_mem), 0),
-+		  sizeof(send_mem));
-+	/* Poll with inf. timeout */
-+	EXPECT_EQ(poll(&fd, 1, -1), 1);
-+	EXPECT_EQ(fd.revents & POLLIN, 1);
-+	EXPECT_EQ(recv(self->cfd, recv_mem, sizeof(recv_mem), MSG_WAITALL),
-+		  sizeof(recv_mem));
-+
-+	/* Now the remaining 5 bytes of record data are in TLS ULP */
-+	fd.fd = self->cfd;
-+	fd.events = POLLIN;
-+	EXPECT_EQ(poll(&fd, 1, -1), 1);
-+	EXPECT_EQ(fd.revents & POLLIN, 1);
-+	EXPECT_EQ(recv(self->cfd, recv_mem, sizeof(recv_mem), 0),
-+		  sizeof(send_mem) - sizeof(recv_mem));
-+}
-+
- TEST_F(tls, blocking)
- {
- 	size_t data = 100000;
--- 
-2.21.0
-
+attr 0 must have .strict_start_type set.
