@@ -2,94 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A1A35FB39
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 17:52:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E7DC5FB3F
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 17:53:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727849AbfGDPwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 11:52:25 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:54300 "EHLO vps0.lunn.ch"
+        id S1727294AbfGDPxt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 11:53:49 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54318 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727816AbfGDPwZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Jul 2019 11:52:25 -0400
+        id S1726087AbfGDPxt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Jul 2019 11:53:49 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
         Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=svphATbkFOoAAltJuUblfqvoklVJ2Q5WVSnZRTgzpDw=; b=cViTZ/CF344FGf1dtxH/n9m/Ke
-        59YKl369FU2WptLb8GxVK+48MONjUA7ok4zrdOu2D8uxSz/hy8dVytG0l990Hslraf33EI44o331e
-        JB0i7shiAC7PEC9SmVI4eCccso1cymQV/IuV0WOfu/VyxZOKhQWetiQAXhlypz0rI1XU=;
+        bh=nMGORR3OSTbstKlSpsVFyDFAakghkQRIUL1Kg5fHKJI=; b=sSjON5RzcSeQKMOy5lRCWEK/9M
+        9sfRQ7suzwer8JKvoOzXFK7WM1wc1HWJDROkNRx8IVtfaDnf+mlFCxn56m1ikMlEC/3ZfNelR1GlH
+        aX1ypy4oWejuGRF6QXJ49JS8lfDl4Xy4rtDtX7hPfILS7by4GHuy4MkzA7FkciKbXhcg=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
         (envelope-from <andrew@lunn.ch>)
-        id 1hj41x-0004lI-Eh; Thu, 04 Jul 2019 17:52:17 +0200
-Date:   Thu, 4 Jul 2019 17:52:17 +0200
+        id 1hj43P-0004nB-Di; Thu, 04 Jul 2019 17:53:47 +0200
+Date:   Thu, 4 Jul 2019 17:53:47 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Voon, Weifeng" <weifeng.voon@intel.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        biao huang <biao.huang@mediatek.com>,
-        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
-        "Kweh, Hock Leong" <hock.leong.kweh@intel.com>
-Subject: Re: [PATCH v1 net-next] net: stmmac: enable clause 45 mdio support
-Message-ID: <20190704155217.GI18473@lunn.ch>
-References: <1562147404-4371-1-git-send-email-weifeng.voon@intel.com>
- <20190703140520.GA18473@lunn.ch>
- <D6759987A7968C4889FDA6FA91D5CBC8147384B6@PGSMSX103.gar.corp.intel.com>
- <20190704033038.GA6276@lunn.ch>
- <D6759987A7968C4889FDA6FA91D5CBC81473862D@PGSMSX103.gar.corp.intel.com>
- <20190704135420.GD13859@lunn.ch>
- <D6759987A7968C4889FDA6FA91D5CBC8147388E0@PGSMSX103.gar.corp.intel.com>
+To:     Benjamin Beckmeyer <beb@eks-engel.de>
+Cc:     netdev@vger.kernel.org
+Subject: Re: i.mx6ul with DSA in multi chip addressing mode - no MDIO access
+Message-ID: <20190704155347.GJ18473@lunn.ch>
+References: <21680b63-2d87-6841-23eb-551e58866719@eks-engel.de>
+ <20190703155518.GE18473@lunn.ch>
+ <d1181129-ec9d-01c1-3102-e1dc5dec0378@eks-engel.de>
+ <20190704132756.GB13859@lunn.ch>
+ <00b365da-9c7a-a78a-c10a-f031748e0af7@eks-engel.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <D6759987A7968C4889FDA6FA91D5CBC8147388E0@PGSMSX103.gar.corp.intel.com>
+In-Reply-To: <00b365da-9c7a-a78a-c10a-f031748e0af7@eks-engel.de>
 User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Yes, the top 16 bit of the data register only valid when C45 is enable.
-> It contains the Register address which MDIO c45 frame intended for.
+> &mdio0 {
+>         interrupt-parent = <&gpio1>;
+>         interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
+> 
+>         switch0: switch0@2 {
+>                 compatible = "marvell,mv88e6190";
+>                 reg = <2>;
+>                 pinctrl-0 = <&pinctrl_gpios>;
+>                 reset-gpios = <&gpio4 16 GPIO_ACTIVE_LOW>;
+>                 dsa,member = <0 0>;
 
-I think there is too much passing variables around by reference than
-by value, to make this code easy to understand.
+This is wrong. The interrupt is a switch property, not an MDIO bus
+property. So it belongs inside the switch node.
 
-Maybe a better structure would be
-
-static int stmmac_mdion_c45_read(struct stmmac_priv *priv, int phyaddr, int phyreg)
-{
-
-	unsigned int reg_shift = priv->hw->mii.reg_shift;
-	unsigned int reg_mask = priv->hw->mii.reg_mask;
-	u32 mii_addr_val, mii_data_val;
-
-	mii_addr_val = MII_GMAC4_C45E |
-                       ((phyreg >> MII_DEVADDR_C45_SHIFT) << reg_shift) & reg_mask;
-        mii_data_val = (phyreg & MII_REGADDR_C45_MASK) << MII_GMAC4_REG_ADDR_SHIFT;
-
-	writel(mii_data_val, priv->ioaddr + priv->hw->mii_data);
-	writel(mii_addr_val, priv->ioaddr + priv->hw->mii_addrress);
-
-	return (int)readl(priv->ioaddr + mii_data) & MII_DATA_MASK;
-}		   
-
-static int stmmac_mdio_read(struct mii_bus *bus, int phyaddr, int phyreg)
-{
-
-...
-	if (readl_poll_timeout(priv->ioaddr + mii_address, v, !(v & MII_BUSY),
- 	   		      100, 10000))
- 		return -EBUSY;
-
-      if (priv->plat->has_gmac4 && phyreg & MII_ADDR_C45)
-      	return stmmac_mdio_c45_read(priv, phyaddr, phyreg);
-
-	Andrew
+	  Andrew
