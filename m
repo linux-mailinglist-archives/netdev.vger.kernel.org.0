@@ -2,154 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 43B765F146
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 04:13:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10B275F17D
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 04:36:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727412AbfGDCMw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Jul 2019 22:12:52 -0400
-Received: from mga07.intel.com ([134.134.136.100]:32361 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727341AbfGDCMf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Jul 2019 22:12:35 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Jul 2019 19:12:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.63,449,1557212400"; 
-   d="scan'208";a="169319129"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
-  by orsmga006.jf.intel.com with ESMTP; 03 Jul 2019 19:12:26 -0700
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     dledford@redhat.com, jgg@mellanox.com, davem@davemloft.net
-Cc:     Shiraz Saleem <shiraz.saleem@intel.com>,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com, poswald@suse.com,
-        david.m.ertman@intel.com, mustafa.ismail@intel.com
-Subject: [rdma 16/16] RDMA/irdma: Add Kconfig and Makefile
-Date:   Wed,  3 Jul 2019 19:12:59 -0700
-Message-Id: <20190704021259.15489-18-jeffrey.t.kirsher@intel.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190704021259.15489-1-jeffrey.t.kirsher@intel.com>
-References: <20190704021259.15489-1-jeffrey.t.kirsher@intel.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1727203AbfGDCgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Jul 2019 22:36:40 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:44057 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727390AbfGDCgk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Jul 2019 22:36:40 -0400
+Received: by mail-pl1-f196.google.com with SMTP id t7so2233624plr.11;
+        Wed, 03 Jul 2019 19:36:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=5FkHUosH5w373G3pNIUA3FyKoB3S/lYidTryVrPmEgc=;
+        b=qWfWKdsp05s1p8mQnu7JTdC09pDKKOodfUjS5DevKPkWCy2CNOc/kbWvYH8vUVol7Z
+         HBcNmQO03/WWZ+t94WpU9L3l8PlKl2ac3rzjVWsvDFCnNKJOIJDo8K7Fup6XW3nJ0Yq4
+         2umWAL97EekxkQqbT1XgqH2Xp742kZw85/P2Jp5lsM7Y58fPdKME3EesBHlrDM2gZ7Bs
+         J9aCK2rizKOniI9ahYnJ11zbU8+4AxQv44mToF/7LwQb7cJk2RHHCRBbV6y4jOAX+O/d
+         qaKHM10i8zfgytxaYY7I5DQ0FaFFiISUI69K7odTEP/ppfODLQtmoU5BstGTjM4cUt8R
+         Padw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=5FkHUosH5w373G3pNIUA3FyKoB3S/lYidTryVrPmEgc=;
+        b=p2G9o68lyJSvPotFAWBgK8d+sS8WegZ1PJh6LlcWbk2eTt7+UMGb8qM1OuMz41Go/g
+         vBWLtjpISVv5lGV1H9h46NeNhqdjahOSnplE4N68gWlBM1eoBHptakOEAD7EbWTjnrhv
+         RFZgocJsade0vUDGgEmMiyGseJmLzJHniwojWyXdGTvf4uDlzRFY48Si64DByKwwE1cY
+         ei2roBVLjHmUp3w7X2Hl1DBJ5OtAMUj3zUs8B6+m4qNlWoAL5sCJcGroWACbSTt+fpFV
+         b1pt3J8hGUY79Wp+x6P3anCmCNZbtVwqS7tgnIc48VtzEH0Q2tYNyD0WJlgdV6/+uIm2
+         PNKA==
+X-Gm-Message-State: APjAAAXpDN4GtSWxLD+AYVxIuFiEzxLCgU1PUmFDM8bGMdkxwl9utDA9
+        BDBreo9YAnN0WuvxM8d31zw=
+X-Google-Smtp-Source: APXvYqzDlUZDM4vUsC3E9iouAf1cobQwpQM88uIvX5y9yEartDVtlW/cY39D9lsi9dbkKrEX7iGRMg==
+X-Received: by 2002:a17:902:722:: with SMTP id 31mr45436828pli.163.1562207799416;
+        Wed, 03 Jul 2019 19:36:39 -0700 (PDT)
+Received: from hfq-skylake.ipads-lab.se.sjtu.edu.cn ([202.120.40.82])
+        by smtp.googlemail.com with ESMTPSA id q1sm5748143pfn.178.2019.07.03.19.36.37
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 03 Jul 2019 19:36:39 -0700 (PDT)
+From:   Fuqian Huang <huangfq.daxian@gmail.com>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Fuqian Huang <huangfq.daxian@gmail.com>
+Subject: [Patch v2 08/10] net/can: using dev_get_drvdata directly
+Date:   Thu,  4 Jul 2019 10:36:33 +0800
+Message-Id: <20190704023633.4781-1-huangfq.daxian@gmail.com>
+X-Mailer: git-send-email 2.11.0
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shiraz Saleem <shiraz.saleem@intel.com>
+Several drivers cast a struct device pointer to a struct
+platform_device pointer only to then call platform_get_drvdata().
+To improve readability, these constructs can be simplified
+by using dev_get_drvdata() directly.
 
-Add Kconfig and Makefile to build irdma driver and mark i40iw
-deprecated/obsolete, since the irdma driver is replacing it and supports
-x722 devices.
-
-Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
+Signed-off-by: Fuqian Huang <huangfq.daxian@gmail.com>
 ---
- drivers/infiniband/Kconfig           |  1 +
- drivers/infiniband/hw/Makefile       |  1 +
- drivers/infiniband/hw/i40iw/Kconfig  |  4 +++-
- drivers/infiniband/hw/irdma/Kconfig  | 11 ++++++++++
- drivers/infiniband/hw/irdma/Makefile | 31 ++++++++++++++++++++++++++++
- 5 files changed, 47 insertions(+), 1 deletion(-)
- create mode 100644 drivers/infiniband/hw/irdma/Kconfig
- create mode 100644 drivers/infiniband/hw/irdma/Makefile
+Changes in v2:
+  - Make the commit message more clearly.
 
-diff --git a/drivers/infiniband/Kconfig b/drivers/infiniband/Kconfig
-index 0fe6f76e8fdc..40b032a764f5 100644
---- a/drivers/infiniband/Kconfig
-+++ b/drivers/infiniband/Kconfig
-@@ -84,6 +84,7 @@ source "drivers/infiniband/hw/cxgb3/Kconfig"
- source "drivers/infiniband/hw/cxgb4/Kconfig"
- source "drivers/infiniband/hw/efa/Kconfig"
- source "drivers/infiniband/hw/i40iw/Kconfig"
-+source "drivers/infiniband/hw/irdma/Kconfig"
- source "drivers/infiniband/hw/mlx4/Kconfig"
- source "drivers/infiniband/hw/mlx5/Kconfig"
- source "drivers/infiniband/hw/ocrdma/Kconfig"
-diff --git a/drivers/infiniband/hw/Makefile b/drivers/infiniband/hw/Makefile
-index 433fca59febd..d61d690ec0d4 100644
---- a/drivers/infiniband/hw/Makefile
-+++ b/drivers/infiniband/hw/Makefile
-@@ -5,6 +5,7 @@ obj-$(CONFIG_INFINIBAND_CXGB3)		+= cxgb3/
- obj-$(CONFIG_INFINIBAND_CXGB4)		+= cxgb4/
- obj-$(CONFIG_INFINIBAND_EFA)		+= efa/
- obj-$(CONFIG_INFINIBAND_I40IW)		+= i40iw/
-+obj-$(CONFIG_INFINIBAND_IRDMA)		+= irdma/
- obj-$(CONFIG_MLX4_INFINIBAND)		+= mlx4/
- obj-$(CONFIG_MLX5_INFINIBAND)		+= mlx5/
- obj-$(CONFIG_INFINIBAND_OCRDMA)		+= ocrdma/
-diff --git a/drivers/infiniband/hw/i40iw/Kconfig b/drivers/infiniband/hw/i40iw/Kconfig
-index d867ef1ac72a..7454b84b74be 100644
---- a/drivers/infiniband/hw/i40iw/Kconfig
-+++ b/drivers/infiniband/hw/i40iw/Kconfig
-@@ -1,8 +1,10 @@
- config INFINIBAND_I40IW
--	tristate "Intel(R) Ethernet X722 iWARP Driver"
-+	tristate "Intel(R) Ethernet X722 iWARP Driver (DEPRECATED)"
- 	depends on INET && I40E
- 	depends on IPV6 || !IPV6
- 	depends on PCI
-+	depends on !(INFINBAND_IRDMA=y || INFINIBAND_IRDMA=m)
- 	select GENERIC_ALLOCATOR
- 	---help---
- 	Intel(R) Ethernet X722 iWARP Driver
-+	This driver is being replaced by irdma.
-diff --git a/drivers/infiniband/hw/irdma/Kconfig b/drivers/infiniband/hw/irdma/Kconfig
-new file mode 100644
-index 000000000000..652f5f978ce2
---- /dev/null
-+++ b/drivers/infiniband/hw/irdma/Kconfig
-@@ -0,0 +1,11 @@
-+config INFINIBAND_IRDMA
-+       tristate "Intel(R) Ethernet Connection RDMA Driver"
-+       depends on INET && (I40E || ICE)
-+       depends on IPV6 || !IPV6
-+       depends on PCI
-+       select GENERIC_ALLOCATOR
-+       ---help---
-+       This is an Ethernet RDMA driver that supports E810 (iWARP/RoCE)
-+       and X722 (iWARP) network devices.
-+       To compile this driver as a module, choose M here. The module
-+       will be called irdma.
-diff --git a/drivers/infiniband/hw/irdma/Makefile b/drivers/infiniband/hw/irdma/Makefile
-new file mode 100644
-index 000000000000..455940d7cc69
---- /dev/null
-+++ b/drivers/infiniband/hw/irdma/Makefile
-@@ -0,0 +1,31 @@
-+# SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+# Copyright (c) 2019, Intel Corporation.
-+
-+#
-+# Makefile for the Intel(R) Ethernet Connection RDMA Linux Driver
-+#
-+
-+ccflags-y := -I $(srctree)/drivers/net/ethernet/intel/i40e
-+ccflags-y += -I $(srctree)/drivers/net/ethernet/intel/ice
-+
-+obj-$(CONFIG_INFINIBAND_IRDMA) += irdma.o
-+
-+irdma-objs := cm.o        \
-+              ctrl.o      \
-+              hmc.o       \
-+              hw.o        \
-+              i40iw_hw.o  \
-+              i40iw_if.o  \
-+              icrdma_hw.o \
-+              irdma_if.o  \
-+              main.o      \
-+              pble.o      \
-+              puda.o      \
-+              trace.o     \
-+              uda.o       \
-+              uk.o        \
-+              utils.o     \
-+              verbs.o     \
-+              ws.o        \
-+
-+CFLAGS_trace.o = -I$(src)
+ drivers/net/can/softing/softing_main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/can/softing/softing_main.c b/drivers/net/can/softing/softing_main.c
+index 68bb58a57f3b..8242fb287cbb 100644
+--- a/drivers/net/can/softing/softing_main.c
++++ b/drivers/net/can/softing/softing_main.c
+@@ -683,7 +683,7 @@ static void softing_netdev_cleanup(struct net_device *netdev)
+ static ssize_t show_##name(struct device *dev, \
+ 		struct device_attribute *attr, char *buf) \
+ { \
+-	struct softing *card = platform_get_drvdata(to_platform_device(dev)); \
++	struct softing *card = dev_get_drvdata(dev); \
+ 	return sprintf(buf, "%u\n", card->member); \
+ } \
+ static DEVICE_ATTR(name, 0444, show_##name, NULL)
+@@ -692,7 +692,7 @@ static DEVICE_ATTR(name, 0444, show_##name, NULL)
+ static ssize_t show_##name(struct device *dev, \
+ 		struct device_attribute *attr, char *buf) \
+ { \
+-	struct softing *card = platform_get_drvdata(to_platform_device(dev)); \
++	struct softing *card = dev_get_drvdata(dev); \
+ 	return sprintf(buf, "%s\n", card->member); \
+ } \
+ static DEVICE_ATTR(name, 0444, show_##name, NULL)
 -- 
-2.21.0
+2.11.0
 
