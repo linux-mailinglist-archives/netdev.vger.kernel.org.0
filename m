@@ -2,109 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C9CA5FDB2
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 22:12:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EEF35FDBC
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 22:21:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727090AbfGDUMm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 16:12:42 -0400
-Received: from mail-pg1-f179.google.com ([209.85.215.179]:34374 "EHLO
-        mail-pg1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726911AbfGDUMm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 16:12:42 -0400
-Received: by mail-pg1-f179.google.com with SMTP id p10so3299926pgn.1
-        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 13:12:41 -0700 (PDT)
+        id S1727188AbfGDUVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 16:21:38 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:34437 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726805AbfGDUVi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 16:21:38 -0400
+Received: by mail-io1-f67.google.com with SMTP id k8so14953643iot.1
+        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 13:21:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=plx6kx2mQbXqrWYytsJSBVQtVpKcK3KMpXPKAs1zP08=;
-        b=FsiOhai5lg+1msWCmp6oinYuLACIRH5F/ZayO46ZNWsNhqKT22qYCaYX3M60G93g/u
-         bKDa1stJMAKpnfoFWmSkZR9gKYheqfAFP6EdqSqkT6P0KcLOE9m3L3AcYg5Y5igLCMNS
-         0E2BZgkif9bvZaW6jUqDFdv/CwPbDmz4zzhmAAROOy6jQwcb59oz3H6n1KNriCm+DA9+
-         Ryjk+6IIs0cSMB4s1i896QCe1qZVPqkgepZScnGO6ldveyUR6wdFnPjER5trDC6+G/ov
-         wcNEzudXoSlz7h9tfSek3aiWVD7i5y1HKBfpmsX1jHxfuIaXSm6+cDf3KI7fOnEfM67K
-         tq/w==
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=OWrqG+ga7Rz5IJsic1OSpdHkZ7hAzYLuz+LfEP5Woak=;
+        b=2QoQGYAMkj6h2I/282fmnPFsiWGyDeYM85zm8bEvh5+ivb2LeE+Adz9rMYeTSfofuU
+         NYi5fzXQNuzw/QgqYNlLZ10rH8XKFNoOp5MM0sTQHgsqhOBenu/C/xrZk/aHdGRnH6Yk
+         T7t63n2+nvs4VeRIXjAS+BesLErOjoYFkLXgvmNd79FHZYpgxUwglljjZV8jHtUtZLQs
+         9BIlNQZLjv1I78suYLNtP5D11lApHF5CPHKWnKAONQAGfSHi4ouGsSTIcItqboITxOYZ
+         B5b35hOaQAtxxHvwoJrGFoMEAkSSmjRIrNdsgPz7O4ybzgAgTKjUsycHklVPWWmgn7ov
+         2Q+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=plx6kx2mQbXqrWYytsJSBVQtVpKcK3KMpXPKAs1zP08=;
-        b=lHSZPt14m9wKnO75UJM7yJu6ZaxyaPPaoP5ku9smYWsjCYIYRcjRbMZv5sT+LJNuwE
-         8y9R3BgO7WnuYsJo7JtX/lbpxRUWD9v3ptCi79MBQAdl2IX+KDp8k7ssLwUXjRSCBnip
-         eoJ/lZC+VEazPk6UAQo4QEod4hOI/UKylQSW5jmEaydWdK5rJICM2AZd/mz1G3vzq02f
-         q4GKHt2G95yoSRaQAWJp+5foQoKmRyDUO8y4zUIwwSrSyTW+IlFyOqY933Csw/vK1+Mn
-         PjnAQ+PJs1p6ufb577kcFSbAFnoOxcWUpCT60hOIQ2okXXzkHBY9WuLMQC6ggd+tKyF5
-         lHAw==
-X-Gm-Message-State: APjAAAV81tk2kV9lP+Bsgh55Mvdr/tzDKulLiQFQee8vtzeM0QjjrOrn
-        79EEQHVKfBwg3N9Fn6BDNt61BHva2Lk=
-X-Google-Smtp-Source: APXvYqy1NKYhjVAHlE9bmTM6Cc9sZcqONl+MGWEWdw9vSDGTTp4HjMJpMWMINeFkplZj4pwTzUgE1w==
-X-Received: by 2002:a17:90a:b883:: with SMTP id o3mr1406255pjr.50.1562271161369;
-        Thu, 04 Jul 2019 13:12:41 -0700 (PDT)
-Received: from cakuba.netronome.com (c-71-204-185-212.hsd1.ca.comcast.net. [71.204.185.212])
-        by smtp.gmail.com with ESMTPSA id o12sm5120149pjr.22.2019.07.04.13.12.40
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 04 Jul 2019 13:12:41 -0700 (PDT)
-Date:   Thu, 4 Jul 2019 13:12:37 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        Boris Pismenny <borisp@mellanox.com>
-Subject: Re: [net-next 14/14] net/mlx5e: Add kTLS TX HW offload support
-Message-ID: <20190704131237.239bfa56@cakuba.netronome.com>
-In-Reply-To: <20190704181235.8966-15-saeedm@mellanox.com>
-References: <20190704181235.8966-1-saeedm@mellanox.com>
-        <20190704181235.8966-15-saeedm@mellanox.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=OWrqG+ga7Rz5IJsic1OSpdHkZ7hAzYLuz+LfEP5Woak=;
+        b=M9U4DbHvtcZxErk2R1zZnYMOEVlnmxPwKuYDKkP+iUDnldnr8f8g6vha4ppUnyXXHD
+         84B6OkfCYl1rYTwPTgANkTIY4fp9L4SN5NlZy8kEVsw/T+t+9jHRpstLeWJo//J9zcLq
+         KeDNXrKk6GTZLfYVh7K1aOjh+pc63jYujw1vCtmtLMh0KjC/rssXIG3Zhe+KBbLkUWoi
+         l/HK3BI305Hdo5BkWkmk2hjTqeNlpsR8PvLiUp7m9jhp1RpSBka8p8l4HOPmG+gOnN4E
+         zF5d06cb9vywI/dBbhqWDf/v0UyBxY6UZ3xmNDdAXb4Mf/jaeVr4Mp2qtCxqsF5ROtT4
+         PAkA==
+X-Gm-Message-State: APjAAAXR5gIwdsRjmDzd3XlYsSzbVoCDxJgno68ucKWRWf5P+stuRl2I
+        ewIM8uhgi4LG3954BSUl2XfRDA==
+X-Google-Smtp-Source: APXvYqzzKrgoNeBtJBuMwntK1+8Tv/t1GXsV2Zn0LZj88LmPY0mmghikaUdIbLP4WkzPOCiJWHc2pQ==
+X-Received: by 2002:a02:c885:: with SMTP id m5mr24951jao.101.1562271697734;
+        Thu, 04 Jul 2019 13:21:37 -0700 (PDT)
+Received: from x220t ([64.26.149.125])
+        by smtp.gmail.com with ESMTPSA id a8sm4956144ioh.29.2019.07.04.13.21.36
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 04 Jul 2019 13:21:37 -0700 (PDT)
+Date:   Thu, 4 Jul 2019 16:21:30 -0400
+From:   Alexander Aring <aring@mojatatu.com>
+To:     Lucas Bates <lucasb@mojatatu.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, mleitner@redhat.com,
+        vladbu@mellanox.com, dcaratti@redhat.com, kernel@mojatatu.com
+Subject: Re: [PATCH v2 net-next 1/3] tc-testing: Add JSON verification to tdc
+Message-ID: <20190704202130.tv2ivy5tjj7pjasj@x220t>
+References: <1562201102-4332-1-git-send-email-lucasb@mojatatu.com>
+ <1562201102-4332-2-git-send-email-lucasb@mojatatu.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1562201102-4332-2-git-send-email-lucasb@mojatatu.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 4 Jul 2019 18:16:15 +0000, Saeed Mahameed wrote:
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-> index 483d321d2151..6854f132d505 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-> @@ -50,6 +50,15 @@ static const struct counter_desc sw_stats_desc[] = {
->  #ifdef CONFIG_MLX5_EN_TLS
->  	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_tls_ooo) },
->  	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_tls_resync_bytes) },
-> +
-> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_ooo) },
+Hi,
 
-Why do you call this stat tx_ktls_ooo, and not tx_tls_ooo (extra 'k')?
+On Wed, Jul 03, 2019 at 08:45:00PM -0400, Lucas Bates wrote:
+> This patch allows tdc to process JSON output to perform secondary
+> verification of the command under test. If the verifyCmd generates
+> JSON, one can provide the 'matchJSON' key to process it
+> instead of a regex.
+> 
+> matchJSON has two elements: 'path' and 'value'. The 'path' key is a
+> list of integers and strings that provide the key values for tdc to
+> navigate the JSON information. The value is an integer or string
+> that tdc will compare against what it finds in the provided path.
+> 
+> If the numerical position of an element can vary, it's possible to
+> substitute an asterisk as a wildcard. tdc will search all possible
+> entries in the array.
+> 
+> Multiple matches are possible, but everything specified must
+> match for the test to pass.
+> 
+> If both matchPattern and matchJSON are present, tdc will only
+> operate on matchPattern. If neither are present, verification
+> is skipped.
+> 
+> Example:
+> 
+>   "cmdUnderTest": "$TC actions add action pass index 8",
+>   "verifyCmd": "$TC actions list action gact",
+>   "matchJSON": [
+>       {
+>           "path": [
+>               0,
+>               "actions",
+>               0,
+>               "control action",
+>               "type"
+>           ],
+>           "value": "gact"
+>       },
+>       {
+>           "path": [
+>               0,
+>               "actions",
+>               0,
+>               "index"
+>           ],
+>           "value": 8
+>       }
+>   ]
 
-For nfp I used the stats' names from mlx5 FPGA to make sure we are all
-consistent.  I've added them to the tls-offload.rst doc and Boris has
-reviewed it.
+why you just use eval() as pattern matching operation and let the user
+define how to declare a matching mechanism instead you introduce another
+static matching scheme based on a json description?
 
- * ``rx_tls_decrypted`` - number of successfully decrypted TLS segments
- * ``tx_tls_encrypted`` - number of in-order TLS segments passed to device
-   for encryption
- * ``tx_tls_ooo`` - number of TX packets which were part of a TLS stream
-   but did not arrive in the expected order
- * ``tx_tls_drop_no_sync_data`` - number of TX packets dropped because
-   they arrived out of order and associated record could not be found
+Whereas in eval() you could directly use the python bool expression
+parser to make whatever you want.
 
-Why can't you use the same names for the stats as you used for your mlx5
-FPGA?
+I don't know, I see at some points you will hit limitations what you can
+express with this matchFOO and we need to introduce another matchBAR,
+whereas in providing the code it should be no problem expression
+anything. If you want smaller shortcuts writing matching patterns you
+can implement them and using in your eval() operation.
 
-> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_ooo_drop_no_sync_data) },
-> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_ooo_drop_bypass_req) },
-> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_ooo_dump_bytes) },
-> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_ooo_dump_packets) },
-> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_enc_packets) },
-> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_enc_bytes) },
-> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_ctx) },
->  #endif
->  
->  	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_lro_packets) },
-
-Dave, please don't apply this, I will review in depth once I get
-through the earlier 200 emails ;)
+- Alex
