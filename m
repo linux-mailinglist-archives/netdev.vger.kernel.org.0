@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B9DA5FCC1
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 20:16:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AABE75FCC2
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 20:16:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727164AbfGDSQC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 14:16:02 -0400
-Received: from mail-eopbgr60046.outbound.protection.outlook.com ([40.107.6.46]:28482
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        id S1727196AbfGDSQE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 14:16:04 -0400
+Received: from mail-eopbgr150077.outbound.protection.outlook.com ([40.107.15.77]:20736
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726833AbfGDSQC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Jul 2019 14:16:02 -0400
+        id S1726833AbfGDSQD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Jul 2019 14:16:03 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PtqXWkEXdNxJu4V0nnubNudY6Cw2YJr/9mhec3rhRbQ=;
- b=LN3/ds0RR2T8h4OPPSUevzbiHgmLg9NHk/6nd0vf7rVKZG+pYFYn9n1EkoxIqEeNMvYaq0G7idDazj8M69cjTdmwwQ7iRveTaYuWcr4j5kLkCC1gGxQzdTyH+TP5MhCbr+31tZmpP1CzLd7+BADvUad+8Jc/ntui8O/2xrtFBUU=
+ bh=ASygHLhPnSzrah/XRCd/VgrK5di3PB26pzf+6s3QYfM=;
+ b=SaoFHE8oSdmPpB/15X9Wl361jMXx4ao+GcfwIS5yUSK2FuX2R6BvpMjXV96CpiK9JeO84q1w75dPJQS3g8NoamdK/bwYV5vPGMkajed7axavaNNzfvcGgAvAQWpKbndL3h9IzbHVkvRW6yAJGLV5+m6QFJHUzdgUjpRYzCh4TKc=
 Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
  DB6PR0501MB2584.eurprd05.prod.outlook.com (10.168.74.135) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2032.20; Thu, 4 Jul 2019 18:15:45 +0000
+ 15.20.2032.20; Thu, 4 Jul 2019 18:15:48 +0000
 Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
  ([fe80::c1b3:b3a8:bced:493c]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
  ([fe80::c1b3:b3a8:bced:493c%4]) with mapi id 15.20.2032.019; Thu, 4 Jul 2019
- 18:15:45 +0000
+ 18:15:48 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
@@ -32,11 +32,11 @@ CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Shay Agroskin <shayag@mellanox.com>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next 01/14] net/mlx5: Added fw version query command
-Thread-Topic: [net-next 01/14] net/mlx5: Added fw version query command
-Thread-Index: AQHVMpR/QPi+OjyzoUCTUFjDEvo8OQ==
-Date:   Thu, 4 Jul 2019 18:15:45 +0000
-Message-ID: <20190704181235.8966-2-saeedm@mellanox.com>
+Subject: [net-next 02/14] net/mlx5: Added devlink info callback
+Thread-Topic: [net-next 02/14] net/mlx5: Added devlink info callback
+Thread-Index: AQHVMpSBxKv80qvSDkmdIZKmbpMRaA==
+Date:   Thu, 4 Jul 2019 18:15:48 +0000
+Message-ID: <20190704181235.8966-3-saeedm@mellanox.com>
 References: <20190704181235.8966-1-saeedm@mellanox.com>
 In-Reply-To: <20190704181235.8966-1-saeedm@mellanox.com>
 Accept-Language: en-US
@@ -52,24 +52,24 @@ authentication-results: spf=none (sender IP is )
  smtp.mailfrom=saeedm@mellanox.com; 
 x-ms-exchange-messagesentrepresentingtype: 1
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 50d12694-0dc3-49eb-e651-08d700aba0f5
+x-ms-office365-filtering-correlation-id: e3116ee1-29f4-4eb6-8edb-08d700aba388
 x-ms-office365-filtering-ht: Tenant
 x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2584;
 x-ms-traffictypediagnostic: DB6PR0501MB2584:
-x-microsoft-antispam-prvs: <DB6PR0501MB2584971C1771FD8A14D12127BEFA0@DB6PR0501MB2584.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6108;
+x-microsoft-antispam-prvs: <DB6PR0501MB258422DB4F863D54B0F0EEE8BEFA0@DB6PR0501MB2584.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
 x-forefront-prvs: 0088C92887
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(346002)(136003)(39860400002)(366004)(396003)(199004)(189003)(486006)(14454004)(186003)(305945005)(26005)(6916009)(71200400001)(6486002)(7736002)(86362001)(256004)(14444005)(8936002)(81156014)(386003)(76176011)(8676002)(81166006)(6116002)(52116002)(2906002)(6436002)(3846002)(102836004)(71190400001)(2616005)(476003)(446003)(11346002)(6506007)(99286004)(73956011)(25786009)(1076003)(107886003)(66946007)(66556008)(66476007)(68736007)(66446008)(64756008)(5660300002)(478600001)(4326008)(50226002)(6512007)(54906003)(66066001)(316002)(36756003)(53936002)(309714004);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2584;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(346002)(136003)(39860400002)(366004)(396003)(199004)(189003)(486006)(14454004)(186003)(305945005)(26005)(6916009)(71200400001)(6486002)(7736002)(86362001)(256004)(14444005)(8936002)(81156014)(386003)(76176011)(8676002)(81166006)(6116002)(52116002)(2906002)(6436002)(3846002)(102836004)(71190400001)(2616005)(476003)(446003)(11346002)(6506007)(99286004)(73956011)(25786009)(1076003)(107886003)(66946007)(66556008)(66476007)(68736007)(66446008)(64756008)(5660300002)(478600001)(4326008)(50226002)(6512007)(54906003)(66066001)(316002)(36756003)(53936002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2584;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: kuS9JLjqhee61oowmXU+KF5SmCF4D8NzEEHiB0C5IMyHe6rYJOGqzO22XX0B3dYWxlSBR45t+9ykGCozflIqsaEbDN7XXHEj+3JlnMeaskogvjBmxmMs1c7bLbKCe6ZP3depmDNYDWBgasOMf144akdD4dmDrpbiTejDWkd1eNEpB1hD/MulyrEdhT362ymccDIj3TSawMLkwO9wjU6w5yeJVy92xZp+GJqqDTiiixXK9mYziL+HhQWm1451w4Jugx4kT/VwBOs+OY7gq2iBYl0G4LIXIjMvBy4PyxvH+Zy3JohDdvveybhxNpr4I7K31IzB5bJEHPXUw4BNKiK/IXO2cBilCAFW7yU/fkkG6gpqJuVhNGzG19UtrwaBlkbsona9ExX3IGsJOZgIUc1U5knRFFXyRsqla8WOOqiG2dc=
+x-microsoft-antispam-message-info: XiKL0pCHmjwFtaQKdb3qPgtzX5N0BJkrsE2WCArTnABi2Tmd+SPFvLmq3LoFQLq8xdS94ZScczgTgl7Mksu8jBar7/P40s4Mc4dtDxINCsFvFVx/djb7rNxRx+oif02ZByexs+3X3egDoAvwMIS04h7ZlrpaTJc2QqiOyXBZb2jiUMvJuvElJgZnxp1XkAqJKp/30SQLx8sutaQ9E2cpX04jCvrIfCbIVpj4K+FO2HNgomJdEBuTxEmbIq2J61E3vwNfDanke1X1/l6JrezZiZSviyvOYUt62xj9mXcLtS03SwxI8Ly2PR6mYPIopwlnBilH+wszvTpqV1KfUDG7hUneGsh+EG6PueIN6f2ZWiR3QJH6miHFr0m+byp0xf/OOgyvIy2MRaOSebsqqjxPIqTYTSlTHArGFUSqfh/Mol0=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 50d12694-0dc3-49eb-e651-08d700aba0f5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jul 2019 18:15:45.5838
+X-MS-Exchange-CrossTenant-Network-Message-Id: e3116ee1-29f4-4eb6-8edb-08d700aba388
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jul 2019 18:15:48.3511
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
@@ -83,310 +83,156 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Shay Agroskin <shayag@mellanox.com>
 
-Using the MCQI and MCQS registers, we query the running and pending
-fw version of the HCA.
-The MCQS is queried with sequentially increasing component index, until
-a component of type BOOT_IMG is found. Querying this component's version
-using the MCQI register yields the running and pending fw version of the
-HCA.
+The callback is invoked using 'devlink dev info <pci>' command and returns
+the running and pending firmware version of the HCA and the name of the
+kernel driver.
 
-Querying MCQI for the pending fw version should be done only after
-validating that such fw version exists. This is done my checking
-'component update state' field in MCQS output.
+If there is a pending firmware version (a new version is burned but the
+HCA still runs with the previous) it is returned as the stored
+firmware version. Otherwise, the running version is returned for this
+field.
+
+Output example:
+$ devlink dev info pci/0000:00:06.0
+pci/0000:00:06.0:
+  driver mlx5_core
+  versions:
+      fixed:
+        fw.psid MT_0000000009
+      running:
+        fw.version 16.26.0100
+      stored:
+        fw.version 16.26.0100
 
 Signed-off-by: Shay Agroskin <shayag@mellanox.com>
 Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/fw.c  | 219 ++++++++++++++++--
- .../ethernet/mellanox/mlx5/core/mlx5_core.h   |   2 +
- 2 files changed, 201 insertions(+), 20 deletions(-)
+ .../device_drivers/mellanox/mlx5.rst          | 19 ++++++
+ .../net/ethernet/mellanox/mlx5/core/devlink.c | 60 +++++++++++++++++++
+ 2 files changed, 79 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw.c b/drivers/net/eth=
-ernet/mellanox/mlx5/core/fw.c
-index 6452b62eff15..eb9680293b06 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fw.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fw.c
-@@ -37,6 +37,37 @@
- #include "mlx5_core.h"
- #include "../../mlxfw/mlxfw.h"
+diff --git a/Documentation/networking/device_drivers/mellanox/mlx5.rst b/Do=
+cumentation/networking/device_drivers/mellanox/mlx5.rst
+index 4eeef2df912f..214325897732 100644
+--- a/Documentation/networking/device_drivers/mellanox/mlx5.rst
++++ b/Documentation/networking/device_drivers/mellanox/mlx5.rst
+@@ -10,6 +10,7 @@ Contents
+ =3D=3D=3D=3D=3D=3D=3D=3D
 =20
-+enum {
-+	MCQS_IDENTIFIER_BOOT_IMG	=3D 0x1,
-+	MCQS_IDENTIFIER_OEM_NVCONFIG	=3D 0x4,
-+	MCQS_IDENTIFIER_MLNX_NVCONFIG	=3D 0x5,
-+	MCQS_IDENTIFIER_CS_TOKEN	=3D 0x6,
-+	MCQS_IDENTIFIER_DBG_TOKEN	=3D 0x7,
-+	MCQS_IDENTIFIER_GEARBOX		=3D 0xA,
-+};
+ - `Enabling the driver and kconfig options`_
++- `Devlink info`_
+ - `Devlink health reporters`_
+=20
+ Enabling the driver and kconfig options
+@@ -101,6 +102,24 @@ Enabling the driver and kconfig options
+ - CONFIG_VXLAN: When chosen, mlx5 vxaln support will be enabled.
+ - CONFIG_MLXFW: When chosen, mlx5 firmware flashing support will be enable=
+d (via devlink and ethtool).
+=20
++Devlink info
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 +
-+enum {
-+	MCQS_UPDATE_STATE_IDLE,
-+	MCQS_UPDATE_STATE_IN_PROGRESS,
-+	MCQS_UPDATE_STATE_APPLIED,
-+	MCQS_UPDATE_STATE_ACTIVE,
-+	MCQS_UPDATE_STATE_ACTIVE_PENDING_RESET,
-+	MCQS_UPDATE_STATE_FAILED,
-+	MCQS_UPDATE_STATE_CANCELED,
-+	MCQS_UPDATE_STATE_BUSY,
-+};
++The devlink info reports the running and stored firmware versions on devic=
+e.
++It also prints the device PSID which represents the HCA board type ID.
 +
-+enum {
-+	MCQI_INFO_TYPE_CAPABILITIES	  =3D 0x0,
-+	MCQI_INFO_TYPE_VERSION		  =3D 0x1,
-+	MCQI_INFO_TYPE_ACTIVATION_METHOD  =3D 0x5,
-+};
++User command example::
 +
-+enum {
-+	MCQI_FW_RUNNING_VERSION =3D 0,
-+	MCQI_FW_STORED_VERSION  =3D 1,
-+};
-+
- static int mlx5_cmd_query_adapter(struct mlx5_core_dev *dev, u32 *out,
- 				  int outlen)
- {
-@@ -398,33 +429,49 @@ static int mlx5_reg_mcda_set(struct mlx5_core_dev *de=
-v,
++   $ devlink dev info pci/0000:00:06.0
++      pci/0000:00:06.0:
++      driver mlx5_core
++      versions:
++         fixed:
++            fw.psid MT_0000000009
++         running:
++            fw.version 16.26.0100
++         stored:
++            fw.version 16.26.0100
+=20
+ Devlink health reporters
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/ne=
+t/ethernet/mellanox/mlx5/core/devlink.c
+index 1533c657220b..a400f4430c28 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+@@ -25,6 +25,65 @@ static int mlx5_devlink_flash_update(struct devlink *dev=
+link,
+ 	return mlx5_firmware_flash(dev, fw, extack);
  }
 =20
- static int mlx5_reg_mcqi_query(struct mlx5_core_dev *dev,
--			       u16 component_index,
--			       u32 *max_component_size,
--			       u8 *log_mcda_word_size,
--			       u16 *mcda_max_write_size)
-+			       u16 component_index, bool read_pending,
-+			       u8 info_type, u16 data_size, void *mcqi_data)
- {
--	u32 out[MLX5_ST_SZ_DW(mcqi_reg) + MLX5_ST_SZ_DW(mcqi_cap)];
--	int offset =3D MLX5_ST_SZ_DW(mcqi_reg);
--	u32 in[MLX5_ST_SZ_DW(mcqi_reg)];
-+	u32 out[MLX5_ST_SZ_DW(mcqi_reg) + MLX5_UN_SZ_DW(mcqi_reg_data)] =3D {};
-+	u32 in[MLX5_ST_SZ_DW(mcqi_reg)] =3D {};
-+	void *data;
- 	int err;
-=20
--	memset(in, 0, sizeof(in));
--	memset(out, 0, sizeof(out));
--
- 	MLX5_SET(mcqi_reg, in, component_index, component_index);
--	MLX5_SET(mcqi_reg, in, data_size, MLX5_ST_SZ_BYTES(mcqi_cap));
-+	MLX5_SET(mcqi_reg, in, read_pending_component, read_pending);
-+	MLX5_SET(mcqi_reg, in, info_type, info_type);
-+	MLX5_SET(mcqi_reg, in, data_size, data_size);
-=20
- 	err =3D mlx5_core_access_reg(dev, in, sizeof(in), out,
--				   sizeof(out), MLX5_REG_MCQI, 0, 0);
-+				   MLX5_ST_SZ_BYTES(mcqi_reg) + data_size,
-+				   MLX5_REG_MCQI, 0, 0);
- 	if (err)
--		goto out;
-+		return err;
-=20
--	*max_component_size =3D MLX5_GET(mcqi_cap, out + offset, max_component_si=
-ze);
--	*log_mcda_word_size =3D MLX5_GET(mcqi_cap, out + offset, log_mcda_word_si=
-ze);
--	*mcda_max_write_size =3D MLX5_GET(mcqi_cap, out + offset, mcda_max_write_=
-size);
-+	data =3D MLX5_ADDR_OF(mcqi_reg, out, data);
-+	memcpy(mcqi_data, data, data_size);
-=20
--out:
--	return err;
-+	return 0;
++static u8 mlx5_fw_ver_major(u32 version)
++{
++	return (version >> 24) & 0xff;
 +}
 +
-+static int mlx5_reg_mcqi_caps_query(struct mlx5_core_dev *dev, u16 compone=
-nt_index,
-+				    u32 *max_component_size, u8 *log_mcda_word_size,
-+				    u16 *mcda_max_write_size)
++static u8 mlx5_fw_ver_minor(u32 version)
 +{
-+	u32 mcqi_reg[MLX5_ST_SZ_DW(mcqi_cap)] =3D {};
-+	int err;
-+
-+	err =3D mlx5_reg_mcqi_query(dev, component_index, 0,
-+				  MCQI_INFO_TYPE_CAPABILITIES,
-+				  MLX5_ST_SZ_BYTES(mcqi_cap), mcqi_reg);
-+	if (err)
-+		return err;
-+
-+	*max_component_size =3D MLX5_GET(mcqi_cap, mcqi_reg, max_component_size);
-+	*log_mcda_word_size =3D MLX5_GET(mcqi_cap, mcqi_reg, log_mcda_word_size);
-+	*mcda_max_write_size =3D MLX5_GET(mcqi_cap, mcqi_reg, mcda_max_write_size=
-);
-+
-+	return 0;
- }
-=20
- struct mlx5_mlxfw_dev {
-@@ -440,8 +487,13 @@ static int mlx5_component_query(struct mlxfw_dev *mlxf=
-w_dev,
- 		container_of(mlxfw_dev, struct mlx5_mlxfw_dev, mlxfw_dev);
- 	struct mlx5_core_dev *dev =3D mlx5_mlxfw_dev->mlx5_core_dev;
-=20
--	return mlx5_reg_mcqi_query(dev, component_index, p_max_size,
--				   p_align_bits, p_max_write_size);
-+	if (!MLX5_CAP_GEN(dev, mcam_reg) || !MLX5_CAP_MCAM_REG(dev, mcqi)) {
-+		mlx5_core_warn(dev, "caps query isn't supported by running FW\n");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return mlx5_reg_mcqi_caps_query(dev, component_index, p_max_size,
-+					p_align_bits, p_max_write_size);
- }
-=20
- static int mlx5_fsm_lock(struct mlxfw_dev *mlxfw_dev, u32 *fwhandle)
-@@ -581,3 +633,130 @@ int mlx5_firmware_flash(struct mlx5_core_dev *dev,
- 	return mlxfw_firmware_flash(&mlx5_mlxfw_dev.mlxfw_dev,
- 				    firmware, extack);
- }
-+
-+static int mlx5_reg_mcqi_version_query(struct mlx5_core_dev *dev,
-+				       u16 component_index, bool read_pending,
-+				       u32 *mcqi_version_out)
-+{
-+	return mlx5_reg_mcqi_query(dev, component_index, read_pending,
-+				   MCQI_INFO_TYPE_VERSION,
-+				   MLX5_ST_SZ_BYTES(mcqi_version),
-+				   mcqi_version_out);
++	return (version >> 16) & 0xff;
 +}
 +
-+static int mlx5_reg_mcqs_query(struct mlx5_core_dev *dev, u32 *out,
-+			       u16 component_index)
++static u16 mlx5_fw_ver_subminor(u32 version)
 +{
-+	u8 out_sz =3D MLX5_ST_SZ_BYTES(mcqs_reg);
-+	u32 in[MLX5_ST_SZ_DW(mcqs_reg)] =3D {};
-+	int err;
-+
-+	memset(out, 0, out_sz);
-+
-+	MLX5_SET(mcqs_reg, in, component_index, component_index);
-+
-+	err =3D mlx5_core_access_reg(dev, in, sizeof(in), out,
-+				   out_sz, MLX5_REG_MCQS, 0, 0);
-+	return err;
++	return version & 0xffff;
 +}
 +
-+/* scans component index sequentially, to find the boot img index */
-+static int mlx5_get_boot_img_component_index(struct mlx5_core_dev *dev)
-+{
-+	u32 out[MLX5_ST_SZ_DW(mcqs_reg)] =3D {};
-+	u16 identifier, component_idx =3D 0;
-+	bool quit;
-+	int err;
-+
-+	do {
-+		err =3D mlx5_reg_mcqs_query(dev, out, component_idx);
-+		if (err)
-+			return err;
-+
-+		identifier =3D MLX5_GET(mcqs_reg, out, identifier);
-+		quit =3D !!MLX5_GET(mcqs_reg, out, last_index_flag);
-+		quit |=3D identifier =3D=3D MCQS_IDENTIFIER_BOOT_IMG;
-+	} while (!quit && ++component_idx);
-+
-+	if (identifier !=3D MCQS_IDENTIFIER_BOOT_IMG) {
-+		mlx5_core_warn(dev, "mcqs: can't find boot_img component ix, last scanne=
-d idx %d\n",
-+			       component_idx);
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return component_idx;
-+}
++#define DEVLINK_FW_STRING_LEN 32
 +
 +static int
-+mlx5_fw_image_pending(struct mlx5_core_dev *dev,
-+		      int component_index,
-+		      bool *pending_version_exists)
++mlx5_devlink_info_get(struct devlink *devlink, struct devlink_info_req *re=
+q,
++		      struct netlink_ext_ack *extack)
 +{
-+	u32 out[MLX5_ST_SZ_DW(mcqs_reg)];
-+	u8 component_update_state;
++	struct mlx5_core_dev *dev =3D devlink_priv(devlink);
++	char version_str[DEVLINK_FW_STRING_LEN];
++	u32 running_fw, stored_fw;
 +	int err;
 +
-+	err =3D mlx5_reg_mcqs_query(dev, out, component_index);
++	err =3D devlink_info_driver_name_put(req, DRIVER_NAME);
 +	if (err)
 +		return err;
 +
-+	component_update_state =3D MLX5_GET(mcqs_reg, out, component_update_state=
-);
++	err =3D devlink_info_version_fixed_put(req, "fw.psid", dev->board_id);
++	if (err)
++		return err;
 +
-+	if (component_update_state =3D=3D MCQS_UPDATE_STATE_IDLE) {
-+		*pending_version_exists =3D false;
-+	} else if (component_update_state =3D=3D MCQS_UPDATE_STATE_ACTIVE_PENDING=
-_RESET) {
-+		*pending_version_exists =3D true;
-+	} else {
-+		mlx5_core_warn(dev,
-+			       "mcqs: can't read pending fw version while fw state is %d\n",
-+			       component_update_state);
-+		return -ENODATA;
-+	}
++	err =3D mlx5_fw_version_query(dev, &running_fw, &stored_fw);
++	if (err)
++		return err;
++
++	snprintf(version_str, sizeof(version_str), "%d.%d.%04d",
++		 mlx5_fw_ver_major(running_fw), mlx5_fw_ver_minor(running_fw),
++		 mlx5_fw_ver_subminor(running_fw));
++	err =3D devlink_info_version_running_put(req, "fw.version", version_str);
++	if (err)
++		return err;
++
++	/* no pending version, return running (stored) version */
++	if (stored_fw =3D=3D 0)
++		stored_fw =3D running_fw;
++
++	snprintf(version_str, sizeof(version_str), "%d.%d.%04d",
++		 mlx5_fw_ver_major(stored_fw), mlx5_fw_ver_minor(stored_fw),
++		 mlx5_fw_ver_subminor(stored_fw));
++	err =3D devlink_info_version_stored_put(req, "fw.version", version_str);
++	if (err)
++		return err;
++
 +	return 0;
 +}
 +
-+int mlx5_fw_version_query(struct mlx5_core_dev *dev,
-+			  u32 *running_ver, u32 *pending_ver)
-+{
-+	u32 reg_mcqi_version[MLX5_ST_SZ_DW(mcqi_version)] =3D {};
-+	bool pending_version_exists;
-+	int component_index;
-+	int err;
-+
-+	if (!MLX5_CAP_GEN(dev, mcam_reg) || !MLX5_CAP_MCAM_REG(dev, mcqi) ||
-+	    !MLX5_CAP_MCAM_REG(dev, mcqs)) {
-+		mlx5_core_warn(dev, "fw query isn't supported by the FW\n");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	component_index =3D mlx5_get_boot_img_component_index(dev);
-+	if (component_index < 0)
-+		return component_index;
-+
-+	err =3D mlx5_reg_mcqi_version_query(dev, component_index,
-+					  MCQI_FW_RUNNING_VERSION,
-+					  reg_mcqi_version);
-+	if (err)
-+		return err;
-+
-+	*running_ver =3D MLX5_GET(mcqi_version, reg_mcqi_version, version);
-+
-+	err =3D mlx5_fw_image_pending(dev, component_index, &pending_version_exis=
-ts);
-+	if (err)
-+		return err;
-+
-+	if (!pending_version_exists) {
-+		*pending_ver =3D 0;
-+		return 0;
-+	}
-+
-+	err =3D mlx5_reg_mcqi_version_query(dev, component_index,
-+					  MCQI_FW_STORED_VERSION,
-+					  reg_mcqi_version);
-+	if (err)
-+		return err;
-+
-+	*pending_ver =3D MLX5_GET(mcqi_version, reg_mcqi_version, version);
-+
-+	return 0;
-+}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h b/drivers/=
-net/ethernet/mellanox/mlx5/core/mlx5_core.h
-index 958769702823..471bbc48bc1f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-@@ -205,6 +205,8 @@ int mlx5_set_mtppse(struct mlx5_core_dev *mdev, u8 pin,=
- u8 arm, u8 mode);
+ static const struct devlink_ops mlx5_devlink_ops =3D {
+ #ifdef CONFIG_MLX5_ESWITCH
+ 	.eswitch_mode_set =3D mlx5_devlink_eswitch_mode_set,
+@@ -35,6 +94,7 @@ static const struct devlink_ops mlx5_devlink_ops =3D {
+ 	.eswitch_encap_mode_get =3D mlx5_devlink_eswitch_encap_mode_get,
+ #endif
+ 	.flash_update =3D mlx5_devlink_flash_update,
++	.info_get =3D mlx5_devlink_info_get,
+ };
 =20
- int mlx5_firmware_flash(struct mlx5_core_dev *dev, const struct firmware *=
-fw,
- 			struct netlink_ext_ack *extack);
-+int mlx5_fw_version_query(struct mlx5_core_dev *dev,
-+			  u32 *running_ver, u32 *stored_ver);
-=20
- void mlx5e_init(void);
- void mlx5e_cleanup(void);
+ struct devlink *mlx5_devlink_alloc(void)
 --=20
 2.21.0
 
