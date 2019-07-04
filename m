@@ -2,113 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50E745FA45
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 16:46:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0E1F5FA92
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 17:04:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727723AbfGDOqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 10:46:14 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:46020 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727246AbfGDOqO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 10:46:14 -0400
-Received: by mail-wr1-f67.google.com with SMTP id f9so6889680wre.12
-        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 07:46:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=vIlZPh+cGdBas5UVFVe9m7v5eH4HqPXtkpxnK7R76V8=;
-        b=by5JoobT6u12N2NqxmbOaAvvscrI4lTaDsNQMaPqOs5k5nDFzoSDmKsm9/s2TFnsWn
-         d+j/CfTOGZnqMiTRFKYDpNeQJAXSpHXPrmuAJYk0A8LOkSBleazbQaCiINh2+QroyiMS
-         X+0xHHjXJ8i+s1MyTEPA0aUHvM07wXVfv+X2i4CwEDy7fjRsAct5ARlyKWIt0n/Gvdam
-         bmmwxTfJGW0Dia5XqIAtXh1AlnirXIVl2LVqHC9VvXjyEOQuAgcsAYP5kfM6HybM7qFt
-         4X3BqgBIUMLssHclhAtYlOOhRh3VRHsp1JTFi86726jxi2RcspVa2AUq6ubTCQILh9hR
-         lxIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=vIlZPh+cGdBas5UVFVe9m7v5eH4HqPXtkpxnK7R76V8=;
-        b=OfxdCC8+IcFUQJmGcHXYc/qs6zEkAOCB9roNv8EeVyc7LmGE0ynsNfe7gCAWF8ILg0
-         c/24tR6CGE+VBOxxPlBa/YzdCYv160OhuM4/shyymv+KDJ57adYCb9HblUiIrKzqbG4f
-         EOZ245X5q/Pzl1jHHptWKoaBgoMkJoCh71MeihdwK/2QifBr7eCsQ+gLuBQcT464Kgga
-         a3iB4l6Hhca07zdbS0hVACJtm7fkOSry2cS1ROgCa0TMLs6fjtKMblaKGwcuBVQVuNiC
-         AApRCuY693PrFnxGpKA9cIuw9kl9eT5eioS++YNv99AwYCQIeFlv0YxxcEXJTVzx67E9
-         KdIA==
-X-Gm-Message-State: APjAAAWuOhhw05D0prws+CYWBysmIHwwzPY22KBHmOhJhYYjjJBJUAJm
-        Kqz8vDpr8aQnhoHjgxffgaRlk14AtXHlEg==
-X-Google-Smtp-Source: APXvYqxVy0sEUv3xIfMrZOTmb+DRentv3xwc0JcDUfn2aEicy6EyHj6Je33WTUyG4LdgeTW9CInTDw==
-X-Received: by 2002:a5d:6650:: with SMTP id f16mr3076605wrw.89.1562251571548;
-        Thu, 04 Jul 2019 07:46:11 -0700 (PDT)
-Received: from apalos.lan (athedsl-428434.home.otenet.gr. [79.131.225.144])
-        by smtp.gmail.com with ESMTPSA id b12sm2503569wmg.32.2019.07.04.07.46.10
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Thu, 04 Jul 2019 07:46:11 -0700 (PDT)
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     netdev@vger.kernel.org, jaswinder.singh@linaro.org
-Cc:     ard.biesheuvel@linaro.org, arnd@arndb.de,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Subject: [net-next, PATCH, v2] net: netsec: Sync dma for device on buffer allocation
-Date:   Thu,  4 Jul 2019 17:46:09 +0300
-Message-Id: <1562251569-16506-1-git-send-email-ilias.apalodimas@linaro.org>
+        id S1727574AbfGDPE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 11:04:27 -0400
+Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:47088 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727066AbfGDPE0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 11:04:26 -0400
+Received: from mailhost.synopsys.com (mdc-mailhost1.synopsys.com [10.225.0.209])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 12782C263A;
+        Thu,  4 Jul 2019 15:04:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1562252666; bh=PAo9PIfhNcKwwl9Dq4k5dVtLOG+3Xoxeinoz/2G+cRY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=fjCN0tWGG04dUAErtw3+lTfyoSI1bCYZ1W+tfumt497tAJeXlHTCvXjXWLxORtmi4
+         yXfh0hm7HNGGtcQ6o1SUPI+r/oAFWW/WhzoIb7CCcmkrO2Z31MBMLv9QXfr60L0iFL
+         V85QfjjBvyr1H7MZ39Yv7It51sh1IWofgDC6HtR2wSZ4m0lV+Ds04F2+hDJI1zZ2g0
+         Sh00PHuMlY2A7OU4rDGocObLlvHj90HK+AICMmIRfFasQNWaabU1kRoolcmjRCVt5S
+         JbZG9TSrg7HTFzM2F+63jh53vle+CRvMxIBK38p9Pdxjp7eO972wJ1w8HjYwABzYSh
+         VmrsJ2wO+zWTA==
+Received: from de02.synopsys.com (de02.internal.synopsys.com [10.225.17.21])
+        by mailhost.synopsys.com (Postfix) with ESMTP id 81926A005D;
+        Thu,  4 Jul 2019 15:04:23 +0000 (UTC)
+Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
+        by de02.synopsys.com (Postfix) with ESMTP id 2984E3FC5D;
+        Thu,  4 Jul 2019 17:04:23 +0200 (CEST)
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        Joao Pinto <Joao.Pinto@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>
+Subject: [PATCH net-next v2 0/3] net: stmmac: Some improvements and a fix
+Date:   Thu,  4 Jul 2019 17:04:11 +0200
+Message-Id: <cover.1562252534.git.joabreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quoting Arnd,
+Some performace improvements (01/03 and 03/03) and a fix (02/03), all for -next.
 
-We have to do a sync_single_for_device /somewhere/ before the
-buffer is given to the device. On a non-cache-coherent machine with
-a write-back cache, there may be dirty cache lines that get written back
-after the device DMA's data into it (e.g. from a previous memset
-from before the buffer got freed), so you absolutely need to flush any
-dirty cache lines on it first.
+Cc: Joao Pinto <jpinto@synopsys.com>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+Cc: Alexandre Torgue <alexandre.torgue@st.com>
 
-Since the coherency is configurable in this device make sure we cover
-all configurations by explicitly syncing the allocated buffer for the
-device before refilling it's descriptors
+Jose Abreu (3):
+  net: stmmac: Implement RX Coalesce Frames setting
+  net: stmmac: Fix descriptors address being in > 32 bits address space
+  net: stmmac: Introducing support for Page Pool
 
-Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
----
+ drivers/net/ethernet/stmicro/stmmac/Kconfig        |   1 +
+ drivers/net/ethernet/stmicro/stmmac/common.h       |   1 +
+ drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c  |   8 +-
+ .../net/ethernet/stmicro/stmmac/dwmac1000_dma.c    |   8 +-
+ drivers/net/ethernet/stmicro/stmmac/dwmac100_dma.c |   8 +-
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c   |   8 +-
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h     |   2 +
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c |  10 +-
+ drivers/net/ethernet/stmicro/stmmac/hwif.h         |   4 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h       |  12 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_ethtool.c   |   7 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  | 215 +++++++--------------
+ 12 files changed, 112 insertions(+), 172 deletions(-)
 
-Changes since V1: 
-- Make the code more readable
- 
- drivers/net/ethernet/socionext/netsec.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
-index 5544a722543f..ada7626bf3a2 100644
---- a/drivers/net/ethernet/socionext/netsec.c
-+++ b/drivers/net/ethernet/socionext/netsec.c
-@@ -727,21 +727,26 @@ static void *netsec_alloc_rx_data(struct netsec_priv *priv,
- {
- 
- 	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
-+	enum dma_data_direction dma_dir;
-+	dma_addr_t dma_start;
- 	struct page *page;
- 
- 	page = page_pool_dev_alloc_pages(dring->page_pool);
- 	if (!page)
- 		return NULL;
- 
-+	dma_start = page_pool_get_dma_addr(page);
- 	/* We allocate the same buffer length for XDP and non-XDP cases.
- 	 * page_pool API will map the whole page, skip what's needed for
- 	 * network payloads and/or XDP
- 	 */
--	*dma_handle = page_pool_get_dma_addr(page) + NETSEC_RXBUF_HEADROOM;
-+	*dma_handle = dma_start + NETSEC_RXBUF_HEADROOM;
- 	/* Make sure the incoming payload fits in the page for XDP and non-XDP
- 	 * cases and reserve enough space for headroom + skb_shared_info
- 	 */
- 	*desc_len = PAGE_SIZE - NETSEC_RX_BUF_NON_DATA;
-+	dma_dir = page_pool_get_dma_dir(dring->page_pool);
-+	dma_sync_single_for_device(priv->dev, dma_start, PAGE_SIZE, dma_dir);
- 
- 	return page_address(page);
- }
 -- 
-2.20.1
+2.7.4
 
