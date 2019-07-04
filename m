@@ -2,146 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C9CD65F5C4
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 11:37:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 207665F5CE
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 11:39:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727390AbfGDJhy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 05:37:54 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:48562 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727256AbfGDJhy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 05:37:54 -0400
-Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x649bpkH028627, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (RTITCASV01.realtek.com.tw[172.21.6.18])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x649bpkH028627
-        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Thu, 4 Jul 2019 17:37:52 +0800
-Received: from fc30.localdomain (172.21.177.138) by RTITCASV01.realtek.com.tw
- (172.21.6.18) with Microsoft SMTP Server id 14.3.439.0; Thu, 4 Jul 2019
- 17:37:50 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     <netdev@vger.kernel.org>
-CC:     <nic_swsd@realtek.com>, <linux-kernel@vger.kernel.org>,
-        <linux-usb@vger.kernel.org>, Hayes Wang <hayeswang@realtek.com>
-Subject: [PATCH net] r8152: set RTL8152_UNPLUG only for real disconnection
-Date:   Thu, 4 Jul 2019 17:36:32 +0800
-Message-ID: <1394712342-15778-288-albertk@realtek.com>
-X-Mailer: Microsoft Office Outlook 11
+        id S1727385AbfGDJjJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 05:39:09 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:55119 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727370AbfGDJjI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 05:39:08 -0400
+Received: by mail-wm1-f66.google.com with SMTP id p74so2018810wme.4
+        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 02:39:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=WSgYNyiVFTsfF9jPEtI+98HkWM1O/G/j6vEHZDtVKWc=;
+        b=JKSN5hno96QmLoVsyG+/LZMfrZKCh+mjHRVCXMiVXDzoyv6Fd6bzsSTZFFJpC0KM9A
+         aEy1TYiaQlvJ4lMRQtPEwICrqPTPqjznFdCK/DYPW1V7NbbFBiNdyMrGJkvjwInVpBRe
+         f56bxQeW1YIif88NOeACq7d58yh+g9UWA1osembho58b0ex9lqgzz0pEBVcx6Ge9/X6X
+         Br1XHFa+1DIXw2eCVEsWuRy6glzkQ0Q18u9wuqzwvhflQ73yJQLQhZshL3im/vPCjDz4
+         ZKTy/hM6jHC/YHNvkOwaEZFAIpmIjONQXttOVEZAkR5dtUxRdV9/mKpw9Z3FUUcS9jSJ
+         YEFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=WSgYNyiVFTsfF9jPEtI+98HkWM1O/G/j6vEHZDtVKWc=;
+        b=QYGcO6+m6upv6o3qnLn7DtWGlbkGjkMjpEHH5ovtXD1g/gW+bJK5ptJnJ9+7C5dInU
+         LoDnaqcKzydlFYSbXzOhH5q8HNXi2I4dR8+aS6Sm1d3NV22qkw21vTsm1zzINUsqGQEF
+         R3DvaHCLcUrrpUqKb7g6yl/b11uvtfR9oP6ZT7z5SlUjkN1ZERXmCkFEs/nyQ4dH2NI8
+         ePQYdkNhMO/LOAx46va4dhWL4VZhJdpUF20+TAH7Ili/Wk5WsYFa7Rx8vsAPdNdVuzIF
+         swAYleXqyea8BaKtOzqOI6qmPaxea4NtsNjMvSF7VJUz9gueZ3AAHjG+LAeZGifUYnrj
+         F9Ug==
+X-Gm-Message-State: APjAAAVWTcX1/AfOZmb1lVNy9+FAB4TSB611iEtOYy8K96WAV6xLX4D0
+        oOWtZFwTSkQt4sh7vjAJDcJKBA==
+X-Google-Smtp-Source: APXvYqwEKvVGpyCj/sGD0WgccFoXLNcEiyTYrTEKI4A5nhW6vqcEutiZpq75PWGazImk8PIBFv0y0Q==
+X-Received: by 2002:a7b:c4d0:: with SMTP id g16mr12146955wmk.88.1562233146315;
+        Thu, 04 Jul 2019 02:39:06 -0700 (PDT)
+Received: from apalos (athedsl-428434.home.otenet.gr. [79.131.225.144])
+        by smtp.gmail.com with ESMTPSA id v65sm5750191wme.31.2019.07.04.02.39.04
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 04 Jul 2019 02:39:05 -0700 (PDT)
+Date:   Thu, 4 Jul 2019 12:39:02 +0300
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        grygorii.strashko@ti.com, hawk@kernel.org, davem@davemloft.net,
+        ast@kernel.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        netdev@vger.kernel.org, daniel@iogearbox.net,
+        jakub.kicinski@netronome.com, john.fastabend@gmail.com
+Subject: Re: [PATCH v6 net-next 5/5] net: ethernet: ti: cpsw: add XDP support
+Message-ID: <20190704093902.GA26927@apalos>
+References: <20190703101903.8411-1-ivan.khoronzhuk@linaro.org>
+ <20190703101903.8411-6-ivan.khoronzhuk@linaro.org>
+ <20190704111939.5d845071@carbon>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [172.21.177.138]
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190704111939.5d845071@carbon>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Set the flag of RTL8152_UNPLUG if and only if the device is unplugged.
-Some error codes sometimes don't mean the real disconnection of usb device.
-For those situations, set the flag of RTL8152_UNPLUG causes the driver skips
-some flows of disabling the device, and it let the device stay at incorrect
-state.
+On Thu, Jul 04, 2019 at 11:19:39AM +0200, Jesper Dangaard Brouer wrote:
+> On Wed,  3 Jul 2019 13:19:03 +0300
+> Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
+> 
+> > Add XDP support based on rx page_pool allocator, one frame per page.
+> > Page pool allocator is used with assumption that only one rx_handler
+> > is running simultaneously. DMA map/unmap is reused from page pool
+> > despite there is no need to map whole page.
+> > 
+> > Due to specific of cpsw, the same TX/RX handler can be used by 2
+> > network devices, so special fields in buffer are added to identify
+> > an interface the frame is destined to. Thus XDP works for both
+> > interfaces, that allows to test xdp redirect between two interfaces
+> > easily. Aslo, each rx queue have own page pools, but common for both
+> > netdevs.
+> > 
+> > XDP prog is common for all channels till appropriate changes are added
+> > in XDP infrastructure. Also, once page_pool recycling becomes part of
+> > skb netstack some simplifications can be added, like removing
+> > page_pool_release_page() before skb receive.
+> > 
+> > In order to keep rx_dev while redirect, that can be somehow used in
+> > future, do flush in rx_handler, that allows to keep rx dev the same
+> > while reidrect. It allows to conform with tracing rx_dev pointed
+> > by Jesper.
+> 
+> So, you simply call xdp_do_flush_map() after each xdp_do_redirect().
+> It will kill RX-bulk and performance, but I guess it will work.
+> 
+> I guess, we can optimized it later, by e.g. in function calling
+> cpsw_run_xdp() have a variable that detect if net_device changed
+> (priv->ndev) and then call xdp_do_flush_map() when needed.
+I tried something similar on the netsec driver on my initial development. 
+On the 1gbit speed NICs i saw no difference between flushing per packet vs
+flushing on the end of the NAPI handler. 
+The latter is obviously better but since the performance impact is negligible on
+this particular NIC, i don't think this should be a blocker. 
+Please add a clear comment on this and why you do that on this driver,
+so people won't go ahead and copy/paste this approach 
 
-Signed-off-by: Hayes Wang <hayeswang@realtek.com>
----
- drivers/net/usb/r8152.c | 27 ++++++++++++++++-----------
- 1 file changed, 16 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index e887ac86fbef..39e0768d734d 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -28,7 +28,7 @@
- #define NETNEXT_VERSION		"09"
- 
- /* Information for net */
--#define NET_VERSION		"9"
-+#define NET_VERSION		"10"
- 
- #define DRIVER_VERSION		"v1." NETNEXT_VERSION "." NET_VERSION
- #define DRIVER_AUTHOR "Realtek linux nic maintainers <nic_swsd@realtek.com>"
-@@ -825,6 +825,14 @@ int set_registers(struct r8152 *tp, u16 value, u16 index, u16 size, void *data)
- 	return ret;
- }
- 
-+static void rtl_set_unplug(struct r8152 *tp)
-+{
-+	if (tp->udev->state == USB_STATE_NOTATTACHED) {
-+		set_bit(RTL8152_UNPLUG, &tp->flags);
-+		smp_mb__after_atomic();
-+	}
-+}
-+
- static int generic_ocp_read(struct r8152 *tp, u16 index, u16 size,
- 			    void *data, u16 type)
- {
-@@ -863,7 +871,7 @@ static int generic_ocp_read(struct r8152 *tp, u16 index, u16 size,
- 	}
- 
- 	if (ret == -ENODEV)
--		set_bit(RTL8152_UNPLUG, &tp->flags);
-+		rtl_set_unplug(tp);
- 
- 	return ret;
- }
-@@ -933,7 +941,7 @@ static int generic_ocp_write(struct r8152 *tp, u16 index, u16 byteen,
- 
- error1:
- 	if (ret == -ENODEV)
--		set_bit(RTL8152_UNPLUG, &tp->flags);
-+		rtl_set_unplug(tp);
- 
- 	return ret;
- }
-@@ -1321,7 +1329,7 @@ static void read_bulk_callback(struct urb *urb)
- 		napi_schedule(&tp->napi);
- 		return;
- 	case -ESHUTDOWN:
--		set_bit(RTL8152_UNPLUG, &tp->flags);
-+		rtl_set_unplug(tp);
- 		netif_device_detach(tp->netdev);
- 		return;
- 	case -ENOENT:
-@@ -1441,7 +1449,7 @@ static void intr_callback(struct urb *urb)
- resubmit:
- 	res = usb_submit_urb(urb, GFP_ATOMIC);
- 	if (res == -ENODEV) {
--		set_bit(RTL8152_UNPLUG, &tp->flags);
-+		rtl_set_unplug(tp);
- 		netif_device_detach(tp->netdev);
- 	} else if (res) {
- 		netif_err(tp, intr, tp->netdev,
-@@ -2036,7 +2044,7 @@ static void tx_bottom(struct r8152 *tp)
- 			struct net_device *netdev = tp->netdev;
- 
- 			if (res == -ENODEV) {
--				set_bit(RTL8152_UNPLUG, &tp->flags);
-+				rtl_set_unplug(tp);
- 				netif_device_detach(netdev);
- 			} else {
- 				struct net_device_stats *stats = &netdev->stats;
-@@ -2110,7 +2118,7 @@ int r8152_submit_rx(struct r8152 *tp, struct rx_agg *agg, gfp_t mem_flags)
- 
- 	ret = usb_submit_urb(agg->urb, mem_flags);
- 	if (ret == -ENODEV) {
--		set_bit(RTL8152_UNPLUG, &tp->flags);
-+		rtl_set_unplug(tp);
- 		netif_device_detach(tp->netdev);
- 	} else if (ret) {
- 		struct urb *urb = agg->urb;
-@@ -5355,10 +5363,7 @@ static void rtl8152_disconnect(struct usb_interface *intf)
- 
- 	usb_set_intfdata(intf, NULL);
- 	if (tp) {
--		struct usb_device *udev = tp->udev;
--
--		if (udev->state == USB_STATE_NOTATTACHED)
--			set_bit(RTL8152_UNPLUG, &tp->flags);
-+		rtl_set_unplug(tp);
- 
- 		netif_napi_del(&tp->napi);
- 		unregister_netdev(tp->netdev);
--- 
-2.21.0
-
+Thanks
+/Ilias
+> 
+> 
+> > Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+> > ---
+> >  drivers/net/ethernet/ti/Kconfig        |   1 +
+> >  drivers/net/ethernet/ti/cpsw.c         | 485 ++++++++++++++++++++++---
+> >  drivers/net/ethernet/ti/cpsw_ethtool.c |  66 +++-
+> >  drivers/net/ethernet/ti/cpsw_priv.h    |   7 +
+> >  4 files changed, 502 insertions(+), 57 deletions(-)
+> > 
+> [...]
+> > +static int cpsw_run_xdp(struct cpsw_priv *priv, int ch, struct xdp_buff *xdp,
+> > +			struct page *page)
+> > +{
+> > +	struct cpsw_common *cpsw = priv->cpsw;
+> > +	struct net_device *ndev = priv->ndev;
+> > +	int ret = CPSW_XDP_CONSUMED;
+> > +	struct xdp_frame *xdpf;
+> > +	struct bpf_prog *prog;
+> > +	u32 act;
+> > +
+> > +	rcu_read_lock();
+> > +
+> > +	prog = READ_ONCE(priv->xdp_prog);
+> > +	if (!prog) {
+> > +		ret = CPSW_XDP_PASS;
+> > +		goto out;
+> > +	}
+> > +
+> > +	act = bpf_prog_run_xdp(prog, xdp);
+> > +	switch (act) {
+> > +	case XDP_PASS:
+> > +		ret = CPSW_XDP_PASS;
+> > +		break;
+> > +	case XDP_TX:
+> > +		xdpf = convert_to_xdp_frame(xdp);
+> > +		if (unlikely(!xdpf))
+> > +			goto drop;
+> > +
+> > +		cpsw_xdp_tx_frame(priv, xdpf, page);
+> > +		break;
+> > +	case XDP_REDIRECT:
+> > +		if (xdp_do_redirect(ndev, xdp, prog))
+> > +			goto drop;
+> > +
+> > +		/* as flush requires rx_dev to be per NAPI handle and there
+> > +		 * is can be two devices putting packets on bulk queue,
+> > +		 * do flush here avoid this just for sure.
+> > +		 */
+> > +		xdp_do_flush_map();
+> 
+> > +		break;
+> > +	default:
+> > +		bpf_warn_invalid_xdp_action(act);
+> > +		/* fall through */
+> > +	case XDP_ABORTED:
+> > +		trace_xdp_exception(ndev, prog, act);
+> > +		/* fall through -- handle aborts by dropping packet */
+> > +	case XDP_DROP:
+> > +		goto drop;
+> > +	}
+> > +out:
+> > +	rcu_read_unlock();
+> > +	return ret;
+> > +drop:
+> > +	rcu_read_unlock();
+> > +	page_pool_recycle_direct(cpsw->page_pool[ch], page);
+> > +	return ret;
+> > +}
+> 
+> -- 
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
