@@ -2,116 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 036665F510
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 10:59:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCCC15F514
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 11:03:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727201AbfGDI7A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 04:59:00 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:17397 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726993AbfGDI67 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Jul 2019 04:58:59 -0400
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 2CD8530BCCE2;
-        Thu,  4 Jul 2019 08:58:59 +0000 (UTC)
-Received: from krava.brq.redhat.com (unknown [10.43.17.81])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 903B888F04;
-        Thu,  4 Jul 2019 08:58:57 +0000 (UTC)
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Michael Petlan <mpetlan@redhat.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>
-Subject: [PATCH] tools bpftool: Fix json dump crash on powerpc
-Date:   Thu,  4 Jul 2019 10:58:56 +0200
-Message-Id: <20190704085856.17502-1-jolsa@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.42]); Thu, 04 Jul 2019 08:58:59 +0000 (UTC)
+        id S1727128AbfGDJDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 05:03:41 -0400
+Received: from mx140-tc.baidu.com ([61.135.168.140]:37667 "EHLO
+        tc-sys-mailedm03.tc.baidu.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727092AbfGDJDl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 05:03:41 -0400
+Received: from localhost (cp01-cos-dev01.cp01.baidu.com [10.92.119.46])
+        by tc-sys-mailedm03.tc.baidu.com (Postfix) with ESMTP id 7A0A0450005F
+        for <netdev@vger.kernel.org>; Thu,  4 Jul 2019 17:03:26 +0800 (CST)
+From:   Li RongQing <lirongqing@baidu.com>
+To:     netdev@vger.kernel.org
+Subject: [PATCH][net-next] net: remove unused parameter from skb_checksum_try_convert
+Date:   Thu,  4 Jul 2019 17:03:26 +0800
+Message-Id: <1562231006-16341-1-git-send-email-lirongqing@baidu.com>
+X-Mailer: git-send-email 1.7.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Michael reported crash with by bpf program in json mode on powerpc:
+the check parameter is never used
 
-  # bpftool prog -p dump jited id 14
-  [{
-        "name": "0xd00000000a9aa760",
-        "insns": [{
-                "pc": "0x0",
-                "operation": "nop",
-                "operands": [null
-                ]
-            },{
-                "pc": "0x4",
-                "operation": "nop",
-                "operands": [null
-                ]
-            },{
-                "pc": "0x8",
-                "operation": "mflr",
-  Segmentation fault (core dumped)
-
-The code is assuming char pointers in format, which is not always
-true at least for powerpc. Fixing this by dumping the whole string
-into buffer based on its format.
-
-Please note that libopcodes code does not check return values from
-fprintf callback, so there's no point to return error in case of
-allocation failure.
-
-Reported-by: Michael Petlan <mpetlan@redhat.com>
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+Signed-off-by: Li RongQing <lirongqing@baidu.com>
 ---
- tools/bpf/bpftool/jit_disasm.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ include/linux/skbuff.h | 8 +++-----
+ net/ipv4/gre_demux.c   | 2 +-
+ net/ipv4/udp.c         | 3 +--
+ net/ipv6/udp.c         | 3 +--
+ 4 files changed, 6 insertions(+), 10 deletions(-)
 
-diff --git a/tools/bpf/bpftool/jit_disasm.c b/tools/bpf/bpftool/jit_disasm.c
-index 3ef3093560ba..05fa6dc970f8 100644
---- a/tools/bpf/bpftool/jit_disasm.c
-+++ b/tools/bpf/bpftool/jit_disasm.c
-@@ -11,6 +11,8 @@
-  * Licensed under the GNU General Public License, version 2.0 (GPLv2)
-  */
- 
-+#define _GNU_SOURCE
-+#include <stdio.h>
- #include <stdarg.h>
- #include <stdint.h>
- #include <stdio.h>
-@@ -44,11 +46,13 @@ static int fprintf_json(void *out, const char *fmt, ...)
- 	char *s;
- 
- 	va_start(ap, fmt);
-+	if (vasprintf(&s, fmt, ap) < 0)
-+		return 0;
-+	va_end(ap);
-+
- 	if (!oper_count) {
- 		int i;
- 
--		s = va_arg(ap, char *);
--
- 		/* Strip trailing spaces */
- 		i = strlen(s) - 1;
- 		while (s[i] == ' ')
-@@ -61,11 +65,10 @@ static int fprintf_json(void *out, const char *fmt, ...)
- 	} else if (!strcmp(fmt, ",")) {
- 		   /* Skip */
- 	} else {
--		s = va_arg(ap, char *);
- 		jsonw_string(json_wtr, s);
- 		oper_count++;
- 	}
--	va_end(ap);
-+	free(s);
- 	return 0;
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index c922ac8a8bd6..f0b5adeb644d 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -3914,18 +3914,16 @@ static inline bool __skb_checksum_convert_check(struct sk_buff *skb)
+ 	return (skb->ip_summed == CHECKSUM_NONE && skb->csum_valid);
  }
  
+-static inline void __skb_checksum_convert(struct sk_buff *skb,
+-					  __sum16 check, __wsum pseudo)
++static inline void __skb_checksum_convert(struct sk_buff *skb, __wsum pseudo)
+ {
+ 	skb->csum = ~pseudo;
+ 	skb->ip_summed = CHECKSUM_COMPLETE;
+ }
+ 
+-#define skb_checksum_try_convert(skb, proto, check, compute_pseudo)	\
++#define skb_checksum_try_convert(skb, proto, compute_pseudo)	\
+ do {									\
+ 	if (__skb_checksum_convert_check(skb))				\
+-		__skb_checksum_convert(skb, check,			\
+-				       compute_pseudo(skb, proto));	\
++		__skb_checksum_convert(skb, compute_pseudo(skb, proto)); \
+ } while (0)
+ 
+ static inline void skb_remcsum_adjust_partial(struct sk_buff *skb, void *ptr,
+diff --git a/net/ipv4/gre_demux.c b/net/ipv4/gre_demux.c
+index 293acfb36376..44bfeecac33e 100644
+--- a/net/ipv4/gre_demux.c
++++ b/net/ipv4/gre_demux.c
+@@ -83,7 +83,7 @@ int gre_parse_header(struct sk_buff *skb, struct tnl_ptk_info *tpi,
+ 	options = (__be32 *)(greh + 1);
+ 	if (greh->flags & GRE_CSUM) {
+ 		if (!skb_checksum_simple_validate(skb)) {
+-			skb_checksum_try_convert(skb, IPPROTO_GRE, 0,
++			skb_checksum_try_convert(skb, IPPROTO_GRE,
+ 						 null_compute_pseudo);
+ 		} else if (csum_err) {
+ 			*csum_err = true;
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 1b971bd95786..c21862ba9c02 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -2224,8 +2224,7 @@ static int udp_unicast_rcv_skb(struct sock *sk, struct sk_buff *skb,
+ 	int ret;
+ 
+ 	if (inet_get_convert_csum(sk) && uh->check && !IS_UDPLITE(sk))
+-		skb_checksum_try_convert(skb, IPPROTO_UDP, uh->check,
+-					 inet_compute_pseudo);
++		skb_checksum_try_convert(skb, IPPROTO_UDP, inet_compute_pseudo);
+ 
+ 	ret = udp_queue_rcv_skb(sk, skb);
+ 
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index 66ca5a4b17c4..4406e059da68 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -826,8 +826,7 @@ static int udp6_unicast_rcv_skb(struct sock *sk, struct sk_buff *skb,
+ 	int ret;
+ 
+ 	if (inet_get_convert_csum(sk) && uh->check && !IS_UDPLITE(sk))
+-		skb_checksum_try_convert(skb, IPPROTO_UDP, uh->check,
+-					 ip6_compute_pseudo);
++		skb_checksum_try_convert(skb, IPPROTO_UDP, ip6_compute_pseudo);
+ 
+ 	ret = udpv6_queue_rcv_skb(sk, skb);
+ 
 -- 
-2.21.0
+2.16.2
 
