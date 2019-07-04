@@ -2,118 +2,423 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B88235F681
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 12:22:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C7E95F686
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 12:22:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727515AbfGDKWP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 06:22:15 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:50768 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727303AbfGDKWO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Jul 2019 06:22:14 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 94CFD201BE;
-        Thu,  4 Jul 2019 12:22:12 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id XnNP8JPzlgeW; Thu,  4 Jul 2019 12:22:11 +0200 (CEST)
-Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 3A805200AC;
-        Thu,  4 Jul 2019 12:22:11 +0200 (CEST)
-Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
- (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Thu, 4 Jul 2019
- 12:22:10 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 8EAFE31804EF;
- Thu,  4 Jul 2019 12:22:10 +0200 (CEST)
-Date:   Thu, 4 Jul 2019 12:22:10 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Lorenzo Colitti <lorenzo@google.com>,
-        Benedict Wong <benedictwong@google.com>,
-        Shannon Nelson <shannon.nelson@oracle.com>,
-        Antony Antony <antony@phenome.org>,
-        Eyal Birger <eyal.birger@gmail.com>,
-        Julien Floret <julien.floret@6wind.com>
-Subject: Re: [PATCH ipsec v2] xfrm interface: fix memory leak on creation
-Message-ID: <20190704102210.GK17989@gauss3.secunet.de>
-References: <20190702155139.11399-1-nicolas.dichtel@6wind.com>
+        id S1727536AbfGDKWq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 06:22:46 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:42901 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727517AbfGDKWp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 06:22:45 -0400
+Received: by mail-lj1-f193.google.com with SMTP id t28so5604802lje.9
+        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 03:22:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=9aV8RAyF3WE+/A/u8zETEkCw/LlkRBH85b7MZ/q1pOs=;
+        b=u02J823Lxdq6ihfmTkZv8d7D5ZmTpW/syq9hD2vBBGmKOHe0tPVttf6oTKlu2Ru29G
+         gEATZx1vgjMk7SOepF5WZkTj0ip46M5vvidcy5VnHpSGgp3Jquwd/qVQgwnae/6MCjPL
+         z8UP/IpwKtDp7neeazYcxarnyXzMj6Wl3cnu6fm06qAm9pqj5UTX1j+d/H2p0mshYWJA
+         4XM0HLlJPimkjG7c8LOAni1pYpM5UWiJTRb1q++9Nkrcm7vYU7/08c1Hsa3byudIoeKC
+         /3ia3o1yCs8HVCVI94U6MtZDv1bwLbhK/Rs+gSGBPitsgu5jacBqGSoXm2UroBjmK8p7
+         WEXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to:user-agent;
+        bh=9aV8RAyF3WE+/A/u8zETEkCw/LlkRBH85b7MZ/q1pOs=;
+        b=j2YI47mK0IRt8DH+zqCXWa+dP5uCtRyq+/F6i0/G+pIwEPt3TmmuJCZG7amOp3yIb2
+         GQb6pRZKHPTSNWBcXmD/t2bwJBRvVRXtX5q3ebmCQgGEBVMeUGhp5Xbk9RuBQLV2ccd9
+         HcbjKbQsNIFeI3i7BQSQY6j4fkIMuHWTxpuK5NCIROwN/kQfJw0mFaW2Tz9e2Z2qkRGl
+         DF0xSCrfXlC3T26HykC4h6BMN0ILFGPJN4k3bhvfb18hWItCDGAra0ZlEZ2Bzr+kjOZU
+         KUNhMQptY4mZXpq2opvKqjEdm8IpaVB2tUt/xM5/uOloiNFxiE2SO/KukA6W99xlyd7X
+         KOPQ==
+X-Gm-Message-State: APjAAAWYKucm0YVYAoONU2T4hwQvZQqqVU3ybl4UxFn6Ru5kCzVk+iGS
+        dwrzq4FTpV/A6Mv02GtfWKgazw==
+X-Google-Smtp-Source: APXvYqwS14MaeDz6e6vLxfov4XA+PhSmLc0hYN/+A6wgREMAuVpo1Ng73MREI4tpQX4uhNV9rGgFBg==
+X-Received: by 2002:a2e:93c8:: with SMTP id p8mr20216496ljh.6.1562235762794;
+        Thu, 04 Jul 2019 03:22:42 -0700 (PDT)
+Received: from khorivan (59-201-94-178.pool.ukrtel.net. [178.94.201.59])
+        by smtp.gmail.com with ESMTPSA id x2sm792517lfg.12.2019.07.04.03.22.41
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 04 Jul 2019 03:22:42 -0700 (PDT)
+Date:   Thu, 4 Jul 2019 13:22:40 +0300
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     grygorii.strashko@ti.com, hawk@kernel.org, davem@davemloft.net,
+        ast@kernel.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
+        daniel@iogearbox.net, jakub.kicinski@netronome.com,
+        john.fastabend@gmail.com
+Subject: Re: [PATCH v6 net-next 1/5] xdp: allow same allocator usage
+Message-ID: <20190704102239.GA3406@khorivan>
+Mail-Followup-To: Jesper Dangaard Brouer <brouer@redhat.com>,
+        grygorii.strashko@ti.com, hawk@kernel.org, davem@davemloft.net,
+        ast@kernel.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        ilias.apalodimas@linaro.org, netdev@vger.kernel.org,
+        daniel@iogearbox.net, jakub.kicinski@netronome.com,
+        john.fastabend@gmail.com
+References: <20190703101903.8411-1-ivan.khoronzhuk@linaro.org>
+ <20190703101903.8411-2-ivan.khoronzhuk@linaro.org>
+ <20190703194013.02842e42@carbon>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20190702155139.11399-1-nicolas.dichtel@6wind.com>
+In-Reply-To: <20190703194013.02842e42@carbon>
 User-Agent: Mutt/1.9.4 (2018-02-28)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 02, 2019 at 05:51:39PM +0200, Nicolas Dichtel wrote:
-> The following commands produce a backtrace and return an error but the xfrm
-> interface is created (in the wrong netns):
-> $ ip netns add foo
-> $ ip netns add bar
-> $ ip -n foo netns set bar 0
-> $ ip -n foo link add xfrmi0 link-netnsid 0 type xfrm dev lo if_id 23
-> RTNETLINK answers: Invalid argument
-> $ ip -n bar link ls xfrmi0
-> 2: xfrmi0@lo: <NOARP,M-DOWN> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
->     link/none 00:00:00:00:00:00 brd 00:00:00:00:00:00
-> 
-> Here is the backtrace:
-> [   79.879174] WARNING: CPU: 0 PID: 1178 at net/core/dev.c:8172 rollback_registered_many+0x86/0x3c1
-> [   79.880260] Modules linked in: xfrm_interface nfsv3 nfs_acl auth_rpcgss nfsv4 nfs lockd grace sunrpc fscache button parport_pc parport serio_raw evdev pcspkr loop ext4 crc16 mbcache jbd2 crc32c_generic ide_cd_mod ide_gd_mod cdrom ata_$
-> eneric ata_piix libata scsi_mod 8139too piix psmouse i2c_piix4 ide_core 8139cp mii i2c_core floppy
-> [   79.883698] CPU: 0 PID: 1178 Comm: ip Not tainted 5.2.0-rc6+ #106
-> [   79.884462] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1 04/01/2014
-> [   79.885447] RIP: 0010:rollback_registered_many+0x86/0x3c1
-> [   79.886120] Code: 01 e8 d7 7d c6 ff 0f 0b 48 8b 45 00 4c 8b 20 48 8d 58 90 49 83 ec 70 48 8d 7b 70 48 39 ef 74 44 8a 83 d0 04 00 00 84 c0 75 1f <0f> 0b e8 61 cd ff ff 48 b8 00 01 00 00 00 00 ad de 48 89 43 70 66
-> [   79.888667] RSP: 0018:ffffc900015ab740 EFLAGS: 00010246
-> [   79.889339] RAX: ffff8882353e5700 RBX: ffff8882353e56a0 RCX: ffff8882353e5710
-> [   79.890174] RDX: ffffc900015ab7e0 RSI: ffffc900015ab7e0 RDI: ffff8882353e5710
-> [   79.891029] RBP: ffffc900015ab7e0 R08: ffffc900015ab7e0 R09: ffffc900015ab7e0
-> [   79.891866] R10: ffffc900015ab7a0 R11: ffffffff82233fec R12: ffffc900015ab770
-> [   79.892728] R13: ffffffff81eb7ec0 R14: ffff88822ed6cf00 R15: 00000000ffffffea
-> [   79.893557] FS:  00007ff350f31740(0000) GS:ffff888237a00000(0000) knlGS:0000000000000000
-> [   79.894581] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [   79.895317] CR2: 00000000006c8580 CR3: 000000022c272000 CR4: 00000000000006f0
-> [   79.896137] Call Trace:
-> [   79.896464]  unregister_netdevice_many+0x12/0x6c
-> [   79.896998]  __rtnl_newlink+0x6e2/0x73b
-> [   79.897446]  ? __kmalloc_node_track_caller+0x15e/0x185
-> [   79.898039]  ? pskb_expand_head+0x5f/0x1fe
-> [   79.898556]  ? stack_access_ok+0xd/0x2c
-> [   79.899009]  ? deref_stack_reg+0x12/0x20
-> [   79.899462]  ? stack_access_ok+0xd/0x2c
-> [   79.899927]  ? stack_access_ok+0xd/0x2c
-> [   79.900404]  ? __module_text_address+0x9/0x4f
-> [   79.900910]  ? is_bpf_text_address+0x5/0xc
-> [   79.901390]  ? kernel_text_address+0x67/0x7b
-> [   79.901884]  ? __kernel_text_address+0x1a/0x25
-> [   79.902397]  ? unwind_get_return_address+0x12/0x23
-> [   79.903122]  ? __cmpxchg_double_slab.isra.37+0x46/0x77
-> [   79.903772]  rtnl_newlink+0x43/0x56
-> [   79.904217]  rtnetlink_rcv_msg+0x200/0x24c
-> 
-> In fact, each time a xfrm interface was created, a netdev was allocated
-> by __rtnl_newlink()/rtnl_create_link() and then another one by
-> xfrmi_newlink()/xfrmi_create(). Only the second one was registered, it's
-> why the previous commands produce a backtrace: dev_change_net_namespace()
-> was called on a netdev with reg_state set to NETREG_UNINITIALIZED (the
-> first one).
-> 
-> CC: Lorenzo Colitti <lorenzo@google.com>
-> CC: Benedict Wong <benedictwong@google.com>
-> CC: Steffen Klassert <steffen.klassert@secunet.com>
-> CC: Shannon Nelson <shannon.nelson@oracle.com>
-> CC: Antony Antony <antony@phenome.org>
-> CC: Eyal Birger <eyal.birger@gmail.com>
-> Fixes: f203b76d7809 ("xfrm: Add virtual xfrm interfaces")
-> Reported-by: Julien Floret <julien.floret@6wind.com>
-> Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+On Wed, Jul 03, 2019 at 07:40:13PM +0200, Jesper Dangaard Brouer wrote:
+>On Wed,  3 Jul 2019 13:18:59 +0300
+>Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
+>
+>> First of all, it is an absolute requirement that each RX-queue have
+>> their own page_pool object/allocator. And this change is intendant
+>> to handle special case, where a single RX-queue can receive packets
+>> from two different net_devices.
+>>
+>> In order to protect against using same allocator for 2 different rx
+>> queues, add queue_index to xdp_mem_allocator to catch the obvious
+>> mistake where queue_index mismatch, as proposed by Jesper Dangaard
+>> Brouer.
+>>
+>> Adding this on xdp allocator level allows drivers with such dependency
+>> change the allocators w/o modifications.
+>>
+>> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+>> ---
+>>  include/net/xdp_priv.h |  2 ++
+>>  net/core/xdp.c         | 55 ++++++++++++++++++++++++++++++++++++++++++
+>>  2 files changed, 57 insertions(+)
+>>
+>> diff --git a/include/net/xdp_priv.h b/include/net/xdp_priv.h
+>> index 6a8cba6ea79a..9858a4057842 100644
+>> --- a/include/net/xdp_priv.h
+>> +++ b/include/net/xdp_priv.h
+>> @@ -18,6 +18,8 @@ struct xdp_mem_allocator {
+>>  	struct rcu_head rcu;
+>>  	struct delayed_work defer_wq;
+>>  	unsigned long defer_warn;
+>> +	unsigned long refcnt;
+>> +	u32 queue_index;
+>>  };
+>
+>I don't like this approach, because I think we need to extend struct
+>xdp_mem_allocator with a net_device pointer, for doing dev_hold(), to
+>correctly handle lifetime issues. (As I tried to explain previously).
+>This will be much harder after this change, which is why I proposed the
+>other patch.
+My concern comes not from zero also.
+It's partly continuation of not answered questions from here:
+https://lwn.net/ml/netdev/20190625122822.GC6485@khorivan/
 
-Applied, thanks a lot!
+"For me it's important to know only if it means that alloc.count is
+freed at first call of __mem_id_disconnect() while shutdown.
+The workqueue for the rest is connected only with ring cache protected
+by ring lock and not supposed that alloc.count can be changed while
+workqueue tries to shutdonwn the pool."
+
+So patch you propose to leave works only because of luck, because fast
+cache is cleared before workqueue is scheduled and no races between two
+workqueues for fast cache later. I'm not really against this patch, but
+I have to try smth better.
+
+So, the patch is fine only because of specific of page_pool implementation.
+I'm not sure that in future similar workqueue completion will be lucky for
+another allocator (it easily can happen due to xdp frame can live longer
+than an allocator). Similar problem can happen with other drivers having
+same allocator, that can use zca (potentially can use smth similar),
+af_xdp api allows to switch on it or some other allocators....
+
+But not the essence. The concern about adding smth new to the allocator
+later, like net device, can be solved with a little modification to the patch,
+(despite here can be several more approaches) for instance, like this:
+(by fact it's still the same, when mem_alloc instance per each register call
+but with same void *allocator)
+
+
+diff --git a/include/net/xdp_priv.h b/include/net/xdp_priv.h
+index 6a8cba6ea79a..c7ad0f41e1b0 100644
+--- a/include/net/xdp_priv.h
++++ b/include/net/xdp_priv.h
+@@ -18,6 +18,8 @@ struct xdp_mem_allocator {
+ 	struct rcu_head rcu;
+ 	struct delayed_work defer_wq;
+ 	unsigned long defer_warn;
++	unsigned long *refcnt;
++	u32 queue_index;
+ };
+ 
+ #endif /* __LINUX_NET_XDP_PRIV_H__ */
+diff --git a/net/core/xdp.c b/net/core/xdp.c
+index 829377cc83db..a44e3e4c8307 100644
+--- a/net/core/xdp.c
++++ b/net/core/xdp.c
+@@ -64,9 +64,37 @@ static const struct rhashtable_params mem_id_rht_params = {
+ 	.obj_cmpfn = xdp_mem_id_cmp,
+ };
+ 
++static struct xdp_mem_allocator *xdp_allocator_find(void *allocator)
++{
++	struct xdp_mem_allocator *xae, *xa = NULL;
++	struct rhashtable_iter iter;
++
++	if (!allocator)
++		return xa;
++
++	rhashtable_walk_enter(mem_id_ht, &iter);
++	do {
++		rhashtable_walk_start(&iter);
++
++		while ((xae = rhashtable_walk_next(&iter)) && !IS_ERR(xae)) {
++			if (xae->allocator == allocator) {
++				xa = xae;
++				break;
++			}
++		}
++
++		rhashtable_walk_stop(&iter);
++
++	} while (xae == ERR_PTR(-EAGAIN));
++	rhashtable_walk_exit(&iter);
++
++	return xa;
++}
++
+ static void __xdp_mem_allocator_rcu_free(struct rcu_head *rcu)
+ {
+ 	struct xdp_mem_allocator *xa;
++	void *allocator;
+ 
+ 	xa = container_of(rcu, struct xdp_mem_allocator, rcu);
+ 
+@@ -74,15 +102,27 @@ static void __xdp_mem_allocator_rcu_free(struct rcu_head *rcu)
+ 	if (xa->mem.type == MEM_TYPE_PAGE_POOL)
+ 		page_pool_free(xa->page_pool);
+ 
+-	/* Allow this ID to be reused */
+-	ida_simple_remove(&mem_id_pool, xa->mem.id);
++	kfree(xa->refcnt);
++	allocator = xa->allocator;
++	while (xa) {
++		xa = xdp_allocator_find(allocator);
++		if (!xa)
++			break;
++
++		mutex_lock(&mem_id_lock);
++		rhashtable_remove_fast(mem_id_ht, &xa->node, mem_id_rht_params);
++		mutex_unlock(&mem_id_lock);
+ 
+-	/* Poison memory */
+-	xa->mem.id = 0xFFFF;
+-	xa->mem.type = 0xF0F0;
+-	xa->allocator = (void *)0xDEAD9001;
++		/* Allow this ID to be reused */
++		ida_simple_remove(&mem_id_pool, xa->mem.id);
+ 
+-	kfree(xa);
++		/* Poison memory */
++		xa->mem.id = 0xFFFF;
++		xa->mem.type = 0xF0F0;
++		xa->allocator = (void *)0xDEAD9001;
++
++		kfree(xa);
++	}
+ }
+ 
+ static bool __mem_id_disconnect(int id, bool force)
+@@ -98,6 +138,18 @@ static bool __mem_id_disconnect(int id, bool force)
+ 		WARN(1, "Request remove non-existing id(%d), driver bug?", id);
+ 		return true;
+ 	}
++
++	/* to avoid calling hash lookup twice, decrement refcnt here till it
++	 * reaches zero, then it can be called from workqueue afterwards.
++	 */
++	if (*xa->refcnt)
++		(*xa->refcnt)--;
++
++	if (*xa->refcnt) {
++		mutex_unlock(&mem_id_lock);
++		return true;
++	}
++
+ 	xa->disconnect_cnt++;
+ 
+ 	/* Detects in-flight packet-pages for page_pool */
+@@ -106,8 +158,7 @@ static bool __mem_id_disconnect(int id, bool force)
+ 
+ 	trace_mem_disconnect(xa, safe_to_remove, force);
+ 
+-	if ((safe_to_remove || force) &&
+-	    !rhashtable_remove_fast(mem_id_ht, &xa->node, mem_id_rht_params))
++	if (safe_to_remove || force)
+ 		call_rcu(&xa->rcu, __xdp_mem_allocator_rcu_free);
+ 
+ 	mutex_unlock(&mem_id_lock);
+@@ -316,6 +367,7 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
+ 			       enum xdp_mem_type type, void *allocator)
+ {
+ 	struct xdp_mem_allocator *xdp_alloc;
++	unsigned long *refcnt = NULL;
+ 	gfp_t gfp = GFP_KERNEL;
+ 	int id, errno, ret;
+ 	void *ptr;
+@@ -347,6 +399,19 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
+ 		}
+ 	}
+ 
++	mutex_lock(&mem_id_lock);
++	xdp_alloc = xdp_allocator_find(allocator);
++	if (xdp_alloc) {
++		/* One allocator per queue is supposed only */
++		if (xdp_alloc->queue_index != xdp_rxq->queue_index) {
++			mutex_unlock(&mem_id_lock);
++			return -EINVAL;
++		}
++
++		refcnt = xdp_alloc->refcnt;
++	}
++	mutex_unlock(&mem_id_lock);
++
+ 	xdp_alloc = kzalloc(sizeof(*xdp_alloc), gfp);
+ 	if (!xdp_alloc)
+ 		return -ENOMEM;
+@@ -360,6 +425,7 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
+ 	xdp_rxq->mem.id = id;
+ 	xdp_alloc->mem  = xdp_rxq->mem;
+ 	xdp_alloc->allocator = allocator;
++	xdp_alloc->queue_index = xdp_rxq->queue_index;
+ 
+ 	/* Insert allocator into ID lookup table */
+ 	ptr = rhashtable_insert_slow(mem_id_ht, &id, &xdp_alloc->node);
+@@ -370,6 +436,16 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
+ 		goto err;
+ 	}
+ 
++	if (!refcnt) {
++		refcnt = kzalloc(sizeof(*xdp_alloc->refcnt), gfp);
++		if (!refcnt) {
++			errno = -ENOMEM;
++			goto err;
++		}
++	}
++
++	(*refcnt)++;
++	xdp_alloc->refcnt = refcnt;
+ 	mutex_unlock(&mem_id_lock);
+ 
+ 	trace_mem_connect(xdp_alloc, xdp_rxq);
+
+
+
+>
+>
+>>  #endif /* __LINUX_NET_XDP_PRIV_H__ */
+>> diff --git a/net/core/xdp.c b/net/core/xdp.c
+>> index 829377cc83db..4f0ddbb3717a 100644
+>> --- a/net/core/xdp.c
+>> +++ b/net/core/xdp.c
+>> @@ -98,6 +98,18 @@ static bool __mem_id_disconnect(int id, bool force)
+>>  		WARN(1, "Request remove non-existing id(%d), driver bug?", id);
+>>  		return true;
+>>  	}
+>> +
+>> +	/* to avoid calling hash lookup twice, decrement refcnt here till it
+>> +	 * reaches zero, then it can be called from workqueue afterwards.
+>> +	 */
+>> +	if (xa->refcnt)
+>> +		xa->refcnt--;
+>> +
+>> +	if (xa->refcnt) {
+>> +		mutex_unlock(&mem_id_lock);
+>> +		return true;
+>> +	}
+>> +
+>>  	xa->disconnect_cnt++;
+>>
+>>  	/* Detects in-flight packet-pages for page_pool */
+>> @@ -312,6 +324,33 @@ static bool __is_supported_mem_type(enum xdp_mem_type type)
+>>  	return true;
+>>  }
+>>
+>> +static struct xdp_mem_allocator *xdp_allocator_find(void *allocator)
+>> +{
+>> +	struct xdp_mem_allocator *xae, *xa = NULL;
+>> +	struct rhashtable_iter iter;
+>> +
+>> +	if (!allocator)
+>> +		return xa;
+>> +
+>> +	rhashtable_walk_enter(mem_id_ht, &iter);
+>> +	do {
+>> +		rhashtable_walk_start(&iter);
+>> +
+>> +		while ((xae = rhashtable_walk_next(&iter)) && !IS_ERR(xae)) {
+>> +			if (xae->allocator == allocator) {
+>> +				xa = xae;
+>> +				break;
+>> +			}
+>> +		}
+>> +
+>> +		rhashtable_walk_stop(&iter);
+>> +
+>> +	} while (xae == ERR_PTR(-EAGAIN));
+>> +	rhashtable_walk_exit(&iter);
+>> +
+>> +	return xa;
+>> +}
+>> +
+>>  int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
+>>  			       enum xdp_mem_type type, void *allocator)
+>>  {
+>> @@ -347,6 +386,20 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
+>>  		}
+>>  	}
+>>
+>> +	mutex_lock(&mem_id_lock);
+>> +	xdp_alloc = xdp_allocator_find(allocator);
+>> +	if (xdp_alloc) {
+>> +		/* One allocator per queue is supposed only */
+>> +		if (xdp_alloc->queue_index != xdp_rxq->queue_index)
+>> +			return -EINVAL;
+>> +
+>> +		xdp_rxq->mem.id = xdp_alloc->mem.id;
+>> +		xdp_alloc->refcnt++;
+>> +		mutex_unlock(&mem_id_lock);
+>> +		return 0;
+>> +	}
+>> +	mutex_unlock(&mem_id_lock);
+>> +
+>>  	xdp_alloc = kzalloc(sizeof(*xdp_alloc), gfp);
+>>  	if (!xdp_alloc)
+>>  		return -ENOMEM;
+>> @@ -360,6 +413,8 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
+>>  	xdp_rxq->mem.id = id;
+>>  	xdp_alloc->mem  = xdp_rxq->mem;
+>>  	xdp_alloc->allocator = allocator;
+>> +	xdp_alloc->refcnt = 1;
+>> +	xdp_alloc->queue_index = xdp_rxq->queue_index;
+>>
+>>  	/* Insert allocator into ID lookup table */
+>>  	ptr = rhashtable_insert_slow(mem_id_ht, &id, &xdp_alloc->node);
+>
+>
+>
+>-- 
+>Best regards,
+>  Jesper Dangaard Brouer
+>  MSc.CS, Principal Kernel Engineer at Red Hat
+>  LinkedIn: http://www.linkedin.com/in/brouer
+
+-- 
+Regards,
+Ivan Khoronzhuk
