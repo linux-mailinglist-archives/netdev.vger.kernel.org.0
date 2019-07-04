@@ -2,58 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 65B1E5FE41
+	by mail.lfdr.de (Postfix) with ESMTP id CF0A65FE42
 	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 23:51:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727238AbfGDVvA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 17:51:00 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:37440 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726069AbfGDVvA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 17:51:00 -0400
-Received: by mail-qt1-f193.google.com with SMTP id y57so7120985qtk.4
-        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 14:50:59 -0700 (PDT)
+        id S1727276AbfGDVvB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 17:51:01 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:34656 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726069AbfGDVvB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 17:51:01 -0400
+Received: by mail-qt1-f196.google.com with SMTP id k10so1675243qtq.1
+        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 14:51:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=N0kLC5iQW4l++HnbRhXzNrsN94ZrzzJBmo9rxxQxVZY=;
-        b=oiH3+O5M3qjc2+53PDHOJ3t6xZUad8065KMEZ907tzhO9DGu7LPuH/ivERa0iKovGM
-         apz3Atyja9ukZQxUj8bQKcWJv3LcY5t3hLvLMuXeMKispmtrS+1ZQXdU8OS5OPSV4ni8
-         PiFkZGRC9bswGr2qojiPlOtVdNML64kQtPSpwGAfBCrDlP+8UuWfyMxI55diYrnG0ItF
-         2flDZ3zGohPc7uEJ5gP3Ai5MZZsJPFB0QVUNkjjU4JZP7dTVhxkxiGJbNFDMcFfH0v8X
-         HAkuDxeBJVe4QB9NBLy8qKnl38kRbcSATh/Xe5qpkZN+u8FOVdBGdoBK65Y7vMgTebGm
-         PZrA==
+        bh=MTaW+lneOwrfeQUjieT5VA6MLG6XGeAqlaz+nMyhVlY=;
+        b=QkO8JAVIiLCm3HGcqbSEMC/Tf4Q8syu1AOdLd9H0Q8uPWhBkSETfGHMS+1P/i1BaVN
+         7LrHnWSMLJeIVyYn5ZOYispqySqEd5TrZc6br+scLrodjE7Ey1OJ5RQcuyqof90thW1L
+         xNFeaLlhGrhPRhbp3+NNOYSvdjcQYqOAj5gfPXcvWm8MMet1MLXy2OHrigsVR01MANZ1
+         Y6bgz14C25YIcOJgl4nrWcoJIODbPa3sILL5JT3tMF/2MRhryGZgNAhBnxRTDsza0RXB
+         t32SIcfvOPix2fuqpHRv0C01hOVfsxzuvVYHJqw/YnVJl2/klG1C4AF/CdcGQ2N5v9aJ
+         zyWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=N0kLC5iQW4l++HnbRhXzNrsN94ZrzzJBmo9rxxQxVZY=;
-        b=YSiP1TDdS8bEScHA6WSXaqzgrBnGv1nHoEiyCfWOOCiL7FJUC5jEGG+qqpdGoOsYxP
-         wIa709iKR5nKClYI27vtAvqvDR/4qSGSjwKE9XBS52xK/sv591+BgPmL7dxCwPYgAYZu
-         Q5n8lZORXoTeANeA4PWS9HNl1x4mzsf7YdYn1J5oaNfhL9CcD05mXvMfXcyANaUsteC7
-         sKQjS0x4hBwggsXAVp5nJzLYqzh6giL3IJGksoSNOT+hinDOyswJnwkzF0u0vxFiK6za
-         6ATPJJOWp9roFozezztmeAgmjT8xAL6GCgFjHT97Q3+ChdeEuWxf4IV3qVTMlVwXlKIN
-         TteQ==
-X-Gm-Message-State: APjAAAV/KYJniIJHsucdhWd+nucqiOYmE987Zw3UWJ2EiGMOHvbnn+wU
-        6/EM8QKnQMT3AitMvxPbyO764w==
-X-Google-Smtp-Source: APXvYqzoCmxet8n9hxJ846b/ALNVZpRFhOqE1VXeuGV5MJUW8zgOQxw4IK1A9BGMRlEnZ12rBVQRgw==
-X-Received: by 2002:a0c:887c:: with SMTP id 57mr401891qvm.192.1562277059146;
-        Thu, 04 Jul 2019 14:50:59 -0700 (PDT)
+        bh=MTaW+lneOwrfeQUjieT5VA6MLG6XGeAqlaz+nMyhVlY=;
+        b=tLOiqqWv6yqewwhX1a/bQrGUKZmmPUvahy5MdNYT9uaMq/yKwwBxI+22Apqs3ciknp
+         nHil4a969gQDVyOXbTAHY+ZyCVUbSNisBW/LpUii23pO2J7+UFPQ5XoYPJ7FFwdQKkAA
+         yjzYPlBIKK86KlbUkI8k3nSH1yrIS31V9UzqAFe2iCA/DxbNdyez2AWvbTSloDrXRC9l
+         v1MVbNSmwCkq4lxT/FWcVPI/vm8/rPoNADcKYVy1X2sBA7FaAiC2T4EdmuScczt9enaw
+         VdlEmFrGo4LhQ/YOihVFs9KA078K46GfbTkifSEvZzuMqtbwJiyzUqV9HpD1jivGJc2t
+         2VtQ==
+X-Gm-Message-State: APjAAAU6nrOMxGZvBm7XYpnPynXZ51a93aR/1H0SrEWbfPEmar0r1xx9
+        u4b+42nN3zCI0gbWFICE+qgyug==
+X-Google-Smtp-Source: APXvYqxPhZeBZcqE39jvZbC8dZXqrrlXHAnbai3aLg1pot5h+XGtJng5QjpP3cVlcNs+5FTDSoB3mg==
+X-Received: by 2002:a0c:c94d:: with SMTP id v13mr379616qvj.211.1562277060565;
+        Thu, 04 Jul 2019 14:51:00 -0700 (PDT)
 Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id t2sm3542329qth.33.2019.07.04.14.50.57
+        by smtp.gmail.com with ESMTPSA id t2sm3542329qth.33.2019.07.04.14.50.59
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 04 Jul 2019 14:50:58 -0700 (PDT)
+        Thu, 04 Jul 2019 14:51:00 -0700 (PDT)
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         alexei.starovoitov@gmail.com,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
-        David Beckett <david.beckett@netronome.com>,
         Dirk van der Merwe <dirk.vandermerwe@netronome.com>
-Subject: [PATCH net 1/2] net/tls: fix poll ignoring partially copied records
-Date:   Thu,  4 Jul 2019 14:50:36 -0700
-Message-Id: <20190704215037.6008-2-jakub.kicinski@netronome.com>
+Subject: [PATCH net 2/2] selftests/tls: add test for poll() with data in TLS ULP
+Date:   Thu,  4 Jul 2019 14:50:37 -0700
+Message-Id: <20190704215037.6008-3-jakub.kicinski@netronome.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190704215037.6008-1-jakub.kicinski@netronome.com>
 References: <20190704215037.6008-1-jakub.kicinski@netronome.com>
@@ -64,39 +63,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David reports that RPC applications which use epoll() occasionally
-get stuck, and that TLS ULP causes the kernel to not wake applications,
-even though read() will return data.
+Add a test which checks if leftover record data in TLS
+layer correctly wakes up poll().
 
-This is indeed true. The ctx->rx_list which holds partially copied
-records is not consulted when deciding whether socket is readable.
-
-Note that SO_RCVLOWAT with epoll() is and has always been broken for
-kernel TLS. We'd need to parse all records from the TCP layer, instead
-of just the first one.
-
-Fixes: 692d7b5d1f91 ("tls: Fix recvmsg() to be able to peek across multiple records")
-Reported-by: David Beckett <david.beckett@netronome.com>
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Reviewed-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
 ---
- net/tls/tls_sw.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ tools/testing/selftests/net/tls.c | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
-diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index 455a782c7658..e2385183526e 100644
---- a/net/tls/tls_sw.c
-+++ b/net/tls/tls_sw.c
-@@ -1958,7 +1958,8 @@ bool tls_sw_stream_read(const struct sock *sk)
- 		ingress_empty = list_empty(&psock->ingress_msg);
- 	rcu_read_unlock();
- 
--	return !ingress_empty || ctx->recv_pkt;
-+	return !ingress_empty || ctx->recv_pkt ||
-+		!skb_queue_empty(&ctx->rx_list);
+diff --git a/tools/testing/selftests/net/tls.c b/tools/testing/selftests/net/tls.c
+index 278c86134556..090fff9dbc48 100644
+--- a/tools/testing/selftests/net/tls.c
++++ b/tools/testing/selftests/net/tls.c
+@@ -644,6 +644,32 @@ TEST_F(tls, poll_wait)
+ 	EXPECT_EQ(recv(self->cfd, recv_mem, send_len, MSG_WAITALL), send_len);
  }
  
- static int tls_read_size(struct strparser *strp, struct sk_buff *skb)
++TEST_F(tls, poll_wait_split)
++{
++	struct pollfd fd = { 0, 0, 0 };
++	char send_mem[20] = {};
++	char recv_mem[15];
++
++	fd.fd = self->cfd;
++	fd.events = POLLIN;
++	/* Send 20 bytes */
++	EXPECT_EQ(send(self->fd, send_mem, sizeof(send_mem), 0),
++		  sizeof(send_mem));
++	/* Poll with inf. timeout */
++	EXPECT_EQ(poll(&fd, 1, -1), 1);
++	EXPECT_EQ(fd.revents & POLLIN, 1);
++	EXPECT_EQ(recv(self->cfd, recv_mem, sizeof(recv_mem), MSG_WAITALL),
++		  sizeof(recv_mem));
++
++	/* Now the remaining 5 bytes of record data are in TLS ULP */
++	fd.fd = self->cfd;
++	fd.events = POLLIN;
++	EXPECT_EQ(poll(&fd, 1, -1), 1);
++	EXPECT_EQ(fd.revents & POLLIN, 1);
++	EXPECT_EQ(recv(self->cfd, recv_mem, sizeof(recv_mem), 0),
++		  sizeof(send_mem) - sizeof(recv_mem));
++}
++
+ TEST_F(tls, blocking)
+ {
+ 	size_t data = 100000;
 -- 
 2.21.0
 
