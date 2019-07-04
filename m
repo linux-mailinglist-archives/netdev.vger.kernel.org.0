@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 85D8F5F355
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 09:16:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B4405F360
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 09:22:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727328AbfGDHQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 03:16:24 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:40509 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726120AbfGDHQY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 03:16:24 -0400
-Received: by mail-lj1-f196.google.com with SMTP id a21so5099330ljh.7
-        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 00:16:23 -0700 (PDT)
+        id S1727368AbfGDHWh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 03:22:37 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:44599 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727340AbfGDHWg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 03:22:36 -0400
+Received: by mail-lf1-f67.google.com with SMTP id r15so3501815lfm.11
+        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 00:22:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=CM3CA+ac86LStxn0A7zCf+sHc6gVIK+nURjGT/ZVURM=;
-        b=noWI4Xsww4AJnpE58QFOvduhB9wBWDFkpSe+Vwy2fZ0AOCB5779/gGsN9l9X3L3+Vz
-         2U5Mk11jDXkh5zK+rXiY70rSTYMLGD7BnXPYnyoCcVx8i4GKaFI7DmR0K3KNh6+ITsLa
-         +ZIwOEF1CtSL/fsKuACAzNIn1sAWmf3FOy9180YbvETQeZ8FwqoZUTSzZJ38suahAHQ6
-         2/pTGWkhA96+/1UdRfkOfONEpVlxYmnxyH5DD4tqyT6zU50JG5MO65uD+2RKBnlx17GQ
-         u3caugrGFRIDPf3gx/miR319qEwsnJDN2icdIMupqu+FmXg/MqUQprrULNQponZsL/jF
-         B9Vg==
+        bh=pqFQucJA68+LfUIF6PsmEVF8+AEtjKWUJb7Uq0uRSO8=;
+        b=CMJX5LA3Iq/AnR8kOQVB/604GMxrDUOprx6uTQFKGqvpRDPoXa+sKHKl3e4cdQXgfD
+         4uA0JPNgBa4vNdt9VhAXGP4G/6Sw7hdD9mwybYBeXxCLAqWcrAO0YpooNeSdJUTZ8jZH
+         4WJJC3lDPhI+e6+RqCI2h4LHE9Y0Flm+RGAhO68n1zcGv9w0i+1K4858z7knfegErIet
+         YosMOlwfxeiCQ+VPAvJ/73zMiLPUaBwMOR6lHlidBHiQfHeQJQZ+NgdQxgrlA5zG9CCd
+         IG8412Na3RS0+/AsO3XTB8G/FozzUx4ptmN02hnY+GckXEezQqJzaYVKlYSwanALxR09
+         TElQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=CM3CA+ac86LStxn0A7zCf+sHc6gVIK+nURjGT/ZVURM=;
-        b=YdHxE3CU0erTKuuQGmkX4uJzMOV5mHoulPk3zngYNplF+ITCPBvSMWlEA2cBzk3gKq
-         6WpF79vsuQRTeHHgYZZphjuU7wMQTFqoXfs1//5va09Gq//WtsVETczqjJlNyJtc+eqY
-         lC7oLD4OIwIszP04BRvyMjGIbWKg7TlyWe1cc5QNpCjOIRsTi3SvRiHAoC3tc5fUzO0O
-         PT+Umkd169xKWnagcPpnHwEXfeIofsnOBA/2L2SoN6MShNWynXKlKw/a9dk5+GoOpQoO
-         0Kdfn6qpnfd6rf6sRu6CduhhIeWfdegs9K3VuuylRALH2OG29SR3JHQbbK0Y/7NTj0l6
-         Jaeg==
-X-Gm-Message-State: APjAAAXddxb6Ui8aSETnx7cIoNd0AJQlT4S9d1pWapMT1yxDMUZsE7PI
-        pRd4uqUPO+shGSK6xrqaJahZMdRu5ogxdnKgMr9diQ==
-X-Google-Smtp-Source: APXvYqzE9S7+MBd9cz3CLYgD2cxe0CiQIYN/YmMnO+BXFTBBIuqXEJP5eErh26Lm2r6+xg1JL2/RPnz20gM0wD6QESg=
-X-Received: by 2002:a2e:8195:: with SMTP id e21mr5076509ljg.62.1562224582501;
- Thu, 04 Jul 2019 00:16:22 -0700 (PDT)
+        bh=pqFQucJA68+LfUIF6PsmEVF8+AEtjKWUJb7Uq0uRSO8=;
+        b=aIUOowRpKxsqTsm9JoCHb78ywv77uEGQ36F56v9+5vAS99uWmuljDRGIPCTrdkpuP0
+         q/oR8Zs+BvD5U8AgVfCvMN6Ck09UwHJMFKUIvrB0ytzfjKrs4gDZMQ8V8L0p1k3ufHC8
+         JDLM36ZXbvINIvUBUiEiY3oaohir+5l+bVGRJIIzWhVMH3IRT5Kq6Hl7hYYEr8fPZL6+
+         f3/MsrOawe1x9q90fM23HbTfVIev7ZnKqRDYG9vL9sz1r74KxmTk6cxh1jAb9p0dTR5g
+         LefJJ8zq5VFUQcLjeqxNkRbtDuCaFsIyBnAvMKLqZux/ittZZYK/acARhMrNdb65SXRv
+         L0bQ==
+X-Gm-Message-State: APjAAAWmT14xc6CHVkkpWd+xcwOsI+GVYnoZqsey2gZXsCjKkWv7dhKT
+        wPqgzlr63SsIyuFBSOhGNR1KwJueH1Ofgls4tVdeUA==
+X-Google-Smtp-Source: APXvYqynHwsot+XX5IFHli2hQMu+J3uhahUul8EBgUfkRdJBS2rD6AJj0I7kGNyHUl0psqXlBoI1EIIsBBUT+qDq/oo=
+X-Received: by 2002:ac2:5c42:: with SMTP id s2mr4205328lfp.61.1562224954848;
+ Thu, 04 Jul 2019 00:22:34 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190703171924.31801-1-paweldembicki@gmail.com> <20190703171924.31801-4-paweldembicki@gmail.com>
-In-Reply-To: <20190703171924.31801-4-paweldembicki@gmail.com>
+References: <20190703171924.31801-1-paweldembicki@gmail.com> <20190703171924.31801-5-paweldembicki@gmail.com>
+In-Reply-To: <20190703171924.31801-5-paweldembicki@gmail.com>
 From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 4 Jul 2019 09:16:10 +0200
-Message-ID: <CACRpkdaLZ8XeyLhH_mzwb5phRNvuwuUgecWKBVa1Z7L0QqH_bw@mail.gmail.com>
-Subject: Re: [PATCH v2 3/4] net: dsa: vsc73xx: add support for parallel mode
+Date:   Thu, 4 Jul 2019 09:22:23 +0200
+Message-ID: <CACRpkdYsA5437Sb8J539AJ=cYtnO2MiD7w7V_Emrmk8dNKbaEQ@mail.gmail.com>
+Subject: Re: [PATCH v2 4/4] net: dsa: vsc73xx: Assert reset if iCPU is enabled
 To:     Pawel Dembicki <paweldembicki@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -64,36 +64,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Pawel,
-
-this looks overall good and the following is just
-documentation nit-pick so feel free to add my
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-
 On Wed, Jul 3, 2019 at 7:21 PM Pawel Dembicki <paweldembicki@gmail.com> wrote:
 
-> This patch add platform part of vsc73xx driver.
-> It allows to use chip connected by parallel interface.
+> Driver allow to use devices with disabled iCPU only.
+>
+> Some devices have pre-initialised iCPU by bootloader.
+> That state make switch unmanaged. This patch force reset
+> if device is in unmanaged state. In the result chip lost
+> internal firmware from RAM and it can be managed.
 >
 > Signed-off-by: Pawel Dembicki <paweldembicki@gmail.com>
 
-I would elaborate on the fact that we're dealing with memory-mapped
-I/O but perhaps even more important to do that in the source code file and
-Kconfig so it is close to the users rather than in the changelog.
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-Write something about the address bus wireing making all
-accesses big endian.
-
-> +config NET_DSA_VITESSE_VSC73XX_PLATFORM
-> +       tristate "Vitesse VSC7385/7388/7395/7398 Platform mode support"
-> +       depends on HAS_IOMEM
-> +       select NET_DSA_VITESSE_VSC73XX
-> +       ---help---
-> +         This enables support for the Vitesse VSC7385, VSC7388, VSC7395
-> +         and VSC7398 SparX integrated ethernet switches in Platform managed mode.
-
-I would insert something about memory-mapped I/O mode
-over a CPU-attached address bus.
+My devices do not have direct access to the reset line so I
+can't assert reset no matter how I try, if it works for you, the
+code is certainly better like this.
 
 Yours,
 Linus Walleij
