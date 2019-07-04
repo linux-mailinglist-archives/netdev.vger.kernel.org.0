@@ -2,101 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0382B5FD8F
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 21:55:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C9CA5FDB2
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 22:12:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727151AbfGDTzK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 15:55:10 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:51081 "EHLO
-        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727091AbfGDTzK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 15:55:10 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id B66F02177A;
-        Thu,  4 Jul 2019 15:55:08 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Thu, 04 Jul 2019 15:55:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=sR6FK6
-        wqiBzNtxlzGk6SfV4KUNKuNzdHTlJq97KtCs4=; b=oN/590eeF0el74q/TTobzu
-        CI7Pj/f1EanfRWuj4OjG/ujBMRUpkTcmqzI7REhQHvPK9Io1uTwOW2jhFIm0x1kr
-        VBO8D+0tm1gD+/IUo3Ci3knM4YgyBi41GxGSUO9tv4lJPQFsmoumqqrJXHMvUF2H
-        3QuhvF9cYtWP7ws3Axn7ccbx2k8DjEXsJXSndk8ErccadYUsbrBG6on8N80eVdlF
-        C6MZorI3BtcMUygtuqvBj2IpMGO1T8FwIto9Iq5199bdToI4fLVuM+M6Sx97a0kM
-        u7o84H4KsHua5OEt6dKIIixg+/ZwsrVYc2fjtO4akpwpCjO2bclLh+P6YvY+8TAQ
-        ==
-X-ME-Sender: <xms:nFkeXQimoWqRCvxwerUFmUQ4Ef8roWm41bRGJ7vDo7AE5AgYjn5BXw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrfedvgddugeeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjfgesthdtredttdervdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecukfhppedutd
-    elrdeihedrieefrddutddunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhes
-    ihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
-X-ME-Proxy: <xmx:nFkeXe29gSXIiXUy-3YWmGWt7SClDZ4gmE0ED8G15P_e9kLPGg0Gwg>
-    <xmx:nFkeXdLecSd7yEWNG0gsXyBHntAZRpdxAIZoD2-BnxJ1NPJvA7S3ZQ>
-    <xmx:nFkeXQSS4cz-7-Z9RH5ZuFCrrbT3T5pZSHhC6AsPi7Gl67n2_lNVjg>
-    <xmx:nFkeXUMAp1Gi6XIojis0kvcKTJly0n46QkaRLqMQePlvapwMmGYtYg>
-Received: from localhost (bzq-109-65-63-101.red.bezeqint.net [109.65.63.101])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 6E35C380074;
-        Thu,  4 Jul 2019 15:55:07 -0400 (EDT)
-Date:   Thu, 4 Jul 2019 22:55:04 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com, jiri@mellanox.com,
-        shalomt@mellanox.com, mlxsw@mellanox.com, idosch@mellanox.com
-Subject: Re: [PATCH net] ipv4: Fix NULL pointer dereference in
- ipv4_neigh_lookup()
-Message-ID: <20190704195504.GA20705@splinter>
-References: <20190704162638.17913-1-idosch@idosch.org>
- <20190704.122449.742393341056317443.davem@davemloft.net>
+        id S1727090AbfGDUMm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 16:12:42 -0400
+Received: from mail-pg1-f179.google.com ([209.85.215.179]:34374 "EHLO
+        mail-pg1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726911AbfGDUMm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 16:12:42 -0400
+Received: by mail-pg1-f179.google.com with SMTP id p10so3299926pgn.1
+        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 13:12:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=plx6kx2mQbXqrWYytsJSBVQtVpKcK3KMpXPKAs1zP08=;
+        b=FsiOhai5lg+1msWCmp6oinYuLACIRH5F/ZayO46ZNWsNhqKT22qYCaYX3M60G93g/u
+         bKDa1stJMAKpnfoFWmSkZR9gKYheqfAFP6EdqSqkT6P0KcLOE9m3L3AcYg5Y5igLCMNS
+         0E2BZgkif9bvZaW6jUqDFdv/CwPbDmz4zzhmAAROOy6jQwcb59oz3H6n1KNriCm+DA9+
+         Ryjk+6IIs0cSMB4s1i896QCe1qZVPqkgepZScnGO6ldveyUR6wdFnPjER5trDC6+G/ov
+         wcNEzudXoSlz7h9tfSek3aiWVD7i5y1HKBfpmsX1jHxfuIaXSm6+cDf3KI7fOnEfM67K
+         tq/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=plx6kx2mQbXqrWYytsJSBVQtVpKcK3KMpXPKAs1zP08=;
+        b=lHSZPt14m9wKnO75UJM7yJu6ZaxyaPPaoP5ku9smYWsjCYIYRcjRbMZv5sT+LJNuwE
+         8y9R3BgO7WnuYsJo7JtX/lbpxRUWD9v3ptCi79MBQAdl2IX+KDp8k7ssLwUXjRSCBnip
+         eoJ/lZC+VEazPk6UAQo4QEod4hOI/UKylQSW5jmEaydWdK5rJICM2AZd/mz1G3vzq02f
+         q4GKHt2G95yoSRaQAWJp+5foQoKmRyDUO8y4zUIwwSrSyTW+IlFyOqY933Csw/vK1+Mn
+         PjnAQ+PJs1p6ufb577kcFSbAFnoOxcWUpCT60hOIQ2okXXzkHBY9WuLMQC6ggd+tKyF5
+         lHAw==
+X-Gm-Message-State: APjAAAV81tk2kV9lP+Bsgh55Mvdr/tzDKulLiQFQee8vtzeM0QjjrOrn
+        79EEQHVKfBwg3N9Fn6BDNt61BHva2Lk=
+X-Google-Smtp-Source: APXvYqy1NKYhjVAHlE9bmTM6Cc9sZcqONl+MGWEWdw9vSDGTTp4HjMJpMWMINeFkplZj4pwTzUgE1w==
+X-Received: by 2002:a17:90a:b883:: with SMTP id o3mr1406255pjr.50.1562271161369;
+        Thu, 04 Jul 2019 13:12:41 -0700 (PDT)
+Received: from cakuba.netronome.com (c-71-204-185-212.hsd1.ca.comcast.net. [71.204.185.212])
+        by smtp.gmail.com with ESMTPSA id o12sm5120149pjr.22.2019.07.04.13.12.40
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 04 Jul 2019 13:12:41 -0700 (PDT)
+Date:   Thu, 4 Jul 2019 13:12:37 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Eran Ben Elisha <eranbe@mellanox.com>,
+        Boris Pismenny <borisp@mellanox.com>
+Subject: Re: [net-next 14/14] net/mlx5e: Add kTLS TX HW offload support
+Message-ID: <20190704131237.239bfa56@cakuba.netronome.com>
+In-Reply-To: <20190704181235.8966-15-saeedm@mellanox.com>
+References: <20190704181235.8966-1-saeedm@mellanox.com>
+        <20190704181235.8966-15-saeedm@mellanox.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190704.122449.742393341056317443.davem@davemloft.net>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 04, 2019 at 12:24:49PM -0700, David Miller wrote:
-> From: Ido Schimmel <idosch@idosch.org>
-> Date: Thu,  4 Jul 2019 19:26:38 +0300
-> 
-> > Both ip_neigh_gw4() and ip_neigh_gw6() can return either a valid pointer
-> > or an error pointer, but the code currently checks that the pointer is
-> > not NULL.
->  ...
-> > @@ -447,7 +447,7 @@ static struct neighbour *ipv4_neigh_lookup(const struct dst_entry *dst,
-> >  		n = ip_neigh_gw4(dev, pkey);
-> >  	}
-> >  
-> > -	if (n && !refcount_inc_not_zero(&n->refcnt))
-> > +	if (!IS_ERR(n) && !refcount_inc_not_zero(&n->refcnt))
-> >  		n = NULL;
-> >  
-> >  	rcu_read_unlock_bh();
-> 
-> Don't the callers expect only non-error pointers?
+On Thu, 4 Jul 2019 18:16:15 +0000, Saeed Mahameed wrote:
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+> index 483d321d2151..6854f132d505 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+> @@ -50,6 +50,15 @@ static const struct counter_desc sw_stats_desc[] = {
+>  #ifdef CONFIG_MLX5_EN_TLS
+>  	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_tls_ooo) },
+>  	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_tls_resync_bytes) },
+> +
+> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_ooo) },
 
-It is actually OK to return an error pointer here. In fact, before the
-commit I cited the function returned the return value of neigh_create().
+Why do you call this stat tx_ktls_ooo, and not tx_tls_ooo (extra 'k')?
 
-If you think it's clearer, we can do this instead:
+For nfp I used the stats' names from mlx5 FPGA to make sure we are all
+consistent.  I've added them to the tls-offload.rst doc and Boris has
+reviewed it.
 
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index 8ea0735a6754..40697fcd2889 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -447,6 +447,9 @@ static struct neighbour *ipv4_neigh_lookup(const struct dst_entry *dst,
-                n = ip_neigh_gw4(dev, pkey);
-        }
- 
-+       if (IS_ERR(n))
-+               n = NULL;
-+
-        if (n && !refcount_inc_not_zero(&n->refcnt))
-                n = NULL;
+ * ``rx_tls_decrypted`` - number of successfully decrypted TLS segments
+ * ``tx_tls_encrypted`` - number of in-order TLS segments passed to device
+   for encryption
+ * ``tx_tls_ooo`` - number of TX packets which were part of a TLS stream
+   but did not arrive in the expected order
+ * ``tx_tls_drop_no_sync_data`` - number of TX packets dropped because
+   they arrived out of order and associated record could not be found
+
+Why can't you use the same names for the stats as you used for your mlx5
+FPGA?
+
+> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_ooo_drop_no_sync_data) },
+> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_ooo_drop_bypass_req) },
+> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_ooo_dump_bytes) },
+> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_ooo_dump_packets) },
+> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_enc_packets) },
+> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_enc_bytes) },
+> +	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, tx_ktls_ctx) },
+>  #endif
+>  
+>  	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_lro_packets) },
+
+Dave, please don't apply this, I will review in depth once I get
+through the earlier 200 emails ;)
