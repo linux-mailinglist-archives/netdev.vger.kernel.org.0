@@ -2,102 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E60115FCD8
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 20:21:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 578485FCDD
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 20:22:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726411AbfGDSVd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 14:21:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59554 "EHLO mail.kernel.org"
+        id S1726980AbfGDSWu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 14:22:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59996 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725882AbfGDSVd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Jul 2019 14:21:33 -0400
+        id S1726199AbfGDSWu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Jul 2019 14:22:50 -0400
 Received: from localhost (unknown [37.142.3.125])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9B91721738;
-        Thu,  4 Jul 2019 18:21:31 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6A46521670;
+        Thu,  4 Jul 2019 18:22:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1562264492;
-        bh=ww8m1xV7CM9m57rdSK+MAGheGY/bPXOI0pBbNppAWjA=;
+        s=default; t=1562264569;
+        bh=SlEyAm7VBEuRnkfs/zAbeLnxmIBqyN8hc8EsAmhR/kQ=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rQou53LgkclnN4Quq3olY9xjYgbWzAV8hWryC+XLpdJraAiaLLV5C4k3RCnmJJMpV
-         K4fGUumw+tSEU5z2N8m4Cl94PaQQwjimlOZkYmpCwJENwpcWwYIEKI8seB7gJQuLly
-         p64pBXFX+yUvGE54YkNjjtLBmDEZ5IdQekEhvaIU=
-Date:   Thu, 4 Jul 2019 21:21:13 +0300
+        b=QtkxO0rDSvzfb8fD7hZT8raX2Zo3uVJwigKAlw+Q+RZPTCt5VHMSlF9geuZc4yvlU
+         +SuIYn8vmfuK0gq4meCRZCXx+g9obYTVifCVdTU45In7yiup0wWvXsAwF9bMydohvg
+         ll7gtrKymlW9mkvuh8at+ILHEJjFdcICnCX9xD8E=
+Date:   Thu, 4 Jul 2019 21:22:26 +0300
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Saeed Mahameed <saeedm@dev.mellanox.co.il>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        Tariq Toukan <tariqt@mellanox.com>
-Subject: Re: [PATCH mlx5-next 4/5] net/mlx5: Introduce TLS TX offload
- hardware bits and structures
-Message-ID: <20190704182113.GG7212@mtr-leonro.mtl.com>
-References: <20190703073909.14965-1-saeedm@mellanox.com>
- <20190703073909.14965-5-saeedm@mellanox.com>
- <20190703092735.GZ4727@mtr-leonro.mtl.com>
- <CALzJLG-em1w+Lgf2UutbG2Lzq8bx3zUqoLGx26H2_EXOuuk+jg@mail.gmail.com>
- <20190704171519.GE7212@mtr-leonro.mtl.com>
- <CALzJLG--k3z2HuV09tivJuOtU-BFAyCEV1vJbPqYX+OyskggmQ@mail.gmail.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Majd Dibbiny <majd@mellanox.com>,
+        Mark Zhang <markz@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH rdma-next v5 11/17] RDMA/netlink: Implement counter
+ dumpit calback
+Message-ID: <20190704182226.GH7212@mtr-leonro.mtl.com>
+References: <20190702100246.17382-1-leon@kernel.org>
+ <20190702100246.17382-12-leon@kernel.org>
+ <20190704180716.GA2583@ziepe.ca>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CALzJLG--k3z2HuV09tivJuOtU-BFAyCEV1vJbPqYX+OyskggmQ@mail.gmail.com>
+In-Reply-To: <20190704180716.GA2583@ziepe.ca>
 User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 04, 2019 at 01:21:04PM -0400, Saeed Mahameed wrote:
-> On Thu, Jul 4, 2019 at 1:15 PM Leon Romanovsky <leon@kernel.org> wrote:
+On Thu, Jul 04, 2019 at 03:07:16PM -0300, Jason Gunthorpe wrote:
+> On Tue, Jul 02, 2019 at 01:02:40PM +0300, Leon Romanovsky wrote:
+> > diff --git a/include/uapi/rdma/rdma_netlink.h b/include/uapi/rdma/rdma_netlink.h
+> > index 0cb47d23fd86..22c5bc7a82dd 100644
+> > +++ b/include/uapi/rdma/rdma_netlink.h
+> > @@ -283,6 +283,8 @@ enum rdma_nldev_command {
 > >
-> > On Thu, Jul 04, 2019 at 01:06:58PM -0400, Saeed Mahameed wrote:
-> > > On Wed, Jul 3, 2019 at 5:27 AM <leon@kernel.org> wrote:
-> > > >
-> > > > On Wed, Jul 03, 2019 at 07:39:32AM +0000, Saeed Mahameed wrote:
-> > > > > From: Eran Ben Elisha <eranbe@mellanox.com>
-> > > > >
-> > > > > Add TLS offload related IFC structs, layouts and enumerations.
-> > > > >
-> > > > > Signed-off-by: Eran Ben Elisha <eranbe@mellanox.com>
-> > > > > Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
-> > > > > Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
-> > > > > ---
-> > > > >  include/linux/mlx5/device.h   |  14 +++++
-> > > > >  include/linux/mlx5/mlx5_ifc.h | 104 ++++++++++++++++++++++++++++++++--
-> > > > >  2 files changed, 114 insertions(+), 4 deletions(-)
-> > > >
-> > > > <...>
-> > > >
-> > > > > @@ -2725,7 +2739,8 @@ struct mlx5_ifc_traffic_counter_bits {
-> > > > >
-> > > > >  struct mlx5_ifc_tisc_bits {
-> > > > >       u8         strict_lag_tx_port_affinity[0x1];
-> > > > > -     u8         reserved_at_1[0x3];
-> > > > > +     u8         tls_en[0x1];
-> > > > > +     u8         reserved_at_1[0x2];
-> > > >
-> > > > It should be reserved_at_2.
-> > > >
-> > >
-> > > it should be at_1.
+> >  	RDMA_NLDEV_CMD_STAT_SET,
 > >
-> > Why? See mlx5_ifc_flow_table_prop_layout_bits, mlx5_ifc_roce_cap_bits, e.t.c.
+> > +	RDMA_NLDEV_CMD_STAT_GET, /* can dump */
+> > +
+> >  	RDMA_NLDEV_NUM_OPS
+> >  };
 > >
+> > @@ -496,7 +498,13 @@ enum rdma_nldev_attr {
+> >  	RDMA_NLDEV_ATTR_STAT_MODE,		/* u32 */
+> >  	RDMA_NLDEV_ATTR_STAT_RES,		/* u32 */
+> >  	RDMA_NLDEV_ATTR_STAT_AUTO_MODE_MASK,	/* u32 */
+> > -
+> > +	RDMA_NLDEV_ATTR_STAT_COUNTER,		/* nested table */
+> > +	RDMA_NLDEV_ATTR_STAT_COUNTER_ENTRY,	/* nested table */
+> > +	RDMA_NLDEV_ATTR_STAT_COUNTER_ID,	/* u32 */
+> > +	RDMA_NLDEV_ATTR_STAT_HWCOUNTERS,	/* nested table */
+> > +	RDMA_NLDEV_ATTR_STAT_HWCOUNTER_ENTRY,	/* nested table */
+> > +	RDMA_NLDEV_ATTR_STAT_HWCOUNTER_ENTRY_NAME,	/* string */
+> > +	RDMA_NLDEV_ATTR_STAT_HWCOUNTER_ENTRY_VALUE,	/* u64 */
+> >  	/*
+> >  	 * Information about a chardev.
+> >  	 * CHARDEV_TYPE is the name of the chardev ABI (ie uverbs, umad, etc)
 >
-> they are all at_1 .. so i don't really understand what you want from me,
-> Leon the code is good, please double check you comments..
+> This is in the wrong place, needs to be at the end.
 
-Saeed,
+Yes, it is rebase error.
 
-reserved_at_1 should be renamed to be reserved_at_2.
-
-strict_lag_tx_port_affinity[0x1] + tls_en[0x1] = 0x2
+Thanks
 
 >
-> > Thanks
-> >
-> > >
-> > > > Thanks
+> Jason
