@@ -2,96 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D1255F4F5
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 10:52:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1E105F504
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 10:56:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727106AbfGDIwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 04:52:36 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:26742 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727068AbfGDIwg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 04:52:36 -0400
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x648puxd099630
-        for <netdev@vger.kernel.org>; Thu, 4 Jul 2019 04:52:35 -0400
-Received: from e06smtp01.uk.ibm.com (e06smtp01.uk.ibm.com [195.75.94.97])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2thdcfta8j-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 04:52:35 -0400
-Received: from localhost
-        by e06smtp01.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
-        Thu, 4 Jul 2019 09:52:33 +0100
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (9.149.109.198)
-        by e06smtp01.uk.ibm.com (192.168.101.131) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Thu, 4 Jul 2019 09:52:30 +0100
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x648qUMU50593822
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 4 Jul 2019 08:52:30 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EDAA85204F;
-        Thu,  4 Jul 2019 08:52:29 +0000 (GMT)
-Received: from white.boeblingen.de.ibm.com (unknown [9.152.98.248])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id B429F52050;
-        Thu,  4 Jul 2019 08:52:29 +0000 (GMT)
-From:   Ilya Leoshkevich <iii@linux.ibm.com>
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org, ys114321@gmail.com
-Cc:     Ilya Leoshkevich <iii@linux.ibm.com>
-Subject: [PATCH v2 bpf-next] selftests/bpf: fix "alu with different scalars 1" on s390
-Date:   Thu,  4 Jul 2019 10:52:24 +0200
-X-Mailer: git-send-email 2.21.0
+        id S1727179AbfGDIzU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 04:55:20 -0400
+Received: from mx-relay92-hz2.antispameurope.com ([94.100.136.192]:51242 "EHLO
+        mx-relay92-hz2.antispameurope.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727083AbfGDIzU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 04:55:20 -0400
+Received: from b2b-92-50-72-125.unitymedia.biz ([92.50.72.125]) by mx-relay92-hz2.antispameurope.com;
+ Thu, 04 Jul 2019 10:55:18 +0200
+Received: from [192.168.101.59] (192.168.101.59) by eks-ex.eks-engel.local
+ (192.168.100.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1034.26; Thu, 4 Jul
+ 2019 10:54:47 +0200
+Subject: Re: i.mx6ul with DSA in multi chip addressing mode - no MDIO access
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <netdev@vger.kernel.org>
+References: <21680b63-2d87-6841-23eb-551e58866719@eks-engel.de>
+ <20190703155518.GE18473@lunn.ch>
+From:   Benjamin Beckmeyer <beb@eks-engel.de>
+Message-ID: <d1181129-ec9d-01c1-3102-e1dc5dec0378@eks-engel.de>
+Date:   Thu, 4 Jul 2019 10:54:47 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-x-cbid: 19070408-4275-0000-0000-000003490E47
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19070408-4276-0000-0000-000038592C83
-Message-Id: <20190704085224.65223-1-iii@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-04_05:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=716 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907040116
+In-Reply-To: <20190703155518.GE18473@lunn.ch>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [192.168.101.59]
+X-ClientProxiedBy: eks-ex.eks-engel.local (192.168.100.30) To
+ eks-ex.eks-engel.local (192.168.100.30)
+X-cloud-security-sender: beb@eks-engel.de
+X-cloud-security-recipient: netdev@vger.kernel.org
+X-cloud-security-Virusscan: CLEAN
+X-cloud-security-disclaimer: This E-Mail was scanned by E-Mailservice on mx-relay92-hz2.antispameurope.com with AC7DF962676
+X-cloud-security-connect: b2b-92-50-72-125.unitymedia.biz[92.50.72.125], TLS=1, IP=92.50.72.125
+X-cloud-security: scantime:.4055
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-BPF_LDX_MEM is used to load the least significant byte of the retrieved
-test_val.index, however, on big-endian machines it ends up retrieving
-the most significant byte.
 
-Use the correct least significant byte offset on big-endian machines.
+On 03.07.19 17:55, Andrew Lunn wrote:
+> On Wed, Jul 03, 2019 at 03:10:34PM +0200, Benjamin Beckmeyer wrote:
+>> Hey folks,
+>>
+>> I'm having a problem with a custom i.mx6ul board. When DSA is loaded I can't 
+>> get access to the switch via MDIO, but the DSA is working properly. I set up
+>> a bridge for testing and the switch is in forwarding mode and i can ping the 
+>> board. But the MDIO access isn't working at address 2 for the switch. When I 
+>> delete the DSA from the devicetree and start the board up, I can access the 
+>> switch via MDIO.
+>>
+>> With DSA up and running:
+>>
+>> mii -i 2 0 0x9800
+>> mii -i 2 1
+>> phyid:2, reg:0x01 -> 0x4000
+>> mii -i 2 0 0x9803
+>> mii -i 2 1
+>> phyid:2, reg:0x01 -> 0x4000
+>> mii -i 2 1 0x1883
+>> mii -i 2 1
+>> phyid:2, reg:0x01 -> 0x4000
+> Hi Benjamin
+>
+> I'm guessing that the driver is also using register 0 and 1 at the
+> same time you are, e.g. to poll the PHYs for link status etc.
+>
+> There are trace points for MDIO, so you can get the kernel to log all
+> registers access. That should confirm if i'm right.
+>
+> 	  Andrew
 
-Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
----
+Hi Andrew,
+you were absolutly right. The bus is really busy the whole time, I've 
+checked that with the tracepoints in mdio_access.
 
-v1->v2:
-- use __BYTE_ORDER instead of __BYTE_ORDER__.
+But I'm still wondering why isn't that with a single chip addressing 
+mode configured switch? I mean, okay, the switch has more ports, but
+I've checked the accesses for both. The 6321(single chip addressing 
+mode) has around 4-5 accesses to the MDIO bus and the 6390(multi chip 
+addressing mode) has around 600 accesses per second. 
 
- tools/testing/selftests/bpf/verifier/value_ptr_arith.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/tools/testing/selftests/bpf/verifier/value_ptr_arith.c b/tools/testing/selftests/bpf/verifier/value_ptr_arith.c
-index c3de1a2c9dc5..e5940c4e8b8f 100644
---- a/tools/testing/selftests/bpf/verifier/value_ptr_arith.c
-+++ b/tools/testing/selftests/bpf/verifier/value_ptr_arith.c
-@@ -183,7 +183,11 @@
- 	BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
- 	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 1),
- 	BPF_EXIT_INSN(),
-+#if __BYTE_ORDER == __LITTLE_ENDIAN
- 	BPF_LDX_MEM(BPF_B, BPF_REG_1, BPF_REG_0, 0),
-+#else
-+	BPF_LDX_MEM(BPF_B, BPF_REG_1, BPF_REG_0, sizeof(int) - 1),
-+#endif
- 	BPF_JMP_IMM(BPF_JEQ, BPF_REG_1, 0, 3),
- 	BPF_MOV64_IMM(BPF_REG_2, 0),
- 	BPF_MOV64_IMM(BPF_REG_3, 0x100000),
--- 
-2.21.0
+Thanks, 
+Benjamin
 
