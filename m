@@ -2,99 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7545A5F967
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 15:53:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E49405F96D
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 15:54:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727351AbfGDNxg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 09:53:36 -0400
-Received: from mail-vk1-f196.google.com ([209.85.221.196]:35653 "EHLO
-        mail-vk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727026AbfGDNxg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 09:53:36 -0400
-Received: by mail-vk1-f196.google.com with SMTP id m17so633128vkl.2
-        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 06:53:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=uYvSkcotS/gDPYpWgwke+Ro/F2OQSKZ0Zx2yUM0DaZM=;
-        b=d1F4jSTsFCLravdDMoOepHaMe3xW6uTyIvkbT22i1D/NNcRQZQh01paDpxwQMKWHYb
-         UA0JlUrAhXoken3hTG6uypyoSRRyHSPOIBjJxJnXpHPl/4PY5bhwZKzKgw3rrLC2Aluz
-         15cw/h6HZs6FOoFIJk0j7yN4n9Omv5J9yjieoajasrw/x2YP4WTMmbZG1qPc/e+F6uaE
-         8u4UHaoheJS6c3u86BuQ5l0f7wJ9hi7hHaBmtggQbdqI0Nssz2UH4wAZo0Yl8UOU8tPn
-         8kYvxEdD7C+cX9IwN3vpdr+S15FjNcSyjJij4oSq6bcnvuGtK+ZEWAlr7FtSl9dUxTQl
-         f4bw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=uYvSkcotS/gDPYpWgwke+Ro/F2OQSKZ0Zx2yUM0DaZM=;
-        b=E0zXbtSOu88dl50nTu2vkVWLzkVK1D+XgqFz34jLiyE5smIcbLz7rSnG6Bqvze92mm
-         lZnu9fgsRykThLbxgRwMCQJ7HBgg4Mi4rrI94Trf8UzB1TRYUN+NzIbq8yU2qNjVWpmt
-         1yNpM3/rKnvXBlgeKuzBP8bCm9faaQq+mn9yrmd0oo9BQVkPMoacIYpLuuEsvD94c4Hd
-         8Mzy0o5jhs85S72rb6s0NU4apXL0/z2exoW16Hh/ukDs/1PEXv3NX15ms3gpUtO3SyJT
-         gqFnke0PL+3JNV//gXyGqg4ZitV7pQwQjfonRPYyL6fcqsPADd20fi8gc5vURC5rVHnD
-         OIRg==
-X-Gm-Message-State: APjAAAXZ4I0fOmj20XTQLhUWsbeca7Vyn9sqX4naSZBjOaQDTqwpvXdA
-        9glceea5fMFar7iF2Ks0/2cz8m2XrB2L6g1RXRY=
-X-Google-Smtp-Source: APXvYqxDipPMbOHzqxjnYXdHoKkA2bnLUkx4KUUNLdyLE1mYnY0F1DM5VcHpyoSgeUlQBf65Q4WQzh+lBL8dt/vhIPg=
-X-Received: by 2002:a1f:9748:: with SMTP id z69mr13058931vkd.25.1562248414826;
- Thu, 04 Jul 2019 06:53:34 -0700 (PDT)
+        id S1727357AbfGDNy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 09:54:29 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:53950 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727044AbfGDNy3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Jul 2019 09:54:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=/tUWj9SXbNEAufZYyZPkHISvXvHqdA3KX4p3SCB6+58=; b=PU3reFtiNuWI7IaG6QoE7LdN69
+        tfCwrCFaqPLIHZTbPs9+tvqBpLUEv2+ykv2SULBo4xRbvcjgUB4VKjLvKlHQ8RpfEv4N5LaGyNqVR
+        h/K8/fJikTii5KftGAd/tTorJ1efBQWbqLdS687ei8lB7Xq+MzDBXirmiHWY7bi//Zg0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hj2Bo-0003zo-Lm; Thu, 04 Jul 2019 15:54:20 +0200
+Date:   Thu, 4 Jul 2019 15:54:20 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Voon, Weifeng" <weifeng.voon@intel.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        biao huang <biao.huang@mediatek.com>,
+        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
+        "Kweh, Hock Leong" <hock.leong.kweh@intel.com>
+Subject: Re: [PATCH v1 net-next] net: stmmac: enable clause 45 mdio support
+Message-ID: <20190704135420.GD13859@lunn.ch>
+References: <1562147404-4371-1-git-send-email-weifeng.voon@intel.com>
+ <20190703140520.GA18473@lunn.ch>
+ <D6759987A7968C4889FDA6FA91D5CBC8147384B6@PGSMSX103.gar.corp.intel.com>
+ <20190704033038.GA6276@lunn.ch>
+ <D6759987A7968C4889FDA6FA91D5CBC81473862D@PGSMSX103.gar.corp.intel.com>
 MIME-Version: 1.0
-Received: by 2002:a67:e81:0:0:0:0:0 with HTTP; Thu, 4 Jul 2019 06:53:34 -0700 (PDT)
-Reply-To: mohamedallyson2019@gmail.com
-From:   Mohamed Allyson <mohamed.allyson2015@gmail.com>
-Date:   Thu, 4 Jul 2019 06:53:34 -0700
-Message-ID: <CAHu39-Tcx+hqphdYyKSWCjvZzVgx9MpqGi-fWxTEisxMRfOmBw@mail.gmail.com>
-Subject: VERY URGENT!!!
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <D6759987A7968C4889FDA6FA91D5CBC81473862D@PGSMSX103.gar.corp.intel.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Dear Friend,
+On Thu, Jul 04, 2019 at 06:05:23AM +0000, Voon, Weifeng wrote:
+> > > > > @@ -155,22 +171,26 @@ static int stmmac_mdio_read(struct mii_bus
+> > > > > *bus,
+> > > > int phyaddr, int phyreg)
+> > > > >  	struct stmmac_priv *priv = netdev_priv(ndev);
+> > > > >  	unsigned int mii_address = priv->hw->mii.addr;
+> > > > >  	unsigned int mii_data = priv->hw->mii.data;
+> > > > > -	u32 v;
+> > > > > -	int data;
+> > > > >  	u32 value = MII_BUSY;
+> > > > > +	int data = 0;
+> > > > > +	u32 v;
+> > > > >
+> > > > >  	value |= (phyaddr << priv->hw->mii.addr_shift)
+> > > > >  		& priv->hw->mii.addr_mask;
+> > > > >  	value |= (phyreg << priv->hw->mii.reg_shift) & priv->hw-
+> > > > >mii.reg_mask;
+> > > > >  	value |= (priv->clk_csr << priv->hw->mii.clk_csr_shift)
+> > > > >  		& priv->hw->mii.clk_csr_mask;
+> > > > > -	if (priv->plat->has_gmac4)
+> > > > > +	if (priv->plat->has_gmac4) {
+> > > > >  		value |= MII_GMAC4_READ;
+> > > > > +		if (phyreg & MII_ADDR_C45)
+> > > > > +			stmmac_mdio_c45_setup(priv, phyreg, &value, &data);
+> > > > > +	}
+> > > > >
+> > > > >  	if (readl_poll_timeout(priv->ioaddr + mii_address, v, !(v &
+> > > > MII_BUSY),
+> > > > >  			       100, 10000))
+> > > > >  		return -EBUSY;
+> > > > >
+> > > > > +	writel(data, priv->ioaddr + mii_data);
+> > > >
+> > > > That looks odd. Could you explain why it is needed.
+> > > >
+> > > > Thanks
+> > > > 	Andrew
+> > >
+> > > Hi Andrew,
+> > > This mdio c45 support needed to access DWC xPCS which is a Clause-45
+> > 
+> > I mean it looks odd doing a write to the data register in the middle of
+> > stmmac_mdio_read().
+> 
+> MAC is using an indirect access to access mdio devices. In order to read,
+> the driver needs to write into both mii_data and mii_address to select 
+> c45, read/write command, phy address, address to read, and etc. 
 
-My name is Mr. Mohamed Allyson. I have decided to seek a confidential
-co-operation  with you in the execution of the deal described
-here-under for our both  mutual benefit and I hope you will keep it a
-top secret because of the nature  of the transaction, During the
-course of our bank year auditing, I discovered  an unclaimed/abandoned
-fund, sum total of {US$19.3 Million United State  Dollars} in the bank
-account that belongs to a Saudi Arabia businessman Who unfortunately
-lost his life and entire family in a Motor Accident.
+Yes, that is all clear. The stmmac_mdio_c45_setup() does part of this
+setup. There is also a write to mii_address which i snipped out when
+replying. But why do you need to write to the data registers during a
+read? C22 does not need this write. Are there some bits in the top of
+the data register which are relevant to C45?
 
-Now our bank has been waiting for any of the relatives to come-up for
-the claim but nobody has done that. I personally has been unsuccessful
-in locating any of the relatives, now, I sincerely seek your consent
-to present you as the next of kin / Will Beneficiary to the deceased
-so that the proceeds of this account valued at {US$19.3 Million United
-State Dollars} can be paid to you, which we will share in these
-percentages ratio, 60% to me and 40% to you. All I request is your
-utmost sincere co-operation; trust and maximum confidentiality to
-achieve this project successfully. I have carefully mapped out the
-moralities for execution of this transaction under a legitimate
-arrangement to protect you from any breach of the law both in your
-country and here in Burkina Faso when the fund is being transferred to
-your bank account.
-
-I will have to provide all the relevant document that will be
-requested to indicate that you are the rightful beneficiary of this
-legacy and our bank will release the fund to you without any further
-delay, upon your consideration and acceptance of this offer, please
-send me the following information as stated below so we can proceed
-and get this fund transferred to your designated bank account
-immediately.
-
--Your Full Name:
--Your Contact Address:
--Your direct Mobile telephone Number:
--Your Date of Birth:
--Your occupation:
-
-I await your swift response and re-assurance through my Private email
-address: mohamedallyson2019@gmail.com
-
-
-Best regards,
-Mr. Mohamed Allyson
+Thanks
+    Andrew
