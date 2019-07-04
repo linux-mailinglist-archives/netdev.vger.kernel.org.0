@@ -2,84 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B1DF5F332
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 09:05:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FA665F33D
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 09:10:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727338AbfGDHFR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 03:05:17 -0400
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:46145 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727180AbfGDHFQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 03:05:16 -0400
-Received: by mail-lf1-f65.google.com with SMTP id z15so3457644lfh.13
-        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 00:05:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2/jhMVFWL9zAP6DASgDxWvKe4pRoCVY+Bzzlbxt4Sws=;
-        b=qwDSVwsECgzZhe2WwlG1p8BOPlPHnzsNTaQt1KS8uYPGmdPXJqoI8dUKZa4N9BH/bQ
-         O7QOMjn0trVW6NJLJAgx1IQA8mYmF2lT6hZqFMtVdWO5d7EKSxWkwVQeA51/LKFBQFeR
-         JfWOVSjVV3Af/VORKOstlu0LPLSn+zx1e+VbFF6GbnJnmvY/KumjMcv+KeAbxHIJFwHg
-         47dCJgb1rCk/k6pxP9MR2KHQI7uoBai+qnkxbSrfGXVxvqclUX3PzMMxApCEHCY2xU6N
-         vWNlOxTyomJ9DxPxQU4YiQJgFKC/tJkybV4VdVUcFXD85U/wq+refUau9H/AEzpPCUtB
-         39AA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2/jhMVFWL9zAP6DASgDxWvKe4pRoCVY+Bzzlbxt4Sws=;
-        b=aMieKCzCL7cSl88CHJh6ATSz7p9dDEHS/lj/MwLlPoIMhkPXPs6BhMMv5PQVDUcrZx
-         glZ93peDpog81feJTgFawtbOxZOpu3dKQ9qaUSaG+h3h0FOfWe8ry0dre2BXnrtJHcls
-         HbxhEyT9gvTt7ffdFVI9B2muS19rCqGPywNj8JcY1PHsz8T+T/GKW4t8IrUz3f5RYkKk
-         3q1+fzQgHMF2+brmJbwdjnbaOl3bGxpl27SNdVb6u5E6JOm8HIC9FqmEfyowSTYu4EfN
-         uhjeH3g140VobFbSN6sgNvblbbOtAknU1dWyToqCTRbXOjYMkw/Okyjn43lVGdkN9H/e
-         vAAA==
-X-Gm-Message-State: APjAAAVzZqoFvoMlVmyNRRcsv6SjP72Nh+RgZWJg/gQXzKlJPqDr+ADT
-        EMJxaXNj1A7o5KjgHNuwwQUtNA1BoBrbglIeLW/9/w==
-X-Google-Smtp-Source: APXvYqxQCD23eaeoAJhpEZfOc2Of9fwPsf/stmR5iwxoFFdrgqdv4D53+o/uLeap0VPJozhN950Mm7ck5RTeeImezjQ=
-X-Received: by 2002:ac2:5c42:: with SMTP id s2mr4161503lfp.61.1562223914898;
- Thu, 04 Jul 2019 00:05:14 -0700 (PDT)
+        id S1727320AbfGDHI7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 03:08:59 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:57365 "EHLO
+        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726120AbfGDHI7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 03:08:59 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 04CE121F4C;
+        Thu,  4 Jul 2019 03:08:58 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Thu, 04 Jul 2019 03:08:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=TieZLcHfJjDI39ZmR
+        jmM0WA9Z38os3q4mehClk94yME=; b=OuUYBiWYekuZR3eIIgkvxelfI8vsQb2UR
+        zp4121gMAKWc+s+jjOkcB84r+oUh8oWSo0tKo6Su7wZa5oxFPNfPxXmah+l6Kp8Y
+        LM8URm8K8pcR297zlxztdb3d8aAmH+d/zSyXf0qkN88cZD1Q32iKWa6j7ymW61jD
+        GNwffkmbMEsFTJ4SJeKetg+2Mb2dS5ppT/HUr7obY2fOkKxTHZSIua6IfehFd1JR
+        0lvht2NEf5s7jhIHQxre7oDqguLHJ7R4XtD0AC/8Q5cUkwdwDHzWBMglX9V3QRs9
+        lXGZO+V+Minu43vwhhetLfyfxQ9fkk8sZB3/n3Htxo98LbjnfN/Ew==
+X-ME-Sender: <xms:CaYdXXU0koOcZLOmMd0J_KtG3pTXxCVutuyrKd6FY5IG_zY_J4eA8Q>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrfedugdduudekucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpehmrg
+    hilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghrufhi
+    iigvpedt
+X-ME-Proxy: <xmx:CaYdXT1pYtNPA23Oa20gPrA_DnjqxiEEXFZPbwLqQjOReWG2Birfqg>
+    <xmx:CaYdXeaJWhcEfkrQPlnLEUpRfNKntVdxCEP1SZStxJ_-PPN4c5mQKg>
+    <xmx:CaYdXWpkeOw489YJyvZWqtlp7XxLqYXzMznBocYcITgwu2ubVDClKg>
+    <xmx:CaYdXbvo6XOEoDQgFbxiNbldvZxuJ3_aEQ5q9GNZ4aNlCZbp88Gy4Q>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 16FE6380075;
+        Thu,  4 Jul 2019 03:08:55 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, richardcochran@gmail.com, jiri@mellanox.com,
+        petrm@mellanox.com, shalomt@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next 0/8] mlxsw: Enable/disable PTP shapers
+Date:   Thu,  4 Jul 2019 10:07:32 +0300
+Message-Id: <20190704070740.302-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20190703171924.31801-1-paweldembicki@gmail.com> <20190703171924.31801-2-paweldembicki@gmail.com>
-In-Reply-To: <20190703171924.31801-2-paweldembicki@gmail.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 4 Jul 2019 09:05:03 +0200
-Message-ID: <CACRpkdb5LonYLpbOHj=Oo8Z7XjVUWoO0CuhOokxfSoY_fRinPw@mail.gmail.com>
-Subject: Re: [PATCH v2 1/4] net: dsa: Change DT bindings for Vitesse VSC73xx switches
-To:     Pawel Dembicki <paweldembicki@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 3, 2019 at 7:21 PM Pawel Dembicki <paweldembicki@gmail.com> wrote:
+From: Ido Schimmel <idosch@mellanox.com>
 
-> This commit introduce how to use vsc73xx platform driver.
->
-> Signed-off-by: Pawel Dembicki <paweldembicki@gmail.com>
+Shalom says:
 
-Nice!
+In order to get more accurate hardware time stamping in Spectrum-1, the
+driver needs to apply a shaper on the port for speeds lower than 40Gbps.
+This shaper is called a PTP shaper and it is applied on hierarchy 0,
+which is the port hierarchy. This shaper may affect the shaper rates of
+all hierarchies.
 
-> +If Platform driver is used, the device tree node is an platform device so it
-> +must reside inside a platform bus device tree node.
+This patchset adds the ability to enable or disable the PTP shaper on
+the port in two scenarios:
+ 1. When the user wants to enable/disable the hardware time stamping
+ 2. When the port is brought up or down (including port speed change)
 
-I would write something like "when connected to a memory bus, and
-used in memory-mapped I/O mode, a platform device is used to represent
-the vsc73xx" so it is clear what is going on.
+Patch #1 adds the QEEC.ptps field that is used for enabling or disabling
+the PTP shaper on a port.
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Patch #2 adds a note about disabling the PTP shaper when calling to
+mlxsw_sp_port_ets_maxrate_set().
 
-Yours,
-Linus Walleij
+Patch #3 adds the QPSC register that is responsible for configuring the
+PTP shaper parameters per speed.
+
+Patch #4 sets the PTP shaper parameters during the ptp_init().
+
+Patch #5 adds new operation for getting the port's speed.
+
+Patch #6 enables/disables the PTP shaper when turning on or off the
+hardware time stamping.
+
+Patch #7 enables/disables the PTP shaper when the port's status has
+changed (including port speed change).
+
+Patch #8 applies the PTP shaper enable/disable logic by filling the PTP
+shaper parameters array.
+
+Shalom Toledo (8):
+  mlxsw: reg: Add ptps field in QoS ETS Element Configuration Register
+  mlxsw: spectrum: Add note about the PTP shaper
+  mlxsw: reg: Add QoS PTP Shaper Configuration Register
+  mlxsw: spectrum_ptp: Set the PTP shaper parameters
+  mlxsw: spectrum: Add new operation for getting the port's speed
+  mlxsw: spectrum_ptp: Enable/disable PTP shaper on a port when getting
+    HWTSTAMP on/off
+  mlxsw: spectrum: Set up PTP shaper when port status has changed
+  mlxsw: spectrum_ptp: Apply the PTP shaper enable/disable logic
+
+ drivers/net/ethernet/mellanox/mlxsw/reg.h     | 129 ++++++++++++++
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |  81 +++++----
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |   2 +
+ .../ethernet/mellanox/mlxsw/spectrum_ptp.c    | 158 ++++++++++++++++++
+ .../ethernet/mellanox/mlxsw/spectrum_ptp.h    |  10 ++
+ 5 files changed, 350 insertions(+), 30 deletions(-)
+
+-- 
+2.20.1
+
