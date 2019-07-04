@@ -2,129 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EEF35FDBC
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 22:21:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D9B85FDBD
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 22:22:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727188AbfGDUVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 16:21:38 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:34437 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726805AbfGDUVi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 16:21:38 -0400
-Received: by mail-io1-f67.google.com with SMTP id k8so14953643iot.1
-        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 13:21:38 -0700 (PDT)
+        id S1727317AbfGDUWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 16:22:14 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:39320 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726038AbfGDUWO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 16:22:14 -0400
+Received: by mail-pg1-f194.google.com with SMTP id u17so2812870pgi.6;
+        Thu, 04 Jul 2019 13:22:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=OWrqG+ga7Rz5IJsic1OSpdHkZ7hAzYLuz+LfEP5Woak=;
-        b=2QoQGYAMkj6h2I/282fmnPFsiWGyDeYM85zm8bEvh5+ivb2LeE+Adz9rMYeTSfofuU
-         NYi5fzXQNuzw/QgqYNlLZ10rH8XKFNoOp5MM0sTQHgsqhOBenu/C/xrZk/aHdGRnH6Yk
-         T7t63n2+nvs4VeRIXjAS+BesLErOjoYFkLXgvmNd79FHZYpgxUwglljjZV8jHtUtZLQs
-         9BIlNQZLjv1I78suYLNtP5D11lApHF5CPHKWnKAONQAGfSHi4ouGsSTIcItqboITxOYZ
-         B5b35hOaQAtxxHvwoJrGFoMEAkSSmjRIrNdsgPz7O4ybzgAgTKjUsycHklVPWWmgn7ov
-         2Q+Q==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=rm2kV9yaZ6s1nLYzpiwzizy1cuY+K/0vfHusQEBtFDM=;
+        b=ud9QTMzGJeG2Qyeabj4fzxOdJKu5mdumwhrsjky4yMQq7wJ8ByIxEuufzWyoErxa9s
+         CkOmBNUXfzP1M3k5xwCoOLl/RzbUovzSX02GiCSbK88NhfWpMngxl2bmNKWibY+xT2Sh
+         m8gVPDLWkxwsXJKuCzlaueqbknNi1UDbNwIEfy1iyUCGvXDdNdd+FkAvrHO+AFh4U70H
+         t/seI8sDEtoBLp+hK4PBTksFrWlxwtY1gnt3Ctv1Wxj1gEoDTCwIDyAQ2gZh94sjQ9f9
+         EkaRxv8FOhN18Qc0576Gdt5BgL2sr0CWnfyFEzUi5v/636CkUckFb1wZG1ZR0okS1L0u
+         7yXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=OWrqG+ga7Rz5IJsic1OSpdHkZ7hAzYLuz+LfEP5Woak=;
-        b=M9U4DbHvtcZxErk2R1zZnYMOEVlnmxPwKuYDKkP+iUDnldnr8f8g6vha4ppUnyXXHD
-         84B6OkfCYl1rYTwPTgANkTIY4fp9L4SN5NlZy8kEVsw/T+t+9jHRpstLeWJo//J9zcLq
-         KeDNXrKk6GTZLfYVh7K1aOjh+pc63jYujw1vCtmtLMh0KjC/rssXIG3Zhe+KBbLkUWoi
-         l/HK3BI305Hdo5BkWkmk2hjTqeNlpsR8PvLiUp7m9jhp1RpSBka8p8l4HOPmG+gOnN4E
-         zF5d06cb9vywI/dBbhqWDf/v0UyBxY6UZ3xmNDdAXb4Mf/jaeVr4Mp2qtCxqsF5ROtT4
-         PAkA==
-X-Gm-Message-State: APjAAAXR5gIwdsRjmDzd3XlYsSzbVoCDxJgno68ucKWRWf5P+stuRl2I
-        ewIM8uhgi4LG3954BSUl2XfRDA==
-X-Google-Smtp-Source: APXvYqzzKrgoNeBtJBuMwntK1+8Tv/t1GXsV2Zn0LZj88LmPY0mmghikaUdIbLP4WkzPOCiJWHc2pQ==
-X-Received: by 2002:a02:c885:: with SMTP id m5mr24951jao.101.1562271697734;
-        Thu, 04 Jul 2019 13:21:37 -0700 (PDT)
-Received: from x220t ([64.26.149.125])
-        by smtp.gmail.com with ESMTPSA id a8sm4956144ioh.29.2019.07.04.13.21.36
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 04 Jul 2019 13:21:37 -0700 (PDT)
-Date:   Thu, 4 Jul 2019 16:21:30 -0400
-From:   Alexander Aring <aring@mojatatu.com>
-To:     Lucas Bates <lucasb@mojatatu.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, mleitner@redhat.com,
-        vladbu@mellanox.com, dcaratti@redhat.com, kernel@mojatatu.com
-Subject: Re: [PATCH v2 net-next 1/3] tc-testing: Add JSON verification to tdc
-Message-ID: <20190704202130.tv2ivy5tjj7pjasj@x220t>
-References: <1562201102-4332-1-git-send-email-lucasb@mojatatu.com>
- <1562201102-4332-2-git-send-email-lucasb@mojatatu.com>
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=rm2kV9yaZ6s1nLYzpiwzizy1cuY+K/0vfHusQEBtFDM=;
+        b=GnPT1nfbGQ42rhINXszZiZBz/HueuxDPmRObZGwPVm8vlp2AZp7Ov0ptXVYl1nVSFk
+         HFAtvz8QOBWvcrNJo0nY5jr62OzXbufEYDgJNNcUS1OuzE86tHVI3rTRnJs7PI2n34lB
+         X3KwL11DKvo4N+5zd+VQaQ9FkWZBQr6pLSMIyttBMLRVNz5jqTepDPcwlBVDA5cqHspR
+         X2WX+XL35NH099ntjIdqquNi+VHK+E+VJqWNlaNwUQaSt2Nnayi3e2SQNOjtl1eSesoX
+         tFIQJCO1IFAKAMj2XjzQFnVI283YS82BX1jT+NxrloDLJHvthwj9iiXz8FGEPQy6bOzv
+         OHtg==
+X-Gm-Message-State: APjAAAX5EBFCCmcfEPNs67doABeU1nWOcQdGMHqwHIJ8z5OgmHqt9S05
+        QlDaY1WIORI8cHe+b9sWoyDUz2Y9
+X-Google-Smtp-Source: APXvYqw0FmRzchp1flwHU/JMjvxUB4wW47+nJXzUYXeaqj2quvFrpT0ZePaI26WjQLdltIjpdSLz0Q==
+X-Received: by 2002:a63:e1e:: with SMTP id d30mr350264pgl.100.1562271733235;
+        Thu, 04 Jul 2019 13:22:13 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-101-123-102.oc.oc.cox.net. [68.101.123.102])
+        by smtp.gmail.com with ESMTPSA id f62sm9479672pfb.143.2019.07.04.13.22.11
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 04 Jul 2019 13:22:12 -0700 (PDT)
+Subject: Re: [PATCH v2 1/4] net: dsa: Change DT bindings for Vitesse VSC73xx
+ switches
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Pawel Dembicki <paweldembicki@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20190703171924.31801-1-paweldembicki@gmail.com>
+ <20190703171924.31801-2-paweldembicki@gmail.com>
+ <CACRpkdb5LonYLpbOHj=Oo8Z7XjVUWoO0CuhOokxfSoY_fRinPw@mail.gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Message-ID: <ae24004f-64c5-fb80-db59-8ad7ecddfd95@gmail.com>
+Date:   Thu, 4 Jul 2019 13:22:10 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
+In-Reply-To: <CACRpkdb5LonYLpbOHj=Oo8Z7XjVUWoO0CuhOokxfSoY_fRinPw@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1562201102-4332-2-git-send-email-lucasb@mojatatu.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
 
-On Wed, Jul 03, 2019 at 08:45:00PM -0400, Lucas Bates wrote:
-> This patch allows tdc to process JSON output to perform secondary
-> verification of the command under test. If the verifyCmd generates
-> JSON, one can provide the 'matchJSON' key to process it
-> instead of a regex.
-> 
-> matchJSON has two elements: 'path' and 'value'. The 'path' key is a
-> list of integers and strings that provide the key values for tdc to
-> navigate the JSON information. The value is an integer or string
-> that tdc will compare against what it finds in the provided path.
-> 
-> If the numerical position of an element can vary, it's possible to
-> substitute an asterisk as a wildcard. tdc will search all possible
-> entries in the array.
-> 
-> Multiple matches are possible, but everything specified must
-> match for the test to pass.
-> 
-> If both matchPattern and matchJSON are present, tdc will only
-> operate on matchPattern. If neither are present, verification
-> is skipped.
-> 
-> Example:
-> 
->   "cmdUnderTest": "$TC actions add action pass index 8",
->   "verifyCmd": "$TC actions list action gact",
->   "matchJSON": [
->       {
->           "path": [
->               0,
->               "actions",
->               0,
->               "control action",
->               "type"
->           ],
->           "value": "gact"
->       },
->       {
->           "path": [
->               0,
->               "actions",
->               0,
->               "index"
->           ],
->           "value": 8
->       }
->   ]
 
-why you just use eval() as pattern matching operation and let the user
-define how to declare a matching mechanism instead you introduce another
-static matching scheme based on a json description?
+On 7/4/2019 12:05 AM, Linus Walleij wrote:
+> On Wed, Jul 3, 2019 at 7:21 PM Pawel Dembicki <paweldembicki@gmail.com> wrote:
+> 
+>> This commit introduce how to use vsc73xx platform driver.
+>>
+>> Signed-off-by: Pawel Dembicki <paweldembicki@gmail.com>
+> 
+> Nice!
+> 
+>> +If Platform driver is used, the device tree node is an platform device so it
+>> +must reside inside a platform bus device tree node.
+> 
+> I would write something like "when connected to a memory bus, and
+> used in memory-mapped I/O mode, a platform device is used to represent
+> the vsc73xx" so it is clear what is going on.
 
-Whereas in eval() you could directly use the python bool expression
-parser to make whatever you want.
+Agreed, with that fixed:
 
-I don't know, I see at some points you will hit limitations what you can
-express with this matchFOO and we need to introduce another matchBAR,
-whereas in providing the code it should be no problem expression
-anything. If you want smaller shortcuts writing matching patterns you
-can implement them and using in your eval() operation.
-
-- Alex
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
