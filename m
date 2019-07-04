@@ -2,115 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 635BD5F28C
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 08:07:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 460E05F2BB
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 08:23:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727230AbfGDGF1 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 4 Jul 2019 02:05:27 -0400
-Received: from mga11.intel.com ([192.55.52.93]:3779 "EHLO mga11.intel.com"
+        id S1727260AbfGDGXB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 02:23:01 -0400
+Received: from mga12.intel.com ([192.55.52.136]:39678 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725861AbfGDGF1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Jul 2019 02:05:27 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
+        id S1725879AbfGDGXB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Jul 2019 02:23:01 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
 X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Jul 2019 23:05:27 -0700
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Jul 2019 23:23:00 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.63,449,1557212400"; 
-   d="scan'208";a="169357260"
-Received: from kmsmsx157.gar.corp.intel.com ([172.21.138.134])
-  by orsmga006.jf.intel.com with ESMTP; 03 Jul 2019 23:05:24 -0700
-Received: from pgsmsx110.gar.corp.intel.com (10.221.44.111) by
- kmsmsx157.gar.corp.intel.com (172.21.138.134) with Microsoft SMTP Server
- (TLS) id 14.3.439.0; Thu, 4 Jul 2019 14:05:23 +0800
-Received: from pgsmsx103.gar.corp.intel.com ([169.254.2.4]) by
- PGSMSX110.gar.corp.intel.com ([169.254.13.19]) with mapi id 14.03.0439.000;
- Thu, 4 Jul 2019 14:05:23 +0800
-From:   "Voon, Weifeng" <weifeng.voon@intel.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "Giuseppe Cavallaro" <peppe.cavallaro@st.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        biao huang <biao.huang@mediatek.com>,
-        "Ong, Boon Leong" <boon.leong.ong@intel.com>,
-        "Kweh, Hock Leong" <hock.leong.kweh@intel.com>
-Subject: RE: [PATCH v1 net-next] net: stmmac: enable clause 45 mdio support
-Thread-Topic: [PATCH v1 net-next] net: stmmac: enable clause 45 mdio support
-Thread-Index: AQHVMUGmUw8CyhUBakCg51utnm9b/6a4aBMAgAFBlaD//59qAIAArWRQ
-Date:   Thu, 4 Jul 2019 06:05:23 +0000
-Message-ID: <D6759987A7968C4889FDA6FA91D5CBC81473862D@PGSMSX103.gar.corp.intel.com>
-References: <1562147404-4371-1-git-send-email-weifeng.voon@intel.com>
- <20190703140520.GA18473@lunn.ch>
- <D6759987A7968C4889FDA6FA91D5CBC8147384B6@PGSMSX103.gar.corp.intel.com>
- <20190704033038.GA6276@lunn.ch>
-In-Reply-To: <20190704033038.GA6276@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.0.600.7
-dlp-reaction: no-action
-x-originating-ip: [172.30.20.206]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+   d="scan'208";a="247853485"
+Received: from npg-dpdk-virtio-tbie-2.sh.intel.com (HELO ___) ([10.67.104.151])
+  by orsmga001.jf.intel.com with ESMTP; 03 Jul 2019 23:22:58 -0700
+Date:   Thu, 4 Jul 2019 14:21:34 +0800
+From:   Tiwei Bie <tiwei.bie@intel.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     mst@redhat.com, alex.williamson@redhat.com,
+        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, dan.daly@intel.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com
+Subject: Re: [RFC v2] vhost: introduce mdev based hardware vhost backend
+Message-ID: <20190704062134.GA21116@___>
+References: <20190703091339.1847-1-tiwei.bie@intel.com>
+ <7b8279b2-aa7e-7adc-eeff-20dfaf4400d0@redhat.com>
+ <20190703115245.GA22374@___>
+ <64833f91-02cd-7143-f12e-56ab93b2418d@redhat.com>
+ <20190703130817.GA1978@___>
+ <b01b8e28-8d96-31dd-56f4-ca7793498c55@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <b01b8e28-8d96-31dd-56f4-ca7793498c55@redhat.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > > @@ -155,22 +171,26 @@ static int stmmac_mdio_read(struct mii_bus
-> > > > *bus,
-> > > int phyaddr, int phyreg)
-> > > >  	struct stmmac_priv *priv = netdev_priv(ndev);
-> > > >  	unsigned int mii_address = priv->hw->mii.addr;
-> > > >  	unsigned int mii_data = priv->hw->mii.data;
-> > > > -	u32 v;
-> > > > -	int data;
-> > > >  	u32 value = MII_BUSY;
-> > > > +	int data = 0;
-> > > > +	u32 v;
-> > > >
-> > > >  	value |= (phyaddr << priv->hw->mii.addr_shift)
-> > > >  		& priv->hw->mii.addr_mask;
-> > > >  	value |= (phyreg << priv->hw->mii.reg_shift) & priv->hw-
-> > > >mii.reg_mask;
-> > > >  	value |= (priv->clk_csr << priv->hw->mii.clk_csr_shift)
-> > > >  		& priv->hw->mii.clk_csr_mask;
-> > > > -	if (priv->plat->has_gmac4)
-> > > > +	if (priv->plat->has_gmac4) {
-> > > >  		value |= MII_GMAC4_READ;
-> > > > +		if (phyreg & MII_ADDR_C45)
-> > > > +			stmmac_mdio_c45_setup(priv, phyreg, &value, &data);
-> > > > +	}
-> > > >
-> > > >  	if (readl_poll_timeout(priv->ioaddr + mii_address, v, !(v &
-> > > MII_BUSY),
-> > > >  			       100, 10000))
-> > > >  		return -EBUSY;
-> > > >
-> > > > +	writel(data, priv->ioaddr + mii_data);
-> > >
-> > > That looks odd. Could you explain why it is needed.
-> > >
-> > > Thanks
-> > > 	Andrew
-> >
-> > Hi Andrew,
-> > This mdio c45 support needed to access DWC xPCS which is a Clause-45
+On Thu, Jul 04, 2019 at 12:31:48PM +0800, Jason Wang wrote:
+> On 2019/7/3 下午9:08, Tiwei Bie wrote:
+> > On Wed, Jul 03, 2019 at 08:16:23PM +0800, Jason Wang wrote:
+> > > On 2019/7/3 下午7:52, Tiwei Bie wrote:
+> > > > On Wed, Jul 03, 2019 at 06:09:51PM +0800, Jason Wang wrote:
+> > > > > On 2019/7/3 下午5:13, Tiwei Bie wrote:
+> > > > > > Details about this can be found here:
+> > > > > > 
+> > > > > > https://lwn.net/Articles/750770/
+> > > > > > 
+> > > > > > What's new in this version
+> > > > > > ==========================
+> > > > > > 
+> > > > > > A new VFIO device type is introduced - vfio-vhost. This addressed
+> > > > > > some comments from here:https://patchwork.ozlabs.org/cover/984763/
+> > > > > > 
+> > > > > > Below is the updated device interface:
+> > > > > > 
+> > > > > > Currently, there are two regions of this device: 1) CONFIG_REGION
+> > > > > > (VFIO_VHOST_CONFIG_REGION_INDEX), which can be used to setup the
+> > > > > > device; 2) NOTIFY_REGION (VFIO_VHOST_NOTIFY_REGION_INDEX), which
+> > > > > > can be used to notify the device.
+> > > > > > 
+> > > > > > 1. CONFIG_REGION
+> > > > > > 
+> > > > > > The region described by CONFIG_REGION is the main control interface.
+> > > > > > Messages will be written to or read from this region.
+> > > > > > 
+> > > > > > The message type is determined by the `request` field in message
+> > > > > > header. The message size is encoded in the message header too.
+> > > > > > The message format looks like this:
+> > > > > > 
+> > > > > > struct vhost_vfio_op {
+> > > > > > 	__u64 request;
+> > > > > > 	__u32 flags;
+> > > > > > 	/* Flag values: */
+> > > > > >     #define VHOST_VFIO_NEED_REPLY 0x1 /* Whether need reply */
+> > > > > > 	__u32 size;
+> > > > > > 	union {
+> > > > > > 		__u64 u64;
+> > > > > > 		struct vhost_vring_state state;
+> > > > > > 		struct vhost_vring_addr addr;
+> > > > > > 	} payload;
+> > > > > > };
+> > > > > > 
+> > > > > > The existing vhost-kernel ioctl cmds are reused as the message
+> > > > > > requests in above structure.
+> > > > > Still a comments like V1. What's the advantage of inventing a new protocol?
+> > > > I'm trying to make it work in VFIO's way..
+> > > > 
+> > > > > I believe either of the following should be better:
+> > > > > 
+> > > > > - using vhost ioctl,  we can start from SET_VRING_KICK/SET_VRING_CALL and
+> > > > > extend it with e.g notify region. The advantages is that all exist userspace
+> > > > > program could be reused without modification (or minimal modification). And
+> > > > > vhost API hides lots of details that is not necessary to be understood by
+> > > > > application (e.g in the case of container).
+> > > > Do you mean reusing vhost's ioctl on VFIO device fd directly,
+> > > > or introducing another mdev driver (i.e. vhost_mdev instead of
+> > > > using the existing vfio_mdev) for mdev device?
+> > > Can we simply add them into ioctl of mdev_parent_ops?
+> > Right, either way, these ioctls have to be and just need to be
+> > added in the ioctl of the mdev_parent_ops. But another thing we
+> > also need to consider is that which file descriptor the userspace
+> > will do the ioctl() on. So I'm wondering do you mean let the
+> > userspace do the ioctl() on the VFIO device fd of the mdev
+> > device?
+> > 
 > 
-> I mean it looks odd doing a write to the data register in the middle of
-> stmmac_mdio_read().
+> Yes.
 
-MAC is using an indirect access to access mdio devices. In order to read,
-the driver needs to write into both mii_data and mii_address to select 
-c45, read/write command, phy address, address to read, and etc. 
+Got it! I'm not sure what's Alex opinion on this. If we all
+agree with this, I can do it in this way.
 
-Weifeng
+> Is there any other way btw?
 
+Just a quick thought.. Maybe totally a bad idea. I was thinking
+whether it would be odd to do non-VFIO's ioctls on VFIO's device
+fd. So I was wondering whether it's possible to allow binding
+another mdev driver (e.g. vhost_mdev) to the supported mdev
+devices. The new mdev driver, vhost_mdev, can provide similar
+ways to let userspace open the mdev device and do the vhost ioctls
+on it. To distinguish with the vfio_mdev compatible mdev devices,
+the device API of the new vhost_mdev compatible mdev devices
+might be e.g. "vhost-net" for net?
+
+So in VFIO case, the device will be for passthru directly. And
+in VHOST case, the device can be used to accelerate the existing
+virtualized devices.
+
+How do you think?
+
+Thanks,
+Tiwei
+> 
+> Thanks
+> 
