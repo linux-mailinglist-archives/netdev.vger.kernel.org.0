@@ -2,114 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 10FBE5F889
-	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 14:49:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A763D5F896
+	for <lists+netdev@lfdr.de>; Thu,  4 Jul 2019 14:53:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727026AbfGDMtr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Jul 2019 08:49:47 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:51855 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725865AbfGDMtq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Jul 2019 08:49:46 -0400
-Received: by mail-wm1-f68.google.com with SMTP id 207so5654166wma.1
-        for <netdev@vger.kernel.org>; Thu, 04 Jul 2019 05:49:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=pJR9Nbd+EOvZUGtVQfqXOkJPh6MJRl4K59V5gxu19nc=;
-        b=pW28AYFsfz6lnQajSXfkgm0Hxur+z4zyo2+Mn98yniclwqQG8ecE+mzYQficvwPFQX
-         CwaUtZA2yFftv6MUGI+P39gNRBhdcckVT6Z0SvAtY1DX2pnwSaoHEly7RoIVzrucF8G6
-         QkNbFnvmuH8BK7WWkIuBgCbD3BytI6VZUw6ERP+uTPion1cNRcbhgGFAWdYp0RPt4EtJ
-         M6uwQDJR9jYJanmQM8MXRDn0xqlApbLdnoCFWaJYCctFnhciK/AIsqBU+gRA1PhQpR1C
-         M+emjXF3OofspwDRs4fsa/6DEY898+4AgcxTrYHV6MOPqtDDritljBieEejXK1CY6+2f
-         kIRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=pJR9Nbd+EOvZUGtVQfqXOkJPh6MJRl4K59V5gxu19nc=;
-        b=EMMlomTiQdZkGMXPxUwohsmxizddPltQ9pmfYDmQ16x6E1fJ4irYfriDSVdETRCE5V
-         v1+u7AWRfJccY6Bx0z7LgsZKope5cY0toVuTjkrU17RtqejQ2PxhU3CzTMt5h4/9Fy3e
-         lyK5Bk1nYqpP8siKdCc/7xFvYdJvnkufhtSJbEDKynPYmYm1gdbtBQ+TIstL/2TpfwcS
-         ztG/GAJ/3pAoHWjQCZccFPXjqOlyLx9uy2sTRiAcVHzcQ+TlqSL8f4Ny/DuL1nVEBmhO
-         8VeV/aCeWQygqLhgq7FGjVNvkFN8ysmcvtbrLJgrJ6qkoobcxLHVRyzmoOQ7iK7XYMyZ
-         lg0Q==
-X-Gm-Message-State: APjAAAXlY3lfizlPjy/aJm2xWFpi/k97hCS0BzWPy9PVYI2enVgIWPLR
-        rIrjDFpNwJFCNh4orXc5hJFJLg==
-X-Google-Smtp-Source: APXvYqxkaYPEcpkgDFk9Q6mfIv5r2R6ZColj0lHQ9LOI2sMRzVJDlcVu4dSz0xDEM7lLB6xOpEFGdQ==
-X-Received: by 2002:a1c:18d:: with SMTP id 135mr12614483wmb.171.1562244584926;
-        Thu, 04 Jul 2019 05:49:44 -0700 (PDT)
-Received: from apalos (athedsl-428434.home.otenet.gr. [79.131.225.144])
-        by smtp.gmail.com with ESMTPSA id s11sm2387689wrr.59.2019.07.04.05.49.43
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 04 Jul 2019 05:49:44 -0700 (PDT)
-Date:   Thu, 4 Jul 2019 15:49:41 +0300
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Maxime Ripard <maxime.ripard@bootlin.com>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH net-next 3/3] net: stmmac: Introducing support for Page
- Pool
-Message-ID: <20190704124941.GA9617@apalos>
-References: <cover.1562149883.git.joabreu@synopsys.com>
- <1b254bb7fc6044c5e6e2fdd9e00088d1d13a808b.1562149883.git.joabreu@synopsys.com>
- <20190704120018.4523a119@carbon>
- <20190704103057.GA29734@apalos>
- <CAK8P3a3GC6f-xHG7MqZRLhY66Ui4HQVi=4WXR703wqfMNY6A5A@mail.gmail.com>
+        id S1727016AbfGDMxT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Jul 2019 08:53:19 -0400
+Received: from mx2.suse.de ([195.135.220.15]:37780 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725945AbfGDMxT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Jul 2019 08:53:19 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 03806B049;
+        Thu,  4 Jul 2019 12:53:17 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 2655DE0159; Thu,  4 Jul 2019 14:53:15 +0200 (CEST)
+Date:   Thu, 4 Jul 2019 14:53:15 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        Jiri Pirko <jiri@resnulli.us>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Linville <linville@tuxdriver.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v6 06/15] ethtool: netlink bitset handling
+Message-ID: <20190704125315.GT20101@unicorn.suse.cz>
+References: <cover.1562067622.git.mkubecek@suse.cz>
+ <cb614bebee1686293127194e8f7ced72955c7c7f.1562067622.git.mkubecek@suse.cz>
+ <20190703114933.GW2250@nanopsycho>
+ <20190703181851.GP20101@unicorn.suse.cz>
+ <20190704080435.GF2250@nanopsycho>
+ <20190704115236.GR20101@unicorn.suse.cz>
+ <6c070d62ffe342f5bc70556ef0f85740d04ae4a3.camel@sipsolutions.net>
+ <20190704121718.GS20101@unicorn.suse.cz>
+ <2f1a8edb0b000b4eb7adcaca0d1fb05fdd73a587.camel@sipsolutions.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAK8P3a3GC6f-xHG7MqZRLhY66Ui4HQVi=4WXR703wqfMNY6A5A@mail.gmail.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+In-Reply-To: <2f1a8edb0b000b4eb7adcaca0d1fb05fdd73a587.camel@sipsolutions.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jul 04, 2019 at 02:14:28PM +0200, Arnd Bergmann wrote:
-> On Thu, Jul 4, 2019 at 12:31 PM Ilias Apalodimas
-> <ilias.apalodimas@linaro.org> wrote:
-> > > On Wed,  3 Jul 2019 12:37:50 +0200
-> > > Jose Abreu <Jose.Abreu@synopsys.com> wrote:
+On Thu, Jul 04, 2019 at 02:21:52PM +0200, Johannes Berg wrote:
+> On Thu, 2019-07-04 at 14:17 +0200, Michal Kubecek wrote:
+> > On Thu, Jul 04, 2019 at 02:03:02PM +0200, Johannes Berg wrote:
+> > > On Thu, 2019-07-04 at 13:52 +0200, Michal Kubecek wrote:
+> > > > 
+> > > > There is still the question if it it should be implemented as a nested
+> > > > attribute which could look like the current compact form without the
+> > > > "list" flag (if there is no mask, it's a list). Or an unstructured data
+> > > > block consisting of u32 bit length 
+> > > 
+> > > You wouldn't really need the length, since the attribute has a length
+> > > already :-)
+> > 
+> > It has byte length, not bit length. The bitmaps we are dealing with
+> > can have any bit length, not necessarily multiples of 8 (or even 32).
 > 
-> > 1. page pool allocs packet. The API doesn't sync but i *think* you don't have to
-> > explicitly since the CPU won't touch that buffer until the NAPI handler kicks
-> > in. On the napi handler you need to dma_sync_single_for_cpu() and process the
-> > packet.
+> Not sure why that matters? You have the mask, so you don't really need
+> to additionally say that you're only going up to a certain bit?
 > 
-> > So bvottom line i *think* we can skip the dma_sync_single_for_device() on the
-> > initial allocation *only*. If am terribly wrong please let me know :)
-> 
-> I think you have to do a sync_single_for_device /somewhere/ before the
-> buffer is given to the device. On a non-cache-coherent machine with
-> a write-back cache, there may be dirty cache lines that get written back
-> after the device DMA's data into it (e.g. from a previous memset
-> from before the buffer got freed), so you absolutely need to flush any
-> dirty cache lines on it first.
-Ok my bad here i forgot to add "when coherency is there", since the driver
-i had in mind runs on such a device (i think this is configurable though so i'll
-add the sync explicitly to make sure we won't break any configurations).
+> I mean, say you want to set some bits <=17, why would you need to say
+> that they're <=17 if you have a
+>  value: 0b00000000'000000xx'xxxxxxxx'xxxxxxxx
+>  mask:  0b00000000'00000011'11111111'11111111
 
-In general you are right, thanks for the explanation!
-> You may also need to invalidate the cache lines in the following
-> sync_single_for_cpu() to eliminate clean cache lines with stale data
-> that got there when speculatively reading between the cache-invalidate
-> and the DMA.
-> 
->        Arnd
+One scenario that I can see from the top of my head would be user
+running
 
+  ethtool -s <dev> advertise 0x...
 
-Thanks!
-/Ilias
+with hex value representing some subset of link modes. Now if ethtool
+version is behind kernel and recognizes fewer link modes than kernel
+but in a way that the number rounded up to bytes or words would be the
+same, kernel has no way to recognize of those zero bits on top of the
+mask are zero on purpose or just because userspace doesn't know about
+them. In general, I believe the absence of bit length information is
+something protocols would have to work around sometimes.
+
+The submitted implementation doesn't have this problem as it can tell
+kernel "this is a list" (i.e. I'm not sending a value/mask pair, I want
+exactly these bits to be set). Thus it can easily implement requests of
+both types (value/mask or just value):
+
+  ethtool -s <dev> advertise 0x2f
+  ethtool -s <dev> advertise 0x08/0x0c
+  ethtool -s <dev> advertise 100baseT/Full off 1000baseT/Full on
+
+and could be as easily extended to support also
+
+  ethtool -s <dev> advertise 100baseT/Full 1000baseT/Full
+
+Michal
